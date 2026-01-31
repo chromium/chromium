@@ -180,6 +180,10 @@ float DriveUploadTask::GetProgress() const {
 std::optional<GURL> DriveUploadTask::GetResponseLink(
     bool add_user_identifier) const {
   if (!upload_result_ || !upload_result_->file_link) {
+    base::UmaHistogramEnumeration(
+        "IOS.SaveToDrive.UploadTask.GetResponseLinkFailure",
+        !upload_result_ ? GetResponseLinkFailure::kMissingResult
+                        : GetResponseLinkFailure::kMissingFileLink);
     return std::nullopt;
   }
   GURL result(base::SysNSStringToUTF8(upload_result_->file_link));

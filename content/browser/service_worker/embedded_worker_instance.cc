@@ -4,10 +4,10 @@
 
 #include "content/browser/service_worker/embedded_worker_instance.h"
 
+#include <algorithm>
 #include <utility>
 
 #include "base/check_is_test.h"
-#include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -305,6 +305,11 @@ void EmbeddedWorkerInstance::Start(
   const url::Origin origin = url::Origin::Create(params->script_url);
   ChildProcessSecurityPolicyImpl::GetInstance()->AddCommittedOrigin(process_id,
                                                                     origin);
+
+  // Pass the cross-origin isolated capability of the worker.
+  params->cross_origin_isolated =
+      rph->GetProcessLock().agent_cluster_key().IsCrossOriginIsolated() ||
+      rph->GetProcessLock().GetWebExposedIsolationInfo().is_isolated();
 
   rph->BindReceiver(client_.BindNewPipeAndPassReceiver());
   client_.set_disconnect_handler(
@@ -945,7 +950,7 @@ EmbeddedWorkerInstance::CreateFactoryBundle(
     // redirects to data: URLs in ServiceWorkerGlobalScope
     // (https://crbug.com/1334249).
     if (scheme != url::kDataScheme &&
-        !base::Contains(GetServiceWorkerSchemes(), scheme)) {
+        !std::ranges::contains(GetServiceWorkerSchemes(), scheme)) {
       continue;
     }
 

@@ -21,10 +21,10 @@ Status DevToolsEventsLogger::OnConnected(DevToolsClient* client) {
 
 Status DevToolsEventsLogger::OnEvent(DevToolsClient* client,
                                      const std::string& method,
-                                     const base::Value::Dict& params) {
+                                     const base::DictValue& params) {
   auto it = events_.find(method);
   if (it != events_.end()) {
-    base::Value::Dict log_message_dict;
+    base::DictValue log_message_dict;
     log_message_dict.Set("method", method);
     log_message_dict.Set("params", params.Clone());
     log_->AddEntry(Log::kInfo, base::WriteJson(log_message_dict).value_or(""));

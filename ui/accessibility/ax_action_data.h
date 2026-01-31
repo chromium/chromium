@@ -10,7 +10,6 @@
 
 #include "ui/accessibility/ax_base_export.h"
 #include "ui/accessibility/ax_constants.mojom.h"
-#include "ui/accessibility/ax_enums.mojom-forward.h"
 #include "ui/accessibility/ax_enums.mojom-shared.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/accessibility/ax_node_id_forward.h"

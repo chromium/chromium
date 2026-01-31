@@ -13,8 +13,10 @@
 #include "components/autofill/core/browser/payments/test_legal_message_line.h"
 #include "components/autofill/core/browser/test_utils/autofill_test_utils.h"
 #include "components/autofill/core/common/autofill_features.h"
+#include "components/strings/grit/components_strings.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/l10n/l10n_util.h"
 
 namespace autofill {
 
@@ -269,6 +271,25 @@ TEST_P(IbanBubbleControllerImplTest, OnConfirmationPromptAutoClosed_Fail) {
   task_environment()->FastForwardBy(
       IbanBubbleControllerImpl::kAutoCloseConfirmationBubbleWaitSec);
   EXPECT_TRUE(controller()->GetPaymentBubbleView());
+}
+
+TEST_P(IbanBubbleControllerImplTest, ReturnsApplicableExplanatoryMessage) {
+  base::test::ScopedFeatureList feature_list{
+      features::kAutofillEnableWalletBranding};
+  ShowUploadSaveBubble(autofill::test::GetServerIban());
+  EXPECT_EQ(controller()->GetExplanatoryMessage(),
+            l10n_util::GetStringUTF16(
+                IDS_AUTOFILL_UPLOAD_IBAN_TO_WALLET_PROMPT_EXPLANATION));
+}
+
+TEST_P(IbanBubbleControllerImplTest,
+       ReturnsApplicableExplanatoryMessage_FlagOff) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(features::kAutofillEnableWalletBranding);
+  ShowUploadSaveBubble(autofill::test::GetServerIban());
+  EXPECT_EQ(
+      controller()->GetExplanatoryMessage(),
+      l10n_util::GetStringUTF16(IDS_AUTOFILL_UPLOAD_IBAN_PROMPT_EXPLANATION));
 }
 
 INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(IbanBubbleControllerImplTest);

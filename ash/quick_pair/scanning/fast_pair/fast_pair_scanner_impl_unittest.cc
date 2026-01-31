@@ -18,7 +18,6 @@
 #include "ash/quick_pair/fast_pair_handshake/fast_pair_gatt_service_client.h"
 #include "ash/quick_pair/fast_pair_handshake/fast_pair_handshake.h"
 #include "ash/quick_pair/fast_pair_handshake/fast_pair_handshake_lookup.h"
-#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
@@ -67,7 +66,7 @@ class FastPairScannerObserver
   }
 
   bool DoesDeviceListContainTestDevice(const std::string& address) {
-    return base::Contains(device_addreses_, address);
+    return std::ranges::contains(device_addreses_, address);
   }
 
   int on_device_found_count() { return on_device_found_count_; }

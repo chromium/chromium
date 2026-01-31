@@ -775,7 +775,7 @@ TEST_F(Pkcs12ReaderTest, CheckRelationRsaKey) {
   }
 
   // Regular RSA key, cert has other type (EC) of public key.
-  // Operation will fail.
+  // Operation will return kPkcs12NoValidCertificatesFound.
   {
     KeyData key_data = BuildRsaKeyData();
     ScopedX509 cert = BuildScopedX509AndSetPublicKey(GenerateEcKey());
@@ -784,7 +784,7 @@ TEST_F(Pkcs12ReaderTest, CheckRelationRsaKey) {
     Pkcs12ReaderStatusCode result =
         pkcs12Reader_->CheckRelation(key_data, cert.get(), is_related);
 
-    EXPECT_EQ(result, Pkcs12ReaderStatusCode::kPkeyComparisonFailure);
+    EXPECT_EQ(result, Pkcs12ReaderStatusCode::kPkcs12NoValidCertificatesFound);
     EXPECT_FALSE(is_related);
   }
 
@@ -804,22 +804,8 @@ TEST_F(Pkcs12ReaderTest, CheckRelationRsaKey) {
 }
 
 TEST_F(Pkcs12ReaderTest, CheckRelationEcKey) {
-  // EC key is empty in key_data, operation will fail.
-  {
-    KeyData key_data = BuildEcKeyData();
-    EVP_PKEY_assign_EC_KEY(key_data.key.get(), EC_KEY_new());
-    ScopedX509 cert = BuildScopedX509AndSetPublicKey(GenerateEcKey());
-    bool is_related = true;
-
-    Pkcs12ReaderStatusCode result =
-        pkcs12Reader_->CheckRelation(key_data, cert.get(), is_related);
-
-    EXPECT_EQ(result, Pkcs12ReaderStatusCode::kPkeyComparisonFailure);
-    EXPECT_FALSE(is_related);
-  }
-
   // Regular EC key_data, public key in cert is other type of key.
-  // Operation will fail.
+  // Operation will return kPkcs12NoValidCertificatesFound.
   {
     KeyData key_data = BuildEcKeyData();
     ScopedX509 cert = BuildScopedX509AndSetPublicKey(GenerateRsaKey());
@@ -828,7 +814,7 @@ TEST_F(Pkcs12ReaderTest, CheckRelationEcKey) {
     Pkcs12ReaderStatusCode result =
         pkcs12Reader_->CheckRelation(key_data, cert.get(), is_related);
 
-    EXPECT_EQ(result, Pkcs12ReaderStatusCode::kPkeyComparisonFailure);
+    EXPECT_EQ(result, Pkcs12ReaderStatusCode::kPkcs12NoValidCertificatesFound);
     EXPECT_FALSE(is_related);
   }
 

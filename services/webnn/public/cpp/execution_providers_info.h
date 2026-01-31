@@ -42,6 +42,11 @@ struct EpWorkarounds {
   // respect this limit.
   bool resample2d_limit_to_nchw = false;
 
+  // The maximum K dimension size of batched MatMul on certain NPU devices.
+  // It is unnecessary to compute `|=` operation result across EP devices,
+  // because there will be only one NPU device EP.
+  std::optional<uint32_t> npu_batched_matmul_k_dimension_limit;
+
   EpWorkarounds& operator|=(const EpWorkarounds& other) {
     resample2d_limit_to_nchw |= other.resample2d_limit_to_nchw;
     return *this;
@@ -100,7 +105,7 @@ inline constexpr auto kKnownEPs = base::MakeFixedFlatMap<base::cstring_view,
                     .Revision = 0,
                 },
             .vendor_id = 0x10de,
-            .enabled = true,
+            .enabled = false,
         },
     },
     // Intel
@@ -119,6 +124,11 @@ inline constexpr auto kKnownEPs = base::MakeFixedFlatMap<base::cstring_view,
             .workarounds =
                 {
                     .resample2d_limit_to_nchw = true,
+                    // The OpenVINO NPU limits the batched MatMul K dimension
+                    // size to 8192.
+                    // For more details, see GraphBuilderOrt::AddMatMulOperation
+                    // in src/services/webnn/graph_builder_ort.cc.
+                    .npu_batched_matmul_k_dimension_limit = 8192,
                 },
             // OpenVINO EP configuration. Keys and values must align with the
             // ORT OpenVINO EP implementation. See:

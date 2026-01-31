@@ -90,7 +90,7 @@ const char kBackgroundDurationSec[] = "background_duration_sec";
 const char kNumSessions[] = "num_sessions";
 
 optional<DailyInteraction> DictToRecord(const std::string& url,
-                                        const base::Value::Dict& record_dict) {
+                                        const base::DictValue& record_dict) {
   GURL gurl(url);
   if (!gurl.is_valid())
     return std::nullopt;
@@ -135,8 +135,8 @@ optional<DailyInteraction> DictToRecord(const std::string& url,
   return record;
 }
 
-base::Value::Dict RecordToDict(DailyInteraction& record) {
-  base::Value::Dict record_dict;
+base::DictValue RecordToDict(DailyInteraction& record) {
+  base::DictValue record_dict;
   // Note URL is not set here as it is the key for this dict in its parent.
   record_dict.Set(kInstalled, record.installed);
   if (record.install_source.has_value())
@@ -176,7 +176,7 @@ void EmitRecord(DailyInteraction record, Profile* profile) {
 }
 
 void EmitRecords(Profile* profile) {
-  const base::Value::Dict& urls_to_features =
+  const base::DictValue& urls_to_features =
       profile->GetPrefs()->GetDict(prefs::kWebAppsDailyMetrics);
 
   for (const auto iter : urls_to_features) {
@@ -189,15 +189,15 @@ void EmitRecords(Profile* profile) {
 }
 
 void RemoveRecords(PrefService* prefs) {
-  prefs->SetDict(prefs::kWebAppsDailyMetrics, base::Value::Dict());
+  prefs->SetDict(prefs::kWebAppsDailyMetrics, base::DictValue());
 }
 
 void UpdateRecord(DailyInteraction& record, PrefService* prefs) {
   DCHECK(record.start_url.is_valid());
   const std::string& url = record.start_url.spec();
-  const base::Value::Dict& urls_to_features =
+  const base::DictValue& urls_to_features =
       prefs->GetDict(prefs::kWebAppsDailyMetrics);
-  const base::Value::Dict* existing_val = urls_to_features.FindDict(url);
+  const base::DictValue* existing_val = urls_to_features.FindDict(url);
   if (existing_val) {
     // Sum duration and session values from existing record.
     optional<DailyInteraction> existing_record =
@@ -209,7 +209,7 @@ void UpdateRecord(DailyInteraction& record, PrefService* prefs) {
     }
   }
 
-  base::Value::Dict record_dict = RecordToDict(record);
+  base::DictValue record_dict = RecordToDict(record);
   ScopedDictPrefUpdate update(prefs, prefs::kWebAppsDailyMetrics);
 
   update->Set(url, std::move(record_dict));

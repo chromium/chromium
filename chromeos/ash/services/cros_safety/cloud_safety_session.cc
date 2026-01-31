@@ -62,7 +62,7 @@ SafetyClassifierVerdict ToSafetyClassifierVerdict(
 
 void OnClassifyTextSafetyComplete(
     CloudSafetySession::ClassifySafetyCallback callback,
-    base::Value::Dict dict,
+    base::DictValue dict,
     manta::MantaStatus status) {
   SafetyClassifierVerdict ret_val =
       ToSafetyClassifierVerdict(status.status_code, /* is_image*/ false);
@@ -71,7 +71,7 @@ void OnClassifyTextSafetyComplete(
 
 void OnClassifyImageSafetyComplete(
     CloudSafetySession::ClassifySafetyCallback callback,
-    base::Value::Dict dict,
+    base::DictValue dict,
     manta::MantaStatus status) {
   SafetyClassifierVerdict ret_val =
       ToSafetyClassifierVerdict(status.status_code, /* is_image*/ true);

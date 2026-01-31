@@ -64,9 +64,9 @@ class GPU_COMMAND_BUFFER_CLIENT_EXPORT MemoryChunk {
   //   size: the size of the memory block to allocate.
   //
   // Returns:
-  //   the pointer to the allocated memory block, or nullptr if out of
+  //   the span to the allocated memory block, or an empty span if out of
   //   memory.
-  void* Alloc(uint32_t size) { return allocator_.Alloc(size); }
+  base::span<uint8_t> Alloc(uint32_t size) { return allocator_.Alloc(size); }
 
   // Gets the offset to a memory block given the base memory and the address.
   // It translates nullptr to FencedAllocator::kInvalidOffset.
@@ -158,16 +158,17 @@ class GPU_COMMAND_BUFFER_CLIENT_EXPORT MappedMemoryManager {
   //   shm_id: pointer to variable to receive the shared memory id.
   //   shm_offset: pointer to variable to receive the shared memory offset.
   //   option: defaults to kLoseContextOnOOM, but may be kReturnNullOnOOM.
-  //           Passing kReturnNullOnOOM will gracefully fail and return nullptr
-  //           on OOM instead of losing the context. Callers should be careful
-  //           to check error conditions.
+  //           Passing kReturnNullOnOOM will gracefully fail and return empty
+  //           span on OOM instead of losing the context. Callers should be
+  //           careful to check error conditions.
   // Returns:
-  //   pointer to allocated block of memory. nullptr if failure.
-  void* Alloc(uint32_t size,
-              int32_t* shm_id,
-              uint32_t* shm_offset,
-              TransferBufferAllocationOption option =
-                  TransferBufferAllocationOption::kLoseContextOnOOM);
+  //   span of allocated block of memory. Empty span if failure.
+  base::span<uint8_t> Alloc(
+      uint32_t size,
+      int32_t* shm_id,
+      uint32_t* shm_offset,
+      TransferBufferAllocationOption option =
+          TransferBufferAllocationOption::kLoseContextOnOOM);
 
   // Frees a block of memory.
   //

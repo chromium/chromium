@@ -26,13 +26,24 @@ class ClipboardRecentContentGeneric : public ClipboardRecentContent {
 
   ~ClipboardRecentContentGeneric() override;
 
+  // Returns clipboard content as URL, if it has a compatible type,
+  // is recent enough, has not been suppressed and will not trigger a system
+  // notification that the clipboard has been accessed.
+  std::optional<GURL> GetRecentURLFromClipboard();
+
+  // Returns clipboard content as text, if it has a compatible type,
+  // is recent enough, has not been suppressed and will not trigger a system
+  // notification that the clipboard has been accessed.
+  std::optional<std::u16string> GetRecentTextFromClipboard();
+
+  // Return if system's clipboard contains an image that will not trigger a
+  // system notification that the clipboard has been accessed.
+  bool HasRecentImageFromClipboard();
+
   // ClipboardRecentContent implementation.
-  std::optional<GURL> GetRecentURLFromClipboard() override;
-  std::optional<std::u16string> GetRecentTextFromClipboard() override;
   std::optional<std::set<ClipboardContentType>> GetCachedClipboardContentTypes()
       override;
   void GetRecentImageFromClipboard(GetRecentImageCallback callback) override;
-  bool HasRecentImageFromClipboard() override;
   void HasRecentContentFromClipboard(std::set<ClipboardContentType> types,
                                      HasDataCallback callback) override;
   void GetRecentURLFromClipboard(GetRecentURLCallback callback) override;

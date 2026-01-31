@@ -10,7 +10,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/observer_list.h"
 #include "base/rand_util.h"
@@ -66,7 +65,7 @@ InternalMessage::InternalMessage(CastMessageType type,
                                  std::string_view source_id,
                                  std::string_view destination_id,
                                  std::string_view message_namespace,
-                                 base::Value::Dict message)
+                                 base::DictValue message)
     : type(type),
       source_id(source_id),
       destination_id(destination_id),
@@ -83,7 +82,8 @@ CastMessageHandler::CastMessageHandler(CastSocketService* socket_service,
                                        std::string_view user_agent,
                                        std::string_view browser_version,
                                        std::string_view locale)
-    : source_id_(base::StringPrintf("sender-%d", base::RandInt(0, 1000000))),
+    : source_id_(
+          base::StringPrintf("sender-%d", base::RandIntInclusive(0, 1000000))),
       parse_json_(std::move(parse_json)),
       user_agent_(user_agent),
       browser_version_(browser_version),
@@ -288,7 +288,7 @@ Result CastMessageHandler::SendAppMessage(int channel_id,
 
 std::optional<int> CastMessageHandler::SendMediaRequest(
     int channel_id,
-    const base::Value::Dict& body,
+    const base::DictValue& body,
     const std::string& source_id,
     const std::string& destination_id) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -306,7 +306,7 @@ std::optional<int> CastMessageHandler::SendMediaRequest(
 }
 
 void CastMessageHandler::SendSetVolumeRequest(int channel_id,
-                                              const base::Value::Dict& body,
+                                              const base::DictValue& body,
                                               const std::string& source_id,
                                               ResultCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -390,7 +390,7 @@ void CastMessageHandler::HandleCastInternalMessage(
   ASSIGN_OR_RETURN(base::Value value, std::move(parse_result),
                    ReportParseError);
 
-  base::Value::Dict* payload = value.GetIfDict();
+  base::DictValue* payload = value.GetIfDict();
   if (!payload) {
     ReportParseError("Parsed message not a dictionary");
     return;
@@ -517,8 +517,8 @@ bool CastMessageHandler::PendingRequests::AddAppAvailabilityRequest(
           base::Unretained(this), request_id));
 
   // Look for a request with the given app ID.
-  bool found = base::Contains(pending_app_availability_requests_, app_id,
-                              &GetAppAvailabilityRequest::app_id);
+  bool found = std::ranges::contains(pending_app_availability_requests_, app_id,
+                                     &GetAppAvailabilityRequest::app_id);
   pending_app_availability_requests_.emplace_back(std::move(request));
   return !found;
 }
@@ -572,7 +572,7 @@ void CastMessageHandler::PendingRequests::AddVolumeRequest(
 
 void CastMessageHandler::PendingRequests::HandlePendingRequest(
     int request_id,
-    const base::Value::Dict& response) {
+    const base::DictValue& response) {
   // Look up an app availability request by its |request_id|.
   auto app_availability_it =
       std::ranges::find(pending_app_availability_requests_, request_id,

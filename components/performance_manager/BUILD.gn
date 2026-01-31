@@ -58,6 +58,8 @@ static_library("performance_manager") {
     "execution_context_priority/execution_context_priority.cc",
     "execution_context_priority/extension_service_worker_voter.cc",
     "execution_context_priority/extension_service_worker_voter.h",
+    "execution_context_priority/force_foreground_voter.cc",
+    "execution_context_priority/force_foreground_voter.h",
     "execution_context_priority/frame_audible_voter.cc",
     "execution_context_priority/frame_audible_voter.h",
     "execution_context_priority/frame_capturing_media_stream_voter.cc",
@@ -115,8 +117,6 @@ static_library("performance_manager") {
     "graph/page_node_impl.h",
     "graph/page_node_impl_describer.cc",
     "graph/page_node_impl_describer.h",
-    "graph/policies/bfcache_policy.cc",
-    "graph/policies/bfcache_policy.h",
     "graph/process_node.cc",
     "graph/process_node_impl.cc",
     "graph/process_node_impl.h",
@@ -382,6 +382,7 @@ source_set("unit_tests") {
     "execution_context_priority/closing_page_voter_unittest.cc",
     "execution_context_priority/execution_context_priority_unittest.cc",
     "execution_context_priority/extension_service_worker_voter_unittest.cc",
+    "execution_context_priority/force_foreground_voter_unittest.cc",
     "execution_context_priority/frame_audible_voter_unittest.cc",
     "execution_context_priority/frame_capturing_media_stream_voter_unittest.cc",
     "execution_context_priority/frame_visibility_voter_unittest.cc",
@@ -483,9 +484,6 @@ source_set("unit_tests") {
       "persistence/site_data/site_data_impl_unittest.cc",
       "persistence/site_data/site_data_reader_unittest.cc",
       "persistence/site_data/site_data_writer_unittest.cc",
-
-      # TODO(crbug.com/40188246): Consider using this policy on Android.
-      "graph/policies/bfcache_policy_unittest.cc",
     ]
   }
 

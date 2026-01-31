@@ -8,7 +8,6 @@
 #include <string>
 #include <tuple>
 
-#include "base/containers/contains.h"
 #include "base/functional/callback.h"
 #include "base/memory/ref_counted.h"
 #include "base/strings/strcat.h"
@@ -2696,7 +2695,7 @@ class FencedFrameParameterizedBrowserTest : public FencedFrameBrowserTestBase {
     SCOPED_TRACE(from_here.ToString());
     DCHECK_CURRENTLY_ON(BrowserThread::UI);
     std::string file_name = url.GetPath();
-    CHECK(base::Contains(cookie_headers_map_, file_name));
+    CHECK(cookie_headers_map_.contains(file_name));
     std::string header = cookie_headers_map_[file_name];
     EXPECT_EQ(expected_value, header);
     cookie_headers_map_.erase(file_name);
@@ -2711,7 +2710,7 @@ class FencedFrameParameterizedBrowserTest : public FencedFrameBrowserTestBase {
     SCOPED_TRACE(from_here.ToString());
     DCHECK_CURRENTLY_ON(BrowserThread::UI);
     std::string file_name = url.GetPath();
-    CHECK(base::Contains(sec_fetch_dest_headers_map_, file_name));
+    CHECK(sec_fetch_dest_headers_map_.contains(file_name));
     std::string header = sec_fetch_dest_headers_map_[file_name];
     EXPECT_EQ(expected_value, header);
     sec_fetch_dest_headers_map_.erase(file_name);
@@ -3427,35 +3426,34 @@ IN_PROC_BROWSER_TEST_F(FencedFrameParameterizedBrowserTest,
                      "location.reload();"));
 
   // Check associated cookies according to devtools
-  base::Value::Dict params = fenced_frame_devtools_client.WaitForNotification(
+  base::DictValue params = fenced_frame_devtools_client.WaitForNotification(
       "Network.requestWillBeSentExtraInfo", /*allow_existing=*/true);
 
-  const base::Value::List* associated_cookies =
+  const base::ListValue* associated_cookies =
       params.FindList("associatedCookies");
 
   EXPECT_THAT(
       associated_cookies,
       testing::Pointee(testing::UnorderedElementsAre(
-          base::test::IsSupersetOfValue(base::test::ParseJsonDict(R"({
+          base::test::IsSupersetOfValue(R"({
                               "blockedReasons": [ "AnonymousContext" ],
                               "cookie" : {
                                 "name": "name",
                                 "value": "root"
                               }
-                          })")),
-          testing::AllOf(
-              base::test::IsSupersetOfValue(base::test::ParseJsonDict(R"({
+                          })"),
+          testing::AllOf(base::test::IsSupersetOfValue(R"({
                           "blockedReasons": [ ],
                           "cookie" : {
                             "name": "name",
                             "value": "fencedFrame"
                           }
-                        })")),
-              testing::ResultOf(
-                  [](const base::Value& dict) {
-                    return dict.GetDict().FindList("blockedReasons");
-                  },
-                  testing::Pointee(testing::IsEmpty()))))));
+                        })"),
+                         testing::ResultOf(
+                             [](const base::Value& dict) {
+                               return dict.GetDict().FindList("blockedReasons");
+                             },
+                             testing::Pointee(testing::IsEmpty()))))));
 
   fenced_frame_devtools_client.DetachProtocolClient();
 }
@@ -7022,7 +7020,7 @@ class FencedFrameReportEventBrowserTest
   FencedFrameReportEventBrowserTest() {
     scoped_feature_list_.InitWithFeaturesAndParameters(
         /*enabled_features=*/{{blink::features::kAllowURNsInIframes, {}}},
-        /*disabled_features=*/{features::kCookieDeprecationFacilitatedTesting});
+        /*disabled_features=*/{});
   }
 
   // An object representing a single step of a reportEvent test.
@@ -7139,10 +7137,10 @@ class FencedFrameReportEventBrowserTest
     response->set_code(net::HTTP_OK);
     response->AddCustomHeader(cors::kAccessControlAllowMethods,
                               request->method_string);
-    if (base::Contains(request->headers, "Origin")) {
+    if (request->headers.contains("Origin")) {
       response->AddCustomHeader(cors::kAccessControlAllowOrigin, "*");
     }
-    if (base::Contains(request->headers, cors::kAccessControlRequestHeaders)) {
+    if (request->headers.contains(cors::kAccessControlRequestHeaders)) {
       response->AddCustomHeader(
           cors::kAccessControlAllowHeaders,
           request->headers.at(cors::kAccessControlRequestHeaders));
@@ -7202,7 +7200,7 @@ class FencedFrameReportEventBrowserTest
         ASSERT_FALSE(step.destination.path.empty());
         int redirect_index = 0;
         for (auto& redirect_destination : step.redirects) {
-          ASSERT_FALSE(base::Contains(paths, redirect_destination.path));
+          ASSERT_FALSE(paths.contains(redirect_destination.path));
           ASSERT_FALSE(redirect_destination.origin.empty());
           ASSERT_FALSE(redirect_destination.path.empty());
           paths.insert(redirect_destination.path);
@@ -7469,10 +7467,10 @@ class FencedFrameReportEventBrowserTest
               /*web_expected=*/true,
               /*os_expected=*/false);
         } else {
-          EXPECT_FALSE(base::Contains(response.http_request()->headers,
-                                      "Attribution-Reporting-Eligible"));
-          EXPECT_FALSE(base::Contains(response.http_request()->headers,
-                                      "Attribution-Reporting-Support"));
+          EXPECT_FALSE(response.http_request()->headers.contains(
+              "Attribution-Reporting-Eligible"));
+          EXPECT_FALSE(response.http_request()->headers.contains(
+              "Attribution-Reporting-Support"));
         }
 
         // TODO(crbug.com/40286778): Remove this check after 3PCD.
@@ -8236,11 +8234,9 @@ IN_PROC_BROWSER_TEST_F(FencedFrameReportEventBrowserTest,
         response.http_request()->headers.at("Attribution-Reporting-Support"),
         /*web_expected=*/true,
         /*os_expected=*/false);
-    EXPECT_TRUE(
-        base::Contains(response.http_request()->headers, "Content-Length"));
-    EXPECT_TRUE(
-        base::Contains(response.http_request()->headers, "Content-Type"));
-    EXPECT_TRUE(base::Contains(response.http_request()->headers, "Origin"));
+    EXPECT_TRUE(response.http_request()->headers.contains("Content-Length"));
+    EXPECT_TRUE(response.http_request()->headers.contains("Content-Type"));
+    EXPECT_TRUE(response.http_request()->headers.contains("Origin"));
 
     // Send 302 redirect response.
     GURL redirect_url = https_server()->GetURL("a.test", "/redirect.html");
@@ -8259,12 +8255,11 @@ IN_PROC_BROWSER_TEST_F(FencedFrameReportEventBrowserTest,
     EXPECT_EQ(redirect_response.http_request()->method,
               net::test_server::HttpMethod::METHOD_GET);
     // Check that POST-specific headers were stripped.
-    EXPECT_FALSE(base::Contains(redirect_response.http_request()->headers,
-                                "Content-Length"));
-    EXPECT_FALSE(base::Contains(redirect_response.http_request()->headers,
-                                "Content-Type"));
     EXPECT_FALSE(
-        base::Contains(redirect_response.http_request()->headers, "Origin"));
+        redirect_response.http_request()->headers.contains("Content-Length"));
+    EXPECT_FALSE(
+        redirect_response.http_request()->headers.contains("Content-Type"));
+    EXPECT_FALSE(redirect_response.http_request()->headers.contains("Origin"));
     // Check that the content body was stripped.
     EXPECT_TRUE(redirect_response.http_request()->content.empty());
     // These extra request headers were not stripped.
@@ -8358,12 +8353,11 @@ IN_PROC_BROWSER_TEST_F(FencedFrameReportEventBrowserTest,
     EXPECT_EQ(reporting_response.http_request()->method,
               net::test_server::HttpMethod::METHOD_POST);
     EXPECT_EQ(reporting_response.http_request()->content, event_data);
-    EXPECT_TRUE(base::Contains(reporting_response.http_request()->headers,
-                               "Content-Length"));
-    EXPECT_TRUE(base::Contains(reporting_response.http_request()->headers,
-                               "Content-Type"));
     EXPECT_TRUE(
-        base::Contains(reporting_response.http_request()->headers, "Origin"));
+        reporting_response.http_request()->headers.contains("Content-Length"));
+    EXPECT_TRUE(
+        reporting_response.http_request()->headers.contains("Content-Type"));
+    EXPECT_TRUE(reporting_response.http_request()->headers.contains("Origin"));
     ExpectValidAttributionReportingEligibleHeaderForEventBeacon(
         reporting_response.http_request()->headers.at(
             "Attribution-Reporting-Eligible"));
@@ -8391,10 +8385,10 @@ IN_PROC_BROWSER_TEST_F(FencedFrameReportEventBrowserTest,
     EXPECT_EQ(redirect_response.http_request()->method,
               net::test_server::HttpMethod::METHOD_GET);
     EXPECT_EQ(redirect_response.http_request()->headers.at("Origin"), "null");
-    EXPECT_FALSE(base::Contains(redirect_response.http_request()->headers,
-                                "Content-Length"));
-    EXPECT_FALSE(base::Contains(redirect_response.http_request()->headers,
-                                "Content-Type"));
+    EXPECT_FALSE(
+        redirect_response.http_request()->headers.contains("Content-Length"));
+    EXPECT_FALSE(
+        redirect_response.http_request()->headers.contains("Content-Type"));
     // Check that the content body was stripped.
     EXPECT_TRUE(redirect_response.http_request()->content.empty());
     // These extra request headers were not stripped.
@@ -9192,10 +9186,10 @@ class FencedFrameAutomaticBeaconBrowserTest
     response->set_code(net::HTTP_OK);
     response->AddCustomHeader(cors::kAccessControlAllowMethods,
                               request->method_string);
-    if (base::Contains(request->headers, "Origin")) {
+    if (request->headers.contains("Origin")) {
       response->AddCustomHeader(cors::kAccessControlAllowOrigin, "*");
     }
-    if (base::Contains(request->headers, cors::kAccessControlRequestHeaders)) {
+    if (request->headers.contains(cors::kAccessControlRequestHeaders)) {
       response->AddCustomHeader(
           cors::kAccessControlAllowHeaders,
           request->headers.at(cors::kAccessControlRequestHeaders));
@@ -9321,7 +9315,7 @@ class FencedFrameAutomaticBeaconBrowserTest
     }
     ad_frame_observer.WaitForCommit();
 
-    base::Value::List destination_list;
+    base::ListValue destination_list;
     if (config.register_destinations) {
       destination_list.Append("buyer");
       destination_list.Append("seller");
@@ -9527,12 +9521,6 @@ class FencedFrameAutomaticBeaconBrowserTest
     histogram_tester_.ExpectUniqueSample(
         blink::kAutomaticBeaconOutcomeHistogram,
         blink::AutomaticBeaconOutcome::kSuccess, 1);
-    histogram_tester_.ExpectBucketCount(
-        blink::kFencedFrameTopNavigationHistogram,
-        blink::FencedFrameNavigationState::kBegin, 1);
-    histogram_tester_.ExpectBucketCount(
-        blink::kFencedFrameTopNavigationHistogram,
-        blink::FencedFrameNavigationState::kCommit, 1);
   }
 
  private:

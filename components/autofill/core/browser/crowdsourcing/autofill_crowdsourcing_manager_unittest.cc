@@ -92,15 +92,6 @@ constexpr int METHOD_POST = 1;
 constexpr int CACHE_MISS = 0;
 constexpr int CACHE_HIT = 1;
 
-std::vector<raw_ptr<const FormStructure, VectorExperimental>>
-ToRawPointerVector(const std::vector<std::unique_ptr<FormStructure>>& list) {
-  std::vector<raw_ptr<const FormStructure, VectorExperimental>> result;
-  for (const auto& item : list) {
-    result.push_back(item.get());
-  }
-  return result;
-}
-
 // Sets the `host_form_signature` member of all fields contained in
 // `form_structure` to the signature of the `form_structure`.
 void SetCorrectFieldHostFormSignatures(FormStructure& form_structure) {
@@ -243,11 +234,9 @@ class AutofillCrowdsourcingManagerTest
     return weak_ptr_factory_.GetWeakPtr();
   }
 
-  bool StartQueryRequest(
-      const std::vector<std::unique_ptr<FormStructure>>& form_structures) {
+  bool StartQueryRequest(const std::vector<FormData>& forms) {
     return crowdsourcing_manager().StartQueryRequest(
-        ToRawPointerVector(form_structures),
-        autofill_driver().GetIsolationInfo(),
+        forms, autofill_driver().GetIsolationInfo(),
         base::BindOnce(
             &AutofillCrowdsourcingManagerTest::OnLoadedServerPredictions,
             weak_ptr_factory_.GetWeakPtr()));
@@ -318,7 +307,8 @@ TEST_F(AutofillCrowdsourcingManagerTest, QueryAndUploadTest) {
   // Request with id 0.
   base::HistogramTester histogram;
   EXPECT_TRUE(crowdsourcing_manager->StartQueryRequest(
-      ToRawPointerVector(form_structures), autofill_driver().GetIsolationInfo(),
+      base::ToVector(form_structures, &FormStructure::ToFormData),
+      autofill_driver().GetIsolationInfo(),
       base::BindOnce(
           &AutofillCrowdsourcingManagerTest::OnLoadedServerPredictions,
           GetWeakPtr())));
@@ -413,7 +403,8 @@ TEST_F(AutofillCrowdsourcingManagerTest, QueryAndUploadTest) {
 
   // Request with id 4, not successful.
   EXPECT_TRUE(crowdsourcing_manager->StartQueryRequest(
-      ToRawPointerVector(form_structures), autofill_driver().GetIsolationInfo(),
+      base::ToVector(form_structures, &FormStructure::ToFormData),
+      autofill_driver().GetIsolationInfo(),
       base::BindOnce(
           &AutofillCrowdsourcingManagerTest::OnLoadedServerPredictions,
           GetWeakPtr())));
@@ -430,7 +421,8 @@ TEST_F(AutofillCrowdsourcingManagerTest, QueryAndUploadTest) {
 
   // Request with id 5. Let's pretend we hit the cache.
   EXPECT_TRUE(crowdsourcing_manager->StartQueryRequest(
-      ToRawPointerVector(form_structures), autofill_driver().GetIsolationInfo(),
+      base::ToVector(form_structures, &FormStructure::ToFormData),
+      autofill_driver().GetIsolationInfo(),
       base::BindOnce(
           &AutofillCrowdsourcingManagerTest::OnLoadedServerPredictions,
           GetWeakPtr())));
@@ -467,7 +459,8 @@ TEST_F(AutofillCrowdsourcingManagerTest, QueryAPITest) {
   // Start the query and check its success. No response has been received yet.
   base::HistogramTester histogram;
   EXPECT_TRUE(crowdsourcing_manager->StartQueryRequest(
-      ToRawPointerVector(form_structures), autofill_driver().GetIsolationInfo(),
+      base::ToVector(form_structures, &FormStructure::ToFormData),
+      autofill_driver().GetIsolationInfo(),
       base::BindOnce(
           &AutofillCrowdsourcingManagerTest::OnLoadedServerPredictions,
           GetWeakPtr())));
@@ -551,7 +544,8 @@ TEST_F(AutofillCrowdsourcingManagerTest, QueryAPITestWhenTooLongUrl) {
   // received yet.
   base::HistogramTester histogram;
   EXPECT_TRUE(crowdsourcing_manager.StartQueryRequest(
-      ToRawPointerVector(form_structures), autofill_driver().GetIsolationInfo(),
+      base::ToVector(form_structures, &FormStructure::ToFormData),
+      autofill_driver().GetIsolationInfo(),
       base::BindOnce(
           &AutofillCrowdsourcingManagerTest::OnLoadedServerPredictions,
           GetWeakPtr())));
@@ -680,18 +674,14 @@ TEST_F(AutofillCrowdsourcingManagerTest, UploadToAPITest) {
 }
 
 TEST_F(AutofillCrowdsourcingManagerTest, BackoffLogic_Query) {
-  std::vector<std::unique_ptr<FormStructure>> form_structures;
-  form_structures.push_back(std::make_unique<FormStructure>(
+  std::vector<FormData> forms = {
       test::GetFormData({.fields = {{.role = ADDRESS_HOME_LINE1},
                                     {.role = ADDRESS_HOME_LINE2},
-                                    {.role = ADDRESS_HOME_CITY}}})));
-  for (auto& form_structure : form_structures) {
-    SetCorrectFieldHostFormSignatures(*form_structure);
-  }
+                                    {.role = ADDRESS_HOME_CITY}}})};
 
   // Request with id 0.
   base::HistogramTester histogram;
-  EXPECT_TRUE(StartQueryRequest(form_structures));
+  EXPECT_TRUE(StartQueryRequest(forms));
   histogram.ExpectUniqueSample("Autofill.ServerQueryResponse",
                                AutofillMetrics::QUERY_SENT, 1);
 
@@ -784,15 +774,14 @@ TEST_F(AutofillCrowdsourcingManagerTest, BackoffLogic_Upload) {
 }
 
 TEST_F(AutofillCrowdsourcingManagerTest, RetryLimit_Query) {
-  std::vector<std::unique_ptr<FormStructure>> form_structures;
-  form_structures.push_back(std::make_unique<FormStructure>(
+  std::vector<FormData> forms = {
       test::GetFormData({.fields = {{.role = ADDRESS_HOME_LINE1},
                                     {.role = ADDRESS_HOME_LINE2},
-                                    {.role = ADDRESS_HOME_CITY}}})));
+                                    {.role = ADDRESS_HOME_CITY}}})};
 
   // Request with id 0.
   base::HistogramTester histogram;
-  EXPECT_TRUE(StartQueryRequest(form_structures));
+  EXPECT_TRUE(StartQueryRequest(forms));
   histogram.ExpectUniqueSample("Autofill.ServerQueryResponse",
                                AutofillMetrics::QUERY_SENT, 1);
 
@@ -881,61 +870,54 @@ TEST_F(AutofillCrowdsourcingManagerTest, RetryLimit_Upload) {
 TEST_F(AutofillCrowdsourcingManagerTest, QueryTooManyFieldsTest) {
   // Create a query that contains too many fields for the server.
   std::vector<FormData> forms(21);
-  std::vector<std::unique_ptr<FormStructure>> form_structures;
   for (auto& form : forms) {
     for (size_t i = 0; i < 5; ++i) {
       test_api(form).Append(CreateTestFormField(base::NumberToString(i),
                                                 base::NumberToString(i), "",
                                                 FormControlType::kInputText));
     }
-    form_structures.push_back(std::make_unique<FormStructure>(form));
   }
 
   // Check whether the query is aborted.
-  EXPECT_FALSE(StartQueryRequest(form_structures));
+  EXPECT_FALSE(StartQueryRequest(forms));
 }
 
 TEST_F(AutofillCrowdsourcingManagerTest, QueryNotTooManyFieldsTest) {
   // Create a query that contains a lot of fields, but not too many for the
   // server.
   std::vector<FormData> forms(25);
-  std::vector<std::unique_ptr<FormStructure>> form_structures;
   for (auto& form : forms) {
     for (size_t i = 0; i < 4; ++i) {
       test_api(form).Append(CreateTestFormField(base::NumberToString(i),
                                                 base::NumberToString(i), "",
                                                 FormControlType::kInputText));
     }
-    form_structures.push_back(std::make_unique<FormStructure>(form));
   }
 
   // Check that the query is not aborted.
-  EXPECT_TRUE(StartQueryRequest(form_structures));
+  EXPECT_TRUE(StartQueryRequest(forms));
 }
 
 TEST_F(AutofillCrowdsourcingManagerTest, CacheQueryTest) {
-  std::vector<std::unique_ptr<FormStructure>> form_structures0;
-  form_structures0.push_back(std::make_unique<FormStructure>(test::GetFormData(
+  std::vector<FormData> forms0 = {test::GetFormData(
       {.fields = {
-           {.role = USERNAME}, {.role = NAME_FIRST}, {.role = NAME_LAST}}})));
+           {.role = USERNAME}, {.role = NAME_FIRST}, {.role = NAME_LAST}}})};
 
   // Make a slightly different form, which should result in a different request.
-  std::vector<std::unique_ptr<FormStructure>> form_structures1;
-  form_structures1.push_back(std::make_unique<FormStructure>(
+  std::vector<FormData> forms1 = {
       test::GetFormData({.fields = {{.role = USERNAME},
                                     {.role = NAME_FIRST},
                                     {.role = NAME_LAST},
-                                    {.role = EMAIL_ADDRESS}}})));
+                                    {.role = EMAIL_ADDRESS}}})};
 
   // Make yet another slightly different form, which should also result in a
   // different request.
-  std::vector<std::unique_ptr<FormStructure>> form_structures2;
-  form_structures2.push_back(std::make_unique<FormStructure>(
+  std::vector<FormData> forms2 = {
       test::GetFormData({.fields = {{.role = USERNAME},
                                     {.role = NAME_FIRST},
                                     {.role = NAME_LAST},
                                     {.role = EMAIL_ADDRESS},
-                                    {.role = EMAIL_ADDRESS}}})));
+                                    {.role = EMAIL_ADDRESS}}})};
 
   test_api(crowdsourcing_manager()).set_max_form_cache_size(2);
 
@@ -962,7 +944,7 @@ TEST_F(AutofillCrowdsourcingManagerTest, CacheQueryTest) {
 
   base::HistogramTester histogram;
   // Request with id 0.
-  EXPECT_TRUE(StartQueryRequest(form_structures0));
+  EXPECT_TRUE(StartQueryRequest(forms0));
   histogram.ExpectUniqueSample("Autofill.ServerQueryResponse",
                                AutofillMetrics::QUERY_SENT, 1);
 
@@ -978,7 +960,7 @@ TEST_F(AutofillCrowdsourcingManagerTest, CacheQueryTest) {
   responses().clear();
 
   // No actual request - should be a cache hit.
-  EXPECT_TRUE(StartQueryRequest(form_structures0));
+  EXPECT_TRUE(StartQueryRequest(forms0));
   histogram.ExpectUniqueSample("Autofill.ServerQueryResponse",
                                AutofillMetrics::QUERY_SENT, 2);
   // Data is available immediately from cache - no over-the-wire trip.
@@ -987,7 +969,7 @@ TEST_F(AutofillCrowdsourcingManagerTest, CacheQueryTest) {
   responses().clear();
 
   // Request with id 1.
-  EXPECT_TRUE(StartQueryRequest(form_structures1));
+  EXPECT_TRUE(StartQueryRequest(forms1));
   histogram.ExpectUniqueSample("Autofill.ServerQueryResponse",
                                AutofillMetrics::QUERY_SENT, 3);
   // No responses yet
@@ -1002,7 +984,7 @@ TEST_F(AutofillCrowdsourcingManagerTest, CacheQueryTest) {
   responses().clear();
 
   // Request with id 2.
-  EXPECT_TRUE(StartQueryRequest(form_structures2));
+  EXPECT_TRUE(StartQueryRequest(forms2));
   histogram.ExpectUniqueSample("Autofill.ServerQueryResponse",
                                AutofillMetrics::QUERY_SENT, 4);
 
@@ -1015,11 +997,11 @@ TEST_F(AutofillCrowdsourcingManagerTest, CacheQueryTest) {
   responses().clear();
 
   // No actual requests - should be a cache hit.
-  EXPECT_TRUE(StartQueryRequest(form_structures1));
+  EXPECT_TRUE(StartQueryRequest(forms1));
   histogram.ExpectUniqueSample("Autofill.ServerQueryResponse",
                                AutofillMetrics::QUERY_SENT, 5);
 
-  EXPECT_TRUE(StartQueryRequest(form_structures2));
+  EXPECT_TRUE(StartQueryRequest(forms2));
   histogram.ExpectUniqueSample("Autofill.ServerQueryResponse",
                                AutofillMetrics::QUERY_SENT, 6);
 
@@ -1030,7 +1012,7 @@ TEST_F(AutofillCrowdsourcingManagerTest, CacheQueryTest) {
 
   // The first structure should have expired.
   // Request with id 3.
-  EXPECT_TRUE(StartQueryRequest(form_structures0));
+  EXPECT_TRUE(StartQueryRequest(forms0));
   histogram.ExpectUniqueSample("Autofill.ServerQueryResponse",
                                AutofillMetrics::QUERY_SENT, 7);
   // No responses yet
@@ -1180,8 +1162,7 @@ class AutofillServerCommunicationTest
     return nullptr;
   }
 
-  bool SendQueryRequest(
-      const std::vector<std::unique_ptr<FormStructure>>& form_structures) {
+  bool SendQueryRequest(const std::vector<FormData>& forms) {
     EXPECT_EQ(run_loop_, nullptr);
     run_loop_ = std::make_unique<base::RunLoop>();
 
@@ -1189,8 +1170,7 @@ class AutofillServerCommunicationTest
     AutofillCrowdsourcingManager crowdsourcing_manager(
         &autofill_client(), version_info::Channel::UNKNOWN);
     bool succeeded = crowdsourcing_manager.StartQueryRequest(
-        ToRawPointerVector(form_structures),
-        autofill_driver().GetIsolationInfo(),
+        forms, autofill_driver().GetIsolationInfo(),
         base::BindOnce(
             &AutofillServerCommunicationTest::OnLoadedServerPredictions,
             weak_ptr_factory_.GetWeakPtr()));
@@ -1269,14 +1249,19 @@ TEST_P(AutofillServerCommunicationTest, IsEnabled) {
 }
 
 TEST_P(AutofillServerCommunicationTest, Query) {
-  std::vector<std::unique_ptr<FormStructure>> form_structures;
-  form_structures.push_back(std::make_unique<FormStructure>(
-      test::GetFormData({.fields = {{.role = NAME_FIRST}}})));
+  std::vector<FormData> forms = {
+      test::GetFormData({.fields = {{.role = NAME_FIRST}}})};
 
-  EXPECT_EQ(GetParam() != DISABLED, SendQueryRequest(form_structures));
+  EXPECT_EQ(GetParam() != DISABLED, SendQueryRequest(forms));
 }
 
-TEST_P(AutofillServerCommunicationTest, Upload) {
+// Flaky on fuchsia bots, see crbug.com/471202285.
+#if BUILDFLAG(IS_FUCHSIA)
+#define MAYBE_Upload DISABLED_Upload
+#else
+#define MAYBE_Upload Upload
+#endif
+TEST_P(AutofillServerCommunicationTest, MAYBE_Upload) {
   AutofillCrowdsourcingManager crowdsourcing_manager(
       &autofill_client(), version_info::Channel::UNKNOWN);
   std::optional<RandomizedEncoder> randomized_encoder =
@@ -1304,16 +1289,15 @@ INSTANTIATE_TEST_SUITE_P(All,
 using AutofillQueryTest = AutofillServerCommunicationTest;
 
 TEST_P(AutofillQueryTest, CacheableResponse) {
-  std::vector<std::unique_ptr<FormStructure>> form_structures;
-  form_structures.push_back(std::make_unique<FormStructure>(
-      test::GetFormData({.fields = {{.role = NAME_FIRST}}})));
+  std::vector<FormData> forms = {
+      test::GetFormData({.fields = {{.role = NAME_FIRST}}})};
 
   // Query for the form. This should go to the embedded server.
   {
     SCOPED_TRACE("First Query");
     base::HistogramTester histogram;
     ResetCallCount();
-    ASSERT_TRUE(SendQueryRequest(form_structures));
+    ASSERT_TRUE(SendQueryRequest(forms));
     EXPECT_EQ(1, call_count());
     histogram.ExpectBucketCount("Autofill.ServerQueryResponse",
                                 AutofillMetrics::QUERY_SENT, 1);
@@ -1329,7 +1313,7 @@ TEST_P(AutofillQueryTest, CacheableResponse) {
     SCOPED_TRACE("Second Query");
     base::HistogramTester histogram;
     ResetCallCount();
-    ASSERT_TRUE(SendQueryRequest(form_structures));
+    ASSERT_TRUE(SendQueryRequest(forms));
     EXPECT_EQ(0, call_count());
     histogram.ExpectBucketCount("Autofill.ServerQueryResponse",
                                 AutofillMetrics::QUERY_SENT, 1);
@@ -1341,16 +1325,15 @@ TEST_P(AutofillQueryTest, CacheableResponse) {
 }
 
 TEST_P(AutofillQueryTest, SendsExperiment) {
-  std::vector<std::unique_ptr<FormStructure>> form_structures;
-  form_structures.push_back(std::make_unique<FormStructure>(
-      test::GetFormData({.fields = {{.role = NAME_FIRST}}})));
+  std::vector<FormData> forms = {
+      test::GetFormData({.fields = {{.role = NAME_FIRST}}})};
 
   // Query for the form. This should go to the embedded server.
   {
     SCOPED_TRACE("First Query");
     base::HistogramTester histogram;
     ResetCallCount();
-    ASSERT_TRUE(SendQueryRequest(form_structures));
+    ASSERT_TRUE(SendQueryRequest(forms));
     EXPECT_EQ(1, call_count());
     histogram.ExpectBucketCount("Autofill.ServerQueryResponse",
                                 AutofillMetrics::QUERY_SENT, 1);
@@ -1375,7 +1358,7 @@ TEST_P(AutofillQueryTest, SendsExperiment) {
     base::HistogramTester histogram;
     ResetCallCount();
     payloads().clear();
-    ASSERT_TRUE(SendQueryRequest(form_structures));
+    ASSERT_TRUE(SendQueryRequest(forms));
     EXPECT_EQ(1, call_count());
     histogram.ExpectBucketCount("Autofill.ServerQueryResponse",
                                 AutofillMetrics::QUERY_SENT, 1);
@@ -1403,7 +1386,7 @@ TEST_P(AutofillQueryTest, SendsExperiment) {
     SCOPED_TRACE("Third Query");
     base::HistogramTester histogram;
     ResetCallCount();
-    ASSERT_TRUE(SendQueryRequest(form_structures));
+    ASSERT_TRUE(SendQueryRequest(forms));
     EXPECT_EQ(0, call_count());
     histogram.ExpectBucketCount("Autofill.ServerQueryResponse",
                                 AutofillMetrics::QUERY_SENT, 1);
@@ -1415,9 +1398,8 @@ TEST_P(AutofillQueryTest, SendsExperiment) {
 }
 
 TEST_P(AutofillQueryTest, ExpiredCacheInResponse) {
-  std::vector<std::unique_ptr<FormStructure>> form_structures;
-  form_structures.push_back(std::make_unique<FormStructure>(
-      test::GetFormData({.fields = {{.role = NAME_FIRST}}})));
+  std::vector<FormData> forms = {
+      test::GetFormData({.fields = {{.role = NAME_FIRST}}})};
 
   set_cache_expiration_time(base::Seconds(0));
 
@@ -1426,7 +1408,7 @@ TEST_P(AutofillQueryTest, ExpiredCacheInResponse) {
     SCOPED_TRACE("First Query");
     base::HistogramTester histogram;
     ResetCallCount();
-    ASSERT_TRUE(SendQueryRequest(form_structures));
+    ASSERT_TRUE(SendQueryRequest(forms));
     EXPECT_EQ(1, call_count());
     histogram.ExpectBucketCount("Autofill.ServerQueryResponse",
                                 AutofillMetrics::QUERY_SENT, 1);
@@ -1448,7 +1430,7 @@ TEST_P(AutofillQueryTest, ExpiredCacheInResponse) {
     SCOPED_TRACE("Second Query");
     base::HistogramTester histogram;
     ResetCallCount();
-    ASSERT_TRUE(SendQueryRequest(form_structures));
+    ASSERT_TRUE(SendQueryRequest(forms));
     EXPECT_EQ(1, call_count());
     histogram.ExpectBucketCount("Autofill.ServerQueryResponse",
                                 AutofillMetrics::QUERY_SENT, 1);
@@ -1468,12 +1450,11 @@ TEST_P(AutofillQueryTest, IncludesAutofillAiExperiment) {
       features::kAutofillAiWithDataSchema,
       {{"autofill_ai_server_experiment_id", "12345678"}});
 
-  std::vector<std::unique_ptr<FormStructure>> form_structures;
-  form_structures.push_back(std::make_unique<FormStructure>(
-      test::GetFormData({.fields = {{.role = NAME_FIRST}}})));
+  std::vector<FormData> forms = {
+      test::GetFormData({.fields = {{.role = NAME_FIRST}}})};
 
   payloads().clear();
-  ASSERT_TRUE(SendQueryRequest(form_structures));
+  ASSERT_TRUE(SendQueryRequest(forms));
   EXPECT_EQ(1, call_count());
 
   ASSERT_THAT(payloads(), SizeIs(1));
@@ -1533,11 +1514,10 @@ TEST_P(AutofillQueryTest, Metadata) {
   // Setup the form structures to query.
   AutofillCrowdsourcingManager crowdsourcing_manager(
       &autofill_client(), version_info::Channel::UNKNOWN);
-  std::vector<std::unique_ptr<FormStructure>> form_structures;
-  form_structures.push_back(std::make_unique<FormStructure>(form));
+  std::vector<FormData> forms = {form};
 
   // Generate a query request.
-  ASSERT_TRUE(SendQueryRequest(form_structures));
+  ASSERT_TRUE(SendQueryRequest(forms));
   EXPECT_EQ(1, call_count());
 
   // We should have intercepted exactly on query request. Parse it.
@@ -2131,7 +2111,7 @@ TEST_F(AutofillCrowdsourcingManagerTest, RequestsInLastMinute) {
                          base::NumberToString(request_index))}}})));
     base::RunLoop run_loop;
     bool result = crowdsourcing_manager->StartQueryRequest(
-        ToRawPointerVector(form_structures),
+        base::ToVector(form_structures, &FormStructure::ToFormData),
         autofill_driver().GetIsolationInfo(),
         base::BindOnce(
             &AutofillCrowdsourcingManagerTest::OnLoadedServerPredictions,

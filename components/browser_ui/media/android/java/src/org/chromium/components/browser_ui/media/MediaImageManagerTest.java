@@ -23,7 +23,6 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.robolectric.annotation.Config;
-import org.robolectric.shadows.ShadowLog;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.content_public.browser.WebContents;
@@ -57,7 +56,6 @@ public class MediaImageManagerTest {
 
     @Before
     public void setUp() {
-        ShadowLog.stream = System.out;
         MockitoAnnotations.initMocks(this);
         doReturn(REQUEST_ID_1)
                 .when(mWebContents)

@@ -28,7 +28,7 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.ThreadUtils;
-import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.params.ParameterAnnotations;
 import org.chromium.base.test.params.ParameterSet;
@@ -41,7 +41,6 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
-import org.chromium.chrome.browser.tabmodel.TabGroupModelFilterProvider;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
@@ -78,11 +77,10 @@ public class TabSwitcherActionMenuRenderTest {
                     .build();
 
     @Mock private Profile mProfile;
-    @Mock private ObservableSupplier<TabModelSelector> mTabModelSelectorSupplier;
-    @Mock private ObservableSupplier<Tab> mCurrentTabSupplier;
+    @Mock private MonotonicObservableSupplier<TabModelSelector> mTabModelSelectorSupplier;
+    @Mock private MonotonicObservableSupplier<Tab> mCurrentTabSupplier;
     @Mock private TabModelSelector mTabModelSelector;
     @Mock private TabModel mModel;
-    @Mock private TabGroupModelFilterProvider mTabGroupModelFilterProvider;
     @Mock private TabGroupModelFilter mTabGroupModelFilter;
     @Mock private Tab mTab;
 
@@ -102,10 +100,7 @@ public class TabSwitcherActionMenuRenderTest {
         when(mTabModelSelectorSupplier.get()).thenReturn(mTabModelSelector);
         when(mTabModelSelector.getModel(true)).thenReturn(mModel);
         when(mModel.getCount()).thenReturn(0);
-        when(mTabModelSelector.getTabGroupModelFilterProvider())
-                .thenReturn(mTabGroupModelFilterProvider);
-        when(mTabGroupModelFilterProvider.getCurrentTabGroupModelFilter())
-                .thenReturn(mTabGroupModelFilter);
+        when(mTabModelSelector.getCurrentTabGroupModelFilter()).thenReturn(mTabGroupModelFilter);
         when(mTabModelSelector.isTabStateInitialized()).thenReturn(true);
         when(mTabGroupModelFilter.isTabModelRestored()).thenReturn(true);
         when(mCurrentTabSupplier.get()).thenReturn(mTab);

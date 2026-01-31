@@ -34,11 +34,16 @@
 <translation id="159029779861043703">‏Chromium שומר על האבטחה של מידע אישי רגיש באמצעות Face ID.</translation>
 <translation id="1591119736686995611">‏תיפתח תצוגת הכרטיסיות ב-Chromium.</translation>
 <translation id="16001233025397167">‏בדיקת האבטחה מגינה עליך מפני פרצות באבטחת מידע, אתרים לא בטוחים וסכנות נוספות. אפשר לקבל התראות לגבי כל בעיה בפרטיות או באבטחה ש-Chromium מזהה.</translation>
+<translation id="1614362805233822594">כבר שמרת סיסמאות או מפתחות גישה במנהל הסיסמאות לאתרים שמוצגים. צריך לבחור חשבון כדי לשמור את פרטי הכניסה שמוצגים, ולכתוב על הפרטים במנהל הסיסמאות.</translation>
 <translation id="1617663976202781617">‏נתונים מסנכרון Chromium</translation>
 <translation id="164952285225495380">‏החבילה הזו כבר נוספה למעקב ב-Chromium.</translation>
+<translation id="1703338211136118534">הסיסמאות הבאות לא יובאו למנהל הסיסמאות כי הן לא עומדות בדרישות.</translation>
 <translation id="1707458603865303524">‏שימוש ב-Chromium בכל פעם שלוחצים על קישורים בהודעות או באפליקציות אחרות.</translation>
 <translation id="1722370509450468186">הסיסמה שלך תישמר בחשבון (<ph name="EMAIL" />).</translation>
 <translation id="1747088204252710672">פיד מותאם אישית שנוצר במיוחד בשבילך</translation>
+<translation id="1761196287436320018">‏הגעת למגבלה של <ph name="LIMIT" /> סימניות ב-Chromium, ולכן חלק מהסימניות שלך עדיין לא נשמרו בחשבון Google.
+
+כדי לשמור סימניות חדשות בחשבון, צריך למחוק חלק מהסימניות הקיימות. יציאה מהחשבון תמחק את הסימניות שלא נשמרו.</translation>
 <translation id="1811860791247653035">‏כדי להשתמש בהתאמה אישית ובתכונות אחרות, צריך לכלול את Chromium ב<ph name="FEATURE_NAME_1" /> וב<ph name="FEATURE_NAME_2" /></translation>
 <translation id="1838412507805038478">‏Chromium אימת ש-<ph name="ISSUER" /> הנפיק את האישור של האתר הזה.</translation>
 <translation id="1839447949248872139">‏פתיחת קישורים ב-Chromium כברירת מחדל</translation>
@@ -47,6 +52,7 @@
 <translation id="1847960401032164406">‏מפות Google ב-Chromium</translation>
 <translation id="1867772173333403444">‏4. בוחרים באפשרות Chromium</translation>
 <translation id="1965068424387304464">‏טיפ ל-Chromium: שמירת סיסמאות</translation>
+<translation id="1992653360331625459">כבר שמרת סיסמאות לחשבונות האלה במנהל הסיסמאות. אם אחת מהסיסמאות הבאות תיובא, היא תחליף את הסיסמה הקיימת.</translation>
 <translation id="2006345422933397527">‏Chromium לא הצליח לחפש עדכונים. יש לבדוק את החיבור לאינטרנט.</translation>
 <translation id="2042889939382983733">‏הצגת ההיסטוריה ב-Chromium</translation>
 <translation id="2052320862053429062">‏Chromium בודק מדי פעם את הסיסמאות שלך ומשווה אותן לרשימות שהתפרסמו באינטרנט. כשהבדיקה הזו מתבצעת, הסיסמאות ושמות המשתמשים מוצפנים, כך שאיש לא יכול לקרוא אותם, כולל Google.</translation>
@@ -65,6 +71,7 @@
 <translation id="2326738825692478496">‏חלק מהנתונים ב-Chromium עדיין לא נשמרו בחשבון Google.
 
 כדאי לחכות כמה דקות לפני היציאה מהחשבון. אם תתבצע יציאה מהחשבון, הנתונים האלה יימחקו.</translation>
+<translation id="2334943301233020675">מפתחות הגישה הבאים לא יובאו למנהל הסיסמאות כי הם לא עומדים בדרישות.</translation>
 <translation id="2337722506862731008">‏שיתוף של Chromium</translation>
 <translation id="2340423701577464731">‏הוספת פריט מרשימת הקריאה ל-Chromium</translation>
 <translation id="2374627437126809292">‏בעזרת מפות Google, אפשר לקבל ב-Chromium מסלולים ומידע מקומי על כתובות שהמערכת מזהה.</translation>
@@ -125,6 +132,7 @@
 <translation id="3728124580182886854">‏אפשר לקשר את Chromium לשירותי Google אחרים לצורך התאמה אישית ולמטרות אחרות</translation>
 <translation id="377649297473651452">‏תצוגה מורחבת של המילוי האוטומטי ב-Chromium</translation>
 <translation id="3780779443901618967">‏מקבלים אזהרות לגבי אתרים מסוכנים, גם כאלה שלא היו ידועים ל-Google לפני כן, בעזרת ניתוח של יותר נתונים מאתרים בהשוואה להגנה הרגילה. אפשר לדלג על האזהרות מ-Chromium.</translation>
+<translation id="3793136096560888222">‏עריכת תמונה באמצעות Gemini ב-Chromium</translation>
 <translation id="3805899903892079518">‏ל-Chromium אין גישה לתמונות או לסרטונים שלך. יש להפעיל את הגישה ב'הגדרות iOS' &gt; 'פרטיות' &gt; 'תמונות'.</translation>
 <translation id="3816686541346279443">‏‫Chromium יציע לשמור את הסיסמה.</translation>
 <translation id="3827545470516145620">במכשיר הזה יש אבטחה ברמה רגילה</translation>
@@ -292,7 +300,6 @@
 <translation id="7554983317097061001">‏טיפ ל-Chromium: כדאי להעביר את Chromium ל-Dock</translation>
 <translation id="7576863740961052505">‏ניהול של הגדרות Chromium</translation>
 <translation id="7674213385180944843">‏יש לעבור אל 'הגדרות' &gt; 'פרטיות' &gt; 'מצלמה' &gt; Chromium ולהפעיל את המצלמה.</translation>
-<translation id="7685160423563372998">‏יצירת תמונה באמצעות Gemini ב-Chromium</translation>
 <translation id="7733418656985455268">‏טיפ ל-Chromium: חיפוש באמצעות Lens</translation>
 <translation id="7747820849741499258">‏חיפוש ב-Chromium</translation>
 <translation id="7753923083404296545">‏נפתח במצב פרטי ב-Chromium</translation>

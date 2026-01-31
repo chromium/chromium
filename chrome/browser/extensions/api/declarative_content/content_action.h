@@ -59,7 +59,7 @@ class ContentAction {
   static std::unique_ptr<ContentAction> Create(
       content::BrowserContext* browser_context,
       const Extension* extension,
-      const base::Value::Dict& json_action_dict,
+      const base::DictValue& json_action_dict,
       std::string* error);
 
   static void SetAllowInvisibleIconsForTest(bool value);
@@ -86,10 +86,10 @@ class RequestContentScript : public ContentAction,
   static std::unique_ptr<ContentAction> Create(
       content::BrowserContext* browser_context,
       const Extension* extension,
-      const base::Value::Dict* dict,
+      const base::DictValue* dict,
       std::string* error);
 
-  static bool InitScriptData(const base::Value::Dict* dict,
+  static bool InitScriptData(const base::DictValue* dict,
                              std::string* error,
                              ScriptData* script_data);
 

@@ -220,8 +220,8 @@ void AudioOutputStreamBroker::ObserverBindingLost(
 
   DisconnectReason reason_enum = static_cast<DisconnectReason>(reason);
 
-  // TODO(crbug.com/40551225): Don't propagate errors if we can retry
-  // instead.
+  // Errors are propagated to the client, which is responsible for retries. See
+  // crbug.com/40551225 for context.
   client_.ResetWithReason(
       static_cast<uint32_t>(DisconnectReason::kPlatformError), std::string());
   Cleanup((reason_enum == DisconnectReason::kPlatformError && AwaitingCreated())

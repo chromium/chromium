@@ -7,6 +7,8 @@ package org.chromium.chrome.browser;
 import static androidx.browser.customtabs.CustomTabsIntent.EXTRA_ENABLE_EPHEMERAL_BROWSING;
 
 import static org.chromium.build.NullUtil.assumeNonNull;
+import static org.chromium.chrome.browser.url_constants.UrlConstantResolverFactory.getIncognitoResolver;
+import static org.chromium.chrome.browser.url_constants.UrlConstantResolverFactory.getOriginalResolver;
 import static org.chromium.components.webapk.lib.common.WebApkConstants.WEBAPK_PACKAGE_PREFIX;
 
 import android.app.Activity;
@@ -60,6 +62,7 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tabmodel.MultiTabMetadata;
 import org.chromium.chrome.browser.tabmodel.TabGroupMetadata;
+import org.chromium.chrome.browser.url_constants.UrlConstantResolver;
 import org.chromium.chrome.browser.webapps.WebappActivity;
 import org.chromium.components.bookmarks.BookmarkId;
 import org.chromium.components.bookmarks.BookmarkType;
@@ -1545,9 +1548,11 @@ public class IntentHandler {
      * @return The {@link Intent} to launch.
      */
     public static Intent createTrustedOpenNewTabIntent(Context context, boolean incognito) {
+        UrlConstantResolver resolver = incognito ? getIncognitoResolver() : getOriginalResolver();
+
         Intent newIntent = new Intent();
         newIntent.setAction(Intent.ACTION_VIEW);
-        newIntent.setData(Uri.parse(UrlConstants.NTP_URL));
+        newIntent.setData(Uri.parse(resolver.getNtpUrl()));
         newIntent.setClass(context, ChromeLauncherActivity.class);
         newIntent.putExtra(Browser.EXTRA_CREATE_NEW_TAB, true);
         newIntent.putExtra(Browser.EXTRA_APPLICATION_ID, context.getPackageName());

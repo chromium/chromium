@@ -5,14 +5,19 @@
 #include "components/supervised_user/core/browser/supervised_user_log_record.h"
 
 #include <optional>
+#include <string>
+#include <vector>
 
+#include "base/metrics/histogram_functions.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
+#include "components/content_settings/core/browser/permission_settings_registry.h"
+#include "components/content_settings/core/common/content_settings.h"
+#include "components/content_settings/core/common/content_settings_utils.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
+#include "components/supervised_user/core/browser/device_parental_controls.h"
 #include "components/supervised_user/core/browser/supervised_user_preferences.h"
-#include "components/supervised_user/core/browser/supervised_user_service.h"
-#include "components/supervised_user/core/browser/supervised_user_url_filter.h"
-#include "components/supervised_user/core/common/features.h"
+#include "components/supervised_user/core/browser/supervised_user_url_filtering_service.h"
 #include "components/supervised_user/core/common/pref_names.h"
 #include "extensions/buildflags/buildflags.h"
 
@@ -38,9 +43,12 @@ bool IsParentFamilyMemberRole(const PrefService& pref_service) {
 std::optional<SupervisedUserLogRecord::Segment> GetSupervisionStatus(
     signin::IdentityManager* identity_manager,
     const PrefService& pref_service,
-    SupervisedUserService* supervised_user_service) {
-  if (supervised_user_service &&
-      supervised_user_service->IsSupervisedLocally()) {
+    const DeviceParentalControls& device_parental_controls) {
+  // TODO(crbug.com/474592052): in case of Family Link and device supervision,
+  // prefer Family Link supervision status. Once properly handled, record
+  // metrics for both supervision types.
+  if (!IsSubjectToParentalControls(pref_service) &&
+      device_parental_controls.IsEnabled()) {
     // This type of supervision is signin-status independent (but only available
     // to non-incognito profiles).
     return SupervisedUserLogRecord::Segment::kSupervisionEnabledLocally;
@@ -104,12 +112,12 @@ bool IsUnsupervisedStatus(
 // than browser content.
 std::optional<WebFilterType> GetWebFilterType(
     std::optional<SupervisedUserLogRecord::Segment> supervision_status,
-    SupervisedUserService* supervised_user_service) {
-  if (!supervised_user_service || IsUnsupervisedStatus(supervision_status)) {
+    SupervisedUserUrlFilteringService* url_filtering_service) {
+  if (!url_filtering_service || IsUnsupervisedStatus(supervision_status)) {
     return std::nullopt;
   }
 
-  return supervised_user_service->GetURLFilter()->GetWebFilterType();
+  return url_filtering_service->GetWebFilterType();
 }
 
 std::optional<ToggleState> GetPermissionsToggleState(
@@ -127,14 +135,18 @@ std::optional<ToggleState> GetPermissionsToggleState(
   // The permissions toggle set multiple content settings. We pick one of them,
   // geolocation, to inspect here to infer the value of the toggle.
   content_settings::ProviderType provider;
-  auto content_setting = content_settings_map.GetDefaultContentSetting(
-      ContentSettingsType::GEOLOCATION, &provider);
+  const content_settings::PermissionSettingsInfo* geolocation_info =
+      content_settings::PermissionSettingsRegistry::GetInstance()->Get(
+          content_settings::GeolocationContentSettingsType());
+  bool is_geolocation_blocked_by_default =
+      geolocation_info->delegate().IsBlocked(
+          content_settings_map.GetDefaultPermissionSetting(
+              content_settings::GeolocationContentSettingsType(), &provider));
   // Note: Do not check that the ProviderType is `kSupervisedProvider`. This
   // is true only when the parent has disabled the "Permissions" FL switch.
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
-  bool block_geolocation =
-      content_setting == ContentSetting::CONTENT_SETTING_BLOCK;
+  bool block_geolocation = is_geolocation_blocked_by_default;
   bool permissions_allowed_pref = pref_service.GetBoolean(
       prefs::kSupervisedUserExtensionsMayRequestPermissions);
   // Cross-check the content setting against the preference that was the former
@@ -142,9 +154,8 @@ std::optional<ToggleState> GetPermissionsToggleState(
   DCHECK(permissions_allowed_pref != block_geolocation);
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
-  return content_setting == ContentSetting::CONTENT_SETTING_BLOCK
-             ? ToggleState::kDisabled
-             : ToggleState::kEnabled;
+  return is_geolocation_blocked_by_default ? ToggleState::kDisabled
+                                           : ToggleState::kEnabled;
 #endif  // BUILDFLAG(IS_IOS)
 }
 
@@ -171,22 +182,160 @@ std::optional<ToggleState> GetExtensionToggleState(
 #endif
 }
 
+// A templated function to merge multiple values of the same type into either:
+// * An empty optional if none of the values are set
+// * A non-empty optional if all the set values are equal
+// * An optional containing |mixed_value| if there are multiple different
+// values.
+template <class T>
+std::optional<T> GetMergedRecord(const std::vector<std::optional<T>>& records,
+                                 T mixed_value) {
+  std::optional<T> merged_record;
+  for (const std::optional<T> record : records) {
+    if (!record.has_value()) {
+      continue;
+    }
+
+    if (merged_record.has_value() && merged_record.value() != record.value()) {
+      return mixed_value;
+    }
+    merged_record = record;
+  }
+  return merged_record;
+}
+
+bool HasSupervisedStatus(
+    std::optional<SupervisedUserLogRecord::Segment> segment) {
+  if (!segment.has_value()) {
+    return false;
+  }
+  switch (segment.value()) {
+    case SupervisedUserLogRecord::Segment::kUnsupervised:
+    case SupervisedUserLogRecord::Segment::kParent:
+      return false;
+    case SupervisedUserLogRecord::Segment::
+        kSupervisionEnabledByFamilyLinkPolicy:
+    case SupervisedUserLogRecord::Segment::kSupervisionEnabledByFamilyLinkUser:
+    case SupervisedUserLogRecord::Segment::kSupervisionEnabledLocally:
+      return true;
+    case SupervisedUserLogRecord::Segment::kMixedProfile:
+      NOTREACHED();
+  }
+}
+
+std::optional<SupervisedUserLogRecord::Segment> GetLogSegmentForHistogram(
+    const std::vector<SupervisedUserLogRecord>& records) {
+  bool has_supervised_status = false;
+  std::optional<SupervisedUserLogRecord::Segment> merged_log_segment;
+  for (const SupervisedUserLogRecord& record : records) {
+    std::optional<SupervisedUserLogRecord::Segment> supervision_status =
+        record.GetSupervisionStatusForPrimaryAccount();
+    has_supervised_status |= HasSupervisedStatus(supervision_status);
+    if (merged_log_segment.has_value() &&
+        merged_log_segment.value() != supervision_status) {
+      if (has_supervised_status) {
+        // A supervised user record is only expected to be mixed if there is at
+        // least one supervised user.
+        return SupervisedUserLogRecord::Segment::kMixedProfile;
+      }
+      CHECK(merged_log_segment.value() ==
+                SupervisedUserLogRecord::Segment::kParent ||
+            merged_log_segment.value() ==
+                SupervisedUserLogRecord::Segment::kUnsupervised);
+      merged_log_segment = SupervisedUserLogRecord::Segment::kParent;
+    } else {
+      merged_log_segment = supervision_status;
+    }
+  }
+  return merged_log_segment;
+}
+
+std::optional<WebFilterType> GetWebFilterForHistogram(
+    const std::vector<SupervisedUserLogRecord>& records) {
+  std::vector<std::optional<WebFilterType>> filter_types;
+  for (const SupervisedUserLogRecord& record : records) {
+    filter_types.push_back(record.GetWebFilterTypeForPrimaryAccount());
+  }
+  return GetMergedRecord(filter_types, WebFilterType::kMixed);
+}
+
+std::optional<ToggleState> GetPermissionsToggleStateForHistogram(
+    const std::vector<SupervisedUserLogRecord>& records) {
+  std::vector<std::optional<ToggleState>> permissions_toggle_states;
+  for (const SupervisedUserLogRecord& record : records) {
+    permissions_toggle_states.push_back(
+        record.GetPermissionsToggleStateForPrimaryAccount());
+  }
+  return GetMergedRecord(permissions_toggle_states, ToggleState::kMixed);
+}
+
+std::optional<ToggleState> GetExtensionsToggleStateForHistogram(
+    const std::vector<SupervisedUserLogRecord>& records) {
+  std::vector<std::optional<ToggleState>> extensions_toggle_states;
+  for (const SupervisedUserLogRecord& record : records) {
+    extensions_toggle_states.push_back(
+        record.GetExtensionsToggleStateForPrimaryAccount());
+  }
+  return GetMergedRecord(extensions_toggle_states, ToggleState::kMixed);
+}
 }  // namespace
 
 SupervisedUserLogRecord SupervisedUserLogRecord::Create(
     signin::IdentityManager* identity_manager,
     const PrefService& pref_service,
     const HostContentSettingsMap& content_settings_map,
-    SupervisedUserService* supervised_user_service) {
+    SupervisedUserUrlFilteringService* url_filtering_service,
+    const DeviceParentalControls& device_parental_controls) {
   std::optional<SupervisedUserLogRecord::Segment> supervision_status =
       GetSupervisionStatus(identity_manager, pref_service,
-                           supervised_user_service);
+                           device_parental_controls);
   return SupervisedUserLogRecord(
       supervision_status,
-      GetWebFilterType(supervision_status, supervised_user_service),
+      GetWebFilterType(supervision_status, url_filtering_service),
       GetPermissionsToggleState(supervision_status, pref_service,
                                 content_settings_map),
       GetExtensionToggleState(supervision_status, pref_service));
+}
+
+// static
+bool SupervisedUserLogRecord::EmitHistograms(
+    const std::vector<SupervisedUserLogRecord>& records) {
+  bool did_emit_histogram = false;
+
+  std::optional<SupervisedUserLogRecord::Segment> segment =
+      GetLogSegmentForHistogram(records);
+  if (segment.has_value()) {
+    base::UmaHistogramEnumeration(kFamilyLinkUserLogSegmentHistogramName,
+                                  segment.value());
+    did_emit_histogram = true;
+  }
+
+  std::optional<WebFilterType> web_filter = GetWebFilterForHistogram(records);
+  if (web_filter.has_value()) {
+    base::UmaHistogramEnumeration(
+        kFamilyLinkUserLogSegmentWebFilterHistogramName, web_filter.value());
+    did_emit_histogram = true;
+  }
+
+  std::optional<ToggleState> permissions_toggle_state =
+      GetPermissionsToggleStateForHistogram(records);
+  if (permissions_toggle_state.has_value()) {
+    base::UmaHistogramEnumeration(
+        kSitesMayRequestCameraMicLocationHistogramName,
+        permissions_toggle_state.value());
+    did_emit_histogram = true;
+  }
+
+  std::optional<ToggleState> extensions_toggle_state =
+      GetExtensionsToggleStateForHistogram(records);
+  if (extensions_toggle_state.has_value()) {
+    base::UmaHistogramEnumeration(
+        kSkipParentApprovalToInstallExtensionsHistogramName,
+        extensions_toggle_state.value());
+    did_emit_histogram = true;
+  }
+
+  return did_emit_histogram;
 }
 
 SupervisedUserLogRecord::SupervisedUserLogRecord(

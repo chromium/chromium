@@ -259,8 +259,7 @@ bool ReadNullTerminatedString(base::File& f,
   char cur;
   int64_t name_bytes_read = 0;
   do {
-    int bytes_read = f.Read(offset, &cur, 1);
-    if (bytes_read < 1) {
+    if (!f.Read(offset, base::byte_span_from_ref(cur))) {
       PLOG(ERROR) << "read device name";
       return false;
     }
@@ -406,13 +405,11 @@ bool Replay(const base::FilePath& file_path, int offset_x, int offset_y) {
   }
   const int64_t bytes_to_read = num_records * sizeof(TouchInputEventRecord);
   std::vector<TouchInputEventRecord> records(num_records);
-  int bytes_read = dump_file.Read(
-      offset, reinterpret_cast<char*>(records.data()), bytes_to_read);
-  if (bytes_read < base::checked_cast<int>(bytes_to_read)) {
+  if (dump_file.Read(offset, base::as_writable_byte_span(records)) <
+      base::checked_cast<size_t>(bytes_to_read)) {
     PLOG(ERROR) << "Could not read records";
     return false;
   }
-
   ValidateRecords(records);
 
   // Open the device.

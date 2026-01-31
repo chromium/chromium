@@ -18,9 +18,9 @@ static_library("base") {
   ]
 
   deps = [
-    "//chrome/browser:browser_process",
     "//chrome/browser/profiles:profile",
     "//chrome/common:constants",
+    "//components/application_locale_storage",
     "//components/language/core/browser",
     "//components/language/core/common",
     "//components/prefs",

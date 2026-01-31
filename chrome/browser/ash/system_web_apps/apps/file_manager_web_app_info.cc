@@ -123,9 +123,9 @@ FileManagerSystemAppDelegate::GetWebAppInfo() const {
                     });
 
   // Drive & Google Docs:
-  AppendFileHandler(
-      *info, "open-hosted-generic",
-      {"gdraw", "gtable", "gform", "gmaps", "gsite", "glink", "gmaillayout"});
+  AppendFileHandler(*info, "open-hosted-generic",
+                    {"gdraw", "gtable", "gform", "gmaps", "gsite", "glink",
+                     "gmaillayout", "gprj"});
   AppendFileHandler(*info, "open-hosted-gdoc", {"gdoc"});
   AppendFileHandler(*info, "open-hosted-gsheet", {"gsheet"});
   AppendFileHandler(*info, "open-hosted-gslides", {"gslides"});

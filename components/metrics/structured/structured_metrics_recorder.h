@@ -69,8 +69,6 @@ class StructuredMetricsRecorder
 
   bool recording_enabled() const { return recording_enabled_; }
 
-  void ProvideUmaEventMetrics(ChromeUserMetricsExtension& uma_proto);
-
   // Provides event metrics stored in the recorder into |uma_proto|.
   //
   // This calls OnIndependentMetrics() to populate |uma_proto| with metadata

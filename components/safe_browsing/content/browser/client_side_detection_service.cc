@@ -9,7 +9,6 @@
 
 #include "base/callback_list.h"
 #include "base/compiler_specific.h"
-#include "base/containers/contains.h"
 #include "base/containers/queue.h"
 #include "base/files/file.h"
 #include "base/files/file_path.h"
@@ -223,7 +222,7 @@ void ClientSideDetectionService::OnURLLoaderComplete(
       "SBClientPhishing.NetworkResult2", url_loader->NetError(),
       response_code.has_value() ? response_code.value() : 0);
 
-  DCHECK(base::Contains(client_phishing_reports_, url_loader));
+  DCHECK(client_phishing_reports_.contains(url_loader));
   HandlePhishingVerdict(url_loader, url_loader->GetFinalURL(),
                         url_loader->NetError(), response_code,
                         std::move(response_body).value_or(""));
@@ -502,7 +501,7 @@ bool ClientSideDetectionService::AddPhishingReport(base::Time timestamp) {
 
   phishing_report_times_.push_back(timestamp);
 
-  base::Value::List time_list;
+  base::ListValue time_list;
   for (const base::Time& report_time : phishing_report_times_) {
     time_list.Append(base::Value(report_time.InSecondsFSinceUnixEpoch()));
   }
@@ -562,6 +561,22 @@ const base::File& ClientSideDetectionService::GetImageEmbeddingModel() {
   // At launch, we will only deploy the Image Embedding Model through
   // OptimizationGuide
   return client_side_phishing_model_->GetImageEmbeddingModel();
+}
+
+int ClientSideDetectionService::GetClassificationInputWidth() {
+  return client_side_phishing_model_->GetClassificationInputWidth();
+}
+
+int ClientSideDetectionService::GetClassificationInputHeight() {
+  return client_side_phishing_model_->GetClassificationInputHeight();
+}
+
+int ClientSideDetectionService::GetImageEmbeddingInputWidth() {
+  return client_side_phishing_model_->GetImageEmbeddingInputWidth();
+}
+
+int ClientSideDetectionService::GetImageEmbeddingInputHeight() {
+  return client_side_phishing_model_->GetImageEmbeddingInputHeight();
 }
 
 bool ClientSideDetectionService::
@@ -625,29 +640,42 @@ void ClientSideDetectionService::SetPhishingModel(
     return;
   }
 
-  switch (GetModelType()) {
-    case CSDModelType::kNone:
-      return;
-    case CSDModelType::kFlatbuffer:
-      if (delegate_ && delegate_->GetPrefs() &&
-          IsEnhancedProtectionEnabled(*delegate_->GetPrefs())) {
-        // The check for image embedding model is important because the
-        // OptimizationGuide server can send a null image embedding model to
-        // signal there is a bad model in disk. If the image embedding model
-        // isn't available because of this, the scorer will be created without
-        // the image embedder model, temporarily halting the image embedding
-        // process on the renderer.
-        if (IsModelMetadataImageEmbeddingVersionMatching() &&
-            HasImageEmbeddingModel()) {
-          base::UmaHistogramBoolean(
-              "SBClientPhishing.ImageEmbeddingModelVersionMatch", true);
-          if (!new_renderer_process_host &&
-              trigger_model_version_ ==
-                  client_side_phishing_model_->GetTriggerModelVersion()) {
-            // If the trigger model version remains the same in the same
-            // renderer process host, we can just attach the complementary image
-            // embedding model to the current scorer.
+  bool deprecate_dom_model =
+      base::FeatureList::IsEnabled(kClientSideDetectionDeprecateDOMModel);
+
+  if (deprecate_dom_model || GetModelType() == CSDModelType::kFlatbuffer) {
+    if (delegate_ && delegate_->GetPrefs() &&
+        IsEnhancedProtectionEnabled(*delegate_->GetPrefs())) {
+      // The check for image embedding model is important because the
+      // OptimizationGuide server can send a null image embedding model to
+      // signal there is a bad model in disk. If the image embedding model
+      // isn't available because of this, the scorer will be created without
+      // the image embedder model, temporarily halting the image embedding
+      // process on the renderer.
+      if (IsModelMetadataImageEmbeddingVersionMatching() &&
+          HasImageEmbeddingModel()) {
+        base::UmaHistogramBoolean(
+            "SBClientPhishing.ImageEmbeddingModelVersionMatch", true);
+        if (!new_renderer_process_host &&
+            trigger_model_version_ ==
+                client_side_phishing_model_->GetTriggerModelVersion()) {
+          // If the trigger model version remains the same in the same
+          // renderer process host, we can just attach the complementary
+          // image embedding model to the current scorer.
+          if (deprecate_dom_model) {
+            model_setter->AttachImageEmbeddingModelAndDimensions(
+                GetImageEmbeddingInputWidth(), GetImageEmbeddingInputHeight(),
+                GetImageEmbeddingModel().Duplicate());
+          } else {
             model_setter->AttachImageEmbeddingModel(
+                GetImageEmbeddingModel().Duplicate());
+          }
+        } else {
+          if (deprecate_dom_model) {
+            model_setter->SetImageEmbeddingAndPhishingTfLiteModel(
+                GetClassificationInputWidth(), GetClassificationInputHeight(),
+                GetVisualTfLiteModel().Duplicate(),
+                GetImageEmbeddingInputWidth(), GetImageEmbeddingInputHeight(),
                 GetImageEmbeddingModel().Duplicate());
           } else {
             model_setter->SetImageEmbeddingAndPhishingFlatBufferModel(
@@ -655,18 +683,30 @@ void ClientSideDetectionService::SetPhishingModel(
                 GetVisualTfLiteModel().Duplicate(),
                 GetImageEmbeddingModel().Duplicate());
           }
+        }
+      } else {
+        base::UmaHistogramBoolean(
+            "SBClientPhishing.ImageEmbeddingModelVersionMatch", false);
+        if (deprecate_dom_model) {
+          model_setter->SetPhishingTfLiteModel(
+              GetClassificationInputWidth(), GetClassificationInputHeight(),
+              GetVisualTfLiteModel().Duplicate());
         } else {
-          base::UmaHistogramBoolean(
-              "SBClientPhishing.ImageEmbeddingModelVersionMatch", false);
           model_setter->SetPhishingFlatBufferModel(
               GetModelSharedMemoryRegion(), GetVisualTfLiteModel().Duplicate());
         }
+      }
+    } else {
+      if (deprecate_dom_model) {
+        model_setter->SetPhishingTfLiteModel(
+            GetClassificationInputWidth(), GetClassificationInputHeight(),
+            GetVisualTfLiteModel().Duplicate());
       } else {
         model_setter->SetPhishingFlatBufferModel(
             GetModelSharedMemoryRegion(), GetVisualTfLiteModel().Duplicate());
       }
-      sent_trigger_models_ = true;
-      return;
+    }
+    sent_trigger_models_ = true;
   }
 }
 
@@ -721,20 +761,30 @@ void ClientSideDetectionService::ClassifyPhishingThroughThresholds(
   for (int i = 0; i < verdict->tflite_model_scores().size(); i++) {
     const TfLiteModelMetadata::Threshold& threshold = thresholds.at(i);
 
+    ClientPhishingRequest::CategoryScore* category =
+        verdict->mutable_tflite_model_scores(i);
+
+    if (base::FeatureList::IsEnabled(kClientSideDetectionDeprecateDOMModel)) {
+      category->set_label(threshold.label());
+    }
+
     if (delegate_ && delegate_->GetPrefs() &&
         IsEnhancedProtectionEnabled(*delegate_->GetPrefs())) {
-      if (verdict->tflite_model_scores().at(i).value() >=
-          threshold.esb_threshold()) {
+      if (category->value() >= threshold.esb_threshold()) {
         verdict->set_is_phishing(true);
         verdict->set_is_tflite_match(true);
       }
     } else {
-      if (verdict->tflite_model_scores().at(i).value() >=
-          threshold.threshold()) {
+      if (category->value() >= threshold.threshold()) {
         verdict->set_is_phishing(true);
         verdict->set_is_tflite_match(true);
       }
     }
+  }
+
+  if (base::FeatureList::IsEnabled(kClientSideDetectionDeprecateDOMModel)) {
+    verdict->set_tflite_model_version(
+        client_side_phishing_model_->GetTriggerModelVersion());
   }
 
 #if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
@@ -742,6 +792,11 @@ void ClientSideDetectionService::ClassifyPhishingThroughThresholds(
       client_side_phishing_model_->GetTargetImageEmbeddings();
   if (!target_image_embeddings.empty() && !verdict->is_phishing() &&
       verdict->has_image_feature_embedding()) {
+    if (base::FeatureList::IsEnabled(kClientSideDetectionDeprecateDOMModel)) {
+      verdict->mutable_image_feature_embedding()->set_embedding_model_version(
+          client_side_phishing_model_->GetImageEmbeddingModelVersion());
+    }
+
     // Create a FeatureVector from the ImageFeatureEmbedding.
     tflite::task::vision::FeatureVector feature_vector;
     for (float image_embedding_value :
@@ -792,6 +847,11 @@ bool ClientSideDetectionService::IsModelAvailable() {
 
 int ClientSideDetectionService::GetTriggerModelVersion() {
   return trigger_model_version_;
+}
+
+int ClientSideDetectionService::GetImageEmbeddingModelVersion() {
+  return client_side_phishing_model_ &&
+         client_side_phishing_model_->GetImageEmbeddingModelVersion();
 }
 
 bool ClientSideDetectionService::HasImageEmbeddingModel() {

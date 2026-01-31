@@ -45,15 +45,14 @@ class CONTENT_EXPORT WebRTCInternalsMessageHandler
   RenderFrameHost* GetWebRTCInternalsHost();
 
   // Javascript message handler.
-  void OnGetStandardStats(const base::Value::List& list);
-  void OnGetCurrentState(const base::Value::List& list);
+  void OnGetStandardStats(const base::ListValue& list);
+  void OnGetCurrentState(const base::ListValue& list);
   void OnSetAudioDebugRecordingsEnabled(bool enable,
-                                        const base::Value::List& list);
-  void OnSetEventLogRecordingsEnabled(bool enable,
-                                      const base::Value::List& list);
+                                        const base::ListValue& list);
+  void OnSetEventLogRecordingsEnabled(bool enable, const base::ListValue& list);
   void OnSetDataChannelRecordingsEnabled(bool enable,
-                                         const base::Value::List& list);
-  void OnDOMLoadDone(const base::Value::List& list);
+                                         const base::ListValue& list);
+  void OnDOMLoadDone(const base::ListValue& list);
 
   // WebRTCInternalsUIObserver override.
   void OnUpdate(const std::string& event_name,

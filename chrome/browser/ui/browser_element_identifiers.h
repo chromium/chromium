@@ -2,21 +2,51 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// A subset of the browser element identifiers are being used in Desktop UI
-// benchmark. The name of the identifiers and the string names used by the
-// benchmark are expected to be equal.
-//
-// Please keep the names in this file in sync with
-// `tools/perf/page_sets/desktop_ui/browser_element_identifiers.py`
-
 #ifndef CHROME_BROWSER_UI_BROWSER_ELEMENT_IDENTIFIERS_H_
 #define CHROME_BROWSER_UI_BROWSER_ELEMENT_IDENTIFIERS_H_
 
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/interaction/element_tracker.h"
 
-// These should gradually replace values in view_ids.h.
-// Please keep this list alphabetized.
+// These are the top-level UI ElementIdentifiers that can be used to retrieve
+// parts of the UI in both production code and in tests.
+//
+// These IDs can be used with:
+//  - BrowserElements
+//  - BrowserElementsViews
+//  - ElementTracker
+//  - ElementTrackerViews
+//  - Kombucha (InteractiveBrowserTest) tests
+//
+// Guidelines:
+//  1. Keep the list alphabetized.
+//     - Name identifiers in such a way that related identifiers are together
+//       alphabetically.
+//     - E.g. kToolbarAppMenuElementId, kToolbarBackButtonElementId, etc.
+//  2. This is not intended to be a master directory.
+//     - Only add things here if they are in the top-level conceptual space of
+//       the browser window.
+//     - For dialog elements, prefer to declare them in the dialog controller
+//       class using DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE() instead.
+//     - Similarly, declare menu item identifiers in the menu controller, WebUI
+//       page elements in the page handler or controller, etc.
+//     - You will notice some items here that should probably not be here. When
+//       convenient, take the time to move them out to the appropriate location.
+//  3. These should gradually replace values in view_ids.h.
+//     - When possible take the time to remove view_ids and references to them.
+//
+// Example uses:
+// ```
+//   // A view whose ID is listed in this file:
+//   auto* my_view =
+//       BrowserElementsViews::From(browser)->GetViewAs<MyView>(kMyViewId);
+//
+//   // A view whose ID is declared in a dialog controller:
+//   auto* my_dialog_view =
+//       BrowserElementsViews::From(browser)->GetViewAs<MyDialogView>(
+//           MyDialogController::kMyDialogViewId);
+// ```
+
 DECLARE_ELEMENT_IDENTIFIER_VALUE(kActionItemZoomElementId);
 DECLARE_ELEMENT_IDENTIFIER_VALUE(kAddCurrentTabToReadingListElementId);
 DECLARE_ELEMENT_IDENTIFIER_VALUE(kAiModePageActionIconElementId);
@@ -27,15 +57,15 @@ DECLARE_ELEMENT_IDENTIFIER_VALUE(kBookmarkBarElementId);
 DECLARE_ELEMENT_IDENTIFIER_VALUE(kBookmarkReplaceOldGroupCheckboxId);
 DECLARE_ELEMENT_IDENTIFIER_VALUE(kBookmarkSidePanelWebViewElementId);
 DECLARE_ELEMENT_IDENTIFIER_VALUE(kBookmarkStarViewElementId);
+DECLARE_ELEMENT_IDENTIFIER_VALUE(kBrowserDialogAnchorElementId);
 DECLARE_ELEMENT_IDENTIFIER_VALUE(kBrowserViewElementId);
 DECLARE_ELEMENT_IDENTIFIER_VALUE(kConstrainedDialogWebViewElementId);
 DECLARE_ELEMENT_IDENTIFIER_VALUE(kContentsCaptureBorder);
 DECLARE_ELEMENT_IDENTIFIER_VALUE(kContentsContainerViewElementId);
 DECLARE_ELEMENT_IDENTIFIER_VALUE(kContentsSeparatorLeadingEdgeElementId);
-DECLARE_ELEMENT_IDENTIFIER_VALUE(kContentsSeparatorLeadingTopCornerElementId);
+DECLARE_ELEMENT_IDENTIFIER_VALUE(kContentsSeparatorTopCornerElementId);
 DECLARE_ELEMENT_IDENTIFIER_VALUE(kContentsSeparatorTopEdgeElementId);
 DECLARE_ELEMENT_IDENTIFIER_VALUE(kContentsSeparatorTrailingEdgeElementId);
-DECLARE_ELEMENT_IDENTIFIER_VALUE(kContentsSeparatorTrailingTopCornerElementId);
 DECLARE_ELEMENT_IDENTIFIER_VALUE(kContextualTasksPageActionElementId);
 DECLARE_ELEMENT_IDENTIFIER_VALUE(kContextualTasksSidePanelWebViewElementId);
 DECLARE_ELEMENT_IDENTIFIER_VALUE(kCookieControlsIconElementId);
@@ -54,6 +84,9 @@ DECLARE_ELEMENT_IDENTIFIER_VALUE(kEnhancedProtectionSettingElementId);
 DECLARE_ELEMENT_IDENTIFIER_VALUE(kExclusiveAccessBubbleViewElementId);
 DECLARE_ELEMENT_IDENTIFIER_VALUE(kExtensionsMenuButtonElementId);
 DECLARE_ELEMENT_IDENTIFIER_VALUE(kExtensionsMenuMainPageElementId);
+DECLARE_ELEMENT_IDENTIFIER_VALUE(kExtensionsMenuSiteSettingsToggleElementId);
+DECLARE_ELEMENT_IDENTIFIER_VALUE(kExtensionsMenuReloadPageButtonElementId);
+DECLARE_ELEMENT_IDENTIFIER_VALUE(kExtensionsMenuReloadSectionElementId);
 DECLARE_ELEMENT_IDENTIFIER_VALUE(kExtensionsMenuManageExtensionsElementId);
 DECLARE_ELEMENT_IDENTIFIER_VALUE(kExtensionsRequestAccessButtonElementId);
 DECLARE_ELEMENT_IDENTIFIER_VALUE(kFeatureFirstRunDialogContentViewElementId);
@@ -106,6 +139,13 @@ DECLARE_ELEMENT_IDENTIFIER_VALUE(kPriceTrackingBookmarkViewElementId);
 DECLARE_ELEMENT_IDENTIFIER_VALUE(kPriceTrackingChipElementId);
 DECLARE_ELEMENT_IDENTIFIER_VALUE(kProductSpecificationsChipElementId);
 DECLARE_ELEMENT_IDENTIFIER_VALUE(kProductSpecificationsButtonElementId);
+DECLARE_ELEMENT_IDENTIFIER_VALUE(kProjectsPanelButtonElementId);
+DECLARE_ELEMENT_IDENTIFIER_VALUE(kProjectsPanelControlsViewElementId);
+DECLARE_ELEMENT_IDENTIFIER_VALUE(kProjectsPanelRecentThreadsViewElementId);
+DECLARE_ELEMENT_IDENTIFIER_VALUE(kProjectsPanelTabGroupsItemViewElementId);
+DECLARE_ELEMENT_IDENTIFIER_VALUE(kProjectsPanelTabGroupsViewElementId);
+DECLARE_ELEMENT_IDENTIFIER_VALUE(kProjectsPanelThreadListItemViewElementId);
+DECLARE_ELEMENT_IDENTIFIER_VALUE(kProjectsPanelViewElementId);
 DECLARE_ELEMENT_IDENTIFIER_VALUE(kReadLaterSidePanelWebViewElementId);
 DECLARE_ELEMENT_IDENTIFIER_VALUE(kReloadButtonElementId);
 DECLARE_ELEMENT_IDENTIFIER_VALUE(kRightAlignedSidePanelSeparatorViewElementId);
@@ -127,6 +167,8 @@ DECLARE_ELEMENT_IDENTIFIER_VALUE(kSidePanelMoreInfoButtonElementId);
 DECLARE_ELEMENT_IDENTIFIER_VALUE(kSidePanelOpenInNewTabButtonElementId);
 DECLARE_ELEMENT_IDENTIFIER_VALUE(kSidePanelPinButtonElementId);
 DECLARE_ELEMENT_IDENTIFIER_VALUE(kSidePanelReadingListUnreadElementId);
+DECLARE_ELEMENT_IDENTIFIER_VALUE(kSidePanelResizeAreaElementId);
+DECLARE_ELEMENT_IDENTIFIER_VALUE(kSidePanelResizeHandleElementId);
 DECLARE_ELEMENT_IDENTIFIER_VALUE(kSidePanelRoundedCornerViewElementId);
 DECLARE_ELEMENT_IDENTIFIER_VALUE(kSideSearchButtonElementId);
 DECLARE_ELEMENT_IDENTIFIER_VALUE(kSideSearchWebViewElementId);
@@ -190,9 +232,11 @@ DECLARE_ELEMENT_IDENTIFIER_VALUE(kUserNotesSidePanelWebViewElementId);
 DECLARE_ELEMENT_IDENTIFIER_VALUE(kVerticalTabStripCollapseButtonElementId);
 DECLARE_ELEMENT_IDENTIFIER_VALUE(kVerticalTabStripRegionElementId);
 DECLARE_ELEMENT_IDENTIFIER_VALUE(kVerticalTabStripBottomContainerElementId);
+DECLARE_ELEMENT_IDENTIFIER_VALUE(kVerticalTabStripProjectsButtonElementId);
 DECLARE_ELEMENT_IDENTIFIER_VALUE(kVerticalTabStripTopContainerElementId);
 DECLARE_ELEMENT_IDENTIFIER_VALUE(kVerticalTabTitleElementId);
 DECLARE_ELEMENT_IDENTIFIER_VALUE(kWebUIIPHDemoElementIdentifier);
+DECLARE_ELEMENT_IDENTIFIER_VALUE(kWebUIToolbarElementIdentifier);
 
 DECLARE_CUSTOM_ELEMENT_EVENT_TYPE(kBrowserThemeChangedEventId);
 DECLARE_CUSTOM_ELEMENT_EVENT_TYPE(kLensSidePanelSearchBoxFocusedEventId);

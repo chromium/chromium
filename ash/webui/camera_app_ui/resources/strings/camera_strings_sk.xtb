@@ -19,7 +19,7 @@
 <translation id="1644345013557678440">HD (720p)</translation>
 <translation id="1664224225747386870">Nič sa nezaznamenalo</translation>
 <translation id="1838104802459806957">Naklonenie nahor</translation>
-<translation id="1843105061469674856">Skenovať ďalšiu stránku</translation>
+<translation id="1843105061469674856">Skenovať ďalšiu stranu</translation>
 <translation id="1851616744363735765">POZASTAVENÉ</translation>
 <translation id="1899697626337024495">Rozlíšenie fotky</translation>
 <translation id="1925845977604399247">Prejsť do galérie</translation>
@@ -48,6 +48,7 @@
 <translation id="2761536921376153655">Typ vyhľadávania</translation>
 <translation id="28682968802727151">Ukážka zrkadlenia</translation>
 <translation id="2879583609344924966">Kamera <ph name="CAMERA" /> je pripojená.</translation>
+<translation id="3063987824612038785">Všetky súbory z kamery sa budú ukladať na Disk Google</translation>
 <translation id="3067436040345934772">Posunutie doprava</translation>
 <translation id="3081586908890909590">Prepnúť na zaznamenávanie videa</translation>
 <translation id="3091480460059548935">Rozpoznávanie textu v ukážke</translation>
@@ -67,6 +68,7 @@
 <translation id="3642192109456033823">Video sa spracúva…</translation>
 <translation id="3789724198583203151">Otočiť o 90 stupňov proti smeru hodinových ručičiek</translation>
 <translation id="3810838688059735925">Video</translation>
+<translation id="386366972082231038">Všetky súbory kamery sa budú ukladať do služby OneDrive</translation>
 <translation id="4060608699153044055">Nemôžete nahrávať, pretože v zariadení nie je dostatok priestoru. Ak chcete začať nahrávať, musíte v zariadení uvoľniť priestor.</translation>
 <translation id="4061162772429051350"><ph name="MAGAPIXELS_AMOUNT" /> Mpx</translation>
 <translation id="4118525110028899586">Pozastaviť nahrávanie</translation>
@@ -100,6 +102,7 @@
 <translation id="5634947914995388399">Rozbaliť dialógové okno a zastaviť skenovanie</translation>
 <translation id="5662366948659129155">Skenuje sa <ph name="COUNT" />. strana</translation>
 <translation id="5671277269877808209">Štvorec</translation>
+<translation id="5725797473946373607">Nabudúce toto dialógové okno nezobrazovať</translation>
 <translation id="574392208103952083">Stredné</translation>
 <translation id="5746169159649715125">Uložiť ako PDF</translation>
 <translation id="5753488212459587150">Povoliť expertný režim</translation>
@@ -156,6 +159,7 @@ Ak sa týka kvality obrázkov či videí, priložte ukážku fotky alebo videa a
 <translation id="7983668134180549431">Bol rozpoznaný text.</translation>
 <translation id="8079255378695216066">Nahrávanie sa nedá spustiť</translation>
 <translation id="8120146556401698679">Posunúť nakloniť priblížiť</translation>
+<translation id="8127459436205030819">Vaše súbory môže vidieť váš správca</translation>
 <translation id="8131740175452115882">Potvrdiť</translation>
 <translation id="8145038249676204903">Prepnúť na fotenie</translation>
 <translation id="8167081290930651932">Uložiť ako fotku</translation>
@@ -165,6 +169,7 @@ Ak sa týka kvality obrázkov či videí, priložte ukážku fotky alebo videa a
 <translation id="8609951387004618906">Otvoriť <ph name="URL" /></translation>
 <translation id="8629662593426079630">360p</translation>
 <translation id="8711011893539266636">Prepínač vypnutia zvuku mikrofónu. Zvuk je vypnutý.</translation>
+<translation id="8712637175834984815">Dobre</translation>
 <translation id="8730621377337864115">Hotovo</translation>
 <translation id="8732462232047530626">Zobraziť ukážku metadát</translation>
 <translation id="874854738381978209">Bola zistená sieť Wi‑Fi.</translation>

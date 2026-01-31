@@ -99,7 +99,7 @@ scoped_refptr<InputContext> InputContextAndroid::ToNativeInputContext(
 
 void InputContextAndroid::FromJavaParams(
     JNIEnv* env,
-    const jlong input_context_ptr,
+    const int64_t input_context_ptr,
     const base::android::JavaRef<jobjectArray>& jboolean_keys,
     const base::android::JavaRef<jbooleanArray>& jboolean_values,
     const base::android::JavaRef<jobjectArray>& jint_keys,
@@ -141,7 +141,7 @@ void InputContextAndroid::FromJavaParams(
 
 static void JNI_InputContext_FillNative(
     JNIEnv* env,
-    const jlong input_context_ptr,
+    const int64_t input_context_ptr,
     const JavaRef<jobjectArray>& jboolean_keys,
     const JavaRef<jbooleanArray>& jboolean_values,
     const JavaRef<jobjectArray>& jint_keys,

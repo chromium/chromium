@@ -31,7 +31,6 @@
 #include <set>
 #include <utility>
 
-#include "base/containers/contains.h"
 #include "base/debug/dump_without_crashing.h"
 #include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
@@ -199,7 +198,7 @@ String ContentSecurityPolicy::StripURLForUseInReport(
   // > 1. If url's scheme is not "`https`", "'http'", "`wss`" or "`ws`" then
   // >    return url's scheme.
   static const char* const allow_list[] = {"http", "https", "ws", "wss"};
-  if (!base::Contains(allow_list, url.Protocol())) {
+  if (!std::ranges::contains(allow_list, url.Protocol())) {
     return url.Protocol();
   }
 
@@ -703,6 +702,30 @@ bool ContentSecurityPolicy::AllowWasmCodeGeneration(
         *policy, this, reporting_disposition, exception_status, script_content);
   }
   return is_allowed;
+}
+
+bool ContentSecurityPolicy::AllowTrustedTypesEval(
+    ReportingDisposition reporting_disposition,
+    ContentSecurityPolicy::ExceptionStatus exception_status) {
+  // https://www.w3.org/TR/CSP3/#can-compile-strings, step 5.3.3
+  // "If source-list contains a source expression which is [...] "'unsafe-eval'"
+
+  // The spec wants 'trusted-types-eval' to apply _only_ when Trusted Types is
+  // enforced. Note that in most other contexts, we only check whether TT is
+  // required -- report only or not -- because even in report-only we need to
+  // run the checks in order to generate the reports. This, however, requires
+  // TT to enabled in an enforcing directive. Because that is a global
+  // property, we need to check it here.
+  bool trusted_types_is_enforced =
+      std::ranges::any_of(policies_, [&](const auto& policy) {
+        return CSPDirectiveListRequiresTrustedTypesEnforcing(*policy);
+      });
+  bool trusted_types_eval_applies =
+      std::ranges::any_of(policies_, [&](const auto& policy) {
+        return CSPDirectiveListAllowTrustedTypesEval(
+            *policy, this, reporting_disposition, exception_status);
+      });
+  return trusted_types_is_enforced && trusted_types_eval_applies;
 }
 
 HashSet<HashAlgorithm> ContentSecurityPolicy::HashesToReport() const {

@@ -19,7 +19,7 @@ namespace wallet {
 class WalletablePassBarcodeDetector {
  public:
   using WalletBarcodeDetectionDetectCallback =
-      base::OnceCallback<void(const std::vector<WalletBarcode>&)>;
+      base::OnceCallback<void(std::vector<WalletBarcode>)>;
 
   virtual ~WalletablePassBarcodeDetector() = default;
 

@@ -1,0 +1,52 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("eg_app_support+eg2") {
+  configs += [ "//build/config/ios:xctest_config" ]
+  testonly = true
+  sources = [
+    "omnibox_position_choice_app_interface.h",
+    "omnibox_position_choice_app_interface.mm",
+  ]
+  deps = [
+    "//ios/chrome/browser/shared/public/commands",
+    "//ios/chrome/test/app:test_support",
+  ]
+}
+
+source_set("eg_test_support+eg2") {
+  configs += [ "//build/config/ios:xctest_config" ]
+  testonly = true
+  sources = [
+    "omnibox_position_choice_app_interface.h",
+    "omnibox_position_choice_app_interface_stub.mm",
+  ]
+  deps = [ "//ios/testing/earl_grey:eg_test_support+eg2" ]
+}
+
+source_set("eg2_tests") {
+  configs += [ "//build/config/ios:xctest_config" ]
+  testonly = true
+  sources = [ "omnibox_position_egtest.mm" ]
+  deps = [
+    ":eg_test_support+eg2",
+    "//base",
+    "//build:branding_buildflags",
+    "//components/omnibox/browser:pref_names",
+    "//components/search_engines:search_engines_switches",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/authentication/test:eg_test_support+eg2",
+    "//ios/chrome/browser/first_run/public:constants",
+    "//ios/chrome/browser/promos_manager/model:features",
+    "//ios/chrome/browser/shared/model/prefs:pref_names",
+    "//ios/chrome/browser/shared/public/features",
+    "//ios/chrome/common/ui/promo_style:constants",
+    "//ios/chrome/test/earl_grey:eg_test_support+eg2",
+    "//ios/chrome/test/earl_grey:switches",
+    "//ios/testing/earl_grey:eg_test_support+eg2",
+    "//ios/testing/earl_grey:launch_configuration",
+    "//ui/base",
+  ]
+  frameworks = [ "UIKit.framework" ]
+}

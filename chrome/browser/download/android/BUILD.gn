@@ -228,8 +228,8 @@ android_resources("java_resources") {
   sources = [
     "java/res/color/error_icon_color_tint_list.xml",
     "java/res/drawable/dangerous_filled_24dp.xml",
+    "java/res/drawable/ic_download_done_24dp.xml",
     "java/res/drawable/ic_incognito_download_message.xml",
-    "java/res/drawable/infobar_download_complete.xml",
     "java/res/layout/confirm_oma_download.xml",
     "java/res/layout/download_location_dialog.xml",
     "java/res/layout/download_location_preference.xml",

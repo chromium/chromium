@@ -42,6 +42,7 @@ source_set("startup") {
     sources += [
       "automation_infobar_delegate.h",
       "google_api_keys_infobar_delegate.h",
+      "google_chrome_scheme_util.h",
       "infobar_utils.h",
       "launch_mode_recorder.h",
       "obsolete_system_infobar_delegate.h",
@@ -109,6 +110,7 @@ source_set("impl") {
     "//chrome/app:branded_strings",
     "//chrome/app:generated_resources",
     "//chrome/browser:browser_process",
+    "//chrome/browser/actor",
     "//chrome/browser/devtools",
     "//chrome/browser/infobars",
     "//chrome/browser/profiles",
@@ -117,6 +119,7 @@ source_set("impl") {
     "//chrome/browser/signin",
     "//chrome/browser/sync",
     "//chrome/browser/sync:factories",
+    "//chrome/browser/ui/dialogs",
     "//chrome/browser/ui/profiles",
     "//chrome/browser/webauthn",
     "//chrome/common:chrome_features",
@@ -155,6 +158,7 @@ source_set("impl") {
     sources += [
       "automation_infobar_delegate.cc",
       "google_api_keys_infobar_delegate.cc",
+      "google_chrome_scheme_util.cc",
       "infobar_utils.cc",
       "launch_mode_recorder.cc",
       "obsolete_system_infobar_delegate.cc",
@@ -170,7 +174,6 @@ source_set("impl") {
       "//build:buildflag_header_h",
       "//chrome/browser:global_features",
       "//chrome/browser:shell_integration",
-      "//chrome/browser/actor",
       "//chrome/browser/app_mode",
       "//chrome/browser/apps/app_service",
       "//chrome/browser/apps/platform_apps",
@@ -348,6 +351,7 @@ source_set("unit_tests") {
 
   if (!is_android) {
     sources = [
+      "google_chrome_scheme_util_unittest.cc",
       "launch_mode_recorder_unittest.cc",
       "startup_browser_creator_impl_unittest.cc",
       "startup_browser_creator_unittest.cc",

@@ -30,7 +30,7 @@ dictionary LanguageModelMessageContent {
 };
 
 // LINT.IfChange
-enum LanguageModelMessageRole { "system", "user", "assistant", "tool-call", "tool-response" };
+enum LanguageModelMessageRole { "system", "user", "assistant" };
 // LINT.ThenChange(//third_party/blink/renderer/modules/ai/ai_metrics.h:LanguageModelInputRole)
 
 // LINT.IfChange
@@ -65,24 +65,57 @@ dictionary LanguageModelToolResultContent {
 };
 
 // Represents a tool call requested by the language model.
-dictionary LanguageModelToolCall {
-  // Unique identifier for this tool call within the session.
+[
+  Exposed(Window AIPromptAPI, Worker AIPromptAPIForWorkers),
+  RuntimeEnabled=AIPromptAPI,
+  SecureContext
+]
+interface LanguageModelToolCall {
+  [RaisesException] constructor(LanguageModelToolCallInit init);
+  readonly attribute DOMString callID;
+  readonly attribute DOMString name;
+  [CallWith=ScriptState] readonly attribute object? arguments;
+};
+
+dictionary LanguageModelToolCallInit {
   required DOMString callID;
-  // The tool name to be invoked.
   required DOMString name;
-  // Object fitting the JSON input schema of the tool's declaration.
   object arguments;
 };
 
 // Successful tool execution result.
-dictionary LanguageModelToolSuccess {
+[
+  Exposed(Window AIPromptAPI, Worker AIPromptAPIForWorkers),
+  RuntimeEnabled=AIPromptAPI,
+  SecureContext
+]
+interface LanguageModelToolSuccess {
+  [RaisesException] constructor(LanguageModelToolSuccessInit init);
+  readonly attribute DOMString callID;
+  readonly attribute DOMString name;
+  readonly attribute FrozenArray<LanguageModelToolResultContent> result;
+};
+
+dictionary LanguageModelToolSuccessInit {
   required DOMString callID;
   required DOMString name;
   required sequence<LanguageModelToolResultContent> result;
 };
 
 // Failed tool execution result.
-dictionary LanguageModelToolError {
+[
+  Exposed(Window AIPromptAPI, Worker AIPromptAPIForWorkers),
+  RuntimeEnabled=AIPromptAPI,
+  SecureContext
+]
+interface LanguageModelToolError {
+  [RaisesException] constructor(LanguageModelToolErrorInit init);
+  readonly attribute DOMString callID;
+  readonly attribute DOMString name;
+  readonly attribute DOMString errorMessage;
+};
+
+dictionary LanguageModelToolErrorInit {
   required DOMString callID;
   required DOMString name;
   required DOMString errorMessage;

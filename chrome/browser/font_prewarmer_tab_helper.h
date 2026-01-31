@@ -8,9 +8,9 @@
 #include <string>
 #include <vector>
 
-#include "content/public/browser/child_process_id.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
+#include "content/public/common/child_process_id.h"
 
 class Profile;
 

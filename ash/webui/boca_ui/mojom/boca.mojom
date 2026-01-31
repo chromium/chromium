@@ -315,6 +315,8 @@ enum CreateSessionError {
   kHTTPError,
   // Enforce manged network.
   kNetworkRestriction,
+  // More students added to class than session limit.
+  kMaxStudentsExceeded,
 };
 
 enum CrdConnectionState {

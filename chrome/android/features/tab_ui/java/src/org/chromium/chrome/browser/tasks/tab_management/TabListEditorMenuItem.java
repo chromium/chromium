@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.tasks.tab_management;
 
 import static org.chromium.build.NullUtil.assumeNonNull;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.res.ColorStateList;
 import android.graphics.drawable.Drawable;
@@ -26,6 +27,7 @@ import org.chromium.chrome.browser.tasks.tab_management.TabListEditorAction.Icon
 import org.chromium.chrome.browser.tasks.tab_management.TabListEditorAction.ShowMode;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.components.browser_ui.util.motion.MotionEventInfo;
+import org.chromium.components.browser_ui.util.motion.OnPeripheralClickListener;
 import org.chromium.components.browser_ui.widget.BrowserUiListMenuUtils;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 
@@ -205,12 +207,20 @@ public class TabListEditorMenuItem {
         }
     }
 
+    @SuppressLint("ClickableViewAccessibility")
     public void setOnClickListener(OnClickRunnable runnable) {
         mOnClickRunnable = runnable;
         if (mActionView != null) {
-            // TODO(crbug.com/419085605): Also attach an OnPeripheralClickListener and use it to
-            // pass triggeringMotion.
+            // For non-peripheral clicks.
             mActionView.setOnClickListener(v -> onClick(/* triggeringMotion= */ null));
+            // For peripheral clicks. This will intercept the event and prevent OnClickListener
+            // from being called for peripheral events.
+            mActionView.setOnTouchListener(
+                    new OnPeripheralClickListener(
+                            mActionView,
+                            (triggeringMotion) -> {
+                                onClick(triggeringMotion);
+                            }));
         }
     }
 

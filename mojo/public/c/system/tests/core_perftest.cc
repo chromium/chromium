@@ -194,10 +194,12 @@ class CorePerftest : public testing::Test {
 
     // Interleave the starts.
     for (unsigned i = 0; i < num_writers || i < num_readers; i++) {
-      if (i < num_writers)
+      if (i < num_writers) {
         writers[i]->Start();
-      if (i < num_readers)
+      }
+      if (i < num_readers) {
         readers[i]->Start();
+      }
     }
 
     Sleep(kPerftestTimeMicroseconds);

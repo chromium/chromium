@@ -50,6 +50,8 @@ static std::string WrappedEncodeByte(char value) {
   return buffer;
 }
 
+}  // namespace
+
 TEST(IndexedDBLevelDBCodingTest, EncodeByte) {
   std::string expected;
   expected.push_back(0);
@@ -184,9 +186,7 @@ TEST(IndexedDBLevelDBCodingTest, EncodeInt) {
   EXPECT_EQ(1u, WrappedEncodeInt(255).size());
   EXPECT_EQ(2u, WrappedEncodeInt(256).size());
   EXPECT_EQ(4u, WrappedEncodeInt(0xffffffff).size());
-#ifdef NDEBUG
   EXPECT_EQ(8u, WrappedEncodeInt(-1).size());
-#endif
 }
 
 TEST(IndexedDBLevelDBCodingTest, DecodeBool) {
@@ -225,9 +225,7 @@ TEST(IndexedDBLevelDBCodingTest, DecodeInt) {
       655536,
       7711192431755665792ll,
       0x7fffffffffffffffll,
-#ifdef NDEBUG
       -3,
-#endif
   };
 
   for (size_t i = 0; i < test_cases.size(); ++i) {
@@ -1182,5 +1180,8 @@ TEST(IndexedDBLevelDBCodingTest, EncodeVarIntVSEncodeByteTest) {
   }
 }
 
-}  // namespace
+TEST(IndexedDBLevelDBCodingTest, Empty) {
+  EXPECT_EQ(KeyPrefix::EncodeInternal(0, 0, 0), KeyPrefix::EncodeEmpty());
+}
+
 }  // namespace content::indexed_db

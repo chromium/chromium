@@ -15,10 +15,10 @@
 #include "base/no_destructor.h"
 #include "base/notreached.h"
 #include "chrome/browser/enterprise/connectors/common.h"
-#include "chrome/browser/safe_browsing/cloud_content_scanning/binary_upload_service.h"
 #include "chrome/browser/safe_browsing/cloud_content_scanning/deep_scanning_utils.h"
 #include "chrome/browser/safe_browsing/cloud_content_scanning/file_opening_job.h"
 #include "components/enterprise/common/proto/connectors.pb.h"
+#include "components/enterprise/connectors/core/cloud_content_scanning/binary_upload_service.h"
 #include "components/enterprise/connectors/core/reporting_constants.h"
 #include "components/file_access/scoped_file_access.h"
 #include "components/file_access/scoped_file_access_delegate.h"
@@ -81,7 +81,7 @@ FilesRequestHandler::FileInfo::~FileInfo() = default;
 
 FilesRequestHandler::FilesRequestHandler(
     ContentAnalysisInfo* content_analysis_info,
-    safe_browsing::BinaryUploadService* upload_service,
+    BinaryUploadService* upload_service,
     Profile* profile,
     GURL url,
     const std::string& source,
@@ -108,7 +108,7 @@ FilesRequestHandler::FilesRequestHandler(
 // static
 std::unique_ptr<FilesRequestHandler> FilesRequestHandler::Create(
     ContentAnalysisInfo* content_analysis_info,
-    safe_browsing::BinaryUploadService* upload_service,
+    BinaryUploadService* upload_service,
     Profile* profile,
     GURL url,
     const std::string& source,
@@ -284,10 +284,11 @@ void FilesRequestHandler::FinishRequestEarly(
   // We add the request here in case we never actually uploaded anything, so it
   // wasn't added in OnGetRequestData
   safe_browsing::WebUIContentInfoSingleton::GetInstance()
-      ->AddToDeepScanRequests(request->per_profile_request(),
-                              /*access_token*/ "", /*upload_info*/ "",
-                              /*upload_url=*/"",
-                              request->content_analysis_request());
+      ->AddToDeepScanRequests(
+          request->per_profile_request(),
+          /*access_token*/ "",
+          /*upload_info*/ ScanRequestUploadResultToString(result),
+          /*upload_url=*/"", request->content_analysis_request());
   safe_browsing::WebUIContentInfoSingleton::GetInstance()
       ->AddToDeepScanResponses(
           /*token=*/"", ScanRequestUploadResultToString(result),
@@ -301,7 +302,7 @@ void FilesRequestHandler::UploadFileForDeepScanning(
     ScanRequestUploadResult result,
     const base::FilePath& path,
     std::unique_ptr<BinaryUploadRequest> request) {
-  safe_browsing::BinaryUploadService* upload_service = GetBinaryUploadService();
+  BinaryUploadService* upload_service = GetBinaryUploadService();
   if (upload_service)
     upload_service->MaybeUploadForDeepScanning(std::move(request));
 }

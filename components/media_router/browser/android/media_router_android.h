@@ -65,7 +65,7 @@ class MediaRouterAndroid : public MediaRouterBase {
       mojo::PendingReceiver<mojom::MediaController> controller,
       mojo::PendingRemote<mojom::MediaStatusObserver> observer) override;
   base::Value GetLogs() const override;
-  base::Value::Dict GetState() const override;
+  base::DictValue GetState() const override;
   void GetProviderState(
       mojom::MediaRouteProviderId provider_id,
       mojom::MediaRouteProvider::GetStateCallback callback) const override;

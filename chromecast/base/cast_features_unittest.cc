@@ -61,8 +61,8 @@ TEST_F(CastFeaturesTest, EnableDisableMultipleBooleanFeatures) {
       {&bool_feature, &bool_feature_2, &bool_feature_3, &bool_feature_4});
 
   // Override those features with DCS configs.
-  base::Value::List experiments;
-  base::Value::Dict features;
+  base::ListValue experiments;
+  base::DictValue features;
   features.Set(kTestBooleanFeatureName, false);
   features.Set(kTestBooleanFeatureName2, false);
   features.Set(kTestBooleanFeatureName3, true);
@@ -85,9 +85,9 @@ TEST_F(CastFeaturesTest, EnableSingleFeatureWithParams) {
   chromecast::SetFeaturesForTest({&test_feature});
 
   // Pass params via DCS.
-  base::Value::List experiments;
-  base::Value::Dict features;
-  base::Value::Dict params;
+  base::ListValue experiments;
+  base::DictValue features;
+  base::DictValue params;
   params.Set("foo_key", "foo");
   params.Set("bar_key", "bar");
   params.Set("doub_key", "3.14159");
@@ -126,8 +126,8 @@ TEST_F(CastFeaturesTest, CommandLineOverridesDcsAndDefault) {
                       base::FEATURE_ENABLED_BY_DEFAULT);
 
   // Override those features with DCS configs.
-  base::Value::List experiments;
-  base::Value::Dict features;
+  base::ListValue experiments;
+  base::DictValue features;
   features.Set(kTestBooleanFeatureName, false);
   features.Set(kTestBooleanFeatureName2, false);
   features.Set(kTestBooleanFeatureName3, true);
@@ -140,7 +140,7 @@ TEST_F(CastFeaturesTest, CommandLineOverridesDcsAndDefault) {
                                   &bool_feature_3, &bool_feature_4,
                                   &params_feature});
 
-  base::Value::Dict params;
+  base::DictValue params;
   params.Set("foo_key", "foo");
   features.Set(kTestParamsFeatureName, std::move(params));
 
@@ -172,8 +172,8 @@ TEST_F(CastFeaturesTest, CommandLineOverridesDcsAndDefault) {
 
 TEST_F(CastFeaturesTest, SetEmptyExperiments) {
   // Override those features with DCS configs.
-  base::Value::List experiments;
-  base::Value::Dict features;
+  base::ListValue experiments;
+  base::DictValue features;
 
   InitializeFeatureList(features, experiments, "", "", "", "");
   ASSERT_EQ(0u, GetDCSExperimentIds().size());
@@ -181,8 +181,8 @@ TEST_F(CastFeaturesTest, SetEmptyExperiments) {
 
 TEST_F(CastFeaturesTest, SetGoodExperiments) {
   // Override those features with DCS configs.
-  base::Value::List experiments;
-  base::Value::Dict features;
+  base::ListValue experiments;
+  base::DictValue features;
 
   int32_t ids[] = {12345678, 123, 0, -1};
   std::unordered_set<int32_t> expected;
@@ -197,8 +197,8 @@ TEST_F(CastFeaturesTest, SetGoodExperiments) {
 
 TEST_F(CastFeaturesTest, SetSomeGoodExperiments) {
   // Override those features with DCS configs.
-  base::Value::List experiments;
-  base::Value::Dict features;
+  base::ListValue experiments;
+  base::DictValue features;
   experiments.Append(1234);
   experiments.Append("foobar");
   experiments.Append(true);
@@ -215,8 +215,8 @@ TEST_F(CastFeaturesTest, SetSomeGoodExperiments) {
 
 TEST_F(CastFeaturesTest, SetAllBadExperiments) {
   // Override those features with DCS configs.
-  base::Value::List experiments;
-  base::Value::Dict features;
+  base::ListValue experiments;
+  base::DictValue features;
   experiments.Append("foobar");
   experiments.Append(true);
   experiments.Append(1.23456);
@@ -228,11 +228,11 @@ TEST_F(CastFeaturesTest, SetAllBadExperiments) {
 }
 
 TEST_F(CastFeaturesTest, GetOverriddenFeaturesForStorage) {
-  base::Value::Dict features;
+  base::DictValue features;
   features.Set("bool_key", false);
   features.Set("bool_key_2", true);
 
-  base::Value::Dict params;
+  base::DictValue params;
   params.Set("foo_key", "foo");
   params.Set("bar_key", "bar");
   params.Set("doub_key", 3.14159);
@@ -279,13 +279,13 @@ TEST_F(CastFeaturesTest, GetOverriddenFeaturesForStorage) {
 }
 
 TEST_F(CastFeaturesTest, GetOverriddenFeaturesForStorage_BadParams) {
-  base::Value::Dict features;
+  base::DictValue features;
   features.Set("bool_key", false);
   features.Set("str_key", "foobar");
   features.Set("int_key", 12345);
   features.Set("doub_key", 4.5678);
 
-  base::Value::Dict params;
+  base::DictValue params;
   params.Set("foo_key", "foo");
   features.Set("params_key", std::move(params));
 

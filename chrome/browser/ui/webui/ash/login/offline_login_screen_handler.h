@@ -20,7 +20,7 @@ class OfflineLoginView {
   virtual ~OfflineLoginView() = default;
 
   // Shows the contents of the screen.
-  virtual void Show(base::Value::Dict params) = 0;
+  virtual void Show(base::DictValue params) = 0;
 
   // Hide the contents of the screen.
   virtual void Hide() = 0;
@@ -57,7 +57,7 @@ class OfflineLoginScreenHandler final : public BaseScreenHandler,
                           const std::string& password);
 
   // OfflineLoginView:
-  void Show(base::Value::Dict params) override;
+  void Show(base::DictValue params) override;
   void Hide() override;
   void Reset() override;
   void ShowPasswordPage(bool authenticate_by_pin) override;

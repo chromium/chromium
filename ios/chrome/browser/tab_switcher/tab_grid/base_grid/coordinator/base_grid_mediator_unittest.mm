@@ -7,11 +7,11 @@
 #import <Foundation/Foundation.h>
 #import <UIKit/UIKit.h>
 
+#import <algorithm>
 #import <memory>
 
 #import "base/apple/foundation_util.h"
 #import "base/barrier_closure.h"
-#import "base/containers/contains.h"
 #import "base/functional/callback.h"
 #import "base/functional/callback_helpers.h"
 #import "base/run_loop.h"
@@ -188,7 +188,7 @@ TEST_P(BaseGridMediatorTest, ConsumerInsertItem) {
   EXPECT_EQ(original_selected_identifier_,
             consumer_.selectedItem.tabSwitcherItem.identifier);
   EXPECT_EQ(item_identifier, consumer_.items[1]);
-  EXPECT_FALSE(base::Contains(original_identifiers_, item_identifier));
+  EXPECT_FALSE(std::ranges::contains(original_identifiers_, item_identifier));
 }
 
 // Tests that the consumer is notified when a web state is removed.
@@ -227,7 +227,8 @@ TEST_P(BaseGridMediatorTest, ConsumerReplaceItem) {
   EXPECT_EQ(new_item_identifier,
             consumer_.selectedItem.tabSwitcherItem.identifier);
   EXPECT_EQ(new_item_identifier, consumer_.items[1]);
-  EXPECT_FALSE(base::Contains(original_identifiers_, new_item_identifier));
+  EXPECT_FALSE(
+      std::ranges::contains(original_identifiers_, new_item_identifier));
 }
 
 // Tests that the consumer is notified when a web state is moved.
@@ -359,7 +360,7 @@ TEST_P(BaseGridMediatorTest, AddNewItemAtEndCommand) {
   // to return pending item's URL.
   EXPECT_EQ("", web_state->GetVisibleURL().spec());
   web::WebStateID identifier = web_state->GetUniqueIdentifier();
-  EXPECT_FALSE(base::Contains(original_identifiers_, identifier));
+  EXPECT_FALSE(std::ranges::contains(original_identifiers_, identifier));
   // Consumer checks.
   EXPECT_EQ(4UL, consumer_.items.size());
   EXPECT_EQ(identifier, consumer_.selectedItem.tabSwitcherItem.identifier);
@@ -724,12 +725,20 @@ TEST_P(BaseGridMediatorTest, CloseAllThenAddWebState) {
   EXPECT_EQ(3UL, consumer_.items.size());
   [mediator_ closeAllButtonTapped:nil];
 
+  if (base::FeatureList::IsEnabled(kTabSwitcherOverflowMenu)) {
+    // Simulate closing all items if the Overflow Menu is enabled. This is
+    // needed because the Overflow Menu presents a confirmation dialog instead
+    // of immediately closing all items when the Close All button is tapped.
+    [mediator_ closeAllItems];
+  }
+
   TabGridToolbarsConfiguration* configuration =
       fake_toolbars_mediator_.configuration;
   EXPECT_TRUE(configuration.newTabButton);
   EXPECT_TRUE(configuration.searchButton);
-  if (GetParam() == TEST_REGULAR_MEDIATOR) {
-    // Undo is only available in regular.
+  if (GetParam() == TEST_REGULAR_MEDIATOR &&
+      !base::FeatureList::IsEnabled(kTabSwitcherOverflowMenu)) {
+    // Undo is only available in regular when the edit button is enabled.
     EXPECT_TRUE(configuration.undoButton);
   } else {
     EXPECT_FALSE(configuration.undoButton);

@@ -44,6 +44,7 @@ class DawnClientMemoryTransferService
   class WriteHandleImpl;
 
   // Allocate a shared memory handle for the memory transfer.
+  // TODO(crbug.com/40285824): Return the span instead of a pointer.
   void* AllocateHandle(size_t size, MemoryTransferHandle* handle);
 
   // Mark a shared memory allocation as free. This should not be called more

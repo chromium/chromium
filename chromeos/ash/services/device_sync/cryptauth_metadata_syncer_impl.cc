@@ -6,7 +6,6 @@
 
 #include <utility>
 
-#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_functions.h"
@@ -600,7 +599,7 @@ void CryptAuthMetadataSyncerImpl::FilterMetadataAndFinishAttempt() {
     }
 
     bool is_duplicate_id =
-        base::Contains(id_to_device_metadata_packet_map_, metadata.device_id());
+        id_to_device_metadata_packet_map_.contains(metadata.device_id());
     base::UmaHistogramBoolean(
         "CryptAuth.DeviceSyncV2.MetadataSyncer.IsDuplicateDeviceId",
         is_duplicate_id);
@@ -622,8 +621,8 @@ void CryptAuthMetadataSyncerImpl::FilterMetadataAndFinishAttempt() {
   }
 
   // We require that the local device's metadata is returned in the response.
-  if (!base::Contains(id_to_device_metadata_packet_map_,
-                      request_context_.device_id())) {
+  if (!id_to_device_metadata_packet_map_.contains(
+          request_context_.device_id())) {
     PA_LOG(ERROR) << "Metadata for local device (Instance ID: "
                   << request_context_.device_id()
                   << ") not in SyncMetadata response.";

@@ -66,17 +66,6 @@ void UpdateAnimationTiming(
     Document& document,
     HeapHashSet<WeakMember<AnimationTimeline>>& timelines,
     TimingUpdateReason reason) {
-  if (RuntimeEnabledFeatures::TimelineTriggerEnabled()) {
-    // First service all triggers because servicing a trigger might result in an
-    // animation's timeline being "dirtied", i.e. marked with an outdated
-    // animation whose currentTime was updated. This can happen if an
-    // animation's timeline is serviced first and then the trigger's timeline is
-    // serviced afterwards.
-    for (auto& timeline : timelines) {
-      timeline->ServiceTriggers();
-    }
-  }
-
   for (auto& timeline : timelines)
     timeline->ServiceAnimations(reason);
   document.GetWorkletAnimationController().UpdateAnimationTimings(reason);
@@ -84,11 +73,9 @@ void UpdateAnimationTiming(
 }  // namespace
 
 // static
-void DocumentAnimations::UpdateTriggerAttachment(
+void DocumentAnimations::FindRelevantTriggerAttachments(
     CSSAnimation& animation,
-    base::FunctionRef<void(AnimationTrigger& trigger,
-                           const StyleTriggerAttachment& attachment)>
-        attach_function) {
+    TriggerAttachmentMap& relevant_attachments_out) {
   const Member<const StyleTriggerAttachmentVector>&
       animation_trigger_attachments = animation.GetTriggerAttachments();
   if (!animation_trigger_attachments) {
@@ -135,9 +122,49 @@ void DocumentAnimations::UpdateTriggerAttachment(
 
     auto it = ancestors_named_triggers->find(trigger_scoped_name);
     if (it != ancestors_named_triggers->end()) {
-      AnimationTrigger* trigger = it->value;
-      attach_function(*trigger, *attachment);
+      AnimationTrigger* trigger =
+          it->value->NamedTrigger(trigger_scoped_name->GetScopedName());
+      DCHECK(trigger);
+      relevant_attachments_out.Set(trigger_scoped_name,
+                                   std::make_pair<>(trigger, attachment));
     }
+  }
+}
+
+// static
+void DocumentAnimations::UpdateTriggerAttachments(
+    CSSAnimation& animation,
+    const TriggerAttachmentMap& relevant_attachments) {
+  HeapHashMap<Member<const TriggerScopedName>, Member<AnimationTrigger>>
+      named_trigger_attachments_copy;
+  // Clear old trigger associations. Associations that are still relevant will
+  // get added below.
+  animation.NamedTriggerAttachments().swap(named_trigger_attachments_copy);
+
+  const auto& relevant_attachment_values = relevant_attachments.Values();
+  // Remove obsolete triggers.
+  for (const auto& [scope, trigger] : named_trigger_attachments_copy) {
+    // As only a single trigger is allowed per animation, we need to first
+    // remove obsolete triggers before relevant triggers can be attached.
+    if (std::any_of(
+            relevant_attachment_values.begin(),
+            relevant_attachment_values.end(),
+            [&](const std::pair<Member<AnimationTrigger>,
+                                Member<const StyleTriggerAttachment>>& pair) {
+              return pair.first == trigger;
+            })) {
+      continue;
+    }
+
+    trigger->removeAnimation(&animation);
+  }
+
+  for (const auto& [scope, trigger_attachment] : relevant_attachments) {
+    AnimationTrigger* trigger = trigger_attachment.first;
+    const StyleTriggerAttachment* attachment = trigger_attachment.second;
+
+    animation.SetNamedTriggerAttachment(scope, trigger);
+    attachment->Attach(*trigger, *scope, animation);
   }
 }
 
@@ -196,7 +223,7 @@ void DocumentAnimations::UpdateAnimations(
     document_->View()->ScheduleAnimation();
   }
 
-  UpdateCompositorAnimationTriggers();
+  UpdateCompositorAnimationTriggers(paint_artifact_compositor);
 
   document_->GetWorkletAnimationController().UpdateAnimationStates();
   document_->GetFrame()->ScheduleNextServiceForPostLayoutSnapshotClients();
@@ -295,7 +322,7 @@ void DocumentAnimations::Trace(Visitor* visitor) const {
   visitor->Trace(document_);
   visitor->Trace(timelines_);
   visitor->Trace(triggers_);
-  visitor->Trace(pending_trigger_attachment_updates_);
+  visitor->Trace(triggered_animations_);
 }
 
 void DocumentAnimations::GetAnimationsTargetingTreeScope(
@@ -379,78 +406,44 @@ void DocumentAnimations::RemoveReplacedAnimations(
 }
 
 void DocumentAnimations::UpdateAnimationTriggerAttachments() {
-  if (RuntimeEnabledFeatures::LimitTriggerAttachmentUpdatesEnabled()) {
-    ExecutePendingTriggerAttachmentUpdates();
-  } else {
-    for (const auto& timeline : timelines_) {
-      timeline->UpdateAnimationTriggerAttachments();
-    }
-  }
+  ExecuteTriggerAttachmentUpdates();
 }
 
 void DocumentAnimations::AddAnimationTrigger(AnimationTrigger& trigger) {
   triggers_.insert(&trigger);
 }
 
-void DocumentAnimations::UpdateCompositorAnimationTriggers() {
+void DocumentAnimations::UpdateCompositorAnimationTriggers(
+    const PaintArtifactCompositor* paint_artifact_compositor) {
   if (!RuntimeEnabledFeatures::AnimationTriggerEnabled() ||
       !Platform::Current()->IsThreadedAnimationEnabled()) {
     return;
   }
 
   for (AnimationTrigger* trigger : triggers_) {
-    trigger->UpdateCompositorTrigger();
+    trigger->UpdateCompositorTrigger(paint_artifact_compositor);
   }
 }
 
-void DocumentAnimations::AddPendingTriggerAttachmentUpdate(
-    CSSAnimation* animation) {
-  pending_trigger_attachment_updates_.insert(animation);
-}
+void DocumentAnimations::ExecuteTriggerAttachmentUpdates() {
+  HeapHashSet<WeakMember<CSSAnimation>> triggered_animations;
+  triggered_animations.swap(triggered_animations_);
 
-void DocumentAnimations::RemovePendingTriggerAttachmentUpdate(
-    CSSAnimation* animation) {
-  pending_trigger_attachment_updates_.erase(animation);
-}
-
-void DocumentAnimations::ExecutePendingTriggerAttachmentUpdates() {
-  // Track animations whose attachments weren't completely fulfilled.
-  HeapHashSet<WeakMember<CSSAnimation>> defer;
-
-  for (CSSAnimation* animation : pending_trigger_attachment_updates_) {
+  for (CSSAnimation* animation : triggered_animations) {
     const Member<const StyleTriggerAttachmentVector>&
         animation_trigger_attachments = animation->GetTriggerAttachments();
-    if (!animation_trigger_attachments) {
-      continue;
+    TriggerAttachmentMap relevant_attachments;
+    if (animation_trigger_attachments) {
+      AddTriggeredAnimation(animation);
+      FindRelevantTriggerAttachments(*animation, relevant_attachments);
     }
-
-    wtf_size_t expected_attachments_size =
-        animation_trigger_attachments->size();
-    HeapHashMap<WeakMember<AnimationTrigger>,
-                WeakMember<const StyleTriggerAttachment>>
-        relevant_attachments;
-
-    auto attach_function = [&](AnimationTrigger& trigger,
-                               const StyleTriggerAttachment& attachment) {
-      relevant_attachments.Set(&trigger, &attachment);
-    };
-
-    UpdateTriggerAttachment(*animation, attach_function);
-
-    for (const auto& [trigger, attachment] : relevant_attachments) {
-      attachment->Attach(*trigger, *animation);
-    }
-
-    if (expected_attachments_size != relevant_attachments.size()) {
-      // We didn't find all the triggers with the names declared in this
-      // animation's animation-trigger declaration. Queue this animation up for
-      // another attempt to find its triggers after we've run style and layout
-      // again.
-      defer.insert(animation);
-    }
+    // Add new triggers, remove obsolete ones.
+    UpdateTriggerAttachments(*animation, relevant_attachments);
   }
+}
 
-  pending_trigger_attachment_updates_.swap(defer);
+void DocumentAnimations::AddTriggeredAnimation(CSSAnimation* animation) {
+  triggered_animations_.insert(animation);
 }
 
 }  // namespace blink

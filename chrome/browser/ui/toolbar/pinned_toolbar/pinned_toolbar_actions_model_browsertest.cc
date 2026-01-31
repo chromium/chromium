@@ -144,7 +144,7 @@ IN_PROC_BROWSER_TEST_F(PinnedToolbarActionsModelBrowserTest, PinActions) {
 
   // Verify all actions ids were added to the model and that the prefs object
   // maintains insertion order.
-  const base::Value::List& list =
+  const base::ListValue& list =
       browser()->profile()->GetPrefs()->GetList(prefs::kPinnedActions);
 
   if (features::HasTabSearchToolbarButton()) {
@@ -182,7 +182,7 @@ IN_PROC_BROWSER_TEST_F(PinnedToolbarActionsModelBrowserTest, UnpinActions) {
   EXPECT_EQ(3, observer()->inserted_count());
 
   // Verify only the reading list ActionId was removed.
-  const base::Value::List& list =
+  const base::ListValue& list =
       browser()->profile()->GetPrefs()->GetList(prefs::kPinnedActions);
   if (features::HasTabSearchToolbarButton()) {
     ASSERT_EQ(4u, list.size());
@@ -220,7 +220,7 @@ IN_PROC_BROWSER_TEST_F(PinnedToolbarActionsModelBrowserTest,
 
   // Verify kActionCopy was moved to the end of the list which should be
   // index 2.
-  const base::Value::List& list_1 =
+  const base::ListValue& list_1 =
       browser()->profile()->GetPrefs()->GetList(prefs::kPinnedActions);
   if (features::HasTabSearchToolbarButton()) {
     ASSERT_EQ(5u, list_1.size());
@@ -246,7 +246,7 @@ IN_PROC_BROWSER_TEST_F(PinnedToolbarActionsModelBrowserTest,
             observer()->moved_to_index());
 
   // kActionSidePanelShowBookmarks was move to the end.
-  const base::Value::List& list_2 =
+  const base::ListValue& list_2 =
       browser()->profile()->GetPrefs()->GetList(prefs::kPinnedActions);
   if (features::HasTabSearchToolbarButton()) {
     ASSERT_EQ(5u, list_2.size());
@@ -273,7 +273,7 @@ IN_PROC_BROWSER_TEST_F(PinnedToolbarActionsModelBrowserTest,
             observer()->moved_to_index());
 
   // Verify kActionCopy was moved to index 0.
-  const base::Value::List& list_3 =
+  const base::ListValue& list_3 =
       browser()->profile()->GetPrefs()->GetList(prefs::kPinnedActions);
   if (features::HasTabSearchToolbarButton()) {
     ASSERT_EQ(5u, list_3.size());
@@ -311,7 +311,7 @@ IN_PROC_BROWSER_TEST_F(PinnedToolbarActionsModelBrowserTest,
   EXPECT_EQ(-1, observer()->moved_to_index());
 
   // Verify the action did not move.
-  const base::Value::List& list_1 =
+  const base::ListValue& list_1 =
       browser()->profile()->GetPrefs()->GetList(prefs::kPinnedActions);
   if (features::HasTabSearchToolbarButton()) {
     ASSERT_EQ(5u, list_1.size());
@@ -335,7 +335,7 @@ IN_PROC_BROWSER_TEST_F(PinnedToolbarActionsModelBrowserTest,
   EXPECT_EQ(-1, observer()->moved_to_index());
 
   // Verify the action did not move.
-  const base::Value::List& list_2 =
+  const base::ListValue& list_2 =
       browser()->profile()->GetPrefs()->GetList(prefs::kPinnedActions);
   if (features::HasTabSearchToolbarButton()) {
     ASSERT_EQ(5u, list_2.size());
@@ -369,7 +369,7 @@ IN_PROC_BROWSER_TEST_F(PinnedToolbarActionsModelBrowserTest,
   EXPECT_EQ(-1, observer()->moved_to_index());
 
   // Verify nothing changed.
-  const base::Value::List& list_1 =
+  const base::ListValue& list_1 =
       browser()->profile()->GetPrefs()->GetList(prefs::kPinnedActions);
   if (features::HasTabSearchToolbarButton()) {
     ASSERT_EQ(4u, list_1.size());
@@ -404,7 +404,7 @@ IN_PROC_BROWSER_TEST_F(PinnedToolbarActionsModelBrowserTest,
   EXPECT_EQ(-1, observer()->moved_to_index());
 
   // Verify no action moved.
-  const base::Value::List& list_1 =
+  const base::ListValue& list_1 =
       browser()->profile()->GetPrefs()->GetList(prefs::kPinnedActions);
   if (features::HasTabSearchToolbarButton()) {
     ASSERT_EQ(5u, list_1.size());

@@ -4,7 +4,8 @@
 
 #include "components/autofill/core/browser/suggestions/payments/iban_suggestion_generator.h"
 
-#include "base/containers/contains.h"
+#include <algorithm>
+
 #include "base/containers/to_vector.h"
 #include "base/functional/function_ref.h"
 #include "base/strings/string_util.h"
@@ -12,7 +13,7 @@
 #include "components/autofill/core/browser/data_manager/payments/payments_data_manager.h"
 #include "components/autofill/core/browser/integrators/optimization_guide/autofill_optimization_guide_decider.h"
 #include "components/autofill/core/browser/payments/iban_manager.h"
-#include "components/autofill/core/browser/suggestions/payments/payments_suggestion_generator.h"
+#include "components/autofill/core/browser/suggestions/payments/payments_suggestion_generator_util.h"
 #include "components/grit/components_scaled_resources.h"
 #include "ui/base/resource/resource_bundle.h"
 
@@ -175,7 +176,8 @@ void IbanSuggestionGenerator::FetchSuggestionData(
   // assume the IBAN has been filled, and don't show any suggestions.
   if (!trigger_autofill_field ||
       (!trigger_autofill_field->value().empty() &&
-       base::Contains(ibans, trigger_autofill_field->value(), &Iban::value))) {
+       std::ranges::contains(ibans, trigger_autofill_field->value(),
+                             &Iban::value))) {
     callback({SuggestionDataSource::kIban, {}});
     return;
   }

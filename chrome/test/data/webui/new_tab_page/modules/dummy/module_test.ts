@@ -41,7 +41,7 @@ suite('NewTabPageModulesDummyModuleTest', () => {
         imageUrl: 'baz.com',
       },
     ];
-    handler.setResultFor('getData', Promise.resolve({data}));
+    handler.setPromiseResolveFor('getData', {data});
     const modules = await dummyV2Descriptor.initialize(0) as HTMLElement[];
     assertEquals(12, modules.length);
     const module = modules[0]! as DummyModuleElement;
@@ -60,7 +60,7 @@ suite('NewTabPageModulesDummyModuleTest', () => {
   });
 
   test('creates module without data', async () => {
-    handler.setResultFor('getData', Promise.resolve({data: []}));
+    handler.setPromiseResolveFor('getData', {data: []});
     // Act.
     const modules = await dummyV2Descriptor.initialize(0) as HTMLElement[];
     const module = modules[0]! as DummyModuleElement;

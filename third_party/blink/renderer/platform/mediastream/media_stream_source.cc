@@ -124,13 +124,13 @@ MediaStreamSource::MediaStreamSource(
       remote_(remote),
       ready_state_(ready_state),
       platform_source_(std::move(platform_source)) {
-  SendLogMessage(
+  SendLogMessage(UNSAFE_TODO(
       String::Format(
           "MediaStreamSource({id=%s}, {type=%s}, {name=%s}, {remote=%d}, "
           "{ready_state=%s})",
           id.Utf8().c_str(), StreamTypeToString(type), name.Utf8().c_str(),
           remote, ReadyStateToString(ready_state))
-          .Utf8());
+          .Utf8()));
   if (platform_source_)
     platform_source_->SetOwner(this);
 }
@@ -143,10 +143,10 @@ void MediaStreamSource::SetGroupId(const String& group_id) {
 }
 
 void MediaStreamSource::SetReadyState(ReadyState ready_state) {
-  SendLogMessage(String::Format("SetReadyState({id=%s}, {ready_state=%s})",
-                                Id().Utf8().c_str(),
-                                ReadyStateToString(ready_state))
-                     .Utf8());
+  SendLogMessage(UNSAFE_TODO(
+      String::Format("SetReadyState({id=%s}, {ready_state=%s})",
+                     Id().Utf8().c_str(), ReadyStateToString(ready_state))
+          .Utf8()));
   if (ready_state_ != kReadyStateEnded && ready_state_ != ready_state) {
     ready_state_ = ready_state;
 
@@ -175,10 +175,11 @@ void MediaStreamSource::SetAudioProcessingProperties(
     bool noise_supression,
     bool voice_isolation) {
   SendLogMessage(
-      String::Format("%s({echo_cancellation=%s}, {auto_gain_control=%d}, "
-                     "{noise_supression=%d}, {voice_isolation=%d})",
-                     __func__, EchoCancellationModeToString(echo_cancellation),
-                     auto_gain_control, noise_supression, voice_isolation)
+      UNSAFE_TODO(String::Format(
+                      "%s({echo_cancellation=%s}, {auto_gain_control=%d}, "
+                      "{noise_supression=%d}, {voice_isolation=%d})",
+                      __func__, EchoCancellationModeToString(echo_cancellation),
+                      auto_gain_control, noise_supression, voice_isolation))
           .Utf8());
   echo_cancellation_ = echo_cancellation;
   auto_gain_control_ = auto_gain_control;

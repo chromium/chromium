@@ -16,17 +16,16 @@ import java.util.Set;
 
 /** Creates payment apps. */
 @NullMarked
-public class PaymentAppService implements PaymentAppFactoryInterface {
+public class PaymentAppService {
     /**
      * The identity of the Google Pay internal app.
-     * TODO(crbug.com/400531531): Stop special-casing individual payment apps in Chrome.
+     *
+     * <p>TODO(crbug.com/400531531): Stop special-casing individual payment apps in Chrome.
      */
     public static final String GOOGLE_PAY_INTERNAL_APP_IDENTITY = "Google_Pay_Internal";
 
-    private static final String UNTRACKED_FACTORY_ID_PREFIX = "Untracked factory - ";
     private static @Nullable PaymentAppService sInstance;
     private final Map<String, PaymentAppFactoryInterface> mFactories = new HashMap<>();
-    private int mIdMax;
 
     /** @return The singleton instance of this class. */
     public static PaymentAppService getInstance() {
@@ -38,24 +37,13 @@ public class PaymentAppService implements PaymentAppFactoryInterface {
 
     private PaymentAppService() {}
 
-    // TODO(crbug.com/40727972): Remove this method after tests and clank switch to use
-    // addUniqueFactory.
-    /**
-     * @param factory The factory to add.
-     */
-    public void addFactory(PaymentAppFactoryInterface factory) {
-        String id = UNTRACKED_FACTORY_ID_PREFIX + mIdMax++;
-        mFactories.put(id, factory);
-    }
-
     /** Resets the instance, used by //clank tests. */
     public void resetForTest() {
         sInstance = null;
     }
 
-    // PaymentAppFactoryInterface implementation.
-    @Override
-    public void create(PaymentAppFactoryDelegate delegate) {
+    /** Trigger creation of payment apps by the factories owned by this class. */
+    public void createPaymentApps(PaymentAppServiceDelegate delegate) {
         Collector collector = new Collector(new HashSet<>(mFactories.values()), delegate);
         for (PaymentAppFactoryInterface factory : mFactories.values()) {
             factory.create(/* delegate= */ collector);
@@ -77,7 +65,8 @@ public class PaymentAppService implements PaymentAppFactoryInterface {
      */
     public void addUniqueFactory(@Nullable PaymentAppFactoryInterface factory, String factoryId) {
         if (factory == null) return;
-        assert !factoryId.startsWith(UNTRACKED_FACTORY_ID_PREFIX);
+        // TODO(crbug.com/474398434): We should be able to assert that the factory does not already
+        // exist here, but too many tests (especially under batching) reuse the same factoryId.
         if (mFactories.containsKey(factoryId)) return;
         mFactories.put(factoryId, factory);
     }
@@ -86,18 +75,27 @@ public class PaymentAppService implements PaymentAppFactoryInterface {
      * Collects payment apps from multiple factories and invokes
      * delegate.onDoneCreatingPaymentApps() and delegate.onCanMakePaymentCalculated() only once.
      */
-    private final class Collector implements PaymentAppFactoryDelegate {
+    private static final class Collector implements PaymentAppFactoryDelegate {
         private final Set<PaymentAppFactoryInterface> mPendingFactories;
         private final List<PaymentApp> mPossiblyDuplicatePaymentApps = new ArrayList<>();
-        private final PaymentAppFactoryDelegate mDelegate;
+        private final PaymentAppServiceDelegate mDelegate;
 
         /** Whether at least one payment app factory has calculated canMakePayment to be true. */
         private boolean mCanMakePayment;
 
+        private boolean mHasInternalFactory;
+
         private Collector(
-                Set<PaymentAppFactoryInterface> pendingTasks, PaymentAppFactoryDelegate delegate) {
+                Set<PaymentAppFactoryInterface> pendingTasks, PaymentAppServiceDelegate delegate) {
             mPendingFactories = pendingTasks;
             mDelegate = delegate;
+
+            for (PaymentAppFactoryInterface factory : mPendingFactories) {
+                if (factory.isInternal()) {
+                    mHasInternalFactory = true;
+                    break;
+                }
+            }
         }
 
         @Override
@@ -127,11 +125,6 @@ public class PaymentAppService implements PaymentAppFactoryInterface {
         }
 
         @Override
-        public boolean prefsCanMakePayment() {
-            return mDelegate.prefsCanMakePayment();
-        }
-
-        @Override
         public void setCanMakePaymentEvenWithoutApps() {
             mDelegate.setCanMakePaymentEvenWithoutApps();
         }
@@ -141,17 +134,18 @@ public class PaymentAppService implements PaymentAppFactoryInterface {
             mPendingFactories.remove(factory);
             if (!mPendingFactories.isEmpty()) return;
 
+            // At this point all factories have created any apps that they are going to create. We
+            // can now proceed to let our delegate know we are done.
+
+            // If all payment app factories returned false for canMakePayment, then we can now let
+            // the delegate know that the answer is definitely false.
             if (!mCanMakePayment) mDelegate.onCanMakePaymentCalculated(false);
 
             Set<PaymentApp> uniquePaymentApps =
                     deduplicatePaymentApps(mPossiblyDuplicatePaymentApps);
             mPossiblyDuplicatePaymentApps.clear();
 
-            for (PaymentApp app : uniquePaymentApps) {
-                mDelegate.onPaymentAppCreated(app);
-            }
-
-            mDelegate.onDoneCreatingPaymentApps(PaymentAppService.this);
+            mDelegate.onDoneCreatingPaymentApps(new ArrayList<>(uniquePaymentApps));
         }
 
         @Override
@@ -160,23 +154,8 @@ public class PaymentAppService implements PaymentAppFactoryInterface {
         }
 
         @Override
-        public CSPChecker getCSPChecker() {
-            return mDelegate.getCSPChecker();
-        }
-
-        @Override
-        public @Nullable DialogController getDialogController() {
-            return mDelegate.getDialogController();
-        }
-
-        @Override
-        public @Nullable AndroidIntentLauncher getAndroidIntentLauncher() {
-            return mDelegate.getAndroidIntentLauncher();
-        }
-
-        @Override
-        public boolean isFullDelegationRequired() {
-            return mDelegate.isFullDelegationRequired();
+        public boolean internalPaymentAppFactoryPresent() {
+            return mHasInternalFactory;
         }
     }
 

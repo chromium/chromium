@@ -750,7 +750,7 @@ String FontDescription::ToString(
 }
 
 String FontDescription::VariantLigatures::ToString() const {
-  return String::Format(
+  return UNSAFE_TODO(String::Format(
       "common=%s, discretionary=%s, historical=%s, contextual=%s",
       FontDescription::ToString(static_cast<LigaturesState>(common))
           .Ascii()
@@ -763,7 +763,7 @@ String FontDescription::VariantLigatures::ToString() const {
           .data(),
       FontDescription::ToString(static_cast<LigaturesState>(contextual))
           .Ascii()
-          .data());
+          .data()));
 }
 
 String FontDescription::Size::ToString() const {
@@ -792,7 +792,7 @@ String FontDescription::ToString(FontVariantPosition variant_position) {
 }
 
 String FontDescription::ToString() const {
-  return String::Format(
+  return UNSAFE_TODO(String::Format(
       "family_list=[%s], feature_settings=[%s], variation_settings=[%s], "
       "locale=%s, "
       "specified_size=%f, computed_size=%f, adjusted_size=%f, "
@@ -844,7 +844,7 @@ String FontDescription::ToString() const {
       FontDescription::ToString(GetFontSynthesisStyle()).Ascii().c_str(),
       FontDescription::ToString(GetFontSynthesisSmallCaps()).Ascii().c_str(),
       FontDescription::ToString(VariantPosition()).Ascii().c_str(),
-      blink::ToString(VariantEmoji()).Ascii().c_str());
+      blink::ToString(VariantEmoji()).Ascii().c_str()));
 }
 
 }  // namespace blink

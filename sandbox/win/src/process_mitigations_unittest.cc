@@ -11,6 +11,7 @@
 #include <ntstatus.h>
 
 #include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/files/file.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/path_service.h"
@@ -532,12 +533,10 @@ SBOX_TESTS_COMMAND int CheckWin10FontLoad(int argc, wchar_t** argv) {
     return SBOX_TEST_NOT_FOUND;
   font_data.resize(len);
 
-  int read =
-      UNSAFE_TODO(file.Read(0, &font_data[0], base::checked_cast<int>(len)));
-  file.Close();
-
-  if (read != len)
+  if (!file.ReadAndCheck(0, base::as_writable_byte_span(font_data))) {
     return SBOX_TEST_NOT_FOUND;
+  }
+  file.Close();
 
   DWORD font_count = 0;
   HANDLE font_handle = ::AddFontMemResourceEx(
@@ -911,6 +910,27 @@ TEST(ProcessMitigationsTest, CheckWin10MsSignedPolicyAndDllLoadSuccess) {
 
   EXPECT_EQ(SBOX_TEST_SUCCEEDED, runner.RunTest(test_command.c_str()));
 #endif  // !defined(ADDRESS_SANITIZER) && !defined(COMPONENT_BUILD)
+}
+
+// This test validates that AllowExtraDll can be called twice on the same DLL.
+TEST(ProcessMitigationsTest, CheckWin10MsSignedPolicyMultipleLoads) {
+  if (base::win::GetVersion() < base::win::Version::WIN10_TH2) {
+    return;
+  }
+
+  base::FilePath exe_path;
+  ASSERT_TRUE(base::PathService::Get(base::DIR_EXE, &exe_path));
+  std::wstring path = exe_path.Append(hooking_dll::g_hook_dll_file).value();
+  TestRunner runner;
+  sandbox::TargetConfig* config = runner.GetPolicy()->GetConfig();
+  EXPECT_EQ(config->SetProcessMitigations(MITIGATION_FORCE_MS_SIGNED_BINS),
+            SBOX_ALL_OK);
+  EXPECT_EQ(sandbox::SBOX_ALL_OK, config->AllowExtraDll(path.c_str()));
+  TestRunner runner2;
+  config = runner2.GetPolicy()->GetConfig();
+  EXPECT_EQ(config->SetProcessMitigations(MITIGATION_FORCE_MS_SIGNED_BINS),
+            SBOX_ALL_OK);
+  EXPECT_EQ(sandbox::SBOX_ALL_OK, config->AllowExtraDll(path.c_str()));
 }
 
 //------------------------------------------------------------------------------

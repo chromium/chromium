@@ -654,7 +654,12 @@ class BLINK_EXPORT WebLocalFrameClient {
 
   // A new soft navigation was observed.
   virtual void DidObserveSoftNavigation(
-      blink::SoftNavigationMetricsForReporting metrics) {}
+      SoftNavigationMetricsForReporting metrics) {}
+
+  // A new largest contentful paint candidate relating to the most recent
+  // soft navigation was observed. Also see DidObserveSoftNavigation().
+  virtual void DidObserveSoftLargestContentfulPaint(
+      const LargestContentfulPaintDetailsForReporting& lcp) {}
 
   // Reports that visible elements in the frame shifted (bit.ly/lsm-explainer).
   virtual void DidObserveLayoutShift(double score, bool after_input_or_scroll) {

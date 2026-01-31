@@ -120,7 +120,7 @@ void GPMEnclaveTransaction::StartEnclaveTransaction(
   // `enclave_request_callback_` which surfaces in
   // `EnclaveDiscovery::OnUIRequest`.
 
-  if (!token || !enclave_manager_->is_ready()) {
+  if (!token || !enclave_manager_->IsReady()) {
     delegate_->HandleEnclaveTransactionError();
     return;
   }

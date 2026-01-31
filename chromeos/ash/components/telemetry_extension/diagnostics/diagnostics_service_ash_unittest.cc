@@ -146,7 +146,7 @@ TEST_F(DiagnosticsServiceAshTest, GetRoutineUpdateSuccess) {
     cros_healthd::FakeCrosHealthd::Get()->SetGetRoutineUpdateResponseForTesting(
         response);
 
-    base::Value::Dict expected_passed_parameters;
+    base::DictValue expected_passed_parameters;
     expected_passed_parameters.Set("id", 123456);
     expected_passed_parameters.Set(
         "command",
@@ -182,7 +182,7 @@ TEST_F(DiagnosticsServiceAshTest, GetRoutineUpdateSuccess) {
 TEST_F(DiagnosticsServiceAshTest, RunAcPowerRoutineSuccess) {
   // Configure FakeCrosHealthd.
   SetSuccessfulRoutineResponse();
-  base::Value::Dict expected_passed_parameters;
+  base::DictValue expected_passed_parameters;
   expected_passed_parameters.Set(
       "expected_status",
       static_cast<int32_t>(
@@ -236,7 +236,7 @@ TEST_F(DiagnosticsServiceAshTest, RunBatteryCapacityRoutineSuccess) {
 TEST_F(DiagnosticsServiceAshTest, RunBatteryChargeRoutineSuccess) {
   // Configure FakeCrosHealthd.
   SetSuccessfulRoutineResponse();
-  base::Value::Dict expected_passed_parameters;
+  base::DictValue expected_passed_parameters;
   expected_passed_parameters.Set("length_seconds", 423);
   expected_passed_parameters.Set("minimum_charge_percent_required", 123);
   cros_healthd::FakeCrosHealthd::Get()
@@ -259,7 +259,7 @@ TEST_F(DiagnosticsServiceAshTest, RunBatteryChargeRoutineSuccess) {
 TEST_F(DiagnosticsServiceAshTest, RunBatteryDischargeRoutineSuccess) {
   // Configure FakeCrosHealthd.
   SetSuccessfulRoutineResponse();
-  base::Value::Dict expected_passed_parameters;
+  base::DictValue expected_passed_parameters;
   expected_passed_parameters.Set("length_seconds", 423);
   expected_passed_parameters.Set("maximum_discharge_percent_allowed", 123);
   cros_healthd::FakeCrosHealthd::Get()
@@ -310,7 +310,7 @@ TEST_F(DiagnosticsServiceAshTest, RunBluetoothDiscoveryRoutine) {
 TEST_F(DiagnosticsServiceAshTest, RunBluetoothPairingRoutine) {
   // Configure FakeCrosHealthd.
   SetSuccessfulRoutineResponse();
-  base::Value::Dict expected_passed_parameters;
+  base::DictValue expected_passed_parameters;
   expected_passed_parameters.Set("peripheral_id", "HEALTHD_TEST_ID");
   cros_healthd::FakeCrosHealthd::Get()
       ->SetExpectedLastPassedDiagnosticsParametersForTesting(
@@ -344,7 +344,7 @@ TEST_F(DiagnosticsServiceAshTest, RunBluetoothPowerRoutine) {
 TEST_F(DiagnosticsServiceAshTest, RunBluetoothScanningRoutine) {
   // Configure FakeCrosHealthd.
   SetSuccessfulRoutineResponse();
-  base::Value::Dict expected_passed_parameters;
+  base::DictValue expected_passed_parameters;
   expected_passed_parameters.Set("length_seconds", 100);
   cros_healthd::FakeCrosHealthd::Get()
       ->SetExpectedLastPassedDiagnosticsParametersForTesting(
@@ -363,7 +363,7 @@ TEST_F(DiagnosticsServiceAshTest, RunBluetoothScanningRoutine) {
 TEST_F(DiagnosticsServiceAshTest, RunCpuCacheRoutineSuccess) {
   // Configure FakeCrosHealthd.
   SetSuccessfulRoutineResponse();
-  base::Value::Dict expected_passed_parameters;
+  base::DictValue expected_passed_parameters;
   expected_passed_parameters.Set("length_seconds", 100);
   cros_healthd::FakeCrosHealthd::Get()
       ->SetExpectedLastPassedDiagnosticsParametersForTesting(
@@ -384,7 +384,7 @@ TEST_F(DiagnosticsServiceAshTest, RunCpuCacheRoutineSuccess) {
 TEST_F(DiagnosticsServiceAshTest, RunCpuStressRoutineSuccess) {
   // Configure FakeCrosHealthd.
   SetSuccessfulRoutineResponse();
-  base::Value::Dict expected_passed_parameters;
+  base::DictValue expected_passed_parameters;
   expected_passed_parameters.Set("length_seconds", 100);
   cros_healthd::FakeCrosHealthd::Get()
       ->SetExpectedLastPassedDiagnosticsParametersForTesting(
@@ -405,7 +405,7 @@ TEST_F(DiagnosticsServiceAshTest, RunCpuStressRoutineSuccess) {
 TEST_F(DiagnosticsServiceAshTest, RunDiskReadRoutineSuccess) {
   // Configure FakeCrosHealthd.
   SetSuccessfulRoutineResponse();
-  base::Value::Dict expected_passed_parameters;
+  base::DictValue expected_passed_parameters;
   expected_passed_parameters.Set(
       "type",
       static_cast<int32_t>(
@@ -560,7 +560,7 @@ TEST_F(DiagnosticsServiceAshTest, RunMemoryRoutineSuccess) {
 TEST_F(DiagnosticsServiceAshTest, RunNvmeSelfTestRoutineSuccess) {
   // Configure FakeCrosHealthd.
   SetSuccessfulRoutineResponse();
-  base::Value::Dict expected_passed_parameters;
+  base::DictValue expected_passed_parameters;
   expected_passed_parameters.Set(
       "nvme_self_test_type",
       static_cast<int32_t>(
@@ -586,7 +586,7 @@ TEST_F(DiagnosticsServiceAshTest, RunNvmeSelfTestRoutineSuccess) {
 TEST_F(DiagnosticsServiceAshTest, RunPrimeSearchRoutineSuccess) {
   // Configure FakeCrosHealthd.
   SetSuccessfulRoutineResponse();
-  base::Value::Dict expected_passed_parameters;
+  base::DictValue expected_passed_parameters;
   expected_passed_parameters.Set("length_seconds", 100);
   cros_healthd::FakeCrosHealthd::Get()
       ->SetExpectedLastPassedDiagnosticsParametersForTesting(
@@ -649,7 +649,7 @@ TEST_F(DiagnosticsServiceAshTest, RunSmartctlCheckRoutineSuccess) {
 TEST_F(DiagnosticsServiceAshTest, RunSmartctlCheckRoutineWithParameterSuccess) {
   // Configure FakeCrosHealthd.
   SetSuccessfulRoutineResponse();
-  base::Value::Dict expected_passed_parameters;
+  base::DictValue expected_passed_parameters;
   expected_passed_parameters.Set("percentage_used_threshold", 42);
   cros_healthd::FakeCrosHealthd::Get()
       ->SetExpectedLastPassedDiagnosticsParametersForTesting(
@@ -686,7 +686,7 @@ TEST_F(DiagnosticsServiceAshTest, RunPowerButtonRoutineSuccess) {
   // Configure FakeCrosHealthd.
   SetSuccessfulRoutineResponse();
   constexpr uint32_t kTimeout = 10;
-  base::Value::Dict expected_passed_parameters;
+  base::DictValue expected_passed_parameters;
   expected_passed_parameters.Set("timeout_seconds",
                                  static_cast<int32_t>(kTimeout));
   cros_healthd::FakeCrosHealthd::Get()

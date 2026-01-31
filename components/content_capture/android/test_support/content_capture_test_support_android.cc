@@ -57,12 +57,12 @@ static void JNI_ContentCaptureTestSupport_SimulateDidUpdateFaviconURL(
   CHECK(root->is_list());
   std::vector<blink::mojom::FaviconURLPtr> favicon_urls;
   for (const base::Value& icon_val : root->GetList()) {
-    const base::Value::Dict& icon = icon_val.GetDict();
+    const base::DictValue& icon = icon_val.GetDict();
     std::vector<gfx::Size> sizes;
     // The sizes is optional.
-    if (const base::Value::List* icon_sizes = icon.FindList("sizes")) {
+    if (const base::ListValue* icon_sizes = icon.FindList("sizes")) {
       for (const base::Value& size_val : CHECK_DEREF(icon_sizes)) {
-        const base::Value::Dict& size = size_val.GetDict();
+        const base::DictValue& size = size_val.GetDict();
 
         const std::optional<int> width = size.FindInt("width");
         const std::optional<int> height = size.FindInt("height");

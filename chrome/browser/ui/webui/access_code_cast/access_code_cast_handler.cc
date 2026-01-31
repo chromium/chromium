@@ -7,7 +7,6 @@
 #include <algorithm>
 #include <numeric>
 
-#include "base/containers/contains.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/rand_util.h"
 #include "base/strings/string_number_conversions.h"
@@ -202,7 +201,7 @@ void AccessCodeCastHandler::AddSink(
 }
 
 bool AccessCodeCastHandler::IsCastModeAvailable(MediaCastMode mode) const {
-  return base::Contains(cast_mode_set_, mode);
+  return cast_mode_set_.contains(mode);
 }
 
 // Discovery is not complete until the sink is in QRM. This is because any
@@ -383,8 +382,8 @@ void AccessCodeCastHandler::OnRouteResponse(MediaCastMode cast_mode,
 
 bool AccessCodeCastHandler::HasActiveRoute(const MediaSink::Id& sink_id) {
   return GetMediaRouter() &&
-         base::Contains(GetMediaRouter()->GetCurrentRoutes(), sink_id,
-                        &MediaRoute::media_sink_id);
+         std::ranges::contains(GetMediaRouter()->GetCurrentRoutes(), sink_id,
+                               &MediaRoute::media_sink_id);
 }
 
 void AccessCodeCastHandler::SetIdentityManagerForTesting(

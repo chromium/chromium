@@ -21,6 +21,9 @@
 #       For "gn analyze" to be correct with this arg disabled, all inputs
 #       must be listed via |inputs|.
 #
+#   gritdeps (optional)
+#       A file containing a list of dependencies for the grit action.
+#
 #   inputs  (optional)
 #       List of additional files, required for grit to process source file.
 #
@@ -90,6 +93,7 @@
 import("//build/config/compiler/compiler.gni")
 import("//build/config/compute_inputs_for_analyze.gni")
 import("//build/config/locales.gni")
+import("//build/config/python.gni")
 import("//build/config/sanitizers/sanitizers.gni")
 import("//build/toolchain/gcc_toolchain.gni")
 import("//tools/grit/grit_args.gni")
@@ -153,7 +157,7 @@ template("grit") {
   }
 
   _grit_custom_target = target_name + "_grit"
-  action(_grit_custom_target) {
+  action_with_pydeps(_grit_custom_target) {
     script = "//tools/grit/grit.py"
     inputs = [ invoker.source ]
 
@@ -161,7 +165,7 @@ template("grit") {
 
     depfile = "$target_gen_dir/$target_name.d"
 
-    deps = [ "//tools/grit:grit_sources" ]
+    deps = []
     outputs = [ "${depfile}.stamp" ] + _grit_outputs + _pak_info_outputs
 
     _grit_flags = grit_args
@@ -319,6 +323,11 @@ template("grit") {
     }
     if (defined(invoker.inputs)) {
       inputs += invoker.inputs
+    }
+    if (defined(invoker.gritdeps)) {
+      _gritdeps_lines = read_file(invoker.gritdeps, "list lines")
+      _gritdeps_entries = filter_exclude(_gritdeps_lines, [ "#*" ])
+      inputs += rebase_path(_gritdeps_entries, ".", "//")
     }
   }
 

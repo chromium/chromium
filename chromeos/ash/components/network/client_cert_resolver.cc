@@ -488,7 +488,7 @@ bool ClientCertResolver::IsAnyResolveTaskRunning() const {
 bool ClientCertResolver::ResolveClientCertificateSync(
     const client_cert::ConfigType client_cert_type,
     const client_cert::ClientCertConfig& client_cert_config,
-    base::Value::Dict* shill_properties) {
+    base::DictValue* shill_properties) {
   if (!ShouldResolveCert(client_cert_config))
     return false;
 
@@ -653,7 +653,7 @@ void ClientCertResolver::ResolveNetworks(
     // pattern there is already replaced with a certificate (or an empty value).
     // The kOriginal policy cannot be used here because it still contains the
     // unexpanded placeholders.
-    const base::Value::Dict* policy =
+    const base::DictValue* policy =
         managed_network_config_handler_->FindPolicyByGuidAndProfile(
             network->guid(), network->profile_path(),
             ManagedNetworkConfigurationHandler::PolicyType::

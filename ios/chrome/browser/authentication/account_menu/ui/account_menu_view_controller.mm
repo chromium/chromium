@@ -17,10 +17,10 @@
 #import "ios/chrome/browser/authentication/account_menu/ui/account_menu_data_source.h"
 #import "ios/chrome/browser/authentication/account_menu/ui/account_menu_mutator.h"
 #import "ios/chrome/browser/authentication/ui_bundled/cells/central_account_view.h"
-#import "ios/chrome/browser/authentication/ui_bundled/cells/table_view_account_item.h"
 #import "ios/chrome/browser/keyboard/ui_bundled/UIKeyCommand+Chrome.h"
 #import "ios/chrome/browser/policy/model/management_state.h"
 #import "ios/chrome/browser/settings/model/sync/utils/account_error_ui_info.h"
+#import "ios/chrome/browser/shared/model/profile/features.h"
 #import "ios/chrome/browser/shared/ui/list_model/list_model.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_text_item.h"
@@ -29,6 +29,7 @@
 #import "ios/chrome/browser/shared/ui/table_view/table_view_utils.h"
 #import "ios/chrome/browser/signin/model/constants.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
+#import "ios/chrome/common/ui/table_view/table_view_cells_constants.h"
 #import "ios/chrome/common/ui/util/image_util.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util.h"
@@ -42,6 +43,9 @@ const CGFloat kButtonImageSize = 18;
 
 // Size of the symbols.
 constexpr CGFloat kErrorSymbolSize = 22.;
+
+// Point size of enterprise icon.
+constexpr CGFloat kEnterpriseIconPointSize = 20;
 
 // The height of the footer of sections, except for last section.
 constexpr CGFloat kFooterHeight = 16.;
@@ -142,7 +146,6 @@ NSString* const kCustomExpandedDetentIdentifier = @"customExpandedDetent";
   tableView.accessibilityIdentifier = kAccountMenuTableViewId;
   tableView.backgroundColor =
       [UIColor colorNamed:kGroupedPrimaryBackgroundColor];
-  RegisterTableViewCell<TableViewAccountCell>(tableView);
   [TableViewCellContentConfiguration registerCellForTableView:tableView];
   [self setUpTopButtons];
   [self setUpTableContent];
@@ -166,12 +169,12 @@ NSString* const kCustomExpandedDetentIdentifier = @"customExpandedDetent";
 #pragma mark - Private
 
 // Sets the activity indicator.
-- (void)setActivityIndicator:(TableViewAccountCell*)cell {
+- (void)setActivityIndicator:(UITableViewCell*)cell {
   UIActivityIndicatorView* activityIndicatorView =
       [[UIActivityIndicatorView alloc] init];
   activityIndicatorView.translatesAutoresizingMaskIntoConstraints = NO;
   activityIndicatorView.color = [UIColor colorNamed:kTextSecondaryColor];
-  [cell setStatusView:activityIndicatorView];
+  [cell setAccessoryView:activityIndicatorView];
   [activityIndicatorView startAnimating];
 }
 
@@ -403,42 +406,66 @@ NSString* const kCustomExpandedDetentIdentifier = @"customExpandedDetent";
 - (UITableViewCell*)cellForTableView:(UITableView*)tableView
                               gaiaID:(const GaiaId&)gaiaID
                            indexPath:(NSIndexPath*)indexPath {
-  // `itemIdentifier` is a gaia id.
-  TableViewAccountCell* cell =
-      DequeueTableViewCell<TableViewAccountCell>(tableView);
-  cell.accessibilityTraits = UIAccessibilityTraitButton;
-
-  cell.imageView.image = [self.dataSource imageForGaiaID:gaiaID];
-  cell.textLabel.text = [self.dataSource nameForGaiaID:gaiaID];
-  NSString* name = [self.dataSource nameForGaiaID:gaiaID];
   NSString* email = [self.dataSource emailForGaiaID:gaiaID];
-  cell.detailTextLabel.text = email;
-  cell.detailTextLabel.textColor = [UIColor colorNamed:kTextSecondaryColor];
   BOOL isGaiaIDManaged = [self.dataSource isGaiaIDManaged:gaiaID];
+
+  TableViewCellContentConfiguration* configuration =
+      [[TableViewCellContentConfiguration alloc] init];
+  configuration.title = [self.dataSource nameForGaiaID:gaiaID];
+  configuration.titleNumberOfLines = 1;
+  configuration.titleLineBreakMode = NSLineBreakByTruncatingTail;
+  configuration.subtitle = email;
+  configuration.subtitleNumberOfLines = 1;
+  configuration.subtitleLineBreakMode = NSLineBreakByTruncatingTail;
+
+  ImageContentConfiguration* imageConfiguration =
+      [[ImageContentConfiguration alloc] init];
+  imageConfiguration.image = [self.dataSource imageForGaiaID:gaiaID];
+  imageConfiguration.imageSize =
+      CGSizeMake(kTableViewIconImageSize, kTableViewIconImageSize);
+  imageConfiguration.imageCornerRadius = kTableViewIconImageSize / 2.0;
+
+  configuration.leadingConfiguration = imageConfiguration;
+
+  if (isGaiaIDManaged && AreSeparateProfilesForManagedAccountsEnabled()) {
+    ImageContentConfiguration* trailingImageConfiguration =
+        [[ImageContentConfiguration alloc] init];
+    trailingImageConfiguration.image = SymbolWithPalette(
+        CustomSymbolWithPointSize(kEnterpriseSymbol, kEnterpriseIconPointSize),
+        @[ [UIColor colorNamed:kStaticGrey600Color] ]);
+    configuration.trailingConfiguration = trailingImageConfiguration;
+  }
+
+  UITableViewCell* cell =
+      [TableViewCellContentConfiguration dequeueTableViewCell:tableView];
+
+  NSString* name = [self.dataSource nameForGaiaID:gaiaID];
   if (name) {
-    cell.accessibilityLabel = l10n_util::GetNSStringF(
+    configuration.customAccessibilityLabel = l10n_util::GetNSStringF(
         isGaiaIDManaged
             ? IDS_IOS_OPTIONS_ACCOUNTS_SIGNIN_WITH_NAME_MANAGED_ACCESSIBILITY_LABEL
             : IDS_IOS_OPTIONS_ACCOUNTS_SIGNIN_WITH_NAME_ACCESSIBILITY_LABEL,
         base::SysNSStringToUTF16(name), base::SysNSStringToUTF16(email));
   } else {
-    cell.accessibilityLabel = l10n_util::GetNSStringF(
+    configuration.customAccessibilityLabel = l10n_util::GetNSStringF(
         isGaiaIDManaged
             ? IDS_IOS_OPTIONS_ACCOUNTS_SIGNIN_MANAGED_ACCESSIBILITY_LABEL
             : IDS_IOS_OPTIONS_ACCOUNTS_SIGNIN_ACCESSIBILITY_LABEL,
         base::SysNSStringToUTF16(email));
   }
-  cell.userInteractionEnabled = YES;
-  cell.accessibilityIdentifier = kAccountMenuSecondaryAccountButtonId;
-  // Set the enterprise icon. This may be replaced by the activity indicator
-  // when needed.
-  [cell showManagementIcon:isGaiaIDManaged];
+
+  cell.contentConfiguration = configuration;
 
   if ([indexPath isEqual:_selectedIndexPath]) {
     // In theory, this can occur if, during the account switch process, the
     // user scrolls a lot, and scroll back.
     [self setActivityIndicator:cell];
   }
+
+  cell.accessibilityTraits = UIAccessibilityTraitButton;
+
+  cell.accessibilityIdentifier = kAccountMenuSecondaryAccountButtonId;
+
   return cell;
 }
 
@@ -652,9 +679,8 @@ NSString* const kCustomExpandedDetentIdentifier = @"customExpandedDetent";
 
 - (void)switchingStarted {
   CHECK(_selectedIndexPath);
-  TableViewAccountCell* cell =
-      base::apple::ObjCCastStrict<TableViewAccountCell>(
-          [self.tableView cellForRowAtIndexPath:_selectedIndexPath]);
+  UITableViewCell* cell =
+      [self.tableView cellForRowAtIndexPath:_selectedIndexPath];
   [self setActivityIndicator:cell];
   self.modalInPresentation = YES;
   _ellipsisButton.enabled = NO;
@@ -664,10 +690,9 @@ NSString* const kCustomExpandedDetentIdentifier = @"customExpandedDetent";
   if (!_selectedIndexPath) {
     return;
   }
-  TableViewAccountCell* cell =
-      base::apple::ObjCCastStrict<TableViewAccountCell>(
-          [self.tableView cellForRowAtIndexPath:_selectedIndexPath]);
-  [cell setStatusView:nil];
+  UITableViewCell* cell =
+      [self.tableView cellForRowAtIndexPath:_selectedIndexPath];
+  [cell setAccessoryView:nil];
   [self.tableView deselectRowAtIndexPath:_selectedIndexPath animated:YES];
   _selectedIndexPath = nil;
   self.modalInPresentation = NO;

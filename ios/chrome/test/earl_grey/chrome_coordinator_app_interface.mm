@@ -10,6 +10,7 @@
 #import "components/language/ios/browser/ios_language_detection_tab_helper.h"
 #import "components/prefs/pref_service.h"
 #import "ios/chrome/browser/autocomplete/model/autocomplete_browser_agent.h"
+#import "ios/chrome/browser/bookmarks/ui_bundled/home/bookmarks_coordinator.h"
 #import "ios/chrome/browser/browser_view/model/browser_view_visibility_notifier_browser_agent.h"
 #import "ios/chrome/browser/discover_feed/model/discover_feed_visibility_browser_agent.h"
 #import "ios/chrome/browser/history/ui_bundled/history_coordinator.h"
@@ -19,9 +20,12 @@
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_component_factory.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_coordinator.h"
 #import "ios/chrome/browser/omnibox/eg_tests/inttest/omnibox_inttest_coordinator.h"
-#import "ios/chrome/browser/popup_menu/ui_bundled/popup_menu_coordinator.h"
+#import "ios/chrome/browser/passwords/password_suggestion/coordinator/password_suggestion_coordinator.h"
+#import "ios/chrome/browser/popup_menu/coordinator/popup_menu_coordinator.h"
 #import "ios/chrome/browser/qr_scanner/coordinator/qr_scanner_legacy_coordinator.h"
 #import "ios/chrome/browser/reading_list/ui_bundled/reading_list_coordinator.h"
+#import "ios/chrome/browser/settings/ui_bundled/privacy/privacy_safe_browsing_coordinator.h"
+#import "ios/chrome/browser/settings/ui_bundled/settings_navigation_controller.h"
 #import "ios/chrome/browser/shared/coordinator/chrome_coordinator/chrome_coordinator.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
@@ -76,7 +80,7 @@
 
 // Dismisses the root view controller, stops the coordinator, and clears the
 // browser.
-- (void)reset;
+- (void)resetWithCompletion:(ProceduralBlock)completion;
 
 @end
 
@@ -95,15 +99,19 @@
   static dispatch_once_t onceToken;
   dispatch_once(&onceToken, ^{
     instance = [[ChromeCoordinatorAppInterfaceHelper alloc] init];
-    [instance reset];
+    [instance resetWithCompletion:nil];
   });
   return instance;
 }
 
-- (void)reset {
+- (void)resetWithCompletion:(ProceduralBlock)completion {
   [_rootViewController.presentingViewController
       dismissViewControllerAnimated:NO
-                         completion:nil];
+                         completion:^{
+                           if (completion) {
+                             completion();
+                           }
+                         }];
   _rootViewController = nil;
   _mockObject = nil;
   _browser.reset();
@@ -211,10 +219,14 @@
   self.helper.coordinator = nil;
 }
 
-+ (void)reset {
++ (void)resetWithCompletion:(ProceduralBlock)completion {
   chrome_test_util::SetMainBrowserOverride(nullptr);
   [self stopCoordinator];
-  [self.helper reset];
+  [self.helper resetWithCompletion:completion];
+}
+
++ (void)reset {
+  [ChromeCoordinatorAppInterface resetWithCompletion:nil];
 }
 
 #pragma mark - Properties
@@ -313,6 +325,26 @@
   [self.helper.coordinator start];
 }
 
++ (void)startPrivacySafeBrowsingCoordinator {
+  // Setup & display the `SettingsNavigationController`.
+  Browser* browser = self.helper.browser;
+  DiscoverFeedVisibilityBrowserAgent::CreateForBrowser(browser);
+  SettingsNavigationController* navigationController =
+      [SettingsNavigationController mainSettingsControllerForBrowser:browser
+                                                            delegate:nil
+                                            hasDefaultBrowserBlueDot:false];
+  [[self rootViewController] presentViewController:navigationController
+                                          animated:false
+                                        completion:nil];
+
+  PrivacySafeBrowsingCoordinator* coordinator =
+      [[PrivacySafeBrowsingCoordinator alloc]
+          initWithBaseNavigationController:navigationController
+                                   browser:browser];
+  self.helper.coordinator = coordinator;
+  [self.helper.coordinator start];
+}
+
 + (void)startOmniboxCoordinator {
   AutocompleteBrowserAgent::CreateForBrowser(self.helper.browser);
   OmniboxInttestCoordinator* coordinator = [[OmniboxInttestCoordinator alloc]
@@ -350,6 +382,35 @@
   self.helper.coordinator = [[ReadingListCoordinator alloc]
       initWithBaseViewController:[self rootViewController]
                          browser:self.helper.browser];
+  [self.helper.coordinator start];
+}
+
++ (void)startBookmarksCoordinator {
+  BookmarksCoordinator* coordinator =
+      [[BookmarksCoordinator alloc] initWithBrowser:self.helper.browser];
+  coordinator.baseViewController = [self rootViewController];
+  self.helper.coordinator = coordinator;
+  [self.helper.coordinator start];
+  [coordinator presentBookmarks];
+}
+
++ (void)startPasswordSuggestionCoordinator {
+  NSString* testPasswordSuggestion = @"TestSuggestion123!";
+  base::WeakPtr<web::WebFrame> nullWebFrame;
+  void (^testDecisionHandler)(BOOL) = ^(BOOL accept) {
+  };
+  BOOL isProactive = YES;
+
+  PasswordSuggestionCoordinator* coordinator =
+      [[PasswordSuggestionCoordinator alloc]
+          initWithBaseViewController:[self rootViewController]
+                             browser:self.helper.browser
+                  passwordSuggestion:testPasswordSuggestion
+                               frame:nullWebFrame
+                     decisionHandler:testDecisionHandler
+                           proactive:isProactive];
+
+  self.helper.coordinator = coordinator;
   [self.helper.coordinator start];
 }
 

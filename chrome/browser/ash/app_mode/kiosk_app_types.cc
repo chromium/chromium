@@ -89,4 +89,27 @@ bool operator==(const KioskAppId& first, const KioskAppId& second) {
          (first.account_id == second.account_id);
 }
 
+KioskAppInstallParams::KioskAppInstallParams(std::string id,
+                                             std::string crx_file_location,
+                                             std::string version,
+                                             bool is_store_app)
+    : id(std::move(id)),
+      crx_file_location(std::move(crx_file_location)),
+      version(std::move(version)),
+      is_store_app(is_store_app) {}
+
+KioskAppInstallParams::KioskAppInstallParams(
+    const KioskAppInstallParams& other) = default;
+
+KioskAppInstallParams::KioskAppInstallParams(
+    KioskAppInstallParams&& other) noexcept = default;
+
+KioskAppInstallParams& KioskAppInstallParams::operator=(
+    const KioskAppInstallParams& other) = default;
+
+KioskAppInstallParams& KioskAppInstallParams::operator=(
+    KioskAppInstallParams&& other) noexcept = default;
+
+KioskAppInstallParams::~KioskAppInstallParams() = default;
+
 }  // namespace ash

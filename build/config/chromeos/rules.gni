@@ -526,7 +526,7 @@ template("tast_test") {
   }
 
   _data_deps = [
-    "//:chromiumos_preflight",  # Builds the browser.
+    "//:chromiumos_preflight_minimal",  # Builds the browser.
     "//chromeos:cros_chrome_deploy",  # Adds additional browser run-time deps.
 
     # Tools used to symbolize Chrome crash dumps.

@@ -1,0 +1,69 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//ui/webui/resources/tools/build_webui.gni")
+
+assert(!is_android)
+
+build_webui("build") {
+  grd_prefix = "webui_toolbar"
+
+  static_files = [
+    "webui_toolbar.html",
+    "webui_toolbar.css",
+  ]
+
+  ts_files = [
+    "browser_proxy.ts",
+    "metrics_recorder.ts",
+    "reload_button.html.ts",
+    "reload_button.ts",
+    "app.ts",
+    "app.html.ts",
+  ]
+  css_files = [
+    "reload_button.css",
+    "app.css",
+  ]
+
+  webui_context_type = "trusted"
+  optimize = optimize_webui
+  if (optimize) {
+    optimize_webui_host = "webui-toolbar.top-chrome"
+    optimize_webui_in_files = [
+      "app.js",
+      "reload_button.js",
+    ]
+    optimize_webui_external_paths =
+        [ "chrome://webui-toolbar.top-chrome|" +
+          rebase_path(
+              "$root_gen_dir/chrome/browser/resources/webui_toolbar/tsc",
+              root_build_dir) ]
+  }
+
+  ts_definitions = [
+    "//tools/typescript/definitions/chrome_send.d.ts",
+    "//tools/typescript/definitions/chrome_timeticks.d.ts",
+    "//tools/typescript/definitions/metrics_private.d.ts",
+    "//tools/typescript/definitions/pending.d.ts",
+  ]
+
+  ts_deps = [
+    "//third_party/lit/v3_0:build_ts",
+    "//ui/webui/resources/cr_components/color_change_listener:build_ts",
+    "//ui/webui/resources/cr_elements:build_ts",
+    "//ui/webui/resources/js:build_ts",
+    "//ui/webui/resources/mojo:build_ts",
+  ]
+
+  mojo_files_deps = [
+    "//components/browser_apis/browser_controls:mojom_data_model_ts__generator",
+    "//components/browser_apis/browser_controls:mojom_ts__generator",
+  ]
+
+  mojo_files = [
+    "$root_gen_dir/components/browser_apis/browser_controls/browser_controls_api.mojom-webui.ts",
+    "$root_gen_dir/components/browser_apis/browser_controls/browser_controls_api_data_model.mojom-webui.ts",
+  ]
+}

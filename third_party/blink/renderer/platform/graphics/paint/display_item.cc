@@ -185,6 +185,7 @@ String DisplayItem::TypeAsDebugString(Type type) {
     DEBUG_STRING_CASE(HitTest);
     DEBUG_STRING_CASE(WebPluginHitTest);
     DEBUG_STRING_CASE(RegionCapture);
+    DEBUG_STRING_CASE(TrackedElement);
     DEBUG_STRING_CASE(ScrollHitTest);
     DEBUG_STRING_CASE(ResizerScrollHitTest);
     DEBUG_STRING_CASE(ScrollbarHitTest);
@@ -242,7 +243,7 @@ void DisplayItem::PropertiesAsJSON(JSONObject& json,
 String DisplayItem::Id::ToString() const {
 #if DCHECK_IS_ON()
   return String::Format("%p:%s:%d", reinterpret_cast<void*>(client_id),
-                        DisplayItem::TypeAsDebugString(type).Utf8().data(),
+                        DisplayItem::TypeAsDebugString(type).Utf8().c_str(),
                         fragment);
 #else
   return String::Format("%p:%d:%d", reinterpret_cast<void*>(client_id),

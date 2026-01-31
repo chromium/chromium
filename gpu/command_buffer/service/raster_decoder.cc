@@ -1140,8 +1140,7 @@ gl::GLSurface* RasterDecoderImpl::GetGLSurface() {
 Capabilities RasterDecoderImpl::GetCapabilities() {
   // TODO(enne): reconcile this with gles2_cmd_decoder's capability settings.
   Capabilities caps;
-  caps.gpu_memory_buffer_formats =
-      feature_info()->feature_flags().gpu_memory_buffer_formats;
+  caps.mappable_formats = feature_info()->feature_flags().mappable_formats;
   caps.texture_format_bgra8888 =
       feature_info()->feature_flags().ext_texture_format_bgra8888;
   caps.texture_rg = feature_info()->feature_flags().ext_texture_rg;
@@ -1232,7 +1231,7 @@ Capabilities RasterDecoderImpl::GetCapabilities() {
                                           caps.drm_formats_and_modifiers);
   }
 #endif  // BUILDFLAG(ENABLE_VULKAN)
-#if BUILDFLAG(SKIA_USE_DAWN)
+#if BUILDFLAG(SKIA_USE_DAWN) && BUILDFLAG(IS_CHROMEOS)
   else if (shared_context_state_->IsGraphiteDawnVulkan()) {
     auto adapter = shared_context_state_->dawn_context_provider()
                        ->GetDevice()

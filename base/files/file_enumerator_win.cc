@@ -127,7 +127,7 @@ FileEnumerator::FileInfo FileEnumerator::GetInfo() const {
   DCHECK(!(file_type_ & FileType::NAMES_ONLY));
   CHECK(has_find_data_);
   FileInfo ret;
-  UNSAFE_TODO(memcpy(&ret.find_data_, &find_data_, sizeof(find_data_)));
+  ret.find_data_ = find_data_;
   return ret;
 }
 

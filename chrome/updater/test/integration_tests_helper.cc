@@ -182,11 +182,11 @@ base::RepeatingCallback<bool(Args...)> WithSwitch(
       }));
 }
 
-// Overload for base::Value::Dict switches.
+// Overload for base::DictValue switches.
 template <typename... Args>
 base::RepeatingCallback<bool(Args...)> WithSwitch(
     const std::string& flag,
-    base::RepeatingCallback<bool(const base::Value::Dict&, Args...)> callback) {
+    base::RepeatingCallback<bool(const base::DictValue&, Args...)> callback) {
   return WithSwitch(
       flag,
       base::BindLambdaForTesting([=](const std::string& flag, Args... args) {
@@ -195,11 +195,11 @@ base::RepeatingCallback<bool(Args...)> WithSwitch(
       }));
 }
 
-// Overload for base::Value::List switches.
+// Overload for base::ListValue switches.
 template <typename... Args>
 base::RepeatingCallback<bool(Args...)> WithSwitch(
     const std::string& flag,
-    base::RepeatingCallback<bool(const base::Value::List&, Args...)> callback) {
+    base::RepeatingCallback<bool(const base::ListValue&, Args...)> callback) {
   return WithSwitch(
       flag,
       base::BindLambdaForTesting([=](const std::string& flag, Args... args) {
@@ -312,301 +312,284 @@ class AppTestHelper : public App {
 };
 
 void AppTestHelper::FirstTaskRun() {
-  std::map<std::string,
-           base::RepeatingCallback<bool(base::OnceCallback<void(int)>)>>
-      commands = {
-          // To add additional commands, first Wrap a pointer to the target
-          // function (which should be declared in integration_tests_impl.h),
-          // and then use the With* helper functions to provide its arguments.
-          {"clean", WithSystemScope(Wrap(&Clean))},
-          {"enter_test_mode",
-           WithEventLoggingPermissionProviderSwitch(
-               WithSwitch(
-                   "ceca_connection_timeout",
-                   WithSwitch(
-                       "server_keep_alive_time",
-                       WithSwitch(
-                           "idle_timeout",
-                           WithSwitch(
-                                "event_logging_url",
-                                WithSwitch(
-                                    "app_logo_url",
-                                    WithSwitch(
-                                        "crash_upload_url",
-                                        WithSwitch("update_url",
-                                                   Wrap(
-                                                       &EnterTestMode)))))))))},
-          {"exit_test_mode", WithSystemScope(Wrap(&ExitTestMode))},
-          {"set_dict_policies", WithSwitch("values", Wrap(&SetDictPolicies))},
-          {"set_platform_policies",
-           WithSwitch("values", Wrap(&SetPlatformPolicies))},
-          {"set_machine_managed",
-           WithSwitch("managed", Wrap(&SetMachineManaged))},
-          {"fill_log", WithSystemScope(Wrap(&FillLog))},
-          {"expect_log_rotated", WithSystemScope(Wrap(&ExpectLogRotated))},
-          {"expect_registered",
-           WithSwitch("app_id", WithSystemScope(Wrap(&ExpectRegistered)))},
-          {"expect_not_registered",
-           WithSwitch("app_id", WithSystemScope(Wrap(&ExpectNotRegistered)))},
-          {"expect_app_tag",
-           WithSwitch("tag", WithSwitch("app_id",
-                                        WithSystemScope(Wrap(&ExpectAppTag))))},
-          {"set_app_tag",
-           WithSwitch("tag",
-                      WithSwitch("app_id", WithSystemScope(Wrap(&SetAppTag))))},
-          {"expect_app_version",
+  std::map<std::string, base::RepeatingCallback<bool(base::OnceCallback<void(int)>)>> commands = {
+      // To add additional commands, first Wrap a pointer to the target
+      // function (which should be declared in integration_tests_impl.h),
+      // and then use the With* helper functions to provide its arguments.
+      {"clean", WithSystemScope(Wrap(&Clean))},
+      {"enter_test_mode",
+       WithEventLoggingPermissionProviderSwitch(WithSwitch(
+           "ceca_connection_timeout",
            WithSwitch(
-               "app_version",
-               WithSwitch("app_id", WithSystemScope(Wrap(&ExpectAppVersion))))},
-          {"expect_candidate_uninstalled",
-           WithSystemScope(Wrap(&ExpectCandidateUninstalled))},
-          {"expect_clean", WithSystemScope(Wrap(&ExpectClean))},
-          {"expect_installed", WithSystemScope(Wrap(&ExpectInstalled))},
+               "server_keep_alive_time",
+               WithSwitch(
+                   "idle_timeout",
+                   WithSwitch(
+                       "event_logging_url",
+                       WithSwitch(
+                           "app_logo_url",
+                           WithSwitch("crash_upload_url",
+                                      WithSwitch("update_url",
+                                                 Wrap(&EnterTestMode)))))))))},
+      {"exit_test_mode", WithSystemScope(Wrap(&ExitTestMode))},
+      {"set_dict_policies", WithSwitch("values", Wrap(&SetDictPolicies))},
+      {"set_platform_policies",
+       WithSwitch("values", Wrap(&SetPlatformPolicies))},
+      {"set_machine_managed", WithSwitch("managed", Wrap(&SetMachineManaged))},
+      {"fill_log", WithSystemScope(Wrap(&FillLog))},
+      {"expect_log_rotated", WithSystemScope(Wrap(&ExpectLogRotated))},
+      {"expect_registered",
+       WithSwitch("app_id", WithSystemScope(Wrap(&ExpectRegistered)))},
+      {"expect_not_registered",
+       WithSwitch("app_id", WithSystemScope(Wrap(&ExpectNotRegistered)))},
+      {"expect_app_tag",
+       WithSwitch("tag",
+                  WithSwitch("app_id", WithSystemScope(Wrap(&ExpectAppTag))))},
+      {"set_app_tag",
+       WithSwitch("tag",
+                  WithSwitch("app_id", WithSystemScope(Wrap(&SetAppTag))))},
+      {"expect_app_version",
+       WithSwitch(
+           "app_version",
+           WithSwitch("app_id", WithSystemScope(Wrap(&ExpectAppVersion))))},
+      {"expect_candidate_uninstalled",
+       WithSystemScope(Wrap(&ExpectCandidateUninstalled))},
+      {"expect_clean", WithSystemScope(Wrap(&ExpectClean))},
+      {"expect_installed", WithSystemScope(Wrap(&ExpectInstalled))},
 #if BUILDFLAG(IS_WIN)
-          {"expect_interfaces_registered",
-           WithSystemScope(Wrap(&ExpectInterfacesRegistered))},
-          {"expect_marshal_interface_succeeds",
-           WithSystemScope(Wrap(&ExpectMarshalInterfaceSucceeds))},
-          {"expect_legacy_update3web_succeeds",
+      {"expect_interfaces_registered",
+       WithSystemScope(Wrap(&ExpectInterfacesRegistered))},
+      {"expect_marshal_interface_succeeds",
+       WithSystemScope(Wrap(&ExpectMarshalInterfaceSucceeds))},
+      {"expect_legacy_update3web_succeeds",
+       WithSwitch(
+           "cancel_when_downloading",
            WithSwitch(
-               "cancel_when_downloading",
+               "expected_error_code",
                WithSwitch(
-                   "expected_error_code",
+                   "expected_final_state",
                    WithSwitch(
-                       "expected_final_state",
-                       WithSwitch(
-                           "app_bundle_web_create_mode",
-                           WithSwitch(
-                               "app_id",
-                               WithSystemScope(
-                                   Wrap(&ExpectLegacyUpdate3WebSucceeds)))))))},
-          {"expect_legacy_process_launcher_succeeds",
-           WithSystemScope(Wrap(&ExpectLegacyProcessLauncherSucceeds))},
-          {"expect_process_launcher_launch_cmd_line_succeeds",
-           WithSystemScope(Wrap(&ExpectProcessLauncherLaunchCmdLineSucceeds))},
-          {"expect_legacy_app_command_web_succeeds",
-           WithSwitch(
-               "expected_exit_code",
-               WithSwitch(
-                   "parameters",
-                   WithSwitch(
-                       "command_id",
+                       "app_bundle_web_create_mode",
                        WithSwitch("app_id",
                                   WithSystemScope(Wrap(
-                                      &ExpectLegacyAppCommandWebSucceeds))))))},
-          {"expect_legacy_policy_status_succeeds",
+                                      &ExpectLegacyUpdate3WebSucceeds)))))))},
+      {"expect_legacy_process_launcher_succeeds",
+       WithSystemScope(Wrap(&ExpectLegacyProcessLauncherSucceeds))},
+      {"expect_process_launcher_launch_cmd_line_succeeds",
+       WithSystemScope(Wrap(&ExpectProcessLauncherLaunchCmdLineSucceeds))},
+      {"expect_legacy_app_command_web_succeeds",
+       WithSwitch(
+           "expected_exit_code",
            WithSwitch(
-               "updater_version",
-               WithSystemScope(Wrap(&ExpectLegacyPolicyStatusSucceeds)))},
-          {"legacy_install_app",
-           WithSwitch(
-               "app_version",
-               WithSwitch("app_id", WithSystemScope(Wrap(&LegacyInstallApp))))},
-          {"run_uninstall_cmd_line",
-           WithSystemScope(Wrap(&RunUninstallCmdLine))},
-          {"run_handoff",
-           WithSwitch("app_id", WithSystemScope(Wrap(&RunHandoff)))},
-          {"install_scheduled_task",
-           WithSwitch("use_task_subfolders",
-                      WithSwitch("task_name",
-                                 Wrap(&InstallScheduledTask)))},
-          {"is_scheduled_task_registered",
-           WithSwitch("use_task_subfolders",
-                      WithSwitch("task_name",
-                                 Wrap(&IsScheduledTaskRegistered)))},
-          {"delete_scheduled_task",
-           WithSwitch("use_task_subfolders",
-                      WithSwitch("task_name",
-                                 Wrap(&DeleteScheduledTask)))},
-#endif  // BUILDFLAG(IS_WIN)
-          {"expect_version_active",
-           WithSwitch("updater_version",
-                      WithSystemScope(Wrap(&ExpectVersionActive)))},
-          {"expect_version_not_active",
-           WithSwitch("updater_version",
-                      WithSystemScope(Wrap(&ExpectVersionNotActive)))},
-          {"install", WithSwitch("switches", WithSystemScope(Wrap(&Install)))},
-          {"install_updater_and_app",
-           WithSwitch(
-               "updater_path",
+               "parameters",
                WithSwitch(
-                   "additional_switches",
-                   WithSwitch(
-                       "expected_exit_code",
-                       WithSwitch(
-                           "wait_for_the_installer",
-                           WithSwitch(
-                               "expect_success",
-                               WithSwitch(
-                                   "verify_app_logo_loaded",
-                                   WithSwitch(
-                                       "always_launch_cmd",
-                                       WithSwitch(
-                                           "child_window_text_to_find",
-                                           WithSwitch(
-                                               "tag",
-                                               WithSwitch(
-                                                   "is_silent_install",
-                                                   WithSwitch(
-                                                       "app_id",
-                                                       WithSystemScope(Wrap(
-                                                           &InstallUpdaterAndApp)))))))))))))},  // NOLINT
-          {"print_log", WithSystemScope(Wrap(&PrintLog))},
-          {"run_wake",
-           WithSwitch("version", WithSwitch("exit_code",
-                                            WithSystemScope(Wrap(&RunWake))))},
-          {"run_wake_all", WithSystemScope(Wrap(&RunWakeAll))},
-          {"run_wake_active",
-           WithSwitch("exit_code", WithSystemScope(Wrap(&RunWakeActive)))},
-          {"run_crash_me", WithSystemScope(Wrap(&RunCrashMe))},
-          {"run_server",
-           WithSwitch("internal", WithSwitch("exit_code", WithSystemScope(Wrap(
-                                                              &RunServer))))},
-          {"run_update_apps",
-           WithSwitch(
-               "version",
-               WithSwitch("exit_code", WithSystemScope(Wrap(&RunUpdateApps))))},
-          {"update",
-           WithSwitch("install_data_index",
-                      (WithSwitch("app_id", WithSystemScope(Wrap(&Update)))))},
-          {"register_app",
-           WithSwitch("registration",
-                      WithSystemScope(Wrap(&RegisterAppByValue)))},
-          {"check_for_update",
-           (WithSwitch("app_id", WithSystemScope(Wrap(&CheckForUpdate))))},
-          {"expect_check_for_update_opposite_scope_fails",
-           (WithSwitch("app_id",
-                       WithSystemScope(
-                           Wrap(&ExpectCheckForUpdateOppositeScopeFails))))},
-          {"update_all", WithSystemScope(Wrap(&UpdateAll))},
-          {"get_app_states", WithSwitch("expected_app_states",
-                                        WithSystemScope(Wrap(&GetAppStates)))},
-          {"delete_updater_directory",
-           WithSystemScope(Wrap(&DeleteUpdaterDirectory))},
-          {"delete_active_updater_executable",
-           WithSystemScope(Wrap(&DeleteActiveUpdaterExecutable))},
-          {"delete_file",
-           (WithSwitch("path", WithSystemScope(Wrap(&DeleteFile))))},
-          {"install_app",
-           WithSwitch("app_version", WithSwitch("app_id", WithSystemScope(Wrap(
-                                                              &InstallApp))))},
-          {"install_app_via_service",
-           WithSwitch("expected_final_values",
-                      WithSwitch("app_id", WithSystemScope(
-                                               Wrap(&InstallAppViaService))))},
-          {"uninstall_app",
-           WithSwitch("app_id", WithSystemScope(Wrap(&UninstallApp)))},
-          {"set_existence_checker_path",
-           WithSwitch("path",
-                      (WithSwitch("app_id", WithSystemScope(Wrap(
-                                                &SetExistenceCheckerPath)))))},
-          {"setup_fake_updater_higher_version",
-           WithSystemScope(Wrap(&SetupFakeUpdaterHigherVersion))},
-          {"setup_fake_updater_lower_version",
-           WithSystemScope(Wrap(&SetupFakeUpdaterLowerVersion))},
-          {"setup_real_updater",
-           WithSwitch("switches",
-                      WithSwitch("updater_path",
-                                 WithSystemScope(Wrap(&SetupRealUpdater))))},
-          {"set_first_registration_counter",
-           WithSwitch("value", WithSystemScope(Wrap(&SetServerStarts)))},
-          {"stress_update_service",
-           WithSystemScope(Wrap(&StressUpdateService))},
-          {"uninstall", WithSystemScope(Wrap(&Uninstall))},
-          {"call_service_update",
-           WithSwitch(
-               "same_version_update_allowed",
-               WithSwitch("install_data_index",
-                          WithSwitch("app_id", WithSystemScope(Wrap(
-                                                   &CallServiceUpdate)))))},
-          {"setup_fake_legacy_updater",
-           WithSystemScope(Wrap(&SetupFakeLegacyUpdater))},
-#if BUILDFLAG(IS_WIN)
-          {"run_fake_legacy_updater",
-           WithSystemScope(Wrap(&RunFakeLegacyUpdater))},
+                   "command_id",
+                   WithSwitch("app_id",
+                              WithSystemScope(Wrap(
+                                  &ExpectLegacyAppCommandWebSucceeds))))))},
+      {"expect_legacy_policy_status_succeeds",
+       WithSwitch("updater_version",
+                  WithSystemScope(Wrap(&ExpectLegacyPolicyStatusSucceeds)))},
+      {"legacy_install_app",
+       WithSwitch(
+           "app_version",
+           WithSwitch("app_id", WithSystemScope(Wrap(&LegacyInstallApp))))},
+      {"run_uninstall_cmd_line", WithSystemScope(Wrap(&RunUninstallCmdLine))},
+      {"run_handoff", WithSwitch("app_id", WithSystemScope(Wrap(&RunHandoff)))},
+      {"install_scheduled_task",
+       WithSwitch("use_task_subfolders",
+                  WithSwitch("task_name", Wrap(&InstallScheduledTask)))},
+      {"is_scheduled_task_registered",
+       WithSwitch("use_task_subfolders",
+                  WithSwitch("task_name", Wrap(&IsScheduledTaskRegistered)))},
+      {"delete_scheduled_task",
+       WithSwitch("use_task_subfolders",
+                  WithSwitch("task_name", Wrap(&DeleteScheduledTask)))},
 #endif  // BUILDFLAG(IS_WIN)
-#if BUILDFLAG(IS_MAC)
-          {"privileged_helper_install",
-           WithSystemScope(Wrap(&PrivilegedHelperInstall))},
-          {"delete_legacy_updater",
-           WithSystemScope(Wrap(&DeleteLegacyUpdater))},
-          {"expect_prepare_to_run_bundle_success",
-           WithSwitch("bundle_path", Wrap(&ExpectPrepareToRunBundleSuccess))},
-#endif  // BUILDFLAG(IS_MAC)
-          {"expect_legacy_updater_migrated",
-           WithSystemScope(Wrap(&ExpectLegacyUpdaterMigrated))},
-          {"run_recovery_component",
-           WithSwitch("browser_version",
-                      WithSwitch("app_id", WithSystemScope(
-                                               Wrap(&RunRecoveryComponent))))},
-          {"set_last_checked",
-           WithSwitch("time", WithSystemScope(Wrap(&SetLastChecked)))},
-          {"expect_last_checked", WithSystemScope(Wrap(&ExpectLastChecked))},
-          {"expect_last_started", WithSystemScope(Wrap(&ExpectLastStarted))},
-          {"run_offline_install",
+      {"expect_version_active",
+       WithSwitch("updater_version",
+                  WithSystemScope(Wrap(&ExpectVersionActive)))},
+      {"expect_version_not_active",
+       WithSwitch("updater_version",
+                  WithSystemScope(Wrap(&ExpectVersionNotActive)))},
+      {"install", WithSwitch("switches", WithSystemScope(Wrap(&Install)))},
+      {"install_updater_and_app",
+       WithSwitch(
+           "updater_path",
            WithSwitch(
-               "installer_error",
-               WithSwitch("installer_result",
-                          WithSwitch("silent",
-                                     WithSwitch("legacy_install",
-                                                WithSystemScope(Wrap(
-                                                    &RunOfflineInstall))))))},
-          {"run_offline_install_os_not_supported",
-           WithSwitch(
-               "language",
-               WithSwitch("silent",
-                          WithSwitch("legacy_install",
-                                     WithSystemScope(Wrap(
-                                         &RunOfflineInstallOsNotSupported)))))},
-          {"run_mock_offline_meta_install",
-           WithSwitch(
-               "expect_success",
+               "additional_switches",
                WithSwitch(
                    "expected_exit_code",
                    WithSwitch(
-                       "always_launch_cmd",
+                       "wait_for_the_installer",
                        WithSwitch(
-                           "installer_text",
+                           "expect_success",
                            WithSwitch(
-                               "platform",
+                               "verify_app_logo_loaded",
                                WithSwitch(
-                                   "is_silent_install",
+                                   "always_launch_cmd",
                                    WithSwitch(
-                                       "arguments",
+                                       "child_window_text_to_find",
                                        WithSwitch(
-                                           "installer_path",
+                                           "tag",
                                            WithSwitch(
-                                               "tag",
+                                               "is_silent_install",
                                                WithSwitch(
-                                                   "version",
-                                                   WithSwitch(
-                                                       "app_id",
-                                                       WithSystemScope(Wrap(
-                                                           &RunMockOfflineMetaInstall)))))))))))))},  // NOLINT
-          {"dm_push_enrollment_token",
-           WithSwitch("enrollment_token", Wrap(DMPushEnrollmentToken))},
-          {"dm_deregister_device", WithSystemScope(Wrap(&DMDeregisterDevice))},
-          {"dm_cleanup", WithSystemScope(Wrap(&DMCleanup))},
-          {"install_enterprise_companion_app",
-           Wrap(&InstallEnterpriseCompanionApp)},
-          {"install_enterprise_companion_app_overrides",
-           WithSwitch("external_overrides",
-                      Wrap(&InstallEnterpriseCompanionAppOverrides))},
-          {"expect_enterprise_companion_app_not_installed",
-           Wrap(&ExpectEnterpriseCompanionAppNotInstalled)},
-          {"uninstall_enterprise_companion_app",
-           Wrap(&UninstallEnterpriseCompanionApp)},
-          {"set_app_allows_usage_stats",
+                                                   "app_id",
+                                                   WithSystemScope(Wrap(
+                                                       &InstallUpdaterAndApp)))))))))))))},  // NOLINT
+      {"print_log", WithSystemScope(Wrap(&PrintLog))},
+      {"run_wake",
+       WithSwitch("version",
+                  WithSwitch("exit_code", WithSystemScope(Wrap(&RunWake))))},
+      {"run_wake_all", WithSystemScope(Wrap(&RunWakeAll))},
+      {"run_wake_active",
+       WithSwitch("exit_code", WithSystemScope(Wrap(&RunWakeActive)))},
+      {"run_crash_me", WithSystemScope(Wrap(&RunCrashMe))},
+      {"run_server",
+       WithSwitch("internal",
+                  WithSwitch("exit_code", WithSystemScope(Wrap(&RunServer))))},
+      {"run_update_apps",
+       WithSwitch(
+           "version",
+           WithSwitch("exit_code", WithSystemScope(Wrap(&RunUpdateApps))))},
+      {"update",
+       WithSwitch("install_data_index",
+                  (WithSwitch("app_id", WithSystemScope(Wrap(&Update)))))},
+      {"register_app",
+       WithSwitch("registration", WithSystemScope(Wrap(&RegisterAppByValue)))},
+      {"check_for_update",
+       (WithSwitch("app_id", WithSystemScope(Wrap(&CheckForUpdate))))},
+      {"expect_check_for_update_opposite_scope_fails",
+       (WithSwitch(
+           "app_id",
+           WithSystemScope(Wrap(&ExpectCheckForUpdateOppositeScopeFails))))},
+      {"update_all", WithSystemScope(Wrap(&UpdateAll))},
+      {"get_app_states",
+       WithSwitch("expected_app_states", WithSystemScope(Wrap(&GetAppStates)))},
+      {"delete_updater_directory",
+       WithSystemScope(Wrap(&DeleteUpdaterDirectory))},
+      {"delete_active_updater_executable",
+       WithSystemScope(Wrap(&DeleteActiveUpdaterExecutable))},
+      {"delete_file", (WithSwitch("path", WithSystemScope(Wrap(&DeleteFile))))},
+      {"install_app",
+       WithSwitch("app_version",
+                  WithSwitch("app_id", WithSystemScope(Wrap(&InstallApp))))},
+      {"install_app_via_service",
+       WithSwitch(
+           "expected_final_values",
+           WithSwitch("app_id", WithSystemScope(Wrap(&InstallAppViaService))))},
+      {"uninstall_app",
+       WithSwitch("app_id", WithSystemScope(Wrap(&UninstallApp)))},
+      {"set_existence_checker_path",
+       WithSwitch(
+           "path",
+           (WithSwitch(
+               "app_id", WithSystemScope(Wrap(&SetExistenceCheckerPath)))))},
+      {"setup_fake_updater_higher_version",
+       WithSystemScope(Wrap(&SetupFakeUpdaterHigherVersion))},
+      {"setup_fake_updater_lower_version",
+       WithSystemScope(Wrap(&SetupFakeUpdaterLowerVersion))},
+      {"setup_real_updater",
+       WithSwitch("switches",
+                  WithSwitch("updater_path",
+                             WithSystemScope(Wrap(&SetupRealUpdater))))},
+      {"set_first_registration_counter",
+       WithSwitch("value", WithSystemScope(Wrap(&SetServerStarts)))},
+      {"stress_update_service", WithSystemScope(Wrap(&StressUpdateService))},
+      {"uninstall", WithSystemScope(Wrap(&Uninstall))},
+      {"call_service_update",
+       WithSwitch(
+           "same_version_update_allowed",
+           WithSwitch("install_data_index",
+                      WithSwitch("app_id", WithSystemScope(
+                                               Wrap(&CallServiceUpdate)))))},
+      {"setup_fake_legacy_updater",
+       WithSystemScope(Wrap(&SetupFakeLegacyUpdater))},
+#if BUILDFLAG(IS_WIN)
+      {"run_fake_legacy_updater", WithSystemScope(Wrap(&RunFakeLegacyUpdater))},
+#endif  // BUILDFLAG(IS_WIN)
+#if BUILDFLAG(IS_MAC)
+      {"privileged_helper_install",
+       WithSystemScope(Wrap(&PrivilegedHelperInstall))},
+      {"delete_legacy_updater", WithSystemScope(Wrap(&DeleteLegacyUpdater))},
+      {"expect_prepare_to_run_bundle_success",
+       WithSwitch("bundle_path", Wrap(&ExpectPrepareToRunBundleSuccess))},
+#endif  // BUILDFLAG(IS_MAC)
+      {"expect_legacy_updater_migrated",
+       WithSystemScope(Wrap(&ExpectLegacyUpdaterMigrated))},
+      {"run_recovery_component",
+       WithSwitch(
+           "browser_version",
+           WithSwitch("app_id", WithSystemScope(Wrap(&RunRecoveryComponent))))},
+      {"set_last_checked",
+       WithSwitch("time", WithSystemScope(Wrap(&SetLastChecked)))},
+      {"expect_last_checked", WithSystemScope(Wrap(&ExpectLastChecked))},
+      {"expect_last_started", WithSystemScope(Wrap(&ExpectLastStarted))},
+      {"run_offline_install",
+       WithSwitch(
+           "install_source",
            WithSwitch(
-               "allowed",
+               "installer_error",
                WithSwitch(
-                   "identifier",
-                   WithSystemScope(Wrap(&SetAppAllowsUsageStats))))},
-          {"clear_app_allows_usage_stats",
+                   "installer_result",
+                   WithSwitch(
+                       "silent", WithSwitch("legacy_install",
+                                            WithSystemScope(
+                                                Wrap(&RunOfflineInstall)))))))},
+      {"run_offline_install_os_not_supported",
+       WithSwitch(
+           "language",
            WithSwitch(
-               "identifier",
-               WithSystemScope(Wrap(&ClearAppAllowsUsageStats)))},
-      };
+               "silent", WithSwitch("legacy_install",
+                                    WithSystemScope(Wrap(
+                                        &RunOfflineInstallOsNotSupported)))))},
+      {"run_mock_offline_meta_install",
+       WithSwitch(
+           "expect_success",
+           WithSwitch(
+               "expected_exit_code",
+               WithSwitch(
+                   "always_launch_cmd",
+                   WithSwitch(
+                       "installer_text",
+                       WithSwitch(
+                           "platform",
+                           WithSwitch(
+                               "is_silent_install",
+                               WithSwitch(
+                                   "arguments",
+                                   WithSwitch(
+                                       "installer_path",
+                                       WithSwitch(
+                                           "tag",
+                                           WithSwitch(
+                                               "version",
+                                               WithSwitch(
+                                                   "app_id",
+                                                   WithSystemScope(Wrap(
+                                                       &RunMockOfflineMetaInstall)))))))))))))},  // NOLINT
+      {"dm_push_enrollment_token",
+       WithSwitch("enrollment_token", Wrap(DMPushEnrollmentToken))},
+      {"dm_deregister_device", WithSystemScope(Wrap(&DMDeregisterDevice))},
+      {"dm_cleanup", WithSystemScope(Wrap(&DMCleanup))},
+      {"install_enterprise_companion_app",
+       Wrap(&InstallEnterpriseCompanionApp)},
+      {"install_enterprise_companion_app_overrides",
+       WithSwitch("external_overrides",
+                  Wrap(&InstallEnterpriseCompanionAppOverrides))},
+      {"expect_enterprise_companion_app_not_installed",
+       Wrap(&ExpectEnterpriseCompanionAppNotInstalled)},
+      {"uninstall_enterprise_companion_app",
+       Wrap(&UninstallEnterpriseCompanionApp)},
+      {"set_app_allows_usage_stats",
+       WithSwitch("allowed",
+                  WithSwitch("identifier",
+                             WithSystemScope(Wrap(&SetAppAllowsUsageStats))))},
+      {"clear_app_allows_usage_stats",
+       WithSwitch("identifier",
+                  WithSystemScope(Wrap(&ClearAppAllowsUsageStats)))},
+  };
 
   const base::CommandLine* command_line =
       base::CommandLine::ForCurrentProcess();

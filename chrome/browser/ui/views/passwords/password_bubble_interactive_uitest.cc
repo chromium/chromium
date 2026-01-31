@@ -223,7 +223,28 @@ IN_PROC_BROWSER_TEST_P(PasswordBubbleInteractiveUiTest,
   EXPECT_FALSE(IsBubbleShowing());
 }
 
-IN_PROC_BROWSER_TEST_P(PasswordBubbleInteractiveUiTest, temp) {
+IN_PROC_BROWSER_TEST_P(PasswordBubbleInteractiveUiTest,
+                       CredentialLeak_ActorOperating_NoDialog) {
+  ASSERT_TRUE(ui_test_utils::BringBrowserWindowToFront(browser()));
+
+  AddActorTask();
+  auto origin = GURL("https://example.com");
+  PasswordForm form;
+  form.url = origin;
+  form.signon_realm = origin.GetWithEmptyPath().spec();
+  form.username_value = u"Eve";
+  form.password_value = u"password";
+  GetController()->OnCredentialLeak(password_manager::LeakedPasswordDetails(
+      password_manager::CredentialLeakFlags::kPasswordSaved, std::move(form),
+      /*in_account_store=*/false));
+
+  // Dialog controller is only present when there is a dialog shown.
+  EXPECT_FALSE(GetController()->dialog_controller());
+}
+
+IN_PROC_BROWSER_TEST_P(
+    PasswordBubbleInteractiveUiTest,
+    BiometricAuthenticationForFilling_ActorOperating_NoBubble) {
   ASSERT_TRUE(ui_test_utils::BringBrowserWindowToFront(browser()));
 
   AddActorTask();
@@ -369,12 +390,20 @@ IN_PROC_BROWSER_TEST_P(PasswordBubbleInteractiveUiTest,
 
 IN_PROC_BROWSER_TEST_P(PasswordBubbleInteractiveUiTest, DontCloseOnClick) {
   SetupPendingPassword();
-  EXPECT_TRUE(IsBubbleShowing());
-  EXPECT_FALSE(PasswordBubbleViewBase::manage_password_bubble()
+  RunTestSequence(
+      Do([this]() { SetupPendingPassword(); }),
+      WaitForShow(PasswordSaveUpdateView::kPasswordBubbleElementId),
+      Check([]() {
+        return PasswordBubbleViewBase::manage_password_bubble()
                    ->GetFocusManager()
-                   ->GetFocusedView());
-  ui_test_utils::ClickOnView(browser(), VIEW_ID_TAB_CONTAINER);
-  EXPECT_TRUE(IsBubbleShowing());
+                   ->GetFocusedView() == nullptr;
+      }),
+      // Click somewhere outside the dialog. Use the menu button arbitrarily,
+      // as something that's safely outside the bounds of the dialog. Note that
+      // clicking the center of the content window (as was previously done) may
+      // actually hit the password dialog in some cases.
+      PressButton(kToolbarAppMenuButtonElementId),
+      EnsurePresent(PasswordSaveUpdateView::kPasswordBubbleElementId));
 }
 
 IN_PROC_BROWSER_TEST_P(PasswordBubbleInteractiveUiTest,
@@ -582,6 +611,25 @@ IN_PROC_BROWSER_TEST_P(PasswordBubbleInteractiveUiTest, AutoSigninNoFocus) {
   // Wait until the auto-signin bubble has disappeared, which should happen
   // after its timeout.
   EXPECT_TRUE(base::test::RunUntil([&] { return !IsBubbleShowing(); }));
+}
+
+IN_PROC_BROWSER_TEST_P(PasswordBubbleInteractiveUiTest,
+                       CredentialLeak_OpensDialog) {
+  ASSERT_TRUE(ui_test_utils::BringBrowserWindowToFront(browser()));
+  SetupPendingPassword();
+
+  auto origin = GURL("https://example.com");
+  PasswordForm form;
+  form.url = origin;
+  form.signon_realm = origin.GetWithEmptyPath().spec();
+  form.username_value = u"Eve";
+  form.password_value = u"password";
+  GetController()->OnCredentialLeak(password_manager::LeakedPasswordDetails(
+      password_manager::CredentialLeakFlags::kPasswordSaved, std::move(form),
+      /*in_account_store=*/false));
+
+  // Dialog controller is present when there is a dialog shown.
+  EXPECT_TRUE(GetController()->dialog_controller());
 }
 
 // Test that triggering the leak detection dialog successfully hides a showing
@@ -1271,8 +1319,16 @@ IN_PROC_BROWSER_TEST_P(
                  /*screenshot_name=*/std::string(), /*baseline_cl=*/"5189779"));
 }
 
+// TODO(crbug.com/470163229): Disabled due to flakiness.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_ClosesBubbleOnNavigationToPasswordDetailsSubpage \
+  DISABLED_ClosesBubbleOnNavigationToPasswordDetailsSubpage
+#else
+#define MAYBE_ClosesBubbleOnNavigationToPasswordDetailsSubpage \
+  ClosesBubbleOnNavigationToPasswordDetailsSubpage
+#endif
 IN_PROC_BROWSER_TEST_P(PasswordBubbleInteractiveUiTest,
-                       ClosesBubbleOnNavigationToPasswordDetailsSubpage) {
+                       MAYBE_ClosesBubbleOnNavigationToPasswordDetailsSubpage) {
   base::HistogramTester histogram_tester;
 
   SetupManagingPasswords();

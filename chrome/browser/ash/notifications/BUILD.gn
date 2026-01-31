@@ -49,6 +49,7 @@ static_library("notifications") {
     "//chrome/browser/ash/policy/core",
     "//chrome/browser/ash/policy/handlers",
     "//chrome/browser/profiles:profile",
+    "//chrome/browser/ui/dialogs:browser_dialogs",
     "//chrome/common",
     "//chromeos/ash/components/browser_context_helper",
     "//chromeos/ash/components/dbus",

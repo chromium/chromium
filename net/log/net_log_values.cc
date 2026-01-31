@@ -79,27 +79,27 @@ base::Value NetLogNumberValue(uint32_t num) {
   return NetLogNumberValueHelper(num);
 }
 
-base::Value::Dict NetLogParamsWithInt(std::string_view name, int value) {
-  base::Value::Dict params;
+base::DictValue NetLogParamsWithInt(std::string_view name, int value) {
+  base::DictValue params;
   params.Set(name, value);
   return params;
 }
 
-base::Value::Dict NetLogParamsWithInt64(std::string_view name, int64_t value) {
-  base::Value::Dict params;
+base::DictValue NetLogParamsWithInt64(std::string_view name, int64_t value) {
+  base::DictValue params;
   params.Set(name, NetLogNumberValue(value));
   return params;
 }
 
-base::Value::Dict NetLogParamsWithBool(std::string_view name, bool value) {
-  base::Value::Dict params;
+base::DictValue NetLogParamsWithBool(std::string_view name, bool value) {
+  base::DictValue params;
   params.Set(name, value);
   return params;
 }
 
-base::Value::Dict NetLogParamsWithString(std::string_view name,
-                                         std::string_view value) {
-  base::Value::Dict params;
+base::DictValue NetLogParamsWithString(std::string_view name,
+                                       std::string_view value) {
+  base::DictValue params;
   params.Set(name, value);
   return params;
 }

@@ -93,7 +93,7 @@ scoped_refptr<extensions::Extension> MakeApp(
     const std::string& id,
     extensions::Extension::InitFromValueFlags flags) {
   std::u16string err;
-  base::Value::Dict value;
+  base::DictValue value;
   value.Set("name", name);
   value.Set("version", "0.0");
   value.SetByDottedPath("app.launch.web_url", "http://google.com");

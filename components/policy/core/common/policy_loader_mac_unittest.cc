@@ -20,6 +20,8 @@
 #include "components/policy/core/common/async_policy_provider.h"
 #include "components/policy/core/common/configuration_policy_provider_test.h"
 #include "components/policy/core/common/external_data_fetcher.h"
+#include "components/policy/core/common/management/platform_management_service.h"
+#include "components/policy/core/common/management/scoped_management_service_override_for_testing.h"
 #include "components/policy/core/common/policy_bundle.h"
 #include "components/policy/core/common/policy_map.h"
 #include "components/policy/core/common/policy_test_utils.h"
@@ -55,9 +57,9 @@ class TestHarness : public PolicyProviderTestHarness {
   void InstallBooleanPolicy(const std::string& policy_name,
                             bool policy_value) override;
   void InstallStringListPolicy(const std::string& policy_name,
-                               const base::Value::List& policy_value) override;
+                               const base::ListValue& policy_value) override;
   void InstallDictionaryPolicy(const std::string& policy_name,
-                               const base::Value::Dict& policy_value) override;
+                               const base::DictValue& policy_value) override;
 
   static PolicyProviderTestHarness* Create();
 
@@ -79,8 +81,9 @@ ConfigurationPolicyProvider* TestHarness::CreateProvider(
     scoped_refptr<base::SequencedTaskRunner> task_runner) {
   auto prefs = std::make_unique<MockPreferences>();
   prefs_ = prefs.get();
-  auto loader = std::make_unique<PolicyLoaderMac>(task_runner, base::FilePath(),
-                                                  std::move(prefs));
+  auto loader = std::make_unique<PolicyLoaderMac>(
+      task_runner, policy::PlatformManagementService::GetInstance(),
+      base::FilePath(), std::move(prefs));
   return new AsyncPolicyProvider(registry, std::move(loader));
 }
 
@@ -111,9 +114,8 @@ void TestHarness::InstallBooleanPolicy(const std::string& policy_name,
                       /*is_forced=*/true, /*is_machine=*/true);
 }
 
-void TestHarness::InstallStringListPolicy(
-    const std::string& policy_name,
-    const base::Value::List& policy_value) {
+void TestHarness::InstallStringListPolicy(const std::string& policy_name,
+                                          const base::ListValue& policy_value) {
   ScopedCFTypeRef<CFStringRef> name(base::SysUTF8ToCFStringRef(policy_name));
   ScopedCFTypeRef<CFPropertyListRef> array =
       ValueToProperty(base::Value(policy_value.Clone()));
@@ -122,9 +124,8 @@ void TestHarness::InstallStringListPolicy(
                       /*is_machine=*/true);
 }
 
-void TestHarness::InstallDictionaryPolicy(
-    const std::string& policy_name,
-    const base::Value::Dict& policy_value) {
+void TestHarness::InstallDictionaryPolicy(const std::string& policy_name,
+                                          const base::DictValue& policy_value) {
   ScopedCFTypeRef<CFStringRef> name(base::SysUTF8ToCFStringRef(policy_name));
   ScopedCFTypeRef<CFPropertyListRef> dict =
       ValueToProperty(base::Value(policy_value.Clone()));
@@ -158,7 +159,8 @@ class PolicyLoaderMacTest : public PolicyTestBase {
     auto prefs = std::make_unique<MockPreferences>();
     prefs_ = prefs.get();
     auto loader = std::make_unique<PolicyLoaderMac>(
-        task_environment_.GetMainThreadTaskRunner(), base::FilePath(),
+        task_environment_.GetMainThreadTaskRunner(),
+        PlatformManagementService::GetInstance(), base::FilePath(),
         std::move(prefs));
     provider_ = std::make_unique<AsyncPolicyProvider>(&schema_registry_,
                                                       std::move(loader));
@@ -168,6 +170,17 @@ class PolicyLoaderMacTest : public PolicyTestBase {
   void TearDown() override {
     provider_->Shutdown();
     PolicyTestBase::TearDown();
+  }
+
+  // Gets any existing PolicyMap::Entry, even if marked 'ignored'.
+  const PolicyMap::Entry* GetRawPolicyEntry(const PolicyMap& policy_map,
+                                            const std::string& key) {
+    for (const auto& it : policy_map) {
+      if (it.first == key) {
+        return &it.second;
+      }
+    }
+    return nullptr;
   }
 
   raw_ptr<MockPreferences, AcrossTasksDanglingUntriaged> prefs_ = nullptr;
@@ -261,6 +274,90 @@ TEST_F(PolicyLoaderMacTest, LoadPrecedencePolicies) {
   task_environment_.RunUntilIdle();
 
   EXPECT_TRUE(provider_->policies().Equals(expected));
+}
+
+TEST_F(PolicyLoaderMacTest, SensitivePoliciesFilteredWhenNotManaged) {
+  const PolicyNamespace chrome_ns(POLICY_DOMAIN_CHROME, std::string());
+  RegisterChromeSchema(chrome_ns);
+
+  // Set device unmanaged.
+  ScopedManagementServiceOverrideForTesting scoped_override(
+      policy::PlatformManagementService::GetInstance(),
+      static_cast<uint64_t>(EnterpriseManagementAuthority::NONE));
+
+  // Add a sensitive policy.
+  prefs_->AddTestItem(
+      base::SysUTF8ToCFStringRef(key::kSafeBrowsingEnabled).get(),
+      kCFBooleanTrue,
+      /*is_forced=*/true, /*is_machine=*/true);
+
+  // Add a non-sensitive policy.
+  prefs_->AddTestItem(
+      base::SysUTF8ToCFStringRef(key::kCloudReportingEnabled).get(),
+      kCFBooleanTrue, /*is_forced=*/true, /*is_machine=*/true);
+
+  provider_->RefreshPolicies(PolicyFetchReason::kTest);
+  task_environment_.RunUntilIdle();
+
+  const PolicyMap& actual_map = provider_->policies().Get(chrome_ns);
+
+  // Sensitive Policy Check
+  const PolicyMap::Entry* entry_safe_browsing =
+      GetRawPolicyEntry(actual_map, key::kSafeBrowsingEnabled);
+  ASSERT_TRUE(entry_safe_browsing);
+  EXPECT_TRUE(entry_safe_browsing->ignored());
+
+  // PolicyMap::Get() should return nullptr for ignored policies.
+  EXPECT_EQ(nullptr, actual_map.Get(key::kSafeBrowsingEnabled));
+
+  // Non-Sensitive Policy Check
+  const PolicyMap::Entry* entry_cloud_reporting =
+      GetRawPolicyEntry(actual_map, key::kCloudReportingEnabled);
+  ASSERT_TRUE(entry_cloud_reporting);
+  EXPECT_FALSE(entry_cloud_reporting->ignored());
+
+  const base::Value* cloud_reporting_value = actual_map.GetValue(
+      key::kCloudReportingEnabled, base::Value::Type::BOOLEAN);
+  ASSERT_TRUE(cloud_reporting_value);
+  EXPECT_TRUE(cloud_reporting_value->GetBool());
+}
+
+TEST_F(PolicyLoaderMacTest, SensitivePoliciesHonoredWhenManaged) {
+  const PolicyNamespace chrome_ns(POLICY_DOMAIN_CHROME, std::string());
+  RegisterChromeSchema(chrome_ns);
+
+  // Set device managed.
+  ScopedManagementServiceOverrideForTesting scoped_override(
+      PlatformManagementService::GetInstance(),
+      static_cast<uint64_t>(EnterpriseManagementAuthority::CLOUD));
+
+  // Add a sensitive policy.
+  prefs_->AddTestItem(
+      base::SysUTF8ToCFStringRef(key::kSafeBrowsingEnabled).get(),
+      kCFBooleanTrue,
+      /*is_forced=*/true, /*is_machine=*/true);
+
+  // Add a non-sensitive policy.
+  prefs_->AddTestItem(
+      base::SysUTF8ToCFStringRef(key::kCloudReportingEnabled).get(),
+      kCFBooleanTrue, /*is_forced=*/true, /*is_machine=*/true);
+
+  provider_->RefreshPolicies(PolicyFetchReason::kTest);
+  task_environment_.RunUntilIdle();
+
+  const PolicyMap& actual_map = provider_->policies().Get(chrome_ns);
+  // Sensitive Policy Check
+
+  const base::Value* entry_safe_browsing_value = actual_map.GetValue(
+      key::kSafeBrowsingEnabled, base::Value::Type::BOOLEAN);
+  ASSERT_TRUE(entry_safe_browsing_value);
+  EXPECT_TRUE(entry_safe_browsing_value->GetBool());
+
+  // Non-Sensitive Policy Check
+  const base::Value* cloud_reporting_value = actual_map.GetValue(
+      key::kCloudReportingEnabled, base::Value::Type::BOOLEAN);
+  ASSERT_TRUE(cloud_reporting_value);
+  EXPECT_TRUE(cloud_reporting_value->GetBool());
 }
 
 }  // namespace policy

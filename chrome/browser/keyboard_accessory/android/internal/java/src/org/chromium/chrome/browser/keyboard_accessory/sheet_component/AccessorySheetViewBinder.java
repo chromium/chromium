@@ -5,11 +5,18 @@
 package org.chromium.chrome.browser.keyboard_accessory.sheet_component;
 
 import static org.chromium.chrome.browser.keyboard_accessory.sheet_component.AccessorySheetProperties.ACTIVE_TAB_INDEX;
+import static org.chromium.chrome.browser.keyboard_accessory.sheet_component.AccessorySheetProperties.BACKGROUND;
+import static org.chromium.chrome.browser.keyboard_accessory.sheet_component.AccessorySheetProperties.BAR_SHADOW_VISIBLE;
+import static org.chromium.chrome.browser.keyboard_accessory.sheet_component.AccessorySheetProperties.ELEVATION;
+import static org.chromium.chrome.browser.keyboard_accessory.sheet_component.AccessorySheetProperties.GRAVITY;
 import static org.chromium.chrome.browser.keyboard_accessory.sheet_component.AccessorySheetProperties.HEIGHT;
+import static org.chromium.chrome.browser.keyboard_accessory.sheet_component.AccessorySheetProperties.HORIZONTAL_PADDING;
+import static org.chromium.chrome.browser.keyboard_accessory.sheet_component.AccessorySheetProperties.MAX_WIDTH;
 import static org.chromium.chrome.browser.keyboard_accessory.sheet_component.AccessorySheetProperties.NO_ACTIVE_TAB;
 import static org.chromium.chrome.browser.keyboard_accessory.sheet_component.AccessorySheetProperties.PAGE_CHANGE_LISTENER;
 import static org.chromium.chrome.browser.keyboard_accessory.sheet_component.AccessorySheetProperties.SHOW_KEYBOARD_CALLBACK;
 import static org.chromium.chrome.browser.keyboard_accessory.sheet_component.AccessorySheetProperties.TABS;
+import static org.chromium.chrome.browser.keyboard_accessory.sheet_component.AccessorySheetProperties.TOP_OFFSET;
 import static org.chromium.chrome.browser.keyboard_accessory.sheet_component.AccessorySheetProperties.TOP_SHADOW_VISIBLE;
 import static org.chromium.chrome.browser.keyboard_accessory.sheet_component.AccessorySheetProperties.VISIBLE;
 
@@ -40,6 +47,20 @@ class AccessorySheetViewBinder {
             p.height = model.get(HEIGHT);
             view.setLayoutParams(p);
             view.setFrameHeight(model.get(HEIGHT));
+        } else if (propertyKey == MAX_WIDTH) {
+            view.setMaxWidth(model.get(MAX_WIDTH));
+        } else if (propertyKey == HORIZONTAL_PADDING) {
+            view.setHorizontalPadding(model.get(HORIZONTAL_PADDING));
+        } else if (propertyKey == GRAVITY) {
+            view.setLayoutGravity(model.get(GRAVITY));
+        } else if (propertyKey == ELEVATION) {
+            view.setElevation(model.get(ELEVATION));
+        } else if (propertyKey == TOP_OFFSET) {
+            view.setTopOffset(model.get(TOP_OFFSET));
+        } else if (propertyKey == BACKGROUND) {
+            view.setBackgroundResource(model.get(BACKGROUND));
+        } else if (propertyKey == BAR_SHADOW_VISIBLE) {
+            view.setBarShadowVisible(model.get(BAR_SHADOW_VISIBLE));
         } else if (propertyKey == TOP_SHADOW_VISIBLE) {
             view.setTopShadowVisible(model.get(TOP_SHADOW_VISIBLE));
         } else if (propertyKey == ACTIVE_TAB_INDEX) {

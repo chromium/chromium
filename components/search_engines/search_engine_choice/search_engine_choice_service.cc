@@ -62,6 +62,7 @@
 #endif
 
 using ::country_codes::CountryId;
+using ::regional_capabilities::SearchEngineChoiceScreenConditions;
 
 namespace search_engines {
 namespace {
@@ -150,7 +151,7 @@ bool ShouldRepromptFromFeatureParams(
     return false;
   }
 
-  std::optional<base::Value::Dict> reprompt_params_json =
+  std::optional<base::DictValue> reprompt_params_json =
       base::JSONReader::ReadDict(reprompt_params,
                                  base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   // Not a valid JSON.
@@ -246,6 +247,7 @@ regional_capabilities::FunnelStage ToFunnelStage(
     SearchEngineChoiceScreenConditions condition) {
   switch (condition) {
     case SearchEngineChoiceScreenConditions::kEligible:
+    case SearchEngineChoiceScreenConditions::kEligibleForRestore:
       return regional_capabilities::FunnelStage::kEligible;
 
     case SearchEngineChoiceScreenConditions::kNotInRegionalScope:
@@ -261,7 +263,6 @@ regional_capabilities::FunnelStage ToFunnelStage(
     case SearchEngineChoiceScreenConditions::kHasCustomSearchEngine:
     case SearchEngineChoiceScreenConditions::kSearchProviderOverride:
     case SearchEngineChoiceScreenConditions::kControlledByPolicy:
-    case SearchEngineChoiceScreenConditions::kProfileOutOfScope:
     case SearchEngineChoiceScreenConditions::kExtensionControlled:
     case SearchEngineChoiceScreenConditions::kSuppressedByOtherDialog:
     case SearchEngineChoiceScreenConditions::kBrowserWindowTooSmall:
@@ -464,7 +465,7 @@ PendingDisplayStateStatus ProcessPendingChoiceScreenDisplayStateInternal(
     regional_capabilities::RegionalCapabilitiesService&
         regional_capabilities_service,
     PrefService& profile_prefs) {
-  const base::Value::Dict& dict = profile_prefs.GetDict(
+  const base::DictValue& dict = profile_prefs.GetDict(
       prefs::kDefaultSearchProviderPendingChoiceScreenDisplayState);
   std::optional<ChoiceScreenDisplayState> display_state =
       ChoiceScreenDisplayState::FromDict(dict);
@@ -603,6 +604,20 @@ SearchEngineChoiceService::GetStaticChoiceScreenConditions(
     return SearchEngineChoiceScreenConditions::kAccountNotEligible;
   }
 
+  if (status == ChoiceStatus::kFromRestoredDevice) {
+    return SearchEngineChoiceScreenConditions::kEligibleForRestore;
+  }
+
+  if (status == ChoiceStatus::kNotMade) {
+    return SearchEngineChoiceScreenConditions::kEligible;
+  }
+
+  // Continue as `kEligible`, other statuses will be re-checked at triggering
+  // time.
+  // TODO(crbug.com/437857100): To be revisited to consider whether the list of
+  // status checked here should be expanded.
+  base::UmaHistogramEnumeration(
+      "Search.ChoiceDebug.UnhandledChoiceStatusAtLoadTime", status);
   return SearchEngineChoiceScreenConditions::kEligible;
 #endif
 }
@@ -638,8 +653,9 @@ SearchEngineChoiceService::GetDynamicChoiceScreenConditions(
     case ChoiceStatus::kCurrentIsNonGooglePrepopulated:
       return SearchEngineChoiceScreenConditions::kHasNonGoogleSearchEngine;
     case ChoiceStatus::kNotMade:
-    case ChoiceStatus::kFromRestoredDevice:
       return SearchEngineChoiceScreenConditions::kEligible;
+    case ChoiceStatus::kFromRestoredDevice:
+      return SearchEngineChoiceScreenConditions::kEligibleForRestore;
     case ChoiceStatus::kAccountNotEligible:
       return SearchEngineChoiceScreenConditions::kAccountNotEligible;
     case ChoiceStatus::kManaged:
@@ -657,7 +673,7 @@ void SearchEngineChoiceService::RecordProfileLoadEligibility(
 #endif  // !BUILDFLAG(IS_IOS)
 
   regional_capabilities::RecordEligibilityFunnelStageDetails(condition);
-  if (condition != SearchEngineChoiceScreenConditions::kEligible) {
+  if (!regional_capabilities::IsEligible(condition)) {
     // Being eligible at profile load is not a conclusive funnel state. We don't
     // record it here, we instead rely on trigger-time eligibility, which is
     // expected to be recorded shortly after, to record a funnel stage.

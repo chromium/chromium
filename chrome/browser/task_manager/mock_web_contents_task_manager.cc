@@ -6,7 +6,6 @@
 
 #include <algorithm>
 
-#include "base/containers/contains.h"
 #include "build/build_config.h"
 
 namespace task_manager {
@@ -17,7 +16,7 @@ MockWebContentsTaskManager::~MockWebContentsTaskManager() = default;
 
 void MockWebContentsTaskManager::TaskAdded(Task* task) {
   DCHECK(task);
-  DCHECK(!base::Contains(tasks_, task));
+  DCHECK(!std::ranges::contains(tasks_, task));
   tasks_.push_back(task);
 }
 

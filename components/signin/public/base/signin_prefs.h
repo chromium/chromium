@@ -147,8 +147,19 @@ class SigninPrefs {
   int GetSyncPromoIdentityPillUsedCount(const GaiaId& gaia_id) const;
 
   // History sync promo on the history page.
-  void IncrementHistoryPageHistorySyncPromoShownCount(const GaiaId& gaia_id);
   int GetHistoryPageHistorySyncPromoShownCount(const GaiaId& gaia_id) const;
+  void IncrementHistoryPageHistorySyncPromoShownCount(const GaiaId& gaia_id);
+
+  std::optional<base::Time>
+  GetHistoryPageHistorySyncPromoLastDismissedTimestamp(
+      const GaiaId& gaia_id) const;
+  void SetHistoryPageHistorySyncPromoLastDismissedTimestamp(
+      const GaiaId& gaia_id,
+      base::Time last_dismissed_timestamp);
+
+  void SetHistoryPageHistorySyncPromoShownAfterDismissal(const GaiaId& gaia_id);
+  bool GetHistoryPageHistorySyncPromoShownAfterDismissal(
+      const GaiaId& gaia_id) const;
 
   // Returns a dictionary of the avatar button promo count for `gaia_id`, if the
   // dictionary didn't exist it will create it.

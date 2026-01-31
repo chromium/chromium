@@ -69,7 +69,7 @@ inline constexpr char kTabResumptionHomeModuleEnabled[] =
 // The pref that stores if the Tips Home Module is enabled.
 inline constexpr char kTipsHomeModuleEnabled[] = "home.module.tips.enabled";
 
-// The pref that stores if the Tab Resumption Home Module is enabled.
+// Stores if the Magic Stack Home Module (i.e. cards on the NTP) is enabled.
 inline constexpr char kMagicStackHomeModuleEnabled[] =
     "home.module.magic_stack.enabled";
 

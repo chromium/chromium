@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2026 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<org.chromium.chrome.browser.educational_tip.two_cell.EducationalTipModuleTwoCellView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginTop="@dimen/single_tab_module_padding_top"
+    android:layout_marginStart="@dimen/single_tab_module_lateral_margin"
+    android:layout_marginEnd="@dimen/single_tab_module_lateral_margin"
+    android:paddingStart="@dimen/single_tab_module_padding_bottom"
+    android:paddingEnd="@dimen/single_tab_module_padding_bottom"
+    android:paddingTop="@dimen/single_tab_module_padding_top"
+    android:paddingBottom="@dimen/single_tab_module_padding_top"
+    android:background="@drawable/home_surface_ui_background"
+    android:foreground="@drawable/single_tab_card_ripple"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:baselineAligned="false"
+        android:orientation="horizontal"
+        android:gravity="center_vertical">
+
+        <TextView
+            android:id="@+id/educational_tip_module_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="start"
+            android:singleLine="true"
+            android:text="@string/educational_tip_module_title"
+            android:textAlignment="viewStart"
+            android:textAppearance="@style/TextAppearance.TextMediumThick.Secondary" />
+
+        <Space
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_weight="1" />
+
+        <!-- TODO(crbug.com/469425754): Implement onClickListener and update visibility. -->
+        <TextView
+            android:id="@+id/see_more"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/educational_tip_see_more"
+            android:textAppearance="@style/TextAppearance.TextAccentMediumThick.Link"/>
+
+    </LinearLayout>
+
+    <!-- First item -->
+    <LinearLayout
+        android:id="@+id/two_cell_item_1"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:orientation="horizontal"
+        android:gravity="center_vertical">
+
+        <ImageView
+            android:id="@+id/two_cell_item_1_icon"
+            android:layout_width="@dimen/educational_tip_two_cell_icon_container_size"
+            android:layout_height="@dimen/educational_tip_two_cell_icon_container_size"
+            android:background="@drawable/educational_tip_module_content_image_background"
+            android:scaleType="center"
+            android:importantForAccessibility="no" />
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="vertical"
+            android:paddingStart="@dimen/educational_tip_module_content_info_padding_start">
+
+            <TextView
+                android:id="@+id/two_cell_item_1_title"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textAppearance="@style/TextAppearance.TextMedium.Primary" />
+
+            <TextView
+                android:id="@+id/two_cell_item_1_description"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textAppearance="@style/TextAppearance.TextSmall.Secondary" />
+        </LinearLayout>
+
+
+    </LinearLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="?android:attr/listDivider"
+        android:layout_marginStart="@dimen/educational_tip_two_cell_divider_margin_start" />
+
+    <!-- Second item -->
+    <LinearLayout
+        android:id="@+id/two_cell_item_2"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:orientation="horizontal"
+        android:gravity="center_vertical">
+
+        <ImageView
+            android:id="@+id/two_cell_item_2_icon"
+            android:layout_width="@dimen/educational_tip_two_cell_icon_container_size"
+            android:layout_height="@dimen/educational_tip_two_cell_icon_container_size"
+            android:background="@drawable/educational_tip_module_content_image_background"
+            android:scaleType="center"
+            android:importantForAccessibility="no" />
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="vertical"
+            android:paddingStart="@dimen/educational_tip_module_content_info_padding_start">
+
+            <TextView
+                android:id="@+id/two_cell_item_2_title"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textAppearance="@style/TextAppearance.TextMedium.Primary" />
+
+            <TextView
+                android:id="@+id/two_cell_item_2_description"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textAppearance="@style/TextAppearance.TextSmall.Secondary" />
+        </LinearLayout>
+
+    </LinearLayout>
+
+</org.chromium.chrome.browser.educational_tip.two_cell.EducationalTipModuleTwoCellView>

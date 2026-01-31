@@ -120,8 +120,9 @@ TEST_F(IsolatedWebAppUpdateApplyWaiterTest,
   provider->SetEnableAutomaticIwaUpdates(
       FakeWebAppProvider::AutomaticIwaUpdateStrategy::kDefault);
   test::AwaitStartWebAppProviderAndSubsystems(profile);
-  EXPECT_THAT(provider->iwa_update_manager().AreAutomaticUpdatesEnabled(),
-              IsFalse());
+  EXPECT_THAT(
+      provider->isolated_web_app_update_manager().AreAutomaticUpdatesEnabled(),
+      IsFalse());
 
   IsolatedWebAppUpdateApplyWaiter waiter(url_info_, provider->ui_manager());
   base::test::TestFuture<std::unique_ptr<ScopedKeepAlive>,

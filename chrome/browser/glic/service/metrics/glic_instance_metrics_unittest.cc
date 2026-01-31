@@ -10,8 +10,8 @@
 #include "base/test/metrics/user_action_tester.h"
 #include "base/test/task_environment.h"
 #include "chrome/browser/glic/glic_metrics.h"
+#include "components/split_tabs/split_tab_id.h"
 #include "components/tabs/public/mock_tab_interface.h"
-#include "components/tabs/public/split_tab_id.h"
 #include "components/tabs/public/tab_interface.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -244,6 +244,25 @@ TEST_F(GlicInstanceMetricsTest, Response_InputStopStop_LogsError) {
   histogram_tester_.ExpectUniqueSample(
       "Glic.Instance.Metrics.Error",
       GlicInstanceMetricsError::kResponseStopWithoutInput, 1);
+}
+
+TEST_F(GlicInstanceMetricsTest, RecordTabPinningStatusEventLogs) {
+  base::TimeTicks now = base::TimeTicks::Now();
+  GlicPinEvent pin_event(GlicPinTrigger::kContextMenu, now);
+  metrics_.RecordTabPinningStatusEvent(&mock_tab_, pin_event);
+  histogram_tester_.ExpectUniqueSample("Glic.Instance.TabPinTrigger",
+                                       GlicPinTrigger::kContextMenu, 1);
+}
+
+TEST_F(GlicInstanceMetricsTest,
+       RecordTabPinningStatusEvent_LogsUnpinHistogram) {
+  base::TimeTicks now = base::TimeTicks::Now();
+  GlicPinnedTabUsage usage(GlicPinTrigger::kContextMenu, now);
+  GlicUnpinEvent unpin_event(GlicUnpinTrigger::kContextMenu, std::move(usage),
+                             now);
+  metrics_.RecordTabPinningStatusEvent(&mock_tab_, unpin_event);
+  histogram_tester_.ExpectUniqueSample("Glic.Instance.TabUnpinTrigger",
+                                       GlicUnpinTrigger::kContextMenu, 1);
 }
 
 }  // namespace glic

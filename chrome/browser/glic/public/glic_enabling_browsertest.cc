@@ -4,13 +4,16 @@
 
 #include "chrome/browser/glic/public/glic_enabling.h"
 
+#include "base/command_line.h"
 #include "base/metrics/metrics_hashes.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_command_line.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/glic/glic_metrics_provider.h"
 #include "chrome/browser/glic/glic_pref_names.h"
+#include "chrome/browser/glic/test_support/glic_test_environment.h"
 #include "chrome/browser/glic/test_support/glic_test_util.h"
 #include "chrome/browser/global_features.h"
 #include "chrome/browser/profiles/profile.h"
@@ -19,10 +22,12 @@
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/profiles/profile_test_util.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
+#include "chrome/browser/subscription_eligibility/subscription_eligibility_prefs.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/tabs/tab_strip.h"
 #include "chrome/common/chrome_features.h"
+#include "chrome/common/chrome_switches.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/metrics/metrics_service.h"
 #include "components/signin/public/base/signin_switches.h"
@@ -50,18 +55,10 @@ class GlicEnablingTest : public InProcessBrowserTest {
     InProcessBrowserTest::SetUp();
   }
 
-  void TearDown() override {
-    scoped_feature_list_.Reset();
-    InProcessBrowserTest::TearDown();
-  }
-
  protected:
   virtual void InitializeFeatureList() {
     scoped_feature_list_.InitWithFeatures(
         {
-            features::kGlic,
-            features::kTabstripComboButton,
-            features::kGlicRollout,
 #if BUILDFLAG(IS_CHROMEOS)
             chromeos::features::kFeatureManagementGlic,
 #endif  // BUILDFLAG(IS_CHROMEOS)
@@ -77,19 +74,20 @@ class GlicEnablingTest : public InProcessBrowserTest {
     return profile_manager()->GetProfileAttributesStorage();
   }
 
+  GlicTestEnvironment glic_test_env_;
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_F(GlicEnablingTest, EnabledForProfileTest) {
   ASSERT_FALSE(GlicEnabling::IsEnabledForProfile(nullptr));
 
-  ASSERT_FALSE(GlicEnabling::IsEnabledForProfile(profile()));
-  ForceSigninAndGlicCapability(profile());
   ASSERT_TRUE(GlicEnabling::IsEnabledForProfile(profile()));
 }
 
 IN_PROC_BROWSER_TEST_F(GlicEnablingTest, AttributeEntryUpdatesOnChange) {
-  SigninWithPrimaryAccount(profile());
+  SetGlicCapability(profile(), false);
+  glic_test_env_.GetService(profile())->SetFRECompletion(
+      prefs::FreStatus::kIncomplete);
   ASSERT_FALSE(GlicEnabling::IsEnabledForProfile(profile()));
 
   ProfileAttributesEntry* entry =
@@ -115,7 +113,6 @@ class GlicEnablingWithSeparateAccountCapabilityTest : public GlicEnablingTest {
     scoped_feature_list_.InitWithFeaturesAndParameters(
         {
             {features::kGlic, {}},
-            {features::kTabstripComboButton, {}},
             {features::kGlicRollout, {}},
             {switches::kGlicEligibilitySeparateAccountCapability, {}},
 #if BUILDFLAG(IS_CHROMEOS)
@@ -143,8 +140,6 @@ IN_PROC_BROWSER_TEST_F(GlicEnablingWithSeparateAccountCapabilityTest,
                        EnabledForProfileTest) {
   ASSERT_FALSE(GlicEnabling::IsEnabledForProfile(nullptr));
 
-  ASSERT_FALSE(GlicEnabling::IsEnabledForProfile(profile()));
-  ForceSigninAndGlicCapability(profile());
   ASSERT_TRUE(GlicEnabling::IsEnabledForProfile(profile()));
 }
 
@@ -157,10 +152,6 @@ IN_PROC_BROWSER_TEST_F(GlicEnablingWithSeparateAccountCapabilityTest,
                                 ->GetSyntheticTrialRegistry()
                                 ->GetCurrentSyntheticFieldTrialsForTest()
                                 .size();
-
-  //  Sign in the user, and mark them as eligible via the new account
-  // capability.
-  ForceSigninAndGlicCapability(profile());
 
   // Set the legacy account capability to true, so that their eligibility is not
   // affected by the experiment.
@@ -186,10 +177,6 @@ IN_PROC_BROWSER_TEST_F(GlicEnablingWithSeparateAccountCapabilityTest,
                                 ->GetCurrentSyntheticFieldTrialsForTest()
                                 .size();
 
-  //  Sign in the user, and mark them as eligible via the new account
-  // capability.
-  ForceSigninAndGlicCapability(profile());
-
   // Set the legacy account capability to false, so that their eligibility is
   // affected by the experiment.
   SetLegacyAccountCapability(false);
@@ -208,6 +195,30 @@ IN_PROC_BROWSER_TEST_F(GlicEnablingWithSeparateAccountCapabilityTest,
                 kGlicEligibilitySeparateAccountCapabilitySyntheticTrialName));
 }
 
+IN_PROC_BROWSER_TEST_F(GlicEnablingWithSeparateAccountCapabilityTest,
+                       SeparateAccountCapabilityUnknownTest) {
+  // Sign in with a different account (this resets all account capabilities to
+  // unknown).
+  auto* const identity_manager =
+      IdentityManagerFactory::GetForProfile(profile());
+  auto account_info = signin::MakePrimaryAccountAvailable(
+      identity_manager, "glic-test-2@example.com",
+      signin::ConsentLevel::kSignin);
+  account_info.full_name = "Glic 2 Testing";
+  account_info.given_name = "Glic 2";
+  signin::UpdateAccountInfoForAccount(identity_manager, account_info);
+  ASSERT_FALSE(GlicEnabling::IsEnabledForProfile(profile()));
+
+  // If the "can_use_gemini_in_chrome" capability is unknown, we should fall
+  // back to the legacy "can_use_model_execution_features" capability.
+  //
+  // This is important during rollout, where existing users may not yet hav
+  // fetched the new capability and it would be undesirable to disable GLIC for
+  // them.
+  SetLegacyAccountCapability(true);
+  EXPECT_TRUE(GlicEnabling::IsEnabledForProfile(profile()));
+}
+
 IN_PROC_BROWSER_TEST_F(
     GlicEnablingWithSeparateAccountCapabilityTest,
     AffectedUserAddedToSyntheticFieldTrial_EligibilityChanges) {
@@ -218,10 +229,6 @@ IN_PROC_BROWSER_TEST_F(
                                 ->GetSyntheticTrialRegistry()
                                 ->GetCurrentSyntheticFieldTrialsForTest()
                                 .size();
-
-  //  Sign in the user, and mark them as eligible via the new account
-  // capability.
-  ForceSigninAndGlicCapability(profile());
 
   // Set the legacy account capability to false, so that their eligibility is
   // affected by the experiment. This adds the user to a synthetic field trial.
@@ -264,7 +271,6 @@ class GlicEnablingTieredRolloutTest : public GlicEnablingTest {
     scoped_feature_list_.InitWithFeatures(
         {
             features::kGlic,
-            features::kTabstripComboButton,
             features::kGlicTieredRollout,
 #if BUILDFLAG(IS_CHROMEOS)
             chromeos::features::kFeatureManagementGlic,
@@ -294,11 +300,12 @@ class GlicEnablingTieredRolloutTest : public GlicEnablingTest {
         ->GetDelegatingProviderForTesting()
         ->ProvideCurrentSessionData(&uma_proto);
   }
+
+ protected:
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_F(GlicEnablingTieredRolloutTest, EnabledForProfileTest) {
-  ForceSigninAndGlicCapability(profile());
-
   // Should not be enabled as profile not eligible for tiered rollout.
   EXPECT_FALSE(GlicEnabling::IsEnabledForProfile(profile()));
 
@@ -313,6 +320,7 @@ IN_PROC_BROWSER_TEST_F(GlicEnablingTieredRolloutTest, EnabledForProfileTest) {
 
 IN_PROC_BROWSER_TEST_F(GlicEnablingTieredRolloutTest,
                        InTieredRolloutGroupOtherCriteriaNotPassing) {
+  glic_test_env_.GetService(profile())->SetModelExecutionCapability(false);
   // Should be enabled as profile.
   SetTieredRolloutEligibilityForProfile(/*is_eligible=*/true);
   EXPECT_FALSE(GlicEnabling::IsEnabledForProfile(profile()));
@@ -331,7 +339,6 @@ class GlicEnablingSimultaneousRolloutTest
     scoped_feature_list_.InitWithFeatures(
         {
             features::kGlic,
-            features::kTabstripComboButton,
             features::kGlicTieredRollout,
             features::kGlicRollout,
 #if BUILDFLAG(IS_CHROMEOS)
@@ -345,8 +352,6 @@ class GlicEnablingSimultaneousRolloutTest
 
 IN_PROC_BROWSER_TEST_F(GlicEnablingSimultaneousRolloutTest,
                        EnabledForProfileTest) {
-  ForceSigninAndGlicCapability(profile());
-
   // Eligible for tiered rollout. Profile enabled for GLIC.
   SetTieredRolloutEligibilityForProfile(/*is_eligible=*/true);
   ASSERT_TRUE(GlicEnabling::IsEnabledForProfile(profile()));
@@ -368,7 +373,6 @@ IN_PROC_BROWSER_TEST_F(GlicEnablingSimultaneousRolloutTest,
   base::FilePath new_path = profile_manager->GenerateNextProfileDirectoryPath();
   Profile* second_profile =
       &profiles::testing::CreateProfileSync(profile_manager, new_path);
-  ForceSigninAndGlicCapability(second_profile);
   ASSERT_TRUE(GlicEnabling::IsEnabledForProfile(second_profile));
 
   {
@@ -394,6 +398,157 @@ IN_PROC_BROWSER_TEST_F(GlicEnablingSimultaneousRolloutTest,
         GlicTieredRolloutEnablementStatus::kNoProfilesEnabled, 1);
   }
 }
+
+// Test fixtures for testing-related flags for multi-instance enablement by
+// tier.
+class GlicMultiInstanceEnablingTestingFlagsBrowserTest
+    : public GlicEnablingTest {
+ public:
+  void InitializeFeatureList() override {
+    scoped_feature_list_.InitWithFeatures(
+        {
+            features::kGlic,
+            features::kGlicEnableMultiInstanceBasedOnTier,
+#if BUILDFLAG(IS_CHROMEOS)
+            chromeos::features::kFeatureManagementGlic,
+#endif  // BUILDFLAG(IS_CHROMEOS)
+        },
+        {features::kGlicMultiInstance});
+  }
+  ~GlicMultiInstanceEnablingTestingFlagsBrowserTest() override = default;
+
+ protected:
+  // Helper to set the AI subscription tier for the profile.
+  void SetAiSubscriptionTier(int tier) {
+    profile()->GetPrefs()->SetInteger(
+        subscription_eligibility::prefs::kAiSubscriptionTier, tier);
+  }
+
+  // Helper to set the kGlicMultiInstanceEnabledBySubscriptionTier pref.
+  void SetGlicMultiInstanceEnabledBySubscriptionTierPref(bool value) {
+    g_browser_process->local_state()->SetBoolean(
+        glic::prefs::kGlicMultiInstanceEnabledBySubscriptionTier, value);
+  }
+
+  // Helper to get the kGlicMultiInstanceEnabledBySubscriptionTier pref.
+  bool GetGlicMultiInstanceEnabledBySubscriptionTierPref() {
+    return g_browser_process->local_state()->GetBoolean(
+        glic::prefs::kGlicMultiInstanceEnabledBySubscriptionTier);
+  }
+};
+
+class GlicMultiInstanceEnablingNoFlagsBrowserTest
+    : public GlicMultiInstanceEnablingTestingFlagsBrowserTest,
+      public testing::WithParamInterface<std::tuple<bool, bool>> {
+ public:
+  bool IsG1() const { return std::get<0>(GetParam()); }
+  bool WasPreviouslyEligible() const { return std::get<1>(GetParam()); }
+};
+
+IN_PROC_BROWSER_TEST_P(GlicMultiInstanceEnablingNoFlagsBrowserTest,
+                       NoFlagsTest) {
+  SetAiSubscriptionTier(IsG1() ? 1 : 0);
+  SetGlicMultiInstanceEnabledBySubscriptionTierPref(WasPreviouslyEligible());
+
+  bool expected_eligibility = IsG1() || WasPreviouslyEligible();
+  EXPECT_EQ(
+      GlicEnabling::GetAndUpdateEligibilityForGlicMultiInstanceTieredRollout(
+          profile()),
+      expected_eligibility);
+}
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         GlicMultiInstanceEnablingNoFlagsBrowserTest,
+                         testing::Combine(testing::Bool(), testing::Bool()));
+
+class GlicMultiInstanceEnablingForceG1ForMiBrowserTest
+    : public GlicMultiInstanceEnablingTestingFlagsBrowserTest,
+      public testing::WithParamInterface<bool> {
+ public:
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    GlicMultiInstanceEnablingTestingFlagsBrowserTest::SetUpCommandLine(
+        command_line);
+    command_line->AppendSwitchASCII(
+        switches::kGlicForceG1StatusForMultiInstance,
+        GetParam() ? "true" : "false");
+  }
+};
+
+IN_PROC_BROWSER_TEST_P(GlicMultiInstanceEnablingForceG1ForMiBrowserTest,
+                       ForceG1ForMi) {
+  bool force_g1_for_mi = GetParam();
+  // Set the actual subscription tier to the opposite status of the test param,
+  // to ensure that it is overridden by the command line switch in effect.
+  SetAiSubscriptionTier(force_g1_for_mi ? 0 : 1);
+  EXPECT_EQ(
+      GlicEnabling::GetAndUpdateEligibilityForGlicMultiInstanceTieredRollout(
+          profile()),
+      force_g1_for_mi);
+}
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         GlicMultiInstanceEnablingForceG1ForMiBrowserTest,
+                         testing::Bool());
+
+class GlicMultiInstanceEnablingResetPrefBrowserTest
+    : public GlicMultiInstanceEnablingTestingFlagsBrowserTest,
+      public testing::WithParamInterface<bool> {
+ public:
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    GlicMultiInstanceEnablingTestingFlagsBrowserTest::SetUpCommandLine(
+        command_line);
+    command_line->AppendSwitch(switches::kGlicResetMultiInstanceEnabledByTier);
+  }
+};
+
+IN_PROC_BROWSER_TEST_P(GlicMultiInstanceEnablingResetPrefBrowserTest,
+                       ResetMiEnabledByTierPref) {
+  bool is_eligible_by_tier = GetParam();
+  SetAiSubscriptionTier(is_eligible_by_tier ? 1 : 0);
+  SetGlicMultiInstanceEnabledBySubscriptionTierPref(/*value=*/true);
+
+  EXPECT_EQ(
+      GlicEnabling::GetAndUpdateEligibilityForGlicMultiInstanceTieredRollout(
+          profile()),
+      is_eligible_by_tier);
+  // The pref should be reset to false if the user is not eligible by tier.
+  EXPECT_EQ(GetGlicMultiInstanceEnabledBySubscriptionTierPref(),
+            is_eligible_by_tier);
+}
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         GlicMultiInstanceEnablingResetPrefBrowserTest,
+                         testing::Bool());
+
+class GlicEnablingMultiInstanceFlagPrecedenceBrowserTest
+    : public GlicMultiInstanceEnablingTestingFlagsBrowserTest,
+      public testing::WithParamInterface<bool> {
+ public:
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    GlicMultiInstanceEnablingTestingFlagsBrowserTest::SetUpCommandLine(
+        command_line);
+    command_line->AppendSwitch(switches::kGlicResetMultiInstanceEnabledByTier);
+    command_line->AppendSwitchASCII(
+        switches::kGlicForceG1StatusForMultiInstance,
+        GetParam() ? "true" : "false");
+  }
+};
+
+IN_PROC_BROWSER_TEST_P(GlicEnablingMultiInstanceFlagPrecedenceBrowserTest,
+                       FlagPrecedence) {
+  bool force_g1_for_mi = GetParam();
+  SetAiSubscriptionTier(force_g1_for_mi ? 0 : 1);
+  SetGlicMultiInstanceEnabledBySubscriptionTierPref(/*value=*/true);
+
+  EXPECT_EQ(
+      GlicEnabling::GetAndUpdateEligibilityForGlicMultiInstanceTieredRollout(
+          profile()),
+      force_g1_for_mi);
+}
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         GlicEnablingMultiInstanceFlagPrecedenceBrowserTest,
+                         testing::Bool());
 
 }  // namespace
 }  // namespace glic

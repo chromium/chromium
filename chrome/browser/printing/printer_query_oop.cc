@@ -196,7 +196,7 @@ void PrinterQueryOop::GetSettingsWithUI(uint32_t document_page_count,
 #endif
 }
 
-void PrinterQueryOop::UpdatePrintSettings(base::Value::Dict new_settings,
+void PrinterQueryOop::UpdatePrintSettings(base::DictValue new_settings,
                                           SettingsCallback callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 

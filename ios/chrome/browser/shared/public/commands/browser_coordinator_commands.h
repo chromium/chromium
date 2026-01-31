@@ -8,6 +8,8 @@
 #import <Foundation/Foundation.h>
 #import <UIKit/UIKit.h>
 
+#import "base/ios/block_types.h"
+
 enum class ComposeboxEntrypoint;
 namespace base {
 class ScopedClosureRunner;
@@ -55,13 +57,19 @@ enum class TrustedVaultUserActionTriggerForUMA;
 // Shows the online help page in a tab.
 - (void)showHelpPage;
 
-// Shows the composebox.
+// Shows the composebox with the default entrypoint and no query.
+- (void)showComposebox;
+
+// Shows the composebox from the `entryPoint` with `query`.
 - (void)showComposeboxFromEntrypoint:(ComposeboxEntrypoint)entryPoint
                            withQuery:(NSString*)query;
 
-// Hides the composebox. If not `immediately`, the prototype will be stopped
-// on the next run loop.
-- (void)hideComposeboxImmediately:(BOOL)immediately;
+// Hides the composebox on the next run loop.
+- (void)hideComposebox;
+
+// Hides the compose box on the next run loop. The completion block is called
+// once hidden.
+- (void)hideComposeboxWithCompletion:(ProceduralBlock)completion;
 
 // Shows the activity indicator overlay that appears over the view to prevent
 // interaction with the web page until the returned value is destructed.
@@ -99,6 +107,9 @@ enum class TrustedVaultUserActionTriggerForUMA;
 
 // Dismiss the payments suggestions.
 - (void)dismissPaymentSuggestions;
+
+// Dismisses the passkey creation bottom sheet.
+- (void)dismissPasskeyCreation;
 
 // Dismiss the card unmask authentication prompt.
 - (void)dismissCardUnmaskAuthentication;

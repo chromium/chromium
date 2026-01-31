@@ -205,7 +205,7 @@ const char* AccountId::AccountTypeToString(AccountType account_type) {
 }
 
 std::string AccountId::Serialize() const {
-  base::Value::Dict value;
+  base::DictValue value;
   switch (GetAccountType()) {
     case AccountType::GOOGLE:
       value.Set(kGaiaIdKey, gaia_id_.ToString());
@@ -221,7 +221,7 @@ std::string AccountId::Serialize() const {
 
 // static
 std::optional<AccountId> AccountId::Deserialize(std::string_view serialized) {
-  std::optional<base::Value::Dict> value = base::JSONReader::ReadDict(
+  std::optional<base::DictValue> value = base::JSONReader::ReadDict(
       serialized, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   if (!value) {
     return std::nullopt;

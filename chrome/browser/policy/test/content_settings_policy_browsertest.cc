@@ -252,21 +252,21 @@ IN_PROC_BROWSER_TEST_F(PolicyTest, WebUsbAllowDevicesForUrls) {
   // |kTestOrigin| to access the device described by |device_info|.
   PolicyMap policies;
 
-  base::Value::Dict device_value;
+  base::DictValue device_value;
   device_value.Set("vendor_id", 0);
   device_value.Set("product_id", 0);
 
-  base::Value::List devices_value;
+  base::ListValue devices_value;
   devices_value.Append(std::move(device_value));
 
-  base::Value::List urls_value;
+  base::ListValue urls_value;
   urls_value.Append(base::Value("https://foo.com"));
 
-  base::Value::Dict entry;
+  base::DictValue entry;
   entry.Set("devices", std::move(devices_value));
   entry.Set("urls", std::move(urls_value));
 
-  base::Value::List policy_value;
+  base::ListValue policy_value;
   policy_value.Append(std::move(entry));
 
   SetPolicy(&policies, key::kWebUsbAllowDevicesForUrls,
@@ -354,7 +354,7 @@ class SensorsPolicyTest : public PolicyTest {
   }
 
   void AllowUrl(const char* url) {
-    base::Value::List policy_value;
+    base::ListValue policy_value;
     policy_value.Append(url);
     SetPolicy(&policies_, key::kSensorsAllowedForUrls,
               base::Value(std::move(policy_value)));
@@ -362,7 +362,7 @@ class SensorsPolicyTest : public PolicyTest {
   }
 
   void BlockUrl(const char* url) {
-    base::Value::List policy_value;
+    base::ListValue policy_value;
     policy_value.Append(url);
     SetPolicy(&policies_, key::kSensorsBlockedForUrls,
               base::Value(std::move(policy_value)));
@@ -370,8 +370,8 @@ class SensorsPolicyTest : public PolicyTest {
   }
 
   void ClearLists() {
-    base::Value::List policy_value_allow;
-    base::Value::List policy_value_block;
+    base::ListValue policy_value_allow;
+    base::ListValue policy_value_block;
     SetPolicy(&policies_, key::kSensorsAllowedForUrls,
               base::Value(std::move(policy_value_allow)));
     SetPolicy(&policies_, key::kSensorsBlockedForUrls,
@@ -493,14 +493,14 @@ class WebPrintingPolicyTest : public PolicyTest {
   void SetWebPrintingAllowedFor(const GURL& url) {
     PolicyMap policies;
     SetPolicy(&policies, key::kWebPrintingAllowedForUrls,
-              base::Value(base::Value::List().Append(url.spec())));
+              base::Value(base::ListValue().Append(url.spec())));
     UpdateProviderPolicy(policies);
   }
 
   void SetWebPrintingBlockedFor(const GURL& url) {
     PolicyMap policies;
     SetPolicy(&policies, key::kWebPrintingBlockedForUrls,
-              base::Value(base::Value::List().Append(url.spec())));
+              base::Value(base::ListValue().Append(url.spec())));
     UpdateProviderPolicy(policies);
   }
 
@@ -565,7 +565,7 @@ IN_PROC_BROWSER_TEST_F(LocalNetworkAccessPolicyTest, Default) {
 
 IN_PROC_BROWSER_TEST_F(LocalNetworkAccessPolicyTest, AllowByURL) {
   PolicyMap policies;
-  base::Value::List allowlist;
+  base::ListValue allowlist;
   allowlist.Append(base::Value("http://bleep.com"));
   allowlist.Append(base::Value("http://woohoo.com:1234"));
   allowlist.Append(base::Value("http://[*.]meep.com"));
@@ -611,7 +611,7 @@ IN_PROC_BROWSER_TEST_F(LocalNetworkAccessPolicyTest, AllowByURL) {
 
 IN_PROC_BROWSER_TEST_F(LocalNetworkAccessPolicyTest, AllowEverythingByURL) {
   PolicyMap policies;
-  base::Value::List allowlist;
+  base::ListValue allowlist;
   allowlist.Append(base::Value("*"));
   SetPolicy(&policies, key::kLocalNetworkAccessAllowedForUrls,
             base::Value(std::move(allowlist)));
@@ -631,7 +631,7 @@ IN_PROC_BROWSER_TEST_F(LocalNetworkAccessPolicyTest, AllowEverythingByURL) {
 
 IN_PROC_BROWSER_TEST_F(LocalNetworkAccessPolicyTest, BlockByURL) {
   PolicyMap policies;
-  base::Value::List blocklist;
+  base::ListValue blocklist;
   blocklist.Append(base::Value("http://bleep.com"));
   blocklist.Append(base::Value("http://woohoo.com:1234"));
   blocklist.Append(base::Value("http://[*.]meep.com"));
@@ -677,7 +677,7 @@ IN_PROC_BROWSER_TEST_F(LocalNetworkAccessPolicyTest, BlockByURL) {
 
 IN_PROC_BROWSER_TEST_F(LocalNetworkAccessPolicyTest, BlockEverythingByUrl) {
   PolicyMap policies;
-  base::Value::List allowlist;
+  base::ListValue allowlist;
   allowlist.Append(base::Value("*"));
   SetPolicy(&policies, key::kLocalNetworkAccessBlockedForUrls,
             base::Value(std::move(allowlist)));
@@ -697,11 +697,11 @@ IN_PROC_BROWSER_TEST_F(LocalNetworkAccessPolicyTest, BlockEverythingByUrl) {
 
 IN_PROC_BROWSER_TEST_F(LocalNetworkAccessPolicyTest, BlockOverridesAllow) {
   PolicyMap policies;
-  base::Value::List blocklist;
+  base::ListValue blocklist;
   blocklist.Append(base::Value("http://bleep.com"));
   SetPolicy(&policies, key::kLocalNetworkAccessBlockedForUrls,
             base::Value(std::move(blocklist)));
-  base::Value::List allowlist;
+  base::ListValue allowlist;
   allowlist.Append(base::Value("http://bleep.com"));
   SetPolicy(&policies, key::kLocalNetworkAccessAllowedForUrls,
             base::Value(std::move(allowlist)));
@@ -714,11 +714,11 @@ IN_PROC_BROWSER_TEST_F(LocalNetworkAccessPolicyTest, BlockOverridesAllow) {
 
 IN_PROC_BROWSER_TEST_F(LocalNetworkAccessPolicyTest, MixBlockAndAllowPolicies) {
   PolicyMap policies;
-  base::Value::List blocklist;
+  base::ListValue blocklist;
   blocklist.Append(base::Value("http://bleep.com"));
   SetPolicy(&policies, key::kLocalNetworkAccessBlockedForUrls,
             base::Value(std::move(blocklist)));
-  base::Value::List allowlist;
+  base::ListValue allowlist;
   allowlist.Append(base::Value("http://[*.]bleep.com"));
   SetPolicy(&policies, key::kLocalNetworkAccessAllowedForUrls,
             base::Value(std::move(allowlist)));
@@ -771,13 +771,13 @@ class DirectSocketsPolicyTest : public PolicyTest {
 
   void SetDirectSocketsAllowedFor(const GURL& url) {
     SetPolicy(&policies_, key::kDirectSocketsAllowedForUrls,
-              base::Value(base::Value::List().Append(url.spec())));
+              base::Value(base::ListValue().Append(url.spec())));
     UpdateProviderPolicy(policies_);
   }
 
   void SetDirectSocketsBlockedFor(const GURL& url) {
     SetPolicy(&policies_, key::kDirectSocketsBlockedForUrls,
-              base::Value(base::Value::List().Append(url.spec())));
+              base::Value(base::ListValue().Append(url.spec())));
     UpdateProviderPolicy(policies_);
   }
 
@@ -851,13 +851,13 @@ class ControlledFramePolicyTest : public PolicyTest {
 
   void SetControlledFrameAllowedFor(const GURL& url) {
     SetPolicy(&policies_, key::kControlledFrameAllowedForUrls,
-              base::Value(base::Value::List().Append(url.spec())));
+              base::Value(base::ListValue().Append(url.spec())));
     UpdateProviderPolicy(policies_);
   }
 
   void SetControlledFrameBlockedFor(const GURL& url) {
     SetPolicy(&policies_, key::kControlledFrameBlockedForUrls,
-              base::Value(base::Value::List().Append(url.spec())));
+              base::Value(base::ListValue().Append(url.spec())));
     UpdateProviderPolicy(policies_);
   }
 
@@ -930,13 +930,13 @@ class SmartCardConnectPolicyTest : public PolicyTest {
 
   void SetSmartCardConnectAllowedFor(std::string_view url) {
     SetPolicy(&policies_, key::kSmartCardConnectAllowedForUrls,
-              base::Value(base::Value::List().Append(url)));
+              base::Value(base::ListValue().Append(url)));
     UpdateProviderPolicy(policies_);
   }
 
   void SetSmartCardConnectBlockedFor(std::string_view url) {
     SetPolicy(&policies_, key::kSmartCardConnectBlockedForUrls,
-              base::Value(base::Value::List().Append(url)));
+              base::Value(base::ListValue().Append(url)));
     UpdateProviderPolicy(policies_);
   }
 
@@ -1061,13 +1061,13 @@ class DeviceAttributesPolicyTest : public PolicyTest {
 
   void SetDeviceAttributesAllowedFor(std::string_view url) {
     SetPolicy(&policies_, key::kDeviceAttributesAllowedForOrigins,
-              base::Value(base::Value::List().Append(url)));
+              base::Value(base::ListValue().Append(url)));
     UpdateProviderPolicy(policies_);
   }
 
   void SetDeviceAttributesBlockedFor(std::string_view url) {
     SetPolicy(&policies_, key::kDeviceAttributesBlockedForOrigins,
-              base::Value(base::Value::List().Append(url)));
+              base::Value(base::ListValue().Append(url)));
     UpdateProviderPolicy(policies_);
   }
 
@@ -1192,7 +1192,7 @@ class IdleDetectionPolicyTest : public PolicyTest {
   }
 
   void AllowUrl(const char* url) {
-    base::Value::List policy_value;
+    base::ListValue policy_value;
     policy_value.Append(url);
     SetPolicy(&policies_, key::kIdleDetectionAllowedForUrls,
               base::Value(std::move(policy_value)));
@@ -1200,7 +1200,7 @@ class IdleDetectionPolicyTest : public PolicyTest {
   }
 
   void BlockUrl(const char* url) {
-    base::Value::List policy_value;
+    base::ListValue policy_value;
     policy_value.Append(url);
     SetPolicy(&policies_, key::kIdleDetectionBlockedForUrls,
               base::Value(std::move(policy_value)));
@@ -1208,8 +1208,8 @@ class IdleDetectionPolicyTest : public PolicyTest {
   }
 
   void ClearLists() {
-    base::Value::List policy_value_allow;
-    base::Value::List policy_value_block;
+    base::ListValue policy_value_allow;
+    base::ListValue policy_value_block;
     SetPolicy(&policies_, key::kIdleDetectionAllowedForUrls,
               base::Value(std::move(policy_value_allow)));
     SetPolicy(&policies_, key::kIdleDetectionBlockedForUrls,

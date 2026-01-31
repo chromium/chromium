@@ -4,10 +4,13 @@
 
 #include "components/permissions/contexts/nfc_permission_context_android.h"
 
+#include <variant>
+
 #include "base/android/jni_android.h"
 #include "base/functional/bind.h"
 #include "components/permissions/android/nfc/nfc_system_level_setting_impl.h"
 #include "components/permissions/permission_decision.h"
+#include "components/permissions/permission_prompt_decision.h"
 #include "components/permissions/permission_request_id.h"
 #include "content/public/browser/permission_descriptor_util.h"
 #include "content/public/browser/permission_request_description.h"
@@ -29,16 +32,14 @@ void NfcPermissionContextAndroid::NotifyPermissionSet(
     const PermissionRequestData& request_data,
     BrowserPermissionCallback callback,
     bool persist,
-    PermissionDecision decision,
-    bool is_final_decision) {
-  DCHECK(is_final_decision);
+    const permissions::PermissionPromptDecision& decision) {
+  DCHECK(decision.is_final);
 
-  if (decision != PermissionDecision::kAllow ||
+  if (decision.overall_decision != PermissionDecision::kAllow ||
       !nfc_system_level_setting_->IsNfcAccessPossible() ||
       nfc_system_level_setting_->IsNfcSystemLevelSettingEnabled()) {
     NfcPermissionContext::NotifyPermissionSet(request_data, std::move(callback),
-                                              persist, decision,
-                                              is_final_decision);
+                                              persist, decision);
     return;
   }
 
@@ -57,7 +58,9 @@ void NfcPermissionContextAndroid::NotifyPermissionSet(
   if (!delegate_->IsInteractable(web_contents)) {
     ContentSettingPermissionContextBase::NotifyPermissionSet(
         request_data, std::move(callback), false /* persist */,
-        PermissionDecision::kDeny, is_final_decision);
+        permissions::PermissionPromptDecision{PermissionDecision::kDeny,
+                                              decision.prompt_options,
+                                              decision.is_final});
     return;
   }
 
@@ -67,7 +70,7 @@ void NfcPermissionContextAndroid::NotifyPermissionSet(
           &NfcPermissionContextAndroid::OnNfcSystemLevelSettingPromptClosed,
           weak_factory_.GetWeakPtr(), request_data.id,
           request_data.requesting_origin, request_data.embedding_origin,
-          std::move(callback), persist, decision));
+          std::move(callback), persist, decision.overall_decision));
 }
 
 void NfcPermissionContextAndroid::OnNfcSystemLevelSettingPromptClosed(
@@ -84,7 +87,10 @@ void NfcPermissionContextAndroid::OnNfcSystemLevelSettingPromptClosed(
                                     CreatePermissionDescriptorForPermissionType(
                                         blink::PermissionType::NFC)),
                             requesting_origin, embedding_origin),
-      std::move(callback), persist, decision, /*is_final_decision=*/true);
+      std::move(callback), persist,
+      PermissionPromptDecision{.overall_decision = decision,
+                               .prompt_options = std::monostate(),
+                               .is_final = true});
 }
 
 }  // namespace permissions

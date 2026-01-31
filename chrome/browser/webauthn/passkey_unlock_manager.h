@@ -9,6 +9,7 @@
 #include "base/observer_list_types.h"
 #include "base/scoped_observation.h"
 #include "base/sequence_checker.h"
+#include "chrome/browser/trusted_vault/trusted_vault_encryption_keys_tab_helper.h"
 #include "chrome/browser/webauthn/enclave_manager.h"
 #include "chrome/browser/webauthn/enclave_manager_interface.h"
 #include "components/keyed_service/core/keyed_service.h"
@@ -17,7 +18,6 @@
 #include "components/webauthn/core/browser/passkey_model_change.h"
 
 class Browser;
-class Profile;
 
 namespace syncer {
 class SyncService;
@@ -49,10 +49,8 @@ class PasskeyUnlockManager : public KeyedService,
 
   class Observer : public base::CheckedObserver {
    public:
-    // Notifies the observer that state has changed.
-    // TODO(crbug.com/461806010): Rename this method. The more suitable name for
-    // this method would be something like `OnPasskeyErrorUiStateChanged()`.
-    virtual void OnPasskeyUnlockManagerStateChanged() = 0;
+    // Notifies the observer that the passkey error UI state has changed.
+    virtual void OnPasskeyErrorUiStateChanged() = 0;
 
     // Notifies the observer that the passkey unlock manager is shutting down.
     virtual void OnPasskeyUnlockManagerShuttingDown() = 0;
@@ -61,7 +59,9 @@ class PasskeyUnlockManager : public KeyedService,
     virtual void OnPasskeyUnlockManagerIsReady() = 0;
   };
 
-  explicit PasskeyUnlockManager(Profile* profile);
+  PasskeyUnlockManager(EnclaveManagerInterface* enclave_manager,
+                       PasskeyModel* passkey_model,
+                       syncer::SyncService* sync_service);
   ~PasskeyUnlockManager() override;
   PasskeyUnlockManager(const PasskeyUnlockManager&) = delete;
   PasskeyUnlockManager(const PasskeyUnlockManager&&) = delete;
@@ -74,7 +74,9 @@ class PasskeyUnlockManager : public KeyedService,
   virtual bool ShouldDisplayErrorUi() const;
 
   // Opens a browser tab with a challenge for unlocking passkeys.
-  static void OpenTabWithPasskeyUnlockChallenge(Browser* browser);
+  static void OpenTabWithPasskeyUnlockChallenge(
+      Browser* browser,
+      trusted_vault::TrustedVaultUserActionTriggerForUMA trigger);
 
   // Methods providing the UI strings. Results depend on the experiment arms
   // configured by the feature parameter `kPasskeyUnlockErrorUiExperimentArm`.
@@ -92,16 +94,13 @@ class PasskeyUnlockManager : public KeyedService,
   static void RecordErrorUIEventType(ErrorUIEventType event_type);
 
  private:
-  // Returns the PasskeyModel associated with the profile passed to the
-  // constructor.
+  // Returns the PasskeyModel provided at construction.
   PasskeyModel* passkey_model();
 
-  // Returns the EnclaveManager associated with the profile passed to the
-  // constructor.
+  // Returns the EnclaveManager provided at construction.
   EnclaveManagerInterface* enclave_manager();
 
-  // Returns the SyncService associated with the profile passed to the
-  // constructor.
+  // Returns the SyncService provided at construction.
   syncer::SyncService* sync_service();
 
   // Updates the cached value of `has_passkeys_`.
@@ -162,6 +161,12 @@ class PasskeyUnlockManager : public KeyedService,
   void MaybeRecordDelayedPasskeyReadinessHistogram();
   // Records the `WebAuthentication.PasskeyReadiness` histogram.
   void RecordPasskeyReadinessHistogram();
+  // Schedules recording the `WebAuthentication.GpmPinStatus` histogram.
+  void MaybeRecordDelayedGpmPinStatusHistogram(
+      EnclaveManager::GpmPinAvailability gpm_pin_availability);
+  // Records the `WebAuthentication.GpmPinStatus` histogram.
+  void RecordGpmPinStatusHistogram(
+      EnclaveManager::GpmPinAvailability gpm_pin_availability);
 
   std::optional<bool> has_passkeys_;
   std::optional<bool> enclave_ready_;
@@ -180,6 +185,10 @@ class PasskeyUnlockManager : public KeyedService,
   // histogram needs to recorded. Set to true iff histogram was already
   // recorded.
   bool passkey_readiness_recorded_on_startup_ = false;
+  // Used for UMA to determine whether `WebAuthentication.GpmPinStatus`
+  // histogram needs to be recorded. Set to true iff histogram was already
+  // recorded.
+  bool gpm_pin_status_recorded_on_startup_ = false;
 
   SEQUENCE_CHECKER(sequence_checker_);
 

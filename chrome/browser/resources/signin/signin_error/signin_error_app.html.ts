@@ -12,25 +12,9 @@ export function getHtml(this: SigninErrorAppElement) {
   <div id="normal-error-message" class="details"
       ?hidden="${this.hideNormalError_}">
     <p>$i18nRaw{signinErrorMessage}</p>
-    <a id="learnMoreLink" href="#" @click="${this.onLearnMore_}"
-           ?hidden="${this.fromProfilePicker_}">
+    <a id="learnMoreLink" href="#" @click="${this.onLearnMore_}">
       $i18nRaw{signinErrorLearnMore}
     </a>
-  </div>
-  <div id="profile-blocking-error-message" class="details"
-      ?hidden="${this.hideProfileBlockingErrors_[0]}">
-    <div ?hidden="${this.hideProfileBlockingErrors_[1]}">
-      <cr-icon icon="cr:domain"></cr-icon>
-      <span>$i18n{profileBlockedMessage}</span>
-    </div>
-    <div ?hidden="${this.hideProfileBlockingErrors_[2]}">
-      <cr-icon icon="cr:info"></cr-icon>
-      <span>$i18n{profileBlockedAddPersonSuggestion}</span>
-    </div>
-    <div ?hidden="${this.hideProfileBlockingErrors_[3]}">
-      <cr-icon icon="cr:info"></cr-icon>
-      <span>$i18n{profileBlockedRemoveProfileSuggestion}</span>
-    </div>
   </div>
   <div class="action-container">
     <cr-button class="action-button" id="switchButton"

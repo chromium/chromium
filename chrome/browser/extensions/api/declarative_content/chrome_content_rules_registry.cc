@@ -4,7 +4,6 @@
 
 #include "chrome/browser/extensions/api/declarative_content/chrome_content_rules_registry.h"
 
-#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/extensions/extension_util.h"
@@ -123,7 +122,7 @@ void ChromeContentRulesRegistry::MonitorWebContentsForRuleEvaluation(
 void ChromeContentRulesRegistry::DidFinishNavigation(
     content::WebContents* contents,
     content::NavigationHandle* navigation_handle) {
-  if (base::Contains(active_rules_, contents)) {
+  if (active_rules_.contains(contents)) {
     EvaluationScope evaluation_scope(this);
     for (const std::unique_ptr<ContentPredicateEvaluator>& evaluator :
          evaluators_)
@@ -140,7 +139,7 @@ void ChromeContentRulesRegistry::WebContentsDestroyed(
 void ChromeContentRulesRegistry::OnWatchedPageChanged(
     content::WebContents* contents,
     const std::vector<std::string>& css_selectors) {
-  if (base::Contains(active_rules_, contents)) {
+  if (active_rules_.contains(contents)) {
     EvaluationScope evaluation_scope(this);
     for (const std::unique_ptr<ContentPredicateEvaluator>& evaluator :
          evaluators_) {
@@ -177,7 +176,7 @@ ChromeContentRulesRegistry::CreateRule(
 
   std::vector<std::unique_ptr<const ContentAction>> actions;
   for (const base::Value& value : api_rule.actions) {
-    // TODO(crbug.com/40832669): Migrate api_rule to use base::Value::Dict to
+    // TODO(crbug.com/40832669): Migrate api_rule to use base::DictValue to
     // avoid conversion.
     if (!value.is_dict()) {
       return nullptr;
@@ -334,7 +333,7 @@ std::string ChromeContentRulesRegistry::RemoveRulesImpl(
 
     // Remove the ContentRule from active_rules_.
     for (auto& tab_rules_pair : active_rules_) {
-      if (base::Contains(tab_rules_pair.second, rule)) {
+      if (tab_rules_pair.second.contains(rule)) {
         ContentAction::ApplyInfo apply_info =
             {rule->extension, browser_context(), tab_rules_pair.first,
              rule->priority};
@@ -377,7 +376,7 @@ void ChromeContentRulesRegistry::EvaluateConditionsForTab(
     content::WebContents* tab) {
   std::set<raw_ptr<const ContentRule, SetExperimental>> matching_rules =
       GetMatchingRules(tab);
-  if (matching_rules.empty() && !base::Contains(active_rules_, tab)) {
+  if (matching_rules.empty() && !active_rules_.contains(tab)) {
     return;
   }
 
@@ -386,7 +385,7 @@ void ChromeContentRulesRegistry::EvaluateConditionsForTab(
   for (const ContentRule* rule : matching_rules) {
     ContentAction::ApplyInfo apply_info =
         {rule->extension, browser_context(), tab, rule->priority};
-    if (!base::Contains(prev_matching_rules, rule)) {
+    if (!prev_matching_rules.contains(rule)) {
       for (const std::unique_ptr<const ContentAction>& action : rule->actions)
         action->Apply(apply_info);
     } else {
@@ -395,7 +394,7 @@ void ChromeContentRulesRegistry::EvaluateConditionsForTab(
     }
   }
   for (const ContentRule* rule : prev_matching_rules) {
-    if (!base::Contains(matching_rules, rule)) {
+    if (!matching_rules.contains(rule)) {
       ContentAction::ApplyInfo apply_info =
           {rule->extension, browser_context(), tab, rule->priority};
       for (const std::unique_ptr<const ContentAction>& action : rule->actions)

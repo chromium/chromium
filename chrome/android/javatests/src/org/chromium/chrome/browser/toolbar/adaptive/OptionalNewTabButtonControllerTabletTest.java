@@ -6,6 +6,8 @@ package org.chromium.chrome.browser.toolbar.adaptive;
 
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 
+import static org.chromium.base.test.transit.ViewFinder.waitForNoView;
+
 import android.content.res.Configuration;
 
 import androidx.test.filters.MediumTest;
@@ -29,7 +31,6 @@ import org.chromium.chrome.test.transit.ChromeTransitTestRules;
 import org.chromium.chrome.test.transit.page.WebPageStation;
 import org.chromium.chrome.test.util.ActivityTestUtils;
 import org.chromium.ui.base.DeviceFormFactor;
-import org.chromium.ui.test.util.ViewUtils;
 
 /**
  * Tests {@link OptionalNewTabButtonController} on tablet. Phone functionality is tested by {@link
@@ -78,8 +79,7 @@ public class OptionalNewTabButtonControllerTabletTest {
                 mActivityTestRule.getActivity(), Configuration.ORIENTATION_LANDSCAPE);
         mActivityTestRule.loadUrl(mTestPageUrl, /* secondsToWait= */ 10);
 
-        ViewUtils.waitForViewCheckingState(
-                withId(R.id.optional_toolbar_button), ViewUtils.VIEW_GONE | ViewUtils.VIEW_NULL);
+        waitForNoView(withId(R.id.optional_toolbar_button));
     }
 
     @Test
@@ -89,7 +89,6 @@ public class OptionalNewTabButtonControllerTabletTest {
                 mActivityTestRule.getActivity(), Configuration.ORIENTATION_PORTRAIT);
         mActivityTestRule.loadUrl(mTestPageUrl, /* secondsToWait= */ 10);
 
-        ViewUtils.waitForViewCheckingState(
-                withId(R.id.optional_toolbar_button), ViewUtils.VIEW_GONE | ViewUtils.VIEW_NULL);
+        waitForNoView(withId(R.id.optional_toolbar_button));
     }
 }

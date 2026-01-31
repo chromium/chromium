@@ -67,14 +67,13 @@ import type {ViewerToolbarElement} from './elements/viewer_toolbar.js';
 import {Ink2Manager} from './ink2_manager.js';
 //</if>
 import {LocalStorageProxyImpl} from './local_storage_proxy.js';
-import {convertDocumentDimensionsMessage, convertFormFocusChangeMessage, convertLoadProgressMessage} from './message_converter.js';
+import {convertDocumentDimensionsMessage, convertFormFocusChangeMessage, convertLoadProgressMessage, convertSendKeyEventMessage} from './message_converter.js';
 import {record, recordEnumeration, UserAction} from './metrics.js';
 import {NavigatorDelegateImpl, PdfNavigatorImpl, WindowOpenDisposition} from './navigator.js';
 import type {PdfNavigator} from './navigator.js';
-import {deserializeKeyEvent, LoadState} from './pdf_scripting_api.js';
+import {LoadState} from './pdf_scripting_api.js';
 import {getCss} from './pdf_viewer.css.js';
 import {getHtml} from './pdf_viewer.html.js';
-import type {KeyEventData} from './pdf_viewer_base.js';
 import {PdfViewerBaseElement} from './pdf_viewer_base.js';
 import {PdfViewerPrivateProxyImpl} from './pdf_viewer_private_proxy.js';
 import type {DocumentDimensionsMessageData} from './pdf_viewer_utils.js';
@@ -1057,9 +1056,7 @@ export class PdfViewerElement extends PdfViewerBaseElement {
             caretBrowsingEnabledData.caretBrowsingEnabled;
         return;
       case 'sendKeyEvent':
-        const keyEventData = data as unknown as KeyEventData;
-        const keyEvent =
-            deserializeKeyEvent(keyEventData.keyEvent) as ExtendedKeyEvent;
+        const keyEvent = convertSendKeyEventMessage(data);
         keyEvent.fromPlugin = true;
         this.handleKeyEvent(keyEvent);
         return;

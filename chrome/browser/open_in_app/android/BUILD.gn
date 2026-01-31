@@ -1,0 +1,23 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/android/rules.gni")
+
+android_library("java") {
+  sources = [
+    "java/src/org/chromium/chrome/browser/open_in_app/CustomTabOpenInAppEntryPoint.java",
+    "java/src/org/chromium/chrome/browser/open_in_app/OpenInAppDelegate.java",
+    "java/src/org/chromium/chrome/browser/open_in_app/OpenInAppEntryPoint.java",
+    "java/src/org/chromium/chrome/browser/open_in_app/OpenInAppMenuItemProvider.java",
+    "java/src/org/chromium/chrome/browser/open_in_app/OpenInAppUtils.java",
+    "java/src/org/chromium/chrome/browser/open_in_app/TabbedOpenInAppEntryPoint.java",
+  ]
+
+  deps = [
+    "//base:base_java",
+    "//chrome/browser/flags:java",
+    "//chrome/browser/tab:java",
+    "//components/cached_flags:java",
+  ]
+}

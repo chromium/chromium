@@ -17,7 +17,7 @@
 
 using ::base::test::EqualsProto;
 using ::testing::IsEmpty;
-using Dict = ::base::Value::Dict;
+using Dict = ::base::DictValue;
 
 namespace chromeos {
 
@@ -33,15 +33,15 @@ ManagedPrinterConfiguration ValidManagedPrinter() {
 }
 
 TEST(ManagedPrinterConfigFromDict, EmptyDict) {
-  auto managed_printer = ManagedPrinterConfigFromDict(base::Value::Dict());
+  auto managed_printer = ManagedPrinterConfigFromDict(base::DictValue());
   ASSERT_TRUE(managed_printer.has_value());
   EXPECT_THAT(*managed_printer,
               EqualsProto(ManagedPrinterConfiguration::default_instance()));
 }
 
 TEST(ManagedPrinterConfigFromDict, DictWithMultiplePpdResources) {
-  auto printer_dict = base::Value::Dict().Set(
-      "ppd_resource", base::Value::Dict()
+  auto printer_dict = base::DictValue().Set(
+      "ppd_resource", base::DictValue()
                           .Set("autoconf", true)
                           .Set("user_supplied_ppd_uri", "a")
                           .Set("effective_model", "b"));
@@ -51,12 +51,12 @@ TEST(ManagedPrinterConfigFromDict, DictWithMultiplePpdResources) {
 
 TEST(ManagedPrinterConfigFromDict, DictWithMakeAndModelPpdResource) {
   auto printer_dict =
-      base::Value::Dict()
+      base::DictValue()
           .Set("guid", "a")
           .Set("display_name", "b")
           .Set("description", "c")
           .Set("uri", "d")
-          .Set("ppd_resource", base::Value::Dict().Set("effective_model", "e"));
+          .Set("ppd_resource", base::DictValue().Set("effective_model", "e"));
 
   auto managed_printer = ManagedPrinterConfigFromDict(printer_dict);
 
@@ -72,12 +72,12 @@ TEST(ManagedPrinterConfigFromDict, DictWithMakeAndModelPpdResource) {
 
 TEST(ManagedPrinterConfigFromDict, DictWithAutoconfPpdResource) {
   auto printer_dict =
-      base::Value::Dict()
+      base::DictValue()
           .Set("guid", "a")
           .Set("display_name", "b")
           .Set("description", "c")
           .Set("uri", "d")
-          .Set("ppd_resource", base::Value::Dict().Set("autoconf", false));
+          .Set("ppd_resource", base::DictValue().Set("autoconf", false));
 
   auto managed_printer = ManagedPrinterConfigFromDict(printer_dict);
 
@@ -93,13 +93,13 @@ TEST(ManagedPrinterConfigFromDict, DictWithAutoconfPpdResource) {
 
 TEST(ManagedPrinterConfigFromDict, DictWithUserSuppliedPpdUriPpdResource) {
   auto printer_dict =
-      base::Value::Dict()
+      base::DictValue()
           .Set("guid", "a")
           .Set("display_name", "b")
           .Set("description", "c")
           .Set("uri", "d")
           .Set("ppd_resource",
-               base::Value::Dict().Set("user_supplied_ppd_uri", "e"));
+               base::DictValue().Set("user_supplied_ppd_uri", "e"));
 
   auto managed_printer = ManagedPrinterConfigFromDict(printer_dict);
 
@@ -114,10 +114,10 @@ TEST(ManagedPrinterConfigFromDict, DictWithUserSuppliedPpdUriPpdResource) {
 }
 
 TEST(ManagedPrinterConfigFromDict, DictWithPrintJobOptions) {
-  auto printer_dict = base::Value::Dict().Set(
+  auto printer_dict = base::DictValue().Set(
       "print_job_options",
-      base::Value::Dict().Set("color",
-                              base::Value::Dict().Set("default_value", true)));
+      base::DictValue().Set("color",
+                            base::DictValue().Set("default_value", true)));
 
   auto managed_printer = ManagedPrinterConfigFromDict(printer_dict);
 

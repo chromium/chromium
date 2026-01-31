@@ -1,4 +1,5 @@
 include_rules = [
+  # keep-sorted start
   "+ios/chrome/browser/metrics/model/constants.h",
   "+ios/chrome/browser/push_notification/model",
   "+ios/chrome/browser/search_engines/model/template_url_service_factory.h",
@@ -6,4 +7,5 @@ include_rules = [
   "+ios/chrome/browser/signin/model/authentication_service_factory.h",
   "+ios/chrome/browser/signin/model/chrome_account_manager_service_factory.h",
   "+ios/chrome/browser/signin/model/identity_manager_factory.h",
+  # keep-sorted end
 ]

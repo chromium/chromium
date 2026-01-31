@@ -71,7 +71,7 @@ base::ListValue TwoQwacCertBindingBuilder::GenerateX5cHeaderValue() {
 
 base::DictValue TwoQwacCertBindingBuilder::GenerateSigDHeaderValue() {
   base::DictValue sig_d =
-      base::Value::Dict()
+      base::DictValue()
           .Set("mId", "http://uri.etsi.org/19182/ObjectIdByURIHash")
           .Set("hashM", HashAlg());
   base::ListValue pars;

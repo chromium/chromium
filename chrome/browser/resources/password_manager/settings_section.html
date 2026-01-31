@@ -64,14 +64,12 @@
       </extension-controlled-indicator>
     </div>
   </template>
-  <template is="dom-if" if="[[isPasskeyUpgradeSettingsToggleVisible_]]">
-    <pref-toggle-button id="passkeyUpgradeToggle"
-        label="$i18n{passkeyUpgradeSettingsToggleLabel}"
-        sub-label="$i18n{passkeyUpgradeSettingsToggleSubLabel}"
-        pref="{{prefs.credentials_enable_automatic_passkey_upgrades}}"
-        hidden="[[!prefs.credentials_enable_service.value]]">
-    </pref-toggle-button>
-  </template>
+  <pref-toggle-button id="passkeyUpgradeToggle"
+      label="$i18n{passkeyUpgradeSettingsToggleLabel}"
+      sub-label="$i18n{passkeyUpgradeSettingsToggleSubLabel}"
+      pref="{{prefs.credentials_enable_automatic_passkey_upgrades}}"
+      hidden="[[!prefs.credentials_enable_service.value]]">
+  </pref-toggle-button>
   <pref-toggle-button id="autosigninToggle" class="hr"
       label="$i18n{autosigninLabel}"
       sub-label="$i18n{autosigninDescription}"
@@ -191,7 +189,7 @@
     <div id="actorLoginPermissionsList" class="hr">
       <template is="dom-repeat" items="[[actorLoginPermissions_]]">
         <div class="flex-centered">
-          <site-favicon class="favicon" domain="[[item.domainInfo.url.url]]"
+          <site-favicon class="favicon" domain="[[item.domainInfo.url]]"
               url="[[item.faviconUrl.url]]">
           </site-favicon>
           <div class="site-content flex-centered"

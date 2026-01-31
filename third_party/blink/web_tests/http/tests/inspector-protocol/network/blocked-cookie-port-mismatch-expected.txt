@@ -12,7 +12,6 @@ Cookie ports do not match: [
             name : foo
             path : /
             priority : Medium
-            sameParty : false
             sameSite : None
             secure : true
             session : true

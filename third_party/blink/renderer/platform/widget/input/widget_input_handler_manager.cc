@@ -596,32 +596,17 @@ void WidgetInputHandlerManager::ObserveGestureEventOnMainThread(
                                     std::move(observe_gesture_event_closure));
 }
 
-void WidgetInputHandlerManager::LogInputTimingUMA() {
-  bool should_emit_uma;
-  {
-    base::AutoLock lock(uma_data_lock_);
-    should_emit_uma = !uma_data_.have_emitted_uma;
-    uma_data_.have_emitted_uma = true;
-  }
-
-  if (!should_emit_uma)
-    return;
-
-  InitialInputTiming lifecycle_state = InitialInputTiming::kBeforeLifecycle;
-  if (!(suppressing_input_events_state_ &
-        (unsigned)SuppressingInputEventsBits::kDeferMainFrameUpdates)) {
-    if (suppressing_input_events_state_ &
-        (unsigned)SuppressingInputEventsBits::kDeferCommits) {
-      lifecycle_state = InitialInputTiming::kBeforeCommit;
-    } else if (suppressing_input_events_state_ &
-               (unsigned)SuppressingInputEventsBits::kHasNotPainted) {
-      lifecycle_state = InitialInputTiming::kBeforeFirstPaint;
-    } else {
-      lifecycle_state = InitialInputTiming::kAfterFirstPaint;
-    }
-  }
-
-  UMA_HISTOGRAM_ENUMERATION("PaintHolding.InputTiming4", lifecycle_state);
+void WidgetInputHandlerManager::PostHandwritingRadiusToInputThread(
+    int handwriting_radius) {
+  base::OnceClosure init_closure = base::BindOnce(
+      [](base::WeakPtr<WidgetInputHandlerManager> weak_ptr, int radius) {
+        if (weak_ptr && weak_ptr->input_handler_proxy_) {
+          weak_ptr->input_handler_proxy_->SetHandwritingRadiusOnInputThread(
+              radius);
+        }
+      },
+      weak_ptr_factory_.GetWeakPtr(), handwriting_radius);
+  InputThreadTaskRunner()->PostTask(FROM_HERE, std::move(init_closure));
 }
 
 void WidgetInputHandlerManager::RecordEventMetricsForPaintTiming(
@@ -727,8 +712,6 @@ void WidgetInputHandlerManager::DispatchEvent(
       event_type == WebInputEvent::Type::kPointerMove;
   if (!event_is_mouse_or_pointer_move &&
       event_type != WebInputEvent::Type::kTouchMove) {
-    LogInputTimingUMA();
-
     // We only count it if the only reason we are suppressing is because we
     // haven't painted yet.
     if (suppressing_input_events_state_ ==

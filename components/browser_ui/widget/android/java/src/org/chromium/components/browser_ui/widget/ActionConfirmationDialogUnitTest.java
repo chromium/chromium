@@ -126,7 +126,7 @@ public class ActionConfirmationDialogUnitTest {
         assertEquals("Title", propertyModel.get(ModalDialogProperties.TITLE));
         View customView = propertyModel.get(ModalDialogProperties.CUSTOM_VIEW);
         TextView descriptionTextView = customView.findViewById(R.id.description_text_view);
-        assertEquals("Learn more", descriptionTextView.getText());
+        assertEquals("Learn more", descriptionTextView.getText().toString());
     }
 
     @Test
@@ -148,7 +148,7 @@ public class ActionConfirmationDialogUnitTest {
 
         View customView = propertyModel.get(ModalDialogProperties.CUSTOM_VIEW);
         TextView descriptionTextView = customView.findViewById(R.id.description_text_view);
-        assertEquals("Remove 'test@gmail.com'", descriptionTextView.getText());
+        assertEquals("Remove 'test@gmail.com'", descriptionTextView.getText().toString());
     }
 
     @Test

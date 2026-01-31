@@ -12,6 +12,8 @@ from contextlib import contextmanager
 from pkg_resources import packaging
 from typing import Optional
 
+from chrome.test.variations.test_utils.helper import retry
+
 import attr
 
 from selenium import webdriver
@@ -21,6 +23,7 @@ from selenium.webdriver.chrome.service import Service as ChromeService
 
 DEFAULT_WAIT_TIMEOUT_SECONDS = 60
 DEFAULT_WAIT_INTERVAL_SECONDS = 1
+DRIVER_CREATION_RETRY_COUNT = 3
 
 @attr.attrs()
 class DriverFactory:
@@ -62,6 +65,10 @@ class DriverFactory:
       # the test time. Chrome should start in 10 seconds.
       options.add_experimental_option('browserStartupTimeout', 10000)
     return options
+
+  @retry(DRIVER_CREATION_RETRY_COUNT)
+  def get_driver(self, options):
+    return webdriver.Chrome(service=self.get_driver_service(), options=options)
 
   def get_driver_session_folder(self, session_counter: int) -> str:
     folder = os.path.join(self.artifacts_path, f'session-{session_counter}')

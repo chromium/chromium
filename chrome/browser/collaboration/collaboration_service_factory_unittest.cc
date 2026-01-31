@@ -30,13 +30,17 @@ class CollaborationServiceFactoryTest : public testing::Test {
   ~CollaborationServiceFactoryTest() override = default;
 
   void InitService(bool enable_feature) {
-    profile_ = TestingProfile::Builder()
-                   .AddTestingFactory(SyncServiceFactory::GetInstance(),
-                                      SyncServiceFactory::GetDefaultFactory())
-                   .Build();
+    TestingProfile::Builder builder;
+    // Set the testing factory for SyncService before building the profile.
+    builder.AddTestingFactory(SyncServiceFactory::GetInstance(),
+                              base::BindRepeating(&TestingSyncFactoryFunction));
+
+    profile_ = builder.Build();
+
+    // Get the TestSyncService instance that was created by the factory.
     test_sync_service_ = static_cast<syncer::TestSyncService*>(
-        SyncServiceFactory::GetInstance()->SetTestingFactoryAndUse(
-            profile_.get(), base::BindRepeating(&TestingSyncFactoryFunction)));
+        SyncServiceFactory::GetForProfile(profile_.get()));
+
     if (enable_feature) {
       scoped_feature_list_.InitWithFeaturesAndParameters(
           {{data_sharing::features::kDataSharingFeature, {}}}, {});

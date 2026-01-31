@@ -137,12 +137,14 @@ ClassicScript* ClassicScript::CreateUnspecifiedScript(
 
 ClassicScript* ClassicScript::CreateUnspecifiedScript(
     const WebScriptSource& source,
-    SanitizeScriptErrors sanitize_script_errors) {
+    SanitizeScriptErrors sanitize_script_errors,
+    ScriptStreamer* streamer) {
   return MakeGarbageCollected<ClassicScript>(
       ParkableString(String(source.code).Impl()),
       StripFragmentIdentifier(source.url), KURL() /* base_url */,
       ScriptFetchOptions(), ScriptSourceLocationType::kUnknown,
-      sanitize_script_errors);
+      sanitize_script_errors, nullptr, TextPosition::MinimumPosition(),
+      streamer, ScriptStreamer::NotStreamingReason::kInlineScript);
 }
 
 ClassicScript::ClassicScript(

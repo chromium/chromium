@@ -3,6 +3,7 @@
 # found in the LICENSE file.
 
 import("//build/config/chromeos/ui_mode.gni")
+import("//components/guest_view/buildflags/buildflags.gni")
 import("//extensions/buildflags/buildflags.gni")
 
 # APIs and features included in both normal desktop builds and the experimental
@@ -14,15 +15,14 @@ extensions_api_schema_files_ = [
   "dns.webidl",
   "events.json",
   "extension_types.json",
-  "file_handlers.idl",
-  "icon_variants.idl",
+  "file_handlers.webidl",
   "i18n.json",
   "idle.json",
   "management.json",
   "metrics_private.json",
   "offscreen.idl",
   "power.idl",
-  "protocol_handlers.idl",
+  "protocol_handlers.webidl",
   "runtime.json",
   "storage.json",
   "system_cpu.webidl",
@@ -38,17 +38,26 @@ extensions_api_schema_files_ = [
 # In many cases, this includes schemas used to generate types used in manifest
 # parsing.
 extensions_types_only_schema_files_ = [
-  "chrome_url_overrides.idl",
+  "chrome_url_overrides.webidl",
   "content_scripts.idl",
-  "cross_origin_isolation.idl",
+  "cross_origin_isolation.webidl",
   "extensions_manifest_types.json",
   "incognito.json",
-  "oauth2.idl",
+  "oauth2.webidl",
   "requirements.json",
-  "shared_module.idl",
-  "web_accessible_resources_mv2.idl",
-  "web_accessible_resources.idl",
+  "shared_module.webidl",
+  "web_accessible_resources_mv2.webidl",
+  "web_accessible_resources.webidl",
 ]
+
+if (enable_guest_view) {
+  extensions_api_schema_files_ += [
+    "extension_options_internal.webidl",
+    "guest_view_internal.json",
+    "icon_variants.idl",
+    "web_view_internal.json",
+  ]
+}
 
 # APIs that are not currently supported on the experimental desktop-android.
 if (enable_extensions) {
@@ -66,10 +75,8 @@ if (enable_extensions) {
     "bluetooth.webidl",
     "cec_private.webidl",
     "clipboard.webidl",
-    "extension_options_internal.webidl",
     "feedback_private.idl",
     "file_system.idl",
-    "guest_view_internal.json",
     "hid.idl",
     "mime_handler_private.idl",
     "mime_handler_view_guest_internal.json",
@@ -88,7 +95,6 @@ if (enable_extensions) {
     "usb.webidl",
     "virtual_keyboard_private.json",
     "virtual_keyboard.webidl",
-    "web_view_internal.json",
   ]
 
   if (is_chromeos) {

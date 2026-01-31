@@ -117,8 +117,8 @@ def _ScopedHistogramName(metric_name, histogram_name):
   """
   metric_suffix = '_metric'
   suffix_length = len(metric_suffix)
-  # TODO(crbug.com/40102479): Decide on whether metrics should always have
-  # '_metric' suffix.
+  # TBMv3 was deprioritized, so the metric naming convention (with or without
+  # '_metric' suffix) was left flexible. See crbug.com/40102479 for context.
   if metric_name[-suffix_length:] == metric_suffix:
     scope = metric_name[:-suffix_length]
   else:

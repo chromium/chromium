@@ -111,7 +111,9 @@ public class VirtualKeyboardResizeTest {
                             mActivityTestRule
                                     .getKeyboardDelegate()
                                     .isKeyboardShowing(
-                                            mActivityTestRule.getActivity().getTabsView());
+                                            mActivityTestRule
+                                                    .getActivity()
+                                                    .getTabsViewForTesting());
                     Criteria.checkThat(isKeyboardShowing, Matchers.is(show));
                 },
                 TEST_TIMEOUT,

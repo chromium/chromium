@@ -7,6 +7,7 @@
 
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/autofill/autofill_ai/autofill_ai_import_data_controller.h"
+#include "chrome/browser/ui/autofill/autofill_ai/entity_attribute_update_details.h"
 #include "chrome/browser/ui/autofill/autofill_bubble_base.h"
 #include "chrome/browser/ui/views/autofill/autofill_location_bar_bubble.h"
 #include "ui/base/metadata/metadata_header_macros.h"
@@ -44,9 +45,7 @@ class AutofillAiImportDataBubbleView : public AutofillLocationBarBubble {
   // Creates a row displayed in the dialog. This row contains information
   // about the entity to be saved or updated.
   std::unique_ptr<views::View> BuildEntityAttributeRow(
-      const AutofillAiImportDataController::EntityAttributeUpdateDetails&
-          detail);
-
+      const EntityAttributeUpdateDetails& detail);
 
   void OnDialogAccepted() const;
 

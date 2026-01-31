@@ -169,9 +169,8 @@ bool ValidateConnection(const HttpResponseHeaders* headers,
   return true;
 }
 
-base::Value::Dict NetLogFailureParam(int net_error,
-                                     const std::string& message) {
-  base::Value::Dict dict;
+base::DictValue NetLogFailureParam(int net_error, const std::string& message) {
+  base::DictValue dict;
   dict.Set("net_error", net_error);
   dict.Set("message", message);
   return dict;

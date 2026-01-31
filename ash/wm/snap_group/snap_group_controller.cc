@@ -28,7 +28,6 @@
 #include "ash/wm/wm_metrics.h"
 #include "base/check.h"
 #include "base/check_op.h"
-#include "base/containers/contains.h"
 #include "base/containers/unique_ptr_adapters.h"
 #include "base/metrics/user_metrics.h"
 #include "base/numerics/ranges.h"
@@ -186,8 +185,8 @@ SnapGroup* SnapGroupController::AddSnapGroup(
     return nullptr;
   }
 
-  if (base::Contains(window_to_snap_group_map_, window1) ||
-      base::Contains(window_to_snap_group_map_, window2)) {
+  if (window_to_snap_group_map_.contains(window1) ||
+      window_to_snap_group_map_.contains(window2)) {
     return nullptr;
   }
 

@@ -8,6 +8,9 @@
 #include "chrome/common/pref_names.h"
 #include "components/policy/policy_constants.h"
 #include "components/prefs/pref_value_map.h"
+#include "extensions/buildflags/buildflags.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 namespace {
 // Values for the ExtensionDeveloperModeSettings policy. These must be in sync

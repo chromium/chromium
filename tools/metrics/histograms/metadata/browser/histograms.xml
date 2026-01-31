@@ -111,7 +111,7 @@ chromium-metrics-reviews@google.com.
 </variants>
 
 <histogram name="Browser.Actions.PinnedActionsCount" units="actions"
-    expires_after="2026-04-26">
+    expires_after="2026-06-28">
   <owner>corising@chromium.org</owner>
   <owner>top-chrome-desktop-ui@google.com</owner>
   <summary>
@@ -191,7 +191,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Browser.ChromeOS.HatsStatus" enum="HatsStatus"
-    expires_after="2026-05-03">
+    expires_after="2026-07-05">
   <owner>aalsum@chromium.org</owner>
   <owner>chromeos-data-eng@google.com</owner>
   <summary>
@@ -205,7 +205,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Browser.CookieAccessObserver.{CookieAccessReceiver}.Duration.Subsampled"
-    units="microseconds" expires_after="2026-05-10">
+    units="microseconds" expires_after="2026-07-12">
   <owner>acondor@chromium.org</owner>
   <owner>clank-performance-team@google.com</owner>
   <summary>
@@ -218,7 +218,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Browser.DarkModeStatus" enum="DarkModeStatus"
-    expires_after="2026-05-17">
+    expires_after="2026-07-19">
   <owner>lgrey@chromium.org</owner>
   <owner>robliao@chromium.org</owner>
   <summary>
@@ -228,10 +228,11 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Browser.ERP.CachedEventsCountExp" units="events"
-    expires_after="2026-05-01">
-  <owner>djzhang@google.com</owner>
-  <owner>jdudder@google.com</owner>
-  <owner>cros-reporting-team@google.com</owner>
+    expires_after="2026-07-05">
+  <owner>nancylanxiao@google.com</owner>
+  <owner>xanth@google.com</owner>
+  <owner>domfc@google.com</owner>
+  <owner>cbe-cep-eng@google.com</owner>
   <summary>
     Reflects cached events count: presents number of times a single event is
     received and placed in cache. Per-event count is incremented every time an
@@ -250,9 +251,10 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Browser.ERP.ConfigFileParsingError"
     enum="EnterpriseCloudReportingStatusCode" expires_after="2026-11-01">
-  <owner>djzhang@google.com</owner>
-  <owner>jdudder@google.com</owner>
-  <owner>cros-reporting-team@google.com</owner>
+  <owner>nancylanxiao@google.com</owner>
+  <owner>xanth@google.com</owner>
+  <owner>domfc@google.com</owner>
+  <owner>cbe-cep-eng@google.com</owner>
   <summary>
     Recorded when RecordHandlerImpl catches an error while trying to parse the
     configuration file that was sent from the reporting server.
@@ -261,9 +263,10 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Browser.ERP.ConfigFileSignatureVerificationError"
     enum="EnterpriseCloudReportingStatusCode" expires_after="2026-11-01">
-  <owner>djzhang@google.com</owner>
-  <owner>jdudder@google.com</owner>
-  <owner>cros-reporting-team@google.com</owner>
+  <owner>nancylanxiao@google.com</owner>
+  <owner>xanth@google.com</owner>
+  <owner>domfc@google.com</owner>
+  <owner>cbe-cep-eng@google.com</owner>
   <summary>
     Recorded when ConfigurationFileController encounters an error while trying
     to verify the signature and the signed message received from the reporting
@@ -272,10 +275,11 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Browser.ERP.DataLossErrorReason"
-    enum="DataLossErrorReasonBrowser" expires_after="2026-05-01">
-  <owner>djzhang@google.com</owner>
-  <owner>jdudder@google.com</owner>
-  <owner>cros-reporting-team@google.com</owner>
+    enum="DataLossErrorReasonBrowser" expires_after="2026-07-05">
+  <owner>nancylanxiao@google.com</owner>
+  <owner>xanth@google.com</owner>
+  <owner>domfc@google.com</owner>
+  <owner>cbe-cep-eng@google.com</owner>
   <summary>
     Recorded once each time reporting::error::DATA_LOSS is returned in the
     browser. There is a 1:1 relationship between the UMA values and error
@@ -285,10 +289,11 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Browser.ERP.EnqueueFailureDestination"
-    enum="EnterpriseCloudReportingDestination" expires_after="2026-04-26">
-  <owner>djzhang@google.com</owner>
-  <owner>jdudder@google.com</owner>
-  <owner>cros-reporting-team@google.com</owner>
+    enum="EnterpriseCloudReportingDestination" expires_after="2026-06-28">
+  <owner>nancylanxiao@google.com</owner>
+  <owner>xanth@google.com</owner>
+  <owner>domfc@google.com</owner>
+  <owner>cbe-cep-eng@google.com</owner>
   <summary>
     Recorded when ReportQueue::Enqueue is called to post an event or metric to
     ERP. It counts occurences of the reporting destination for the record
@@ -297,10 +302,11 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Browser.ERP.EnqueueSuccessDestination"
-    enum="EnterpriseCloudReportingDestination" expires_after="2026-04-26">
-  <owner>djzhang@google.com</owner>
-  <owner>jdudder@google.com</owner>
-  <owner>cros-reporting-team@google.com</owner>
+    enum="EnterpriseCloudReportingDestination" expires_after="2026-06-28">
+  <owner>nancylanxiao@google.com</owner>
+  <owner>xanth@google.com</owner>
+  <owner>domfc@google.com</owner>
+  <owner>cbe-cep-eng@google.com</owner>
   <summary>
     Recorded when ReportQueue::Enqueue is called to post an event or metric to
     ERP. It counts occurences of the reporting destination for the record
@@ -310,9 +316,10 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Browser.ERP.EventEnqueueResult"
     enum="EnterpriseCloudReportingStatusCode" expires_after="2026-06-07">
-  <owner>djzhang@google.com</owner>
-  <owner>jdudder@google.com</owner>
-  <owner>cros-reporting-team@google.com</owner>
+  <owner>nancylanxiao@google.com</owner>
+  <owner>xanth@google.com</owner>
+  <owner>domfc@google.com</owner>
+  <owner>cbe-cep-eng@google.com</owner>
   <summary>
     Recorded when ReportQueue::Enqueue is called to post an event to ERP. It
     counts occurrences of the call returning success or each possible error
@@ -321,10 +328,11 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Browser.ERP.EventEnqueueResult.{Destination}"
-    enum="EnterpriseCloudReportingStatusCode" expires_after="2026-04-26">
-  <owner>djzhang@google.com</owner>
-  <owner>jdudder@google.com</owner>
-  <owner>cros-reporting-team@google.com</owner>
+    enum="EnterpriseCloudReportingStatusCode" expires_after="2026-06-28">
+  <owner>nancylanxiao@google.com</owner>
+  <owner>xanth@google.com</owner>
+  <owner>domfc@google.com</owner>
+  <owner>cbe-cep-eng@google.com</owner>
   <summary>
     Recorded when ReportQueue::Enqueue is called to post an event to ERP. It
     counts occurrences of the call returning success or each possible error
@@ -367,9 +375,10 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Browser.ERP.EventsUploadCountExp" units="uploads"
     expires_after="2026-12-07">
-  <owner>djzhang@google.com</owner>
-  <owner>jdudder@google.com</owner>
-  <owner>cros-reporting-team@google.com</owner>
+  <owner>nancylanxiao@google.com</owner>
+  <owner>xanth@google.com</owner>
+  <owner>domfc@google.com</owner>
+  <owner>cbe-cep-eng@google.com</owner>
   <summary>
     Reflects events upload count: presents number of times a single event is
     sent to the server. Per-event count is incremented every time the event is
@@ -387,9 +396,10 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Browser.ERP.EventUploadSizeAdjustment.{Param}" units="bytes"
     expires_after="2026-05-01">
-  <owner>djzhang@google.com</owner>
-  <owner>jdudder@google.com</owner>
-  <owner>cros-reporting-team@google.com</owner>
+  <owner>nancylanxiao@google.com</owner>
+  <owner>xanth@google.com</owner>
+  <owner>domfc@google.com</owner>
+  <owner>cbe-cep-eng@google.com</owner>
   <summary>
     {Param} informed by the Missive daemon. Updated every time the Missive
     daemon requests uploading.
@@ -407,9 +417,10 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Browser.ERP.FilteredOutEvents" enum="BooleanFiltered"
     expires_after="2026-05-01">
-  <owner>djzhang@google.com</owner>
-  <owner>jdudder@google.com</owner>
-  <owner>cros-reporting-team@google.com</owner>
+  <owner>nancylanxiao@google.com</owner>
+  <owner>xanth@google.com</owner>
+  <owner>domfc@google.com</owner>
+  <owner>cbe-cep-eng@google.com</owner>
   <summary>
     Records whether an event is filtered out by FilteredReportQueue.
   </summary>
@@ -417,9 +428,10 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Browser.ERP.MetricsReporting.EventMetricEnqueued"
     enum="EnterpriseCloudReportingMetricEventType" expires_after="2024-12-04">
-  <owner>djzhang@google.com</owner>
-  <owner>jdudder@google.com</owner>
-  <owner>cros-reporting-team@google.com</owner>
+  <owner>nancylanxiao@google.com</owner>
+  <owner>xanth@google.com</owner>
+  <owner>domfc@google.com</owner>
+  <owner>cbe-cep-eng@google.com</owner>
   <summary>
     Recorded when the MetricEventObserverManager enqueues an event metric. It
     counts occurences of the event type that was extracted from the event
@@ -429,9 +441,10 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Browser.ERP.MetricsReporting.{MetricCollector}NoMetricData"
     enum="EnterpriseCloudReportingDestination" expires_after="2026-11-22">
-  <owner>djzhang@google.com</owner>
-  <owner>jdudder@google.com</owner>
-  <owner>cros-reporting-team@google.com</owner>
+  <owner>nancylanxiao@google.com</owner>
+  <owner>xanth@google.com</owner>
+  <owner>domfc@google.com</owner>
+  <owner>cbe-cep-eng@google.com</owner>
   <summary>
     Recorded when {MetricCollector}::OnMetricDataCollected is triggered from
     samplers with no metric data to report. It counts occurences of the
@@ -446,9 +459,10 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Browser.ERP.MissiveClientDbusError"
     enum="EnterpriseReportingMissiveClientDbusError" expires_after="2026-02-22">
-  <owner>djzhang@google.com</owner>
-  <owner>jdudder@google.com</owner>
-  <owner>cros-reporting-team@google.com</owner>
+  <owner>nancylanxiao@google.com</owner>
+  <owner>xanth@google.com</owner>
+  <owner>domfc@google.com</owner>
+  <owner>cbe-cep-eng@google.com</owner>
   <summary>
     Recorded when the Missive client receives a response from sending a record
     to the Missive daemon over dBus. There are four types of responses. OK
@@ -461,10 +475,11 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Browser.ERP.PsrResult" enum="EnterpriseReportingPsrResult"
-    expires_after="2026-04-19">
-  <owner>djzhang@google.com</owner>
-  <owner>jdudder@google.com</owner>
-  <owner>cros-reporting-team@google.com</owner>
+    expires_after="2026-06-21">
+  <owner>nancylanxiao@google.com</owner>
+  <owner>xanth@google.com</owner>
+  <owner>domfc@google.com</owner>
+  <owner>cbe-cep-eng@google.com</owner>
   <summary>
     Records the result of obtaining PSR info from healthd in the metrics
     pipeline.
@@ -472,10 +487,11 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Browser.ERP.RateLimitedEvents" enum="BooleanAccepted"
-    expires_after="2026-05-10">
-  <owner>djzhang@google.com</owner>
-  <owner>jdudder@google.com</owner>
-  <owner>cros-reporting-team@google.com</owner>
+    expires_after="2026-07-12">
+  <owner>nancylanxiao@google.com</owner>
+  <owner>xanth@google.com</owner>
+  <owner>domfc@google.com</owner>
+  <owner>cbe-cep-eng@google.com</owner>
   <summary>
     Records whether an event is accepted by ReportQueue rate limiter.
   </summary>
@@ -483,9 +499,10 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Browser.ERP.RecordProcessedByServer" enum="Boolean"
     expires_after="2026-11-02">
-  <owner>djzhang@google.com</owner>
-  <owner>jdudder@google.com</owner>
-  <owner>cros-reporting-team@google.com</owner>
+  <owner>nancylanxiao@google.com</owner>
+  <owner>xanth@google.com</owner>
+  <owner>domfc@google.com</owner>
+  <owner>cbe-cep-eng@google.com</owner>
   <summary>
     Recorded when we send an encrypted record and receive a valid response from
     the server (i.e. no network errors). True if the server processed the
@@ -498,9 +515,10 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Browser.ERP.RecordsPerUploadFromNonChromeosDevice"
     units="records" expires_after="2026-05-01">
-  <owner>djzhang@google.com</owner>
-  <owner>jdudder@google.com</owner>
-  <owner>cros-reporting-team@google.com</owner>
+  <owner>nancylanxiao@google.com</owner>
+  <owner>xanth@google.com</owner>
+  <owner>domfc@google.com</owner>
+  <owner>cbe-cep-eng@google.com</owner>
   <summary>
     Recorded when uploading records to the reporting server from a non-ChromeOS
     device (i.e. using the realtime reporting pipeline). Counts the number of
@@ -512,9 +530,10 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Browser.ERP.RecordsPerUploadFrom{ManagementStatus}Device"
     units="records" expires_after="2026-05-01">
-  <owner>djzhang@google.com</owner>
-  <owner>jdudder@google.com</owner>
-  <owner>cros-reporting-team@google.com</owner>
+  <owner>nancylanxiao@google.com</owner>
+  <owner>xanth@google.com</owner>
+  <owner>domfc@google.com</owner>
+  <owner>cbe-cep-eng@google.com</owner>
   <summary>
     Recorded when uploading records to the reporting server. Counts the number
     of records batched into a single upload request from a {ManagementStatus}
@@ -529,9 +548,10 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Browser.ERP.ResponsePayloadSize" units="bytes"
     expires_after="2026-05-01">
-  <owner>djzhang@google.com</owner>
-  <owner>jdudder@google.com</owner>
-  <owner>cros-reporting-team@google.com</owner>
+  <owner>nancylanxiao@google.com</owner>
+  <owner>xanth@google.com</owner>
+  <owner>domfc@google.com</owner>
+  <owner>cbe-cep-eng@google.com</owner>
   <summary>
     The size of ERP's response payload as a JSON string when upload is
     successful. Updated every time when an upload succeeds AND at least one hour
@@ -542,9 +562,10 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Browser.ERP.RetryEnqueueRecordStatus"
     enum="EnterpriseCloudReportingStatusCode" expires_after="2026-12-01">
-  <owner>djzhang@google.com</owner>
-  <owner>jdudder@google.com</owner>
-  <owner>cros-reporting-team@google.com</owner>
+  <owner>nancylanxiao@google.com</owner>
+  <owner>xanth@google.com</owner>
+  <owner>domfc@google.com</owner>
+  <owner>cbe-cep-eng@google.com</owner>
   <summary>
     Success or failure status of enqueuing a record to Missive after failing to
     enqueue at least once due to Missive unavailablity. Recorded once the
@@ -553,10 +574,11 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Browser.ERP.SingleRequestPayloadSize" units="bytes"
-    expires_after="2026-05-24">
-  <owner>djzhang@google.com</owner>
-  <owner>jdudder@google.com</owner>
-  <owner>cros-reporting-team@google.com</owner>
+    expires_after="2026-07-26">
+  <owner>nancylanxiao@google.com</owner>
+  <owner>xanth@google.com</owner>
+  <owner>domfc@google.com</owner>
+  <owner>cbe-cep-eng@google.com</owner>
   <summary>
     The size of ERP's request payload as a JSON string when upload is
     successful. Updated every time when an upload succeeds.
@@ -564,10 +586,11 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Browser.ERP.TimeSpentRetryingEnqueueRecord" units="ms"
-    expires_after="2026-04-26">
-  <owner>djzhang@google.com</owner>
-  <owner>jdudder@google.com</owner>
-  <owner>cros-reporting-team@google.com</owner>
+    expires_after="2026-06-28">
+  <owner>nancylanxiao@google.com</owner>
+  <owner>xanth@google.com</owner>
+  <owner>domfc@google.com</owner>
+  <owner>cbe-cep-eng@google.com</owner>
   <summary>
     Amount of time spent re-trying to enqueue a record to Missive after failing
     to enqueue at least once due to Missive unavailablity. Recorded once the
@@ -577,9 +600,10 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Browser.ERP.UnavailableErrorReason"
     enum="UnavailableErrorReasonBrowser" expires_after="2026-05-01">
-  <owner>djzhang@google.com</owner>
-  <owner>jdudder@google.com</owner>
-  <owner>cros-reporting-team@google.com</owner>
+  <owner>nancylanxiao@google.com</owner>
+  <owner>xanth@google.com</owner>
+  <owner>domfc@google.com</owner>
+  <owner>cbe-cep-eng@google.com</owner>
   <summary>
     Recorded once each time reporting::error::UNAVAILABLE is returned in the
     browser. There is a 1:1 relationship between the UMA values and error
@@ -591,9 +615,10 @@ chromium-metrics-reviews@google.com.
 <histogram name="Browser.ERP.UnuploadedCrashShouldNotReportReason"
     enum="EnterpriseReportingUnuploadedCrashShouldNotReportReason"
     expires_after="2026-11-01">
-  <owner>djzhang@google.com</owner>
-  <owner>jdudder@google.com</owner>
-  <owner>cros-reporting-team@google.com</owner>
+  <owner>nancylanxiao@google.com</owner>
+  <owner>xanth@google.com</owner>
+  <owner>domfc@google.com</owner>
+  <owner>cbe-cep-eng@google.com</owner>
   <summary>
     The reason that an unuploaded crash is determined that it should or should
     not be reported in crash reporting. It is recorded every time an unuploaded
@@ -605,9 +630,10 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Browser.ERP.UnusualEnqueueTimestamp" enum="Boolean"
     expires_after="2026-05-01">
-  <owner>djzhang@google.com</owner>
-  <owner>jdudder@google.com</owner>
-  <owner>cros-reporting-team@google.com</owner>
+  <owner>nancylanxiao@google.com</owner>
+  <owner>xanth@google.com</owner>
+  <owner>domfc@google.com</owner>
+  <owner>cbe-cep-eng@google.com</owner>
   <summary>
     Would only be true. Recorded whenever an unusual timestamp is encountered
     when enqueuing a record, which will be rejected.
@@ -616,9 +642,10 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Browser.ERP.UploadMemoryUsagePercent" units="%"
     expires_after="2026-05-01">
-  <owner>djzhang@google.com</owner>
-  <owner>jdudder@google.com</owner>
-  <owner>cros-reporting-team@google.com</owner>
+  <owner>nancylanxiao@google.com</owner>
+  <owner>xanth@google.com</owner>
+  <owner>domfc@google.com</owner>
+  <owner>cbe-cep-eng@google.com</owner>
   <summary>
     Records memory usage by event uploader as a percent of total memory
     allocated for the client-side events upload handling. Metric is recorded
@@ -627,10 +654,11 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Browser.ERP.{ManagementStatus}UploadEncryptedReport"
-    enum="EnterpriseDMServerRequestSuccess" expires_after="2026-04-19">
-  <owner>djzhang@google.com</owner>
-  <owner>jdudder@google.com</owner>
-  <owner>cros-reporting-team@google.com</owner>
+    enum="EnterpriseDMServerRequestSuccess" expires_after="2026-06-21">
+  <owner>nancylanxiao@google.com</owner>
+  <owner>xanth@google.com</owner>
+  <owner>domfc@google.com</owner>
+  <owner>cbe-cep-eng@google.com</owner>
   <summary>
     Status of a completed ERP upload request from a {ManagementStatus} device.
     Either successful, with a failure or with a server error. Recorded when a
@@ -643,7 +671,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Browser.ERP.{Param}PayloadSizePerHour" units="KiB"
-    expires_after="2026-05-10">
+    expires_after="2026-07-19">
   <owner>djzhang@google.com</owner>
   <owner>jdudder@google.com</owner>
   <owner>cros-reporting-team@google.com</owner>
@@ -658,7 +686,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Browser.MainThreadsCongestion.1MinAfterResume" units="janks"
-    expires_after="2026-05-03">
+    expires_after="2026-07-05">
   <owner>kawasin@google.com</owner>
   <owner>baseos-perf@google.com</owner>
   <improvement direction="LOWER_IS_BETTER"/>
@@ -714,7 +742,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Browser.MainThreadsCongestion.LowMemory" units="janks"
-    expires_after="2026-04-26">
+    expires_after="2026-06-28">
   <owner>vovoy@chromium.org</owner>
   <owner>chromeos-memory@google.com</owner>
   <improvement direction="LOWER_IS_BETTER"/>
@@ -735,7 +763,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Browser.MainThreadsCongestion.Used" units="janks"
-    expires_after="2026-05-03">
+    expires_after="2026-07-05">
   <owner>pmonette@chromium.org</owner>
   <owner>catan-team@chromium.org</owner>
   <improvement direction="LOWER_IS_BETTER"/>
@@ -801,7 +829,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Browser.MainThreadsCongestion{UsageScenario}" units="janks"
-    expires_after="2026-04-26">
+    expires_after="2026-06-28">
   <owner>pmonette@chromium.org</owner>
   <owner>catan-team@chromium.org</owner>
   <improvement direction="LOWER_IS_BETTER"/>
@@ -935,7 +963,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Browser.PaintPreview.Player.CompositorProcessStartedCorrectly"
-    enum="BooleanSuccess" expires_after="2026-04-05">
+    enum="BooleanSuccess" expires_after="2026-07-26">
   <owner>ckitagawa@chromium.org</owner>
   <owner>fredmello@chromium.org</owner>
   <owner>chrome-fdt@google.com</owner>
@@ -945,7 +973,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Browser.PaintPreview.Player.CompositorProcessStartupTime"
-    units="ms" expires_after="2026-04-05">
+    units="ms" expires_after="2026-07-26">
   <owner>ckitagawa@chromium.org</owner>
   <owner>fredmello@chromium.org</owner>
   <owner>chrome-fdt@google.com</owner>
@@ -974,7 +1002,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Browser.PaintPreview.TabbedPlayer.CompositorFailureReason"
-    enum="TabbedPaintPreviewCompositorFailureReason" expires_after="2026-04-05">
+    enum="TabbedPaintPreviewCompositorFailureReason" expires_after="2026-07-26">
   <owner>ckitagawa@chromium.org</owner>
   <owner>fredmello@chromium.org</owner>
   <owner>chrome-fdt@google.com</owner>
@@ -1043,7 +1071,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Browser.PaintPreview.TabbedPlayer.UpTime{TabbedPaintPreviewPlayerUptime}"
-    units="ms" expires_after="2026-04-05">
+    units="ms" expires_after="2026-07-26">
   <owner>ckitagawa@chromium.org</owner>
   <owner>fredmello@chromium.org</owner>
   <owner>chrome-fdt@google.com</owner>
@@ -1081,7 +1109,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Browser.Responsiveness.IOJanksTotalPerMinute" units="janks"
-    expires_after="2026-05-03">
+    expires_after="2026-07-05">
   <owner>gab@chromium.org</owner>
   <owner>olivierli@chromium.org</owner>
   <summary>
@@ -1095,7 +1123,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Browser.Responsiveness.IOJankyIntervalsPerMinute"
-    units="janks" expires_after="2026-05-03">
+    units="janks" expires_after="2026-07-05">
   <owner>gab@chromium.org</owner>
   <owner>olivierli@chromium.org</owner>
   <summary>
@@ -1170,7 +1198,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Browser.Tabs.TabSwitchResult3{TabSwitchingType}"
-    enum="TabSwitchResult2" expires_after="2026-04-26">
+    enum="TabSwitchResult2" expires_after="2026-06-28">
   <owner>fdoray@chromium.org</owner>
   <owner>joenotcharles@google.com</owner>
   <owner>catan-team@chromium.org</owner>
@@ -1182,7 +1210,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Browser.Tabs.TotalIncompleteSwitchDuration3{TabSwitchingType}"
-    units="ms" expires_after="2026-05-03">
+    units="ms" expires_after="2026-07-05">
   <owner>fdoray@chromium.org</owner>
   <owner>jonross@chromium.org</owner>
   <owner>joenotcharles@google.com</owner>
@@ -1196,7 +1224,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Browser.Tabs.TotalSwitchDuration3{TabSwitchingType}"
-    units="ms" expires_after="2026-04-26">
+    units="ms" expires_after="2026-06-28">
   <owner>jonross@chromium.org</owner>
   <owner>joenotcharles@google.com</owner>
   <owner>catan-team@chromium.org</owner>
@@ -1222,7 +1250,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Browser.WindowCount.Incognito" units="units"
-    expires_after="2026-05-03">
+    expires_after="2026-07-05">
   <owner>rhalavati@chromium.org</owner>
   <owner>chrome-privacy-core@google.com</owner>
   <summary>
@@ -1257,7 +1285,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="BrowserRenderProcessHost.AvailableMemoryBeforeCreation.SpareRenderer"
-    units="MB" expires_after="2026-05-24">
+    units="MB" expires_after="2026-07-26">
   <owner>gjc@google.com</owner>
   <owner>chrome-loading@google.com</owner>
   <summary>
@@ -1268,7 +1296,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="BrowserRenderProcessHost.BlockedByFilterURL"
-    enum="RenderProcessHostBlockedURLReason" expires_after="2026-05-24">
+    enum="RenderProcessHostBlockedURLReason" expires_after="2026-07-26">
   <owner>creis@chromium.org</owner>
   <owner>site-isolation-dev@chromium.org</owner>
   <summary>
@@ -1386,7 +1414,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="BrowserRenderProcessHost.ExistingRendererIsInitializedAndNotDead"
-    enum="Boolean" expires_after="2026-04-26">
+    enum="Boolean" expires_after="2026-06-28">
   <owner>cduvall@chromium.org</owner>
   <owner>swarm-team@google.com</owner>
   <summary>
@@ -1397,7 +1425,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="BrowserRenderProcessHost.FastShutdownIfPossible.DelayReason"
-    enum="RenderProcessHostDelayShutdownReason" expires_after="2026-05-03">
+    enum="RenderProcessHostDelayShutdownReason" expires_after="2026-07-05">
   <owner>mych@chromium.org</owner>
   <owner>bfcache-dev@chromium.org</owner>
   <summary>
@@ -1436,7 +1464,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="BrowserRenderProcessHost.MaxOutermostMainFrames"
-    units="frames" expires_after="2026-05-03">
+    units="frames" expires_after="2026-07-05">
   <owner>dtapuska@chromium.org</owner>
   <owner>chrome-loading@google.com</owner>
   <summary>
@@ -1446,7 +1474,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="BrowserRenderProcessHost.NoSparePresentReason2"
-    enum="NoSpareRendererReason" expires_after="2026-05-03">
+    enum="NoSpareRendererReason" expires_after="2026-07-05">
   <owner>gjc@google.com</owner>
   <owner>chrome-loading@google.com</owner>
   <summary>
@@ -1459,7 +1487,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="BrowserRenderProcessHost.NoSpareRenderer.AllocationSource.{NoSpareRendererReason}"
-    enum="ProcessAllocationSource" expires_after="2026-05-10">
+    enum="ProcessAllocationSource" expires_after="2026-07-12">
   <owner>gjc@google.com</owner>
   <owner>chrome-loading@google.com</owner>
   <summary>
@@ -1473,7 +1501,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="BrowserRenderProcessHost.NoSpareRenderer.ForCOOP.{NoSpareRendererReason}"
-    enum="Boolean" expires_after="2026-05-17">
+    enum="Boolean" expires_after="2026-07-19">
   <owner>gjc@google.com</owner>
   <owner>chrome-loading@google.com</owner>
   <summary>
@@ -1487,7 +1515,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="BrowserRenderProcessHost.NoSpareRenderer.NavigationStage.{NoSpareRendererReason}"
-    enum="ProcessAllocationNavigationStage" expires_after="2026-05-10">
+    enum="ProcessAllocationNavigationStage" expires_after="2026-07-12">
   <owner>gjc@google.com</owner>
   <owner>chrome-loading@google.com</owner>
   <summary>
@@ -1554,7 +1582,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="BrowserRenderProcessHost.SpareProcessEvictedOtherSpare"
-    enum="Boolean" expires_after="2026-05-24">
+    enum="Boolean" expires_after="2026-07-26">
   <owner>jam@chromium.org</owner>
   <owner>cduvall@chromium.org</owner>
   <summary>
@@ -1565,7 +1593,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="BrowserRenderProcessHost.SpareProcessMaybeTakeAction"
-    enum="SpareProcessMaybeTakeAction" expires_after="2026-05-24">
+    enum="SpareProcessMaybeTakeAction" expires_after="2026-07-26">
   <owner>alexmos@chromium.org</owner>
   <owner>lukasza@chromium.org</owner>
   <summary>
@@ -1576,7 +1604,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="BrowserRenderProcessHost.SpareProcessMaybeTakeAction.NavigationRequest"
-    enum="SpareProcessMaybeTakeAction" expires_after="2026-05-03">
+    enum="SpareProcessMaybeTakeAction" expires_after="2026-07-05">
   <owner>gjc@google.com</owner>
   <owner>chrome-loading@google.com</owner>
   <summary>
@@ -1587,7 +1615,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="BrowserRenderProcessHost.SpareProcessMaybeTakeTime"
-    units="seconds" expires_after="2026-05-03">
+    units="seconds" expires_after="2026-07-05">
   <owner>gjc@google.com</owner>
   <owner>chrome-loading@google.com</owner>
   <summary>
@@ -1602,7 +1630,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="BrowserRenderProcessHost.SpareProcessMaybeTakeTime.{SpareProcessMaybeTakeAction}"
-    units="seconds" expires_after="2026-05-03">
+    units="seconds" expires_after="2026-07-05">
   <owner>gjc@google.com</owner>
   <owner>chrome-loading@google.com</owner>
   <summary>
@@ -1625,7 +1653,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="BrowserRenderProcessHost.SpareProcessStartupTime" units="ms"
-    expires_after="2026-05-24">
+    expires_after="2026-07-26">
   <owner>kerenzhu@chromium.org</owner>
   <owner>dayeung@chromium.org</owner>
   <owner>robliao@chromium.org</owner>
@@ -1638,7 +1666,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="BrowserRenderProcessHost.SpareRendererDispatchResult"
-    enum="SpareRendererDispatchResult" expires_after="2026-04-26">
+    enum="SpareRendererDispatchResult" expires_after="2026-06-28">
   <owner>gjc@google.com</owner>
   <owner>chrome-loading@google.com</owner>
   <summary>
@@ -1693,7 +1721,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="BrowserRenderProcessHost.SpareRendererTaken.IsReady"
-    enum="BooleanReady" expires_after="2026-05-03">
+    enum="BooleanReady" expires_after="2026-07-05">
   <owner>pmonette@chromium.org</owner>
   <owner>catan-team@chromium.org</owner>
   <summary>
@@ -1702,7 +1730,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="BrowserRenderProcessHost.SpareRendererTaken.TimeSinceCreation"
-    units="seconds" expires_after="2026-05-03">
+    units="seconds" expires_after="2026-07-05">
   <owner>pmonette@chromium.org</owner>
   <owner>catan-team@chromium.org</owner>
   <summary>
@@ -1747,7 +1775,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="BrowserRenderProcessHost.SubframeProcessReuseThreshold.TotalFrames"
-    units="frames" expires_after="2026-05-24">
+    units="frames" expires_after="2026-07-26">
   <owner>alexmos@chromium.org</owner>
   <owner>creis@chromium.org</owner>
   <owner>wjmaclean@chromium.org</owner>
@@ -1789,7 +1817,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="BrowserScheduler.UIThread.TaskOffCpuDuration" units="ms"
-    expires_after="2026-05-03">
+    expires_after="2026-07-05">
   <owner>anandrv@google.com</owner>
   <owner>clank-performance-team@google.com</owner>
   <summary>
@@ -1800,7 +1828,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="BrowserScheduler.UIThread.TaskOnCpuDuration" units="ms"
-    expires_after="2026-05-03">
+    expires_after="2026-07-05">
   <owner>anandrv@google.com</owner>
   <owner>clank-performance-team@google.com</owner>
   <summary>
@@ -1811,7 +1839,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="BrowserScheduler.UIThread.TaskOnCpuPercentage" units="%"
-    expires_after="2026-05-03">
+    expires_after="2026-07-05">
   <owner>anandrv@google.com</owner>
   <owner>clank-performance-team@google.com</owner>
   <summary>
@@ -2152,7 +2180,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SidePanel.ReadAnything.ShownDurationMax1Day" units="ms"
-    expires_after="2026-03-22">
+    expires_after="2026-06-21">
   <owner>alfredohiguera@google.com</owner>
   <owner>top-chrome-desktop-ui@google.com</owner>
   <summary>
@@ -2164,7 +2192,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="{SidePanelType}.OpenDuration" units="ms"
-    expires_after="2026-05-24">
+    expires_after="2026-07-26">
   <owner>corising@chromium.org</owner>
   <owner>top-chrome-desktop-ui@google.com</owner>
   <summary>
@@ -2189,7 +2217,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="{SidePanelType}.OpenTrigger" enum="SidePanelOpenTrigger"
-    expires_after="2026-05-24">
+    expires_after="2026-07-26">
   <owner>corising@chromium.org</owner>
   <owner>top-chrome-desktop-ui@google.com</owner>
   <summary>
@@ -2234,7 +2262,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="{SidePanelType}.{SidePanelAnimationType}.AnimationFPS"
-    units="fps" expires_after="2026-04-05">
+    units="fps" expires_after="2026-07-05">
   <owner>corising@chromium.org</owner>
   <owner>top-chrome-desktop-ui@google.com</owner>
   <summary>
@@ -2272,7 +2300,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="{SidePanelType}.{SidePanelEntry}.ShownDuration" units="ms"
-    expires_after="2026-05-24">
+    expires_after="2026-07-26">
   <owner>corising@chromium.org</owner>
   <owner>top-chrome-desktop-ui@google.com</owner>
   <summary>
@@ -2285,7 +2313,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="{SidePanelType}.{SidePanelEntry}.ShowTriggered"
-    enum="SidePanelOpenTrigger" expires_after="2026-05-24">
+    enum="SidePanelOpenTrigger" expires_after="2026-07-26">
   <owner>corising@chromium.org</owner>
   <owner>top-chrome-desktop-ui@google.com</owner>
   <summary>
@@ -2299,7 +2327,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="{SidePanelType}.{SidePanelEntry}.TimeFromEntryTriggerToShown"
-    units="ms" expires_after="2026-05-03">
+    units="ms" expires_after="2026-07-05">
   <owner>corising@chromium.org</owner>
   <owner>top-chrome-desktop-ui@google.com</owner>
   <summary>

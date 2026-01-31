@@ -91,7 +91,7 @@ std::string_view ShortNameForPromo(Promo promo);
 // Returns promos_manager::Promo for string `promo`.
 std::optional<Promo> PromoForName(std::string_view promo);
 
-std::optional<Impression> ImpressionFromDict(const base::Value::Dict& dict);
+std::optional<Impression> ImpressionFromDict(const base::DictValue& dict);
 
 // Represents distinct outcomes of the promo registration lifecycle.
 // LINT.IfChange(PromoRegistrationState)

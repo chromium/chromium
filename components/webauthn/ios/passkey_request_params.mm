@@ -11,45 +11,64 @@ namespace webauthn {
 namespace {
 
 // Returns a set of credential ids from a vector of credential descriptors.
-std::set<std::string> GetIdsFromDescriptors(
+std::set<std::vector<uint8_t>> GetIdsFromDescriptors(
     const std::vector<device::PublicKeyCredentialDescriptor>& descriptors) {
-  std::set<std::string> descriptor_ids;
+  std::set<std::vector<uint8_t>> descriptor_ids;
   std::transform(descriptors.begin(), descriptors.end(),
                  std::inserter(descriptor_ids, descriptor_ids.begin()),
                  [](const device::PublicKeyCredentialDescriptor& desc) {
-                   return std::string(desc.id.begin(), desc.id.end());
+                   return desc.id;
                  });
   return descriptor_ids;
 }
 
+// Builds a new ExtensionInputData.
+// Uses the PRFInputData if prf_eval is not std::nullopt.
+passkey_model_utils::ExtensionInputData BuildExtensionInputData(
+    const std::optional<passkey_model_utils::PRFInputData>& prf_eval) {
+  return prf_eval.has_value()
+             ? passkey_model_utils::ExtensionInputData(*prf_eval)
+             : passkey_model_utils::ExtensionInputData();
+}
+
 }  // namespace
 
-PasskeyRequestParams::PasskeyRequestParams()
-    : user_verification_(device::UserVerificationRequirement::kPreferred) {}
+PasskeyExtensionData::PasskeyExtensionData() = default;
+PasskeyExtensionData::PasskeyExtensionData(const PasskeyExtensionData& other) =
+    default;
+PasskeyExtensionData::PasskeyExtensionData(PasskeyExtensionData&& other) =
+    default;
+PasskeyExtensionData::~PasskeyExtensionData() = default;
 
 PasskeyRequestParams::PasskeyRequestParams(
-    const std::string& frame_id,
-    const std::string& request_id,
+    IOSPasskeyClient::RequestInfo request_info,
     device::PublicKeyCredentialRpEntity rp_entity,
     std::vector<uint8_t> challenge,
-    device::UserVerificationRequirement user_verification)
-    : frame_id_(frame_id),
-      request_id_(request_id),
+    device::UserVerificationRequirement user_verification,
+    bool is_conditional,
+    PasskeyExtensionData extension_data)
+    : request_info_(std::move(request_info)),
       rp_entity_(std::move(rp_entity)),
       challenge_(std::move(challenge)),
-      user_verification_(user_verification) {}
+      user_verification_(user_verification),
+      is_conditional_(is_conditional),
+      extension_data_(std::move(extension_data)) {}
 
 PasskeyRequestParams::PasskeyRequestParams(PasskeyRequestParams&& other) =
     default;
 
 PasskeyRequestParams::~PasskeyRequestParams() = default;
 
+const IOSPasskeyClient::RequestInfo& PasskeyRequestParams::RequestInfo() const {
+  return request_info_;
+}
+
 const std::string& PasskeyRequestParams::FrameId() const {
-  return frame_id_;
+  return request_info_.frame_id;
 }
 
 const std::string& PasskeyRequestParams::RequestId() const {
-  return request_id_;
+  return request_info_.request_id;
 }
 
 const std::vector<uint8_t> PasskeyRequestParams::Challenge() const {
@@ -66,6 +85,24 @@ bool PasskeyRequestParams::ShouldPerformUserVerification(
                                    is_biometric_authentication_enabled);
 }
 
+bool PasskeyRequestParams::IsConditional() const {
+  return is_conditional_;
+}
+
+passkey_model_utils::ExtensionInputData
+PasskeyRequestParams::ExtensionInputForCreation() const {
+  return BuildExtensionInputData(extension_data_.prf_eval);
+}
+
+passkey_model_utils::ExtensionInputData
+PasskeyRequestParams::ExtensionInputForCredential(
+    std::vector<uint8_t> credential_id) const {
+  auto it = extension_data_.prf_eval_by_credential.find(credential_id);
+  auto itEnd = extension_data_.prf_eval_by_credential.end();
+  return BuildExtensionInputData((it != itEnd) ? it->second
+                                               : extension_data_.prf_eval);
+}
+
 AssertionRequestParams::AssertionRequestParams(
     PasskeyRequestParams request_params,
     std::vector<device::PublicKeyCredentialDescriptor> allow_credentials)
@@ -75,7 +112,8 @@ AssertionRequestParams::AssertionRequestParams(
 AssertionRequestParams::AssertionRequestParams(AssertionRequestParams&& other) =
     default;
 
-std::set<std::string> AssertionRequestParams::GetAllowCredentialIds() const {
+std::set<std::vector<uint8_t>> AssertionRequestParams::GetAllowCredentialIds()
+    const {
   return GetIdsFromDescriptors(allow_credentials_);
 }
 
@@ -92,8 +130,8 @@ RegistrationRequestParams::RegistrationRequestParams(
 RegistrationRequestParams::RegistrationRequestParams(
     RegistrationRequestParams&& other) = default;
 
-std::set<std::string> RegistrationRequestParams::GetExcludeCredentialIds()
-    const {
+std::set<std::vector<uint8_t>>
+RegistrationRequestParams::GetExcludeCredentialIds() const {
   return GetIdsFromDescriptors(exclude_credentials_);
 }
 

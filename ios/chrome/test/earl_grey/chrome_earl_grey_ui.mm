@@ -8,11 +8,11 @@
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/ios/wait_util.h"
 #import "components/strings/grit/components_strings.h"
-#import "ios/chrome/browser/browser_container/ui_bundled/edit_menu_app_interface.h"
-#import "ios/chrome/browser/popup_menu/ui_bundled/popup_menu_constants.h"
-#import "ios/chrome/browser/settings/ui_bundled/clear_browsing_data/quick_delete_constants.h"
+#import "ios/chrome/browser/browser_content/ui_bundled/edit_menu_app_interface.h"
+#import "ios/chrome/browser/popup_menu/public/popup_menu_constants.h"
+#import "ios/chrome/browser/settings/ui_bundled/clear_browsing_data/public/quick_delete_constants.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_constants.h"
-#import "ios/chrome/browser/toolbar/ui_bundled/public/toolbar_constants.h"
+#import "ios/chrome/browser/toolbar/legacy/ui_bundled/public/toolbar_constants.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/earl_grey/chrome_actions.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
@@ -137,8 +137,7 @@ const int kMaxNumberOfAttemptsAtTypingTextInOmnibox = 3;
 }
 
 - (void)closeToolsMenu {
-  if ([ChromeEarlGrey isNewOverflowMenuEnabled] &&
-      [ChromeEarlGrey isCompactWidth]) {
+  if ([ChromeEarlGrey isCompactWidth]) {
     // With the new overflow menu on compact devices, the half sheet covers the
     // bottom half of the screen. Swiping down on the sheet will close the menu.
     [[EarlGrey selectElementWithMatcher:chrome_test_util::ToolsMenuView()]
@@ -178,26 +177,18 @@ const int kMaxNumberOfAttemptsAtTypingTextInOmnibox = 3;
                 chrome_test_util::WindowWithNumber(windowNumber)];
   // TODO(crbug.com/41271107): Add logic to ensure the app is in the correct
   // state, for example DCHECK if no tabs are displayed.
-  chrome_test_util::TapAtOffsetOf(kToolbarToolsMenuButtonIdentifier,
+  chrome_test_util::TapAtOffsetOf(kLegacyToolbarToolsMenuButtonIdentifier,
                                   windowNumber, CGVectorMake(0.5, 0.5));
 }
 
 - (void)openSettingsMenu {
   [self openToolsMenu];
-  if ([ChromeEarlGrey isNewOverflowMenuEnabled]) {
-    [self tapToolsMenuButton:SettingsDestinationButton()];
-  } else {
-    [self tapToolsMenuButton:SettingsActionButton()];
-  }
+  [self tapToolsMenuButton:SettingsDestinationButton()];
 }
 
 - (void)openSettingsMenuInWindowWithNumber:(int)windowNumber {
   [self openToolsMenuInWindowWithNumber:windowNumber];
-  if ([ChromeEarlGrey isNewOverflowMenuEnabled]) {
-    [self tapToolsMenuButton:SettingsDestinationButton()];
-  } else {
-    [self tapToolsMenuButton:SettingsActionButton()];
-  }
+  [self tapToolsMenuButton:SettingsDestinationButton()];
 }
 
 - (void)openNewTabMenu {
@@ -217,18 +208,13 @@ const int kMaxNumberOfAttemptsAtTypingTextInOmnibox = 3;
   ScopedDisableTimerTracking disabler;
   id<GREYMatcher> interactableSettingsButton =
       grey_allOf(buttonMatcher, grey_interactable(), nil);
-  id<GREYAction> scrollAction =
-      [ChromeEarlGrey isNewOverflowMenuEnabled] ? ScrollRight() : ScrollDown();
+  id<GREYAction> scrollAction = ScrollRight();
   [[[EarlGrey selectElementWithMatcher:interactableSettingsButton]
          usingSearchAction:scrollAction
       onElementWithMatcher:ToolsMenuView()] performAction:grey_tap()];
 }
 
 - (void)tapToolsMenuAction:(id<GREYMatcher>)buttonMatcher {
-  if (![ChromeEarlGrey isNewOverflowMenuEnabled]) {
-    [self tapToolsMenuButton:buttonMatcher];
-    return;
-  }
   ScopedDisableTimerTracking disabler;
   id<GREYMatcher> interactableSettingsButton =
       grey_allOf(buttonMatcher, grey_interactable(), nil);

@@ -18,15 +18,15 @@ import org.chromium.url.GURL;
 public class ReparentingDelegateFactory {
     /**
      * @return Creates an implementation of {@link ReparentingTask.Delegate} that supplies
-     *         dependencies for {@link ReparentingTask} to reparent a Tab.
+     *     dependencies for {@link ReparentingTask} to reparent a Tab.
      */
     public static ReparentingTask.Delegate createReparentingTaskDelegate(
-            final CompositorViewHolder compositorViewHolder,
+            final @Nullable CompositorViewHolder compositorViewHolder,
             final WindowAndroid windowAndroid,
             @Nullable TabDelegateFactory tabDelegateFactory) {
         return new ReparentingTask.Delegate() {
             @Override
-            public CompositorViewHolder getCompositorViewHolder() {
+            public @Nullable CompositorViewHolder getCompositorViewHolder() {
                 return compositorViewHolder;
             }
 

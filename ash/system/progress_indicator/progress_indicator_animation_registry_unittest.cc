@@ -4,13 +4,13 @@
 
 #include "ash/system/progress_indicator/progress_indicator_animation_registry.h"
 
+#include <algorithm>
 #include <vector>
 
 #include "ash/constants/ash_features.h"
 #include "ash/system/progress_indicator/progress_icon_animation.h"
 #include "ash/system/progress_indicator/progress_indicator_animation.h"
 #include "ash/system/progress_indicator/progress_ring_animation.h"
-#include "base/containers/contains.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -150,7 +150,7 @@ TEST_F(ProgressIndicatorAnimationRegistryTest, EraseAllAnimations) {
 
     // Iterate over `keys`.
     for (const auto key : keys) {
-      const bool expected = base::Contains(
+      const bool expected = std::ranges::contains(
           test_case.keys_with_animations_after_erase_callback, key);
 
       // Verify progress animations are set for `key` only if `expected`.

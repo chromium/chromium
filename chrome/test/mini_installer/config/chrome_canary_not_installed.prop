@@ -35,6 +35,12 @@
         "$CHROME_LONG_NAME_SXS$USER_SPECIFIC_REGISTRY_SUFFIX": {}
       }
     },
+    "HKEY_CURRENT_USER\\Software\\Classes\\.pdf\\OpenWithProgids": {
+      "exists": "optional",
+      "values": {
+        "$CHROME_PDF_PROG_ID_SXS$USER_SPECIFIC_REGISTRY_SUFFIX": {}
+      }
+    },
     "HKEY_CURRENT_USER\\Software\\Classes\\CLSID\\$CHROME_TOAST_ACTIVATOR_CLSID_SXS": {
       "exists": "forbidden"
     },

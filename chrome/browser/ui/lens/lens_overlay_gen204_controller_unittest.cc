@@ -7,7 +7,6 @@
 #include "base/base64url.h"
 #include "base/containers/span.h"
 #include "base/strings/string_number_conversions.h"
-#include "chrome/browser/lens/core/mojom/lens.mojom-shared.h"
 #include "chrome/browser/lens/core/mojom/lens.mojom.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"

@@ -6,7 +6,7 @@
 
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/views/extensions/extensions_toolbar_container.h"
+#include "chrome/browser/ui/views/extensions/extensions_toolbar_desktop.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "extensions/browser/extension_registrar.h"
@@ -24,7 +24,6 @@ ExtensionsDialogBrowserTest::InstallExtension(const std::string& name) {
   return extension;
 }
 
-ExtensionsToolbarContainer*
-ExtensionsDialogBrowserTest::extensions_container() {
+ExtensionsToolbarDesktop* ExtensionsDialogBrowserTest::extensions_container() {
   return browser()->GetBrowserView().toolbar()->extensions_container();
 }

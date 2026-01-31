@@ -14,6 +14,7 @@
 #include "base/containers/auto_spanification_helper.h"
 #include "base/containers/span.h"
 #include "base/notreached.h"
+#include "skia/ext/rgba_to_yuva.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "third_party/skia/include/core/SkImageInfo.h"
 #include "ui/gfx/geometry/rect.h"
@@ -187,39 +188,9 @@ SkBitmap GLScalerTestUtil::CreateCyclicalTestImage(
 }
 
 // static
-gfx::ColorSpace GLScalerTestUtil::DefaultRGBColorSpace() {
-  return gfx::ColorSpace::CreateSRGB();
-}
-
-// static
-gfx::ColorSpace GLScalerTestUtil::DefaultYUVColorSpace() {
-  return gfx::ColorSpace::CreateREC709();
-}
-
-// static
 void GLScalerTestUtil::ConvertRGBABitmapToYUV(SkBitmap* image) {
-  CHECK_EQ(image->colorType(), kRGBA_8888_SkColorType);
-
-  const auto transform = gfx::ColorTransform::NewColorTransform(
-      DefaultRGBColorSpace(), DefaultYUVColorSpace());
-
-  // Loop, transforming one row of pixels at a time.
-  std::vector<gfx::ColorTransform::TriStim> stims(image->width());
-  for (int y = 0; y < image->height(); ++y) {
-    const base::span<uint32_t> pixels = UNSAFE_SKBITMAP_GETADDR32(image, 0, y);
-    for (int x = 0; x < image->width(); ++x) {
-      stims[x].set_x(((pixels[x] >> kRedShift) & 0xff) / 255.0f);
-      stims[x].set_y(((pixels[x] >> kGreenShift) & 0xff) / 255.0f);
-      stims[x].set_z(((pixels[x] >> kBlueShift) & 0xff) / 255.0f);
-    }
-    transform->Transform(stims.data(), stims.size());
-    for (int x = 0; x < image->width(); ++x) {
-      pixels[x] = ((ToClamped255(stims[x].x()) << kRedShift) |
-                   (ToClamped255(stims[x].y()) << kGreenShift) |
-                   (ToClamped255(stims[x].z()) << kBlueShift) |
-                   (((pixels[x] >> kAlphaShift) & 0xff) << kAlphaShift));
-    }
-  }
+  skia::ConvertRGBAToOrFromYUVA(image->pixmap(), kIdentity_SkYUVColorSpace,
+                                image->pixmap(), kRec709_SkYUVColorSpace);
 }
 
 // static

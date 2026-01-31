@@ -13,7 +13,6 @@
 #include "ash/keyboard/ui/resources/keyboard_resource_util.h"
 #include "ash/public/cpp/keyboard/keyboard_switches.h"
 #include "base/command_line.h"
-#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/memory/ptr_util.h"
@@ -184,7 +183,7 @@ void ChromeKeyboardControllerClient::ClearEnableFlag(
 
 bool ChromeKeyboardControllerClient::IsEnableFlagSet(
     const keyboard::KeyboardEnableFlag& flag) {
-  return base::Contains(keyboard_enable_flags_, flag);
+  return keyboard_enable_flags_.contains(flag);
 }
 
 void ChromeKeyboardControllerClient::ReloadKeyboardIfNeeded() {
@@ -304,8 +303,8 @@ void ChromeKeyboardControllerClient::OnKeyboardEnabledChanged(bool enabled) {
 
   auto event = std::make_unique<extensions::Event>(
       extensions::events::VIRTUAL_KEYBOARD_PRIVATE_ON_KEYBOARD_CLOSED,
-      virtual_keyboard_private::OnKeyboardClosed::kEventName,
-      base::Value::List(), profile);
+      virtual_keyboard_private::OnKeyboardClosed::kEventName, base::ListValue(),
+      profile);
   router->BroadcastEvent(std::move(event));
 }
 
@@ -355,8 +354,8 @@ void ChromeKeyboardControllerClient::OnKeyboardVisibleBoundsChanged(
 
   // Convert screen bounds to the frame of reference of the keyboard window.
   gfx::Rect bounds = BoundsFromScreen(screen_bounds);
-  base::Value::List event_args;
-  base::Value::Dict new_bounds;
+  base::ListValue event_args;
+  base::DictValue new_bounds;
   new_bounds.Set("left", bounds.x());
   new_bounds.Set("top", bounds.y());
   new_bounds.Set("width", bounds.width());

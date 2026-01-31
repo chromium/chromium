@@ -62,7 +62,7 @@ TEST(DeviceSyncCryptAuthKeyTest, SymmetricKeyAsDictionary) {
                              cryptauthv2::KeyType::RAW256, kFakeHandle);
 
   auto dict =
-      base::Value::Dict()
+      base::DictValue()
           .Set("handle", kFakeHandle)
           .Set("status", CryptAuthKey::Status::kActive)
           .Set("type", cryptauthv2::KeyType::RAW256)
@@ -77,7 +77,7 @@ TEST(DeviceSyncCryptAuthKeyTest, AsymmetricKeyAsDictionary) {
                               cryptauthv2::KeyType::P256, kFakeHandle);
 
   auto dict =
-      base::Value::Dict()
+      base::DictValue()
           .Set("handle", kFakeHandle)
           .Set("status", CryptAuthKey::Status::kActive)
           .Set("type", cryptauthv2::KeyType::P256)
@@ -89,7 +89,7 @@ TEST(DeviceSyncCryptAuthKeyTest, AsymmetricKeyAsDictionary) {
 
 TEST(DeviceSyncCryptAuthKeyTest, SymmetricKeyFromDictionary) {
   auto dict =
-      base::Value::Dict()
+      base::DictValue()
           .Set("handle", kFakeHandle)
           .Set("status", CryptAuthKey::Status::kActive)
           .Set("type", cryptauthv2::KeyType::RAW256)
@@ -104,7 +104,7 @@ TEST(DeviceSyncCryptAuthKeyTest, SymmetricKeyFromDictionary) {
 
 TEST(DeviceSyncCryptAuthKeyTest, AsymmetricKeyFromDictionary) {
   auto dict =
-      base::Value::Dict()
+      base::DictValue()
           .Set("handle", kFakeHandle)
           .Set("status", CryptAuthKey::Status::kActive)
           .Set("type", cryptauthv2::KeyType::P256)
@@ -120,7 +120,7 @@ TEST(DeviceSyncCryptAuthKeyTest, AsymmetricKeyFromDictionary) {
 }
 
 TEST(DeviceSyncCryptAuthKeyTest, KeyFromDictionary_MissingHandle) {
-  auto dict = base::Value::Dict()
+  auto dict = base::DictValue()
                   .Set("status", CryptAuthKey::Status::kActive)
                   .Set("type", cryptauthv2::KeyType::RAW256)
                   .Set("symmetric_key", kFakeSymmetricKey);
@@ -129,7 +129,7 @@ TEST(DeviceSyncCryptAuthKeyTest, KeyFromDictionary_MissingHandle) {
 }
 
 TEST(DeviceSyncCryptAuthKeyTest, KeyFromDictionary_MissingStatus) {
-  auto dict = base::Value::Dict()
+  auto dict = base::DictValue()
                   .Set("handle", kFakeHandle)
                   .Set("type", cryptauthv2::KeyType::RAW256)
                   .Set("symmetric_key", kFakeSymmetricKey);
@@ -138,7 +138,7 @@ TEST(DeviceSyncCryptAuthKeyTest, KeyFromDictionary_MissingStatus) {
 }
 
 TEST(DeviceSyncCryptAuthKeyTest, KeyFromDictionary_MissingType) {
-  auto dict = base::Value::Dict()
+  auto dict = base::DictValue()
                   .Set("handle", kFakeHandle)
                   .Set("status", CryptAuthKey::Status::kActive)
                   .Set("symmetric_key", kFakeSymmetricKey);
@@ -148,7 +148,7 @@ TEST(DeviceSyncCryptAuthKeyTest, KeyFromDictionary_MissingType) {
 
 TEST(DeviceSyncCryptAuthKeyTest,
      SymmetricKeyFromDictionary_MissingSymmetricKey) {
-  auto dict = base::Value::Dict()
+  auto dict = base::DictValue()
                   .Set("handle", kFakeHandle)
                   .Set("status", CryptAuthKey::Status::kActive)
                   .Set("type", cryptauthv2::KeyType::RAW256);
@@ -157,7 +157,7 @@ TEST(DeviceSyncCryptAuthKeyTest,
 }
 
 TEST(DeviceSyncCryptAuthKeyTest, AsymmetricKeyFromDictionary_MissingPublicKey) {
-  auto dict = base::Value::Dict()
+  auto dict = base::DictValue()
                   .Set("handle", kFakeHandle)
                   .Set("status", CryptAuthKey::Status::kActive)
                   .Set("type", cryptauthv2::KeyType::P256)
@@ -168,7 +168,7 @@ TEST(DeviceSyncCryptAuthKeyTest, AsymmetricKeyFromDictionary_MissingPublicKey) {
 
 TEST(DeviceSyncCryptAuthKeyTest,
      AsymmetricKeyFromDictionary_MissingPrivateKey) {
-  auto dict = base::Value::Dict()
+  auto dict = base::DictValue()
                   .Set("handle", kFakeHandle)
                   .Set("status", CryptAuthKey::Status::kActive)
                   .Set("type", cryptauthv2::KeyType::P256)

@@ -105,7 +105,7 @@ class ChromeAutofillClientIOS : public AutofillClientIOS {
   FormDataImporter* GetFormDataImporter() override;
   payments::IOSChromePaymentsAutofillClient* GetPaymentsAutofillClient()
       override;
-  strike_database::StrikeDatabase* GetStrikeDatabase() override;
+  strike_database::StrikeDatabase* GetStrikeDatabase() final;
   ukm::UkmRecorder* GetUkmRecorder() override;
   AddressNormalizer* GetAddressNormalizer() override;
   const GURL& GetLastCommittedPrimaryMainFrameURL() const override;
@@ -135,7 +135,6 @@ class ChromeAutofillClientIOS : public AutofillClientIOS {
   bool IsAutocompleteEnabled() const override;
   bool IsPasswordManagerEnabled() const override;
   bool IsContextSecure() const override;
-  FormInteractionsFlowId GetCurrentFormInteractionsFlowId() override;
   LogManager* GetCurrentLogManager() override;
   autofill_metrics::FormInteractionsUkmLogger& GetFormInteractionsUkmLogger()
       override;
@@ -143,8 +142,11 @@ class ChromeAutofillClientIOS : public AutofillClientIOS {
   bool IsLastQueriedField(FieldGlobalId field_id) override;
   bool ShouldFormatForLargeKeyboardAccessory() const override;
   AutofillPlusAddressDelegate* GetPlusAddressDelegate() override;
-  std::unique_ptr<device_reauth::DeviceAuthenticator> GetDeviceAuthenticator()
-      override;
+  // Returns a pointer to a DeviceAuthenticator. Might be nullptr if the given
+  // platform is not supported.
+  std::unique_ptr<device_reauth::DeviceAuthenticator> GetDeviceAuthenticator(
+      std::string histogram) override;
+
   PasswordFormClassification ClassifyAsPasswordForm(
       AutofillManager& manager,
       FormGlobalId form_id,

@@ -32,7 +32,7 @@ suite('SidePanelResultsFrame', () => {
   });
 
   test('LoadResultsInFrame', async () => {
-    const url: Url = {url: 'https://www.google.com/'};
+    const url: Url = 'https://www.google.com/';
     testBrowserProxy.page.loadResultsInFrame(url);
     await flushTasks();
     const loadedUrl = new URL(lensSidePanelElement.$.results.src);
@@ -40,7 +40,7 @@ suite('SidePanelResultsFrame', () => {
     assertTrue(loadedUrl.searchParams.has(VIEWPORT_WIDTH_KEY));
     loadedUrl.searchParams.delete(VIEWPORT_HEIGHT_KEY);
     loadedUrl.searchParams.delete(VIEWPORT_WIDTH_KEY);
-    assertEquals(loadedUrl.href, url.url);
+    assertEquals(loadedUrl.href, url);
   });
 
   test('LoadingStateChangeShowsAndHideResults', async () => {

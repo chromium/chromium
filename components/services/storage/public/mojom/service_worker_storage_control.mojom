@@ -9,6 +9,7 @@ import "components/services/storage/public/mojom/storage_policy_update.mojom";
 import "mojo/public/mojom/base/big_buffer.mojom";
 import "mojo/public/mojom/base/byte_string.mojom";
 import "mojo/public/mojom/base/time.mojom";
+import "services/network/public/mojom/hash_value.mojom";
 import "services/network/public/mojom/url_response_head.mojom";
 import "third_party/blink/public/mojom/service_worker/service_worker_fetch_handler_type.mojom";
 import "third_party/blink/public/mojom/storage_key/storage_key.mojom";
@@ -196,33 +197,6 @@ interface ServiceWorkerStorageControl {
       (ServiceWorkerDatabaseStatus status,
        array<ServiceWorkerRegistrationData> registrations);
 
-  // Creates a fake ServiceWorker registration for the SyntheticResponse feature
-  // (crbug.com/352578800) locally and pass it to `callback`.
-  //
-  // This fake registration has:
-  // - scope with the origin and pathname from given `client_url`.
-  // - empty fetch handler.
-  // - router rules to bypass ServiceWorker interceptions.
-  // - fields that are fulfilled with fake IDs/values.
-  //
-  // The SyntheticResponse feature is triggered inside the
-  // ServiceWorkerMainResourceLoader. This fake registration is necessary to
-  // plumb the navigation interceptor chain and let the
-  // ServiceWorkerMainResourceLoader handles the navigation.
-  //
-  // NOTE: This only creates data to make a fake `ServiceWorkerRegistration`.
-  // We don't create a separate `ServiceWorkerRegistration` per
-  // `ServiceWorkerVersion`. Eventually, this feature will be implemented as a
-  // part of regular ServiceWorker API. In order to reduce the difference
-  // between this fake ServiceWorker and the real one (in the future), we
-  // implement it in ServiceWorkerStorage, which intentionally involves an extra
-  // IPC hop.
-  GetFakeRegistrationForClientUrl(url.mojom.Url client_url,
-                                  blink.mojom.StorageKey key) =>
-      (ServiceWorkerDatabaseStatus status,
-       ServiceWorkerFindRegistrationResult? result,
-       array<url.mojom.Url>? scopes);
-
   // Stores |registration_data| and |resources|. If exists, the previous
   // registration for `registration.registration_id` will be deleted when
   // storing succeeds. `deleted_resources_size` carries the total size of
@@ -284,9 +258,14 @@ interface ServiceWorkerStorageControl {
   // is disabled.
   GetNewResourceId() => (int64 resource_id);
 
-  // Creates a resource reader for the given |resource_id|.
-  CreateResourceReader(int64 resource_id,
-                       pending_receiver<ServiceWorkerResourceReader> reader);
+  // Creates a resource reader for the given `resource_id`. If `sha256_checksum`
+  // is provided, it is used to verify the integrity of the resource data as it
+  // is read from the cache. The result of this verification is recorded in the
+  // ServiceWorker.ResourceChecksumMatch UMA metric.
+  CreateResourceReader(
+      int64 resource_id,
+      network.mojom.SHA256HashValue? sha256_checksum,
+      pending_receiver<ServiceWorkerResourceReader> reader);
   // Creates a resource writer for the given |resource_id|.
   CreateResourceWriter(int64 resource_id,
                        pending_receiver<ServiceWorkerResourceWriter> writer);

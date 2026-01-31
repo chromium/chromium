@@ -249,7 +249,17 @@ using signin_metrics::SignoutDataLossAlertReason;
 // data type, otherwise the sign-out is triggered without dialog.
 - (void)continueSignOutWithUnsyncedDataTypeSet:(syncer::DataTypeSet)set {
   [self allowUserInteraction];
-  if (!set.empty()) {
+
+  syncer::SyncService* syncService =
+      SyncServiceFactory::GetForProfile(self.profile);
+  BOOL bookmarksLimitExceeded =
+      syncService &&
+      syncService->GetUserActionableError() ==
+          syncer::SyncService::UserActionableError::kBookmarksLimitExceeded;
+
+  if (!set.empty() || bookmarksLimitExceeded) {
+    base::UmaHistogramBoolean("Sync.BookmarksLimitExceededOnSignoutPrompt",
+                              bookmarksLimitExceeded);
     for (syncer::DataType type : set) {
       base::UmaHistogramEnumeration("Sync.UnsyncedDataOnSignout2",
                                     syncer::DataTypeHistogramValue(type));

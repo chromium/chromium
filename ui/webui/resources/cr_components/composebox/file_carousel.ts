@@ -4,12 +4,13 @@
 import './file_thumbnail.js';
 
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
+import type {UnguessableToken} from '//resources/mojo/mojo/public/mojom/base/unguessable_token.mojom-webui.js';
 
 import type {ComposeboxFile} from './common.js';
 import {getCss} from './file_carousel.css.js';
 import {getHtml} from './file_carousel.html.js';
 
-const DEBOUNCE_TIMEOUT: number = 20;
+const DEBOUNCE_TIMEOUT_MS: number = 20;
 const CAROUSEL_HEIGHT_PADDING = 18;
 
 function debounce(context: Object, func: () => void, delay: number) {
@@ -43,6 +44,17 @@ export class ComposeboxFileCarouselElement extends CrLitElement {
 
   private resizeObserver_: ResizeObserver|null = null;
 
+  getThumbnailElementByUuid(uuid: UnguessableToken): HTMLElement|null {
+    const thumbnails =
+        this.shadowRoot.querySelectorAll('cr-composebox-file-thumbnail');
+    for (const thumbnail of thumbnails) {
+      if (thumbnail.file.uuid === uuid) {
+        return thumbnail;
+      }
+    }
+    return null;
+  }
+
   override connectedCallback() {
     super.connectedCallback();
     this.resizeObserver_ = new ResizeObserver(debounce(this, () => {
@@ -53,7 +65,7 @@ export class ComposeboxFileCarouselElement extends CrLitElement {
         composed: true,
         detail: {height: height},
       }));
-    }, DEBOUNCE_TIMEOUT));
+    }, DEBOUNCE_TIMEOUT_MS));
     this.resizeObserver_.observe(this);
   }
 

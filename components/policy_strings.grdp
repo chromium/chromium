@@ -79,7 +79,7 @@
   <message name="IDS_POLICY_ACTION_BLOCKED_BY_ORGANIZATION" desc="Text to be shown to the user to inform them that an action they initiated was blocked by the organization.">
     Blocked by your organization
   </message>
-  <message name="IDS_POLICY_ACTION_FORCED_SAVE_TO_GDRIVE" desc="Text to be shown to the user to inform them that a local download they initiated was blocked and will proceed to GDrive">
+  <message name="IDS_POLICY_ACTION_FORCED_SAVE_TO_CLOUD" desc="Text to be shown to the user to inform them that a local download they initiated was blocked and will proceed to Cloud">
     Local download blocked
   </message>
   <message name="IDS_POLICY_VALIDATION_OK" desc="Message indicating successful policy validation.">
@@ -322,6 +322,21 @@
   </message>
   <message name="IDS_POLICY_PROXY_NEITHER_SPECIFIED_ERROR" desc="The text displayed in the status column when neither a fixed proxy servers or a .pac url are specified.">
     Neither fixed proxy servers nor a .pac script URL are specified.
+  </message>
+  <message name="IDS_POLICY_PROXY_UNKNOWN_CONDITION" desc="The text displayed in the status column when a proxy condition uses an unknown value.">
+    "<ph name="PROXY_UNKNOWN_CONDITION">$1<ex>DnsProbe</ex></ph>" is not a known condition type.
+  </message>
+  <message name="IDS_POLICY_PROXY_INVALID_SCHEME_HOST_PORT" desc="The text displayed in the status column when a proxy scheme-host-port triplet has an invalid value.">
+    "<ph name="PROXY_INVALID_SCHEME_HOST_PORT">$1<ex>example.com</ex></ph>" is not a valid value.
+  </message>
+  <message name="IDS_POLICY_PROXY_INVALID_PROXY" desc="The text displayed in the status column when a proxy has an invalid value.">
+    "<ph name="PROXY_INVALID_PROXY">$1<ex>example.com</ex></ph>" is not a valid proxy.
+  </message>
+  <message name="IDS_POLICY_PROXY_INVALID_DESTINATION" desc="The text displayed in the status column when a proxy destination has an invalid value.">
+    "<ph name="PROXY_INVALID_DESTINATION">$1<ex>example.com</ex></ph>" is not a valid destination pattern.
+  </message>
+  <message name="IDS_POLICY_UNAFFILIATED_USER_ERROR" desc="The text displayed in the status column when a policy is set from an unaffiliated user.">
+    This policy value is ignored since the user is not affiliated.
   </message>
   <message name="IDS_POLICY_DEVELOPER_TOOLS_EXTENSIONS_CONFLICT_MESSAGE" desc="The text displayed in the status column when the value of DeveloperToolsAvailability conflicts with ExtensionDeveloperModeSettings.">
     <ph name="EXTENSION_DEVELOPER_MODE_SETTINGS_POLICY_NAME">$1<ex>ExtensionDeveloperModeSettings</ex></ph> policy is set. <ph name="DEVELOPER_TOOLS_AVAILABILITY_POLICY_NAME">$2<ex>DeveloperToolsAvailability</ex></ph> will not control the availability of developer mode on extensions page.
@@ -1327,7 +1342,132 @@ Additional details:
   <message name="IDS_POLICY_GEN_AI_DEFAULT_SETTINGS_NO_CONTROL_MESSAGE" desc="Text stating that no GenAI policies have their default behavior controlled by GenAiDefaultSettings.">
     This policy is not controlling the default behavior of any other policies.
   </message>
-  <message name="IDS_POLICY_SKYVAULT_DOWNLOAD_SIGN_IN_TITLE" desc="The title for the notification asking the user to sign-in to Microsoft OneDrive to complete the download flow.">
+  <message name="IDS_POLICY_SKYVAULT_CAMERA_SIGN_IN_DISPLAY_SOURCE"
+                 desc="The name of the notification source, which is camera. Shown in the notification header.">
+          Camera
+  </message>
+  <message name="IDS_POLICY_SKYVAULT_CAMERA_SIGN_IN_TITLE_PHOTO" desc="The title for the notification asking the user to sign-in to Microsoft OneDrive to complete the camera upload.">
+    Can't save photo to OneDrive
+  </message>
+  <message name="IDS_POLICY_SKYVAULT_CAMERA_SIGN_IN_TITLE_VIDEO" desc="The title for the notification asking the user to sign-in to Microsoft OneDrive to complete the camera upload.">
+    Can't save video to OneDrive
+  </message>
+  <message name="IDS_POLICY_SKYVAULT_CAMERA_SIGN_IN_TITLE_SCAN" desc="The title for the notification asking the user to sign-in to Microsoft OneDrive to complete the camera upload.">
+    Can't save scan to OneDrive
+  </message>
+  <message name="IDS_POLICY_SKYVAULT_CAMERA_SIGN_IN_MESSAGE_PHOTO" desc="The title for the notification asking the user to sign-in to Microsoft OneDrive to complete the camera upload.">
+    Sign in to save your photo
+  </message>
+  <message name="IDS_POLICY_SKYVAULT_CAMERA_SIGN_IN_MESSAGE_VIDEO" desc="The title for the notification asking the user to sign-in to Microsoft OneDrive to complete the camera upload.">
+    Sign in to save your video
+  </message>
+  <message name="IDS_POLICY_SKYVAULT_CAMERA_SIGN_IN_MESSAGE_SCAN" desc="The title for the notification asking the user to sign-in to Microsoft OneDrive to complete the camera upload.">
+    Sign in to save your scan
+  </message>
+  <message name="IDS_POLICY_SKYVAULT_CAMERA_SIGN_IN_BUTTON" desc="Label for the button that starts the sign-in flow to Microsoft OneDrive.">
+    Sign in
+  </message>
+  <message name="IDS_POLICY_SKYVAULT_CAMERA_SIGN_IN_CANCEL_BUTTON" desc="Cancel button for the notification asking the user to sign-in to Microsoft OneDrive.">
+    Cancel
+  </message>
+  <message name="IDS_POLICY_SKYVAULT_CAMERA_UPLOAD_DISPLAY_SOURCE"
+                 desc="The name of the notification source for camera uploads. Shown in the notification header.">
+          Camera
+  </message>
+  <message name="IDS_POLICY_SKYVAULT_CAMERA_UPLOAD_CANCEL_BUTTON" desc="Cancel button on the notification that shows up informing the user that a file is being saved to the cloud.">
+    Cancel
+  </message>
+  <message name="IDS_POLICY_SKYVAULT_CAMERA_UPLOAD_TITLE" desc="The title of the notification which shows while file is saved to cloud storage.">
+    Saving camera file
+  </message>
+  <message name="IDS_POLICY_SKYVAULT_CAMERA_MULTI_UPLOAD_TITLE" desc="The title of the notification which shows while files are saved to cloud storage.">
+    Saving camera files
+  </message>
+  <message name="IDS_POLICY_SKYVAULT_CAMERA_UPLOAD_ONEDRIVE_MESSAGE" desc="The message of the notification which shows up informing the user that a file is being saved to OneDrive.">
+    Uploading file to Microsoft OneDrive
+  </message>
+  <message name="IDS_POLICY_SKYVAULT_CAMERA_MULTI_UPLOAD_ONEDRIVE_MESSAGE" desc="The message of the notification which shows up informing the user that multiple files are being saved to OneDrive.">
+    Uploading <ph name="COUNT">$1<ex>2</ex></ph> files to Microsoft OneDrive
+  </message>
+  <message name="IDS_POLICY_SKYVAULT_CAMERA_UPLOAD_GOOGLE_DRIVE_MESSAGE" desc="The message of the notification which shows up informing the user that a file is being saved to Google Drive.">
+    Uploading file to Google Drive
+  </message>
+  <message name="IDS_POLICY_SKYVAULT_CAMERA_MULTI_UPLOAD_GOOGLE_DRIVE_MESSAGE" desc="The message of the notification which shows up informing the user that multiple files are being saved to Google Drive.">
+    Uploading <ph name="COUNT">$1<ex>2</ex></ph> files to Google Drive
+  </message>
+  <message name="IDS_POLICY_SKYVAULT_CAMERA_CANCEL_UPLOAD_TITLE" desc="The title of the notification dialog which asks the user whether to cancel upload to cloud storage.">
+    Cancel saving file?
+  </message>
+  <message name="IDS_POLICY_SKYVAULT_CAMERA_CANCEL_UPLOAD_MESSAGE" desc="The message of the notification dialog which asks the user whether to cancel upload to cloud storage.">
+    You will lose the file permanently
+  </message>
+  <message name="IDS_POLICY_SKYVAULT_CAMERA_CANCEL_UPLOAD_SKIP_CHECKBOX" desc="The checkbox to skip the notification dialog which asks the user whether to cancel upload to cloud storage next time.">
+    Do not show this dialog next time
+  </message>
+  <message name="IDS_POLICY_SKYVAULT_CAMERA_CANCEL_UPLOAD_CANCEL_BUTTON" desc="The cancel button in the notification dialog which asks the user whether to cancel upload to cloud storage.">
+    Yes, I want to cancel
+  </message>
+  <message name="IDS_POLICY_SKYVAULT_CAMERA_CANCEL_UPLOAD_CLOSE_BUTTON" desc="The close button in the notification dialog which asks the user whether to cancel upload to cloud storage.">
+    Close
+  </message>
+  <message name="IDS_POLICY_SKYVAULT_CAMERA_PHOTO_UPLOAD_DONE_TITLE_ONEDRIVE" desc="The title of the notification which shows when the file is successfully saved to cloud storage.">
+    Photo saved to OneDrive
+  </message>
+  <message name="IDS_POLICY_SKYVAULT_CAMERA_VIDEO_UPLOAD_DONE_TITLE_ONEDRIVE" desc="The title of the notification which shows when the file is successfully saved to cloud storage.">
+    Video saved to OneDrive
+  </message>
+  <message name="IDS_POLICY_SKYVAULT_CAMERA_SCAN_UPLOAD_DONE_TITLE_ONEDRIVE" desc="The title of the notification which shows when the file is successfully saved to cloud storage.">
+    Scan saved to OneDrive
+  </message>
+  <message name="IDS_POLICY_SKYVAULT_CAMERA_PHOTO_UPLOAD_DONE_TITLE_GOOGLE_DRIVE" desc="The title of the notification which shows when the file is successfully saved to cloud storage.">
+    Photo saved to Google Drive
+  </message>
+  <message name="IDS_POLICY_SKYVAULT_CAMERA_VIDEO_UPLOAD_DONE_TITLE_GOOGLE_DRIVE" desc="The title of the notification which shows when the file is successfully saved to cloud storage.">
+    Video saved to Google Drive
+  </message>
+  <message name="IDS_POLICY_SKYVAULT_CAMERA_SCAN_UPLOAD_DONE_TITLE_GOOGLE_DRIVE" desc="The title of the notification which shows when the file is successfully saved to cloud storage.">
+    Scan saved to Google Drive
+  </message>
+  <message name="IDS_POLICY_SKYVAULT_CAMERA_UPLOAD_DONE_MESSAGE" desc="The message of the notification which shows when the file is successfully saved to cloud storage.">
+    You can find it in the Camera folder
+  </message>
+  <message name="IDS_POLICY_SKYVAULT_CAMERA_UPLOAD_DONE_EDIT_BUTTON" desc="The edit button in the notification which shows when the file is successfully saved to cloud storage.">
+    Edit
+  </message>
+  <message name="IDS_POLICY_SKYVAULT_CAMERA_UPLOAD_DONE_DELETE_BUTTON" desc="The delete button in the notification which shows when the file is successfully saved to cloud storage.">
+    Delete
+  </message>
+  <message name="IDS_POLICY_SKYVAULT_CAMERA_PHOTO_UPLOAD_ERROR_TITLE" desc="The title of the notification which shows when the file upload to cloud storage failed.">
+    Unable to save photo
+  </message>
+  <message name="IDS_POLICY_SKYVAULT_CAMERA_PHOTO_UPLOAD_ERROR_MESSAGE" desc="The message of the notification which shows when the file upload to cloud storage failed.">
+    Photo is lost due to an unknown error
+  </message>
+  <message name="IDS_POLICY_SKYVAULT_CAMERA_PHOTO_UPLOAD_ERROR_RETAKE_BUTTON" desc="The message of the notification which shows when the file upload to cloud storage failed.">
+    Retake photo
+  </message>
+  <message name="IDS_POLICY_SKYVAULT_CAMERA_VIDEO_UPLOAD_ERROR_TITLE" desc="The title of the notification which shows when the file upload to cloud storage failed.">
+    Unable to save video
+  </message>
+  <message name="IDS_POLICY_SKYVAULT_CAMERA_VIDEO_UPLOAD_ERROR_MESSAGE" desc="The message of the notification which shows when the file upload to cloud storage failed.">
+    Video is lost due to an unknown error
+  </message>
+  <message name="IDS_POLICY_SKYVAULT_CAMERA_VIDEO_UPLOAD_ERROR_RETAKE_BUTTON" desc="The message of the notification which shows when the file upload to cloud storage failed.">
+    Retake video
+  </message>
+  <message name="IDS_POLICY_SKYVAULT_CAMERA_SCAN_UPLOAD_ERROR_TITLE" desc="The title of the notification which shows when the file upload to cloud storage failed.">
+    Unable to save scan
+  </message>
+  <message name="IDS_POLICY_SKYVAULT_CAMERA_SCAN_UPLOAD_ERROR_MESSAGE" desc="The message of the notification which shows when the file upload to cloud storage failed.">
+    Scan is lost due to an unknown error
+  </message>
+  <message name="IDS_POLICY_SKYVAULT_CAMERA_SCAN_UPLOAD_ERROR_RETAKE_BUTTON" desc="The message of the notification which shows when the file upload to cloud storage failed.">
+    Retake scan
+  </message>
+  <message name="IDS_POLICY_SKYVAULT_CAMERA_UPLOAD_ERROR_DISMISS_BUTTON" desc="The message of the notification which shows when the file upload to cloud storage failed.">
+    Dismiss
+  </message>
+  <message name="IDS_POLICY_SKYVAULT_DOWNLOAD_SIGN_IN_TITLE" desc="The title for the notification asking the user to sign-in to Microsoft OneDrive to complete the camera upload.">
     Sign in to OneDrive to continue downloading
   </message>
   <message name="IDS_POLICY_SKYVAULT_DOWNLOAD_SIGN_IN_BUTTON" desc="Label for the button that starts the sign-in flow to Microsoft OneDrive.">

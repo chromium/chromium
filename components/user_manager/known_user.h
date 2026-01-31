@@ -205,9 +205,9 @@ class USER_MANAGER_EXPORT KnownUser final {
   // when the property isn't present. For the format of the value, refer to
   // chromeos/ash/components/login/auth/challenge_response/known_user_pref_utils.h.
   void SetChallengeResponseKeys(const AccountId& account_id,
-                                base::Value::List value);
+                                base::ListValue value);
 
-  base::Value::List GetChallengeResponseKeys(const AccountId& account_id);
+  base::ListValue GetChallengeResponseKeys(const AccountId& account_id);
 
   void SetLastOnlineSignin(const AccountId& account_id, base::Time time);
 
@@ -246,9 +246,9 @@ class USER_MANAGER_EXPORT KnownUser final {
   void PinAutosubmitSetBackfillNotNeeded(const AccountId& account_id);
   void PinAutosubmitSetBackfillNeededForTests(const AccountId& account_id);
 
-  base::Value::Dict GetAuthFactorCache(const AccountId& account_id);
+  base::DictValue GetAuthFactorCache(const AccountId& account_id);
   void SetAuthFactorCache(const AccountId& account_id,
-                          const base::Value::Dict cache);
+                          const base::DictValue cache);
 
   // Setter and getter for password sync token used for syncing SAML passwords
   // across multiple user devices.
@@ -295,7 +295,7 @@ class USER_MANAGER_EXPORT KnownUser final {
 
   // Performs a lookup of properties associated with |account_id|. Returns
   // nullptr if not found.
-  const base::Value::Dict* FindPrefs(const AccountId& account_id) const;
+  const base::DictValue* FindPrefs(const AccountId& account_id) const;
 
   // Removes all user preferences associated with |account_id|.
   // Not exported, as code should not be calling this outside this component.

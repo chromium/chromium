@@ -17,7 +17,6 @@ source_set("cookie_controls") {
       "//base",
       "//chrome/browser/infobars",
       "//chrome/browser/privacy_sandbox:roll_back_3pcd_notice_action",
-      "//chrome/browser/sync",
       "//components/privacy_sandbox:tracking_protection_settings",
       "//content/public/browser",
     ]
@@ -36,6 +35,7 @@ source_set("impl") {
     deps += [
       ":cookie_controls",
       "//base",
+      "//chrome/browser/profiles:profile",
       "//chrome/common",
       "//components/infobars/content",
       "//components/privacy_sandbox:privacy_sandbox_prefs",
@@ -59,7 +59,6 @@ source_set("unit_tests") {
     "//components/content_settings/browser/ui",
     "//components/privacy_sandbox:features",
     "//components/privacy_sandbox:privacy_sandbox_prefs",
-    "//components/privacy_sandbox:tracking_protection_settings",
     "//components/site_engagement/content",
     "//components/ukm:test_support",
     "//net",
@@ -74,6 +73,7 @@ source_set("unit_tests") {
       ":cookie_controls",
       "//components/infobars/core",
       "//components/privacy_sandbox:privacy_sandbox_prefs",
+      "//components/privacy_sandbox:tracking_protection_settings",
     ]
   }
 }

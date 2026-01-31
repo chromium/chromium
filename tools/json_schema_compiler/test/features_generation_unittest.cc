@@ -158,9 +158,9 @@ TEST(FeaturesGenerationTest, FeaturesTest) {
     comparator.contexts = std::vector<mojom::ContextType>(
         {mojom::ContextType::kPrivilegedExtension});
     comparator.channel = version_info::Channel::DEV;
-    comparator.extension_types = {Manifest::TYPE_EXTENSION,
-                                  Manifest::TYPE_PLATFORM_APP};
-    comparator.location = SimpleFeature::COMPONENT_LOCATION;
+    comparator.extension_types = {Manifest::Type::kExtension,
+                                  Manifest::Type::kPlatformApp};
+    comparator.location = SimpleFeature::Location::kComponent;
     comparator.allowlist = {"ABCDEF0123456789ABCDEF0123456789ABCDEF01",
                             "10FEDCBA9876543210FEDCBA9876543210FEDCBA"};
     comparator.blocklist = {"0123456789ABCDEF0123456789ABCDEF01234567",
@@ -176,7 +176,7 @@ TEST(FeaturesGenerationTest, FeaturesTest) {
     comparator.contexts = std::vector<mojom::ContextType>(
         {mojom::ContextType::kPrivilegedExtension});
     comparator.dependencies = {"permission:gamma"};
-    comparator.extension_types = {Manifest::TYPE_EXTENSION};
+    comparator.extension_types = {Manifest::Type::kExtension};
     comparator.internal = true;
     comparator.CompareFeature(feature);
 
@@ -244,14 +244,14 @@ TEST(FeaturesGenerationTest, FeaturesTest) {
          mojom::ContextType::kUserScript, mojom::ContextType::kWebPage,
          mojom::ContextType::kWebUi, mojom::ContextType::kUntrustedWebUi,
          mojom::ContextType::kUnprivilegedExtension});
-    comparator.extension_types = {Manifest::TYPE_EXTENSION,
-                                  Manifest::TYPE_HOSTED_APP,
-                                  Manifest::TYPE_LEGACY_PACKAGED_APP,
-                                  Manifest::TYPE_PLATFORM_APP,
-                                  Manifest::TYPE_SHARED_MODULE,
-                                  Manifest::TYPE_THEME,
-                                  Manifest::TYPE_LOGIN_SCREEN_EXTENSION,
-                                  Manifest::TYPE_CHROMEOS_SYSTEM_EXTENSION};
+    comparator.extension_types = {Manifest::Type::kExtension,
+                                  Manifest::Type::kHostedApp,
+                                  Manifest::Type::kLegacyPackagedApp,
+                                  Manifest::Type::kPlatformApp,
+                                  Manifest::Type::kSharedModule,
+                                  Manifest::Type::kTheme,
+                                  Manifest::Type::kLoginScreenExtension,
+                                  Manifest::Type::kChromeOSSystemExtension};
     comparator.channel = version_info::Channel::BETA;
     comparator.CompareFeature(feature);
   }
@@ -300,7 +300,7 @@ TEST(FeaturesGenerationTest, FeaturesTest) {
       comparator.channel = version_info::Channel::STABLE;
       comparator.contexts = std::vector<mojom::ContextType>(
           {mojom::ContextType::kPrivilegedExtension});
-      comparator.extension_types = {Manifest::TYPE_EXTENSION};
+      comparator.extension_types = {Manifest::Type::kExtension};
       comparator.CompareFeature(default_parent);
       // Check the child of the complex feature. It should inherit its
       // properties from the default parent.
@@ -316,7 +316,7 @@ TEST(FeaturesGenerationTest, FeaturesTest) {
       comparator.channel = version_info::Channel::BETA;
       comparator.contexts = std::vector<mojom::ContextType>(
           {mojom::ContextType::kPrivilegedExtension});
-      comparator.extension_types = {Manifest::TYPE_EXTENSION};
+      comparator.extension_types = {Manifest::Type::kExtension};
       comparator.allowlist = {"0123456789ABCDEF0123456789ABCDEF01234567"};
       comparator.CompareFeature(other_parent);
     }

@@ -29,7 +29,6 @@
 #include "base/barrier_closure.h"
 #include "base/base_paths.h"
 #include "base/check.h"
-#include "base/containers/contains.h"
 #include "base/files/file_enumerator.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
@@ -607,8 +606,8 @@ TEST_F(AmbientPhotoControllerTest, ShouldDownloadBackupImagesWhenScheduled) {
   // Should have been two cache writes to backup data.
   const auto& backup_data = GetBackupCachedFiles();
   ASSERT_EQ(backup_data.size(), 2u);
-  ASSERT_TRUE(base::Contains(backup_data, 0));
-  ASSERT_TRUE(base::Contains(backup_data, 1));
+  ASSERT_TRUE(backup_data.contains(0));
+  ASSERT_TRUE(backup_data.contains(1));
   for (const auto& i : backup_data) {
     EXPECT_TRUE(i.second.primary_photo().details().empty());
     EXPECT_TRUE(i.second.related_photo().image().empty());
@@ -662,8 +661,8 @@ TEST_F(AmbientPhotoControllerTest,
   // two cache writes to backup cache.
   const auto& backup_data = GetBackupCachedFiles();
   ASSERT_EQ(backup_data.size(), 2u);
-  ASSERT_TRUE(base::Contains(backup_data, 0));
-  ASSERT_TRUE(base::Contains(backup_data, 1));
+  ASSERT_TRUE(backup_data.contains(0));
+  ASSERT_TRUE(backup_data.contains(1));
   for (const auto& i : backup_data) {
     EXPECT_TRUE(i.second.primary_photo().details().empty());
     EXPECT_TRUE(i.second.related_photo().image().empty());

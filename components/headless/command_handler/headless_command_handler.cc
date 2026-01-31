@@ -103,8 +103,8 @@ void CreateAndAddHeadlessHostDataSource(
   source->AddResourcePath(kHeadlessCommandJs, IDR_HEADLESS_COMMAND_JS);
 }
 
-base::Value::Dict GetColorDictFromHexColor(uint32_t color, bool has_alpha) {
-  base::Value::Dict dict;
+base::DictValue GetColorDictFromHexColor(uint32_t color, bool has_alpha) {
+  base::DictValue dict;
   if (has_alpha) {
     dict.Set("r", static_cast<int>((color & 0xff000000) >> 24));
     dict.Set("g", static_cast<int>((color & 0x00ff0000) >> 16));
@@ -131,7 +131,7 @@ bool ParseWindowSize(const std::string& window_size, int* width, int* height) {
   return *width > 0 && *height > 0;
 }
 
-bool GetCommandDictAndOutputPaths(base::Value::Dict* commands,
+bool GetCommandDictAndOutputPaths(base::DictValue* commands,
                                   base::FilePath* pdf_file_path,
                                   base::FilePath* screenshot_file_path) {
   const base::CommandLine* command_line =
@@ -151,7 +151,7 @@ bool GetCommandDictAndOutputPaths(base::Value::Dict* commands,
     }
     *pdf_file_path = path;
 
-    base::Value::Dict params;
+    base::DictValue params;
     if (command_line->HasSwitch(switches::kNoPDFHeaderFooter)) {
       params.Set("noHeaderFooter", true);
     }
@@ -194,7 +194,7 @@ bool GetCommandDictAndOutputPaths(base::Value::Dict* commands,
       return false;
     }
 
-    base::Value::Dict params;
+    base::DictValue params;
     params.Set("format", it->second);
 
     if (command_line->HasSwitch(kWindowSize)) {
@@ -344,7 +344,7 @@ void HeadlessCommandHandler::ProcessCommands(
 
 void HeadlessCommandHandler::DocumentOnLoadCompletedInPrimaryMainFrame() {
   // Expose DevTools protocol to the target.
-  base::Value::Dict expose_params;
+  base::DictValue expose_params;
   expose_params.Set("targetId", devtools_client_.GetTargetId());
   browser_devtools_client_.SendCommand(
       "Target.exposeDevToolsProtocol", std::move(expose_params),
@@ -352,7 +352,7 @@ void HeadlessCommandHandler::DocumentOnLoadCompletedInPrimaryMainFrame() {
                      base::Unretained(this)));
 }
 
-void HeadlessCommandHandler::OnDevToolsProtocolExposed(base::Value::Dict) {
+void HeadlessCommandHandler::OnDevToolsProtocolExposed(base::DictValue) {
   // Set up Inspector domain.
   devtools_client_.AddEventHandler(
       "Inspector.targetCrashed",
@@ -361,7 +361,7 @@ void HeadlessCommandHandler::OnDevToolsProtocolExposed(base::Value::Dict) {
   devtools_client_.SendCommand("Inspector.enable");
 
   // Prepare headless commands.
-  base::Value::Dict commands;
+  base::DictValue commands;
   if (!GetCommandDictAndOutputPaths(&commands, &pdf_file_path_,
                                     &screenshot_file_path_) ||
       commands.empty()) {
@@ -374,7 +374,7 @@ void HeadlessCommandHandler::OnDevToolsProtocolExposed(base::Value::Dict) {
   std::string json_commands = base::WriteJson(commands).value_or("");
   std::string script = "executeCommands(JSON.parse('" + json_commands + "'))";
 
-  base::Value::Dict params;
+  base::DictValue params;
   params.Set("expression", script);
   params.Set("awaitPromise", true);
   params.Set("returnByValue", true);
@@ -389,12 +389,12 @@ void HeadlessCommandHandler::WebContentsDestroyed() {
   Done();
 }
 
-void HeadlessCommandHandler::OnTargetCrashed(const base::Value::Dict&) {
+void HeadlessCommandHandler::OnTargetCrashed(const base::DictValue&) {
   LOG(ERROR) << "Abnormal renderer termination.";
   Done();
 }
 
-void HeadlessCommandHandler::OnCommandsResult(base::Value::Dict result) {
+void HeadlessCommandHandler::OnCommandsResult(base::DictValue result) {
   if (result.FindBoolByDottedPath("result.result.value.pageLoadTimedOut")
           .value_or(false)) {
     result_ = Result::kPageLoadTimeout;

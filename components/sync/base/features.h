@@ -48,6 +48,9 @@ BASE_DECLARE_FEATURE(kSyncAIThread);
 // Enables syncing of contextual tasks.
 BASE_DECLARE_FEATURE(kSyncContextualTask);
 
+// Enables syncing of Gemini threads across devices.
+BASE_DECLARE_FEATURE(kSyncGeminiThread);
+
 #if !BUILDFLAG(IS_CHROMEOS)
 // Flag that controls Uno fast-follow features which are:
 // On Android:
@@ -127,21 +130,6 @@ constexpr bool IsReadingListAccountStorageEnabled() {
 }
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 
-// Flag to enable clean up of password deletions that may be unintentional.
-BASE_DECLARE_FEATURE(kSyncPasswordCleanUpAccidentalBatchDeletions);
-// The minimum number of deletions that can be considered a batch deletion.
-inline constexpr base::FeatureParam<int>
-    kSyncPasswordCleanUpAccidentalBatchDeletionsCountThreshold{
-        &kSyncPasswordCleanUpAccidentalBatchDeletions,
-        "SyncPasswordCleanUpAccidentalBatchDeletionsCountThreshold", 3};
-// The maximum time between earliest and latest deletion to be considered an
-// accidental batch deletion.
-inline constexpr base::FeatureParam<base::TimeDelta>
-    kSyncPasswordCleanUpAccidentalBatchDeletionsTimeThreshold{
-        &kSyncPasswordCleanUpAccidentalBatchDeletions,
-        "SyncPasswordCleanUpAccidentalBatchDeletionsTimeThreshold",
-        base::Milliseconds(100)};
-
 // If enabled, sync-the-transport will auto-start (avoid deferring startup) if
 // sync metadata isn't available (i.e. initial sync never completed).
 BASE_DECLARE_FEATURE(kSyncAlwaysForceImmediateStartIfTransportDataMissing);
@@ -192,6 +180,9 @@ BASE_DECLARE_FEATURE(kSyncEnablePasswordsSyncErrorMessageAlternative);
 inline constexpr base::FeatureParam<int>
     kSyncEnablePasswordsSyncErrorMessageAlternativeVersion{
         &kSyncEnablePasswordsSyncErrorMessageAlternative, "version", 3};
+
+// If enabled, the error message to unlock passwords is shown for longer.
+BASE_DECLARE_FEATURE(kSyncTrustedVaultErrorMessageDuration);
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_IOS)
@@ -200,6 +191,10 @@ inline constexpr base::FeatureParam<int>
 // passwords).
 BASE_DECLARE_FEATURE(kSyncTrustedVaultInfobarMessageImprovements);
 #endif  // BUILDFLAG(IS_IOS)
+
+// If enabled, the preferences sync service will use the selected types to
+// determine whether the pref values should be set in the account storage.
+BASE_DECLARE_FEATURE(kSyncPreferencesUseSelectedTypes);
 
 // When enabled, Sync will use OSCryptAsync for encryption/decryption instead
 // of OSCrypt within the sync code.
@@ -212,6 +207,14 @@ BASE_DECLARE_FEATURE_PARAM(base::TimeDelta,
 // If enabled, the new sync dashboard URL will be opened when the user clicks
 // on the "Review your synced data" (or equivalent) entrypoint in settings.
 BASE_DECLARE_FEATURE(kSyncEnableNewSyncDashboardUrl);
+
+// If enabled, Sync will fetch device statistics for all accounts on the device,
+// and record summary metrics about them.
+BASE_DECLARE_FEATURE(kSyncRecordDeviceStatisticsMetrics);
+
+// If enabled, DeviceInfoSyncBridge uses WallClockTimer for pulse updates,
+// which is more resilient to device suspension.
+BASE_DECLARE_FEATURE(kSyncDeviceInfoUseWallClockTimer);
 
 }  // namespace syncer
 

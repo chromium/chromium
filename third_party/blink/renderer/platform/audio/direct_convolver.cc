@@ -31,16 +31,7 @@
 #include <utility>
 
 #include "base/compiler_specific.h"
-#include "build/build_config.h"
 #include "third_party/blink/renderer/platform/audio/vector_math.h"
-
-#if BUILDFLAG(IS_MAC)
-#include <Accelerate/Accelerate.h>
-#endif
-
-#if defined(ARCH_CPU_X86_FAMILY) && !BUILDFLAG(IS_MAC)
-#include <emmintrin.h>
-#endif
 
 namespace blink {
 

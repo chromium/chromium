@@ -28,16 +28,15 @@ class SupportLibWebViewPageAdapter implements WebViewPageBoundaryInterface {
     }
 
     @Override
-    public boolean isPrerendering() {
-        try (TraceEvent event =
-                TraceEvent.scoped("WebView.APICall.AndroidX.PAGE_IS_PRERENDERING")) {
-            recordApiCall(ApiCall.PAGE_IS_PRERENDERING);
-            return mPage.isPrerendering();
-        }
+    public Object getOrCreatePeer(Callable<Object> creationCallable) {
+        return mPage.getOrCreateSupportLibObject(creationCallable);
     }
 
     @Override
-    public Object getOrCreatePeer(Callable<Object> creationCallable) {
-        return mPage.getOrCreateSupportLibObject(creationCallable);
+    public String getUrl() {
+        try (TraceEvent event = TraceEvent.scoped("WebView.APICall.AndroidX.PAGE_GET_URL")) {
+            recordApiCall(ApiCall.PAGE_GET_URL);
+            return mPage.getUrl();
+        }
     }
 }

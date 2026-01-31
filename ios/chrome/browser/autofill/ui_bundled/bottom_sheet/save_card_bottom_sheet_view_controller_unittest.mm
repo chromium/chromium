@@ -32,8 +32,8 @@ class SaveCardBottomSheetViewControllerTest : public PlatformTest {
  protected:
   void ViewSetup() {
     // Set dataSource_ properties when accessed on `viewDidLoad`.
-    OCMStub([dataSource_ logoType]).andReturn(kGooglePayLogo);
-    OCMStub([dataSource_ logoAccessibilityLabel]).andReturn(@"Google Pay");
+    OCMStub([dataSource_ logoType]).andReturn(kGoogleWalletLogo);
+    OCMStub([dataSource_ logoAccessibilityLabel]).andReturn(@"Google Wallet");
 
     // Presence of primary action string lets view controller create a primary
     // action button.

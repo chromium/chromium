@@ -199,7 +199,7 @@ void UpdateScreen::HideImpl() {
   is_shown_ = false;
 }
 
-void UpdateScreen::OnUserAction(const base::Value::List& args) {
+void UpdateScreen::OnUserAction(const base::ListValue& args) {
   const std::string& action_id = args[0].GetString();
   bool is_chrome_branded_build = false;
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
@@ -591,7 +591,7 @@ bool UpdateScreen::CheckIfOptOutIsEnabled() {
   if (!country.has_value()) {
     return false;
   }
-  return base::Contains(kEUCountriesSet, country.value());
+  return kEUCountriesSet.contains(country.value());
 }
 
 }  // namespace ash

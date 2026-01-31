@@ -128,24 +128,24 @@ class PowerHandler : public ::settings::SettingsPageUIHandler,
   };
 
   // Handler to request updating the power status.
-  void HandleUpdatePowerStatus(const base::Value::List& args);
+  void HandleUpdatePowerStatus(const base::ListValue& args);
 
   // Handler to change the power source.
-  void HandleSetPowerSource(const base::Value::List& args);
+  void HandleSetPowerSource(const base::ListValue& args);
 
   // Handler to request the current power management settings. Just calls
   // SendPowerManagementSettings().
-  void HandleRequestPowerManagementSettings(const base::Value::List& args);
+  void HandleRequestPowerManagementSettings(const base::ListValue& args);
 
   // Handlers to change the idle and lid-closed behaviors.
-  void HandleSetIdleBehavior(const base::Value::List& args);
-  void HandleSetLidClosedBehavior(const base::Value::List& args);
+  void HandleSetIdleBehavior(const base::ListValue& args);
+  void HandleSetLidClosedBehavior(const base::ListValue& args);
 
   // Handler to toggle adaptive charging behavior.
-  void HandleSetAdaptiveCharging(const base::Value::List& args);
+  void HandleSetAdaptiveCharging(const base::ListValue& args);
 
   // Handler which enables or disables the provided optimized charging strategy.
-  void HandleSetOptimizedCharging(const base::Value::List& args);
+  void HandleSetOptimizedCharging(const base::ListValue& args);
 
   // Updates the UI with the current battery status.
   void SendBatteryStatus();

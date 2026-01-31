@@ -2,21 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "base/test/launcher/test_launcher.h"
 
 #include <stdio.h>
 
 #include <algorithm>
-#include <map>
 #include <random>
 #include <string_view>
-#include <unordered_map>
-#include <unordered_set>
 #include <utility>
 
 #include "base/at_exit.h"
@@ -24,7 +16,6 @@
 #include "base/command_line.h"
 #include "base/compiler_specific.h"
 #include "base/containers/adapters.h"
-#include "base/containers/contains.h"
 #include "base/environment.h"
 #include "base/files/file_enumerator.h"
 #include "base/files/file_path.h"
@@ -71,6 +62,8 @@
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
 
 #if BUILDFLAG(IS_POSIX)
 #include <fcntl.h>
@@ -250,8 +243,8 @@ Lock* GetLiveProcessesLock() {
   return lock;
 }
 
-std::map<ProcessHandle, CommandLine>* GetLiveProcesses() {
-  static auto* map = new std::map<ProcessHandle, CommandLine>;
+absl::flat_hash_map<ProcessHandle, CommandLine>* GetLiveProcesses() {
+  static auto* map = new absl::flat_hash_map<ProcessHandle, CommandLine>;
   return map;
 }
 
@@ -469,13 +462,13 @@ int LaunchChildTestProcessWithOptions(const CommandLine& command_line,
   zx_status_t result = fdio_ns_export_root(&flat_namespace);
   ZX_CHECK(ZX_OK == result, result) << "fdio_ns_export_root";
   for (size_t i = 0; i < flat_namespace->count; ++i) {
-    base::FilePath path(flat_namespace->path[i]);
+    base::FilePath path(UNSAFE_TODO(flat_namespace->path[i]));
     if (path == kDataPath || path == kCachePath) {
-      result = zx_handle_close(flat_namespace->handle[i]);
+      result = zx_handle_close(UNSAFE_TODO(flat_namespace->handle[i]));
       ZX_CHECK(ZX_OK == result, result) << "zx_handle_close";
     } else {
       new_options.paths_to_transfer.push_back(
-          {path, flat_namespace->handle[i]});
+          {path, UNSAFE_TODO(flat_namespace->handle[i])});
     }
   }
   free(flat_namespace);
@@ -1138,7 +1131,7 @@ bool TestLauncher::Run(CommandLine* command_line) {
   CHECK_EQ(0, pipe(g_shutdown_pipe));
 
   struct sigaction action;
-  memset(&action, 0, sizeof(action));
+  UNSAFE_TODO(memset(&action, 0, sizeof(action)));
   sigemptyset(&action.sa_mask);
   action.sa_handler = &ShutdownPipeSignalHandler;
 
@@ -1288,17 +1281,19 @@ void TestLauncher::ProcessTestResults(
 
   // TODO(phajdan.jr): Check for duplicates and mismatches between
   // the results we got from XML file and tests we intended to run.
-  std::map<std::string, TestResult> results_map;
+  absl::flat_hash_map<std::string, TestResult> results_map;
+  results_map.reserve(test_results.size());
   for (const auto& i : test_results) {
     results_map[i.full_name] = i;
   }
 
   // Results to be reported back to the test launcher.
   std::vector<TestResult> final_results;
+  final_results.reserve(test_names.size());
 
   for (const auto& i : test_names) {
-    if (Contains(results_map, i)) {
-      TestResult test_result = results_map[i];
+    if (auto it = results_map.find(i); it != results_map.end()) {
+      TestResult test_result = it->second;
       // Fix up the test status: we forcibly kill the child process
       // after the timeout, so from XML results it looks just like
       // a crash.
@@ -1311,7 +1306,7 @@ void TestLauncher::ProcessTestResults(
           test_result.elapsed_time > launcher_delegate_->GetTimeout()) {
         test_result.status = TestResult::TEST_TIMEOUT;
       }
-      final_results.push_back(test_result);
+      final_results.push_back(std::move(test_result));
     } else {
       // TODO(phajdan.jr): Explicitly pass the info that the test didn't
       // run for a mysterious reason.
@@ -1319,7 +1314,7 @@ void TestLauncher::ProcessTestResults(
       TestResult test_result;
       test_result.full_name = i;
       test_result.status = missing_result_status;
-      final_results.push_back(test_result);
+      final_results.push_back(std::move(test_result));
     }
   }
   // TODO(phajdan.jr): Handle the case where processing XML output
@@ -1531,7 +1526,7 @@ bool TestLauncher::IsOnlyExactPositiveFilterFromFile(
     return false;
   }
   for (const auto& filter : positive_test_filter_) {
-    if (Contains(filter, '*')) {
+    if (filter.contains('*')) {
       LOG(ERROR) << "Found wildcard positive filters in the filter file.";
       return false;
     }
@@ -1865,14 +1860,15 @@ bool TestLauncher::InitTests() {
   // Check for duplicate test names. These can cause difficult-to-diagnose
   // crashes in the test runner as well as confusion about exactly what test is
   // failing. See https://crbug.com/1463355 for details.
-  std::unordered_set<std::string> full_test_names;
+  absl::flat_hash_set<std::string> full_test_names;
+  full_test_names.reserve(tests.size());
   bool dups_found = false;
   for (auto& test : tests) {
-    const std::string full_test_name =
-        test.test_case_name + "." + test.test_name;
-    auto [it, inserted] = full_test_names.insert(full_test_name);
+    std::string full_test_name =
+        base::StrCat({test.test_case_name, ".", test.test_name});
+    auto [it, inserted] = full_test_names.insert(std::move(full_test_name));
     if (!inserted) {
-      LOG(WARNING) << "Duplicate test name found: " << full_test_name;
+      LOG(WARNING) << "Duplicate test name found: " << *it;
       dups_found = true;
     }
   }
@@ -1946,8 +1942,8 @@ bool TestLauncher::ShuffleTests(CommandLine* command_line) {
 
 bool TestLauncher::ProcessAndValidateTests() {
   bool result = true;
-  std::unordered_set<std::string> disabled_tests;
-  std::unordered_map<std::string, TestInfo> pre_tests;
+  absl::flat_hash_set<std::string> disabled_tests;
+  absl::flat_hash_map<std::string, TestInfo> pre_tests;
 
   // Find disabled and pre tests
   for (const TestInfo& test_info : tests_) {
@@ -1966,7 +1962,7 @@ bool TestLauncher::ProcessAndValidateTests() {
   for (const TestInfo& test_info : tests_) {
     std::string test_name = test_info.GetFullName();
     // If any test has a matching disabled test, fail and log for audit.
-    if (base::Contains(disabled_tests, test_name)) {
+    if (disabled_tests.contains(test_name)) {
       LOG(ERROR) << test_name << " duplicated by a DISABLED_ test";
       result = false;
     }
@@ -1979,7 +1975,7 @@ bool TestLauncher::ProcessAndValidateTests() {
     std::vector<TestInfo> test_sequence;
     test_sequence.push_back(test_info);
     // Move Pre Tests prior to final test in order.
-    while (base::Contains(pre_tests, test_sequence.back().GetPreName())) {
+    while (pre_tests.contains(test_sequence.back().GetPreName())) {
       test_sequence.push_back(pre_tests[test_sequence.back().GetPreName()]);
       pre_tests.erase(test_sequence.back().GetDisabledStrippedName());
     }
@@ -2049,9 +2045,9 @@ std::vector<std::string> TestLauncher::CollectTests() {
   // more exact gtest filter, we first split filter into exact filter
   // and wildcards filter, then exact filter can match faster.
   std::vector<std::string_view> positive_wildcards_filter;
-  std::unordered_set<std::string_view> positive_exact_filter;
+  absl::flat_hash_set<std::string_view> positive_exact_filter;
   positive_exact_filter.reserve(positive_test_filter_.size());
-  std::unordered_set<std::string> enforced_positive_tests;
+  absl::flat_hash_set<std::string> enforced_positive_tests;
   for (const std::string& filter : positive_test_filter_) {
     if (filter.find('*') != std::string::npos) {
       positive_wildcards_filter.push_back(filter);
@@ -2061,7 +2057,7 @@ std::vector<std::string> TestLauncher::CollectTests() {
   }
 
   std::vector<std::string_view> negative_wildcards_filter;
-  std::unordered_set<std::string_view> negative_exact_filter;
+  absl::flat_hash_set<std::string_view> negative_exact_filter;
   negative_exact_filter.reserve(negative_test_filter_.size());
   for (const std::string& filter : negative_test_filter_) {
     if (filter.find('*') != std::string::npos) {
@@ -2148,7 +2144,7 @@ std::vector<std::string> TestLauncher::CollectTests() {
     bool found_exact_positive_filter_not_enforced = false;
     for (const auto& filter : positive_exact_filter) {
       if (!ShouldRunInCurrentShard(filter) ||
-          Contains(enforced_positive_tests, std::string(filter))) {
+          enforced_positive_tests.contains(std::string(filter))) {
         continue;
       }
       if (!found_exact_positive_filter_not_enforced) {
@@ -2230,7 +2226,7 @@ bool TestLauncher::RunRetryTests() {
     // Retry all tests that depend on a failing test.
     std::vector<std::string> test_names;
     for (const TestInfo& test_info : tests_) {
-      if (base::Contains(tests_to_retry_, test_info.GetPrefixStrippedName())) {
+      if (tests_to_retry_.contains(test_info.GetPrefixStrippedName())) {
         test_names.push_back(test_info.GetFullName());
       }
     }
@@ -2244,8 +2240,9 @@ bool TestLauncher::RunRetryTests() {
       return false;
     }
 
-    fprintf(stdout, "Retrying %zu test%s (retry #%zu)\n", retry_started_count,
-            retry_started_count > 1 ? "s" : "", retry_limit_ - retries_left_);
+    UNSAFE_TODO(fprintf(stdout, "Retrying %zu test%s (retry #%zu)\n",
+                        retry_started_count, retry_started_count > 1 ? "s" : "",
+                        retry_limit_ - retries_left_));
     fflush(stdout);
 
     --retries_left_;

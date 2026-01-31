@@ -34,7 +34,7 @@ class PrinterHandler {
   using DefaultPrinterCallback =
       base::OnceCallback<void(const std::string& printer_name)>;
   using AddedPrintersCallback =
-      base::RepeatingCallback<void(base::Value::List printers)>;
+      base::RepeatingCallback<void(base::ListValue printers)>;
   using GetPrintersDoneCallback = base::OnceClosure;
   // `capability` should contain a CDD with key `kSettingCapabilities`.
   // It may also contain other information about the printer in a dictionary
@@ -44,15 +44,15 @@ class PrinterHandler {
   // `kSettingCapabilities` is empty, this indicates capabilities were retrieved
   // but the printer does not support any of the capability fields in a CDD.
   using GetCapabilityCallback =
-      base::OnceCallback<void(base::Value::Dict capability)>;
+      base::OnceCallback<void(base::DictValue capability)>;
   using PrintCallback = base::OnceCallback<void(const base::Value& error)>;
   using GetPrinterInfoCallback =
-      base::OnceCallback<void(const base::Value::Dict& printer_info)>;
+      base::OnceCallback<void(const base::DictValue& printer_info)>;
 #if BUILDFLAG(IS_CHROMEOS)
   using GetEulaUrlCallback =
       base::OnceCallback<void(const std::string& license)>;
   using PrinterStatusRequestCallback = base::OnceCallback<void(
-      std::optional<base::Value::Dict> cups_printer_status)>;
+      std::optional<base::DictValue> cups_printer_status)>;
 #endif
 
   // Creates an instance of a PrinterHandler for extension printers.
@@ -106,7 +106,7 @@ class PrinterHandler {
   // |print_data|: The document bytes to print.
   // |callback| should be called in the response to the request.
   virtual void StartPrint(const std::u16string& job_title,
-                          base::Value::Dict settings,
+                          base::DictValue settings,
                           scoped_refptr<base::RefCountedMemory> print_data,
                           PrintCallback callback) = 0;
 

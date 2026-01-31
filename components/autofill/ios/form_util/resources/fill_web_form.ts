@@ -9,8 +9,24 @@ import {inferLabelForElement, inferLabelFromNext} from '//components/autofill/io
 import * as inferenceUtil from '//components/autofill/ios/form_util/resources/fill_element_inference_util.js';
 import * as fillUtil from '//components/autofill/ios/form_util/resources/fill_util.js';
 import {getFieldIdentifier, getFormControlElements, getFormIdentifier, getIframeElements} from '//components/autofill/ios/form_util/resources/form_utils.js';
-import {gCrWeb, gCrWebLegacy} from '//ios/web/public/js_messaging/resources/gcrweb.js';
-import {isTextField, removeQueryAndReferenceFromURL, trim} from '//ios/web/public/js_messaging/resources/utils.js';
+import {gCrWeb} from '//ios/web/public/js_messaging/resources/gcrweb.js';
+import {isTextField, removeQueryAndReferenceFromURL, sendWebKitMessage, trim} from '//ios/web/public/js_messaging/resources/utils.js';
+
+if (typeof document.__gCrWasEditedByUserMap === 'undefined') {
+  document.__gCrWasEditedByUserMap = new WeakMap();
+}
+
+if (typeof document.__gCrFormSubmissionRegistry === 'undefined') {
+  document.__gCrFormSubmissionRegistry = new WeakSet();
+}
+
+/**
+ * A WeakMap to track if the current value of a field was entered by user or
+ * programmatically.
+ * If the map is null, the source of changed is not track.
+ */
+export const wasEditedByUser: WeakMap<any, any> =
+    document.__gCrWasEditedByUserMap;
 
 /**
  * Retrieves the registered 'autofill_form_features' CrWebApi
@@ -19,25 +35,17 @@ import {isTextField, removeQueryAndReferenceFromURL, trim} from '//ios/web/publi
 const autofillFormFeaturesApi =
     gCrWeb.getRegisteredApi('autofill_form_features');
 
-declare global {
-  // Defines an additional property, `__gcrweb`, on the Window object.
-  // This definition is needed in order to call into gCrWeb inside an iframe.
-  interface Window {
-    __gCrWeb: any;
-  }
-}
-
 // Returns the URL for the frame to be set in the FormData.
-export function getFrameUrlOrOrigin(frame: Window): string {
-  if ((frame === frame.top) ||
-      ((frame.location.href !== 'about:blank') &&
-       (frame.location.href !== 'about:srcdoc'))) {
+export function getFrameUrlOrOrigin(): string {
+  if ((window === window.top) ||
+      ((window.location.href !== 'about:blank') &&
+       (window.location.href !== 'about:srcdoc'))) {
     // If the full URL is available, use it.
-    return removeQueryAndReferenceFromURL(frame.location.href);
+    return removeQueryAndReferenceFromURL(window.location.href);
   } else {
     // Iframes might have empty own URLs, and they do not have access to the
     // parent frame URL, only to the origin. Use it as the only available data.
-    return frame.origin;
+    return window.origin;
   }
 }
 
@@ -81,7 +89,7 @@ export function webFormElementToFormData(
   }
 
   form.name = getFormIdentifier(formElement);
-  form.origin = getFrameUrlOrOrigin(frame);
+  form.origin = getFrameUrlOrOrigin();
   form.action = formElement !== null ?
       fillUtil.getCanonicalActionForForm(formElement) :
       '';
@@ -92,7 +100,7 @@ export function webFormElementToFormData(
 
   form.renderer_id = fillUtil.getUniqueID(formElement);
 
-  form.host_frame = frame.__gCrWeb.getFrameId();
+  form.host_frame = gCrWeb.getFrameId();
 
   // Note different from form_autofill_util.cc version of this method, which
   // computes |form.action| using document.completeURL(form_element.action())
@@ -137,8 +145,7 @@ export function webFormElementToFormData(
  * @param field Field to fill in the element information.
  */
 export function webFormControlElementToFormField(
-    element: fillConstants.FormControlElement,
-    field: fillUtil.AutofillFormFieldData) {
+    element: FormControlElement, field: fillUtil.AutofillFormFieldData) {
   if (!field || !element) {
     return;
   }
@@ -194,7 +201,7 @@ export function webFormControlElementToFormField(
       inferenceUtil.isTextAreaElement(element) ||
       inferenceUtil.isSelectElement(element)) {
     field.is_autofilled = (element as any).isAutofilled;
-    field.is_user_edited = gCrWebLegacy.form.fieldWasEditedByUser(element);
+    field.is_user_edited = fieldWasEditedByUser(element);
     field.should_autocomplete = fillUtil.shouldAutocomplete(element);
     field.is_focusable = !element.disabled && !(element as any).readOnly &&
         element.tabIndex >= 0 && fillUtil.isVisibleNode(element);
@@ -421,8 +428,7 @@ export function formOrFieldsetsToFormData(
  *     form.
  */
 export function unownedFormElementsAndFieldSetsToFormData(
-    frame: Window, fieldsets: Element[],
-    controlElements: fillConstants.FormControlElement[],
+    frame: Window, fieldsets: Element[], controlElements: FormControlElement[],
     iframeElements: HTMLIFrameElement[],
     restrictUnownedFieldsToFormlessCheckout: boolean,
     form: fillUtil.AutofillFormData): boolean {
@@ -430,7 +436,7 @@ export function unownedFormElementsAndFieldSetsToFormData(
     return false;
   }
   form.name = '';
-  form.origin = getFrameUrlOrOrigin(frame);
+  form.origin = getFrameUrlOrOrigin();
   form.action = '';
 
   // To avoid performance bottlenecks, do not keep child frames if their
@@ -467,8 +473,7 @@ export function unownedFormElementsAndFieldSetsToFormData(
 
   // Since it's not a checkout flow, only add fields that have a non-"off"
   // autocomplete attribute to the formless autofill.
-  const controlElementsWithAutocomplete: fillConstants.FormControlElement[] =
-      [];
+  const controlElementsWithAutocomplete: FormControlElement[] = [];
   for (const controlElement of controlElements) {
     if (controlElement.hasAttribute('autocomplete') &&
         controlElement.getAttribute('autocomplete') !== 'off') {
@@ -559,7 +564,7 @@ function matchLabelsAndFields(
       continue;
     }
 
-    if (!('label' in fieldData)) {
+    if (!fieldData.label) {
       fieldData.label = '';
     }
     let labelText = inferenceUtil.findChildText(label);
@@ -638,7 +643,7 @@ function extractFieldsFromControlElements(
 
     // Create a new AutofillFormFieldData, fill it out and map it to the
     // field's name.
-    const formField = new gCrWebLegacy['common'].JSONSafeObject();
+    const formField = new fillUtil.AutofillFormFieldData();
     webFormControlElementToFormField(controlElement, formField);
     formFields.push(formField);
     elementArray[i] = formField;
@@ -708,7 +713,125 @@ export function getFieldName(element: Element|null): string {
  */
 export function autofillSubmissionData(form: HTMLFormElement):
     fillUtil.AutofillFormData {
-  const formData = new gCrWebLegacy['common'].JSONSafeObject();
+  const formData = new fillUtil.AutofillFormData();
   webFormElementToFormData(window, form, null, formData);
   return formData;
+}
+
+/**
+ * Returns whether the last `input` or `change` event on `element` was
+ * triggered by a user action (was "trusted"). Returns true by default if the
+ * feature to fix the user edited bit isn't enabled which is the status quo.
+ * TODO(crbug.com/40941928): Match Blink's behavior so that only a 'reset' event
+ * makes an edited field unedited.
+ */
+export function fieldWasEditedByUser(element: Element) {
+  return !autofillFormFeaturesApi.getFunction(
+             'isAutofillCorrectUserEditedBitInParsedField')() ||
+      (wasEditedByUser.get(element) ?? false);
+}
+
+/**
+ * @param originalURL A string containing a URL (absolute, relative...)
+ * @return A string containing a full URL (absolute with scheme)
+ */
+function getFullyQualifiedUrl(originalURL: string): string {
+  // A dummy anchor (never added to the document) is used to obtain the
+  // fully-qualified URL of `originalURL`.
+  const anchor = document.createElement('a');
+  anchor.href = originalURL;
+  return anchor.href;
+}
+
+// Send the form data to the browser.
+export function formSubmittedInternal(
+    form: HTMLFormElement,
+    messageHandler: string,
+    programmaticSubmission: boolean,
+    includeRemoteFrameToken: boolean = false,
+    ): void {
+  if (autofillFormFeaturesApi.getFunction(
+          'isAutofillDedupeFormSubmissionEnabled')()) {
+    // Handle deduping when the feature allows it.
+    if (document.__gCrFormSubmissionRegistry.has(form)) {
+      // Do not double submit the same form.
+      return;
+    }
+    document.__gCrFormSubmissionRegistry.add(form);
+  }
+
+  // Default URL for action is the document's URL.
+  const action = form.getAttribute('action') || document.URL;
+
+  const message = {
+    command: 'form.submit',
+    frameID: gCrWeb.getFrameId(),
+    formName: getFormIdentifier(form),
+    href: getFullyQualifiedUrl(action),
+    formData: autofillSubmissionData(form),
+    remoteFrameToken: includeRemoteFrameToken ? fillUtil.getRemoteFrameToken() :
+                                                undefined,
+    programmaticSubmission: programmaticSubmission,
+  };
+
+  sendWebKitMessage(messageHandler, message);
+}
+
+/**
+ * Sends the form data to the browser. Errors that are caught via the try/catch
+ * are reported to the browser. This is done before the error bubbles above
+ * `formSubmitted()` so the generic JS errors wrapper doesn't intercept the
+ * error before this custom error handler.
+ *
+ * @param form The form that was submitted.
+ * @param messageHandler The name of the message handler to send the message to.
+ * @param programmaticSubmission True if the form submission is programmatic.
+ * @includeRemoteFrameToken True if the remote frame token should be included
+ *   in the payload of the message sent to the browser.
+ */
+export function formSubmitted(
+    form: HTMLFormElement,
+    messageHandler: string,
+    programmaticSubmission: boolean,
+    includeRemoteFrameToken: boolean = false,
+    ): void {
+  try {
+    formSubmittedInternal(
+        form, messageHandler, programmaticSubmission, includeRemoteFrameToken);
+  } catch (error) {
+    if (autofillFormFeaturesApi.getFunction(
+            'isAutofillReportFormSubmissionErrorsEnabled')()) {
+      reportFormSubmissionError(error, programmaticSubmission, messageHandler);
+    } else {
+      // Just let the error go through if not reported.
+      throw error;
+    }
+  }
+}
+
+/**
+ * Reports a form submission error to the browser.
+ * @param error Object that holds information on the error.
+ * @param programmaticSubmission True if the submission that errored was
+ *   programmatic.
+ * @param handler The name of the handler to send the error message to.
+ */
+export function reportFormSubmissionError(
+    error: any, programmaticSubmission: boolean, handler: string) {
+  let errorMessage = '';
+  let errorStack = '';
+  if (error && error instanceof Error) {
+    errorMessage = error.message;
+    if (error.stack) {
+      errorStack = error.stack;
+    }
+  }
+
+  const message = {
+    command: 'form.submit.error',
+    errorStack,
+    errorMessage,
+    programmaticSubmission,
+  };
+  sendWebKitMessage(handler, message);
 }

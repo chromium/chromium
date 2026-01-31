@@ -87,7 +87,7 @@ class ProductSpecificationsIconViewIntegrationTest
   }
 
   ProductSpecificationsIconView* GetChip() {
-    auto* location_bar_view = browser_view()->toolbar()->location_bar();
+    auto* location_bar_view = browser_view()->toolbar()->location_bar_view();
     const ui::ElementContext context =
         views::ElementTrackerViews::GetContextForView(location_bar_view);
     views::View* matched_view =

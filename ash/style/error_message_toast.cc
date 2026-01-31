@@ -11,7 +11,6 @@
 
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/typography.h"
-#include "base/types/cxx23_to_underlying.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"

@@ -39,6 +39,7 @@
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "base/trace_event/trace_event.h"
+#include "base/types/expected.h"
 #include "net/base/net_errors.h"
 #include "net/disk_cache/backend_cleanup_tracker.h"
 #include "net/disk_cache/blockfile/disk_format.h"
@@ -1222,8 +1223,8 @@ void BackendImpl::FlushIndex() {
 
 // ------------------------------------------------------------------------
 
-int32_t BackendImpl::GetEntryCount(
-    net::Int32CompletionOnceCallback callback) const {
+base::expected<int32_t, net::Error> BackendImpl::GetEntryCount(
+    GetEntryCountCallback callback) const {
   return GetEntryCountSync();
 }
 

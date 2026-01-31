@@ -23,7 +23,7 @@ const char* EnumString(SavePageRequest::AutoFetchNotificationState value) {
 }  // namespace
 
 std::string SavePageRequest::ToString() const {
-  base::Value::Dict result;
+  base::DictValue result;
   result.Set("request_id", static_cast<int>(request_id_));
   result.Set("url", url_.spec());
   result.Set("client_id", client_id_.ToString());

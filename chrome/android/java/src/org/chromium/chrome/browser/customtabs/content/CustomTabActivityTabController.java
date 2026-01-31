@@ -107,7 +107,7 @@ public class CustomTabActivityTabController implements PauseResumeWithNativeObse
     private final AppCompatActivity mActivity;
     private final BrowserServicesIntentDataProvider mIntentDataProvider;
     private final TabObserverRegistrar mTabObserverRegistrar;
-    private final Supplier<CompositorViewHolder> mCompositorViewHolder;
+    private final Supplier<@Nullable CompositorViewHolder> mCompositorViewHolder;
     private final CustomTabTabPersistencePolicy mTabPersistencePolicy;
     private final CustomTabActivityTabFactory mTabFactory;
     private final CustomTabObserver mCustomTabObserver;
@@ -129,7 +129,7 @@ public class CustomTabActivityTabController implements PauseResumeWithNativeObse
             CustomTabDelegateFactory customTabDelegateFactory,
             BrowserServicesIntentDataProvider intentDataProvider,
             TabObserverRegistrar tabObserverRegistrar,
-            Supplier<CompositorViewHolder> compositorViewHolder,
+            Supplier<@Nullable CompositorViewHolder> compositorViewHolder,
             CustomTabTabPersistencePolicy tabPersistencePolicy,
             CustomTabActivityTabFactory tabFactory,
             CustomTabObserver customTabObserver,
@@ -655,8 +655,7 @@ public class CustomTabActivityTabController implements PauseResumeWithNativeObse
                                 };
                         // Blink has rendered the page by this point, but we need to wait for the
                         // compositor frame swap to avoid flash of white content.
-                        mCompositorViewHolder
-                                .get()
+                        assumeNonNull(mCompositorViewHolder.get())
                                 .getCompositorView()
                                 .surfaceRedrawNeededAsync(finishedCallback);
                     }

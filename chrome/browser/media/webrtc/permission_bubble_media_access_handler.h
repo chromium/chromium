@@ -13,7 +13,6 @@
 #include "chrome/browser/media/media_access_handler.h"
 #include "chrome/browser/tab_contents/web_contents_collection.h"
 #include "components/content_settings/core/common/content_settings.h"
-#include "third_party/blink/public/mojom/mediastream/media_stream.mojom-shared.h"
 #include "third_party/blink/public/mojom/mediastream/media_stream.mojom.h"
 
 namespace user_prefs {

@@ -7,7 +7,9 @@
 #include "cc/animation/animation_id_provider.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/core/animation/animation.h"
+#include "third_party/blink/renderer/core/animation/animation_timeline.h"
 #include "third_party/blink/renderer/core/animation/css/css_animation.h"
+#include "third_party/blink/renderer/platform/animation/compositor_animation.h"
 
 namespace blink {
 
@@ -42,16 +44,6 @@ void PerformPlayForwards(Animation& animation,
   animation.PlayInternal(Animation::AutoRewind::kEnabled, exception_state);
 }
 
-void PerformPlayAlternate(Animation& animation,
-                          V8AnimationPlayState::Enum play_state,
-                          ExceptionState& exception_state) {
-  if (play_state == V8AnimationPlayState::Enum::kIdle) {
-    animation.PlayInternal(Animation::AutoRewind::kEnabled, exception_state);
-  } else {
-    animation.ReverseInternal(exception_state);
-  }
-}
-
 void PerformPlayBackwards(Animation& animation,
                           V8AnimationPlayState::Enum play_state,
                           ExceptionState& exception_state) {
@@ -67,16 +59,6 @@ void PerformPlayOnce(Animation& animation,
                      ExceptionState& exception_state) {
   if (play_state != V8AnimationPlayState::Enum::kFinished) {
     animation.PlayInternal(Animation::AutoRewind::kEnabled, exception_state);
-  }
-}
-
-void PerformPlayPause(Animation& animation,
-                      V8AnimationPlayState::Enum play_state,
-                      ExceptionState& exception_state) {
-  if (play_state != V8AnimationPlayState::Enum::kRunning) {
-    animation.PlayInternal(Animation::AutoRewind::kEnabled, exception_state);
-  } else {
-    animation.PauseInternal(ASSERT_NO_EXCEPTION);
   }
 }
 
@@ -115,14 +97,8 @@ void AnimationTrigger::PerformBehavior(Animation& animation,
     case Behavior::kPlayBackwards:
       PerformPlayBackwards(animation, play_state, exception_state);
       break;
-    case Behavior::kPlayAlternate:
-      PerformPlayAlternate(animation, play_state, exception_state);
-      break;
     case Behavior::kPlayOnce:
       PerformPlayOnce(animation, play_state, exception_state);
-      break;
-    case Behavior::kPlayPause:
-      PerformPlayPause(animation, play_state, exception_state);
       break;
     case Behavior::kReset:
       PerformReset(animation, play_state, exception_state);
@@ -152,6 +128,30 @@ bool AnimationTrigger::HasPausedCSSPlayState(Animation* animation) {
   return animation->GetTriggerActionPlayState() == EAnimPlayState::kPaused;
 }
 
+// static
+cc::AnimationTrigger::Behavior AnimationTrigger::ToCcAnimationTriggerBehavior(
+    Behavior behavior) {
+  switch (behavior) {
+    case Behavior::kPlay:
+      return cc::AnimationTrigger::Behavior::kPlay;
+    case Behavior::kPause:
+      return cc::AnimationTrigger::Behavior::kPause;
+    case Behavior::kPlayForwards:
+      return cc::AnimationTrigger::Behavior::kPlayForwards;
+    case Behavior::kPlayBackwards:
+      return cc::AnimationTrigger::Behavior::kPlayBackwards;
+    case Behavior::kPlayOnce:
+      return cc::AnimationTrigger::Behavior::kPlayOnce;
+    case Behavior::kReset:
+      return cc::AnimationTrigger::Behavior::kReset;
+    case Behavior::kReplay:
+      return cc::AnimationTrigger::Behavior::kReplay;
+    case Behavior::kNone:
+      return cc::AnimationTrigger::Behavior::kNone;
+  };
+  NOTREACHED();
+}
+
 void AnimationTrigger::Dispose() {
   DestroyCompositorTrigger();
 }
@@ -163,6 +163,17 @@ void AnimationTrigger::addAnimation(
     ExceptionState& exception_state) {
   if (!animation) {
     return;
+  }
+
+  const HeapHashSet<WeakMember<AnimationTrigger>>& animation_triggers =
+      animation->GetTriggers();
+  if (!animation_triggers.empty() && !animation_triggers.Contains(this)) {
+    // TODO(crbug.com/474398437): Support multiple triggers per animation when
+    // the working group resolevs to do so:
+    // https://github.com/w3c/csswg-drafts/issues/12399#issuecomment-3089703026
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kNotSupportedError,
+        "Attaching multiple triggers to an animation is not allowed.");
   }
 
   WillAddAnimation(animation, activate_behavior.AsEnum(),
@@ -216,14 +227,6 @@ void AnimationTrigger::DidAddAnimation() {}
 
 void AnimationTrigger::DidRemoveAnimation(Animation* animation) {}
 
-void AnimationTrigger::RemoveAnimations() {
-  AnimationBehaviorMap animation_behavior_map;
-  animation_behavior_map_.swap(animation_behavior_map);
-  for (Animation* animation : animation_behavior_map.Keys()) {
-    removeAnimation(animation);
-  }
-}
-
 void AnimationTrigger::UpdateBehaviorMap(Animation& animation,
                                          Behavior activate_behavior,
                                          Behavior deactivate_behavior) {
@@ -233,7 +236,8 @@ void AnimationTrigger::UpdateBehaviorMap(Animation& animation,
 
 void AnimationTrigger::PerformActivate() {
   for (auto [animation, behaviors] : animation_behavior_map_) {
-    if (HasPausedCSSPlayState(animation)) {
+    if (HasPausedCSSPlayState(animation) ||
+        (compositor_trigger_ && IsTriggeredOnCompositor(animation))) {
       continue;
     }
     PerformBehavior(*animation, behaviors.first, ASSERT_NO_EXCEPTION);
@@ -242,14 +246,63 @@ void AnimationTrigger::PerformActivate() {
 
 void AnimationTrigger::PerformDeactivate() {
   for (auto [animation, behaviors] : animation_behavior_map_) {
-    if (HasPausedCSSPlayState(animation)) {
+    if (HasPausedCSSPlayState(animation) ||
+        (compositor_trigger_ && IsTriggeredOnCompositor(animation))) {
       continue;
     }
     PerformBehavior(*animation, behaviors.second, ASSERT_NO_EXCEPTION);
   }
 }
 
-void AnimationTrigger::UpdateCompositorTrigger() {
+void AnimationTrigger::UpdateCompositorTriggerAnimations(
+    const PaintArtifactCompositor* paint_artifact_compositor) {
+  CHECK(compositor_trigger_);
+
+  std::vector<cc::AnimationTrigger::AnimationData> animation_data;
+  for (auto& [animation, behaviors] : animation_behavior_map_) {
+    bool pause_keyframe_models = false;
+
+    if (!animation->StartTriggeredAnimationOnCompositor(
+            paint_artifact_compositor, pause_keyframe_models)) {
+      // Check that the animation is compositable. If it is, create a
+      // cc::Animation for it if necessary.
+      continue;
+    }
+
+    CompositorAnimation* compositor_anim = animation->GetCompositorAnimation();
+    compositor_anim = animation->GetCompositorAnimation();
+    DCHECK(compositor_anim);
+    cc::Animation* cc_animation = compositor_anim->CcAnimation();
+    DCHECK(cc_animation);
+
+    AnimationTimeline* timeline = animation->TimelineInternal();
+    cc::AnimationTimeline* cc_timeline =
+        timeline ? timeline->CompositorTimeline() : nullptr;
+    if (!cc_timeline) {
+      continue;
+    }
+
+    CcBehavior activate = ToCcAnimationTriggerBehavior(behaviors.first);
+    CcBehavior deactivate = ToCcAnimationTriggerBehavior(behaviors.second);
+
+    cc::AnimationTrigger::AnimationData data(
+        cc_animation->id(), cc_timeline->id(), activate, deactivate);
+    animation_data.push_back(data);
+
+    // Ensure that cc animations created because of the trigger remain
+    // paused until triggered. We only do this if we instantiated the cc
+    // animation so as not to interfere with an animation that was already
+    // playing.
+    if (pause_keyframe_models) {
+      cc_animation->PauseKeyframeModels(base::TimeDelta());
+    }
+  }
+
+  compositor_trigger_->SetAnimationData(animation_data);
+}
+
+void AnimationTrigger::UpdateCompositorTrigger(
+    const PaintArtifactCompositor* paint_artifact_compositor) {
   DCHECK(Platform::Current()->IsThreadedAnimationEnabled());
 
   bool compositing_supported =
@@ -272,8 +325,22 @@ void AnimationTrigger::UpdateCompositorTrigger() {
     CreateCompositorTrigger();
   }
 
-  // TODO(crbug.com/451238244): if (compositor_trigger_) { Update cc animations.
-  // }
+  if (compositor_trigger_) {
+    UpdateCompositorTriggerAnimations(paint_artifact_compositor);
+  }
+}
+
+bool AnimationTrigger::IsTriggeredOnCompositor(Animation* animation) {
+  DCHECK(compositor_trigger_);
+
+  CompositorAnimation* compositor_anim = animation->GetCompositorAnimation();
+  cc::Animation* cc_animation =
+      compositor_anim ? compositor_anim->CcAnimation() : nullptr;
+  if (!cc_animation) {
+    return false;
+  }
+
+  return true;
 }
 
 void AnimationTrigger::Trace(Visitor* visitor) const {

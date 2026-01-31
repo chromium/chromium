@@ -9,6 +9,7 @@
 #include <optional>
 
 #include "base/functional/callback_helpers.h"
+#include "base/memory/memory_pressure_listener_registry.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory_coordinator/memory_consumer_registry.h"
 #include "content/browser/startup_data_impl.h"
@@ -54,6 +55,13 @@ class ContentMainRunnerImpl : public ContentMainRunner {
                  bool start_minimal_browser);
 
   bool is_browser_main_loop_started_ = false;
+
+  // The MemoryPressureListenerRegistry instantiated in the browser process.
+  // TODO(406578344): Remove `memory_pressure_listener_registry_` when the
+  // base::MemoryPressureListener API is deleted in favor of
+  // base::MemoryConsumer.
+  std::optional<base::MemoryPressureListenerRegistry>
+      memory_pressure_listener_registry_;
 
   std::unique_ptr<
       base::ScopedMemoryConsumerRegistry<BrowserMemoryConsumerRegistry>>

@@ -39,6 +39,8 @@ source_set("test_support") {
     # TODO(crbug.com/353332589): Revisit this when external_protocol_handler.h
     # gets modularized.
     public_deps += [ "//chrome/browser" ]
+
+    deps += [ "//chrome/browser/ui" ]
   }
 }
 

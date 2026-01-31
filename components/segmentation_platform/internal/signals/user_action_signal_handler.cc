@@ -7,6 +7,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/metrics/metrics_hashes.h"
+#include "base/task/single_thread_task_runner.h"
 #include "components/segmentation_platform/internal/database/signal_database.h"
 #include "components/segmentation_platform/internal/database/ukm_database.h"
 #include "components/segmentation_platform/internal/database/ukm_types.h"

@@ -51,7 +51,7 @@ ArcPictureInPictureWindowControllerImpl::GetWebContents() {
 }
 
 std::optional<gfx::Rect>
-ArcPictureInPictureWindowControllerImpl::GetWindowBounds() {
+ArcPictureInPictureWindowControllerImpl::GetWindowBoundsInScreen() {
   for (auto* window : ChromeShelfController::instance()->GetArcWindows()) {
     if (window->GetProperty(chromeos::kWindowStateTypeKey) ==
         chromeos::WindowStateType::kPip) {

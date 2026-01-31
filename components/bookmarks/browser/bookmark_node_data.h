@@ -124,11 +124,15 @@ struct BookmarkNodeData {
   static bool ClipboardContainsBookmarks();
 
   // Reads bookmarks from the given vector.
+  // Returns true if the operation succeeds, which also implies that this
+  // contains valid data (is non-empty).
   bool ReadFromVector(
       const std::vector<raw_ptr<const BookmarkNode, VectorExperimental>>&
           nodes);
 
   // Creates a single-bookmark DragData from url/title pair.
+  // Returns true if the operation succeeds, which also implies that this
+  // contains valid data (is non-empty).
   bool ReadFromTuple(const GURL& url, const std::u16string& title);
 
   // Writes bookmarks to the specified clipboard.
@@ -136,6 +140,8 @@ struct BookmarkNodeData {
 
   // Reads bookmarks from the specified clipboard. Prefers data written via
   // WriteToClipboard() but will also attempt to read a plain bookmark.
+  // Returns true if the operation succeeds, which also implies that this
+  // contains valid data (is non-empty).
   bool ReadFromClipboard(ui::ClipboardBuffer buffer);
 
 #if defined(TOOLKIT_VIEWS)
@@ -157,6 +163,8 @@ struct BookmarkNodeData {
                      base::Pickle* pickle) const;
 
   // Reads the data for a drag from a `pickle`.
+  // Returns true if the operation succeeds, which also implies that this
+  // contains valid data (is non-empty).
   bool ReadFromPickle(base::Pickle* pickle);
 #endif
 

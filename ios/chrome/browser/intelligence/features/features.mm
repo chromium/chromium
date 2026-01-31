@@ -4,17 +4,21 @@
 
 #import "ios/chrome/browser/intelligence/features/features.h"
 
+#import <optional>
+
 #import "base/check.h"
+#import "base/strings/string_split.h"
 #import "base/strings/string_util.h"
 #import "base/time/time.h"
 #import "components/application_locale_storage/application_locale_storage.h"
 #import "components/feature_engagement/public/feature_constants.h"
+#import "components/optimization_guide/proto/features/actions_data.pb.h"
 #import "components/page_content_annotations/core/page_content_annotations_features.h"
 #import "components/prefs/pref_service.h"
 #import "components/variations/service/variations_service.h"
 #import "components/variations/service/variations_service_utils.h"
+#import "ios/chrome/browser/intelligence/actuation/actuation_util.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
-#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/tabs/model/inactive_tabs/features.h"
 
 BASE_FEATURE(kEnhancedCalendar, base::FEATURE_DISABLED_BY_DEFAULT);
@@ -32,10 +36,6 @@ const char kPageActionMenuDirectEntryPointParam[] =
     "PageActionMenuDirectEntryPoint";
 
 bool IsPageActionMenuEnabled() {
-  if (IsDiamondPrototypeEnabled()) {
-    return true;
-  }
-
   // Checks the killswtich, allowing to disable the feature for any user
   // including those in launched locales.
   bool is_killswitch_enabled = base::FeatureList::IsEnabled(kGeminiKillSwitch);
@@ -375,11 +375,20 @@ bool IsWebPageReportedImagesSheetEnabled() {
   return base::FeatureList::IsEnabled(kWebPageReportedImagesSheet);
 }
 
-BASE_FEATURE(kImageContextMenuGeminiEntryPoint,
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kGeminiImageRemixTool, base::FEATURE_DISABLED_BY_DEFAULT);
 
-bool IsImageContextMenuGeminiEntryPointEnabled() {
-  return base::FeatureList::IsEnabled(kImageContextMenuGeminiEntryPoint);
+bool IsGeminiImageRemixToolEnabled() {
+  return base::FeatureList::IsEnabled(kGeminiImageRemixTool);
+}
+
+const char kGeminiImageRemixToolShowFRERow[] = "ShowFRERow";
+
+bool IsGeminiImageRemixToolShowFRERowEnabled() {
+  if (!IsGeminiImageRemixToolEnabled()) {
+    return false;
+  }
+  return base::GetFieldTrialParamByFeatureAsBool(
+      kGeminiImageRemixTool, kGeminiImageRemixToolShowFRERow, false);
 }
 
 BASE_FEATURE(kGeminiEligibilityAblation, base::FEATURE_DISABLED_BY_DEFAULT);
@@ -403,4 +412,45 @@ BASE_FEATURE(kGeminiCopresence, base::FEATURE_DISABLED_BY_DEFAULT);
 
 bool IsGeminiCopresenceEnabled() {
   return base::FeatureList::IsEnabled(kGeminiCopresence);
+}
+
+BASE_FEATURE(kGeminiDynamicSettings, base::FEATURE_DISABLED_BY_DEFAULT);
+
+bool IsGeminiDynamicSettingsEnabled() {
+  return base::FeatureList::IsEnabled(kGeminiDynamicSettings);
+}
+
+BASE_FEATURE(kActuationTools, base::FEATURE_DISABLED_BY_DEFAULT);
+
+bool IsActuationEnabled() {
+  return base::FeatureList::IsEnabled(kActuationTools);
+}
+
+bool IsToolDisabled(optimization_guide::proto::Action::ActionCase tool) {
+  if (!IsActuationEnabled()) {
+    return true;
+  }
+
+  std::optional<std::string> tool_name = ActuationActionCaseToToolName(tool);
+  if (!tool_name) {
+    // Don't support tools that aren't in the proto.
+    return true;
+  }
+
+  std::string disabled_tools =
+      base::GetFieldTrialParamValueByFeature(kActuationTools, "DisabledTools");
+  if (disabled_tools.empty()) {
+    return false;
+  }
+
+  std::vector<std::string> disabled_list = base::SplitString(
+      disabled_tools, ",", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
+
+  for (const auto& disabled_tool : disabled_list) {
+    if (disabled_tool == *tool_name) {
+      return true;
+    }
+  }
+
+  return false;
 }

@@ -96,8 +96,8 @@ bool IsEqual(const Permissions& source, const Permissions& target) {
   return true;
 }
 
-base::Value::Dict ConvertPermissionToDict(const PermissionPtr& permission) {
-  base::Value::Dict dict;
+base::DictValue ConvertPermissionToDict(const PermissionPtr& permission) {
+  base::DictValue dict;
 
   if (!permission) {
     return dict;
@@ -121,7 +121,7 @@ base::Value::Dict ConvertPermissionToDict(const PermissionPtr& permission) {
   return dict;
 }
 
-PermissionPtr ConvertDictToPermission(const base::Value::Dict& dict) {
+PermissionPtr ConvertDictToPermission(const base::DictValue& dict) {
   std::optional<int> permission_type = dict.FindInt(kPermissionTypeKey);
   if (!permission_type.has_value() ||
       permission_type.value() < static_cast<int>(PermissionType::kUnknown) ||
@@ -157,11 +157,11 @@ PermissionPtr ConvertDictToPermission(const base::Value::Dict& dict) {
       details ? std::optional<std::string>(*details) : std::nullopt);
 }
 
-base::Value::List ConvertPermissionsToList(const Permissions& permissions) {
+base::ListValue ConvertPermissionsToList(const Permissions& permissions) {
   return base::ToValueList(permissions, &ConvertPermissionToDict);
 }
 
-Permissions ConvertListToPermissions(const base::Value::List* list) {
+Permissions ConvertListToPermissions(const base::ListValue* list) {
   Permissions permissions;
 
   if (!list) {

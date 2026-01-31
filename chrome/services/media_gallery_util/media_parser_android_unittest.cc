@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/callback_helpers.h"
@@ -67,13 +68,9 @@ class TestMediaDataSource : public chrome::mojom::MediaDataSource {
             chrome::mojom::MediaDataSource::ReadCallback callback) override {
     base::File file(file_path_, base::File::Flags::FLAG_OPEN |
                                     base::File::Flags::FLAG_READ);
-    auto buffer = std::vector<uint8_t>(length);
-    int bytes_read =
-        UNSAFE_TODO(file.Read(position, (char*)(buffer.data()), length));
-    if (bytes_read < length)
-      buffer.resize(bytes_read);
-
-    std::move(callback).Run(std::vector<uint8_t>(std::move(buffer)));
+    std::vector<uint8_t> buffer(length);
+    buffer.resize(file.Read(position, buffer).value_or(0));
+    std::move(callback).Run(std::move(buffer));
   }
 
   base::FilePath file_path_;

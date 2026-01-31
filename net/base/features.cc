@@ -394,6 +394,17 @@ BASE_FEATURE_PARAM(base::TimeDelta,
 BASE_FEATURE(kDeviceBoundSessionSigningQuotaAndCaching,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+BASE_FEATURE(kDeviceBoundSessionsForRestrictedSites,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kDeviceBoundSessionsForRestrictedSitesExperimentId,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE_PARAM(std::string,
+                   kDeviceBoundSessionsForRestrictedSitesExperimentIdParam,
+                   &kDeviceBoundSessionsForRestrictedSitesExperimentId,
+                   "Value",
+                   "");
+
 BASE_FEATURE(kSpdySessionForProxyAdditionalChecks,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
@@ -412,6 +423,9 @@ BASE_FEATURE(kSimdutfBase64Support,
 );
 
 BASE_FEATURE(kFurtherOptimizeParsingDataUrls, base::FEATURE_ENABLED_BY_DEFAULT);
+
+BASE_FEATURE(kDataUrlMimeTypeParameterPreservation,
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kNoVarySearchIgnoreUnrecognizedKeys,
              base::FEATURE_ENABLED_BY_DEFAULT);
@@ -695,5 +709,14 @@ BASE_FEATURE(kAddAutomaticWithDohFallbackMode,
 
 BASE_FEATURE(kUseQuicProxiesWithoutWaitingForConnectResponse,
              base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kEnableBootstrapIPRandomizationForDoh,
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
+BASE_FEATURE(kUseLockFreeX509Verification, base::FEATURE_DISABLED_BY_DEFAULT);
+
+#if BUILDFLAG(IS_APPLE)
+BASE_FEATURE(kUseNSURLDataForGURLConversion, base::FEATURE_ENABLED_BY_DEFAULT);
+#endif  // BUILDFLAG(IS_APPLE)
 
 }  // namespace net::features

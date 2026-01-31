@@ -6,6 +6,7 @@ import 'chrome://new-tab-page/strings.m.js';
 import 'chrome://resources/cr_components/composebox/context_menu_entrypoint.js';
 
 import {PageCallbackRouter, PageHandlerRemote} from 'chrome://resources/cr_components/composebox/composebox.mojom-webui.js';
+import {TabUploadOrigin} from 'chrome://resources/cr_components/composebox/common.js';
 import {ComposeboxProxyImpl} from 'chrome://resources/cr_components/composebox/composebox_proxy.js';
 import type {ContextMenuEntrypointElement} from 'chrome://resources/cr_components/composebox/context_menu_entrypoint.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
@@ -31,9 +32,10 @@ suite('ContextMenuEntrypoint', () => {
     for (let i = 1; i <= count; i++) {
       tabs.push({
         title: `Tab ${i}`,
-        url: {url: `https://www.google.com/${i}`},
+        url: `https://www.google.com/${i}`,
         tabId: i,
-        showInRecentTabChip: true,
+        showInCurrentTabChip: false,
+        showInPreviousTabChip: true,
         lastActive: {internalValue: BigInt(i)},
       });
     }
@@ -98,16 +100,18 @@ suite('ContextMenuEntrypoint', () => {
         entrypoint.tabSuggestions = [
           {
             title: 'Tab 1',
-            url: {url: 'https://www.google.com'},
+            url: 'https://www.google.com',
             tabId: 1,
-            showInRecentTabChip: true,
+            showInCurrentTabChip: false,
+            showInPreviousTabChip: true,
             lastActive: {internalValue: BigInt(1)},
           },
           {
             title: 'Tab 2',
-            url: {url: 'https://www.google.com'},
+            url: 'https://www.google.com',
             tabId: 2,
-            showInRecentTabChip: true,
+            showInCurrentTabChip: false,
+            showInPreviousTabChip: true,
             lastActive: {internalValue: BigInt(2)},
           },
         ];
@@ -136,16 +140,18 @@ suite('ContextMenuEntrypoint', () => {
     entrypoint.tabSuggestions = [
       {
         title: 'Tab 1',
-        url: {url: 'https://www.google.com'},
+        url: 'https://www.google.com',
         tabId: 1,
-        showInRecentTabChip: true,
+        showInCurrentTabChip: false,
+        showInPreviousTabChip: true,
         lastActive: {internalValue: BigInt(1)},
       },
       {
         title: 'Tab 2',
-        url: {url: 'https://www.google.com'},
+        url: 'https://www.google.com',
         tabId: 2,
-        showInRecentTabChip: true,
+        showInCurrentTabChip: false,
+        showInPreviousTabChip: true,
         lastActive: {internalValue: BigInt(2)},
       },
     ];
@@ -592,7 +598,8 @@ suite('ContextMenuEntrypoint', () => {
     // Act by clicking on tab to initiate upload flow.
     const whenTabContextAdded = eventToPromise('add-tab-context', entrypoint);
     tab.click();
-    await whenTabContextAdded;
+    const event = await whenTabContextAdded;
+    assertEquals(TabUploadOrigin.CONTEXT_MENU, event.detail.origin);
 
     // Assert context menu is still open.
     assertTrue(entrypoint.$.menu.open);

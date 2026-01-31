@@ -78,6 +78,21 @@ AutofillMessageModel::CreateForVirtualCardEnrollFailure(
       std::move(message), Type::kVirtualCardEnrollFailure));
 }
 
+std::string_view AutofillMessageModel::TypeToString(Type message_type) {
+  switch (message_type) {
+    case Type::kUnspecified:
+      return "Unspecified";
+    case Type::kSaveCardFailure:
+      return "SaveCardFailure";
+    case Type::kVirtualCardEnrollFailure:
+      return "VirtualCardEnrollFailure";
+    case Type::kEntitySaveUpdateFlow:
+      return "EntitySaveUpdateFlow";
+    case Type::kAddressSaveUpdateFlow:
+      return "AddressSaveUpdateFlow";
+  }
+}
+
 messages::MessageWrapper& AutofillMessageModel::GetMessage(
     base::PassKey<AutofillMessageControllerImpl> pass_key) {
   return *message_;
@@ -100,19 +115,6 @@ void AutofillMessageModel::OnActionClicked() {
 void AutofillMessageModel::OnDismissed(messages::DismissReason reason) {
   if (dismiss_callback_) {
     std::move(dismiss_callback_).Run(reason);
-  }
-}
-
-std::string_view AutofillMessageModel::TypeToString(Type message_type) {
-  switch (message_type) {
-    case Type::kUnspecified:
-      return "Unspecified";
-    case Type::kSaveCardFailure:
-      return "SaveCardFailure";
-    case Type::kVirtualCardEnrollFailure:
-      return "VirtualCardEnrollFailure";
-    case Type::kEntitySaveUpdateFlow:
-      return "EntitySaveUpdateFlow";
   }
 }
 

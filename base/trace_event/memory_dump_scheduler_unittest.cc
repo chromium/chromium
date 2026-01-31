@@ -23,7 +23,7 @@ namespace {
 
 // Wrapper to use gmock on a callback.
 struct CallbackWrapper {
-  MOCK_METHOD1(OnTick, void(MemoryDumpLevelOfDetail));
+  MOCK_METHOD(void, OnTick, (MemoryDumpLevelOfDetail));
 };
 
 }  // namespace

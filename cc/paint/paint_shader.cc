@@ -22,7 +22,7 @@
 #include "third_party/skia/include/core/SkColorSpace.h"
 #include "third_party/skia/include/core/SkImage.h"
 #include "third_party/skia/include/core/SkPictureRecorder.h"
-#include "third_party/skia/include/effects/SkGradientShader.h"
+#include "third_party/skia/include/effects/SkGradient.h"
 #include "third_party/skia/include/effects/SkRuntimeEffect.h"
 #include "ui/gfx/geometry/clamp_float_geometry.h"
 
@@ -92,7 +92,7 @@ sk_sp<PaintShader> PaintShader::MakeLinearGradient(
     const SkScalar pos[],
     int count,
     SkTileMode mode,
-    SkGradientShader::Interpolation interpolation,
+    SkGradient::Interpolation interpolation,
     uint32_t flags,
     const SkMatrix* local_matrix,
     SkColor4f fallback_color) {
@@ -117,7 +117,7 @@ sk_sp<PaintShader> PaintShader::MakeRadialGradient(
     const SkScalar pos[],
     int count,
     SkTileMode mode,
-    SkGradientShader::Interpolation interpolation,
+    SkGradient::Interpolation interpolation,
     uint32_t flags,
     const SkMatrix* local_matrix,
     SkColor4f fallback_color) {
@@ -143,7 +143,7 @@ sk_sp<PaintShader> PaintShader::MakeTwoPointConicalGradient(
     const SkScalar pos[],
     int count,
     SkTileMode mode,
-    SkGradientShader::Interpolation interpolation,
+    SkGradient::Interpolation interpolation,
     uint32_t flags,
     const SkMatrix* local_matrix,
     SkColor4f fallback_color) {
@@ -171,7 +171,7 @@ sk_sp<PaintShader> PaintShader::MakeSweepGradient(
     SkTileMode mode,
     SkScalar start_degrees,
     SkScalar end_degrees,
-    SkGradientShader::Interpolation interpolation,
+    SkGradient::Interpolation interpolation,
     uint32_t flags,
     const SkMatrix* local_matrix,
     SkColor4f fallback_color) {
@@ -510,33 +510,24 @@ sk_sp<SkShader> PaintShader::GetSkShader(
       points[0].fY = gfx::ClampFloatGeometry(points[0].fY);
       points[1].fX = gfx::ClampFloatGeometry(points[1].fX);
       points[1].fY = gfx::ClampFloatGeometry(points[1].fY);
-      return SkGradientShader::MakeLinear(
-          points, colors_.data(), nullptr /*sk_sp<SkColorSpace>*/,
-          positions_.empty() ? nullptr : positions_.data(),
-          static_cast<int>(colors_.size()), tx_, gradient_interpolation_,
+      return SkShaders::LinearGradient(
+          points, {{colors_, positions_, tx_}, gradient_interpolation_},
           base::OptionalToPtr(local_matrix_));
     }
     case Type::kRadialGradient:
-      return SkGradientShader::MakeRadial(
-          center_, start_radius_, colors_.data(),
-          nullptr /*sk_sp<SkColorSpace>*/,
-          positions_.empty() ? nullptr : positions_.data(),
-          static_cast<int>(colors_.size()), tx_, gradient_interpolation_,
+      return SkShaders::RadialGradient(
+          center_, start_radius_, {{colors_, positions_, tx_}, gradient_interpolation_},
           base::OptionalToPtr(local_matrix_));
     case Type::kTwoPointConicalGradient:
-      return SkGradientShader::MakeTwoPointConical(
-          start_point_, start_radius_, end_point_, end_radius_, colors_.data(),
-          nullptr /*sk_sp<SkColorSpace>*/,
-          positions_.empty() ? nullptr : positions_.data(),
-          static_cast<int>(colors_.size()), tx_, gradient_interpolation_,
+      return SkShaders::TwoPointConicalGradient(
+          start_point_, start_radius_, end_point_, end_radius_,
+          {{colors_, positions_, tx_}, gradient_interpolation_},
           base::OptionalToPtr(local_matrix_));
     case Type::kSweepGradient:
-      return SkGradientShader::MakeSweep(
-          center_.x(), center_.y(), colors_.data(),
-          nullptr /*sk_sp<SkColorSpace>*/,
-          positions_.empty() ? nullptr : positions_.data(),
-          static_cast<int>(colors_.size()), tx_, start_degrees_, end_degrees_,
-          gradient_interpolation_, base::OptionalToPtr(local_matrix_));
+      return SkShaders::SweepGradient(
+          center_, start_degrees_, end_degrees_,
+          {{colors_, positions_, tx_}, gradient_interpolation_},
+          base::OptionalToPtr(local_matrix_));
     case Type::kImage:
       if (sk_cached_image_) {
         return sk_cached_image_->makeShader(tx_, ty_, sampling,

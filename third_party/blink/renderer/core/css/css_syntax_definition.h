@@ -10,6 +10,7 @@
 
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/css/css_syntax_component.h"
+#include "third_party/blink/renderer/core/css/parser/css_parser_local_context.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_token_stream.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_copier.h"
 
@@ -31,6 +32,7 @@ class CORE_EXPORT CSSSyntaxDefinition {
       CSSParserTokenStream&);
   const CSSValue* Parse(StringView,
                         const CSSParserContext&,
+                        CSSParserLocalContext&,
                         bool is_animation_tainted,
                         bool is_attr_tainted = false) const;
 

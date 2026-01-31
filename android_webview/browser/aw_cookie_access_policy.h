@@ -57,6 +57,15 @@ class AwCookieAccessPolicy {
       bool accept_third_party_cookies,
       net::StorageAccessApiStatus storage_access_api_status);
 
+  // Static version that takes all policy values as parameters, allowing
+  // callers to use pre-captured/latched values instead of dynamic lookups.
+  static net::NetworkDelegate::PrivacySetting CanAccessCookies(
+      const GURL& url,
+      const net::SiteForCookies& site_for_cookies,
+      bool accept_cookies,
+      bool accept_third_party_cookies,
+      net::StorageAccessApiStatus storage_access_api_status);
+
  private:
   friend class AwCookieAccessPolicyTest;
 

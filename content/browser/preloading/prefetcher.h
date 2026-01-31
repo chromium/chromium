@@ -5,8 +5,13 @@
 #ifndef CONTENT_BROWSER_PRELOADING_PREFETCHER_H_
 #define CONTENT_BROWSER_PRELOADING_PREFETCHER_H_
 
-#include "content/public/browser/speculation_host_delegate.h"
+#include "base/memory/raw_ref.h"
+#include "base/memory/weak_ptr.h"
+#include "content/common/content_export.h"
 #include "services/network/public/mojom/devtools_observer.mojom-forward.h"
+#include "third_party/blink/public/mojom/speculation_rules/speculation_rules.mojom-forward.h"
+
+class GURL;
 
 namespace content {
 
@@ -37,15 +42,13 @@ class CONTENT_EXPORT Prefetcher {
   bool IsPrefetchAttemptFailedOrDiscarded(const GURL& url);
 
  private:
-  // content::PreloadingDecider, which inherits content::DocumentUserData, owns
-  // `this`, so `this` can access `render_frame_host_` safely.
-  const raw_ref<content::RenderFrameHost> render_frame_host_;
+  // PreloadingDecider, which inherits DocumentUserData, owns `this`, so `this`
+  // can access `render_frame_host_` safely.
+  const raw_ref<RenderFrameHost> render_frame_host_;
 
-  // content::PreloadingDecider, which inherits content::DocumentUserData, owns
-  // `this`, so `this` can access `render_frame_host_impl_` safely.
-  const raw_ptr<content::RenderFrameHostImpl> render_frame_host_impl_;
-
-  std::unique_ptr<SpeculationHostDelegate> delegate_;
+  // PreloadingDecider, which inherits DocumentUserData, owns `this`, so `this`
+  // can access `render_frame_host_impl_` safely.
+  const raw_ptr<RenderFrameHostImpl> render_frame_host_impl_;
 
   base::WeakPtrFactory<Prefetcher> weak_ptr_factory_{this};
 };

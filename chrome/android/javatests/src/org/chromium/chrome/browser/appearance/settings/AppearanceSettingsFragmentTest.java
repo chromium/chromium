@@ -35,7 +35,8 @@ import org.mockito.stubbing.Answer;
 import org.chromium.base.Callback;
 import org.chromium.base.FeatureOverrides;
 import org.chromium.base.ThreadUtils;
-import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.supplier.ObservableSuppliers;
+import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.chrome.browser.bookmarks.bar.BookmarkBarUtils;
@@ -87,7 +88,7 @@ public class AppearanceSettingsFragmentTest {
     @Mock private Tracker mTracker;
 
     private Set<PrefObserver> mBookmarkBarSettingObserverCache;
-    private ObservableSupplierImpl<Boolean> mBookmarkBarSettingSupplier;
+    private SettableNonNullObservableSupplier<Boolean> mBookmarkBarSettingSupplier;
     private AppearanceSettingsFragment mSettings;
 
     @Before
@@ -108,7 +109,7 @@ public class AppearanceSettingsFragmentTest {
         BookmarkBarUtils.setSettingObserverCacheForTesting(mBookmarkBarSettingObserverCache);
 
         // Update bookmark bar setting and notify observers when supplier changes.
-        mBookmarkBarSettingSupplier = new ObservableSupplierImpl<>();
+        mBookmarkBarSettingSupplier = ObservableSuppliers.createNonNull(false);
         mBookmarkBarSettingSupplier.addObserver(
                 enabled -> {
                     BookmarkBarUtils.setSettingEnabledForTesting(enabled);

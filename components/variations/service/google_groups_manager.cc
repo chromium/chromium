@@ -144,9 +144,9 @@ void GoogleGroupsManager::UpdateGoogleGroups() {
   // Get the current value of the local state dict.
   ScopedDictPrefUpdate target_prefs_update(
       &target_prefs_.get(), variations::prefs::kVariationsGoogleGroups);
-  base::Value::Dict& target_prefs_dict = target_prefs_update.Get();
+  base::DictValue& target_prefs_dict = target_prefs_update.Get();
 
-  const base::Value::List& source_list = source_prefs_->GetList(
+  const base::ListValue& source_list = source_prefs_->GetList(
 #if BUILDFLAG(IS_CHROMEOS)
       variations::kOsDogfoodGroupsSyncPrefName
 #else
@@ -154,11 +154,11 @@ void GoogleGroupsManager::UpdateGoogleGroups() {
 #endif
   );
 
-  base::Value::List groups;
+  base::ListValue groups;
   std::vector<std::string> group_ids;
   group_ids.reserve(source_list.size());
   for (const auto& group_value : source_list) {
-    const base::Value::Dict* group_dict = group_value.GetIfDict();
+    const base::DictValue* group_dict = group_value.GetIfDict();
     if (group_dict == nullptr) {
       continue;
     }

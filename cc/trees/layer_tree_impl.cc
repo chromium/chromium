@@ -16,7 +16,6 @@
 #include <utility>
 
 #include "base/containers/adapters.h"
-#include "base/containers/contains.h"
 #include "base/debug/crash_logging.h"
 #include "base/debug/dump_without_crashing.h"
 #include "base/json/json_writer.h"
@@ -62,6 +61,7 @@
 #include "components/viz/common/frame_sinks/begin_frame_args.h"
 #include "components/viz/common/traced_value.h"
 #include "components/viz/common/view_transition_element_resource_id.h"
+#include "third_party/perfetto/include/perfetto/tracing/track_event_args.h"
 #include "ui/gfx/geometry/point_conversions.h"
 #include "ui/gfx/geometry/quad_f.h"
 #include "ui/gfx/geometry/rect_conversions.h"
@@ -495,16 +495,16 @@ void LayerTreeImpl::UpdateViewportContainerSizes() {
       std::max(0.0f, max_safe_area_inset_bottom() - bottom_content_offset);
   const float blink_saib = std::max(
       0.0f, max_safe_area_inset_bottom() - blink_bottom_content_offset);
-  const float transform_delta_by_safe_area_inset_bottom =
-      -(real_saib - blink_saib);
+  float transform_delta_by_safe_area_inset_bottom = -(real_saib - blink_saib);
 
-  const float scaled_transform_delta_by_safe_area_inset_bottom =
-      transform_delta_by_safe_area_inset_bottom / min_page_scale_factor();
+  if (min_page_scale_factor() > 0.f) {
+    transform_delta_by_safe_area_inset_bottom /= min_page_scale_factor();
+  }
 
   if (property_trees->transform_delta_by_safe_area_inset_bottom() !=
-      scaled_transform_delta_by_safe_area_inset_bottom) {
+      transform_delta_by_safe_area_inset_bottom) {
     property_trees->SetTransformDeltaBySafeAreaInsetBottom(
-        scaled_transform_delta_by_safe_area_inset_bottom);
+        transform_delta_by_safe_area_inset_bottom);
   }
 
   // Adjust the viewport layers by shrinking/expanding the container to account
@@ -1035,11 +1035,9 @@ void LayerTreeImpl::PushPropertiesTo(LayerTreeImpl* target_tree) {
   successful_presentation_callbacks_.clear();
 
   if (delegated_ink_metadata_) {
-    TRACE_EVENT_WITH_FLOW1("delegated_ink_trails",
-                           "Delegated ink metadata pushed to tree",
-                           TRACE_ID_GLOBAL(delegated_ink_metadata_->trace_id()),
-                           TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT,
-                           "metadata", delegated_ink_metadata_->ToString());
+    TRACE_EVENT("delegated_ink_trails", "Delegated ink metadata pushed to tree",
+                perfetto::Flow::Global(delegated_ink_metadata_->trace_id()),
+                "metadata", delegated_ink_metadata_->ToString());
     target_tree->set_delegated_ink_metadata(std::move(delegated_ink_metadata_));
   } else if (target_tree->delegated_ink_metadata()) {
     target_tree->clear_delegated_ink_metadata();
@@ -1786,13 +1784,6 @@ bool LayerTreeImpl::UpdateDrawProperties(
     // us to skip it.
     draw_property_utils::CalculateDrawProperties(
         this, &render_surface_list_, output_update_layer_list_for_testing);
-
-    if (!settings().single_thread_proxy_scheduler) {
-      // This metric is only recorded for the Renderer.
-      UMA_HISTOGRAM_COUNTS_100(
-          "Compositing.Renderer.NumRenderSurfaces",
-          base::saturated_cast<int>(render_surface_list_.size()));
-    }
   }
 
   TRACE_EVENT2("cc,benchmark", "LayerTreeImpl::UpdateDrawProperties::Occlusion",
@@ -1977,7 +1968,7 @@ void LayerTreeImpl::UnregisterLayer(LayerImpl* layer) {
 
 void LayerTreeImpl::AddLayer(std::unique_ptr<LayerImpl> layer) {
   DCHECK(layer);
-  DCHECK(!base::Contains(layer_list_, layer));
+  DCHECK(!std::ranges::contains(layer_list_, layer));
   layer_list_.push_back(std::move(layer));
   set_needs_update_draw_properties();
 }
@@ -2328,7 +2319,7 @@ void LayerTreeImpl::ProcessUIResourceRequestQueue() {
 }
 
 void LayerTreeImpl::RegisterPictureLayerImpl(PictureLayerImpl* layer) {
-  DCHECK(!base::Contains(picture_layers_, layer));
+  DCHECK(!std::ranges::contains(picture_layers_, layer));
   picture_layers_.push_back(layer);
 }
 
@@ -3200,6 +3191,13 @@ bool LayerTreeImpl::HasViewTransitionSaveRequest() const {
     }
   }
   return false;
+}
+
+bool LayerTreeImpl::IsAnimatingHUDContents() const {
+  if (settings().trees_in_viz_in_viz_process) {
+    return is_animating_hud_contents_;
+  }
+  return hud_layer() && hud_layer()->IsAnimatingHUDContents();
 }
 
 base::flat_set<blink::ViewTransitionToken>

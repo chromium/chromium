@@ -2,9 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "mojo/public/cpp/base/thread_type_mojom_traits.h"
-
 #include "base/threading/platform_thread.h"
+#include "mojo/public/cpp/base/thread_type_mojom_traits.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace mojo_base::thread_type_unittest {
@@ -12,7 +11,7 @@ namespace mojo_base::thread_type_unittest {
 TEST(ThreadTypeTest, ThreadType) {
   static constexpr base::ThreadType kTestTypes[] = {
       base::ThreadType::kBackground,  base::ThreadType::kUtility,
-      base::ThreadType::kDefault,     base::ThreadType::kDisplayCritical,
+      base::ThreadType::kDefault,     base::ThreadType::kPresentation,
       base::ThreadType::kInteractive, base::ThreadType::kRealtimeAudio};
 
   for (auto thread_type_in : kTestTypes) {

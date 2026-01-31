@@ -257,7 +257,7 @@ IN_PROC_BROWSER_TEST_P(GlicProfileManagerUiTest, ConsistentPreload) {
                                  /*primary_profile=*/true)),
               ToggleGlicWindow(GlicWindowMode::kAttached),
               WaitForState(kFreWebUiState, mojom::FreWebUiState::kReady)),
-         Else(OpenGlicWindow(GlicWindowMode::kAttached))),
+         Else(DeprecatedOpenGlicWindow(GlicWindowMode::kAttached))),
       // Check that the client contents are the same as when warmed.
       CheckCachedClientContents(/*primary_profile=*/true));
 }
@@ -296,7 +296,7 @@ IN_PROC_BROWSER_TEST_P(GlicProfileManagerUiTest, ShowMutex) {
       // (and we should not have attempted to warm the other web
       // client, so it should not yet be warmed).
       CheckWarmedAndSized(false, true),
-      OpenGlicWindow(GlicWindowMode::kAttached),
+      DeprecatedOpenGlicWindow(GlicWindowMode::kAttached),
       // The first service should only remain warmed if we have the
       // feature `kGlicWarmMultiple` enabled.
       CheckWarmedAndSized(true, ShouldWarmMultiple()));
@@ -332,7 +332,7 @@ IN_PROC_BROWSER_TEST_P(GlicProfileManagerUiTest, DoNotWarmWhenShowing) {
       // Since we've disabled preloading, nothing should be preloaded yet.
       CheckWarmedAndSized(false, false),
       // Re-enable preloading.
-      ResetPreloading(), OpenGlicWindow(GlicWindowMode::kAttached),
+      ResetPreloading(), DeprecatedOpenGlicWindow(GlicWindowMode::kAttached),
       CheckWarmedAndSized(true, false),
       // Attempt to preload for the secondary profile.
       CreateAndWarmGlic(/*primary_profile=*/false),
@@ -380,7 +380,7 @@ IN_PROC_BROWSER_TEST_P(GlicProfileManagerUiTest, MemPressureDoesNotClearShown) {
       // Since we've disabled preloading, nothing should be preloaded yet.
       CheckWarmedAndSized(false, false),
       // Re-enable preloading.
-      ResetPreloading(), OpenGlicWindow(GlicWindowMode::kAttached),
+      ResetPreloading(), DeprecatedOpenGlicWindow(GlicWindowMode::kAttached),
       CheckWarmedAndSized(true, false), SendMemoryPressureSignal(),
       // Since the window is showing, we shouldn't close it.
       CheckWarmedAndSized(true, false),

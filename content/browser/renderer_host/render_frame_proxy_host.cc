@@ -10,7 +10,6 @@
 #include <vector>
 
 #include "base/containers/circular_deque.h"
-#include "base/containers/contains.h"
 #include "base/functional/callback.h"
 #include "base/hash/hash.h"
 #include "base/lazy_instance.h"
@@ -524,23 +523,11 @@ void RenderFrameProxyHost::RouteMessageEvent(
     return;
   }
 
-  // Verify the source origin. Note that this used to skip cases where the
-  // origin serialized to "null", but now that old behavior is behind a kill
-  // switch.
-  //
-  // TODO(crbug.com/40109437): Remove this fallback and always validate opaque
-  // origins once rollout is complete.
-  bool should_verify_source_origin =
-      base::FeatureList::IsEnabled(
-          features::kAdditionalOpaqueOriginEnforcements) ||
-      !source_origin.opaque();
-  if (should_verify_source_origin) {
-    auto* policy = ChildProcessSecurityPolicyImpl::GetInstance();
-    if (!policy->HostsOrigin(GetProcess()->GetDeprecatedID(), source_origin)) {
-      bad_message::ReceivedBadMessage(
-          GetProcess(), bad_message::RFPH_POST_MESSAGE_INVALID_SOURCE_ORIGIN);
-      return;
-    }
+  auto* policy = ChildProcessSecurityPolicyImpl::GetInstance();
+  if (!policy->HostsOrigin(GetProcess()->GetDeprecatedID(), source_origin)) {
+    bad_message::ReceivedBadMessage(
+        GetProcess(), bad_message::RFPH_POST_MESSAGE_INVALID_SOURCE_ORIGIN);
+    return;
   }
 
   SiteInstanceGroup* target_group = target_rfh->GetSiteInstance()->group();

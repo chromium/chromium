@@ -49,9 +49,11 @@ import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowLooper;
 
+import org.chromium.base.CallbackUtils;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Token;
-import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.supplier.ObservableSuppliers;
+import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -119,8 +121,8 @@ public class TabGridItemTouchHelperCallbackUnitTest {
 
     @Mock private TabGridItemLongPressOrchestrator mTabGridItemLongPressOrchestrator;
 
-    private final ObservableSupplierImpl<TabGroupModelFilter> mTabGroupModelFilterSupplier =
-            new ObservableSupplierImpl<>();
+    private final SettableMonotonicObservableSupplier<TabGroupModelFilter>
+            mTabGroupModelFilterSupplier = ObservableSuppliers.createMonotonic();
 
     private SimpleRecyclerViewAdapter mSimpleAdapter;
     private ViewHolder mMockViewHolder1;
@@ -182,10 +184,6 @@ public class TabGridItemTouchHelperCallbackUnitTest {
         doReturn(mTab2).when(mTabGroupModelFilter).getRepresentativeTabAt(POSITION2);
         doReturn(mTab3).when(mTabGroupModelFilter).getRepresentativeTabAt(POSITION3);
         doReturn(mTab4).when(mTabGroupModelFilter).getRepresentativeTabAt(POSITION4);
-        doReturn(TAB1_ID).when(mTab1).getRootId();
-        doReturn(TAB2_ID).when(mTab2).getRootId();
-        doReturn(TAB3_ID).when(mTab3).getRootId();
-        doReturn(TAB4_ID).when(mTab4).getRootId();
         initAndAssertAllProperties();
 
         setupRecyclerView();
@@ -229,7 +227,8 @@ public class TabGridItemTouchHelperCallbackUnitTest {
                         isDialog ? mTabGridDialogHandler : null,
                         "",
                         !isDialog,
-                        TabListMode.GRID);
+                        TabListMode.GRID,
+                        CallbackUtils.emptyRunnable());
         mItemTouchHelperCallback.setupCallback(THRESHOLD, MERGE_AREA_THRESHOLD, THRESHOLD);
         mItemTouchHelperCallback.getMovementFlags(mRecyclerView, mMockViewHolder1);
     }
@@ -1392,6 +1391,60 @@ public class TabGridItemTouchHelperCallbackUnitTest {
 
         // Drag pinned card#1 rightwards to hover on pinned card#2.
         verifyDrag(mMockViewHolder1, 5, 0, POSITION2, AnimationStatus.CARD_RESTORE);
+    }
+
+    @Test
+    public void testClearCardState() {
+        mItemTouchHelperCallback.onSelectedChanged(
+                mMockViewHolder1, ItemTouchHelper.ACTION_STATE_DRAG);
+        assertThat(
+                mModel.get(POSITION1).model.get(CardProperties.CARD_ANIMATION_STATUS),
+                equalTo(AnimationStatus.SELECTED_CARD_ZOOM_IN));
+        assertThat(mModel.get(POSITION1).model.get(CARD_ALPHA), equalTo(0.8f));
+
+        mItemTouchHelperCallback.setHoveredTabIndexForTesting(POSITION2);
+        mModel.updateHoveredCardForHover(POSITION2, true);
+        assertThat(
+                mModel.get(POSITION2).model.get(CardProperties.CARD_ANIMATION_STATUS),
+                equalTo(AnimationStatus.HOVERED_CARD_ZOOM_IN));
+
+        mItemTouchHelperCallback.clearCardState();
+
+        assertThat(
+                mModel.get(POSITION1).model.get(CardProperties.CARD_ANIMATION_STATUS),
+                equalTo(AnimationStatus.SELECTED_CARD_ZOOM_OUT));
+        assertThat(mModel.get(POSITION1).model.get(CARD_ALPHA), equalTo(1f));
+        assertThat(
+                mModel.get(POSITION2).model.get(CardProperties.CARD_ANIMATION_STATUS),
+                equalTo(AnimationStatus.HOVERED_CARD_ZOOM_OUT));
+    }
+
+    @Test
+    public void testClearCardState_ArchivedMessage() {
+        setupItemTouchHelperCallback(false);
+        addArchivedMessageCard();
+        mItemTouchHelperCallback.setActionsOnAllRelatedTabsForTesting(true);
+        mItemTouchHelperCallback.setSelectedTabIndexForTesting(POSITION1);
+
+        // Pretend a drag over the archived message card has started.
+        mItemTouchHelperCallback.onChildDraw(
+                mCanvas,
+                mRecyclerView,
+                mMockViewHolder1,
+                4,
+                8,
+                ItemTouchHelper.ACTION_STATE_DRAG,
+                true);
+
+        assertEquals(
+                AnimationStatus.HOVERED_CARD_ZOOM_IN,
+                mModel.get(ARCHIVED_MSG_CARD_POSITION).model.get(CARD_ANIMATION_STATUS));
+
+        mItemTouchHelperCallback.clearCardState();
+
+        assertEquals(
+                AnimationStatus.HOVERED_CARD_ZOOM_OUT,
+                mModel.get(ARCHIVED_MSG_CARD_POSITION).model.get(CARD_ANIMATION_STATUS));
     }
 
     private void verifyDrag(

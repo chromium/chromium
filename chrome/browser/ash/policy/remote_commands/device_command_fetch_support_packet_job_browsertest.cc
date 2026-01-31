@@ -171,7 +171,7 @@ class DeviceCommandFetchSupportPacketBrowserTestBase : public BaseBrowserTest {
               event.upload_settings().upload_parameters());
 
     // The result payload should contain the success result code.
-    base::Value::Dict expected_payload;
+    base::DictValue expected_payload;
     expected_payload.Set("result",
                          enterprise_management::FetchSupportPacketResultCode::
                              FETCH_SUPPORT_PACKET_RESULT_SUCCESS);
@@ -179,7 +179,7 @@ class DeviceCommandFetchSupportPacketBrowserTestBase : public BaseBrowserTest {
       // A note will be added to the result payload when requested PII is
       // not included in the collected logs.
       expected_payload.Set(
-          "notes", base::Value::List().Append(
+          "notes", base::ListValue().Append(
                        enterprise_management::FetchSupportPacketResultNote::
                            WARNING_PII_NOT_ALLOWED));
     }
@@ -362,7 +362,7 @@ IN_PROC_BROWSER_TEST_F(DeviceCommandFetchSupportPacketBrowserTest,
   // supported on the device.
   EXPECT_THAT(
       result.payload(),
-      IsJson(base::Value::Dict().Set(
+      IsJson(base::DictValue().Set(
           "result", enterprise_management::FetchSupportPacketResultCode::
                         FAILURE_COMMAND_NOT_ENABLED)));
 

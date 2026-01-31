@@ -136,7 +136,7 @@ BrowserGpuVideoAcceleratorFactories::CreateVideoEncodeAccelerator() {
 }
 
 bool BrowserGpuVideoAcceleratorFactories::
-    ShouldUseGpuMemoryBuffersForVideoFrames(bool for_media_stream) const {
+    ShouldUseMappableSharedImagesForVideoFrames(bool for_media_stream) const {
   return false;
 }
 

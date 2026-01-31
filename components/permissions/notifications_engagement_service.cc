@@ -38,7 +38,7 @@ constexpr base::TimeDelta kMaxAge = base::Days(30);
 
 // Discards notification interactions stored in `engagement` for time
 // periods older than |kMaxAge|.
-void EraseStaleEntries(base::Value::Dict& engagement) {
+void EraseStaleEntries(base::DictValue& engagement) {
   const base::Time cutoff = base::Time::Now() - kMaxAge;
 
   for (auto it = engagement.begin(); it != engagement.end();) {
@@ -54,9 +54,9 @@ void EraseStaleEntries(base::Value::Dict& engagement) {
   }
 }
 
-int ExtractNotificationCount(const base::Value::Dict& engagement,
+int ExtractNotificationCount(const base::DictValue& engagement,
                              std::string date) {
-  const base::Value::Dict* bucket = engagement.FindDict(date);
+  const base::DictValue* bucket = engagement.FindDict(date);
   if (!bucket) {
     return 0;
   }
@@ -140,7 +140,7 @@ void NotificationsEngagementService::RecordNotificationSuspicious(
 
 // static
 int NotificationsEngagementService::GetDailyAverageNotificationCount(
-    const base::Value::Dict& engagement) {
+    const base::DictValue& engagement) {
   // Calculate daily average count for the past week.
   base::Time date = base::Time::Now();
   int notification_count_total = 0;
@@ -166,13 +166,13 @@ int NotificationsEngagementService::GetDailyAverageNotificationCount(
 
 // static
 int NotificationsEngagementService::GetSuspiciousNotificationCountForPeriod(
-    const base::Value::Dict& engagement,
+    const base::DictValue& engagement,
     int days) {
   base::Time date = base::Time::Now();
   int suspicious_notification_count = 0;
 
   for (int day = 0; day < days; ++day) {
-    const base::Value::Dict* bucket =
+    const base::DictValue* bucket =
         engagement.FindDict(GetBucketLabel(date - base::Days(day)));
     if (bucket) {
       suspicious_notification_count +=
@@ -206,7 +206,7 @@ void NotificationsEngagementService::IncrementCounts(
   base::Value engagement_as_value = settings_map_->GetWebsiteSetting(
       url, GURL(), ContentSettingsType::NOTIFICATION_INTERACTIONS);
 
-  base::Value::Dict engagement;
+  base::DictValue engagement;
 
   if (engagement_as_value.is_dict()) {
     engagement = std::move(engagement_as_value).TakeDict();
@@ -218,9 +218,9 @@ void NotificationsEngagementService::IncrementCounts(
   }
 
   EraseStaleEntries(engagement);
-  base::Value::Dict* bucket = engagement.FindDict(date);
+  base::DictValue* bucket = engagement.FindDict(date);
   if (!bucket) {
-    bucket = &engagement.Set(date, base::Value::Dict())->GetDict();
+    bucket = &engagement.Set(date, base::DictValue())->GetDict();
   }
   if (display_count_delta) {
     bucket->Set(kDisplayedKey, display_count_delta +

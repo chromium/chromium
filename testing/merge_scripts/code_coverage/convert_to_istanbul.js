@@ -7,18 +7,14 @@
  * compliant coverage files.
  */
 
-// Relative path to the node modules.
-const NODE_MODULES = [
-  '..', '..', '..', 'third_party', 'js_code_coverage', 'node_modules'];
-
-const {Worker} = require('worker_threads');
-const {join} = require('path');
-const {readFile, mkdir} = require('fs').promises;
-const {ArgumentParser} = require(join(...NODE_MODULES, 'argparse'));
+import {mkdir, readFile} from 'node:fs/promises';
+import {join} from 'node:path';
+import {Worker} from 'node:worker_threads';
+import {ArgumentParser} from '../../../third_party/js_code_coverage/node_modules/argparse/argparse.js';
 
 function createWorker(coverageDir, sourceDir, outputDir, urlToPathMap) {
   return new Promise(function(resolve, reject) {
-    const worker = new Worker(join(__dirname, 'coverage_worker.js'), {
+    const worker = new Worker(join(import.meta.dirname, 'coverage_worker.js'), {
       workerData: {
         coverageDir: coverageDir,
         sourceDir: sourceDir,

@@ -26,5 +26,10 @@ bool CSSRatioValue::Equals(const CSSRatioValue& other) const {
          base::ValuesEquivalent(second_, other.second_);
 }
 
+bool CSSRatioValue::HasRandomFunctions() const {
+  return (first_ && first_->HasRandomFunctions()) ||
+         (second_ && second_->HasRandomFunctions());
+}
+
 }  // namespace cssvalue
 }  // namespace blink

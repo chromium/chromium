@@ -23,6 +23,10 @@ bool IsDelegationEnabled() {
   return base::FeatureList::IsEnabled(features::kFedCmDelegation);
 }
 
+bool IsEmailVerificationProtocolEnabled() {
+  return base::FeatureList::IsEnabled(features::kEmailVerificationProtocol);
+}
+
 bool IsIdPRegistrationEnabled() {
   return base::FeatureList::IsEnabled(features::kFedCmIdPRegistration);
 }
@@ -50,15 +54,6 @@ bool IsLightweightModeEnabled() {
   return base::FeatureList::IsEnabled(features::kFedCmLightweightMode);
 }
 
-bool IsAlternativeIdentifiersEnabled() {
-  return base::FeatureList::IsEnabled(features::kFedCmAlternativeIdentifiers);
-}
-
-bool IsUseOtherAccountAndLabelsNewSyntaxEnabled() {
-  return base::FeatureList::IsEnabled(
-      features::kFedCmUseOtherAccountAndLabelsNewSyntax);
-}
-
 bool IsFedCmEmbedderCheckEnabled() {
   return base::FeatureList::IsEnabled(features::kFedCmEmbedderCheck);
 }
@@ -69,10 +64,6 @@ bool IsAutofillEnabled() {
   // if the old one is enabled.
   return base::FeatureList::IsEnabled(features::kFedCmAutofill) ||
          IsDelegationEnabled();
-}
-
-bool IsIframeOriginEnabled() {
-  return base::FeatureList::IsEnabled(features::kFedCmIframeOrigin);
 }
 
 bool IsNonceInParamsEnabled() {
@@ -100,8 +91,8 @@ bool IsNavigationInterceptionEnabled() {
   return base::FeatureList::IsEnabled(features::kFedCmNavigationInterception);
 }
 
-bool IsNavigationCancellationEnabled() {
-  return base::FeatureList::IsEnabled(features::kFedCmNavigationCancellation);
+bool IsEmbedderInitiatedLoginEnabled() {
+  return base::FeatureList::IsEnabled(features::kFedCmEmbedderInitiatedLogin);
 }
 
 }  // namespace content::webid

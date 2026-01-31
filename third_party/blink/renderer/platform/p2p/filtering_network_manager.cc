@@ -68,7 +68,7 @@ void FilteringNetworkManager::StartUpdating() {
   if (!start_updating_called_) {
     start_updating_called_ = true;
     network_manager_for_signaling_thread_->SubscribeNetworksChanged(
-        [that = GetWeakPtr()] {
+        this, [that = GetWeakPtr()] {
           if (that) {
             that->OnNetworksChanged();
           }

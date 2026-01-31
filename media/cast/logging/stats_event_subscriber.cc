@@ -61,11 +61,11 @@ void StatsEventSubscriber::SimpleHistogram::Reset() {
   buckets_.assign(buckets_.size(), 0);
 }
 
-base::Value::List StatsEventSubscriber::SimpleHistogram::GetHistogram() const {
-  base::Value::List histo;
+base::ListValue StatsEventSubscriber::SimpleHistogram::GetHistogram() const {
+  base::ListValue histo;
 
   if (buckets_.front()) {
-    base::Value::Dict bucket;
+    base::DictValue bucket;
     bucket.Set(base::StringPrintf("<%" PRId64, min_), buckets_.front());
     histo.Append(std::move(bucket));
   }
@@ -74,7 +74,7 @@ base::Value::List StatsEventSubscriber::SimpleHistogram::GetHistogram() const {
     if (!buckets_[i]) {
       continue;
     }
-    base::Value::Dict bucket;
+    base::DictValue bucket;
     int64_t lower = min_ + (i - 1) * width_;
     int64_t upper = lower + width_ - 1;
     bucket.Set(base::StringPrintf("%" PRId64 "-%" PRId64, lower, upper),
@@ -83,7 +83,7 @@ base::Value::List StatsEventSubscriber::SimpleHistogram::GetHistogram() const {
   }
 
   if (buckets_.back()) {
-    base::Value::Dict bucket;
+    base::DictValue bucket;
     bucket.Set(base::StringPrintf(">=%" PRId64, max_), buckets_.back());
     histo.Append(std::move(bucket));
   }
@@ -222,12 +222,12 @@ void StatsEventSubscriber::UpdateFirstLastEventTime(base::TimeTicks timestamp,
   }
 }
 
-base::Value::Dict StatsEventSubscriber::GetStats() const {
+base::DictValue StatsEventSubscriber::GetStats() const {
   StatsMap stats_map;
   GetStatsInternal(&stats_map);
-  base::Value::Dict ret;
+  base::DictValue ret;
 
-  base::Value::Dict stats;
+  base::DictValue stats;
   for (StatsMap::const_iterator it = stats_map.begin(); it != stats_map.end();
        ++it) {
     // Round to 3 digits after the decimal point.

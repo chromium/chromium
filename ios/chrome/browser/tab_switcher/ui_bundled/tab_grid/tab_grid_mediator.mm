@@ -15,6 +15,7 @@
 #import "components/signin/public/identity_manager/tribool.h"
 #import "components/supervised_user/core/common/pref_names.h"
 #import "ios/chrome/browser/policy/model/policy_util.h"
+#import "ios/chrome/browser/shared/coordinator/scene/state/tab_grid_state.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/supervised_user/model/family_link_user_capabilities_observer_bridge.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/grid/grid_toolbars_mutator.h"
@@ -125,6 +126,7 @@
 
 // Notifies mutators if it is the current selected one or not.
 - (void)notifyPageMutatorAboutPage:(TabGridPage)page {
+  self.tabGridState.currentPage = page;
   [_currentPageMutator currentlySelectedGrid:NO];
   if (_modeHolder.mode == TabGridMode::kSearch) {
     // It shouldn't be possible to switch panel in search mode, but it is

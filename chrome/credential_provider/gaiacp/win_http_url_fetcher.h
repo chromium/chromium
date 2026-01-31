@@ -43,10 +43,10 @@ class WinHttpUrlFetcher {
       const GURL& request_url,
       std::string access_token,
       const std::vector<std::pair<std::string, std::string>>& headers,
-      const base::Value::Dict& request_dict,
+      const base::DictValue& request_dict,
       const base::TimeDelta& request_timeout,
       unsigned int request_retries,
-      std::optional<base::Value::Dict>* request_result);
+      std::optional<base::DictValue>* request_result);
 
   virtual ~WinHttpUrlFetcher();
 

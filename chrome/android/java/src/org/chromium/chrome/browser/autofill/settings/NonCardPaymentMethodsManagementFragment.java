@@ -14,8 +14,9 @@ import androidx.preference.PreferenceScreen;
 
 import org.chromium.base.Callback;
 import org.chromium.base.metrics.RecordHistogram;
-import org.chromium.base.supplier.ObservableSupplier;
-import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.supplier.MonotonicObservableSupplier;
+import org.chromium.base.supplier.ObservableSuppliers;
+import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.build.annotations.NullMarked;
@@ -28,12 +29,14 @@ import org.chromium.chrome.browser.autofill.PersonalDataManager.PersonalDataMana
 import org.chromium.chrome.browser.autofill.PersonalDataManagerFactory;
 import org.chromium.chrome.browser.customtabs.CustomTabActivity;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.settings.ChromeBaseSettingsFragment;
 import org.chromium.chrome.browser.settings.search.ChromeBaseSearchIndexProvider;
 import org.chromium.components.autofill.ImageSize;
 import org.chromium.components.autofill.payments.Ewallet;
 import org.chromium.components.browser_ui.settings.ChromeSwitchPreference;
 import org.chromium.components.browser_ui.settings.SettingsFragment;
+import org.chromium.components.browser_ui.settings.search.SettingsIndexData;
 
 /** Fragment showing management options for non-card payment accounts like e-Wallets etc. */
 @NullMarked
@@ -60,7 +63,8 @@ public class NonCardPaymentMethodsManagementFragment extends ChromeBaseSettingsF
     @VisibleForTesting static final String PREFERENCE_KEY_A2A = "a2a";
     private final Callback<String> mFinancialAccountManageLinkOpenerCallback =
             url -> CustomTabActivity.showInfoPage(getActivity(), url);
-    private final ObservableSupplierImpl<String> mPageTitle = new ObservableSupplierImpl<>();
+    private final SettableMonotonicObservableSupplier<String> mPageTitle =
+            ObservableSuppliers.createMonotonic();
     private PersonalDataManager mPersonalDataManager;
     private Ewallet @Nullable [] mEwallets;
 
@@ -80,7 +84,7 @@ public class NonCardPaymentMethodsManagementFragment extends ChromeBaseSettingsF
 
     // EmbeddableSettingsPage implementation.
     @Override
-    public ObservableSupplier<String> getPageTitle() {
+    public MonotonicObservableSupplier<String> getPageTitle() {
         return mPageTitle;
     }
 
@@ -112,7 +116,17 @@ public class NonCardPaymentMethodsManagementFragment extends ChromeBaseSettingsF
         getPreferenceScreen().removeAll();
         getPreferenceScreen().setOrderingAsAdded(true);
         mEwallets = mPersonalDataManager.getEwallets();
-        if (mEwallets.length > 0) {
+        // LINT.IfChange(PrefConditions)
+        boolean addEwalletPref = mEwallets.length > 0;
+        boolean addA2aPref =
+                mPersonalDataManager.getFacilitatedPaymentsA2ATriggeredOncePref()
+                        && ChromeFeatureList.isEnabled(
+                                ChromeFeatureList.FACILITATED_PAYMENTS_ENABLE_A2A_PAYMENT);
+        // LINT.ThenChange(:DynamicPrefConditions)
+
+        // LINT.IfChange(EwalletPrefConditions)
+        if (addEwalletPref) {
+            // LINT.ThenChange(:DynamicEwalletPrefConditions)
             boolean isFacilitatedPaymentsEwalletEnabled =
                     mPersonalDataManager.getFacilitatedPaymentsEwalletPref();
             ChromeSwitchPreference ewalletSwitch = new ChromeSwitchPreference(getStyledContext());
@@ -127,9 +141,9 @@ public class NonCardPaymentMethodsManagementFragment extends ChromeBaseSettingsF
                 }
             }
         }
-        if (mPersonalDataManager.getFacilitatedPaymentsA2ATriggeredOncePref()
-                && ChromeFeatureList.isEnabled(
-                        ChromeFeatureList.FACILITATED_PAYMENTS_ENABLE_A2A_PAYMENT)) {
+        // LINT.IfChange(A2APrefConditions)
+        if (addA2aPref) {
+            // LINT.ThenChange(:DynamicA2APrefConditions)
             ChromeSwitchPreference a2aSwitch = new ChromeSwitchPreference(getStyledContext());
             a2aSwitch.setChecked(mPersonalDataManager.getFacilitatedPaymentsA2AEnabledPref());
             a2aSwitch.setKey(PREFERENCE_KEY_A2A);
@@ -216,9 +230,45 @@ public class NonCardPaymentMethodsManagementFragment extends ChromeBaseSettingsF
         return SettingsFragment.AnimationType.PROPERTY;
     }
 
-    // TODO(crbug.com/444470792): Determine what pieces of logic are dynamic and need handling. Any
-    // entries that need adding?
     public static final ChromeBaseSearchIndexProvider SEARCH_INDEX_DATA_PROVIDER =
             new ChromeBaseSearchIndexProvider(
-                    NonCardPaymentMethodsManagementFragment.class.getName(), 0);
+                    NonCardPaymentMethodsManagementFragment.class.getName(), 0) {
+                @Override
+                public void updateDynamicPreferences(
+                        Context context, SettingsIndexData indexData, Profile profile) {
+                    PersonalDataManager personalDataManager =
+                            PersonalDataManagerFactory.getForProfile(profile);
+                    // LINT.IfChange(DynamicPrefConditions)
+                    boolean addEwalletPref = personalDataManager.getEwallets().length > 0;
+                    boolean addA2aPref =
+                            personalDataManager.getFacilitatedPaymentsA2ATriggeredOncePref()
+                                    && ChromeFeatureList.isEnabled(
+                                            ChromeFeatureList
+                                                    .FACILITATED_PAYMENTS_ENABLE_A2A_PAYMENT);
+                    // LINT.ThenChange()
+
+                    String prefFrag = getPrefFragmentName();
+
+                    // LINT.IfChange(DynamicEwalletPrefConditions)
+                    if (addEwalletPref) {
+                        // LINT.ThenChange()
+                        indexData.addEntryForKey(
+                                prefFrag,
+                                PREFERENCE_KEY_EWALLET,
+                                R.string.settings_manage_other_financial_accounts_ewallet);
+                    }
+                    // LINT.IfChange(DynamicA2APrefConditions)
+                    if (addA2aPref) {
+                        // LINT.ThenChange()
+                        indexData.addEntryForKey(
+                                prefFrag,
+                                PREFERENCE_KEY_A2A,
+                                R.string.settings_manage_non_card_payment_methods_a2a_title);
+                        indexData.updateEntrySummaryForKey(
+                                prefFrag,
+                                PREFERENCE_KEY_A2A,
+                                R.string.settings_manage_non_card_payment_methods_a2a_description);
+                    }
+                }
+            };
 }

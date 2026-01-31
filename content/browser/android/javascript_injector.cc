@@ -44,8 +44,7 @@ JavascriptInjector::~JavascriptInjector() {
   Java_JavascriptInjectorImpl_onDestroy(env, j_obj);
 }
 
-void JavascriptInjector::SetAllowInspection(JNIEnv* env,
-                                            jboolean allow) {
+void JavascriptInjector::SetAllowInspection(JNIEnv* env, bool allow) {
   DCHECK(java_bridge_dispatcher_host_);
   java_bridge_dispatcher_host_->SetAllowObjectContentsInspection(allow);
 }
@@ -93,7 +92,7 @@ WebContentsImpl& JavascriptInjector::GetWebContentsImpl() {
   return static_cast<WebContentsImpl&>(GetWebContents());
 }
 
-static jlong JNI_JavascriptInjectorImpl_Init(
+static int64_t JNI_JavascriptInjectorImpl_Init(
     JNIEnv* env,
     const JavaRef<jobject>& obj,
     const JavaRef<jobject>& jweb_contents,

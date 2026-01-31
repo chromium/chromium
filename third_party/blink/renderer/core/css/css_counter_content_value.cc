@@ -43,6 +43,11 @@ const CSSCounterContentValue& CSSCounterContentValue::PopulateWithTreeScope(
       separator_);
 }
 
+bool CSSCounterContentValue::HasRandomFunctions() const {
+  return (identifier_ && identifier_->HasRandomFunctions()) ||
+         (list_style_ && list_style_->HasRandomFunctions());
+}
+
 void CSSCounterContentValue::TraceAfterDispatch(blink::Visitor* visitor) const {
   visitor->Trace(identifier_);
   visitor->Trace(list_style_);

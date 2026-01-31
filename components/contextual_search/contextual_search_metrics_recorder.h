@@ -37,7 +37,7 @@ enum class ContextualSearchSource {
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
 // Describes the query submission details.
-enum class MultimodalState {
+enum class ContextualSearchMultimodalState {
   kTextOnly = 0,
   kFileOnly = 1,
   kTextAndFile = 2,
@@ -70,6 +70,17 @@ struct SessionMetrics {
   // where a user navigates to the AIM page on a new window or tab and the
   // composebox remains open.
   int num_query_submissions = 0;
+  // The number of times a tab is added as context to the session.
+  int tab_context_added_count = 0;
+  // The number of times a tab is added as context to the session via the tab
+  // suggestion chip.
+  int tab_context_added_from_tab_suggestion_chip_count = 0;
+  // The number of time a tab is added as context to the session via the plus
+  // button (i.e. not via the tab suggestion chip).
+  int tab_context_added_from_plus_button_count = 0;
+  // The number of times a tab with a duplicate title is added as context to the
+  // session.
+  int tab_with_duplicate_title_clicked_count = 0;
 };
 
 class ContextualSearchMetricsRecorder {
@@ -93,6 +104,7 @@ class ContextualSearchMetricsRecorder {
   // Maps contextual search sources to its string version for histogram naming.
   static std::string ContextualSearchSourceToString(
       ContextualSearchSource source);
+  ContextualSearchSource source() const { return source_; }
   // Maps submission types to its string version for histogram naming.
   std::string SubmissionTypeToString(SubmissionType submission_type);
 
@@ -107,9 +119,11 @@ class ContextualSearchMetricsRecorder {
                                 lens::MimeType file_type,
                                 FileUploadStatus file_status);
 
-  void RecordTabClickedMetrics(bool has_duplicate_title,
-                               std::optional<int> recency_ranking);
+  void RecordTabAddedMetrics(bool has_duplicate_title,
+                               std::optional<int> recency_ranking,
+                               bool is_tab_suggestion_chip);
 
+  // If `duplicate_title_count` < 0 then it won't be recorded.
   void RecordTabContextMenuMetrics(int total_tab_count,
                                    int duplicate_title_count);
 
@@ -140,6 +154,7 @@ class ContextualSearchMetricsRecorder {
   void FinalizeSessionMetrics();
   // Resets all session metrics at the end of a session.
   void ResetSessionMetrics();
+  ContextualSearchSource source_;
   std::string metrics_suffix_;
   std::unique_ptr<SessionMetrics> session_metrics_;
   SessionState session_state_ = SessionState::kNone;

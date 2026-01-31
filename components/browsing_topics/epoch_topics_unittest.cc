@@ -298,8 +298,7 @@ TEST_F(EpochTopicsTest, ClearContextDomain) {
 }
 
 TEST_F(EpochTopicsTest, FromEmptyDictionaryValue) {
-  EpochTopics read_epoch_topics =
-      EpochTopics::FromDictValue(base::Value::Dict());
+  EpochTopics read_epoch_topics = EpochTopics::FromDictValue(base::DictValue());
 
   EXPECT_TRUE(read_epoch_topics.empty());
   EXPECT_EQ(read_epoch_topics.config_version(), 0);
@@ -316,7 +315,7 @@ TEST_F(EpochTopicsTest, FromEmptyDictionaryValue) {
 TEST_F(EpochTopicsTest, FromDictValueInvalidCalculationTime) {
   EpochTopics epoch_topics(kCalculationTime);
 
-  base::Value::Dict dict_value = epoch_topics.ToDictValue();
+  base::DictValue dict_value = epoch_topics.ToDictValue();
   dict_value.Set("calculation_time", "nonsense");
   EpochTopics read_epoch_topics = EpochTopics::FromDictValue(dict_value);
   EXPECT_EQ(read_epoch_topics.calculation_time(), base::Time());
@@ -324,9 +323,9 @@ TEST_F(EpochTopicsTest, FromDictValueInvalidCalculationTime) {
 
 TEST_F(EpochTopicsTest,
        FromDictionaryValueWithoutConfigVersion_UseConfigVersion1) {
-  base::Value::Dict dict;
+  base::DictValue dict;
 
-  base::Value::List top_topics_and_observing_domains_list;
+  base::ListValue top_topics_and_observing_domains_list;
   std::vector<TopicAndDomains> top_topics_and_domains = CreateTestTopTopics();
   for (const TopicAndDomains& topic_and_domains : top_topics_and_domains) {
     top_topics_and_observing_domains_list.Append(
@@ -352,7 +351,7 @@ TEST_F(EpochTopicsTest,
 TEST_F(EpochTopicsTest, EmptyEpochTopics_ToAndFromDictValue) {
   EpochTopics epoch_topics(kCalculationTime);
 
-  base::Value::Dict dict_value = epoch_topics.ToDictValue();
+  base::DictValue dict_value = epoch_topics.ToDictValue();
   EpochTopics read_epoch_topics = EpochTopics::FromDictValue(dict_value);
 
   EXPECT_TRUE(read_epoch_topics.empty());
@@ -371,7 +370,7 @@ TEST_F(EpochTopicsTest, EmptyEpochTopics_ToAndFromDictValue) {
 TEST_F(EpochTopicsTest, PopulatedEpochTopics_ToAndFromValue) {
   EpochTopics epoch_topics = CreateTestEpochTopics();
 
-  base::Value::Dict dict_value = epoch_topics.ToDictValue();
+  base::DictValue dict_value = epoch_topics.ToDictValue();
   EpochTopics read_epoch_topics = EpochTopics::FromDictValue(dict_value);
 
   EXPECT_FALSE(read_epoch_topics.empty());
@@ -403,7 +402,7 @@ TEST_F(EpochTopicsTest,
       kCalculationTime,
       CalculatorResultStatus::kFailureAnnotationExecutionError);
 
-  base::Value::Dict dict_value = epoch_topics.ToDictValue();
+  base::DictValue dict_value = epoch_topics.ToDictValue();
   EpochTopics read_epoch_topics = EpochTopics::FromDictValue(dict_value);
 
   EXPECT_TRUE(read_epoch_topics.empty());

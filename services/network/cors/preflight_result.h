@@ -103,7 +103,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) PreflightResult final {
 
   // Returns params for the `CORS_PREFLIGHT_RESULT` and
   // `CORS_PREFLIGHT_CACHED_RESULT` net log events.
-  base::Value::Dict NetLogParams() const;
+  base::DictValue NetLogParams() const;
 
  protected:
   explicit PreflightResult(const mojom::CredentialsMode credentials_mode);

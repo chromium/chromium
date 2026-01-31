@@ -27,11 +27,12 @@ import org.chromium.base.Callback;
 import org.chromium.base.Token;
 import org.chromium.base.TraceEvent;
 import org.chromium.base.supplier.LazyOneshotSupplier;
+import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.base.supplier.NonNullObservableSupplier;
-import org.chromium.base.supplier.ObservableSupplier;
-import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.supplier.NullableObservableSupplier;
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.SettableNonNullObservableSupplier;
+import org.chromium.base.supplier.SettableNullableObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.bookmarks.TabBookmarker;
@@ -96,7 +97,7 @@ public class TabGridDialogCoordinator implements TabGridDialogMediator.DialogCon
             ObservableSuppliers.createNonNull(false);
 
     private final Activity mActivity;
-    private final ObservableSupplier<@Nullable TabGroupModelFilter>
+    private final NullableObservableSupplier<TabGroupModelFilter>
             mCurrentTabGroupModelFilterSupplier;
     private final BrowserControlsStateProvider mBrowserControlsStateProvider;
     private final ModalDialogManager mModalDialogManager;
@@ -104,10 +105,10 @@ public class TabGridDialogCoordinator implements TabGridDialogMediator.DialogCon
     private final BottomSheetController mBottomSheetController;
     private final UndoBarThrottle mUndoBarThrottle;
     private @Nullable final TabLabeller mTabLabeller;
-    private final ObservableSupplierImpl<Boolean> mShowingOrAnimationSupplier =
-            new ObservableSupplierImpl<>(false);
-    private final ObservableSupplierImpl<@Nullable Token> mCurrentTabGroupId =
-            new ObservableSupplierImpl<>();
+    private final SettableNonNullObservableSupplier<Boolean> mShowingOrAnimationSupplier =
+            ObservableSuppliers.createNonNull(false);
+    private final SettableNullableObservableSupplier<Token> mCurrentTabGroupId =
+            ObservableSuppliers.createNullable();
     private final TabContentManager mTabContentManager;
     private final @Nullable SnackbarManager mSnackbarManager;
     private final @Nullable TabSwitcherResetHandler mTabSwitcherResetHandler;
@@ -125,7 +126,7 @@ public class TabGridDialogCoordinator implements TabGridDialogMediator.DialogCon
             BrowserControlsStateProvider browserControlsStateProvider,
             BottomSheetController bottomSheetController,
             DataSharingTabManager dataSharingTabManager,
-            ObservableSupplier<@Nullable TabGroupModelFilter> currentTabGroupModelFilterSupplier,
+            NullableObservableSupplier<TabGroupModelFilter> currentTabGroupModelFilterSupplier,
             TabContentManager tabContentManager,
             @Nullable TabSwitcherResetHandler resetHandler,
             @Nullable GridCardOnClickListenerProvider gridCardOnClickListenerProvider,
@@ -134,7 +135,7 @@ public class TabGridDialogCoordinator implements TabGridDialogMediator.DialogCon
             ModalDialogManager modalDialogManager,
             @Nullable DesktopWindowStateManager desktopWindowStateManager,
             UndoBarThrottle undoBarThrottle,
-            ObservableSupplier<TabBookmarker> tabBookmarkerSupplier,
+            MonotonicObservableSupplier<TabBookmarker> tabBookmarkerSupplier,
             Supplier<ShareDelegate> shareDelegateSupplier,
             Callback<@Nullable View> attachViewCallback) {
         try (TraceEvent e = TraceEvent.scoped("TabGridDialogCoordinator.constructor")) {
@@ -195,7 +196,7 @@ public class TabGridDialogCoordinator implements TabGridDialogMediator.DialogCon
 
                 @ColorInt
                 int backgroundColor =
-                        TabUiThemeProvider.getTabGridDialogBackgroundColor(
+                        TabUiThemeProvider.getTabGroupDialogBackgroundColor(
                                 mDialogView.getContext(), /* isIncognito= */ false);
                 SharedImageTilesConfig config =
                         SharedImageTilesConfig.Builder.createForButton(activity)
@@ -261,7 +262,8 @@ public class TabGridDialogCoordinator implements TabGridDialogMediator.DialogCon
                             /* tabSwitcherDragHandler= */ null,
                             /* undoBarExplicitTrigger= */ null,
                             mSnackbarManager,
-                            TabListEditorCoordinator.UNLIMITED_SELECTION);
+                            TabListEditorCoordinator.UNLIMITED_SELECTION,
+                            false);
             mTabListCoordinator.setOnLongPressTabItemEventListener(mMediator);
             mTabListCoordinator.registerItemType(
                     UiType.COLLABORATION_ACTIVITY_MESSAGE,
@@ -374,7 +376,8 @@ public class TabGridDialogCoordinator implements TabGridDialogMediator.DialogCon
                             CreationMode.DIALOG,
                             /* undoBarExplicitTrigger= */ null,
                             /* componentName= */ null,
-                            TabListEditorCoordinator.UNLIMITED_SELECTION);
+                            TabListEditorCoordinator.UNLIMITED_SELECTION,
+                            false);
         }
 
         return mTabListEditorCoordinator.getController();
@@ -579,7 +582,7 @@ public class TabGridDialogCoordinator implements TabGridDialogMediator.DialogCon
     }
 
     @Override
-    public ObservableSupplier<Boolean> getShowingOrAnimationSupplier() {
+    public NonNullObservableSupplier<Boolean> getShowingOrAnimationSupplier() {
         return mShowingOrAnimationSupplier;
     }
 

@@ -62,9 +62,9 @@ class SocketDecoratorTest : public IntegrationTest {
       return status;
     }
     Timeout timeout{base::Seconds(10)};
-    base::Value::Dict result;
+    base::DictValue result;
     status = browser_client_->SendCommandAndGetResultWithTimeout(
-        "Browser.getVersion", base::Value::Dict(), &timeout, &result);
+        "Browser.getVersion", base::DictValue(), &timeout, &result);
     if (status.IsError()) {
       return status;
     }
@@ -137,11 +137,11 @@ TEST_P(PageCrashTest, WaitForNavigation) {
     const bool is_saturated = socket->IsSaturated();
 
     socket->SetSkipCount(1'000'000'000);
-    base::Value::Dict params;
+    base::DictValue params;
     params.Set("url", "data:,");
     ASSERT_TRUE(StatusOk(browser_client_->SendCommand("Target.createTarget",
                                                       std::move(params))));
-    params = base::Value::Dict();
+    params = base::DictValue();
     params.Set("targetId", tab_view.GetId());
     ASSERT_TRUE(StatusOk(
         browser_client_->SendCommand("Target.closeTarget", std::move(params))));

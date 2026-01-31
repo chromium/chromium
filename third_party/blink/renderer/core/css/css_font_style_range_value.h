@@ -55,6 +55,8 @@ class CSSFontStyleRangeValue final : public CSSValue {
 
   bool Equals(const CSSFontStyleRangeValue&) const;
 
+  bool HasRandomFunctions() const;
+
   void TraceAfterDispatch(blink::Visitor*) const;
 
  private:

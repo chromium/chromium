@@ -23,7 +23,7 @@
 #include "services/network/public/cpp/network_service_buildflags.h"
 #include "services/network/public/mojom/cache_encryption_provider.mojom.h"
 
-namespace enterprise_encryption {
+namespace network::enterprise_encryption {
 
 // Implements the net::CacheEncryptionDelegate interface using OSCrypt for
 // encryption.
@@ -84,6 +84,6 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) OSCryptCacheEncryptionDelegate
 
   base::WeakPtrFactory<OSCryptCacheEncryptionDelegate> weak_ptr_factory_{this};
 };
-}  // namespace enterprise_encryption
+}  // namespace network::enterprise_encryption
 
 #endif  // SERVICES_NETWORK_ENTERPRISE_ENCRYPTION_OS_CRYPT_CACHE_ENCRYPTION_DELEGATE_H_

@@ -17,7 +17,7 @@ TEST(DailyNavigationCounterTest, ShouldLoadFromDict) {
   EXPECT_TRUE(base::Time::FromUTCString(kStartTime, &now));
   clock.SetNow(now);
 
-  base::Value::Dict dict;
+  base::DictValue dict;
   DailyNavigationCounter counter1(&dict, &clock,
                                   /*rolling_window_duration_in_days=*/1u,
                                   /*save_interval=*/1);
@@ -78,7 +78,7 @@ TEST(DailyNavigationCounterTest, SmallRollingWindowSmallInterval) {
   EXPECT_TRUE(base::Time::FromUTCString(kStartTime, &now));
   clock.SetNow(now);
 
-  base::Value::Dict dict;
+  base::DictValue dict;
   DailyNavigationCounter counter(&dict, &clock,
                                  /*rolling_window_duration_in_days=*/1u,
                                  /*save_interval=*/1);
@@ -123,7 +123,7 @@ TEST(DailyNavigationCounterTest, LargeRollingWindowSmallInterval) {
   EXPECT_TRUE(base::Time::FromUTCString(kStartTime, &now));
   clock.SetNow(now);
 
-  base::Value::Dict dict;
+  base::DictValue dict;
   DailyNavigationCounter counter(&dict, &clock,
                                  /*rolling_window_duration_in_days=*/7u,
                                  /*save_interval=*/1);
@@ -205,7 +205,7 @@ TEST(DailyNavigationCounterTest, SmallRollingWindowLargeInterval) {
   EXPECT_TRUE(base::Time::FromUTCString(kStartTime, &now));
   clock.SetNow(now);
 
-  base::Value::Dict dict;
+  base::DictValue dict;
   DailyNavigationCounter counter(&dict, &clock,
                                  /*rolling_window_duration_in_days=*/1u,
                                  /*save_interval=*/10);
@@ -274,7 +274,7 @@ TEST(DailyNavigationCounterTest, LargeRollingWindowLargeInterval) {
   EXPECT_TRUE(base::Time::FromUTCString(kStartTime, &now));
   clock.SetNow(now);
 
-  base::Value::Dict dict;
+  base::DictValue dict;
   DailyNavigationCounter counter(&dict, &clock,
                                  /*rolling_window_duration_in_days=*/7u,
                                  /*save_interval=*/10);

@@ -37,7 +37,8 @@ namespace ui {
 
 namespace {
 API_AVAILABLE(macos(14.0))
-ui::VSyncParamsMac ComputeVSyncParametersMac(CADisplayLink* display_link) {
+ui::VSyncParamsMac ComputeVSyncParametersMac(CADisplayLink* display_link,
+                                             CGDirectDisplayID display_id) {
   // The time interval that represents when the last frame displayed.
   base::TimeTicks callback_time =
       base::TimeTicks() + base::Seconds(display_link.timestamp);
@@ -48,10 +49,14 @@ ui::VSyncParamsMac ComputeVSyncParametersMac(CADisplayLink* display_link) {
   bool times_valid = true;
   base::TimeDelta interval = base::Seconds(1) * display_link.duration;
 
-  // Sanity check.
-  if (callback_time.is_null() || target_time.is_null() ||
-      !interval.is_positive()) {
-    times_valid = false;
+  // Sanity check. Inputs should always be valid. Use the default values if this
+  // is not the case.
+  if (callback_time.is_null() || target_time.is_null()) {
+    callback_time = base::TimeTicks::Now();
+    target_time = callback_time + interval;
+  }
+  if (!interval.is_positive()) {
+    interval = display::GetNSScreenRefreshInterval(display_id);
   }
 
   ui::VSyncParamsMac params;
@@ -76,21 +81,12 @@ void CADisplayLinkMac::Step() {
   TRACE_EVENT0("ui", "CADisplayLinkCallback");
 
   if (@available(macos 14.0, *)) {
-    // Allow extra callbacks before stopping CADisplayLink.
     if (!vsync_callback_) {
-      consecutive_vsyncs_with_no_callbacks_ += 1;
-      if (consecutive_vsyncs_with_no_callbacks_ >=
-          VSyncCallbackMac::kMaxExtraVSyncs) {
-        // It's time to stop CADisplayLink.
-        objc_state_->display_link.paused = YES;
-      }
       return;
     }
 
-    consecutive_vsyncs_with_no_callbacks_ = 0;
-
     ui::VSyncParamsMac params =
-        ComputeVSyncParametersMac(objc_state_->display_link);
+        ComputeVSyncParametersMac(objc_state_->display_link, display_id_);
 
     // UnregisterCallback() might be called while running the callbacks.
     vsync_callback_->callback_for_displaylink_thread_.Run(params);
@@ -119,6 +115,7 @@ scoped_refptr<DisplayLinkMac> CADisplayLinkMac::GetForDisplay(
 
     NSScreen* screen = display::GetNSScreenFromDisplayID(display_id);
     if (!screen) {
+      RecordDisplayLinkCreation(false);
       return nullptr;
     }
 
@@ -127,8 +124,11 @@ scoped_refptr<DisplayLinkMac> CADisplayLinkMac::GetForDisplay(
                                                     selector:@selector(step:)];
 
     if (!objc_state->display_link) {
+      RecordDisplayLinkCreation(false);
       return nullptr;
     }
+
+    RecordDisplayLinkCreation(true);
 
     // Pause CADisplaylink callback until a request for start.
     objc_state->display_link.paused = YES;
@@ -140,18 +140,13 @@ scoped_refptr<DisplayLinkMac> CADisplayLinkMac::GetForDisplay(
     // There will be no callbacks (CADisplayLinkTarget::step()) at all if
     // MessagePumpType NS_RUNLOOP is not chosen during thread initialization.
     [objc_state->display_link addToRunLoop:NSRunLoop.currentRunLoop
-                                   forMode:NSDefaultRunLoopMode];
+                                   forMode:NSRunLoopCommonModes];
 
     // Set the CADisplayLinkTarget's callback to call back into the C++ code.
     [objc_state->target
         setCallback:base::BindRepeating(
                         &CADisplayLinkMac::Step,
                         display_link->weak_factory_.GetWeakPtr())];
-
-    display_link->min_interval_ =
-        base::Seconds(1) * screen.minimumRefreshInterval;
-    display_link->max_interval_ = display_link->min_interval_;
-    display_link->preferred_interval_ = display_link->min_interval_;
 
     return display_link;
   }
@@ -197,6 +192,9 @@ std::unique_ptr<VSyncCallbackMac> CADisplayLinkMac::RegisterCallback(
 
 void CADisplayLinkMac::UnregisterCallback(VSyncCallbackMac* callback) {
   vsync_callback_ = nullptr;
+  if (@available(macos 14.0, *)) {
+    objc_state_->display_link.paused = YES;
+  }
 }
 
 }  // namespace ui

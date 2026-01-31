@@ -122,6 +122,9 @@ class FakeWebContentsManager : public WebContentsManager {
   std::unique_ptr<webapps::WebAppUrlLoader> CreateUrlLoader() override;
   std::unique_ptr<WebAppDataRetriever> CreateDataRetriever() override;
   std::unique_ptr<WebAppIconDownloader> CreateIconDownloader() override;
+  base::CallbackListSubscription GetPrimaryPageAllSpecifiedManifests(
+      content::WebContents& web_contents,
+      AllManifestsCallbackList::CallbackType callback) override;
   FakeWebContentsManager* AsFakeWebContentsManagerForTesting() override;
 
   // Set the behavior for calls to `GetIcons` from wrappers returned by this

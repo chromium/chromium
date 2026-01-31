@@ -194,7 +194,7 @@ void SettingsOverridesAPI::OnExtensionLoaded(
                        kManyStartupPagesWarning,
                        manifest_keys::kSettingsOverride);
       }
-      base::Value::List url_list;
+      base::ListValue url_list;
       url_list.Append(SubstituteInstallParam(settings->startup_pages[0].spec(),
                                              install_parameter));
       SetPref(extension->id(), prefs::kURLsToRestoreOnStartup,

@@ -125,15 +125,15 @@ class MinimumVersionPolicyTestBase : public ash::LoginManagerTest {
   }
 
   // Set new value for policy and wait till setting is changed.
-  void SetDevicePolicyAndWaitForSettingChange(const base::Value::Dict& value);
+  void SetDevicePolicyAndWaitForSettingChange(const base::DictValue& value);
 
   // Set new value for policy.
-  void SetAndRefreshMinimumChromeVersionPolicy(const base::Value::Dict& value);
+  void SetAndRefreshMinimumChromeVersionPolicy(const base::DictValue& value);
 
   void SetUpdateEngineStatus(update_engine::Operation operation);
 
  protected:
-  void SetMinimumChromeVersionPolicy(const base::Value::Dict& value);
+  void SetMinimumChromeVersionPolicy(const base::DictValue& value);
 
   DevicePolicyCrosTestHelper helper_;
   base::test::ScopedFeatureList feature_list_;
@@ -146,7 +146,7 @@ class MinimumVersionPolicyTestBase : public ash::LoginManagerTest {
 };
 
 void MinimumVersionPolicyTestBase::SetMinimumChromeVersionPolicy(
-    const base::Value::Dict& value) {
+    const base::DictValue& value) {
   DevicePolicyBuilder* const device_policy(helper_.device_policy());
   em::ChromeDeviceSettingsProto& proto(device_policy->payload());
   std::string policy_value;
@@ -155,14 +155,14 @@ void MinimumVersionPolicyTestBase::SetMinimumChromeVersionPolicy(
 }
 
 void MinimumVersionPolicyTestBase::SetDevicePolicyAndWaitForSettingChange(
-    const base::Value::Dict& value) {
+    const base::DictValue& value) {
   SetMinimumChromeVersionPolicy(value);
   helper_.RefreshPolicyAndWaitUntilDeviceSettingsUpdated(
       {ash::kDeviceMinimumVersion});
 }
 
 void MinimumVersionPolicyTestBase::SetAndRefreshMinimumChromeVersionPolicy(
-    const base::Value::Dict& value) {
+    const base::DictValue& value) {
   SetMinimumChromeVersionPolicy(value);
   helper_.RefreshDevicePolicy();
 }
@@ -262,7 +262,7 @@ IN_PROC_BROWSER_TEST_F(MinimumVersionPolicyTest, CriticalUpdateOnLoginScreen) {
   EXPECT_TRUE(ash::LoginScreenTestApi::IsOobeDialogVisible());
 
   // Revoke policy and check update required screen is hidden.
-  SetDevicePolicyAndWaitForSettingChange(base::Value::Dict());
+  SetDevicePolicyAndWaitForSettingChange(base::DictValue());
   ash::OobeScreenExitWaiter(ash::UpdateRequiredView::kScreenId).Wait();
   EXPECT_FALSE(ash::LoginScreenTestApi::IsOobeDialogVisible());
 }
@@ -293,7 +293,7 @@ IN_PROC_BROWSER_TEST_F(MinimumVersionPolicyTest,
   EXPECT_TRUE(ash::LoginScreenTestApi::IsOobeDialogVisible());
 
   // Revoke policy and check update required screen is hidden.
-  SetDevicePolicyAndWaitForSettingChange(base::Value::Dict());
+  SetDevicePolicyAndWaitForSettingChange(base::DictValue());
   ash::OobeScreenExitWaiter(ash::UpdateRequiredView::kScreenId).Wait();
   EXPECT_FALSE(ash::LoginScreenTestApi::IsOobeDialogVisible());
 }
@@ -773,7 +773,7 @@ IN_PROC_BROWSER_TEST_F(MinimumVersionPolicyTest, RelaunchNotificationOverride) {
 
   // Revoking update required should reset the overridden the relaunch
   // notifications.
-  SetDevicePolicyAndWaitForSettingChange(base::Value::Dict());
+  SetDevicePolicyAndWaitForSettingChange(base::DictValue());
   EXPECT_NE(upgrade_detector->GetAnnoyanceLevelDeadline(
                 UpgradeDetector::UPGRADE_ANNOYANCE_HIGH),
             deadline);
@@ -803,7 +803,7 @@ IN_PROC_BROWSER_TEST_F(MinimumVersionNoUsersLoginTest,
 
   // Revoke policy and check update required screen is hidden and gaia screen is
   // shown.
-  SetDevicePolicyAndWaitForSettingChange(base::Value::Dict());
+  SetDevicePolicyAndWaitForSettingChange(base::DictValue());
   ash::OobeScreenExitWaiter(ash::UpdateRequiredView::kScreenId).Wait();
   ash::OobeScreenWaiter(ash::OobeBaseTest::GetFirstSigninScreen()).Wait();
 }
@@ -1036,7 +1036,7 @@ IN_PROC_BROWSER_TEST_F(MinimumVersionPolicyChildUser,
   EXPECT_FALSE(chrome::IsSendingStopRequestToSessionManager());
 
   // Reset the policy so that it can be applied again.
-  SetDevicePolicyAndWaitForSettingChange(base::Value::Dict());
+  SetDevicePolicyAndWaitForSettingChange(base::DictValue());
 
   // Child user should be signout out as policy now restricts unmanaged users.
   SetDevicePolicyAndWaitForSettingChange(

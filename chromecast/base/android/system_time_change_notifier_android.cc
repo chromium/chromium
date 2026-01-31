@@ -15,7 +15,7 @@ SystemTimeChangeNotifierAndroid::SystemTimeChangeNotifierAndroid() {
   JNIEnv* env = jni_zero::AttachCurrentThread();
   java_notifier_.Reset(Java_SystemTimeChangeNotifierAndroid_create(env));
   Java_SystemTimeChangeNotifierAndroid_initializeFromNative(
-      env, java_notifier_, reinterpret_cast<jlong>(this));
+      env, java_notifier_, reinterpret_cast<int64_t>(this));
 }
 
 SystemTimeChangeNotifierAndroid::~SystemTimeChangeNotifierAndroid() {

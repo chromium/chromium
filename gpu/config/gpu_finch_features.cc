@@ -63,7 +63,7 @@ BASE_FEATURE(kAndroidSurfaceControl, base::FEATURE_ENABLED_BY_DEFAULT);
 // Hardware Overlays for WebView.
 BASE_FEATURE(kWebViewSurfaceControl, base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kWebViewSurfaceControlForTV, base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kWebViewSurfaceControlForTV, base::FEATURE_DISABLED_BY_DEFAULT);
 
 // This is used as default state because it's different for webview and chrome.
 // WebView hardcodes this as enabled in AwMainDelegate.
@@ -94,7 +94,7 @@ const base::FeatureParam<std::string>
     kRelaxLimitAImageReaderMaxSizeToOneManufacturerBlocklist{
         &kRelaxLimitAImageReaderMaxSizeToOne,
         "RelaxLimitAImageReaderMaxSizeToOneManufacturerBlocklist",
-        "*Broadcom*|*Google*"};
+        "*Broadcom*"};
 const base::FeatureParam<std::string>
     kRelaxLimitAImageReaderMaxSizeToOneDeviceBlocklist{
         &kRelaxLimitAImageReaderMaxSizeToOne,
@@ -109,6 +109,12 @@ const base::FeatureParam<std::string>
 // When enabled, gives GpuChannel/Host its own dedicated Mojo pipe instead
 // of associating with an unused IPC::Channel.
 BASE_FEATURE(kRemoveGPULegacyIPC, base::FEATURE_DISABLED_BY_DEFAULT);
+
+#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
+// Feature flag to control whether SharedImageStub sequence uses high priority
+// on ChromeOS and Linux. Enabled by default.
+BASE_FEATURE(kSharedImageStubHighPriority, base::FEATURE_DISABLED_BY_DEFAULT);
+#endif
 
 // Enable GPU Rasterization by default. This can still be overridden by
 // --enable-gpu-rasterization or --disable-gpu-rasterization.
@@ -174,6 +180,11 @@ BASE_FEATURE(kVulkan,
 #endif
 );
 
+// Force enable WebGPU interop when enabled. When disabled the webgpu interop
+// mechanism will default to auto detection in 'GetWebGPUOnVulkanViaGLInterop'
+// function.
+BASE_FEATURE(kForceEnableWebGpuInterop, base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kEnableDrDc,
 #if BUILDFLAG(IS_ANDROID)
              base::FEATURE_ENABLED_BY_DEFAULT
@@ -197,6 +208,10 @@ BASE_FEATURE(kEnableDrDc,
 BASE_FEATURE(kWebGPUService, WEBGPU_ENABLED);
 BASE_FEATURE(kWebGPUBlobCache, WEBGPU_ENABLED);
 #undef WEBGPU_ENABLED
+
+// Feature enforces WebGPU security in Android Advanced Protection Mode.
+// Disable feature by default for Finch testing.
+BASE_FEATURE(kAAPMBlocksWebGPU, base::FEATURE_DISABLED_BY_DEFAULT);
 
 // List of Dawn toggles for WebGPU, delimited by ,
 // The FeatureParam may be overridden via Finch config, or via the command line
@@ -415,10 +430,6 @@ BASE_FEATURE(kD3DBackingUploadWithUpdateSubresource,
              base::FEATURE_ENABLED_BY_DEFAULT);
 #endif
 
-// This feature allows viz to handle overlays' swap failures instead of loosing a context and
-// restarting a gpu service.
-BASE_FEATURE(kHandleOverlaysSwapFailure, base::FEATURE_DISABLED_BY_DEFAULT);
-
 // This feature allows enabling specific entries in
 // software_rendering_list.json, via experimentation. The entries must have
 // test_group property and test_group feature parameter should be set in the
@@ -434,6 +445,12 @@ const base::FeatureParam<int> kGPUBlockListTestGroupId{&kGPUBlockListTestGroup,
 BASE_FEATURE(kGPUDriverBugListTestGroup, base::FEATURE_DISABLED_BY_DEFAULT);
 const base::FeatureParam<int> kGPUDriverBugListTestGroupId{
     &kGPUDriverBugListTestGroup, "test_group", 0};
+
+#if BUILDFLAG(IS_LINUX)
+bool IsForceEnableWebGpuInterop() {
+  return base::FeatureList::IsEnabled(kForceEnableWebGpuInterop);
+}
+#endif
 
 bool IsUsingVulkan() {
 #if BUILDFLAG(IS_ANDROID)

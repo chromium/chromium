@@ -63,7 +63,7 @@ bool GapGeometry::IsMultiColSpanner(wtf_size_t gap_index,
   return false;
 }
 
-LayoutUnit GapGeometry::ComputeEndInset(const ComputedStyle& style,
+LayoutUnit GapGeometry::ComputeInsetEnd(const ComputedStyle& style,
                                         wtf_size_t gap_index,
                                         wtf_size_t intersection_index,
                                         const Vector<LayoutUnit>& intersections,
@@ -76,17 +76,17 @@ LayoutUnit GapGeometry::ComputeEndInset(const ComputedStyle& style,
   // https://drafts.csswg.org/css-gaps-1/#propdef-column-rule-inset
   if (IsEdgeIntersection(gap_index, intersection_index, intersections.size(),
                          is_main, intersections)) {
-    return ValueForLength((is_column_gap ? style.ColumnRuleEdgeEndInset()
-                                         : style.RowRuleEdgeEndInset()),
+    return ValueForLength((is_column_gap ? style.ColumnRuleEdgeInsetEnd()
+                                         : style.RowRuleEdgeInsetEnd()),
                           cross_width);
   } else {
-    return ValueForLength((is_column_gap ? style.ColumnRuleInteriorEndInset()
-                                         : style.RowRuleInteriorEndInset()),
+    return ValueForLength((is_column_gap ? style.ColumnRuleInteriorInsetEnd()
+                                         : style.RowRuleInteriorInsetEnd()),
                           cross_width);
   }
 }
 
-LayoutUnit GapGeometry::ComputeStartInset(
+LayoutUnit GapGeometry::ComputeInsetStart(
     const ComputedStyle& style,
     wtf_size_t gap_index,
     wtf_size_t intersection_index,
@@ -100,12 +100,12 @@ LayoutUnit GapGeometry::ComputeStartInset(
   // https://drafts.csswg.org/css-gaps-1/#propdef-column-rule-inset
   if (IsEdgeIntersection(gap_index, intersection_index, intersections.size(),
                          is_main, intersections)) {
-    return ValueForLength((is_column_gap ? style.ColumnRuleEdgeStartInset()
-                                         : style.RowRuleEdgeStartInset()),
+    return ValueForLength((is_column_gap ? style.ColumnRuleEdgeInsetStart()
+                                         : style.RowRuleEdgeInsetStart()),
                           cross_width);
   } else {
-    return ValueForLength((is_column_gap ? style.ColumnRuleInteriorStartInset()
-                                         : style.RowRuleInteriorStartInset()),
+    return ValueForLength((is_column_gap ? style.ColumnRuleInteriorInsetStart()
+                                         : style.RowRuleInteriorInsetStart()),
                           cross_width);
   }
 }

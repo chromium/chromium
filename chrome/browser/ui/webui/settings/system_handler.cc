@@ -34,7 +34,7 @@ void SystemHandler::RegisterMessages() {
                           base::Unretained(this)));
 }
 
-void SystemHandler::HandleShowProxySettings(const base::Value::List& args) {
+void SystemHandler::HandleShowProxySettings(const base::ListValue& args) {
   base::RecordAction(base::UserMetricsAction("Options_ShowProxySettings"));
   settings_utils::ShowNetworkProxySettings(web_ui()->GetWebContents());
 }

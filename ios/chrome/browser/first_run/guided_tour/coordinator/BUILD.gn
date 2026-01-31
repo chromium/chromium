@@ -1,0 +1,26 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("coordinator") {
+  sources = [
+    "guided_tour_coordinator.h",
+    "guided_tour_coordinator.mm",
+    "guided_tour_promo_coordinator.h",
+    "guided_tour_promo_coordinator.mm",
+  ]
+  deps = [
+    "//base",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/bubble/ui_bundled/guided_tour",
+    "//ios/chrome/browser/first_run/guided_tour/ui",
+    "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
+    "//ios/chrome/browser/shared/coordinator/layout_guide",
+    "//ios/chrome/browser/shared/public/commands",
+    "//ios/chrome/browser/shared/ui/symbols",
+    "//ios/chrome/browser/shared/ui/util",
+    "//ios/chrome/browser/shared/ui/util:util_swift",
+    "//ios/chrome/browser/toolbar/legacy/ui_bundled/buttons",
+  ]
+  frameworks = [ "UIKit.framework" ]
+}

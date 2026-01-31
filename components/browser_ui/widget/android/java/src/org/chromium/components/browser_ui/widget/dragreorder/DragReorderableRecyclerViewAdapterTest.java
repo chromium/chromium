@@ -30,7 +30,7 @@ import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.util.Batch;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.components.browser_ui.widget.dragreorder.DragReorderableRecyclerViewAdapter.DragBinder;
-import org.chromium.components.browser_ui.widget.dragreorder.DragReorderableRecyclerViewAdapter.DraggabilityProvider;
+import org.chromium.components.browser_ui.widget.dragreorder.DragTouchHandler.DraggabilityProvider;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.MVCListAdapter.ViewBuilder;
@@ -108,7 +108,9 @@ public class DragReorderableRecyclerViewAdapterTest {
 
     private DragReorderableRecyclerViewAdapter createAdapter() {
         mModelList = new ModelList();
-        mAdapter = new DragReorderableRecyclerViewAdapter(sActivity, mModelList);
+
+        DragTouchHandler dragTouchHandler = new DragTouchHandler(sActivity, mModelList);
+        mAdapter = new DragReorderableRecyclerViewAdapter(sActivity, mModelList, dragTouchHandler);
 
         ViewBuilder<View> viewBuilder = (parent) -> createListItemView();
         ViewBinder<PropertyModel, View, PropertyKey> viewBinder =
@@ -143,7 +145,7 @@ public class DragReorderableRecyclerViewAdapterTest {
                 dragBinder,
                 draggabilityProvider);
         mAdapter.enableDrag();
-        mAdapter.setLongPressDragDelegate(this::isLongPressDragEnabled);
+        dragTouchHandler.setLongPressDragDelegate(this::isLongPressDragEnabled);
 
         return mAdapter;
     }

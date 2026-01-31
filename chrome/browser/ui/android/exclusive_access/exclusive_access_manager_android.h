@@ -35,7 +35,7 @@ class ExclusiveAccessManagerAndroid {
       const jni_zero::JavaRef<jobject>& jrender_frame_host_android,
       bool prefersNavigationBar,
       bool prefersStatusBar,
-      jlong displayId);
+      int64_t displayId);
 
   void ExitFullscreenModeForTab(
       JNIEnv* env,
@@ -45,7 +45,7 @@ class ExclusiveAccessManagerAndroid {
       JNIEnv* env,
       const jni_zero::JavaRef<jobject>& jweb_contents);
 
-  bool PreHandleKeyboardEvent(JNIEnv* env, jlong nativeKeyEvent);
+  bool PreHandleKeyboardEvent(JNIEnv* env, int64_t nativeKeyEvent);
 
   void RequestKeyboardLock(JNIEnv* env,
                            const jni_zero::JavaRef<jobject>& jweb_contents,

@@ -413,7 +413,7 @@ class HoldingSpaceTrayTestBase : public NoSessionAshTestBase {
             HoldingSpaceFile(path, HoldingSpaceFile::FileSystemType::kTest,
                              GURL("filesystem:ignored")),
             base::BindOnce(&CreateStubHoldingSpaceImage));
-    const base::Value::Dict serialized_holding_space_item = item->Serialize();
+    const base::DictValue serialized_holding_space_item = item->Serialize();
     std::unique_ptr<HoldingSpaceItem> deserialized_item =
         HoldingSpaceItem::Deserialize(
             serialized_holding_space_item,

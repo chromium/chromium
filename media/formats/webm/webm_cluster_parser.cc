@@ -4,6 +4,7 @@
 
 #include "media/formats/webm/webm_cluster_parser.h"
 
+#include <bit>
 #include <memory>
 #include <utility>
 #include <vector>
@@ -364,7 +365,7 @@ bool WebMClusterParser::OnBinary(int id, const uint8_t* data_ptr, int size) {
       return true;
 
     case kWebMIdBlockAdditional: {
-      uint64_t block_add_id = base::ByteSwap(block_add_id_);
+      uint64_t block_add_id = std::byteswap(block_add_id_);
       if (block_additional_data_) {
         // TODO(vigneshv): Technically, more than 1 BlockAdditional is allowed
         // as per matroska spec. But for now we don't have a use case to
@@ -742,10 +743,12 @@ base::TimeDelta WebMClusterParser::Track::GetDurationEstimate() {
   if (max_frame_duration_ == kNoTimestamp) {
     DVLOG(3) << __func__ << " : using hardcoded default duration";
     if (track_type_ == TrackType::AUDIO) {
-      duration = base::Milliseconds(kDefaultAudioBufferDurationInMs);
+      duration = base::Milliseconds(
+          std::to_underlying(kDefaultAudioBufferDurationInMs));
     } else {
       // Video tracks use the larger video default duration.
-      duration = base::Milliseconds(kDefaultVideoBufferDurationInMs);
+      duration = base::Milliseconds(
+          std::to_underlying(kDefaultVideoBufferDurationInMs));
     }
   } else {
     // Use max duration to minimize the risk of introducing gaps in the buffered

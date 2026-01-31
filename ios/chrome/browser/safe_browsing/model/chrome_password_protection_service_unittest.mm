@@ -391,7 +391,7 @@ TEST_F(ChromePasswordProtectionServiceTest,
       GURL("https://www.mydomain.com")));
 
   // Verify URL is allowed after setting allowlist in prefs.
-  base::Value::List allowlist;
+  base::ListValue allowlist;
   allowlist.Append("mydomain.com");
   allowlist.Append("mydomain.net");
   profile_->GetPrefs()->SetList(prefs::kSafeBrowsingAllowlistDomains,
@@ -415,7 +415,7 @@ TEST_F(ChromePasswordProtectionServiceTest,
   profile_->GetPrefs()->ClearPref(prefs::kPasswordProtectionChangePasswordURL);
   EXPECT_FALSE(service_->IsURLAllowlistedForPasswordEntry(
       GURL("https://www.mydomain.com")));
-  base::Value::List login_urls;
+  base::ListValue login_urls;
   login_urls.Append("https://mydomain.com/login.html");
   profile_->GetPrefs()->SetList(prefs::kPasswordProtectionLoginURLs,
                                 std::move(login_urls));
@@ -572,7 +572,7 @@ TEST_F(ChromePasswordProtectionServiceTest, VerifyGetPingNotSentReason) {
     reused_password_type.set_account_type(ReusedPasswordAccountType::GSUITE);
     profile_->GetPrefs()->SetInteger(prefs::kPasswordProtectionWarningTrigger,
                                      safe_browsing::PHISHING_REUSE);
-    base::Value::List allowlist;
+    base::ListValue allowlist;
     allowlist.Append("mydomain.com");
     allowlist.Append("mydomain.net");
     profile_->GetPrefs()->SetList(prefs::kSafeBrowsingAllowlistDomains,

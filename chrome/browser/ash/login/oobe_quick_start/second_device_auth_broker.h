@@ -221,7 +221,7 @@ class SecondDeviceAuthBroker {
   void RunAuthCodeCallbackFromParsedResponse(
       SecondDeviceAuthBroker::AuthCodeCallback auth_code_callback,
       std::optional<endpoint_fetcher::FetchErrorType> error_type,
-      std::optional<base::Value::Dict> response);
+      std::optional<base::DictValue> response);
 
   // Internal helper methods to respond to `challenge_callback`.
   void HandleFetchChallengeBytesErrorResponse(

@@ -25,6 +25,38 @@ searching through selector tables and values for each subblock.
 
 Detailed comments about the algorithm can be found in the source.
 
+## Tools
+### Performance Evaluation for Decoder
+
+This directory also contains a tool to measure decoder performance.
+
+#### Evaluation Methodology
+
+To ensure accurate and consistent results, the tool follows this process:
+
+1.  Warm-up: Performs an initial decoding pass (discarded) to prime the CPU caches and branch predictors.
+2.  Measurement: Executes the decoding process 100 times (`BENCHMARK_RUNS`).
+3.  Analysis: Calculates the average and standard deviation of the execution time.
+
+#### Usage
+
+To build and run the performance evaluation tool on an Android device:
+
+```bash
+# 1. Build
+autoninja -C out/Debug/ texture_compressor_benchmark
+
+# 2. Push executable and data
+adb push out/Debug/texture_compressor_benchmark /data/local/tmp/
+adb push input.png /data/local/tmp/
+
+# 3. Run
+adb shell /data/local/tmp/texture_compressor_benchmark /data/local/tmp/input.png /data/local/tmp/output.png
+
+# 4. Pull the image decoded from ETC1 file
+adb pull /data/local/tmp/output.png
+```
+
 ## Similar projects
 
   * [etcpak][etcpak] heavily inspired this project. Most of the algorithm

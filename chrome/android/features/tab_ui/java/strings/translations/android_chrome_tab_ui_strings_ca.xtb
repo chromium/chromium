@@ -20,6 +20,7 @@
 <translation id="1499635324672558517">Vols tancar totes les pestanyes d'incògnit?</translation>
 <translation id="1501480321619201731">Suprimeix el grup</translation>
 <translation id="1553638665176794706">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> element inactiu}other{<ph name="TABS_COUNT_MANY" /> elements inactius}}</translation>
+<translation id="1568067597247500137">Silencia el lloc web</translation>
 <translation id="1645759014353344461">S'han agrupat <ph name="TABS_COUNT_MANY" /> pestanyes</translation>
 <translation id="1657719826150349398">Mou la pestanya cap avall</translation>
 <translation id="1670942869417022142">L'àudio està silenciat</translation>
@@ -82,13 +83,13 @@
 <translation id="3619255692378312441">Gestiona l'accés</translation>
 <translation id="3649471731638882002">{TAB_COUNT,plural, =1{Tanca l'element}other{Tanca els elements}}</translation>
 <translation id="3652027618765638838"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
+<translation id="3714430408451673233">Full inferior de la pestanya a mitja alçada.</translation>
 <translation id="374923079891132274">Miniatura del full de compartició.</translation>
 <translation id="3776329373944672717">Títol del grup de pestanyes <ph name="TITLE_OF_GROUP" /></translation>
 <translation id="3810973564298564668">Gestiona</translation>
 <translation id="3849789634341518784">{TAB_COUNT,plural, =1{No fixis la pestanya}other{No fixis les pestanyes}}</translation>
 <translation id="3940195383040445971">Seguiment dels preus a les pestanyes</translation>
 <translation id="3940717704786481856">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> pestanya nova, <ph name="ANY_CLOSED" /> de tancades}other{<ph name="MANY_ADDED" /> pestanyes noves, <ph name="ANY_CLOSED" /> de tancades}}</translation>
-<translation id="3954615705217314756">{TABS_COUNT,plural, =1{Agrupa la pestanya}other{Agrupa les pestanyes}}</translation>
 <translation id="3962134438902735041">{TABS_COUNT,plural, =1{Deixa de fixar <ph name="TABS_COUNT_ONE" /> pestanya seleccionada}other{Deixa de fixar <ph name="TABS_COUNT_MANY" /> pestanyes seleccionades}}</translation>
 <translation id="4009732926939031387">{NUM_DAYS,plural, =1{Creat fa <ph name="NUM_DAYS_ONE" /> dia}other{Creat fa <ph name="NUM_DAYS_MANY" /> dies}}</translation>
 <translation id="4076226664360336092">Llista de grups de pestanyes oberta a alçada completa</translation>
@@ -126,8 +127,10 @@
 <translation id="5339733443032484186">La teva darrera pestanya</translation>
 <translation id="5380159289133845234">Arxiva les pestanyes duplicades</translation>
 <translation id="5446043142172831860">Suprimeix la pestanya i surt del grup</translation>
+<translation id="5465437530117042974">El full inferior de la pestanya ha canviat a Tancat.</translation>
 <translation id="5490235265819901748">El grup de pestanyes s'ha desplegat</translation>
 <translation id="5494920125229734069">Selecciona-ho tot</translation>
+<translation id="5505998972479309757">{LIMIT_COUNT,plural, =1{Afegeix fins a <ph name="LIMIT_COUNT_ONE" /> fitxer, pestanya o imatge}other{Afegeix fins a <ph name="LIMIT_COUNT_MANY" /> fitxers, pestanyes o imatges}}</translation>
 <translation id="5551694449008560081">{NUMBER_OF_TABS,plural, =1{Tanca el grup de pestanyes de color <ph name="COLOR_NAME" /> amb <ph name="TABS_COUNT_ONE" /> pestanya.}other{Tanca el grup de pestanyes de color <ph name="COLOR_NAME" /> amb <ph name="TABS_COUNT_MANY" /> pestanyes.}}</translation>
 <translation id="5556417849629758491">Consulta la informació de la botiga, opció disponible a prop de la part superior de la pantalla</translation>
 <translation id="5627941783489838464">Cap actualització de pestanyes</translation>
@@ -140,7 +143,9 @@
 <translation id="6040143037577758943">Tanca</translation>
 <translation id="6051432659151380973">Els teus grups de pestanyes es desen automàticament</translation>
 <translation id="6054741997831917303">El preu d'aquest article fa poc ha baixat de <ph name="PREVIOUS_PRICE" /> a <ph name="NEW_PRICE" /></translation>
+<translation id="606985262342505139">Full inferior de la pestanya a alçada completa</translation>
 <translation id="6109251075362363230">Ara també s'arxivaran totes les pestanyes duplicades, a excepció de la còpia que s'hagi utilitzat més recentment.</translation>
+<translation id="612596694132302162">Deixa de silenciar el lloc web</translation>
 <translation id="6149218574440723463">{TABS_COUNT,plural, =1{Tanca <ph name="TABS_COUNT_ONE" /> element seleccionat}other{Tanca els <ph name="TABS_COUNT_MANY" /> elements seleccionats}}</translation>
 <translation id="61924696525243173">{WINDOW_COUNT,plural, =1{Mou el grup a una finestra nova}other{Mou el grup a una altra finestra}}</translation>
 <translation id="6212374449852603982">{TAB_COUNT,plural, =1{Mou la pestanya cap a la dreta}other{Mou les pestanyes cap a la dreta}}</translation>
@@ -195,7 +200,6 @@
 <translation id="7792771145871471484">Revisa els suggeriments.</translation>
 <translation id="7792860826279960128">Avís sobre els canvis en el grup de pestanyes compartit obert a mitja alçada</translation>
 <translation id="7825973332242257878">Grups de pestanyes</translation>
-<translation id="7838146321400849846">{TABS_COUNT,plural, =1{Agrupa <ph name="TABS_COUNT_ONE" /> pestanya seleccionada}other{Agrupa les <ph name="TABS_COUNT_MANY" /> pestanyes seleccionades}}</translation>
 <translation id="7853202427316060426">Activitat</translation>
 <translation id="7854360405711302755">{REVIEWS,plural, =1{ Puntuació: <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" />, <ph name="REVIEWS_COUNT_ONE" /> ressenya}other{Puntuació: <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" />, <ph name="REVIEWS_COUNT_MANY" /> ressenyes}}</translation>
 <translation id="7885132941432959125">Mou la pestanya cap a la dreta</translation>
@@ -223,7 +227,6 @@
 <translation id="8428213095426709021">Configuració</translation>
 <translation id="855081842937141170">Fixa la pestanya</translation>
 <translation id="8633025649649592204">Activitat recent</translation>
-<translation id="8635822281281406185">Afegeix fins a 10 fitxers, pestanyes o imatges</translation>
 <translation id="8712637175834984815">Entesos</translation>
 <translation id="8714939927607906138">Preu més baix</translation>
 <translation id="8730621377337864115">Fet</translation>

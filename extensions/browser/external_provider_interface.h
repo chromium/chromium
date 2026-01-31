@@ -109,11 +109,11 @@ class ExternalProviderInterface {
 
   // Sets underlying prefs and notifies provider. Only to be called by the
   // owned ExternalLoader instance.
-  virtual void SetPrefs(base::Value::Dict prefs) {}
+  virtual void SetPrefs(base::DictValue prefs) {}
 
   // Updates the underlying prefs and notifies provider.
   // Only to be called by the owned ExternalLoader instance.
-  virtual void UpdatePrefs(base::Value::Dict prefs) {}
+  virtual void UpdatePrefs(base::DictValue prefs) {}
 };
 
 using ProviderCollection =

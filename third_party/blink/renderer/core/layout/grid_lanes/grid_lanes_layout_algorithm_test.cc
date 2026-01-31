@@ -17,7 +17,7 @@ class GridLanesLayoutAlgorithmTest : public BaseLayoutAlgorithmTest {
  protected:
   void SetUp() override { BaseLayoutAlgorithmTest::SetUp(); }
 
-  void ComputeGeometry(const GridLanesLayoutAlgorithm& algorithm) {
+  void ComputeGeometry(GridLanesLayoutAlgorithm& algorithm) {
     wtf_size_t start_offset;
     const auto& style = algorithm.Style();
     const GridLineResolver line_resolver(style, /*auto_repetitions=*/0);
@@ -28,8 +28,8 @@ class GridLanesLayoutAlgorithmTest : public BaseLayoutAlgorithmTest {
     bool needs_intrinsic_track_size = false;
     grid_axis_tracks_ = algorithm.ComputeGridAxisTracks(
         SizingConstraint::kLayout, /*intrinsic_repeat_track_sizes=*/nullptr,
-        grid_lanes_items, collapsed_track_indexes_, start_offset,
-        needs_intrinsic_track_size);
+        /*should_apply_inline_size_containment=*/false, grid_lanes_items,
+        collapsed_track_indexes_, start_offset, needs_intrinsic_track_size);
 
     // We have a repeat() track definition with an intrinsic sized track(s). The
     // previous track sizing pass was used to find the track size to apply
@@ -46,8 +46,8 @@ class GridLanesLayoutAlgorithmTest : public BaseLayoutAlgorithmTest {
                                                    grid_axis_tracks_.value());
       grid_axis_tracks_ = algorithm.ComputeGridAxisTracks(
           SizingConstraint::kLayout, &intrinsic_repeat_track_sizes,
-          grid_lanes_items, collapsed_track_indexes_, start_offset,
-          needs_intrinsic_track_size);
+          /*should_apply_inline_size_containment=*/false, grid_lanes_items,
+          collapsed_track_indexes_, start_offset, needs_intrinsic_track_size);
     }
 
     const auto grid_axis_direction = grid_axis_tracks_->Direction();
@@ -93,11 +93,6 @@ class GridLanesLayoutAlgorithmTest : public BaseLayoutAlgorithmTest {
 
   const GridSpan& VirtualItemSpan(wtf_size_t index) {
     return VirtualItemData(index).resolved_span;
-  }
-
-  const Vector<LayoutUnit>& GetRunningPositions(
-      const GridLanesRunningPositions& running_positions) {
-    return running_positions.running_positions_;
   }
 
   Vector<LayoutUnit> GetMaxPositionsForAllTracks(
@@ -1231,32 +1226,6 @@ TEST_F(GridLanesLayoutAlgorithmTest, RowAutoFillAutoFitAutoNoCollapse) {
                           LayoutUnit(100), LayoutUnit(100), LayoutUnit(100),
                           LayoutUnit(100), LayoutUnit(100), LayoutUnit(100),
                           LayoutUnit(100)}));
-}
-
-TEST_F(GridLanesLayoutAlgorithmTest, UpdateRunningPositionsForSpan) {
-  Vector<wtf_size_t> collapsed_track_indexes;
-  GridLanesRunningPositions running_positions =
-      InitializeGridLanesRunningPositions(
-          {LayoutUnit(), LayoutUnit(), LayoutUnit(), LayoutUnit()},
-          /*tie_threshold=*/LayoutUnit());
-
-  Vector<LayoutUnit> expected_running_positions = {
-      LayoutUnit(0), LayoutUnit(3), LayoutUnit(3), LayoutUnit(0)};
-  running_positions.UpdateRunningPositionsForSpan(
-      GridSpan::TranslatedDefiniteGridSpan(1, 3), LayoutUnit(3));
-  EXPECT_EQ(expected_running_positions, GetRunningPositions(running_positions));
-
-  expected_running_positions = {LayoutUnit(4), LayoutUnit(4), LayoutUnit(4),
-                                LayoutUnit(4)};
-  running_positions.UpdateRunningPositionsForSpan(
-      GridSpan::TranslatedDefiniteGridSpan(0, 4), LayoutUnit(4));
-  EXPECT_EQ(expected_running_positions, GetRunningPositions(running_positions));
-
-  expected_running_positions = {LayoutUnit(4), LayoutUnit(4), LayoutUnit(5),
-                                LayoutUnit(5)};
-  running_positions.UpdateRunningPositionsForSpan(
-      GridSpan::TranslatedDefiniteGridSpan(2, 4), LayoutUnit(5));
-  EXPECT_EQ(expected_running_positions, GetRunningPositions(running_positions));
 }
 
 TEST_F(GridLanesLayoutAlgorithmTest, GetFirstEligibleLine) {

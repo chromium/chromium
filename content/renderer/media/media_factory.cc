@@ -129,8 +129,6 @@
 
 #if BUILDFLAG(IS_WIN)
 #include "content/renderer/media/win/dcomp_texture_wrapper_impl.h"
-#include "content/renderer/media/win/overlay_state_observer_impl.h"
-#include "content/renderer/media/win/overlay_state_service_provider.h"
 #include "gpu/config/gpu_driver_bug_workarounds.h"
 #include "media/base/win/mf_feature_checks.h"
 #include "media/cdm/win/media_foundation_cdm.h"

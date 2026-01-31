@@ -270,82 +270,30 @@ class PopupViewViewsBrowsertestBase
   std::unique_ptr<PopupViewViews> popup_parent_;
 };
 
-class PopupViewViewsBrowsertestNewFopOn : public PopupViewViewsBrowsertestBase {
- protected:
-  base::test::ScopedFeatureList feature_list_{
-      features::kAutofillEnableNewFopDisplayDesktop};
-};
-
-IN_PROC_BROWSER_TEST_P(PopupViewViewsBrowsertestNewFopOn, InvokeUi_CreditCard) {
-  PrepareSuggestions(CreateCreditCardSuggestions());
-  ShowAndVerifyUi();
-}
-
-IN_PROC_BROWSER_TEST_P(PopupViewViewsBrowsertestNewFopOn,
-                       InvokeUi_CreditCard_MultipleLabels) {
-  Suggestion suggestion1(
-      "Visa",
-      {{Suggestion::Text(u"Filling credit card - your card for payments"),
-        Suggestion::Text(u"Alexander Joseph Ricardo Park")},
-       {Suggestion::Text(u"Full credit card"), Suggestion::Text(u"Alex Park")}},
-      Suggestion::Icon::kCardVisa, SuggestionType::kCreditCardEntry);
-
-  // Also create a 1 label line suggestion to make sure they work well together.
-  Suggestion suggestion2(
-      "Visa",
-      {{Suggestion::Text(u"Filling credit card - your card for payments")}},
-      Suggestion::Icon::kCardVisa, SuggestionType::kCreditCardEntry);
-  PrepareSuggestions({suggestion1, suggestion2});
-  ShowAndVerifyUi();
-}
-
-INSTANTIATE_TEST_SUITE_P(All,
-                         PopupViewViewsBrowsertestNewFopOn,
-                         Combine(Bool(), Bool()),
-                         PopupViewViewsBrowsertestBase::GetTestSuffix);
-
-class PopupViewViewsBrowsertestNewFopOff
-    : public PopupViewViewsBrowsertestBase {
- public:
-  PopupViewViewsBrowsertestNewFopOff() {
-    feature_list_.InitAndDisableFeature(
-        features::kAutofillEnableNewFopDisplayDesktop);
-  }
-
- protected:
-  base::test::ScopedFeatureList feature_list_;
-};
-
-IN_PROC_BROWSER_TEST_P(PopupViewViewsBrowsertestNewFopOff,
-                       InvokeUi_CreditCard) {
-  PrepareSuggestions(CreateCreditCardSuggestions());
-  ShowAndVerifyUi();
-}
-
-IN_PROC_BROWSER_TEST_P(PopupViewViewsBrowsertestNewFopOff,
-                       InvokeUi_CreditCard_MultipleLabels) {
-  Suggestion suggestion1(
-      "Visa",
-      {{Suggestion::Text(u"Filling credit card - your card for payments"),
-        Suggestion::Text(u"Alexander Joseph Ricardo Park")},
-       {Suggestion::Text(u"Full credit card"), Suggestion::Text(u"Alex Park")}},
-      Suggestion::Icon::kCardVisa, SuggestionType::kCreditCardEntry);
-
-  // Also create a 1 label line suggestion to make sure they work well together.
-  Suggestion suggestion2(
-      "Visa",
-      {{Suggestion::Text(u"Filling credit card - your card for payments")}},
-      Suggestion::Icon::kCardVisa, SuggestionType::kCreditCardEntry);
-  PrepareSuggestions({suggestion1, suggestion2});
-  ShowAndVerifyUi();
-}
-
-INSTANTIATE_TEST_SUITE_P(All,
-                         PopupViewViewsBrowsertestNewFopOff,
-                         Combine(Bool(), Bool()),
-                         PopupViewViewsBrowsertestBase::GetTestSuffix);
-
 using PopupViewViewsBrowsertest = PopupViewViewsBrowsertestBase;
+
+IN_PROC_BROWSER_TEST_P(PopupViewViewsBrowsertest, InvokeUi_CreditCard) {
+  PrepareSuggestions(CreateCreditCardSuggestions());
+  ShowAndVerifyUi();
+}
+
+IN_PROC_BROWSER_TEST_P(PopupViewViewsBrowsertest,
+                       InvokeUi_CreditCard_MultipleLabels) {
+  Suggestion suggestion1(
+      "Visa",
+      {{Suggestion::Text(u"Filling credit card - your card for payments"),
+        Suggestion::Text(u"Alexander Joseph Ricardo Park")},
+       {Suggestion::Text(u"Full credit card"), Suggestion::Text(u"Alex Park")}},
+      Suggestion::Icon::kCardVisa, SuggestionType::kCreditCardEntry);
+
+  // Also create a 1 label line suggestion to make sure they work well together.
+  Suggestion suggestion2(
+      "Visa",
+      {{Suggestion::Text(u"Filling credit card - your card for payments")}},
+      Suggestion::Icon::kCardVisa, SuggestionType::kCreditCardEntry);
+  PrepareSuggestions({suggestion1, suggestion2});
+  ShowAndVerifyUi();
+}
 
 IN_PROC_BROWSER_TEST_P(PopupViewViewsBrowsertest, InvokeUi_Autocomplete) {
   PrepareSuggestions(CreateAutocompleteSuggestions());

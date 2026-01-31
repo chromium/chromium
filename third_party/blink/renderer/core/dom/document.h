@@ -97,6 +97,7 @@
 #include "third_party/blink/renderer/platform/timer.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "third_party/blink/renderer/platform/wtf/casting.h"
+#include "third_party/blink/renderer/platform/wtf/hash_counted_set.h"
 #include "third_party/blink/renderer/platform/wtf/hash_set.h"
 #include "third_party/perfetto/include/perfetto/tracing/traced_value_forward.h"
 
@@ -107,6 +108,7 @@
 
 namespace base {
 class SingleThreadTaskRunner;
+class UnguessableToken;
 }
 
 namespace cc {
@@ -226,7 +228,6 @@ class MediaQueryMatcher;
 class NodeIterator;
 class NthIndexCache;
 class Page;
-class PaintLayerScrollableArea;
 class PendingAnimations;
 class PendingLinkPreload;
 class ProcessingInstruction;
@@ -248,7 +249,6 @@ class ScriptRunnerDelayer;
 class ScriptValue;
 class ScriptableDocumentParser;
 class ScriptedAnimationController;
-class ScrollMarkerGroupData;
 class SecurityOrigin;
 class SelectorQueryCache;
 class SerializedScriptValue;
@@ -909,15 +909,23 @@ class CORE_EXPORT Document : public ContainerNode,
   // |did_allow_navigation| is set to reflect the choice made by the user via
   // the modal dialog. The value is meaningless if |auto_cancel|
   // is true, in which case it will always be set to false.
-  bool DispatchBeforeUnloadEvent(ChromeClient* chrome_client,
-                                 bool is_reload,
-                                 bool& did_allow_navigation);
+  bool DispatchBeforeUnloadEvent(
+      ChromeClient* chrome_client,
+      bool is_reload,
+      bool& did_allow_navigation,
+      base::TimeTicks& out_before_unload_dialog_opened_time,
+      base::TimeTicks& out_before_unload_dialog_closed_time);
 
   // Dispatches "pagehide", "visibilitychange" and "unload" events, if not
   // dispatched already. Fills `unload_timing_info` if present.
   void DispatchUnloadEvents(UnloadEventTimingInfo* unload_timing_info);
 
   void DispatchFreezeEvent();
+
+  void DispatchAutofillEvent(
+      HeapVector<std::pair<Member<Element>, String>> autofill_values,
+      const base::UnguessableToken& fill_id,
+      bool supports_refill);
 
   enum PageDismissalType {
     kNoDismissal,
@@ -1600,7 +1608,7 @@ class CORE_EXPORT Document : public ContainerNode,
                                       Member<Node>& block_target,
                                       Member<Node>& inline_target);
 
-  void DispatchEventsForPrinting();
+  void DispatchMediaQueryListEvents();
 
   void exitPointerLock();
   Element* PointerLockElement() const;
@@ -1988,6 +1996,12 @@ class CORE_EXPORT Document : public ContainerNode,
   void ResponsiveEmbeddedSizingChanged();
   void SetResponsiveEmbeddedSizing() { responsive_embedded_sizing_ = true; }
 
+  // A META element with name=text-scale was added, removed, or
+  // modified. Re-collect the META values.
+  void TextScaleMetaChanged();
+  bool TextScaleMetaTagPresent() const;
+  void SetTextScaleMetaTagPresent(bool present);
+
   // Use counter related functions.
   void CountUse(mojom::WebFeature feature) final;
   void CountDeprecation(mojom::WebFeature feature) final;
@@ -2221,24 +2235,6 @@ class CORE_EXPORT Document : public ContainerNode,
   void ScheduleShadowTreeCreation(HTMLInputElement& element);
   void UnscheduleShadowTreeCreation(HTMLInputElement& element);
 
-  // Traverses DOM tree and collects HTMLAnchorElements to closest ancestor
-  // element with scroll-target-group property.
-  void UpdateScrollTargetGroupRelations();
-  void SetNeedsScrollTargetGroupRelationsUpdate() {
-    needs_scroll_target_group_relations_update_ = true;
-  }
-
-  // Subscribes each ScrollMarkerGroupData to all scrollers
-  // that own corresponding scroll marker's scroll target (see
-  // scroll_target_group_to_scrollable_areas_ for details), so that the scroller
-  // will notify ScrollMarkerGroupData of updates.
-  void UpdateScrollTargetGroupToScrollableAreasMap();
-  void AddScrollTargetGroup(ScrollMarkerGroupData* scroll_target_group);
-  void RemoveScrollTargetGroup(ScrollMarkerGroupData* scroll_target_group);
-  void SetNeedsScrollTargetGroupsMapUpdate() {
-    needs_scroll_target_groups_map_update_ = true;
-  }
-
   void ScheduleSelectionchangeEvent();
 
   // Reset to false after the event gets callbacked
@@ -2291,6 +2287,12 @@ class CORE_EXPORT Document : public ContainerNode,
       return CreateViewTransitions();
     }
   }
+
+  const HashCountedSet<AtomicString>& OverscrollCommandTargets() const {
+    return overscroll_command_targets_;
+  }
+  void AddOverscrollCommandTarget(const AtomicString& target);
+  void RemoveOverscrollCommandTarget(const AtomicString& target);
 
  protected:
   void ClearXMLVersion() { xml_version_ = String(); }
@@ -3163,27 +3165,6 @@ class CORE_EXPORT Document : public ContainerNode,
   // Number of disabled <fieldset> elements in this document.
   unsigned disabled_fieldset_count_ = 0;
 
-  // True if the document has scroll marker groups that need to be
-  // recalculated due to e.g. a new element with scroll-target-group
-  // property was added or removed, hence it can now be a container
-  // for some html anchor scroll marker elements of other container.
-  bool needs_scroll_target_group_relations_update_ = false;
-  // True if the document has elements with scroll-target-group property
-  // and some html anchor scroll marker elements. It is a signal to update a
-  // map between scroll marker groups and scrollable areas to subscribe scroll
-  // marker groups to scrollable areas changes.
-  bool needs_scroll_target_groups_map_update_ = false;
-  // Every element with scroll-target-group property set collects
-  // HTMLAnchorElements as scroll markers inside its ScrollMarkerGroupData.
-  // This is the map of ScrollMarkerGroupData to all scrollers that is the
-  // closest scroller to scroll marker's scroll target (e.g. scroll marker is <a
-  // href="#target"> then scroll target is some element with id="target" and
-  // scroller is closest ancestor scroller of scroll target).
-  // It's needed to subscribe ScrollMarkerGroupData to changes in scrollers.
-  HeapHashMap<Member<ScrollMarkerGroupData>,
-              HeapHashSet<Member<PaintLayerScrollableArea>>>
-      scroll_target_group_to_scrollable_areas_;
-
   // For rendering media URLs in a top-level context that use the
   // Content-Security-Policy header to sandbox their content. This causes
   // access-controlled media to not load when it is the top-level URL when
@@ -3213,6 +3194,14 @@ class CORE_EXPORT Document : public ContainerNode,
 #endif
 
   bool responsive_embedded_sizing_ = false;
+  bool text_scale_meta_tag_present_ = false;
+
+  // A map of idrefs that have been identified by commandfor with an overscroll
+  // related command (e.g. toggle-overscroll). This determines a
+  // :-internal-overscroll-target pseudo class. Whenever adding or removing
+  // entries here, the element identified by the target needs to invalidate that
+  // pseudo class.
+  HashCountedSet<AtomicString> overscroll_command_targets_;
 
   // If you want to add new data members to blink::Document, please reconsider
   // if the members really should be in blink::Document.  document.h is a very

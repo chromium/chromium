@@ -16,14 +16,17 @@
 #include "components/tabs/public/tab_interface.h"
 #include "url/gurl.h"
 
-// BrowserWindowInterface is available on desktop Android, but not other Android
-// builds.
-#if !BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_DESKTOP_ANDROID)
 class BrowserWindowInterface;
-#endif
-
 class SessionID;
 class TabListInterfaceObserver;
+
+namespace gfx {
+class Range;
+}
+
+namespace tab_groups {
+class TabGroupVisualData;
+}
 
 // Interface for supporting a basic set of tab operations on Android and
 // Desktop.
@@ -35,10 +38,8 @@ class TabListInterface {
   TabListInterface(const TabListInterface& other) = delete;
   void operator=(const TabListInterface& other) = delete;
 
-#if !BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_DESKTOP_ANDROID)
   // Returns the TabListInterface associated with the given `browser`.
   static TabListInterface* From(BrowserWindowInterface* browser);
-#endif
 
   // Adds / removes observers from this tab list.
   virtual void AddTabListInterfaceObserver(
@@ -56,9 +57,19 @@ class TabListInterface {
   // Returns the `TabInterface` for the currently-active tab.
   virtual tabs::TabInterface* GetActiveTab() = 0;
 
+  // Activates the given `tab`. The `tab` must be present in this tab list.
+  virtual void ActivateTab(tabs::TabHandle tab) = 0;
+
   // Opens a new tab to the given `url`, inserting it at `index` in the tab
   // strip. `index` may be ignored by the implementation if necessary.
   virtual tabs::TabInterface* OpenTab(const GURL& url, int index) = 0;
+
+  // Sets the opener for the `target` tab to be the `opener` tab.
+  virtual void SetOpenerForTab(tabs::TabHandle target,
+                               tabs::TabHandle opener) = 0;
+
+  // Get the `opener` tab from `target` tab.
+  virtual tabs::TabInterface* GetOpenerForTab(tabs::TabHandle target) = 0;
 
   // Attempts to discard the renderer for the `tab` from memory.
   //
@@ -102,6 +113,33 @@ class TabListInterface {
   // in moving the tab if necessary.
   virtual void UnpinTab(tabs::TabHandle tab) = 0;
 
+  // Returns true if this tab list contains a tab group with `group_id`.
+  virtual bool ContainsTabGroup(tab_groups::TabGroupId group_id) = 0;
+
+  // Returns a list of tab groups in this tab strip. If the tab strip does not
+  // support tab groups (e.g. legacy apps) returns an empty vector.
+  virtual std::vector<tab_groups::TabGroupId> ListTabGroups() = 0;
+
+  // Returns the visual data for a tab group, or nullopt on error.
+  virtual std::optional<tab_groups::TabGroupVisualData> GetTabGroupVisualData(
+      tab_groups::TabGroupId group_id) = 0;
+
+  // Returns the range of tab model indices this group contains. The returned
+  // range will never be a reverse range. It will always be a forward range or
+  // the empty range (0,0) on error. See TabGroup::ListTabs() for details.
+  virtual gfx::Range GetTabGroupTabIndices(tab_groups::TabGroupId group_id) = 0;
+
+  // Creates a tab group from a list of tabs and returns the group ID. Returns
+  // nullopt on error (for example, if the tab list is empty).
+  virtual std::optional<tab_groups::TabGroupId> CreateTabGroup(
+      const std::vector<tabs::TabHandle>& tabs) = 0;
+
+  // Sets the visual data for a tab group. Implementations may choose to notify
+  // observers of the change.
+  virtual void SetTabGroupVisualData(
+      tab_groups::TabGroupId group_id,
+      const tab_groups::TabGroupVisualData& visual_data) = 0;
+
   // Adds `tabs` to the `group_id` if provided or creates a new tab group.
   // Returns the tab group ID of the created or added to group. Tabs will be
   // moved as necessary to make the group contiguous. Pinned tabs will no longer
@@ -117,6 +155,7 @@ class TabListInterface {
   virtual void Ungroup(const std::set<tabs::TabHandle>& tabs) = 0;
 
   // Moves the tab group to `index`. The nearest valid index will be used.
+  // The index assumes the group has already been removed from the tab strip.
   virtual void MoveGroupTo(tab_groups::TabGroupId group_id, int index) = 0;
 
   // Moves `tab` from this TabListInterface to the TabListInterface associated

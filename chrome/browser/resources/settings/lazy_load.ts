@@ -10,6 +10,7 @@ import './ai_page/offer_writing_help_page.js';
 import './appearance_page/appearance_fonts_page.js';
 import './autofill_page/autofill_ai_section.js';
 import './autofill_page/autofill_section.js';
+import './autofill_page/walletable_pass_detection_toggle.js';
 // <if expr="is_win or is_macosx">
 import './autofill_page/passkeys_subpage.js';
 // </if>
@@ -63,7 +64,9 @@ import './site_settings/insecure_content_page.js';
 import './site_settings/javascript_page.js';
 import './site_settings/keyboard_lock_page.js';
 import './site_settings/local_fonts_page.js';
+import './site_settings/local_network_page.js';
 import './site_settings/local_network_access_page.js';
+import './site_settings/loopback_network_page.js';
 import './site_settings/microphone_page.js';
 import './site_settings/midi_devices_page.js';
 import './site_settings/notifications_page.js';
@@ -192,6 +195,7 @@ export {PaymentsManagerImpl} from './autofill_page/payments_manager_proxy.js';
 export type {PaymentsManagerProxy} from './autofill_page/payments_manager_proxy.js';
 export {SettingsPaymentsSectionElement} from './autofill_page/payments_section.js';
 export {SettingsVirtualCardUnenrollDialogElement} from './autofill_page/virtual_card_unenroll_dialog.js';
+export {SettingsWalletablePassDetectionToggleElement} from './autofill_page/walletable_pass_detection_toggle.js';
 // <if expr="not is_chromeos">
 export {SettingsClearBrowsingDataAccountIndicator} from './clear_browsing_data_dialog/clear_browsing_data_account_indicator.js';
 // </if>
@@ -252,12 +256,12 @@ export {PrivacyGuideMsbbFragmentElement} from './privacy_page/privacy_guide/priv
 export {SettingsPrivacyGuidePageElement} from './privacy_page/privacy_guide/privacy_guide_page.js';
 export {PrivacyGuideSafeBrowsingFragmentElement} from './privacy_page/privacy_guide/privacy_guide_safe_browsing_fragment.js';
 export {PrivacyGuideWelcomeFragmentElement} from './privacy_page/privacy_guide/privacy_guide_welcome_fragment.js';
-export {SafeBrowsingSetting} from './privacy_page/safe_browsing_types.js';
 export {CrLottieElement} from './privacy_page/security/cr_lottie.js';
 export {FINGERPRINT_CHECK_DARK_URL, FINGERPRINT_CHECK_LIGHT_URL, FINGERPRINT_SCANNED_ICON_DARK, FINGERPRINT_SCANNED_ICON_LIGHT, FingerprintProgressArcElement, PROGRESS_CIRCLE_BACKGROUND_COLOR_DARK, PROGRESS_CIRCLE_BACKGROUND_COLOR_LIGHT, PROGRESS_CIRCLE_FILL_COLOR_DARK, PROGRESS_CIRCLE_FILL_COLOR_LIGHT} from './privacy_page/security/fingerprint_progress_arc.js';
+export {SafeBrowsingSetting} from './privacy_page/security/safe_browsing_types.js';
 export {SecureDnsResolverType, SettingsSecureDnsElement} from './privacy_page/security/secure_dns.js';
 export {SecureDnsInputElement} from './privacy_page/security/secure_dns_input.js';
-export {SettingsSecureDnsV2Element} from './privacy_page/security/secure_dns_v2.js';
+export {SecureDnsV2ResolverType, SettingsSecureDnsV2Element} from './privacy_page/security/secure_dns_v2.js';
 export {BioEnrollDialogPage, SettingsSecurityKeysBioEnrollDialogElement} from './privacy_page/security/security_keys_bio_enroll_dialog.js';
 export {Ctap2Status, SampleStatus, SecurityKeysBioEnrollProxyImpl, SecurityKeysCredentialBrowserProxyImpl, SecurityKeysPinBrowserProxyImpl, SecurityKeysResetBrowserProxyImpl} from './privacy_page/security/security_keys_browser_proxy.js';
 export type {SecurityKeysBioEnrollProxy, SecurityKeysCredentialBrowserProxy, SecurityKeysPinBrowserProxy, SecurityKeysResetBrowserProxy} from './privacy_page/security/security_keys_browser_proxy.js';
@@ -335,6 +339,10 @@ export {V8PageElement} from './site_settings/v8_page.js';
 export {WebsiteUsageBrowserProxyImpl} from './site_settings/website_usage_browser_proxy.js';
 export type {WebsiteUsageBrowserProxy} from './site_settings/website_usage_browser_proxy.js';
 export {ZoomLevelsElement} from './site_settings/zoom_levels.js';
+// <if expr="not is_chromeos and _google_chrome">
+export type {OnDeviceAiBrowserProxy, OnDeviceAiEnabled} from './system_page/on_device_ai_browser_proxy.js';
+export {OnDeviceAiBrowserProxyImpl} from './system_page/on_device_ai_browser_proxy.js';
+// </if>
 // <if expr="not is_chromeos">
 export {SettingsSystemPageElement} from './system_page/system_page.js';
 export {SystemPageBrowserProxyImpl} from './system_page/system_page_browser_proxy.js';

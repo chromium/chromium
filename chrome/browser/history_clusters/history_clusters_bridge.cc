@@ -33,7 +33,7 @@ HistoryClustersBridge::HistoryClustersBridge(
     HistoryClustersService* history_clusters_service)
     : history_clusters_service_(history_clusters_service) {
   ScopedJavaLocalRef<jobject> j_history_clusters_bridge =
-      Java_HistoryClustersBridge_create(env, reinterpret_cast<jlong>(this));
+      Java_HistoryClustersBridge_create(env, reinterpret_cast<int64_t>(this));
   java_ref_.Reset(j_history_clusters_bridge);
 }
 

@@ -13,6 +13,7 @@
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "base/unguessable_token.h"
+#include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/web_contents_delegate.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "ui/base/models/image_model.h"
@@ -31,10 +32,6 @@ namespace views {
 class WebView;
 class Widget;
 }  // namespace views
-
-namespace viz {
-struct CopyOutputBitmapWithMetadata;
-}  // namespace viz
 
 // Renders html in an off-screen WebView, copies the rendered surface, and
 // passes the copy through |deliver_image_model_callback_|. If the request takes
@@ -170,7 +167,7 @@ class ClipboardImageModelRequest : public content::WebContentsDelegate,
 
   // Callback called when the rendered surface is done being copied.
   void OnCopyComplete(float device_scale_factor,
-                      const viz::CopyOutputBitmapWithMetadata& result);
+                      const content::CopyFromSurfaceResult& result);
 
   // Called when the running request takes too long to complete.
   void OnTimeout();

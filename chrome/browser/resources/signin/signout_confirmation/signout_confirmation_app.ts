@@ -28,6 +28,7 @@ const SAMPLE_DATA: SignoutConfirmationData = {
   dialogSubtitle: '',
   acceptButtonLabel: '',
   cancelButtonLabel: '',
+  verifyButtonLabel: '',
   accountExtensions: [],
   hasUnsyncedData: false,
 };
@@ -37,6 +38,7 @@ export interface SignoutConfirmationAppElement {
     signoutConfirmationDialog: HTMLElement,
     acceptButton: CrButtonElement,
     cancelButton: CrButtonElement,
+    verifyReauthButton: CrButtonElement,
   };
 }
 
@@ -130,6 +132,10 @@ export class SignoutConfirmationAppElement extends CrLitElement {
     return this.showExtensionsSection_() && this.data_.hasUnsyncedData;
   }
 
+  protected showVerifyReauthButton_(): boolean {
+    return !!this.data_.verifyButtonLabel;
+  }
+
   protected onAcceptButtonClick_() {
     this.signoutConfirmationBrowserProxy_.handler.accept(
         this.uninstallExtensionsOnSignout_());
@@ -138,6 +144,10 @@ export class SignoutConfirmationAppElement extends CrLitElement {
   protected onCancelButtonClick_() {
     this.signoutConfirmationBrowserProxy_.handler.cancel(
         this.uninstallExtensionsOnSignout_());
+  }
+
+  protected onVerifyReauthButtonClick_() {
+    this.signoutConfirmationBrowserProxy_.handler.performReauth();
   }
 
   // Request the browser to update the native view to match the current height

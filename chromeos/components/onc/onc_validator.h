@@ -121,9 +121,9 @@ class COMPONENT_EXPORT(CHROMEOS_ONC) Validator : public Mapper {
   // If any of these cases occurred, sets |result| to VALID_WITH_WARNINGS and
   // otherwise to VALID.
   // For details, see the class comment.
-  std::optional<base::Value::Dict> ValidateAndRepairObject(
+  std::optional<base::DictValue> ValidateAndRepairObject(
       const OncValueSignature* object_signature,
-      const base::Value::Dict& onc_object,
+      const base::DictValue& onc_object,
       Result* result);
 
   // Returns the list of validation results that occurred within validation
@@ -144,9 +144,9 @@ class COMPONENT_EXPORT(CHROMEOS_ONC) Validator : public Mapper {
   // |signature|. Iterates over all fields and recursively validates/repairs
   // these. All valid fields are added to the result dictionary. Returns the
   // repaired dictionary.
-  base::Value::Dict MapObject(const OncValueSignature& signature,
-                              const base::Value::Dict& onc_object,
-                              bool* error) override;
+  base::DictValue MapObject(const OncValueSignature& signature,
+                            const base::DictValue& onc_object,
+                            bool* error) override;
 
   // Pushes/pops the |field_name| to |path_|, otherwise like |Mapper::MapField|.
   base::Value MapField(const std::string& field_name,
@@ -157,9 +157,9 @@ class COMPONENT_EXPORT(CHROMEOS_ONC) Validator : public Mapper {
 
   // Ignores nested errors in NetworkConfigurations and Certificates, otherwise
   // like |Mapper::MapArray|.
-  base::Value::List MapArray(const OncValueSignature& array_signature,
-                             const base::Value::List& onc_array,
-                             bool* nested_error) override;
+  base::ListValue MapArray(const OncValueSignature& array_signature,
+                           const base::ListValue& onc_array,
+                           bool* nested_error) override;
 
   // Pushes/pops the index to |path_|, otherwise like |Mapper::MapEntry|.
   base::Value MapEntry(int index,
@@ -171,68 +171,68 @@ class COMPONENT_EXPORT(CHROMEOS_ONC) Validator : public Mapper {
   // |onc_object| according to |object_signature|. |result| must point to a
   // dictionary into which the repaired fields are written.
   bool ValidateObjectDefault(const OncValueSignature& object_signature,
-                             const base::Value::Dict& onc_object,
-                             base::Value::Dict* result);
+                             const base::DictValue& onc_object,
+                             base::DictValue* result);
 
   // Validates/repairs the kRecommended array in |result| according to
   // |object_signature| of the enclosing object.
   bool ValidateRecommendedField(const OncValueSignature& object_signature,
-                                base::Value::Dict* result);
+                                base::DictValue* result);
 
   // Validates the ClientCert* fields in a VPN or EAP object. Only if
   // |allow_cert_type_none| is true, the value "None" is allowed as
   // ClientCertType.
   bool ValidateClientCertFields(bool allow_cert_type_none,
-                                base::Value::Dict* result);
+                                base::DictValue* result);
 
-  bool ValidateToplevelConfiguration(base::Value::Dict* result);
-  bool ValidateNetworkConfiguration(base::Value::Dict* result);
-  bool ValidateCellular(base::Value::Dict* result);
-  bool ValidateAPN(base::Value::Dict* result);
-  bool ValidateEthernet(base::Value::Dict* result);
-  bool ValidateIPConfig(base::Value::Dict* result, bool require_fields = true);
-  bool ValidateNameServersConfig(base::Value::Dict* result);
-  bool ValidateWiFi(base::Value::Dict* result);
-  bool ValidateVPN(base::Value::Dict* result);
-  bool ValidateIPsec(base::Value::Dict* result);
-  bool ValidateOpenVPN(base::Value::Dict* result);
-  bool ValidateWireGuard(base::Value::Dict* result);
-  bool ValidateThirdPartyVPN(base::Value::Dict* result);
-  bool ValidateARCVPN(base::Value::Dict* result);
-  bool ValidateVerifyX509(base::Value::Dict* result);
-  bool ValidateCertificatePattern(base::Value::Dict* result);
-  bool ValidateGlobalNetworkConfiguration(base::Value::Dict* result);
-  bool ValidateProxySettings(base::Value::Dict* result);
-  bool ValidateProxyLocation(base::Value::Dict* result);
-  bool ValidateEAP(base::Value::Dict* result);
-  bool ValidateSubjectAlternativeNameMatch(base::Value::Dict* result);
-  bool ValidateCertificate(base::Value::Dict* result);
-  bool ValidateScope(base::Value::Dict* result);
-  bool ValidateTether(base::Value::Dict* result);
-  void ValidateEthernetConfigs(base::Value::List* result);
-  void OnlyKeepLast(base::Value::List* network_configurations_list,
+  bool ValidateToplevelConfiguration(base::DictValue* result);
+  bool ValidateNetworkConfiguration(base::DictValue* result);
+  bool ValidateCellular(base::DictValue* result);
+  bool ValidateAPN(base::DictValue* result);
+  bool ValidateEthernet(base::DictValue* result);
+  bool ValidateIPConfig(base::DictValue* result, bool require_fields = true);
+  bool ValidateNameServersConfig(base::DictValue* result);
+  bool ValidateWiFi(base::DictValue* result);
+  bool ValidateVPN(base::DictValue* result);
+  bool ValidateIPsec(base::DictValue* result);
+  bool ValidateOpenVPN(base::DictValue* result);
+  bool ValidateWireGuard(base::DictValue* result);
+  bool ValidateThirdPartyVPN(base::DictValue* result);
+  bool ValidateARCVPN(base::DictValue* result);
+  bool ValidateVerifyX509(base::DictValue* result);
+  bool ValidateCertificatePattern(base::DictValue* result);
+  bool ValidateGlobalNetworkConfiguration(base::DictValue* result);
+  bool ValidateProxySettings(base::DictValue* result);
+  bool ValidateProxyLocation(base::DictValue* result);
+  bool ValidateEAP(base::DictValue* result);
+  bool ValidateSubjectAlternativeNameMatch(base::DictValue* result);
+  bool ValidateCertificate(base::DictValue* result);
+  bool ValidateScope(base::DictValue* result);
+  bool ValidateTether(base::DictValue* result);
+  void ValidateEthernetConfigs(base::ListValue* result);
+  void OnlyKeepLast(base::ListValue* network_configurations_list,
                     const std::vector<std::string>& guids,
                     const char* type_for_messages);
   void RemoveNetworkConfigurationWithGuid(
-      base::Value::List* network_configurations_list,
+      base::ListValue* network_configurations_list,
       const std::string& guid_to_remove);
 
   bool IsValidValue(const std::string& field_value,
                     const std::vector<const char*>& valid_values);
 
-  bool IsInDevicePolicy(base::Value::Dict* result, std::string_view field_name);
+  bool IsInDevicePolicy(base::DictValue* result, std::string_view field_name);
 
   bool FieldExistsAndHasNoValidValue(
-      const base::Value::Dict& object,
+      const base::DictValue& object,
       const std::string& field_name,
       const std::vector<const char*>& valid_values);
 
-  bool FieldExistsAndIsNotInRange(const base::Value::Dict& object,
+  bool FieldExistsAndIsNotInRange(const base::DictValue& object,
                                   const std::string& field_name,
                                   int lower_bound,
                                   int upper_bound);
 
-  bool FieldExistsAndIsEmpty(const base::Value::Dict& object,
+  bool FieldExistsAndIsEmpty(const base::DictValue& object,
                              const std::string& field_name);
 
   // Validates 'StaticIPConfig' field of the given network configuration. This
@@ -240,31 +240,31 @@ class COMPONENT_EXPORT(CHROMEOS_ONC) Validator : public Mapper {
   // because it needs other 'NetworkConfiguration' fields (e.g.
   // 'IPAddressConfigType' and 'NameServersConfigType') to check correctness of
   // the 'StaticIPConfig' field.
-  bool NetworkHasCorrectStaticIPConfig(base::Value::Dict* network);
+  bool NetworkHasCorrectStaticIPConfig(base::DictValue* network);
 
   // Validates that the given field either exists or is recommended.
-  bool FieldShouldExistOrBeRecommended(const base::Value::Dict& object,
+  bool FieldShouldExistOrBeRecommended(const base::DictValue& object,
                                        const std::string& field_name);
 
-  bool OnlyOneFieldSet(const base::Value::Dict& object,
+  bool OnlyOneFieldSet(const base::DictValue& object,
                        const std::string& field_name1,
                        const std::string& field_name2);
 
   bool ListFieldContainsValidValues(
-      const base::Value::Dict& object,
+      const base::DictValue& object,
       const std::string& field_name,
       const std::vector<const char*>& valid_values);
 
-  bool ValidateSSIDAndHexSSID(base::Value::Dict* object);
+  bool ValidateSSIDAndHexSSID(base::DictValue* object);
 
   // Returns true if |key| is a key of |dict|. Otherwise, returns false and,
   // depending on |error_on_missing_field_| raises an error or a warning.
-  bool RequireField(const base::Value::Dict& dict, const std::string& key);
+  bool RequireField(const base::DictValue& dict, const std::string& key);
 
   // Returns true if the GUID is unique or if the GUID is not a string
   // and false otherwise. The function also adds the GUID to a set in
   // order to identify duplicates.
-  bool CheckGuidIsUniqueAndAddToSet(const base::Value::Dict& dict,
+  bool CheckGuidIsUniqueAndAddToSet(const base::DictValue& dict,
                                     const std::string& kGUID,
                                     std::set<std::string>* guids);
 
@@ -274,11 +274,11 @@ class COMPONENT_EXPORT(CHROMEOS_ONC) Validator : public Mapper {
   // onc::cellular::kAdminAssignedAPNIds or
   // onc::global_network_config::kPSIMAdminAssignedAPNIds.
   bool CheckAdminAssignedAPNIdsAreNonEmptyAndAddToSet(
-      const base::Value::Dict& dict,
+      const base::DictValue& dict,
       const std::string& key_list_of_ids);
 
   // Prohibit global network configuration in user ONC imports.
-  bool IsGlobalNetworkConfigInUserImport(const base::Value::Dict& onc_object);
+  bool IsGlobalNetworkConfigInUserImport(const base::DictValue& onc_object);
 
   void AddValidationIssue(bool is_error, const std::string& debug_info);
 

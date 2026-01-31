@@ -75,7 +75,8 @@ void ResourceMonitor::OnResourceUsageUpdated(
 
   if (memory.has_value()) {
     max_resident_memory_ =
-        std::max(max_resident_memory_, memory->resident_set_size);
+        std::max(max_resident_memory_,
+                 memory->resident_set_size.AsDeprecatedByteCount());
   }
 }
 

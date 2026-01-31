@@ -96,7 +96,7 @@ class HotspotNotifierTest : public NoSessionAshTestBase {
   }
 
   void SetHotspotStateInShill(const std::string& state) {
-    base::Value::Dict status_dict;
+    base::DictValue status_dict;
     status_dict.Set(shill::kTetheringStatusStateProperty, state);
     network_handler_test_helper_->manager_test()->SetManagerProperty(
         shill::kTetheringStatusProperty, base::Value(std::move(status_dict)));

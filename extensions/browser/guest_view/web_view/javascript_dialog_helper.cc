@@ -50,7 +50,7 @@ void JavaScriptDialogHelper::RunJavaScriptDialog(
     const std::u16string& default_prompt_text,
     DialogClosedCallback callback,
     bool* did_suppress_message) {
-  base::Value::Dict request_info;
+  base::DictValue request_info;
   request_info.Set(webview::kDefaultPromptText, default_prompt_text);
   request_info.Set(webview::kMessageText, message_text);
   request_info.Set(webview::kMessageType,

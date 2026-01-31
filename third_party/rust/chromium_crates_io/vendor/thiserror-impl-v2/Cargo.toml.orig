@@ -1,12 +1,12 @@
 [package]
 name = "thiserror-impl"
-version = "2.0.17"
+version = "2.0.18"
 authors = ["David Tolnay <dtolnay@gmail.com>"]
 description = "Implementation detail of the `thiserror` crate"
 edition = "2021"
 license = "MIT OR Apache-2.0"
 repository = "https://github.com/dtolnay/thiserror"
-rust-version = "1.61"
+rust-version = "1.68"
 
 [lib]
 proc-macro = true

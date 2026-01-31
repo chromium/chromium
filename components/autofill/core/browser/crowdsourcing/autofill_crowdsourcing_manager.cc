@@ -45,7 +45,6 @@
 #include "components/autofill/core/common/autofill_switches.h"
 #include "components/autofill/core/common/autofill_util.h"
 #include "components/autofill/core/common/logging/log_buffer.h"
-#include "components/autofill/core/common/mojom/autofill_types.mojom-shared.h"
 #include "components/autofill/core/common/mojom/autofill_types.mojom.h"
 #include "components/autofill/core/common/signatures.h"
 #include "components/google/core/common/google_util.h"
@@ -75,8 +74,7 @@ namespace {
 // The reserved identifier ranges for autofill server experiments.
 constexpr std::pair<int, int> kAutofillExperimentRanges[] = {
     {3312923, 3312930}, {3314208, 3314209}, {3314711, 3314712},
-    {3314445, 3314448}, {3314854, 3314883},
-};
+    {3314445, 3314448}, {3314854, 3314883}, {3396826, 3396925}};
 
 constexpr size_t kAutofillCrowdsourcingManagerMaxFormCacheSize = 16;
 constexpr size_t kMaxFieldsPerQueryRequest = 100;
@@ -309,14 +307,13 @@ net::NetworkTrafficAnnotationTag GetNetworkTrafficAnnotation(
 
 // A field is active if it contributes to the form signature and it is are
 // included in queries to the Autofill server.
-size_t CountActiveFieldsInForms(
-    const std::vector<raw_ptr<const FormStructure, VectorExperimental>>&
-        forms) {
+size_t CountActiveFieldsInForms(const std::vector<FormData>& forms) {
   size_t active_field_count = 0;
-  for (const FormStructure* form : forms) {
-    active_field_count += std::ranges::count_if(
-        form->fields(),
-        [](const auto& field) { return !IsCheckable(field->check_status()); });
+  for (const FormData& form : forms) {
+    active_field_count +=
+        std::ranges::count_if(form.fields(), [](const FormFieldData& field) {
+          return !IsCheckable(field.check_status());
+        });
   }
   return active_field_count;
 }
@@ -716,7 +713,7 @@ bool AutofillCrowdsourcingManager::IsEnabled() const {
 }
 
 bool AutofillCrowdsourcingManager::StartQueryRequest(
-    const std::vector<raw_ptr<const FormStructure, VectorExperimental>>& forms,
+    const std::vector<FormData>& forms,
     std::optional<net::IsolationInfo> isolation_info,
     base::OnceCallback<void(std::optional<QueryResponse>)> callback) {
   ScopedCallbackRunner<void(std::optional<QueryResponse>)>

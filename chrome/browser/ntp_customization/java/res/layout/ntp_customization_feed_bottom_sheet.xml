@@ -55,7 +55,7 @@ found in the LICENSE file.
         android:layout_width="@dimen/ntp_customization_back_button_clickable_size"
         android:padding="@dimen/ntp_customization_back_button_padding"
         android:layout_marginEnd="@dimen/ntp_customization_back_button_margin_start"
-        android:src="@drawable/ic_help_and_feedback"
+        android:src="@drawable/ic_help_24dp"
         app:tint="@macro/default_icon_color"
         android:contentDescription="@string/learn_more_discover_feed"
         app:layout_constraintTop_toTopOf="@id/bottom_sheet_title"

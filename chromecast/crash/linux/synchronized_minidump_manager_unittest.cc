@@ -245,7 +245,7 @@ TEST_F(SynchronizedMinidumpManagerTest,
 TEST_F(SynchronizedMinidumpManagerTest,
        AddEntryToLockFile_FailsWithInvalidEntry) {
   // Create invalid dump info value
-  base::Value val{base::Value::Dict()};
+  base::Value val{base::DictValue()};
 
   // Test that the manager tried to log the entry and failed.
   SynchronizedMinidumpManagerSimple manager;

@@ -21,7 +21,7 @@ struct DataTypeActivationResponse;
 // Lives on the UI thread.
 class DataTypeConfigurer {
  public:
-  using AllNodesCallback = base::OnceCallback<void(base::Value::List)>;
+  using AllNodesCallback = base::OnceCallback<void(base::ListValue)>;
 
   // Utility struct for holding ConfigureDataTypes options.
   struct ConfigureParams {
@@ -72,7 +72,7 @@ class DataTypeConfigurer {
   // Record histograms related to Nigori type.
   virtual void RecordNigoriMemoryUsageAndCountsHistograms() = 0;
 
-  // Returns a Value::List representing Nigori node.
+  // Returns a base::ListValue representing Nigori node.
   virtual void GetNigoriNodeForDebugging(AllNodesCallback callback) = 0;
 };
 

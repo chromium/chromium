@@ -275,7 +275,7 @@ void RecordHandlerImpl::ReportUploader::OnUploadComplete(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK(records_.empty()) << "All records have to had been processed";
   // Release reservation right away, since we no londer need to keep
-  // `base::Value::Dict request` it was referring to.
+  // `base::DictValue request` it was referring to.
   scoped_reservation_.Reduce(0uL);
 
   if (!response_result.has_value()) {

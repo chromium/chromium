@@ -40,6 +40,9 @@ enum class AddContextButtonVariant {
 
 extern const base::FeatureParam<AddContextButtonVariant>
     kWebUIOmniboxAimPopupAddContextButtonVariantParam;
+BASE_DECLARE_FEATURE(kAiModeEntryPointAlwaysNavigates);
+BASE_DECLARE_FEATURE(kWebUIOmniboxDisableCaretColorAnimation);
+BASE_DECLARE_FEATURE(kWebUIOmniboxAimPopupDisableAnimation);
 BASE_DECLARE_FEATURE(kWebUIOmniboxFullPopup);
 BASE_DECLARE_FEATURE(kWebUIOmniboxPopup);
 BASE_DECLARE_FEATURE(kWebUIOmniboxPopupDebug);
@@ -55,16 +58,12 @@ extern const base::FeatureParam<bool> kCloseComposeboxByEscape;
 extern const base::FeatureParam<bool> kContextMenuEnableMultiTabSelection;
 // The maximum number of tab suggestions to show in the composebox context menu.
 extern const base::FeatureParam<int> kContextMenuMaxTabSuggestions;
+// Whether to allow drag and drop files in the composebox.
+extern const base::FeatureParam<bool> kEnableContextDragAndDrop;
 // Whether or not to enable viewport images with page context uploads.
 extern const base::FeatureParam<bool> kEnableViewportImages;
-// Whether to force tools and models to show in the composebox context menu.
-extern const base::FeatureParam<bool> kForceToolsAndModels;
 // The maximum number of file attachments to upload.
 extern const base::FeatureParam<int> kMaxNumFiles;
-// Whether to send the lns_surface parameter.
-// TODO(crbug.com/430070871): Remove this flag once the server supports the
-// `lns_surface` parameter.
-extern const base::FeatureParam<bool> kSendLnsSurfaceParam;
 // Whether to show image suggestions under the composebox.
 extern const base::FeatureParam<bool> kShowComposeboxImageSuggestions;
 // Whether to show typed suggestions under the composebox.
@@ -79,8 +78,6 @@ extern const base::FeatureParam<bool> kShowContextMenu;
 extern const base::FeatureParam<bool> kShowContextMenuDescription;
 // Whether to show tab previews on hover for the composebox context menu.
 extern const base::FeatureParam<bool> kShowContextMenuTabPreviews;
-// Whether to show the create image button in the composebox context menu.
-extern const base::FeatureParam<bool> kShowCreateImageTool;
 // Whether to show the lens search chip in the composebox.
 extern const base::FeatureParam<bool> kShowLensSearchChip;
 // Whether to delay an upload if tab context is added from the recent tab chip.
@@ -91,20 +88,24 @@ extern const base::FeatureParam<bool> kShowRecentTabChip;
 extern const base::FeatureParam<bool> kShowSmartCompose;
 // Whether to show the submit button in the composebox.
 extern const base::FeatureParam<bool> kShowSubmit;
-// Whether to show the tools and models picker in the composebox.
+// Whether to show the tools and models in the composebox.
 extern const base::FeatureParam<bool> kShowToolsAndModels;
+// Whether to show canvas in the composebox.
+extern const base::FeatureParam<bool> kShowCanvas;
+// Whether to show the model picker in the composebox.
+extern const base::FeatureParam<bool> kShowModelPicker;
 // Whether to show the voice search button in steady state composebox.
 extern const base::FeatureParam<bool> kShowVoiceSearchInSteadyComposebox;
 // Whether to show the voice search button in expanded composebox.
 extern const base::FeatureParam<bool> kShowVoiceSearchInExpandedComposebox;
-// If kSendLnsSurfaceParam is true, whether to suppress the `lns_surface`
-// parameter if there is no image upload. Does nothing if kSendLnsSurfaceParam
-// is false.
-extern const base::FeatureParam<bool> kSuppressLnsSurfaceParamIfNoImage;
+// Whether to auto submit voice queries in the composebox.
+extern const base::FeatureParam<bool> kAutoSubmitVoiceSearchQuery;
 // Whether or not to use separate request ids for viewport images if the
 // multi-context input flow is enabled.
 extern const base::FeatureParam<bool>
     kUseSeparateRequestIdsForMultiContextViewportImages;
+// Whether to attach the page title and URL to the suggest request.
+extern const base::FeatureParam<bool> kAttachPageTitleAndUrlToSuggestRequest;
 
 // Returns true if the `kWebUIOmniboxAimPopup` base::Feature is enabled.
 // This does NOT include user eligibility checks. Most UI code should use the
@@ -116,6 +117,7 @@ bool IsAimPopupFeatureEnabled();
 // checks both the base::Feature flag and all other requirements like user
 // eligibility.
 bool IsAimPopupEnabled(Profile* profile);
+bool ShouldShowAimContextMenuOption(Profile* profile);
 
 bool IsCreateImagesEnabled(Profile* profile);
 bool IsDeepSearchEnabled(Profile* profile);

@@ -5,7 +5,6 @@
 #include "chrome/browser/ui/webui/ash/settings/pages/os_settings_sections.h"
 
 #include "ash/constants/ash_features.h"
-#include "base/containers/contains.h"
 #include "build/branding_buildflags.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/ash/settings/pages/a11y/accessibility_section.h"
@@ -116,7 +115,7 @@ const OsSettingsSection* OsSettingsSections::GetSection(
 void OsSettingsSections::AddSection(
     chromeos::settings::mojom::Section section_id,
     std::unique_ptr<OsSettingsSection> section) {
-  DCHECK(!base::Contains(sections_map_, section_id));
+  DCHECK(!sections_map_.contains(section_id));
 
   sections_map_[section_id] = section.get();
   sections_.push_back(std::move(section));

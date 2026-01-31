@@ -2431,6 +2431,13 @@ void Widget::SetColorModeOverride(
   }
 }
 
+void Widget::SetUserColorOverride(std::optional<SkColor> user_color) {
+  if (user_color != user_color_override_) {
+    user_color_override_ = user_color;
+    ThemeChanged();
+  }
+}
+
 void Widget::SetBackgroundColor(std::optional<ui::ColorId> background_color) {
   if (background_color != background_color_) {
     background_color_ = background_color;
@@ -2458,6 +2465,12 @@ ui::ColorProviderKey Widget::GetColorProviderKey() const {
   // apply specifically to themselves and their children, apply these here.
   if (color_mode_override_.has_value()) {
     key.color_mode = color_mode_override_.value();
+  }
+
+  // Widgets may have specific overrides set on the Widget itself that should
+  // apply specifically to themselves and their children, apply these here.
+  if (user_color_override_.has_value()) {
+    key.user_color = user_color_override_.value();
   }
 
   return key;

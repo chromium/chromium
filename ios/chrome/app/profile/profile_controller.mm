@@ -63,7 +63,7 @@
 #import "ios/chrome/browser/external_files/model/external_file_remover.h"
 #import "ios/chrome/browser/external_files/model/external_file_remover_factory.h"
 #import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
-#import "ios/chrome/browser/first_run/ui_bundled/features.h"
+#import "ios/chrome/browser/first_run/public/features.h"
 #import "ios/chrome/browser/mailto_handler/model/mailto_handler_service_factory.h"
 #import "ios/chrome/browser/profile_metrics/model/profile_activity_profile_agent.h"
 #import "ios/chrome/browser/reading_list/model/reading_list_download_service.h"
@@ -483,7 +483,9 @@ void RecordDiscardedSceneConnectedAfterBeingPurged(
 
   // Save the cookies unless there is already a save in progress. This avoid
   // posting multiple tasks if the user switch rapidly between multiple apps.
-  if (!_savingCookies) {
+  if (!base::FeatureList::IsEnabled(
+          kDisableCookieStoreIOSFlushOnBackgrounding) &&
+      !_savingCookies) {
     _savingCookies = YES;
 
     // Save the cookie while ensuring the application will be given time for
@@ -523,7 +525,8 @@ void RecordDiscardedSceneConnectedAfterBeingPurged(
   enterprise_idle::IdleServiceFactory::GetForProfile(profile)
       ->OnApplicationWillEnterForeground();
 
-  if (MobilePromoOnDesktopEnabled()) {
+  if (IsMobilePromoOnDesktopRecordActiveDaysEnabled() ||
+      MobilePromoOnDesktopEnabled()) {
     CrossPlatformPromosServiceFactory::GetForProfile(profile)
         ->OnApplicationWillEnterForeground();
   }
@@ -628,7 +631,7 @@ void RecordDiscardedSceneConnectedAfterBeingPurged(
     }
   }
 
-  if (!tests_hook::LoadMinimalAppUI()) {
+  if (!tests_hook::ShouldLoadMinimalAppUI()) {
     [self attachProfileAgents];
   }
 }
@@ -757,7 +760,8 @@ void RecordDiscardedSceneConnectedAfterBeingPurged(
   DCHECK(_state.profile);
   enterprise_idle::IdleServiceFactory::GetForProfile(_state.profile)
       ->OnApplicationWillEnterForeground();
-  if (MobilePromoOnDesktopEnabled()) {
+  if (IsMobilePromoOnDesktopRecordActiveDaysEnabled() ||
+      MobilePromoOnDesktopEnabled()) {
     CrossPlatformPromosServiceFactory::GetForProfile(_state.profile)
         ->OnApplicationWillEnterForeground();
   }

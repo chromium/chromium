@@ -32,7 +32,7 @@ class TestNetworkContext : public network::TestNetworkContext {
            const std::string& group,
            const GURL& url,
            const net::NetworkAnonymizationKey& network_anonymization_key,
-           base::Value::Dict body)
+           base::DictValue body)
         : type(type),
           group(group),
           url(url),
@@ -43,7 +43,7 @@ class TestNetworkContext : public network::TestNetworkContext {
     std::string group;
     GURL url;
     net::NetworkAnonymizationKey network_anonymization_key;
-    base::Value::Dict body;
+    base::DictValue body;
   };
 
   void QueueReport(
@@ -52,7 +52,7 @@ class TestNetworkContext : public network::TestNetworkContext {
       const GURL& url,
       const std::optional<base::UnguessableToken>& reporting_source,
       const net::NetworkAnonymizationKey& network_anonymization_key,
-      base::Value::Dict body) override {
+      base::DictValue body) override {
     reports_.emplace_back(type, group, url, network_anonymization_key,
                           std::move(body));
   }
@@ -97,10 +97,10 @@ class DocumentIsolationPolicyReporterTest : public testing::Test {
   }
   void InvalidateWeakPtrs() { storage_partition_.InvalidateWeakPtrs(); }
   const TestNetworkContext& network_context() const { return network_context_; }
-  base::Value::Dict CreateBodyForCorp(std::string_view blocked_url,
-                                      RequestDestination destination,
-                                      std::string_view disposition) const {
-    base::Value::Dict dict;
+  base::DictValue CreateBodyForCorp(std::string_view blocked_url,
+                                    RequestDestination destination,
+                                    std::string_view disposition) const {
+    base::DictValue dict;
     for (const auto& pair :
          CreateBodyForCorpInternal(blocked_url, destination, disposition)) {
       dict.Set(std::move(pair.first), std::move(pair.second));

@@ -4,6 +4,7 @@
 
 module network.mojom;
 
+import "mojo/public/mojom/base/byte_size.mojom";
 import "mojo/public/mojom/base/string16.mojom";
 import "mojo/public/mojom/base/time.mojom";
 import "mojo/public/mojom/base/unguessable_token.mojom";
@@ -153,8 +154,8 @@ interface URLLoaderNetworkServiceObserver {
       HttpResponseHeaders? head_headers,
       pending_remote<AuthChallengeResponder> auth_challenge_responder);
 
-  // Asks the URL loader observer if the caller has permission to connect to
-  // devices on the local network.
+  // Asks the URL loader observer if the caller has permission to issue a local
+  // network request to the given ip_address_space.
   //
   // `result` is an enum specifying the result of the permission check.
   //
@@ -164,7 +165,8 @@ interface URLLoaderNetworkServiceObserver {
   // that there aren't any race conditions to worry about with respect to the
   // permission value.
   OnLocalNetworkAccessPermissionRequired(
-      TransportType transport_type) => (LocalNetworkAccessResult result);
+      TransportType transport_type,
+      IPAddressSpace ip_address_space) => (LocalNetworkAccessResult result);
 
   // Called when the Clear-Site-Data header has been received. The callback
   // should be run after the data is deleted.
@@ -187,8 +189,9 @@ interface URLLoaderNetworkServiceObserver {
   // ID, and the total bytes received and sent.
   // |network_traffic_annotation_id_hash| represents the hash of unique tag that
   // identifies the annotation of the request.
-  OnDataUseUpdate(int32 network_traffic_annotation_id_hash, int64 recv_bytes,
-                  int64 sent_bytes);
+  OnDataUseUpdate(int32 network_traffic_annotation_id_hash,
+                  mojo_base.mojom.ByteSize recv_bytes,
+                  mojo_base.mojom.ByteSize sent_bytes);
 
   // The syntactic parsing of "Shared-Storage-Write" response headers occurs in
   // the network service for security and privacy; this method then notifies

@@ -1155,7 +1155,8 @@ INSTANTIATE_TEST_SUITE_P(,
 
 // TODO(crbug.com/390224186) Re-enable the test after fixing the flakiness.
 // TODO(crbug.com/430147700) Re-enable after fixing flakiness on ChromeOS.
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+// TODO(crbug.com/478925583) Re-enable after fixing flakiness on Windows.
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_WIN)
 #define MAYBE_TestCoverageEmits DISABLED_TestCoverageEmits
 #else
 #define MAYBE_TestCoverageEmits TestCoverageEmits

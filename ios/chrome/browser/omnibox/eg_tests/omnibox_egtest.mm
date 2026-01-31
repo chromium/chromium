@@ -5,7 +5,6 @@
 #import <XCTest/XCTest.h>
 
 #import "base/apple/foundation_util.h"
-#import "base/containers/contains.h"
 #import "base/functional/bind.h"
 #import "base/ios/ios_util.h"
 #import "base/strings/stringprintf.h"
@@ -14,8 +13,8 @@
 #import "components/feature_engagement/public/feature_constants.h"
 #import "components/omnibox/browser/omnibox_pref_names.h"
 #import "components/strings/grit/components_strings.h"
-#import "ios/chrome/browser/browser_container/ui_bundled/edit_menu_app_interface.h"
-#import "ios/chrome/browser/content_suggestions/ui_bundled/ntp_home_constant.h"
+#import "ios/chrome/browser/browser_content/ui_bundled/edit_menu_app_interface.h"
+#import "ios/chrome/browser/content_suggestions/public/ntp_home_constants.h"
 #import "ios/chrome/browser/omnibox/eg_tests/omnibox_app_interface.h"
 #import "ios/chrome/browser/omnibox/eg_tests/omnibox_earl_grey.h"
 #import "ios/chrome/browser/omnibox/eg_tests/omnibox_test_util.h"
@@ -24,7 +23,7 @@
 #import "ios/chrome/browser/omnibox/public/omnibox_ui_features.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
-#import "ios/chrome/browser/toolbar/ui_bundled/public/toolbar_constants.h"
+#import "ios/chrome/browser/toolbar/legacy/ui_bundled/public/toolbar_constants.h"
 #import "ios/chrome/common/NSString+Chromium.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/earl_grey/chrome_actions.h"
@@ -117,7 +116,7 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
 
   if (request.relative_url == kHeaderPageURL) {
     std::string result = kHeaderPageFailure;
-    if (base::Contains(request.headers, "X-Client-Data")) {
+    if (request.headers.contains("X-Client-Data")) {
       result = kHeaderPageSuccess;
     }
     http_response->set_content("<html><body>" + result + "</body></html>");
@@ -391,9 +390,11 @@ void FocusFakebox() {
   [[EarlGrey selectElementWithMatcher:SearchCopiedTextButton()]
       performAction:grey_tap()];
   // Check that the omnibox contains the copied text.
+  [ChromeEarlGreyUI focusOmnibox];
   [[EarlGrey selectElementWithMatcher:chrome_test_util::Omnibox()]
       assertWithMatcher:chrome_test_util::OmniboxContainingText(
                             textToSearch.cr_UTF8String)];
+  [OmniboxEarlGrey defocusOmnibox];
 }
 
 // Tests that Visit Copied Link menu button is shown with a link in the

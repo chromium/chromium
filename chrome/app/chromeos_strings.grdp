@@ -1278,6 +1278,12 @@
   <message name="IDS_FJORD_STATION_SETUP_DONE_BUTTON_TEXT" desc="Button shown to the user to indicate they have finished the setup flow.">
     Done
   </message>
+  <message name="IDS_FJORD_FW_UPDATE_TITLE" desc="Title of OOBE screen to indicate that device peripherals are updating.">
+    Updating device peripherals
+  </message>
+  <message name="IDS_FJORD_FW_UPDATE_SUBTITLE" desc="Subtitle shown to indicate the peripheral updates may take up to 30 minutes.">
+    This may take up to 30 minutes
+  </message>
 
   <!-- Strings for parental handoff login screen -->
   <message name="IDS_LOGIN_PARENTAL_HANDOFF_SCREEN_TITLE" desc="Title of screen which tells user that the parent can handoff the device to supervised user.">
@@ -4854,114 +4860,6 @@
   <message name="IDS_CROSTINI_UPGRADING_SUBTEXT" desc="Description for upgrade dialog warning user of delay starting container due to running upgrades.">
     Your app will open when the upgrade is finished. Upgrades can take a few minutes.
   </message>
-  <message name="IDS_CROSTINI_UPGRADE_AVAILABLE_NOTIFICATION_TITLE" desc="Title of the notification shown to the user when a Linux upgrade is available.">
-    Linux
-  </message>
-  <message name="IDS_CROSTINI_UPGRADE_AVAILABLE_NOTIFICATION_BODY" desc="Body text  of the notification shown to the user when a Linux upgrade is available.">
-    An upgrade is available for your Linux Container. You can also upgrade later from the Settings app.
-  </message>
-  <message name="IDS_CROSTINI_UPGRADE_AVAILABLE_NOTIFICATION_UPGRADE" desc="Text on the action button of the notification shown to the user when a Linux upgrade is available.">
-    Upgrade
-  </message>
-  <message name="IDS_CROSTINI_UPGRADER_TITLE" desc="Title of the Crostini upgrader, a dialog for upgrading Linux.">
-    Upgrade Linux
-  </message>
-  <message name="IDS_CROSTINI_UPGRADER_BODY" desc="Description for the Crostini upgrader, a dialog for upgrading Linux.">
-    For the best performance, upgrade to the latest version. Backing up your files is recommended in case the upgrade can’t be completed. Once the upgrade begins, Linux will shut down. Save open files before continuing. <ph name="LINK_START">&lt;a href="$1" target="_blank"&gt;</ph>Learn more<ph name="LINK_END">&lt;/a&gt;</ph>
-  </message>
-  <message name="IDS_CROSTINI_UPGRADER_UPGRADE_BUTTON" desc="Label for the button in the Crostini upgrader dialog to begin upgrading Linux.">
-    Upgrade
-  </message>
-  <message name="IDS_CROSTINI_UPGRADER_DONE_BUTTON" desc="Label for the button in the Crostini upgrader dialog to indicate upgrading Linux is complete.">
-    Done
-  </message>
-    <message name="IDS_CROSTINI_UPGRADER_RESTORE_BUTTON" desc="Label for the button in the Crostini upgrader dialog to restore a backup if there was an error upgrading Linux.">
-    Restore backup
-  </message>
-  <message name="IDS_CROSTINI_UPGRADER_BACKING_UP_TITLE" desc="Title of the Crostini upgrader when the container backup is in progress.">
-    Backing up Linux apps and files
-  </message>
-  <message name="IDS_CROSTINI_UPGRADER_BACKING_UP_MESSAGE" desc="Text shown by the Crostini upgrader when the container backup is in progress.">
-    This may take up to 30 minutes
-  </message>
-  <message name="IDS_CROSTINI_UPGRADER_BACKUP_ERROR_TITLE" desc="Title of the Crostini upgrader when the container backup fails.">
-    Can't back up Linux apps and files
-  </message>
-  <message name="IDS_CROSTINI_UPGRADER_BACKUP_ERROR_MESSAGE" desc="Text shown by the Crostini upgrader when the container backup fails.">
-    You may not have enough free storage on your device or selected backup location. Try freeing up space or picking a different location.
-  </message>
-  <message name="IDS_CROSTINI_UPGRADER_BACKUP_SUCCEEDED_TITLE" desc="Title of the Crostini upgrader when the container backup completed successfully, prior to the main upgrade.">
-    Backup complete
-  </message>
-  <message name="IDS_CROSTINI_UPGRADER_PRECHECKS_FAILED_TITLE" desc="Title of the Crostini upgrader when the upgrade prechecks failed.">
-    Can't start upgrade
-  </message>
-  <message name="IDS_CROSTINI_UPGRADER_PRECHECKS_FAILED_NETWORK" desc="Text shown by the Crostini upgrader when the upgrade did not start because there was no network connection.">
-    You need a network connection to upgrade Linux. Connect to the internet and try again.
-  </message>
-  <message name="IDS_CROSTINI_UPGRADER_PRECHECKS_FAILED_POWER" desc="Text shown by the Crostini upgrader when the upgrade did not start because there wasn't enough power.">
-    Your device needs to be plugged in. Upgrading Linux can drain your battery significantly. Connect your device to a charger and try again.
-  </message>
-  <message name="IDS_CROSTINI_UPGRADER_TRY_AGAIN_BUTTON" desc="Try again button for the Crostini upgrader dialog that retries a failed step.">
-    Try again
-  </message>
-  <message name="IDS_CROSTINI_UPGRADER_UPGRADING_TITLE" desc="Title of the Crostini upgrader when the upgrade is in progress.">
-    Upgrading Linux
-  </message>
-  <message name="IDS_CROSTINI_UPGRADER_UPGRADING" desc="Text shown by the Crostini upgrader when the upgrade is in progress.">
-    This may take up to 30 minutes
-  </message>
-  <message name="IDS_CROSTINI_UPGRADER_SUCCEEDED_TITLE" desc="Title of the Crostini upgrader when the upgrade is finished successfully.">
-    Linux upgrade complete
-  </message>
-  <message name="IDS_CROSTINI_UPGRADER_RESTORE_TITLE" desc="Title of the Crostini upgrader when the container upgrade fails and restore of a backup is in progress.">
-    Restoring Linux
-  </message>
-  <message name="IDS_CROSTINI_UPGRADER_RESTORE_ERROR_TITLE" desc="Title of the Crostini upgrader when restoring from backup fails.">
-    Couldn’t restore Linux backup
-  </message>
-  <message name="IDS_CROSTINI_UPGRADER_RESTORE_ERROR_MESSAGE" desc="Text shown by the Crostini upgrader when restoring from backup fails fails.">
-    Linux may not have enough disk space. You can increase your Linux disk space and try to restore again in <ph name="LINK_START">&lt;a href="chrome://os-settings/crostini/details"&gt;</ph>Settings<ph name="LINK_END">&lt;/a&gt;</ph>.
-  </message>
-  <message name="IDS_CROSTINI_UPGRADER_RESTORE_SUCCEEDED_TITLE" desc="Title of the Crostini upgrader when the upgrade failed but the restore of a backup completed successfully.">
-    Linux backup restored
-  </message>
-  <message name="IDS_CROSTINI_UPGRADER_ERROR_TITLE" desc="Title of the Crostini upgrader when an error occurs.">
-    Couldn't upgrade Linux
-  </message>
-  <message name="IDS_CROSTINI_UPGRADER_CANCELING_TITLE" desc="Title of the Crostini upgrader when the upgrade is canceled.">
-    Canceling Linux upgrade
-  </message>
-  <message name="IDS_CROSTINI_UPGRADER_BACKUP_CHECKBOX_MESSAGE" desc="Text shown in the Crostini upgrader dialog next to the backup checkbox.">
-    Back up apps and files to Files &gt; My files before the upgrade.
-  </message>
-  <message name="IDS_CROSTINI_UPGRADER_BACKUP_CHANGE_LOCATION" desc="Text shown in the Crostini upgrader dialog next to the backup checkbox with a link enabling the user to change the location to which files are backed up.">
-    Change location
-  </message>
-  <message name="IDS_CROSTINI_UPGRADER_RESTORE_MESSAGE" desc="Title of the Crostini upgrader when the container upgrade fails and restore of a backup is in progress.">
-    Your backed up Linux files and apps are being restored
-  </message>
-  <message name="IDS_CROSTINI_UPGRADER_LOG_FILE_ERROR" desc="A message shown in the Crostini upgrader that says which file the upgrade log messages have been stored in, shown after an error.">
-    Something went wrong. Linux may only be partially upgraded. Review logs for more information. Logs have been saved in Files &gt; My files &gt; <ph name="LOG_FILE">$1<ex>upgrade_container.log</ex></ph>
-  </message>
-  <message name="IDS_CROSTINI_UPGRADER_LOG_FILE_SUCCESS" desc="A message shown in the Crostini upgrader that says which file the upgrade log messages have been stored in, shown on success.">
-    For detailed upgrade information, the logs have been saved in Files &gt; My files &gt; <ph name="LOG_FILE">$1<ex>upgrade_container.log</ex></ph>
-  </message>
-  <message name="IDS_CROSTINI_UPGRADER_NOT_NOW" desc="Text on the button to defer performing the upgrade">
-    Not now
-  </message>
-  <message name="IDS_CROSTINI_EXPIRED_CONTAINER_WARNING_TITLE" desc="Title for a dialog to warn the user that the OS version in their crostini container is unsupported">
-    Upgrade your Linux container
-  </message>
-  <message name="IDS_CROSTINI_EXPIRED_CONTAINER_WARNING_BODY" desc="Body of a dialog to warn the user that the OS version in their crostini container is unsupported">
-    The operating system in your Linux container is no longer supported. It will stop receiving security updates and bug fixes, and features that currently work may break unexpectedly. Please upgrade to the latest version to continue using Linux.
-  </message>
-  <message name="IDS_CROSTINI_EXPIRED_CONTAINER_WARNING_CONTINUE_BUTTON" desc="Button to continue using crostini even though the OS version in their crostini container is unsupported">
-    Continue anyway
-  </message>
-  <message name="IDS_CROSTINI_EXPIRED_CONTAINER_WARNING_UPGRADE_BUTTON" desc="Button to begin upgrading the crostini container after warning that the OS version in their crostini container is unsupported">
-    Upgrade
-  </message>
   <message name="IDS_CROSTINI_SHUT_DOWN_LINUX_MENU_ITEM" desc="Text shown in the context menu for the Linux terminal app, allowing users to shut down the Linux virtual machine.">
     Shut down Linux
   </message>
@@ -4973,40 +4871,6 @@
   </message>
   <message name="IDS_CROSTINI_TERMINA_UPDATE_OFFLINE" desc="Text shown in the Crostini update dialog when the VM component needs updating but the user is offline.">
     Please connect to the internet and try again.
-  </message>
-
-  <!-- Linux install package messages -->
-  <message name="IDS_CROSTINI_PACKAGE_INSTALL_NOTIFICATION_DISPLAY_SOURCE" desc="Source of the Notification for Linux package installation.">
-    Linux installer
-  </message>
-  <message name="IDS_CROSTINI_PACKAGE_INSTALL_NOTIFICATION_QUEUED_TITLE" desc="Title of the Notification when an Linux application is queued waiting for other operations to finish.">
-    Install pending
-  </message>
-  <message name="IDS_CROSTINI_PACKAGE_INSTALL_NOTIFICATION_IN_PROGRESS_TITLE" desc="Title of the Notification for an in-progress Linux package installation.">
-    Installation in progress
-  </message>
-  <message name="IDS_CROSTINI_PACKAGE_INSTALL_NOTIFICATION_COMPLETED_TITLE" desc="Title of the Notification for Linux package installation once installation has completed successfully.">
-    Installation complete
-  </message>
-  <message name="IDS_CROSTINI_PACKAGE_INSTALL_NOTIFICATION_COMPLETED_MESSAGE" desc="Message in the Notification for Linux package installation once installation has completed successfully.">
-    App is available in your terminal. There may also be an icon in your Launcher.
-  </message>
-  <message name="IDS_CROSTINI_PACKAGE_INSTALL_NOTIFICATION_COMPLETED_BUTTON" desc="Button text in the Notification for Linux package installation once installation has completed successfully.">
-    Launch
-  </message>
-  <message name="IDS_CROSTINI_PACKAGE_INSTALL_NOTIFICATION_ERROR_TITLE" desc="Title of the Notification for Linux package installation when there is an error during installation.">
-    Error while installing
-  </message>
-  <message name="IDS_CROSTINI_PACKAGE_INSTALL_NOTIFICATION_ERROR_MESSAGE" desc="Message in the Notification for Linux package installation when there is an error during installation.">
-    An error occurred during installation of your Linux application. Click on the notification for details.
-  </message>
-
-  <!-- Linux package installation failure messages -->
-  <message name="IDS_CROSTINI_PACKAGE_INSTALL_FAILURE_VIEW_TITLE" desc="Title of the crostini package-install-failure dialog, which shows detailed error messages when installing .deb packages.">
-    Error installing Linux application
-  </message>
-  <message name="IDS_CROSTINI_PACKAGE_INSTALL_FAILURE_VIEW_MESSAGE" desc="Message displayed to the user in the package-install-failure dialog.">
-    An error occurred during installation of your Linux application.
   </message>
 
   <!-- Linux windows force closing messages -->
@@ -6432,6 +6296,18 @@ You can manage this account’s settings by installing the Family Link app on yo
   </message>
   <message name="IDS_AUTH_SETUP_SET_LOCAL_PASSWORD_MIN_CHARS_HINT" desc="The hint about the minimal length of a password when the user sets a new password.">
     Password must be at least 8 characters
+  </message>
+  <message name="IDS_AUTH_SETUP_SET_LOCAL_PASSWORD_COMPLEXITY_ERROR_NONE" desc="The hint about password requirements when the LocalPinAndPassword policy is set to None.">
+    Password must be at least 1 character
+  </message>
+  <message name="IDS_AUTH_SETUP_SET_LOCAL_PASSWORD_COMPLEXITY_ERROR_LOW" desc="The hint about password requirements when the LocalPinAndPassword policy is set to Low.">
+    Password must be at least 6 characters and include at least one letter or symbol
+  </message>
+  <message name="IDS_AUTH_SETUP_SET_LOCAL_PASSWORD_COMPLEXITY_ERROR_MEDIUM" desc="The hint about password requirements when the LocalPinAndPassword policy is set to Medium.">
+    Password must be at least 8 characters and include at least two of the following: uppercase letters, lowercase letters, numbers, or symbols
+  </message>
+  <message name="IDS_AUTH_SETUP_SET_LOCAL_PASSWORD_COMPLEXITY_ERROR_HIGH" desc="The hint about password requirements when the LocalPinAndPassword policy is set to High.">
+    Password must be at least 12 characters and include uppercase and lowercase letters, numbers, and symbols
   </message>
   <message name="IDS_AUTH_SETUP_SET_LOCAL_PASSWORD_NO_MATCH_ERROR" desc="Error message shown when the user sets a password but the first entry does not match the second entry.">
     Passwords do not match

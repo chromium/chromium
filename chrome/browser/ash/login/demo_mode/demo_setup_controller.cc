@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/login/demo_mode/demo_setup_controller.h"
 
+#include <algorithm>
 #include <utility>
 
 #include "ash/constants/ash_features.h"
@@ -11,7 +12,6 @@
 #include "ash/constants/ash_switches.h"
 #include "base/barrier_closure.h"
 #include "base/command_line.h"
-#include "base/containers/contains.h"
 #include "base/containers/flat_map.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -441,7 +441,8 @@ std::string DemoSetupController::GetSubOrganizationEmail() {
   std::string country_lowercase = base::ToLowerASCII(country);
 
   // Exclude US as it is the default country.
-  if (base::Contains(demo_mode::kSupportedCountries, country_uppercase)) {
+  if (std::ranges::contains(demo_mode::kSupportedCountries,
+                            country_uppercase)) {
     if (chromeos::features::IsCloudGamingDeviceEnabled()) {
       return base::StringPrintf("admin-%s-blazey@%s", country_lowercase.c_str(),
                                 policy::kDemoModeDomain);
@@ -453,8 +454,8 @@ std::string DemoSetupController::GetSubOrganizationEmail() {
 }
 
 // static
-base::Value::Dict DemoSetupController::GetDemoSetupSteps() {
-  base::Value::Dict setup_steps_dict;
+base::DictValue DemoSetupController::GetDemoSetupSteps() {
+  base::DictValue setup_steps_dict;
   for (auto entry : GetDemoSetupStepsInfo()) {
     setup_steps_dict.Set(GetDemoSetupStepString(entry.step), entry.step_index);
   }

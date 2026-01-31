@@ -24,6 +24,8 @@ enum class GeolocationAccuracy {
 
 // GeolocationPromptOptions are used for prompt options for geolocation.
 struct GeolocationPromptOptions {
+  bool operator==(const GeolocationPromptOptions&) const = default;
+
   // If the user is in the approximate geolocation experiment
   // (kApproximateGeolocationPermission), and the site requests a precise grant,
   // the user will be shown a prompt which allows the user to choose whether

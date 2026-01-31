@@ -146,6 +146,7 @@ class AudioEffectsControllerTest : public NoSessionAshTestBase {
   }
 
   void TearDown() override {
+    audio_effects_controller_ = nullptr;
     AshTestBase::TearDown();
     tray_controller_.reset();
     CrasAudioHandler::Shutdown();
@@ -208,8 +209,7 @@ class AudioEffectsControllerTest : public NoSessionAshTestBase {
   base::HistogramTester histogram_tester_;
 
  private:
-  raw_ptr<AudioEffectsController, DanglingUntriaged> audio_effects_controller_ =
-      nullptr;
+  raw_ptr<AudioEffectsController> audio_effects_controller_ = nullptr;
   std::unique_ptr<FakeVideoConferenceTrayController> tray_controller_;
   base::test::ScopedFeatureList scoped_feature_list_;
 };

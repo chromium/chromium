@@ -14,7 +14,7 @@ _sym_db = _symbol_database.Default()
 from google.protobuf import timestamp_pb2 as google_dot_protobuf_dot_timestamp__pb2
 
 
-DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\x19test_script_metrics.proto\x12\x14\x62uild.util.lib.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"L\n\x11TestScriptMetrics\x12\x37\n\x07metrics\x18\x01 \x03(\x0b\x32&.build.util.lib.proto.TestScriptMetric\"\x9a\x02\n\x10TestScriptMetric\x12\x0c\n\x04name\x18\x01 \x01(\t\x12\x0f\n\x05value\x18\x02 \x01(\x01H\x00\x12\x43\n\x06points\x18\x03 \x01(\x0b\x32\x31.build.util.lib.proto.TestScriptMetric.DataPointsH\x00\x1aI\n\tDataPoint\x12\r\n\x05value\x18\x01 \x01(\x01\x12-\n\ttimestamp\x18\x02 \x01(\x0b\x32\x1a.google.protobuf.Timestamp\x1aN\n\nDataPoints\x12@\n\x06points\x18\x01 \x03(\x0b\x32\x30.build.util.lib.proto.TestScriptMetric.DataPointB\x07\n\x05OneOfb\x06proto3')
+DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\x19test_script_metrics.proto\x12\x14\x62uild.util.lib.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"L\n\x11TestScriptMetrics\x12\x37\n\x07metrics\x18\x01 \x03(\x0b\x32&.build.util.lib.proto.TestScriptMetric\"\xa7\x02\n\x10TestScriptMetric\x12\x0c\n\x04name\x18\x01 \x01(\t\x12\x0f\n\x05value\x18\x02 \x01(\x01H\x00\x12\x43\n\x06points\x18\x03 \x01(\x0b\x32\x31.build.util.lib.proto.TestScriptMetric.DataPointsH\x00\x12\x0b\n\x03tag\x18\x04 \x01(\t\x1aI\n\tDataPoint\x12\r\n\x05value\x18\x01 \x01(\x01\x12-\n\ttimestamp\x18\x02 \x01(\x0b\x32\x1a.google.protobuf.Timestamp\x1aN\n\nDataPoints\x12@\n\x06points\x18\x01 \x03(\x0b\x32\x30.build.util.lib.proto.TestScriptMetric.DataPointB\x07\n\x05OneOfb\x06proto3')
 
 _builder.BuildMessageAndEnumDescriptors(DESCRIPTOR, globals())
 _builder.BuildTopDescriptorsAndMessages(DESCRIPTOR, 'test_script_metrics_pb2', globals())
@@ -24,9 +24,9 @@ if _descriptor._USE_C_DESCRIPTORS == False:
   _TESTSCRIPTMETRICS._serialized_start=84
   _TESTSCRIPTMETRICS._serialized_end=160
   _TESTSCRIPTMETRIC._serialized_start=163
-  _TESTSCRIPTMETRIC._serialized_end=445
-  _TESTSCRIPTMETRIC_DATAPOINT._serialized_start=283
-  _TESTSCRIPTMETRIC_DATAPOINT._serialized_end=356
-  _TESTSCRIPTMETRIC_DATAPOINTS._serialized_start=358
-  _TESTSCRIPTMETRIC_DATAPOINTS._serialized_end=436
+  _TESTSCRIPTMETRIC._serialized_end=458
+  _TESTSCRIPTMETRIC_DATAPOINT._serialized_start=296
+  _TESTSCRIPTMETRIC_DATAPOINT._serialized_end=369
+  _TESTSCRIPTMETRIC_DATAPOINTS._serialized_start=371
+  _TESTSCRIPTMETRIC_DATAPOINTS._serialized_end=449
 # @@protoc_insertion_point(module_scope)

@@ -99,8 +99,10 @@ AtomicString ConsumeAndComputeVariableName(CSSParserTokenStream& stream,
   }
   // ident()
   DCHECK_EQ(stream.Peek().FunctionId(), CSSValueID::kIdent);
+  CSSParserLocalContext local_context =
+      CSSParserLocalContext::CreateWithoutPropertyForSubstitutions();
   CSSFunctionValue* ident_function =
-      css_parsing_utils::ConsumeIdentFunction(stream, context);
+      css_parsing_utils::ConsumeIdentFunction(stream, context, local_context);
   DCHECK(ident_function);
   AtomicString computed_ident = CSSCustomIdentValue::ComputeIdent(
       *ident_function, state.CssToLengthConversionData());
@@ -2082,8 +2084,11 @@ CSSVariableData* StyleCascade::ResolveTypedExpression(
   if (!type || type->IsUniversal()) {
     return data;
   }
-  const CSSValue* value = type->Parse(data->OriginalText(), context,
-                                      /*is_animation_tainted=*/false);
+  CSSParserLocalContext local_context =
+      CSSParserLocalContext::CreateWithoutPropertyForSubstitutions();
+  const CSSValue* value =
+      type->Parse(data->OriginalText(), context, local_context,
+                  /*is_animation_tainted=*/false);
   if (!value) {
     return nullptr;
   }
@@ -2352,12 +2357,15 @@ bool StyleCascade::ResolveAttrInto(CSSParserTokenStream& stream,
     substituted_attribute_value = g_null_atom;
   }
 
+  CSSParserLocalContext local_context =
+      CSSParserLocalContext::CreateWithoutPropertyForSubstitutions();
   // Parse value according to the attribute type.
   // https://drafts.csswg.org/css-values-5/#typedef-attr-type
   const CSSValue* substitution_value =
       (substituted_attribute_value.IsNull())
           ? nullptr
-          : attr_type->Parse(substituted_attribute_value, context);
+          : attr_type->Parse(substituted_attribute_value, context,
+                             local_context);
 
   if (substitution_value) {
     return out.Append(substitution_value, /*is_attr_tainted=*/true,
@@ -2529,8 +2537,10 @@ const CSSValue* StyleCascade::CoerceIntoNumericValueInternal(
 
   CSSSyntaxDefinition syntax_definition =
       CSSSyntaxDefinition::CreateNumericSyntax();
+  CSSParserLocalContext local_context =
+      CSSParserLocalContext::CreateWithoutPropertyForSubstitutions();
   const CSSValue* parsed_value = syntax_definition.Parse(
-      data->OriginalText(), context,
+      data->OriginalText(), context, local_context,
       /* is_animation_tainted= */ data->IsAnimationTainted(),
       /* is_attr_tainted= */ data->IsAttrTainted());
 
@@ -2877,7 +2887,8 @@ bool StyleCascade::ValidateFallback(const CustomProperty& property,
   auto context_mode =
       state_.GetDocument().GetExecutionContext()->GetSecureContextMode();
   auto* context = StrictCSSParserContext(context_mode);
-  auto local_context = CSSParserLocalContext();
+  auto local_context =
+      CSSParserLocalContext::CreateWithoutPropertyForSubstitutions();
   return property.Parse(value, *context, local_context);
 }
 

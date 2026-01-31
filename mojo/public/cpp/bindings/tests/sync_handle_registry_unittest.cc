@@ -183,8 +183,9 @@ TEST_F(SyncHandleRegistryTest, RegisterDuplicateEventFromWithinCallback) {
          bool* called, int* call_count) {
         // Don't re-enter.
         ++(*call_count);
-        if (*called)
+        if (*called) {
           return;
+        }
 
         *called = true;
 
@@ -226,8 +227,9 @@ TEST_F(SyncHandleRegistryTest, UnregisterUniqueEventInNestedWait) {
          SyncHandleRegistry::EventCallbackSubscription* subscription,
          scoped_refptr<SyncHandleRegistry> registry, bool* called) {
         // Prevent re-entrancy.
-        if (*called)
+        if (*called) {
           return;
+        }
 
         subscription->reset();
         *called = true;

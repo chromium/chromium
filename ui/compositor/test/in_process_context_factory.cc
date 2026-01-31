@@ -160,9 +160,7 @@ class InProcessContextFactory::PerCompositorData
 #if BUILDFLAG(IS_ANDROID)
   void UpdateRefreshRate(float refresh_rate) override {}
   void SetAdaptiveRefreshRateInfo(
-      bool has_support,
-      float suggested_high,
-      float device_scale_factor) override {}
+      viz::mojom::AdaptiveRefreshRateInfoPtr info) override {}
   void PreserveChildSurfaceControls() override {}
   void SetSwapCompletionCallbackEnabled(bool enabled) override {}
 #endif  // BUILDFLAG(IS_ANDROID)

@@ -83,7 +83,9 @@ WhatsNewUI::WhatsNewUI(content::WebUI* web_ui)
       browser_command_factory_receiver_(this),
       profile_(Profile::FromWebUI(web_ui)) {
   GURL url = web_ui->GetWebContents()->GetVisibleURL();
-  bool enable_staging = url.query().compare("staging=true") == 0;
+  const bool staging_param_enabled = url.query().compare("staging=true") == 0;
+  const bool enable_staging =
+      staging_param_enabled || whats_new::UseStagingOverrideEnabled();
   CreateAndAddWhatsNewUIHtmlSource(profile_, enable_staging);
 }
 

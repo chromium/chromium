@@ -4,6 +4,7 @@
 
 #include "components/autofill/core/browser/metrics/form_interactions_ukm_logger.h"
 
+#include <utility>
 #include <vector>
 
 #include "base/base64.h"
@@ -16,6 +17,7 @@
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/form_parsing/determine_regex_types.h"
 #include "components/autofill/core/browser/form_structure_test_api.h"
+#include "components/autofill/core/browser/foundations/autofill_manager_test_api.h"
 #include "components/autofill/core/browser/heuristic_source.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics_test_base.h"
 #include "components/autofill/core/browser/metrics/ukm_metrics_test_utils.h"
@@ -308,10 +310,10 @@ TEST_F(FieldLogUkmMetricTest, AddressSubmittedFormLogEvents) {
         AutofillSuggestionTriggerSource::kFormControlElementClicked);
     FillTestProfile(form);
 
-    base::TimeTicks parse_time = autofill_manager()
+    base::TimeTicks parse_time = test_api(autofill_manager())
                                      .form_structures()
-                                     .begin()
-                                     ->second->form_parsed_timestamp();
+                                     .front()
+                                     ->form_parsed_timestamp();
     // Simulate text input in the first fields.
     SimulateUserChangedFieldTo(form, form.fields()[0], u"United States",
                                parse_time + base::Milliseconds(3));
@@ -482,9 +484,9 @@ TEST_F(FieldLogUkmMetricTest, AutofillFieldInfoMetricsFieldType) {
 
   auto form_structure = std::make_unique<FormStructure>(form);
   FormStructure* form_structure_ptr = form_structure.get();
-  const RegexPredictions regex_predictions =
-      DetermineRegexTypes(GeoIpCountryCode(""), LanguageCode(""),
-                          form_structure->ToFormData(), nullptr);
+  const RegexPredictions regex_predictions = DetermineRegexTypes(
+      GeoIpCountryCode(""), LanguageCode(""), form_structure->ToFormData(),
+      nullptr, /*ignore_small_forms=*/true);
   regex_predictions.ApplyTo(form_structure->fields());
   form_structure->RationalizeAndAssignSections(GeoIpCountryCode(""),
                                                LanguageCode(""), nullptr);
@@ -511,7 +513,8 @@ TEST_F(FieldLogUkmMetricTest, AutofillFieldInfoMetricsFieldType) {
   std::string response_string = SerializeAndEncode(response);
   test_api(autofill_manager())
       .OnLoadedServerPredictions(
-          response_string, test::GetEncodedSignatures(*form_structure_ptr));
+          response_string, test::GetEncodedSignatures(*form_structure_ptr),
+          {form});
 
   task_environment_.FastForwardBy(base::Milliseconds(37000));
   base::HistogramTester histogram_tester;
@@ -654,10 +657,10 @@ TEST_F(FieldLogUkmMetricTest, AutofillFieldInfoMetricsEditedFieldWithoutFill) {
 
   FormData form = GetAndAddSeenForm(form_description);
 
-  base::TimeTicks parse_time = autofill_manager()
+  base::TimeTicks parse_time = test_api(autofill_manager())
                                    .form_structures()
-                                   .begin()
-                                   ->second->form_parsed_timestamp();
+                                   .front()
+                                   ->form_parsed_timestamp();
   // Simulate text input in the first and second fields.
   SimulateUserChangedFieldTo(form, form.fields()[0], u"Elvis Aaron Presley",
                              parse_time + base::Milliseconds(3));
@@ -1103,15 +1106,15 @@ class LogFocusedComplexFormAtFormRemoveTest
 };
 
 // These are just constants to make the code below easier to understand.
-constexpr int kFormType_Address =
-    1 << base::to_underlying(FormType::kAddressForm);
+constexpr int kFormType_Address = 1
+                                  << std::to_underlying(FormType::kAddressForm);
 constexpr int kFormType_CreditCard =
-    1 << base::to_underlying(FormType::kCreditCardForm);
+    1 << std::to_underlying(FormType::kCreditCardForm);
 constexpr int kFormTypeNameForLogging_AddressForm_or_PostalAddressForm =
-    (1 << base::to_underlying(FormTypeNameForLogging::kAddressForm)) |
-    (1 << base::to_underlying(FormTypeNameForLogging::kPostalAddressForm));
+    (1 << std::to_underlying(FormTypeNameForLogging::kAddressForm)) |
+    (1 << std::to_underlying(FormTypeNameForLogging::kPostalAddressForm));
 constexpr int kFormTypeNameForLogging_CreditCardForm =
-    1 << base::to_underlying(FormTypeNameForLogging::kCreditCardForm);
+    1 << std::to_underlying(FormTypeNameForLogging::kCreditCardForm);
 
 INSTANTIATE_TEST_SUITE_P(
     FieldLogUkmMetricTest,

@@ -499,9 +499,8 @@ class FailingAddressValidatorTest : public testing::Test, LoadRulesListener {
     // Always fails for the first |failures_number| times.
     void Get(const std::string& url, const Callback& callback) const override {
       ++attempts_number_;
-      // |callback| takes ownership of the |new std::string|.
       if (failures_number_-- > 0)
-        callback(false, url, new std::string);
+        callback(false, url, "");
       else
         actual_source_.Get(url, callback);
     }

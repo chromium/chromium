@@ -69,7 +69,7 @@ found in the LICENSE file.
           android:layout_height="wrap_content"
           android:minHeight="@dimen/min_touch_target_size"
           android:paddingTop="10dp"
-          app:iconSrc="@drawable/star_outline_24dp"
+          app:iconSrc="@drawable/ic_star_24dp"
           app:primaryText="@string/adaptive_toolbar_button_preference_add_to_bookmarks" />
 
       <org.chromium.components.browser_ui.widget.RadioButtonWithDescription

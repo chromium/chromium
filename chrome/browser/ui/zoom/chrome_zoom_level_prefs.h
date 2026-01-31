@@ -54,7 +54,7 @@ class ChromeZoomLevelPrefs : public content::ZoomLevelDelegate {
   base::CallbackListSubscription RegisterDefaultZoomLevelCallback(
       base::RepeatingClosure callback);
 
-  void ExtractPerHostZoomLevels(const base::Value::Dict& host_zoom_dictionary,
+  void ExtractPerHostZoomLevels(const base::DictValue& host_zoom_dictionary,
                                 bool sanitize_partition_host_zoom_levels);
 
   // content::ZoomLevelDelegate

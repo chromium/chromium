@@ -10,8 +10,12 @@ source_set("browser") {
     "passkey_data_type_controller.h",
   ]
   deps = [
+    "//base",
     "//components/sync",
     "//components/webauthn:features",
+    "//net",
+    "//services/network/public/cpp",
+    "//url",
   ]
 
   if (!is_android && !is_ios) {
@@ -42,7 +46,6 @@ source_set("browser") {
     deps += [
       ":passkey_model",
       "//base",
-      "//components/webauthn/core/browser/import",
     ]
   }
 }
@@ -85,14 +88,28 @@ source_set("common_utils") {
   sources = [
     "common_utils.cc",
     "common_utils.h",
+    "remote_validation.cc",
+    "remote_validation.h",
+    "webauthn_security_utils.cc",
+    "webauthn_security_utils.h",
   ]
-  deps = [ "//base" ]
+  deps = [
+    "//base",
+    "//net",
+    "//services/network/public/cpp",
+    "//services/network/public/mojom",
+    "//url",
+  ]
 }
 
 source_set("unit_tests") {
   testonly = true
   sources = []
-  deps = []
+  deps = [
+    ":common_utils",
+    "//testing/gtest",
+    "//url",
+  ]
 
   if (!is_android) {
     sources += [ "passkey_model_utils_unittest.cc" ]

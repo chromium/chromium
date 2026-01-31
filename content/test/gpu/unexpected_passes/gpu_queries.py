@@ -123,9 +123,7 @@ RESULTS_SUBQUERY = """\
       DATE(tr.partition_time) > DATE_SUB(CURRENT_DATE(), INTERVAL 30 DAY)
       AND exported.id = build_inv_id
       AND status != "SKIP"
-      AND REGEXP_CONTAINS(
-          test_id,
-          "gpu_tests\\\\.{suite}\\\\.")
+      AND STRUCT("gpu_test_class", "{suite_class}") IN UNNEST(tags)
   )"""
 
 # Selects the relevant columns from results that had either a Failure or a
@@ -168,10 +166,11 @@ class GpuBigQueryQuerier(queries_module.BigQueryQuerier):
     super().__init__(*args, **kwargs)
 
     name_mapping = gpu_integration_test.GenerateTestNameMapping()
-    self._suite_class = name_mapping[self._suite]
-    # The suite name we use for identification (return value of Name()) is not
-    # the same as the one used by ResultDB (Python module), so convert here.
-    self._suite = self._suite_class.__module__.split('.')[-1]
+    _suite_class = name_mapping[self._suite]
+    # __qualname__ returns the same value as __name__, so we need to manually
+    # construct the qualified name.
+    self._qualified_class_name = (
+        f'{_suite_class.__module__}.{_suite_class.__name__}')
 
   def _CiBuildsFor(self, project: str) -> str:
     """Helper function to generate a CI builds subquery."""
@@ -187,7 +186,7 @@ class GpuBigQueryQuerier(queries_module.BigQueryQuerier):
     """Helper function to generate a results subquery."""
     return RESULTS_SUBQUERY.format(project=project,
                                    ci_or_try=ci_or_try,
-                                   suite=self._suite)
+                                   suite_class=self._qualified_class_name)
 
   def _GetPublicCiQuery(self) -> str:
     return f"""\

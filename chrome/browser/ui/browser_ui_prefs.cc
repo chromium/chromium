@@ -131,8 +131,6 @@ void RegisterBrowserUserPrefs(user_prefs::PrefRegistrySyncable* registry) {
   registry->RegisterBooleanPref(
       translate::prefs::kOfferTranslateEnabled, true,
       user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
-  registry->RegisterStringPref(prefs::kCloudPrintEmail, std::string());
-  registry->RegisterBooleanPref(prefs::kCloudPrintProxyEnabled, true);
   registry->RegisterDictionaryPref(prefs::kBrowserWindowPlacement);
   registry->RegisterDictionaryPref(prefs::kBrowserWindowPlacementPopup);
   registry->RegisterDictionaryPref(prefs::kAppWindowPlacement);
@@ -145,7 +143,7 @@ void RegisterBrowserUserPrefs(user_prefs::PrefRegistrySyncable* registry) {
 #endif
   registry->RegisterStringPref(prefs::kWebRTCIPHandlingPolicy,
                                blink::kWebRTCIPHandlingDefault);
-  registry->RegisterListPref(prefs::kWebRTCIPHandlingUrl, base::Value::List());
+  registry->RegisterListPref(prefs::kWebRTCIPHandlingUrl, base::ListValue());
   registry->RegisterBooleanPref(prefs::kWebRTCPostQuantumKeyAgreement, false);
   registry->RegisterStringPref(prefs::kWebRTCUDPPortRange, std::string());
   registry->RegisterBooleanPref(prefs::kWebRtcEventLogCollectionAllowed, false);

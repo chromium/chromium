@@ -4,14 +4,17 @@
 #include "components/unexportable_keys/mojom/unexportable_key_service_proxy_impl.h"
 
 #include <cstdint>
+#include <optional>
+#include <utility>
 
 #include "base/check_deref.h"
 #include "base/numerics/safe_conversions.h"
+#include "base/time/time.h"
 #include "base/types/expected.h"
+#include "base/types/expected_macros.h"
 #include "base/unguessable_token.h"
 #include "build/build_config.h"
 #include "components/unexportable_keys/background_task_priority.h"
-#include "components/unexportable_keys/mojom/unexportable_key_service.mojom-data-view.h"
 #include "components/unexportable_keys/mojom/unexportable_key_service.mojom.h"
 #include "components/unexportable_keys/service_error.h"
 #include "components/unexportable_keys/unexportable_key_id.h"
@@ -24,49 +27,40 @@ namespace unexportable_keys {
 
 namespace {
 
-base::expected<mojom::NewKeyDataPtr, ServiceError> PopulateNewKeyData(
-    unexportable_keys::UnexportableKeyService& unexportable_key_service,
-    const ServiceErrorOr<UnexportableKeyId> error_or_key_id) {
-  if (!error_or_key_id.has_value()) {
-    return base::unexpected(error_or_key_id.error());
-  }
-
-  const UnexportableKeyId& key_id = error_or_key_id.value();
-  auto new_key_data = mojom::NewKeyData::New();
-
-  new_key_data->key_id = key_id;
-
-  const ServiceErrorOr<crypto::SignatureVerifier::SignatureAlgorithm> algo =
-      unexportable_key_service.GetAlgorithm(key_id);
-  if (!algo.has_value()) {
-    return base::unexpected(algo.error());
-  }
-  new_key_data->algorithm = *algo;
-
-  const ServiceErrorOr<std::vector<uint8_t>> wrapped =
-      unexportable_key_service.GetWrappedKey(key_id);
-  if (!wrapped.has_value()) {
-    return base::unexpected(wrapped.error());
-  }
-  new_key_data->wrapped_key = *wrapped;
-
-  const ServiceErrorOr<std::vector<uint8_t>> key_info =
-      unexportable_key_service.GetSubjectPublicKeyInfo(key_id);
-  if (!key_info.has_value()) {
-    return base::unexpected(key_info.error());
-  }
-  new_key_data->subject_public_key_info = *key_info;
-
-  return new_key_data;
+// For operations requiring stateful keys `ServiceError::kOperationNotSupported`
+// might be returned on platforms where keys are stateless. Since this is not an
+// actual error when retrieving the key, treat it simply as a missing key.
+template <typename T>
+ServiceErrorOr<std::optional<T>> AdaptOperationNotSupported(
+    ServiceErrorOr<T> result) {
+  using ServiceErrorOrOpt = ServiceErrorOr<std::optional<T>>;
+  return ServiceErrorOrOpt(std::move(result)).or_else([](ServiceError error) {
+    return error == ServiceError::kOperationNotSupported
+               ? ServiceErrorOrOpt(std::nullopt)
+               : base::unexpected(error);
+  });
 }
 
-std::optional<ServiceError> AdaptErrorOrVoid(
-    const ServiceErrorOr<void> result) {
-  if (result.has_value()) {
-    return std::nullopt;
-  } else {
-    return result.error();
-  }
+ServiceErrorOr<mojom::NewKeyDataPtr> PopulateNewKeyData(
+    unexportable_keys::UnexportableKeyService& unexportable_key_service,
+    const ServiceErrorOr<UnexportableKeyId> error_or_key_id) {
+  ASSIGN_OR_RETURN(UnexportableKeyId key_id, error_or_key_id);
+  auto new_key_data = mojom::NewKeyData::New();
+  new_key_data->key_id = key_id;
+
+  ASSIGN_OR_RETURN(new_key_data->algorithm,
+                   unexportable_key_service.GetAlgorithm(key_id));
+  ASSIGN_OR_RETURN(new_key_data->wrapped_key,
+                   unexportable_key_service.GetWrappedKey(key_id));
+  ASSIGN_OR_RETURN(new_key_data->subject_public_key_info,
+                   unexportable_key_service.GetSubjectPublicKeyInfo(key_id));
+  ASSIGN_OR_RETURN(
+      new_key_data->key_tag,
+      AdaptOperationNotSupported(unexportable_key_service.GetKeyTag(key_id)));
+  ASSIGN_OR_RETURN(new_key_data->creation_time,
+                   AdaptOperationNotSupported(
+                       unexportable_key_service.GetCreationTime(key_id)));
+  return new_key_data;
 }
 
 ServiceErrorOr<uint64_t> AdaptSizeType(ServiceErrorOr<size_t> result) {
@@ -125,13 +119,13 @@ void unexportable_keys::UnexportableKeyServiceProxyImpl::
       priority, std::move(callback));
 }
 
-void unexportable_keys::UnexportableKeyServiceProxyImpl::DeleteKey(
-    const UnexportableKeyId& key_id,
+void unexportable_keys::UnexportableKeyServiceProxyImpl::DeleteKeys(
+    const std::vector<UnexportableKeyId>& key_ids,
     BackgroundTaskPriority priority,
-    DeleteKeyCallback callback) {
-  unexportable_key_service_->DeleteKeySlowlyAsync(
-      key_id, priority,
-      base::BindOnce(&AdaptErrorOrVoid).Then(std::move(callback)));
+    DeleteKeysCallback callback) {
+  unexportable_key_service_->DeleteKeysSlowlyAsync(
+      key_ids, priority,
+      base::BindOnce(&AdaptSizeType).Then(std::move(callback)));
 }
 
 void unexportable_keys::UnexportableKeyServiceProxyImpl::DeleteAllKeys(

@@ -52,11 +52,11 @@ constexpr const char* kSupportedFeatures[] = {
 #endif  // BUILDFLAG(IS_APPLE)
 };
 
-// Helper to extract the "config" part of a message as a base::Value::Dict.
+// Helper to extract the "config" part of a message as a base::DictValue.
 // Returns nullptr on failure, and logs an error message.
-std::optional<base::Value::Dict> ConfigDictionaryFromMessage(
-    base::Value::Dict message) {
-  if (base::Value::Dict* config_dict = message.FindDict("config")) {
+std::optional<base::DictValue> ConfigDictionaryFromMessage(
+    base::DictValue message) {
+  if (base::DictValue* config_dict = message.FindDict("config")) {
     return std::move(*config_dict);
   }
   return std::nullopt;
@@ -91,8 +91,8 @@ Me2MeNativeMessagingHost::~Me2MeNativeMessagingHost() {
 void Me2MeNativeMessagingHost::OnMessage(const std::string& message) {
   DCHECK(task_runner()->BelongsToCurrentThread());
 
-  base::Value::Dict response;
-  std::optional<base::Value::Dict> message_dict =
+  base::DictValue response;
+  std::optional<base::DictValue> message_dict =
       base::JSONReader::ReadDict(message, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   if (!message_dict) {
     OnError("Received a message that's not a dictionary.");
@@ -167,12 +167,12 @@ Me2MeNativeMessagingHost::task_runner() const {
   return host_context_->ui_task_runner();
 }
 
-void Me2MeNativeMessagingHost::ProcessHello(base::Value::Dict message,
-                                            base::Value::Dict response) {
+void Me2MeNativeMessagingHost::ProcessHello(base::DictValue message,
+                                            base::DictValue response) {
   DCHECK(task_runner()->BelongsToCurrentThread());
 
   response.Set("version", STRINGIZE(VERSION));
-  base::Value::List supported_features_list;
+  base::ListValue supported_features_list;
   for (const char* feature : kSupportedFeatures) {
     supported_features_list.Append(feature);
   }
@@ -181,8 +181,8 @@ void Me2MeNativeMessagingHost::ProcessHello(base::Value::Dict message,
 }
 
 void Me2MeNativeMessagingHost::ProcessClearPairedClients(
-    base::Value::Dict message,
-    base::Value::Dict response) {
+    base::DictValue message,
+    base::DictValue response) {
   DCHECK(task_runner()->BelongsToCurrentThread());
 
   if (needs_elevation_) {
@@ -202,8 +202,8 @@ void Me2MeNativeMessagingHost::ProcessClearPairedClients(
 }
 
 void Me2MeNativeMessagingHost::ProcessDeletePairedClient(
-    base::Value::Dict message,
-    base::Value::Dict response) {
+    base::DictValue message,
+    base::DictValue response) {
   DCHECK(task_runner()->BelongsToCurrentThread());
 
   if (needs_elevation_) {
@@ -231,16 +231,16 @@ void Me2MeNativeMessagingHost::ProcessDeletePairedClient(
   }
 }
 
-void Me2MeNativeMessagingHost::ProcessGetHostName(base::Value::Dict message,
-                                                  base::Value::Dict response) {
+void Me2MeNativeMessagingHost::ProcessGetHostName(base::DictValue message,
+                                                  base::DictValue response) {
   DCHECK(task_runner()->BelongsToCurrentThread());
 
   response.Set("hostname", net::GetHostName());
   SendMessageToClient(std::move(response));
 }
 
-void Me2MeNativeMessagingHost::ProcessGetPinHash(base::Value::Dict message,
-                                                 base::Value::Dict response) {
+void Me2MeNativeMessagingHost::ProcessGetPinHash(base::DictValue message,
+                                                 base::DictValue response) {
   DCHECK(task_runner()->BelongsToCurrentThread());
 
   std::string* host_id = message.FindString("hostId");
@@ -258,8 +258,8 @@ void Me2MeNativeMessagingHost::ProcessGetPinHash(base::Value::Dict message,
 }
 
 void Me2MeNativeMessagingHost::ProcessGenerateKeyPair(
-    base::Value::Dict message,
-    base::Value::Dict response) {
+    base::DictValue message,
+    base::DictValue response) {
   DCHECK(task_runner()->BelongsToCurrentThread());
 
   scoped_refptr<RsaKeyPair> key_pair = RsaKeyPair::Generate();
@@ -269,8 +269,8 @@ void Me2MeNativeMessagingHost::ProcessGenerateKeyPair(
 }
 
 void Me2MeNativeMessagingHost::ProcessUpdateDaemonConfig(
-    base::Value::Dict message,
-    base::Value::Dict response) {
+    base::DictValue message,
+    base::DictValue response) {
   DCHECK(task_runner()->BelongsToCurrentThread());
 
   if (needs_elevation_) {
@@ -288,7 +288,7 @@ void Me2MeNativeMessagingHost::ProcessUpdateDaemonConfig(
     }
   }
 
-  std::optional<base::Value::Dict> config_dict =
+  std::optional<base::DictValue> config_dict =
       ConfigDictionaryFromMessage(std::move(message));
   if (!config_dict) {
     OnError("'config' dictionary not found");
@@ -302,8 +302,8 @@ void Me2MeNativeMessagingHost::ProcessUpdateDaemonConfig(
 }
 
 void Me2MeNativeMessagingHost::ProcessGetDaemonConfig(
-    base::Value::Dict message,
-    base::Value::Dict response) {
+    base::DictValue message,
+    base::DictValue response) {
   DCHECK(task_runner()->BelongsToCurrentThread());
 
   daemon_controller_->GetConfig(
@@ -312,8 +312,8 @@ void Me2MeNativeMessagingHost::ProcessGetDaemonConfig(
 }
 
 void Me2MeNativeMessagingHost::ProcessGetPairedClients(
-    base::Value::Dict message,
-    base::Value::Dict response) {
+    base::DictValue message,
+    base::DictValue response) {
   DCHECK(task_runner()->BelongsToCurrentThread());
 
   if (pairing_registry_.get()) {
@@ -322,13 +322,13 @@ void Me2MeNativeMessagingHost::ProcessGetPairedClients(
                        weak_ptr_, std::move(response)));
   } else {
     SendPairedClientsResponse(std::move(response),
-                              /*pairings=*/base::Value::List());
+                              /*pairings=*/base::ListValue());
   }
 }
 
 void Me2MeNativeMessagingHost::ProcessGetUsageStatsConsent(
-    base::Value::Dict message,
-    base::Value::Dict response) {
+    base::DictValue message,
+    base::DictValue response) {
   DCHECK(task_runner()->BelongsToCurrentThread());
 
   daemon_controller_->GetUsageStatsConsent(
@@ -336,8 +336,8 @@ void Me2MeNativeMessagingHost::ProcessGetUsageStatsConsent(
                      weak_ptr_, std::move(response)));
 }
 
-void Me2MeNativeMessagingHost::ProcessStartDaemon(base::Value::Dict message,
-                                                  base::Value::Dict response) {
+void Me2MeNativeMessagingHost::ProcessStartDaemon(base::DictValue message,
+                                                  base::DictValue response) {
   DCHECK(task_runner()->BelongsToCurrentThread());
 
   if (needs_elevation_) {
@@ -361,7 +361,7 @@ void Me2MeNativeMessagingHost::ProcessStartDaemon(base::Value::Dict message,
     return;
   }
 
-  std::optional<base::Value::Dict> config_dict =
+  std::optional<base::DictValue> config_dict =
       ConfigDictionaryFromMessage(std::move(message));
   if (!config_dict) {
     OnError("'config' dictionary not found");
@@ -374,8 +374,8 @@ void Me2MeNativeMessagingHost::ProcessStartDaemon(base::Value::Dict message,
                      std::move(response)));
 }
 
-void Me2MeNativeMessagingHost::ProcessStopDaemon(base::Value::Dict message,
-                                                 base::Value::Dict response) {
+void Me2MeNativeMessagingHost::ProcessStopDaemon(base::DictValue message,
+                                                 base::DictValue response) {
   DCHECK(task_runner()->BelongsToCurrentThread());
 
   if (needs_elevation_) {
@@ -398,9 +398,8 @@ void Me2MeNativeMessagingHost::ProcessStopDaemon(base::Value::Dict message,
                      std::move(response)));
 }
 
-void Me2MeNativeMessagingHost::ProcessGetDaemonState(
-    base::Value::Dict message,
-    base::Value::Dict response) {
+void Me2MeNativeMessagingHost::ProcessGetDaemonState(base::DictValue message,
+                                                     base::DictValue response) {
   DCHECK(task_runner()->BelongsToCurrentThread());
 
   DaemonController::State state = daemon_controller_->GetState();
@@ -428,8 +427,8 @@ void Me2MeNativeMessagingHost::ProcessGetDaemonState(
 }
 
 void Me2MeNativeMessagingHost::ProcessGetHostClientId(
-    base::Value::Dict message,
-    base::Value::Dict response) {
+    base::DictValue message,
+    base::DictValue response) {
   DCHECK(task_runner()->BelongsToCurrentThread());
 
   response.Set("clientId", google_apis::GetOAuth2ClientID(
@@ -438,8 +437,8 @@ void Me2MeNativeMessagingHost::ProcessGetHostClientId(
 }
 
 void Me2MeNativeMessagingHost::ProcessGetCredentialsFromAuthCode(
-    base::Value::Dict message,
-    base::Value::Dict response,
+    base::DictValue message,
+    base::DictValue response,
     bool need_user_email) {
   DCHECK(task_runner()->BelongsToCurrentThread());
 
@@ -464,8 +463,8 @@ void Me2MeNativeMessagingHost::ProcessGetCredentialsFromAuthCode(
 }
 
 void Me2MeNativeMessagingHost::ProcessIt2mePermissionCheck(
-    base::Value::Dict message,
-    base::Value::Dict response) {
+    base::DictValue message,
+    base::DictValue response) {
   DCHECK(task_runner()->BelongsToCurrentThread());
 
   daemon_controller_->CheckPermission(
@@ -475,8 +474,8 @@ void Me2MeNativeMessagingHost::ProcessIt2mePermissionCheck(
 }
 
 void Me2MeNativeMessagingHost::SendConfigResponse(
-    base::Value::Dict response,
-    std::optional<base::Value::Dict> config) {
+    base::DictValue response,
+    std::optional<base::DictValue> config) {
   DCHECK(task_runner()->BelongsToCurrentThread());
 
   if (config) {
@@ -488,8 +487,8 @@ void Me2MeNativeMessagingHost::SendConfigResponse(
 }
 
 void Me2MeNativeMessagingHost::SendPairedClientsResponse(
-    base::Value::Dict response,
-    base::Value::List pairings) {
+    base::DictValue response,
+    base::ListValue pairings) {
   DCHECK(task_runner()->BelongsToCurrentThread());
 
   response.Set("pairedClients", std::move(pairings));
@@ -497,7 +496,7 @@ void Me2MeNativeMessagingHost::SendPairedClientsResponse(
 }
 
 void Me2MeNativeMessagingHost::SendUsageStatsConsentResponse(
-    base::Value::Dict response,
+    base::DictValue response,
     const DaemonController::UsageStatsConsent& consent) {
   DCHECK(task_runner()->BelongsToCurrentThread());
 
@@ -508,7 +507,7 @@ void Me2MeNativeMessagingHost::SendUsageStatsConsentResponse(
 }
 
 void Me2MeNativeMessagingHost::SendAsyncResult(
-    base::Value::Dict response,
+    base::DictValue response,
     DaemonController::AsyncResult result) {
   DCHECK(task_runner()->BelongsToCurrentThread());
 
@@ -526,7 +525,7 @@ void Me2MeNativeMessagingHost::SendAsyncResult(
   SendMessageToClient(std::move(response));
 }
 
-void Me2MeNativeMessagingHost::SendBooleanResult(base::Value::Dict response,
+void Me2MeNativeMessagingHost::SendBooleanResult(base::DictValue response,
                                                  bool result) {
   DCHECK(task_runner()->BelongsToCurrentThread());
 
@@ -535,7 +534,7 @@ void Me2MeNativeMessagingHost::SendBooleanResult(base::Value::Dict response,
 }
 
 void Me2MeNativeMessagingHost::SendCredentialsResponse(
-    base::Value::Dict response,
+    base::DictValue response,
     const std::string& user_email,
     const std::string& refresh_token) {
   DCHECK(task_runner()->BelongsToCurrentThread());
@@ -548,7 +547,7 @@ void Me2MeNativeMessagingHost::SendCredentialsResponse(
 }
 
 void Me2MeNativeMessagingHost::SendMessageToClient(
-    base::Value::Dict message) const {
+    base::DictValue message) const {
   DCHECK(task_runner()->BelongsToCurrentThread());
   client_->PostMessageFromNativeHost(base::WriteJson(message).value_or(""));
 }
@@ -567,7 +566,7 @@ void Me2MeNativeMessagingHost::OnError(const std::string& error_message) {
 #if BUILDFLAG(IS_WIN)
 
 Me2MeNativeMessagingHost::DelegationResult
-Me2MeNativeMessagingHost::DelegateToElevatedHost(base::Value::Dict message) {
+Me2MeNativeMessagingHost::DelegateToElevatedHost(base::DictValue message) {
   DCHECK(task_runner()->BelongsToCurrentThread());
   DCHECK(needs_elevation_);
 
@@ -597,7 +596,7 @@ Me2MeNativeMessagingHost::DelegateToElevatedHost(base::Value::Dict message) {
 #else  // BUILDFLAG(IS_WIN)
 
 Me2MeNativeMessagingHost::DelegationResult
-Me2MeNativeMessagingHost::DelegateToElevatedHost(base::Value::Dict message) {
+Me2MeNativeMessagingHost::DelegateToElevatedHost(base::DictValue message) {
   NOTREACHED();
 }
 

@@ -49,7 +49,7 @@
 #include "content/public/browser/tracing_service.h"
 #include "content/public/browser/web_contents.h"
 #include "services/resource_coordinator/public/cpp/memory_instrumentation/memory_instrumentation.h"
-#include "services/resource_coordinator/public/mojom/memory_instrumentation/memory_instrumentation.mojom-data-view.h"
+#include "services/resource_coordinator/public/mojom/memory_instrumentation/memory_instrumentation.mojom-shared.h"
 #include "services/tracing/public/cpp/perfetto/perfetto_config.h"
 #include "services/tracing/public/cpp/perfetto/perfetto_session.h"
 #include "services/tracing/public/cpp/perfetto/trace_packet_tokenizer.h"
@@ -96,9 +96,9 @@ std::string ConvertFromCamelCase(const std::string& in_str, char separator) {
 }
 
 base::Value ConvertDictKeyStyle(const base::Value& value) {
-  const base::Value::Dict* dict = value.GetIfDict();
+  const base::DictValue* dict = value.GetIfDict();
   if (dict) {
-    base::Value::Dict out;
+    base::DictValue out;
     for (auto kv : *dict) {
       out.Set(ConvertFromCamelCase(kv.first, '_'),
               ConvertDictKeyStyle(kv.second));
@@ -106,9 +106,9 @@ base::Value ConvertDictKeyStyle(const base::Value& value) {
     return base::Value(std::move(out));
   }
 
-  const base::Value::List* list = value.GetIfList();
+  const base::ListValue* list = value.GetIfList();
   if (list) {
-    base::Value::List out;
+    base::ListValue out;
     for (const auto& v : *list) {
       out.Append(ConvertDictKeyStyle(v));
     }
@@ -765,7 +765,7 @@ void TracingHandler::Start(
     base::trace_event::TraceConfig browser_config =
         base::trace_event::TraceConfig();
     if (config) {
-      base::Value::Dict dict;
+      base::DictValue dict;
       CHECK(crdtp::ConvertProtocolValue(*config, &dict));
       browser_config =
           GetTraceConfigFromDevToolsConfig(base::Value(std::move(dict)));
@@ -937,6 +937,12 @@ void TracingHandler::GetCategories(
   TracingController::GetInstance()->GetCategories(
       base::BindOnce(&TracingHandler::OnCategoriesReceived,
                      weak_factory_.GetWeakPtr(), std::move(callback)));
+}
+
+Response TracingHandler::GetTrackEventDescriptor(Binary* out_descriptor) {
+  *out_descriptor = Binary::fromVector(
+      TracingController::GetInstance()->GetTrackEventDescriptor());
+  return Response::Success();
 }
 
 void TracingHandler::OnRecordingEnabled(std::unique_ptr<StartCallback> callback,
@@ -1193,7 +1199,7 @@ bool TracingHandler::IsStartupTracingActive() {
 base::trace_event::TraceConfig TracingHandler::GetTraceConfigFromDevToolsConfig(
     const base::Value& devtools_config) {
   base::Value config = ConvertDictKeyStyle(devtools_config);
-  base::Value::Dict& config_dict = config.GetDict();
+  base::DictValue& config_dict = config.GetDict();
   if (std::string* mode = config_dict.FindString(kRecordModeParam)) {
     config_dict.Set(kRecordModeParam, ConvertFromCamelCase(*mode, '-'));
   }

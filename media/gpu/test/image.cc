@@ -142,7 +142,7 @@ bool Image::LoadMetadata() {
              << metadata_result.error().message;
     return false;
   }
-  const base::Value::Dict& metadata = metadata_result->GetDict();
+  const base::DictValue& metadata = metadata_result->GetDict();
 
   // Get the pixel format from the json data.
   const std::string* pixel_format = metadata.FindString("pixel_format");
@@ -173,10 +173,9 @@ bool Image::LoadMetadata() {
   // These values are not in json data if all the image data is in the visible
   // area.
   visible_rect_ = gfx::Rect(size_);
-  const base::Value::List* visible_rect_info =
-      metadata.FindList("visible_rect");
+  const base::ListValue* visible_rect_info = metadata.FindList("visible_rect");
   if (visible_rect_info) {
-    const base::Value::List& values = *visible_rect_info;
+    const base::ListValue& values = *visible_rect_info;
     if (values.size() != 4) {
       VLOGF(1) << "unexpected json format for visible rectangle";
       return false;

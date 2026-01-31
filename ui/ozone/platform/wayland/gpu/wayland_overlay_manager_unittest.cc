@@ -10,6 +10,7 @@
 #include "base/containers/flat_map.h"
 #include "base/functional/bind.h"
 #include "base/run_loop.h"
+#include "components/viz/common/resources/shared_image_format.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/ozone/platform/wayland/gpu/wayland_buffer_manager_gpu.h"
@@ -47,9 +48,9 @@ class WaylandOverlayManagerTest : public WaylandTest {
   ~WaylandOverlayManagerTest() override = default;
 
   void SetUp() override {
-    const base::flat_map<gfx::BufferFormat, std::vector<uint64_t>>
+    const base::flat_map<viz::SharedImageFormat, std::vector<uint64_t>>
         kSupportedFormatsWithModifiers{
-            {gfx::BufferFormat::YUV_420_BIPLANAR, {DRM_FORMAT_MOD_LINEAR}}};
+            {viz::MultiPlaneFormat::kNV12, {DRM_FORMAT_MOD_LINEAR}}};
 
     WaylandTest::SetUp();
 

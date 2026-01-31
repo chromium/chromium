@@ -81,7 +81,7 @@ TEST_F(ArcInputMethodSurfaceManagerTest, Observer) {
   auto input_method_surface = std::make_unique<exo::InputMethodSurface>(
       &manager, surface.get(), /*default_scale_cancellation=*/false);
   auto buffer = exo::test::ExoTestHelper::CreateBuffer(
-      gfx::Size(500, 500), viz::SinglePlaneFormat::kR_8);
+      gfx::Size(500, 500), viz::SinglePlaneFormat::kRGBA_8888);
   surface->Attach(buffer.get());
   surface->Commit();
 

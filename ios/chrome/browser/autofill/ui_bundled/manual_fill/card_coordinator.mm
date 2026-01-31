@@ -22,10 +22,10 @@
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
-#import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/browser_coordinator_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/open_new_tab_command.h"
+#import "ios/chrome/browser/shared/public/commands/scene_commands.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_navigation_controller.h"
 #import "ios/chrome/common/ui/reauthentication/reauthentication_event.h"
 #import "ios/chrome/common/ui/reauthentication/reauthentication_module.h"
@@ -37,7 +37,7 @@
 @interface CardCoordinator () <CardListDelegate> {
   // Opening links on the enrollment bottom sheet is delegated to this
   // dispatcher.
-  __weak id<ApplicationCommands> _dispatcher;
+  __weak id<SceneCommands> _dispatcher;
 
   // Reauthentication Module used for re-authentication.
   ReauthenticationModule* _reauthenticationModule;
@@ -96,8 +96,8 @@
         initWithProfile:super.browser->GetProfile()->GetOriginalProfile()
            webStateList:super.browser->GetWebStateList()
          resultDelegate:_cardMediator];
-    _dispatcher = HandlerForProtocol(self.browser->GetCommandDispatcher(),
-                                     ApplicationCommands);
+    _dispatcher =
+        HandlerForProtocol(self.browser->GetCommandDispatcher(), SceneCommands);
   }
   return self;
 }

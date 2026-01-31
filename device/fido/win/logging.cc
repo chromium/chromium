@@ -4,11 +4,11 @@
 
 #include "device/fido/win/logging.h"
 
+#include <algorithm>
 #include <string>
 #include <string_view>
 
 #include "base/compiler_specific.h"
-#include "base/containers/contains.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "components/device_event_log/device_event_log.h"
@@ -105,7 +105,7 @@ std::ostream& operator<<(std::ostream& out,
 std::ostream& operator<<(std::ostream& out, const WEBAUTHN_EXTENSION& in) {
   constexpr const wchar_t* kRedactedExtensions[] = {L"largeBlob", L"prf"};
   out << "{" << Quoted(in.pwszExtensionIdentifier) << kSep;
-  if (base::Contains(kRedactedExtensions, in.pwszExtensionIdentifier)) {
+  if (std::ranges::contains(kRedactedExtensions, in.pwszExtensionIdentifier)) {
     out << "[redacted]";
   } else {
     out << base::HexEncode(in.pvExtension, in.cbExtension);

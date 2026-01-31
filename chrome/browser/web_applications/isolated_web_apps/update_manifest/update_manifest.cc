@@ -32,12 +32,11 @@ namespace {
 
 base::expected<std::vector<UpdateManifest::VersionEntry>,
                UpdateManifest::JsonFormatError>
-ParseVersions(const base::Value::List& version_entries_value,
+ParseVersions(const base::ListValue& version_entries_value,
               const GURL& update_manifest_url) {
   base::flat_map<IwaVersion, UpdateManifest::VersionEntry> version_entry_map;
   for (const auto& version_entry_value : version_entries_value) {
-    const base::Value::Dict* version_entry_dict =
-        version_entry_value.GetIfDict();
+    const base::DictValue* version_entry_dict = version_entry_value.GetIfDict();
     if (!version_entry_dict) {
       return base::unexpected(
           UpdateManifest::JsonFormatError::kVersionEntryNotADictionary);
@@ -69,11 +68,11 @@ ParseVersions(const base::Value::List& version_entries_value,
 
 base::expected<base::flat_map<UpdateChannel, UpdateManifest::ChannelMetadata>,
                UpdateManifest::JsonFormatError>
-ParseChannels(const base::Value::Dict& channels) {
+ParseChannels(const base::DictValue& channels) {
   base::flat_map<UpdateChannel, UpdateManifest::ChannelMetadata>
       channels_metadata;
   for (const auto [channel_key, channel_value] : channels) {
-    const base::Value::Dict* channel_dict = channel_value.GetIfDict();
+    const base::DictValue* channel_dict = channel_value.GetIfDict();
     if (!channel_dict) {
       return base::unexpected(
           UpdateManifest::JsonFormatError::kChannelNotADictionary);
@@ -170,7 +169,7 @@ UpdateManifest::CreateFromJson(const base::Value& json,
     return base::unexpected(JsonFormatError::kRootNotADictionary);
   }
 
-  const base::Value::List* versions =
+  const base::ListValue* versions =
       json.GetDict().FindList(kUpdateManifestAllVersionsKey);
   if (!versions) {
     return base::unexpected(JsonFormatError::kVersionsNotAnArray);
@@ -250,7 +249,7 @@ UpdateManifest::ChannelMetadata UpdateManifest::GetChannelMetadata(
 // static
 base::expected<UpdateManifest::VersionEntry, std::monostate>
 UpdateManifest::VersionEntry::ParseFromJson(
-    const base::Value::Dict& version_entry_dict,
+    const base::DictValue& version_entry_dict,
     const GURL& update_manifest_url) {
   ASSIGN_OR_RETURN(auto version,
                    ParseAndValidateVersion(
@@ -281,7 +280,7 @@ bool UpdateManifest::ChannelMetadata::operator==(
 
 void PrintTo(const UpdateManifest::ChannelMetadata& channel_metadata,
              std::ostream* os) {
-  *os << base::Value::Dict()
+  *os << base::DictValue()
              .Set("channel", base::ToString(channel_metadata.channel_))
              .Set("display_name",
                   channel_metadata.display_name_.has_value()
@@ -322,11 +321,11 @@ bool operator==(const UpdateManifest::VersionEntry& lhs,
 
 std::ostream& operator<<(std::ostream& os,
                          const UpdateManifest::VersionEntry& version_entry) {
-  base::Value::List channels;
+  base::ListValue channels;
   for (const auto& channel : version_entry.channels()) {
     channels.Append(channel.ToString());
   }
-  return os << base::Value::Dict()
+  return os << base::DictValue()
                    .Set(kUpdateManifestSrcKey, version_entry.src().spec())
                    .Set(kUpdateManifestVersionKey,
                         version_entry.version().GetString())

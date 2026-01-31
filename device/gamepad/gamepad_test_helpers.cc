@@ -26,9 +26,11 @@ void MockGamepadDataFetcher::GetGamepadData(bool devices_changed_hint) {
     for (size_t i = 0; i < Gamepads::kItemsLengthCap; ++i) {
       if (test_data_.items[i].connected) {
         PadState* pad = GetPadState(i);
-        if (pad)
-          UNSAFE_TODO(
-              memcpy(&pad->data, &test_data_.items[i], sizeof(Gamepad)));
+        if (pad) {
+          base::byte_span_from_ref(base::allow_nonunique_obj, pad->data)
+              .copy_from(base::byte_span_from_ref(base::allow_nonunique_obj,
+                                                  test_data_.items[i]));
+        }
       }
     }
   }

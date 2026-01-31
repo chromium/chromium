@@ -60,14 +60,14 @@ java_library {
 java_library {
     name: "${GN2BP_MODULE_PREFIX}java",
     static_libs: [
+        "${GN2BP_MODULE_PREFIX}components_cronet_android_cronet_build_config_java",
         "${GN2BP_MODULE_PREFIX}components_cronet_android_cronet_impl_native_java",
-        "${GN2BP_MODULE_PREFIX}components_cronet_android_cronet_build_config_and_jni_registration_java",
+        "${GN2BP_MODULE_PREFIX}components_cronet_android_cronet_jni_registration_java",
     ],
     sdk_version: "module_current",
     min_sdk_version: "30",
     visibility: [
-        "//packages/modules/Connectivity:__subpackages__",
-        "//external/cronet/android:__subpackages__",
+        "//external/cronet:__subpackages__",
     ],
     apex_available: [
         "com.android.tethering",
@@ -77,14 +77,15 @@ java_library {
 java_library {
     name: "${GN2BP_MODULE_PREFIX}java__testing",
     static_libs: [
+        "${GN2BP_MODULE_PREFIX}components_cronet_android_cronet_build_config_java__testing",
         "${GN2BP_MODULE_PREFIX}components_cronet_android_cronet_impl_native_java__testing",
-        "${GN2BP_MODULE_PREFIX}components_cronet_android_cronet_build_config_and_jni_registration_java__testing",
+        "${GN2BP_MODULE_PREFIX}components_cronet_android_cronet_jni_registration_java__testing",
         "${GN2BP_MODULE_PREFIX}components_cronet_android_cronet_tests_jni_registration_java__testing",
     ],
     sdk_version: "module_current",
     min_sdk_version: "30",
     visibility: [
-        "//external/cronet/android:__subpackages__",
+        "//external/cronet:__subpackages__",
     ],
     apex_available: [
         "com.android.tethering",
@@ -194,4 +195,32 @@ cc_library_headers {
     visibility: [
         "//external/cronet:__subpackages__",
     ],
+}
+
+android_test {
+    name: "${GN2BP_MODULE_PREFIX}NetHttpCoverageTests",
+    enforce_default_target_sdk_version: true,
+    min_sdk_version: "30",
+    test_suites: [
+        "general-tests",
+        "mts-tethering",
+    ],
+    static_libs: [
+        "modules-utils-native-coverage-listener",
+        "CtsNetHttpTestsLib",
+        "${GN2BP_MODULE_PREFIX}api_java",
+        "${GN2BP_MODULE_PREFIX}java__testing",
+        "${GN2BP_MODULE_PREFIX}java_tests",
+    ],
+    compile_multilib: "both", // Include both the 32 and 64 bit versions
+    jni_libs: [
+        "libnativecoverage",
+        "${GN2BP_MODULE_PREFIX}components_cronet_android_cronet_tests__testing",
+        "${GN2BP_MODULE_PREFIX}components_cronet_android_cronet__testing",
+        "${GN2BP_MODULE_PREFIX}third_party_netty_tcnative_netty_tcnative_so__testing",
+    ],
+    test_config: "AndroidTest.xml",
+    data: [":${GN2BP_MODULE_PREFIX}javatests_resources"],
+    manifest: "components/cronet/android/test/javatests/AndroidManifest.xml",
+    resource_dirs: ["components/cronet/android/test/res"],
 }

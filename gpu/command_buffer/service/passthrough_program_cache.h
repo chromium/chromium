@@ -8,6 +8,7 @@
 #include <mutex>
 
 #include "base/containers/lru_cache.h"
+#include "base/memory/memory_pressure_listener.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ptr_exclusion.h"
 #include "gpu/command_buffer/service/decoder_context.h"
@@ -21,7 +22,9 @@ namespace gles2 {
 // Program cache that stores binaries in memory, with the ability to serialize
 // them for disk storage.  It also acts as generic blob cache for the underlying
 // implementation via the blob cache extension.
-class GPU_GLES2_EXPORT PassthroughProgramCache : public ProgramCache {
+class GPU_GLES2_EXPORT PassthroughProgramCache
+    : public ProgramCache,
+      public base::MemoryPressureListener {
  public:
   using Key = std::vector<uint8_t>;
   using Value = std::vector<uint8_t>;
@@ -54,6 +57,10 @@ class GPU_GLES2_EXPORT PassthroughProgramCache : public ProgramCache {
   void LoadProgram(const std::string& key, const std::string& program) override;
 
   size_t Trim(size_t limit) override;
+
+  // base::MemoryPressureListener:
+  void OnMemoryPressure(
+      base::MemoryPressureLevel memory_pressure_level) override;
 
   static void BlobCacheSet(const void* key,
                            EGLsizeiANDROID key_size,
@@ -104,6 +111,10 @@ class GPU_GLES2_EXPORT PassthroughProgramCache : public ProgramCache {
                         const void* value,
                         EGLsizeiANDROID value_size);
 
+  // Return the current max_size_bytes(), which changes depending on the memory
+  // pressure level.
+  size_t GetCurrentMaxSizeBytes() const;
+
   friend class ProgramCacheValue;
 
   typedef base::LRUCache<Key, ProgramCacheValue> ProgramLRUCache;
@@ -111,6 +122,9 @@ class GPU_GLES2_EXPORT PassthroughProgramCache : public ProgramCache {
   const bool disable_gpu_shader_disk_cache_;
   size_t curr_size_bytes_;
   ProgramLRUCache store_ GUARDED_BY(lock_);
+
+  base::AsyncMemoryPressureListenerRegistration
+      memory_pressure_listener_registration_;
 
   // TODO(syoussefi): take compression from memory_program_cache, see
   // compress_program_binaries_

@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_CLIPBOARD_CLIPBOARD_CHANGE_EVENT_CONTROLLER_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_CLIPBOARD_CLIPBOARD_CHANGE_EVENT_CONTROLLER_H_
 
+#include "third_party/blink/public/mojom/permissions/permission.mojom-blink.h"
 #include "third_party/blink/renderer/core/clipboard/system_clipboard.h"
 #include "third_party/blink/renderer/core/dom/events/event_target.h"
 #include "third_party/blink/renderer/core/frame/navigator.h"
@@ -47,6 +48,11 @@ class MODULES_EXPORT ClipboardChangeEventController final
  private:
   // Fires the clipboardchange event after page focus check.
   void OnClipboardChanged();
+  void MaybeDispatchClipboardChangeEvent();
+  void DispatchClipboardChangeEvent();
+
+  // Callback for permission check result
+  void OnPermissionResult(mojom::blink::PermissionStatus status);
 
   // Gets the SystemClipboard from the execution context.
   SystemClipboard* GetSystemClipboard() const;

@@ -127,7 +127,7 @@ void PrintViewManagerCros::HandlePrintPreviewRemoved() {
 }
 
 void PrintViewManagerCros::HandleGeneratePrintPreview(
-    const base::Value::Dict& settings) {
+    const base::DictValue& settings) {
   ui_wrapper_->GeneratePrintPreview(settings.Clone());
 }
 

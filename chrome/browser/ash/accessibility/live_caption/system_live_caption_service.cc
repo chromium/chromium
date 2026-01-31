@@ -27,7 +27,6 @@
 #include "components/soda/constants.h"
 #include "media/audio/audio_device_description.h"
 #include "media/base/media_switches.h"
-#include "media/mojo/mojom/speech_recognition.mojom-forward.h"
 #include "media/mojo/mojom/speech_recognition.mojom.h"
 #include "system_live_caption_service.h"
 #include "ui/base/l10n/l10n_util.h"

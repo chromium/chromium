@@ -22,9 +22,6 @@ id<GREYMatcher> KeyboardIconMatcher();
 // Returns a matcher for the password table view in manual fallback.
 id<GREYMatcher> PasswordTableViewMatcher();
 
-// Returns a matcher for the password search bar in manual fallback.
-id<GREYMatcher> PasswordSearchBarMatcher();
-
 // Returns a matcher for the button to open Password Manager in manual
 // fallback.
 id<GREYMatcher> ManagePasswordsMatcher();

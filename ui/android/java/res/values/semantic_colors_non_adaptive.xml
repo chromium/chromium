@@ -95,10 +95,6 @@ found in the LICENSE file.
 
     <color name="incognito_card_bg_color">@color/gm3_baseline_surface_container_dark</color>
 
-    <!-- IPH Highlight Colors -->
-    <color name="iph_highlight_blue_dark">@color/baseline_primary_40_alpha_10</color>
-    <color name="iph_highlight_blue_light">@color/baseline_primary_80_alpha_50</color>
-
     <!-- Colors used for Widgets (checkboxes, switches, buttons, etc)-->
     <!-- Same as ?attr/colorPrimary. -->
     <color name="default_control_color_active_light" tools:ignore="UnusedResources">@color/baseline_primary_40</color>
@@ -138,7 +134,7 @@ found in the LICENSE file.
     <color name="tab_strip_tablet_bg_incognito">@color/gm3_baseline_surface_container_highest_dark</color>
     <color name="tab_strip_tablet_divider_bg_incognito">@color/baseline_neutral_variant_30</color>
     <color name="tab_strip_tablet_bg_unfocused_incognito">@color/gm3_baseline_surface_container_low_dark</color>
-    <color name="omnibox_suggestion_bg_hover_incognito">@color/gm3_baseline_surface_container_low_dark</color>
+    <color name="search_suggestion_bg_color_hover_incognito">@color/gm3_baseline_surface_container_low_dark</color>
 
     <!-- Illustration -->
     <color name="promo_illustration_bg_color_light">@color/baseline_neutral_90_alpha_38</color>
@@ -152,7 +148,6 @@ found in the LICENSE file.
     <color name="preference_highlighted_bg_color_light">@color/white_alpha_24</color>
 
     <!-- Snackbar colors -->
-    <color name="snackbar_background_color_baseline_dark">@color/baseline_neutral_10_with_surface_tint_dark_alpha_12</color>
     <color name="floating_snackbar_background_incognito">@color/gm3_baseline_surface_container_high_dark</color>
 
     <!-- Rating star colors -->
@@ -170,10 +165,10 @@ found in the LICENSE file.
     <color name="adaptive_toolbar_preference_header_omnibox_dark">@color/white_alpha_6</color>
 
     <!-- Price-tracking colors -->
-    <color name="price_drop_annotation_bg_color_light">@color/baseline_tertiary_90</color>
-    <color name="price_drop_annotation_bg_color_dark">@color/baseline_tertiary_30</color>
-    <color name="price_drop_annotation_text_green_light">@color/baseline_tertiary_40</color>
-    <color name="price_drop_annotation_text_green_dark">@color/baseline_tertiary_80</color>
+    <color name="price_indicator_bg_color_light">@color/baseline_tertiary_90</color>
+    <color name="price_indicator_bg_color_dark">@color/baseline_tertiary_30</color>
+    <color name="price_indicator_text_color_light">@color/baseline_tertiary_40</color>
+    <color name="price_indicator_text_color_dark">@color/baseline_tertiary_80</color>
 
     <!-- Address Bar preference Colors -->
     <color name="address_bar_preference_header_background_light">@color/material_primary_95</color>

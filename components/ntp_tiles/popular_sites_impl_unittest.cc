@@ -116,11 +116,10 @@ class PopularSitesTest : public ::testing::Test {
     prefs_->SetString(prefs::kPopularSitesOverrideVersion, version);
   }
 
-  base::Value::List CreateListFromTestSites(
-      const TestPopularSiteVector& sites) {
-    base::Value::List sites_value;
+  base::ListValue CreateListFromTestSites(const TestPopularSiteVector& sites) {
+    base::ListValue sites_value;
     for (const TestPopularSite& site : sites) {
-      base::Value::Dict site_value;
+      base::DictValue site_value;
       for (const std::pair<const std::string, std::string>& kv : site) {
         if (kv.first == kTitleSource) {
           int source;
@@ -145,10 +144,10 @@ class PopularSitesTest : public ::testing::Test {
 
   void RespondWithV6JSON(const std::string& url,
                          const TestPopularSectionVector& sections) {
-    base::Value::List sections_value;
+    base::ListValue sections_value;
     sections_value.reserve(sections.size());
     for (const TestPopularSection& section : sections) {
-      base::Value::Dict section_value;
+      base::DictValue section_value;
       section_value.Set(kSection, static_cast<int>(section.first));
       section_value.Set(kSites, CreateListFromTestSites(section.second));
       sections_value.Append(std::move(section_value));

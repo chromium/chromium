@@ -28,7 +28,6 @@ Nếu đã chọn '<ph name="SERVICE_SCRIPT_NAME" />', hãy bỏ chọn rồi ch
 <translation id="2329392777730037872">Không mở được <ph name="URL" /> trên ứng dụng.</translation>
 <translation id="2359808026110333948">Tiếp tục</translation>
 <translation id="2366718077645204424">Không thể kết nối với máy chủ. Điều này có thể do cấu hình của mạng bạn đang sử dụng.</translation>
-<translation id="242591256144136845">Bản quyền 2025 Google LLC. Bảo lưu mọi quyền.</translation>
 <translation id="2504109125669302160">Cấp quyền 'Hỗ trợ tiếp cận' cho <ph name="PRODUCT_NAME" /></translation>
 <translation id="2509394361235492552">Đã kết nối với <ph name="HOSTNAME" /></translation>
 <translation id="2540992418118313681">Bạn có muốn chia sẻ máy tính này cho một người dùng khác xem và kiểm soát không?</translation>
@@ -47,6 +46,7 @@ Nếu đã chọn '<ph name="SERVICE_SCRIPT_NAME" />', hãy bỏ chọn rồi ch
 <translation id="3150823315463303127">Máy chủ không đọc được chính sách.</translation>
 <translation id="3171922709365450819">Ứng dụng này không hỗ trợ thiết bị này do yêu cầu xác thực của bên thứ ba.</translation>
 <translation id="3197730452537982411">Máy tính từ xa</translation>
+<translation id="3236334139428307578">Bản quyền 2026 The Chromium Authors. Bảo lưu mọi quyền.</translation>
 <translation id="324272851072175193">Gửi những hướng dẫn này qua email</translation>
 <translation id="3305934114213025800"><ph name="PRODUCT_NAME" /> muốn thực hiện thay đổi.</translation>
 <translation id="3339299787263251426">Truy cập máy tính của bạn qua Internet một cách an toàn</translation>
@@ -111,6 +111,7 @@ Nếu đã chọn '<ph name="SERVICE_SCRIPT_NAME" />', hãy bỏ chọn rồi ch
 <translation id="5823554426827907568"><ph name="CLIENT_USERNAME" /> đã yêu cầu quyền truy cập để xem màn hình và điều khiển bàn phím cũng như chuột của bạn. Hãy nhấn ''<ph name="IDS_SHARE_CONFIRM_DIALOG_DECLINE" />'' nếu bạn không biết yêu cầu này. Nếu bạn có biết, hãy chọn ''<ph name="IDS_SHARE_CONFIRM_DIALOG_CONFIRM" />'' để cho phép kết nối khi đã sẵn sàng.</translation>
 <translation id="5823658491130719298">Trên máy tính mà bạn muốn truy cập từ xa, hãy mở Chrome và truy cập vào <ph name="INSTALLATION_LINK" /></translation>
 <translation id="5841343754884244200">Tùy chọn hiển thị</translation>
+<translation id="5965133372831030509">Bản quyền 2026 Google LLC. Bảo lưu mọi quyền.</translation>
 <translation id="6033507038939587647">Tùy chọn bàn phím</translation>
 <translation id="6040143037577758943">Đóng</translation>
 <translation id="6062854958530969723">Khởi chạy máy chủ không thành công.</translation>
@@ -138,7 +139,6 @@ Nếu đã chọn '<ph name="SERVICE_SCRIPT_NAME" />', hãy bỏ chọn rồi ch
 <translation id="7067321367069083429">Màn hình đóng vai trò như màn hình cảm ứng</translation>
 <translation id="7116737094673640201">Chào mừng bạn đến với Chrome Remote Desktop</translation>
 <translation id="7144878232160441200">Thử lại</translation>
-<translation id="7298392173540380852">Bản quyền 2025 The Chromium Authors. Bảo lưu mọi quyền.</translation>
 <translation id="7312846573060934304">Máy chủ đang ngoại tuyến.</translation>
 <translation id="7319983568955948908">Ngừng chia sẻ</translation>
 <translation id="7359298090707901886">Không thể dùng trình duyệt đã chọn để mở URL trên máy cục bộ.</translation>

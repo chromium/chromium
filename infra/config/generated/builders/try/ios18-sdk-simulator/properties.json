@@ -39,8 +39,7 @@
           "project": "chromium"
         }
       ],
-      "targets_spec_directory": "infra/config/generated/builders/try/ios18-sdk-simulator/targets",
-      "targets_spec_directory_relative_to_source_dir": true
+      "targets_spec_directory": "infra/config/generated/builders/try/ios18-sdk-simulator/targets"
     }
   },
   "$build/siso": {
@@ -48,10 +47,10 @@
       "builder"
     ],
     "enable_cloud_monitoring": true,
-    "enable_cloud_profiler": true,
     "enable_cloud_trace": true,
     "experiments": [],
-    "metrics_project": "chromium-reclient-metrics",
+    "keep_going": 3,
+    "profile_mode": "cloud",
     "project": "rbe-chromium-untrusted"
   },
   "$recipe_engine/resultdb/test_presentation": {
@@ -63,5 +62,5 @@
   },
   "builder_group": "tryserver.chromium.mac",
   "recipe": "chromium_trybot",
-  "xcode_build_version": "17c48"
+  "xcode_build_version": "17c52"
 }

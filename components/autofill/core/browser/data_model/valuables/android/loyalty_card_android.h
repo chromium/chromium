@@ -5,6 +5,8 @@
 #ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_DATA_MODEL_VALUABLES_ANDROID_LOYALTY_CARD_ANDROID_H_
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_DATA_MODEL_VALUABLES_ANDROID_LOYALTY_CARD_ANDROID_H_
 
+#include <cstdint>
+
 #include "base/component_export.h"
 #include "components/autofill/core/browser/data_model/valuables/loyalty_card.h"
 #include "components/autofill/core/browser/data_model/valuables/valuable_types.h"
@@ -32,10 +34,14 @@ inline autofill::LoyaltyCard FromJniType<autofill::LoyaltyCard>(
       autofill::Java_LoyaltyCard_getLoyaltyCardNumber(env, j_object);
   std::vector<GURL> merchant_domains =
       autofill::Java_LoyaltyCard_getMerchantDomains(env, j_object);
+  base::Time use_date = base::Time::FromMillisecondsSinceUnixEpoch(
+      autofill::Java_LoyaltyCard_getUseDate(env, j_object));
+  int64_t use_count = autofill::Java_LoyaltyCard_getUseCount(env, j_object);
   return autofill::LoyaltyCard(
       std::move(loyalty_card_id), std::move(merchant_name),
       std::move(program_name), std::move(program_logo),
-      std::move(loyalty_card_number), std::move(merchant_domains));
+      std::move(loyalty_card_number), std::move(merchant_domains), use_date,
+      use_count);
 }
 
 template <>
@@ -45,7 +51,9 @@ inline jni_zero::ScopedJavaLocalRef<jobject> ToJniType<autofill::LoyaltyCard>(
   return autofill::Java_LoyaltyCard_Constructor(
       env, *loyalty_card.id(), loyalty_card.merchant_name(),
       loyalty_card.program_name(), loyalty_card.program_logo(),
-      loyalty_card.loyalty_card_number(), loyalty_card.merchant_domains());
+      loyalty_card.loyalty_card_number(), loyalty_card.merchant_domains(),
+      loyalty_card.use_date().InMillisecondsSinceUnixEpoch(),
+      loyalty_card.use_count());
 }
 
 }  // namespace jni_zero

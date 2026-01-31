@@ -32,7 +32,7 @@ class BaseScreenHandler : public BaseWebUIHandler {
  protected:
   // Advances to the `oobe_screen_` in the WebUI. Optional `data` will be passed
   // to the `onBeforeShow` on the javascript side.
-  void ShowInWebUI(std::optional<base::Value::Dict> data = std::nullopt);
+  void ShowInWebUI(std::optional<base::DictValue> data = std::nullopt);
 
   template <typename... Args>
   void CallExternalAPI(const std::string& api_function, Args... args) {
@@ -40,11 +40,11 @@ class BaseScreenHandler : public BaseWebUIHandler {
                     std::move(args)...);
   }
 
-  bool HandleUserActionImpl(const base::Value::List& args);
+  bool HandleUserActionImpl(const base::ListValue& args);
 
  private:
   // Handles user action.
-  void HandleUserAction(const base::Value::List& args);
+  void HandleUserAction(const base::ListValue& args);
 
   // Generates the full function name to call an API function of the screen.
   // `oobe_screen_.external_api_prefix` must be set.

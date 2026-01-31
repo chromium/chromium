@@ -13,15 +13,20 @@ export function getHtml(this: SimpleActionMenuElement) {
   <cr-action-menu
       accessibility-label="${this.label}"
       role-description="$i18n{menu}"
+      ?non-modal="${this.nonModal}"
       tabindex="-1">
     ${this.menuItems.map((item, index) => html`
+      <hr class="sp-hr has-header-${this.doesItemHaveHeaderSeparator_(item)}">
+      <span class="has-header-${this.doesItemHaveHeader_(item)} header-style">
+          ${item.header?.title}
+      </span>
       <button
           class="dropdown-item"
           style="${item.style}"
           @click="${this.onClick_}"
           data-index="${index}">
         <cr-icon
-            class="button-image check-mark check-mark-showing-${this.isItemSelected_(index)}"
+            class="button-image check-mark check-mark-showing-${this.isItemSelected_(index, item)}"
             icon="read-anything-20:check-mark"
             aria-label="$i18n{selected}">
         </cr-icon>

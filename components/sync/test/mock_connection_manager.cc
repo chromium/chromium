@@ -4,10 +4,10 @@
 
 #include "components/sync/test/mock_connection_manager.h"
 
+#include <algorithm>
 #include <map>
 #include <utility>
 
-#include "base/containers/contains.h"
 #include "base/location.h"
 #include "base/strings/stringprintf.h"
 #include "base/uuid.h"
@@ -511,7 +511,7 @@ bool MockConnectionManager::ShouldConflictThisCommit() {
 }
 
 bool MockConnectionManager::ShouldTransientErrorThisId(const std::string& id) {
-  return base::Contains(transient_error_ids_, id);
+  return std::ranges::contains(transient_error_ids_, id);
 }
 
 bool MockConnectionManager::ProcessCommit(

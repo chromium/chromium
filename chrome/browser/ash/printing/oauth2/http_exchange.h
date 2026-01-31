@@ -186,7 +186,7 @@ class HttpExchange {
   std::unique_ptr<network::SimpleURLLoader> url_loader_;
 
   // Stores parameters for a request or parameters parsed from a response.
-  base::Value::Dict content_;
+  base::DictValue content_;
 
   // Error message.
   std::string error_msg_;

@@ -43,7 +43,7 @@ class FirstPartySetsHandlerImplBrowserTest
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
     command_line->AppendSwitchASCII(
-        network::switches::kUseFirstPartySet,
+        network::switches::kUseRelatedWebsiteSet,
         base::StringPrintf(R"({"primary": "%s",)"
                            R"("associatedSites": ["%s","%s"]})",
                            kSiteA, kSiteB, kSiteC));

@@ -50,21 +50,21 @@ export class TestWallpaperProvider extends TestBrowserProxy implements
         descriptionContent: 'description for collection zero',
         id: 'id_0',
         name: 'zero',
-        previews: [{url: 'https://collections.googleusercontent.com/0'}],
+        previews: ['https://collections.googleusercontent.com/0'],
       },
       {
         descriptionContent: '',
         id: 'id_1',
         name: 'one',
-        previews: [{url: 'https://collections.googleusercontent.com/1'}],
+        previews: ['https://collections.googleusercontent.com/1'],
       },
       {
         descriptionContent: '',
         id: 'id_2',
         name: 'dark-light',
         previews: [
-          {url: 'https://collections.googleusercontent.com/2'},
-          {url: 'https://collections.googleusercontent.com/3'},
+          'https://collections.googleusercontent.com/2',
+          'https://collections.googleusercontent.com/3',
         ],
       },
       {
@@ -72,7 +72,7 @@ export class TestWallpaperProvider extends TestBrowserProxy implements
         id: loadTimeData.getString('timeOfDayWallpaperCollectionId'),
         name: 'time-of-day',
         previews: [
-          {url: 'https://collections.googleusercontent.com/tod'},
+          'https://collections.googleusercontent.com/tod',
         ],
       },
     ];
@@ -84,49 +84,49 @@ export class TestWallpaperProvider extends TestBrowserProxy implements
       {
         assetId: BigInt(1),
         attribution: ['Image 0 light'],
-        url: {url: 'https://images.googleusercontent.com/1'},
+        url: 'https://images.googleusercontent.com/1',
         unitId: BigInt(1),
         type: OnlineImageType.kLight,
       },
       {
         assetId: BigInt(2),
         attribution: ['Image 2'],
-        url: {url: 'https://images.googleusercontent.com/2'},
+        url: 'https://images.googleusercontent.com/2',
         unitId: BigInt(2),
         type: OnlineImageType.kUnknown,
       },
       {
         assetId: BigInt(0),
         attribution: ['Image 0 dark'],
-        url: {url: 'https://images.googleusercontent.com/0'},
+        url: 'https://images.googleusercontent.com/0',
         unitId: BigInt(1),
         type: OnlineImageType.kDark,
       },
       {
         assetId: BigInt(3),
         attribution: ['Image 3'],
-        url: {url: 'https://images.googleusercontent.com/light-1'},
+        url: 'https://images.googleusercontent.com/light-1',
         unitId: BigInt(3),
         type: OnlineImageType.kLight,
       },
       {
         assetId: BigInt(4),
         attribution: ['Image 3'],
-        url: {url: 'https://images.googleusercontent.com/morning-1'},
+        url: 'https://images.googleusercontent.com/morning-1',
         unitId: BigInt(3),
         type: OnlineImageType.kMorning,
       },
       {
         assetId: BigInt(5),
         attribution: ['Image 3'],
-        url: {url: 'https://images.googleusercontent.com/afternoon-1'},
+        url: 'https://images.googleusercontent.com/afternoon-1',
         unitId: BigInt(3),
         type: OnlineImageType.kLateAfternoon,
       },
       {
         assetId: BigInt(6),
         attribution: ['Image 3'],
-        url: {url: 'https://images.googleusercontent.com/dark-1'},
+        url: 'https://images.googleusercontent.com/dark-1',
         unitId: BigInt(3),
         type: OnlineImageType.kDark,
       },
@@ -135,9 +135,9 @@ export class TestWallpaperProvider extends TestBrowserProxy implements
     this.localImages = [{path: 'LocalImage0.png'}, {path: 'LocalImage1.png'}];
 
     this.localImageData = {
-      [kDefaultImageSymbol]: {url: ''},
-      'LocalImage0.png': {url: 'data:image/png;base64,localimage0data'},
-      'LocalImage1.png': {url: 'data:image/png;base64,localimage1data'},
+      [kDefaultImageSymbol]: '',
+      'LocalImage0.png': 'data:image/png;base64,localimage0data',
+      'LocalImage1.png': 'data:image/png;base64,localimage1data',
     };
 
     this.attribution = {
@@ -176,8 +176,7 @@ export class TestWallpaperProvider extends TestBrowserProxy implements
       Record<string, string|null> = {};
   localImages: FilePath[]|null;
   localImageData: Record<string|DefaultImageSymbol, Url>;
-  defaultImageThumbnail:
-      Url = {url: 'data:image/png;base64,default_image_thumbnail'};
+  defaultImageThumbnail: Url = 'data:image/png;base64,default_image_thumbnail';
   attribution: CurrentAttribution;
   currentWallpaper: CurrentWallpaper;
   albumId: string;

@@ -13,9 +13,9 @@
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
-#import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/open_new_tab_command.h"
+#import "ios/chrome/browser/shared/public/commands/scene_commands.h"
 #import "ios/chrome/browser/shared/ui/util/layout_guide_names.h"
 #import "ios/chrome/browser/shared/ui/util/named_guide.h"
 #import "ios/chrome/browser/tabs/model/tabs_dependency_installer_bridge.h"
@@ -110,7 +110,7 @@
     (SadTabViewController*)sadTabViewController {
   // TODO(crbug.com/40670043): Use HandlerForProtocol after commands protocol
   // clean up.
-  [static_cast<id<ApplicationCommands>>(self.browser->GetCommandDispatcher())
+  [static_cast<id<SceneCommands>>(self.browser->GetCommandDispatcher())
       showReportAnIssueFromViewController:self.baseViewController
                                    sender:UserFeedbackSender::SadTab];
 }
@@ -123,7 +123,7 @@
 
   // TODO(crbug.com/40670043): Use HandlerForProtocol after commands protocol
   // clean up.
-  [static_cast<id<ApplicationCommands>>(self.browser->GetCommandDispatcher())
+  [static_cast<id<SceneCommands>>(self.browser->GetCommandDispatcher())
       openURLInNewTab:command];
 }
 

@@ -195,12 +195,12 @@ constexpr net::NetworkTrafficAnnotationTag kStartSessionAnnotation =
 //   }
 // }
 Base64UrlString GetChallengeBytesFromParsedResponse(
-    std::optional<base::Value::Dict> response) {
+    std::optional<base::DictValue> response) {
   if (!response.has_value()) {
     return Base64UrlString();
   }
 
-  base::Value::Dict* challenge_dict = response->FindDict(kChallengeDataKey);
+  base::DictValue* challenge_dict = response->FindDict(kChallengeDataKey);
   if (!challenge_dict) {
     return Base64UrlString();
   }
@@ -298,7 +298,7 @@ std::string CreateStartSessionRequestData(
   //     }
   // }
 
-  base::Value::Dict assertion_info;
+  base::DictValue assertion_info;
   assertion_info.Set(kEmailKey, fido_assertion_info.email);
   assertion_info.Set(kCredentialIdKey, *fido_assertion_info.credential_id);
   // The following fields are binary data that will be represented as a protobuf
@@ -312,17 +312,17 @@ std::string CreateStartSessionRequestData(
   assertion_info.Set(kSignatureKey,
                      base::Base64Encode(fido_assertion_info.signature));
 
-  base::Value::Dict fulfilled_challenge;
+  base::DictValue fulfilled_challenge;
   fulfilled_challenge.Set(kFulfilledChallengeTypeKey, "FIDO");
   fulfilled_challenge.Set(kAssertionInfoKey, std::move(assertion_info));
 
-  base::Value::Dict platform_data;
+  base::DictValue platform_data;
   platform_data.Set(kFallbackOptionKey, "TARGET_ONLY");
 
-  base::Value::Dict source_device_info;
+  base::DictValue source_device_info;
   source_device_info.Set(kDeviceTypeKey, "ANDROID");
 
-  base::Value::Dict chrome_os_device_info;
+  base::DictValue chrome_os_device_info;
   // Gaia expects a byte array of cert chain in their request proto (see request
   // format above). We need to Base64 encode the cert chain on top of the PEM
   // encoding. Gaia will then do a double decoding - one at the proto level
@@ -335,12 +335,12 @@ std::string CreateStartSessionRequestData(
       kClientIdKey,
       google_apis::GetOAuth2ClientID(google_apis::OAuth2Client::CLIENT_MAIN));
 
-  base::Value::Dict target_device_info;
+  base::DictValue target_device_info;
   target_device_info.Set(kChromeOsDeviceInfoKey,
                          std::move(chrome_os_device_info));
   target_device_info.Set(kDeviceTypeKey, "CHROME_OS");
 
-  base::Value::Dict request;
+  base::DictValue request;
   request.Set(kFulfilledChallengeKey, std::move(fulfilled_challenge));
   request.Set(kPlatformDataKey, std::move(platform_data));
   request.Set(kSourceDeviceInfoKey, std::move(source_device_info));
@@ -352,7 +352,7 @@ std::string CreateStartSessionRequestData(
 void RunAuthCodeCallbackWithRejectionResponse(
     QuickStartMetrics& metrics,
     SecondDeviceAuthBroker::AuthCodeCallback auth_code_callback,
-    const base::Value::Dict& response) {
+    const base::DictValue& response) {
   SecondDeviceAuthBroker::AuthCodeRejectionResponse rejection_response;
 
   const std::string* email_ptr = response.FindString(kEmailKey);
@@ -391,7 +391,7 @@ void RunAuthCodeCallbackWithRejectionResponse(
 void RunAuthCodeCallbackWithAdditionalChallengesOnTargetResponse(
     QuickStartMetrics& metrics,
     SecondDeviceAuthBroker::AuthCodeCallback auth_code_callback,
-    const base::Value::Dict& response) {
+    const base::DictValue& response) {
   SecondDeviceAuthBroker::AuthCodeAdditionalChallengesOnTargetResponse
       additional_challenges_response;
 
@@ -419,7 +419,7 @@ void RunAuthCodeCallbackWithAdditionalChallengesOnTargetResponse(
 void RunAuthCodeCallbackWithAdditionalChallengesOnSourceResponse(
     QuickStartMetrics& metrics,
     SecondDeviceAuthBroker::AuthCodeCallback auth_code_callback,
-    const base::Value::Dict& response) {
+    const base::DictValue& response) {
   SecondDeviceAuthBroker::AuthCodeAdditionalChallengesOnSourceResponse
       additional_challenges_response;
 
@@ -466,8 +466,8 @@ void RunAuthCodeCallback(
 void ParseAuthCodeAndRunCallback(
     QuickStartMetrics& metrics,
     SecondDeviceAuthBroker::AuthCodeCallback auth_code_callback,
-    const base::Value::Dict& response) {
-  const base::Value::Dict* credential_data =
+    const base::DictValue& response) {
+  const base::DictValue* credential_data =
       response.FindDict(kCredentialDataKey);
   if (!credential_data) {
     QS_LOG(ERROR) << "Could not fetch OAuth auth code. Could not find "
@@ -561,7 +561,7 @@ void SecondDeviceAuthBroker::OnChallengeBytesFetched(
     return;
   }
 
-  std::optional<base::Value::Dict> response_value =
+  std::optional<base::DictValue> response_value =
       base::JSONReader::ReadDict(response->response, base::JSON_PARSE_RFC);
   RunChallengeBytesCallback(
       std::move(challenge_callback),
@@ -714,7 +714,7 @@ void SecondDeviceAuthBroker::RunAttestationCertificateCallback(
 void SecondDeviceAuthBroker::RunAuthCodeCallbackFromParsedResponse(
     SecondDeviceAuthBroker::AuthCodeCallback auth_code_callback,
     std::optional<FetchErrorType> error_type,
-    std::optional<base::Value::Dict> response) {
+    std::optional<base::DictValue> response) {
   if (!response.has_value()) {
     // When we can't even parse the response, it most probably is an error from
     // Google's FrontEnd (GFE) - which may not be sending JSON responses. Check

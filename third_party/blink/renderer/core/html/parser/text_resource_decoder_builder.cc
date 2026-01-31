@@ -75,8 +75,7 @@ static const auto kEncodings = std::to_array<LegacyEncoding>(
      {"xb", "windows-1257"}});
 
 static const TextEncoding GetEncodingFromDomain(const KURL& url) {
-  Vector<String> tokens;
-  url.Host().ToString().Split(".", tokens);
+  Vector<StringView> tokens = url.Host().SplitSkippingEmpty('.');
   if (!tokens.empty()) {
     auto tld = tokens.back();
     for (const auto& encoding : kEncodings) {

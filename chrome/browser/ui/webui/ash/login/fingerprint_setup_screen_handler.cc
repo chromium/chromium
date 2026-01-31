@@ -59,7 +59,7 @@ void FingerprintSetupScreenHandler::DeclareLocalizedValues(
 
 void FingerprintSetupScreenHandler::Show() {
   auto* user_manager = user_manager::UserManager::Get();
-  base::Value::Dict data;
+  base::DictValue data;
   data.Set("isChildAccount", user_manager->IsLoggedInAsChildUser());
   ShowInWebUI(std::move(data));
 }

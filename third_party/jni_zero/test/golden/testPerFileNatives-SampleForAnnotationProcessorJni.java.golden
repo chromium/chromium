@@ -5,6 +5,7 @@ package org.jni_zero;
 
 import android.content.Context;
 import android.view.View;
+import javax.annotation.processing.Generated;
 import org.jni_zero.CheckDiscard;
 import org.jni_zero.JniTestInstanceHolder;
 import org.jni_zero.SampleForAnnotationProcessor;
@@ -12,6 +13,7 @@ import org.jni_zero.internal.NullUnmarked;
 import org.jni_zero.internal.Nullable;
 import org.stubs.MyClass;
 
+@Generated("JNI Zero")
 @NullUnmarked
 class SampleForAnnotationProcessorJni implements SampleForAnnotationProcessor.Natives {
   private static @Nullable JniTestInstanceHolder sOverride;

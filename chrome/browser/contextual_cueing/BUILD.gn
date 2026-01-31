@@ -44,13 +44,13 @@ source_set("impl") {
     "//chrome/browser/page_content_annotations:extraction_service",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/ui",
-    "//chrome/browser/ui/browser_window",
     "//components/content_extraction/content/browser",
     "//components/keyed_service/core",
     "//components/optimization_guide/content/browser",
     "//components/optimization_guide/content/browser:page_context_eligibility",
     "//components/optimization_guide/core",
     "//components/optimization_guide/proto:optimization_guide_proto",
+    "//components/page_content_annotations/core",
     "//components/pdf/common:constants",
     "//components/prefs",
     "//components/variations/service",
@@ -66,7 +66,10 @@ source_set("impl") {
     ]
   }
   if (!is_android) {
-    deps += [ "//chrome/browser/contextual_tasks:ui" ]
+    deps += [
+      "//chrome/browser/contextual_tasks:ui",
+      "//chrome/browser/ui/browser_window",
+    ]
   }
   if (enable_pdf) {
     deps += [ "//components/pdf/browser" ]

@@ -33,7 +33,6 @@
 #include "chrome/browser/prefs/browser_prefs.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search/background/ntp_custom_background_service_constants.h"
-#include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/themes/test/theme_service_changed_waiter.h"
 #include "chrome/browser/themes/theme_helper.h"
 #include "chrome/browser/themes/theme_service.h"
@@ -46,6 +45,7 @@
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/sync/base/client_tag_hash.h"
 #include "components/sync/base/features.h"
+#include "components/sync/base/pref_names.h"
 #include "components/sync/model/sync_change.h"
 #include "components/sync/protocol/entity_specifics.pb.h"
 #include "components/sync/protocol/proto_value_conversions.h"
@@ -53,7 +53,6 @@
 #include "components/sync/protocol/theme_types.pb.h"
 #include "components/sync/test/fake_sync_change_processor.h"
 #include "components/sync/test/sync_change_processor_wrapper_for_test.h"
-#include "components/sync/test/test_sync_service.h"
 #include "components/sync_preferences/pref_service_syncable.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "components/themes/pref_names.h"
@@ -243,8 +242,7 @@ class FakeThemeService : public ThemeService {
 class ThemeSyncableServiceTest : public testing::Test,
                                  public ThemeSyncableService::Observer {
  protected:
-  ThemeSyncableServiceTest() : fake_theme_service_(nullptr) {}
-
+  ThemeSyncableServiceTest() = default;
   ~ThemeSyncableServiceTest() override = default;
 
   void SetUp() override {
@@ -271,7 +269,10 @@ class ThemeSyncableServiceTest : public testing::Test,
   }
 
   void TearDown() override {
+    theme_extension_.reset();
+    fake_change_processor_.reset();
     theme_sync_service_.reset();
+    fake_theme_service_ = nullptr;
     profile_.reset();
     base::RunLoop().RunUntilIdle();
   }
@@ -332,7 +333,7 @@ class ThemeSyncableServiceTest : public testing::Test,
 #endif
 
   std::unique_ptr<TestingProfile> profile_;
-  raw_ptr<FakeThemeService, DanglingUntriaged> fake_theme_service_;
+  raw_ptr<FakeThemeService> fake_theme_service_ = nullptr;
   scoped_refptr<extensions::Extension> theme_extension_;
   std::unique_ptr<ThemeSyncableService> theme_sync_service_;
   std::unique_ptr<syncer::FakeSyncChangeProcessor> fake_change_processor_;
@@ -869,7 +870,12 @@ class RealThemeSyncableServiceTest
     ThemeService::DisableThemePackForTesting();
 
     extensions::ExtensionServiceTestBase::SetUp();
-    InitializeExtensionService(ExtensionServiceInitParams());
+    // Avoid using the real SyncService instance, to avoid triggering sync
+    // startup notifications, specifically clearing of existing account data
+    // upon startup when there is no sync metadata.
+    ExtensionServiceInitParams params;
+    params.use_test_sync_service = true;
+    InitializeExtensionService(std::move(params));
     service()->Init();
 
     theme_service_ = ThemeServiceFactory::GetForProfile(profile());
@@ -891,6 +897,14 @@ class RealThemeSyncableServiceTest
     ASSERT_EQ(1u, extensions::ExtensionRegistry::Get(profile())
                       ->enabled_extensions()
                       .size());
+  }
+
+  void TearDown() override {
+    theme_extension_.reset();
+    fake_change_processor_.reset();
+    theme_sync_service_ = nullptr;
+    theme_service_ = nullptr;
+    extensions::ExtensionServiceTestBase::TearDown();
   }
 
   ThemeService* theme_service() { return theme_service_; }
@@ -1257,8 +1271,8 @@ TEST_F(RealThemeSyncableServiceTest, ShouldDownloadNtpBackground) {
               fake_change_processor()));
   ASSERT_FALSE(error.has_value()) << error->ToString();
 
-  base::Value::Dict expected_value =
-      base::Value::Dict()
+  base::DictValue expected_value =
+      base::DictValue()
           .Set(kNtpCustomBackgroundURL, kTestUrl)
           .Set(kNtpCustomBackgroundAttributionLine1, "attribution_line_1")
           .Set(kNtpCustomBackgroundAttributionLine2, "attribution_line_2")
@@ -1284,8 +1298,8 @@ TEST_F(RealThemeSyncableServiceTest, ShouldUploadNtpBackground) {
               fake_change_processor()));
   ASSERT_FALSE(error.has_value()) << error->ToString();
 
-  base::Value::Dict new_value =
-      base::Value::Dict()
+  base::DictValue new_value =
+      base::DictValue()
           .Set(kNtpCustomBackgroundURL, kTestUrl)
           .Set(kNtpCustomBackgroundAttributionLine1, "attribution_line_1")
           .Set(kNtpCustomBackgroundAttributionLine2, "attribution_line_2")
@@ -1321,8 +1335,8 @@ TEST_F(RealThemeSyncableServiceTest, ShouldUploadNtpBackground) {
 
 TEST_F(RealThemeSyncableServiceTest,
        ShouldNotUploadNtpBackgroundIfSetFromLocalResource) {
-  base::Value::Dict new_value =
-      base::Value::Dict()
+  base::DictValue new_value =
+      base::DictValue()
           .Set(kNtpCustomBackgroundURL, kTestUrl)
           .Set(kNtpCustomBackgroundAttributionLine1, "attribution_line_1")
           .Set(kNtpCustomBackgroundAttributionLine2, "attribution_line_2")
@@ -2070,8 +2084,8 @@ TEST_F(RealThemeSyncableServiceTest, ShouldUpdateOldSyncingThemePrefs) {
 // Regression test for crbug.com/389026436.
 TEST_F(RealThemeSyncableServiceTest, ClearLocalNtpBackgroundIfRemoteEmpty) {
   // Set local ntp background.
-  base::Value::Dict new_value =
-      base::Value::Dict()
+  base::DictValue new_value =
+      base::DictValue()
           .Set(kNtpCustomBackgroundURL, kTestUrl)
           .Set(kNtpCustomBackgroundAttributionLine1, "attribution_line_1")
           .Set(kNtpCustomBackgroundAttributionLine2, "attribution_line_2")
@@ -2113,8 +2127,8 @@ TEST_F(RealThemeSyncableServiceTest, ClearLocalNtpBackgroundIfRemoteEmpty) {
 TEST_F(RealThemeSyncableServiceTest,
        KeepLocalNtpBackgroundUponNonDefaultOldThemeSpecifics) {
   // Set local ntp background.
-  base::Value::Dict new_value =
-      base::Value::Dict()
+  base::DictValue new_value =
+      base::DictValue()
           .Set(kNtpCustomBackgroundURL, kTestUrl)
           .Set(kNtpCustomBackgroundAttributionLine1, "attribution_line_1")
           .Set(kNtpCustomBackgroundAttributionLine2, "attribution_line_2")
@@ -2167,8 +2181,8 @@ TEST_F(RealThemeSyncableServiceTest,
 TEST_F(RealThemeSyncableServiceTest,
        KeepLocalNtpBackgroundUponDefaultOldThemeSpecifics) {
   // Set local ntp background.
-  base::Value::Dict new_value =
-      base::Value::Dict()
+  base::DictValue new_value =
+      base::DictValue()
           .Set(kNtpCustomBackgroundURL, kTestUrl)
           .Set(kNtpCustomBackgroundAttributionLine1, "attribution_line_1")
           .Set(kNtpCustomBackgroundAttributionLine2, "attribution_line_2")
@@ -2212,8 +2226,8 @@ TEST_F(RealThemeSyncableServiceTest,
 TEST_F(RealThemeSyncableServiceTest,
        ClearLocalNtpBackgroundUponNonDefaultNewThemeSpecifics) {
   // Set local ntp background.
-  base::Value::Dict new_value =
-      base::Value::Dict()
+  base::DictValue new_value =
+      base::DictValue()
           .Set(kNtpCustomBackgroundURL, kTestUrl)
           .Set(kNtpCustomBackgroundAttributionLine1, "attribution_line_1")
           .Set(kNtpCustomBackgroundAttributionLine2, "attribution_line_2")
@@ -2255,8 +2269,8 @@ TEST_F(RealThemeSyncableServiceTest,
 TEST_F(RealThemeSyncableServiceTest,
        KeepLocalNtpBackgroundUponDefaultNewThemeSpecifics) {
   // Set local ntp background.
-  base::Value::Dict new_value =
-      base::Value::Dict()
+  base::DictValue new_value =
+      base::DictValue()
           .Set(kNtpCustomBackgroundURL, kTestUrl)
           .Set(kNtpCustomBackgroundAttributionLine1, "attribution_line_1")
           .Set(kNtpCustomBackgroundAttributionLine2, "attribution_line_2")
@@ -2947,8 +2961,8 @@ TEST_F(ThemeSyncableServiceTestWithAccountThemesSeparation,
 TEST_F(ThemeSyncableServiceTestWithAccountThemesSeparation,
        SaveLocalNtpBackgroundToPrefUponInitialSync) {
   // Set custom background via pref.
-  base::Value::Dict background_dict =
-      base::Value::Dict()
+  base::DictValue background_dict =
+      base::DictValue()
           .Set(kNtpCustomBackgroundURL, kTestUrl)
           .Set(kNtpCustomBackgroundAttributionLine1, "attribution_line_1")
           .Set(kNtpCustomBackgroundAttributionLine2, "attribution_line_2")
@@ -3332,7 +3346,7 @@ TEST_F(ThemeSyncableServiceTestWithAccountThemesSeparation,
   EXPECT_FALSE(theme_service()->UsingExtensionTheme());
   EXPECT_EQ(
       profile()->GetPrefs()->GetDict(prefs::kNtpCustomBackgroundDict),
-      base::Value::Dict()
+      base::DictValue()
           .Set(kNtpCustomBackgroundURL, kTestUrl)
           .Set(kNtpCustomBackgroundAttributionLine1, "attribution_line_1")
           .Set(kNtpCustomBackgroundAttributionLine2, "attribution_line_2")
@@ -3558,17 +3572,12 @@ class ThemeSyncableServiceTestForThemeExtension
     pending_extension_manager_ =
         extensions::PendingExtensionManager::Get(profile());
     extension_registry_ = extensions::ExtensionRegistry::Get(profile());
+  }
 
-    // Avoid using the real SyncService instance, to avoid triggering sync
-    // startup notifications, specifically clearing of existing account data
-    // upon startup when there is no sync metadata.
-    // TODO(crbug.com/425913203): Remove once usage of TestSyncService is
-    // simplified.
-    SyncServiceFactory::GetInstance()->SetTestingFactoryAndUse(
-        profile(), base::BindRepeating([](content::BrowserContext* context)
-                                           -> std::unique_ptr<KeyedService> {
-          return std::make_unique<syncer::TestSyncService>();
-        }));
+  void TearDown() override {
+    extension_registry_ = nullptr;
+    pending_extension_manager_ = nullptr;
+    ThemeSyncableServiceTestWithAccountThemesSeparation::TearDown();
   }
 
   void InstallExtension() {
@@ -3774,7 +3783,7 @@ TEST_F(ThemePrefsMigrationTest, MigrateSyncingNtpPrefToNonSyncing) {
 
   pref_service_.SetDict(
       prefs::kDeprecatedNtpCustomBackgroundDictDoNotUse,
-      base::Value::Dict()
+      base::DictValue()
           .Set(kNtpCustomBackgroundURL, kTestUrl)
           .Set(kNtpCustomBackgroundAttributionLine1, "attribution_line_1")
           .Set(kNtpCustomBackgroundAttributionLine2, "attribution_line_2")
@@ -4161,4 +4170,121 @@ TEST_F(ThemePrefsMigrationShouldReadPrefsTest,
             static_cast<int>(SK_ColorRED));
   EXPECT_EQ(prefs()->GetInteger(prefs::kBrowserColorVariant),
             static_cast<int>(ui::mojom::BrowserColorVariant::kTonalSpot));
+}
+
+class ThemeSyncableServiceWithMigrateSyncingUserToSignedInUserTest
+    : public ::testing::Test {
+ public:
+  ThemeSyncableServiceWithMigrateSyncingUserToSignedInUserTest() {
+    profile_ = std::make_unique<TestingProfile>();
+    // TestingProfile init automatically leads to creation of
+    // ThemeSyncableService. To allow for more control for tests, reset the
+    // ThemeSyncableService instance.
+    theme_service()->ResetThemeSyncableServiceForTest();
+
+    // Mark theme for migration.
+    profile_->GetPrefs()->SetBoolean(
+        syncer::prefs::internal::kMigrateThemeFromLocalToAccount, true);
+  }
+
+  ThemeService* theme_service() {
+    return ThemeServiceFactory::GetForProfile(profile_.get());
+  }
+
+  sync_pb::ThemeSpecifics ReadSavedLocalThemeSpecifics() {
+    std::string encoded_str =
+        profile_->GetPrefs()->GetString(prefs::kSavedLocalTheme);
+    std::string decoded_str;
+    EXPECT_TRUE(base::Base64Decode(encoded_str, &decoded_str));
+
+    sync_pb::ThemeSpecifics specifics;
+    EXPECT_TRUE(specifics.ParseFromString(decoded_str));
+    return specifics;
+  }
+
+ protected:
+  base::test::ScopedFeatureList feature_list_{
+      syncer::kSeparateLocalAndAccountThemes};
+  content::BrowserTaskEnvironment task_environment_;
+  std::unique_ptr<TestingProfile> profile_;
+};
+
+TEST_F(ThemeSyncableServiceWithMigrateSyncingUserToSignedInUserTest,
+       ShouldDeduplicateLocalThemeIfSameAsAccountTheme) {
+  ThemeSyncableService theme_syncable_service(profile_.get(), theme_service());
+
+  // Set the local theme.
+  theme_service()->BuildAutogeneratedThemeFromColor(SK_ColorBLUE);
+  ASSERT_EQ(theme_service()->GetThemeID(), ThemeService::kAutogeneratedThemeID);
+  sync_pb::ThemeSpecifics local_theme_specifics =
+      theme_syncable_service.GetThemeSpecificsFromCurrentThemeForTesting();
+
+  // Set the remote theme same as the local theme.
+  sync_pb::ThemeSpecifics theme_specifics;
+  theme_specifics.mutable_autogenerated_color_theme()->set_color(SK_ColorBLUE);
+
+  // Initiate themes sync.
+  theme_syncable_service.WillStartInitialSync();
+  // Local theme is saved to pref.
+  ASSERT_TRUE(profile_->GetPrefs()->GetUserPrefValue(prefs::kSavedLocalTheme));
+  ASSERT_TRUE(ThemeSyncableService::AreThemeSpecificsEquivalent(
+      local_theme_specifics, ReadSavedLocalThemeSpecifics(), false));
+
+  ASSERT_FALSE(theme_syncable_service.MergeDataAndStartSyncing(
+      syncer::THEMES, MakeThemeDataList(theme_specifics),
+      std::make_unique<syncer::FakeSyncChangeProcessor>()));
+  ASSERT_TRUE(ThemeSyncableService::AreThemeSpecificsEquivalent(
+      theme_syncable_service.GetThemeSpecificsFromCurrentThemeForTesting(),
+      local_theme_specifics, false));
+
+  // Saved local theme was cleared.
+  EXPECT_FALSE(profile_->GetPrefs()->GetUserPrefValue(prefs::kSavedLocalTheme));
+
+  ASSERT_EQ(theme_service()->GetThemeID(), ThemeService::kAutogeneratedThemeID);
+  // Since no saved local theme exists, default theme is applied upon sync stop.
+  theme_syncable_service.StopSyncing(syncer::THEMES);
+  ASSERT_EQ(theme_service()->GetThemeID(), ThemeHelper::kDefaultThemeID);
+}
+
+TEST_F(ThemeSyncableServiceWithMigrateSyncingUserToSignedInUserTest,
+       ShouldNotDeduplicateLocalThemeIfDifferentFromAccountTheme) {
+  ThemeSyncableService theme_syncable_service(profile_.get(), theme_service());
+
+  // Set the local theme.
+  theme_service()->BuildAutogeneratedThemeFromColor(SK_ColorBLUE);
+  ASSERT_EQ(theme_service()->GetThemeID(), ThemeService::kAutogeneratedThemeID);
+  sync_pb::ThemeSpecifics local_theme_specifics =
+      theme_syncable_service.GetThemeSpecificsFromCurrentThemeForTesting();
+
+  // Set the remote theme different from the local theme.
+  sync_pb::ThemeSpecifics theme_specifics;
+  sync_pb::UserColorTheme* user_color_theme =
+      theme_specifics.mutable_user_color_theme();
+  user_color_theme->set_color(SK_ColorBLUE);
+  user_color_theme->set_browser_color_variant(BrowserColorVariantToProtoEnum(
+      ui::mojom::BrowserColorVariant::kTonalSpot));
+
+  // Initiate themes sync.
+  theme_syncable_service.WillStartInitialSync();
+  // Local theme is saved to pref.
+  ASSERT_TRUE(profile_->GetPrefs()->GetUserPrefValue(prefs::kSavedLocalTheme));
+  ASSERT_TRUE(ThemeSyncableService::AreThemeSpecificsEquivalent(
+      local_theme_specifics, ReadSavedLocalThemeSpecifics(), false));
+
+  ASSERT_FALSE(theme_syncable_service.MergeDataAndStartSyncing(
+      syncer::THEMES, MakeThemeDataList(theme_specifics),
+      std::make_unique<syncer::FakeSyncChangeProcessor>()));
+  ASSERT_FALSE(ThemeSyncableService::AreThemeSpecificsEquivalent(
+      theme_syncable_service.GetThemeSpecificsFromCurrentThemeForTesting(),
+      local_theme_specifics, false));
+
+  // Saved local theme was not cleared and is unchanged.
+  EXPECT_TRUE(profile_->GetPrefs()->GetUserPrefValue(prefs::kSavedLocalTheme));
+  EXPECT_TRUE(ThemeSyncableService::AreThemeSpecificsEquivalent(
+      local_theme_specifics, ReadSavedLocalThemeSpecifics(), false));
+
+  ASSERT_EQ(theme_service()->GetThemeID(), ThemeService::kUserColorThemeID);
+  // Since no saved local theme exists, default theme is applied upon sync stop.
+  theme_syncable_service.StopSyncing(syncer::THEMES);
+  ASSERT_EQ(theme_service()->GetThemeID(), ThemeService::kAutogeneratedThemeID);
 }

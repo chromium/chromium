@@ -1,28 +1,32 @@
-# media/cast/
+# //media/cast
 
 This directory contains a collection of components related to streaming using
 the Cast Streaming Protocol (over UDP network sockets). They encode/decode raw
 audio or video frames, and send/receive encoded data reliably over a local area
 network.
 
-NOTE: This implementation is **deprecated**, and to be replaced soon by the one
-found in `../../third_party/openscreen/src/cast/streaming/`. Contact
-jophba@chromium.org for details.
+The Chromium project uses libcast, which is part of the
+[Open Screen](https://chromium.googlesource.com/openscreen/) project, for
+handling Cast Streaming. This implementation sits essentially as a translation
+layer on top of libcast, providing things like encoders (which libcast, very
+intentionally, tries to not be aware of) and Cast objects that are (hopefully)
+easy to reason with.
 
-# Directory Breakdown
+The majority of the documentation for Cast Streaming can be found in libcast's
+[documents folder](https://chromium.googlesource.com/openscreen/+/HEAD/cast/docs/).
+
+## Directory Breakdown
 
 * common/ - Collection of shared utility code and constants.
+
+* encoding/ - Audio and video encoders and supporting classes.
 
 * logging/ - Packet/Frame logging, for study/experimentation of the protocol at
   runtime.
 
-* net/ - Wire-level packetization and pacing.
+* openscreen/ - classes and free functions for interfacing with libcast, the
+                Cast Streaming implementation.
 
-* sender/ - Encoder front-ends and frame-level sender implementation for
-  audio/video.
+* sender/ - Frame level senders and supporting classes.
 
-* test/ - A collection of end-to-end tests, experiments, benchmarks, and related
-  utility code.
-
-* test/receiver/ - A minimal receiver implementation, used only for end-to-end
-  testing.
+* test/ - Contains fakes, mocks, and other test utility code.

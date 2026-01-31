@@ -23,7 +23,8 @@ class FakeTransaction : public BackingStore::Transaction {
   FakeTransaction& operator=(const FakeTransaction&) = delete;
 
   Status Begin(std::vector<PartitionedLock> locks) override;
-  Status CommitPhaseOne(BlobWriteCallback, SerializeFsaCallback) override;
+  StatusOr<bool> CommitPhaseOne(BlobWriteCallback,
+                                SerializeFsaCallback) override;
   Status CommitPhaseTwo() override;
   void Rollback() override;
   Status SetDatabaseVersion(int64_t version) override;

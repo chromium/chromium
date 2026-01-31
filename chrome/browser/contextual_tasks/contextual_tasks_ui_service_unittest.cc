@@ -4,20 +4,30 @@
 
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui_service.h"
 
+#include "base/run_loop.h"
 #include "base/test/task_environment.h"
+#include "base/test/test_future.h"
 #include "base/uuid.h"
-#include "chrome/browser/contextual_tasks/contextual_tasks_context_controller.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui.h"
-#include "chrome/browser/contextual_tasks/mock_contextual_tasks_context_controller.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/testing_profile.h"
+#include "components/contextual_tasks/public/contextual_tasks_service.h"
+#include "components/contextual_tasks/public/mock_contextual_tasks_service.h"
+#include "components/omnibox/browser/mock_aim_eligibility_service.h"
+#include "components/prefs/testing_pref_service.h"
 #include "components/sessions/content/session_tab_helper.h"
+#include "components/signin/public/base/consent_level.h"
+#include "components/signin/public/identity_manager/access_token_info.h"
+#include "components/signin/public/identity_manager/identity_manager.h"
+#include "components/signin/public/identity_manager/identity_test_environment.h"
+#include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "components/tabs/public/mock_tab_interface.h"
 #include "content/public/browser/page_navigator.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_renderer_host.h"
 #include "content/public/test/web_contents_tester.h"
 #include "net/base/url_util.h"
+#include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
@@ -37,7 +47,14 @@ namespace {
 
 constexpr char kTestUrl[] = "https://example.com";
 constexpr char kAiPageUrl[] = "https://google.com/search?udm=50";
+constexpr char kSrpHomepage[] = "https://www.google.com/search";
+constexpr char kAimHomepage[] = "https://www.google.com/search?udm=50";
+constexpr char kAimHomepageThinking[] = "https://www.google.com/search?nem=143";
+constexpr char kSrpShopping[] = "https://www.google.com/search?udm=28&q=query";
 constexpr char kSrpUrl[] = "https://google.com/search?q=query";
+constexpr char kSrpUrlWithLensQuery[] =
+    "https://www.google.com/search?lns_mode=un";
+constexpr char kLabsUrl[] = "https://labs.google.com/search";
 
 // A mock ContextualTasksUiService that is specifically used for tests around
 // intercepting navigation. Namely the `HandleNavigation` method is the real
@@ -45,8 +62,12 @@ constexpr char kSrpUrl[] = "https://google.com/search?q=query";
 class MockUiServiceForUrlIntercept : public ContextualTasksUiService {
  public:
   explicit MockUiServiceForUrlIntercept(
-      ContextualTasksContextController* context_controller)
-      : ContextualTasksUiService(nullptr, context_controller, nullptr) {}
+      contextual_tasks::ContextualTasksService* contextual_tasks_service,
+      AimEligibilityService* aim_eligibility_service)
+      : ContextualTasksUiService(nullptr,
+                                 contextual_tasks_service,
+                                 nullptr,
+                                 aim_eligibility_service) {}
   ~MockUiServiceForUrlIntercept() override = default;
 
   MOCK_METHOD(void,
@@ -72,7 +93,7 @@ class MockUiServiceForUrlIntercept : public ContextualTasksUiService {
                ContextualTasksUI* webui_controller),
               (override));
   MOCK_METHOD(bool, IsUrlForPrimaryAccount, (const GURL& url), (override));
-  MOCK_METHOD(bool, IsSignedInToWebOrBrowser, (const GURL& url), (override));
+  MOCK_METHOD(bool, IsSignedInToBrowserWithValidCredentials, (), (override));
 
   // Make the impl method public for this test.
   bool HandleNavigationImpl(content::OpenURLParams url_params,
@@ -103,31 +124,54 @@ MATCHER_P(OpenURLParamsHasUrl, expected_url, "") {
 
 class ContextualTasksUiServiceTest : public content::RenderViewHostTestHarness {
  public:
+  explicit ContextualTasksUiServiceTest(
+      base::test::TaskEnvironment::TimeSource time_source =
+          base::test::TaskEnvironment::TimeSource::SYSTEM_TIME)
+      : content::RenderViewHostTestHarness(time_source) {}
+
   void SetUp() override {
     content::RenderViewHostTestHarness::SetUp();
+    // IdentityTestEnvironment must be created after the TaskEnvironment.
+    identity_test_env_ = std::make_unique<signin::IdentityTestEnvironment>();
+
     profile_ = std::make_unique<TestingProfile>();
-    context_controller_ =
-        std::make_unique<MockContextualTasksContextController>();
+    contextual_tasks_service_ = std::make_unique<MockContextualTasksService>();
+    aim_eligibility_service_ = std::make_unique<MockAimEligibilityService>(
+        prefs_, nullptr, nullptr, nullptr);
+
+    // By default, assume URLs have the correct URL params to be intercepted.
+    ON_CALL(*aim_eligibility_service_, HasAimUrlParams(_))
+        .WillByDefault(Return(true));
+
     service_for_nav_ = std::make_unique<MockUiServiceForUrlIntercept>(
-        context_controller_.get());
+        contextual_tasks_service_.get(), aim_eligibility_service_.get());
+
+    // Create a real service for testing non-mocked methods like GetAccessToken.
+    // We pass the IdentityManager from the test environment.
+    real_service_ = std::make_unique<ContextualTasksUiService>(
+        profile_.get(), contextual_tasks_service_.get(),
+        identity_test_env_->identity_manager(), aim_eligibility_service_.get());
 
     ON_CALL(*service_for_nav_, IsUrlForPrimaryAccount(_))
         .WillByDefault(Return(true));
-    ON_CALL(*service_for_nav_, IsSignedInToWebOrBrowser(_))
+    ON_CALL(*service_for_nav_, IsSignedInToBrowserWithValidCredentials())
         .WillByDefault(Return(true));
 
-    ON_CALL(*context_controller_, GetFeatureEligibility).WillByDefault([]() {
-      FeatureEligibility eligibility;
-      eligibility.contextual_tasks_enabled = true;
-      eligibility.aim_eligible = true;
-      eligibility.context_sharing_enabled = true;
-      return eligibility;
-    });
+    ON_CALL(*contextual_tasks_service_, GetFeatureEligibility)
+        .WillByDefault([]() {
+          FeatureEligibility eligibility;
+          eligibility.contextual_tasks_enabled = true;
+          eligibility.aim_eligible = true;
+          eligibility.context_sharing_enabled = true;
+          return eligibility;
+        });
   }
 
   void TearDown() override {
+    real_service_ = nullptr;
     service_for_nav_ = nullptr;
-    context_controller_ = nullptr;
+    contextual_tasks_service_ = nullptr;
+    identity_test_env_.reset();
     profile_ = nullptr;
     content::RenderViewHostTestHarness::TearDown();
   }
@@ -137,10 +181,95 @@ class ContextualTasksUiServiceTest : public content::RenderViewHostTestHarness {
   }
 
  protected:
+  TestingPrefServiceSimple prefs_;
   std::unique_ptr<TestingProfile> profile_;
+  std::unique_ptr<signin::IdentityTestEnvironment> identity_test_env_;
+  std::unique_ptr<MockAimEligibilityService> aim_eligibility_service_;
   std::unique_ptr<MockUiServiceForUrlIntercept> service_for_nav_;
-  std::unique_ptr<MockContextualTasksContextController> context_controller_;
+  std::unique_ptr<ContextualTasksUiService> real_service_;
+  std::unique_ptr<MockContextualTasksService> contextual_tasks_service_;
 };
+
+class ContextualTasksUiServiceTestParameterized
+    : public ContextualTasksUiServiceTest,
+      public testing::WithParamInterface<
+          base::test::TaskEnvironment::TimeSource> {
+ public:
+  ContextualTasksUiServiceTestParameterized()
+      : ContextualTasksUiServiceTest(GetParam()) {}
+};
+
+TEST_P(ContextualTasksUiServiceTestParameterized, GetAccessToken_Success) {
+  identity_test_env_->MakePrimaryAccountAvailable(
+      "test@example.com", signin::ConsentLevel::kSignin);
+  base::test::TestFuture<const std::string&> token_future;
+  real_service_->GetAccessToken(token_future.GetCallback());
+
+  identity_test_env_->WaitForAccessTokenRequestIfNecessaryAndRespondWithToken(
+      "access_token", base::Time::Now() + base::Hours(1));
+  EXPECT_EQ(token_future.Get(), "access_token");
+}
+
+TEST_P(ContextualTasksUiServiceTestParameterized, GetAccessToken_NotSignedIn) {
+  base::test::TestFuture<const std::string&> token_future;
+  real_service_->GetAccessToken(token_future.GetCallback());
+  EXPECT_EQ(token_future.Get(), "");
+}
+
+// TODO(crbug.com/477018818): Flaky on Linux ASan.
+#if BUILDFLAG(IS_LINUX) && defined(ADDRESS_SANITIZER)
+#define MAYBE_GetAccessToken_TransientError_Retries \
+  DISABLED_GetAccessToken_TransientError_Retries
+#else
+#define MAYBE_GetAccessToken_TransientError_Retries \
+  GetAccessToken_TransientError_Retries
+#endif
+TEST_P(ContextualTasksUiServiceTestParameterized,
+       MAYBE_GetAccessToken_TransientError_Retries) {
+  if (GetParam() == base::test::TaskEnvironment::TimeSource::SYSTEM_TIME) {
+    GTEST_SKIP() << "Retries won't work on SYSTEM_TIME";
+  }
+
+  identity_test_env_->MakePrimaryAccountAvailable(
+      "test@example.com", signin::ConsentLevel::kSignin);
+  base::test::TestFuture<const std::string&> token_future;
+  real_service_->GetAccessToken(token_future.GetCallback());
+
+  // First request fails with a transient error.
+  identity_test_env_->WaitForAccessTokenRequestIfNecessaryAndRespondWithError(
+      GoogleServiceAuthError(GoogleServiceAuthError::CONNECTION_FAILED));
+
+  // The service should retry. We need to fast forward time to trigger the
+  // retry. The backoff policy has an initial delay of 500ms.
+  task_environment()->FastForwardBy(base::Milliseconds(1000));
+
+  // Second request succeeds.
+  identity_test_env_->WaitForAccessTokenRequestIfNecessaryAndRespondWithToken(
+      "access_token", base::Time::Now() + base::Hours(1));
+
+  EXPECT_EQ(token_future.Get(), "access_token");
+}
+
+TEST_P(ContextualTasksUiServiceTestParameterized,
+       GetAccessToken_PersistentError) {
+  identity_test_env_->MakePrimaryAccountAvailable(
+      "test@example.com", signin::ConsentLevel::kSignin);
+  base::test::TestFuture<const std::string&> token_future;
+  real_service_->GetAccessToken(token_future.GetCallback());
+
+  // First request fails with a persistent error.
+  identity_test_env_->WaitForAccessTokenRequestIfNecessaryAndRespondWithError(
+      GoogleServiceAuthError(GoogleServiceAuthError::INVALID_GAIA_CREDENTIALS));
+
+  // The service should NOT retry.
+  EXPECT_EQ(token_future.Get(), "");
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    ContextualTasksUiServiceTestParameterized,
+    testing::Values(base::test::TaskEnvironment::TimeSource::SYSTEM_TIME,
+                    base::test::TaskEnvironment::TimeSource::MOCK_TIME));
 
 TEST_F(ContextualTasksUiServiceTest, IsAiUrl_InvalidUrl) {
   GURL url("http://?a=12345");
@@ -157,14 +286,15 @@ TEST_F(ContextualTasksUiServiceTest, LinkFromWebUiIntercepted) {
   content::WebContentsTester::For(web_contents.get())
       ->SetLastCommittedURL(host_web_content_url);
 
+  base::RunLoop run_loop;
   EXPECT_CALL(*service_for_nav_, OnThreadLinkClicked(navigated_url, _, _, _))
-      .Times(1);
+      .WillOnce(testing::InvokeWithoutArgs(&run_loop, &base::RunLoop::Quit));
   EXPECT_CALL(*service_for_nav_, OnNavigationToAiPageIntercepted(_, _, _))
       .Times(0);
   EXPECT_TRUE(service_for_nav_->HandleNavigation(
       CreateOpenUrlParams(navigated_url, true), web_contents.get(),
       /*is_from_embedded_page=*/true, /*is_to_new_tab=*/false));
-  task_environment()->RunUntilIdle();
+  run_loop.Run();
 }
 
 TEST_F(ContextualTasksUiServiceTest, BrowserUiNavigationFromWebUiIgnored) {
@@ -185,6 +315,11 @@ TEST_F(ContextualTasksUiServiceTest, BrowserUiNavigationFromWebUiIgnored) {
   EXPECT_FALSE(service_for_nav_->HandleNavigation(
       CreateOpenUrlParams(navigated_url, false), web_contents.get(),
       /*is_from_embedded_page=*/false, /*is_to_new_tab=*/false));
+
+  // TODO(crbug.com/470448689): RunUntilIdle is needed to ensure the EXPECT_CALL
+  // above that is sent to a posted task never gets called. Using RunUntilIdle
+  // is bad practice and these tests should be updated to avoid the need for
+  // RunUntilIdle.
   task_environment()->RunUntilIdle();
 }
 
@@ -202,6 +337,11 @@ TEST_F(ContextualTasksUiServiceTest, NormalLinkNotIntercepted) {
   EXPECT_FALSE(service_for_nav_->HandleNavigation(
       CreateOpenUrlParams(GURL(kTestUrl), true), web_contents.get(),
       /*is_from_embedded_page=*/false, /*is_to_new_tab=*/false));
+
+  // TODO(crbug.com/470448689): RunUntilIdle is needed to ensure the EXPECT_CALL
+  // above that is sent to a posted task never gets called. Using RunUntilIdle
+  // is bad practice and these tests should be updated to avoid the need for
+  // RunUntilIdle.
   task_environment()->RunUntilIdle();
 }
 
@@ -217,6 +357,11 @@ TEST_F(ContextualTasksUiServiceTest, AiHostNotIntercepted_BadPath) {
   EXPECT_FALSE(service_for_nav_->HandleNavigation(
       CreateOpenUrlParams(GURL(kTestUrl), false), web_contents.get(),
       /*is_from_embedded_page=*/false, /*is_to_new_tab=*/false));
+
+  // TODO(crbug.com/470448689): RunUntilIdle is needed to ensure the EXPECT_CALL
+  // above that is sent to a posted task never gets called. Using RunUntilIdle
+  // is bad practice and these tests should be updated to avoid the need for
+  // RunUntilIdle.
   task_environment()->RunUntilIdle();
 }
 
@@ -228,13 +373,14 @@ TEST_F(ContextualTasksUiServiceTest, AiPageNotIntercepted_NotEligible) {
   content::WebContentsTester::For(web_contents.get())
       ->SetLastCommittedURL(tab_url);
 
-  ON_CALL(*context_controller_, GetFeatureEligibility).WillByDefault([]() {
-    FeatureEligibility eligibility;
-    eligibility.contextual_tasks_enabled = false;
-    eligibility.aim_eligible = false;
-    eligibility.context_sharing_enabled = false;
-    return eligibility;
-  });
+  ON_CALL(*contextual_tasks_service_, GetFeatureEligibility)
+      .WillByDefault([]() {
+        FeatureEligibility eligibility;
+        eligibility.contextual_tasks_enabled = false;
+        eligibility.aim_eligible = false;
+        eligibility.context_sharing_enabled = false;
+        return eligibility;
+      });
 
   EXPECT_CALL(*service_for_nav_, OnThreadLinkClicked(_, _, _, _)).Times(0);
   EXPECT_CALL(*service_for_nav_, OnNavigationToAiPageIntercepted(_, _, _))
@@ -242,9 +388,16 @@ TEST_F(ContextualTasksUiServiceTest, AiPageNotIntercepted_NotEligible) {
   EXPECT_FALSE(service_for_nav_->HandleNavigation(
       CreateOpenUrlParams(ai_url, false), web_contents.get(),
       /*is_from_embedded_page=*/false, /*is_to_new_tab=*/false));
+
+  // TODO(crbug.com/470448689): RunUntilIdle is needed to ensure the EXPECT_CALL
+  // above that is sent to a posted task never gets called. Using RunUntilIdle
+  // is bad practice and these tests should be updated to avoid the need for
+  // RunUntilIdle.
   task_environment()->RunUntilIdle();
 }
 
+// Verifies the happy path. The AI page is intercepted when the user is signed
+// in to Chrome and the web identity matches.
 TEST_F(ContextualTasksUiServiceTest, AiPageIntercepted_FromTab) {
   GURL ai_url(kAiPageUrl);
   GURL tab_url(kTestUrl);
@@ -253,13 +406,14 @@ TEST_F(ContextualTasksUiServiceTest, AiPageIntercepted_FromTab) {
   content::WebContentsTester::For(web_contents.get())
       ->SetLastCommittedURL(tab_url);
 
+  base::RunLoop run_loop;
   EXPECT_CALL(*service_for_nav_, OnThreadLinkClicked(_, _, _, _)).Times(0);
   EXPECT_CALL(*service_for_nav_, OnNavigationToAiPageIntercepted(ai_url, _, _))
-      .Times(1);
+      .WillOnce(testing::InvokeWithoutArgs(&run_loop, &base::RunLoop::Quit));
   EXPECT_TRUE(service_for_nav_->HandleNavigation(
       CreateOpenUrlParams(ai_url, false), web_contents.get(),
       /*is_from_embedded_page=*/false, /*is_to_new_tab=*/false));
-  task_environment()->RunUntilIdle();
+  run_loop.Run();
 }
 
 TEST_F(ContextualTasksUiServiceTest, AiPageIntercepted_FromOmnibox) {
@@ -269,13 +423,14 @@ TEST_F(ContextualTasksUiServiceTest, AiPageIntercepted_FromOmnibox) {
   content::WebContentsTester::For(web_contents.get())
       ->SetLastCommittedURL(GURL());
 
+  base::RunLoop run_loop;
   EXPECT_CALL(*service_for_nav_, OnThreadLinkClicked(_, _, _, _)).Times(0);
   EXPECT_CALL(*service_for_nav_, OnNavigationToAiPageIntercepted(ai_url, _, _))
-      .Times(1);
+      .WillOnce(testing::InvokeWithoutArgs(&run_loop, &base::RunLoop::Quit));
   EXPECT_TRUE(service_for_nav_->HandleNavigation(
       CreateOpenUrlParams(ai_url, false), web_contents.get(),
       /*is_from_embedded_page=*/false, /*is_to_new_tab=*/false));
-  task_environment()->RunUntilIdle();
+  run_loop.Run();
 }
 
 TEST_F(ContextualTasksUiServiceTest, AiPageIntercepted_AlreadyViewingUiInTab) {
@@ -285,13 +440,14 @@ TEST_F(ContextualTasksUiServiceTest, AiPageIntercepted_AlreadyViewingUiInTab) {
   content::WebContentsTester::For(web_contents.get())
       ->SetLastCommittedURL(ai_url);
 
+  base::RunLoop run_loop;
   EXPECT_CALL(*service_for_nav_, OnThreadLinkClicked(_, _, _, _)).Times(0);
   EXPECT_CALL(*service_for_nav_, OnNavigationToAiPageIntercepted(ai_url, _, _))
-      .Times(1);
+      .WillOnce(testing::InvokeWithoutArgs(&run_loop, &base::RunLoop::Quit));
   EXPECT_TRUE(service_for_nav_->HandleNavigation(
       CreateOpenUrlParams(ai_url, false), web_contents.get(),
       /*is_from_embedded_page=*/false, /*is_to_new_tab=*/false));
-  task_environment()->RunUntilIdle();
+  run_loop.Run();
 }
 
 // The AI page is allowed to load as long as it is part of the WebUI.
@@ -308,6 +464,11 @@ TEST_F(ContextualTasksUiServiceTest, AiPageNotIntercepted) {
   EXPECT_FALSE(service_for_nav_->HandleNavigation(
       CreateOpenUrlParams(GURL(kAiPageUrl), false), web_contents.get(),
       /*is_from_embedded_page=*/true, /*is_to_new_tab=*/false));
+
+  // TODO(crbug.com/470448689): RunUntilIdle is needed to ensure the EXPECT_CALL
+  // above that is sent to a posted task never gets called. Using RunUntilIdle
+  // is bad practice and these tests should be updated to avoid the need for
+  // RunUntilIdle.
   task_environment()->RunUntilIdle();
 }
 
@@ -322,6 +483,8 @@ TEST_F(ContextualTasksUiServiceTest, AiPageNotIntercepted_AccountMismatch) {
 
   ON_CALL(*service_for_nav_, IsUrlForPrimaryAccount(_))
       .WillByDefault(Return(false));
+  ON_CALL(*service_for_nav_, IsSignedInToBrowserWithValidCredentials())
+      .WillByDefault(Return(true));
 
   EXPECT_CALL(*service_for_nav_, OnThreadLinkClicked(_, _, _, _)).Times(0);
   EXPECT_CALL(*service_for_nav_, OnNavigationToAiPageIntercepted(_, _, _))
@@ -329,28 +492,32 @@ TEST_F(ContextualTasksUiServiceTest, AiPageNotIntercepted_AccountMismatch) {
   EXPECT_FALSE(service_for_nav_->HandleNavigation(
       CreateOpenUrlParams(ai_url, false), web_contents.get(),
       /*is_from_embedded_page=*/false, /*is_to_new_tab=*/false));
+
+  // TODO(crbug.com/470448689): RunUntilIdle is needed to ensure the EXPECT_CALL
+  // above that is sent to a posted task never gets called. Using RunUntilIdle
+  // is bad practice and these tests should be updated to avoid the need for
+  // RunUntilIdle.
   task_environment()->RunUntilIdle();
 }
 
-// If the user is signed out of the browser, an account mismatch shouldn't
-// prevent AI navigations from being intercepted.
-TEST_F(ContextualTasksUiServiceTest,
-       AiPageNotIntercepted_AccountMismatch_SignedOut) {
+// Test for identity case: Browser Identity: Signed out.
+// This covers cases where the user is signed out of Chrome, regardless of
+// web identity.
+TEST_F(ContextualTasksUiServiceTest, AiPageNotIntercepted_BrowserSignedOut) {
   GURL ai_url(kAiPageUrl);
   auto web_contents = content::WebContentsTester::CreateTestWebContents(
       profile_.get(), content::SiteInstance::Create(profile_.get()));
   content::WebContentsTester::For(web_contents.get())
       ->SetLastCommittedURL(GURL());
 
-  ON_CALL(*service_for_nav_, IsUrlForPrimaryAccount(_))
-      .WillByDefault(Return(false));
-  ON_CALL(*service_for_nav_, IsSignedInToWebOrBrowser(_))
+  ON_CALL(*service_for_nav_, IsSignedInToBrowserWithValidCredentials())
       .WillByDefault(Return(false));
 
+  base::RunLoop run_loop;
   EXPECT_CALL(*service_for_nav_, OnThreadLinkClicked(_, _, _, _)).Times(0);
-  EXPECT_CALL(*service_for_nav_, OnNavigationToAiPageIntercepted(ai_url, _, _))
-      .Times(1);
-  EXPECT_TRUE(service_for_nav_->HandleNavigation(
+  EXPECT_CALL(*service_for_nav_, OnNavigationToAiPageIntercepted(_, _, _))
+      .Times(0);
+  EXPECT_FALSE(service_for_nav_->HandleNavigation(
       CreateOpenUrlParams(ai_url, false), web_contents.get(),
       /*is_from_embedded_page=*/false, /*is_to_new_tab=*/false));
   task_environment()->RunUntilIdle();
@@ -361,6 +528,41 @@ TEST_F(ContextualTasksUiServiceTest,
 TEST_F(ContextualTasksUiServiceTest, SearchResultsNavigation_ViewedInTab) {
   GURL navigated_url(kSrpUrl);
   GURL host_web_content_url(chrome::kChromeUIContextualTasksURL);
+
+  ON_CALL(*aim_eligibility_service_, HasAimUrlParams(_))
+      .WillByDefault(Return(false));
+
+  auto web_contents = content::WebContentsTester::CreateTestWebContents(
+      profile_.get(), content::SiteInstance::Create(profile_.get()));
+  content::WebContentsTester::For(web_contents.get())
+      ->SetLastCommittedURL(host_web_content_url);
+  tabs::MockTabInterface tab;
+  ON_CALL(tab, GetContents).WillByDefault(Return(web_contents.get()));
+
+  base::RunLoop run_loop;
+  EXPECT_CALL(*service_for_nav_, OnThreadLinkClicked(_, _, _, _)).Times(0);
+  EXPECT_CALL(*service_for_nav_,
+              OnSearchResultsNavigationInTab(navigated_url, _))
+      .WillOnce(testing::InvokeWithoutArgs(&run_loop, &base::RunLoop::Quit));
+  EXPECT_CALL(*service_for_nav_, OnNavigationToAiPageIntercepted(_, _, _))
+      .Times(0);
+  EXPECT_TRUE(service_for_nav_->HandleNavigationImpl(
+      CreateOpenUrlParams(navigated_url, true), web_contents.get(), &tab,
+      /*is_from_embedded_page=*/true,
+      /*is_to_new_tab=*/false));
+  run_loop.Run();
+}
+
+// If the search results patch is navigated to by a link in the embedded page
+// but doesn't have a query (e.g. search home), make sure it isn't treated as
+// a thread link click.
+TEST_F(ContextualTasksUiServiceTest,
+       SearchResultsNavigation_ViewedInTab_NoQuery) {
+  GURL navigated_url(kSrpHomepage);
+  GURL host_web_content_url(chrome::kChromeUIContextualTasksURL);
+
+  ON_CALL(*aim_eligibility_service_, HasAimUrlParams(_))
+      .WillByDefault(Return(false));
 
   auto web_contents = content::WebContentsTester::CreateTestWebContents(
       profile_.get(), content::SiteInstance::Create(profile_.get()));
@@ -379,6 +581,10 @@ TEST_F(ContextualTasksUiServiceTest, SearchResultsNavigation_ViewedInTab) {
       CreateOpenUrlParams(navigated_url, true), web_contents.get(), &tab,
       /*is_from_embedded_page=*/true,
       /*is_to_new_tab=*/false));
+  // TODO(crbug.com/470448689): RunUntilIdle is needed to ensure the EXPECT_CALL
+  // above that is sent to a posted task never gets called. Using RunUntilIdle
+  // is bad practice and these tests should be updated to avoid the need for
+  // RunUntilIdle.
   task_environment()->RunUntilIdle();
 }
 
@@ -395,17 +601,48 @@ TEST_F(ContextualTasksUiServiceTest,
   content::WebContentsTester::For(web_contents.get())
       ->SetLastCommittedURL(host_web_content_url);
 
+  base::RunLoop run_loop;
   EXPECT_CALL(*service_for_nav_, OnThreadLinkClicked(_, _, _, _)).Times(0);
   EXPECT_CALL(*service_for_nav_, OnSearchResultsNavigationInSidePanel(
                                      OpenURLParamsHasUrl(navigated_url), _))
-      .Times(1);
+      .WillOnce(testing::InvokeWithoutArgs(&run_loop, &base::RunLoop::Quit));
   EXPECT_CALL(*service_for_nav_, OnNavigationToAiPageIntercepted(_, _, _))
       .Times(0);
   EXPECT_TRUE(service_for_nav_->HandleNavigationImpl(
       CreateOpenUrlParams(navigated_url, true), web_contents.get(), nullptr,
       /*is_from_embedded_page=*/true,
       /*is_to_new_tab=*/false));
-  task_environment()->RunUntilIdle();
+  run_loop.Run();
+}
+
+// If the navigating to the Search Labs page, the navigation should be
+// intercepted but open in a new tab.
+TEST_F(ContextualTasksUiServiceTest,
+       LabsNavigation_Intercepted_NotViewedInSidePanel) {
+  GURL navigated_url(kLabsUrl);
+  GURL host_web_content_url(chrome::kChromeUIContextualTasksURL);
+
+  ON_CALL(*aim_eligibility_service_, HasAimUrlParams(_))
+      .WillByDefault(Return(false));
+
+  auto web_contents = content::WebContentsTester::CreateTestWebContents(
+      profile_.get(), content::SiteInstance::Create(profile_.get()));
+  content::WebContentsTester::For(web_contents.get())
+      ->SetLastCommittedURL(host_web_content_url);
+
+  base::RunLoop run_loop;
+  EXPECT_CALL(*service_for_nav_, OnThreadLinkClicked(_, _, _, _))
+      .WillOnce(testing::InvokeWithoutArgs(&run_loop, &base::RunLoop::Quit));
+  EXPECT_CALL(*service_for_nav_, OnSearchResultsNavigationInSidePanel(
+                                     OpenURLParamsHasUrl(navigated_url), _))
+      .Times(0);
+  EXPECT_CALL(*service_for_nav_, OnNavigationToAiPageIntercepted(_, _, _))
+      .Times(0);
+  EXPECT_TRUE(service_for_nav_->HandleNavigationImpl(
+      CreateOpenUrlParams(navigated_url, true), web_contents.get(), nullptr,
+      /*is_from_embedded_page=*/true,
+      /*is_to_new_tab=*/false));
+  run_loop.Run();
 }
 
 TEST_F(ContextualTasksUiServiceTest, GetThreadUrlFromTaskId) {
@@ -421,7 +658,7 @@ TEST_F(ContextualTasksUiServiceTest, GetThreadUrlFromTaskId) {
   task.SetTitle(title);
   task.AddThread(thread);
 
-  ON_CALL(*context_controller_, GetTaskById)
+  ON_CALL(*contextual_tasks_service_, GetTaskById)
       .WillByDefault([&](const base::Uuid& task_id,
                          base::OnceCallback<void(std::optional<ContextualTask>)>
                              callback) { std::move(callback).Run(task); });
@@ -445,7 +682,8 @@ TEST_F(ContextualTasksUiServiceTest, GetThreadUrlFromTaskId) {
 }
 
 TEST_F(ContextualTasksUiServiceTest, OnNavigationToAiPageIntercepted_SameTab) {
-  ContextualTasksUiService service(nullptr, context_controller_.get(), nullptr);
+  ContextualTasksUiService service(nullptr, contextual_tasks_service_.get(),
+                                   nullptr, aim_eligibility_service_.get());
   GURL intercepted_url("https://google.com/search?udm=50&q=test+query");
 
   auto web_contents = content::WebContentsTester::CreateTestWebContents(
@@ -460,9 +698,9 @@ TEST_F(ContextualTasksUiServiceTest, OnNavigationToAiPageIntercepted_SameTab) {
   ON_CALL(tab, GetContents).WillByDefault(Return(web_contents.get()));
 
   ContextualTask task(base::Uuid::GenerateRandomV4());
-  EXPECT_CALL(*context_controller_, CreateTaskFromUrl(intercepted_url))
+  EXPECT_CALL(*contextual_tasks_service_, CreateTaskFromUrl(intercepted_url))
       .WillOnce(Return(task));
-  EXPECT_CALL(*context_controller_,
+  EXPECT_CALL(*contextual_tasks_service_,
               AssociateTabWithTask(
                   task.GetTaskId(),
                   sessions::SessionTabHelper::IdForTab(web_contents.get())))
@@ -476,6 +714,170 @@ TEST_F(ContextualTasksUiServiceTest, OnNavigationToAiPageIntercepted_SameTab) {
       "https://google.com/search?udm=50&q=test+query&cs=0&gsc=2&hl=en");
   EXPECT_EQ(service.GetInitialUrlForTask(task.GetTaskId()),
             expected_initial_url);
+}
+
+TEST_F(ContextualTasksUiServiceTest, SrpHomepage_Intercepted) {
+  GURL navigated_url(kSrpHomepage);
+  GURL host_web_content_url(chrome::kChromeUIContextualTasksURL);
+
+  ON_CALL(*aim_eligibility_service_, HasAimUrlParams(_))
+      .WillByDefault(Return(false));
+
+  auto web_contents = content::WebContentsTester::CreateTestWebContents(
+      profile_.get(), content::SiteInstance::Create(profile_.get()));
+  content::WebContentsTester::For(web_contents.get())
+      ->SetLastCommittedURL(host_web_content_url);
+
+  base::RunLoop run_loop;
+  EXPECT_CALL(*service_for_nav_, OnThreadLinkClicked(navigated_url, _, _, _))
+      .WillOnce(testing::InvokeWithoutArgs(&run_loop, &base::RunLoop::Quit));
+  EXPECT_CALL(*service_for_nav_, OnNavigationToAiPageIntercepted(_, _, _))
+      .Times(0);
+  EXPECT_TRUE(service_for_nav_->HandleNavigation(
+      CreateOpenUrlParams(navigated_url, true), web_contents.get(),
+      /*is_from_embedded_page=*/true, /*is_to_new_tab=*/false));
+  run_loop.Run();
+}
+
+TEST_F(ContextualTasksUiServiceTest, AimHomepage_InTab_NotIntercepted) {
+  GURL nav_url(kAimHomepage);
+  GURL webui_url(chrome::kChromeUIContextualTasksURL);
+  auto web_contents = content::WebContentsTester::CreateTestWebContents(
+      profile_.get(), content::SiteInstance::Create(profile_.get()));
+  tabs::MockTabInterface tab;
+  ON_CALL(tab, GetContents).WillByDefault(Return(web_contents.get()));
+
+  content::WebContentsTester::For(web_contents.get())
+      ->SetLastCommittedURL(webui_url);
+
+  EXPECT_CALL(*service_for_nav_, OnThreadLinkClicked(_, _, _, _)).Times(0);
+  EXPECT_CALL(*service_for_nav_, OnNavigationToAiPageIntercepted(_, _, _))
+      .Times(0);
+  EXPECT_FALSE(service_for_nav_->HandleNavigationImpl(
+      CreateOpenUrlParams(nav_url, false), web_contents.get(), &tab,
+      /*is_from_embedded_page=*/true, /*is_to_new_tab=*/false));
+
+  // TODO(crbug.com/470448689): RunUntilIdle is needed to ensure the EXPECT_CALL
+  // above that is sent to a posted task never gets called. Using RunUntilIdle
+  // is bad practice and these tests should be updated to avoid the need for
+  // RunUntilIdle.
+  task_environment()->RunUntilIdle();
+}
+
+TEST_F(ContextualTasksUiServiceTest, AimHomepage_InSidePanel_Intercepted) {
+  GURL navigated_url(kAimHomepage);
+  GURL host_web_content_url(chrome::kChromeUIContextualTasksURL);
+
+  auto web_contents = content::WebContentsTester::CreateTestWebContents(
+      profile_.get(), content::SiteInstance::Create(profile_.get()));
+  content::WebContentsTester::For(web_contents.get())
+      ->SetLastCommittedURL(host_web_content_url);
+
+  base::RunLoop run_loop;
+  EXPECT_CALL(*service_for_nav_, OnThreadLinkClicked(_, _, _, _)).Times(0);
+  EXPECT_CALL(*service_for_nav_, OnNavigationToAiPageIntercepted(_, _, _))
+      .Times(0);
+  EXPECT_CALL(*service_for_nav_, OnSearchResultsNavigationInSidePanel(
+                                     OpenURLParamsHasUrl(navigated_url), _))
+      .WillOnce(testing::InvokeWithoutArgs(&run_loop, &base::RunLoop::Quit));
+  EXPECT_TRUE(service_for_nav_->HandleNavigation(
+      CreateOpenUrlParams(navigated_url, true), web_contents.get(),
+      /*is_from_embedded_page=*/true, /*is_to_new_tab=*/false));
+  run_loop.Run();
+}
+
+TEST_F(ContextualTasksUiServiceTest, SrpShoppingMode_InSidePanel_Intercepted) {
+  GURL navigated_url(kSrpShopping);
+  GURL host_web_content_url(chrome::kChromeUIContextualTasksURL);
+
+  ON_CALL(*aim_eligibility_service_, HasAimUrlParams(_))
+      .WillByDefault(Return(false));
+
+  auto web_contents = content::WebContentsTester::CreateTestWebContents(
+      profile_.get(), content::SiteInstance::Create(profile_.get()));
+  content::WebContentsTester::For(web_contents.get())
+      ->SetLastCommittedURL(host_web_content_url);
+
+  base::RunLoop run_loop;
+  EXPECT_CALL(*service_for_nav_, OnThreadLinkClicked(_, _, _, _))
+      .Times(1)
+      .WillOnce(testing::InvokeWithoutArgs(&run_loop, &base::RunLoop::Quit));
+  EXPECT_CALL(*service_for_nav_, OnNavigationToAiPageIntercepted(_, _, _))
+      .Times(0);
+  EXPECT_TRUE(service_for_nav_->HandleNavigation(
+      CreateOpenUrlParams(navigated_url, true), web_contents.get(),
+      /*is_from_embedded_page=*/true, /*is_to_new_tab=*/false));
+  run_loop.Run();
+}
+
+TEST_F(ContextualTasksUiServiceTest, AimHomepageThinking_InTab_NotIntercepted) {
+  GURL nav_url(kAimHomepageThinking);
+  GURL webui_url(chrome::kChromeUIContextualTasksURL);
+  auto web_contents = content::WebContentsTester::CreateTestWebContents(
+      profile_.get(), content::SiteInstance::Create(profile_.get()));
+  content::WebContentsTester::For(web_contents.get())
+      ->SetLastCommittedURL(webui_url);
+  tabs::MockTabInterface tab;
+  ON_CALL(tab, GetContents).WillByDefault(Return(web_contents.get()));
+
+  EXPECT_CALL(*service_for_nav_, OnThreadLinkClicked(_, _, _, _)).Times(0);
+  EXPECT_CALL(*service_for_nav_, OnNavigationToAiPageIntercepted(_, _, _))
+      .Times(0);
+  EXPECT_FALSE(service_for_nav_->HandleNavigationImpl(
+      CreateOpenUrlParams(nav_url, false), web_contents.get(), &tab,
+      /*is_from_embedded_page=*/true, /*is_to_new_tab=*/false));
+
+  // TODO(crbug.com/470448689): RunUntilIdle is needed to ensure the EXPECT_CALL
+  // above that is sent to a posted task never gets called. Using RunUntilIdle
+  // is bad practice and these tests should be updated to avoid the need for
+  // RunUntilIdle.
+  task_environment()->RunUntilIdle();
+}
+
+TEST_F(ContextualTasksUiServiceTest,
+       AimHomepageThinking_InSidePanel_Intercepted) {
+  GURL navigated_url(kAimHomepageThinking);
+  GURL host_web_content_url(chrome::kChromeUIContextualTasksURL);
+
+  auto web_contents = content::WebContentsTester::CreateTestWebContents(
+      profile_.get(), content::SiteInstance::Create(profile_.get()));
+  content::WebContentsTester::For(web_contents.get())
+      ->SetLastCommittedURL(host_web_content_url);
+
+  base::RunLoop run_loop;
+  EXPECT_CALL(*service_for_nav_, OnThreadLinkClicked(_, _, _, _)).Times(0);
+  EXPECT_CALL(*service_for_nav_, OnNavigationToAiPageIntercepted(_, _, _))
+      .Times(0);
+  EXPECT_CALL(*service_for_nav_, OnSearchResultsNavigationInSidePanel(
+                                     OpenURLParamsHasUrl(navigated_url), _))
+      .WillOnce(testing::InvokeWithoutArgs(&run_loop, &base::RunLoop::Quit));
+  EXPECT_TRUE(service_for_nav_->HandleNavigation(
+      CreateOpenUrlParams(navigated_url, true), web_contents.get(),
+      /*is_from_embedded_page=*/true, /*is_to_new_tab=*/false));
+  run_loop.Run();
+}
+
+TEST_F(ContextualTasksUiServiceTest, LensQuery_Intercepted) {
+  GURL navigated_url(kSrpUrlWithLensQuery);
+  GURL host_web_content_url(chrome::kChromeUIContextualTasksURL);
+
+  auto web_contents = content::WebContentsTester::CreateTestWebContents(
+      profile_.get(), content::SiteInstance::Create(profile_.get()));
+  content::WebContentsTester::For(web_contents.get())
+      ->SetLastCommittedURL(host_web_content_url);
+
+  base::RunLoop run_loop;
+  EXPECT_CALL(*service_for_nav_, OnThreadLinkClicked(_, _, _, _)).Times(0);
+  EXPECT_CALL(*service_for_nav_, OnSearchResultsNavigationInSidePanel(
+                                     OpenURLParamsHasUrl(navigated_url), _))
+      .WillOnce(testing::InvokeWithoutArgs(&run_loop, &base::RunLoop::Quit));
+  EXPECT_CALL(*service_for_nav_, OnNavigationToAiPageIntercepted(_, _, _))
+      .Times(0);
+  EXPECT_TRUE(service_for_nav_->HandleNavigationImpl(
+      CreateOpenUrlParams(navigated_url, true), web_contents.get(), nullptr,
+      /*is_from_embedded_page=*/true,
+      /*is_to_new_tab=*/false));
+  run_loop.Run();
 }
 
 }  // namespace contextual_tasks

@@ -51,15 +51,9 @@ class TestContextProvider
   static scoped_refptr<TestContextProvider> CreateWorker();
   static scoped_refptr<TestContextProvider> CreateWorker(
       std::unique_ptr<TestContextSupport> support);
-
-  explicit TestContextProvider(std::unique_ptr<TestContextSupport> support,
-                               std::unique_ptr<TestRasterInterface> raster,
-                               bool support_locking);
-  explicit TestContextProvider(
+  static scoped_refptr<TestContextProvider> CreateWorker(
       std::unique_ptr<TestContextSupport> support,
-      std::unique_ptr<TestGLES2Interface> gl,
-      scoped_refptr<gpu::TestSharedImageInterface> sii,
-      bool support_locking);
+      std::unique_ptr<TestRasterInterface> raster);
 
   TestContextProvider(const TestContextProvider&) = delete;
   TestContextProvider& operator=(const TestContextProvider&) = delete;
@@ -70,14 +64,17 @@ class TestContextProvider
   gpu::ContextResult BindToCurrentSequence() override;
   const gpu::Capabilities& ContextCapabilities() const override;
   const gpu::GpuFeatureInfo& GetGpuFeatureInfo() const override;
-  gpu::gles2::GLES2Interface* ContextGL() override;
-  gpu::raster::RasterInterface* RasterInterface() override;
   gpu::ContextSupport* ContextSupport() override;
   gpu::TestSharedImageInterface* SharedImageInterface() override;
   ContextCacheController* CacheController() override;
   base::Lock* GetLock() override;
   void AddObserver(ContextLostObserver* obs) override;
   void RemoveObserver(ContextLostObserver* obs) override;
+
+  // In order to ensure that these methods return the same objects as the
+  // methods below, they should not be overridden by subclasses.
+  gpu::gles2::GLES2Interface* ContextGL() final;
+  gpu::raster::RasterInterface* RasterInterface() final;
 
   TestGLES2Interface* TestContextGL();
   TestRasterInterface* GetTestRasterInterface();
@@ -100,6 +97,13 @@ class TestContextProvider
   ~TestContextProvider() override;
 
  private:
+  TestContextProvider(std::unique_ptr<TestContextSupport> support,
+                      std::unique_ptr<TestRasterInterface> raster,
+                      bool support_locking);
+  TestContextProvider(std::unique_ptr<TestContextSupport> support,
+                      std::unique_ptr<TestGLES2Interface> gl,
+                      bool support_locking);
+
   void OnLostContext();
   void CheckValidThreadOrLockAcquired() const {
 #if DCHECK_IS_ON()

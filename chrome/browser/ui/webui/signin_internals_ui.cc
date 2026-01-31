@@ -50,27 +50,27 @@ std::string GetBoundSessionExpirationString(base::Time expiration_time) {
 }
 
 void AppendBoundSessionInfo(
-    base::Value::Dict& signin_status,
+    base::DictValue& signin_status,
     BoundSessionCookieRefreshService* bound_session_service,
     bool is_feature_enabled) {
   // TODO(b/299884315): update bound session info dynamically by observing the
   // service.
   static constexpr std::string_view kSessionIdKey = "sessionID";
-  base::Value::List bound_sessions_list;
+  base::ListValue bound_sessions_list;
   if (!bound_session_service) {
-    bound_sessions_list.Append(base::Value::Dict().Set(
+    bound_sessions_list.Append(base::DictValue().Set(
         kSessionIdKey, "Bound session service is disabled."));
   } else if (std::vector<BoundSessionDebugInfo> bound_session_info =
                  bound_session_service->GetBoundSessionDebugInfo();
              bound_session_info.empty()) {
-    bound_sessions_list.Append(base::Value::Dict().Set(
+    bound_sessions_list.Append(base::DictValue().Set(
         kSessionIdKey, is_feature_enabled
                            ? "No active bound sessions."
                            : "Bound session feature is disabled."));
   } else {
     for (const auto& info : bound_session_info) {
       bound_sessions_list.Append(
-          base::Value::Dict()
+          base::DictValue()
               .Set(kSessionIdKey, info.session_id)
               .Set("domain", info.domain)
               .Set("path", info.path)
@@ -126,8 +126,7 @@ void SignInInternalsHandler::RegisterMessages() {
                           base::Unretained(this)));
 }
 
-void SignInInternalsHandler::HandleGetSignInInfo(
-    const base::Value::List& args) {
+void SignInInternalsHandler::HandleGetSignInInfo(const base::ListValue& args) {
   std::string callback_id = args[0].GetString();
   AllowJavascript();
 
@@ -143,9 +142,9 @@ void SignInInternalsHandler::HandleGetSignInInfo(
   // reasonable defaults, so the about:signin-internals page doesn't look
   // empty in incognito mode. Alternatively, we could force about:signin to
   // open in non-incognito mode always (like about:settings for ex.).
-  base::Value::Dict signin_status =
+  base::DictValue signin_status =
       about_signin_internals ? about_signin_internals->GetSigninStatus()
-                             : base::Value::Dict();
+                             : base::DictValue();
 #if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
   AppendBoundSessionInfo(
       signin_status,
@@ -169,12 +168,11 @@ void SignInInternalsHandler::HandleGetSignInInfo(
   }
 }
 
-void SignInInternalsHandler::OnSigninStateChanged(
-    const base::Value::Dict& info) {
+void SignInInternalsHandler::OnSigninStateChanged(const base::DictValue& info) {
 #if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
   Profile* profile = Profile::FromWebUI(web_ui());
   if (profile) {
-    base::Value::Dict signin_status = info.Clone();
+    base::DictValue signin_status = info.Clone();
     AppendBoundSessionInfo(
         signin_status,
         BoundSessionCookieRefreshServiceFactory::GetForProfile(profile),
@@ -188,6 +186,6 @@ void SignInInternalsHandler::OnSigninStateChanged(
 }
 
 void SignInInternalsHandler::OnCookieAccountsFetched(
-    const base::Value::Dict& info) {
+    const base::DictValue& info) {
   FireWebUIListener("update-cookie-accounts", info);
 }

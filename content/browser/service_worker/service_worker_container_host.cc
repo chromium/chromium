@@ -7,7 +7,6 @@
 #include <set>
 #include <utility>
 
-#include "base/containers/contains.h"
 #include "base/debug/crash_logging.h"
 #include "base/debug/dump_without_crashing.h"
 #include "base/feature_list.h"
@@ -601,7 +600,7 @@ ServiceWorkerRegistrationObjectManager::CreateInfo(
 void ServiceWorkerRegistrationObjectManager::RemoveHost(
     int64_t registration_id) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(base::Contains(registration_object_hosts_, registration_id));
+  DCHECK(registration_object_hosts_.contains(registration_id));
   // This is a workaround for a really unfavorable ownership structure of
   // service worker content code. This boils down to the following ownership
   // cycle:
@@ -673,7 +672,7 @@ ServiceWorkerObjectManager::GetOrCreateHost(
 
 void ServiceWorkerObjectManager::RemoveHost(int64_t version_id) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(base::Contains(service_worker_object_hosts_, version_id));
+  DCHECK(service_worker_object_hosts_.contains(version_id));
 
   // ServiceWorkerObjectHost to be deleted may have the last reference to
   // ServiceWorkerVersion that indirectly owns this ServiceWorkerContainerHost.

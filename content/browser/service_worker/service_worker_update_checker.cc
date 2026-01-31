@@ -4,9 +4,11 @@
 
 #include "content/browser/service_worker/service_worker_update_checker.h"
 
+#include <algorithm>
 #include <utility>
 
 #include "base/functional/bind.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/trace_event/trace_event.h"
 #include "content/browser/loader/browser_initiated_resource_request.h"
 #include "content/browser/service_worker/service_worker_consts.h"
@@ -20,10 +22,12 @@
 #include "content/public/common/content_client.h"
 #include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
+#include "net/base/hash_value.h"
 #include "net/http/http_request_headers.h"
 #include "services/network/public/cpp/constants.h"
 #include "services/network/public/cpp/features.h"
 #include "third_party/blink/public/common/renderer_preferences/renderer_preferences.h"
+#include "third_party/perfetto/include/perfetto/tracing/track_event_args.h"
 
 namespace content {
 
@@ -61,9 +65,9 @@ ServiceWorkerUpdateChecker::ServiceWorkerUpdateChecker(
 ServiceWorkerUpdateChecker::~ServiceWorkerUpdateChecker() = default;
 
 void ServiceWorkerUpdateChecker::Start(UpdateStatusCallback callback) {
-  TRACE_EVENT_WITH_FLOW1("ServiceWorker", "ServiceWorkerUpdateChecker::Start",
-                         this, TRACE_EVENT_FLAG_FLOW_OUT, "main_script_url",
-                         main_script_url_.spec());
+  TRACE_EVENT("ServiceWorker", "ServiceWorkerUpdateChecker::Start",
+              perfetto::Flow::FromPointer(this), "main_script_url",
+              main_script_url_.spec());
 
   DCHECK(!scripts_to_compare_.empty());
   callback_ = std::move(callback);
@@ -74,7 +78,8 @@ void ServiceWorkerUpdateChecker::Start(UpdateStatusCallback callback) {
     return;
   }
 
-  CheckOneScript(main_script_url_, main_script_resource_id_);
+  CheckOneScript(main_script_url_, main_script_resource_id_,
+                 main_script_sha256_checksum_);
 }
 
 void ServiceWorkerUpdateChecker::OnOneUpdateCheckFinished(
@@ -86,11 +91,10 @@ void ServiceWorkerUpdateChecker::OnOneUpdateCheckFinished(
     std::unique_ptr<ServiceWorkerSingleScriptUpdateChecker::PausedState>
         paused_state,
     const std::optional<std::string>& sha256_checksum) {
-  TRACE_EVENT_WITH_FLOW2(
+  TRACE_EVENT(
       "ServiceWorker", "ServiceWorkerUpdateChecker::OnOneUpdateCheckFinished",
-      this, TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT, "script_url",
-      script_url.spec(), "result",
-      ServiceWorkerSingleScriptUpdateChecker::ResultToString(result));
+      perfetto::Flow::FromPointer(this), "script_url", script_url.spec(),
+      "result", ServiceWorkerSingleScriptUpdateChecker::ResultToString(result));
 
   // If calculated checksum exists, add it to the set.
   // |sha256_checksum| will be set only when cached scripts don't have sha256
@@ -111,10 +115,10 @@ void ServiceWorkerUpdateChecker::OnOneUpdateCheckFinished(
   // See also https://github.com/w3c/ServiceWorker/issues/1374 for more details.
   if (is_main_script &&
       result == ServiceWorkerSingleScriptUpdateChecker::Result::kFailed) {
-    TRACE_EVENT_WITH_FLOW0(
+    TRACE_EVENT(
         "ServiceWorker",
         "ServiceWorkerUpdateChecker::OnOneUpdateCheckFinished_MainScriptFailed",
-        this, TRACE_EVENT_FLAG_FLOW_IN);
+        perfetto::TerminatingFlow::FromPointer(this));
 
     std::move(callback_).Run(
         ServiceWorkerSingleScriptUpdateChecker::Result::kFailed,
@@ -134,10 +138,10 @@ void ServiceWorkerUpdateChecker::OnOneUpdateCheckFinished(
   }
 
   if (ServiceWorkerSingleScriptUpdateChecker::Result::kDifferent == result) {
-    TRACE_EVENT_WITH_FLOW0(
+    TRACE_EVENT(
         "ServiceWorker",
         "ServiceWorkerUpdateChecker::OnOneUpdateCheckFinished_UpdateFound",
-        this, TRACE_EVENT_FLAG_FLOW_IN);
+        perfetto::TerminatingFlow::FromPointer(this));
 
     updated_script_url_ = script_url;
 
@@ -151,10 +155,9 @@ void ServiceWorkerUpdateChecker::OnOneUpdateCheckFinished(
   }
 
   if (next_script_index_to_compare_ >= scripts_to_compare_.size()) {
-    TRACE_EVENT_WITH_FLOW0(
-        "ServiceWorker",
-        "ServiceWorkerUpdateChecker::OnOneUpdateCheckFinished_NoUpdate", this,
-        TRACE_EVENT_FLAG_FLOW_IN);
+    TRACE_EVENT("ServiceWorker",
+                "ServiceWorkerUpdateChecker::OnOneUpdateCheckFinished_NoUpdate",
+                perfetto::TerminatingFlow::FromPointer(this));
 
     // None of scripts had any updates.
     // Running |callback_| will delete |this|.
@@ -169,10 +172,10 @@ void ServiceWorkerUpdateChecker::OnOneUpdateCheckFinished(
       main_script_url_) {
     next_script_index_to_compare_++;
     if (next_script_index_to_compare_ >= scripts_to_compare_.size()) {
-      TRACE_EVENT_WITH_FLOW0(
+      TRACE_EVENT(
           "ServiceWorker",
-          "ServiceWorkerUpdateChecker::OnOneUpdateCheckFinished_NoUpdate", this,
-          TRACE_EVENT_FLAG_FLOW_IN);
+          "ServiceWorkerUpdateChecker::OnOneUpdateCheckFinished_NoUpdate",
+          perfetto::TerminatingFlow::FromPointer(this));
 
       // None of scripts had any updates.
       // Running |callback_| will delete |this|.
@@ -183,12 +186,13 @@ void ServiceWorkerUpdateChecker::OnOneUpdateCheckFinished(
     }
   }
 
-  const GURL& next_url =
-      scripts_to_compare_[next_script_index_to_compare_]->url;
-  int64_t next_resource_id =
-      scripts_to_compare_[next_script_index_to_compare_]->resource_id;
+  const auto& record = scripts_to_compare_[next_script_index_to_compare_];
+  const GURL& next_url = record->url;
+  int64_t next_resource_id = record->resource_id;
+  const std::optional<std::string>& next_sha256_checksum =
+      record->sha256_checksum;
   next_script_index_to_compare_++;
-  CheckOneScript(next_url, next_resource_id);
+  CheckOneScript(next_url, next_resource_id, next_sha256_checksum);
 }
 
 std::map<GURL, ServiceWorkerUpdateChecker::ComparedScriptInfo>
@@ -196,11 +200,12 @@ ServiceWorkerUpdateChecker::TakeComparedResults() {
   return std::move(script_check_results_);
 }
 
-void ServiceWorkerUpdateChecker::CheckOneScript(const GURL& url,
-                                                const int64_t resource_id) {
-  TRACE_EVENT_WITH_FLOW1(
-      "ServiceWorker", "ServiceWorkerUpdateChecker::CheckOneScript", this,
-      TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT, "url", url.spec());
+void ServiceWorkerUpdateChecker::CheckOneScript(
+    const GURL& url,
+    const int64_t resource_id,
+    const std::optional<const std::string>& sha256_checksum) {
+  TRACE_EVENT("ServiceWorker", "ServiceWorkerUpdateChecker::CheckOneScript",
+              perfetto::Flow::FromPointer(this), "url", url.spec());
 
   DCHECK_NE(blink::mojom::kInvalidServiceWorkerResourceId, resource_id)
       << "All the target scripts should be stored in the storage.";
@@ -208,12 +213,13 @@ void ServiceWorkerUpdateChecker::CheckOneScript(const GURL& url,
   version_to_update_->context()->GetStorageControl()->GetNewResourceId(
       base::BindOnce(
           &ServiceWorkerUpdateChecker::OnResourceIdAssignedForOneScriptCheck,
-          weak_factory_.GetWeakPtr(), url, resource_id));
+          weak_factory_.GetWeakPtr(), url, resource_id, sha256_checksum));
 }
 
 void ServiceWorkerUpdateChecker::OnResourceIdAssignedForOneScriptCheck(
     const GURL& url,
     const int64_t resource_id,
+    const std::optional<const std::string>& sha256_checksum,
     const int64_t new_resource_id) {
   if (context_->process_manager()->IsShutdown()) {
     // If it's being shut down, ServiceWorkerUpdateChecker is going to be
@@ -232,11 +238,19 @@ void ServiceWorkerUpdateChecker::OnResourceIdAssignedForOneScriptCheck(
   // We need two identical readers for comparing and reading the resource for
   // |resource_id| from the storage.
   mojo::Remote<storage::mojom::ServiceWorkerResourceReader> compare_reader;
+  std::optional<net::SHA256HashValue> sha256_hash_value;
+  if (sha256_checksum) {
+    sha256_hash_value.emplace();
+    if (!base::HexStringToSpan(*sha256_checksum, *sha256_hash_value)) {
+      sha256_hash_value.reset();
+    }
+  }
   registry.GetRemoteStorageControl()->CreateResourceReader(
-      resource_id, compare_reader.BindNewPipeAndPassReceiver());
+      resource_id, sha256_hash_value,
+      compare_reader.BindNewPipeAndPassReceiver());
   mojo::Remote<storage::mojom::ServiceWorkerResourceReader> copy_reader;
   registry.GetRemoteStorageControl()->CreateResourceReader(
-      resource_id, copy_reader.BindNewPipeAndPassReceiver());
+      resource_id, sha256_hash_value, copy_reader.BindNewPipeAndPassReceiver());
 
   mojo::Remote<storage::mojom::ServiceWorkerResourceWriter> writer;
   registry.GetRemoteStorageControl()->CreateResourceWriter(

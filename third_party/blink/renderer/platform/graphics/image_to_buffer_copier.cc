@@ -51,13 +51,12 @@ bool ImageToBufferCopier::EnsureDestImage(const gfx::Size& size) {
 }
 
 std::pair<gfx::GpuMemoryBufferHandle, gpu::SyncToken>
-ImageToBufferCopier::CopyImage(StaticBitmapImage* image) {
-  if (!image)
-    return {};
-
+ImageToBufferCopier::CopyImage(
+    const scoped_refptr<gpu::ClientSharedImage>& source_shared_image) {
+  CHECK(source_shared_image);
   TRACE_EVENT0("gpu", "ImageToBufferCopier::CopyImage");
 
-  gfx::Size size = image->Size();
+  gfx::Size size = source_shared_image->size();
   if (!EnsureDestImage(size))
     return {};
 
@@ -75,9 +74,6 @@ ImageToBufferCopier::CopyImage(StaticBitmapImage* image) {
     gl_->TexParameteri(target, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
   }
   gl_->BindTexture(GL_TEXTURE_2D, 0);
-
-  // Bind the read framebuffer to our image.
-  auto source_shared_image = image->GetSharedImage();
 
   auto source_si_texture = source_shared_image->CreateGLTexture(gl_);
   auto source_scoped_si_access =
@@ -99,8 +95,6 @@ ImageToBufferCopier::CopyImage(StaticBitmapImage* image) {
   sii_->VerifySyncToken(sync_token);
   dest_shared_image_->UpdateDestructionSyncToken(sync_token);
   dest_si_texture.reset();
-
-  image->UpdateSyncToken(sync_token);
 
   return std::make_pair(dest_shared_image_
                             ? dest_shared_image_->CloneGpuMemoryBufferHandle()

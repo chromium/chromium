@@ -24,7 +24,6 @@
 #include "base/strings/stringprintf.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/metrics/user_action_tester.h"
-#include "base/types/cxx23_to_underlying.h"
 #include "components/account_id/account_id.h"
 #include "components/prefs/pref_service.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -114,62 +113,61 @@ class GlanceablesClassroomStudentViewTest : public AshTestBase {
 
   const views::View* GetHeaderIcon() const {
     return views::AsViewClass<views::View>(
-        view_->GetViewByID(base::to_underlying(
+        view_->GetViewByID(std::to_underlying(
             GlanceablesViewId::kTimeManagementBubbleHeaderIcon)));
   }
 
   Combobox* GetComboBoxView() {
     return views::AsViewClass<Combobox>(view_->GetViewByID(
-        base::to_underlying(GlanceablesViewId::kTimeManagementBubbleComboBox)));
+        std::to_underlying(GlanceablesViewId::kTimeManagementBubbleComboBox)));
   }
 
   views::ScrollView* GetScrollView() const {
     return views::AsViewClass<views::ScrollView>(view_->GetViewByID(
-        base::to_underlying(GlanceablesViewId::kContentsScrollView)));
+        std::to_underlying(GlanceablesViewId::kContentsScrollView)));
   }
 
   const CounterExpandButton* GetCounterExpandButton() const {
     return views::AsViewClass<CounterExpandButton>(
-        view_->GetViewByID(base::to_underlying(
+        view_->GetViewByID(std::to_underlying(
             GlanceablesViewId::kTimeManagementBubbleExpandButton)));
   }
 
   const views::View* GetListContainerView() const {
     return views::AsViewClass<views::View>(
-        view_->GetViewByID(base::to_underlying(
+        view_->GetViewByID(std::to_underlying(
             GlanceablesViewId::kTimeManagementBubbleListContainer)));
   }
 
   const views::View* GetEmptyListLabel() const {
-    return views::AsViewClass<views::View>(
-        view_->GetViewByID(base::to_underlying(
-            GlanceablesViewId::kClassroomBubbleEmptyListLabel)));
+    return views::AsViewClass<views::View>(view_->GetViewByID(
+        std::to_underlying(GlanceablesViewId::kClassroomBubbleEmptyListLabel)));
   }
 
   views::View* GetListFooter() const {
     return views::AsViewClass<views::View>(
-        view_->GetViewByID(base::to_underlying(
+        view_->GetViewByID(std::to_underlying(
             GlanceablesViewId::kTimeManagementBubbleListFooter)));
   }
 
   const views::Label* GetListFooterLabel() const {
     return views::AsViewClass<views::Label>(GetListFooter()->GetViewByID(
-        base::to_underlying(GlanceablesViewId::kListFooterTitleLabel)));
+        std::to_underlying(GlanceablesViewId::kListFooterTitleLabel)));
   }
 
   const views::LabelButton* GetListFooterSeeAllButton() const {
     return views::AsViewClass<views::LabelButton>(GetListFooter()->GetViewByID(
-        base::to_underlying(GlanceablesViewId::kListFooterSeeAllButton)));
+        std::to_underlying(GlanceablesViewId::kListFooterSeeAllButton)));
   }
 
   const views::ProgressBar* GetProgressBar() const {
     return views::AsViewClass<views::ProgressBar>(view_->GetViewByID(
-        base::to_underlying(GlanceablesViewId::kProgressBar)));
+        std::to_underlying(GlanceablesViewId::kProgressBar)));
   }
 
   const ErrorMessageToast* GetErrorMessage() const {
     return views::AsViewClass<ErrorMessageToast>(
-        view_->GetViewByID(base::to_underlying(
+        view_->GetViewByID(std::to_underlying(
             GlanceablesViewId::kTimeManagementErrorMessageToast)));
   }
 
@@ -202,8 +200,8 @@ TEST_F(GlanceablesClassroomStudentViewTest, Basics) {
 
   // Check that the expand button is not visible when
   // `GlanceablesClassroomStudentView` is created alone.
-  auto* expand_button = view_->GetViewByID(base::to_underlying(
-      GlanceablesViewId::kTimeManagementBubbleExpandButton));
+  auto* expand_button = view_->GetViewByID(
+      std::to_underlying(GlanceablesViewId::kTimeManagementBubbleExpandButton));
   EXPECT_TRUE(expand_button);
   EXPECT_FALSE(expand_button->GetVisible());
 }

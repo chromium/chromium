@@ -10,7 +10,6 @@
 #include <memory>
 #include <vector>
 
-#include "base/metrics/histogram_flattener.h"
 #include "base/metrics/histogram_snapshot_manager.h"
 #include "base/synchronization/lock.h"
 #include "third_party/metrics_proto/chrome_user_metrics_extension.pb.h"
@@ -20,9 +19,9 @@ namespace metrics {
 // A HistogramManager instance is created by the app. It is the central
 // controller for the acquisition of log data, and recording deltas for
 // transmission to an external server. Public APIs are all thread-safe.
-class HistogramManager : public base::HistogramFlattener {
+class HistogramManager : public base::HistogramSnapshotManager {
  public:
-  HistogramManager();
+  HistogramManager() = default;
 
   HistogramManager(const HistogramManager&) = delete;
   HistogramManager& operator=(const HistogramManager&) = delete;
@@ -38,11 +37,9 @@ class HistogramManager : public base::HistogramFlattener {
   static HistogramManager* GetInstance();
 
  private:
-  // base::HistogramFlattener:
+  // base::HistogramSnapshotManager:
   void RecordDelta(const base::HistogramBase& histogram,
                    const base::HistogramSamples& snapshot) override;
-
-  base::HistogramSnapshotManager histogram_snapshot_manager_;
 
   // Stores the protocol buffer representation for this log.
   metrics::ChromeUserMetricsExtension uma_proto_;

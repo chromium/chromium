@@ -7,7 +7,9 @@
 #import "base/test/scoped_feature_list.h"
 #import "components/bookmarks/test/bookmark_test_helpers.h"
 #import "components/commerce/core/mock_shopping_service.h"
+#import "components/sync/service/sync_service.h"
 #import "components/sync/service/sync_service_utils.h"
+#import "components/sync/test/mock_sync_service.h"
 #import "components/trusted_vault/trusted_vault_server_constants.h"
 #import "ios/chrome/browser/authentication/trusted_vault_reauthentication/coordinator/trusted_vault_reauthentication_coordinator.h"
 #import "ios/chrome/browser/autocomplete/model/autocomplete_browser_agent.h"
@@ -28,6 +30,7 @@
 #import "ios/chrome/browser/history/model/history_service_factory.h"
 #import "ios/chrome/browser/incognito_reauth/ui_bundled/incognito_reauth_scene_agent.h"
 #import "ios/chrome/browser/lens/model/lens_browser_agent.h"
+#import "ios/chrome/browser/main/model/browser_web_state_list_delegate.h"
 #import "ios/chrome/browser/ntp/model/new_tab_page_tab_helper.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_coordinator.h"
 #import "ios/chrome/browser/omnibox/model/omnibox_position/omnibox_position_browser_agent.h"
@@ -39,15 +42,16 @@
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_manager_ios.h"
+#import "ios/chrome/browser/shared/model/web_state_list/web_state_list_observer.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_opener.h"
 #import "ios/chrome/browser/shared/public/commands/activity_service_commands.h"
-#import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/browser_coordinator_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/help_commands.h"
 #import "ios/chrome/browser/shared/public/commands/promos_manager_commands.h"
 #import "ios/chrome/browser/shared/public/commands/save_image_to_photos_command.h"
 #import "ios/chrome/browser/shared/public/commands/save_to_photos_commands.h"
+#import "ios/chrome/browser/shared/public/commands/scene_commands.h"
 #import "ios/chrome/browser/shared/public/commands/settings_commands.h"
 #import "ios/chrome/browser/shared/public/commands/sync_presenter_commands.h"
 #import "ios/chrome/browser/sharing/ui_bundled/sharing_coordinator.h"
@@ -57,10 +61,10 @@
 #import "ios/chrome/browser/signin/model/fake_authentication_service_delegate.h"
 #import "ios/chrome/browser/start_surface/ui_bundled/start_surface_recent_tab_browser_agent.h"
 #import "ios/chrome/browser/sync/model/sync_error_browser_agent.h"
+#import "ios/chrome/browser/sync/model/sync_service_factory.h"
 #import "ios/chrome/browser/tab_insertion/model/tab_insertion_browser_agent.h"
-#import "ios/chrome/browser/tabs/model/tab_helper_util.h"
 #import "ios/chrome/browser/tips_manager/model/tips_manager_ios_factory.h"
-#import "ios/chrome/browser/toolbar/ui_bundled/fullscreen/toolbars_size_browser_agent.h"
+#import "ios/chrome/browser/toolbar/legacy/ui_bundled/fullscreen/toolbars_size_browser_agent.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_browser_agent.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_notifier_browser_agent.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_params.h"
@@ -124,12 +128,26 @@ class BrowserCoordinatorTest : public PlatformTest {
         TipsManagerIOSFactory::GetInstance(),
         TipsManagerIOSFactory::GetDefaultFactory());
     test_profile_builder.AddTestingFactory(
+        SyncServiceFactory::GetInstance(),
+        base::BindRepeating(
+            [](ProfileIOS* profile) -> std::unique_ptr<KeyedService> {
+              return std::make_unique<syncer::MockSyncService>();
+            }));
+    test_profile_builder.AddTestingFactory(
         tab_groups::TabGroupSyncServiceFactory::GetInstance(),
         tab_groups::TabGroupSyncServiceFactory::GetDefaultFactory());
     profile_ =
         profile_manager_.AddProfileWithBuilder(std::move(test_profile_builder));
 
-    browser_ = std::make_unique<TestBrowser>(GetProfile(), scene_state_);
+    ProfileIOS* profile = GetProfile();
+    browser_ = std::make_unique<TestBrowser>(
+        profile, scene_state_,
+        std::make_unique<BrowserWebStateListDelegate>(
+            profile,
+            BrowserWebStateListDelegate::InsertionPolicy::kAttachTabHelpers,
+            BrowserWebStateListDelegate::ActivationPolicy::kDoNothing),
+        profile->IsOffTheRecord() ? Browser::Type::kIncognito
+                                  : Browser::Type::kRegular);
     UrlLoadingNotifierBrowserAgent::CreateForBrowser(browser_.get());
     UrlLoadingBrowserAgent::CreateForBrowser(browser_.get());
     LensBrowserAgent::CreateForBrowser(browser_.get());
@@ -137,8 +155,7 @@ class BrowserCoordinatorTest : public PlatformTest {
     WebUsageEnablerBrowserAgent::CreateForBrowser(browser_.get());
     TabInsertionBrowserAgent::CreateForBrowser(browser_.get());
     StartSurfaceRecentTabBrowserAgent::CreateForBrowser(browser_.get());
-    WebStateDelegateBrowserAgent::CreateForBrowser(
-        browser_.get(), TabInsertionBrowserAgent::FromBrowser(browser_.get()));
+    WebStateDelegateBrowserAgent::CreateForBrowser(browser_.get());
     SyncErrorBrowserAgent::CreateForBrowser(browser_.get());
     OmniboxPositionBrowserAgent::CreateForBrowser(browser_.get());
     BrowserViewVisibilityNotifierBrowserAgent::CreateForBrowser(browser_.get());
@@ -153,21 +170,20 @@ class BrowserCoordinatorTest : public PlatformTest {
 
     CommandDispatcher* dispatcher = browser_->GetCommandDispatcher();
 
-    // Set up ApplicationCommands mock. Because ApplicationCommands conforms
+    // Set up SceneCommands mock. Because SceneCommands conforms
     // to SettingsCommands, that needs to be mocked and dispatched
     // as well.
-    id mockApplicationCommandHandler =
-        OCMProtocolMock(@protocol(ApplicationCommands));
+    mock_scene_handler_ = OCMProtocolMock(@protocol(SceneCommands));
     id mockSettingsCommandHandler =
         OCMProtocolMock(@protocol(SettingsCommands));
-    [dispatcher startDispatchingToTarget:mockApplicationCommandHandler
-                             forProtocol:@protocol(ApplicationCommands)];
+    [dispatcher startDispatchingToTarget:mock_scene_handler_
+                             forProtocol:@protocol(SceneCommands)];
     [dispatcher startDispatchingToTarget:mockSettingsCommandHandler
                              forProtocol:@protocol(SettingsCommands)];
 
     IncognitoReauthSceneAgent* reauthAgent = [[IncognitoReauthSceneAgent alloc]
-              initWithReauthModule:[[ReauthenticationModule alloc] init]
-        applicationCommandsHandler:mockApplicationCommandHandler];
+        initWithReauthModule:[[ReauthenticationModule alloc] init]
+                sceneHandler:mock_scene_handler_];
     [scene_state_ addAgent:reauthAgent];
     [dispatcher startDispatchingToTarget:reauthAgent
                              forProtocol:@protocol(IncognitoReauthCommands)];
@@ -185,7 +201,6 @@ class BrowserCoordinatorTest : public PlatformTest {
   int InsertWebState() {
     web::WebState::CreateParams params(GetProfile());
     std::unique_ptr<web::WebState> web_state = web::WebState::Create(params);
-    AttachTabHelpers(web_state.get());
 
     int insertion_index = browser_->GetWebStateList()->InsertWebState(
         std::move(web_state),
@@ -225,10 +240,14 @@ class BrowserCoordinatorTest : public PlatformTest {
   UIViewController* base_view_controller_;
   std::unique_ptr<TestBrowser> browser_;
   SceneState* scene_state_;
+  id<SceneCommands> mock_scene_handler_;
 };
 
-// Tests if the URL to open the downlads directory from files.app is valid.
+// Tests showDownloadsFolder opens Files.app when download list is disabled.
 TEST_F(BrowserCoordinatorTest, ShowDownloadsFolder) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(kDownloadList);
+
   base::FilePath download_dir;
   GetDownloadsDirectory(&download_dir);
 
@@ -238,24 +257,48 @@ TEST_F(BrowserCoordinatorTest, ShowDownloadsFolder) {
   UIApplication* shared_application = [UIApplication sharedApplication];
   ASSERT_TRUE([shared_application canOpenURL:url]);
 
+  BrowserCoordinator* browser_coordinator = GetBrowserCoordinator();
+  [browser_coordinator start];
+
+  CommandDispatcher* dispatcher = browser_->GetCommandDispatcher();
+  id<BrowserCoordinatorCommands> handler =
+      HandlerForProtocol(dispatcher, BrowserCoordinatorCommands);
+
+  // When the download list feature is disabled, showDownloadsFolder should
+  // open Files.app.
   id shared_application_mock = OCMPartialMock(shared_application);
 
   OCMExpect([shared_application_mock openURL:url
                                      options:[OCMArg any]
                            completionHandler:nil]);
 
-  BrowserCoordinator* browser_coordinator = GetBrowserCoordinator();
+  [handler showDownloadsFolder];
 
+  EXPECT_OCMOCK_VERIFY(shared_application_mock);
+
+  [browser_coordinator stop];
+}
+
+// Tests showDownloadsFolder shows download list UI when feature is enabled.
+TEST_F(BrowserCoordinatorTest, ShowDownloadList) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(kDownloadList);
+
+  BrowserCoordinator* browser_coordinator = GetBrowserCoordinator();
   [browser_coordinator start];
 
   CommandDispatcher* dispatcher = browser_->GetCommandDispatcher();
   id<BrowserCoordinatorCommands> handler =
       HandlerForProtocol(dispatcher, BrowserCoordinatorCommands);
+
+  // When the download list feature is enabled, showDownloadsFolder should
+  // present the download list UI instead of opening Files.app.
   [handler showDownloadsFolder];
 
-  [browser_coordinator stop];
+  // Verify that the download list coordinator was created.
+  EXPECT_NE(browser_coordinator.downloadListCoordinator, nil);
 
-  EXPECT_OCMOCK_VERIFY(shared_application_mock);
+  [browser_coordinator stop];
 }
 
 // Tests that `-showShareSheet` is leaving fullscreen and starting the share
@@ -535,4 +578,28 @@ TEST_F(BrowserCoordinatorTest,
   [browser_coordinator stop];
 
   EXPECT_OCMOCK_VERIFY((id)trusted_vault_mock);
+}
+
+// Tests that showBookmarksLimitExceededHelp acknowledges the error and opens
+// the help URL.
+TEST_F(BrowserCoordinatorTest, ShowBookmarksLimitExceededHelp) {
+  BrowserCoordinator* browser_coordinator = GetBrowserCoordinator();
+  [browser_coordinator start];
+
+  syncer::MockSyncService* mock_sync_service =
+      static_cast<syncer::MockSyncService*>(
+          SyncServiceFactory::GetForProfile(GetProfile()));
+
+  EXPECT_CALL(*mock_sync_service,
+              AcknowledgeBookmarksLimitExceededError(
+                  syncer::SyncService::BookmarksLimitExceededHelpClickedSource::
+                      kSyncErrorMessage));
+
+  OCMExpect([mock_scene_handler_ closePresentedViewsAndOpenURL:[OCMArg any]]);
+
+  [browser_coordinator showBookmarksLimitExceededHelp];
+
+  EXPECT_OCMOCK_VERIFY((OCMockObject*)mock_scene_handler_);
+
+  [browser_coordinator stop];
 }

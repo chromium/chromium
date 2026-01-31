@@ -120,10 +120,10 @@ void NetworkingPrivateServiceClient::RemoveServiceCallbacks(
 void NetworkingPrivateServiceClient::GetProperties(
     const std::string& guid,
     PropertiesCallback callback) {
-  auto properties = std::make_unique<base::Value::Dict>();
+  auto properties = std::make_unique<base::DictValue>();
   std::string* error = new std::string;
 
-  base::Value::Dict* properties_ptr = properties.get();
+  base::DictValue* properties_ptr = properties.get();
   task_runner_->PostTaskAndReply(
       FROM_HERE,
       base::BindOnce(&WiFiService::GetProperties,
@@ -137,10 +137,10 @@ void NetworkingPrivateServiceClient::GetProperties(
 void NetworkingPrivateServiceClient::GetManagedProperties(
     const std::string& guid,
     PropertiesCallback callback) {
-  auto properties = std::make_unique<base::Value::Dict>();
+  auto properties = std::make_unique<base::DictValue>();
   std::string* error = new std::string;
 
-  base::Value::Dict* properties_ptr = properties.get();
+  base::DictValue* properties_ptr = properties.get();
   task_runner_->PostTaskAndReply(
       FROM_HERE,
       base::BindOnce(&WiFiService::GetManagedProperties,
@@ -159,10 +159,10 @@ void NetworkingPrivateServiceClient::GetState(
   service_callbacks->failure_callback = std::move(failure_callback);
   service_callbacks->get_properties_callback = std::move(success_callback);
 
-  auto properties = std::make_unique<base::Value::Dict>();
+  auto properties = std::make_unique<base::DictValue>();
   std::string* error = new std::string;
 
-  base::Value::Dict* properties_ptr = properties.get();
+  base::DictValue* properties_ptr = properties.get();
   task_runner_->PostTaskAndReply(
       FROM_HERE,
       base::BindOnce(&WiFiService::GetState,
@@ -175,7 +175,7 @@ void NetworkingPrivateServiceClient::GetState(
 
 void NetworkingPrivateServiceClient::SetProperties(
     const std::string& guid,
-    base::Value::Dict properties,
+    base::DictValue properties,
     bool allow_set_shared_config,
     VoidCallback success_callback,
     FailureCallback failure_callback) {
@@ -199,7 +199,7 @@ void NetworkingPrivateServiceClient::SetProperties(
 
 void NetworkingPrivateServiceClient::CreateNetwork(
     bool shared,
-    base::Value::Dict properties,
+    base::DictValue properties,
     StringCallback success_callback,
     FailureCallback failure_callback) {
   ServiceCallbacks* service_callbacks = AddServiceCallbacks();
@@ -240,11 +240,11 @@ void NetworkingPrivateServiceClient::GetNetworks(
   service_callbacks->get_visible_networks_callback =
       std::move(success_callback);
 
-  auto networks = std::make_unique<base::Value::List>();
+  auto networks = std::make_unique<base::ListValue>();
 
   // TODO(stevenjb/mef): Apply filters (configured, visible, limit).
 
-  base::Value::List* networks_ptr = networks.get();
+  base::ListValue* networks_ptr = networks.get();
   task_runner_->PostTaskAndReply(
       FROM_HERE,
       base::BindOnce(&WiFiService::GetVisibleNetworks,
@@ -329,7 +329,7 @@ void NetworkingPrivateServiceClient::SelectCellularMobileNetwork(
 
 void NetworkingPrivateServiceClient::GetEnabledNetworkTypes(
     EnabledNetworkTypesCallback callback) {
-  base::Value::List network_list;
+  base::ListValue network_list;
   network_list.Append(::onc::network_type::kWiFi);
   std::move(callback).Run(std::move(network_list));
 }
@@ -346,12 +346,12 @@ void NetworkingPrivateServiceClient::GetDeviceStateList(
 
 void NetworkingPrivateServiceClient::GetGlobalPolicy(
     GetGlobalPolicyCallback callback) {
-  std::move(callback).Run(base::Value::Dict());
+  std::move(callback).Run(base::DictValue());
 }
 
 void NetworkingPrivateServiceClient::GetCertificateLists(
     GetCertificateListsCallback callback) {
-  std::move(callback).Run(base::Value::Dict());
+  std::move(callback).Run(base::DictValue());
 }
 
 void NetworkingPrivateServiceClient::EnableNetworkType(const std::string& type,
@@ -377,7 +377,7 @@ void NetworkingPrivateServiceClient::RequestScan(const std::string& /* type */,
 void NetworkingPrivateServiceClient::AfterGetProperties(
     PropertiesCallback callback,
     const std::string& network_guid,
-    std::unique_ptr<base::Value::Dict> properties,
+    std::unique_ptr<base::DictValue> properties,
     const std::string* error) {
   if (!error->empty()) {
     std::move(callback).Run(std::nullopt, *error);
@@ -389,7 +389,7 @@ void NetworkingPrivateServiceClient::AfterGetProperties(
 void NetworkingPrivateServiceClient::AfterGetState(
     ServiceCallbacksID callback_id,
     const std::string& network_guid,
-    std::unique_ptr<base::Value::Dict> properties,
+    std::unique_ptr<base::DictValue> properties,
     const std::string* error) {
   ServiceCallbacks* service_callbacks = callbacks_map_.Lookup(callback_id);
   DCHECK(service_callbacks);
@@ -406,7 +406,7 @@ void NetworkingPrivateServiceClient::AfterGetState(
 
 void NetworkingPrivateServiceClient::AfterGetVisibleNetworks(
     ServiceCallbacksID callback_id,
-    std::unique_ptr<base::Value::List> networks) {
+    std::unique_ptr<base::ListValue> networks) {
   ServiceCallbacks* service_callbacks = callbacks_map_.Lookup(callback_id);
   DCHECK(service_callbacks);
   DCHECK(!service_callbacks->get_visible_networks_callback.is_null());

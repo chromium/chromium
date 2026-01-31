@@ -95,6 +95,7 @@ class CC_ANIMATION_EXPORT Animation : public base::RefCounted<Animation>,
 
   void AddKeyframeModel(std::unique_ptr<KeyframeModel> keyframe_model);
   void PauseKeyframeModel(int keyframe_model_id, base::TimeDelta time_offset);
+  void PauseKeyframeModels(base::TimeDelta time_offset);
   virtual void RemoveKeyframeModel(int keyframe_model_id);
   void AbortKeyframeModel(int keyframe_model_id);
 

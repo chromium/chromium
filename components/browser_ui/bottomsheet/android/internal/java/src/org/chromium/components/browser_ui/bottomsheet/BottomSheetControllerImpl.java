@@ -167,11 +167,10 @@ class BottomSheetControllerImpl implements ManagedBottomSheetController, ScrimCo
                         assert mBottomSheet != null
                                 && !mSuppressionTokens.hasTokens()
                                 && mBottomSheet.getCurrentSheetContent() != null;
-                        if (Boolean.TRUE.equals(
-                                mBottomSheet
-                                        .getCurrentSheetContent()
-                                        .getBackPressStateChangedSupplier()
-                                        .get())) {
+                        if (mBottomSheet
+                                .getCurrentSheetContent()
+                                .getBackPressStateChangedSupplier()
+                                .get()) {
                             mBottomSheet.getCurrentSheetContent().onBackPressed();
                             return BackPressResult.SUCCESS;
                         }
@@ -797,11 +796,10 @@ class BottomSheetControllerImpl implements ManagedBottomSheetController, ScrimCo
                 mBottomSheet != null
                         && !mSuppressionTokens.hasTokens()
                         && mBottomSheet.getCurrentSheetContent() != null
-                        && (Boolean.TRUE.equals(
-                                        mBottomSheet
-                                                .getCurrentSheetContent()
-                                                .getBackPressStateChangedSupplier()
-                                                .get())
+                        && (mBottomSheet
+                                        .getCurrentSheetContent()
+                                        .getBackPressStateChangedSupplier()
+                                        .get()
                                 || mBottomSheet.isSheetOpen()));
     }
 

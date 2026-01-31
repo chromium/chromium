@@ -71,7 +71,7 @@ import java.util.function.Supplier;
  */
 @NullMarked
 public class PaymentRequestService
-        implements PaymentAppFactoryDelegate,
+        implements PaymentAppServiceDelegate,
                 PaymentAppFactoryParams,
                 PaymentRequestUpdateEventListener,
                 PaymentApp.AbortCallback,
@@ -87,7 +87,6 @@ public class PaymentRequestService
     private final Runnable mOnClosedListener;
     private final RenderFrameHost mRenderFrameHost;
     private final Delegate mDelegate;
-    private final List<PaymentApp> mPendingApps = new ArrayList<>();
     private final @Nullable Supplier<PaymentAppServiceBridge> mPaymentAppServiceBridgeSupplier;
     @SuppressWarnings("NullAway.Init") // When init() fails this can have null value
     private WebContents mWebContents;
@@ -555,11 +554,6 @@ public class PaymentRequestService
             return false;
         }
 
-        if (mBrowserPaymentRequest.disconnectIfExtraValidationFails(
-                mWebContents, methodData, details, mPaymentOptions)) {
-            return false;
-        }
-
         PaymentRequestSpec spec =
                 mDelegate.createPaymentRequestSpec(
                         mPaymentOptions,
@@ -624,7 +618,7 @@ public class PaymentRequestService
             service.addUniqueFactory(mDelegate.createAndroidPaymentAppFactory(), androidFactoryId);
         }
 
-        service.create(/* delegate= */ this);
+        service.createPaymentApps(/* delegate= */ this);
     }
 
     /**
@@ -761,11 +755,6 @@ public class PaymentRequestService
     @Override
     public void onPaymentResponseReady(PaymentResponse response) {
         assumeNonNull(mBrowserPaymentRequest);
-        if (!mBrowserPaymentRequest.patchPaymentResponseIfNeeded(response)) {
-            disconnectFromClientWithDebugMessage(
-                    ErrorStrings.PAYMENT_APP_INVALID_RESPONSE, PaymentErrorReason.NOT_SUPPORTED);
-            // Intentionally do not early-return.
-        }
         if (response.methodName.equals(MethodStrings.SECURE_PAYMENT_CONFIRMATION)) {
             assumeNonNull(mInvokedPaymentApp);
             assert mInvokedPaymentApp.getInstrumentMethodNames().contains(response.methodName);
@@ -884,29 +873,33 @@ public class PaymentRequestService
         mJourneyLogger.setSelectedMethod(category);
     }
 
-    // Implements PaymentAppFactoryDelegate:
+    // Implements PaymentAppServiceDelegate:
     @Override
     public void setCanMakePaymentEvenWithoutApps() {
         mCanMakePaymentEvenWithoutApps = true;
     }
 
-    // Implements PaymentAppFactoryDelegate:
+    // Implements PaymentAppServiceDelegate:
     @Override
-    public void onDoneCreatingPaymentApps(PaymentAppFactoryInterface factory /* Unused */) {
+    public void onDoneCreatingPaymentApps(List<PaymentApp> createdApps) {
         if (mBrowserPaymentRequest == null) return;
         assert mSpec != null;
         assert !mSpec.isDestroyed() : "mSpec is destroyed only after close()";
 
         mIsFinishedQueryingPaymentApps = true;
 
+        for (PaymentApp app : createdApps) {
+            mHasEnrolledInstrument |= app.hasEnrolledInstrument();
+        }
+
         mHasEnrolledInstrument |= mCanMakePaymentEvenWithoutApps;
+
         // The kCanMakePaymentEnabled pref does not apply to SPC, where hasEnrolledInstrument() is
         // only used for feature detection and does not communicate with any applications.
         mHasEnrolledInstrument &=
                 (mDelegate.prefsCanMakePayment() || mSpec.isSecurePaymentConfirmationRequested());
 
-        mBrowserPaymentRequest.notifyPaymentUiOfPendingApps(mPendingApps);
-        mPendingApps.clear();
+        mBrowserPaymentRequest.notifyPaymentUiOfPendingApps(createdApps);
         // Record the number suggested payment methods and whether at least one of them was
         // complete.
         mJourneyLogger.setNumberOfSuggestionsShown(
@@ -1067,17 +1060,10 @@ public class PaymentRequestService
                 () -> sIsLocalHasEnrolledInstrumentQueryQuotaEnforcedForTest = false);
     }
 
-    // Implements PaymentAppFactoryDelegate:
+    // Implements PaymentAppServiceDelegate:
     @Override
     public PaymentAppFactoryParams getParams() {
         return this;
-    }
-
-    // Implements PaymentAppFactoryDelegate:
-    @Override
-    public void onPaymentAppCreated(PaymentApp paymentApp) {
-        mHasEnrolledInstrument |= paymentApp.hasEnrolledInstrument();
-        mPendingApps.add(paymentApp);
     }
 
     /** Responds to the CanMakePayment query from the merchant page. */
@@ -1200,7 +1186,7 @@ public class PaymentRequestService
                 || sIsLocalHasEnrolledInstrumentQueryQuotaEnforcedForTest;
     }
 
-    // Implements PaymentAppFactoryDelegate:
+    // Implements PaymentAppServiceDelegate:
     @Override
     public void onCanMakePaymentCalculated(boolean canMakePayment) {
         mCanMakePayment = canMakePayment || mCanMakePaymentEvenWithoutApps;
@@ -1210,7 +1196,7 @@ public class PaymentRequestService
         respondCanMakePaymentQuery();
     }
 
-    // Implements PaymentAppFactoryDelegate:
+    // Implements PaymentAppServiceDelegate:
     @Override
     public void onPaymentAppCreationError(
             String errorMessage, @AppCreationFailureReason int errorReason) {
@@ -1220,43 +1206,10 @@ public class PaymentRequestService
         }
     }
 
-    // Implements PaymentAppFactoryDelegate:
-    @Override
-    public boolean prefsCanMakePayment() {
-        return mDelegate.prefsCanMakePayment();
-    }
-
-    // Implements PaymentAppFactoryDelegate:
+    // Implements PaymentAppServiceDelegate:
     @Override
     public void setOptOutOffered() {
         mJourneyLogger.setOptOutOffered();
-    }
-
-    // Implements PaymentAppFactoryDelegate:
-    @Override
-    public CSPChecker getCSPChecker() {
-        return this;
-    }
-
-    // Implements PaymentAppFactoryDelegate:
-    @Override
-    public DialogController getDialogController() {
-        assumeNonNull(mBrowserPaymentRequest);
-        return mBrowserPaymentRequest.getDialogController();
-    }
-
-    // Implements PaymentAppFactoryDelegate:
-    @Override
-    public AndroidIntentLauncher getAndroidIntentLauncher() {
-        assumeNonNull(mBrowserPaymentRequest);
-        return mBrowserPaymentRequest.getAndroidIntentLauncher();
-    }
-
-    // Implements PaymentAppFactoryDelegate:
-    @Override
-    public boolean isFullDelegationRequired() {
-        assumeNonNull(mBrowserPaymentRequest);
-        return mBrowserPaymentRequest.isFullDelegationRequired();
     }
 
     /**
@@ -1412,9 +1365,7 @@ public class PaymentRequestService
     private boolean isPaymentDetailsUpdateValid(PaymentDetails details) {
         assumeNonNull(mBrowserPaymentRequest);
         // ID cannot be updated. Updating the total is optional.
-        return details.id == null
-                && mDelegate.validatePaymentDetails(details)
-                && mBrowserPaymentRequest.parseAndValidateDetailsFurtherIfNeeded(details);
+        return details.id == null && mDelegate.validatePaymentDetails(details);
     }
 
     private @Nullable String continueShowWithUpdatedDetails(@Nullable PaymentDetails details) {
@@ -1854,6 +1805,39 @@ public class PaymentRequestService
     @Override
     public boolean isOffTheRecord() {
         return mIsOffTheRecord;
+    }
+
+    // PaymentAppFactoryParams implementation.
+    @Override
+    public boolean prefsCanMakePayment() {
+        return mDelegate.prefsCanMakePayment();
+    }
+
+    // PaymentAppFactoryParams implementation.
+    @Override
+    public CSPChecker getCSPChecker() {
+        return this;
+    }
+
+    // PaymentAppFactoryParams implementation.
+    @Override
+    public DialogController getDialogController() {
+        assumeNonNull(mBrowserPaymentRequest);
+        return mBrowserPaymentRequest.getDialogController();
+    }
+
+    // PaymentAppFactoryParams implementation.
+    @Override
+    public AndroidIntentLauncher getAndroidIntentLauncher() {
+        assumeNonNull(mBrowserPaymentRequest);
+        return mBrowserPaymentRequest.getAndroidIntentLauncher();
+    }
+
+    // PaymentAppFactoryParams implementation.
+    @Override
+    public boolean isFullDelegationRequired() {
+        assumeNonNull(mBrowserPaymentRequest);
+        return mBrowserPaymentRequest.isFullDelegationRequired();
     }
 
     // Implements PaymentRequestUpdateEventListener:

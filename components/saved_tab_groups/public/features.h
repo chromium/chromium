@@ -26,8 +26,6 @@ BASE_DECLARE_FEATURE(kEnableUrlRestriction);
 
 BASE_DECLARE_FEATURE(kEnableOriginatingSavedGroupCleanUp);
 
-BASE_DECLARE_FEATURE(kLeftClickOpensTabGroupBubble);
-
 extern bool IsTabGroupSyncDelegateAndroidEnabled();
 
 extern bool IsTabGroupSyncCoordinatorEnabled();

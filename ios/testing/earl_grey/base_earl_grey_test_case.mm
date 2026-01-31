@@ -27,10 +27,6 @@ bool g_needs_set_up_for_test_case = true;
 
 @implementation BaseEarlGreyTestCase
 
-+ (BOOL)loadMinimalAppUI {
-  return NO;
-}
-
 + (BOOL)forceRestartAndWipe {
   return YES;
 }
@@ -60,6 +56,10 @@ bool g_needs_set_up_for_test_case = true;
       forConfigKey:kGREYConfigKeyAutoUntrackMDCActivityIndicators];
 }
 
+- (BOOL)loadMinimalAppUI {
+  return NO;
+}
+
 // Invoked upon starting each test method in a test case.
 // Launches the app under test if necessary.
 - (void)setUp {
@@ -75,7 +75,7 @@ bool g_needs_set_up_for_test_case = true;
     config.additional_args.push_back(std::string("-EGTestWipeProfile"));
   }
 
-  if ([[self class] loadMinimalAppUI]) {
+  if ([self loadMinimalAppUI]) {
     config.additional_args.push_back(std::string("-load-minimal-app-ui"));
   }
 

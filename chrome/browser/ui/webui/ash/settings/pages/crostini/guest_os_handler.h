@@ -37,14 +37,14 @@ class GuestOsHandler : public ::settings::SettingsPageUIHandler,
   // Callback for the "getSharedPathsDisplayText" message.  Converts actual
   // paths in chromeos to values suitable to display to users.
   // E.g. /home/chronos/u-<hash>/Downloads/foo => "Downloads > foo".
-  void HandleGetGuestOsSharedPathsDisplayText(const base::Value::List& args);
+  void HandleGetGuestOsSharedPathsDisplayText(const base::ListValue& args);
   // Remove a specified path from being shared.
-  void HandleRemoveGuestOsSharedPath(const base::Value::List& args);
+  void HandleRemoveGuestOsSharedPath(const base::ListValue& args);
   // Called when the shared USB devices page is ready.
   void HandleNotifyGuestOsSharedUsbDevicesPageReady(
-      const base::Value::List& args);
+      const base::ListValue& args);
   // Set the share state of a USB device.
-  void HandleSetGuestOsUsbDeviceShared(const base::Value::List& args);
+  void HandleSetGuestOsUsbDeviceShared(const base::ListValue& args);
 
   void OnGuestOsSharedPathRemoved(const std::string& callback_id,
                                   const std::string& path,

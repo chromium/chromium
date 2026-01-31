@@ -8,6 +8,6 @@ import type {PageFaviconElement} from './page_favicon.js';
 
 export function getHtml(this: PageFaviconElement) {
   return this.imageUrl_ ? html`<img id="page-image"
-      is="cr-auto-img" auto-src="${this.imageUrl_.url}"></img>` :
+      is="cr-auto-img" auto-src="${this.imageUrl_}"></img>` :
                           '';
 }

@@ -424,11 +424,11 @@ TEST_F(WebCryptoAesCbcTest, ImportKeyEmptyUsage) {
 // If key_ops is specified but empty, no key usages are allowed for the key.
 TEST_F(WebCryptoAesCbcTest, ImportKeyJwkEmptyKeyOps) {
   blink::WebCryptoKey key;
-  base::Value::Dict dict;
+  base::DictValue dict;
   dict.Set("kty", "oct");
   dict.Set("ext", false);
   dict.Set("k", "GADWrMRHwQfoNaXU5fZvTg");
-  dict.Set("key_ops", base::Value::List());
+  dict.Set("key_ops", base::ListValue());
 
   // The JWK does not contain encrypt usages.
   EXPECT_EQ(Status::ErrorJwkKeyopsInconsistent(),
@@ -446,7 +446,7 @@ TEST_F(WebCryptoAesCbcTest, ImportKeyJwkEmptyKeyOps) {
 // If key_ops is missing, then any key usages can be specified.
 TEST_F(WebCryptoAesCbcTest, ImportKeyJwkNoKeyOps) {
   blink::WebCryptoKey key;
-  base::Value::Dict dict;
+  base::DictValue dict;
   dict.Set("kty", "oct");
   dict.Set("k", "GADWrMRHwQfoNaXU5fZvTg");
 
@@ -466,10 +466,10 @@ TEST_F(WebCryptoAesCbcTest, ImportKeyJwkNoKeyOps) {
 
 TEST_F(WebCryptoAesCbcTest, ImportKeyJwkKeyOpsEncryptDecrypt) {
   blink::WebCryptoKey key;
-  base::Value::Dict dict;
+  base::DictValue dict;
   dict.Set("kty", "oct");
   dict.Set("k", "GADWrMRHwQfoNaXU5fZvTg");
-  base::Value::List* key_ops = dict.EnsureList("key_ops");
+  base::ListValue* key_ops = dict.EnsureList("key_ops");
 
   key_ops->Append("encrypt");
 
@@ -503,10 +503,10 @@ TEST_F(WebCryptoAesCbcTest, ImportKeyJwkKeyOpsEncryptDecrypt) {
 // Test failure if input usage is NOT a strict subset of the JWK usage.
 TEST_F(WebCryptoAesCbcTest, ImportKeyJwkKeyOpsNotSuperset) {
   blink::WebCryptoKey key;
-  base::Value::Dict dict;
+  base::DictValue dict;
   dict.Set("kty", "oct");
   dict.Set("k", "GADWrMRHwQfoNaXU5fZvTg");
-  base::Value::List key_ops;
+  base::ListValue key_ops;
   key_ops.Append("encrypt");
   dict.Set("key_ops", std::move(key_ops));
 
@@ -520,7 +520,7 @@ TEST_F(WebCryptoAesCbcTest, ImportKeyJwkKeyOpsNotSuperset) {
 
 TEST_F(WebCryptoAesCbcTest, ImportKeyJwkUseEnc) {
   blink::WebCryptoKey key;
-  base::Value::Dict dict;
+  base::DictValue dict;
   dict.Set("kty", "oct");
   dict.Set("k", "GADWrMRHwQfoNaXU5fZvTg");
 
@@ -578,11 +578,11 @@ TEST_F(WebCryptoAesCbcTest, ImportJwkInvalidJson) {
 TEST_F(WebCryptoAesCbcTest, ImportJwkKeyOpsLacksUsages) {
   blink::WebCryptoKey key;
 
-  base::Value::Dict dict;
+  base::DictValue dict;
   dict.Set("kty", "oct");
   dict.Set("k", "GADWrMRHwQfoNaXU5fZvTg");
 
-  base::Value::List key_ops;
+  base::ListValue key_ops;
   key_ops.Append("foo");
   dict.Set("key_ops", std::move(key_ops));
   EXPECT_EQ(Status::ErrorJwkKeyopsInconsistent(),

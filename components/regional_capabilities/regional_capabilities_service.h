@@ -207,7 +207,7 @@ class RegionalCapabilitiesService : public KeyedService {
   void DestroyJavaObject();
 
   // See `IsInEeaCountry()`.
-  jboolean IsInEeaCountry(JNIEnv* env);
+  bool IsInEeaCountry(JNIEnv* env);
 #endif
   // -- JNI Interface End ----------------------------------------------------
 

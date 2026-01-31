@@ -79,15 +79,6 @@ public class UiUtils {
     }
 
     /**
-     * Checks whether the Instance Switcher V2 feature is enabled.
-     *
-     * @return {@code true} if the Instance Switcher V2 feature is enabled, {@code false} otherwise.
-     */
-    public static boolean isInstanceSwitcherV2Enabled() {
-        return ChromeFeatureList.isEnabled(ChromeFeatureList.INSTANCE_SWITCHER_V2);
-    }
-
-    /**
      * Checks whether the Robust Window Management feature is enabled.
      *
      * @return {@code true} if the Robust Window Management feature is enabled, {@code false}
@@ -113,7 +104,7 @@ public class UiUtils {
      *     false} otherwise.
      */
     public static boolean isRecentlyClosedTabsAndWindowsEnabled() {
-        return ChromeFeatureList.isEnabled(ChromeFeatureList.RECENTLY_CLOSED_TABS_AND_WINDOWS);
+        return ChromeFeatureList.sRecentlyClosedTabsAndWindows.isEnabled();
     }
 
     /**
@@ -255,11 +246,7 @@ public class UiUtils {
         int totalTabCount = totalTabCount(item);
         String desc;
         Resources res = mContext.getResources();
-        if (item.type == InstanceInfo.Type.CURRENT && !isInstanceSwitcherV2Enabled()) {
-            desc = res.getString(R.string.instance_switcher_current_window);
-        } else if (item.type == InstanceInfo.Type.ADJACENT && !isInstanceSwitcherV2Enabled()) {
-            desc = res.getString(R.string.instance_switcher_adjacent_window);
-        } else if (totalTabCount == 0) { // <ex>No tabs</ex>
+        if (totalTabCount == 0) { // <ex>No tabs</ex>
             desc = res.getString(R.string.instance_switcher_tab_count_zero);
         } else if (item.isIncognitoSelected && incognitoTabCount > 0) {
             if (IncognitoUtils.shouldOpenIncognitoAsWindow()) { // <ex>2 tabs</ex>
@@ -318,14 +305,11 @@ public class UiUtils {
                                 R.plurals.instance_switcher_close_confirm_deleted_incognito,
                                 incognitoTabCount,
                                 incognitoTabCount);
-            } else { // 1 incognito and 3 more tabs will be closed
+            } else { // 1 incognito and 3 other tabs will be closed
                 msg =
                         res.getQuantityString(
-                                isInstanceSwitcherV2Enabled()
-                                        ? R.plurals
-                                                .instance_switcher_close_confirm_deleted_incognito_mixed_v2
-                                        : R.plurals
-                                                .instance_switcher_close_confirm_deleted_incognito_mixed,
+                                R.plurals
+                                        .instance_switcher_close_confirm_deleted_incognito_mixed_v2,
                                 item.tabCount,
                                 incognitoTabCount,
                                 item.tabCount,
@@ -333,20 +317,14 @@ public class UiUtils {
             }
         } else if (totalTabCount == 0) { // The window will be closed
             msg = res.getString(R.string.instance_switcher_close_confirm_deleted_tabs_zero);
-        } else if (totalTabCount == 1) {
-            // V1. The tab YouTube will be closed. V2. YouTube will be closed.
+        } else if (totalTabCount == 1) { // YouTube will be closed.
             msg =
                     res.getString(
-                            isInstanceSwitcherV2Enabled()
-                                    ? R.string.instance_switcher_close_confirm_deleted_tabs_one_v2
-                                    : R.string.instance_switcher_close_confirm_deleted_tabs_one,
-                            title);
-        } else { // YouTube and 3 more tabs will be closed
+                            R.string.instance_switcher_close_confirm_deleted_tabs_one_v2, title);
+        } else { // YouTube and 3 other tabs will be closed
             msg =
                     res.getQuantityString(
-                            isInstanceSwitcherV2Enabled()
-                                    ? R.plurals.instance_switcher_close_confirm_deleted_tabs_many_v2
-                                    : R.plurals.instance_switcher_close_confirm_deleted_tabs_many,
+                            R.plurals.instance_switcher_close_confirm_deleted_tabs_many_v2,
                             totalTabCount - 1,
                             title,
                             totalTabCount - 1,

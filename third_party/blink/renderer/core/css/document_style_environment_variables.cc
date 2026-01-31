@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/css/document_style_environment_variables.h"
 
+#include "third_party/blink/renderer/core/css/font_size_functions.h"
 #include "third_party/blink/renderer/core/css/style_engine.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
@@ -55,8 +56,7 @@ DocumentStyleEnvironmentVariables::DocumentStyleEnvironmentVariables(
     StyleEnvironmentVariables& parent,
     Document& document)
     : StyleEnvironmentVariables(parent), document_(&document) {
-  SetPreferredTextScale(
-      document_->GetSettings()->GetAccessibilityFontScaleFactor());
+  UpdatePreferredTextScaleFromDocument();
 }
 
 void DocumentStyleEnvironmentVariables::RecordVariableUsage(
@@ -93,42 +93,42 @@ void DocumentStyleEnvironmentVariables::RecordVariableUsage(
     // Do nothing if this is an unknown variable.
   }
 }
-namespace {
 
-double SnapToClosestFontScaleBucket(double raw_font_scale) {
-  static const std::array<double, 7> font_scale_buckets = {0.85, 1,   1.15, 1.3,
-                                                           1.5,  1.8, 2};
+void DocumentStyleEnvironmentVariables::UpdatePreferredTextScaleFromDocument() {
+  double scale_factor;
 
-  // Handle cases where the input value is outside the range of literals.
-  if (raw_font_scale <= font_scale_buckets.front()) {
-    return font_scale_buckets.front();
+  // For compat, we don't expose env(preferred-text-scale)'s true value to pages
+  // in WebView if the page has no meta text-scale tag and the app does not
+  // enable autosizing.
+  //
+  // WebView defaults to inflating ALL text on the page, so if there's a page
+  // that uses env(preferred-text-scale) to inflate *parts* of the page, those
+  // parts will get double-scaled (once along with everything else, then once
+  // again by env()).
+
+  if (document_->TextScaleMetaTagPresent()) {
+    // But if a page includes meta, they are signaling to us that the page will
+    // handle scaling themselves, so we populate env() to let them use it.
+    // Elsewhere, in response to meta, we have disabled Webview inflating all
+    // text.
+    scale_factor =
+        FontSizeFunctions::SnapToClosestFontScaleBucket(
+            document_->GetSettings()->GetAccessibilityFontScaleFactor()) *
+        (document_->GetSettings()->GetDefaultFontSize() / 16.0);
+  } else {
+    const bool should_hide_env_to_prevent_double_scaling =
+        document_->GetSettings()->GetScaleAllFontsIfNoMetaTextScaleTag() &&
+        !document_->GetSettings()->GetTextAutosizingEnabled();
+
+    scale_factor =
+        should_hide_env_to_prevent_double_scaling
+            ? 1.0
+            : FontSizeFunctions::SnapToClosestFontScaleBucket(
+                  document_->GetSettings()->GetAccessibilityFontScaleFactor());
   }
-  if (raw_font_scale >= font_scale_buckets.back()) {
-    return font_scale_buckets.back();
-  }
 
-  // std::lower_bound finds the first element >= raw_font_scale.
-  const auto it = std::lower_bound(font_scale_buckets.begin(),
-                                   font_scale_buckets.end(), raw_font_scale);
-
-  const double higher_candidate = *it;
-  // The element before 'it' is the other candidate.
-  // Safe because we handled edge cases above.
-  const double lower_candidate = *(it - 1);
-
-  const double diff_to_lower = std::abs(raw_font_scale - lower_candidate);
-  const double diff_to_higher = std::abs(raw_font_scale - higher_candidate);
-
-  return (diff_to_lower <= diff_to_higher) ? lower_candidate : higher_candidate;
-}
-
-}  // namespace
-
-void DocumentStyleEnvironmentVariables::SetPreferredTextScale(
-    double raw_font_scale_from_os) {
-  SetVariable(
-      UADefinedVariable::kPreferredTextScale,
-      String::Number(SnapToClosestFontScaleBucket(raw_font_scale_from_os)));
+  SetVariable(UADefinedVariable::kPreferredTextScale,
+              String::Number(scale_factor));
 }
 
 }  // namespace blink

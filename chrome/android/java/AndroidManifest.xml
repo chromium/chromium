@@ -168,6 +168,9 @@ by a child template that "extends" this file.
 
     <uses-permission android:name="com.google.android.apps.now.CURRENT_ACCOUNT_ACCESS" />
 
+    <!-- Permission for using pinned windowing layer for document picture-in-picture. -->
+    <uses-permission android:name="android.permission.USE_PINNED_WINDOWING_LAYER" />
+
     {% block extra_uses_permissions %}
     {% endblock %}
 
@@ -554,6 +557,9 @@ by a child template that "extends" this file.
             android:theme="@style/Theme.Chromium.TabbedMode"
             android:exported="true"
             android:launchMode="singleTask"
+            {% if is_desktop_android == "true" %}
+            android:persistableMode="persistAcrossReboots"
+            {% endif %}
             {# We can only use blocks once in Jinja, for future substitutions we use
             self.supports_video_persistence(). #}
             {% block supports_video_persistence %}
@@ -1168,9 +1174,6 @@ by a child template that "extends" this file.
         <receiver android:name="org.chromium.chrome.browser.offlinepages.AutoFetchNotifier$InProgressCancelReceiver"
             android:exported="false"/>
 
-        <receiver android:name="org.chromium.chrome.browser.safety_hub.UnsubscribedNotificationsNotificationManager$NotificationReceiver"
-            android:exported="false"/>
-
         <service android:name="org.chromium.chrome.browser.media.MediaCaptureNotificationService"
             {% if is_desktop_android == "true" and enable_screen_capture == "true" %}
             android:foregroundServiceType="camera|microphone|mediaProjection|mediaPlayback"
@@ -1306,10 +1309,7 @@ by a child template that "extends" this file.
       {% if javaless_renderers is defined %}
       <!-- Restricting to just 2 native-only services, one for zygote and one for non-zygote. -->
       {% for i in range(2) %}
-      <!-- For now, the name of a native-only service must be prefixed with "NativeService". This is
-           only for the prototype, and once it actually lands in the Android tree, there will be a
-           better mechanism than this. -->
-      <service android:name="org.chromium.content.app.NativeServiceSandboxedProcessService{{ i }}"
+      <service android:name="org.chromium.content.app.NativeOnlySandboxedProcessService{{ i }}"
           android:nativeService="true"
           android:process=":sandboxed_process{{ i }}"
           android:permission="{{ manifest_package }}.permission.CHILD_SERVICE"

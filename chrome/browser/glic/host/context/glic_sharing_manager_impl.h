@@ -8,7 +8,7 @@
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/glic/glic_metrics.h"
 #include "chrome/browser/glic/host/context/glic_focused_browser_manager.h"
-#include "chrome/browser/glic/host/context/glic_focused_tab_manager.h"
+#include "chrome/browser/glic/host/context/glic_focused_tab_manager_interface.h"
 #include "chrome/browser/glic/host/context/glic_pinned_tab_manager.h"
 #include "chrome/browser/glic/host/context/glic_tab_data.h"
 #include "chrome/browser/glic/public/context/glic_sharing_manager.h"
@@ -24,13 +24,14 @@ class GlicStablePinningDelegatingSharingManager;
 // functionality.
 class GlicSharingManagerImpl : public GlicSharingManager {
  public:
+#if !BUILDFLAG(IS_ANDROID)
   GlicSharingManagerImpl(Profile* profile,
                          GlicWindowControllerInterface* window_controller,
                          GlicMetrics* metrics);
+#endif
   GlicSharingManagerImpl(
       std::unique_ptr<GlicFocusedTabManagerInterface> focused_tab_manager,
-      std::unique_ptr<GlicFocusedBrowserManagerInterface>
-          focused_browser_manager,
+      std::unique_ptr<GlicFocusedBrowserManager> focused_browser_manager,
       GlicPinnedTabManager* pinned_tab_manager,
       Profile* profile,
       GlicMetrics* metrics);
@@ -120,7 +121,7 @@ class GlicSharingManagerImpl : public GlicSharingManager {
 
   void OnConversationTurnSubmitted() override;
 
-  GlicFocusedBrowserManagerInterface& focused_browser_manager() override;
+  GlicFocusedBrowserManager& focused_browser_manager() override;
 
   base::WeakPtr<GlicSharingManager> GetWeakPtr() override;
 
@@ -132,7 +133,7 @@ class GlicSharingManagerImpl : public GlicSharingManager {
 
   GlicPinnedTabManager* pinned_tab_manager() const;
 
-  std::unique_ptr<GlicFocusedBrowserManagerInterface> focused_browser_manager_;
+  std::unique_ptr<GlicFocusedBrowserManager> focused_browser_manager_;
   std::unique_ptr<GlicFocusedTabManagerInterface> focused_tab_manager_;
   std::variant<std::unique_ptr<GlicPinnedTabManager>,
                raw_ptr<GlicPinnedTabManager>>

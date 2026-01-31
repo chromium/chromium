@@ -20,6 +20,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -36,6 +37,7 @@ import org.chromium.components.browser_ui.widget.BoundedLinearLayout;
 import org.chromium.components.browser_ui.widget.FadingEdgeScrollView;
 import org.chromium.ui.UiUtils;
 import org.chromium.ui.base.DeviceFormFactor;
+import org.chromium.ui.listmenu.ListMenuButton;
 import org.chromium.ui.modaldialog.ModalDialogProperties;
 import org.chromium.ui.modaldialog.ModalDialogProperties.ButtonType;
 import org.chromium.ui.widget.ButtonCompat;
@@ -60,6 +62,10 @@ public class ModalDialogView extends BoundedLinearLayout implements View.OnClick
     private ViewGroup mTitleContainer;
     private TextView mTitleView;
     private ImageView mTitleIcon;
+    private ImageView mTitleEndIcon;
+    private int mTitleDefaultHorizontalPadding;
+    private ImageButton mTitleBackButton;
+    private ListMenuButton mTitleMoreButton;
     private LinearLayout mMessageParagraphsContainer;
     private View mMessageParagraphsSpacer;
 
@@ -80,6 +86,7 @@ public class ModalDialogView extends BoundedLinearLayout implements View.OnClick
     private final Set<View> mTouchFilterableViews = new HashSet<>();
     private ViewGroup mFooterContainer;
     private TextView mFooterMessageView;
+    private View mDialogBottomSpacer;
     private long mStartProtectingButtonTimestamp = -1;
     // The duration for which dialog buttons should not react to any tap event after this view is
     // displayed to prevent potentially unintentional user interactions. A value of zero turns off
@@ -138,6 +145,10 @@ public class ModalDialogView extends BoundedLinearLayout implements View.OnClick
         mTitleContainer = findViewById(R.id.title_container);
         mTitleView = mTitleContainer.findViewById(R.id.title);
         mTitleIcon = mTitleContainer.findViewById(R.id.title_icon);
+        mTitleEndIcon = mTitleContainer.findViewById(R.id.title_end_icon);
+        mTitleDefaultHorizontalPadding = mTitleContainer.getPaddingLeft();
+        mTitleBackButton = mTitleContainer.findViewById(R.id.title_back);
+        mTitleMoreButton = mTitleContainer.findViewById(R.id.title_more_button);
         mMessageParagraphsContainer = findViewById(R.id.message_paragraphs_container);
         mMessageParagraphsSpacer = findViewById(R.id.message_paragraphs_bottom_spacer);
         mMenuItemsContainer = findViewById(R.id.menu_items_container);
@@ -155,6 +166,8 @@ public class ModalDialogView extends BoundedLinearLayout implements View.OnClick
         mButtonGroup = findViewById(R.id.button_group);
         mFooterContainer.setBackgroundColor(
                 SemanticColorUtils.getColorSurfaceContainerLow(getContext()));
+        mDialogBottomSpacer = findViewById(R.id.dialog_bottom_spacer);
+
         updateContentVisibility();
         updateCheckboxVisibility();
         updateButtonVisibility();
@@ -263,13 +276,24 @@ public class ModalDialogView extends BoundedLinearLayout implements View.OnClick
         updateContentVisibility();
     }
 
-    /** @param titleScrollable Whether the title is scrollable with the message. */
+    /**
+     * @param drawable The icon drawable on the title at the end.
+     */
+    public void setTitleEndIcon(Drawable drawable) {
+        mTitleEndIcon.setImageDrawable(drawable);
+        updateContentVisibility();
+    }
+
+    /**
+     * @param titleScrollable Whether the title is scrollable with the message.
+     */
     void setTitleScrollable(boolean titleScrollable) {
         if (mTitleScrollable == titleScrollable) return;
 
         mTitleScrollable = titleScrollable;
         CharSequence title = mTitleView.getText();
         Drawable icon = mTitleIcon.getDrawable();
+        Drawable endIcon = mTitleEndIcon.getDrawable();
 
         // Hide the previous title container since the scrollable and non-scrollable title container
         // should not be shown at the same time.
@@ -280,8 +304,10 @@ public class ModalDialogView extends BoundedLinearLayout implements View.OnClick
                         titleScrollable ? R.id.scrollable_title_container : R.id.title_container);
         mTitleView = mTitleContainer.findViewById(R.id.title);
         mTitleIcon = mTitleContainer.findViewById(R.id.title_icon);
+        mTitleEndIcon = mTitleContainer.findViewById(R.id.title_end_icon);
         setTitle(title);
         setTitleIcon(icon);
+        setTitleEndIcon(endIcon);
 
         LayoutParams layoutParams = (LayoutParams) mCustomViewContainer.getLayoutParams();
         if (titleScrollable) {
@@ -411,15 +437,11 @@ public class ModalDialogView extends BoundedLinearLayout implements View.OnClick
             button.setText(spec.getText());
             button.setContentDescription(spec.getContentDescription());
 
-            int button_padding_in_px =
+            int buttonPaddingPx =
                     getContext()
                             .getResources()
                             .getDimensionPixelSize(R.dimen.modal_dialog_button_group_padding);
-            button.setPadding(
-                    button_padding_in_px,
-                    button_padding_in_px,
-                    button_padding_in_px,
-                    button_padding_in_px);
+            button.setPadding(buttonPaddingPx, buttonPaddingPx, buttonPaddingPx, buttonPaddingPx);
 
             setupClickableView(button, spec.getButtonType());
             setFilterTouchForSecurityIfNecessary(button);
@@ -544,6 +566,7 @@ public class ModalDialogView extends BoundedLinearLayout implements View.OnClick
         } else {
             mCustomViewContainer.setVisibility(View.GONE);
         }
+        updateContentVisibility();
     }
 
     /** @param view The customized button bar for the dialog. */
@@ -623,6 +646,7 @@ public class ModalDialogView extends BoundedLinearLayout implements View.OnClick
      */
     void setPadding(Rect padding) {
         setPadding(padding.left, padding.top, padding.right, padding.bottom);
+        updateContentVisibility();
     }
 
     /**
@@ -669,7 +693,8 @@ public class ModalDialogView extends BoundedLinearLayout implements View.OnClick
     private void updateContentVisibility() {
         boolean titleVisible = !TextUtils.isEmpty(mTitleView.getText());
         boolean titleIconVisible = mTitleIcon.getDrawable() != null;
-        boolean titleContainerVisible = titleVisible || titleIconVisible;
+        boolean titleEndIconVisible = mTitleEndIcon.getDrawable() != null;
+        boolean titleContainerVisible = titleVisible || titleIconVisible || titleEndIconVisible;
         boolean messageParagraphsVisible = mMessageParagraphsContainer.getChildCount() > 0;
         boolean menuItemsVisible = mMenuItemsContainer.getChildCount() > 0;
         boolean multipleParagraphsVisible = mMessageParagraphsContainer.getChildCount() > 1;
@@ -683,8 +708,24 @@ public class ModalDialogView extends BoundedLinearLayout implements View.OnClick
         boolean modalDialogScrollViewVisible =
                 mShouldWrapCustomViewScrollable || mButtonGroup.getVisibility() == View.VISIBLE;
 
+        final int titleHorizontalPadding;
+        if (mTitleBackButton.getVisibility() == View.VISIBLE) {
+            titleHorizontalPadding =
+                    getContext()
+                            .getResources()
+                            .getDimensionPixelSize(
+                                    R.dimen.modal_dialog_title_with_icons_padding);
+        } else {
+            titleHorizontalPadding = mTitleDefaultHorizontalPadding;
+        }
+        mTitleContainer.setPaddingRelative(
+                titleHorizontalPadding,
+                mTitleContainer.getPaddingTop(),
+                mTitleContainer.getPaddingEnd(),
+                mTitleContainer.getPaddingBottom());
         mTitleView.setVisibility(titleVisible ? View.VISIBLE : View.GONE);
         mTitleIcon.setVisibility(titleIconVisible ? View.VISIBLE : View.GONE);
+        mTitleEndIcon.setVisibility(titleEndIconVisible ? View.VISIBLE : View.GONE);
         mTitleContainer.setVisibility(titleContainerVisible ? View.VISIBLE : View.GONE);
         mMessageParagraphsContainer.setVisibility(
                 messageParagraphsVisible ? View.VISIBLE : View.GONE);
@@ -695,6 +736,23 @@ public class ModalDialogView extends BoundedLinearLayout implements View.OnClick
         mModalDialogScrollView.setVisibility(
                 modalDialogScrollViewVisible ? View.VISIBLE : View.GONE);
         mFooterContainer.setVisibility(footerMessageVisible ? View.VISIBLE : View.GONE);
+
+        boolean buttonBarVisible = mButtonBar.getVisibility() == View.VISIBLE;
+        boolean customButtonBarVisible =
+                mCustomButtonBarViewContainer.getVisibility() == View.VISIBLE;
+        boolean buttonGroupVisible = mButtonGroup.getVisibility() == View.VISIBLE;
+
+        int bottomSpacerHeight =
+                getContext()
+                        .getResources()
+                        .getDimensionPixelSize(R.dimen.modal_dialog_bottom_spacer_height);
+        boolean spacerVisible =
+                !buttonBarVisible
+                        && !customButtonBarVisible
+                        && !buttonGroupVisible
+                        && !footerMessageVisible
+                        && getPaddingBottom() < bottomSpacerHeight;
+        mDialogBottomSpacer.setVisibility(spacerVisible ? View.VISIBLE : View.GONE);
     }
 
     private void updateCheckboxVisibility() {
@@ -714,6 +772,7 @@ public class ModalDialogView extends BoundedLinearLayout implements View.OnClick
         mPositiveButton.setVisibility(positiveButtonVisible ? View.VISIBLE : View.GONE);
         mNegativeButton.setVisibility(negativeButtonVisible ? View.VISIBLE : View.GONE);
         mButtonBar.setVisibility(defaultButtonBarVisible ? View.VISIBLE : View.GONE);
+        updateContentVisibility();
     }
 
     public static void disableButtonTapProtectionForTesting() {
@@ -731,5 +790,23 @@ public class ModalDialogView extends BoundedLinearLayout implements View.OnClick
             return true;
         }
         return super.dispatchKeyEvent(event);
+    }
+
+    void setTitleMoreButtonClickListener(OnClickListener listener) {
+        mTitleMoreButton.setOnClickListener(listener);
+    }
+
+    void setTitleBackButtonClickListener(OnClickListener listener) {
+        mTitleBackButton.setOnClickListener(listener);
+    }
+
+    void setTitleBackButtonVisible(boolean visible) {
+        mTitleBackButton.setVisibility(visible ? View.VISIBLE : View.GONE);
+        updateContentVisibility();
+    }
+
+    void setMoreMenuVisible(boolean visible) {
+        mTitleMoreButton.setVisibility(visible ? View.VISIBLE : View.GONE);
+        updateContentVisibility();
     }
 }

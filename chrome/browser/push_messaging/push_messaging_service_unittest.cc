@@ -135,7 +135,8 @@ class PushMessagingServiceTest : public ::testing::Test {
   ~PushMessagingServiceTest() override = default;
 
   void SetUp() override {
-    TestingBrowserProcess::GetGlobal()->CreateGlobalFeaturesForTesting();
+    TestingBrowserProcess::GetGlobal()->SetUpGlobalFeaturesForTesting(
+        /*profile_manager=*/false);
     profile_ = std::make_unique<PushMessagingTestingProfile>();
 
     // Override the GCM Profile service so that we can send fake messages.
@@ -148,7 +149,7 @@ class PushMessagingServiceTest : public ::testing::Test {
 
   void TearDown() override {
     profile_.reset();
-    TestingBrowserProcess::GetGlobal()->GetFeatures()->Shutdown();
+    TestingBrowserProcess::GetGlobal()->TearDownGlobalFeaturesForTesting();
   }
 
   void SetPermission(const GURL& origin, ContentSetting value) {
@@ -566,9 +567,15 @@ class ExtensionsPushMessagingServiceTest
       const ExtensionsPushMessagingServiceTest&) = delete;
 
   void SetUp() override {
-    TestingBrowserProcess::GetGlobal()->CreateGlobalFeaturesForTesting();
+    TestingBrowserProcess::GetGlobal()->SetUpGlobalFeaturesForTesting(
+        /*profile_manager=*/false);
     ExtensionServiceTestWithInstall::SetUp();
     InitializeExtensionService(ExtensionServiceInitParams());
+  }
+
+  void TearDown() override {
+    ExtensionServiceTestWithInstall::TearDown();
+    TestingBrowserProcess::GetGlobal()->TearDownGlobalFeaturesForTesting();
   }
 };
 

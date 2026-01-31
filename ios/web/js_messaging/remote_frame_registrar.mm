@@ -67,7 +67,7 @@ void ChildFrameRegistrar::RegisterMapping(RemoteFrameToken remote,
 }
 
 void ChildFrameRegistrar::ProcessRegistrationMessage(base::Value* message) {
-  base::Value::Dict* dict = message->GetIfDict();
+  base::DictValue* dict = message->GetIfDict();
   if (!dict) {
     return;
   }
@@ -108,12 +108,6 @@ void ChildFrameRegistrar::DeclareNewRemoteToken(
 
 ChildFrameRegistrar* ChildFrameRegistrar::GetOrCreateForWebState(
     web::WebState* web_state) {
-  if (!base::FeatureList::IsEnabled(
-          autofill::features::kAutofillAcrossIframesIos) &&
-      !base::FeatureList::IsEnabled(kAutofillIsolatedWorldForJavascriptIos)) {
-    return nullptr;
-  }
-
   ChildFrameRegistrar* helper = FromWebState(web_state);
   if (!helper) {
     CreateForWebState(web_state);

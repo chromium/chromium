@@ -18,7 +18,6 @@
 #include "base/types/expected.h"
 #include "components/viz/common/display/renderer_settings.h"
 #include "components/viz/common/features.h"
-#include "components/viz/common/overlay_state/win/overlay_state_service.h"
 #include "components/viz/common/quads/aggregated_render_pass_draw_quad.h"
 #include "components/viz/common/quads/debug_border_draw_quad.h"
 #include "components/viz/service/debugger/viz_debugger.h"
@@ -27,8 +26,8 @@
 #include "components/viz/service/display/overlay_candidate.h"
 #include "components/viz/service/display/overlay_candidate_factory.h"
 #include "components/viz/service/display/overlay_processor_delegated_support.h"
-#include "media/base/win/mf_feature_checks.h"
 #include "ui/gfx/geometry/rect_conversions.h"
+#include "ui/gl/gl_switches.h"
 
 namespace viz {
 namespace {
@@ -190,7 +189,7 @@ void OverlayProcessorWin::ProcessForOverlays(
     const OverlayProcessorInterface::FilterOperationsMap&
         render_pass_backdrop_filters,
     SurfaceDamageRectList surface_damage_rect_list_in_root_space,
-    const PrimaryPlaneParams& primary_plane_params,
+    std::optional<OverlayCandidate>& primary_plane,
     CandidateList* candidates,
     gfx::Rect* root_damage_rect,
     std::vector<gfx::Rect>* content_bounds) {
@@ -204,7 +203,6 @@ void OverlayProcessorWin::ProcessForOverlays(
       render_pass_filters, render_pass_backdrop_filters,
       surface_damage_rect_list_in_root_space, candidates, root_damage_rect);
 
-  std::optional<OverlayCandidate> primary_plane;
   if (status != DelegationStatus::kFullDelegation) {
     // Fall back to promoting overlays from the output surface plane.
     ProcessOverlaysFromOutputSurfacePlane(
@@ -212,7 +210,7 @@ void OverlayProcessorWin::ProcessForOverlays(
         render_pass_filters, render_pass_backdrop_filters,
         surface_damage_rect_list_in_root_space, candidates, root_damage_rect);
 
-    primary_plane = CreatePrimaryPlane(primary_plane_params);
+    CHECK(primary_plane);
     primary_plane->is_opaque =
         !render_passes->back()->has_transparent_background;
     primary_plane->layer_id = gfx::OverlayLayerId::MakeVizInternalRenderPass(
@@ -547,9 +545,6 @@ OverlayProcessorWin::TryDelegatedCompositing(
   DelegatedCompositingResult result;
   result.candidates.reserve(root_render_pass->quad_list.size());
 
-  const bool allow_promotion_hinting =
-      media::SupportMediaFoundationClearPlayback();
-
   int draw_quad_rounded_corner_count = 0;
 
   // The quad that renders underneath the current quad in the following loop.
@@ -560,19 +555,6 @@ OverlayProcessorWin::TryDelegatedCompositing(
     std::optional<OverlayCandidate> dc_layer;
     {
       auto candidate_result = TryPromoteDrawQuadForDelegation(factory, quad);
-
-      if (allow_promotion_hinting && !quad->resource_id.is_null() &&
-          resource_provider->DoesResourceWantPromotionHint(quad->resource_id)) {
-        // The OverlayStateService should always be initialized by
-        // GpuServiceImpl at creation - CHECK here just to assert there aren't
-        // any corner cases where this isn't true.
-        auto* overlay_state_service = OverlayStateService::GetInstance();
-        CHECK(overlay_state_service->IsInitialized());
-        overlay_state_service->SetPromotionHint(
-            resource_provider->GetMailbox(quad->resource_id),
-            /*promoted=*/candidate_result.has_value());
-      }
-
       if (candidate_result.has_value()) {
         if (auto& candidate = candidate_result.value()) {
           dc_layer = std::move(candidate);
@@ -681,6 +663,18 @@ void OverlayProcessorWin::TryPromoteFullScreenVideo(
                 candidate.priority_hint == gfx::OverlayPriorityHint::kVideo);
       });
   if (frontmost_candidate_it == candidates.rend()) {
+    return;
+  }
+
+  CHECK(std::holds_alternative<gfx::Transform>(
+      frontmost_candidate_it->transform));
+  if (!std::get<gfx::Transform>(frontmost_candidate_it->transform)
+           .IsPositiveScaleOrTranslation()) {
+    // If the candidate has a buffer rotation or flip, skip the full screen
+    // optimization since `SwapChainPresenter` doesn't handle buffer transforms
+    // with the video processor.
+    // TODO(crbug.com/474398418): When `SwapChainPresenter` handles buffer
+    // rotations and flips, we can remove this early exit.
     return;
   }
 

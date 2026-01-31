@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.bookmarks.bar;
 
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.any;
@@ -27,12 +29,14 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.mockito.stubbing.Answer;
 import org.robolectric.Robolectric;
 
-import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.supplier.ObservableSuppliers;
+import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.bookmarks.bar.BookmarkBarVisibilityProvider.BookmarkBarVisibilityObserver;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
@@ -70,7 +74,10 @@ public class BookmarkBarVisibilityProviderTest {
     @Mock private BookmarkBarVisibilityObserver mObserver;
 
     private final Set<ConfigurationChangedObserver> mConfigChangeObserverCache = new HashSet<>();
-    private final ObservableSupplierImpl<Profile> mProfileSupplier = new ObservableSupplierImpl<>();
+    private final SettableMonotonicObservableSupplier<Profile> mProfileSupplier =
+            ObservableSuppliers.createMonotonic();
+    private final SettableMonotonicObservableSupplier<Boolean> mXrSpaceModeSupplier =
+            ObservableSuppliers.createMonotonic(false);
     private final Set<PrefObserver> mSettingObserverCache = new HashSet<>();
 
     @Before
@@ -114,7 +121,7 @@ public class BookmarkBarVisibilityProviderTest {
         BookmarkBarUtils.setSettingEnabledForTesting(false);
         BookmarkBarVisibilityProvider provider = createProvider();
         Robolectric.flushForegroundThreadScheduler();
-        verify(mObserver, times(1)).onVisibilityChanged(false);
+        verify(mObserver, times(2)).onVisibilityChanged(false);
         verify(mObserver, never()).onItemWidthConstraintsChanged(anyInt(), anyInt());
         clearInvocations(mObserver);
 
@@ -127,7 +134,8 @@ public class BookmarkBarVisibilityProviderTest {
         BookmarkBarUtils.setSettingEnabledForTesting(true);
         provider = createProvider();
         Robolectric.flushForegroundThreadScheduler();
-        verify(mObserver, times(1)).onVisibilityChanged(false);
+        // Called 2 times because mXrSpaceModeSupplier will also call it when initialized.
+        verify(mObserver, times(2)).onVisibilityChanged(false);
         verify(mObserver, never()).onItemWidthConstraintsChanged(anyInt(), anyInt());
         clearInvocations(mObserver);
 
@@ -141,7 +149,8 @@ public class BookmarkBarVisibilityProviderTest {
         BookmarkBarUtils.setSettingEnabledForTesting(false);
         provider = createProvider();
         Robolectric.flushForegroundThreadScheduler();
-        verify(mObserver, times(1)).onVisibilityChanged(false);
+        // Called 2 times because mXrSpaceModeSupplier will also call it when initialized.
+        verify(mObserver, times(2)).onVisibilityChanged(false);
         verify(mObserver, never()).onItemWidthConstraintsChanged(anyInt(), anyInt());
         clearInvocations(mObserver);
 
@@ -154,7 +163,7 @@ public class BookmarkBarVisibilityProviderTest {
         BookmarkBarUtils.setSettingEnabledForTesting(true);
         provider = createProvider();
         Robolectric.flushForegroundThreadScheduler();
-        verify(mObserver, times(1)).onVisibilityChanged(true);
+        verify(mObserver, times(2)).onVisibilityChanged(true);
         verify(mObserver, never()).onItemWidthConstraintsChanged(anyInt(), anyInt());
         clearInvocations(mObserver);
 
@@ -225,18 +234,43 @@ public class BookmarkBarVisibilityProviderTest {
         BookmarkBarVisibilityProvider provider = createProvider();
         Robolectric.flushForegroundThreadScheduler();
 
-        // Case: Profile changed to `null`
-        BookmarkBarUtils.setSettingEnabledForTesting(false);
-        mProfileSupplier.set(null);
-        verify(mObserver, times(1)).onVisibilityChanged(false);
-        verify(mObserver, never()).onItemWidthConstraintsChanged(anyInt(), anyInt());
+        // Case: Profile changed
         clearInvocations(mObserver);
-
-        // Case: Profile changed from `null`
         BookmarkBarUtils.setSettingEnabledForTesting(true);
-        mProfileSupplier.set(mProfile);
+        mProfileSupplier.set(Mockito.mock(Profile.class));
         verify(mObserver, times(1)).onVisibilityChanged(true);
         verify(mObserver, never()).onItemWidthConstraintsChanged(anyInt(), anyInt());
+
+        // Clean up.
+        provider.destroy();
+    }
+
+    @Test
+    @SmallTest
+    public void testXrSpaceModeChange() {
+        // Set up.
+        BookmarkBarUtils.setActivityStateBookmarkBarCompatibleForTesting(true);
+        BookmarkBarUtils.setSettingEnabledForTesting(true);
+        BookmarkBarVisibilityProvider provider = createProvider();
+        Robolectric.flushForegroundThreadScheduler();
+
+        // Verify initial state.
+        verify(mObserver, times(2)).onVisibilityChanged(true);
+        clearInvocations(mObserver);
+
+        // Case: XR space mode changed to true.
+        mXrSpaceModeSupplier.set(true);
+        verify(mObserver, times(1)).onVisibilityChanged(false);
+        assertFalse(
+                BookmarkBarUtils.isBookmarkBarVisible(mActivity, mProfile, mXrSpaceModeSupplier));
+        clearInvocations(mObserver);
+
+        // Case: XR space mode changed to false.
+        mXrSpaceModeSupplier.set(false);
+        verify(mObserver, times(1)).onVisibilityChanged(true);
+        assertTrue(
+                BookmarkBarUtils.isBookmarkBarVisible(mActivity, mProfile, mXrSpaceModeSupplier));
+        clearInvocations(mObserver);
 
         // Clean up.
         provider.destroy();
@@ -253,7 +287,10 @@ public class BookmarkBarVisibilityProviderTest {
     private @NonNull BookmarkBarVisibilityProvider createProvider() {
         BookmarkBarVisibilityProvider provider =
                 new BookmarkBarVisibilityProvider(
-                        mActivity, mActivityLifecycleDispatcher, mProfileSupplier);
+                        mActivity,
+                        mActivityLifecycleDispatcher,
+                        mProfileSupplier,
+                        mXrSpaceModeSupplier);
         provider.addObserver(mObserver);
         mSettingObserverCache.add(provider.getPrefObserverForTesting());
         return provider;

@@ -7,7 +7,6 @@
 #include <optional>
 
 #include "base/compiler_specific.h"
-#include "base/containers/contains.h"
 #include "base/files/file_util.h"
 #include "base/files/memory_mapped_file.h"
 #include "base/json/json_reader.h"
@@ -81,7 +80,7 @@ bool VideoBitstream::LoadMetadata(const base::FilePath& json_file_path,
                << metadata_result.error().message;
     return false;
   }
-  const base::Value::Dict& metadata_dict = metadata_result->GetDict();
+  const base::DictValue& metadata_dict = metadata_result->GetDict();
 
   const std::string* profile = metadata_dict.FindString("profile");
   auto converted_profile = ConvertStringtoProfile(*profile);
@@ -133,7 +132,7 @@ bool VideoBitstream::LoadMetadata(const base::FilePath& json_file_path,
   metadata.resolution =
       gfx::Size(static_cast<uint32_t>(*width), static_cast<uint32_t>(*height));
 
-  const base::Value::List* md5_checksums =
+  const base::ListValue* md5_checksums =
       metadata_dict.FindList("md5_checksums");
   for (const base::Value& checksum : *md5_checksums) {
     metadata.frame_checksums.push_back(checksum.GetString());
@@ -191,8 +190,8 @@ std::unique_ptr<VideoBitstream> VideoBitstream::Create(
       std::find_if(std::cbegin(kKeyFrameLessResolutionChangeFiles),
                    std::cend(kKeyFrameLessResolutionChangeFiles),
                    [filepath = data_file_path.value()](base::FilePath substr) {
-                     return base::Contains(base::ToLowerASCII(filepath),
-                                           base::ToLowerASCII(substr.value()));
+                     return base::ToLowerASCII(filepath).contains(
+                         base::ToLowerASCII(substr.value()));
                    });
   return base::WrapUnique(
       new VideoBitstream(std::move(memory_mapped_file), metadata));

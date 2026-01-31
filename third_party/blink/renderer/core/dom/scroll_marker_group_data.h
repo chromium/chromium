@@ -108,8 +108,8 @@ class ScrollMarkerGroupData : public GarbageCollected<ScrollMarkerGroupData>,
   Element* FindPreviousScrollMarker(const Element* current);
 
   void SetNeedsScrollersMapUpdate() { needs_scrollers_map_update_ = true; }
-  void UpdateScrollableAreaSubscriptions(
-      HeapHashSet<Member<PaintLayerScrollableArea>>& scrollable_areas);
+  void UpdateScrollableAreaSubscriptions();
+  void ClearScrollableAreaSubscriptions();
   bool NeedsScrollersMapUpdate() const { return needs_scrollers_map_update_; }
 
   void Trace(Visitor* v) const final;
@@ -185,6 +185,9 @@ class ScrollMarkerGroupData : public GarbageCollected<ScrollMarkerGroupData>,
   // The selected scroll marker that was captured at the time of the last
   // snapshot.
   Member<Element> selected_marker_;
+  // The set of scrollable areas that contain scroll targets for anchors in this
+  // group. Used to subscribe/unsubscribe from scroll updates.
+  HeapHashSet<Member<PaintLayerScrollableArea>> scrollable_areas_;
 };
 
 }  // namespace blink

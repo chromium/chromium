@@ -63,7 +63,10 @@ class MockPictureInPictureWindowController
   MOCK_METHOD(void, CloseAndFocusInitiator, (), (override));
   MOCK_METHOD(void, OnWindowDestroyed, (bool), (override));
   MOCK_METHOD(content::WebContents*, GetWebContents, (), (override));
-  MOCK_METHOD(std::optional<gfx::Rect>, GetWindowBounds, (), (override));
+  MOCK_METHOD(std::optional<gfx::Rect>,
+              GetWindowBoundsInScreen,
+              (),
+              (override));
   MOCK_METHOD(content::WebContents*, GetChildWebContents, (), (override));
   MOCK_METHOD(std::optional<url::Origin>, GetOrigin, (), (override));
 };

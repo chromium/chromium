@@ -69,9 +69,9 @@ class COMPONENT_EXPORT(AX_PLATFORM) BrowserAccessibilityManagerWin
   size_t TreeExtraAnnouncementNodesCount() const override;
 
   void FireFocusEvent(AXNode* node) override;
-  void FireBlinkEvent(ax::mojom::Event event_type,
-                      BrowserAccessibility* node,
-                      int action_request_id) override;
+  void FireSourceEvent(ax::mojom::Event event_type,
+                       BrowserAccessibility* node,
+                       int action_request_id) override;
   void FireGeneratedEvent(AXEventGenerator::Event event_type,
                           const AXNode* node) override;
 
@@ -160,7 +160,7 @@ class COMPONENT_EXPORT(AX_PLATFORM) BrowserAccessibilityManagerWin
       selection_changed_nodes_;
 
   // Since there could be duplicate text changed events on a node raised from
-  // both FireBlinkEvent and FireGeneratedEvent, we use the set here to keep
+  // both FireSourceEvent and FireGeneratedEvent, we use the set here to keep
   // track of the unique nodes that had UIA_Text_TextChangedEventId, so we only
   // fire the event once for every node.
   std::set<raw_ptr<BrowserAccessibility, SetExperimental>> text_changed_nodes_;

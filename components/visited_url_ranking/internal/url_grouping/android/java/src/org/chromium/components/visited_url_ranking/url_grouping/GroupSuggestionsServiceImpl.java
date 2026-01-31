@@ -44,9 +44,9 @@ public class GroupSuggestionsServiceImpl implements GroupSuggestionsService {
     }
 
     @Override
-    public void didSelectTab(int tabId, GURL url, int tabSelectionType, int lastId) {
+    public void didSelectTab(int tabId, GURL url, int tabSelectionCause, int lastId) {
         GroupSuggestionsServiceImplJni.get()
-                .didSelectTab(mNativePtr, tabId, url, tabSelectionType, lastId);
+                .didSelectTab(mNativePtr, tabId, url, tabSelectionCause, lastId);
     }
 
     @Override
@@ -123,7 +123,7 @@ public class GroupSuggestionsServiceImpl implements GroupSuggestionsService {
                 long nativeGroupSuggestionsServiceAndroid,
                 int tabId,
                 GURL url,
-                @TabSelectionType int tabSelectionType,
+                @TabSelectionCause int tabSelectionCause,
                 int lastId);
 
         void willCloseTab(long nativeGroupSuggestionsServiceAndroid, int tabId);

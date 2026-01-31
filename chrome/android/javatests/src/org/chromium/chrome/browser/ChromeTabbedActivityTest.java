@@ -7,8 +7,6 @@ package org.chromium.chrome.browser;
 import static org.junit.Assert.assertNotNull;
 import static org.mockito.Mockito.when;
 
-import static org.chromium.chrome.browser.TabbedMismatchedIndicesHandler.HISTOGRAM_MISMATCHED_INDICES_ACTIVITY_CREATION_TIME_DELTA;
-
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Build.VERSION_CODES;
@@ -72,7 +70,7 @@ import org.chromium.chrome.browser.tabmodel.TabClosureParams;
 import org.chromium.chrome.browser.tabmodel.TabGroupMetadata;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabModel;
-import org.chromium.chrome.browser.toolbar.top.tab_strip.StripVisibilityState;
+import org.chromium.chrome.browser.tabstrip.StripVisibilityState;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.transit.ChromeTransitTestRules;
 import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
@@ -341,11 +339,6 @@ public class ChromeTabbedActivityTest {
     @MediumTest
     @MinAndroidSdkLevel(VERSION_CODES.S)
     public void testHandleMismatchedIndices_ActivityFinishing() {
-        HistogramWatcher histogramWatcher =
-                HistogramWatcher.newBuilder()
-                        .expectAnyRecordTimes(
-                                HISTOGRAM_MISMATCHED_INDICES_ACTIVITY_CREATION_TIME_DELTA, 1)
-                        .build();
         // Create two new ChromeTabbedActivity's.
         ChromeTabbedActivity activity1 = createActivityForMismatchedIndicesTest();
         ChromeTabbedActivity activity2 = createActivityForMismatchedIndicesTest();
@@ -368,19 +361,12 @@ public class ChromeTabbedActivityTest {
                         .getTabModelOrchestratorSupplier()
                         .get()
                         .getTabPersistentStoreDestroyedEarlyForTesting());
-        histogramWatcher.assertExpected();
     }
 
     @Test
     @MediumTest
     @MinAndroidSdkLevel(VERSION_CODES.S)
     public void testHandleMismatchedIndices_ActivityInSameTask() {
-        HistogramWatcher histogramWatcher =
-                HistogramWatcher.newBuilder()
-                        .expectAnyRecordTimes(
-                                HISTOGRAM_MISMATCHED_INDICES_ACTIVITY_CREATION_TIME_DELTA, 1)
-                        .build();
-
         // Create two new ChromeTabbedActivity's.
         ChromeTabbedActivity activity1 = createActivityForMismatchedIndicesTest();
         ChromeTabbedActivity activity2 = createActivityForMismatchedIndicesTest();
@@ -403,20 +389,12 @@ public class ChromeTabbedActivityTest {
 
         // activity1 should be subsequently destroyed.
         ApplicationTestUtils.waitForActivityState(activity1, Stage.DESTROYED);
-
-        histogramWatcher.assertExpected();
     }
 
     @Test
     @MediumTest
     @MinAndroidSdkLevel(VERSION_CODES.S)
     public void testHandleMismatchedIndices_ActivityNotInAppTasks() {
-        HistogramWatcher histogramWatcher =
-                HistogramWatcher.newBuilder()
-                        .expectAnyRecordTimes(
-                                HISTOGRAM_MISMATCHED_INDICES_ACTIVITY_CREATION_TIME_DELTA, 1)
-                        .build();
-
         // Create two new ChromeTabbedActivity's.
         ChromeTabbedActivity activity1 = createActivityForMismatchedIndicesTest();
         ChromeTabbedActivity activity2 = createActivityForMismatchedIndicesTest();
@@ -439,8 +417,6 @@ public class ChromeTabbedActivityTest {
 
         // activity1 should be subsequently destroyed.
         ApplicationTestUtils.waitForActivityState(activity1, Stage.DESTROYED);
-
-        histogramWatcher.assertExpected();
     }
 
     private ChromeTabbedActivity createActivityForMismatchedIndicesTest() {
@@ -501,7 +477,11 @@ public class ChromeTabbedActivityTest {
     @Test
     @MediumTest
     @MinAndroidSdkLevel(VERSION_CODES.S)
-    @Restriction({DeviceFormFactor.TABLET_OR_DESKTOP, DeviceRestriction.RESTRICTION_TYPE_NON_AUTO})
+    @Restriction({
+        DeviceFormFactor.TABLET_OR_DESKTOP,
+        DeviceRestriction.RESTRICTION_TYPE_NON_AUTO,
+        DeviceRestriction.RESTRICTION_TYPE_NON_FOLDABLE
+    })
     @EnableFeatures(ChromeFeatureList.ANDROID_OPEN_INCOGNITO_AS_WINDOW)
     public void testNewIncognitoTab_NewWindow() {
         mActivityTestRule.getTestServer(); // Triggers the lazy initialization of the test server.
@@ -672,10 +652,7 @@ public class ChromeTabbedActivityTest {
                                             TabLaunchType.FROM_LINK,
                                             null);
                             TabGroupModelFilter filter =
-                                    mActivity
-                                            .getTabModelSelector()
-                                            .getTabGroupModelFilterProvider()
-                                            .getTabGroupModelFilter(false);
+                                    mActivity.getTabModelSelector().getTabGroupModelFilter(false);
                             filter.createSingleTabGroup(newTab);
                             return newTab;
                         });
@@ -763,10 +740,7 @@ public class ChromeTabbedActivityTest {
 
                     // Verify other tab group properties.
                     TabGroupModelFilter filter =
-                            mActivity
-                                    .getTabModelSelector()
-                                    .getTabGroupModelFilterProvider()
-                                    .getTabGroupModelFilter(false);
+                            mActivity.getTabModelSelector().getTabGroupModelFilter(false);
                     Assert.assertEquals(TAB_GROUP_TITLE, filter.getTabGroupTitle(TAB_GROUP_ID));
                     Assert.assertEquals(0, filter.getTabGroupColor(TAB_GROUP_ID));
                     if (shouldApplyCollapse) {
@@ -1218,10 +1192,7 @@ public class ChromeTabbedActivityTest {
 
                     TabGroupModelFilter filter2 =
                             (TabGroupModelFilter)
-                                    activity2
-                                            .getTabModelSelector()
-                                            .getTabGroupModelFilterProvider()
-                                            .getTabGroupModelFilter(false);
+                                    activity2.getTabModelSelector().getTabGroupModelFilter(false);
                     List<Tab> relatedTabs = filter2.getRelatedTabList(tab1.getId());
                     Criteria.checkThat(relatedTabs.size(), Matchers.is(2));
                     Criteria.checkThat(

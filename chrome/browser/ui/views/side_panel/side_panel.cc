@@ -15,6 +15,7 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/ui_features.h"
+#include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/top_container_background.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_animation_coordinator.h"
@@ -79,7 +80,8 @@ gfx::Insets GetBorderInsets() {
 
 SidePanel::HorizontalAlignment GetHorizontalAlignment(
     PrefService* pref_service,
-    SidePanelEntry::PanelType type) {
+    SidePanelEntry::PanelType type,
+    bool use_default_horizontal_alignment) {
   bool is_right_aligned =
       pref_service->GetBoolean(prefs::kSidePanelHorizontalAlignment);
   is_right_aligned = type == SidePanelEntry::PanelType::kToolbar &&
@@ -88,8 +90,9 @@ SidePanel::HorizontalAlignment GetHorizontalAlignment(
                                      kShowPanelsOnOppositeSides
                          ? !is_right_aligned
                          : is_right_aligned;
-  return is_right_aligned ? SidePanel::HorizontalAlignment::kRight
-                          : SidePanel::HorizontalAlignment::kLeft;
+  return is_right_aligned == use_default_horizontal_alignment
+             ? SidePanel::HorizontalAlignment::kRight
+             : SidePanel::HorizontalAlignment::kLeft;
 }
 
 // This border paints the toolbar color around the side panel content and draws
@@ -125,8 +128,9 @@ class SidePanelBorder : public views::Border {
 
     gfx::RectF scaled_contents_bounds_f = scaled_view_bounds_f;
     const float corner_radius =
-        dsf * view.GetLayoutProvider()->GetCornerRadiusMetric(
-                  views::ShapeContextTokens::kSidePanelContentRadius);
+        dsf * view.GetLayoutProvider()->GetDistanceMetric(
+                  ChromeDistanceMetric::
+                      DISTANCE_CONTENT_HEIGHT_SIDE_PANEL_CONTENT_RADIUS);
     const gfx::InsetsF insets_in_pixels(
         gfx::ConvertInsetsToPixels(GetInsets(), dsf));
     scaled_contents_bounds_f.Inset(insets_in_pixels);
@@ -263,14 +267,15 @@ class ContentParentView : public views::View, public views::ViewObserver {
   }
 
   gfx::RoundedCornersF GetRoundedCorners() {
+    ChromeDistanceMetric corner_radius =
+        type_ == SidePanelEntry::PanelType::kToolbar
+            ? ChromeDistanceMetric::
+                  DISTANCE_TOOLBAR_HEIGHT_SIDE_PANEL_CONTENT_RADIUS
+            : ChromeDistanceMetric::
+                  DISTANCE_CONTENT_HEIGHT_SIDE_PANEL_CONTENT_RADIUS;
     return should_round_corners_ && GetLayoutProvider()
                ? gfx::RoundedCornersF(
-                     GetLayoutProvider()->GetCornerRadiusMetric(
-                         type_ == SidePanelEntry::PanelType::kToolbar
-                             ? views::ShapeContextTokens::
-                                   kToolbarHeightSidePanelContentRadius
-                             : views::ShapeContextTokens::
-                                   kSidePanelContentRadius))
+                     GetLayoutProvider()->GetDistanceMetric(corner_radius))
                : gfx::RoundedCornersF();
   }
 
@@ -392,7 +397,8 @@ SidePanel::SidePanel(BrowserView* browser_view,
       visible_bounds_view_clipper_(
           std::make_unique<VisibleBoundsViewClipper>(this)) {
   horizontal_alignment_ =
-      GetHorizontalAlignment(browser_view->GetProfile()->GetPrefs(), type_);
+      GetHorizontalAlignment(browser_view->GetProfile()->GetPrefs(), type_,
+                             use_default_horizontal_alignment_);
 
   // The default z-order is the order in which children were added to the
   // parent view. content_parent_view_ is added first so it exists behind
@@ -513,7 +519,7 @@ void SidePanel::UpdateWidthOnEntryChanged() {
   }
 
   PrefService* pref_service = browser_view_->browser()->profile()->GetPrefs();
-  const base::Value::Dict& dict =
+  const base::DictValue& dict =
       pref_service->GetDict(prefs::kSidePanelIdToWidth);
   std::string panel_id = SidePanelEntryIdToString(current_entry.value());
 
@@ -703,7 +709,7 @@ void SidePanel::UpdateSidePanelWidthPref(const std::string& panel_id,
                                          int width) {
   PrefService* pref_service = browser_view_->browser()->profile()->GetPrefs();
   ScopedDictPrefUpdate update(pref_service, prefs::kSidePanelIdToWidth);
-  base::Value::Dict& dict = update.Get();
+  base::DictValue& dict = update.Get();
 
   // Update the dictionary with the new width for the specified panel_id.
   dict.Set(panel_id, base::Value(width));
@@ -782,6 +788,15 @@ void SidePanel::ResetSidePanelAnimationContent() {
     animation_coordinator_->Reset(SidePanelAnimationCoordinator::AnimationType::
                                       kOpenWithContentTransition);
   }
+}
+
+void SidePanel::SetActiveEntryUsesDefaultHorizontalAlignment(
+    bool use_default_horizontal_alignment) {
+  if (use_default_horizontal_alignment_ == use_default_horizontal_alignment) {
+    return;
+  }
+  use_default_horizontal_alignment_ = use_default_horizontal_alignment;
+  UpdateHorizontalAlignment();
 }
 
 views::View* SidePanel::GetContentParentView() {
@@ -917,7 +932,8 @@ void SidePanel::AnnounceResize() {
 
 void SidePanel::UpdateHorizontalAlignment() {
   horizontal_alignment_ =
-      GetHorizontalAlignment(browser_view_->GetProfile()->GetPrefs(), type_);
+      GetHorizontalAlignment(browser_view_->GetProfile()->GetPrefs(), type_,
+                             use_default_horizontal_alignment_);
 
   InvalidateLayout();
 }

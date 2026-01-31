@@ -13,7 +13,6 @@
 #include "chrome/browser/enterprise/connectors/common.h"
 #include "chrome/browser/enterprise/connectors/reporting/reporting_event_router_factory.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/safe_browsing/cloud_content_scanning/binary_upload_service.h"
 #include "components/crash/core/common/crash_key.h"
 #include "components/enterprise/connectors/core/reporting_constants.h"
 

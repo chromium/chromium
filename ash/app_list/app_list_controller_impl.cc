@@ -4,6 +4,7 @@
 
 #include "ash/app_list/app_list_controller_impl.h"
 
+#include <algorithm>
 #include <memory>
 #include <optional>
 #include <string_view>
@@ -72,7 +73,6 @@
 #include "base/check.h"
 #include "base/command_line.h"
 #include "base/containers/adapters.h"
-#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
@@ -194,7 +194,7 @@ bool MinimizeAllWindows(const aura::Window::Windows& windows,
   aura::Window::Windows windows_to_minimize;
   for (aura::Window* window : base::Reversed(windows)) {
     if (!container->Contains(window) &&
-        !base::Contains(windows_to_ignore, window) &&
+        !std::ranges::contains(windows_to_ignore, window) &&
         !WindowState::Get(window)->IsMinimized()) {
       windows_to_minimize.push_back(window);
     }

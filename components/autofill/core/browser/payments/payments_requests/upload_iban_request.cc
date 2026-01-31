@@ -42,9 +42,9 @@ std::string UploadIbanRequest::GetRequestContentType() {
 }
 
 std::string UploadIbanRequest::GetRequestContent() {
-  base::Value::Dict request_dict;
+  base::DictValue request_dict;
 
-  base::Value::Dict iban_info;
+  base::DictValue iban_info;
   iban_info.Set("value", "__param:s7e_443_value");
   request_dict.Set("iban_info", std::move(iban_info));
 
@@ -54,7 +54,7 @@ std::string UploadIbanRequest::GetRequestContent() {
   request_dict.Set("risk_data_encoded",
                    BuildRiskDictionary(request_details_.risk_data));
 
-  base::Value::Dict context;
+  base::DictValue context;
   context.Set("language_code", request_details_.app_locale);
   context.Set("billable_service",
               payments::kUploadPaymentMethodBillableServiceNumber);
@@ -64,7 +64,7 @@ std::string UploadIbanRequest::GetRequestContent() {
                     request_details_.billing_customer_number));
   }
   request_dict.Set("context", std::move(context));
-  base::Value::Dict chrome_user_context;
+  base::DictValue chrome_user_context;
   chrome_user_context.Set("full_sync_enabled", full_sync_enabled_);
   request_dict.Set("chrome_user_context", std::move(chrome_user_context));
   request_dict.Set("context_token", request_details_.context_token);
@@ -80,7 +80,7 @@ std::string UploadIbanRequest::GetRequestContent() {
   return request_content;
 }
 
-void UploadIbanRequest::ParseResponse(const base::Value::Dict& response) {
+void UploadIbanRequest::ParseResponse(const base::DictValue& response) {
   NOTIMPLEMENTED();
 }
 

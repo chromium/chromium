@@ -71,14 +71,29 @@ bool CSSOMUtils::HasGridRepeatValue(const CSSValueList* value_list) {
 }
 
 // static
+bool CSSOMUtils::IsGridLanesNormalDirectionValue(
+    const CSSValue* grid_lanes_direction_values) {
+  // The 'normal' keyword cannot be paired with any reversal keywords and as
+  // such is parsed as an identifier.
+  if (const auto* value =
+          DynamicTo<CSSIdentifierValue>(grid_lanes_direction_values)) {
+    CHECK_EQ(value->GetValueID(), CSSValueID::kNormal);
+    return true;
+  }
+  return false;
+}
+
+// static
 bool CSSOMUtils::IsGridLanesColumnDirectionValue(
     const CSSValue* grid_lanes_direction_values) {
-  const auto* grid_lanes_direction_value =
-      DynamicTo<CSSIdentifierValue>(grid_lanes_direction_values);
-  return grid_lanes_direction_value &&
-         (grid_lanes_direction_value->GetValueID() == CSSValueID::kColumn ||
-          grid_lanes_direction_value->GetValueID() ==
-              CSSValueID::kColumnReverse);
+  // Unlike 'normal', the 'row'/'column' keywords are parsed as a list because
+  // they may be paired with one or more reversal keyword.
+  if (const auto* list = DynamicTo<CSSValueList>(grid_lanes_direction_values)) {
+    CHECK_GE(list->length(), 1u);
+    return To<CSSIdentifierValue>(&list->Item(0))->GetValueID() ==
+           CSSValueID::kColumn;
+  }
+  return false;
 }
 
 // static
@@ -213,11 +228,13 @@ CSSValueList* CSSOMUtils::ComputedValueForGridTemplateShorthand(
 }
 
 // static
+//
+// TODO(almaher): Update grid-lanes based on new shorthand proposal in
+// https://github.com/w3c/csswg-drafts/issues/12023#issuecomment-3666148876
 CSSValueList* CSSOMUtils::ComputedValueForGridLanesShorthand(
     const CSSValue* grid_template_tracks_values,
     const CSSValue* template_area_values,
-    const CSSValue* grid_lanes_direction_values,
-    const CSSValue* grid_lanes_fill_values) {
+    const CSSValue* grid_lanes_direction_values) {
   const bool has_initial_grid_template_tracks =
       IsNoneValue(grid_template_tracks_values);
   const bool has_initial_template_areas = IsNoneValue(template_area_values);
@@ -230,7 +247,8 @@ CSSValueList* CSSOMUtils::ComputedValueForGridLanesShorthand(
     // If we have template columns, we can serialize the template areas as is.
     // Otherwise, for template rows, we need to serialize multiple string tokens
     // into a single space-separated string.
-    if (IsGridLanesColumnDirectionValue(grid_lanes_direction_values)) {
+    if (IsGridLanesColumnDirectionValue(grid_lanes_direction_values) ||
+        IsGridLanesNormalDirectionValue(grid_lanes_direction_values)) {
       list->Append(*template_area_values);
     } else {
       const cssvalue::CSSGridTemplateAreasValue* template_areas =
@@ -247,7 +265,6 @@ CSSValueList* CSSOMUtils::ComputedValueForGridLanesShorthand(
   }
 
   list->Append(*grid_lanes_direction_values);
-  list->Append(*grid_lanes_fill_values);
 
   return list;
 }

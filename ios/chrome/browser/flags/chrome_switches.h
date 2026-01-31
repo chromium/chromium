@@ -51,6 +51,11 @@ extern const char kUserAgent[];
 
 // Force the discover feed to show the sign-in promo.
 extern const char kForceFeedSigninPromo[];
+
+// Forces any Reading Mode activation on a web page to immediately timeout
+// due to distillation delay.
+extern const char kForceReaderModeDistillationTimeout[];
+
 }  // namespace switches
 
 #endif  // IOS_CHROME_BROWSER_FLAGS_CHROME_SWITCHES_H_

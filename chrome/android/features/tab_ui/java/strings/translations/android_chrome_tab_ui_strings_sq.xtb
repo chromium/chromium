@@ -20,6 +20,7 @@
 <translation id="1499635324672558517">Të mbyllen të gjitha skedat "e fshehta"?</translation>
 <translation id="1501480321619201731">Fshi grupin</translation>
 <translation id="1553638665176794706">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> artikull joaktiv}other{<ph name="TABS_COUNT_MANY" /> artikuj joaktivë}}</translation>
+<translation id="1568067597247500137">Hiq zërin e sajtit</translation>
 <translation id="1645759014353344461"><ph name="TABS_COUNT_MANY" /> skeda të grupuara</translation>
 <translation id="1657719826150349398">Lëviz skedën poshtë</translation>
 <translation id="1670942869417022142">Audioja e vendosur në heshtje</translation>
@@ -82,13 +83,13 @@
 <translation id="3619255692378312441">Menaxho qasjen</translation>
 <translation id="3649471731638882002">{TAB_COUNT,plural, =1{Mbyll artikullin}other{Mbyll artikujt}}</translation>
 <translation id="3652027618765638838"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
+<translation id="3714430408451673233">Fleta e poshtme e skedës në gjysmë lartësi.</translation>
 <translation id="374923079891132274">Miniatura për pamjen paraprake të ndarjes së fletës.</translation>
 <translation id="3776329373944672717">Titulli i grupit të skedave: <ph name="TITLE_OF_GROUP" /></translation>
 <translation id="3810973564298564668">Menaxho</translation>
 <translation id="3849789634341518784">{TAB_COUNT,plural, =1{Zhgozhdo skedën}other{Zhgozhdo skedat}}</translation>
 <translation id="3940195383040445971">Monitoro çmimet në skeda</translation>
 <translation id="3940717704786481856">{NUMBER_OF_TABS_ADDED,plural, =1{Skeda të reja: <ph name="ONE_ADDED" />. Skeda të mbyllura: <ph name="ANY_CLOSED" />.}other{Skeda të reja: <ph name="MANY_ADDED" />. Skeda të mbyllura: <ph name="ANY_CLOSED" />}}</translation>
-<translation id="3954615705217314756">{TABS_COUNT,plural, =1{Grupo skedën}other{Grupo skedat}}</translation>
 <translation id="3962134438902735041">{TABS_COUNT,plural, =1{Zhgozhdo <ph name="TABS_COUNT_ONE" /> skedë të zgjedhur}other{Zhgozhdo <ph name="TABS_COUNT_MANY" /> skeda të zgjedhura}}</translation>
 <translation id="4009732926939031387">{NUM_DAYS,plural, =1{Krijuar <ph name="NUM_DAYS_ONE" /> ditë më parë}other{Krijuar <ph name="NUM_DAYS_MANY" /> ditë më parë}}</translation>
 <translation id="4076226664360336092">Lista e grupeve të skedave, hapur në lartësi të plotë</translation>
@@ -126,8 +127,10 @@
 <translation id="5339733443032484186">Skeda jote e fundit</translation>
 <translation id="5380159289133845234">Arkivo skedat dublikata</translation>
 <translation id="5446043142172831860">Hiq skeda dhe largohu nga grupi</translation>
+<translation id="5465437530117042974">Ndryshimet e fletës së poshtme të skedës u mbyllën.</translation>
 <translation id="5490235265819901748">Grupi i skedave u zgjerua</translation>
 <translation id="5494920125229734069">Zgjidh të gjitha</translation>
+<translation id="5505998972479309757">{LIMIT_COUNT,plural, =1{Shto deri në <ph name="LIMIT_COUNT_ONE" /> skedar, skedë ose imazh}other{Shto deri në <ph name="LIMIT_COUNT_MANY" /> skedarë, skeda ose imazhe}}</translation>
 <translation id="5551694449008560081">{NUMBER_OF_TABS,plural, =1{Mbyll grupin e skedave me <ph name="TABS_COUNT_ONE" /> skedë, ngjyrë <ph name="COLOR_NAME" />.}other{Mbyll grupin e skedave me <ph name="TABS_COUNT_MANY" /> skeda, ngjyrë <ph name="COLOR_NAME" />.}}</translation>
 <translation id="5556417849629758491">Shiko informacionet e dyqanit. Opsioni ofrohet pranë kreut të ekranit</translation>
 <translation id="5627941783489838464">Nuk ka përditësime për skedat</translation>
@@ -140,7 +143,9 @@
 <translation id="6040143037577758943">Mbyll</translation>
 <translation id="6051432659151380973">Grupet e tua të skedave do të ruhen automatikisht</translation>
 <translation id="6054741997831917303">Çmimi i artikullit ra së fundi nga <ph name="PREVIOUS_PRICE" /> në <ph name="NEW_PRICE" /></translation>
+<translation id="606985262342505139">Fleta e poshtme e skedave në lartësi të plotë</translation>
 <translation id="6109251075362363230">Të gjitha skedat dublikata tani do të arkivohen gjithashtu, me përjashtim të kopjes së përdorur më së fundi.</translation>
+<translation id="612596694132302162">Kthe zërin e sajtit</translation>
 <translation id="6149218574440723463">{TABS_COUNT,plural, =1{Mbyll <ph name="TABS_COUNT_ONE" /> artikull të zgjedhur}other{Mbyll <ph name="TABS_COUNT_MANY" /> artikuj të zgjedhur}}</translation>
 <translation id="61924696525243173">{WINDOW_COUNT,plural, =1{Zhvendose grupin në dritaren e re}other{Zhvendose grupin në një dritare tjetër}}</translation>
 <translation id="6212374449852603982">{TAB_COUNT,plural, =1{Zhvendos skedën djathtas}other{Zhvendos skedat djathtas}}</translation>
@@ -195,7 +200,6 @@
 <translation id="7792771145871471484">Rishiko sugjerimet.</translation>
 <translation id="7792860826279960128">Njoftim për ndryshimet në grupin e ndarë të skedave në gjysmë lartësi</translation>
 <translation id="7825973332242257878">Grupet e skedave</translation>
-<translation id="7838146321400849846">{TABS_COUNT,plural, =1{Grupo <ph name="TABS_COUNT_ONE" /> skedë të zgjedhur}other{Grupo <ph name="TABS_COUNT_MANY" /> skeda të zgjedhura}}</translation>
 <translation id="7853202427316060426">Aktiviteti</translation>
 <translation id="7854360405711302755">{REVIEWS,plural, =1{ Vlerësimi <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" />, <ph name="REVIEWS_COUNT_ONE" /> koment}other{Vlerësimi <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" />, <ph name="REVIEWS_COUNT_MANY" /> komente}}</translation>
 <translation id="7885132941432959125">Lëviz skedën djathtas</translation>
@@ -223,7 +227,6 @@
 <translation id="8428213095426709021">Cilësimet</translation>
 <translation id="855081842937141170">Skeda e gozhdimit</translation>
 <translation id="8633025649649592204">Aktiviteti i fundit</translation>
-<translation id="8635822281281406185">Shto deri në 10 skedarë, skeda ose imazhe</translation>
 <translation id="8712637175834984815">E kuptova</translation>
 <translation id="8714939927607906138">Çmim më i ulët</translation>
 <translation id="8730621377337864115">U krye</translation>

@@ -256,11 +256,11 @@ TestSearchAggregator kSearchAggregatorSettingWithShortcut = {
     .icon_url = "https://work.com/favicon.ico"};
 
 // Creates a simple list item for the site search policy.
-base::Value::Dict GenerateSiteSearchPolicyEntry(const std::string& name,
-                                                const std::string& shortcut,
-                                                const std::string& url,
-                                                bool featured_by_policy) {
-  base::Value::Dict entry;
+base::DictValue GenerateSiteSearchPolicyEntry(const std::string& name,
+                                              const std::string& shortcut,
+                                              const std::string& url,
+                                              bool featured_by_policy) {
+  base::DictValue entry;
   entry.Set(SiteSearchPolicyHandler::kName, name);
   entry.Set(SiteSearchPolicyHandler::kShortcut, shortcut);
   entry.Set(SiteSearchPolicyHandler::kUrl, url);
@@ -268,8 +268,8 @@ base::Value::Dict GenerateSiteSearchPolicyEntry(const std::string& name,
   return entry;
 }
 
-base::Value::Dict GenerateSiteSearchPolicyEntry(TestProvider test_case) {
-  base::Value::Dict entry;
+base::DictValue GenerateSiteSearchPolicyEntry(TestProvider test_case) {
+  base::DictValue entry;
   if (test_case.name.has_value()) {
     entry.Set(SiteSearchPolicyHandler::kName, test_case.name.value());
   }
@@ -289,15 +289,15 @@ base::Value::Dict GenerateSiteSearchPolicyEntry(TestProvider test_case) {
 
 void SetFieldIfNotEmpty(const std::string& field,
                         const char* value,
-                        base::Value::Dict* dict) {
+                        base::DictValue* dict) {
   if (value) {
     dict->Set(field, value);
   }
 }
 
-base::Value::Dict GenerateSearchAggregatorPolicyEntry(
+base::DictValue GenerateSearchAggregatorPolicyEntry(
     TestSearchAggregator test_case) {
-  base::Value::Dict entry;
+  base::DictValue entry;
   SetFieldIfNotEmpty(SearchAggregatorPolicyHandler::kIconUrl,
                      test_case.icon_url, &entry);
   SetFieldIfNotEmpty(SearchAggregatorPolicyHandler::kName, test_case.name,
@@ -396,7 +396,7 @@ TEST(SiteSearchPolicyHandlerTest, ValidSiteSearchEntries) {
   PolicyErrorMap errors;
   PrefValueMap prefs;
 
-  base::Value::List policy_value;
+  base::ListValue policy_value;
   policy_value.Append(GenerateSiteSearchPolicyEntry(kValidTestProviders[0]));
   policy_value.Append(GenerateSiteSearchPolicyEntry(kValidTestProviders[1]));
 
@@ -432,7 +432,7 @@ TEST(SiteSearchPolicyHandlerTest,
   PolicyErrorMap errors;
   PrefValueMap prefs;
 
-  base::Value::List policy_value;
+  base::ListValue policy_value;
   policy_value.Append(GenerateSiteSearchPolicyEntry(
       kValidTestProvidersWithAllowUserOverride[0]));
   policy_value.Append(GenerateSiteSearchPolicyEntry(
@@ -475,7 +475,7 @@ TEST(SiteSearchPolicyHandlerTest,
   PolicyErrorMap errors;
   PrefValueMap prefs;
 
-  base::Value::List policy_value;
+  base::ListValue policy_value;
   policy_value.Append(GenerateSiteSearchPolicyEntry(
       kValidTestProvidersWithAllowUserOverride[0]));
   policy_value.Append(GenerateSiteSearchPolicyEntry(
@@ -530,7 +530,7 @@ TEST(SiteSearchPolicyHandlerTest, TooManySiteSearchEntries) {
   PrefValueMap prefs;
 
   // Policy value has one list entry over the max allowed.
-  base::Value::List policy_value;
+  base::ListValue policy_value;
   for (int i = 0; i <= SiteSearchPolicyHandler::kMaxSiteSearchProviders; ++i) {
     policy_value.Append(GenerateSiteSearchPolicyEntry(
         base::StringPrintf("shortcut_%d", i), base::StringPrintf("name %d", i),
@@ -559,7 +559,7 @@ TEST(SiteSearchPolicyHandlerTest, TooManyFeaturedSiteSearchEntries) {
   PrefValueMap prefs;
 
   // Policy value has one featured list entry over the max allowed.
-  base::Value::List policy_value;
+  base::ListValue policy_value;
   for (int i = 0; i <= SiteSearchPolicyHandler::kMaxFeaturedProviders; ++i) {
     policy_value.Append(GenerateSiteSearchPolicyEntry(
         base::StringPrintf("shortcut_%d", i), base::StringPrintf("name %d", i),
@@ -589,7 +589,7 @@ TEST(SiteSearchPolicyHandlerTest, MissingRequiredField) {
     PolicyErrorMap errors;
     PrefValueMap prefs;
 
-    base::Value::List policy_value;
+    base::ListValue policy_value;
     policy_value.Append(GenerateSiteSearchPolicyEntry(test_case));
 
     policies.Set(key::kSiteSearchSettings, policy::POLICY_LEVEL_MANDATORY,
@@ -609,7 +609,7 @@ TEST(SiteSearchPolicyHandlerTest, ShortcutNotUnique) {
   PolicyErrorMap errors;
   PrefValueMap prefs;
 
-  base::Value::List policy_value;
+  base::ListValue policy_value;
   for (const auto& test_case : kShortcutNotUniqueTestProviders) {
     policy_value.Append(GenerateSiteSearchPolicyEntry(test_case));
   }
@@ -641,7 +641,7 @@ TEST(SiteSearchPolicyHandlerTest, NoUniqueShortcut) {
   PolicyErrorMap errors;
   PrefValueMap prefs;
 
-  base::Value::List policy_value;
+  base::ListValue policy_value;
   for (const auto& test_case : kNoUniqueShortcutTestProviders) {
     policy_value.Append(GenerateSiteSearchPolicyEntry(test_case));
   }
@@ -664,7 +664,7 @@ TEST(SiteSearchPolicyHandlerTest, EmptyRequiredField) {
   PolicyErrorMap errors;
   PrefValueMap prefs;
 
-  base::Value::List policy_value;
+  base::ListValue policy_value;
   for (const auto& test_case : kEmptyFieldTestProviders) {
     policy_value.Append(GenerateSiteSearchPolicyEntry(test_case));
   }
@@ -692,10 +692,10 @@ TEST(SiteSearchPolicyHandlerTest, UnknownField) {
   PolicyErrorMap errors;
   PrefValueMap prefs;
 
-  base::Value::Dict entry =
+  base::DictValue entry =
       GenerateSiteSearchPolicyEntry(kUnknownFieldTestProviders[0]);
   entry.Set(kUnknownFieldName, true);
-  base::Value::List policy_value;
+  base::ListValue policy_value;
   policy_value.Append(std::move(entry));
 
   policies.Set(key::kSiteSearchSettings, policy::POLICY_LEVEL_MANDATORY,
@@ -726,7 +726,7 @@ TEST(SiteSearchPolicyHandlerTest, ShortcutWithSpace) {
   PolicyErrorMap errors;
   PrefValueMap prefs;
 
-  base::Value::List policy_value;
+  base::ListValue policy_value;
   for (const auto& test_case : kShortcutWithSpacesTestProviders) {
     policy_value.Append(GenerateSiteSearchPolicyEntry(test_case));
   }
@@ -751,7 +751,7 @@ TEST(SiteSearchPolicyHandlerTest, ShortcutStartsWithAt) {
   PolicyErrorMap errors;
   PrefValueMap prefs;
 
-  base::Value::List policy_value;
+  base::ListValue policy_value;
   for (const auto& test_case : kShortcutStartsWithAtTestProviders) {
     policy_value.Append(GenerateSiteSearchPolicyEntry(test_case));
   }
@@ -787,7 +787,7 @@ TEST(SiteSearchPolicyHandlerTest, InvalidUrl) {
   PolicyErrorMap errors;
   PrefValueMap prefs;
 
-  base::Value::List policy_value;
+  base::ListValue policy_value;
   for (const auto& test_case : kInvalidUrlTestProviders) {
     policy_value.Append(GenerateSiteSearchPolicyEntry(test_case));
   }
@@ -813,7 +813,7 @@ TEST(SiteSearchPolicyHandlerTest, ShortcutSameAsDSPKeyword_DSPEnabledNotSet) {
   PolicyErrorMap errors;
   PrefValueMap prefs;
 
-  base::Value::List policy_value;
+  base::ListValue policy_value;
   for (const auto& test_case : kShortcutSameAsDSPKeywordTestProviders) {
     policy_value.Append(GenerateSiteSearchPolicyEntry(test_case));
   }
@@ -849,7 +849,7 @@ TEST(SiteSearchPolicyHandlerTest, ShortcutSameAsDSPKeyword_DSPDisabled) {
   PolicyErrorMap errors;
   PrefValueMap prefs;
 
-  base::Value::List policy_value;
+  base::ListValue policy_value;
   for (const auto& test_case : kShortcutSameAsDSPKeywordTestProviders) {
     policy_value.Append(GenerateSiteSearchPolicyEntry(test_case));
   }
@@ -887,7 +887,7 @@ TEST(SiteSearchPolicyHandlerTest, ShortcutSameAsDSPKeyword_DSPEnabled) {
   PolicyErrorMap errors;
   PrefValueMap prefs;
 
-  base::Value::List policy_value;
+  base::ListValue policy_value;
   for (const auto& test_case : kShortcutSameAsDSPKeywordTestProviders) {
     policy_value.Append(GenerateSiteSearchPolicyEntry(test_case));
   }
@@ -929,7 +929,7 @@ TEST(SiteSearchPolicyHandlerTest, NonHttpsUrl) {
   PolicyErrorMap errors;
   PrefValueMap prefs;
 
-  base::Value::List policy_value;
+  base::ListValue policy_value;
   policy_value.Append(
       GenerateSiteSearchPolicyEntry(kNonHttpsUrlTestProviders[0]));
 
@@ -965,7 +965,7 @@ TEST(SiteSearchPolicyHandlerTest, NoValidEntry) {
 
   policies.Set(key::kSiteSearchSettings, policy::POLICY_LEVEL_MANDATORY,
                policy::POLICY_SCOPE_USER, policy::POLICY_SOURCE_CLOUD,
-               base::Value(base::Value::List()), nullptr);
+               base::Value(base::ListValue()), nullptr);
 
   ASSERT_FALSE(handler.CheckPolicySettings(policies, &errors));
   EXPECT_THAT(&errors, HasValidationError(l10n_util::GetStringUTF16(
@@ -980,7 +980,7 @@ TEST(SiteSearchPolicyHandlerTest, FeaturedSiteSearchEntries) {
   PolicyErrorMap errors;
   PrefValueMap prefs;
 
-  base::Value::List policy_value;
+  base::ListValue policy_value;
   for (const auto& test_case : kTestProvidersWithFeaturedEntries) {
     policy_value.Append(GenerateSiteSearchPolicyEntry(test_case));
   }
@@ -1017,7 +1017,7 @@ TEST(SiteSearchPolicyHandlerTest, ShortcutSameAsSearchAggregatorKeyword) {
   PolicyErrorMap errors;
   PrefValueMap prefs;
 
-  base::Value::List policy_value;
+  base::ListValue policy_value;
   policy_value.Append(
       GenerateSiteSearchPolicyEntry(kSiteSearchShortcutSameAsSearchAggregator));
 
@@ -1057,7 +1057,7 @@ TEST(SiteSearchPolicyHandlerTest,
   PolicyErrorMap errors;
   PrefValueMap prefs;
 
-  base::Value::List policy_value;
+  base::ListValue policy_value;
   policy_value.Append(GenerateSiteSearchPolicyEntry(kValidTestProviders[0]));
   policy_value.Append(GenerateSiteSearchPolicyEntry(kValidTestProviders[1]));
 
@@ -1091,7 +1091,7 @@ TEST(SiteSearchPolicyHandlerTest, SearchAggregatorPolicyTypeMismatch) {
   PolicyErrorMap errors;
   PrefValueMap prefs;
 
-  base::Value::List policy_value;
+  base::ListValue policy_value;
   policy_value.Append(
       GenerateSiteSearchPolicyEntry(kSiteSearchShortcutSameAsSearchAggregator));
 
@@ -1123,7 +1123,7 @@ TEST(SiteSearchPolicyHandlerTest, SearchAggregatorPolicyMissingShortcut) {
   PolicyErrorMap errors;
   PrefValueMap prefs;
 
-  base::Value::List policy_value;
+  base::ListValue policy_value;
   policy_value.Append(
       GenerateSiteSearchPolicyEntry(kSiteSearchShortcutSameAsSearchAggregator));
 

@@ -4,7 +4,6 @@
 
 #include "chrome/browser/apps/link_capturing/metrics/intent_handling_metrics.h"
 
-#include "base/containers/contains.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"

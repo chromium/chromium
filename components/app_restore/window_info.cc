@@ -65,9 +65,9 @@ WindowInfo::~WindowInfo() = default;
 bool WindowInfo::operator==(const WindowInfo& other) const = default;
 
 std::string WindowInfo::ToString() const {
-  auto root = base::Value::Dict().Set(
+  auto root = base::DictValue().Set(
       "Window Info",
-      base::Value::Dict()
+      base::DictValue()
           .Set("Activation index", activation_index.value_or(-1))
           .Set("Desk", desk_id.value_or(-1))
           .Set("Desk guid", desk_guid.AsLowercaseString())

@@ -430,7 +430,11 @@ const char* AXRoleToAndroidClassName(ax::mojom::Role role, bool has_parent) {
     case ax::mojom::Role::kProgressIndicator:
       return kAXProgressBarClassname;
     case ax::mojom::Role::kTabList:
-      return kAXTabWidgetClassname;
+      // TODO(crbug.com/474135469): Investigate mapping kTabList to a more
+      // specific class (e.g., TabLayout). Currently, mapping to TabWidget
+      // causes TalkBack to suppress CollectionInfo metadata, losing the "X of
+      // N" announcement.
+      return kAXViewGroupClassname;
     case ax::mojom::Role::kGrid:
     case ax::mojom::Role::kTreeGrid:
     case ax::mojom::Role::kTable:

@@ -1,0 +1,16 @@
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto2";
+
+option optimize_for = LITE_RUNTIME;
+
+package skills.proto;
+
+import "components/sync/protocol/skill_specifics.proto";
+
+// Local data stored on the disk for the `SKILL` data type.
+message SkillLocalData {
+  optional sync_pb.SkillSpecifics specifics = 1;
+}

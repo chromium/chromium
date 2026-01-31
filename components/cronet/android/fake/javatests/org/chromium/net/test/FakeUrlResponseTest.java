@@ -167,7 +167,8 @@ public class FakeUrlResponseTest {
                         TEST_WAS_CACHED,
                         TEST_NEGOTIATED_PROTOCOL,
                         TEST_PROXY_SERVER,
-                        0);
+                        0,
+                        /* isProxied= */ false);
         FakeUrlResponse expectedResponse =
                 new FakeUrlResponse.Builder()
                         .setHttpStatusCode(TEST_HTTP_STATUS_CODE)
@@ -204,7 +205,8 @@ public class FakeUrlResponseTest {
                         TEST_WAS_CACHED,
                         null,
                         null,
-                        0);
+                        0,
+                        /* isProxied= */ false);
 
         FakeUrlResponse constructedResponse = new FakeUrlResponse(info);
 
@@ -236,7 +238,8 @@ public class FakeUrlResponseTest {
                         mTestResponse.getWasCached(),
                         mTestResponse.getNegotiatedProtocol(),
                         mTestResponse.getProxyServer(),
-                        mTestResponse.getResponseBody().length);
+                        mTestResponse.getResponseBody().length,
+                        /* isProxied= */ false);
 
         Map infoMap = info.getAllHeaders();
 

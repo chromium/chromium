@@ -114,7 +114,12 @@
 
   id<SystemIdentity> systemIdentity =
       authenticationService->GetPrimaryIdentity(signin::ConsentLevel::kSignin);
-  CHECK(systemIdentity, base::NotFatalUntil::M148);
+  if (!systemIdentity) {
+    // If the migrated account signs out before the confirmation dialog is shown
+    // (a rare case), skip showing the dialog.
+    localState->SetBoolean(prefs::kMultiProfileForcedMigrationDone, false);
+    return;
+  }
 
   SystemIdentityManager* systemIdentityManager =
       GetApplicationContext()->GetSystemIdentityManager();

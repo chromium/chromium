@@ -102,7 +102,7 @@ class OverlayScrollbarThemeFluentTest : public ScrollbarThemeFluentTest {
  protected:
   void SetUp() override {
     ScrollbarThemeFluentTest::SetUp();
-    feature_list_.InitAndEnableFeature(::features::kFluentOverlayScrollbar);
+    feature_list_.InitAndEnableFeature(::features::kOverlayScrollbar);
     // Re-instantiate ScrollbarThemeFluent with the overlay scrollbar flag on.
     theme_ = std::make_unique<ScrollbarThemeFluentMock>();
   }

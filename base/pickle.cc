@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
-
 #include "base/pickle.h"
 
 #include <algorithm>
@@ -18,6 +13,7 @@
 #include <type_traits>
 
 #include "base/bits.h"
+#include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/numerics/safe_math.h"
@@ -44,7 +40,7 @@ inline bool PickleIterator::ReadBuiltinType(Type* result) {
   if (!read_from) {
     return false;
   }
-  memcpy(result, read_from, sizeof(*result));
+  UNSAFE_TODO(memcpy(result, read_from, sizeof(*result)));
   return true;
 }
 
@@ -143,7 +139,7 @@ bool PickleIterator::ReadFloat(float* result) {
   if (!read_from) {
     return false;
   }
-  memcpy(result, read_from, sizeof(*result));
+  UNSAFE_TODO(memcpy(result, read_from, sizeof(*result)));
   return true;
 }
 
@@ -156,7 +152,7 @@ bool PickleIterator::ReadDouble(double* result) {
   if (!read_from) {
     return false;
   }
-  memcpy(result, read_from, sizeof(*result));
+  UNSAFE_TODO(memcpy(result, read_from, sizeof(*result)));
   return true;
 }
 
@@ -331,7 +327,8 @@ Pickle::Pickle(const Pickle& other)
       write_offset_(other.write_offset_) {
   if (other.header_) {
     Resize(other.header_->payload_size);
-    memcpy(header_, other.header_, header_size_ + other.header_->payload_size);
+    UNSAFE_TODO(memcpy(header_, other.header_,
+                       header_size_ + other.header_->payload_size));
   }
 }
 
@@ -356,8 +353,8 @@ Pickle& Pickle::operator=(const Pickle& other) {
   }
   if (other.header_) {
     Resize(other.header_->payload_size);
-    memcpy(header_, other.header_,
-           other.header_size_ + other.header_->payload_size);
+    UNSAFE_TODO(memcpy(header_, other.header_,
+                       other.header_size_ + other.header_->payload_size));
     write_offset_ = other.write_offset_;
   }
   return *this;
@@ -431,7 +428,7 @@ void Pickle::Resize(size_t new_capacity) {
 void* Pickle::ClaimBytes(size_t num_bytes) {
   void* p = ClaimUninitializedBytesInternal(num_bytes);
   CHECK(p);
-  memset(p, 0, num_bytes);
+  UNSAFE_TODO(memset(p, 0, num_bytes));
   return p;
 }
 

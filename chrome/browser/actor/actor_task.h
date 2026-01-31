@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "base/callback_list.h"
+#include "base/cancelable_callback.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/weak_ptr.h"
@@ -20,9 +21,8 @@
 #include "chrome/browser/actor/actor_task_delegate.h"
 #include "chrome/browser/actor/aggregated_journal.h"
 #include "chrome/browser/actor/tools/tool_request.h"
-#include "chrome/common/actor.mojom-forward.h"
 #include "chrome/common/actor/task_id.h"
-#include "chrome/common/actor_webui.mojom.h"
+#include "chrome/common/actor_webui.mojom-forward.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/visibility.h"
 #include "content/public/common/buildflags.h"
@@ -65,7 +65,7 @@ class ActorTask {
   ActorTask(Profile* profile,
             std::unique_ptr<ExecutionEngine> execution_engine,
             std::unique_ptr<ui::UiEventDispatcher> ui_event_dispatcher,
-            webui::mojom::TaskOptionsPtr options = nullptr,
+            webui::mojom::TaskOptionsPtr options,
             base::WeakPtr<ActorTaskDelegate> delegate = nullptr);
   ActorTask(const ActorTask&) = delete;
   ActorTask& operator=(const ActorTask&) = delete;
@@ -129,6 +129,9 @@ class ActorTask {
   void Act(std::vector<std::unique_ptr<ToolRequest>>&& actions,
            ActCallback callback);
 
+  // Converts stopped_reason to the final state of the task.
+  static State GetTaskStateFromStoppedReason(StoppedReason stopped_reason);
+
   // Sets State to `stop_reason` and cancels any pending actions.
   // TODO(bokan): It's important that Stop only be called from ActorKeyedService
   // since that has to clean up actor tasks. Add a PassKey.
@@ -149,6 +152,10 @@ class ActorTask {
 
   // Uninterrupt from waiting on user input.
   void Uninterrupt(State resumed_state);
+
+  // Cancels any pending actions. Returns true if the task is still running, and
+  // false otherwise.
+  bool CancelOngoingActions(mojom::ActionResultCode reason);
 
   // Returns true if the task hasn't completed and is under control of the user.
   // That is, the actor cannot send actions and the user is able to interact
@@ -256,6 +263,9 @@ class ActorTask {
   void RecomputeHasVisibleTab();
   void UpdateVisibilityTimes();
 
+  void DidEarlyAddTabs(std::vector<std::unique_ptr<ToolRequest>>&& actions,
+                       std::vector<mojom::ActionResultPtr> add_tab_results);
+
   State state_ = State::kCreated;
   raw_ptr<Profile> profile_;
 
@@ -282,6 +292,10 @@ class ActorTask {
 
   // The callback to notify the client of the result of calling Act().
   ActCallback callback_for_act_;
+
+  using DidAddTabsCallback =
+      base::CancelableOnceCallback<void(std::vector<mojom::ActionResultPtr>)>;
+  DidAddTabsCallback did_add_tabs_callback_;
 
   // A timer for the current state.
   base::ElapsedTimer current_state_timer_;

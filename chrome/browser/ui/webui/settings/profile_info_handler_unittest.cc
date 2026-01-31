@@ -73,7 +73,7 @@ class ProfileInfoHandlerTest : public testing::Test {
 
   void VerifyProfileInfo(const base::Value* call_argument) {
     ASSERT_TRUE(call_argument->is_dict());
-    const base::Value::Dict& dict = call_argument->GetDict();
+    const base::DictValue& dict = call_argument->GetDict();
 
     const std::string* name = dict.FindString("name");
     const std::string* icon_url = dict.FindString("iconUrl");
@@ -113,7 +113,7 @@ class ProfileInfoHandlerTest : public testing::Test {
 };
 
 TEST_F(ProfileInfoHandlerTest, GetProfileInfo) {
-  base::Value::List list_args;
+  base::ListValue list_args;
   list_args.Append("get-profile-info-callback-id");
   handler()->HandleGetProfileInfo(list_args);
 

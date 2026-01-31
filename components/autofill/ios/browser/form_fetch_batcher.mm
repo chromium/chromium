@@ -4,7 +4,8 @@
 
 #import "components/autofill/ios/browser/form_fetch_batcher.h"
 
-#import <algorithm>
+#import <utility>
+#import <vector>
 
 #import "base/functional/bind.h"
 #import "base/memory/weak_ptr.h"
@@ -19,6 +20,7 @@
 namespace autofill {
 
 namespace {
+
 // Filters the `forms` by `form_name`. No op if `form_name` is nullopt.
 // This filter is the equivalent of the form name filter
 // in autofill:ExtractFormData(). Will still filter if the `form_name` string is
@@ -26,17 +28,14 @@ namespace {
 std::optional<std::vector<FormData>> ApplyFormFilterIfNeeded(
     std::optional<std::u16string> form_name,
     std::optional<std::vector<FormData>> forms) {
-  if (!forms || !form_name) {
-    return forms;
+  if (forms && form_name) {
+    std::erase_if(*forms, [&](const FormData& form) {
+      return form.name() != *form_name;
+    });
   }
-
-  std::vector<FormData> filtered_forms;
-  std::ranges::copy_if(
-      *forms, std::back_inserter(filtered_forms),
-      [&](const std::u16string& name) { return name == *form_name; },
-      &FormData::name);
-  return filtered_forms;
+  return forms;
 }
+
 }  // namespace
 
 FormFetchBatcher::FormFetchBatcher(id<AutofillDriverIOSBridge> bridge,
@@ -47,7 +46,7 @@ FormFetchBatcher::FormFetchBatcher(id<AutofillDriverIOSBridge> bridge,
 FormFetchBatcher::~FormFetchBatcher() = default;
 
 void FormFetchBatcher::PushRequestAndRun(
-    FormFetchCompletion&& completion,
+    FormFetchCompletion completion,
     std::optional<std::u16string> form_name_filter) {
   fetch_requests_.emplace_back(
       base::BindOnce(&ApplyFormFilterIfNeeded, std::move(form_name_filter))
@@ -64,7 +63,7 @@ void FormFetchBatcher::PushRequestAndRun(
 }
 
 void FormFetchBatcher::PushRequest(
-    FormFetchCompletion&& completion,
+    FormFetchCompletion completion,
     std::optional<std::u16string> form_name_filter) {
   fetch_requests_.emplace_back(
       base::BindOnce(&ApplyFormFilterIfNeeded, std::move(form_name_filter))
@@ -89,8 +88,7 @@ void FormFetchBatcher::Run() {
   if (frame_) {
     auto completion =
         base::BindOnce(&FormFetchBatcher::Complete, weak_factory_.GetWeakPtr());
-    [bridge_ fetchFormsFiltered:NO
-                       withName:u""
+    [bridge_ fetchFormsFiltered:std::nullopt
                         inFrame:frame_.get()
               completionHandler:std::move(completion)];
   } else {
@@ -116,20 +114,10 @@ void FormFetchBatcher::Complete(
   // about to be completed here.
   batch_scheduled_ = false;
 
-  // Make a local copy of the queue of completion blocks so the vector cannot
-  // be resized if one of the callback pushes a new request in the
-  // `fetch_requests_` queue. Resizing the vector will invalidate the iteration
-  // loop. Any new requests that were pushed when emptying the loop will be
-  // pushed to the next scheduled batch. A new batch will be scheduled if
-  // needed.
-  std::vector<FormFetchCompletion> fetch_requests_copy =
-      std::move(fetch_requests_);
-  fetch_requests_ = std::vector<FormFetchCompletion>();
-
   // Complete the original requests. New requests may be pushed to
   // fetch_requests_ when completing the blocks here but this won't affect this
   // loop.
-  for (auto& fetch_request : fetch_requests_copy) {
+  for (auto& fetch_request : std::exchange(fetch_requests_, {})) {
     std::move(fetch_request).Run(forms);
   }
 }

@@ -171,7 +171,7 @@ IN_PROC_BROWSER_TEST_F(ExternalInstallErrorTest,
   constexpr char kId[] = "akjooamlhcgeopfifcmlggaebeocgokj";
   PrefService* prefs = profile()->GetPrefs();
   {
-    base::Value::List ids;
+    base::ListValue ids;
     ids.Append(kId);
     prefs->SetList(pref_names::kInitialInstallList, std::move(ids));
     prefs->SetString(pref_names::kInitialInstallProviderName, kProvider);
@@ -209,7 +209,7 @@ IN_PROC_BROWSER_TEST_F(ExternalInstallErrorTest,
   constexpr char kId[] = "ldnnhddmnhbkjipkidpdiheffobcpfmf";
   PrefService* prefs = profile()->GetPrefs();
   {
-    base::Value::List ids;
+    base::ListValue ids;
     // NOTE: Intentionally NOT appending kId here.
     ids.Append("oooooooooooooooooooooooooooooooo");
     prefs->SetList(pref_names::kInitialInstallList, std::move(ids));

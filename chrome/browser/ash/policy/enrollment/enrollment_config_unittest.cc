@@ -63,7 +63,7 @@ class EnrollmentConfigTest : public testing::Test {
 
 TEST_F(EnrollmentConfigTest, TokenEnrollmentModeWithNoTokenYieldsModeNone) {
   enrollment_test_helper_.SetUpFlexDevice();
-  auto state_dict = base::Value::Dict().Set(
+  auto state_dict = base::DictValue().Set(
       kDeviceStateMode, kDeviceStateInitialModeTokenEnrollment);
   local_state_.SetDict(prefs::kServerBackedDeviceState, state_dict.Clone());
 
@@ -79,7 +79,7 @@ TEST_F(
     TokenEnrollmentModeWithTokenPresentYieldsEnrollmentConfigModeTokenEnrollment) {
   enrollment_test_helper_.SetUpFlexDevice();
   enrollment_test_helper_.SetUpEnrollmentTokenConfig();
-  auto state_dict = base::Value::Dict().Set(
+  auto state_dict = base::DictValue().Set(
       kDeviceStateMode, kDeviceStateInitialModeTokenEnrollment);
   local_state_.SetDict(prefs::kServerBackedDeviceState, state_dict.Clone());
 
@@ -107,7 +107,7 @@ TEST_F(
   enrollment_test_helper_.SetUpFlexDevice();
   enrollment_test_helper_.SetUpEnrollmentTokenConfig(
       kRemoteDeploymentFlexOobeConfig);
-  auto state_dict = base::Value::Dict().Set(
+  auto state_dict = base::DictValue().Set(
       kDeviceStateMode, kDeviceStateInitialModeTokenEnrollment);
   local_state_.SetDict(prefs::kServerBackedDeviceState, state_dict.Clone());
 
@@ -156,7 +156,7 @@ TEST_P(EnrollmentConfigOOBEConfigSourceTest,
       base::StringPrintf(kOOBEConfigFormat, test_case.json_source).c_str();
   enrollment_test_helper_.SetUpFlexDevice();
   enrollment_test_helper_.SetUpEnrollmentTokenConfig(oobe_config.c_str());
-  auto state_dict = base::Value::Dict().Set(
+  auto state_dict = base::DictValue().Set(
       kDeviceStateMode, kDeviceStateInitialModeTokenEnrollment);
   local_state_.SetDict(prefs::kServerBackedDeviceState, state_dict.Clone());
 
@@ -212,7 +212,7 @@ TEST_F(EnrollmentConfigTest, GetPrescribedEnrollmentConfigDuringOOBE) {
 
   // Server-backed state: advertised enrollment.
   auto state_dict =
-      base::Value::Dict()
+      base::DictValue()
           .Set(kDeviceStateMode, kDeviceStateRestoreModeReEnrollmentRequested)
           .Set(kDeviceStateManagementDomain, kTestDomain);
   local_state_.SetDict(prefs::kServerBackedDeviceState, state_dict.Clone());
@@ -254,7 +254,7 @@ TEST_F(EnrollmentConfigTest, GetPrescribedEnrollmentConfigDuringOOBE) {
   // Server-backed state: forced initial attestation-based enrollment.
   local_state_.SetDict(
       prefs::kServerBackedDeviceState,
-      base::Value::Dict()
+      base::DictValue()
           .Set(kDeviceStateMode, kDeviceStateInitialModeEnrollmentZeroTouch)
           .Set(kDeviceStateManagementDomain, kTestDomain));
   {
@@ -275,7 +275,7 @@ TEST_F(EnrollmentConfigTest, GetPrescribedEnrollmentConfigDuringOOBE) {
   // Server-backed state: forced attestation-based re-enrollment.
   local_state_.SetDict(
       prefs::kServerBackedDeviceState,
-      base::Value::Dict()
+      base::DictValue()
           .Set(kDeviceStateMode, kDeviceStateRestoreModeReEnrollmentZeroTouch)
           .Set(kDeviceStateManagementDomain, kTestDomain));
   {
@@ -295,7 +295,7 @@ TEST_F(EnrollmentConfigTest, GetPrescribedEnrollmentConfigDuringOOBE) {
   // Server-backed state: forced initial enrollment.
   local_state_.SetDict(
       prefs::kServerBackedDeviceState,
-      base::Value::Dict()
+      base::DictValue()
           .Set(kDeviceStateMode, kDeviceStateInitialModeEnrollmentEnforced)
           .Set(kDeviceStateManagementDomain, kTestDomain));
   {
@@ -309,7 +309,7 @@ TEST_F(EnrollmentConfigTest, GetPrescribedEnrollmentConfigDuringOOBE) {
   // Server-backed state: forced re-enrollment.
   local_state_.SetDict(
       prefs::kServerBackedDeviceState,
-      base::Value::Dict()
+      base::DictValue()
           .Set(kDeviceStateMode, kDeviceStateRestoreModeReEnrollmentEnforced)
           .Set(kDeviceStateManagementDomain, kTestDomain));
   {
@@ -419,7 +419,7 @@ TEST_F(EnrollmentConfigTest, GetEffectiveManualEnrollmentConfig) {
 
   local_state_.SetDict(
       prefs::kServerBackedDeviceState,
-      base::Value::Dict()
+      base::DictValue()
           .Set(kDeviceStateManagementDomain, kTestDomain)
           .Set(kDeviceStateLicenseType, kDeviceStateLicenseTypeEducation));
 

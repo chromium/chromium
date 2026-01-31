@@ -32,14 +32,6 @@ class DISPLAY_EXPORT CADisplayLinkMac : public DisplayLinkMac {
 
   void SetPreferredInterval(base::TimeDelta interval) override {}
 
-  // Use the same minimum, maximum and preferred frame rate for the fixed frame
-  // rate rerquest. If different minimum and maximum frame rates are set, the
-  // actual callback rate will be dynamically adjusted to better align with
-  // other animation sources.
-  void SetPreferredIntervalRange(base::TimeDelta min_interval,
-                                 base::TimeDelta max_interval,
-                                 base::TimeDelta preferred_interval) override {}
-
   base::TimeTicks GetCurrentTime() const override;
 
  private:
@@ -58,24 +50,7 @@ class DISPLAY_EXPORT CADisplayLinkMac : public DisplayLinkMac {
   const CGDirectDisplayID display_id_;
   std::unique_ptr<ObjCState> objc_state_;
 
-  // The system can change the available range of frame rates because it factors
-  // in system policies and a person’s preferences. For example, Low Power Mode,
-  // critical thermal state, and accessibility settings can affect the system’s
-  // frame rate. The system typically provides a consistent frame rate by
-  // choosing one that’s a factor of the display’s maximum refresh rate.
-
-  // The current frame interval range set in CADisplayLink
-  // preferredFrameRateRange.
-  base::TimeDelta preferred_interval_;
-  base::TimeDelta max_interval_;
-  base::TimeDelta min_interval_;
-
   base::WeakPtr<VSyncCallbackMac> vsync_callback_;
-
-  // The number of consecutive DisplayLink VSyncs received after zero
-  // |callbacks_|. DisplayLink will be stopped after |kMaxExtraVSyncs| is
-  // reached.
-  int consecutive_vsyncs_with_no_callbacks_ = 0;
 
   base::WeakPtrFactory<CADisplayLinkMac> weak_factory_{this};
 };

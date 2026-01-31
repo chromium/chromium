@@ -9,6 +9,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/containers/flat_map.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -210,6 +211,37 @@ void UpdateServiceProxy::RunInstaller(
       base::BindOnce(static_cast<DoneFunc<UpdateService::Result>>(&CallDone),
                      base::WrapRefCounted(this), call, std::move(callback),
                      UpdateService::Result::kIPCConnectionFailed, 1));
+}
+
+void UpdateServiceProxy::GetUpdaterState(
+    base::OnceCallback<void(const UpdaterState&)> callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  auto call =
+      base::BindRepeating(&UpdateServiceProxyImpl::GetUpdaterState, proxy_);
+  call.Run(base::BindOnce(
+      static_cast<DoneFunc<UpdaterState>>(&CallDone),
+      base::WrapRefCounted(this), call,
+      base::BindOnce([](base::OnceCallback<void(const UpdaterState&)> callback,
+                        UpdaterState value) { std::move(callback).Run(value); },
+                     std::move(callback)),
+      UpdaterState(), 1));
+}
+
+void UpdateServiceProxy::GetPoliciesJson(
+    base::OnceCallback<void(const std::string&)> callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  auto call =
+      base::BindRepeating(&UpdateServiceProxyImpl::GetPoliciesJson, proxy_);
+  call.Run(base::BindOnce(
+      static_cast<DoneFunc<std::string>>(&CallDone), base::WrapRefCounted(this),
+      call,
+      base::BindOnce(
+          [](base::OnceCallback<void(const std::string&)> callback,
+             std::string policies_json) {
+            std::move(callback).Run(policies_json);
+          },
+          std::move(callback)),
+      std::string(), 1));
 }
 
 UpdateServiceProxy::~UpdateServiceProxy() {

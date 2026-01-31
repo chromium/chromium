@@ -128,6 +128,12 @@ class InstallLimiterTest : public extensions::ExtensionServiceTestBase {
         base::MakeRefCounted<extensions::MockCrxInstaller>(profile());
   }
 
+  void TearDown() override {
+    mock_installer_.reset();
+    install_limiter_ = nullptr;
+    extensions::ExtensionServiceTestBase::TearDown();
+  }
+
   extensions::CRXFileInfo CreateTestExtensionCrx(const base::FilePath& path,
                                                  int extension_size) {
     const std::string data(extension_size, 0);

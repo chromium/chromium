@@ -1312,8 +1312,8 @@ void InputType::AddWarningToConsole(const char* message_format,
       MakeGarbageCollected<ConsoleMessage>(
           mojom::ConsoleMessageSource::kRendering,
           mojom::ConsoleMessageLevel::kWarning,
-          String::Format(message_format,
-                         JSONValue::QuoteString(value).Utf8().c_str())));
+          UNSAFE_TODO(String::Format(
+              message_format, JSONValue::QuoteString(value).Utf8().c_str()))));
 }
 
 bool InputType::SupportsBaseAppearance(Element::BaseAppearanceValue) const {

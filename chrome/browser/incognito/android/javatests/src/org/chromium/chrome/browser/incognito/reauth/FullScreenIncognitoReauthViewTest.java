@@ -77,7 +77,8 @@ public class FullScreenIncognitoReauthViewTest {
     public ChromeRenderTestRule mRenderTestRule =
             ChromeRenderTestRule.Builder.withPublicCorpus()
                     .setBugComponent(ChromeRenderTestRule.Component.PRIVACY_INCOGNITO)
-                    .setRevision(2)
+                    .setRevision(3)
+                    .setDescription("Updated Incognito splash to GM3")
                     .build();
 
     @BeforeClass

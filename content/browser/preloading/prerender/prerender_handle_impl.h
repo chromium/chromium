@@ -6,8 +6,8 @@
 #define CONTENT_BROWSER_PRELOADING_PRERENDER_PRERENDER_HANDLE_IMPL_H_
 
 #include "base/memory/weak_ptr.h"
+#include "base/scoped_observation.h"
 #include "content/browser/preloading/prerender/prerender_host.h"
-#include "content/public/browser/frame_tree_node_id.h"
 #include "content/public/browser/preloading.h"
 #include "content/public/browser/prerender_handle.h"
 
@@ -22,7 +22,7 @@ class PrerenderHandleImpl final : public PrerenderHandle,
  public:
   PrerenderHandleImpl(
       base::WeakPtr<PrerenderHostRegistry> prerender_host_registry,
-      FrameTreeNodeId frame_tree_node_id,
+      PrerenderHostId prerender_host_id,
       const GURL& url,
       std::optional<net::HttpNoVarySearchData> no_vary_search_hint);
   ~PrerenderHandleImpl() override;
@@ -42,21 +42,17 @@ class PrerenderHandleImpl final : public PrerenderHandle,
   // PrerenderHost::Observer:
   void OnActivated() override;
   void OnFailed(PrerenderFinalStatus status) override;
-  void OnHostReused() override;
+  void OnHostDestroyed(PrerenderFinalStatus status) override;
 
-  FrameTreeNodeId frame_tree_node_id_for_testing() const {
-    return frame_tree_node_id_;
+  PrerenderHostId prerender_host_id_for_testing() const {
+    return prerender_host_id_;
   }
 
  private:
-  PrerenderHost* GetPrerenderHost();
-
   const int handle_id_;
+  const PrerenderHostId prerender_host_id_;
 
   base::WeakPtr<PrerenderHostRegistry> prerender_host_registry_;
-  // `frame_tree_node_id_` is the root FrameTreeNode id of the prerendered
-  // page.
-  FrameTreeNodeId frame_tree_node_id_;
 
   const GURL prerendering_url_;
   const std::optional<net::HttpNoVarySearchData> no_vary_search_hint_;
@@ -66,6 +62,8 @@ class PrerenderHandleImpl final : public PrerenderHandle,
 
   std::vector<base::OnceClosure> activation_callbacks_;
   std::vector<base::OnceClosure> error_callbacks_;
+
+  base::ScopedObservation<PrerenderHost, PrerenderHandleImpl> obs_{this};
 
   base::WeakPtrFactory<PrerenderHandle> weak_factory_{this};
 };

@@ -19,7 +19,7 @@
 #include "chrome/browser/ui/toolbar/pinned_toolbar/pinned_toolbar_actions_model.h"
 #include "chrome/browser/ui/toolbar_controller_util.h"
 #include "chrome/browser/ui/ui_features.h"
-#include "chrome/browser/ui/views/extensions/extensions_toolbar_container.h"
+#include "chrome/browser/ui/views/extensions/extensions_toolbar_desktop.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/layout/browser_view_layout.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_coordinator.h"
@@ -44,6 +44,7 @@
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/views/layout/animating_layout_manager_test_util.h"
+#include "ui/views/layout/flex_layout.h"
 #include "ui/views/test/views_test_utils.h"
 #include "ui/views/view.h"
 #include "ui/views/view_class_properties.h"
@@ -82,7 +83,18 @@ class ToolbarControllerUiTest : public InteractiveFeaturePromoTest {
     dummy_button_size_ = overflow_button_->GetPreferredSize();
     element_flex_order_start_ = toolbar_controller_->element_flex_order_start_;
     MaybeAddDummyButtonsToToolbarView();
-    overflow_threshold_width_ = GetOverflowThresholdWidthInToolbarContainer();
+
+    // On some platforms, the toolbar may not be able to overflow, because the
+    // minimum size doesn't allow any elements to drop out. When this happens,
+    // this will be null, and overflow tests will be skipped.
+    const int overflow_threshold =
+        GetOverflowThresholdWidthInToolbarContainer();
+
+    overflow_threshold_width_ =
+        overflow_threshold <= toolbar_container_view_->GetMinimumSize().width()
+            ? std::nullopt
+            : std::make_optional(overflow_threshold);
+
     default_browser_width_ = browser()->window()->GetBounds().width();
     ASSERT_GT(default_browser_width_, overflow_threshold_width_);
   }
@@ -347,8 +359,9 @@ class ToolbarControllerUiTest : public InteractiveFeaturePromoTest {
   }
 
   auto ResizeRelativeToOverflow(int diff) {
-    return Do(
-        [this, diff]() { SetBrowserWidth(overflow_threshold_width() + diff); });
+    return Do([this, diff]() {
+      SetBrowserWidth(*overflow_threshold_width() + diff);
+    });
   }
 
   void SetBrowserWidth(int width) {
@@ -375,7 +388,9 @@ class ToolbarControllerUiTest : public InteractiveFeaturePromoTest {
   get_responsive_elements() const {
     return toolbar_controller_->responsive_elements_;
   }
-  int overflow_threshold_width() const { return overflow_threshold_width_; }
+  std::optional<int> overflow_threshold_width() const {
+    return overflow_threshold_width_;
+  }
   std::vector<const ToolbarController::ResponsiveElementInfo*>
   GetOverflowedElements() {
     return toolbar_controller_->GetOverflowedElements();
@@ -394,7 +409,7 @@ class ToolbarControllerUiTest : public InteractiveFeaturePromoTest {
   gfx::Size dummy_button_size_;
 
   // The minimum width the toolbar view can be without any elements dropped out.
-  int overflow_threshold_width_;
+  std::optional<int> overflow_threshold_width_;
 
   int default_browser_width_;
 };
@@ -408,16 +423,21 @@ class ToolbarControllerUiTest : public InteractiveFeaturePromoTest {
 #endif
 IN_PROC_BROWSER_TEST_F(ToolbarControllerUiTest,
                        MAYBE_StartBrowserWithThresholdWidth) {
+  const auto threshold = overflow_threshold_width();
+  if (!threshold) {
+    GTEST_SKIP();
+  }
+
   // Start browser with threshold width. Should not see overflow.
-  SetBrowserWidth(overflow_threshold_width());
+  SetBrowserWidth(*threshold);
   EXPECT_FALSE(overflow_button()->GetVisible());
 
   // Resize browser a bit wider. Should not see overflow.
-  SetBrowserWidth(overflow_threshold_width() + 1);
+  SetBrowserWidth(*threshold + 1);
   EXPECT_FALSE(overflow_button()->GetVisible());
 
   // Resize browser back to threshold width. Should not see overflow.
-  SetBrowserWidth(overflow_threshold_width());
+  SetBrowserWidth(*threshold);
   EXPECT_FALSE(overflow_button()->GetVisible());
 
   base::UserActionTester user_action_tester;
@@ -425,7 +445,7 @@ IN_PROC_BROWSER_TEST_F(ToolbarControllerUiTest,
                    "ResponsiveToolbar.OverflowButtonShown"));
 
   // Resize browser a bit narrower. Should see overflow.
-  SetBrowserWidth(overflow_threshold_width() - 1);
+  SetBrowserWidth(*threshold - 1);
   EXPECT_TRUE(overflow_button()->GetVisible());
 
   EXPECT_EQ(1, user_action_tester.GetActionCount(
@@ -435,7 +455,7 @@ IN_PROC_BROWSER_TEST_F(ToolbarControllerUiTest,
                    "ResponsiveToolbar.OverflowButtonHidden"));
 
   // Resize browser back to threshold width. Should not see overflow.
-  SetBrowserWidth(overflow_threshold_width());
+  SetBrowserWidth(*threshold);
   EXPECT_FALSE(overflow_button()->GetVisible());
 
   EXPECT_EQ(1, user_action_tester.GetActionCount(
@@ -451,56 +471,70 @@ IN_PROC_BROWSER_TEST_F(ToolbarControllerUiTest,
 #endif
 IN_PROC_BROWSER_TEST_F(ToolbarControllerUiTest,
                        MAYBE_StartBrowserWithWidthSmallerThanThreshold) {
+  const auto threshold = overflow_threshold_width();
+  if (!threshold) {
+    GTEST_SKIP();
+  }
+
   // Start browser with a smaller width than threshold. Should see overflow.
-  SetBrowserWidth(overflow_threshold_width() - 1);
+  SetBrowserWidth(*threshold - 1);
   EXPECT_TRUE(overflow_button()->GetVisible());
 
   // Resize browser wider to threshold width. Should not see overflow.
-  SetBrowserWidth(overflow_threshold_width());
+  SetBrowserWidth(*threshold);
   EXPECT_FALSE(overflow_button()->GetVisible());
 
   // Resize browser a bit narrower. Should see overflow.
-  SetBrowserWidth(overflow_threshold_width() - 1);
+  SetBrowserWidth(*threshold - 1);
   EXPECT_TRUE(overflow_button()->GetVisible());
 
   // Keep resizing browser narrower. Should see overflow.
-  SetBrowserWidth(overflow_threshold_width() - 2);
+  SetBrowserWidth(*threshold - 2);
   EXPECT_TRUE(overflow_button()->GetVisible());
 
   // Resize browser a bit wider. Should still see overflow.
-  SetBrowserWidth(overflow_threshold_width() - 1);
+  SetBrowserWidth(*threshold - 1);
   EXPECT_TRUE(overflow_button()->GetVisible());
 }
 
 IN_PROC_BROWSER_TEST_F(ToolbarControllerUiTest,
                        StartBrowserWithWidthLargerThanThreshold) {
+  const auto threshold = overflow_threshold_width();
+  if (!threshold) {
+    GTEST_SKIP();
+  }
+
   // Start browser with a larger width than threshold. Should not see overflow.
-  SetBrowserWidth(overflow_threshold_width() + 1);
+  SetBrowserWidth(*threshold + 1);
   EXPECT_FALSE(overflow_button()->GetVisible());
 
   // Resize browser wider. Should not see overflow.
-  SetBrowserWidth(overflow_threshold_width() + 2);
+  SetBrowserWidth(*threshold + 2);
   EXPECT_FALSE(overflow_button()->GetVisible());
 
   // Resize browser a bit narrower. Should not see overflow.
-  SetBrowserWidth(overflow_threshold_width() + 1);
+  SetBrowserWidth(*threshold + 1);
   EXPECT_FALSE(overflow_button()->GetVisible());
 
   // Resize browser back to threshold width. Should not see overflow.
-  SetBrowserWidth(overflow_threshold_width());
+  SetBrowserWidth(*threshold);
   EXPECT_FALSE(overflow_button()->GetVisible());
 
   // Resize browser a bit wider. Should not see overflow.
-  SetBrowserWidth(overflow_threshold_width() + 1);
+  SetBrowserWidth(*threshold + 1);
   EXPECT_FALSE(overflow_button()->GetVisible());
 }
 
 IN_PROC_BROWSER_TEST_F(ToolbarControllerUiTest, MenuMatchesOverflowedElements) {
-  RunTestSequence(
-      Do([this]() { SetBrowserWidth(overflow_threshold_width() - 1); }),
-      WaitForShow(kToolbarOverflowButtonElementId),
-      PressButton(kToolbarOverflowButtonElementId),
-      CheckMenuMatchesOverflowedElements());
+  const auto threshold = overflow_threshold_width();
+  if (!threshold) {
+    GTEST_SKIP();
+  }
+
+  RunTestSequence(Do([this, threshold]() { SetBrowserWidth(*threshold - 1); }),
+                  WaitForShow(kToolbarOverflowButtonElementId),
+                  PressButton(kToolbarOverflowButtonElementId),
+                  CheckMenuMatchesOverflowedElements());
 }
 
 IN_PROC_BROWSER_TEST_F(ToolbarControllerUiTest, ActivateActionElementFromMenu) {
@@ -653,13 +687,9 @@ IN_PROC_BROWSER_TEST_F(ToolbarControllerUiTest,
 // be visible because there's enough space for it. Extensions container should
 // not have animation because its visibility didn't change.
 // TODO(crbug.com/41495158): Flaky on Windows and Mac.
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
-#define MAYBE_ExtensionHasNoAnimationLoop DISABLED_ExtensionHasNoAnimationLoop
-#else
-#define MAYBE_ExtensionHasNoAnimationLoop ExtensionHasNoAnimationLoop
-#endif
+// TODO(crbug.com/472508632): Test is failing on Linux & CrOS.
 IN_PROC_BROWSER_TEST_F(ToolbarControllerUiTest,
-                       MAYBE_ExtensionHasNoAnimationLoop) {
+                       DISABLED_ExtensionHasNoAnimationLoop) {
   RunTestSequence(
       LoadAndPinExtensionButton(), PinBookmarkToToolbar(),
       PinReadingModeToToolbar(), Do([this]() {
@@ -683,11 +713,16 @@ IN_PROC_BROWSER_TEST_F(ToolbarControllerUiTest,
 #endif
 IN_PROC_BROWSER_TEST_F(ToolbarControllerUiTest,
                        MAYBE_DoNotShowIphWhenOverflowed) {
+  const auto threshold = overflow_threshold_width();
+  if (!threshold) {
+    GTEST_SKIP();
+  }
+
   RunTestSequence(
       ResizeRelativeToOverflow(-1),
       MaybeShowPromo(feature_engagement::kIPHMemorySaverModeFeature,
                      user_education::FeaturePromoResult::kWindowTooSmall),
-      ResizeRelativeToOverflow(1),
+      ResizeRelativeToOverflow(+1),
       MaybeShowPromo(feature_engagement::kIPHMemorySaverModeFeature),
       PressClosePromoButton());
 }

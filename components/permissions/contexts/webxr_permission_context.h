@@ -13,6 +13,8 @@
 #include "components/permissions/permission_request_data.h"
 
 namespace permissions {
+struct PermissionPromptDecision;
+
 class WebXrPermissionContext : public ContentSettingPermissionContextBase {
  public:
   WebXrPermissionContext(content::BrowserContext* browser_context,
@@ -32,11 +34,11 @@ class WebXrPermissionContext : public ContentSettingPermissionContextBase {
   // https://immersive-web.github.io/webxr/#dom-xrsystem-requestsession
   // When implementing navigator.xr.permission methods, we should ensure that
   // GetPermissionStatus is also updated to check these permissions.
-  void NotifyPermissionSet(const PermissionRequestData& request_data,
-                           BrowserPermissionCallback callback,
-                           bool persist,
-                           PermissionDecision decision,
-                           bool is_final_decision) override;
+  void NotifyPermissionSet(
+      const PermissionRequestData& request_data,
+      BrowserPermissionCallback callback,
+      bool persist,
+      const permissions::PermissionPromptDecision& decision) override;
 
   void UpdateTabContext(const PermissionRequestData& request_data,
                         bool allowed) override;

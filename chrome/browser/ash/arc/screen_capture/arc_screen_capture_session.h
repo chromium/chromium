@@ -12,6 +12,7 @@
 #include "base/memory/raw_ptr.h"
 #include "chromeos/ash/experiences/arc/mojom/screen_capture.mojom.h"
 #include "components/viz/common/gpu/context_lost_observer.h"
+#include "gpu/command_buffer/common/sync_token.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -64,7 +65,7 @@ class ArcScreenCaptureSession : public display::DisplayObserver,
       uint32_t stride,
       SetOutputBufferDeprecatedCallback callback) override;
   void SetOutputBuffer(mojo::ScopedHandle graphics_buffer,
-                       gfx::BufferFormat buffer_format,
+                       mojom::BufferFormat buffer_format,
                        uint64_t buffer_format_modifier,
                        uint32_t stride,
                        SetOutputBufferCallback callback) override;
@@ -106,7 +107,8 @@ class ArcScreenCaptureSession : public display::DisplayObserver,
   // Callback for completion of GL commands.
   void QueryCompleted(uint32_t query_id,
                       std::unique_ptr<DesktopTexture> desktop_texture,
-                      std::unique_ptr<PendingBuffer> pending_buffer);
+                      std::unique_ptr<PendingBuffer> pending_buffer,
+                      gpu::SyncToken sync_token);
   // Callback for a user clicking Stop on the notification for screen capture.
   void NotificationStop();
 

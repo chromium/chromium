@@ -120,27 +120,27 @@ bool PopulateItem(const base::Value& from,
   return true;
 }
 
-void AddItemToList(const int from, base::Value::List& out) {
+void AddItemToList(const int from, base::ListValue& out) {
   out.Append(from);
 }
 
-void AddItemToList(const bool from, base::Value::List& out) {
+void AddItemToList(const bool from, base::ListValue& out) {
   out.Append(from);
 }
 
-void AddItemToList(const double from, base::Value::List& out) {
+void AddItemToList(const double from, base::ListValue& out) {
   out.Append(from);
 }
 
-void AddItemToList(const std::string& from, base::Value::List& out) {
+void AddItemToList(const std::string& from, base::ListValue& out) {
   out.Append(from);
 }
 
-void AddItemToList(const std::vector<uint8_t>& from, base::Value::List& out) {
+void AddItemToList(const std::vector<uint8_t>& from, base::ListValue& out) {
   out.Append(base::Value(from));
 }
 
-void AddItemToList(const base::Value& from, base::Value::List& out) {
+void AddItemToList(const base::Value& from, base::ListValue& out) {
   out.Append(from.Clone());
 }
 

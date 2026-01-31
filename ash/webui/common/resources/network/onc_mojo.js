@@ -888,10 +888,40 @@ export class OncMojo {
       config.nameServersConfigType = nameServersConfigType;
     }
     // The static IP config is not a managed field so we can copy it directly.
-    if (ipAddressConfigType === 'Static' ||
-        nameServersConfigType === 'Static') {
-      config.staticIpConfig = managedProperties.staticIpConfig;
+    if ((ipAddressConfigType !== 'Static' &&
+         nameServersConfigType !== 'Static') ||
+        !managedProperties.staticIpConfig) {
+      return config;
     }
+
+    const staticIpConfig = managedProperties.staticIpConfig;
+    const newStaticIpConfig = {
+      // The type is not provided as a managed value and can be copied directly.
+      type: staticIpConfig.type,
+    };
+
+    if (staticIpConfig.ipAddress) {
+      newStaticIpConfig.ipAddress =
+          OncMojo.getActiveValue(staticIpConfig.ipAddress);
+    }
+    if (staticIpConfig.gateway) {
+      newStaticIpConfig.gateway =
+          OncMojo.getActiveValue(staticIpConfig.gateway);
+    }
+    if (staticIpConfig.routingPrefix) {
+      newStaticIpConfig.routingPrefix =
+          OncMojo.getActiveValue(staticIpConfig.routingPrefix);
+    }
+    if (staticIpConfig.nameServers) {
+      newStaticIpConfig.nameServers =
+          OncMojo.getActiveValue(staticIpConfig.nameServers);
+    }
+    if (staticIpConfig.webProxyAutoDiscoveryUrl) {
+      newStaticIpConfig.webProxyAutoDiscoveryUrl =
+          OncMojo.getActiveValue(staticIpConfig.webProxyAutoDiscoveryUrl);
+    }
+    config.staticIpConfig = newStaticIpConfig;
+
     return config;
   }
 

@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_UI_PERFORMANCE_CONTROLS_MEMORY_SAVER_CHIP_TAB_HELPER_H_
 #define CHROME_BROWSER_UI_PERFORMANCE_CONTROLS_MEMORY_SAVER_CHIP_TAB_HELPER_H_
 
-#include "base/byte_count.h"
+#include "base/byte_size.h"
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/performance_manager/public/user_tuning/user_performance_tuning_manager.h"
 #include "chrome/browser/ui/tabs/contents_observing_tab_feature.h"
@@ -60,8 +60,8 @@ class MemorySaverChipTabHelper : public tabs::ContentsObservingTabFeature,
 
  private:
   // Threshold was selected based on the 75th percentile of tab memory usage.
-  static constexpr base::ByteCount kExpandedMemorySaverChipThreshold =
-      base::MiB(197);
+  static constexpr base::ByteSize kExpandedMemorySaverChipThreshold =
+      base::MiBU(197);
 
   static constexpr base::TimeDelta kExpandedMemorySaverChipFrequency =
       base::Days(1);

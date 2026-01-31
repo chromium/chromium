@@ -4,6 +4,8 @@
 
 #include "chrome/browser/notifications/notification_permission_context.h"
 
+#include <variant>
+
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
@@ -19,6 +21,7 @@
 #include "components/content_settings/core/common/content_settings_pattern.h"
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/permissions/permission_decision.h"
+#include "components/permissions/permission_prompt_decision.h"
 #include "components/permissions/permission_request_id.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/permission_descriptor_util.h"
@@ -185,8 +188,11 @@ void NotificationPermissionContext::DecidePermission(
                   if (context) {
                     context->NotifyPermissionSet(
                         *request_data, std::move(callback),
-                        /*persist=*/true, PermissionDecision::kDeny,
-                        /*is_final_decision=*/true);
+                        /*persist=*/true,
+                        permissions::PermissionPromptDecision{
+                            .overall_decision = PermissionDecision::kDeny,
+                            .prompt_options = std::monostate(),
+                            .is_final = true});
                   }
                 },
                 weak_factory_ui_thread_.GetWeakPtr(), std::move(request_data),

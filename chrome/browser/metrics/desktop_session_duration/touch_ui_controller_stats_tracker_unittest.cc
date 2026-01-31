@@ -13,7 +13,6 @@
 #include "base/time/time.h"
 #include "chrome/browser/metrics/desktop_session_duration/desktop_session_duration_tracker.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_list.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/test/base/test_browser_window.h"
 #include "chrome/test/base/testing_browser_process.h"
@@ -97,13 +96,13 @@ class SessionStatsTrackerTestBase : public ::testing::Test {
   }
 
   void StartSession() {
-    BrowserList::SetLastActive(browser_.get());
+    browser_->DidBecomeActive();
     task_environment_.RunUntilIdle();
     metrics::DesktopSessionDurationTracker::Get()->OnUserEvent();
   }
 
   void EndSession() {
-    BrowserList::NotifyBrowserNoLongerActive(browser_.get());
+    browser_->DidBecomeInactive();
     SessionEndWaiter waiter(metrics::DesktopSessionDurationTracker::Get());
     waiter.Wait();
   }

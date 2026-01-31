@@ -5,6 +5,7 @@
 #include "ui/events/blink/blink_event_util.h"
 
 #include <array>
+#include <limits>
 
 #include "base/time/time.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -106,7 +107,7 @@ TEST(BlinkEventUtilTest, PaginatedScrollBeginEvent) {
 }
 
 TEST(BlinkEventUtilTest, EnsureFlingVelocityNotNaN) {
-  float nan_number = std::nanf("");
+  float nan_number = std::numeric_limits<float>::quiet_NaN();
   ui::GestureEventDetails details(ui::EventType::kScrollFlingStart, nan_number,
                                   1.f);
   details.set_device_type(ui::GestureDeviceType::DEVICE_TOUCHSCREEN);

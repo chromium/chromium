@@ -14,6 +14,7 @@
 #include <string>
 #include <utility>
 
+#include "base/containers/span.h"
 #include "base/feature_list.h"
 #include "base/logging.h"
 #include "base/strings/string_number_conversions.h"
@@ -338,7 +339,7 @@ bool VisitDatabase::FillVisitVectorWithOptions(sql::Statement& statement,
 
       bool is_actor_visit = false;
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
-      if (base::FeatureList::IsEnabled(kBrowsingHistoryActorIntegrationM2)) {
+      if (history::IsBrowsingHistoryActorIntegrationM2Enabled()) {
         is_actor_visit = (visit.source == SOURCE_ACTOR);
       }
 #endif
@@ -605,7 +606,7 @@ bool VisitDatabase::PrepareVisibleVisitsQuery(
 // TODO(crbug.com/457641486) Clean up preprocessor statements once feature is
 // rolled out.
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
-  if (base::FeatureList::IsEnabled(kBrowsingHistoryActorIntegrationM2)) {
+  if (history::IsBrowsingHistoryActorIntegrationM2Enabled()) {
     sql += ", IFNULL(visit_source.source,1)";
     joins += " LEFT JOIN visit_source ON visits.id = visit_source.id";
 
@@ -693,7 +694,7 @@ bool VisitDatabase::GetVisibleVisitsForURL(URLID url_id,
   return FillVisitVectorWithOptions(statement, options, visits);
 }
 
-bool VisitDatabase::GetVisitsForTimes(const std::vector<base::Time>& times,
+bool VisitDatabase::GetVisitsForTimes(base::span<const base::Time> times,
                                       VisitVector* visits) {
   visits->clear();
 

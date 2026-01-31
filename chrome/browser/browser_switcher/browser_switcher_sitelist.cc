@@ -229,7 +229,7 @@ class IESiteListModeRule : public Rule {
     //
     // This lets us parse strings like "example.com", even though they're not
     // fully-specified URLs (missing scheme and path).
-    GURL url = url_formatter::FixupURL(std::string(original_rule), "");
+    GURL url = url_formatter::FixupURL(std::string(original_rule));
 
     if (!url.is_valid() ||
         (!url.SchemeIsHTTPOrHTTPS() && !url.SchemeIsFile())) {

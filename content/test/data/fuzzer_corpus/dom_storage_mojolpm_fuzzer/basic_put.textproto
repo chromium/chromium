@@ -1,0 +1,31 @@
+# Basic test case: create a storage area and perform a Put operation
+
+actions {
+  new_storage_area {
+    id: 0
+  }
+}
+actions {
+  storage_area_remote_action {
+    id: 0
+    m_put {
+      m_key {
+        values { value: 107 }
+        values { value: 101 }
+        values { value: 121 }
+      }
+      m_value {
+        values { value: 118 }
+        values { value: 97 }
+        values { value: 108 }
+      }
+    }
+  }
+}
+
+sequences {
+  action_indexes: 0
+  action_indexes: 1
+}
+
+sequence_indexes: 0

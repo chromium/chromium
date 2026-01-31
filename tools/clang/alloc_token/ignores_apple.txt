@@ -1,0 +1,5 @@
+[alloc-token]
+# The dependency of apple top-level targets are limited and cannot include the
+# allocator_shim.
+src:*chrome_exe_main_mac.cc
+src:*content/shell/app/*

@@ -66,7 +66,7 @@ AXTreeServer::AXTreeServer(const AXTreeSelector& selector,
   }
 
   // Get accessibility tree as a nested dictionary.
-  base::Value::Dict dict = formatter->BuildTreeForSelector(selector);
+  base::DictValue dict = formatter->BuildTreeForSelector(selector);
 
   if (dict.empty()) {
     LOG(ERROR) << "Failed to get accessibility tree.";

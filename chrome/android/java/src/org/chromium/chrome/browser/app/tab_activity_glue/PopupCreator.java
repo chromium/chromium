@@ -8,13 +8,14 @@ import static android.view.Display.INVALID_DISPLAY;
 
 import static org.chromium.build.NullUtil.assertNonNull;
 
-import android.app.ActivityManager;
 import android.app.ActivityManager.AppTask;
 import android.app.ActivityOptions;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Rect;
 import android.os.Build;
+import android.os.Bundle;
+import android.util.AndroidRuntimeException;
 import android.util.Pair;
 
 import androidx.core.graphics.Insets;
@@ -37,10 +38,12 @@ import org.chromium.chrome.browser.customtabs.CustomTabIntentDataProvider;
 import org.chromium.chrome.browser.customtabs.IncognitoCustomTabIntentDataProvider;
 import org.chromium.chrome.browser.customtabs.PopupIntentCreator;
 import org.chromium.chrome.browser.customtabs.PopupIntentCreatorProvider;
+import org.chromium.chrome.browser.customtabs.features.desktop_popup_header.DesktopPopupHeaderUtils;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.media.DocumentPictureInPictureActivity;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.util.AndroidTaskUtils;
+import org.chromium.chrome.browser.util.PictureInPictureWindowOptions;
 import org.chromium.chrome.browser.util.WindowFeatures;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.WindowAndroid;
@@ -56,9 +59,10 @@ public class PopupCreator implements PopupIntentCreator {
             "chrome.browser.app.tab_activity_glue.PopupCreator.EXTRA_REQUESTED_WINDOW_FEATURES";
 
     private static final String TAG = "PopupCreator";
-    private static @Nullable Boolean sArePopupsEnabledForTesting;
     private static @Nullable ReparentingTask sReparentingTaskForTesting;
     private static @Nullable Insets sInsetsForecastForTesting;
+    private static @Nullable Boolean sMoveTabToNewPopupResultForTesting;
+    private static @Nullable Boolean sSetMovableTaskRequiredForPopupsForTesting;
 
     /**
      * Initializes {@link PopupIntentCreator} with top-level dependencies so lower-level code can
@@ -73,7 +77,7 @@ public class PopupCreator implements PopupIntentCreator {
 
     @Override
     public Intent createPopupIntent(@Nullable WindowFeatures windowFeatures, boolean isIncognito) {
-        Intent intent = initializePopupIntent();
+        final Intent intent = initializePopupIntent();
         if (windowFeatures != null) {
             intent.putExtra(EXTRA_REQUESTED_WINDOW_FEATURES, windowFeatures.toBundle());
         }
@@ -89,16 +93,28 @@ public class PopupCreator implements PopupIntentCreator {
      *
      * @param tab The {@link Tab} to move.
      * @param windowFeatures The {@link WindowFeatures} to use for the new Custom Tab popup window.
+     * @return {@code true} if the tab was successfully reparented to a new movable Task, {@code
+     *     false} otherwise
      */
-    public static void moveTabToNewPopup(Tab tab, WindowFeatures windowFeatures) {
-        initializePopupIntentCreator();
-        var popupIntentCreator = assertNonNull(PopupIntentCreatorProvider.getInstance());
-        Intent intent =
-                popupIntentCreator.createPopupIntent(windowFeatures, tab.isIncognitoBranded());
-        ActivityOptions activityOptions =
-                createPopupActivityOptions(windowFeatures, tab.getWindowAndroid());
+    public static boolean moveTabToNewPopup(Tab tab, WindowFeatures windowFeatures) {
+        if (sMoveTabToNewPopupResultForTesting != null) {
+            return sMoveTabToNewPopupResultForTesting;
+        }
 
-        getReparentingTask(tab)
+        final Rect windowBounds = getWindowBoundsFromWindowFeatures(windowFeatures);
+        final ActivityOptions activityOptions =
+                createPopupActivityOptions(windowBounds, tab.getWindowAndroid());
+        if (activityOptions == null) {
+            return false;
+        }
+
+        initializePopupIntentCreator();
+        final PopupIntentCreator popupIntentCreator =
+                assertNonNull(PopupIntentCreatorProvider.getInstance());
+        final Intent intent =
+                popupIntentCreator.createPopupIntent(windowFeatures, tab.isIncognitoBranded());
+
+        return getReparentingTask(tab)
                 .begin(
                         ContextUtils.getApplicationContext(),
                         intent,
@@ -110,75 +126,21 @@ public class PopupCreator implements PopupIntentCreator {
      * Moves the given {@link WebContents} to a new Document Picture-in-Picture window.
      *
      * @param webContents The {@link WebContents} to move.
-     * @param windowFeatures The {@link WindowFeatures} to use for the new Document
+     * @param windowOptions The {@link PictureInPictureWindowOptions} to use for the new Document
      *     Picture-in-Picture window.
      */
-    public static void moveWebContentsToNewDocumentPictureInPictureWindow(
-            WebContents webContents, WindowFeatures windowFeatures) {
-        Intent intent = initializeDocumentPipIntent(webContents, windowFeatures);
-        ActivityOptions activityOptions =
-                createPopupActivityOptions(windowFeatures, webContents.getTopLevelNativeWindow());
-        ContextUtils.getApplicationContext().startActivity(intent, activityOptions.toBundle());
-    }
-
-    /**
-     * Checks if popups are enabled.
-     *
-     * <p>This method first checks if the {@link
-     * ChromeFeatureList#ANDROID_WINDOW_POPUP_LARGE_SCREEN} feature is enabled. If it is, it then
-     * checks if tasks can be moved on the target display by calling {@link
-     * #isTaskMoveAllowedOnDisplay}.
-     *
-     * @param windowFeatures The window features used to determine the target display.
-     * @param openerDisplay The display to check if {@code windowFeatures} do not resolve to a
-     *     specific display.
-     * @return {@code true} if the feature is enabled and tasks can be moved on the display, {@code
-     *     false} otherwise.
-     */
-    public static boolean arePopupsEnabled(
-            WindowFeatures windowFeatures, DisplayAndroid openerDisplay) {
-        if (!ChromeFeatureList.isEnabled(ChromeFeatureList.ANDROID_WINDOW_POPUP_LARGE_SCREEN)) {
+    public static boolean moveWebContentsToNewDocumentPictureInPictureWindow(
+            WebContents webContents, PictureInPictureWindowOptions windowOptions) {
+        final ActivityOptions activityOptions =
+                createDocumentPipActivityOptions(
+                        windowOptions.windowBounds, webContents.getTopLevelNativeWindow());
+        if (activityOptions == null) {
             return false;
         }
 
-        if (sArePopupsEnabledForTesting != null) {
-            return sArePopupsEnabledForTesting;
-        }
-
-        return isTaskMoveAllowedOnDisplay(windowFeatures, openerDisplay);
-    }
-
-    /**
-     * Checks if tasks can be moved on a display determined from the provided arguments.
-     *
-     * <p>If the provided {@code windowFeatures} resolve to unambiguous coordinates, this method
-     * checks the display hosting those coordinates. Otherwise, it checks the {@code openerDisplay}.
-     *
-     * <p>The check is performed using {@link ActivityManager#isTaskMoveAllowedOnDisplay}.
-     *
-     * @param windowFeatures The window features used to determine the target display.
-     * @param openerDisplay The display to check if {@code windowFeatures} do not resolve to a
-     *     specific display.
-     * @return {@code true} if {@link ActivityManager#isTaskMoveAllowedOnDisplay} returns true for
-     *     the determined display, {@code false} otherwise.
-     */
-    public static boolean isTaskMoveAllowedOnDisplay(
-            WindowFeatures windowFeatures, DisplayAndroid openerDisplay) {
-        AconfigFlaggedApiDelegate delegate = AconfigFlaggedApiDelegate.getInstance();
-        if (delegate == null) {
-            return false;
-        }
-
-        final Pair<DisplayAndroid, Rect> localCoordinatesFromWindowFeatures =
-                getLocalCoordinatesPxFromWindowFeatures(windowFeatures);
-        final int targetDisplayId =
-                (localCoordinatesFromWindowFeatures == null)
-                        ? openerDisplay.getDisplayId()
-                        : localCoordinatesFromWindowFeatures.first.getDisplayId();
-
-        ActivityManager am =
-                ContextUtils.getApplicationContext().getSystemService(ActivityManager.class);
-        return delegate.isTaskMoveAllowedOnDisplay(am, targetDisplayId);
+        final Intent intent = initializeDocumentPipIntent(webContents, windowOptions);
+        return tryStartActivity(
+                ContextUtils.getApplicationContext(), intent, activityOptions.toBundle());
     }
 
     /**
@@ -390,13 +352,9 @@ public class PopupCreator implements PopupIntentCreator {
                         + " [px]");
 
         final int totalTopControlsHeightPx =
-                predictBrowserTopControlsTotalHeightPx(targetDisplayContext);
-        Log.v(
-                TAG,
-                "getPopupInsetsForecast: totalTopControlsHeightPx = "
-                        + totalTopControlsHeightPx
-                        + " px");
-
+                predictBrowserTopControlsTotalHeightBelowTopInsetPx(
+                        targetDisplayContext,
+                        Math.round(windowInsetsOnSourceDisplay.top * densityFactor));
         final Insets totalInsets =
                 Insets.add(
                         forecastedWindowInsetsOnTargetDisplay,
@@ -407,10 +365,29 @@ public class PopupCreator implements PopupIntentCreator {
     }
 
     /**
-     * Returns a prediction of overall height in pixels of browser-owned UI elements of a popup
-     * spawned on display with given context.
+     * Returns the height in pixels of browser-owned popup UI elements visible below the top system
+     * inset. For layouts that draw behind the status bar, this value represents the UI overflow
+     * height; for standard layouts, it represents the full control container height.
      */
-    private static int predictBrowserTopControlsTotalHeightPx(Context targetDisplayContext) {
+    private static int predictBrowserTopControlsTotalHeightBelowTopInsetPx(
+            Context targetDisplayContext, int topInsetPx) {
+        // Without edge-to-edge drawing the caption bar is precisely the top inset.
+        int captionBarOverflowOverTopInsetPx = 0;
+        if (ChromeFeatureList.isEnabled(ChromeFeatureList.ANDROID_WINDOW_POPUP_CUSTOM_TAB_UI)) {
+            final int customTabsE2EHeaderHeightPx =
+                    DesktopPopupHeaderUtils.getFinalHeaderHeightPx(
+                            targetDisplayContext, topInsetPx);
+            Log.v(
+                    TAG,
+                    "predictBrowserTopControlsTotalHeightPx: customTabsE2EHeaderHeightPx = "
+                            + customTabsE2EHeaderHeightPx
+                            + " px");
+            Log.v(
+                    TAG,
+                    "predictBrowserTopControlsTotalHeightPx: topInsetPx = " + topInsetPx + " px");
+            captionBarOverflowOverTopInsetPx = customTabsE2EHeaderHeightPx - topInsetPx;
+        }
+
         final int customTabsHeaderHeightPx =
                 targetDisplayContext
                         .getResources()
@@ -421,6 +398,11 @@ public class PopupCreator implements PopupIntentCreator {
                         .getDimensionPixelSize(R.dimen.toolbar_hairline_height);
         Log.v(
                 TAG,
+                "predictBrowserTopControlsTotalHeightPx: captionBarOverflowOverTopInsetPx = "
+                        + captionBarOverflowOverTopInsetPx
+                        + " px");
+        Log.v(
+                TAG,
                 "predictBrowserTopControlsTotalHeightPx: customTabsHeaderHeightPx = "
                         + customTabsHeaderHeightPx
                         + " px");
@@ -429,12 +411,59 @@ public class PopupCreator implements PopupIntentCreator {
                 "predictBrowserTopControlsTotalHeightPx: toolbarHairlineHeightPx = "
                         + toolbarHairlineHeightPx
                         + " px");
-        return customTabsHeaderHeightPx + toolbarHairlineHeightPx;
+        final int totalTopControlsHeightPx =
+                captionBarOverflowOverTopInsetPx
+                        + customTabsHeaderHeightPx
+                        + toolbarHairlineHeightPx;
+        Log.v(
+                TAG,
+                "predictBrowserTopControlsTotalHeightPx: totalTopControlsHeightPx = "
+                        + totalTopControlsHeightPx
+                        + " px");
+        return totalTopControlsHeightPx;
     }
 
-    public static void setArePopupsEnabledForTesting(boolean value) {
-        sArePopupsEnabledForTesting = value;
-        ResettersForTesting.register(() -> sArePopupsEnabledForTesting = null);
+    /**
+     * Starts an activity using given {@link android.content.Context}, {@link
+     * android.content.Intent}, and {@link android.os.Bundle} of ActivityOptions. Catches exceptions
+     * likely to be thrown when {@link android.app.ActivityOptions#setMovableTaskRequired(boolean)}
+     * is set to {@code true} in the {@link android.app.ActivityOptions} object represented by the
+     * {@link android.os.Bundle} provided.
+     *
+     * @param context The Context on which the {@link
+     *     android.content.Context#startActivity(android.content.Intent, android.os.Bundle)} method
+     *     will be executed.
+     * @param intent The Intent passed to the {@code startActivity} call.
+     * @param activityOptions The Bundle passed to the {@code startActivity} call.
+     * @return {@code true} if succeeded, {@code false} otherwise.
+     * @see android.app.ActivityOptions#toBundle()
+     * @see android.app.ActivityOptions#setMovableTaskRequired(boolean)
+     */
+    public static boolean tryStartActivity(
+            Context context, Intent intent, @Nullable Bundle activityOptions) {
+        try {
+            context.startActivity(intent, activityOptions);
+        } catch (SecurityException e) {
+            Log.w(TAG, "tryStartActivity: no permission to start a movable task", e);
+            return false;
+        } catch (AndroidRuntimeException e) {
+            final AconfigFlaggedApiDelegate delegate = AconfigFlaggedApiDelegate.getInstance();
+            if (delegate == null) {
+                Log.w(TAG, "tryStartActivity: AconfigFlaggedApiDelegate is null");
+                return false;
+            }
+
+            if (delegate.isInfeasibleActivityOptionsException(e)) {
+                Log.w(
+                        TAG,
+                        "tryStartActivity: startActivity threw InfeasibleActivityOptionsException");
+                return false;
+            }
+
+            throw e;
+        }
+
+        return true;
     }
 
     public static void setReparentingTaskForTesting(ReparentingTask task) {
@@ -451,6 +480,22 @@ public class PopupCreator implements PopupIntentCreator {
         ResettersForTesting.register(() -> sInsetsForecastForTesting = null);
     }
 
+    /** Overrides values returned by {@link moveTabToNewPopup}. */
+    public static void setMoveTabToNewPopupResultForTesting(Boolean moveTabToNewPopupResult) {
+        sMoveTabToNewPopupResultForTesting = moveTabToNewPopupResult;
+        ResettersForTesting.register(() -> sMoveTabToNewPopupResultForTesting = null);
+    }
+
+    /**
+     * If this is set to {@code false}, contextual popups will be launched without specifying the
+     * {@link android.app.ActivityOptions#setMovableTaskRequired(boolean)} option.
+     */
+    public static void setSetMovableTaskRequiredForPopupsForTesting(
+            Boolean setMovableTaskRequiredForPopups) {
+        sSetMovableTaskRequiredForPopupsForTesting = setMovableTaskRequiredForPopups;
+        ResettersForTesting.register(() -> sSetMovableTaskRequiredForPopupsForTesting = null);
+    }
+
     private static Intent initializePopupIntent() {
         Intent intent = new Intent();
         intent.setClass(ContextUtils.getApplicationContext(), CustomTabActivity.class);
@@ -461,25 +506,62 @@ public class PopupCreator implements PopupIntentCreator {
     }
 
     private static Intent initializeDocumentPipIntent(
-            WebContents webContents, WindowFeatures windowFeatures) {
+            WebContents webContents, PictureInPictureWindowOptions windowOptions) {
         Intent intent = new Intent();
         intent.setClass(
                 ContextUtils.getApplicationContext(), DocumentPictureInPictureActivity.class);
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_MULTIPLE_TASK);
         intent.putExtra(DocumentPictureInPictureActivity.WEB_CONTENTS_KEY, webContents);
-        intent.putExtra(EXTRA_REQUESTED_WINDOW_FEATURES, windowFeatures.toBundle());
+        intent.putExtra(
+                DocumentPictureInPictureActivity.WINDOW_OPTIONS_KEY, windowOptions.toBundle());
 
         intent.setAction(Intent.ACTION_VIEW);
 
         return intent;
     }
 
-    private static ActivityOptions createPopupActivityOptions(
-            WindowFeatures windowFeatures, @Nullable WindowAndroid sourceWindow) {
+    private static @Nullable ActivityOptions createPopupActivityOptions(
+            @Nullable Rect windowBounds, @Nullable WindowAndroid sourceWindow) {
+        return createPopupActivityOptions(
+                windowBounds,
+                sourceWindow,
+                ChromeFeatureList.isEnabled(
+                        ChromeFeatureList.ANDROID_WINDOW_POPUP_PREDICT_FINAL_BOUNDS));
+    }
+
+    private static @Nullable ActivityOptions createDocumentPipActivityOptions(
+            @Nullable Rect windowBounds, @Nullable WindowAndroid sourceWindow) {
+        // TODO(crbug.com/465413462): Add support for predicting final bounds.
+        return createPopupActivityOptions(
+                windowBounds, sourceWindow, /* predictFinalBounds= */ false);
+    }
+
+    private static @Nullable ActivityOptions createPopupActivityOptions(
+            @Nullable Rect windowBounds,
+            @Nullable WindowAndroid sourceWindow,
+            boolean predictFinalBounds) {
         ActivityOptions activityOptions = ActivityOptions.makeBasic();
 
+        if (sSetMovableTaskRequiredForPopupsForTesting == null
+                || sSetMovableTaskRequiredForPopupsForTesting) {
+            final AconfigFlaggedApiDelegate delegate = AconfigFlaggedApiDelegate.getInstance();
+            if (delegate == null) {
+                Log.w(TAG, "createPopupActivityOptions: AconfigFlaggedApiDelegate is null");
+                return null;
+            }
+
+            activityOptions = delegate.setMovableTaskRequired(activityOptions);
+            if (activityOptions == null) {
+                return null;
+            }
+        }
+
+        if (windowBounds == null) {
+            return activityOptions;
+        }
+
         final Pair<DisplayAndroid, Rect> localCoordinates =
-                getLocalCoordinatesPxFromWindowFeatures(windowFeatures);
+                DisplayUtil.convertGlobalDipToLocalPxCoordinates(windowBounds);
 
         if (localCoordinates != null) {
             final DisplayAndroid display = localCoordinates.first;
@@ -487,8 +569,7 @@ public class PopupCreator implements PopupIntentCreator {
 
             Log.v(TAG, "createPopupActivityOptions: ideal bounds = " + bounds);
 
-            if (ChromeFeatureList.isEnabled(
-                    ChromeFeatureList.ANDROID_WINDOW_POPUP_PREDICT_FINAL_BOUNDS)) {
+            if (predictFinalBounds) {
                 Insets insets = getPopupInsetsForecast(sourceWindow, display);
                 Log.v(TAG, "createPopupActivityOptions: apply insets = " + insets);
                 bounds = WindowInsetsUtils.insetRectangle(bounds, insets);
@@ -504,8 +585,7 @@ public class PopupCreator implements PopupIntentCreator {
         return activityOptions;
     }
 
-    private static @Nullable Pair<DisplayAndroid, Rect> getLocalCoordinatesPxFromWindowFeatures(
-            WindowFeatures windowFeatures) {
+    private static @Nullable Rect getWindowBoundsFromWindowFeatures(WindowFeatures windowFeatures) {
         if (windowFeatures.width == null || windowFeatures.height == null) {
             return null;
         }
@@ -518,8 +598,7 @@ public class PopupCreator implements PopupIntentCreator {
         final int rightDp = leftDp + widthDp;
         final int bottomDp = topDp + heightDp;
 
-        return DisplayUtil.convertGlobalDipToLocalPxCoordinates(
-                new Rect(leftDp, topDp, rightDp, bottomDp));
+        return new Rect(leftDp, topDp, rightDp, bottomDp);
     }
 
     private static ReparentingTask getReparentingTask(Tab tab) {

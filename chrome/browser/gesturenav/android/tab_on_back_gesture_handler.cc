@@ -141,23 +141,22 @@ void TabOnBackGestureHandler::Destroy(JNIEnv* env) {
 // ----------------------------------------------------------------------------
 
 // static
-static jlong JNI_TabOnBackGestureHandler_Init(JNIEnv* env,
-                                              const JavaRef<jobject>& jtab) {
+static int64_t JNI_TabOnBackGestureHandler_Init(JNIEnv* env,
+                                                const JavaRef<jobject>& jtab) {
   TabOnBackGestureHandler* handler =
       new TabOnBackGestureHandler(TabAndroid::GetNativeTab(env, jtab));
   return reinterpret_cast<intptr_t>(handler);
 }
 
 // static
-static jboolean JNI_TabOnBackGestureHandler_ShouldAnimateNavigationTransition(
+static bool JNI_TabOnBackGestureHandler_ShouldAnimateNavigationTransition(
     JNIEnv* env,
-    jboolean forward,
-    jint edge) {
-  return static_cast<jboolean>(
+    bool forward,
+    int32_t edge) {
+  return static_cast<bool>(
       content::BackForwardTransitionAnimationManager::
           ShouldAnimateNavigationTransition(
-              static_cast<bool>(forward) ? NavDirection::kForward
-                                         : NavDirection::kBackward,
+              forward ? NavDirection::kForward : NavDirection::kBackward,
               static_cast<ui::BackGestureEventSwipeEdge>(edge)));
 }
 

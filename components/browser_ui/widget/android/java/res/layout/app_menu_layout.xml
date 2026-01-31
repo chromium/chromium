@@ -13,7 +13,7 @@ found in the LICENSE file.
     android:background="@drawable/default_popup_menu_bg"
     android:elevation="@dimen/app_menu_elevation">
 
-    <ListView
+    <org.chromium.components.browser_ui.widget.list_view.TouchTrackingListView
         android:id="@+id/app_menu_list"
         android:layout_width="match_parent"
         android:layout_height="0dp"

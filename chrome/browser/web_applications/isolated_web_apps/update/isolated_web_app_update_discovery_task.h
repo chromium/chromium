@@ -149,7 +149,7 @@ class IsolatedWebAppUpdateDiscoveryTask {
   void OnUpdateDryRunDone(
       IsolatedWebAppUpdatePrepareAndStoreCommandResult result);
 
-  base::Value::Dict debug_log_;
+  base::DictValue debug_log_;
   bool has_started_ = false;
   CompletionCallback callback_;
 

@@ -25,16 +25,15 @@ class TestNetworkConfigurationObserver : public NetworkConfigurationObserver {
       const TestNetworkConfigurationObserver&) = delete;
 
   // NetworkConfigurationObserver
-  void OnConfigurationModified(
-      const std::string& service_path,
-      const std::string& guid,
-      const base::Value::Dict* set_properties) override;
+  void OnConfigurationModified(const std::string& service_path,
+                               const std::string& guid,
+                               const base::DictValue* set_properties) override;
 
-  const base::Value::Dict* GetUserSettings(const std::string& guid) const;
+  const base::DictValue* GetUserSettings(const std::string& guid) const;
   unsigned int GetOnConfigurationModifiedCallCount() const;
 
  private:
-  std::unordered_map<std::string, base::Value::Dict> user_settings_;
+  std::unordered_map<std::string, base::DictValue> user_settings_;
   unsigned int on_configuration_modified_call_count_ = 0;
 
   base::ScopedObservation<NetworkConfigurationHandler,

@@ -232,11 +232,11 @@ TEST_P(RealtimeReportingClientUmaTest, TestDeprecatedUmaEventUploadSucceeds) {
 
   ReportingSettings settings;
   settings.per_profile = is_profile_reporting();
-  base::Value::Dict event;
+  base::DictValue event;
 
   base::RunLoop run_loop;
   EXPECT_CALL(*client_.get(), UploadSecurityEventReport(_, _, _))
-      .WillOnce([&](bool include_device_info, base::Value::Dict&& report,
+      .WillOnce([&](bool include_device_info, base::DictValue&& report,
                     policy::CloudPolicyClient::ResultCallback callback) {
         upload_callback_ = std::move(callback);
         run_loop.Quit();
@@ -321,11 +321,11 @@ TEST_P(RealtimeReportingClientUmaTest, TestDeprecatedUmaEventUploadFails) {
 
   ReportingSettings settings;
   settings.per_profile = is_profile_reporting();
-  base::Value::Dict event;
+  base::DictValue event;
 
   base::RunLoop run_loop;
   EXPECT_CALL(*client_.get(), UploadSecurityEventReport(_, _, _))
-      .WillOnce([&](bool include_device_info, base::Value::Dict&& report,
+      .WillOnce([&](bool include_device_info, base::DictValue&& report,
                     policy::CloudPolicyClient::ResultCallback callback) {
         upload_callback_ = std::move(callback);
         run_loop.Quit();
@@ -423,7 +423,7 @@ TEST_F(RealtimeReportingClientTestBase,
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 
 TEST_F(RealtimeReportingClientTestBase, TestCrowdstrikeSignalsPopulated) {
-  base::Value::Dict event;
+  base::DictValue event;
   device_signals::CrowdStrikeSignals signals;
   signals.agent_id = "agent-123";
   signals.customer_id = "customer-123";
@@ -432,9 +432,9 @@ TEST_F(RealtimeReportingClientTestBase, TestCrowdstrikeSignalsPopulated) {
   device_signals::SignalsAggregationResponse response;
   response.agent_signals_response = agent_signals;
   AddCrowdstrikeSignalsToEvent(event, response);
-  const base::Value::List& agentList = event.Find("securityAgents")->GetList();
+  const base::ListValue& agentList = event.Find("securityAgents")->GetList();
   ASSERT_EQ(agentList.size(), 1u);
-  const base::Value::Dict& signalValues =
+  const base::DictValue& signalValues =
       agentList[0].GetDict().Find("crowdstrike")->GetDict();
   EXPECT_EQ(signalValues.Find("agent_id")->GetString(), "agent-123");
   EXPECT_EQ(signalValues.Find("customer_id")->GetString(), "customer-123");
@@ -442,7 +442,7 @@ TEST_F(RealtimeReportingClientTestBase, TestCrowdstrikeSignalsPopulated) {
 
 TEST_F(RealtimeReportingClientTestBase,
        TestCrowdstrikeSignalsNotPopulatedForEmptyResponse) {
-  base::Value::Dict event;
+  base::DictValue event;
   device_signals::SignalsAggregationResponse response;
   response.agent_signals_response = std::nullopt;
   AddCrowdstrikeSignalsToEvent(event, response);

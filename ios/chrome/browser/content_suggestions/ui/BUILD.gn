@@ -1,0 +1,91 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("ui") {
+  sources = [
+    "content_suggestions_consumer.h",
+    "content_suggestions_view_controller.h",
+    "content_suggestions_view_controller.mm",
+  ]
+  public_deps = []
+  deps = [
+    ":public",
+    ":ui_util",
+    "//base",
+    "//ios/chrome/browser/content_suggestions/magic_stack/public:constants",
+    "//ios/chrome/browser/content_suggestions/magic_stack/ui:cells",
+    "//ios/chrome/browser/content_suggestions/magic_stack/ui:public",
+    "//ios/chrome/browser/content_suggestions/model:metrics_recorder",
+    "//ios/chrome/browser/content_suggestions/most_visited_tiles/ui",
+    "//ios/chrome/browser/content_suggestions/public:constants",
+    "//ios/chrome/browser/drag_and_drop/model",
+    "//ios/chrome/browser/ntp/ui_bundled:constants",
+    "//ios/chrome/browser/ntp/ui_bundled:feature_flags",
+    "//ios/chrome/browser/shared/public/features",
+    "//ios/chrome/browser/url_loading/model",
+  ]
+  frameworks = [ "UIKit.framework" ]
+}
+
+source_set("public") {
+  sources = [
+    "content_suggestions_image_data_source.h",
+    "content_suggestions_menu_elements_provider.h",
+    "content_suggestions_view_controller_audience.h",
+    "user_account_image_update_delegate.h",
+  ]
+  public_deps =
+      [ "//ios/chrome/browser/content_suggestions/magic_stack/ui:public" ]
+}
+
+source_set("ui_util") {
+  sources = [
+    "content_suggestions_collection_utils.h",
+    "content_suggestions_collection_utils.mm",
+  ]
+  deps = [
+    "//base:i18n",
+    "//components/strings",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/content_suggestions/public:ntp_home_constants",
+    "//ios/chrome/browser/location_bar/ui_bundled:constants",
+    "//ios/chrome/browser/ntp/search_engine_logo/ui",
+    "//ios/chrome/browser/ntp/ui_bundled:constants",
+    "//ios/chrome/browser/ntp/ui_bundled:feature_flags",
+    "//ios/chrome/browser/shared/public/features",
+    "//ios/chrome/browser/shared/ui/elements",
+    "//ios/chrome/browser/shared/ui/symbols",
+    "//ios/chrome/browser/shared/ui/util",
+    "//ios/chrome/browser/start_surface/ui_bundled:feature_flags",
+    "//ios/chrome/browser/toolbar/legacy/ui_bundled/public",
+    "//ios/chrome/browser/toolbar/legacy/ui_bundled/public:constants",
+    "//ios/chrome/common/ui/colors",
+    "//ios/chrome/common/ui/util",
+    "//ios/components/ui_util",
+    "//ui/base",
+    "//ui/gfx/ios:uikit_util",
+  ]
+  frameworks = [ "UIKit.framework" ]
+}
+
+source_set("commands") {
+  sources = [ "content_suggestions_commands.h" ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "content_suggestions_collection_utils_unittest.mm" ]
+  deps = [
+    ":ui_util",
+    "//base/test:test_support",
+    "//ios/chrome/browser/ntp/search_engine_logo/ui",
+    "//ios/chrome/browser/ntp/ui_bundled:feature_flags",
+    "//ios/chrome/browser/shared/public/features",
+    "//ios/chrome/browser/start_surface/ui_bundled:feature_flags",
+    "//ios/testing:block_swizzler",
+    "//testing/gtest",
+    "//third_party/ocmock",
+    "//ui/base",
+  ]
+}

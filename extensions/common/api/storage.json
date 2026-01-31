@@ -64,7 +64,7 @@
             ],
             "returns_async": {
               "name": "callback",
-              "description": "Callback with storage items, or on failure (in which case $(ref:runtime.lastError) will be set).",
+              "description": "Promise that resolves with an object containing a key-value map for the requested items, or rejects on failure.",
               "parameters": [
                 {
                   "name": "items",
@@ -82,7 +82,7 @@
             "parameters": [],
             "returns_async": {
               "name": "callback",
-              "description": "Callback with storage keys, or on failure (in which case $(ref:runtime.lastError) will be set).",
+              "description": "Promise that resolves with storage keys, or rejects on failure.",
               "parameters": [
                 {
                   "name": "keys",
@@ -110,7 +110,7 @@
             ],
             "returns_async": {
               "name": "callback",
-              "description": "Callback with the amount of space being used by storage, or on failure (in which case $(ref:runtime.lastError) will be set).",
+              "description": "Promise that resolves with the amount of space being used by storage, or rejects on failure.",
               "parameters": [
                 {
                   "name": "bytesInUse",
@@ -135,7 +135,7 @@
             ],
             "returns_async": {
               "name": "callback",
-              "description": "Callback on success, or on failure (in which case $(ref:runtime.lastError) will be set).",
+              "description": "Promise that resolves on success, or rejects on failure.",
               "parameters": [],
               "optional": true
             }
@@ -156,7 +156,7 @@
             ],
             "returns_async": {
               "name": "callback",
-              "description": "Callback on success, or on failure (in which case $(ref:runtime.lastError) will be set).",
+              "description": "Promise that resolves on success, or rejects on failure.",
               "parameters": [],
               "optional": true
             }
@@ -168,7 +168,7 @@
             "parameters": [],
             "returns_async":  {
               "name": "callback",
-              "description": "Callback on success, or on failure (in which case $(ref:runtime.lastError) will be set).",
+              "description": "Promise that resolves on success, or rejects on failure.",
               "parameters": [],
               "optional": true
             }
@@ -190,7 +190,7 @@
             ],
             "returns_async":  {
               "name": "callback",
-              "description": "Callback on success, or on failure (in which case $(ref:runtime.lastError) will be set).",
+              "description": "Promise that resolves on success, or rejects on failure.",
               "parameters": [],
               "optional": true
             }

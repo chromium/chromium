@@ -55,6 +55,7 @@ source_set("configs") {
     "//components/compose:buildflags",
     "//components/lens:buildflags",
     "//components/security_interstitials/content:security_interstitial_page",
+    "//components/webui/user_actions",
     "//content/public/browser",
     "//extensions/buildflags",
     "//printing/buildflags",
@@ -62,9 +63,14 @@ source_set("configs") {
     "//third_party/abseil-cpp:absl",
   ]
 
+  if (is_win || is_chromeos) {
+    deps += [ "//chrome/browser/ui/webui/signin:inline_login" ]
+  }
+
   if (!is_android) {
     deps += [
       "//chrome/browser/actor/ui",
+      "//chrome/browser/actor/ui:actor_overlay",
       "//chrome/browser/contextual_tasks:ui",
       "//chrome/browser/ui/webui/access_code_cast",
       "//chrome/browser/ui/webui/actor_internals",
@@ -75,12 +81,15 @@ source_set("configs") {
       "//chrome/browser/ui/webui/legion_internals",
       "//chrome/browser/ui/webui/new_tab_footer",
       "//chrome/browser/ui/webui/privacy_sandbox:mojo_bindings",
-      "//chrome/browser/ui/webui/reload_button",
+      "//chrome/browser/ui/webui/webui_toolbar",
       "//chrome/browser/ui/webui_browser",
     ]
 
     if (!is_chromeos) {
-      deps += [ "//chrome/browser/ui/webui/app_home" ]
+      deps += [
+        "//chrome/browser/ui/webui/app_home",
+        "//chrome/browser/ui/webui/default_browser:default_browser_modal",
+      ]
     }
   } else {
     #is_android
@@ -96,6 +105,7 @@ source_set("configs") {
       "//chrome/browser/ui/lens",
       "//chrome/browser/ui/views/side_panel",
       "//chrome/browser/ui/webui/signin",
+      "//chrome/browser/ui/webui/skills",
     ]
 
     if (!is_chromeos) {
@@ -131,6 +141,10 @@ source_set("configs") {
 
   if (enable_session_service) {
     deps += [ "//chrome/browser/ui/webui/tab_strip_internals" ]
+  }
+
+  if (is_mac) {
+    deps += [ "//chrome/browser/ui/webui/unexportable_keys_internals" ]
   }
 }
 

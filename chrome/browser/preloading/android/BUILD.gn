@@ -8,6 +8,7 @@ import("//third_party/jni_zero/jni_zero.gni")
 generate_jni("jni_headers") {
   sources = [
     "java/src/org/chromium/chrome/browser/preloading/PreloadingDataBridge.java",
+    "java/src/org/chromium/chrome/browser/preloading/PreloadingFeatureMap.java",
   ]
 }
 
@@ -15,9 +16,11 @@ android_library("java") {
   srcjar_deps = [ ":jni_headers" ]
   sources = [
     "java/src/org/chromium/chrome/browser/preloading/PreloadingDataBridge.java",
+    "java/src/org/chromium/chrome/browser/preloading/PreloadingFeatureMap.java",
   ]
 
   deps = [
+    "//base:features_java",
     "//content/public/android:content_java",
     "//third_party/jni_zero:jni_zero_java",
   ]

@@ -14,7 +14,6 @@
 #import "ios/chrome/browser/authentication/account_menu/ui/account_menu_data_source.h"
 #import "ios/chrome/browser/authentication/account_menu/ui/account_menu_mutator.h"
 #import "ios/chrome/browser/authentication/ui_bundled/cells/central_account_view.h"
-#import "ios/chrome/browser/authentication/ui_bundled/cells/table_view_account_item.h"
 #import "ios/chrome/browser/policy/model/management_state.h"
 #import "ios/chrome/browser/settings/model/sync/utils/account_error_ui_info.h"
 #import "ios/chrome/browser/settings/ui_bundled/settings_table_view_controller_constants.h"
@@ -261,10 +260,6 @@ TEST_P(AccountMenuViewControllerTest, TestDefaultSetting) {
   EXPECT_EQ(2, [TableView() numberOfRowsInSection:0]);
   // Sign Out
   EXPECT_EQ(1, [TableView() numberOfRowsInSection:1]);
-  UITableViewCell* secondary_account_cell =
-      GetCell(path_for_secondary_account_);
-  EXPECT_TRUE(
-      [secondary_account_cell isKindOfClass:[TableViewAccountCell class]]);
   ExpectTextAtPath(
       l10n_util::GetNSString(IDS_IOS_OPTIONS_ACCOUNTS_ADD_ACCOUNT_BUTTON),
       path_for_add_account_);

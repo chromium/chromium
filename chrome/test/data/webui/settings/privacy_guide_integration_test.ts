@@ -134,10 +134,7 @@ suite('PrivacyGuideEligibleReachedMetrics', function() {
   const optionalSteps: PrivacyGuideStep[] = [];
   optionalSteps.push(PrivacyGuideStep.HISTORY_SYNC);
   optionalSteps.push(PrivacyGuideStep.SAFE_BROWSING);
-  // The COOKIES step only exists if the 3PCD redesign is not enabled.
-  if (!loadTimeData.getBoolean('is3pcdCookieSettingsRedesignEnabled')) {
-    optionalSteps.push(PrivacyGuideStep.COOKIES);
-  }
+  optionalSteps.push(PrivacyGuideStep.COOKIES);
 
   suiteSetup(function() {
     settingsPrefs = document.createElement('settings-prefs');

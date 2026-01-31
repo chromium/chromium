@@ -14,7 +14,7 @@ using base::android::ConvertUTF16ToJavaString;
 using base::android::ScopedJavaLocalRef;
 
 static std::u16string JNI_StringUtils_GetFailStateMessage(JNIEnv* env,
-                                                          jint fail_state) {
+                                                          int32_t fail_state) {
   std::u16string message = OfflineItemUtils::GetFailStateMessage(
       static_cast<offline_items_collection::FailState>(fail_state));
   l10n_util::GetStringFUTF16(IDS_DOWNLOAD_STATUS_INTERRUPTED, message);

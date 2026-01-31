@@ -4,17 +4,7 @@
 
 module gpu.mojom;
 
-// See gpu/command_buffer/common/constants.h
-enum CommandBufferNamespace {
-  INVALID = -1,
-
-  GPU_IO,
-  IN_PROCESS,
-  VIZ_SKIA_OUTPUT_SURFACE,
-  VIZ_SKIA_OUTPUT_SURFACE_NON_DDL,
-  GPU_CHANNEL_SHARED_IMAGE_INTERFACE,
-  WEBNN_CONTEXT_INTERFACE
-};
+import "gpu/ipc/common/constants.mojom";
 
 // See gpu/command_buffer/common/sync_token.h
 struct SyncToken {

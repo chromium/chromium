@@ -30,7 +30,7 @@ Status BackingStoreTransactionImpl::Begin(std::vector<PartitionedLock> locks) {
   return db_->BeginTransaction(PassKey(), *this);
 }
 
-Status BackingStoreTransactionImpl::CommitPhaseOne(
+StatusOr<bool> BackingStoreTransactionImpl::CommitPhaseOne(
     BlobWriteCallback callback,
     SerializeFsaCallback serialize_fsa) {
   return db_->CommitTransactionPhaseOne(PassKey(), *this, std::move(callback),

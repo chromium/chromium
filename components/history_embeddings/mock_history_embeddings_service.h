@@ -11,7 +11,7 @@
 #include "base/time/time.h"
 #include "components/history/core/browser/history_service.h"
 #include "components/history_embeddings/history_embeddings_service.h"
-#include "components/passage_embeddings/passage_embeddings_types.h"
+#include "components/passage_embeddings/core/passage_embeddings_types.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
 namespace os_crypt_async {

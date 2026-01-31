@@ -17,9 +17,9 @@ TEST(PaymentRequestTest, PaymentItemFromValueDictSuccess) {
   expected.amount->currency = "NZD";
   expected.amount->value = "2,242,093.00";
 
-  base::Value::Dict item_dict;
+  base::DictValue item_dict;
   item_dict.Set("label", "Payment Total");
-  base::Value::Dict amount_dict;
+  base::DictValue amount_dict;
   amount_dict.Set("currency", "NZD");
   amount_dict.Set("value", "2,242,093.00");
   item_dict.Set("amount", std::move(amount_dict));
@@ -35,14 +35,14 @@ TEST(PaymentRequestTest, PaymentItemFromValueDictFailure) {
   PaymentItem actual;
 
   // Both a label and an amount are required.
-  base::Value::Dict item_dict;
+  base::DictValue item_dict;
   EXPECT_FALSE(actual.FromValueDict(item_dict));
 
   item_dict.Set("label", "Payment Total");
   EXPECT_FALSE(actual.FromValueDict(item_dict));
 
   // Even with both present, the label must be a string.
-  base::Value::Dict amount_dict;
+  base::DictValue amount_dict;
   amount_dict.Set("currency", "NZD");
   amount_dict.Set("value", "2,242,093.00");
   item_dict.Set("amount", std::move(amount_dict));
@@ -86,10 +86,10 @@ TEST(PaymentRequestTest, PaymentItemEquality) {
 
 // Tests that serializing a default PaymentItem yields the expected result.
 TEST(PaymentRequestTest, EmptyPaymentItemDictionary) {
-  base::Value::Dict expected_value;
+  base::DictValue expected_value;
 
   expected_value.Set("label", "");
-  base::Value::Dict amount_dict;
+  base::DictValue amount_dict;
   amount_dict.Set("currency", "");
   amount_dict.Set("value", "");
   expected_value.Set("amount", std::move(amount_dict));
@@ -101,10 +101,10 @@ TEST(PaymentRequestTest, EmptyPaymentItemDictionary) {
 
 // Tests that serializing a populated PaymentItem yields the expected result.
 TEST(PaymentRequestTest, PopulatedPaymentItemDictionary) {
-  base::Value::Dict expected_value;
+  base::DictValue expected_value;
 
   expected_value.Set("label", "Payment Total");
-  base::Value::Dict amount_dict;
+  base::DictValue amount_dict;
   amount_dict.Set("currency", "NZD");
   amount_dict.Set("value", "2,242,093.00");
   expected_value.Set("amount", std::move(amount_dict));

@@ -55,7 +55,7 @@ void DemoPreferencesScreen::ShowImpl() {
 
 void DemoPreferencesScreen::HideImpl() {}
 
-void DemoPreferencesScreen::OnUserAction(const base::Value::List& args) {
+void DemoPreferencesScreen::OnUserAction(const base::ListValue& args) {
   const std::string& action_id = args[0].GetString();
   if (action_id == kUserActionContinue) {
     CHECK_EQ(args.size(), 3u);

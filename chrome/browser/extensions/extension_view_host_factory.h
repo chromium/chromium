@@ -35,6 +35,7 @@ class ExtensionViewHostFactory {
   // appropriate SiteInstance (and therefore process) based on the URL and
   // profile.
   static std::unique_ptr<ExtensionViewHost> CreatePopupHost(
+      const Extension& extension,
       const GURL& url,
       BrowserWindowInterface* browser);
 

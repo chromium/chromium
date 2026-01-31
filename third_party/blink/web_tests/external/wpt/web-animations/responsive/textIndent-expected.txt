@@ -1,0 +1,5 @@
+This is a testharness.js-based test.
+[FAIL] textIndent responsive to inherited textIndent changes
+  assert_equals: expected "300px hanging each-line" but got "200px hanging each-line"
+Harness: the test ran to completion.
+

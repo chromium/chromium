@@ -9,9 +9,11 @@
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "base/test/mock_callback.h"
+#include "base/test/with_feature_override.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
+#include "components/sync/base/features.h"
 #include "content/public/test/browser_task_environment.h"
 #include "net/http/http_status_code.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
@@ -201,14 +203,27 @@ TEST_F(SanitizedImageSourceTest, WrongUrl) {
   EXPECT_EQ(0, test_url_loader_factory_.NumPending());
 }
 
+class SanitizedImageSourceSigninPromoTest
+    : public base::test::WithFeatureOverride,
+      public SanitizedImageSourceTest {
+ public:
+  SanitizedImageSourceSigninPromoTest()
+      : base::test::WithFeatureOverride(
+            syncer::kReplaceSyncPromosWithSignInPromos) {}
+};
+INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(SanitizedImageSourceSigninPromoTest);
+
 // Verifies that the image source sends a Google Photos auth token with its data
 // request if and only if asked to by URL specification.
-TEST_F(SanitizedImageSourceTest, GooglePhotosImage) {
+TEST_P(SanitizedImageSourceSigninPromoTest, GooglePhotosImage) {
   constexpr char kImageUrl[] = "https://lh3.googleusercontent.com/img.png";
   base::MockCallback<content::URLDataSource::GotDataCallback> callback;
   signin::IdentityTestEnvironment identity_test_env;
-  identity_test_env.MakePrimaryAccountAvailable("test@gmail.com",
-                                                signin::ConsentLevel::kSync);
+  identity_test_env.MakePrimaryAccountAvailable(
+      "test@gmail.com",
+      base::FeatureList::IsEnabled(syncer::kReplaceSyncPromosWithSignInPromos)
+          ? signin::ConsentLevel::kSignin
+          : signin::ConsentLevel::kSync);
   sanitized_image_source_->set_identity_manager_for_test(
       identity_test_env.identity_manager());
 

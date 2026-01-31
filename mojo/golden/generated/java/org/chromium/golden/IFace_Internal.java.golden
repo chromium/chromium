@@ -41,8 +41,11 @@ class IFace_Internal {
         }
 
         @Override
-        public Stub buildStub(org.chromium.mojo.system.Core core, IFace impl) {
-            return new Stub(core, impl);
+        public org.chromium.mojo.bindings.Stub<IFace> buildStub(
+                org.chromium.mojo.system.Core core,
+                IFace impl,
+                int interfaceId) {
+            return new IFaceStub(core, impl, interfaceId);
         }
 
         @Override
@@ -72,29 +75,35 @@ Method_Response callback) {
 
             _message.param = param;
 
+            try {
 
-            getProxyHandler().getMessageReceiver().acceptWithResponder(
-                    _message.serializeWithHeader(
-                            getProxyHandler().getCore(),
-                            new org.chromium.mojo.bindings.MessageHeader(
-                                    METHOD_ORDINAL,
-                                    org.chromium.mojo.bindings.MessageHeader.MESSAGE_EXPECTS_RESPONSE_FLAG,
-                                    0)),
-                    new IFaceMethodResponseParamsForwardToCallback(callback));
+                getProxyHandler().getMessageReceiver().acceptWithResponder(
+                        _message.serializeWithHeader(
+                                getProxyHandler().getCore(),
+                                new org.chromium.mojo.bindings.MessageHeader(
+                                        org.chromium.mojo.bindings.MessageHeader.TEMPORARY_DEFAULT_INTERFACE_ID,
+                                        METHOD_ORDINAL,
+                                        org.chromium.mojo.bindings.MessageHeader.MESSAGE_EXPECTS_RESPONSE_FLAG,
+                                        0)),
+                        new IFaceMethodResponseParamsForwardToCallback(callback));
 
+            } catch (org.chromium.mojo.bindings.BadMessageException e) {
+                // Should not be possible, because we serialized above.
+                throw new IllegalStateException(e);
+            }
         }
 
 
     }
 
-    static final class Stub extends org.chromium.mojo.bindings.Interface.Stub<IFace> {
+    static final class IFaceStub extends org.chromium.mojo.bindings.Stub<IFace> {
 
-        Stub(org.chromium.mojo.system.Core core, IFace impl) {
-            super(core, impl);
+        IFaceStub(org.chromium.mojo.system.Core core, IFace impl, int interfaceId) {
+            super(core, impl, interfaceId);
         }
 
         @Override
-        public boolean accept(org.chromium.mojo.bindings.Message message) {
+        public boolean accept(org.chromium.mojo.bindings.Message message) throws org.chromium.mojo.bindings.BadMessageException {
             try {
                 org.chromium.mojo.bindings.ServiceMessage messageWithHeader =
                         message.asServiceMessage();
@@ -103,10 +112,12 @@ Method_Response callback) {
                 if (header.hasFlag(org.chromium.mojo.bindings.MessageHeader.MESSAGE_IS_SYNC_FLAG)) {
                     flags = flags | org.chromium.mojo.bindings.MessageHeader.MESSAGE_IS_SYNC_FLAG;
                 }
-                if (!header.validateHeader(flags)) {
-                    return false;
+                if (!header.hasExactFlags(flags)) {
+                    throw new org.chromium.mojo.bindings.InvalidHeaderException(
+                        "expected flags: " + flags + ", but got: " + header.getFlags()
+                    );
                 }
-                switch(header.getType()) {
+                switch(header.getMethodId()) {
 
                     case org.chromium.mojo.bindings.interfacecontrol.InterfaceControlMessagesConstants.RUN_OR_CLOSE_PIPE_MESSAGE_ID:
                         return org.chromium.mojo.bindings.InterfaceControlMessagesHelper.handleRunOrClosePipe(
@@ -116,16 +127,17 @@ Method_Response callback) {
 
 
                     default:
-                        return false;
+                        throw new org.chromium.mojo.bindings.UnknownMethodException(
+                            "unknown method: " + header.getMethodId());
                 }
             } catch (org.chromium.mojo.bindings.DeserializationException e) {
-                System.err.println(e.toString());
-                return false;
+                throw new org.chromium.mojo.bindings.UnmarshalException(e);
             }
         }
 
         @Override
-        public boolean acceptWithResponder(org.chromium.mojo.bindings.Message message, org.chromium.mojo.bindings.MessageReceiver receiver) {
+        public boolean acceptWithResponder(org.chromium.mojo.bindings.Message message, org.chromium.mojo.bindings.MessageReceiver receiver)
+                throws org.chromium.mojo.bindings.BadMessageException {
             try {
                 org.chromium.mojo.bindings.ServiceMessage messageWithHeader =
                         message.asServiceMessage();
@@ -134,10 +146,12 @@ Method_Response callback) {
                 if (header.hasFlag(org.chromium.mojo.bindings.MessageHeader.MESSAGE_IS_SYNC_FLAG)) {
                     flags = flags | org.chromium.mojo.bindings.MessageHeader.MESSAGE_IS_SYNC_FLAG;
                 }
-                if (!header.validateHeader(flags)) {
-                    return false;
+                if (!header.hasExactFlags(flags)) {
+                    throw new org.chromium.mojo.bindings.InvalidHeaderException(
+                        "expected flags: " + flags + ", but got: " + header.getFlags()
+                    );
                 }
-                switch(header.getType()) {
+                switch(header.getMethodId()) {
 
                     case org.chromium.mojo.bindings.interfacecontrol.InterfaceControlMessagesConstants.RUN_MESSAGE_ID:
                         return org.chromium.mojo.bindings.InterfaceControlMessagesHelper.handleRun(
@@ -160,11 +174,11 @@ Method_Response callback) {
 
 
                     default:
-                        return false;
+                        throw new org.chromium.mojo.bindings.UnknownMethodException(
+                            "unknown method: " + header.getMethodId());
                 }
             } catch (org.chromium.mojo.bindings.DeserializationException e) {
-                System.err.println(e.toString());
-                return false;
+                throw new org.chromium.mojo.bindings.UnmarshalException(e);
             }
         }
     }
@@ -294,8 +308,7 @@ Method_Response callback) {
         }
     }
 
-    static class IFaceMethodResponseParamsForwardToCallback extends org.chromium.mojo.bindings.SideEffectFreeCloseable
-            implements org.chromium.mojo.bindings.MessageReceiver {
+    static class IFaceMethodResponseParamsForwardToCallback implements org.chromium.mojo.bindings.MessageReceiver {
         private final IFace.Method_Response mCallback;
 
         IFaceMethodResponseParamsForwardToCallback(IFace.Method_Response callback) {
@@ -303,13 +316,15 @@ Method_Response callback) {
         }
 
         @Override
-        public boolean accept(org.chromium.mojo.bindings.Message message) {
+        public boolean accept(org.chromium.mojo.bindings.Message message) throws org.chromium.mojo.bindings.BadMessageException {
             try {
                 org.chromium.mojo.bindings.ServiceMessage messageWithHeader =
                         message.asServiceMessage();
                 org.chromium.mojo.bindings.MessageHeader header = messageWithHeader.getHeader();
-                if (!header.validateHeader(METHOD_ORDINAL,
-                                           org.chromium.mojo.bindings.MessageHeader.MESSAGE_IS_RESPONSE_FLAG)) {
+                if (header.getMethodId() != METHOD_ORDINAL) {
+                    return false;
+                }
+                if (!header.hasExactFlags(org.chromium.mojo.bindings.MessageHeader.MESSAGE_IS_RESPONSE_FLAG)) {
                     return false;
                 }
 
@@ -318,9 +333,12 @@ Method_Response callback) {
                 mCallback.call(response.result);
                 return true;
             } catch (org.chromium.mojo.bindings.DeserializationException e) {
-                return false;
+                throw new org.chromium.mojo.bindings.UnmarshalException(e);
             }
         }
+
+        @Override
+        public void close() {}
     }
 
     static class IFaceMethodResponseParamsProxyToResponder implements IFace.Method_Response {
@@ -344,14 +362,20 @@ Method_Response callback) {
 
             _response.result = result;
 
-            org.chromium.mojo.bindings.ServiceMessage _message =
-                    _response.serializeWithHeader(
-                            mCore,
-                            new org.chromium.mojo.bindings.MessageHeader(
-                                    METHOD_ORDINAL,
-                                    org.chromium.mojo.bindings.MessageHeader.MESSAGE_IS_RESPONSE_FLAG,
-                                    mRequestId));
-            mMessageReceiver.accept(_message);
+            try {
+                org.chromium.mojo.bindings.ServiceMessage _message =
+                        _response.serializeWithHeader(
+                                mCore,
+                                new org.chromium.mojo.bindings.MessageHeader(
+                                        org.chromium.mojo.bindings.MessageHeader.TEMPORARY_DEFAULT_INTERFACE_ID,
+                                        METHOD_ORDINAL,
+                                        org.chromium.mojo.bindings.MessageHeader.MESSAGE_IS_RESPONSE_FLAG,
+                                        mRequestId));
+                mMessageReceiver.accept(_message);
+            } catch (org.chromium.mojo.bindings.BadMessageException e) {
+                // Should not be possible, because we serialized above.
+                throw new IllegalStateException(e);
+            }
         }
     }
 

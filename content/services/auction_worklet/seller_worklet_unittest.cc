@@ -6048,7 +6048,7 @@ TEST_F(SellerWorkletTest, BasicDevToolsDebug) {
   TestDevToolsAgentClient::Event breakpoint_hit1 =
       debug1.WaitForMethodNotification("Debugger.paused");
 
-  base::Value::List* hit_breakpoints =
+  base::ListValue* hit_breakpoints =
       breakpoint_hit1.value.GetDict().FindDict("params")->FindList(
           "hitBreakpoints");
   ASSERT_TRUE(hit_breakpoints);
@@ -6235,7 +6235,7 @@ TEST_F(SellerWorkletTwoThreadsTest, BasicDevToolsDebug) {
   TestDevToolsAgentClient::Event breakpoint_hit1 =
       debug1.WaitForMethodNotification("Debugger.paused");
 
-  base::Value::List* hit_breakpoints0 =
+  base::ListValue* hit_breakpoints0 =
       breakpoint_hit0.value.GetDict().FindDict("params")->FindList(
           "hitBreakpoints");
   ASSERT_TRUE(hit_breakpoints0);
@@ -6250,7 +6250,7 @@ TEST_F(SellerWorkletTwoThreadsTest, BasicDevToolsDebug) {
                                    .GetDict()
                                    .FindString("callFrameId");
 
-  base::Value::List* hit_breakpoints1 =
+  base::ListValue* hit_breakpoints1 =
       breakpoint_hit1.value.GetDict().FindDict("params")->FindList(
           "hitBreakpoints");
   ASSERT_TRUE(hit_breakpoints1);

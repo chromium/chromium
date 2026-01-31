@@ -5,13 +5,13 @@
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui.h"
 
 #include "base/uuid.h"
-#include "chrome/browser/contextual_tasks/contextual_tasks_context_controller.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui_service.h"
-#include "chrome/browser/contextual_tasks/mock_contextual_tasks_context_controller.h"
 #include "chrome/browser/ui/browser_window/test/mock_browser_window_interface.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/contextual_tasks/public/contextual_task.h"
+#include "components/contextual_tasks/public/contextual_tasks_service.h"
+#include "components/contextual_tasks/public/mock_contextual_tasks_service.h"
 #include "components/sessions/content/session_tab_helper.h"
 #include "content/public/test/mock_navigation_handle.h"
 #include "content/public/test/test_renderer_host.h"
@@ -52,24 +52,44 @@ class MockTaskInfoDelegate : public TaskInfoDelegate {
 
   void SetThreadId(std::optional<std::string> id) override { thread_id_ = id; }
 
+  void SetThreadTurnId(std::optional<std::string> id) override {
+    turn_id_ = id;
+  }
+
+  const std::optional<std::string>& GetThreadTurnId() { return turn_id_; }
+
   const std::optional<std::string>& GetThreadTitle() override { return title_; }
 
   void SetThreadTitle(std::optional<std::string> title) override {
     title_ = title;
   }
 
-  bool IsShownInTab() override { return false; }
+  bool IsShownInTab() override { return is_shown_in_tab_; }
+
+  void SetIsShownInTab(bool is_shown_in_tab) {
+    is_shown_in_tab_ = is_shown_in_tab;
+  }
 
   BrowserWindowInterface* GetBrowser() override {
     return &mock_browser_window_interface_;
   }
 
+  void SetIsAiPage(bool is_ai_page) override {}
+
   content::WebContents* GetWebUIWebContents() override { return nullptr; }
+
+  MOCK_METHOD(void, OnZeroStateChange, (bool is_zero_state), (override));
+
+  MOCK_METHOD(void, PrepareForTaskChange, (), (override));
+
+  MOCK_METHOD(void, OnTaskChanged, (), (override));
 
  private:
   std::optional<base::Uuid> task_id_;
   std::optional<std::string> thread_id_;
+  std::optional<std::string> turn_id_;
   std::optional<std::string> title_;
+  bool is_shown_in_tab_ = false;
   MockBrowserWindowInterface mock_browser_window_interface_;
 };
 
@@ -86,16 +106,22 @@ class MockContextualTasksUiService : public ContextualTasksUiService {
  public:
   MockContextualTasksUiService(
       Profile* profile,
-      ContextualTasksContextController* context_controller)
-      : ContextualTasksUiService(profile, context_controller, nullptr) {}
+      contextual_tasks::ContextualTasksService* contextual_tasks_service)
+      : ContextualTasksUiService(profile,
+                                 contextual_tasks_service,
+                                 nullptr,
+                                 nullptr) {}
   ~MockContextualTasksUiService() override = default;
 
   MOCK_METHOD(void,
-              OnTaskChangedInPanel,
+              OnTaskChanged,
               (BrowserWindowInterface * browser_window_interface,
                content::WebContents* web_contents,
-               const base::Uuid& task_id),
+               const base::Uuid& task_id,
+               bool is_shown_in_tab),
               (override));
+  MOCK_METHOD(GURL, GetDefaultAiPageUrl, (), (override));
+  MOCK_METHOD(bool, IsAiUrl, (const GURL& url), (override));
 };
 
 }  // namespace
@@ -104,11 +130,12 @@ class ContextualTasksUiTest : public ChromeRenderViewHostTestHarness {
  public:
   void SetUp() override {
     ChromeRenderViewHostTestHarness::SetUp();
-    context_controller_ = std::make_unique<
-        testing::NiceMock<MockContextualTasksContextController>>();
+    contextual_tasks_service_ =
+        std::make_unique<testing::NiceMock<MockContextualTasksService>>();
     service_for_nav_ =
         std::make_unique<testing::NiceMock<MockContextualTasksUiService>>(
-            profile_.get(), context_controller_.get());
+            profile_.get(), contextual_tasks_service_.get());
+    ON_CALL(*service_for_nav_, IsAiUrl(_)).WillByDefault(Return(true));
 
     profile_ = std::make_unique<TestingProfile>();
     embedded_web_contents_ = content::WebContentsTester::CreateTestWebContents(
@@ -119,7 +146,7 @@ class ContextualTasksUiTest : public ChromeRenderViewHostTestHarness {
     embedded_web_contents_ = nullptr;
     profile_ = nullptr;
     service_for_nav_ = nullptr;
-    context_controller_ = nullptr;
+    contextual_tasks_service_ = nullptr;
     ChromeRenderViewHostTestHarness::TearDown();
   }
 
@@ -143,10 +170,10 @@ class ContextualTasksUiTest : public ChromeRenderViewHostTestHarness {
   std::unique_ptr<TestingProfile> profile_;
 
   std::unique_ptr<MockContextualTasksUiService> service_for_nav_;
-  std::unique_ptr<MockContextualTasksContextController> context_controller_;
+  std::unique_ptr<MockContextualTasksService> contextual_tasks_service_;
 };
 
-TEST_F(ContextualTasksUiTest, ContextControllerUpdatedOnUrlChange) {
+TEST_F(ContextualTasksUiTest, ContextualTasksServiceUpdatedOnUrlChange) {
   MockTaskInfoDelegate delegate;
   std::optional<base::Uuid> task_id = base::Uuid::ParseCaseInsensitive(kUuid);
   std::optional<std::string> thread_id = "5678";
@@ -156,18 +183,20 @@ TEST_F(ContextualTasksUiTest, ContextControllerUpdatedOnUrlChange) {
   SetupMockDelegate(&delegate, task_id, thread_id, title);
   auto observer = std::make_unique<ContextualTasksUI::FrameNavObserver>(
       embedded_web_contents_.get(), service_for_nav_.get(),
-      context_controller_.get(), &delegate);
+      contextual_tasks_service_.get(), &delegate);
 
   GURL updated_url(kAiPageUrl);
+  updated_url = net::AppendQueryParameter(updated_url, "q", "test");
   updated_url = net::AppendQueryParameter(updated_url, "mstk", turn_id.value());
   updated_url =
       net::AppendQueryParameter(updated_url, "mtid", thread_id.value());
 
-  EXPECT_CALL(*context_controller_,
-              UpdateThreadForTask(task_id.value(), _, thread_id.value(),
-                                  Optional(turn_id), Optional(title)))
+  EXPECT_CALL(
+      *contextual_tasks_service_,
+      UpdateThreadForTask(task_id.value(), _, thread_id.value(),
+                          Optional(turn_id), Optional(std::string("test"))))
       .Times(1);
-  EXPECT_CALL(*service_for_nav_, OnTaskChangedInPanel(_, _, _)).Times(0);
+  EXPECT_CALL(*service_for_nav_, OnTaskChanged(_, _, _, _)).Times(0);
 
   std::unique_ptr<content::MockNavigationHandle> nav_handle =
       CreateMockNavigationHandle(updated_url);
@@ -178,7 +207,7 @@ TEST_F(ContextualTasksUiTest, ContextControllerUpdatedOnUrlChange) {
 }
 
 TEST_F(ContextualTasksUiTest,
-       ContextControllerUpdatedOnUrlChange_ThreadChange) {
+       ContextualTasksServiceUpdatedOnUrlChange_ThreadChange) {
   MockTaskInfoDelegate delegate;
   std::optional<base::Uuid> task_id = base::Uuid::ParseCaseInsensitive(kUuid);
   base::Uuid task_id2 =
@@ -191,19 +220,21 @@ TEST_F(ContextualTasksUiTest,
   SetupMockDelegate(&delegate, task_id, thread_id, title);
   auto observer = std::make_unique<ContextualTasksUI::FrameNavObserver>(
       embedded_web_contents_.get(), service_for_nav_.get(),
-      context_controller_.get(), &delegate);
+      contextual_tasks_service_.get(), &delegate);
 
   GURL updated_url(kAiPageUrl);
+  updated_url = net::AppendQueryParameter(updated_url, "q", "test");
   updated_url = net::AppendQueryParameter(updated_url, "mstk", "abcd");
   updated_url = net::AppendQueryParameter(updated_url, "mtid", thread_id2);
 
-  EXPECT_CALL(*context_controller_,
+  EXPECT_CALL(*contextual_tasks_service_,
               UpdateThreadForTask(task_id2, _, thread_id2, _, _))
       .Times(1);
-  EXPECT_CALL(*service_for_nav_, OnTaskChangedInPanel(_, _, _)).Times(1);
+  EXPECT_CALL(delegate, PrepareForTaskChange()).Times(1);
+  EXPECT_CALL(*service_for_nav_, OnTaskChanged(_, _, _, false)).Times(1);
 
   ContextualTask task(task_id2);
-  ON_CALL(*context_controller_, CreateTaskFromUrl(_))
+  ON_CALL(*contextual_tasks_service_, CreateTaskFromUrl(_))
       .WillByDefault(Return(task));
 
   std::unique_ptr<content::MockNavigationHandle> nav_handle =
@@ -215,7 +246,7 @@ TEST_F(ContextualTasksUiTest,
 }
 
 TEST_F(ContextualTasksUiTest,
-       ContextControllerNotUpdatedOnUrlChange_NoThreadId) {
+       ContextualTasksServiceNotUpdatedOnUrlChange_NoThreadId) {
   MockTaskInfoDelegate delegate;
   std::optional<base::Uuid> task_id = base::Uuid::ParseCaseInsensitive(kUuid);
   std::optional<std::string> turn_id = "1234";
@@ -225,16 +256,17 @@ TEST_F(ContextualTasksUiTest,
 
   auto observer = std::make_unique<ContextualTasksUI::FrameNavObserver>(
       embedded_web_contents_.get(), service_for_nav_.get(),
-      context_controller_.get(), &delegate);
+      contextual_tasks_service_.get(), &delegate);
 
   GURL updated_url(kAiPageUrl);
+  updated_url = net::AppendQueryParameter(updated_url, "q", "test");
   updated_url = net::AppendQueryParameter(updated_url, "mstk", turn_id.value());
 
   // UpdateThreadForTask() is not called due to missing thread id.
-  EXPECT_CALL(*context_controller_, UpdateThreadForTask(_, _, _, _, _))
+  EXPECT_CALL(*contextual_tasks_service_, UpdateThreadForTask(_, _, _, _, _))
       .Times(0);
   // No task change events should occur.
-  EXPECT_CALL(*service_for_nav_, OnTaskChangedInPanel(_, _, _)).Times(0);
+  EXPECT_CALL(*service_for_nav_, OnTaskChanged(_, _, _, _)).Times(0);
 
   std::unique_ptr<content::MockNavigationHandle> nav_handle =
       CreateMockNavigationHandle(updated_url);
@@ -245,7 +277,8 @@ TEST_F(ContextualTasksUiTest,
 }
 
 // The task should still updated without a turn ID.
-TEST_F(ContextualTasksUiTest, ContextControllerUpdatedOnUrlChange_NoTurnId) {
+TEST_F(ContextualTasksUiTest,
+       ContextualTasksServiceUpdatedOnUrlChange_NoTurnId) {
   MockTaskInfoDelegate delegate;
   std::optional<base::Uuid> task_id = base::Uuid::ParseCaseInsensitive(kUuid);
   std::optional<std::string> thread_id = "5678";
@@ -255,17 +288,18 @@ TEST_F(ContextualTasksUiTest, ContextControllerUpdatedOnUrlChange_NoTurnId) {
 
   auto observer = std::make_unique<ContextualTasksUI::FrameNavObserver>(
       embedded_web_contents_.get(), service_for_nav_.get(),
-      context_controller_.get(), &delegate);
+      contextual_tasks_service_.get(), &delegate);
 
   GURL updated_url(kAiPageUrl);
+  updated_url = net::AppendQueryParameter(updated_url, "q", "test");
   updated_url =
       net::AppendQueryParameter(updated_url, "mtid", thread_id.value());
 
-  EXPECT_CALL(*context_controller_,
+  EXPECT_CALL(*contextual_tasks_service_,
               UpdateThreadForTask(task_id.value(), _, thread_id.value(), _,
-                                  Optional(title)))
+                                  Optional(std::string("test"))))
       .Times(1);
-  EXPECT_CALL(*service_for_nav_, OnTaskChangedInPanel(_, _, _)).Times(0);
+  EXPECT_CALL(*service_for_nav_, OnTaskChanged(_, _, _, _)).Times(0);
 
   std::unique_ptr<content::MockNavigationHandle> nav_handle =
       CreateMockNavigationHandle(updated_url);
@@ -287,7 +321,7 @@ TEST_F(ContextualTasksUiTest, TaskCreated_ThreadIdChanged) {
 
   auto observer = std::make_unique<ContextualTasksUI::FrameNavObserver>(
       embedded_web_contents_.get(), service_for_nav_.get(),
-      context_controller_.get(), &delegate);
+      contextual_tasks_service_.get(), &delegate);
 
   GURL url(kAiPageUrl);
   url = net::AppendQueryParameter(url, "q", query);
@@ -297,19 +331,66 @@ TEST_F(ContextualTasksUiTest, TaskCreated_ThreadIdChanged) {
 
   // Ensure a task is created and the info is pushed to the UI.
   ContextualTask task(task_id);
-  ON_CALL(*context_controller_, CreateTaskFromUrl(url))
+  ON_CALL(*contextual_tasks_service_, CreateTaskFromUrl(url))
       .WillByDefault(Return(task));
-  ON_CALL(*context_controller_, GetTaskFromServerId(_, thread_id.value()))
+  ON_CALL(*contextual_tasks_service_, GetTaskFromServerId(_, thread_id.value()))
       .WillByDefault(Return(std::nullopt));
 
-  EXPECT_CALL(*context_controller_, CreateTaskFromUrl(url)).Times(1);
-  EXPECT_CALL(*context_controller_, GetTaskFromServerId(_, thread_id.value()))
+  EXPECT_CALL(*contextual_tasks_service_, CreateTaskFromUrl(url)).Times(1);
+  EXPECT_CALL(*contextual_tasks_service_,
+              GetTaskFromServerId(_, thread_id.value()))
       .Times(1);
   EXPECT_CALL(
-      *context_controller_,
+      *contextual_tasks_service_,
       UpdateThreadForTask(task_id, _, thread_id.value(), _, Optional(query)))
       .Times(1);
-  EXPECT_CALL(*service_for_nav_, OnTaskChangedInPanel(_, _, task_id)).Times(1);
+  EXPECT_CALL(delegate, PrepareForTaskChange()).Times(1);
+  EXPECT_CALL(*service_for_nav_, OnTaskChanged(_, _, task_id, false)).Times(1);
+
+  std::unique_ptr<content::MockNavigationHandle> nav_handle =
+      CreateMockNavigationHandle(url);
+
+  observer->DidFinishNavigation(nav_handle.get());
+
+  observer.reset();
+}
+
+// Ensure that OnTaskChanged is called with is_shown_in_tab = true when the
+// delegate indicates it is shown in a tab.
+TEST_F(ContextualTasksUiTest, TaskCreated_ThreadIdChanged_ShownInTab) {
+  MockTaskInfoDelegate delegate;
+  delegate.SetIsShownInTab(true);
+  base::Uuid task_id = base::Uuid::ParseCaseInsensitive(kUuid);
+  std::optional<std::string> thread_id = "5678";
+  std::string query = "koalas";
+
+  SetupMockDelegate(&delegate, std::nullopt, std::nullopt, std::nullopt);
+
+  auto observer = std::make_unique<ContextualTasksUI::FrameNavObserver>(
+      embedded_web_contents_.get(), service_for_nav_.get(),
+      contextual_tasks_service_.get(), &delegate);
+
+  GURL url(kAiPageUrl);
+  url = net::AppendQueryParameter(url, "q", query);
+  url = net::AppendQueryParameter(url, "mtid", thread_id.value());
+
+  ContextualTask task(task_id);
+  ON_CALL(*contextual_tasks_service_, CreateTaskFromUrl(url))
+      .WillByDefault(Return(task));
+  ON_CALL(*contextual_tasks_service_, GetTaskFromServerId(_, thread_id.value()))
+      .WillByDefault(Return(std::nullopt));
+
+  EXPECT_CALL(*contextual_tasks_service_, CreateTaskFromUrl(url)).Times(1);
+  EXPECT_CALL(*contextual_tasks_service_,
+              GetTaskFromServerId(_, thread_id.value()))
+      .Times(1);
+  EXPECT_CALL(
+      *contextual_tasks_service_,
+      UpdateThreadForTask(task_id, _, thread_id.value(), _, Optional(query)))
+      .Times(1);
+  // Verify is_shown_in_tab is true.
+  EXPECT_CALL(delegate, PrepareForTaskChange()).Times(1);
+  EXPECT_CALL(*service_for_nav_, OnTaskChanged(_, _, task_id, true)).Times(1);
 
   std::unique_ptr<content::MockNavigationHandle> nav_handle =
       CreateMockNavigationHandle(url);
@@ -331,7 +412,7 @@ TEST_F(ContextualTasksUiTest, TaskChanged_ThreadIdChanged_HasExistingTask) {
 
   auto observer = std::make_unique<ContextualTasksUI::FrameNavObserver>(
       embedded_web_contents_.get(), service_for_nav_.get(),
-      context_controller_.get(), &delegate);
+      contextual_tasks_service_.get(), &delegate);
 
   GURL url(kAiPageUrl);
   url = net::AppendQueryParameter(url, "q", "koalas");
@@ -341,15 +422,18 @@ TEST_F(ContextualTasksUiTest, TaskChanged_ThreadIdChanged_HasExistingTask) {
   // being created.
   ContextualTask task(task_id);
   task.SetTitle(title);
-  ON_CALL(*context_controller_, GetTaskFromServerId(_, thread_id))
+  ON_CALL(*contextual_tasks_service_, GetTaskFromServerId(_, thread_id))
       .WillByDefault(Return(task));
 
-  EXPECT_CALL(*context_controller_, CreateTaskFromUrl(_)).Times(0);
-  EXPECT_CALL(*context_controller_, GetTaskFromServerId(_, thread_id)).Times(1);
-  EXPECT_CALL(*context_controller_,
-              UpdateThreadForTask(task_id, _, thread_id, _, Optional(title)))
+  EXPECT_CALL(*contextual_tasks_service_, CreateTaskFromUrl(_)).Times(0);
+  EXPECT_CALL(*contextual_tasks_service_, GetTaskFromServerId(_, thread_id))
       .Times(1);
-  EXPECT_CALL(*service_for_nav_, OnTaskChangedInPanel(_, _, _)).Times(0);
+  EXPECT_CALL(*contextual_tasks_service_,
+              UpdateThreadForTask(task_id, _, thread_id, _,
+                                  Optional(std::string("koalas"))))
+      .Times(1);
+  EXPECT_CALL(delegate, PrepareForTaskChange()).Times(1);
+  EXPECT_CALL(*service_for_nav_, OnTaskChanged(_, _, _, _)).Times(1);
 
   std::unique_ptr<content::MockNavigationHandle> nav_handle =
       CreateMockNavigationHandle(url);
@@ -359,31 +443,65 @@ TEST_F(ContextualTasksUiTest, TaskChanged_ThreadIdChanged_HasExistingTask) {
   observer.reset();
 }
 
-// The task ID should not change until there's a new thread ID available in the
-// URL.
-TEST_F(ContextualTasksUiTest, TaskUnchangedWithNoThreadId) {
+// A new task should be created when navigating to the zero state.
+TEST_F(ContextualTasksUiTest, TaskCreated_ZeroState) {
   MockTaskInfoDelegate delegate;
 
-  base::Uuid task_id = base::Uuid::ParseCaseInsensitive(kUuid);
-  std::string thread_id = "5678";
-  SetupMockDelegate(&delegate, task_id, thread_id, std::nullopt);
+  SetupMockDelegate(&delegate, std::nullopt, std::nullopt, std::nullopt);
 
   auto observer = std::make_unique<ContextualTasksUI::FrameNavObserver>(
       embedded_web_contents_.get(), service_for_nav_.get(),
-      context_controller_.get(), &delegate);
+      contextual_tasks_service_.get(), &delegate);
 
   GURL url(kAiPageUrl);
 
-  // There is no query value and no other information, the task and thread being
-  // tracked should remain unchanged.
-  EXPECT_CALL(*context_controller_, CreateTaskFromUrl(_)).Times(0);
-  EXPECT_CALL(*service_for_nav_, OnTaskChangedInPanel(_, _, _)).Times(0);
+  base::Uuid task_id = base::Uuid::ParseCaseInsensitive(kUuid);
+  ContextualTask task(task_id);
+  // OnTaskChanged should be called with the created UUID.
+  EXPECT_CALL(delegate, PrepareForTaskChange()).Times(1);
+  EXPECT_CALL(*contextual_tasks_service_, CreateTask()).WillOnce(Return(task));
+  EXPECT_CALL(*service_for_nav_, OnTaskChanged(_, _, task_id, _)).Times(1);
 
   std::unique_ptr<content::MockNavigationHandle> nav_handle =
       CreateMockNavigationHandle(url);
 
   observer->DidFinishNavigation(nav_handle.get());
 
+  EXPECT_EQ(delegate.GetTaskId(), task_id);
+
+  observer.reset();
+}
+
+TEST_F(ContextualTasksUiTest, ThreadUpdatedOnSameDocumentNav) {
+  MockTaskInfoDelegate delegate;
+  base::Uuid task_id = base::Uuid::ParseCaseInsensitive(kUuid);
+  std::optional<std::string> thread_id = "5678";
+  std::string query = "koalas";
+
+  SetupMockDelegate(&delegate, task_id, "1234", std::nullopt);
+
+  auto observer = std::make_unique<ContextualTasksUI::FrameNavObserver>(
+      embedded_web_contents_.get(), service_for_nav_.get(),
+      contextual_tasks_service_.get(), &delegate);
+
+  GURL url(kAiPageUrl);
+  url = net::AppendQueryParameter(url, "q", query);
+  url = net::AppendQueryParameter(url, "mtid", thread_id.value());
+
+  EXPECT_CALL(
+      *contextual_tasks_service_,
+      UpdateThreadForTask(task_id, _, thread_id.value(), _, Optional(query)))
+      .Times(1);
+
+  ContextualTask task(task_id);
+  ON_CALL(*contextual_tasks_service_, CreateTaskFromUrl(url))
+      .WillByDefault(Return(task));
+
+  std::unique_ptr<content::MockNavigationHandle> nav_handle =
+      CreateMockNavigationHandle(url);
+  nav_handle->set_is_same_document(true);
+
+  observer->DidFinishNavigation(nav_handle.get());
   observer.reset();
 }
 
@@ -397,16 +515,17 @@ TEST_F(ContextualTasksUiTest, PendingTaskNoNewTaskCreatedOnNav) {
 
   auto observer = std::make_unique<ContextualTasksUI::FrameNavObserver>(
       embedded_web_contents_.get(), service_for_nav_.get(),
-      context_controller_.get(), &delegate);
+      contextual_tasks_service_.get(), &delegate);
 
   GURL url(kAiPageUrl);
+  url = net::AppendQueryParameter(url, "q", "test");
   url = net::AppendQueryParameter(url, "mtid", "5678");
   url = net::AppendQueryParameter(url, "mstk", "1234");
 
   // There is no query value and no other information, the task and thread being
   // tracked should remain unchanged.
-  EXPECT_CALL(*context_controller_, CreateTaskFromUrl(_)).Times(0);
-  EXPECT_CALL(*service_for_nav_, OnTaskChangedInPanel(_, _, _)).Times(0);
+  EXPECT_CALL(*contextual_tasks_service_, CreateTaskFromUrl(_)).Times(0);
+  EXPECT_CALL(*service_for_nav_, OnTaskChanged(_, _, _, _)).Times(0);
 
   std::unique_ptr<content::MockNavigationHandle> nav_handle =
       CreateMockNavigationHandle(url);
@@ -416,6 +535,214 @@ TEST_F(ContextualTasksUiTest, PendingTaskNoNewTaskCreatedOnNav) {
   EXPECT_EQ(delegate.GetTaskId(), task_id);
 
   observer.reset();
+}
+
+TEST_F(ContextualTasksUiTest, TaskDetailsUpdated) {
+  MockTaskInfoDelegate delegate;
+
+  SetupMockDelegate(&delegate, std::nullopt, std::nullopt, std::nullopt);
+
+  auto observer = std::make_unique<ContextualTasksUI::FrameNavObserver>(
+      embedded_web_contents_.get(), service_for_nav_.get(),
+      contextual_tasks_service_.get(), &delegate);
+
+  GURL url(kAiPageUrl);
+  const std::string thread_id = "5678";
+  url = net::AppendQueryParameter(url, "q", "test");
+  url = net::AppendQueryParameter(url, "mtid", thread_id);
+  const std::string turn_id = "1234";
+  url = net::AppendQueryParameter(url, "mstk", turn_id);
+
+  // Expect a task to be created
+  base::Uuid task_id = base::Uuid::ParseCaseInsensitive(kUuid);
+  ContextualTask task(task_id);
+  ON_CALL(*contextual_tasks_service_, CreateTaskFromUrl(url))
+      .WillByDefault(Return(task));
+
+  EXPECT_CALL(*contextual_tasks_service_, CreateTaskFromUrl(url)).Times(1);
+
+  std::unique_ptr<content::MockNavigationHandle> nav_handle =
+      CreateMockNavigationHandle(url);
+
+  observer->DidFinishNavigation(nav_handle.get());
+
+  EXPECT_EQ(delegate.GetTaskId(), task_id);
+  EXPECT_EQ(delegate.GetThreadId(), thread_id);
+  EXPECT_EQ(delegate.GetThreadTurnId(), turn_id);
+
+  // Fake an updated turn
+  GURL url2(kAiPageUrl);
+  url2 = net::AppendQueryParameter(url2, "q", "test");
+  url2 = net::AppendQueryParameter(url2, "mtid", thread_id);
+  const std::string turn_id2 = "2222";
+  url2 = net::AppendQueryParameter(url2, "mstk", turn_id2);
+
+  std::unique_ptr<content::MockNavigationHandle> nav_handle2 =
+      CreateMockNavigationHandle(url2);
+
+  observer->DidFinishNavigation(nav_handle2.get());
+
+  EXPECT_EQ(delegate.GetTaskId(), task_id);
+  EXPECT_EQ(delegate.GetThreadId(), thread_id);
+  EXPECT_EQ(delegate.GetThreadTurnId(), turn_id2);
+  observer.reset();
+}
+
+TEST_F(ContextualTasksUiTest, DidFinishNavigation_ZeroState) {
+  struct TestCase {
+    GURL url;
+    bool expected_is_zero_state;
+  } test_cases[] = {
+      {GURL("https://google.com"), false},
+      {GURL("https://google.com?q=test"), false},
+      {GURL("https://www.google.com/search?udm=50"), true},
+      {GURL("https://www.google.com/search?udm=50&mstk=test"), false},
+      {GURL("https://www.google.com/search?udm=50&q="), true},
+      {GURL("https://www.google.com/search?udm=50&q=&mstk=test"), false},
+      {GURL("https://www.google.com/search?udm=50&q=&mstk="), true},
+      {GURL("https://www.google.com/search?udm=50&q=test"), false},
+      {GURL("https://www.google.com/search?udm=50&q=test&mstk="), false},
+      {GURL("https://www.google.com/search?udm=50&q=&mstk=&vsrid=test"), false},
+      {GURL("https://www.google.com/search?udm=50&q=&mstk=&cinpts=test"),
+       false},
+      {GURL("https://google.com/search"), false},
+      {GURL("https://www.google.com/search?q=test&udm=50"), false},
+      {GURL("https://www.google.com/search?udm=50&other=param"),
+       true},  // Other noise/params
+      {GURL("https://www.google.com/search?udm=50&q=%20"),
+       false},  // Whitespace
+  };
+
+  ON_CALL(*service_for_nav_, IsAiUrl(GURL("https://google.com")))
+      .WillByDefault(Return(false));
+  ON_CALL(*service_for_nav_, IsAiUrl(GURL("https://google.com?q=test")))
+      .WillByDefault(Return(false));
+  ON_CALL(*service_for_nav_, IsAiUrl(GURL("https://google.com/search")))
+      .WillByDefault(Return(false));
+
+  for (const auto& test_case : test_cases) {
+    testing::NiceMock<MockTaskInfoDelegate> delegate;
+    SetupMockDelegate(&delegate, std::nullopt, std::nullopt, std::nullopt);
+
+    auto observer = std::make_unique<ContextualTasksUI::FrameNavObserver>(
+        embedded_web_contents_.get(), service_for_nav_.get(),
+        contextual_tasks_service_.get(), &delegate);
+
+    EXPECT_EQ(
+        ContextualTasksUI::IsZeroState(test_case.url, service_for_nav_.get()),
+        test_case.expected_is_zero_state)
+        << "Expected " << test_case.url.spec() << " to "
+        << (test_case.expected_is_zero_state ? "be" : "not be")
+        << " a zero state";
+    EXPECT_CALL(delegate, OnZeroStateChange(test_case.expected_is_zero_state))
+        .Times(1);
+
+    if (test_case.expected_is_zero_state) {
+      base::Uuid task_id = base::Uuid::ParseCaseInsensitive(kUuid);
+      ContextualTask task(task_id);
+      EXPECT_CALL(*contextual_tasks_service_, CreateTask())
+          .WillOnce(Return(task));
+      EXPECT_CALL(delegate, PrepareForTaskChange()).Times(1);
+    }
+
+    std::unique_ptr<content::MockNavigationHandle> nav_handle =
+        CreateMockNavigationHandle(test_case.url);
+
+    observer->DidFinishNavigation(nav_handle.get());
+  }
+}
+
+// Checks that does not create new task when fully refreshing page.
+TEST_F(ContextualTasksUiTest, DidFinishNavigation_FiresOnReload) {
+  testing::NiceMock<MockTaskInfoDelegate> delegate;
+  SetupMockDelegate(&delegate, std::nullopt, std::nullopt, std::nullopt);
+
+  auto observer = std::make_unique<ContextualTasksUI::FrameNavObserver>(
+      embedded_web_contents_.get(), service_for_nav_.get(),
+      contextual_tasks_service_.get(), &delegate);
+
+  GURL zero_state_url("https://www.google.com/search?udm=50");
+
+  base::Uuid task_id = base::Uuid::ParseCaseInsensitive(kUuid);
+  ContextualTask task(task_id);
+
+  EXPECT_CALL(delegate, OnZeroStateChange(true)).Times(2);
+  EXPECT_CALL(delegate, PrepareForTaskChange()).Times(1);
+  EXPECT_CALL(*contextual_tasks_service_, CreateTask())
+      .Times(1)
+      .WillRepeatedly(Return(task));
+
+  // First load.
+  auto handle1 = CreateMockNavigationHandle(zero_state_url);
+  handle1->set_has_committed(true);
+  observer->DidFinishNavigation(handle1.get());
+
+  // Full refresh, with same URL.
+  auto handle2 = CreateMockNavigationHandle(zero_state_url);
+  handle2->set_has_committed(true);
+  handle2->set_reload_type(content::ReloadType::NORMAL);
+  observer->DidFinishNavigation(handle2.get());
+}
+
+/* Ensures didFinishNavigation ignores network errors and returns early
+ * when !hasCommitted.
+ */
+TEST_F(ContextualTasksUiTest, DidFinishNavigation_IgnoredCases) {
+  testing::NiceMock<MockTaskInfoDelegate> delegate;
+  SetupMockDelegate(&delegate, std::nullopt, std::nullopt, std::nullopt);
+  auto observer = std::make_unique<ContextualTasksUI::FrameNavObserver>(
+      embedded_web_contents_.get(), service_for_nav_.get(),
+      contextual_tasks_service_.get(), &delegate);
+
+  EXPECT_CALL(delegate, OnZeroStateChange(_)).Times(0);
+
+  auto failed_handle = std::make_unique<content::MockNavigationHandle>();
+  failed_handle->set_url(GURL("https://www.google.com/search?udm=50"));
+
+  failed_handle->set_is_in_primary_main_frame(true);
+
+  // Returns when !hasCommitted.
+  failed_handle->set_has_committed(false);
+  observer->DidFinishNavigation(failed_handle.get());
+}
+
+/* Goes from zero state to regular state, then refresh, and
+ * then back to zero, then regular.
+ */
+TEST_F(ContextualTasksUiTest, Transition_QueryToZeroToQuery) {
+  testing::NiceMock<MockTaskInfoDelegate> delegate;
+  SetupMockDelegate(&delegate, std::nullopt, std::nullopt, std::nullopt);
+  auto observer = std::make_unique<ContextualTasksUI::FrameNavObserver>(
+      embedded_web_contents_.get(), service_for_nav_.get(),
+      contextual_tasks_service_.get(), &delegate);
+
+  GURL zero_state_url("https://www.google.com/search?udm=50");
+  GURL query_url("https://www.google.com/search?udm=50&q=cats");
+
+  // Mock functions
+  base::Uuid task_id = base::Uuid::ParseCaseInsensitive(kUuid);
+  ContextualTask task(task_id);
+  ON_CALL(*contextual_tasks_service_, CreateTask()).WillByDefault(Return(task));
+  ON_CALL(*contextual_tasks_service_, CreateTaskFromUrl(_))
+      .WillByDefault(Return(task));
+
+  // Exit zero state; enter normal state.
+  EXPECT_CALL(delegate, OnZeroStateChange(false));
+  auto handle_query = CreateMockNavigationHandle(query_url);
+  handle_query->set_has_committed(true);
+  observer->DidFinishNavigation(handle_query.get());
+
+  // Simulate full refresh. Enter zero state again.
+  EXPECT_CALL(delegate, OnZeroStateChange(true));
+  auto handle_zero = CreateMockNavigationHandle(zero_state_url);
+  handle_zero->set_has_committed(true);
+  observer->DidFinishNavigation(handle_zero.get());
+
+  // Exit zero state; enter normal state again.
+  EXPECT_CALL(delegate, OnZeroStateChange(false));
+  auto handle_query2 = CreateMockNavigationHandle(query_url);
+  handle_query2->set_has_committed(true);
+  observer->DidFinishNavigation(handle_query2.get());
 }
 
 }  // namespace contextual_tasks

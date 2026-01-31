@@ -1,0 +1,33 @@
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module browser_controls_api.mojom;
+
+// The event flags for the click that might affect disposition of a
+// button's behavior.
+enum ClickDispositionFlag {
+  kUnspecified = 0,
+  kMiddleMouseButton = 1,
+  kAltKeyDown = 2,
+  kMetaKeyDown = 3,
+};
+
+// The context menu types that can be opened with BrowserControlsService's
+// ShowContextMenu.
+enum ContextMenuType {
+  kUnspecified = 0,
+  kReload = 1,
+};
+
+enum DevToolsState {
+  kUnspecified = 0,
+  kConnected = 1,
+  kDisconnected = 2,
+};
+
+enum NavigationState {
+  kUnspecified = 0,
+  kLoading = 1,
+  kNotLoading = 2,
+};

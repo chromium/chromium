@@ -20,6 +20,7 @@
 #include "base/trace_event/memory_allocator_dump_guid.h"
 #include "components/services/storage/dom_storage/async_dom_storage_database.h"
 #include "components/services/storage/dom_storage/dom_storage_database.h"
+#include "components/services/storage/dom_storage/test_support/dom_storage_database_testing.h"
 #include "storage/common/database/db_status.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -30,6 +31,13 @@ namespace storage {
 
 namespace {
 
+constexpr const char kFakeNamespaceId[] =
+    "ce8c7dc5_73b4_4320_a506_ce1f4fd3356f";
+constexpr const char kClonedFakeNamespaceId[] =
+    "5fe0e896_c6d8_4d2b_8b3c_d26f47832125";
+constexpr const char kOtherFakeNamespaceId[] =
+    "36356e0b_1627_4492_a474_db76a8996bed";
+
 std::vector<uint8_t> StdStringToUint8Vector(const std::string& s) {
   return std::vector<uint8_t>(s.begin(), s.end());
 }
@@ -38,8 +46,8 @@ MATCHER(OKStatus, "Equality matcher for type OK DbStatus") {
   return arg.ok();
 }
 
-base::span<const uint8_t> MakeBytes(std::string_view str) {
-  return base::as_byte_span(str);
+std::vector<uint8_t> MakeBytes(std::string_view str) {
+  return std::vector<uint8_t>(str.begin(), str.end());
 }
 
 mojo::PendingRemote<blink::mojom::StorageAreaObserver> MakeStubObserver() {
@@ -53,9 +61,8 @@ class MockListener : public SessionStorageDataMap::Listener {
   MockListener() = default;
   ~MockListener() override = default;
   MOCK_METHOD2(OnDataMapCreation,
-               void(const std::vector<uint8_t>& map_id,
-                    SessionStorageDataMap* map));
-  MOCK_METHOD1(OnDataMapDestruction, void(const std::vector<uint8_t>& map_id));
+               void(int64_t map_id, SessionStorageDataMap* map));
+  MOCK_METHOD1(OnDataMapDestruction, void(int64_t map_id));
   MOCK_METHOD1(OnCommitResult, void(DbStatus status));
 };
 
@@ -75,11 +82,11 @@ blink::mojom::StorageArea::GetAllCallback MakeGetAllCallback(
 class SessionStorageDataMapTest : public testing::Test {
  public:
   SessionStorageDataMapTest() {
-    // Create an in-memory LevelDB.
+    // Create an in-memory database.
     base::RunLoop loop;
     database_ = AsyncDomStorageDatabase::Open(
         StorageType::kSessionStorage,
-        /*directory=*/base::FilePath(), "SessionStorageDataMapTest",
+        /*database_path=*/base::FilePath(),
         /*memory_dump_id=*/std::nullopt,
         base::BindLambdaForTesting([&](DbStatus status) {
           ASSERT_TRUE(status.ok());
@@ -87,63 +94,69 @@ class SessionStorageDataMapTest : public testing::Test {
         }));
     loop.Run();
 
-    database_->database().PostTaskWithThisObject(
-        base::BindOnce([](DomStorageDatabase* dom_storage_database) {
-          DomStorageDatabaseLevelDB* db = &dom_storage_database->GetLevelDB();
-          // Should show up in first map.
-          DbStatus status =
-              db->Put(MakeBytes("map-1-key1"), MakeBytes("data1"));
-          ASSERT_TRUE(status.ok());
+    // Store a key/value pair in the first map.
+    FakeCommitter first_map_committer(database_.get(),
+                                      first_map_locator_->Clone());
+    first_map_committer.PutMapKeyValueSync(kKey1, kValue1);
 
-          // Dummy data to verify we don't delete everything.
-          status = db->Put(MakeBytes("map-3-key1"), MakeBytes("data3"));
-          ASSERT_TRUE(status.ok());
-        }));
+    // Create another map with a key/value pair to verify the test does not
+    // delete everything.
+    FakeCommitter other_map_committer(database_.get(),
+                                      other_map_locator_->Clone());
+    other_map_committer.PutMapKeyValueSync(kKey1, kValue3);
   }
 
   ~SessionStorageDataMapTest() override = default;
 
-  std::map<std::string, std::string> GetDatabaseContents() {
-    std::vector<DomStorageDatabase::KeyValuePair> entries;
-    base::RunLoop loop;
-    database_->database().PostTaskWithThisObject(base::BindLambdaForTesting(
-        [&](DomStorageDatabase* dom_storage_database) {
-          DomStorageDatabaseLevelDB& db = dom_storage_database->GetLevelDB();
-          ASSERT_OK_AND_ASSIGN(entries, db.GetPrefixed({}));
-          loop.Quit();
-        }));
-    loop.Run();
-
-    std::map<std::string, std::string> contents;
-    for (auto& entry : entries) {
-      contents.emplace(std::string(entry.key.begin(), entry.key.end()),
-                       std::string(entry.value.begin(), entry.value.end()));
-    }
-
-    return contents;
+  // Verifies a map in the database contains `expected_entries`.
+  void ExpectMapEquals(const DomStorageDatabase::MapLocator& map_locator,
+                       std::map<DomStorageDatabase::Key,
+                                DomStorageDatabase::Value> expected_entries) {
+    std::map<DomStorageDatabase::Key, DomStorageDatabase::Value> actual_entries;
+    ASSERT_NO_FATAL_FAILURE(
+        ReadMapKeyValuesSync(*database_, map_locator.Clone(), &actual_entries));
+    EXPECT_EQ(actual_entries, expected_entries);
   }
 
  protected:
+  const DomStorageDatabase::Key kKey1 = MakeBytes("key1");
+  const DomStorageDatabase::Value kValue1 = MakeBytes("data1");
+  const DomStorageDatabase::Value kValue3 = MakeBytes("data3");
+
+  const blink::StorageKey kTestStorageKey =
+      blink::StorageKey::CreateFromStringForTesting("http://host1.com:1");
+
+  scoped_refptr<DomStorageDatabase::SharedMapLocator> first_map_locator_ =
+      base::MakeRefCounted<DomStorageDatabase::SharedMapLocator>(
+          DomStorageDatabase::MapLocator(kFakeNamespaceId,
+                                         kTestStorageKey,
+                                         /*map_id=*/1));
+
+  scoped_refptr<DomStorageDatabase::SharedMapLocator> other_map_locator_ =
+      base::MakeRefCounted<DomStorageDatabase::SharedMapLocator>(
+          DomStorageDatabase::MapLocator(kOtherFakeNamespaceId,
+                                         kTestStorageKey,
+                                         /*map_id=*/3));
+
+  scoped_refptr<DomStorageDatabase::SharedMapLocator> cloned_map_locator_ =
+      base::MakeRefCounted<DomStorageDatabase::SharedMapLocator>(
+          DomStorageDatabase::MapLocator(kClonedFakeNamespaceId,
+                                         kTestStorageKey,
+                                         /*map_id=*/2));
+
   base::test::TaskEnvironment task_environment_;
   testing::StrictMock<MockListener> listener_;
-  const blink::StorageKey test_storage_key_ =
-      blink::StorageKey::CreateFromStringForTesting("http://host1.com:1");
   std::unique_ptr<AsyncDomStorageDatabase> database_;
 };
 
 }  // namespace
 
 TEST_F(SessionStorageDataMapTest, BasicEmptyCreation) {
-  EXPECT_CALL(listener_,
-              OnDataMapCreation(StdStringToUint8Vector("1"), testing::_))
-      .Times(1);
+  EXPECT_CALL(listener_, OnDataMapCreation(/*map_id=*/1, testing::_)).Times(1);
 
   scoped_refptr<SessionStorageDataMap> map =
-      SessionStorageDataMap::CreateFromDisk(
-          &listener_,
-          base::MakeRefCounted<SessionStorageMetadata::MapData>(
-              1, test_storage_key_),
-          database_.get());
+      SessionStorageDataMap::CreateFromDisk(&listener_, first_map_locator_,
+                                            database_.get());
 
   std::vector<blink::mojom::KeyValuePtr> data;
   base::RunLoop loop;
@@ -155,29 +168,25 @@ TEST_F(SessionStorageDataMapTest, BasicEmptyCreation) {
   EXPECT_EQ(StdStringToUint8Vector("key1"), data[0]->key);
   EXPECT_EQ(StdStringToUint8Vector("data1"), data[0]->value);
 
-  EXPECT_CALL(listener_, OnDataMapDestruction(StdStringToUint8Vector("1")))
-      .Times(1);
+  EXPECT_CALL(listener_, OnDataMapDestruction(/*map_id=*/1)).Times(1);
 
   // Test data is not cleared on deletion.
   map = nullptr;
 
-  // The database must contain 3 entries:
+  // The database must contain 2 map entries:
   // (1) This map's key/value pair.
   // (2) The other map's key/value pair
-  // (3) The database schema version.
-  EXPECT_EQ(3u, GetDatabaseContents().size());
+  ASSERT_NO_FATAL_FAILURE(
+      ExpectMapEquals(*first_map_locator_, {{kKey1, kValue1}}));
+  ASSERT_NO_FATAL_FAILURE(
+      ExpectMapEquals(*other_map_locator_, {{kKey1, kValue3}}));
 }
 
 TEST_F(SessionStorageDataMapTest, ExplicitlyEmpty) {
-  EXPECT_CALL(listener_,
-              OnDataMapCreation(StdStringToUint8Vector("1"), testing::_))
-      .Times(1);
+  EXPECT_CALL(listener_, OnDataMapCreation(/*map_id=*/1, testing::_)).Times(1);
 
   scoped_refptr<SessionStorageDataMap> map = SessionStorageDataMap::CreateEmpty(
-      &listener_,
-      base::MakeRefCounted<SessionStorageMetadata::MapData>(1,
-                                                            test_storage_key_),
-      database_.get());
+      &listener_, first_map_locator_, database_.get());
 
   std::vector<blink::mojom::KeyValuePtr> data;
   base::RunLoop loop;
@@ -187,43 +196,33 @@ TEST_F(SessionStorageDataMapTest, ExplicitlyEmpty) {
 
   ASSERT_EQ(0u, data.size());
 
-  EXPECT_CALL(listener_, OnDataMapDestruction(StdStringToUint8Vector("1")))
-      .Times(1);
+  EXPECT_CALL(listener_, OnDataMapDestruction(/*map_id=*/1)).Times(1);
 
   // Test data is not cleared on deletion.
   map = nullptr;
 
-  // The database must contain 3 entries:
+  // The database must contain 2 map entries:
   // (1) This map's key/value pair.
   // (2) The other map's key/value pair
-  // (3) The database schema version.
-  EXPECT_EQ(3u, GetDatabaseContents().size());
+  ASSERT_NO_FATAL_FAILURE(
+      ExpectMapEquals(*first_map_locator_, {{kKey1, kValue1}}));
+  ASSERT_NO_FATAL_FAILURE(
+      ExpectMapEquals(*other_map_locator_, {{kKey1, kValue3}}));
 }
 
 TEST_F(SessionStorageDataMapTest, Clone) {
-  EXPECT_CALL(listener_,
-              OnDataMapCreation(StdStringToUint8Vector("1"), testing::_))
-      .Times(1);
+  EXPECT_CALL(listener_, OnDataMapCreation(/*map_id=*/1, testing::_)).Times(1);
 
   scoped_refptr<SessionStorageDataMap> map1 =
-      SessionStorageDataMap::CreateFromDisk(
-          &listener_,
-          base::MakeRefCounted<SessionStorageMetadata::MapData>(
-              1, test_storage_key_),
-          database_.get());
+      SessionStorageDataMap::CreateFromDisk(&listener_, first_map_locator_,
+                                            database_.get());
 
-  EXPECT_CALL(listener_,
-              OnDataMapCreation(StdStringToUint8Vector("2"), testing::_))
-      .Times(1);
+  EXPECT_CALL(listener_, OnDataMapCreation(/*map_id=*/2, testing::_)).Times(1);
   // One call on fork.
   EXPECT_CALL(listener_, OnCommitResult(OKStatus())).Times(1);
 
   scoped_refptr<SessionStorageDataMap> map2 =
-      SessionStorageDataMap::CreateClone(
-          &listener_,
-          base::MakeRefCounted<SessionStorageMetadata::MapData>(
-              2, test_storage_key_),
-          map1);
+      SessionStorageDataMap::CreateClone(&listener_, cloned_map_locator_, map1);
 
   std::vector<blink::mojom::KeyValuePtr> data;
   base::RunLoop loop;
@@ -236,22 +235,25 @@ TEST_F(SessionStorageDataMapTest, Clone) {
   EXPECT_EQ(StdStringToUint8Vector("data1"), data[0]->value);
 
   // Test that the data was copied.
-  EXPECT_EQ("data1", GetDatabaseContents()["map-2-key1"]);
-  EXPECT_CALL(listener_, OnDataMapDestruction(StdStringToUint8Vector("1")))
-      .Times(1);
-  EXPECT_CALL(listener_, OnDataMapDestruction(StdStringToUint8Vector("2")))
-      .Times(1);
+  ASSERT_NO_FATAL_FAILURE(
+      ExpectMapEquals(*cloned_map_locator_, {{kKey1, kValue1}}));
+  EXPECT_CALL(listener_, OnDataMapDestruction(/*map_id=*/1)).Times(1);
+  EXPECT_CALL(listener_, OnDataMapDestruction(/*map_id=*/2)).Times(1);
 
   // Test data is not cleared on deletion.
   map1 = nullptr;
   map2 = nullptr;
 
-  // The database must contain 4 entries:
+  // The database must contain 3 map entries:
   // (1) This map's key/value pair.
   // (2) The cloned map's key/value pair.
   // (3) The other map's key/value pair
-  // (4) The database schema version.
-  EXPECT_EQ(4u, GetDatabaseContents().size());
+  ASSERT_NO_FATAL_FAILURE(
+      ExpectMapEquals(*first_map_locator_, {{kKey1, kValue1}}));
+  ASSERT_NO_FATAL_FAILURE(
+      ExpectMapEquals(*cloned_map_locator_, {{kKey1, kValue1}}));
+  ASSERT_NO_FATAL_FAILURE(
+      ExpectMapEquals(*first_map_locator_, {{kKey1, kValue1}}));
 }
 
 }  // namespace storage

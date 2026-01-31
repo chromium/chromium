@@ -33,7 +33,7 @@ class COMPONENT_EXPORT(SHILL_CLIENT) ShillIPConfigClient {
    public:
     // Adds an IPConfig entry.
     virtual void AddIPConfig(const std::string& ip_config_path,
-                             base::Value::Dict properties) = 0;
+                             base::DictValue properties) = 0;
 
    protected:
     virtual ~TestInterface() = default;
@@ -69,7 +69,7 @@ class COMPONENT_EXPORT(SHILL_CLIENT) ShillIPConfigClient {
   // success or nullopt on failure.
   virtual void GetProperties(
       const dbus::ObjectPath& ipconfig_path,
-      chromeos::DBusMethodCallback<base::Value::Dict> callback) = 0;
+      chromeos::DBusMethodCallback<base::DictValue> callback) = 0;
 
   // Calls SetProperty method.
   // |callback| is called after the method call succeeds.

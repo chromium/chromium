@@ -126,7 +126,11 @@ public class MostVisitedTilesPTTest {
 
     @Test
     @MediumTest
-    @Restriction({DeviceFormFactor.TABLET_OR_DESKTOP, DeviceRestriction.RESTRICTION_TYPE_NON_AUTO})
+    @Restriction({
+        DeviceFormFactor.TABLET_OR_DESKTOP,
+        DeviceRestriction.RESTRICTION_TYPE_NON_AUTO,
+        DeviceRestriction.RESTRICTION_TYPE_NON_FOLDABLE
+    })
     @EnableFeatures({ChromeFeatureList.ANDROID_OPEN_INCOGNITO_AS_WINDOW})
     @MinAndroidSdkLevel(Build.VERSION_CODES.S)
     public void testOpenItemInIncognitoWindow() {

@@ -6,7 +6,6 @@
 
 #include <algorithm>
 
-#include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/strings/string_util.h"
 #include "third_party/blink/public/common/manifest/manifest_util.h"

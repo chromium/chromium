@@ -5,12 +5,12 @@
 
 #include "components/open_from_clipboard/clipboard_recent_content_generic.h"
 
+#include <algorithm>
 #include <array>
 #include <memory>
 #include <string>
 #include <utility>
 
-#include "base/containers/contains.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
@@ -76,7 +76,7 @@ class ClipboardRecentContentGenericTest : public testing::Test {
   void SetUp() override {
     // Make sure "chrome" as standard scheme for non chrome embedder.
     std::vector<std::string> standard_schemes = url::GetStandardSchemes();
-    if (!base::Contains(standard_schemes, kChromeUIScheme)) {
+    if (!std::ranges::contains(standard_schemes, kChromeUIScheme)) {
       url::AddStandardScheme(kChromeUIScheme, url::SCHEME_WITH_HOST);
     }
 

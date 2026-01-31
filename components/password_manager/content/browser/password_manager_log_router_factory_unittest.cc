@@ -21,7 +21,7 @@ const char kTestText[] = "abcd1234";
 
 class MockLogReceiver : public autofill::LogReceiver {
  public:
-  MOCK_METHOD1(LogEntry, void(const base::Value::Dict&));
+  MOCK_METHOD1(LogEntry, void(const base::DictValue&));
 };
 
 }  // namespace
@@ -53,7 +53,7 @@ TEST_F(PasswordManagerLogRouterFactoryTest, ServiceActiveNonIncognito) {
   ASSERT_TRUE(log_router);
   log_router->RegisterReceiver(&receiver);
 
-  base::Value::Dict log_entry =
+  base::DictValue log_entry =
       autofill::LogRouter::CreateEntryForText(kTestText);
   EXPECT_CALL(receiver, LogEntry(testing::Eq(testing::ByRef(log_entry))))
       .Times(1);

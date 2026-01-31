@@ -8,6 +8,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
@@ -36,7 +37,7 @@ import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.ContextUtils;
-import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
@@ -51,7 +52,8 @@ import org.chromium.chrome.browser.omnibox.test.R;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
-import org.chromium.components.content_settings.CookieBlocking3pcdStatus;
+import org.chromium.components.content_settings.ContentSetting;
+import org.chromium.components.content_settings.ContentSettingsType;
 import org.chromium.components.content_settings.CookieControlsBridge;
 import org.chromium.components.content_settings.CookieControlsBridgeJni;
 import org.chromium.components.content_settings.CookieControlsState;
@@ -101,6 +103,8 @@ public final class StatusMediatorUnitTest {
     @Mock private PrefService mPrefs;
     @Mock private Tracker mTracker;
 
+    private PermissionDialogController.Observer mPermissionObserver;
+
     Context mContext;
 
     PropertyModel mModel;
@@ -132,6 +136,14 @@ public final class StatusMediatorUnitTest {
 
         TrackerFactory.setTrackerForTests(mTracker);
 
+        doAnswer(
+                        invocation -> {
+                            mPermissionObserver = invocation.getArgument(0);
+                            return null;
+                        })
+                .when(mPermissionDialogController)
+                .addObserver(any());
+
         setupStatusMediator(/* isTablet= */ false);
 
         mMediator.onSearchEngineIconChanged(logo);
@@ -145,8 +157,6 @@ public final class StatusMediatorUnitTest {
 
     private void setupStatusMediator(boolean isTablet) {
         mTemplateUrlServiceSupplier = new OneshotSupplierImpl<>();
-        ObservableSupplierImpl<MerchantTrustSignalsCoordinator>
-                merchantTrustSignalsCoordinatorObservableSupplier = new ObservableSupplierImpl<>();
         mMediator =
                 new StatusMediator(
                         mModel,
@@ -156,12 +166,28 @@ public final class StatusMediatorUnitTest {
                         mLocationBarDataProvider,
                         mPermissionDialogController,
                         mTemplateUrlServiceSupplier,
-                        new ObservableSupplierImpl(mProfile),
+                        ObservableSuppliers.createNonNull(mProfile),
                         mPageInfoIphController,
                         mWindowAndroid,
-                        merchantTrustSignalsCoordinatorObservableSupplier);
+                        () -> mMerchantTrustSignalsCoordinator);
         mTemplateUrlServiceSupplier.set(mTemplateUrlService);
-        merchantTrustSignalsCoordinatorObservableSupplier.set(mMerchantTrustSignalsCoordinator);
+    }
+
+    @Test
+    @SmallTest
+    public void testPermissionIconShown() {
+        mPermissionObserver.onDialogResult(
+                mWindowAndroid,
+                new int[] {ContentSettingsType.MEDIASTREAM_CAMERA},
+                ContentSetting.ALLOW);
+
+        StatusIconResource icon = mModel.get(StatusProperties.STATUS_ICON_RESOURCE);
+        Assert.assertNotNull("Permission icon should be shown", icon);
+        Assert.assertEquals(IconTransitionType.ROTATE, icon.getTransitionType());
+        icon.getAnimationFinishedCallback().run();
+        verify(mPageInfoIphController, times(1))
+                .onPermissionDialogShown(
+                        any(), eq(mMediator.getPermissionStatusHandler().getIphTimeoutMs()));
     }
 
     @Test
@@ -591,29 +617,14 @@ public final class StatusMediatorUnitTest {
 
     @Test
     @SmallTest
-    public void iphCookieControls_showIphOnlyWhenNotIn3pcd() {
+    public void iphCookieControls() {
         setupCookieControlsTest();
         mMediator.onStatusChanged(
-                CookieControlsState.BLOCKED3PC,
-                /* enforcement= */ 0,
-                CookieBlocking3pcdStatus.NOT_IN3PCD,
-                /* expiration= */ 0);
+                CookieControlsState.BLOCKED3PC, /* enforcement= */ 0, /* expiration= */ 0);
 
         mMediator.onHighlightCookieControl(true);
         Assert.assertEquals(COOKIE_CONTROLS_ICON, getIconIdentifierForTesting());
         mModel.get(StatusProperties.STATUS_ICON_RESOURCE).getAnimationFinishedCallback().run();
-        // Not in 3PCD, IPH is shown.
-        verify(mPageInfoIphController, times(1)).showCookieControlsIph(anyInt(), anyInt());
-
-        mMediator.onStatusChanged(
-                CookieControlsState.BLOCKED3PC,
-                /* enforcement= */ 0,
-                CookieBlocking3pcdStatus.LIMITED,
-                /* expiration= */ 0);
-
-        mMediator.onHighlightCookieControl(true);
-        Assert.assertEquals(COOKIE_CONTROLS_ICON, getIconIdentifierForTesting());
-        // Limited 3PCD, IPH is NOT shown.
         verify(mPageInfoIphController, times(1)).showCookieControlsIph(anyInt(), anyInt());
     }
 
@@ -634,10 +645,7 @@ public final class StatusMediatorUnitTest {
         doReturn(null).when(mTab).getWebContents();
 
         mMediator.onStatusChanged(
-                CookieControlsState.BLOCKED3PC,
-                /* enforcement= */ 0,
-                CookieBlocking3pcdStatus.LIMITED,
-                /* expiration= */ 0);
+                CookieControlsState.BLOCKED3PC, /* enforcement= */ 0, /* expiration= */ 0);
         Assert.assertNotEquals(COOKIE_CONTROLS_ICON, getIconIdentifierForTesting());
 
         mMediator.onHighlightCookieControl(true);

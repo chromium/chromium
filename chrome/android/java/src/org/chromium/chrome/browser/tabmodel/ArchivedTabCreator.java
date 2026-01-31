@@ -22,6 +22,8 @@ import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.url.GURL;
 
+import java.util.concurrent.CompletableFuture;
+
 /**
  * Creates tabs for the archived tab model selector during restore. This only creates frozen tabs.
  */
@@ -106,15 +108,16 @@ public class ArchivedTabCreator implements TabCreator, NeedsTabModel {
     }
 
     @Override
-    public Tab createTabWithWebContents(
+    public @Nullable Tab createTabWithWebContents(
             @Nullable Tab parent,
             boolean shouldPin,
             WebContents webContents,
             @TabLaunchType int type,
             GURL url,
-            boolean addTabToModel) {
+            int index,
+            CompletableFuture<Boolean> addTabToModel) {
         assert false : "Not reached.";
-        return assumeNonNull(null);
+        return null;
     }
 
     @Override

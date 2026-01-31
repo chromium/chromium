@@ -4,10 +4,11 @@
 
 #include "ash/public/cpp/holding_space/holding_space_util.h"
 
+#include <algorithm>
+
 #include "ash/public/cpp/holding_space/holding_space_client.h"
 #include "ash/public/cpp/holding_space/holding_space_constants.h"
 #include "ash/public/cpp/holding_space/holding_space_controller.h"
-#include "base/containers/contains.h"
 #include "base/containers/to_vector.h"
 #include "base/pickle.h"
 #include "base/strings/string_split.h"
@@ -182,8 +183,9 @@ bool IsInProgressCommand(HoldingSpaceCommandId command_id) {
 bool SupportsInProgressCommand(const HoldingSpaceItem* item,
                                HoldingSpaceCommandId command_id) {
   DCHECK(IsInProgressCommand(command_id));
-  return base::Contains(item->in_progress_commands(), command_id,
-                        &HoldingSpaceItem::InProgressCommand::command_id);
+  return std::ranges::contains(
+      item->in_progress_commands(), command_id,
+      &HoldingSpaceItem::InProgressCommand::command_id);
 }
 
 bool ExecuteInProgressCommand(const HoldingSpaceItem* item,

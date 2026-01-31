@@ -8,7 +8,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/containers/contains.h"
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_macros.h"
@@ -263,10 +262,10 @@ void WebRtcAudioRenderer::AudioStreamTracker::LogAudioPowerLevel() {
 void WebRtcAudioRenderer::AudioStreamTracker::CheckAlive(TimerBase*) {
   DCHECK(task_runner_->BelongsToCurrentThread());
   DCHECK(renderer_);
-  renderer_->SendLogMessage(String::Format(
+  renderer_->SendLogMessage(UNSAFE_TODO(String::Format(
       "%s => (%s)", __func__,
       render_callbacks_started_ ? "stream is alive"
-                                : "WARNING: stream is not alive"));
+                                : "WARNING: stream is not alive")));
 }
 
 WebRtcAudioRenderer::WebRtcAudioRenderer(
@@ -294,10 +293,10 @@ WebRtcAudioRenderer::WebRtcAudioRenderer(
         web_frame.Client()->CreateSpeechRecognitionClient();
   }
 
-  SendLogMessage(
+  SendLogMessage(UNSAFE_TODO(
       String::Format("%s({session_id=%s}, {device_id=%s})", __func__,
                      session_id.is_empty() ? "" : session_id.ToString().c_str(),
-                     device_id.Utf8().c_str()));
+                     device_id.Utf8().c_str())));
 }
 
 WebRtcAudioRenderer::~WebRtcAudioRenderer() {
@@ -314,8 +313,8 @@ bool WebRtcAudioRenderer::Initialize(WebRtcAudioRendererSource* source) {
     DCHECK_EQ(state_, kUninitialized);
     DCHECK(!source_);
   }
-  SendLogMessage(
-      String::Format("%s([state=%s])", __func__, StateToString(state_)));
+  SendLogMessage(UNSAFE_TODO(
+      String::Format("%s([state=%s])", __func__, StateToString(state_))));
 
   media::AudioSinkParameters sink_params(session_id_, output_device_id_.Utf8());
   sink_ = Platform::Current()->NewAudioRendererSink(
@@ -327,8 +326,9 @@ bool WebRtcAudioRenderer::Initialize(WebRtcAudioRendererSource* source) {
       sink_->GetOutputDeviceInfo().device_status();
   UMA_HISTOGRAM_ENUMERATION("Media.Audio.WebRTCAudioRenderer.DeviceStatus",
                             sink_status, media::OUTPUT_DEVICE_STATUS_MAX + 1);
-  SendLogMessage(String::Format("%s => (sink device_status=%s)", __func__,
-                                OutputDeviceStatusToString(sink_status)));
+  SendLogMessage(
+      UNSAFE_TODO(String::Format("%s => (sink device_status=%s)", __func__,
+                                 OutputDeviceStatusToString(sink_status))));
   if (sink_status != media::OUTPUT_DEVICE_STATUS_OK) {
     SendLogMessage(String::Format("%s => (ERROR: invalid output device status)",
                                   __func__));
@@ -379,15 +379,15 @@ bool WebRtcAudioRenderer::CurrentThreadIsRenderingThread() {
 
 void WebRtcAudioRenderer::Start() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  SendLogMessage(
-      String::Format("%s([state=%s])", __func__, StateToString(state_)));
+  SendLogMessage(UNSAFE_TODO(
+      String::Format("%s([state=%s])", __func__, StateToString(state_))));
   ++start_ref_count_;
 }
 
 void WebRtcAudioRenderer::Play() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  SendLogMessage(
-      String::Format("%s([state=%s])", __func__, StateToString(state_)));
+  SendLogMessage(UNSAFE_TODO(
+      String::Format("%s([state=%s])", __func__, StateToString(state_))));
   if (playing_state_.playing())
     return;
 
@@ -400,8 +400,8 @@ void WebRtcAudioRenderer::EnterPlayState() {
   DVLOG(1) << "WebRtcAudioRenderer::EnterPlayState()";
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   DCHECK_GT(start_ref_count_, 0) << "Did you forget to call Start()?";
-  SendLogMessage(
-      String::Format("%s([state=%s])", __func__, StateToString(state_)));
+  SendLogMessage(UNSAFE_TODO(
+      String::Format("%s([state=%s])", __func__, StateToString(state_))));
   base::AutoLock auto_lock(lock_);
   if (state_ == kUninitialized)
     return;
@@ -420,14 +420,14 @@ void WebRtcAudioRenderer::EnterPlayState() {
       audio_fifo_->Clear();
     }
   }
-  SendLogMessage(
-      String::Format("%s => (state=%s)", __func__, StateToString(state_)));
+  SendLogMessage(UNSAFE_TODO(
+      String::Format("%s => (state=%s)", __func__, StateToString(state_))));
 }
 
 void WebRtcAudioRenderer::Pause() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  SendLogMessage(
-      String::Format("%s([state=%s])", __func__, StateToString(state_)));
+  SendLogMessage(UNSAFE_TODO(
+      String::Format("%s([state=%s])", __func__, StateToString(state_))));
   if (!playing_state_.playing())
     return;
 
@@ -439,8 +439,8 @@ void WebRtcAudioRenderer::Pause() {
 void WebRtcAudioRenderer::EnterPauseState() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   DCHECK_GT(start_ref_count_, 0) << "Did you forget to call Start()?";
-  SendLogMessage(
-      String::Format("%s([state=%s])", __func__, StateToString(state_)));
+  SendLogMessage(UNSAFE_TODO(
+      String::Format("%s([state=%s])", __func__, StateToString(state_))));
   base::AutoLock auto_lock(lock_);
   if (state_ == kUninitialized)
     return;
@@ -449,15 +449,15 @@ void WebRtcAudioRenderer::EnterPauseState() {
   DCHECK_GT(play_ref_count_, 0);
   if (!--play_ref_count_)
     state_ = kPaused;
-  SendLogMessage(
-      String::Format("%s => (state=%s)", __func__, StateToString(state_)));
+  SendLogMessage(UNSAFE_TODO(
+      String::Format("%s => (state=%s)", __func__, StateToString(state_))));
 }
 
 void WebRtcAudioRenderer::Stop() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   {
-    SendLogMessage(
-        String::Format("%s([state=%s])", __func__, StateToString(state_)));
+    SendLogMessage(UNSAFE_TODO(
+        String::Format("%s([state=%s])", __func__, StateToString(state_))));
     base::AutoLock auto_lock(lock_);
     if (state_ == kUninitialized)
       return;
@@ -511,8 +511,9 @@ void WebRtcAudioRenderer::SwitchOutputDevice(
     const std::string& device_id,
     media::OutputDeviceStatusCB callback) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  SendLogMessage(String::Format("%s({device_id=%s} [state=%s])", __func__,
-                                device_id.c_str(), StateToString(state_)));
+  SendLogMessage(
+      UNSAFE_TODO(String::Format("%s({device_id=%s} [state=%s])", __func__,
+                                 device_id.c_str(), StateToString(state_))));
   if (!source_) {
     SendLogMessage(String::Format(
         "%s => (ERROR: OUTPUT_DEVICE_STATUS_ERROR_INTERNAL)", __func__));
@@ -547,8 +548,9 @@ void WebRtcAudioRenderer::SwitchOutputDevice(
   UMA_HISTOGRAM_ENUMERATION(
       "Media.Audio.WebRTCAudioRenderer.SwitchDeviceStatus", status,
       media::OUTPUT_DEVICE_STATUS_MAX + 1);
-  SendLogMessage(String::Format("%s => (sink device_status=%s)", __func__,
-                                OutputDeviceStatusToString(status)));
+  SendLogMessage(
+      UNSAFE_TODO(String::Format("%s => (sink device_status=%s)", __func__,
+                                 OutputDeviceStatusToString(status))));
 
   if (status != media::OUTPUT_DEVICE_STATUS_OK) {
     SendLogMessage(
@@ -711,7 +713,7 @@ bool WebRtcAudioRenderer::AddPlayingState(webrtc::AudioSourceInterface* source,
   DCHECK(state->playing());
   // Look up or add the |source| to the map.
   PlayingStates& array = source_playing_states_[source];
-  if (base::Contains(array, state))
+  if (std::ranges::contains(array, state))
     return false;
 
   array.push_back(state);

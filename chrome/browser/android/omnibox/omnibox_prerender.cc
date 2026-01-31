@@ -40,8 +40,9 @@ OmniboxPrerender::OmniboxPrerender(JNIEnv* env,
 
 OmniboxPrerender::~OmniboxPrerender() = default;
 
-static jlong JNI_OmniboxPrerender_Init(JNIEnv* env,
-                                       const jni_zero::JavaRef<jobject>& obj) {
+static int64_t JNI_OmniboxPrerender_Init(
+    JNIEnv* env,
+    const jni_zero::JavaRef<jobject>& obj) {
   OmniboxPrerender* omnibox = new OmniboxPrerender(env, obj);
   return reinterpret_cast<intptr_t>(omnibox);
 }
@@ -66,7 +67,7 @@ void OmniboxPrerender::InitializeForProfile(JNIEnv* env,
 void OmniboxPrerender::PrerenderMaybe(JNIEnv* env,
                                       const JavaRef<jstring>& j_url,
                                       const JavaRef<jstring>& j_current_url,
-                                      jlong jsource_match,
+                                      int64_t jsource_match,
                                       Profile* profile,
                                       const JavaRef<jobject>& j_tab) {
   AutocompleteResult* autocomplete_result =

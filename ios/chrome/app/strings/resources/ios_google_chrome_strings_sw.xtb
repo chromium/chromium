@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="sw">
 <translation id="1076643793026027628">Chrome hufungua kiotomatiki viungo vya Faraghani vya YouTube katika hali ya Faraghani.</translation>
+<translation id="1081114897601629648">Manenosiri yafuatayo hayakuhamishiwa kwenye Kidhibiti cha Manenosiri cha Google, kwa sababu hayatimizi masharti.</translation>
 <translation id="1086486568852410168">Tafuta ukitumia Lenzi ya Google</translation>
 <translation id="1088490543924960890">Anza kuhifadhi funguo za siri ukitumia Kidhibiti cha Manenosiri cha Google</translation>
 <translation id="1143896152279775643">Nenosiri lako litahifadhiwa kwenye Kidhibiti cha Manenosiri cha Google kwa ajili ya <ph name="EMAIL" />.</translation>
@@ -85,6 +86,9 @@ Jaribu kusubiri kwa dakika chache kabla ya kuondoka kwenye akaunti. Ukiondoka kw
 <translation id="2767464022270041271">Hakuna manenosiri yaliyohifadhiwa. Kidhibiti cha Manenosiri cha Google kinaweza kukagua manenosiri yako unapoyahifadhi.</translation>
 <translation id="2788811701191021538">Hufungua ukurasa wa mipangilio ya njia za kulipa kwenye Chrome.</translation>
 <translation id="2876628302275096482">Pata maelezo zaidi kuhusu <ph name="BEGIN_LINK" />jinsi Chrome inavyoweka data yako kuwa ya faragha<ph name="END_LINK" /></translation>
+<translation id="288992067439702510">Umefikia kikomo cha Google Chrome cha alamisho <ph name="LIMIT" />, kwa hivyo baadhi ya alamisho zako bado hazijahifadhiwa kwenye Akaunti yako ya Google.
+
+Huwezi kuhifadhi alamisho mpya kwenye akaunti yako hadi ufute baadhi ya alamisho. Ukiondoka kwenye akaunti sasa, alamisho ambazo hazijahifadhiwa zitafutwa.</translation>
 <translation id="2922914028977213693">Gusa hapa ili unufaike zaidi na Chrome kwenye iPad yako.</translation>
 <translation id="292371311537977079">Mipangilio ya Chrome</translation>
 <translation id="2923827943290349720">Funga vichupo Fiche unapofunga Chrome</translation>
@@ -115,6 +119,7 @@ Jaribu kusubiri kwa dakika chache kabla ya kuondoka kwenye akaunti. Ukiondoka kw
 <translation id="3460369101684070455">Ili upate manenosiri uliyohifadhi kwa urahisi katika programu yako nyingine, chagua Chrome ili Ujaze Kiotomatiki</translation>
 <translation id="3472587960215700950">Chrome hutumia Ramani za Google kukupatia maelekezo na maelezo ya eneo husika kwenye anwani zilizotambuliwa.</translation>
 <translation id="3482807551645716768">Fikia Chrome kwa haraka zaidi katika Skrini ya Kwanza ya iPad yako.</translation>
+<translation id="3491067552520121605">Tayari una manenosiri au funguo za siri katika Kidhibiti cha Manenosiri cha Google kwenye tovuti zilizoonyeshwa. Chagua akaunti ili uhifadhi maelezo ya kuingia katika akaunti yanayoonyeshwa, ukibadilisha yaliyo kwenye Kidhibiti cha Manenosiri cha Google.</translation>
 <translation id="3503014945441706099">Pia, pata Kipengele cha Kuvinjari Salama Kilichoboreshwa kwenye wasifu huu wa Chrome</translation>
 <translation id="3522659714780527202">Ili uone vichupo vyako kwenye kifaa chochote unakotumia Chrome, washa kipengele cha kusawazisha</translation>
 <translation id="364480321352456989">Toleo lako la Chrome limepitwa na wakati.</translation>
@@ -134,6 +139,7 @@ Jaribu kusubiri kwa dakika chache kabla ya kuondoka kwenye akaunti. Ukiondoka kw
 <translation id="4167555379306984168">Angalia vipengele vipya kwenye Chrome</translation>
 <translation id="417201473131094001">Haitumiki kwenye Chrome Canary (toleo la jaribio)</translation>
 <translation id="424864128008805179">Ungependa kuondoka kwenye Chrome?</translation>
+<translation id="4409545895715116037">Funguo zifuatazo za siri hazikuhamishiwa kwenye Kidhibiti cha Manenosiri cha Google, kwa sababu hazitimizi masharti.</translation>
 <translation id="4430797724889237570">Fungua viungo kwenye Gmail, Ramani, YouTube na programu nyingine katika Chrome</translation>
 <translation id="447252321002412580">Tusaidie tuboreshe utendaji na vipengele vya Chrome</translation>
 <translation id="4523886039239821078">Baadhi ya programu jalizi husababisha Chrome iache kufanya kazi. Tafadhali ondoa:</translation>
@@ -272,6 +278,7 @@ Kwa mipangilio zaidi inayotumia data kuboresha hali yako ya utumiaji wa Chrome, 
 <translation id="7284245284340063465">Ikiwa ulisahau kauli yako ya siri au ungependa kubadilisha mipangilio hii, <ph name="BEGIN_LINK" />futa data ya Chrome kwenye akaunti yako<ph name="END_LINK" />.</translation>
 <translation id="7296102444587051536">Chrome mahususi kwa iOS</translation>
 <translation id="7299681342915173313">Sasa unaweza kutumia Chrome wakati wowote unapogusa viungo kwenye barua pepe, hati na programu zingine.</translation>
+<translation id="7334364820047587268">Tayari una manenosiri ya akaunti hizi katika huduma yako ya Kidhibiti cha Manenosiri cha Google. Ukichagua kupakia mojawapo ya manenosiri yaliyo hapa chini, litatumika badala ya lililopo.</translation>
 <translation id="7344094882820374540">Pata usalama thabiti wa Chrome dhidi ya tovuti hatari</translation>
 <translation id="7349129508108954623">Iruhusu Chrome kutumia Ramani za Google kukupa maelekezo na maelezo ya eneo kwenye anwani zilizotambuliwa.</translation>
 <translation id="7371674917547846460">Pata arifa za vidokezo muhimu vya Chrome na zaidi.</translation>
@@ -300,11 +307,11 @@ Kwa mipangilio zaidi inayotumia data kuboresha hali yako ya utumiaji wa Chrome, 
 <translation id="7787205077729386167">Fungua mipangilio ya Chrome kwenye iOS, kisha uguse "Programu Chaguomsingi ya Kivinjari" kisha uchague Chrome.</translation>
 <translation id="778855399387580014">Anza kutafuta ukitumia kichupo kipya cha Chrome.</translation>
 <translation id="7792140019572081272">Chrome huweka data yako nyeti salama kwa kutumia Face ID.</translation>
+<translation id="7825648984449922731">Hariri picha ukitumia Gemini kwenye Chrome</translation>
 <translation id="7855730255114109580">Google Chrome imesasishwa</translation>
 <translation id="787226752901403048">Ingia katika akaunti ya Chrome ili uweze kuruhusu ufikiaji na ujiunge kwenye vikundi vya vichupo na kushirikiana kwenye mawazo</translation>
 <translation id="7897703007638178753">Angalia Vichupo vya Hivi Karibuni kwenye Chrome</translation>
 <translation id="7948283758957877064">Mapya katika Chrome</translation>
-<translation id="7996707498590516621">Buni picha ukitumia Gemini kwenye Chrome</translation>
 <translation id="8000174216052461231">Kidokezo cha Chrome: Pata ulinzi thabiti zaidi wa Chrome</translation>
 <translation id="8006014511203279255">Tumia Chrome wakati wowote unapogusa viungo kwenye ujumbe au programu zingine.</translation>
 <translation id="8014670471808569312">Chromium itakuomba kuhifadhi nenosiri lako.</translation>

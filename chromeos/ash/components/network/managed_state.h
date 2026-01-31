@@ -67,11 +67,11 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) ManagedState {
   // properties, e.g. name from hex_ssid in NetworkState. |properties| must
   // contain the complete set of initial properties. Returns true if any
   // additional properties are updated.
-  virtual bool InitialPropertiesReceived(const base::Value::Dict& properties);
+  virtual bool InitialPropertiesReceived(const base::DictValue& properties);
 
   // Fills |dictionary| with a minimal set of state properties for the network
   // type. See implementations for which properties are included.
-  virtual void GetStateProperties(base::Value::Dict* dictionary) const;
+  virtual void GetStateProperties(base::DictValue* dictionary) const;
 
   // Returns true if a state is "Active". For networks that means connected,
   // connecting, or activating. Devices are always "active".

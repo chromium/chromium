@@ -47,7 +47,8 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.ThreadUtils;
-import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.supplier.ObservableSuppliers;
+import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.Batch;
@@ -89,7 +90,7 @@ public class AppModalPresenterTest {
     private static Activity sActivity;
     private static ModalDialogManager sManager;
     private static InsetObserver sInsetObserver;
-    private static ObservableSupplierImpl<Boolean> sEdgeToEdgeStateSupplier;
+    private static SettableNonNullObservableSupplier<Boolean> sEdgeToEdgeStateSupplier;
     private TestObserver mTestObserver;
     private Integer mExpectedDismissalCause;
 
@@ -99,7 +100,7 @@ public class AppModalPresenterTest {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     sActivity = activityTestRule.getActivity();
-                    sEdgeToEdgeStateSupplier = new ObservableSupplierImpl<>();
+                    sEdgeToEdgeStateSupplier = ObservableSuppliers.createNonNull(false);
                     sManager =
                             new ModalDialogManager(
                                     new AppModalPresenter(sActivity),

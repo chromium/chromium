@@ -42,7 +42,8 @@ TEST_F(RootVoteObserverTest, VotesForwardedToGraph) {
 
   // The priority and reason starts with a default value.
   static const PriorityAndReason kDefaultPriorityAndReason(
-      base::TaskPriority::LOWEST, FrameNodeImpl::kDefaultPriorityReason);
+      base::Process::Priority::kMinValue,
+      FrameNodeImpl::kDefaultPriorityReason);
   EXPECT_EQ(frame->GetPriorityAndReason(), kDefaultPriorityAndReason);
 
   // Do not expect a notification when an identical vote is submitted.
@@ -53,11 +54,11 @@ TEST_F(RootVoteObserverTest, VotesForwardedToGraph) {
   // Update the vote with a new priority and expect that to propagate.
   EXPECT_CALL(obs, OnPriorityAndReasonChanged(frame.get(), _));
   voter.ChangeVote(execution_context,
-                   Vote(base::TaskPriority::HIGHEST, kReason));
+                   Vote(base::Process::Priority::kMaxValue, kReason));
 
   testing::Mock::VerifyAndClear(&obs);
   EXPECT_EQ(frame->GetPriorityAndReason().priority(),
-            base::TaskPriority::HIGHEST);
+            base::Process::Priority::kMaxValue);
   EXPECT_EQ(frame->GetPriorityAndReason().reason(), kReason);
 
   // Cancel the existing vote and expect it to go back to the default.

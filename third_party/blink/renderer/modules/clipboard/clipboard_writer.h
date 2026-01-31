@@ -38,14 +38,19 @@ class SystemClipboard;
 //     can only be used on the main thread.
 // (3) Writing - the Blob's decoded contents to the system clipboard.
 //
-// Subclasses of ClipboardWriter should be implemented for each supported
-// format. Subclasses should:
-// (1) Begin execution by implementing ClipboardWriter::StartWrite().
-// (2) Decode the payload on a background thread (if possible) by implementing
-//     a static DecodeOnBackgroundThread() function. This function is called by
-//     StartWrite() via worker_pool::PostTask().
-// (3) Write the decoded content to the system clipboard by implementing
-//     ClipboardWriter::Write();
+// Format-specific writer classes inherit from ClipboardWriter and implement
+// the FileReaderClient interface. The architecture includes:
+// - ClipboardStringWriter: Base class for text-based formats (HTML, SVG, plain
+// text)
+// - ClipboardImageWriter: Handles binary image data with background decoding
+// - ClipboardCustomFormatWriter: Handles arbitrary unsanitized content
+//
+// Each writer class:
+// (1) Implements DidFinishLoading() to handle FileReaderLoader completion
+// (2) For binary data (images): Uses background thread decoding via
+//     DecodeOnBackgroundThread() and cross-thread task posting
+// (3) For string data: Processes content on main thread and writes directly
+//     to system clipboard via WriteString() override
 //
 // ClipboardWriter is owned only by itself and ClipboardPromise. It keeps
 // itself alive for the duration of FileReaderLoader's async operations using
@@ -64,26 +69,29 @@ class ClipboardWriter : public GarbageCollected<ClipboardWriter>,
   // clipboard.
   void WriteToSystem(V8UnionBlobOrString* clipboard_item_data);
 
+  virtual void WriteString(String text);
+
   // FileReaderClient.
-  void DidFinishLoading(FileReaderData) override;
+  void DidFinishLoading(FileReaderData) override = 0;
   void DidFail(FileErrorCode) override;
+
+  // Common helper for DidFinishLoading implementations
+  bool CleanupAfterFileReaderFinishedAndCheckIfCanProceed();
 
   void Trace(Visitor*) const override;
 
  protected:
   ClipboardWriter(SystemClipboard* system_clipboard, ClipboardPromise* promise);
 
-  // Decodes and writes `raw_data`. Decoding is done off the main thread
-  // whenever possible, by calling DecodeOnBackgroundThread.
-  virtual void StartWrite(
-      DOMArrayBuffer* raw_data,
-      scoped_refptr<base::SingleThreadTaskRunner> task_runner) = 0;
-
   // SystemClipboard is bound to LocalFrame, so the bound LocalFrame must still
   // be valid by the time it's used.
   SystemClipboard* system_clipboard() {
     DCHECK(promise_->GetLocalFrame());
     return system_clipboard_.Get();
+  }
+
+  scoped_refptr<base::SingleThreadTaskRunner> clipboard_task_runner() {
+    return clipboard_task_runner_;
   }
 
   // This ClipboardPromise owns this ClipboardWriter. Subclasses use `promise_`

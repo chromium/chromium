@@ -68,7 +68,7 @@ class DownloaderTestDelegate : public ExtensionDownloaderTestDelegate {
 };
 
 // This lets us simulate a policy-installed extension being "force" installed;
-// ie a user is not allowed to manually uninstall/disable it.
+// i.e. a user is not allowed to manually uninstall/disable it.
 class ForceInstallProvider : public ManagementPolicy::Provider {
  public:
   explicit ForceInstallProvider(const ExtensionId& id);

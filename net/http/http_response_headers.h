@@ -33,7 +33,7 @@ class Pickle;
 class PickleIterator;
 class Time;
 class TimeDelta;
-}
+}  // namespace base
 
 namespace net {
 
@@ -100,7 +100,7 @@ class NET_EXPORT HttpResponseHeaders
   // Persist options.
   typedef int PersistOptions;
   static const PersistOptions PERSIST_RAW = -1;  // Raw, unparsed headers.
-  static const PersistOptions PERSIST_ALL = 0;  // Parsed headers.
+  static const PersistOptions PERSIST_ALL = 0;   // Parsed headers.
   static const PersistOptions PERSIST_SANS_COOKIES = 1 << 0;
   static const PersistOptions PERSIST_SANS_CHALLENGES = 1 << 1;
   static const PersistOptions PERSIST_SANS_HOP_BY_HOP = 1 << 2;
@@ -238,9 +238,7 @@ class NET_EXPORT HttpResponseHeaders
   std::string GetStatusLine() const;
 
   // Get the HTTP version of the normalized status line.
-  HttpVersion GetHttpVersion() const {
-    return http_version_;
-  }
+  HttpVersion GetHttpVersion() const { return http_version_; }
 
   // Get the HTTP status text of the normalized status line.
   std::string GetStatusText() const;
@@ -421,7 +419,7 @@ class NET_EXPORT HttpResponseHeaders
   bool IsChunkEncoded() const;
 
   // Creates a Value for use with the NetLog containing the response headers.
-  base::Value::Dict NetLogParams(NetLogCaptureMode capture_mode) const;
+  base::DictValue NetLogParams(NetLogCaptureMode capture_mode) const;
 
   // Returns the HTTP response code.  This is 0 if the response code text seems
   // to exist but could not be parsed.  Otherwise, it defaults to 200 if the
@@ -446,7 +444,7 @@ class NET_EXPORT HttpResponseHeaders
  private:
   friend class base::RefCountedThreadSafe<HttpResponseHeaders>;
 
-  using HeaderSet = std::unordered_set<std::string>;
+  class HeaderSet;
 
   // The members of this structure point into raw_headers_.
   struct ParsedHeader;

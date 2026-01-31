@@ -17,7 +17,7 @@ bool ValueMapPrefStore::GetValue(std::string_view key,
   return prefs_.GetValue(key, value);
 }
 
-base::Value::Dict ValueMapPrefStore::GetValues() const {
+base::DictValue ValueMapPrefStore::GetValues() const {
   return prefs_.AsDict();
 }
 

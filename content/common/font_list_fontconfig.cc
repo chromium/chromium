@@ -26,10 +26,10 @@ std::unique_ptr<FcPattern, decltype(&FcPatternDestroy)> CreateFormatPattern(
   return pattern;
 }
 
-base::Value::List GetFontList_SlowBlocking() {
+base::ListValue GetFontList_SlowBlocking() {
   DCHECK(GetFontListTaskRunner()->RunsTasksInCurrentSequence());
 
-  base::Value::List font_list;
+  base::ListValue font_list;
 
   std::unique_ptr<FcObjectSet, decltype(&FcObjectSetDestroy)> object_set(
       FcObjectSetBuild(FC_FAMILY, NULL), FcObjectSetDestroy);
@@ -61,7 +61,7 @@ base::Value::List GetFontList_SlowBlocking() {
   sorted_families.insert("Serif");
 
   for (const auto& family : sorted_families) {
-    base::Value::List font_item;
+    base::ListValue font_item;
     font_item.Append(family);
     font_item.Append(family);  // localized name.
     // TODO(yusukes): Support localized family names.

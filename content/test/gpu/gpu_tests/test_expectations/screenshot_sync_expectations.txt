@@ -66,6 +66,7 @@
 #         mesa_ge_23.2
 #         mesa_ge_24.2
 #         nvidia_ge_31.0.15.4601 nvidia_lt_31.0.15.4601
+#         nvidia_ge_32.0.15.8180 nvidia_lt_32.0.15.8180
 #         nvidia_ge_535.183.01 nvidia_lt_535.183.01 ]
 # ASan
 # tags: [ asan no-asan ]
@@ -125,6 +126,14 @@ crbug.com/450325666 [ win11 nvidia-0x2783 ] ScreenshotSync_GPURasterWithDivs [ R
 
 # Win11 / Qualcomm Snapdragon X Elite
 crbug.com/458607668 [ win qualcomm-0x36334330 ] ScreenshotSync_SWRasterWithDivs [ Failure ]
+crbug.com/458607668 [ win qualcomm-0x36334330 ] ScreenshotSync_SWRasterWithCanvas [ Failure ]
+crbug.com/458607668 [ win qualcomm-0x36334330 ] ScreenshotSync_GPURasterWithDivs [ Failure ]
+crbug.com/458607668 [ win qualcomm-0x36334330 ] ScreenshotSync_GPURasterWithCanvas [ Failure ]
+
+# Win 11 AMD RX 5500XT
+crbug.com/458607668 [ win amd-0x7340 ] ScreenshotSync_SWRasterWithDivs [ Failure ]
+crbug.com/458607668 [ win amd-0x7340 ] ScreenshotSync_SWRasterWithCanvas [ Failure ]
+crbug.com/458607668 [ win amd-0x7340 ] ScreenshotSync_GPURasterWithDivs [ Failure ]
 
 # Win 11 / GTX 1660 timeouts
 crbug.com/465497423 [ win11 nvidia-0x2184 ] ScreenshotSync_GPURasterWithDivs [ Failure ]

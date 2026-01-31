@@ -1,0 +1,30 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/ios/rules.gni")
+
+bundle_data_xcassets("resources") {
+  catalog = "Assets.xcassets"
+  sources = [
+    "Assets.xcassets/Contents.json",
+    "Assets.xcassets/credential_import_1password.imageset/Contents.json",
+    "Assets.xcassets/credential_import_1password.imageset/credential_import_1password.pdf",
+    "Assets.xcassets/credential_import_1password.imageset/credential_import_1password_dark.pdf",
+    "Assets.xcassets/credential_import_apple.imageset/Contents.json",
+    "Assets.xcassets/credential_import_apple.imageset/credential_import_apple.pdf",
+    "Assets.xcassets/credential_import_apple.imageset/credential_import_apple_dark.pdf",
+    "Assets.xcassets/credential_import_bitwarden.imageset/Contents.json",
+    "Assets.xcassets/credential_import_bitwarden.imageset/credential_import_bitwarden.pdf",
+    "Assets.xcassets/credential_import_bitwarden.imageset/credential_import_bitwarden_dark.pdf",
+    "Assets.xcassets/credential_import_dashlane.imageset/Contents.json",
+    "Assets.xcassets/credential_import_dashlane.imageset/credential_import_dashlane.pdf",
+    "Assets.xcassets/credential_import_dashlane.imageset/credential_import_dashlane_dark.pdf",
+    "Assets.xcassets/credential_import_generic.imageset/Contents.json",
+    "Assets.xcassets/credential_import_generic.imageset/credential_import_generic.pdf",
+    "Assets.xcassets/credential_import_generic.imageset/credential_import_generic_dark.pdf",
+    "Assets.xcassets/credential_import_keeper.imageset/Contents.json",
+    "Assets.xcassets/credential_import_keeper.imageset/credential_import_keeper.pdf",
+    "Assets.xcassets/credential_import_keeper.imageset/credential_import_keeper_dark.pdf",
+  ]
+}

@@ -130,9 +130,9 @@ void WebApkUkmRecorder::RecordWebApkableVisit(const GURL& manifest_id) {
 static void JNI_WebApkUkmRecorder_RecordSessionDuration(
     JNIEnv* env,
     const JavaRef<jstring>& manifest_id,
-    jint distributor,
-    jint version_code,
-    jlong duration) {
+    int32_t distributor,
+    int32_t version_code,
+    int64_t duration) {
   WebApkUkmRecorder::RecordSessionDuration(
       ConvertNullableJavaStringToGURL(env, manifest_id), distributor,
       version_code, duration);
@@ -142,9 +142,9 @@ static void JNI_WebApkUkmRecorder_RecordSessionDuration(
 static void JNI_WebApkUkmRecorder_RecordVisit(
     JNIEnv* env,
     const JavaRef<jstring>& manifest_id,
-    jint distributor,
-    jint version_code,
-    jint source) {
+    int32_t distributor,
+    int32_t version_code,
+    int32_t source) {
   WebApkUkmRecorder::RecordVisit(
       ConvertNullableJavaStringToGURL(env, manifest_id), distributor,
       version_code, source);
@@ -154,10 +154,10 @@ static void JNI_WebApkUkmRecorder_RecordVisit(
 static void JNI_WebApkUkmRecorder_RecordUninstall(
     JNIEnv* env,
     const JavaRef<jstring>& manifest_id,
-    jint distributor,
-    jint version_code,
-    jint launch_count,
-    jlong installed_duration_ms) {
+    int32_t distributor,
+    int32_t version_code,
+    int32_t launch_count,
+    int64_t installed_duration_ms) {
   WebApkUkmRecorder::RecordUninstall(
       ConvertNullableJavaStringToGURL(env, manifest_id), distributor,
       version_code, launch_count, installed_duration_ms);

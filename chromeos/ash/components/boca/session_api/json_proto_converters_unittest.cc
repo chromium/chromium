@@ -21,7 +21,7 @@ constexpr std::string_view kFullNameValue = "fullName";
 constexpr std::string_view kPhotoUrlValue = "photoUrl";
 
 TEST(JsonProtoConvertersTest, ConvertUserIdentityJsonToProto) {
-  base::Value::Dict dict;
+  base::DictValue dict;
   dict.Set(kEmail, kEmailValue);
   dict.Set(kGaiaId, kGaiaIdValue);
   dict.Set(kFullName, kFullNameValue);

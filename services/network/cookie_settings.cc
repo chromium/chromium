@@ -9,7 +9,6 @@
 #include <iterator>
 #include <memory>
 
-#include "base/containers/contains.h"
 #include "base/containers/fixed_flat_map.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
@@ -205,8 +204,8 @@ DeleteCookiePredicate CookieSettings::CreateDeleteCookieOnExitPredicate()
 bool CookieSettings::ShouldIgnoreSameSiteRestrictions(
     const GURL& url,
     const net::SiteForCookies& site_for_cookies) const {
-  return base::Contains(secure_origin_cookies_allowed_schemes_,
-                        site_for_cookies.scheme()) &&
+  return secure_origin_cookies_allowed_schemes_.contains(
+             site_for_cookies.scheme()) &&
          url.SchemeIsCryptographic();
 }
 
@@ -245,11 +244,10 @@ bool CookieSettings::IsCookieAccessible(
 bool CookieSettings::ShouldAlwaysAllowCookies(
     const GURL& url,
     const GURL& first_party_url) const {
-  return (base::Contains(secure_origin_cookies_allowed_schemes_,
-                         first_party_url.scheme()) &&
+  return (secure_origin_cookies_allowed_schemes_.contains(
+              first_party_url.scheme()) &&
           url.SchemeIsCryptographic()) ||
-         (base::Contains(matching_scheme_cookies_allowed_schemes_,
-                         url.scheme()) &&
+         (matching_scheme_cookies_allowed_schemes_.contains(url.scheme()) &&
           url.SchemeIs(first_party_url.scheme()));
 }
 

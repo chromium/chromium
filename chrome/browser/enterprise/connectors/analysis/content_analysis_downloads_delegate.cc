@@ -147,4 +147,12 @@ void ContentAnalysisDownloadsDelegate::OnDownloadDestroyed(
   download_item_ = nullptr;
 }
 
+std::optional<std::u16string> ContentAnalysisDownloadsDelegate::GetFilename()
+    const {
+  if (filename_.empty()) {
+    return std::nullopt;
+  }
+  return filename_;
+}
+
 }  // namespace enterprise_connectors

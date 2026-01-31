@@ -31,6 +31,21 @@ message LensImageQueryData {
   reserved 3, 5;
 }
 
+// Metadata for context for the turn.
+message ContextTurnMetadata {
+  int64 context_id = 1;
+
+  message TabMetadata {
+    // Whether the tab as represented by the context_id is actively shown
+    // to the user at the time the turn was made.
+    bool is_active_tab = 1;
+  }
+
+  oneof metadata {
+    TabMetadata tab_metadata = 2;
+  }
+}
+
 // The set of data that's required to generate a response from the LLM.
 message QueryPayload {
   // The input source of the query text.
@@ -38,6 +53,7 @@ message QueryPayload {
     QUERY_TEXT_SOURCE_UNSPECIFIED = 0;
     QUERY_TEXT_SOURCE_KEYBOARD_INPUT = 1;
   }
+
   // The user query.
   string query_text = 1;
 
@@ -53,6 +69,15 @@ message QueryPayload {
   // Whether to use Image Generation for this query.
   bool use_image_generation = 12;
 
+  // CGI params.
+  map<string, string> additional_cgi_params = 9;
+
+  // Information about the context that is turn-specific.
+  // If a piece of context is not included here, then there is nothing
+  // remarkable about the context that is turn-specific. Should just use context
+  // as is.
+  repeated ContextTurnMetadata context_turn_metadata = 14;
+
   // Deprecated fields to match the Silk QueryPayload.
-  reserved 5, 7;
+  reserved 5, 7, 13;
 }

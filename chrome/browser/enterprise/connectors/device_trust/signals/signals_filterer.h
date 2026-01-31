@@ -16,7 +16,7 @@ class SignalsFilterer {
   virtual ~SignalsFilterer() = default;
 
   // Modifies `signals` based on the current device context.
-  virtual void Filter(base::Value::Dict& signals);
+  virtual void Filter(base::DictValue& signals);
 };
 
 }  // namespace enterprise_connectors

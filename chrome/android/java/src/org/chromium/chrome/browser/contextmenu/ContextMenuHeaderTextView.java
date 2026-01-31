@@ -44,7 +44,7 @@ public class ContextMenuHeaderTextView extends LinearLayout {
         mUrl = findViewById(R.id.menu_header_url);
         mSecondaryUrl = findViewById(R.id.menu_header_secondary_url);
         mTertiaryUrl = findViewById(R.id.menu_header_tertiary_url);
-        mUrl.addOnLayoutChangeListener(
+        addOnLayoutChangeListener(
                 (view, left, top, right, bottom, oldLeft, oldTop, oldRight, oldBottom) -> update());
         update();
     }

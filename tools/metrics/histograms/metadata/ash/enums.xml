@@ -41,6 +41,7 @@ chromium-metrics-reviews@google.com.
   <int value="0" label="PasswordManager"/>
   <int value="1" label="Settings"/>
   <int value="2" label="WebAuthN"/>
+  <int value="3" label="PaymentsAutofill"/>
 </enum>
 
 <enum name="AltTabMode">

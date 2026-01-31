@@ -14,6 +14,8 @@
 #include "third_party/blink/renderer/platform/wtf/text/code_point_iterator.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_impl.h"
+#include "third_party/blink/renderer/platform/wtf/text/string_internal.h"
+#include "third_party/blink/renderer/platform/wtf/text/unicode.h"
 #include "third_party/blink/renderer/platform/wtf/text/utf16.h"
 #include "third_party/blink/renderer/platform/wtf/text/utf8.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
@@ -39,6 +41,26 @@ class StackStringViewAllocator {
  private:
   StringView::StackBackingStore& backing_store_;
 };
+
+Vector<StringView> SplitInternal(StringView input,
+                                 UChar separator,
+                                 bool allow_empty_entries) {
+  Vector<StringView> result;
+
+  unsigned start_pos = 0;
+  wtf_size_t end_pos;
+  while ((end_pos = input.find(separator, start_pos)) != kNotFound) {
+    if (allow_empty_entries || start_pos != end_pos) {
+      result.push_back(StringView(input, start_pos, end_pos - start_pos));
+    }
+    start_pos = end_pos + 1;
+  }
+  if (allow_empty_entries || start_pos != input.length()) {
+    result.push_back(StringView(input, start_pos));
+  }
+  return result;
+}
+
 }  // namespace
 
 StringView::StringView(const UChar* chars)
@@ -175,6 +197,13 @@ bool StringView::ContainsOnlyASCIIOrEmpty() const {
   return attrs.contains_only_ascii;
 }
 
+bool StringView::ContainsOnlyLatin1OrEmpty() const {
+  if (empty() || Is8Bit()) {
+    return true;
+  }
+  return std::ranges::all_of(Span16(), [](UChar ch) { return ch < 0x0100; });
+}
+
 bool StringView::SubstringContainsOnlyWhitespaceOrEmpty(unsigned from,
                                                         unsigned to) const {
   DCHECK_LE(from, to);
@@ -186,6 +215,33 @@ bool StringView::SubstringContainsOnlyWhitespaceOrEmpty(unsigned from,
     }
     return true;
   });
+}
+
+wtf_size_t StringView::find(UChar ch, wtf_size_t start) const {
+  if (empty()) {
+    return kNotFound;
+  }
+  return Is8Bit() ? blink::Find(Span8(), ch, start)
+                  : blink::Find(Span16(), ch, start);
+}
+
+bool StringView::contains(UChar ch) const {
+  return find(ch) != kNotFound;
+}
+
+bool StringView::starts_with(const StringView& other) const {
+  if (other.empty()) {
+    return true;
+  }
+  return other.length() <= length() && substr(0, other.length()) == other;
+}
+
+bool StringView::ends_with(const StringView& other) const {
+  if (other.empty()) {
+    return true;
+  }
+  return other.length() <= length() &&
+         substr(length() - other.length(), other.length()) == other;
 }
 
 String StringView::ToString() const {
@@ -340,6 +396,52 @@ CodePointIterator StringView::begin() const {
 
 CodePointIterator StringView::end() const {
   return CodePointIterator::End(*this);
+}
+
+StringView StringView::substr(wtf_size_t offset, wtf_size_t len) const {
+  CHECK_LE(offset, length());
+  return StringView(*this, offset, std::min(len, length() - offset));
+}
+
+void StringView::remove_prefix(wtf_size_t len) {
+  CHECK_LE(len, length());
+  *this = substr(len);
+}
+
+void StringView::remove_suffix(wtf_size_t len) {
+  CHECK_LE(len, length());
+  *this = substr(0, length() - len);
+}
+
+StringView StringView::StripWhiteSpace() const {
+  return VisitCharacters(*this, [&](auto chars) {
+    const auto [start, len] = internal::StrippedMatchedCharactersRange(
+        chars, unicode::IsSpaceOrNewline);
+    if (start == 0 && len == length_) {
+      return *this;
+    }
+    return StringView(chars.subspan(start, len));
+  });
+}
+
+StringView StringView::StripWhiteSpace(
+    IsWhiteSpaceFunctionPtr predicate) const {
+  return VisitCharacters(*this, [&](auto chars) {
+    const auto [start, len] =
+        internal::StrippedMatchedCharactersRange(chars, predicate);
+    if (start == 0 && len == length_) {
+      return *this;
+    }
+    return StringView(chars.subspan(start, len));
+  });
+}
+
+Vector<StringView> StringView::Split(UChar separator) const {
+  return SplitInternal(*this, separator, /* allow_empty_entries */ true);
+}
+
+Vector<StringView> StringView::SplitSkippingEmpty(UChar separator) const {
+  return SplitInternal(*this, separator, /* allow_empty_entries */ false);
 }
 
 std::ostream& operator<<(std::ostream& out, const StringView& string) {

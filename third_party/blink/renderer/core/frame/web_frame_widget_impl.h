@@ -289,7 +289,8 @@ class CORE_EXPORT WebFrameWidgetImpl
                       const Vector<ui::ImeTextSpan>& ime_text_spans,
                       const gfx::Range& replacement_range,
                       int selection_start,
-                      int selection_end) override;
+                      int selection_end,
+                      mojom::blink::ImeState ime_state) override;
   void CommitText(const String& text,
                   const Vector<ui::ImeTextSpan>& ime_text_spans,
                   const gfx::Range& replacement_range,
@@ -332,6 +333,8 @@ class CORE_EXPORT WebFrameWidgetImpl
   void SetLayerTreeDebugState(const cc::LayerTreeDebugState& state) override;
   void SetMayThrottleIfUndrawnFrames(
       bool may_throttle_if_undrawn_frames) override;
+  std::unique_ptr<cc::ScopedRequestHighFramerate> RequestHighFramerate()
+      override;
   int GetVirtualKeyboardResizeHeight() const override;
 
   void OnTaskCompletedForFrame(base::TimeTicks start_time,
@@ -759,6 +762,8 @@ class CORE_EXPORT WebFrameWidgetImpl
 
   void OnFirstContentfulPaint(const base::TimeTicks& first_paint_time) override;
 
+  WidgetBase* widget_base_for_testing() const { return widget_base_.get(); }
+
  protected:
   // WidgetBaseClient overrides:
   void ScheduleAnimation(bool urgent) override;
@@ -770,8 +775,6 @@ class CORE_EXPORT WebFrameWidgetImpl
   // Whether compositing to LCD text should be auto determined. This can be
   // overridden by tests to disable this.
   virtual bool ShouldAutoDetermineCompositingToLCDTextSetting();
-
-  WidgetBase* widget_base_for_testing() const { return widget_base_.get(); }
 
   // WebFrameWidget overrides.
   cc::LayerTreeHost* LayerTreeHost() override;

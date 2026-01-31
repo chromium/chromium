@@ -10,7 +10,6 @@
 #include "base/check.h"
 #include "base/values.h"
 #include "build/buildflag.h"
-#include "printing/buildflags/buildflags.h"
 #include "printing/metafile.h"
 #include "printing/mojom/print.mojom.h"
 #include "printing/print_dialog_linux_interface.h"
@@ -51,13 +50,14 @@ PrintingContextLinux::PrintingContextLinux(
 
 PrintingContextLinux::~PrintingContextLinux() = default;
 
-void PrintingContextLinux::EnsurePrintDialog() {
+void PrintingContextLinux::EnsurePrintDialog(bool show_system_dialog) {
   if (print_dialog_) {
     return;
   }
 
   if (g_print_dialog_factory) {
-    print_dialog_ = g_print_dialog_factory->CreatePrintDialog(this);
+    print_dialog_ =
+        g_print_dialog_factory->CreatePrintDialog(this, show_system_dialog);
   }
 }
 
@@ -78,7 +78,7 @@ void PrintingContextLinux::AskUserForSettings(int max_pages,
 mojom::ResultCode PrintingContextLinux::UseDefaultSettings() {
   DCHECK(!in_print_job_);
 
-  EnsurePrintDialog();
+  EnsurePrintDialog(/*show_system_dialog=*/true);
 
   if (print_dialog_) {
     print_dialog_->UseDefaultSettings();
@@ -100,7 +100,7 @@ mojom::ResultCode PrintingContextLinux::UpdatePrinterSettings(
   DCHECK(!printer_settings.show_system_dialog);
   DCHECK(!in_print_job_);
 
-  EnsurePrintDialog();
+  EnsurePrintDialog(/*show_system_dialog=*/false);
 
   if (print_dialog_) {
     // PrintDialogGtk::UpdateSettings() calls InitWithSettings() so settings_
@@ -138,7 +138,17 @@ mojom::ResultCode PrintingContextLinux::NewDocument(
     // Take the settings captured by the browser process from the system print
     // dialog and apply them to this printing context in the PrintBackend
     // service.
-    EnsurePrintDialog();
+    if (!print_dialog_) {
+      // Ensure a print dialog is created with a type matching the settings
+      // provided by the browser process.
+      if (g_print_dialog_factory) {
+        print_dialog_ = g_print_dialog_factory->CreatePrintDialogForSettings(
+            this, *settings_);
+      }
+    }
+    if (print_dialog_) {
+      print_dialog_->LoadPrintSettings(*settings_);
+    }
   }
 #endif
 

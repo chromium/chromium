@@ -19,10 +19,10 @@ class ScannerAction;
 namespace ash {
 
 // Converts a `manta::proto::ScannerAction` into an "externally tagged"
-// `base::Value::Dict` for use in filing feedback.
+// `base::DictValue` for use in filing feedback.
 // Required as Chromium's lite runtime for Protobuf does not support descriptors
 // and, by extension, text format.
-ASH_EXPORT base::Value::Dict ScannerActionToDict(
+ASH_EXPORT base::DictValue ScannerActionToDict(
     manta::proto::ScannerAction action);
 
 // Converts `base::Value` into a "flattened" user-facing string, comprising

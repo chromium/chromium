@@ -84,6 +84,11 @@ class NavigationItemImpl : public web::NavigationItem {
   void SetIsCreatedFromHashChange(bool hash_change);
   bool IsCreatedFromHashChange() const;
 
+  // Whether this navigation is the result of an automatic navigation without
+  // any user interaction.
+  void SetWasCreatedAutomatically(bool value);
+  bool WasCreatedAutomatically() const;
+
   // Initiation type of this pending navigation. Resets to NONE after commit.
   void SetNavigationInitiationType(
       web::NavigationInitiationType navigation_initiation_type);
@@ -148,6 +153,7 @@ class NavigationItemImpl : public web::NavigationItem {
   UserAgentType user_agent_type_ = UserAgentType::NONE;
   NSData* security_scoped_file_resource_ = nil;
   NSMutableDictionary* http_request_headers_ = nil;
+  bool was_created_automatically_ = false;
 
   NSString* serialized_state_object_ = nil;
   bool is_created_from_hash_change_ = false;

@@ -31,7 +31,6 @@
 #include "components/signin/public/identity_manager/access_token_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/primary_account_access_token_fetcher.h"
-#include "components/signin/public/identity_manager/scope_set.h"
 #include "components/sync/base/user_selectable_type.h"
 #include "components/sync/service/sync_service.h"
 #include "components/sync/service/sync_user_settings.h"
@@ -458,7 +457,7 @@ void TailoredSecurityService::
   pending_tailored_security_requests_.erase(request);
 
   base::Time previous_update = last_updated_;
-  base::Value::Dict response_value = ReadResponse(request);
+  base::DictValue response_value = ReadResponse(request);
   std::optional<bool> history_recording_enabled =
       response_value.FindBool("history_recording_enabled");
 
@@ -488,7 +487,7 @@ void TailoredSecurityService::SetTailoredSecurityBitForTesting(
       CreateRequest(url, std::move(completion_callback), traffic_annotation);
 
   auto enable_tailored_security_service =
-      base::Value::Dict().Set("history_recording_enabled", is_enabled);
+      base::DictValue().Set("history_recording_enabled", is_enabled);
   request->SetPostData(
       base::WriteJson(enable_tailored_security_service).value_or(""));
 
@@ -498,8 +497,8 @@ void TailoredSecurityService::SetTailoredSecurityBitForTesting(
 }
 
 // static
-base::Value::Dict TailoredSecurityService::ReadResponse(Request* request) {
-  base::Value::Dict result;
+base::DictValue TailoredSecurityService::ReadResponse(Request* request) {
+  base::DictValue result;
   if (request->GetResponseCode() == net::HTTP_OK) {
     std::optional<base::Value> json_value = base::JSONReader::Read(
         request->GetResponseBody(), base::JSON_PARSE_CHROMIUM_EXTENSIONS);

@@ -140,6 +140,11 @@ class COMPONENT_EXPORT(CHROMEOS_UI_FRAME) ImmersiveFullscreenController
   void LockRevealedState(AnimateReveal animate_reveal) override;
   void UnlockRevealedState() override;
 
+  // Returns true if the `view` is a part of top chrome UI that should reveal a
+  // frame in a immersive fullscreen mode, e.g. when `view` gets a keyboard
+  // focus, or is used as an anchor for a bubble or a menu.
+  bool ShouldRevealTopChrome(views::View* view);
+
   static void EnableForWidget(views::Widget* widget, bool enabled);
 
   static ImmersiveFullscreenController* Get(views::Widget* widget);

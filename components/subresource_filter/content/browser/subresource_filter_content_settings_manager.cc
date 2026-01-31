@@ -72,7 +72,7 @@ void SubresourceFilterContentSettingsManager::AllowlistSite(const GURL& url) {
 }
 
 void SubresourceFilterContentSettingsManager::OnDidShowUI(const GURL& url) {
-  std::optional<base::Value::Dict> dict = GetSiteMetadata(url);
+  std::optional<base::DictValue> dict = GetSiteMetadata(url);
   if (!dict) {
     dict = CreateMetadataDictWithActivation(true /* is_activated */);
   }
@@ -88,7 +88,7 @@ bool SubresourceFilterContentSettingsManager::ShouldShowUIForSite(
     return true;
   }
 
-  std::optional<base::Value::Dict> dict = GetSiteMetadata(url);
+  std::optional<base::DictValue> dict = GetSiteMetadata(url);
   if (!dict) {
     return true;
   }
@@ -108,8 +108,8 @@ void SubresourceFilterContentSettingsManager::SetSiteMetadataBasedOnActivation(
     const GURL& url,
     bool is_activated,
     ActivationSource activation_source,
-    std::optional<base::Value::Dict> additional_data) {
-  std::optional<base::Value::Dict> dict = GetSiteMetadata(url);
+    std::optional<base::DictValue> additional_data) {
+  std::optional<base::DictValue> dict = GetSiteMetadata(url);
 
   if (!is_activated &&
       ShouldDeleteDataWithNoActivation(dict, activation_source)) {
@@ -153,7 +153,7 @@ void SubresourceFilterContentSettingsManager::SetSiteMetadataBasedOnActivation(
   SetSiteMetadata(url, std::move(dict));
 }
 
-std::optional<base::Value::Dict>
+std::optional<base::DictValue>
 SubresourceFilterContentSettingsManager::GetSiteMetadata(
     const GURL& url) const {
   base::Value value = settings_map_->GetWebsiteSetting(
@@ -167,13 +167,13 @@ SubresourceFilterContentSettingsManager::GetSiteMetadata(
 
 void SubresourceFilterContentSettingsManager::SetSiteMetadataForTesting(
     const GURL& url,
-    std::optional<base::Value::Dict> dict) {
+    std::optional<base::DictValue> dict) {
   SetSiteMetadata(url, std::move(dict));
 }
 
 void SubresourceFilterContentSettingsManager::SetSiteMetadata(
     const GURL& url,
-    std::optional<base::Value::Dict> dict) {
+    std::optional<base::DictValue> dict) {
   if (url.is_empty()) {
     return;
   }
@@ -207,17 +207,17 @@ void SubresourceFilterContentSettingsManager::SetSiteMetadata(
       dict ? base::Value(std::move(*dict)) : base::Value(), constraints);
 }
 
-base::Value::Dict
+base::DictValue
 SubresourceFilterContentSettingsManager::CreateMetadataDictWithActivation(
     bool is_activated) {
-  base::Value::Dict dict;
+  base::DictValue dict;
   dict.Set(kActivatedKey, is_activated);
 
   return dict;
 }
 
 bool SubresourceFilterContentSettingsManager::ShouldDeleteDataWithNoActivation(
-    const std::optional<base::Value::Dict>& dict,
+    const std::optional<base::DictValue>& dict,
     ActivationSource activation_source) {
   // For the ads intervention dry run experiment we want to make sure that
   // non activated pages get properly tagged for metrics collection. Don't
@@ -245,7 +245,7 @@ bool SubresourceFilterContentSettingsManager::ShouldDeleteDataWithNoActivation(
 
 bool SubresourceFilterContentSettingsManager::GetSiteActivationFromMetadata(
     const GURL& url) {
-  std::optional<base::Value::Dict> dict = GetSiteMetadata(url);
+  std::optional<base::DictValue> dict = GetSiteMetadata(url);
 
   // If there is no dict, this is metadata V1, absence of metadata
   // implies no activation.

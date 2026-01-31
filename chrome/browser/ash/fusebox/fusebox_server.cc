@@ -70,9 +70,9 @@ bool UseEmptyTruncateWorkaround(std::string_view fs_url_as_string,
 
 std::pair<std::string, bool> ResolvePrefixMap(
     const fusebox::Server::PrefixMap& prefix_map,
-    const std::string& s) {
+    std::string_view s) {
   size_t i = s.find('/');
-  if (i == std::string::npos) {
+  if (i == std::string_view::npos) {
     i = s.size();
   }
   auto iter = prefix_map.find(s.substr(0, i));
@@ -132,7 +132,7 @@ ParseError::ParseError(int posix_error_code_arg, bool is_moniker_root_arg)
 base::expected<Parsed, ParseError> ParseFileSystemURL(
     const fusebox::MonikerMap& moniker_map,
     const fusebox::Server::PrefixMap& prefix_map,
-    const std::string& fs_url_as_string) {
+    std::string_view fs_url_as_string) {
   scoped_refptr<storage::FileSystemContext> fs_context =
       file_manager::util::GetFileManagerFileSystemContext(
           ProfileManager::GetActiveUserProfile());
@@ -154,8 +154,8 @@ base::expected<Parsed, ParseError> ParseFileSystemURL(
   // ResolvePrefixMap and MonikerMap::ExtractToken expects to find.
   std::string encoded;
   size_t slash = fs_url_as_string.find('/');
-  if (slash == std::string::npos) {
-    encoded = fs_url_as_string;
+  if (slash == std::string_view::npos) {
+    encoded = std::string(fs_url_as_string);
   } else {
     url::RawCanonOutputT<char> canon_output;
     url::EncodeURIComponent(fs_url_as_string.substr(slash + 1), &canon_output);
@@ -805,7 +805,7 @@ void Server::UnregisterFSURLPrefix(const std::string& subdir) {
 }
 
 storage::FileSystemURL Server::ResolveFilename(Profile* profile,
-                                               const std::string& filename) {
+                                               std::string_view filename) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   if (!base::StartsWith(filename, file_manager::util::kFuseBoxMediaSlashPath)) {
@@ -854,7 +854,7 @@ base::FilePath Server::InverseResolveFSURL(
 void Server::GetDebugJSONForKey(
     std::string_view key,
     base::OnceCallback<void(JSONKeyValuePair)> callback) {
-  base::Value::Dict subdirs;
+  base::DictValue subdirs;
   subdirs.Set(kMonikerSubdir, base::Value("[special]"));
   for (const auto& i : prefix_map_) {
     subdirs.Set(i.first,
@@ -863,7 +863,7 @@ void Server::GetDebugJSONForKey(
                      i.second.read_only ? " (read-only)" : " (read-write)"})));
   }
 
-  base::Value::Dict dict;
+  base::DictValue dict;
   dict.Set("monikers", moniker_map_.GetDebugJSON());
   dict.Set("subdirs", std::move(subdirs));
   std::move(callback).Run(std::make_pair(key, base::Value(std::move(dict))));

@@ -17,7 +17,7 @@ struct ResolveHostResult {
   ResolveHostResult(int result_code,
                     const HostResolver::ResolveHostRequest& completed_request);
 
-  void AddToDict(base::Value::Dict& dict) const;
+  void AddToDict(base::DictValue& dict) const;
 
   const int result_code;
   const bool is_address_list_empty;

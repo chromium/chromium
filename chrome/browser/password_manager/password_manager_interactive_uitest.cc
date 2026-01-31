@@ -14,8 +14,8 @@
 #include "build/build_config.h"
 #include "chrome/browser/password_manager/chrome_password_manager_client.h"
 #include "chrome/browser/password_manager/password_manager_interactive_test_base.h"
+#include "chrome/browser/password_manager/password_manager_test_util.h"
 #include "chrome/browser/password_manager/passwords_navigation_observer.h"
-#include "chrome/browser/password_manager/profile_password_store_factory.h"
 #include "chrome/browser/ui/autofill/autofill_suggestion_controller.h"
 #include "chrome/browser/ui/autofill/chrome_autofill_client.h"
 #include "chrome/browser/ui/browser.h"
@@ -69,10 +69,7 @@ class PasswordManagerInteractiveTest
 IN_PROC_BROWSER_TEST_F(PasswordManagerInteractiveTest, UsernameChanged) {
   // At first let us save a credential to the password store.
   scoped_refptr<password_manager::TestPasswordStore> password_store =
-      static_cast<password_manager::TestPasswordStore*>(
-          ProfilePasswordStoreFactory::GetForProfile(
-              browser()->profile(), ServiceAccessType::IMPLICIT_ACCESS)
-              .get());
+      GetDefaultPasswordStore(browser()->profile());
   password_manager::PasswordForm signin_form;
   signin_form.signon_realm = embedded_test_server()->base_url().spec();
   signin_form.url = embedded_test_server()->base_url();
@@ -177,10 +174,7 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerInteractiveTest,
                        ManualFallbackForSaving_GoToManagedState) {
   // At first let us save a credential to the password store.
   scoped_refptr<password_manager::TestPasswordStore> password_store =
-      static_cast<password_manager::TestPasswordStore*>(
-          ProfilePasswordStoreFactory::GetForProfile(
-              browser()->profile(), ServiceAccessType::IMPLICIT_ACCESS)
-              .get());
+      GetDefaultPasswordStore(browser()->profile());
   password_manager::PasswordForm signin_form;
   signin_form.signon_realm = embedded_test_server()->base_url().spec();
   signin_form.url = embedded_test_server()->base_url();
@@ -315,10 +309,8 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerInteractiveTest,
 #endif
 IN_PROC_BROWSER_TEST_F(PasswordManagerInteractiveTest,
                        MAYBE_DeleteCredentialsUpdateDropdown) {
-  password_manager::PasswordStoreInterface* password_store =
-      ProfilePasswordStoreFactory::GetForProfile(
-          browser()->profile(), ServiceAccessType::IMPLICIT_ACCESS)
-          .get();
+  scoped_refptr<password_manager::TestPasswordStore> password_store =
+      GetDefaultPasswordStore(browser()->profile());
 
   // Start with two logins in the password store.
   password_manager::PasswordForm admin_form;
@@ -444,10 +436,7 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerInteractiveTest, ChangePwdFormCleared) {
   base::HistogramTester histogram_tester;
   // At first let us save credentials to the PasswordManager.
   scoped_refptr<password_manager::TestPasswordStore> password_store =
-      static_cast<password_manager::TestPasswordStore*>(
-          ProfilePasswordStoreFactory::GetForProfile(
-              browser()->profile(), ServiceAccessType::IMPLICIT_ACCESS)
-              .get());
+      GetDefaultPasswordStore(browser()->profile());
   password_manager::PasswordForm signin_form;
   signin_form.signon_realm = embedded_test_server()->base_url().spec();
   signin_form.username_value = u"temp";
@@ -487,10 +476,7 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerInteractiveTest,
                        ChangePwdFormFieldsCleared) {
   // At first let us save credentials to the PasswordManager.
   scoped_refptr<password_manager::TestPasswordStore> password_store =
-      static_cast<password_manager::TestPasswordStore*>(
-          ProfilePasswordStoreFactory::GetForProfile(
-              browser()->profile(), ServiceAccessType::IMPLICIT_ACCESS)
-              .get());
+      GetDefaultPasswordStore(browser()->profile());
   password_manager::PasswordForm signin_form;
   signin_form.signon_realm = embedded_test_server()->base_url().spec();
   signin_form.username_value = u"temp";
@@ -546,10 +532,7 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerInteractiveTest,
   base::HistogramTester histogram_tester;
   // At first let us save credentials to the PasswordManager.
   scoped_refptr<password_manager::TestPasswordStore> password_store =
-      static_cast<password_manager::TestPasswordStore*>(
-          ProfilePasswordStoreFactory::GetForProfile(
-              browser()->profile(), ServiceAccessType::IMPLICIT_ACCESS)
-              .get());
+      GetDefaultPasswordStore(browser()->profile());
   password_manager::PasswordForm signin_form;
   signin_form.signon_realm = embedded_test_server()->base_url().spec();
   signin_form.username_value = u"temp";
@@ -668,10 +651,7 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerInteractiveTestWithSigninInterception,
   helper_.SetupProfilesForInterception(profile);
   // Prepopulate Gaia credentials to trigger an update bubble.
   scoped_refptr<password_manager::TestPasswordStore> password_store =
-      static_cast<password_manager::TestPasswordStore*>(
-          ProfilePasswordStoreFactory::GetForProfile(
-              profile, ServiceAccessType::IMPLICIT_ACCESS)
-              .get());
+      GetDefaultPasswordStore(browser()->profile());
   helper_.StoreGaiaCredentials(password_store);
 
   helper_.NavigateToGaiaSigninPage(WebContents());

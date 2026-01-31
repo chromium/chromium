@@ -150,14 +150,6 @@ class BrowserController {
                                         BrowserType browser_type,
                                         const CreateParams& params) = 0;
 
-  // Creates a "custom tab" browser with the given contents.
-  // TODO(crbug.com/369689187): This is a special kind of popup only used by
-  // ARC. It's based on the Browser::TYPE_CUSTOM_TAB type that only exists on
-  // ChromeOS. Consider getting rid of this special type.
-  virtual BrowserDelegate* CreateCustomTab(
-      const AccountId& account_id,
-      std::unique_ptr<content::WebContents> contents) = 0;
-
   // Facilitates observation of browser events.
   virtual void AddObserver(Observer* observer) = 0;
   virtual void RemoveObserver(Observer* observer) = 0;

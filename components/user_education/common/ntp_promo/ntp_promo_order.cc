@@ -6,7 +6,6 @@
 
 #include <algorithm>
 
-#include "base/containers/contains.h"
 #include "base/logging.h"
 #include "components/user_education/common/ntp_promo/ntp_promo_identifier.h"
 #include "components/user_education/common/ntp_promo/ntp_promo_registry.h"
@@ -77,7 +76,7 @@ std::vector<NtpPromoIdentifier> NtpPromoOrderPolicy::OrderPendingPromos(
     const auto* spec = registry_->GetNtpPromoSpecification(id);
     CHECK(spec);
     for (const auto& after : spec->show_after()) {
-      if (base::Contains(ids, after)) {
+      if (std::ranges::contains(ids, after)) {
         show_after_map[id].insert(after);
       }
     }

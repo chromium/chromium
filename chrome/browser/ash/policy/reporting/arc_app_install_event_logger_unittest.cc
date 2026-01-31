@@ -219,11 +219,11 @@ class AppInstallEventLoggerTest : public testing::Test {
   PolicyMap CreatePolicyWithForceInstalls(std::set<std::string> package_names) {
     PolicyMap policy_map;
 
-    base::Value::Dict arc_policy;
-    base::Value::List list;
+    base::DictValue arc_policy;
+    base::ListValue list;
 
     for (std::string package_name : package_names) {
-      base::Value::Dict package;
+      base::DictValue package;
       package.Set("installType", "FORCE_INSTALLED");
       package.Set("packageName", package_name);
       list.Append(std::move(package));
@@ -239,16 +239,16 @@ class AppInstallEventLoggerTest : public testing::Test {
 
   base::Value CreateComplianceReport(
       std::set<std::string> noncompliant_packages) {
-    base::Value::List details;
+    base::ListValue details;
 
     for (std::string package_name : noncompliant_packages) {
-      base::Value::Dict package;
+      base::DictValue package;
       package.Set("nonComplianceReason", 5);
       package.Set("packageName", package_name);
       details.Append(std::move(package));
     }
 
-    base::Value::Dict compliance_report;
+    base::DictValue compliance_report;
     compliance_report.Set("nonComplianceDetails", std::move(details));
     return base::Value(std::move(compliance_report));
   }
@@ -268,7 +268,7 @@ class AppInstallEventLoggerTest : public testing::Test {
 // pending. Clear all data related to app-install event log collection. Verify
 // that the lists are cleared.
 TEST_F(AppInstallEventLoggerTest, Clear) {
-  base::Value::List list;
+  base::ListValue list;
   list.Append("test");
   profile_.GetPrefs()->SetList(arc::prefs::kArcPushInstallAppsRequested,
                                list.Clone());
@@ -433,28 +433,28 @@ TEST_F(AppInstallEventLoggerTest, UpdatePolicy) {
 
   PolicyMap new_policy_map;
 
-  base::Value::Dict arc_policy;
-  base::Value::List list;
+  base::DictValue arc_policy;
+  base::ListValue list;
 
   // Test that REQUIRED, PREINSTALLED and FORCE_INSTALLED are markers to include
   // app to the tracking. BLOCKED and AVAILABLE are excluded.
-  base::Value::Dict package1;
+  base::DictValue package1;
   package1.Set("installType", "REQUIRED");
   package1.Set("packageName", kPackageName);
   list.Append(std::move(package1));
-  base::Value::Dict package2;
+  base::DictValue package2;
   package2.Set("installType", "PREINSTALLED");
   package2.Set("packageName", kPackageName2);
   list.Append(std::move(package2));
-  base::Value::Dict package3;
+  base::DictValue package3;
   package3.Set("installType", "FORCE_INSTALLED");
   package3.Set("packageName", kPackageName3);
   list.Append(std::move(package3));
-  base::Value::Dict package4;
+  base::DictValue package4;
   package4.Set("installType", "BLOCKED");
   package4.Set("packageName", kPackageName4);
   list.Append(std::move(package4));
-  base::Value::Dict package5;
+  base::DictValue package5;
   package5.Set("installType", "AVAILABLE");
   package5.Set("packageName", kPackageName5);
   list.Append(std::move(package5));

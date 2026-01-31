@@ -7,6 +7,7 @@ module cc.mojom;
 import "services/viz/public/mojom/compositing/local_surface_id.mojom";
 import "services/viz/public/mojom/compositing/selection.mojom";
 import "services/viz/public/mojom/compositing/vertical_scroll_direction.mojom";
+import "cc/mojom/tracked_element_bounds.mojom";
 import "skia/public/mojom/skcolor4f.mojom";
 import "ui/gfx/geometry/mojom/geometry.mojom";
 
@@ -84,6 +85,9 @@ struct RenderFrameMetadata {
   // `content::FrameNavigationEntry`. This is only set if the primary main frame
   // is rendering to this compositor.
   int64 primary_main_frame_item_sequence_number;
+
+  // Screen-space bounds of 'tracked elements' attached to the document
+  cc.mojom.TrackedElementBounds tracked_element_bounds;
 
   // Used to position Android/iOS bottom bar, whose position is computed by the
   // renderer compositor.

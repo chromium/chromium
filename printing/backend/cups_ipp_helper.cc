@@ -13,7 +13,6 @@
 #include <string_view>
 #include <vector>
 
-#include "base/containers/contains.h"
 #include "base/containers/fixed_flat_map.h"
 #include "base/containers/fixed_flat_set.h"
 #include "base/logging.h"
@@ -433,8 +432,8 @@ void ExtractMediaTypes(const CupsOptionProvider& printer,
 bool CollateCapable(const CupsOptionProvider& printer) {
   std::vector<std::string_view> values =
       printer.GetSupportedOptionValueStrings(kIppCollate);
-  return base::Contains(values, kCollated) &&
-         base::Contains(values, kUncollated);
+  return std::ranges::contains(values, kCollated) &&
+         std::ranges::contains(values, kUncollated);
 }
 
 bool CollateDefault(const CupsOptionProvider& printer) {
@@ -457,7 +456,7 @@ bool PinSupported(const CupsOptionProvider& printer) {
 
   std::vector<std::string_view> values =
       printer.GetSupportedOptionValueStrings(kIppPinEncryption);
-  return base::Contains(values, kPinEncryptionNone);
+  return std::ranges::contains(values, kPinEncryptionNone);
 }
 
 // Returns the number of IPP attributes added to `caps` (not necessarily in
@@ -480,7 +479,7 @@ size_t AddAttributes(const CupsOptionProvider& printer,
   size_t attr_count = 0;
   for (int i = 0; i < num_options; i++) {
     const char* option_name = ippGetString(attr, i, nullptr);
-    if (base::Contains(kOptionsToIgnore, option_name)) {
+    if (kOptionsToIgnore.contains(option_name)) {
       continue;
     }
     auto it = handlers->find(option_name);

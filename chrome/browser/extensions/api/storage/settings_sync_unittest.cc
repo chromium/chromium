@@ -90,7 +90,7 @@ testing::AssertionResult ValuesEq(
 // Logs when different.
 testing::AssertionResult SettingsEq(const char* _1,
                                     const char* _2,
-                                    const base::Value::Dict& expected,
+                                    const base::DictValue& expected,
                                     ValueStore::ReadResult actual) {
   if (!actual.status().ok()) {
     return testing::AssertionFailure()
@@ -422,7 +422,7 @@ TEST_F(ExtensionSettingsSyncTest, AnySyncDataOverwritesLocalData) {
 
   // Maintain dictionaries mirrored to the expected values of the settings in
   // each storage area.
-  base::Value::Dict expected1, expected2;
+  base::DictValue expected1, expected2;
 
   // Pre-populate one of the storage areas.
   ValueStore* storage1 = AddExtensionAndGetStorage("s1", type);
@@ -470,7 +470,7 @@ TEST_F(ExtensionSettingsSyncTest, ProcessSyncChanges) {
   PostOnBackendSequenceAndWait(FROM_HERE, [&, this]() {
     // Maintain dictionaries mirrored to the expected values of the settings in
     // each storage area.
-    base::Value::Dict expected1, expected2;
+    base::DictValue expected1, expected2;
 
     storage1->Set(DEFAULTS, "foo", value1);
     expected1.Set("foo", value1.Clone());
@@ -742,12 +742,12 @@ TEST_F(ExtensionSettingsSyncTest, FailingStartSyncingDisablesSync) {
     GetExisting("bad", data_type)->set_status_code(ValueStore::OK);
 
     {
-      base::Value::Dict dict;
+      base::DictValue dict;
       dict.Set("foo", fooValue.Clone());
       EXPECT_PRED_FORMAT2(SettingsEq, dict, good->Get());
     }
     {
-      base::Value::Dict dict;
+      base::DictValue dict;
       EXPECT_PRED_FORMAT2(SettingsEq, dict, bad->Get());
     }
 
@@ -761,13 +761,13 @@ TEST_F(ExtensionSettingsSyncTest, FailingStartSyncingDisablesSync) {
     EXPECT_EQ(1u, sync_processor_->changes().size());
 
     {
-      base::Value::Dict dict;
+      base::DictValue dict;
       dict.Set("foo", fooValue.Clone());
       dict.Set("bar", barValue.Clone());
       EXPECT_PRED_FORMAT2(SettingsEq, dict, good->Get());
     }
     {
-      base::Value::Dict dict;
+      base::DictValue dict;
       dict.Set("bar", barValue.Clone());
       EXPECT_PRED_FORMAT2(SettingsEq, dict, bad->Get());
     }
@@ -786,13 +786,13 @@ TEST_F(ExtensionSettingsSyncTest, FailingStartSyncingDisablesSync) {
     }
 
     {
-      base::Value::Dict dict;
+      base::DictValue dict;
       dict.Set("foo", barValue.Clone());
       dict.Set("bar", barValue.Clone());
       EXPECT_PRED_FORMAT2(SettingsEq, dict, good->Get());
     }
     {
-      base::Value::Dict dict;
+      base::DictValue dict;
       dict.Set("bar", barValue.Clone());
       EXPECT_PRED_FORMAT2(SettingsEq, dict, bad->Get());
     }
@@ -808,13 +808,13 @@ TEST_F(ExtensionSettingsSyncTest, FailingStartSyncingDisablesSync) {
     EXPECT_EQ(1u, sync_processor_->changes().size());
 
     {
-      base::Value::Dict dict;
+      base::DictValue dict;
       dict.Set("foo", barValue.Clone());
       dict.Set("bar", fooValue.Clone());
       EXPECT_PRED_FORMAT2(SettingsEq, dict, good->Get());
     }
     {
-      base::Value::Dict dict;
+      base::DictValue dict;
       dict.Set("bar", fooValue.Clone());
       EXPECT_PRED_FORMAT2(SettingsEq, dict, bad->Get());
     }
@@ -833,13 +833,13 @@ TEST_F(ExtensionSettingsSyncTest, FailingStartSyncingDisablesSync) {
     GetExisting("bad", data_type)->set_status_code(ValueStore::OK);
 
     {
-      base::Value::Dict dict;
+      base::DictValue dict;
       dict.Set("foo", fooValue.Clone());
       dict.Set("bar", fooValue.Clone());
       EXPECT_PRED_FORMAT2(SettingsEq, dict, good->Get());
     }
     {
-      base::Value::Dict dict;
+      base::DictValue dict;
       dict.Set("bar", fooValue.Clone());
       EXPECT_PRED_FORMAT2(SettingsEq, dict, bad->Get());
     }
@@ -885,13 +885,13 @@ TEST_F(ExtensionSettingsSyncTest, FailingStartSyncingDisablesSync) {
     }
 
     {
-      base::Value::Dict dict;
+      base::DictValue dict;
       dict.Set("foo", fooValue.Clone());
       dict.Set("bar", fooValue.Clone());
       EXPECT_PRED_FORMAT2(SettingsEq, dict, good->Get());
     }
     {
-      base::Value::Dict dict;
+      base::DictValue dict;
       dict.Set("bar", fooValue.Clone());
       EXPECT_PRED_FORMAT2(SettingsEq, dict, bad->Get());
     }
@@ -925,12 +925,12 @@ TEST_F(ExtensionSettingsSyncTest, FailingProcessChangesDisablesSync) {
     EXPECT_EQ(0u, sync_processor_->changes().size());
 
     {
-      base::Value::Dict dict;
+      base::DictValue dict;
       dict.Set("foo", fooValue.Clone());
       EXPECT_PRED_FORMAT2(SettingsEq, dict, good->Get());
     }
     {
-      base::Value::Dict dict;
+      base::DictValue dict;
       dict.Set("foo", fooValue.Clone());
       EXPECT_PRED_FORMAT2(SettingsEq, dict, bad->Get());
     }
@@ -948,13 +948,13 @@ TEST_F(ExtensionSettingsSyncTest, FailingProcessChangesDisablesSync) {
     GetExisting("bad", data_type)->set_status_code(ValueStore::OK);
 
     {
-      base::Value::Dict dict;
+      base::DictValue dict;
       dict.Set("foo", fooValue.Clone());
       dict.Set("bar", barValue.Clone());
       EXPECT_PRED_FORMAT2(SettingsEq, dict, good->Get());
     }
     {
-      base::Value::Dict dict;
+      base::DictValue dict;
       dict.Set("foo", fooValue.Clone());
       EXPECT_PRED_FORMAT2(SettingsEq, dict, bad->Get());
     }
@@ -979,13 +979,13 @@ TEST_F(ExtensionSettingsSyncTest, FailingProcessChangesDisablesSync) {
     }
 
     {
-      base::Value::Dict dict;
+      base::DictValue dict;
       dict.Set("foo", fooValue.Clone());
       dict.Set("bar", barValue.Clone());
       EXPECT_PRED_FORMAT2(SettingsEq, dict, good->Get());
     }
     {
-      base::Value::Dict dict;
+      base::DictValue dict;
       dict.Set("foo", barValue.Clone());
       EXPECT_PRED_FORMAT2(SettingsEq, dict, bad->Get());
     }
@@ -1086,13 +1086,13 @@ TEST_F(ExtensionSettingsSyncTest, FailureToReadChangesToPushDisablesSync) {
     }
 
     {
-      base::Value::Dict dict;
+      base::DictValue dict;
       dict.Set("foo", barValue.Clone());
       dict.Set("bar", barValue.Clone());
       EXPECT_PRED_FORMAT2(SettingsEq, dict, good->Get());
     }
     {
-      base::Value::Dict dict;
+      base::DictValue dict;
       dict.Set("foo", fooValue.Clone());
       dict.Set("bar", barValue.Clone());
       EXPECT_PRED_FORMAT2(SettingsEq, dict, bad->Get());
@@ -1169,13 +1169,13 @@ TEST_F(ExtensionSettingsSyncTest, FailureToPushLocalStateDisablesSync) {
     }
 
     {
-      base::Value::Dict dict;
+      base::DictValue dict;
       dict.Set("foo", barValue.Clone());
       dict.Set("bar", barValue.Clone());
       EXPECT_PRED_FORMAT2(SettingsEq, dict, good->Get());
     }
     {
-      base::Value::Dict dict;
+      base::DictValue dict;
       dict.Set("foo", barValue.Clone());
       EXPECT_PRED_FORMAT2(SettingsEq, dict, bad->Get());
     }
@@ -1253,13 +1253,13 @@ TEST_F(ExtensionSettingsSyncTest, FailureToPushLocalChangeDisablesSync) {
     }
 
     {
-      base::Value::Dict dict;
+      base::DictValue dict;
       dict.Set("foo", barValue.Clone());
       dict.Set("bar", barValue.Clone());
       EXPECT_PRED_FORMAT2(SettingsEq, dict, good->Get());
     }
     {
-      base::Value::Dict dict;
+      base::DictValue dict;
       dict.Set("foo", barValue.Clone());
       EXPECT_PRED_FORMAT2(SettingsEq, dict, bad->Get());
     }
@@ -1328,7 +1328,7 @@ TEST_F(ExtensionSettingsSyncTest,
       GetSyncableService(data_type)->ProcessSyncChanges(FROM_HERE, change_list);
     }
     {
-      base::Value::Dict expected;
+      base::DictValue expected;
       expected.Set("large_value", large_value.Clone());
       EXPECT_PRED_FORMAT2(SettingsEq, expected, storage1->Get());
       EXPECT_PRED_FORMAT2(SettingsEq, expected, storage2->Get());
@@ -1360,7 +1360,7 @@ TEST_F(ExtensionSettingsSyncTest, Dots) {
       ValueStore::ReadResult data = storage->Get();
       ASSERT_TRUE(data.status().ok());
 
-      base::Value::Dict expected_data;
+      base::DictValue expected_data;
       expected_data.Set("key.with.dot", base::Value("value"));
       EXPECT_EQ(expected_data, data.settings());
     }

@@ -4,6 +4,7 @@
 
 #include "media/audio/application_loopback_device_helper.h"
 
+#include "base/process/process_handle.h"
 #include "media/audio/audio_device_description.h"
 #include "testing/gtest/include/gtest/gtest.h"
 namespace media {
@@ -12,9 +13,20 @@ TEST(ApplicationLoopbackDeviceHelperTest, EncodeDecode) {
   uint32_t application_id = 12345;
   std::string device_id = CreateApplicationLoopbackDeviceId(application_id);
   EXPECT_TRUE(AudioDeviceDescription::IsApplicationLoopbackDevice(device_id));
+  EXPECT_FALSE(IsRestrictOwnAudioBrowserLoopbackDeviceId(device_id));
   uint32_t decoded_application_id =
       GetApplicationIdFromApplicationLoopbackDeviceId(device_id);
   EXPECT_EQ(application_id, decoded_application_id);
+}
+
+TEST(ApplicationLoopbackDeviceHelperTest, RestrictOwnAudio) {
+  std::string device_id = CreateRestrictOwnAudioBrowserLoopbackDeviceId();
+  EXPECT_TRUE(AudioDeviceDescription::IsApplicationLoopbackDevice(device_id));
+  EXPECT_TRUE(IsRestrictOwnAudioBrowserLoopbackDeviceId(device_id));
+  uint32_t decoded_application_id =
+      GetApplicationIdFromApplicationLoopbackDeviceId(device_id);
+  EXPECT_EQ(static_cast<uint32_t>(base::GetCurrentProcId()),
+            decoded_application_id);
 }
 
 }  // namespace media

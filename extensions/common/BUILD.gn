@@ -8,6 +8,10 @@ import("//extensions/buildflags/buildflags.gni")
 import("//mojo/public/tools/bindings/mojom.gni")
 import("//testing/libfuzzer/fuzzer_test.gni")
 
+if (is_android) {
+  import("//build/config/android/rules.gni")
+}
+
 assert(enable_extensions_core)
 
 # If enable_extensions is true then enable_guest_view must also be true.
@@ -589,7 +593,6 @@ static_library("common") {
     "//ui/gfx/geometry",
     "//ui/gfx/ipc",
     "//ui/gfx/ipc/geometry",
-    "//ui/gfx/ipc/skia",
     "//url",
   ]
 
@@ -617,6 +620,13 @@ source_set("core_api_provider") {
     "//extensions/common/api",
     "//extensions/common/api:extensions_features",
   ]
+}
+
+if (is_android) {
+  java_cpp_features("java_features_srcjar") {
+    sources = [ "extension_features.cc" ]
+    class_name = "org.chromium.extensions.common.ExtensionFeatures"
+  }
 }
 
 source_set("test_support") {

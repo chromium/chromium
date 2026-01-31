@@ -153,35 +153,36 @@ InstallableIconFetcher::InstallableIconFetcher(
       prefer_maskable_(prefer_maskable),
       fetch_favicon_(fetch_favicon),
       finish_callback_(std::move(finish_callback)) {
-  downloading_icons_type_.push_back(IconPurpose::ANY);
-  if (prefer_maskable_) {
-    downloading_icons_type_.push_back(IconPurpose::MASKABLE);
-  }
-
   TryFetchingNextIcon();
 }
 
 InstallableIconFetcher::~InstallableIconFetcher() = default;
 
 void InstallableIconFetcher::TryFetchingNextIcon() {
-  while (!downloading_icons_type_.empty()) {
-    IconPurpose purpose = downloading_icons_type_.back();
-    downloading_icons_type_.pop_back();
+  blink::ManifestIconSelectorParams params;
+  params.purpose = prefer_maskable_ ? IconPurpose::MASKABLE : IconPurpose::ANY;
 
-    GURL icon_url = blink::ManifestIconSelector::FindBestMatchingSquareIcon(
-        manifest_icons_.get(), GetIdealPrimaryIconSizeInPx(purpose),
-        GetMinimumPrimaryIconSizeInPx(purpose), purpose);
+  params.ideal_icon_size_in_px = GetIdealPrimaryIconSizeInPx(params.purpose);
+  params.minimum_icon_size_in_px =
+      GetMinimumPrimaryIconSizeInPx(params.purpose);
 
-    if (icon_url.is_empty()) {
-      continue;
-    }
+  auto result = blink::ManifestIconSelector::FindBestMatchingIcon(
+      manifest_icons_.get(), params);
+  if (!result && prefer_maskable_) {
+    prefer_maskable_ = false;
+    TryFetchingNextIcon();
+    return;
+  }
 
+  if (result) {
     bool can_download_icon = content::ManifestIconDownloader::Download(
-        web_contents_.get(), icon_url, GetIdealPrimaryIconSizeInPx(purpose),
-        GetMinimumPrimaryIconSizeInPx(purpose),
+        web_contents_.get(), result->icon_url,
+        GetIdealPrimaryIconSizeInPx(result->icon_purpose),
+        GetMinimumPrimaryIconSizeInPx(result->icon_purpose),
         InstallableEvaluator::kMaximumIconSizeInPx,
         base::BindOnce(&InstallableIconFetcher::OnManifestIconFetched,
-                       weak_ptr_factory_.GetWeakPtr(), icon_url, purpose));
+                       weak_ptr_factory_.GetWeakPtr(), result->icon_url,
+                       result->icon_purpose));
     if (can_download_icon) {
       // We have started to download the current icon, wait for it to complete.
       return;
@@ -200,7 +201,14 @@ void InstallableIconFetcher::OnManifestIconFetched(const GURL& icon_url,
                                                    const IconPurpose purpose,
                                                    const SkBitmap& bitmap) {
   if (bitmap.drawsNothing()) {
-    TryFetchingNextIcon();
+    if (prefer_maskable_) {
+      // We preferred a maskable icon, but the one we got was invalid (e.g.,
+      // corrupted). Try again without preferring masking.
+      prefer_maskable_ = false;
+      TryFetchingNextIcon();
+    } else {
+      MaybeEndWithError(InstallableStatusCode::NO_ACCEPTABLE_ICON);
+    }
     return;
   }
 

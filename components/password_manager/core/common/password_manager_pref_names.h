@@ -293,6 +293,11 @@ inline constexpr char kPasswordManagerBlocklist[] =
 #endif  // BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN) ||
         // BUILDFLAG(IS_MAC)
 
+#if BUILDFLAG(IS_CHROMEOS)
+inline constexpr char kPinAuthenticationAvailableOnChromeOS[] =
+    "password_manager.pin_authentication_available_on_chrome_os";
+#endif
+
 }  // namespace password_manager::prefs
 
 #endif  // COMPONENTS_PASSWORD_MANAGER_CORE_COMMON_PASSWORD_MANAGER_PREF_NAMES_H_

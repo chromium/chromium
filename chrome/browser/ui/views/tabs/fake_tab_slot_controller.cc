@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/views/tabs/fake_tab_slot_controller.h"
 
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/views/tabs/tab_container.h"
 #include "chrome/browser/ui/views/tabs/tab_strip_controller.h"
 #include "ui/views/view_utils.h"
@@ -29,14 +30,6 @@ bool FakeTabSlotController::IsActiveTab(const TabSlotView* tab) const {
 }
 
 bool FakeTabSlotController::IsTabSelected(const TabSlotView* tab) const {
-  return false;
-}
-
-bool FakeTabSlotController::IsTabPinned(const TabSlotView* tab) const {
-  return false;
-}
-
-bool FakeTabSlotController::IsTabFirst(const TabSlotView* tab) const {
   return false;
 }
 
@@ -82,17 +75,8 @@ bool FakeTabSlotController::CanPaintThrobberToLayer() const {
   return paint_throbber_to_layer_;
 }
 
-bool FakeTabSlotController::HasVisibleBackgroundTabShapes() const {
-  return false;
-}
-
 SkColor FakeTabSlotController::GetTabSeparatorColor() const {
   return SK_ColorBLACK;
-}
-
-std::optional<int> FakeTabSlotController::GetCustomBackgroundId(
-    BrowserFrameActiveState active_state) const {
-  return std::nullopt;
 }
 
 std::u16string FakeTabSlotController::GetAccessibleTabName(
@@ -138,8 +122,8 @@ Browser* FakeTabSlotController::GetBrowser() {
   return nullptr;
 }
 
-bool FakeTabSlotController::IsFrameCondensed() const {
-  return false;
+BrowserWindowInterface* FakeTabSlotController::GetBrowserWindowInterface() {
+  return nullptr;
 }
 
 TabGroup* FakeTabSlotController::GetTabGroup(

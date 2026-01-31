@@ -16,12 +16,12 @@
 namespace ash::input_method {
 namespace {
 
-base::Value::Dict GenerateResultsFrom(const std::vector<std::string>& results) {
-  base::Value::List result_list;
+base::DictValue GenerateResultsFrom(const std::vector<std::string>& results) {
+  base::ListValue result_list;
   for (const auto& result : results) {
-    result_list.Append(base::Value::Dict().Set("text", result));
+    result_list.Append(base::DictValue().Set("text", result));
   }
-  return base::Value::Dict().Set("outputData", std::move(result_list));
+  return base::DictValue().Set("outputData", std::move(result_list));
 }
 
 }  // namespace

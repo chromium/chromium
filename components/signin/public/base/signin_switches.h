@@ -102,27 +102,72 @@ BASE_DECLARE_FEATURE(kChromeAndroidIdentitySurveyBookmarkPromo);
 COMPONENT_EXPORT(SIGNIN_SWITCHES)
 BASE_DECLARE_FEATURE(kChromeIdentitySurveyAddressBubbleSignin);
 COMPONENT_EXPORT(SIGNIN_SWITCHES)
+BASE_DECLARE_FEATURE_PARAM(double,
+                           kChromeIdentitySurveyAddressBubbleSigninProbability);
+COMPONENT_EXPORT(SIGNIN_SWITCHES)
 BASE_DECLARE_FEATURE(kChromeIdentitySurveyDiceWebSigninAccepted);
+COMPONENT_EXPORT(SIGNIN_SWITCHES)
+BASE_DECLARE_FEATURE_PARAM(
+    double,
+    kChromeIdentitySurveyDiceWebSigninAcceptedProbability);
 COMPONENT_EXPORT(SIGNIN_SWITCHES)
 BASE_DECLARE_FEATURE(kChromeIdentitySurveyDiceWebSigninDeclined);
 COMPONENT_EXPORT(SIGNIN_SWITCHES)
+BASE_DECLARE_FEATURE_PARAM(
+    double,
+    kChromeIdentitySurveyDiceWebSigninDeclinedProbability);
+COMPONENT_EXPORT(SIGNIN_SWITCHES)
 BASE_DECLARE_FEATURE(kChromeIdentitySurveyFirstRunSignin);
+COMPONENT_EXPORT(SIGNIN_SWITCHES)
+BASE_DECLARE_FEATURE_PARAM(double,
+                           kChromeIdentitySurveyFirstRunSigninProbability);
 COMPONENT_EXPORT(SIGNIN_SWITCHES)
 BASE_DECLARE_FEATURE(kChromeIdentitySurveyPasswordBubbleSignin);
 COMPONENT_EXPORT(SIGNIN_SWITCHES)
+BASE_DECLARE_FEATURE_PARAM(
+    double,
+    kChromeIdentitySurveyPasswordBubbleSigninProbability);
+COMPONENT_EXPORT(SIGNIN_SWITCHES)
 BASE_DECLARE_FEATURE(kChromeIdentitySurveyProfileMenuDismissed);
+COMPONENT_EXPORT(SIGNIN_SWITCHES)
+BASE_DECLARE_FEATURE_PARAM(
+    double,
+    kChromeIdentitySurveyProfileMenuDismissedProbability);
 COMPONENT_EXPORT(SIGNIN_SWITCHES)
 BASE_DECLARE_FEATURE(kChromeIdentitySurveyProfileMenuSignin);
 COMPONENT_EXPORT(SIGNIN_SWITCHES)
+BASE_DECLARE_FEATURE_PARAM(double,
+                           kChromeIdentitySurveyProfileMenuSigninProbability);
+COMPONENT_EXPORT(SIGNIN_SWITCHES)
 BASE_DECLARE_FEATURE(kChromeIdentitySurveyProfilePickerAddProfileSignin);
+COMPONENT_EXPORT(SIGNIN_SWITCHES)
+BASE_DECLARE_FEATURE_PARAM(
+    double,
+    kChromeIdentitySurveyProfilePickerAddProfileSigninProbability);
 COMPONENT_EXPORT(SIGNIN_SWITCHES)
 BASE_DECLARE_FEATURE(kChromeIdentitySurveySigninInterceptProfileSeparation);
 COMPONENT_EXPORT(SIGNIN_SWITCHES)
+BASE_DECLARE_FEATURE_PARAM(
+    double,
+    kChromeIdentitySurveySigninInterceptProfileSeparationProbability);
+COMPONENT_EXPORT(SIGNIN_SWITCHES)
 BASE_DECLARE_FEATURE(kChromeIdentitySurveySigninPromoBubbleDismissed);
+COMPONENT_EXPORT(SIGNIN_SWITCHES)
+BASE_DECLARE_FEATURE_PARAM(
+    double,
+    kChromeIdentitySurveySigninPromoBubbleDismissedProbability);
 COMPONENT_EXPORT(SIGNIN_SWITCHES)
 BASE_DECLARE_FEATURE(kChromeIdentitySurveySwitchProfileFromProfileMenu);
 COMPONENT_EXPORT(SIGNIN_SWITCHES)
+BASE_DECLARE_FEATURE_PARAM(
+    double,
+    kChromeIdentitySurveySwitchProfileFromProfileMenuProbability);
+COMPONENT_EXPORT(SIGNIN_SWITCHES)
 BASE_DECLARE_FEATURE(kChromeIdentitySurveySwitchProfileFromProfilePicker);
+COMPONENT_EXPORT(SIGNIN_SWITCHES)
+BASE_DECLARE_FEATURE_PARAM(
+    double,
+    kChromeIdentitySurveySwitchProfileFromProfilePickerProbability);
 // LINT.ThenChange(//chrome/browser/signin/signin_hats_util.cc)
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 
@@ -165,18 +210,6 @@ BASE_DECLARE_FEATURE(kEnableChromeRefreshTokenBinding);
 COMPONENT_EXPORT(SIGNIN_SWITCHES)
 bool IsChromeRefreshTokenBindingEnabled(const PrefService* profile_prefs);
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
-
-#if BUILDFLAG(IS_IOS)
-// Show the error badge on the identity disc in the NTP.
-COMPONENT_EXPORT(SIGNIN_SWITCHES)
-BASE_DECLARE_FEATURE(kEnableErrorBadgeOnIdentityDisc);
-#endif
-
-#if BUILDFLAG(IS_IOS)
-// Features to enable identities in auth error (stale token).
-COMPONENT_EXPORT(SIGNIN_SWITCHES)
-BASE_DECLARE_FEATURE(kEnableIdentityInAuthError);
-#endif
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
 COMPONENT_EXPORT(SIGNIN_SWITCHES)
@@ -259,7 +292,7 @@ COMPONENT_EXPORT(SIGNIN_SWITCHES)
 BASE_DECLARE_FEATURE(kFullscreenSignInPromoUseDate);
 #endif
 
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+#if !BUILDFLAG(IS_IOS)
 // When enabled, GLIC will check a new CanUseGeminiInChrome account capability
 // to determine profile eligibility, instead of CanUseModelExecutionFeatures.
 COMPONENT_EXPORT(SIGNIN_SWITCHES)
@@ -270,16 +303,11 @@ BASE_DECLARE_FEATURE(kGlicEligibilitySeparateAccountCapability);
 COMPONENT_EXPORT(SIGNIN_SWITCHES)
 BASE_DECLARE_FEATURE(kHandleMdmErrorsForDasherAccounts);
 
-#if BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(IS_IOS)
+// Follow-ups to EnableIdentityInAuthError.
 COMPONENT_EXPORT(SIGNIN_SWITCHES)
-BASE_DECLARE_FEATURE(kHistoryOptInEducationalTip);
-extern const base::FeatureParam<int> kHistoryOptInEducationalTipVariation;
-#endif  // BUILDFLAG(IS_ANDROID)
-
-#if BUILDFLAG(IS_ANDROID)
-COMPONENT_EXPORT(SIGNIN_SWITCHES)
-BASE_DECLARE_FEATURE(kMakeAccountsAvailableInIdentityManager);
-#endif  // BUILDFLAG(IS_ANDROID)
+BASE_DECLARE_FEATURE(kIdentityInAuthErrorFollowUps);
+#endif
 
 #if BUILDFLAG(IS_ANDROID)
 COMPONENT_EXPORT(SIGNIN_SWITCHES)
@@ -317,6 +345,11 @@ extern const base::FeatureParam<int>
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+// Add new entry points for uploading passwords to account storage and update
+// existing ones.
+COMPONENT_EXPORT(SIGNIN_SWITCHES)
+BASE_DECLARE_FEATURE(kPasswordUploadUiUpdate);
+
 // Experimenting with changing the secondary CTA for FRE and new profile
 // creation.
 COMPONENT_EXPORT(SIGNIN_SWITCHES)
@@ -374,6 +407,13 @@ BASE_DECLARE_FEATURE(kRollbackDiceMigration);
 COMPONENT_EXPORT(SIGNIN_SWITCHES)
 BASE_DECLARE_FEATURE(kShowProfilePickerToAllUsersExperiment);
 
+#if BUILDFLAG(IS_ANDROID)
+// Experiment replacing signed out avatar with signin button on Android, see
+// crbug.com/475816843.
+COMPONENT_EXPORT(SIGNIN_SWITCHES)
+BASE_DECLARE_FEATURE(kSigninLevelUpButton);
+#endif  // BUILDFLAG(IS_ANDROID)
+
 // Feature to control the experiment for max count of showing contextual sign-in
 // promos and UNO bubble reprompt.
 COMPONENT_EXPORT(SIGNIN_SWITCHES)
@@ -430,6 +470,12 @@ COMPONENT_EXPORT(SIGNIN_SWITCHES)
 BASE_DECLARE_FEATURE(kSupportAddSessionEmailPrefill);
 #endif
 
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+// Kill switch for displaying sign-in errors in the profile picker.
+COMPONENT_EXPORT(SIGNIN_SWITCHES)
+BASE_DECLARE_FEATURE(kSupportErrorsInProfilePicker);
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+
 #if BUILDFLAG(IS_ANDROID)
 COMPONENT_EXPORT(SIGNIN_SWITCHES)
 BASE_DECLARE_FEATURE(kSupportWebSigninAddSession);
@@ -446,6 +492,11 @@ BASE_DECLARE_FEATURE(kSyncEnableBookmarksInTransportMode);
 COMPONENT_EXPORT(SIGNIN_SWITCHES)
 BASE_DECLARE_FEATURE(kUseIssueTokenToFetchAccessTokens);
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
+
+// If enabled, buttons for sign-in promos / intercepts will use consistent
+// primary - tonal button class pattern.
+COMPONENT_EXPORT(SIGNIN_SWITCHES)
+BASE_DECLARE_FEATURE(kUsePrimaryAndTonalButtonsForPromos);
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
 // If enabled, web sign-in will implicitly sign the user in.

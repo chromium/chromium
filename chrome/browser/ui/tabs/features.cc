@@ -17,10 +17,20 @@ BASE_FEATURE(kTabGroupHome, base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kVerticalTabs, base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kTabSelectionByPointer, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kTabSelectionByPointer, base::FEATURE_ENABLED_BY_DEFAULT);
+
+BASE_FEATURE(kProjectsPanel, base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Enables Back-to-Opener behavior, allowing users to press the back button in a
+// newly opened tab to close that tab and return focus to the opener tab.
+BASE_FEATURE(kBackToOpener, base::FEATURE_DISABLED_BY_DEFAULT);
 
 bool IsVerticalTabsFeatureEnabled() {
   return base::FeatureList::IsEnabled(kVerticalTabs);
+}
+
+bool IsProjectsPanelFeatureEnabled() {
+  return base::FeatureList::IsEnabled(kProjectsPanel);
 }
 
 }  // namespace tabs

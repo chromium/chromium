@@ -146,7 +146,7 @@ IN_PROC_BROWSER_TEST_F(DomDistillerJsTest, MAYBE_RunJsTests) {
   // Convert to dictionary and parse the results.
   ASSERT_TRUE(result_.is_dict()) << "Result is not a dictionary: " << result_;
 
-  const base::Value::Dict& dict = result_.GetDict();
+  const base::DictValue& dict = result_.GetDict();
   std::optional<bool> success = dict.FindBool("success");
   ASSERT_TRUE(success.has_value());
   std::optional<int> num_tests = dict.FindInt("numTests");

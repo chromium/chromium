@@ -90,15 +90,18 @@ BeginFrameArgs FakeExternalBeginFrameSource::CreateBeginFrameArgs(
 BeginFrameArgs FakeExternalBeginFrameSource::CreateBeginFrameArgsWithGenerator(
     base::TimeTicks frame_time,
     base::TimeTicks next_frame_time,
-    base::TimeDelta vsync_interval) {
+    base::TimeDelta vsync_interval,
+    base::TimeDelta unthrottled_interval) {
   return begin_frame_args_generator_.GenerateBeginFrameArgs(
-      source_id(), frame_time, next_frame_time, vsync_interval);
+      source_id(), frame_time, next_frame_time, vsync_interval,
+      unthrottled_interval);
 }
 
 void FakeExternalBeginFrameSource::TestOnBeginFrame(
     const BeginFrameArgs& args) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   current_args_ = args;
+  IssueBeginFrameToInputClient(args);
   std::set<raw_ptr<BeginFrameObserver, SetExperimental>> observers(observers_);
   for (BeginFrameObserver* obs : observers) {
     pending_frames_[obs]++;

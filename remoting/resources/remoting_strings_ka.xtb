@@ -28,7 +28,6 @@
 <translation id="2329392777730037872"><ph name="URL" /> ვერ გაიხსნა ამ კლიენტზე.</translation>
 <translation id="2359808026110333948">გაგრძელება</translation>
 <translation id="2366718077645204424">ვერ დაუკავშირდა ჰოსტს. ამის მიზეზი შეიძლება იყოს იმ ქსელის კონფიგურაცია, რომელსაც იყენებთ.</translation>
-<translation id="242591256144136845">Copyright 2025 Google LLC. ყველა უფლება დაცულია.</translation>
 <translation id="2504109125669302160"><ph name="PRODUCT_NAME" /> საჭიროებს „მარტივი წვდომის“ ნებართვას</translation>
 <translation id="2509394361235492552">დაკავშირებულია „<ph name="HOSTNAME" />“-თან</translation>
 <translation id="2540992418118313681">გსურთ ნახვისა და მართვისათვის, გაუზიაროს ეს კომპიუტერი სხვა მომხმარებელს?</translation>
@@ -47,6 +46,7 @@
 <translation id="3150823315463303127">საკვანძო კომპიუტერმა პოლიტიკის წაკითხვა ვერ მოახერხა.</translation>
 <translation id="3171922709365450819">ეს მოწყობილობა არ არის მხარდაჭერილი ამ კლიენტის მიერ, ვინაიდან ის მოითხოვს ავტორიზაციას მესამე მხარისგან.</translation>
 <translation id="3197730452537982411">დისტანციური სამუშაო დაფა</translation>
+<translation id="3236334139428307578">Copyright 2026 The Chromium Authors. ყველა უფლება დაცულია.</translation>
 <translation id="324272851072175193">ინსტრუქციის ელფოსტით გაგზავნა</translation>
 <translation id="3305934114213025800"><ph name="PRODUCT_NAME" />-ს სურს ცვლილებების განხორციელება.</translation>
 <translation id="3339299787263251426">ინტერნეტის მეშვეობით თქვენს კომპიუტერზე უსაფრთხო წვდომა</translation>
@@ -111,6 +111,7 @@
 <translation id="5823554426827907568"><ph name="CLIENT_USERNAME" /> ითხოვს ნებართვას, რომ ნახოს თქვენი ეკრანი, ასევე, თქვენი კლავიატურა და მაუსი გააკონტროლოს. თუ ეს მოთხოვნა მოულოდნელია, დააჭირეთ „<ph name="IDS_SHARE_CONFIRM_DIALOG_DECLINE" />“-ს. სხვა შემთხვევაში არჩიეთ „<ph name="IDS_SHARE_CONFIRM_DIALOG_CONFIRM" />“ და დაუშვით დაკავშირება, როცა მზად იქნებით.</translation>
 <translation id="5823658491130719298">იმ კომპიუტერიდან, რომელზეც გსურთ, გქონდეთ დისტანციური წვდომა, გახსენით Chrome და მოინახულეთ <ph name="INSTALLATION_LINK" /></translation>
 <translation id="5841343754884244200">ჩვენების ვარიანტები</translation>
+<translation id="5965133372831030509">Copyright 2026 Google LLC. ყველა უფლება დაცულია.</translation>
 <translation id="6033507038939587647">კლავიატურის ვარიანტები</translation>
 <translation id="6040143037577758943">დახურვა</translation>
 <translation id="6062854958530969723">ვერ განხორციელდა მასპინძლის ინიციალიზაცია.</translation>
@@ -138,7 +139,6 @@
 <translation id="7067321367069083429">ეკრანი მუშაობს სენსორული ეკრანის სახით</translation>
 <translation id="7116737094673640201">მოგესალმებათ Chrome-ის დისტანციური სამუშაო დაფა</translation>
 <translation id="7144878232160441200">გაიმეორეთ</translation>
-<translation id="7298392173540380852">Copyright 2025 The Chromium Authors. ყველა უფლება დაცულია.</translation>
 <translation id="7312846573060934304">საკვანძო კომპიუტერი ოფლაინშია.</translation>
 <translation id="7319983568955948908">შეწყვიტეთ გაზიარება</translation>
 <translation id="7359298090707901886">არჩეული ბრაუზერის მეშვეობით ადგილობრივ მოწყობილობაზე URL-ები ვერ გაიხსნება.</translation>

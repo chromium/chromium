@@ -34,16 +34,6 @@ class COMPONENT_EXPORT(CICERONE) CiceroneClient : public chromeos::DBusClient {
     virtual void OnContainerShutdown(
         const vm_tools::cicerone::ContainerShutdownSignal& signal) {}
 
-    // This is signaled from the container while a package is being installed
-    // via InstallLinuxPackage.
-    virtual void OnInstallLinuxPackageProgress(
-        const vm_tools::cicerone::InstallLinuxPackageProgressSignal& signal) {}
-
-    // This is signaled from the container while a package is being uninstalled
-    // via UninstallPackageOwningFile.
-    virtual void OnUninstallPackageProgress(
-        const vm_tools::cicerone::UninstallPackageProgressSignal& signal) {}
-
     // OnLxdContainerCreated is signaled from Cicerone when the long running
     // creation of an Lxd container is complete.
     virtual void OnLxdContainerCreated(
@@ -85,11 +75,6 @@ class COMPONENT_EXPORT(CICERONE) CiceroneClient : public chromeos::DBusClient {
     // pending app list updates changes.
     virtual void OnPendingAppListUpdates(
         const vm_tools::cicerone::PendingAppListUpdatesSignal& signal) {}
-
-    // This is signaled from Cicerone while a container is being upgraded
-    // via UpgradeContainer.
-    virtual void OnUpgradeContainerProgress(
-        const vm_tools::cicerone::UpgradeContainerProgressSignal& signal) {}
 
     // This is signaled from Cicerone while LXD is starting via StartLxd.
     virtual void OnStartLxdProgress(
@@ -137,12 +122,6 @@ class COMPONENT_EXPORT(CICERONE) CiceroneClient : public chromeos::DBusClient {
   // StartLxdContainer is called.
   virtual bool IsContainerShutdownSignalConnected() = 0;
 
-  // This should be true prior to calling InstallLinuxPackage.
-  virtual bool IsInstallLinuxPackageProgressSignalConnected() = 0;
-
-  // This should be true prior to calling UninstallPackageOwningFile.
-  virtual bool IsUninstallPackageProgressSignalConnected() = 0;
-
   // This should be true prior to calling CreateLxdContainer or
   // StartLxdContainer.
   virtual bool IsLxdContainerCreatedSignalConnected() = 0;
@@ -170,9 +149,6 @@ class COMPONENT_EXPORT(CICERONE) CiceroneClient : public chromeos::DBusClient {
   // This should be true before expecting to receive
   // PendingAppListUpdatesSignal.
   virtual bool IsPendingAppListUpdatesSignalConnected() = 0;
-
-  // This should be true prior to calling UpgradeContainer.
-  virtual bool IsUpgradeContainerProgressSignalConnected() = 0;
 
   // This should be true prior to calling StartLxd.
   virtual bool IsStartLxdProgressSignalConnected() = 0;
@@ -205,27 +181,6 @@ class COMPONENT_EXPORT(CICERONE) CiceroneClient : public chromeos::DBusClient {
       const vm_tools::cicerone::ContainerAppIconRequest& request,
       chromeos::DBusMethodCallback<vm_tools::cicerone::ContainerAppIconResponse>
           callback) = 0;
-
-  // Gets information about a Linux package file inside a container.
-  // |callback| is called after the method call finishes.
-  virtual void GetLinuxPackageInfo(
-      const vm_tools::cicerone::LinuxPackageInfoRequest& request,
-      chromeos::DBusMethodCallback<vm_tools::cicerone::LinuxPackageInfoResponse>
-          callback) = 0;
-
-  // Installs a package inside the container.
-  // |callback| is called after the method call finishes.
-  virtual void InstallLinuxPackage(
-      const vm_tools::cicerone::InstallLinuxPackageRequest& request,
-      chromeos::DBusMethodCallback<
-          vm_tools::cicerone::InstallLinuxPackageResponse> callback) = 0;
-
-  // Uninstalls the package that owns the indicated .desktop file.
-  // |callback| is called after the method call finishes.
-  virtual void UninstallPackageOwningFile(
-      const vm_tools::cicerone::UninstallPackageOwningFileRequest& request,
-      chromeos::DBusMethodCallback<
-          vm_tools::cicerone::UninstallPackageOwningFileResponse> callback) = 0;
 
   // Creates a new Lxd Container.
   // |callback| is called to indicate creation status.
@@ -306,20 +261,6 @@ class COMPONENT_EXPORT(CICERONE) CiceroneClient : public chromeos::DBusClient {
       const vm_tools::cicerone::ConfigureForArcSideloadRequest& request,
       chromeos::DBusMethodCallback<
           vm_tools::cicerone::ConfigureForArcSideloadResponse> callback) = 0;
-
-  // Upgrades the container.
-  // |callback| is called when the method completes.
-  virtual void UpgradeContainer(
-      const vm_tools::cicerone::UpgradeContainerRequest& request,
-      chromeos::DBusMethodCallback<vm_tools::cicerone::UpgradeContainerResponse>
-          callback) = 0;
-
-  // Cancels the in progress container upgrade.
-  // |callback| is called when the method completes.
-  virtual void CancelUpgradeContainer(
-      const vm_tools::cicerone::CancelUpgradeContainerRequest& request,
-      chromeos::DBusMethodCallback<
-          vm_tools::cicerone::CancelUpgradeContainerResponse> callback) = 0;
 
   // Starts LXD.
   // |callback| is called when the method completes.

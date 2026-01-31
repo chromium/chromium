@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/css/cssom/style_property_map_read_only_main_thread.h"
 
+#include "third_party/blink/renderer/bindings/core/v8/v8_union_cssstylevalue_undefined.h"
 #include "third_party/blink/renderer/core/css/css_property_name.h"
 #include "third_party/blink/renderer/core/css/css_property_names.h"
 #include "third_party/blink/renderer/core/css/css_unparsed_declaration_value.h"
@@ -55,9 +56,18 @@ class StylePropertyMapIterationSource final
       values_;
 };
 
+V8UnionCSSStyleValueOrUndefined* ToV8UnionCSSStyleValueOrUndefined(
+    CSSStyleValue* value) {
+  if (!value) {
+    return MakeGarbageCollected<V8UnionCSSStyleValueOrUndefined>(
+        ToV8UndefinedGenerator());
+  }
+  return MakeGarbageCollected<V8UnionCSSStyleValueOrUndefined>(value);
+}
+
 }  // namespace
 
-CSSStyleValue* StylePropertyMapReadOnlyMainThread::get(
+V8UnionCSSStyleValueOrUndefined* StylePropertyMapReadOnlyMainThread::get(
     const ExecutionContext* execution_context,
     const String& property_name,
     ExceptionState& exception_state) const {
@@ -67,18 +77,20 @@ CSSStyleValue* StylePropertyMapReadOnlyMainThread::get(
   if (!name) {
     exception_state.ThrowTypeError(
         StrCat({"Invalid propertyName: ", property_name}));
-    return nullptr;
+    return MakeGarbageCollected<V8UnionCSSStyleValueOrUndefined>(
+        ToV8UndefinedGenerator());
   }
 
   if (CSSProperty::IsShorthand(*name)) {
-    return GetShorthandProperty(*name);
+    return ToV8UnionCSSStyleValueOrUndefined(GetShorthandProperty(*name));
   }
 
   const CSSValue* value = (name->IsCustomProperty())
                               ? GetCustomProperty(name->ToAtomicString())
                               : GetProperty(name->Id());
   if (!value) {
-    return nullptr;
+    return MakeGarbageCollected<V8UnionCSSStyleValueOrUndefined>(
+        ToV8UndefinedGenerator());
   }
 
   // Custom properties count as repeated whenever we have a CSSValueList.
@@ -86,10 +98,12 @@ CSSStyleValue* StylePropertyMapReadOnlyMainThread::get(
       (name->IsCustomProperty() && value->IsValueList())) {
     CSSStyleValueVector values =
         StyleValueFactory::CssValueToStyleValueVector(*name, *value);
-    return values.empty() ? nullptr : values[0];
+    return ToV8UnionCSSStyleValueOrUndefined(values.empty() ? nullptr
+                                                            : values[0]);
   }
 
-  return StyleValueFactory::CssValueToStyleValue(*name, *value);
+  return ToV8UnionCSSStyleValueOrUndefined(
+      StyleValueFactory::CssValueToStyleValue(*name, *value));
 }
 
 CSSStyleValueVector StylePropertyMapReadOnlyMainThread::getAll(

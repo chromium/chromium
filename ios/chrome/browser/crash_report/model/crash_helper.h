@@ -5,6 +5,8 @@
 #ifndef IOS_CHROME_BROWSER_CRASH_REPORT_MODEL_CRASH_HELPER_H_
 #define IOS_CHROME_BROWSER_CRASH_REPORT_MODEL_CRASH_HELPER_H_
 
+#include "base/callback_list.h"
+#include "base/functional/callback.h"
 #include "base/time/time.h"
 
 namespace crash_helper {
@@ -34,10 +36,6 @@ int GetPendingCrashReportCount();
 // `callback` with the result when complete.
 void GetPendingCrashReportCount(void (^callback)(int));
 
-// Check if there is currently a crash report to upload. This function will wait
-// for an operation to complete on a background thread.
-bool HasReportToUpload();
-
 // Informs the crash report helper that crash restoration is about to begin.
 void WillStartCrashRestoration();
 
@@ -48,6 +46,11 @@ void StartUploadingReportsInRecoveryMode();
 
 // Deletes any reports that were recorded or uploaded within the time range.
 void ClearReportsBetween(base::Time delete_begin, base::Time delete_end);
+
+// Adds a callback to be called when crash helper finishes processing
+// intermediate dumps.
+base::CallbackListSubscription AddProcessIntermediateDumpsFinishedCallback(
+    const base::RepeatingCallback<void(bool)>& callback);
 
 }  // namespace crash_helper
 

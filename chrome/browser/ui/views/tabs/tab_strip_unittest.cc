@@ -116,6 +116,7 @@ class TabStripTestBase : public ChromeViewsTestBase {
 
     controller_ = new FakeBaseTabStripController;
     tab_strip_ = new TabStrip(std::unique_ptr<TabStripController>(controller_));
+    tab_strip_->Initialize();
     controller_->set_tab_strip(tab_strip_);
     // Do this to force TabStrip to create the buttons.
     auto tab_strip_parent = std::make_unique<views::View>();
@@ -155,8 +156,8 @@ class TabStripTestBase : public ChromeViewsTestBase {
 
  protected:
   void SetMaxTabStripWidth(int max_width) {
-    tab_strip_parent_->SetBounds(0, 0, max_width,
-                                 GetLayoutConstant(TAB_STRIP_HEIGHT));
+    tab_strip_parent_->SetBounds(
+        0, 0, max_width, GetLayoutConstant(LayoutConstant::kTabStripHeight));
     // Layout is handled from the Widget, so make sure it is also the correct
     // size.
     widget_->SetSize(tab_strip_parent_->bounds().size());
@@ -164,10 +165,6 @@ class TabStripTestBase : public ChromeViewsTestBase {
 
   bool IsShowingAttentionIndicator(Tab* tab) {
     return tab->icon_->GetShowingAttentionIndicator();
-  }
-
-  bool IsShowingAttentionIndicator(const tab_groups::TabGroupId& id) {
-    return tab_strip_->group_header(id)->GetShowingAttentionIndicator();
   }
 
   void CompleteAnimationAndLayout() {
@@ -590,37 +587,16 @@ TEST_P(TabStripTest, TabNeedsAttentionGeneric) {
 
   Tab* tab1 = tab_strip_->tab_at(1);
 
-  tab1->SetTabNeedsAttention(true);
+  // Set needs attention.
+  TabRendererData data;
+  data.needs_attention = true;
+  tab1->SetData(data);
 
   EXPECT_TRUE(IsShowingAttentionIndicator(tab1));
   controller_->SelectTab(0, dummy_event_);
   EXPECT_TRUE(IsShowingAttentionIndicator(tab1));
   controller_->SelectTab(1, dummy_event_);
   EXPECT_TRUE(IsShowingAttentionIndicator(tab1));
-}
-
-// The tab group header can display an attention indicator.
-TEST_P(TabStripTest, TabGroupNeedsAttention) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures(
-      {data_sharing::features::kDataSharingFeature}, {});
-  controller_->AddTab(0, TabActive::kInactive);
-  controller_->AddTab(1, TabActive::kActive);
-
-  auto group_id = tab_groups::TabGroupId::GenerateNew();
-  controller_->MoveTabIntoGroup(0, group_id);
-
-  // Collapse the group so it can accept attention state.
-  controller_->ToggleTabGroupCollapsedState(
-      group_id, ToggleTabGroupCollapsedStateOrigin::kMenuAction);
-  tab_strip_->group_header(group_id)->VisualsChanged();
-  EXPECT_TRUE(controller_->IsGroupCollapsed(group_id));
-
-  tab_strip_->SetTabGroupNeedsAttention(group_id, true);
-  EXPECT_TRUE(IsShowingAttentionIndicator(group_id));
-
-  tab_strip_->SetTabGroupNeedsAttention(group_id, false);
-  EXPECT_FALSE(IsShowingAttentionIndicator(group_id));
 }
 
 // Closing tab should be targeted during event dispatching.
@@ -798,7 +774,8 @@ TEST_P(TabStripTest, RelayoutAfterDraggedTabBoundsUpdate) {
   std::vector<TabSlotView*> tabs{dragged_tab};
   std::vector<gfx::Rect> bounds{gfx::Rect({kXOffset, 0}, dragged_tab->size())};
   SizeChangeObserver view_observer(tab_strip_);
-  tab_strip_->GetDragContext()->SetBoundsForDrag(tabs, bounds);
+  tab_strip_->GetDragContext()->GetPositioningDelegate()->SetBoundsForDrag(
+      tabs, bounds);
   EXPECT_EQ(1, view_observer.size_change_count);
 }
 
@@ -817,8 +794,8 @@ TEST_P(TabStripTest, PreferredWidthDuringDrag) {
   tab_strip_->GetDragContext()->StartedDragging({dragged_tab});
   constexpr int kXOffset = 10;
   dragged_tab_bounds.Offset(kXOffset, 0);
-  tab_strip_->GetDragContext()->SetBoundsForDrag({dragged_tab},
-                                                 {dragged_tab_bounds});
+  tab_strip_->GetDragContext()->GetPositioningDelegate()->SetBoundsForDrag(
+      {dragged_tab}, {dragged_tab_bounds});
 
   // Preferred width should be larger by Y.
   EXPECT_EQ(original_preferred_width + kXOffset,

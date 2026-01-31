@@ -33,6 +33,7 @@ import * as SDK from 'devtools/core/sdk/sdk.js';
   var propertiesSection = new ObjectUI.ObjectPropertiesSection.ObjectPropertiesSection(localObject, 'JSON');
   await propertiesSection.objectTreeElement().expandRecursively();
 
+  await new Promise(requestAnimationFrame);
   TestRunner.addResult(TestRunner.textContentWithLineBreaks(propertiesSection.element));
   TestRunner.completeTest();
 })();

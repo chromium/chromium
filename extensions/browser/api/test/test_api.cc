@@ -140,7 +140,7 @@ ExtensionFunction::ResponseAction TestSendScriptResultFunction::Run() {
 }
 
 // static
-void TestGetConfigFunction::set_test_config_state(base::Value::Dict* value) {
+void TestGetConfigFunction::set_test_config_state(base::DictValue* value) {
   TestConfigState* test_config_state = TestConfigState::GetInstance();
   test_config_state->set_config_state(value);
 }

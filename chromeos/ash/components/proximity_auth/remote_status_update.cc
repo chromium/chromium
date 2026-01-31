@@ -38,7 +38,7 @@ namespace proximity_auth {
 
 // static
 std::unique_ptr<RemoteStatusUpdate> RemoteStatusUpdate::Deserialize(
-    const base::Value::Dict& serialized_value) {
+    const base::DictValue& serialized_value) {
   const std::string* type = serialized_value.FindString(kType);
   if (!type || *type != kStatusUpdateType) {
     PA_LOG(ERROR) << "Unable to parse remote status update: unexpected type. "

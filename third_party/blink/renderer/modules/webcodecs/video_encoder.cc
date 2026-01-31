@@ -7,7 +7,6 @@
 #include <algorithm>
 #include <string>
 
-#include "base/containers/contains.h"
 #include "base/format_macros.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -244,8 +243,8 @@ media::EncoderStatus IsAcceleratedConfigurationSupported(
     }
 
     if (options.scalability_mode.has_value() &&
-        !base::Contains(supported_profile.scalability_modes,
-                        options.scalability_mode.value())) {
+        !std::ranges::contains(supported_profile.scalability_modes,
+                               options.scalability_mode.value())) {
       continue;
     }
 
@@ -602,14 +601,14 @@ const char* VideoEncoderTraits::GetName() {
 }
 
 String VideoEncoderTraits::ParsedConfig::ToString() {
-  return String::Format(
-      "{codec: %s, profile: %s, level: %d, hw_pref: %s, "
-      "options: {%s}, codec_string: %s, display_size: %s}",
-      media::GetCodecName(codec).c_str(),
-      media::GetProfileName(profile).c_str(), level,
-      HardwarePreferenceToIdlEnum(hw_pref).AsCStr(), options.ToString().c_str(),
-      codec_string.Utf8().c_str(),
-      display_size ? display_size->ToString().c_str() : "");
+  return UNSAFE_TODO(
+      String::Format("{codec: %s, profile: %s, level: %d, hw_pref: %s, "
+                     "options: {%s}, codec_string: %s, display_size: %s}",
+                     media::GetCodecName(codec).c_str(),
+                     media::GetProfileName(profile).c_str(), level,
+                     HardwarePreferenceToIdlEnum(hw_pref).AsCStr(),
+                     options.ToString().c_str(), codec_string.Utf8().c_str(),
+                     display_size ? display_size->ToString().c_str() : ""));
 }
 
 // static

@@ -110,15 +110,6 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="all device identifiers are missing"/>
 </enum>
 
-<enum name="DeviceSettingsStatus">
-  <int value="0" label="STORE_SUCCESS"/>
-  <int value="1" label="STORE_KEY_UNAVAILABLE"/>
-  <int value="2" label="STORE_OPERATION_FAILED"/>
-  <int value="3" label="STORE_NO_POLICY"/>
-  <int value="4" label="STORE_INVALID_POLICY"/>
-  <int value="5" label="STORE_VALIDATION_ERROR"/>
-</enum>
-
 <enum name="DeviceSettingsStatus2">
   <int value="0" label="STORE_SUCCESS"/>
   <int value="1" label="STORE_KEY_UNAVAILABLE"/>
@@ -802,8 +793,8 @@ chromium-metrics-reviews@google.com.
   <int value="40" label="Registration/fetch: invalid response">
     Registration / policy fetch failed: can't decode DM server response.
   </int>
-  <int value="41" label="OAuth fetch: account not signed up">
-    OAuth token fetch failed: account not signed up.
+  <int value="41" label="OAuth fetch: account not found">
+    OAuth token fetch failed: account not found.
   </int>
   <int value="42" label="OAuth fetch: account deleted (unused)">
     UNUSED: OAuth token fetch failed: account deleted.
@@ -2221,7 +2212,6 @@ chromium-metrics-reviews@google.com.
   <int value="1284" label="SystemShortcutBehavior"/>
   <int value="1285" label="DeletingUndecryptablePasswordsEnabled"/>
   <int value="1286" label="StandardizedBrowserZoomEnabled"/>
-  <int value="1287" label="ReportingEndpoints"/>
   <int value="1288" label="PrintingLPACSandboxEnabled"/>
   <int value="1289" label="ShowGeminiIntroScreenEnabled"/>
   <int value="1290" label="DeviceRestrictionSchedule"/>
@@ -2323,8 +2313,8 @@ chromium-metrics-reviews@google.com.
   <int value="1389" label="AutoSignOutEnabled"/>
   <int value="1390" label="ExtensionInstallCloudPolicyChecksEnabled"/>
   <int value="1391" label="DevToolsGoogleDeveloperProgramProfileAvailability"/>
-  <int value="1392" label="IncognitoModeBlocklist"/>
-  <int value="1393" label="IncognitoModeAllowlist"/>
+  <int value="1392" label="IncognitoModeUrlBlocklist"/>
+  <int value="1393" label="IncognitoModeUrlAllowlist"/>
   <int value="1394" label="PreferSlowKexAlgorithms"/>
   <int value="1395"
       label="ExtensionForceInstallWithNonMalwareViolationsEnabled"/>
@@ -2337,7 +2327,7 @@ chromium-metrics-reviews@google.com.
   <int value="1402" label="GeminiActOnWebSettings"/>
   <int value="1403" label="LocalAuthFactorsComplexity"/>
   <int value="1404" label="ProxyOverrideRules"/>
-  <int value="1405" label="LocalAuthFactors"/>
+  <int value="1405" label="AllowedLocalAuthFactors"/>
   <int value="1406" label="EnableProxyOverrideRulesForAllUsers"/>
   <int value="1407" label="DefaultIdleDetectionSetting"/>
   <int value="1408" label="IdleDetectionAllowedForUrls"/>
@@ -2350,8 +2340,13 @@ chromium-metrics-reviews@google.com.
   <int value="1415" label="DeviceLoginScreenPreferSlowCiphers"/>
   <int value="1416" label="SearchContentSharingSettings"/>
   <int value="1417" label="StaticStorageQuotaEnabled"/>
-  <int value="1418" label="SaaSReportDomainUrlsForBrowser"/>
-  <int value="1419" label="SaaSReportDomainUrlsForProfile"/>
+  <int value="1418" label="SaasUsageReportingDomainUrlsForBrowsers"/>
+  <int value="1419" label="SaasUsageReportingDomainUrlsForProfiles"/>
+  <int value="1420" label="GeminiActOnWebAllowedForURLs"/>
+  <int value="1421" label="GeminiActOnWebBlockedForURLs"/>
+  <int value="1422" label="WebAppInstallByUserEnabled"/>
+  <int value="1423" label="LocalNetworkAccessIpAddressSpaceOverrides"/>
+  <int value="1424" label="RestrictPdfSaveToDriveAccountsToPattern"/>
 </enum>
 
 <enum name="EnterprisePoliciesSources">
@@ -2681,6 +2676,13 @@ chromium-metrics-reviews@google.com.
   <int value="4"
       label="Dasher-based OIDC profile can't add/set primary account"/>
   <int value="5" label="Profile ID mismatch with registration request"/>
+</enum>
+
+<enum name="OktaSSOFailureReason">
+  <int value="0" label="An unexpected error has occurred."/>
+  <int value="1" label="URLSession has failed with an OS error."/>
+  <int value="2" label="URLSession request has timed out."/>
+  <int value="3" label="URLSession response body size over the limit."/>
 </enum>
 
 <enum name="OsSuite">

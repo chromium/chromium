@@ -8,7 +8,6 @@
 #include <string_view>
 #include <utility>
 
-#include "base/containers/contains.h"
 #include "base/strings/escape.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
@@ -258,7 +257,7 @@ std::string FindArcMimeTypeFromExtension(const std::string& ext) {
   for (const auto& mapping : kAndroidMimeTypeMappings) {
     std::vector<std::string_view> extensions = base::SplitStringPiece(
         mapping.extensions, ",", base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
-    if (base::Contains(extensions, ext)) {
+    if (std::ranges::contains(extensions, ext)) {
       return mapping.mime_type;
     }
   }
@@ -292,7 +291,7 @@ base::FilePath::StringType GetFileNameForDocument(
       GetExtensionsForArcMimeType(document->mime_type);
 
   if (!possible_extensions.empty() &&
-      !base::Contains(possible_extensions, extension)) {
+      !std::ranges::contains(possible_extensions, extension)) {
     // Lookup the extension in the hardcoded map before appending an extension,
     // as some extensions (eg. 3gp) are typed differently by Android. Only
     // append the suggested extension if the lookup fails (i.e. no valid mime

@@ -71,20 +71,6 @@ namespace {
 BASE_FEATURE(kAvoidUnnecessaryGetMinimizeButtonOffset,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Converts the |image| to a Windows icon and returns the corresponding HICON
-// handle. |image| is resized to desired |width| and |height| if needed.
-base::win::ScopedGDIObject<HICON> CreateHICONFromSkBitmapSizedTo(
-    const gfx::ImageSkia& image,
-    int width,
-    int height) {
-  return IconUtil::CreateHICONFromSkBitmap(
-      width == image.width() && height == image.height()
-          ? *image.bitmap()
-          : skia::ImageOperations::Resize(*image.bitmap(),
-                                          skia::ImageOperations::RESIZE_BEST,
-                                          width, height));
-}
-
 // If nothing has been added to the left of the window title, match native
 // Windows 10 UWP apps that don't have window icons.
 // TODO(crbug.com/40890502): Avoid hardcoding sizes like this.
@@ -95,18 +81,6 @@ constexpr int kMinimumTitleLeftBorderMargin = 11;
 constexpr int kMaximizedLeftMargin = 2;
 
 constexpr int kIconTitleSpacing = 5;
-
-void LayoutWebAppWindowTitleCommon(const gfx::Rect& available_space,
-                                   views::Label& window_title_label) {
-  gfx::Rect bounds = available_space;
-  if (bounds.x() < kMinimumTitleLeftBorderMargin) {
-    bounds.SetHorizontalBounds(kMinimumTitleLeftBorderMargin, bounds.right());
-  }
-  window_title_label.SetSubpixelRenderingEnabled(false);
-  window_title_label.SetHorizontalAlignment(gfx::ALIGN_LEFT);
-  window_title_label.SetAutoColorReadabilityEnabled(false);
-  window_title_label.SetBoundsRect(bounds);
-}
 
 }  // namespace
 
@@ -262,36 +236,6 @@ bool BrowserFrameViewWin::CaptionButtonsOnLeadingEdge() const {
          base::i18n::IsRTL();
 }
 
-gfx::Rect BrowserFrameViewWin::GetBoundsForTabStripRegion(
-    const gfx::Size& tabstrip_minimum_size) const {
-  const int x = CaptionButtonsOnLeadingEdge() ? CaptionButtonsRegionWidth() : 0;
-  int end_x = width();
-  if (!CaptionButtonsOnLeadingEdge()) {
-    end_x = std::min(width() - CaptionButtonsRegionWidth(), end_x);
-  }
-  return gfx::Rect(x, TopAreaHeight(false), std::max(0, end_x - x),
-                   tabstrip_minimum_size.height());
-}
-
-gfx::Rect BrowserFrameViewWin::GetBoundsForWebAppFrameToolbar(
-    const gfx::Size& toolbar_preferred_size) const {
-  int x = display::win::GetScreenWin()->GetSystemMetricsInDIP(SM_CXSIZEFRAME);
-  if (IsMaximized()) {
-    x += kMaximizedLeftMargin;
-  }
-  if (GetBrowserView()->IsWindowControlsOverlayEnabled()) {
-    x = 0;
-  } else if (window_icon_) {
-    // Add extra padding to the left of the toolbar to account for the window
-    // icon.
-    x += window_icon_->size().width() + kIconTitleSpacing;
-  }
-
-  int trailing_x = width() - CaptionButtonsRegionWidth();
-  return gfx::Rect(x, WindowTopY(), std::max(0, trailing_x - x),
-                   caption_button_container_->size().height());
-}
-
 int BrowserFrameViewWin::GetTopInset(bool restored) const {
   if (GetBrowserView()->GetTabStripVisible() || IsWebUITabStrip()) {
     return TopAreaHeight(restored);
@@ -351,7 +295,14 @@ void BrowserFrameViewWin::WindowControlsOverlayEnabledChanged() {
 void BrowserFrameViewWin::LayoutWebAppWindowTitle(
     const gfx::Rect& available_space,
     views::Label& window_title_label) const {
-  LayoutWebAppWindowTitleCommon(available_space, window_title_label);
+  gfx::Rect bounds = available_space;
+  if (bounds.x() < kMinimumTitleLeftBorderMargin) {
+    bounds.SetHorizontalBounds(kMinimumTitleLeftBorderMargin, bounds.right());
+  }
+  window_title_label.SetSubpixelRenderingEnabled(false);
+  window_title_label.SetHorizontalAlignment(gfx::ALIGN_LEFT);
+  window_title_label.SetAutoColorReadabilityEnabled(false);
+  window_title_label.SetBoundsRect(bounds);
 }
 
 BrowserFrameViewWin::BoundsAndMargins
@@ -421,9 +372,10 @@ int BrowserFrameViewWin::NonClientHitTest(const gfx::Point& point) {
   // pixels at the end of the top and bottom edges trigger diagonal resizing.
   constexpr int kResizeCornerWidth = 16;
 
-  const int top_border_thickness = GetBrowserView()->GetIsWebAppType()
-                                       ? FrameTopBorderThickness(false)
-                                       : GetLayoutConstant(TAB_STRIP_PADDING);
+  const int top_border_thickness =
+      GetBrowserView()->GetIsWebAppType()
+          ? FrameTopBorderThickness(false)
+          : GetLayoutConstant(LayoutConstant::kTabStripPadding);
 
   const int window_component = GetHTComponentForFrame(
       point, gfx::Insets::TLBR(top_border_thickness, 0, 0, 0),
@@ -681,11 +633,11 @@ int BrowserFrameViewWin::TitlebarMaximizedVisualHeight() const {
   // Adding 2 dip of vertical padding puts at least 1 dip of space on the top
   // and bottom of the element.
   constexpr int kVerticalPadding = 2;
-  if (!GetBrowserView()->GetWebAppFrameToolbarPreferredSize().IsEmpty()) {
-    maximized_height = std::max(
-        maximized_height,
-        GetBrowserView()->GetWebAppFrameToolbarPreferredSize().height() +
-            kVerticalPadding);
+  const auto toolbar_height =
+      GetClientFrameElementInfo().toolbar_minimum_height;
+  if (toolbar_height > 0) {
+    maximized_height =
+        std::max(maximized_height, toolbar_height + kVerticalPadding);
   }
   return maximized_height;
 }
@@ -705,11 +657,10 @@ int BrowserFrameViewWin::TitlebarHeight(bool restored) const {
 }
 
 int BrowserFrameViewWin::GetFrameHeight() const {
-  if (GetBrowserView()->GetTabStripVisible()) {
-    // TODO(crbug.com/437915973): Account for the vertical tab region when using
-    // GetMinimumSize().
-    return GetBrowserView()->tab_strip_view()->GetMinimumSize().height() -
-           WindowTopY() - GetLayoutConstant(TABSTRIP_TOOLBAR_OVERLAP);
+  const auto info = GetClientFrameElementInfo();
+  if (info.tabstrip_preferred_height) {
+    return info.tabstrip_preferred_height - WindowTopY() -
+           GetLayoutConstant(LayoutConstant::kTabstripToolbarOverlap);
   }
   return IsMaximized() ? TitlebarMaximizedVisualHeight()
                        : TitlebarHeight(false);
@@ -840,14 +791,10 @@ void BrowserFrameViewWin::PaintTitlebar(gfx::Canvas* canvas) const {
       titlebar_color));
   canvas->DrawRect(gfx::RectF(0, 0, width() * scale, y), flags);
 
-  // TODO(crbug.com/437915973): Account for the vertical tab region when using
-  // GetMinimumSize().
+  const auto info = GetClientFrameElementInfo();
   const int titlebar_height =
-      GetBrowserView()->GetTabStripVisible()
-          ? GetBoundsForTabStripRegion(
-                GetBrowserView()->tab_strip_view()->GetMinimumSize())
-                .bottom()
-          : TitlebarHeight(false);
+      std::max(TitlebarHeight(false),
+               TopAreaHeight(false) + info.tabstrip_preferred_height);
   const gfx::Rect titlebar_rect = gfx::ToEnclosingRect(
       gfx::RectF(0, y, width() * scale, titlebar_height * scale - y));
   // Paint the titlebar first so we have a background if an area isn't covered
@@ -990,10 +937,12 @@ void BrowserFrameViewWin::StopThrobber() {
       previous_big_icon = std::move(big_window_icon_);
 
       // Take responsibility for eventually destroying the created icons.
-      small_window_icon_ = CreateHICONFromSkBitmapSizedTo(
-          icon, GetSystemMetrics(SM_CXSMICON), GetSystemMetrics(SM_CYSMICON));
-      big_window_icon_ = CreateHICONFromSkBitmapSizedTo(
-          icon, GetSystemMetrics(SM_CXICON), GetSystemMetrics(SM_CYICON));
+      small_window_icon_ = IconUtil::CreateHICONFromSkBitmapSizedTo(
+          *icon.bitmap(), GetSystemMetrics(SM_CXSMICON),
+          GetSystemMetrics(SM_CYSMICON));
+      big_window_icon_ = IconUtil::CreateHICONFromSkBitmapSizedTo(
+          *icon.bitmap(), GetSystemMetrics(SM_CXICON),
+          GetSystemMetrics(SM_CYICON));
 
       small_icon = small_window_icon_.get();
       big_icon = big_window_icon_.get();
@@ -1043,21 +992,4 @@ void BrowserFrameViewWin::InitThrobberIcons() {
 }
 
 BEGIN_METADATA(BrowserFrameViewWin)
-END_METADATA
-
-OpaqueBrowserFrameViewWin::OpaqueBrowserFrameViewWin(
-    BrowserWidget* widget,
-    BrowserView* browser_view,
-    OpaqueBrowserFrameViewLayout* layout)
-    : OpaqueBrowserFrameView(widget, browser_view, layout) {}
-
-OpaqueBrowserFrameViewWin::~OpaqueBrowserFrameViewWin() = default;
-
-void OpaqueBrowserFrameViewWin::LayoutWebAppWindowTitle(
-    const gfx::Rect& available_space,
-    views::Label& window_title_label) const {
-  LayoutWebAppWindowTitleCommon(available_space, window_title_label);
-}
-
-BEGIN_METADATA(OpaqueBrowserFrameViewWin)
 END_METADATA

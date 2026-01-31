@@ -169,7 +169,7 @@ void HeaderDirectFromSellerSignals::ProcessOneResponse(
     return;
   }
 
-  const base::Value::List* maybe_list = result->GetIfList();
+  const base::ListValue* maybe_list = result->GetIfList();
   if (!maybe_list) {
     errors.push_back(base::StringPrintf(
         "directFromSellerSignalsHeaderAdSlot: encountered response where "
@@ -181,7 +181,7 @@ void HeaderDirectFromSellerSignals::ProcessOneResponse(
   size_t num_ad_slots = 0u;
   std::set<std::string> ad_slots_from_response;
   for (const base::Value& list_item : *maybe_list) {
-    const base::Value::Dict* maybe_dict = list_item.GetIfDict();
+    const base::DictValue* maybe_dict = list_item.GetIfDict();
     if (!maybe_dict) {
       errors.push_back(
           base::StringPrintf("directFromSellerSignalsHeaderAdSlot: encountered "
@@ -233,7 +233,7 @@ void HeaderDirectFromSellerSignals::ProcessOneResponse(
     }
 
     std::vector<std::pair<url::Origin, std::string>> per_buyer_signals_vec;
-    const base::Value::Dict* maybe_per_buyer_signals =
+    const base::DictValue* maybe_per_buyer_signals =
         maybe_dict->FindDict("perBuyerSignals");
     if (maybe_per_buyer_signals) {
       for (const std::pair<const std::string&, const base::Value&> item :

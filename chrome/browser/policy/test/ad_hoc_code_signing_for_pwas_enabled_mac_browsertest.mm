@@ -43,8 +43,15 @@ class AdHocCodeSigningForPWAsEnabledTest
     policy::BrowserPolicyConnector::SetPolicyProviderForTesting(
         &policy_provider_);
 
-    feature_list_.InitWithFeatureState(features::kUseAdHocSigningForWebAppShims,
-                                       GetFeatureValue());
+    if (GetFeatureValue()) {
+      // Init with a dummy field trial parameter to make sure this override is
+      // treated as a field trial override rather than a command line override.
+      feature_list_.InitAndEnableFeatureWithParameters(
+          features::kUseAdHocSigningForWebAppShims, {{"dummy", "value"}});
+    } else {
+      feature_list_.InitWithFeatureState(
+          features::kUseAdHocSigningForWebAppShims, false);
+    }
     override_registration_ =
         web_app::OsIntegrationTestOverrideImpl::OverrideForTesting();
     destination_dir_ =
@@ -64,9 +71,7 @@ class AdHocCodeSigningForPWAsEnabledTest
   base::FilePath destination_dir_;
 };
 
-// TODO(crbug.com/369346087): Deflake and re-enable.
-IN_PROC_BROWSER_TEST_P(AdHocCodeSigningForPWAsEnabledTest,
-                       DISABLED_IsRespected) {
+IN_PROC_BROWSER_TEST_P(AdHocCodeSigningForPWAsEnabledTest, IsRespected) {
   webapps::AppId app_id = web_app::test::InstallDummyWebApp(
       browser()->profile(), "Example", GURL("https://www.example.com"));
 

@@ -4,19 +4,25 @@
 
 #include "chrome/browser/default_browser/default_browser_manager.h"
 
+#include <memory>
 #include <string>
 #include <utility>
 
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/statistics_recorder.h"
+#include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/default_browser/default_browser_controller.h"
 #include "chrome/browser/default_browser/default_browser_features.h"
+#include "chrome/browser/default_browser/test_support/fake_shell_delegate.h"
+#include "chrome/browser/global_features.h"
 #include "chrome/browser/shell_integration.h"
+#include "chrome/test/base/testing_browser_process.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/unowned_user_data/user_data_factory.h"
 #include "url/gurl.h"
 
 #if BUILDFLAG(IS_WIN)
@@ -44,48 +50,11 @@ void CreateDefaultBrowserKey(const std::wstring& prog_id) {
 
 }  // namespace
 
-class FakeShellDelegate : public DefaultBrowserManager::ShellDelegate {
- public:
-  FakeShellDelegate() = default;
-  ~FakeShellDelegate() override = default;
-
-  void StartCheckIsDefault(
-      shell_integration::DefaultWebClientWorkerCallback callback) override {
-    std::move(callback).Run(default_state_);
-  }
-
-#if BUILDFLAG(IS_WIN)
-  void StartCheckDefaultClientProgId(
-      const GURL& scheme,
-      base::OnceCallback<void(const std::u16string&)> callback) override {
-    std::u16string prog_id = u"";
-    if (scheme.scheme() == "http") {
-      prog_id = http_assoc_prog_id_;
-    }
-    std::move(callback).Run(prog_id);
-  }
-#endif  // BUILDFLAG(IS_WIN)
-
-  void set_default_state(DefaultBrowserState state) { default_state_ = state; }
-  void set_http_assoc_prog_id(const std::u16string& prog_id) {
-    http_assoc_prog_id_ = prog_id;
-  }
-
- private:
-  DefaultBrowserState default_state_ = shell_integration::NUM_DEFAULT_STATES;
-  std::u16string http_assoc_prog_id_ = u"";
-};
-
 class DefaultBrowserManagerTest : public testing::Test {
  protected:
   DefaultBrowserManagerTest() {
     scoped_feature_list_.InitAndEnableFeature(
         kPerformDefaultBrowserCheckValidations);
-
-    auto shell_delegate = std::make_unique<FakeShellDelegate>();
-    shell_delegate_ = shell_delegate.get();
-    default_browser_manager_ =
-        std::make_unique<DefaultBrowserManager>(std::move(shell_delegate));
   }
 
   ~DefaultBrowserManagerTest() override = default;
@@ -98,23 +67,41 @@ class DefaultBrowserManagerTest : public testing::Test {
     ASSERT_EQ(ERROR_SUCCESS,
               key.Create(HKEY_CURRENT_USER, kRegistryPath, KEY_WRITE));
 #endif
-    testing::Test::SetUp();
+
+    global_feature_override_ =
+        GlobalFeatures::GetUserDataFactoryForTesting().AddOverrideForTesting(
+            base::BindLambdaForTesting([&](BrowserProcess& browser_process) {
+              auto fake_shell_delegate = std::make_unique<FakeShellDelegate>();
+              fake_shell_delegate_ptr_ = fake_shell_delegate.get();
+              return std::make_unique<DefaultBrowserManager>(
+                  TestingBrowserProcess::GetGlobal(),
+                  std::move(fake_shell_delegate));
+            }));
+
+    TestingBrowserProcess::GetGlobal()->SetUpGlobalFeaturesForTesting(
+        /*profile_manager=*/false);
+  }
+
+  void TearDown() override {
+    fake_shell_delegate_ptr_ = nullptr;
+    TestingBrowserProcess::GetGlobal()->TearDownGlobalFeaturesForTesting();
   }
 
   DefaultBrowserManager& default_browser_manager() {
-    return *default_browser_manager_.get();
+    return *DefaultBrowserManager::From(TestingBrowserProcess::GetGlobal());
   }
 
-  FakeShellDelegate& shell_delegate() { return *shell_delegate_.get(); }
+  FakeShellDelegate& shell_delegate() { return *fake_shell_delegate_ptr_; }
 
  private:
-  base::test::TaskEnvironment task_environment_;
+  content::BrowserTaskEnvironment task_environment_;
   base::test::ScopedFeatureList scoped_feature_list_;
-  std::unique_ptr<DefaultBrowserManager> default_browser_manager_;
-  raw_ptr<FakeShellDelegate> shell_delegate_;
 #if BUILDFLAG(IS_WIN)
   registry_util::RegistryOverrideManager registry_override_manager_;
 #endif
+
+  ui::UserDataFactory::ScopedOverride global_feature_override_;
+  raw_ptr<FakeShellDelegate> fake_shell_delegate_ptr_;
 };
 
 TEST_F(DefaultBrowserManagerTest, GetDefaultBrowserState) {

@@ -273,8 +273,11 @@ class FormStructure {
   // Returns a FormData containing the data this form structure knows about.
   FormData ToFormData() const;
 
-  // Returns the possible form types.
-  DenseSet<FormType> GetFormTypes() const;
+  // Returns the possible form types. Detailed documentation for
+  // `ac_unrecognized_behavior` can be found at
+  // `AutocompleteUnrecognizedBehavior`.
+  DenseSet<FormType> GetFormTypes(
+      AutocompleteUnrecognizedBehavior ac_unrecognized_behavior) const;
 
   mojom::SubmissionSource submission_source() const {
     return submission_source_;

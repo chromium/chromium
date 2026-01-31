@@ -55,7 +55,7 @@ class SupervisedUserVerificationPageForBlockedSites
       override;
 
  protected:
-  void PopulateInterstitialStrings(base::Value::Dict& load_time_data) override;
+  void PopulateInterstitialStrings(base::DictValue& load_time_data) override;
 
  private:
   int GetBlockMessageReasonId();

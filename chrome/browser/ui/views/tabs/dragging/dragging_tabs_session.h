@@ -23,17 +23,16 @@ class DraggingTabsSession final {
   // `initial_move` should be true if the drag session is beginning, and
   // the tabs have not been moved from their initial positions.
   // `point_in_screen` is the initial cursor screen position.
-  explicit DraggingTabsSession(DragSessionData drag_data,
-                               TabDragContext* attached_context,
-                               float offset_to_width_ratio_,
-                               bool initial_move,
-                               gfx::Point point_in_screen);
+  explicit DraggingTabsSession(
+      DragSessionData drag_data,
+      TabDragContext& attached_context,
+      TabDragPositioningDelegate& drag_position_delegate,
+      float offset_to_width_ratio_,
+      bool initial_move,
+      gfx::Point point_in_screen);
   ~DraggingTabsSession();
 
   void MoveAttached(gfx::Point point_in_screen);
-  gfx::Rect GetEnclosingRectForDraggedTabs();
-  gfx::Point GetLastPointInScreen();
-  views::View* GetAttachedContext();
 
  private:
   void MoveAttachedImpl(gfx::Point point_in_screen, bool just_attached);
@@ -60,7 +59,9 @@ class DraggingTabsSession final {
   // Data about the tabs and groups being dragged.
   const DragSessionData drag_data_;
   // The context in which `this` will drag tabs.
-  const raw_ptr<TabDragContext> attached_context_;
+  const raw_ref<TabDragContext> attached_context_;
+  // The delegate for getting positioning data about the current drag context.
+  const raw_ref<TabDragPositioningDelegate> drag_position_delegate_;
   // This is the horizontal offset of the mouse from the leading edge of the
   // first tab where dragging began. This is used to ensure that the dragged
   // tabs are always positioned at the correct location during the drag.

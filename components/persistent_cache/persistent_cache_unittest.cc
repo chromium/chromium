@@ -23,11 +23,15 @@
 #include "base/types/expected.h"
 #include "components/persistent_cache/backend_storage.h"
 #include "components/persistent_cache/backend_type.h"
+#include "components/persistent_cache/client.h"
 #include "components/persistent_cache/mock/mock_backend.h"
 #include "components/persistent_cache/pending_backend.h"
 #include "components/persistent_cache/sqlite/sqlite_backend_impl.h"
 #include "components/persistent_cache/test_utils.h"
 #include "components/persistent_cache/transaction_error.h"
+#include "components/sqlite_vfs/client.h"
+#include "components/sqlite_vfs/file_type.h"
+#include "components/sqlite_vfs/vfs_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 
@@ -56,7 +60,7 @@ class PersistentCacheMockedBackendTest : public testing::Test {
 
   void CreateCache() {
     cache_ = std::make_unique<persistent_cache::PersistentCache>(
-        std::move(backend_));
+        persistent_cache::Client::kTest, std::move(backend_));
   }
 
   persistent_cache::MockBackend* GetBackend() {
@@ -113,7 +117,7 @@ class PersistentCacheTest : public testing::Test,
  protected:
   void SetUp() override {
     ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
-    backend_storage_.emplace(GetParam(), temp_dir_.GetPath());
+    backend_storage_.emplace(Client::kTest, GetParam(), temp_dir_.GetPath());
   }
 
   // Returns the cache base name for a new cache and the new cache itself.
@@ -122,7 +126,8 @@ class PersistentCacheTest : public testing::Test,
       bool journal_mode_wal = false) {
     auto [cache_name, pending_backend] =
         MakePendingBackend(single_connection, journal_mode_wal);
-    auto cache = PersistentCache::Bind(*std::move(pending_backend));
+    auto cache =
+        PersistentCache::Bind(Client::kTest, *std::move(pending_backend));
     if (!cache) {
       ADD_FAILURE() << "Failed to bind PersistentCache";
       return {};
@@ -315,7 +320,8 @@ TEST_P(PersistentCacheTest, EphemeralCachesSharingParamsShareData) {
     ASSERT_OK_AND_ASSIGN(
         auto pending_backend,
         backend_storage().ShareReadWriteConnection(cache_name, *main_cache));
-    auto cache = PersistentCache::Bind(std::move(pending_backend));
+    auto cache =
+        PersistentCache::Bind(Client::kTest, std::move(pending_backend));
     ASSERT_TRUE(cache);
 
     // First run, setup.
@@ -343,7 +349,8 @@ TEST_P(PersistentCacheTest, LiveCachesSharingParamsShareData) {
     ASSERT_OK_AND_ASSIGN(
         auto pending_backend,
         backend_storage().ShareReadWriteConnection(cache_name, *main_cache));
-    caches.push_back(PersistentCache::Bind(std::move(pending_backend)));
+    caches.push_back(
+        PersistentCache::Bind(Client::kTest, std::move(pending_backend)));
     std::unique_ptr<PersistentCache>& cache = caches.back();
     ASSERT_TRUE(cache);
 
@@ -375,7 +382,8 @@ TEST_P(PersistentCacheTest, MultipleInstancesShareData) {
         auto pending_backend,
         backend_storage().ShareReadOnlyConnection(cache_name, *main_cache));
     // Create a new instance that will read from the original.
-    caches.push_back(PersistentCache::Bind(std::move(pending_backend)));
+    caches.push_back(
+        PersistentCache::Bind(Client::kTest, std::move(pending_backend)));
     std::unique_ptr<PersistentCache>& ro_cache = caches.back();
     ASSERT_TRUE(ro_cache);
 
@@ -412,7 +420,8 @@ TEST_P(PersistentCacheTest, MultipleInstancesCanWriteData) {
         auto pending_backend,
         backend_storage().ShareReadWriteConnection(cache_name, *main_cache));
     // Create a new instance that will read/write from/to the original.
-    caches.push_back(PersistentCache::Bind(std::move(pending_backend)));
+    caches.push_back(
+        PersistentCache::Bind(Client::kTest, std::move(pending_backend)));
     std::unique_ptr<PersistentCache>& rw_cache = caches.back();
     ASSERT_TRUE(rw_cache);
 
@@ -565,12 +574,14 @@ TEST_P(PersistentCacheTest, RecoveryFromTransientError) {
       HasValue());
 
   // Lock the db file in shared mode.
-  ASSERT_OK_AND_ASSIGN(
-      auto reader_vfs_file_set,
-      SqliteBackendImpl::BindToFileSet(std::move(pending_reader)));
-  SandboxedFile* reader_db_file = reader_vfs_file_set.GetSandboxedDbFile();
+  ASSERT_OK_AND_ASSIGN(auto reader_vfs_file_set,
+                       sqlite_vfs::SqliteVfsFileSet::Bind(
+                           sqlite_vfs::Client::kTest,
+                           std::move(pending_reader.pending_file_set)));
+  sqlite_vfs::SandboxedFile* reader_db_file =
+      reader_vfs_file_set.GetSandboxedDbFile();
   reader_db_file->OnFileOpened(
-      reader_db_file->TakeUnderlyingFile(SandboxedFile::FileType::kMainDb));
+      reader_db_file->TakeUnderlyingFile(sqlite_vfs::FileType::kMainDb));
   ASSERT_EQ(reader_db_file->Lock(SQLITE_LOCK_SHARED), SQLITE_OK);
 
   // Held lock causes transient error.

@@ -10,7 +10,6 @@
 #include <utility>
 
 #include "base/memory/stack_allocated.h"
-#include "base/types/cxx23_to_underlying.h"
 #include "url/origin.h"
 
 namespace autofill {
@@ -49,7 +48,7 @@ std::ostream& operator<<(std::ostream& os, PrintWrapper<T> pw) {
     return os << PrintWrapper(pw.x.ToString());
   }
   if constexpr (std::is_enum_v<T>) {
-    return os << base::to_underlying(pw.x);
+    return os << std::to_underlying(pw.x);
   }
 }
 

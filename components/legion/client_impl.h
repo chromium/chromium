@@ -18,6 +18,7 @@
 #include "base/types/expected.h"
 #include "components/legion/client.h"
 #include "components/legion/legion_common.h"
+#include "components/legion/phosphor/token_manager.h"
 #include "components/legion/proto/legion.pb.h"
 #include "components/legion/secure_channel.h"
 
@@ -42,7 +43,11 @@ class ClientImpl : public Client {
   using OnRequestCompletedCallback = base::OnceCallback<void(
       base::expected<BinaryEncodedProtoResponse, ErrorCode> result)>;
 
-  explicit ClientImpl(SecureChannelFactory channel_factory);
+  using OnLegionRequestCompletedCallback = base::OnceCallback<void(
+      base::expected<proto::LegionResponse, ErrorCode> result)>;
+
+  ClientImpl(SecureChannelFactory channel_factory,
+             phosphor::TokenManager* token_manager);
   ~ClientImpl() override;
 
   ClientImpl(const ClientImpl&) = delete;
@@ -59,18 +64,40 @@ class ClientImpl : public Client {
       const proto::GenerateContentRequest& request,
       OnGenerateContentRequestCompletedCallback callback,
       const RequestOptions& options) override;
+  void SendPaicRequest(proto::FeatureName feature_name,
+                       const proto::PaicMessage& request,
+                       OnPaicMessageRequestCompletedCallback callback,
+                       const RequestOptions& options) override;
 
  private:
   friend class ClientImplTest;
 
-  // Recreates the secure channel and sets the response callback.
-  void RecreateSecureChannel();
+  // Returns the existing secure channel or creates a new one if it doesn't
+  // exist.
+  SecureChannel* GetOrCreateSecureChannel();
+
+  int32_t CreateRequestId();
+
+  void SendLegionRequest(proto::FeatureName feature_name,
+                         proto::LegionRequest legion_request,
+                         OnLegionRequestCompletedCallback callback,
+                         const RequestOptions& options);
 
   // Sends a request over the secure channel.
   void SendRequest(int32_t request_id,
                    BinaryEncodedProtoRequest request,
                    OnRequestCompletedCallback callback,
                    base::TimeDelta timeout);
+
+  // Sends client attestation request using blind signed token.
+  void TrySendClientAttestationRequest();
+
+  // The callback for when a token is available for client attestation.
+  void OnGetAuthTokenForAttestation(
+      std::optional<phosphor::BlindSignedAuthToken> auth_token);
+
+  void OnClientAttestationRequest(
+      base::expected<BinaryEncodedProtoResponse, ErrorCode> result);
 
   // Handles responses from the secure channel.
   void OnResponseReceived(
@@ -92,8 +119,10 @@ class ClientImpl : public Client {
   void OnSessionEstablished(OnEstablishSessionCompletedCallback callback,
                             base::expected<void, ErrorCode> result);
 
-  std::unique_ptr<SecureChannel> secure_channel_;
   SecureChannelFactory secure_channel_factory_;
+  raw_ptr<phosphor::TokenManager> token_manager_;
+
+  std::unique_ptr<SecureChannel> secure_channel_;
   int32_t next_request_id_{1};
 
   // Callbacks for requests that have been sent to the secure channel but have

@@ -45,7 +45,7 @@ class WebAppProfileSwitcher : public ProfileObserver {
   // Checks if the app is installed using the obtained |lock| and
   // starts launch or installation.
   void InstallOrOpenWebAppWindowForProfile(web_app::AppLock& lock,
-                                           base::Value::Dict& debug_value);
+                                           base::DictValue& debug_value);
 
   // Installs web app defined by |app_id_| for a |new_profile| and launches
   // it once installed.

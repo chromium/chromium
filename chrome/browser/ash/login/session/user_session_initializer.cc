@@ -130,13 +130,17 @@ void OnGotNSSCertDatabaseForUser(net::NSSCertDatabase* database) {
 
 }  // namespace
 
-UserSessionInitializer::UserSessionInitializer() {
+UserSessionInitializer::UserSessionInitializer(
+    session_manager::SessionManager* session_manager) {
+  CHECK(session_manager);
   DCHECK(!g_instance);
   g_instance = this;
+  session_manager_observation_.Observe(session_manager);
 }
 
 UserSessionInitializer::~UserSessionInitializer() {
   DCHECK(g_instance);
+  session_manager_observation_.Reset();
   g_instance = nullptr;
 }
 
@@ -284,11 +288,6 @@ void UserSessionInitializer::InitializePrimaryProfileServices(
 
   arc::ArcServiceLauncher::Get()->OnPrimaryUserProfilePrepared(profile);
   guest_os::GuestOsSessionTrackerFactory::GetForProfile(profile);
-
-  crostini::CrostiniManager* crostini_manager =
-      crostini::CrostiniManager::GetForProfile(profile);
-  if (crostini_manager)
-    crostini_manager->MaybeUpdateCrostini();
 
   if (::captions::IsLiveCaptionFeatureSupported()) {
     SystemLiveCaptionServiceFactory::GetInstance()->GetForProfile(profile);

@@ -7,6 +7,7 @@
 #import "components/handoff/handoff_manager.h"
 #import "components/handoff/pref_names_ios.h"
 #import "components/prefs/pref_service.h"
+#import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 
 DeviceSharingManagerImpl::DeviceSharingManagerImpl(ProfileIOS* profile)
@@ -25,12 +26,12 @@ DeviceSharingManagerImpl::DeviceSharingManagerImpl(ProfileIOS* profile)
 DeviceSharingManagerImpl::~DeviceSharingManagerImpl() = default;
 
 void DeviceSharingManagerImpl::SetActiveBrowser(Browser* browser) {
-  active_browser_ = browser;
+  active_browser_ = browser ? browser->AsWeakPtr() : nullptr;
 }
 
 void DeviceSharingManagerImpl::UpdateActiveUrl(Browser* browser,
                                                const GURL& active_url) {
-  if (browser != active_browser_) {
+  if (!IsActiveBrowser(browser)) {
     return;
   }
 
@@ -44,7 +45,7 @@ void DeviceSharingManagerImpl::UpdateActiveUrl(Browser* browser,
 
 void DeviceSharingManagerImpl::UpdateActiveTitle(Browser* browser,
                                                  const std::u16string& title) {
-  if (browser != active_browser_) {
+  if (!IsActiveBrowser(browser)) {
     return;
   }
 
@@ -52,7 +53,7 @@ void DeviceSharingManagerImpl::UpdateActiveTitle(Browser* browser,
 }
 
 void DeviceSharingManagerImpl::ClearActiveUrl(Browser* browser) {
-  if (browser != active_browser_) {
+  if (!IsActiveBrowser(browser)) {
     return;
   }
 
@@ -69,4 +70,12 @@ void DeviceSharingManagerImpl::UpdateHandoffManager() {
   if (!handoff_manager_) {
     handoff_manager_ = [[HandoffManager alloc] init];
   }
+}
+
+bool DeviceSharingManagerImpl::IsActiveBrowser(Browser* browser) {
+  if (!active_browser_ || !browser) {
+    return false;
+  }
+
+  return browser == active_browser_.get();
 }

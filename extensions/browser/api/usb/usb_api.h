@@ -75,7 +75,7 @@ class UsbTransferFunction : public UsbConnectionFunction {
   ~UsbTransferFunction() override;
 
   void OnCompleted(device::mojom::UsbTransferStatus status,
-                   base::Value::Dict transfer_info);
+                   base::DictValue transfer_info);
   void OnTransferInCompleted(device::mojom::UsbTransferStatus status,
                              base::span<const uint8_t> data);
   void OnTransferOutCompleted(device::mojom::UsbTransferStatus status);
@@ -117,7 +117,7 @@ class UsbFindDevicesFunction : public UsbExtensionFunction {
 
   uint16_t vendor_id_;
   uint16_t product_id_;
-  base::Value::List result_;
+  base::ListValue result_;
   base::RepeatingClosure barrier_;
 };
 

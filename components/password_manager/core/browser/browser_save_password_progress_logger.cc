@@ -408,7 +408,7 @@ void BrowserSavePasswordProgressLogger::LogSuccessfulSubmissionIndicatorEvent(
 void BrowserSavePasswordProgressLogger::LogPasswordForm(
     BrowserSavePasswordProgressLogger::StringID label,
     const PasswordForm& form) {
-  base::Value::Dict log;
+  base::DictValue log;
   log.Set(GetStringFromID(STRING_SCHEME_MESSAGE),
           GetStringFromID(FormSchemeToStringID(form.scheme)));
   log.Set(GetStringFromID(STRING_SCHEME_MESSAGE),

@@ -32,7 +32,7 @@ s! {
         pub sc_rsp: c_long,
         pub sc_ss: c_long,
         pub sc_fpstate: *mut fxsave64,
-        __sc_unused: c_int,
+        __sc_unused: Padding<c_int>,
         pub sc_mask: c_int,
         pub sc_cookie: c_long,
     }
@@ -42,7 +42,7 @@ s! {
         pub fx_fcw: u16,
         pub fx_fsw: u16,
         pub fx_ftw: u8,
-        __fx_unused1: u8,
+        __fx_unused1: Padding<u8>,
         pub fx_fop: u16,
         pub fx_rip: u64,
         pub fx_rdp: u64,
@@ -50,7 +50,7 @@ s! {
         pub fx_mxcsr_mask: u32,
         pub fx_st: [[u64; 2]; 8],
         pub fx_xmm: [[u64; 2]; 16],
-        __fx_unused3: [u8; 96],
+        __fx_unused3: Padding<[u8; 96]>,
     }
 }
 

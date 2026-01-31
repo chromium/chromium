@@ -6,7 +6,7 @@
 
 #include <string>
 
-#include "base/byte_count.h"
+#include "base/byte_size.h"
 #include "base/notreached.h"
 #include "base/time/time.h"
 #include "chrome/app/vector_icons/vector_icons.h"
@@ -99,7 +99,7 @@ void MemorySaverChipView::UpdateImpl() {
       }
       case memory_saver::ChipState::EXPANDED_WITH_SAVINGS: {
         SetVisible(true);
-        const base::ByteCount memory_savings =
+        const base::ByteSize memory_savings =
             memory_saver::GetDiscardedMemorySavings(web_contents);
         std::u16string memory_savings_string = ui::FormatBytes(memory_savings);
         SetLabel(l10n_util::GetStringFUTF16(IDS_MEMORY_SAVER_CHIP_SAVINGS_LABEL,
@@ -148,9 +148,9 @@ void MemorySaverChipView::OnExecuting(
   // Open the dialog bubble.
   // TODO(crbug.com/376283619): An action ID should be created and used here
   // when Memory Saver is migrated to the new page actions framework.
-  View* anchor_view =
-      browser_view->toolbar_button_provider()->GetAnchorView(std::nullopt);
-  bubble_ = MemorySaverBubbleView::ShowBubble(browser_, anchor_view, this);
+  auto anchor =
+      browser_view->toolbar_button_provider()->GetBubbleAnchor(std::nullopt);
+  bubble_ = MemorySaverBubbleView::ShowBubble(browser_, anchor, this);
 }
 
 const gfx::VectorIcon& MemorySaverChipView::GetVectorIcon() const {

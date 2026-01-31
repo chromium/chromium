@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include <array>
-
-// This file contains unit tests for webgpu commands
+#include "gpu/command_buffer/common/webgpu_cmd_format.h"
 
 #include <stddef.h>
 #include <stdint.h>
 
+#include <algorithm>
+#include <array>
 #include <limits>
 
 #include "base/functional/bind.h"
@@ -16,8 +16,9 @@
 #include "base/synchronization/waitable_event.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread.h"
-#include "gpu/command_buffer/common/webgpu_cmd_format.h"
 #include "testing/gtest/include/gtest/gtest.h"
+
+// This file contains unit tests for webgpu commands.
 
 namespace gpu {
 namespace webgpu {
@@ -26,11 +27,7 @@ class WebGPUFormatTest : public testing::Test {
  protected:
   static const unsigned char kInitialValue = 0xBD;
 
-  void SetUp() override {
-    UNSAFE_TODO(
-        memset(buffer_.data(), kInitialValue,
-               (buffer_.size() * sizeof(decltype(buffer_)::value_type))));
-  }
+  void SetUp() override { std::ranges::fill(buffer_, kInitialValue); }
 
   void TearDown() override {}
 

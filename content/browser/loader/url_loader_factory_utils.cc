@@ -81,7 +81,8 @@ TerminalParams TerminalParams::ForNetworkContext(
     DisableSecureDnsOption disable_secure_dns_option) {
   CHECK(network_context);
   CHECK(factory_params);
-  int process_id = factory_params->process_id;
+  // TODO(crbug.com/379869738) Remove GetUnsafeValue.
+  int process_id = factory_params->process_id.GetUnsafeValue();
   return TerminalParams(network_context, std::move(factory_params),
                         header_client_option, factory_override_option,
                         disable_secure_dns_option,

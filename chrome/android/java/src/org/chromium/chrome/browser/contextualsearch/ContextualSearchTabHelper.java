@@ -12,8 +12,8 @@ import org.jni_zero.NativeMethods;
 
 import org.chromium.base.Callback;
 import org.chromium.base.Log;
+import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.base.supplier.NullableObservableSupplier;
-import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.OneShotCallback;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -76,7 +76,8 @@ public class ContextualSearchTabHelper extends EmptyTabObserver
     private final Callback<ContextualSearchManager> mManagerCallback;
 
     /** The ReadAloudController supplier to get the active playback tab supplier when available. */
-    private @Nullable ObservableSupplier<ReadAloudController> mReadAloudControllerSupplier;
+    private final @Nullable MonotonicObservableSupplier<ReadAloudController>
+            mReadAloudControllerSupplier;
 
     private final Callback<@Nullable Tab> mActivePlaybackTabCallback =
             this::onActivePlaybackTabUpdated;
@@ -109,12 +110,10 @@ public class ContextualSearchTabHelper extends EmptyTabObserver
         if (context != null) scaleFactor /= context.getResources().getDisplayMetrics().density;
         mPxToDp = scaleFactor;
         mManagerCallback = (ContextualSearchManager manager) -> updateHooksForTab(mTab);
-        if (isReadAloudTapToSeekEnabled()) {
-            mReadAloudControllerSupplier = getReadAloudControllerSupplier(tab);
-            if (mReadAloudControllerSupplier != null) {
-                new OneShotCallback<>(
-                        mReadAloudControllerSupplier, this::onReadAloudControllerSupplierReady);
-            }
+        mReadAloudControllerSupplier = getReadAloudControllerSupplier(tab);
+        if (mReadAloudControllerSupplier != null) {
+            new OneShotCallback<>(
+                    mReadAloudControllerSupplier, this::onReadAloudControllerSupplierReady);
         }
     }
 
@@ -179,7 +178,7 @@ public class ContextualSearchTabHelper extends EmptyTabObserver
         mContextualSearchManager = null;
         mSelectionClientManager = null;
         mGestureStateListener = null;
-        ObservableSupplier<ContextualSearchManager> supplier =
+        MonotonicObservableSupplier<ContextualSearchManager> supplier =
                 getContextualSearchManagerSupplier(mTab);
         if (supplier != null) {
             supplier.removeObserver(mManagerCallback);
@@ -320,12 +319,9 @@ public class ContextualSearchTabHelper extends EmptyTabObserver
                         SelectionPopupController.fromWebContents(webContents);
                 SelectionClient client =
                         mSelectionClientManager.removeContextualSearchSelectionClient();
-                if (isReadAloudTapToSeekEnabled()) {
-                    if (controller.getSelectionClient()
-                            == mSelectionClientManager.getSelectionClient()) {
-                        controller.setSelectionClient(client);
-                    }
-                } else {
+
+                if (controller.getSelectionClient()
+                        == mSelectionClientManager.getSelectionClient()) {
                     controller.setSelectionClient(client);
                 }
             }
@@ -343,9 +339,7 @@ public class ContextualSearchTabHelper extends EmptyTabObserver
     private boolean isContextualSearchActive(WebContents webContents) {
         assert mTab.getWebContents() == null || mTab.getWebContents() == webContents;
         // If the tab has an active ReadAloud playback, contextual search is disabled
-        if (isReadAloudTapToSeekEnabled()
-                && mReadAloudActivePlaybackTab != null
-                && mReadAloudActivePlaybackTab.get() == mTab) {
+        if (mReadAloudActivePlaybackTab != null && mReadAloudActivePlaybackTab.get() == mTab) {
             return false;
         }
         if (maybeObserveManagerCreation()) return false;
@@ -404,7 +398,7 @@ public class ContextualSearchTabHelper extends EmptyTabObserver
         if (manager != null) return false;
 
         if (mTab.isCustomTab()) Log.w(TAG, "No manager!");
-        ObservableSupplier<ContextualSearchManager> supplier =
+        MonotonicObservableSupplier<ContextualSearchManager> supplier =
                 getContextualSearchManagerSupplier(mTab);
         if (supplier != null) {
             supplier.addObserver(mManagerCallback);
@@ -423,13 +417,6 @@ public class ContextualSearchTabHelper extends EmptyTabObserver
     }
 
     /**
-     * @return Whether ReadAloud's tap to seek is enabled
-     */
-    private static boolean isReadAloudTapToSeekEnabled() {
-        return ChromeFeatureList.sReadAloudTapToSeek.isEnabled();
-    }
-
-    /**
      * Gets the {@link ContextualSearchManager} associated with the given tab's activity.
      *
      * @param tab The {@link Tab} that we're getting the manager for.
@@ -440,16 +427,15 @@ public class ContextualSearchTabHelper extends EmptyTabObserver
         return supplier != null ? supplier.get() : null;
     }
 
-    private @Nullable
-            ObservableSupplier<ContextualSearchManager> getContextualSearchManagerSupplier(
-                    Tab tab) {
+    private @Nullable MonotonicObservableSupplier<ContextualSearchManager>
+            getContextualSearchManagerSupplier(Tab tab) {
         // Window may be null in tests.
         WindowAndroid window = tab.getWindowAndroid();
         return window != null ? ContextualSearchManagerSupplier.from(window) : null;
     }
 
-    private static @Nullable ObservableSupplier<ReadAloudController> getReadAloudControllerSupplier(
-            Tab tab) {
+    private static @Nullable MonotonicObservableSupplier<ReadAloudController>
+            getReadAloudControllerSupplier(Tab tab) {
         // Window may be null in tests.
         WindowAndroid window = tab.getWindowAndroid();
         return window != null ? ReadAloudControllerSupplier.from(window) : null;

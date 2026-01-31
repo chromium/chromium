@@ -56,7 +56,7 @@ void FakeWiFiService::UnInitialize() {
 }
 
 void FakeWiFiService::GetProperties(const std::string& network_guid,
-                                    base::Value::Dict* properties,
+                                    base::DictValue* properties,
                                     std::string* error) {
   NetworkList::iterator network_properties = FindNetwork(network_guid);
   if (network_properties == networks_.end()) {
@@ -66,16 +66,15 @@ void FakeWiFiService::GetProperties(const std::string& network_guid,
   *properties = network_properties->ToValue(/*network_list=*/false);
 }
 
-void FakeWiFiService::GetManagedProperties(
-    const std::string& network_guid,
-    base::Value::Dict* managed_properties,
-    std::string* error) {
+void FakeWiFiService::GetManagedProperties(const std::string& network_guid,
+                                           base::DictValue* managed_properties,
+                                           std::string* error) {
   // Not implemented
   *error = kErrorWiFiService;
 }
 
 void FakeWiFiService::GetState(const std::string& network_guid,
-                               base::Value::Dict* properties,
+                               base::DictValue* properties,
                                std::string* error) {
   NetworkList::iterator network_properties = FindNetwork(network_guid);
   if (network_properties == networks_.end()) {
@@ -86,7 +85,7 @@ void FakeWiFiService::GetState(const std::string& network_guid,
 }
 
 void FakeWiFiService::SetProperties(const std::string& network_guid,
-                                    base::Value::Dict properties,
+                                    base::DictValue properties,
                                     std::string* error) {
   NetworkList::iterator network_properties = FindNetwork(network_guid);
   if (network_properties == networks_.end() ||
@@ -96,7 +95,7 @@ void FakeWiFiService::SetProperties(const std::string& network_guid,
 }
 
 void FakeWiFiService::CreateNetwork(bool shared,
-                                    base::Value::Dict properties,
+                                    base::DictValue properties,
                                     std::string* network_guid,
                                     std::string* error) {
   NetworkProperties network_properties;
@@ -111,7 +110,7 @@ void FakeWiFiService::CreateNetwork(bool shared,
 
 void FakeWiFiService::GetVisibleNetworks(const std::string& network_type,
                                          bool include_details,
-                                         base::Value::List* network_list) {
+                                         base::ListValue* network_list) {
   for (NetworkList::const_iterator it = networks_.begin();
        it != networks_.end();
        ++it) {

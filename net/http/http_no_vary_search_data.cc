@@ -4,10 +4,10 @@
 
 #include "net/http/http_no_vary_search_data.h"
 
+#include <algorithm>
 #include <optional>
 #include <string_view>
 
-#include "base/containers/contains.h"
 #include "base/containers/flat_set.h"
 #include "base/debug/crash_logging.h"
 #include "base/debug/dump_without_crashing.h"
@@ -39,30 +39,6 @@ std::optional<std::vector<std::string>> ParseStringList(
     keys.push_back(UnescapePercentEncodedUrl(item.item.GetString()));
   }
   return keys;
-}
-
-template <typename ParamsType>
-void ApplyNoVarySearchRulesToParams(const HttpNoVarySearchData& rules,
-                                    ParamsType& params) {
-  // Ignore all the query search params that the URL is not varying on.
-  if (rules.vary_by_default()) {
-    params.DeleteAllWithNames(rules.affected_params());
-  } else {
-    params.DeleteAllExceptWithNames(rules.affected_params());
-  }
-  // Sort the params if the order of the search params in the query
-  // is ignored.
-  if (!rules.vary_on_key_order()) {
-    params.Sort();
-  }
-}
-
-template <typename ParamsType>
-void ApplyNoVarySearchRulesToBothParams(const HttpNoVarySearchData& rules,
-                                        ParamsType& params_a,
-                                        ParamsType& params_b) {
-  ApplyNoVarySearchRulesToParams(rules, params_a);
-  ApplyNoVarySearchRulesToParams(rules, params_b);
 }
 
 // Extracts the "base URL" (everything before the query or fragment) from `url`.
@@ -116,6 +92,23 @@ HttpNoVarySearchData& HttpNoVarySearchData::operator=(
 HttpNoVarySearchData& HttpNoVarySearchData::operator=(HttpNoVarySearchData&&) =
     default;
 
+std::vector<std::string> HttpNoVarySearchData::GetAffectedParams() const {
+  return std::vector<std::string>(affected_params_.begin(),
+                                  affected_params_.end());
+}
+
+template <typename ParamsType>
+void HttpNoVarySearchData::ApplyRulesToParams(ParamsType& params) const {
+  if (vary_by_default_) {
+    params.DeleteAllWithNames(affected_params_);
+  } else {
+    params.DeleteAllExceptWithNames(affected_params_);
+  }
+  if (!vary_on_key_order_) {
+    params.Sort();
+  }
+}
+
 bool HttpNoVarySearchData::AreEquivalent(const GURL& a, const GURL& b) const {
   CHECK(a.is_valid());
   CHECK(b.is_valid());
@@ -128,7 +121,7 @@ bool HttpNoVarySearchData::AreEquivalent(const GURL& a, const GURL& b) const {
 
 std::string HttpNoVarySearchData::CanonicalizeQuery(const GURL& url) const {
   UrlSearchParamsView search_params(url);
-  ApplyNoVarySearchRulesToParams(*this, search_params);
+  ApplyRulesToParams(search_params);
 
   return search_params.SerializeAsUtf8();
 }
@@ -209,9 +202,10 @@ HttpNoVarySearchData::ParseNoVarySearchDictionary(
   bool vary_by_default = true;
 
   // If the dictionary contains unknown keys, maybe fail parsing.
-  const bool has_unrecognized_keys = !std::ranges::all_of(
-      dict,
-      [&](const auto& pair) { return base::Contains(kValidKeys, pair.first); });
+  const bool has_unrecognized_keys =
+      !std::ranges::all_of(dict, [&](const auto& pair) {
+        return std::ranges::contains(kValidKeys, pair.first);
+      });
 
   UMA_HISTOGRAM_BOOLEAN("Net.HttpNoVarySearch.HasUnrecognizedKeys",
                         has_unrecognized_keys);
@@ -293,7 +287,8 @@ bool HttpNoVarySearchData::AreEquivalentOldImpl(const GURL& a,
   // search params variance.
   UrlSearchParams a_search_params(a);
   UrlSearchParams b_search_params(b);
-  ApplyNoVarySearchRulesToBothParams(*this, a_search_params, b_search_params);
+  ApplyRulesToParams(a_search_params);
+  ApplyRulesToParams(b_search_params);
 
   // Check Search Params for equality
   // All search params, in order, need to have the same keys and the same
@@ -311,7 +306,8 @@ bool HttpNoVarySearchData::AreEquivalentNewImpl(const GURL& a,
   // search params variance.
   UrlSearchParamsView a_search_params(a);
   UrlSearchParamsView b_search_params(b);
-  ApplyNoVarySearchRulesToBothParams(*this, a_search_params, b_search_params);
+  ApplyRulesToParams(a_search_params);
+  ApplyRulesToParams(b_search_params);
 
   return a_search_params == b_search_params;
 }

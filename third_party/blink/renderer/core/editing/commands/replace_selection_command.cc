@@ -292,9 +292,6 @@ ReplacementFragment::ReplacementFragment(Document* document,
 }
 
 void ReplacementFragment::UpdateFragmentForTextArea() {
-  if (!RuntimeEnabledFeatures::TextareaLineEndingsAsBrEnabled()) {
-    return;
-  }
   DocumentFragment* new_fragment = nullptr;
   Node* next = nullptr;
   for (Node* node = fragment_->firstChild(); node; node = next) {
@@ -509,6 +506,7 @@ ReplaceSelectionCommand::ReplaceSelectionCommand(
     Document& document,
     DocumentFragment* fragment,
     CommandOptions options,
+    PasswordEchoBehavior password_echo_behavior,
     InputEvent::InputType input_type,
     DataTransfer* data_transfer)
     : CompositeEditCommand(document, data_transfer),
@@ -518,6 +516,7 @@ ReplaceSelectionCommand::ReplaceSelectionCommand(
       document_fragment_(fragment),
       prevent_nesting_(options & kPreventNesting),
       moving_paragraph_(options & kMovingParagraph),
+      password_echo_behavior_(password_echo_behavior),
       input_type_(input_type),
       sanitize_fragment_(options & kSanitizeFragment),
       should_merge_end_(false) {}
@@ -1305,7 +1304,9 @@ void ReplaceSelectionCommand::DoApply(EditingState* editing_state) {
 
   ReplacementFragment fragment(&GetDocument(), document_fragment_.Get(),
                                selection);
-  bool trivial_replace_result = PerformTrivialReplace(fragment, editing_state);
+
+  bool trivial_replace_result =
+      PerformTrivialReplace(fragment, editing_state, password_echo_behavior_);
   if (editing_state->IsAborted())
     return;
   if (trivial_replace_result)
@@ -1898,7 +1899,8 @@ void ReplaceSelectionCommand::AddSpacesForSmartReplace(
     end_text_node = DynamicTo<Text>(end_node);
     if (end_text_node) {
       InsertTextIntoNode(end_text_node, end_offset,
-                         collapse_white_space ? NonBreakingSpaceString() : " ");
+                         collapse_white_space ? NonBreakingSpaceString() : " ",
+                         password_echo_behavior_);
       if (end_of_inserted_content_.ComputeContainerNode() == end_node)
         end_of_inserted_content_ = Position(
             end_node, end_of_inserted_content_.OffsetInContainerNode() + 1);
@@ -1938,7 +1940,8 @@ void ReplaceSelectionCommand::AddSpacesForSmartReplace(
         start_node->GetLayoutObject()->Style()->ShouldCollapseWhiteSpaces();
     if (auto* start_text_node = DynamicTo<Text>(start_node)) {
       InsertTextIntoNode(start_text_node, start_offset,
-                         collapse_white_space ? NonBreakingSpaceString() : " ");
+                         collapse_white_space ? NonBreakingSpaceString() : " ",
+                         password_echo_behavior_);
       if (end_of_inserted_content_.ComputeContainerNode() == start_node &&
           end_of_inserted_content_.OffsetInContainerNode())
         end_of_inserted_content_ = Position(
@@ -2053,7 +2056,7 @@ void ReplaceSelectionCommand::MergeTextNodesAroundPosition(
   if (auto* previous = DynamicTo<Text>(text->previousSibling())) {
     if (has_incomplete_surrogate ||
         previous->data().length() <= kMergeSizeLimit) {
-      InsertTextIntoNode(text, 0, previous->data());
+      InsertTextIntoNode(text, 0, previous->data(), password_echo_behavior_);
 
       if (position_is_offset_in_anchor) {
         position =
@@ -2085,7 +2088,8 @@ void ReplaceSelectionCommand::MergeTextNodesAroundPosition(
     if (!has_incomplete_surrogate && next->data().length() > kMergeSizeLimit)
       return;
     unsigned original_length = text->length();
-    InsertTextIntoNode(text, original_length, next->data());
+    InsertTextIntoNode(text, original_length, next->data(),
+                       password_echo_behavior_);
 
     if (!position_is_offset_in_anchor)
       position = ComputePositionForNodeRemoval(position, *next);
@@ -2199,7 +2203,8 @@ void ReplaceSelectionCommand::UpdateNodesInserted(Node* node) {
 // nodes.
 bool ReplaceSelectionCommand::PerformTrivialReplace(
     const ReplacementFragment& fragment,
-    EditingState* editing_state) {
+    EditingState* editing_state,
+    PasswordEchoBehavior password_echo_behavior) {
   // Save the text to set event data for input events.
   input_event_data_ = fragment.TrivialReplacementText();
 
@@ -2229,7 +2234,8 @@ bool ReplaceSelectionCommand::PerformTrivialReplace(
   // have to worry about those here.
 
   Position start = EndingVisibleSelection().Start();
-  Position end = ReplaceSelectedTextInNode(text_node->data());
+  Position end =
+      ReplaceSelectedTextInNode(text_node->data(), password_echo_behavior);
   if (end.IsNull())
     return false;
 
@@ -2244,7 +2250,6 @@ bool ReplaceSelectionCommand::PerformTrivialReplace(
     if (editing_state->IsAborted())
       return false;
   }
-
 
   start_of_inserted_range_ = start;
   end_of_inserted_range_ = end;

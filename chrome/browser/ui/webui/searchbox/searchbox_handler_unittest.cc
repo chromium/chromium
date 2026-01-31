@@ -5,10 +5,12 @@
 #include "chrome/browser/ui/webui/cr_components/searchbox/searchbox_handler.h"
 
 #include "base/memory/raw_ptr.h"
+#include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/ui/browser_window/test/mock_browser_window_interface.h"
+#include "chrome/browser/ui/contextual_search/tab_contextualization_controller.h"
 #include "chrome/browser/ui/omnibox/omnibox_controller.h"
 #include "chrome/browser/ui/tab_ui_helper.h"
 #include "chrome/browser/ui/tabs/alert/tab_alert_controller.h"
@@ -21,7 +23,6 @@
 #include "chrome/browser/ui/webui/searchbox/webui_omnibox_handler.h"
 #include "chrome/browser/ui/webui/webui_embedding_context.h"
 #include "chrome/test/base/testing_profile.h"
-#include "components/lens/tab_contextualization_controller.h"
 #include "components/omnibox/browser/autocomplete_controller.h"
 #include "components/omnibox/browser/mock_autocomplete_provider_client.h"
 #include "components/omnibox/browser/omnibox_prefs.h"
@@ -105,7 +106,11 @@ class RealboxHandlerTest : public SearchboxHandlerTest {
         content::WebContentsTester::CreateTestWebContents(profile(), nullptr);
     handler_ = std::make_unique<RealboxHandler>(
         mojo::PendingReceiver<searchbox::mojom::PageHandler>(), profile(),
-        web_contents_.get());
+        web_contents_.get(),
+        base::BindLambdaForTesting(
+            []() -> contextual_search::ContextualSearchSessionHandle* {
+              return nullptr;
+            }));
     handler_->SetPage(page_.BindAndGetRemote());
   }
 
@@ -226,7 +231,8 @@ TEST_F(RealboxHandlerTest, AddFileContext) {
   file_info->mime_type = "image/png";
   file_info->image_data_url = image_data_url;
   file_info->is_deletable = is_deletable;
-  handler_->AddFileContextFromBrowser(token, file_info.Clone());
+  handler_->SearchboxHandler::AddFileContextFromBrowser(token,
+                                                        file_info.Clone());
   page_.FlushForTesting();
 
   ASSERT_TRUE(captured_file_info);
@@ -311,7 +317,7 @@ TEST_F(LensSearchboxHandlerTest, Lens_AutocompleteController_Start) {
     suggest_inputs.set_search_session_id("123");
     suggest_inputs.set_encoded_visual_search_interaction_log_data("321");
     EXPECT_CALL(*lens_searchbox_client_, GetLensSuggestInputs())
-        .WillRepeatedly(ReturnRef(suggest_inputs));
+        .WillRepeatedly(Return(suggest_inputs));
 
     handler_->QueryAutocomplete(u"", /*prevent_inline_autocomplete=*/false);
 
@@ -363,7 +369,7 @@ TEST_F(LensSearchboxHandlerTest, Lens_AutocompleteController_Start) {
     suggest_inputs.set_search_session_id("123");
     suggest_inputs.set_encoded_visual_search_interaction_log_data("321");
     EXPECT_CALL(*lens_searchbox_client_, GetLensSuggestInputs())
-        .WillRepeatedly(ReturnRef(suggest_inputs));
+        .WillRepeatedly(Return(suggest_inputs));
 
     handler_->QueryAutocomplete(u"a", /*prevent_inline_autocomplete=*/false);
 
@@ -420,7 +426,11 @@ class WebuiOmniboxHandlerTest : public SearchboxHandlerTest {
 
     handler_ = std::make_unique<WebuiOmniboxHandler>(
         mojo::PendingReceiver<searchbox::mojom::PageHandler>(),
-        /*metrics_reporter=*/nullptr, omnibox_controller_.get(), &web_ui_);
+        /*metrics_reporter=*/nullptr, omnibox_controller_.get(), &web_ui_,
+        base::BindLambdaForTesting(
+            []() -> contextual_search::ContextualSearchSessionHandle* {
+              return nullptr;
+            }));
     handler_->SetPage(page_.BindAndGetRemote());
   }
 

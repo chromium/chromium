@@ -826,6 +826,14 @@ class CC_EXPORT LayerTreeImpl {
   // output of the current frame.
   bool HasViewTransitionSaveRequest() const;
 
+  // Returns true if there is a HUD layer and it has animating contents.
+  bool IsAnimatingHUDContents() const;
+
+  void set_is_animating_hud_contents(bool is_animating_hud_contents) {
+    DCHECK(settings().trees_in_viz_in_viz_process);
+    is_animating_hud_contents_ = is_animating_hud_contents;
+  }
+
   // Returns a set of all view transition tokens that are currently in the
   // capture phase.
   base::flat_set<blink::ViewTransitionToken> GetCaptureViewTransitionTokens()
@@ -910,6 +918,9 @@ class CC_EXPORT LayerTreeImpl {
   LayerSelection selection_;
 
   scoped_refptr<SyncedScale> page_scale_factor_;
+
+  // The minimum and maximum page scale factor.  A value of 0 indicates that the
+  // limit is not enforced.
   float min_page_scale_factor_;
   float max_page_scale_factor_;
   float external_page_scale_factor_;
@@ -949,6 +960,15 @@ class CC_EXPORT LayerTreeImpl {
   // Whether we have a request to force-send RenderFrameMetadata with the next
   // frame.
   bool force_send_metadata_request_ : 1 = false;
+
+  // This is only used in TreesInViz.
+  // It is Equivalent to LayerTreeImpl::hud_layer() &&
+  // LayerTreeImpl::hud_layer()->IsAnimatingHUDContents().
+  // It is always false in renderer process, but is wired to viz process
+  // and used to replace the above logic. This is because hud layers aren't
+  // deserialized as HeadsUoDisplayLayerImpl so LayerTreeImpl::hud_layer()
+  // always returns false in viz.
+  bool is_animating_hud_contents_ : 1 = false;
 
   PropertyChangeForcesCommitCriteria property_change_forces_commit_criteria_ =
       PropertyChangeForcesCommitCriteria::kNone;

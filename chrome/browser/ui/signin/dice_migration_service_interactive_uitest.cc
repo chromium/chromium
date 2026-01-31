@@ -26,6 +26,7 @@
 #include "components/signin/public/identity_manager/identity_utils.h"
 #include "content/public/test/browser_test.h"
 #include "ui/base/interaction/interactive_test.h"
+#include "ui/gfx/scoped_animation_duration_scale_mode.h"
 #include "ui/views/test/widget_test.h"
 #include "ui/views/window/dialog_client_view.h"
 
@@ -115,6 +116,11 @@ class DiceMigrationServiceInteractiveUiTest : public InteractiveBrowserTest {
   base::test::ScopedFeatureList scoped_feature_list_;
   base::HistogramTester histogram_tester_;
   base::UserActionTester user_action_tester_;
+
+ private:
+  gfx::ScopedAnimationDurationScaleMode zero_duration_mode_ =
+      gfx::ScopedAnimationDurationScaleMode(
+          gfx::ScopedAnimationDurationScaleMode::ZERO_DURATION);
 };
 
 DICE_MIGRATION_TEST_F(DiceMigrationServiceInteractiveUiTest,

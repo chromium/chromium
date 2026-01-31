@@ -105,8 +105,7 @@ class WellKnownChangePasswordTabHelperTest : public PlatformTest {
         IOSChromeAffiliationServiceFactory::GetForProfile(profile_.get()));
 
     web_state()->SetDelegate(&delegate_);
-    password_manager::WellKnownChangePasswordTabHelper::CreateForWebState(
-        web_state());
+    WellKnownChangePasswordTabHelper::CreateForWebState(web_state());
     profile_->SetSharedURLLoaderFactory(
         base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
             &test_url_loader_factory_));

@@ -52,6 +52,7 @@ specific_include_rules = {
     "+chrome/browser/ui/browser_list.h",
     "+chrome/browser/ui/browser_list_observer.h",
     "+chrome/browser/ui/browser_window/public/global_browser_collection.h",
+    "+chrome/browser/ui/browser_window/public/browser_collection_observer.h",
     "+chrome/test/base",
   ]
 }

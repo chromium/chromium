@@ -37,19 +37,19 @@ class SmbHandler : public content::WebUIMessageHandler {
   void SetSmbServiceForTesting(smb_client::SmbService* smb_service);
 
  protected:
-  void HandleHasAnySmbMountedBefore(const base::Value::List& args);
+  void HandleHasAnySmbMountedBefore(const base::ListValue& args);
 
  private:
   friend class TestSmbHandler;
 
   // WebUI call to mount an Smb Filesystem.
-  void HandleSmbMount(const base::Value::List& args);
+  void HandleSmbMount(const base::ListValue& args);
 
   // WebUI call to start file share discovery on the network.
-  void HandleStartDiscovery(const base::Value::List& args);
+  void HandleStartDiscovery(const base::ListValue& args);
 
   // WebUI call to update the credentials of a mounted share.
-  void HandleUpdateCredentials(const base::Value::List& args);
+  void HandleUpdateCredentials(const base::ListValue& args);
 
   // Callback handler for SmbMount.
   void HandleSmbMountResponse(const std::string& callback_id,

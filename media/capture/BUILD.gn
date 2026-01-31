@@ -121,6 +121,8 @@ component("capture_lib") {
     "video/create_video_capture_device_factory.cc",
     "video/create_video_capture_device_factory.h",
     "video/scoped_buffer_pool_reservation.h",
+    "video/shared_image_buffer_tracker.cc",
+    "video/shared_image_buffer_tracker.h",
     "video/shared_memory_buffer_tracker.cc",
     "video/shared_memory_buffer_tracker.h",
     "video/video_capture_buffer_pool.h",
@@ -440,6 +442,14 @@ source_set("test_support") {
       "video/linux/fake_v4l2_impl.cc",
       "video/linux/fake_v4l2_impl.h",
     ]
+  }
+
+  if (is_mac) {
+    sources += [
+      "video/mac/test/screen_capture_kit_test_helper.h",
+      "video/mac/test/screen_capture_kit_test_helper.mm",
+    ]
+    weak_frameworks = [ "ScreenCaptureKit.framework" ]
   }
 
   if (is_chromeos) {

@@ -203,10 +203,22 @@ class GPUDevice final : public EventTarget,
   void DissociateMailboxes();
   void UnmapAllMappableBuffers(v8::Isolate* isolate);
 
-  void OnUncapturedError(const wgpu::Device& device,
+  // Both the uncaptured error callbacks and the logging callbacks run
+  // spontaneously (unlike other callbacks that run via ProcessEvents). When
+  // running on the main thread, they can run inline as usual, but when running
+  // off the main thread, i.e. on the IO thread, the StringView needs to be
+  // copied at the callsite, then proxied over to the main thread to actually
+  // run the callbacks. The complexity of the function signatures is a result of
+  // the restrictions when using blink's callbacks which implicitly wraps
+  // sequence checking. Further explanation of the callbacks are included at the
+  // implementation sites.
+  void OnUncapturedError(const wgpu::Device&,
                          wgpu::ErrorType errorType,
                          wgpu::StringView message);
+  void OnUncapturedErrorImpl(wgpu::ErrorType errorType, const String& message);
   void OnLogging(wgpu::LoggingType loggingType, wgpu::StringView message);
+  void OnLoggingImpl(wgpu::LoggingType loggingType, const String& message);
+
   void OnDeviceLost(
       std::unique_ptr<
           WGPURepeatingCallback<wgpu::UncapturedErrorCallback<void>>>,

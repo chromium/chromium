@@ -315,7 +315,7 @@ class LayerTreeTest : public testing::Test, public TestHooks {
 // the unit test suite. Instead, comment out the usage of this macro for
 // a specific test name. eg.
 // // TODO(crbug.com/abcd): Disabled for some reasons stated here.
-// // SINGLE_AND_MULTI_THREAD_TEST_F(SomeRandomTest)
+// // SINGLE_THREAD_TEST_F(SomeRandomTest)
 #define SINGLE_THREAD_TEST_F(TEST_FIXTURE_NAME)                   \
   TEST_F(TEST_FIXTURE_NAME, RunSingleThread_DelegatingRenderer) { \
     RunTest(CompositorMode::SINGLE_THREADED);                     \
@@ -326,7 +326,7 @@ class LayerTreeTest : public testing::Test, public TestHooks {
 // the unit test suite. Instead, comment out the usage of this macro for
 // a specific test name. eg.
 // // TODO(crbug.com/abcd): Disabled for some reasons stated here.
-// // SINGLE_AND_MULTI_THREAD_TEST_F(SomeRandomTest)
+// // MULTI_THREAD_TEST_F(SomeRandomTest)
 #define MULTI_THREAD_TEST_F(TEST_FIXTURE_NAME)                   \
   TEST_F(TEST_FIXTURE_NAME, RunMultiThread_DelegatingRenderer) { \
     RunTest(CompositorMode::THREADED);                           \

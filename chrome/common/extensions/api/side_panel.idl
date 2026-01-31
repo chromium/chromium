@@ -11,7 +11,7 @@ namespace sidePanel {
   };
 
   dictionary ManifestKeys {
-    SidePanel side_panel;
+    SidePanel? side_panel;
   };
 
   // Defines the possible alignment for the side panel in the browser UI.
@@ -87,8 +87,11 @@ namespace sidePanel {
     long? windowId;
 
     // The tab in which to close the side panel. If a tab-specific side panel
-    // is open in the specified tab, it will be closed for that tab.
-    // At least one of this or <code>windowId</code> must be provided.
+    // is open in the specified tab, it will be closed for that tab. If only the
+    // global side panel is open, the promise returned by the call to
+    // <code>close()</code> will reject with an error. This behavior was changed
+    // in Chrome 145, with prior versions falling back to closing the global
+    // panel. At least one of this or <code>windowId</code> must be provided.
     long? tabId;
   };
 
@@ -132,14 +135,16 @@ namespace sidePanel {
   interface Functions {
     // Configures the side panel.
     // |options|: The configuration options to apply to the panel.
-    // |callback|: Invoked when the options have been set.
+    // |callback|: Returns a Promise which resolves when the options have been
+    // set.
     static void setOptions(
         PanelOptions options,
         optional VoidCallback callback);
 
     // Returns the active panel configuration.
     // |options|: Specifies the context to return the configuration for.
-    // |callback|: Called with the active panel configuration.
+    // |callback|: Returns a Promise which resolves with the active panel
+    // configuration.
     static void getOptions(
         GetPanelOptions options,
         PanelOptionsCallback callback);
@@ -147,33 +152,37 @@ namespace sidePanel {
     // Configures the extension's side panel behavior. This is an upsert
     // operation.
     // |behavior|: The new behavior to be set.
-    // |callback|: Called when the new behavior has been set.
+    // |callback|: Returns a Promise which resolves when the new behavior has
+    // been set.
     static void setPanelBehavior(
         PanelBehavior behavior,
         optional VoidCallback callback);
 
     // Returns the extension's current side panel behavior.
-    // |callback|: Called with the extension's side panel behavior.
+    // |callback|: Returns a Promise which resolves with the extension's side
+    // panel behavior.
     static void getPanelBehavior(
         PanelBehaviorCallback callback);
 
     // Opens the side panel for the extension.
     // This may only be called in response to a user action.
     // |options|: Specifies the context in which to open the side panel.
-    // |callback|: Called when the side panel has been opened.
+    // |callback|: Returns a Promise which resolves when the side panel has been
+    // opened.
     static void open(
         OpenOptions options,
         VoidCallback callback);
 
     // Returns the side panel's current layout.
-    // |callback|: Called with a $(ref:PanelLayout) containing the side value.
+    // |callback|: Returns a Promise which resolves with a $(ref:PanelLayout).
     static void getLayout(PanelLayoutCallback callback);
 
     // Closes the extension's side panel.
     // This is a no-op if the panel is already closed.
     // |options|: Specifies the context in which to close the side panel.
-    // |callback|: Called when the side panel has been closed.
-    [nodoc] static void close(
+    // |callback|: Returns a Promise which resolves when the side panel has been
+    // closed.
+    static void close(
         CloseOptions options,
         VoidCallback callback);
   };

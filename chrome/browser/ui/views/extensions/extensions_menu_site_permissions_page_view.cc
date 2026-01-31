@@ -373,38 +373,38 @@ ExtensionsMenuSitePermissionsPageView::ExtensionsMenuSitePermissionsPageView(
 }
 
 void ExtensionsMenuSitePermissionsPageView::Update(
-    const std::u16string& extension_name,
-    const ui::ImageModel& extension_icon,
-    ExtensionsMenuViewModel::ExtensionSiteAccessOptionsState
-        site_access_state) {
-  extension_icon_->SetImage(extension_icon);
-  extension_name_->SetText(extension_name);
+    ExtensionsMenuViewModel::ExtensionSitePermissionsState
+        site_permissions_state) {
+  extension_icon_->SetImage(site_permissions_state.extension_icon);
+  extension_name_->SetText(site_permissions_state.extension_name);
 
   std::vector<views::RadioButton*> site_access_buttons =
       GetSiteAccessButtons(this);
   site_access_buttons[kOnClickButtonIndex]->SetChecked(
-      site_access_state.on_click_option.is_on);
+      site_permissions_state.on_click_option.is_on);
   site_access_buttons[kOnSiteButtonIndex]->SetChecked(
-      site_access_state.on_site_option.is_on);
+      site_permissions_state.on_site_option.is_on);
   site_access_buttons[kOnAllSitesButtonIndex]->SetChecked(
-      site_access_state.on_all_sites_option.is_on);
+      site_permissions_state.on_all_sites_option.is_on);
 
   site_access_buttons[kOnClickButtonIndex]->SetEnabled(
-      site_access_state.on_click_option.status ==
+      site_permissions_state.on_click_option.status ==
       ExtensionsMenuViewModel::ControlState::Status::kEnabled);
   site_access_buttons[kOnSiteButtonIndex]->SetEnabled(
-      site_access_state.on_site_option.status ==
+      site_permissions_state.on_site_option.status ==
       ExtensionsMenuViewModel::ControlState::Status::kEnabled);
   site_access_buttons[kOnAllSitesButtonIndex]->SetEnabled(
-      site_access_state.on_all_sites_option.status ==
+      site_permissions_state.on_all_sites_option.status ==
       ExtensionsMenuViewModel::ControlState::Status::kEnabled);
 
   site_access_buttons[kOnClickButtonIndex]->SetText(
-      site_access_state.on_click_option.text);
+      site_permissions_state.on_click_option.text);
   site_access_buttons[kOnSiteButtonIndex]->SetText(
-      site_access_state.on_site_option.text);
+      site_permissions_state.on_site_option.text);
   site_access_buttons[kOnAllSitesButtonIndex]->SetText(
-      site_access_state.on_all_sites_option.text);
+      site_permissions_state.on_all_sites_option.text);
+
+  UpdateShowRequestsToggle(site_permissions_state.show_requests_toggle);
 }
 
 void ExtensionsMenuSitePermissionsPageView::UpdateShowRequestsToggle(

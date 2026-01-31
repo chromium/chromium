@@ -89,7 +89,6 @@ void TabOrganizationRequest::AddGroupData(
 void TabOrganizationRequest::StartRequest() {
   CHECK(state_ == State::NOT_STARTED);
   state_ = State::STARTED;
-  request_start_time_ = base::Time::Now();
 
   std::move(backend_start_request_lambda_)
       .Run(this,
@@ -106,7 +105,6 @@ void TabOrganizationRequest::CompleteRequest(
     return;
   }
 
-  request_end_time_ = base::Time::Now();
   state_ = State::COMPLETED;
   response_ = std::move(response);
   if (response_callback_) {
@@ -134,24 +132,11 @@ void TabOrganizationRequest::CancelRequest() {
 }
 
 void TabOrganizationRequest::LogResults(const TabOrganizationSession* session) {
-  // Only log success metrics about the response if the response was started.
-  if (state_ != State::NOT_STARTED) {
-    UMA_HISTOGRAM_BOOLEAN("Tab.Organization.Response.Succeeded",
-                          state_ == State::COMPLETED);
-  }
-
   if (!response_ || state_ != State::COMPLETED) {
     return;
   }
 
-  UMA_HISTOGRAM_COUNTS_1000("Tab.Organization.Response.TabCount",
-                            response_->GetTabCount());
-
   if (response_->log_results_callback) {
     std::move(response_->log_results_callback).Run(session);
   }
-
-  CHECK(request_start_time_.has_value() && request_end_time_.has_value());
-  UMA_HISTOGRAM_TIMES("Tab.Organization.Response.Latency",
-                      request_end_time_.value() - request_start_time_.value());
 }

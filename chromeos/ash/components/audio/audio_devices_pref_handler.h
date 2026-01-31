@@ -97,7 +97,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_AUDIO) AudioDevicesPrefHandler
       const AudioDevice& preferred_device) = 0;
 
   // Gets the preferred device stable id given a set of devices from prefs.
-  virtual const base::Value::List& GetMostRecentActivatedDeviceIdList(
+  virtual const base::ListValue& GetMostRecentActivatedDeviceIdList(
       bool is_input) = 0;
 
   virtual void UpdateMostRecentActivatedDeviceIdList(

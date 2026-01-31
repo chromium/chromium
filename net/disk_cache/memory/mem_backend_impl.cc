@@ -14,6 +14,7 @@
 #include "base/system/sys_info.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/clock.h"
+#include "base/types/expected.h"
 #include "net/base/net_errors.h"
 #include "net/disk_cache/cache_util.h"
 #include "net/disk_cache/memory/mem_entry_impl.h"
@@ -154,9 +155,9 @@ void MemBackendImpl::SetClockForTesting(base::Clock* clock) {
   custom_clock_for_testing_ = clock;
 }
 
-int32_t MemBackendImpl::GetEntryCount(
-    net::Int32CompletionOnceCallback callback) const {
-  return static_cast<int32_t>(entries_.size());
+base::expected<int32_t, net::Error> MemBackendImpl::GetEntryCount(
+    GetEntryCountCallback callback) const {
+  return base::ok(static_cast<int32_t>(entries_.size()));
 }
 
 EntryResult MemBackendImpl::OpenOrCreateEntry(const std::string& key,

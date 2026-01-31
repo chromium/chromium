@@ -60,7 +60,7 @@ chromium-metrics-reviews@google.com.
 </variants>
 
 <histogram name="MachineLearningService.CpuUsageMilliPercent"
-    units="1/1000ths of %" expires_after="2026-05-24">
+    units="1/1000ths of %" expires_after="2026-07-26">
   <owner>alanlxl@chromium.org</owner>
   <owner>amoylan@chromium.org</owner>
   <summary>
@@ -163,7 +163,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="MachineLearningService.MlCore.DlcBeginInstallDlcServiceError"
-    enum="MachineLearningServiceDlcErrorCode" expires_after="2026-02-01">
+    enum="MachineLearningServiceDlcErrorCode" expires_after="2026-08-01">
   <owner>amoylan@chromium.org</owner>
   <owner>chenjih@google.com</owner>
   <owner>nbowe@chromium.org</owner>
@@ -175,7 +175,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="MachineLearningService.MlCore.DlcBeginInstallResult"
     enum="MachineLearningServiceDlcBeginInstallResult"
-    expires_after="2026-02-01">
+    expires_after="2026-08-01">
   <owner>amoylan@chromium.org</owner>
   <owner>chenjih@google.com</owner>
   <owner>nbowe@chromium.org</owner>
@@ -187,7 +187,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="MachineLearningService.MlCore.DlcFinalInstallDlcServiceError"
-    enum="MachineLearningServiceDlcErrorCode" expires_after="2026-02-01">
+    enum="MachineLearningServiceDlcErrorCode" expires_after="2026-08-01">
   <owner>amoylan@chromium.org</owner>
   <owner>chenjih@google.com</owner>
   <owner>nbowe@chromium.org</owner>
@@ -201,7 +201,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="MachineLearningService.MlCore.DlcFinalInstallResult"
     enum="MachineLearningServiceDlcFinalInstallResult"
-    expires_after="2026-02-01">
+    expires_after="2026-08-01">
   <owner>amoylan@chromium.org</owner>
   <owner>chenjih@google.com</owner>
   <owner>nbowe@chromium.org</owner>
@@ -213,7 +213,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="MachineLearningService.MlCore.DlcInstallAttemptCount"
-    units="attempts" expires_after="2026-02-01">
+    units="attempts" expires_after="2026-08-01">
   <owner>amoylan@chromium.org</owner>
   <owner>chenjih@google.com</owner>
   <owner>nbowe@chromium.org</owner>
@@ -226,7 +226,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="MachineLearningService.MojoConnectionEvent"
-    enum="MachineLearningServiceMojoConnectionEvent" expires_after="2026-04-26">
+    enum="MachineLearningServiceMojoConnectionEvent" expires_after="2026-06-28">
   <owner>alanlxl@chromium.org</owner>
   <owner>amoylan@chromium.org</owner>
   <summary>
@@ -256,7 +256,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="MachineLearningService.ProcessError"
-    enum="MachineLearningServiceProcessError" expires_after="2026-05-24">
+    enum="MachineLearningServiceProcessError" expires_after="2026-07-26">
   <owner>amoylan@chromium.org</owner>
   <owner>alanlxl@chromium.org</owner>
   <summary>
@@ -292,7 +292,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="MachineLearningService.TotalMemoryKb" units="KB"
-    expires_after="2026-05-17">
+    expires_after="2026-07-19">
   <owner>alanlxl@chromium.org</owner>
   <owner>amoylan@chromium.org</owner>
   <summary>
@@ -326,7 +326,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="MachineLearningService.WorkerProcessAcceptMojoConnectionTime"
-    units="microseconds" expires_after="2026-05-17">
+    units="microseconds" expires_after="2026-07-19">
   <owner>alanlxl@chromium.org</owner>
   <owner>amoylan@chromium.org</owner>
   <summary>
@@ -336,7 +336,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="MachineLearningService.WorkerProcessCleanUpTime"
-    units="microseconds" expires_after="2026-05-24">
+    units="microseconds" expires_after="2026-07-26">
   <owner>alanlxl@chromium.org</owner>
   <owner>amoylan@chromium.org</owner>
   <summary>
@@ -360,7 +360,7 @@ chromium-metrics-reviews@google.com.
 <histogram
     name="MachineLearningService.{ModelName}.CreateGraphExecutorResult.Event"
     enum="MachineLearningServiceCreateGraphExecutorResultEvent"
-    expires_after="2026-02-01">
+    expires_after="2026-08-01">
   <owner>amoylan@chromium.org</owner>
   <owner>alanlxl@chromium.org</owner>
   <summary>
@@ -371,7 +371,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="MachineLearningService.{ModelName}.ExecuteResult.Event"
-    enum="MachineLearningServiceExecuteResultEvent" expires_after="2026-02-01">
+    enum="MachineLearningServiceExecuteResultEvent" expires_after="2026-08-01">
   <owner>amoylan@chromium.org</owner>
   <owner>alanlxl@chromium.org</owner>
   <summary>
@@ -383,7 +383,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="MachineLearningService.{ModelName}.LoadModelResult.Event"
     enum="MachineLearningServiceLoadModelResultEvent"
-    expires_after="2026-05-24">
+    expires_after="2026-07-26">
   <owner>amoylan@chromium.org</owner>
   <owner>alanlxl@chromium.org</owner>
   <summary>
@@ -407,7 +407,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="MachineLearningService.{RequestName}.CpuTimeMicrosec"
-    units="microseconds" expires_after="2026-05-24">
+    units="microseconds" expires_after="2026-07-26">
   <owner>amoylan@chromium.org</owner>
   <owner>alanlxl@chromium.org</owner>
   <summary>
@@ -419,7 +419,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="MachineLearningService.{RequestName}.TotalMemoryDeltaKb"
-    units="KB" expires_after="2026-05-24">
+    units="KB" expires_after="2026-07-26">
   <owner>amoylan@chromium.org</owner>
   <owner>alanlxl@chromium.org</owner>
   <summary>Memory usage increase caused by {RequestName} request.</summary>

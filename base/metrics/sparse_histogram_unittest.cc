@@ -488,18 +488,18 @@ TEST_P(SparseHistogramTest, CheckGetCountAndBucketData) {
   EXPECT_EQ(25, count_and_data_bucket.count);
   EXPECT_EQ(4000, count_and_data_bucket.sum);
 
-  const base::Value::List& buckets_list = count_and_data_bucket.buckets;
+  const base::ListValue& buckets_list = count_and_data_bucket.buckets;
   ASSERT_EQ(2u, buckets_list.size());
 
   // Check the first bucket.
-  const base::Value::Dict* bucket1 = buckets_list[0].GetIfDict();
+  const base::DictValue* bucket1 = buckets_list[0].GetIfDict();
   ASSERT_TRUE(bucket1 != nullptr);
   EXPECT_EQ(bucket1->FindInt("low"), std::optional<int>(100));
   EXPECT_EQ(bucket1->FindInt("high"), std::optional<int>(101));
   EXPECT_EQ(bucket1->FindInt("count"), std::optional<int>(10));
 
   // Check the second bucket.
-  const base::Value::Dict* bucket2 = buckets_list[1].GetIfDict();
+  const base::DictValue* bucket2 = buckets_list[1].GetIfDict();
   ASSERT_TRUE(bucket2 != nullptr);
   EXPECT_EQ(bucket2->FindInt("low"), std::optional<int>(200));
   EXPECT_EQ(bucket2->FindInt("high"), std::optional<int>(201));
@@ -529,7 +529,7 @@ TEST_P(SparseHistogramTest, ToGraphDict) {
   histogram->AddCount(/*value=*/4, /*count=*/5);
   histogram->AddCount(/*value=*/10, /*count=*/15);
 
-  base::Value::Dict output = histogram->ToGraphDict();
+  base::DictValue output = histogram->ToGraphDict();
   std::string* header = output.FindString("header");
   std::string* body = output.FindString("body");
 

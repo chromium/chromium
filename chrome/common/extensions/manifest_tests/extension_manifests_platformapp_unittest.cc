@@ -136,14 +136,14 @@ TEST_F(PlatformAppsManifestTest, CertainApisRequirePlatformApps) {
   // testing. The requirements are that (1) it be a valid platform app, and (2)
   // it contain no permissions dictionary.
   std::string error;
-  std::optional<base::Value::Dict> platform_app_manifest =
+  std::optional<base::DictValue> platform_app_manifest =
       LoadManifest("init_valid_platform_app.json", &error);
   ASSERT_TRUE(platform_app_manifest);
 
   std::vector<ManifestData> manifests;
   // Create each manifest.
   for (const char* api_name : kPlatformAppExperimentalApis) {
-    base::Value::List permissions;
+    base::ListValue permissions;
     permissions.Append("experimental");
     permissions.Append(api_name);
     platform_app_manifest->Set("permissions", std::move(permissions));

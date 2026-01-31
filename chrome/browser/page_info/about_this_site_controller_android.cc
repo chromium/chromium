@@ -22,13 +22,12 @@
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "chrome/android/chrome_jni_headers/PageInfoAboutThisSiteController_jni.h"
 
-static jboolean JNI_PageInfoAboutThisSiteController_IsFeatureEnabled(
-    JNIEnv* env) {
+static bool JNI_PageInfoAboutThisSiteController_IsFeatureEnabled(JNIEnv* env) {
   return page_info::IsAboutThisSiteFeatureEnabled(
       g_browser_process->GetApplicationLocale());
 }
 
-static jint JNI_PageInfoAboutThisSiteController_GetJavaDrawableIconId(
+static int32_t JNI_PageInfoAboutThisSiteController_GetJavaDrawableIconId(
     JNIEnv* env) {
   return ResourceMapper::MapToJavaDrawableId(
       IDR_ANDROID_ABOUT_THIS_SITE_LOGO_24DP);
@@ -64,7 +63,7 @@ JNI_PageInfoAboutThisSiteController_GetSiteInfo(
 
 static void JNI_PageInfoAboutThisSiteController_OnAboutThisSiteRowClicked(
     JNIEnv* env,
-    jboolean j_withDescription) {
+    bool j_withDescription) {
   page_info::AboutThisSiteService::OnAboutThisSiteRowClicked(j_withDescription);
 }
 

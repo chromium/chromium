@@ -17,6 +17,7 @@
 #include "chrome/common/pref_names.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/common/webui_url_constants.h"
+#include "components/contextual_tasks/public/features.h"
 #include "components/google/core/common/google_util.h"
 #include "components/offline_pages/buildflags/buildflags.h"
 #include "components/omnibox/browser/autocomplete_input.h"
@@ -122,8 +123,15 @@ bool ChromeLocationBarModelDelegate::ShouldDisplayURL() const {
            url.spec() == chrome::kChromeUISplitViewNewTabPageURL;
   };
 
+  const auto is_contextual_tasks = [](const GURL& url) {
+    return url.SchemeIs(content::kChromeUIScheme) &&
+           url.GetHost() == chrome::kChromeUIContextualTasksHost &&
+           base::FeatureList::IsEnabled(contextual_tasks::kContextualTasks);
+  };
+
   GURL url = entry->GetURL();
-  if (is_ntp(entry->GetVirtualURL()) || is_ntp(url)) {
+  if (is_ntp(entry->GetVirtualURL()) || is_ntp(url) ||
+      is_contextual_tasks(entry->GetVirtualURL()) || is_contextual_tasks(url)) {
     return false;
   }
 

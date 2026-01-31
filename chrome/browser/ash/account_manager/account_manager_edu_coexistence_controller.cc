@@ -8,7 +8,6 @@
 #include <optional>
 
 #include "ash/constants/ash_pref_names.h"
-#include "base/containers/contains.h"
 #include "base/logging.h"
 #include "chrome/browser/ash/account_manager/account_manager_util.h"
 #include "chrome/browser/ash/child_accounts/edu_coexistence_tos_store_utils.h"
@@ -150,8 +149,8 @@ void EduCoexistenceConsentInvalidationController::InvalidateEduAccounts(
     }
 
     // This account should not be invalidated.
-    if (!base::Contains(account_gaia_ids_to_invalidate,
-                        GaiaId(account.key.id()))) {
+    if (!std::ranges::contains(account_gaia_ids_to_invalidate,
+                               GaiaId(account.key.id()))) {
       continue;
     }
 

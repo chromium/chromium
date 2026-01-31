@@ -22,9 +22,9 @@ JNI_AccountInfoSerializer_AccountInfoToJsonString(
   AccountInfo account_info = ConvertFromJavaAccountInfo(env, j_account_info);
 
   // Call the static C++ function to serialize the AccountInfo.
-  base::Value::Dict value_dict = signin::SerializeAccountInfo(account_info);
+  base::DictValue value_dict = signin::SerializeAccountInfo(account_info);
 
-  // Convert the resulting base::Value::Dict to a JSON string.
+  // Convert the resulting base::DictValue to a JSON string.
   std::string json_string;
   if (!base::JSONWriter::Write(value_dict, &json_string)) {
     return nullptr;
@@ -37,7 +37,7 @@ JNI_AccountInfoSerializer_AccountInfoToJsonString(
 static base::android::ScopedJavaLocalRef<jobject>
 JNI_AccountInfoSerializer_JsonStringToAccountInfo(JNIEnv* env,
                                                   std::string& json_string) {
-  // Parse the JSON string into a base::Value::Dict.
+  // Parse the JSON string into a base::DictValue.
   std::optional<base::Value> value =
       base::JSONReader::Read(json_string, base::JSON_PARSE_RFC);
   if (!value || !value->is_dict()) {

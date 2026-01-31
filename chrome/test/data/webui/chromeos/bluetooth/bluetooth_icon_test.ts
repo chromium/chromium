@@ -79,9 +79,7 @@ suite('CrComponentsBluetoothIconTest', function() {
         /*opt_deviceType=*/ DeviceType.kMouse);
     const fakeUrl = 'fake_image';
     device.deviceProperties.imageInfo = {
-      defaultImageUrl: {
-        url: fakeUrl,
-      },
+      defaultImageUrl: fakeUrl,
       trueWirelessImages: null,
     };
 

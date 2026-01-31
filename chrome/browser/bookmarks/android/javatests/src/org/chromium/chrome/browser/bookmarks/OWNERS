@@ -1,1 +1,4 @@
 file://chrome/browser/bookmarks/android/OWNERS
+
+per-file BookmarkPersonalizedSigninPromoTest.java=file://components/signin/ANDROID_OWNERS
+per-file BookmarkPersonalizedSigninPromoDismissTest.java=file://components/signin/ANDROID_OWNERS

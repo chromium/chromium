@@ -1,0 +1,99 @@
+// Copyright 2022 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#import "ios/chrome/browser/passwords/password_suggestion/ui/password_suggestion_view_controller.h"
+
+#import "base/strings/sys_string_conversions.h"
+#import "base/strings/utf_string_conversions.h"
+#import "components/autofill/core/common/password_generation_util.h"
+#import "components/strings/grit/components_strings.h"
+#import "ios/chrome/browser/passwords/password_suggestion/public/password_suggestion_constants.h"
+#import "ios/chrome/browser/shared/ui/symbols/symbols.h"
+#import "ios/chrome/common/ui/button_stack/button_stack_configuration.h"
+#import "ios/chrome/grit/ios_branded_strings.h"
+#import "ios/chrome/grit/ios_strings.h"
+#import "ios/public/provider/chrome/browser/branded_images/branded_images_api.h"
+#import "ui/base/l10n/l10n_util.h"
+
+@interface PasswordSuggestionViewController ()
+
+// The current user's email.
+@property(nonatomic, copy) NSString* userEmail;
+
+// The suggested strong password.
+@property(nonatomic, copy) NSString* passwordSuggestion;
+
+@end
+
+namespace {
+constexpr CGFloat customSpacingBeforeImage = 24;
+constexpr CGFloat customSpacingAfterImage = 1;
+}  // namespace
+
+@implementation PasswordSuggestionViewController {
+  // YES when the bottom sheet is proactive where it is triggered upon focus.
+  BOOL _proactive;
+}
+
+#pragma mark - Public
+
+- (instancetype)initWithPasswordSuggestion:(NSString*)passwordSuggestion
+                                 userEmail:(NSString*)userEmail
+                                 proactive:(BOOL)proactivePasswordGeneration {
+  ButtonStackConfiguration* configuration =
+      [[ButtonStackConfiguration alloc] init];
+  configuration.primaryActionString =
+      l10n_util::GetNSString(IDS_IOS_USE_SUGGESTED_STRONG_PASSWORD);
+  if (proactivePasswordGeneration) {
+    configuration.secondaryActionString =
+        l10n_util::GetNSString(IDS_IOS_CREDENTIAL_BOTTOM_SHEET_USE_KEYBOARD);
+    configuration.secondaryActionImage =
+        DefaultSymbolWithPointSize(kKeyboardSymbol, kSymbolActionPointSize);
+  } else {
+    configuration.secondaryActionString = l10n_util::GetNSString(IDS_CANCEL);
+  }
+
+  self = [super initWithConfiguration:configuration];
+  if (self) {
+    _userEmail = userEmail;
+    _passwordSuggestion = passwordSuggestion;
+    _proactive = proactivePasswordGeneration;
+  }
+  return self;
+}
+
+- (void)viewDidLoad {
+  self.image = ios::provider::GetBrandedImage(
+      ios::provider::BrandedImage::kPasswordSuggestionKey);
+  self.imageHasFixedSize = YES;
+  self.customSpacingBeforeImage = customSpacingBeforeImage;
+  self.customSpacingAfterImage = customSpacingAfterImage;
+  self.titleTextStyle = UIFontTextStyleTitle2;
+  self.topAlignedLayout = YES;
+
+  self.titleString = l10n_util::GetNSString(
+      _passwordSuggestion.length >=
+              autofill::password_generation::kLengthSufficientForStrongLabel
+          ? IDS_IOS_SUGGESTED_STRONG_PASSWORD
+          : IDS_IOS_SUGGESTED_PASSWORD);
+  self.secondaryTitleString = self.passwordSuggestion;
+  self.subtitleString = l10n_util::GetNSStringF(
+      IDS_IOS_SUGGESTED_STRONG_PASSWORD_HINT_DISPLAYING_EMAIL,
+      base::SysNSStringToUTF16(self.userEmail));
+
+  [super viewDidLoad];
+
+  self.view.accessibilityIdentifier =
+      kPasswordSuggestionViewAccessibilityIdentifier;
+}
+
+- (BOOL)canBecomeFirstResponder {
+  // For the proactive view, since the listeners are removed early as soon as
+  // the presentation started, allow the sheet to become a first responder to
+  // not allow the keyboard popping over the sheet when there is a focus event
+  // on the WebView underneath the sheet.
+  return _proactive;
+}
+
+@end

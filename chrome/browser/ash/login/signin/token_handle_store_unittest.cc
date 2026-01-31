@@ -704,7 +704,7 @@ TEST_F(TokenHandleStoreHistogramTest,
   CreateAndInitializeAccountManager();
   account_manager_->UpsertAccount(kGaiaAccountKey, kFakeEmail, kFakeToken);
 
-  base::Value::Dict token_handle_map_dict;
+  base::DictValue token_handle_map_dict;
   token_handle_map_dict.Set(kFakeToken, Sha1Digest(kFakeToken));
   token_handle_mapping_store_.SetDict(kTokenHandleMap,
                                       std::move(token_handle_map_dict));
@@ -726,7 +726,7 @@ TEST_F(TokenHandleStoreHistogramTest,
   CreateAndInitializeAccountManager();
   account_manager_->UpsertAccount(kGaiaAccountKey, kFakeEmail, kFakeToken);
 
-  base::Value::Dict token_handle_map_dict;
+  base::DictValue token_handle_map_dict;
   token_handle_map_dict.Set(kFakeToken, Sha1Digest(kFakeOtherToken));
   token_handle_mapping_store_.SetDict(kTokenHandleMap,
                                       std::move(token_handle_map_dict));

@@ -487,6 +487,36 @@ TEST_F(CookieStoreTest, MaxAgeNegativeValue) {
       WebFeature::kCookieStoreMaxAge));
 }
 
+TEST_F(CookieStoreTest, MaxAgeZero) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(blink::features::kCookieStoreAPIMaxAge);
+
+  V8TestingScope v8_testing_scope((KURL(kDefaultUrl)));
+  CookieStore* cookie_store = CreateCookieStore(v8_testing_scope);
+
+  ScriptState* script_state = v8_testing_scope.GetScriptState();
+  ASSERT_TRUE(script_state);
+  DummyExceptionStateForTesting exception_state;
+
+  EXPECT_THAT(GetAllCookies(), IsEmpty());
+
+  CookieInit* set_options = CookieInit::Create();
+  set_options->setName("cookie-name");
+  set_options->setValue("cookie-value");
+  set_options->setMaxAge(0);
+
+  ScriptPromise<IDLUndefined> promise =
+      cookie_store->set(script_state, set_options, exception_state);
+  ScriptPromiseTester promise_tester(script_state, promise, &exception_state);
+  promise_tester.WaitUntilSettled();
+  // Cookie is immediately expired but promise resolves.
+  EXPECT_FALSE(exception_state.HadException());
+  EXPECT_TRUE(promise_tester.IsFulfilled());
+  EXPECT_THAT(GetAllCookies(), IsEmpty());
+  EXPECT_TRUE(v8_testing_scope.GetDocument().IsUseCounted(
+      WebFeature::kCookieStoreMaxAge));
+}
+
 TEST_F(CookieStoreTest, MaxAgeAndExpiry) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(blink::features::kCookieStoreAPIMaxAge);

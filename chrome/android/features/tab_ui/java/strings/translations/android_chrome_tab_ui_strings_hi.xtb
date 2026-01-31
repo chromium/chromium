@@ -20,6 +20,7 @@
 <translation id="1499635324672558517">क्या सभी गुप्त टैब बंद करने हैं?</translation>
 <translation id="1501480321619201731">ग्रुप मिटाएं</translation>
 <translation id="1553638665176794706">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> इनऐक्टिव आइटम}one{<ph name="TABS_COUNT_MANY" /> इनऐक्टिव आइटम}other{<ph name="TABS_COUNT_MANY" /> इनऐक्टिव आइटम}}</translation>
+<translation id="1568067597247500137">साइट म्यूट करें</translation>
 <translation id="1645759014353344461"><ph name="TABS_COUNT_MANY" /> टैब ग्रुप में शामिल किए गए</translation>
 <translation id="1657719826150349398">टैब को नीचे ले जाएं</translation>
 <translation id="1670942869417022142">ऑडियो म्यूट किया गया है</translation>
@@ -82,13 +83,13 @@
 <translation id="3619255692378312441">ऐक्सेस मैनेज करें</translation>
 <translation id="3649471731638882002">{TAB_COUNT,plural, =1{आइटम बंद करें}one{आइटम बंद करें}other{आइटम बंद करें}}</translation>
 <translation id="3652027618765638838"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
+<translation id="3714430408451673233">टैब बॉटम शीट आधी स्क्रीन पर दिख रही है.</translation>
 <translation id="374923079891132274">Share sheet की झलक का थंबनेल.</translation>
 <translation id="3776329373944672717">टैब ग्रुप का टाइटल <ph name="TITLE_OF_GROUP" /> है</translation>
 <translation id="3810973564298564668">मैनेज करें</translation>
 <translation id="3849789634341518784">{TAB_COUNT,plural, =1{टैब को अनपिन करें}one{टैब को अनपिन करें}other{टैब अनपिन करें}}</translation>
 <translation id="3940195383040445971">टैब पर कीमतों को ट्रैक करें</translation>
 <translation id="3940717704786481856">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> नया टैब, <ph name="ANY_CLOSED" /> बंद किया गया}one{<ph name="MANY_ADDED" /> नया टैब, <ph name="ANY_CLOSED" /> बंद किया गया}other{<ph name="MANY_ADDED" /> नए टैब, <ph name="ANY_CLOSED" /> बंद किए गए}}</translation>
-<translation id="3954615705217314756">{TABS_COUNT,plural, =1{टैब को ग्रुप में शामिल करें}one{टैब को ग्रुप में शामिल करें}other{टैब को ग्रुप में शामिल करें}}</translation>
 <translation id="3962134438902735041">{TABS_COUNT,plural, =1{चुने गए <ph name="TABS_COUNT_ONE" /> टैब को अनपिन करें}one{चुने गए <ph name="TABS_COUNT_MANY" /> टैब को अनपिन करें}other{चुने गए <ph name="TABS_COUNT_MANY" /> टैब अनपिन करें}}</translation>
 <translation id="4009732926939031387">{NUM_DAYS,plural, =1{<ph name="NUM_DAYS_ONE" /> दिन पहले बनाया गया}one{<ph name="NUM_DAYS_MANY" /> दिन पहले बनाया गया}other{<ph name="NUM_DAYS_MANY" /> दिन पहले बनाया गया}}</translation>
 <translation id="4076226664360336092">टैब ग्रुप की सूची, पूरी स्क्रीन पर खोल दी गई है</translation>
@@ -126,8 +127,10 @@
 <translation id="5339733443032484186">आपका आखिरी टैब</translation>
 <translation id="5380159289133845234">डुप्लीकेट टैब संग्रहित करें</translation>
 <translation id="5446043142172831860">टैब हटाएं और ग्रुप छोड़ें</translation>
+<translation id="5465437530117042974">टैब बॉटम शीट बंद हो गई है.</translation>
 <translation id="5490235265819901748">टैब ग्रुप बड़ा किया गया</translation>
 <translation id="5494920125229734069">सभी को चुनें</translation>
+<translation id="5505998972479309757">{LIMIT_COUNT,plural, =1{ज़्यादा से ज़्यादा <ph name="LIMIT_COUNT_ONE" /> फ़ाइल, टैब या इमेज जोड़ें}one{ज़्यादा से ज़्यादा <ph name="LIMIT_COUNT_MANY" /> फ़ाइल, टैब या इमेज जोड़ें}other{ज़्यादा से ज़्यादा <ph name="LIMIT_COUNT_MANY" /> फ़ाइलें, टैब या इमेज जोड़ें}}</translation>
 <translation id="5551694449008560081">{NUMBER_OF_TABS,plural, =1{<ph name="COLOR_NAME" /> रंग और <ph name="TABS_COUNT_ONE" /> टैब वाले टैब ग्रुप को बंद करें.}one{<ph name="COLOR_NAME" /> रंग और <ph name="TABS_COUNT_MANY" /> टैब वाले टैब ग्रुप को बंद करें.}other{<ph name="COLOR_NAME" /> रंग और <ph name="TABS_COUNT_MANY" /> टैब वाले टैब ग्रुप को बंद करें.}}</translation>
 <translation id="5556417849629758491">स्क्रीन पर सबसे ऊपर मौजूद विकल्प से स्टोर की जानकारी देखें</translation>
 <translation id="5627941783489838464">टैब के बारे में कोई अपडेट नहीं है</translation>
@@ -140,7 +143,9 @@
 <translation id="6040143037577758943">बंद करें</translation>
 <translation id="6051432659151380973">आपके टैब ग्रुप अपने-आप सेव होते हैं</translation>
 <translation id="6054741997831917303">इस आइटम की कीमत <ph name="PREVIOUS_PRICE" /> से कम होकर <ph name="NEW_PRICE" /> हो गई है</translation>
+<translation id="606985262342505139">टैब बॉटम शीट पूरी स्क्रीन पर खुली है</translation>
 <translation id="6109251075362363230">अब सभी डुप्लीकेट टैब भी संग्रहित किए जाएंगे. हालांकि, सबसे हाल ही में इस्तेमाल किए गए डुप्लीकेट टैब को संग्रहित नहीं किया जाएगा.</translation>
+<translation id="612596694132302162">साइट अनम्यूट करें</translation>
 <translation id="6149218574440723463">{TABS_COUNT,plural, =1{चुना गया <ph name="TABS_COUNT_ONE" /> आइटम बंद करें}one{चुना गया <ph name="TABS_COUNT_MANY" /> आइटम बंद करें}other{चुने गए <ph name="TABS_COUNT_MANY" /> आइटम बंद करें}}</translation>
 <translation id="61924696525243173">{WINDOW_COUNT,plural, =1{ग्रुप को दूसरी विंडो पर ले जाएं}one{ग्रुप को दूसरी विंडो पर ले जाएं}other{ग्रुप को दूसरी विंडो पर ले जाएं}}</translation>
 <translation id="6212374449852603982">{TAB_COUNT,plural, =1{टैब को दाईं ओर ले जाएं}one{टैब को दाईं ओर ले जाएं}other{टैब दाईं ओर ले जाएं}}</translation>
@@ -195,7 +200,6 @@
 <translation id="7792771145871471484">सुझावों की समीक्षा करें.</translation>
 <translation id="7792860826279960128">शेयर किए गए टैब ग्रुप में बदलावों की सूचना वाली विंडो आधी स्क्रीन पर दिख रही है</translation>
 <translation id="7825973332242257878">टैब ग्रुप</translation>
-<translation id="7838146321400849846">{TABS_COUNT,plural, =1{चुने गए <ph name="TABS_COUNT_ONE" /> टैब का ग्रुप बनाएं}one{चुने गए <ph name="TABS_COUNT_MANY" /> टैब का ग्रुप बनाएं}other{चुने गए <ph name="TABS_COUNT_MANY" /> टैब का ग्रुप बनाएं}}</translation>
 <translation id="7853202427316060426">गतिविधि</translation>
 <translation id="7854360405711302755">{REVIEWS,plural, =1{ <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /> रेटिंग, <ph name="REVIEWS_COUNT_ONE" /> समीक्षा}one{<ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /> रेटिंग, <ph name="REVIEWS_COUNT_MANY" /> समीक्षा}other{<ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /> रेटिंग, <ph name="REVIEWS_COUNT_MANY" /> समीक्षाएं}}</translation>
 <translation id="7885132941432959125">टैब को दाईं ओर ले जाएं</translation>
@@ -223,7 +227,6 @@
 <translation id="8428213095426709021">सेटिंग</translation>
 <translation id="855081842937141170">टैब छोटा करें</translation>
 <translation id="8633025649649592204">हाल की गतिविधि</translation>
-<translation id="8635822281281406185">ज़्यादा से ज़्यादा 10 फ़ाइलें, टैब या इमेज जोड़ें</translation>
 <translation id="8712637175834984815">समझ लिया</translation>
 <translation id="8714939927607906138">कम कीमत</translation>
 <translation id="8730621377337864115">हो गया</translation>

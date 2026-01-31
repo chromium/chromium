@@ -120,9 +120,10 @@ WASAPIAudioOutputStream::WASAPIAudioOutputStream(
   DCHECK_NE(device_id_, AudioDeviceDescription::kDefaultDeviceId);
   DCHECK_NE(device_id_, AudioDeviceDescription::kCommunicationsDeviceId);
 
-  SendLogMessage("%s({device_id=%s}, {params=[%s]}, {role=%s})", __func__,
-                 device_id.c_str(), params.AsHumanReadableString().c_str(),
-                 RoleToString(device_role));
+  UNSAFE_TODO(SendLogMessage("%s({device_id=%s}, {params=[%s]}, {role=%s})",
+                             __func__, device_id.c_str(),
+                             params.AsHumanReadableString().c_str(),
+                             RoleToString(device_role)));
 
   // Load the Avrt DLL if not already loaded. Required to support MMCSS.
   bool avrt_init = avrt::Initialize();
@@ -168,7 +169,8 @@ WASAPIAudioOutputStream::~WASAPIAudioOutputStream() {
 
 bool WASAPIAudioOutputStream::Open() {
   DCHECK_EQ(GetCurrentThreadId(), creating_thread_id_.raw());
-  SendLogMessage("%s([opened=%s])", __func__, opened_ ? "true" : "false");
+  UNSAFE_TODO(
+      SendLogMessage("%s([opened=%s])", __func__, opened_ ? "true" : "false"));
   if (opened_)
     return true;
 
@@ -356,8 +358,9 @@ void WASAPIAudioOutputStream::Start(AudioSourceCallback* callback) {
   DCHECK_EQ(GetCurrentThreadId(), creating_thread_id_.raw());
   CHECK(callback);
   CHECK(opened_);
-  SendLogMessage("%s([opened=%s, started=%s])", __func__,
-                 opened_ ? "true" : "false", render_thread_ ? "true" : "false");
+  UNSAFE_TODO(SendLogMessage("%s([opened=%s, started=%s])", __func__,
+                             opened_ ? "true" : "false",
+                             render_thread_ ? "true" : "false"));
 
   if (render_thread_) {
     CHECK_EQ(callback, source_);
@@ -441,8 +444,8 @@ void WASAPIAudioOutputStream::Start(AudioSourceCallback* callback) {
 void WASAPIAudioOutputStream::Stop() {
   DVLOG(1) << "WASAPIAudioOutputStream::Stop()";
   DCHECK_EQ(GetCurrentThreadId(), creating_thread_id_.raw());
-  SendLogMessage("%s([started=%s])", __func__,
-                 render_thread_ ? "true" : "false");
+  UNSAFE_TODO(SendLogMessage("%s([started=%s])", __func__,
+                             render_thread_ ? "true" : "false"));
 
   if (!render_thread_)
     return;
@@ -528,7 +531,7 @@ void WASAPIAudioOutputStream::SendLogMessage(const char* format, ...) {
     return;
   va_list args;
   va_start(args, format);
-  log_callback_.Run("WAOS::" + base::StringPrintV(format, args) +
+  log_callback_.Run("WAOS::" + UNSAFE_TODO(base::StringPrintV(format, args)) +
                     base::StringPrintf(" [this=0x%" PRIXPTR "]",
                                        reinterpret_cast<uintptr_t>(this)));
   va_end(args);
@@ -868,7 +871,8 @@ bool WASAPIAudioOutputStream::RenderAudioFromSource(UINT64 device_frequency) {
     // Read a data packet from the registered client source and
     // deliver a delay estimate in the same callback to the client.
 
-#if BUILDFLAG(ENABLE_PLATFORM_DTS_AUDIO)
+#if BUILDFLAG(ENABLE_PASSTHROUGH_AUDIO_CODECS) && \
+    BUILDFLAG(ENABLE_PLATFORM_DTS_AUDIO)
     if (params_.format() == AudioParameters::AUDIO_BITSTREAM_DTS) {
       // SAFETY: `audio_data` points to a WASAPI-allocated buffer of
       // `packet_size_bytes_` bytes. The Windows audio API guarantees this
@@ -898,7 +902,8 @@ bool WASAPIAudioOutputStream::RenderAudioFromSource(UINT64 device_frequency) {
       num_written_frames_ += packet_size_frames_;
       return true;
     }
-#endif  // BUILDFLAG(ENABLE_PLATFORM_DTS_AUDIO)
+#endif  // BUILDFLAG(ENABLE_PASSTHROUGH_AUDIO_CODECS) &&
+        // BUILDFLAG(ENABLE_PLATFORM_DTS_AUDIO)
     int frames_filled = source_->OnMoreData(
         BoundedDelay(delay), delay_timestamp,
         glitch_info_accumulator.GetAndReset(), audio_bus_.get());

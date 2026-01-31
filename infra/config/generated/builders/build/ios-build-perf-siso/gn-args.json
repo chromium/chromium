@@ -4,6 +4,7 @@
       "gn_args": {
         "coverage_instrumentation_input_file": "//.code-coverage/files_to_instrument.txt",
         "enable_run_ios_unittests_with_xctest": true,
+        "ios_chrome_enable_profile_altering_tests": true,
         "ios_enable_dangling_raw_ptr_checks": true,
         "is_component_build": false,
         "is_debug": true,
@@ -21,6 +22,7 @@
       "gn_args": {
         "coverage_instrumentation_input_file": "//.code-coverage/files_to_instrument.txt",
         "enable_run_ios_unittests_with_xctest": true,
+        "ios_chrome_enable_profile_altering_tests": true,
         "ios_enable_dangling_raw_ptr_checks": true,
         "is_component_build": false,
         "is_debug": true,

@@ -33,7 +33,6 @@
 #include "chrome/browser/privacy_sandbox/privacy_sandbox_service_factory.h"
 #include "chrome/browser/privacy_sandbox/privacy_sandbox_settings_factory.h"
 #include "chrome/browser/privacy_sandbox/profile_bucket_metrics.h"
-#include "chrome/browser/privacy_sandbox/tracking_protection_settings_factory.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
@@ -62,7 +61,6 @@
 #include "components/privacy_sandbox/privacy_sandbox_prefs.h"
 #include "components/privacy_sandbox/privacy_sandbox_settings_impl.h"
 #include "components/privacy_sandbox/privacy_sandbox_test_util.h"
-#include "components/privacy_sandbox/tracking_protection_settings.h"
 #include "components/profile_metrics/browser_profile_type.h"
 #include "components/signin/public/identity_manager/account_capabilities_test_mutator.h"
 #include "components/signin/public/identity_manager/account_info.h"
@@ -138,6 +136,8 @@ using privacy_sandbox_test_util::TestOutput;
 using privacy_sandbox_test_util::TestState;
 
 const char kFirstPartySetsStateHistogram[] = "Settings.FirstPartySets.State";
+const char kTrackingProtectionStateHistogram[] =
+    "Settings.TrackingProtection.Enabled";
 const char kDefaultProfileUsername[] = "user@gmail.com";
 const char kTestEmail[] = "test@test.com";
 
@@ -517,9 +517,6 @@ class PrivacySandboxServiceTest : public testing::Test {
   content_settings::CookieSettings* cookie_settings() {
     return CookieSettingsFactory::GetForProfile(profile()).get();
   }
-  privacy_sandbox::TrackingProtectionSettings* tracking_protection_settings() {
-    return TrackingProtectionSettingsFactory::GetForProfile(profile());
-  }
   TestInterestGroupManager* test_interest_group_manager() {
     return &test_interest_group_manager_;
   }
@@ -573,9 +570,9 @@ class PrivacySandboxServiceTest : public testing::Test {
   std::unique_ptr<PrivacySandboxServiceImpl> BuildTestService(
       content::BrowserContext* context) {
     return std::make_unique<PrivacySandboxServiceImpl>(
-        profile(), privacy_sandbox_settings(), tracking_protection_settings(),
-        cookie_settings(), profile()->GetPrefs(), test_interest_group_manager(),
-        GetProfileType(), browsing_data_remover(), host_content_settings_map(),
+        profile(), privacy_sandbox_settings(), cookie_settings(),
+        profile()->GetPrefs(), test_interest_group_manager(), GetProfileType(),
+        browsing_data_remover(), host_content_settings_map(),
         mock_browsing_topics_service(), first_party_sets_policy_service(),
         mock_privacy_sandbox_countries());
   }
@@ -1239,8 +1236,7 @@ TEST_F(PrivacySandboxServiceDeathTest, TPSettingsNullExpectDeath) {
   ASSERT_DEATH(
       {
         PrivacySandboxServiceImpl(
-            profile(), privacy_sandbox_settings(),
-            /*tracking_protection_settings=*/nullptr, cookie_settings(),
+            profile(), privacy_sandbox_settings(), cookie_settings(),
             profile()->GetPrefs(), test_interest_group_manager(),
             GetProfileType(), browsing_data_remover(),
             host_content_settings_map(), mock_browsing_topics_service(),
@@ -1312,6 +1308,23 @@ TEST_F(PrivacySandboxServiceTest, RelatedWebsiteSetsDisabledMetric) {
       kFirstPartySetsStateHistogram,
       PrivacySandboxServiceImpl::FirstPartySetsState::kFpsDisabled, 1);
 }
+
+class TrackingProtectionHistogramTest
+    : public PrivacySandboxServiceTest,
+      public testing::WithParamInterface<bool> {};
+
+INSTANTIATE_TEST_SUITE_P(TrackingProtectionHistogramTest,
+                         TrackingProtectionHistogramTest,
+                         testing::Bool());
+
+TEST_P(TrackingProtectionHistogramTest, HistogramReflectsPref) {
+  base::HistogramTester histogram_tester;
+  prefs()->SetBoolean(prefs::kTrackingProtection3pcdEnabled, GetParam());
+  CreateService();
+  histogram_tester.ExpectUniqueSample(kTrackingProtectionStateHistogram,
+                                      GetParam(), 1);
+}
+
 TEST_F(PrivacySandboxServiceTest,
        GetRelatedWebsiteSetOwner_SimulatedRwsData_DisabledWhen3pcAllowed) {
   GURL associate1_gurl("https://associate1.test");

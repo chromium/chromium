@@ -12,7 +12,6 @@
 #include <set>
 #include <vector>
 
-#include "base/containers/contains.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/bind.h"
@@ -264,11 +263,11 @@ TEST_F(SandboxFileSystemBackendTest, EnumerateOrigins) {
     SCOPED_TRACE(testing::Message()
                  << "EnumerateOrigin " << current->origin().Serialize());
     if (enumerator->HasFileSystemType(kFileSystemTypeTemporary)) {
-      EXPECT_TRUE(base::Contains(temporary_set, current.value()));
+      EXPECT_TRUE(temporary_set.contains(current.value()));
       ++temporary_actual_size;
     }
     if (enumerator->HasFileSystemType(kFileSystemTypePersistent)) {
-      EXPECT_TRUE(base::Contains(persistent_set, current.value()));
+      EXPECT_TRUE(persistent_set.contains(current.value()));
       ++persistent_actual_size;
     }
   }

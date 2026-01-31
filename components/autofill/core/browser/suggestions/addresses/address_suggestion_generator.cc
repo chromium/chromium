@@ -8,10 +8,10 @@
 #include <functional>
 #include <optional>
 #include <string>
+#include <utility>
 #include <vector>
 
 #include "base/check_deref.h"
-#include "base/containers/contains.h"
 #include "base/containers/extend.h"
 #include "base/containers/map_util.h"
 #include "base/containers/to_vector.h"
@@ -29,6 +29,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "components/autofill/core/browser/autofill_browser_util.h"
+#include "components/autofill/core/browser/autofill_trigger_source.h"
 #include "components/autofill/core/browser/data_manager/addresses/address_data_manager.h"
 #include "components/autofill/core/browser/data_manager/personal_data_manager.h"
 #include "components/autofill/core/browser/data_model/addresses/autofill_normalization_utils.h"
@@ -51,6 +52,7 @@
 #include "components/autofill/core/browser/suggestions/suggestion_generator.h"
 #include "components/autofill/core/browser/suggestions/suggestion_type.h"
 #include "components/autofill/core/browser/suggestions/suggestion_util.h"
+#include "components/autofill/core/common/aliases.h"
 #include "components/autofill/core/common/autofill_clock.h"
 #include "components/autofill/core/common/autofill_constants.h"
 #include "components/autofill/core/common/autofill_debug_features.h"
@@ -59,6 +61,7 @@
 #include "components/autofill/core/common/autofill_internals/logging_scope.h"
 #include "components/autofill/core/common/autofill_util.h"
 #include "components/autofill/core/common/form_field_data.h"
+#include "components/autofill/core/common/mojom/autofill_types.mojom-shared.h"
 #include "components/feature_engagement/public/feature_constants.h"
 #include "components/grit/components_scaled_resources.h"
 #include "components/strings/grit/components_strings.h"
@@ -220,21 +223,6 @@ std::u16string GetProfileSuggestionMainText(
   return profile.GetInfo(trigger_field_type, app_locale);
 }
 
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
-// Returns the minimum number of fields that should be returned by
-// `AutofillProfile::CreateInferredLabels()`, based on the type of the
-// triggering field.
-int GetNumberOfMinimalFieldsToShow(FieldType trigger_field_type) {
-  if (GroupTypeOfFieldType(trigger_field_type) == FieldTypeGroup::kPhone) {
-    // Phone fields are a special case. For them we want both the
-    // `FULL_NAME` and `ADDRESS_HOME_LINE1` to be present.
-    return 2;
-  } else {
-    return 1;
-  }
-}
-#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
-
 // Returns for each profile in `profiles` a differentiating label string to be
 // used as a secondary text in the corresponding suggestion bubble.
 // `field_types` the types of the fields that will be filled by the suggestion.
@@ -244,25 +232,11 @@ std::vector<std::u16string> GetProfileSuggestionLabels(
     FieldType trigger_field_type,
     const std::string& app_locale) {
   // Generate disambiguating labels based on the list of matches.
-  std::vector<std::u16string> differentiating_labels;
   std::vector<const AutofillProfile*> profile_ptrs = base::ToVector(
       profiles, [](const AutofillProfile& profile) { return &profile; });
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
-  if (base::FeatureList::IsEnabled(features::kAutofillImprovedLabels)) {
-    differentiating_labels = AutofillProfile::CreateInferredLabels(
-        profile_ptrs, /*suggested_fields=*/std::nullopt, trigger_field_type,
-        {trigger_field_type},
-        GetNumberOfMinimalFieldsToShow(trigger_field_type), app_locale,
-        /*use_improved_labels_order=*/true);
-  } else
-#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
-  {
-    differentiating_labels = AutofillProfile::CreateInferredLabels(
-        profile_ptrs, field_types, /*triggering_field_type=*/std::nullopt,
-        {trigger_field_type},
-        /*minimal_fields_shown=*/1, app_locale);
-  }
-  return differentiating_labels;
+  return AutofillProfile::CreateInferredLabels(
+      profile_ptrs, field_types, {trigger_field_type},
+      /*minimal_fields_shown=*/1, app_locale);
 }
 
 // For each profile in `profiles`, returns a vector of `Suggestion::labels` to
@@ -560,14 +534,14 @@ std::vector<AutofillProfile> GetProfilesToSuggest(
       SCOPED_CRASH_KEY_NUMBER("Autofill", "field_types_contains",
                               field_types.contains(trigger_field_type));
       SCOPED_CRASH_KEY_NUMBER("Autofill", "trigger_field_type",
-                              base::to_underlying(trigger_field_type));
+                              std::to_underlying(trigger_field_type));
       SCOPED_CRASH_KEY_NUMBER("Autofill", "size_before_filter",
                               size_before_filter);
       SCOPED_CRASH_KEY_NUMBER("Autofill", "trigger_field_value_size",
                               trigger_field.value().size());
       SCOPED_CRASH_KEY_NUMBER(
           "Autofill", "trigger_field_form_ctrl_type",
-          base::to_underlying(trigger_field.form_control_type()));
+          std::to_underlying(trigger_field.form_control_type()));
       base::debug::DumpWithoutCrashing();
     }
   }
@@ -631,9 +605,7 @@ std::vector<Suggestion> CreateSuggestionsFromProfiles(
       GroupTypeOfFieldType(trigger_field_type) == FieldTypeGroup::kName &&
               !IsAlternativeNameType(trigger_field_type) &&
               suggestion_type != SuggestionType::kAddressFieldByFieldFilling &&
-              base::FeatureList::IsEnabled(features::kAutofillImprovedLabels) &&
-              !features::kAutofillImprovedLabelsParamWithoutMainTextChangesParam
-                   .Get()
+              base::FeatureList::IsEnabled(features::kAutofillImprovedLabels)
           ? NAME_FULL
           : trigger_field_type;
   for (size_t i = 0; i < profiles.size(); ++i) {
@@ -700,7 +672,7 @@ std::vector<Suggestion> CreateSuggestionsFromProfiles(
     // IPH should only be shown for non-H/W profiles.
     if (profile.record_type() == AutofillProfile::RecordType::kAccount &&
         profile.initial_creator_id() !=
-            AutofillProfile::kInitialCreatorOrModifierChrome) {
+            AutofillProfile::kInitialCreatorChrome) {
       suggestion.iph_metadata = Suggestion::IPHMetadata(
           &feature_engagement::
               kIPHAutofillExternalAccountProfileSuggestionFeature);
@@ -893,7 +865,10 @@ std::vector<Suggestion> GetSuggestionsOnTypingForProfile(
   std::vector<Suggestion> suggestions;
   AddressSuggestionGenerator address_suggestion_generator(
       /*plus_address_email_override=*/std::nullopt,
-      /*log_manager=*/nullptr);
+      /*log_manager=*/nullptr,
+      // AddressOnTyping suggestions do not depend on the trigger source.
+      /*trigger_source=*/
+      mojom::AutofillSuggestionTriggerSource::kUnspecified);
 
   auto on_suggestions_generated =
       [&suggestions](
@@ -973,9 +948,11 @@ bool ContainsProfileSuggestionWithRecordType(
 
 AddressSuggestionGenerator::AddressSuggestionGenerator(
     const std::optional<std::string>& plus_address_email_override,
-    LogManager* log_manager)
+    LogManager* log_manager,
+    AutofillSuggestionTriggerSource trigger_source)
     : plus_address_email_override_(plus_address_email_override),
-      log_manager_(log_manager) {}
+      log_manager_(log_manager),
+      trigger_source_(trigger_source) {}
 
 AddressSuggestionGenerator::~AddressSuggestionGenerator() = default;
 
@@ -1112,7 +1089,7 @@ AddressSuggestionGenerator::MaybeFetchRegularAddressSuggestionData(
     return {};
   }
   if (SuppressSuggestionsForAutocompleteUnrecognizedField(
-          *trigger_autofill_field)) {
+          *trigger_autofill_field, GetAcUnrecognizedBehavior(client))) {
     return {};
   }
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
@@ -1151,7 +1128,7 @@ AddressSuggestionGenerator::MaybeFetchRegularAddressSuggestionData(
       skip_reasons = FormFiller::GetFieldFillingSkipReasons(
           form.fields(), *form_structure, *trigger_autofill_field,
           FormFiller::RefillOptions::NotRefill(), FillingProduct::kAddress,
-          client);
+          TriggerSourceFromSuggestionTriggerSource(trigger_source_), client);
     }
     FieldTypeSet field_types;
     for (size_t i = 0; i < form_structure->field_count(); ++i) {

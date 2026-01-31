@@ -201,9 +201,9 @@ void RunJavaCallbackWithRankedButtons(
 static void JNI_AdaptiveToolbarBridge_GetRankedSessionVariantButtons(
     JNIEnv* env,
     Profile* profile,
-    jboolean j_use_raw_results,
+    bool j_use_raw_results,
     const JavaRef<jobject>& j_callback) {
-  bool use_raw_results = static_cast<bool>(j_use_raw_results);
+  bool use_raw_results = j_use_raw_results;
   base::OnceCallback<void(bool, std::vector<int>)> wrapped_callback =
       base::BindOnce(&RunJavaCallbackWithRankedButtons,
                      base::android::ScopedJavaGlobalRef<jobject>(j_callback));

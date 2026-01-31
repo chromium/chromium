@@ -199,10 +199,6 @@ class OmniboxAction : public base::RefCountedThreadSafe<OmniboxAction> {
 #if BUILDFLAG(IS_ANDROID)
   virtual base::android::ScopedJavaLocalRef<jobject> GetOrCreateJavaObject(
       JNIEnv* env) const;
-
-  void RecordActionShown(JNIEnv* env, int position, bool executed) {
-    RecordActionShown(position, executed);
-  }
 #endif
 
  protected:

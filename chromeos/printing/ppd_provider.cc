@@ -11,7 +11,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/containers/contains.h"
 #include "base/containers/queue.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -77,7 +76,7 @@ std::string PpdPathInServingRoot(std::string_view ppd_basename) {
 // "ZPL" in the IEEE 1284 device id make and model.
 bool SupportsGenericZebraPPD(const PrinterSearchData& search_data) {
   return search_data.printer_id.make().starts_with("Zebra") &&
-         base::Contains(search_data.printer_id.model(), "ZPL");
+         search_data.printer_id.model().contains("ZPL");
 }
 
 // This class implements the PpdProvider interface for the v3 metadata

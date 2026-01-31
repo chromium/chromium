@@ -90,9 +90,6 @@ api::tabs::WindowType GetTabsWindowType(const BrowserWindowInterface* browser) {
 #if !BUILDFLAG(IS_ANDROID)
     case BrowserWindowInterface::TYPE_PICTURE_IN_PICTURE:
 #endif
-#if BUILDFLAG(IS_CHROMEOS)
-    case BrowserWindowInterface::TYPE_CUSTOM_TAB:
-#endif
       return api::tabs::WindowType::kNormal;
   }
 }
@@ -186,6 +183,9 @@ content::WebContents* BrowserExtensionWindowController::GetActiveTab() const {
 }
 
 bool BrowserExtensionWindowController::HasEditableTabStrip() const {
+  if (disable_tab_strip_editing_for_test_) {
+    return false;
+  }
 #if BUILDFLAG(IS_ANDROID)
   NOTIMPLEMENTED();
   return true;
@@ -218,12 +218,11 @@ bool BrowserExtensionWindowController::IsVisibleToTabsAPIForExtension(
          allow_dev_tools_windows;
 }
 
-base::Value::Dict
-BrowserExtensionWindowController::CreateWindowValueForExtension(
+base::DictValue BrowserExtensionWindowController::CreateWindowValueForExtension(
     const Extension* extension,
     PopulateTabBehavior populate_tab_behavior,
     mojom::ContextType context) const {
-  base::Value::Dict dict;
+  base::DictValue dict;
 
   dict.Set(extension_misc::kId, session_id_.id());
   dict.Set(kWindowTypeKey, GetWindowTypeText());
@@ -264,10 +263,10 @@ BrowserExtensionWindowController::CreateWindowValueForExtension(
   return dict;
 }
 
-base::Value::List BrowserExtensionWindowController::CreateTabList(
+base::ListValue BrowserExtensionWindowController::CreateTabList(
     const Extension* extension,
     mojom::ContextType context) const {
-  base::Value::List tab_list;
+  base::ListValue tab_list;
   const int tab_count = tab_list_->GetTabCount();
 
   for (int i = 0; i < tab_count; ++i) {

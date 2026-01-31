@@ -50,8 +50,9 @@ class SharedAssociatedRemote {
       scoped_refptr<base::SequencedTaskRunner> bind_task_runner =
           base::SequencedTaskRunner::GetCurrentDefault(),
       const base::Location& location = base::Location::Current()) {
-    if (pending_remote.is_valid())
+    if (pending_remote.is_valid()) {
       Bind(std::move(pending_remote), std::move(bind_task_runner), location);
+    }
   }
 
   bool is_bound() const { return remote_ != nullptr; }

@@ -717,8 +717,8 @@ bool PlatformCrashpadInitialization(
   bool dump_at_crash = true;
   unsigned int dump_percentage =
       crash_reporter_client->GetCrashDumpPercentage();
-  if (dump_percentage < 100 &&
-      static_cast<unsigned int>(base::RandInt(0, 99)) >= dump_percentage) {
+  if (dump_percentage < 100 && static_cast<unsigned int>(base::RandIntInclusive(
+                                   0, 99)) >= dump_percentage) {
     dump_at_crash = false;
   }
 

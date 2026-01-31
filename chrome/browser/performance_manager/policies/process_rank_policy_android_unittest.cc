@@ -691,11 +691,9 @@ TEST_F(ProcessRankPolicyAndroidTest, SubframeImportanceForImportant) {
   if (!content::IsPerceptibleImportanceSupported()) {
     GTEST_SKIP() << "Perceptible importance is not supported.";
   }
-  scoped_feature_list_
-      .InitWithFeatures(/*enabled_features=*/
-                        {::features::kSubframeImportance,
-                         ::features::kSubframePriorityContribution},
-                        /*disabled_features=*/{});
+  scoped_feature_list_.InitWithFeatures(
+      /*enabled_features=*/{::features::kSubframeImportance},
+      /*disabled_features=*/{});
   graph_->PassToGraph(std::make_unique<ProcessRankPolicyAndroid>(true));
   MockPageGraph page_graph = CreateDefaultPage();
   DefaultNavigation(page_graph.page.get());
@@ -712,12 +710,9 @@ TEST_F(ProcessRankPolicyAndroidTest,
   if (!content::IsPerceptibleImportanceSupported()) {
     GTEST_SKIP() << "Perceptible importance is not supported.";
   }
-  scoped_feature_list_
-      .InitWithFeatures(/*enabled_features=*/
-                        {::features::kSubframeImportance,
-                         ::features::kSubframePriorityContribution},
-                        /*disabled_features=*/{
-                            chrome::android::kProtectedTabsAndroid});
+  scoped_feature_list_.InitWithFeatures(
+      /*enabled_features=*/{::features::kSubframeImportance},
+      /*disabled_features=*/{chrome::android::kProtectedTabsAndroid});
   graph_->PassToGraph(std::make_unique<ProcessRankPolicyAndroid>(false));
   MockPageGraph page_graph = CreateDefaultPage();
   DefaultNavigation(page_graph.page.get());
@@ -738,8 +733,7 @@ TEST_F(ProcessRankPolicyAndroidTest,
       /*enabled_features=*/
       {{chrome::android::kProtectedTabsAndroid,
         {{"fallback_to_moderate", "true"}}},
-       {::features::kSubframeImportance, {}},
-       {::features::kSubframePriorityContribution, {}}},
+       {::features::kSubframeImportance, {}}},
       /*disabled_features=*/{});
   graph_->PassToGraph(std::make_unique<ProcessRankPolicyAndroid>(false));
   MockPageGraph page_graph = CreateDefaultPage();
@@ -756,12 +750,10 @@ TEST_F(ProcessRankPolicyAndroidTest, SubframeImportanceForProtectedTab) {
   if (!content::IsPerceptibleImportanceSupported()) {
     GTEST_SKIP() << "Perceptible importance is not supported.";
   }
-  scoped_feature_list_
-      .InitWithFeatures(/*enabled_features=*/
-                        {chrome::android::kProtectedTabsAndroid,
-                         ::features::kSubframeImportance,
-                         ::features::kSubframePriorityContribution},
-                        /*disabled_features=*/{});
+  scoped_feature_list_.InitWithFeatures(/*enabled_features=*/
+                                        {chrome::android::kProtectedTabsAndroid,
+                                         ::features::kSubframeImportance},
+                                        /*disabled_features=*/{});
   graph_->PassToGraph(std::make_unique<ProcessRankPolicyAndroid>(true));
   MockPageGraph page_graph = CreateDefaultPage();
   DefaultNavigation(page_graph.page.get());
@@ -783,8 +775,7 @@ TEST_F(ProcessRankPolicyAndroidTest,
       /*enabled_features=*/
       {{chrome::android::kProtectedTabsAndroid,
         {{"fallback_to_moderate", "false"}}},
-       {::features::kSubframeImportance, {}},
-       {::features::kSubframePriorityContribution, {}}},
+       {::features::kSubframeImportance, {}}},
       /*disabled_features=*/{});
   graph_->PassToGraph(std::make_unique<ProcessRankPolicyAndroid>(false));
   MockPageGraph page_graph = CreateDefaultPage();
@@ -807,8 +798,7 @@ TEST_F(ProcessRankPolicyAndroidTest,
       /*enabled_features=*/
       {{chrome::android::kProtectedTabsAndroid,
         {{"fallback_to_moderate", "true"}}},
-       {::features::kSubframeImportance, {}},
-       {::features::kSubframePriorityContribution, {}}},
+       {::features::kSubframeImportance, {}}},
       /*disabled_features=*/{});
   graph_->PassToGraph(std::make_unique<ProcessRankPolicyAndroid>(false));
   MockPageGraph page_graph = CreateDefaultPage();

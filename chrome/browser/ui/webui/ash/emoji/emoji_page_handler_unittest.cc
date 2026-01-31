@@ -59,7 +59,7 @@ TEST_F(EmojiPageHandlerTest, UpdatesEmojiHistoryInPrefs) {
   history.push_back(HistoryItem::New("xyz", TimeFromSeconds(5)));
   handler.UpdateHistoryInPrefs(kEmojis, std::move(history));
 
-  const base::Value::List* emoji_history =
+  const base::ListValue* emoji_history =
       profile_->GetPrefs()
           ->GetDict(prefs::kEmojiPickerHistory)
           .FindList("emoji");
@@ -84,9 +84,9 @@ TEST_F(EmojiPageHandlerTest, UpdatesPerferredVariantsInPrefs) {
   variants.push_back(EmojiVariant::New("xyz", "456"));
   handler.UpdatePreferredVariantsInPrefs(std::move(variants));
 
-  const base::Value::Dict& preference =
+  const base::DictValue& preference =
       profile_->GetPrefs()->GetDict(prefs::kEmojiPickerPreferences);
-  const base::Value::Dict* preferred_variants =
+  const base::DictValue* preferred_variants =
       preference.FindDict("preferred_variants");
   EXPECT_EQ(preferred_variants->Find("abc")->GetString(), "123");
   EXPECT_EQ(preferred_variants->Find("xyz")->GetString(), "456");

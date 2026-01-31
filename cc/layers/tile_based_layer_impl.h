@@ -6,6 +6,7 @@
 #define CC_LAYERS_TILE_BASED_LAYER_IMPL_H_
 
 #include <algorithm>
+#include <vector>
 
 #include "cc/base/math_util.h"
 #include "cc/cc_export.h"
@@ -52,6 +53,10 @@ class CC_EXPORT TileBasedLayerImpl : public LayerImpl {
 
   void SetSolidColor(std::optional<SkColor4f> color) { solid_color_ = color; }
 
+  std::vector<float>& GetLastAppendQuadsScalesForTesting() {
+    return last_append_quads_scales_;
+  }
+
  protected:
   TileBasedLayerImpl(LayerTreeImpl* tree_impl, int id)
       : LayerImpl(tree_impl, id) {}
@@ -68,6 +73,19 @@ class CC_EXPORT TileBasedLayerImpl : public LayerImpl {
                       const gfx::Rect& scaled_recorded_bounds,
                       const Occlusion& scaled_occlusion,
                       gfx::Rect& visible_geometry_rect) const;
+
+  void ClearLastAppendQuadsScales() { last_append_quads_scales_.clear(); }
+
+  void AddScaleToLastAppendQuadsScales(float scale) {
+    if (last_append_quads_scales_.empty() ||
+        last_append_quads_scales_.back() != scale) {
+      last_append_quads_scales_.push_back(scale);
+    }
+  }
+
+  bool LastAppendQuadsScalesContains(float scale) const {
+    return std::ranges::contains(last_append_quads_scales_, scale);
+  }
 
  private:
   // Invoked when the draw mode is DRAW_MODE_RESOURCELESS_SOFTWARE.
@@ -116,6 +134,11 @@ class CC_EXPORT TileBasedLayerImpl : public LayerImpl {
 
   bool is_backdrop_filter_mask_ : 1 = false;
   std::optional<SkColor4f> solid_color_;
+
+  // List of tiling scales that were used last time we appended quads. This is
+  // used as an optimization not to remove tilings if they are still being
+  // drawn.
+  std::vector<float> last_append_quads_scales_;
 };
 
 template <typename Tiling>

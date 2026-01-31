@@ -112,7 +112,7 @@ class HotspotMetricsHelperTest : public testing::Test {
   }
 
   void SetHotspotStateInShill(const std::string& hotspot_state) {
-    auto status_dict = base::Value::Dict().Set(
+    auto status_dict = base::DictValue().Set(
         shill::kTetheringStatusStateProperty, hotspot_state);
     network_state_test_helper_.manager_test()->SetManagerProperty(
         shill::kTetheringStatusProperty, base::Value(std::move(status_dict)));
@@ -247,7 +247,7 @@ TEST_F(HotspotMetricsHelperTest, HotspotUsageDurationHistogram) {
   task_environment_.FastForwardBy(kHotspotUsageTime);
 
   auto status_dict =
-      base::Value::Dict()
+      base::DictValue()
           .Set(shill::kTetheringStatusStateProperty, shill::kTetheringStateIdle)
           .Set(shill::kTetheringStatusIdleReasonProperty,
                shill::kTetheringIdleReasonError);
@@ -263,13 +263,13 @@ TEST_F(HotspotMetricsHelperTest, HotspotMaxClientCountHistogram) {
   hotspot_controller_->EnableHotspot(base::DoNothing());
   base::RunLoop().RunUntilIdle();
 
-  base::Value::Dict status_dict;
+  base::DictValue status_dict;
   status_dict.Set(shill::kTetheringStatusStateProperty,
                   shill::kTetheringStateActive);
   // Update tethering status with one active client.
-  base::Value::List active_clients_list;
+  base::ListValue active_clients_list;
   active_clients_list.Append(
-      base::Value::Dict()
+      base::DictValue()
           .Set(shill::kTetheringStatusClientIPv4Property, "IPV4:001")
           .Set(shill::kTetheringStatusClientHostnameProperty, "hostname1")
           .Set(shill::kTetheringStatusClientMACProperty, "persist"));
@@ -295,7 +295,7 @@ TEST_F(HotspotMetricsHelperTest, HotspotMaxClientCountHistogram) {
 
   // Add one more connected client.
   active_clients_list.Append(
-      base::Value::Dict()
+      base::DictValue()
           .Set(shill::kTetheringStatusClientIPv4Property, "IPV4:002")
           .Set(shill::kTetheringStatusClientHostnameProperty, "hostname2"));
   status_dict.Set(shill::kTetheringStatusClientsProperty,
@@ -384,7 +384,7 @@ TEST_F(HotspotMetricsHelperTest, HotspotDisableReasonHistogram) {
   // Verifies that the disabel reason is logged if hotspot is torn down by
   // internal error.
   auto status_dict =
-      base::Value::Dict()
+      base::DictValue()
           .Set(shill::kTetheringStatusStateProperty, shill::kTetheringStateIdle)
           .Set(shill::kTetheringStatusIdleReasonProperty,
                shill::kTetheringIdleReasonError);
@@ -401,11 +401,11 @@ TEST_F(HotspotMetricsHelperTest, HotspotDisableReasonHistogram) {
   // When user actions result in hotspot being disabled, we have to skip
   // recording disable reason received from the platform as we will be recording
   // it from hotspot controller.
-  status_dict = base::Value::Dict()
-                    .Set(shill::kTetheringStatusStateProperty,
-                         shill::kTetheringStateIdle)
-                    .Set(shill::kTetheringStatusIdleReasonProperty,
-                         shill::kTetheringIdleReasonUserExit);
+  status_dict =
+      base::DictValue()
+          .Set(shill::kTetheringStatusStateProperty, shill::kTetheringStateIdle)
+          .Set(shill::kTetheringStatusIdleReasonProperty,
+               shill::kTetheringIdleReasonUserExit);
   network_state_test_helper_.manager_test()->SetManagerProperty(
       shill::kTetheringStatusProperty, base::Value(status_dict.Clone()));
   base::RunLoop().RunUntilIdle();

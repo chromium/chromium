@@ -596,7 +596,7 @@ s! {
         pub aio_offset: off_t,
         #[cfg(all(not(target_arch = "x86_64"), target_pointer_width = "32"))]
         __unused1: Padding<[c_char; 4]>,
-        __glibc_reserved: [c_char; 32],
+        __glibc_reserved: Padding<[c_char; 32]>,
     }
 
     pub struct mq_attr {
@@ -708,7 +708,7 @@ s! {
     }
 
     pub struct _IO_FILE {
-        _unused: [u8; 0],
+        _unused: Padding<[u8; 0]>,
     }
 
     pub struct sched_param {
@@ -1041,7 +1041,7 @@ s! {
         pub ut_tv: __timeval,
 
         pub ut_addr_v6: [i32; 4],
-        __glibc_reserved: [c_char; 20],
+        __glibc_reserved: Padding<[c_char; 20]>,
     }
 }
 

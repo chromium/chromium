@@ -4,6 +4,8 @@
 
 #include "chrome/browser/devtools/devtools_ui_bindings.h"
 
+#include "base/base64.h"
+#include "base/command_line.h"
 #include "base/feature_list.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
@@ -12,8 +14,10 @@
 #include "chrome/browser/devtools/devtools_dispatch_http_request_params.h"
 #include "chrome/browser/devtools/devtools_http_service_handler.h"
 #include "chrome/browser/devtools/devtools_http_service_registry.h"
+#include "chrome/browser/devtools/features.h"
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
 #include "chrome/browser/sync/sync_service_factory.h"
+#include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
@@ -166,7 +170,7 @@ class DevToolsUIBindingsSyncInfoTest : public testing::Test {
 TEST_F(DevToolsUIBindingsSyncInfoTest, SyncDisabled) {
   sync_service_->SetSignedOut();
 
-  base::Value::Dict info =
+  base::DictValue info =
       DevToolsUIBindings::GetSyncInformationForProfile(&profile_);
 
   EXPECT_EQ(
@@ -179,7 +183,7 @@ TEST_F(DevToolsUIBindingsSyncInfoTest, PreferencesNotSynced) {
       /*sync_everything=*/false,
       /*types=*/{syncer::UserSelectableType::kBookmarks});
 
-  base::Value::Dict info =
+  base::DictValue info =
       DevToolsUIBindings::GetSyncInformationForProfile(&profile_);
 
   EXPECT_THAT(info.FindBool("isSyncActive"), testing::Optional(true));
@@ -193,75 +197,11 @@ TEST_F(DevToolsUIBindingsSyncInfoTest, ImageAlwaysProvided) {
 
   EXPECT_TRUE(account_info.account_image.IsEmpty());
 
-  base::Value::Dict info =
+  base::DictValue info =
       DevToolsUIBindings::GetSyncInformationForProfile(&profile_);
 
   EXPECT_EQ(*info.FindString("accountEmail"), "sync@devtools.dev");
   EXPECT_NE(info.FindString("accountImage"), nullptr);
-}
-
-// This class uses the actual implementation of the CanMakeRequest
-class TestServiceHandler : public DevToolsHttpServiceHandler {
- public:
-  TestServiceHandler() = default;
-  ~TestServiceHandler() override = default;
-
-  GURL BaseURL() const override { return GURL("http://localhost:8000"); }
-  signin::OAuthConsumerId OAuthConsumerId() const override {
-    return signin::OAuthConsumerId::kDevtoolsAida;
-  }
-  net::NetworkTrafficAnnotationTag NetworkTrafficAnnotationTag()
-      const override {
-    return TRAFFIC_ANNOTATION_FOR_TESTS;
-  }
-};
-
-class DevToolsHttpServiceHandlerTest : public testing::Test {
- protected:
-  void SetUp() override {
-    TestingProfile::Builder builder;
-    profile_ = builder.Build();
-    mock_handler_ = base::WrapUnique(new TestServiceHandler());
-
-    params_.service = "unknownService";
-    params_.path = "/path";
-    params_.method = "GET";
-  }
-
-  DevToolsDispatchHttpRequestParams params_;
-  content::BrowserTaskEnvironment task_environment_;
-  std::unique_ptr<TestingProfile> profile_;
-  std::unique_ptr<TestServiceHandler> mock_handler_;
-};
-
-TEST_F(DevToolsHttpServiceHandlerTest, RequestWithNullProfileFails) {
-  base::test::TestFuture<std::unique_ptr<DevToolsHttpServiceHandler::Result>>
-      result_future;
-
-  mock_handler_->Request(nullptr, params_, result_future.GetCallback());
-
-  std::unique_ptr<DevToolsHttpServiceHandler::Result> result =
-      result_future.Take();
-
-  ASSERT_TRUE(result);
-  EXPECT_EQ(result->error,
-            DevToolsHttpServiceHandler::Result::Error::kValidationFailed);
-}
-
-TEST_F(DevToolsHttpServiceHandlerTest, RequestWithOTRProfileFails) {
-  base::test::TestFuture<std::unique_ptr<DevToolsHttpServiceHandler::Result>>
-      result_future;
-
-  auto* incognito_profile = profile_->GetPrimaryOTRProfile(true);
-  mock_handler_->Request(incognito_profile, params_,
-                         result_future.GetCallback());
-
-  std::unique_ptr<DevToolsHttpServiceHandler::Result> result =
-      result_future.Take();
-
-  ASSERT_TRUE(result);
-  EXPECT_EQ(result->error,
-            DevToolsHttpServiceHandler::Result::Error::kValidationFailed);
 }
 
 class MockServiceHandler : public DevToolsHttpServiceHandler {
@@ -351,7 +291,7 @@ class DevToolsUIBindingsDispatchHttpRequestTest : public testing::Test {
     return last_request_;
   }
 
- private:
+ protected:
   bool InterceptRequest(content::URLLoaderInterceptor::RequestParams* params) {
     last_request_ = params->url_request;
     const GURL& url = params->url_request.url;
@@ -396,7 +336,7 @@ class DevToolsUIBindingsDispatchHttpRequestTest : public testing::Test {
 
 TEST_F(DevToolsUIBindingsDispatchHttpRequestTest,
        DispatchHttpRequestUnknownService) {
-  base::Value::Dict result;
+  base::DictValue result;
   DevToolsDispatchHttpRequestParams params;
   params.service = "unknownService";
   params.path = "/path";
@@ -411,7 +351,7 @@ TEST_F(DevToolsUIBindingsDispatchHttpRequestTest,
 
 TEST_F(DevToolsUIBindingsDispatchHttpRequestTest,
        DispatchHttpRequestDisallowedPath) {
-  base::Value::Dict result;
+  base::DictValue result;
   base::RunLoop run_loop;
   DevToolsDispatchHttpRequestParams params;
   params.service = "mockService";
@@ -431,7 +371,7 @@ TEST_F(DevToolsUIBindingsDispatchHttpRequestTest,
   ExpectCanMakeRequest(false);
 
   base::RunLoop run_loop;
-  base::Value::Dict result;
+  base::DictValue result;
   DevToolsDispatchHttpRequestParams params;
   params.service = "mockService";
   params.path = "/getFoo";
@@ -452,7 +392,7 @@ TEST_F(DevToolsUIBindingsDispatchHttpRequestTest,
   identity_test_env_adaptor()->identity_test_env()->MakePrimaryAccountAvailable(
       "test@google.com", signin::ConsentLevel::kSignin);
   base::RunLoop run_loop;
-  base::Value::Dict result;
+  base::DictValue result;
   DevToolsDispatchHttpRequestParams params;
   params.service = "mockService";
   params.path = "/getFoo";
@@ -481,7 +421,7 @@ TEST_F(DevToolsUIBindingsDispatchHttpRequestTest,
       "test@google.com", signin::ConsentLevel::kSignin);
 
   base::RunLoop run_loop;
-  base::Value::Dict result;
+  base::DictValue result;
   DevToolsDispatchHttpRequestParams params;
   params.service = "mockService";
   params.path = "/getFoo";
@@ -513,7 +453,7 @@ TEST_F(DevToolsUIBindingsDispatchHttpRequestTest,
       "test@google.com", signin::ConsentLevel::kSignin);
 
   base::RunLoop run_loop;
-  base::Value::Dict result;
+  base::DictValue result;
   DevToolsDispatchHttpRequestParams params;
   params.service = "mockService";
   params.path = "/postBar";
@@ -546,7 +486,7 @@ TEST_F(DevToolsUIBindingsDispatchHttpRequestTest,
       "test@google.com", signin::ConsentLevel::kSignin);
 
   base::RunLoop run_loop;
-  base::Value::Dict result;
+  base::DictValue result;
   DevToolsDispatchHttpRequestParams params;
   params.service = "mockService";
   params.path = "/postBar";
@@ -576,7 +516,7 @@ TEST_F(DevToolsUIBindingsDispatchHttpRequestTest, DispatchHttpRequestWithBody) {
       "test@google.com", signin::ConsentLevel::kSignin);
 
   base::RunLoop run_loop;
-  base::Value::Dict result;
+  base::DictValue result;
   DevToolsDispatchHttpRequestParams params;
   params.service = "mockService";
   params.path = "/postBar";
@@ -611,7 +551,7 @@ TEST_F(DevToolsUIBindingsDispatchHttpRequestTest,
       "test@google.com", signin::ConsentLevel::kSignin);
 
   base::RunLoop run_loop;
-  base::Value::Dict result;
+  base::DictValue result;
   DevToolsDispatchHttpRequestParams params;
   params.service = "mockService";
   params.path = "/getFoo";
@@ -639,7 +579,7 @@ TEST_F(DevToolsUIBindingsDispatchHttpRequestTest,
       "test@google.com", signin::ConsentLevel::kSignin);
 
   base::RunLoop run_loop;
-  base::Value::Dict result;
+  base::DictValue result;
   DevToolsDispatchHttpRequestParams params;
   params.service = "mockService";
   params.path = "/getFoo";
@@ -663,4 +603,237 @@ TEST_F(DevToolsUIBindingsDispatchHttpRequestTest,
             GURL("http://localhost:8000/getFoo?q=test%2Ftoescape&q=test2"));
   EXPECT_EQ(*result.FindString("response"), "body");
   EXPECT_EQ(*result.FindInt("statusCode"), net::HTTP_OK);
+}
+
+class TestDevToolsUIBindings : public DevToolsUIBindings {
+ public:
+  explicit TestDevToolsUIBindings(content::WebContents* web_contents)
+      : DevToolsUIBindings(web_contents) {}
+
+  MOCK_METHOD(void,
+              CallClientMethodImpl,
+              (const std::string& object_name,
+               const std::string& method_name,
+               base::Value arg1,
+               base::Value arg2,
+               base::Value arg3,
+               base::OnceCallback<void(base::Value)> completion_callback),
+              (override));
+};
+
+// Override the bindings creation to use TestDevToolsUIBindings.
+class DevToolsUIBindingsDispatchHttpRequestStreamingTest
+    : public DevToolsUIBindingsDispatchHttpRequestTest {
+ public:
+  void SetUp() override {
+    profile_ = IdentityTestEnvironmentProfileAdaptor::
+        CreateProfileForIdentityTestEnvironment();
+    identity_test_env_adaptor_ =
+        std::make_unique<IdentityTestEnvironmentProfileAdaptor>(profile_.get());
+    interceptor_ = std::make_unique<
+        content::URLLoaderInterceptor>(base::BindRepeating(
+        &DevToolsUIBindingsDispatchHttpRequestStreamingTest::InterceptRequest,
+        base::Unretained(this)));
+
+    web_contents_ = web_contents_factory_.CreateWebContents(profile_.get());
+    test_bindings_ = std::make_unique<TestDevToolsUIBindings>(web_contents_);
+
+    auto registry = std::make_unique<DevToolsHttpServiceRegistry>();
+    auto mock_handler = base::WrapUnique(new MockServiceHandler());
+    mock_handler_ptr_ = mock_handler.get();
+    registry->AddForTesting(DevToolsHttpServiceRegistry::Service(
+        "mockService", {{"/getFoo", "GET"}}, std::move(mock_handler)));
+    test_bindings_->SetHttpServiceRegistryForTesting(std::move(registry));
+  }
+
+  void DispatchHttpRequest(DevToolsUIBindings::DispatchCallback callback,
+                           const DevToolsDispatchHttpRequestParams& params) {
+    test_bindings_->DispatchHttpRequest(std::move(callback), params);
+  }
+
+  void TearDown() override {
+    // Clear dangling pointer before test_bindings_ destroys the handler.
+    mock_handler_ptr_ = nullptr;
+    test_bindings_.reset();
+    DevToolsUIBindingsDispatchHttpRequestTest::TearDown();
+  }
+
+  TestDevToolsUIBindings* bindings() { return test_bindings_.get(); }
+
+ protected:
+  std::unique_ptr<TestDevToolsUIBindings> test_bindings_;
+};
+
+TEST_F(DevToolsUIBindingsDispatchHttpRequestStreamingTest,
+       DispatchHttpRequestStreaming) {
+  ExpectCanMakeRequest(true);
+  identity_test_env_adaptor()->identity_test_env()->MakePrimaryAccountAvailable(
+      "test@google.com", signin::ConsentLevel::kSignin);
+
+  const std::string kChunk = "test_chunk";
+  SetResponse(GURL("http://localhost:8000/getFoo"), "", kChunk, net::OK);
+
+  base::RunLoop run_loop;
+  DevToolsDispatchHttpRequestParams params;
+  params.service = "mockService";
+  params.path = "/getFoo";
+  params.method = "GET";
+  params.stream_id = 99;
+
+  EXPECT_CALL(*bindings(),
+              CallClientMethodImpl("DevToolsAPI", "streamWrite", testing::_,
+                                   testing::_, testing::_, testing::_))
+      .WillOnce([&](const std::string& object_name,
+                    const std::string& method_name, base::Value arg1,
+                    base::Value arg2, base::Value arg3,
+                    base::OnceCallback<void(base::Value)> completion_callback) {
+        EXPECT_EQ(arg1.GetInt(), 99);
+        EXPECT_EQ(arg2.GetString(), kChunk);
+        EXPECT_EQ(arg3.GetBool(), false);  // encoded = false
+      });
+
+  DispatchHttpRequest(base::BindLambdaForTesting(
+                          [&](const base::Value* value) { run_loop.Quit(); }),
+                      params);
+
+  identity_test_env_adaptor()
+      ->identity_test_env()
+      ->WaitForAccessTokenRequestIfNecessaryAndRespondWithToken(
+          "test_token", base::Time::Max());
+
+  run_loop.Run();
+}
+
+TEST_F(DevToolsUIBindingsDispatchHttpRequestStreamingTest,
+       DispatchHttpRequestStreamingBinary) {
+  ExpectCanMakeRequest(true);
+  identity_test_env_adaptor()->identity_test_env()->MakePrimaryAccountAvailable(
+      "test@google.com", signin::ConsentLevel::kSignin);
+
+  // A chunk that is not valid UTF-8 (e.g., 0xFF 0xFE).
+  const std::string kBinaryChunk = "\xFF\xFE\x00\x00";
+  SetResponse(GURL("http://localhost:8000/getFoo"), "", kBinaryChunk, net::OK);
+
+  base::RunLoop run_loop;
+  DevToolsDispatchHttpRequestParams params;
+  params.service = "mockService";
+  params.path = "/getFoo";
+  params.method = "GET";
+  params.stream_id = 99;
+
+  // The chunk should be base64 encoded and the 'encoded' flag set to true.
+  EXPECT_CALL(*bindings(),
+              CallClientMethodImpl("DevToolsAPI", "streamWrite", testing::_,
+                                   testing::_, testing::_, testing::_))
+      .WillOnce([&](const std::string& object_name,
+                    const std::string& method_name, base::Value arg1,
+                    base::Value arg2, base::Value arg3,
+                    base::OnceCallback<void(base::Value)> completion_callback) {
+        EXPECT_EQ(arg1.GetInt(), 99);
+        EXPECT_EQ(arg2.GetString(), base::Base64Encode(kBinaryChunk));
+        EXPECT_EQ(arg3.GetBool(), true);  // encoded = true
+      });
+
+  DispatchHttpRequest(base::BindLambdaForTesting(
+                          [&](const base::Value* value) { run_loop.Quit(); }),
+                      params);
+
+  identity_test_env_adaptor()
+      ->identity_test_env()
+      ->WaitForAccessTokenRequestIfNecessaryAndRespondWithToken(
+          "test_token", base::Time::Max());
+
+  run_loop.Run();
+}
+
+class DevToolsUIBindingsHostConfigTest : public testing::Test {
+ public:
+  void SetUp() override { profile_ = std::make_unique<TestingProfile>(); }
+
+  void TearDown() override { profile_.reset(); }
+
+ protected:
+  content::BrowserTaskEnvironment task_environment_;
+  std::unique_ptr<TestingProfile> profile_;
+};
+
+TEST_F(DevToolsUIBindingsHostConfigTest, GetHostConfigBasic) {
+  base::DictValue result =
+      DevToolsUIBindings::GetHostConfigDictionary(profile_.get());
+
+  // Check some basic keys that should always be present.
+  EXPECT_TRUE(result.FindDict("aidaAvailability"));
+  EXPECT_TRUE(result.FindDict("devToolsConsoleInsights"));
+}
+
+TEST_F(DevToolsUIBindingsHostConfigTest, GetHostConfigWithFeatures) {
+  // Verify initial state of features.
+  base::DictValue initial_config =
+      DevToolsUIBindings::GetHostConfigDictionary(profile_.get());
+
+  const base::DictValue* initial_durable_messages =
+      initial_config.FindDict("devToolsEnableDurableMessages");
+  ASSERT_FALSE(initial_durable_messages);
+
+  const base::DictValue* initial_protocol_monitor =
+      initial_config.FindDict("devToolsProtocolMonitor");
+  ASSERT_TRUE(initial_protocol_monitor);
+  EXPECT_FALSE(initial_protocol_monitor->FindBool("enabled").value_or(true));
+
+  const base::DictValue* initial_freestyler =
+      initial_config.FindDict("devToolsFreestyler");
+  ASSERT_TRUE(initial_freestyler);
+  EXPECT_TRUE(initial_freestyler->FindBool("enabled").value_or(false));
+
+  // Enable features.
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      {::features::kDevToolsEnableDurableMessages,
+       ::features::kDevToolsProtocolMonitor, ::features::kDevToolsFreestyler},
+      {});
+
+  // Verify state of features after enabling them.
+  base::DictValue result =
+      DevToolsUIBindings::GetHostConfigDictionary(profile_.get());
+
+  const base::DictValue* durable_messages =
+      result.FindDict("devToolsEnableDurableMessages");
+  ASSERT_TRUE(durable_messages);
+  EXPECT_TRUE(durable_messages->FindBool("enabled").value_or(false));
+
+  const base::DictValue* protocol_monitor =
+      result.FindDict("devToolsProtocolMonitor");
+  ASSERT_TRUE(protocol_monitor);
+  EXPECT_TRUE(protocol_monitor->FindBool("enabled").value_or(false));
+
+  const base::DictValue* freestyler = result.FindDict("devToolsFreestyler");
+  ASSERT_TRUE(freestyler);
+  EXPECT_TRUE(freestyler->FindBool("enabled").value_or(false));
+}
+
+TEST_F(DevToolsUIBindingsHostConfigTest, SetChromeFlag) {
+  base::DictValue initial_config =
+      DevToolsUIBindings::GetHostConfigDictionary(profile_.get());
+  const base::DictValue* protocol_monitor =
+      initial_config.FindDict("devToolsProtocolMonitor");
+  ASSERT_TRUE(protocol_monitor);
+  EXPECT_FALSE(protocol_monitor->FindBool("enabled").value_or(true));
+
+  DevToolsUIBindings::SetChromeFlagInternal(profile_.get(),
+                                            "devtools-protocol-monitor", true);
+  base::DictValue new_config =
+      DevToolsUIBindings::GetHostConfigDictionary(profile_.get());
+  const base::DictValue* new_protocol_monitor =
+      new_config.FindDict("devToolsProtocolMonitor");
+  ASSERT_TRUE(new_protocol_monitor);
+  EXPECT_TRUE(new_protocol_monitor->FindBool("enabled").value_or(false));
+
+  DevToolsUIBindings::SetChromeFlagInternal(profile_.get(),
+                                            "devtools-protocol-monitor", false);
+  base::DictValue final_config =
+      DevToolsUIBindings::GetHostConfigDictionary(profile_.get());
+  const base::DictValue* final_protocol_monitor =
+      final_config.FindDict("devToolsProtocolMonitor");
+  ASSERT_TRUE(final_protocol_monitor);
+  EXPECT_FALSE(final_protocol_monitor->FindBool("enabled").value_or(true));
 }

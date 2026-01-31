@@ -75,7 +75,7 @@ em::RemoteCommand GenerateCommandProto(
       em::RemoteCommand_Type_DEVICE_GET_DIAGNOSTIC_ROUTINE_UPDATE);
   command_proto.set_command_id(unique_id);
   command_proto.set_age_of_command(age_of_command.InMilliseconds());
-  base::Value::Dict root_dict;
+  base::DictValue root_dict;
   if (id.has_value()) {
     root_dict.Set(kIdFieldName, id.value());
   }
@@ -93,13 +93,13 @@ std::string CreateInteractivePayload(
     uint32_t progress_percent,
     std::optional<std::string> output,
     ash::cros_healthd::mojom::DiagnosticRoutineUserMessageEnum user_message) {
-  auto root_dict = base::Value::Dict().Set(kProgressPercentFieldName,
-                                           static_cast<int>(progress_percent));
+  auto root_dict = base::DictValue().Set(kProgressPercentFieldName,
+                                         static_cast<int>(progress_percent));
   if (output.has_value()) {
     root_dict.Set(kOutputFieldName, std::move(output.value()));
   }
-  auto interactive_dict = base::Value::Dict().Set(
-      kUserMessageFieldName, static_cast<int>(user_message));
+  auto interactive_dict = base::DictValue().Set(kUserMessageFieldName,
+                                                static_cast<int>(user_message));
   root_dict.Set(kInteractiveUpdateFieldName, std::move(interactive_dict));
   return base::WriteJson(root_dict).value_or("");
 }
@@ -109,13 +109,13 @@ std::string CreateNonInteractivePayload(
     std::optional<std::string> output,
     ash::cros_healthd::mojom::DiagnosticRoutineStatusEnum status,
     const std::string& status_message) {
-  auto root_dict = base::Value::Dict().Set(kProgressPercentFieldName,
-                                           static_cast<int>(progress_percent));
+  auto root_dict = base::DictValue().Set(kProgressPercentFieldName,
+                                         static_cast<int>(progress_percent));
   if (output.has_value()) {
     root_dict.Set(kOutputFieldName, std::move(output.value()));
   }
   auto noninteractive_dict =
-      base::Value::Dict()
+      base::DictValue()
           .Set(kStatusFieldName, static_cast<int>(status))
           .Set(kStatusMessageFieldName, status_message);
   root_dict.Set(kNonInteractiveUpdateFieldName, std::move(noninteractive_dict));

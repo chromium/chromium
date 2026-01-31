@@ -31,7 +31,7 @@ constexpr char kManifestDisabledTokenSignaturesPath[] =
 namespace embedder_support {
 
 void ReadOriginTrialsConfigAndPopulateLocalState(PrefService* local_state,
-                                                 base::Value::Dict manifest) {
+                                                 base::DictValue manifest) {
   DCHECK(local_state);
 
   if (std::string* override_public_key =
@@ -41,7 +41,7 @@ void ReadOriginTrialsConfigAndPopulateLocalState(PrefService* local_state,
     local_state->ClearPref(prefs::kOriginTrialPublicKey);
   }
 
-  base::Value::List* override_disabled_feature_list =
+  base::ListValue* override_disabled_feature_list =
       manifest.FindListByDottedPath(kManifestDisabledFeaturesPath);
   if (override_disabled_feature_list &&
       !override_disabled_feature_list->empty()) {
@@ -51,7 +51,7 @@ void ReadOriginTrialsConfigAndPopulateLocalState(PrefService* local_state,
     local_state->ClearPref(prefs::kOriginTrialDisabledFeatures);
   }
 
-  base::Value::List* disabled_tokens_list =
+  base::ListValue* disabled_tokens_list =
       manifest.FindListByDottedPath(kManifestDisabledTokenSignaturesPath);
   if (disabled_tokens_list && !disabled_tokens_list->empty()) {
     local_state->SetList(prefs::kOriginTrialDisabledTokens,
@@ -76,7 +76,7 @@ void SetupOriginTrialsCommandLineAndSettings(
     }
   }
   if (!command_line->HasSwitch(kOriginTrialDisabledFeatures)) {
-    const base::Value::List& override_disabled_feature_list =
+    const base::ListValue& override_disabled_feature_list =
         local_state->GetList(prefs::kOriginTrialDisabledFeatures);
     std::vector<std::string_view> disabled_features;
     for (const auto& item : override_disabled_feature_list) {
@@ -94,7 +94,7 @@ void SetupOriginTrialsCommandLineAndSettings(
   // users to override the disabled tokens list via a CLI flag or remove that
   // functionality and populate the settings only from the PrefService.
   if (!command_line->HasSwitch(kOriginTrialDisabledTokens)) {
-    const base::Value::List& disabled_token_list =
+    const base::ListValue& disabled_token_list =
         local_state->GetList(prefs::kOriginTrialDisabledTokens);
     settings_storage->PopulateSettings(std::move(disabled_token_list));
   } else {
@@ -103,7 +103,7 @@ void SetupOriginTrialsCommandLineAndSettings(
     const std::vector<std::string> tokens =
         base::SplitString(disabled_token_value, "|", base::TRIM_WHITESPACE,
                           base::SPLIT_WANT_NONEMPTY);
-    base::Value::List disabled_token_list;
+    base::ListValue disabled_token_list;
     for (auto& ascii_token : tokens) {
       disabled_token_list.Append(std::move(ascii_token));
     }

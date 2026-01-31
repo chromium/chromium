@@ -9,7 +9,6 @@
 #include <utility>
 
 #include "ash/constants/ash_features.h"
-#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/strings/strcat.h"
@@ -205,7 +204,7 @@ void AppServiceProxyAsh::OnApps(std::vector<AppPtr> deltas,
       // If there's already a deletion in progress, skip the deletion request.
       // For app types, not using AppService icon cache, e.g. remote apps, skip
       // the deletion request.
-      if (base::Contains(pending_read_icon_requests_, delta->app_id) ||
+      if (pending_read_icon_requests_.contains(delta->app_id) ||
           !ShouldReadIcons(app_type)) {
         continue;
       }
@@ -227,7 +226,7 @@ void AppServiceProxyAsh::OnApps(std::vector<AppPtr> deltas,
   for (const AppPtr& delta : deltas) {
     if (delta->readiness != Readiness::kUnknown &&
         !apps_util::IsInstalled(delta->readiness) &&
-        base::Contains(uninstall_dialogs_, delta->app_id)) {
+        uninstall_dialogs_.contains(delta->app_id)) {
       uninstall_dialogs_[delta->app_id]->CloseDialog();
     }
   }

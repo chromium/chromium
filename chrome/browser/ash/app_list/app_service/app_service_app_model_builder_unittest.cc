@@ -136,7 +136,7 @@ scoped_refptr<extensions::Extension> MakeApp(const std::string& name,
                                              const std::string& url,
                                              const std::string& id) {
   std::u16string err;
-  base::Value::Dict value;
+  base::DictValue value;
   value.Set("name", name);
   value.Set("version", version);
   value.SetByDottedPath("app.launch.web_url", url);

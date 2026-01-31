@@ -414,7 +414,7 @@ class ScopedKioskAppManagerOverrides : public KioskChromeAppManager::Overrides {
         /*create_service=*/false);
     accounts_settings_helper_->ReplaceDeviceSettingsProviderWithStub();
 
-    base::Value::Dict account;
+    base::DictValue account;
     account.Set(kAccountsPrefDeviceLocalAccountsKeyId, kTestUserAccount);
     account.Set(kAccountsPrefDeviceLocalAccountsKeyType,
                 static_cast<int>(policy::DeviceLocalAccountType::kKioskApp));
@@ -423,7 +423,7 @@ class ScopedKioskAppManagerOverrides : public KioskChromeAppManager::Overrides {
         static_cast<int>(policy::DeviceLocalAccount::EphemeralMode::kUnset));
     account.Set(kAccountsPrefDeviceLocalAccountsKeyKioskAppId,
                 kTestPrimaryAppId);
-    base::Value::List accounts;
+    base::ListValue accounts;
     accounts.Append(std::move(account));
 
     accounts_settings_helper_->Set(kAccountsPrefDeviceLocalAccounts,

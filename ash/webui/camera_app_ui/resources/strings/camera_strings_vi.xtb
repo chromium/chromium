@@ -48,6 +48,7 @@
 <translation id="2761536921376153655">Loại quét</translation>
 <translation id="28682968802727151">Xem trước gương</translation>
 <translation id="2879583609344924966">Đã cắm <ph name="CAMERA" /> vào thiết bị.</translation>
+<translation id="3063987824612038785">Tất cả tệp của Camera sẽ được lưu vào Google Drive</translation>
 <translation id="3067436040345934772">Xoay phải</translation>
 <translation id="3081586908890909590">Chuyển sang quay video</translation>
 <translation id="3091480460059548935">Phát hiện văn bản trong bản xem trước</translation>
@@ -67,6 +68,7 @@
 <translation id="3642192109456033823">Đang xử lý video...</translation>
 <translation id="3789724198583203151">Xoay 90 độ ngược chiều kim đồng hồ</translation>
 <translation id="3810838688059735925">Video</translation>
+<translation id="386366972082231038">Tất cả tệp của Camera sẽ được lưu vào OneDrive</translation>
 <translation id="4060608699153044055">Bạn không thể quay video vì thiết bị sắp hết dung lượng lưu trữ. Để bắt đầu quay video, bạn cần giải phóng dung lượng trên thiết bị.</translation>
 <translation id="4061162772429051350"><ph name="MAGAPIXELS_AMOUNT" /> MP</translation>
 <translation id="4118525110028899586">Tạm dừng quay</translation>
@@ -100,6 +102,7 @@
 <translation id="5634947914995388399">Mở rộng hộp thoại và dừng quét</translation>
 <translation id="5662366948659129155">Đang quét trang <ph name="COUNT" /></translation>
 <translation id="5671277269877808209">Vuông</translation>
+<translation id="5725797473946373607">Không hiện hộp thoại này vào lần sau</translation>
 <translation id="574392208103952083">Trung bình</translation>
 <translation id="5746169159649715125">Lưu dưới dạng PDF</translation>
 <translation id="5753488212459587150">Bật chế độ chuyên gia</translation>
@@ -156,6 +159,7 @@ Nếu ý kiến phản hồi của bạn là về chất lượng ảnh hoặc v
 <translation id="7983668134180549431">Phát hiện thấy văn bản.</translation>
 <translation id="8079255378695216066">Không thể bắt đầu quay video</translation>
 <translation id="8120146556401698679">Xoay, nghiêng, thu phóng</translation>
+<translation id="8127459436205030819">Quản trị viên có thể xem các tệp của bạn</translation>
 <translation id="8131740175452115882">Xác nhận</translation>
 <translation id="8145038249676204903">Chuyển sang chụp ảnh</translation>
 <translation id="8167081290930651932">Lưu dưới dạng Ảnh</translation>
@@ -165,6 +169,7 @@ Nếu ý kiến phản hồi của bạn là về chất lượng ảnh hoặc v
 <translation id="8609951387004618906">Mở <ph name="URL" /></translation>
 <translation id="8629662593426079630">360p</translation>
 <translation id="8711011893539266636">Bật/tắt micrô. Chế độ tắt tiếng đang bật</translation>
+<translation id="8712637175834984815">Tôi hiểu</translation>
 <translation id="8730621377337864115">Xong</translation>
 <translation id="8732462232047530626">Xem trước siêu dữ liệu</translation>
 <translation id="874854738381978209">Đã phát hiện mạng Wi-Fi.</translation>

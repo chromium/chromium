@@ -57,8 +57,9 @@ std::unique_ptr<OverscrollGlow> CreateGlowEffect(OverscrollGlowClient* client) {
   // The elastic overscroll feature indicates when the user is scrolling beyond
   // the range of the scrollable area. Showing a glow in addition would be
   // redundant.
-  if (switches::IsElasticOverscrollEnabled())
+  if (switches::IsElasticOverscrollEnabledOnRoot()) {
     return nullptr;
+  }
 
   return std::make_unique<OverscrollGlow>(client);
 }
@@ -371,7 +372,8 @@ bool OverscrollControllerAndroid::OnTouchEvent(
 
 void OverscrollControllerAndroid::OnInputEvent(
     const RenderWidgetHost& widget,
-    const blink::WebInputEvent& input_event) {
+    const blink::WebInputEvent& input_event,
+    InputEventSource source) {
   if (!blink::WebInputEvent::IsGestureEventType(input_event.GetType())) {
     return;
   }

@@ -39,7 +39,10 @@ export class SearchAnimatedGlowElement extends CrLitElement {
         type: String,
         reflect: true,
       },
-      entrypointName: {type: String},
+      entrypointName: {
+        type: String,
+        reflect: true,
+      },
       dragDropPlaceholder: {type: String},
       requiresVoice: {type: Boolean},
       isCollapsible: {

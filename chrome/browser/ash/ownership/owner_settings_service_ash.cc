@@ -7,6 +7,7 @@
 #include <keyhi.h>
 #include <stdint.h>
 
+#include <algorithm>
 #include <memory>
 #include <optional>
 #include <string>
@@ -15,7 +16,6 @@
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
 #include "base/command_line.h"
-#include "base/containers/contains.h"
 #include "base/debug/dump_without_crashing.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -30,11 +30,9 @@
 #include "chrome/browser/ash/ownership/owner_key_loader.h"
 #include "chrome/browser/ash/ownership/owner_settings_service_ash_factory.h"
 #include "chrome/browser/ash/ownership/ownership_histograms.h"
-#include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
 #include "chrome/browser/ash/settings/about_flags.h"
 #include "chrome/browser/ash/settings/device_settings_provider.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chromeos/ash/components/browser_context_helper/annotated_account_id.h"
@@ -275,7 +273,7 @@ bool OwnerSettingsServiceAsh::Set(const std::string& setting,
 // 2: retrieve the list with CrosSettings, be careful
 // - the CrosSettings is on observer of this object
 // - or the list is already written to the disk
-base::Value::List OwnerSettingsServiceAsh::GetListForSetting(
+base::ListValue OwnerSettingsServiceAsh::GetListForSetting(
     const std::string& setting) const {
   auto iter = pending_changes_.find(setting);
   if (iter != pending_changes_.end()) {
@@ -283,20 +281,20 @@ base::Value::List OwnerSettingsServiceAsh::GetListForSetting(
     if (!pending_val->is_list()) {
       LOG(ERROR) << "The " << setting << " setting is not a list!";
       base::debug::DumpWithoutCrashing();
-      return base::Value::List();
+      return base::ListValue();
     }
     return pending_val->GetList().Clone();
   }
   const base::Value* old_value = CrosSettings::Get()->GetPref(setting);
 
   if (old_value == nullptr) {
-    return base::Value::List();
+    return base::ListValue();
   }
 
   if (!old_value->is_list()) {
     LOG(ERROR) << "The " << setting << " setting is not a list!";
     base::debug::DumpWithoutCrashing();
-    return base::Value::List();
+    return base::ListValue();
   }
 
   return old_value->GetList().Clone();
@@ -305,7 +303,7 @@ base::Value::List OwnerSettingsServiceAsh::GetListForSetting(
 bool OwnerSettingsServiceAsh::AppendToList(const std::string& setting,
                                            const base::Value& value) {
   DCHECK(thread_checker_.CalledOnValidThread());
-  base::Value::List new_value = GetListForSetting(setting);
+  base::ListValue new_value = GetListForSetting(setting);
   new_value.Append(value.Clone());
   return Set(setting, base::Value(std::move(new_value)));
 }
@@ -313,7 +311,7 @@ bool OwnerSettingsServiceAsh::AppendToList(const std::string& setting,
 bool OwnerSettingsServiceAsh::RemoveFromList(const std::string& setting,
                                              const base::Value& value) {
   DCHECK(thread_checker_.CalledOnValidThread());
-  base::Value::List new_value = GetListForSetting(setting);
+  base::ListValue new_value = GetListForSetting(setting);
   new_value.EraseValue(value);
   return Set(setting, base::Value(std::move(new_value)));
 }
@@ -438,13 +436,13 @@ void OwnerSettingsServiceAsh::FixupLocalOwnerPolicy(
   if (settings->has_user_whitelist() && !settings->has_user_allowlist()) {
     em::UserWhitelistProto* whitelist_proto =
         settings->mutable_user_whitelist();
-    if (!base::Contains(whitelist_proto->user_whitelist(), user_id)) {
+    if (!std::ranges::contains(whitelist_proto->user_whitelist(), user_id)) {
       whitelist_proto->add_user_whitelist(user_id);
     }
   } else {
     em::UserAllowlistProto* allowlist_proto =
         settings->mutable_user_allowlist();
-    if (!base::Contains(allowlist_proto->user_allowlist(), user_id)) {
+    if (!std::ranges::contains(allowlist_proto->user_allowlist(), user_id)) {
       allowlist_proto->add_user_allowlist(user_id);
     }
   }
@@ -483,7 +481,7 @@ void OwnerSettingsServiceAsh::UpdateDeviceSettings(
     if (value.is_list()) {
       for (const auto& entry : value.GetList()) {
         if (entry.is_dict()) {
-          const base::Value::Dict& entry_dict = entry.GetDict();
+          const base::DictValue& entry_dict = entry.GetDict();
           em::DeviceLocalAccountInfoProto* account =
               device_local_accounts->add_account();
           const std::string* account_id =
@@ -732,9 +730,8 @@ void OwnerSettingsServiceAsh::ReloadKeypairImpl(
     return;
   }
 
-  const bool is_enterprise_managed = g_browser_process->platform_part()
-                                         ->browser_policy_connector_ash()
-                                         ->IsDeviceEnterpriseManaged();
+  const bool is_enterprise_managed =
+      InstallAttributes::Get()->IsEnterpriseManaged();
 
   auto cb = base::BindOnce(&OwnerSettingsServiceAsh::OnReloadedKeypairImpl,
                            weak_factory_.GetWeakPtr(), std::move(callback));

@@ -27,8 +27,8 @@ class HeadlessClientBrowserTest : public HeadlessDevTooledBrowserTest {
                        base::Unretained(this)));
   }
 
-  void AttachToTarget(base::Value::Dict result) {
-    base::Value::Dict params;
+  void AttachToTarget(base::DictValue result) {
+    base::DictValue params;
     params.Set("targetId", DictString(result, "result.targetId"));
     params.Set("flatten", true);
     browser_devtools_client_.SendCommand(
@@ -37,7 +37,7 @@ class HeadlessClientBrowserTest : public HeadlessDevTooledBrowserTest {
                        base::Unretained(this)));
   }
 
-  void CreateSession(base::Value::Dict result) {
+  void CreateSession(base::DictValue result) {
     session_client_ = browser_devtools_client_.CreateSession(
         DictString(result, "result.sessionId"));
 
@@ -47,7 +47,7 @@ class HeadlessClientBrowserTest : public HeadlessDevTooledBrowserTest {
                        base::Unretained(this)));
   }
 
-  void FinishTest(base::Value::Dict result) {
+  void FinishTest(base::DictValue result) {
     EXPECT_THAT(result, DictHasValue("result.result.value", "about:blank"));
     session_client_.reset();
     FinishAsynchronousTest();

@@ -6,7 +6,6 @@
 
 #include <string_view>
 
-#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/stringprintf.h"
@@ -198,11 +197,11 @@ std::string AccessibilityDlcInstaller::GetPendingDlcRequestErrorMessage(
 }
 
 bool AccessibilityDlcInstaller::IsFaceGazeAssetsInstalled() const {
-  return base::Contains(installed_dlcs_, DlcType::kFaceGazeAssets);
+  return installed_dlcs_.contains(DlcType::kFaceGazeAssets);
 }
 
 bool AccessibilityDlcInstaller::IsPumpkinInstalled() const {
-  return base::Contains(installed_dlcs_, DlcType::kPumpkin);
+  return installed_dlcs_.contains(DlcType::kPumpkin);
 }
 
 base::WeakPtr<AccessibilityDlcInstaller>

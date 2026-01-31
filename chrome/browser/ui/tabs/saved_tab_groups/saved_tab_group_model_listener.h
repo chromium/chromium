@@ -7,7 +7,10 @@
 
 #include "base/containers/flat_set.h"
 #include "base/memory/raw_ptr.h"
-#include "chrome/browser/ui/browser_list_observer.h"
+#include "base/scoped_observation.h"
+#include "chrome/browser/ui/browser_window/public/browser_collection_observer.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/browser_window/public/profile_browser_collection.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/local_tab_group_listener.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_web_contents_listener.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
@@ -28,7 +31,7 @@ class TabGroupSyncService;
 
 // Serves to maintain and listen to browsers who contain saved tab groups and
 // update the model if a saved tab group was changed.
-class SavedTabGroupModelListener : public BrowserListObserver,
+class SavedTabGroupModelListener : public BrowserCollectionObserver,
                                    TabStripModelObserver {
  public:
   // Used for testing.
@@ -78,9 +81,8 @@ class SavedTabGroupModelListener : public BrowserListObserver,
   // of the saved tab group, if it is open locally.
   void UpdateLocalGroupFromSync(tab_groups::TabGroupId local_group_id);
 
-  // BrowserListObserver:
-  void OnBrowserAdded(Browser* browser) override;
-  void OnBrowserRemoved(Browser* browser) override;
+  // BrowserCollectionObserver:
+  void OnBrowserCreated(BrowserWindowInterface* browser) override;
 
   // TabStripModelObserver:
   void OnTabGroupAdded(const tab_groups::TabGroupId& group_id) override;
@@ -128,6 +130,9 @@ class SavedTabGroupModelListener : public BrowserListObserver,
   // listen to it. Also used to query if new groups should be automatically
   // pinned by default.
   raw_ptr<Profile> profile_ = nullptr;
+
+  base::ScopedObservation<ProfileBrowserCollection, BrowserCollectionObserver>
+      browser_collection_observation_{this};
 };
 
 }  // namespace tab_groups

@@ -46,6 +46,11 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) BrokerHelperWin
   // creation to be brokered.
   bool ShouldBroker(const net::IPAddress& address) const;
 
+  void InjectNetworkListForTesting(net::NetworkInterfaceList list) {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    interfaces_ = std::move(list);
+  }
+
   void SetDelegateForTesting(
       std::unique_ptr<BrokerHelperWin::Delegate> delegate) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);

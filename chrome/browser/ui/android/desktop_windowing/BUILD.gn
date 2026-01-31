@@ -9,6 +9,7 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/ui/desktop_windowing/AppHeaderCoordinator.java",
     "java/src/org/chromium/chrome/browser/ui/desktop_windowing/AppHeaderUtils.java",
     "java/src/org/chromium/chrome/browser/ui/desktop_windowing/BasicAppHeaderStateProvider.java",
+    "java/src/org/chromium/chrome/browser/ui/desktop_windowing/TopControlsLockCoordinator.java",
   ]
   deps = [
     "//base:base_java",
@@ -17,6 +18,8 @@ android_library("java") {
     "//chrome/browser/flags:java",
     "//chrome/browser/preferences:java",
     "//chrome/browser/ui/android/edge_to_edge:java",
+    "//chrome/browser/ui/android/multiwindow:java",
+    "//chrome/browser/ui/android/tabstrip:enums_java",
     "//components/browser_ui/desktop_windowing/android:java",
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/androidx:androidx_core_core_java",
@@ -31,6 +34,7 @@ robolectric_library("junit") {
     "java/src/org/chromium/chrome/browser/ui/desktop_windowing/AppHeaderTestUtils.java",
     "java/src/org/chromium/chrome/browser/ui/desktop_windowing/AppHeaderUtilsUnitTest.java",
     "java/src/org/chromium/chrome/browser/ui/desktop_windowing/BasicAppHeaderStateProviderTest.java",
+    "java/src/org/chromium/chrome/browser/ui/desktop_windowing/TopControlsLockCoordinatorTest.java",
   ]
 
   deps = [
@@ -43,6 +47,8 @@ robolectric_library("junit") {
     "//chrome/browser/browser_controls/android:java",
     "//chrome/browser/flags:java",
     "//chrome/browser/preferences:java",
+    "//chrome/browser/ui/android/multiwindow:java",
+    "//chrome/browser/ui/android/tabstrip:enums_java",
     "//components/browser_ui/desktop_windowing/android:java",
     "//third_party/androidx:androidx_core_core_java",
     "//third_party/androidx:androidx_test_core_java",

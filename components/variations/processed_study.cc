@@ -9,7 +9,6 @@
 #include <string>
 #include <string_view>
 
-#include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
@@ -95,7 +94,7 @@ bool ValidateExperimentNames(const Study& study) {
   // Specifying a default experiment is optional, so finding it in the
   // experiment list is only required when it is specified.
   if (!study.default_experiment_name().empty() &&
-      !base::Contains(experiment_names, study.default_experiment_name())) {
+      !experiment_names.contains(study.default_experiment_name())) {
     LogInvalidReason(InvalidStudyReason::kMissingDefaultExperimentInList);
     DVLOG(1) << study.name() << " is missing default experiment ("
              << study.default_experiment_name() << ") in its experiment list";

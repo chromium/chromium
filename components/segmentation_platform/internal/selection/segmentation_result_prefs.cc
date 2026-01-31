@@ -24,13 +24,13 @@ void SegmentationResultPrefs::SaveSegmentationResultToPref(
     const std::string& result_key,
     const std::optional<SelectedSegment>& selected_segment) {
   ScopedDictPrefUpdate update(prefs_, kSegmentationResultPref);
-  base::Value::Dict& dictionary = update.Get();
+  base::DictValue& dictionary = update.Get();
   if (!selected_segment.has_value()) {
     dictionary.Remove(result_key);
     return;
   }
 
-  base::Value::Dict segmentation_result;
+  base::DictValue segmentation_result;
   segmentation_result.Set("segment_id", selected_segment->segment_id);
   if (selected_segment->rank)
     segmentation_result.Set("segment_rank", *selected_segment->rank);
@@ -43,14 +43,13 @@ void SegmentationResultPrefs::SaveSegmentationResultToPref(
 std::optional<SelectedSegment>
 SegmentationResultPrefs::ReadSegmentationResultFromPref(
     const std::string& result_key) {
-  const base::Value::Dict& dictionary =
-      prefs_->GetDict(kSegmentationResultPref);
+  const base::DictValue& dictionary = prefs_->GetDict(kSegmentationResultPref);
 
   const base::Value* value = dictionary.Find(result_key);
   if (!value)
     return std::nullopt;
 
-  const base::Value::Dict& segmentation_result = value->GetDict();
+  const base::DictValue& segmentation_result = value->GetDict();
 
   std::optional<int> segment_id = segmentation_result.FindInt("segment_id");
   std::optional<float> rank = segmentation_result.FindDouble("segment_rank");

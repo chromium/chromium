@@ -8,6 +8,7 @@
 #include <ostream>
 #include <string>
 
+#include "base/containers/flat_map.h"
 #include "base/files/file_path.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/ref_counted.h"
@@ -38,6 +39,7 @@ class UpdateService : public base::RefCountedThreadSafe<UpdateService> {
   using UpdateState = mojom::UpdateState;
   using Priority = mojom::UpdateService::Priority;
   using AppState = mojom::AppState;
+  using UpdaterState = mojom::UpdaterState;
 
   // Returns the version of the active updater. The version object is invalid
   // if an error (including timeout) occurs.
@@ -169,6 +171,14 @@ class UpdateService : public base::RefCountedThreadSafe<UpdateService> {
       const std::string& language,
       base::RepeatingCallback<void(const UpdateState&)> state_update,
       base::OnceCallback<void(Result)> callback) = 0;
+
+  // Gets the current state of the updater.
+  virtual void GetUpdaterState(
+      base::OnceCallback<void(const UpdaterState&)> callback) = 0;
+
+  // Gets the current policies for the updater and apps in a JSON string.
+  virtual void GetPoliciesJson(
+      base::OnceCallback<void(const std::string&)> callback) = 0;
 
  protected:
   friend class base::RefCountedThreadSafe<UpdateService>;

@@ -82,7 +82,7 @@ class HeadlessBrowserContextIsolationTest
         Param("url", embedded_test_server()->GetURL("/hello.html").spec()));
   }
 
-  void OnFirstLoadEventFired(const base::Value::Dict&) {
+  void OnFirstLoadEventFired(const base::DictValue&) {
     devtools_client2_.AddEventHandler(
         "Page.loadEventFired",
         base::BindRepeating(
@@ -95,7 +95,7 @@ class HeadlessBrowserContextIsolationTest
         Param("url", embedded_test_server()->GetURL("/hello.html").spec()));
   }
 
-  void OnSecondLoadEventFired(const base::Value::Dict&) {
+  void OnSecondLoadEventFired(const base::DictValue&) {
     // Set cookies on both pages.
     EXPECT_THAT(EvaluateScript(web_contents_,
                                base::StringPrintf("document.cookie = '%s'",

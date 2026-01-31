@@ -90,8 +90,8 @@ void GeminiIntroScreen::ShowImpl() {
     return;
   }
 
-  base::Value::Dict params = base::Value::Dict()
-    .Set("backButtonVisible", !AiIntroScreen::ShouldBeSkipped());
+  base::DictValue params = base::DictValue().Set(
+      "backButtonVisible", !AiIntroScreen::ShouldBeSkipped());
   view_->Show(std::move(params));
 }
 

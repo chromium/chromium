@@ -315,6 +315,23 @@ enable_web_component_missing_deps: Defaults to "false". Turns on
                                    the WebUI ESLint plugin.
 ```
 
+### **stylelint**
+
+This rule makes it possible to run Stylelint CSS checks [1] on CSS files.
+
+The list of default checks that are applied are at
+`//ui/webui/resources/tools/stylelint.config_base.mjs` and are currently not
+configurable from callers.
+
+[1] https://stylelint.io/
+
+#### **Arguments**
+```
+in_folder: The folder where all |in_files| reside.
+in_files: A list of CSS files to check. An assertion error is thrown if
+          files other than '*.css' are encountered.
+```
+
 ### **bundle_js**
 
 This rule is used to bundle larger user-facing WebUIs for improved performance.
@@ -585,22 +602,24 @@ rules described earlier.
 
 Under the cover, build_webui() defines the following targets
 
-1. `preprocess_if_expr("preprocess_ts_files")`
-2. `preprocess_if_expr("preprocess_html_css_files")`
-3. `create_js_source_maps("create_source_maps")`
-4. `html_to_wrapper("html_wrapper_files")`
-5. `css_to_wrapper("css_wrapper_files")`
-6. `copy("copy_mojo")`
-7. `webui_path_mappings("build_path_map")`
-8. `ts_library("build_ts")`
-9. `eslint_ts("lint")`
-10. `merge_js_source_maps("merge_source_maps")`
-11. `bundle_js("build_bundle")`
-12. `minify_js("build_min_js")`
-13. `generate_code_cache("build_code_cache")`
-14. `generate_grd("build_grd")`
-15. `generate_grd("build_grdp")`
-16. `grit("resources")`
+ 1. `preprocess_if_expr("preprocess_ts_files")`
+ 2. `preprocess_if_expr("preprocess_html_css_files")`
+ 3. `create_js_source_maps("create_source_maps")`
+ 4. `html_to_wrapper("html_wrapper_files")`
+ 5. `css_to_wrapper("css_wrapper_files")`
+ 6. `copy("copy_mojo")`
+ 7. `webui_path_mappings("build_path_map")`
+ 8. `ts_library("build_ts")`
+ 9. `eslint_ts("lint_ts")`
+10. `stylelint("lint_css")`
+11. `group("lint")`
+12. `merge_js_source_maps("merge_source_maps")`
+13. `bundle_js("build_bundle")`
+14. `minify_js("build_min_js")`
+15. `generate_code_cache("build_code_cache")`
+16. `generate_grd("build_grd")`
+17. `generate_grd("build_grdp")`
+18. `grit("resources")`
 
 Some targets are only conditionally defined based on `build_webui()` input
 parameters.

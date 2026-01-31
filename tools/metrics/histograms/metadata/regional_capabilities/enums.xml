@@ -40,6 +40,20 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(/components/regional_capabilities/regional_capabilities_metrics.h:ActiveRegionalProgram) -->
 
+<!-- LINT.IfChange(AndroidProgramResolution) -->
+
+<enum name="AndroidProgramResolution">
+  <int value="0" label="Success">
+    The program obtained from Android was successfully applied to Chrome
+  </int>
+  <int value="1" label="DefaultForOutOfProgramCountry">
+    The program obtained from Android is not consistent with the active country.
+    Falling back to using the Default program in Chrome for this session.
+  </int>
+</enum>
+
+<!-- LINT.ThenChange(/components/regional_capabilities/regional_capabilities_metrics.h:AndroidProgramResolution) -->
+
 <!-- LINT.IfChange(CountryMatchingStatus) -->
 
 <enum name="CountryMatchingStatus">

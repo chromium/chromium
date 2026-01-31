@@ -6,7 +6,7 @@
 #define COMPONENTS_BROWSER_APIS_TAB_STRIP_TYPES_SPLIT_TAB_VISUAL_DATA_TRAITS_H_
 
 #include "components/browser_apis/tab_strip/tab_strip_api_data_model.mojom.h"
-#include "components/tabs/public/split_tab_visual_data.h"
+#include "components/split_tabs/split_tab_visual_data.h"
 #include "mojo/public/cpp/bindings/enum_traits.h"
 #include "mojo/public/cpp/bindings/struct_traits.h"
 

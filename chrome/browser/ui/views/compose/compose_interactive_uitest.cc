@@ -149,7 +149,7 @@ class MAYBE_ComposeInteractiveUiTest : public InteractiveBrowserTest {
     return Do([this]() {
       identity_test_environment_adaptor_->identity_test_env()
           ->MakePrimaryAccountAvailable("test@example.com",
-                                        signin::ConsentLevel::kSync);
+                                        signin::ConsentLevel::kSignin);
     });
   }
 

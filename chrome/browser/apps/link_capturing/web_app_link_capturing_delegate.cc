@@ -10,6 +10,7 @@
 #include "base/memory/values_equivalent.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/web_app_command_scheduler.h"
+#include "chrome/browser/web_applications/web_app_filter.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/browser/web_applications/web_app_tab_helper.h"
@@ -91,7 +92,7 @@ WebAppLinkCapturingDelegate::CreateLinkCaptureLaunchClosure(
 
   webapps::AppId app_id = possible_app_id.value();
   // Don't capture links for apps that open in a tab.
-  if (registrar.GetAppEffectiveDisplayMode(app_id) == DisplayMode::kBrowser) {
+  if (registrar.AppMatches(app_id, WebAppFilter::OpensInBrowserTab())) {
     return std::nullopt;
   }
 

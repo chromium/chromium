@@ -101,7 +101,7 @@ class BaseRequestsTest : public testing::Test {
 
     network::mojom::URLLoaderFactoryParamsPtr params =
         network::mojom::URLLoaderFactoryParams::New();
-    params->process_id = network::mojom::kBrowserProcessId;
+    params->process_id = network::OriginatingProcess::browser();
     params->is_orb_enabled = false;
     network_context_->CreateURLLoaderFactory(
         url_loader_factory_.BindNewPipeAndPassReceiver(), std::move(params));
@@ -157,7 +157,7 @@ TEST_F(BaseRequestsTest, ParseValidJson) {
   std::unique_ptr<base::Value> json(ParseJson(kValidJsonString));
 
   ASSERT_TRUE(json);
-  base::Value::Dict* root_dict = json->GetIfDict();
+  base::DictValue* root_dict = json->GetIfDict();
   ASSERT_TRUE(root_dict);
 
   std::optional<int> int_value = root_dict->FindInt("test");

@@ -46,7 +46,7 @@ std::vector<FirefoxDetail> GetFirefoxDetails(
 // with that id.
 // Exposed for testing.
 std::vector<FirefoxDetail> GetFirefoxDetailsFromDictionary(
-    const base::Value::Dict& root,
+    const base::DictValue& root,
     const std::string& firefox_install_id);
 
 // Detects version of Firefox and installation path for the given Firefox

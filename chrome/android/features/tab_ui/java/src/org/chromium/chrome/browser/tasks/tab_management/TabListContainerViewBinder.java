@@ -38,8 +38,9 @@ import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.RecyclerView.OnScrollListener;
 
 import org.chromium.base.Callback;
-import org.chromium.base.supplier.ObservableSupplier;
-import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.supplier.MonotonicObservableSupplier;
+import org.chromium.base.supplier.ObservableSuppliers;
+import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.tab.TabUtils;
@@ -121,9 +122,10 @@ class TabListContainerViewBinder {
                         return new Pair<>(start, end);
                     });
         } else if (IS_SCROLLING_SUPPLIER_CALLBACK == propertyKey) {
-            Callback<ObservableSupplier<Boolean>> callback =
+            Callback<MonotonicObservableSupplier<Boolean>> callback =
                     model.get(IS_SCROLLING_SUPPLIER_CALLBACK);
-            ObservableSupplierImpl<Boolean> supplier = new ObservableSupplierImpl<>(false);
+            SettableNonNullObservableSupplier<Boolean> supplier =
+                    ObservableSuppliers.createNonNull(false);
             recyclerView.addOnScrollListener(
                     new OnScrollListener() {
                         @Override
@@ -163,7 +165,7 @@ class TabListContainerViewBinder {
         } else if (IS_NON_ZERO_Y_OFFSET == propertyKey) {
             updateHairlineVisibility(model, hairline);
         } else if (IS_PINNED_TAB_STRIP_ANIMATING_SUPPLIER == propertyKey) {
-            ObservableSupplier<Boolean> supplier =
+            MonotonicObservableSupplier<Boolean> supplier =
                     model.get(IS_PINNED_TAB_STRIP_ANIMATING_SUPPLIER);
             if (supplier == null) return;
             supplier.addSyncObserverAndCallIfNonNull(
@@ -180,7 +182,7 @@ class TabListContainerViewBinder {
     private static void updateHairlineVisibility(PropertyModel model, ImageView hairline) {
         if (hairline == null) return;
 
-        ObservableSupplier<Boolean> isAnimatingSupplier =
+        MonotonicObservableSupplier<Boolean> isAnimatingSupplier =
                 model.get(IS_PINNED_TAB_STRIP_ANIMATING_SUPPLIER);
         boolean isAnimating = isAnimatingSupplier != null && isAnimatingSupplier.get();
         boolean isYOffsetNonZero = model.get(IS_NON_ZERO_Y_OFFSET);

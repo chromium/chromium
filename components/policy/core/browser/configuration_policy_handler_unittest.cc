@@ -120,8 +120,7 @@ class StringListPolicyHandler : public ListPolicyHandler {
       : ListPolicyHandler(policy_name, base::Value::Type::STRING) {}
 
  protected:
-  void ApplyList(base::Value::List filtered_list,
-                 PrefValueMap* prefs) override {
+  void ApplyList(base::ListValue filtered_list, PrefValueMap* prefs) override {
     prefs->SetValue(kTestPref, base::Value(std::move(filtered_list)));
   }
 };
@@ -144,7 +143,7 @@ JsonStringHandlerForTesting() {
 }  // namespace
 
 TEST(ListPolicyHandlerTest, CheckPolicySettings) {
-  base::Value::List list;
+  base::ListValue list;
   base::Value dict(base::Value::Type::DICT);
   policy::PolicyMap policy_map;
   policy::PolicyErrorMap errors;
@@ -192,8 +191,8 @@ TEST(ListPolicyHandlerTest, CheckPolicySettings) {
 }
 
 TEST(StringListPolicyHandlerTest, ApplyPolicySettings) {
-  base::Value::List list;
-  base::Value::List expected;
+  base::ListValue list;
+  base::ListValue expected;
   PolicyMap policy_map;
   PrefValueMap prefs;
   base::Value* value;
@@ -231,7 +230,7 @@ TEST(StringListPolicyHandlerTest, ApplyPolicySettings) {
 }
 
 TEST(StringToIntEnumListPolicyHandlerTest, CheckPolicySettings) {
-  base::Value::List list;
+  base::ListValue list;
   PolicyMap policy_map;
   PolicyErrorMap errors;
   StringMappingListPolicyHandler handler(
@@ -267,8 +266,8 @@ TEST(StringToIntEnumListPolicyHandlerTest, CheckPolicySettings) {
 }
 
 TEST(StringMappingListPolicyHandlerTest, ApplyPolicySettings) {
-  base::Value::List list;
-  base::Value::List expected;
+  base::ListValue list;
+  base::ListValue expected;
   PolicyMap policy_map;
   PrefValueMap prefs;
   base::Value* value;
@@ -773,7 +772,7 @@ TEST(SchemaValidatingPolicyHandlerTest, CheckAndGetValueUnknown) {
       handler.CheckAndGetValueForTest(policy_map, &error_map, &output_value));
   ASSERT_TRUE(output_value);
   ASSERT_TRUE(output_value->is_dict());
-  const base::Value::Dict& output = output_value->GetDict();
+  const base::DictValue& output = output_value->GetDict();
 
   // Test that CheckAndGetValue outputs warnings about unknown properties.
   EXPECT_THAT(error_map.GetErrors(kPolicyName),

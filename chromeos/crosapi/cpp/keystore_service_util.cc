@@ -20,9 +20,9 @@ const char kWebCryptoRsaOaep[] = "RSA-OAEP";
 const char kWebCryptoNamedCurveP256[] = "P-256";
 
 // Converts a keystore algorithm into a WebCrypto dictionary.
-std::optional<base::Value::Dict> MakeDictionaryFromKeystoreAlgorithm(
+std::optional<base::DictValue> MakeDictionaryFromKeystoreAlgorithm(
     const crosapi::mojom::KeystoreAlgorithmPtr& algorithm) {
-  base::Value::Dict value;
+  base::DictValue value;
   switch (algorithm->which()) {
     case crosapi::mojom::KeystoreAlgorithm::Tag::kRsassaPkcs115:
       value.Set("name", kWebCryptoRsassaPkcs1v15);
@@ -72,7 +72,7 @@ std::optional<base::Value::Dict> MakeDictionaryFromKeystoreAlgorithm(
 
 // Converts a WebCrypto dictionary into a keystore algorithm.
 std::optional<crosapi::mojom::KeystoreAlgorithmPtr>
-MakeKeystoreAlgorithmFromDictionary(const base::Value::Dict& dictionary) {
+MakeKeystoreAlgorithmFromDictionary(const base::DictValue& dictionary) {
   const std::string* name = dictionary.FindString("name");
   if (!name) {
     return std::nullopt;

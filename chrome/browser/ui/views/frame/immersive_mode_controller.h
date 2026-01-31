@@ -83,9 +83,6 @@ class ImmersiveModeController {
   virtual void SetEnabled(bool enabled) = 0;
   virtual bool IsEnabled() const = 0;
 
-  // True when the top views are hidden due to immersive mode.
-  virtual bool ShouldHideTopViews() const = 0;
-
   // True when the top views are fully or partially visible.
   virtual bool IsRevealed() const = 0;
 

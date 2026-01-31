@@ -11,6 +11,7 @@
 #include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/version_info/version_info.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/glic/fre/fre_util.h"
 #include "chrome/browser/glic/fre/glic_fre_page_handler.h"
 #include "chrome/browser/glic/glic_net_log.h"
@@ -36,6 +37,8 @@
 #include "chrome/grit/glic_fre_resources_map.h"
 #include "chrome/grit/glic_resources.h"
 #include "chrome/grit/glic_resources_map.h"
+#include "components/prefs/pref_service.h"
+#include "components/webui/chrome_urls/pref_names.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/url_data_source.h"
 #include "content/public/browser/web_contents.h"
@@ -147,6 +150,10 @@ GlicUI::GlicUI(content::WebUI* web_ui)
     source->AddResourcePath(base::StrCat({"fre/", resource.path}), resource.id);
   }
 
+  // Setup chrome://glic/internals debug UI.
+  source->AddResourcePath("internals/", IDR_GLIC_INTERNALS_GLIC_INTERNALS_HTML);
+  source->AddResourcePath("internals", IDR_GLIC_INTERNALS_GLIC_INTERNALS_HTML);
+
   // Add localized strings.
   source->AddLocalizedStrings(kStrings);
 
@@ -167,8 +174,10 @@ GlicUI::GlicUI(content::WebUI* web_ui)
   source->AddBoolean("loggingEnabled",
                      command_line->HasSwitch(::switches::kGlicHostLogging));
 
+  auto* profile = Profile::FromBrowserContext(browser_context);
+
   // Set up guest URL via cli flag or default to finch param value.
-  const GURL guest_url = GetGuestURL();
+  const GURL guest_url = GetGuestURL(profile);
   source->AddString("glicGuestURL", guest_url.spec());
   net_log::LogDummyNetworkRequestForTrafficAnnotation(guest_url,
                                                       net_log::GlicPage::kGlic);
@@ -192,8 +201,7 @@ GlicUI::GlicUI(content::WebUI* web_ui)
 
   // Allow corp origins for @google accounts.
   signin::IdentityManager* identity_manager =
-      IdentityManagerFactory::GetForProfile(
-          Profile::FromBrowserContext(browser_context));
+      IdentityManagerFactory::GetForProfile(profile);
   if (identity_manager && IsPrimaryAccountGoogleInternal(*identity_manager)) {
     allowed_origins += " https://*.corp.google.com";
   }
@@ -240,17 +248,12 @@ GlicUI::GlicUI(content::WebUI* web_ui)
   source->AddString("adminBlockedRedirectPatterns",
                     admin_blocked_redirect_patterns);
 
-  source->AddString(
-      "glicFreURL",
-      GetFreURL(Profile::FromBrowserContext(browser_context)).spec());
+  source->AddString("glicFreURL", GetFreURL(profile).spec());
   source->AddBoolean("isUnifiedFre",
-                     GlicEnabling::IsUnifiedFreEnabled(
-                         Profile::FromBrowserContext(browser_context)));
-  source->AddBoolean(
-      "shouldShowFre",
-      !base::FeatureList::IsEnabled(features::kGlicTrustFirstOnboarding) &&
-          !GlicEnabling::HasConsentedForProfile(
-              Profile::FromBrowserContext(browser_context)));
+                     GlicEnabling::IsUnifiedFreEnabled(profile));
+  source->AddBoolean("shouldShowFre",
+                     !GlicEnabling::IsTrustFirstOnboardingEnabled() &&
+                         !GlicEnabling::HasConsentedForProfile(profile));
   source->AddInteger("reloadMaxLoadingTimeMs",
                      features::kGlicReloadMaxLoadingTimeMs.Get());
   source->AddBoolean("caaGuestError", base::FeatureList::IsEnabled(

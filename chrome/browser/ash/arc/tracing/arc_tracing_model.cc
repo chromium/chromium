@@ -148,7 +148,7 @@ bool HandleGraphicsEvent(GraphicsEventsContext* context,
       }
       const std::string name = line.substr(name_pos + 1);
       std::unique_ptr<ArcTracingEvent> event =
-          std::make_unique<ArcTracingEvent>(base::Value::Dict());
+          std::make_unique<ArcTracingEvent>(base::DictValue());
       event->SetPid(pid);
       event->SetTid(tid);
       event->SetTimestamp(timestamp);
@@ -192,7 +192,7 @@ bool HandleGraphicsEvent(GraphicsEventsContext* context,
       const std::string name = line.substr(name_pos + 1, id_pos - name_pos - 1);
       const std::string id = line.substr(id_pos + 1);
       std::unique_ptr<ArcTracingEvent> event =
-          std::make_unique<ArcTracingEvent>(base::Value::Dict());
+          std::make_unique<ArcTracingEvent>(base::DictValue());
       event->SetPhase(phase);
       event->SetPid(pid);
       event->SetTid(tid);
@@ -368,7 +368,7 @@ bool ArcTracingModel::Build(const std::string& data) {
     return false;
   }
 
-  base::Value::Dict* dictionary = value->GetIfDict();
+  base::DictValue* dictionary = value->GetIfDict();
   if (!dictionary) {
     LOG(ERROR) << "Trace data is not dictionary";
     return false;
@@ -382,7 +382,7 @@ bool ArcTracingModel::Build(const std::string& data) {
     }
   }
 
-  base::Value::List* events = dictionary->FindList("traceEvents");
+  base::ListValue* events = dictionary->FindList("traceEvents");
   if (!events) {
     LOG(ERROR) << "No trace events";
     return false;
@@ -459,7 +459,7 @@ ArcTracingModel::TracingEventPtrs ArcTracingModel::GetGroupEvents(
   return result;
 }
 
-bool ArcTracingModel::ProcessEvent(base::Value::List* events) {
+bool ArcTracingModel::ProcessEvent(base::ListValue* events) {
   std::vector<std::unique_ptr<ArcTracingEvent>> parsed_events;
   for (auto& it : *events) {
     base::Value event_data = std::move(it);

@@ -4,7 +4,6 @@
 
 #include "content/web_test/browser/fake_bluetooth_delegate.h"
 
-#include "base/containers/contains.h"
 #include "content/public/browser/web_contents.h"
 #include "content/web_test/browser/web_test_control_host.h"
 #include "device/bluetooth/bluetooth_device.h"
@@ -100,7 +99,7 @@ WebBluetoothDeviceId FakeBluetoothDelegate::GrantServiceAccessPermission(
 bool FakeBluetoothDelegate::HasDevicePermission(
     RenderFrameHost* frame,
     const WebBluetoothDeviceId& device_id) {
-  return base::Contains(device_id_to_services_map_, device_id);
+  return device_id_to_services_map_.contains(device_id);
 }
 
 void FakeBluetoothDelegate::RevokeDevicePermissionWebInitiated(
@@ -126,7 +125,7 @@ bool FakeBluetoothDelegate::IsAllowedToAccessService(
   if (id_to_services_it == device_id_to_services_map_.end())
     return false;
 
-  return base::Contains(id_to_services_it->second, service);
+  return id_to_services_it->second.contains(service);
 }
 
 bool FakeBluetoothDelegate::IsAllowedToAccessAtLeastOneService(
@@ -148,7 +147,7 @@ bool FakeBluetoothDelegate::IsAllowedToAccessManufacturerData(
   if (id_to_manufacturer_data_it == device_id_to_manufacturer_code_map_.end())
     return false;
 
-  return base::Contains(id_to_manufacturer_data_it->second, manufacturer_code);
+  return id_to_manufacturer_data_it->second.contains(manufacturer_code);
 }
 
 void FakeBluetoothDelegate::AddFramePermissionObserver(

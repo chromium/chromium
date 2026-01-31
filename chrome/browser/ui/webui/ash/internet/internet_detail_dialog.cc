@@ -91,7 +91,7 @@ class PortalNetworkMessageHandler : public content::WebUIMessageHandler {
   }
 
  private:
-  void ShowPortalSignin(const base::Value::List& args) {
+  void ShowPortalSignin(const base::ListValue& args) {
     if (args.size() < 1 || !args[0].is_string()) {
       NOTREACHED() << "Invalid args for: ShowPortalSignin";
     }
@@ -155,7 +155,7 @@ void InternetDetailDialog::GetDialogSize(gfx::Size* size) const {
 }
 
 std::string InternetDetailDialog::GetDialogArgs() const {
-  base::Value::Dict args;
+  base::DictValue args;
   args.Set("type", network_type_);
   args.Set("guid", network_id_);
   args.Set("name", network_name_);

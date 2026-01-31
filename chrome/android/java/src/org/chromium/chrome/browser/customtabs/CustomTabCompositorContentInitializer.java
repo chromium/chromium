@@ -4,12 +4,16 @@
 
 package org.chromium.chrome.browser.customtabs;
 
+import static org.chromium.build.NullUtil.assertNonNull;
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.app.Activity;
 import android.view.ViewGroup;
 
 import org.chromium.base.Callback;
-import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.compositor.CompositorViewHolder;
 import org.chromium.chrome.browser.compositor.layouts.LayoutManagerImpl;
@@ -31,8 +35,8 @@ public class CustomTabCompositorContentInitializer implements NativeInitObserver
 
     private final ActivityLifecycleDispatcher mLifecycleDispatcher;
     private final Activity mActivity;
-    private final Supplier<CompositorViewHolder> mCompositorViewHolder;
-    private final ObservableSupplier<TabContentManager> mTabContentManagerSupplier;
+    private final Supplier<@Nullable CompositorViewHolder> mCompositorViewHolder;
+    private final MonotonicObservableSupplier<TabContentManager> mTabContentManagerSupplier;
     private final CompositorViewHolder.Initializer mCompositorViewHolderInitializer;
     private final TopUiThemeColorProvider mTopUiThemeColorProvider;
 
@@ -40,8 +44,8 @@ public class CustomTabCompositorContentInitializer implements NativeInitObserver
 
     public CustomTabCompositorContentInitializer(
             Activity activity,
-            Supplier<CompositorViewHolder> compositorViewHolder,
-            ObservableSupplier<TabContentManager> tabContentManagerSupplier,
+            Supplier<@Nullable CompositorViewHolder> compositorViewHolder,
+            MonotonicObservableSupplier<TabContentManager> tabContentManagerSupplier,
             CompositorViewHolder.Initializer compositorViewHolderInitializer,
             TopUiThemeColorProvider topUiThemeColorProvider,
             ActivityLifecycleDispatcher lifecycleDispatcher) {
@@ -61,7 +65,7 @@ public class CustomTabCompositorContentInitializer implements NativeInitObserver
      */
     public void addCallback(Callback<LayoutManagerImpl> callback) {
         if (mInitialized) {
-            callback.onResult(mCompositorViewHolder.get().getLayoutManager());
+            callback.onResult(assumeNonNull(mCompositorViewHolder.get()).getLayoutManager());
         } else {
             mListeners.add(callback);
         }
@@ -72,7 +76,7 @@ public class CustomTabCompositorContentInitializer implements NativeInitObserver
         ViewGroup contentContainer = mActivity.findViewById(android.R.id.content);
         LayoutManagerImpl layoutDriver =
                 new LayoutManagerImpl(
-                        mCompositorViewHolder.get(),
+                        assertNonNull(mCompositorViewHolder.get()),
                         contentContainer,
                         mTabContentManagerSupplier,
                         () -> mTopUiThemeColorProvider);

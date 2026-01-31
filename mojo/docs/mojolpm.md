@@ -230,7 +230,9 @@ arguments:
 # DCHECKS are really useful when getting your fuzzer up and running correctly,
 # but will often get in the way when running actual fuzzing, so we will disable
 # this later.
-dcheck_always_on = true
+# TODO(crbug.com/476159166): currently broken; fix the ability to run mojolpm
+# fuzzers with DCHECK and re-enable this recommendation.
+# dcheck_always_on = true
 
 # Without this flag, our fuzzer target won't exist.
 enable_mojom_fuzzer = true
@@ -274,7 +276,7 @@ context in which the interface to be fuzzed will actually run. Most fuzzers in
 content will be fine using either the existing `FuzzerEnvironment` or
 `FuzzerEnvironmentWithTaskEnvironment`, depending on whether there's some
 per-testcase state that causes issues with reusing the task environment. There
-are existing examples of both in //content/test/fuzzer.
+are existing examples of both in [`//content/test/fuzzer`].
 
 
 ## Handle per-testcase setup
@@ -350,7 +352,7 @@ just need to implement code to run at the start and end of each testcase, and
 to run each individual action.
 
 All three of these functions will be called on the Fuzzer thread; they should
-ensure that after they've completed the `done_closure/run_closure` argument is
+ensure that after they've completed the `done_closure`/`run_closure` argument is
 invoked on the Fuzzer thread.
 
 ```c++
@@ -409,8 +411,8 @@ void CodeCacheHostTestcase::RunAction(const ProtoAction& action,
 ```
 
 The key line here in integration with MojoLPM is the last case,
-`kCodeCacheHostCall`, where we're asking MojoLPM to treat this incoming proto
-entry as a call to a method on the `CodeCacheHost` interface.
+`kCodeCacheHostRemoteAction`, where we're asking MojoLPM to treat this incoming
+proto entry as a call to a method on the `CodeCacheHost` interface.
 
 There's just a little bit more boilerplate in the bottom of the file to tidy up
 concurrency loose ends, making sure that the fuzzer components are all running
@@ -437,7 +439,7 @@ the rough structure of the presentation service fuzzer")
 Make a corpus directory and fire up your shiny new fuzzer!
 
 ```
- ~/chromium/src% set ASAN_OPTIONS=detect_odr_violation=0,handle_abort=1,handle_sigtrap=1,handle_sigill=1
+ ~/chromium/src% export ASAN_OPTIONS=detect_odr_violation=0,handle_abort=1,handle_sigtrap=1,handle_sigill=1
  ~/chromium/src% out/Default/code_cache_host_mojolpm_fuzzer /dev/shm/corpus
 INFO: Seed: 3273881842
 INFO: Loaded 1 modules   (1121912 inline 8-bit counters): 1121912 [0x559151a1aea8, 0x559151b2cd20),
@@ -514,15 +516,15 @@ We can see that this interface references multiple other interfaces; there are
 several different kinds of reference that we need to worry about:
 
 **Additional fuzzable interfaces** - if an interface method can return a
-pending_remote<> or take a pending_receiver<> to an interface Foo, then we
+`pending_remote<>` or take a `pending_receiver<>` to an interface Foo, then we
 want our fuzzer to fuzz those interfaces too.
 
 Here we would want to add `blink.mojom.Blob.RemoteAction` and
 `blink.mojom.BlobURLStore.AssociatedRemoteAction` to the possible actions
 that our fuzzer protobufs can take.
 
-**Renderer-hosted interfaces** - if an interface method takes a pending_remote<>
-(or returns a pending_receiver<>), then we'll also want to add response handling
+**Renderer-hosted interfaces** - if an interface method takes a `pending_remote<>`
+(or returns a `pending_receiver<>`), then we'll also want to add response handling
 to our fuzzer. This lets the fuzzer send fuzzer-side implementations of mojo
 interfaces, and handle fuzzing the values returned if those methods are called.
 
@@ -593,7 +595,7 @@ use_libfuzzer = true
 python tools/code_coverage/coverage.py code_cache_host_mojolpm_fuzzer -b out/Coverage -o ManualReport -c "out/Coverage/code_cache_host_mojolpm_fuzzer -ignore_timeouts=1 -timeout=4 -runs=0 /dev/shm/corpus" -f content
 ```
 
-With the CodeCacheHost, looking at the coverage after a few hours we could see
+With the `CodeCacheHost`, looking at the coverage after a few hours we could see
 that there's definitely some room for improvement:
 
 ```c++
@@ -768,11 +770,13 @@ Thread T5 (fuzzer_thread) created by T0 here:
 
 ## Debugging tips
 
-`LOG()` statements don't print while running the fuzzer, but printing to
-`std::cout` should work. NOTE(caraitto): This is likely due to the lack of
+`LOG()` statements don't print while running the fuzzer, but [`SYSLOG()`] works.
+
+> NOTE(caraitto): This is likely due to the lack of
 `--enable-logging=stderr`, but `LOG()` only worked in certain contexts when
-adding that to the command line during `FuzzerEnvironment` setup. `CHECK()`
-should work though.
+adding that to the command line during `FuzzerEnvironment` setup.
+
+`CHECK()` should work as well.
 
 [`google::protobuf::TextFormat::PrintToString()`] can be used to dump the
 contents of the current testcase proto. This can be useful to help inspect the
@@ -810,6 +814,8 @@ might be faster to add a print or `CHECK()` at that line and run the fuzzer.
 [libprotobuf-mutator]: https://source.chromium.org/chromium/chromium/src/+/main:testing/libfuzzer/libprotobuf-mutator.md
 [testing in Chromium]: https://source.chromium.org/chromium/chromium/src/+/main:docs/testing/testing_in_chromium.md
 [interfaces]: https://source.chromium.org/search?q=interface%5Cs%2B%5Cw%2B%5Cs%2B%7B%20f:%5C.mojom$%20-f:test
+[`//content/test/fuzzer`]: https://source.chromium.org/chromium/chromium/src/+/main:content/test/fuzzer/
+[`SYSLOG()`]: https://source.chromium.org/chromium/chromium/src/+/main:base/syslog_logging.h
 [`google::protobuf::TextFormat::PrintToString()`]: https://source.chromium.org/chromium/chromium/src/+/main:third_party/protobuf/src/google/protobuf/text_format.h;l=92;drc=b8644e8bc11097152e648510ca97dad0a20c1aae
 [`mojolpm::Context`]: https://source.chromium.org/chromium/chromium/src/+/main:mojo/public/tools/fuzzers/mojolpm.cc;l=85;drc=6f3f85b321146cfc0f9eb81a74c7c2257821461e
 [`MOJOLPM_DBG`]: https://source.chromium.org/chromium/chromium/src/+/main:mojo/public/tools/fuzzers/mojolpm.h;l=25;drc=6f3f85b321146cfc0f9eb81a74c7c2257821461e

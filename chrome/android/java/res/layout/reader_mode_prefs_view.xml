@@ -8,11 +8,12 @@ found in the LICENSE file.
 <org.chromium.chrome.browser.dom_distiller.ReaderModePrefsView
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical" >
 
-    <LinearLayout
+    <HorizontalScrollView
         android:id="@+id/font_family_container"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -21,74 +22,53 @@ found in the LICENSE file.
         android:layout_marginBottom="2dp"
         android:gravity="center"
         android:padding="16dp"
-        android:background="@drawable/list_item_background_top" >
+        android:background="@drawable/list_item_background_top"
+        android:scrollbars="none"
+        android:overScrollMode="never"
+        android:requiresFadingEdge="horizontal"
+        android:fadingEdgeLength="24dp"
+        android:fillViewport="true" >
 
-        <androidx.constraintlayout.widget.ConstraintLayout
-            android:id="@+id/font_family_button_container"
-            android:layout_width="match_parent"
+        <FrameLayout
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:maxWidth=
-                "@dimen/reader_mode_prefs_font_style_container_width" >
+            tools:ignore="UselessParent">
 
-            <!-- Text property for these MaterialButtons defined in
-            ReaderModePrefsView.java to support multiple lines of text. -->
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/font_sans_serif"
-                android:layout_width=
-                    "@dimen/reader_mode_prefs_font_style_button_size"
-                android:layout_height=
-                    "@dimen/reader_mode_prefs_font_style_button_size"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintEnd_toStartOf="@+id/font_serif"
-                app:layout_constraintHorizontal_chainStyle=
-                    "spread_inside"
-                style="@style/ReaderModeFontStyleButton"
-                app:backgroundTint=
-                    "@color/reader_mode_prefs_font_style_button_background_color"
-                android:checkable="true"
-                android:contentDescription=
-                    "@string/font_family_sans_serif_accessibility_label"
-                android:foreground="@drawable/focusable_item_foreground" />
+            <LinearLayout
+                android:id="@+id/font_family_button_container"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_gravity="center_horizontal" >
 
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/font_serif"
-                android:layout_width=
-                    "@dimen/reader_mode_prefs_font_style_button_size"
-                android:layout_height=
-                    "@dimen/reader_mode_prefs_font_style_button_size"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintStart_toEndOf="@+id/font_sans_serif"
-                app:layout_constraintEnd_toStartOf="@+id/font_monospace"
-                style="@style/ReaderModeFontStyleButton"
-                app:backgroundTint=
-                    "@color/reader_mode_prefs_font_style_button_background_color"
-                android:checkable="true"
-                android:contentDescription=
-                    "@string/font_family_serif_accessibility_label"
-                android:foreground="@drawable/focusable_item_foreground" />
+                <!-- Text property for these MaterialButtons defined in
+                ReaderModePrefsView.java to support multiple lines of text. -->
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/font_sans_serif"
+                    style="@style/ReaderModeFontStyleButton"
+                    android:contentDescription=
+                        "@string/font_family_sans_serif_accessibility_label" />
 
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/font_monospace"
-                android:layout_width=
-                    "@dimen/reader_mode_prefs_font_style_button_size"
-                android:layout_height=
-                    "@dimen/reader_mode_prefs_font_style_button_size"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintStart_toEndOf="@+id/font_serif"
-                app:layout_constraintEnd_toEndOf="parent"
-                style="@style/ReaderModeFontStyleButton"
-                app:backgroundTint=
-                    "@color/reader_mode_prefs_font_style_button_background_color"
-                android:checkable="true"
-                android:contentDescription=
-                    "@string/font_family_monospace_accessibility_label"
-                android:foreground="@drawable/focusable_item_foreground" />
-        </androidx.constraintlayout.widget.ConstraintLayout>
-    </LinearLayout>
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/font_serif"
+                    style="@style/ReaderModeFontStyleButton"
+                    android:contentDescription=
+                        "@string/font_family_serif_accessibility_label" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/font_monospace"
+                    style="@style/ReaderModeFontStyleButton"
+                    android:contentDescription=
+                        "@string/font_family_monospace_accessibility_label" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/font_lexend"
+                    style="@style/ReaderModeFontStyleButton"
+                    android:contentDescription=
+                        "@string/font_family_lexend_accessibility_label" />
+            </LinearLayout>
+        </FrameLayout>
+    </HorizontalScrollView>
 
     <LinearLayout
         android:id="@+id/font_size_container"
@@ -119,7 +99,7 @@ found in the LICENSE file.
                 app:layout_constraintEnd_toStartOf="@+id/font_size_slider"
                 app:layout_constraintHorizontal_chainStyle="packed" />
 
-<com.google.android.material.slider.Slider
+            <com.google.android.material.slider.Slider
                 android:id="@+id/font_size_slider"
                 android:layout_width="0dp"
                 android:layout_height="44dp"
@@ -138,6 +118,7 @@ found in the LICENSE file.
                 android:contentDescription=
                     "@string/font_size_slider_accessibility_label"
                 android:foreground="@drawable/focusable_item_foreground" />
+
             <TextView
                 android:id="@+id/text_size_signifier_large"
                 android:layout_width="wrap_content"

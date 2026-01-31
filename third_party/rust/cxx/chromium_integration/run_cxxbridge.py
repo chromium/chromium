@@ -20,18 +20,49 @@ sys.path.append(
 import action_helpers
 
 
-def get_cfg_args(rustc_print_cfg_path):
-  """ Returns `--cfg=target_arch=...` etc. based on rustc.
+def calculate_cxxbridge_args(unrecognized_script_args, rustc_print_cfg_path):
+  """ Calculates and returns command-line flags for `cxxbridge`.
 
-      `rustc_print_cfg_path` should be a path to the output of
-      `//build/rust/gni_impl:rustc_print_cfg`
+      `unrecognized_script_args` should be post-`--` args that are not explictly
+      named and handled by `argparse` in `main`.  These are (in order):
+
+      1. `rustc` flags / `"{{rustflags}}"` expansion from `rust_cxx.gni`:
+          1.1. `--cfg=foo` needs to be transformed into `--cfg=foo=true`
+               (there is also special handling for `--cfg=foo=false`)
+          1.2. All other `rustc` flags (e.g. `-Cpanic=abort`) are ignored
+      2. "RUSTFLAGS_SEPARATOR"
+      3. `cxxbridge` flags (e.g. source files and/or `--cxx-impl-annotations`;
+         we forward all of them)
+
+      Returns command-line flags to pass to `cxxbridge`.
   """
-  result = []
+
+  rustflags_separator = unrecognized_script_args.index("RUSTFLAGS_SEPARATOR")
+  cxxbridge_args = unrecognized_script_args[rustflags_separator+1:]
+
+  parser = argparse.ArgumentParser("<def filter_non_cfg_rustflags>")
+  parser.add_argument("--cfg", action="append"),
+  parsed_rustc_args, _other_args = parser.parse_known_args(
+      args=unrecognized_script_args[:rustflags_separator])
+  for cfg_arg in parsed_rustc_args.cfg:
+    if "=" not in cfg_arg:  # `buildflag_header.gni` only supports bool flags.
+      # TODO(https://crbug.com/436606652): Stop using `_BUILDFLAG_NOT_SET_`
+      # prefix and instead use `--check-cfg` in `run_cxxbridge.py` to
+      # detect buildflag names.
+      FALSE_PREFIX = "_BUILDFLAG_NOT_SET_"
+      if cfg_arg.startswith(FALSE_PREFIX):
+        flagname = cfg_arg[len(FALSE_PREFIX):]
+        cxxbridge_args.append(f"--cfg={flagname}=false")
+      else:
+        flagname = cfg_arg
+        cxxbridge_args.append(f"--cfg={flagname}=true")
+
   with open(rustc_print_cfg_path, 'r') as file:
     for line in file:
       line = line.strip()
-      result.append(f"--cfg={line}")
-  return result
+      cxxbridge_args.append(f"--cfg={line}")
+
+  return cxxbridge_args
 
 
 def run(exe, args, output, is_header):
@@ -62,11 +93,11 @@ def main():
                       nargs='+',
                       help="Args to pass through")
   args = parser.parse_args()
-  args.args += get_cfg_args(args.rustc_print_cfg_path)
-  v = run(args.exe, args.args, args.cc, False)
+  cxxbridge_args = calculate_cxxbridge_args(args.args, args.rustc_print_cfg_path)
+  v = run(args.exe, cxxbridge_args, args.cc, False)
   if v != 0:
     return v
-  return run(args.exe, args.args, args.header, True)
+  return run(args.exe, cxxbridge_args, args.header, True)
 
 
 if __name__ == '__main__':

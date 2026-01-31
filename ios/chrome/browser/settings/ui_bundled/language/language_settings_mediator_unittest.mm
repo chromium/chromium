@@ -4,11 +4,11 @@
 
 #import "ios/chrome/browser/settings/ui_bundled/language/language_settings_mediator.h"
 
+#import <algorithm>
 #import <memory>
 #import <string>
 #import <vector>
 
-#import "base/containers/contains.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/ios/wait_util.h"
 #import "base/time/time.h"
@@ -196,12 +196,12 @@ TEST_F(LanguageSettingsMediatorTest, TestSupportedLanguagesItems) {
 
   std::vector<std::string> language_codes =
       ExtractLanguageCodesFromLanguageItems(language_items);
-  EXPECT_TRUE(base::Contains(language_codes, "fa"));
+  EXPECT_TRUE(std::ranges::contains(language_codes, "fa"));
 
   translate_prefs()->AddToLanguageList("fa", /*force_blocked=*/false);
   language_items = [mediator() supportedLanguagesItems];
   language_codes = ExtractLanguageCodesFromLanguageItems(language_items);
-  EXPECT_FALSE(base::Contains(language_codes, "fa"));
+  EXPECT_FALSE(std::ranges::contains(language_codes, "fa"));
 }
 
 // Tests that the list of accept language items is as expected.

@@ -55,7 +55,7 @@ class HidChooserContext : public permissions::ObjectPermissionContextBase,
   HidChooserContext& operator=(const HidChooserContext&) = delete;
   ~HidChooserContext() override;
 
-  static base::Value::Dict DeviceInfoToValue(
+  static base::DictValue DeviceInfoToValue(
       const device::mojom::HidDeviceInfo& device);
 
   // Returns a human-readable string identifier for |device|.
@@ -67,16 +67,16 @@ class HidChooserContext : public permissions::ObjectPermissionContextBase,
       const device::mojom::HidDeviceInfo& device);
 
   // permissions::ObjectPermissionContextBase implementation:
-  std::string GetKeyForObject(const base::Value::Dict& object) override;
-  bool IsValidObject(const base::Value::Dict& object) override;
+  std::string GetKeyForObject(const base::DictValue& object) override;
+  bool IsValidObject(const base::DictValue& object) override;
   // In addition these methods from ObjectPermissionContextBase are overridden
   // in order to expose ephemeral devices through the public interface.
   std::vector<std::unique_ptr<Object>> GetGrantedObjects(
       const url::Origin& origin) override;
   std::vector<std::unique_ptr<Object>> GetAllGrantedObjects() override;
   void RevokeObjectPermission(const url::Origin& origin,
-                              const base::Value::Dict& object) override;
-  std::u16string GetObjectDisplayName(const base::Value::Dict& object) override;
+                              const base::DictValue& object) override;
+  std::u16string GetObjectDisplayName(const base::DictValue& object) override;
 
   // HID-specific interface for granting, revoking and checking permissions.
   void GrantDevicePermission(const url::Origin& origin,

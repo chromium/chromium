@@ -62,7 +62,7 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) CellularPolicyHandler
   // and to include the ICCID of the installed profile. Installations are
   // performed using a queue, and each installation will be retried a fix number
   // of times.
-  void InstallESim(const base::Value::Dict& onc_config);
+  void InstallESim(const base::DictValue& onc_config);
 
  private:
   // This enum allows us to treat a retry differently depending on what the
@@ -104,14 +104,14 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) CellularPolicyHandler
   // ONC configuration of the cellular policy.
   struct InstallPolicyESimRequest {
     InstallPolicyESimRequest(policy_util::SmdxActivationCode activation_code,
-                             const base::Value::Dict& onc_config);
+                             const base::DictValue& onc_config);
     InstallPolicyESimRequest(const InstallPolicyESimRequest&) = delete;
     InstallPolicyESimRequest& operator=(const InstallPolicyESimRequest&) =
         delete;
     ~InstallPolicyESimRequest();
 
     const policy_util::SmdxActivationCode activation_code;
-    base::Value::Dict onc_config;
+    base::DictValue onc_config;
     net::BackoffEntry retry_backoff;
   };
 
@@ -148,27 +148,27 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) CellularPolicyHandler
   // that will be installed, and will ensure that we have non-cellular internet
   // connectivity.
   void PerformInstallESim(const dbus::ObjectPath& euicc_path,
-                          base::Value::Dict new_shill_properties);
+                          base::DictValue new_shill_properties);
 
   void OnRefreshProfileList(
       const dbus::ObjectPath& euicc_path,
-      base::Value::Dict new_shill_properties,
+      base::DictValue new_shill_properties,
       std::unique_ptr<CellularInhibitor::InhibitLock> inhibit_lock);
   void OnConfigureESimService(std::optional<dbus::ObjectPath> service_path);
   void OnInhibitedForRefreshSmdxProfiles(
       const dbus::ObjectPath& euicc_path,
-      base::Value::Dict new_shill_properties,
+      base::DictValue new_shill_properties,
       std::unique_ptr<CellularInhibitor::InhibitLock> inhibit_lock);
   void OnRefreshSmdxProfiles(
       const dbus::ObjectPath& euicc_path,
-      base::Value::Dict new_shill_properties,
+      base::DictValue new_shill_properties,
       std::unique_ptr<CellularInhibitor::InhibitLock> inhibit_lock,
       base::TimeTicks start_time,
       HermesResponseStatus status,
       const std::vector<dbus::ObjectPath>& profile_paths);
   void CompleteRefreshSmdxProfiles(
       const dbus::ObjectPath& euicc_path,
-      base::Value::Dict new_shill_properties,
+      base::DictValue new_shill_properties,
       std::unique_ptr<CellularInhibitor::InhibitLock> inhibit_lock,
       HermesResponseStatus status,
       const std::vector<dbus::ObjectPath>& profile_paths);
@@ -178,7 +178,7 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) CellularPolicyHandler
       std::optional<std::string> service_path);
   void OnWaitTimeout();
 
-  base::Value::Dict GetNewShillProperties();
+  base::DictValue GetNewShillProperties();
   const policy_util::SmdxActivationCode& GetCurrentActivationCode() const;
   std::optional<dbus::ObjectPath> FindExistingMatchingESimProfile(
       const std::string& iccid);

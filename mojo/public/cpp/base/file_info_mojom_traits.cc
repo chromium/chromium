@@ -12,12 +12,15 @@ namespace mojo {
 bool StructTraits<mojo_base::mojom::FileInfoDataView, base::File::Info>::Read(
     mojo_base::mojom::FileInfoDataView data,
     base::File::Info* out) {
-  if (!data.ReadLastModified(&out->last_modified))
+  if (!data.ReadLastModified(&out->last_modified)) {
     return false;
-  if (!data.ReadLastAccessed(&out->last_accessed))
+  }
+  if (!data.ReadLastAccessed(&out->last_accessed)) {
     return false;
-  if (!data.ReadCreationTime(&out->creation_time))
+  }
+  if (!data.ReadCreationTime(&out->creation_time)) {
     return false;
+  }
   out->size = data.size();
   out->is_directory = data.is_directory();
   out->is_symbolic_link = data.is_symbolic_link();

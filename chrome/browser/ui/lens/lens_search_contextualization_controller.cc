@@ -18,7 +18,6 @@
 #include "chrome/browser/ui/lens/lens_searchbox_controller.h"
 #include "chrome/browser/ui/lens/lens_session_metrics_logger.h"
 #include "components/content_extraction/content/browser/inner_text.h"
-#include "components/contextual_tasks/public/features.h"
 #include "components/lens/lens_features.h"
 #include "components/tabs/public/tab_interface.h"
 #include "components/viz/common/frame_sinks/copy_output_result.h"
@@ -762,7 +761,7 @@ void LensSearchContextualizationController::GetPartialPdfTextCallback(
       page_index + 1 >= total_page_count) {
     std::move(pdf_partial_page_text_retrieved_callback_).Run(pdf_pages_text_);
     // When contextual tasks is enabled, partial PDF text is not sent.
-    if (!contextual_tasks::GetEnableLensInContextualTasks()) {
+    if (!lens_search_controller_->should_route_to_contextual_tasks()) {
       GetQueryController()->SendPartialPageContentRequest(pdf_pages_text_);
     }
     return;
@@ -806,7 +805,7 @@ void LensSearchContextualizationController::StartScreenshotFlow(
 
   // Side panel is now fully closed, take screenshot and open overlay.
   view->CopyFromSurface(
-      /*src_rect=*/gfx::Rect(), /*output_size=*/gfx::Size(),
+      /*src_rect=*/gfx::Rect(), /*output_size=*/gfx::Size(), base::TimeDelta(),
       base::BindPostTask(
           base::SequencedTaskRunner::GetCurrentDefault(),
           base::BindOnce(&LensSearchContextualizationController::
@@ -831,7 +830,7 @@ void LensSearchContextualizationController::CaptureScreenshot(
   }
 
   view->CopyFromSurface(
-      /*src_rect=*/gfx::Rect(), /*output_size=*/gfx::Size(),
+      /*src_rect=*/gfx::Rect(), /*output_size=*/gfx::Size(), base::TimeDelta(),
       base::BindPostTask(
           base::SequencedTaskRunner::GetCurrentDefault(),
           base::BindOnce(&LensSearchContextualizationController::
@@ -843,11 +842,14 @@ void LensSearchContextualizationController::CaptureScreenshot(
 void LensSearchContextualizationController::OnScreenshotCapturedForUpdate(
     int attempt_id,
     base::OnceCallback<void(const SkBitmap&)> callback,
-    const viz::CopyOutputBitmapWithMetadata& result) {
+    const content::CopyFromSurfaceResult& result) {
   if (attempt_id != screenshot_attempt_id_) {
     return;
   }
-  std::move(callback).Run(result.bitmap);
+
+  // TODO(crbug.com/466199824): Update callsite to handle error case.
+  std::move(callback).Run(
+      result.value_or(viz::CopyOutputBitmapWithMetadata()).bitmap);
 }
 
 void LensSearchContextualizationController::DidCaptureScreenshot(
@@ -1008,8 +1010,9 @@ void LensSearchContextualizationController::
 
 void LensSearchContextualizationController::FetchViewportImageBoundingBoxes(
     OnScreenshotTakenCallback callback,
-    const viz::CopyOutputBitmapWithMetadata& result) {
-  const SkBitmap& bitmap = result.bitmap;
+    const content::CopyFromSurfaceResult& result) {
+  // TODO(crbug.com/466199824): Update callsite to handle error case.
+  const SkBitmap& bitmap = result.has_value() ? result->bitmap : SkBitmap();
   content::RenderFrameHost* render_frame_host =
       lens_search_controller_->GetTabInterface()
           ->GetContents()

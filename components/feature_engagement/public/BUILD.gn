@@ -88,17 +88,6 @@ static_library("public") {
       "ios_promo_feature_configuration.h",
     ]
   }
-
-  if (is_chromeos) {
-    sources += [
-      "scalable_iph_feature_configurations.cc",
-      "scalable_iph_feature_configurations.h",
-    ]
-    deps += [
-      "//ash/constants",
-      "//chromeos/ash/components/scalable_iph:constants",
-    ]
-  }
 }
 
 source_set("unit_tests") {

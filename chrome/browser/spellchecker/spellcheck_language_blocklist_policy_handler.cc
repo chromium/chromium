@@ -4,7 +4,6 @@
 
 #include "chrome/browser/spellchecker/spellcheck_language_blocklist_policy_handler.h"
 
-#include <unordered_set>
 #include <utility>
 #include <vector>
 
@@ -20,6 +19,7 @@
 #include "components/spellcheck/browser/pref_names.h"
 #include "components/spellcheck/common/spellcheck_features.h"
 #include "components/strings/grit/components_strings.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
 
 SpellcheckLanguageBlocklistPolicyHandler::
     SpellcheckLanguageBlocklistPolicyHandler(const char* policy_name)
@@ -34,7 +34,7 @@ bool SpellcheckLanguageBlocklistPolicyHandler::CheckPolicySettings(
   const base::Value* value = nullptr;
   bool ok = CheckAndGetValue(policies, errors, &value);
 
-  base::Value::List blocklisted;
+  base::ListValue blocklisted;
   std::vector<std::string> unknown;
   std::vector<std::string> duplicates;
   SortBlocklistedLanguages(policies, &blocklisted, &unknown, &duplicates);
@@ -71,7 +71,7 @@ void SpellcheckLanguageBlocklistPolicyHandler::ApplyPolicySettings(
 
   // Set the blocklisted dictionaries preference based on this policy's values,
   // and emit warnings for unknown or duplicate languages.
-  base::Value::List blocklisted;
+  base::ListValue blocklisted;
   std::vector<std::string> unknown;
   std::vector<std::string> duplicates;
   SortBlocklistedLanguages(policies, &blocklisted, &unknown, &duplicates);
@@ -95,7 +95,7 @@ void SpellcheckLanguageBlocklistPolicyHandler::ApplyPolicySettings(
 
 void SpellcheckLanguageBlocklistPolicyHandler::SortBlocklistedLanguages(
     const policy::PolicyMap& policies,
-    base::Value::List* const blocklisted,
+    base::ListValue* const blocklisted,
     std::vector<std::string>* const unknown,
     std::vector<std::string>* const duplicates) {
   const base::Value* value =
@@ -106,7 +106,7 @@ void SpellcheckLanguageBlocklistPolicyHandler::SortBlocklistedLanguages(
   // Build a lookup of force-enabled spellcheck languages to find duplicates.
   const base::Value* forced_enabled_value = policies.GetValue(
       policy::key::kSpellcheckLanguage, base::Value::Type::LIST);
-  std::unordered_set<std::string> forced_languages_lookup;
+  absl::flat_hash_set<std::string> forced_languages_lookup;
   if (forced_enabled_value) {
     for (const auto& forced_language : forced_enabled_value->GetList())
       forced_languages_lookup.insert(forced_language.GetString());
@@ -123,8 +123,7 @@ void SpellcheckLanguageBlocklistPolicyHandler::SortBlocklistedLanguages(
     if (current_language.empty()) {
       unknown->emplace_back(language.GetString());
     } else {
-      if (forced_languages_lookup.find(language.GetString()) !=
-          forced_languages_lookup.end()) {
+      if (forced_languages_lookup.contains(language.GetString())) {
         // If a language is both force-enabled and force-disabled, force-enable
         // wins. Put the language in the list of duplicates.
         duplicates->emplace_back(std::move(current_language));

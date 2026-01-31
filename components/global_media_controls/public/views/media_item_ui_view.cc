@@ -248,11 +248,9 @@ void MediaItemUIView::OnVisibleActionsChanged(
     const base::flat_set<media_session::mojom::MediaSessionAction>& actions) {
   has_many_actions_ =
       (actions.size() >= kMinVisibleActionsForExpanding ||
-       base::Contains(
-           actions,
+       actions.contains(
            media_session::mojom::MediaSessionAction::kEnterPictureInPicture) ||
-       base::Contains(
-           actions,
+       actions.contains(
            media_session::mojom::MediaSessionAction::kExitPictureInPicture));
   ForceExpandedState();
 
@@ -367,7 +365,7 @@ void MediaItemUIView::UpdateDismissButtonIcon() {
                                           : kDismissButtonIconSize;
   views::SetImageFromVectorIconWithColor(
       dismiss_button_, vector_icons::kCloseRoundedIcon, icon_size,
-      foreground_color_, foreground_disabled_color_);
+      {foreground_color_, foreground_disabled_color_});
 }
 
 void MediaItemUIView::UpdateDismissButtonBackground() {

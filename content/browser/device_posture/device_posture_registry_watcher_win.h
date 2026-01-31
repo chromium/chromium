@@ -43,7 +43,7 @@ class DevicePostureRegistryWatcherWin {
   void ComputeFoldableState(const base::win::RegKey& registry_key,
                             bool notify_changes);
   CONTENT_EXPORT static std::optional<std::vector<gfx::Rect>>
-  ParseViewportSegments(const base::Value::List& viewport_segments);
+  ParseViewportSegments(const base::ListValue& viewport_segments);
   CONTENT_EXPORT static std::optional<blink::mojom::DevicePostureType>
   ParsePosture(std::string_view posture_state);
 

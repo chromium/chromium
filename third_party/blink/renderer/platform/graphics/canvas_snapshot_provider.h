@@ -29,6 +29,29 @@ class PLATFORM_EXPORT CanvasSnapshotProvider {
   virtual bool IsValid() const = 0;
   virtual bool IsGpuContextLost() const = 0;
   virtual bool IsExternalBitmapProvider() const { return false; }
+
+  // Helper structure and function for caching CanvasSnapshotProviders.
+  struct Info {
+    SkAlphaType alpha_type;
+    gfx::ColorSpace color_space;
+    viz::SharedImageFormat format;
+    gfx::Size size;
+
+    bool Matches(const CanvasSnapshotProvider& provider) const {
+      return provider.IsValid() && provider.Size() == size &&
+             provider.GetAlphaType() == alpha_type &&
+             provider.GetColorSpace() == color_space &&
+             // TODO(crbug.com/40767377): Restore strict format checks once the
+             // CanvasResourceProvider no longer swaps BGRA/RGBA sometimes.
+             (provider.GetSharedImageFormat() == format ||
+              (provider.GetSharedImageFormat() ==
+                   viz::SinglePlaneFormat::kRGBA_8888 &&
+               format == viz::SinglePlaneFormat::kBGRA_8888) ||
+              (provider.GetSharedImageFormat() ==
+                   viz::SinglePlaneFormat::kBGRA_8888 &&
+               format == viz::SinglePlaneFormat::kRGBA_8888));
+    }
+  };
 };
 
 }  // namespace blink

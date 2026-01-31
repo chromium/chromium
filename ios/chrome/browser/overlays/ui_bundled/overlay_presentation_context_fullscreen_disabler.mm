@@ -14,8 +14,7 @@
 OverlayContainerFullscreenDisabler::OverlayContainerFullscreenDisabler(
     Browser* browser,
     OverlayModality modality)
-    : fullscreen_disabler_(FullscreenController::FromBrowser(browser),
-                           OverlayPresenter::FromBrowser(browser, modality)) {}
+    : fullscreen_disabler_(browser, modality) {}
 
 OverlayContainerFullscreenDisabler::~OverlayContainerFullscreenDisabler() =
     default;
@@ -23,10 +22,11 @@ OverlayContainerFullscreenDisabler::~OverlayContainerFullscreenDisabler() =
 #pragma mark - OverlayContainerFullscreenDisabler::FullscreenDisabler
 
 OverlayContainerFullscreenDisabler::FullscreenDisabler::FullscreenDisabler(
-    FullscreenController* fullscreen_controller,
-    OverlayPresenter* overlay_presenter)
-    : fullscreen_controller_(fullscreen_controller) {
-  DCHECK(fullscreen_controller_);
+    Browser* browser,
+    OverlayModality modality)
+    : browser_(browser) {
+  OverlayPresenter* overlay_presenter =
+      OverlayPresenter::FromBrowser(browser, modality);
   DCHECK(overlay_presenter);
   scoped_observation_.Observe(overlay_presenter);
 }
@@ -39,7 +39,7 @@ void OverlayContainerFullscreenDisabler::FullscreenDisabler::WillShowOverlay(
     OverlayRequest* request,
     bool initial_presentation) {
   disabler_ = std::make_unique<AnimatedScopedFullscreenDisabler>(
-      fullscreen_controller_);
+      FullscreenController::FromBrowser(browser_));
   disabler_->StartAnimation();
 }
 

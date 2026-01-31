@@ -5,7 +5,6 @@
 #include "ui/events/ozone/chromeos/cursor_controller.h"
 
 #include "base/check.h"
-#include "base/containers/contains.h"
 
 namespace ui {
 

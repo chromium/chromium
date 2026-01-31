@@ -4,6 +4,7 @@ desc: |-
 
         Setting the policy to Disabled means users can't turn on the proxy, and the machine can't share its printers with <ph name="CLOUD_PRINT_NAME">Google Cloud Print</ph>.
 default: true
+deprecated: true
 example_value: true
 features:
   dynamic_refresh: true
@@ -21,6 +22,6 @@ owners:
 schema:
   type: boolean
 supported_on:
-- chrome.*:17-
+- chrome.*:17-144
 tags: []
 type: main

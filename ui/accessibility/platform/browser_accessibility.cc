@@ -10,7 +10,6 @@
 #include <iterator>
 
 #include "base/check.h"
-#include "base/containers/contains.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/notimplemented.h"
@@ -2196,7 +2195,7 @@ TextAttributeMap BrowserAccessibility::ComputeTextAttributeMap(
 // static
 bool BrowserAccessibility::HasInvalidAttribute(
     const TextAttributeList& attributes) {
-  return base::Contains(attributes, "invalid", &TextAttribute::first);
+  return std::ranges::contains(attributes, "invalid", &TextAttribute::first);
 }
 
 static bool HasListAncestor(const BrowserAccessibility* node) {

@@ -6,9 +6,9 @@
 
 #include <stddef.h>
 
+#include <algorithm>
 #include <sstream>
 
-#include "base/containers/contains.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/values.h"
@@ -359,7 +359,7 @@ TEST(URLPatternSetTest, ToValueAndPopulate) {
 
   std::string error;
   bool allow_file_access = false;
-  base::Value::List value = set1.ToValue();
+  base::ListValue value = set1.ToValue();
   set2.Populate(value, URLPattern::SCHEME_ALL, allow_file_access, &error);
   EXPECT_EQ(set1, set2);
 
@@ -409,8 +409,8 @@ TEST(URLPatternSetTest, ToStringVector) {
 
   EXPECT_EQ(2UL, string_vector.size());
 
-  EXPECT_TRUE(base::Contains(string_vector, "https://google.com/"));
-  EXPECT_TRUE(base::Contains(string_vector, "https://yahoo.com/"));
+  EXPECT_TRUE(std::ranges::contains(string_vector, "https://google.com/"));
+  EXPECT_TRUE(std::ranges::contains(string_vector, "https://yahoo.com/"));
 }
 
 TEST(URLPatternSetTest, MatchesHost) {

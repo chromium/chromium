@@ -4,7 +4,6 @@
 
 #include "components/gcm_driver/account_tracker.h"
 
-#include "base/containers/contains.h"
 #include "base/logging.h"
 #include "base/observer_list.h"
 #include "base/trace_event/trace_event.h"
@@ -120,10 +119,10 @@ void AccountTracker::OnPrimaryAccountChanged(
 
 void AccountTracker::UpdateSignInState(const CoreAccountId& account_id,
                                        bool is_signed_in) {
-  if (!is_signed_in && !base::Contains(accounts_, account_id))
+  if (!is_signed_in && !accounts_.contains(account_id))
     return;
 
-  DCHECK(base::Contains(accounts_, account_id));
+  DCHECK(accounts_.contains(account_id));
   AccountState& account = accounts_[account_id];
   if (account.is_signed_in == is_signed_in)
     return;
@@ -134,7 +133,7 @@ void AccountTracker::UpdateSignInState(const CoreAccountId& account_id,
 }
 
 void AccountTracker::StartTrackingAccount(const CoreAccountInfo& account) {
-  if (base::Contains(accounts_, account.account_id))
+  if (accounts_.contains(account.account_id))
     return;
 
   DVLOG(1) << "StartTracking " << account.account_id;
@@ -146,7 +145,7 @@ void AccountTracker::StartTrackingAccount(const CoreAccountInfo& account) {
 
 void AccountTracker::StopTrackingAccount(const CoreAccountId account_id) {
   DVLOG(1) << "StopTracking " << account_id;
-  if (base::Contains(accounts_, account_id)) {
+  if (accounts_.contains(account_id)) {
     UpdateSignInState(account_id, /*is_signed_in=*/false);
     accounts_.erase(account_id);
   }

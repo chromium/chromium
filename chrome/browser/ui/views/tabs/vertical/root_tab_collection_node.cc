@@ -10,27 +10,56 @@
 #include "base/types/pass_key.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/browser/ui/views/tabs/vertical/tab_collection_node.h"
 #include "chrome/browser/ui/views/tabs/vertical/vertical_tab_group_view.h"
+#include "chrome/browser/ui/views/tabs/vertical/vertical_tab_strip_controller.h"
+#include "components/tabs/public/split_tab_data.h"
 #include "components/tabs/public/tab_collection.h"
 #include "components/tabs/public/tab_collection_types.h"
 #include "components/tabs/public/tab_group.h"
 #include "components/tabs/public/tab_interface.h"
 
-RootTabCollectionNode::RootTabCollectionNode(
-    TabStripModel* tab_strip_model,
-    CustomAddChildViewCallback add_node_view_to_parent)
-    : TabCollectionNode(tab_strip_model->Root()),
-      tab_strip_model_(tab_strip_model) {
-  tab_strip_model_->Root()->AddObserver(this);
-  tab_strip_model_->AddObserver(this);
-  add_node_view_to_parent.Run(Initialize());
+namespace {
+
+tabs::ConstChildPtr GetNodeFromHandle(
+    const tabs::TabCollection::NodeHandle& handle) {
+  if (std::holds_alternative<tabs::TabCollection::Handle>(handle)) {
+    const tabs::TabCollection* collection =
+        std::get<tabs::TabCollection::Handle>(handle).Get();
+    return collection;
+  } else {
+    CHECK(std::holds_alternative<tabs::TabInterface::Handle>(handle));
+    const tabs::TabInterface* tab =
+        std::get<tabs::TabInterface::Handle>(handle).Get();
+    return tab;
+  }
 }
 
-RootTabCollectionNode::~RootTabCollectionNode() {
-  if (tab_strip_model_) {
-    tab_strip_model_->Root()->RemoveObserver(this);
-    tab_strip_model_->RemoveObserver(this);
-  }
+}  // namespace
+
+RootTabCollectionNode::RootTabCollectionNode(
+    TabStripModel* tab_strip_model,
+    CustomAddChildViewCallback add_node_view_to_parent,
+    CustomRemoveChildViewCallback remove_node_view_from_parent)
+    : TabCollectionNode(tab_strip_model->Root()),
+      tab_strip_model_(tab_strip_model),
+      add_node_view_to_parent_(add_node_view_to_parent),
+      remove_node_view_from_parent_(remove_node_view_from_parent) {}
+
+RootTabCollectionNode::~RootTabCollectionNode() = default;
+
+void RootTabCollectionNode::Init() {
+  tab_strip_model_->Root()->AddObserver(this);
+  tab_strip_model_->SetTabStripUI(this);
+  add_node_view_to_parent_.Run(Initialize());
+}
+
+void RootTabCollectionNode::Reset() {
+  tab_strip_model_->Root()->RemoveObserver(this);
+  tab_strip_model_->RemoveObserver(this);
+  Deinitialize();
+  views::View* view = std::exchange(node_view_, nullptr);
+  remove_node_view_from_parent_.Run(view);
 }
 
 void RootTabCollectionNode::OnChildrenAdded(
@@ -38,21 +67,10 @@ void RootTabCollectionNode::OnChildrenAdded(
     const tabs::TabCollectionNodes& handles,
     bool insert_from_detached) {
   for (auto handle : handles) {
-    tabs::ConstChildPtr child;
-    if (std::holds_alternative<tabs::TabCollection::Handle>(handle)) {
-      const tabs::TabCollection* collection =
-          std::get<tabs::TabCollection::Handle>(handle).Get();
-      child = collection;
-    } else {
-      CHECK(std::holds_alternative<tabs::TabInterface::Handle>(handle));
-      const tabs::TabInterface* tab =
-          std::get<tabs::TabInterface::Handle>(handle).Get();
-      child = tab;
-    }
-
+    tabs::ConstChildPtr child = GetNodeFromHandle(handle);
     GetNodeForHandle(position.parent_handle)
         ->AddNewChild(GetPassKey(), child, position.index,
-                      insert_from_detached);
+                      /*perform_initialization=*/insert_from_detached);
   }
 }
 
@@ -65,7 +83,8 @@ void RootTabCollectionNode::OnChildrenRemoved(
   }
 
   for (auto& handle : handles) {
-    parent_node->RemoveChild(GetPassKey(), handle);
+    parent_node->RemoveChild(GetPassKey(), handle,
+                             /*perform_deinitialization=*/false);
   }
 }
 
@@ -74,15 +93,43 @@ void RootTabCollectionNode::OnChildMoved(
     const tabs::TabCollectionObserver::NodeData& node_data) {
   const tabs::TabCollection::Position& from_position = node_data.position;
   const tabs::TabCollection::NodeHandle& moved_node_handle = node_data.handle;
+
   TabCollectionNode* src_parent_node =
       GetNodeForHandle(from_position.parent_handle);
   TabCollectionNode* dst_parent_node =
       GetNodeForHandle(to_position.parent_handle);
 
-  auto [view, node] =
-      src_parent_node->RemoveChild(GetPassKey(), moved_node_handle);
-  dst_parent_node->AddChild(std::move(view), std::move(node),
-                            to_position.index);
+  TabCollectionNode* pinned_node = GetChildNodeOfType(Type::PINNED);
+  CHECK(pinned_node);
+
+  const bool src_pinned =
+      pinned_node->GetNodeForHandle(src_parent_node->GetHandle()) != nullptr;
+  const bool dst_pinned =
+      pinned_node->GetNodeForHandle(dst_parent_node->GetHandle()) != nullptr;
+
+  bool pin_state_changed = src_pinned != dst_pinned;
+
+  if (pin_state_changed) {
+    // Pin state change is treated as a remove and add instead of an attach and
+    // detach since we have separate concurrent animations in each container.
+    src_parent_node->RemoveChild(GetPassKey(), moved_node_handle,
+                                 /*perform_deinitialization=*/false);
+    dst_parent_node->AddNewChild(
+        GetPassKey(), GetNodeFromHandle(moved_node_handle), to_position.index,
+        /*perform_initialization=*/true);
+  } else if (src_parent_node == dst_parent_node) {
+    // Moves within the same container treated as a reorder of views e.g. within
+    // unpinned or group containers.
+    TabCollectionNode* parent_node =
+        GetNodeForHandle(to_position.parent_handle);
+    parent_node->MoveChild(GetPassKey(), moved_node_handle, to_position.index);
+  } else {
+    // Moves across different containers typically within the unpinned container
+    // e.g. unpinned to group, unpinned to split etc.
+    TabCollectionNode::MoveChild(GetPassKey(), moved_node_handle,
+                                 to_position.index, src_parent_node,
+                                 dst_parent_node);
+  }
 }
 
 void RootTabCollectionNode::OnTabStripModelChanged(
@@ -93,21 +140,21 @@ void RootTabCollectionNode::OnTabStripModelChanged(
     return;
   }
 
-  std::set<TabCollectionNode*> selection_changes;
+  std::set<TabCollectionNode*> changed_tabs;
 
   if (selection.active_tab_changed()) {
     if (selection.old_tab) {
       TabCollectionNode* old_tab_node =
           GetNodeForHandle(selection.old_tab->GetHandle());
       if (old_tab_node) {
-        selection_changes.insert(old_tab_node);
+        changed_tabs.insert(old_tab_node);
       }
     }
     if (selection.new_tab) {
       TabCollectionNode* new_tab_node =
           GetNodeForHandle(selection.new_tab->GetHandle());
       if (new_tab_node) {
-        selection_changes.insert(new_tab_node);
+        changed_tabs.insert(new_tab_node);
       }
     }
   }
@@ -127,13 +174,22 @@ void RootTabCollectionNode::OnTabStripModelChanged(
          base::STLSetUnion<SelectionHandles>(old_selections, new_selections)) {
       TabCollectionNode* tab_node = GetNodeForHandle(tab_handle);
       if (tab_node) {
-        selection_changes.insert(tab_node);
+        changed_tabs.insert(tab_node);
       }
     }
     selected_tabs_ = selected_tabs;
   }
 
-  for (auto* tab_node : selection_changes) {
+  if (change.type() == TabStripModelChange::kReplaced) {
+    // Discarding a tab causes a replace change notification to be sent. Add any
+    // replaced tab to the list of tabs to update.
+    auto* replace = change.GetReplace();
+    TabCollectionNode* tab_node = GetNodeForHandle(
+        tab_strip_model->GetTabAtIndex(replace->index)->GetHandle());
+    changed_tabs.insert(tab_node);
+  }
+
+  for (auto* tab_node : changed_tabs) {
     tab_node->NotifyDataChanged();
   }
 }
@@ -143,46 +199,37 @@ void RootTabCollectionNode::OnTabGroupChanged(const TabGroupChange& change) {
     return;
   }
 
-  if (change.type != TabGroupChange::kVisualsChanged) {
-    return;
-  }
-
   TabCollectionNode* group_node =
       GetNodeForHandle(change.model->group_model()
                            ->GetTabGroup(change.group)
                            ->GetCollectionHandle());
-  if (group_node) {
+  if (!group_node) {
+    return;
+  }
+
+  if (change.type == TabGroupChange::kVisualsChanged) {
     group_node->NotifyDataChanged();
+  } else if (change.type == TabGroupChange::kEditorOpened) {
+    group_node->GetController()->ShowGroupEditorBubble(group_node);
   }
 }
 
-void RootTabCollectionNode::TabChangedAt(content::WebContents* contents,
-                                         int model_index,
-                                         TabChangeType change_type) {
+void RootTabCollectionNode::OnTabChangedAt(tabs::TabInterface* tab,
+                                           int model_index,
+                                           TabChangeType change_type) {
   if (tab_strip_model_->closing_all()) {
     return;
   }
 
-  UpdateTabData(contents, model_index);
+  UpdateTabData(tab);
 }
 
-void RootTabCollectionNode::TabPinnedStateChanged(
-    TabStripModel* tab_strip_model,
-    content::WebContents* contents,
-    int model_index) {
-  CHECK_EQ(tab_strip_model, tab_strip_model_);
-  UpdateTabData(contents, model_index);
+void RootTabCollectionNode::OnTabBlockedStateChanged(tabs::TabInterface* tab,
+                                                     int model_index) {
+  UpdateTabData(tab);
 }
 
-void RootTabCollectionNode::TabBlockedStateChanged(
-    content::WebContents* contents,
-    int model_index) {
-  UpdateTabData(contents, model_index);
-}
-
-void RootTabCollectionNode::UpdateTabData(content::WebContents* contents,
-                                          int model_index) {
-  tabs::TabInterface* tab = tabs::TabInterface::GetFromContents(contents);
+void RootTabCollectionNode::UpdateTabData(tabs::TabInterface* tab) {
   TabCollectionNode* tab_node = GetNodeForHandle(tab->GetHandle());
   if (tab_node) {
     tab_node->NotifyDataChanged();

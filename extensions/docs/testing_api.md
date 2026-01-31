@@ -105,8 +105,23 @@ chrome.test.runTests([
 ]);
 ```
 
+### Checks
+
+#### checkDeepEq(expected, actual)
+Checks if `expected` is equal to `actual`. If `expected` is an object, this will
+perform a deep-equals check (i.e., verifying that two objects are equivalent by
+value, rather than have the same address) and return `true`. Otherwise returns
+`false`.
+
+**Important Notes:**
+- Primitive wrappers (`Number`, `Boolean`, `String`): are value compared to
+  their internal representation, even if `NaN`.
+- `Date`s: compared to their `Date.getTime()` representation, even if `NaN`.
+- `undefined` is implicitly converted to `null` so it is not currently supported
+for value checking. This means that `checkDeepEq(undefined, null) === true`.
+
 ### Assertions
-The ``chrome.test API`` provides a number of basic assertion methods.
+The `chrome.test API` provides a number of basic assertion methods.
 
 #### assertTrue(condition, message?)
 Asserts that the given condition is true, printing out the optional error
@@ -116,12 +131,11 @@ message if it is not.
 Asserts that the given condition is false, printing out the optional error
 message if it is not.
 
-#### assertEq(expected, actual, message?)
-Asserts that the provided value matches the expected value.  If `expected` is
-an object, this will perform a deep-equals check (i.e., verifying that two
-objects are logically equivalent, rather than have the same address).  If the
-expected value does not match the actual value, this will print out the
-expected and actual values (through `JSON.stringify()` for objects).
+#### assertEq/assertNe(expected, actual, message?)
+Asserts that the provided value matches (or doesn't match) the expected value
+via `checkDeepEq(expected, actual)`. If the expected value does not match (or
+unexpectedly matches) the actual value, this will print out the expected and/or
+actual values.
 
 #### assertNoLastError()
 Asserts that `chrome.runtime.lastError` is undefined, printing out the error

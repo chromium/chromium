@@ -21,9 +21,9 @@ TEST(DnsOverHttpsConfigTest, SingleValue) {
   DnsOverHttpsConfig config({kServerConfig1});
   EXPECT_THAT(config.servers(), testing::ElementsAre(kServerConfig1));
 
-  base::Value::List expected_servers;
+  base::ListValue expected_servers;
   expected_servers.Append(kServerConfig1.ToValue());
-  base::Value::Dict expected_value;
+  base::DictValue expected_value;
   expected_value.Set("servers", std::move(expected_servers));
   EXPECT_EQ(expected_value, config.ToValue());
 
@@ -39,10 +39,10 @@ TEST(DnsOverHttpsConfigTest, MultiValue) {
                 kServerConfig2.server_template(),
             config.ToString());
 
-  base::Value::List expected_servers;
+  base::ListValue expected_servers;
   expected_servers.Append(kServerConfig1.ToValue());
   expected_servers.Append(kServerConfig2.ToValue());
-  base::Value::Dict expected_value;
+  base::DictValue expected_value;
   expected_value.Set("servers", std::move(expected_servers));
   EXPECT_EQ(expected_value, config.ToValue());
 

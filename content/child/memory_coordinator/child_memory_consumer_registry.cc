@@ -4,11 +4,11 @@
 
 #include "content/child/memory_coordinator/child_memory_consumer_registry.h"
 
+#include <algorithm>
 #include <utility>
 
 #include "base/check.h"
 #include "base/check_op.h"
-#include "base/containers/contains.h"
 
 namespace content {
 
@@ -36,7 +36,7 @@ void ChildMemoryConsumerRegistry::ConsumerGroup::OnUpdateMemoryLimit() {
 
 void ChildMemoryConsumerRegistry::ConsumerGroup::AddMemoryConsumer(
     base::RegisteredMemoryConsumer consumer) {
-  CHECK(!base::Contains(memory_consumers_, consumer));
+  CHECK(!std::ranges::contains(memory_consumers_, consumer));
   memory_consumers_.push_back(consumer);
 }
 

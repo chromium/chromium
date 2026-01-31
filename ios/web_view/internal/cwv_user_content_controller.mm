@@ -16,8 +16,8 @@
 
 namespace {
 
-// Converts base::Value::Dict to NSDictionary.
-NSDictionary* NSDictionaryFromDictValue(const base::Value::Dict& value) {
+// Converts base::DictValue to NSDictionary.
+NSDictionary* NSDictionaryFromDictValue(const base::DictValue& value) {
   std::string json;
   const bool success = base::JSONWriter::Write(value, &json);
   DCHECK(success) << "Failed to convert base::Value to JSON";
@@ -106,10 +106,10 @@ NSDictionary* NSDictionaryFromDictValue(const base::Value::Dict& value) {
   std::string command = base::SysNSStringToUTF8(nsCommand);
   WebViewMessageHandlerJavaScriptFeature::FromBrowserState(
       _configuration.browserState)
-      ->RegisterHandler(
-          command, base::BindRepeating(^(const base::Value::Dict& payload) {
-            handler(NSDictionaryFromDictValue(payload));
-          }));
+      ->RegisterHandler(command,
+                        base::BindRepeating(^(const base::DictValue& payload) {
+                          handler(NSDictionaryFromDictValue(payload));
+                        }));
 }
 
 - (void)removeMessageHandlerForCommand:(NSString*)nsCommand {

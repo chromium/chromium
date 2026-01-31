@@ -28,6 +28,9 @@
   <message name="IDS_IOS_WHATS_NEW_LENSSEARCHWHATYOUSEE_INSTRUCTIONS_STEP_2" desc="Text of the row indicating step 2 of LensSearchWhatYouSee in What's New. [iOS only]">
           In the address bar, tap on the Google Lens camera icon
   </message>
+  <message name="IDS_IOS_WHATS_NEW_LENSSEARCHWHATYOUSEE_INSTRUCTIONS_STEP_2_GEMINI_ENABLED" desc="Text of the row indicating step 2 of LensSearchWhatYouSee in What's New when Gemini is enabled. [iOS only]">
+          In the address bar, tap the Page Tools icon on the left, then tap "Search screen"
+  </message>
   <message name="IDS_IOS_WHATS_NEW_LENSSEARCHWHATYOUSEE_INSTRUCTIONS_STEP_3" desc="Text of the row indicating step 3 of LensSearchWhatYouSee in What's New. [iOS only]">
           Draw, highlight or tap anything on your screen to search
   </message>

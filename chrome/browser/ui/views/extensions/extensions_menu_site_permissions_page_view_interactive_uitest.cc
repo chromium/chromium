@@ -5,10 +5,10 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/views/extensions/extensions_menu_coordinator.h"
+#include "chrome/browser/ui/views/extensions/extensions_menu_delegate_desktop.h"
 #include "chrome/browser/ui/views/extensions/extensions_menu_site_permissions_page_view.h"
-#include "chrome/browser/ui/views/extensions/extensions_menu_view_platform_delegate_views.h"
 #include "chrome/browser/ui/views/extensions/extensions_toolbar_button.h"
-#include "chrome/browser/ui/views/extensions/extensions_toolbar_container.h"
+#include "chrome/browser/ui/views/extensions/extensions_toolbar_desktop.h"
 #include "chrome/browser/ui/views/extensions/extensions_toolbar_interactive_uitest.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "content/public/test/browser_test.h"
@@ -61,8 +61,7 @@ ExtensionsMenuSitePermissionsPageViewInteractiveUITest::
 
 void ExtensionsMenuSitePermissionsPageViewInteractiveUITest::
     ShowSitePermissionsPage(extensions::ExtensionId extension_id) {
-  menu_coordinator()->Show(extensions_button(),
-                           GetExtensionsToolbarContainer());
+  menu_coordinator()->Show(extensions_button(), GetExtensionsToolbarDesktop());
   menu_coordinator()->GetDelegateForTesting()->OpenSitePermissionsPage(
       extension_id);
 }
@@ -81,7 +80,7 @@ bool ExtensionsMenuSitePermissionsPageViewInteractiveUITest::
 
 ExtensionsMenuMainPageView*
 ExtensionsMenuSitePermissionsPageViewInteractiveUITest::main_page() {
-  ExtensionsMenuViewPlatformDelegateViews* menu_delegate =
+  ExtensionsMenuDelegateDesktop* menu_delegate =
       menu_coordinator()->GetDelegateForTesting();
   DCHECK(menu_delegate);
   return menu_delegate->GetMainPageViewForTesting();
@@ -90,7 +89,7 @@ ExtensionsMenuSitePermissionsPageViewInteractiveUITest::main_page() {
 ExtensionsMenuSitePermissionsPageView*
 ExtensionsMenuSitePermissionsPageViewInteractiveUITest::
     site_permissions_page() {
-  ExtensionsMenuViewPlatformDelegateViews* menu_delegate =
+  ExtensionsMenuDelegateDesktop* menu_delegate =
       menu_coordinator()->GetDelegateForTesting();
   DCHECK(menu_delegate);
   return menu_delegate->GetSitePermissionsPageForTesting();

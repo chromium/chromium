@@ -47,13 +47,6 @@ enum class CookieCacheLookupResult {
 constexpr char kFirstCookieRequestHistogram[] =
     "Blink.Experimental.Cookies.FirstCookieRequest";
 
-// TODO(crbug.com/1276520): Remove after truncating characters are fully
-// deprecated.
-bool ContainsTruncatingChar(UChar c) {
-  // equivalent to '\x00', '\x0D', or '\x0A'
-  return c == '\0' || c == '\r' || c == '\n';
-}
-
 }  // namespace
 
 // Controls whether we apply an artificial delay to priming the CookieJar access
@@ -138,12 +131,6 @@ void CookieJar::SetCookie(const String& value) {
 
   if (is_first_operation_) {
     LogFirstCookieRequest(FirstCookieRequest::kFirstOperationWasSet);
-  }
-
-  // TODO(crbug.com/40808935): Remove after truncating characters are fully
-  // deprecated
-  if (value.Find(ContainsTruncatingChar) != kNotFound) {
-    document_->CountDeprecation(WebFeature::kCookieWithTruncatingChar);
   }
 }
 

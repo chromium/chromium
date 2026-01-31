@@ -15,12 +15,12 @@ namespace ash::rollback_network_config {
 
 // Returns the value of the given key. This will crash if string value can not
 // be found.
-std::string GetStringValue(const base::Value::Dict& network,
+std::string GetStringValue(const base::DictValue& network,
                            const std::string& key);
 
 // Returns the value of the given key. This will crash if bool value can not be
 // found.
-bool GetBoolValue(const base::Value::Dict& network, const std::string& key);
+bool GetBoolValue(const base::DictValue& network, const std::string& key);
 
 // Managed ONC
 
@@ -36,69 +36,69 @@ void ManagedOncCollapseToUiData(base::Value* network);
 
 // Sets the PSK password of a managed onc dictionary as device or policy
 // configured, depending on the source of the network.
-void ManagedOncWiFiSetPskPassword(base::Value::Dict* network,
+void ManagedOncWiFiSetPskPassword(base::DictValue* network,
                                   const std::string& password);
 // Sets the EAP password of a managed onc dictionary as device or policy
 // configured, depending on the source of the network.
-void ManagedOncSetEapPassword(base::Value::Dict* network,
+void ManagedOncSetEapPassword(base::DictValue* network,
                               const std::string& password);
 
 // ONC
 
-bool OncIsWiFi(const base::Value::Dict& network);
-bool OncIsEthernet(const base::Value::Dict& network);
+bool OncIsWiFi(const base::DictValue& network);
+bool OncIsEthernet(const base::DictValue& network);
 
-bool OncIsSourceDevicePolicy(const base::Value::Dict& network);
-bool OncIsSourceDevice(const base::Value::Dict& network);
+bool OncIsSourceDevicePolicy(const base::DictValue& network);
+bool OncIsSourceDevice(const base::DictValue& network);
 
-bool OncHasNoSecurity(const base::Value::Dict& network);
+bool OncHasNoSecurity(const base::DictValue& network);
 
 // Returns true if the given network is of a type that would require an EAP
 // entry.
-bool OncIsEap(const base::Value::Dict& network);
+bool OncIsEap(const base::DictValue& network);
 
 // Returns true if the given dictionary has an EAP entry.
-bool OncHasEapConfiguration(const base::Value::Dict& network);
+bool OncHasEapConfiguration(const base::DictValue& network);
 
 // Returns true if the given network is an EAP network and is of a type that
 // does not require a client certificate.
-bool OncIsEapWithoutClientCertificate(const base::Value::Dict& network);
+bool OncIsEapWithoutClientCertificate(const base::DictValue& network);
 
 // ONC>EAP
 // The following functions only succeed if called on a dictionary containing
 // an EAP entry within a wifi or ethernet entry.
 
-std::string OncGetEapIdentity(const base::Value::Dict& network);
-std::string OncGetEapInner(const base::Value::Dict& network);
-std::string OncGetEapOuter(const base::Value::Dict& network);
-bool OncGetEapSaveCredentials(const base::Value::Dict& network);
-std::string OncGetEapPassword(const base::Value::Dict& network);
-std::string OncGetEapClientCertType(const base::Value::Dict& network);
-std::string OncGetEapClientCertPKCS11Id(const base::Value::Dict& network);
+std::string OncGetEapIdentity(const base::DictValue& network);
+std::string OncGetEapInner(const base::DictValue& network);
+std::string OncGetEapOuter(const base::DictValue& network);
+bool OncGetEapSaveCredentials(const base::DictValue& network);
+std::string OncGetEapPassword(const base::DictValue& network);
+std::string OncGetEapClientCertType(const base::DictValue& network);
+std::string OncGetEapClientCertPKCS11Id(const base::DictValue& network);
 
 // Returns true if the given EAP wifi or ethernet is of a type that may require
 // a client certificate.
-bool OncEapRequiresClientCertificate(const base::Value::Dict& network);
+bool OncEapRequiresClientCertificate(const base::DictValue& network);
 
-void OncSetEapPassword(base::Value::Dict* network, const std::string& password);
+void OncSetEapPassword(base::DictValue* network, const std::string& password);
 
 // ONC>WiFi
 // The following functions only succeed if called on a dictionary containing
 // a wifi entry.
 
-std::string OncWiFiGetSecurity(const base::Value::Dict& network);
-std::string OncWiFiGetPassword(const base::Value::Dict& network);
+std::string OncWiFiGetSecurity(const base::DictValue& network);
+std::string OncWiFiGetPassword(const base::DictValue& network);
 
-bool OncWiFiIsPsk(const base::Value::Dict& network);
+bool OncWiFiIsPsk(const base::DictValue& network);
 
-void OncWiFiSetPskPassword(base::Value::Dict* network,
+void OncWiFiSetPskPassword(base::DictValue* network,
                            const std::string& password);
 
 // ONC>Ethernet
 // The following functions only succeed if called on a dictionary containing
 // an ethernet entry.
 
-std::string OncEthernetGetAuthentication(const base::Value::Dict& network);
+std::string OncEthernetGetAuthentication(const base::DictValue& network);
 
 }  // namespace ash::rollback_network_config
 

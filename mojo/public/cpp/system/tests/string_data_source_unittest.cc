@@ -64,12 +64,14 @@ class DataPipeReader {
         }
       } while (read_result == MOJO_RESULT_OK);
 
-      if (read_result == MOJO_RESULT_SHOULD_WAIT)
+      if (read_result == MOJO_RESULT_SHOULD_WAIT) {
         return;
+      }
     }
 
-    if (result != MOJO_RESULT_CANCELLED)
+    if (result != MOJO_RESULT_CANCELLED) {
       watcher_.Cancel();
+    }
 
     std::move(on_read_done_).Run();
   }
@@ -126,9 +128,10 @@ class StringDataSourceTest : public testing::Test {
             [](std::unique_ptr<DataPipeProducer> producer,
                std::list<std::string_view> strings,
                StringDataSource::AsyncWritingMode mode, MojoResult result) {
-              if (!strings.empty())
+              if (!strings.empty()) {
                 WriteStringsThenCloseProducer(std::move(producer),
                                               std::move(strings), mode);
+              }
             },
             std::move(producer), std::move(strings), mode));
   }

@@ -7,16 +7,25 @@
 
 #include <memory>
 
+#include "base/component_export.h"
+#include "crypto/process_bound_string.h"
 #include "net/disk_cache/cache_file.h"
+#include "services/network/enterprise/encryption/chunked_encryptor.h"
 
-namespace network::enterprise {
+namespace network::enterprise_encryption {
 
 // A decorator implementation of `CacheFile` that adds an encryption layer on
 // top of another `CacheFile` instance.
 // TODO(crbug.com/460509865): Currently a pass-through. Implement actual
 // encryption/decryption logic.
-class EncryptedCacheFile : public disk_cache::CacheFile {
+class COMPONENT_EXPORT(NETWORK_SERVICE) EncryptedCacheFile
+    : public disk_cache::CacheFile {
  public:
+  EncryptedCacheFile(std::unique_ptr<disk_cache::CacheFile> file,
+                     base::span<const uint8_t, kKeySize> key);
+
+  // TODO(crbug.com/474061119): NOT FOR PRODUCTION USE. Remove once key
+  // injection is implemented.
   explicit EncryptedCacheFile(std::unique_ptr<disk_cache::CacheFile> file);
   ~EncryptedCacheFile() override;
 
@@ -35,9 +44,37 @@ class EncryptedCacheFile : public disk_cache::CacheFile {
   bool WriteAndCheck(int64_t offset, base::span<const uint8_t> data) override;
 
  private:
+  // Checks lazily that the file is initialized (header read/written,
+  // encryptor created).
+  bool EnsureInitialized();
+
+  // Helper to write data into a specific chunk.
+  // Handles partial updates (Read-Modify-Write) and new chunk creation.
+  // |is_new_chunk|: For optimization purposes. If true, assumes the chunk is
+  // currently empty/non-existent. |is_last_chunk|: Encrypts the chunk with the
+  // "last chunk" flag in the nonce.
+  bool WriteChunk(uint32_t chunk_index,
+                  size_t offset_in_chunk,
+                  base::span<const uint8_t> data_to_write,
+                  bool is_new_chunk,
+                  bool is_last_chunk);
+
+  // Reads and decrypts the specified chunk.
+  base::expected<std::vector<uint8_t>, EncryptionError> ReadAndDecryptChunk(
+      uint32_t chunk_index);
+
+  // Handles the transition of the previous last chunk to an intermediate chunk.
+  // When extending the file, the old "last chunk" must be padded to the full
+  // chunk size and re-encrypted with `is_last_chunk=false` to allow subsequent
+  // chunks to be valid.
+  bool EnsurePreviousChunkNotLast(int64_t new_logical_length);
+
   std::unique_ptr<disk_cache::CacheFile> file_;
+  crypto::ProcessBoundString key_;
+  std::unique_ptr<ChunkedEncryptor> encryptor_;
+  bool initialized_ = false;
 };
 
-}  // namespace network::enterprise
+}  // namespace network::enterprise_encryption
 
 #endif  // SERVICES_NETWORK_ENTERPRISE_ENCRYPTION_ENCRYPTED_CACHE_FILE_H_

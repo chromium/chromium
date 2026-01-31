@@ -55,10 +55,10 @@ Year SetUpNextYear() {
 
 AutofillSaveCardUiInfo AutofillSaveCardUiInfoForUploadSaveForTest(
     payments::PaymentsAutofillClient::SaveCreditCardOptions options,
-    bool is_gpay_branded = false) {
+    bool is_chrome_branded = false) {
   return AutofillSaveCardUiInfo::CreateForUploadSave(
       options, test::GetMaskedServerCard(), LegalMessageLines(), AccountInfo(),
-      is_gpay_branded);
+      is_chrome_branded);
 }
 
 // Verify that the AutofillSaveCardUiInfo attributes for local save that are
@@ -90,7 +90,7 @@ TEST(AutofillSaveCardUiInfoTestForLocalSave, VerifyCommonAttributes) {
   EXPECT_TRUE(ui_info.displayed_target_account_avatar.IsEmpty());
   EXPECT_EQ(ui_info.cancel_text, l10n_util::GetStringUTF16(
                                      IDS_AUTOFILL_NO_THANKS_MOBILE_LOCAL_SAVE));
-  EXPECT_EQ(ui_info.is_google_pay_branding_enabled, false);
+  EXPECT_EQ(ui_info.is_chrome_branding_enabled, false);
 }
 
 #if BUILDFLAG(IS_IOS)
@@ -99,8 +99,6 @@ TEST(AutofillSaveCardUiInfoTestForLocalSave, VerifyCommonAttributes) {
 
 // Tests confirm text for local save card bottomsheet.
 TEST(AutofillSaveCardUiInfoTestForLocalSave, VerifyConfirmTextForBottomSheet) {
-  base::test::ScopedFeatureList features(
-      features::kAutofillLocalSaveCardBottomSheet);
   auto ui_info = AutofillSaveCardUiInfo::CreateForLocalSave(
       autofill::payments::PaymentsAutofillClient::SaveCreditCardOptions()
           .with_card_save_type(CardSaveType::kCardSaveOnly),
@@ -113,8 +111,6 @@ TEST(AutofillSaveCardUiInfoTestForLocalSave, VerifyConfirmTextForBottomSheet) {
 // from the user.
 TEST(AutofillSaveCardUiInfoTestForLocalSave,
      VerifyConfirmTextForBottomSheetWhenRequestingNameFromUser) {
-  base::test::ScopedFeatureList features(
-      features::kAutofillLocalSaveCardBottomSheet);
   auto ui_info = AutofillSaveCardUiInfo::CreateForLocalSave(
       autofill::payments::PaymentsAutofillClient::SaveCreditCardOptions()
           .with_card_save_type(CardSaveType::kCardSaveOnly)
@@ -128,8 +124,6 @@ TEST(AutofillSaveCardUiInfoTestForLocalSave,
 // requested from the user.
 TEST(AutofillSaveCardUiInfoTestForLocalSave,
      VerifyConfirmTextForBottomSheetWhenRequestingExpiryDateFromUser) {
-  base::test::ScopedFeatureList features(
-      features::kAutofillLocalSaveCardBottomSheet);
   auto ui_info = AutofillSaveCardUiInfo::CreateForLocalSave(
       autofill::payments::PaymentsAutofillClient::SaveCreditCardOptions()
           .with_card_save_type(CardSaveType::kCardSaveOnly)
@@ -143,8 +137,6 @@ TEST(AutofillSaveCardUiInfoTestForLocalSave,
 // name is requested from the user.
 TEST(AutofillSaveCardUiInfoTestForLocalSave,
      VerifyConfirmTextForBottomSheetWhenRequestingExpiryDateAndNameFromUser) {
-  base::test::ScopedFeatureList features(
-      features::kAutofillLocalSaveCardBottomSheet);
   auto ui_info = AutofillSaveCardUiInfo::CreateForLocalSave(
       autofill::payments::PaymentsAutofillClient::SaveCreditCardOptions()
           .with_card_save_type(CardSaveType::kCardSaveOnly)
@@ -182,9 +174,7 @@ TEST(AutofillSaveCardUiInfoTestForLocalSave,
 TEST(AutofillSaveCardUiInfoTestForLocalSave,
      VerifyUiForCardSaveOnlyWithOldTitleOnBottomSheet) {
   base::test::ScopedFeatureList features;
-  features.InitWithFeatures(
-      /*enabled_features=*/{features::kAutofillSaveCardBottomSheet},
-      /*disabled_features=*/{features::kAutofillEnableCvcStorageAndFilling});
+  features.InitAndDisableFeature(features::kAutofillEnableCvcStorageAndFilling);
 
   payments::PaymentsAutofillClient::SaveCreditCardOptions options;
   options.card_save_type = CardSaveType::kCardSaveOnly;
@@ -310,14 +300,14 @@ TEST(AutofillSaveCardUiInfoTestForLocalSave,
 #endif  // #BUILDFLAG(IS_ANDROID)
 
 // Test class for testing the upload save card prompts. Parameterized tests are
-// run with GPay branding enabled/disabled.
+// run with Google Chrome branding enabled/disabled.
 class AutofillSaveCardUiInfoTestForUploadSave
     : public testing::Test,
       public testing::WithParamInterface<bool> {
  public:
   ~AutofillSaveCardUiInfoTestForUploadSave() override = default;
 
-  bool is_gpay_branded() const { return GetParam(); }
+  bool is_chrome_branded() const { return GetParam(); }
 
  private:
   base::test::ScopedFeatureList features_;
@@ -344,7 +334,7 @@ TEST_P(AutofillSaveCardUiInfoTestForUploadSave, VerifyCommonAttributes) {
 
   auto ui_info = AutofillSaveCardUiInfo::CreateForUploadSave(
       /*options=*/{}, card, legal_message_lines, account_info,
-      /*is_google_pay_branding_enabled=*/is_gpay_branded());
+      /*is_chrome_branding_enabled=*/is_chrome_branded());
   EXPECT_EQ(ui_info.issuer_icon_id, IDR_AUTOFILL_METADATA_CC_VISA_OLD);
   EXPECT_THAT(base::UTF16ToUTF8(ui_info.card_label),
               testing::AllOf(testing::HasSubstr("My Card"),
@@ -366,40 +356,41 @@ TEST_P(AutofillSaveCardUiInfoTestForUploadSave, VerifyCommonAttributes) {
   EXPECT_EQ(
       ui_info.cancel_text,
       l10n_util::GetStringUTF16(IDS_AUTOFILL_NO_THANKS_MOBILE_UPLOAD_SAVE));
-  EXPECT_EQ(ui_info.is_google_pay_branding_enabled, is_gpay_branded());
+  EXPECT_EQ(ui_info.is_chrome_branding_enabled, is_chrome_branded());
 }
 
 #if BUILDFLAG(IS_IOS)
 // Verify that AutofillSaveCardUiInfo attributes are correctly set for the
-// upload-card-only-save infobar.
+// upload-card-only-save bottomsheet.
 TEST_P(AutofillSaveCardUiInfoTestForUploadSave,
-       VerifyAttributesForCardSaveOnlyInfobar) {
+       VerifyAttributesForCardSaveOnlyBottomsheet) {
   base::test::ScopedFeatureList features;
   features.InitWithFeatures(
-      /*enabled_features=*/{},
-      /*disabled_features=*/{features::kAutofillEnableCvcStorageAndFilling,
-                             features::kAutofillSaveCardBottomSheet});
+      /*enabled_features=*/{features::kAutofillEnableWalletBranding},
+      /*disabled_features=*/{features::kAutofillEnableCvcStorageAndFilling});
   auto ui_info = AutofillSaveCardUiInfoForUploadSaveForTest(
       /*options=*/{.card_save_type = CardSaveType::kCardSaveOnly},
-      is_gpay_branded());
+      is_chrome_branded());
 
-  EXPECT_EQ(ui_info.logo_icon_id, is_gpay_branded() ? IDR_AUTOFILL_GOOGLE_PAY
-                                                    : IDR_INFOBAR_AUTOFILL_CC);
+  EXPECT_EQ(ui_info.logo_icon_id, is_chrome_branded()
+                                      ? IDR_AUTOFILL_GOOGLE_PAY
+                                      : IDR_INFOBAR_AUTOFILL_CC);
   EXPECT_EQ(ui_info.logo_icon_description,
-            is_gpay_branded()
+            is_chrome_branded()
                 ? l10n_util::GetStringUTF16(
                       IDS_AUTOFILL_GOOGLE_PAY_LOGO_ACCESSIBLE_NAME)
                 : u"");
+  EXPECT_EQ(ui_info.title_text,
+            l10n_util::GetStringUTF16(
+                is_chrome_branded()
+                    ? IDS_AUTOFILL_SAVE_CARD_PROMPT_TITLE_TO_CLOUD_SECURITY
+                    : IDS_AUTOFILL_SAVE_CARD_PROMPT_TITLE_TO_CLOUD));
   EXPECT_EQ(
-      ui_info.title_text,
-      l10n_util::GetStringUTF16(
-          is_gpay_branded() ? IDS_AUTOFILL_SAVE_CARD_PROMPT_TITLE_TO_CLOUD_V3
-                            : IDS_AUTOFILL_SAVE_CARD_PROMPT_TITLE_TO_CLOUD));
-  EXPECT_EQ(ui_info.description_text,
-            is_gpay_branded()
-                ? l10n_util::GetStringUTF16(
-                      IDS_AUTOFILL_SAVE_CARD_PROMPT_UPLOAD_EXPLANATION_V3)
-                : u"");
+      ui_info.description_text,
+      is_chrome_branded()
+          ? l10n_util::GetStringUTF16(
+                IDS_AUTOFILL_SAVE_CARD_PROMPT_UPLOAD_TO_WALLET_EXPLANATION_SECURITY)
+          : u"");
   EXPECT_EQ(ui_info.confirm_text,
             l10n_util::GetStringUTF16(IDS_AUTOFILL_SAVE_CARD_INFOBAR_ACCEPT));
 }
@@ -407,29 +398,31 @@ TEST_P(AutofillSaveCardUiInfoTestForUploadSave,
 // Verify that AutofillSaveCardUiInfo attributes are correctly set for the
 // upload-card-only-save bottomsheet.
 TEST_P(AutofillSaveCardUiInfoTestForUploadSave,
-       VerifyAttributesForCardSaveOnlyBottomsheet) {
+       VerifyAttributesForCardSaveOnlyBottomsheet_WalletBrandingOff) {
   base::test::ScopedFeatureList features;
   features.InitWithFeatures(
-      /*enabled_features=*/{features::kAutofillSaveCardBottomSheet},
-      /*disabled_features=*/{features::kAutofillEnableCvcStorageAndFilling});
+      /*enabled_features=*/{},
+      /*disabled_features=*/{features::kAutofillEnableCvcStorageAndFilling,
+                             features::kAutofillEnableWalletBranding});
   auto ui_info = AutofillSaveCardUiInfoForUploadSaveForTest(
       /*options=*/{.card_save_type = CardSaveType::kCardSaveOnly},
-      is_gpay_branded());
+      is_chrome_branded());
 
-  EXPECT_EQ(ui_info.logo_icon_id, is_gpay_branded() ? IDR_AUTOFILL_GOOGLE_PAY
-                                                    : IDR_INFOBAR_AUTOFILL_CC);
+  EXPECT_EQ(ui_info.logo_icon_id, is_chrome_branded()
+                                      ? IDR_AUTOFILL_GOOGLE_PAY
+                                      : IDR_INFOBAR_AUTOFILL_CC);
   EXPECT_EQ(ui_info.logo_icon_description,
-            is_gpay_branded()
+            is_chrome_branded()
                 ? l10n_util::GetStringUTF16(
                       IDS_AUTOFILL_GOOGLE_PAY_LOGO_ACCESSIBLE_NAME)
                 : u"");
   EXPECT_EQ(ui_info.title_text,
             l10n_util::GetStringUTF16(
-                is_gpay_branded()
+                is_chrome_branded()
                     ? IDS_AUTOFILL_SAVE_CARD_PROMPT_TITLE_TO_CLOUD_SECURITY
                     : IDS_AUTOFILL_SAVE_CARD_PROMPT_TITLE_TO_CLOUD));
   EXPECT_EQ(ui_info.description_text,
-            is_gpay_branded()
+            is_chrome_branded()
                 ? l10n_util::GetStringUTF16(
                       IDS_AUTOFILL_SAVE_CARD_PROMPT_UPLOAD_EXPLANATION_SECURITY)
                 : u"");
@@ -440,28 +433,31 @@ TEST_P(AutofillSaveCardUiInfoTestForUploadSave,
 // Verify that AutofillSaveCardUiInfo attributes are correctly set for the
 // upload-card-save-with-CVC bottom sheet.
 TEST_P(AutofillSaveCardUiInfoTestForUploadSave,
-       VerifyAttributesForCardSaveOnlyBottomSheet_FlagOff) {
+       VerifyAttributesForCardSaveWithCvcBottomSheet) {
   base::test::ScopedFeatureList features;
   features.InitWithFeatures(
-      /*enabled_features=*/{features::kAutofillEnableCvcStorageAndFilling},
-      /*disabled_features=*/{features::kAutofillSaveCardBottomSheet});
+      /*enabled_features=*/{features::kAutofillEnableCvcStorageAndFilling,
+                            features::kAutofillEnableWalletBranding},
+      /*disabled_features=*/{});
 
   auto ui_info = AutofillSaveCardUiInfoForUploadSaveForTest(
-      /*options=*/{.card_save_type = CardSaveType::kCardSaveOnly},
-      is_gpay_branded());
+      /*options=*/{.card_save_type = CardSaveType::kCardSaveWithCvc},
+      is_chrome_branded());
 
-  EXPECT_EQ(ui_info.logo_icon_id, is_gpay_branded() ? IDR_AUTOFILL_GOOGLE_PAY
-                                                    : IDR_INFOBAR_AUTOFILL_CC);
+  EXPECT_EQ(ui_info.logo_icon_id, is_chrome_branded()
+                                      ? IDR_AUTOFILL_GOOGLE_PAY
+                                      : IDR_INFOBAR_AUTOFILL_CC);
+  EXPECT_EQ(ui_info.title_text,
+            l10n_util::GetStringUTF16(
+                is_chrome_branded()
+                    ? IDS_AUTOFILL_SAVE_CARD_PROMPT_TITLE_TO_CLOUD_SECURITY
+                    : IDS_AUTOFILL_SAVE_CARD_PROMPT_TITLE_TO_CLOUD));
   EXPECT_EQ(
-      ui_info.title_text,
-      l10n_util::GetStringUTF16(
-          is_gpay_branded() ? IDS_AUTOFILL_SAVE_CARD_PROMPT_TITLE_TO_CLOUD_V3
-                            : IDS_AUTOFILL_SAVE_CARD_PROMPT_TITLE_TO_CLOUD));
-  EXPECT_EQ(ui_info.description_text,
-            is_gpay_branded()
-                ? l10n_util::GetStringUTF16(
-                      IDS_AUTOFILL_SAVE_CARD_PROMPT_UPLOAD_EXPLANATION_V3)
-                : u"");
+      ui_info.description_text,
+      is_chrome_branded()
+          ? l10n_util::GetStringUTF16(
+                IDS_AUTOFILL_SAVE_CARD_PROMPT_UPLOAD_TO_WALLET_EXPLANATION_SECURITY)
+          : u"");
   EXPECT_EQ(ui_info.confirm_text,
             l10n_util::GetStringUTF16(IDS_AUTOFILL_SAVE_CARD_INFOBAR_ACCEPT));
 }
@@ -469,25 +465,25 @@ TEST_P(AutofillSaveCardUiInfoTestForUploadSave,
 // Verify that AutofillSaveCardUiInfo attributes are correctly set for the
 // upload-card-save-with-CVC bottom sheet.
 TEST_P(AutofillSaveCardUiInfoTestForUploadSave,
-       VerifyAttributesForCardSaveWithCvcBottomSheet_FlagOn) {
+       VerifyAttributesForCardSaveWithCvcBottomSheet_WalletBrandingOff) {
   base::test::ScopedFeatureList features;
-  features.InitWithFeatures({features::kAutofillEnableCvcStorageAndFilling,
-                             features::kAutofillSaveCardBottomSheet},
-                            {});
+  features.InitWithFeatures({features::kAutofillEnableCvcStorageAndFilling},
+                            {features::kAutofillEnableWalletBranding});
 
   auto ui_info = AutofillSaveCardUiInfoForUploadSaveForTest(
       /*options=*/{.card_save_type = CardSaveType::kCardSaveWithCvc},
-      is_gpay_branded());
+      is_chrome_branded());
 
-  EXPECT_EQ(ui_info.logo_icon_id, is_gpay_branded() ? IDR_AUTOFILL_GOOGLE_PAY
-                                                    : IDR_INFOBAR_AUTOFILL_CC);
+  EXPECT_EQ(ui_info.logo_icon_id, is_chrome_branded()
+                                      ? IDR_AUTOFILL_GOOGLE_PAY
+                                      : IDR_INFOBAR_AUTOFILL_CC);
   EXPECT_EQ(ui_info.title_text,
             l10n_util::GetStringUTF16(
-                is_gpay_branded()
+                is_chrome_branded()
                     ? IDS_AUTOFILL_SAVE_CARD_PROMPT_TITLE_TO_CLOUD_SECURITY
                     : IDS_AUTOFILL_SAVE_CARD_PROMPT_TITLE_TO_CLOUD));
   EXPECT_EQ(ui_info.description_text,
-            is_gpay_branded()
+            is_chrome_branded()
                 ? l10n_util::GetStringUTF16(
                       IDS_AUTOFILL_SAVE_CARD_PROMPT_UPLOAD_EXPLANATION_SECURITY)
                 : u"");
@@ -499,12 +495,38 @@ TEST_P(AutofillSaveCardUiInfoTestForUploadSave,
 // upload-CVC-only-save message.
 TEST_P(AutofillSaveCardUiInfoTestForUploadSave,
        VerifyAttributesForCvcSaveOnlyMessage) {
-  base::test::ScopedFeatureList features(
-      features::kAutofillEnableCvcStorageAndFilling);
-
+  base::test::ScopedFeatureList features;
+  features.InitWithFeatures(
+      /*enabled_features=*/{features::kAutofillEnableCvcStorageAndFilling,
+                            features::kAutofillEnableWalletBranding},
+      /*disabled_features=*/{});
   auto ui_info = AutofillSaveCardUiInfoForUploadSaveForTest(
       /*options=*/{.card_save_type = CardSaveType::kCvcSaveOnly},
-      is_gpay_branded());
+      is_chrome_branded());
+
+  EXPECT_EQ(ui_info.logo_icon_id, IDR_AUTOFILL_CC_GENERIC_PRIMARY_OLD);
+  EXPECT_EQ(
+      ui_info.title_text,
+      l10n_util::GetStringUTF16(IDS_AUTOFILL_SAVE_CVC_PROMPT_TITLE_TO_CLOUD));
+  EXPECT_EQ(ui_info.description_text,
+            l10n_util::GetStringFUTF16(
+                IDS_AUTOFILL_SAVE_CVC_TO_WALLET_PROMPT_EXPLANATION_UPLOAD_IOS,
+                base::UTF8ToUTF16(AccountInfo().email)));
+  EXPECT_EQ(ui_info.confirm_text,
+            l10n_util::GetStringUTF16(IDS_AUTOFILL_SAVE_CARD_INFOBAR_ACCEPT));
+}
+
+// Verify that AutofillSaveCardUiInfo attributes are correctly set for the
+// upload-CVC-only-save message.
+TEST_P(AutofillSaveCardUiInfoTestForUploadSave,
+       VerifyAttributesForCvcSaveOnlyMessage_WalletBrandingDisabled) {
+  base::test::ScopedFeatureList features;
+  features.InitWithFeatures(
+      /*enabled_features=*/{features::kAutofillEnableCvcStorageAndFilling},
+      /*disabled_features=*/{features::kAutofillEnableWalletBranding});
+  auto ui_info = AutofillSaveCardUiInfoForUploadSaveForTest(
+      /*options=*/{.card_save_type = CardSaveType::kCvcSaveOnly},
+      is_chrome_branded());
 
   EXPECT_EQ(ui_info.logo_icon_id, IDR_AUTOFILL_CC_GENERIC_PRIMARY_OLD);
   EXPECT_EQ(
@@ -521,27 +543,97 @@ TEST_P(AutofillSaveCardUiInfoTestForUploadSave,
 
 #if BUILDFLAG(IS_ANDROID)
 // Verify that AutofillSaveCardUiInfo attributes are correctly set for the
-// upload-card-only-save bottom sheet.
+// upload-card-only-save bottom sheet when Google Wallet branding is
+// disabled.
 TEST_P(AutofillSaveCardUiInfoTestForUploadSave,
-       VerifyAttributesForCardSaveOnlyBottomSheet) {
-  base::test::ScopedFeatureList features(
-      features::kAutofillEnableCvcStorageAndFilling);
+       VerifyAttributesForCardSaveOnlyBottomSheet_WalletBrandingDisabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      /*enabled_features=*/
+      {features::kAutofillEnableCvcStorageAndFilling},
+      /*disabled_features=*/{features::kAutofillEnableWalletBranding});
 
   auto ui_info = AutofillSaveCardUiInfoForUploadSaveForTest(
       /*options=*/{.card_save_type = CardSaveType::kCardSaveOnly},
-      is_gpay_branded());
+      is_chrome_branded());
 
-  EXPECT_EQ(ui_info.logo_icon_id, is_gpay_branded() ? IDR_AUTOFILL_GOOGLE_PAY
-                                                    : IDR_INFOBAR_AUTOFILL_CC);
+  EXPECT_EQ(ui_info.logo_icon_id, is_chrome_branded()
+                                      ? IDR_AUTOFILL_GOOGLE_PAY
+                                      : IDR_INFOBAR_AUTOFILL_CC);
   EXPECT_EQ(
       ui_info.title_text,
       l10n_util::GetStringUTF16(
-          is_gpay_branded() ? IDS_AUTOFILL_SAVE_CARD_PROMPT_TITLE_TO_CLOUD_V3
-                            : IDS_AUTOFILL_SAVE_CARD_PROMPT_TITLE_TO_CLOUD));
+          is_chrome_branded() ? IDS_AUTOFILL_SAVE_CARD_PROMPT_TITLE_TO_CLOUD_V3
+                              : IDS_AUTOFILL_SAVE_CARD_PROMPT_TITLE_TO_CLOUD));
   EXPECT_EQ(ui_info.description_text,
-            is_gpay_branded()
+            is_chrome_branded()
                 ? l10n_util::GetStringUTF16(
                       IDS_AUTOFILL_SAVE_CARD_PROMPT_UPLOAD_EXPLANATION_V3)
+                : u"");
+  EXPECT_EQ(ui_info.confirm_text,
+            l10n_util::GetStringUTF16(IDS_AUTOFILL_SAVE_CARD_INFOBAR_ACCEPT));
+}
+
+// Verify that AutofillSaveCardUiInfo attributes are correctly set for the
+// upload-card-only-save bottom sheet.
+TEST_P(AutofillSaveCardUiInfoTestForUploadSave,
+       VerifyAttributesForCardSaveOnlyBottomSheet) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      /*enabled_features=*/
+      {features::kAutofillEnableCvcStorageAndFilling,
+       features::kAutofillEnableWalletBranding},
+      /*disabled_features=*/{});
+
+  auto ui_info = AutofillSaveCardUiInfoForUploadSaveForTest(
+      /*options=*/{.card_save_type = CardSaveType::kCardSaveOnly},
+      is_chrome_branded());
+
+  EXPECT_EQ(ui_info.logo_icon_id, is_chrome_branded()
+                                      ? IDR_AUTOFILL_GOOGLE_WALLET
+                                      : IDR_INFOBAR_AUTOFILL_CC);
+  EXPECT_EQ(
+      ui_info.title_text,
+      l10n_util::GetStringUTF16(
+          is_chrome_branded() ? IDS_AUTOFILL_SAVE_CARD_PROMPT_TITLE_TO_CLOUD_V3
+                              : IDS_AUTOFILL_SAVE_CARD_PROMPT_TITLE_TO_CLOUD));
+  EXPECT_EQ(
+      ui_info.description_text,
+      is_chrome_branded()
+          ? l10n_util::GetStringUTF16(
+                IDS_AUTOFILL_SAVE_CARD_PROMPT_UPLOAD_TO_WALLET_EXPLANATION)
+          : u"");
+  EXPECT_EQ(ui_info.confirm_text,
+            l10n_util::GetStringUTF16(IDS_AUTOFILL_SAVE_CARD_INFOBAR_ACCEPT));
+}
+
+// Verify that AutofillSaveCardUiInfo attributes are correctly set for the
+// upload-card-save-with-CVC bottom sheet when Google Wallet branding is
+// disabled.
+TEST_P(AutofillSaveCardUiInfoTestForUploadSave,
+       VerifyAttributesForCardSaveWithCvcBottomSheet_WalletBrandingDisabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      /*enabled_features=*/
+      {features::kAutofillEnableCvcStorageAndFilling},
+      /*disabled_features=*/{features::kAutofillEnableWalletBranding});
+
+  auto ui_info = AutofillSaveCardUiInfoForUploadSaveForTest(
+      /*options=*/{.card_save_type = CardSaveType::kCardSaveWithCvc},
+      is_chrome_branded());
+
+  EXPECT_EQ(ui_info.logo_icon_id, is_chrome_branded()
+                                      ? IDR_AUTOFILL_GOOGLE_PAY
+                                      : IDR_INFOBAR_AUTOFILL_CC);
+  EXPECT_EQ(ui_info.title_text,
+            l10n_util::GetStringUTF16(
+                is_chrome_branded()
+                    ? IDS_AUTOFILL_SAVE_CARD_PROMPT_TITLE_TO_CLOUD_SECURITY
+                    : IDS_AUTOFILL_SAVE_CARD_PROMPT_TITLE_TO_CLOUD));
+  EXPECT_EQ(ui_info.description_text,
+            is_chrome_branded()
+                ? l10n_util::GetStringUTF16(
+                      IDS_AUTOFILL_SAVE_CARD_PROMPT_UPLOAD_EXPLANATION_SECURITY)
                 : u"");
   EXPECT_EQ(ui_info.confirm_text,
             l10n_util::GetStringUTF16(IDS_AUTOFILL_SAVE_CARD_INFOBAR_ACCEPT));
@@ -551,39 +643,48 @@ TEST_P(AutofillSaveCardUiInfoTestForUploadSave,
 // upload-card-save-with-CVC bottom sheet.
 TEST_P(AutofillSaveCardUiInfoTestForUploadSave,
        VerifyAttributesForCardSaveWithCvcBottomSheet) {
-  base::test::ScopedFeatureList features(
-      features::kAutofillEnableCvcStorageAndFilling);
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      /*enabled_features=*/
+      {features::kAutofillEnableCvcStorageAndFilling,
+       features::kAutofillEnableWalletBranding},
+      /*disabled_features=*/{});
 
   auto ui_info = AutofillSaveCardUiInfoForUploadSaveForTest(
       /*options=*/{.card_save_type = CardSaveType::kCardSaveWithCvc},
-      is_gpay_branded());
+      is_chrome_branded());
 
-  EXPECT_EQ(ui_info.logo_icon_id, is_gpay_branded() ? IDR_AUTOFILL_GOOGLE_PAY
-                                                    : IDR_INFOBAR_AUTOFILL_CC);
+  EXPECT_EQ(ui_info.logo_icon_id, is_chrome_branded()
+                                      ? IDR_AUTOFILL_GOOGLE_WALLET
+                                      : IDR_INFOBAR_AUTOFILL_CC);
   EXPECT_EQ(ui_info.title_text,
             l10n_util::GetStringUTF16(
-                is_gpay_branded()
+                is_chrome_branded()
                     ? IDS_AUTOFILL_SAVE_CARD_PROMPT_TITLE_TO_CLOUD_SECURITY
                     : IDS_AUTOFILL_SAVE_CARD_PROMPT_TITLE_TO_CLOUD));
-  EXPECT_EQ(ui_info.description_text,
-            is_gpay_branded()
-                ? l10n_util::GetStringUTF16(
-                      IDS_AUTOFILL_SAVE_CARD_PROMPT_UPLOAD_EXPLANATION_SECURITY)
-                : u"");
+  EXPECT_EQ(
+      ui_info.description_text,
+      is_chrome_branded()
+          ? l10n_util::GetStringUTF16(
+                IDS_AUTOFILL_SAVE_CARD_PROMPT_UPLOAD_TO_WALLET_EXPLANATION_SECURITY)
+          : u"");
   EXPECT_EQ(ui_info.confirm_text,
             l10n_util::GetStringUTF16(IDS_AUTOFILL_SAVE_CARD_INFOBAR_ACCEPT));
 }
 
 // Verify that AutofillSaveCardUiInfo attributes are correctly set for the
-// upload-CVC-only-save message.
+// upload-CVC-only-save message when Google Wallet branding is disabled.
 TEST_P(AutofillSaveCardUiInfoTestForUploadSave,
-       VerifyAttributesForCvcSaveOnlyMessage) {
-  base::test::ScopedFeatureList features(
-      features::kAutofillEnableCvcStorageAndFilling);
+       VerifyAttributesForCvcSaveOnlyMessage_WalletBrandingDisabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      /*enabled_features=*/
+      {features::kAutofillEnableCvcStorageAndFilling},
+      /*disabled_features=*/{features::kAutofillEnableWalletBranding});
 
   auto ui_info = AutofillSaveCardUiInfoForUploadSaveForTest(
       /*options=*/{.card_save_type = CardSaveType::kCvcSaveOnly},
-      is_gpay_branded());
+      is_chrome_branded());
 
   EXPECT_EQ(ui_info.logo_icon_id, IDR_AUTOFILL_CC_GENERIC_PRIMARY_OLD);
   EXPECT_EQ(
@@ -592,6 +693,33 @@ TEST_P(AutofillSaveCardUiInfoTestForUploadSave,
   EXPECT_EQ(ui_info.description_text,
             l10n_util::GetStringUTF16(
                 IDS_AUTOFILL_SAVE_CVC_PROMPT_EXPLANATION_UPLOAD));
+  EXPECT_EQ(
+      ui_info.confirm_text,
+      l10n_util::GetStringUTF16(IDS_AUTOFILL_SAVE_CVC_MESSAGE_SAVE_ACCEPT));
+}
+
+// Verify that AutofillSaveCardUiInfo attributes are correctly set for the
+// upload-CVC-only-save message.
+TEST_P(AutofillSaveCardUiInfoTestForUploadSave,
+       VerifyAttributesForCvcSaveOnlyMessage) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      /*enabled_features=*/
+      {features::kAutofillEnableCvcStorageAndFilling,
+       features::kAutofillEnableWalletBranding},
+      /*disabled_features=*/{});
+
+  auto ui_info = AutofillSaveCardUiInfoForUploadSaveForTest(
+      /*options=*/{.card_save_type = CardSaveType::kCvcSaveOnly},
+      is_chrome_branded());
+
+  EXPECT_EQ(ui_info.logo_icon_id, IDR_AUTOFILL_CC_GENERIC_PRIMARY_OLD);
+  EXPECT_EQ(
+      ui_info.title_text,
+      l10n_util::GetStringUTF16(IDS_AUTOFILL_SAVE_CVC_PROMPT_TITLE_TO_CLOUD));
+  EXPECT_EQ(ui_info.description_text,
+            l10n_util::GetStringUTF16(
+                IDS_AUTOFILL_SAVE_CVC_TO_WALLET_PROMPT_EXPLANATION_UPLOAD));
   EXPECT_EQ(
       ui_info.confirm_text,
       l10n_util::GetStringUTF16(IDS_AUTOFILL_SAVE_CVC_MESSAGE_SAVE_ACCEPT));
@@ -610,7 +738,7 @@ TEST(AutofillSaveCardUiInfoTestForUploadSave,
 
   auto ui_info = AutofillSaveCardUiInfo::CreateForUploadSave(
       /*options=*/{}, card, LegalMessageLines(), AccountInfo(),
-      /*is_google_pay_branding_enabled=*/false);
+      /*is_chrome_branding_enabled=*/false);
 
   EXPECT_EQ(ui_info.card_description,
             u"Visa, 1111, expires 03/" + next_year.u16string);

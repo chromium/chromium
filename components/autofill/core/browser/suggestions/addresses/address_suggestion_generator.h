@@ -81,7 +81,8 @@ class AddressSuggestionGenerator : public SuggestionGenerator {
   // suggestions merging are implemented.
   AddressSuggestionGenerator(
       const std::optional<std::string>& plus_address_email_override,
-      LogManager* log_manager);
+      LogManager* log_manager,
+      AutofillSuggestionTriggerSource trigger_source);
   ~AddressSuggestionGenerator() override;
 
   void FetchSuggestionData(
@@ -160,6 +161,8 @@ class AddressSuggestionGenerator : public SuggestionGenerator {
   const std::optional<std::string> plus_address_email_override_;
 
   raw_ptr<LogManager> log_manager_;
+
+  AutofillSuggestionTriggerSource trigger_source_;
 
   // Stores a set of types of fillable fields that are in the form.
   FieldTypeSet field_types_;

@@ -59,10 +59,7 @@ source_set("web_view_sources") {
   sources = ios_web_view_public_headers + ios_web_view_sources
 
   public_deps = ios_web_view_deps
-  deps = [
-    "//components/autofill/ios/common",
-    "//components/version_info:channel",
-  ]
+  deps = [ "//components/version_info:channel" ]
   configs += [ ":config" ]
 
   # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and

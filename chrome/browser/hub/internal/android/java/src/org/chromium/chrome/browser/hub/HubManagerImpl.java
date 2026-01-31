@@ -13,10 +13,12 @@ import android.widget.FrameLayout.LayoutParams;
 import androidx.annotation.ColorInt;
 
 import org.chromium.base.ValueChangedCallback;
+import org.chromium.base.supplier.MonotonicObservableSupplier;
+import org.chromium.base.supplier.NonNullObservableSupplier;
 import org.chromium.base.supplier.NullableObservableSupplier;
-import org.chromium.base.supplier.ObservableSupplier;
-import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.OneshotSupplier;
+import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.build.annotations.MonotonicNonNull;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -43,8 +45,8 @@ import org.chromium.ui.util.TokenHolder;
 public class HubManagerImpl implements HubManager, HubController {
     private final ValueChangedCallback<Pane> mOnFocusedPaneChanged =
             new ValueChangedCallback<>(this::onFocusedPaneChanged);
-    private final ObservableSupplierImpl<Boolean> mHubVisibilitySupplier =
-            new ObservableSupplierImpl<>();
+    private final SettableNonNullObservableSupplier<Boolean> mHubVisibilitySupplier =
+            ObservableSuppliers.createNonNull(false);
     private final Activity mActivity;
     private final OneshotSupplier<ProfileProvider> mProfileProviderSupplier;
     private final PaneManagerImpl mPaneManager;
@@ -55,7 +57,7 @@ public class HubManagerImpl implements HubManager, HubController {
     private final NullableObservableSupplier<Tab> mTabSupplier;
     private final MenuButtonCoordinator mMenuButtonCoordinator;
     private final HubShowPaneHelper mHubShowPaneHelper;
-    private final ObservableSupplier<EdgeToEdgeController> mEdgeToEdgeSupplier;
+    private final MonotonicObservableSupplier<EdgeToEdgeController> mEdgeToEdgeSupplier;
     private final SearchActivityClient mSearchActivityClient;
     private final HubColorMixer mHubColorMixer;
 
@@ -65,7 +67,7 @@ public class HubManagerImpl implements HubManager, HubController {
     private int mSnackbarOverrideToken;
     private int mStatusIndicatorHeight;
     private int mAppHeaderHeight;
-    private final @Nullable ObservableSupplier<Boolean> mXrSpaceModeObservableSupplier;
+    private final @Nullable MonotonicObservableSupplier<Boolean> mXrSpaceModeObservableSupplier;
     private final @PaneId int mDefaultPaneId;
 
     /** See {@link HubManagerFactory#createHubManager}. */
@@ -79,9 +81,9 @@ public class HubManagerImpl implements HubManager, HubController {
             NullableObservableSupplier<Tab> tabSupplier,
             MenuButtonCoordinator menuButtonCoordinator,
             HubShowPaneHelper hubShowPaneHelper,
-            ObservableSupplier<EdgeToEdgeController> edgeToEdgeSupplier,
+            MonotonicObservableSupplier<EdgeToEdgeController> edgeToEdgeSupplier,
             SearchActivityClient searchActivityClient,
-            @Nullable ObservableSupplier<Boolean> xrSpaceModeObservableSupplier,
+            @Nullable MonotonicObservableSupplier<Boolean> xrSpaceModeObservableSupplier,
             @PaneId int defaultPaneId) {
         mActivity = activity;
         mProfileProviderSupplier = profileProviderSupplier;
@@ -130,7 +132,7 @@ public class HubManagerImpl implements HubManager, HubController {
     }
 
     @Override
-    public ObservableSupplier<Boolean> getHubVisibilitySupplier() {
+    public NonNullObservableSupplier<Boolean> getHubVisibilitySupplier() {
         return mHubVisibilitySupplier;
     }
 
@@ -159,7 +161,7 @@ public class HubManagerImpl implements HubManager, HubController {
     }
 
     @Override
-    public ObservableSupplier<Integer> getHubOverviewColorSupplier() {
+    public NonNullObservableSupplier<Integer> getHubOverviewColorSupplier() {
         return mHubColorMixer.getOverviewColorSupplier();
     }
 
@@ -266,7 +268,7 @@ public class HubManagerImpl implements HubManager, HubController {
         return mHubCoordinator;
     }
 
-    private void onFocusedPaneChanged(@Nullable Pane newPane, @Nullable Pane oldPane) {
+    private void onFocusedPaneChanged(Pane newPane, @Nullable Pane oldPane) {
         detachPaneDependencies(oldPane);
         if (mHubCoordinator != null) {
             attachPaneDependencies(newPane);

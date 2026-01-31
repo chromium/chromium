@@ -27,7 +27,6 @@
 #include "ash/webui/personalization_app/personalization_app_user_provider.h"
 #include "ash/webui/personalization_app/personalization_app_wallpaper_provider.h"
 #include "base/check.h"
-#include "base/containers/contains.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -65,7 +64,7 @@ AmbientBackendController* GetAmbientBackendController() {
 }
 
 void AddResources(content::WebUIDataSource* source) {
-  source->AddResourcePath("", IDR_ASH_PERSONALIZATION_APP_INDEX_HTML);
+  source->SetDefaultResource(IDR_ASH_PERSONALIZATION_APP_INDEX_HTML);
   source->AddResourcePaths(kAshPersonalizationAppResources);
   source->AddResourcePath("test_loader.html", IDR_WEBUI_TEST_LOADER_HTML);
   source->AddResourcePath("test_loader.js", IDR_WEBUI_JS_TEST_LOADER_JS);
@@ -569,7 +568,7 @@ void PersonalizationAppUI::AddIntegers(content::WebUIDataSource* source) {
 void PersonalizationAppUI::HandleWebUIRequest(
     const std::string& path,
     content::WebUIDataSource::GotDataCallback callback) {
-  DCHECK(base::Contains(path, "?key="))
+  DCHECK(path.contains("?key="))
       << "wallpaper key must be provided to prevent browser cache collisions";
   wallpaper_provider_->GetWallpaperAsJpegBytes(std::move(callback));
 }

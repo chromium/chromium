@@ -63,8 +63,9 @@ class InterfaceImpl : public sample::Provider {
   void EchoInt(int32_t x, EchoIntCallback callback) override {
     last_server_value_seen_ = x;
     callback_saved_ = std::move(callback);
-    if (closure_)
+    if (closure_) {
       std::move(closure_).Run();
+    }
   }
 
   void EchoString(const std::string& a, EchoStringCallback callback) override {

@@ -109,7 +109,7 @@ constexpr char kLoggerComponent[] = "MirroringService";
 
 using MirroringType = MirroringActivity::MirroringType;
 
-const std::string GetMirroringNamespace(const base::Value::Dict& message) {
+const std::string GetMirroringNamespace(const base::DictValue& message) {
   const std::string* type = message.FindString("type");
   if (type &&
       *type == cast_util::EnumToString<cast_channel::CastMessageType,
@@ -169,7 +169,7 @@ bool ShouldForceLetterboxing(std::string_view model_name) {
 }
 
 std::optional<int> GetExceededPlayoutDelayPacketPercent(
-    const base::Value::List* network_latency_ms_histo,
+    const base::ListValue* network_latency_ms_histo,
     int64_t target_playout_delay) {
   if (!network_latency_ms_histo) {
     return std::nullopt;
@@ -213,7 +213,7 @@ std::optional<int> GetExceededPlayoutDelayPacketPercent(
 }
 
 std::optional<double> LookupStat(
-    const base::Value::Dict& mirroring_stats,
+    const base::DictValue& mirroring_stats,
     media::cast::StatsEventSubscriber::CastStat cast_stat) {
   const std::string key =
       media::cast::StatsEventSubscriber::CastStatToString(cast_stat);
@@ -240,10 +240,10 @@ void MaybeRecordMemoryHistogram(std::string_view streaming_type,
   }
 }
 
-void RecordCastStreamingSenderUma(const base::Value::Dict& all_mirroring_stats,
+void RecordCastStreamingSenderUma(const base::DictValue& all_mirroring_stats,
                                   std::string_view stats_dict_key,
                                   int64_t target_playout_delay) {
-  const base::Value::Dict* mirroring_stats =
+  const base::DictValue* mirroring_stats =
       all_mirroring_stats.FindDict(stats_dict_key);
   if (!mirroring_stats) {
     return;
@@ -302,7 +302,7 @@ void RecordCastStreamingSenderUma(const base::Value::Dict& all_mirroring_stats,
   const std::string network_latency_ms_histo_key =
       media::cast::StatsEventSubscriber::CastStatToString(
           media::cast::StatsEventSubscriber::NETWORK_LATENCY_MS_HISTO);
-  const base::Value::List* network_latency_ms_histo =
+  const base::ListValue* network_latency_ms_histo =
       mirroring_stats->FindList(network_latency_ms_histo_key);
   std::optional<int> exceeded_playout_percent =
       GetExceededPlayoutDelayPacketPercent(network_latency_ms_histo,
@@ -853,10 +853,10 @@ void MirroringActivity::StopMirroring() {
 }
 
 std::string MirroringActivity::GetScrubbedLogMessage(
-    const base::Value::Dict& message) {
+    const base::DictValue& message) {
   std::string message_str;
   auto scrubbed_message = message.Clone();
-  base::Value::List* streams =
+  base::ListValue* streams =
       scrubbed_message.FindListByDottedPath("offer.supportedStreams");
   if (!streams) {
     base::JSONWriter::Write(scrubbed_message, &message_str);

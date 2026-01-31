@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_ACTOR_UI_DOM_NODE_GEOMETRY_H_
 
 #include "base/types/expected.h"
+#include "base/types/pass_key.h"
 #include "chrome/browser/actor/shared_types.h"
 #include "chrome/browser/actor/ui/dom_node_geometry_types.h"
 #include "components/optimization_guide/proto/features/common_quality_data.pb.h"
@@ -19,6 +20,10 @@ class DomNodeGeometry {
   using NodeGeomMap =
       absl::flat_hash_map<DomNode,
                           optimization_guide::proto::ContentAttributes>;
+
+  DomNodeGeometry(base::PassKey<DomNodeGeometry>, NodeGeomMap map);
+  DomNodeGeometry(base::PassKey<DomNodeGeometry>,
+                  GetDomNodeResult construction_error);
   ~DomNodeGeometry();
 
   static std::unique_ptr<DomNodeGeometry> InitFromApc(
@@ -33,8 +38,6 @@ class DomNodeGeometry {
  private:
   base::expected<gfx::Point, GetDomNodeResult> InternalGetDomNode(
       const DomNode& node) const;
-  explicit DomNodeGeometry(NodeGeomMap map);
-  explicit DomNodeGeometry(GetDomNodeResult construction_error);
 
   std::optional<GetDomNodeResult> init_error_;  // Errors during initialization
   const NodeGeomMap node_map_;

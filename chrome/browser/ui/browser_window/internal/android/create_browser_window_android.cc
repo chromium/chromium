@@ -9,6 +9,8 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/notimplemented.h"
+#include "chrome/browser/prefs/incognito_mode_prefs.h"
+#include "chrome/browser/profiles/nuke_profile_directory_utils.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_window/internal/jni/AndroidBrowserWindowCreateParamsImpl_jni.h"
 #include "chrome/browser/ui/browser_window/internal/jni/BrowserWindowCreatorBridge_jni.h"
@@ -44,9 +46,9 @@ void CreateBrowserWindow(
           static_cast<int>(create_params.initial_show_state));
 
   // The callback will be invoked with the native pointer of the created browser
-  // window. The pointer is represented as a jlong in Java.
-  base::OnceCallback<void(jlong)> jlong_callback = base::BindOnce(
-      [](base::OnceCallback<void(BrowserWindowInterface*)> cb, jlong ptr) {
+  // window. The pointer is represented as a int64_t in Java.
+  base::OnceCallback<void(int64_t)> jlong_callback = base::BindOnce(
+      [](base::OnceCallback<void(BrowserWindowInterface*)> cb, int64_t ptr) {
         std::move(cb).Run(reinterpret_cast<BrowserWindowInterface*>(ptr));
       },
       std::move(callback));
@@ -59,6 +61,12 @@ void CreateBrowserWindow(
 BrowserWindowInterface::CreationStatus GetBrowserWindowCreationStatusForProfile(
     Profile& profile) {
   if (profile.ShutdownStarted()) {
+    return BrowserWindowInterface::CreationStatus::kErrorShuttingDown;
+  }
+
+  if (!IncognitoModePrefs::CanOpenBrowser(&profile) ||
+      !profile.AllowsBrowserWindows() ||
+      IsProfileDirectoryMarkedForDeletion(profile.GetPath())) {
     return BrowserWindowInterface::CreationStatus::kErrorProfileUnsuitable;
   }
 

@@ -18,7 +18,7 @@ using base::android::JavaRef;
 // Defined and called by JNI.
 static void JNI_MemoryPressureListener_OnMemoryPressure(
     JNIEnv* env,
-    jint memory_pressure_level) {
+    int32_t memory_pressure_level) {
   // Sometimes, early in the process's lifetime, the main thread task runner is
   // not set yet.
   if (!base::SingleThreadTaskRunner::HasMainThreadDefault()) {
@@ -37,7 +37,7 @@ static void JNI_MemoryPressureListener_OnPreFreeze(JNIEnv* env) {
   base::android::PreFreezeBackgroundMemoryTrimmer::OnPreFreeze();
 }
 
-static jboolean JNI_MemoryPressureListener_IsTrimMemoryBackgroundCritical(
+static bool JNI_MemoryPressureListener_IsTrimMemoryBackgroundCritical(
     JNIEnv* env) {
   return base::android::PreFreezeBackgroundMemoryTrimmer::
       IsTrimMemoryBackgroundCritical();

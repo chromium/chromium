@@ -6,25 +6,16 @@
 #define IOS_CHROME_BROWSER_METRICS_MODEL_MOBILE_SESSION_SHUTDOWN_METRICS_PROVIDER_H_
 
 #import "base/memory/raw_ptr.h"
-#include "components/metrics/metrics_provider.h"
+#import "components/metrics/metrics_provider.h"
 
 namespace metrics {
 class MetricsService;
 }
 
-// Exposed for testing purposes only.
-// Values of the UMA Stability.MobileSessionShutdownType histogram.
-enum MobileSessionShutdownType {
-  SHUTDOWN_IN_BACKGROUND = 0,
-  SHUTDOWN_IN_FOREGROUND_NO_CRASH_LOG_NO_MEMORY_WARNING,
-  SHUTDOWN_IN_FOREGROUND_WITH_CRASH_LOG_NO_MEMORY_WARNING,
-  SHUTDOWN_IN_FOREGROUND_NO_CRASH_LOG_WITH_MEMORY_WARNING,
-  SHUTDOWN_IN_FOREGROUND_WITH_CRASH_LOG_WITH_MEMORY_WARNING,
-  FIRST_LAUNCH_AFTER_UPGRADE,
-  SHUTDOWN_IN_FOREGROUND_WITH_MAIN_THREAD_FROZEN,
-  MOBILE_SESSION_SHUTDOWN_TYPE_COUNT,
-};
-
+// Provides metrics regarding the previous session's shutdown type that can be
+// logged immediately on startup (e.g., tab counts).
+// Metrics that require checking for crash reports (which may involve blocking
+// file operations) are handled by MobileSessionCrashHelperMetricsProvider.
 class MobileSessionShutdownMetricsProvider : public metrics::MetricsProvider {
  public:
   explicit MobileSessionShutdownMetricsProvider(
@@ -37,31 +28,14 @@ class MobileSessionShutdownMetricsProvider : public metrics::MetricsProvider {
 
   ~MobileSessionShutdownMetricsProvider() override;
 
-  // metrics::MetricsProvider
+  // metrics::MetricsProvider implementation.
   bool HasPreviousSessionData() override;
   void ProvidePreviousSessionData(
       metrics::ChromeUserMetricsExtension* uma_proto) override;
 
  protected:
-  // Returns the shutdown type of the last session.
-  MobileSessionShutdownType GetLastShutdownType();
-
-  // Provides information on the last session environment, used to decide what
-  // stability metrics to provide in ProvidePreviousSessionData.
-  // These methods are virtual to be overridden in the tests.
-  // The default implementations return the real values.
-
-  // Whether this is the first time the app is launched after an upgrade.
+  // Returns true if the last session was a first launch after an upgrade.
   virtual bool IsFirstLaunchAfterUpgrade();
-
-  // Whether there are crash reports to upload.
-  virtual bool HasCrashLogs();
-
-  // Whether there was a memory warning shortly before last shutdown.
-  virtual bool ReceivedMemoryWarningBeforeLastShutdown();
-
-  // Whether the main thread was frozen on previous session termination.
-  virtual bool LastSessionEndedFrozen();
 
  private:
   raw_ptr<metrics::MetricsService> metrics_service_;

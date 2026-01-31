@@ -43,7 +43,7 @@ class ExternalPolicyLoader : public ExternalLoader,
   void OnExtensionManagementSettingsChanged() override;
 
   // Adds an extension to be updated to the pref dictionary.
-  static void AddExtension(base::Value::Dict& dict,
+  static void AddExtension(base::DictValue& dict,
                            const std::string& extension_id,
                            const std::string& update_url);
 

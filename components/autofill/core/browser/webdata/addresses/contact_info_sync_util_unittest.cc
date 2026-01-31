@@ -25,7 +25,6 @@ using sync_pb::ContactInfoSpecifics;
 
 constexpr char kGuid[] = "00000000-0000-0000-0000-000000000001";
 constexpr char kInvalidGuid[] = "1234";
-constexpr int kNonChromeModifier = 1234;
 const auto kUseDate = base::Time::FromSecondsSinceUnixEpoch(123);
 const auto kModificationDate = base::Time::FromSecondsSinceUnixEpoch(456);
 
@@ -41,9 +40,7 @@ AutofillProfile ConstructBaseProfile(
   profile.usage_history().set_modification_date(kModificationDate);
   profile.set_language_code("en");
   profile.set_profile_label("profile_label");
-  profile.set_initial_creator_id(
-      AutofillProfile::kInitialCreatorOrModifierChrome);
-  profile.set_last_modifier_id(kNonChromeModifier);
+  profile.set_initial_creator_id(AutofillProfile::kInitialCreatorChrome);
 
   // Set name-related values and statuses.
   profile.SetRawInfoWithVerificationStatus(NAME_FIRST, u"John",
@@ -358,9 +355,7 @@ ContactInfoSpecifics ConstructBaseSpecifics() {
   specifics.set_date_modified_unix_epoch_seconds(kModificationDate.ToTimeT());
   specifics.set_language_code("en");
   specifics.set_profile_label("profile_label");
-  specifics.set_initial_creator_id(
-      AutofillProfile::kInitialCreatorOrModifierChrome);
-  specifics.set_last_modifier_id(kNonChromeModifier);
+  specifics.set_initial_creator_id(AutofillProfile::kInitialCreatorChrome);
 
   // Set name-related values and statuses.
   SetToken(specifics.mutable_name_first(), "John",

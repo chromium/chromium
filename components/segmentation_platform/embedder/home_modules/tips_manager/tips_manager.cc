@@ -108,7 +108,7 @@ bool TipsManager::WasSignalFired(std::string_view signal) {
           ? local_pref_service_
           : profile_pref_service_;
 
-  const base::Value::Dict& signal_history =
+  const base::DictValue& signal_history =
       pref_service->GetDict(kTipsSignalHistory);
 
   return signal_history.contains(signal);
@@ -124,10 +124,10 @@ bool TipsManager::WasSignalFiredWithin(std::string_view signal,
           ? local_pref_service_
           : profile_pref_service_;
 
-  const base::Value::Dict& signal_history =
+  const base::DictValue& signal_history =
       pref_service->GetDict(kTipsSignalHistory);
 
-  const base::Value::Dict* signal_data = signal_history.FindDict(signal);
+  const base::DictValue* signal_data = signal_history.FindDict(signal);
 
   if (!signal_data) {
     return false;  // Signal not found in history.
@@ -150,7 +150,7 @@ bool TipsManager::RecordSignalToPref(std::string_view signal,
 
   ScopedDictPrefUpdate update(pref_service, kTipsSignalHistory);
 
-  base::Value::Dict* signal_history = update->EnsureDict(signal);
+  base::DictValue* signal_history = update->EnsureDict(signal);
 
   if (signal_history->empty()) {
     signal_history->Set(kFirstObservedTime,

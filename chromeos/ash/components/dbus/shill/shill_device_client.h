@@ -109,7 +109,7 @@ class COMPONENT_EXPORT(SHILL_CLIENT) ShillDeviceClient {
   // success or nullopt on failure.
   virtual void GetProperties(
       const dbus::ObjectPath& device_path,
-      chromeos::DBusMethodCallback<base::Value::Dict> callback) = 0;
+      chromeos::DBusMethodCallback<base::DictValue> callback) = 0;
 
   // Calls SetProperty method.
   // |callback| is called after the method call finishes.

@@ -90,11 +90,11 @@ void SpellingRequest::CombineResults(
     remote_iter->spelling_service_used = true;
 
     // Unless local and remote result coincide, result is GRAMMAR.
-    remote_iter->decoration = SpellCheckResult::GRAMMAR;
+    remote_iter->decoration = spellcheck::Decoration::GRAMMAR;
     if (local_iter != local_results.end() &&
         local_iter->location == remote_iter->location &&
         local_iter->length == remote_iter->length) {
-      remote_iter->decoration = SpellCheckResult::SPELLING;
+      remote_iter->decoration = spellcheck::Decoration::SPELLING;
     }
   }
 }

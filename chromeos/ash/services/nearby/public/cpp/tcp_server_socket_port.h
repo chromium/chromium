@@ -8,8 +8,7 @@
 #include <cstdint>
 #include <optional>
 
-namespace ash {
-namespace nearby {
+namespace ash::nearby {
 
 // A TCP server socket port number used by the Nearby Connections WifiLan
 // medium. The port number is guaranteed to be in the interval [kMin, kMax]. We
@@ -46,7 +45,6 @@ class TcpServerSocketPort {
   uint16_t port_;
 };
 
-}  // namespace nearby
-}  // namespace ash
+}  // namespace ash::nearby
 
 #endif  // CHROMEOS_ASH_SERVICES_NEARBY_PUBLIC_CPP_TCP_SERVER_SOCKET_PORT_H_

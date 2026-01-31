@@ -75,7 +75,7 @@ using FwupdStringToRequestIdMap = std::map<std::string, DeviceRequestId>;
 //
 // If any error occurs, returns an empty path.
 COMPONENT_EXPORT(ASH_DBUS_FWUPD)
-base::FilePath GetUpdatePathFromDict(const base::Value::Dict& dict);
+base::FilePath GetUpdatePathFromDict(const base::DictValue& dict);
 
 class FakeFwupdClient;
 

@@ -48,11 +48,11 @@ using base::android::JavaRef;
 
 namespace android {
 
-static jboolean JNI_CompositorView_IsSurfaceControlEnabled(JNIEnv* env) {
+static bool JNI_CompositorView_IsSurfaceControlEnabled(JNIEnv* env) {
   return features::IsAndroidSurfaceControlEnabled();
 }
 
-static jlong JNI_CompositorView_Init(
+static int64_t JNI_CompositorView_Init(
     JNIEnv* env,
     const JavaRef<jobject>& obj,
     const JavaRef<jobject>& jwindow_android,
@@ -75,7 +75,7 @@ static jlong JNI_CompositorView_Init(
   return reinterpret_cast<intptr_t>(view);
 }
 
-static jboolean JNI_CompositorView_PreferRgb565ForDisplay(JNIEnv* env) {
+static bool JNI_CompositorView_PreferRgb565ForDisplay(JNIEnv* env) {
   return features::PreferRGB565ResourcesForDisplay();
 }
 
@@ -193,9 +193,9 @@ void CompositorView::SurfaceDestroyed(JNIEnv* env) {
 
 std::optional<int> CompositorView::SurfaceChanged(
     JNIEnv* env,
-    jint format,
-    jint width,
-    jint height,
+    int32_t format,
+    int32_t width,
+    int32_t height,
     bool can_be_used_with_surface_control,
     const JavaRef<jobject>& surface,
     const JavaRef<jobject>& browser_input_token) {
@@ -229,8 +229,8 @@ std::optional<int> CompositorView::SurfaceChanged(
 void CompositorView::OnPhysicalBackingSizeChanged(
     JNIEnv* env,
     const JavaRef<jobject>& jweb_contents,
-    jint width,
-    jint height) {
+    int32_t width,
+    int32_t height) {
   content::WebContents* web_contents =
       content::WebContents::FromJavaWebContents(jweb_contents);
   gfx::Size size(width, height);
@@ -240,7 +240,7 @@ void CompositorView::OnPhysicalBackingSizeChanged(
 void CompositorView::OnControlsResizeViewChanged(
     JNIEnv* env,
     const JavaRef<jobject>& jweb_contents,
-    jboolean controls_resize_view) {
+    bool controls_resize_view) {
   content::WebContents* web_contents =
       content::WebContents::FromJavaWebContents(jweb_contents);
   web_contents->GetNativeView()->OnControlsResizeViewChanged(
@@ -250,10 +250,10 @@ void CompositorView::OnControlsResizeViewChanged(
 void CompositorView::NotifyVirtualKeyboardOverlayRect(
     JNIEnv* env,
     const JavaRef<jobject>& jweb_contents,
-    jint x,
-    jint y,
-    jint width,
-    jint height) {
+    int32_t x,
+    int32_t y,
+    int32_t width,
+    int32_t height) {
   content::WebContents* web_contents =
       content::WebContents::FromJavaWebContents(jweb_contents);
   gfx::Rect keyboard_rect(x, y, width, height);
@@ -432,7 +432,7 @@ void CompositorView::PreserveChildSurfaceControls(JNIEnv* env) {
 }
 
 void CompositorView::SetDidSwapBuffersCallbackEnabled(JNIEnv* env,
-                                                      jboolean enable) {
+                                                      bool enable) {
   compositor_->SetDidSwapBuffersCallbackEnabled(enable);
 }
 

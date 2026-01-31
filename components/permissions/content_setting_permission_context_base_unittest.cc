@@ -923,7 +923,7 @@ TEST_F(PermissionContextBaseTests, TestGlobalKillSwitch) {
   TestGlobalPermissionsKillSwitch(ContentSettingsType::GEOLOCATION);
   TestGlobalPermissionsKillSwitch(ContentSettingsType::NOTIFICATIONS);
   TestGlobalPermissionsKillSwitch(ContentSettingsType::MIDI_SYSEX);
-  TestGlobalPermissionsKillSwitch(ContentSettingsType::DURABLE_STORAGE);
+  TestGlobalPermissionsKillSwitch(ContentSettingsType::PERSISTENT_STORAGE);
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS)
   TestGlobalPermissionsKillSwitch(
       ContentSettingsType::PROTECTED_MEDIA_IDENTIFIER);

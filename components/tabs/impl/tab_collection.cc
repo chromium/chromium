@@ -125,11 +125,10 @@ void TabCollection::TabIterator::Next() {
   }
 }
 
-TabCollection::TabCollection(
-    Type type,
-    std::unordered_set<Type> supported_child_collections,
-    bool supports_tabs,
-    bool send_notifications_immediately)
+TabCollection::TabCollection(Type type,
+                             TypeEnumSet supported_child_collections,
+                             bool supports_tabs,
+                             bool send_notifications_immediately)
     : type_(type),
       supported_child_collections_(supported_child_collections),
       supports_tabs_{supports_tabs},
@@ -477,12 +476,6 @@ TabInterface* TabCollection::AddTab(std::unique_ptr<TabInterface> tab,
   TabInterface* inserted_tab = impl_->AddTab(std::move(tab), index);
   inserted_tab->OnReparented(this, GetPassKey());
   return inserted_tab;
-}
-
-void TabCollection::MoveTab(TabInterface* tab, size_t index) {
-  CHECK(tab);
-
-  impl_->MoveTab(tab, index);
 }
 
 std::unique_ptr<TabInterface> TabCollection::MaybeRemoveTab(TabInterface* tab) {

@@ -8,7 +8,7 @@
 #include "base/run_loop.h"
 #include "base/test/gtest_tags.h"
 #include "base/test/test_switches.h"
-#include "chrome/browser/ui/browser_list.h"
+#include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/test/base/chromeos/crosier/chromeos_integration_test_mixin.h"
 #include "chrome/test/base/chromeos/crosier/crosier_util.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -46,12 +46,11 @@ class DemoIntegrationTest : public MixinBasedInProcessBrowserTest {
     // manager, but AttemptUserExit() uses session manager to kill the chrome
     // binary.
     // TODO(b/292067979): Find a better way to work around this issue.
-    auto* browser_list = BrowserList::GetInstance();
-    // Copy the browser list to avoid mutating it during iteration.
-    std::vector<Browser*> browsers(browser_list->begin(), browser_list->end());
-    for (Browser* browser : browsers) {
-      CloseBrowserSynchronously(browser);
-    }
+    GlobalBrowserCollection::GetInstance()->ForEach(
+        [this](BrowserWindowInterface* browser) {
+          CloseBrowserSynchronously(browser);
+          return true;
+        });
 
     InProcessBrowserTest::TearDownOnMainThread();
   }

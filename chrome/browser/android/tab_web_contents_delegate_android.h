@@ -90,8 +90,6 @@ class TabWebContentsDelegateAndroid
       const blink::mojom::WindowFeatures& window_features,
       bool user_gesture,
       bool* was_blocked) override;
-  void SetContentsBounds(content::WebContents* source,
-                         const gfx::Rect& bounds) override;
   void OnDidBlockNavigation(
       content::WebContents* web_contents,
       const GURL& blocked_url,
@@ -107,6 +105,9 @@ class TabWebContentsDelegateAndroid
       content::PreloadingTriggerType trigger_type) override;
   device::mojom::GeolocationContext* GetInstalledWebappGeolocationContext()
       override;
+  content::KeyboardEventProcessingResult PreHandleKeyboardEvent(
+      content::WebContents* source,
+      const input::NativeWebKeyboardEvent& event) override;
   void RequestPointerLock(content::WebContents* web_contents,
                           bool user_gesture,
                           bool last_unlocked_by_target) override;
@@ -160,6 +161,9 @@ class TabWebContentsDelegateAndroid
   base::ScopedMultiSourceObservation<find_in_page::FindTabHelper,
                                      find_in_page::FindResultObserver>
       find_result_observations_{this};
+
+  // Timestamp when the user last successfully escaped from a lock request.
+  base::TimeTicks pointer_lock_last_user_escape_time_;
 };
 
 }  // namespace android

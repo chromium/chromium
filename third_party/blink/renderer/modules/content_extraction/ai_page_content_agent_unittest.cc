@@ -11,15 +11,19 @@
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/strings/stringprintf.h"
+#include "base/test/mock_log.h"
 #include "base/test/with_feature_override.h"
+#include "base/trace_event/trace_event.h"
 #include "mojo/public/cpp/test_support/test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/frame/frame_ad_evidence.h"
 #include "third_party/blink/public/common/input/web_mouse_event.h"
-#include "third_party/blink/public/mojom/content_extraction/ai_page_content.mojom-data-view.h"
+#include "third_party/blink/public/mojom/content_extraction/ai_page_content.mojom-shared.h"
 #include "third_party/blink/renderer/core/accessibility/ax_context.h"
 #include "third_party/blink/renderer/core/accessibility/ax_object_cache.h"
+#include "third_party/blink/renderer/core/css/style_engine.h"
 #include "third_party/blink/renderer/core/dom/document.h"
+#include "third_party/blink/renderer/core/dom/document_lifecycle.h"
 #include "third_party/blink/renderer/core/dom/dom_node_ids.h"
 #include "third_party/blink/renderer/core/frame/frame_test_helpers.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
@@ -37,6 +41,7 @@
 #include "third_party/blink/renderer/core/layout/layout_object.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
 #include "third_party/blink/renderer/core/layout/map_coordinates_flags.h"
+#include "third_party/blink/renderer/core/page/chrome_client.h"
 #include "third_party/blink/renderer/core/scroll/scrollable_area.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/core/testing/page_test_base.h"
@@ -1715,6 +1720,73 @@ TEST_F(AIPageContentAgentTest, ContentVisibilityHidden) {
   EXPECT_TRUE(hidden_container.children_nodes.empty());
 }
 
+TEST_F(AIPageContentAgentTest, ContentVisibilityHiddenActionable) {
+  frame_test_helpers::LoadHTMLString(
+      helper_.LocalMainFrame(),
+      "<body>"
+      "  <style>"
+      "    #hidden {"
+      "      content-visibility: hidden"
+      "    }"
+      "  </style>"
+      "  <div id=hidden>hidden text</div>visible text"
+      "</body>",
+      url_test_helpers::ToKURL("http://foobar.com"));
+
+  // Actionable mode exercises geometry and hit-testing paths used in
+  // production APC requests.
+  GetAIPageContentWithActionableElements();
+
+  const auto& root = ContentRootNode();
+  ASSERT_EQ(root.children_nodes.size(), 2u);
+
+  const auto& hidden_container = *root.children_nodes[0];
+  CheckContainerNode(hidden_container);
+  CheckAnnotatedRole(hidden_container,
+                     mojom::blink::AIPageContentAnnotatedRole::kContentHidden);
+  // Content-visibility hidden subtrees are represented but not expanded.
+  EXPECT_TRUE(hidden_container.children_nodes.empty());
+  // The container itself is laid out; actionable mode should capture its
+  // geometry without forcing layout on descendants.
+  EXPECT_TRUE(hidden_container.content_attributes->geometry);
+
+  const auto& visible_text_node = *root.children_nodes[1];
+  CheckTextNode(visible_text_node, "visible text");
+  ASSERT_TRUE(visible_text_node.content_attributes->geometry);
+  EXPECT_FALSE(visible_text_node.content_attributes->geometry
+                   ->visible_bounding_box.IsEmpty());
+}
+
+TEST_F(AIPageContentAgentTest, ContentVisibilityHiddenIframeActionable) {
+  frame_test_helpers::LoadHTMLString(
+      helper_.LocalMainFrame(),
+      "<body><style>iframe { content-visibility: hidden }</style>"
+      "<iframe srcdoc='<div>hidden iframe text</div>'></iframe>"
+      "  visible text</body>",
+      url_test_helpers::ToKURL("http://foobar.com"));
+
+  // Actionable mode exercises iframe geometry and traversal paths.
+  GetAIPageContentWithActionableElements();
+
+  const auto& root = ContentRootNode();
+  ASSERT_EQ(root.children_nodes.size(), 2u);
+
+  const auto& iframe_node = *root.children_nodes[0];
+  CheckIframeNode(iframe_node);
+  CheckAnnotatedRole(iframe_node,
+                     mojom::blink::AIPageContentAnnotatedRole::kContentHidden);
+  // The iframe container is laid out, but its subtree should not be traversed
+  // when display locks block layout/prepaint on children.
+  EXPECT_TRUE(iframe_node.children_nodes.empty());
+  ASSERT_TRUE(iframe_node.content_attributes->geometry);
+
+  const auto& visible_text_node = *root.children_nodes[1];
+  CheckTextNode(visible_text_node, "  visible text");
+  ASSERT_TRUE(visible_text_node.content_attributes->geometry);
+  EXPECT_FALSE(visible_text_node.content_attributes->geometry
+                   ->visible_bounding_box.IsEmpty());
+}
+
 TEST_F(AIPageContentAgentTest, ContentVisibilityAuto) {
   frame_test_helpers::LoadHTMLString(
       helper_.LocalMainFrame(),
@@ -1931,6 +2003,70 @@ TEST_F(AIPageContentAgentTest, HiddenUntilFoundOnIframe) {
   const auto& hidden_text_node = *iframe_root.children_nodes[0];
   CheckTextNode(hidden_text_node, "hidden text");
 }
+
+#if DCHECK_IS_ON()
+TEST_F(AIPageContentAgentTest, AutoBuildRunsDuringDOMContentLoadedDispatch) {
+  frame_test_helpers::LoadHTMLString(
+      helper_.LocalMainFrame(), "<body><div>Auto build content</div></body>",
+      url_test_helpers::ToKURL("http://example.com"));
+
+  Document* document = helper_.LocalMainFrame()->GetFrame()->GetDocument();
+  ASSERT_TRUE(document);
+  LocalFrameView* view = document->View();
+  ASSERT_TRUE(view);
+
+  // Establish a stable lifecycle baseline so the auto-build checks are not
+  // influenced by unrelated pending layout or style updates.
+  view->UpdateAllLifecyclePhasesForTest();
+
+  auto* agent = AIPageContentAgent::GetOrCreateForTesting(*document);
+  ASSERT_TRUE(agent);
+  EXPECT_EQ(AIPageContentAgent::From(*document), agent);
+  base::test::MockLog log;
+  // Allow unrelated INFO logs; we only assert on the auto-build dump below.
+  EXPECT_CALL(log, Log(logging::LOGGING_INFO, testing::_, testing::_,
+                       testing::_, testing::_))
+      .Times(testing::AnyNumber());
+  // TODO(crbug.com/474330989): Re-enable the blink_unittests auto-build guard
+  // so this test can assert no auto-build during DOMContentLoaded.
+
+  // Simulate DOMContentLoaded dispatch still being in progress by forcing the
+  // parsing state to "in DCL".
+  document->SetParsingState(Document::kInDOMContentLoaded);
+
+  // Invoke the auto-build entry point directly to keep the test deterministic;
+  // it should run while DOMContentLoaded dispatch is in progress.
+  EXPECT_CALL(log, Log(logging::LOGGING_INFO, testing::_, testing::_,
+                       testing::_, testing::HasSubstr("<Root>")))
+      .Times(1);
+  log.StartCapturingLogs();
+  agent->RunAutoBuildAfterDOMContentLoadedForTesting();
+  test::RunPendingTasks();
+  log.StopCapturingLogs();
+  testing::Mock::VerifyAndClearExpectations(&log);
+
+  // Auto-build runs while parsing is still in the DOMContentLoaded phase.
+
+  // Once parsing is finished and lifecycle updates complete, auto-build should
+  // still run without triggering lifecycle DCHECKs.
+  document->SetParsingState(Document::kFinishedParsing);
+  view->UpdateAllLifecyclePhasesForTest();
+  test::RunPendingTasks();
+  WebViewImpl* web_view = document->GetPage()->GetChromeClient().GetWebView();
+  ASSERT_TRUE(web_view);
+  EXPECT_FALSE(web_view->GetPagePopup());
+
+  // Re-run the auto-build entry point now that parsing is finished. This should
+  // synchronously execute the auto-build path without crashing.
+  EXPECT_CALL(log, Log(logging::LOGGING_INFO, testing::_, testing::_,
+                       testing::_, testing::HasSubstr("<Root>")))
+      .Times(1);
+  log.StartCapturingLogs();
+  agent->RunAutoBuildAfterDOMContentLoadedForTesting();
+  test::RunPendingTasks();
+  log.StopCapturingLogs();
+}
+#endif  // #if DCHECK_IS_ON()
 
 TEST_F(AIPageContentAgentTest, LineBreak) {
   frame_test_helpers::LoadHTMLString(
@@ -3650,9 +3786,10 @@ TEST_F(AIPageContentAgentTest, SVGWithText) {
 
   const auto& svg = *ContentRootNode().children_nodes[0];
   EXPECT_EQ(svg.content_attributes->attribute_type,
-            mojom::blink::AIPageContentAttributeType::kSVG);
-  ASSERT_TRUE(svg.content_attributes->svg_data);
-  EXPECT_EQ(svg.content_attributes->svg_data->inner_text, "Hello SVG Text!");
+            mojom::blink::AIPageContentAttributeType::kSvgRoot);
+  ASSERT_TRUE(svg.content_attributes->svg_root_data);
+  EXPECT_EQ(svg.content_attributes->svg_root_data->inner_text,
+            "Hello SVG Text!");
 
   const auto& text_child = *svg.children_nodes[0];
   EXPECT_EQ(text_child.content_attributes->attribute_type,
@@ -3677,9 +3814,9 @@ TEST_F(AIPageContentAgentTest, SVGWithNoText) {
 
   const auto& svg = *ContentRootNode().children_nodes[0];
   EXPECT_EQ(svg.content_attributes->attribute_type,
-            mojom::blink::AIPageContentAttributeType::kSVG);
-  ASSERT_TRUE(svg.content_attributes->svg_data);
-  EXPECT_FALSE(svg.content_attributes->svg_data->inner_text);
+            mojom::blink::AIPageContentAttributeType::kSvgRoot);
+  ASSERT_TRUE(svg.content_attributes->svg_root_data);
+  EXPECT_FALSE(svg.content_attributes->svg_root_data->inner_text);
 
   // Only visible text nodes are extracted.
   EXPECT_EQ(svg.children_nodes.size(), 0u);
@@ -3712,9 +3849,10 @@ TEST_F(AIPageContentAgentTest, SVGSubtreeContainersAreKept) {
 
   const auto& svg = *ContentRootNode().children_nodes[0];
   EXPECT_EQ(svg.content_attributes->attribute_type,
-            mojom::blink::AIPageContentAttributeType::kSVG);
-  ASSERT_TRUE(svg.content_attributes->svg_data);
-  EXPECT_EQ(svg.content_attributes->svg_data->inner_text, "Hello SVG Text!");
+            mojom::blink::AIPageContentAttributeType::kSvgRoot);
+  ASSERT_TRUE(svg.content_attributes->svg_root_data);
+  EXPECT_EQ(svg.content_attributes->svg_root_data->inner_text,
+            "Hello SVG Text!");
 
   ASSERT_EQ(svg.children_nodes.size(), 1u);
   const auto& a_child = *svg.children_nodes[0];
@@ -4780,6 +4918,121 @@ TEST_F(AIPageContentAgentTest, StructuralWrapperWithoutPaintGeometry) {
   const auto& child_geometry = *child_node->content_attributes->geometry;
   EXPECT_FALSE(child_geometry.visible_bounding_box.IsEmpty());
   EXPECT_FALSE(child_geometry.outer_bounding_box.IsEmpty());
+}
+
+TEST_F(AIPageContentAgentTest, InlinePreWrapGeometry) {
+  // Inline wrappers that rely on white-space:pre-wrap frequently delegate all
+  // actual painting to anonymous block fragments generated for line wrapping.
+  // The legacy outer-bounding-box path used AbsoluteBoundingBoxRect() on the
+  // LayoutInline host, so it produced an empty rect even though the wrapped
+  // text occupied multiple lines. Mapping via GeometryMapper keeps outer and
+  // visible boxes consistent in these inlines-with-block-descendants cases.
+  ScopedAIPageContentOuterBoxMapToAncestorSpaceForTest enable_outer_box_mapping(
+      true);
+  frame_test_helpers::LoadHTMLString(
+      helper_.LocalMainFrame(),
+      R"HTML(
+      <style>
+        body { margin: 0; font: 16px/16px Ahem; }
+        #prewrap-inline { white-space: pre-wrap; }
+      </style>
+      <body>
+        <span id="prewrap-inline">
+          <span>Label:</span> Wrapped inline text.
+        </span>
+      </body>)HTML",
+      url_test_helpers::ToKURL("http://example.com"));
+
+  LoadAhem();
+  GetAIPageContentWithActionableElements();
+
+  const auto* entry_node = FindNodeBySelector("#prewrap-inline");
+  ASSERT_TRUE(entry_node);
+  ASSERT_TRUE(entry_node->content_attributes);
+  ASSERT_TRUE(entry_node->content_attributes->geometry);
+
+  const auto& geometry = *entry_node->content_attributes->geometry;
+  EXPECT_FALSE(geometry.outer_bounding_box.IsEmpty());
+  EXPECT_FALSE(geometry.visible_bounding_box.IsEmpty());
+  EXPECT_EQ(geometry.outer_bounding_box, geometry.visible_bounding_box);
+}
+
+TEST_F(AIPageContentAgentTest, IframeOuterBoxNotViewportClipped) {
+  // Enable the experimental outer-box mapping so GeometryMapper is used for
+  // both the visible and unclipped bounds.
+  ScopedAIPageContentOuterBoxMapToAncestorSpaceForTest enable_outer_box_mapping(
+      true);
+  frame_test_helpers::LoadHTMLString(
+      helper_.LocalMainFrame(),
+      R"HTML(
+      <style>
+        body { margin: 0; }
+        iframe {
+          border: none;
+          width: 200px;
+          height: 150px;
+        }
+      </style>
+      <body>
+        <iframe id="offscreen-frame" srcdoc="
+          <style>
+            body { margin: 0; height: 800px; position: relative; font: 10px/10px Ahem; }
+            #deep {
+              position: absolute;
+              left: 20px;
+              top: -10px;
+              width: 50px;
+              height: 40px;
+              background: lightgreen;
+            }
+          </style>
+          <body>
+            <a id='deep' href='#'>Deep target</a>
+          </body>">
+        </iframe>
+      </body>)HTML",
+      url_test_helpers::ToKURL("http://example.com"));
+
+  Document* document = helper_.LocalMainFrame()->GetFrame()->GetDocument();
+  ASSERT_TRUE(document);
+  LocalFrameView* view = document->View();
+  ASSERT_TRUE(view);
+  test::RunPendingTasks();
+  view->UpdateAllLifecyclePhasesForTest();
+  auto* iframe_element = DynamicTo<HTMLIFrameElement>(
+      document->getElementById(AtomicString("offscreen-frame")));
+  ASSERT_TRUE(iframe_element);
+  LocalFrame* child_frame =
+      DynamicTo<LocalFrame>(iframe_element->ContentFrame());
+  ASSERT_TRUE(child_frame);
+  PageTestBase::LoadAhem(*child_frame);
+  if (LocalFrameView* child_view = child_frame->View()) {
+    test::RunPendingTasks();
+    child_view->UpdateAllLifecyclePhasesForTest();
+  }
+  Document* child_document = child_frame->GetDocument();
+  ASSERT_TRUE(child_document);
+
+  Element* deep = child_document->getElementById(AtomicString("deep"));
+  ASSERT_TRUE(deep);
+
+  GetAIPageContentWithActionableElements();
+
+  DOMNodeId deep_dom_node_id = DOMNodeIds::IdForNode(deep);
+  ASSERT_GE(deep_dom_node_id, 1);
+  const auto* deep_node = FindNodeByDomNodeId(deep_dom_node_id);
+  ASSERT_TRUE(deep_node);
+  ASSERT_TRUE(deep_node->content_attributes);
+  ASSERT_TRUE(deep_node->content_attributes->geometry);
+
+  // The element straddles the iframe's viewport top edge. When
+  // kSkipAncestorAndViewportClips is honored, MapToVisualRectInAncestorSpace
+  // skips that viewport clip so the outer box reports the true location in the
+  // embedder viewport, while the visible box remains clipped to the portion
+  // that is painted.
+  const auto& geometry = *deep_node->content_attributes->geometry;
+  EXPECT_EQ(geometry.outer_bounding_box, gfx::Rect(20, -10, 50, 40));
+  EXPECT_EQ(geometry.visible_bounding_box, gfx::Rect(20, 0, 50, 30));
 }
 
 TEST_F(AIPageContentAgentTest, InlineBlockFixedDescendantKeepsGeometry) {

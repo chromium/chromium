@@ -85,7 +85,7 @@ class ReaderModeJavaScriptFeatureTest : public PlatformTest {
 
  protected:
   std::unique_ptr<base::Value> ValidDerivedFeatures() {
-    return std::make_unique<base::Value>(base::Value::Dict()
+    return std::make_unique<base::Value>(base::DictValue()
                                              .Set("time", 10.0)
                                              .Set("numElements", 0.0)
                                              .Set("numAnchors", 0.0)
@@ -155,7 +155,7 @@ TEST_F(ReaderModeJavaScriptFeatureTest, MalformedResponseNotDict) {
 TEST_F(ReaderModeJavaScriptFeatureTest, MalformedResponseMissingFeatures) {
   CommitNavigation();
   auto invalid_body =
-      std::make_unique<base::Value>(base::Value(base::Value::Dict()));
+      std::make_unique<base::Value>(base::Value(base::DictValue()));
   web::ScriptMessage script_message(std::move(invalid_body),
                                     /*is_user_interacting=*/true,
                                     /*is_main_frame=*/true,

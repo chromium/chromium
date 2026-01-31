@@ -8,7 +8,8 @@ use crate::{Compress, Decompress};
 /// A DEFLATE encoder, or compressor.
 ///
 /// This structure implements a [`Read`] interface. When read from, it reads
-/// uncompressed data from the underlying [`BufRead`] and provides the compressed data.
+/// uncompressed data from the underlying [`BufRead`] and provides the
+/// compressed data.
 ///
 /// [`Read`]: https://doc.rust-lang.org/std/io/trait.Read.html
 /// [`BufRead`]: https://doc.rust-lang.org/std/io/trait.BufRead.html
@@ -47,10 +48,7 @@ impl<R: BufRead> DeflateEncoder<R> {
     /// Creates a new encoder which will read uncompressed data from the given
     /// stream and emit the compressed stream.
     pub fn new(r: R, level: crate::Compression) -> DeflateEncoder<R> {
-        DeflateEncoder {
-            obj: r,
-            data: Compress::new(level, false),
-        }
+        DeflateEncoder { obj: r, data: Compress::new(level, false) }
     }
 }
 
@@ -125,7 +123,8 @@ impl<W: BufRead + Write> Write for DeflateEncoder<W> {
 /// A DEFLATE decoder, or decompressor.
 ///
 /// This structure implements a [`Read`] interface. When read from, it reads
-/// compressed data from the underlying [`BufRead`] and provides the uncompressed data.
+/// compressed data from the underlying [`BufRead`] and provides the
+/// uncompressed data.
 ///
 /// After reading a single member of the DEFLATE data this reader will return
 /// Ok(0) even if there are more bytes available in the underlying reader.
@@ -166,17 +165,14 @@ pub struct DeflateDecoder<R> {
 }
 
 pub fn reset_decoder_data<R>(zlib: &mut DeflateDecoder<R>) {
-    zlib.data = Decompress::new(false);
+    zlib.data.reset(false);
 }
 
 impl<R: BufRead> DeflateDecoder<R> {
     /// Creates a new decoder which will decompress data read from the given
     /// stream.
     pub fn new(r: R) -> DeflateDecoder<R> {
-        DeflateDecoder {
-            obj: r,
-            data: Decompress::new(false),
-        }
+        DeflateDecoder { obj: r, data: Decompress::new(false) }
     }
 }
 
@@ -256,8 +252,8 @@ mod test {
     use crate::Compression;
     use std::io::{Read, Write};
 
-    // DeflateDecoder consumes one deflate archive and then returns 0 for subsequent reads, allowing any
-    // additional data to be consumed by the caller.
+    // DeflateDecoder consumes one deflate archive and then returns 0 for subsequent
+    // reads, allowing any additional data to be consumed by the caller.
     #[test]
     fn decode_extra_data() {
         let expected = "Hello World";
@@ -275,10 +271,7 @@ mod test {
         let decoded_bytes = decoder.read_to_end(&mut output).unwrap();
         assert_eq!(decoded_bytes, output.len());
         let actual = std::str::from_utf8(&output).expect("String parsing error");
-        assert_eq!(
-            actual, expected,
-            "after decompression we obtain the original input"
-        );
+        assert_eq!(actual, expected, "after decompression we obtain the original input");
 
         output.clear();
         assert_eq!(

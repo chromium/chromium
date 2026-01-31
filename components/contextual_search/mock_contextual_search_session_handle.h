@@ -7,6 +7,7 @@
 
 #include "components/contextual_search/contextual_search_session_handle.h"
 #include "components/lens/contextual_input.h"
+#include "components/lens/proto/server/lens_overlay_response.pb.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
 namespace contextual_search {
@@ -16,7 +17,27 @@ class MockContextualSearchSessionHandle : public ContextualSearchSessionHandle {
   MockContextualSearchSessionHandle();
   ~MockContextualSearchSessionHandle() override;
 
+  MOCK_METHOD(void,
+              StartFileContextUploadFlow,
+              (const base::UnguessableToken& file_token,
+               std::string file_mime_type,
+               mojo_base::BigBuffer file_bytes,
+               std::optional<lens::ImageEncodingOptions> image_options),
+              (override));
   MOCK_METHOD(void, NotifySessionStarted, (), (override));
+  MOCK_METHOD(std::optional<lens::proto::LensOverlaySuggestInputs>,
+              GetSuggestInputs,
+              (),
+              (const, override));
+  MOCK_METHOD(std::vector<FileInfo>,
+              GetUploadedContextFileInfos,
+              (),
+              (const, override));
+  MOCK_METHOD(ContextualSearchContextController*,
+              GetController,
+              (),
+              (const, override));
+  MOCK_METHOD(base::UnguessableToken, CreateContextToken, (), (override));
   MOCK_METHOD(void,
               StartTabContextUploadFlow,
               (const base::UnguessableToken& file_token,

@@ -6,6 +6,7 @@
 use crate::parsers::Precision;
 use crate::TemporalUnwrap;
 use crate::{error::ErrorMessage, TemporalError, TemporalResult, MS_PER_DAY, NS_PER_DAY};
+use core::cmp::Ordering;
 use core::num::NonZeroU128;
 use core::ops::Add;
 use core::{fmt, str::FromStr};
@@ -844,6 +845,60 @@ impl RoundingMode {
             HalfFloor | HalfExpand => UnsignedRoundingMode::HalfInfinity,
             HalfEven => UnsignedRoundingMode::HalfEven,
         }
+    }
+}
+
+impl UnsignedRoundingMode {
+    /// <https://tc39.es/proposal-temporal/#sec-applyunsignedroundingmode>
+    pub(crate) fn apply(self, dividend: u128, divisor: u128, r1: i128, r2: i128) -> i128 {
+        // 1. If x = r1, return r1.
+        if is_exact(dividend, divisor) {
+            return r1;
+        }
+        // 4. If unsignedRoundingMode is zero, return r1.
+        if self == UnsignedRoundingMode::Zero {
+            return r1;
+        } else if self == UnsignedRoundingMode::Infinity {
+            return r2;
+        }
+        // 6. Let d1 be x – r1.
+        // 7. Let d2 be r2 – x.
+        match compare_remainder(dividend, divisor) {
+            Ordering::Less => r1,
+            Ordering::Greater => r2,
+            Ordering::Equal => {
+                match self {
+                    UnsignedRoundingMode::HalfZero => r1,
+                    UnsignedRoundingMode::HalfInfinity => r2,
+                    // HalfEven
+                    _ => {
+                        // 14. Let cardinality be (r1 / (r2 – r1)) modulo 2.
+                        let diff = r2 - r1;
+                        let cardinality = r1.div_euclid(diff).rem_euclid(2);
+                        // 15. If cardinality = 0, return r1.
+                        if cardinality == 0 {
+                            r1
+                        } else {
+                            r2
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+fn is_exact(dividend: u128, divisor: u128) -> bool {
+    dividend.rem_euclid(divisor) == 0
+}
+
+fn compare_remainder(dividend: u128, divisor: u128) -> Ordering {
+    let midway = divisor.div_euclid(2);
+    let cmp = dividend.rem_euclid(divisor).cmp(&midway);
+    if cmp == Ordering::Equal && divisor.rem_euclid(2) != 0 {
+        Ordering::Less
+    } else {
+        cmp
     }
 }
 

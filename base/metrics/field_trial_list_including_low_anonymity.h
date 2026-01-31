@@ -30,7 +30,7 @@ SeedSimulationResult ComputeDifferences(
 }  // namespace variations
 
 namespace version_ui {
-base::Value::List GetVariationsList();
+base::ListValue GetVariationsList();
 }
 
 namespace base {
@@ -75,7 +75,7 @@ class BASE_EXPORT FieldTrialListIncludingLowAnonymity {
 
   // This usage is to display field trials in chrome://version and other local
   // internal UIs.
-  friend base::Value::List version_ui::GetVariationsList();
+  friend base::ListValue version_ui::GetVariationsList();
 
   // Required for tests.
   friend class TestFieldTrialObserverIncludingLowAnonymity;

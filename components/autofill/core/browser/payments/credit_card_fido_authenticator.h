@@ -99,14 +99,14 @@ class CreditCardFidoAuthenticator
   virtual void Authenticate(
       CreditCard card,
       base::WeakPtr<Requester> requester,
-      base::Value::Dict request_options,
+      base::DictValue request_options,
       std::optional<std::string> context_token = std::nullopt);
 
   // Invokes Registration flow. Sends credentials created from
   // |creation_options| along with the |card_authorization_token| to Payments in
   // order to enroll the user and authorize the corresponding card.
   void Register(std::string card_authorization_token = std::string(),
-                base::Value::Dict creation_options = base::Value::Dict());
+                base::DictValue creation_options = base::DictValue());
 
   // Invokes an Authorization flow. Sends signature created from
   // |request_options| along with the |card_authorization_token| to Payments in
@@ -114,7 +114,7 @@ class CreditCardFidoAuthenticator
   // Authorization is complete.
   void Authorize(base::WeakPtr<Requester> requester,
                  std::string card_authorization_token,
-                 base::Value::Dict request_options);
+                 base::DictValue request_options);
 
   // Opts the user out.
   virtual void OptOut();
@@ -154,7 +154,7 @@ class CreditCardFidoAuthenticator
 
   // Returns true if `request_options` contains a challenge and has a non-empty
   // list of keys that each have a Credential ID.
-  bool IsValidRequestOptions(const base::Value::Dict& request_options);
+  bool IsValidRequestOptions(const base::DictValue& request_options);
 
  private:
   friend class CreditCardAccessManagerTestBase;
@@ -181,8 +181,7 @@ class CreditCardFidoAuthenticator
 
   // Makes a request to payments to either opt-in or opt-out the user.
   // TODO(crbug.com/345006413): Remove logic related to the FIDO opt-out flow.
-  void OptChange(
-      base::Value::Dict authenticator_response = base::Value::Dict());
+  void OptChange(base::DictValue authenticator_response = base::DictValue());
 
   // The callback invoked from the WebAuthn prompt including the
   // |assertion_response|, which will be sent to Google Payments to retrieve
@@ -216,11 +215,11 @@ class CreditCardFidoAuthenticator
 
   // Converts |request_options| from JSON to mojom pointer.
   blink::mojom::PublicKeyCredentialRequestOptionsPtr ParseRequestOptions(
-      base::Value::Dict request_options);
+      base::DictValue request_options);
 
   // Converts |creation_options| from JSON to mojom pointer.
   blink::mojom::PublicKeyCredentialCreationOptionsPtr ParseCreationOptions(
-      base::Value::Dict creation_options);
+      base::DictValue creation_options);
 
   // Helper function to parse |key_info| sub-dictionary found in
   // |request_options| and |creation_options|.
@@ -228,16 +227,16 @@ class CreditCardFidoAuthenticator
       const base::Value& key_info);
 
   // Converts |assertion_response| from mojom pointer to JSON.
-  base::Value::Dict ParseAssertionResponse(
+  base::DictValue ParseAssertionResponse(
       blink::mojom::GetAssertionAuthenticatorResponsePtr assertion_response);
 
   // Converts |attestation_response| from mojom pointer to JSON.
-  base::Value::Dict ParseAttestationResponse(
+  base::DictValue ParseAttestationResponse(
       blink::mojom::MakeCredentialAuthenticatorResponsePtr
           attestation_response);
 
   // Returns true if |request_options| contains a challenge.
-  bool IsValidCreationOptions(const base::Value::Dict& creation_options);
+  bool IsValidCreationOptions(const base::DictValue& creation_options);
 
   // Logs the result of a WebAuthn prompt.
   void LogWebauthnResult(blink::mojom::AuthenticatorStatus status);

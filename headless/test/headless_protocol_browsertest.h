@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/command_line.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/values.h"
 #include "components/headless/test/test_meta_info.h"
 #include "content/public/browser/devtools_agent_host.h"
@@ -30,7 +31,7 @@ class HeadlessProtocolBrowserTest : public HeadlessDevTooledBrowserTest {
 
   // Implement this for tests that need to pass extra parameters to
   // JavaScript test body.
-  virtual base::Value::Dict GetPageUrlExtraParams();
+  virtual base::DictValue GetPageUrlExtraParams();
 
   // Returns relative test data directory.
   base::FilePath GetTestDataDir();
@@ -52,9 +53,9 @@ class HeadlessProtocolBrowserTest : public HeadlessDevTooledBrowserTest {
   // HeadlessDevTooledBrowserTest:
   void RunDevTooledTest() override;
 
-  void OnceSetUp(base::Value::Dict params);
-  void OnLoadEventFired(const base::Value::Dict& params);
-  void OnEvaluateResult(base::Value::Dict params);
+  void OnceSetUp(base::DictValue params);
+  void OnLoadEventFired(const base::DictValue& params);
+  void OnEvaluateResult(base::DictValue params);
 
   void ProcessTestResult(const std::string& test_result);
   void FinishTest();
@@ -63,6 +64,7 @@ class HeadlessProtocolBrowserTest : public HeadlessDevTooledBrowserTest {
   void LoadTestMetaInfo();
 
   TestMetaInfo test_meta_info_;
+  std::unique_ptr<base::test::ScopedFeatureList> feature_list_;
   bool test_finished_ = false;
 };
 

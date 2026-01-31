@@ -22,7 +22,6 @@
 #include "ash/wm/window_util.h"
 #include "base/auto_reset.h"
 #include "base/check.h"
-#include "base/containers/contains.h"
 #include "base/metrics/user_metrics.h"
 #include "chromeos/ui/base/chromeos_ui_constants.h"
 #include "ui/aura/window_targeter.h"
@@ -425,7 +424,7 @@ bool SplitViewDivider::IsAdjustable() const {
 }
 
 void SplitViewDivider::MaybeAddObservedWindow(aura::Window* window) {
-  if (base::Contains(observed_windows_, window)) {
+  if (std::ranges::contains(observed_windows_, window)) {
     return;
   }
   window->AddObserver(this);
@@ -772,7 +771,7 @@ void SplitViewDivider::RefreshStackingOrder() {
   // Iterate through the siblings of the top window in an increasing z-order
   // which reflects the relative order of siblings.
   for (aura::Window* window : children) {
-    if (!base::Contains(visible_observed_windows, window) ||
+    if (!std::ranges::contains(visible_observed_windows, window) ||
         window == top_window) {
       continue;
     }
@@ -838,7 +837,7 @@ void SplitViewDivider::StopObservingTransientChild(aura::Window* transient) {
 
 gfx::Point SplitViewDivider::GetEndDragLocationInScreen(
     aura::Window* window) const {
-  DCHECK(base::Contains(observed_windows_, window));
+  DCHECK(std::ranges::contains(observed_windows_, window));
   gfx::Point end_location(previous_event_location_);
 
   const SnapPosition snap_position =

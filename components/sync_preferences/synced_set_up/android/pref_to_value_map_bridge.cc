@@ -10,7 +10,7 @@
 
 namespace sync_preferences::synced_set_up {
 
-static jlong JNI_PrefToValueMapBridge_Init(
+static int64_t JNI_PrefToValueMapBridge_Init(
     JNIEnv* env,
     const base::android::JavaRef<jobject>& j_caller) {
   return reinterpret_cast<intptr_t>(new PrefToValueMapBridge(j_caller));

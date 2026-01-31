@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "base/pickle.h"
 
 #include <limits.h>
@@ -18,6 +13,7 @@
 #include <string_view>
 #include <tuple>
 
+#include "base/compiler_specific.h"
 #include "base/containers/heap_array.h"
 #include "base/containers/span.h"
 #include "base/strings/utf_string_conversions.h"
@@ -115,7 +111,7 @@ void VerifyResult(const Pickle& pickle) {
   size_t outdatalen;
   EXPECT_TRUE(iter.ReadData(&outdata, &outdatalen));
   EXPECT_EQ(testdatalen, outdatalen);
-  EXPECT_EQ(memcmp(testdata, outdata, outdatalen), 0);
+  EXPECT_EQ(UNSAFE_TODO(memcmp(testdata, outdata, outdatalen)), 0);
 
   // reads past the end should fail
   EXPECT_FALSE(iter.ReadInt(&outint));
@@ -311,25 +307,26 @@ TEST(PickleTest, PeekNext) {
   size_t pickle_size;
 
   // Data range doesn't contain header
-  EXPECT_FALSE(Pickle::PeekNext(sizeof(CustomHeader), pickle_data,
-                                pickle_data + sizeof(CustomHeader) - 1,
-                                &pickle_size));
+  EXPECT_FALSE(Pickle::PeekNext(
+      sizeof(CustomHeader), pickle_data,
+      UNSAFE_TODO(pickle_data + sizeof(CustomHeader) - 1), &pickle_size));
 
   // Data range contains header
   EXPECT_TRUE(Pickle::PeekNext(sizeof(CustomHeader), pickle_data,
-                               pickle_data + sizeof(CustomHeader),
+                               UNSAFE_TODO(pickle_data + sizeof(CustomHeader)),
                                &pickle_size));
   EXPECT_EQ(pickle_size, pickle.size());
 
   // Data range contains header and some other data
-  EXPECT_TRUE(Pickle::PeekNext(sizeof(CustomHeader), pickle_data,
-                               pickle_data + sizeof(CustomHeader) + 1,
-                               &pickle_size));
+  EXPECT_TRUE(Pickle::PeekNext(
+      sizeof(CustomHeader), pickle_data,
+      UNSAFE_TODO(pickle_data + sizeof(CustomHeader) + 1), &pickle_size));
   EXPECT_EQ(pickle_size, pickle.size());
 
   // Data range contains full pickle
   EXPECT_TRUE(Pickle::PeekNext(sizeof(CustomHeader), pickle_data,
-                               pickle_data + pickle.size(), &pickle_size));
+                               UNSAFE_TODO(pickle_data + pickle.size()),
+                               &pickle_size));
   EXPECT_EQ(pickle_size, pickle.size());
 }
 
@@ -353,7 +350,7 @@ TEST(PickleTest, PeekNextOverflow) {
   header.payload_size =
       static_cast<uint32_t>(1 - static_cast<int32_t>(sizeof(CustomHeader)));
   EXPECT_TRUE(Pickle::PeekNext(sizeof(CustomHeader), pickle_data,
-                               pickle_data + sizeof(CustomHeader),
+                               UNSAFE_TODO(pickle_data + sizeof(CustomHeader)),
                                &pickle_size));
   EXPECT_EQ(pickle_size, std::numeric_limits<size_t>::max());
 
@@ -362,7 +359,7 @@ TEST(PickleTest, PeekNextOverflow) {
   header.payload_size =
       std::numeric_limits<uint32_t>::max() / 2 - sizeof(CustomHeader);
   EXPECT_TRUE(Pickle::PeekNext(sizeof(CustomHeader), pickle_data,
-                               pickle_data + sizeof(CustomHeader),
+                               UNSAFE_TODO(pickle_data + sizeof(CustomHeader)),
                                &pickle_size));
   EXPECT_EQ(pickle_size, std::numeric_limits<uint32_t>::max() / 2);
 }
@@ -373,20 +370,22 @@ TEST(PickleTest, FindNext) {
   pickle.WriteString("Domo");
 
   const char* start = reinterpret_cast<const char*>(pickle.data());
-  const char* end = start + pickle.size();
+  const char* end = UNSAFE_TODO(start + pickle.size());
 
   EXPECT_EQ(end, Pickle::FindNext(pickle.header_size_, start, end));
-  EXPECT_EQ(nullptr, Pickle::FindNext(pickle.header_size_, start, end - 1));
-  EXPECT_EQ(end, Pickle::FindNext(pickle.header_size_, start, end + 1));
+  EXPECT_EQ(nullptr,
+            Pickle::FindNext(pickle.header_size_, start, UNSAFE_TODO(end - 1)));
+  EXPECT_EQ(end,
+            Pickle::FindNext(pickle.header_size_, start, UNSAFE_TODO(end + 1)));
 }
 
 TEST(PickleTest, FindNextWithIncompleteHeader) {
   size_t header_size = sizeof(Pickle::Header);
   auto buffer = base::HeapArray<char>::Uninit(header_size - 1);
-  memset(buffer.data(), 0x1, header_size - 1);
+  UNSAFE_TODO(memset(buffer.data(), 0x1, header_size - 1));
 
   const char* start = buffer.data();
-  const char* end = start + header_size - 1;
+  const char* end = UNSAFE_TODO(start + header_size - 1);
 
   EXPECT_EQ(nullptr, Pickle::FindNext(header_size, start, end));
 }
@@ -402,7 +401,7 @@ TEST(PickleTest, FindNextOverflow) {
   auto buffer = base::HeapArray<char>::Uninit(header_size2 + payload_received);
   const char* start = buffer.data();
   Pickle::Header* header = reinterpret_cast<Pickle::Header*>(buffer.data());
-  const char* end = start + header_size2 + payload_received;
+  const char* end = UNSAFE_TODO(start + header_size2 + payload_received);
   // It is impossible to construct an overflow test otherwise.
   if (sizeof(size_t) > sizeof(header->payload_size) ||
       sizeof(uintptr_t) > sizeof(header->payload_size)) {
@@ -416,7 +415,7 @@ TEST(PickleTest, FindNextOverflow) {
   EXPECT_EQ(nullptr, Pickle::FindNext(header_size2, start, end));
 
   header->payload_size = 0;
-  end = start + header_size;
+  end = UNSAFE_TODO(start + header_size);
   EXPECT_EQ(nullptr, Pickle::FindNext(header_size2, start, end));
 }
 #if defined(COMPILER_MSVC)
@@ -558,7 +557,7 @@ TEST(PickleTest, ReadBytes) {
   EXPECT_TRUE(iter.ReadBytes(&outdata_char, sizeof(data)));
 
   int outdata;
-  memcpy(&outdata, outdata_char, sizeof(outdata));
+  UNSAFE_TODO(memcpy(&outdata, outdata_char, sizeof(outdata)));
   EXPECT_EQ(data, outdata);
 }
 
@@ -595,7 +594,7 @@ TEST(PickleTest, ClaimBytesInitialization) {
   TestingPickle pickle;
   const char* bytes = static_cast<const char*>(pickle.ClaimBytes(kChunkSize));
   for (size_t i = 0; i < kChunkSize; ++i) {
-    EXPECT_EQ(0, bytes[i]);
+    EXPECT_EQ(0, UNSAFE_TODO(bytes[i]));
   }
 }
 
@@ -607,7 +606,7 @@ TEST(PickleTest, ClaimBytes) {
   pickle.WriteUInt32(data.size());
   void* bytes = pickle.ClaimBytes(data.size());
   pickle.WriteInt(42);
-  memcpy(bytes, data.data(), data.size());
+  UNSAFE_TODO(memcpy(bytes, data.data(), data.size()));
 
   PickleIterator iter(pickle);
   uint32_t out_data_length;

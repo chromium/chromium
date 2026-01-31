@@ -25,7 +25,6 @@
 #include "base/threading/thread.h"
 #include "base/time/time.h"
 #include "chrome/browser/local_discovery/service_discovery_client_mac_util.h"
-#include "chrome/browser/media/router/media_router_feature.h"
 #include "net/base/ip_address.h"
 #include "net/base/ip_endpoint.h"
 
@@ -263,20 +262,14 @@ ServiceWatcherImplMac::ServiceWatcherImplMac(
     : service_type_(service_type),
       callback_(std::move(callback)),
       service_discovery_runner_(service_discovery_runner) {
-  force_enable_legacy_discovery_ =
-      base::mac::MacOSMajorVersion() >= 15 ||
-      !base::FeatureList::IsEnabled(
-          media_router::kUseNetworkFrameworkForLocalDiscovery);
+  force_enable_legacy_discovery_ = base::mac::MacOSMajorVersion() >= 15;
 }
 
 ServiceWatcherImplMac::~ServiceWatcherImplMac() {
-  if (base::FeatureList::IsEnabled(
-          media_router::kUseNetworkFrameworkForLocalDiscovery)) {
-    service_discovery_runner_->PostTask(
-        FROM_HERE, base::BindOnce(&StopServiceBrowser, nw_browser_,
-                                  service_discovery_runner_));
-    nw_browser_ = nil;
-  }
+  service_discovery_runner_->PostTask(
+      FROM_HERE, base::BindOnce(&StopServiceBrowser, nw_browser_,
+                                service_discovery_runner_));
+  nw_browser_ = nil;
 
   if (force_enable_legacy_discovery_) {
     service_discovery_runner_->PostTask(
@@ -289,31 +282,28 @@ void ServiceWatcherImplMac::Start() {
   DCHECK(!started_);
   VLOG(1) << "ServiceWatcherImplMac::Start";
 
-  if (base::FeatureList::IsEnabled(
-          media_router::kUseNetworkFrameworkForLocalDiscovery)) {
-    std::optional<local_discovery::ServiceInfo> service_info =
-        local_discovery::ExtractServiceInfo(service_type_, false);
-    if (!service_info) {
-      VLOG(1) << "Failed to start discovery. Invalid service_type: '"
-              << service_type_ << "'";
-      return;
-    }
-    VLOG(1) << "Listening for service" << service_info.value();
-
-    nw_browse_descriptor_t descriptor =
-        nw_browse_descriptor_create_bonjour_service(
-            service_info->service_type.c_str(), service_info->domain.c_str());
-    nw_parameters_t parameters = nw_parameters_create_secure_tcp(
-        NW_PARAMETERS_DISABLE_PROTOCOL, NW_PARAMETERS_DEFAULT_CONFIGURATION);
-    nw_browser_ = nw_browser_create(descriptor, parameters);
-
-    SetUpServiceBrowser(
-        nw_browser_, base::SingleThreadTaskRunner::GetCurrentDefault(),
-        base::BindRepeating(&ServiceWatcherImplMac::OnServicesUpdate,
-                            weak_factory_.GetWeakPtr()),
-        base::BindRepeating(&ServiceWatcherImplMac::RecordPermissionState,
-                            weak_factory_.GetWeakPtr()));
+  std::optional<local_discovery::ServiceInfo> service_info =
+      local_discovery::ExtractServiceInfo(service_type_, false);
+  if (!service_info) {
+    VLOG(1) << "Failed to start discovery. Invalid service_type: '"
+            << service_type_ << "'";
+    return;
   }
+  VLOG(1) << "Listening for service" << service_info.value();
+
+  nw_browse_descriptor_t descriptor =
+      nw_browse_descriptor_create_bonjour_service(
+          service_info->service_type.c_str(), service_info->domain.c_str());
+  nw_parameters_t parameters = nw_parameters_create_secure_tcp(
+      NW_PARAMETERS_DISABLE_PROTOCOL, NW_PARAMETERS_DEFAULT_CONFIGURATION);
+  nw_browser_ = nw_browser_create(descriptor, parameters);
+
+  SetUpServiceBrowser(
+      nw_browser_, base::SingleThreadTaskRunner::GetCurrentDefault(),
+      base::BindRepeating(&ServiceWatcherImplMac::OnServicesUpdate,
+                          weak_factory_.GetWeakPtr()),
+      base::BindRepeating(&ServiceWatcherImplMac::RecordPermissionState,
+                          weak_factory_.GetWeakPtr()));
 
   if (force_enable_legacy_discovery_) {
     browser_ = [[NetServiceBrowser alloc]
@@ -329,12 +319,9 @@ void ServiceWatcherImplMac::Start() {
 void ServiceWatcherImplMac::DiscoverNewServices() {
   DCHECK(started_);
   VLOG(1) << "ServiceWatcherImplMac::DiscoverNewServices";
-  if (base::FeatureList::IsEnabled(
-          media_router::kUseNetworkFrameworkForLocalDiscovery)) {
-    service_discovery_runner_->PostTask(
-        FROM_HERE, base::BindOnce(&StartServiceBrowser, nw_browser_,
-                                  service_discovery_runner_));
-  }
+  service_discovery_runner_->PostTask(
+      FROM_HERE, base::BindOnce(&StartServiceBrowser, nw_browser_,
+                                service_discovery_runner_));
 
   if (force_enable_legacy_discovery_) {
     service_discovery_runner_->PostTask(

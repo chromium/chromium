@@ -2,6 +2,10 @@
 
 This is a list of changes to [Largest Contentful Paint](https://web.dev/lcp).
 
+* Chrome 143
+  * Metric bug fix: [Fixed text presentation timestamps reporting too early, impacting LCP (introduced in M140)](2025_09_lcp.md)
+* Chrome 140
+  * Bug: [Text presentation timestamps reporting too early, impacting LCP](2025_09_lcp.md)
 * Chrome 133
   * Implementation optimizations: [Expose coarsened cross-origin renderTime in element timing/LCP (regardless of TAO)](2025_02_lcp.md)
 * Chrome 130

@@ -27,7 +27,7 @@ using ::attribution_reporting::mojom::TriggerRegistrationError;
 // static
 base::expected<EventTriggerData, TriggerRegistrationError>
 EventTriggerData::FromJSON(base::Value& value) {
-  base::Value::Dict* dict = value.GetIfDict();
+  base::DictValue* dict = value.GetIfDict();
   if (!dict) {
     return base::unexpected(
         TriggerRegistrationError::kEventTriggerDataWrongType);
@@ -66,8 +66,8 @@ EventTriggerData::EventTriggerData(uint64_t data,
       dedup_key(dedup_key),
       filters(std::move(filters)) {}
 
-base::Value::Dict EventTriggerData::ToJson() const {
-  base::Value::Dict dict;
+base::DictValue EventTriggerData::ToJson() const {
+  base::DictValue dict;
 
   filters.SerializeIfNotEmpty(dict);
 

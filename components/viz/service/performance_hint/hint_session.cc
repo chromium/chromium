@@ -9,7 +9,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/containers/contains.h"
 #include "base/memory/raw_ptr.h"
 #include "base/system/sys_info.h"
 #include "base/time/time.h"
@@ -171,7 +170,12 @@ class AdpfHintSession : public HintSession {
  private:
   bool ShouldScheduleForEfficiency() const;
   void UpdateEfficiencyHintIfNeeded(const bool);
+  void UpdateLastFrameReportTime();
 
+  const bool rate_limit_boost_;
+  const base::TimeDelta rate_limit_boost_min_wait_;
+
+  base::TimeTicks last_frame_report_time_ = base::TimeTicks();
   const raw_ptr<APerformanceHintSession> hint_session_;
   const raw_ptr<HintSessionFactoryImpl> factory_;
   base::TimeDelta target_duration_;
@@ -213,7 +217,10 @@ AdpfHintSession::AdpfHintSession(APerformanceHintSession* session,
                                  HintSessionFactoryImpl* factory,
                                  base::TimeDelta target_duration,
                                  SessionType type)
-    : hint_session_(session),
+    : rate_limit_boost_(
+          base::FeatureList::IsEnabled(features::kEnableADPFBoostRateLimit)),
+      rate_limit_boost_min_wait_(features::kAdpfBoostRateLimitMinWait.Get()),
+      hint_session_(session),
       factory_(factory),
       target_duration_(target_duration),
       type_(type) {
@@ -246,6 +253,10 @@ bool AdpfHintSession::ShouldScheduleForEfficiency() const {
     default:
       return true;
   }
+}
+
+void AdpfHintSession::UpdateLastFrameReportTime() {
+  last_frame_report_time_ = base::TimeTicks::Now();
 }
 
 void AdpfHintSession::UpdateEfficiencyHintIfNeeded(
@@ -290,6 +301,7 @@ void AdpfHintSession::ReportCpuCompletionTime(base::TimeDelta actual_duration,
                       "target_duration_ms", target_duration_.InMillisecondsF());
   AdpfMethods::Get().APerformanceHint_reportActualWorkDurationFn(
       hint_session_, frame_duration.InNanoseconds());
+  UpdateLastFrameReportTime();
 }
 
 void AdpfHintSession::SetThreads(
@@ -332,6 +344,12 @@ void AdpfHintSession::NotifyWorkloadIncrease() {
 
 void AdpfHintSession::WakeUp() {
   DCHECK_CALLED_ON_VALID_THREAD(factory_->thread_checker_);
+  if (rate_limit_boost_ &&
+      base::TimeTicks::Now() <=
+          last_frame_report_time_ + rate_limit_boost_min_wait_) {
+    TRACE_EVENT_INSTANT("android.adpf", "Skip WakeUp");
+    return;
+  }
   if (ShouldUseWorkloadReset()) {
     NotifyWorkloadReset();
   } else {
@@ -431,9 +449,8 @@ bool IsAdpfEnabled() {
   }
 
   std::string soc_allowlist = features::kADPFSocManufacturerAllowlist.Get();
-  std::string soc_blocklist = features::kADPFSocManufacturerBlocklist.Get();
   std::string soc = base::SysInfo::SocManufacturer();
-  return features::ShouldUseAdpfForSoc(soc_allowlist, soc_blocklist, soc);
+  return features::ShouldUseAdpfForSoc(soc_allowlist, soc);
 }
 
 }  // namespace

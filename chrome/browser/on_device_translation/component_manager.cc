@@ -5,6 +5,8 @@
 #include "chrome/browser/on_device_translation/component_manager.h"
 
 #include "base/command_line.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/no_destructor.h"
 #include "base/path_service.h"
@@ -14,12 +16,13 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/component_updater/translate_kit_component_installer.h"
 #include "chrome/browser/component_updater/translate_kit_language_pack_component_installer.h"
-#include "chrome/browser/on_device_translation/constants.h"
-#include "chrome/browser/on_device_translation/language_pack_util.h"
-#include "chrome/browser/on_device_translation/pref_names.h"
 #include "components/component_updater/component_updater_paths.h"
+#include "components/component_updater/component_updater_service.h"
 #include "components/on_device_translation/features.h"
+#include "components/on_device_translation/public/language_pack.h"
 #include "components/on_device_translation/public/mojom/on_device_translation_service.mojom.h"
+#include "components/on_device_translation/public/paths.h"
+#include "components/on_device_translation/public/pref_names.h"
 
 #if BUILDFLAG(IS_WIN)
 #include "base/strings/utf_string_conversions.h"
@@ -58,7 +61,9 @@ class ComponentManagerImpl : public ComponentManager {
         /*registered_callback=*/
         base::BindOnce(
             &component_updater::TranslateKitComponentInstallerPolicy::
-                UpdateComponentOnDemand));
+                UpdateComponentOnDemand,
+            base::Unretained(g_browser_process->component_updater())),
+        base::DoNothing());
   }
 
   void RegisterTranslateKitLanguagePackComponent(
@@ -70,7 +75,9 @@ class ComponentManagerImpl : public ComponentManager {
         base::BindOnce(&component_updater::
                            TranslateKitLanguagePackComponentInstallerPolicy::
                                UpdateComponentOnDemand,
-                       language_pack));
+                       base::Unretained(g_browser_process->component_updater()),
+                       language_pack),
+        base::RepeatingClosure());
   }
 
   void UninstallTranslateKitLanguagePackComponent(
@@ -87,7 +94,7 @@ class ComponentManagerImpl : public ComponentManager {
     base::PathService::Get(component_updater::DIR_COMPONENT_USER,
                            &components_dir);
     CHECK(!components_dir.empty());
-    return components_dir.Append(kTranslateKitBinaryInstallationRelativeDir);
+    return components_dir.Append(GetBinaryRelativeInstallDir());
   }
 
  private:

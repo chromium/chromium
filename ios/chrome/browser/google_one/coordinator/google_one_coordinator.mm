@@ -9,10 +9,10 @@
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
-#import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/google_one_commands.h"
 #import "ios/chrome/browser/shared/public/commands/open_new_tab_command.h"
+#import "ios/chrome/browser/shared/public/commands/scene_commands.h"
 #import "ios/public/provider/chrome/browser/google_one/google_one_api.h"
 #import "net/base/apple/url_conversions.h"
 #import "url/gurl.h"
@@ -169,7 +169,7 @@ GoogleOneOutcomeMetrics HistogramOutcomeBucket(GoogleOneOutcome outcome,
       commandWithURLFromChrome:net::GURLWithNSURL(url)
                    inIncognito:browser->GetProfile()->IsOffTheRecord()];
 
-  [HandlerForProtocol(browser->GetCommandDispatcher(), ApplicationCommands)
+  [HandlerForProtocol(browser->GetCommandDispatcher(), SceneCommands)
       openURLInNewTab:command];
 }
 

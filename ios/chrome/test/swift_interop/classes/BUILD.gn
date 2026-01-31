@@ -1,0 +1,47 @@
+# Copyright 2026 The Chromium Authors. All rights resAerved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/apple/swift_source_set.gni")
+
+if (enable_swift_cxx_interop) {
+  source_set("outlined") {
+    sources = [
+      "outlined.cc",
+      "outlined.h",
+    ]
+  }
+
+  swift_modulemap("classes") {
+    modules = [
+      {
+        name = "Classes"
+        sources = [
+          "inlined_classes.h",
+          "outlined.h",
+        ]
+        apinotes = [ "classes.apinotes" ]
+      },
+
+      # This target deliberately tests the possibility of defining multiple
+      # modules in a single modulemap.
+      {
+        name = "Polymorphism"
+        sources = [ "polymorphism.h" ]
+      },
+    ]
+  }
+
+  swift_source_set("tests") {
+    sources = [
+      "inlined_xctest.swift",
+      "outlined_xctest.swift",
+      "polymorphism_xctest.swift",
+    ]
+    deps = [
+      ":classes",
+      ":outlined",
+      "//build/config/ios:xctest",
+    ]
+  }
+}

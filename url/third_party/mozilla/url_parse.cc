@@ -696,20 +696,20 @@ int DoParsePort(std::basic_string_view<CHAR> spec, const Component& component) {
     return PORT_INVALID;
 
   // Copy valid digits to the buffer.
-  char digits[kMaxDigits + 1];  // +1 for null terminator
-  for (int i = 0; i < digits_comp.len; i++) {
+  std::array<char, kMaxDigits + 1> digits;  // +1 for null terminator
+  for (int i = 0; i < digits_comp.len; ++i) {
     CHAR ch = spec[digits_comp.begin + i];
     if (!IsPortDigit(ch)) {
       // Invalid port digit, fail.
       return PORT_INVALID;
     }
-    UNSAFE_TODO(digits[i]) = static_cast<char>(ch);
+    digits[i] = static_cast<char>(ch);
   }
 
   // Null-terminate the string and convert to integer. Since we guarantee
   // only digits, atoi's lack of error handling is OK.
-  UNSAFE_TODO(digits[digits_comp.len]) = 0;
-  int port = atoi(digits);
+  digits[digits_comp.len] = 0;
+  int port = atoi(digits.data());
   if (port > 65535)
     return PORT_INVALID;  // Out of range.
   return port;

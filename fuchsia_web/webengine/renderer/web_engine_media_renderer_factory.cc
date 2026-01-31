@@ -5,6 +5,7 @@
 #include "fuchsia_web/webengine/renderer/web_engine_media_renderer_factory.h"
 
 #include <fuchsia/media/cpp/fidl.h>
+
 #include <memory>
 #include <utility>
 
@@ -14,8 +15,8 @@
 #include "media/base/decoder_factory.h"
 #include "media/renderers/renderer_impl.h"
 #include "media/renderers/video_renderer_impl.h"
-#include "media/video/gpu_memory_buffer_video_frame_pool.h"
 #include "media/video/gpu_video_accelerator_factories.h"
+#include "media/video/mappable_shared_image_video_frame_pool.h"
 
 WebEngineMediaRendererFactory::WebEngineMediaRendererFactory(
     media::MediaLog* media_log,
@@ -61,11 +62,13 @@ std::unique_ptr<media::Renderer> WebEngineMediaRendererFactory::CreateRenderer(
   if (get_gpu_factories_cb_)
     gpu_factories = get_gpu_factories_cb_.Run();
 
-  std::unique_ptr<media::GpuMemoryBufferVideoFramePool> gmb_pool;
-  if (gpu_factories && gpu_factories->ShouldUseGpuMemoryBuffersForVideoFrames(
-                           /*for_media_stream=*/false)) {
-    gmb_pool = std::make_unique<media::GpuMemoryBufferVideoFramePool>(
-        media_task_runner, std::move(worker_task_runner), gpu_factories);
+  std::unique_ptr<media::MappableSharedImageVideoFramePool> mappable_si_pool;
+  if (gpu_factories &&
+      gpu_factories->ShouldUseMappableSharedImagesForVideoFrames(
+          /*for_media_stream=*/false)) {
+    mappable_si_pool =
+        std::make_unique<media::MappableSharedImageVideoFramePool>(
+            media_task_runner, std::move(worker_task_runner), gpu_factories);
   }
 
   std::unique_ptr<media::VideoRenderer> video_renderer(
@@ -82,7 +85,7 @@ std::unique_ptr<media::Renderer> WebEngineMediaRendererFactory::CreateRenderer(
               base::Unretained(this), media_task_runner,
               std::move(request_overlay_info_cb), target_color_space,
               gpu_factories),
-          /*drop_frames=*/true, media_log_, std::move(gmb_pool),
+          /*drop_frames=*/true, media_log_, std::move(mappable_si_pool),
           media::GetNextMediaPlayerLoggingID()));
 
   return std::make_unique<media::RendererImpl>(

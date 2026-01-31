@@ -53,8 +53,8 @@ class VpnDetailedViewTest : public AshTestBase {
   }
 
   void TearDown() override {
-    widget_.reset();
     vpn_detailed_view_ = nullptr;
+    widget_.reset();
     delegate_.reset();
     AshTestBase::TearDown();
   }
@@ -147,7 +147,7 @@ class VpnDetailedViewTest : public AshTestBase {
 
   std::unique_ptr<views::Widget> widget_;
   std::unique_ptr<FakeDetailedViewDelegate> delegate_;
-  raw_ptr<VpnDetailedView, DanglingUntriaged> vpn_detailed_view_ = nullptr;
+  raw_ptr<VpnDetailedView> vpn_detailed_view_ = nullptr;
 };
 
 TEST_F(VpnDetailedViewTest, Basics) {

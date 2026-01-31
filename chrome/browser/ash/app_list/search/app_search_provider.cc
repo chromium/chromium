@@ -4,13 +4,13 @@
 
 #include "chrome/browser/ash/app_list/search/app_search_provider.h"
 
+#include <algorithm>
 #include <string>
 #include <string_view>
 #include <utility>
 
 #include "ash/public/cpp/app_list/app_list_features.h"
 #include "base/callback_list.h"
-#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/i18n/rtl.h"
 #include "base/metrics/histogram_macros.h"
@@ -33,7 +33,7 @@ bool IsNonLatinLocale(std::string_view locale) {
       "hy", "iw", "ja", "ka", "kk",    "km",    "kn",   "ko", "ky",
       "lo", "mk", "ml", "mn", "mr",    "my",    "pa",   "ru", "sr",
       "ta", "te", "th", "uk", "zh-CN", "zh-HK", "zh-TW"};
-  return base::Contains(kNonLatinLocales, locale);
+  return std::ranges::contains(kNonLatinLocales, locale);
 }
 
 }  // namespace

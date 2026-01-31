@@ -104,9 +104,8 @@ class FakeVideoCaptureBufferTrackerFactory
       VideoCaptureBufferType buffer_type) override {
     return std::make_unique<FakeVideoCaptureBufferTracker>();
   }
-  std::unique_ptr<VideoCaptureBufferTracker>
-  CreateTrackerForExternalGpuMemoryBuffer(
-      gfx::GpuMemoryBufferHandle handle) override {
+  std::unique_ptr<VideoCaptureBufferTracker> CreateTrackerForExternalBuffer(
+      CapturedExternalVideoBuffer buffer) override {
     return std::make_unique<FakeVideoCaptureBufferTracker>();
   }
 };

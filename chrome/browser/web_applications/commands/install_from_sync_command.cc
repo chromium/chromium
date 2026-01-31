@@ -253,7 +253,7 @@ void InstallFromSyncCommand::
       GenerateAppIdFromManifestId(install_info->manifest_id());
   if (params_.app_id != generated_app_id) {
     // Add the error to the log.
-    base::Value::Dict expected_id_error;
+    base::DictValue expected_id_error;
     expected_id_error.Set("expected_app_id", params_.app_id);
     expected_id_error.Set("app_id", generated_app_id);
     GetMutableDebugValue().Set("app_id_error", std::move(expected_id_error));

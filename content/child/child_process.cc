@@ -20,7 +20,7 @@
 #include "build/config/compiler/compiler_buildflags.h"
 #include "components/performance_manager/scenario_api/performance_scenarios.h"
 #include "content/child/child_thread_impl.h"
-#include "content/common/process_visibility_tracker.h"
+#include "content/common/process_priority_tracker.h"
 #include "content/public/common/content_features.h"
 #include "mojo/public/cpp/bindings/interface_endpoint_client.h"
 #include "sandbox/policy/sandbox_type.h"
@@ -117,7 +117,7 @@ ChildProcess::ChildProcess(base::ThreadType io_thread_type,
   }
 
   // Ensure the visibility tracker is created on the main thread.
-  ProcessVisibilityTracker::GetInstance();
+  ProcessPriorityTracker::GetInstance();
 
 #if BUILDFLAG(IS_ANDROID)
   SetupCpuTimeMetrics();
@@ -130,7 +130,7 @@ ChildProcess::ChildProcess(base::ThreadType io_thread_type,
 #if BUILDFLAG(IS_ANDROID)
   // TODO(reveman): Remove this in favor of setting it explicitly for each type
   // of process.
-  thread_options.thread_type = base::ThreadType::kDisplayCritical;
+  thread_options.thread_type = base::ThreadType::kPresentation;
 #endif
 
   if (base::FeatureList::IsEnabled(features::kIOThreadInteractiveThreadType)) {
@@ -227,7 +227,7 @@ void ChildProcess::SetIOThreadType(base::ThreadType thread_type) {
   if (SandboxedProcessThreadTypeHandler* sandboxed_process_thread_type_handler =
           SandboxedProcessThreadTypeHandler::Get()) {
     sandboxed_process_thread_type_handler->HandleThreadTypeChange(
-        io_thread_->GetThreadId(), base::ThreadType::kDisplayCritical);
+        io_thread_->GetThreadId(), base::ThreadType::kPresentation);
   }
 }
 #endif

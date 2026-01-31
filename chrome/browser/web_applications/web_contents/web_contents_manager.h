@@ -6,7 +6,14 @@
 #define CHROME_BROWSER_WEB_APPLICATIONS_WEB_CONTENTS_WEB_CONTENTS_MANAGER_H_
 
 #include <memory>
+
+#include "base/callback_list.h"
 #include "base/memory/weak_ptr.h"
+#include "content/public/browser/page_manifest_manager.h"
+
+namespace content {
+class WebContents;
+}
 
 namespace webapps {
 class WebAppUrlLoader;
@@ -41,6 +48,24 @@ class WebContentsManager {
 
   // Creates a `WebAppIconDownloader` to download icons for a web app.
   virtual std::unique_ptr<WebAppIconDownloader> CreateIconDownloader();
+
+  using AllManifestsCallbackList =
+      content::PageManifestManager::AllManifestsCallbackList;
+  // This calls PageManifestManager::GetAllSpecifiedManifests on the current
+  // primary page of the web contents (see that method for more details about
+  // the behavior).
+  //
+  // Notes:
+  // - There is no timeout for this method, it will never be called if no
+  //   manifest is specified on the page.
+  // - The callback is called synchronously if the manifest is already known,
+  //   and then asynchronously for any subsequent manifests found.
+  // - In the future it might be appropriate to move this method to the
+  //   WebAppDataRetriever, but since that increases WebAppTabHelper complexity,
+  //   it lives on the WebContentsManager for now.
+  virtual base::CallbackListSubscription GetPrimaryPageAllSpecifiedManifests(
+      content::WebContents& web_contents,
+      AllManifestsCallbackList::CallbackType callback);
 
   // Safely downcast to the fake version for tests.
   virtual FakeWebContentsManager* AsFakeWebContentsManagerForTesting();

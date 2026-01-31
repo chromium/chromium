@@ -4,7 +4,6 @@
 
 #include <memory>
 
-#include "base/containers/contains.h"
 #include "base/memory/raw_ptr.h"
 #include "base/values.h"
 #include "extensions/browser/api/storage/session_storage_manager.h"
@@ -61,7 +60,7 @@ class SessionStorageManagerUnittest : public ExtensionsTest {
   base::Value value_int_;
   base::Value value_string_;
   base::Value value_list_;
-  base::Value::Dict value_dict_;
+  base::DictValue value_dict_;
 
   // Session storage manager being tested.
   raw_ptr<SessionStorageManager> manager_;
@@ -114,7 +113,7 @@ TEST_F(SessionStorageManagerUnittest, SetGetAndRemoveOneExtensionSuccessful) {
       manager_->Get("extension id1", {"key1", "invalid key", "key4"});
   ASSERT_EQ(multiple_values.size(), 2u);
   EXPECT_EQ(*multiple_values["key1"], value_int_);
-  EXPECT_FALSE(base::Contains(multiple_values, "invalid_key"));
+  EXPECT_FALSE(multiple_values.contains("invalid_key"));
   EXPECT_EQ(*multiple_values["key4"], value_dict_);
 
   // Retrieve all values from storage.

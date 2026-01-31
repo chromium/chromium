@@ -20,6 +20,7 @@
 #include "chrome/browser/web_applications/isolated_web_apps/policy/isolated_web_app_cache_client.h"
 #include "chrome/browser/web_applications/isolated_web_apps/policy/isolated_web_app_external_install_options.h"
 #include "chrome/browser/web_applications/isolated_web_apps/policy/isolated_web_app_installer.h"
+#include "chrome/browser/web_applications/isolated_web_apps/runtime_data/chrome_iwa_runtime_data_provider.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/common/pref_names.h"
@@ -40,6 +41,12 @@ KioskIwaLauncher::~KioskIwaLauncher() = default;
 
 void KioskIwaLauncher::Initialize() {
   KioskWebAppLauncherBase::Initialize();
+
+  if (web_app::ChromeIwaRuntimeDataProvider::GetInstance().IsBundleBlocklisted(
+          iwa_data_->web_bundle_id().id())) {
+    NotifyLaunchFailed(KioskAppLaunchError::Error::kIsolatedAppNotAllowed);
+    return;
+  }
   KioskIwaManager::Get()->StartObservingAppUpdate(profile(), account_id());
   CHECK_DEREF(profile()->GetExtensionSpecialStoragePolicy())
       .AddOriginWithUnlimitedStorage(iwa_data().origin());
@@ -60,7 +67,17 @@ bool KioskIwaLauncher::IsIsolatedWebAppInstalled() const {
       web_app::WebAppProvider::GetForWebApps(profile());
   const web_app::WebAppRegistrar& web_app_registrar =
       CHECK_DEREF(provider).registrar_unsafe();
-  return web_app_registrar.GetInstallState(iwa_data().app_id()).has_value();
+  std::optional<web_app::proto::InstallState> install_state =
+      web_app_registrar.GetInstallState(iwa_data().app_id());
+  if (!install_state.has_value()) {
+    return false;
+  }
+
+  // IWAs are not eligible to be migrated, so if an IWA is found to be in the
+  // middle of migration, that is unexpected.
+  CHECK_NE(*install_state,
+           web_app::proto::InstallState::SUGGESTED_FROM_MIGRATION);
+  return true;
 }
 
 void KioskIwaLauncher::InstallIsolatedWebApp(

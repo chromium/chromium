@@ -16,8 +16,9 @@ import android.widget.LinearLayout;
 import androidx.annotation.StringRes;
 import androidx.preference.PreferenceCategory;
 
-import org.chromium.base.supplier.ObservableSupplier;
-import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.supplier.MonotonicObservableSupplier;
+import org.chromium.base.supplier.ObservableSuppliers;
+import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.settings.SettingsNavigationFactory;
@@ -34,7 +35,8 @@ public abstract class SafetyHubSubpageFragment extends SafetyHubBaseFragment {
     protected PreferenceCategory mPreferenceList;
     protected ButtonCompat mBottomButton;
     protected boolean mBulkActionConfirmed;
-    private final ObservableSupplierImpl<String> mPageTitle = new ObservableSupplierImpl<>();
+    private final SettableMonotonicObservableSupplier<String> mPageTitle =
+            ObservableSuppliers.createMonotonic();
 
     @Override
     public void onCreatePreferences(@Nullable Bundle bundle, @Nullable String s) {
@@ -50,7 +52,7 @@ public abstract class SafetyHubSubpageFragment extends SafetyHubBaseFragment {
     }
 
     @Override
-    public ObservableSupplier<String> getPageTitle() {
+    public MonotonicObservableSupplier<String> getPageTitle() {
         return mPageTitle;
     }
 

@@ -34,7 +34,7 @@ EventRouterForwarder::~EventRouterForwarder() = default;
 void EventRouterForwarder::BroadcastEventToRenderers(
     events::HistogramValue histogram_value,
     const std::string& event_name,
-    base::Value::List event_args,
+    base::ListValue event_args,
     bool dispatch_to_off_the_record_profiles) {
   if (!BrowserThread::CurrentlyOn(BrowserThread::UI)) {
     content::GetUIThreadTaskRunner({})->PostTask(
@@ -83,7 +83,7 @@ void EventRouterForwarder::CallEventRouter(
     Profile* profile,
     events::HistogramValue histogram_value,
     const std::string& event_name,
-    base::Value::List event_args) {
+    base::ListValue event_args) {
   auto* event_router = extensions::EventRouter::Get(profile);
   // Extension does not exist for chromeos login.  This needs to be
   // removed once we have an extension service for login screen.

@@ -13,3 +13,5 @@
 ++++[panel]
 ++++++[menu item] name='Submenu1 first item'
 ++++++[menu item] name='Submenu1 second item'
+++++[menu bar] horizontal
+++++++[menu item] name='First item'

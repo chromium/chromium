@@ -233,7 +233,7 @@ bool LocalExtensionCache::RemoveOnNextInit(const std::string& id) {
     return false;
   }
 
-  if (base::Contains(invalid_cache_ids_, id)) {
+  if (invalid_cache_ids_.contains(id)) {
     return true;
   }
 
@@ -490,7 +490,7 @@ void LocalExtensionCache::BackendCheckCacheContentsInternal(
       continue;
     }
 
-    if (base::Contains(invalid_cache, id)) {
+    if (invalid_cache.contains(id)) {
       base::DeleteFile(path);
       continue;
     }

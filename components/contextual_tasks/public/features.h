@@ -14,15 +14,30 @@
 namespace contextual_tasks {
 
 BASE_DECLARE_FEATURE(kContextualTasks);
+// When enabled, it should instead request the kSearchResultsOAuth2Scope instead
+// of the kChromeSyncOAuth2Scope
+BASE_DECLARE_FEATURE(kContextualTasksScopeChange);
 BASE_DECLARE_FEATURE(kContextualTasksContext);
 BASE_DECLARE_FEATURE(kContextualTasksContextLibrary);
 BASE_DECLARE_FEATURE(kContextualTasksContextLogging);
+BASE_DECLARE_FEATURE(kContextualTasksShowOnboardingTooltip);
+
+// Overrides the value of EntryPointEligibilitymanager::IsEligible to true.
+BASE_DECLARE_FEATURE(kContextualTasksForceEntryPointEligibility);
 
 // Enables context menu settings for contextual tasks.
 BASE_DECLARE_FEATURE(kContextualTasksContextMenu);
 
 // Enables context menu settings for contextual tasks.
 BASE_DECLARE_FEATURE(kContextualTasksSuggestionsEnabled);
+
+// Force the application locale to US and the gl query parameter to us.
+BASE_DECLARE_FEATURE(kContextualTasksForceCountryCodeUS);
+
+// Remove tasks that have no tabs or threads associated with them on tab
+// disassociation.
+BASE_DECLARE_FEATURE(
+    kContextualTasksRemoveTasksWithoutThreadsOrTabAssociations);
 
 // Enum denoting which entry point can show when enabled.
 enum class EntryPointOption {
@@ -32,12 +47,10 @@ enum class EntryPointOption {
   kToolbarPermanent
 };
 
-// The minimum score required for two embeddings to be considered similar.
-extern const base::FeatureParam<double> kMinEmbeddingSimilarityScore;
 // Whether to only consider titles for similarity.
 extern const base::FeatureParam<bool> kOnlyUseTitlesForSimilarity;
-// Minimum score, computed using multiple signals, to consider a tab relevant.
-extern const base::FeatureParam<double> kMinMultiSignalScore;
+// Minimum score to consider a tab relevant.
+extern const base::FeatureParam<double> kTabSelectionScoreThreshold;
 // Minimum score required for a tab to be considered visible.
 extern const base::FeatureParam<double> kContentVisibilityThreshold;
 
@@ -54,6 +67,10 @@ extern const base::FeatureParam<EntryPointOption, true> kShowEntryPoint;
 // will become associated with the new task. When set to false, task change in
 // the side panel only affects the current tab.
 extern const base::FeatureParam<bool> kTaskScopedSidePanel;
+
+// Whether to open side panel when an external link is clicked on the contextual
+// task page.
+extern const base::FeatureParam<bool> kOpenSidePanelOnLinkClicked;
 
 // Whether the context menu is enabled for Nextbox.
 extern bool GetIsContextualTasksNextboxContextMenuEnabled();
@@ -75,11 +92,42 @@ extern const base::FeatureParam<int> kContextualTasksNextboxMaxFileCount;
 // The user agent suffix to use for requests from the contextual tasks UI.
 extern const base::FeatureParam<std::string> kContextualTasksUserAgentSuffix;
 
+// The URL for the help center article from the toolbar.
+extern const base::FeatureParam<std::string> kContextualTasksHelpUrl;
+
+// The URL for the help center article linked from the onboarding tooltip.
+extern const base::FeatureParam<std::string>
+    kContextualTasksOnboardingTooltipHelpUrl;
+
+// The maximum number of times the onboarding tooltip can be shown to the user
+// in a single session before it no longer shows up.
+extern int GetContextualTasksShowOnboardingTooltipSessionImpressionCap();
+
+// The maximum number of times the onboarding tooltip can be dismissed by the
+// user before it no longer shows up.
+extern int GetContextualTasksOnboardingTooltipDismissedCap();
+
+// The delay in milliseconds before the onboarding tooltip is considered shown.
+extern int GetContextualTasksOnboardingTooltipImpressionDelay();
+
+// The number of seconds inactive side panel WebContents should keep in cache.
+// Expired side panel WebContents will be destroyed.
+extern int ContextualTasksInactiveSidePanelKeepInCacheMinutes();
+
 // Returns if voice search is allowed in expanded composebox.
 extern bool GetIsExpandedComposeboxVoiceSearchEnabled();
 
 // Returns if voice search is allowed in base steady composebox.
 extern bool GetIsSteadyComposeboxVoiceSearchEnabled();
+
+// Returns if voice search queries should be auto submitted.
+extern bool GetAutoSubmitVoiceSearchQuery();
+
+// Returns if the protected page error is enabled.
+extern bool GetIsProtectedPageErrorEnabled();
+
+// Returns if the ghost loader is enabled.
+extern bool GetIsGhostLoaderEnabled();
 
 // Returns the base URL for the AI page.
 extern std::string GetContextualTasksAiPageUrl();
@@ -103,11 +151,27 @@ extern bool GetEnableLensInContextualTasks();
 // panel UI unless the gsc=2 param is set.
 extern bool ShouldForceGscInTabMode();
 
+// Returns whether the country code should be forced to US.
+extern bool ShouldForceCountryCodeUS();
+
 // Returns the user agent suffix to use for requests.
 extern std::string GetContextualTasksUserAgentSuffix();
 
 // Whether the contextual tasks context quality should be logged.
 extern bool ShouldLogContextualTasksContextQuality();
+
+// Returns the help URL for the onboarding tooltip.
+extern std::string GetContextualTasksOnboardingTooltipHelpUrl();
+
+// Returns the help URL for the help center article from the toolbar.
+extern std::string GetContextualTasksHelpUrl();
+
+// Returns whether smart compose is enabled for Contextual Tasks.
+extern bool GetEnableContextualTasksSmartCompose();
+
+// Returns whether the kSearchResultsOAuth2Scope should be used instead of the
+// kChromeSyncOAuth2Scope.
+extern bool ShouldUseSearchResultsScope();
 
 namespace flag_descriptions {
 

@@ -9,6 +9,7 @@ import android.graphics.Rect;
 import org.chromium.base.lifetime.Destroyable;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.util.PictureInPictureWindowOptions;
 import org.chromium.chrome.browser.util.WindowFeatures;
 import org.chromium.components.embedder_support.delegate.WebContentsDelegateAndroid;
 import org.chromium.content_public.browser.WebContents;
@@ -36,6 +37,7 @@ public abstract class TabWebContentsDelegateAndroid extends WebContentsDelegateA
      * @param disposition WindowOpenDisposition indicating how the tab should be created.
      * @param windowFeatures Initial window features to be used for the new tab.
      * @param userGesture {@code true} if opened by user gesture.
+     * @param pictureInPictureWindowOptions Picture-in-Picture window options.
      * @return {@code true} if new tab was created successfully with a given WebContents.
      */
     protected abstract boolean addNewContents(
@@ -44,18 +46,8 @@ public abstract class TabWebContentsDelegateAndroid extends WebContentsDelegateA
             GURL targetUrl,
             int disposition,
             WindowFeatures windowFeatures,
-            boolean userGesture);
-
-    /**
-     * Repositions the window containing this tab to given bounds. Applicable
-     * only for multi-window mode in Android.
-     *
-     * @param source Source WebContents which requested the repositioning.
-     * @param bounds Rectangle specifying desired bounds in global work area coordinate system.
-     */
-    protected void setContentsBounds(WebContents source, Rect bounds) {
-        // Do nothing.
-    }
+            boolean userGesture,
+            @Nullable PictureInPictureWindowOptions pictureInPictureWindowOptions);
 
     /**
      * Sets the overlay mode.
@@ -163,4 +155,14 @@ public abstract class TabWebContentsDelegateAndroid extends WebContentsDelegateA
 
     /** Called when WebContents reports a change to the non-draggable regions in header content. */
     protected void nonDraggableRegionsChanged(List<Rect> regions) {}
+
+    /**
+     * Called when WebContents is about to handle a keyboard event.
+     *
+     * @param nativeKeyEvent The native key event.
+     * @return true if the event was handled.
+     */
+    protected boolean preHandleKeyboardEvent(long nativeKeyEvent) {
+        return false;
+    }
 }

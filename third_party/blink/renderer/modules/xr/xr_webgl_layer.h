@@ -46,7 +46,7 @@ class XRWebGLLayer final : public XRLayer, public XrLayerClient {
 
   // XrLayerClient overrides.
   XRSession* session() const override;
-  scoped_refptr<StaticBitmapImage> TransferToStaticBitmapImage() override;
+  std::unique_ptr<SharedImageHolder> TransferToSharedImageHolder() override;
   XRFrameTransportDelegate* GetTransportDelegate() override;
 
   WebGLFramebuffer* framebuffer() const { return framebuffer_.Get(); }

@@ -42,8 +42,6 @@ class MainThreadTaskRunnerRestricted {
   friend MainThreadTaskRunnerRestricted AccessMainThreadForGpuFactories();
   friend MainThreadTaskRunnerRestricted
   AccessMainThreadForWebGraphicsContext3DProvider();
-  friend MainThreadTaskRunnerRestricted
-  AccessMainThreadForGpuMemoryBufferManager();
 
   MainThreadTaskRunnerRestricted() = default;
 };

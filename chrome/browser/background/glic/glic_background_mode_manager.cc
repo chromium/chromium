@@ -142,7 +142,7 @@ GlicBackgroundModeManager::GlicBackgroundModeManager(StatusTray* status_tray)
        g_browser_process->profile_manager()->GetLoadedProfiles()) {
     OnProfileAdded(profile);
   }
-  EnableLaunchOnStartup(enabled_pref_);
+  startup_launch_client_.SetLaunchOnStartup(enabled_pref_);
   UpdateState();
 }
 
@@ -161,7 +161,7 @@ void GlicBackgroundModeManager::OnEnabledChanged(bool enabled) {
 
   enabled_pref_ = enabled;
   UpdateState();
-  EnableLaunchOnStartup(enabled_pref_);
+  startup_launch_client_.SetLaunchOnStartup(enabled_pref_);
 }
 
 void GlicBackgroundModeManager::OnGlobalHotkeyChanged(ui::Accelerator hotkey) {
@@ -249,19 +249,6 @@ void GlicBackgroundModeManager::EnterBackgroundMode() {
 void GlicBackgroundModeManager::ExitBackgroundMode() {
   status_icon_.reset();
   keep_alive_.reset();
-}
-
-void GlicBackgroundModeManager::EnableLaunchOnStartup(bool should_launch) {
-#if BUILDFLAG(IS_WIN)
-  StartupLaunchManager* startup_launch_manager =
-      StartupLaunchManager::From(g_browser_process);
-  if (should_launch) {
-    startup_launch_manager->RegisterLaunchOnStartup(StartupLaunchReason::kGlic);
-  } else {
-    startup_launch_manager->UnregisterLaunchOnStartup(
-        StartupLaunchReason::kGlic);
-  }
-#endif
 }
 
 void GlicBackgroundModeManager::RegisterHotkey(ui::Accelerator updated_hotkey) {

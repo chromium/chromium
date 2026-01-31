@@ -36,7 +36,8 @@ std::vector<UrlResource> ConvertAiModeContextToUrlResources(
   // local file info (e.g. tab URL) to build the UrlResource list.
   for (const auto& context : message.contexts()) {
     if (context.has_webpage()) {
-      UrlResource url_resource(GURL(context.webpage().url()));
+      UrlResource url_resource(GURL(context.webpage().url()),
+                               ResourceType::kWebpage);
       url_resource.context_id = context.context_id();
       url_resource.title = context.webpage().title();
 
@@ -56,20 +57,19 @@ std::vector<UrlResource> ConvertAiModeContextToUrlResources(
       }
       result.push_back(url_resource);
     } else if (context.has_pdf()) {
-      // TODO(nyquist): Add special handling for PDFs.
-      UrlResource url_resource(GURL(context.pdf().url()));
+      UrlResource url_resource(GURL(context.pdf().url()), ResourceType::kPdf);
       url_resource.context_id = context.context_id();
       url_resource.title = context.pdf().title();
       result.push_back(url_resource);
     } else if (context.has_image()) {
-      // TODO(nyquist): Add special handling for images.
-      UrlResource url_resource(GURL(context.image().url()));
+      UrlResource url_resource(GURL(context.image().url()),
+                               ResourceType::kImage);
       url_resource.context_id = context.context_id();
       url_resource.title = context.image().title();
       result.push_back(url_resource);
     } else {
       // Unknown context type. This client does not support representing it.
-      UrlResource url_resource(GURL::EmptyGURL());
+      UrlResource url_resource(GURL::EmptyGURL(), ResourceType::kUnknown);
       url_resource.context_id = context.context_id();
       result.push_back(url_resource);
     }

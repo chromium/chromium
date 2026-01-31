@@ -25,7 +25,7 @@ import androidx.appcompat.widget.TooltipCompat;
 import org.chromium.base.TraceEvent;
 import org.chromium.base.lifetime.DestroyChecker;
 import org.chromium.base.lifetime.Destroyable;
-import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.build.annotations.Initializer;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -159,7 +159,7 @@ public abstract class ToolbarLayout extends FrameLayout
             @Nullable ToggleTabStackButtonCoordinator tabSwitcherButtonCoordinator,
             HistoryDelegate historyDelegate,
             UserEducationHelper userEducationHelper,
-            ObservableSupplier<Tracker> trackerSupplier,
+            MonotonicObservableSupplier<Tracker> trackerSupplier,
             ToolbarProgressBar progressBar,
             @Nullable ReloadButtonCoordinator reloadButtonCoordinator,
             @Nullable BackButtonCoordinator backButtonCoordinator,
@@ -595,9 +595,11 @@ public abstract class ToolbarLayout extends FrameLayout
 
     /**
      * Return the height of the tab strip from the layout resource. Return 0 for toolbars that do
-     * not have a tab strip.
+     * not have a tab strip. Note the actual tab strip height might be different than this value.
+     *
+     * @see Toolbar#getTabStripHeight()
      */
-    protected int getTabStripHeightFromResource() {
+    public int getTabStripHeightFromResource() {
         return getResources().getDimensionPixelSize(R.dimen.tab_strip_height);
     }
 
@@ -637,7 +639,7 @@ public abstract class ToolbarLayout extends FrameLayout
      *
      * @param tabCountSupplier The observable supplier subclasses can observe.
      */
-    void setTabCountSupplier(ObservableSupplier<Integer> tabCountSupplier) {}
+    void setTabCountSupplier(MonotonicObservableSupplier<Integer> tabCountSupplier) {}
 
     /**
      * Gives inheriting classes the chance to update themselves based on default search engine

@@ -27,8 +27,7 @@ class MockMahiMediaAppContentManager
               (override));
   MOCK_METHOD(void,
               GetContent,
-              (const base::UnguessableToken,
-               chromeos::GetMediaAppContentCallback),
+              (const base::UnguessableToken, chromeos::MahiGetContentCallback),
               (override));
   MOCK_METHOD(void,
               OnMahiContextMenuClicked,

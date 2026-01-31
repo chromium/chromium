@@ -32,7 +32,11 @@ FullscreenWebStateObserver::FullscreenWebStateObserver(
   DCHECK(model_);
 }
 
-FullscreenWebStateObserver::~FullscreenWebStateObserver() = default;
+FullscreenWebStateObserver::~FullscreenWebStateObserver() {
+  CHECK(!web::WebStateObserver::IsInObserverList())
+      << "FullscreenWebStateObserver must be removed "
+         "from observer list before destruction.";
+}
 
 void FullscreenWebStateObserver::SetWebState(web::WebState* web_state) {
   if (web_state_ == web_state) {
@@ -65,10 +69,7 @@ void FullscreenWebStateObserver::WasShown(web::WebState* web_state) {
 void FullscreenWebStateObserver::DidFinishNavigation(
     web::WebState* web_state,
     web::NavigationContext* navigation_context) {
-  const GURL& navigation_url = navigation_context->GetUrl();
-  bool url_changed = web::GURLByRemovingRefFromGURL(navigation_url) !=
-                     web::GURLByRemovingRefFromGURL(last_navigation_url_);
-  last_navigation_url_ = navigation_url;
+  last_navigation_url_ = navigation_context->GetUrl();
 
   // Due to limitations in WKWebView's rendering, different MIME types must be
   // inset using different techniques:
@@ -87,9 +88,8 @@ void FullscreenWebStateObserver::DidFinishNavigation(
 
   model_->SetScrollViewHeight(web_state->GetView().bounds.size.height);
 
-  // Only reset the model for document-changing navigations or same-document
-  // navigations that update the visible URL.
-  if (!navigation_context->IsSameDocument() || url_changed) {
+  // Only reset the model for document-changing navigations.
+  if (!navigation_context->IsSameDocument()) {
     model_->ResetForNavigation();
   }
 }

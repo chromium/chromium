@@ -95,7 +95,7 @@ TEST_F(SyncWebSocketImplTest, DetermineRecipient) {
   std::optional<base::Value> message_value =
       base::JSONReader::Read(message, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   ASSERT_TRUE(message_value.has_value());
-  base::Value::Dict* message_dict = message_value->GetIfDict();
+  base::DictValue* message_dict = message_value->GetIfDict();
   ASSERT_TRUE(message_dict);
   const std::string* method = message_dict->FindString("method");
   ASSERT_EQ(*method, "Page.enable");
@@ -111,8 +111,7 @@ TEST_F(SyncWebSocketImplTest, SendReceiveTimeout) {
   base::WaitableEvent server_reply_allowed(
       base::WaitableEvent::ResetPolicy::AUTOMATIC,
       base::WaitableEvent::InitialState::NOT_SIGNALED);
-  server_.SetMessageCallback(base::BindOnce(
-      &base::WaitableEvent::Wait, base::Unretained(&server_reply_allowed)));
+  server_.SetMessageCallback(server_reply_allowed.GetWaitCallbackForTesting());
 
   ASSERT_TRUE(sock.Connect(server_.web_socket_url()));
   ASSERT_TRUE(sock.Send("hi"));

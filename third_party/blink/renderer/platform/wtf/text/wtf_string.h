@@ -56,6 +56,9 @@ class WTF_EXPORT String {
   USING_FAST_MALLOC(String);
 
  public:
+  using size_type = string_size_t;
+  static constexpr size_type npos = kNotFound;
+
   // Construct a null string, distinguishable from an empty string.
   String() = default;
 
@@ -432,9 +435,6 @@ class WTF_EXPORT String {
   void Split(const StringView& separator,
              bool allow_empty_entries,
              Vector<String>& result) const;
-  void Split(const StringView& separator, Vector<String>& result) const {
-    Split(separator, false, result);
-  }
   void Split(UChar separator,
              bool allow_empty_entries,
              Vector<String>& result) const;
@@ -595,12 +595,6 @@ inline bool operator==(const char* a, const String& b) {
 
 inline bool EqualIgnoringNullity(const String& a, const String& b) {
   return EqualIgnoringNullity(a.Impl(), b.Impl());
-}
-
-template <wtf_size_t inlineCapacity>
-inline bool EqualIgnoringNullity(const Vector<UChar, inlineCapacity>& a,
-                                 const String& b) {
-  return EqualIgnoringNullity(a, b.Impl());
 }
 
 inline void swap(String& a, String& b) {

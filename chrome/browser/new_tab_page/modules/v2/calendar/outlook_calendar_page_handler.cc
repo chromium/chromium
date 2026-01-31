@@ -356,8 +356,8 @@ void OutlookCalendarPageHandler::OnJsonParsed(
     const std::string* end_time =
         event_dict.FindStringByDottedPath("end.dateTime");
     std::optional<bool> is_organizer = event_dict.FindBool("isOrganizer");
-    const base::Value::List* attendees = event_dict.FindList("attendees");
-    const base::Value::List* attachments = event_dict.FindList("attachments");
+    const base::ListValue* attendees = event_dict.FindList("attendees");
+    const base::ListValue* attachments = event_dict.FindList("attachments");
 
     base::Time start_timestamp;
     base::Time end_timestamp;

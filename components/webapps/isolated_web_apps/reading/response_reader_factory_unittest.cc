@@ -128,9 +128,6 @@ class IsolatedWebAppResponseReaderFactoryTest : public testing::Test {
         base::BindRepeating(
             &web_package::MockWebBundleParserFactory::AddReceiver,
             base::Unretained(parser_factory_.get())));
-
-    ON_CALL(iwa_client_, ValidateTrust(_, kWebBundleId, _))
-        .WillByDefault(Return(base::ok()));
   }
 
   void TearDown() override { factory_.reset(); }
@@ -184,7 +181,7 @@ class IsolatedWebAppResponseReaderFactoryTest : public testing::Test {
           web_app::SignedWebBundleReader::SetSignatureVerifierForTesting(
               &signature_verifier_);
 
-  test::MockIwaClient iwa_client_;
+  test::TestIwaClient iwa_client_;
 };
 
 using ReaderResult =
@@ -202,7 +199,8 @@ TEST_P(IsolatedWebAppResponseReaderFactoryIntegrityBlockParserErrorTest,
 
   base::test::TestFuture<ReaderResult> reader_future;
   factory_->CreateResponseReader(web_bundle_path_, kWebBundleId,
-                                 /*flags=*/{}, reader_future.GetCallback());
+                                 /*verify_signatures=*/true,
+                                 reader_future.GetCallback());
 
   auto error = web_package::mojom::BundleIntegrityBlockParseError::New();
   error->type = GetParam().first;
@@ -238,7 +236,8 @@ TEST_F(IsolatedWebAppResponseReaderFactoryTest,
 
   base::test::TestFuture<ReaderResult> reader_future;
   factory_->CreateResponseReader(web_bundle_path_, kWebBundleId,
-                                 /*flags=*/{}, reader_future.GetCallback());
+                                 /*verify_signatures=*/true,
+                                 reader_future.GetCallback());
 
   auto integrity_block = integrity_block_->Clone();
   // Simulate a failed validation by returning a different ID.
@@ -276,17 +275,15 @@ TEST_P(IsolatedWebAppResponseReaderFactorySignatureVerificationErrorTest,
        SignatureVerificationError) {
   base::HistogramTester histogram_tester;
 
-  IsolatedWebAppResponseReaderFactory::Flags flags;
-  if (skip_signature_verification_) {
-    flags.Put(
-        IsolatedWebAppResponseReaderFactory::Flag::kSkipSignatureVerification);
-  } else {
+  if (!skip_signature_verification_) {
     EXPECT_CALL(signature_verifier_, VerifySignatures)
         .WillOnce(RunOnceCallback<2>(base::unexpected(error_)));
   }
   base::test::TestFuture<ReaderResult> reader_future;
-  factory_->CreateResponseReader(web_bundle_path_, kWebBundleId, flags,
-                                 reader_future.GetCallback());
+  factory_->CreateResponseReader(
+      web_bundle_path_, kWebBundleId,
+      /*verify_signatures=*/!skip_signature_verification_,
+      reader_future.GetCallback());
 
   FulfillIntegrityBlock();
 
@@ -335,7 +332,8 @@ TEST_P(IsolatedWebAppResponseReaderFactoryMetadataParserErrorTest,
 
   base::test::TestFuture<ReaderResult> reader_future;
   factory_->CreateResponseReader(web_bundle_path_, kWebBundleId,
-                                 /*flags=*/{}, reader_future.GetCallback());
+                                 /*verify_signatures=*/true,
+                                 reader_future.GetCallback());
 
   FulfillIntegrityBlock();
   auto error = web_package::mojom::BundleMetadataParseError::New();
@@ -372,7 +370,8 @@ TEST_F(IsolatedWebAppResponseReaderFactoryTest, TestInvalidMetadataPrimaryUrl) {
 
   base::test::TestFuture<ReaderResult> reader_future;
   factory_->CreateResponseReader(web_bundle_path_, kWebBundleId,
-                                 /*flags=*/{}, reader_future.GetCallback());
+                                 /*verify_signatures=*/true,
+                                 reader_future.GetCallback());
 
   FulfillIntegrityBlock();
   auto metadata = metadata_->Clone();
@@ -395,7 +394,8 @@ TEST_F(IsolatedWebAppResponseReaderFactoryTest,
       .WillOnce(RunOnceCallback<2>(base::ok()));
   base::test::TestFuture<ReaderResult> reader_future;
   factory_->CreateResponseReader(web_bundle_path_, kWebBundleId,
-                                 /*flags=*/{}, reader_future.GetCallback());
+                                 /*verify_signatures=*/true,
+                                 reader_future.GetCallback());
 
   FulfillIntegrityBlock();
   auto metadata = metadata_->Clone();

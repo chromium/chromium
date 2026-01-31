@@ -92,14 +92,13 @@ const WebViewInfo* WebViewsInfo::GetForId(const std::string& id) const {
   return &*it;
 }
 
-Status WebViewsInfo::FillFromTargetsInfo(
-    const base::Value::List& target_infos) {
+Status WebViewsInfo::FillFromTargetsInfo(const base::ListValue& target_infos) {
   std::vector<WebViewInfo> temp_views_info;
   for (const base::Value& info_value : target_infos) {
     if (!info_value.is_dict()) {
       return Status(kUnknownError, "DevTools contains non-dictionary item");
     }
-    const base::Value::Dict& info = info_value.GetDict();
+    const base::DictValue& info = info_value.GetDict();
     const std::string* id = info.FindString("id");
     if (!id) {
       id = info.FindString("targetId");

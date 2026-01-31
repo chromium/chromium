@@ -14,6 +14,7 @@
 #include "base/threading/thread_restrictions.h"
 #include "chrome/browser/ash/base/locale_util.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/global_features.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/webui/ash/login/l10n_util.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -195,9 +196,10 @@ typedef InProcessBrowserTest CustomizationLocaleTest;
 IN_PROC_BROWSER_TEST_F(CustomizationLocaleTest, CheckAvailableLocales) {
   for (size_t i = 0; i < languages_available.size(); ++i) {
     LanguageSwitchedWaiter waiter(base::BindOnce(&VerifyLanguageSwitched));
-    locale_util::SwitchLanguage(languages_available[i], true, true,
-                                waiter.Callback(),
-                                ProfileManager::GetActiveUserProfile());
+    locale_util::SwitchLanguage(
+        g_browser_process->GetFeatures()->application_locale_storage(),
+        languages_available[i], true, true, waiter.Callback(),
+        ProfileManager::GetActiveUserProfile());
     waiter.Wait();
     {
       base::ScopedAllowBlockingForTesting allow_blocking;
@@ -245,7 +247,7 @@ IN_PROC_BROWSER_TEST_P(CustomizationVPDTest, GetUILanguageList) {
       << "Test failed for initial_locale='" << GetParam() << "'";
 
   for (size_t i = 0; i < ui_language_list.size(); ++i) {
-    base::Value::Dict* language_info = ui_language_list[i].GetIfDict();
+    base::DictValue* language_info = ui_language_list[i].GetIfDict();
 
     ASSERT_TRUE(language_info)
         << "Test failed for initial_locale='" << GetParam() << "', i=" << i;

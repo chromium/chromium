@@ -13,6 +13,7 @@
 #include "base/feature_list.h"
 #include "base/scoped_observation.h"
 #include "base/test/bind.h"
+#include "base/test/gmock_callback_support.h"
 #include "base/test/simple_test_clock.h"
 #include "base/test/test_future.h"
 #include "base/traits_bag.h"
@@ -31,6 +32,7 @@
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/test/web_app_test.h"
 #include "chrome/browser/web_applications/test/web_app_test_utils.h"
+#include "chrome/browser/web_applications/web_app_command_scheduler.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
@@ -46,11 +48,13 @@
 #include "components/services/app_service/public/cpp/file_handler.h"
 #include "components/sync/base/time.h"
 #include "components/webapps/browser/install_result_code.h"
+#include "components/webapps/isolated_web_apps/test_support/signing_keys.h"
 #include "components/webapps/isolated_web_apps/types/storage_location.h"
 #include "mojo/public/cpp/bindings/struct_ptr.h"
 #include "services/data_decoder/public/cpp/test_support/in_process_data_decoder.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/blink/public/mojom/manifest/manifest.mojom-forward.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/manifest/manifest.mojom.h"
 #include "url/gurl.h"
 #include "url/origin.h"
@@ -64,6 +68,18 @@ using testing::_;
 struct FinalizeInstallResult {
   webapps::AppId installed_app_id;
   webapps::InstallResultCode code;
+};
+
+class MockWebAppCommandScheduler : public WebAppCommandScheduler {
+ public:
+  explicit MockWebAppCommandScheduler(Profile& profile)
+      : WebAppCommandScheduler(profile) {}
+  ~MockWebAppCommandScheduler() override = default;
+
+  MOCK_METHOD(void,
+              ScheduleResolveWebAppPendingMigrationInfo,
+              (base::OnceClosure callback, const base::Location& location),
+              (override));
 };
 
 }  // namespace
@@ -90,7 +106,10 @@ class TestInstallManagerObserver : public WebAppInstallManagerObserver {
 
 class WebAppInstallFinalizerUnitTest : public WebAppTest {
  public:
-  WebAppInstallFinalizerUnitTest() = default;
+  WebAppInstallFinalizerUnitTest() {
+    scoped_feature_list_.InitAndEnableFeature(
+        blink::features::kWebAppMigrationApi);
+  }
   WebAppInstallFinalizerUnitTest(const WebAppInstallFinalizerUnitTest&) =
       delete;
   WebAppInstallFinalizerUnitTest& operator=(
@@ -110,10 +129,24 @@ class WebAppInstallFinalizerUnitTest : public WebAppTest {
     provider->SetOriginAssociationManager(
         std::make_unique<FakeWebAppOriginAssociationManager>());
 
+    auto mock_scheduler =
+        std::make_unique<MockWebAppCommandScheduler>(*profile());
+    mock_scheduler_ = mock_scheduler.get();
+    // Expect (and flush at the end of this method) initially scheduled pending
+    // migration sync command.
+    EXPECT_CALL(*mock_scheduler_,
+                ScheduleResolveWebAppPendingMigrationInfo(_, _))
+        .WillOnce(base::test::RunOnceClosure<0>());
+    provider->SetScheduler(std::move(mock_scheduler));
+
     test::AwaitStartWebAppProviderAndSubsystems(profile());
+
+    provider->command_manager().AwaitAllCommandsCompleteForTesting();
+    testing::Mock::VerifyAndClearExpectations(mock_scheduler_);
   }
 
   void TearDown() override {
+    mock_scheduler_ = nullptr;
     install_manager_observer_.reset();
     WebAppTest::TearDown();
   }
@@ -154,8 +187,10 @@ class WebAppInstallFinalizerUnitTest : public WebAppTest {
 
  protected:
   std::unique_ptr<TestInstallManagerObserver> install_manager_observer_;
+  raw_ptr<MockWebAppCommandScheduler> mock_scheduler_;
 
  private:
+  base::test::ScopedFeatureList scoped_feature_list_;
   data_decoder::test::InProcessDataDecoder in_process_data_decoder_;
 };
 
@@ -522,7 +557,7 @@ TEST_F(WebAppInstallFinalizerUnitTest, IsolationDataSetInWebAppDB) {
   IwaVersion version = *IwaVersion::Create("1.2.3");
 
   auto info = WebAppInstallInfo::CreateWithStartUrlForTesting(
-      GURL("isolated-app://random_app"));
+      IwaOrigin(test::GetDefaultEcdsaP256WebBundleId()).origin().GetURL());
   info->title = u"Foo Title";
   info->set_isolated_web_app_version(version);
 
@@ -622,6 +657,131 @@ TEST_F(WebAppInstallFinalizerUnitTest, ValidateOriginAssociationsDenied) {
   EXPECT_EQ(installed_app->install_state(),
             proto::InstallState::INSTALLED_WITH_OS_INTEGRATION);
   EXPECT_EQ(ScopeExtensions(), installed_app->validated_scope_extensions());
+}
+
+TEST_F(WebAppInstallFinalizerUnitTest, ValidateMigrationSourcesApproved) {
+  GURL start_url("https://foo.example");
+  auto info = WebAppInstallInfo::CreateWithStartUrlForTesting(start_url);
+  info->title = u"Foo Title";
+  WebAppInstallFinalizer::FinalizeOptions options(
+      webapps::WebappInstallSource::INTERNAL_DEFAULT);
+
+  proto::WebAppMigrationSource source;
+  source.set_manifest_id("https://migration.foo.example/");
+  source.set_behavior(
+      proto::WebAppMigrationBehavior::WEB_APP_MIGRATION_BEHAVIOR_SUGGEST);
+  info->migration_sources = {source};
+
+  // Set data such that migration source will be returned in validated data.
+  static_cast<FakeWebAppOriginAssociationManager&>(
+      provider().origin_association_manager())
+      .SetMigrationSourcesData(
+          {webapps::ManifestId("https://migration.foo.example/")});
+
+  EXPECT_CALL(*mock_scheduler_, ScheduleResolveWebAppPendingMigrationInfo(_, _))
+      .WillOnce(base::test::RunOnceClosure<0>());
+
+  FinalizeInstallResult result = AwaitFinalizeInstall(*info, options);
+
+  EXPECT_EQ(webapps::InstallResultCode::kSuccessNewInstall, result.code);
+  const WebApp* installed_app = registrar().GetAppById(result.installed_app_id);
+  EXPECT_THAT(installed_app->unvalidated_migration_sources(),
+              testing::ElementsAre(
+                  testing::Property(&proto::WebAppMigrationSource::manifest_id,
+                                    "https://migration.foo.example/")));
+  EXPECT_THAT(installed_app->validated_migration_sources(),
+              testing::ElementsAre(
+                  testing::Property(&proto::WebAppMigrationSource::manifest_id,
+                                    "https://migration.foo.example/")));
+}
+
+TEST_F(WebAppInstallFinalizerUnitTest,
+       SuggestedFromMigrationSucceedsWithoutValidatedSource) {
+  GURL start_url("https://foo.example");
+  auto info = WebAppInstallInfo::CreateWithStartUrlForTesting(start_url);
+  info->title = u"Foo Title";
+  WebAppInstallFinalizer::FinalizeOptions options(
+      webapps::WebappInstallSource::INTERNAL_DEFAULT);
+  options.install_state = proto::InstallState::SUGGESTED_FROM_MIGRATION;
+  options.add_to_applications_menu = false;
+  options.add_to_desktop = false;
+  options.add_to_quick_launch_bar = false;
+
+  proto::WebAppMigrationSource source;
+  source.set_manifest_id("https://migration.foo.example/");
+  source.set_behavior(
+      proto::WebAppMigrationBehavior::WEB_APP_MIGRATION_BEHAVIOR_SUGGEST);
+  info->migration_sources = {source};
+
+  // Set data such that migration source will NOT be returned in validated data.
+  static_cast<FakeWebAppOriginAssociationManager&>(
+      provider().origin_association_manager())
+      .SetMigrationSourcesData({});
+
+  FinalizeInstallResult result = AwaitFinalizeInstall(*info, options);
+
+  EXPECT_EQ(webapps::InstallResultCode::kSuccessNewInstall, result.code);
+  const WebApp* installed_app = registrar().GetAppById(result.installed_app_id);
+  EXPECT_EQ(proto::InstallState::SUGGESTED_FROM_MIGRATION,
+            installed_app->install_state());
+  EXPECT_THAT(installed_app->unvalidated_migration_sources(),
+              testing::ElementsAre(
+                  testing::Property(&proto::WebAppMigrationSource::manifest_id,
+                                    "https://migration.foo.example/")));
+  EXPECT_TRUE(installed_app->validated_migration_sources().empty());
+}
+
+TEST_F(WebAppInstallFinalizerUnitTest,
+       SuggestedFromMigrationFailsWithoutMigrationSources) {
+  GURL start_url("https://foo.example");
+  auto info = WebAppInstallInfo::CreateWithStartUrlForTesting(start_url);
+  info->title = u"Foo Title";
+  WebAppInstallFinalizer::FinalizeOptions options(
+      webapps::WebappInstallSource::INTERNAL_DEFAULT);
+  options.install_state = proto::InstallState::SUGGESTED_FROM_MIGRATION;
+
+  info->migration_sources = {};
+
+  FinalizeInstallResult result = AwaitFinalizeInstall(*info, options);
+
+  EXPECT_EQ(webapps::InstallResultCode::kNoValidMigrationSource, result.code);
+  EXPECT_FALSE(registrar().GetAppById(result.installed_app_id));
+}
+
+TEST_F(WebAppInstallFinalizerUnitTest, MigrationSourceChangeSchedulesSync) {
+  GURL start_url("https://foo.example");
+  auto info = WebAppInstallInfo::CreateWithStartUrlForTesting(start_url);
+  info->title = u"Foo Title";
+  WebAppInstallFinalizer::FinalizeOptions options(
+      webapps::WebappInstallSource::INTERNAL_DEFAULT);
+  static_cast<FakeWebAppOriginAssociationManager&>(
+      provider().origin_association_manager())
+      .SetMigrationSourcesData(
+          {webapps::ManifestId("https://migration.foo.example/")});
+
+  // 1. Install without migration sources.
+  {
+    FinalizeInstallResult result = AwaitFinalizeInstall(*info, options);
+    ASSERT_EQ(webapps::InstallResultCode::kSuccessNewInstall, result.code);
+  }
+
+  // 2. Expect ScheduleResolveWebAppPendingMigrationInfo to be called.
+  EXPECT_CALL(*mock_scheduler_, ScheduleResolveWebAppPendingMigrationInfo(_, _))
+      .WillOnce(base::test::RunOnceClosure<0>());
+
+  // 3. Finalize update with migration sources.
+  proto::WebAppMigrationSource source;
+  source.set_manifest_id("https://migration.foo.example/");
+  source.set_behavior(
+      proto::WebAppMigrationBehavior::WEB_APP_MIGRATION_BEHAVIOR_SUGGEST);
+  info->migration_sources = {source};
+
+  base::test::TestFuture<const webapps::AppId&, webapps::InstallResultCode>
+      update_future;
+  finalizer().FinalizeUpdate(*info, update_future.GetCallback());
+  ASSERT_TRUE(update_future.Wait());
+  EXPECT_EQ(webapps::InstallResultCode::kSuccessAlreadyInstalled,
+            update_future.Get<webapps::InstallResultCode>());
 }
 
 class WebAppInstallFinalizerUnitTestQueriesAndFragments

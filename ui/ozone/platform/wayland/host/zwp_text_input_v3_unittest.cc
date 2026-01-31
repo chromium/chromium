@@ -7,6 +7,7 @@
 #include <text-input-unstable-v3-client-protocol.h>
 #include <text-input-unstable-v3-server-protocol.h>
 
+#include <algorithm>
 #include <memory>
 #include <string_view>
 
@@ -995,7 +996,7 @@ class ZwpTextInputV3TestWithCustomClient : public WaylandTestSimple {
       };
       base::UTF8ToUTF16AndAdjustOffsets(base::UTF16ToUTF8(surrounding_text),
                                         &offsets_for_adjustment);
-      if (base::Contains(offsets_for_adjustment, std::u16string::npos)) {
+      if (std::ranges::contains(offsets_for_adjustment, std::u16string::npos)) {
         LOG(DFATAL) << "The selection range for surrounding text is invalid.";
         return;
       }

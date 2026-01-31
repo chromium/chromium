@@ -52,4 +52,7 @@ enum ChromeAimEntryPoint {
 
   // AIM is entered from the lens contextual searchbox.
   DESKTOP_CHROME_LENS_CONTEXTUAL_SEARCHBOX_ENTRY_POINT = 117;
+
+  // AIM is entered from the NTP Threads.
+  DESKTOP_CHROME_NTP_THREADS_ENTRY_POINT = 129;
 }

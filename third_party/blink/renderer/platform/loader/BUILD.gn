@@ -58,6 +58,7 @@ blink_platform_sources("loader") {
     "fetch/fetch_parameters.h",
     "fetch/fetch_utils.cc",
     "fetch/fetch_utils.h",
+    "fetch/guardrail_policy_asset_type.h",
     "fetch/https_state.cc",
     "fetch/https_state.h",
     "fetch/integrity_metadata.cc",

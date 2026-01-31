@@ -196,7 +196,7 @@ PaintRecord PaintWorkletProxyClient::Paint(
   // should shuffle the bundle randomly and then assign half to the first global
   // scope, and half to the rest.
   DCHECK_EQ(global_scopes_.size(), PaintWorklet::kNumGlobalScopesPerThread);
-  PaintWorkletGlobalScope* global_scope = global_scopes_[base::RandInt(
+  PaintWorkletGlobalScope* global_scope = global_scopes_[base::RandIntInclusive(
       0, (PaintWorklet::kNumGlobalScopesPerThread)-1)];
 
   const CSSPaintWorkletInput* input =

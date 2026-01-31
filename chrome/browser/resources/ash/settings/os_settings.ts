@@ -173,9 +173,6 @@ export type {TtsVoiceSubpageBrowserProxy} from './os_a11y_page/tts_voice_subpage
 export {TtsVoiceSubpageBrowserProxyImpl} from './os_a11y_page/tts_voice_subpage_browser_proxy.js';
 export type {AboutPageBrowserProxy, ChannelInfo, EndOfLifeInfo, RegulatoryInfo, TpmFirmwareUpdateStatusChangedEvent, VersionInfo} from './os_about_page/about_page_browser_proxy.js';
 export {AboutPageBrowserProxyImpl, BrowserChannel, UpdateStatus} from './os_about_page/about_page_browser_proxy.js';
-export type {DeviceNameBrowserProxy, DeviceNameMetadata} from './os_about_page/device_name_browser_proxy.js';
-export {DeviceNameBrowserProxyImpl} from './os_about_page/device_name_browser_proxy.js';
-export {DeviceNameState, SetDeviceNameResult} from './os_about_page/device_name_util.js';
 export {OsAboutPageElement} from './os_about_page/os_about_page.js';
 export type {AndroidAppsBrowserProxy} from './os_apps_page/android_apps_browser_proxy.js';
 export {AndroidAppsBrowserProxyImpl} from './os_apps_page/android_apps_browser_proxy.js';
@@ -211,7 +208,6 @@ export type {DataAccessPolicyState, PeripheralDataAccessBrowserProxy} from './os
 export {PeripheralDataAccessBrowserProxyImpl} from './os_privacy_page/peripheral_data_access_browser_proxy.js';
 export {SettingsPrivacyHubAppPermissionRow} from './os_privacy_page/privacy_hub_app_permission_row.js';
 export {GeolocationAccessLevel, ScheduleType} from './os_privacy_page/privacy_hub_geolocation_subpage.js';
-export {PrivacyHubSensorSubpageUserAction} from './os_privacy_page/privacy_hub_metrics_util.js';
 export {SettingsPrivacyHubSystemServiceRow} from './os_privacy_page/privacy_hub_system_service_row.js';
 export type {OsResetBrowserProxy} from './os_reset_page/os_reset_browser_proxy.js';
 export {OsResetBrowserProxyImpl} from './os_reset_page/os_reset_browser_proxy.js';

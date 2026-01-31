@@ -24,7 +24,7 @@ namespace web_app {
 
 InstallFromInfoJob::InstallFromInfoJob(
     Profile* profile,
-    base::Value::Dict& debug_value,
+    base::DictValue& debug_value,
     std::unique_ptr<WebAppInstallInfo> install_info,
     bool overwrite_existing_manifest_fields,
     webapps::WebappInstallSource install_surface,

@@ -1,5 +1,7 @@
 include_rules = [
+  # keep-sorted start
+  "+ios/chrome/browser/safe_browsing/model",
   "+ios/chrome/browser/tab_insertion/model",
   "+ios/chrome/browser/web/model",
-  "+ios/chrome/browser/safe_browsing/model",
+  # keep-sorted end
 ]

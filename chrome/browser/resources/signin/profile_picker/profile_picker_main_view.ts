@@ -11,11 +11,11 @@ import 'chrome://resources/cr_elements/icons.html.js';
 import './icons.html.js';
 import './profile_card.js';
 import '/strings.m.js';
+import './signin_error_dialog.js';
 
 import {HelpBubbleMixinLit} from 'chrome://resources/cr_components/help_bubble/help_bubble_mixin_lit.js';
 import type {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import type {CrCheckboxElement} from 'chrome://resources/cr_elements/cr_checkbox/cr_checkbox.js';
-import type {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
 import {I18nMixinLit} from 'chrome://resources/cr_elements/i18n_mixin_lit.js';
 import {WebUiListenerMixinLit} from 'chrome://resources/cr_elements/web_ui_listener_mixin_lit.js';
 import {assert} from 'chrome://resources/js/assert.js';
@@ -32,6 +32,7 @@ import {navigateTo, NavigationMixin, Routes} from './navigation_mixin.js';
 import {isAskOnStartupAllowed, isGlicVersion, isProfileCreationAllowed} from './profile_picker_flags.js';
 import {getCss} from './profile_picker_main_view.css.js';
 import {getHtml} from './profile_picker_main_view.html.js';
+import type {SigninErrorDialogElement} from './signin_error_dialog.js';
 
 export interface ProfilePickerMainViewElement {
   $: {
@@ -42,7 +43,7 @@ export interface ProfilePickerMainViewElement {
     openAllProfilesButton: HTMLElement,
     profilesContainer: HTMLElement,
     profilesWrapper: HTMLElement,
-    forceSigninErrorDialog: CrDialogElement,
+    signinErrorDialog: SigninErrorDialogElement,
   };
 }
 
@@ -75,10 +76,6 @@ export class ProfilePickerMainViewElement extends
       guestModeEnabled_: {type: Boolean},
       profileCreationAllowed_: {type: Boolean},
       pickerButtonsDisabled_: {type: Boolean},
-      forceSigninErrorDialogTitle_: {type: String},
-      forceSigninErrorDialogBody_: {type: String},
-      forceSigninErrorProfilePath_: {type: String},
-      shouldShownSigninButton_: {type: Boolean},
       shouldShowOpenAllProfilesButton_: {type: Boolean},
       // Exposed to CSS as 'is-glic_'.
       isGlic_: {type: Boolean, reflect: true},
@@ -109,14 +106,6 @@ export class ProfilePickerMainViewElement extends
 
   protected accessor pickerButtonsDisabled_: boolean = false;
 
-  // TODO(crbug.com/40280498): Move the dialog into it's own element with the
-  // below members. This dialog state should be independent of the Profile
-  // Picker itself.
-  protected accessor forceSigninErrorDialogTitle_: string = '';
-  protected accessor forceSigninErrorDialogBody_: string = '';
-  private accessor forceSigninErrorProfilePath_: string = '';
-  protected accessor shouldShownSigninButton_: boolean = false;
-
   protected accessor isOpenAllProfilesButtonExperimentEnabled_: boolean =
       loadTimeData.getBoolean('isOpenAllProfilesButtonExperimentEnabled');
   private maxProfilesCountToShowOpenAllProfilesButton_: number =
@@ -141,10 +130,6 @@ export class ProfilePickerMainViewElement extends
         'profiles-list-changed', this.handleProfilesListChanged_.bind(this));
     this.addWebUiListener(
         'profile-removed', this.handleProfileRemoved_.bind(this));
-    this.addWebUiListener(
-        'display-force-signin-error-dialog',
-        (title: string, body: string, profilePath: string) =>
-            this.showForceSigninErrorDialog(title, body, profilePath));
     this.addWebUiListener('reset-picker-buttons', () => {
       this.enableAllPickerButtons_();
     });
@@ -466,34 +451,6 @@ export class ProfilePickerMainViewElement extends
 
   getProfileListForTesting(): ProfileState[] {
     return this.profilesList_;
-  }
-
-  showForceSigninErrorDialog(title: string, body: string, profilePath: string):
-      void {
-    this.forceSigninErrorDialogTitle_ = title;
-    this.forceSigninErrorDialogBody_ = body;
-    this.forceSigninErrorProfilePath_ = profilePath;
-    this.shouldShownSigninButton_ = profilePath.length !== 0;
-    this.$.forceSigninErrorDialog.showModal();
-  }
-
-  protected onForceSigninErrorDialogOkButtonClicked_(): void {
-    this.$.forceSigninErrorDialog.close();
-    this.clearErrorDialogInfo_();
-  }
-
-  protected onReauthClicked_(): void {
-    this.$.forceSigninErrorDialog.close();
-    this.manageProfilesBrowserProxy_.launchSelectedProfile(
-        this.forceSigninErrorProfilePath_);
-    this.clearErrorDialogInfo_();
-  }
-
-  private clearErrorDialogInfo_(): void {
-    this.forceSigninErrorDialogTitle_ = '';
-    this.forceSigninErrorDialogBody_ = '';
-    this.forceSigninErrorProfilePath_ = '';
-    this.shouldShownSigninButton_ = false;
   }
 }
 

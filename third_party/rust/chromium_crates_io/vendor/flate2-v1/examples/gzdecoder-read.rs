@@ -11,8 +11,8 @@ fn main() {
     println!("{}", decode_reader(bytes).unwrap());
 }
 
-// Uncompresses a Gz Encoded vector of bytes and returns a string or error
-// Here &[u8] implements Read
+// Uncompresses a Gz-encoded vector of bytes and returns a string or error
+// Here &[u8] implements the Read trait
 fn decode_reader(bytes: Vec<u8>) -> io::Result<String> {
     let mut gz = read::GzDecoder::new(&bytes[..]);
     let mut s = String::new();

@@ -13,15 +13,11 @@
 #include <utility>
 #include <vector>
 
-#include "base/containers/contains.h"
 #include "base/functional/bind.h"
+#include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/test_future.h"
-#include "base/types/cxx23_to_underlying.h"
-#include "chrome/browser/ash/crosapi/crosapi_ash.h"
-#include "chrome/browser/ash/crosapi/crosapi_manager.h"
-#include "chrome/browser/ash/crosapi/vpn_service_ash.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/chromeos/extensions/vpn_provider/vpn_provider_api.h"
 #include "chrome/browser/chromeos/extensions/vpn_provider/vpn_service.h"
@@ -35,7 +31,6 @@
 #include "chromeos/ash/components/dbus/shill/shill_profile_client.h"
 #include "chromeos/ash/components/network/network_configuration_handler.h"
 #include "chromeos/ash/components/network/shill_property_handler.h"
-#include "chromeos/crosapi/mojom/vpn_service.mojom.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_utils.h"
@@ -91,7 +86,7 @@ class TestShillThirdPartyVpnDriverClient
     : public ash::FakeShillThirdPartyVpnDriverClient {
  public:
   void SetParameters(const std::string& object_path_value,
-                     const base::Value::Dict& parameters,
+                     const base::DictValue& parameters,
                      StringCallback callback,
                      ErrorCallback error_callback) override {
     set_parameters_counter_++;
@@ -124,7 +119,7 @@ class TestShillThirdPartyVpnDriverClient
   }
 
   int set_parameters_counter_ = 0;
-  base::Value::Dict parameters_;
+  base::DictValue parameters_;
   int update_connection_state_counter_ = 0;
   uint32_t connection_state_;
   int send_packet_counter_ = 0;
@@ -156,8 +151,6 @@ class VpnProviderApiTestBase : public extensions::ExtensionApiTest {
         chromeos::VpnServiceFactory::GetForBrowserContext(profile()));
   }
 
-  virtual crosapi::mojom::VpnService* service_remote() const = 0;
-
   virtual void OnPlatformMessage(const std::string& configuration_name,
                                  api_vpn::PlatformMessage) = 0;
   virtual void OnPacketReceived(const std::string& configuration_name,
@@ -187,14 +180,11 @@ class VpnProviderApiTest : public VpnProviderApiTestBase {
     VpnProviderApiTestBase::SetUpOnMainThread();
     AddNetworkProfileForUser();
   }
-  crosapi::mojom::VpnService* service_remote() const override {
-    return GetVpnServiceAsh();
-  }
   void OnPlatformMessage(const std::string& configuration_name,
                          api_vpn::PlatformMessage message) override {
     test_client_->OnPlatformMessage(
         shill::kObjectPathBase + GetKey(configuration_name),
-        base::to_underlying(message));
+        std::to_underlying(message));
   }
   void OnPacketReceived(const std::string& configuration_name,
                         const std::vector<char>& data) override {
@@ -203,37 +193,21 @@ class VpnProviderApiTest : public VpnProviderApiTestBase {
   }
 
   std::string GetKey(const std::string& configuration_name) const {
-    return crosapi::VpnServiceForExtensionAsh::GetKey(extension_id(),
-                                                      configuration_name);
+    return VpnService::GetKeyForTesting(extension_id(), configuration_name);
   }
 
   bool DoesConfigExist(const std::string& configuration_name) {
-    return base::Contains(service()->key_to_configuration_map_,
-                          GetKey(configuration_name));
+    return service()->LookupConfiguration(extension_id(), configuration_name) !=
+           nullptr;
   }
 
   bool IsConfigConnected() {
-    const auto& mapping = GetVpnServiceAsh()->extension_id_to_service_;
-    if (!base::Contains(mapping, extension_id())) {
-      return false;
-    }
-    return service()->OwnsActiveConfiguration(extension_id());
+    return service()->GetActiveConfigurationForExtension(extension_id());
   }
 
   std::string GetSingleServicePath() {
-    std::vector<std::string> service_paths;
-    for (const auto& [extension_id, service] :
-         GetVpnServiceAsh()->extension_id_to_service_) {
-      const auto& service_path_map =
-          service->service_path_to_configuration_map_;
-      if (service_path_map.empty()) {
-        continue;
-      }
-      DCHECK_EQ(service_path_map.size(), 1U);
-      service_paths.push_back(service_path_map.begin()->first);
-    }
-    EXPECT_EQ(service_paths.size(), 1U);
-    return service_paths[0];
+    EXPECT_EQ(service()->service_path_to_configuration_map_.size(), 1);
+    return service()->service_path_to_configuration_map_.begin()->first;
   }
 
   bool CreateConfigForTest(const std::string& name) {
@@ -264,7 +238,7 @@ class VpnProviderApiTest : public VpnProviderApiTestBase {
 
   bool HasService(const std::string& service_path) const {
     std::string profile_path;
-    std::optional<base::Value::Dict> properties =
+    std::optional<base::DictValue> properties =
         ash::ShillProfileClient::Get()->GetTestInterface()->GetService(
             service_path, &profile_path);
     return properties.has_value();
@@ -274,7 +248,7 @@ class VpnProviderApiTest : public VpnProviderApiTestBase {
                          const std::string& configuration_name) {
     service()->SendOnPlatformMessageToExtension(
         extension_id, configuration_name,
-        base::to_underlying(api_vpn::PlatformMessage::kError));
+        std::to_underlying(api_vpn::PlatformMessage::kError));
   }
 
   void ClearNetworkProfiles() {
@@ -290,10 +264,6 @@ class VpnProviderApiTest : public VpnProviderApiTestBase {
         kNetworkProfilePath,
         ash::ProfileHelper::GetUserIdHashFromProfile(profile()));
     content::RunAllPendingInMessageLoop();
-  }
-
-  static crosapi::VpnServiceAsh* GetVpnServiceAsh() {
-    return crosapi::CrosapiManager::Get()->crosapi_ash()->vpn_service_ash();
   }
 
   raw_ptr<TestShillThirdPartyVpnDriverClient, DanglingUntriaged> test_client_ =
@@ -367,7 +337,7 @@ IN_PROC_BROWSER_TEST_F(VpnProviderApiTest, CheckEvents) {
 IN_PROC_BROWSER_TEST_F(VpnProviderApiTest, ConfigPersistence) {
   EXPECT_FALSE(DoesConfigExist(kTestConfig));
 
-  base::Value::Dict properties;
+  base::DictValue properties;
   properties.Set(shill::kTypeProperty, shill::kTypeVPN);
   properties.Set(shill::kNameProperty, kTestConfig);
   properties.Set(shill::kProviderHostProperty, extension_id());
@@ -448,7 +418,7 @@ IN_PROC_BROWSER_TEST_F(VpnProviderApiTest, VpnSuccess) {
   EXPECT_EQ(1, test_client_->set_parameters_counter_);
   EXPECT_EQ(1, test_client_->update_connection_state_counter_);
   EXPECT_EQ(1, test_client_->send_packet_counter_);
-  EXPECT_EQ(base::to_underlying(api_vpn::VpnConnectionState::kConnected),
+  EXPECT_EQ(std::to_underlying(api_vpn::VpnConnectionState::kConnected),
             test_client_->update_connection_state_counter_);
   for (size_t i = 0; i < std::size(kParameterValues); ++i) {
     const std::string* value =
@@ -468,44 +438,6 @@ IN_PROC_BROWSER_TEST_F(VpnProviderApiTest, VpnSuccess) {
   ASSERT_TRUE(catcher.GetNextResult());
 
   EXPECT_FALSE(IsConfigConnected());
-}
-
-class TestEventObserverForExtension
-    : public crosapi::mojom::EventObserverForExtension {
- public:
-  // crosapi::mojom::EventObserverForExtension:
-  void OnConfigRemoved(const std::string& configuration_name) override {}
-  void OnPlatformMessage(const std::string& configuration_name,
-                         int32_t platform_message) override {}
-  void OnPacketReceived(const std::vector<uint8_t>& data) override {}
-};
-
-// Tests that the per-extension crosapi connection between ash and browser
-// is initialized by the moment ash decides to send a platform message to the
-// browser.
-IN_PROC_BROWSER_TEST_F(VpnProviderApiTest, PlatformMessage) {
-  auto test_observer = std::make_unique<TestEventObserverForExtension>();
-  mojo::Remote<crosapi::mojom::VpnServiceForExtension> remote;
-  mojo::Receiver<crosapi::mojom::EventObserverForExtension> receiver{
-      test_observer.get()};
-  service_remote()->RegisterVpnServiceForExtension(
-      extension_id(), remote.BindNewPipeAndPassReceiver(),
-      receiver.BindNewPipeAndPassRemote());
-
-  base::test::TestFuture<crosapi::mojom::VpnErrorResponsePtr> future;
-  remote->CreateConfiguration(kTestConfig, future.GetCallback());
-  auto error = future.Take();
-  ASSERT_FALSE(error) << "CreateConfiguration failed with |message| = "
-                      << error->message.value_or(std::string{});
-
-  extensions::ResultCatcher catcher;
-  EXPECT_TRUE(RunTest("platformMessage"));
-  ASSERT_TRUE(catcher.GetNextResult());
-
-  OnPlatformMessage(kTestConfig, api_vpn::PlatformMessage::kConnected);
-  ASSERT_TRUE(catcher.GetNextResult());
-  OnPlatformMessage(kTestConfig, api_vpn::PlatformMessage::kDisconnected);
-  ASSERT_TRUE(catcher.GetNextResult());
 }
 
 }  // namespace chromeos

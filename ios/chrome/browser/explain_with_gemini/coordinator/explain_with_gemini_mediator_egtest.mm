@@ -13,8 +13,8 @@
 #import "base/test/ios/wait_util.h"
 #import "components/signin/internal/identity_manager/account_capabilities_constants.h"
 #import "ios/chrome/browser/authentication/test/signin_earl_grey.h"
-#import "ios/chrome/browser/browser_container/ui_bundled/edit_menu_app_interface.h"
-#import "ios/chrome/browser/browser_container/ui_bundled/edit_menu_matchers.h"
+#import "ios/chrome/browser/browser_content/ui_bundled/edit_menu_app_interface.h"
+#import "ios/chrome/browser/browser_content/ui_bundled/edit_menu_matchers.h"
 #import "ios/chrome/browser/explain_with_gemini/coordinator/explain_with_gemini_constants.h"
 #import "ios/chrome/browser/intelligence/features/features.h"
 #import "ios/chrome/browser/reader_mode/model/features.h"
@@ -107,7 +107,6 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
   config.features_enabled_and_params.push_back(
       {kBWGPromoConsent, {{{kBWGPromoConsentParams, "3"}}}});
   if ([self isRunningTest:@selector(testExplainWithGeminiInReadingMode)]) {
-    config.features_enabled_and_params.push_back({kEnableReaderMode, {}});
     config.features_enabled_and_params.push_back({kEnableReaderModeInUS, {}});
   }
   return config;
@@ -162,8 +161,6 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
     GREYAssert(WaitUntilConditionOrTimeout(kWaitForUIElementTimeout, condition),
                @"Does not redirect to Gemini URL");
 
-    // TODO(crbug.com/409525576): Add waitForWebStateContainingText for `Explain
-    // this to me` once rollout is done by Gemini team.
     GREYAssertEqual(2UL, [ChromeEarlGrey mainTabCount],
                     @"Search Should be in new tab");
     [ChromeEarlGrey closeCurrentTab];

@@ -298,7 +298,7 @@ SearchPrefetchBaseBrowserTest::HandleSearchRequest(
                                     MonitorSearchResourceRequestOnUIThread,
                                 base::Unretained(this), request, is_prefetch));
 
-  if (base::Contains(static_files_, request.relative_url)) {
+  if (static_files_.contains(request.relative_url)) {
     response_headers.emplace_back("content-type",
                                   static_files_[request.relative_url].second);
     return CreateDeferrableResponse(net::HTTP_OK, response_headers,

@@ -4,9 +4,7 @@
 
 #include "chrome/browser/ash/mahi/web_contents/test_support/fake_mahi_web_contents_manager.h"
 
-#include "base/notimplemented.h"
-#include "chromeos/crosapi/mojom/mahi.mojom.h"
-#include "mojo/public/cpp/bindings/pending_remote.h"
+#include "chromeos/components/mahi/public/cpp/mahi_types.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/image/image_unittest_util.h"
 
@@ -23,10 +21,12 @@ gfx::ImageSkia FakeMahiWebContentsManager::GetFavicon(
 
 void FakeMahiWebContentsManager::RequestContent(
     const base::UnguessableToken& page_id,
-    chromeos::mahi::GetContentCallback callback) {
-  std::move(callback).Run(crosapi::mojom::MahiPageContent::New(
-      /*client_id deprecated*/ base::UnguessableToken::Create(), page_id,
-      u"Test page content"));
+    chromeos::MahiGetContentCallback callback) {
+  chromeos::MahiPageContent page_content;
+  page_content.client_id = base::UnguessableToken::Create();
+  page_content.page_id = page_id;
+  page_content.page_content = u"Test page content";
+  std::move(callback).Run(std::move(page_content));
   ++number_of_request_content_calls_;
 }
 

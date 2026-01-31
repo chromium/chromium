@@ -192,8 +192,7 @@ FocusModeSoundsView::FocusModeSoundsView(
   const bool should_show_soundscapes =
       focus_mode_util::SoundType::kSoundscape ==
           sounds_controller->sound_type() ||
-      !base::Contains(sound_sections,
-                      focus_mode_util::SoundType::kYouTubeMusic);
+      !sound_sections.contains(focus_mode_util::SoundType::kYouTubeMusic);
 
   if (soundscape_button_ && youtube_music_button_) {
     if (should_show_soundscapes) {
@@ -403,9 +402,9 @@ void FocusModeSoundsView::CreateHeader(
     const base::flat_set<focus_mode_util::SoundType>& sections,
     bool is_network_connected) {
   CHECK(!sections.empty());
-  CHECK(base::Contains(sections, focus_mode_util::SoundType::kSoundscape));
+  CHECK(sections.contains(focus_mode_util::SoundType::kSoundscape));
   const bool contains_youtube_music =
-      base::Contains(sections, focus_mode_util::SoundType::kYouTubeMusic);
+      sections.contains(focus_mode_util::SoundType::kYouTubeMusic);
 
   auto* sounds_container_header =
       AddChildView(std::make_unique<views::BoxLayoutView>());
@@ -469,15 +468,14 @@ void FocusModeSoundsView::CreateHeader(
 
 void FocusModeSoundsView::CreatesSoundSectionViews(
     const base::flat_set<focus_mode_util::SoundType>& sound_sections) {
-  if (base::Contains(sound_sections, focus_mode_util::SoundType::kSoundscape)) {
+  if (sound_sections.contains(focus_mode_util::SoundType::kSoundscape)) {
     soundscape_container_ = AddChildView(std::make_unique<SoundSectionView>(
         focus_mode_util::SoundType::kSoundscape));
     // Start downloading playlists for Soundscape.
     DownloadPlaylistsForType(/*is_soundscape_type=*/true);
   }
 
-  if (base::Contains(sound_sections,
-                     focus_mode_util::SoundType::kYouTubeMusic)) {
+  if (sound_sections.contains(focus_mode_util::SoundType::kYouTubeMusic)) {
     youtube_music_container_ = AddChildView(std::make_unique<SoundSectionView>(
         focus_mode_util::SoundType::kYouTubeMusic));
 

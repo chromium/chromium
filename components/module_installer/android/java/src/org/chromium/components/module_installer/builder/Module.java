@@ -158,13 +158,14 @@ public class Module<T> {
     private ModuleDescriptor getModuleDescriptor() {
         ModuleDescriptor ret = mModuleDescriptor;
         if (ret == null) {
-            if (BundleUtils.isIsolatedSplitInstalled(mName)) {
+            try {
                 ret =
                         (ModuleDescriptor)
                                 instantiateReflectively(
                                         "org.chromium.components.module_installer.builder.ModuleDescriptor_"
                                                 + mName);
-            } else {
+            } catch (Exception e) {
+                // Happens for ChromePublic.apk
                 ret =
                         new ModuleDescriptor() {
                             @Override

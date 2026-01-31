@@ -6,7 +6,6 @@
 
 #include <memory>
 
-#include "base/containers/contains.h"
 #include "base/memory/weak_ptr.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
@@ -77,7 +76,8 @@ class MockIOSPromoTriggerService : public IOSPromoTriggerService {
       /*paask_info=*/std::nullopt,
       /*fcm_registration_token=*/"token",
       /*interested_data_types=*/syncer::DataTypeSet::All(),
-      /*auto_sign_out_last_signin_timestamp=*/std::nullopt};
+      /*auto_sign_out_last_signin_timestamp=*/std::nullopt,
+      /*desktop_to_ios_promo_receiving_enabled=*/false};
 };
 
 std::unique_ptr<KeyedService> CreateMockIOSPromoTriggerService(
@@ -96,7 +96,8 @@ class IOSPromoBubbleViewTest : public ChromeViewsTestBase {
   void SetUp() override {
     ChromeViewsTestBase::SetUp();
     scoped_feature_list_.InitWithFeaturesAndParameters(
-        {{kMobilePromoOnDesktop, {{kMobilePromoOnDesktopPromoTypeParam, "1"}}},
+        {{kMobilePromoOnDesktopWithReminder,
+          {{kMobilePromoOnDesktopPromoTypeParam, "1"}}},
          {sync_preferences::features::kEnableCrossDevicePrefTracker, {}}},
         {});
     profile_ = std::make_unique<TestingProfile>();
@@ -200,7 +201,7 @@ TEST_F(IOSPromoBubbleViewTest, CancelCallsNotifyUserAction_QRCode) {
 // confirmation state.
 // 2. Second "Accept" ("Got it") closes the bubble.
 TEST_F(IOSPromoBubbleViewTest, AcceptShowsConfirmation_Reminder) {
-  ASSERT_TRUE(base::FeatureList::IsEnabled(kMobilePromoOnDesktop));
+  ASSERT_TRUE(base::FeatureList::IsEnabled(kMobilePromoOnDesktopWithReminder));
   ASSERT_TRUE(base::FeatureList::IsEnabled(
       sync_preferences::features::kEnableCrossDevicePrefTracker));
 
@@ -269,8 +270,8 @@ TEST_F(IOSPromoBubbleViewTest, AcceptOpensUrl_QRCode) {
       .WillOnce([](const content::OpenURLParams& params) {
         EXPECT_EQ(params.url.host(), "www.google.com");
         EXPECT_EQ(params.url.path(), "/chrome/go-mobile/");
-        EXPECT_TRUE(base::Contains(params.url.query(), "ios-campaign"));
-        EXPECT_TRUE(base::Contains(params.url.query(), "android-campaign"));
+        EXPECT_TRUE(params.url.query().contains("ios-campaign"));
+        EXPECT_TRUE(params.url.query().contains("android-campaign"));
         EXPECT_EQ(params.disposition,
                   WindowOpenDisposition::NEW_FOREGROUND_TAB);
       });

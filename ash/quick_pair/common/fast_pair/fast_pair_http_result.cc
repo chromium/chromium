@@ -10,8 +10,7 @@
 #include "services/network/public/cpp/header_util.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 
-namespace ash {
-namespace quick_pair {
+namespace ash::quick_pair {
 
 FastPairHttpResult::FastPairHttpResult(
     const int net_error,
@@ -61,13 +60,11 @@ std::string FastPairHttpResult::ToString() const {
 
   std::string response_error =
       http_response_error_.has_value()
-          ? net::GetHttpReasonPhrase(
-                static_cast<net::HttpStatusCode>(*http_response_error_))
+          ? std::string(net::GetHttpReasonPhrase(*http_response_error_))
           : "[null]";
 
   return "status=" + status + ", net_error=" + net_error +
          ", http_response_error=" + response_error;
 }
 
-}  // namespace quick_pair
-}  // namespace ash
+}  // namespace ash::quick_pair

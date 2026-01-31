@@ -1,0 +1,53 @@
+// Copyright 2018 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#include "chrome/browser/strike_database/strike_database_factory.h"
+
+#include "base/no_destructor.h"
+#include "chrome/browser/profiles/profile.h"
+#include "components/strike_database/strike_database.h"
+#include "content/public/browser/storage_partition.h"
+
+// static
+strike_database::StrikeDatabase* StrikeDatabaseFactory::GetForProfile(
+    Profile* profile) {
+  return static_cast<strike_database::StrikeDatabase*>(
+      GetInstance()->GetServiceForBrowserContext(profile, true));
+}
+
+// static
+StrikeDatabaseFactory* StrikeDatabaseFactory::GetInstance() {
+  static base::NoDestructor<StrikeDatabaseFactory> instance;
+  return instance.get();
+}
+
+StrikeDatabaseFactory::StrikeDatabaseFactory()
+    : ProfileKeyedServiceFactory(
+          "AutofillStrikeDatabase",
+          ProfileSelections::Builder()
+              .WithRegular(ProfileSelection::kOriginalOnly)
+              // TODO(crbug.com/40257657): Check if this service is needed in
+              // Guest mode.
+              .WithGuest(ProfileSelection::kOriginalOnly)
+              // TODO(crbug.com/41488885): Check if this service is needed for
+              // Ash Internals.
+              .WithAshInternals(ProfileSelection::kOriginalOnly)
+              .Build()) {}
+
+StrikeDatabaseFactory::~StrikeDatabaseFactory() = default;
+
+std::unique_ptr<KeyedService>
+StrikeDatabaseFactory::BuildServiceInstanceForBrowserContext(
+    content::BrowserContext* context) const {
+  Profile* profile = Profile::FromBrowserContext(context);
+
+  leveldb_proto::ProtoDatabaseProvider* db_provider =
+      profile->GetDefaultStoragePartition()->GetProtoDatabaseProvider();
+
+  // Note: This instance becomes owned by an object that never gets destroyed,
+  // effectively leaking it until browser close. Only one is created per
+  // profile, and closing-then-opening a profile returns the same instance.
+  return std::make_unique<strike_database::StrikeDatabase>(db_provider,
+                                                           profile->GetPath());
+}

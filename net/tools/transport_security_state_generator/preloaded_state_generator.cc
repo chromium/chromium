@@ -6,6 +6,7 @@
 
 #include <string>
 
+#include "base/logging.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
@@ -174,6 +175,10 @@ std::string PreloadedStateGenerator::Generate(
 
   ReplaceTag("PINS_LIST_TIMESTAMP", base::NumberToString(timestamp.ToTimeT()),
              &output);
+
+  VLOG(1) << "PreloadedStateGenerator wrote " << huffman_tree.size()
+          << " bytes for the huffman table and " << new_writer.bytes().size()
+          << " bytes for the trie.";
 
   return output;
 }

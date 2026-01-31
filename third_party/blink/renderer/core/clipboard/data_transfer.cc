@@ -207,17 +207,27 @@ AtomicString ConvertEffectAllowedToDropEffect(
   if (!mask.has_value()) {
     return keywords::kNone;
   }
-  // Defaults to copy if copy if present, then to link if link is present (this
-  // relevant in composite cases like copyMove).  Defaults taken from the table
-  // in https://html.spec.whatwg.org/multipage/dnd.html#the-dragevent-interface
-  if ((mask.value() & kDragOperationCopy) || (mask == kDragOperationEvery)) {
+  // The spec [1] doesn't define a specific order drop effects should be
+  // prioritized in, and leaves it up to user agents to adapt to their
+  // platform's convention.
+  // [1] https://html.spec.whatwg.org/multipage/dnd.html#the-dragevent-interface
+  // For example, if `effectAllowed` is "all", the entry in the spec table
+  // mentions that `dropEffect` should be:
+  // > "copy", or, if appropriate, either "link" or "move"
+  // In desktop platforms, the usual expectation is that when you drag something
+  // within the file system it will be moved (if it's on the same disk).
+  // This ordering matches `DragController::DefaultOperationForDrag`.
+  if (mask == kDragOperationEvery) {
+    return AtomicString("copy");
+  }
+  if (mask.value() & kDragOperationMove) {
+    return AtomicString("move");
+  }
+  if ((mask.value() & kDragOperationCopy)) {
     return AtomicString("copy");
   }
   if (mask.value() & kDragOperationLink) {
     return AtomicString("link");
-  }
-  if (mask.value() & kDragOperationMove) {
-    return AtomicString("move");
   }
   return keywords::kNone;
 }
@@ -282,6 +292,10 @@ DataTransfer* DataTransfer::Create(DataTransferType type,
 }
 
 DataTransfer::~DataTransfer() = default;
+
+void DataTransfer::resetDropEffect() {
+  drop_effect_ = AtomicString();
+}
 
 void DataTransfer::setDropEffect(const AtomicString& effect) {
   if (!IsForDragAndDrop())

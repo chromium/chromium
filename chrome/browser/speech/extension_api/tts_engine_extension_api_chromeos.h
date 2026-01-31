@@ -63,7 +63,7 @@ class TtsExtensionEngineChromeOS
                                              Profile* profile);
 
   // Helper to start audio playback.
-  void Play(base::Value::List args,
+  void Play(base::ListValue args,
             const std::string& engine_id,
             Profile* profile);
 

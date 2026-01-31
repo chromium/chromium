@@ -4,9 +4,9 @@
 
 #include "components/autofill/core/browser/integrators/one_time_tokens/otp_suggestion.h"
 
+#include <algorithm>
 #include <vector>
 
-#include "base/containers/contains.h"
 #include "components/autofill/core/browser/autofill_field.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/form_structure.h"
@@ -28,7 +28,7 @@ OtpFillData CreateFillDataForOtpSuggestion(const FormStructure& form,
   const FieldGlobalId& field_id = trigger_field.global_id();
 
   // Check if the triggering field is not classified as OTP field anymore.
-  if (!base::Contains(otp_field_ids, field_id)) {
+  if (!std::ranges::contains(otp_field_ids, field_id)) {
     // The only way this could happen is if the form has changed between the
     // field focus and the filling moment. Fill into the current field, since
     // the user requested that and otherwise it would be weird.

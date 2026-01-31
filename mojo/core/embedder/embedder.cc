@@ -94,9 +94,6 @@ void InitFeatures() {
         // BUILDFLAG(IS_ANDROID)
 #endif  // BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_MAC)
 
-  Channel::set_use_trivial_messages(
-      base::FeatureList::IsEnabled(kMojoInlineMessagePayloads));
-
 #if BUILDFLAG(MOJO_SUPPORT_LEGACY_CORE)
   if (base::FeatureList::IsEnabled(kMojoIpcz)) {
     EnableMojoIpcz();

@@ -1,0 +1,44 @@
+This is a testharness.js-based test.
+Found 20 FAIL, 0 TIMEOUT, 0 NOTRUN.
+[FAIL] Animation between "path("M 100 400 A 10 20 30 1 0 140 450")" and "path("M 300 200 A 50 60 70 0 1 380 290")" at progress 0.125
+  assert_equals: expected "path(\\"M 125 375 A 15 25 35 1 1 170 430\\")" but got "path(\\"M 125 375 A 15 25 35 1 0 170 430\\")"
+[FAIL] Animation between "path("M 100 400 A 10 20 30 1 0 140 450")" and "path("M 300 200 A 50 60 70 0 1 380 290")" at progress 0.875
+  assert_equals: expected "path(\\"M 275 225 A 45 55 65 1 1 350 310\\")" but got "path(\\"M 275 225 A 45 55 65 0 1 350 310\\")"
+[FAIL] Animation between "path("m 100 400 a 10 20 30 1 0 40 50")" and "path("m 300 200 a 50 60 70 0 1 80 90")" at progress 0.125
+  assert_equals: expected "path(\\"M 125 375 A 15 25 35 1 1 170 430\\")" but got "path(\\"M 125 375 A 15 25 35 1 0 170 430\\")"
+[FAIL] Animation between "path("m 100 400 a 10 20 30 1 0 40 50")" and "path("m 300 200 a 50 60 70 0 1 80 90")" at progress 0.875
+  assert_equals: expected "path(\\"M 275 225 A 45 55 65 1 1 350 310\\")" but got "path(\\"M 275 225 A 45 55 65 0 1 350 310\\")"
+[FAIL] Animation between "path("M 50 60 H 70")" and "path("M 10 140 H 270")" at progress 0.125
+  assert_equals: expected "path(\\"M 125 375 A 15 25 35 1 1 170 430\\")" but got "path(\\"M 125 375 A 15 25 35 1 0 170 430\\")"
+[FAIL] Animation between "path("M 50 60 H 70")" and "path("M 10 140 H 270")" at progress 0.875
+  assert_equals: expected "path(\\"M 275 225 A 45 55 65 1 1 350 310\\")" but got "path(\\"M 275 225 A 45 55 65 0 1 350 310\\")"
+[FAIL] Animation between "path("m 50 60 h 20")" and "path("m 10 140 h 260")" at progress 0.125
+  assert_equals: expected "path(\\"M 125 375 A 15 25 35 1 1 170 430\\")" but got "path(\\"M 125 375 A 15 25 35 1 0 170 430\\")"
+[FAIL] Animation between "path("m 50 60 h 20")" and "path("m 10 140 h 260")" at progress 0.875
+  assert_equals: expected "path(\\"M 275 225 A 45 55 65 1 1 350 310\\")" but got "path(\\"M 275 225 A 45 55 65 0 1 350 310\\")"
+[FAIL] Animation between "path("M 50 60 V 70")" and "path("M 10 140 V 270")" at progress 0.125
+  assert_equals: expected "path(\\"M 125 375 A 15 25 35 1 1 170 430\\")" but got "path(\\"M 125 375 A 15 25 35 1 0 170 430\\")"
+[FAIL] Animation between "path("M 50 60 V 70")" and "path("M 10 140 V 270")" at progress 0.875
+  assert_equals: expected "path(\\"M 275 225 A 45 55 65 1 1 350 310\\")" but got "path(\\"M 275 225 A 45 55 65 0 1 350 310\\")"
+[FAIL] Animation between "path("m 50 60 v 10")" and "path("m 10 140 v 130")" at progress 0.125
+  assert_equals: expected "path(\\"M 125 375 A 15 25 35 1 1 170 430\\")" but got "path(\\"M 125 375 A 15 25 35 1 0 170 430\\")"
+[FAIL] Animation between "path("m 50 60 v 10")" and "path("m 10 140 v 130")" at progress 0.875
+  assert_equals: expected "path(\\"M 275 225 A 45 55 65 1 1 350 310\\")" but got "path(\\"M 275 225 A 45 55 65 0 1 350 310\\")"
+[FAIL] Animation between "path("M 12 34 S 45 67 89 123")" and "path("M 20 26 S 61 51 113 99")" at progress 0.125
+  assert_equals: expected "path(\\"M 125 375 A 15 25 35 1 1 170 430\\")" but got "path(\\"M 125 375 A 15 25 35 1 0 170 430\\")"
+[FAIL] Animation between "path("M 12 34 S 45 67 89 123")" and "path("M 20 26 S 61 51 113 99")" at progress 0.875
+  assert_equals: expected "path(\\"M 275 225 A 45 55 65 1 1 350 310\\")" but got "path(\\"M 275 225 A 45 55 65 0 1 350 310\\")"
+[FAIL] Animation between "path("m 12 34 s 33 33 77 89")" and "path("m 20 26 s 41 25 93 73")" at progress 0.125
+  assert_equals: expected "path(\\"M 125 375 A 15 25 35 1 1 170 430\\")" but got "path(\\"M 125 375 A 15 25 35 1 0 170 430\\")"
+[FAIL] Animation between "path("m 12 34 s 33 33 77 89")" and "path("m 20 26 s 41 25 93 73")" at progress 0.875
+  assert_equals: expected "path(\\"M 275 225 A 45 55 65 1 1 350 310\\")" but got "path(\\"M 275 225 A 45 55 65 0 1 350 310\\")"
+[FAIL] Animation between "path("M 12 34 T 45 67")" and "path("M 20 26 T 61 51")" at progress 0.125
+  assert_equals: expected "path(\\"M 125 375 A 15 25 35 1 1 170 430\\")" but got "path(\\"M 125 375 A 15 25 35 1 0 170 430\\")"
+[FAIL] Animation between "path("M 12 34 T 45 67")" and "path("M 20 26 T 61 51")" at progress 0.875
+  assert_equals: expected "path(\\"M 275 225 A 45 55 65 1 1 350 310\\")" but got "path(\\"M 275 225 A 45 55 65 0 1 350 310\\")"
+[FAIL] Animation between "path("m 12 34 t 33 33")" and "path("m 20 26 t 41 25")" at progress 0.125
+  assert_equals: expected "path(\\"M 125 375 A 15 25 35 1 1 170 430\\")" but got "path(\\"M 125 375 A 15 25 35 1 0 170 430\\")"
+[FAIL] Animation between "path("m 12 34 t 33 33")" and "path("m 20 26 t 41 25")" at progress 0.875
+  assert_equals: expected "path(\\"M 275 225 A 45 55 65 1 1 350 310\\")" but got "path(\\"M 275 225 A 45 55 65 0 1 350 310\\")"
+Harness: the test ran to completion.
+

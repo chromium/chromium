@@ -33,8 +33,8 @@ class InlineCaretPositionTest : public RenderingTest {
         dir == TextDirection::kLtr
             ? "<div id='%s' style='width: %u0px; %s'>%s</div>"
             : "<bdo dir=rtl id='%s' style='width: %u0px; %s'>%s</bdo>";
-    SetBodyInnerHTML(String::Format(
-        pattern, id, width, style ? style : "word-break: break-all", html));
+    SetBodyInnerHTML(UNSAFE_TODO(String::Format(
+        pattern, id, width, style ? style : "word-break: break-all", html)));
     container_ = GetElementById(id);
     DCHECK(container_);
     context_ = To<LayoutBlockFlow>(container_->GetLayoutObject());

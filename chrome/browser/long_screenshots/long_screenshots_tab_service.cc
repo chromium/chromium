@@ -52,7 +52,7 @@ const char kGoogleNewsPathPattern[] = "/articles/(.*)";
 // the compositior for some reason.
 static void JNI_LongScreenshotsTabService_ReleaseCaptureResultPtr(
     JNIEnv* env,
-    jlong j_capture_result_ptr) {
+    int64_t j_capture_result_ptr) {
   // `j_capture_result_ptr` is checked to not be nullptr in Java.
   delete reinterpret_cast<paint_preview::CaptureResult*>(j_capture_result_ptr);
 }
@@ -208,7 +208,7 @@ void LongScreenshotsTabService::OnCaptured(
 
   result->proto.mutable_metadata()->clear_chrome_version();
   Java_LongScreenshotsTabService_processPaintPreviewResponse(
-      env, java_ref_, reinterpret_cast<jlong>(result.release()));
+      env, java_ref_, reinterpret_cast<int64_t>(result.release()));
 }
 
 content::RenderFrameHost* LongScreenshotsTabService::GetRootRenderFrameHost(
@@ -273,16 +273,16 @@ void LongScreenshotsTabService::DeleteAllLongScreenshotFiles() {
 
 void LongScreenshotsTabService::CaptureTabAndroid(
     JNIEnv* env,
-    jint j_tab_id,
+    int32_t j_tab_id,
     const base::android::JavaRef<jobject>& j_gurl,
     const base::android::JavaRef<jobject>& j_web_contents,
-    jint clip_x,
-    jint clip_y,
-    jint clip_width,
-    jint clip_height,
-    jboolean in_memory,
-    jint clip_x_coord_override,
-    jint clip_y_coord_override) {
+    int32_t clip_x,
+    int32_t clip_y,
+    int32_t clip_width,
+    int32_t clip_height,
+    bool in_memory,
+    int32_t clip_x_coord_override,
+    int32_t clip_y_coord_override) {
   CHECK_GE(
       clip_x_coord_override,
       static_cast<int>(paint_preview::mojom::ClipCoordOverride::kMinValue));
@@ -302,7 +302,7 @@ void LongScreenshotsTabService::CaptureTabAndroid(
   CaptureTab(static_cast<int>(j_tab_id), url, web_contents,
              static_cast<int>(clip_x), static_cast<int>(clip_y),
              static_cast<int>(clip_width), static_cast<int>(clip_height),
-             static_cast<bool>(in_memory),
+             in_memory,
              static_cast<paint_preview::mojom::ClipCoordOverride>(
                  clip_x_coord_override),
              static_cast<paint_preview::mojom::ClipCoordOverride>(

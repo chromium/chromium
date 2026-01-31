@@ -11,7 +11,6 @@
 #include "cc/tiles/gpu_image_decode_cache.h"
 #include "content/public/common/content_switches.h"
 #include "gpu/command_buffer/client/context_support.h"
-#include "gpu/command_buffer/client/gl_helper.h"
 #include "gpu/config/gpu_feature_info.h"
 #include "services/viz/public/cpp/gpu/context_provider_command_buffer.h"
 #include "third_party/skia/include/gpu/ganesh/GrDirectContext.h"
@@ -19,8 +18,10 @@
 namespace content {
 
 WebGraphicsContext3DProviderImpl::WebGraphicsContext3DProviderImpl(
-    scoped_refptr<viz::ContextProviderCommandBuffer> provider)
-    : provider_(std::move(provider)) {}
+    scoped_refptr<viz::ContextProviderCommandBuffer> provider,
+    scoped_refptr<base::SingleThreadTaskRunner> reply_task_runner)
+    : provider_(std::move(provider)),
+      reply_task_runner_(std::move(reply_task_runner)) {}
 
 WebGraphicsContext3DProviderImpl::~WebGraphicsContext3DProviderImpl() {
   provider_->RemoveObserver(this);
@@ -32,6 +33,9 @@ bool WebGraphicsContext3DProviderImpl::BindToCurrentSequence() {
   // Call AddObserver here instead of in constructor so that it's called on the
   // correct thread.
   provider_->AddObserver(this);
+  if (reply_task_runner_) {
+    provider_->SetReplyTaskRunner(reply_task_runner_);
+  }
   return provider_->BindToCurrentSequence() == gpu::ContextResult::kSuccess;
 }
 
@@ -136,14 +140,6 @@ WebGraphicsContext3DProviderImpl::GetWebglPreferences() const {
   }
 
   return prefs;
-}
-
-gpu::GLHelper* WebGraphicsContext3DProviderImpl::GetGLHelper() {
-  if (!gl_helper_) {
-    gl_helper_ = std::make_unique<gpu::GLHelper>(provider_->ContextGL(),
-                                                 provider_->ContextSupport());
-  }
-  return gl_helper_.get();
 }
 
 void WebGraphicsContext3DProviderImpl::SetLostContextCallback(

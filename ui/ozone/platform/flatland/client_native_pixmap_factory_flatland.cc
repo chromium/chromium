@@ -120,6 +120,10 @@ class ClientNativePixmapFuchsia final : public gfx::ClientNativePixmap {
     return gfx::CloneHandleForIPC(handle_);
   }
 
+  uint64_t GetPlaneSize(size_t plane) const override {
+    return handle_.planes[plane].size;
+  }
+
   static std::unique_ptr<gfx::ClientNativePixmap> CreateFromHandle(
       gfx::NativePixmapHandle handle,
       const gfx::Size& size,

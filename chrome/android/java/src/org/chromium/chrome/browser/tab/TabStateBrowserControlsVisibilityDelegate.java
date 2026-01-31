@@ -11,6 +11,7 @@ import android.os.Message;
 import androidx.annotation.IntDef;
 
 import org.chromium.base.Log;
+import org.chromium.base.ResettersForTesting;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -335,6 +336,7 @@ public class TabStateBrowserControlsVisibilityDelegate extends BrowserControlsVi
     /** Disables the logic that prevents hiding the top controls during page load for testing. */
     public static void disablePageLoadDelayForTests() {
         sDisableLoadingCheck = true;
+        ResettersForTesting.register(() -> sDisableLoadingCheck = false);
     }
 
     // ImeEventObserver

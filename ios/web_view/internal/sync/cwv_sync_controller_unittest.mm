@@ -89,7 +89,7 @@ TEST_F(CWVSyncControllerTest, StartSyncWithIdentity) {
   EXPECT_TRUE(autofill::IsUserOptedInWalletSyncTransport(
       &pref_service_, primary_account_info.account_id));
   EXPECT_TRUE(
-      password_manager::features_util::IsAccountStorageEnabled(&sync_service_));
+      password_manager::features_util::IsAccountStorageActive(&sync_service_));
 }
 
 TEST_F(CWVSyncControllerTest, StartSyncWithIdentityInAuthError) {
@@ -99,7 +99,7 @@ TEST_F(CWVSyncControllerTest, StartSyncWithIdentityInAuthError) {
   sync_service_.SetSignedIn(signin::ConsentLevel::kSignin, account_info);
   sync_service_.SetPersistentAuthError();
   ASSERT_FALSE(
-      password_manager::features_util::IsAccountStorageEnabled(&sync_service_));
+      password_manager::features_util::IsAccountStorageActive(&sync_service_));
 
   // Should not crash.
   CWVSyncController* sync_controller = [[CWVSyncController alloc]

@@ -47,6 +47,8 @@ NSString* const kSettingsPreloadCellId = @"kSettingsPreloadCellId";
 NSString* const kSettingsBlockPopupsCellId = @"kSettingsBlockPopupsCellId";
 NSString* const kSettingsShowLinkPreviewCellId =
     @"kSettingsShowLinkPreviewCellId";
+NSString* const kSettingsShowReadingModeAvailableCellId =
+    @"kSettingsShowReadingModeAvailableCellId";
 NSString* const kSettingsDetectAddressesCellId =
     @"kSettingsDetectAddressesCellId";
 NSString* const kSettingsMimiMapNativeCellId = @"kSettingsMimiMapNativeCellId";
@@ -73,6 +75,5 @@ NSString* const kSettingsMoveInactiveTabsCellId =
     @"kSettingsMoveInactiveTabsCellId";
 NSString* const kSettingsAutomaticallyOpenTabGroupsCellId =
     @"kSettingsAutomaticallyOpenTabGroupsCellId";
-NSString* const kSettingsPrivacyGuideCellId = @"kSettingsPrivacyGuideCellId";
 NSString* const kSettingsDetectUnitsCellId = @"kSettingsDetectUnitsCellId";
 NSString* const kSettingsSafetyCheckCellId = @"SettingsSafetyCheckCellId";

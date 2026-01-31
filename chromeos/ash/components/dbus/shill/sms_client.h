@@ -28,7 +28,7 @@ namespace ash {
 // DBusThreadManager instance.
 class COMPONENT_EXPORT(SHILL_CLIENT) SMSClient {
  public:
-  using GetAllCallback = base::OnceCallback<void(const base::Value::Dict& sms)>;
+  using GetAllCallback = base::OnceCallback<void(const base::DictValue& sms)>;
 
   static const char kSMSPropertyState[];
   static const char kSMSPropertyNumber[];

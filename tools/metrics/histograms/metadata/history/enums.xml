@@ -332,6 +332,16 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//chrome/browser/resources/history/constants.ts:VisitContextMenuAction) -->
 
+<!-- LINT.IfChange(WebHistoryRequestOutcome) -->
+
+<enum name="WebHistoryRequestOutcome">
+  <int value="0" label="Success"/>
+  <int value="1" label="Invalid response"/>
+  <int value="2" label="Failure"/>
+</enum>
+
+<!-- LINT.ThenChange(//components/history/core/browser/web_history_service.h:WebHistoryRequestOutcome) -->
+
 </enums>
 
 </histogram-configuration>

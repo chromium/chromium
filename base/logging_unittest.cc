@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "base/logging.h"
 
 #include <sstream>
@@ -14,6 +9,7 @@
 #include <string_view>
 
 #include "base/command_line.h"
+#include "base/compiler_specific.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/bind.h"
@@ -84,14 +80,15 @@ class LoggingTest : public testing::Test {
 
 class MockLogSource {
  public:
-  MOCK_METHOD0(Log, const char*());
+  MOCK_METHOD(const char*, Log, ());
 };
 
 class MockLogAssertHandler {
  public:
-  MOCK_METHOD4(
+  MOCK_METHOD(
+      void,
       HandleLogAssert,
-      void(const char*, int, const std::string_view, const std::string_view));
+      (const char*, int, const std::string_view, const std::string_view));
 };
 
 TEST_F(LoggingTest, BasicLogging) {
@@ -363,7 +360,7 @@ TEST_F(LoggingTest, DuplicateLogFile) {
   FILE* log_file_dup = DuplicateLogFILE();
   CHECK(log_file_dup);
   CloseLogFile();
-  fprintf(log_file_dup, "%s\n", kErrorLogMessage2);
+  UNSAFE_TODO(fprintf(log_file_dup, "%s\n", kErrorLogMessage2));
   fflush(log_file_dup);
 
   // Check the messages were written to the log file.

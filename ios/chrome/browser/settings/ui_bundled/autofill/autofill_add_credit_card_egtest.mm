@@ -344,20 +344,17 @@ id<GREYMatcher> CardNumberIconView(NSString* icon_type) {
 // Tests that an error icon is displayed when a field has invalid text. The icon
 // is displayed if the field is not currently being editted.
 - (void)testInvalidInputDisplaysInlineError {
-  // TODO(crbug.com/440027804): Re-enable the test.
-#if !TARGET_OS_SIMULATOR
-  if (base::ios::IsRunningOnIOS26OrLater()) {
-    EARL_GREY_TEST_DISABLED(@"Test disabled on iOS 26.");
-  }
-#endif
   [[EarlGrey selectElementWithMatcher:CardNumberIconView(kEditIconIdentifier)]
       assertWithMatcher:grey_sufficientlyVisible()];
 
   // Error icon displayed when field is invalid.
   [[EarlGrey selectElementWithMatcher:CardNumberTextField()]
       performAction:grey_replaceText(@"1234")];
-  [[EarlGrey selectElementWithMatcher:MonthOfExpiryTextField()]
-      performAction:grey_tap()];
+
+  // Tap CVC field to shift focus from the card number field, avoiding keyboard
+  // obstruction on iPad.
+  [[EarlGrey selectElementWithMatcher:CvcTextField()] performAction:grey_tap()];
+
   [[EarlGrey selectElementWithMatcher:CardNumberIconView(kErrorIconIdentifier)]
       assertWithMatcher:grey_sufficientlyVisible()];
   [[EarlGrey selectElementWithMatcher:CardNumberIconView(kEditIconIdentifier)]

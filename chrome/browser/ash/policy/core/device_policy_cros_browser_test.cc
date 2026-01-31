@@ -87,7 +87,7 @@ DictionaryLocalStateValueWaiter::DictionaryLocalStateValueWaiter(
 DictionaryLocalStateValueWaiter::~DictionaryLocalStateValueWaiter() = default;
 
 bool DictionaryLocalStateValueWaiter::ExpectedValueFound() {
-  const base::Value::Dict& pref =
+  const base::DictValue& pref =
       pref_change_registrar_.prefs()->GetDict(pref_.c_str());
 
   const std::string* actual_value = pref.FindString(key_);

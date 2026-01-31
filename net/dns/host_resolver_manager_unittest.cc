@@ -17,7 +17,6 @@
 #include <vector>
 
 #include "base/auto_reset.h"
-#include "base/containers/contains.h"
 #include "base/containers/to_vector.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
@@ -3820,8 +3819,7 @@ DnsConfig CreateUpgradableDnsConfig() {
   config.allow_dns_over_https_upgrade = true;
 
   auto ProviderHasAddr = [](std::string_view provider, const IPAddress& addr) {
-    return base::Contains(GetDohProviderEntryForTesting(provider).ip_addresses,
-                          addr);
+    return GetDohProviderEntryForTesting(provider).ip_addresses.contains(addr);
   };
 
   // Cloudflare upgradeable IPs

@@ -21,6 +21,7 @@
 #include "third_party/blink/renderer/platform/fonts/shaping/shape_result_view.h"
 #include "third_party/blink/renderer/platform/fonts/simple_font_data.h"
 #include "third_party/blink/renderer/platform/text/text_direction.h"
+#include "third_party/blink/renderer/platform/text/text_run.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_view.h"
 #include "third_party/blink/renderer/platform/wtf/wtf_size_t.h"
@@ -208,8 +209,8 @@ const HeapVector<Member<DOMRectReadOnly>> TextMetrics::getSelectionRects(
   if (start > text_.length() || end > text_.length()) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kIndexSizeError,
-        String::Format("The %s index is out of bounds.",
-                       start > text_.length() ? "start" : "end"));
+        UNSAFE_TODO(String::Format("The %s index is out of bounds.",
+                                   start > text_.length() ? "start" : "end")));
     return selection_rects;
   }
 
@@ -324,8 +325,8 @@ DOMRectReadOnly* TextMetrics::getActualBoundingBox(
   if (start >= text_.length() || end > text_.length()) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kIndexSizeError,
-        String::Format("The %s index is out of bounds.",
-                       start >= text_.length() ? "start" : "end"));
+        UNSAFE_TODO(String::Format("The %s index is out of bounds.",
+                                   start >= text_.length() ? "start" : "end")));
     return DOMRectReadOnly::FromRectF(bounding_box);
   }
 
@@ -434,8 +435,8 @@ HeapVector<Member<TextCluster>> TextMetrics::getTextClustersImpl(
     CHECK(exception_state != nullptr);
     exception_state->ThrowDOMException(
         DOMExceptionCode::kIndexSizeError,
-        String::Format("The %s index is out of bounds.",
-                       start >= text_.length() ? "start" : "end"));
+        UNSAFE_TODO(String::Format("The %s index is out of bounds.",
+                                   start >= text_.length() ? "start" : "end")));
     return clusters_for_range;
   }
 

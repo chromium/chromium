@@ -19,8 +19,9 @@ namespace blink {
 namespace {
 
 String CreateWriterLockReleasedMessage(const char* verbed) {
-  return String::Format(
-      "This writable stream writer has been released and cannot be %s", verbed);
+  return UNSAFE_TODO(String::Format(
+      "This writable stream writer has been released and cannot be %s",
+      verbed));
 }
 
 v8::Local<v8::Value> CreateWriterLockReleasedException(v8::Isolate* isolate,

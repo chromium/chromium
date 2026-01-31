@@ -28,7 +28,7 @@ class OobeConfiguration {
   OobeConfiguration();
   virtual ~OobeConfiguration();
 
-  const base::Value::Dict& configuration() const { return configuration_; }
+  const base::DictValue& configuration() const { return configuration_; }
 
   bool CheckCompleted() const;
 
@@ -69,7 +69,7 @@ class OobeConfiguration {
   bool check_completed_;
 
   // Dictionary value with configuration.
-  base::Value::Dict configuration_;
+  base::DictValue configuration_;
 
   // Observers
   base::ObserverList<Observer>::Unchecked observer_list_;

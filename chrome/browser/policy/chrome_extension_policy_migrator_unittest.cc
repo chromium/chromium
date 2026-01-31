@@ -58,9 +58,11 @@ class TestingPolicyMigrator : public ChromeExtensionPolicyMigrator {
         Migration(kOldPolicy4, kNewPolicy4,
                   base::BindRepeating(&MultiplyByTwo)),
     };
-    CopyPoliciesIfUnset(bundle,
-                        extensions::HashedExtensionId(kExtensionId).value(),
-                        migrations);
+    CopyPoliciesIfUnset(
+        bundle,
+        extensions::HashedExtensionId(extensions::ExtensionId(kExtensionId))
+            .value(),
+        migrations);
   }
 };
 

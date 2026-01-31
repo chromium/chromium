@@ -93,27 +93,6 @@ TEST_P(StoredProfileMetricsTestByCategory, StoredProfiles) {
   histogram_tester.ExpectBucketCount(last_used_metric, 200, 1);
 }
 
-// Tests that `LogLocalProfileSupersetMetrics()` determines the correct number
-// of superset profiles.
-TEST(StoredProfileMetricsTest, LocalProfileSupersetMetrics) {
-  AutofillProfile account_profile = test::SubsetOfStandardProfile();
-  test_api(account_profile)
-      .set_record_type(AutofillProfile::RecordType::kAccount);
-  AutofillProfile local_profile1 = test::StandardProfile();
-  AutofillProfile local_profile2 = test::SubsetOfStandardProfile();
-  AutofillProfile local_profile3 = test::DifferentFromStandardProfile();
-
-  base::HistogramTester histogram_tester;
-  LogLocalProfileSupersetMetrics(
-      {&account_profile, &local_profile1, &local_profile2, &local_profile3},
-      "en-US");
-  // Expect that `local_profile1` is a strict superset of `account_profile`, but
-  // `local_profile2` and `local_profile3` is not.
-  histogram_tester.ExpectUniqueSample(
-      "Autofill.Leipzig.Duplication.NumberOfLocalSupersetProfilesOnStartup", 1,
-      1);
-}
-
 TEST(StoredProfileMetricsTest, TotalPostalAddressProfiles) {
   // A full profile is a postal address.
   AutofillProfile postal_address = test::GetFullProfile();

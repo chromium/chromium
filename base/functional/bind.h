@@ -55,14 +55,14 @@ namespace base {
 
 // Bind as OnceCallback.
 template <typename Functor, typename... Args>
-inline auto BindOnce(Functor&& functor, Args&&... args) {
+[[nodiscard]] inline auto BindOnce(Functor&& functor, Args&&... args) {
   return internal::BindHelper<OnceCallback>::Bind(
       std::forward<Functor>(functor), std::forward<Args>(args)...);
 }
 
 // Bind as RepeatingCallback.
 template <typename Functor, typename... Args>
-inline auto BindRepeating(Functor&& functor, Args&&... args) {
+[[nodiscard]] inline auto BindRepeating(Functor&& functor, Args&&... args) {
   return internal::BindHelper<RepeatingCallback>::Bind(
       std::forward<Functor>(functor), std::forward<Args>(args)...);
 }

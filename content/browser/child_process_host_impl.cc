@@ -26,6 +26,7 @@
 #include "content/common/content_constants_internal.h"
 #include "content/common/pseudonymization_salt.h"
 #include "content/public/browser/browser_thread.h"
+#include "content/public/browser/child_process_host.h"
 #include "content/public/browser/child_process_host_delegate.h"
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/common/content_client.h"
@@ -39,7 +40,9 @@
 #include "base/linux_util.h"
 #elif BUILDFLAG(IS_MAC)
 #include "base/apple/foundation_util.h"
+#include "base/feature_list.h"
 #include "content/browser/mac_helpers.h"
+#include "content/common/features.h"
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 
 namespace content {
@@ -75,6 +78,14 @@ base::FilePath ChildProcessHost::GetChildPath(int flags) {
 
 #if BUILDFLAG(IS_MAC)
   std::string child_base_name = child_path.BaseName().value();
+
+  // An emergency override switch to re-allow third-party plugins;
+  // TODO(https://crbug.com/461717105): remove this.
+  if (base::FeatureList::IsEnabled(
+          features::kBlockThirdPartyInProcessPlugins) &&
+      flags == CHILD_PLUGIN) {
+    flags = CHILD_NORMAL;
+  }
 
   if (flags != CHILD_NORMAL && base::apple::AmIBundled()) {
     // This is a specialized helper, with the |child_path| at
@@ -297,14 +308,6 @@ void ChildProcessHostImpl::DumpProfilingData(base::OnceClosure callback) {
 
 void ChildProcessHostImpl::SetProfilingFile(base::File file) {
   child_process_->SetProfilingFile(std::move(file));
-}
-#endif
-
-#if BUILDFLAG(IS_ANDROID)
-// Notifies the child process of memory pressure level.
-void ChildProcessHostImpl::NotifyMemoryPressureToChildProcess(
-    base::MemoryPressureLevel level) {
-  child_process()->OnMemoryPressure(level);
 }
 #endif
 

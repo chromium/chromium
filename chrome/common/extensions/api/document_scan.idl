@@ -549,7 +549,7 @@ namespace documentScan {
     // with a $(ref:ScanResults) object. If a callback is passed to
     // this function, the returned data is passed to it instead.
     // |options| : An object containing scan parameters.
-    // |callback| : Called with the result and data from the scan.
+    // |callback| : Returns a Promise which resolves with the scan results.
     static void scan(
         ScanOptions options,
         ScanCallback callback);
@@ -559,7 +559,8 @@ namespace documentScan {
     // is passed to this function, returned data is passed to it instead.
     // |filter| : A $(ref:DeviceFilter) indicating which types of scanners
     // should be returned.
-    // |callback| : Called with the result and list of scanners.
+    // |callback| : Returns a Promise which resolves with the result and list of
+    // scanners.
     static void getScannerList(
         DeviceFilter filter, GetScannerListCallback callback);
 
@@ -568,7 +569,7 @@ namespace documentScan {
     // is passed to this function, returned data is passed to it instead.
     // |scannerId| : The ID of a scanner to be opened. This value is one
     // returned from a previous call to $(ref:getScannerList).
-    // |callback| : Called with the result.
+    // |callback| : Returns a Promise which resolves with the result.
     static void openScanner(
         DOMString scannerId, OpenScannerCallback callback);
 
@@ -578,7 +579,7 @@ namespace documentScan {
     // is passed to this function, returned data is passed to it instead.
     // |scannerHandle| : The handle of an open scanner returned from a call
     // to $(ref:openScanner).
-    // |callback| : Called with the result.
+    // |callback| : Returns a Promise which resolves with the result.
     static void getOptionGroups(
         DOMString scannerHandle, GetOptionGroupsCallback callback);
 
@@ -589,7 +590,7 @@ namespace documentScan {
     // used for further operations.
     // |scannerHandle| : Specifies the handle of an open scanner that was
     // previously returned from a call to $(ref:openScanner).
-    // |callback| : Called with the result.
+    // |callback| : Returns a Promise which resolves with the result.
     static void closeScanner(
         DOMString scannerHandle, CloseScannerCallback callback);
 
@@ -602,7 +603,7 @@ namespace documentScan {
     // should be a value previously returned from a call to $(ref:openScanner).
     // |options| : A list of <code>OptionSetting</code> objects to be applied to
     // the scanner.
-    // |callback| : Called with the result.
+    // |callback| : Returns a Promise which resolves with the result.
     static void setOptions(
         DOMString scannerHandle, OptionSetting[] options,
         SetOptionsCallback callback);
@@ -618,7 +619,7 @@ namespace documentScan {
     // be used for the scan. The <code>StartScanOptions.format</code> property
     // must match one of the entries returned in the scanner's
     // <code>ScannerInfo</code>.
-    // |callback| : Called with the result.
+    // |callback| : Returns a Promise which resolves with the result.
     static void startScan(
         DOMString scannerHandle, StartScanOptions options,
         StartScanCallback callback);
@@ -628,7 +629,7 @@ namespace documentScan {
     // is passed to it instead.
     // |job| : The handle of an active scan job previously returned from a
     // call to $(ref:startScan).
-    // |callback| : Called with the result.
+    // |callback| : Returns a Promise which resolves with the result.
     static void cancelScan(
         DOMString job, CancelScanCallback callback);
 
@@ -647,7 +648,7 @@ namespace documentScan {
     //
     // |job| : Active job handle previously returned from
     // $(ref:startScan).
-    // |callback| : Called with the result.
+    // |callback| : Returns a Promise which resolves with the result.
     static void readScanData(
         DOMString job, ReadScanDataCallback callback);
   };

@@ -105,8 +105,9 @@ public class UmaActivityObserverTest {
                     Assert.assertEquals(
                             ActivityType.TABBED, UmaActivityObserver.getCurrentActivityType());
                 });
-        mInOrder.verify(mUmaSessionStatsJniSpy, Mockito.times(0)).umaResumeSession(anyLong());
-        mInOrder.verify(mUmaSessionStatsJniSpy, Mockito.times(0)).umaEndSession(anyLong());
+        // Resume needs to happen before end to ensure the log isn't closed.
+        mInOrder.verify(mUmaSessionStatsJniSpy, Mockito.times(1)).umaResumeSession(anyLong());
+        mInOrder.verify(mUmaSessionStatsJniSpy, Mockito.times(1)).umaEndSession(anyLong());
 
         // Start a CCT over the second window.
         Intent intent =
@@ -165,7 +166,6 @@ public class UmaActivityObserverTest {
 
     @Test
     @LargeTest
-    @DisableFeatures(ChromeFeatureList.SETTINGS_MULTI_COLUMN)
     public void testSessionPreservedInSettings() throws Exception {
         WebPageStation pageInFirstWindow = mCtaTestRule.startOnBlankPage();
         ThreadUtils.runOnUiThreadBlocking(

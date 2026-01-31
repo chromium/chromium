@@ -255,12 +255,10 @@ IsolatedWebAppReaderRegistry::~IsolatedWebAppReaderRegistry() {
 
 void IsolatedWebAppReaderRegistry::ReadResponse(
     const base::FilePath& web_bundle_path,
-    bool dev_mode,
     const web_package::SignedWebBundleId& web_bundle_id,
     const network::ResourceRequest& resource_request,
     ReadResponseCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(!web_bundle_id.is_for_proxy_mode());
 
   Cache::Key cache_key = web_bundle_path;
 
@@ -304,21 +302,13 @@ void IsolatedWebAppReaderRegistry::ReadResponse(
   bool skip_signature_verification = verified_files_.contains(web_bundle_path);
 #endif
 
-  IsolatedWebAppResponseReaderFactory::Flags flags;
-  if (dev_mode) {
-    flags.Put(IsolatedWebAppResponseReaderFactory::Flag::kDevModeBundle);
-  }
-  if (skip_signature_verification) {
-    flags.Put(
-        IsolatedWebAppResponseReaderFactory::Flag::kSkipSignatureVerification);
-  }
-
   reader_factory_->CreateResponseReader(
-      web_bundle_path, web_bundle_id, flags,
+      web_bundle_path, web_bundle_id,
+      /*verify_signatures=*/!skip_signature_verification,
       base::BindOnce(&IsolatedWebAppReaderRegistry::OnResponseReaderCreated,
                      // `base::Unretained` can be used here since `this` owns
                      // `reader_factory`.
-                     base::Unretained(this), web_bundle_path, web_bundle_id));
+                     base::Unretained(this), web_bundle_path));
 }
 
 // Processes a key data change event and queues close requests for readers
@@ -378,7 +368,6 @@ void IsolatedWebAppReaderRegistry::ClearCacheForPath(
 
 void IsolatedWebAppReaderRegistry::OnResponseReaderCreated(
     const base::FilePath& web_bundle_path,
-    const web_package::SignedWebBundleId& web_bundle_id,
     base::expected<std::unique_ptr<IsolatedWebAppResponseReader>,
                    UnusableSwbnFileError> maybe_reader) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -495,8 +484,7 @@ void IsolatedWebAppReaderRegistry::OnResponseRead(
 IsolatedWebAppReaderRegistry::ReadResponseError
 IsolatedWebAppReaderRegistry::ReadResponseError::ForError(
     const UnusableSwbnFileError& error) {
-  return ForOtherError(
-      IsolatedWebAppResponseReaderFactory::ErrorToString(error));
+  return ForOtherError(error.ToString());
 }
 
 // static

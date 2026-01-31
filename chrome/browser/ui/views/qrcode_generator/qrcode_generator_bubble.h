@@ -41,7 +41,7 @@ class QRCodeGeneratorBubble : public QRCodeGeneratorBubbleView,
   METADATA_HEADER(QRCodeGeneratorBubble, LocationBarBubbleDelegateView)
 
  public:
-  QRCodeGeneratorBubble(views::View* anchor_view,
+  QRCodeGeneratorBubble(views::BubbleAnchor anchor,
                         base::WeakPtr<content::WebContents> web_contents,
                         base::OnceClosure on_closing,
                         base::OnceClosure on_back_button_pressed,

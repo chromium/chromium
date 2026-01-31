@@ -19,24 +19,24 @@ class COMPONENT_EXPORT(MIRRORING_SERVICE) OpenscreenStatsClient
   OpenscreenStatsClient();
   ~OpenscreenStatsClient() override;
 
-  base::Value::Dict GetStats() const;
+  base::DictValue GetStats() const;
 
   // openscreen::cast::SenderStatsClient::OnStatisticsUpdated() override;
   void OnStatisticsUpdated(
       const openscreen::cast::SenderStats& updated_stats) override;
 
  protected:
-  base::Value::Dict ConvertSenderStatsToDict(
+  base::DictValue ConvertSenderStatsToDict(
       const openscreen::cast::SenderStats& updated_stats) const;
-  base::Value::Dict ConvertStatisticsListToDict(
+  base::DictValue ConvertStatisticsListToDict(
       const openscreen::cast::SenderStats::StatisticsList& stats_list) const;
-  base::Value::Dict ConvertHistogramsListToDict(
+  base::DictValue ConvertHistogramsListToDict(
       const openscreen::cast::SenderStats::HistogramsList& histograms_list)
       const;
-  base::Value::List ConvertOpenscreenHistogramToList(
+  base::ListValue ConvertOpenscreenHistogramToList(
       const openscreen::cast::SimpleHistogram& histogram) const;
 
-  base::Value::Dict most_recent_stats_;
+  base::DictValue most_recent_stats_;
 };
 
 }  // namespace mirroring

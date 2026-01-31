@@ -26,6 +26,7 @@
 #include "chrome/browser/ui/webui/searchbox/searchbox_test_utils.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/contextual_tasks/public/features.h"
 #include "components/lens/lens_composebox_user_action.h"
 #include "components/lens/lens_features.h"
 #include "components/lens/lens_overlay_dismissal_source.h"
@@ -102,7 +103,8 @@ class LensSearchControllerFake : public lens::TestLensSearchController {
  protected:
   std::unique_ptr<lens::LensSearchContextualizationController>
   CreateLensSearchContextualizationController() override {
-    return std::make_unique<lens::TestLensSearchContextualizationController>(this);
+    return std::make_unique<lens::TestLensSearchContextualizationController>(
+        this);
   }
 
   std::unique_ptr<LensOverlayController> CreateLensOverlayController(
@@ -122,7 +124,6 @@ class LensSearchControllerFake : public lens::TestLensSearchController {
       lens::LensOverlayFullImageResponseCallback full_image_callback,
       lens::LensOverlayUrlResponseCallback url_callback,
       lens::LensOverlayInteractionResponseCallback interaction_callback,
-      lens::LensOverlaySuggestInputsCallback suggest_inputs_callback,
       lens::LensOverlayThumbnailCreatedCallback thumbnail_created_callback,
       lens::UploadProgressCallback upload_progress_callback,
       variations::VariationsClient* variations_client,
@@ -134,9 +135,9 @@ class LensSearchControllerFake : public lens::TestLensSearchController {
     auto fake_query_controller =
         std::make_unique<lens::TestLensOverlayQueryController>(
             full_image_callback, url_callback, interaction_callback,
-            suggest_inputs_callback, thumbnail_created_callback,
-            upload_progress_callback, variations_client, identity_manager,
-            profile, invocation_source, use_dark_mode, gen204_controller);
+            thumbnail_created_callback, upload_progress_callback,
+            variations_client, identity_manager, profile, invocation_source,
+            use_dark_mode, gen204_controller);
 
     // Set up the cluster info to test the search session ID is propagated.
     lens::LensOverlayServerClusterInfoResponse cluster_info_response;
@@ -192,7 +193,8 @@ class LensComposeboxControllerBrowserTest : public InProcessBrowserTest {
          {lens::features::kLensAimSuggestions,
           {{"lens-aim-suggestions-type", "Contextual"}}},
          {lens::features::kLensSearchReinvocationAffordance, {}}},
-        /*disabled_features=*/{omnibox::kAimServerEligibilityEnabled});
+        /*disabled_features=*/{contextual_tasks::kContextualTasks,
+                               omnibox::kAimServerEligibilityEnabled});
 
     InProcessBrowserTest::SetUp();
   }
@@ -361,6 +363,110 @@ IN_PROC_BROWSER_TEST_F(LensComposeboxControllerBrowserTest,
   ASSERT_EQ(lens_image_query_data.request_id().sequence_id(), 4);
   ASSERT_EQ(lens_image_query_data.request_id().long_context_id(), 1);
   ASSERT_EQ(lens_image_query_data.request_id().image_sequence_id(), 1);
+}
+
+IN_PROC_BROWSER_TEST_F(LensComposeboxControllerBrowserTest,
+                       IssueComposeboxQueryWithParamsSendsPostMessage) {
+  WaitForPaint();
+
+  auto* lens_controller = GetLensSearchController();
+  ASSERT_TRUE(lens_controller);
+
+  // Open the overlay directly to the side panel so composebox is visible.
+  SkBitmap initial_bitmap = CreateNonEmptyBitmap(100, 100);
+  lens_controller->OpenLensOverlayWithPendingRegion(
+      lens::LensOverlayInvocationSource::kContentAreaContextMenuImage,
+      kTestRegion->Clone(), initial_bitmap);
+  ASSERT_TRUE(
+      base::test::RunUntil([&]() { return IsResultsSidePanelShowing(); }));
+
+  // Wait for the composebox handler to be set.
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return GetLensComposeboxController()->composebox_handler_for_testing() !=
+           nullptr;
+  }));
+
+  // Mock a handshake call so the composebox controller can send query messages.
+  lens::AimToClientMessage aim_to_client_message;
+  aim_to_client_message.mutable_handshake_response()->add_capabilities(
+      lens::FeatureCapability::DEFAULT);
+  MockAimToClientMessage(aim_to_client_message);
+
+  // Send a query with params.
+  std::map<std::string, std::string> additional_params;
+  additional_params["gs_lcrp"] = "test_value";
+  GetLensComposeboxController()->IssueComposeboxQuery("test query",
+                                                      additional_params);
+
+  // Verify the client message sent.
+  auto* test_side_panel_coordinator = GetLensSidePanelCoordinator();
+  ASSERT_TRUE(test_side_panel_coordinator);
+  ASSERT_TRUE(test_side_panel_coordinator->last_sent_client_message_to_aim_
+                  .has_submit_query());
+
+  // Verify the submit query message.
+  auto submit_query = test_side_panel_coordinator
+                          ->last_sent_client_message_to_aim_.submit_query();
+  ASSERT_EQ(submit_query.payload().query_text(), "test query");
+
+  // Verify additional params.
+  auto sent_params = submit_query.payload().additional_cgi_params();
+  ASSERT_EQ(sent_params.size(), 1ul);
+  ASSERT_EQ(sent_params.at("gs_lcrp"), "test_value");
+}
+
+IN_PROC_BROWSER_TEST_F(LensComposeboxControllerBrowserTest,
+                       IssueComposeboxQueryWithParamsBeforeHandshakeIsQueued) {
+  WaitForPaint();
+
+  auto* lens_controller = GetLensSearchController();
+  ASSERT_TRUE(lens_controller);
+
+  // Open the overlay directly to the side panel so composebox is visible.
+  SkBitmap initial_bitmap = CreateNonEmptyBitmap(100, 100);
+  lens_controller->OpenLensOverlayWithPendingRegion(
+      lens::LensOverlayInvocationSource::kContentAreaContextMenuImage,
+      kTestRegion->Clone(), initial_bitmap);
+  ASSERT_TRUE(
+      base::test::RunUntil([&]() { return IsResultsSidePanelShowing(); }));
+
+  // Wait for the composebox handler to be set.
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return GetLensComposeboxController()->composebox_handler_for_testing() !=
+           nullptr;
+  }));
+
+  // Send a query with params before handshake.
+  std::map<std::string, std::string> additional_params;
+  additional_params["gs_lcrp"] = "test_value";
+  GetLensComposeboxController()->IssueComposeboxQuery("test query",
+                                                      additional_params);
+
+  // Verify the client message was not sent.
+  auto* test_side_panel_coordinator = GetLensSidePanelCoordinator();
+  ASSERT_TRUE(test_side_panel_coordinator);
+  ASSERT_FALSE(test_side_panel_coordinator->last_sent_client_message_to_aim_
+                   .has_submit_query());
+
+  // Mock a handshake call so the composebox controller can send query messages.
+  lens::AimToClientMessage aim_to_client_message;
+  aim_to_client_message.mutable_handshake_response()->add_capabilities(
+      lens::FeatureCapability::DEFAULT);
+  MockAimToClientMessage(aim_to_client_message);
+
+  // Verify the client message sent.
+  ASSERT_TRUE(test_side_panel_coordinator->last_sent_client_message_to_aim_
+                  .has_submit_query());
+
+  // Verify the submit query message.
+  auto submit_query = test_side_panel_coordinator
+                          ->last_sent_client_message_to_aim_.submit_query();
+  ASSERT_EQ(submit_query.payload().query_text(), "test query");
+
+  // Verify additional params.
+  auto sent_params = submit_query.payload().additional_cgi_params();
+  ASSERT_EQ(sent_params.size(), 1ul);
+  ASSERT_EQ(sent_params.at("gs_lcrp"), "test_value");
 }
 
 IN_PROC_BROWSER_TEST_F(LensComposeboxControllerBrowserTest,
@@ -710,7 +816,7 @@ IN_PROC_BROWSER_TEST_F(LensComposeboxControllerBrowserTest,
             lens::LensOverlayRequestId::MEDIA_TYPE_DEFAULT_IMAGE);
 
   // Clear the region selection.
-  overlay_controller->ClearRegionSelectionForTesting();
+  overlay_controller->ClearRegionSelection();
   ASSERT_FALSE(overlay_controller->HasRegionSelection());
 
   // Send another query.
@@ -849,10 +955,9 @@ IN_PROC_BROWSER_TEST_F(LensComposeboxControllerBrowserTest,
       [&]() { return overlay_controller->state() == State::kOff; }));
 
   // Verify suggest inputs are cleared.
-  ASSERT_EQ(GetLensComposeboxController()
-                ->GetLensSuggestInputs()
-                .ByteSizeLong(),
-            static_cast<size_t>(0));
+  ASSERT_EQ(
+      GetLensComposeboxController()->GetLensSuggestInputs().ByteSizeLong(),
+      static_cast<size_t>(0));
 }
 
 IN_PROC_BROWSER_TEST_F(
@@ -1015,7 +1120,7 @@ IN_PROC_BROWSER_TEST_F(LensComposeboxControllerBrowserTest,
   EXPECT_NEAR(zoomed_crop.crop().height(), 0.8f, tolerance);
 
   // Clear the region selection.
-  overlay_controller->ClearRegionSelectionForTesting();
+  overlay_controller->ClearRegionSelection();
 
   // Send another query.
   GetLensComposeboxController()->composebox_handler_for_testing()->SubmitQuery(
@@ -1045,8 +1150,8 @@ IN_PROC_BROWSER_TEST_F(LensComposeboxControllerBrowserTest,
       /*suppress_contextualization=*/true);
 
   // Wait for side panel to be visible.
-  ASSERT_TRUE(base::test::RunUntil(
-      [&]() { return IsResultsSidePanelShowing(); }));
+  ASSERT_TRUE(
+      base::test::RunUntil([&]() { return IsResultsSidePanelShowing(); }));
 
   // Wait for the composebox handler to be set.
   ASSERT_TRUE(base::test::RunUntil([&]() {
@@ -1117,8 +1222,8 @@ IN_PROC_BROWSER_TEST_F(LensComposeboxControllerBrowserTest,
       /*suppress_contextualization=*/true);
 
   // Wait for side panel to be visible.
-  ASSERT_TRUE(base::test::RunUntil(
-      [&]() { return IsResultsSidePanelShowing(); }));
+  ASSERT_TRUE(
+      base::test::RunUntil([&]() { return IsResultsSidePanelShowing(); }));
 
   // Wait for the composebox handler to be set.
   ASSERT_TRUE(base::test::RunUntil([&]() {

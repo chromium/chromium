@@ -91,7 +91,7 @@ class CBCMInvalidationsInitializerTest
 
   std::string MakeTokensFromAuthCodesResponse(const std::string& refresh_token,
                                               const std::string& access_token) {
-    base::Value::Dict dict;
+    base::DictValue dict;
     dict.Set("access_token", access_token);
     dict.Set("refresh_token", refresh_token);
     dict.Set("expires_in", 9999);

@@ -6,7 +6,6 @@
 
 #include <memory>
 
-#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/no_destructor.h"
@@ -64,7 +63,7 @@ GuestViewContainer::GuestViewContainer(content::RenderFrame* render_frame,
     : element_instance_id_(element_instance_id),
       render_frame_lifetime_observer_(
           std::make_unique<RenderFrameLifetimeObserver>(this, render_frame)) {
-  DCHECK(!base::Contains(GetContainerMap(), element_instance_id));
+  DCHECK(!GetContainerMap().contains(element_instance_id));
   GetContainerMap().insert(std::make_pair(element_instance_id, this));
 }
 

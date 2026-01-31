@@ -68,7 +68,7 @@ TranslateBubbleController* TranslateBubbleController::From(
 
 views::Widget* TranslateBubbleController::ShowTranslateBubble(
     content::WebContents* web_contents,
-    views::View* anchor_view,
+    views::BubbleAnchor anchor,
     views::Button* highlighted_button,
     translate::TranslateStep step,
     const std::string& source_language,
@@ -112,7 +112,7 @@ views::Widget* TranslateBubbleController::ShowTranslateBubble(
   }
 
   auto translate_bubble_view = std::make_unique<TranslateBubbleView>(
-      anchor_view, std::move(model), error_type, web_contents,
+      anchor, std::move(model), error_type, web_contents,
       GetOnTranslateBubbleClosedCallback());
   translate_bubble_view_ = translate_bubble_view.get();
 
@@ -136,12 +136,12 @@ views::Widget* TranslateBubbleController::ShowTranslateBubble(
 
 void TranslateBubbleController::StartPartialTranslate(
     content::WebContents* web_contents,
-    views::View* anchor_view,
+    views::BubbleAnchor anchor,
     views::Button* highlighted_button,
     const std::string& source_language,
     const std::string& target_language,
     const std::u16string& text_selection) {
-  CreatePartialTranslateBubble(web_contents, anchor_view, highlighted_button,
+  CreatePartialTranslateBubble(web_contents, anchor, highlighted_button,
                                PartialTranslateBubbleModel::VIEW_STATE_WAITING,
                                source_language, target_language, text_selection,
                                /*target_text=*/u"",
@@ -200,7 +200,7 @@ void TranslateBubbleController::OnPartialTranslateComplete() {
 
 void TranslateBubbleController::CreatePartialTranslateBubble(
     content::WebContents* web_contents,
-    views::View* anchor_view,
+    views::BubbleAnchor anchor,
     views::Button* highlighted_button,
     PartialTranslateBubbleModel::ViewState view_state,
     const std::string& source_language,
@@ -274,7 +274,7 @@ void TranslateBubbleController::CreatePartialTranslateBubble(
 
   auto partial_translate_bubble_view =
       std::make_unique<PartialTranslateBubbleView>(
-          anchor_view, std::move(model), web_contents,
+          anchor, std::move(model), web_contents,
           GetOnPartialTranslateBubbleClosedCallback());
   partial_translate_bubble_view_ = partial_translate_bubble_view.get();
   if (highlighted_button) {

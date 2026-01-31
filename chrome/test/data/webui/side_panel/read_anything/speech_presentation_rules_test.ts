@@ -24,6 +24,46 @@ suite('SpeechPresentationRules', () => {
     assertEquals(1.2, getCurrentSpeechRate());
   });
 
+  // <if expr="not is_chromeos">
+  test('getCurrentSpeechRate caps at value to 2.0 on Desktop', () => {
+    chrome.readingMode.speechRate = 4.0;
+    assertEquals(2.0, getCurrentSpeechRate());
+
+    chrome.readingMode.speechRate = 3.0;
+    assertEquals(2.0, getCurrentSpeechRate());
+
+    chrome.readingMode.speechRate = 2.1;
+    assertEquals(2.0, getCurrentSpeechRate());
+
+    chrome.readingMode.speechRate = 2.0;
+    assertEquals(2.0, getCurrentSpeechRate());
+
+    // Values below 2.0 aren't impacted.
+    chrome.readingMode.speechRate = 1.199999;
+    assertEquals(1.2, getCurrentSpeechRate());
+
+    chrome.readingMode.speechRate = .53333;
+    assertEquals(.5, getCurrentSpeechRate());
+  });
+  // </if>
+
+  // <if expr="is_chromeos">
+  test('getCurrentSpeechRate does not cap value on ChromeOS', () => {
+    chrome.readingMode.speechRate = 4.0;
+    assertEquals(4.0, getCurrentSpeechRate());
+
+    chrome.readingMode.speechRate = 3.0;
+    assertEquals(3.0, getCurrentSpeechRate());
+
+    chrome.readingMode.speechRate = 2.1;
+    assertEquals(2.1, getCurrentSpeechRate());
+
+    chrome.readingMode.speechRate = 2.0;
+    assertEquals(2.0, getCurrentSpeechRate());
+  });
+  // </if>
+
+
   test('isInvalidHighlightForWordHighlighting', () => {
     assertTrue(isInvalidHighlightForWordHighlighting());
     assertTrue(isInvalidHighlightForWordHighlighting(''));

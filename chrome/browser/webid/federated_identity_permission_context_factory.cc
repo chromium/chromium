@@ -39,10 +39,8 @@ FederatedIdentityPermissionContextFactory::
           "FederatedIdentityPermissionContext",
           ProfileSelections::Builder()
               .WithRegular(ProfileSelection::kOwnInstance)
-              // TODO(crbug.com/40257657): Check if this service is needed in
-              // Guest mode.
               .WithGuest(ProfileSelection::kOwnInstance)
-              .WithAshInternals(ProfileSelection::kNone)
+              .WithAshInternals(ProfileSelection::kOwnInstance)
               .Build()) {
   DependsOn(HostContentSettingsMapFactory::GetInstance());
   DependsOn(IdentityManagerFactory::GetInstance());

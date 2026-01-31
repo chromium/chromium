@@ -4,7 +4,6 @@
 
 #include "services/network/network_service_proxy_delegate.h"
 
-#include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/memory/scoped_refptr.h"
@@ -188,15 +187,6 @@ net::Error NetworkServiceProxyDelegate::OnTunnelHeadersReceived(
 void NetworkServiceProxyDelegate::SetProxyResolutionService(
     net::ProxyResolutionService* proxy_resolution_service) {
   proxy_resolution_service_ = proxy_resolution_service;
-}
-
-bool NetworkServiceProxyDelegate::AliasRequiresProxyOverride(
-    const std::string scheme,
-    const std::vector<std::string>& dns_aliases,
-    const net::NetworkAnonymizationKey& network_anonymization_key) {
-  // The `NetworkServiceProxyDelegate` should never check DNS aliases for
-  // overriding a proxy.
-  return false;
 }
 
 void NetworkServiceProxyDelegate::OnCustomProxyConfigUpdated(

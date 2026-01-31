@@ -16,7 +16,6 @@
 
 #include "base/base_paths.h"
 #include "base/check.h"
-#include "base/containers/contains.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/logging.h"

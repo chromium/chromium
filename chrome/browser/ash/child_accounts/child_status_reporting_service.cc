@@ -65,7 +65,7 @@ ChildStatusReportingService::~ChildStatusReportingService() = default;
 
 void ChildStatusReportingService::CreateStatusUploaderIfNeeded(
     policy::CloudPolicyClient* client) {
-  const base::Value::Dict& time_limit =
+  const base::DictValue& time_limit =
       pref_change_registrar_->prefs()->GetDict(prefs::kUsageTimeLimit);
   const base::TimeDelta new_day_reset_time =
       usage_time_limit::GetTimeUsageLimitResetTime(time_limit);

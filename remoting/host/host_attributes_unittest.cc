@@ -7,7 +7,6 @@
 #include <algorithm>
 #include <vector>
 
-#include "base/containers/contains.h"
 #include "base/strings/string_split.h"
 #include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -17,7 +16,7 @@ namespace remoting {
 // Ensures there is no DCHECK failure or crash in Register() and Callbacks.
 TEST(HostAttributesTest, Sanity) {
   std::string result = GetHostAttributes();
-  bool is_debug_build = base::Contains(result, "Debug-Build");
+  bool is_debug_build = result.contains("Debug-Build");
 
 #if defined(NDEBUG)
   ASSERT_FALSE(is_debug_build);

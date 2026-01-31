@@ -45,7 +45,7 @@ scoped_refptr<Extension> LoadManifestUnchecked(const std::string& dir,
       deserializer.Deserialize(nullptr, error);
   if (!result)
     return nullptr;
-  const base::Value::Dict* dict = result->GetIfDict();
+  const base::DictValue* dict = result->GetIfDict();
   CHECK(dict);
 
   std::u16string utf16_error;

@@ -50,7 +50,7 @@ void FontHandler::OnJavascriptDisallowed() {
   weak_ptr_factory_.InvalidateWeakPtrs();
 }
 
-void FontHandler::HandleFetchFontsData(const base::Value::List& args) {
+void FontHandler::HandleFetchFontsData(const base::ListValue& args) {
   CHECK_EQ(1U, args.size());
   const std::string& callback_id = args[0].GetString();
 
@@ -61,11 +61,11 @@ void FontHandler::HandleFetchFontsData(const base::Value::List& args) {
 }
 
 void FontHandler::FontListHasLoaded(std::string callback_id,
-                                    base::Value::List list) {
+                                    base::ListValue list) {
   // Font list. Selects the directionality for the fonts in the given list.
   for (auto& i : list) {
     DCHECK(i.is_list());
-    base::Value::List& font = i.GetList();
+    base::ListValue& font = i.GetList();
 
     DCHECK(font.size() >= 2u && font[1].is_string());
     std::u16string value = base::UTF8ToUTF16(font[1].GetString());
@@ -74,7 +74,7 @@ void FontHandler::FontListHasLoaded(std::string callback_id,
     font.Append(has_rtl_chars ? "rtl" : "ltr");
   }
 
-  base::Value::Dict response;
+  base::DictValue response;
   response.Set("fontList", std::move(list));
 
   ResolveJavascriptCallback(base::Value(callback_id), response);

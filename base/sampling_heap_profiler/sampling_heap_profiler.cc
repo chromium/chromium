@@ -92,9 +92,8 @@ const char* GetAndLeakThreadName() {
         // BUILDFLAG(IS_ANDROID)
 
   // Use tid if we don't have a thread name.
-  UNSAFE_TODO(snprintf(
-      name, sizeof(name), "Thread %lu",
-      static_cast<unsigned long>(base::PlatformThread::CurrentId().raw())));
+  snprintf(name, sizeof(name), "Thread %lu",
+           static_cast<unsigned long>(base::PlatformThread::CurrentId().raw()));
   return UNSAFE_TODO(strdup(name));
 }
 
@@ -298,7 +297,7 @@ std::vector<SamplingHeapProfiler::Sample> SamplingHeapProfiler::GetSamples(
 std::vector<const char*> SamplingHeapProfiler::GetStrings() {
   PoissonAllocationSampler::ScopedMuteThreadSamples no_samples_scope;
   AutoLock lock(mutex_);
-  return std::vector<const char*>(strings_.begin(), strings_.end());
+  return std::vector<const char*>(std::from_range, strings_);
 }
 
 // static

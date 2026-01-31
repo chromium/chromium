@@ -134,7 +134,7 @@ export class HelpContentElement extends HelpContentElementBase {
 
   /** Extract the url string from help content. */
   private getUrl(helpContent: HelpContent): string {
-    return helpContent.url.url;
+    return helpContent.url;
   }
 
   /** Extract the title as JS string from help content. */

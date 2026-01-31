@@ -39,7 +39,9 @@ class BLINK_COMMON_EXPORT WebTouchEvent : public WebInputEvent {
   bool hovering = false;
 
   // Whether this touch event is a touchstart or a first touchmove event per
-  // scroll.
+  // scroll. (Note: There can be multiple first touchmove events per scroll. All
+  // touchmoves up until the first touchmove that moves beyond the slop region
+  // are considered first touchmove events).
   bool touch_start_or_first_touch_move = false;
 
   // A unique identifier for the touch event. Valid ids start at one and

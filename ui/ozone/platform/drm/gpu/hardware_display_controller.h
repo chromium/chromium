@@ -158,7 +158,7 @@ class HardwareDisplayController {
   std::vector<uint64_t> GetFormatModifiersForTestModeset(
       uint32_t fourcc_format);
 
-  void UpdatePreferredModifierForFormat(gfx::BufferFormat buffer_format,
+  void UpdatePreferredModifierForFormat(viz::SharedImageFormat format,
                                         uint64_t modifier);
 
   // Moves the hardware cursor to |location|.

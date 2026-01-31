@@ -6,7 +6,6 @@
 
 #include <algorithm>
 
-#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/metrics/histogram_functions.h"
@@ -178,7 +177,7 @@ void WebBundleManager::CleanUpWillBeDeletedURLLoader(
 
 void WebBundleManager::DisconnectHandler(Key key) {
   factories_.erase(key);
-  DCHECK(!base::Contains(pending_loaders_, key));
+  DCHECK(!pending_loaders_.contains(key));
 }
 
 bool WebBundleManager::AllocateMemoryForProcess(int32_t process_id,

@@ -18,8 +18,8 @@ struct ReconnectParams {
   ~ReconnectParams();
 
   // Helpers used to convert to/from a JSON dictionary.
-  static base::Value::Dict ToDict(const ReconnectParams& params);
-  static ReconnectParams FromDict(const base::Value::Dict& dict);
+  static base::DictValue ToDict(const ReconnectParams& params);
+  static ReconnectParams FromDict(const base::DictValue& dict);
 
   // Verifies the structure contains valid data.
   bool IsValid() const;

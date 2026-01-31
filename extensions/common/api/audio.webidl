@@ -151,8 +151,8 @@ interface Audio {
 
   // Gets the system-wide mute state for the specified stream type.
   // |streamType|: Stream type for which mute state should be fetched.
-  // |Returns|: Callback reporting whether mute is set or not for specified
-  // stream type.
+  // |Returns|: Promise that resolves with a boolean indicating whether mute is
+  // set or not for specified stream type.
   // |PromiseValue|: value
   [requiredCallback] static Promise<boolean> getMute(StreamType streamType);
 

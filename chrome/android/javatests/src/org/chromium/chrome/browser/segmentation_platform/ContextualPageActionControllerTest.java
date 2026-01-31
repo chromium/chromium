@@ -14,6 +14,7 @@ import org.junit.runner.RunWith;
 import org.chromium.base.library_loader.LibraryLoader;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
@@ -53,6 +54,7 @@ public class ContextualPageActionControllerTest {
     @Test
     @MediumTest
     @Restriction(DeviceFormFactor.PHONE) // Flaky on larger form factors crbug.com/422817837
+    @DisableIf.Build(supported_abis_includes = "x86_64", message = "https://crbug.com/448846307")
     public void testContextualPageModelExecution() {
         LibraryLoader.getInstance().ensureInitialized();
 

@@ -33,7 +33,6 @@
 #include "chrome/common/chrome_paths.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
-#include "components/content_settings/core/common/features.h"
 #include "components/google/core/common/google_switches.h"
 #include "components/google/core/common/google_util.h"
 #include "components/metrics/content/subprocess_metrics_provider.h"
@@ -336,22 +335,15 @@ class HintsFetcherDisabledBrowserTest : public InProcessBrowserTest {
     no_state_prefetch_manager->SetNoStatePrefetchContentsFactoryForTest(
         no_state_prefetch_contents_factory);
 
-    content::SessionStorageNamespace* storage_namespace =
-        browser()
-            ->tab_strip_model()
-            ->GetActiveWebContents()
-            ->GetController()
-            .GetDefaultSessionStorageNamespace();
-    ASSERT_TRUE(storage_namespace);
-
     std::unique_ptr<prerender::test_utils::TestPrerender> test_prerender =
         no_state_prefetch_contents_factory->ExpectNoStatePrefetchContents(
             prerender::FINAL_STATUS_NOSTATE_PREFETCH_FINISHED);
 
     std::unique_ptr<prerender::NoStatePrefetchHandle> no_state_prefetch_handle =
-        no_state_prefetch_manager->AddSameOriginSpeculation(
-            url, storage_namespace, gfx::Size(640, 480),
-            url::Origin::Create(url));
+        no_state_prefetch_manager->StartPrefetchingFromLinkRelPrerender(
+            /*process_id=*/-1, /*route_id=*/-1, url,
+            blink::mojom::PrerenderTriggerType::kLinkRelPrerender,
+            content::Referrer(), url::Origin::Create(url), gfx::Size(640, 480));
     ASSERT_EQ(no_state_prefetch_handle->contents(), test_prerender->contents());
 
     // The final status may be either  FINAL_STATUS_NOSTATE_PREFETCH_FINISHED or
@@ -385,16 +377,16 @@ class HintsFetcherDisabledBrowserTest : public InProcessBrowserTest {
     EXPECT_EQ(request.method, net::test_server::METHOD_POST);
     EXPECT_NE(request.headers.end(), request.headers.find("X-Client-Data"));
 
-    EXPECT_EQ(expected_bearer_access_token_.empty(),
-              !base::Contains(request.headers,
-                              net::HttpRequestHeaders::kAuthorization));
+    EXPECT_EQ(
+        expected_bearer_access_token_.empty(),
+        !request.headers.contains(net::HttpRequestHeaders::kAuthorization));
     if (!expected_bearer_access_token_.empty()) {
       EXPECT_EQ(expected_bearer_access_token_,
                 request.headers.at(net::HttpRequestHeaders::kAuthorization));
     }
 
     // Make sure only one of API key or access token is sent.
-    EXPECT_EQ(base::Contains(request.headers, "X-Goog-Api-Key"),
+    EXPECT_EQ(request.headers.contains("X-Goog-Api-Key"),
               expected_bearer_access_token_.empty());
 
     optimization_guide::proto::GetHintsRequest hints_request;
@@ -541,8 +533,7 @@ class HintsFetcherBrowserTest : public HintsFetcherDisabledBrowserTest {
         {optimization_guide::kHintsBatchUpdateForActiveTabsAndTopHosts, {}},
     };
     PopulateEnabledFeatures(&enabled_features);
-    scoped_feature_list_.InitWithFeaturesAndParameters(enabled_features,
-                                                       disabled_features_);
+    scoped_feature_list_.InitWithFeaturesAndParameters(enabled_features, {});
     // Call to inherited class to match same set up with feature flags added.
     HintsFetcherDisabledBrowserTest::SetUp();
   }
@@ -578,9 +569,6 @@ class HintsFetcherBrowserTest : public HintsFetcherDisabledBrowserTest {
             urls, optimization_types,
             optimization_guide::proto::CONTEXT_BOOKMARKS, callback);
   }
-
- protected:
-  std::vector<base::test::FeatureRef> disabled_features_;
 };
 
 // This test creates new browser with no profile and loads a random page with
@@ -1297,16 +1285,7 @@ IN_PROC_BROWSER_TEST_F(
   }
 }
 
-class HintsFetcherPre3pcdBrowserTest : public HintsFetcherBrowserTest {
- public:
-  HintsFetcherPre3pcdBrowserTest() {
-    disabled_features_.push_back(
-        content_settings::features::kTrackingProtection3pcd);
-  }
-};
-
-IN_PROC_BROWSER_TEST_F(HintsFetcherPre3pcdBrowserTest,
-                       HintsFetcherDoesntFetchOnNSP) {
+IN_PROC_BROWSER_TEST_F(HintsFetcherBrowserTest, HintsFetcherDoesntFetchOnNSP) {
   const base::HistogramTester* histogram_tester = GetHistogramTester();
 
   // Allowlist NoScript for https_url()'s' host.
@@ -1511,7 +1490,7 @@ IN_PROC_BROWSER_TEST_F(HintsFetcherSearchPagePrerenderingBrowserTest,
   // Load a page in the prerender.
   GURL prerender_url = search_results_page_url();
   ResetCountHintsRequestsReceived();
-  content::FrameTreeNodeId host_id =
+  content::PrerenderHostId host_id =
       prerender_helper()->AddPrerender(prerender_url);
   EXPECT_EQ(0u, count_hints_requests_received());
   histogram_tester->ExpectBucketCount(

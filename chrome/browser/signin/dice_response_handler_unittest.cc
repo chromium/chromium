@@ -155,8 +155,9 @@ class DiceResponseHandlerTest : public testing::Test,
   }
 
   // Called after the refresh token was fetched and added in the token service.
-  void EnableSync(const CoreAccountInfo& account_info) {
-    enable_sync_account_info_ = account_info;
+  void CompleteChromeSignInAfterGaiaSignin(
+      const CoreAccountInfo& account_info) {
+    complete_profile_signin_account_info_ = account_info;
   }
 
   void HandleTokenExchangeFailure(const std::string& email,
@@ -182,7 +183,7 @@ class DiceResponseHandlerTest : public testing::Test,
     AboutSigninInternals::RegisterPrefs(pref_service_.registry());
     auto account_reconcilor_delegate =
         std::make_unique<signin::DiceAccountReconcilorDelegate>(
-            identity_manager(), &signin_client_);
+            identity_manager());
     account_reconcilor_ = std::make_unique<AccountReconcilor>(
         identity_test_env_.identity_manager(), &signin_client_,
         std::move(account_reconcilor_delegate));
@@ -304,7 +305,7 @@ class DiceResponseHandlerTest : public testing::Test,
   int reconcilor_unblocked_count_ = 0;
   CoreAccountId token_exchange_account_id_;
   bool token_exchange_is_new_account_ = false;
-  CoreAccountInfo enable_sync_account_info_;
+  CoreAccountInfo complete_profile_signin_account_info_;
   GoogleServiceAuthError auth_error_;
   std::string auth_error_email_;
   base::test::ScopedFeatureList feature_list_{
@@ -333,8 +334,9 @@ class TestProcessDiceHeaderDelegate : public ProcessDiceHeaderDelegate {
   }
 
   // Called after the refresh token was fetched and added in the token service.
-  void EnableSync(const CoreAccountInfo& account_info) override {
-    owner_->EnableSync(account_info);
+  void CompleteChromeSignInAfterGaiaSignin(
+      const CoreAccountInfo& account_info) override {
+    owner_->CompleteChromeSignInAfterGaiaSignin(account_info);
   }
 
   void HandleTokenExchangeFailure(
@@ -960,7 +962,8 @@ TEST_F(DiceResponseHandlerTest, CheckSigninAfterOutageInDice) {
 TEST_F(DiceResponseHandlerTest, Reauth) {
   DiceResponseParams dice_params = MakeDiceParams(DiceAction::SIGNIN);
   AccountInfo account_info = identity_test_env_.MakePrimaryAccountAvailable(
-      dice_params.signin_info->account_info.email, signin::ConsentLevel::kSync);
+      dice_params.signin_info->account_info.email,
+      signin::ConsentLevel::kSignin);
   dice_params.signin_info->account_info.gaia_id = account_info.gaia;
   CoreAccountId account_id = account_info.account_id;
   identity_test_env_.UpdatePersistentErrorOfRefreshTokenForAccount(
@@ -1099,7 +1102,8 @@ TEST_F(DiceResponseHandlerTest, SigninWithTwoAccounts) {
 
 // Checks that a ENABLE_SYNC action received after the refresh token is added
 // to the token service, triggers a call to enable sync on the delegate.
-TEST_F(DiceResponseHandlerTest, SigninEnableSyncAfterRefreshTokenFetched) {
+TEST_F(DiceResponseHandlerTest,
+       SigninEnableSyncDiceHeaderAfterRefreshTokenFetched) {
   DiceResponseParams dice_params = MakeDiceParams(DiceAction::SIGNIN);
   const auto& account_info = dice_params.signin_info->account_info;
   CoreAccountId account_id = identity_manager()->PickAccountIdForAccount(
@@ -1120,21 +1124,22 @@ TEST_F(DiceResponseHandlerTest, SigninEnableSyncAfterRefreshTokenFetched) {
   EXPECT_EQ(token_exchange_account_id_, account_id);
   EXPECT_TRUE(token_exchange_is_new_account_);
   // Check that delegate was not called to enable sync.
-  EXPECT_TRUE(enable_sync_account_info_.IsEmpty());
+  EXPECT_TRUE(complete_profile_signin_account_info_.IsEmpty());
 
   // Enable sync.
   dice_response_handler_->ProcessDiceHeader(
       MakeDiceParams(DiceAction::ENABLE_SYNC),
       std::make_unique<TestProcessDiceHeaderDelegate>(this));
   // Check that delegate was called to enable sync.
-  EXPECT_EQ(account_info.gaia_id, enable_sync_account_info_.gaia);
-  EXPECT_EQ(account_info.email, enable_sync_account_info_.email);
+  EXPECT_EQ(account_info.gaia_id, complete_profile_signin_account_info_.gaia);
+  EXPECT_EQ(account_info.email, complete_profile_signin_account_info_.email);
 }
 
 // Checks that a ENABLE_SYNC action received before the refresh token is added
 // to the token service, is schedules a call to enable sync on the delegate
 // once the refresh token is received.
-TEST_F(DiceResponseHandlerTest, SigninEnableSyncBeforeRefreshTokenFetched) {
+TEST_F(DiceResponseHandlerTest,
+       SigninEnableSyncDiceHeaderBeforeRefreshTokenFetched) {
   DiceResponseParams dice_params = MakeDiceParams(DiceAction::SIGNIN);
   const auto& account_info = dice_params.signin_info->account_info;
   CoreAccountId account_id = identity_manager()->PickAccountIdForAccount(
@@ -1151,7 +1156,7 @@ TEST_F(DiceResponseHandlerTest, SigninEnableSyncBeforeRefreshTokenFetched) {
       MakeDiceParams(DiceAction::ENABLE_SYNC),
       std::make_unique<TestProcessDiceHeaderDelegate>(this));
   // Check that delegate was not called to enable sync.
-  EXPECT_TRUE(enable_sync_account_info_.IsEmpty());
+  EXPECT_TRUE(complete_profile_signin_account_info_.IsEmpty());
 
   // Simulate GaiaAuthFetcher success.
   consumer->OnClientOAuthSuccess(GaiaAuthConsumer::ClientOAuthResult(
@@ -1163,8 +1168,8 @@ TEST_F(DiceResponseHandlerTest, SigninEnableSyncBeforeRefreshTokenFetched) {
   EXPECT_EQ(token_exchange_account_id_, account_id);
   EXPECT_TRUE(token_exchange_is_new_account_);
   // Check that delegate was called to enable sync.
-  EXPECT_EQ(account_info.gaia_id, enable_sync_account_info_.gaia);
-  EXPECT_EQ(account_info.email, enable_sync_account_info_.email);
+  EXPECT_EQ(account_info.gaia_id, complete_profile_signin_account_info_.gaia);
+  EXPECT_EQ(account_info.email, complete_profile_signin_account_info_.email);
 }
 
 TEST_F(DiceResponseHandlerTest, Timeout) {
@@ -1222,31 +1227,6 @@ TEST_F(DiceResponseHandlerTest, DeleteBeforeTimeout) {
   EXPECT_EQ(1, reconcilor_unblocked_count_);
 }
 
-TEST_F(DiceResponseHandlerTest, SignoutSyncPrimaryAccount) {
-  // Setup.
-  // Configure Dice params.
-  DiceResponseParams dice_params = MakeDiceParams(DiceAction::SIGNOUT);
-  const char kSecondarySignedOutEmail[] = "secondary_signed_out@gmail.com";
-  dice_params.signout_info->account_infos.push_back(
-      GetDiceResponseParamsAccountInfo(kSecondarySignedOutEmail));
-  const std::string dice_primary_account_email =
-      dice_params.signout_info->account_infos[0].email;
-  // Configure Chrome.
-  AccountInfo primary_account = identity_test_env_.MakePrimaryAccountAvailable(
-      dice_primary_account_email, signin::ConsentLevel::kSync);
-  AccountInfo secondary_signed_out =
-      identity_test_env_.MakeAccountAvailable(kSecondarySignedOutEmail);
-  AccountInfo secondary_not_signed_out =
-      identity_test_env_.MakeAccountAvailable("other@gmail.com");
-  EXPECT_EQ(identity_manager()->GetAccountsWithRefreshTokens().size(), 3U);
-  EXPECT_TRUE(
-      identity_manager()->HasPrimaryAccount(signin::ConsentLevel::kSync));
-
-  // Receive signout response including sync and secondary account.
-  RunSignoutTest(dice_params, {secondary_not_signed_out.account_id},
-                 primary_account.account_id, /*invalid_primary_account=*/true);
-}
-
 TEST_F(DiceResponseHandlerTest, SignoutSigninPrimaryAccount) {
   // Setup.
   // Configure Dice params.
@@ -1282,7 +1262,7 @@ TEST_F(DiceResponseHandlerTest, SignoutSecondaryAccount) {
   // account.
   AccountInfo primary_account_info =
       identity_test_env_.MakePrimaryAccountAvailable(
-          kPrimaryAccount, signin::ConsentLevel::kSync);
+          kPrimaryAccount, signin::ConsentLevel::kSignin);
   AccountInfo secondary_account_info =
       identity_test_env_.MakeAccountAvailable(secondary_account_email);
   EXPECT_TRUE(identity_manager()->HasAccountWithRefreshToken(
@@ -1290,7 +1270,7 @@ TEST_F(DiceResponseHandlerTest, SignoutSecondaryAccount) {
   EXPECT_TRUE(identity_manager()->HasAccountWithRefreshToken(
       primary_account_info.account_id));
   EXPECT_TRUE(
-      identity_manager()->HasPrimaryAccount(signin::ConsentLevel::kSync));
+      identity_manager()->HasPrimaryAccount(signin::ConsentLevel::kSignin));
   // Receive signout response for the secondary account.
   RunSignoutTest(dice_params, {}, primary_account_info.account_id,
                  /*invalid_primary_account=*/false);
@@ -1310,7 +1290,7 @@ TEST_F(DiceResponseHandlerTest, SignoutWebOnly) {
   EXPECT_TRUE(identity_manager()->HasAccountWithRefreshToken(
       secondary_account_info.account_id));
   EXPECT_FALSE(
-      identity_manager()->HasPrimaryAccount(signin::ConsentLevel::kSync));
+      identity_manager()->HasPrimaryAccount(signin::ConsentLevel::kSignin));
   // Receive signout response.
   RunSignoutTest(dice_params, {secondary_account_info.account_id},
                  /*primary_account=*/CoreAccountId(),
@@ -1324,7 +1304,7 @@ TEST_F(DiceResponseHandlerTest, SigninSignoutSameAccount) {
 
   // User is signed in to Chrome.
   AccountInfo account_info = identity_test_env_.MakePrimaryAccountAvailable(
-      dice_account_info.email, signin::ConsentLevel::kSync);
+      dice_account_info.email, signin::ConsentLevel::kSignin);
   EXPECT_TRUE(
       identity_manager()->HasAccountWithRefreshToken(account_info.account_id));
   EXPECT_FALSE(
@@ -1400,8 +1380,7 @@ TEST_F(DiceResponseHandlerTest, SigninSignoutDifferentAccount) {
           account_id_2));
 }
 
-TEST_F(DiceResponseHandlerTest,
-       SignoutPrimaryNonSyncAccountWithSignoutRestrictions) {
+TEST_F(DiceResponseHandlerTest, SignoutPrimaryAccountWithSignoutRestrictions) {
   signin_client_.set_is_clear_primary_account_allowed_for_testing(
       SigninClient::SignoutDecision::CLEAR_PRIMARY_ACCOUNT_DISALLOWED);
   const char kSecondaryEmail[] = "other@gmail.com";
@@ -1417,8 +1396,6 @@ TEST_F(DiceResponseHandlerTest,
       primary_account.account_id));
   EXPECT_TRUE(identity_manager()->HasAccountWithRefreshToken(
       secondary_account_info.account_id));
-  EXPECT_FALSE(
-      identity_manager()->HasPrimaryAccount(signin::ConsentLevel::kSync));
   EXPECT_TRUE(
       identity_manager()->HasPrimaryAccount(signin::ConsentLevel::kSignin));
   // Receive signout response.
@@ -1428,32 +1405,5 @@ TEST_F(DiceResponseHandlerTest,
   // Check that the reconcilor was not blocked.
   EXPECT_EQ(0, reconcilor_blocked_count_);
   EXPECT_EQ(0, reconcilor_unblocked_count_);
-}
-
-TEST_F(DiceResponseHandlerTest, SignoutImplicitPrimaryAccountSignin) {
-  // Setup.
-  // Configure Dice params.
-  DiceResponseParams dice_params = MakeDiceParams(DiceAction::SIGNOUT);
-  const char kSecondarySignedOutEmail[] = "secondary_signed_out@gmail.com";
-  dice_params.signout_info->account_infos.push_back(
-      GetDiceResponseParamsAccountInfo(kSecondarySignedOutEmail));
-  const std::string dice_primary_account_email =
-      dice_params.signout_info->account_infos[0].email;
-  // Configure Chrome.
-  AccountInfo primary_account = identity_test_env_.MakePrimaryAccountAvailable(
-      dice_primary_account_email, signin::ConsentLevel::kSignin);
-  // Mark as implicit sign in.
-  pref_service().SetBoolean(prefs::kExplicitBrowserSignin, false);
-  identity_test_env_.MakeAccountAvailable(kSecondarySignedOutEmail);
-  AccountInfo secondary_not_signed_out =
-      identity_test_env_.MakeAccountAvailable("other@gmail.com");
-  EXPECT_EQ(identity_manager()->GetAccountsWithRefreshTokens().size(), 3U);
-  EXPECT_TRUE(
-      identity_manager()->HasPrimaryAccount(signin::ConsentLevel::kSignin));
-
-  // Receive signout response including primary and secondary account.
-  RunSignoutTest(dice_params, {secondary_not_signed_out.account_id},
-                 /*primary_account=*/CoreAccountId(),
-                 /*invalid_primary_account=*/false);
 }
 }  // namespace

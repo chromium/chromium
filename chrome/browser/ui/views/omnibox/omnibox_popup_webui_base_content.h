@@ -6,7 +6,9 @@
 #define CHROME_BROWSER_UI_VIEWS_OMNIBOX_OMNIBOX_POPUP_WEBUI_BASE_CONTENT_H_
 
 #include "base/memory/raw_ptr.h"
+#include "base/timer/timer.h"
 #include "chrome/browser/ui/webui/top_chrome/webui_contents_wrapper.h"
+#include "extensions/browser/view_type_utils.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
@@ -19,6 +21,7 @@ class LocationBarView;
 class OmniboxContextMenu;
 class OmniboxController;
 class OmniboxPopupPresenterBase;
+class OmniboxPopupTabSelectionListener;
 class OmniboxPopupUI;
 
 namespace content {
@@ -66,6 +69,10 @@ class OmniboxPopupWebUIBaseContent : public views::WebView,
                              const gfx::Size& new_size) override;
   bool HandleKeyboardEvent(content::WebContents* source,
                            const input::NativeWebKeyboardEvent& event) override;
+  void RequestMediaAccessPermission(
+      content::WebContents* web_contents,
+      const content::MediaStreamRequest& request,
+      content::MediaResponseCallback callback) override;
 
   // Notifies the page the widget was hidden.
   virtual void OnPopupHidden();
@@ -73,6 +80,10 @@ class OmniboxPopupWebUIBaseContent : public views::WebView,
   // Returns the WebContents from within the wrapper. Don't use
   // GetWebContents() since that may be nullptr if the popup isn't visible.
   content::WebContents* GetWrappedWebContents();
+
+  // content::WebContentsObserver:
+  void PrimaryMainFrameRenderProcessGone(
+      base::TerminationStatus status) override;
 
  protected:
   // Callback for cleaning up the `context_menu_` field.
@@ -95,7 +106,6 @@ class OmniboxPopupWebUIBaseContent : public views::WebView,
 
   raw_ptr<OmniboxPopupPresenterBase> popup_presenter_ = nullptr;
   raw_ptr<LocationBarView> location_bar_view_ = nullptr;
-  raw_ptr<OmniboxPopupPresenterBase> omnibox_popup_presenter_ = nullptr;
   // The controller for the Omnibox.
   raw_ptr<OmniboxController> controller_ = nullptr;
 
@@ -104,6 +114,8 @@ class OmniboxPopupWebUIBaseContent : public views::WebView,
 
   std::unique_ptr<WebUIContentsWrapperT<OmniboxPopupUI>> contents_wrapper_;
   std::unique_ptr<OmniboxContextMenu> context_menu_;
+
+  std::unique_ptr<OmniboxPopupTabSelectionListener> tab_selection_listener_;
 
   // The URL used to load the WebUI. Cached here so the content can be reloaded
   // if the renderer crashes.
@@ -116,6 +128,9 @@ class OmniboxPopupWebUIBaseContent : public views::WebView,
   // A handler to handle unhandled keyboard messages coming back from the
   // renderer process.
   views::UnhandledKeyboardEventHandler unhandled_keyboard_event_handler_;
+
+  // Debounces the resize events to avoid flickering.
+  base::OneShotTimer debounce_resize_timer_;
 
   base::WeakPtrFactory<OmniboxPopupWebUIBaseContent> weak_factory_{this};
 };

@@ -12,7 +12,6 @@
 #include "base/base64url.h"
 #include "base/check.h"
 #include "base/compiler_specific.h"
-#include "base/containers/contains.h"
 #include "base/containers/span.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
@@ -84,7 +83,7 @@ class TestNetworkContext : public network::TestNetworkContext {
     static const char kContactPrefix[] = "/cable/contact/";
     if (path.find(kNewPrefix) == 0) {
       path.remove_prefix(sizeof(kNewPrefix) - 1);
-      CHECK(!base::Contains(connections_, std::string(path)));
+      CHECK(!connections_.contains(std::string(path)));
       connections_.emplace(std::string(path), std::make_unique<Connection>(
                                                   Connection::Type::NEW,
                                                   std::move(handshake_client)));

@@ -201,9 +201,7 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
   // a tab containing the test page was opened.
   [[EarlGrey selectElementWithMatcher:TitleOfTestPage()]
       performAction:grey_tap()];
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::Omnibox()]
-      assertWithMatcher:chrome_test_util::OmniboxText(
-                            testPageURL.GetContent())];
+  [ChromeEarlGrey waitForWebStateVisibleURL:testPageURL];
 
   [ChromeEarlGrey waitForMainTabCount:2];
 }
@@ -239,9 +237,7 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
   // a tab containing the test page was opened.
   [[EarlGrey selectElementWithMatcher:TitleOfTestPage()]
       performAction:grey_tap()];
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::Omnibox()]
-      assertWithMatcher:chrome_test_util::OmniboxText(
-                            testPageURL.GetContent())];
+  [ChromeEarlGrey waitForWebStateVisibleURL:testPageURL];
 
   [ChromeEarlGrey waitForMainTabCount:1];
 }

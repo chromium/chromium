@@ -13,7 +13,6 @@
 
 #include "base/check_deref.h"
 #include "base/check_op.h"
-#include "base/containers/contains.h"
 #include "base/memory/raw_ptr.h"
 #include "base/notimplemented.h"
 #include "base/notreached.h"
@@ -183,7 +182,9 @@ base::span<const PasswordForm> FormFetcherImpl::GetFederatedMatches() const {
 }
 
 bool FormFetcherImpl::IsBlocklisted() const {
-  if (client_->GetPasswordFeatureManager()->IsAccountStorageEnabled()) {
+  // TODO(crbug.com/470332074): Verify whether this should check for
+  // "enabled" instead of "active".
+  if (client_->GetPasswordFeatureManager()->IsAccountStorageActive()) {
     return is_blocklisted_in_account_store_;
   }
   return is_blocklisted_in_profile_store_;
@@ -209,7 +210,7 @@ bool FormFetcherImpl::IsMovingBlocked(const signin::GaiaIdHash& destination,
       if (form.username_value != username) {
         continue;
       }
-      if (base::Contains(form.moving_blocked_for_list, destination)) {
+      if (std::ranges::contains(form.moving_blocked_for_list, destination)) {
         return true;
       }
     }
@@ -379,8 +380,6 @@ void FormFetcherImpl::OnGetPasswordStoreResultsFrom(
 void FormFetcherImpl::OnGetPasswordStoreResultsOrErrorFrom(
     PasswordStoreInterface* store,
     LoginsResultOrError results_or_error) {
-  // TODO(crbug.com/40239372): Handle errors coming from the account
-  // store.
   if (store == client_->GetProfilePasswordStore()) {
     profile_store_backend_error_.reset();
     if (std::holds_alternative<PasswordStoreBackendError>(results_or_error)) {

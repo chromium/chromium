@@ -459,12 +459,12 @@ int64_t SqlBackendImpl::MaxFileSize() const {
   return store_->MaxFileSize();
 }
 
-int32_t SqlBackendImpl::GetEntryCount(
-    net::Int32CompletionOnceCallback callback) const {
+base::expected<int32_t, net::Error> SqlBackendImpl::GetEntryCount(
+    GetEntryCountCallback callback) const {
   // The entry count must be retrieved asynchronously to ensure that all
   // pending database operations are reflected in the result.
   store_->GetEntryCountAsync(std::move(callback));
-  return net::ERR_IO_PENDING;
+  return base::unexpected(net::ERR_IO_PENDING);
 }
 
 EntryResult SqlBackendImpl::OpenOrCreateEntry(const std::string& key,
@@ -601,7 +601,7 @@ void SqlBackendImpl::DoomActiveEntryInternal(SqlEntryImpl& entry,
   }
   // Ask the store to mark the entry as doomed in the database.
   store_->DoomEntry(
-      entry.cache_key(), *optional_res_id,
+      entry.cache_key(), *optional_res_id, /*accept_index_mismatch=*/false,
       base::BindOnce(
           [](base::WeakPtr<SqlBackendImpl> weak_ptr,
              CompletionOnceCallback callback, SqlPersistentStore::Error error) {
@@ -666,7 +666,8 @@ void SqlBackendImpl::HandleDoomEntryOperation(
   // If there is a unique entry in the in-memory index, call DoomEntry using its
   // res_id.
   if (auto res_id = store_->TryGetSingleResIdFromInMemoryIndex(key.hash())) {
-    store_->DoomEntry(key, *res_id, std::move(store_callback));
+    store_->DoomEntry(key, *res_id, /*accept_index_mismatch=*/false,
+                      std::move(store_callback));
     // The handle for this operation is released upon returning, allowing the
     // next queued operation to run.
     return;
@@ -1252,7 +1253,12 @@ void SqlBackendImpl::OnOptimisticWriteFinished(
   // subsequent operations on this entry will also fail.
   // Since the user of the Sql backend can no longer delete the entry from
   // storage, SqlBackendImpl takes responsibility for deleting it.
-  store_->DoomEntry(key, res_id, base::DoNothing());
+  // `accept_index_mismatch` is set to true because the entry might have been
+  // doomed by a concurrent operation (e.g., if the user called Doom() followed
+  // by WriteData() immediately, the Doom operation might execute first). In
+  // that case, the entry is already removed from the in-memory index.
+  store_->DoomEntry(key, res_id, /*accept_index_mismatch=*/true,
+                    base::DoNothing());
   store_->DeleteDoomedEntry(key, res_id,
                             base::DoNothingWithBoundArgs(std::move(handle)));
 }

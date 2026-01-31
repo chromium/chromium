@@ -20,8 +20,7 @@ import android.view.autofill.AutofillValue;
 import android.widget.RemoteViews;
 import android.widget.Toast;
 
-import androidx.annotation.Nullable;
-
+import org.chromium.build.annotations.Nullable;
 import org.chromium.example.autofill_service.R;
 import org.chromium.example.autofill_service.fill_service.helpers.CredentialStorage.Credential;
 

@@ -96,6 +96,8 @@ std::ostream& operator<<(std::ostream& os, FailState state) {
       return os << "FILE_TRANSIENT_ERROR";
     case FailState::FILE_BLOCKED:
       return os << "FILE_BLOCKED";
+    case FailState::LOCAL_DOWNLOAD_BLOCKED:
+      return os << "LOCAL_DOWNLOAD_BLOCKED";
     case FailState::FILE_SECURITY_CHECK_FAILED:
       return os << "FILE_SECURITY_CHECK_FAILED";
     case FailState::FILE_TOO_SHORT:

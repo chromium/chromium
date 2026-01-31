@@ -7,10 +7,12 @@ package org.chromium.components.embedder_support.delegate;
 import static android.view.Display.INVALID_DISPLAY;
 
 import android.graphics.Bitmap;
+import android.graphics.Rect;
 import android.view.KeyEvent;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
+import org.jni_zero.JniType;
 
 import org.chromium.base.Callback;
 import org.chromium.base.JniOnceCallback;
@@ -21,6 +23,7 @@ import org.chromium.content_public.browser.RenderFrameHost;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.navigation_controller.UserAgentOverrideOption;
 import org.chromium.content_public.common.ResourceRequestBody;
+import org.chromium.ui.resources.dynamics.CaptureResult;
 import org.chromium.url.GURL;
 
 /** Java peer of the native class of the same name. */
@@ -82,11 +85,6 @@ public class WebContentsDelegateAndroid {
 
     @CalledByNative
     public boolean takeFocus(boolean reverse) {
-        return false;
-    }
-
-    @CalledByNative
-    public boolean preHandleKeyboardEvent(long nativeKeyEvent) {
         return false;
     }
 
@@ -236,8 +234,8 @@ public class WebContentsDelegateAndroid {
 
     @CalledByNative
     private boolean maybeCopyContentAreaAsBitmap(
-            JniOnceCallback<@Nullable ScreenshotResult> callback) {
-        boolean result = maybeCopyContentArea(callback, ScreenshotResult.Destination.BITMAP);
+            JniOnceCallback<@Nullable CaptureResult> callback) {
+        boolean result = maybeCopyContentArea(callback, CaptureResult.Destination.BITMAP);
         if (!result) {
             // If the method returns false, the callback won't be called, so we need to destroy it
             // to prevent memory leaks and match the previous behavior of no callback.
@@ -248,9 +246,8 @@ public class WebContentsDelegateAndroid {
 
     @CalledByNative
     private boolean maybeCopyContentAreaAsHardwareBuffer(
-            JniOnceCallback<@Nullable ScreenshotResult> callback) {
-        boolean result =
-                maybeCopyContentArea(callback, ScreenshotResult.Destination.HARDWARE_BUFFER);
+            JniOnceCallback<@Nullable CaptureResult> callback) {
+        boolean result = maybeCopyContentArea(callback, CaptureResult.Destination.HARDWARE_BUFFER);
         if (!result) {
             // If the method returns false, the callback won't be called, so we need to destroy it
             // to prevent memory leaks and match the previous behavior of no callback.
@@ -301,6 +298,16 @@ public class WebContentsDelegateAndroid {
     }
 
     /**
+     * Repositions the window containing this tab to given bounds. Applicable only for multi-window
+     * mode in Android.
+     *
+     * @param source Source WebContents which requested the repositioning.
+     * @param bounds Rectangle specifying desired bounds in global work area coordinate system.
+     */
+    @CalledByNative
+    public void setContentsBounds(WebContents source, @JniType("gfx::Rect") Rect bounds) {}
+
+    /**
      * Capture current visible native view as a bitmap.
      *
      * @param callback Executed asynchronously with the captured screenshot if this returns true.
@@ -310,8 +317,8 @@ public class WebContentsDelegateAndroid {
      * @return True if a native view such as an NTP is presenting.
      */
     public boolean maybeCopyContentArea(
-            Callback<@Nullable ScreenshotResult> callback,
-            ScreenshotResult.Destination destination) {
+            Callback<@Nullable CaptureResult> callback,
+            @CaptureResult.Destination int destination) {
         return false;
     }
 

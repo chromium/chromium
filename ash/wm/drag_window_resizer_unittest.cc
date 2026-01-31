@@ -130,10 +130,12 @@ class DragWindowResizerTest : public AshTestBase {
   }
 
   void TearDown() override {
-    window_.reset();
-    always_on_top_window_.reset();
-    system_modal_window_.reset();
+    // transient_child first due to dependency
+    transient_child_ = nullptr;
     transient_parent_.reset();
+    system_modal_window_.reset();
+    always_on_top_window_.reset();
+    window_.reset();
     AshTestBase::TearDown();
   }
 
@@ -175,7 +177,7 @@ class DragWindowResizerTest : public AshTestBase {
   std::unique_ptr<aura::Window> window_;
   std::unique_ptr<aura::Window> always_on_top_window_;
   std::unique_ptr<aura::Window> system_modal_window_;
-  raw_ptr<aura::Window, DanglingUntriaged> transient_child_;
+  raw_ptr<aura::Window> transient_child_;
   std::unique_ptr<aura::Window> transient_parent_;
 };
 

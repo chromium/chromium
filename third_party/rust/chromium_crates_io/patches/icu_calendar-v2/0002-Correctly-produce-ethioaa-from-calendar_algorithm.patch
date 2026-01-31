@@ -1,0 +1,31 @@
+From dc06477c72995c3de6c2f8160ba1b64b27df0673 Mon Sep 17 00:00:00 2001
+From: Manish Goregaokar <manishearth@google.com>
+Date: Tue, 16 Dec 2025 00:06:56 +0000
+Subject: [PATCH 3/3] Correctly produce ethioaa from calendar_algorithm
+
+Uplift of https://github.com/unicode-org/icu4x/pull/7321
+
+Change-Id: I9411287f3d4d3299f0223ff18159725dbb2d5d8e
+---
+ .../vendor/icu_calendar-v2/src/cal/ethiopian.rs              | 5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
+
+diff --git a/third_party/rust/chromium_crates_io/vendor/icu_calendar-v2/src/cal/ethiopian.rs b/third_party/rust/chromium_crates_io/vendor/icu_calendar-v2/src/cal/ethiopian.rs
+index 559864e2f765c..7474cb1cc8413 100644
+--- a/third_party/rust/chromium_crates_io/vendor/icu_calendar-v2/src/cal/ethiopian.rs
++++ b/third_party/rust/chromium_crates_io/vendor/icu_calendar-v2/src/cal/ethiopian.rs
+@@ -265,7 +265,10 @@ impl Calendar for Ethiopian {
+     }
+ 
+     fn calendar_algorithm(&self) -> Option<crate::preferences::CalendarAlgorithm> {
+-        Some(crate::preferences::CalendarAlgorithm::Ethiopic)
++        match self.0 {
++            EthiopianEraStyle::AmeteMihret => Some(crate::preferences::CalendarAlgorithm::Ethiopic),
++            EthiopianEraStyle::AmeteAlem => Some(crate::preferences::CalendarAlgorithm::Ethioaa),
++        }
+     }
+ }
+ 
+-- 
+2.52.0.239.gd5f0c6e74e-goog
+

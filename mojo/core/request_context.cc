@@ -34,8 +34,9 @@ RequestContext::~RequestContext() {
     current_context = nullptr;
 
     MojoTrapEventFlags flags = MOJO_TRAP_EVENT_FLAG_NONE;
-    if (source_ == Source::LOCAL_API_CALL)
+    if (source_ == Source::LOCAL_API_CALL) {
       flags |= MOJO_TRAP_EVENT_FLAG_WITHIN_API_CALL;
+    }
 
     // We send all cancellation notifications first. This is necessary because
     // it's possible that cancelled watches have other pending notifications

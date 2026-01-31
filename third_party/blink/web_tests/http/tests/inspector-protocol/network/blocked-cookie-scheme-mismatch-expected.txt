@@ -12,7 +12,6 @@ Cookie schemes do not match: [
             name : foo
             path : /
             priority : Medium
-            sameParty : false
             secure : false
             session : true
             size : 6

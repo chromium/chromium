@@ -48,7 +48,6 @@
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/extension_service_test_base.h"
 #include "chrome/browser/extensions/forced_extensions/force_installed_tracker.h"
-#include "chrome/browser/extensions/forced_extensions/install_stage_tracker.h"
 #include "chrome/browser/ui/ash/keyboard/chrome_keyboard_controller_client_test_helper.h"
 #include "chrome/browser/ui/webui/ash/login/app_launch_splash_screen_handler.h"
 #include "chrome/test/base/testing_browser_process.h"
@@ -62,12 +61,16 @@
 #include "components/policy/core/common/policy_map.h"
 #include "components/policy/core/common/policy_types.h"
 #include "components/policy/policy_constants.h"
+#include "components/prefs/testing_pref_service.h"
 #include "components/session_manager/core/fake_session_manager_delegate.h"
 #include "components/session_manager/core/session_manager.h"
 #include "components/session_manager/session_manager_types.h"
+#include "components/user_manager/fake_user_manager_delegate.h"
 #include "components/user_manager/scoped_user_manager.h"
+#include "components/user_manager/user_manager_impl.h"
 #include "content/public/test/browser_task_environment.h"
 #include "extensions/browser/extension_system.h"
+#include "extensions/browser/forced_extensions/install_stage_tracker.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_builder.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -187,16 +190,24 @@ class KioskLaunchControllerTest : public extensions::ExtensionServiceTestBase {
       delete;
 
   void SetUp() override {
+    session_manager_ = std::make_unique<session_manager::SessionManager>(
+        std::make_unique<session_manager::FakeSessionManagerDelegate>());
+    user_manager_.Reset(std::make_unique<user_manager::UserManagerImpl>(
+        std::make_unique<user_manager::FakeUserManagerDelegate>(),
+        TestingBrowserProcess::GetGlobal()->GetTestingLocalState()));
+    session_manager_->OnUserManagerCreated(user_manager_.Get());
+
+    can_configure_network_for_testing_ =
+        NetworkUiController::SetCanConfigureNetworkForTesting(true);
     SetDeviceEnterpriseManaged();
+
+    extensions::ExtensionServiceTestBase::SetUp();
     InitializeEmptyExtensionService();
     policy::BrowserPolicyConnectorBase::SetPolicyServiceForTesting(
         policy_service());
 
     keyboard_controller_client_ =
         ChromeKeyboardControllerClientTestHelper::InitializeWithFake();
-
-    can_configure_network_for_testing_ =
-        NetworkUiController::SetCanConfigureNetworkForTesting(true);
 
     auto network_monitor_unique = std::make_unique<FakeNetworkMonitor>();
     network_monitor_ = network_monitor_unique->GetWeakPtr();
@@ -223,15 +234,19 @@ class KioskLaunchControllerTest : public extensions::ExtensionServiceTestBase {
 
     SetUpKioskAppId();
 
-    extensions::ExtensionServiceTestBase::SetUp();
-
     LoginFakeUser();
   }
 
   void TearDown() override {
+    app_launcher_ = nullptr;
+    network_monitor_.reset();
+    accelerator_controller_ = nullptr;
+    controller_.reset();
+    keyboard_controller_client_.reset();
     extensions::ExtensionServiceTestBase::TearDown();
-
     policy::BrowserPolicyConnectorBase::SetPolicyServiceForTesting(nullptr);
+    session_manager_.reset();
+    user_manager_.Reset();
   }
 
   KioskLaunchController& controller() { return *controller_; }
@@ -314,7 +329,7 @@ class KioskLaunchControllerTest : public extensions::ExtensionServiceTestBase {
   }
 
   void CheckLaunchError(KioskAppLaunchError::Error error) {
-    const base::Value::Dict& dict =
+    const base::DictValue& dict =
         TestingBrowserProcess::GetGlobal()->local_state()->GetDict("kiosk");
     EXPECT_THAT(dict.FindInt("launch_error"), Eq(static_cast<int>(error)));
   }
@@ -322,6 +337,11 @@ class KioskLaunchControllerTest : public extensions::ExtensionServiceTestBase {
   auto& app_launched_future() { return app_launched_future_; }
 
   auto& launch_done_future() { return launch_done_future_; }
+
+  void WillResetController() {
+    app_launcher_ = nullptr;
+    accelerator_controller_ = nullptr;
+  }
 
  private:
   void SetDeviceEnterpriseManaged() {
@@ -355,11 +375,13 @@ class KioskLaunchControllerTest : public extensions::ExtensionServiceTestBase {
         });
   }
 
-  TestingProfile profile_;
-  session_manager::SessionManager session_manager_{
-      std::make_unique<session_manager::FakeSessionManagerDelegate>()};
+  user_manager::ScopedUserManager user_manager_;
+
+  std::unique_ptr<session_manager::SessionManager> session_manager_;
   std::unique_ptr<ChromeKeyboardControllerClientTestHelper>
       keyboard_controller_client_;
+
+  TestingProfile profile_;
 
   base::test::
       TestFuture<const KioskAppId&, Profile*, const std::optional<std::string>&>
@@ -380,10 +402,8 @@ class KioskLaunchControllerTest : public extensions::ExtensionServiceTestBase {
   std::unique_ptr<KioskLaunchController> controller_;
 
   // owned by `controller_`.
-  raw_ptr<FakeKioskAppLauncher, DanglingUntriaged> app_launcher_ = nullptr;
-  // owned by `controller_`.
+  raw_ptr<FakeKioskAppLauncher> app_launcher_ = nullptr;
   base::WeakPtr<FakeNetworkMonitor> network_monitor_;
-  // owned by `controller_`.
   raw_ptr<FakeAcceleratorController> accelerator_controller_ = nullptr;
 
   KioskAppId kiosk_app_id_;
@@ -519,7 +539,14 @@ TEST_F(KioskLaunchControllerTest, AppWindowCreatedShouldInvokeOnDoneCallback) {
   ASSERT_FALSE(app_launched_future().IsReady());
   ASSERT_FALSE(launch_done_future().IsReady());
 
-  launcher().observers().NotifyAppWindowCreated("app-name");
+  // In NotifyAppWindowCreated, controller that fixture holds will be released
+  // so we have to release just before calling the method to avoid a dangling
+  // pointer.
+  {
+    auto* launcher_ptr = &launcher();
+    WillResetController();
+    launcher_ptr->observers().NotifyAppWindowCreated("app-name");
+  }
 
   ASSERT_TRUE(app_launched_future().IsReady());
   ASSERT_TRUE(launch_done_future().IsReady());
@@ -543,6 +570,7 @@ TEST_F(KioskLaunchControllerTest, SplashScreenTimerShouldInvokeOnDoneCallback) {
   ASSERT_TRUE(app_launched_future().IsReady());
   ASSERT_FALSE(launch_done_future().IsReady());
 
+  WillResetController();
   FireSplashScreenTimer();
 
   ASSERT_TRUE(launch_done_future().IsReady());
@@ -615,6 +643,7 @@ TEST_F(KioskLaunchControllerTest,
       HasViewState(
           AppLaunchSplashScreenView::AppLaunchState::kPreparingNetwork));
 
+  WillResetController();
   task_environment()->FastForwardBy(base::Seconds(10));
 
   EXPECT_THAT(controller(),
@@ -653,6 +682,7 @@ TEST_F(KioskLaunchControllerTest, ConfigureNetworkDuringInstallation) {
   launcher().observers().NotifyAppInstalling();
 
   // User presses the hotkey, current installation is canceled.
+  WillResetController();
   OnNetworkConfigRequested();
 
   EXPECT_THAT(controller(),
@@ -741,7 +771,7 @@ class KioskLaunchControllerWithExtensionTest
  public:
   void SetForceInstallPolicy(const std::string& extension_id,
                              const std::string& update_url) {
-    base::Value::List list;
+    base::ListValue list;
     list.Append(extension_id + ";" + update_url);
     policy::PolicyMap map;
     map.Set(policy::key::kExtensionInstallForcelist,

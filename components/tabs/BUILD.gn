@@ -2,7 +2,12 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/features.gni")
 import("//build/config/ui.gni")
+
+# This component depends on content::WebContents so it can't be used in iOS on
+# WebKit. iOS on Blink uses content::WebContents, so assert `use_blink`.
+assert(use_blink)
 
 source_set("public") {
   sources = [
@@ -27,27 +32,13 @@ source_set("public") {
   sources += [ "public/tab_collection_storage.h" ]
 
   public_deps = [
-    ":split_tabs",
     "//base",
+    "//components/split_tabs",
     "//components/tab_groups",
+    "//content/public/browser",
   ]
 
   deps = [ "//ui/gfx/range" ]
-}
-
-source_set("split_tabs") {
-  sources = [
-    "impl/split_tab_visual_data.cc",
-    "public/split_tab_id.h",
-    "public/split_tab_visual_data.h",
-  ]
-
-  public_deps = [
-    "//base",
-    "//ui/gfx/range",
-  ]
-
-  deps = [ "//components/tab_groups" ]
 }
 
 source_set("tabs") {
@@ -61,14 +52,14 @@ source_set("tabs") {
     "impl/tab_group.cc",
     "impl/tab_group_tab_collection.cc",
     "impl/tab_handle_factory.cc",
+    "impl/tab_interface.cc",
     "impl/tab_strip_collection.cc",
     "impl/unpinned_tab_collection.cc",
   ]
 
-  deps = [
-    ":public",
-    ":split_tabs",
-  ]
+  deps = [ "//components/split_tabs" ]
+
+  public_deps = [ ":public" ]
 }
 
 source_set("test_support") {
@@ -106,9 +97,9 @@ source_set("unit_tests") {
 
   deps = [
     ":public",
-    ":split_tabs",
     ":tabs",
     ":test_support",
+    "//components/split_tabs",
     "//testing/gmock",
     "//testing/gtest",
     "//ui/gfx/range",

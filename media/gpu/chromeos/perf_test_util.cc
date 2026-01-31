@@ -4,7 +4,7 @@
 
 #include "media/gpu/chromeos/perf_test_util.h"
 
-#include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/files/file_util.h"
 #include "base/json/json_writer.h"
 #include "base/logging.h"
@@ -19,7 +19,7 @@ base::FilePath g_source_directory =
     base::FilePath(base::FilePath::kCurrentDirectory);
 
 void WriteJsonResult(std::vector<std::pair<std::string, double>> data) {
-  base::Value::Dict metrics;
+  base::DictValue metrics;
   for (auto i : data) {
     metrics.Set(i.first, i.second);
   }
@@ -35,9 +35,8 @@ void WriteJsonResult(std::vector<std::pair<std::string, double>> data) {
   base::File metrics_output_file(
       base::FilePath(metrics_file_path),
       base::File::FLAG_CREATE_ALWAYS | base::File::FLAG_WRITE);
-  const int bytes_written = UNSAFE_TODO(metrics_output_file.WriteAtCurrentPos(
-      metrics_str.data(), metrics_str.length()));
-  ASSERT_EQ(bytes_written, static_cast<int>(metrics_str.length()));
+  ASSERT_TRUE(metrics_output_file.WriteAtCurrentPosAndCheck(
+      base::as_byte_span(metrics_str)));
   LOG(INFO) << "Wrote performance metrics to: " << metrics_file_path;
 }
 

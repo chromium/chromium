@@ -55,8 +55,9 @@ std::optional<TMojoEnum> ConvertIntToMojoEnum(
   // in somenamespace::mojom namespace (the same namespace as the namespace of
   // TMojoEnum and |enum_value|) - we rely on ADL (argument-dependent lookup) to
   // find the right overload below.
-  if (!IsKnownEnumValue(enum_value))
+  if (!IsKnownEnumValue(enum_value)) {
     return std::nullopt;
+  }
 
   return enum_value;
 }

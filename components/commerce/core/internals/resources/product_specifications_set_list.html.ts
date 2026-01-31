@@ -30,8 +30,8 @@ export function getHtml(this: ProductSpecificationsTableListElement) {
             <ul>
               ${set.urlInfos.map(urlInfo => html`
                 <li>
-                  <a href="${urlInfo.url.url}" target="_blank">
-                    ${urlInfo.title || urlInfo.url.url}
+                  <a href="${urlInfo.url}" target="_blank">
+                    ${urlInfo.title || urlInfo.url}
                   </a>
                 </li>`)}
             </ul>

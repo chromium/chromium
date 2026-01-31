@@ -16,6 +16,7 @@
 #include "cc/input/input_handler.h"
 #include "cc/input/snap_fling_controller.h"
 #include "cc/paint/element_id.h"
+#include "components/viz/common/features.h"
 #include "third_party/blink/public/common/input/web_coalesced_input_event.h"
 #include "third_party/blink/public/common/input/web_gesture_device.h"
 #include "third_party/blink/public/common/input/web_gesture_event.h"
@@ -42,6 +43,11 @@ class ElasticOverscrollController;
 }  // namespace blink
 
 namespace blink {
+
+// TODO(crbug.com/355578906): This needs to match
+// kStylusWritableAdjustmentSizeDip for parity. Move this to a common location
+// instead of having 2 different constants with the same value.
+inline constexpr unsigned int kStylusWritingHitTestRadius = 30;
 
 namespace test {
 class InputHandlerProxyTest;
@@ -215,6 +221,9 @@ class PLATFORM_EXPORT InputHandlerProxy : public cc::InputHandlerClient,
   // compositor thread has had a chance to update the scroll offset.
   void SetDeferBeginMainFrame(bool defer_begin_main_frame) const;
 
+  void SetHandwritingRadiusOnInputThread(int handwriting_radius);
+  int HandwritingRadiusOnInputThread() const { return handwriting_radius_; }
+
   void RequestCallbackAfterEventQueueFlushed(base::OnceClosure callback);
 
   // cc::InputHandlerClient implementation.
@@ -268,6 +277,8 @@ class PLATFORM_EXPORT InputHandlerProxy : public cc::InputHandlerClient,
 
   // Returns the ElementId of the currently latched scroller, or invalid id.
   cc::ElementId LatchedScrollerElementId() const;
+
+  bool HandlingFlingForTesting() const { return handling_fling_; }
 
  private:
   friend class test::TestInputHandlerProxy;
@@ -420,6 +431,10 @@ class PLATFORM_EXPORT InputHandlerProxy : public cc::InputHandlerClient,
 
   base::OnceClosure queue_flushed_callback_;
 
+  // Set by the main thread. This is relevant when calculating the TouchAction
+  // for "near-miss" pointer scenarios.
+  int handwriting_radius_ = blink::kStylusWritingHitTestRadius;
+
   // Tracks whether the first scroll update gesture event has been seen after a
   // scroll begin. This is set/reset when scroll gestures are processed in
   // HandleInputEventWithLatencyInfo and shouldn't be used outside the scope
@@ -478,11 +493,17 @@ class PLATFORM_EXPORT InputHandlerProxy : public cc::InputHandlerClient,
   // has started, or completed.
   bool enqueue_scroll_events_ = true;
 
-  // Cached value of the (kUpdateScrollPredictorInputMapping &
-  // kRefactorCompositorThreadEventQueue) feature flag. (Feature
-  // UpdateScrollPredictorInputMapping needs RefactorCompositorThreadEventQueue
-  // to be enabled).
+  // Cached value of the kUpdateScrollPredictorInputMapping feature flag.
   const bool update_scroll_predictor_;
+
+  // Cached value of the kFlingSchedulingImprovements feature flag.
+  const bool fling_scheduling_improvements_;
+
+  // Tracks whether a fling is currently in progress. This is only set to true
+  // if `fling_scheduling_improvements_` is enabled. When true, input events
+  // are processed up to the current |frame_time| instead of using resampling
+  // offset.
+  bool handling_fling_ = false;
 
   // `cc::InputHandlerClient::ScrollEventDispatchMode::kEnqueueScrollEvents`:
   // Scroll events arriving in `HandleInputEventWithLatencyInfo` will be

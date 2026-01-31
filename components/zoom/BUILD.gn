@@ -47,7 +47,7 @@ static_library("test_support") {
 
 source_set("unit_tests") {
   testonly = true
-  sources = [ "page_zoom_unittests.cc" ]
+  sources = [ "page_zoom_unittest.cc" ]
   deps = [
     ":zoom",
     "//components/prefs",

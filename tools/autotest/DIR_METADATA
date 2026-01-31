@@ -1,0 +1,8 @@
+monorail {
+  project: "chromium"
+  component: "Infra>Test"
+}
+team_email: "pdeio-chrome-test-infra-mx@google.com"
+buganizer_public: {
+  component_id: 1456189 # Public Trackers > Chromium Public Trackers > Chromium > Infra > Test
+}

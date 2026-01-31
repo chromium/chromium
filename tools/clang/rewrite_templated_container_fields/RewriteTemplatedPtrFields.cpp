@@ -27,6 +27,7 @@
 // https://docs.google.com/document/d/1P8wLVS3xueI4p3EAPO4JJP6d1_zVp5SapQB0EW9iHQI/
 
 #include <assert.h>
+
 #include <algorithm>
 #include <cstdio>
 #include <fstream>
@@ -66,6 +67,7 @@
 #include "llvm/Support/MemoryBuffer.h"
 #include "llvm/Support/Path.h"
 #include "llvm/Support/TargetSelect.h"
+#include "tools/clang/raw_ptr_plugin/RawPtrManualPathsToIgnore.h"
 
 using namespace clang::ast_matchers;
 
@@ -1446,9 +1448,7 @@ int main(int argc, const char* argv[]) {
   std::unique_ptr<raw_ptr_plugin::FilterFile> paths_to_exclude;
   if (override_exclude_paths_param.getValue().empty()) {
     std::vector<std::string> paths_to_exclude_lines;
-    for (auto* const line : kRawPtrManualPathsToIgnore) {
-      paths_to_exclude_lines.push_back(line);
-    }
+    raw_ptr_plugin::AddManualPathsToIgnore(paths_to_exclude_lines);
     for (auto* const line : kSeparateRepositoryPaths) {
       paths_to_exclude_lines.push_back(line);
     }

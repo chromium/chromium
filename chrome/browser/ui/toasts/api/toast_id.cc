@@ -32,6 +32,10 @@ std::string GetToastName(ToastId toast_id) {
       return "SyncEsbOnWithoutActionButton";
     case ToastId::kSyncEsbOff:
       return "SyncEsbOff";
+    case ToastId::kSkillSaved:
+      return "SkillSaved";
+    case ToastId::kSkillDeleted:
+      return "SkillDeleted";
     case ToastId::kTabGroupSyncTabRemoved:
       return "TabGroupSyncTabRemoved";
     case ToastId::kTabGroupSyncUserJoined:
@@ -54,6 +58,8 @@ std::string GetToastName(ToastId toast_id) {
       return "GlicShareImageFailed";
     case ToastId::kCopiedToClipboard:
       return "CopiedToClipboard";
+    case ToastId::kEnhancedBundledSecuritySettings:
+      return "EnhancedBundledSecuritySettings";
   }
 
   NOTREACHED();

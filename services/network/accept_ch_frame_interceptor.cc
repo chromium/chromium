@@ -4,7 +4,8 @@
 
 #include "services/network/accept_ch_frame_interceptor.h"
 
-#include "base/containers/contains.h"
+#include <algorithm>
+
 #include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/time/time.h"
@@ -174,10 +175,11 @@ AcceptCHFrameInterceptor::NeedsObserverCheck(
   // is not in either list, we must fall back to the browser process to check.
   bool needs_observer_check = false;
   for (const auto& h : hints) {
-    const bool is_in_hints = base::Contains(enabled_client_hints_->hints, h);
+    const bool is_in_hints =
+        std::ranges::contains(enabled_client_hints_->hints, h);
     const bool is_in_not_allowed_hints =
         features::kAcceptCHFrameOffloadNotAllowedHints.Get() &&
-        base::Contains(enabled_client_hints_->not_allowed_hints, h);
+        std::ranges::contains(enabled_client_hints_->not_allowed_hints, h);
     const bool is_valid_for_offload = is_in_hints || is_in_not_allowed_hints;
     if (is_in_not_allowed_hints && !is_in_hints) {
       base::UmaHistogramEnumeration(

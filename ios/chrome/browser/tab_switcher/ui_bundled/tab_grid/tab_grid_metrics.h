@@ -43,4 +43,7 @@ void RecordTabGridCloseTabsCount(int count);
 // Records the status of the incognito tab grid.
 void RecordIncognitoGridStatus(IncognitoGridStatus status);
 
+// Records the action of closing other tabs.
+void RecordTabGridCloseOtherTabs(bool incognito);
+
 #endif  // IOS_CHROME_BROWSER_TAB_SWITCHER_UI_BUNDLED_TAB_GRID_TAB_GRID_METRICS_H_

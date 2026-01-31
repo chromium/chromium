@@ -31,7 +31,6 @@ using ime::SuggestionsTextContext;
 
 // Used for UmaHistogramExactLinear, should remain <= 101.
 constexpr size_t kMaxSuggestionLength = 101;
-constexpr size_t kMinimumNumberOfCharsToProduceSuggestion = 3;
 constexpr char kMultiWordFirstAcceptTimeDays[] = "multi_word_first_accept";
 constexpr char16_t kSuggestionShownMessage[] =
     u"predictive writing candidate shown, press down to select or "
@@ -100,13 +99,6 @@ void RecordSuggestionLength(size_t suggestion_length) {
       kMaxSuggestionLength);
 }
 
-void RecordCouldPossiblyShowSuggestion(
-    const ime::AssistiveSuggestionMode& suggestion_mode) {
-  base::UmaHistogramEnumeration(
-      "InputMethod.Assistive.MultiWord.CouldPossiblyShowSuggestion",
-      ToSuggestionType(suggestion_mode));
-}
-
 void RecordImplicitAcceptance(
     const ime::AssistiveSuggestionMode& suggestion_mode) {
   base::UmaHistogramEnumeration(
@@ -159,20 +151,6 @@ bool ShouldShowTabGuide(Profile* profile) {
   return (time_since_epoch - first_accepted) <= base::Days(7);
 }
 
-bool CouldSuggestWithSurroundingText(std::u16string_view text,
-                                     const gfx::Range selection_range) {
-  return selection_range.is_empty() && selection_range.end() == text.size() &&
-         text.size() >= kMinimumNumberOfCharsToProduceSuggestion;
-}
-
-bool u16_isalpha(char16_t ch) {
-  return (ch >= u'A' && ch <= u'Z') || (ch >= u'a' && ch <= u'z');
-}
-
-bool WouldBeInCompletionMode(std::u16string_view text) {
-  return !text.empty() && u16_isalpha(text.back());
-}
-
 // TODO(crbug/1146266): Add DismissedAccuracy metric back in.
 
 }  // namespace
@@ -206,14 +184,6 @@ void MultiWordSuggester::OnBlur() {
 void MultiWordSuggester::OnSurroundingTextChanged(
     const std::u16string& text,
     const gfx::Range selection_range) {
-  if (CouldSuggestWithSurroundingText(text, selection_range) &&
-      !state_.IsSuggestionShowing()) {
-    RecordCouldPossiblyShowSuggestion(
-        WouldBeInCompletionMode(text)
-            ? ime::AssistiveSuggestionMode::kCompletion
-            : ime::AssistiveSuggestionMode::kPrediction);
-  }
-
   const uint32_t cursor_pos = selection_range.start();
   auto surrounding_text = SuggestionState::SurroundingText{
       .text = text,

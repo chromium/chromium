@@ -21,7 +21,7 @@ static constexpr bool kSoftwareBacked = true;
 static constexpr uint8_t kDefaultPublicExponent[] = {0x01, 0x00, 0x01};
 
 TEST(KeystoreServiceUtil, EcdsaDictionary) {
-  base::Value::Dict value;
+  base::DictValue value;
   value.Set("name", kWebCryptoEcdsa);
   value.Set("namedCurve", kWebCryptoNamedCurveP256);
 
@@ -29,7 +29,7 @@ TEST(KeystoreServiceUtil, EcdsaDictionary) {
       MakeKeystoreAlgorithmFromDictionary(value);
   ASSERT_TRUE(ptr);
 
-  std::optional<base::Value::Dict> value2 =
+  std::optional<base::DictValue> value2 =
       MakeDictionaryFromKeystoreAlgorithm(ptr.value());
   ASSERT_TRUE(value2);
 
@@ -37,7 +37,7 @@ TEST(KeystoreServiceUtil, EcdsaDictionary) {
 }
 
 TEST(KeystoreServiceUtil, RsassaPkcs1v15Dictionary) {
-  base::Value::Dict value;
+  base::DictValue value;
   value.Set("name", kWebCryptoRsassaPkcs1v15);
   value.Set("modulusLength", base::checked_cast<int>(kModulusLength));
 
@@ -49,7 +49,7 @@ TEST(KeystoreServiceUtil, RsassaPkcs1v15Dictionary) {
       MakeKeystoreAlgorithmFromDictionary(value);
   ASSERT_TRUE(ptr);
 
-  std::optional<base::Value::Dict> value2 =
+  std::optional<base::DictValue> value2 =
       MakeDictionaryFromKeystoreAlgorithm(ptr.value());
   ASSERT_TRUE(value2);
 
@@ -57,7 +57,7 @@ TEST(KeystoreServiceUtil, RsassaPkcs1v15Dictionary) {
 }
 
 TEST(KeystoreServiceUtil, RsaOaepDictionary) {
-  base::Value::Dict value;
+  base::DictValue value;
   value.Set("name", kWebCryptoRsaOaep);
   value.Set("modulusLength", base::checked_cast<int>(kModulusLength));
 
@@ -69,7 +69,7 @@ TEST(KeystoreServiceUtil, RsaOaepDictionary) {
       MakeKeystoreAlgorithmFromDictionary(value);
   ASSERT_TRUE(ptr);
 
-  std::optional<base::Value::Dict> value2 =
+  std::optional<base::DictValue> value2 =
       MakeDictionaryFromKeystoreAlgorithm(ptr.value());
   ASSERT_TRUE(value2);
 

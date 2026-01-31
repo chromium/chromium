@@ -37,7 +37,8 @@ namespace {
 // Usually we want to only capture navigations from clicking a link. For a
 // subset of apps, we want to capture typing into the omnibox as well.
 bool ShouldOnlyCaptureLinks(const std::vector<std::string>& app_ids) {
-  return !base::Contains(app_ids, ash::kChromeUIUntrustedProjectorSwaAppId);
+  return !std::ranges::contains(app_ids,
+                                ash::kChromeUIUntrustedProjectorSwaAppId);
 }
 
 bool IsSystemWebApp(Profile* profile, const std::string& app_id) {

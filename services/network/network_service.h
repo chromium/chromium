@@ -44,6 +44,7 @@
 #include "services/network/devtools_durable_msg_collector_manager.h"
 #include "services/network/first_party_sets/first_party_sets_manager.h"
 #include "services/network/keepalive_statistics_recorder.h"
+#include "services/network/multiple_durable_message_writer_impl.h"
 #include "services/network/network_change_manager.h"
 #include "services/network/network_quality_estimator_manager.h"
 #include "services/network/public/cpp/network_service_buildflags.h"
@@ -156,7 +157,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkService
   void StartNetLog(base::File file,
                    uint64_t max_total_size,
                    net::NetLogCaptureMode capture_mode,
-                   base::Value::Dict constants,
+                   base::DictValue constants,
                    std::optional<base::TimeDelta> duration) override;
   void AttachNetLogProxy(
       mojo::PendingRemote<mojom::NetLogProxySource> proxy_source,
@@ -193,8 +194,6 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkService
   void OnTrustStoreChanged() override;
   void OnClientCertStoreChanged() override;
   void SetEncryptionKey(const std::string& encryption_key) override;
-  void OnMemoryPressure(
-      base::MemoryPressureLevel memory_pressure_level) override;
   void OnPeerToPeerConnectionsCountChange(uint32_t count) override;
 #if BUILDFLAG(IS_ANDROID)
   void OnApplicationStateChange(base::android::ApplicationState state) override;
@@ -272,19 +271,19 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkService
   void StartNetLogBounded(base::File file,
                           uint64_t max_total_size,
                           net::NetLogCaptureMode capture_mode,
-                          base::Value::Dict client_constants);
+                          base::DictValue client_constants);
 
   // Called after StartNetLogBounded() finishes creating a scratch dir.
   void OnStartNetLogBoundedScratchDirectoryCreated(
       base::File file,
       uint64_t max_total_size,
       net::NetLogCaptureMode capture_mode,
-      base::Value::Dict constants,
+      base::DictValue constants,
       const base::FilePath& in_progress_dir_path);
 
   void StartNetLogUnbounded(base::File file,
                             net::NetLogCaptureMode capture_mode,
-                            base::Value::Dict client_constants);
+                            base::DictValue client_constants);
 
   // Returns an HttpAuthHandlerFactory for the given NetworkContext.
   std::unique_ptr<net::HttpAuthHandlerFactory> CreateHttpAuthHandlerFactory(
@@ -387,9 +386,9 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkService
 
   static NetworkService* GetNetworkServiceForTesting();
 
-  std::vector<base::WeakPtr<DevtoolsDurableMessageCollector>>
-  GetDurableMessageCollectorsEnabledForProfile(
-      const base::UnguessableToken& devtools_profile);
+  std::unique_ptr<DevtoolsDurableMessageWriter> MaybeCreateDurableMessageWriter(
+      const base::UnguessableToken& throttling_profile_id,
+      const std::string& devtools_request_id);
   DevtoolsDurableMessageCollectorManager*
   GetDurableMessageCollectorManagerForTesting() {
     return durable_message_collector_manager_.get();
@@ -438,7 +437,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkService
   std::unique_ptr<net::FileNetLogObserver> file_net_log_observer_;
   // When capturing NetLog events, this keeps a NetworkContext's polled data
   // on the destruction of the NetworkContext.
-  base::Value::List net_log_polled_data_list_;
+  base::ListValue net_log_polled_data_list_;
 
   net::TraceNetLogObserver trace_net_log_observer_;
 
@@ -538,6 +537,9 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkService
   std::unique_ptr<network::tpcd::metadata::Manager> tpcd_metadata_manager_;
 
   bool exclusive_cookie_database_locking_ = true;
+
+  // When this is set, it overrides the default setting used by the net stack.
+  std::optional<bool> tls_13_early_data_enabled_;
 
   std::unique_ptr<DevtoolsDurableMessageCollectorManager>
       durable_message_collector_manager_;

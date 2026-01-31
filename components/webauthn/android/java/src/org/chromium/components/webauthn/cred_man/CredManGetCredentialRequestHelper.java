@@ -48,7 +48,7 @@ class CredManGetCredentialRequestHelper {
         private final CredManGetCredentialRequestHelper mHelper;
 
         Builder(
-                String requestAsJson,
+                @Nullable String requestAsJson,
                 byte @Nullable [] clientDataHash,
                 boolean preferImmediatelyAvailable,
                 boolean allowAutoSelect,
@@ -86,13 +86,19 @@ class CredManGetCredentialRequestHelper {
     GetCredentialRequest getGetCredentialRequest(@Nullable CredManRequestDecorator decorator) {
         final Bundle requestBundle = getGetCredentialRequestBundle(decorator);
         var builder = new GetCredentialRequest.Builder(requestBundle);
-        final CredentialOption publicKeyCredentialOption = getPublicKeyCredentialOption(decorator);
-        final CredentialOption passwordCredentialOption = getPasswordCredentialOption(decorator);
+        final @Nullable CredentialOption publicKeyCredentialOption =
+                getPublicKeyCredentialOption(decorator);
+        final @Nullable CredentialOption passwordCredentialOption =
+                getPasswordCredentialOption(decorator);
         if (decorator != null) {
             decorator.updateGetCredentialRequestBuilder(builder, this);
         }
-        builder.addCredentialOption(publicKeyCredentialOption);
-        if (passwordCredentialOption != null) builder.addCredentialOption(passwordCredentialOption);
+        if (publicKeyCredentialOption != null) {
+            builder.addCredentialOption(publicKeyCredentialOption);
+        }
+        if (passwordCredentialOption != null) {
+            builder.addCredentialOption(passwordCredentialOption);
+        }
         return builder.build();
     }
 
@@ -129,8 +135,11 @@ class CredManGetCredentialRequestHelper {
     }
 
     @RequiresApi(Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
-    private CredentialOption getPublicKeyCredentialOption(
+    private @Nullable CredentialOption getPublicKeyCredentialOption(
             @Nullable CredManRequestDecorator decorator) {
+        if (mRequestAsJson == null) {
+            return null;
+        }
         Bundle publicKeyCredentialOptionBundle = getBasePublicKeyCredentialOptionBundle();
         if (decorator != null) {
             decorator.updatePublicKeyCredentialOptionBundle(publicKeyCredentialOptionBundle, this);

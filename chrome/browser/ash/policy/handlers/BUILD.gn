@@ -26,8 +26,6 @@ static_library("handlers") {
     "device_dock_mac_address_source_handler.h",
     "device_name_policy_handler.cc",
     "device_name_policy_handler.h",
-    "device_name_policy_handler_impl.cc",
-    "device_name_policy_handler_impl.h",
     "device_name_policy_handler_name_generator.cc",
     "device_name_policy_handler_name_generator.h",
     "device_wifi_allowed_handler.cc",
@@ -59,7 +57,6 @@ static_library("handlers") {
     "//ash/public/cpp",
     "//base",
     "//build:buildflag_header_h",
-    "//chrome/browser:browser_process",
     "//chrome/browser/ash/accessibility",
     "//chrome/browser/ash/crostini",
     "//chrome/browser/ash/login/session",
@@ -126,8 +123,6 @@ static_library("test_support") {
   testonly = true
 
   sources = [
-    "fake_device_name_policy_handler.cc",
-    "fake_device_name_policy_handler.h",
     "minimum_version_policy_test_helpers.cc",
     "minimum_version_policy_test_helpers.h",
   ]
@@ -152,8 +147,8 @@ source_set("unit_tests") {
     "configuration_policy_handler_ash_unittest.cc",
     "device_dlc_predownload_list_policy_handler_unittest.cc",
     "device_dock_mac_address_source_handler_unittest.cc",
-    "device_name_policy_handler_impl_unittest.cc",
     "device_name_policy_handler_name_generator_unittest.cc",
+    "device_name_policy_handler_unittest.cc",
     "extension_cache_unittest.cc",
     "lock_to_single_user_manager_unittest.cc",
     "minimum_version_policy_handler_unittest.cc",

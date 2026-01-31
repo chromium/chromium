@@ -16,11 +16,9 @@
 #include <set>
 #include <string>
 #include <string_view>
-#include <unordered_set>
 #include <vector>
 
 #include "base/check.h"
-#include "base/containers/contains.h"
 #include "base/containers/to_vector.h"
 #include "base/dcheck_is_on.h"
 #include "base/metrics/histogram_macros.h"
@@ -48,6 +46,7 @@
 #include "net/dns/public/dns_query_type.h"
 #include "net/dns/record_parsed.h"
 #include "net/dns/record_rdata.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
 
 namespace net {
 
@@ -63,14 +62,13 @@ using RecordsOrError =
 using ResultsOrError = DnsResponseResultExtractor::ResultsOrError;
 using Source = HostResolverInternalResult::Source;
 
-void SaveMetricsForAdditionalHttpsRecord(const RecordParsed& record,
-                                         bool is_unsolicited) {
+void SaveMetricsForRequestedAdditionalHttpsRecord(const RecordParsed& record) {
   const HttpsRecordRdata* rdata = record.rdata<HttpsRecordRdata>();
   DCHECK(rdata);
 
   // These values are persisted to logs. Entries should not be renumbered and
   // numeric values should never be reused.
-  enum class UnsolicitedHttpsRecordStatus {
+  enum class AdditionalHttpsRecordStatus {
     kMalformed = 0,  // No longer recorded.
     kAlias = 1,
     kService = 2,
@@ -78,18 +76,13 @@ void SaveMetricsForAdditionalHttpsRecord(const RecordParsed& record,
   } status;
 
   if (rdata->IsAlias()) {
-    status = UnsolicitedHttpsRecordStatus::kAlias;
+    status = AdditionalHttpsRecordStatus::kAlias;
   } else {
-    status = UnsolicitedHttpsRecordStatus::kService;
+    status = AdditionalHttpsRecordStatus::kService;
   }
 
-  if (is_unsolicited) {
-    UMA_HISTOGRAM_ENUMERATION("Net.DNS.DnsTask.AdditionalHttps.Unsolicited",
-                              status);
-  } else {
-    UMA_HISTOGRAM_ENUMERATION("Net.DNS.DnsTask.AdditionalHttps.Requested",
-                              status);
-  }
+  UMA_HISTOGRAM_ENUMERATION("Net.DNS.DnsTask.AdditionalHttps.Requested",
+                            status);
 }
 
 // Sort service targets per RFC2782.  In summary, sort first by `priority`,
@@ -97,7 +90,7 @@ void SaveMetricsForAdditionalHttpsRecord(const RecordParsed& record,
 // using `weight` with higher weighted objects more likely to go first.
 std::vector<HostPortPair> SortServiceTargets(
     const std::vector<const SrvRecordRdata*>& rdatas) {
-  std::map<uint16_t, std::unordered_set<const SrvRecordRdata*>>
+  std::map<uint16_t, absl::flat_hash_set<const SrvRecordRdata*>>
       ordered_by_priority;
   for (const SrvRecordRdata* rdata : rdatas) {
     ordered_by_priority[rdata->priority()].insert(rdata);
@@ -108,7 +101,7 @@ std::vector<HostPortPair> SortServiceTargets(
     // With (num results) <= UINT16_MAX (and in practice, much less) and
     // (weight per result) <= UINT16_MAX, then it should be the case that
     // (total weight) <= UINT32_MAX, but use CheckedNumeric for extra safety.
-    auto total_weight = base::MakeCheckedNum<uint32_t>(0);
+    auto total_weight = base::CheckedNumeric<uint32_t>(0);
     for (const SrvRecordRdata* rdata : priority.second) {
       total_weight += rdata->weight();
     }
@@ -255,16 +248,8 @@ RecordsOrError ExtractResponseRecords(
   std::string final_chain_name;
   ExtractionError name_and_alias_validation_error = ValidateNamesAndAliases(
       response.GetSingleDottedName(), aliases, data_records, final_chain_name);
-  bool has_extraction_error =
-      name_and_alias_validation_error != ExtractionError::kOk;
 
-  if (query_type == DnsQueryType::A || query_type == DnsQueryType::AAAA) {
-    UMA_HISTOGRAM_BOOLEAN(
-        DnsResponseResultExtractor::kHasValidCnameRecordsHistogram,
-        !has_extraction_error && !aliases.empty());
-  }
-
-  if (has_extraction_error) {
+  if (name_and_alias_validation_error != ExtractionError::kOk) {
     return base::unexpected(name_and_alias_validation_error);
   }
 
@@ -316,8 +301,10 @@ RecordsOrError ExtractResponseRecords(
         RecordParsed::CreateFrom(&parser, base::Time::Now());
     if (record && record->klass() == dns_protocol::kClassIN &&
         record->type() == dns_protocol::kTypeHttps) {
-      bool is_unsolicited = query_type != DnsQueryType::HTTPS;
-      SaveMetricsForAdditionalHttpsRecord(*record, is_unsolicited);
+      bool was_requested = query_type == DnsQueryType::HTTPS;
+      if (was_requested) {
+        SaveMetricsForRequestedAdditionalHttpsRecord(*record);
+      }
     }
   }
 
@@ -572,8 +559,8 @@ ResultsOrError ExtractHttpsResults(const DnsResponse& response,
 
     metadata.supported_protocol_alpns = service->alpn_ids();
     if (service->default_alpn() &&
-        !base::Contains(metadata.supported_protocol_alpns,
-                        dns_protocol::kHttpsServiceDefaultAlpn)) {
+        !std::ranges::contains(metadata.supported_protocol_alpns,
+                               dns_protocol::kHttpsServiceDefaultAlpn)) {
       metadata.supported_protocol_alpns.push_back(
           dns_protocol::kHttpsServiceDefaultAlpn);
     }

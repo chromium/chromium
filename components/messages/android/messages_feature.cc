@@ -36,8 +36,8 @@ BASE_FEATURE(kMessagesAndroidExtraHistograms, base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kMessagesCloseButton, base::FEATURE_ENABLED_BY_DEFAULT);
 
-static jlong JNI_MessageFeatureMap_GetNativeMap(JNIEnv* env) {
-  return reinterpret_cast<jlong>(GetFeatureMap());
+static int64_t JNI_MessageFeatureMap_GetNativeMap(JNIEnv* env) {
+  return reinterpret_cast<int64_t>(GetFeatureMap());
 }
 
 }  // namespace messages

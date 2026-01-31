@@ -62,11 +62,11 @@ bool Notification::AppMetadata::operator!=(const AppMetadata& other) const {
   return !(*this == other);
 }
 
-base::Value::Dict Notification::AppMetadata::ToValue() const {
+base::DictValue Notification::AppMetadata::ToValue() const {
   scoped_refptr<base::RefCountedMemory> png_data = color_icon.As1xPNGBytes();
   scoped_refptr<base::RefCountedMemory> monochrome_mask_png_data;
 
-  base::Value::Dict val;
+  base::DictValue val;
   val.Set(kVisibleAppName, visible_app_name);
   val.Set(kPackageName, package_name);
   val.Set(kUserId, static_cast<double>(user_id));
@@ -89,7 +89,7 @@ base::Value::Dict Notification::AppMetadata::ToValue() const {
 
 // static
 Notification::AppMetadata Notification::AppMetadata::FromValue(
-    const base::Value::Dict& value) {
+    const base::DictValue& value) {
   DCHECK(value.FindString(kVisibleAppName));
   DCHECK(value.FindString(kPackageName));
   DCHECK(value.FindDouble(kUserId));

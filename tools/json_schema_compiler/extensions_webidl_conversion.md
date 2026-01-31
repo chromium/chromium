@@ -207,6 +207,19 @@ callback AlarmCallback = void(optional Alarm alarm);
 [requiredCallback] static Promise<Alarm?> get(optional DOMString name);
 ```
 
+### Synchronous Custom Type Function Returns
+If a function has a synchronous return that is either a custom type or an explicit object type, it should be marked nullable in the new definition with a `?` after the type. The old IDL parser didn't support marking returns as nullable, so this was previously done under the hood for all function returns of these types.
+
+**Before:**
+```
+static FooType getFoo(DOMString name);
+```
+
+**After:**
+```
+static FooType? getFoo(DOMString name);
+```
+
 ### Events
 The old `interface Events { ... }` is replaced with a more explicit event handling interface. For each event, such as `onFoo`, follow these steps:
 1. **Define a Listener Callback.** Create a new callback definition for the event listener. The name should be `OnFooListener`. If the argument passed to the callback had a comment description previously, that should be moved to be directly above the new callback definition; otherwise, it does not need a comment describing that argument. **Important:** The descriptive comment for each argument in the old event (e.g., `// |alarm|: The alarm that has elapsed.`) **must** be moved to be directly above the new `callback` definition.

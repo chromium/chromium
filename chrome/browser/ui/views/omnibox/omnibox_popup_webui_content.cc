@@ -7,6 +7,7 @@
 #include <string_view>
 
 #include "base/feature_list.h"
+#include "chrome/browser/lifetime/browser_shutdown.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/omnibox/omnibox_controller.h"
@@ -14,6 +15,7 @@
 #include "chrome/browser/ui/views/location_bar/location_bar_view.h"
 #include "chrome/browser/ui/views/location_bar/omnibox_popup_file_selector.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_context_menu.h"
+#include "chrome/browser/ui/views/omnibox/omnibox_popup_closer.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_presenter.h"
 #include "chrome/browser/ui/views/omnibox/rounded_omnibox_results_frame.h"
 #include "chrome/browser/ui/webui/omnibox_popup/omnibox_popup_ui.h"
@@ -23,6 +25,7 @@
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/input/native_web_keyboard_event.h"
+#include "components/omnibox/browser/omnibox_client.h"
 #include "components/omnibox/common/omnibox_features.h"
 #include "components/zoom/zoom_controller.h"
 #include "content/public/browser/render_widget_host_view.h"
@@ -60,6 +63,20 @@ void OmniboxPopupWebUIContent::ShowUI() {
 WebuiOmniboxHandler* OmniboxPopupWebUIContent::omnibox_handler() {
   auto* webui_controller = contents_wrapper()->GetWebUIController();
   return webui_controller ? webui_controller->omnibox_handler() : nullptr;
+}
+
+void OmniboxPopupWebUIContent::PrimaryMainFrameRenderProcessGone(
+    base::TerminationStatus status) {
+  OmniboxPopupWebUIBaseContent::PrimaryMainFrameRenderProcessGone(status);
+  if (browser_shutdown::HasShutdownStarted()) {
+    return;
+  }
+
+  // Close the popup if the render process is gone. This will allow for the
+  // crash recovery flow in `ShowUI` to run and restore the popup.
+  if (auto* popup_closer = controller()->client()->GetOmniboxPopupCloser()) {
+    popup_closer->CloseWithReason(omnibox::PopupCloseReason::kCrash);
+  }
 }
 
 BEGIN_METADATA(OmniboxPopupWebUIContent)

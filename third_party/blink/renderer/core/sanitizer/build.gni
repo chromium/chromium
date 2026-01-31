@@ -10,6 +10,8 @@ blink_core_sources_sanitizer = [
   "sanitizer_builtins.cc",
   "sanitizer_builtins.h",
   "sanitizer_names.h",
+  "streaming_sanitizer.cc",
+  "streaming_sanitizer.h",
 ]
 
 blink_core_tests_sanitizer = [

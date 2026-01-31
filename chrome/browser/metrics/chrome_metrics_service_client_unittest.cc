@@ -233,9 +233,10 @@ TEST_F(ChromeMetricsServiceClientTest, TestRegisterMetricsServiceProviders) {
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_WIN)
-  // GoogleUpdateMetricsProviderWin, AntiVirusMetricsProvider, and
-  // TPMMetricsProvider.
-  expected_providers += 3;
+  // GoogleUpdateMetricsProviderWin, AntiVirusMetricsProvider,
+  // TPMMetricsProvider, SystemMemoryListMetricsProvider, and
+  // SystemPdhMetricsProvider.
+  expected_providers += 5;
 #endif  // BUILDFLAG(IS_WIN)
 
 #if BUILDFLAG(IS_CHROMEOS)

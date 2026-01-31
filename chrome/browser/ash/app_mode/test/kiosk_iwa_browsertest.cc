@@ -7,6 +7,7 @@
 #include "chrome/browser/ash/app_mode/test/kiosk_mixin.h"
 #include "chrome/browser/ash/app_mode/test/kiosk_test_utils.h"
 #include "chrome/browser/extensions/extension_special_storage_policy.h"
+#include "chrome/browser/web_applications/isolated_web_apps/test/fake_iwa_runtime_data_provider_mixin.h"
 #include "chrome/browser/web_applications/isolated_web_apps/test/isolated_web_app_builder.h"
 #include "chrome/browser/web_applications/isolated_web_apps/test/isolated_web_app_test_update_server.h"
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
@@ -51,6 +52,10 @@ class KioskIwaTest : public MixinBasedInProcessBrowserTest {
         web_app::IsolatedWebAppBuilder(
             web_app::ManifestBuilder().SetVersion("1.0.0"))
             .BuildBundle(web_app::test::GetDefaultEd25519KeyPair()));
+    data_provider_->Update([&](auto& update) {
+      update.AddToManagedAllowlist(
+          web_app::test::GetDefaultEd25519WebBundleId());
+    });
   }
 
   ~KioskIwaTest() override = default;
@@ -59,6 +64,7 @@ class KioskIwaTest : public MixinBasedInProcessBrowserTest {
 
  protected:
   web_app::IsolatedWebAppTestUpdateServer iwa_test_server_;
+  web_app::FakeIwaRuntimeDataProviderMixin data_provider_{&mixin_host_};
   KioskMixin kiosk_{&mixin_host_,
                     GetKioskIwaConfig(iwa_test_server_.GetUpdateManifestUrl(
                         kTestWebBundleId))};

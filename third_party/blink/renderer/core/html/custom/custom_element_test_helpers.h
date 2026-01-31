@@ -201,7 +201,8 @@ class CreateElement {
     NonThrowableExceptionState no_exceptions;
     Element* element = document->CreateElement(
         QualifiedName(g_null_atom, local_name_, namespace_uri_),
-        CreateElementFlags::ByCreateElement(), is_value_, /*registry*/ nullptr);
+        CreateElementFlags::ByCreateElement(), is_value_,
+        CustomElementRegistry::DefaultRegistry(*document));
     for (const auto& attribute : attributes_)
       element->setAttribute(attribute.first, attribute.second);
     return element;

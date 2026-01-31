@@ -17,31 +17,15 @@ namespace device {
 
 // static
 void SerialPortImpl::Open(
-    const base::FilePath& path,
-    mojom::SerialConnectionOptionsPtr options,
-    mojo::PendingRemote<mojom::SerialPortClient> client,
-    mojo::PendingRemote<mojom::SerialPortConnectionWatcher> watcher,
-    scoped_refptr<base::SingleThreadTaskRunner> ui_task_runner,
-    OpenCallback callback) {
-  // This SerialPortImpl is owned by |receiver_| and |watcher_| and will
-  // self-destruct on close.
-  auto* port = new SerialPortImpl(
-      device::SerialIoHandler::Create(path, std::move(ui_task_runner)),
-      std::move(client), std::move(watcher));
-  port->OpenPort(*options, std::move(callback));
-}
-
-// static
-void SerialPortImpl::OpenForTesting(
     scoped_refptr<SerialIoHandler> io_handler,
     mojom::SerialConnectionOptionsPtr options,
     mojo::PendingRemote<mojom::SerialPortClient> client,
     mojo::PendingRemote<mojom::SerialPortConnectionWatcher> watcher,
     OpenCallback callback) {
-  // This SerialPortImpl is owned by |receiver| and |watcher| and will
+  // This SerialPortImpl is owned by |receiver_| and |watcher_| and will
   // self-destruct on close.
-  auto* port = new SerialPortImpl(std::move(io_handler), std::move(client),
-                                  std::move(watcher));
+  auto* port =
+      new SerialPortImpl(io_handler, std::move(client), std::move(watcher));
   port->OpenPort(*options, std::move(callback));
 }
 

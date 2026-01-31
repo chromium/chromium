@@ -24,7 +24,7 @@
 #include "chromeos/ash/components/settings/cros_settings.h"
 #include "chromeos/ash/components/settings/cros_settings_names.h"
 #include "content/public/browser/network_service_instance.h"
-#include "services/network/public/mojom/network_change_manager.mojom-data-view.h"
+#include "services/network/public/mojom/network_change_manager.mojom-shared.h"
 
 namespace {
 

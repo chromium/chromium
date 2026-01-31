@@ -34,14 +34,14 @@ class SaveAndFillDialogControllerImpl : public SaveAndFillDialogController {
 
   void ShowUploadDialog(
       const LegalMessageLines& legal_message_lines,
-      base::OnceCallback<std::unique_ptr<SaveAndFillDialogView>()>
-          create_and_show_view_callback,
       payments::PaymentsAutofillClient::CardSaveAndFillDialogCallback
           card_save_and_fill_dialog_callback);
 
   void ShowPendingDialog(
       base::OnceCallback<std::unique_ptr<SaveAndFillDialogView>()>
-          create_and_show_view_callback);
+          create_and_show_view_callback,
+      payments::PaymentsAutofillClient::CardSaveAndFillDialogCallback
+          card_save_and_fill_dialog_callback);
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
   std::u16string GetWindowTitle() const override;

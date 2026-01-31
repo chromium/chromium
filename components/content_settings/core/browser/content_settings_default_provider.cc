@@ -36,6 +36,7 @@
 #include "components/prefs/pref_registry.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
+#include "services/network/public/cpp/features.h"
 #include "url/gurl.h"
 
 namespace content_settings {
@@ -88,6 +89,10 @@ constexpr char kObsoleteTopLevelTpcdOriginTrialDefaultPref[] =
 // TODO(https://crbug.com/367181093): clean this up.
 constexpr char kBug364820109AlreadyWorkedAroundPref[] =
     "profile.did_work_around_bug_364820109_default";
+constexpr char kLocalNetworkAccessMigrateDefaultValuePref[] =
+    "profile.default_content_setting_values.has_migrated_local_network_access";
+constexpr char kObsoleteTrackingProtectionDefaultPref[] =
+    "profile.default_content_setting_values.tracking_protection";
 #endif  // !BUILDFLAG(IS_IOS)
 
 base::Value GetDefaultValue(const WebsiteSettingsInfo* info) {
@@ -129,6 +134,10 @@ void DefaultProvider::RegisterProfilePrefs(
   }
 
   registry->RegisterBooleanPref(kGeolocationMigrateDefaultValue, false);
+#if !BUILDFLAG(IS_IOS)
+  registry->RegisterBooleanPref(kLocalNetworkAccessMigrateDefaultValuePref,
+                                false);
+#endif  // !BUILDFLAG(IS_IOS)
 
   // Obsolete prefs -------------------------------------------------------
 
@@ -139,6 +148,7 @@ void DefaultProvider::RegisterProfilePrefs(
   registry->RegisterIntegerPref(kObsoleteTpcdTrialDefaultPref, 0);
   registry->RegisterIntegerPref(kObsoleteTopLevelTpcdTrialDefaultPref, 0);
   registry->RegisterIntegerPref(kObsoleteTopLevelTpcdOriginTrialDefaultPref, 0);
+  registry->RegisterIntegerPref(kObsoleteTrackingProtectionDefaultPref, 0);
 #if !BUILDFLAG(IS_ANDROID)
   registry->RegisterIntegerPref(
       kObsoleteMouseLockDefaultPref, 0,
@@ -176,6 +186,9 @@ DefaultProvider::DefaultProvider(PrefService* prefs,
   ReadDefaultSettings();
 
   MigrateGeolocationDefaultValue();
+#if !BUILDFLAG(IS_IOS)
+  MigrateLocalNetworkAccessDefaultValue();
+#endif  // !BUILDFLAG(IS_IOS)
 
   if (should_record_metrics)
     RecordHistogramMetrics();
@@ -396,6 +409,7 @@ void DefaultProvider::DiscardOrMigrateObsoletePreferences() {
   prefs_->ClearPref(kObsoleteTpcdTrialDefaultPref);
   prefs_->ClearPref(kObsoleteTopLevelTpcdTrialDefaultPref);
   prefs_->ClearPref(kObsoleteTopLevelTpcdOriginTrialDefaultPref);
+  prefs_->ClearPref(kObsoleteTrackingProtectionDefaultPref);
 #if !BUILDFLAG(IS_ANDROID)
   prefs_->ClearPref(kObsoleteMouseLockDefaultPref);
   prefs_->ClearPref(kObsoletePluginsDefaultPref);
@@ -450,6 +464,45 @@ void DefaultProvider::MigrateGeolocationDefaultValue() {
     prefs_->SetBoolean(kGeolocationMigrateDefaultValue, false);
   }
 }
+
+#if !BUILDFLAG(IS_IOS)
+void DefaultProvider::MigrateLocalNetworkAccessDefaultValue() {
+  if (is_off_the_record_) {
+    return;
+  }
+  // If LNA isn't turned on at all, don't try to migrate anything.
+  if (!base::FeatureList::IsEnabled(
+          network::features::kLocalNetworkAccessChecks)) {
+    return;
+  }
+
+  // Migrate when the feature gets enabled the first time.
+  // Only the default for LOCAL_NETWORK is changed, as the old prompt language
+  // was biased towards that.
+  if (base::FeatureList::IsEnabled(
+          network::features::kLocalNetworkAccessChecksSplitPermissions) &&
+      !prefs_->GetBoolean(kLocalNetworkAccessMigrateDefaultValuePref)) {
+    ChangeSetting(ContentSettingsType::LOCAL_NETWORK,
+                  std::move(default_settings_.at(
+                      ContentSettingsType::LOCAL_NETWORK_ACCESS)));
+    // Change LOCAL_NETWORK_ACCESS setting back to default.
+    ChangeSetting(
+        ContentSettingsType::LOCAL_NETWORK_ACCESS,
+        ContentSettingToValue(ContentSetting::CONTENT_SETTING_DEFAULT));
+    prefs_->SetBoolean(kLocalNetworkAccessMigrateDefaultValuePref, true);
+  }
+
+  // If the feature is turned off, then don't attempt to migrate back, as we'd
+  // be unsure of how to reconcile the differences. But make sure to unset the
+  // migration pref so that when the feature gets turned back on we'll migrate
+  // again.
+  if (!base::FeatureList::IsEnabled(
+          network::features::kLocalNetworkAccessChecksSplitPermissions) &&
+      prefs_->GetBoolean(kLocalNetworkAccessMigrateDefaultValuePref)) {
+    prefs_->SetBoolean(kLocalNetworkAccessMigrateDefaultValuePref, false);
+  }
+}
+#endif  // !BUILDFLAG(IS_IOS)
 
 void DefaultProvider::RecordHistogramMetrics() {
   base::UmaHistogramEnumeration(

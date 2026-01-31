@@ -50,13 +50,13 @@ namespace extensions {
 namespace {
 
 scoped_refptr<const Extension> CreateExtensionWithOptionalPermissions(
-    base::Value::List optional_permissions,
-    base::Value::List permissions,
+    base::ListValue optional_permissions,
+    base::ListValue permissions,
     const std::string& name) {
   return ExtensionBuilder()
       .SetLocation(mojom::ManifestLocation::kInternal)
       .SetManifest(
-          base::Value::Dict()
+          base::DictValue()
               .Set("name", name)
               .Set("description", "foo")
               .Set("manifest_version", 2)
@@ -166,7 +166,8 @@ TEST_F(PermissionsUpdaterTest, GrantAndRevokeOptionalPermissions) {
 
     PermissionsManagerWaiter waiter(PermissionsManager::Get(profile()));
     PermissionsUpdater(profile()).RevokeOptionalPermissions(
-        *extension, delta, PermissionsUpdater::REMOVE_SOFT, base::DoNothing());
+        *extension, delta, PermissionsUpdater::RemoveType::kSoft,
+        base::DoNothing());
     waiter.WaitForExtensionPermissionsUpdate(base::BindOnce(
         [](scoped_refptr<const Extension> extension, PermissionSet* delta,
            const Extension& actual_extension,
@@ -218,9 +219,8 @@ TEST_F(PermissionsUpdaterTest, RevokingPermissions) {
   {
     // Test revoking optional permissions.
     auto optional_permissions =
-        base::Value::List().Append("tabs").Append("cookies").Append(
-            "management");
-    base::Value::List required_permissions;
+        base::ListValue().Append("tabs").Append("cookies").Append("management");
+    base::ListValue required_permissions;
     required_permissions.Append("topSites");
     scoped_refptr<const Extension> extension =
         CreateExtensionWithOptionalPermissions(std::move(optional_permissions),
@@ -259,7 +259,7 @@ TEST_F(PermissionsUpdaterTest, RevokingPermissions) {
     // The extension should still have the "cookies" permission.
     permissions_test_util::RevokeOptionalPermissionsAndWaitForCompletion(
         profile(), *extension, *api_permission_set(APIPermissionID::kTab),
-        PermissionsUpdater::REMOVE_HARD);
+        PermissionsUpdater::RemoveType::kHard);
     EXPECT_FALSE(permissions->HasAPIPermission(APIPermissionID::kTab));
     granted_permissions = prefs->GetGrantedPermissions(extension->id());
     EXPECT_FALSE(granted_permissions->HasAPIPermission(APIPermissionID::kTab));
@@ -279,9 +279,9 @@ TEST_F(PermissionsUpdaterTest, RevokingPermissions) {
     URLPatternSet default_policy_allowed_hosts;
     URLPatternSet policy_blocked_hosts;
     URLPatternSet policy_allowed_hosts;
-    base::Value::List optional_permissions;
-    base::Value::List required_permissions =
-        base::Value::List().Append("tabs").Append("http://*/*");
+    base::ListValue optional_permissions;
+    base::ListValue required_permissions =
+        base::ListValue().Append("tabs").Append("http://*/*");
     scoped_refptr<const Extension> extension =
         CreateExtensionWithOptionalPermissions(std::move(optional_permissions),
                                                std::move(required_permissions),
@@ -405,18 +405,18 @@ TEST_F(PermissionsUpdaterTest,
   EXPECT_EQ(optional_permissions,
             *prefs->GetGrantedPermissions(extension->id()));
 
-  // Removing permissions with REMOVE_SOFT should not remove the permission
+  // Removing permissions with kSoft should not remove the permission
   // from runtime-granted permissions or granted permissions; this happens when
   // the extension opts into lower privilege.
   permissions_test_util::RevokeOptionalPermissionsAndWaitForCompletion(
       profile(), *extension, optional_permissions,
-      PermissionsUpdater::REMOVE_SOFT);
+      PermissionsUpdater::RemoveType::kSoft);
   EXPECT_EQ(optional_permissions,
             *prefs->GetRuntimeGrantedPermissions(extension->id()));
   EXPECT_EQ(optional_permissions,
             *prefs->GetGrantedPermissions(extension->id()));
 
-  // Removing permissions with REMOVE_HARD should remove the permission from
+  // Removing permissions with kHard should remove the permission from
   // runtime-granted and granted permissions; this happens when the user chooses
   // to revoke the permission.
   // Note: we need to add back the permission first, so it shows up as a
@@ -426,7 +426,7 @@ TEST_F(PermissionsUpdaterTest,
       profile(), *extension, optional_permissions);
   permissions_test_util::RevokeOptionalPermissionsAndWaitForCompletion(
       profile(), *extension, optional_permissions,
-      PermissionsUpdater::REMOVE_HARD);
+      PermissionsUpdater::RemoveType::kHard);
   EXPECT_TRUE(prefs->GetRuntimeGrantedPermissions(extension->id())->IsEmpty());
   EXPECT_TRUE(prefs->GetGrantedPermissions(extension->id())->IsEmpty());
 }
@@ -500,8 +500,8 @@ TEST_F(PermissionsUpdaterTest, RevokingPermissionsWithRuntimeHostPermissions) {
     SCOPED_TRACE(test_name);
     scoped_refptr<const Extension> extension =
         CreateExtensionWithOptionalPermissions(
-            base::Value::List(),
-            base::Value::List().Append(test_case.permission), test_name);
+            base::ListValue(), base::ListValue().Append(test_case.permission),
+            test_name);
     PermissionsUpdater updater(profile());
     updater.InitializePermissions(extension.get());
 
@@ -764,10 +764,9 @@ TEST_F(PermissionsUpdaterTest,
 
   scoped_refptr<const Extension> extension =
       CreateExtensionWithOptionalPermissions(
-          /*optional_permissions=*/base::Value::List().Append("tabs"),
+          /*optional_permissions=*/base::ListValue().Append("tabs"),
           /*permissions=*/
-          base::Value::List().Append("https://example.com/*"),
-          "optional grant");
+          base::ListValue().Append("https://example.com/*"), "optional grant");
   ASSERT_TRUE(extension);
 
   {

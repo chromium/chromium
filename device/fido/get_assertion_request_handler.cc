@@ -11,7 +11,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/json/json_writer.h"
@@ -267,8 +266,7 @@ bool AllowListIncludedTransport(const CtapGetAssertionRequest& request,
   return std::ranges::any_of(
       request.allow_list,
       [transport](const PublicKeyCredentialDescriptor& cred) {
-        return cred.transports.empty() ||
-               base::Contains(cred.transports, transport);
+        return cred.transports.empty() || cred.transports.contains(transport);
       });
 }
 
@@ -330,8 +328,8 @@ void GetAssertionRequestHandler::PreselectAccount(
     DiscoverableCredentialMetadata credential) {
   DCHECK(!preselected_credential_);
   DCHECK(request_.allow_list.empty() ||
-         base::Contains(request_.allow_list, credential.cred_id,
-                        &PublicKeyCredentialDescriptor::id));
+         std::ranges::contains(request_.allow_list, credential.cred_id,
+                               &PublicKeyCredentialDescriptor::id));
   preselected_credential_ = std::move(credential);
 }
 

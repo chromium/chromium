@@ -44,7 +44,7 @@ class TestUrlCheckInterceptor : public safe_browsing::UrlCheckInterceptor {
       SafeBrowsingApiHandlerBridge::ResponseCallback callback,
       const GURL& gurl) override {
     std::string url = gurl.spec();
-    DCHECK(base::Contains(urls_safebrowsing_threat_type_, url));
+    DCHECK(urls_safebrowsing_threat_type_.contains(url));
     std::move(callback).Run(urls_safebrowsing_threat_type_[url],
                             ThreatMetadata());
   }

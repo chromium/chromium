@@ -97,8 +97,6 @@ TEST_P(FormEventLoggerBaseFunnelTest, LogFunnelMetrics) {
     SubmitForm(form);
   }
 
-  FormInteractionsFlowId flow_id =
-      test_api(autofill_manager()).address_form_interactions_flow_id();
   DeleteDriverToCommitMetrics();
 
   // Phase 2: Validate Funnel expectations.
@@ -170,7 +168,6 @@ TEST_P(FormEventLoggerBaseFunnelTest, LogFunnelMetrics) {
               {UkmAutofillKeyMetricsType::kFillingAssistanceName, 1},
               {UkmAutofillKeyMetricsType::kAutofillFillsName, 1},
               {UkmAutofillKeyMetricsType::kFormElementUserModificationsName, 0},
-              {UkmAutofillKeyMetricsType::kFlowIdName, flow_id.value()},
               {UkmAutofillKeyMetricsType::kFormTypesName,
                AutofillMetrics::FormTypesToBitVector(
                    {FormTypeNameForLogging::kAddressForm,
@@ -305,8 +302,6 @@ TEST_F(FormEventLoggerBaseKeyMetricsTest, LogEmptyForm) {
 
   SubmitForm(form_);
 
-  FormInteractionsFlowId flow_id =
-      test_api(autofill_manager()).address_form_interactions_flow_id();
   DeleteDriverToCommitMetrics();
 
   histogram_tester.ExpectBucketCount(
@@ -329,7 +324,6 @@ TEST_F(FormEventLoggerBaseKeyMetricsTest, LogEmptyForm) {
             {UkmAutofillKeyMetricsType::kFillingAssistanceName, 0},
             {UkmAutofillKeyMetricsType::kAutofillFillsName, 0},
             {UkmAutofillKeyMetricsType::kFormElementUserModificationsName, 0},
-            {UkmAutofillKeyMetricsType::kFlowIdName, flow_id.value()},
             {UkmAutofillKeyMetricsType::kFormTypesName,
              AutofillMetrics::FormTypesToBitVector(
                  {FormTypeNameForLogging::kAddressForm,
@@ -354,8 +348,6 @@ TEST_F(FormEventLoggerBaseKeyMetricsTest, LogNoProfile) {
   SimulateUserChangedField(form_, form_.fields()[1]);
   SubmitForm(form_);
 
-  FormInteractionsFlowId flow_id =
-      test_api(autofill_manager()).address_form_interactions_flow_id();
   DeleteDriverToCommitMetrics();
 
   histogram_tester.ExpectBucketCount(
@@ -378,7 +370,6 @@ TEST_F(FormEventLoggerBaseKeyMetricsTest, LogNoProfile) {
             {UkmAutofillKeyMetricsType::kFillingAssistanceName, 0},
             {UkmAutofillKeyMetricsType::kAutofillFillsName, 0},
             {UkmAutofillKeyMetricsType::kFormElementUserModificationsName, 2},
-            {UkmAutofillKeyMetricsType::kFlowIdName, flow_id.value()},
             {UkmAutofillKeyMetricsType::kFormTypesName,
              AutofillMetrics::FormTypesToBitVector(
                  {FormTypeNameForLogging::kAddressForm,
@@ -402,8 +393,6 @@ TEST_F(FormEventLoggerBaseKeyMetricsTest, LogUserDoesNotAcceptSuggestion) {
   SimulateUserChangedField(form_, form_.fields()[1]);
   SubmitForm(form_);
 
-  FormInteractionsFlowId flow_id =
-      test_api(autofill_manager()).address_form_interactions_flow_id();
   DeleteDriverToCommitMetrics();
 
   histogram_tester.ExpectBucketCount(
@@ -430,7 +419,6 @@ TEST_F(FormEventLoggerBaseKeyMetricsTest, LogUserDoesNotAcceptSuggestion) {
             {UkmAutofillKeyMetricsType::kFillingAssistanceName, 0},
             {UkmAutofillKeyMetricsType::kAutofillFillsName, 0},
             {UkmAutofillKeyMetricsType::kFormElementUserModificationsName, 2},
-            {UkmAutofillKeyMetricsType::kFlowIdName, flow_id.value()},
             {UkmAutofillKeyMetricsType::kFormTypesName,
              AutofillMetrics::FormTypesToBitVector(
                  {FormTypeNameForLogging::kAddressForm,
@@ -455,8 +443,6 @@ TEST_F(FormEventLoggerBaseKeyMetricsTest, LogUserFixesFilledData) {
   SimulateUserChangedField(form_, form_.fields()[1]);
   SubmitForm(form_);
 
-  FormInteractionsFlowId flow_id =
-      test_api(autofill_manager()).address_form_interactions_flow_id();
   DeleteDriverToCommitMetrics();
 
   histogram_tester.ExpectBucketCount(
@@ -484,7 +470,6 @@ TEST_F(FormEventLoggerBaseKeyMetricsTest, LogUserFixesFilledData) {
             {UkmAutofillKeyMetricsType::kFillingAssistanceName, 1},
             {UkmAutofillKeyMetricsType::kAutofillFillsName, 1},
             {UkmAutofillKeyMetricsType::kFormElementUserModificationsName, 1},
-            {UkmAutofillKeyMetricsType::kFlowIdName, flow_id.value()},
             {UkmAutofillKeyMetricsType::kFormTypesName,
              AutofillMetrics::FormTypesToBitVector(
                  {FormTypeNameForLogging::kAddressForm,

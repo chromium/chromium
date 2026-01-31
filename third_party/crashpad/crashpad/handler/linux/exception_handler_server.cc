@@ -30,7 +30,6 @@
 #include "base/logging.h"
 #include "base/posix/eintr_wrapper.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/types/cxx23_to_underlying.h"
 #include "build/build_config.h"
 #include "util/file/file_io.h"
 #include "util/file/filesystem.h"
@@ -325,8 +324,8 @@ void ExceptionHandlerServer::Stop() {
 }
 
 void ExceptionHandlerServer::HandleEvent(Event* event, uint32_t event_type) {
-  DCHECK_NE(base::to_underlying(event->type),
-            base::to_underlying(Event::Type::kShutdown));
+  DCHECK_NE(std::to_underlying(event->type),
+            std::to_underlying(Event::Type::kShutdown));
 
   if (event_type & EPOLLERR) {
     LogSocketError(event->fd.get());

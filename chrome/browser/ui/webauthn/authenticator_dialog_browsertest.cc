@@ -75,9 +75,8 @@ void UpdateModelBeforeStartFlow(
       tai.attestation_conveyance_preference;
   model->ble_adapter_is_powered =
       tai.ble_status == device::FidoRequestHandlerBase::BleStatus::kOn;
-  model->show_security_key_on_qr_sheet =
-      base::Contains(tai.available_transports,
-                     device::FidoTransportProtocol::kUsbHumanInterfaceDevice);
+  model->show_security_key_on_qr_sheet = tai.available_transports.contains(
+      device::FidoTransportProtocol::kUsbHumanInterfaceDevice);
   model->is_off_the_record = is_off_the_record;
   model->platform_has_biometrics = tai.platform_has_biometrics;
 }
@@ -369,7 +368,7 @@ class AuthenticatorDialogTest : public DialogBrowserTest {
           AuthenticatorRequestDialogModel::Step::kCableActivate);
     } else if (name == "create_passkey") {
       controller_->SetCurrentStepForTesting(
-          AuthenticatorRequestDialogModel::Step::kCreatePasskey);
+          AuthenticatorRequestDialogModel::Step::kChromeProfileCreatePasskey);
     }
 #if BUILDFLAG(IS_MAC)
     else if (name == "ble_permission_mac") {  // NOLINT
@@ -716,10 +715,11 @@ class GPMPasskeysAuthenticatorDialogTest : public DialogBrowserTest {
       };
     } else if (name == "trust_this_computer_assertion") {
       controller_->SetCurrentStepForTesting(
-          AuthenticatorRequestDialogModel::Step::kTrustThisComputerAssertion);
+          AuthenticatorRequestDialogModel::Step::
+              kGPMTrustThisComputerAssertion);
     } else if (name == "trust_this_computer_creation") {
       controller_->SetCurrentStepForTesting(
-          AuthenticatorRequestDialogModel::Step::kTrustThisComputerCreation);
+          AuthenticatorRequestDialogModel::Step::kGPMTrustThisComputerCreation);
     } else if (name == "gpm_create_passkey") {
       controller_->SetCurrentStepForTesting(
           AuthenticatorRequestDialogModel::Step::kGPMCreatePasskey);
@@ -1031,7 +1031,7 @@ IN_PROC_BROWSER_TEST_F(AuthenticatorWindowTest, RecoverSecurityDomain) {
   // by this test class, will immediately return keys, which will cause the
   // browser to exit.
   model_->SetStep(
-      AuthenticatorRequestDialogModel::Step::kRecoverSecurityDomain);
+      AuthenticatorRequestDialogModel::Step::kGPMRecoverSecurityDomain);
 
   RunUntilBrowserProcessQuits();
 }
@@ -1047,8 +1047,8 @@ class QuitBrowserWhenReauthTokenReceived
   }
 
   // AuthenticatorRequestDialogModel::Observer
-  void OnReauthComplete(std::string token) override {
-    LOG(INFO) << "QuitBrowserWhenKeysStored::OnReauthComplete";
+  void OnGPMReauthComplete(std::string token) override {
+    LOG(INFO) << "QuitBrowserWhenReauthTokenReceived::OnGPMReauthComplete";
     CHECK_EQ(token, "RAPT");
     model_->observers.RemoveObserver(this);
     model_ = nullptr;
@@ -1077,7 +1077,7 @@ IN_PROC_BROWSER_TEST_F(AuthenticatorWindowTest, UINavigatesAway) {
   // Test that closing the window (e.g. due to a timeout) doesn't cause any
   // issues.
   model_->SetStep(
-      AuthenticatorRequestDialogModel::Step::kRecoverSecurityDomain);
+      AuthenticatorRequestDialogModel::Step::kGPMRecoverSecurityDomain);
   model_->SetStep(AuthenticatorRequestDialogModel::Step::kNotStarted);
 }
 

@@ -42,7 +42,6 @@ source_set("coordinator") {
     "//ios/chrome/browser/autofill/model/credit_card:infobar_delegate",
     "//ios/chrome/browser/autofill/ui_bundled/bottom_sheet:virtual_card_enrollment_bottom_sheet_coordinator",
     "//ios/chrome/browser/autofill/ui_bundled/cells",
-    "//ios/chrome/browser/autofill/ui_bundled/manual_fill",
     "//ios/chrome/browser/autofill/ui_bundled/manual_fill:manual_fill_ui",
     "//ios/chrome/browser/device_reauth/model",
     "//ios/chrome/browser/history/model",
@@ -147,14 +146,6 @@ source_set("ui_type") {
   ]
 }
 
-source_set("autofill_metrics") {
-  sources = [
-    "save_card_infobar_metrics_recorder.h",
-    "save_card_infobar_metrics_recorder.mm",
-  ]
-  deps = [ "//base" ]
-}
-
 source_set("common") {
   sources = [
     "scoped_autofill_payment_reauth_module_override.h",
@@ -242,10 +233,6 @@ source_set("eg_app_support+eg2") {
     "//ios/web/public/js_messaging",
     "//services/network:test_support",
   ]
-
-  # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
-  # enable the diagnostic by removing this line.
-  configs += [ "//build/config/compiler:no_exit_time_destructors" ]
 }
 
 source_set("eg_test_support+eg2") {

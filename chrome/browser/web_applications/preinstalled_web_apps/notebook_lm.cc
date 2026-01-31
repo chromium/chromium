@@ -33,7 +33,6 @@ ExternalInstallOptions GetConfigForNotebookLm() {
   options.add_to_applications_menu = true;
   options.add_to_search = true;
   options.expected_app_id = ash::kNotebookLmAppId;
-  options.gate_on_feature = chromeos::features::kNotebookLmAppPreinstall.name;
   options.is_preferred_app_for_supported_links = true;
 
   options.only_use_app_info_factory = true;

@@ -75,10 +75,6 @@ class IsolatedWebAppResponseReader {
 
     static Error FromSignedWebBundleReaderError(
         const SignedWebBundleReader::ReadResponseError& error);
-    // Returns `base::ok` if the trust checker result indicates success. Returns
-    // an error otherwise.
-    static base::expected<void, Error> FromTrustCheckerResult(
-        base::expected<void, std::string> result);
 
     Type type;
     std::string message;
@@ -106,9 +102,7 @@ class IsolatedWebAppResponseReaderImpl : public IsolatedWebAppResponseReader {
  public:
   explicit IsolatedWebAppResponseReaderImpl(
       std::unique_ptr<SignedWebBundleReader> reader,
-      content::BrowserContext* browser_context,
-      const web_package::SignedWebBundleId& web_bundle_id,
-      bool dev_mode);
+      content::BrowserContext* browser_context);
   ~IsolatedWebAppResponseReaderImpl() override;
 
   web_package::SignedWebBundleIntegrityBlock GetIntegrityBlock() override;
@@ -125,8 +119,6 @@ class IsolatedWebAppResponseReaderImpl : public IsolatedWebAppResponseReader {
 
   std::unique_ptr<SignedWebBundleReader> reader_;
   const raw_ref<content::BrowserContext> browser_context_;
-  const web_package::SignedWebBundleId web_bundle_id_;
-  const bool dev_mode_ = false;
 };
 
 }  // namespace web_app

@@ -134,15 +134,9 @@ IN_PROC_BROWSER_TEST_F(ExtensionBrowsingDataTest, Syncing) {
   signin::IdentityManager* identity_manager =
       IdentityManagerFactory::GetForProfile(profile);
   AccountInfo primary_account_info = signin::MakePrimaryAccountAvailable(
-      identity_manager, kPrimaryAccountEmail, signin::ConsentLevel::kSync);
+      identity_manager, kPrimaryAccountEmail, signin::ConsentLevel::kSignin);
   AccountInfo secondary_account_info =
       signin::MakeAccountAvailable(identity_manager, kSecondaryAccountEmail);
-
-  // Sync is running.
-  syncer::SyncService* sync_service =
-      SyncServiceFactory::GetForProfile(profile);
-  sync_service->GetUserSettings()->SetInitialSyncFeatureSetupComplete(
-      syncer::SyncFirstSetupCompleteSource::BASIC_FLOW);
 
   // Clear browsing data.
   auto function = base::MakeRefCounted<BrowsingDataRemoveFunction>();
@@ -170,7 +164,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionBrowsingDataTest, SyncError) {
   signin::IdentityManager* identity_manager =
       IdentityManagerFactory::GetForProfile(profile);
   AccountInfo account_info = signin::MakePrimaryAccountAvailable(
-      identity_manager, kAccountEmail, signin::ConsentLevel::kSync);
+      identity_manager, kAccountEmail, signin::ConsentLevel::kSignin);
   signin::UpdatePersistentErrorOfRefreshTokenForAccount(
       identity_manager, account_info.account_id,
       GoogleServiceAuthError::FromInvalidGaiaCredentialsReason(

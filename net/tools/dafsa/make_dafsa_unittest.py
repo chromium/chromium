@@ -764,18 +764,22 @@ class ExamplesTest(unittest.TestCase):
     """Tests Example 1 from make_dafsa.py."""
     infile = [ '%%', 'aa, 1', 'a, 2', '%%' ]
     bytes = [ 0x81, 0xE1, 0x02, 0x81, 0x82, 0x61, 0x81 ]
-    outfile = make_dafsa.to_cxx(bytes)
-    self.assertEqual(make_dafsa.words_to_cxx(make_dafsa.parse_gperf(
-      infile, False)), outfile)
+    outfile = make_dafsa.to_cxx(bytes, namespace="test_namespace")
+    self.assertEqual(
+        make_dafsa.words_to_cxx(make_dafsa.parse_gperf(infile, False),
+                                namespace="test_namespace"), outfile)
+    self.assertIn("\nnamespace test_namespace {\n", outfile)
 
   def testExample2(self):
     """Tests Example 2 from make_dafsa.py."""
     infile = [ '%%', 'aa, 1', 'bbb, 2', 'baa, 1', '%%' ]
     bytes = [ 0x02, 0x83, 0xE2, 0x02, 0x83, 0x61, 0x61, 0x81, 0x62, 0x62,
               0x82 ]
-    outfile = make_dafsa.to_cxx(bytes)
-    self.assertEqual(make_dafsa.words_to_cxx(make_dafsa.parse_gperf(
-      infile, False)), outfile)
+    outfile = make_dafsa.to_cxx(bytes, namespace="test_namespace")
+    self.assertEqual(
+        make_dafsa.words_to_cxx(make_dafsa.parse_gperf(infile, False),
+                                namespace="test_namespace"), outfile)
+    self.assertIn("\nnamespace test_namespace {\n", outfile)
 
 
 if __name__ == '__main__':

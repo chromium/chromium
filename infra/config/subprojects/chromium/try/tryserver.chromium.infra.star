@@ -173,6 +173,7 @@ try_.builder(
         ],
     },
     service_account = try_constants.DEFAULT_SERVICE_ACCOUNT,
+    siso_keep_going = siso.KEEP_GOING,
     siso_project = siso.project.DEFAULT_UNTRUSTED,
     tryjob = try_.job(
         location_filters = [
@@ -236,6 +237,7 @@ try_.builder(
         ],
     },
     service_account = try_constants.DEFAULT_SERVICE_ACCOUNT,
+    siso_keep_going = siso.KEEP_GOING,
     siso_project = siso.project.DEFAULT_UNTRUSTED,
     tryjob = try_.job(
         location_filters = [
@@ -291,5 +293,6 @@ try_.builder(
         ],
     },
     service_account = try_constants.DEFAULT_SERVICE_ACCOUNT,
+    siso_keep_going = siso.KEEP_GOING,
     siso_project = siso.project.DEFAULT_UNTRUSTED,
 )

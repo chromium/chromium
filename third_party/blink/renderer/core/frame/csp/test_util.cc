@@ -37,6 +37,7 @@ WebCSPSourceList ConvertSourceList(
           source_list->allow_dynamic_url,
           source_list->allow_unsafe_hashes,
           source_list->report_sample,
+          source_list->allow_trusted_types_eval,
           source_list->report_hash_algorithm};
 }
 

@@ -9,7 +9,6 @@
 #include "chrome/browser/ash/app_list/search/search_controller.h"
 #include "chrome/browser/ash/app_list/search/test/test_result.h"
 #include "chrome/browser/ash/app_list/search/types.h"
-#include "chromeos/crosapi/mojom/launcher_search.mojom-forward.h"
 #include "chromeos/crosapi/mojom/launcher_search.mojom.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"

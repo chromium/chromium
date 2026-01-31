@@ -56,8 +56,7 @@ OnDeviceModelAccessController::OnDeviceModelAccessController(
     pref_service_->SetString(kOnDeviceModelChromeVersion,
                              version_info::GetVersionNumber());
     if (features::ShouldOnDeviceModelClearValidationOnVersionChange()) {
-      pref_service_->SetDict(kOnDeviceModelValidationResult,
-                             base::Value::Dict());
+      pref_service_->SetDict(kOnDeviceModelValidationResult, base::DictValue());
     } else {
       // If the full validation result is not cleared, at least reset the
       // attempt count to allow validation to continue.
@@ -172,7 +171,7 @@ OnDeviceModelAccessController::GetValidationState() const {
 
 void OnDeviceModelAccessController::SetValidationState(
     const ValidationState& state) {
-  base::Value::Dict dict;
+  base::DictValue dict;
   dict.Set(kResultKey, static_cast<int>(state.result));
   dict.Set(kAttemptCountKey, state.attempt_count);
   dict.Set(kComponentVersionKey, state.component_version);

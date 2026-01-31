@@ -226,8 +226,8 @@ class UserManagerTest : public testing::Test {
       int type = static_cast<int>(policy::DeviceLocalAccountType::kKioskApp)) {
     settings_helper_.Set(
         kAccountsPrefDeviceLocalAccounts,
-        base::Value(base::Value::List().Append(
-            base::Value::Dict()
+        base::Value(base::ListValue().Append(
+            base::DictValue()
                 .Set(kAccountsPrefDeviceLocalAccountsKeyId, account_id)
                 .Set(kAccountsPrefDeviceLocalAccountsKeyType, type)
                 .Set(kAccountsPrefDeviceLocalAccountsKeyEphemeralMode,
@@ -242,8 +242,8 @@ class UserManagerTest : public testing::Test {
       policy::DeviceLocalAccount::EphemeralMode ephemeral_mode) {
     settings_helper_.Set(
         kAccountsPrefDeviceLocalAccounts,
-        base::Value(base::Value::List().Append(
-            base::Value::Dict()
+        base::Value(base::ListValue().Append(
+            base::DictValue()
                 .Set(kAccountsPrefDeviceLocalAccountsKeyId, account_id)
                 .Set(kAccountsPrefDeviceLocalAccountsKeyType,
                      static_cast<int>(type))
@@ -259,7 +259,7 @@ class UserManagerTest : public testing::Test {
                          /* account_id= */ email, /* type=kArcKiosk */ 2);
     TestingBrowserProcess::GetGlobal()->local_state()->Set(
         user_manager::prefs::kDeviceLocalAccountsWithSavedData,
-        base::Value(base::Value::List().Append(email)));
+        base::Value(base::ListValue().Append(email)));
     user_manager::KnownUser(TestingBrowserProcess::GetGlobal()->local_state())
         .SaveKnownUser(
             AccountId::FromUserEmailGaiaId(email, GaiaId("fake_gaia_id")));

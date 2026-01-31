@@ -4,8 +4,7 @@
 
 #include "ash/quick_pair/common/pair_failure.h"
 
-namespace ash {
-namespace quick_pair {
+namespace ash::quick_pair {
 
 std::ostream& operator<<(std::ostream& stream, PairFailure failure) {
   switch (failure) {
@@ -129,5 +128,4 @@ std::ostream& operator<<(std::ostream& stream, PairFailure failure) {
   return stream;
 }
 
-}  // namespace quick_pair
-}  // namespace ash
+}  // namespace ash::quick_pair

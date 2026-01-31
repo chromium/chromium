@@ -58,7 +58,7 @@ class MediaInternalsAudioFocusHelper
       media_session::mojom::MediaSessionDebugInfoPtr info);
 
   void SerializeAndSendUpdate(std::string_view function,
-                              const base::Value::Dict& value);
+                              const base::DictValue& value);
 
   // Build the name of the request to display and inject values from |state|.
   std::string BuildNameString(
@@ -75,7 +75,7 @@ class MediaInternalsAudioFocusHelper
   mojo::Remote<media_session::mojom::AudioFocusManagerDebug> audio_focus_debug_;
 
   // Must only be accessed on the UI thread.
-  base::Value::Dict audio_focus_data_;
+  base::DictValue audio_focus_data_;
   std::map<std::string, media_session::mojom::AudioFocusRequestStatePtr>
       request_state_;
 

@@ -141,6 +141,7 @@ message GetHintsResponse {
 // OptimizationType enum at http://shortn/_t8G1sv8yAS (Google-internal link).
 // Additionally, these values must be synchronized with the OptimizationType
 // enum in enums.xml and optimization/histograms.xml for metric recording.
+// Next ID: 120
 enum OptimizationType {
   // Values for obsolete optimizations.
   reserved 11, 12, 16, 29, 32, 66, 68, 72, 73, 89, 94, 95, 96, 101;
@@ -379,6 +380,15 @@ enum OptimizationType {
   // Provides information about whether we may trigger Autofill on a page
   // element in an iframe with this origin during an actor task.
   AUTOFILL_ACTOR_IFRAME_ORIGIN_ALLOWLIST = 116;
+
+  // Provides information about whether a page is eligible for walletable
+  // transit ticket pass detection.
+  WALLETABLE_PASS_DETECTION_TRANSIT_TICKET_ALLOWLIST = 117;
+  // Provides information about whether a page is eligible for walletable
+  // event pass detection.
+  WALLETABLE_PASS_DETECTION_EVENT_PASS_ALLOWLIST = 118;
+  // Provides the set of Skills to display on the current page.
+  SKILLS = 119;
 }
 
 // Presents semantics for how page load URLs should be matched.

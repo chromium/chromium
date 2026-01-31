@@ -56,7 +56,6 @@ class PaintFlags;
 namespace blink {
 
 class FontSelector;
-class ShapeCache;
 struct TextFragmentPaintInfo;
 
 class PLATFORM_EXPORT Font : public GarbageCollected<Font> {
@@ -163,10 +162,6 @@ class PLATFORM_EXPORT Font : public GarbageCollected<Font> {
   // Access the NG shape cache associated with this particular font object.
   // Should *not* be retained across layout calls as it may become invalid.
   NGShapeCache& GetNGShapeCache() const;
-
-  // Access the shape cache associated with this particular font object.
-  // Should *not* be retained across layout calls as it may become invalid.
-  ShapeCache* GetShapeCache() const;
 
   // Whether the font supports shaping word by word instead of shaping the
   // full run in one go. Allows better caching for fonts where space cannot

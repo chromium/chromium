@@ -20,7 +20,7 @@ extensions::api::odfs_config_private::Mount GetMicrosoftOneDriveMount(
   return extensions::api::odfs_config_private::ParseMount(mount_state);
 }
 
-base::Value::List GetMicrosoftOneDriveAccountRestrictions(
+base::ListValue GetMicrosoftOneDriveAccountRestrictions(
     const Profile* profile) {
   const PrefService* pref_service = profile->GetPrefs();
   return pref_service->GetList(prefs::kMicrosoftOneDriveAccountRestrictions)

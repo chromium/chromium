@@ -218,6 +218,7 @@ BitstreamConverter::AnalysisResult AVC::AnalyzeAnnexB(
   NALUOrderState order_state = kAUDAllowed;
   int last_nalu_type = H264NALU::kUnspecified;
   bool done = false;
+  bool had_unexpected_nalu = false;
   while (!done) {
     switch (parser.AdvanceToNextNALU(&nalu)) {
       case H264Parser::kOk:
@@ -241,8 +242,7 @@ BitstreamConverter::AnalysisResult AVC::AnalyzeAnnexB(
 
             order_state = kBeforeFirstVCL;
 
-            if (base::FeatureList::IsEnabled(
-                    kTreatSEIRecoveryPointAsKeyframe)) {
+            if (base::FeatureList::IsEnabled(kParseSEIRecoveryPoints)) {
               H264SEI sei;
               if (parser.ParseSEI(&sei) != H264Parser::kOk) {
                 // This is non-fatal for historical compliance.
@@ -257,10 +257,12 @@ BitstreamConverter::AnalysisResult AVC::AnalyzeAnnexB(
                            sei_recovery_msg->recovery_frame_cnt == 0;
                   });
 
-              // Treat SEI recovery points with a recovery_frame_cnt of zero as
-              // key frames. This is generally well supported by our decoders.
+              // SEI recovery points generally function as key frames. However
+              // we don't mark them as such since `is_keyframe` is used to
+              // insert parameter sets -- which can cause decoding errors when
+              // done to non-IDR frames. See https://crbug.com/464062740.
               if (is_sei_recovery_point) {
-                result.is_keyframe = true;
+                result.is_sei_recovery_point = true;
               }
             }
 
@@ -340,7 +342,7 @@ BitstreamConverter::AnalysisResult AVC::AnalyzeAnnexB(
                 order_state != kAfterFirstVCL) {
               DVLOG(1) << "Unexpected NALU type " << nalu.nal_unit_type
                        << " in order_state " << order_state;
-              return result;
+              had_unexpected_nalu = true;
             }
         }
         last_nalu_type = nalu.nal_unit_type;
@@ -360,7 +362,7 @@ BitstreamConverter::AnalysisResult AVC::AnalyzeAnnexB(
   if (order_state < kAfterFirstVCL)
     return result;
 
-  result.is_conformant = true;
+  result.is_conformant = !had_unexpected_nalu;
   DCHECK(result.is_keyframe.has_value());
   return result;
 }

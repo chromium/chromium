@@ -74,7 +74,12 @@ public abstract class Struct {
         Encoder encoder = new Encoder(core, mEncodedBaseSize + header.getSize());
         header.encode(encoder);
         encode(encoder);
-        return new ServiceMessage(encoder.getMessage(), header);
+        try {
+            return new ServiceMessage(encoder.getMessage(), header);
+        } catch (DeserializationException e) {
+            // This should never happen, as the header was just encoded above.
+            throw new IllegalArgumentException(e);
+        }
     }
 
     /** Use the given encoder to serialize this data structure. */

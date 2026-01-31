@@ -8,8 +8,10 @@
 #import "base/test/ios/wait_util.h"
 #import "components/content_settings/core/common/content_settings.h"
 #import "ios/chrome/browser/infobars/ui_bundled/banners/infobar_banner_constants.h"
+#import "ios/chrome/browser/omnibox/eg_tests/omnibox_earl_grey.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
+#import "ios/chrome/test/earl_grey/chrome_earl_grey_ui.h"
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
 #import "ios/chrome/test/earl_grey/chrome_test_case.h"
 #import "ios/chrome/test/earl_grey/scoped_block_popups_pref.h"
@@ -18,8 +20,6 @@
 #import "ios/web/public/test/element_selector.h"
 #import "net/test/embedded_test_server/embedded_test_server.h"
 #import "ui/base/l10n/l10n_util.h"
-
-using chrome_test_util::OmniboxText;
 
 namespace {
 // URL of the file-based page supporting these tests.
@@ -120,10 +120,7 @@ id<GREYMatcher> PopupBlocker() {
   // Ensure that the resulting tab is updated as expected.
   const GURL targetURL =
       self.testServer->GetURL(std::string(kTestURL) + "#assigned");
-  const std::string targetOmniboxText =
-      net::GetContentAndFragmentForUrl(targetURL);
-  [[EarlGrey selectElementWithMatcher:OmniboxText(targetOmniboxText)]
-      assertWithMatcher:grey_notNil()];
+  [ChromeEarlGrey waitForWebStateVisibleURL:targetURL];
 }
 
 // Tests that opening a window, reading its title, and updating its location
@@ -137,10 +134,7 @@ id<GREYMatcher> PopupBlocker() {
   // Ensure that the resulting tab is updated as expected.
   const GURL targetURL =
       self.testServer->GetURL(std::string(kTestURL) + "#updated");
-  const std::string targetOmniboxText =
-      net::GetContentAndFragmentForUrl(targetURL);
-  [[EarlGrey selectElementWithMatcher:OmniboxText(targetOmniboxText)]
-      assertWithMatcher:grey_notNil()];
+  [ChromeEarlGrey waitForWebStateVisibleURL:targetURL];
 }
 
 // Tests a button that invokes window.open() with "_blank" target parameter.
@@ -181,20 +175,16 @@ id<GREYMatcher> PopupBlocker() {
   [ChromeEarlGrey tapWebStateElementWithID:
                       @"webScenarioLocationReplaceInWindowOpenWithEmptyTarget"];
   [ChromeEarlGrey waitForMainTabCount:2];
-  // WebKit doesn't parse 'about:blank#hash' as about:blank with URL fragment.
-  // Instead, it percent encodes '#hash' and considers 'blank%23hash' as the
-  // resource identifier. Nevertheless, the '#' is significant in triggering the
-  // edge case in the bug. TODO(crbug.com/41414501): Change back to '#'.
-  // Since about scheme URLs are also trimmed to about:blank, check the url
-  // directly instead.
-  //
-  // TODO(crbug.com/40932726): Confirm the expected behavir of [ChromeEarlGrey
-  // webStateLastCommittedURL] here. After https://crrev.com/c/4823237, this
-  // returns empty URL ("").
-  DCHECK_EQ("", [ChromeEarlGrey webStateLastCommittedURL]);
-  // And confirm the location bar only shows "".
-  [[EarlGrey selectElementWithMatcher:OmniboxText("")]
-      assertWithMatcher:grey_notNil()];
+  DCHECK_EQ(GURL("about:blank#hash"),
+            [ChromeEarlGrey webStateLastCommittedURL]);
+  // And confirm the location bar shows "about:blank".
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::DefocusedLocationView()]
+      assertWithMatcher:chrome_test_util::LocationViewContainingText(
+                            "about:blank")];
+  [ChromeEarlGreyUI focusOmnibox];
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::Omnibox()]
+      assertWithMatcher:chrome_test_util::OmniboxText("about:blank")];
+  [OmniboxEarlGrey defocusOmnibox];
 }
 
 // Tests a link with JavaScript in the href.
@@ -222,8 +212,7 @@ id<GREYMatcher> PopupBlocker() {
   // Ensure that the starting tab hasn't navigated.
   [ChromeEarlGrey closeCurrentTab];
   const GURL URL = self.testServer->GetURL(kTestURL);
-  [[EarlGrey selectElementWithMatcher:OmniboxText(URL.GetContent())]
-      assertWithMatcher:grey_notNil()];
+  [ChromeEarlGrey waitForWebStateVisibleURL:URL];
 }
 
 // Tests that closing the current window using DOM fails.

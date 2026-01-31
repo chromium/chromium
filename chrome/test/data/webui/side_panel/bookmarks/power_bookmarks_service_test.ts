@@ -27,8 +27,8 @@ class ServiceTestPowerBookmarksDelegate extends TestPowerBookmarksDelegate {
       title: 'Sample Product',
       clusterTitle: 'Sample Cluster',
       domain: 'sampledomain.com',
-      imageUrl: {url: 'http://example.com/sample.jpg'},
-      productUrl: {url: 'http://example.com/sample-product'},
+      imageUrl: 'http://example.com/sample.jpg',
+      productUrl: 'http://example.com/sample-product',
       currentPrice: '29.99',
       previousPrice: '39.99',
       clusterId: BigInt(1),
@@ -268,7 +268,7 @@ suite('SidePanelPowerBookmarksServiceTest', () => {
     PageImageServiceBrowserProxy.setInstance(
         new PageImageServiceBrowserProxy(imageServiceHandler));
     imageServiceHandler.setResultFor('getPageImageUrl', Promise.resolve({
-      result: {imageUrl: {url: 'https://example.com/image.png'}},
+      result: {imageUrl: 'https://example.com/image.png'},
     }));
 
     delegate = new ServiceTestPowerBookmarksDelegate();

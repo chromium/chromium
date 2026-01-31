@@ -4,12 +4,12 @@
 
 #include "remoting/protocol/negotiating_client_authenticator.h"
 
+#include <algorithm>
 #include <memory>
 #include <sstream>
 #include <utility>
 
 #include "base/check_op.h"
-#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/location.h"
@@ -59,7 +59,7 @@ void NegotiatingClientAuthenticator::ProcessMessage(
       return;
     }
     if (method == AuthenticationMethod::INVALID ||
-        !base::Contains(methods_, method)) {
+        !std::ranges::contains(methods_, method)) {
       state_ = REJECTED;
       rejection_reason_ = RejectionReason::INVALID_STATE;
       rejection_details_ = RejectionDetails(

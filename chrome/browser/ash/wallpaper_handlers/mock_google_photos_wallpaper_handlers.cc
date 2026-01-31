@@ -96,7 +96,7 @@ MockGooglePhotosAlbumsFetcher::MockGooglePhotosAlbumsFetcher(Profile* profile)
           });
 
   ON_CALL(*this, ParseResponse)
-      .WillByDefault([this](const base::Value::Dict* response) {
+      .WillByDefault([this](const base::DictValue* response) {
         return GooglePhotosAlbumsFetcher::ParseResponse(response);
       });
 }
@@ -127,7 +127,7 @@ MockGooglePhotosSharedAlbumsFetcher::MockGooglePhotosSharedAlbumsFetcher(
           });
 
   ON_CALL(*this, ParseResponse)
-      .WillByDefault([this](const base::Value::Dict* response) {
+      .WillByDefault([this](const base::DictValue* response) {
         return GooglePhotosSharedAlbumsFetcher::ParseResponse(response);
       });
 }
@@ -152,7 +152,7 @@ MockGooglePhotosEnabledFetcher::MockGooglePhotosEnabledFetcher(Profile* profile)
           });
 
   ON_CALL(*this, ParseResponse)
-      .WillByDefault([this](const base::Value::Dict* response) {
+      .WillByDefault([this](const base::DictValue* response) {
         return GooglePhotosEnabledFetcher::ParseResponse(response);
       });
 }
@@ -182,7 +182,7 @@ MockGooglePhotosPhotosFetcher::MockGooglePhotosPhotosFetcher(Profile* profile)
           });
 
   ON_CALL(*this, ParseResponse)
-      .WillByDefault([this](const base::Value::Dict* response) {
+      .WillByDefault([this](const base::DictValue* response) {
         return GooglePhotosPhotosFetcher::ParseResponse(response);
       });
 }

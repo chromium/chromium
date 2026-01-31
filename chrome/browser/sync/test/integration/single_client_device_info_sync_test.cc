@@ -23,7 +23,6 @@
 #include "components/sync/protocol/sync_entity.pb.h"
 #include "components/sync/protocol/sync_enums.pb.h"
 #include "components/sync/test/fake_server.h"
-#include "components/sync/test/fake_server_http_post_provider.h"
 #include "components/sync_device_info/device_info.h"
 #include "components/sync_device_info/device_info_sync_service.h"
 #include "components/sync_device_info/device_info_tracker.h"
@@ -564,7 +563,7 @@ IN_PROC_BROWSER_TEST_P(SingleClientDeviceInfoSyncTest,
 
   // Simulate going offline to have both downloading and committing updates in
   // the same sync cycle.
-  fake_server::FakeServerHttpPostProvider::DisableNetwork();
+  DisableNetwork();
 
   // Add a DeviceInfo tombstone to cause a commit request (removing local
   // DeviceInfo will cause its reupload).
@@ -577,7 +576,7 @@ IN_PROC_BROWSER_TEST_P(SingleClientDeviceInfoSyncTest,
 
   // Simulate going online. This starts a new sync cycle with both GetUpdates
   // and Commit requests.
-  fake_server::FakeServerHttpPostProvider::EnableNetwork();
+  EnableNetwork();
 
   // Waiting for a local DeviceInfo reupload.
   ASSERT_TRUE(ServerDeviceInfoMatchChecker(

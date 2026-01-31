@@ -11,7 +11,6 @@
 #include "base/memory/raw_ptr.h"
 #include "cc/paint/paint_shader.h"
 #include "third_party/skia/include/core/SkColor.h"
-#include "third_party/skia/include/effects/SkGradientShader.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_animator.h"

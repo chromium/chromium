@@ -37,7 +37,7 @@ int GenerateLowEntropySource() {
   return Java_LowEntropySource_generateLowEntropySource(env);
 #else
   static const int low_entropy_source =
-      base::RandInt(0, EntropyState::kMaxLowEntropySize - 1);
+      base::RandIntInclusive(0, EntropyState::kMaxLowEntropySize - 1);
   return low_entropy_source;
 #endif  // BUILDFLAG(IS_ANDROID)
 }
@@ -54,7 +54,7 @@ int GeneratePseudoLowEntropySource() {
   return Java_LowEntropySource_generatePseudoLowEntropySource(env);
 #else
   static const int pseudo_low_entropy_source =
-      base::RandInt(0, EntropyState::kMaxLowEntropySize - 1);
+      base::RandIntInclusive(0, EntropyState::kMaxLowEntropySize - 1);
   return pseudo_low_entropy_source;
 #endif  // BUILDFLAG(IS_ANDROID)
 }

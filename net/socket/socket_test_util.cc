@@ -886,7 +886,8 @@ MockClientSocketFactory::CreateDatagramClientSocket(
   SocketDataProvider* data_provider = mock_data_.GetNext();
   auto socket = std::make_unique<MockUDPClientSocket>(data_provider, net_log);
   if (bind_type == DatagramSocket::RANDOM_BIND)
-    socket->set_source_port(static_cast<uint16_t>(base::RandInt(1025, 65535)));
+    socket->set_source_port(
+        static_cast<uint16_t>(base::RandIntInclusive(1025, 65535)));
   udp_client_socket_ports_.push_back(socket->source_port());
   return std::move(socket);
 }
@@ -1051,6 +1052,7 @@ MockClientSocket::~MockClientSocket() = default;
 
 void MockClientSocket::RunCallbackAsync(CompletionOnceCallback callback,
                                         int result) {
+  CHECK_NE(result, ERR_IO_PENDING);
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(&MockClientSocket::RunCallback, weak_factory_.GetWeakPtr(),
@@ -1615,6 +1617,7 @@ MockSSLClientSocket::GetServerTrustAnchorIDsForRetry() {
 
 void MockSSLClientSocket::RunCallbackAsync(CompletionOnceCallback callback,
                                            int result) {
+  CHECK_NE(result, ERR_IO_PENDING);
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(&MockSSLClientSocket::RunCallback,
@@ -1960,6 +1963,7 @@ int MockUDPClientSocket::CompleteRead() {
 
 void MockUDPClientSocket::RunCallbackAsync(CompletionOnceCallback callback,
                                            int result) {
+  CHECK_NE(result, ERR_IO_PENDING);
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(&MockUDPClientSocket::RunCallback,
@@ -2121,7 +2125,6 @@ int MockTransportClientSocketPool::RequestSocket(
     ClientSocketHandle* handle,
     CompletionOnceCallback callback,
     const ProxyAuthCallback& on_auth_callback,
-    bool fail_if_alias_requires_proxy_override,
     const NetLogWithSource& net_log) {
   last_request_priority_ = priority;
   std::unique_ptr<StreamSocket> socket =

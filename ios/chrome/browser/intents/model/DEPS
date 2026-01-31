@@ -1,4 +1,5 @@
 include_rules = [
+  # keep-sorted start
   "+ios/chrome/browser/credential_exchange/model",
   "+ios/chrome/browser/credential_provider/model/features.h",
   "+ios/chrome/browser/lens",
@@ -7,4 +8,5 @@ include_rules = [
   "+ios/chrome/browser/search_engines/model",
   "+ios/chrome/browser/shared/coordinator/scene",
   "+ios/chrome/browser/url_loading/model",
+  # keep-sorted end
 ]

@@ -55,10 +55,10 @@ class WebFrameImpl final : public WebFrame,
   BrowserState* GetBrowserState() override;
 
   bool CallJavaScriptFunction(const std::string& name,
-                              const base::Value::List& parameters) override;
+                              const base::ListValue& parameters) override;
   bool CallJavaScriptFunction(
       const std::string& name,
-      const base::Value::List& parameters,
+      const base::ListValue& parameters,
       base::OnceCallback<void(const base::Value*)> callback,
       base::TimeDelta timeout) override;
 
@@ -73,11 +73,11 @@ class WebFrameImpl final : public WebFrame,
   // WebFrameContentWorldAPI:
   bool CallJavaScriptFunctionInContentWorld(
       const std::string& name,
-      const base::Value::List& parameters,
+      const base::ListValue& parameters,
       JavaScriptContentWorld* content_world) override;
   bool CallJavaScriptFunctionInContentWorld(
       const std::string& name,
-      const base::Value::List& parameters,
+      const base::ListValue& parameters,
       JavaScriptContentWorld* content_world,
       base::OnceCallback<void(const base::Value*)> callback,
       base::TimeDelta timeout) override;
@@ -97,7 +97,7 @@ class WebFrameImpl final : public WebFrame,
   // function will be sent back to the receiver with `CompleteRequest()`.
   bool CallJavaScriptFunctionInContentWorld(
       const std::string& name,
-      const base::Value::List& parameters,
+      const base::ListValue& parameters,
       JavaScriptContentWorld* content_world,
       bool reply_with_result);
 
@@ -121,7 +121,7 @@ class WebFrameImpl final : public WebFrame,
   // will be sent back to the receiver.
   bool ExecuteJavaScriptFunction(JavaScriptContentWorld* content_world,
                                  const std::string& name,
-                                 const base::Value::List& parameters,
+                                 const base::ListValue& parameters,
                                  int message_id,
                                  bool reply_with_result);
 

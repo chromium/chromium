@@ -17,7 +17,6 @@
 
 #include <string_view>
 
-#include "base/containers/contains.h"
 #include "base/files/file.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -72,7 +71,7 @@ static const absl::flat_hash_map<int, std::string>
 // Finds corresponding defined V4L2 request code name
 // for a given V4L2 request code value.
 std::string V4L2RequestCodeToString(int request_code) {
-  DCHECK(base::Contains(kMapFromV4L2RequestCodeToString, request_code));
+  DCHECK(kMapFromV4L2RequestCodeToString.contains(request_code));
 
   const auto& request_code_pair =
       kMapFromV4L2RequestCodeToString.find(request_code);

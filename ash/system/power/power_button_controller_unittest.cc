@@ -1146,7 +1146,7 @@ class PowerButtonControllerWithPositionTest
       public testing::WithParamInterface<PowerButtonPosition> {
  public:
   PowerButtonControllerWithPositionTest() : power_button_position_(GetParam()) {
-    base::Value::Dict position_info;
+    base::DictValue position_info;
     switch (power_button_position_) {
       case PowerButtonPosition::LEFT:
         position_info.Set(PowerButtonController::kEdgeField,

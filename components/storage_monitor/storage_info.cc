@@ -6,7 +6,7 @@
 
 #include <stddef.h>
 
-#include "base/byte_count.h"
+#include "base/byte_size.h"
 #include "base/check_op.h"
 #include "base/notreached.h"
 #include "base/strings/utf_string_conversions.h"
@@ -20,15 +20,15 @@ namespace {
 const char kRemovableMassStorageWithDCIMPrefix[] = "dcim:";
 const char kRemovableMassStorageNoDCIMPrefix[] = "nodcim:";
 const char kFixedMassStoragePrefix[] = "path:";
+#if BUILDFLAG(IS_CHROMEOS)
 const char kMtpPtpPrefix[] = "mtp:";
-const char kMacImageCapturePrefix[] = "ic:";
+#endif
 
-std::u16string GetDisplayNameForDevice(base::ByteCount storage_size_in_bytes,
+std::u16string GetDisplayNameForDevice(base::ByteSize storage_size,
                                        const std::u16string& name) {
   DCHECK(!name.empty());
-  return (storage_size_in_bytes.is_zero())
-             ? name
-             : ui::FormatBytes(storage_size_in_bytes) + u" " + name;
+  return (storage_size.is_zero()) ? name
+                                  : ui::FormatBytes(storage_size) + u" " + name;
 }
 
 std::u16string GetFullProductName(const std::u16string& vendor_name,
@@ -82,10 +82,10 @@ std::string StorageInfo::MakeDeviceId(Type type, const std::string& unique_id) {
       return std::string(kRemovableMassStorageNoDCIMPrefix) + unique_id;
     case FIXED_MASS_STORAGE:
       return std::string(kFixedMassStoragePrefix) + unique_id;
+#if BUILDFLAG(IS_CHROMEOS)
     case MTP_OR_PTP:
       return std::string(kMtpPtpPrefix) + unique_id;
-    case MAC_IMAGE_CAPTURE:
-      return std::string(kMacImageCapturePrefix) + unique_id;
+#endif
   }
   NOTREACHED();
 }
@@ -105,20 +105,22 @@ bool StorageInfo::CrackDeviceId(const std::string& device_id,
     found_type = REMOVABLE_MASS_STORAGE_NO_DCIM;
   } else if (prefix == kFixedMassStoragePrefix) {
     found_type = FIXED_MASS_STORAGE;
+#if BUILDFLAG(IS_CHROMEOS)
   } else if (prefix == kMtpPtpPrefix) {
     found_type = MTP_OR_PTP;
-  } else if (prefix == kMacImageCapturePrefix) {
-    found_type = MAC_IMAGE_CAPTURE;
+#endif
   } else {
     // Users may have legacy device IDs in their profiles, like iPhoto, iTunes,
     // or Picasa. Just reject them as invalid devices here.
     return false;
   }
-  if (type)
-    *type = found_type;
 
-  if (unique_id)
+  if (type) {
+    *type = found_type;
+  }
+  if (unique_id) {
     *unique_id = device_id.substr(prefix_length + 1);
+  }
   return true;
 }
 
@@ -126,8 +128,11 @@ bool StorageInfo::CrackDeviceId(const std::string& device_id,
 bool StorageInfo::IsMediaDevice(const std::string& device_id) {
   Type type;
   return CrackDeviceId(device_id, &type, nullptr) &&
-         (type == REMOVABLE_MASS_STORAGE_WITH_DCIM || type == MTP_OR_PTP ||
-          type == MAC_IMAGE_CAPTURE);
+         (type == REMOVABLE_MASS_STORAGE_WITH_DCIM
+#if BUILDFLAG(IS_CHROMEOS)
+          || type == MTP_OR_PTP
+#endif
+         );
 }
 
 // static
@@ -135,8 +140,11 @@ bool StorageInfo::IsRemovableDevice(const std::string& device_id) {
   Type type;
   return CrackDeviceId(device_id, &type, nullptr) &&
          (type == REMOVABLE_MASS_STORAGE_WITH_DCIM ||
-          type == REMOVABLE_MASS_STORAGE_NO_DCIM || type == MTP_OR_PTP ||
-          type == MAC_IMAGE_CAPTURE);
+          type == REMOVABLE_MASS_STORAGE_NO_DCIM
+#if BUILDFLAG(IS_CHROMEOS)
+          || type == MTP_OR_PTP
+#endif
+         );
 }
 
 // static
@@ -149,8 +157,12 @@ bool StorageInfo::IsMassStorageDevice(const std::string& device_id) {
 
 // static
 bool StorageInfo::IsMTPDevice(const std::string& device_id) {
+#if BUILDFLAG(IS_CHROMEOS)
   Type type;
   return CrackDeviceId(device_id, &type, nullptr) && type == MTP_OR_PTP;
+#else
+  return false;
+#endif
 }
 
 std::u16string StorageInfo::GetDisplayName(bool with_size) const {
@@ -174,8 +186,9 @@ std::u16string StorageInfo::GetDisplayNameWithOverride(
   if (name.empty())
     name = u"Unlabeled device";
 
-  if (with_size)
-    name = GetDisplayNameForDevice(base::ByteCount(total_size_in_bytes_), name);
+  if (with_size) {
+    name = GetDisplayNameForDevice(base::ByteSize(total_size_in_bytes_), name);
+  }
   return name;
 }
 

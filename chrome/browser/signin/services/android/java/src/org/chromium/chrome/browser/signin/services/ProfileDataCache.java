@@ -27,7 +27,6 @@ import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.content.res.AppCompatResources;
 
 import org.chromium.base.ObserverList;
-import org.chromium.base.Promise;
 import org.chromium.base.ThreadUtils;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -36,9 +35,8 @@ import org.chromium.components.signin.AccountEmailDisplayHook;
 import org.chromium.components.signin.AccountManagerFacadeProvider;
 import org.chromium.components.signin.base.AccountInfo;
 import org.chromium.components.signin.base.CoreAccountInfo;
-import org.chromium.components.signin.identitymanager.AccountInfoService;
-import org.chromium.components.signin.identitymanager.AccountInfoServiceProvider;
 import org.chromium.components.signin.identitymanager.IdentityManager;
+import org.chromium.google_apis.gaia.CoreAccountId;
 
 import java.util.HashMap;
 import java.util.List;
@@ -50,7 +48,7 @@ import java.util.Objects;
  */
 @MainThread
 @NullMarked
-public class ProfileDataCache implements AccountInfoService.Observer {
+public class ProfileDataCache implements IdentityManager.Observer {
     /** Observer to get notifications about changes in profile data. */
     public interface Observer {
         /**
@@ -120,6 +118,7 @@ public class ProfileDataCache implements AccountInfoService.Observer {
     }
 
     private final Context mContext;
+    private final IdentityManager mIdentityManager;
     private final int mImageSize;
     // The badge for a given account is selected as follows:
     // * If there is a config for that specific account, use that
@@ -137,21 +136,13 @@ public class ProfileDataCache implements AccountInfoService.Observer {
             IdentityManager identityManager,
             @Px int imageSize,
             @Nullable BadgeConfig badgeConfig) {
-        // TODO(crbug.com/341948846): Remove AccountInfoService and update
-        // populateCache/populateCacheForAllAccounts to use identityManager to get the list of
-        // accounts
         assert identityManager != null;
         mContext = context;
+        mIdentityManager = identityManager;
         mImageSize = imageSize;
         mDefaultBadgeConfig = badgeConfig;
         mPlaceholderImage = getScaledPlaceholderImage(context, imageSize);
-        Promise<AccountInfoService> accountInfoServicePromise =
-                AccountInfoServiceProvider.getPromise();
-        if (accountInfoServicePromise.isFulfilled()) {
-            populateCache(accountInfoServicePromise.getResult());
-        } else {
-            accountInfoServicePromise.then(this::populateCache);
-        }
+        populateCache();
     }
 
     /**
@@ -282,7 +273,7 @@ public class ProfileDataCache implements AccountInfoService.Observer {
 
         mDefaultBadgeConfig = badgeConfig;
         mCachedProfileData.clear();
-        AccountInfoServiceProvider.getPromise().then(this::populateCache);
+        populateCache();
     }
 
     /**
@@ -303,11 +294,7 @@ public class ProfileDataCache implements AccountInfoService.Observer {
             return;
         }
         mPerAccountBadgeConfig.put(accountEmail, badgeConfig);
-        AccountInfoServiceProvider.getPromise()
-                .then(
-                        accountInfoService -> {
-                            populateCacheForAccount(accountInfoService, accountEmail);
-                        });
+        populateCacheForAccount(accountEmail);
     }
 
     /**
@@ -316,11 +303,7 @@ public class ProfileDataCache implements AccountInfoService.Observer {
     public void addObserver(Observer observer) {
         ThreadUtils.assertOnUiThread();
         if (mObservers.isEmpty()) {
-            AccountInfoServiceProvider.getPromise()
-                    .then(
-                            accountInfoService -> {
-                                accountInfoService.addObserver(this);
-                            });
+            mIdentityManager.addObserver(this);
         }
         mObservers.addObserver(observer);
     }
@@ -332,17 +315,13 @@ public class ProfileDataCache implements AccountInfoService.Observer {
         ThreadUtils.assertOnUiThread();
         mObservers.removeObserver(observer);
         if (mObservers.isEmpty()) {
-            AccountInfoServiceProvider.getPromise()
-                    .then(
-                            accountInfoService -> {
-                                accountInfoService.removeObserver(this);
-                            });
+            mIdentityManager.removeObserver(this);
         }
     }
 
-    /** Implements {@link AccountInfoService.Observer}. */
+    /** Implements {@link IdentityManager.Observer}. */
     @Override
-    public void onAccountInfoUpdated(@Nullable AccountInfo accountInfo) {
+    public void onExtendedAccountInfoUpdated(@Nullable AccountInfo accountInfo) {
         // We don't update the cache if the account information and ProfileDataCache config mean
         // that we would just be returning the default profile data.
         if (accountInfo != null
@@ -364,36 +343,36 @@ public class ProfileDataCache implements AccountInfoService.Observer {
         return mCachedProfileData.containsKey(accountEmail);
     }
 
-    private void populateCache(AccountInfoService accountInfoService) {
+    private void populateCache() {
         var accountsPromise = AccountManagerFacadeProvider.getInstance().getAccounts();
         if (accountsPromise.isFulfilled()) {
-            populateCacheForAllAccounts(accountInfoService, accountsPromise.getResult());
+            populateCacheForAllAccounts(accountsPromise.getResult());
         } else {
-            accountsPromise.then(
-                    accounts -> {
-                        populateCacheForAllAccounts(accountInfoService, accounts);
-                    });
+            accountsPromise.then(this::populateCacheForAllAccounts);
         }
     }
 
-    private void populateCacheForAllAccounts(
-            AccountInfoService accountInfoService, List<AccountInfo> accounts) {
+    private void populateCacheForAllAccounts(List<AccountInfo> accounts) {
         for (CoreAccountInfo account : accounts) {
-            populateCacheForAccount(accountInfoService, account.getEmail());
+            populateCacheForAccount(account.getId());
         }
     }
 
-    // TODO(crbug.com/40274844): Replace accountEmail with CoreAccountId or CoreAccountInfo.
-    private void populateCacheForAccount(
-            AccountInfoService accountInfoService, String accountEmail) {
-        // TODO(crbug.com/341948846): Remove AccountInfoService and simplify this.
-        Promise<@Nullable AccountInfo> accountInfoPromise =
-                accountInfoService.getAccountInfoByEmail(accountEmail);
-        if (accountInfoPromise.isFulfilled()) {
-            onAccountInfoUpdated(accountInfoPromise.getResult());
-        } else {
-            accountInfoPromise.then(this::onAccountInfoUpdated);
-        }
+    private void populateCacheForAccount(CoreAccountId accountId) {
+        var accountInfo = mIdentityManager.findExtendedAccountInfoByAccountId(accountId);
+        onExtendedAccountInfoUpdated(accountInfo);
+    }
+
+    /**
+     * TODO(crbug.com/476990153): Remove this method and replace all usages with {@link
+     * #populateCacheForAccount(CoreAccountId)}.
+     *
+     * @deprecated Use {@link #populateCacheForAccount(CoreAccountId)} instead.
+     */
+    @Deprecated
+    private void populateCacheForAccount(String accountEmail) {
+        var accountInfo = mIdentityManager.findExtendedAccountInfoByEmailAddress(accountEmail);
+        onExtendedAccountInfoUpdated(accountInfo);
     }
 
     private void updateCacheAndNotifyObservers(

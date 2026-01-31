@@ -29,8 +29,7 @@ web::WebUIIOSDataSource* CreateTranslateInternalsHTMLSource() {
   source->AddResourcePaths(kTranslateInternalsResources);
   source->AddResourcePath("", IDR_TRANSLATE_INTERNALS_TRANSLATE_INTERNALS_HTML);
 
-  base::Value::Dict langs =
-      translate::TranslateInternalsHandler::GetLanguages();
+  base::DictValue langs = translate::TranslateInternalsHandler::GetLanguages();
   for (const auto key_value_pair : langs) {
     DCHECK(key_value_pair.second.is_string());
     std::string key = "language-" + key_value_pair.first;

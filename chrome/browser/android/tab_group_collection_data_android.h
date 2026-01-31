@@ -33,7 +33,7 @@ class TabGroupCollectionDataAndroid {
   // This C++ object is owned by the Java counterpart, and should be destroyed
   // by it.
   void Destroy(JNIEnv* env);
-  jni_zero::ScopedJavaLocalRef<jobject> GetJavaObject() const;
+  jni_zero::ScopedJavaLocalRef<jobject> GetJavaObject(JNIEnv* env) const;
 
   base::Token GetTabGroupId(JNIEnv* env) const;
   const std::u16string& GetTitle(JNIEnv* env) const;
@@ -42,7 +42,7 @@ class TabGroupCollectionDataAndroid {
 
  private:
   std::unique_ptr<TabGroupCollectionData> data_;
-  jni_zero::ScopedJavaLocalRef<jobject> j_object_;
+  jni_zero::ScopedJavaGlobalRef<jobject> j_object_;
 };
 
 }  // namespace tabs
@@ -54,7 +54,15 @@ inline ScopedJavaLocalRef<jobject>
 ToJniType<tabs::TabGroupCollectionDataAndroid>(
     JNIEnv* env,
     const tabs::TabGroupCollectionDataAndroid& input) {
-  return input.GetJavaObject();
+  return input.GetJavaObject(env);
+}
+
+template <>
+inline ScopedJavaLocalRef<jobject>
+ToJniType<tabs::TabGroupCollectionDataAndroid*>(
+    JNIEnv* env,
+    tabs::TabGroupCollectionDataAndroid* const& input) {
+  return input->GetJavaObject(env);
 }
 
 }  // namespace jni_zero

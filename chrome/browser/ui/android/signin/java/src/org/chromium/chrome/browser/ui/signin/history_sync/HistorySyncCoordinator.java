@@ -100,7 +100,7 @@ public class HistorySyncCoordinator {
         IdentityManager identityManager = signinManager.getIdentityManager();
         MinorModeHelper.resolveMinorMode(
                 identityManager,
-                assumeNonNull(identityManager.getPrimaryAccountInfo(ConsentLevel.SIGNIN)),
+                assumeNonNull(identityManager.getPrimaryAccountInfo(ConsentLevel.SIGNIN)).getId(),
                 mMediator::onMinorModeRestrictionStatusUpdated);
     }
 

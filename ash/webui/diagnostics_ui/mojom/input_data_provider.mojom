@@ -62,6 +62,16 @@ struct TouchDeviceInfo {
   bool testable;
 };
 
+// Represents the collection of all connected input devices returned by
+// GetConnectedDevices.
+struct ConnectedDevices {
+  // A list of currently connected keyboards.
+  array<KeyboardInfo> keyboards;
+
+  // A list of currently connected touch devices (touchpads, touchscreens).
+  array<TouchDeviceInfo> touch_devices;
+};
+
 // Implemented by clients that wish to be updated when the internal display
 // is on or off.
 interface InternalDisplayPowerStateObserver {
@@ -105,9 +115,7 @@ interface ConnectedDevicesObserver {
 // process).
 interface InputDataProvider {
   // Returns a snapshot of the devices connected to the system.
-  GetConnectedDevices() =>
-    (array<KeyboardInfo> keyboards,
-     array<TouchDeviceInfo> touch_devices);
+  GetConnectedDevices() => (ConnectedDevices devices);
 
   // Registers an observer for changes to the connected input devices.
   ObserveConnectedDevices(pending_remote<ConnectedDevicesObserver> observer);

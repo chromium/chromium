@@ -81,7 +81,6 @@ class AnchorEvaluator;
 class ComputedStyleBuilder;
 class CounterStyle;
 class CounterStyleMap;
-class StyleContainmentScopeTree;
 class CSSFontSelector;
 class CSSPropertyValueSet;
 class CSSStyleSheet;
@@ -91,6 +90,8 @@ class ElementRuleCollector;
 class Font;
 class FontSelector;
 class HTMLBodyElement;
+class LayoutQuote;
+class HTMLAnchorElement;
 class MediaQueryEvaluator;
 class MediaQuerySet;
 class Node;
@@ -115,6 +116,11 @@ class ViewportStyleResolver;
 class SelectorFilter;
 struct LogicalSize;
 struct MixinMap;
+
+template <typename T>
+class OrderedScopeTree;
+using StyleContainmentScopeTree = OrderedScopeTree<LayoutQuote>;
+using ScrollTargetGroupScopeTree = OrderedScopeTree<HTMLAnchorElement>;
 
 enum InvalidationScope { kInvalidateCurrentScope, kInvalidateAllScopes };
 
@@ -144,15 +150,17 @@ class CORE_EXPORT StyleEngine final : public GarbageCollected<StyleEngine>,
 
    public:
     explicit DetachLayoutTreeScope(StyleEngine& engine)
-        : engine_(engine), in_detach_scope_(&engine.in_detach_scope_, true) {}
+        : engine_(engine),
+          in_detach_scope_(std::in_place, &engine.in_detach_scope_, true) {}
     ~DetachLayoutTreeScope() {
       engine_.MarkForLayoutTreeChangesAfterDetach();
+      in_detach_scope_.reset();
       engine_.InvalidateSVGResourcesAfterDetach();
     }
 
    private:
     StyleEngine& engine_;
-    base::AutoReset<bool> in_detach_scope_;
+    std::optional<base::AutoReset<bool>> in_detach_scope_;
   };
 
   class AttachScrollMarkersScope {
@@ -396,6 +404,11 @@ class CORE_EXPORT StyleEngine final : public GarbageCollected<StyleEngine>,
     return style_containment_scope_tree_.Get();
   }
 
+  ScrollTargetGroupScopeTree& EnsureScrollTargetGroupScopeTree();
+  ScrollTargetGroupScopeTree* GetScrollTargetGroupScopeTree() const {
+    return scroll_target_group_scope_tree_.Get();
+  }
+
   void SetRuleUsageTracker(StyleRuleUsageTracker*);
 
   const Font* ComputeFont(Element& element,
@@ -631,7 +644,7 @@ class CORE_EXPORT StyleEngine final : public GarbageCollected<StyleEngine>,
   // Resolve a tree-scoped reference to a @function rule.
   //
   // https://drafts.csswg.org/css-mixins-1/#function-rule
-  // https://drafts.csswg.org/css-scoping-1/#css-tree-scoped-reference
+  // https://drafts.csswg.org/css-shadow-1/#css-tree-scoped-reference
   std::pair<StyleRuleFunction*, const TreeScope*> FindFunctionAcrossScopes(
       const AtomicString& name,
       const TreeScope*) const;
@@ -783,7 +796,7 @@ class CORE_EXPORT StyleEngine final : public GarbageCollected<StyleEngine>,
 
   // Call when @navigation rules may need to be re-evaluated, because the
   // current URL has changed.
-  void NavigationsMayHaveChanged() { SetNeedsActiveStyleUpdate(GetDocument()); }
+  void NavigationsMayHaveChanged();
 
   // Returns a random base value for CSS random() function.
   // @param random_value_sharing <random-value-sharing> parameter of CSS
@@ -797,10 +810,9 @@ class CORE_EXPORT StyleEngine final : public GarbageCollected<StyleEngine>,
   // functions in the same property value. Only used if
   // RandomValueSharing::isAuto() returns true.
   // https://drafts.csswg.org/css-values-5/#random-caching
-  double GetCachedRandomBaseValue(RandomValueSharing random_value_sharing,
-                                  const Element* element,
-                                  AtomicString property_name,
-                                  size_t property_value_index);
+  double GetCachedRandomBaseValue(
+      const RandomValueSharing& random_value_sharing,
+      const Element* element);
 
  private:
   void UpdateCounters(const Element& element,
@@ -996,6 +1008,10 @@ class CORE_EXPORT StyleEngine final : public GarbageCollected<StyleEngine>,
 
   // Tree of style containment scopes. Is in charge of the document's quotes.
   Member<StyleContainmentScopeTree> style_containment_scope_tree_;
+
+  // Tree of scroll-target-group scopes. Manages scopes created by elements
+  // with scroll-target-group property and their descendant anchor elements.
+  Member<ScrollTargetGroupScopeTree> scroll_target_group_scope_tree_;
 
   // Tracks the number of currently loading top-level stylesheets. Sheets loaded
   // using the @import directive are not included in this count. We use this

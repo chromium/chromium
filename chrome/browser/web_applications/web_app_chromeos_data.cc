@@ -7,7 +7,7 @@
 namespace web_app {
 
 base::Value WebAppChromeOsData::AsDebugValue() const {
-  auto root = base::Value::Dict()
+  auto root = base::DictValue()
                   .Set("show_in_launcher", show_in_launcher)
                   .Set("show_in_search_and_shelf", show_in_search_and_shelf)
                   .Set("show_in_management", show_in_management)

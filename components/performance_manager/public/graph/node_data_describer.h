@@ -39,31 +39,30 @@ class NodeDataDescriber {
  public:
   virtual ~NodeDataDescriber() = default;
 
-  virtual base::Value::Dict DescribeFrameNodeData(
+  virtual base::DictValue DescribeFrameNodeData(
       const FrameNode* node) const = 0;
-  virtual base::Value::Dict DescribePageNodeData(
-      const PageNode* node) const = 0;
-  virtual base::Value::Dict DescribeProcessNodeData(
+  virtual base::DictValue DescribePageNodeData(const PageNode* node) const = 0;
+  virtual base::DictValue DescribeProcessNodeData(
       const ProcessNode* node) const = 0;
-  virtual base::Value::Dict DescribeSystemNodeData(
+  virtual base::DictValue DescribeSystemNodeData(
       const SystemNode* node) const = 0;
-  virtual base::Value::Dict DescribeWorkerNodeData(
+  virtual base::DictValue DescribeWorkerNodeData(
       const WorkerNode* node) const = 0;
 
   // Polymorphic accessors.
-  base::Value::Dict DescribeNodeData(const FrameNode* node) const {
+  base::DictValue DescribeNodeData(const FrameNode* node) const {
     return DescribeFrameNodeData(node);
   }
-  base::Value::Dict DescribeNodeData(const PageNode* node) const {
+  base::DictValue DescribeNodeData(const PageNode* node) const {
     return DescribePageNodeData(node);
   }
-  base::Value::Dict DescribeNodeData(const ProcessNode* node) const {
+  base::DictValue DescribeNodeData(const ProcessNode* node) const {
     return DescribeProcessNodeData(node);
   }
-  base::Value::Dict DescribeNodeData(const SystemNode* node) const {
+  base::DictValue DescribeNodeData(const SystemNode* node) const {
     return DescribeSystemNodeData(node);
   }
-  base::Value::Dict DescribeNodeData(const WorkerNode* node) const {
+  base::DictValue DescribeNodeData(const WorkerNode* node) const {
     return DescribeWorkerNodeData(node);
   }
 };
@@ -72,14 +71,12 @@ class NodeDataDescriber {
 // an is_none() value for all nodes.
 class NodeDataDescriberDefaultImpl : public NodeDataDescriber {
  public:
-  base::Value::Dict DescribeFrameNodeData(const FrameNode* node) const override;
-  base::Value::Dict DescribePageNodeData(const PageNode* node) const override;
-  base::Value::Dict DescribeProcessNodeData(
+  base::DictValue DescribeFrameNodeData(const FrameNode* node) const override;
+  base::DictValue DescribePageNodeData(const PageNode* node) const override;
+  base::DictValue DescribeProcessNodeData(
       const ProcessNode* node) const override;
-  base::Value::Dict DescribeSystemNodeData(
-      const SystemNode* node) const override;
-  base::Value::Dict DescribeWorkerNodeData(
-      const WorkerNode* node) const override;
+  base::DictValue DescribeSystemNodeData(const SystemNode* node) const override;
+  base::DictValue DescribeWorkerNodeData(const WorkerNode* node) const override;
 };
 
 }  // namespace performance_manager

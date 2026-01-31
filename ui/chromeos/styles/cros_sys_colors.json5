@@ -713,5 +713,9 @@
       light: '#7248b9',
       dark: '#b48cff',
     },
+    'file-project': {
+      light: '#009dc9',
+      dark: '#67d4ff',
+    },
   },
 }

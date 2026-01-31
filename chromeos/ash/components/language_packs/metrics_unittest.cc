@@ -7,7 +7,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/containers/contains.h"
 #include "base/hash/hash.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
@@ -34,7 +33,7 @@ TEST(LanguagePackMetricsTest, CheckLanguageCodes) {
   std::string missing_codes;
   for (const std::string& code : language_codes) {
     const auto hashed = static_cast<int32_t>(base::PersistentHash(code));
-    if (!base::Contains(*language_codes_map, hashed)) {
+    if (!language_codes_map->contains(hashed)) {
       base::StrAppend(&missing_codes,
                       {"<int value=\"", base::NumberToString(hashed),
                        "\" label=\"", code, "\"/>\n"});

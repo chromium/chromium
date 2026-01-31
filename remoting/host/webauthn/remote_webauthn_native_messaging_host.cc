@@ -31,15 +31,14 @@ namespace {
 // response after it, we will treat the IPC connection as disconnected.
 constexpr base::TimeDelta kQueryRemoteStateTimeout = base::Seconds(5);
 
-base::Value::Dict CreateWebAuthnExceptionDetailsDict(
-    const std::string& name,
-    const std::string& message) {
-  return base::Value::Dict()
+base::DictValue CreateWebAuthnExceptionDetailsDict(const std::string& name,
+                                                   const std::string& message) {
+  return base::DictValue()
       .Set(kWebAuthnErrorNameKey, name)
       .Set(kWebAuthnErrorMessageKey, message);
 }
 
-base::Value::Dict MojoErrorToErrorDict(
+base::DictValue MojoErrorToErrorDict(
     const mojom::WebAuthnExceptionDetailsPtr& mojo_error) {
   return CreateWebAuthnExceptionDetailsDict(mojo_error->name,
                                             mojo_error->message);
@@ -83,12 +82,12 @@ void RemoteWebAuthnNativeMessagingHost::OnMessage(const std::string& message) {
   DCHECK(task_runner_->BelongsToCurrentThread());
 
   std::string type;
-  base::Value::Dict request;
+  base::DictValue request;
   if (!ParseNativeMessageJson(message, type, request)) {
     return;
   }
 
-  std::optional<base::Value::Dict> response =
+  std::optional<base::DictValue> response =
       CreateNativeMessageResponse(request);
   if (!response.has_value()) {
     return;
@@ -102,8 +101,8 @@ void RemoteWebAuthnNativeMessagingHost::OnMessage(const std::string& message) {
     return;
   }
 
-  void (RemoteWebAuthnNativeMessagingHost::*fn)(
-      const base::Value::Dict& request, base::Value::Dict response);
+  void (RemoteWebAuthnNativeMessagingHost::*fn)(const base::DictValue& request,
+                                                base::DictValue response);
   if (type == kIsUvpaaMessageType) {
     fn = &RemoteWebAuthnNativeMessagingHost::ProcessIsUvpaa;
   } else if (type == kCreateMessageType) {
@@ -138,8 +137,7 @@ RemoteWebAuthnNativeMessagingHost::task_runner() const {
   return task_runner_;
 }
 
-void RemoteWebAuthnNativeMessagingHost::ProcessHello(
-    base::Value::Dict response) {
+void RemoteWebAuthnNativeMessagingHost::ProcessHello(base::DictValue response) {
   // Hello request: {id: string, type: 'hello'}
   // Hello response: {id: string, type: 'helloResponse', hostVersion: string}
 
@@ -150,8 +148,8 @@ void RemoteWebAuthnNativeMessagingHost::ProcessHello(
 }
 
 void RemoteWebAuthnNativeMessagingHost::ProcessIsUvpaa(
-    const base::Value::Dict& request,
-    base::Value::Dict response) {
+    const base::DictValue& request,
+    base::DictValue response) {
   // IsUvpaa request: {id: string, type: 'isUvpaa'}
   // IsUvpaa response:
   //   {id: string, type: 'isUvpaaResponse', isAvailable: boolean}
@@ -164,8 +162,8 @@ void RemoteWebAuthnNativeMessagingHost::ProcessIsUvpaa(
 }
 
 void RemoteWebAuthnNativeMessagingHost::ProcessCreate(
-    const base::Value::Dict& request,
-    base::Value::Dict response) {
+    const base::DictValue& request,
+    base::DictValue response) {
   // Create request: {id: string, type: 'create', requestData: string}
   // Create response: {
   //   id: string, type: 'createResponse', responseData?: string,
@@ -190,8 +188,8 @@ void RemoteWebAuthnNativeMessagingHost::ProcessCreate(
 }
 
 void RemoteWebAuthnNativeMessagingHost::ProcessGet(
-    const base::Value::Dict& request,
-    base::Value::Dict response) {
+    const base::DictValue& request,
+    base::DictValue response) {
   // Get request: {id: string, type: 'get', requestData: string}
   // Get response: {
   //   id: string, type: 'getResponse', responseData?: string,
@@ -215,8 +213,8 @@ void RemoteWebAuthnNativeMessagingHost::ProcessGet(
 }
 
 void RemoteWebAuthnNativeMessagingHost::ProcessCancel(
-    const base::Value::Dict& request,
-    base::Value::Dict response) {
+    const base::DictValue& request,
+    base::DictValue response) {
   // Cancel request: {id: string, type: 'cancel'}
   // Cancel response:
   //   {id: string, type: 'cancelResponse', wasCanceled: boolean}
@@ -245,7 +243,7 @@ void RemoteWebAuthnNativeMessagingHost::ProcessCancel(
 }
 
 void RemoteWebAuthnNativeMessagingHost::ProcessGetRemoteState(
-    base::Value::Dict response) {
+    base::DictValue response) {
   // GetRemoteState request: {id: string, type: 'getRemoteState'}
   // GetRemoteState response:
   //   {id: string, type: 'getRemoteStateResponse', isRemoted: boolean,
@@ -304,7 +302,7 @@ void RemoteWebAuthnNativeMessagingHost::OnIpcDisconnected() {
 }
 
 void RemoteWebAuthnNativeMessagingHost::OnIsUvpaaResponse(
-    base::Value::Dict response,
+    base::DictValue response,
     bool is_available) {
   DCHECK(task_runner_->BelongsToCurrentThread());
 
@@ -313,7 +311,7 @@ void RemoteWebAuthnNativeMessagingHost::OnIsUvpaaResponse(
 }
 
 void RemoteWebAuthnNativeMessagingHost::OnCreateResponse(
-    base::Value::Dict response,
+    base::DictValue response,
     mojom::WebAuthnCreateResponsePtr remote_response) {
   DCHECK(task_runner_->BelongsToCurrentThread());
 
@@ -346,7 +344,7 @@ void RemoteWebAuthnNativeMessagingHost::OnCreateResponse(
 }
 
 void RemoteWebAuthnNativeMessagingHost::OnGetResponse(
-    base::Value::Dict response,
+    base::DictValue response,
     mojom::WebAuthnGetResponsePtr remote_response) {
   DCHECK(task_runner_->BelongsToCurrentThread());
 
@@ -378,7 +376,7 @@ void RemoteWebAuthnNativeMessagingHost::OnGetResponse(
 }
 
 void RemoteWebAuthnNativeMessagingHost::OnCancelResponse(
-    base::Value::Dict response,
+    base::DictValue response,
     bool was_canceled) {
   DCHECK(task_runner_->BelongsToCurrentThread());
 
@@ -482,7 +480,7 @@ bool RemoteWebAuthnNativeMessagingHost::EnsureRemoteBound() {
 }
 
 void RemoteWebAuthnNativeMessagingHost::SendMessageToClient(
-    base::Value::Dict message) {
+    base::DictValue message) {
   DCHECK(task_runner_->BelongsToCurrentThread());
 
   std::optional<std::string> message_json = base::WriteJson(message);
@@ -494,7 +492,7 @@ void RemoteWebAuthnNativeMessagingHost::SendMessageToClient(
 }
 
 const base::Value* RemoteWebAuthnNativeMessagingHost::FindMessageIdOrSendError(
-    base::Value::Dict& response) {
+    base::DictValue& response) {
   const base::Value* message_id = response.Find(kMessageId);
   if (message_id) {
     return message_id;
@@ -508,9 +506,9 @@ const base::Value* RemoteWebAuthnNativeMessagingHost::FindMessageIdOrSendError(
 
 const std::string*
 RemoteWebAuthnNativeMessagingHost::FindRequestDataOrSendError(
-    const base::Value::Dict& request,
+    const base::DictValue& request,
     const std::string& request_data_key,
-    base::Value::Dict& response) {
+    base::DictValue& response) {
   const std::string* request_data = request.FindString(request_data_key);
   if (request_data) {
     return request_data;
@@ -570,7 +568,7 @@ void RemoteWebAuthnNativeMessagingHost::OnRequestCancellerDisconnected(
 void RemoteWebAuthnNativeMessagingHost::SendClientDisconnectedMessage() {
   DCHECK(task_runner_->BelongsToCurrentThread());
 
-  base::Value::Dict message;
+  base::DictValue message;
   message.Set(kMessageType, kClientDisconnectedMessageType);
   SendMessageToClient(std::move(message));
 }

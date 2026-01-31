@@ -955,7 +955,7 @@ bool ChromePaymentsAutofillClient::ShowTouchToFillIban(
 #endif
 }
 
-bool ChromePaymentsAutofillClient::ShowTouchToFillLoyaltyCard(
+bool ChromePaymentsAutofillClient::ShowTouchToFillAffiliatedLoyaltyCard(
     base::WeakPtr<TouchToFillDelegate> delegate,
     std::vector<autofill::LoyaltyCard> loyalty_cards_to_suggest) {
 #if BUILDFLAG(IS_ANDROID)
@@ -978,7 +978,7 @@ bool ChromePaymentsAutofillClient::ShowTouchToFillLoyaltyCard(
           feature_engagement::kIPHAutofillEnableLoyaltyCardsFeature);
 
   const bool loyalty_cards_shown =
-      GetTouchToFillPaymentMethodController()->ShowLoyaltyCards(
+      GetTouchToFillPaymentMethodController()->ShowAffiliatedLoyaltyCards(
           std::make_unique<TouchToFillPaymentMethodViewImpl>(web_contents()),
           delegate, std::move(affiliated_loyalty_cards),
           std::move(loyalty_cards_to_suggest), first_time_usage);
@@ -986,6 +986,19 @@ bool ChromePaymentsAutofillClient::ShowTouchToFillLoyaltyCard(
     tracker->NotifyEvent("keyboard_accessory_loyalty_cards_autofilled");
   }
   return loyalty_cards_shown;
+#else
+  // Touch To Fill is not supported on Desktop.
+  NOTREACHED();
+#endif
+}
+
+bool ChromePaymentsAutofillClient::ShowTouchToFillForAllLoyaltyCards(
+    base::WeakPtr<TouchToFillDelegate> delegate,
+    std::vector<autofill::LoyaltyCard> loyalty_cards_to_suggest) {
+#if BUILDFLAG(IS_ANDROID)
+  return GetTouchToFillPaymentMethodController()->ShowAllLoyaltyCards(
+      std::make_unique<TouchToFillPaymentMethodViewImpl>(web_contents()),
+      delegate, std::move(loyalty_cards_to_suggest));
 #else
   // Touch To Fill is not supported on Desktop.
   NOTREACHED();
@@ -1145,24 +1158,24 @@ void ChromePaymentsAutofillClient::ShowCreditCardUploadSaveAndFillDialog(
   CHECK(save_and_fill_dialog_controller_);
   save_and_fill_dialog_controller_->ShowUploadDialog(
       std::move(legal_message_lines),
-      base::BindOnce(&CreateAndShowSaveAndFillDialog,
-                     save_and_fill_dialog_controller_->GetWeakPtr(),
-                     web_contents()),
       std::move(callback));
 #else
   NOTIMPLEMENTED();
 #endif  // !BUILDFLAG(IS_ANDROID)
 }
 
-void ChromePaymentsAutofillClient::ShowCreditCardSaveAndFillPendingDialog() {
+void ChromePaymentsAutofillClient::ShowCreditCardSaveAndFillPendingDialog(
+    CardSaveAndFillDialogCallback callback) {
 #if !BUILDFLAG(IS_ANDROID)
   if (!save_and_fill_dialog_controller_) {
     save_and_fill_dialog_controller_ =
         std::make_unique<SaveAndFillDialogControllerImpl>();
   }
-  save_and_fill_dialog_controller_->ShowPendingDialog(base::BindOnce(
-      &CreateAndShowSaveAndFillDialog,
-      save_and_fill_dialog_controller_->GetWeakPtr(), web_contents()));
+  save_and_fill_dialog_controller_->ShowPendingDialog(
+      base::BindOnce(&CreateAndShowSaveAndFillDialog,
+                     save_and_fill_dialog_controller_->GetWeakPtr(),
+                     web_contents()),
+      std::move(callback));
 #else
   NOTIMPLEMENTED();
 #endif  // !BUILDFLAG(IS_ANDROID)

@@ -115,7 +115,7 @@ class LogBuffer {
   LogBuffer& operator=(const LogBuffer& other) = delete;
 
   // Returns the contents of the buffer if any and empties it.
-  std::optional<base::Value::Dict> RetrieveResult();
+  std::optional<base::DictValue> RetrieveResult();
 
   // Returns whether an active WebUI is listening. If false, the buffer may
   // not do any logging.
@@ -138,7 +138,7 @@ class LogBuffer {
   // constructed. Once it is read (i.e. closed via a CTag), it is popped from
   // the stack and attached as a child of the previously second last element.
   // Only the first element of buffer_ is a 'fragment' and it is never closed.
-  std::vector<base::Value::Dict> buffer_;
+  std::vector<base::DictValue> buffer_;
 
   bool active_ = true;
 };

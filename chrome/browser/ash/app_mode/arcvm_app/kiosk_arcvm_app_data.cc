@@ -50,7 +50,7 @@ bool KioskArcvmAppData::CompareByAppID(const std::string& other_app_id) const {
 // OnIconLoadDone.
 // TODO(crbug.com/418936700) : Handle asynchronous icon update.
 bool KioskArcvmAppData::LoadFromCache() {
-  const base::Value::Dict& dict = local_state_->GetDict(dictionary_name());
+  const base::DictValue& dict = local_state_->GetDict(dictionary_name());
 
   if (!LoadFromDictionary(dict)) {
     return false;

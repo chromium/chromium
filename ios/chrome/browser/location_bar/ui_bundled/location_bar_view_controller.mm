@@ -4,7 +4,6 @@
 
 #import "ios/chrome/browser/location_bar/ui_bundled/location_bar_view_controller.h"
 
-#import "base/containers/contains.h"
 #import "base/functional/bind.h"
 #import "base/ios/ios_util.h"
 #import "base/metrics/histogram_functions.h"
@@ -32,6 +31,7 @@
 #import "ios/chrome/browser/location_bar/ui_bundled/fakebox_buttons_snapshot_provider.h"
 #import "ios/chrome/browser/location_bar/ui_bundled/location_bar_constants.h"
 #import "ios/chrome/browser/location_bar/ui_bundled/location_bar_metrics.h"
+#import "ios/chrome/browser/location_bar/ui_bundled/location_bar_mutator.h"
 #import "ios/chrome/browser/location_bar/ui_bundled/location_bar_placeholder_type.h"
 #import "ios/chrome/browser/location_bar/ui_bundled/location_bar_steady_view.h"
 #import "ios/chrome/browser/omnibox/public/omnibox_constants.h"
@@ -40,22 +40,21 @@
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/public/commands/activity_service_commands.h"
-#import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/browser_coordinator_commands.h"
 #import "ios/chrome/browser/shared/public/commands/bwg_commands.h"
 #import "ios/chrome/browser/shared/public/commands/help_commands.h"
 #import "ios/chrome/browser/shared/public/commands/lens_commands.h"
 #import "ios/chrome/browser/shared/public/commands/lens_overlay_commands.h"
-#import "ios/chrome/browser/shared/public/commands/load_query_commands.h"
 #import "ios/chrome/browser/shared/public/commands/open_lens_input_selection_command.h"
 #import "ios/chrome/browser/shared/public/commands/page_action_menu_commands.h"
 #import "ios/chrome/browser/shared/public/commands/page_action_menu_entry_point_commands.h"
+#import "ios/chrome/browser/shared/public/commands/scene_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/util/layout_guide_names.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/shared/ui/util/util_swift.h"
-#import "ios/chrome/browser/toolbar/ui_bundled/public/toolbar_type.h"
+#import "ios/chrome/browser/toolbar/legacy/ui_bundled/public/toolbar_type.h"
 #import "ios/chrome/common/NSString+Chromium.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #import "ios/chrome/common/ui/util/pointer_interaction_util.h"
@@ -204,11 +203,7 @@ const CGFloat kShareIconBalancingHeightPadding = 1;
   if (placeholderType == _placeholderType) {
     return;
   }
-  if (IsDiamondPrototypeEnabled()) {
-    _placeholderType = LocationBarPlaceholderType::kNone;
-  } else {
-    _placeholderType = placeholderType;
-  }
+  _placeholderType = placeholderType;
   if (self.isViewLoaded) {
     [self updatePlaceholderView];
   }
@@ -410,7 +405,7 @@ const CGFloat kShareIconBalancingHeightPadding = 1;
 #pragma mark - LocationBarConsumer
 
 - (void)defocusOmnibox {
-  [self.dispatcher cancelOmniboxEdit];
+  [self.dispatcher hideComposebox];
 }
 
 - (void)setPlaceholderText:(NSString*)searchProviderName {
@@ -681,10 +676,6 @@ const CGFloat kShareIconBalancingHeightPadding = 1;
     state = kNoButton;
   }
 
-  if (IsDiamondPrototypeEnabled()) {
-    state = kNoButton;
-  }
-
   switch (state) {
     case kNoButton: {
       self.locationBarSteadyView.trailingButton.hidden = YES;
@@ -818,19 +809,6 @@ const CGFloat kShareIconBalancingHeightPadding = 1;
   NSMutableArray<UIMenuElement*>* menuElements = [[NSMutableArray alloc] init];
   __weak __typeof__(self) weakSelf = self;
 
-  if (IsDiamondPrototypeEnabled() && !self.locationBarSteadyView.hidden) {
-    UIImage* image =
-        DefaultSymbolWithPointSize(kShareSymbol, kSymbolActionPointSize);
-    UIAction* copyAction = [UIAction
-        actionWithTitle:l10n_util::GetNSString(IDS_IOS_SHARE_BUTTON_LABEL)
-                  image:image
-             identifier:nil
-                handler:^(UIAction* action) {
-                  [weakSelf.delegate locationBarShareTapped];
-                }];
-    [menuElements addObject:copyAction];
-  }
-
   UIImage* pasteImage = nil;
   if (IsBottomOmniboxAvailable()) {
     pasteImage =
@@ -859,8 +837,7 @@ const CGFloat kShareIconBalancingHeightPadding = 1;
   if (clipboard_content_types.has_value()) {
     std::set<ClipboardContentType> clipboard_content_types_values =
         clipboard_content_types.value();
-    if (base::Contains(clipboard_content_types_values,
-                       ClipboardContentType::Image)) {
+    if (clipboard_content_types_values.contains(ClipboardContentType::Image)) {
       // Either add an option to search the copied image with Lens, or via the
       // default search engine's reverse image search functionality.
       if (self.shouldUseLensInLongPressMenu) {
@@ -886,8 +863,8 @@ const CGFloat kShareIconBalancingHeightPadding = 1;
                               handler:searchCopiedImageHandler];
         [menuElements addObject:searchCopiedImageAction];
       }
-    } else if (base::Contains(clipboard_content_types_values,
-                              ClipboardContentType::URL)) {
+    } else if (clipboard_content_types_values.contains(
+                   ClipboardContentType::URL)) {
       id visitCopiedLinkHandler = ^(UIAction* action) {
         [self visitCopiedLink:nil];
       };
@@ -897,8 +874,8 @@ const CGFloat kShareIconBalancingHeightPadding = 1;
                identifier:nil
                   handler:visitCopiedLinkHandler];
       [menuElements addObject:visitCopiedLinkAction];
-    } else if (base::Contains(clipboard_content_types_values,
-                              ClipboardContentType::Text)) {
+    } else if (clipboard_content_types_values.contains(
+                   ClipboardContentType::Text)) {
       id searchCopiedTextHandler = ^(UIAction* action) {
         [self searchCopiedText:nil];
       };
@@ -909,6 +886,20 @@ const CGFloat kShareIconBalancingHeightPadding = 1;
                   handler:searchCopiedTextHandler];
       [menuElements addObject:searchCopiedTextAction];
     }
+  }
+
+  // Used to easily trigger the Assistant sheet during development.
+  if (IsAssistantSheetEnabled()) {
+    UIAction* assistantAction =
+        [UIAction actionWithTitle:l10n_util::GetNSString(
+                                      IDS_IOS_DIAMOND_PROTOTYPE_ASK_GEMINI)
+                            image:DefaultSymbolWithPointSize(
+                                      kMagicStackSymbol, kSymbolActionPointSize)
+                       identifier:nil
+                          handler:^(UIAction* action) {
+                            [weakSelf.dispatcher showAssistant];
+                          }];
+    [menuElements addObject:assistantAction];
   }
 
   // Show Top or Bottom Address Bar action.
@@ -979,6 +970,31 @@ const CGFloat kShareIconBalancingHeightPadding = 1;
   return configuration;
 }
 
+- (void)contextMenuInteraction:(UIContextMenuInteraction*)interaction
+    willDisplayMenuForConfiguration:(UIContextMenuConfiguration*)configuration
+                           animator:
+                               (id<UIContextMenuInteractionAnimating>)animator {
+  if (!IsGeminiCopresenceEnabled()) {
+    return;
+  }
+
+  [self.geminiHandler hideFloatyIfInvokedAnimated:YES];
+}
+
+- (void)contextMenuInteraction:(UIContextMenuInteraction*)interaction
+       willEndForConfiguration:(UIContextMenuConfiguration*)configuration
+                      animator:(id<UIContextMenuInteractionAnimating>)animator {
+  if (!IsGeminiCopresenceEnabled()) {
+    return;
+  }
+
+  // Ensure floaty is shown after the context menu has fully dismissed.
+  __weak __typeof(self) weakSelf = self;
+  [animator addCompletion:^() {
+    [weakSelf.geminiHandler showFloatyIfInvokedAnimated:YES];
+  }];
+}
+
 - (BOOL)canPerformAction:(SEL)action withSender:(id)sender {
   // Allow copying if the steady location bar is visible.
   if (!self.locationBarSteadyView.hidden && action == @selector(copy:)) {
@@ -1015,8 +1031,8 @@ const CGFloat kShareIconBalancingHeightPadding = 1;
         }
         NSString* url = base::SysUTF8ToNSString(optionalURL.value().spec());
         dispatch_async(dispatch_get_main_queue(), ^{
-          [self.dispatcher loadQuery:url immediately:YES];
-          [self.dispatcher cancelOmniboxEdit];
+          [self.mutator loadQuery:url];
+          [self.dispatcher hideComposebox];
         });
       }));
 }
@@ -1033,8 +1049,8 @@ const CGFloat kShareIconBalancingHeightPadding = 1;
         }
         NSString* query = base::SysUTF16ToNSString(optionalText.value());
         dispatch_async(dispatch_get_main_queue(), ^{
-          [self.dispatcher loadQuery:query immediately:YES];
-          [self.dispatcher cancelOmniboxEdit];
+          [self.mutator loadQuery:query];
+          [self.dispatcher hideComposebox];
         });
       }));
 }
@@ -1064,15 +1080,14 @@ const CGFloat kShareIconBalancingHeightPadding = 1;
 }
 
 - (void)handlePageActionMenuEntrypointTapped {
-  // TODO(crbug.com/402827015): Log opens.
   if (_pageActionMenuEntrypointView.newBadgeVisible) {
     RecordAIHubNewBadgeTapped();
     [self.delegate locationBarDidTapAIHubNewBadge];
     _pageActionMenuEntrypointView.newBadgeVisible = NO;
   }
   if (IsDirectBWGEntryPoint()) {
-    [self.BWGHandler
-        startGeminiFlowWithEntryPoint:bwg::EntryPoint::OmniboxChip];
+    [self.geminiHandler
+        startGeminiFlowWithEntryPoint:gemini::EntryPoint::OmniboxChip];
   } else {
     RecordAIHubIconTapped();
     [self.pageActionMenuHandler showPageActionMenu];

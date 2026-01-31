@@ -45,6 +45,7 @@ void LevelDBCleanupScheduler::OnTransactionStart() {
       running_state_->clean_up_scheduling_timer_.IsRunning()) {
     ++running_state_->postpone_count;
     running_state_->clean_up_scheduling_timer_.Stop();
+    delegate_->OnCleanupStopped(/*completed=*/false);
   }
 }
 
@@ -138,7 +139,7 @@ void LevelDBCleanupScheduler::LogAndResetState() {
   last_run_ = base::TimeTicks::Now();
   running_state_.reset();
 
-  delegate_->OnCleanupDone();
+  delegate_->OnCleanupStopped(/*completed=*/true);
 }
 
 bool LevelDBCleanupScheduler::RunTombstoneSweeper() {

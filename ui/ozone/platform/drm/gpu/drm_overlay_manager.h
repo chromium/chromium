@@ -28,8 +28,7 @@ class OverlaySurfaceCandidate;
 // of recent configurations.
 class DrmOverlayManager : public OverlayManagerOzone {
  public:
-  DrmOverlayManager(bool handle_overlays_swap_failure,
-                    bool allow_sync_and_real_buffer_page_flip_testing);
+  explicit DrmOverlayManager(bool allow_sync_and_real_buffer_page_flip_testing);
 
   DrmOverlayManager(const DrmOverlayManager&) = delete;
   DrmOverlayManager& operator=(const DrmOverlayManager&) = delete;
@@ -110,10 +109,6 @@ class DrmOverlayManager : public OverlayManagerOzone {
       const gfx::AcceleratedWidget widget,
       const std::vector<OverlayStatus>& status);
 
-  base::TimeTicks disallow_fullscreen_overlays_end_time() const {
-    return disallow_fullscreen_overlays_end_time_;
-  }
-
  private:
   // Value for the request cache, that keeps track of how many times a
   // specific validation has been requested, if there is a GPU validation
@@ -147,22 +142,6 @@ class DrmOverlayManager : public OverlayManagerOzone {
 
   // A simple queue of bools that helps to identify buffer swaps.
   base::circular_deque<std::vector<gfx::OverlayType>> in_flight_overlay_types_;
-
-  // Tell the manager to handle overlay swap failures.
-  // TODO(b/331237773): Unfortunately, the kHandleOverlaysSwapFailure feature
-  // cannot be checked by the this overlay manager in ozone directly as it
-  // creates a circular dependency. That's why this control bool is here. Remove
-  // this once kHandleOverlaysSwapFailure is removed and DrmOverlayManager is
-  // always handling swap failures.
-  const bool handle_overlays_swap_failure_;
-
-  // Control variable, which allows to promote fullscreen overlay candidates
-  // without drm testing if |handle_overlays_swap_failure_| is true.
-  bool allow_skip_fullscreen_overlay_drm_test_ = true;
-  // The end time when fullscreen overlay drm test is allowed again. This is
-  // set when fullscreen overlay fails and the manager has to start to do
-  // drm test of fullscreen overlays again.
-  base::TimeTicks disallow_fullscreen_overlays_end_time_;
 
   THREAD_CHECKER(thread_checker_);
 };

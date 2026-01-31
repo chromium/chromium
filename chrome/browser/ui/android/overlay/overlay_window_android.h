@@ -51,7 +51,7 @@ class OverlayWindowAndroid : public content::VideoOverlayWindow,
   void CompositorViewCreated(
       JNIEnv* env,
       const base::android::JavaRef<jobject>& compositor_view);
-  void OnViewSizeChanged(JNIEnv* env, jint width, jint height);
+  void OnViewSizeChanged(JNIEnv* env, int32_t width, int32_t height);
   void OnBackToTab(JNIEnv* env);
   void OnDismissal(JNIEnv* env);
 

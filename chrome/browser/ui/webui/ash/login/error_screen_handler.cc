@@ -18,7 +18,7 @@ ErrorScreenHandler::ErrorScreenHandler() : BaseScreenHandler(kScreenId) {}
 ErrorScreenHandler::~ErrorScreenHandler() = default;
 
 void ErrorScreenHandler::ShowScreenWithParam(bool is_closeable) {
-  ShowInWebUI(base::Value::Dict().Set("isCloseable", is_closeable));
+  ShowInWebUI(base::DictValue().Set("isCloseable", is_closeable));
 }
 
 void ErrorScreenHandler::ShowOobeScreen(OobeScreenId screen) {

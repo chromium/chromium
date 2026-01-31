@@ -26,8 +26,13 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_OSAUTH) TokenBasedAuthRequest
   explicit TokenBasedAuthRequest(AuthCompletionCallback on_auth_complete);
   ~TokenBasedAuthRequest() override;
 
-  void NotifyAuthSuccess(std::unique_ptr<UserContext> user_context) override;
-  void NotifyAuthFailure() override;
+  void NotifyAuthResult(std::unique_ptr<UserContext> user_context,
+                        AuthResult result) override;
+
+ protected:
+  // Helper to call the on_auth_complete_ callback.
+  void CompleteAuthAttempt(std::unique_ptr<UserContext> user_context,
+                           bool success);
 
  private:
   AuthCompletionCallback on_auth_complete_;

@@ -8,7 +8,6 @@
 #include <string>
 #include <unordered_set>
 
-#include "base/containers/contains.h"
 #include "base/containers/flat_set.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
@@ -96,22 +95,22 @@ void LogRequestDeviceOptions(
       DVLOG(1) << "Name Prefix: " << filter->name_prefix.value();
 
     if (filter->services) {
-      base::Value::List services_list;
+      base::ListValue services_list;
       for (const auto& service : filter->services.value())
         services_list.Append(service.canonical_value());
       DVLOG(1) << "Services: " << services_list;
     }
 
     if (filter->manufacturer_data) {
-      base::Value::List manufacturer_data_list;
+      base::ListValue manufacturer_data_list;
       for (const auto& manufacturer_data : filter->manufacturer_data.value()) {
-        base::Value::List filter_data_list;
-        base::Value::List filter_mask_list;
+        base::ListValue filter_data_list;
+        base::ListValue filter_mask_list;
         for (const auto& data_filter : manufacturer_data.second) {
           filter_data_list.Append(data_filter->data);
           filter_mask_list.Append(data_filter->mask);
         }
-        base::Value::Dict data_filter_dict;
+        base::DictValue data_filter_dict;
         data_filter_dict.Set("Company Identifier", manufacturer_data.first->id);
         data_filter_dict.Set("Data", std::move(filter_data_list));
         data_filter_dict.Set("Mask", std::move(filter_mask_list));
@@ -144,7 +143,7 @@ bool MatchesFilter(const std::string* device_name,
 
   if (filter->services) {
     for (const auto& service : filter->services.value()) {
-      if (!base::Contains(device_uuids, service)) {
+      if (!device_uuids.contains(service)) {
         return false;
       }
     }

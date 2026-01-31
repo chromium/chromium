@@ -74,6 +74,20 @@ void MockSharedWorker::Terminate() {
   terminate_received_ = true;
 }
 
+void MockSharedWorker::Freeze() {
+  freeze_count_++;
+}
+
+void MockSharedWorker::Resume() {
+  if (freeze_count_ > 0) {
+    freeze_count_--;
+  }
+}
+
+bool MockSharedWorker::IsFrozen() const {
+  return freeze_count_ > 0;
+}
+
 MockSharedWorkerFactory::MockSharedWorkerFactory(
     mojo::PendingReceiver<blink::mojom::SharedWorkerFactory> receiver)
     : receiver_(this, std::move(receiver)) {}
@@ -147,7 +161,8 @@ void MockSharedWorkerFactory::CreateSharedWorker(
     mojo::PendingReceiver<blink::mojom::ReportingObserver>
         coep_reporting_observer,
     mojo::PendingReceiver<blink::mojom::ReportingObserver>
-        dip_reporting_observer) {
+        dip_reporting_observer,
+    bool cross_origin_isolated) {
   DCHECK(!create_params_);
   create_params_ = std::make_unique<CreateParams>();
   create_params_->info = std::move(info);

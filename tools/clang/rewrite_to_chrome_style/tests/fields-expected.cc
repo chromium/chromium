@@ -44,8 +44,8 @@ class C {
 };
 
 struct Derived : public C {
-  using C::flag_field_;
   using C::field_mentioning_http_and_https_;
+  using C::flag_field_;
 };
 
 int C::instance_count_ = 0;

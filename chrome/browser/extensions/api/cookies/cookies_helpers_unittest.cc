@@ -19,7 +19,7 @@ namespace {
 std::optional<extensions::api::cookies::CookiePartitionKey>
 BuildApiPartitionKey(const std::optional<std::string>& top_level_site,
                      const std::optional<bool>& has_cross_site_ancestor) {
-  base::Value::Dict partition_key_vals;
+  base::DictValue partition_key_vals;
 
   if (top_level_site.has_value()) {
     partition_key_vals.Set("topLevelSite", top_level_site.value());
@@ -55,7 +55,7 @@ TEST(CookiesHelperUnittest, CookieConversionWithInfiniteExpirationDate) {
   // expiration date, which should be converted to the maximum value.
   api::cookies::Cookie serialized_cookie =
       cookies_helpers::CreateCookie(*cookie, "1");
-  base::Value::Dict value_cookie = serialized_cookie.ToValue();
+  base::DictValue value_cookie = serialized_cookie.ToValue();
   std::optional<double> expiration_time =
       value_cookie.FindDouble("expirationDate");
   ASSERT_TRUE(expiration_time);

@@ -4,6 +4,8 @@
 
 #include "components/facilitated_payments/core/browser/pix_account_linking_manager.h"
 
+#include <utility>
+
 #include "base/check_deref.h"
 #include "base/debug/dump_without_crashing.h"
 #include "base/functional/bind.h"
@@ -26,13 +28,7 @@ PixAccountLinkingManager::PixAccountLinkingManager(
     FacilitatedPaymentsClient* client)
     : client_(CHECK_DEREF(client)) {}
 
-PixAccountLinkingManager::~PixAccountLinkingManager() {
-  if (is_prompt_showing_) {
-    // The prompt closed unexpectedly, so the internal state is not updated. The
-    // event listener would log metrics accordingly.
-    client_->DismissPrompt();
-  }
-}
+PixAccountLinkingManager::~PixAccountLinkingManager() = default;
 
 void PixAccountLinkingManager::MaybeShowPixAccountLinkingPrompt(
     const url::Origin& pix_payment_page_origin) {
@@ -215,8 +211,7 @@ void PixAccountLinkingManager::OnUiScreenEvent(UiEvent ui_event_type) {
       break;
     }
     default:
-      NOTREACHED() << "Unhandled UiEvent "
-                   << base::to_underlying(ui_event_type);
+      NOTREACHED() << "Unhandled UiEvent " << std::to_underlying(ui_event_type);
   }
 }
 

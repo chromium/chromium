@@ -4,6 +4,7 @@
 
 #include "components/omnibox/browser/enterprise_search_aggregator_provider.h"
 
+#include <algorithm>
 #include <iterator>
 #include <memory>
 #include <optional>
@@ -12,7 +13,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/containers/contains.h"
 #include "base/json/json_reader.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
@@ -763,7 +763,7 @@ class EnterpriseSearchAggregatorProviderTest : public testing::Test {
     provider_->done_ = false;
 
     for (size_t i = 0; i < provider_->requests_.size(); ++i) {
-      bool allowed = base::Contains(allowed_requests, i);
+      bool allowed = std::ranges::contains(allowed_requests, i);
       provider_->requests_[i].Reset(!allowed);
       if (allowed) {
         provider_->RequestStarted(i, nullptr);

@@ -3,10 +3,12 @@
 # found in the LICENSE file.
 
 include_rules = [
+  # keep-sorted start
     "+ios/chrome/browser/authentication/ui_bundled/signin/signin_utils.h",
     "+ios/chrome/browser/browsing_data/model",
     "+ios/chrome/browser/discover_feed/model",
     "+ios/chrome/browser/signin/model/identity_manager_factory.h",
+  # keep-sorted end
 ]
 
 specific_include_rules = {

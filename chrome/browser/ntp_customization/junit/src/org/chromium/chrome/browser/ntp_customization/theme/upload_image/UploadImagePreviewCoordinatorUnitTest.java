@@ -10,6 +10,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -22,6 +23,7 @@ import android.graphics.Point;
 import android.view.View;
 
 import androidx.annotation.Nullable;
+import androidx.constraintlayout.widget.ConstraintLayout;
 
 import org.junit.After;
 import org.junit.Before;
@@ -38,6 +40,8 @@ import org.chromium.base.Callback;
 import org.chromium.base.test.BaseRobolectricTestRule;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.HistogramWatcher;
+import org.chromium.chrome.browser.composeplate.ComposeplateUtils;
+import org.chromium.chrome.browser.composeplate.ComposeplateUtilsJni;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.logo.LogoUtils;
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationConfigManager;
@@ -60,6 +64,7 @@ public class UploadImagePreviewCoordinatorUnitTest {
     @Mock private CropImageView mCropImageView;
     @Mock private TemplateUrlService mTemplateUrlService;
     @Mock private Profile mProfile;
+    @Mock private ComposeplateUtils.Natives mComposeplateUtilsJni;
 
     private Dialog mDialog;
     private UploadImagePreviewCoordinator mUploadImagePreviewCoordinator;
@@ -70,12 +75,18 @@ public class UploadImagePreviewCoordinatorUnitTest {
     private Bitmap mBitmap;
     private Matrix mPortraitMatrix;
     private Matrix mLandscapeMatrix;
+    private Bitmap mLogoBitmap;
+    private PropertyModel mPropertyModel;
 
     @Before
     public void setUp() {
         mActivity = Robolectric.buildActivity(Activity.class).create().get();
         mActivity.setTheme(R.style.Theme_BrowserUI_DayNight);
         mBitmap = Bitmap.createBitmap(10, 10, Bitmap.Config.ARGB_8888);
+
+        // Mocks the JNI interface for ComposeplateUtils to avoid Native method not present error.
+        ComposeplateUtilsJni.setInstanceForTesting(mComposeplateUtilsJni);
+        when(mComposeplateUtilsJni.isAimEntrypointEligible(any())).thenReturn(false);
 
         // Default to show Google logo in tests.
         TemplateUrlServiceFactory.setInstanceForTesting(mTemplateUrlService);
@@ -88,6 +99,7 @@ public class UploadImagePreviewCoordinatorUnitTest {
         View contentView = mDialog.findViewById(android.R.id.content);
         mSaveButton = contentView.findViewById(R.id.save_button);
         mCancelButton = contentView.findViewById(R.id.cancel_button);
+        mLogoBitmap = Bitmap.createBitmap(5, 5, Bitmap.Config.ARGB_8888);
 
         mConfigManager = NtpCustomizationConfigManager.getInstance();
         ChromeFeatureList.sNewTabPageCustomizationV2ShowLogoAndSearchBox.setForTesting(true);
@@ -277,6 +289,7 @@ public class UploadImagePreviewCoordinatorUnitTest {
 
     @Test
     public void testClickSaveButton() {
+        mConfigManager.setDefaultSearchEngineLogoBitmap(mLogoBitmap);
         setupCropImageView();
 
         mSaveButton.performClick();
@@ -310,18 +323,25 @@ public class UploadImagePreviewCoordinatorUnitTest {
                 "The background image file should have been saved.",
                 NtpCustomizationUtils.createBackgroundImageFile().exists());
 
-        // Verify the on clicked callback was invoked.
+        // Verifies the on clicked callback was invoked.
         verify(mOnClickedCallback).onResult(eq(true));
 
-        // Verify the dialog was dismissed.
+        // Verifies the bitmap is still present and was not set to null.
+        assertEquals(
+                "The search engine logo bitmap should not be cleared when canceling.",
+                mLogoBitmap,
+                mConfigManager.getDefaultSearchEngineLogoBitmap());
+
+        // Verifies the dialog was dismissed.
         assertFalse("Dialog should be dismissed after clicking save.", mDialog.isShowing());
     }
 
     @Test
     public void testClickCancelButton() {
+        mConfigManager.setDefaultSearchEngineLogoBitmap(mLogoBitmap);
         mCancelButton.performClick();
 
-        // Verify the on clicked callback was invoked.
+        // Verifies the on clicked callback was invoked.
         verify(mOnClickedCallback).onResult(eq(false));
         assertFalse(
                 "The background image file should not have been saved.",
@@ -330,13 +350,19 @@ public class UploadImagePreviewCoordinatorUnitTest {
                 "The matrices should not have been saved.",
                 NtpCustomizationUtils.readNtpBackgroundImageInfo());
 
-        // Verify the dialog was dismissed.
+        // Verifies the bitmap is still present and was not set to null.
+        assertEquals(
+                "The search engine logo bitmap should not be cleared when canceling.",
+                mLogoBitmap,
+                mConfigManager.getDefaultSearchEngineLogoBitmap());
+
+        // Verifies the dialog was dismissed.
         assertFalse("Dialog should be dismissed after clicking cancel.", mDialog.isShowing());
     }
 
     @Test
-    public void destroy_clearsListeners() {
-        PropertyModel propertyModel = mUploadImagePreviewCoordinator.getPropertyModelForTesting();
+    public void testDestroy() {
+        mConfigManager.setDefaultSearchEngineLogoBitmap(mLogoBitmap);
 
         // Verify that the listeners are initially set and not null.
         assertTrue(
@@ -345,120 +371,192 @@ public class UploadImagePreviewCoordinatorUnitTest {
         assertTrue(
                 "Cancel button should have a click listener before destroy.",
                 mCancelButton.hasOnClickListeners());
-        // Use the propertyModel to check if the insets listener is set to null.
-        assertNotNull(
-                "Insets listener should be set before destroy.",
-                propertyModel.get(NtpThemeProperty.PREVIEW_SET_WINDOW_INSETS_LISTENER));
+        assertTrue(mDialog.isShowing());
 
         mUploadImagePreviewCoordinator.destroy();
 
+        // Verifies that listeners are cleared from the model.
         assertFalse(
                 "Save button's click listener should be null after destroy.",
                 mSaveButton.hasOnClickListeners());
         assertFalse(
                 "Cancel button's click listener should be null after destroy.",
                 mCancelButton.hasOnClickListeners());
-        assertNull(
-                "Insets listener should be null in the model after destroy.",
-                propertyModel.get(NtpThemeProperty.PREVIEW_SET_WINDOW_INSETS_LISTENER));
+
+        // Verifies the bitmap is still present and was not set to null.
+        assertEquals(
+                "The search engine logo bitmap should not be cleared when saving an image.",
+                mLogoBitmap,
+                mConfigManager.getDefaultSearchEngineLogoBitmap());
+        assertFalse(mDialog.isShowing());
     }
 
     @Test
-    public void testLogoLogic_GoogleDefault() {
+    public void testLogoAndSearchBox_GoogleDefault() {
         // Sets up the configuration where Google is the default search engine, and the logo
         // service returns a null bitmap. This scenario implies that the default Google drawable
         // should be displayed with non-doodle parameters.
-        verifyLogoVisible(/* isDefaultSearchEngineGoogle= */ true, /* logo= */ null);
+        verifySearchBoxWithLogo(/* isDefaultSearchEngineGoogle= */ true, /* logo= */ null);
     }
 
     @Test
-    public void testLogoLogic_Doodle_Or_ThirdParty_Loading() {
+    public void testLogoAndSearchBox_Doodle_Or_ThirdParty_Loading() {
         // Sets up the configuration where a third-party search engine is selected or doodle should
         // show but the logo bitmap is null.
         // This represents a state where the logo is either currently loading or unavailable. This
         // scenario implies that the view should be hidden.
-        verifyLogoGone(/* doesSearchEngineHaveLogo= */ true);
+        verifySearchBoxNoLogo(/* doesSearchEngineHaveLogo= */ true);
     }
 
     @Test
-    public void testLogoLogic_ThirdParty_Loaded() {
+    public void testLogoAndSearchBox_ThirdParty_Loaded() {
         // Sets up the configuration where a third-party search engine is selected and a valid logo
         // bitmap is available. This scenario implies that the view should
         // be visible and display the bitmap, using doodle layout parameters.
         Bitmap logo = Bitmap.createBitmap(1, 1, Bitmap.Config.ARGB_8888);
-        verifyLogoVisible(/* isDefaultSearchEngineGoogle= */ false, /* logo= */ logo);
+        verifySearchBoxWithLogo(/* isDefaultSearchEngineGoogle= */ false, /* logo= */ logo);
     }
 
     @Test
-    public void testLogoLogic_Doodle_Loaded() {
+    public void testLogoAndSearchBox_Doodle_Loaded() {
         // Sets up the configuration where a doodle should show and a valid logo bitmap is
         // available. This scenario implies that the view should
         // be visible and display the bitmap, using doodle layout parameters.
         Bitmap logo = Bitmap.createBitmap(1, 1, Bitmap.Config.ARGB_8888);
-        verifyLogoVisible(/* isDefaultSearchEngineGoogle= */ true, /* logo= */ logo);
+        verifySearchBoxWithLogo(/* isDefaultSearchEngineGoogle= */ true, /* logo= */ logo);
     }
 
     @Test
-    public void testLogoLogic_SearchEngineHasNoLogo() {
+    public void testLogoAndSearchBox_NoSearchEngineLogo() {
         // Setup the case where the default search engine does not have a logo at all.
         // This scenario implies that the view should be hidden.
-        verifyLogoGone(/* doesSearchEngineHaveLogo= */ false);
+        verifySearchBoxNoLogo(/* doesSearchEngineHaveLogo= */ false);
     }
 
-    /** Helper to verify logo is hidden. */
-    private void verifyLogoGone(boolean doesSearchEngineHaveLogo) {
-        when(mTemplateUrlService.doesDefaultSearchEngineHaveLogo())
-                .thenReturn(doesSearchEngineHaveLogo);
-        when(mTemplateUrlService.isDefaultSearchEngineGoogle()).thenReturn(false);
-        mConfigManager.setDefaultSearchEngineLogoBitmap(null);
+    @Test
+    public void testSearchBoxHeight_ComposeplateV2() {
+        // Forces the ComposeplateV2 state
+        when(mComposeplateUtilsJni.isAimEntrypointEligible(any())).thenReturn(true);
+        ChromeFeatureList.sAndroidComposeplateV2Enabled.setForTesting(true);
 
-        // Re-create coordinator to run constructor logic
         mUploadImagePreviewCoordinator =
                 new UploadImagePreviewCoordinator(mActivity, mProfile, mBitmap, mOnClickedCallback);
 
         PropertyModel model = mUploadImagePreviewCoordinator.getPropertyModelForTesting();
 
+        int expectedTallHeight =
+                NtpCustomizationUtils.getSearchBoxHeightWithShadows(
+                        mActivity.getResources(),
+                        /* showSearchBoxTall= */ true,
+                        /* hasShadowApplied= */ true);
+
+        // Verifies the height passed to the model
+        assertEquals(
+                "The height passed to the property model should be the one returned by"
+                        + " getSearchBoxHeightWithShadows()",
+                expectedTallHeight,
+                model.get(NtpThemeProperty.SEARCH_BOX_HEIGHT));
+
+        // Verify the height of the real view
+        ConstraintLayout.LayoutParams layoutParams = getSearchBoxLayoutParams();
+        assertEquals(
+                "The height of the real search box view should be the one returned by"
+                        + " getSearchBoxHeightWithShadows()",
+                expectedTallHeight,
+                layoutParams.height);
+    }
+
+    /** Verifies state when the logo is hidden and search box margins are adjusted accordingly. */
+    private void verifySearchBoxNoLogo(boolean doesSearchEngineHaveLogo) {
+        setupCoordinatorWithLogoAndSearchBoxState(
+                doesSearchEngineHaveLogo, /* isGoogle= */ false, /* logo= */ null);
+
+        // 1. Verifies logo visibility and parameters in model
         assertEquals(
                 "Logo visibility mismatch",
                 View.GONE,
-                model.get(NtpThemeProperty.SET_LOGO_VISIBILITY));
-
+                mPropertyModel.get(NtpThemeProperty.LOGO_VISIBILITY));
         assertNull(
                 "Params should not be set when logo is GONE",
-                model.get(NtpThemeProperty.SET_LOGO_PARAMS));
+                mPropertyModel.get(NtpThemeProperty.LOGO_PARAMS));
+
+        // 2. Verifies the top margin of the real search box view
+        ConstraintLayout.LayoutParams layoutParams = getSearchBoxLayoutParams();
+        int expectedGoneMargin =
+                mActivity.getResources().getDimensionPixelSize(R.dimen.mvt_container_top_margin);
+        assertEquals(
+                "The real view should use mvt_container_top_margin for goneTopMargin",
+                expectedGoneMargin,
+                layoutParams.goneTopMargin);
     }
 
-    /** Helper to verify logo is visible with correct bitmap and calculated params. */
-    private void verifyLogoVisible(boolean isDefaultSearchEngineGoogle, @Nullable Bitmap logo) {
+    /** Verifies state when the logo is visible and search box margins are adjusted accordingly. */
+    private void verifySearchBoxWithLogo(
+            boolean isDefaultSearchEngineGoogle, @Nullable Bitmap logo) {
+        setupCoordinatorWithLogoAndSearchBoxState(
+                /* hasLogo= */ true, isDefaultSearchEngineGoogle, logo);
 
-        when(mTemplateUrlService.doesDefaultSearchEngineHaveLogo()).thenReturn(true);
-        when(mTemplateUrlService.isDefaultSearchEngineGoogle())
-                .thenReturn(isDefaultSearchEngineGoogle);
+        // 1. Verifies logo visibility and bitmap in model
+        assertEquals(
+                "Logo visibility mismatch",
+                View.VISIBLE,
+                mPropertyModel.get(NtpThemeProperty.LOGO_VISIBILITY));
+        assertEquals(
+                "Logo bitmap mismatch", logo, mPropertyModel.get(NtpThemeProperty.LOGO_BITMAP));
+
+        // 2. Verifies calculated logo layout parameters in model
+        boolean isLogoDoodle = (logo != null);
+        int doodleSize = LogoUtils.getDoodleSize(mActivity.isInMultiWindowMode());
+        int[] expectedParams =
+                LogoUtils.getLogoViewLayoutParams(
+                        mActivity.getResources(), isLogoDoodle, doodleSize);
+        assertArrayEquals(
+                "Logo params mismatch",
+                expectedParams,
+                mPropertyModel.get(NtpThemeProperty.LOGO_PARAMS));
+
+        // 3. Verifies the top margin of the real search box view
+        ConstraintLayout.LayoutParams layoutParams = getSearchBoxLayoutParams();
+        int expectedTopMargin =
+                NtpCustomizationUtils.getLogoViewBottomMarginPx(
+                        mActivity.getResources(), /* applyShadow= */ true);
+        assertEquals(
+                "The real view should use logo bottom margin as top margin",
+                expectedTopMargin,
+                layoutParams.topMargin);
+    }
+
+    /**
+     * Helper to set up mocks, re-instantiates the coordinator, and verifies common model properties
+     * shared by both visible and hidden logo states.
+     */
+    private void setupCoordinatorWithLogoAndSearchBoxState(
+            boolean hasLogo, boolean isGoogle, @Nullable Bitmap logo) {
+        when(mTemplateUrlService.doesDefaultSearchEngineHaveLogo()).thenReturn(hasLogo);
+        when(mTemplateUrlService.isDefaultSearchEngineGoogle()).thenReturn(isGoogle);
         mConfigManager.setDefaultSearchEngineLogoBitmap(logo);
 
         // Re-create coordinator to run constructor logic
         mUploadImagePreviewCoordinator =
                 new UploadImagePreviewCoordinator(mActivity, mProfile, mBitmap, mOnClickedCallback);
 
-        PropertyModel model = mUploadImagePreviewCoordinator.getPropertyModelForTesting();
+        mPropertyModel = mUploadImagePreviewCoordinator.getPropertyModelForTesting();
 
+        // Verifies the value of SEARCH_BOX_TOP_MARGIN which is shared
+        // by both visible and hidden logo states.
+        int expectedModelMargin =
+                NtpCustomizationUtils.getLogoViewBottomMarginPx(
+                        mActivity.getResources(), /* applyShadow= */ true);
         assertEquals(
-                "Logo visibility mismatch",
-                View.VISIBLE,
-                model.get(NtpThemeProperty.SET_LOGO_VISIBILITY));
+                "The model should hold the shadow-adjusted margin",
+                expectedModelMargin,
+                mPropertyModel.get(NtpThemeProperty.SEARCH_BOX_TOP_MARGIN));
+    }
 
-        assertEquals("Logo bitmap mismatch", logo, model.get(NtpThemeProperty.SET_LOGO_BITMAP));
-
-        // Verifies layout parameters
-        boolean isLogoDoodle = (logo != null);
-        int doodleSize = LogoUtils.getDoodleSize(mActivity.isInMultiWindowMode());
-        int[] expectedParams =
-                LogoUtils.getLogoViewLayoutParams(
-                        mActivity.getResources(), isLogoDoodle, doodleSize);
-
-        assertArrayEquals(
-                "Logo params mismatch",
-                expectedParams,
-                model.get(NtpThemeProperty.SET_LOGO_PARAMS));
+    /** Helper to find the search box container view and return its layout params. */
+    private ConstraintLayout.LayoutParams getSearchBoxLayoutParams() {
+        View searchBoxContainer =
+                ShadowDialog.getLatestDialog().findViewById(R.id.search_box_container);
+        return (ConstraintLayout.LayoutParams) searchBoxContainer.getLayoutParams();
     }
 }

@@ -21,3 +21,16 @@ source_set("animated_promo") {
   ]
   frameworks = [ "UIKit.framework" ]
 }
+
+source_set("utils") {
+  sources = [
+    "animated_promo_utils.h",
+    "animated_promo_utils.mm",
+  ]
+  deps = [
+    "//base",
+    "//ios/chrome/browser/shared/ui/util",
+    "//ios/chrome/common/ui/colors",
+    "//ios/public/provider/chrome/browser/lottie:lottie_animation_api",
+  ]
+}

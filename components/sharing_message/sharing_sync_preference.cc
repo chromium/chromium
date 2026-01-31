@@ -35,12 +35,12 @@ const char kRegistrationTimestamp[] = "registration_timestamp";
 const char kSharingInfoSenderIdTargetInfo[] = "sender_id_target_info";
 const char kSharingInfoEnabledFeatures[] = "enabled_features";
 
-base::Value::Dict TargetInfoToValue(
+base::DictValue TargetInfoToValue(
     const syncer::DeviceInfo::SharingTargetInfo& target_info) {
   std::string base64_p256dh = base::Base64Encode(target_info.p256dh);
   std::string base64_auth_secret = base::Base64Encode(target_info.auth_secret);
 
-  base::Value::Dict result;
+  base::DictValue result;
   result.Set(kDeviceFcmToken, target_info.fcm_token);
   result.Set(kDeviceP256dh, base64_p256dh);
   result.Set(kDeviceAuthSecret, base64_auth_secret);
@@ -48,7 +48,7 @@ base::Value::Dict TargetInfoToValue(
 }
 
 std::optional<syncer::DeviceInfo::SharingTargetInfo> ValueToTargetInfo(
-    const base::Value::Dict& dict) {
+    const base::DictValue& dict) {
   const std::string* fcm_token = dict.FindString(kDeviceFcmToken);
   if (!fcm_token) {
     return std::nullopt;
@@ -105,7 +105,7 @@ void SharingSyncPreference::RegisterProfilePrefs(
 
 std::optional<SharingSyncPreference::FCMRegistration>
 SharingSyncPreference::GetFCMRegistration() const {
-  const base::Value::Dict& registration =
+  const base::DictValue& registration =
       prefs_->GetDict(prefs::kSharingFCMRegistration);
   const base::Value* timestamp_value =
       registration.Find(kRegistrationTimestamp);
@@ -144,10 +144,10 @@ void SharingSyncPreference::SetLocalSharingInfo(
     return;
   }
 
-  base::Value::Dict sender_id_target_info =
+  base::DictValue sender_id_target_info =
       TargetInfoToValue(sharing_info.sender_id_target_info);
 
-  base::Value::List list_value;
+  base::ListValue list_value;
   for (SharingSpecificFields::EnabledFeatures feature :
        sharing_info.enabled_features) {
     list_value.Append(feature);
@@ -181,12 +181,12 @@ void SharingSyncPreference::ClearLocalSharingInfo() {
 // static
 std::optional<syncer::DeviceInfo::SharingInfo>
 SharingSyncPreference::GetLocalSharingInfoForSync(PrefService* prefs) {
-  const base::Value::Dict& registration =
+  const base::DictValue& registration =
       prefs->GetDict(prefs::kSharingLocalSharingInfo);
 
-  const base::Value::Dict* sender_id_target_info_value =
+  const base::DictValue* sender_id_target_info_value =
       registration.FindDict(kSharingInfoSenderIdTargetInfo);
-  const base::Value::List* enabled_features_value =
+  const base::ListValue* enabled_features_value =
       registration.FindList(kSharingInfoEnabledFeatures);
   if (!sender_id_target_info_value || !enabled_features_value) {
     return std::nullopt;

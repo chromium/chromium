@@ -94,26 +94,26 @@ TEST_F(SerialAllowUsbDevicesForUrlsPolicyHandlerTest, CheckPolicySettings) {
                                &pref_value));
   EXPECT_TRUE(pref_value);
 
-  base::Value::Dict expected_device1;
+  base::DictValue expected_device1;
   expected_device1.Set("vendor_id", 1234);
   expected_device1.Set("product_id", 5678);
 
-  base::Value::Dict expected_device2;
+  base::DictValue expected_device2;
   expected_device2.Set("vendor_id", 4321);
 
-  base::Value::List expected_devices;
+  base::ListValue expected_devices;
   expected_devices.Append(std::move(expected_device1));
   expected_devices.Append(std::move(expected_device2));
 
-  base::Value::List expected_urls;
+  base::ListValue expected_urls;
   expected_urls.Append("https://google.com");
   expected_urls.Append("https://www.youtube.com");
 
-  base::Value::Dict expected_item;
+  base::DictValue expected_item;
   expected_item.Set("devices", std::move(expected_devices));
   expected_item.Set("urls", std::move(expected_urls));
 
-  base::Value::List expected;
+  base::ListValue expected;
   expected.Append(std::move(expected_item));
 
   EXPECT_EQ(expected, *pref_value);

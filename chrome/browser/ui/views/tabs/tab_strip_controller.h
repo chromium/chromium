@@ -7,27 +7,24 @@
 
 #include <optional>
 #include <string>
-#include <vector>
 
-#include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/tabs/tab_enums.h"
-#include "chrome/browser/ui/views/frame/browser_frame_view.h"
+#include "base/functional/callback_forward.h"
 #include "chrome/browser/ui/views/tabs/tab_strip_types.h"
 #include "components/tab_groups/tab_group_id.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/mojom/menu_source_type.mojom-forward.h"
 #include "ui/gfx/range/range.h"
 
-class Browser;
+enum class BrowserFrameActiveState;
 class BrowserWindowInterface;
-class ScopedTabStripModalUI;
+enum class NewTabTypes;
 class Tab;
 class TabGroup;
 class TabStrip;
 
 namespace gfx {
 class Point;
-}
+}  // namespace gfx
 
 namespace tab_groups {
 enum class TabGroupColorId;
@@ -51,13 +48,6 @@ class TabStripController {
 
   // Returns the number of tabs in the model.
   virtual int GetCount() const = 0;
-
-  // Features that want to show tabstrip-modal UI are mutually exclusive.
-  // Before showing a modal UI first check `CanShowModalUI`. Then call
-  // ShowModalUI() and keep `ScopedTabStripModal` alive to prevent other
-  // features from showing tabstrip-modal UI.
-  virtual bool CanShowModalUI() const = 0;
-  virtual std::unique_ptr<ScopedTabStripModalUI> ShowModalUI() = 0;
 
   // Returns true if `index` is a valid model index.
   virtual bool IsValidIndex(int index) const = 0;
@@ -158,9 +148,7 @@ class TabStripController {
   virtual void CreateNewTab(NewTabTypes context) = 0;
 
   // Notifies controller that the user started dragging this tabstrip's tabs.
-  // `dragging_window` indicates if the whole window is moving, or if tabs are
-  // moving within a window.
-  virtual void OnStartedDragging(bool dragging_window) = 0;
+  virtual void OnStartedDragging() = 0;
 
   // Notifies controller that the user stopped dragging this tabstrip's tabs.
   // This is also called when the tabs that the user is dragging were detached
@@ -215,44 +203,11 @@ class TabStripController {
   virtual gfx::Range ListTabsInGroup(
       const tab_groups::TabGroupId& group) const = 0;
 
-  // Determines whether the top frame is condensed vertically, as when the
-  // window is maximized. If true, the top frame is just the height of a tab,
-  // rather than having extra vertical space above the tabs.
-  virtual bool IsFrameCondensed() const = 0;
-
-  // Returns whether the shapes of background tabs are visible against the
-  // frame.
-  virtual bool HasVisibleBackgroundTabShapes() const = 0;
-
-  // Returns whether the shapes of background tabs are visible against the
-  // frame for either active or inactive windows.
-  virtual bool EverHasVisibleBackgroundTabShapes() const = 0;
-
-  // Returns whether tab strokes can ever be drawn. If true, strokes will only
-  // be drawn if necessary.
-  virtual bool CanDrawStrokes() const = 0;
-
-  // Returns the color of the browser frame for the given window activation
-  // state.
-  virtual SkColor GetFrameColor(BrowserFrameActiveState active_state) const = 0;
-
-  // For non-transparent windows, returns the background tab image resource ID
-  // if the image has been customized, directly or indirectly, by the theme.
-  virtual std::optional<int> GetCustomBackgroundId(
-      BrowserFrameActiveState active_state) const = 0;
-
   // Returns the accessible tab name.
   virtual std::u16string GetAccessibleTabName(const Tab* tab) const = 0;
 
-  // Returns the profile associated with the Tabstrip.
-  virtual Profile* GetProfile() const = 0;
-
   // Returns the interface for the browser hosting the tab strip.
   virtual BrowserWindowInterface* GetBrowserWindowInterface() = 0;
-
-  // TODO(tluk): Migrate use of Browser to BrowserWindowInterface and remove
-  // this method.
-  virtual Browser* GetBrowser() = 0;
 
 #if BUILDFLAG(IS_CHROMEOS)
   // Returns whether the current app instance is locked for OnTask. Only

@@ -6,6 +6,7 @@
 #define GPU_COMMAND_BUFFER_COMMON_GL2_TYPES_H_
 
 #include <KHR/khrplatform.h>
+#include <stdint.h>
 
 // GL types are forward declared to avoid including the GL headers. The problem
 // is determining which GL headers to include from code that is common to the

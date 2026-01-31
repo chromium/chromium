@@ -34,17 +34,17 @@ std::map<std::string, std::string> kTestMap = {
     {"testPackage3", "BLOCKED"},        {"testPackage4", "AVAILABLE"},
     {"testPackage5", "AVAILABLE"},      {"testPackage6", "REQUIRED"}};
 
-std::string CreatePolicyJson(const base::Value::Dict& arc_policy) {
+std::string CreatePolicyJson(const base::DictValue& arc_policy) {
   return base::WriteJson(arc_policy).value_or("");
 }
 
 std::string CreatePolicyWithAppInstalls(
     std::map<std::string, std::string> package_map) {
-  base::Value::Dict arc_policy;
-  base::Value::List list;
+  base::DictValue arc_policy;
+  base::ListValue list;
 
   for (const auto& entry : package_map) {
-    base::Value::Dict package;
+    base::DictValue package;
     package.Set("packageName", entry.first);
     package.Set("installType", entry.second);
     list.Append(std::move(package));
@@ -55,7 +55,7 @@ std::string CreatePolicyWithAppInstalls(
 }
 
 std::string CreatePolicyWithKeys(std::set<std::string> keys) {
-  base::Value::Dict arc_policy;
+  base::DictValue arc_policy;
 
   for (const std::string& key : keys) {
     arc_policy.Set(key, "value");

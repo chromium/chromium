@@ -102,7 +102,7 @@ IN_PROC_BROWSER_TEST_F(TerminalPrivateBrowserTest, OpenCroshProcessChecks) {
     })
     }))";
 
-  base::Value::List system_features;
+  base::ListValue system_features;
   system_features.Append(static_cast<int>(policy::SystemFeature::kCrosh));
   g_browser_process->local_state()->SetList(
       policy::policy_prefs::kSystemFeaturesDisableList,
@@ -111,7 +111,7 @@ IN_PROC_BROWSER_TEST_F(TerminalPrivateBrowserTest, OpenCroshProcessChecks) {
   ExpectJsResult(script, "crosh not allowed");
 
   g_browser_process->local_state()->SetList(
-      policy::policy_prefs::kSystemFeaturesDisableList, base::Value::List());
+      policy::policy_prefs::kSystemFeaturesDisableList, base::ListValue());
   ExpectJsResult(script, "success");
 }
 

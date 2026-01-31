@@ -90,7 +90,7 @@ public class NtpThemeCollectionsCoordinator {
                 mContext.getResources()
                                 .getDimensionPixelSize(
                                         R.dimen
-                                                .ntp_customization_theme_collection_list_item_padding_horizontal)
+                                                .ntp_customization_theme_collection_list_item_margin_horizontal)
                         * 2;
 
         mNtpThemeCollectionsBottomSheetView =
@@ -126,10 +126,6 @@ public class NtpThemeCollectionsCoordinator {
                         mImageFetcher);
         mThemeCollectionsBottomSheetRecyclerView.setAdapter(mNtpThemeCollectionsAdapter);
         mNtpThemeCollectionsAdapter.setItems(mThemeCollectionsList);
-        // After setting items, apply the current selection from the manager.
-        mNtpThemeCollectionsAdapter.setSelection(
-                mNtpThemeCollectionManager.getSelectedThemeCollectionId(),
-                mNtpThemeCollectionManager.getSelectedThemeCollectionImageUrl());
 
         // Post the task to expand the sheet to ensure that the bottom sheet view is laid out and
         // has a height, allowing it to correctly open to the half-height state.

@@ -18,7 +18,7 @@ AutofillInternalsUI::AutofillInternalsUI(content::WebUI* web_ui)
     : WebUIController(web_ui) {
   autofill::CreateAndAddInternalsHTMLSource(
       Profile::FromWebUI(web_ui), chrome::kChromeUIAutofillInternalsHost);
-  base::Value::Dict on_load_argument;
+  base::DictValue on_load_argument;
   on_load_argument.Set("autofillAiServerModelEnabled",
                        base::Value(base::FeatureList::IsEnabled(
                            autofill::features::kAutofillAiServerModel)));

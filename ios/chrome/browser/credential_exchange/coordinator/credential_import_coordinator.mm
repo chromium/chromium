@@ -4,6 +4,9 @@
 
 #import "ios/chrome/browser/credential_exchange/coordinator/credential_import_coordinator.h"
 
+#import <UIKit/UIKit.h>
+
+#import "base/not_fatal_until.h"
 #import "base/notreached.h"
 #import "components/keyed_service/core/service_access_type.h"
 #import "components/metrics/metrics_pref_names.h"
@@ -11,23 +14,28 @@
 #import "components/prefs/pref_service.h"
 #import "components/signin/public/identity_manager/account_info.h"
 #import "components/signin/public/identity_manager/identity_manager.h"
+#import "components/strings/grit/components_strings.h"
 #import "components/webauthn/core/browser/passkey_model.h"
 #import "ios/chrome/browser/affiliations/model/ios_chrome_affiliation_service_factory.h"
 #import "ios/chrome/browser/credential_exchange/coordinator/credential_import_mediator.h"
 #import "ios/chrome/browser/credential_exchange/public/credential_import_stage.h"
 #import "ios/chrome/browser/credential_exchange/ui/credential_import_view_controller.h"
+#import "ios/chrome/browser/data_import/public/credential_item_identifier.h"
+#import "ios/chrome/browser/data_import/public/import_data_item.h"
 #import "ios/chrome/browser/data_import/public/passkey_import_item.h"
 #import "ios/chrome/browser/data_import/public/password_import_item.h"
 #import "ios/chrome/browser/data_import/ui/data_import_credential_conflict_resolution_view_controller.h"
 #import "ios/chrome/browser/data_import/ui/data_import_credential_conflict_resolution_view_controller_delegate.h"
-#import "ios/chrome/browser/data_import/ui/data_import_invalid_passwords_view_controller.h"
+#import "ios/chrome/browser/data_import/ui/data_import_invalid_credentials_view_controller.h"
 #import "ios/chrome/browser/favicon/model/ios_chrome_favicon_loader_factory.h"
 #import "ios/chrome/browser/passwords/model/ios_chrome_account_password_store_factory.h"
 #import "ios/chrome/browser/passwords/model/ios_chrome_profile_password_store_factory.h"
 #import "ios/chrome/browser/settings/ui_bundled/password/create_password_manager_title_view.h"
 #import "ios/chrome/browser/settings/ui_bundled/password/reauthentication/local_reauthentication_coordinator.h"
+#import "ios/chrome/browser/shared/coordinator/alert/alert_coordinator.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/signin/model/identity_manager_factory.h"
+#import "ios/chrome/browser/sync/model/sync_service_factory.h"
 #import "ios/chrome/browser/webauthn/model/ios_passkey_model_factory.h"
 #import "ios/chrome/browser/webauthn/public/passkey_welcome_screen_util.h"
 #import "ios/chrome/common/credential_provider/passkey_keychain_provider_bridge.h"
@@ -74,6 +82,9 @@
   // passed. Used for requiring authentication when the app is
   // backgrounded/foregrounded with credential import opened.
   LocalReauthenticationCoordinator* _reauthCoordinator;
+
+  // Coordinator for displaying alerts in the import flow.
+  AlertCoordinator* _alertCoordinator;
 }
 
 - (instancetype)initWithBaseViewController:(UIViewController*)viewController
@@ -113,7 +124,8 @@
                  passkeyModel:IOSPasskeyModelFactory::GetForProfile(
                                   self.profile)
                 faviconLoader:IOSChromeFaviconLoaderFactory::GetForProfile(
-                                  profile)];
+                                  profile)
+                  syncService:SyncServiceFactory::GetForProfile(profile)];
   _mediator.consumer = _viewController;
   _navigationController = [[UINavigationController alloc]
       initWithRootViewController:_viewController];
@@ -136,6 +148,16 @@
                                         animated:YES
                                       completion:nil];
   [self startReauthCoordinator];
+}
+
+- (void)showNothingImportedScreen {
+  NSString* title = l10n_util::GetNSString(
+      IDS_IOS_CREDENTIAL_EXCHANGE_NOTHING_IMPORTED_TITLE);
+  NSString* message = l10n_util::GetNSString(
+      IDS_IOS_CREDENTIAL_EXCHANGE_NOTHING_IMPORTED_MESSAGE);
+  [self showAlertWithTitle:title
+                   message:message
+        baseViewController:self.baseViewController];
 }
 
 - (void)showConflictResolutionScreenWithPasswords:
@@ -206,14 +228,25 @@
   [self.delegate credentialImportCoordinatorDidFinish:self];
 }
 
-- (void)didTapInfoButton {
-  CHECK_GT(_mediator.invalidPasswords.count, 0u);
-  DataImportInvalidPasswordsViewController* invalidPasswordsViewController =
-      [[DataImportInvalidPasswordsViewController alloc]
-          initWithInvalidPasswords:_mediator.invalidPasswords];
-  [self presentViewController:
-            [[UINavigationController alloc]
-                initWithRootViewController:invalidPasswordsViewController]];
+- (void)didTapInfoButtonForType:(ImportDataItemType)type {
+  switch (type) {
+    case ImportDataItemType::kPasswords: {
+      CHECK_GT(_mediator.invalidPasswords.count, 0u);
+      [self presentInvalidCredentials:_mediator.invalidPasswords
+                                 type:CredentialType::kPassword];
+      break;
+    }
+    case ImportDataItemType::kPasskeys: {
+      CHECK_GT(_mediator.invalidPasskeys.count, 0u);
+      [self presentInvalidCredentials:_mediator.invalidPasskeys
+                                 type:CredentialType::kPasskey];
+      break;
+    }
+    case ImportDataItemType::kBookmarks:
+    case ImportDataItemType::kHistory:
+    case ImportDataItemType::kPayment:
+      NOTREACHED() << "Those types are not supported in credential exchange";
+  }
 }
 
 #pragma mark - DataImportCredentialConflictResolutionViewControllerDelegate
@@ -289,23 +322,34 @@
 - (void)onTrustedVaultKeysFetched:(NSArray<NSData*>*)trustedVaultKeys {
   [_navigationController popToViewController:_viewController animated:YES];
   if (trustedVaultKeys.count == 0) {
-    // TODO(crbug.com/450982128): Handle error.
+    NSString* title =
+        l10n_util::GetNSString(IDS_IOS_CREDENTIAL_EXCHANGE_GENERIC_ERROR_TITLE);
+    [self showAlertWithTitle:title
+                     message:nil
+          baseViewController:_viewController];
+    NOTREACHED(base::NotFatalUntil::M150);
     return;
   }
 
   [_mediator startImportingCredentialsWithTrustedVaultKeys:trustedVaultKeys];
 }
 
-// Presents `viewController` and returns `YES` if no other view controller is
-// being presented. Returns `NO` otherwise.
-- (BOOL)presentViewController:(UIViewController*)viewController {
+// Presents the invalid credentials view for `credentials` with `type`.
+- (void)presentInvalidCredentials:(NSArray<CredentialImportItem*>*)credentials
+                             type:(CredentialType)type {
   if (_viewController.presentedViewController) {
-    return NO;
+    return;
   }
-  [_viewController presentViewController:viewController
-                                animated:YES
-                              completion:nil];
-  return YES;
+  DataImportInvalidCredentialsViewController* invalidCredentialsViewController =
+      [[DataImportInvalidCredentialsViewController alloc]
+          initWithInvalidCredentials:credentials
+                                type:type];
+  [_viewController
+      presentViewController:
+          [[UINavigationController alloc]
+              initWithRootViewController:invalidCredentialsViewController]
+                   animated:YES
+                 completion:nil];
 }
 
 // Starts reauthCoordinator. Once started, it observes scene state changes and
@@ -320,6 +364,27 @@
                            authOnStart:NO];
   _reauthCoordinator.delegate = self;
   [_reauthCoordinator start];
+}
+
+// Starts the alert coordinator with `title` and `message` and initializes it
+// with `baseViewController`.
+- (void)showAlertWithTitle:(NSString*)title
+                   message:(NSString*)message
+        baseViewController:(UIViewController*)baseViewController {
+  _alertCoordinator =
+      [[AlertCoordinator alloc] initWithBaseViewController:baseViewController
+                                                   browser:self.browser
+                                                     title:title
+                                                   message:message];
+  __weak id<CredentialImportCoordinatorDelegate> weakDelegate = _delegate;
+  __weak __typeof(self) weakSelf = self;
+  [_alertCoordinator
+      addItemWithTitle:l10n_util::GetNSString(IDS_CLOSE)
+                action:^{
+                  [weakDelegate credentialImportCoordinatorDidFinish:weakSelf];
+                }
+                 style:UIAlertActionStyleCancel];
+  [_alertCoordinator start];
 }
 
 @end

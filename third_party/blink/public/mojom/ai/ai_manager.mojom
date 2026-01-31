@@ -4,13 +4,13 @@
 
 module blink.mojom;
 
+import "services/on_device_model/public/mojom/download_observer.mojom";
 import "third_party/blink/public/mojom/ai/ai_common.mojom";
 import "third_party/blink/public/mojom/ai/ai_language_model.mojom";
 import "third_party/blink/public/mojom/ai/ai_proofreader.mojom";
 import "third_party/blink/public/mojom/ai/ai_rewriter.mojom";
 import "third_party/blink/public/mojom/ai/ai_summarizer.mojom";
 import "third_party/blink/public/mojom/ai/ai_writer.mojom";
-import "third_party/blink/public/mojom/ai/model_download_progress_observer.mojom";
 
 // LINT.IfChange(ModelAvailabilityCheckResult)
 enum ModelAvailabilityCheckResult {
@@ -171,8 +171,10 @@ interface AIManager {
   CreateProofreader(pending_remote<AIManagerCreateProofreaderClient> client,
                     AIProofreaderCreateOptions options);
   // Registers the observer that will be notified when the on device model
-  // download progress is updated.
+  // download progress is updated. The registration of the observer won't
+  // trigger the model download and the completion of the model download
+  // won't remove the observer or close the connection.
   AddModelDownloadProgressObserver(
-    pending_remote<ModelDownloadProgressObserver> observer_remote
+    pending_remote<on_device_model.mojom.DownloadObserver> observer_remote
   );
 };

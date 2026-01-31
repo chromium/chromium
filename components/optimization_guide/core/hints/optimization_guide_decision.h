@@ -5,6 +5,8 @@
 #ifndef COMPONENTS_OPTIMIZATION_GUIDE_CORE_HINTS_OPTIMIZATION_GUIDE_DECISION_H_
 #define COMPONENTS_OPTIMIZATION_GUIDE_CORE_HINTS_OPTIMIZATION_GUIDE_DECISION_H_
 
+#include <string>
+
 #include "base/containers/flat_map.h"
 #include "base/functional/callback_forward.h"
 #include "components/optimization_guide/core/hints/optimization_metadata.h"
@@ -45,6 +47,10 @@ using OnDemandOptimizationGuideDecisionRepeatingCallback =
         const GURL&,
         const base::flat_map<proto::OptimizationType,
                              OptimizationGuideDecisionWithMetadata>&)>;
+
+// Returns a debug string for OptimizationGuideDecision.
+std::string GetStringForOptimizationGuideDecision(
+    OptimizationGuideDecision decision);
 
 }  // namespace optimization_guide
 

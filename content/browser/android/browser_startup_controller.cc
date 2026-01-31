@@ -42,13 +42,13 @@ bool ShouldStartGpuProcessOnBrowserStartup() {
 
 static void JNI_BrowserStartupControllerImpl_SetCommandLineFlags(
     JNIEnv* env,
-    jboolean single_process) {
-  SetContentCommandLineFlags(static_cast<bool>(single_process));
+    bool single_process) {
+  SetContentCommandLineFlags(single_process);
 }
 
 static void JNI_BrowserStartupControllerImpl_FlushStartupTasks(
     JNIEnv* env,
-    jboolean was_posted) {
+    bool was_posted) {
   BrowserMainLoop::GetInstance()->SynchronouslyFlushStartupTasks(was_posted);
 }
 

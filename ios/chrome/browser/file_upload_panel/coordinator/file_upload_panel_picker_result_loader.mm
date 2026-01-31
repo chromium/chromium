@@ -15,7 +15,6 @@
 #import "base/metrics/histogram_functions.h"
 #import "base/task/bind_post_task.h"
 #import "base/uuid.h"
-#import "ios/chrome/browser/file_upload_panel/coordinator/file_upload_panel_media_item.h"
 #import "ios/chrome/browser/web/model/choose_file/choose_file_file_utils.h"
 #import "ios/chrome/browser/web/model/choose_file/choose_file_util.h"
 #import "ios/web/public/web_state_id.h"
@@ -86,7 +85,7 @@ void FileUploadPanelPickerResultLoader::LoadNextResult(
 void FileUploadPanelPickerResultLoader::OnResultLoaded(
     NSUInteger index,
     LoadResultCallback callback,
-    FileUploadPanelMediaItem* loaded_item) {
+    NSURL* loaded_item) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!loaded_item) {
     base::UmaHistogramBoolean(
@@ -100,7 +99,7 @@ void FileUploadPanelPickerResultLoader::OnResultLoaded(
 
 void FileUploadPanelPickerResultLoader::LoadPickerResult(
     PHPickerResult* result,
-    base::OnceCallback<void(FileUploadPanelMediaItem*)> callback) {
+    base::OnceCallback<void(NSURL*)> callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   NSArray<NSString*>* registered_type_identifiers =
       result.itemProvider.registeredTypeIdentifiers;
@@ -126,15 +125,12 @@ void FileUploadPanelPickerResultLoader::LoadPickerResult(
 
 void FileUploadPanelPickerResultLoader::HandleMovedFileRepresentation(
     UTType* file_type,
-    base::OnceCallback<void(FileUploadPanelMediaItem*)> callback,
+    base::OnceCallback<void(NSURL*)> callback,
     std::optional<base::FilePath> file_path) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!file_path) {
     std::move(callback).Run(nil);
     return;
   }
-  const BOOL is_video = [file_type conformsToType:UTTypeMovie];
-  std::move(callback).Run([[FileUploadPanelMediaItem alloc]
-      initWithFileURL:base::apple::FilePathToNSURL(*file_path)
-              isVideo:is_video]);
+  std::move(callback).Run(base::apple::FilePathToNSURL(*file_path));
 }

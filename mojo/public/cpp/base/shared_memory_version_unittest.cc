@@ -2,9 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include <optional>
-
 #include "mojo/public/cpp/base/shared_memory_version.h"
+
+#include <optional>
 
 #include "testing/gtest/include/gtest/gtest.h"
 

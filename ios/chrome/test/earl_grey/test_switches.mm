@@ -32,4 +32,6 @@ const char kMockShoppingService[] = "mock-shopping-service";
 // Indicates that the test will run with minimal UI.
 const char kLoadMinimalAppUI[] = "load-minimal-app-ui";
 
+const char kUseDefaultInfobarDuration[] = "use-default-infobar-duration";
+
 }  // namespace test_switches

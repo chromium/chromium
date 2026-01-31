@@ -75,7 +75,7 @@ void InternalsUIHandler::RegisterMessages() {
                                            base::Unretained(this)));
 }
 
-void InternalsUIHandler::OnLoaded(const base::Value::List& args) {
+void InternalsUIHandler::OnLoaded(const base::ListValue& args) {
   base::Value load_event(call_on_load_);
   base::Value load_arg(false);
   base::ValueView load_args[] = {load_event, load_arg};
@@ -88,13 +88,13 @@ void InternalsUIHandler::OnLoaded(const base::Value::List& args) {
   web_ui()->CallJavascriptFunction("cr.webUIListenerCallback", incognito_args);
 
   base::Value variations_event("notify-about-variations");
-  base::Value::List variations_list = version_ui::GetVariationsList();
+  base::ListValue variations_list = version_ui::GetVariationsList();
   base::ValueView variations_args[] = {variations_event, variations_list};
   web_ui()->CallJavascriptFunction("cr.webUIListenerCallback", variations_args);
   StartSubscription();
 }
 
-void InternalsUIHandler::OnDumpAddresses(const base::Value::List& args) {
+void InternalsUIHandler::OnDumpAddresses(const base::ListValue& args) {
   ProfileIOS* profile = ProfileIOS::FromWebUIIOS(web_ui());
   PersonalDataManager* pdm = PersonalDataManagerFactory::GetForProfile(profile);
   if (!pdm) {
@@ -105,7 +105,7 @@ void InternalsUIHandler::OnDumpAddresses(const base::Value::List& args) {
        pdm->address_data_manager().GetProfiles()) {
     log << *address;
   }
-  if (std::optional<base::Value::Dict> result = log.RetrieveResult()) {
+  if (std::optional<base::DictValue> result = log.RetrieveResult()) {
     LogEntry(*result);
   }
 }
@@ -133,7 +133,7 @@ void InternalsUIHandler::EndSubscription() {
   }
 }
 
-void InternalsUIHandler::LogEntry(const base::Value::Dict& entry) {
+void InternalsUIHandler::LogEntry(const base::DictValue& entry) {
   if (!registered_with_log_router_) {
     return;
   }

@@ -28,8 +28,8 @@ constexpr int kAndroidActionMove = AMOTION_EVENT_ACTION_MOVE;
 constexpr int kAndroidActionUp = AMOTION_EVENT_ACTION_UP;
 constexpr int kAndroidActionCancel = AMOTION_EVENT_ACTION_CANCEL;
 
-base::android::ScopedInputEvent GetInputEvent(jlong down_time_ms,
-                                              jlong event_time_ms,
+base::android::ScopedInputEvent GetInputEvent(int64_t down_time_ms,
+                                              int64_t event_time_ms,
                                               int action,
                                               float x,
                                               float y) {
@@ -69,7 +69,7 @@ TestInputStream GenerateEventsForSequence(int num_moves,
   x += 5;
   y += 5;
 
-  jlong down_time = event_time.ToUptimeMillis();
+  int64_t down_time = event_time.ToUptimeMillis();
   event_stream.down_time_ms = base::TimeTicks::FromUptimeMillis(down_time);
   event_stream.events.push_back(GetInputEvent(
       down_time, event_time.ToUptimeMillis(), kAndroidActionDown, x, y));

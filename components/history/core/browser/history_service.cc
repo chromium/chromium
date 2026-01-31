@@ -560,8 +560,8 @@ void HistoryService::AddPage(const GURL& url,
   bool consider_for_ntp_most_visited = true;
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
   consider_for_ntp_most_visited =
-      !(base::FeatureList::IsEnabled(kBrowsingHistoryActorIntegrationM2) &&
-        visit_source == VisitSource::SOURCE_ACTOR);
+      !history::IsBrowsingHistoryActorIntegrationM2Enabled() ||
+      visit_source != VisitSource::SOURCE_ACTOR;
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 
   AddPage(HistoryAddPageArgs(url, time, context_id, nav_entry_id,
@@ -580,8 +580,8 @@ void HistoryService::AddPage(const GURL& url,
   bool consider_for_ntp_most_visited = true;
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
   consider_for_ntp_most_visited =
-      !(base::FeatureList::IsEnabled(kBrowsingHistoryActorIntegrationM2) &&
-        visit_source == VisitSource::SOURCE_ACTOR);
+      !history::IsBrowsingHistoryActorIntegrationM2Enabled() ||
+      visit_source != VisitSource::SOURCE_ACTOR;
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 
   // This function will construct the following "self-links" entry in the

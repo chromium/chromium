@@ -93,6 +93,7 @@ CGFloat HorizontalMargin() {
 
   BOOL _undoActive;
   BOOL _selectTabsActionEnabled;
+  BOOL _closeOtherTabsEnabled;
 
   BOOL _scrolledToEdge;
   TabGridToolbarBackground* _backgroundView;
@@ -185,6 +186,11 @@ CGFloat HorizontalMargin() {
 
 - (void)setSelectTabsActionEnabled:(BOOL)enabled {
   _selectTabsActionEnabled = enabled;
+  _overflowMenuButton.menu = [self createOverflowMenu];
+}
+
+- (void)setCloseOtherTabsEnabled:(BOOL)enabled {
+  _closeOtherTabsEnabled = enabled;
   _overflowMenuButton.menu = [self createOverflowMenu];
 }
 
@@ -619,6 +625,19 @@ CGFloat HorizontalMargin() {
                     [strongSelf.buttonsDelegate
                         closeAllButtonTapped:currentOverflowMenuButton];
                   }]];
+
+    if (_closeOtherTabsEnabled) {
+      UIAction* closeOtherTabsAction =
+          [actionFactory actionToCloseAllOtherTabsWithBlock:^{
+            [weakSelf.buttonsDelegate closeOtherTabsButtonTapped:nil];
+          }];
+      UIMenu* closeOtherMenu = [UIMenu menuWithTitle:@""
+                                               image:nil
+                                          identifier:nil
+                                             options:UIMenuOptionsDisplayInline
+                                            children:@[ closeOtherTabsAction ]];
+      [menuElements addObject:closeOtherMenu];
+    }
 
     if (_page == TabGridPageRegularTabs) {
       [menuElements

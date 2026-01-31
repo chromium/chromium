@@ -146,6 +146,8 @@ class COMPONENT_EXPORT(USERDATAAUTH_CLIENT) FakeUserDataAuthClient
     void AddAuthFactor(const cryptohome::AccountIdentifier& account_id,
                        const user_data_auth::AuthFactor& factor,
                        const user_data_auth::AuthInput& input);
+    // Clears all existing fake auth factors for the given existing user.
+    void ClearAuthFactors(const cryptohome::AccountIdentifier& account_id);
 
     void AddRecoveryFactor(const cryptohome::AccountIdentifier& account_id);
     bool HasRecoveryFactor(const cryptohome::AccountIdentifier& account_id);

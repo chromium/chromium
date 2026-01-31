@@ -101,7 +101,7 @@ IN_PROC_BROWSER_TEST_F(InlineLoginDialogTest, ReturnsCorrectDialogArgs) {
       dialog->GetDialogArgs(), base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   ASSERT_TRUE(args.has_value());
   EXPECT_TRUE(args.value().is_dict());
-  const base::Value::Dict& dict = args.value().GetDict();
+  const base::DictValue& dict = args.value().GetDict();
   std::optional<bool> is_available_in_arc = dict.FindBool("isAvailableInArc");
   std::optional<bool> show_arc_availability_picker =
       dict.FindBool("showArcAvailabilityPicker");

@@ -4,9 +4,9 @@
 
 #include "components/user_education/webui/whats_new_registry.h"
 
+#include <algorithm>
 #include <memory>
 
-#include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/test/scoped_feature_list.h"
 #include "components/user_education/webui/mock_whats_new_storage_service.h"
@@ -138,8 +138,8 @@ class WhatsNewRegistryTest : public testing::Test {
   }
 
  protected:
-  base::Value::List stored_enabled_modules_;
-  base::Value::Dict stored_used_editions_;
+  base::ListValue stored_enabled_modules_;
+  base::DictValue stored_used_editions_;
   std::unique_ptr<WhatsNewRegistry> whats_new_registry_;
   base::test::ScopedFeatureList feature_list_;
 };
@@ -150,8 +150,10 @@ TEST_F(WhatsNewRegistryTest, CommandsAreActiveForEnabledFeatures) {
 
   auto active_commands = whats_new_registry_->GetActiveCommands();
   EXPECT_EQ(static_cast<size_t>(2), active_commands.size());
-  EXPECT_TRUE(base::Contains(active_commands, BrowserCommand::kNoOpCommand));
-  EXPECT_TRUE(base::Contains(active_commands, BrowserCommand::kUnknownCommand));
+  EXPECT_TRUE(
+      std::ranges::contains(active_commands, BrowserCommand::kNoOpCommand));
+  EXPECT_TRUE(
+      std::ranges::contains(active_commands, BrowserCommand::kUnknownCommand));
 }
 
 TEST_F(WhatsNewRegistryTest, CommandsAreActiveForEnabledModulesAndEditions) {
@@ -160,15 +162,18 @@ TEST_F(WhatsNewRegistryTest, CommandsAreActiveForEnabledModulesAndEditions) {
 
   auto active_commands = whats_new_registry_->GetActiveCommands();
   EXPECT_EQ(static_cast<size_t>(4), active_commands.size());
-  EXPECT_TRUE(base::Contains(active_commands, BrowserCommand::kNoOpCommand));
-  EXPECT_TRUE(base::Contains(active_commands, BrowserCommand::kUnknownCommand));
+  EXPECT_TRUE(
+      std::ranges::contains(active_commands, BrowserCommand::kNoOpCommand));
+  EXPECT_TRUE(
+      std::ranges::contains(active_commands, BrowserCommand::kUnknownCommand));
 
   // Note: If you are removing one of these commands, you may change
   // these to any available command to match the above Edition
   // registratrion.
-  EXPECT_TRUE(base::Contains(active_commands, BrowserCommand::kOpenAISettings));
   EXPECT_TRUE(
-      base::Contains(active_commands, BrowserCommand::kOpenSafetyCheck));
+      std::ranges::contains(active_commands, BrowserCommand::kOpenAISettings));
+  EXPECT_TRUE(
+      std::ranges::contains(active_commands, BrowserCommand::kOpenSafetyCheck));
 }
 
 TEST_F(WhatsNewRegistryTest, FindModulesForActiveFeatures) {
@@ -273,9 +278,8 @@ TEST_F(WhatsNewRegistryTest, ClearUnregisteredModules) {
   stored_enabled_modules_.Append("TestModuleDoesNotExist");
   EXPECT_CALL(*mock_storage_service, ReadModuleData())
       .WillOnce(testing::ReturnRef(stored_enabled_modules_));
-  EXPECT_CALL(
-      *mock_storage_service,
-      ClearModules(std::set<std::string_view>({"TestModuleDoesNotExist"})));
+  EXPECT_CALL(*mock_storage_service,
+              ClearModules(std::set<std::string>({"TestModuleDoesNotExist"})));
   RegisterModules(std::move(mock_storage_service));
 
   whats_new_registry_->ClearUnregisteredModules();
@@ -285,8 +289,9 @@ TEST_F(WhatsNewRegistryTest, ClearUnregisteredEditions) {
   auto mock_storage_service = std::make_unique<MockWhatsNewStorageService>();
   EXPECT_CALL(*mock_storage_service, ReadEditionData())
       .WillOnce(testing::ReturnRef(stored_used_editions_));
-  EXPECT_CALL(*mock_storage_service, ClearEditions(std::set<std::string_view>(
-                                         {"TestOldUnregisteredEdition"})));
+  EXPECT_CALL(
+      *mock_storage_service,
+      ClearEditions(std::set<std::string>({"TestOldUnregisteredEdition"})));
   RegisterModules(std::move(mock_storage_service));
 
   whats_new_registry_->ClearUnregisteredEditions();

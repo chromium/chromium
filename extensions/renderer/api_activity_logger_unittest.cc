@@ -74,7 +74,7 @@ TEST_F(ActivityLoggerTest, DontCrashOnUnconvertedValues) {
       .WillOnce([&](ScriptContext* script_context,
                     const ExtensionId& extension_id,
                     ActivityLogCallType call_type, const std::string& call_name,
-                    base::Value::List args, const std::string& extra) {
+                    base::ListValue args, const std::string& extra) {
         EXPECT_EQ("someApiMethod", call_name);
         ASSERT_EQ(1u, args.size());
         EXPECT_EQ(base::Value::Type::NONE, args[0].type());

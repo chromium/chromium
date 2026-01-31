@@ -16,6 +16,7 @@
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
+#include "net/base/hash_value.h"
 
 namespace blink {
 class StorageKey;
@@ -86,10 +87,6 @@ class ServiceWorkerStorageControlImpl
                              GetUsageForStorageKeyCallback callback) override;
   void GetAllRegistrationsDeprecated(
       GetAllRegistrationsDeprecatedCallback calback) override;
-  void GetFakeRegistrationForClientUrl(
-      const GURL& client_url,
-      const blink::StorageKey& key,
-      FindRegistrationForClientUrlCallback callback) override;
   void StoreRegistration(
       mojom::ServiceWorkerRegistrationDataPtr registration,
       std::vector<mojom::ServiceWorkerResourceRecordPtr> resources,
@@ -130,6 +127,7 @@ class ServiceWorkerStorageControlImpl
   void GetNewResourceId(GetNewResourceIdCallback callback) override;
   void CreateResourceReader(
       int64_t resource_id,
+      const std::optional<net::SHA256HashValue>& sha256_checksum,
       mojo::PendingReceiver<mojom::ServiceWorkerResourceReader> reader)
       override;
   void CreateResourceWriter(

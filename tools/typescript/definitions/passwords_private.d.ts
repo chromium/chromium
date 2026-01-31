@@ -220,7 +220,7 @@ declare global {
       export function exportPasswords(): Promise<void>;
       export function requestExportProgressStatus():
           Promise<ExportProgressStatus>;
-      export function isAccountStorageEnabled(): Promise<boolean>;
+      export function isAccountStorageActive(): Promise<boolean>;
       export function setAccountStorageEnabled(enabled: boolean): void;
       export function shouldShowAccountStorageSettingToggle(): Promise<boolean>;
       export function getInsecureCredentials(): Promise<PasswordUiEntry[]>;
@@ -251,8 +251,8 @@ declare global {
           ChromeEvent<(entries: ExceptionEntry[]) => void>;
       export const onPasswordsFileExportProgress:
           ChromeEvent<(progress: PasswordExportProgress) => void>;
-      export const onAccountStorageEnabledStateChanged:
-          ChromeEvent<(enabledState: boolean) => void>;
+      export const onAccountStorageActiveStateChanged:
+          ChromeEvent<(activeState: boolean) => void>;
       export const onShouldShowAccountStorageSettingToggleChanged:
           ChromeEvent<(show: boolean) => void>;
       export const onInsecureCredentialsChanged:

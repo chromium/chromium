@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/settings/ui_bundled/password/password_checkup/password_checkup_coordinator.h"
 
 #import "base/debug/dump_without_crashing.h"
+#import "base/feature_list.h"
 #import "base/metrics/user_metrics.h"
 #import "components/signin/public/identity_manager/identity_manager.h"
 #import "ios/chrome/browser/net/model/crurl.h"
@@ -23,13 +24,14 @@
 #import "ios/chrome/browser/settings/ui_bundled/password/password_checkup/password_checkup_mediator_delegate.h"
 #import "ios/chrome/browser/settings/ui_bundled/password/password_checkup/password_checkup_view_controller.h"
 #import "ios/chrome/browser/settings/ui_bundled/password/password_issues/password_issues_coordinator.h"
+#import "ios/chrome/browser/settings/ui_bundled/password/password_manager_ui_features.h"
 #import "ios/chrome/browser/settings/ui_bundled/password/reauthentication/local_reauthentication_coordinator.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
-#import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/browser_coordinator_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/open_new_tab_command.h"
+#import "ios/chrome/browser/shared/public/commands/scene_commands.h"
 #import "ios/chrome/browser/shared/public/commands/settings_commands.h"
 #import "ios/chrome/browser/shared/public/commands/snackbar_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
@@ -48,7 +50,8 @@ using password_manager::PasswordCheckReferrer;
     PasswordCheckupMediatorDelegate,
     PasswordIssuesCoordinatorDelegate,
     NotificationsSettingsObserverDelegate,
-    LocalReauthenticationCoordinatorDelegate>
+    LocalReauthenticationCoordinatorDelegate,
+    UINavigationControllerDelegate>
 
 @end
 
@@ -109,18 +112,15 @@ using password_manager::PasswordCheckReferrer;
 
     _baseNavigationController = navigationController;
     _reauthModule = reauthModule;
-    _dispatcher = HandlerForProtocol(self.browser->GetCommandDispatcher(),
-                                     ApplicationCommands);
+    _dispatcher =
+        HandlerForProtocol(self.browser->GetCommandDispatcher(), SceneCommands);
     _referrer = referrer;
     password_manager::LogPasswordCheckReferrer(referrer);
 
-    if (IsSafetyCheckNotificationsEnabled()) {
-      _notificationsSettingsObserver = [[NotificationsSettingsObserver alloc]
-          initWithPrefService:self.profile->GetPrefs()
-                   localState:GetApplicationContext()->GetLocalState()];
-
-      _notificationsSettingsObserver.delegate = self;
-    }
+    _notificationsSettingsObserver = [[NotificationsSettingsObserver alloc]
+        initWithPrefService:self.profile->GetPrefs()
+                 localState:GetApplicationContext()->GetLocalState()];
+    _notificationsSettingsObserver.delegate = self;
   }
   return self;
 }
@@ -142,6 +142,8 @@ using password_manager::PasswordCheckReferrer;
   _mediator.delegate = self;
 
   BOOL requireAuthOnStart = [self shouldRequireAuthOnStart];
+
+  _baseNavigationController.delegate = self;
 
   // Disable animation when content will be blocked for reauth to prevent
   // flickering in navigation bar.
@@ -167,15 +169,15 @@ using password_manager::PasswordCheckReferrer;
   _viewController.handler = nil;
   _viewController = nil;
 
-  if (IsSafetyCheckNotificationsEnabled()) {
-    // Remove PrefObserverDelegates.
-    _notificationsSettingsObserver.delegate = nil;
-    [_notificationsSettingsObserver disconnect];
-    _notificationsSettingsObserver = nil;
-  }
+  // Remove `PrefObserverDelegate`s.
+  _notificationsSettingsObserver.delegate = nil;
+  [_notificationsSettingsObserver disconnect];
+  _notificationsSettingsObserver = nil;
 
   [self stopPasswordIssuesCoordinator];
   [self stopReauthenticationCoordinator];
+
+  _baseNavigationController.delegate = nil;
 }
 
 #pragma mark - PasswordCheckupCommands
@@ -188,12 +190,15 @@ using password_manager::PasswordCheckReferrer;
 // credentials for `warningType`.
 - (void)showPasswordIssuesWithWarningType:
     (password_manager::WarningType)warningType {
-  [self logPasswordCheckState];
   DUMP_WILL_BE_CHECK(!_passwordIssuesCoordinator);
 
   [self stopReauthCoordinatorBeforeStartingChildCoordinator];
 
   password_manager::LogOpenPasswordIssuesList(warningType);
+
+  // Prevent actions temporarily until the password issues VC takes over the
+  // stack.
+  [_viewController startCooldown];
 
   _passwordIssuesCoordinator = [[PasswordIssuesCoordinator alloc]
             initForWarningType:warningType
@@ -242,8 +247,6 @@ using password_manager::PasswordCheckReferrer;
 #pragma mark - PasswordCheckupMediatorDelegate
 
 - (void)toggleSafetyCheckNotifications {
-  CHECK(IsSafetyCheckNotificationsEnabled());
-
   if ([self isSafetyCheckNotificationsEnabled]) {
     [self disableSafetyCheckNotifications];
     return;
@@ -275,8 +278,7 @@ using password_manager::PasswordCheckReferrer;
 
 - (void)notificationsSettingsDidChangeForClient:
     (PushNotificationClientId)clientID {
-  if (IsSafetyCheckNotificationsEnabled() &&
-      clientID == PushNotificationClientId::kSafetyCheck) {
+  if (clientID == PushNotificationClientId::kSafetyCheck) {
     [_mediator
         reconfigureNotificationsSection:[self
                                             isSafetyCheckNotificationsEnabled]];
@@ -301,12 +303,43 @@ using password_manager::PasswordCheckReferrer;
   // No-op.
 }
 
+#pragma mark - UINavigationControllerDelegate
+
+- (void)navigationController:(UINavigationController*)navigationController
+       didShowViewController:(UIViewController*)viewController
+                    animated:(BOOL)animated {
+  if (!base::FeatureList::IsEnabled(
+          password_manager::features::
+              kPasswordCheckupUIDoubleStartMitigation)) {
+    return;
+  }
+
+  // Enable user interactions when the `_viewController` (password checkup VC)
+  // is at the top of the nav stack OR disable user interactions when
+  // `_viewController` isn't at the top (e.g. the password issues VC is stacked
+  // over it). This should be reliable where a situation where the
+  // `_viewController` is forever disabled is almost impossible as all the
+  // possible states are handled and the notification should be emitted on each
+  // nav.
+  if (viewController == _viewController) {
+    // Re-enable user interaction because at this point (1) the child
+    // coordinator was stopped and (2) the password checkup `_viewController` is
+    // now visible at the top of the nav stack.
+    _viewController.view.userInteractionEnabled = YES;
+    // Use the cooldown period just in case.
+    [_viewController startCooldown];
+  } else if ([navigationController.viewControllers
+                 containsObject:_viewController]) {
+    // Disable user interactions on `_viewController` since there is a view on
+    // top of it.
+    _viewController.view.userInteractionEnabled = NO;
+  }
+}
+
 #pragma mark - Private
 
 // Returns `YES` if the user has opted in to receive Safety Check notifications.
 - (BOOL)isSafetyCheckNotificationsEnabled {
-  CHECK(IsSafetyCheckNotificationsEnabled());
-
   // Safety Check notifications are controlled by app-wide notification
   // settings, not profile-specific ones. No Gaia ID is required below in
   // `GetMobileNotificationPermissionStatusForClient()`.
@@ -319,8 +352,6 @@ using password_manager::PasswordCheckReferrer;
 // notification service preferences. Displays a confirmation snackbar with a
 // link to notification settings.
 - (void)disableSafetyCheckNotifications {
-  CHECK(IsSafetyCheckNotificationsEnabled());
-
   GetApplicationContext()->GetPushNotificationService()->SetPreference(
       GaiaId(), PushNotificationClientId::kSafetyCheck, false);
 
@@ -370,6 +401,14 @@ using password_manager::PasswordCheckReferrer;
 - (void)startReauthCoordinatorWithAuthOnStart:(BOOL)authOnStart {
   base::RecordAction(
       base::UserMetricsAction("MobilePasswordCheckupCoordinatorShowReauth"));
+
+  if (authOnStart && base::FeatureList::IsEnabled(
+                         password_manager::features::
+                             kPasswordCheckupUIDoubleStartMitigation)) {
+    // Prevent actions temporarily in the case the auth view has to be
+    // pushed on the stack. You don't want actions when auth is required.
+    [_viewController startCooldown];
+  }
 
   DCHECK(!_reauthCoordinator);
 
@@ -424,44 +463,6 @@ using password_manager::PasswordCheckReferrer;
       return YES;
     case PasswordCheckReferrer::kPasswordSettings:
       return NO;
-  }
-}
-
-// TODO(crbug.com/409680593): Remove when done with the investigation.
-- (void)logPasswordCheckState {
-  switch (_passwordCheckManager->GetPasswordCheckState()) {
-    case PasswordCheckState::kCanceled:
-      base::RecordAction(base::UserMetricsAction(
-          "MobilePasswordCheckupCoordinatorCheckStateCanceled"));
-      return;
-    case PasswordCheckState::kIdle:
-      base::RecordAction(base::UserMetricsAction(
-          "MobilePasswordCheckupCoordinatorCheckStateIdle"));
-      return;
-    case PasswordCheckState::kNoPasswords:
-      base::RecordAction(base::UserMetricsAction(
-          "MobilePasswordCheckupCoordinatorCheckStateNoPasswords"));
-      return;
-    case PasswordCheckState::kOffline:
-      base::RecordAction(base::UserMetricsAction(
-          "MobilePasswordCheckupCoordinatorCheckStateOffline"));
-      return;
-    case PasswordCheckState::kOther:
-      base::RecordAction(base::UserMetricsAction(
-          "MobilePasswordCheckupCoordinatorCheckStateOther"));
-      return;
-    case PasswordCheckState::kQuotaLimit:
-      base::RecordAction(base::UserMetricsAction(
-          "MobilePasswordCheckupCoordinatorCheckStateQuotaLimit"));
-      return;
-    case PasswordCheckState::kRunning:
-      base::RecordAction(base::UserMetricsAction(
-          "MobilePasswordCheckupCoordinatorCheckStateRunning"));
-      return;
-    case PasswordCheckState::kSignedOut:
-      base::RecordAction(base::UserMetricsAction(
-          "MobilePasswordCheckupCoordinatorCheckStateSignedOut"));
-      return;
   }
 }
 

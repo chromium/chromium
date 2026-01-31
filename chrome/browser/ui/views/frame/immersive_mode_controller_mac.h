@@ -5,8 +5,6 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_FRAME_IMMERSIVE_MODE_CONTROLLER_MAC_H_
 #define CHROME_BROWSER_UI_VIEWS_FRAME_IMMERSIVE_MODE_CONTROLLER_MAC_H_
 
-#include <memory>
-
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
@@ -14,7 +12,6 @@
 #include "chrome/browser/ui/views/frame/immersive_mode_controller.h"
 #include "components/remote_cocoa/common/native_widget_ns_window.mojom.h"
 #include "ui/gfx/geometry/insets.h"
-#include "ui/views/animation/bounds_animator.h"
 #include "ui/views/cocoa/immersive_mode_reveal_client.h"
 #include "ui/views/focus/focus_manager.h"
 #include "ui/views/view_observer.h"
@@ -80,7 +77,6 @@ class ImmersiveModeControllerMac : public ImmersiveModeController,
   void Init(BrowserView* browser_view) override;
   void SetEnabled(bool enabled) override;
   bool IsEnabled() const override;
-  bool ShouldHideTopViews() const override;
   bool IsRevealed() const override;
   int GetTopContainerVerticalOffset(
       const gfx::Size& top_container_size) const override;
@@ -127,6 +123,10 @@ class ImmersiveModeControllerMac : public ImmersiveModeController,
   // Returns true if the child should be moved.
   bool ShouldMoveChild(views::Widget* child);
 
+  // Returns true if there is a bubble anchored to the top container in the
+  // overlay widget.
+  bool HasVisibleBubbleInOverlay() const;
+
   gfx::Insets GetTabStripRegionViewInsets();
 
   // Invoked when the associated browser is closed.
@@ -169,8 +169,6 @@ class ImmersiveModeControllerMac : public ImmersiveModeController,
   int menu_bar_height_ = 0;
 
   std::optional<base::CallbackListSubscription> browser_close_subscription_;
-
-  std::unique_ptr<views::BoundsAnimator> tab_bounds_animator_ = nullptr;
 
   base::WeakPtrFactory<ImmersiveModeControllerMac> weak_ptr_factory_{this};
 };

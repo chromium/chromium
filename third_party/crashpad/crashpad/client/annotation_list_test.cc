@@ -301,7 +301,7 @@ class RaceThread : public Thread {
       } else {
         test_->three_.Clear();
       }
-      SleepNanoseconds(base::RandInt(1, 1000));
+      SleepNanoseconds(base::RandIntInclusive(1, 1000));
     }
   }
 
@@ -321,7 +321,7 @@ TEST_F(AnnotationList, MultipleThreads) {
     } else {
       one_.Clear();
     }
-    SleepNanoseconds(base::RandInt(1, 1000));
+    SleepNanoseconds(base::RandIntInclusive(1, 1000));
   }
 
   other_thread.Join();

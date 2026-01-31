@@ -27,7 +27,7 @@ class SharedImageInterface;
 namespace viz {
 
 class Surface;
-struct ReturnedResource;
+struct ReturnedResourceViz;
 struct TransferableResource;
 
 // This class is responsible for managing a single transition sequence. Each
@@ -71,7 +71,8 @@ class VIZ_SERVICE_EXPORT SurfaceAnimationManager
       const std::vector<TransferableResource>& resources) override;
   void RefResources(
       const std::vector<TransferableResource>& resources) override;
-  void UnrefResources(const std::vector<ReturnedResource>& resources) override;
+  void UnrefResources(
+      const std::vector<ReturnedResourceViz>& resources) override;
 
  private:
   friend class SurfaceAnimationManagerTest;

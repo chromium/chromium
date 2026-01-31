@@ -37,14 +37,12 @@ views::View::DropCallback TextfieldController::CreateDropCallback(
   return base::NullCallback();
 }
 
-bool TextfieldController::HandleWriteTextToClipboard(
-    ui::ClipboardBuffer clipboard_buffer,
-    const std::u16string_view& text) {
+bool TextfieldController::OnBeforeCutOrCopy(Textfield* sender,
+                                            std::u16string* copy_contents) {
+  // Default implementation does not intercept copy/cut. Controllers may
+  // override this to supply copy/cut contents and return true to bypass default
+  // clipboard write.
   return false;
-}
-
-bool TextfieldController::AllowStartDragEvent(const std::u16string_view&) {
-  return true;
 }
 
 bool TextfieldController::OnBeforePaste(Textfield* sender,
@@ -53,6 +51,12 @@ bool TextfieldController::OnBeforePaste(Textfield* sender,
   // this to supply paste contents and return true to bypass default clipboard
   // read.
   return false;
+}
+
+std::unique_ptr<ui::ScopedClipboardWriter>
+TextfieldController::CreateClipboardWriter() {
+  return std::make_unique<ui::ScopedClipboardWriter>(
+      ui::ClipboardBuffer::kCopyPaste);
 }
 
 }  // namespace views

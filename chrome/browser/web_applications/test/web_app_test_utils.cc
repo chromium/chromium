@@ -53,6 +53,7 @@
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_integrity_block_data.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolation_data.h"
 #include "chrome/browser/web_applications/model/app_installed_by.h"
+#include "chrome/browser/web_applications/model/display_override.h"
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
 #include "chrome/browser/web_applications/proto/web_app.pb.h"
 #include "chrome/browser/web_applications/proto/web_app_install_state.pb.h"
@@ -105,8 +106,8 @@
 #include "third_party/blink/public/common/permissions_policy/policy_helper_public.h"
 #include "third_party/blink/public/common/safe_url_pattern.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
-#include "third_party/blink/public/mojom/manifest/display_mode.mojom-data-view.h"
-#include "third_party/blink/public/mojom/manifest/manifest.mojom-data-view.h"
+#include "third_party/blink/public/mojom/manifest/display_mode.mojom-shared.h"
+#include "third_party/blink/public/mojom/manifest/manifest.mojom-shared.h"
 #include "third_party/liburlpattern/part.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/gfx/geometry/size.h"
@@ -695,22 +696,57 @@ std::vector<apps::IconInfo> CreateRandomIconMetadata(RandomHelper& random,
   return icons;
 }
 
+std::vector<proto::WebAppMigrationSource> CreateRandomMigrationSources(
+    RandomHelper& random) {
+  std::vector<proto::WebAppMigrationSource> sources;
+  int num_sources = random.next_uint(3);
+  for (int i = 0; i < num_sources; ++i) {
+    proto::WebAppMigrationSource source;
+    source.set_manifest_id("https://example.com/manifest_id_" +
+                           base::NumberToString(random.next_uint()));
+    source.set_behavior(random.next_bool()
+                            ? proto::WEB_APP_MIGRATION_BEHAVIOR_FORCE
+                            : proto::WEB_APP_MIGRATION_BEHAVIOR_SUGGEST);
+    if (random.next_bool()) {
+      source.set_install_url("https://example.com/install_url_" +
+                             base::NumberToString(random.next_uint()));
+    }
+    sources.push_back(std::move(source));
+  }
+  return sources;
+}
+
+std::optional<proto::PendingMigrationInfo> CreateRandomPendingMigrationInfos(
+    RandomHelper& random) {
+  if (!random.next_bool()) {
+    return std::nullopt;
+  }
+  proto::PendingMigrationInfo info;
+  info.set_manifest_id("https://example.com/manifest_id_" +
+                       base::NumberToString(random.next_uint()));
+  info.set_behavior(random.next_bool()
+                        ? proto::WEB_APP_MIGRATION_BEHAVIOR_FORCE
+                        : proto::WEB_APP_MIGRATION_BEHAVIOR_SUGGEST);
+  return info;
+}
+
 }  // namespace
 
 std::unique_ptr<WebApp> CreateWebApp(const GURL& start_url,
-                                     WebAppManagement::Type source_type) {
+                                     WebAppManagement::Type source_type,
+                                     const GURL& scope) {
   auto web_app = std::make_unique<WebApp>(
       GenerateManifestIdFromStartUrlOnly(start_url), start_url,
-      /*scope=*/start_url.GetWithoutFilename());
-  web_app->AddSource(source_type);
-  web_app->SetDisplayMode(blink::mojom::DisplayMode::kStandalone);
-  web_app->SetUserDisplayMode(mojom::UserDisplayMode::kStandalone);
-  web_app->SetName("Name");
+      scope.is_valid() ? scope : start_url.GetWithoutFilename());
   // Adding OS integration to this app introduces too many edge cases in tests.
   // Simply set this to partially installed w/ no os integration, and the
   // correct OS integration state to match that.
   web_app->SetInstallState(
       proto::InstallState::INSTALLED_WITHOUT_OS_INTEGRATION);
+  web_app->AddSource(source_type);
+  web_app->SetDisplayMode(blink::mojom::DisplayMode::kStandalone);
+  web_app->SetUserDisplayMode(mojom::UserDisplayMode::kStandalone);
+  web_app->SetName("Name");
   proto::os_state::WebAppOsIntegration os_state;
   web_app->SetCurrentOsIntegrationStates(os_state);
 
@@ -783,6 +819,33 @@ std::unique_ptr<WebApp> CreateRandomWebApp(
   const std::string name = "Name" + seed_str;
   const std::string description = "Description" + seed_str;
   auto app = std::make_unique<WebApp>(manifest_id, start_url, scope);
+
+  app->SetName(name);
+  app->SetDescription(description);
+  if (relative_manifest_id) {
+    app->SetManifestId(
+        GenerateManifestId(relative_manifest_id.value(), start_url));
+  }
+
+  if (random.next_bool()) {
+    app->SetThemeColor(SkColorSetA(random.next_uint(), SK_AlphaOPAQUE));
+  }
+  if (random.next_bool()) {
+    app->SetBackgroundColor(SkColorSetA(random.next_uint(), SK_AlphaOPAQUE));
+  }
+  if (random.next_bool()) {
+    app->SetDarkModeThemeColor(SkColorSetA(random.next_uint(), SK_AlphaOPAQUE));
+  }
+  if (random.next_bool()) {
+    app->SetDarkModeBackgroundColor(
+        SkColorSetA(random.next_uint(), SK_AlphaOPAQUE));
+  }
+
+  app->SetInstallState(random.next_enum<proto::InstallState,
+                                        /*min=*/proto::InstallState_MIN,
+                                        /*max=*/
+                                        proto::InstallState_MAX>());
+
   std::vector<WebAppManagement::Type> management_types;
 
   // Generate all possible permutations of field values in a random way:
@@ -801,7 +864,8 @@ std::unique_ptr<WebApp> CreateRandomWebApp(
       app->AddSource(WebAppManagement::kWebAppStore);
       management_types.push_back(WebAppManagement::kWebAppStore);
     }
-    if (random.next_bool()) {
+    if (random.next_bool() &&
+        app->install_state() != proto::SUGGESTED_FROM_MIGRATION) {
       app->AddSource(WebAppManagement::kSync);
       management_types.push_back(WebAppManagement::kSync);
     }
@@ -852,31 +916,6 @@ std::unique_ptr<WebApp> CreateRandomWebApp(
     management_types.push_back(WebAppManagement::kUserInstalled);
   }
 
-  app->SetName(name);
-  app->SetDescription(description);
-  if (relative_manifest_id) {
-    app->SetManifestId(
-        GenerateManifestId(relative_manifest_id.value(), start_url));
-  }
-
-  if (random.next_bool()) {
-    app->SetThemeColor(SkColorSetA(random.next_uint(), SK_AlphaOPAQUE));
-  }
-  if (random.next_bool()) {
-    app->SetBackgroundColor(SkColorSetA(random.next_uint(), SK_AlphaOPAQUE));
-  }
-  if (random.next_bool()) {
-    app->SetDarkModeThemeColor(SkColorSetA(random.next_uint(), SK_AlphaOPAQUE));
-  }
-  if (random.next_bool()) {
-    app->SetDarkModeBackgroundColor(
-        SkColorSetA(random.next_uint(), SK_AlphaOPAQUE));
-  }
-
-  app->SetInstallState(random.next_enum<proto::InstallState,
-                                        /*min=*/proto::InstallState_MIN,
-                                        /*max=*/
-                                        proto::InstallState_MAX>());
   app->SetIsFromSyncAndPendingInstallation(random.next_bool());
 
   const std::array<sync_pb::WebAppSpecifics::UserDisplayMode, 3>
@@ -929,8 +968,14 @@ std::unique_ptr<WebApp> CreateRandomWebApp(
   for (int i = 0; i < num_display_mode_override_tries; i++) {
     display_mode_override.insert(display_modes[random.next_uint(4)]);
   }
-  app->SetDisplayModeOverride(std::vector<DisplayMode>(
-      display_mode_override.begin(), display_mode_override.end()));
+  std::vector<DisplayOverride> override_items;
+  for (DisplayMode display_mode : display_mode_override) {
+    override_items.push_back(
+        display_mode == DisplayMode::kBorderless && random.next_bool()
+            ? DisplayOverride::CreateUnframed(CreateRandomUrlPatterns(random))
+            : DisplayOverride::Create(display_mode));
+  }
+  app->SetDisplayModeOverride(std::move(override_items));
 
   if (random.next_bool()) {
     app->SetLaunchQueryParams(base::NumberToString(random.next_uint()));
@@ -1330,9 +1375,6 @@ std::unique_ptr<WebApp> CreateRandomWebApp(
     app->SetStoredTrustedIconSizes(IconPurpose::MASKABLE,
                                    {icon_sizes[random.next_uint(8)]});
   }
-  if (is_iwa && random.next_bool()) {
-    app->SetBorderlessUrlPatterns(CreateRandomUrlPatterns(random));
-  }
 
   base::Time first_install_time = random.next_time();
   if (random.next_bool()) {
@@ -1347,6 +1389,16 @@ std::unique_ptr<WebApp> CreateRandomWebApp(
         second_install_time,
         params.base_url.Resolve("installed_by2_" + seed_str + "/")));
   }
+
+  app->SetUnvalidatedMigrationSources(CreateRandomMigrationSources(random));
+  std::vector<proto::WebAppMigrationSource> validated_sources;
+  std::ranges::copy_if(app->unvalidated_migration_sources(),
+                       std::back_inserter(validated_sources),
+                       [&random](const proto::WebAppMigrationSource&) {
+                         return random.next_bool();
+                       });
+  app->SetValidatedMigrationSources(std::move(validated_sources));
+  app->SetPendingMigrationInfo(CreateRandomPendingMigrationInfos(random));
 
   return app;
 }

@@ -19,7 +19,7 @@
 #include "ui/views/view_observer.h"
 
 class ToolbarActionHoverCardBubbleView;
-class ExtensionsToolbarContainer;
+class ExtensionsToolbarDesktop;
 class ToolbarActionView;
 enum class ToolbarActionHoverCardUpdateType;
 
@@ -27,7 +27,7 @@ enum class ToolbarActionHoverCardUpdateType;
 class ToolbarActionHoverCardController : public views::ViewObserver {
  public:
   explicit ToolbarActionHoverCardController(
-      ExtensionsToolbarContainer* extensions_container);
+      ExtensionsToolbarDesktop* extensions_container);
   ~ToolbarActionHoverCardController() override;
 
   // Returns whether hover card animations should be shown on the current
@@ -79,7 +79,7 @@ class ToolbarActionHoverCardController : public views::ViewObserver {
   base::TimeTicks last_mouse_exit_timestamp_;
 
   raw_ptr<ToolbarActionView> target_action_view_ = nullptr;
-  const raw_ptr<ExtensionsToolbarContainer> extensions_container_;
+  const raw_ptr<ExtensionsToolbarDesktop> extensions_container_;
   raw_ptr<ToolbarActionHoverCardBubbleView> hover_card_ = nullptr;
 
   base::ScopedObservation<views::View, views::ViewObserver>

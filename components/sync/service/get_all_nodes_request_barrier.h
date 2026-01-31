@@ -22,23 +22,22 @@ class GetAllNodesRequestBarrier
   // Once `OnReceivedNodesForType` has been called for each type in
   // `requested_types`, the `callback` will be run. `requested_types` must not
   // be empty.
-  GetAllNodesRequestBarrier(
-      DataTypeSet requested_types,
-      base::OnceCallback<void(base::Value::List)> callback);
+  GetAllNodesRequestBarrier(DataTypeSet requested_types,
+                            base::OnceCallback<void(base::ListValue)> callback);
 
   GetAllNodesRequestBarrier(const GetAllNodesRequestBarrier&) = delete;
   GetAllNodesRequestBarrier& operator=(const GetAllNodesRequestBarrier&) =
       delete;
 
-  void OnReceivedNodesForType(const DataType type, base::Value::List node_list);
+  void OnReceivedNodesForType(const DataType type, base::ListValue node_list);
 
  private:
   friend class base::RefCountedThreadSafe<GetAllNodesRequestBarrier>;
   virtual ~GetAllNodesRequestBarrier();
 
   DataTypeSet awaiting_types_;
-  base::Value::List result_accumulator_;
-  base::OnceCallback<void(base::Value::List)> callback_;
+  base::ListValue result_accumulator_;
+  base::OnceCallback<void(base::ListValue)> callback_;
   SEQUENCE_CHECKER(sequence_checker_);
 };
 

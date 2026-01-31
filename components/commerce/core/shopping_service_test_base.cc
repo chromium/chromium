@@ -4,10 +4,10 @@
 
 #include "components/commerce/core/shopping_service_test_base.h"
 
+#include <algorithm>
 #include <optional>
 
 #include "base/command_line.h"
-#include "base/containers/contains.h"
 #include "base/containers/flat_map.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/ref_counted.h"
@@ -322,7 +322,8 @@ OptimizationMetadata MockOptGuideDecider::BuildDiscountsResponse(
 
   std::vector<DiscountClusterType> checked_cluster_types;
   for (const auto& info_to_check : infos) {
-    if (base::Contains(checked_cluster_types, info_to_check.cluster_type)) {
+    if (std::ranges::contains(checked_cluster_types,
+                              info_to_check.cluster_type)) {
       continue;
     }
     checked_cluster_types.push_back(info_to_check.cluster_type);
@@ -547,7 +548,7 @@ void ShoppingServiceTestBase::OnWebWrapperSwitched(WebWrapper* web) {
 
 void ShoppingServiceTestBase::MergeProductInfoData(
     ProductInfo* info,
-    const base::Value::Dict& on_page_data_map) {
+    const base::DictValue& on_page_data_map) {
   ShoppingService::MergeProductInfoData(info, on_page_data_map);
 }
 

@@ -51,5 +51,8 @@ blink_modules_sources("credentialmanagement") {
     "scoped_promise_resolver.cc",
     "scoped_promise_resolver.h",
   ]
-  deps = [ "//services/metrics/public/cpp:ukm_builders" ]
+  deps = [
+    "//device/fido/public",
+    "//services/metrics/public/cpp:ukm_builders",
+  ]
 }

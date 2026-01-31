@@ -4,7 +4,6 @@
 
 #include "components/safe_browsing/core/browser/web_ui/web_ui_info_singleton_event_observer_impl.h"
 
-#include "components/safe_browsing/core/browser/db/hit_report.h"
 #include "components/safe_browsing/core/browser/web_ui/safe_browsing_ui_util.h"
 
 namespace safe_browsing {
@@ -65,13 +64,6 @@ void WebUIInfoSingletonEventObserverImpl::NotifyCSBRRJsListener(
                                 base::Value(web_ui::SerializeCSBRR(*csbrr)));
 }
 
-void WebUIInfoSingletonEventObserverImpl::NotifyHitReportJsListener(
-    HitReport* hit_report) {
-  delegate_->SendEventToHandler(
-      "sent-hit-report-list",
-      base::Value(web_ui::SerializeHitReport(*hit_report)));
-}
-
 void WebUIInfoSingletonEventObserverImpl::NotifyPGEventJsListener(
     const sync_pb::UserEventSpecifics& event) {
   delegate_->SendEventToHandler("sent-pg-event",
@@ -87,7 +79,7 @@ void WebUIInfoSingletonEventObserverImpl::NotifySecurityEventJsListener(
 void WebUIInfoSingletonEventObserverImpl::NotifyPGPingJsListener(
     int token,
     const web_ui::LoginReputationClientRequestAndToken& request) {
-  base::Value::List request_list;
+  base::ListValue request_list;
   request_list.Append(token);
   request_list.Append(SerializePGPing(request));
 
@@ -97,7 +89,7 @@ void WebUIInfoSingletonEventObserverImpl::NotifyPGPingJsListener(
 void WebUIInfoSingletonEventObserverImpl::NotifyPGResponseJsListener(
     int token,
     const LoginReputationClientResponse& response) {
-  base::Value::List response_list;
+  base::ListValue response_list;
   response_list.Append(token);
   response_list.Append(web_ui::SerializePGResponse(response));
 
@@ -107,7 +99,7 @@ void WebUIInfoSingletonEventObserverImpl::NotifyPGResponseJsListener(
 void WebUIInfoSingletonEventObserverImpl::NotifyURTLookupPingJsListener(
     int token,
     const web_ui::URTLookupRequest& request) {
-  base::Value::List request_list;
+  base::ListValue request_list;
   request_list.Append(token);
   request_list.Append(SerializeURTLookupPing(request));
 
@@ -117,7 +109,7 @@ void WebUIInfoSingletonEventObserverImpl::NotifyURTLookupPingJsListener(
 void WebUIInfoSingletonEventObserverImpl::NotifyURTLookupResponseJsListener(
     int token,
     const RTLookupResponse& response) {
-  base::Value::List response_list;
+  base::ListValue response_list;
   response_list.Append(token);
   response_list.Append(web_ui::SerializeURTLookupResponse(response));
 
@@ -127,7 +119,7 @@ void WebUIInfoSingletonEventObserverImpl::NotifyURTLookupResponseJsListener(
 void WebUIInfoSingletonEventObserverImpl::NotifyHPRTLookupPingJsListener(
     int token,
     const web_ui::HPRTLookupRequest& request) {
-  base::Value::List request_list;
+  base::ListValue request_list;
   request_list.Append(token);
   request_list.Append(SerializeHPRTLookupPing(request));
 
@@ -137,7 +129,7 @@ void WebUIInfoSingletonEventObserverImpl::NotifyHPRTLookupPingJsListener(
 void WebUIInfoSingletonEventObserverImpl::NotifyHPRTLookupResponseJsListener(
     int token,
     const V5::SearchHashesResponse& response) {
-  base::Value::List response_list;
+  base::ListValue response_list;
   response_list.Append(token);
   response_list.Append(web_ui::SerializeHPRTLookupResponse(response));
 
@@ -153,7 +145,7 @@ void WebUIInfoSingletonEventObserverImpl::NotifyLogMessageJsListener(
 
 void WebUIInfoSingletonEventObserverImpl::NotifyReportingEventJsListener(
     const ::chrome::cros::reporting::proto::UploadEventsRequest& event,
-    const base::Value::Dict& result) {
+    const base::DictValue& result) {
   delegate_->SendEventToHandler(
       "reporting-events-update",
       web_ui::SerializeUploadEventsRequest(event, result));
@@ -162,7 +154,7 @@ void WebUIInfoSingletonEventObserverImpl::NotifyReportingEventJsListener(
 // TODO(crbug.com/443997643): Delete when
 // UploadRealtimeReportingEventsUsingProto is cleaned up.
 void WebUIInfoSingletonEventObserverImpl::NotifyReportingEventJsListener(
-    const base::Value::Dict& event) {
+    const base::DictValue& event) {
   delegate_->SendEventToHandler("reporting-events-update",
                                 web_ui::SerializeReportingEvent(event));
 }

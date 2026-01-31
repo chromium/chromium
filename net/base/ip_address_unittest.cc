@@ -591,6 +591,47 @@ TEST(IPAddressTest, ParseCIDRBlock_Valid) {
   EXPECT_EQ(112u, prefix_length_in_bits);
 }
 
+// Test parsing invalid CIDR notation literals specific to the URL-Hostname
+// version of this function.
+TEST(IPAddressTest, ParseCIDRBlockNonStandardURLFormat_Invalid) {
+  const char* const bad_literals[] = {"foobar",
+                                      "",
+                                      "192.168.0.1",
+                                      "::1",
+                                      "/",
+                                      "/1",
+                                      "1",
+                                      "192.168.1.1/-1",
+                                      "[192.168.1.1]/16",
+                                      "::1/10"};
+
+  for (auto* bad_literal : bad_literals) {
+    size_t prefix_length_in_bits;
+
+    EXPECT_FALSE(ParseCIDRBlockNonStandardURLFormat(bad_literal,
+                                                    &prefix_length_in_bits));
+  }
+}
+
+// Test parsing a valid CIDR notation literal using the URLHostnameIP version of
+// ParseCIDRBlock.
+TEST(IPAddressTest, ParseCIDRBlockNonStandardURLFormat_Valid) {
+  size_t prefix_length_in_bits;
+
+  auto ip_address = ParseCIDRBlockNonStandardURLFormat("192.168.0.1/11",
+                                                       &prefix_length_in_bits);
+  EXPECT_TRUE(ip_address);
+  EXPECT_EQ("192,168,0,1", DumpIPAddress(*ip_address));
+  EXPECT_EQ(11u, prefix_length_in_bits);
+
+  ip_address = ParseCIDRBlockNonStandardURLFormat("[::ffff:192.168.0.1]/112",
+                                                  &prefix_length_in_bits);
+  EXPECT_TRUE(ip_address);
+  EXPECT_EQ("0,0,0,0,0,0,0,0,0,0,255,255,192,168,0,1",
+            DumpIPAddress(*ip_address));
+  EXPECT_EQ(112u, prefix_length_in_bits);
+}
+
 TEST(IPAddressTest, ParseURLHostnameToAddress_FailParse) {
   IPAddress address;
   EXPECT_FALSE(ParseURLHostnameToAddress("bad value", &address));

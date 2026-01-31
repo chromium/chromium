@@ -365,7 +365,6 @@ enum class DeepScanAccessPoint {
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/glic/enums.xml:DeepScanAccessPoint)
 std::string DeepScanAccessPointToString(DeepScanAccessPoint access_point);
-
 }  // namespace enterprise_connectors
 
 #endif  // COMPONENTS_ENTERPRISE_CONNECTORS_CORE_COMMON_H_

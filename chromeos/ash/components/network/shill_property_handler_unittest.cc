@@ -52,7 +52,7 @@ class TestListener : public internal::ShillPropertyHandler::Listener {
   TestListener() : technology_list_updates_(0), errors_(0) {}
 
   void UpdateManagedList(ManagedState::ManagedType type,
-                         const base::Value::List& entries) override {
+                         const base::ListValue& entries) override {
     VLOG(1) << "UpdateManagedList[" << ManagedState::TypeToString(type)
             << "]: " << entries.size();
     UpdateEntries(GetTypeString(type), entries);
@@ -61,12 +61,12 @@ class TestListener : public internal::ShillPropertyHandler::Listener {
   void UpdateManagedStateProperties(
       ManagedState::ManagedType type,
       const std::string& path,
-      const base::Value::Dict& properties) override {
+      const base::DictValue& properties) override {
     VLOG(2) << "UpdateManagedStateProperties: " << GetTypeString(type);
     initial_property_updates(GetTypeString(type))[path] += 1;
   }
 
-  void ProfileListChanged(const base::Value::List& profile_list) override {
+  void ProfileListChanged(const base::ListValue& profile_list) override {
     profile_list_size_ = profile_list.size();
   }
 
@@ -85,7 +85,7 @@ class TestListener : public internal::ShillPropertyHandler::Listener {
   void UpdateIPConfigProperties(ManagedState::ManagedType type,
                                 const std::string& path,
                                 const std::string& ip_config_path,
-                                base::Value::Dict properties) override {
+                                base::DictValue properties) override {
     AddPropertyUpdate(shill::kIPConfigsProperty, ip_config_path);
   }
 
@@ -139,8 +139,7 @@ class TestListener : public internal::ShillPropertyHandler::Listener {
     NOTREACHED();
   }
 
-  void UpdateEntries(const std::string& type,
-                     const base::Value::List& entries) {
+  void UpdateEntries(const std::string& type, const base::ListValue& entries) {
     if (type.empty()) {
       return;
     }
@@ -489,7 +488,7 @@ TEST_F(ShillPropertyHandlerTest, ShillPropertyHandlerIPConfigPropertyChanged) {
                                           shill::kAddressProperty, ip_address,
                                           base::DoNothing());
   auto dns_servers =
-      base::Value::List().Append("192.168.1.100").Append("192.168.1.101");
+      base::ListValue().Append("192.168.1.100").Append("192.168.1.101");
   ShillIPConfigClient::Get()->SetProperty(
       dbus::ObjectPath(kTestIPConfigPath), shill::kNameServersProperty,
       base::Value(std::move(dns_servers)), base::DoNothing());
@@ -597,17 +596,17 @@ TEST_F(ShillPropertyHandlerTest, ProhibitedTechnologies) {
 
 TEST_F(ShillPropertyHandlerTest, RequestTrafficCounters) {
   // Set up the traffic counters.
-  auto chrome_dict = base::Value::Dict()
+  auto chrome_dict = base::DictValue()
                          .Set("source", shill::kTrafficCounterSourceChrome)
                          .Set("rx_bytes", 12)
                          .Set("tx_bytes", 32);
 
-  auto user_dict = base::Value::Dict()
+  auto user_dict = base::DictValue()
                        .Set("source", shill::kTrafficCounterSourceUser)
                        .Set("rx_bytes", 90)
                        .Set("tx_bytes", 87);
 
-  auto traffic_counters = base::Value::List()
+  auto traffic_counters = base::ListValue()
                               .Append(std::move(chrome_dict))
                               .Append(std::move(user_dict));
 
@@ -616,7 +615,7 @@ TEST_F(ShillPropertyHandlerTest, RequestTrafficCounters) {
   base::RunLoop run_loop;
   shill_property_handler_->RequestTrafficCounters(
       kStubWiFi1, base::BindOnce(
-                      [](base::Value::List* expected_traffic_counters,
+                      [](base::ListValue* expected_traffic_counters,
                          base::OnceClosure quit_closure,
                          std::optional<base::Value> actual_traffic_counters) {
                         ASSERT_TRUE(actual_traffic_counters);

@@ -501,6 +501,8 @@ public class OmniboxMetrics {
                 break;
 
             case PageClassification.NTP_COMPOSEBOX_VALUE:
+            case PageClassification.OTHER_OMNIBOX_COMPOSEBOX_VALUE:
+            case PageClassification.SRP_OMNIBOX_COMPOSEBOX_VALUE:
                 suffix = "ComposeBox";
                 break;
 

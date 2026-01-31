@@ -350,7 +350,6 @@ class CONTENT_EXPORT RenderViewHostImpl
   void RenderWidgetDidForwardMouseEvent(
       const blink::WebMouseEvent& mouse_event) override;
 
-  bool ShouldContributePriorityToProcess() override;
   void SetBackgroundOpaque(bool opaque) override;
   bool IsMainFrameActive() override;
   blink::web_pref::WebPreferences GetWebkitPreferencesForWidget() override;

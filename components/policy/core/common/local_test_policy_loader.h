@@ -30,7 +30,7 @@ class POLICY_EXPORT LocalTestPolicyLoader {
   // name and value of the policy.
   void SetPolicyListJson(const std::string& policy_list_json);
 
-  void VerifyJsonContents(base::Value::Dict* policy_dict);
+  void VerifyJsonContents(base::DictValue* policy_dict);
 
   void ClearPolicies();
 

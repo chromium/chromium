@@ -163,7 +163,7 @@ void AddMemoryBytes(mojom::WebMemoryBreakdownEntry* aggregation_point,
   if (!data && is_same_process) {
     return;
   }
-  // Initialize memory to ByteCount(0) for cross-process or frames with data.
+  // Initialize memory to ByteSize(0) for cross-process or frames with data.
   if (!aggregation_point->memory.has_value()) {
     aggregation_point->memory.emplace();
   }
@@ -174,15 +174,15 @@ void AddMemoryBytes(mojom::WebMemoryBreakdownEntry* aggregation_point,
   // Ensure this frame is actually in the same process as the requesting
   // frame. If not it should be considered to have 0 bytes.
   // (https://github.com/WICG/performance-measure-memory/issues/20).
-  base::ByteCount memory_used =
-      is_same_process ? data->v8_memory_used() : base::ByteCount(0);
+  base::ByteSize memory_used =
+      is_same_process ? data->v8_memory_used() : base::ByteSize(0);
   aggregation_point->memory.value() += memory_used;
 
   // Add canvas memory similar to V8 memory above.
   if (data->canvas_memory_used()) {
-    base::ByteCount canvas_memory_used =
-        is_same_process ? data->canvas_memory_used().value()
-                        : base::ByteCount(0);
+    base::ByteSize canvas_memory_used = is_same_process
+                                            ? data->canvas_memory_used().value()
+                                            : base::ByteSize(0);
     if (!aggregation_point->canvas_memory.has_value()) {
       aggregation_point->canvas_memory.emplace();
     }
@@ -415,8 +415,8 @@ namespace {
 double GetBrowsingInstanceV8BytesFraction(
     const ProcessNode* process_node,
     content::BrowsingInstanceId browsing_instance_id) {
-  base::ByteCount memory_used;
-  base::ByteCount total_memory_used;
+  base::ByteSize memory_used;
+  base::ByteSize total_memory_used;
   for (const FrameNode* frame_node : process_node->GetFrameNodes()) {
     const auto* data =
         V8DetailedMemoryExecutionContextData::ForFrameNode(frame_node);

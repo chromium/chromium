@@ -5,6 +5,7 @@
 #import "ios/chrome/app/profile/profile_state.h"
 
 #import <optional>
+#import <utility>
 
 #import "ios/chrome/app/application_delegate/app_state.h"
 #import "ios/chrome/app/application_delegate/fake_startup_information.h"
@@ -35,7 +36,7 @@
 - (void)profileState:(ProfileState*)profileState
     didTransitionToInitStage:(ProfileInitStage)nextStage
                fromInitStage:(ProfileInitStage)fromStage {
-  CHECK_EQ(base::to_underlying(fromStage) + 1, base::to_underlying(nextStage));
+  CHECK_EQ(std::to_underlying(fromStage) + 1, std::to_underlying(nextStage));
   _lastStage = nextStage;
 }
 
@@ -55,7 +56,7 @@ TEST_F(ProfileStateTest, initStages) {
   state.initStage = ProfileInitStage::kStart;
   while (state.initStage != ProfileInitStage::kFinal) {
     const ProfileInitStage nextStage =
-        static_cast<ProfileInitStage>(base::to_underlying(state.initStage) + 1);
+        static_cast<ProfileInitStage>(std::to_underlying(state.initStage) + 1);
 
     EXPECT_NE(state.initStage, nextStage);
     state.initStage = nextStage;

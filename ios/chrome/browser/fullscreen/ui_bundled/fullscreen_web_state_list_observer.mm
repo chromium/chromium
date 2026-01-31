@@ -5,7 +5,6 @@
 #import "ios/chrome/browser/fullscreen/ui_bundled/fullscreen_web_state_list_observer.h"
 
 #import "base/check_op.h"
-#import "base/containers/contains.h"
 #import "ios/chrome/browser/fullscreen/ui_bundled/fullscreen_content_adjustment_util.h"
 #import "ios/chrome/browser/fullscreen/ui_bundled/fullscreen_controller.h"
 #import "ios/chrome/browser/fullscreen/ui_bundled/fullscreen_model.h"
@@ -160,5 +159,5 @@ void FullscreenWebStateListObserver::WebStateWasRemoved(
 
 bool FullscreenWebStateListObserver::HasWebStateBeenActivated(
     web::WebState* web_state) {
-  return base::Contains(activated_web_states_, web_state);
+  return activated_web_states_.contains(web_state);
 }

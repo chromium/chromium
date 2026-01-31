@@ -4,9 +4,10 @@
 
 #import "ios/chrome/browser/prerender/model/prerender_browser_agent.h"
 
+#import <utility>
+
 #import "base/check_deref.h"
 #import "base/memory/raw_ptr.h"
-#import "base/types/cxx23_to_underlying.h"
 #import "components/prefs/pref_service.h"
 #import "components/signin/public/base/consent_level.h"
 #import "components/signin/public/identity_manager/account_info.h"
@@ -189,7 +190,7 @@ class PrerenderBrowserAgentTest : public PlatformTest {
   void SetNetworkPredictionSetting(
       prerender_prefs::NetworkPredictionSetting value) {
     profile_->GetPrefs()->SetInteger(prefs::kNetworkPredictionSetting,
-                                     base::to_underlying(value));
+                                     std::to_underlying(value));
   }
 
   // Set "NetworkPredictionSetting" to "Enabled on WiFi & Cellular"

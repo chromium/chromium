@@ -116,12 +116,7 @@ class Manager : public common::ManagerBase, public Parser::Observer {
 };
 
 namespace helpers {
-const char kMetadataCohortDistributionHistogram[] =
-    "Navigation.TpcdMitigations.MetadataCohortDistribution";
-
 std::string GenerateKeyHash(const MetadataEntry& metadata_entry);
-void WriteCohortDistributionMetrics(
-    const content_settings::mojom::TpcdMetadataCohort& cohort);
 }  // namespace helpers
 }  // namespace tpcd::metadata
 

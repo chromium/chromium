@@ -72,7 +72,7 @@ class DataTypeManagerImpl : public DataTypeManager,
       DataTypeSet throttled_types,
       DataTypeSet backed_off_types) const override;
   void GetAllNodesForDebugging(
-      base::OnceCallback<void(base::Value::List)> callback) const override;
+      base::OnceCallback<void(base::ListValue)> callback) const override;
   void GetEntityCountsForDebugging(
       base::RepeatingCallback<void(const TypeEntitiesCount&)> callback)
       const override;

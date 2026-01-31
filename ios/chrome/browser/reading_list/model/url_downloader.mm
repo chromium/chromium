@@ -4,11 +4,11 @@
 
 #import "ios/chrome/browser/reading_list/model/url_downloader.h"
 
+#import <algorithm>
 #import <string>
 #import <vector>
 
 #import "base/base64.h"
-#import "base/containers/contains.h"
 #import "base/files/file_path.h"
 #import "base/files/file_util.h"
 #import "base/functional/bind.h"
@@ -270,7 +270,7 @@ void URLDownloader::RemoveOfflineURL(const GURL& url) {
 }
 
 void URLDownloader::DownloadOfflineURL(const GURL& url) {
-  if (!base::Contains(tasks_, std::make_pair(DOWNLOAD, url))) {
+  if (!std::ranges::contains(tasks_, std::make_pair(DOWNLOAD, url))) {
     tasks_.push_back(std::make_pair(DOWNLOAD, url));
     HandleNextTask();
   }

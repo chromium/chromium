@@ -12,11 +12,6 @@ namespace crosapi {
 
 class KeystoreServiceAsh;
 
-// The factory to produce additional KeystoreService-s when they are needed
-// (most notably, for multi-sign-in feature). Most of the time it is expected to
-// return the precreated KestoreService from CrosapiManager. When multi-sign-in
-// feature is removed, the additional KeystoreService-s and this factory
-// probably won't be needed anymore.
 class KeystoreServiceFactoryAsh : public ProfileKeyedServiceFactory {
  public:
   static KeystoreServiceAsh* GetForBrowserContext(

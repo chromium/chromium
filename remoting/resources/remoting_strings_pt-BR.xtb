@@ -23,12 +23,11 @@
 Para conceder essa permissão, clique em "<ph name="BUTTON_NAME" />" abaixo para abrir o painel de preferências "Gravação de tela" e marque a caixa ao lado de "<ph name="SERVICE_SCRIPT_NAME" />".
 
 Se a opção "<ph name="SERVICE_SCRIPT_NAME" />" já estiver marcada, desmarque-a e marque-a novamente.</translation>
-<translation id="225614027745146050">Bem-vindo</translation>
+<translation id="225614027745146050">Que bom ter você aqui!</translation>
 <translation id="2320166752086256636">Ocultar teclado</translation>
 <translation id="2329392777730037872">Falha ao abrir <ph name="URL" /> no cliente.</translation>
 <translation id="2359808026110333948">Continuar</translation>
 <translation id="2366718077645204424">Não é possível acessar o host. Isso se deve, provavelmente, à configuração da rede que você está usando.</translation>
-<translation id="242591256144136845">Copyright 2025 Google LLC. Todos os direitos reservados.</translation>
 <translation id="2504109125669302160">Conceder a permissão "Acessibilidade" para o <ph name="PRODUCT_NAME" /></translation>
 <translation id="2509394361235492552">Conectado à <ph name="HOSTNAME" /></translation>
 <translation id="2540992418118313681">Gostaria de compartilhar este computador para que outro usuário o veja e controle?</translation>
@@ -47,6 +46,7 @@ Se a opção "<ph name="SERVICE_SCRIPT_NAME" />" já estiver marcada, desmarque-
 <translation id="3150823315463303127">Não foi possível para o host ler a política.</translation>
 <translation id="3171922709365450819">Este dispositivo não é compatível com esse cliente porque requer autenticação de terceiros.</translation>
 <translation id="3197730452537982411">Computador remoto</translation>
+<translation id="3236334139428307578">Copyright 2026 Autores do Chromium. Todos os direitos reservados.</translation>
 <translation id="324272851072175193">Enviar essas instruções por e-mail</translation>
 <translation id="3305934114213025800"><ph name="PRODUCT_NAME" /> quer fazer alterações.</translation>
 <translation id="3339299787263251426">Acessar seu computador de forma segura pela Internet</translation>
@@ -111,6 +111,7 @@ Se a opção "<ph name="SERVICE_SCRIPT_NAME" />" já estiver marcada, desmarque-
 <translation id="5823554426827907568"><ph name="CLIENT_USERNAME" /> solicitou acesso para ver sua tela e controlar seu teclado e mouse. Se você não esperava essa solicitação, pressione "<ph name="IDS_SHARE_CONFIRM_DIALOG_DECLINE" />". Se estiver tudo certo, pressione "<ph name="IDS_SHARE_CONFIRM_DIALOG_CONFIRM" />" para permitir a conexão.</translation>
 <translation id="5823658491130719298">No computador que você quer acessar remotamente, abra o Chrome e acesse <ph name="INSTALLATION_LINK" /></translation>
 <translation id="5841343754884244200">Opções de exibição</translation>
+<translation id="5965133372831030509">Copyright 2026 Google LLC. Todos os direitos reservados.</translation>
 <translation id="6033507038939587647">Opções do teclado</translation>
 <translation id="6040143037577758943">Fechar</translation>
 <translation id="6062854958530969723">Falha ao iniciar host.</translation>
@@ -131,14 +132,13 @@ Se a opção "<ph name="SERVICE_SCRIPT_NAME" />" já estiver marcada, desmarque-
 <translation id="6939719207673461467">Mostrar/ocultar teclado</translation>
 <translation id="6963936880795878952">As conexões com o computador remoto estão temporariamente bloqueadas porque alguém estava tentando se conectar a ele com um PIN inválido. Tente novamente mais tarde.</translation>
 <translation id="6965382102122355670">OK</translation>
-<translation id="6985691951107243942">Você quer mesmo desativar conexões remotas para <ph name="HOSTNAME" />? Se mudar de idéia, precisará visitar este computador para reativar as conexões.</translation>
+<translation id="6985691951107243942">Você quer mesmo desativar conexões remotas para <ph name="HOSTNAME" />? Se mudar de ideia, precisará acessar este computador para reativar as conexões.</translation>
 <translation id="7019153418965365059">Erro de host não reconhecido: <ph name="HOST_OFFLINE_REASON" />.</translation>
 <translation id="701976023053394610">Assistência remota</translation>
 <translation id="7026930240735156896">Siga as instruções para configurar seu computador para acesso remoto</translation>
 <translation id="7067321367069083429">A tela atua como uma touchscreen</translation>
 <translation id="7116737094673640201">Bem-vindo à Área de trabalho remota do Google Chrome</translation>
 <translation id="7144878232160441200">Tentar novamente</translation>
-<translation id="7298392173540380852">Copyright 2025 Autores do Chromium. Todos os direitos reservados.</translation>
 <translation id="7312846573060934304">O host está off-line.</translation>
 <translation id="7319983568955948908">Parar compartilhamento</translation>
 <translation id="7359298090707901886">Não é possível usar o navegador escolhido para abrir URLs na máquina local.</translation>

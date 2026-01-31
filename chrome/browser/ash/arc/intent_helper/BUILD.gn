@@ -14,8 +14,6 @@ static_library("intent_helper") {
     "arc_settings_service.h",
     "chrome_arc_intent_helper_delegate.cc",
     "chrome_arc_intent_helper_delegate.h",
-    "custom_tab_session_impl.cc",
-    "custom_tab_session_impl.h",
   ]
 
   public_deps = [
@@ -94,10 +92,7 @@ source_set("browser_tests") {
 
   defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
 
-  sources = [
-    "arc_settings_service_browsertest.cc",
-    "custom_tab_session_impl_browsertest.cc",
-  ]
+  sources = [ "arc_settings_service_browsertest.cc" ]
 
   deps = [
     ":intent_helper",

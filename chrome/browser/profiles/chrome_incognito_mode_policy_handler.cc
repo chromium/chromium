@@ -1,0 +1,93 @@
+// Copyright 2013 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#include "chrome/browser/profiles/chrome_incognito_mode_policy_handler.h"
+
+#include "base/command_line.h"
+#include "base/notreached.h"
+#include "base/strings/string_number_conversions.h"
+#include "base/values.h"
+#include "build/build_config.h"
+#include "chrome/browser/prefs/incognito_mode_prefs.h"
+#include "chrome/credential_provider/common/gcp_strings.h"
+#include "components/policy/core/browser/incognito/incognito_mode_policy_handler.h"
+#include "components/policy/core/browser/policy_error_map.h"
+#include "components/policy/core/common/policy_map.h"
+#include "components/policy/core/common/policy_pref_names.h"
+#include "components/policy/policy_constants.h"
+#include "components/prefs/pref_value_map.h"
+#include "components/strings/grit/components_strings.h"
+
+namespace policy {
+
+ChromeIncognitoModePolicyHandler::ChromeIncognitoModePolicyHandler() = default;
+
+ChromeIncognitoModePolicyHandler::~ChromeIncognitoModePolicyHandler() = default;
+
+bool ChromeIncognitoModePolicyHandler::CheckPolicySettings(
+    const PolicyMap& policies,
+    PolicyErrorMap* errors) {
+  if (!IncognitoModePolicyHandler::CheckPolicySettings(policies, errors)) {
+    return false;
+  }
+
+  // It is safe to use `GetValueUnsafe()` because type checking is performed
+  // before the value is used.
+  const base::Value* availability =
+      policies.GetValueUnsafe(key::kIncognitoModeAvailability);
+  const base::Value* deprecated_enabled =
+      policies.GetValueUnsafe(key::kIncognitoEnabled);
+  // kIncognitoEnabled value is checked only if kIncognitoModeAvailability is
+  // not set, since otherwise kIncognitoEnabled is ignored.
+  if (!availability && deprecated_enabled && !deprecated_enabled->is_bool()) {
+    errors->AddError(key::kIncognitoEnabled, IDS_POLICY_TYPE_ERROR,
+                     base::Value::GetTypeName(base::Value::Type::BOOLEAN));
+    return false;
+  }
+  return true;
+}
+
+void ChromeIncognitoModePolicyHandler::ApplyPolicySettings(
+    const PolicyMap& policies,
+    PrefValueMap* prefs) {
+#if BUILDFLAG(IS_WIN)
+  // When browser starts with GCPW sign-in flag, it runs in incognito mode and
+  // gaia login page is loaded. With this flag, user can't use Chrome normally.
+  // However GCPW can't work in non-incognito mode and policy setting prevents
+  // Chrome from launching in incognito mode.To make this work, we should ignore
+  // setting inconito mode policy if GCPW sign-in flag is present.
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+          ::credential_provider::kGcpwSigninSwitch)) {
+    return;
+  }
+#endif
+  std::optional<policy::IncognitoModeAvailability> final_availability_value;
+  const base::Value* availability = policies.GetValue(
+      key::kIncognitoModeAvailability, base::Value::Type::INTEGER);
+  if (availability) {
+    policy::IncognitoModeAvailability availability_enum_value;
+    if (IncognitoModePrefs::IntToAvailability(availability->GetInt(),
+                                              &availability_enum_value)) {
+      final_availability_value = availability_enum_value;
+    }
+  } else {
+    // If kIncognitoModeAvailability is not specified, check the obsolete
+    // kIncognitoEnabled.
+    const base::Value* deprecated_enabled =
+        policies.GetValue(key::kIncognitoEnabled, base::Value::Type::BOOLEAN);
+    if (deprecated_enabled) {
+      final_availability_value =
+          deprecated_enabled->GetBool()
+              ? policy::IncognitoModeAvailability::kEnabled
+              : policy::IncognitoModeAvailability::kDisabled;
+    }
+  }
+
+  // Call the base class method with the final availability value. Base class
+  // logic handles dependencies with allowlist and blocklist policies.
+  IncognitoModePolicyHandler::ApplyPolicySettings(policies, prefs,
+                                                  final_availability_value);
+}
+
+}  // namespace policy

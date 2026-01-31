@@ -5,17 +5,6 @@ Use of this source code is governed by a BSD-style license that can be
 found in the LICENSE file.
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
-    <!-- Omnibox -->
-    <style
-        name="TextAppearance.OmniboxVerboseStatus"
-        parent="@android:style/TextAppearance.Medium">
-
-        <item name="android:textSize">
-            @dimen/location_bar_url_text_size
-        </item>
-
-    </style>
-
     <!-- Omnibox suggestions -->
     <style name="TextAppearance.OmniboxAnswerDescriptionNegative">
         <item name="android:textColor">

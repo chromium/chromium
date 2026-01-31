@@ -10,10 +10,14 @@
 #import "base/notreached.h"
 #import "base/time/default_clock.h"
 #import "base/time/default_tick_clock.h"
+#import "components/activity_reporter/activity_reporter.h"
 #import "components/application_locale_storage/application_locale_storage.h"
 #import "components/metrics_services_manager/metrics_services_manager.h"
 #import "components/network_time/network_time_tracker.h"
 #import "components/os_crypt/async/browser/test_utils.h"
+#import "components/supervised_user/core/browser/device_parental_controls.h"
+#import "components/supervised_user/core/browser/device_parental_controls_noop_impl.h"
+#import "components/update_client/net/network_chromium.h"
 #import "components/variations/service/variations_service.h"
 #import "ios/chrome/browser/download/model/auto_deletion/auto_deletion_service.h"
 #import "ios/chrome/browser/optimization_guide/model/optimization_guide_global_state.h"
@@ -229,16 +233,31 @@ TestingApplicationContext::GetNetExportFileWriter() {
 }
 
 network_time::NetworkTimeTracker*
-TestingApplicationContext::GetNetworkTimeTracker() {
+TestingApplicationContext::GetNetworkTimeTrackerMaybeUninitialized() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!network_time_tracker_) {
-    DCHECK(local_state_);
-    network_time_tracker_.reset(new network_time::NetworkTimeTracker(
-        base::WrapUnique(new base::DefaultClock),
-        base::WrapUnique(new base::DefaultTickClock), local_state_, nullptr,
-        std::nullopt));
+    network_time_tracker_ = std::make_unique<network_time::NetworkTimeTracker>(
+        std::make_unique<base::DefaultClock>(),
+        std::make_unique<base::DefaultTickClock>(),
+        /*pref_service=*/nullptr,
+        /*url_loader_factory=*/nullptr,
+        /*fetch_behavior=*/std::nullopt);
+    CHECK(!network_time_tracker_->is_initialized());
   }
   return network_time_tracker_.get();
+}
+
+network_time::NetworkTimeTracker*
+TestingApplicationContext::GetNetworkTimeTracker() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  auto* network_time_tracker = GetNetworkTimeTrackerMaybeUninitialized();
+  if (!network_time_tracker->is_initialized()) {
+    DCHECK(local_state_);
+    network_time_tracker->Initialize(/*pref_service=*/local_state_,
+                                     /*url_loader_factory=*/nullptr);
+    CHECK(network_time_tracker->is_initialized());
+  }
+  return network_time_tracker;
 }
 
 IOSChromeIOThread* TestingApplicationContext::GetIOSChromeIOThread() {
@@ -249,6 +268,15 @@ IOSChromeIOThread* TestingApplicationContext::GetIOSChromeIOThread() {
 gcm::GCMDriver* TestingApplicationContext::GetGCMDriver() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return nullptr;
+}
+
+activity_reporter::ActivityReporter*
+TestingApplicationContext::GetActivityReporter() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (!activity_reporter_) {
+    activity_reporter_ = activity_reporter::CreateActivityReporterDisabled();
+  }
+  return activity_reporter_.get();
 }
 
 component_updater::ComponentUpdateService*
@@ -373,4 +401,13 @@ TestingApplicationContext::GetOptimizationGuideGlobalState() {
         std::make_unique<optimization_guide::OptimizationGuideGlobalState>();
   }
   return optimization_guide_global_state_.get();
+}
+
+supervised_user::DeviceParentalControls&
+TestingApplicationContext::GetDeviceParentalControls() {
+  if (!device_parental_controls_) {
+    device_parental_controls_ =
+        std::make_unique<supervised_user::DeviceParentalControlsNoOpImpl>();
+  }
+  return *device_parental_controls_;
 }

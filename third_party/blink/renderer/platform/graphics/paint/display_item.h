@@ -134,6 +134,9 @@ class PLATFORM_EXPORT DisplayItem {
     // Used for paint chunks that contain region capture data.
     kRegionCapture,
 
+    // Used for paint chunks that contain tracking highlight data.
+    kTrackedElement,
+
     // Used both for specifying the paint-order scroll location, and for non-
     // composited scroll hit testing (see: hit_test_data.h).
     kScrollHitTest,

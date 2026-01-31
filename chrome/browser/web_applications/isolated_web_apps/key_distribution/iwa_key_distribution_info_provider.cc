@@ -97,7 +97,8 @@ base::TaskPriority GetLoadTaskPriority() {
 }  // namespace
 
 // static
-IwaKeyDistributionInfoProvider& IwaKeyDistributionInfoProvider::GetInstance() {
+IwaKeyDistributionInfoProvider& IwaKeyDistributionInfoProvider::GetInstance(
+    InstanceAccessKey) {
   auto& instance = GetGlobalIwaKeyDistributionInfoProviderInstance();
   if (!instance) {
     instance.reset(new IwaKeyDistributionInfoProvider());
@@ -106,7 +107,14 @@ IwaKeyDistributionInfoProvider& IwaKeyDistributionInfoProvider::GetInstance() {
 }
 
 // static
+IwaKeyDistributionInfoProvider&
+IwaKeyDistributionInfoProvider::GetInstanceForTesting() {
+  return GetInstance(base::PassKey<IwaKeyDistributionInfoProvider>());
+}
+
+// static
 void IwaKeyDistributionInfoProvider::DestroyInstanceForTesting() {
+  CHECK_IS_TEST();
   GetGlobalIwaKeyDistributionInfoProviderInstance().reset();
 }
 
@@ -139,8 +147,7 @@ IwaKeyDistributionInfoProvider::OnRuntimeDataChanged(
 
 bool IwaKeyDistributionInfoProvider::IsBundleBlocklisted(
     std::string_view web_bundle_id) const {
-  return component_ &&
-         base::Contains(component_->data.blocklist, web_bundle_id);
+  return component_ && component_->data.blocklist.contains(web_bundle_id);
 }
 
 bool IwaKeyDistributionInfoProvider::IsManagedInstallPermitted(
@@ -151,8 +158,7 @@ bool IwaKeyDistributionInfoProvider::IsManagedInstallPermitted(
   }
 
   bool is_permitted =
-      component_ &&
-      base::Contains(component_->data.managed_allowlist, web_bundle_id);
+      component_ && component_->data.managed_allowlist.contains(web_bundle_id);
 
   base::UmaHistogramEnumeration(
       kIwaKeyDistributionManagedInstallCheckInfoSourceHistogramName,
@@ -171,8 +177,7 @@ bool IwaKeyDistributionInfoProvider::IsManagedUpdatePermitted(
   }
 
   bool is_permitted =
-      component_ &&
-      base::Contains(component_->data.managed_allowlist, web_bundle_id);
+      component_ && component_->data.managed_allowlist.contains(web_bundle_id);
 
   base::UmaHistogramEnumeration(
       kIwaKeyDistributionManagedUpdateCheckInfoSourceHistogramName,
@@ -400,7 +405,7 @@ IwaKeyDistributionInfoProvider::OnComponentUpdatedForTesting(
 }
 
 base::Value IwaKeyDistributionInfoProvider::AsDebugValue() const {
-  base::Value::Dict debug_data;
+  base::DictValue debug_data;
 
   if (!GetDevModeKeyRotationData().empty()) {
     auto* dev_mode_key_rotations =
@@ -419,6 +424,14 @@ base::Value IwaKeyDistributionInfoProvider::AsDebugValue() const {
     debug_data.Set("managed_allowlist",
                    base::ToValueList(component_->data.managed_allowlist));
     debug_data.Set("blocklist", base::ToValueList(component_->data.blocklist));
+
+    auto* user_install_allowlist =
+        debug_data.EnsureDict("user_install_allowlist");
+    for (const auto& [web_bundle_id, user_install_allowlist_entry] :
+         component_->data.user_install_allowlist) {
+      user_install_allowlist->Set(web_bundle_id,
+                                  user_install_allowlist_entry.AsDebugValue());
+    }
 
     auto* key_rotations = debug_data.EnsureDict("key_rotations");
     for (const auto& [web_bundle_id, kr_info] :
@@ -439,7 +452,7 @@ base::Value IwaKeyDistributionInfoProvider::AsDebugValue() const {
 }
 
 void IwaKeyDistributionInfoProvider::WriteDebugMetadata(
-    base::Value::Dict& log) const {
+    base::DictValue& log) const {
   if (!component_) {
     // Will be displayed as <null>.
     log.Set("component", base::Value());

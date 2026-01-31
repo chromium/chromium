@@ -11,6 +11,8 @@
 #include "base/metrics/puma_histogram_functions.h"
 #include "base/observer_list.h"
 #include "base/strings/string_number_conversions.h"
+#include "chrome/browser/browser_process.h"
+#include "components/activity_reporter/activity_reporter.h"
 
 namespace metrics {
 
@@ -182,6 +184,8 @@ void DesktopSessionDurationTracker::EndSession(
 
   UMA_HISTOGRAM_CUSTOM_TIMES("Session.TotalDurationMax1Day", delta,
                              base::Milliseconds(1), base::Hours(24), 50);
+
+  g_browser_process->activity_reporter()->ReportActive();
 }
 
 void DesktopSessionDurationTracker::InitInactivityTimeout() {

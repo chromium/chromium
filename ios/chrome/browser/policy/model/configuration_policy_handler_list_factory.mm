@@ -16,11 +16,13 @@
 #import "components/component_updater/pref_names.h"
 #import "components/content_settings/core/common/pref_names.h"
 #import "components/contextual_search/pref_names.h"
+#import "components/contextual_search/search_content_sharing_policy_handler.h"
 #import "components/enterprise/browser/data_region/data_region_policy_handler.h"
 #import "components/enterprise/browser/reporting/cloud_profile_reporting_policy_handler.h"
 #import "components/enterprise/browser/reporting/cloud_reporting_frequency_policy_handler.h"
 #import "components/enterprise/browser/reporting/cloud_reporting_policy_handler.h"
 #import "components/enterprise/browser/reporting/common_pref_names.h"
+#import "components/enterprise/client_certificates/core/prefs.h"
 #import "components/enterprise/connectors/core/connectors_prefs.h"
 #import "components/enterprise/connectors/core/enterprise_connectors_policy_handler.h"
 #import "components/enterprise/data_controls/core/browser/data_controls_policy_handler.h"
@@ -37,6 +39,7 @@
 #import "components/policy/core/browser/configuration_policy_handler_list.h"
 #import "components/policy/core/browser/configuration_policy_handler_parameters.h"
 #import "components/policy/core/browser/gen_ai_default_settings_policy_handler.h"
+#import "components/policy/core/browser/incognito/incognito_mode_policy_handler.h"
 #import "components/policy/core/browser/url_list/url_blocklist_policy_handler.h"
 #import "components/policy/core/common/policy_pref_names.h"
 #import "components/policy/policy_constants.h"
@@ -101,9 +104,6 @@ constexpr auto kSimplePolicyMap = std::to_array<PolicyToPreferenceMapEntry>({
   { policy::key::kDeletingUndecryptablePasswordsEnabled,
     password_manager::prefs::kDeletingUndecryptablePasswordsEnabled,
     base::Value::Type::BOOLEAN },
-  { policy::key::kIncognitoModeAvailability,
-    policy::policy_prefs::kIncognitoModeAvailability,
-    base::Value::Type::INTEGER },
   { policy::key::kNTPContentSuggestionsEnabled,
     prefs::kNTPContentSuggestionsEnabled,
     base::Value::Type::BOOLEAN },
@@ -146,12 +146,6 @@ constexpr auto kSimplePolicyMap = std::to_array<PolicyToPreferenceMapEntry>({
   { policy::key::kShoppingListEnabled,
     commerce::kShoppingListEnabledPrefName,
     base::Value::Type::BOOLEAN},
-  { policy::key::kLensCameraAssistedSearchEnabled,
-    prefs::kLensCameraAssistedSearchPolicyAllowed,
-    base::Value::Type::BOOLEAN },
-  { policy::key::kLensOverlaySettings,
-    lens::prefs::kLensOverlaySettings,
-    base::Value::Type::INTEGER },
   { policy::key::kContextMenuPhotoSharingSettings,
     prefs::kIosSaveToPhotosContextMenuPolicySettings,
     base::Value::Type::INTEGER },
@@ -185,14 +179,11 @@ constexpr auto kSimplePolicyMap = std::to_array<PolicyToPreferenceMapEntry>({
   { policy::key::kNTPCustomBackgroundEnabled,
     prefs::kNTPCustomBackgroundEnabledByPolicy,
     base::Value::Type::BOOLEAN },
-  { policy::key::kIncognitoModeBlocklist,
-    policy::policy_prefs::kIncognitoModeBlocklist,
-    base::Value::Type::LIST },
-  { policy::key::kIncognitoModeAllowlist,
-    policy::policy_prefs::kIncognitoModeAllowlist,
-    base::Value::Type::LIST },
-  { policy::key::kSearchContentSharingSettings,
-    contextual_search::kSearchContentSharingSettings,
+  { policy::key::kProvisionManagedClientCertificateForUser,
+    client_certificates::prefs::kProvisionManagedClientCertificateForUserPrefs,
+    base::Value::Type::INTEGER },
+  { policy::key::kProvisionManagedClientCertificateForBrowser,
+    client_certificates::prefs::kProvisionManagedClientCertificateForBrowserPrefs,
     base::Value::Type::INTEGER },
 });
 // clang-format on
@@ -273,6 +264,7 @@ std::unique_ptr<policy::ConfigurationPolicyHandlerList> BuildPolicyHandlerList(
       gen_ai_default_policies;
   gen_ai_default_policies.emplace_back(
       policy::key::kLensOverlaySettings, lens::prefs::kLensOverlaySettings,
+      policy::key::kSearchContentSharingSettings,
       policy::GenAiDefaultSettingsPolicyHandler::PolicyValueToPrefMap(
           {{0, 0}, {1, 0}, {2, 1}}));
   gen_ai_default_policies.emplace_back(
@@ -289,6 +281,23 @@ std::unique_ptr<policy::ConfigurationPolicyHandlerList> BuildPolicyHandlerList(
   handlers->AddHandler(
       std::make_unique<policy::GenAiDefaultSettingsPolicyHandler>(
           std::move(gen_ai_default_policies)));
+
+  handlers->AddHandler(std::make_unique<policy::SimpleDeprecatingPolicyHandler>(
+      std::make_unique<SimplePolicyHandler>(policy::key::kLensOverlaySettings,
+                                            lens::prefs::kLensOverlaySettings,
+                                            base::Value::Type::INTEGER),
+      std::make_unique<contextual_search::SearchContentSharingPolicyHandler>(
+          lens::prefs::kLensOverlaySettings,
+          /* convert_policy_value_to_enabled_boolean= */ false)));
+
+  handlers->AddHandler(std::make_unique<policy::SimpleDeprecatingPolicyHandler>(
+      std::make_unique<SimplePolicyHandler>(
+          policy::key::kLensCameraAssistedSearchEnabled,
+          prefs::kLensCameraAssistedSearchPolicyAllowed,
+          base::Value::Type::BOOLEAN),
+      std::make_unique<contextual_search::SearchContentSharingPolicyHandler>(
+          prefs::kLensCameraAssistedSearchPolicyAllowed,
+          /* convert_policy_value_to_enabled_boolean= */ true)));
 
   handlers->AddHandler(std::make_unique<policy::CloudUserOnlyPolicyChecker>(
       std::make_unique<SimplePolicyHandler>(
@@ -320,6 +329,16 @@ std::unique_ptr<policy::ConfigurationPolicyHandlerList> BuildPolicyHandlerList(
       std::make_unique<data_controls::DataControlsPolicyHandler>(
           policy::key::kDataControlsRules,
           data_controls::kDataControlsRulesPref, chrome_schema));
+
+  handlers->AddHandler(
+      std::make_unique<policy::SimpleJsonStringSchemaValidatingPolicyHandler>(
+          policy::key::kAutoSelectCertificateForUrls,
+          prefs::kManagedAutoSelectCertificateForUrls,
+          chrome_schema.GetValidationSchema(),
+          policy::SimpleSchemaValidatingPolicyHandler::RECOMMENDED_ALLOWED,
+          policy::SimpleSchemaValidatingPolicyHandler::MANDATORY_ALLOWED));
+
+  handlers->AddHandler(std::make_unique<policy::IncognitoModePolicyHandler>());
 
   return handlers;
 }

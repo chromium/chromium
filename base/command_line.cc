@@ -11,7 +11,6 @@
 
 #include "base/check_op.h"
 #include "base/compiler_specific.h"
-#include "base/containers/contains.h"
 #include "base/containers/span.h"
 #include "base/debug/debugging_buildflags.h"
 #include "base/files/file_path.h"
@@ -366,7 +365,7 @@ void CommandLine::SetProgram(const FilePath& program) {
 
 bool CommandLine::HasSwitch(std::string_view switch_string) const {
   CHECK(IsSwitchNameValid(switch_string));
-  return Contains(switches_, switch_string);
+  return switches_.contains(switch_string);
 }
 
 bool CommandLine::HasSwitch(const char switch_constant[]) const {

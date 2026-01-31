@@ -7,7 +7,9 @@ makes this convenient to do.
 **Note**: Friending test classes is usually not the best way to provide testing
 access to a class. It makes it far too easy to unintentionally depend on the
 class's implementation rather than its interface. It is better to use a proper
-testing interface than to friend test classes.
+testing interface than to friend test classes. That testing interface might be
+the [TestApi] pattern, or might be a simple subclass of the class under test
+which exposes normally-protected functionality publicly.
 
 ## Use this pattern when:
 

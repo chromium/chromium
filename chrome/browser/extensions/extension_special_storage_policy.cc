@@ -12,7 +12,6 @@
 #include "base/check.h"
 #include "base/check_op.h"
 #include "base/command_line.h"
-#include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -151,8 +150,7 @@ bool ExtensionSpecialStoragePolicy::IsStorageUnlimited(const GURL& origin) {
 #endif
 
   base::AutoLock locker(lock_);
-  if (base::Contains(origins_with_unlimited_storage_,
-                     url::Origin::Create(origin))) {
+  if (origins_with_unlimited_storage_.contains(url::Origin::Create(origin))) {
     // Origin was externally marked as having unlimited storage.
     return true;
   }
@@ -190,8 +188,8 @@ bool ExtensionSpecialStoragePolicy::HasIsolatedStorage(const GURL& origin) {
   return isolated_extensions_.Contains(origin);
 }
 
-bool ExtensionSpecialStoragePolicy::IsStorageDurable(const GURL& origin) {
-  return cookie_settings_->IsStorageDurable(origin);
+bool ExtensionSpecialStoragePolicy::IsStoragePersistent(const GURL& origin) {
+  return cookie_settings_->IsStoragePersistent(origin);
 }
 
 bool ExtensionSpecialStoragePolicy::NeedsProtection(

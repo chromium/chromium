@@ -17,6 +17,9 @@ bool IsMetricsEndpointEnabled();
 // Whether the Delegation API is enabled.
 bool IsDelegationEnabled();
 
+// Whether the Email Verification Protocol is enabled.
+bool IsEmailVerificationProtocolEnabled();
+
 // Whether the IdP Registration API is enabled.
 bool IsIdPRegistrationEnabled();
 
@@ -35,18 +38,8 @@ bool IsSameSiteLaxEnabled();
 // Whether lightweight FedCM credentials are enabled.
 bool IsLightweightModeEnabled();
 
-// Whether phone/username is supported and name/email are optional.
-bool IsAlternativeIdentifiersEnabled();
-
-// Whether to support the newer syntax for the "Use Other Account"
-// and account labels features.
-bool IsUseOtherAccountAndLabelsNewSyntaxEnabled();
-
 // Whether autofill enhancement with FedCM is enabled.
 bool IsAutofillEnabled();
-
-// Whether showing the iframe origin is enabled.
-bool IsIframeOriginEnabled();
 
 // Whether nonce usage in params is enabled.
 bool IsNonceInParamsEnabled();
@@ -70,8 +63,8 @@ bool IsFedCmEmbedderCheckEnabled();
 // Whether navigation interception is enabled.
 bool IsNavigationInterceptionEnabled();
 
-// Whethere navigation cancellation is enabled.
-bool IsNavigationCancellationEnabled();
+// Whether embedder initiated login is enabled.
+bool IsEmbedderInitiatedLoginEnabled();
 
 }  // namespace content::webid
 

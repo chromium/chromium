@@ -9,7 +9,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/containers/contains.h"
 #include "base/containers/flat_set.h"
 #include "base/containers/span.h"
 #include "base/functional/bind.h"
@@ -126,17 +125,17 @@ class FidoMakeCredentialHandlerTest : public ::testing::Test {
       MakeCredentialRequestHandler* request_handler,
       base::flat_set<FidoTransportProtocol> transports) {
     using Transport = FidoTransportProtocol;
-    if (base::Contains(transports, Transport::kUsbHumanInterfaceDevice))
+    if (transports.contains(Transport::kUsbHumanInterfaceDevice))
       discovery()->WaitForCallToStartAndSimulateSuccess();
-    if (base::Contains(transports, Transport::kNearFieldCommunication))
+    if (transports.contains(Transport::kNearFieldCommunication))
       nfc_discovery()->WaitForCallToStartAndSimulateSuccess();
 
     task_environment_.FastForwardUntilNoTasksRemain();
     EXPECT_FALSE(future().IsReady());
 
-    if (!base::Contains(transports, Transport::kUsbHumanInterfaceDevice))
+    if (!transports.contains(Transport::kUsbHumanInterfaceDevice))
       EXPECT_FALSE(discovery()->is_start_requested());
-    if (!base::Contains(transports, Transport::kNearFieldCommunication))
+    if (!transports.contains(Transport::kNearFieldCommunication))
       EXPECT_FALSE(nfc_discovery()->is_start_requested());
 
     EXPECT_THAT(

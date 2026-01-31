@@ -55,8 +55,8 @@ BASE_FEATURE(kPermissionsAndroidClapperLoud, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kPermissionsAndroidClapperQuiet,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-static jlong JNI_PermissionsAndroidFeatureMap_GetNativeMap(JNIEnv* env) {
-  return reinterpret_cast<jlong>(GetFeatureMap());
+static int64_t JNI_PermissionsAndroidFeatureMap_GetNativeMap(JNIEnv* env) {
+  return reinterpret_cast<int64_t>(GetFeatureMap());
 }
 
 }  // namespace permissions

@@ -22,7 +22,6 @@
 #import "components/autofill/core/common/unique_ids.h"
 #import "components/autofill/ios/browser/autofill_util.h"
 #import "components/autofill/ios/common/field_data_manager_factory_ios.h"
-#import "components/autofill/ios/form_util/form_util_java_script_feature.h"
 #import "components/password_manager/ios/account_select_fill_data.h"
 #import "components/password_manager/ios/ios_password_manager_driver.h"
 #import "components/password_manager/ios/ios_password_manager_driver_factory.h"
@@ -155,8 +154,9 @@ const char kHostFrameKey[] = "host_frame";
       autofill::FieldDataManagerFactoryIOS::FromWebFrame(frame);
 
   std::optional<std::vector<FormData>> formsData = autofill::ExtractFormsData(
-      JSONString, false, std::u16string(), pageURL, frame->GetSecurityOrigin(),
-      *fieldDataManager, frame->GetFrameId());
+      JSONString, /*form_name_filter=*/std::nullopt, pageURL,
+      frame->GetSecurityOrigin(), frame->GetUrl(), *fieldDataManager,
+      frame->GetFrameId());
   if (!formsData) {
     return;
   }
@@ -351,9 +351,9 @@ const char kHostFrameKey[] = "host_frame";
   password_manager::PasswordManagerJavaScriptFeature::GetInstance()
       ->ExtractForm(
           frame, formIdentifier, base::BindOnce(^(NSString* jsonString) {
-            if (std::optional<FormData> formData =
-                    JsonStringToFormData(jsonString, *pageURL, frame_origin,
-                                         *fieldDataManager, frame_id)) {
+            if (std::optional<FormData> formData = JsonStringToFormData(
+                    jsonString, *pageURL, frame_origin, frame->GetUrl(),
+                    *fieldDataManager, frame_id)) {
               completionHandler(YES, *formData);
               return;
             }
@@ -412,10 +412,13 @@ const char kHostFrameKey[] = "host_frame";
   autofill::FieldDataManager* fieldDataManager =
       autofill::FieldDataManagerFactoryIOS::FromWebFrame(frame);
 
-  if (std::optional<FormData> form = autofill::ExtractFormData(
-          dict, false, std::u16string(), *pageURL,
-          url::Origin::Create(*pageURL), *fieldDataManager, *host_frame)) {
-    [self.delegate formHelper:self didSubmitForm:*form inFrame:frame];
+  if (base::expected<FormData, autofill::ExtractFormDataFailure> form =
+          autofill::ExtractFormData(dict, /*form_name_filter=*/std::nullopt,
+                                    *pageURL, url::Origin::Create(*pageURL),
+                                    frame->GetUrl(), *fieldDataManager,
+                                    *host_frame);
+      form.has_value()) {
+    [self.delegate formHelper:self didSubmitForm:form.value() inFrame:frame];
 
     return HandleSubmittedFormStatus::kHandled;
   }

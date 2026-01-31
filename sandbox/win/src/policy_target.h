@@ -5,6 +5,8 @@
 #ifndef SANDBOX_WIN_SRC_POLICY_TARGET_H_
 #define SANDBOX_WIN_SRC_POLICY_TARGET_H_
 
+#include <optional>
+
 #include "sandbox/win/src/ipc_tags.h"
 #include "sandbox/win/src/nt_internals.h"
 #include "sandbox/win/src/sandbox_types.h"
@@ -16,6 +18,11 @@ struct CountedParameterSetBase;
 // Performs a policy lookup and returns true if the request should be passed to
 // the broker process.
 bool QueryBroker(IpcTag ipc_id, CountedParameterSetBase* params);
+
+// Performs a policy lookup and returns the constant value if the match is for
+// RETURN_CONST action. Returns an empty value if no constant available.
+std::optional<uintptr_t> QueryReturnConst(IpcTag ipc_id,
+                                          CountedParameterSetBase* params);
 
 extern "C" {
 

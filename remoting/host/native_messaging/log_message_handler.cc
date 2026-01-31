@@ -121,7 +121,7 @@ void LogMessageHandler::SendLogMessageToClient(logging::LogSeverity severity,
   std::string message = str.substr(message_start);
   base::TrimWhitespaceASCII(message, base::TRIM_ALL, &message);
 
-  base::Value::Dict dictionary;
+  base::DictValue dictionary;
   dictionary.Set("type", kDebugMessageTypeName);
   dictionary.Set("severity", severity_string);
   dictionary.Set("message", message);

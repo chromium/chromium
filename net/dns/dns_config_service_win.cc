@@ -13,7 +13,8 @@
 #include <string>
 #include <string_view>
 
-#include "base/compiler_specific.h"
+#include "base/containers/heap_array.h"
+#include "base/containers/span.h"
 #include "base/files/file_path.h"
 #include "base/files/file_path_watcher.h"
 #include "base/functional/bind.h"
@@ -86,28 +87,33 @@ inline DnsWindowsCompatibility& operator|=(DnsWindowsCompatibility& a,
 
 // Wrapper for GetAdaptersAddresses to get unicast addresses.
 // Returns nullptr if failed.
-std::unique_ptr<IP_ADAPTER_ADDRESSES, base::FreeDeleter>
-ReadAdapterUnicastAddresses() {
+base::HeapArray<uint8_t> ReadAdapterUnicastAddresses() {
   base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
                                                 base::BlockingType::MAY_BLOCK);
 
-  std::unique_ptr<IP_ADAPTER_ADDRESSES, base::FreeDeleter> out;
-  ULONG len = 15000;  // As recommended by MSDN for GetAdaptersAddresses.
+  ULONG len = 15000;  // As recommended by MSDN.
   UINT rv = ERROR_BUFFER_OVERFLOW;
+  base::HeapArray<uint8_t> buffer;
+
   // Try up to three times.
   for (unsigned tries = 0; (tries < 3) && (rv == ERROR_BUFFER_OVERFLOW);
        tries++) {
-    out.reset(static_cast<PIP_ADAPTER_ADDRESSES>(malloc(len)));
-    UNSAFE_TODO(memset(out.get(), 0, len));
-    rv = GetAdaptersAddresses(AF_UNSPEC,
-                              GAA_FLAG_SKIP_ANYCAST | GAA_FLAG_SKIP_DNS_SERVER |
-                              GAA_FLAG_SKIP_MULTICAST |
-                              GAA_FLAG_SKIP_FRIENDLY_NAME,
-                              nullptr, out.get(), &len);
+    buffer = base::HeapArray<uint8_t>::WithSize(len);
+
+    // SAFETY: `buffer` is `len` bytes in length and ::GetAdaptersAddresses
+    // shouldn't write more than `len` bytes.
+    rv = ::GetAdaptersAddresses(
+        AF_UNSPEC,
+        GAA_FLAG_SKIP_ANYCAST | GAA_FLAG_SKIP_DNS_SERVER |
+            GAA_FLAG_SKIP_MULTICAST | GAA_FLAG_SKIP_FRIENDLY_NAME,
+        nullptr, reinterpret_cast<PIP_ADAPTER_ADDRESSES>(buffer.data()), &len);
   }
-  if (rv != NO_ERROR)
-    out.reset();
-  return out;
+
+  if (rv != NO_ERROR) {
+    return {};
+  }
+
+  return buffer;
 }
 
 // Default address of "localhost" and local computer name can be overridden
@@ -139,14 +145,14 @@ bool AddLocalhostEntriesTo(DnsHosts& in_out_hosts) {
   if (have_ipv4 && have_ipv6)
     return true;
 
-  std::unique_ptr<IP_ADAPTER_ADDRESSES, base::FreeDeleter> addresses =
-      ReadAdapterUnicastAddresses();
-  if (!addresses.get())
+  auto addresses = ReadAdapterUnicastAddresses();
+  if (addresses.empty()) {
     return false;
-
-  // The order of adapters is the network binding order, so stick to the
-  // first good adapter for each family.
-  for (const IP_ADAPTER_ADDRESSES* adapter = addresses.get();
+  }
+  // The order of adapters is the network binding order, so stick to the first
+  // good adapter for each family.
+  for (const auto* adapter =
+           reinterpret_cast<IP_ADAPTER_ADDRESSES*>(addresses.data());
        adapter != nullptr && (!have_ipv4 || !have_ipv6);
        adapter = adapter->Next) {
     if (adapter->OperStatus != IfOperStatusUp)
@@ -375,10 +381,7 @@ std::string ParseDomainASCII(std::wstring_view widestr) {
   // |punycode_output| should now be ASCII; convert it to a std::string.
   // (We could use UTF16ToASCII() instead, but that requires an extra string
   // copy. Since ASCII is a subset of UTF8 the following is equivalent).
-  std::string converted;
-  bool success =
-      base::UTF16ToUTF8(punycode.data(), punycode.length(), &converted);
-  DCHECK(success);
+  std::string converted = base::UTF16ToUTF8(punycode.view());
   DCHECK(base::IsStringASCII(converted));
   return converted;
 }

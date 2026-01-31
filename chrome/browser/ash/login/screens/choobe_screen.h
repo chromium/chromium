@@ -14,7 +14,7 @@
 #include "chrome/browser/ash/login/screens/base_screen.h"
 
 namespace base {
-class Value;
+class ListValue;
 }
 
 namespace ash {
@@ -54,13 +54,13 @@ class ChoobeScreen : public BaseScreen {
   bool MaybeSkip(WizardContext& context) override;
   void ShowImpl() override;
   void HideImpl() override;
-  void OnUserAction(const base::Value::List& args) override;
+  void OnUserAction(const base::ListValue& args) override;
 
   // Called when the user skips the CHOOBE screen.
   void SkipScreen();
 
   // Called when the user selects screens on the CHOOBE screen.
-  void OnSelect(base::Value::List screens);
+  void OnSelect(base::ListValue screens);
 
   base::WeakPtr<ChoobeScreenView> view_;
   ScreenExitCallback exit_callback_;

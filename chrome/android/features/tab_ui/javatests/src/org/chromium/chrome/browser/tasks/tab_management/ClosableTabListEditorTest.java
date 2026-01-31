@@ -24,7 +24,8 @@ import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.Callback;
 import org.chromium.base.ThreadUtils;
-import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.supplier.ObservableSuppliers;
+import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
 import org.chromium.base.test.util.Batch;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.layouts.LayoutType;
@@ -68,7 +69,7 @@ public class ClosableTabListEditorTest {
     private TabListEditorLayout mTabListEditorLayout;
     private TabListEditorCoordinator mTabListEditorCoordinator;
     private WeakReference<TabListEditorLayout> mRef;
-    private ObservableSupplierImpl<EdgeToEdgeController> mEdgeToEdgeSupplier;
+    private SettableMonotonicObservableSupplier<EdgeToEdgeController> mEdgeToEdgeSupplier;
 
     private ViewGroup mParentView;
     private SnackbarManager mSnackbarManager;
@@ -83,10 +84,8 @@ public class ClosableTabListEditorTest {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     var currentTabGroupModelFilterSupplier =
-                            mTabModelSelector
-                                    .getTabGroupModelFilterProvider()
-                                    .getCurrentTabGroupModelFilterSupplier();
-                    mEdgeToEdgeSupplier = new ObservableSupplierImpl<>();
+                            mTabModelSelector.getCurrentTabGroupModelFilterSupplier();
+                    mEdgeToEdgeSupplier = ObservableSuppliers.createMonotonic();
                     mTabListEditorCoordinator =
                             new TabListEditorCoordinator(
                                     mActivityTestRule.getActivity(),
@@ -110,7 +109,8 @@ public class ClosableTabListEditorTest {
                                     CreationMode.FULL_SCREEN,
                                     /* undoBarExplicitTrigger= */ null,
                                     /* componentName= */ null,
-                                    TabListEditorCoordinator.UNLIMITED_SELECTION);
+                                    TabListEditorCoordinator.UNLIMITED_SELECTION,
+                                    false);
 
                     mTabListEditorController = mTabListEditorCoordinator.getController();
                     mTabListEditorLayout =

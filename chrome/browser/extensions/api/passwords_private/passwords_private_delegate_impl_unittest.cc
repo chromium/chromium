@@ -29,7 +29,6 @@
 #include "base/test/metrics/user_action_tester.h"
 #include "base/test/mock_callback.h"
 #include "base/test/test_future.h"
-#include "base/types/cxx23_to_underlying.h"
 #include "base/values.h"
 #include "chrome/browser/affiliations/affiliation_service_factory.h"
 #include "chrome/browser/extensions/api/passwords_private/passwords_private_delegate.h"
@@ -275,7 +274,6 @@ void SetUpSyncInTransportMode(Profile* profile) {
                 return std::make_unique<syncer::TestSyncService>();
               })));
   sync_service->SetSignedIn(signin::ConsentLevel::kSignin);
-  ASSERT_FALSE(sync_service->IsSyncFeatureEnabled());
 }
 
 class PasswordEventObserver
@@ -585,7 +583,7 @@ TEST_F(PasswordsPrivateDelegateImplTest, AddPassword) {
   std::unique_ptr<content::WebContents> web_contents = CreateWebContents();
   auto* client =
       MockPasswordManagerClient::CreateForWebContentsAndGet(web_contents.get());
-  ON_CALL(*(client->GetPasswordFeatureManager()), IsAccountStorageEnabled)
+  ON_CALL(*(client->GetPasswordFeatureManager()), IsAccountStorageActive)
       .WillByDefault(Return(false));
   auto delegate = CreateDelegate();
   // Spin the loop to allow PasswordStore tasks posted on the creation of
@@ -644,7 +642,7 @@ TEST_F(PasswordsPrivateDelegateImplTest,
   auto* fake_porter_ptr = fake_porter.get();
   delegate->SetPorterForTesting(std::move(fake_porter));
 
-  ON_CALL(*(client->GetPasswordFeatureManager()), IsAccountStorageEnabled)
+  ON_CALL(*(client->GetPasswordFeatureManager()), IsAccountStorageActive)
       .WillByDefault(Return(false));
 
   const auto kExpectedStatus =
@@ -675,7 +673,7 @@ TEST_F(PasswordsPrivateDelegateImplTest, TestReauthFailedOnImport) {
   auto fake_porter = std::make_unique<FakePasswordManagerPorter>();
   auto* fake_porter_ptr = fake_porter.get();
   delegate->SetPorterForTesting(std::move(fake_porter));
-  ON_CALL(*(client->GetPasswordFeatureManager()), IsAccountStorageEnabled)
+  ON_CALL(*(client->GetPasswordFeatureManager()), IsAccountStorageActive)
       .WillByDefault(Return(false));
 
   const auto kExpectedStatus =
@@ -711,7 +709,7 @@ TEST_F(PasswordsPrivateDelegateImplTest,
   auto* fake_porter_ptr = fake_porter.get();
   delegate->SetPorterForTesting(std::move(fake_porter));
 
-  ON_CALL(*(client->GetPasswordFeatureManager()), IsAccountStorageEnabled)
+  ON_CALL(*(client->GetPasswordFeatureManager()), IsAccountStorageActive)
       .WillByDefault(Return(false));
 
   const auto kExpectedStatus =
@@ -957,11 +955,11 @@ TEST_F(PasswordsPrivateDelegateImplTest, CopyPlaintextBackupPassword) {
   EXPECT_EQ(result, form.GetPasswordBackup());
 }
 
-TEST_F(PasswordsPrivateDelegateImplTest, TestShouldEnableAccountStorage) {
+TEST_F(PasswordsPrivateDelegateImplTest, TestShouldActivateAccountStorage) {
   std::unique_ptr<content::WebContents> web_contents = CreateWebContents();
   auto* client =
       MockPasswordManagerClient::CreateForWebContentsAndGet(web_contents.get());
-  ON_CALL(*(client->GetPasswordFeatureManager()), IsAccountStorageEnabled)
+  ON_CALL(*(client->GetPasswordFeatureManager()), IsAccountStorageActive)
       .WillByDefault(Return(false));
   sync_service()->GetUserSettings()->SetSelectedType(
       syncer::UserSelectableType::kPasswords, false);
@@ -979,8 +977,7 @@ TEST_F(PasswordsPrivateDelegateImplTest, TestShouldDisableAccountStorage) {
       MockPasswordManagerClient::CreateForWebContentsAndGet(web_contents.get());
   password_manager::MockPasswordFeatureManager* feature_manager =
       client->GetPasswordFeatureManager();
-  ON_CALL(*feature_manager, IsAccountStorageEnabled)
-      .WillByDefault(Return(true));
+  ON_CALL(*feature_manager, IsAccountStorageActive).WillByDefault(Return(true));
   sync_service()->GetUserSettings()->SetSelectedType(
       syncer::UserSelectableType::kPasswords, true);
 
@@ -1219,7 +1216,7 @@ TEST_F(PasswordsPrivateDelegateImplTest, TestMovePasswordsToAccountStore) {
   std::unique_ptr<content::WebContents> web_contents = CreateWebContents();
   auto* client =
       MockPasswordManagerClient::CreateForWebContentsAndGet(web_contents.get());
-  ON_CALL(*(client->GetPasswordFeatureManager()), IsAccountStorageEnabled)
+  ON_CALL(*(client->GetPasswordFeatureManager()), IsAccountStorageActive)
       .WillByDefault(Return(true));
 
   auto delegate = CreateDelegate();
@@ -1242,83 +1239,83 @@ TEST_F(PasswordsPrivateDelegateImplTest, TestMovePasswordsToAccountStore) {
 
 TEST_F(PasswordsPrivateDelegateImplTest, VerifyCastingOfImportEntryStatus) {
   static_assert(
-      base::to_underlying(api::passwords_private::ImportEntryStatus::kNone) ==
+      std::to_underlying(api::passwords_private::ImportEntryStatus::kNone) ==
       int{password_manager::ImportEntry::Status::NONE});
-  static_assert(base::to_underlying(
+  static_assert(std::to_underlying(
                     api::passwords_private::ImportEntryStatus::kUnknownError) ==
                 int{password_manager::ImportEntry::Status::UNKNOWN_ERROR});
   static_assert(
-      base::to_underlying(
+      std::to_underlying(
           api::passwords_private::ImportEntryStatus::kMissingPassword) ==
       int{password_manager::ImportEntry::Status::MISSING_PASSWORD});
-  static_assert(base::to_underlying(
+  static_assert(std::to_underlying(
                     api::passwords_private::ImportEntryStatus::kMissingUrl) ==
                 int{password_manager::ImportEntry::Status::MISSING_URL});
-  static_assert(base::to_underlying(
+  static_assert(std::to_underlying(
                     api::passwords_private::ImportEntryStatus::kInvalidUrl) ==
                 int{password_manager::ImportEntry::Status::INVALID_URL});
-  static_assert(base::to_underlying(
-                    api::passwords_private::ImportEntryStatus::kLongUrl) ==
-                int{password_manager::ImportEntry::Status::LONG_URL});
-  static_assert(base::to_underlying(
+  static_assert(
+      std::to_underlying(api::passwords_private::ImportEntryStatus::kLongUrl) ==
+      int{password_manager::ImportEntry::Status::LONG_URL});
+  static_assert(std::to_underlying(
                     api::passwords_private::ImportEntryStatus::kLongPassword) ==
                 int{password_manager::ImportEntry::Status::LONG_PASSWORD});
-  static_assert(base::to_underlying(
+  static_assert(std::to_underlying(
                     api::passwords_private::ImportEntryStatus::kLongUsername) ==
                 int{password_manager::ImportEntry::Status::LONG_USERNAME});
   static_assert(
-      base::to_underlying(
+      std::to_underlying(
           api::passwords_private::ImportEntryStatus::kConflictProfile) ==
       int{password_manager::ImportEntry::Status::CONFLICT_PROFILE});
   static_assert(
-      base::to_underlying(
+      std::to_underlying(
           api::passwords_private::ImportEntryStatus::kConflictAccount) ==
       int{password_manager::ImportEntry::Status::CONFLICT_ACCOUNT});
-  static_assert(base::to_underlying(
+  static_assert(std::to_underlying(
                     api::passwords_private::ImportEntryStatus::kLongNote) ==
                 int{password_manager::ImportEntry::Status::LONG_NOTE});
   static_assert(
-      base::to_underlying(
+      std::to_underlying(
           api::passwords_private::ImportEntryStatus::kLongConcatenatedNote) ==
       int{password_manager::ImportEntry::Status::LONG_CONCATENATED_NOTE});
   static_assert(
-      base::to_underlying(api::passwords_private::ImportEntryStatus::kValid) ==
+      std::to_underlying(api::passwords_private::ImportEntryStatus::kValid) ==
       int{password_manager::ImportEntry::Status::VALID});
 }
 
 TEST_F(PasswordsPrivateDelegateImplTest, VerifyCastingOfImportResultsStatus) {
   static_assert(
-      base::to_underlying(api::passwords_private::ImportResultsStatus::kNone) ==
+      std::to_underlying(api::passwords_private::ImportResultsStatus::kNone) ==
       int{password_manager::ImportResults::Status::NONE});
   static_assert(
-      base::to_underlying(
+      std::to_underlying(
           api::passwords_private::ImportResultsStatus::kUnknownError) ==
       int{password_manager::ImportResults::Status::UNKNOWN_ERROR});
-  static_assert(base::to_underlying(
+  static_assert(std::to_underlying(
                     api::passwords_private::ImportResultsStatus::kSuccess) ==
                 int{password_manager::ImportResults::Status::SUCCESS});
-  static_assert(base::to_underlying(
+  static_assert(std::to_underlying(
                     api::passwords_private::ImportResultsStatus::kIoError) ==
                 int{password_manager::ImportResults::Status::IO_ERROR});
-  static_assert(base::to_underlying(
+  static_assert(std::to_underlying(
                     api::passwords_private::ImportResultsStatus::kBadFormat) ==
                 int{password_manager::ImportResults::Status::BAD_FORMAT});
-  static_assert(base::to_underlying(
+  static_assert(std::to_underlying(
                     api::passwords_private::ImportResultsStatus::kDismissed) ==
                 int{password_manager::ImportResults::Status::DISMISSED});
   static_assert(
-      base::to_underlying(
+      std::to_underlying(
           api::passwords_private::ImportResultsStatus::kMaxFileSize) ==
       int{password_manager::ImportResults::Status::MAX_FILE_SIZE});
   static_assert(
-      base::to_underlying(
+      std::to_underlying(
           api::passwords_private::ImportResultsStatus::kImportAlreadyActive) ==
       int{password_manager::ImportResults::Status::IMPORT_ALREADY_ACTIVE});
   static_assert(
-      base::to_underlying(
+      std::to_underlying(
           api::passwords_private::ImportResultsStatus::kNumPasswordsExceeded) ==
       int{password_manager::ImportResults::Status::NUM_PASSWORDS_EXCEEDED});
-  static_assert(base::to_underlying(
+  static_assert(std::to_underlying(
                     api::passwords_private::ImportResultsStatus::kConflicts) ==
                 int{password_manager::ImportResults::Status::CONFLICTS});
 }
@@ -1862,7 +1859,7 @@ TEST_F(PasswordsPrivateDelegateImplTest, IsConnecetdToCloudAuthenticator) {
 
   MockEnclaveManager* enclave_manager_mock = static_cast<MockEnclaveManager*>(
       EnclaveManagerFactory::GetForProfile(profile()));
-  EXPECT_CALL(*enclave_manager_mock, is_registered).Times(1);
+  EXPECT_CALL(*enclave_manager_mock, IsRegistered).Times(1);
 
   delegate->IsConnectedToCloudAuthenticator(web_contents.get());
 }
@@ -2013,8 +2010,8 @@ class PasswordsPrivateDelegateImplFetchFamilyMembersTest
             version_info::Channel::DEFAULT,
             profile_url_loader_factory().GetSafeWeakWrapper(),
             identity_test_env_.identity_manager()));
-    identity_test_env_.MakePrimaryAccountAvailable("test@email.com",
-                                                   signin::ConsentLevel::kSync);
+    identity_test_env_.MakePrimaryAccountAvailable(
+        "test@email.com", signin::ConsentLevel::kSignin);
     identity_test_env_.SetAutomaticIssueOfAccessTokens(true);
   }
 
@@ -2192,6 +2189,9 @@ TEST_F(PasswordsPrivateDelegateImplFetchFamilyMembersTest,
   task_environment()->RunUntilIdle();
 }
 
+// TODO(crbug.com/40066949): Remove this test after kSync users are migrated to
+// kSignin in phase 3. As it will be identical to GetCredentialGroups_Butter.
+// See ConsentLevel::kSync documentation for details.
 TEST_F(PasswordsPrivateDelegateImplTest, GetCredentialGroups_SyncOn) {
   sync_service()->SetSignedIn(signin::ConsentLevel::kSync);
 

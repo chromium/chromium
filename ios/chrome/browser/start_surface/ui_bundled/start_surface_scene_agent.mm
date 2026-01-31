@@ -4,7 +4,8 @@
 
 #import "ios/chrome/browser/start_surface/ui_bundled/start_surface_scene_agent.h"
 
-#import "base/containers/contains.h"
+#import <algorithm>
+
 #import "base/feature_list.h"
 #import "base/metrics/histogram_functions.h"
 #import "base/metrics/histogram_macros.h"
@@ -28,8 +29,8 @@
 #import "ios/chrome/browser/shared/model/web_state_list/removing_indexes.h"
 #import "ios/chrome/browser/shared/model/web_state_list/tab_group.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
-#import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
+#import "ios/chrome/browser/shared/public/commands/scene_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/signin/model/chrome_account_manager_service.h"
 #import "ios/chrome/browser/signin/model/chrome_account_manager_service_factory.h"
@@ -123,8 +124,7 @@ bool IsEmptyNTP(const web::WebState* web_state) {
   }
   if (level == SceneActivationLevelBackground &&
       self.previousActivationLevel > SceneActivationLevelBackground) {
-    if (base::FeatureList::IsEnabled(kRemoveExcessNTPs) &&
-        !IsAvoidNTPCleanupOnBackgroundEnabled()) {
+    if (base::FeatureList::IsEnabled(kRemoveExcessNTPs)) {
       // Remove duplicate NTP pages upon background event.
       [self removeExcessNTPs];
     }
@@ -139,9 +139,6 @@ bool IsEmptyNTP(const web::WebState* web_state) {
 }
 
 - (void)showStartSurfaceIfNecessary {
-  if (IsDiamondPrototypeEnabled()) {
-    return;
-  }
   if (self.sceneState.profileState.initStage < ProfileInitStage::kFinal) {
     // NO if the app is not yet ready to present normal UI that is required by
     // Start Surface.
@@ -187,11 +184,8 @@ bool IsEmptyNTP(const web::WebState* web_state) {
 
   base::RecordAction(base::UserMetricsAction("IOS.StartSurface.Show"));
   StartSurfaceRecentTabBrowserAgent::FromBrowser(browser)->SaveMostRecentTab();
-
-  StartupRemediationsType startUpRemediationFeatureType =
-      GetIOSStartTimeStartupRemediationsEnabledType();
   WebStateList* webStateList = browser->GetWebStateList();
-  if (startUpRemediationFeatureType == StartupRemediationsType::kDisabled) {
+
     // Iterate through the WebStateList and activate the existing NTP tab for
     // the Start surface (if any).
     for (int i = webStateList->count() - 1; i >= 0; --i) {
@@ -199,21 +193,6 @@ bool IsEmptyNTP(const web::WebState* web_state) {
         return;
       }
     }
-  } else if (startUpRemediationFeatureType ==
-             StartupRemediationsType::kSaveNewNTPWebState) {
-    // If the tab at index kIOSLastKnownNTPWebStateIndex is still a valid
-    // ungrouped NTP page, activate it and return early.
-    PrefService* prefService = browser->GetProfile()->GetPrefs();
-    int knownNTPWebStateIndex =
-        prefService->GetInteger(prefs::kIOSLastKnownNTPWebStateIndex);
-    prefService->ClearPref(prefs::kIOSLastKnownNTPWebStateIndex);
-    if (webStateList->ContainsIndex(knownNTPWebStateIndex)) {
-      if ([self activateUngroupedNTPForWebStateList:webStateList
-                                            atIndex:knownNTPWebStateIndex]) {
-        return;
-      }
-    }
-  }
 
   // Create a new NTP since there is no existing one.
   TabInsertionBrowserAgent* insertion_agent =
@@ -319,13 +298,13 @@ bool IsEmptyNTP(const web::WebState* web_state) {
 
   // If the active tab is going to be closed, pick the last ungrouped
   // NTP as the new active tab, otherwise insert a new NTP.
-  if (base::Contains(indicesToRemove, webStateList->active_index())) {
+  if (std::ranges::contains(indicesToRemove, webStateList->active_index())) {
     int lastUngroupedNTPIndex = WebStateList::kInvalidIndex;
     for (int index = webStateList->count() - 1; index >= 0; --index) {
       const web::WebState* webState = webStateList->GetWebStateAt(index);
       const TabGroup* tabGroup = webStateList->GetGroupOfWebStateAt(index);
       if (IsNTP(webState) && !tabGroup &&
-          !base::Contains(indicesToRemove, index)) {
+          !std::ranges::contains(indicesToRemove, index)) {
         lastUngroupedNTPIndex = index;
         break;
       }
@@ -357,17 +336,6 @@ bool IsEmptyNTP(const web::WebState* web_state) {
   webStateList->CloseWebStatesAtIndices(
       WebStateList::ClosingReason::kDefault,
       RemovingIndexes(std::move(indicesToRemove)));
-
-  if (IsDiamondPrototypeEnabled()) {
-    for (int index = webStateList->count() - 1; index >= 0; --index) {
-      const web::WebState* webState = webStateList->GetWebStateAt(index);
-      const TabGroup* tabGroup = webStateList->GetGroupOfWebStateAt(index);
-      if (IsNTP(webState) && !tabGroup) {
-        webStateList->CloseWebStateAt(index,
-                                      WebStateList::ClosingReason::kDefault);
-      }
-    }
-  }
 }
 
 // Returns YES if the WebState at the given index has been activated. Only
@@ -450,8 +418,8 @@ bool IsEmptyNTP(const web::WebState* web_state) {
 
   // Activate the tab group in grid view.
   CommandDispatcher* dispatcher = browser->GetCommandDispatcher();
-  id<ApplicationCommands> applicationHandler =
-      HandlerForProtocol(dispatcher, ApplicationCommands);
-  [applicationHandler displayTabGridInMode:TabGridOpeningMode::kDefault];
+  id<SceneCommands> sceneHandler =
+      HandlerForProtocol(dispatcher, SceneCommands);
+  [sceneHandler displayTabGridInMode:TabGridOpeningMode::kDefault];
 }
 @end

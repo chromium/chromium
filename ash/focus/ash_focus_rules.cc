@@ -4,6 +4,8 @@
 
 #include "ash/focus/ash_focus_rules.h"
 
+#include <algorithm>
+
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/public/cpp/window_properties.h"
 #include "ash/session/session_controller_impl.h"
@@ -18,7 +20,6 @@
 #include "ash/wm/window_restore/window_restore_controller.h"
 #include "ash/wm/window_state.h"
 #include "base/containers/adapters.h"
-#include "base/containers/contains.h"
 #include "components/app_restore/full_restore_utils.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/window.h"
@@ -74,11 +75,12 @@ bool AshFocusRules::IsToplevelWindow(const aura::Window* window) const {
 
   // The window must exist within a container that supports activation.
   // The window cannot be blocked by a modal transient.
-  return base::Contains(activatable_container_ids_, window->parent()->GetId());
+  return std::ranges::contains(activatable_container_ids_,
+                               window->parent()->GetId());
 }
 
 bool AshFocusRules::SupportsChildActivation(const aura::Window* window) const {
-  return base::Contains(activatable_container_ids_, window->GetId());
+  return std::ranges::contains(activatable_container_ids_, window->GetId());
 }
 
 bool AshFocusRules::IsWindowConsideredVisibleForActivation(

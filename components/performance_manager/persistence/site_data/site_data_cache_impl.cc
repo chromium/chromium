@@ -7,7 +7,6 @@
 #include <set>
 
 #include "base/check.h"
-#include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/functional/callback.h"
 #include "base/memory/ptr_util.h"
@@ -139,7 +138,7 @@ internal::SiteDataImpl* SiteDataCacheImpl::GetOrCreateFeatureImpl(
 void SiteDataCacheImpl::OnSiteDataImplDestroyed(internal::SiteDataImpl* impl) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(impl);
-  DCHECK(base::Contains(origin_data_map_, impl->origin()));
+  DCHECK(origin_data_map_.contains(impl->origin()));
   // Remove the entry for this origin as this is about to get destroyed.
   auto num_erased = origin_data_map_.erase(impl->origin());
   DCHECK_EQ(1U, num_erased);

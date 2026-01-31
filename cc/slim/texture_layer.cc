@@ -155,10 +155,13 @@ void TextureLayer::AppendQuads(viz::CompositorRenderPass& render_pass,
   constexpr auto kVideoType = gfx::ProtectedVideoType::kClear;
   const bool needs_blending =
       !contents_opaque() && !background_color().isOpaque();
+  const gfx::Size resource_size = resource_holder_->resource().GetSize();
   quad->SetNew(quad_state, quad_state->quad_layer_rect,
                quad_state->visible_quad_layer_rect, needs_blending,
-               resource_id_, gfx::PointF(), gfx::PointF(1.0f, 1.0f),
-               background_color(), kNearest, kSecureOutputOnly, kVideoType);
+               resource_id_, gfx::PointF(),
+               gfx::PointF(resource_size.width(), resource_size.height()),
+               background_color(), kNearest, kSecureOutputOnly, kVideoType,
+               /*is_tex_coords_normalized=*/false);
 }
 
 }  // namespace cc::slim

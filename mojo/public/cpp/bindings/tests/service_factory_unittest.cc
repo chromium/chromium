@@ -43,9 +43,7 @@ class TestService1Impl : public mojom::TestService1 {
   TestService1Impl(const TestService1Impl&) = delete;
   TestService1Impl& operator=(const TestService1Impl&) = delete;
 
-  ~TestService1Impl() override {
-    --num_instances_;
-  }
+  ~TestService1Impl() override { --num_instances_; }
 
   static int num_instances() { return num_instances_; }
 

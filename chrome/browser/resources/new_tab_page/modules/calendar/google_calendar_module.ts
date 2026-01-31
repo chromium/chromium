@@ -83,6 +83,7 @@ export class GoogleCalendarModuleElement extends
 
   protected onDisableButtonClick_() {
     const disableEvent = new CustomEvent('disable-module', {
+      bubbles: true,
       composed: true,
       detail: {
         message: this.i18n('modulesGoogleCalendarDisableToastMessage'),

@@ -7,10 +7,10 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <algorithm>
 #include <limits>
 #include <memory>
 
-#include "base/containers/contains.h"
 #include "base/task/single_thread_task_runner.h"
 #include "cc/raster/raster_buffer.h"
 #include "cc/raster/synchronous_task_graph_runner.h"
@@ -54,7 +54,7 @@ FakeTileManager::FakeTileManager(TileManagerClient* client,
 FakeTileManager::~FakeTileManager() = default;
 
 bool FakeTileManager::HasBeenAssignedMemory(Tile* tile) {
-  return base::Contains(tiles_for_raster, tile);
+  return std::ranges::contains(tiles_for_raster, tile);
 }
 
 }  // namespace cc

@@ -7,6 +7,7 @@ include_rules = [
   "+components/ukm",
   "+components/ukm/ios",
   "+components/test/ios",
+  "+components/webauthn/ios",
   "+ios/web/public",
   "+ios/web/common",
   "+services/metrics/public",

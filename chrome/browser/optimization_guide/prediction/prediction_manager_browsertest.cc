@@ -107,8 +107,8 @@ void SetUpValidModelInfoReceival(ModelFileObserver* model_file_observer,
              model_info->GetAdditionalFiles()) {
           EXPECT_TRUE(add_file.IsAbsolute());
           EXPECT_TRUE(base::PathExists(add_file));
-          EXPECT_TRUE(base::Contains(expected_additional_files,
-                                     add_file.BaseName().value()));
+          EXPECT_TRUE(
+              expected_additional_files.contains(add_file.BaseName().value()));
         }
         run_loop->Quit();
       },

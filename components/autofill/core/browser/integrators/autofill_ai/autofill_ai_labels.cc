@@ -12,7 +12,6 @@
 #include <string_view>
 #include <vector>
 
-#include "base/containers/contains.h"
 #include "base/containers/extend.h"
 #include "base/containers/flat_set.h"
 #include "base/containers/span.h"
@@ -26,6 +25,7 @@
 #include "components/autofill/core/browser/data_model/data_model_utils.h"
 #include "components/autofill/core/browser/field_type_utils.h"
 #include "components/autofill/core/browser/field_types.h"
+#include "components/autofill/core/browser/filling/field_filling_util.h"
 #include "components/autofill/core/browser/form_structure.h"
 
 namespace autofill {
@@ -39,10 +39,17 @@ constexpr size_t kMaxNumberOfLabels = 2;
 
 std::u16string GetInfo(const EntityInstance& entity,
                        AttributeType type,
-                       const std::string& app_locale) {
+                       bool obfuscate_sensitive_types,
+                       std::string_view app_locale) {
   base::optional_ref<const AttributeInstance> attribute =
       entity.attribute(type);
-  return attribute ? attribute->GetCompleteInfo(app_locale) : std::u16string();
+  if (!attribute) {
+    return std::u16string();
+  }
+  std::u16string value = attribute->GetCompleteInfo(app_locale);
+  return obfuscate_sensitive_types && type.is_obfuscated()
+             ? GetObfuscatedValue(value, /*visible_suffix_length=*/4)
+             : value;
 }
 
 // Joins the non-empty values `attributes` in `entity` with the `delimiter` and
@@ -50,10 +57,12 @@ std::u16string GetInfo(const EntityInstance& entity,
 std::u16string JoinAttributes(const EntityInstance& entity,
                               base::span<const AttributeType> attributes,
                               std::u16string_view separator,
-                              const std::string& app_locale) {
+                              bool obfuscate_sensitive_types,
+                              std::string_view app_locale) {
   std::vector<std::u16string> combination;
   for (const AttributeType at : attributes) {
-    if (std::u16string value = GetInfo(entity, at, app_locale);
+    if (std::u16string value =
+            GetInfo(entity, at, obfuscate_sensitive_types, app_locale);
         !value.empty()) {
       combination.push_back(std::move(value));
     }
@@ -68,18 +77,20 @@ std::u16string JoinAttributes(const EntityInstance& entity,
 std::pair<std::u16string, DenseSet<AttributeType>> GetValueAndTypesForLabel(
     const EntityInstance& entity,
     AttributeType type,
-    const std::string& app_locale) {
+    bool obfuscate_sensitive_types,
+    std::string_view app_locale) {
   using enum AttributeTypeName;
   static constexpr std::array kAirports = {
       AttributeType(kFlightReservationDepartureAirport),
       AttributeType(kFlightReservationArrivalAirport)};
-  if (base::Contains(kAirports, type)) {
+  if (std::ranges::contains(kAirports, type)) {
     // The label for flight airport information should be:
     // - Empty if no airport information is available.
     // - "DEPARTURE–ARRIVAL" if both the departure and arrival airports are
     //   available in the `entity`.
     // - The one that is available otherwise.
-    return {JoinAttributes(entity, kAirports, u"\u2013", app_locale),
+    return {JoinAttributes(entity, kAirports, u"\u2013",
+                           obfuscate_sensitive_types, app_locale),
             DenseSet<AttributeType>(kAirports)};
   }
   if (type == AttributeType(kFlightReservationDepartureDate)) {
@@ -95,10 +106,14 @@ std::pair<std::u16string, DenseSet<AttributeType>> GetValueAndTypesForLabel(
         data_util::LocalizePattern(date_format, app_locale)
             .value_or(date_format),
         FormatString_Type_ICU_DATE);
-    return {attribute->GetInfo(type.field_type(), app_locale, format_string),
+    std::u16string value =
+        attribute->GetInfo(type.field_type(), app_locale, format_string);
+    return {obfuscate_sensitive_types
+                ? GetObfuscatedValue(value, /*visible_suffix_length=*/4)
+                : value,
             {type}};
   }
-  return {GetInfo(entity, type, app_locale), {type}};
+  return {GetInfo(entity, type, obfuscate_sensitive_types, app_locale), {type}};
 }
 
 // Given `entities`, having all the same `entity_type`, returns two lists
@@ -120,15 +135,16 @@ GetOrderedAttributeTypesForDisambiguation(
     EntityType entity_type,
     base::span<const EntityInstance* const> entities,
     bool only_disambiguating_types,
-    const std::string& app_locale) {
+    bool obfuscate_sensitive_types,
+    std::string_view app_locale) {
   auto should_prioritize = [&](AttributeType attribute_type) {
     if (!attribute_type.is_disambiguation_type()) {
       return false;
     }
     std::vector<std::u16string> values;
     for (const EntityInstance* entity : entities) {
-      auto [value, types_used] =
-          GetValueAndTypesForLabel(*entity, attribute_type, app_locale);
+      auto [value, types_used] = GetValueAndTypesForLabel(
+          *entity, attribute_type, obfuscate_sensitive_types, app_locale);
       values.push_back(std::move(value));
     }
     return values.size() == 1
@@ -166,7 +182,8 @@ void ExpandEntityLabels(AttributeType type,
                         base::span<EntityLabel> labels,
                         DenseSet<AttributeType>& tried_types,
                         bool only_add_to_empty_labels,
-                        const std::string& app_locale) {
+                        bool obfuscate_sensitive_types,
+                        std::string_view app_locale) {
   for (auto [entity, label] : base::zip(entities, labels)) {
     if (label.size() == kMaxNumberOfLabels) {
       // No more labels can be added for this particular entity.
@@ -176,8 +193,8 @@ void ExpandEntityLabels(AttributeType type,
       // The entity doesn't need more labels.
       continue;
     }
-    if (auto [value, used_types] =
-            GetValueAndTypesForLabel(*entity, type, app_locale);
+    if (auto [value, used_types] = GetValueAndTypesForLabel(
+            *entity, type, obfuscate_sensitive_types, app_locale);
         !value.empty()) {
       tried_types.insert_all(std::move(used_types));
       label.push_back(std::move(value));
@@ -197,7 +214,8 @@ void AddLabelsRound(base::span<const EntityInstance* const> entities,
                     base::span<EntityLabel> labels,
                     DenseSet<AttributeType>& tried_types,
                     bool only_add_to_empty_labels,
-                    const std::string& app_locale) {
+                    bool obfuscate_sensitive_types,
+                    std::string_view app_locale) {
   auto labels_are_non_empty = [&] {
     return std::ranges::none_of(labels, &EntityLabel::empty);
   };
@@ -214,7 +232,8 @@ void AddLabelsRound(base::span<const EntityInstance* const> entities,
       break;
     }
     ExpandEntityLabels(type, entities, labels, tried_types,
-                       only_add_to_empty_labels, app_locale);
+                       only_add_to_empty_labels, obfuscate_sensitive_types,
+                       app_locale);
   }
 }
 
@@ -224,7 +243,8 @@ std::vector<EntityLabel> GetLabelsForEntities(
     base::span<const EntityInstance* const> entities,
     DenseSet<AttributeType> attribute_types_to_ignore,
     bool only_disambiguating_types,
-    const std::string& app_locale) {
+    bool obfuscate_sensitive_types,
+    std::string_view app_locale) {
   std::map<EntityType, std::vector<const EntityInstance*>> entities_by_type;
   for (const EntityInstance* entity : entities) {
     entities_by_type[entity->type()].push_back(entity);
@@ -236,7 +256,7 @@ std::vector<EntityLabel> GetLabelsForEntities(
     auto [high_priority_types, low_priority_types] =
         GetOrderedAttributeTypesForDisambiguation(
             entity_type, entities_for_type, only_disambiguating_types,
-            app_locale);
+            obfuscate_sensitive_types, app_locale);
 
     std::vector<EntityLabel> labels(entities_for_type.size());
 
@@ -244,13 +264,15 @@ std::vector<EntityLabel> GetLabelsForEntities(
     // either all the types were considered or we reach a state where all
     // `labels` are unique and non-empty.
     AddLabelsRound(entities_for_type, high_priority_types, labels, tried_types,
-                   /*only_add_to_empty_labels=*/false, app_locale);
+                   /*only_add_to_empty_labels=*/false,
+                   obfuscate_sensitive_types, app_locale);
 
     // The second round aims at adding labels to entities that still have an
     // empty label, if any. Since all `priority_types` were already considered,
     // this round considers adding labels from `low_priority_types`.
     AddLabelsRound(entities_for_type, low_priority_types, labels, tried_types,
-                   /*only_add_to_empty_labels=*/true, app_locale);
+                   /*only_add_to_empty_labels=*/true, obfuscate_sensitive_types,
+                   app_locale);
 
     // Map the entity to its corresponding label so that the function is able to
     // reconstruct the list of `EntityLabel`s according to the ordering provided

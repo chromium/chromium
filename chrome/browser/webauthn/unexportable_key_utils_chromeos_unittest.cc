@@ -169,7 +169,8 @@ TEST_P(UserVerifyingKeyUtilsCrosTest,
     EXPECT_CALL(dialog_controller_, ShowAuthDialog(_))
         .WillOnce([this](std::unique_ptr<ash::AuthRequest> request) {
           AssertRequestContainsRpId(request.get());
-          request->NotifyAuthSuccess(nullptr);
+          request->NotifyAuthResult(nullptr,
+                                    ash::AuthRequest::AuthResult::kSuccess);
           return true;
         });
   } else {
@@ -211,7 +212,8 @@ TEST_P(UserVerifyingKeyUtilsCrosTest,
     EXPECT_CALL(dialog_controller_, ShowAuthDialog(_))
         .WillOnce([this](std::unique_ptr<ash::AuthRequest> request) -> bool {
           AssertRequestContainsRpId(request.get());
-          request->NotifyAuthFailure();
+          request->NotifyAuthResult(nullptr,
+                                    ash::AuthRequest::AuthResult::kAuthFailed);
           return true;
         });
   } else {

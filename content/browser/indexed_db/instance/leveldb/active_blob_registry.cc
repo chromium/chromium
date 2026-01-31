@@ -4,7 +4,6 @@
 
 #include "content/browser/indexed_db/instance/leveldb/active_blob_registry.h"
 
-#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/task/task_runner.h"
@@ -82,7 +81,7 @@ void ActiveBlobRegistry::MarkBlobActive(int64_t database_id,
 
   CHECK(KeyPrefix::IsValidDatabaseId(database_id));
   CHECK(DatabaseMetaDataKey::IsValidBlobNumber(blob_number));
-  CHECK(!base::Contains(deleted_dbs_, database_id));
+  CHECK(!deleted_dbs_.contains(database_id));
   bool outstanding_blobs_in_backing_store = !blob_reference_tracker_.empty();
   SingleDBMap& blobs_in_db = blob_reference_tracker_[database_id];
   auto iter = blobs_in_db.find(blob_number);

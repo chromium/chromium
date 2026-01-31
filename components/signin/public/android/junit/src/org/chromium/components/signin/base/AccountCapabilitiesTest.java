@@ -48,23 +48,13 @@ public final class AccountCapabilitiesTest {
             case AccountCapabilitiesConstants
                     .CAN_SHOW_HISTORY_SYNC_OPT_INS_WITHOUT_MINOR_MODE_RESTRICTIONS_CAPABILITY_NAME:
                 return capabilities.canShowHistorySyncOptInsWithoutMinorModeRestrictions();
-            case AccountCapabilitiesConstants.CAN_TOGGLE_AUTO_UPDATES_NAME:
-                return capabilities.canToggleAutoUpdates();
-            case AccountCapabilitiesConstants.CAN_USE_CHROMEOS_GENERATIVE_AI:
-                return capabilities.canUseChromeOSGenerativeAi();
-            case AccountCapabilitiesConstants.CAN_USE_CHROME_IP_PROTECTION_NAME:
-                return capabilities.canUseChromeIpProtection();
-            case AccountCapabilitiesConstants.CAN_USE_COPYEDITOR_FEATURE_NAME:
-                return capabilities.canUseCopyeditorFeature();
             case AccountCapabilitiesConstants
                     .CAN_USE_DEVTOOLS_GENERATIVE_AI_FEATURES_CAPABILITY_NAME:
                 return capabilities.canUseDevToolsGenerativeAiFeatures();
             case AccountCapabilitiesConstants.CAN_USE_EDU_FEATURES_CAPABILITY_NAME:
                 return capabilities.canUseEduFeatures();
-            case AccountCapabilitiesConstants.CAN_USE_GENERATIVE_AI_IN_RECORDER_APP:
-                return capabilities.canUseGenerativeAiInRecorderApp();
-            case AccountCapabilitiesConstants.CAN_USE_GENERATIVE_AI_PHOTO_EDITING:
-                return capabilities.canUseGenerativeAiPhotoEditing();
+            case AccountCapabilitiesConstants.CAN_USE_GEMINI_IN_CHROME_CAPABILITY_NAME:
+                return capabilities.canUseGeminiInChromeCapability();
             case AccountCapabilitiesConstants.CAN_USE_MANTA_SERVICE_NAME:
                 return capabilities.canUseMantaService();
             case AccountCapabilitiesConstants.CAN_USE_MODEL_EXECUTION_FEATURES_NAME:
@@ -123,19 +113,6 @@ public final class AccountCapabilitiesTest {
                                         AccountCapabilitiesConstants
                                                 .IS_OPTED_IN_TO_PARENTAL_SUPERVISION_CAPABILITY_NAME),
                         new ParameterSet()
-                                .name("CanToggleAutoUpdates")
-                                .value(AccountCapabilitiesConstants.CAN_TOGGLE_AUTO_UPDATES_NAME),
-                        new ParameterSet()
-                                .name("CanUseChromeIpProtection")
-                                .value(
-                                        AccountCapabilitiesConstants
-                                                .CAN_USE_CHROME_IP_PROTECTION_NAME),
-                        new ParameterSet()
-                                .name("CanUseCopyEditorFeature")
-                                .value(
-                                        AccountCapabilitiesConstants
-                                                .CAN_USE_COPYEDITOR_FEATURE_NAME),
-                        new ParameterSet()
                                 .name("CanUseDevToolsGenerativeAiFeatures")
                                 .value(
                                         AccountCapabilitiesConstants
@@ -164,6 +141,11 @@ public final class AccountCapabilitiesTest {
                                         AccountCapabilitiesConstants
                                                 .CAN_FETCH_FAMILY_MEMBER_INFO_CAPABILITY_NAME),
                         new ParameterSet()
+                                .name("canUseGeminiInChromeCapability")
+                                .value(
+                                        AccountCapabilitiesConstants
+                                                .CAN_USE_GEMINI_IN_CHROME_CAPABILITY_NAME),
+                        new ParameterSet()
                                 .name("IsSubjectToParentalControls")
                                 .value(
                                         AccountCapabilitiesConstants
@@ -172,22 +154,7 @@ public final class AccountCapabilitiesTest {
                                 .name("CanUseSpeakerLabelInRecorderApp")
                                 .value(
                                         AccountCapabilitiesConstants
-                                                .CAN_USE_SPEAKER_LABEL_IN_RECORDER_APP),
-                        new ParameterSet()
-                                .name("CanUseGenerativeAiInRecorderApp")
-                                .value(
-                                        AccountCapabilitiesConstants
-                                                .CAN_USE_GENERATIVE_AI_IN_RECORDER_APP),
-                        new ParameterSet()
-                                .name("CanUseGenerativeAiPhotoEditing")
-                                .value(
-                                        AccountCapabilitiesConstants
-                                                .CAN_USE_GENERATIVE_AI_PHOTO_EDITING),
-                        new ParameterSet()
-                                .name("CanUseChromeOSGenerativeAi")
-                                .value(
-                                        AccountCapabilitiesConstants
-                                                .CAN_USE_CHROMEOS_GENERATIVE_AI));
+                                                .CAN_USE_SPEAKER_LABEL_IN_RECORDER_APP));
 
         // Returns String value added from Capabilities ParameterSet.
         static String getCapabilityName(ParameterSet parameterSet) {

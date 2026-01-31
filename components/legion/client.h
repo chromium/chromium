@@ -13,6 +13,7 @@
 #include "base/types/expected.h"
 #include "components/legion/error_code.h"
 #include "components/legion/legion_common.h"
+#include "components/legion/phosphor/token_manager.h"
 #include "components/legion/proto/legion.pb.h"
 #include "url/gurl.h"
 
@@ -33,6 +34,10 @@ class Client {
   using OnGenerateContentRequestCompletedCallback = base::OnceCallback<void(
       base::expected<proto::GenerateContentResponse, ErrorCode> result)>;
 
+  // Callback for when a `SendPaicRequest` operation completes.
+  using OnPaicMessageRequestCompletedCallback = base::OnceCallback<void(
+      base::expected<proto::PaicMessage, ErrorCode> result)>;
+
   // Callback for when a `EstablishSession` operation completes.
   using OnEstablishSessionCompletedCallback =
       base::OnceCallback<void(base::expected<void, ErrorCode>)>;
@@ -44,9 +49,11 @@ class Client {
   static constexpr base::TimeDelta kDefaultTimeout = base::Seconds(120);
 
   static std::unique_ptr<Client> Create(
+      phosphor::TokenManager* token_manager,
       network::mojom::NetworkContext* network_context);
 
   static std::unique_ptr<Client> CreateWithUrl(
+      phosphor::TokenManager* token_manager,
       const GURL& url,
       network::mojom::NetworkContext* network_context);
 
@@ -74,6 +81,12 @@ class Client {
       const proto::GenerateContentRequest& request,
       OnGenerateContentRequestCompletedCallback callback,
       const RequestOptions& options) = 0;
+
+  // Sends a `PaicMessage` request.
+  virtual void SendPaicRequest(proto::FeatureName feature_name,
+                               const proto::PaicMessage& request,
+                               OnPaicMessageRequestCompletedCallback callback,
+                               const RequestOptions& options) = 0;
 };
 
 }  // namespace legion

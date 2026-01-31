@@ -588,62 +588,6 @@ ServiceImageTransferCacheEntry::ServiceImageTransferCacheEntry(
 ServiceImageTransferCacheEntry& ServiceImageTransferCacheEntry::operator=(
     ServiceImageTransferCacheEntry&& other) = default;
 
-bool ServiceImageTransferCacheEntry::BuildFromHardwareDecodedImage(
-    GrDirectContext* gr_context,
-    std::vector<sk_sp<SkImage>> plane_images,
-    SkYUVAInfo::PlaneConfig plane_config,
-    SkYUVAInfo::Subsampling subsampling,
-    SkYUVColorSpace yuv_color_space,
-    size_t buffer_byte_size,
-    bool needs_mips) {
-  // Only supported on Ganesh for now since this code path is only used on CrOS.
-  CHECK(gr_context);
-  gr_context_ = gr_context;
-  size_ = buffer_byte_size;
-
-  // 1) Generate mipmap chains if requested.
-  if (needs_mips) {
-    DCHECK(plane_sizes_.empty());
-    base::CheckedNumeric<size_t> safe_total_size(0u);
-    for (size_t plane = 0; plane < plane_images.size(); plane++) {
-      plane_images[plane] = SkImages::TextureFromImage(
-          gr_context_, plane_images[plane], skgpu::Mipmapped::kYes,
-          skgpu::Budgeted::kNo);
-      if (!plane_images[plane]) {
-        DLOG(ERROR) << "Could not generate mipmap chain for plane " << plane;
-        return false;
-      }
-      plane_sizes_.push_back(plane_images[plane]->textureSize());
-      safe_total_size += plane_sizes_.back();
-    }
-    if (!safe_total_size.AssignIfValid(&size_)) {
-      DLOG(ERROR) << "Could not calculate the total image size";
-      return false;
-    }
-  }
-  plane_images_ = std::move(plane_images);
-  if (static_cast<size_t>(SkYUVAInfo::NumPlanes(plane_config)) !=
-      plane_images_.size()) {
-    DLOG(ERROR) << "Expected " << SkYUVAInfo::NumPlanes(plane_config)
-                << " planes, got " << plane_images_.size();
-    return false;
-  }
-  yuva_info_ = SkYUVAInfo(plane_images_[0]->dimensions(), plane_config,
-                          subsampling, yuv_color_space);
-
-  // 2) Create a SkImage backed by |plane_images|.
-  // TODO(andrescj): support embedded color profiles for hardware decodes and
-  // pass the color space to MakeYUVImageFromUploadedPlanes.
-  image_ = MakeYUVImageFromUploadedPlanes(
-      gr_context_, /*graphite_recorder=*/nullptr, plane_images_,
-      yuva_info_.value(), SkColorSpace::MakeSRGB());
-  if (!image_) {
-    return false;
-  }
-  DCHECK(image_->isTextureBacked());
-  return true;
-}
-
 size_t ServiceImageTransferCacheEntry::CachedSize() const {
   return size_;
 }

@@ -20,7 +20,6 @@
 #include "base/check.h"
 #include "base/check_deref.h"
 #include "base/command_line.h"
-#include "base/containers/contains.h"
 #include "base/debug/crash_logging.h"
 #include "base/i18n/case_conversion.h"
 #include "base/logging.h"
@@ -1680,7 +1679,7 @@ bool PaymentsAutofillTable::SetCreditCardBenefits(
                              *benefit_base.linked_card_instrument_id());
     insert_benefit.BindInt(index++, benefit_type);
     insert_benefit.BindInt(
-        index++, base::to_underlying(std::visit(
+        index++, std::to_underlying(std::visit(
                      absl::Overload{
                          [](const CreditCardCategoryBenefit& a) {
                            return a.benefit_category();

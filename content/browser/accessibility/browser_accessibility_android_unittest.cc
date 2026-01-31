@@ -11,11 +11,12 @@
 #include "content/browser/accessibility/ax_style_data.h"
 #include "content/browser/accessibility/browser_accessibility_manager_android.h"
 #include "content/browser/accessibility/web_contents_accessibility_android.h"
+#include "content/public/common/content_features.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/test/test_content_client.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "ui/accessibility/ax_enums.mojom-data-view.h"
+#include "ui/accessibility/ax_enums.mojom-shared.h"
 #include "ui/accessibility/platform/browser_accessibility_manager.h"
 #include "ui/accessibility/platform/test_ax_node_id_delegate.h"
 #include "ui/accessibility/platform/test_ax_platform_tree_manager_delegate.h"
@@ -1499,6 +1500,65 @@ TEST_F(BrowserAccessibilityAndroidTest, TestJavaNodeCache_NodeUnignored) {
   EXPECT_TRUE(actual.contains(2));
   // From an AXEventGenerator::Event::PARENT_CHANGED.
   EXPECT_TRUE(actual.contains(3));
+}
+
+TEST_F(BrowserAccessibilityAndroidTest, ExplicitlyEmptyName) {
+  // Create parent node with the empty name.
+  ui::AXNodeData parent_data;
+  parent_data.id = 1;
+  parent_data.role = ax::mojom::Role::kGenericContainer;
+  parent_data.SetNameExplicitlyEmpty();
+  parent_data.child_ids = {2};
+
+  // Create a child node with text that should be ignored.
+  ui::AXNodeData child_data;
+  child_data.id = 2;
+  child_data.role = ax::mojom::Role::kStaticText;
+  child_data.SetName("This text should be hidden");
+
+  std::unique_ptr<ui::BrowserAccessibilityManager> manager(
+      BrowserAccessibilityManagerAndroid::Create(
+          MakeAXTreeUpdateForTesting(parent_data, child_data),
+          node_id_delegate_, test_browser_accessibility_delegate_.get()));
+
+  BrowserAccessibilityAndroid* parent_node =
+      static_cast<BrowserAccessibilityAndroid*>(manager->GetFromID(1));
+  ASSERT_NE(nullptr, parent_node);
+
+  EXPECT_EQ(u"", parent_node->GetContentDescription());
+}
+
+TEST_F(BrowserAccessibilityAndroidTest,
+       RelatedElementMapsToSupplementalWhenLabeledByDisabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      /*enabled_features=*/
+      {features::kAccessibilityPopulateSupplementalDescriptionApi},
+      /*disabled_features=*/{features::kAccessibilityLabeledBy});
+
+  ui::AXTreeUpdate tree;
+  tree.root_id = 1;
+  tree.nodes.resize(2);
+
+  tree.nodes[0].id = 1;
+  tree.nodes[0].child_ids = {2};
+
+  tree.nodes[1].id = 2;
+  tree.nodes[1].role = ax::mojom::Role::kButton;
+  tree.nodes[1].SetName("Label Text");
+  tree.nodes[1].SetNameFrom(ax::mojom::NameFrom::kRelatedElement);
+  tree.nodes[1].AddIntListAttribute(ax::mojom::IntListAttribute::kLabelledbyIds,
+                                    {99});
+
+  std::unique_ptr<ui::BrowserAccessibilityManager> manager(
+      BrowserAccessibilityManagerAndroid::Create(
+          tree, node_id_delegate_, test_browser_accessibility_delegate_.get()));
+
+  BrowserAccessibilityAndroid* node = static_cast<BrowserAccessibilityAndroid*>(
+      manager->GetBrowserAccessibilityRoot()->PlatformGetChild(0));
+
+  EXPECT_EQ(u"Label Text", node->GetSupplementalDescription());
+  EXPECT_TRUE(node->GetTextContentUTF16().empty());
 }
 
 }  // namespace content

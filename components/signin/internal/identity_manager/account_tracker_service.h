@@ -155,7 +155,7 @@ class AccountTrackerService {
  protected:
   // Available to be called in tests.
   void SetAccountInfoFromUserInfo(const CoreAccountId& account_id,
-                                  const base::Value::Dict& user_info);
+                                  const base::DictValue& user_info);
 
   // Updates the account image. Does nothing if |account_id| does not exist in
   // |accounts_|.
@@ -198,9 +198,8 @@ class AccountTrackerService {
   void LoadFromPrefs();
   void SaveToPrefs(const AccountInfo& account);
 
-  base::Value::Dict* FindOrCreateDictForAccount(
-      ScopedListPrefUpdate& update,
-      const CoreAccountId& account_id);
+  base::DictValue* FindOrCreateDictForAccount(ScopedListPrefUpdate& update,
+                                              const CoreAccountId& account_id);
 
   void RemoveFromPrefs(const AccountInfo& account);
 

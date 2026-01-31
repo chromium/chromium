@@ -5,7 +5,9 @@
 #include "third_party/blink/public/common/device_memory/approximated_device_memory.h"
 
 #include "base/check_op.h"
+#include "base/feature_list.h"
 #include "base/system/sys_info.h"
+#include "third_party/blink/public/common/features.h"
 
 namespace blink {
 
@@ -53,10 +55,26 @@ void ApproximatedDeviceMemory::CalculateAndSetApproximatedDeviceMemory() {
   else
     approximated_device_memory_gb_ = static_cast<float>(upper_bound) / 1024.0;
 
-  // Max-limit the reported value to 8GB to reduce fingerprintability of
-  // high-spec machines.
-  if (approximated_device_memory_gb_ > 8)
-    approximated_device_memory_gb_ = 8.0;
+  // Limit the values to reduce fingerprintability
+  float kMinMemory = 0.25f;
+  float kMaxMemory = 8.0f;
+
+  // We're rolling out improved limits. See: https://crbug.com/454354290.
+  if (base::FeatureList::IsEnabled(
+          blink::features::kUpdatedDeviceMemoryLimitsFor2026)) {
+    // Increase lower limit to 2GB.
+    kMinMemory = 2.0f;
+    // Allow higher upper limit, except for Android where >8 is rare.
+#if !BUILDFLAG(IS_ANDROID)
+    kMaxMemory = 32.0f;
+#endif
+  }
+
+  if (approximated_device_memory_gb_ < kMinMemory) {
+    approximated_device_memory_gb_ = kMinMemory;
+  } else if (approximated_device_memory_gb_ > kMaxMemory) {
+    approximated_device_memory_gb_ = kMaxMemory;
+  }
 }
 
 // static

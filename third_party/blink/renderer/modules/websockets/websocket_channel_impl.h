@@ -251,9 +251,13 @@ class MODULES_EXPORT WebSocketChannelImpl final
     String Reason() const;
     std::unique_ptr<SendCompletionWatcher> TakeSendCompletionWatcher();
 
-    // Returns a mutable `pending_payload_`. Since calling code always mutates
-    // the value, `pending_payload_` only has a mutable getter.
-    base::span<const uint8_t>& MutablePendingPayload();
+    // Returns a view of the data currently waiting to be sent.
+    base::span<const uint8_t> PendingPayload() const;
+
+    // Advances the pending payload span by the given number of bytes.
+    // This should be called after `bytes_consumed` bytes from PendingPayload()
+    // have been successfully processed.
+    void ConsumePendingPayload(size_t bytes_consumed);
 
     void SetDidCallSendMessage(DidCallSendMessage did_call_send_message);
 
@@ -262,8 +266,7 @@ class MODULES_EXPORT WebSocketChannelImpl final
     MessageType type_;
 
     scoped_refptr<BlobDataHandle> blob_data_handle_;
-    // TODO(crbug.com/367764863) Rewrite to base::raw_span.
-    RAW_PTR_EXCLUSION base::span<const uint8_t> pending_payload_;
+    base::raw_span<const uint8_t> pending_payload_;
     DidCallSendMessage did_call_send_message_ = DidCallSendMessage(false);
     uint16_t code_ = 0;
     String reason_;
@@ -330,7 +333,11 @@ class MODULES_EXPORT WebSocketChannelImpl final
   bool MaybeSendSynchronously(MessageTypeForMojo,
                               base::span<const uint8_t>* data);
   void ProcessSendQueue();
-  bool SendMessageData(base::span<const uint8_t>* data);
+
+  // Returns a pair:
+  //  - A boolean indicating if the entire `data` span was sent successfully.
+  //  - A size_t for the number of bytes actually consumed from `data`.
+  std::pair<bool, size_t> SendMessageData(base::span<const uint8_t> data);
   void FailAsError(const String& reason) {
     Fail(reason, mojom::ConsoleMessageLevel::kError,
          location_at_construction_->Clone());
@@ -359,8 +366,9 @@ class MODULES_EXPORT WebSocketChannelImpl final
                         base::span<const uint8_t> data);
   // Called when |writable_| becomes writable.
   void OnWritable(MojoResult result, const mojo::HandleSignalsState& state);
-  MojoResult ProduceData(base::span<const uint8_t>* data,
-                         uint64_t* consumed_buffered_amount);
+  // Writes `data` and returns the unwritten portion.
+  base::span<const uint8_t> ProduceData(base::span<const uint8_t> data,
+                                        size_t* consumed_buffered_amount);
   String GetTextMessage(const Vector<base::span<const uint8_t>>& chunks,
                         wtf_size_t size);
   void OnConnectionError(const base::Location& set_from,

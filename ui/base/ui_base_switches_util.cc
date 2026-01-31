@@ -15,7 +15,17 @@
 
 namespace switches {
 
-bool IsElasticOverscrollEnabled() {
+bool IsElasticOverscrollEnabledOnRoot() {
+#if BUILDFLAG(IS_ANDROID)
+  return IsElasticOverscrollSupported() &&
+         !base::CommandLine::ForCurrentProcess()->HasSwitch(
+             switches::kDisableOverscrollEdgeEffect);
+#else
+  return IsElasticOverscrollSupported();
+#endif
+}
+
+bool IsElasticOverscrollSupported() {
 // On macOS and iOS this value is adjusted in `UpdateScrollbarTheme()`,
 // but the system default is true.
 #if BUILDFLAG(IS_APPLE)
@@ -23,8 +33,6 @@ bool IsElasticOverscrollEnabled() {
 #elif BUILDFLAG(IS_ANDROID)
   return base::android::android_info::sdk_int() >=
              base::android::android_info::SDK_VERSION_S &&
-         !base::CommandLine::ForCurrentProcess()->HasSwitch(
-             switches::kDisableOverscrollEdgeEffect) &&
          base::FeatureList::IsEnabled(features::kElasticOverscroll);
 #else
   return base::FeatureList::IsEnabled(features::kElasticOverscroll);

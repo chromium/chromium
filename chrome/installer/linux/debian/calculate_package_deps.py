@@ -64,6 +64,11 @@ elif arch == 'mips64el':
         '-l%s/usr/lib/mips64el-linux-gnuabi64' % sysroot,
         '-l%s/lib/mips64el-linux-gnuabi64' % sysroot
     ])
+elif arch == 'riscv64':
+    cmd.extend([
+        '-l%s/usr/lib/riscv64-linux-gnu' % sysroot,
+        '-l%s/lib/riscv64-linux-gnu' % sysroot
+    ])
 else:
     print('Unsupported architecture ' + arch)
     sys.exit(1)

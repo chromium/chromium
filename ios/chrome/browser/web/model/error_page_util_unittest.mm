@@ -31,7 +31,7 @@ NSString* ErrorAsString(int net_error) {
 // Returns error in the same format as passed from ios/web layer to ios/chrome.
 NSError* CreateTestError(NSInteger url_error) {
   NSDictionary* info = @{
-    NSURLErrorFailingURLStringErrorKey : kTestUrl,
+    NSURLErrorFailingURLErrorKey : [NSURL URLWithString:kTestUrl],
   };
   return web::testing::CreateTestNetError(
       [NSError errorWithDomain:NSURLErrorDomain code:url_error userInfo:info]);
@@ -112,7 +112,7 @@ TEST_F(ErrorPageUtilTest, PostOtrError) {
   EXPECT_FALSE([html containsString:GetNSString(IDS_ERRORPAGES_BUTTON_RELOAD)]);
 }
 
-// Tests error page for error without NSURLErrorFailingURLStringErrorKey key.
+// Tests error page for error without NSURLErrorFailingURLErrorKey key.
 // This test only makes sure that absence of the spec is handled gracefully.
 TEST_F(ErrorPageUtilTest, NoUrlSpec) {
   NSError* error = web::testing::CreateTestNetError([NSError

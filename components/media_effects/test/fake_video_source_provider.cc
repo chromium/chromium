@@ -3,7 +3,9 @@
 // found in the LICENSE file.
 
 #include "components/media_effects/test/fake_video_source_provider.h"
+
 #include "base/system/system_monitor.h"
+#include "base/task/single_thread_task_runner.h"
 
 namespace media_effects {
 

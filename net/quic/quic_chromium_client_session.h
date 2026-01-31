@@ -279,6 +279,10 @@ class NET_EXPORT_PRIVATE QuicChromiumClientSession
     // code.
     int GetSelfAddress(IPEndPoint* address) const;
 
+    // CHECKs that the cert is valid for `url`. Used as a safety check against
+    // aliasing/request merging logic.
+    void AssertIsValidFor(const GURL& url) const;
+
     // Returns the session's server ID.
     quic::QuicServerId server_id() const { return server_id_; }
 
@@ -760,6 +764,7 @@ class NET_EXPORT_PRIVATE QuicChromiumClientSession
   void OnGoAway(const quic::QuicGoAwayFrame& frame) override;
   void OnCanCreateNewOutgoingStream(bool unidirectional) override;
   quic::QuicSSLConfig GetSSLConfig() const override;
+  void OnConfigNegotiated() override;
 
   // QuicSpdyClientSessionBase methods:
   void OnProofValid(
@@ -826,7 +831,7 @@ class NET_EXPORT_PRIVATE QuicChromiumClientSession
                                 quic::QuicErrorCode quic_error,
                                 quic::ConnectionCloseBehavior behavior);
 
-  base::Value::Dict GetInfoAsValue(const std::set<HostPortPair>& aliases);
+  base::DictValue GetInfoAsValue(const std::set<HostPortPair>& aliases);
 
   const NetLogWithSource& net_log() const { return net_log_; }
 
@@ -978,6 +983,13 @@ class NET_EXPORT_PRIVATE QuicChromiumClientSession
     migration_info_ = migration_info;
   }
 
+  // Makes AssertIsValidFor() do nothing, once set.
+  void set_allow_any_url_for_testing() { allow_any_url_for_testing_ = true; }
+
+  quic::QuicTagVector& received_connection_options() {
+    return received_connection_options_;
+  }
+
  protected:
   // quic::QuicSession methods:
   bool ShouldCreateIncomingStream(quic::QuicStreamId id) override;
@@ -1099,6 +1111,10 @@ class NET_EXPORT_PRIVATE QuicChromiumClientSession
   void OnCryptoHandshakeComplete();
 
   void LogZeroRttStats();
+
+  // CHECKs that the cert is valid for `url`. Used as a safety check against
+  // aliasing/request merging logic. Applies subset of logic in CanPool().
+  void AssertIsValidFor(const GURL& url) const;
 
 #if BUILDFLAG(ENABLE_WEBSOCKETS)
   std::unique_ptr<WebSocketQuicStreamAdapter>
@@ -1254,11 +1270,23 @@ class NET_EXPORT_PRIVATE QuicChromiumClientSession
 
   const MultiplexedSessionCreationInitiator session_creation_initiator_;
 
+  quic::QuicTagVector received_connection_options_;
+
+  bool connection_migration_disabled_ = false;
+
   // Enable periodic ping to keep the connection alive even when the session
   // does not have any outstanding requests.
   bool enable_periodic_ping_ = false;
 
   bool crypto_handshake_complete_ = false;
+
+  // Makes AssertIsValidFor() do nothing.
+  bool allow_any_url_for_testing_ = false;
+
+  // If the server supports MTCs (as determined by whether it advertised a trust
+  // anchor ID corresponding to a known Merkle Tree Certificate CA), this is set
+  // to true in OnProofVerifyDetailsAvailable. This is only used for metrics.
+  bool server_advertised_mtc_tai_ = false;
 
   base::WeakPtrFactory<QuicChromiumClientSession> weak_factory_{this};
 };

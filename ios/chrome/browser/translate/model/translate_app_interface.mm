@@ -5,7 +5,6 @@
 #import "ios/chrome/browser/translate/model/translate_app_interface.h"
 
 #import "base/command_line.h"
-#import "base/containers/contains.h"
 #import "base/memory/singleton.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/strings/utf_string_conversions.h"

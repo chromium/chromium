@@ -67,6 +67,7 @@ public class AutofillBuyNowPayLaterFragmentTest {
     @Mock private Menu mHelpMenu;
     @Mock private MenuItem mHelpItem;
 
+    private static final String AFFIRM_ISSUER_ID = "affirm";
     private static final String AFFIRM_DISPLAY_NAME = "Affirm";
     private static final Long INSTRUMENT_ID = 123L;
 
@@ -144,7 +145,7 @@ public class AutofillBuyNowPayLaterFragmentTest {
         launchAutofillBuyNowPayLaterFragment();
         mAutofillBuyNowPayLaterFragment.onCreateOptionsMenu(mHelpMenu, mock(MenuInflater.class));
         verify(mHelpMenu).clear();
-        verify(mHelpItem).setIcon(R.drawable.ic_help_and_feedback);
+        verify(mHelpItem).setIcon(R.drawable.ic_help_24dp);
 
         mAutofillBuyNowPayLaterFragment.onOptionsItemSelected(mHelpItem);
 
@@ -222,7 +223,7 @@ public class AutofillBuyNowPayLaterFragmentTest {
     public void testBnplIssuerPreference_CorrectlyDisplays() {
         BnplIssuerForSettings issuer =
                 new BnplIssuerForSettings(
-                        /* iconId= */ R.drawable.bnpl_icon_generic,
+                        /* issuerId= */ AFFIRM_ISSUER_ID,
                         /* instrumentId= */ INSTRUMENT_ID,
                         /* displayName= */ AFFIRM_DISPLAY_NAME);
         when(mPersonalDataManager.getBnplIssuersForSettings())
@@ -254,7 +255,7 @@ public class AutofillBuyNowPayLaterFragmentTest {
     public void testBnplIssuerPreference_WhenToggleIsEnabled_IsShown() {
         BnplIssuerForSettings issuer =
                 new BnplIssuerForSettings(
-                        /* iconId= */ R.drawable.bnpl_icon_generic,
+                        /* issuerId= */ AFFIRM_ISSUER_ID,
                         /* instrumentId= */ INSTRUMENT_ID,
                         /* displayName= */ AFFIRM_DISPLAY_NAME);
         when(mPersonalDataManager.getBnplIssuersForSettings())
@@ -277,7 +278,7 @@ public class AutofillBuyNowPayLaterFragmentTest {
     public void testBnplIssuerPreference_WhenToggleIsDisabled_IsNotShown() {
         BnplIssuerForSettings issuer =
                 new BnplIssuerForSettings(
-                        /* iconId= */ R.drawable.bnpl_icon_generic,
+                        /* issuerId= */ AFFIRM_ISSUER_ID,
                         /* instrumentId= */ INSTRUMENT_ID,
                         /* displayName= */ AFFIRM_DISPLAY_NAME);
         when(mPersonalDataManager.getBnplIssuersForSettings())
@@ -299,7 +300,7 @@ public class AutofillBuyNowPayLaterFragmentTest {
     public void testBnplIssuerPreference_IssuerTermsLinkClicked() {
         BnplIssuerForSettings issuer =
                 new BnplIssuerForSettings(
-                        /* iconId= */ R.drawable.bnpl_icon_generic,
+                        /* issuerId= */ AFFIRM_ISSUER_ID,
                         /* instrumentId= */ INSTRUMENT_ID,
                         /* displayName= */ AFFIRM_DISPLAY_NAME);
         when(mPersonalDataManager.getBnplIssuersForSettings())

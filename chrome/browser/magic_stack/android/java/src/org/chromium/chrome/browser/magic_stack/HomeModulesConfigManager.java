@@ -6,8 +6,6 @@ package org.chromium.chrome.browser.magic_stack;
 
 import static org.chromium.chrome.browser.magic_stack.HomeModulesUtils.getSettingsPreferenceKey;
 
-import android.content.Context;
-
 import org.chromium.base.ObserverList;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.shared_preferences.SharedPreferencesManager;
@@ -16,7 +14,6 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
-import org.chromium.chrome.browser.settings.SettingsNavigationFactory;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -84,16 +81,6 @@ public class HomeModulesConfigManager {
      */
     public void removeListener(HomeModulesStateListener listener) {
         mHomepageStateListeners.removeObserver(listener);
-    }
-
-    /**
-     * Menu click handler on customize button.
-     *
-     * @param context {@link Context} used for launching a settings activity.
-     */
-    public void onMenuClick(Context context) {
-        SettingsNavigationFactory.createSettingsNavigation()
-                .startSettings(context, HomeModulesConfigSettings.class);
     }
 
     /**
@@ -190,16 +177,6 @@ public class HomeModulesConfigManager {
             }
         }
         return moduleListShownInSettings;
-    }
-
-    /** Returns whether it has any module to configure in settings. */
-    public boolean hasModuleShownInSettings() {
-        for (ModuleConfigChecker moduleConfigChecker : mModuleConfigCheckerMap.values()) {
-            if (moduleConfigChecker.isEligible()) {
-                return true;
-            }
-        }
-        return false;
     }
 
     /** Sets a mocked instance for testing. */

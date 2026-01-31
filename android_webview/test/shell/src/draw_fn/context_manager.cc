@@ -237,7 +237,7 @@ class ContextManagerGL : public ContextManager {
       int height,
       int scroll_x,
       int scroll_y,
-      jboolean readback_quadrants) override;
+      bool readback_quadrants) override;
   void DoCreateContext(JNIEnv* env, int width, int height) override;
   void DestroyContext() override;
   void CurrentFunctorChanged() override {}
@@ -263,7 +263,7 @@ base::android::ScopedJavaLocalRef<jintArray> ContextManagerGL::Draw(
     int height,
     int scroll_x,
     int scroll_y,
-    jboolean readback_quadrants) {
+    bool readback_quadrants) {
   int results[] = {0, 0, 0, 0};
   if (!current_functor_ || !gl_context_) {
     LOG(ERROR) << "Draw failed. context:" << gl_context_
@@ -497,7 +497,7 @@ class ContextManagerVulkan : public ContextManager {
       int height,
       int scroll_x,
       int scroll_y,
-      jboolean readback_quadrants) override;
+      bool readback_quadrants) override;
   void DoCreateContext(JNIEnv* env, int width, int height) override;
   void DestroyContext() override;
   void CurrentFunctorChanged() override;
@@ -546,7 +546,7 @@ base::android::ScopedJavaLocalRef<jintArray> ContextManagerVulkan::Draw(
     int height,
     int scroll_x,
     int scroll_y,
-    jboolean readback_quadrants) {
+    bool readback_quadrants) {
   int results[] = {0, 0, 0, 0};
   if (!current_functor_) {
     LOG(ERROR) << "Draw failed no functor:" << current_functor_;
@@ -820,13 +820,13 @@ void ContextManager::CreateContext(
   DoCreateContext(env, width, height);
 }
 
-static jlong JNI_ContextManager_GetDrawFnFunctionTable(JNIEnv* env,
-                                                       jboolean use_vulkan) {
+static int64_t JNI_ContextManager_GetDrawFnFunctionTable(JNIEnv* env,
+                                                         bool use_vulkan) {
   draw_fn::SetDrawFnUseVulkan(use_vulkan);
   return reinterpret_cast<intptr_t>(draw_fn::GetDrawFnFunctionTable());
 }
 
-static jlong JNI_ContextManager_Init(JNIEnv* env, jboolean use_vulkan) {
+static int64_t JNI_ContextManager_Init(JNIEnv* env, bool use_vulkan) {
   ContextManager* manager = nullptr;
   if (use_vulkan) {
     manager = new draw_fn::ContextManagerVulkan;

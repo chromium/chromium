@@ -14,6 +14,7 @@
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/browser_root_view.h"
 #include "chrome/browser/ui/views/tabs/dragging/tab_drag_context.h"
+#include "chrome/browser/ui/views/tabs/dragging/test/mock_tab_drag_context.h"
 #include "chrome/browser/ui/views/tabs/fake_base_tab_strip_controller.h"
 #include "chrome/browser/ui/views/tabs/fake_tab_slot_controller.h"
 #include "chrome/browser/ui/views/tabs/tab_close_button.h"
@@ -50,9 +51,13 @@ views::View* FindTabView(views::View* view) {
   return current;
 }
 
-class FakeTabDragContext : public TabDragContextBase {
-  METADATA_HEADER(FakeTabDragContext, TabDragContextBase)
-
+// An extension of both `TabDragContext` and `TabDragPositionDelegateBase`.
+// The `TabDragContext` base class is needed for `TabContainerImpl` to
+// create `TabGroupViews`. The implementation of the methods is not needed
+// for the test, which is why `MockTabDrabContext` is used here.
+class FakeTabDragContext : public TabDragPositioningDelegateBase,
+                           public MockTabDragContext {
+  METADATA_HEADER(FakeTabDragContext, MockTabDragContext)
  public:
   FakeTabDragContext() = default;
   ~FakeTabDragContext() override = default;
@@ -63,6 +68,7 @@ class FakeTabDragContext : public TabDragContextBase {
   bool IsAnimatingDragEnd() const override { return false; }
   void CompleteEndDragAnimations() override {}
   int GetTabDragAreaWidth() const override { return width(); }
+  TabDragContext* GetContext() override { return this; }
 
   void set_drag_session_active(bool active) { drag_session_active_ = active; }
 
@@ -129,10 +135,7 @@ class FakeTabContainerController final : public TabContainerController {
     return tab_strip_controller_->IsBrowserClosing();
   }
 
-  bool CanExtendDragHandle() const override {
-    return !tab_strip_controller_->IsFrameCondensed() &&
-           !tab_strip_controller_->EverHasVisibleBackgroundTabShapes();
-  }
+  bool CanExtendDragHandle() const override { return true; }
 
   const views::View* GetTabClosingModeMouseWatcherHostView() const override {
     return nullptr;
@@ -216,7 +219,8 @@ class TabContainerTest : public ChromeViewsTestBase {
               TabActive active = TabActive::kInactive,
               TabPinned pinned = TabPinned::kUnpinned) {
     std::vector<TabContainer::TabInsertionParams> tabs_params;
-    tabs_params.emplace_back(std::make_unique<Tab>(tab_slot_controller_.get()),
+    tabs_params.emplace_back(std::make_unique<Tab>(tabs::TabHandle(model_index),
+                                                   tab_slot_controller_.get()),
                              model_index, pinned);
     Tab* tab = tab_container_->AddTabs(std::move(tabs_params))[0];
 
@@ -376,9 +380,10 @@ class TabContainerTest : public ChromeViewsTestBase {
 
   void SetTabContainerWidth(int width) {
     tab_container_width_ = width;
-    gfx::Size size(tab_container_width_, GetLayoutConstant(TAB_STRIP_HEIGHT));
-    widget_->SetSize(size);
+    gfx::Size size(tab_container_width_,
+                   GetLayoutConstant(LayoutConstant::kTabStripHeight));
     drag_context_->SetSize(size);
+    widget_->SetSize(size);
     tab_container_->SetSize(size);
   }
 
@@ -386,7 +391,8 @@ class TabContainerTest : public ChromeViewsTestBase {
   // from Widget::SetSize.
   void SetTabContainerWidthSingleLayout(int width) {
     tab_container_width_ = width;
-    gfx::Size size(tab_container_width_, GetLayoutConstant(TAB_STRIP_HEIGHT));
+    gfx::Size size(tab_container_width_,
+                   GetLayoutConstant(LayoutConstant::kTabStripHeight));
     tab_container_->SetSize(size);
   }
 
@@ -1140,7 +1146,8 @@ TEST_F(TabContainerTest, PreferredWidthNotAffectedByTransferTabTo) {
 TEST_F(TabContainerTest, PreferredWidthAddTabToViewModel) {
   // Start with one tab, and one more that is not in the container.
   AddTab(0);
-  const auto owned_tab = std::make_unique<Tab>(tab_slot_controller_.get());
+  const auto owned_tab =
+      std::make_unique<Tab>(tabs::TabHandle(1), tab_slot_controller_.get());
   const int initial_pref_width = tab_container_->GetPreferredSize().width();
 
   // Add `owned_tab` to `tab_container_`'s viewmodel without giving it the

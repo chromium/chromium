@@ -19,7 +19,7 @@
 #include "extensions/common/permissions/permissions_data.h"
 #include "mojo/public/cpp/bindings/binder_map.h"
 
-#if BUILDFLAG(ENABLE_GUEST_VIEW)
+#if BUILDFLAG(ENABLE_EXTENSIONS)
 #include "extensions/browser/api/mime_handler_private/mime_handler_private.h"
 #include "extensions/browser/guest_view/mime_handler_view/mime_handler_view_guest.h"
 #include "extensions/common/api/mime_handler.mojom.h"
@@ -143,7 +143,7 @@ void BindCfmServiceContext(
 
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
-#if BUILDFLAG(ENABLE_GUEST_VIEW)
+#if BUILDFLAG(ENABLE_EXTENSIONS)
 void BindMimeHandlerService(
     content::RenderFrameHost* frame_host,
     mojo::PendingReceiver<mime_handler::MimeHandlerService> receiver) {
@@ -164,7 +164,7 @@ void BindBeforeUnloadControl(
   }
   guest_view->FuseBeforeUnloadControl(std::move(receiver));
 }
-#endif  // BUILDFLAG(ENABLE_GUEST_VIEW)
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 }  // namespace
 
@@ -283,23 +283,23 @@ void PopulateChromeFrameBindersForExtension(
     // rebooted to the CfM image variant for their device.
     // This applies to LaCrOS and none CfM Ash builds
     // TODO(crbug.com/341493979): Deprecate after CfM LaCrOS migration.
-    binder_map->Add<ash::cfm::mojom::XuCamera>(
-        [](content::RenderFrameHost* frame_host,
-           mojo::PendingReceiver<ash::cfm::mojom::XuCamera> receiver) {
-          receiver.ResetWithReason(
-              static_cast<uint32_t>(chromeos::cfm::mojom::DisconnectReason::
-                                        kServiceUnavailableCode),
-              chromeos::cfm::mojom::DisconnectReason::
-                  kServiceUnavailableMessage);
-        });
+    binder_map->Add<
+        ash::cfm::mojom::XuCamera>([](content::RenderFrameHost* frame_host,
+                                      mojo::PendingReceiver<
+                                          ash::cfm::mojom::XuCamera> receiver) {
+      receiver.ResetWithReason(
+          static_cast<uint32_t>(
+              chromeos::cfm::mojom::DisconnectReason::kServiceUnavailableCode),
+          chromeos::cfm::mojom::DisconnectReason::kServiceUnavailableMessage);
+    });
 #endif  // BUILDFLAG(PLATFORM_CFM)
   }
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
-#if BUILDFLAG(ENABLE_GUEST_VIEW)
+#if BUILDFLAG(ENABLE_EXTENSIONS)
   binder_map->Add<mime_handler::MimeHandlerService>(&BindMimeHandlerService);
   binder_map->Add<mime_handler::BeforeUnloadControl>(&BindBeforeUnloadControl);
-#endif  // BUILDFLAG(ENABLE_GUEST_VIEW)
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 }
 
 void PopulateChromeServiceWorkerBindersForExtension(

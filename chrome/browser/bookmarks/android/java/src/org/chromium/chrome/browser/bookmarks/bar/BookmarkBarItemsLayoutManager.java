@@ -36,10 +36,12 @@ import java.util.List;
 @NullMarked
 class BookmarkBarItemsLayoutManager extends RecyclerView.LayoutManager {
 
+    private static final String DYNAMIC_WIDTH_PARAM = "dynamic_width_enabled";
     private static int @Nullable [] sDesiredWidthsForTesting;
 
     private final int mItemSpacing;
     private final SettableNonNullObservableSupplier<Boolean> mItemsOverflowSupplier;
+    private final boolean mIsDynamicWidthEnabled;
 
     private int mItemMinWidth;
     private int mItemMaxWidth;
@@ -56,6 +58,12 @@ class BookmarkBarItemsLayoutManager extends RecyclerView.LayoutManager {
         mItemMinWidth = resources.getDimensionPixelSize(R.dimen.bookmark_bar_item_min_width);
         mItemSpacing = resources.getDimensionPixelSize(R.dimen.bookmark_bar_item_spacing);
         mItemsOverflowSupplier = ObservableSuppliers.createNonNull(false);
+        mIsDynamicWidthEnabled =
+                ChromeFeatureList.sAndroidBookmarkBarFastFollow.isEnabled()
+                        && ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
+                                ChromeFeatureList.ANDROID_BOOKMARK_BAR_FAST_FOLLOW,
+                                DYNAMIC_WIDTH_PARAM,
+                                true);
     }
 
     @Override
@@ -80,7 +88,7 @@ class BookmarkBarItemsLayoutManager extends RecyclerView.LayoutManager {
         detachAndScrapAttachedViews(recycler);
 
         // When the fast-follow feature is enabled, we will use the dynamic width calculation.
-        if (ChromeFeatureList.sAndroidBookmarkBarFastFollow.isEnabled()) {
+        if (mIsDynamicWidthEnabled) {
             mEffectiveItemWidth = calculateOptimalItemWidth(recycler, state.getItemCount());
         }
 
@@ -171,11 +179,11 @@ class BookmarkBarItemsLayoutManager extends RecyclerView.LayoutManager {
 
         // When the fast-follow feature is enabled, we will use the dynamic width calculation.
         final var width =
-                ChromeFeatureList.sAndroidBookmarkBarFastFollow.isEnabled()
+                mIsDynamicWidthEnabled
                         ? Math.min(mEffectiveItemWidth, lp.width)
                         : Math.min(mItemMaxWidth, lp.width);
         final var widthMeasureSpec =
-                ChromeFeatureList.sAndroidBookmarkBarFastFollow.isEnabled()
+                mIsDynamicWidthEnabled
                         ? MeasureSpec.makeMeasureSpec(mEffectiveItemWidth, AT_MOST)
                         : MeasureSpec.makeMeasureSpec(mItemMaxWidth, AT_MOST);
 

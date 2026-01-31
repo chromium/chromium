@@ -9,7 +9,6 @@
 
 #include "ash/system/mahi/mahi_ui_update.h"
 #include "ash/system/mahi/test/mock_mahi_ui_controller_delegate.h"
-#include "base/containers/contains.h"
 #include "base/run_loop.h"
 #include "base/scoped_observation.h"
 #include "base/test/gmock_callback_support.h"
@@ -59,7 +58,7 @@ class UiUpdateRecorder {
   }
 
   bool HasUpdate(MahiUiUpdateType type) const {
-    return base::Contains(received_updates_, type);
+    return received_updates_.contains(type);
   }
 
  private:

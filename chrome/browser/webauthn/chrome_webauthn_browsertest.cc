@@ -26,7 +26,7 @@
 #include "chrome/browser/actor/actor_keyed_service.h"
 #include "chrome/browser/actor/actor_task.h"
 #include "chrome/browser/actor/execution_engine.h"
-#include "chrome/browser/actor/ui/mocks/mock_event_dispatcher.h"
+#include "chrome/browser/actor/ui/test_support/mock_event_dispatcher.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/test_extension_system.h"
 #include "chrome/browser/password_manager/chrome_webauthn_credentials_delegate.h"
@@ -1543,7 +1543,7 @@ class WebAuthnImmediateGetTest : public WebAuthnBrowserTest {
  protected:
   static constexpr std::string_view kRequestWithPasswordTemplate = R"(
     navigator.credentials.get({
-    mediation: 'immediate',
+    uiMode: 'immediate',
     password: $1,
     publicKey: {
       challenge: new Uint8Array([1,3,2,7,1,3,2,7]),
@@ -1554,7 +1554,7 @@ class WebAuthnImmediateGetTest : public WebAuthnBrowserTest {
 
   static constexpr std::string_view kRequestWithAllowlistTemplate = R"(
     navigator.credentials.get({
-    mediation: 'immediate',
+    uiMode: 'immediate',
     publicKey: {
       challenge: new Uint8Array([1,3,2,7,1,3,2,7]),
       allowCredentials: [$1],
@@ -1661,7 +1661,8 @@ class WebAuthnActorBrowserTest : public WebAuthnBrowserTest {
         std::make_unique<actor::ActorTask>(
             browser()->profile(), std::move(execution_engine),
             actor::ui::NewUiEventDispatcher(
-                actor_service->GetActorUiStateManager()));
+                actor_service->GetActorUiStateManager()),
+            /*options=*/nullptr);
     actor_task->SetState(actor::ActorTask::State::kActing);
 
     base::RunLoop loop;
@@ -1693,9 +1694,9 @@ class WebAuthnActorBrowserTest : public WebAuthnBrowserTest {
 };
 
 IN_PROC_BROWSER_TEST_F(WebAuthnActorBrowserTest, MakeCredentialsActorIsActive) {
-  CreateActingTask();
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(), https_server_.GetURL("www.example.com", "/title1.html")));
+  CreateActingTask();
 
   content::EvalJsResult result =
       content::EvalJs(browser()->tab_strip_model()->GetActiveWebContents(),
@@ -1704,11 +1705,11 @@ IN_PROC_BROWSER_TEST_F(WebAuthnActorBrowserTest, MakeCredentialsActorIsActive) {
 }
 
 IN_PROC_BROWSER_TEST_F(WebAuthnActorBrowserTest, GetCredentialsActorIsActive) {
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), https_server_.GetURL("www.example.com", "/title1.html")));
   CreateActingTask();
   virtual_device_factory_->mutable_state()->InjectRegistration(
       kCredentialID, "www.example.com");
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(
-      browser(), https_server_.GetURL("www.example.com", "/title1.html")));
   content::EvalJsResult result =
       content::EvalJs(browser()->tab_strip_model()->GetActiveWebContents(),
                       kGetAssertionCredID1234);

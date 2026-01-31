@@ -39,7 +39,7 @@ suite('ReadingListAppTest', () => {
       unreadEntries: [
         {
           title: 'Google',
-          url: {url: 'https://www.google.com'},
+          url: 'https://www.google.com',
           displayUrl: 'google.com',
           updateTime: 0n,
           read: false,
@@ -47,7 +47,7 @@ suite('ReadingListAppTest', () => {
         },
         {
           title: 'Apple',
-          url: {url: 'https://www.apple.com'},
+          url: 'https://www.apple.com',
           displayUrl: 'apple.com',
           updateTime: 0n,
           read: false,
@@ -57,7 +57,7 @@ suite('ReadingListAppTest', () => {
       readEntries: [
         {
           title: 'Bing',
-          url: {url: 'https://www.bing.com'},
+          url: 'https://www.bing.com',
           displayUrl: 'bing.com',
           updateTime: 0n,
           read: true,
@@ -65,7 +65,7 @@ suite('ReadingListAppTest', () => {
         },
         {
           title: 'Yahoo',
-          url: {url: 'https://www.yahoo.com'},
+          url: 'https://www.yahoo.com',
           displayUrl: 'yahoo.com',
           updateTime: 0n,
           read: true,
@@ -105,7 +105,7 @@ suite('ReadingListAppTest', () => {
     const expectedUrl = 'https://www.apple.com';
     clickItem(expectedUrl);
     const [url, updateReadStatus] = await testProxy.whenCalled('openUrl');
-    assertEquals(url.url, expectedUrl);
+    assertEquals(url, expectedUrl);
     assertTrue(updateReadStatus);
   });
 
@@ -152,7 +152,7 @@ suite('ReadingListAppTest', () => {
         'cr:check-circle', readingListItem.$.updateStatusButton.ironIcon);
     readingListItem.$.updateStatusButton.click();
     const [url, read] = await testProxy.whenCalled('updateReadStatus');
-    assertEquals(expectedUrl, url.url);
+    assertEquals(expectedUrl, url);
     assertTrue(read);
   });
 
@@ -170,7 +170,7 @@ suite('ReadingListAppTest', () => {
         readingListItem.$.updateStatusButton.ironIcon);
     readingListItem.$.updateStatusButton.click();
     const [url, read] = await testProxy.whenCalled('updateReadStatus');
-    assertEquals(expectedUrl, url.url);
+    assertEquals(expectedUrl, url);
     assertFalse(read);
   });
 
@@ -183,7 +183,7 @@ suite('ReadingListAppTest', () => {
     const readingListItemDeleteButton = readingListItem.$.deleteButton;
     readingListItemDeleteButton.click();
     const url = await testProxy.whenCalled('removeEntry');
-    assertEquals(expectedUrl, url.url);
+    assertEquals(expectedUrl, url);
   });
 
   test('Enter key triggers action and passes correct url', async () => {
@@ -194,7 +194,7 @@ suite('ReadingListAppTest', () => {
 
     keyDownOn(readingListItem, 0, [], 'Enter');
     const [url, updateReadStatus] = await testProxy.whenCalled('openUrl');
-    assertEquals(url.url, expectedUrl);
+    assertEquals(url, expectedUrl);
     assertTrue(updateReadStatus);
   });
 
@@ -206,7 +206,7 @@ suite('ReadingListAppTest', () => {
 
     keyDownOn(readingListItem, 0, [], ' ');
     const [url, updateReadStatus] = await testProxy.whenCalled('openUrl');
-    assertEquals(url.url, expectedUrl);
+    assertEquals(url, expectedUrl);
     assertTrue(updateReadStatus);
   });
 

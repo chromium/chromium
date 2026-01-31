@@ -14,8 +14,8 @@
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_delegate.h"
 #include "chrome/browser/ui/views/frame/multi_contents_drop_target_view.h"
+#include "components/split_tabs/split_tab_visual_data.h"
 #include "components/tabs/public/split_tab_data.h"
-#include "components/tabs/public/split_tab_visual_data.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/common/url_constants.h"
@@ -125,7 +125,7 @@ void MultiContentsViewDelegateImpl::HandleLinkDrop(
 
 void MultiContentsViewDelegateImpl::HandleTabDrop(
     MultiContentsDropTargetView::DropSide side,
-    TabDragDelegate::DragController& drag_controller) {
+    TabDragTarget::DragController& drag_controller) {
   CHECK(!tab_strip_model_->GetActiveTab()->IsSplit());
 
   // TODO(crbug.com/406792273): Support entrypoint for horizontal splits.

@@ -4,31 +4,51 @@
 
 #include "third_party/blink/renderer/core/overscroll/overscroll_area_tracker.h"
 
-#include "base/token.h"
 #include "third_party/blink/renderer/core/dom/element.h"
+#include "third_party/blink/renderer/core/dom/node.h"
+#include "third_party/blink/renderer/platform/wtf/vector.h"
 
 namespace blink {
 
 OverscrollAreaTracker::OverscrollAreaTracker(Element* element)
     : container_(element) {}
 
-void OverscrollAreaTracker::AddOverscroll(Element* element,
-                                          Element* activator) {
-  auto* member = MakeGarbageCollected<OverscrollMember>();
-  member->overscroll_element = element;
-  member->activator = activator;
-  member->token = AtomicString(base::Token::CreateRandom().ToString().data());
-  // TODO(crbug.com/463970475): This should be in DOM order of `element`. See
-  // `getAnimations()` for how it sorts things, and use it here.
-  overscroll_members_.push_back(member);
+void OverscrollAreaTracker::AddOverscroll(Element* element) {
+  CHECK(!element->GetOverscrollContainer());
+  DCHECK(element->isConnected());
+  element->SetOverscrollContainer(container_);
+  overscroll_members_.push_back(element);
+  needs_dom_sort_ = overscroll_members_.size() > 1;
+  needs_layout_tree_rebuild_ = true;
 }
 
-void OverscrollAreaTracker::PropagateOverscrollToAncestor() {
-  // TODO(crbug.com/463972821): Implement.
+const VectorOf<Element>& OverscrollAreaTracker::DOMSortedElements() {
+  if (needs_dom_sort_) {
+    std::sort(overscroll_members_.begin(), overscroll_members_.end(),
+              [](const Member<Element>& a, const Member<Element>& b) {
+                return a->compareDocumentPosition(b) &
+                       Node::kDocumentPositionFollowing;
+              });
+    needs_dom_sort_ = false;
+  }
+  return overscroll_members_;
 }
 
-void OverscrollAreaTracker::TakeOverscrollFromAncestor() {
-  // TODO(crbug.com/463972324): Implement.
+void OverscrollAreaTracker::RemoveAllOverscroll() {
+  for (auto& member : overscroll_members_) {
+    member->ClearOverscrollContainer();
+  }
+  overscroll_members_.clear();
+  needs_dom_sort_ = false;
+  needs_layout_tree_rebuild_ = true;
+}
+
+void OverscrollAreaTracker::RemoveOverscroll(Element* element) {
+  CHECK_EQ(element->GetOverscrollContainer(), container_);
+  element->ClearOverscrollContainer();
+  Erase(overscroll_members_, element);
+  needs_dom_sort_ = needs_dom_sort_ && overscroll_members_.size() > 1;
+  needs_layout_tree_rebuild_ = true;
 }
 
 void OverscrollAreaTracker::Trace(Visitor* visitor) const {
@@ -36,11 +56,6 @@ void OverscrollAreaTracker::Trace(Visitor* visitor) const {
 
   visitor->Trace(container_);
   visitor->Trace(overscroll_members_);
-}
-
-void OverscrollAreaTracker::OverscrollMember::Trace(Visitor* visitor) const {
-  visitor->Trace(overscroll_element);
-  visitor->Trace(activator);
 }
 
 }  // namespace blink

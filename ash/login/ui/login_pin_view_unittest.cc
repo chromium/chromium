@@ -27,6 +27,12 @@ class LoginPinViewTest : public LoginTestBase {
   LoginPinViewTest(const LoginPinViewTest&) = delete;
   LoginPinViewTest& operator=(const LoginPinViewTest&) = delete;
 
+  // LoginTestBase:
+  void TearDown() override {
+    view_ = nullptr;
+    LoginTestBase::TearDown();
+  }
+
  protected:
   LoginPinViewTest() = default;
   ~LoginPinViewTest() override = default;
@@ -51,7 +57,7 @@ class LoginPinViewTest : public LoginTestBase {
   void OnPinBackspace() { ++backspace_; }
   void OnPinSubmit() { ++submit_; }
 
-  raw_ptr<LoginPinView, DanglingUntriaged> view_ =
+  raw_ptr<LoginPinView> view_ =
       nullptr;  // Owned by test widget view hierarchy.
   std::optional<int> value_;
   // Number of times the backspace event has been fired.

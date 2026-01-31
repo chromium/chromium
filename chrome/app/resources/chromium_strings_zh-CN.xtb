@@ -3,7 +3,6 @@
 <translationbundle lang="zh-CN">
 <translation id="1026101648481255140">继续安装</translation>
 <translation id="1029669172902658969">重新启动以更新 Chromium 操作系统(&amp;C)</translation>
-<translation id="103359417695385097">Chromium 可以更好地理解表单，并更快地为您自动填充表单。此设置已关闭。</translation>
 <translation id="1040916596585577953">Chromium 建议您检查此扩展程序</translation>
 <translation id="1042552502243217427">当某个网站请求以私密方式预加载其网页上的链接时，Chromium 会使用 Google 服务器。如此一来，Google 能知道会预加载哪些网站，但这些网站无法得知您的身份。</translation>
 <translation id="1051793555070215510">请花 1 分钟时间填写调查问卷，帮助我们改进无痕模式。</translation>
@@ -21,6 +20,7 @@
 <translation id="1184145431117212167">安装失败，因为您的 Windows 版本不受支持。</translation>
 <translation id="1185134272377778587">关于 Chromium</translation>
 <translation id="1203500561924088507">感谢您完成安装。您必须重启浏览器才能使用 <ph name="BUNDLE_NAME" />。</translation>
+<translation id="1232234696885483911">当您打开图片搜索功能时，系统会自动将网页标题、网址和内容（包括 PDF 文件）发送给服务器。<ph name="LEARN_MORE" /></translation>
 <translation id="123265588161106468">登录后，您可以在 Chromium 中使用 Google 账号中的密码等信息。如需更改此设置，请前往“设置 Chromium 账号”。</translation>
 <translation id="1262876892872089030">当此标签页处于闲置状态时，系统会释放一些内存，以让 Chromium 保持快速运行。您可以选择始终不让此网站处于闲置状态。</translation>
 <translation id="1265577313130862557">由于该文件具有危险性，Chromium 阻止了这次下载</translation>
@@ -34,7 +34,6 @@
 <translation id="1356661055722410047">新功能！您可以翻译屏幕上的文字和图片</translation>
 <translation id="1383876407941801731">搜索</translation>
 <translation id="1397530502368084401">管理 Chromium 个人资料(&amp;M)</translation>
-<translation id="1414495520565016063">您已登录 Chromium！</translation>
 <translation id="141901961143729572">分享您的想法</translation>
 <translation id="1465192221147974788">若要共享窗口，请在“系统设置”中为 Chromium 启用屏幕录制功能。</translation>
 <translation id="1478370723027452770">获取 Chrome for Testing 方面的帮助</translation>
@@ -68,6 +67,7 @@
 <translation id="183031085822326697">下次在<ph name="DEVICE_TYPE" />上打开 Chromium 时，您会看到使用 Google 密码管理工具的提示。</translation>
 <translation id="1838374766361614909">清除搜索字词</translation>
 <translation id="18552579716432081">若要仅删除此设备中的浏览数据而保留 Google 账号中的浏览数据，请<ph name="BEGIN_LINK" />从 Chromium 中退出账号<ph name="END_LINK" />。</translation>
+<translation id="1857749206890802997">在手机上下载 Chromium，随时随地打开现有标签页分组或创建新标签页分组。</translation>
 <translation id="185970820835152459">您可以管理您已登录的 Google 账号。您可通过登录自己的 Google 账号使用 Chromium 浏览器、Play 商店、Gmail 等产品。如果您想添加他人（比如某个家庭成员）的账号，请改为将这个新人添加到您的 <ph name="DEVICE_TYPE" />。<ph name="LINK_BEGIN" />了解详情<ph name="LINK_END" /></translation>
 <translation id="1862852878885210965">使用图片搜索功能进行搜索</translation>
 <translation id="1880677175115548835">选择文字</translation>
@@ -81,6 +81,7 @@
 <translation id="193439633299369377">需要重新启动 Chromium 操作系统以应用更新。</translation>
 <translation id="1951406923938785464">Chromium 阻止了此项下载操作，因为这不是常下载的文件类型，可能具有危险性</translation>
 <translation id="1953553007165777902">正在下载…还需 <ph name="MINUTE" /> 分钟</translation>
+<translation id="1965068424387304464">Chromium 提示：保存密码</translation>
 <translation id="1966382378801805537">Chromium 无法确定或设置默认浏览器</translation>
 <translation id="1990262977744080398">了解 Chromium 为何屏蔽某些文件（在新标签页中打开）</translation>
 <translation id="1999715455684970349">让您的 Chromium 软件保持最新状态。如果此服务已停用或已停止运行，您的 Chromium 软件将无法保持最新状态，这意味着可能出现的安全漏洞无法得到修复，并且某些功能可能无法正常运行。当没有 Chromium 软件使用此服务时，此服务会自行卸载。</translation>
@@ -89,7 +90,6 @@
 <translation id="2020032459870799438">若要检查您的其他密码是否未曾遭遇数据泄露和其他安全问题，请<ph name="BEGIN_LINK" />登录 Chromium<ph name="END_LINK" />。</translation>
 <translation id="2039417478970545937">设置。</translation>
 <translation id="2049376729098081731">选择是否要包含 Chromium 历史记录以便在各款 Google 服务中获享更个性化的体验</translation>
-<translation id="2054039611381840095">若要接收后续 Chromium 更新，您需要使用 macOS 12 或更高版本。该电脑目前使用的是 macOS 11。</translation>
 <translation id="2064856577282482477">点击“新标签页”页面上的“自定义 Chromium”按钮，即可为 Chromium 换上全新外观</translation>
 <translation id="2086476982681781442">Chromium 阻止了此项下载操作，因为该文件具有欺骗性，可能会意外更改您的设备</translation>
 <translation id="208726765006323911">下次打开 Chromium iOS 时，您会看到试用<ph name="FEATURE_NAME" />的提示。</translation>
@@ -158,6 +158,7 @@
 <translation id="2738871930057338499">无法连接到互联网。发生 HTTP 403 Forbidden 错误，请检查您的代理配置。</translation>
 <translation id="2753623023919742414">点击即可搜索</translation>
 <translation id="2768103863314748511">将 Chromium 设为默认 PDF 查看器</translation>
+<translation id="277828055419948999">Chromium 可自动填充标准自动填充功能可能会遗漏的复杂字段</translation>
 <translation id="2785438272836277133">此扩展程序包含恶意软件，所以不安全。请将其从 Chromium 中移除，这样它便无法再查看和更改您在所访问的网站上的数据，包括您的个人信息。</translation>
 <translation id="2799223571221894425">重新启动</translation>
 <translation id="2803971713792056305">您的 Chromium</translation>
@@ -215,12 +216,15 @@
 <translation id="3313189106987092621">Chromium 会在使用不安全的连接加载网站前向您发出警告</translation>
 <translation id="3316771292331273802">关闭所有 Chromium 窗口后，您将会从大多数网站退出账号；但如果您已登录 Chromium，则您的 Google 账号不会退出。若要让网站记住您，请<ph name="SETTINGS_LINK" />。</translation>
 <translation id="3322413454779348750">您的默认搜索引擎已在 Chromium 外部更改。为保护您的安全，Chromium 已将其重置。</translation>
+<translation id="3331557257666250900">登录 Chrome 即可让您的密码、书签等信息在所有设备上触手可及</translation>
 <translation id="3352986031709923790">搜索区域的右上角：右侧 <ph name="RIGHT" />%，顶部 <ph name="TOP" />%</translation>
 <translation id="3366305173356742781">您账号中的 Chromium 数据</translation>
 <translation id="3369405342922656244">使用图片搜索功能搜索此页面</translation>
+<translation id="3375770072980084583">借助 Chromium 在手机上使用您的密码</translation>
 <translation id="3387527074123400161">Chromium 操作系统</translation>
 <translation id="3406848076815591792">切换到现有的 Chromium 个人资料？</translation>
 <translation id="3412460710772753638">在此设备上的密码管理工具中更新</translation>
+<translation id="3455907671758333080">借助 Chromium 在手机上使用增强型安全浏览功能</translation>
 <translation id="3461644266919055473">正在打造您的专属 Chromium…</translation>
 <translation id="347328004046849135">当您使用已泄露的密码登录时，Chromium 会通知您</translation>
 <translation id="3474745554856756813">这会从这台设备上删除 <ph name="ITEMS_COUNT" /> 项内容。如果日后想要检索您的数据，届时请以 <ph name="USER_EMAIL" /> 的身份登录 Chromium。</translation>
@@ -247,6 +251,8 @@
 <translation id="3798048725356732506">您可以根据不同的用途设置不同的 Chromium 资料。立即添加新的资料。</translation>
 <translation id="3802055581630249637">Chromium 会预加载您可能访问的网页，以便提高这些网页在您访问时的加载速度</translation>
 <translation id="3810973564298564668">管理</translation>
+<translation id="3823384748599722168">如需使用已保存的密码，请扫描二维码、下载 iOS 版 Chromium 应用，并登录您的 Google 账号</translation>
+<translation id="3837584850181228767">Chromium 提示：增强型安全浏览</translation>
 <translation id="3846683726093018685">**总结：**用一句话（不到 30 个字）概括屏幕截图所示内容的核心主题和主要目的。
 
           **建议问题：**生成 3-5 个发人深省的问题，以项目符号列表的形式呈现，帮助用户更深入地理解屏幕截图。这些问题中，至少应有一个是关于某个视觉对象、其设计或其放置位置的问题。</translation>
@@ -266,6 +272,7 @@
 <translation id="3971865010372729242">当您在地址栏或搜索框中输入内容时，Chromium 会将您输入的内容发送给组织的搜索、AI 和代理工具，以便获取建议。</translation>
 <translation id="3975724895399328945">关于 Google Chrome for Testing(&amp;G)</translation>
 <translation id="3997429360543082038">关于 Chromium 操作系统</translation>
+<translation id="4010059961270896984">当您访问某个网站时，Chromium 会通过可隐藏 IP 地址的隐私保护服务器，将经过混淆处理的网址片段发送给 <ph name="BEGIN_LINK" />Google 安全浏览服务<ph name="END_LINK" />。如果网站有可疑行为，系统也会发送完整网址和少量网页内容。</translation>
 <translation id="4019629340646866719">与 <ph name="BEGIN_LINK_LINUX_OSS" />Linux 开发环境<ph name="END_LINK_LINUX_OSS" />一样，Chromium 操作系统也是借助了其他<ph name="BEGIN_LINK_CROS_OSS" />开源软件<ph name="END_LINK_CROS_OSS" />才得以问世。</translation>
 <translation id="4022972681110646219">翻译屏幕</translation>
 <translation id="4023601594785368013">源语言：<ph name="LANGUAGE" /></translation>
@@ -280,6 +287,7 @@
 <translation id="4095980151185649725">{COUNT,plural, =1{您的组织会在 Chromium 闲置 1 分钟后自动关闭它。浏览数据会被删除。这些数据可能包括历史记录、自动填充数据和下载内容。}other{您的组织会在 Chromium 闲置 # 分钟后自动关闭它。浏览数据会被删除。这些数据可能包括历史记录、自动填充数据和下载内容。}}</translation>
 <translation id="4118474109249235144">Chromium 无痕模式</translation>
 <translation id="4122186850977583290">前往“关于 Chromium”页面</translation>
+<translation id="4135244987012252068">自定义 Chromium，为您的浏览器换上全新外观</translation>
 <translation id="4147856324248078748">自定义 Chromium(&amp;U)</translation>
 <translation id="4148957013307229264">正在安装...</translation>
 <translation id="419998258129752635"><ph name="PAGE_TITLE" /> - 网络登录 - Chromium</translation>
@@ -315,18 +323,16 @@
 <translation id="4510853178268397146">此扩展程序尚未发布隐私权规范，例如如何收集和使用数据。Chromium 建议您移除它。</translation>
 <translation id="452711251841752011">欢迎使用 Chromium；已打开新的浏览器窗口</translation>
 <translation id="4531137820806573936">Chromium 需要获得权限，才能绘制您周边环境的地图并跟踪您的双手</translation>
-<translation id="4534145890176164066">Chromium 可以更好地理解表单，并更快地为您自动填充表单</translation>
 <translation id="4536805923587466102">您已使用另一份 Chromium 个人资料 (<ph name="USER_EMAIL_ADDRESS" />) 登录</translation>
 <translation id="4548534452171747496">Chromium 会预加载网页，以便您更快速地浏览和搜索内容。<ph name="BEGIN_LINK" />详细了解预加载网页<ph name="END_LINK" /></translation>
-<translation id="4567424176335768812">您已使用 <ph name="USER_EMAIL_ADDRESS" /> 的身份登录。现在您可在已登录的所有设备上访问您的书签、历史记录和其他设置。</translation>
 <translation id="4570813286784708942">Chromium 阻止了此项下载操作，因为您关闭了安全浏览功能，系统无法验证该文件</translation>
+<translation id="4583692638088316420">借助 Chromium 在手机上试用 Google 智能镜头</translation>
 <translation id="4594305310729380060">保存到此设备上的密码管理工具中</translation>
 <translation id="459535195905078186">Chromium 应用</translation>
 <translation id="4598116752460667024">从列表中搜索任何进程。</translation>
 <translation id="4613863813562375431">Chromium 操作系统版本</translation>
 <translation id="4621240073146040695">即将更新到最新版本！重新启动 Chromium 即可完成更新。</translation>
 <translation id="4625064703209785397">使用 Chromium 的 V8 引擎加快网站速度，但 Chromium 的防范攻击能力会略微降低</translation>
-<translation id="4654936675281451226">Chromium 可以更好地理解表单，并更快地为您自动填充表单。此设置已开启。</translation>
 <translation id="4665829708273112819">警告：Chromium 无法阻止扩展程序记录您的浏览活动。若要在无痕模式下停用该扩展程序，请取消选中此选项。</translation>
 <translation id="4673151026126227699">如果您还分享 Chromium 使用情况报告，这些报告会包含您访问过的网址</translation>
 <translation id="4677944499843243528">其他计算机 (<ph name="HOST_NAME" />) 的另一个 Chromium 进程 (<ph name="PROCESS_ID" />) 好像正在使用此个人资料。Chromium 已锁定此个人资料以防止其受损。如果您确定其他进程目前未使用此个人资料，请为其解锁并重新启动 Chromium。</translation>
@@ -344,6 +350,7 @@
 <translation id="4814736265800133385">在不登录账号的情况下使用 Chromium</translation>
 <translation id="4888717733111232871">Chromium的入站规则，允许mDNS流量。</translation>
 <translation id="4893347770495441059">重新启动以更新 Chromium(&amp;C)</translation>
+<translation id="4918086044614829423">接受</translation>
 <translation id="4918844574251943176">已复制图片</translation>
 <translation id="4943838377383847465">Chromium处于后台运行模式。</translation>
 <translation id="494490797786467921">点击即可关闭 Chromium 登录对话框</translation>
@@ -351,6 +358,7 @@
 <translation id="4987820182225656817">访客使用Chromium不会留下任何痕迹。</translation>
 <translation id="4992938037305302429">设置 Chromium 账号</translation>
 <translation id="4994636714258228724">将您自己添加到Chromium</translation>
+<translation id="5083712646171654472">Chromium 中的 Gemini 会使用自动浏览功能在标签页中运行，完成您交代的各种任务。<ph name="LINK_BEGIN" />了解详情<ph name="LINK_END" /></translation>
 <translation id="5123973130450702873">Chromium 需要获得权限，才能跟踪您的手部动作</translation>
 <translation id="5141988424377517949">您近期未访问过该网站，因此 Chromium 撤消了该网站的<ph name="PERMISSION_1" />权限、<ph name="PERMISSION_2" />权限和<ph name="PERMISSION_3" />权限。</translation>
 <translation id="5167819546851111585">今天想聊点什么？</translation>
@@ -363,6 +371,7 @@
 <translation id="5254739261293693943">询问此视频</translation>
 <translation id="5277894862589591112">要想应用您的更改，请重新启动 Chromium</translation>
 <translation id="5286907366254680517">检测到</translation>
+<translation id="5289287148052354622">获取 Chromium 应用</translation>
 <translation id="5294316920224716406">当您在无痕模式下浏览内容时，Chromium 会在使用不安全的连接加载网站前向您发出警告</translation>
 <translation id="5313228254328109263">Chromium Updater Internal Service</translation>
 <translation id="5346389065299425353">添加多个标签页、文件和工具，让搜索更深入、更精准</translation>
@@ -427,7 +436,6 @@
 <translation id="6063093106622310249">在 Chromium 中打开(&amp;O)</translation>
 <translation id="6069027071882229820">复制为图片</translation>
 <translation id="6072279588547424923">“<ph name="EXTENSION_NAME" />”已添加到 Chromium</translation>
-<translation id="6072463441809498330">提高 Chromium 的运行速度</translation>
 <translation id="6096348254544841612">有可用的更新。欢迎自定义和控制 Chromium。</translation>
 <translation id="6107893135096467929">已开启 • Chromium 无法验证此扩展程序的来源</translation>
 <translation id="611228897408671387">设置 Chromium 账号</translation>
@@ -472,6 +480,7 @@
 <translation id="6436260184216827876">图片搜索功能不可用，请稍后再试。</translation>
 <translation id="6442900851116057561">重启 Chromium 操作系统</translation>
 <translation id="6443470774889161065">Chromium 会预加载您可能会访问的更多网页，以便提高这些网页在您访问时的加载速度</translation>
+<translation id="6450948450282634257">在手机上下载 Chromium，即可跟踪价格并在有网站降价时收到提醒</translation>
 <translation id="645458117210240797">已关闭 • Chromium 无法验证此扩展程序的来源</translation>
 <translation id="6455857529632101747">欢迎使用 Chromium 个人资料</translation>
 <translation id="6466344609055215035">从 Chromium 中移除账号</translation>
@@ -519,6 +528,9 @@
 <translation id="6901631050894301805">将 Chromium 设为默认浏览器，并将其固定到任务栏</translation>
 <translation id="6909503629704372277">管理 Chromium 个人资料(&amp;M)</translation>
 <translation id="6934579572334859869">向图片搜索功能询问此图片</translation>
+<translation id="6948031725951063910">您已达到 Chromium 的书签数量上限（<ph name="BOOKMARK_LIMIT" /> 个），因此部分书签尚未保存到您的 Google 账号中。
+
+请先删除一些书签，否则新书签将无法保存到账号中。如果现在退出账号，系统将删除未保存的书签。</translation>
 <translation id="6964305034639999644">在 Chromium 无痕式窗口中打开链接(&amp;G)</translation>
 <translation id="6965382102122355670">确定</translation>
 <translation id="6978145336957848883">安全系数低的密码容易被人猜到。不妨让 Chromium <ph name="BEGIN_LINK" />为您创建并记住安全系数高的密码<ph name="END_LINK" />。</translation>
@@ -557,6 +569,7 @@ Chromium 无法恢复您的设置。</translation>
 <translation id="7347827960336370838">只有知道您口令的人能读取您的加密数据。该口令不会被发送给 Google，也不会被 Google 存储。如果您忘记了口令或想更改此设置，将需要<ph name="BEGIN_LINK" />删除您账号中的 Chromium 数据<ph name="END_LINK" />。</translation>
 <translation id="7349591376906416160">您的系统管理员已将 Chromium 配置为使用<ph name="ALTERNATIVE_BROWSER_NAME" />访问 <ph name="TARGET_URL_HOSTNAME" />。</translation>
 <translation id="7352651011704765696">出了点问题</translation>
+<translation id="7368826207863345663">若要接收后续 Chromium 更新，您需要使用 macOS 13 或更高版本。该电脑目前使用的是 macOS 12。</translation>
 <translation id="7376384068949534168">您近期未访问过该网站，因此 Chromium 撤消了该网站的<ph name="PERMISSION_1" />权限和<ph name="PERMISSION_2" />权限。</translation>
 <translation id="7384121030444253939">此扩展程序已不再受支持。Chromium 建议您移除它。</translation>
 <translation id="7413153308467572558">从上次停下的地方继续：Chromium 会在您每次重启后恢复标签页。如需关闭此功能，请前往</translation>
@@ -577,6 +590,7 @@ Chromium 无法恢复您的设置。</translation>
 <translation id="7617377681829253106">Chromium现在更好用了</translation>
 <translation id="7622753900276619808">您现在可以在 Chromium 中使用更多功能了</translation>
 <translation id="7649070708921625228">帮助</translation>
+<translation id="7656340475565475526">让 Chromium 代您浏览</translation>
 <translation id="7658239707568436148">取消</translation>
 <translation id="7686590090926151193">Chromium 不是您的默认浏览器</translation>
 <translation id="7689606757190482937">在您的所有设备上同步并个性化设置 Chromium</translation>
@@ -585,6 +599,7 @@ Chromium 无法恢复您的设置。</translation>
 <translation id="77283119132245232">为 <ph name="BROWSER_NAME" /> 提供系统跟踪服务。如果停用此服务，浏览器创建的性能轨迹将不包含系统级事件，例如上下文切换和就绪线程事件。</translation>
 <translation id="7745317241717453663">这会从这台设备上删除您的浏览数据。如果日后想要检索您的数据，届时请以 <ph name="USER_EMAIL" /> 的身份登录 Chromium。</translation>
 <translation id="7747138024166251722">安装程序无法创建临时目录。请检查您是否有足够的磁盘空间和权限来安装该软件。</translation>
+<translation id="7750130090210923118">重置为默认 Chromium</translation>
 <translation id="7786760609782648049">提高 Chromium 的运行速度</translation>
 <translation id="7790626492778995050"><ph name="PAGE_TITLE" /> - Chromium Canary</translation>
 <translation id="7803986347287457849">让对您的互联网流量有访问权限的用户更难看到您访问的网站。Chromium 会使用安全连接在 DNS（域名系统）中查找网站的 IP 地址。</translation>
@@ -601,7 +616,6 @@ Chromium 无法恢复您的设置。</translation>
 <translation id="7888981273428720788">将 Chromium 设为默认浏览器</translation>
 <translation id="7934340546140346950">Chromium 会尽可能将不安全的连接自动升级为 HTTPS</translation>
 <translation id="7937630085815544518">您之前登录 Chromium 时使用的账号为 <ph name="USER_EMAIL_ADDRESS" />，请使用同一账号再次登录。</translation>
-<translation id="7953047982688951904">在手机上下载 Chromium，随时随地享受额外安全保障</translation>
 <translation id="7975919845073681630">这是 Chromium 的并行安装，您无法将此浏览器设为默认浏览器。</translation>
 <translation id="7997934263947464652">来源不明的扩展程序、应用和主题可能会危害您的设备。Chromium 建议只从 <ph name="IDS_EXTENSION_WEB_STORE_TITLE" />安装这些内容</translation>
 <translation id="8004582292198964060">浏览器</translation>
@@ -618,6 +632,7 @@ Chromium 无法恢复您的设置。</translation>
 <translation id="8118331347066725040">发送有关智能镜头搜索的反馈</translation>
 <translation id="8133124826068723441">由于您的网域不支持同步，Chromium 操作系统无法同步您的数据。</translation>
 <translation id="813913629614996137">正在初始化…</translation>
+<translation id="8164014945047474187">Chromium 附加服务条款</translation>
 <translation id="81770708095080097">此文件存在危险，因此 Chromium 已将其拦截。</translation>
 <translation id="8177472873527554730">在页面中找不到内容</translation>
 <translation id="8200109504272824693">请输入您的口令，以便将 Chromium 数据保存在您的账号 <ph name="USER_EMAIL" /> 中并使用这些数据</translation>
@@ -628,6 +643,7 @@ Chromium 无法恢复您的设置。</translation>
 <translation id="8254601181414348851">要使用新的个人资料登录 Chromium 吗？</translation>
 <translation id="8286943863733751221">在检测到不安全的网站和下载内容时，<ph name="BEGIN_LINK" />Chromium 会向您发出警告<ph name="END_LINK" /></translation>
 <translation id="8295827201165805317">您近期未访问过该网站，因此 Chromium 撤消了该网站的<ph name="PERMISSION" />权限。</translation>
+<translation id="8296236834352487533">在 iOS 版 Chromium 应用中，借助摄像头轻松购买、翻译和识别所见内容</translation>
 <translation id="8313851650939857356">启动错误：<ph name="STARTUP_ERROR" />。</translation>
 <translation id="8318772038038596122">贵组织会在 Chromium 闲置 <ph name="TIMEOUT_DURATION" />后将其关闭。</translation>
 <translation id="8321888067342493336">另存为图片</translation>
@@ -673,6 +689,7 @@ Chromium 无法恢复您的设置。</translation>
 <translation id="8747073452963259673">搜索区域的左下角：左侧 <ph name="LEFT" />%，底部 <ph name="BOTTOM" />%</translation>
 <translation id="878572486461146056">安装时出错：您的网络管理员所应用的一项群组政策阻止了安装进程：<ph name="INSTALL_ERROR" /></translation>
 <translation id="8796602469536043152">Chromium 需要获得相应权限，才能允许此网站使用您的摄像头和麦克风</translation>
+<translation id="8813277370772331957">稍后提醒我</translation>
 <translation id="8818550178040858407">登录 Chromium？</translation>
 <translation id="8823401858233292222">将 Chromium 设为默认浏览器并固定到任务栏</translation>
 <translation id="8826492472752484139">点击“密码管理工具”</translation>
@@ -683,8 +700,10 @@ Chromium 无法恢复您的设置。</translation>
 <translation id="8880203542552872219">如果是的话，请修改您在 Chromium 中保存的密码，使它与您的新密码保持一致。</translation>
 <translation id="8891709362986793894">您的组织要求您登录 Chromium</translation>
 <translation id="8907580949721785412">Chromium正在尝试显示密码，请输入您的Windows密码以允许此操作。</translation>
+<translation id="8932992523185907506">Chromium 不再是默认浏览器。要将 Chromium 设置为默认浏览器吗？</translation>
 <translation id="8941642502866065432">无法更新 Chromium</translation>
 <translation id="897581876605952338">Chromium 企业版徽标</translation>
+<translation id="8981150672034878610">无法启动 Chromium，因为打开您的个人资料时出了点问题。请尝试重启 Chromium。</translation>
 <translation id="8988036198400390003">管理 Chromium 个人资料</translation>
 <translation id="9019929317751753759">为了提高 Chromium 的安全性，我们停用了以下扩展程序（该扩展程序未列在<ph name="IDS_EXTENSION_WEB_STORE_TITLE" />中，并且可能是在您不知情的情况下添加的）。</translation>
 <translation id="904366664621834601">Chromium 阻止了此项下载操作，因为归档文件包含可能隐藏恶意软件的其他文件</translation>
@@ -700,6 +719,7 @@ Chromium 无法恢复您的设置。</translation>
 <translation id="9148058034647219655">退出</translation>
 <translation id="9155105544013854680">从上次停下的地方继续：Chromium 可在您每次重启后恢复标签页。如需开启此功能，请前往</translation>
 <translation id="9158494823179993217">您的系统管理员已将 Chromium 配置为使用备用浏览器访问 <ph name="TARGET_URL_HOSTNAME" />。</translation>
+<translation id="9183331186620388872">Chromium 提示：使用智能镜头搜索</translation>
 <translation id="9185526690718004400">重新启动以更新 Chromium(&amp;C)</translation>
 <translation id="9190841055450128916">Chromium (mDNS-In)</translation>
 <translation id="9206863043651638213">登录 Chromium 后可获享更多功能</translation>

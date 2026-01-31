@@ -124,8 +124,8 @@ class ArcAppInstallEventLogUploaderTest : public testing::Test {
 
   void CompleteUpload(bool success) {
     value_report_.clear();
-    base::Value::Dict context = reporting::GetContext(/*profile=*/nullptr);
-    base::Value::List events = ConvertArcAppProtoToValue(&log_, context);
+    base::DictValue context = reporting::GetContext(/*profile=*/nullptr);
+    base::ListValue events = ConvertArcAppProtoToValue(&log_, context);
     value_report_ = RealtimeReportingJobConfiguration::BuildReport(
         std::move(events), std::move(context));
 
@@ -140,8 +140,8 @@ class ArcAppInstallEventLogUploaderTest : public testing::Test {
 
   void CaptureUpload(CloudPolicyClient::ResultCallback* callback) {
     value_report_.clear();
-    base::Value::Dict context = reporting::GetContext(/*profile=*/nullptr);
-    base::Value::List events = ConvertArcAppProtoToValue(&log_, context);
+    base::DictValue context = reporting::GetContext(/*profile=*/nullptr);
+    base::ListValue events = ConvertArcAppProtoToValue(&log_, context);
     value_report_ = RealtimeReportingJobConfiguration::BuildReport(
         std::move(events), std::move(context));
 
@@ -164,7 +164,7 @@ class ArcAppInstallEventLogUploaderTest : public testing::Test {
   base::test::SingleThreadTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   em::AppInstallReportRequest log_;
-  base::Value::Dict value_report_;
+  base::DictValue value_report_;
 
   MockCloudPolicyClient client_;
   MockArcAppInstallEventLogUploaderDelegate delegate_;

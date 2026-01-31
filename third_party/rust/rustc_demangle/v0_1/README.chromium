@@ -1,7 +1,7 @@
 Name: rustc-demangle
 URL: https://crates.io/crates/rustc-demangle
-Version: 0.1.26
-Revision: c5688cfec32d2bd00701836f12beb3560ee015b8
+Version: 0.1.27
+Revision: f65a6d8f63a7656c71649d92ff3cb000951c11a6
 Update Mechanism: Manual (https://crbug.com/449898466)
 License: Apache-2.0
 License File: //third_party/rust/chromium_crates_io/vendor/rustc-demangle-v0_1/LICENSE-APACHE

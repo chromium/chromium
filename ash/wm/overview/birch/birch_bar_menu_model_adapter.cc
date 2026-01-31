@@ -4,6 +4,8 @@
 
 #include "ash/wm/overview/birch/birch_bar_menu_model_adapter.h"
 
+#include <utility>
+
 #include "ash/app_menu/app_menu_model_adapter.h"
 #include "ash/shell.h"
 #include "ash/style/checkbox.h"
@@ -13,7 +15,6 @@
 #include "ash/wm/overview/birch/birch_bar_context_menu_model.h"
 #include "ash/wm/overview/birch/birch_bar_controller.h"
 #include "ash/wm/overview/birch/birch_bar_util.h"
-#include "base/types/cxx23_to_underlying.h"
 #include "ui/base/mojom/menu_source_type.mojom-forward.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/views/accessibility/view_accessibility.h"
@@ -66,7 +67,7 @@ views::MenuItemView* BirchBarMenuModelAdapter::AppendMenuItem(
   const int menu_item_padding =
       views::MenuConfig::instance().touchable_item_horizontal_padding;
   switch (command_id) {
-    case base::to_underlying(CommandId::kShowSuggestions): {
+    case std::to_underlying(CommandId::kShowSuggestions): {
       // By default, all menu item labels will start after the icon column. To
       // make the show suggestions label left aligned, we cannot use the menu
       // item label but create a new label and add it in a container with the
@@ -102,7 +103,7 @@ views::MenuItemView* BirchBarMenuModelAdapter::AppendMenuItem(
             auto* birch_bar_controller = BirchBarController::Get();
             CHECK(birch_bar_controller);
             birch_bar_controller->ExecuteMenuCommand(
-                base::to_underlying(CommandId::kShowSuggestions), from_chip);
+                std::to_underlying(CommandId::kShowSuggestions), from_chip);
           },
           for_chip_menu_));
       switch_button->SetIsOn(
@@ -112,12 +113,12 @@ views::MenuItemView* BirchBarMenuModelAdapter::AppendMenuItem(
       switch_container->AddChildView(std::move(switch_button));
       return item_view;
     }
-    case base::to_underlying(CommandId::kWeatherSuggestions):
-    case base::to_underlying(CommandId::kCalendarSuggestions):
-    case base::to_underlying(CommandId::kDriveSuggestions):
-    case base::to_underlying(CommandId::kChromeTabSuggestions):
-    case base::to_underlying(CommandId::kMediaSuggestions):
-    case base::to_underlying(CommandId::kCoralSuggestions): {
+    case std::to_underlying(CommandId::kWeatherSuggestions):
+    case std::to_underlying(CommandId::kCalendarSuggestions):
+    case std::to_underlying(CommandId::kDriveSuggestions):
+    case std::to_underlying(CommandId::kChromeTabSuggestions):
+    case std::to_underlying(CommandId::kMediaSuggestions):
+    case std::to_underlying(CommandId::kCoralSuggestions): {
       views::MenuItemView* item_view = menu->AppendMenuItem(command_id);
       // Note that we cannot directly added a checkbox, since `MenuItemView`
       // will align the newly added children to the right side of its label. We

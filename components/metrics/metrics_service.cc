@@ -133,8 +133,8 @@
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
 #include "base/location.h"
+#include "base/metrics/histogram.h"
 #include "base/metrics/histogram_base.h"
-#include "base/metrics/histogram_flattener.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/histogram_macros_local.h"
@@ -181,16 +181,19 @@ namespace metrics {
 namespace {
 
 // Used to write histogram data to a log. Does not take ownership of the log.
-class IndependentFlattener : public base::HistogramFlattener {
+class IndependentHistogramSnapshotManager
+    : public base::HistogramSnapshotManager {
  public:
-  explicit IndependentFlattener(MetricsLog* log) : log_(log) {}
+  explicit IndependentHistogramSnapshotManager(MetricsLog* log) : log_(log) {}
 
-  IndependentFlattener(const IndependentFlattener&) = delete;
-  IndependentFlattener& operator=(const IndependentFlattener&) = delete;
+  IndependentHistogramSnapshotManager(
+      const IndependentHistogramSnapshotManager&) = delete;
+  IndependentHistogramSnapshotManager& operator=(
+      const IndependentHistogramSnapshotManager&) = delete;
 
-  ~IndependentFlattener() override = default;
+  ~IndependentHistogramSnapshotManager() override = default;
 
-  // base::HistogramFlattener:
+  // base::HistogramSnapshotManager:
   void RecordDelta(const base::HistogramBase& histogram,
                    const base::HistogramSamples& snapshot) override {
     CHECK(histogram.HasFlags(base::HistogramBase::kUmaTargetedHistogramFlag));
@@ -203,15 +206,18 @@ class IndependentFlattener : public base::HistogramFlattener {
 
 // Used to mark histogram samples as reported so that they are not included in
 // the next log. A histogram's snapshot samples are simply discarded/ignored
-// when attempting to record them through this |HistogramFlattener|.
-class DiscardingFlattener : public base::HistogramFlattener {
+// when attempting to record them through this manager.
+class DiscardingHistogramSnapshotManager
+    : public base::HistogramSnapshotManager {
  public:
-  DiscardingFlattener() = default;
+  DiscardingHistogramSnapshotManager() = default;
 
-  DiscardingFlattener(const DiscardingFlattener&) = delete;
-  DiscardingFlattener& operator=(const DiscardingFlattener&) = delete;
+  DiscardingHistogramSnapshotManager(
+      const DiscardingHistogramSnapshotManager&) = delete;
+  DiscardingHistogramSnapshotManager& operator=(
+      const DiscardingHistogramSnapshotManager&) = delete;
 
-  ~DiscardingFlattener() override = default;
+  ~DiscardingHistogramSnapshotManager() override = default;
 
   void RecordDelta(const base::HistogramBase& histogram,
                    const base::HistogramSamples& snapshot) override {
@@ -742,8 +748,7 @@ void MetricsService::ClearSavedStabilityMetrics() {
 }
 
 void MetricsService::MarkCurrentHistogramsAsReported() {
-  DiscardingFlattener flattener;
-  base::HistogramSnapshotManager snapshot_manager(&flattener);
+  DiscardingHistogramSnapshotManager snapshot_manager;
   base::StatisticsRecorder::PrepareDeltas(
       /*include_persistent=*/true, /*flags_to_set=*/base::Histogram::kNoFlags,
       /*required_flags=*/base::Histogram::kUmaTargetedHistogramFlag,
@@ -799,8 +804,7 @@ void MetricsService::UnsetUserLogStore() {
   // TODO(crbug.com/40245274): Consider not flushing histograms here.
 
   // Discard histograms.
-  DiscardingFlattener flattener;
-  base::HistogramSnapshotManager histogram_snapshot_manager(&flattener);
+  DiscardingHistogramSnapshotManager histogram_snapshot_manager;
   delegating_provider_.RecordHistogramSnapshots(&histogram_snapshot_manager);
   base::StatisticsRecorder::PrepareDeltas(
       /*include_persistent=*/true, /*flags_to_set=*/base::Histogram::kNoFlags,
@@ -1025,9 +1029,8 @@ MetricsService::MetricsLogHistogramWriter::MetricsLogHistogramWriter(
     MetricsLog* log,
     base::HistogramBase::Flags required_flags)
     : required_flags_(required_flags),
-      flattener_(std::make_unique<IndependentFlattener>(log)),
       histogram_snapshot_manager_(
-          std::make_unique<base::HistogramSnapshotManager>(flattener_.get())) {}
+          std::make_unique<IndependentHistogramSnapshotManager>(log)) {}
 
 MetricsService::MetricsLogHistogramWriter::~MetricsLogHistogramWriter() =
     default;
@@ -1042,10 +1045,7 @@ void MetricsService::MetricsLogHistogramWriter::
 }
 
 void MetricsService::MetricsLogHistogramWriter::NotifyLogBeingFinalized() {
-  // Since the `flattener_` references the `log`, make sure it is destroyed so
-  // the pointer doesn't become dangling.
-  histogram_snapshot_manager()->ResetFlattener();
-  flattener_.reset();
+  histogram_snapshot_manager_.reset();
 }
 
 MetricsService::IndependentMetricsLoader::IndependentMetricsLoader(
@@ -1053,9 +1053,8 @@ MetricsService::IndependentMetricsLoader::IndependentMetricsLoader(
     std::string app_version,
     std::string signing_key)
     : log_(std::move(log)),
-      flattener_(std::make_unique<IndependentFlattener>(log_.get())),
       snapshot_manager_(
-          std::make_unique<base::HistogramSnapshotManager>(flattener_.get())),
+          std::make_unique<IndependentHistogramSnapshotManager>(log_.get())),
       app_version_(std::move(app_version)),
       signing_key_(std::move(signing_key)) {
   CHECK(log_);
@@ -1084,10 +1083,9 @@ void MetricsService::IndependentMetricsLoader::FinalizeLog() {
   CHECK(!finalize_log_called_);
   finalize_log_called_ = true;
 
-  // Release |snapshot_manager_| and then |flattener_| to prevent dangling
-  // pointers, since |log_| will be released in MetricsService::FinalizeLog().
+  // Release |snapshot_manager_| since |log_| will be released in
+  // MetricsService::FinalizeLog().
   snapshot_manager_.reset();
-  flattener_.reset();
 
   // Note that the close_time param must not be set for independent logs.
   finalized_log_ = MetricsService::FinalizeLog(
@@ -1346,7 +1344,7 @@ void MetricsService::OnFinalLogInfoCollectionDone() {
   // 2. We only re-schedule the MetricsRotationScheduler after storing a
   //    periodic ongoing log.
   //
-  // TODO(crbug.com/40119012): Consider making it possible to have multiple
+  // TODO(crbug.com/466140652): Consider making it possible to have multiple
   // simultaneous async logs by having some queueing system (e.g., if we want
   // the log created when foregrounding Chrome to be async).
   DCHECK(!pending_ongoing_log_);

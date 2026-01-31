@@ -4,7 +4,6 @@
 
 #include "chrome/browser/web_applications/test/test_web_app_url_loader.h"
 
-#include "base/containers/contains.h"
 #include "base/functional/callback.h"
 #include "base/task/sequenced_task_runner.h"
 
@@ -23,7 +22,7 @@ void TestWebAppUrlLoader::ProcessLoadUrlRequests() {
     auto [url, callback] = std::move(pending_requests_.front());
     pending_requests_.pop();
 
-    DCHECK(base::Contains(next_result_map_, url));
+    DCHECK(next_result_map_.contains(url));
 
     const UrlResponses& url_responses = next_result_map_[url];
     DCHECK_EQ(1u, url_responses.results.size());
@@ -42,7 +41,7 @@ void TestWebAppUrlLoader::SetNextLoadUrlResult(const GURL& url, Result result) {
 void TestWebAppUrlLoader::AddNextLoadUrlResults(
     const GURL& url,
     const std::vector<Result>& results) {
-  DCHECK(!base::Contains(next_result_map_, url)) << url;
+  DCHECK(!next_result_map_.contains(url)) << url;
   UrlResponses& responses = next_result_map_[url];
 
   for (Result result : results)
@@ -62,7 +61,7 @@ void TestWebAppUrlLoader::LoadUrl(
     return;
   }
 
-  DCHECK(base::Contains(next_result_map_, url)) << url;
+  DCHECK(next_result_map_.contains(url)) << url;
   UrlResponses& responses = next_result_map_[url];
   DCHECK(!responses.results.empty());
 

@@ -14,7 +14,6 @@
 #include "base/base64url.h"
 #include "base/cancelable_callback.h"
 #include "base/command_line.h"
-#include "base/containers/contains.h"
 #include "base/files/file_util.h"
 #include "base/json/json_reader.h"
 #include "base/memory/raw_ptr.h"
@@ -222,7 +221,7 @@ bool IsSingleFormRequest(const AutofillPageQueryRequest& query) {
 
 // Validates, retrieves, and decodes node |node_name| from |request_node| and
 // returns it in |decoded_value|. Returns false if unsuccessful.
-bool RetrieveValueFromRequestNode(const base::Value::Dict& request_node,
+bool RetrieveValueFromRequestNode(const base::DictValue& request_node,
                                   const std::string& node_name,
                                   std::string* decoded_value) {
   // Get and check field node string.
@@ -248,7 +247,7 @@ bool RetrieveValueFromRequestNode(const base::Value::Dict& request_node,
 
 // Gets AutofillPageQueryRequest from WPR recorded HTTP request body for POST.
 ErrorOr<AutofillPageQueryRequest> GetAutofillQueryFromRequestNode(
-    const base::Value::Dict& request_node) {
+    const base::DictValue& request_node) {
   std::string decoded_request_text;
   if (!RetrieveValueFromRequestNode(request_node, "SerializedRequest",
                                     &decoded_request_text)) {
@@ -263,7 +262,7 @@ ErrorOr<AutofillPageQueryRequest> GetAutofillQueryFromRequestNode(
 // Gets AutofillQueryResponse from WPR recorded HTTP response body.
 // Also populates and returns the split |response_header_text|.
 ErrorOr<AutofillQueryResponse> GetAutofillResponseFromRequestNode(
-    const base::Value::Dict& request_node,
+    const base::DictValue& request_node,
     std::string* response_header_text) {
   std::string compressed_response_text;
   if (!RetrieveValueFromRequestNode(request_node, "SerializedResponse",
@@ -313,7 +312,7 @@ bool FillFormSplitCache(const AutofillPageQueryRequest& query_request,
     std::string key = base::NumberToString(query_form.signature());
     // If already stored a respones for this key, then just advance the
     // current_field by that offset and continue.
-    if (base::Contains((*cache_to_fill), key)) {
+    if (cache_to_fill->contains(key)) {
       VLOG(2) << "Already added key: " << key;
       continue;
     }
@@ -431,7 +430,7 @@ ServerCacheReplayer::Status PopulateCacheFromQueryNode(
 // Finds the Autofill server Query nodes in a dictionary node. The |domain| has
 // to outlive any usage of the returned value node pointers.
 std::vector<QueryNode> FindQueryNodesInDomainDict(
-    const base::Value::Dict& domain,
+    const base::DictValue& domain,
     const std::string& url_prefix) {
   std::vector<QueryNode> nodes;
   for (auto pair : domain) {
@@ -482,11 +481,11 @@ ServerCacheReplayer::Status PopulateCacheFromJSONFile(
 
   {
     std::vector<QueryNode> query_nodes;
-    const base::Value::Dict* root_node_dict = root_node.GetIfDict();
+    const base::DictValue* root_node_dict = root_node.GetIfDict();
     if (root_node_dict) {
-      const base::Value::Dict* requests = root_node_dict->FindDict("Requests");
+      const base::DictValue* requests = root_node_dict->FindDict("Requests");
       if (requests) {
-        const base::Value::Dict* domain_node =
+        const base::DictValue* domain_node =
             requests->FindDict(kApiServerDomain);
         if (domain_node) {
           query_nodes =
@@ -702,7 +701,7 @@ bool GetResponseForQuery(const ServerCacheReplayer& cache_replayer,
   bool split_requests_by_form = cache_replayer.split_requests_by_form();
   std::string combined_key = GetKeyFromQuery(query);
 
-  if (base::Contains(cache, combined_key)) {
+  if (cache.contains(combined_key)) {
     VLOG(1) << "Retrieving response for " << combined_key;
     std::string decompressed_http_response;
     if (!RetrieveAndDecompressStoredHTTP(cache, combined_key,
@@ -725,7 +724,7 @@ bool GetResponseForQuery(const ServerCacheReplayer& cache_replayer,
   bool first_loop = true;
   for (const auto& form : GetFormsRef(query)) {
     std::string key = base::NumberToString(form.signature());
-    if (!base::Contains(cache, key)) {
+    if (!cache.contains(key)) {
       VLOG(2) << "Stubbing in fields for uncached key `" << key << "`.";
       CreateEmptyResponseForFormQuery(form, &combined_form_response);
       continue;

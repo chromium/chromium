@@ -15,6 +15,7 @@
 #include "cc/paint/paint_op_buffer.h"
 #include "cc/paint/paint_shader.h"
 #include "third_party/skia/include/core/SkColorFilter.h"
+#include "third_party/skia/include/core/SkPathBuilder.h"
 #include "third_party/skia/include/core/SkPathEffect.h"
 #include "third_party/skia/include/core/SkPathUtils.h"
 
@@ -118,7 +119,12 @@ bool PaintFlags::getFillPath(const SkPath& src,
                              const SkRect* cull_rect,
                              SkScalar res_scale) const {
   SkPaint paint = ToSkPaint();
-  return skpathutils::FillPathWithPaint(src, paint, dst, cull_rect, res_scale);
+  SkPathBuilder dst_builder;
+  bool fill =
+      skpathutils::FillPathWithPaint(src, paint, &dst_builder, cull_rect,
+                                     SkMatrix::Scale(res_scale, res_scale));
+  *dst = dst_builder.detach();
+  return fill;
 }
 
 bool PaintFlags::SupportsFoldingAlpha() const {

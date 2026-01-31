@@ -22,8 +22,9 @@ cargo_crate("lib") {
     "//third_party/rust/chromium_crates_io/vendor/flate2-v1/src/deflate/read.rs",
     "//third_party/rust/chromium_crates_io/vendor/flate2-v1/src/deflate/write.rs",
     "//third_party/rust/chromium_crates_io/vendor/flate2-v1/src/ffi/c.rs",
+    "//third_party/rust/chromium_crates_io/vendor/flate2-v1/src/ffi/miniz_oxide.rs",
     "//third_party/rust/chromium_crates_io/vendor/flate2-v1/src/ffi/mod.rs",
-    "//third_party/rust/chromium_crates_io/vendor/flate2-v1/src/ffi/rust.rs",
+    "//third_party/rust/chromium_crates_io/vendor/flate2-v1/src/ffi/zlib_rs.rs",
     "//third_party/rust/chromium_crates_io/vendor/flate2-v1/src/gz/bufread.rs",
     "//third_party/rust/chromium_crates_io/vendor/flate2-v1/src/gz/mod.rs",
     "//third_party/rust/chromium_crates_io/vendor/flate2-v1/src/gz/read.rs",
@@ -44,7 +45,7 @@ cargo_crate("lib") {
   cargo_pkg_name = "flate2"
   cargo_pkg_description = "DEFLATE compression and decompression exposed as Read/BufRead/Write streams. Supports miniz_oxide and multiple zlib implementations. Supports zlib, gzip, and raw deflate streams."
   cargo_pkg_repository = "https://github.com/rust-lang/flate2-rs"
-  cargo_pkg_version = "1.1.5"
+  cargo_pkg_version = "1.1.8"
 
   allow_unsafe = true
 

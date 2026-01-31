@@ -26,8 +26,8 @@ std::unique_ptr<views::View> NearbyShareDetailedViewController::CreateView() {
 }
 
 std::u16string NearbyShareDetailedViewController::GetAccessibleName() const {
-  return u"Quick Share";  // TODO(brandosocarras, b/360150790): Create and use a
-                          // Quick Share string.
+  return u"Quick Share";  // TODO(360150790): Create and use a Quick Share
+                          // string.
 }
 
 }  // namespace ash

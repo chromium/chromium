@@ -1,5 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] Test resuming a running online context
-  assert_equals: Initial state is suspended expected "suspended" but got "running"
-Harness: the test ran to completion.
-

@@ -256,12 +256,10 @@ class PLATFORM_EXPORT LazyLineBreakIterator final {
 
   template <typename CharacterType, LineBreakType, BreakSpaceType>
   unsigned NextBreakablePosition(unsigned pos,
-                                 const CharacterType* str,
-                                 unsigned len) const;
+                                 base::span<const CharacterType> span) const;
   template <typename CharacterType, LineBreakType>
   unsigned NextBreakablePosition(unsigned pos,
-                                 const CharacterType* str,
-                                 unsigned len) const;
+                                 base::span<const CharacterType> span) const;
   template <LineBreakType>
   unsigned NextBreakablePosition(unsigned pos, unsigned len) const;
   unsigned NextBreakablePositionBreakCharacter(unsigned pos) const;

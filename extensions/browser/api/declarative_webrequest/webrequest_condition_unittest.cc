@@ -218,7 +218,7 @@ TEST(WebRequestConditionTest, NoUrlAttributes) {
 TEST(WebRequestConditionTest, CreateConditionSet) {
   URLMatcher matcher;
 
-  base::Value::List conditions;
+  base::ListValue conditions;
   conditions.Append(base::test::ParseJson(
       "{ \n"
       "  \"instanceType\": \"declarativeWebRequest.RequestMatcher\", \n"
@@ -288,7 +288,7 @@ TEST(WebRequestConditionTest, CreateConditionSet) {
 TEST(WebRequestConditionTest, TestPortFilter) {
   URLMatcher matcher;
 
-  base::Value::List conditions;
+  base::ListValue conditions;
   conditions.Append(base::test::ParseJson(
       "{ \n"
       "  \"instanceType\": \"declarativeWebRequest.RequestMatcher\", \n"

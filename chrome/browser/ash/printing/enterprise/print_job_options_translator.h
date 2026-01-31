@@ -17,7 +17,7 @@ namespace chromeos {
 // Parses `print_job_options` field of the managed printer configuration JSON.
 COMPONENT_EXPORT(CHROMEOS_PRINTING)
 PrintJobOptions ManagedPrintOptionsProtoFromDict(
-    const base::Value::Dict& print_job_options);
+    const base::DictValue& print_job_options);
 
 // Converts PrintJobOptions proto to ChromeOS print job options representation.
 // Returns std::nullopt if the proto is malformed.

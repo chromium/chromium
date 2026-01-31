@@ -8,7 +8,6 @@
 #include <string_view>
 
 #include "base/check_op.h"
-#include "base/containers/contains.h"
 #include "base/notreached.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
@@ -235,7 +234,7 @@ bool UpdatePrintJob(const ::printing::PrinterStatus& printer_status,
   // even if the job-state doesn't change, so this is based on matching the
   // previous status message instead of looking at just the state.
   bool updated = print_job->state() != old_state || pages_updated;
-  if (!base::Contains(old_status, job.id)) {
+  if (!old_status.contains(job.id)) {
     PRINTER_LOG(EVENT) << base::StringPrintf(
         "%s: job %d created with total_pages: %d, title: %s", job.printer_id,
         job.id, print_job->total_page_number(), print_job->document_title());

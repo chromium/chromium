@@ -61,9 +61,9 @@ class UnexportableKeyServiceProxyImpl : public mojom::UnexportableKeyService {
       BackgroundTaskPriority priorty,
       GetAllSigningKeysForGarbageCollectionCallback callback) override;
 
-  void DeleteKey(const UnexportableKeyId& key_id,
-                 BackgroundTaskPriority priority,
-                 DeleteKeyCallback result) override;
+  void DeleteKeys(const std::vector<UnexportableKeyId>& key_ids,
+                  BackgroundTaskPriority priority,
+                  DeleteKeysCallback callback) override;
 
   void DeleteAllKeys(BackgroundTaskPriority priority,
                      DeleteAllKeysCallback result) override;

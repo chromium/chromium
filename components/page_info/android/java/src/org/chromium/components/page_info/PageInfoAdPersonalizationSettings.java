@@ -93,9 +93,7 @@ public class PageInfoAdPersonalizationSettings extends BaseSiteSettingsFragment
         return false;
     }
 
-    // TODO(crbug.com/444470792): This is probably a simple pref. Maybe logic from
-    // #onCreatePreferences
-    // needs to be mimicked under #updateDynamicPreferences.
+    // The index logic is left empty as there is no dynamic logic to be handled.
     public static final BaseSearchIndexProvider SEARCH_INDEX_DATA_PROVIDER =
             new BaseSearchIndexProvider(
                     PageInfoAdPersonalizationSettings.class.getName(),

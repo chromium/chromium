@@ -12,6 +12,7 @@
 #include <utility>
 
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/time/time.h"
@@ -37,7 +38,9 @@
 #include "components/session_manager/core/session_manager.h"
 #include "components/session_manager/core/session_manager_observer.h"
 
+class ApplicationLocaleStorage;
 class ArcAppLauncher;
+class PrefService;
 class Profile;
 
 namespace arc {
@@ -144,7 +147,11 @@ class ArcSessionManager : public ArcSessionRunner::Observer,
   using ExpansionResult = std::pair<std::string /* salt on disk */,
                                     bool /* expansion successful */>;
 
-  ArcSessionManager(std::unique_ptr<ArcSessionRunner> arc_session_runner,
+  // `local_state` and `application_locale_storage` must be non-null and must
+  // outlive `this`.
+  ArcSessionManager(PrefService* local_state,
+                    const ApplicationLocaleStorage* application_locale_storage,
+                    std::unique_ptr<ArcSessionRunner> arc_session_runner,
                     std::unique_ptr<AdbSideloadingAvailabilityDelegateImpl>
                         adb_sideloading_availability_delegate,
                     ArcDlcInstaller* arc_dlc_installer);
@@ -538,6 +545,9 @@ class ArcSessionManager : public ArcSessionRunner::Observer,
   // Invoked after WaitForServiceToBeAvailable(). Proceeds to query DLC state
   // if |available|, otherwise aborts ARC provisioning
   void OnDlcServiceReady(bool available);
+
+  const raw_ref<PrefService> local_state_;
+  const raw_ref<const ApplicationLocaleStorage> application_locale_storage_;
 
   std::unique_ptr<ArcSessionRunner> arc_session_runner_;
   std::unique_ptr<AdbSideloadingAvailabilityDelegateImpl>

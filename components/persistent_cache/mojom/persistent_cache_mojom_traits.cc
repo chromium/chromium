@@ -4,9 +4,7 @@
 
 #include "components/persistent_cache/mojom/persistent_cache_mojom_traits.h"
 
-#include "mojo/public/cpp/base/file_mojom_traits.h"
-#include "mojo/public/cpp/base/read_only_file_mojom_traits.h"
-#include "mojo/public/cpp/base/shared_memory_mojom_traits.h"
+#include "components/sqlite_vfs/mojom/sqlite_vfs_mojom_traits.h"
 
 namespace mojo {
 
@@ -15,17 +13,9 @@ bool StructTraits<persistent_cache::mojom::PendingReadOnlyBackendDataView,
                   persistent_cache::PendingBackend>::
     Read(persistent_cache::mojom::PendingReadOnlyBackendDataView data,
          persistent_cache::PendingBackend* out_pending_backend) {
-  auto& sqlite_data = out_pending_backend->sqlite_data;
-  if (!data.ReadDbFile(&sqlite_data.db_file)) {
+  if (!data.ReadPendingFileSet(&out_pending_backend->pending_file_set)) {
     return false;
   }
-  if (!data.ReadJournalFile(&sqlite_data.journal_file)) {
-    return false;
-  }
-  if (!data.ReadSharedLock(&sqlite_data.shared_lock)) {
-    return false;
-  }
-  out_pending_backend->read_write = false;
   return true;
 }
 
@@ -34,20 +24,9 @@ bool StructTraits<persistent_cache::mojom::PendingReadWriteBackendDataView,
                   persistent_cache::PendingBackend>::
     Read(persistent_cache::mojom::PendingReadWriteBackendDataView data,
          persistent_cache::PendingBackend* out_pending_backend) {
-  auto& sqlite_data = out_pending_backend->sqlite_data;
-  if (!data.ReadDbFile(&sqlite_data.db_file)) {
+  if (!data.ReadPendingFileSet(&out_pending_backend->pending_file_set)) {
     return false;
   }
-  if (!data.ReadJournalFile(&sqlite_data.journal_file)) {
-    return false;
-  }
-  if (!data.ReadWalFile(&sqlite_data.wal_file)) {
-    return false;
-  }
-  if (!data.ReadSharedLock(&sqlite_data.shared_lock)) {
-    return false;
-  }
-  out_pending_backend->read_write = true;
   return true;
 }
 

@@ -227,10 +227,12 @@ void WebContentsViewIOS::CreateView(gfx::NativeView context) {}
 
 RenderWidgetHostViewBase* WebContentsViewIOS::CreateViewForWidget(
     RenderWidgetHost* render_widget_host) {
-  if (g_create_render_widget_host_view) {
-    return g_create_render_widget_host_view(render_widget_host);
-  }
-  return new RenderWidgetHostViewClass(render_widget_host);
+  RenderWidgetHostViewIOS* view =
+      g_create_render_widget_host_view
+          ? g_create_render_widget_host_view(render_widget_host)
+          : new RenderWidgetHostViewClass(render_widget_host);
+  view->InitAsChild(GetNativeView());
+  return view;
 }
 
 RenderWidgetHostViewBase* WebContentsViewIOS::CreateViewForChildWidget(
@@ -247,18 +249,18 @@ void WebContentsViewIOS::RenderViewReady() {}
 void WebContentsViewIOS::RenderViewHostChanged(RenderViewHost* old_host,
                                                RenderViewHost* new_host) {
   ScopedCAActionDisabler disabler;
+  // Detach old host's view from parent view tree.
+  // New host's view attachment is handled in CreateViewForWidget(), which
+  // passes the parent scroll view to the RenderWidgetHostViewIOS constructor.
+  // This follows the Android pattern and ensures the view is attached at
+  // creation time, avoiding timing issues where RenderViewHostChanged may be
+  // called before the RWHV exists (e.g., during window.open()).
   if (old_host) {
     auto* rwhv = old_host->GetWidget()->GetView();
     if (rwhv && rwhv->GetNativeView()) {
       static_cast<RenderWidgetHostViewIOS*>(rwhv)->UpdateNativeViewTree(
           gfx::NativeView());
     }
-  }
-
-  auto* rwhv = new_host->GetWidget()->GetView();
-  if (rwhv && rwhv->GetNativeView()) {
-    static_cast<RenderWidgetHostViewIOS*>(rwhv)->UpdateNativeViewTree(
-        GetNativeView());
   }
   web_contents_->UpdateBrowserControlsState(cc::BrowserControlsState::kBoth,
                                             cc::BrowserControlsState::kHidden,

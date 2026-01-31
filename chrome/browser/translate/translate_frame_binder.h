@@ -18,10 +18,6 @@ namespace translate {
 void BindContentTranslateDriver(
     content::RenderFrameHost* render_frame_host,
     mojo::PendingReceiver<translate::mojom::ContentTranslateDriver> receiver);
-void BindContentLanguageDetectionDriver(
-    content::RenderFrameHost* render_frame_host,
-    mojo::PendingReceiver<
-        language_detection::mojom::ContentLanguageDetectionDriver> receiver);
 }
 
 #endif  // CHROME_BROWSER_TRANSLATE_TRANSLATE_FRAME_BINDER_H_

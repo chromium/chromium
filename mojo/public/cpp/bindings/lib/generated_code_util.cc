@@ -18,8 +18,9 @@ GenericValidationInfo FindGenericValidationInfo(
     uint32_t name,
     base::span<const std::pair<uint32_t, GenericValidationInfo>> info) {
   for (const auto& pair : info) {
-    if (pair.first == name)
+    if (pair.first == name) {
       return pair.second;
+    }
   }
   return {nullptr, nullptr};
 }
@@ -27,8 +28,9 @@ GenericValidationInfo FindGenericValidationInfo(
 GenericValidationInfo FindGenericValidationInfo(
     uint32_t name,
     base::span<const GenericValidationInfo> info) {
-  if (name >= info.size())
+  if (name >= info.size()) {
     return {nullptr, nullptr};
+  }
   return info[name];
 }
 
@@ -56,8 +58,9 @@ bool ValidateRequestGenericT(Message* message,
                                      message, &validation_context)
                                : ValidateMessageIsRequestWithoutResponse(
                                      message, &validation_context);
-  if (!message_is_request)
+  if (!message_is_request) {
     return false;
+  }
 
   return entry.request_validator(message->payload(), &validation_context);
 }
@@ -74,8 +77,9 @@ bool ValidateResponseGenericT(Message* message,
   ValidationContext validation_context(message, class_name,
                                        ValidationContext::kResponseValidator);
 
-  if (!ValidateMessageIsResponse(message, &validation_context))
+  if (!ValidateMessageIsResponse(message, &validation_context)) {
     return false;
+  }
 
   auto entry = FindGenericValidationInfo(message->header()->name, info);
   if (!entry.response_validator) {

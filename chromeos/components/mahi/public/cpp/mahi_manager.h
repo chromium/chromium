@@ -14,7 +14,7 @@
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/unguessable_token.h"
-#include "chromeos/crosapi/mojom/mahi.mojom.h"
+#include "chromeos/components/mahi/public/cpp/mahi_types.h"
 #include "ui/gfx/image/image_skia.h"
 
 class GURL;
@@ -138,11 +138,10 @@ class COMPONENT_EXPORT(MAHI_PUBLIC_CPP) MahiManager {
       MahiGetSuggestedQuestionCallback callback) = 0;
 
   // Set page info of current focused page
-  virtual void SetCurrentFocusedPageInfo(
-      crosapi::mojom::MahiPageInfoPtr info) = 0;
+  virtual void SetCurrentFocusedPageInfo(MahiPageInfo info) = 0;
 
   virtual void OnContextMenuClicked(
-      crosapi::mojom::MahiContextMenuRequestPtr context_menu_request) = 0;
+      MahiContextMenuRequest context_menu_request) = 0;
 
   // Opens the feedback dialog.
   virtual void OpenFeedbackDialog() = 0;

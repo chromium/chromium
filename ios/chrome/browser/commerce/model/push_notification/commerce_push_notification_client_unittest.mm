@@ -39,9 +39,9 @@
 #import "ios/chrome/browser/shared/model/profile/features.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_manager_ios.h"
-#import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/open_new_tab_command.h"
+#import "ios/chrome/browser/shared/public/commands/scene_commands.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "testing/gmock/include/gmock/gmock.h"
@@ -56,7 +56,7 @@ namespace {
 constexpr char kHintKey[] = "https://www.merchant.com/price_drop_product";
 constexpr char kBookmarkFoundHistogramName[] =
     "Commerce.PriceTracking.Untrack.BookmarkFound";
-std::string kBookmarkTitle = "My product title";
+constexpr std::string_view kBookmarkTitle = "My product title";
 constexpr uint64_t kClusterId = 12345L;
 constexpr char kPayloadValue[] = "value";
 NSString* const kSerializedPayloadKey = @"op";
@@ -202,10 +202,10 @@ class CommercePushNotificationClientTest : public PlatformTest {
         ->SetIsTrackingMetadataForTesting();
     shopping_service_ = static_cast<commerce::MockShoppingService*>(
         commerce::ShoppingServiceFactory::GetForProfile(profile_.get()));
-    application_handler_ = OCMProtocolMock(@protocol(ApplicationCommands));
+    application_handler_ = OCMProtocolMock(@protocol(SceneCommands));
     [browser_->GetCommandDispatcher()
         startDispatchingToTarget:application_handler_
-                     forProtocol:@protocol(ApplicationCommands)];
+                     forProtocol:@protocol(SceneCommands)];
 
     commerce_push_notification_client_ =
         IsMultiProfilePushNotificationHandlingEnabled()
@@ -262,7 +262,7 @@ class CommercePushNotificationClientTest : public PlatformTest {
   raw_ptr<commerce::MockShoppingService> shopping_service_;
   SceneState* scene_state_foreground_;
   SceneState* scene_state_background_;
-  id<ApplicationCommands> application_handler_;
+  id<SceneCommands> application_handler_;
   AppState* app_state_;
 };
 

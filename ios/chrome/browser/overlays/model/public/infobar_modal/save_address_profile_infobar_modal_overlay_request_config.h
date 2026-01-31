@@ -9,12 +9,16 @@
 
 #include <optional>
 
-#import "base/memory/raw_ptr.h"
+#import "base/memory/weak_ptr.h"
 #include "components/autofill/core/browser/data_model/addresses/autofill_profile.h"
 #include "components/autofill/core/browser/data_model/addresses/autofill_profile_comparator.h"
 #include "ios/chrome/browser/overlays/model/public/overlay_request_config.h"
 
 class InfoBarIOS;
+
+namespace infobars {
+class InfoBar;
+} // namespace infobars
 
 namespace autofill_address_profile_infobar_overlays {
 
@@ -85,7 +89,7 @@ class SaveAddressProfileModalRequestConfig
       const std::vector<autofill::ProfileValueDifference>& profile_diff);
 
   // The InfoBar causing this modal.
-  raw_ptr<InfoBarIOS, DanglingUntriaged> infobar_ = nullptr;
+  base::WeakPtr<infobars::InfoBar> infobar_;
 
   // Configuration data extracted from `infobar_`'s save address profile
   // delegate.

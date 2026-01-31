@@ -11,7 +11,7 @@
 #include "base/trace_event/trace_event.h"
 #include "components/optimization_guide/core/model_execution/on_device_features.h"
 #include "components/optimization_guide/core/model_execution/usage_tracker.h"
-#include "components/optimization_guide/public/mojom/model_broker.mojom-data-view.h"
+#include "components/optimization_guide/public/mojom/model_broker.mojom.h"
 
 namespace optimization_guide {
 
@@ -50,15 +50,6 @@ void ModelBrokerImpl::SubscribeInternal(
 ModelBrokerImpl::SolutionProvider& ModelBrokerImpl::GetSolutionProvider(
     mojom::OnDeviceFeature feature) {
   return solution_providers_.emplace(feature, feature).first->second;
-}
-
-absl::flat_hash_set<mojom::OnDeviceFeature> ModelBrokerImpl::GetCapabilityKeys()
-    const {
-  absl::flat_hash_set<mojom::OnDeviceFeature> keys;
-  for (const auto& [key, _] : solution_providers_) {
-    keys.insert(key);
-  }
-  return keys;
 }
 
 ModelBrokerImpl::Solution::Solution() = default;

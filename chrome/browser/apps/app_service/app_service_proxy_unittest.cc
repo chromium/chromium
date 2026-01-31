@@ -9,7 +9,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/containers/contains.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
@@ -156,7 +155,7 @@ class FakeAppRegistryCacheObserver : public apps::AppRegistryCache::Observer {
 
   // apps::AppRegistryCache::Observer overrides.
   void OnAppUpdate(const apps::AppUpdate& update) override {
-    if (base::Contains(app_ids_, update.AppId())) {
+    if (app_ids_.contains(update.AppId())) {
       app_ids_.erase(update.AppId());
     }
     if (app_ids_.empty() && !result_.IsReady()) {

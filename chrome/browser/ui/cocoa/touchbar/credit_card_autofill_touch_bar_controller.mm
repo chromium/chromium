@@ -9,7 +9,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/time/time.h"
-#include "base/types/cxx23_to_underlying.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #import "chrome/browser/ui/autofill/autofill_popup_controller.h"
 #include "components/autofill/core/browser/filling/filling_product.h"

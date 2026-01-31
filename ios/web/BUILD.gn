@@ -10,6 +10,12 @@ import("//ios/web/public/js_messaging/optimize_ts.gni")
 import("//testing/test.gni")
 import("//tools/grit/grit_rule.gni")
 
+declare_args() {
+  # Name of the implementation to use for the //ios/web provider API.
+  # Can be overridden by embedders.
+  ios_web_provider_target = "//ios/web/providers"
+}
+
 group("all_tests") {
   testonly = true
   deps = [
@@ -25,7 +31,6 @@ source_set("web") {
   ]
 
   deps = [
-    ":common_js",
     ":core",
     ":navigation_resources",
     ":resources",
@@ -56,6 +61,7 @@ source_set("web") {
     "//ios/web/web_state/ui:wk_web_view_configuration_provider",
     "//ios/web/webui",
     "//services/network:network_service",
+    ios_web_provider_target,
   ]
 
   if (ios_enable_javascript_flags) {
@@ -171,7 +177,6 @@ test("ios_web_unittests") {
     ":ios_web_general_unittests",
     ":ios_web_navigation_unittests",
     ":ios_web_net_unittests",
-    ":ios_web_web_state_js_unittests",
     ":ios_web_web_state_ui_unittests",
     ":ios_web_web_state_unittests",
     ":ios_web_webui_unittests",
@@ -237,10 +242,6 @@ source_set("ios_web_general_unittests") {
     "web_client_unittest.mm",
     "web_thread_unittest.cc",
   ]
-
-  # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
-  # enable the diagnostic by removing this line.
-  configs += [ "//build/config/compiler:no_exit_time_destructors" ]
 }
 
 source_set("ios_web_navigation_unittests") {
@@ -427,38 +428,6 @@ source_set("ios_web_web_state_unittests") {
   ]
 }
 
-source_set("ios_web_web_state_js_unittests") {
-  testonly = true
-  deps = [
-    ":core",
-    ":web",
-    "//base",
-    "//base/test:test_support",
-    "//components/url_formatter",
-    "//ios/net",
-    "//ios/testing:ocmock_support",
-    "//ios/web/common:web_view_creation_util",
-    "//ios/web/js_features/context_menu",
-    "//ios/web/js_messaging",
-    "//ios/web/public",
-    "//ios/web/public/js_messaging",
-    "//ios/web/public/test",
-    "//ios/web/public/test:javascript_test",
-    "//ios/web/public/test/fakes",
-    "//ios/web/test:mojo_bindings",
-    "//ios/web/test:test_constants",
-    "//ios/web/test:test_support",
-    "//ios/web/test/fakes",
-    "//net:test_support",
-    "//testing/gmock",
-    "//testing/gtest",
-    "//third_party/ocmock",
-    "//ui/base:test_support",
-  ]
-
-  sources = [ "web_state/js/common_js_unittest.mm" ]
-}
-
 source_set("ios_web_web_state_ui_unittests") {
   testonly = true
   deps = [
@@ -600,6 +569,7 @@ test("ios_web_inttests") {
     "//services/network/public/cpp",
     "//services/network/public/mojom",
     "//testing/gtest",
+    "//third_party/ocmock",
     "//ui/base:test_support",
     "//ui/resources",
   ]
@@ -626,13 +596,6 @@ test("ios_web_inttests") {
   ]
 
   assert_no_deps = ios_assert_no_deps
-}
-
-optimize_js("common_js") {
-  visibility = [ ":web" ]
-
-  primary_script = "web_state/js/resources/common.js"
-  sources = [ "web_state/js/resources/common.js" ]
 }
 
 bundle_data("navigation_resources") {

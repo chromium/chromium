@@ -80,7 +80,7 @@ bool HTMLMenuItemElement::IsCheckable() const {
   return HasOwnerMenuList() && nearest_ancestor_field_set_ &&
          nearest_ancestor_field_set_->FastGetAttribute(
              html_names::kCheckableAttr) &&
-         !InvokesSubmenu();
+         !GetInvokedSubmenu();
 }
 
 bool HTMLMenuItemElement::checked() const {
@@ -117,22 +117,28 @@ bool HTMLMenuItemElement::ShouldHaveFocusAppearance() const {
   return SelectorChecker::MatchesFocusVisiblePseudoClass(*this);
 }
 
-HTMLMenuListElement* HTMLMenuItemElement::InvokesSubmenu() const {
+HTMLMenuListElement* HTMLMenuItemElement::GetInvokedSubmenu() const {
   auto* invoked_element = DynamicTo<HTMLMenuListElement>(commandForElement());
   if (!invoked_element || !invoked_element->IsPopover()) {
     return nullptr;
   }
   CommandEventType type = GetCommandEventType(
       FastGetAttribute(html_names::kCommandAttr), GetExecutionContext());
-  if (type != CommandEventType::kToggleMenu &&
-      type != CommandEventType::kShowMenu &&
-      type != CommandEventType::kHideMenu) {
+  // Only the toggle-menu command creates a submenu relationship (which
+  // involves builtin behaviors that both show and hide the menu).
+  if (type != CommandEventType::kToggleMenu) {
     return nullptr;
   }
   return invoked_element;
 }
 
 bool HTMLMenuItemElement::CanBeCommandInvoker() const {
+  return !FastHasAttribute(html_names::kDisabledAttr);
+}
+
+bool HTMLMenuItemElement::IsValidInterestInvoker(Element& target) const {
+  DCHECK(RuntimeEnabledFeatures::HTMLInterestForAttributeEnabled());
+  // Menu items need to be enabled in order to support interest invokers.
   return !FastHasAttribute(html_names::kDisabledAttr);
 }
 
@@ -144,9 +150,9 @@ bool HTMLMenuItemElement::setChecked(bool checked) {
   if (!checkable) {
     // Not checkable - close the containing menulist unless this item invokes
     // a sub-menu.
-    return !InvokesSubmenu();
+    return !GetInvokedSubmenu();
   }
-  DCHECK(!InvokesSubmenu());
+  DCHECK(!GetInvokedSubmenu());
 
   is_default_checkedness_overridden_ = true;
 
@@ -179,10 +185,10 @@ void HTMLMenuItemElement::ActivateMenuItem() {
   // If this menu item isn't a submenu invoker, or it's a checkable menu item
   // that wants us to close after changing, then close the containing menu.
   if (close_containing_menulist) {
-    DCHECK(IsCheckable() || !InvokesSubmenu());
+    DCHECK(IsCheckable() || !GetInvokedSubmenu());
     CloseOutermostContainingMenuList();
   }
-  if (InvokesSubmenu()) {
+  if (GetInvokedSubmenu()) {
     DCHECK(!IsCheckable());
     HandleCommandForActivation();
   }
@@ -266,7 +272,7 @@ void HTMLMenuItemElement::HandleMenuKeyboardEvents(Event& event) {
       // If this invokes a menulist and is itself in a menulist, then
       // arrow right should open the invoked menulist and focus its first
       // menuitem.
-      if (auto* invoked_menulist = InvokesSubmenu()) {
+      if (auto* invoked_menulist = GetInvokedSubmenu()) {
         if (!invoked_menulist->popoverOpen()) {
           invoked_menulist->InvokePopover(*this);
         }
@@ -367,7 +373,7 @@ void HTMLMenuItemElement::HandleMenuKeyboardEvents(Event& event) {
     } else if (key == keywords::kArrowDown || key == keywords::kArrowUp) {
       // If this invokes a menulist and is in a menubar, then arrow down/up
       // should open the menulist and go to first/last menuitem in it.
-      if (auto* invoked_menulist = InvokesSubmenu()) {
+      if (auto* invoked_menulist = GetInvokedSubmenu()) {
         if (!invoked_menulist->popoverOpen()) {
           invoked_menulist->InvokePopover(*this);
         }
@@ -448,7 +454,7 @@ void HTMLMenuItemElement::HandleMenuPointerEvents(Event& event) {
     DCHECK_EQ(event.type(), event_type_names::kMousedown);
     GetDocument().SetPopoverPickerPointerdown(
         {.target = this, .location = mouse_event->AbsoluteLocation()});
-    if (!InvokesSubmenu()) {
+    if (!GetInvokedSubmenu()) {
       return;
     }
     // Activate sub-menus on mouse *down*, so that the user can drag and
@@ -463,7 +469,7 @@ void HTMLMenuItemElement::HandleMenuPointerEvents(Event& event) {
 
 bool HTMLMenuItemElement::HandleCommandForActivation() {
   if (ignore_next_command_) {
-    DCHECK(InvokesSubmenu());
+    DCHECK(GetInvokedSubmenu());
     ignore_next_command_ = false;
     return false;
   }
@@ -471,7 +477,7 @@ bool HTMLMenuItemElement::HandleCommandForActivation() {
 }
 
 void HTMLMenuItemElement::DefaultEventHandler(Event& event) {
-  if (event.type() == event_type_names::kDOMActivate && !InvokesSubmenu()) {
+  if (event.type() == event_type_names::kDOMActivate && !GetInvokedSubmenu()) {
     // If this isn't a submenu invoker, activate it now. If it is a command
     // invoker of any kind, HTMLElement::DefaultEventHandler() will take care of
     // it, so we can't early-return here.

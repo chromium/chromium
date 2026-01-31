@@ -2,12 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <cmath>
 #include <memory>
 
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/ui/ash/test_util.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_context.h"
 #include "chrome/browser/ui/views/frame/browser_frame_view_chromeos.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
@@ -64,97 +66,6 @@ class ImmersiveModeBrowserViewTest
 using ImmersiveModeBrowserViewTestNoWebUiTabStrip =
     WebUiTabStripOverrideTest<false, ImmersiveModeBrowserViewTest>;
 
-// This test does not make sense for the webUI tabstrip, since the frame is not
-// painted in that case.
-IN_PROC_BROWSER_TEST_P(ImmersiveModeBrowserViewTestNoWebUiTabStrip,
-                       ImmersiveFullscreen) {
-  BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser());
-  content::WebContents* web_contents = browser_view->GetActiveWebContents();
-  BrowserFrameViewChromeOS* frame_view = GetFrameViewChromeOS(browser_view);
-
-  auto* const immersive_mode_controller =
-      ImmersiveModeController::From(browser());
-
-  // Immersive fullscreen starts disabled.
-  ASSERT_FALSE(browser_view->GetWidget()->IsFullscreen());
-  EXPECT_FALSE(immersive_mode_controller->IsEnabled());
-
-  // Frame paints by default.
-  EXPECT_TRUE(frame_view->GetShouldPaint());
-  EXPECT_LT(0, frame_view
-                   ->GetBoundsForTabStripRegion(
-                       browser_view->tab_strip_view()->GetMinimumSize())
-                   .bottom());
-
-  // Enter both browser fullscreen and tab fullscreen. Entering browser
-  // fullscreen should enable immersive fullscreen.
-  ui_test_utils::ToggleFullscreenModeAndWait(browser());
-  EnterTabFullscreenMode(browser(), web_contents);
-  EXPECT_TRUE(immersive_mode_controller->IsEnabled());
-  // Caption button container is hidden.
-  EXPECT_FALSE(frame_view->caption_button_container_->GetVisible());
-
-  // An immersive reveal shows the buttons and the top of the frame.
-  std::unique_ptr<ImmersiveRevealedLock> revealed_lock =
-      immersive_mode_controller->GetRevealedLock(
-          ImmersiveModeController::ANIMATE_REVEAL_NO);
-  EXPECT_TRUE(immersive_mode_controller->IsRevealed());
-  EXPECT_TRUE(frame_view->GetShouldPaint());
-  // Caption button container is visible again.
-  EXPECT_TRUE(frame_view->caption_button_container_->GetVisible());
-
-  // End the reveal. When in both immersive browser fullscreen and tab
-  // fullscreen.
-  revealed_lock.reset();
-  EXPECT_FALSE(immersive_mode_controller->IsRevealed());
-  EXPECT_FALSE(frame_view->GetShouldPaint());
-  EXPECT_EQ(0, frame_view
-                   ->GetBoundsForTabStripRegion(
-                       browser_view->tab_strip_view()->GetMinimumSize())
-                   .bottom());
-  EXPECT_FALSE(frame_view->caption_button_container()->GetVisible());
-
-  // Repeat test but without tab fullscreen.
-  EnterTabFullscreenMode(browser(), web_contents);
-
-  // Immersive reveal should have same behavior as before.
-  revealed_lock = immersive_mode_controller->GetRevealedLock(
-      ImmersiveModeController::ANIMATE_REVEAL_NO);
-  EXPECT_TRUE(immersive_mode_controller->IsRevealed());
-  EXPECT_TRUE(frame_view->GetShouldPaint());
-  EXPECT_LT(0, frame_view
-                   ->GetBoundsForTabStripRegion(
-                       browser_view->tab_strip_view()->GetMinimumSize())
-                   .bottom());
-  EXPECT_TRUE(frame_view->caption_button_container()->GetVisible());
-
-  // Ending the reveal. Immersive browser should have the same behavior as full
-  // screen, i.e., having an origin of (0,0).
-  revealed_lock.reset();
-  EXPECT_FALSE(frame_view->GetShouldPaint());
-  EXPECT_EQ(0, frame_view
-                   ->GetBoundsForTabStripRegion(
-                       browser_view->tab_strip_view()->GetMinimumSize())
-                   .bottom());
-  EXPECT_FALSE(frame_view->caption_button_container()->GetVisible());
-
-  // Exiting immersive fullscreen should make the caption buttons and the frame
-  // visible again.
-  {
-    ui_test_utils::FullscreenWaiter waiter(
-        browser(), ui_test_utils::FullscreenWaiter::kNoFullscreen);
-    browser_view->GetExclusiveAccessContext()->ExitFullscreen();
-    waiter.Wait();
-  }
-  EXPECT_FALSE(immersive_mode_controller->IsEnabled());
-  EXPECT_TRUE(frame_view->GetShouldPaint());
-  EXPECT_LT(0, frame_view
-                   ->GetBoundsForTabStripRegion(
-                       browser_view->tab_strip_view()->GetMinimumSize())
-                   .bottom());
-  EXPECT_TRUE(frame_view->caption_button_container()->GetVisible());
-}
-
 // Tests IDC_SELECT_TAB_0, IDC_SELECT_NEXT_TAB, IDC_SELECT_PREVIOUS_TAB and
 // IDC_SELECT_LAST_TAB when the browser is in immersive fullscreen mode.
 IN_PROC_BROWSER_TEST_P(ImmersiveModeBrowserViewTest,
@@ -194,6 +105,48 @@ IN_PROC_BROWSER_TEST_P(ImmersiveModeBrowserViewTest,
                                     {IDC_SELECT_PREVIOUS_TAB, 0}};
   for (const auto& datum : test_data) {
     tester.RunCommand(datum.command, datum.expected_index);
+  }
+}
+
+IN_PROC_BROWSER_TEST_P(ImmersiveModeBrowserViewTest,
+                       LocatedEventShouldRevealTopChrome) {
+  auto* const immersive_mode_controller =
+      ImmersiveModeController::From(browser());
+
+  EnterImmersiveFullscreenMode(browser());
+  EXPECT_FALSE(immersive_mode_controller->IsRevealed());
+
+  enum EventType { kMouse, kTouch };
+  for (auto event_type : {kMouse, kTouch}) {
+    SCOPED_TRACE(event_type == kMouse ? "Mouse" : "Touch");
+
+    ImmersiveModeTester tester(browser());
+
+    aura::Window* window = browser()->window()->GetNativeWindow();
+    ui::test::EventGenerator event_generator(window->GetRootWindow());
+    gfx::Point point(std::roundl(window->bounds().width() / 2), 0);
+
+    if (event_type == kMouse) {
+      event_generator.MoveMouseTo(point);
+    } else {
+      event_generator.PressTouch(point);
+      event_generator.MoveTouchBy(0, 30);
+      event_generator.ReleaseTouch();
+    }
+    tester.WaitForRevealStarted();
+    EXPECT_TRUE(immersive_mode_controller->IsRevealed());
+
+    point.set_y(std::roundl(window->bounds().height() / 2));
+    if (event_type == kMouse) {
+      // Moving down below the topchrome hides the topchrome.
+      event_generator.MoveMouseTo(point);
+    } else {
+      // Touching the center of the window hides the topchrome.
+      event_generator.PressTouch(point);
+      event_generator.ReleaseTouch();
+    }
+    tester.WaitForRevealEnded();
+    EXPECT_FALSE(immersive_mode_controller->IsRevealed());
   }
 }
 

@@ -24,10 +24,8 @@ buildflag_header("blink_heap_buildflags") {
   header = "heap_buildflags.h"
   header_dir = "third_party/blink/renderer/platform/heap"
 
-  flags = [
-    "VERBOSE_PERSISTENT=$cppgc_enable_object_names",
-    "BLINK_HEAP_INSIDE_SHARED_LIBRARY=$blink_heap_inside_shared_library",
-  ]
+  flags =
+      [ "BLINK_HEAP_INSIDE_SHARED_LIBRARY=$blink_heap_inside_shared_library" ]
 }
 
 blink_platform_sources("heap") {
@@ -79,6 +77,7 @@ blink_platform_sources("heap") {
     ":blink_heap_buildflags",
     "//base",
     "//gin",
+    "//third_party/blink/public:buildflags",
     "//third_party/blink/renderer/platform:make_platform_generated",
     "//third_party/icu",
 

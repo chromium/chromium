@@ -35,8 +35,8 @@ class OverlayPanelContent {
 
   void OnPhysicalBackingSizeChanged(JNIEnv* env,
                                     content::WebContents* web_contents,
-                                    jint width,
-                                    jint height);
+                                    int32_t width,
+                                    int32_t height);
 
   // Takes ownership of the WebContents which holds the panel content.
   void SetWebContents(
@@ -54,9 +54,7 @@ class OverlayPanelContent {
       content::WebContents* web_contents);
 
   // Update the browser controls for the held web contents.
-  void UpdateBrowserControlsState(
-      JNIEnv* env,
-      jboolean are_controls_hidden);
+  void UpdateBrowserControlsState(JNIEnv* env, bool are_controls_hidden);
 
  private:
   // Our global reference to the Java OverlayPanelContent.

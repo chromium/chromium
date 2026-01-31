@@ -53,8 +53,9 @@ class TestInterfaceImpl : public mojom::TestInterface {
 
  private:
   void OnDisconnect() {
-    if (wait_for_disconnect_closure_)
+    if (wait_for_disconnect_closure_) {
       std::move(wait_for_disconnect_closure_).Run();
+    }
   }
 
   // mojom::TestInterface:

@@ -4,12 +4,12 @@
 
 #include "chrome/browser/apps/app_service/publishers/guest_os_apps.h"
 
+#include <algorithm>
 #include <utility>
 #include <vector>
 
 #include "base/check_is_test.h"
 #include "base/strings/string_util.h"
-#include "chrome/browser/apps/app_service/app_launch_params.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_base.h"
 #include "chrome/browser/apps/app_service/intent_util.h"
@@ -18,6 +18,7 @@
 #include "chrome/browser/ash/file_manager/fileapi_util.h"
 #include "chrome/browser/ash/guest_os/guest_os_registry_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "components/services/app_service/public/cpp/app_launch_params.h"
 #include "components/services/app_service/public/cpp/app_types.h"
 #include "components/services/app_service/public/cpp/icon_types.h"
 #include "components/services/app_service/public/cpp/intent_util.h"
@@ -168,9 +169,6 @@ AppPtr GuestOSApps::CreateApp(
 
   if (generate_new_icon_key) {
     IconEffects icon_effects = IconEffects::kCrOsStandardIcon;
-    if (crostini::CrostiniFeatures::Get()->IsMultiContainerAllowed(profile_)) {
-      icon_effects |= IconEffects::kGuestOsBadge;
-    }
     app->icon_key = IconKey(icon_effects);
   }
 
@@ -233,7 +231,7 @@ apps::IntentFilters CreateIntentFilterForAppService(
   // https://specifications.freedesktop.org/shared-mime-info-spec/shared-mime-info-spec-latest.html.
   // In this case, remove all mime types that begin with "text/" and replace
   // them with a single "text/*" mime type.
-  if (base::Contains(mime_types, "text/plain")) {
+  if (std::ranges::contains(mime_types, "text/plain")) {
     std::erase_if(mime_types, [](const std::string& s) {
       return base::StartsWith(s, "text/");
     });

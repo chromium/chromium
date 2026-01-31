@@ -74,8 +74,12 @@ def _LogToFlakinessDashboard(results, test_type, test_package,
     logging.exception('Failure while logging to %s', flakiness_server)
 
 
-def LogFull(results, test_type, test_package, annotation=None,
-            flakiness_server=None):
+def LogFull(results,
+            test_type,
+            test_package,
+            annotation=None,
+            flakiness_server=None,
+            quiet=False):
   """Log the tests results for the test suite.
 
   The results will be logged three different ways:
@@ -96,30 +100,23 @@ def LogFull(results, test_type, test_package, annotation=None,
     """
   # pylint doesn't like how colorama set up its color enums.
   # pylint: disable=no-member
-  black_on_white = (logging_utils.BACK.WHITE, logging_utils.FORE.BLACK)
-  with logging_utils.OverrideColor(logging.CRITICAL, black_on_white):
-    if not results.DidRunPass():
-      logging.critical('*' * 80)
-      logging.critical('Detailed Logs')
-      logging.critical('*' * 80)
-      for line in results.GetLogs().splitlines():
-        logging.critical(line)
+  if not results.DidRunPass() and not quiet:
     logging.critical('*' * 80)
-    logging.critical('Summary')
+    logging.critical('Detailed Logs')
     logging.critical('*' * 80)
-    # Assign uniform color, depending on presence of 'FAILED' over lines.
-    if any('FAILED' in line for line in results.GetGtestForm().splitlines()):
-      # Red on white, dim.
-      color = (logging_utils.BACK.WHITE, logging_utils.FORE.RED,
-               logging_utils.STYLE.DIM)
-    else:
-      # Green on white, dim.
-      color = (logging_utils.BACK.WHITE, logging_utils.FORE.GREEN,
-               logging_utils.STYLE.DIM)
-    with logging_utils.OverrideColor(logging.CRITICAL, color):
-      for line in results.GetGtestForm().splitlines():
-        logging.critical(line)
-    logging.critical('*' * 80)
+    for line in results.GetLogs().splitlines():
+      logging.critical(line)
+  logging.critical('*' * 80)
+  logging.critical('Summary')
+  logging.critical('*' * 80)
+
+  colored_failed = logging_utils.Colorize('FAILED', logging_utils.FORE.RED)
+  colored_passed = logging_utils.Colorize('PASSED', logging_utils.FORE.GREEN)
+  for line in results.GetGtestForm().splitlines():
+    line = line.replace('FAILED', colored_failed)
+    line = line.replace('PASSED', colored_passed)
+    logging.critical(line)
+  logging.critical('*' * 80)
 
   if os.environ.get('BUILDBOT_BUILDERNAME'):
     # It is possible to have multiple buildbot steps for the same

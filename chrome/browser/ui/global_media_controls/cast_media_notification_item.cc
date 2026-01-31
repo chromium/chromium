@@ -26,7 +26,6 @@
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/storage_partition.h"
-#include "media/base/media_switches.h"
 #include "net/base/load_flags.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "net/url_request/referrer_policy.h"
@@ -131,17 +130,7 @@ media_session::mojom::MediaSessionInfo::SessionState ToSessionState(
 }
 
 std::u16string GetSourceTitle(const media_router::MediaRoute& route) {
-#if !BUILDFLAG(IS_CHROMEOS)
-  // Never include the media sink name for updated media UI on non-CrOS.
-  if (base::FeatureList::IsEnabled(media::kGlobalMediaControlsUpdatedUI)) {
-    if (route.description().empty()) {
-      return l10n_util::GetStringUTF16(
-          IDS_GLOBAL_MEDIA_CONTROLS_UNKNOWN_SOURCE_TEXT);
-    }
-    return base::UTF8ToUTF16(route.description());
-  }
-#endif
-
+#if BUILDFLAG(IS_CHROMEOS)
   if (route.media_sink_name().empty()) {
     return base::UTF8ToUTF16(route.description());
   }
@@ -156,6 +145,13 @@ std::u16string GetSourceTitle(const media_router::MediaRoute& route) {
           ? route.media_sink_name() + kSeparator + route.description()
           : route.description() + kSeparator + route.media_sink_name();
   return base::UTF8ToUTF16(source_title);
+#else
+  if (route.description().empty()) {
+    return l10n_util::GetStringUTF16(
+        IDS_GLOBAL_MEDIA_CONTROLS_UNKNOWN_SOURCE_TEXT);
+  }
+  return base::UTF8ToUTF16(route.description());
+#endif  // BUILDFLAG(IS_CHROMEOS)
 }
 
 }  // namespace

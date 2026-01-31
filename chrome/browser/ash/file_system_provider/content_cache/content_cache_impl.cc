@@ -445,6 +445,7 @@ void ContentCacheImpl::WriteBytes(const OpenedCloudFile& file,
   VLOG(1) << "Adding '" << file.file_path << "' to the cache";
   it = lru_cache_.Put(
       PathContextPair(file.file_path, CacheFileContext(file.version_tag)));
+  CHECK(it != lru_cache_.end());
   EvictExcessItems();
 
   // Add a new entry to the database then retrieve the ID and use it to create

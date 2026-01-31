@@ -53,9 +53,9 @@ class ExternalLoader : public base::RefCountedThreadSafe<ExternalLoader> {
  protected:
   virtual ~ExternalLoader();
 
-  virtual void LoadFinished(base::Value::Dict prefs);
+  virtual void LoadFinished(base::DictValue prefs);
 
-  void OnUpdated(base::Value::Dict updated_prefs);
+  void OnUpdated(base::DictValue updated_prefs);
 
   // Returns true if this loader has an owner.
   // This is useful to know if calling LoadFinished/OnUpdated will propagate

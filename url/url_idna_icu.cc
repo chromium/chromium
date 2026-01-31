@@ -90,9 +90,10 @@ bool IDNToASCII(std::u16string_view src, CanonOutputW* output) {
   while (true) {
     UErrorCode err = U_ZERO_ERROR;
     UIDNAInfo info = UIDNA_INFO_INITIALIZER;
+    auto output_span = output->Span();
     int output_length = uidna_nameToASCII(
         uidna, src.data(), base::checked_cast<int32_t>(src.size()),
-        output->data(), output->capacity(), &info, &err);
+        output_span.data(), output_span.size(), &info, &err);
 
     // Ignore various errors for web compatibility. The options are specified
     // by the WHATWG URL Standard. See

@@ -277,8 +277,6 @@ TEST_P(AccountMenuMediatorTest, TestAddSecondaryIdentity) {
 TEST_P(AccountMenuMediatorTest, TestRemoveSecondaryIdentity) {
   IgnoreAccountListUpdatesWithNoAdditionsOrRemovals();
 
-  OCMExpect([consumer_mock_ updatePrimaryAccount]);
-
   OCMExpect([consumer_mock_
       updateAccountListWithGaiaIDsToAdd:@[]
                         gaiaIDsToRemove:@[
@@ -534,6 +532,20 @@ TEST_P(AccountMenuMediatorTest, TestTapErrorButtonPassphrase) {
   [mediator_ didTapErrorButton];
   EXPECT_EQ(1, user_actions_.GetActionCount(
                    "Signin_AccountMenu_ErrorButton_Passphrase"));
+}
+
+// Tests the result of didTapErrorButton when a bookmarks limit is exceeded.
+TEST_P(AccountMenuMediatorTest, TestTapErrorButtonBookmarksLimitExceeded) {
+  test_sync_service_->SetSignedIn(signin::ConsentLevel::kSignin);
+  test_sync_service_->SetBookmarksLimitExceeded(true);
+
+  OCMExpect([consumer_mock_ updateErrorSection:[OCMArg any]]);
+  test_sync_service_->FireStateChanged();
+
+  OCMExpect([sync_error_settings_mock_ openBookmarksLimitExceededHelp]);
+  [mediator_ didTapErrorButton];
+  EXPECT_EQ(1, user_actions_.GetActionCount(
+                   "Signin_AccountMenu_ErrorButton_BookmarksLimitExceeded"));
 }
 
 // Tests the effect of didTapManageYourGoogleAccount.

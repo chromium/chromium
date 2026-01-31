@@ -37,7 +37,7 @@ import {Router} from '../router.js';
 import {SettingsViewMixin} from '../settings_page/settings_view_mixin.js';
 
 import type {DataCategoryClickEvent, DataChipClickEvent} from './category_reference_card.js';
-import {SavedInfoHandlerImpl} from './saved_info_handler_proxy.js';
+import {DataManagementSurvey, SavedInfoHandlerImpl} from './saved_info_handler_proxy.js';
 import {getTemplate} from './your_saved_info_page.html.js';
 
 type AddressEntry = chrome.autofillPrivate.AddressEntry;
@@ -470,6 +470,8 @@ export class SettingsYourSavedInfoPageElement extends
         PasswordManagerImpl.getInstance().recordPasswordsPageAccessInSettings();
         PasswordManagerImpl.getInstance().showPasswordManager(
             PasswordManagerPage.PASSWORDS);
+        SavedInfoHandlerImpl.getInstance().requestDataManagementSurvey(
+            DataManagementSurvey.PASSWORDS, true);
         break;
       case YourSavedInfoDataCategory.PAYMENTS:
         Router.getInstance().navigateTo(routes.PAYMENTS);
@@ -499,6 +501,8 @@ export class SettingsYourSavedInfoPageElement extends
     PasswordManagerImpl.getInstance().recordPasswordsPageAccessInSettings();
     PasswordManagerImpl.getInstance().showPasswordManager(
         PasswordManagerPage.PASSWORDS);
+    SavedInfoHandlerImpl.getInstance().requestDataManagementSurvey(
+        DataManagementSurvey.PASSWORDS, true);
   }
 
   /**

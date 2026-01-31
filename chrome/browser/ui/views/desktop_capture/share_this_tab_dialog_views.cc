@@ -188,11 +188,13 @@ ShareThisTabDialogView::ShareThisTabDialogView(
   // Make sure web modal dialogs are supported before trying to show the picker
   // as a web model dialog.
   if (MediaPickerCanShowAsWebModal(params.web_contents)) {
-    const Browser* browser = chrome::FindBrowserWithTab(params.web_contents);
+    Browser* browser = chrome::FindBrowserWithTab(params.web_contents);
     // Close the extension popup to prevent spoofing.
-    if (browser && browser->window() &&
-        browser->window()->GetExtensionsContainer()) {
-      browser->window()->GetExtensionsContainer()->HideActivePopup();
+    if (browser) {
+      ExtensionsContainer* container = ExtensionsContainer::From(*browser);
+      if (container) {
+        container->HideActivePopup();
+      }
     }
     constrained_window::ShowWebModalDialogViews(this, params.web_contents);
   } else {
@@ -306,7 +308,7 @@ void ShareThisTabDialogView::SetupAudioToggle() {
       std::make_unique<views::ImageView>());
   audio_icon_view->SetImage(ui::ImageModel::FromVectorIcon(
       vector_icons::kVolumeUpIcon, ui::kColorIcon,
-      GetLayoutConstant(PAGE_INFO_ICON_SIZE)));
+      GetLayoutConstant(LayoutConstant::kPageInfoIconSize)));
 
   views::Label* audio_toggle_label =
       audio_toggle_container->AddChildView(std::make_unique<views::Label>());

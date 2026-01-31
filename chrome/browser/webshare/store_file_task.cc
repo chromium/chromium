@@ -4,7 +4,6 @@
 
 #include "chrome/browser/webshare/store_file_task.h"
 
-#include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/string_util.h"
@@ -106,11 +105,8 @@ void StoreFileTask::OnDataPipeReadable(MojoResult result) {
     }
 
     // Defend against compromised renderer process sending too much data.
-    std::string_view chars = base::as_string_view(buffer);
-    int chars_size_int = base::saturated_cast<int>(chars.size());
     if (buffer.size() > total_bytes_ - bytes_received_ ||
-        UNSAFE_TODO(output_file_.WriteAtCurrentPos(
-            chars.data(), chars_size_int)) != chars_size_int) {
+        !output_file_.WriteAtCurrentPosAndCheck(buffer)) {
       std::move(callback_).Run(blink::mojom::ShareError::INTERNAL_ERROR);
       return;
     }

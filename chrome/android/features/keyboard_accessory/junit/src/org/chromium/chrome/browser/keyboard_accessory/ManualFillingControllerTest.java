@@ -49,11 +49,9 @@ import static org.chromium.chrome.browser.tab.TabSelectionType.FROM_USER;
 
 import android.content.res.Configuration;
 import android.graphics.RectF;
-import android.graphics.drawable.Drawable;
 import android.view.Surface;
 import android.view.View;
 
-import androidx.annotation.Nullable;
 import androidx.annotation.Px;
 
 import org.junit.Before;
@@ -72,9 +70,12 @@ import org.robolectric.annotation.Config;
 
 import org.chromium.base.CallbackUtils;
 import org.chromium.base.UserDataHost;
-import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.supplier.ObservableSuppliers;
+import org.chromium.base.supplier.SettableNonNullObservableSupplier;
+import org.chromium.base.supplier.SettableNullableObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.ActivityTabProvider;
 import org.chromium.chrome.browser.ChromeWindow;
 import org.chromium.chrome.browser.app.ChromeActivity;
@@ -94,7 +95,6 @@ import org.chromium.chrome.browser.keyboard_accessory.data.KeyboardAccessoryData
 import org.chromium.chrome.browser.keyboard_accessory.data.Provider;
 import org.chromium.chrome.browser.keyboard_accessory.data.UserInfoField;
 import org.chromium.chrome.browser.keyboard_accessory.sheet_component.AccessorySheetCoordinator;
-import org.chromium.chrome.browser.keyboard_accessory.sheet_tabs.AccessorySheetTabCoordinator;
 import org.chromium.chrome.browser.multiwindow.MultiWindowModeStateDispatcher;
 import org.chromium.chrome.browser.password_manager.ConfirmationDialogHelper;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -168,10 +168,10 @@ public class ManualFillingControllerTest {
     private final UserDataHost mUserDataHost = new UserDataHost();
     private final ApplicationViewportInsetTracker mInsetSupplier =
             ApplicationViewportInsetTracker.createForTests();
-    private final ObservableSupplierImpl<Integer> mKeyboardInsetSupplier =
-            new ObservableSupplierImpl<>();
-    private final ObservableSupplierImpl<EdgeToEdgeController> mMockEdgeToEdgeControllerSupplier =
-            new ObservableSupplierImpl<>();
+    private final SettableNonNullObservableSupplier<Integer> mKeyboardInsetSupplier =
+            ObservableSuppliers.createNonNull(0);
+    private final SettableNullableObservableSupplier<EdgeToEdgeController>
+            mMockEdgeToEdgeControllerSupplier = ObservableSuppliers.createNullable();
 
     private final ActivityTabProvider mActivityTabProvider = new ActivityTabProvider();
 
@@ -206,10 +206,9 @@ public class ManualFillingControllerTest {
          * Can be used to capture data from an observer. Retrieve the last captured data with {@link
          * #getRecordedSheetData()} and {@link #getFirstRecordedPassword()}.
          *
-         * @param unusedTypeId Unused but necessary to enable use as method reference.
-         * @param data The {@link AccessorySheetData} provided by a {@link Provider}.
+         * @param data The {@link AccessorySheetData} provided by a {@link ObservableSupplier}.
          */
-        void record(int unusedTypeId, AccessorySheetData data) {
+        void record(AccessorySheetData data) {
             mRecordedSheetData.set(data);
         }
 
@@ -338,9 +337,8 @@ public class ManualFillingControllerTest {
         when(mMockActivity.getBrowserControlsManager()).thenReturn(browserControlsManager);
         when(mMockActivity.getFullscreenManager()).thenReturn(mMockFullscreenManager);
         doNothing().when(mMockFullscreenManager).addObserver(mFullscreenObserverCaptor.capture());
-        ObservableSupplierImpl<CompositorViewHolder> compositorViewHolderSupplier =
-                new ObservableSupplierImpl<>();
-        compositorViewHolderSupplier.set(mMockCompositorViewHolder);
+        SettableNonNullObservableSupplier<CompositorViewHolder> compositorViewHolderSupplier =
+                ObservableSuppliers.createNonNull(mMockCompositorViewHolder);
         when(mMockActivity.getCompositorViewHolderSupplier())
                 .thenReturn(compositorViewHolderSupplier);
         when(mMockActivity.getResources()).thenReturn(mMockResources);
@@ -360,7 +358,6 @@ public class ManualFillingControllerTest {
         Configuration config = new Configuration();
         config.hardKeyboardHidden = HARDKEYBOARDHIDDEN_UNDEFINED;
         when(mMockResources.getConfiguration()).thenReturn(config);
-        AccessorySheetTabCoordinator.IconProvider.setIconForTesting(mock(Drawable.class));
         doNothing()
                 .when(mMockBackPressManager)
                 .addHandler(any(), eq(BackPressHandler.Type.MANUAL_FILLING));
@@ -1499,6 +1496,34 @@ public class ManualFillingControllerTest {
     }
 
     @Test
+    public void testLargeFormSheetShownWithUndockedStyle() {
+        updateConfiguration(/* widthDp= */ 1600, /* heightDp= */ 2560);
+        addBrowserTab(mMediator, 1111, null);
+        mModel.set(KEYBOARD_EXTENSION_STATE, HIDDEN);
+        reset(mMockKeyboardAccessory, mMockAccessorySheet);
+
+        mModel.set(KEYBOARD_EXTENSION_STATE, REPLACING_KEYBOARD);
+        assertThat(mModel.get(KEYBOARD_EXTENSION_STATE), is(REPLACING_KEYBOARD));
+
+        verify(mMockAccessorySheet).show();
+        verify(mMockAccessorySheet).setStyle(/* isDocked= */ false);
+    }
+
+    @Test
+    public void testNonLargeFormSheetShownWithDockedStyle() {
+        updateConfiguration(/* widthDp= */ 320, /* heightDp= */ 470);
+        addBrowserTab(mMediator, 1111, null);
+        mModel.set(KEYBOARD_EXTENSION_STATE, HIDDEN);
+        reset(mMockKeyboardAccessory, mMockAccessorySheet);
+
+        mModel.set(KEYBOARD_EXTENSION_STATE, REPLACING_KEYBOARD);
+        assertThat(mModel.get(KEYBOARD_EXTENSION_STATE), is(REPLACING_KEYBOARD));
+
+        verify(mMockAccessorySheet).show();
+        verify(mMockAccessorySheet).setStyle(/* isDocked= */ true);
+    }
+
+    @Test
     public void testLargeFormAccessoryWithDynamicPositioningPositionBelowField() {
         final int density = 2;
         final int paddingForNotch = 5;
@@ -1519,8 +1544,7 @@ public class ManualFillingControllerTest {
 
         when(mMockResources.getDimensionPixelSize(R.dimen.keyboard_accessory_height_redesign))
                 .thenReturn(barHeight);
-        when(mMockResources.getDimensionPixelSize(
-                        R.dimen.keyboard_accessory_dynamic_positioning_padding))
+        when(mMockResources.getDimensionPixelSize(R.dimen.keyboard_accessory_notch_height))
                 .thenReturn(paddingForNotch);
 
         mController.show(
@@ -1532,8 +1556,9 @@ public class ManualFillingControllerTest {
         KeyboardAccessoryStyle style = mStyleCaptor.getValue();
         assertFalse(style.isDocked());
         assertTrue(style.getMaxWidth() > 0);
+        assertEquals(KeyboardAccessoryStyle.NotchPosition.TOP, style.getNotchPosition());
 
-        assertEquals(bottomBound * density + paddingForNotch, style.getVerticalOffset());
+        assertEquals(bottomBound * density, style.getVerticalOffset());
         assertEquals(leftBound * density, style.getHorizontalOffset());
     }
 
@@ -1558,8 +1583,7 @@ public class ManualFillingControllerTest {
 
         when(mMockResources.getDimensionPixelSize(R.dimen.keyboard_accessory_height_redesign))
                 .thenReturn(barHeight);
-        when(mMockResources.getDimensionPixelSize(
-                        R.dimen.keyboard_accessory_dynamic_positioning_padding))
+        when(mMockResources.getDimensionPixelSize(R.dimen.keyboard_accessory_notch_height))
                 .thenReturn(paddingForNotch);
 
         mController.show(
@@ -1571,6 +1595,7 @@ public class ManualFillingControllerTest {
         KeyboardAccessoryStyle style = mStyleCaptor.getValue();
         assertFalse(style.isDocked());
         assertTrue(style.getMaxWidth() > 0);
+        assertEquals(KeyboardAccessoryStyle.NotchPosition.BOTTOM, style.getNotchPosition());
 
         assertEquals(topBound * density - paddingForNotch - barHeight, style.getVerticalOffset());
         assertEquals(leftBound * density, style.getHorizontalOffset());

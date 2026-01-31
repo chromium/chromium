@@ -252,7 +252,7 @@ void PersonalizedRecommendAppsScreen::OnResponseReceived(
   //    - If an app is associated with multiple selected use cases, the
   //      server-defined order determines the primary use case for display.
   PrefService* prefs = ProfileManager::GetActiveUserProfile()->GetPrefs();
-  const base::Value::List& selected_use_cases_ids =
+  const base::ListValue& selected_use_cases_ids =
       prefs->GetList(prefs::kOobeCategoriesSelected);
 
   std::vector<OOBEDeviceUseCase> selected_use_cases;
@@ -316,14 +316,14 @@ void PersonalizedRecommendAppsScreen::OnResponseReceived(
   // in case multiple attached use-cases were selected by the user.
   std::unordered_set<std::string> used_apps_uuids;
 
-  base::Value::List apps_by_use_cases_list;
+  base::ListValue apps_by_use_cases_list;
 
   // Reset it on each filtering so it's not persisted between screen
   // back/next flow.
   filtered_apps_count_by_type_.clear();
 
   for (const auto& selected_use_case : selected_use_cases) {
-    base::Value::List apps_list;
+    base::ListValue apps_list;
     // Handle case when server-side provided use-case that doesn't have any apps
     // attached to it.
     if (use_cases_to_apps.find(selected_use_case.GetID()) ==
@@ -342,8 +342,8 @@ void PersonalizedRecommendAppsScreen::OnResponseReceived(
 
       filtered_apps_count_by_type_[app.GetPlatform()] += 1;
 
-      base::Value::Dict app_dict(
-          base::Value::Dict()
+      base::DictValue app_dict(
+          base::DictValue()
               .Set("appId", base::Value(app.GetAppGroupUUID()))
               .Set("name", base::Value(app.GetName()))
               // TODO: Propagate app's subtitle when it will be available on the
@@ -358,7 +358,7 @@ void PersonalizedRecommendAppsScreen::OnResponseReceived(
     if (!apps_list.empty()) {
       // Create data that we pass to the WebUI.
       apps_by_use_cases_list.Append(
-          base::Value::Dict()
+          base::DictValue()
               .Set("name", selected_use_case.GetLabel())
               .Set("apps", std::move(apps_list)));
     }
@@ -382,8 +382,8 @@ void PersonalizedRecommendAppsScreen::OnResponseReceived(
 void PersonalizedRecommendAppsScreen::HideImpl() {}
 
 void PersonalizedRecommendAppsScreen::OnInstall(
-    base::Value::List selected_apps_package_ids) {
-  base::Value::List selected_arc_apps;
+    base::ListValue selected_apps_package_ids) {
+  base::ListValue selected_arc_apps;
   std::vector<apps::PackageId> selected_web_apps;
 
   int filtered_arc_apps_count =
@@ -488,14 +488,14 @@ void PersonalizedRecommendAppsScreen::ShowOverviewStep() {
 }
 
 void PersonalizedRecommendAppsScreen::SetAppsAndUseCasesData(
-    base::Value::List apps_by_use_cases_list) {
+    base::ListValue apps_by_use_cases_list) {
   if (view_) {
     view_->SetAppsAndUseCasesData(std::move(apps_by_use_cases_list));
   }
 }
 
 void PersonalizedRecommendAppsScreen::OnUserAction(
-    const base::Value::List& args) {
+    const base::ListValue& args) {
   if (is_hidden()) {
     return;
   }

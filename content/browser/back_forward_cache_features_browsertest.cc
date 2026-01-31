@@ -2,7 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/containers/contains.h"
+#include <algorithm>
+
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/threading/platform_thread.h"
@@ -686,11 +687,20 @@ IN_PROC_BROWSER_TEST_F(
                     {}, FROM_HERE);
 }
 
+// TODO(crbug.com/469570289): enable the flaky test.
+#if BUILDFLAG(IS_LINUX)
+#define MAYBE_PageWithDrainedDatapipeRequestsForFetchShouldBeEvicted \
+  DISABLED_PageWithDrainedDatapipeRequestsForFetchShouldBeEvicted
+#else
+#define MAYBE_PageWithDrainedDatapipeRequestsForFetchShouldBeEvicted \
+  PageWithDrainedDatapipeRequestsForFetchShouldBeEvicted
+#endif  // BUILDFLAG(IS_LINUX)
 // Tests the case when fetching started in a dedicated worker and the header was
 // received before the page is frozen, but parts of the response body is
 // received when the page is frozen.
-IN_PROC_BROWSER_TEST_F(BackForwardCacheWithDedicatedWorkerBrowserTest,
-                       PageWithDrainedDatapipeRequestsForFetchShouldBeEvicted) {
+IN_PROC_BROWSER_TEST_F(
+    BackForwardCacheWithDedicatedWorkerBrowserTest,
+    MAYBE_PageWithDrainedDatapipeRequestsForFetchShouldBeEvicted) {
   CreateHttpsServer();
 
   net::test_server::ControllableHttpResponse fetch_response(https_server(),
@@ -1771,15 +1781,16 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
   std::vector<base::Bucket> blocklist_values = histogram_tester().GetAllSamples(
       "BackForwardCache.HistoryNavigationOutcome."
       "BlocklistedFeature");
-  EXPECT_TRUE(base::Contains(blocklist_values, sample, &base::Bucket::min));
+  EXPECT_TRUE(
+      std::ranges::contains(blocklist_values, sample, &base::Bucket::min));
 
   std::vector<base::Bucket> all_sites_blocklist_values =
       histogram_tester().GetAllSamples(
           "BackForwardCache.AllSites.HistoryNavigationOutcome."
           "BlocklistedFeature");
 
-  EXPECT_TRUE(
-      base::Contains(all_sites_blocklist_values, sample, &base::Bucket::min));
+  EXPECT_TRUE(std::ranges::contains(all_sites_blocklist_values, sample,
+                                    &base::Bucket::min));
 }
 
 // Pages with acquired keyboard lock should not enter BackForwardCache.

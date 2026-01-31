@@ -24,6 +24,8 @@ namespace {
 constexpr char kShowReasonHistogram[] = "Ash.Auth.ActiveSessionShowReason";
 constexpr char kAuthStartedHistogram[] = "Ash.Auth.ActiveSessionAuthStart";
 constexpr char kAuthFailedHistogram[] = "Ash.Auth.ActiveSessionAuthFailed";
+constexpr char kAuthNotAvailableHistogram[] =
+    "Ash.Auth.ActiveSessionAuthNotAvailable";
 constexpr char kAuthSucceededHistogram[] =
     "Ash.Auth.ActiveSessionAuthSucceeded";
 constexpr char kClosedWithSuccessHistogram[] =
@@ -162,6 +164,13 @@ void ActiveSessionAuthMetricsRecorder::RecordAuthFailed(
 
   // Record to metric the failed authentication type.
   base::UmaHistogramEnumeration(kAuthFailedHistogram, input_type);
+}
+
+void ActiveSessionAuthMetricsRecorder::RecordAuthNotAvailable(
+    AuthRequest::Reason reason) {
+  // Record to metric the user tried to open the dialog but has no
+  // authentication factor.
+  base::UmaHistogramEnumeration(kAuthNotAvailableHistogram, reason);
 }
 
 void ActiveSessionAuthMetricsRecorder::RecordAuthSucceeded(

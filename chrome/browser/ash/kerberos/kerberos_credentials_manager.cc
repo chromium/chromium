@@ -832,7 +832,7 @@ void KerberosCredentialsManager::UpdateAccountsFromPref(bool is_retry) {
     return;
   }
 
-  const base::Value::List& accounts =
+  const base::ListValue& accounts =
       local_state_->GetList(prefs::kKerberosAccounts);
   if (accounts.empty()) {
     VLOG(1) << "Empty KerberosAccounts policy";
@@ -849,7 +849,7 @@ void KerberosCredentialsManager::UpdateAccountsFromPref(bool is_retry) {
   bool requires_login_password = false;
   std::vector<std::string> managed_accounts_added;
   for (const auto& account : accounts) {
-    const base::Value::Dict& account_dict = account.GetDict();
+    const base::DictValue& account_dict = account.GetDict();
 
     // Get the principal. Should always be set.
     const std::string* principal_string = account_dict.FindString(kPrincipal);

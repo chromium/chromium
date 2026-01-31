@@ -2,13 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "base/debug/dwarf_line_no.h"
 
+#include "base/compiler_specific.h"
 
 #ifdef USE_SYMBOLIZE
 #include <stdlib.h>
@@ -240,9 +236,10 @@ void EvaluateLineNumberProgram(const int fd,
 
         if (registers->last_file < kMaxFilenames) {
           info->module_filename_offset =
-              program_info->filename_offsets[registers->last_file];
+              UNSAFE_TODO(program_info->filename_offsets[registers->last_file]);
 
-          uint8_t dir = program_info->filename_dirs[registers->last_file];
+          uint8_t dir =
+              UNSAFE_TODO(program_info->filename_dirs[registers->last_file]);
           info->module_dir_offset = program_info->directory_offsets[dir];
           info->dir_size = program_info->directory_sizes[dir];
         }
@@ -338,8 +335,9 @@ void EvaluateLineNumberProgram(const int fd,
                 ++program_info.num_filenames;
                 // Store the offset from the start of file and skip the data to
                 // save memory.
-                program_info.filename_offsets[cur_filename] = filename_offset;
-                program_info.filename_dirs[cur_filename] =
+                UNSAFE_TODO(program_info.filename_offsets[cur_filename]) =
+                    filename_offset;
+                UNSAFE_TODO(program_info.filename_dirs[cur_filename]) =
                     static_cast<uint8_t>(value);
               }
 
@@ -578,8 +576,10 @@ bool ParseDwarf4ProgramInfo(BufferedDwarfReader* reader,
     size_t cur_filename = program_info->num_filenames;
     if (cur_filename < kMaxFilenames && value < kMaxDirectories) {
       ++program_info->num_filenames;
-      program_info->filename_offsets[cur_filename] = filename_offset;
-      program_info->filename_dirs[cur_filename] = static_cast<uint8_t>(value);
+      UNSAFE_TODO(program_info->filename_offsets[cur_filename]) =
+          filename_offset;
+      UNSAFE_TODO(program_info->filename_dirs[cur_filename]) =
+          static_cast<uint8_t>(value);
     }
 
     // Modification time
@@ -1136,37 +1136,39 @@ void SerializeLineNumberInfoToString(int fd,
   if (info.module_filename_offset) {
     BufferedDwarfReader reader(fd, info.module_dir_offset);
     if (info.module_dir_offset != 0) {
-      out_pos +=
-          reader.ReadCString(kMaxOffset, out + out_pos, out_size - out_pos);
-      out[out_pos - 1] = '/';
+      out_pos += reader.ReadCString(kMaxOffset, UNSAFE_TODO(out + out_pos),
+                                    out_size - out_pos);
+      UNSAFE_TODO(out[out_pos - 1]) = '/';
     }
 
     reader.set_position(info.module_filename_offset);
-    out_pos +=
-        reader.ReadCString(kMaxOffset, out + out_pos, out_size - out_pos);
+    out_pos += reader.ReadCString(kMaxOffset, UNSAFE_TODO(out + out_pos),
+                                  out_size - out_pos);
   } else {
-    out[out_pos++] = '\0';
+    UNSAFE_TODO(out[out_pos++]) = '\0';
   }
 
-  out[out_pos - 1] = ':';
-  auto result = std::to_chars(out + out_pos, out + out_size,
-                              static_cast<intptr_t>(info.line));
+  UNSAFE_TODO(out[out_pos - 1]) = ':';
+  auto result =
+      std::to_chars(UNSAFE_TODO(out + out_pos), UNSAFE_TODO(out + out_size),
+                    static_cast<intptr_t>(info.line));
   if (result.ec != std::errc()) {
-    out[out_pos - 1] = '\0';
+    UNSAFE_TODO(out[out_pos - 1]) = '\0';
     return;
   }
   out_pos = static_cast<size_t>(result.ptr - out);
 
-  out[out_pos++] = ':';
-  result = std::to_chars(out + out_pos, out + out_size,
-                         static_cast<intptr_t>(info.column));
+  UNSAFE_TODO(out[out_pos++]) = ':';
+  result =
+      std::to_chars(UNSAFE_TODO(out + out_pos), UNSAFE_TODO(out + out_size),
+                    static_cast<intptr_t>(info.column));
   if (result.ec != std::errc()) {
-    out[out_pos - 1] = '\0';
+    UNSAFE_TODO(out[out_pos - 1]) = '\0';
     return;
   }
   out_pos = static_cast<size_t>(result.ptr - out);
 
-  out[out_pos++] = '\0';
+  UNSAFE_TODO(out[out_pos++]) = '\0';
 }
 
 // Reads the Line Number info for a compile unit.
@@ -1239,12 +1241,14 @@ size_t ProcessFlatArangeSet(BufferedDwarfReader* reader,
     }
     uint64_t end = start + length;
     for (size_t i = unsorted_start; i < num_frames; ++i) {
-      uint64_t module_relative_pc = frame_info[i].pc - base_address;
+      uint64_t module_relative_pc =
+          UNSAFE_TODO(frame_info[i]).pc - base_address;
       if (start <= module_relative_pc && module_relative_pc < end) {
-        *frame_info[i].cu_offset = cu_offset;
+        *UNSAFE_TODO(frame_info[i]).cu_offset = cu_offset;
         if (i != unsorted_start) {
           // Move to sorted section.
-          std::swap(frame_info[i], frame_info[unsorted_start]);
+          std::swap(UNSAFE_TODO(frame_info[i]),
+                    UNSAFE_TODO(frame_info[unsorted_start]));
         }
         unsorted_start++;
       }
@@ -1307,7 +1311,7 @@ void PopulateCompileUnitOffsets(int fd,
     }
     unsorted_start += ProcessFlatArangeSet(
         &reader, next_arange_set, address_size, base_address, debug_info_offset,
-        &frame_info[unsorted_start], num_frames - unsorted_start);
+        &UNSAFE_TODO(frame_info[unsorted_start]), num_frames - unsorted_start);
   }
 }
 
@@ -1345,8 +1349,8 @@ void GetDwarfCompileUnitOffsets(const void* const* trace,
   // LINT.ThenChange(stack_trace.h:max_stack_frames)
   for (size_t i = 0; i < num_frames; i++) {
     // The `cu_offset` also encodes the original sort order.
-    frame_info[i].cu_offset = &cu_offsets[i];
-    frame_info[i].pc = reinterpret_cast<uintptr_t>(trace[i]);
+    frame_info[i].cu_offset = &UNSAFE_TODO(cu_offsets[i]);
+    frame_info[i].pc = reinterpret_cast<uintptr_t>(UNSAFE_TODO(trace[i]));
   }
   auto pc_comparator = [](const FrameInfo& lhs, const FrameInfo& rhs) {
     return lhs.pc < rhs.pc;

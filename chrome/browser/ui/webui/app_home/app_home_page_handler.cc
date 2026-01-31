@@ -17,17 +17,16 @@
 #include "base/time/time.h"
 #include "base/values.h"
 #include "chrome/browser/apps/app_service/app_icon_source.h"
-#include "chrome/browser/apps/app_service/app_launch_params.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/extension_ui_util.h"
 #include "chrome/browser/extensions/launch_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_dialogs.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/chrome_pages.h"
+#include "chrome/browser/ui/dialogs/browser_dialogs.h"
 #include "chrome/browser/ui/extensions/extension_enable_flow.h"
 #include "chrome/browser/ui/tab_dialogs.h"
 #include "chrome/browser/ui/views/apps/app_info_dialog/app_info_dialog_container.h"
@@ -51,6 +50,7 @@
 #include "chrome/common/extensions/extension_metrics.h"
 #include "chrome/common/extensions/manifest_handlers/app_launch_info.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/services/app_service/public/cpp/app_launch_params.h"
 #include "components/webapps/browser/uninstall_result_code.h"
 #include "content/public/browser/web_ui.h"
 #include "extensions/browser/bookmark_app_util.h"
@@ -177,11 +177,10 @@ void AppHomePageHandler::LaunchAppInternal(
   apps::LaunchContainer launch_container;
 
   web_app::WebAppRegistrar& registrar = web_app_provider_->registrar_unsafe();
-  if (registrar.IsInstallState(
-          app_id,
-          {web_app::proto::InstallState::SUGGESTED_FROM_ANOTHER_DEVICE,
-           web_app::proto::InstallState::INSTALLED_WITHOUT_OS_INTEGRATION,
-           web_app::proto::InstallState::INSTALLED_WITH_OS_INTEGRATION})) {
+  // TODO(crbug.com/379136842): This is likely too 'permissive' of a check, and
+  // different more restrictive filter should likely be used instead.
+  if (registrar.AppMatches(app_id,
+                           web_app::WebAppFilter::IsAppSurfaceableToUser())) {
     type = extensions::Manifest::Type::TYPE_HOSTED_APP;
     full_launch_url = registrar.GetAppStartUrl(app_id);
     launch_container = web_app::ConvertDisplayModeToAppLaunchContainer(
@@ -367,21 +366,22 @@ app_home::mojom::AppInfoPtr AppHomePageHandler::CreateAppInfoPtrFromWebApp(
       case web_app::proto::INSTALLED_WITHOUT_OS_INTEGRATION:
         is_locally_installed = true;
         break;
+      // Apps that will be migrated to should not be shown on UX surfaces.
+      case web_app::proto::SUGGESTED_FROM_MIGRATION:
+        NOTREACHED();
     }
   }
 
   const auto login_mode = registrar.GetAppRunOnOsLoginMode(app_id);
   // Only show the Run on OS Login menu item for locally installed web apps
-  app_info->may_show_run_on_os_login_mode =
-      base::FeatureList::IsEnabled(features::kDesktopPWAsRunOnOsLogin) &&
-      is_locally_installed;
+  app_info->may_show_run_on_os_login_mode = is_locally_installed;
   app_info->may_toggle_run_on_os_login_mode = login_mode.user_controllable;
   app_info->run_on_os_login_mode = login_mode.value;
 
   app_info->is_locally_installed = is_locally_installed;
   // Treat all other types of display mode as "open as window".
-  app_info->open_in_window = registrar.GetAppEffectiveDisplayMode(app_id) !=
-                             blink::mojom::DisplayMode::kBrowser;
+  app_info->open_in_window = registrar.AppMatches(
+      app_id, web_app::WebAppFilter::OpensInDedicatedWindow());
 
   app_info->store_page_url = std::nullopt;
   app_info->may_uninstall = registrar.CanUserUninstallWebApp(app_id);
@@ -446,6 +446,11 @@ void AppHomePageHandler::FillWebAppInfoList(
   web_app::WebAppRegistrar& registrar = web_app_provider_->registrar_unsafe();
 
   for (const webapps::AppId& web_app_id : registrar.GetAppIds()) {
+    // Do not show apps that are migration targets on chrome://apps.
+    if (registrar.AppMatches(
+            web_app_id, web_app::WebAppFilter::IsAppSuggestedForMigration())) {
+      continue;
+    }
     result->emplace_back(CreateAppInfoPtrFromWebApp(web_app_id));
   }
 }
@@ -679,11 +684,10 @@ void AppHomePageHandler::UninstallApp(const std::string& app_id) {
     return;
   }
 
-  if (web_app_provider_->registrar_unsafe().IsInstallState(
-          app_id,
-          {web_app::proto::InstallState::SUGGESTED_FROM_ANOTHER_DEVICE,
-           web_app::proto::InstallState::INSTALLED_WITHOUT_OS_INTEGRATION,
-           web_app::proto::InstallState::INSTALLED_WITH_OS_INTEGRATION})) {
+  // TODO(crbug.com/379136842): This is likely too 'permissive' of a check, and
+  // different more restrictive filter should likely be used instead.
+  if (web_app_provider_->registrar_unsafe().AppMatches(
+          app_id, web_app::WebAppFilter::IsAppSurfaceableToUser())) {
     UninstallWebApp(app_id);
     return;
   }
@@ -696,11 +700,10 @@ void AppHomePageHandler::UninstallApp(const std::string& app_id) {
 }
 
 void AppHomePageHandler::ShowAppSettings(const std::string& app_id) {
-  if (web_app_provider_->registrar_unsafe().IsInstallState(
-          app_id,
-          {web_app::proto::InstallState::SUGGESTED_FROM_ANOTHER_DEVICE,
-           web_app::proto::InstallState::INSTALLED_WITHOUT_OS_INTEGRATION,
-           web_app::proto::InstallState::INSTALLED_WITH_OS_INTEGRATION})) {
+  // TODO(crbug.com/379136842): This is likely too 'permissive' of a check, and
+  // different more restrictive filter should likely be used instead.
+  if (web_app_provider_->registrar_unsafe().AppMatches(
+          app_id, web_app::WebAppFilter::IsAppSurfaceableToUser())) {
     ShowWebAppSettings(app_id);
     return;
   }
@@ -719,11 +722,10 @@ void AppHomePageHandler::ShowAppSettings(const std::string& app_id) {
 
 void AppHomePageHandler::CreateAppShortcut(const std::string& app_id,
                                            CreateAppShortcutCallback callback) {
-  if (web_app_provider_->registrar_unsafe().IsInstallState(
-          app_id,
-          {web_app::proto::InstallState::SUGGESTED_FROM_ANOTHER_DEVICE,
-           web_app::proto::InstallState::INSTALLED_WITHOUT_OS_INTEGRATION,
-           web_app::proto::InstallState::INSTALLED_WITH_OS_INTEGRATION})) {
+  // TODO(crbug.com/379136842): This is likely too 'permissive' of a check, and
+  // different more restrictive filter should likely be used instead.
+  if (web_app_provider_->registrar_unsafe().AppMatches(
+          app_id, web_app::WebAppFilter::IsAppSurfaceableToUser())) {
     CreateWebAppShortcut(app_id, std::move(callback));
     return;
   }
@@ -747,10 +749,6 @@ void AppHomePageHandler::LaunchApp(const std::string& app_id,
 void AppHomePageHandler::SetRunOnOsLoginMode(
     const std::string& app_id,
     web_app::RunOnOsLoginMode run_on_os_login_mode) {
-  if (!base::FeatureList::IsEnabled(features::kDesktopPWAsRunOnOsLogin)) {
-    return;
-  }
-
   if (run_on_os_login_mode != web_app::RunOnOsLoginMode::kNotRun &&
       run_on_os_login_mode != web_app::RunOnOsLoginMode::kWindowed) {
     return;  // Other login mode is not supported;
@@ -767,6 +765,15 @@ void AppHomePageHandler::LaunchDeprecatedAppDialog() {
 }
 
 void AppHomePageHandler::InstallAppLocally(const std::string& app_id) {
+  // TODO(crbug.com/456164619): Grey out web app sync if web app installs are
+  // not allowed via policy. Disallow InstallAppLocally to install sync apps if
+  // web app installs are not allowed via policy. Trigger not supported dialog.
+  if (!web_app::IsWebAppInstallByUserPolicyEnabled(profile_)) {
+    web_app::WebAppUiManager::TriggerInstallNotSupportedDialog(
+        web_ui_->GetWebContents(), profile_, base::DoNothing());
+    return;
+  }
+
   web_app_provider_->scheduler().InstallAppLocally(app_id, base::DoNothing());
 }
 

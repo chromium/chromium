@@ -8,6 +8,7 @@
 #include "base/files/file_path.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/scoped_path_override.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -15,6 +16,7 @@
 #include "chrome/browser/extensions/extension_browsertest_platform_delegate.h"
 #include "chrome/browser/extensions/scoped_test_mv2_enabler.h"
 #include "chrome/browser/extensions/updater/extension_updater.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/test/base/platform_browser_test.h"
 #include "extensions/browser/browsertest_util.h"
 #include "extensions/browser/disable_reason.h"
@@ -31,7 +33,6 @@
 
 static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
-class BrowserWindowInterface;
 class OwningTestTabModel;
 class Profile;
 
@@ -259,6 +260,15 @@ class ExtensionBrowserTest : public PlatformBrowserTest,
   content::WebContents* PlatformOpenURLOffTheRecord(Profile* profile,
                                                     const GURL& url);
 
+  // Creates a browser window of `type` using the test's profile from
+  // GetProfile().
+  BrowserWindowInterface* CreateBrowserWindowWithType(
+      BrowserWindowInterface::Type type);
+
+  // Creates a new incognito browser window using the incognito profile owned
+  // by the test's profile from GetProfile().
+  BrowserWindowInterface* CreateIncognitoBrowserWindow();
+
   // Opens `url` in a new tab, blocking until the navigation finishes.
   content::RenderFrameHost* NavigateToURLInNewTab(const GURL& url);
 
@@ -445,6 +455,9 @@ class ExtensionBrowserTest : public PlatformBrowserTest,
 #if BUILDFLAG(IS_ANDROID)
   // Tab model used for incognito tab support.
   std::unique_ptr<OwningTestTabModel> incognito_tab_model_;
+
+  // Feature flags overrides are only used on Android.
+  base::test::ScopedFeatureList feature_list_;
 #endif
 
   // Used for setting the default scoped current channel for extension browser

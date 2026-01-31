@@ -13,10 +13,13 @@ extern const char kNtpCustomLinksVisible[];
 extern const char kNtpEnterpriseShortcutsVisible[];
 extern const char kNtpPersonalShortcutsVisible[];
 extern const char kNtpShowAllMostVisitedTiles[];
+extern const char kNtpLastShortcutsStalenessUpdate[];
+extern const char kNtpShortcutsStalenessCount[];
 extern const char kNtpShortcutsAutoRemovalDisabled[];
 extern const char kNtpLastModuleStalenessUpdate[];
 extern const char kNtpModuleStalenessCountDict[];
 extern const char kNtpModulesAutoRemovalDisabledDict[];
+extern const char kNtpContextMenuClickCount[];
 }  // namespace ntp_prefs
 
 #endif  // CHROME_BROWSER_UI_WEBUI_NEW_TAB_PAGE_NTP_PREF_NAMES_H_

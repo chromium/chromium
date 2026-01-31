@@ -15,7 +15,6 @@
 
 #include "base/command_line.h"
 #include "base/compiler_specific.h"
-#include "base/containers/contains.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
@@ -463,7 +462,7 @@ HRESULT FindExistingUserSidIfAvailable(const std::string& refresh_token,
 // since only local users can be created. |sid| will be empty until the user is
 // created later on. |is_consumer_account| will be set to true if the email used
 // to sign in is gmail or googlemail.
-HRESULT MakeUsernameForAccount(const base::Value::Dict& result,
+HRESULT MakeUsernameForAccount(const base::DictValue& result,
                                std::wstring* gaia_id,
                                wchar_t* username,
                                DWORD username_length,
@@ -665,7 +664,7 @@ HRESULT WaitForLoginUIAndGetResult(
 // This function validates the response from GLS and makes sure it contained
 // all the fields required to proceed with logon.  This does not necessarily
 // guarantee that the logon will succeed, only that GLS response seems correct.
-HRESULT ValidateResult(const base::Value::Dict& result, BSTR* status_text) {
+HRESULT ValidateResult(const base::DictValue& result, BSTR* status_text) {
   DCHECK(status_text);
 
   // Check the exit_code to see if any errors were detected by the GLS.
@@ -1075,6 +1074,11 @@ HRESULT CGaiaCredentialBase::GetBaseGlsCommandline(
   // screen has a specific language, that will be the one used for the UI
   // language.
   command_line->AppendSwitchNative("lang", GetSelectedLanguage());
+
+  // Enable logging and set verbosity, log file is created as
+  // C:\Users\gaia\AppData\Local\Google\Chrome\User Data\chrome_debug.log
+  command_line->AppendSwitch("enable-logging");
+  command_line->AppendSwitchASCII("v", "1");
 
   return S_OK;
 }
@@ -1815,7 +1819,7 @@ HRESULT CGaiaCredentialBase::ForkGaiaLogonStub(
 }
 
 HRESULT CGaiaCredentialBase::ForkPerformPostSigninActionsStub(
-    const base::Value::Dict& dict,
+    const base::DictValue& dict,
     BSTR* status_text) {
   LOGFN(VERBOSE);
   DCHECK(status_text);
@@ -1953,8 +1957,7 @@ unsigned __stdcall CGaiaCredentialBase::WaitForLoginUI(void* param) {
 }
 
 // static
-HRESULT CGaiaCredentialBase::PerformActions(
-    const base::Value::Dict& properties) {
+HRESULT CGaiaCredentialBase::PerformActions(const base::DictValue& properties) {
   LOGFN(VERBOSE);
 
   std::wstring sid = GetDictString(properties, kKeySID);
@@ -2032,7 +2035,7 @@ HRESULT CGaiaCredentialBase::PerformActions(
 
 // static
 HRESULT CGaiaCredentialBase::PerformPostSigninActions(
-    const base::Value::Dict& properties,
+    const base::DictValue& properties,
     bool com_initialized) {
   LOGFN(VERBOSE);
   HRESULT hr = S_OK;
@@ -2216,12 +2219,11 @@ void CGaiaCredentialBase::TerminateLogonProcess() {
   }
 }
 
-HRESULT CGaiaCredentialBase::ValidateOrCreateUser(
-    const base::Value::Dict& result,
-    BSTR* domain,
-    BSTR* username,
-    BSTR* sid,
-    BSTR* error_text) {
+HRESULT CGaiaCredentialBase::ValidateOrCreateUser(const base::DictValue& result,
+                                                  BSTR* domain,
+                                                  BSTR* username,
+                                                  BSTR* sid,
+                                                  BSTR* error_text) {
   LOGFN(VERBOSE);
   DCHECK(domain);
   DCHECK(username);
@@ -2389,7 +2391,7 @@ HRESULT CGaiaCredentialBase::OnUserAuthenticated(BSTR authentication_info,
   base::WideToUTF8(OLE2CW(authentication_info),
                    ::SysStringLen(authentication_info), &json_string);
 
-  std::optional<base::Value::Dict> properties =
+  std::optional<base::DictValue> properties =
       base::JSONReader::ReadDict(json_string, base::JSON_ALLOW_TRAILING_COMMAS);
 
   SecurelyClearString(json_string);
@@ -2413,7 +2415,7 @@ HRESULT CGaiaCredentialBase::OnUserAuthenticated(BSTR authentication_info,
     const std::wstring email_domain = email.substr(email.find(L"@") + 1);
     const std::vector<std::wstring> allowed_domains = GetEmailDomainsList();
 
-    if (!base::Contains(allowed_domains, email_domain)) {
+    if (!std::ranges::contains(allowed_domains, email_domain)) {
       LOGFN(ERROR) << "Account " << email
                    << " isn't in a domain from allowed domains."
                    << "Allowed Domains: "
@@ -2426,7 +2428,7 @@ HRESULT CGaiaCredentialBase::OnUserAuthenticated(BSTR authentication_info,
 
     std::vector<std::wstring> permitted_accounts = GetPermittedAccounts();
     if (!permitted_accounts.empty() &&
-        !base::Contains(permitted_accounts, email)) {
+        !std::ranges::contains(permitted_accounts, email)) {
       *status_text = AllocErrorString(IDS_EMAIL_MISMATCH_BASE);
       SecurelyClearDictionaryValue(properties);
       return E_FAIL;

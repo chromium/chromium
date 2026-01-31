@@ -162,6 +162,31 @@ const std::string kLiveFullEncryptedMediaPlaylist =
     "#EXTINF:3.0,\n"
     "13981.js\n";
 
+const std::string kMultivariantPlaylistWithNonMatchingTracks =
+    "#EXTM3U\n"
+    "#EXT-X-MEDIA:TYPE=AUDIO,GROUP-ID=\"P1\",NAME=\"p1-en\",DEFAULT=NO,"
+    "AUTOSELECT=YES,LANGUAGE=\"en\",URI=\"1-en.m3u8\"\n"
+    "#EXT-X-MEDIA:TYPE=AUDIO,GROUP-ID=\"P1\",NAME=\"p1-de\",DEFAULT=YES,"
+    "AUTOSELECT=YES,LANGUAGE=\"de\",URI=\"1-de.m3u8\"\n"
+    "#EXT-X-MEDIA:TYPE=AUDIO,GROUP-ID=\"P1\",NAME=\"crowd-es\",DEFAULT=NO,"
+    "AUTOSELECT=YES,LANGUAGE=\"es\",URI=\"crowd-es.m3u8\"\n"
+    "#EXT-X-MEDIA:TYPE=AUDIO,GROUP-ID=\"P2\",NAME=\"p2-en\",DEFAULT=NO,"
+    "AUTOSELECT=YES,LANGUAGE=\"en\",URI=\"2-en.m3u8\"\n"
+    "#EXT-X-MEDIA:TYPE=AUDIO,GROUP-ID=\"P2\",NAME=\"p2-fr\",DEFAULT=YES,"
+    "AUTOSELECT=YES,LANGUAGE=\"fr\",URI=\"2-fr.m3u8\"\n"
+    "#EXT-X-MEDIA:TYPE=AUDIO,GROUP-ID=\"P2\",NAME=\"crowd-es\",DEFAULT=NO,"
+    "AUTOSELECT=YES,LANGUAGE=\"es\",URI=\"crowd-es.m3u8\"\n"
+    "#EXT-X-MEDIA:TYPE=VIDEO,GROUP-ID=\"V1\",NAME=\"Deutchboothen\",DEFAULT="
+    "YES,AUTOSELECT=YES,URI=\"1.m3u8\"\n"
+    "#EXT-X-MEDIA:TYPE=VIDEO,GROUP-ID=\"V2\",NAME=\"booth au "
+    "francaise\",DEFAULT=YES,AUTOSELECT=YES,URI=\"2.m3u8\"\n"
+    "#EXT-X-STREAM-INF:BANDWIDTH=1,CODECS=\"avc1.420000\",AUDIO="
+    "\"P1\",VIDEO=\"V1\"\n"
+    "1.m3u8\n"
+    "#EXT-X-STREAM-INF:BANDWIDTH=1,CODECS=\"avc1.420000\",AUDIO="
+    "\"P2\",VIDEO=\"V2\"\n"
+    "2.m3u8\n";
+
 using ::base::test::RunOnceCallback;
 using ::base::test::RunOnceClosure;
 using testing::_;
@@ -315,6 +340,12 @@ class HlsManifestDemuxerEngineTest : public testing::Test {
     BindUrlToDataSource<StringHlsDataSourceStreamFactory>(
         "http://example.com/low.m3u8", kSimpleMediaPlaylist);
     EXPECT_CALL(*this, MockInitComplete(HasStatusCode(PIPELINE_OK)));
+    EXPECT_CALL(*this, TrackNameAdded(MediaTrack::Type::kVideo, "1.2 Mbps"));
+    EXPECT_CALL(*this, TrackNameAdded(MediaTrack::Type::kVideo, "2.5 Mbps"));
+    EXPECT_CALL(*this, TrackNameAdded(MediaTrack::Type::kVideo, "7.6 Mbps"));
+    EXPECT_CALL(*this, TrackNameAdded(MediaTrack::Type::kAudio, "Default"));
+    EXPECT_CALL(*this, TrackChangedState(MediaTrack::Type::kVideo, "1.2 Mbps",
+                                         MediaTrack::State::kActive));
     InitializeEngine();
     task_environment_.RunUntilIdle();
 
@@ -407,8 +438,12 @@ class HlsManifestDemuxerEngineTest : public testing::Test {
  public:
   MOCK_METHOD(void, MockInitComplete, (PipelineStatus status), ());
   MOCK_METHOD(void, SeekFinished, (), ());
-  MOCK_METHOD(void, AddTrack, (const MediaTrack&), ());
-  MOCK_METHOD(void, RemoveTrack, (const MediaTrack&), ());
+  MOCK_METHOD(void, TrackNameAdded, (MediaTrack::Type, std::string), ());
+  MOCK_METHOD(void, TrackNameRemoved, (MediaTrack::Type, std::string), ());
+  MOCK_METHOD(void,
+              TrackChangedState,
+              (MediaTrack::Type, std::string, MediaTrack::State),
+              ());
 
   HlsManifestDemuxerEngineTest()
       : media_log_(std::make_unique<NiceMock<media::MockMediaLog>>()),
@@ -425,10 +460,13 @@ class HlsManifestDemuxerEngineTest : public testing::Test {
 
     engine_ = std::make_unique<HlsManifestDemuxerEngine>(
         std::move(dsp), base::SingleThreadTaskRunner::GetCurrentDefault(),
-        base::BindRepeating(&HlsManifestDemuxerEngineTest::AddTrack,
-                            base::Unretained(this)),
-        base::BindRepeating(&HlsManifestDemuxerEngineTest::RemoveTrack,
-                            base::Unretained(this)),
+        std::make_unique<ForwardingTrackManager>(
+            base::BindRepeating(&HlsManifestDemuxerEngineTest::AddTrack,
+                                base::Unretained(this)),
+            base::BindRepeating(&HlsManifestDemuxerEngineTest::RemoveTrack,
+                                base::Unretained(this)),
+            base::BindRepeating(&HlsManifestDemuxerEngineTest::SetTrackState,
+                                base::Unretained(this))),
         false, GURL("http://media.example.com/manifest.m3u8"),
         media_log_.get());
   }
@@ -438,6 +476,18 @@ class HlsManifestDemuxerEngineTest : public testing::Test {
         mock_mdeh_.get(),
         base::BindOnce(&HlsManifestDemuxerEngineTest::MockInitComplete,
                        base::Unretained(this)));
+  }
+
+  void AddTrack(const MediaTrack& track) {
+    TrackNameAdded(track.type(), track.track_id().value());
+  }
+
+  void RemoveTrack(const MediaTrack& track) {
+    TrackNameRemoved(track.type(), track.track_id().value());
+  }
+
+  void SetTrackState(const MediaTrack& track, MediaTrack::State state) {
+    TrackChangedState(track.type(), track.track_id().value(), state);
   }
 
   ~HlsManifestDemuxerEngineTest() override {
@@ -582,6 +632,12 @@ TEST_F(HlsManifestDemuxerEngineTest, TestMultivariantPlaylistNoAlternates) {
       "http://media.example.com/manifest.m3u8", kSimpleMultivariantPlaylist);
   BindUrlToDataSource<StringHlsDataSourceStreamFactory>(
       "http://example.com/low.m3u8", kSimpleMediaPlaylist);
+  EXPECT_CALL(*this, TrackNameAdded(MediaTrack::Type::kVideo, "1.2 Mbps"));
+  EXPECT_CALL(*this, TrackNameAdded(MediaTrack::Type::kVideo, "2.5 Mbps"));
+  EXPECT_CALL(*this, TrackNameAdded(MediaTrack::Type::kVideo, "7.6 Mbps"));
+  EXPECT_CALL(*this, TrackNameAdded(MediaTrack::Type::kAudio, "Default"));
+  EXPECT_CALL(*this, TrackChangedState(MediaTrack::Type::kVideo, "1.2 Mbps",
+                                       MediaTrack::State::kActive));
   EXPECT_CALL(*this, MockInitComplete(HasStatusCode(PIPELINE_OK)));
   InitializeEngine();
   task_environment_.RunUntilIdle();
@@ -608,6 +664,18 @@ TEST_F(HlsManifestDemuxerEngineTest, TestMultivariantPlaylistWithAlternates) {
       "http://media.example.com/eng-audio.m3u8", kSingleInfoMediaPlaylist);
   BindUrlToDataSource<StringHlsDataSourceStreamFactory>(
       "http://media.example.com/low/video-only.m3u8", kSimpleMediaPlaylist);
+
+  EXPECT_CALL(*this, TrackNameAdded(MediaTrack::Type::kVideo, "1.2 Mbps"));
+  EXPECT_CALL(*this, TrackNameAdded(MediaTrack::Type::kVideo, "2.5 Mbps"));
+  EXPECT_CALL(*this, TrackNameAdded(MediaTrack::Type::kVideo, "7.6 Mbps"));
+  EXPECT_CALL(*this, TrackNameAdded(MediaTrack::Type::kAudio, "Eng"));
+  EXPECT_CALL(*this, TrackNameAdded(MediaTrack::Type::kAudio, "Ger"));
+  EXPECT_CALL(*this, TrackNameAdded(MediaTrack::Type::kAudio, "Com"));
+  EXPECT_CALL(*this, TrackChangedState(MediaTrack::Type::kVideo, "1.2 Mbps",
+                                       MediaTrack::State::kActive));
+  EXPECT_CALL(*this, TrackChangedState(MediaTrack::Type::kAudio, "Eng",
+                                       MediaTrack::State::kActive));
+
   EXPECT_CALL(*this, MockInitComplete(HasStatusCode(PIPELINE_OK)));
   InitializeEngine();
   task_environment_.RunUntilIdle();
@@ -632,6 +700,12 @@ TEST_F(HlsManifestDemuxerEngineTest, TestMultivariantPlaylistWithNoUrlAlts) {
       kMultivariantPlaylistWithEmbeddedAlts);
   BindUrlToDataSource<StringHlsDataSourceStreamFactory>(
       "http://media.example.com/hi/video-only.m3u8", kSimpleMediaPlaylist);
+
+  EXPECT_CALL(*this, TrackNameAdded(MediaTrack::Type::kVideo, "7.6 Mbps"));
+  EXPECT_CALL(*this, TrackNameAdded(MediaTrack::Type::kAudio, "Eng"));
+  EXPECT_CALL(*this, TrackChangedState(MediaTrack::Type::kVideo, "7.6 Mbps",
+                                       MediaTrack::State::kActive));
+
   EXPECT_CALL(*this, MockInitComplete(HasStatusCode(PIPELINE_OK)));
   InitializeEngine();
   task_environment_.RunUntilIdle();
@@ -737,6 +811,9 @@ TEST_F(HlsManifestDemuxerEngineTest, TestMultiRenditionCheckState) {
       base::Seconds(0), 0.0, base::BindOnce([](base::TimeDelta r) {
         EXPECT_THAT(r, CloseTo(base::Seconds(7), base::Milliseconds(1)));
       }));
+
+  EXPECT_CALL(*rend1, Stop());
+  EXPECT_CALL(*rend2, Stop());
 }
 
 TEST_F(HlsManifestDemuxerEngineTest, SeekAfterErrorFails) {
@@ -765,6 +842,11 @@ TEST_F(HlsManifestDemuxerEngineTest, TestSeekDuringAdaptation) {
   auto* rendition_ptr = SetUpInterruptTest();
   EXPECT_EQ(rendition_ptr->MediaPlaylistUri(),
             GURL("http://example.com/low.m3u8"));
+
+  EXPECT_CALL(*this, TrackNameRemoved(MediaTrack::Type::kAudio, "Default"));
+  EXPECT_CALL(*this, TrackNameAdded(MediaTrack::Type::kAudio, "Default"));
+  EXPECT_CALL(*this, TrackChangedState(MediaTrack::Type::kVideo, "7.6 Mbps",
+                                       MediaTrack::State::kActive));
 
   // Start the adaptation and hold it from finishing.
   base::OnceClosure continue_adaptation = StartAndCaptureNetworkAdaptation(
@@ -842,6 +924,11 @@ TEST_F(HlsManifestDemuxerEngineTest, TestAdaptDuringTimeUpdate) {
   base::OnceClosure continue_update =
       StartAndCaptureTimeUpdate(rendition_ptr, base::Seconds(10));
 
+  EXPECT_CALL(*this, TrackNameRemoved(MediaTrack::Type::kAudio, "Default"));
+  EXPECT_CALL(*this, TrackNameAdded(MediaTrack::Type::kAudio, "Default"));
+  EXPECT_CALL(*this, TrackChangedState(MediaTrack::Type::kVideo, "7.6 Mbps",
+                                       MediaTrack::State::kActive));
+
   // Start an adaptation. It should wait while the update is pending.
   ExpectNoNetworkRequests();
   engine_->UpdateNetworkSpeed(45600001);
@@ -860,6 +947,11 @@ TEST_F(HlsManifestDemuxerEngineTest, TestAdaptDuringSeek) {
   // Start the seek, and hold it so it can't finish.
   base::OnceClosure continue_seek = StartAndCaptureSeek(rendition_ptr);
 
+  EXPECT_CALL(*this, TrackNameRemoved(MediaTrack::Type::kAudio, "Default"));
+  EXPECT_CALL(*this, TrackNameAdded(MediaTrack::Type::kAudio, "Default"));
+  EXPECT_CALL(*this, TrackChangedState(MediaTrack::Type::kVideo, "7.6 Mbps",
+                                       MediaTrack::State::kActive));
+
   // Start an adaptation. It should wait while the seek is pending.
   ExpectNoNetworkRequests();
   engine_->UpdateNetworkSpeed(45600001);
@@ -875,6 +967,11 @@ TEST_F(HlsManifestDemuxerEngineTest, TestAdaptDuringSeek) {
 
 TEST_F(HlsManifestDemuxerEngineTest, TestTimeUpdateDuringAdaptation) {
   auto* rendition_ptr = SetUpInterruptTest();
+
+  EXPECT_CALL(*this, TrackNameRemoved(MediaTrack::Type::kAudio, "Default"));
+  EXPECT_CALL(*this, TrackNameAdded(MediaTrack::Type::kAudio, "Default"));
+  EXPECT_CALL(*this, TrackChangedState(MediaTrack::Type::kVideo, "7.6 Mbps",
+                                       MediaTrack::State::kActive));
 
   // Start the adaptation and hold it from finishing.
   base::OnceClosure continue_adaptation = StartAndCaptureNetworkAdaptation(
@@ -1054,6 +1151,12 @@ TEST_F(HlsManifestDemuxerEngineTest, TestOriginTainting) {
       /*taint_origin=*/true);
   BindUrlToDataSource<StringHlsDataSourceStreamFactory>(
       "http://example.com/low.m3u8", kSimpleMediaPlaylist);
+  EXPECT_CALL(*this, TrackNameAdded(MediaTrack::Type::kVideo, "1.2 Mbps"));
+  EXPECT_CALL(*this, TrackNameAdded(MediaTrack::Type::kVideo, "2.5 Mbps"));
+  EXPECT_CALL(*this, TrackNameAdded(MediaTrack::Type::kVideo, "7.6 Mbps"));
+  EXPECT_CALL(*this, TrackNameAdded(MediaTrack::Type::kAudio, "Default"));
+  EXPECT_CALL(*this, TrackChangedState(MediaTrack::Type::kVideo, "1.2 Mbps",
+                                       MediaTrack::State::kActive));
   EXPECT_CALL(*this, MockInitComplete(HasStatusCode(PIPELINE_OK)));
   InitializeEngine();
   task_environment_.RunUntilIdle();
@@ -1079,6 +1182,135 @@ TEST_F(HlsManifestDemuxerEngineTest, TestInitialSegmentEncrypted) {
       "http://media.example.com/13979.js", ciphertext);
   InitializeEngine();
   task_environment_.RunUntilIdle();
+}
+
+TEST_F(HlsManifestDemuxerEngineTest, TestTrackChangeUpdatesSelectableOptions) {
+  {
+    BindUrlToDataSource<StringHlsDataSourceStreamFactory>(
+        "http://media.example.com/manifest.m3u8",
+        kMultivariantPlaylistWithNonMatchingTracks);
+
+    EXPECT_CALL(*this, TrackNameAdded(MediaTrack::Type::kVideo, "Stream: 1"));
+    EXPECT_CALL(*this, TrackNameAdded(MediaTrack::Type::kVideo, "Stream: 2"));
+
+    // The p2-en and p2-fr tracks are not available for selection because
+    // stream is the first selected stream.
+    EXPECT_CALL(*this, TrackNameAdded(MediaTrack::Type::kAudio, "p1-en"));
+    EXPECT_CALL(*this, TrackNameAdded(MediaTrack::Type::kAudio, "p1-de"));
+    EXPECT_CALL(*this, TrackNameAdded(MediaTrack::Type::kAudio, "crowd-es"));
+
+    // The p1-de audio stream is selected because it is marked DEFAULT=YES
+    EXPECT_CALL(*this, TrackChangedState(MediaTrack::Type::kVideo, "Stream: 1",
+                                         MediaTrack::State::kActive));
+    EXPECT_CALL(*this, TrackChangedState(MediaTrack::Type::kAudio, "p1-de",
+                                         MediaTrack::State::kActive));
+
+    BindUrlToDataSource<StringHlsDataSourceStreamFactory>(
+        "http://media.example.com/1-de.m3u8", kSimpleMediaPlaylist);
+    BindUrlToDataSource<StringHlsDataSourceStreamFactory>(
+        "http://media.example.com/1.m3u8", kSimpleMediaPlaylist);
+
+    EXPECT_CALL(*this, MockInitComplete(HasStatusCode(PIPELINE_OK)));
+    InitializeEngine();
+    task_environment_.RunUntilIdle();
+    testing::Mock::VerifyAndClear(this);
+  }
+
+  {
+    // The crowd-es stream is shared between the two video variants, so we
+    // don't remove and re-add it.
+    EXPECT_CALL(*this, TrackNameRemoved(MediaTrack::Type::kAudio, "p1-en"));
+    EXPECT_CALL(*this, TrackNameRemoved(MediaTrack::Type::kAudio, "p1-de"));
+    EXPECT_CALL(*this, TrackNameAdded(MediaTrack::Type::kAudio, "p2-en"));
+    EXPECT_CALL(*this, TrackNameAdded(MediaTrack::Type::kAudio, "p2-fr"));
+
+    // There was no non-default german audio for this variant, so we fall back
+    // to the DEFAULT=YES french track.
+    EXPECT_CALL(*this, TrackChangedState(MediaTrack::Type::kAudio, "p2-fr",
+                                         MediaTrack::State::kActive));
+    EXPECT_CALL(*this, TrackChangedState(MediaTrack::Type::kVideo, "Stream: 2",
+                                         MediaTrack::State::kActive));
+
+    BindUrlToDataSource<StringHlsDataSourceStreamFactory>(
+        "http://media.example.com/2.m3u8", kSimpleMediaPlaylist);
+    BindUrlToDataSource<StringHlsDataSourceStreamFactory>(
+        "http://media.example.com/2-fr.m3u8", kSimpleMediaPlaylist);
+
+    engine_->SelectVideoTrack(MediaTrack::Id("Stream: 2"));
+    task_environment_.RunUntilIdle();
+    testing::Mock::VerifyAndClear(this);
+  }
+
+  {
+    EXPECT_CALL(*this, TrackChangedState(MediaTrack::Type::kAudio, "p2-en",
+                                         MediaTrack::State::kActive));
+    EXPECT_CALL(*this, TrackChangedState(MediaTrack::Type::kVideo, "Stream: 2",
+                                         MediaTrack::State::kActive));
+    // No tracklist changes occur, since this was just a rendition change.
+    EXPECT_CALL(*this, TrackNameRemoved(_, _)).Times(0);
+    EXPECT_CALL(*this, TrackNameAdded(_, _)).Times(0);
+    BindUrlToDataSource<StringHlsDataSourceStreamFactory>(
+        "http://media.example.com/2-en.m3u8", kSimpleMediaPlaylist);
+    engine_->SelectAudioTrack(MediaTrack::Id("p2-en"));
+    task_environment_.RunUntilIdle();
+    testing::Mock::VerifyAndClear(this);
+  }
+
+  {
+    // The crowd-es stream is shared between the two video variants, so we
+    // don't remove and re-add it.
+    EXPECT_CALL(*this, TrackNameAdded(MediaTrack::Type::kAudio, "p1-en"));
+    EXPECT_CALL(*this, TrackNameAdded(MediaTrack::Type::kAudio, "p1-de"));
+    EXPECT_CALL(*this, TrackNameRemoved(MediaTrack::Type::kAudio, "p2-en"));
+    EXPECT_CALL(*this, TrackNameRemoved(MediaTrack::Type::kAudio, "p2-fr"));
+
+    // The language is preserved because both variants have an english track
+    EXPECT_CALL(*this, TrackChangedState(MediaTrack::Type::kVideo, "Stream: 1",
+                                         MediaTrack::State::kActive));
+    EXPECT_CALL(*this, TrackChangedState(MediaTrack::Type::kAudio, "p1-en",
+                                         MediaTrack::State::kActive));
+    BindUrlToDataSource<StringHlsDataSourceStreamFactory>(
+        "http://media.example.com/1-en.m3u8", kSimpleMediaPlaylist);
+    BindUrlToDataSource<StringHlsDataSourceStreamFactory>(
+        "http://media.example.com/1.m3u8", kSimpleMediaPlaylist);
+    engine_->SelectVideoTrack(MediaTrack::Id("Stream: 1"));
+    task_environment_.RunUntilIdle();
+    testing::Mock::VerifyAndClear(this);
+  }
+
+  {
+    EXPECT_CALL(*this, TrackChangedState(MediaTrack::Type::kAudio, "crowd-es",
+                                         MediaTrack::State::kActive));
+    EXPECT_CALL(*this, TrackChangedState(MediaTrack::Type::kVideo, "Stream: 1",
+                                         MediaTrack::State::kActive));
+    // No tracklist changes occur, since this was just a rendition change.
+    EXPECT_CALL(*this, TrackNameRemoved(_, _)).Times(0);
+    EXPECT_CALL(*this, TrackNameAdded(_, _)).Times(0);
+    BindUrlToDataSource<StringHlsDataSourceStreamFactory>(
+        "http://media.example.com/crowd-es.m3u8", kSimpleMediaPlaylist);
+    engine_->SelectAudioTrack(MediaTrack::Id("crowd-es"));
+    task_environment_.RunUntilIdle();
+    testing::Mock::VerifyAndClear(this);
+  }
+
+  {
+    // The crowd-es stream is shared between the two video variants, so we
+    // don't remove and re-add it.
+    EXPECT_CALL(*this, TrackNameRemoved(MediaTrack::Type::kAudio, "p1-en"));
+    EXPECT_CALL(*this, TrackNameRemoved(MediaTrack::Type::kAudio, "p1-de"));
+    EXPECT_CALL(*this, TrackNameAdded(MediaTrack::Type::kAudio, "p2-en"));
+    EXPECT_CALL(*this, TrackNameAdded(MediaTrack::Type::kAudio, "p2-fr"));
+
+    EXPECT_CALL(*this, TrackChangedState(MediaTrack::Type::kVideo, "Stream: 2",
+                                         MediaTrack::State::kActive));
+    EXPECT_CALL(*this, TrackChangedState(MediaTrack::Type::kAudio, "crowd-es",
+                                         MediaTrack::State::kActive));
+    BindUrlToDataSource<StringHlsDataSourceStreamFactory>(
+        "http://media.example.com/2.m3u8", kSimpleMediaPlaylist);
+    engine_->SelectVideoTrack(MediaTrack::Id("Stream: 2"));
+    task_environment_.RunUntilIdle();
+    testing::Mock::VerifyAndClear(this);
+  }
 }
 
 }  // namespace media

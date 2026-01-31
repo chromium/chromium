@@ -112,11 +112,11 @@ class SimpleFeature : public Feature {
   // Similar to mojom::ManifestLocation, these are the classes of locations
   // supported in feature files. These should only be used in this class and in
   // generated files.
-  enum Location {
-    COMPONENT_LOCATION,
-    EXTERNAL_COMPONENT_LOCATION,
-    POLICY_LOCATION,
-    UNPACKED_LOCATION,
+  enum class Location {
+    kComponent,
+    kExternalComponent,
+    kPolicy,
+    kUnpacked,
   };
 
   // Setters used by generated code to create the feature.

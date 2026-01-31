@@ -11,7 +11,6 @@
 #include <utility>
 
 #include "base/check.h"
-#include "base/containers/contains.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/functional/callback.h"
@@ -60,7 +59,7 @@ FatalCrashEventsObserver::ReportedLocalIdManager::Create(
 bool FatalCrashEventsObserver::ReportedLocalIdManager::HasBeenReported(
     const std::string& local_id) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return base::Contains(local_ids_, local_id);
+  return local_ids_.contains(local_id);
 }
 
 FatalCrashEventsObserver::ReportedLocalIdManager::ShouldReportResult
@@ -268,7 +267,7 @@ void FatalCrashEventsObserver::ReportedLocalIdManager::
 
   // Clean up uploaded crashes from the top of the priority queue.
   while (!local_id_entry_queue_.empty()) {
-    if (base::Contains(local_ids_, local_id_entry_queue_.top().local_id)) {
+    if (local_ids_.contains(local_id_entry_queue_.top().local_id)) {
       break;
     }
     local_id_entry_queue_.pop();

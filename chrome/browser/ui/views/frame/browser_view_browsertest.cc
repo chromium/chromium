@@ -19,9 +19,6 @@
 #include "chrome/browser/preloading/scoped_prewarm_feature_list.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/safe_browsing/chrome_enterprise_url_lookup_service_factory.h"
-#if BUILDFLAG(IS_CHROMEOS)
-#include "chrome/browser/ui/ash/test_util.h"
-#endif
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands_mac.h"
 #include "chrome/browser/ui/browser_navigator.h"
@@ -65,8 +62,8 @@
 #include "components/policy/core/common/policy_types.h"
 #include "components/prefs/pref_service.h"
 #include "components/safe_browsing/core/browser/realtime/fake_url_lookup_service.h"
+#include "components/split_tabs/split_tab_visual_data.h"
 #include "components/tabs/public/split_tab_collection.h"
-#include "components/tabs/public/split_tab_visual_data.h"
 #include "content/public/browser/invalidate_type.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_observer.h"
@@ -93,6 +90,11 @@
 
 #if BUILDFLAG(IS_OZONE)
 #include "ui/ozone/public/ozone_platform.h"
+#endif
+
+#if BUILDFLAG(IS_CHROMEOS)
+#include "chrome/browser/ash/boca/on_task/on_task_locked_controller.h"
+#include "chrome/browser/ui/ash/test_util.h"
 #endif
 
 class BrowserViewTest : public InProcessBrowserTest {
@@ -278,13 +280,15 @@ IN_PROC_BROWSER_TEST_F(BrowserViewTest, CloseWithTabsStartWithActive) {
 
 #if BUILDFLAG(IS_CHROMEOS)
 IN_PROC_BROWSER_TEST_F(BrowserViewTest, OnTaskLockedBrowserView) {
-  browser()->SetLockedForOnTask(true);
+  ash::boca::OnTaskLockedController::From(browser())->set_locked_for_on_task(
+      true);
   EXPECT_FALSE(browser_view()->CanMinimize());
   EXPECT_FALSE(browser_view()->ShouldShowCloseButton());
 }
 
 IN_PROC_BROWSER_TEST_F(BrowserViewTest, OnTaskUnlockedBrowserView) {
-  browser()->SetLockedForOnTask(false);
+  ash::boca::OnTaskLockedController::From(browser())->set_locked_for_on_task(
+      false);
   EXPECT_TRUE(browser_view()->CanMinimize());
   EXPECT_TRUE(browser_view()->ShouldShowCloseButton());
 }
@@ -379,8 +383,8 @@ void SetDevToolsWindowSizePrefs(Browser* browser,
                                 int bottom) {
   PrefService* prefs = browser->GetProfile()->GetPrefs();
   ScopedDictPrefUpdate update(prefs, prefs::kAppWindowPlacement);
-  base::Value::Dict& wp_prefs = update.Get();
-  base::Value::Dict dev_tools_defaults;
+  base::DictValue& wp_prefs = update.Get();
+  base::DictValue dev_tools_defaults;
   dev_tools_defaults.Set("left", left);
   dev_tools_defaults.Set("right", right);
   dev_tools_defaults.Set("top", top);
@@ -390,7 +394,7 @@ void SetDevToolsWindowSizePrefs(Browser* browser,
   wp_prefs.Set(DevToolsWindow::kDevToolsApp, std::move(dev_tools_defaults));
 }
 
-const base::Value::Dict& GetDevToolsWindowSizePrefs(Browser* browser) {
+const base::DictValue& GetDevToolsWindowSizePrefs(Browser* browser) {
   PrefService* prefs = browser->GetProfile()->GetPrefs();
   return prefs->GetDict(prefs::kAppWindowPlacement)
       .Find(DevToolsWindow::kDevToolsApp)
@@ -398,7 +402,7 @@ const base::Value::Dict& GetDevToolsWindowSizePrefs(Browser* browser) {
 }
 
 auto HasDimensions(int left, int right, int top, int bottom) {
-  return base::test::DictionaryHasValues(base::Value::Dict()
+  return base::test::DictionaryHasValues(base::DictValue()
                                              .Set("left", left)
                                              .Set("right", right)
                                              .Set("top", top)
@@ -536,7 +540,7 @@ IN_PROC_BROWSER_TEST_F(BrowserViewTest, TitleAndLoadState) {
   content::TestNavigationObserver navigation_watcher(
       contents, 1, content::MessageLoopRunner::QuitMode::DEFERRED);
 
-  TabStrip* tab_strip = browser_view()->tabstrip();
+  TabStrip* tab_strip = browser_view()->horizontal_tab_strip_for_testing();
   // Navigate without blocking.
   const GURL test_url = chrome_test_utils::GetTestUrl(
       base::FilePath(base::FilePath::kCurrentDirectory),
@@ -949,8 +953,16 @@ IN_PROC_BROWSER_TEST_F(BrowserViewTest, SplitViewFullscreenLayout) {
       {1}, split_tabs::SplitTabVisualData(),
       split_tabs::SplitTabCreatedSource::kToolbarButton);
 
-  ASSERT_TRUE(browser()->tab_strip_model()->selection_model().IsSelected(0));
-  ASSERT_TRUE(browser()->tab_strip_model()->selection_model().IsSelected(1));
+  ASSERT_TRUE(browser()
+                  ->tab_strip_model()
+                  ->selection_model()
+                  .GetListSelectionModel()
+                  .IsSelected(0));
+  ASSERT_TRUE(browser()
+                  ->tab_strip_model()
+                  ->selection_model()
+                  .GetListSelectionModel()
+                  .IsSelected(1));
 
   TopContainerView* top_container = browser_view()->top_container();
   views::View* overlay_view = browser_view()->overlay_view();
@@ -981,8 +993,16 @@ IN_PROC_BROWSER_TEST_F(BrowserViewTest, SplitViewTabRevealFullscreen) {
       {1}, split_tabs::SplitTabVisualData(),
       split_tabs::SplitTabCreatedSource::kToolbarButton);
 
-  ASSERT_TRUE(browser()->tab_strip_model()->selection_model().IsSelected(0));
-  ASSERT_TRUE(browser()->tab_strip_model()->selection_model().IsSelected(1));
+  ASSERT_TRUE(browser()
+                  ->tab_strip_model()
+                  ->selection_model()
+                  .GetListSelectionModel()
+                  .IsSelected(0));
+  ASSERT_TRUE(browser()
+                  ->tab_strip_model()
+                  ->selection_model()
+                  .GetListSelectionModel()
+                  .IsSelected(1));
 
   ui_test_utils::ToggleFullscreenModeAndWait(browser());
   ASSERT_FALSE(browser()->window()->IsToolbarShowing());

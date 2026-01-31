@@ -212,7 +212,7 @@ TEST_F(FocusModeControllerMultiUserTest, LoadUserPrefsAndSwitchUsers) {
   const focus_mode_util::SoundType kUser2SoundType =
       focus_mode_util::SoundType::kYouTubeMusic;
 
-  base::Value::Dict user2_task_dict;
+  base::DictValue user2_task_dict;
   const std::string task_list_id_2 = "task_list_id_2";
   const std::string task_id_2 = "task_id_2";
   user2_task_dict.Set(focus_mode_util::kTaskListIdKey, task_list_id_2);
@@ -224,7 +224,7 @@ TEST_F(FocusModeControllerMultiUserTest, LoadUserPrefsAndSwitchUsers) {
   user_2_prefs()->SetBoolean(prefs::kFocusModeDoNotDisturb, kUser2DNDState);
   user_2_prefs()->SetDict(prefs::kFocusModeSelectedTask,
                           user2_task_dict.Clone());
-  base::Value::Dict sound_section_dict;
+  base::DictValue sound_section_dict;
   sound_section_dict.Set(focus_mode_util::kSoundTypeKey,
                          static_cast<int>(kUser2SoundType));
   user_2_prefs()->SetDict(prefs::kFocusModeSoundSection,
@@ -276,7 +276,7 @@ TEST_F(FocusModeControllerMultiUserTest, LoadUserPrefsAndSwitchUsers) {
 TEST_F(FocusModeControllerMultiUserTest, SwitchingUsersClearsTasksCache) {
   // Setup for user1.
   auto& tasks_client1 = CreateFakeTasksClient(GetUser1AccountId());
-  base::Value::Dict user1_task_dict;
+  base::DictValue user1_task_dict;
   const std::string task_list_id_1 = "task_list_id_1";
   const std::string task_id_1 = "task_id_1";
   user1_task_dict.Set(focus_mode_util::kTaskListIdKey, task_list_id_1);
@@ -304,7 +304,7 @@ TEST_F(FocusModeControllerMultiUserTest, SwitchingUsersClearsTasksCache) {
 
   // Setup for user2.
   auto& tasks_client2 = CreateFakeTasksClient(GetUser2AccountId());
-  base::Value::Dict user2_task_dict;
+  base::DictValue user2_task_dict;
   const std::string task_list_id_2 = "task_list_id_2";
   const std::string task_id_2 = "task_id_2";
   user2_task_dict.Set(focus_mode_util::kTaskListIdKey, task_list_id_2);
@@ -356,7 +356,7 @@ TEST_F(FocusModeControllerMultiUserTest, TogglePlaylistToChangeUserPref) {
   EXPECT_EQ(kUser1NewSoundType, sounds_controller->sound_type());
 
   // The playlist id should be also updated into the user pref.
-  base::Value::Dict dict =
+  base::DictValue dict =
       user_1_prefs()->GetDict(prefs::kFocusModeSoundSection).Clone();
   EXPECT_EQ(static_cast<int>(kUser1NewSoundType),
             dict.FindInt(focus_mode_util::kSoundTypeKey).value());
@@ -437,7 +437,7 @@ TEST_F(FocusModeControllerMultiUserTest, TasksFlow) {
 
   // Verify the selected task info is accurate in the user pref once we start a
   // focus session.
-  base::Value::Dict task_dict =
+  base::DictValue task_dict =
       user_1_prefs()->GetDict(prefs::kFocusModeSelectedTask).Clone();
   EXPECT_FALSE(task_dict.empty());
   EXPECT_EQ(task_list_id,

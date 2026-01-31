@@ -11,13 +11,13 @@
 
 #include <sync/sync.h>
 
+#include <algorithm>
 #include <initializer_list>
 #include <map>
 #include <set>
 #include <string>
 #include <utility>
 
-#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/posix/safe_strerror.h"
@@ -168,7 +168,7 @@ void RequestManager::SetUpStreamsAndBuffers(
   auto request_keys = GetMetadataEntryAsSpan<int32_t>(
       static_metadata,
       cros::mojom::CameraMetadataTag::ANDROID_REQUEST_AVAILABLE_REQUEST_KEYS);
-  zero_shutter_lag_supported_ = base::Contains(
+  zero_shutter_lag_supported_ = std::ranges::contains(
       request_keys,
       static_cast<int32_t>(
           cros::mojom::CameraMetadataTag::ANDROID_CONTROL_ENABLE_ZSL));

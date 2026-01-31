@@ -23,7 +23,7 @@ namespace ui {
 // core value and 0 or or more qualifiers.
 //
 // A Java counterpart will be generated for this enum.  This is why the enum
-// uses int32_t and not uint32_t as the underlying type (jint cannot
+// uses int32_t and not uint32_t as the underlying type (int32_t cannot
 // represent uint32_t).
 // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.ui.base
 enum PageTransition : int32_t {

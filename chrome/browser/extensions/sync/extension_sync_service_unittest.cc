@@ -34,6 +34,7 @@
 #include "chrome/browser/extensions/updater/extension_updater.h"
 #include "chrome/browser/profiles/profile_key.h"
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
+#include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/common/chrome_constants.h"
 #include "chrome/common/extensions/extension_test_util.h"
 #include "chrome/common/extensions/sync_helper.h"
@@ -41,10 +42,14 @@
 #include "components/crx_file/id_util.h"
 #include "components/signin/public/base/signin_pref_names.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
+#include "components/sync/base/features.h"
+#include "components/sync/base/user_selectable_type.h"
 #include "components/sync/model/sync_data.h"
 #include "components/sync/protocol/app_specifics.pb.h"
 #include "components/sync/protocol/entity_specifics.pb.h"
 #include "components/sync/protocol/extension_specifics.pb.h"
+#include "components/sync/service/sync_service.h"
+#include "components/sync/service/sync_user_settings.h"
 #include "components/variations/variations_associated_data.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/storage_partition.h"
@@ -847,6 +852,38 @@ TEST_F(ExtensionSyncServiceTest, DontSyncPolicyUninstalls) {
   EXPECT_EQ(1u, extensions_processor.data().size());
 }
 
+TEST_F(ExtensionSyncServiceTest, ReinstallSyncedExtensionWhenPolicyIsLifted) {
+  InitializeEmptyExtensionService();
+  service()->Init();
+  ASSERT_TRUE(extension_system()->is_ready());
+
+  StartSyncing(syncer::EXTENSIONS);
+
+  // 1. Install an extension.
+  const Extension* extension =
+      InstallCRX(data_dir().AppendASCII("good.crx"), INSTALL_NEW);
+  ASSERT_TRUE(extension);
+  const std::string extension_id = extension->id();
+
+  // 2. Uninstall the extension with reason INTERNAL_MANAGEMENT.
+  // This simulates the extension being uninstalled due to policy change.
+  UninstallExtension(extension_id,
+                     UninstallExtensionFileDeleteType::kDeleteAllVersions,
+                     extensions::UNINSTALL_REASON_INTERNAL_MANAGEMENT);
+  EXPECT_FALSE(registry()->GetInstalledExtension(extension_id));
+
+  // 3. Verify the extension is not pending install.
+  extensions::PendingExtensionManager* pending_extension_manager =
+      extensions::PendingExtensionManager::Get(profile());
+  EXPECT_FALSE(pending_extension_manager->IsIdPending(extension_id));
+
+  // 4. Simulate the extension becoming allowed back.
+  extension_sync_service()->OnExtensionManagementSettingsChanged();
+
+  // 5. Verify it's the same extension that is now pending install.
+  EXPECT_TRUE(pending_extension_manager->IsIdPending(extension_id));
+}
+
 #if !BUILDFLAG(IS_ANDROID)
 // Disabled on Android since Android does not support Chrome Apps.
 TEST_F(ExtensionSyncServiceTest, GetSyncAppDataUserSettings) {
@@ -1594,8 +1631,12 @@ TEST_F(ExtensionSyncServiceTest, AccountExtensionTypeChangesWithSync) {
   auto identity_test_env_profile_adaptor =
       std::make_unique<IdentityTestEnvironmentProfileAdaptor>(profile());
   identity_test_env_profile_adaptor->identity_test_env()
-      ->MakePrimaryAccountAvailable("testy@mctestface.com",
-                                    signin::ConsentLevel::kSync);
+      ->MakePrimaryAccountAvailable(
+          "testy@mctestface.com",
+          base::FeatureList::IsEnabled(
+              syncer::kReplaceSyncPromosWithSignInPromos)
+              ? signin::ConsentLevel::kSignin
+              : signin::ConsentLevel::kSync);
 
   scoped_refptr<const Extension> second_extension =
       load_extension("simple_with_icon");

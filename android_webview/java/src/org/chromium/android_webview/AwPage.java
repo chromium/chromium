@@ -16,8 +16,8 @@ public class AwPage extends AwSupportLibIsomorphic {
         mPage = page;
     }
 
-    public boolean isPrerendering() {
-        return mPage.isPrerendering();
+    public String getUrl() {
+        return mPage.getUrl().getSpec();
     }
 
     public Page getInternalPageForTesting() {

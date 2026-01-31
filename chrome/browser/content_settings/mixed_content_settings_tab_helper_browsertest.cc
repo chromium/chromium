@@ -162,7 +162,7 @@ IN_PROC_BROWSER_TEST_F(MixedContentSettingsTabHelperPrerenderBrowserTest,
   // Loads a page in the prerendering.
   GURL prerender_url(test_server()->GetURL(
       "/content_setting_bubble/mixed_script.html?prerendering"));
-  const content::FrameTreeNodeId host_id =
+  const content::PrerenderHostId host_id =
       prerender_helper()->AddPrerender(prerender_url);
   content::RenderFrameHost* prerender_rfh =
       prerender_helper()->GetPrerenderedMainFrameHost(host_id);
@@ -198,7 +198,7 @@ IN_PROC_BROWSER_TEST_F(MixedContentSettingsTabHelperPrerenderBrowserTest,
   // Loads a page in the prerendering.
   GURL prerender_url(
       test_server()->GetURL("/content_setting_bubble/mixed_script.html"));
-  const content::FrameTreeNodeId host_id =
+  const content::PrerenderHostId host_id =
       prerender_helper()->AddPrerender(prerender_url);
   content::RenderFrameHost* prerender_rfh =
       prerender_helper()->GetPrerenderedMainFrameHost(host_id);
@@ -239,7 +239,7 @@ IN_PROC_BROWSER_TEST_F(MixedContentSettingsTabHelperPrerenderBrowserTest,
   // Loads a page in the prerendering.
   GURL prerender_url(
       test_server()->GetURL("/content_setting_bubble/mixed_script.html"));
-  content::FrameTreeNodeId host_id =
+  content::PrerenderHostId host_id =
       prerender_helper()->AddPrerender(prerender_url);
   content::RenderFrameHost* prerender_rfh =
       prerender_helper()->GetPrerenderedMainFrameHost(host_id);

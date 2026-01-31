@@ -431,7 +431,7 @@ TEST_F(SeaPenWallpaperManagerTest, GetImageAndMetadataInvalidJson) {
   {
     const auto template_query = MakeTemplateQuery();
     // Create valid metadata dict.
-    base::Value::Dict query_dict = SeaPenQueryToDict(MakeTemplateQuery());
+    base::DictValue query_dict = SeaPenQueryToDict(MakeTemplateQuery());
 
     // Rename a necessary field to cause parsing failure.
     ASSERT_TRUE(query_dict.contains("user_visible_query_text"));

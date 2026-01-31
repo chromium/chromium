@@ -22,7 +22,6 @@
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/time/time.h"
-#include "base/types/cxx23_to_underlying.h"
 #include "build/build_config.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/events/event_constants.h"
@@ -1179,7 +1178,7 @@ ScrollEvent::ScrollEvent(const PlatformEvent& native_event)
     GetFlingData(native_event, &x_offset_, &y_offset_, &x_offset_ordinal_,
                  &y_offset_ordinal_, nullptr);
   } else {
-    NOTREACHED() << "Unexpected event type " << base::to_underlying(type())
+    NOTREACHED() << "Unexpected event type " << std::to_underlying(type())
                  << " when constructing a ScrollEvent.";
   }
 }

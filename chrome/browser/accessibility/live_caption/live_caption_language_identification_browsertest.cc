@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/containers/contains.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "chrome/browser/accessibility/live_caption/live_caption_speech_recognition_host_browsertest.h"

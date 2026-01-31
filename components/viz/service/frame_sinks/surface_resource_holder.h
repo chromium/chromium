@@ -29,7 +29,7 @@ class ReservedResourceDelegate {
   virtual void RefResources(
       const std::vector<TransferableResource>& resources) = 0;
   virtual void UnrefResources(
-      const std::vector<ReturnedResource>& resources) = 0;
+      const std::vector<ReturnedResourceViz>& resources) = 0;
 };
 
 // A SurfaceResourceHolder manages the lifetime of resources submitted by a
@@ -48,14 +48,18 @@ class VIZ_SERVICE_EXPORT SurfaceResourceHolder {
   void Reset();
   void ReceiveFromChild(const std::vector<TransferableResource>& resources);
   void RefResources(const std::vector<TransferableResource>& resources);
-  void UnrefResources(std::vector<ReturnedResource> resources);
+  void UnrefResources(std::vector<ReturnedResourceViz> resources);
 
  private:
   raw_ptr<SurfaceResourceHolderClient> client_;
 
   struct ResourceRefs {
+    ResourceRefs();
+    ~ResourceRefs();
+
     int refs_received_from_child = 0;
     int refs_holding_resource_alive = 0;
+    scoped_refptr<gpu::ClientSharedImage> shared_image;
     gpu::SyncToken sync_token;
   };
   // Keeps track of the number of users currently in flight for each resource

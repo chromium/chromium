@@ -4,17 +4,19 @@
 
 #include "chrome/browser/extensions/api/webstore_private/extension_install_status.h"
 
-#include "base/containers/contains.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/values.h"
 #include "chrome/browser/extensions/extension_management.h"
 #include "chrome/browser/extensions/managed_installation_mode.h"
 #include "chrome/browser/extensions/manifest_v2_experiment_manager.h"
+#include "chrome/browser/policy/cloud/extension_install_policy_service.h"
+#include "chrome/browser/policy/cloud/extension_install_policy_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/supervised_user/supervised_user_browser_utils.h"
 #include "chrome/common/extensions/extension_constants.h"
 #include "chrome/common/pref_names.h"
 #include "components/crx_file/id_util.h"
+#include "components/policy/core/common/cloud/cloud_policy_client_types.h"
 #include "components/prefs/pref_service.h"
 #include "components/supervised_user/core/browser/supervised_user_preferences.h"
 #include "components/supervised_user/core/common/pref_names.h"
@@ -41,7 +43,7 @@ bool IsExtensionInstallBlockedByPolicy(
     ManagedInstallationMode mode,
     const ExtensionId& extension_id,
     const std::string& update_url,
-    Manifest::Type manifest_type,
+    const Manifest::Type manifest_type,
     const PermissionSet& required_permissions) {
   switch (mode) {
     case ManagedInstallationMode::kBlocked:
@@ -74,19 +76,10 @@ bool IsExtensionInstallBlockedByPolicy(
   return false;
 }
 
-}  // namespace
-
-ExtensionInstallStatus GetWebstoreExtensionInstallStatus(
-    const ExtensionId& extension_id,
-    Profile* profile) {
-  return GetWebstoreExtensionInstallStatus(
-      extension_id, profile, Manifest::Type::TYPE_UNKNOWN, PermissionSet());
-}
-
-ExtensionInstallStatus GetWebstoreExtensionInstallStatus(
+ExtensionInstallStatus PerformSynchronousChecks(
     const ExtensionId& extension_id,
     Profile* profile,
-    const Manifest::Type manifest_type,
+    Manifest::Type manifest_type,
     const PermissionSet& required_permission_set,
     int manifest_version) {
   DCHECK(crx_file::id_util::IdIsValid(extension_id));
@@ -114,9 +107,9 @@ ExtensionInstallStatus GetWebstoreExtensionInstallStatus(
       supervised_user::AreExtensionsPermissionsEnabled(profile) &&
       !supervised_user::SupervisedUserCanSkipExtensionParentApprovals(
           profile) &&
-      !base::Contains(profile->GetPrefs()->GetDict(
-                          prefs::kSupervisedUserApprovedExtensions),
-                      extension_id)) {
+      !profile->GetPrefs()
+           ->GetDict(prefs::kSupervisedUserApprovedExtensions)
+           .contains(extension_id)) {
     return kCustodianApprovalRequiredForInstallation;
   }
   // Check if parent approval is needed for a supervised user to enable
@@ -203,6 +196,55 @@ ExtensionInstallStatus GetWebstoreExtensionInstallStatus(
   }
 
   return kInstallable;
+}
+
+void OnCloudPolicyCheckDone(
+    base::OnceCallback<void(ExtensionInstallStatus)> callback,
+    bool can_install) {
+  std::move(callback).Run(can_install ? kInstallable : kBlockedByPolicy);
+}
+
+}  // namespace
+
+ExtensionInstallStatus GetWebstoreExtensionInstallStatus(
+    const ExtensionId& extension_id,
+    Profile* profile) {
+  // We don't know the extension's version, so we can't check
+  // ExtensionInstallPolicyService. Only perform the other checks.
+  return PerformSynchronousChecks(extension_id, profile,
+                                  Manifest::Type::TYPE_UNKNOWN, PermissionSet(),
+                                  /*manifest_version=*/3);
+}
+
+void GetWebstoreExtensionInstallStatus(
+    const ExtensionId& extension_id,
+    Profile* profile,
+    const base::Version& extension_version,
+    const Manifest::Type manifest_type,
+    const PermissionSet& required_permission_set,
+    int manifest_version,
+    base::OnceCallback<void(ExtensionInstallStatus)> callback) {
+  ExtensionInstallStatus status =
+      PerformSynchronousChecks(extension_id, profile, manifest_type,
+                               required_permission_set, manifest_version);
+  if (status != kInstallable) {
+    std::move(callback).Run(status);
+    return;
+  }
+
+  if (extension_version.IsValid()) {
+    policy::ExtensionInstallPolicyService* extension_install_policy_service =
+        policy::ExtensionInstallPolicyServiceFactory::GetForBrowserContext(
+            profile);
+    if (extension_install_policy_service) {
+      extension_install_policy_service->CanInstallExtension(
+          {extension_id, extension_version.GetString()},
+          base::BindOnce(&OnCloudPolicyCheckDone, std::move(callback)));
+      return;
+    }
+  }
+
+  std::move(callback).Run(kInstallable);
 }
 
 }  // namespace extensions

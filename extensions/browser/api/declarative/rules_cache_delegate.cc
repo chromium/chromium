@@ -91,7 +91,7 @@ void RulesCacheDelegate::Init(RulesRegistry* registry) {
 }
 
 void RulesCacheDelegate::UpdateRules(const ExtensionId& extension_id,
-                                     base::Value::List value) {
+                                     base::ListValue value) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   if (!browser_context_)
     return;

@@ -40,12 +40,12 @@ class PrefHashCalculatorEncryptedTest : public testing::Test {
 TEST(PrefHashCalculatorTest, TestCurrentAlgorithm) {
   base::Value string_value_1("string value 1");
   base::Value string_value_2("string value 2");
-  base::Value::Dict dictionary_value_1;
+  base::DictValue dictionary_value_1;
   dictionary_value_1.Set("int value", 1);
-  dictionary_value_1.Set("nested empty map", base::Value::Dict());
-  base::Value::Dict dictionary_value_1_equivalent;
+  dictionary_value_1.Set("nested empty map", base::DictValue());
+  base::DictValue dictionary_value_1_equivalent;
   dictionary_value_1_equivalent.Set("int value", 1);
-  base::Value::Dict dictionary_value_2;
+  base::DictValue dictionary_value_2;
   dictionary_value_2.Set("int value", 2);
 
   PrefHashCalculator calc1("seed1", "deviceid");
@@ -133,25 +133,25 @@ TEST(PrefHashCalculatorTest, CatchHashChanges) {
 
   // For legacy reasons, we have to support pruning of empty lists/dictionaries
   // and nested empty lists/dicts in the hash generation algorithm.
-  base::Value::Dict nested_empty_dict;
-  nested_empty_dict.Set("a", base::Value::Dict());
-  nested_empty_dict.Set("b", base::Value::List());
-  base::Value::List nested_empty_list;
-  nested_empty_list.Append(base::Value::Dict());
-  nested_empty_list.Append(base::Value::List());
+  base::DictValue nested_empty_dict;
+  nested_empty_dict.Set("a", base::DictValue());
+  nested_empty_dict.Set("b", base::ListValue());
+  base::ListValue nested_empty_list;
+  nested_empty_list.Append(base::DictValue());
+  nested_empty_list.Append(base::ListValue());
   nested_empty_list.Append(nested_empty_dict.Clone());
 
   // A dictionary with an empty dictionary, an empty list, and nested empty
   // dictionaries/lists in it.
-  base::Value::Dict dict_value;
+  base::DictValue dict_value;
   dict_value.Set("a", "foo");
-  dict_value.Set("d", base::Value::List());
-  dict_value.Set("b", base::Value::Dict());
+  dict_value.Set("d", base::ListValue());
+  dict_value.Set("b", base::DictValue());
   dict_value.Set("c", "baz");
   dict_value.Set("e", std::move(nested_empty_dict));
   dict_value.Set("f", std::move(nested_empty_list));
 
-  base::Value::List list;
+  base::ListValue list;
   list.Append(true);
   list.Append(100);
   list.Append(1.0);
@@ -209,7 +209,7 @@ TEST(PrefHashCalculatorTest, CatchHashChanges) {
                 .Validate("pref.path", &list_value, kExpectedListValue));
 
   // Also test every value type together in the same dictionary.
-  base::Value::Dict everything;
+  base::DictValue everything;
   everything.Set("null", std::move(null_value));
   everything.Set("bool", std::move(bool_value));
   everything.Set("int", std::move(int_value));
@@ -227,7 +227,7 @@ TEST(PrefHashCalculatorTest, CatchHashChanges) {
 TEST_F(PrefHashCalculatorEncryptedTest, CalculateEncryptedHash) {
   base::Value value_int(987);
   base::Value value_str("encrypt me");
-  base::Value::Dict value_dict;
+  base::DictValue value_dict;
   value_dict.Set("key", "value");
   const base::Value value_dict_val(value_dict.Clone());
   const base::Value* null_ptr = static_cast<const base::Value*>(nullptr);
@@ -320,7 +320,7 @@ TEST_F(PrefHashCalculatorEncryptedTest, ValidateEncryptedHash) {
 }
 
 TEST_F(PrefHashCalculatorEncryptedTest, EncryptedHashValuesAreStable) {
-  base::Value::Dict dict;
+  base::DictValue dict;
   dict.Set("key", "value");
   std::optional<std::string> encrypted_hash =
       calculator_.CalculateEncryptedHash("p.dict", &dict, &test_encryptor_);

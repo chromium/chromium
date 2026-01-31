@@ -2,6 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// <if expr="_google_chrome">
+import './internal/icons.html.js';
+// </if>
 import './searched_label.js';
 import './shared_icons.html.js';
 import '/strings.m.js';
@@ -329,6 +332,15 @@ export class HistoryItemElement extends HistoryItemElementBase {
     const el = this.$['time-accessed'];
     el.setAttribute('title', new Date(this.item.time).toString());
     this.eventTracker_.remove(el, 'mouseover');
+  }
+
+  protected actorIconClass_(): string {
+    // <if expr="_google_chrome">
+    return 'history-internal:arrow-selector-spark';
+    // </if>
+    // <if expr="not _google_chrome">
+    return 'history20:arrow-selector-tool';
+    // </if>
   }
 }
 

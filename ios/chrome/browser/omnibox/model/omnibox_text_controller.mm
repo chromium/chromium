@@ -113,6 +113,17 @@ const char kOmniboxFocusResultedInNavigation[] =
   }
 
   [textInput.view becomeFirstResponder];
+
+  if (_presentationContext == OmniboxPresentationContext::kComposebox) {
+    if (textInput.isPreEditing) {
+      // Reset the pre-edit state to ensure the caret is not visible.
+      [textInput exitPreEditState];
+      [textInput enterPreEditState];
+    } else {
+      [self setCaretPos:textInput.text.length];
+    }
+  }
+
   // Ensures that the accessibility system focuses the text input instead of
   // the popup crbug.com/1469173.
   UIAccessibilityPostNotification(UIAccessibilityScreenChangedNotification,

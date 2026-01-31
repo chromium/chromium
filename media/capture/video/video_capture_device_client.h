@@ -97,6 +97,16 @@ class CAPTURE_EXPORT VideoCaptureDeviceClient
       std::optional<base::TimeTicks> capture_begin_timestamp,
       const std::optional<VideoFrameMetadata>& metadata,
       int frame_feedback_id) override;
+
+  void OnIncomingCapturedImageZeroCopy(
+      scoped_refptr<gpu::ClientSharedImage> shared_image,
+      const VideoCaptureFormat& frame_format,
+      int clockwise_rotation,
+      base::TimeTicks reference_time,
+      base::TimeDelta timestamp,
+      std::optional<base::TimeTicks> capture_begin_timestamp,
+      const std::optional<VideoFrameMetadata>& metadata,
+      int frame_feedback_id);
   void OnIncomingCapturedExternalBuffer(
       CapturedExternalVideoBuffer buffer,
       base::TimeTicks reference_time,

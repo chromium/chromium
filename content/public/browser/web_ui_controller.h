@@ -12,6 +12,8 @@
 #include "base/memory/raw_ptr.h"
 #include "base/values.h"
 #include "content/common/content_export.h"
+#include "third_party/blink/public/mojom/loader/local_resource_loader_config.mojom-forward.h"
+#include "url/origin.h"
 
 class GURL;
 
@@ -42,7 +44,7 @@ class CONTENT_EXPORT WebUIController {
   // Return true if the message handling was overridden.
   virtual bool OverrideHandleWebUIMessage(const GURL& source_url,
                                           const std::string& message,
-                                          const base::Value::List& args);
+                                          const base::ListValue& args);
 
   // Called when a WebUI RenderFrame is created.  This is *not* called for every
   // page load because in some cases a RenderFrame will be reused, for example
@@ -54,6 +56,17 @@ class CONTENT_EXPORT WebUIController {
   // Called when the WebUI's primary page changes. WebUIControllers should reset
   // its state if necessary.
   virtual void WebUIPrimaryPageChanged(Page& page) {}
+
+  // Allows the controller to directly populate the local resource loader
+  // config. This is used to add shared resources or dynamically generated
+  // content, e.g. theme colors, without creating a full WebUIDataSource.
+  //
+  // `requesting_origin` is the origin of the WebUI page that is requesting the
+  // resources, e.g. "chrome://webui-toolbar.top-chrome". It matches the origin
+  // that the `config` will be sent to.
+  virtual void PopulateLocalResourceLoaderConfig(
+      blink::mojom::LocalResourceLoaderConfig* config,
+      const url::Origin& requesting_origin) {}
 
   WebUI* web_ui() const { return web_ui_; }
 

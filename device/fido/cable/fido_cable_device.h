@@ -81,11 +81,11 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoCableDevice : public FidoDevice {
   // Encapsulates state FidoCableDevice maintains to encrypt and decrypt
   // data within FidoBleFrame.
   struct EncryptionData {
-    EncryptionData();
+    explicit EncryptionData(base::span<const uint8_t, 32> session_key);
     ~EncryptionData();
 
-    std::array<uint8_t, 32> read_key;
-    std::array<uint8_t, 32> write_key;
+    crypto::Aead reader;
+    crypto::Aead writer;
     std::array<uint8_t, 8> nonce;
     uint32_t write_sequence_num = 0;
     uint32_t read_sequence_num = 0;

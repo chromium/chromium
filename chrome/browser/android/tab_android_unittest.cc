@@ -49,7 +49,7 @@ class TabAndroidTest : public testing::Test {
 
     java_tab_ = Java_TabAndroidTestHelper_createAndInitializeTabImpl(
         env_, kTabId, profile_->GetJavaObject(),
-        static_cast<jint>(TabModel::TabLaunchType::FROM_LINK));
+        static_cast<int32_t>(TabModel::TabLaunchType::FROM_LINK));
     ASSERT_FALSE(java_tab_.is_null()) << "Java tab creation failed.";
 
     tab_android_ = TabAndroid::GetNativeTab(env_, java_tab_);

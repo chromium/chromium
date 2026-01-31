@@ -56,7 +56,7 @@ namespace {
 
 constexpr char kSidePanelSnapshotImageOptions[] = "=w320-h180-p-k-no-nd-mv";
 
-base::Value::Dict GetBackgroundInfoAsDict(
+base::DictValue GetBackgroundInfoAsDict(
     const GURL& background_url,
     const std::string& attribution_line_1,
     const std::string& attribution_line_2,
@@ -64,7 +64,7 @@ base::Value::Dict GetBackgroundInfoAsDict(
     const std::optional<std::string>& collection_id,
     const std::optional<std::string>& resume_token,
     std::optional<int> refresh_timestamp) {
-  base::Value::Dict background_info;
+  base::DictValue background_info;
   background_info.Set(kNtpCustomBackgroundURL,
                       base::Value(background_url.spec()));
   background_info.Set(kNtpCustomBackgroundAttributionLine1,
@@ -83,17 +83,17 @@ base::Value::Dict GetBackgroundInfoAsDict(
   return background_info;
 }
 
-base::Value::Dict GetBackgroundInfoWithColor(
-    const base::Value::Dict* background_info,
+base::DictValue GetBackgroundInfoWithColor(
+    const base::DictValue* background_info,
     const SkColor color) {
-  base::Value::Dict new_background_info = background_info->Clone();
+  base::DictValue new_background_info = background_info->Clone();
   new_background_info.Set(kNtpCustomBackgroundMainColor,
                           base::Value(static_cast<int>(color)));
   return new_background_info;
 }
 
-base::Value::Dict NtpCustomBackgroundDefaults() {
-  base::Value::Dict defaults;
+base::DictValue NtpCustomBackgroundDefaults() {
+  base::DictValue defaults;
   defaults.Set(kNtpCustomBackgroundURL, base::Value(base::Value::Type::STRING));
   defaults.Set(kNtpCustomBackgroundAttributionLine1,
                base::Value(base::Value::Type::STRING));
@@ -250,7 +250,7 @@ void NtpCustomBackgroundService::OnNextCollectionImageAvailable() {
   FetchCustomBackgroundAndExtractBackgroundColor(image.image_url,
                                                  image.thumbnail_image_url);
 
-  base::Value::Dict background_info = GetBackgroundInfoAsDict(
+  base::DictValue background_info = GetBackgroundInfoAsDict(
       image.image_url, attribution1, attribution2, image.attribution_action_url,
       image.collection_id, resume_token, timestamp);
 
@@ -315,7 +315,7 @@ void NtpCustomBackgroundService::SetCustomBackgroundInfo(
       FetchCustomBackgroundAndExtractBackgroundColor(background_url,
                                                      thumbnail_url);
     }
-    base::Value::Dict background_info = GetBackgroundInfoAsDict(
+    base::DictValue background_info = GetBackgroundInfoAsDict(
         background_url, attribution_line_1, attribution_line_2, action_url,
         collection_id, std::nullopt, std::nullopt);
     pref_service_->SetDict(prefs::kNtpCustomBackgroundDict,
@@ -395,7 +395,7 @@ void NtpCustomBackgroundService::RefreshBackgroundIfNeeded() {
     return;
   }
 
-  const base::Value::Dict& background_info =
+  const base::DictValue& background_info =
       pref_service_->GetDict(prefs::kNtpCustomBackgroundDict);
 
 #if !BUILDFLAG(IS_ANDROID)
@@ -452,7 +452,7 @@ NtpCustomBackgroundService::GetCustomBackground() {
   // Attempt to get custom background URL from preferences.
   if (IsCustomBackgroundPrefValid()) {
     auto custom_background = std::make_optional<CustomBackground>();
-    const base::Value::Dict& background_info =
+    const base::DictValue& background_info =
         pref_service_->GetDict(prefs::kNtpCustomBackgroundDict);
     GURL custom_background_url(
         background_info.Find(kNtpCustomBackgroundURL)->GetString());
@@ -648,7 +648,7 @@ void NtpCustomBackgroundService::SetBackgroundToLocalResourceWithId(
 void NtpCustomBackgroundService::ForceRefreshBackground() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
-  const base::Value::Dict& background_info =
+  const base::DictValue& background_info =
       pref_service_->GetDict(prefs::kNtpCustomBackgroundDict);
   std::string collection_id =
       background_info.Find(kNtpCustomBackgroundCollectionId)->GetString();
@@ -659,7 +659,7 @@ void NtpCustomBackgroundService::ForceRefreshBackground() {
 
 bool NtpCustomBackgroundService::IsCustomBackgroundPrefValid() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  const base::Value::Dict& background_info =
+  const base::DictValue& background_info =
       pref_service_->GetDict(prefs::kNtpCustomBackgroundDict);
 
   const base::Value* background_url =
@@ -679,7 +679,7 @@ void NtpCustomBackgroundService::UpdateCustomBackgroundPrefsWithColor(
     const GURL& image_url,
     SkColor color) {
   // Update background color only if the selected background is still the same.
-  const base::Value::Dict& background_info =
+  const base::DictValue& background_info =
       pref_service_->GetDict(prefs::kNtpCustomBackgroundDict);
 
   GURL current_bg_url(

@@ -6,3 +6,6 @@
 
 BASE_FEATURE(kLogApplicationStorageSizeMetrics,
              base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kDisableCookieStoreIOSFlushOnBackgrounding,
+             base::FEATURE_DISABLED_BY_DEFAULT);

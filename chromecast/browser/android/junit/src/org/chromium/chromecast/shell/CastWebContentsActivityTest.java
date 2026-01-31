@@ -852,6 +852,25 @@ public class CastWebContentsActivityTest {
                 serviceIntent.getComponent().getClassName());
     }
 
+    @Test
+    public void doesNotLeakWebContentsObservers() {
+        mActivityLifecycle.create();
+        verify(mWebContents, times(1)).addObserver(any());
+
+        // New media sessions shouldn't add additional observers; one WebContentsObserver should be
+        // shared between all reactive subscribers to the media session state.
+        updateMediaState(true, true);
+        verify(mWebContents, times(1)).addObserver(any());
+        updateMediaState(true, false);
+        verify(mWebContents, times(1)).addObserver(any());
+        updateMediaState(false, true);
+        verify(mWebContents, times(1)).addObserver(any());
+
+        // When the Activity is destroyed, the WebContentsObserver should be removed.
+        mActivityLifecycle.destroy();
+        verify(mWebContents, times(1)).removeObserver(any());
+    }
+
     private void assertWakeLockFlags(boolean keepScreenOn, boolean allowLockWhileScreenOn) {
         if (keepScreenOn) {
             Assert.assertTrue(

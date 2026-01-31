@@ -161,10 +161,6 @@ profile_metrics::BrowserProfileType AutofillClient::GetProfileType() const {
   return profile_metrics::BrowserProfileType::kRegular;
 }
 
-FastCheckoutClient* AutofillClient::GetFastCheckoutClient() {
-  return nullptr;
-}
-
 LogManager* AutofillClient::GetCurrentLogManager() {
   return nullptr;
 }
@@ -209,13 +205,18 @@ void AutofillClient::TriggerAutofillAiSavePromptSurvey(
   NOTIMPLEMENTED();
 }
 
-bool AutofillClient::IsActorTaskActive() const {
+bool AutofillClient::IsTabInActorMode() const {
   return false;
 }
 
 std::unique_ptr<device_reauth::DeviceAuthenticator>
-AutofillClient::GetDeviceAuthenticator() {
+AutofillClient::GetDeviceAuthenticator(std::string histogram) {
   return nullptr;
+}
+
+std::unique_ptr<device_reauth::DeviceAuthenticator>
+AutofillClient::GetDeviceAuthenticator() {
+  return GetDeviceAuthenticator("");
 }
 
 void AutofillClient::ShowPlusAddressEmailOverrideNotification(

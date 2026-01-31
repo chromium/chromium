@@ -28,10 +28,7 @@ enum class SwapResult {
   // SWAP_SKIPPED.
   SWAP_SKIPPED,
   SWAP_NAK_RECREATE_BUFFERS,
-  // This swap result identifies cases when flipping non-simple overlay planes
-  // fails.
-  SWAP_NON_SIMPLE_OVERLAYS_FAILED,
-  SWAP_RESULT_LAST = SWAP_NON_SIMPLE_OVERLAYS_FAILED,
+  SWAP_RESULT_LAST = SWAP_NAK_RECREATE_BUFFERS,
 };
 
 struct SwapTimings {
@@ -55,6 +52,9 @@ struct SwapTimings {
 
   // When GPU scheduler removed the last required dependency.
   base::TimeTicks gpu_task_ready;
+
+  // When the GPU thread started scheduling overlays.
+  base::TimeTicks gpu_started_overlay;
 
   bool is_null() const { return swap_start.is_null() && swap_end.is_null(); }
 };

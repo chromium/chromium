@@ -27,7 +27,7 @@ const char kOffsetKey[] = "offset";
 const char kDisplayPlacementDisplayIdKey[] = "display_id";
 const char kDisplayPlacementParentDisplayIdKey[] = "parent_display_id";
 
-bool AddLegacyValuesFromValue(const base::Value::Dict& dict,
+bool AddLegacyValuesFromValue(const base::DictValue& dict,
                               DisplayLayout* layout) {
   std::optional<int> optional_offset = dict.FindInt(kOffsetKey);
   if (optional_offset) {
@@ -44,7 +44,7 @@ bool AddLegacyValuesFromValue(const base::Value::Dict& dict,
 // Returns true if
 //     The key is missing - output is left unchanged
 //     The key matches the type - output is updated to the dict.
-bool UpdateFromDict(const base::Value::Dict& dict,
+bool UpdateFromDict(const base::DictValue& dict,
                     const std::string& field_name,
                     bool* output) {
   const base::Value* field = dict.Find(field_name);
@@ -64,7 +64,7 @@ bool UpdateFromDict(const base::Value::Dict& dict,
 // Returns true if
 //     The key is missing - output is left unchanged
 //     The key matches the type - output is updated to the dict.
-bool UpdateFromDict(const base::Value::Dict& dict,
+bool UpdateFromDict(const base::DictValue& dict,
                     const std::string& field_name,
                     int* output) {
   const base::Value* field = dict.Find(field_name);
@@ -84,7 +84,7 @@ bool UpdateFromDict(const base::Value::Dict& dict,
 // Returns true if
 //     The key is missing - output is left unchanged
 //     The key matches the type - output is updated to the dict.
-bool UpdateFromDict(const base::Value::Dict& dict,
+bool UpdateFromDict(const base::DictValue& dict,
                     const std::string& field_name,
                     DisplayPlacement::Position* output) {
   const base::Value* field = dict.Find(field_name);
@@ -105,7 +105,7 @@ bool UpdateFromDict(const base::Value::Dict& dict,
 // Returns true if
 //     The key is missing - output is left unchanged
 //     The key matches the type - output is updated to the dict.
-bool UpdateFromDict(const base::Value::Dict& dict,
+bool UpdateFromDict(const base::DictValue& dict,
                     const std::string& field_name,
                     int64_t* output) {
   const base::Value* field = dict.Find(field_name);
@@ -125,7 +125,7 @@ bool UpdateFromDict(const base::Value::Dict& dict,
 // Returns true if
 //     The key is missing - output is left unchanged
 //     The key matches the type - output is updated to the dict.
-bool UpdateFromDict(const base::Value::Dict& dict,
+bool UpdateFromDict(const base::DictValue& dict,
                     const std::string& field_name,
                     std::vector<DisplayPlacement>* output) {
   const base::Value* field = dict.Find(field_name);
@@ -137,7 +137,7 @@ bool UpdateFromDict(const base::Value::Dict& dict,
   if (!field->is_list())
     return false;
 
-  const base::Value::List& list = field->GetList();
+  const base::ListValue& list = field->GetList();
   output->reserve(list.size());
 
   for (const base::Value& list_item : list) {
@@ -145,7 +145,7 @@ bool UpdateFromDict(const base::Value::Dict& dict,
       return false;
 
     DisplayPlacement item;
-    const base::Value::Dict& item_dict = list_item.GetDict();
+    const base::DictValue& item_dict = list_item.GetDict();
     if (!UpdateFromDict(item_dict, kOffsetKey, &item.offset) ||
         !UpdateFromDict(item_dict, kPositionKey, &item.position) ||
         !UpdateFromDict(item_dict, kDisplayPlacementDisplayIdKey,
@@ -168,7 +168,7 @@ bool JsonToDisplayLayout(const base::Value& value, DisplayLayout* layout) {
   return JsonToDisplayLayout(value.GetDict(), layout);
 }
 
-bool JsonToDisplayLayout(const base::Value::Dict& dict, DisplayLayout* layout) {
+bool JsonToDisplayLayout(const base::DictValue& dict, DisplayLayout* layout) {
   layout->placement_list.clear();
 
   if (!UpdateFromDict(dict, kDefaultUnifiedKey, &layout->default_unified) ||
@@ -184,13 +184,13 @@ bool JsonToDisplayLayout(const base::Value::Dict& dict, DisplayLayout* layout) {
   return AddLegacyValuesFromValue(dict, layout);
 }
 
-void DisplayLayoutToJson(const DisplayLayout& layout, base::Value::Dict& dict) {
+void DisplayLayoutToJson(const DisplayLayout& layout, base::DictValue& dict) {
   dict.Set(kDefaultUnifiedKey, layout.default_unified);
   dict.Set(kPrimaryIdKey, base::NumberToString(layout.primary_id));
 
-  base::Value::List placement_list;
+  base::ListValue placement_list;
   for (const auto& placement : layout.placement_list) {
-    base::Value::Dict placement_value;
+    base::DictValue placement_value;
     placement_value.Set(kPositionKey,
                         DisplayPlacement::PositionToString(placement.position));
     placement_value.Set(kOffsetKey, placement.offset);

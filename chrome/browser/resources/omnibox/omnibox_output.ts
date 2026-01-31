@@ -692,7 +692,7 @@ const COLUMNS: Column[] = [
   new Column(
       ['Icon', 'Image'], '', 'image-and-icon', true,
       'Icon & Image\nClickable icon and image associated with the result.',
-      match => new OutputImageAndIconProperty(match.icon.url, match.image.url)),
+      match => new OutputImageAndIconProperty(match.icon, match.image)),
   new Column(
       ['Contents', 'Description', 'Answer'], '', 'contents-and-description',
       true,
@@ -729,8 +729,8 @@ const COLUMNS: Column[] = [
       'URL & Stripped URL\nThe URL for the result. / The stripped URL for ' +
           'the result.',
       match => new OutputUrlProperty(
-          match.destinationUrl.url, match.isSearchType,
-          match.strippedDestinationUrl.url)),
+          match.destinationUrl, match.isSearchType,
+          match.strippedDestinationUrl)),
   new Column(
       ['AQS Type & Subtypes'], '', 'aqs-type-subtypes', false,
       'The type and subtypes reported in the Assisted Query Stats (AQS) url ' +

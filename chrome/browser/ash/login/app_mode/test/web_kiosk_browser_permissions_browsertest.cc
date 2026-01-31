@@ -78,7 +78,7 @@ class WebKioskBrowserPermissionsTest
   void AllowBrowserPermissionsForOrigin(const std::string& origin) {
     browser()->profile()->GetPrefs()->SetList(
         prefs::kKioskBrowserPermissionsAllowedForOrigins,
-        base::Value::List().Append(origin));
+        base::ListValue().Append(origin));
   }
 
  private:

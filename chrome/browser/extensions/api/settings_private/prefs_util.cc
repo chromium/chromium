@@ -58,7 +58,6 @@
 #include "components/permissions/pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "components/privacy_sandbox/privacy_sandbox_prefs.h"
-#include "components/privacy_sandbox/tracking_protection_prefs.h"
 #include "components/proxy_config/proxy_config_pref_names.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "components/saved_tab_groups/public/pref_names.h"
@@ -150,6 +149,17 @@ bool IsSettingReadOnly(const std::string& pref_name) {
   if (pref_name == prefs::kDownloadDefaultDirectory) {
     return true;
   }
+
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_ANDROID) || \
+    BUILDFLAG(IS_CHROMEOS)
+  // Changing this pref value is protected by reauthentication.
+  if (pref_name ==
+      autofill::prefs::kAutofillAiReauthBeforeViewingSensitiveData) {
+    return true;
+  }
+#endif  // BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_ANDROID) ||
+        // BUILDFLAG(IS_CHROMEOS)
+
 #if BUILDFLAG(IS_CHROMEOS)
   // System timezone is never directly changeable by the user.
   if (pref_name == ash::kSystemTimezone) {
@@ -159,6 +169,13 @@ bool IsSettingReadOnly(const std::string& pref_name) {
   // must be changed through the quickUnlockPrivate API.
   if (pref_name == ash::prefs::kEnableAutoScreenLock ||
       pref_name == ::prefs::kPinUnlockAutosubmitEnabled) {
+    return true;
+  }
+#endif
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS)
+  // Can be changed only from C++ after successful re-auth.
+  if (pref_name ==
+      password_manager::prefs::kBiometricAuthenticationBeforeFilling) {
     return true;
   }
 #endif
@@ -191,6 +208,8 @@ const PrefsUtil::TypedPrefMap& PrefsUtil::GetAllowlistedKeys() {
       settings_api::PrefType::kBoolean;
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS)
   (*s_allowlist)[autofill::prefs::kAutofillPaymentMethodsMandatoryReauth] =
+      settings_api::PrefType::kBoolean;
+  (*s_allowlist)[autofill::prefs::kAutofillAiReauthBeforeViewingSensitiveData] =
       settings_api::PrefType::kBoolean;
 #endif
   (*s_allowlist)[autofill::prefs::kAutofillPaymentCvcStorage] =
@@ -356,6 +375,8 @@ const PrefsUtil::TypedPrefMap& PrefsUtil::GetAllowlistedKeys() {
   (*s_allowlist)[::prefs::kDnsOverHttpsMode] = settings_api::PrefType::kString;
   (*s_allowlist)[::prefs::kDnsOverHttpsTemplates] =
       settings_api::PrefType::kString;
+  (*s_allowlist)[::prefs::kDnsOverHttpsAutomaticModeFallbackToDoh] =
+      settings_api::PrefType::kBoolean;
 #if BUILDFLAG(IS_CHROMEOS)
   (*s_allowlist)[::prefs::kDnsOverHttpsSalt] = settings_api::PrefType::kString;
   (*s_allowlist)[::prefs::kDnsOverHttpsTemplatesWithIdentifiers] =
@@ -1143,10 +1164,14 @@ const PrefsUtil::TypedPrefMap& PrefsUtil::GetAllowlistedKeys() {
       settings_api::PrefType::kBoolean;
   (*s_allowlist)[::prefs::kHardwareAccelerationModeEnabled] =
       settings_api::PrefType::kBoolean;
-#if BUILDFLAG(IS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
+#if BUILDFLAG(IS_WIN)
+  (*s_allowlist)[::prefs::kForegroundLaunchOnLogin] =
+      settings_api::PrefType::kBoolean;
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   (*s_allowlist)[::prefs::kFeatureNotificationsEnabled] =
       settings_api::PrefType::kBoolean;
-#endif  // BUILDFLAG(IS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
+#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
+#endif  // BUILDFLAG(IS_WIN)
 
   // Import data
   (*s_allowlist)[::prefs::kImportDialogAutofillFormData] =
@@ -1541,7 +1566,7 @@ settings_private::SetPrefResult PrefsUtil::SetPref(const std::string& pref_name,
 
       std::string string_value = value->GetString();
       if (IsPrefTypeURL(pref_name)) {
-        GURL fixed = url_formatter::FixupURL(string_value, std::string());
+        GURL fixed = url_formatter::FixupURL(string_value);
         if (fixed.is_valid()) {
           string_value = fixed.spec();
         } else {

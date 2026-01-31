@@ -89,6 +89,11 @@ class CORE_EXPORT LayoutReplaced : public LayoutBox {
            ComputedStyleInitialValues::InitialObjectFit();
   }
 
+  bool NodeAtPoint(HitTestResult&,
+                   const HitTestLocation&,
+                   const PhysicalOffset& accumulated_offset,
+                   HitTestPhase) override;
+
   void Paint(const PaintInfo&) const override;
 
   // Compute the natural dimensions of the replaced content. Should not apply
@@ -124,6 +129,11 @@ class CORE_EXPORT LayoutReplaced : public LayoutBox {
     return true;
   }
 
+  virtual bool HitTestChildren(HitTestResult&,
+                               const HitTestLocation&,
+                               const PhysicalOffset& accumulated_offset,
+                               HitTestPhase) const;
+
   bool IsInSelfHitTestingPhase(HitTestPhase phase) const override {
     NOT_DESTROYED();
     if (LayoutBox::IsInSelfHitTestingPhase(phase))
@@ -133,8 +143,6 @@ class CORE_EXPORT LayoutReplaced : public LayoutBox {
     return element && element->IsReplacedElementRespectingCSSOverflow() &&
            phase == HitTestPhase::kSelfBlockBackground;
   }
-
-  void WillBeDestroyed() override;
 
   // This function calculates the placement of the replaced contents. It takes
   // natural dimensions of the replaced contents, stretch to fit CSS content
@@ -150,6 +158,11 @@ class CORE_EXPORT LayoutReplaced : public LayoutBox {
   PositionWithAffinity PositionForPoint(const PhysicalOffset&) const override;
 
   bool IsLayoutReplaced() const final {
+    NOT_DESTROYED();
+    return true;
+  }
+
+  bool IsMonolithic() const final {
     NOT_DESTROYED();
     return true;
   }

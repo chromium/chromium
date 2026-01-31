@@ -100,9 +100,9 @@ NET_EXPORT bool NetLogCaptureIncludesSocketBytes(
 
 // Returns `url` as a string, with the username/password portions removed, if
 // `capture_mode` mandates it. Always creates a copy of the passed in URL as a
-// string, but since NetLog requires copies of strings be put in Value::Dicts
-// anyways, using this method results in no extra copies over adding url.spec()
-// to a dictionary directly.
+// string, but since NetLog requires copies of strings be put in
+// base::DictValues anyways, using this method results in no extra copies over
+// adding url.spec() to a dictionary directly.
 //
 // Should be used when logging the full input URL, which may contrain
 // credentials. For layers that don't have access to it (e.g., anything below

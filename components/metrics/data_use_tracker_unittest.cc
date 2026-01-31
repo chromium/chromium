@@ -54,14 +54,14 @@ class FakeDataUseTracker : public DataUseTracker {
 // Sets up data usage prefs with mock values so that UMA traffic is above the
 // allowed ratio.
 void SetPrefTestValuesOverRatio(PrefService* local_state) {
-  base::Value::Dict user_pref_dict;
+  base::DictValue user_pref_dict;
   user_pref_dict.Set(kTodayStr, 2 * 100 * 1024);
   user_pref_dict.Set(kYesterdayStr, 2 * 100 * 1024);
   user_pref_dict.Set(kExpiredDateStr1, 2 * 100 * 1024);
   user_pref_dict.Set(kExpiredDateStr2, 2 * 100 * 1024);
   local_state->SetDict(prefs::kUserCellDataUse, std::move(user_pref_dict));
 
-  base::Value::Dict uma_pref_dict;
+  base::DictValue uma_pref_dict;
   uma_pref_dict.Set(kTodayStr, 50 * 1024);
   uma_pref_dict.Set(kYesterdayStr, 50 * 1024);
   uma_pref_dict.Set(kExpiredDateStr1, 50 * 1024);
@@ -71,7 +71,7 @@ void SetPrefTestValuesOverRatio(PrefService* local_state) {
 
 // Sets up data usage prefs with mock values which can be valid.
 void SetPrefTestValuesValidRatio(PrefService* local_state) {
-  base::Value::Dict user_pref_dict;
+  base::DictValue user_pref_dict;
   user_pref_dict.Set(kTodayStr, 100 * 100 * 1024);
   user_pref_dict.Set(kYesterdayStr, 100 * 100 * 1024);
   user_pref_dict.Set(kExpiredDateStr1, 100 * 100 * 1024);
@@ -79,7 +79,7 @@ void SetPrefTestValuesValidRatio(PrefService* local_state) {
   local_state->SetDict(prefs::kUserCellDataUse, std::move(user_pref_dict));
 
   // Should be 4% of user traffic
-  base::Value::Dict uma_pref_dict;
+  base::DictValue uma_pref_dict;
   uma_pref_dict.Set(kTodayStr, 4 * 100 * 1024);
   uma_pref_dict.Set(kYesterdayStr, 4 * 100 * 1024);
   uma_pref_dict.Set(kExpiredDateStr1, 4 * 100 * 1024);

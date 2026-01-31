@@ -535,7 +535,7 @@ suite('<history-sync-optin>', function() {
     const newAccountInfo = {
       name: 'Test User 2',
       email: 'test2@google.com',
-      accountImageSrc: {url: 'http://image.com/img2.png'},
+      accountImageSrc: 'http://image.com/img2.png',
     };
 
     testService.pageRemote.sendAccountInfo(newAccountInfo);
@@ -550,7 +550,7 @@ suite('<history-sync-optin>', function() {
         element.shadowRoot.querySelector<HTMLElement>(
                               '#account-email')!.textContent.trim());
     assertEquals(
-        newAccountInfo.accountImageSrc.url,
+        newAccountInfo.accountImageSrc,
         element.shadowRoot.querySelector<HTMLImageElement>(
                               '#profile-icon')!.src);
   });

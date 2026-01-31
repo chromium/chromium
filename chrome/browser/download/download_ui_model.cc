@@ -6,7 +6,7 @@
 
 #include <utility>
 
-#include "base/byte_count.h"
+#include "base/byte_size.h"
 #include "base/feature_list.h"
 #include "base/i18n/number_formatting.h"
 #include "base/i18n/rtl.h"
@@ -85,6 +85,9 @@ std::u16string FailStateDescription(FailState fail_state) {
       break;
     case FailState::FILE_BLOCKED:
       string_id = IDS_DOWNLOAD_INTERRUPTED_DESCRIPTION_BLOCKED;
+      break;
+    case FailState::LOCAL_DOWNLOAD_BLOCKED:
+      string_id = IDS_DOWNLOAD_INTERRUPTED_STATUS_LOCAL_DOWNLOAD_BLOCKED;
       break;
     case FailState::FILE_SECURITY_CHECK_FAILED:
       string_id = IDS_DOWNLOAD_INTERRUPTED_DESCRIPTION_SECURITY_CHECK_FAILED;
@@ -196,9 +199,11 @@ std::u16string DownloadUIModel::GetProgressSizesString() const {
 std::u16string DownloadUIModel::StatusTextBuilder::GetProgressSizesString()
     const {
   std::u16string size_ratio;
-  base::ByteCount size = base::ByteCount(model_->GetCompletedBytes());
-  base::ByteCount total = base::ByteCount(model_->GetTotalBytes());
-  if (total > base::ByteCount(0)) {
+  base::ByteSize size =
+      base::ByteSize(base::checked_cast<uint64_t>(model_->GetCompletedBytes()));
+  base::ByteSize total =
+      base::ByteSize(base::checked_cast<uint64_t>(model_->GetTotalBytes()));
+  if (total.is_positive()) {
     ui::DataUnits amount_units = ui::GetByteDisplayUnits(total);
     std::u16string simple_size =
         ui::FormatBytesWithUnits(size, amount_units, false);
@@ -324,8 +329,9 @@ std::u16string DownloadUIModel::GetWarningText(const std::u16string& filename,
       return l10n_util::GetStringUTF16(
           IDS_PROMPT_DOWNLOAD_SENSITIVE_CONTENT_WARNING);
     case download::DOWNLOAD_DANGER_TYPE_FORCE_SAVE_TO_GDRIVE:
+    case download::DOWNLOAD_DANGER_TYPE_FORCE_SAVE_TO_ONEDRIVE:
       return l10n_util::GetStringUTF16(
-          IDS_PROMPT_DOWNLOAD_FORCED_SAVE_TO_GDRIVE);
+          IDS_PROMPT_DOWNLOAD_FORCED_SAVE_TO_CLOUD);
     case download::DOWNLOAD_DANGER_TYPE_SENSITIVE_CONTENT_BLOCK:
       return l10n_util::GetStringUTF16(
           IDS_PROMPT_DOWNLOAD_SENSITIVE_CONTENT_BLOCKED);
@@ -922,9 +928,9 @@ DownloadUIModel::BubbleStatusTextBuilder::GetBubbleWarningStatusText() const {
       // "Sensitive content"
       return l10n_util::GetStringUTF16(
           IDS_DOWNLOAD_BUBBLE_STATUS_SENSITIVE_CONTENT);
+    case download::DOWNLOAD_DANGER_TYPE_FORCE_SAVE_TO_ONEDRIVE:
     case download::DOWNLOAD_DANGER_TYPE_FORCE_SAVE_TO_GDRIVE:
-      // "Local download blocked"
-      return l10n_util::GetStringUTF16(IDS_POLICY_ACTION_FORCED_SAVE_TO_GDRIVE);
+      return l10n_util::GetStringUTF16(IDS_POLICY_ACTION_FORCED_SAVE_TO_CLOUD);
     case download::DOWNLOAD_DANGER_TYPE_SENSITIVE_CONTENT_BLOCK:
       // "Blocked by your organization"
       return l10n_util::GetStringUTF16(
@@ -1027,7 +1033,9 @@ DownloadUIModel::BubbleStatusTextBuilder::GetInProgressStatusText() const {
   // this returns "120 MB • Done".
   auto get_total_string = [total_bytes](std::u16string detail_message) {
     return StatusTextBuilderUtils::GetBubbleStatusMessageWithBytes(
-        ui::FormatBytes(base::ByteCount(total_bytes)), detail_message);
+        ui::FormatBytes(
+            base::ByteSize(base::checked_cast<uint64_t>(total_bytes))),
+        detail_message);
   };
 
   // The download is a CRX (app, extension, theme, ...) and it is being unpacked
@@ -1128,7 +1136,9 @@ DownloadUIModel::BubbleStatusTextBuilder::GetCompletedStatusText() const {
                                      ui::TimeFormat::LENGTH_LONG, time_elapsed);
   }
   return StatusTextBuilderUtils::GetBubbleStatusMessageWithBytes(
-      ui::FormatBytes(base::ByteCount(model_->GetTotalBytes())), delta_str);
+      ui::FormatBytes(base::ByteSize(
+          base::checked_cast<uint64_t>(model_->GetTotalBytes()))),
+      delta_str);
 }
 
 // To clarify variable / method names in methods below that help form failure
@@ -1207,6 +1217,9 @@ DownloadUIModel::BubbleStatusTextBuilder::GetInterruptedStatusText(
       break;
     case FailState::FILE_BLOCKED:
       string_id = IDS_POLICY_ACTION_BLOCKED_BY_ORGANIZATION;
+      break;
+    case FailState::LOCAL_DOWNLOAD_BLOCKED:
+      string_id = IDS_DOWNLOAD_INTERRUPTED_STATUS_LOCAL_DOWNLOAD_BLOCKED;
       break;
     case FailState::FILE_SECURITY_CHECK_FAILED:
       string_id = IDS_DOWNLOAD_INTERRUPTED_STATUS_SECURITY_CHECK_FAILED;
@@ -1301,7 +1314,8 @@ std::u16string DownloadUIModel::GetInProgressAccessibleAlertText() const {
   // Percent remaining is also unknown, announce bytes to download.
   return l10n_util::GetStringFUTF16(
       IDS_DOWNLOAD_STATUS_IN_PROGRESS_ACCESSIBLE_ALERT,
-      ui::FormatBytes(base::ByteCount(GetTotalBytes())),
+      ui::FormatBytes(
+          base::ByteSize(base::checked_cast<uint64_t>(GetTotalBytes()))),
       GetFileNameToReportUser().LossyDisplayName());
 }
 

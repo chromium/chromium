@@ -485,8 +485,9 @@ TEST_F(TextOffsetMappingTest, RangeWithSelect1) {
   Element* select = QuerySelector("select");
   const auto& expected_outer =
       "^<select>"
-      "<div aria-hidden=\"true\"></div>"
-      "<slot id=\"select-button\"></slot>"
+      "<div aria-hidden=\"true\" "
+      "pseudo=\"-internal-select-inner-element\"></div>"
+      "<slot pseudo=\"-internal-select-button-slot\"></slot>"
       "<div popover=\"auto\" pseudo=\"picker(select)\">"
       "<slot id=\"select-popover-options\"></slot>"
       "</div>"
@@ -496,8 +497,9 @@ TEST_F(TextOffsetMappingTest, RangeWithSelect1) {
       "</select>foo|";
   const auto& expected_inner =
       "<select>"
-      "<div aria-hidden=\"true\">^|</div>"
-      "<slot id=\"select-button\"></slot>"
+      "<div aria-hidden=\"true\" "
+      "pseudo=\"-internal-select-inner-element\">^|</div>"
+      "<slot pseudo=\"-internal-select-button-slot\"></slot>"
       "<div popover=\"auto\" pseudo=\"picker(select)\">"
       "<slot id=\"select-popover-options\"></slot>"
       "</div>"
@@ -515,8 +517,9 @@ TEST_F(TextOffsetMappingTest, RangeWithSelect2) {
   Element* select = QuerySelector("select");
   const auto& expected_outer =
       "^<select>"
-      "<div aria-hidden=\"true\"></div>"
-      "<slot id=\"select-button\"></slot>"
+      "<div aria-hidden=\"true\" "
+      "pseudo=\"-internal-select-inner-element\"></div>"
+      "<slot pseudo=\"-internal-select-button-slot\"></slot>"
       "<div popover=\"auto\" pseudo=\"picker(select)\">"
       "<slot id=\"select-popover-options\">bar</slot>"
       "</div>"
@@ -526,8 +529,9 @@ TEST_F(TextOffsetMappingTest, RangeWithSelect2) {
       "</select>foo|";
   const auto& expected_inner =
       "<select>"
-      "<div aria-hidden=\"true\">^|</div>"
-      "<slot id=\"select-button\"></slot>"
+      "<div aria-hidden=\"true\" "
+      "pseudo=\"-internal-select-inner-element\">^|</div>"
+      "<slot pseudo=\"-internal-select-button-slot\"></slot>"
       "<div popover=\"auto\" pseudo=\"picker(select)\">"
       "<slot id=\"select-popover-options\">bar</slot>"
       "</div>"

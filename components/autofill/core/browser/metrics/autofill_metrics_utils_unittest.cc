@@ -29,7 +29,7 @@ std::unique_ptr<FormStructure> CreateFormStructure(
   }
   auto form_structure =
       std::make_unique<FormStructure>(test::GetFormData(form_description));
-  for (size_t i = 0; i < form_structure->field_count(); i++) {
+  for (size_t i = 0; i < form_structure->field_count(); ++i) {
     form_structure->field(i)->SetTypeTo(
         AutofillType(form_description.fields[i].role),
         AutofillPredictionSource::kHeuristics);
@@ -135,7 +135,8 @@ class AddressFormTypesForLoggingTest
 TEST_P(AddressFormTypesForLoggingTest,
        GetAddressFormTypesForLoggingReturnsAddressFormTypes) {
   EXPECT_EQ(GetAddressFormTypesForLogging(
-                *CreateFormStructure(std::get<0>(GetParam()))),
+                *CreateFormStructure(std::get<0>(GetParam())),
+                AutocompleteUnrecognizedBehavior::kSuggestionsSuppressed),
             std::get<1>(GetParam()));
 }
 
@@ -174,7 +175,8 @@ class CreditCardFormTypesForLoggingTest
 TEST_P(CreditCardFormTypesForLoggingTest,
        GetCreditCardFormTypesForLoggingReturnsCreditCardFormTypes) {
   EXPECT_EQ(GetCreditCardFormTypesForLogging(
-                *CreateFormStructure(std::get<0>(GetParam()))),
+                *CreateFormStructure(std::get<0>(GetParam())),
+                AutocompleteUnrecognizedBehavior::kSuggestionsSuppressed),
             std::get<1>(GetParam()));
 }
 
@@ -218,9 +220,10 @@ class FormTypesForLoggingTest
 // (first element of the parameter).
 TEST_P(FormTypesForLoggingTest,
        GetFormTypesForLoggingReturnsAppropriateFormTypes) {
-  EXPECT_EQ(
-      GetFormTypesForLogging(*CreateFormStructure(std::get<0>(GetParam()))),
-      std::get<1>(GetParam()));
+  EXPECT_EQ(GetFormTypesForLogging(
+                *CreateFormStructure(std::get<0>(GetParam())),
+                AutocompleteUnrecognizedBehavior::kSuggestionsSuppressed),
+            std::get<1>(GetParam()));
 }
 
 INSTANTIATE_TEST_SUITE_P(

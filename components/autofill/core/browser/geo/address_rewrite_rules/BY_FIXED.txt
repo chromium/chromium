@@ -1,0 +1,5 @@
+\bnorth\b	n
+\bsouth\b	s
+\beast\b	e
+\bwest\b	w
+\bг\b	

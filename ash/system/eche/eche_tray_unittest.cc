@@ -129,6 +129,12 @@ class EcheTrayTest : public AshTestBase {
         .SetFirstDisplayAsInternalDisplay();
   }
 
+  void TearDown() override {
+    phone_hub_tray_ = nullptr;
+    eche_tray_ = nullptr;
+    AshTestBase::TearDown();
+  }
+
   // Performs a tap on the eche tray button.
   void PerformTap() {
     GetEventGenerator()->GestureTapAt(
@@ -157,9 +163,8 @@ class EcheTrayTest : public AshTestBase {
 
  private:
   FakeConnectionStatusObserver fake_connection_status_observer_;
-  raw_ptr<EcheTray, DanglingUntriaged> eche_tray_ = nullptr;  // Not owned
-  raw_ptr<PhoneHubTray, DanglingUntriaged> phone_hub_tray_ =
-      nullptr;  // Not owned
+  raw_ptr<EcheTray> eche_tray_ = nullptr;  // Not owned
+  raw_ptr<PhoneHubTray> phone_hub_tray_ = nullptr;  // Not owned
 
   // Calling the factory constructor is enough to set it up.
   std::unique_ptr<TestAshWebViewFactory> test_web_view_factory_ =

@@ -14,6 +14,7 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/page_load_metrics/browser/page_load_metrics_test_waiter.h"
+#include "content/public/common/content_features.h"
 #include "content/public/test/browser_test.h"
 #include "url/gurl.h"
 
@@ -78,7 +79,7 @@ IN_PROC_BROWSER_TEST_F(InitialWebUIPageLoadMetricsObserverBrowserTest,
   // doesn't support waiting for the webcontents embededed in topchrome UI.
 
   // 1. Navigate to an initial WebUI page.
-  NavigateAndWaitForMetrics(GURL(chrome::kChromeUIReloadButtonURL));
+  NavigateAndWaitForMetrics(GURL(chrome::kChromeUIWebUIToolbarURL));
 
   // The metrics should be only be recorded once from the browser UI itself.
   // Subsequent navigation will not be FirstPaint.

@@ -4,11 +4,14 @@
 
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui_service_factory.h"
 
-#include "chrome/browser/contextual_tasks/contextual_tasks_context_controller_factory.h"
+#include "chrome/browser/autocomplete/aim_eligibility_service_factory.h"
+#include "chrome/browser/contextual_tasks/contextual_tasks_service_factory.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui_service.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "components/contextual_tasks/public/features.h"
+#include "components/contextual_tasks/public/prefs.h"
+#include "components/pref_registry/pref_registry_syncable.h"
 
 namespace contextual_tasks {
 
@@ -41,7 +44,9 @@ ContextualTasksUiServiceFactory::ContextualTasksUiServiceFactory()
               .WithRegular(ProfileSelection::kOwnInstance)
               .WithGuest(ProfileSelection::kOwnInstance)
               .Build()) {
-  DependsOn(ContextualTasksContextControllerFactory::GetInstance());
+  DependsOn(ContextualTasksServiceFactory::GetInstance());
+  DependsOn(IdentityManagerFactory::GetInstance());
+  DependsOn(AimEligibilityServiceFactory::GetInstance());
 }
 
 std::unique_ptr<KeyedService>
@@ -53,8 +58,15 @@ ContextualTasksUiServiceFactory::BuildServiceInstanceForBrowserContext(
 
   Profile* profile = Profile::FromBrowserContext(context);
   return std::make_unique<ContextualTasksUiService>(
-      profile, ContextualTasksContextControllerFactory::GetForProfile(profile),
-      IdentityManagerFactory::GetForProfile(profile));
+      profile, ContextualTasksServiceFactory::GetForProfile(profile),
+      IdentityManagerFactory::GetForProfile(profile),
+      AimEligibilityServiceFactory::GetForProfile(profile));
+}
+
+void ContextualTasksUiServiceFactory::RegisterProfilePrefs(
+    user_prefs::PrefRegistrySyncable* registry) {
+  registry->RegisterIntegerPref(kContextualTasksOnboardingTooltipDismissedCount,
+                                0);
 }
 
 bool ContextualTasksUiServiceFactory::ServiceIsCreatedWithBrowserContext()

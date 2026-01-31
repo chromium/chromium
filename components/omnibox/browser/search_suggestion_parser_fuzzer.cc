@@ -34,7 +34,7 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
     return 0;
   std::optional<std::string> response_body = std::make_optional<std::string>(
       reinterpret_cast<const char*>(data), size);
-  std::optional<base::Value::List> root_list =
+  std::optional<base::ListValue> root_list =
       SearchSuggestionParser::DeserializeJsonData(
           SearchSuggestionParser::ExtractJsonData(nullptr,
                                                   std::move(response_body)));

@@ -7,7 +7,7 @@
 # different entitlements, which afford different capabilities depending on the
 # requirements of the process.
 #
-# This list should be kept in sync with the enum options defined in
+# This list must be kept in sync with the enum options defined in
 # //content/public/browser/child_process_host.h.
 #
 # Each element of the list list is a tuple representing a helper variant. The
@@ -38,8 +38,8 @@ content_mac_helpers = [
   # A helper with the capability to execute writable memory, needed by
   # Swiftshader, and used to run renderer processes.
   #
-  # Note: be careful if adding a suffix to this name - doing so may
-  # break automatic graphics switching. crbug.com/985486
+  # Note: Be careful if adding a suffix to this name, as doing so may break
+  # automatic graphics switching; see https://crbug.com/40636691.
   [
     "gpu",
     "",
@@ -52,7 +52,8 @@ content_mac_helpers = [
   #
   # This helper historically hosted PPAPI plugins. Even after PPAPI deprecation,
   # it still hosts other kinds of third-party binary components; see
-  # https://crbug.com/1342679 for context.
+  # https://crbug.com/40231117 for context. This is deprecated and being
+  # removed; see https://crbug.com/461717105.
   [
     "plugin",
     ".plugin",

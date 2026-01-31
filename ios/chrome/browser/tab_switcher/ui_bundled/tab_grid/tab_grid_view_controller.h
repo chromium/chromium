@@ -15,7 +15,7 @@
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/tab_grid_paging.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/toolbars/tab_grid_toolbars_main_tab_grid_delegate.h"
 
-@protocol ApplicationCommands;
+@protocol BWGCommands;
 @class ChromeAppBarPrototype;
 @class GridContainerViewController;
 @protocol GridCommands;
@@ -29,13 +29,14 @@ enum class IPHDismissalReasonType;
 @class PinnedTabsViewController;
 @protocol PriceCardDataSource;
 @class RegularGridViewController;
-@class TabGridBottomToolbar;
+@protocol SceneCommands;
 @protocol TabCollectionConsumer;
 @protocol TabCollectionDragDropHandler;
+@protocol TabContextMenuProvider;
 @protocol TabGridActivityObserver;
+@class TabGridBottomToolbar;
 @protocol TabGridCommands;
 @protocol TabGridConsumer;
-@protocol TabContextMenuProvider;
 @protocol TabGridMutator;
 @protocol TabGridToolbarsCommandsWrangler;
 @class TabGridTopToolbar;
@@ -100,10 +101,14 @@ enum class TabGridPageConfiguration {
                         TabGridToolbarsMainTabGridDelegate,
                         UISearchBarDelegate>
 
-@property(nonatomic, weak) id<ApplicationCommands> handler;
+// Handler for Scene commands.
+@property(nonatomic, weak) id<SceneCommands> handler;
 
 // Handler for the TabGrid commands.
 @property(nonatomic, weak) id<TabGridCommands> tabGridHandler;
+
+// Handler for Gemini commands.
+@property(nonatomic, weak) id<BWGCommands> geminiHandler;
 
 // Delegate for this view controller to handle presenting tab UI.
 @property(nonatomic, weak) id<TabPresentationDelegate> tabPresentationDelegate;
@@ -192,7 +197,7 @@ enum class TabGridPageConfiguration {
 - (void)updateActivePageToCurrent;
 
 // Sets the app bar.
-- (void)setAppBar:(ChromeAppBarPrototype*)appBar;
+- (void)setAppBar:(UIViewController*)appBar;
 
 @end
 

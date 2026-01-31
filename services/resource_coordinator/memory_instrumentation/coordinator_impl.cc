@@ -10,7 +10,6 @@
 #include <utility>
 
 #include "base/command_line.h"
-#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/location.h"
@@ -27,7 +26,6 @@
 #include "services/resource_coordinator/public/cpp/memory_instrumentation/client_process_impl.h"
 #include "services/resource_coordinator/public/cpp/memory_instrumentation/tracing_observer_proto.h"
 #include "services/resource_coordinator/public/mojom/memory_instrumentation/constants.mojom.h"
-#include "services/resource_coordinator/public/mojom/memory_instrumentation/memory_instrumentation.mojom-data-view.h"
 #include "services/resource_coordinator/public/mojom/memory_instrumentation/memory_instrumentation.mojom.h"
 
 #if BUILDFLAG(IS_MAC)
@@ -434,7 +432,7 @@ void CoordinatorImpl::OnChromeMemoryDumpResponse(
 
   RemovePendingResponse(process_id, ResponseType::kChromeDump);
 
-  if (!base::Contains(clients_, process_id)) {
+  if (!clients_.contains(process_id)) {
     VLOG(1) << "Received a memory dump response from an unregistered client";
     return;
   }
@@ -463,7 +461,7 @@ void CoordinatorImpl::OnOSMemoryDumpResponse(uint64_t dump_guid,
 
   RemovePendingResponse(process_id, ResponseType::kOSDump);
 
-  if (!base::Contains(clients_, process_id)) {
+  if (!clients_.contains(process_id)) {
     VLOG(1) << "Received a memory dump response from an unregistered client";
     return;
   }

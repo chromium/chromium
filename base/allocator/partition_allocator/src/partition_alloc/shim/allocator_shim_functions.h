@@ -64,18 +64,20 @@ void SetCallNewHandlerOnMallocFailure(bool value) {
 
 void* UncheckedAlloc(size_t size) {
   const AllocatorDispatch* const chain_head = internal::GetChainHead();
-  return chain_head->alloc_unchecked_function(size, nullptr);
+  return chain_head->alloc_unchecked_function(size, kDefaultAllocToken,
+                                              nullptr);
 }
 
 void* UncheckedCalloc(size_t n, size_t size) {
   const AllocatorDispatch* const chain_head = internal::GetChainHead();
-  return chain_head->alloc_zero_initialized_unchecked_function(n, size,
-                                                               nullptr);
+  return chain_head->alloc_zero_initialized_unchecked_function(
+      n, size, kDefaultAllocToken, nullptr);
 }
 
 void* UncheckedRealloc(void* ptr, size_t size) {
   const AllocatorDispatch* const chain_head = internal::GetChainHead();
-  return chain_head->realloc_unchecked_function(ptr, size, nullptr);
+  return chain_head->realloc_unchecked_function(ptr, size, kDefaultAllocToken,
+                                                nullptr);
 }
 
 void UncheckedFree(void* ptr) {
@@ -85,13 +87,14 @@ void UncheckedFree(void* ptr) {
 
 void* UncheckedAlignedAlloc(size_t size, size_t align) {
   const AllocatorDispatch* const chain_head = internal::GetChainHead();
-  return chain_head->aligned_malloc_unchecked_function(size, align, nullptr);
+  return chain_head->aligned_malloc_unchecked_function(
+      size, align, kDefaultAllocToken, nullptr);
 }
 
 void* UncheckedAlignedRealloc(void* ptr, size_t size, size_t align) {
   const AllocatorDispatch* const chain_head = internal::GetChainHead();
-  return chain_head->aligned_realloc_unchecked_function(ptr, size, align,
-                                                        nullptr);
+  return chain_head->aligned_realloc_unchecked_function(
+      ptr, size, align, kDefaultAllocToken, nullptr);
 }
 
 void UncheckedAlignedFree(void* ptr) {

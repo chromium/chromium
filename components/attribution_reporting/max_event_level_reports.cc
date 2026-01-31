@@ -39,7 +39,7 @@ int DefaultMaxEventLevelReports(SourceType source_type) {
 
 // static
 base::expected<MaxEventLevelReports, SourceRegistrationError>
-MaxEventLevelReports::Parse(const base::Value::Dict& dict,
+MaxEventLevelReports::Parse(const base::DictValue& dict,
                             SourceType source_type) {
   const base::Value* value = dict.Find(kMaxEventLevelReports);
   if (!value) {
@@ -79,7 +79,7 @@ bool MaxEventLevelReports::SetIfValid(int max_event_level_reports) {
   return true;
 }
 
-void MaxEventLevelReports::Serialize(base::Value::Dict& dict) const {
+void MaxEventLevelReports::Serialize(base::DictValue& dict) const {
   dict.Set(kMaxEventLevelReports, max_event_level_reports_);
 }
 

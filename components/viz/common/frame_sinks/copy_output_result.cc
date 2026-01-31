@@ -5,6 +5,7 @@
 #include "components/viz/common/frame_sinks/copy_output_result.h"
 
 #include <cstddef>
+#include <string>
 #include <utility>
 
 #include "base/check_op.h"
@@ -25,12 +26,33 @@ namespace viz {
 
 CopyOutputResult::CopyOutputResult(Format format,
                                    Destination destination,
+                                   Error error)
+    : CopyOutputResult(format,
+                       destination,
+                       gfx::Rect(),
+                       /*needs_lock_for_bitmap=*/false,
+                       error) {}
+
+CopyOutputResult::CopyOutputResult(Format format,
+                                   Destination destination,
                                    const gfx::Rect& rect,
                                    bool needs_lock_for_bitmap)
+    : CopyOutputResult(format,
+                       destination,
+                       rect,
+                       needs_lock_for_bitmap,
+                       Error::kNone) {}
+
+CopyOutputResult::CopyOutputResult(Format format,
+                                   Destination destination,
+                                   const gfx::Rect& rect,
+                                   bool needs_lock_for_bitmap,
+                                   Error error)
     : format_(format),
       destination_(destination),
       rect_(rect),
-      needs_lock_for_bitmap_(needs_lock_for_bitmap) {
+      needs_lock_for_bitmap_(needs_lock_for_bitmap),
+      error_(error) {
   DCHECK(format_ == Format::RGBA || format_ == Format::RGBAF16 ||
          format_ == Format::I420_PLANES || format == Format::NV12);
   DCHECK(destination_ == Destination::kSystemMemory ||
@@ -234,8 +256,8 @@ CopyOutputSharedImageResult::CopyOutputSharedImageResult(
       release_callback_(std::move(release_callback)) {
   // check non-null `shared_image_`
   DCHECK(shared_image_);
-  // If we're constructing empty result, all mailbox_holders must be zero.
-  // Otherwise, the first mailbox must be non-zero.
+  // If we're constructing empty result, all shared image mailboxes must be
+  // zero. Otherwise, the first mailbox must be non-zero.
   DCHECK_EQ(rect.IsEmpty(), shared_image_->mailbox().IsZero());
   // If we're constructing empty result, the callbacks must be empty.
   // From definition of implication: p => q  <=>  !p || q.
@@ -321,9 +343,18 @@ SkBitmap CopyOutputResult::ScopedSkBitmap::GetOutScopedBitmap() const {
   return bitmap_copy;
 }
 
-CopyOutputBitmapWithMetadata
+base::expected<CopyOutputBitmapWithMetadata, CopyOutputResult::Error>
 CopyOutputResult::ScopedSkBitmap::GetOutScopedBitmapAndMetadata() const {
-  return CopyOutputBitmapWithMetadata{.bitmap = GetOutScopedBitmap()};
+  SkBitmap bitmap = GetOutScopedBitmap();
+  if (bitmap.drawsNothing()) {
+    if (result_) {
+      return base::unexpected<CopyOutputResult::Error>(result_->error());
+    }
+    return base::unexpected<CopyOutputResult::Error>(
+        CopyOutputResult::Error::kUnknown);
+  }
+
+  return CopyOutputBitmapWithMetadata{.bitmap = std::move(bitmap)};
 }
 
 VIZ_COMMON_EXPORT SharedImageFormat

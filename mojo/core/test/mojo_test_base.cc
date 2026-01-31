@@ -110,8 +110,9 @@ std::string MojoTestBase::ReadMessageWithHandles(
 
     CHECK_EQ(MOJO_RESULT_OK, result);
     CHECK_EQ(expected_num_handles, handles.size());
-    for (size_t i = 0; i < handles.size(); ++i)
+    for (size_t i = 0; i < handles.size(); ++i) {
       out_handles[i] = handles[i].release().value();
+    }
 
     return std::string(bytes.begin(), bytes.end());
   }
@@ -137,10 +138,11 @@ std::string MojoTestBase::ReadMessageWithOptionalHandle(MojoHandle mp,
     CHECK(handles.size() == 0 || handles.size() == 1);
     CHECK(handle);
 
-    if (handles.size() == 1)
+    if (handles.size() == 1) {
       *handle = handles[0].release().value();
-    else
+    } else {
       *handle = MOJO_HANDLE_INVALID;
+    }
 
     return std::string(bytes.begin(), bytes.end());
   }
@@ -201,8 +203,9 @@ MojoHandle MojoTestBase::DuplicateBuffer(MojoHandle h, bool read_only) {
   MojoDuplicateBufferHandleOptions options = {
       sizeof(MojoDuplicateBufferHandleOptions),
       MOJO_DUPLICATE_BUFFER_HANDLE_FLAG_NONE};
-  if (read_only)
+  if (read_only) {
     options.flags |= MOJO_DUPLICATE_BUFFER_HANDLE_FLAG_READ_ONLY;
+  }
   EXPECT_EQ(MOJO_RESULT_OK,
             MojoDuplicateBufferHandle(h, &options, &new_handle));
   return new_handle;

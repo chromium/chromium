@@ -11,7 +11,6 @@
 #include <set>
 #include <string>
 
-#include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
@@ -276,7 +275,7 @@ bool AVFoundationMonitorImpl::IsAudioDevice(AVCaptureDevice* device) {
   DCHECK(_mainThreadChecker.CalledOnValidThread());
   DCHECK(device != nil);
   // Skip this device if there are already observers connected to it.
-  if (base::Contains(_monitoredDevices, device)) {
+  if (_monitoredDevices.contains(device)) {
     return;
   }
   // Pass a raw pointer to the device as the context. This is safe because the

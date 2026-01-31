@@ -23,7 +23,6 @@
 #include "content/browser/browser_main_loop.h"
 #include "content/browser/media/capture/frame_test_util.h"
 #include "content/test/gpu_browsertest_helpers.h"
-#include "gpu/command_buffer/common/mailbox_holder.h"
 #include "gpu/ipc/client/client_shared_image_interface.h"
 #include "gpu/ipc/client/gpu_channel_host.h"
 #include "media/base/video_frame.h"
@@ -180,7 +179,7 @@ class FakeVideoCaptureStackReceiver final : public media::VideoFrameReceiver {
     CHECK(sii_);
     auto shared_image = sii_->CreateSharedImage(
         {viz::MultiPlaneFormat::kNV12, frame.frame_info->coded_size,
-         gfx::ColorSpace(), gpu::SharedImageUsageSet(si_usage),
+         frame.frame_info->color_space, gpu::SharedImageUsageSet(si_usage),
          "FakeVideoCaptureStack"},
         gpu::kNullSurfaceHandle, gfx::BufferUsage::SCANOUT_VEA_CPU_READ,
         gmb_handle.Clone());

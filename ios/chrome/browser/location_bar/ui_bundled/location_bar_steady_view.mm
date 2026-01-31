@@ -8,7 +8,7 @@
 #import "base/check_op.h"
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/badges/ui_bundled/badge_view_visibility_delegate.h"
-#import "ios/chrome/browser/content_suggestions/ui_bundled/content_suggestions_collection_utils.h"
+#import "ios/chrome/browser/content_suggestions/ui/content_suggestions_collection_utils.h"
 #import "ios/chrome/browser/contextual_panel/entrypoint/ui/contextual_panel_entrypoint_visibility_delegate.h"
 #import "ios/chrome/browser/intelligence/features/features.h"
 #import "ios/chrome/browser/location_bar/ui_bundled/badges_container_view.h"
@@ -307,27 +307,23 @@ const CGFloat kSmallerLocationLabelFontMultiplier = 0.75;
           constraintGreaterThanOrEqualToAnchor:self.leadingAnchor
                                       constant:kLocationBarLeadingPadding];
 
-  if (IsContextualPanelEnabled()) {
-    // Setup the layout guide centered between the contents of the location
-    // bar.
-    _centeredBetweenLocationBarContentsLayoutGuide =
-        [[UILayoutGuide alloc] init];
-    [_locationButton
-        addLayoutGuide:_centeredBetweenLocationBarContentsLayoutGuide];
-    [NSLayoutConstraint activateConstraints:@[
-      [_centeredBetweenLocationBarContentsLayoutGuide.leadingAnchor
-          constraintEqualToAnchor:_badgesContainerView.trailingAnchor],
-      [_centeredBetweenLocationBarContentsLayoutGuide.trailingAnchor
-          constraintEqualToAnchor:_trailingButton.leadingAnchor],
-    ]];
+  // Setup the layout guide centered between the contents of the location
+  // bar.
+  _centeredBetweenLocationBarContentsLayoutGuide = [[UILayoutGuide alloc] init];
+  [_locationButton
+      addLayoutGuide:_centeredBetweenLocationBarContentsLayoutGuide];
+  [NSLayoutConstraint activateConstraints:@[
+    [_centeredBetweenLocationBarContentsLayoutGuide.leadingAnchor
+        constraintEqualToAnchor:_badgesContainerView.trailingAnchor],
+    [_centeredBetweenLocationBarContentsLayoutGuide.trailingAnchor
+        constraintEqualToAnchor:_trailingButton.leadingAnchor],
+  ]];
 
-    _xRelativeToContentCenteredConstraint = [_locationContainerView
-                                                 .centerXAnchor
-        constraintEqualToAnchor:_centeredBetweenLocationBarContentsLayoutGuide
-                                    .centerXAnchor];
-    _xRelativeToContentCenteredConstraint.priority =
-        UILayoutPriorityDefaultHigh - 1;
-  }
+  _xRelativeToContentCenteredConstraint = [_locationContainerView.centerXAnchor
+      constraintEqualToAnchor:_centeredBetweenLocationBarContentsLayoutGuide
+                                  .centerXAnchor];
+  _xRelativeToContentCenteredConstraint.priority =
+      UILayoutPriorityDefaultHigh - 1;
 
   _trailingButtonTrailingAnchorConstraint = [self.trailingButton.trailingAnchor
       constraintEqualToAnchor:self.trailingAnchor

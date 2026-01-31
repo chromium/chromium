@@ -623,8 +623,7 @@ export class SettingsSyncAccountControlElement extends
         this.syncBrowserProxy_.showSyncPassphraseDialog();
         break;
       case StatusAction.SHOW_BOOKMARKS_LIMIT_HELP_ARTICLE:
-        // TODO(crbug.com/452968646): Adjust this with providing the concrete
-        // help center article link.
+        this.syncBrowserProxy_.showBookmarkLimitExceededHelp();
         break;
       case StatusAction.CONFIRM_SYNC_SETTINGS:
       default:

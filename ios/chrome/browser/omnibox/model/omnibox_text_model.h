@@ -76,7 +76,7 @@ struct OmniboxTextModel {
                                       const OmniboxTextState& after) const;
 
   // The Omnibox client.
-  raw_ptr<OmniboxClient, DanglingUntriaged> omnibox_client;
+  raw_ptr<OmniboxClient> omnibox_client;
 
   // The Omnibox focus state.
   OmniboxFocusState focus_state;

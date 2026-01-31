@@ -205,6 +205,9 @@ class ChromeCameraAppUIDelegate : public ash::CameraAppUIDelegate {
   void MonitorFileDeletion(
       const std::string& name,
       base::OnceCallback<void(FileMonitorResult)> callback) override;
+  void UploadFile(const std::string& name,
+                  const gfx::Image& thumbnail,
+                  base::OnceCallback<void(bool)> callback) override;
   void MaybeTriggerSurvey() override;
   void StartStorageMonitor(base::RepeatingCallback<void(StorageMonitorStatus)>
                                monitor_callback) override;

@@ -23,8 +23,8 @@ class WhatsNewStorageServiceImpl : public WhatsNewStorageService {
       delete;
 
   // Read-only access into prefs.
-  const base::Value::List& ReadModuleData() const override;
-  const base::Value::Dict& ReadEditionData() const override;
+  const base::ListValue& ReadModuleData() const override;
+  const base::DictValue& ReadEditionData() const override;
   std::optional<int> ReadVersionData() const override;
 
   int GetModuleQueuePosition(std::string_view module_name) const override;
@@ -38,8 +38,8 @@ class WhatsNewStorageServiceImpl : public WhatsNewStorageService {
   void SetEditionUsed(std::string_view edition_name) override;
   void SetVersionUsed() override;
 
-  void ClearModules(std::set<std::string_view> modules_to_clear) override;
-  void ClearEditions(std::set<std::string_view> editions_to_clear) override;
+  void ClearModules(std::set<std::string> modules_to_clear) override;
+  void ClearEditions(std::set<std::string> editions_to_clear) override;
 
   void Reset() override;
 

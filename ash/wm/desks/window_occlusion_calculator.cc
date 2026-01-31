@@ -4,6 +4,7 @@
 
 #include "ash/wm/desks/window_occlusion_calculator.h"
 
+#include <algorithm>
 #include <memory>
 #include <utility>
 
@@ -149,7 +150,7 @@ void WindowOcclusionCalculator::AddObserver(
        occlusion_change_observers_) {
     // The `observer` should only be notified of occlusion changes for the
     // windows it cares about (those in `parent_windows_to_track`).
-    if (base::Contains(parent_windows_to_track, parent_window)) {
+    if (std::ranges::contains(parent_windows_to_track, parent_window)) {
       observation_state->observer_list().AddObserver(observer);
     }
   }

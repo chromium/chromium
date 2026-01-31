@@ -17,10 +17,10 @@
 #include "chrome/browser/actor/ui/actor_ui_metrics_types.h"
 #include "chrome/browser/actor/ui/actor_ui_tab_controller_interface.h"
 #include "chrome/browser/actor/ui/actor_ui_window_controller.h"
-#include "chrome/browser/actor/ui/mocks/mock_actor_ui_state_manager.h"
-#include "chrome/browser/actor/ui/mocks/mock_handoff_button_controller.h"
 #include "chrome/browser/actor/ui/states/actor_overlay_state.h"
 #include "chrome/browser/actor/ui/states/handoff_button_state.h"
+#include "chrome/browser/actor/ui/test_support/mock_actor_ui_state_manager.h"
+#include "chrome/browser/actor/ui/test_support/mock_handoff_button_controller.h"
 #include "chrome/browser/ui/browser_window/test/mock_browser_window_interface.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/tabs/test_tab_strip_model_delegate.h"
@@ -89,9 +89,7 @@ class ActorUiTabControllerTest : public content::RenderViewHostTestHarness {
     tab_strip_model_ = std::make_unique<TabStripModel>(
         &delegate_, static_cast<TestingProfile*>(browser_context()));
     scoped_feature_list_.InitWithFeaturesAndParameters(
-        /*enabled_features=*/{{features::kGlicHandoffButtonHiddenClientControl,
-                               {}},
-                              {features::kGlicActorUi,
+        /*enabled_features=*/{{features::kGlicActorUi,
                                {{features::kGlicActorUiHandoffButtonName,
                                  "true"},
                                 {features::kGlicActorUiOverlayName, "true"}}}},
@@ -289,22 +287,6 @@ TEST_F(ActorUiTabControllerTest,
 
   UiTabState ui_tab_state(ActorOverlayState(), handoff_button_state);
   tab_controller()->OnUiTabStateChange(ui_tab_state, base::DoNothing());
-}
-
-TEST_F(
-    ActorUiTabControllerTest,
-    UpdateButtonVisibility_ButtonStaysVisibleWhenClientIsInControlAndFeatureDisabled) {
-  base::test::ScopedFeatureList local_list;
-  local_list.InitAndDisableFeature(
-      features::kGlicHandoffButtonHiddenClientControl);
-
-  EXPECT_CALL(*handoff_button_controller(),
-              UpdateState(_, /*is_visible=*/true, _));
-
-  HandoffButtonState client_control_state(
-      true, HandoffButtonState::ControlOwnership::kClient);
-  UiTabState new_ui_tab_state(ActorOverlayState(), client_control_state);
-  tab_controller()->OnUiTabStateChange(new_ui_tab_state, base::DoNothing());
 }
 
 TEST_F(ActorUiTabControllerTest,

@@ -96,8 +96,6 @@
   CHECK(identity) << "IdentityManager has primary identity: "
                   << hasPrimaryAccount << ", _signoutNotificationCalled: "
                   << _signoutNotificationCalled;
-  // TODO(crbug.com/40068130): Record the history sync opt-in when the new
-  // consent type will be available.
   syncer::SyncUserSettings* syncUserSettings = _syncService->GetUserSettings();
   syncUserSettings->SetSelectedType(syncer::UserSelectableType::kHistory, true);
   syncUserSettings->SetSelectedType(syncer::UserSelectableType::kTabs, true);

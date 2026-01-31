@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "base/command_line.h"
-#include "base/containers/contains.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
@@ -102,11 +101,6 @@ scoped_refptr<DOMStorageContextWrapper> DOMStorageContextWrapper::Create(
 DOMStorageContextWrapper::DOMStorageContextWrapper(
     StoragePartitionImpl* partition)
     : partition_(partition) {
-  memory_pressure_listener_registration_ =
-      std::make_unique<base::MemoryPressureListenerRegistration>(
-          FROM_HERE, base::MemoryPressureListenerTag::kDOMStorageContextWrapper,
-          this);
-
   // `partition_` can be null in test environments.
   if (!partition_) {
     return;
@@ -118,10 +112,8 @@ DOMStorageContextWrapper::DOMStorageContextWrapper(
   // Report on disk LocalStorage db size.
   if (partition_->GetStoragePartitionPath()) {
     // Path to the LocalStorage leveldb directory.
-    base::FilePath db_path =
-        partition_->GetStoragePartitionPath()
-            ->Append(storage::kLocalStoragePath)
-            .AppendASCII(storage::kLocalStorageLeveldbName);
+    base::FilePath db_path = storage::GetLocalStorageDatabasePath(
+        *partition_->GetStoragePartitionPath());
 
     // Offload the blocking file operation and report the result.
     base::ThreadPool::PostTaskAndReplyWithResult(
@@ -242,7 +234,7 @@ void DOMStorageContextWrapper::StartScavengingUnusedSessionStorage() {
     return;
   }
 
-  session_storage_control_->ScavengeUnusedNamespaces(base::NullCallback());
+  session_storage_control_->ScavengeUnusedNamespaces();
 }
 
 void DOMStorageContextWrapper::SetForceKeepSessionState() {
@@ -262,7 +254,6 @@ void DOMStorageContextWrapper::Shutdown() {
   // Signals the implementation to perform shutdown operations.
   session_storage_control_.reset();
   local_storage_control_.reset();
-  memory_pressure_listener_registration_.reset();
 
   // Make sure the observer drops its reference to |this|.
   storage_policy_observer_.reset();
@@ -289,8 +280,6 @@ void DOMStorageContextWrapper::OpenLocalStorage(
   DCHECK(local_storage_control_);
   local_storage_control_->BindStorageArea(storage_key, std::move(receiver));
   if (storage_policy_observer_) {
-    // TODO(crbug.com/40177656): Pass the real StorageKey when
-    // StoragePolicyObserver is converted.
     storage_policy_observer_->StartTrackingOrigin(storage_key.origin());
   }
 }
@@ -300,8 +289,7 @@ void DOMStorageContextWrapper::BindNamespace(
     mojo::ReportBadMessageCallback bad_message_callback,
     mojo::PendingReceiver<blink::mojom::SessionStorageNamespace> receiver) {
   DCHECK(session_storage_control_);
-  session_storage_control_->BindNamespace(namespace_id, std::move(receiver),
-                                          base::DoNothing());
+  session_storage_control_->BindNamespace(namespace_id, std::move(receiver));
 }
 
 void DOMStorageContextWrapper::BindStorageArea(
@@ -317,8 +305,8 @@ void DOMStorageContextWrapper::BindStorageArea(
     return;
   }
   DCHECK(session_storage_control_);
-  session_storage_control_->BindStorageArea(
-      storage_key, namespace_id, std::move(receiver), base::DoNothing());
+  session_storage_control_->BindStorageArea(storage_key, namespace_id,
+                                            std::move(receiver));
 }
 
 bool DOMStorageContextWrapper::IsRequestValid(
@@ -374,7 +362,7 @@ void DOMStorageContextWrapper::OnSessionStorageDisconnected() {
   base::AutoLock lock(alive_namespaces_lock_);
   for (const auto& entry : alive_namespaces_)
     session_storage_control_->CreateNamespace(entry.first);
-  session_storage_control_->ScavengeUnusedNamespaces(base::NullCallback());
+  session_storage_control_->ScavengeUnusedNamespaces();
 
   partition_->ResetSessionStorageConnections();
 }
@@ -423,28 +411,15 @@ void DOMStorageContextWrapper::AddNamespace(
     const std::string& namespace_id,
     SessionStorageNamespaceImpl* session_namespace) {
   base::AutoLock lock(alive_namespaces_lock_);
-  DCHECK(!base::Contains(alive_namespaces_, namespace_id));
+  DCHECK(!alive_namespaces_.contains(namespace_id));
   alive_namespaces_[namespace_id] = session_namespace;
 }
 
 void DOMStorageContextWrapper::RemoveNamespace(
     const std::string& namespace_id) {
   base::AutoLock lock(alive_namespaces_lock_);
-  DCHECK(base::Contains(alive_namespaces_, namespace_id));
+  DCHECK(alive_namespaces_.contains(namespace_id));
   alive_namespaces_.erase(namespace_id);
-}
-
-void DOMStorageContextWrapper::OnMemoryPressure(
-    base::MemoryPressureLevel memory_pressure_level) {
-  if (memory_pressure_level == base::MEMORY_PRESSURE_LEVEL_NONE) {
-    return;
-  }
-
-  PurgeOption purge_option = PURGE_UNOPENED;
-  if (memory_pressure_level == base::MEMORY_PRESSURE_LEVEL_CRITICAL) {
-    purge_option = PURGE_AGGRESSIVE;
-  }
-  PurgeMemory(purge_option);
 }
 
 void DOMStorageContextWrapper::PurgeMemory(PurgeOption purge_option) {
@@ -469,8 +444,6 @@ void DOMStorageContextWrapper::OnStartupUsageRetrieved(
   for (const auto& info : usage) {
     origins.emplace_back(std::move(info->storage_key.origin()));
   }
-  // TODO(crbug.com/40177656): Pass the real StorageKey when
-  // StoragePolicyObserver is converted.
   storage_policy_observer_->StartTrackingOrigins(std::move(origins));
 }
 

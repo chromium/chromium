@@ -91,7 +91,7 @@ bool PrintPreviewUiWrapper::ShouldCancelRequest(
   return it == map.end() || request_id != it->second;
 }
 
-void PrintPreviewUiWrapper::GeneratePrintPreview(base::Value::Dict settings) {
+void PrintPreviewUiWrapper::GeneratePrintPreview(base::DictValue settings) {
   CHECK(print_render_frame_.is_bound());
   // TODO(jimmyxgong): Store settings for sticky settings support.
   // Store the request ID.

@@ -51,7 +51,7 @@ constexpr char kAccountRemovedToastId[] =
     "settings_account_manager_account_removed";
 
 ::account_manager::AccountKey GetAccountKeyFromJsCallback(
-    const base::Value::Dict& dictionary) {
+    const base::DictValue& dictionary) {
   const std::string* id = dictionary.FindString("id");
   DCHECK(id);
   DCHECK(!id->empty());
@@ -98,9 +98,7 @@ class AccountBuilder {
 
   ~AccountBuilder() = default;
 
-  void PopulateFrom(base::Value::Dict account) {
-    account_ = std::move(account);
-  }
+  void PopulateFrom(base::DictValue account) { account_ = std::move(account); }
 
   bool IsEmpty() const { return account_.empty(); }
 
@@ -160,7 +158,7 @@ class AccountBuilder {
   }
 
   // Should be called only once.
-  base::Value::Dict Build() {
+  base::DictValue Build() {
     // Check that values were set.
     DCHECK(account_.FindString("id"));
     DCHECK(account_.FindString("email"));
@@ -177,7 +175,7 @@ class AccountBuilder {
   }
 
  private:
-  base::Value::Dict account_;
+  base::DictValue account_;
 };
 
 }  // namespace
@@ -230,7 +228,7 @@ void AccountManagerUIHandler::SetProfileForTesting(Profile* profile) {
   profile_ = profile;
 }
 
-void AccountManagerUIHandler::HandleGetAccounts(const base::Value::List& args) {
+void AccountManagerUIHandler::HandleGetAccounts(const base::ListValue& args) {
   AllowJavascript();
 
   CHECK_EQ(args.size(), 1u);
@@ -267,8 +265,8 @@ void AccountManagerUIHandler::FinishHandleGetAccounts(
   user_manager::User* user = ProfileHelper::Get()->GetUserByProfile(profile_);
   DCHECK(user);
 
-  base::Value::Dict gaia_device_account;
-  base::Value::List accounts = GetSecondaryGaiaAccounts(
+  base::DictValue gaia_device_account;
+  base::ListValue accounts = GetSecondaryGaiaAccounts(
       account_dummy_token_list, arc_accounts, user->GetAccountId(),
       profile_->IsChild(), &gaia_device_account);
 
@@ -300,14 +298,14 @@ void AccountManagerUIHandler::FinishHandleGetAccounts(
   ResolveJavascriptCallback(callback_id, accounts);
 }
 
-base::Value::List AccountManagerUIHandler::GetSecondaryGaiaAccounts(
+base::ListValue AccountManagerUIHandler::GetSecondaryGaiaAccounts(
     const std::vector<std::pair<::account_manager::Account, bool>>&
         account_dummy_token_list,
     const base::flat_set<account_manager::Account>& arc_accounts,
     const AccountId device_account_id,
     const bool is_child_user,
-    base::Value::Dict* device_account) {
-  base::Value::List accounts;
+    base::DictValue* device_account) {
+  base::ListValue accounts;
   for (const auto& account_token_pair : account_dummy_token_list) {
     const ::account_manager::Account& stored_account = account_token_pair.first;
     const ::account_manager::AccountKey& account_key = stored_account.key;
@@ -359,7 +357,7 @@ base::Value::List AccountManagerUIHandler::GetSecondaryGaiaAccounts(
   return accounts;
 }
 
-void AccountManagerUIHandler::HandleAddAccount(const base::Value::List& args) {
+void AccountManagerUIHandler::HandleAddAccount(const base::ListValue& args) {
   AllowJavascript();
   AccountManagerFactory::Get()
       ->GetAccountManagerFacade(profile_->GetPath().value())
@@ -369,7 +367,7 @@ void AccountManagerUIHandler::HandleAddAccount(const base::Value::List& args) {
 }
 
 void AccountManagerUIHandler::HandleReauthenticateAccount(
-    const base::Value::List& args) {
+    const base::ListValue& args) {
   AllowJavascript();
 
   CHECK(!args.empty());
@@ -384,7 +382,7 @@ void AccountManagerUIHandler::HandleReauthenticateAccount(
 }
 
 void AccountManagerUIHandler::HandleMigrateAccount(
-    const base::Value::List& args) {
+    const base::ListValue& args) {
   AllowJavascript();
 
   CHECK(!args.empty());
@@ -393,12 +391,11 @@ void AccountManagerUIHandler::HandleMigrateAccount(
   AccountMigrationWelcomeDialog::Show(account_email);
 }
 
-void AccountManagerUIHandler::HandleRemoveAccount(
-    const base::Value::List& args) {
+void AccountManagerUIHandler::HandleRemoveAccount(const base::ListValue& args) {
   AllowJavascript();
 
   CHECK(!args.empty());
-  const base::Value::Dict* dictionary = args[0].GetIfDict();
+  const base::DictValue* dictionary = args[0].GetIfDict();
   CHECK(dictionary);
 
   const AccountId device_account_id =

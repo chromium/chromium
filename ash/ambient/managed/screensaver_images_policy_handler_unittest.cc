@@ -4,6 +4,7 @@
 
 #include "ash/ambient/managed/screensaver_images_policy_handler.h"
 
+#include <algorithm>
 #include <memory>
 #include <optional>
 #include <vector>
@@ -20,7 +21,6 @@
 #include "ash/test/ash_test_base.h"
 #include "ash/test/ash_test_helper.h"
 #include "base/base_paths.h"
-#include "base/containers/contains.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
@@ -285,8 +285,8 @@ TEST_P(ScreensaverImagesPolicyHandlerForAnySessionTest,
     EXPECT_TRUE(test_future.Wait());
     std::vector<base::FilePath> file_paths = test_future.Take();
     ASSERT_EQ(2u, file_paths.size());
-    EXPECT_TRUE(base::Contains(file_paths, file_path1));
-    EXPECT_TRUE(base::Contains(file_paths, file_path2));
+    EXPECT_TRUE(std::ranges::contains(file_paths, file_path1));
+    EXPECT_TRUE(std::ranges::contains(file_paths, file_path2));
   }
 
   EXPECT_FALSE(test_future.IsReady());
@@ -300,7 +300,7 @@ TEST_P(ScreensaverImagesPolicyHandlerForAnySessionTest, DownloadImagesTest) {
   ASSERT_NE(GetExpectedFilePath(kImageUrl1),
             GetExpectedFilePath(kImageUrl1Alt));
 
-  base::Value::List image_urls;
+  base::ListValue image_urls;
   image_urls.Append(kImageUrl1);
   image_urls.Append(kImageUrl1Alt);
   image_urls.Append(kImageUrl2);
@@ -333,8 +333,10 @@ TEST_P(ScreensaverImagesPolicyHandlerForAnySessionTest, DownloadImagesTest) {
     EXPECT_TRUE(test_future.Wait());
     std::vector<base::FilePath> file_paths = test_future.Take();
     EXPECT_EQ(2u, file_paths.size());
-    EXPECT_TRUE(base::Contains(file_paths, GetExpectedFilePath(kImageUrl1)));
-    EXPECT_TRUE(base::Contains(file_paths, GetExpectedFilePath(kImageUrl2)));
+    EXPECT_TRUE(
+        std::ranges::contains(file_paths, GetExpectedFilePath(kImageUrl1)));
+    EXPECT_TRUE(
+        std::ranges::contains(file_paths, GetExpectedFilePath(kImageUrl2)));
   }
 }
 
@@ -343,7 +345,7 @@ TEST_P(ScreensaverImagesPolicyHandlerForAnySessionTest, VerifyPolicyLimit) {
   policy_handler()->SetScreensaverImagesUpdatedCallback(
       test_future.GetRepeatingCallback<const std::vector<base::FilePath>&>());
 
-  base::Value::List image_urls;
+  base::ListValue image_urls;
   // Append the same URL request `kMaxUrlsToProcessFromPolicy` times. This
   // should be the only URL that can be requested.
   for (size_t i = 0; i < kMaxUrlsToProcessFromPolicy; ++i) {

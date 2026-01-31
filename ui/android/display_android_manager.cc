@@ -55,7 +55,7 @@ void SetScreenAndroid(bool use_display_wide_color_gamut) {
   display::Screen::SetScreenInstance(manager);
 
   JNIEnv* env = AttachCurrentThread();
-  Java_DisplayAndroidManager_onNativeSideCreated(env, (jlong)manager);
+  Java_DisplayAndroidManager_onNativeSideCreated(env, (int64_t)manager);
 }
 
 bool DisplayAndroidManager::IsDisplayTopologyAvailable() {
@@ -207,24 +207,24 @@ void DisplayAndroidManager::DoUpdateDisplay(display::Display* display,
 
 void DisplayAndroidManager::UpdateDisplay(
     JNIEnv* env,
-    jint sdkDisplayId,
+    int32_t sdkDisplayId,
     const base::android::JavaRef<jstring>& label,
     const base::android::JavaRef<jintArray>&
         jBounds,  // {left, top, right, bottom} in dip
     const base::android::JavaRef<jintArray>&
-        jWorkArea,  // {left, top, right, bottom} in dip
-    jint width,     // in physical pixels
-    jint height,    // in physical pixels
-    jfloat dipScale,
-    jfloat pixelsPerInchX,
-    jfloat pixelsPerInchY,
-    jint rotationDegrees,
-    jint bitsPerPixel,
-    jint bitsPerComponent,
-    jboolean isWideColorGamut,
-    jboolean isHdr,
-    jfloat hdrMaxLuminanceRatio,
-    jboolean isInternal) {
+        jWorkArea,   // {left, top, right, bottom} in dip
+    int32_t width,   // in physical pixels
+    int32_t height,  // in physical pixels
+    float dipScale,
+    float pixelsPerInchX,
+    float pixelsPerInchY,
+    int32_t rotationDegrees,
+    int32_t bitsPerPixel,
+    int32_t bitsPerComponent,
+    bool isWideColorGamut,
+    bool isHdr,
+    float hdrMaxLuminanceRatio,
+    bool isInternal) {
   std::vector<int> bounds_array, work_area_array;
   base::android::JavaIntArrayToIntVector(env, jBounds, &bounds_array);
   base::android::JavaIntArrayToIntVector(env, jWorkArea, &work_area_array);
@@ -254,24 +254,21 @@ void DisplayAndroidManager::UpdateDisplay(
   ProcessDisplayChanged(display, sdkDisplayId == primary_display_id_);
 }
 
-void DisplayAndroidManager::RemoveDisplay(
-    JNIEnv* env,
-    jint sdkDisplayId) {
+void DisplayAndroidManager::RemoveDisplay(JNIEnv* env, int32_t sdkDisplayId) {
   display_list().RemoveDisplay(sdkDisplayId);
   display::RemoveInternalDisplayId(sdkDisplayId);
 }
 
-void DisplayAndroidManager::SetPrimaryDisplayId(
-    JNIEnv* env,
-    jint sdkDisplayId) {
+void DisplayAndroidManager::SetPrimaryDisplayId(JNIEnv* env,
+                                                int32_t sdkDisplayId) {
   primary_display_id_ = sdkDisplayId;
 }
 
-jint DisplayAndroidManager::GetDisplaySdkMatching(JNIEnv* env,
-                                                  jint x,
-                                                  jint y,
-                                                  jint width,
-                                                  jint height) {
+int32_t DisplayAndroidManager::GetDisplaySdkMatching(JNIEnv* env,
+                                                     int32_t x,
+                                                     int32_t y,
+                                                     int32_t width,
+                                                     int32_t height) {
   return GetDisplayMatching(gfx::Rect(x, y, width, height)).id();
 }
 

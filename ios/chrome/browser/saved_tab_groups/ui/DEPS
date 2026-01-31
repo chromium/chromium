@@ -1,4 +1,6 @@
 include_rules = [
+  # keep-sorted start
   "+ios/chrome/browser/share_kit/model",
   "+ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/tab_groups",
+  # keep-sorted end
 ]

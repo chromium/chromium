@@ -54,7 +54,7 @@ class LegacyTechServiceTest : public ::testing::Test {
   }
 
   void SetPolicy(const std::vector<std::string>& urls) {
-    base::Value::List policy;
+    base::ListValue policy;
     for (const auto& url : urls) {
       policy.Append(base::Value(url));
     }

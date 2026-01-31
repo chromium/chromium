@@ -6,12 +6,14 @@
 
 #include <string>
 #include <utility>
+#include <variant>
 
 #include "base/check.h"
 #include "base/no_destructor.h"
 #include "base/notreached.h"
 #include "build/build_config.h"
 #include "components/permissions/permission_decision.h"
+#include "components/permissions/permission_prompt_decision.h"
 #include "components/permissions/permission_util.h"
 #include "components/permissions/request_type.h"
 #include "components/strings/grit/components_strings.h"
@@ -99,6 +101,12 @@ PermissionRequest::GetDialogAnnotatedMessageText(
       break;
     case RequestType::kLocalNetworkAccess:
       message_id = IDS_LOCAL_NETWORK_ACCESS_INFOBAR_TEXT;
+      break;
+    case RequestType::kLocalNetwork:
+      message_id = IDS_LOCAL_NETWORK_INFOBAR_TEXT;
+      break;
+    case RequestType::kLoopbackNetwork:
+      message_id = IDS_LOOPBACK_NETWORK_INFOBAR_TEXT;
       break;
     case RequestType::kMicStream:
       message_id = IDS_MEDIA_CAPTURE_AUDIO_ONLY_INFOBAR_TEXT;
@@ -366,6 +374,12 @@ std::u16string PermissionRequest::GetMessageTextFragment() const {
     case RequestType::kLocalNetworkAccess:
       message_id = IDS_LOCAL_NETWORK_ACCESS_PERMISSION_FRAGMENT;
       break;
+    case RequestType::kLocalNetwork:
+      message_id = IDS_LOCAL_NETWORK_PERMISSION_FRAGMENT;
+      break;
+    case RequestType::kLoopbackNetwork:
+      message_id = IDS_LOOPBACK_NETWORK_PERMISSION_FRAGMENT;
+      break;
     case RequestType::kMicStream:
       message_id = IDS_MEDIA_CAPTURE_AUDIO_ONLY_PERMISSION_FRAGMENT;
       break;
@@ -433,33 +447,39 @@ bool PermissionRequest::ShouldUseTwoOriginPrompt() const {
   return request_type() == RequestType::kStorageAccess;
 }
 
-void PermissionRequest::PermissionGranted(bool is_one_time) {
+void PermissionRequest::PermissionGranted(const PromptOptions& prompt_options,
+                                          bool is_one_time) {
   std::move(permission_decided_callback_)
-      .Run(is_one_time ? PermissionDecision::kAllowThisTime
-                       : PermissionDecision::kAllow,
-           /*is_final_decision=*/true, /*request_data=*/*data_);
+      .Run(PermissionPromptDecision{.overall_decision =
+                                        is_one_time
+                                            ? PermissionDecision::kAllowThisTime
+                                            : PermissionDecision::kAllow,
+                                    .prompt_options = prompt_options,
+                                    .is_final = true},
+           /*request_data=*/*data_);
 }
 
 void PermissionRequest::PermissionDenied() {
   std::move(permission_decided_callback_)
-      .Run(PermissionDecision::kDeny,
-           /*is_final_decision=*/true, /*request_data=*/*data_);
+      .Run(PermissionPromptDecision{.overall_decision =
+                                        PermissionDecision::kDeny,
+                                    .prompt_options = std::monostate(),
+                                    .is_final = true},
+           /*request_data=*/*data_);
 }
 
 void PermissionRequest::Cancelled(bool is_final_decision) {
   if (permission_decided_callback_) {
-    permission_decided_callback_.Run(PermissionDecision::kNone,
-                                     is_final_decision,
-                                     /*request_data=*/*data_);
+    permission_decided_callback_.Run(
+        PermissionPromptDecision{.overall_decision = PermissionDecision::kNone,
+                                 .prompt_options = std::monostate(),
+                                 .is_final = is_final_decision},
+        /*request_data=*/*data_);
   }
 }
 
 PermissionRequestGestureType PermissionRequest::GetGestureType() const {
   return PermissionUtil::GetGestureType(data_->user_gesture);
-}
-
-void PermissionRequest::SetPromptOptions(PromptOptions prompt_options) {
-  data_->prompt_options = std::move(prompt_options);
 }
 
 const std::vector<std::string>&

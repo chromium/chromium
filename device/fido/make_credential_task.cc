@@ -7,13 +7,13 @@
 #include <algorithm>
 #include <utility>
 
-#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "device/base/features.h"
 #include "device/fido/ctap2_device_operation.h"
 #include "device/fido/ctap_make_credential_request.h"
 #include "device/fido/fido_parsing_utils.h"
 #include "device/fido/pin.h"
+#include "device/fido/public/features.h"
 #include "device/fido/public/fido_constants.h"
 #include "device/fido/u2f_command_constructor.h"
 #include "device/fido/u2f_register_operation.h"
@@ -57,7 +57,7 @@ bool CtapDeviceShouldUseU2fBecauseClientPinIsSet(
       device->device_info()->options.client_pin_availability ==
       AuthenticatorSupportedOptions::ClientPinAvailability::kSupportedAndPinSet;
   bool supports_u2f =
-      base::Contains(device->device_info()->versions, ProtocolVersion::kU2f);
+      device->device_info()->versions.contains(ProtocolVersion::kU2f);
   return client_pin_set && supports_u2f;
 }
 
@@ -68,6 +68,7 @@ bool CtapDeviceShouldUseU2fBecauseClientPinIsSet(
 std::optional<AuthenticatorMakeCredentialResponse> ConvertCTAPResponse(
     FidoDevice* device,
     bool resident_key_required,
+    pin::HMACSecretRequest* hmac_secret_mc_request,
     const std::optional<cbor::Value>& cbor) {
   DCHECK_EQ(device->supported_protocol(), ProtocolVersion::kCtap2);
   DCHECK(device->device_info());
@@ -101,6 +102,31 @@ std::optional<AuthenticatorMakeCredentialResponse> ConvertCTAPResponse(
 
   if (device->device_info() && device->device_info()->transports) {
     response->transports = *device->device_info()->transports;
+  }
+
+  const std::optional<cbor::Value>& extensions_cbor =
+      response->attestation_object.authenticator_data().extensions();
+  if (extensions_cbor) {
+    const cbor::Value::MapValue& extensions = extensions_cbor->GetMap();
+    auto it = extensions.find(cbor::Value(kExtensionHmacSecretMc));
+    if (it != extensions.end()) {
+      if (!hmac_secret_mc_request || !it->second.is_bytestring()) {
+        FIDO_LOG(DEBUG) << "Unexpected or invalid hmac-secret-mc extension";
+        return std::nullopt;
+      }
+      if (response->prf_results.has_value()) {
+        FIDO_LOG(DEBUG)
+            << "Assertion response has both hmac-secret-mc and prf extensions";
+        return std::nullopt;
+      }
+      std::optional<std::vector<uint8_t>> plaintext =
+          hmac_secret_mc_request->Decrypt(it->second.GetBytestring());
+      if (!plaintext) {
+        FIDO_LOG(DEBUG) << "Failed to decrypt hmac-secret-mc extension";
+        return std::nullopt;
+      }
+      response->prf_results = std::move(plaintext.value());
+    }
   }
 
   return response;
@@ -244,12 +270,14 @@ void MakeCredentialTask::MakeCredential() {
   // previously, due to filtering.)
   if (exclude_list_batches_.size() == 1 || device()->NoSilentRequests()) {
     auto request = request_;
+    MaybeSetPRFParameters(request);
     request.exclude_list = exclude_list_batches_.front();
     register_operation_ = std::make_unique<Ctap2DeviceOperation<
         CtapMakeCredentialRequest, AuthenticatorMakeCredentialResponse>>(
         device(), std::move(request), std::move(callback_),
         base::BindOnce(&ConvertCTAPResponse, device(),
-                       request_.resident_key_required),
+                       request_.resident_key_required,
+                       hmac_secret_mc_request_.get()),
         /*string_fixup_predicate=*/nullptr,
         base::BindOnce(RedactCtapMakeCredentialResponse));
     register_operation_->Start();
@@ -283,13 +311,15 @@ void MakeCredentialTask::HandleResponseToSilentSignRequest(
   // touch and and the CTAP2_ERR_CREDENTIAL_EXCLUDED error code.
   if (response_code == CtapDeviceResponseCode::kSuccess) {
     CtapMakeCredentialRequest request = request_;
+    MaybeSetPRFParameters(request);
     request.exclude_list =
         exclude_list_batches_.at(current_exclude_list_batch_);
     register_operation_ = std::make_unique<Ctap2DeviceOperation<
         CtapMakeCredentialRequest, AuthenticatorMakeCredentialResponse>>(
         device(), std::move(request), std::move(callback_),
         base::BindOnce(&ConvertCTAPResponse, device(),
-                       request_.resident_key_required),
+                       request_.resident_key_required,
+                       hmac_secret_mc_request_.get()),
         /*string_fixup_predicate=*/nullptr,
         base::BindOnce(RedactCtapMakeCredentialResponse));
     register_operation_->Start();
@@ -299,13 +329,16 @@ void MakeCredentialTask::HandleResponseToSilentSignRequest(
   // The authenticator returned an unexpected error. Collect a touch to take the
   // authenticator out of the set of active devices.
   if (!FidoDevice::IsStatusForUnrecognisedCredentialID(response_code)) {
+    auto request = GetTouchRequest(device());
+    MaybeSetPRFParameters(request);
     register_operation_ = std::make_unique<Ctap2DeviceOperation<
         CtapMakeCredentialRequest, AuthenticatorMakeCredentialResponse>>(
-        device(), GetTouchRequest(device()),
+        device(), std::move(request),
         base::BindOnce(&MakeCredentialTask::HandleResponseToDummyTouch,
                        weak_factory_.GetWeakPtr()),
         base::BindOnce(&ConvertCTAPResponse, device(),
-                       /*resident_key_required=*/false),
+                       /*resident_key_required=*/false,
+                       hmac_secret_mc_request_.get()),
         /*string_fixup_predicate=*/nullptr,
         base::BindOnce(RedactCtapMakeCredentialResponse));
     register_operation_->Start();
@@ -335,11 +368,13 @@ void MakeCredentialTask::HandleResponseToSilentSignRequest(
   // it exceeds the device's size limit.
   CtapMakeCredentialRequest request = request_;
   request.exclude_list = {};
+  MaybeSetPRFParameters(request);
   register_operation_ = std::make_unique<Ctap2DeviceOperation<
       CtapMakeCredentialRequest, AuthenticatorMakeCredentialResponse>>(
       device(), std::move(request), std::move(callback_),
       base::BindOnce(&ConvertCTAPResponse, device(),
-                     request_.resident_key_required),
+                     request_.resident_key_required,
+                     hmac_secret_mc_request_.get()),
       /*string_fixup_predicate=*/nullptr,
       base::BindOnce(RedactCtapMakeCredentialResponse));
   register_operation_->Start();
@@ -350,6 +385,25 @@ void MakeCredentialTask::HandleResponseToDummyTouch(
     std::optional<AuthenticatorMakeCredentialResponse> response_data) {
   std::move(callback_).Run(CtapDeviceResponseCode::kCtap2ErrOther,
                            std::nullopt);
+}
+
+void MakeCredentialTask::MaybeSetPRFParameters(
+    CtapMakeCredentialRequest& request) {
+  if (!request.prf_input || !request.pin_protocol ||
+      !request.pin_key_agreement ||
+      !base::FeatureList::IsEnabled(device::kWebAuthnHmacSecretMcExtension)) {
+    return;
+  }
+
+  hmac_secret_mc_request_ = std::make_unique<pin::HMACSecretRequest>(
+      *request.pin_protocol, *request.pin_key_agreement,
+      request.prf_input->salt1, request.prf_input->salt2);
+  request.hmac_secret_mc.emplace(hmac_secret_mc_request_->public_key_x962,
+                                 hmac_secret_mc_request_->encrypted_salts,
+                                 hmac_secret_mc_request_->salts_auth,
+                                 // The correct PIN protocol will be inserted
+                                 // automatically when needed.
+                                 /*pin_protocol=*/std::nullopt);
 }
 
 void MakeCredentialTask::U2fRegister() {

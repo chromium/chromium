@@ -102,13 +102,13 @@ class ContentSettingsStore
 
   // Serializes all content settings set by the extension with ID `extension_id`
   // and returns them as a list of Values.
-  base::Value::List GetSettingsForExtension(const ExtensionId& extension_id,
-                                            ChromeSettingScope scope) const;
+  base::ListValue GetSettingsForExtension(const ExtensionId& extension_id,
+                                          ChromeSettingScope scope) const;
 
   // Deserializes content settings rules from `list` and applies them as set by
   // the extension with ID `extension_id`.
   void SetExtensionContentSettingFromList(const ExtensionId& extension_id,
-                                          const base::Value::List& list,
+                                          const base::ListValue& list,
                                           ChromeSettingScope scope);
 
   // //////////////////////////////////////////////////////////////////////////

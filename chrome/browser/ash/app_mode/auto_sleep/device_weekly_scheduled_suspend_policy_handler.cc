@@ -39,9 +39,6 @@ bool DeviceWeeklyScheduledSuspendPolicyHandler::CheckPolicySettings(
     return true;
   }
 
-  // TODO(b/322341636): Validate that the schedule contains entries with valid
-  // start/end times, and that it does not contain overlapped entries.
-
   return true;
 }
 

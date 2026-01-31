@@ -6,6 +6,7 @@
 
 #include "base/feature_list.h"
 #include "base/memory/memory_pressure_listener.h"
+#include "base/memory/memory_pressure_listener_registry.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -30,7 +31,6 @@ class MemoryPurgeManagerTest : public testing::Test,
     memory_pressure_listener_registration_ =
         std::make_unique<base::MemoryPressureListenerRegistration>(
             FROM_HERE, base::MemoryPressureListenerTag::kTest, this);
-    base::MemoryPressureListener::SetNotificationsSuppressed(false);
   }
 
   void TearDown() override {
@@ -45,6 +45,8 @@ class MemoryPurgeManagerTest : public testing::Test,
   }
 
   unsigned MemoryPressureCount() const { return memory_pressure_count_; }
+
+  base::MemoryPressureListenerRegistry memory_pressure_listener_registry_;
 
   base::test::TaskEnvironment task_environment_;
   std::unique_ptr<base::MemoryPressureListenerRegistration>

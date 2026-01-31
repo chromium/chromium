@@ -16,6 +16,7 @@
 #include <variant>
 #include <vector>
 
+#include "base/byte_size.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
 #include "base/functional/callback_forward.h"
@@ -90,6 +91,7 @@
 #include "third_party/blink/public/mojom/file_system_access/file_system_access_cloud_identifier.mojom-forward.h"
 #include "third_party/blink/public/mojom/file_system_access/file_system_access_error.mojom-forward.h"
 #include "third_party/blink/public/mojom/manifest/manifest.mojom-forward.h"
+#include "third_party/blink/public/mojom/navigation/navigation_params.mojom-forward.h"
 #include "third_party/blink/public/mojom/on_device_translation/translation_manager.mojom-forward.h"
 #include "third_party/blink/public/mojom/origin_trials/origin_trials_settings.mojom-forward.h"
 #include "third_party/blink/public/mojom/payments/secure_payment_confirmation_service.mojom-forward.h"
@@ -266,7 +268,6 @@ class ResponsivenessCalculatorDelegate;
 class SerialDelegate;
 class ServiceWorkerContext;
 class SiteInstance;
-class SpeculationHostDelegate;
 class SpeechRecognitionManagerDelegate;
 class StoragePartition;
 class TracingDelegate;
@@ -321,6 +322,13 @@ class CONTENT_EXPORT ContentBrowserClient {
       base::OnceCallback<void(const ui::ClipboardFormatType& type,
                               const ClipboardPasteData& data,
                               std::optional<std::u16string> replacement_data)>;
+
+  // Checks if the drag operation initiated by the renderer is allowed by
+  // enterprise policies. This mirrors `IsClipboardCopyAllowedByPolicy` but
+  // accepts the full `DropData` bundle, allowing the embedder to inspect all
+  // data types present in the drag. The default implementation allows the drag.
+  virtual bool IsDragAllowedByPolicy(const ClipboardEndpoint& source,
+                                     const struct DropData& drop_data);
 
   // Records the detailed reason for ShouldUseSpareRenderProcessHost returning
   // .
@@ -513,12 +521,6 @@ class CONTENT_EXPORT ContentBrowserClient {
   virtual bool ShouldLockProcessToSite(BrowserContext* browser_context,
                                        const GURL& effective_url);
 
-  // Returns whether a new set of CanCommitURL restrictions on navigation
-  // commits in ChildProcessSecurityPolicy should be applied. Defaults to true.
-  // TODO(https://crbug.com/326250356): Remove this once the Android WebView
-  // crashes are fixed.
-  virtual bool ShouldEnforceNewCanCommitUrlChecks();
-
   // Returns a boolean indicating whether the WebUI |url| requires its process
   // to be locked to the WebUI origin. Note: This method can be called from
   // multiple threads. It is not safe to assume it runs only on the UI thread.
@@ -683,13 +685,12 @@ class CONTENT_EXPORT ContentBrowserClient {
   // Must be less than or equal to the total number of RenderProcessHosts.
   virtual size_t GetProcessCountToIgnoreForLimit();
 
-  // Returns the base permissions policy that is declared in an isolated app's
-  // Web App Manifest. The embedder might choose to return an std::nullopt in
-  // specific cases -- then the default non-isolated permissions policy will be
-  // applied.
-  virtual std::optional<network::ParsedPermissionsPolicy>
-  GetPermissionsPolicyForIsolatedWebApp(WebContents* web_contents,
-                                        const url::Origin& app_origin);
+  // Returns the cached permissions policy for the given Isolated Web App
+  // origin. Returns nullopt if the policy is not cached.
+  virtual std::optional<
+      std::vector<blink::mojom::IsolatedAppPermissionPolicyEntryPtr>>
+  GetPermissionsPolicyForIsolatedWebApp(BrowserContext* browser_context,
+                                        const url::Origin& iwa_origin);
 
   // Returns whether a new process should be created or an existing one should
   // be reused based on the URL we want to load. This should return false,
@@ -2308,7 +2309,7 @@ class CONTENT_EXPORT ContentBrowserClient {
   // |GetNetConstants()| and passed to FileNetLogObserver - see documentation
   // of |FileNetLogObserver::CreateBounded()| for more information.  The
   // convention is to put new constants under a subdict at the key "clientInfo".
-  virtual base::Value::Dict GetNetLogConstants();
+  virtual base::DictValue GetNetLogConstants();
 
 #if BUILDFLAG(IS_ANDROID)
   // Only used by Android WebView.
@@ -2578,8 +2579,8 @@ class CONTENT_EXPORT ContentBrowserClient {
   virtual void OnNetworkServiceDataUseUpdate(
       GlobalRenderFrameHostId render_frame_host_id,
       int32_t network_traffic_annotation_id_hash,
-      int64_t recv_bytes,
-      int64_t sent_bytes);
+      base::ByteSize recv_bytes,
+      base::ByteSize sent_bytes);
 
   // Returns the absolute path to a directory in which sandboxed out-of-process
   // Storage Service instances should be confined. By default this is empty, and
@@ -2828,7 +2829,7 @@ class CONTENT_EXPORT ContentBrowserClient {
       int child_id,
       const GURL& script_url);
 
-  enum class PrivateNetworkRequestPolicyOverride {
+  enum class LocalNetworkAccessRequestPolicyOverride {
     kForceAllow,
     kBlockInsteadOfWarn,
     kWarnInsteadOfBlock,
@@ -2843,9 +2844,9 @@ class CONTENT_EXPORT ContentBrowserClient {
   //
   // |browser_context| must not be nullptr. Caller retains ownership.
   // |origin| is the origin of a navigation ready to commit.
-  virtual PrivateNetworkRequestPolicyOverride
-  ShouldOverridePrivateNetworkRequestPolicy(BrowserContext* browser_context,
-                                            const url::Origin& origin);
+  virtual LocalNetworkAccessRequestPolicyOverride
+  ShouldOverrideLocalNetworkAccessRequestPolicy(BrowserContext* browser_context,
+                                                const url::Origin& origin);
 
   // Whether the JIT should be disabled for the given |browser_context| and
   // |site_url|. Pass an empty GURL for |site_url| to get the default JIT policy
@@ -2874,6 +2875,10 @@ class CONTENT_EXPORT ContentBrowserClient {
 
   // Whether v8 feature flag overrides are disallowed for the given `site_url`.
   virtual bool DisallowV8FeatureFlagOverridesForSite(const GURL& site_url);
+
+  // Whether Advanced Protection is enabled for Android.
+  // Returns false if build is not Android.
+  virtual bool IsAndroidAdvancedProtectionEnabled();
 
   // Returns the URL-Keyed Metrics service for chrome:ukm.
   virtual ukm::UkmService* GetUkmService();
@@ -2925,12 +2930,6 @@ class CONTENT_EXPORT ContentBrowserClient {
   // be used to make heuristics based preconnects.
   virtual std::unique_ptr<AnchorElementPreconnectDelegate>
   CreateAnchorElementPreconnectDelegate(RenderFrameHost& render_frame_host);
-
-  // Allows the embedder to provide a SpeculationHostDelegate that will be used
-  // to process speculation rules provided by the document hosted by
-  // `render_frame_host`.
-  virtual std::unique_ptr<SpeculationHostDelegate>
-  CreateSpeculationHostDelegate(RenderFrameHost& render_frame_host);
 
   // Allows the embedder to provide a PrefetchServiceDelegate that will be used
   // to make prefetches.
@@ -3024,13 +3023,6 @@ class CONTENT_EXPORT ContentBrowserClient {
   // Checks if Isolated Web Apps are enabled, e.g. by feature flag
   // or in any other way.
   virtual bool AreIsolatedWebAppsEnabled(BrowserContext* browser_context);
-
-  // This function can serve to block third-party storage partitioning
-  // from being enabled if it returns false. If it returns true, then
-  // we fallback on the base feature to determine if partitioning is on.
-  virtual bool IsThirdPartyStoragePartitioningAllowed(
-      content::BrowserContext* browser_context,
-      const url::Origin& top_level_origin);
 
   // Checks whether credentials should be included in fenced frame automatic
   // beacon requests, based on user cookie settings. Any cookies sent in an
@@ -3295,14 +3287,14 @@ class CONTENT_EXPORT ContentBrowserClient {
   // mirroring, etc). Defaults to returning true.
   virtual bool IsRendererProcessPriorityEnabled();
 
-  // Returns a `KeepAliveRequestTracker` instance if `request` is eligible to
-  // be tracked.
+  // Returns a list of `KeepAliveRequestTracker` instances if `request` is
+  // eligible to be tracked, or returns an empty list otherwise.
   //
   // `ukm_source_id` is the UKM ID to associate with the events logged by the
   // returned tracker.
   // `is_context_detached_callback` tells if the context of `request` is
   // detached at the time running the callback.
-  virtual std::unique_ptr<KeepAliveRequestTracker>
+  virtual std::vector<std::unique_ptr<KeepAliveRequestTracker>>
   MaybeCreateKeepAliveRequestTracker(
       const network::ResourceRequest& request,
       std::optional<ukm::SourceId> ukm_source_id,

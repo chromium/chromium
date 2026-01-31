@@ -2,11 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "mojo/public/tools/fuzzers/fuzz_impl.h"
+
 #include <utility>
 
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/tools/fuzzers/fuzz.mojom.h"
-#include "mojo/public/tools/fuzzers/fuzz_impl.h"
 
 FuzzImpl::FuzzImpl(mojo::PendingReceiver<fuzz::mojom::FuzzInterface> receiver)
     : receiver_(this, std::move(receiver)) {}

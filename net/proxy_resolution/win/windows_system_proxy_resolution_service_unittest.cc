@@ -152,13 +152,6 @@ class FakeProxyDelegate : public ProxyDelegate {
   void SetProxyResolutionService(
       ProxyResolutionService* proxy_resolution_service) override {}
 
-  bool AliasRequiresProxyOverride(
-      const std::string scheme,
-      const std::vector<std::string>& dns_aliases,
-      const net::NetworkAnonymizationKey& network_anonymization_key) override {
-    return false;
-  }
-
   // Configuration methods for testing
   void set_should_modify_result(bool should_modify) {
     should_modify_result_ = should_modify;

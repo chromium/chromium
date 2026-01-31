@@ -9,7 +9,7 @@ import android.graphics.Rect;
 import android.view.View;
 
 import org.chromium.base.lifetime.Destroyable;
-import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.ui.edge_to_edge.EdgeToEdgePadAdjuster;
@@ -52,7 +52,7 @@ public interface NativePageHost {
      * Creates a default margin adapter. Once created, the NativePage is responsible for calling
      * destroy() to clean-up the adapter once it is no longer needed.
      */
-    Destroyable createDefaultMarginAdapter(ObservableSupplierImpl<Rect> supplierImpl);
+    Destroyable createDefaultMarginAdapter(SettableMonotonicObservableSupplier<Rect> supplierImpl);
 
     /**
      * @return A {@link EdgeToEdgePadAdjuster} to update the edge-to-edge pad.

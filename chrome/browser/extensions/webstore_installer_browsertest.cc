@@ -125,12 +125,12 @@ class WebstoreInstallerMV2BrowserTest : public WebstoreInstallerBrowserTest {
 
   // The manifest used by the test installer must match `kCrxFilename` manifest
   // in the test directory.
-  base::Value::Dict GetManifest() {
-    return base::Value::Dict()
+  base::DictValue GetManifest() {
+    return base::DictValue()
         .Set("name", "Installer Extension")
         .Set("manifest_version", 2)
         .Set("version", "1.0")
-        .Set("permissions", base::Value::List().Append("tabs"));
+        .Set("permissions", base::ListValue().Append("tabs"));
   }
 };
 
@@ -163,7 +163,7 @@ IN_PROC_BROWSER_TEST_F(WebstoreInstallerMV2BrowserTest, WebstoreInstall) {
 }
 
 IN_PROC_BROWSER_TEST_F(WebstoreInstallerMV2BrowserTest, SimultaneousInstall) {
-  base::Value::Dict manifest = GetManifest();
+  base::DictValue manifest = GetManifest();
 
   content::WebContents* active_web_contents = GetActiveWebContents();
   ASSERT_TRUE(active_web_contents);
@@ -228,12 +228,12 @@ class WebstoreInstallerWithWithholdingUIBrowserTest
 
   // Th manifest used by the test installer must match
   // `kCrxWithPermissionsFilename` manifest in the test directory.
-  base::Value::Dict GetManifest() {
-    return base::Value::Dict()
+  base::DictValue GetManifest() {
+    return base::DictValue()
         .Set("name", "Installer Extension")
         .Set("manifest_version", 3)
         .Set("version", "1.0")
-        .Set("host_permissions", base::Value::List().Append("<all_urls>"));
+        .Set("host_permissions", base::ListValue().Append("<all_urls>"));
   }
 
  private:

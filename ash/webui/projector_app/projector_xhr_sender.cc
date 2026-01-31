@@ -9,7 +9,6 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/webui/projector_app/projector_app_client.h"
-#include "ash/webui/projector_app/public/mojom/projector_types.mojom-shared.h"
 #include "ash/webui/projector_app/public/mojom/projector_types.mojom.h"
 #include "base/containers/flat_map.h"
 #include "base/functional/bind.h"

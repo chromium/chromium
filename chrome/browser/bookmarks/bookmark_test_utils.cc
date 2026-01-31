@@ -11,15 +11,15 @@
 
 namespace {
 
-base::Value::List ConstructManagedBookmarks(size_t managed_bookmarks_size) {
+base::ListValue ConstructManagedBookmarks(size_t managed_bookmarks_size) {
   const GURL url("http://google.com/");
-  base::Value::List bookmarks_list;
+  base::ListValue bookmarks_list;
   for (size_t i = 0; i < managed_bookmarks_size; ++i) {
-    base::Value::List folder_items;
+    base::ListValue folder_items;
     folder_items.Append(
-        base::Value::Dict().Set("name", "Google").Set("url", url.spec()));
+        base::DictValue().Set("name", "Google").Set("url", url.spec()));
     bookmarks_list.Append(
-        base::Value::Dict()
+        base::DictValue()
             .Set("name", "Bookmark folder " + base::NumberToString(i))
             .Set("children", std::move(folder_items)));
   }

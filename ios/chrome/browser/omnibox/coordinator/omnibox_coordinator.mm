@@ -46,14 +46,14 @@
 #import "ios/chrome/browser/shared/coordinator/layout_guide/layout_guide_util.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
-#import "ios/chrome/browser/shared/public/commands/application_commands.h"
+#import "ios/chrome/browser/shared/public/commands/browser_coordinator_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/help_commands.h"
 #import "ios/chrome/browser/shared/public/commands/lens_commands.h"
-#import "ios/chrome/browser/shared/public/commands/load_query_commands.h"
 #import "ios/chrome/browser/shared/public/commands/omnibox_commands.h"
 #import "ios/chrome/browser/shared/public/commands/qr_scanner_commands.h"
 #import "ios/chrome/browser/shared/public/commands/quick_delete_commands.h"
+#import "ios/chrome/browser/shared/public/commands/scene_commands.h"
 #import "ios/chrome/browser/shared/public/commands/settings_commands.h"
 #import "ios/chrome/browser/shared/public/commands/toolbar_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
@@ -162,12 +162,10 @@
   mediator.faviconLoader =
       IOSChromeFaviconLoaderFactory::GetForProfile(profile);
   mediator.consumer = viewController;
-  mediator.omniboxCommandsHandler =
-      HandlerForProtocol(browser->GetCommandDispatcher(), OmniboxCommands);
+  mediator.browserCoordinatorCommandsHandler = HandlerForProtocol(
+      browser->GetCommandDispatcher(), BrowserCoordinatorCommands);
   mediator.lensCommandsHandler =
       HandlerForProtocol(browser->GetCommandDispatcher(), LensCommands);
-  mediator.loadQueryCommandsHandler =
-      HandlerForProtocol(browser->GetCommandDispatcher(), LoadQueryCommands);
   mediator.sceneState = browser->GetSceneState();
   mediator.URLLoadingBrowserAgent =
       UrlLoadingBrowserAgent::FromBrowser(browser);
@@ -200,8 +198,8 @@
   self.pasteDelegate.textInput = textInput;
 
   _keyboardMediator = [[OmniboxAssistiveKeyboardMediator alloc] init];
-  _keyboardMediator.applicationCommandsHandler =
-      HandlerForProtocol(browser->GetCommandDispatcher(), ApplicationCommands);
+  _keyboardMediator.sceneHandler =
+      HandlerForProtocol(browser->GetCommandDispatcher(), SceneCommands);
   _keyboardMediator.lensCommandsHandler =
       HandlerForProtocol(browser->GetCommandDispatcher(), LensCommands);
   _keyboardMediator.qrScannerCommandsHandler =
@@ -236,10 +234,10 @@
 
   CommandDispatcher* dispatcher = browser->GetCommandDispatcher();
   OmniboxPedalAnnotator* annotator = [[OmniboxPedalAnnotator alloc] init];
-  annotator.applicationHandler =
-      HandlerForProtocol(dispatcher, ApplicationCommands);
+  annotator.sceneHandler = HandlerForProtocol(dispatcher, SceneCommands);
   annotator.settingsHandler = HandlerForProtocol(dispatcher, SettingsCommands);
-  annotator.omniboxHandler = HandlerForProtocol(dispatcher, OmniboxCommands);
+  annotator.browserCoordinatorHandler =
+      HandlerForProtocol(dispatcher, BrowserCoordinatorCommands);
   annotator.quickDeleteHandler =
       HandlerForProtocol(dispatcher, QuickDeleteCommands);
 
@@ -317,6 +315,10 @@
   [_omniboxTextController insertTextToOmnibox:text];
 }
 
+- (void)refineWithText:(NSString*)text {
+  [_omniboxTextController refineWithText:base::SysNSStringToUTF16(text)];
+}
+
 - (OmniboxPopupCoordinator*)createPopupCoordinator:
     (id<OmniboxPopupPresenterDelegate>)presenterDelegate {
   DCHECK(!_popupCoordinator);
@@ -353,6 +355,11 @@
   }
 }
 
+/// Toggle visibility of the omnibox debugger view.
+- (void)toggleOmniboxDebuggerView {
+  [self.popupCoordinator toggleOmniboxDebuggerView];
+}
+
 - (id<EditViewAnimatee>)animatee {
   return self.viewController;
 }
@@ -383,7 +390,7 @@
 #pragma mark - OmniboxAssistiveKeyboardMediatorDelegate
 
 - (void)omniboxAssistiveKeyboardDidTapDebuggerButton {
-  [self.popupCoordinator toggleOmniboxDebuggerView];
+  [self toggleOmniboxDebuggerView];
 }
 
 - (void)presentLensKeyboardInProductHelper {
@@ -402,9 +409,8 @@
 
 - (void)updateInputAccessoryView {
   BOOL showKeyboardAccessory =
-      experimental_flags::IsOmniboxDebuggingEnabled() ||
-      (!self.searchOnlyUI &&
-       _presentationContext != OmniboxPresentationContext::kComposebox);
+      !self.searchOnlyUI &&
+      _presentationContext != OmniboxPresentationContext::kComposebox;
 
   if (!self.keyboardAccessoryView && showKeyboardAccessory) {
     TemplateURLService* templateURLService =

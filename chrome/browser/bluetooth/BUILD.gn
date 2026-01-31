@@ -34,6 +34,7 @@ source_set("impl") {
     "//chrome/browser/content_settings:content_settings_factory",
     "//chrome/browser/ui",
     "//chrome/browser/ui/bluetooth",
+    "//chrome/browser/ui/dialogs",
     "//components/guest_view/buildflags",
     "//components/strings:components_strings",
     "//components/strings:components_strings_grit",

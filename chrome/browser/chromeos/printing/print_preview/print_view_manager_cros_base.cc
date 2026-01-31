@@ -40,7 +40,7 @@ void PrintViewManagerCrosBase::GetDefaultPrintSettings(
 
 #if BUILDFLAG(ENABLE_PRINT_PREVIEW)
 void PrintViewManagerCrosBase::UpdatePrintSettings(
-    base::Value::Dict job_settings,
+    base::DictValue job_settings,
     UpdatePrintSettingsCallback callback) {
   // TODO(b/334993067): Handle policies and prefs related to print settings.
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);

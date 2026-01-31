@@ -15,10 +15,6 @@
 
 enum class AndroidLocalWebApprovalFlowOutcome;
 
-namespace supervised_user {
-class UrlFormatter;
-}  // namespace supervised_user
-
 // Android specific implementation of web content handler.
 class SupervisedUserWebContentHandlerImpl
     : public ChromeSupervisedUserWebContentHandlerBase {
@@ -33,17 +29,16 @@ class SupervisedUserWebContentHandlerImpl
       const SupervisedUserWebContentHandlerImpl&) = delete;
   ~SupervisedUserWebContentHandlerImpl() override;
 
-  // ChromeSupervisedUserWebContentHandlerBase implementaion:
+  // ChromeSupervisedUserWebContentHandlerBase implementation:
   void RequestLocalApproval(
-      const GURL& url,
+      const GURL& target_url,
+      supervised_user::WebFilteringResult filtering_result,
       const std::u16string& child_display_name,
-      const supervised_user::UrlFormatter& url_formatter,
-      const supervised_user::FilteringBehaviorReason& filtering_behavior_reason,
       ApprovalRequestInitiatedCallback callback) override;
 
  private:
   void OnLocalApprovalRequestCompleted(
-      supervised_user::SupervisedUserSettingsService& settings_service,
+      supervised_user::FamilyLinkSettingsService& settings_service,
       const GURL& url,
       base::TimeTicks start_time,
       AndroidLocalWebApprovalFlowOutcome request_outcome);

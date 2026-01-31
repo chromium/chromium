@@ -24,9 +24,9 @@ class CONTENT_EXPORT DesktopCapturerAndroidJniInterface {
   virtual ~DesktopCapturerAndroidJniInterface() = default;
   virtual base::android::ScopedJavaLocalRef<jobject> Create(
       JNIEnv* env,
-      jlong native_ptr) = 0;
-  virtual jboolean StartCapture(JNIEnv* env,
-                                const base::android::JavaRef<jobject>& obj) = 0;
+      int64_t native_ptr) = 0;
+  virtual bool StartCapture(JNIEnv* env,
+                            const base::android::JavaRef<jobject>& obj) = 0;
   virtual void Destroy(JNIEnv* env,
                        const base::android::JavaRef<jobject>& obj) = 0;
 };
@@ -66,31 +66,31 @@ class CONTENT_EXPORT DesktopCapturerAndroid final
   // JNI:
   void OnRgbaFrameAvailable(JNIEnv* env,
                             const base::android::JavaRef<jobject>& release_cb,
-                            jlong timestamp_ns,
+                            int64_t timestamp_ns,
                             const base::android::JavaRef<jobject>& buf,
-                            jint unchecked_pixel_stride,
-                            jint unchecked_row_stride,
-                            jint unchecked_crop_left,
-                            jint unchecked_crop_top,
-                            jint unchecked_crop_right,
-                            jint unchecked_crop_bottom);
+                            int32_t unchecked_pixel_stride,
+                            int32_t unchecked_row_stride,
+                            int32_t unchecked_crop_left,
+                            int32_t unchecked_crop_top,
+                            int32_t unchecked_crop_right,
+                            int32_t unchecked_crop_bottom);
 
   void OnI420FrameAvailable(JNIEnv* env,
                             const base::android::JavaRef<jobject>& release_cb,
-                            jlong timestamp_ns,
+                            int64_t timestamp_ns,
                             const base::android::JavaRef<jobject>& y_buf,
-                            jint y_unchecked_pixel_stride,
-                            jint y_unchecked_row_stride,
+                            int32_t y_unchecked_pixel_stride,
+                            int32_t y_unchecked_row_stride,
                             const base::android::JavaRef<jobject>& u_buf,
-                            jint u_unchecked_pixel_stride,
-                            jint u_unchecked_row_stride,
+                            int32_t u_unchecked_pixel_stride,
+                            int32_t u_unchecked_row_stride,
                             const base::android::JavaRef<jobject>& v_buf,
-                            jint v_unchecked_pixel_stride,
-                            jint v_unchecked_row_stride,
-                            jint unchecked_crop_left,
-                            jint unchecked_crop_top,
-                            jint unchecked_crop_right,
-                            jint unchecked_crop_bottom);
+                            int32_t v_unchecked_pixel_stride,
+                            int32_t v_unchecked_row_stride,
+                            int32_t unchecked_crop_left,
+                            int32_t unchecked_crop_top,
+                            int32_t unchecked_crop_right,
+                            int32_t unchecked_crop_bottom);
 
   void OnStop(JNIEnv* env);
 

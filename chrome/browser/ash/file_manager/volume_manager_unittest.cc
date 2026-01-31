@@ -16,7 +16,6 @@
 #include <vector>
 
 #include "ash/constants/ash_switches.h"
-#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/weak_ptr.h"
@@ -91,7 +90,7 @@ const policy::DeviceId kAllowlistedDeviceId{0xA123, 0x456B};
 void SetExternalStorageAllowlist(PrefService* pref_service) {
   pref_service->SetList(
       disks::prefs::kExternalStorageAllowlist,
-      base::Value::List().Append(kAllowlistedDeviceId.ToDict()));
+      base::ListValue().Append(kAllowlistedDeviceId.ToDict()));
 }
 
 std::unique_ptr<Disk> CreateAllowlistedDisk(const std::string& disk_path) {

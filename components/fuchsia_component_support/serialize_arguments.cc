@@ -14,7 +14,7 @@
 namespace fuchsia_component_support {
 
 std::vector<uint8_t> SerializeArguments(const base::CommandLine& command_line) {
-  base::Value::List argv_list;
+  base::ListValue argv_list;
   const auto& argv = command_line.argv();
   DCHECK_GE(argv.size(), 1UL);
   argv_list.reserve(argv.size() - 1);
@@ -22,7 +22,7 @@ std::vector<uint8_t> SerializeArguments(const base::CommandLine& command_line) {
     argv_list.Append(argv[i]);
   }
 
-  base::Value::Dict feature_dict;
+  base::DictValue feature_dict;
   feature_dict.Set("argv", std::move(argv_list));
   std::string json_string;
   CHECK(JSONStringValueSerializer(&json_string)

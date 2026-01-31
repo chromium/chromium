@@ -114,7 +114,7 @@ static JNI_EXPORT void JNI_RequestCoordinatorBridge_SavePageLater(
     std::string& namespace_str,
     std::string& client_id_str,
     std::string& origin,
-    jboolean user_requested) {
+    bool user_requested) {
   DCHECK(j_callback_obj);
 
   offline_pages::ClientId client_id;
@@ -133,7 +133,7 @@ static JNI_EXPORT void JNI_RequestCoordinatorBridge_SavePageLater(
   RequestCoordinator::SavePageLaterParams params;
   params.url = GURL(url_spec);
   params.client_id = client_id;
-  params.user_requested = static_cast<bool>(user_requested);
+  params.user_requested = user_requested;
   params.availability =
       RequestCoordinator::RequestAvailability::ENABLED_FOR_OFFLINER;
   params.request_origin = origin;

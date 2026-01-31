@@ -4,10 +4,10 @@
 
 #include "net/quic/dedicated_web_transport_http3_client.h"
 
+#include <algorithm>
 #include <string_view>
 #include <vector>
 
-#include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/field_trial_params.h"
@@ -127,12 +127,12 @@ void RecordNetLogQuicSessionClientStateChanged(
     const std::optional<WebTransportError>& error) {
   net_log.AddEvent(
       NetLogEventType::QUIC_SESSION_WEBTRANSPORT_CLIENT_STATE_CHANGED, [&] {
-        auto dict = base::Value::Dict()
+        auto dict = base::DictValue()
                         .Set("last_state", WebTransportStateString(last_state))
                         .Set("next_state", WebTransportStateString(next_state));
         if (error.has_value()) {
           dict.Set("error",
-                   base::Value::Dict()
+                   base::DictValue()
                        .Set("net_error", error->net_error)
                        .Set("quic_error", static_cast<int>(error->quic_error))
                        .Set("details", error->details));
@@ -389,7 +389,7 @@ DedicatedWebTransportHttp3Client::DedicatedWebTransportHttp3Client(
   ConfigureQuicCryptoClientConfig(crypto_config_);
   net_log_.BeginEvent(
       NetLogEventType::QUIC_SESSION_WEBTRANSPORT_CLIENT_ALIVE, [&] {
-        base::Value::Dict dict;
+        base::DictValue dict;
         dict.Set("url", url.possibly_invalid_spec());
         dict.Set("network_anonymization_key",
                  anonymization_key.ToDebugString());
@@ -533,7 +533,7 @@ int DedicatedWebTransportHttp3Client::DoInit() {
   // Add other supported versions if available.
   for (quic::ParsedQuicVersion& version :
        quic_context_->params()->supported_versions) {
-    if (base::Contains(supported_versions_, version))
+    if (std::ranges::contains(supported_versions_, version))
       continue;  // Skip as we've already added it above.
     supported_versions_.push_back(version);
   }
@@ -591,8 +591,9 @@ int DedicatedWebTransportHttp3Client::DoLocalNetworkAccessCheck() {
   IPEndPoint server_address =
       resolve_host_request_->GetAddressResults().front();
   visitor_->OnLocalNetworkAccessCheck(
-      server_address, base::BindOnce(&DedicatedWebTransportHttp3Client::DoLoop,
-                                     base::Unretained(this)));
+      server_address, net_log_,
+      base::BindOnce(&DedicatedWebTransportHttp3Client::DoLoop,
+                     base::Unretained(this)));
   return ERR_IO_PENDING;
 }
 
@@ -894,7 +895,7 @@ void DedicatedWebTransportHttp3Client::OnSessionReady() {
   RecordNegotiatedHttpDatagramSupport(session_->http_datagram_support());
   net_log_.AddEvent(NetLogEventType::QUIC_SESSION_WEBTRANSPORT_SESSION_READY,
                     [&] {
-                      base::Value::Dict dict;
+                      base::DictValue dict;
                       dict.Set("http_datagram_version",
                                quic::HttpDatagramSupportToString(
                                    session_->http_datagram_support()));
@@ -991,7 +992,7 @@ void DedicatedWebTransportHttp3Client::OnConnectionClosed(
     original_supported_versions_ = supported_versions_;
     std::erase_if(
         supported_versions_, [this](const quic::ParsedQuicVersion& version) {
-          return !base::Contains(
+          return !std::ranges::contains(
               session_->connection()->server_supported_versions(), version);
         });
     if (!supported_versions_.empty()) {

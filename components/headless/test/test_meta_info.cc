@@ -4,6 +4,7 @@
 
 #include "components/headless/test/test_meta_info.h"
 
+#include "base/base_switches.h"
 #include "base/strings/string_util.h"
 #include "third_party/re2/src/re2/re2.h"
 
@@ -62,17 +63,18 @@ base::expected<TestMetaInfo, std::string> TestMetaInfo::FromString(
     std::string value;
     static RE2 re_command_line_switch(R"(--([\w-]+)(?:=(.*))?)");
     if (RE2::FullMatch(meta_info, re_command_line_switch, &name, &value)) {
-      result.command_line_switches[name] = value;
+      CHECK(!result.command_line_switches_.contains(name));
+      result.command_line_switches_[name] = value;
       continue;
     }
 
     if (meta_info == kForkHeadlessModeExpectations) {
-      result.fork_headless_mode_expectations = true;
+      result.fork_headless_mode_expectations_ = true;
       continue;
     }
 
     if (meta_info == kForkHeadlessShellExpectations) {
-      result.fork_headless_shell_expectations = true;
+      result.fork_headless_shell_expectations_ = true;
       continue;
     }
 
@@ -86,14 +88,37 @@ bool TestMetaInfo::IsEmpty() const {
   return *this == TestMetaInfo();
 }
 
-void TestMetaInfo::AppendToCommandLine(base::CommandLine& command_line) {
-  for (const auto& [name, value] : command_line_switches) {
+std::unique_ptr<base::test::ScopedFeatureList>
+TestMetaInfo::ProcessCommandLineSwitches(base::CommandLine& command_line) {
+  std::string enable_features = TakeSwitch(::switches::kEnableFeatures);
+  std::string disable_features = TakeSwitch(::switches::kDisableFeatures);
+
+  for (const auto& [name, value] : command_line_switches_) {
     if (!value.empty()) {
       command_line.AppendSwitchASCII(name, value);
     } else {
       command_line.AppendSwitch(name);
     }
   }
+
+  std::unique_ptr<base::test::ScopedFeatureList> feature_list;
+  if (!enable_features.empty() || !disable_features.empty()) {
+    feature_list = std::make_unique<base::test::ScopedFeatureList>();
+    feature_list->InitFromCommandLine(enable_features, disable_features);
+  }
+
+  return feature_list;
+}
+
+std::string TestMetaInfo::TakeSwitch(std::string_view switch_name) {
+  std::string value;
+  if (auto it = command_line_switches_.find(switch_name);
+      it != command_line_switches_.cend()) {
+    value = it->second;
+    command_line_switches_.erase(it);
+  }
+
+  return value;
 }
 
 }  // namespace headless

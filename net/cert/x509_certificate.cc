@@ -7,12 +7,12 @@
 #include <limits.h>
 #include <stdlib.h>
 
+#include <algorithm>
 #include <memory>
 #include <string>
 #include <string_view>
 #include <vector>
 
-#include "base/containers/contains.h"
 #include "base/containers/span.h"
 #include "base/containers/to_vector.h"
 #include "base/logging.h"
@@ -428,7 +428,7 @@ bool X509Certificate::IsIssuedByEncoded(
     if (!GetNormalizedCertIssuer(cert.get(), &normalized_cert_issuer)) {
       return false;
     }
-    if (base::Contains(normalized_issuers, normalized_cert_issuer))
+    if (std::ranges::contains(normalized_issuers, normalized_cert_issuer))
       return true;
   }
   return false;
@@ -463,8 +463,8 @@ bool X509Certificate::VerifyHostname(
 
   // Fully handle all cases where |hostname| contains an IP address.
   if (host_info.IsIPAddress()) {
-    return base::Contains(cert_san_ip_addrs,
-                          base::as_string_view(host_info.AddressSpan()));
+    return std::ranges::contains(cert_san_ip_addrs,
+                                 base::as_string_view(host_info.AddressSpan()));
   }
 
   // The host portion of a URL may support a variety of name resolution formats
@@ -766,6 +766,9 @@ bool X509Certificate::ParsedFields::Initialize(
   // okay to save it into a span even though `tbs` gets destroyed at the end of
   // this method.
   serial_number_ = tbs.serial_number;
+
+  signature_algorithm_ =
+      bssl::ParseSignatureAlgorithm(tbs.signature_algorithm_tlv);
   return true;
 }
 

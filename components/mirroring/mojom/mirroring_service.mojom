@@ -54,6 +54,6 @@ interface MirroringService {
   SwitchMirroringSourceTab();
 
   // Fetches the current RTCP stats of the current mirroring session.
-  // The stats are returned as base::Value::Dict.
+  // The stats are returned as base::DictValue.
   GetMirroringStats() => (mojo_base.mojom.Value json_stats);
 };

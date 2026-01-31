@@ -4,10 +4,10 @@
 
 #include "ui/views/accessibility/ax_aura_obj_cache.h"
 
+#include <algorithm>
 #include <utility>
 #include <vector>
 
-#include "base/containers/contains.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/string_util.h"
 #include "ui/accessibility/ax_enums.mojom.h"
@@ -313,7 +313,7 @@ void AXAuraObjCache::OnRootWindowObjCreated(aura::Window* window) {
   }
 
   // Do not allow duplicate entries.
-  if (!base::Contains(root_windows_, window)) {
+  if (!std::ranges::contains(root_windows_, window)) {
     root_windows_.push_back(window);
   }
 }

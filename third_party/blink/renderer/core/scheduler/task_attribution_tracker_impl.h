@@ -7,7 +7,6 @@
 
 #include <optional>
 
-#include "base/containers/contains.h"
 #include "base/memory/weak_ptr.h"
 #include "third_party/blink/public/common/scheduler/task_attribution_id.h"
 #include "third_party/blink/renderer/core/core_export.h"
@@ -20,6 +19,7 @@
 
 namespace blink {
 class SoftNavigationContext;
+class ResourceTimingContext;
 class WebSchedulingTaskState;
 }  // namespace blink
 
@@ -38,7 +38,7 @@ class TaskAttributionInfo;
 // current task.
 class CORE_EXPORT TaskAttributionTrackerImpl
     : public TaskAttributionTracker,
-      public blink::trace_event::AsyncEnabledStateObserver {
+      public blink::trace_event::TraceSessionObserver {
  public:
   static std::unique_ptr<TaskAttributionTracker> Create(v8::Isolate*);
 
@@ -51,6 +51,7 @@ class CORE_EXPORT TaskAttributionTrackerImpl
   TaskScope SetCurrentTaskState(WebSchedulingTaskState* task_state,
                                 TaskScopeType type) override;
   TaskScope SetTaskStateVariable(SoftNavigationContext*) override;
+  TaskScope SetTaskStateVariable(ResourceTimingContext*) override;
   TaskAttributionInfo* CurrentTaskState() const override;
   std::optional<TaskAttributionId> AsyncSameDocumentNavigationStarted()
       override;
@@ -59,15 +60,19 @@ class CORE_EXPORT TaskAttributionTrackerImpl
   void BeginMicrotaskTrace() override;
   void EndMicrotaskTrace() override;
 
-  // AsyncEnabledStateObserver overrides:
-  void OnTraceLogEnabled() override;
-  void OnTraceLogDisabled() override;
+  // trace_event::TraceSessionObserver implementation.
+  void OnStart(const perfetto::DataSourceBase::StartArgs&) override;
+  void OnStop(const perfetto::DataSourceBase::StopArgs&) override;
 
  private:
   explicit TaskAttributionTrackerImpl(v8::Isolate*);
 
   TaskScope SetCurrentTaskStateImpl(TaskAttributionTaskState* task_state,
                                     TaskScopeType type);
+  TaskScope SetCurrentTaskStateImpl(
+      TaskAttributionTaskState* task_state,
+      TaskAttributionTaskState* previous_task_state,
+      TaskScopeType type);
   void OnTaskScopeDestroyed(const TaskScope&) override;
 
   TaskAttributionId next_task_id_{1};

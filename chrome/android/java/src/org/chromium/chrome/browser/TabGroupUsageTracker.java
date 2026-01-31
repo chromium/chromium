@@ -13,7 +13,6 @@ import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.DestroyObserver;
 import org.chromium.chrome.browser.lifecycle.PauseResumeWithNativeObserver;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
-import org.chromium.chrome.browser.tabmodel.TabGroupModelFilterProvider;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
 
@@ -76,9 +75,8 @@ public class TabGroupUsageTracker implements PauseResumeWithNativeObserver, Dest
     public void onPauseWithNative() {}
 
     private void recordTabGroupCount() {
-        TabGroupModelFilterProvider provider = mTabModelSelector.getTabGroupModelFilterProvider();
-        TabGroupModelFilter normalFilter = provider.getTabGroupModelFilter(false);
-        TabGroupModelFilter incognitoFilter = provider.getTabGroupModelFilter(true);
+        TabGroupModelFilter normalFilter = mTabModelSelector.getTabGroupModelFilter(false);
+        TabGroupModelFilter incognitoFilter = mTabModelSelector.getTabGroupModelFilter(true);
         assumeNonNull(normalFilter);
         assumeNonNull(incognitoFilter);
         int groupCount = normalFilter.getTabGroupCount() + incognitoFilter.getTabGroupCount();

@@ -5,7 +5,6 @@
 #include "chrome/browser/ash/extensions/file_manager/drivefs_event_router.h"
 
 #include "ash/constants/ash_features.h"
-#include "base/containers/contains.h"
 #include "base/files/file_path.h"
 #include "base/notreached.h"
 #include "base/strings/strcat.h"

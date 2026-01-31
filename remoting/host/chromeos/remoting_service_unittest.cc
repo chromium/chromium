@@ -36,7 +36,7 @@ class RemotingServiceTest : public ::testing::Test {
     FileSessionStorage storage(session_storage_directory_.GetPath());
 
     TestFuture<void> future;
-    storage.StoreSession(base::Value::Dict{}, future.GetCallback());
+    storage.StoreSession(base::DictValue{}, future.GetCallback());
     ASSERT_TRUE(future.Wait());
   }
 

@@ -23,6 +23,7 @@
 
 #include "third_party/blink/renderer/platform/geometry/blend.h"
 #include "third_party/blink/renderer/platform/geometry/calculation_value.h"
+#include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 
 namespace blink {
 
@@ -118,6 +119,18 @@ void TranslateTransformOperation::CommonPrimitiveForInterpolation(
   } else {
     common_type = kTranslate;
   }
+}
+
+String TranslateTransformOperation::DebugString() const {
+  StringBuilder sb;
+  sb.Append("translate(");
+  sb.Append(x_.ToString());
+  sb.Append(", ");
+  sb.Append(y_.ToString());
+  sb.Append(", ");
+  sb.AppendNumber(z_);
+  sb.Append(")");
+  return sb.ReleaseString();
 }
 
 }  // namespace blink

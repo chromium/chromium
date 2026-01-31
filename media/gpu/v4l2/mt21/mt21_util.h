@@ -26,6 +26,7 @@
 // portable. We only used Neon because Highway's OrderedTruncate2To(), which we
 // need for implementing NarrowToU8, was not released at the time of writing.
 
+#include "base/memory/raw_ptr_exclusion.h"
 #include "build/build_config.h"
 
 #if !defined(ARCH_CPU_ARM_FAMILY)

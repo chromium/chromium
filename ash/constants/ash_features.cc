@@ -390,11 +390,6 @@ BASE_FEATURE(kCellularBypassESimInstallationConnectivityCheck,
 // and Settings.
 BASE_FEATURE(kCellularUseSecondEuicc, base::FEATURE_DISABLED_BY_DEFAULT);
 
-// If enabled, Multiple scraped passwords should be checked against password in
-// cryptohome.
-BASE_FEATURE(kCheckPasswordsAgainstCryptohomeHelper,
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // When enabled alongside the keyboard auto-repeat setting, holding down Ctrl+V
 // will cause the clipboard history menu to show. From there, the user can
 // select a clipboard history item to replace the initially pasted content.
@@ -466,9 +461,6 @@ BASE_FEATURE(kCrostiniGpuSupport, base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Force enable recreating the LXD DB at LXD launch.
 BASE_FEATURE(kCrostiniResetLxdDb, base::FEATURE_DISABLED_BY_DEFAULT);
-
-// Enables experimental UI creating and managing multiple Crostini containers.
-BASE_FEATURE(kCrostiniMultiContainer, base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Enables or disables Crostini Qt application IME support.
 BASE_FEATURE(kCrostiniQtImeSupport, base::FEATURE_DISABLED_BY_DEFAULT);
@@ -596,9 +588,6 @@ BASE_FEATURE(kEnableBrightnessControlInSettings,
 BASE_FEATURE(kEnableExternalKeyboardsInDiagnostics,
              "EnableExternalKeyboardsInDiagnosticsApp",
              base::FEATURE_DISABLED_BY_DEFAULT);
-
-// Enables setting the device hostname.
-BASE_FEATURE(kEnableHostnameSetting, base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Enables OAuth support when printing via the IPP protocol.
 BASE_FEATURE(kEnableOAuthIpp, base::FEATURE_DISABLED_BY_DEFAULT);
@@ -893,6 +882,11 @@ BASE_FEATURE(kGraduationUseEmbeddedTransferEndpoint,
 // Enables a Files banner about Google One offer. This flag is used by Gamgee
 // nudge to conditionally disable the G1 file banner for CBX boards via finch.
 BASE_FEATURE(kGoogleOneOfferFilesBanner, base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Enables the Google Services Connectivity diagnostic routine for testing
+// connectivity to essential Google services.
+BASE_FEATURE(kGoogleServicesConnectivityRoutine,
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Enables targeting for feature-aware devices, as controlled by the feature
 // management module.
@@ -1271,9 +1265,6 @@ BASE_FEATURE(kManagedLocalPinAndPassword, base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Enables policy management for USB printers.
 BASE_FEATURE(kManagedUsbPrinters, base::FEATURE_ENABLED_BY_DEFAULT);
-
-// Enables Mahi on PDF contents in the Media App.
-BASE_FEATURE(kMediaAppPdfMahi, base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables Mantis on image contents in the Media App
 BASE_FEATURE(kMediaAppImageMantis, base::FEATURE_DISABLED_BY_DEFAULT);
@@ -1716,12 +1707,6 @@ BASE_FEATURE(kResetAudioSelectionImprovementPref,
 // If enabled, will reset all shortcut customizations on startup.
 BASE_FEATURE(kResetShortcutCustomizations, base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Set all ScalableIph client side config to tracking only config.
-BASE_FEATURE(kScalableIphTrackingOnly, base::FEATURE_DISABLED_BY_DEFAULT);
-
-// Use client side config.
-BASE_FEATURE(kScalableIphClientConfig, base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Adds a shelf pod button that appears whenever the shelf has limited space and
 // acts as an entrypoint to other shelf pod buttons to prevent overflow.
 BASE_FEATURE(kScalableShelfPods, base::FEATURE_DISABLED_BY_DEFAULT);
@@ -1830,11 +1815,11 @@ BASE_FEATURE(kShimlessRMADynamicDeviceInfoInputs,
 
 // Enables or disables the option to allow customized Serial Number namings.
 BASE_FEATURE(kShimlessRMAFlexibleSerialNumberName,
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables or disables the option to hide Google SKU on the device information
 // page.
-BASE_FEATURE(kShimlessRMAHideGoogleSKU, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kShimlessRMAHideGoogleSKU, base::FEATURE_ENABLED_BY_DEFAULT);
 
 // If enabled, system shortcuts will utilize state machiens instead of
 // keeping track of entire history of keys pressed.
@@ -2440,10 +2425,6 @@ bool IsCaptureModeOnDeviceOcrEnabled() {
          base::FeatureList::IsEnabled(kCaptureModeOnDeviceOcr);
 }
 
-bool IsCheckPasswordsAgainstCryptohomeHelperEnabled() {
-  return base::FeatureList::IsEnabled(kCheckPasswordsAgainstCryptohomeHelper);
-}
-
 bool IsContinuousOverviewScrollAnimationEnabled() {
   return base::FeatureList::IsEnabled(kContinuousOverviewScrollAnimation);
 }
@@ -2815,10 +2796,6 @@ bool IsHybridChargerNotificationsEnabled() {
   return base::FeatureList::IsEnabled(kHybridChargerNotifications);
 }
 
-bool IsHostnameSettingEnabled() {
-  return base::FeatureList::IsEnabled(kEnableHostnameSetting);
-}
-
 bool IsInstantHotspotRebrandEnabled() {
   return base::FeatureList::IsEnabled(kInstantHotspotRebrand);
 }
@@ -3186,14 +3163,6 @@ bool IsResetShortcutCustomizationsEnabled() {
 
 bool IsSameAppWindowCycleEnabled() {
   return base::FeatureList::IsEnabled(kSameAppWindowCycle);
-}
-
-bool IsScalableIphTrackingOnlyEnabled() {
-  return base::FeatureList::IsEnabled(kScalableIphTrackingOnly);
-}
-
-bool IsScalableIphClientConfigEnabled() {
-  return base::FeatureList::IsEnabled(kScalableIphClientConfig);
 }
 
 bool IsScalableShelfPodsEnabled() {

@@ -4,6 +4,7 @@
 
 #include "chrome/browser/tab/tab_storage_package.h"
 
+#include "base/check.h"
 #include "chrome/browser/tab/protocol/tab_state.pb.h"
 #include "chrome/browser/tab/protocol/token.pb.h"
 
@@ -30,6 +31,10 @@ std::vector<uint8_t> TabStoragePackage::SerializePayload() const {
         android_tab_package_.web_contents_state_bytes_->data(),
         android_tab_package_.web_contents_state_bytes_->size());
   }
+  if (android_tab_package_.url_) {
+    tab_state.set_url(*android_tab_package_.url_);
+  }
+
   tab_state.set_web_contents_state_version(android_tab_package_.version_);
   if (android_tab_package_.opener_app_id_) {
     tab_state.set_opener_app_id(*android_tab_package_.opener_app_id_);

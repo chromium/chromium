@@ -151,4 +151,17 @@ base::android::ScopedJavaLocalRef<jobject> ConvertToJavaLocalDataDescription(
 
 }  // namespace syncer
 
+#if BUILDFLAG(IS_ANDROID)
+namespace jni_zero {
+
+template <>
+inline ScopedJavaLocalRef<jobject> ToJniType<syncer::LocalDataDescription>(
+    JNIEnv* env,
+    const syncer::LocalDataDescription& input) {
+  return syncer::ConvertToJavaLocalDataDescription(env, input);
+}
+
+}  // namespace jni_zero
+#endif
+
 #endif  // COMPONENTS_SYNC_SERVICE_LOCAL_DATA_DESCRIPTION_H_

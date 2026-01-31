@@ -102,7 +102,7 @@ class InMemoryFederatedPermissionContext
       const std::string& account_id) override;
   std::optional<bool> GetIdpSigninStatus(
       const url::Origin& idp_origin) override;
-  base::Value::List GetAccounts(const url::Origin& identity_provider) override;
+  base::ListValue GetAccounts(const url::Origin& identity_provider) override;
   void SetIdpSigninStatus(
       const url::Origin& idp_origin,
       bool idp_signin_status,

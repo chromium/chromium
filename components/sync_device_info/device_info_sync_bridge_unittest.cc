@@ -145,6 +145,9 @@ MATCHER_P(ModelEqualsSpecifics, expected_specifics, "") {
          expected_specifics.feature_fields()
                  .send_tab_to_self_receiving_type() ==
              arg.send_tab_to_self_receiving_type() &&
+         expected_specifics.feature_fields()
+                 .desktop_to_ios_promo_receiving_enabled() ==
+             arg.desktop_to_ios_promo_receiving_enabled() &&
          expected_specifics.invalidation_fields().instance_id_token() ==
              arg.fcm_registration_token();
 }
@@ -418,7 +421,8 @@ class TestLocalDeviceInfoProvider : public MutableLocalDeviceInfoProvider {
             sharing_enabled_features),
         /*paask_info=*/std::nullopt, last_fcm_registration_token,
         last_interested_data_types,
-        /*auto_sign_out_last_signin_timestamp=*/std::nullopt);
+        /*auto_sign_out_last_signin_timestamp=*/std::nullopt,
+        /*desktop_to_ios_promo_receiving_enabled=*/false);
   }
 
   void Clear() override { local_device_info_.reset(); }
@@ -1826,6 +1830,37 @@ TEST_F(DeviceInfoSyncBridgeTest, ShouldDeriveOsFromDeviceType) {
   }
 }
 
-}  // namespace
+TEST_F(DeviceInfoSyncBridgeTest, PulseWithWallClockTimer) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(kSyncDeviceInfoUseWallClockTimer);
 
+  // Ensure `last_updated` is about now, plus or minus a little bit.
+  EXPECT_CALL(*processor(), Put(_, HasSpecifics(HasLastUpdatedAboutNow()), _));
+  InitializeAndMergeInitialData(SyncMode::kFull);
+  EXPECT_EQ(1, change_count());
+  testing::Mock::VerifyAndClearExpectations(processor());
+
+  // Ensure `last_updated` is about now, plus or minus a little bit.
+  EXPECT_CALL(*processor(), Put(_, HasSpecifics(HasLastUpdatedAboutNow()), _));
+  ForcePulse();
+  EXPECT_EQ(2, change_count());
+}
+
+TEST_F(DeviceInfoSyncBridgeTest, PulseWithWallClockTimerTransportOnly) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(kSyncDeviceInfoUseWallClockTimer);
+
+  // Ensure `last_updated` is about now, plus or minus a little bit.
+  EXPECT_CALL(*processor(), Put(_, HasSpecifics(HasLastUpdatedAboutNow()), _));
+  InitializeAndMergeInitialData(SyncMode::kTransportOnly);
+  EXPECT_EQ(1, change_count());
+  testing::Mock::VerifyAndClearExpectations(processor());
+
+  // Ensure `last_updated` is about now, plus or minus a little bit.
+  EXPECT_CALL(*processor(), Put(_, HasSpecifics(HasLastUpdatedAboutNow()), _));
+  ForcePulse();
+  EXPECT_EQ(2, change_count());
+}
+
+}  // namespace
 }  // namespace syncer

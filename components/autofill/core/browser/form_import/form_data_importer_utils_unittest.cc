@@ -37,7 +37,7 @@ TEST_F(FormDataImporterUtilsTest, TimestampedSameOriginQueue) {
   TimestampedSameOriginQueue<IntWrapper> queue;
   EXPECT_TRUE(queue.empty());
   const url::Origin irrelevant_origin;
-  for (int i = 0; i < 4; i++) {
+  for (int i = 0; i < 4; ++i) {
     queue.Push({i}, irrelevant_origin);
   }
   EXPECT_EQ(queue.size(), 4u);
@@ -75,7 +75,7 @@ TEST_F(FormDataImporterUtilsTest, TimestampedSameOriginQueue_DifferentOrigins) {
 TEST_F(FormDataImporterUtilsTest, TimestampedSameOriginQueue_TTL) {
   TimestampedSameOriginQueue<IntWrapper> queue;
   const url::Origin irrelevant_origin;
-  for (int i = 0; i < 4; i++) {
+  for (int i = 0; i < 4; ++i) {
     queue.Push({i}, irrelevant_origin);
     task_environment_.FastForwardBy(base::Minutes(1));
   }
@@ -119,7 +119,7 @@ TEST_P(FormAssociatorTest, FormAssociator) {
   // not expected to be included, that's likely a typo.
   EXPECT_TRUE(!test.empty() && base::IsAsciiUpper(test.back()));
 
-  for (size_t i = 0; i < test.size(); i++) {
+  for (size_t i = 0; i < test.size(); ++i) {
     FormSignature signature{i};
     auto type = base::ToLowerASCII(test[i]) == 'a'
                     ? FormAssociator::FormType::kAddressForm

@@ -55,7 +55,7 @@ class ChromeSyncInternalsMessageHandler
   void AllowJavascriptAndHandleMessage(
       const browser_sync::SyncInternalsMessageHandler::PageMessageHandler&
           handler,
-      const base::Value::List& args);
+      const base::ListValue& args);
 
   browser_sync::SyncInternalsMessageHandler message_handler_;
 };

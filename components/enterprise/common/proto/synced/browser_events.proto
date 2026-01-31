@@ -362,7 +362,7 @@ message UrlInfo {
 }
 
 // A message for reporting password reuse events.
-// Next ID: 16.
+// Next ID: 18.
 message SafeBrowsingPasswordReuseEvent {
   reserved 5, 6, 7, 8, 9, 10;
 
@@ -402,6 +402,13 @@ message SafeBrowsingPasswordReuseEvent {
 
   // Security agent installed on the device
   repeated SecurityAgent security_agents = 15;
+
+  // URL info of the URL that triggered the event.
+  UrlInfo url_info = 16;
+
+  // The referrers of the webpage that sent the user to the url that triggered
+  // the event.
+  repeated UrlInfo referrers = 17;
 }
 
 // A message for reporting password change events.
@@ -671,7 +678,7 @@ message SafeBrowsingInterstitialEvent {
 }
 
 // A DLP (Data Loss Prevention) event where sensitive data may have leaked.
-// Next ID: 37.
+// Next ID: 38.
 message DlpSensitiveDataEvent {
   reserved 6, 9, 10, 11, 12, 13, 15, 25;
 
@@ -771,6 +778,9 @@ message DlpSensitiveDataEvent {
   // The referrers of the webpage that sent the user to the url that triggered
   // the event.
   repeated UrlInfo referrers = 33;
+
+  // URL info of the URL of the tab.
+  UrlInfo tab_url_info = 37;
 
   // URLs in the iframes.
   repeated string iframe_urls = 34
@@ -1026,7 +1036,7 @@ message ContentTransferEvent {
 // Event sent when a user successfully logs in to a website, as determined by
 // Chrome's password manager.
 //
-// Next ID: 8.
+// Next ID: 10.
 message LoginEvent {
   // The URL on which the login took place.
   string url = 1;
@@ -1058,6 +1068,13 @@ message LoginEvent {
 
   // Security agent installed on the device
   repeated SecurityAgent security_agents = 7;
+
+  // URL info of the URL that triggered the event.
+  UrlInfo url_info = 8;
+
+  // The referrers of the webpage that sent the user to the url that triggered
+  // the event.
+  repeated UrlInfo referrers = 9;
 }
 
 // Event sent when the Chrome Password Manager detects that a user's password

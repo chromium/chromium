@@ -4,11 +4,11 @@
 
 #import "ios/chrome/browser/settings/ui_bundled/language/language_settings_mediator.h"
 
+#import <algorithm>
 #import <memory>
 
 #import "base/apple/foundation_util.h"
 #import "base/check.h"
-#import "base/containers/contains.h"
 #import "base/metrics/histogram_macros.h"
 #import "base/notreached.h"
 #import "base/strings/sys_string_conversions.h"
@@ -197,7 +197,7 @@
       [NSMutableArray arrayWithCapacity:languages.size()];
   for (const auto& language : languages) {
     // Ignore languages already in the accept languages list.
-    if (base::Contains(acceptLanguageCodes, language.code)) {
+    if (std::ranges::contains(acceptLanguageCodes, language.code)) {
       continue;
     }
     LanguageItem* languageItem = [self languageItemFromLanguage:language];

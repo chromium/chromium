@@ -28,7 +28,6 @@
 <translation id="2329392777730037872">ক্লায়েন্টের ডিভাইসে <ph name="URL" /> খোলা যায়নি।</translation>
 <translation id="2359808026110333948">চালিয়ে যান</translation>
 <translation id="2366718077645204424">হোস্টে পৌঁছাতে পারেনি৷ আপনার ব্যবহার করা নেটওয়ার্কের কনফিগারেশনের কারণে সম্ভবত এটি হয়েছে৷</translation>
-<translation id="242591256144136845">Copyright 2025 Google LLC. সর্বস্বত্ব সংরক্ষিত।</translation>
 <translation id="2504109125669302160"><ph name="PRODUCT_NAME" />-কে 'অ্যাক্সেসিবিলিটি' অনুমতি দিন</translation>
 <translation id="2509394361235492552"><ph name="HOSTNAME" /> এ সংযুক্ত হয়েছে</translation>
 <translation id="2540992418118313681">আপনি কি অন্য ব্যবহারকারীকে দেখার এবং নিয়ন্ত্রণ করার জন্য এই কম্পিউটারটি শেয়ার করতে চান?</translation>
@@ -47,6 +46,7 @@
 <translation id="3150823315463303127">নীতিটি পড়ার জন্য হোস্ট ব্যর্থ হয়েছে৷</translation>
 <translation id="3171922709365450819">এই ডিভাইসটি এই ক্লায়েন্টের দ্বারা সমর্থিত নয় কারণ এটিতে তৃতীয় পক্ষের যাচাইকরণ প্রয়োজন।</translation>
 <translation id="3197730452537982411">রিমোট ডেস্কটপ</translation>
+<translation id="3236334139428307578">কপিরাইট ২০২১ The Chromium Authors. সর্বস্বত্ত্ব সংরক্ষিত।</translation>
 <translation id="324272851072175193">এই নির্দেশাবলী ইমেল করুন</translation>
 <translation id="3305934114213025800"><ph name="PRODUCT_NAME" /> পরিবর্তন করতে চান।</translation>
 <translation id="3339299787263251426">ইন্টারনেটের মাধ্যমে নিরাপদভাবে আপনার কম্পিউটার অ্যাক্সেস করুন</translation>
@@ -111,6 +111,7 @@
 <translation id="5823554426827907568">আপনার স্ক্রিন দেখার জন্য এবং আপনার কীবোর্ড ও মাউজে অ্যাক্সেস পাওয়ার জন্য, <ph name="CLIENT_USERNAME" /> আপনাকে অনুরোধ করেছেন। আপনি এই অনুরোধটি না চাইলে ''<ph name="IDS_SHARE_CONFIRM_DIALOG_DECLINE" />'' প্রেস করুন। অন্যথায় কানেকশন রেডি হয়ে গেলে তাতে অনুমতি দেওয়ার জন্য ''<ph name="IDS_SHARE_CONFIRM_DIALOG_CONFIRM" />'' বেছে নিন।</translation>
 <translation id="5823658491130719298">যে কম্পিউটারটি আপনি রিমোটভাবে অ্যাক্সেস করতে চান সেটিতে Chrome খুলে <ph name="INSTALLATION_LINK" />-এ যান</translation>
 <translation id="5841343754884244200">দেখার বিকল্প</translation>
+<translation id="5965133372831030509">কপিরাইট ২০২০ Google LLC. সর্বস্বত্ব সংরক্ষিত।</translation>
 <translation id="6033507038939587647">কীবোর্ড বিকল্পগুলি</translation>
 <translation id="6040143037577758943">বন্ধ</translation>
 <translation id="6062854958530969723">হোস্ট আরম্ভ করা ব্যর্থ হয়েছে।</translation>
@@ -138,7 +139,6 @@
 <translation id="7067321367069083429">স্ক্রিন একটি টাচ স্ক্রিনের মত কাজ করে</translation>
 <translation id="7116737094673640201">Chrome রিমোট ডেস্কটপে স্বাগত</translation>
 <translation id="7144878232160441200">আবার চেষ্টা করুন</translation>
-<translation id="7298392173540380852">Copyright 2025 The Chromium Authors. সর্বস্বত্ত্ব সংরক্ষিত।</translation>
 <translation id="7312846573060934304">হোস্ট এখন অফলাইনে।</translation>
 <translation id="7319983568955948908">শেয়ার করা বন্ধ করুন</translation>
 <translation id="7359298090707901886">স্থানীয় মেশিনে URL খোলার জন্য বেছে নেওয়া ব্রাউজারটি ব্যবহার করা যাবে না।</translation>

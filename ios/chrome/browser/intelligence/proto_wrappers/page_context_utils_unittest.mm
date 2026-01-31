@@ -4,6 +4,8 @@
 
 #import "ios/chrome/browser/intelligence/proto_wrappers/page_context_utils.h"
 
+#import "base/strings/string_number_conversions.h"
+#import "base/unguessable_token.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
 #import "testing/platform_test.h"
 #import "url/gurl.h"
@@ -61,4 +63,40 @@ TEST_F(PageContextUtilsTest, TestNonHtmlOrImageContentType) {
 // web_state.
 TEST_F(PageContextUtilsTest, TestNullWebState) {
   EXPECT_FALSE(CanExtractPageContextForWebState(nullptr));
+}
+
+// Tests DeserializeFrameIdAsLocalFrameToken with a valid ID.
+TEST_F(PageContextUtilsTest, TestDeserializeLocalFrameTokenValid) {
+  // 32-character hex string representing a 128-bit token.
+  std::string valid_id = "0123456789ABCDEF0123456789ABCDEF";
+  std::optional<autofill::LocalFrameToken> token =
+      DeserializeFrameIdAsLocalFrameToken(valid_id);
+  EXPECT_TRUE(token.has_value());
+  EXPECT_FALSE(token->value().is_empty());
+}
+
+// Tests DeserializeFrameIdAsLocalFrameToken with an invalid ID.
+TEST_F(PageContextUtilsTest, TestDeserializeLocalFrameTokenInvalid) {
+  std::string invalid_id = "invalid-token";
+  std::optional<autofill::LocalFrameToken> token =
+      DeserializeFrameIdAsLocalFrameToken(invalid_id);
+  EXPECT_FALSE(token.has_value());
+}
+
+// Tests DeserializeFrameIdAsRemoteFrameToken with a valid ID.
+TEST_F(PageContextUtilsTest, TestDeserializeRemoteFrameTokenValid) {
+  // 32-character hex string representing a 128-bit token.
+  std::string valid_id = "FEDCBA9876543210FEDCBA9876543210";
+  std::optional<autofill::RemoteFrameToken> token =
+      DeserializeFrameIdAsRemoteFrameToken(valid_id);
+  EXPECT_TRUE(token.has_value());
+  EXPECT_FALSE(token->value().is_empty());
+}
+
+// Tests DeserializeFrameIdAsRemoteFrameToken with an invalid ID.
+TEST_F(PageContextUtilsTest, TestDeserializeRemoteFrameTokenInvalid) {
+  std::string invalid_id = "";
+  std::optional<autofill::RemoteFrameToken> token =
+      DeserializeFrameIdAsRemoteFrameToken(invalid_id);
+  EXPECT_FALSE(token.has_value());
 }

@@ -52,11 +52,11 @@ const char kResponsePreamble[] = ")]}'";
 // instead of these custom functions.
 namespace safe_html {
 
-bool GetImpl(const base::Value::Dict& dict,
+bool GetImpl(const base::DictValue& dict,
              const std::string& name,
              const std::string& wrapped_field_name,
              std::string* out) {
-  const base::Value::Dict* value = dict.FindDict(name);
+  const base::DictValue* value = dict.FindDict(name);
   if (!value) {
     out->clear();
     return false;
@@ -72,14 +72,14 @@ bool GetImpl(const base::Value::Dict& dict,
   return true;
 }
 
-bool GetHtml(const base::Value::Dict& dict,
+bool GetHtml(const base::DictValue& dict,
              const std::string& name,
              std::string* out) {
   return GetImpl(dict, name,
                  "private_do_not_access_or_else_safe_html_wrapped_value", out);
 }
 
-bool GetScript(const base::Value::Dict& dict,
+bool GetScript(const base::DictValue& dict,
                const std::string& name,
                std::string* out) {
   return GetImpl(dict, name,
@@ -87,7 +87,7 @@ bool GetScript(const base::Value::Dict& dict,
                  out);
 }
 
-bool GetStyleSheet(const base::Value::Dict& dict,
+bool GetStyleSheet(const base::DictValue& dict,
                    const std::string& name,
                    std::string* out) {
   return GetImpl(dict, name,
@@ -103,9 +103,9 @@ std::optional<OneGoogleBarData> JsonToOGBData(const base::Value& value,
     DVLOG(1) << "Parse error: top-level dictionary not found";
     return std::nullopt;
   }
-  const base::Value::Dict& dict = value.GetDict();
+  const base::DictValue& dict = value.GetDict();
 
-  const base::Value::Dict* update = dict.FindDict("update");
+  const base::DictValue* update = dict.FindDict("update");
   if (!update) {
     DVLOG(1) << "Parse error: no update";
     return std::nullopt;
@@ -120,7 +120,7 @@ std::optional<OneGoogleBarData> JsonToOGBData(const base::Value& value,
   OneGoogleBarData result;
   result.language_code = language_code;
 
-  const base::Value::Dict* one_google_bar =
+  const base::DictValue* one_google_bar =
       update->FindDict(expect_async_bar_parts ? "ogb_parts" : "ogb");
   if (!one_google_bar) {
     DVLOG(1) << "Parse error: no ogb";
@@ -134,7 +134,7 @@ std::optional<OneGoogleBarData> JsonToOGBData(const base::Value& value,
     return std::nullopt;
   }
 
-  const base::Value::Dict* page_hooks = one_google_bar->FindDict("page_hooks");
+  const base::DictValue* page_hooks = one_google_bar->FindDict("page_hooks");
   if (!page_hooks) {
     DVLOG(1) << "Parse error: no page_hooks";
     return std::nullopt;

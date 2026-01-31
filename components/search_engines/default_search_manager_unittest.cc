@@ -42,18 +42,18 @@ namespace {
 
 void SetOverrides(sync_preferences::TestingPrefServiceSyncable* prefs,
                   bool update) {
-  auto overrides = base::Value::List();
+  auto overrides = base::ListValue();
 
   // Lambda facilitating insertion of TemplateURL definitions, ensuring that all
   // mandatory fields are present.
   auto add_definition = [&overrides](TemplateURLID id,
                                      std::string name_and_keyword,
                                      std::string base_url) {
-    auto alternate_urls = base::Value::List();
+    auto alternate_urls = base::ListValue();
     alternate_urls.Append(base_url + "/alternate?q={searchTerms}");
 
     overrides.Append(
-        base::Value::Dict()
+        base::DictValue()
             .Set("name", name_and_keyword)
             .Set("id", (int)id)
             .Set("keyword", name_and_keyword)
@@ -82,7 +82,7 @@ void SetPolicy(sync_preferences::TestingPrefServiceSyncable* prefs,
     EXPECT_FALSE(data->keyword().empty());
     EXPECT_FALSE(data->url().empty());
   }
-  base::Value::Dict entry = TemplateURLDataToDictionary(*data);
+  base::DictValue entry = TemplateURLDataToDictionary(*data);
   entry.Set(DefaultSearchManager::kDisabledByPolicy, !enabled);
 
   is_mandatory ? prefs->SetManagedPref(

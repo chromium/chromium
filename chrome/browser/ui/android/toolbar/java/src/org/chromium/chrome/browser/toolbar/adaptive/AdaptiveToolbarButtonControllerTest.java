@@ -40,7 +40,8 @@ import org.robolectric.Robolectric;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.Callback;
-import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.supplier.ObservableSuppliers;
+import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -82,7 +83,7 @@ public class AdaptiveToolbarButtonControllerTest {
     @Mock private Configuration mConfiguration;
 
     private ButtonDataImpl mButtonData;
-    private ObservableSupplierImpl<Profile> mProfileSupplier;
+    private SettableMonotonicObservableSupplier<Profile> mProfileSupplier;
     private AdaptiveToolbarBehavior mToolbarBehavior;
 
     @Before
@@ -102,7 +103,7 @@ public class AdaptiveToolbarButtonControllerTest {
                         /* tooltipTextResId= */ Resources.ID_NULL);
         mConfiguration.screenWidthDp = 420;
         doReturn(mProfile).when(mProfile).getOriginalProfile();
-        mProfileSupplier = new ObservableSupplierImpl<>();
+        mProfileSupplier = ObservableSuppliers.createMonotonic();
         mToolbarBehavior =
                 AdaptiveToolbarBehavior.getDefaultBehavior(
                         Robolectric.setupActivity(Activity.class));

@@ -1,7 +1,6 @@
 use crate::prelude::*;
 
 pub type wchar_t = i32;
-pub type useconds_t = u32;
 pub type dev_t = u32;
 pub type socklen_t = u32;
 pub type pthread_t = c_ulong;
@@ -91,7 +90,7 @@ s! {
         pub f_ffree: crate::fsfilcnt_t,
         pub f_favail: crate::fsfilcnt_t,
         pub f_fsid: c_ulong,
-        __f_unused: c_int,
+        __f_unused: Padding<c_int>,
         pub f_flag: c_ulong,
         pub f_namemax: c_ulong,
         __f_spare: [c_int; 6],
@@ -128,11 +127,6 @@ s! {
 
     pub struct cpu_set_t {
         bits: [u32; 32],
-    }
-
-    pub struct if_nameindex {
-        pub if_index: c_uint,
-        pub if_name: *mut c_char,
     }
 
     // System V IPC
@@ -223,7 +217,7 @@ s! {
     pub struct stat {
         pub st_dev: crate::dev_t,
         #[cfg(emscripten_old_stat_abi)]
-        __st_dev_padding: c_int,
+        __st_dev_padding: Padding<c_int>,
         #[cfg(emscripten_old_stat_abi)]
         __st_ino_truncated: c_long,
         pub st_mode: mode_t,
@@ -232,7 +226,7 @@ s! {
         pub st_gid: crate::gid_t,
         pub st_rdev: crate::dev_t,
         #[cfg(emscripten_old_stat_abi)]
-        __st_rdev_padding: c_int,
+        __st_rdev_padding: Padding<c_int>,
         pub st_size: off_t,
         pub st_blksize: crate::blksize_t,
         pub st_blocks: crate::blkcnt_t,
@@ -365,7 +359,7 @@ s! {
         pub mq_maxmsg: c_long,
         pub mq_msgsize: c_long,
         pub mq_curmsgs: c_long,
-        pad: [c_long; 4],
+        pad: Padding<[c_long; 4]>,
     }
 
     #[cfg_attr(target_pointer_width = "32", repr(align(4)))]
@@ -1263,7 +1257,7 @@ f! {
         }
         let next = (cmsg as usize + super::CMSG_ALIGN((*cmsg).cmsg_len as usize)) as *mut cmsghdr;
         let max = (*mhdr).msg_control as usize + (*mhdr).msg_controllen as usize;
-        if (next.offset(1)) as usize > max {
+        if (next.offset(1)) as usize >= max {
             core::ptr::null_mut::<cmsghdr>()
         } else {
             next as *mut cmsghdr
@@ -1378,8 +1372,6 @@ extern "C" {
     pub fn getloadavg(loadavg: *mut c_double, nelem: c_int) -> c_int;
 
     pub fn mkfifoat(dirfd: c_int, pathname: *const c_char, mode: mode_t) -> c_int;
-    pub fn if_nameindex() -> *mut if_nameindex;
-    pub fn if_freenameindex(ptr: *mut if_nameindex);
 
     pub fn mremap(
         addr: *mut c_void,
@@ -1438,21 +1430,6 @@ extern "C" {
     pub fn setpriority(which: c_int, who: crate::id_t, prio: c_int) -> c_int;
 
     pub fn getentropy(buf: *mut c_void, buflen: size_t) -> c_int;
-
-    pub fn getpwnam_r(
-        name: *const c_char,
-        pwd: *mut passwd,
-        buf: *mut c_char,
-        buflen: size_t,
-        result: *mut *mut passwd,
-    ) -> c_int;
-    pub fn getpwuid_r(
-        uid: crate::uid_t,
-        pwd: *mut passwd,
-        buf: *mut c_char,
-        buflen: size_t,
-        result: *mut *mut passwd,
-    ) -> c_int;
 
     // grp.h
     pub fn getgrgid(gid: crate::gid_t) -> *mut crate::group;

@@ -141,8 +141,6 @@ IN_PROC_BROWSER_TEST_F(GeolocationSwitchInteractiveTest,
   ExpectAndApproveBrowserPrompt(false);
   ExpectOSNotification(false);
 }
-
-// TODO(b/312485657): Enable the testcase.
 IN_PROC_BROWSER_TEST_F(GeolocationSwitchInteractiveTest,
                        BrowserBlockSystemBlock) {
   SetBrowserPermission(CONTENT_SETTING_BLOCK);

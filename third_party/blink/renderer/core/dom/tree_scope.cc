@@ -365,7 +365,7 @@ HeapVector<Member<Element>> TreeScope::ElementsFromHitTestResult(
     if (!node->IsElementNode() && !ShouldAcceptNonElementNode(*node))
       continue;
     node = ElementForHitTest(node, HitTestPointType::kWebExposed);
-    // Prune duplicate entries. A pseduo ::before content above its parent
+    // Prune duplicate entries. A pseudo ::before content above its parent
     // node should only result in a single entry.
     if (node == last_node)
       continue;

@@ -167,8 +167,9 @@ class AutofillAgent : public content::RenderFrameObserver,
   // - the `pending_refills_` list is destroyed.
   // In the first event, the callback's argument is `true`; in the other two
   // cases, it is `false`.
-  void RequestRefill(const FillId& fill_id,
-                     base::OnceCallback<void(bool)> callback);
+  // blink::WebAutofillClient override:
+  void RequestRefill(const base::UnguessableToken& fill_id,
+                     base::OnceCallback<void(bool)> callback) override;
 
   // mojom::AutofillAgent:
   void TriggerFormExtraction() override;
@@ -201,6 +202,12 @@ class AutofillAgent : public content::RenderFrameObserver,
   // longer considered previewed - and any state tied to the preview needs to
   // be reset.
   void ClearPreviewedForm() override;
+  // Finds potential "Sign in with Google" buttons in the DOM and returns their
+  // relevant data. The renderer should perform minimal filtering and leave the
+  // decision to the browser.
+  void FindPotentialSiwgButtons(
+      base::OnceCallback<void(std::vector<mojom::SiwgButtonDataPtr>)> callback)
+      override;
   void TriggerSuggestions(
       FieldRendererId field_id,
       AutofillSuggestionTriggerSource trigger_source) override;

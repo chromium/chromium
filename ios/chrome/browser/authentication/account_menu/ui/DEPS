@@ -1,4 +1,6 @@
 include_rules = [
+  # keep-sorted start
   "+ios/chrome/browser/keyboard/ui_bundled/UIKeyCommand+Chrome.h",
   "+ios/chrome/browser/settings",
+  # keep-sorted end
 ]

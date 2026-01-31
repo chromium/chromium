@@ -46,6 +46,7 @@ suite('PaymentsSectionIban', function() {
     loadTimeData.overrideValues({
       migrationEnabled: true,
       showIbansSettings: true,
+      autofillEnableWalletBranding: true,
     });
   });
 
@@ -434,5 +435,43 @@ suite('PaymentsSectionIban', function() {
     const outlinkButton =
         rowShadowRoot.querySelector('cr-icon-button.icon-external');
     assertTrue(!!outlinkButton);
+  });
+
+  test('verifyIbanGooglePayOutlinkText', async function() {
+    loadTimeData.overrideValues({
+      autofillEnableWalletBranding: false,
+    });
+
+    const iban = createIbanEntry();
+    iban.metadata!.isLocal = false;
+    const section = await createPaymentsSection(
+        /*creditCards=*/[], [iban], /*payOverTimeIssuers=*/[],
+        /*prefValues=*/ {});
+    assertEquals(1, getIbanListItems().length);
+    const rowShadowRoot = getIbanRowShadowRoot(section.$.paymentsList);
+    const outlinkButton = rowShadowRoot.querySelector<HTMLElement>(
+        'cr-icon-button.icon-external');
+    assertTrue(!!outlinkButton);
+
+    assertEquals('Your payment methods in Google Pay', outlinkButton.title);
+  });
+
+  test('verifyIbanGoogleWalletOutlinkText', async function() {
+    loadTimeData.overrideValues({
+      autofillEnableWalletBranding: true,
+    });
+
+    const iban = createIbanEntry();
+    iban.metadata!.isLocal = false;
+    const section = await createPaymentsSection(
+        /*creditCards=*/[], [iban], /*payOverTimeIssuers=*/[],
+        /*prefValues=*/ {});
+    assertEquals(1, getIbanListItems().length);
+    const rowShadowRoot = getIbanRowShadowRoot(section.$.paymentsList);
+    const outlinkButton =rowShadowRoot.querySelector<HTMLElement>(
+        'cr-icon-button.icon-external');
+    assertTrue(!!outlinkButton);
+
+    assertEquals('Your payment methods in Google Wallet', outlinkButton.title);
   });
 });

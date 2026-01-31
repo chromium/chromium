@@ -6,12 +6,12 @@
 
 #include <stddef.h>
 
+#include <algorithm>
 #include <map>
 #include <memory>
 #include <string>
 #include <utility>
 
-#include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_macros.h"
@@ -34,6 +34,7 @@
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_registry.h"
 #include "components/prefs/pref_service.h"
+#include "services/network/public/cpp/features.h"
 #include "services/preferences/public/cpp/dictionary_value_update.h"
 #include "services/preferences/public/cpp/scoped_pref_update.h"
 #include "services/tracing/public/cpp/perfetto/macros.h"
@@ -77,6 +78,10 @@ constexpr char kObsoleteTopLevelTpcdOriginTrialExceptionsPref[] =
 // TODO(https://crbug.com/367181093): clean this up.
 constexpr char kBug364820109AlreadyWorkedAroundPref[] =
     "profile.did_work_around_bug_364820109_exceptions";
+constexpr char kLocalNetworkAccessMigrateExceptionsPref[] =
+    "profile.content_settings.exceptions.has_migrated_local_network_access";
+constexpr char kObsoleteTrackingProtectionExceptionsPref[] =
+    "profile.content_settings.exceptions.tracking_protection";
 #endif  // !BUILDFLAG(IS_IOS)
 
 }  // namespace
@@ -122,8 +127,11 @@ void PrefProvider::RegisterProfilePrefs(
   registry->RegisterDictionaryPref(kObsoleteTopLevelTpcdTrialExceptionsPref);
   registry->RegisterDictionaryPref(
       kObsoleteTopLevelTpcdOriginTrialExceptionsPref);
+  registry->RegisterDictionaryPref(kObsoleteTrackingProtectionExceptionsPref);
   // TODO(https://crbug.com/367181093): clean this up.
   registry->RegisterBooleanPref(kBug364820109AlreadyWorkedAroundPref, false);
+  registry->RegisterBooleanPref(kLocalNetworkAccessMigrateExceptionsPref,
+                                false);
 #endif  // !BUILDFLAG(IS_IOS)
 }
 
@@ -164,6 +172,9 @@ PrefProvider::PrefProvider(PrefService* prefs,
   }
 
   MigrateGeolocationExceptions();
+#if !BUILDFLAG(IS_IOS)
+  MigrateLocalNetworkAccessExceptions();
+#endif  // !BUILDFLAG(IS_IOS)
 
   size_t num_exceptions = 0;
   if (!off_the_record_) {
@@ -250,7 +261,8 @@ bool PrefProvider::SetWebsiteSetting(
   // permission has been set by the One Time Provider, therefore we reset a
   // potentially existing Allow Always setting.
   if (constraints.session_model() == mojom::SessionModel::ONE_TIME) {
-    DCHECK(base::Contains(GetTypesWithTemporaryGrantsInHcsm(), content_type));
+    DCHECK(std::ranges::contains(GetTypesWithTemporaryGrantsInHcsm(),
+                                 content_type));
     in_value = base::Value();
   }
 
@@ -449,6 +461,7 @@ void PrefProvider::DiscardOrMigrateObsoletePreferences() {
   prefs_->ClearPref(kObsoleteTpcdTrialExceptionsPref);
   prefs_->ClearPref(kObsoleteTopLevelTpcdTrialExceptionsPref);
   prefs_->ClearPref(kObsoleteTopLevelTpcdOriginTrialExceptionsPref);
+  prefs_->ClearPref(kObsoleteTrackingProtectionExceptionsPref);
   // TODO(https://crbug.com/367181093): clean this up.
   prefs_->ClearPref(kBug364820109AlreadyWorkedAroundPref);
 #endif  // !BUILDFLAG(IS_IOS)
@@ -505,6 +518,64 @@ void PrefProvider::MigrateGeolocationExceptions() {
     prefs_->SetBoolean(kGeolocationMigrateExceptionsPref, false);
   }
 }
+
+#if !BUILDFLAG(IS_IOS)
+void PrefProvider::MigrateLocalNetworkAccessExceptions() {
+  if (off_the_record_) {
+    return;
+  }
+  // If LNA isn't turned on at all, don't try to migrate anything.
+  if (!base::FeatureList::IsEnabled(
+          network::features::kLocalNetworkAccessChecks)) {
+    return;
+  }
+
+  // Migrate when the feature gets enabled the first time.
+  // All exceptions get migrated to LOCAL_NETWORK, but only ALLOW exceptions get
+  // migrated to LOOPBACK_NETWORK, as the old prompt language was biased towards
+  // LOCAL_NETWORK.
+  if (base::FeatureList::IsEnabled(
+          network::features::kLocalNetworkAccessChecksSplitPermissions) &&
+      !prefs_->GetBoolean(kLocalNetworkAccessMigrateExceptionsPref)) {
+    auto* old_pref = GetPref(ContentSettingsType::LOCAL_NETWORK_ACCESS);
+    auto* local_pref = GetPref(ContentSettingsType::LOCAL_NETWORK);
+    auto* loopback_pref = GetPref(ContentSettingsType::LOOPBACK_NETWORK);
+    auto it = old_pref->GetRuleIterator(false);
+
+    while (it && it->HasNext()) {
+      auto rule = it->Next();
+      auto content_setting = ValueToContentSetting(rule->value);
+      local_pref->SetWebsiteSetting(
+          rule->primary_pattern, rule->secondary_pattern,
+          ContentSettingToValue(content_setting), rule->metadata.Clone());
+      if (content_setting != ContentSetting::CONTENT_SETTING_BLOCK) {
+        loopback_pref->SetWebsiteSetting(
+            rule->primary_pattern, rule->secondary_pattern,
+            ContentSettingToValue(content_setting), rule->metadata.Clone());
+      }
+    }
+    it.reset();
+    old_pref->ClearAllContentSettingsRules();
+    prefs_->SetBoolean(kLocalNetworkAccessMigrateExceptionsPref, true);
+  }
+
+  // If the feature is turned off, then don't attempt to migrate back, as it is
+  // unclear in all cases of how to reconcile the differences. But make sure to
+  // clear the new exceptions and unset the migration pref so that when the
+  // feature gets turned back on we'll migrate again.
+  if (base::FeatureList::IsEnabled(
+          network::features::kLocalNetworkAccessChecks) &&
+      !base::FeatureList::IsEnabled(
+          network::features::kLocalNetworkAccessChecksSplitPermissions) &&
+      prefs_->GetBoolean(kLocalNetworkAccessMigrateExceptionsPref)) {
+    auto* local_pref = GetPref(ContentSettingsType::LOCAL_NETWORK);
+    local_pref->ClearAllContentSettingsRules();
+    auto* loopback_pref = GetPref(ContentSettingsType::LOOPBACK_NETWORK);
+    loopback_pref->ClearAllContentSettingsRules();
+    prefs_->SetBoolean(kLocalNetworkAccessMigrateExceptionsPref, false);
+  }
+}
+#endif  // !BUILDFLAG(IS_IOS)
 
 void PrefProvider::SetClockForTesting(const base::Clock* clock) {
   clock_ = clock;

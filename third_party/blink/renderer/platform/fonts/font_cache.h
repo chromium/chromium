@@ -37,13 +37,11 @@
 
 #include "base/gtest_prod_util.h"
 #include "build/build_config.h"
-#include "third_party/blink/renderer/platform/fonts/fallback_list_composite_key.h"
 #include "third_party/blink/renderer/platform/fonts/font_cache_client.h"
 #include "third_party/blink/renderer/platform/fonts/font_data_cache.h"
 #include "third_party/blink/renderer/platform/fonts/font_face_creation_params.h"
 #include "third_party/blink/renderer/platform/fonts/font_fallback_priority.h"
 #include "third_party/blink/renderer/platform/fonts/font_platform_data_cache.h"
-#include "third_party/blink/renderer/platform/fonts/shaping/shape_cache.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_set.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
@@ -65,12 +63,6 @@
 
 class SkString;
 class SkTypeface;
-
-namespace base {
-namespace trace_event {
-class ProcessMemoryDump;
-}  // namespace trace_event
-}  // namespace base
 
 namespace blink {
 
@@ -101,7 +93,6 @@ extern const char kNotoColorEmojiCompat[];
 
 class PLATFORM_EXPORT FontCache final {
   DISALLOW_NEW();
-
  public:
   // FontCache initialisation on Windows depends on a global FontMgr being
   // configured through a call from the browser process. CreateIfNeeded helps
@@ -143,16 +134,8 @@ class PLATFORM_EXPORT FontCache final {
 
   static String FirstAvailableOrFirst(const String&);
 
-  // Returns the ShapeCache instance associated with the given cache key.
-  // Creates a new instance as needed and as such is guaranteed not to return
-  // a nullptr. Instances are managed by FontCache and are only guaranteed to
-  // be valid for the duration of the current session, as controlled by
-  // disable/enablePurging.
-  ShapeCache* GetShapeCache(const FallbackListCompositeKey&);
-
   void AddClient(FontCacheClient*);
 
-  uint16_t Generation();
   void Invalidate();
 
 #if BUILDFLAG(IS_WIN)
@@ -255,9 +238,6 @@ class PLATFORM_EXPORT FontCache final {
 
   static void CrashWithFontInfo(const FontDescription*);
 
-  // Memory reporting
-  void DumpShapeResultCache(base::trace_event::ProcessMemoryDump*);
-
   FontFallbackMap& GetFontFallbackMap();
 
   FontCache(const FontCache&) = delete;
@@ -335,14 +315,9 @@ class PLATFORM_EXPORT FontCache final {
   static float device_scale_factor_;
 #endif
 
-  uint16_t generation_ = 0;
   bool platform_init_ = false;
   HeapHashSet<WeakMember<FontCacheClient>> font_cache_clients_;
   FontPlatformDataCache font_platform_data_cache_;
-  HeapHashMap<FallbackListCompositeKey,
-              WeakMember<ShapeCache>,
-              FallbackListCompositeKeyTraits>
-      fallback_list_shaper_cache_;
 
   FontDataCache font_data_cache_;
 

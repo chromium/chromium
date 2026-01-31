@@ -89,9 +89,9 @@ bool ConfigurationPolicyPrefStore::GetValue(std::string_view key,
   return true;
 }
 
-base::Value::Dict ConfigurationPolicyPrefStore::GetValues() const {
+base::DictValue ConfigurationPolicyPrefStore::GetValues() const {
   if (!prefs_)
-    return base::Value::Dict();
+    return base::DictValue();
   return prefs_->AsDict();
 }
 

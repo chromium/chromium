@@ -21,9 +21,8 @@ import java.util.Collections;
 import java.util.List;
 
 /**
- * A wrapper around ReTrace that:
- *  1. Hardcodes a more useful line regular expression
- *  2. Disables output buffering
+ * A wrapper around ReTrace that: 1. Hardcodes a more useful line regular expression 2. Disables
+ * output buffering
  */
 @NullMarked
 public class FlushingReTrace {
@@ -50,6 +49,15 @@ public class FlushingReTrace {
                     // Stack trace from crbug.com/1300215 looks like:
                     // 0xffffffff (chromium-TrichromeChromeGoogle.aab-canary-490400033: 70) ii2.p
                     + "(?:.*?\\(\\s*%s(?:\\s*:\\s*%l\\s*)?\\)\\s*%c\\.%m)|"
+                    // Pulling a java stack out of a native trace, like http://crbug.com/456529673:
+                    // #06  pc 000376ba0
+                    // /data/app/~~KgwY0O9Ed-tBhkjrcbCBmA==/com.chrome.canary-qkKIPGTTIZZWQsECRfVc7w==/split_chrome.apk (u8g.run+140)
+                    // NOTE: Here, we pull the line number directly out. However, this is likely
+                    // wrong (see comment #4 in the linked bug), so deobfuscate_official divides
+                    // this number by 2 before putting it back into the stack. Any user should be
+                    // wary of the stack traces deobfuscated by this specific pattern, especially
+                    // if the line numbers are not halved.
+                    + "(?:.*?\\(%c\\.%m\\+%l\\))|"
                     // E.g.: Caused by: java.lang.NullPointerException: Attempt to read from field
                     // 'int bLA' on a null object reference
                     + "(?:.*java\\.lang\\.NullPointerException.*[\"']%t\\s*%c\\.(?:%f|%m\\(%a\\))[\"'].*)|"
@@ -72,6 +80,14 @@ public class FlushingReTrace {
                     + "(?:.* isTestClass for %c)|"
                     // E.g.: Caused by: java.lang.RuntimeException: Intentional Java Crash
                     + "(?:Caused by: %c:.*)|"
+                    // LeakCanary output looks like:
+                    // ├─ etg instance
+                    // │    Leaking: NO (fs7↓ aQ2 not leaking)
+                    // │    ↓ rQ.createView
+                    + "(?:.*├─ %c .*)|"
+                    + "(?:.*\\(%c↓ .*)|"
+                    + "(?:.*↓ (?:static )?%c\\.%f.*)|"
+
                     // Quoted values and lines that end with a class / class+method:
                     // E.g.: The class: Foo
                     // E.g.: INSTRUMENTATION_STATUS: class=Foo

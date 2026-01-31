@@ -78,7 +78,7 @@ class TestPasswordsPrivateDelegate : public PasswordsPrivateDelegate {
                        content::WebContents* web_contents) override;
   api::passwords_private::ExportProgressStatus GetExportProgressStatus()
       override;
-  bool IsAccountStorageEnabled() override;
+  bool IsAccountStorageActive() override;
   void SetAccountStorageEnabled(bool enabled,
                                 content::WebContents* web_contents) override;
   bool ShouldShowAccountStorageSettingToggle() override;

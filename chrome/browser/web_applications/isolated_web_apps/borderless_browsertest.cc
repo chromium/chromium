@@ -15,21 +15,22 @@
 #include "chrome/browser/ui/web_applications/web_app_browsertest_base.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
 #include "chrome/browser/web_applications/isolated_web_apps/test/isolated_web_app_builder.h"
+#include "chrome/browser/web_applications/model/display_override.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_types.h"
-#include "components/content_settings/core/common/content_settings_types.mojom-data-view.h"
+#include "components/content_settings/core/common/content_settings_types.mojom-shared.h"
 #include "components/webapps/common/web_app_id.h"
 #include "content/public/common/content_features.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
-#include "services/network/public/mojom/permissions_policy/permissions_policy_feature.mojom-data-view.h"
+#include "services/network/public/mojom/permissions_policy/permissions_policy_feature.mojom-shared.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/safe_url_pattern.h"
-#include "third_party/blink/public/mojom/manifest/display_mode.mojom-data-view.h"
+#include "third_party/blink/public/mojom/manifest/display_mode.mojom-shared.h"
 #include "third_party/liburlpattern/part.h"
 #include "url/gurl.h"
 #include "url/origin.h"
@@ -77,9 +78,8 @@ IsolatedWebAppBuilder CreateBorderlessIwaBuilder() {
              ManifestBuilder()
                  .SetDisplayMode(blink::mojom::DisplayMode::kStandalone)
                  .SetDisplayModeOverride(
-                     {blink::mojom::DisplayMode::kBorderless})
-                 .AddBorderlessUrlPattern(
-                     UrlPatternForPath(kBorderlessPagePath))
+                     {web_app::DisplayOverride::CreateUnframed(
+                         {UrlPatternForPath(kBorderlessPagePath)})})
                  .AddPermissionsPolicy(
                      network::mojom::PermissionsPolicyFeature::
                          kWindowManagement,

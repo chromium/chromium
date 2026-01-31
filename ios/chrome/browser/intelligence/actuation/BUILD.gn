@@ -15,3 +15,12 @@ source_set("actuation") {
     "//ios/web/public",
   ]
 }
+
+source_set("actuation_util") {
+  sources = [
+    "actuation_util.h",
+    "actuation_util.mm",
+  ]
+  public_deps =
+      [ "//components/optimization_guide/proto:optimization_guide_proto" ]
+}

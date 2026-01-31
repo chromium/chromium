@@ -37,6 +37,7 @@
 #include "components/safe_browsing/buildflags.h"
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/base/signin_metrics.h"
+#include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/sync/base/features.h"
@@ -95,13 +96,17 @@ BASE_FEATURE(kProfilePickerGaiaBlankContinueUrl,
 
 ProfilePickerSignInProvider::ProfilePickerSignInProvider(
     ProfilePickerWebContentsHost* host,
+    ProfilePickerSignInProviderDelegate* delegate,
     signin_metrics::AccessPoint signin_access_point,
     const std::string& initial_email,
+    SignInStepFinishedCallback signin_finished_callback,
     base::FilePath profile_path)
     : host_(host),
+      delegate_(delegate),
       signin_access_point_(signin_access_point),
       initial_email_(initial_email),
-      profile_path_(profile_path) {}
+      profile_path_(profile_path),
+      callback_(std::move(signin_finished_callback)) {}
 
 ProfilePickerSignInProvider::~ProfilePickerSignInProvider() {
   // Handle unfinished signed-in profile creation (i.e. when callback was not
@@ -117,14 +122,9 @@ ProfilePickerSignInProvider::~ProfilePickerSignInProvider() {
 }
 
 void ProfilePickerSignInProvider::SwitchToSignIn(
-    StepSwitchFinishedCallback switch_finished_callback,
-    SignedInCallback signin_finished_callback) {
+    StepSwitchFinishedCallback switch_finished_callback) {
   base::UmaHistogramEnumeration(kProfilePickerSignInProviderStepHistogram,
                                 SigninProviderStep::kSwitchToSignin);
-
-  // Update the callback even if the profile is already initialized (to respect
-  // that the callback may be different).
-  callback_ = std::move(signin_finished_callback);
 
   if (IsInitialized()) {
     // Do not load any url because the desired sign-in screen is still loaded in
@@ -357,7 +357,7 @@ void ProfilePickerSignInProvider::FinishFlow(
   host_->SetNativeToolbarVisible(false);
   ResetWebContentsDelegates();
   std::move(callback_).Run(profile_.get(), account_info, std::move(contents_),
-                           SigninUIError::Ok());
+                           StepSwitchFinishedCallback());
 }
 
 void ProfilePickerSignInProvider::FinishFlowInPickerWithSyncConfirmation(
@@ -392,33 +392,7 @@ void ProfilePickerSignInProvider::ShowSigninError(
           syncer::kReplaceSyncPromosWithSignInPromos)) {
     return;
   }
-
-  if (signin_util::IsForceSigninEnabled() &&
-      error.type() ==
-          SigninUIError::Type::kUsernameNotAllowedByPatternFromPrefs) {
-    host_->Reset(StepSwitchFinishedCallback(base::BindOnce(
-        &ProfilePickerWebContentsHost::ShowForceSigninErrorDialog,
-        base::Unretained(host_),
-        ForceSigninUIError::SigninPatternNotMatching(
-            base::UTF16ToUTF8(error.email())))));
-    return;
-  }
-
-  if (error.type() ==
-      SigninUIError::Type::kAccountAlreadyUsedByAnotherProfile) {
-    GURL profile_switch_url(chrome::kChromeUIProfilePickerUrl);
-    profile_switch_url = profile_switch_url.Resolve("profile-switch");
-    // Appends the `profile_path` to be retrieved in the web page.
-    profile_switch_url =
-        net::AppendQueryParameter(profile_switch_url, "profileSwitchPath",
-                                  base::ToString(error.another_profile_path()));
-
-    host_->ShowScreenInPickerContents(profile_switch_url, base::OnceClosure());
-    return;
-  }
-
-  std::move(callback_).Run(profile_.get(), CoreAccountInfo(),
-                           std::move(contents_), error);
+  delegate_->ShowSigninError(profile, error);
 }
 
 void ProfilePickerSignInProvider::ResetWebContentsDelegates() {

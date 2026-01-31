@@ -11,13 +11,13 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/android/tab_android.h"
-#include "chrome/browser/page_content_annotations/page_content_extraction_service.h"
 #include "chrome/browser/page_content_annotations/page_content_extraction_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/android/tab_model/tab_model.h"
 #include "chrome/browser/ui/android/tab_model/tab_model_list.h"
 #include "chrome/test/base/android/android_browser_test.h"
 #include "chrome/test/base/chrome_test_utils.h"
+#include "components/page_content_annotations/content/page_content_extraction_service.h"
 #include "components/page_content_annotations/core/page_content_annotations_features.h"
 #include "components/page_content_annotations/core/page_content_annotations_switches.h"
 #include "content/public/browser/web_contents.h"
@@ -123,7 +123,7 @@ class PageContentCacheBrowserTest : public AndroidBrowserTest {
     std::unique_ptr<content::WebContents> contents =
         content::WebContents::Create(
             content::WebContents::CreateParams(profile()));
-    content::WebContents* new_web_contents = contents.release();
+    content::WebContents* new_web_contents = contents.get();
 
     content::NavigationController::LoadURLParams params(url);
     params.transition_type =
@@ -132,7 +132,10 @@ class PageContentCacheBrowserTest : public AndroidBrowserTest {
     new_web_contents->GetController().LoadURLWithParams(params);
     content::WaitForLoadStop(new_web_contents);
 
-    tab_model->CreateTab(parent_tab, new_web_contents, /*select=*/true);
+    tab_model->CreateTab(parent_tab, std::move(contents),
+                         TabModel::kInvalidIndex,
+                         TabModel::TabLaunchType::FROM_RECENT_TABS_FOREGROUND,
+                         /*should_pin=*/false);
     return new_web_contents;
   }
 
@@ -179,20 +182,20 @@ IN_PROC_BROWSER_TEST_F(PageContentCacheBrowserTest,
   AddTab(url1);
 
   cache_observer.WaitForPopulated(tab_id1);
-  base::test::TestFuture<std::optional<optimization_guide::proto::PageContext>>
+  base::test::TestFuture<std::optional<optimization_guide::PageContentResult>>
       future1;
   cache->GetPageContentForTab(tab_id1, future1.GetCallback());
-  auto result1 = future1.Get();
+  auto result1 = future1.Take();
   EXPECT_TRUE(result1.has_value());
 
   // Close tab: tab_id1, it should delete the cached contents.
   CloseTab(tab_id1);
 
   cache_observer.WaitForRemoved(tab_id1);
-  base::test::TestFuture<std::optional<optimization_guide::proto::PageContext>>
+  base::test::TestFuture<std::optional<optimization_guide::PageContentResult>>
       future_after_close;
   cache->GetPageContentForTab(tab_id1, future_after_close.GetCallback());
-  auto result_after_close = future_after_close.Get();
+  auto result_after_close = future_after_close.Take();
   EXPECT_FALSE(result_after_close.has_value());
 }
 

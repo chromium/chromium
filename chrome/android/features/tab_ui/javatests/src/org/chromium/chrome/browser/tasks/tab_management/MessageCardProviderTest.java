@@ -73,7 +73,7 @@ public class MessageCardProviderTest {
     private TabListModel mModelList;
     private SimpleRecyclerViewAdapter mAdapter;
 
-    private MessageCardProviderCoordinator<@MessageType Integer, @UiType Integer> mCoordinator;
+    private MessageCardProvider<@MessageType Integer, @UiType Integer> mCoordinator;
     private MessageService<@MessageType Integer, @UiType Integer> mTestingService;
     private MessageService<@MessageType Integer, @UiType Integer> mPriceService;
 
@@ -155,9 +155,7 @@ public class MessageCardProviderTest {
                                     R.layout.tab_grid_message_card_item,
                                     MessageCardViewBinder::bind);
 
-                    mCoordinator =
-                            new MessageCardProviderCoordinator<>(
-                                    sActivity, mServiceDismissActionProvider);
+                    mCoordinator = new MessageCardProvider<>(mServiceDismissActionProvider);
                     mCoordinator.subscribeMessageService(mTestingService);
                     mCoordinator.subscribeMessageService(mPriceService);
                 });
@@ -228,8 +226,8 @@ public class MessageCardProviderTest {
     }
 
     private void sendAvailabilityNotification() {
-        mPriceService.sendAvailabilityNotification(
-                (a, b) ->
+        mPriceService.queueMessage(
+                dismiss ->
                         PriceMessageCardViewModel.create(
                                 sActivity,
                                 c -> {},

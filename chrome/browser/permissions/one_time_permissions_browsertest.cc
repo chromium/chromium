@@ -2,7 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/feature_list.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
+#include "base/test/with_feature_override.h"
 #include "chrome/browser/permissions/permission_manager_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
@@ -11,8 +14,11 @@
 #include "chrome/test/base/ui_test_utils.h"
 #include "chrome/test/permissions/permission_request_manager_test_api.h"
 #include "components/content_settings/core/common/content_settings_types.h"
+#include "components/content_settings/core/common/features.h"
 #include "components/permissions/permission_manager.h"
 #include "components/permissions/permission_request_manager.h"
+#include "components/permissions/request_type.h"
+#include "components/permissions/resolvers/permission_prompt_options.h"
 #include "components/permissions/test/permission_request_observer.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
@@ -20,10 +26,10 @@
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 
-class OneTimePermissionsBrowserTest : public InProcessBrowserTest {
+class OneTimePermissionsBrowserTestBase : public InProcessBrowserTest {
  public:
-  OneTimePermissionsBrowserTest() = default;
-  ~OneTimePermissionsBrowserTest() override = default;
+  OneTimePermissionsBrowserTestBase() = default;
+  ~OneTimePermissionsBrowserTestBase() override = default;
 
   void SetUpOnMainThread() override {
     InProcessBrowserTest::SetUpOnMainThread();
@@ -62,7 +68,14 @@ class OneTimePermissionsBrowserTest : public InProcessBrowserTest {
                                     ->GetPrimaryMainFrame(),
                                 request_type);
     observer.Wait();
-    manager_->AcceptThisTime();
+    PromptOptions prompt_options =
+        (request_type == permissions::RequestType::kGeolocation &&
+         base::FeatureList::IsEnabled(
+             content_settings::features::kApproximateGeolocationPermission))
+            ? PromptOptions(GeolocationPromptOptions{
+                  .selected_accuracy = GeolocationAccuracy::kPrecise})
+            : std::monostate();
+    manager_->AcceptThisTime(prompt_options);
   }
 
   GURL GetTestURL() {
@@ -75,7 +88,17 @@ class OneTimePermissionsBrowserTest : public InProcessBrowserTest {
   raw_ptr<permissions::PermissionRequestManager> manager_;
 };
 
-IN_PROC_BROWSER_TEST_F(OneTimePermissionsBrowserTest, RecordOneTimeGrant) {
+class OneTimePermissionsBrowserTest : public base::test::WithFeatureOverride,
+                                      public OneTimePermissionsBrowserTestBase {
+ public:
+  OneTimePermissionsBrowserTest()
+      : base::test::WithFeatureOverride(
+            content_settings::features::kApproximateGeolocationPermission) {}
+};
+
+INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(OneTimePermissionsBrowserTest);
+
+IN_PROC_BROWSER_TEST_P(OneTimePermissionsBrowserTest, RecordOneTimeGrant) {
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GetTestURL()));
   base::HistogramTester histogram_tester;
 
@@ -106,12 +129,18 @@ struct OneTimePermissionActionTestParams {
   std::string histogram_suffix;
   permissions::RequestType request_type;
   std::string permission_type_string;
+  bool approximate_geolocation_enabled = false;
 };
 
 class OneTimePermissionActionBrowserTest
-    : public OneTimePermissionsBrowserTest,
+    : public OneTimePermissionsBrowserTestBase,
       public testing::WithParamInterface<OneTimePermissionActionTestParams> {
  public:
+  OneTimePermissionActionBrowserTest() {
+    scoped_feature_list_.InitWithFeatureState(
+        content_settings::features::kApproximateGeolocationPermission,
+        GetParam().approximate_geolocation_enabled);
+  }
   std::string GetOneTimePermissionActionHistogramName() {
     return "Permissions.OneTimePermission." +
            GetParam().permission_type_string + "." +
@@ -124,23 +153,33 @@ class OneTimePermissionActionBrowserTest
   }
 
   void ExecuteAction(permissions::PermissionRequestManager* manager) {
+    PromptOptions prompt_options =
+        (GetParam().request_type == permissions::RequestType::kGeolocation &&
+         base::FeatureList::IsEnabled(
+             content_settings::features::kApproximateGeolocationPermission))
+            ? PromptOptions(GeolocationPromptOptions{
+                  .selected_accuracy = GeolocationAccuracy::kPrecise})
+            : std::monostate();
     switch (GetParam().action) {
       case permissions::PermissionAction::GRANTED:
-        manager->Accept();
+        manager->Accept(prompt_options);
         break;
       case permissions::PermissionAction::DENIED:
-        manager->Deny();
+        manager->Deny(prompt_options);
         break;
       case permissions::PermissionAction::DISMISSED:
-        manager->Dismiss();
+        manager->Dismiss(prompt_options);
         break;
       case permissions::PermissionAction::IGNORED:
-        manager->Ignore();
+        manager->Ignore(prompt_options);
         break;
       default:
         NOTREACHED();
     }
   }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_P(OneTimePermissionActionBrowserTest, RecordOTPCount) {
@@ -191,6 +230,18 @@ INSTANTIATE_TEST_SUITE_P(
         OneTimePermissionActionTestParams{
             permissions::PermissionAction::IGNORED, "IgnoreOTPCount",
             permissions::RequestType::kGeolocation, "Geolocation"},
+        OneTimePermissionActionTestParams{
+            permissions::PermissionAction::GRANTED, "GrantOTPCount",
+            permissions::RequestType::kGeolocation, "Geolocation", true},
+        OneTimePermissionActionTestParams{
+            permissions::PermissionAction::DENIED, "DenyOTPCount",
+            permissions::RequestType::kGeolocation, "Geolocation", true},
+        OneTimePermissionActionTestParams{
+            permissions::PermissionAction::DISMISSED, "DismissOTPCount",
+            permissions::RequestType::kGeolocation, "Geolocation", true},
+        OneTimePermissionActionTestParams{
+            permissions::PermissionAction::IGNORED, "IgnoreOTPCount",
+            permissions::RequestType::kGeolocation, "Geolocation", true},
         // Mic
         OneTimePermissionActionTestParams{
             permissions::PermissionAction::GRANTED, "GrantOTPCount",
@@ -235,5 +286,8 @@ INSTANTIATE_TEST_SUITE_P(
         default:
           action_str = "Unknown";
       }
-      return info.param.permission_type_string + "_" + action_str;
+      return info.param.permission_type_string + "_" + action_str +
+             (info.param.approximate_geolocation_enabled
+                  ? "_withApproximateLocation"
+                  : "");
     });

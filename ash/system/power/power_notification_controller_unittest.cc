@@ -11,7 +11,6 @@
 #include "ash/constants/ash_features.h"
 #include "ash/test/ash_test_base.h"
 #include "base/compiler_specific.h"
-#include "base/containers/contains.h"
 #include "base/logging.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -387,7 +386,7 @@ TEST_F(PowerNotificationControllerTest,
   ASSERT_TRUE(notification);
   EXPECT_TRUE(notification->never_timeout());
   EXPECT_FALSE(notification->pinned());
-  EXPECT_TRUE(base::Contains((notification->message()), u"60W"))
+  EXPECT_TRUE(notification->message().contains(u"60W"))
       << notification->message();
 }
 

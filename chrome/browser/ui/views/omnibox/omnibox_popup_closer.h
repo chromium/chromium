@@ -23,6 +23,7 @@ enum class PopupCloseReason {
   kMouseClickOutside,
   kRevertAll,
   kTextDrag,
+  kCrash,
   kOther
 };
 

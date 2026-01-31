@@ -28,6 +28,7 @@
 #include "chrome/browser/ui/views/permissions/chip/chip_controller.h"
 #include "chrome/browser/ui/views/permissions/chip/permission_dashboard_controller.h"
 #include "components/permissions/permission_prompt.h"
+#include "components/prefs/pref_change_registrar.h"
 #include "components/security_state/core/security_state.h"
 #include "services/device/public/cpp/geolocation/buildflags.h"
 #include "third_party/metrics_proto/omnibox_event.pb.h"
@@ -68,6 +69,7 @@ class PageActionIconContainerView;
 class PermissionDashboardView;
 class Profile;
 class SelectedKeywordView;
+class PrefChangeRegistrar;
 
 namespace page_actions {
 class PageActionContainerView;
@@ -193,19 +195,6 @@ class LocationBarView
 
   const OmniboxController* GetOmniboxController() const;
 
-  // Returns true if the location bar's current security state does not match
-  // the currently visible state.
-  bool HasSecurityStateChanged();
-
-  // Updates the controller, and, if |contents| is non-null, restores saved
-  // state that the tab holds.
-  void Update(content::WebContents* contents);
-
-  // Clears the location bar's state for |contents|.
-  void ResetTabState(content::WebContents* contents);
-
-  // Controls the chip in the LocationBarView.
-  ChipController* GetChipController();
 
   // Controls the permission dashboard in the LocationBarView.
   PermissionDashboardController* permission_dashboard_controller() {
@@ -219,11 +208,19 @@ class LocationBarView
   void Revert() override;
   OmniboxView* GetOmniboxView() override;
   OmniboxController* GetOmniboxController() override;
+  ChipController* GetChipController() override;
   void UpdateWithoutTabRestore() override;
   LocationBarModel* GetLocationBarModel() override;
   content::WebContents* GetWebContents() override;
   std::optional<bubble_anchor_util::AnchorConfiguration> GetChipAnchor()
       override;
+  bool IsVisible() const override;
+  gfx::Rect Bounds() const override;
+  gfx::Size MinimumSize() const override;
+  gfx::Size PreferredSize() const override;
+  void Update(content::WebContents* contents) override;
+  void ResetTabState(content::WebContents* contents) override;
+  bool HasSecurityStateChanged() override;
 
   // views::View:
   void AddedToWidget() override;
@@ -596,6 +593,7 @@ class LocationBarView
 
   std::unique_ptr<OmniboxContextMenu> omnibox_context_menu_;
   std::unique_ptr<OmniboxPopupFileSelector> omnibox_popup_file_selector_;
+  std::unique_ptr<PrefChangeRegistrar> pref_registrar_;
 
   base::RepeatingCallback<void(OmniboxContextMenu*, gfx::Point)>
       run_omnibox_context_menu_callback_;

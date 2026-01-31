@@ -63,13 +63,13 @@ constexpr char kDecidedByRelatedWebsiteSets[] =
 //       "tag": "...",
 //     }
 //   }
-base::Value::Dict CreateDummyContentSettingValue(
+base::DictValue CreateDummyContentSettingValue(
     std::string_view tag,
     bool expired,
     mojom::SessionModel session_model = mojom::SessionModel::DURABLE,
     bool decided_by_related_website_sets = false) {
-  return base::Value::Dict()
-      .Set(kSettingKey, base::Value::Dict().Set(kTagKey, tag))
+  return base::DictValue()
+      .Set(kSettingKey, base::DictValue().Set(kTagKey, tag))
       .Set(kLastModifiedKey, "13189876543210000")
       .Set(kExpirationKey, expired ? "13189876543210001" : "0")
       .Set(kSessionModelKey, static_cast<int>(session_model))
@@ -78,7 +78,7 @@ base::Value::Dict CreateDummyContentSettingValue(
 
 // Given the JSON dictionary representing the "setting" stored under a content
 // setting exception value, returns the tag.
-std::string GetTagFromDummyContentSetting(const base::Value::Dict& setting) {
+std::string GetTagFromDummyContentSetting(const base::DictValue& setting) {
   const std::string* tag = setting.FindString(kTagKey);
   return tag ? *tag : std::string();
 }
@@ -86,8 +86,8 @@ std::string GetTagFromDummyContentSetting(const base::Value::Dict& setting) {
 // Given the JSON dictionary representing a content setting exception value,
 // returns the tag.
 std::string GetTagFromDummyContentSettingValue(
-    const base::Value::Dict& pref_value) {
-  const base::Value::Dict* setting = pref_value.FindDict(kSettingKey);
+    const base::DictValue& pref_value) {
+  const base::DictValue* setting = pref_value.FindDict(kSettingKey);
   return setting ? GetTagFromDummyContentSetting(*setting) : std::string();
 }
 
@@ -108,11 +108,11 @@ class ContentSettingsPrefTest : public testing::Test {
         base::DoNothing());
   }
 
-  void SetPrefDict(base::Value::Dict pref_value) {
+  void SetPrefDict(base::DictValue pref_value) {
     prefs_.SetUserPref(kTestContentSettingPrefName, std::move(pref_value));
   }
 
-  const base::Value::Dict* GetPrefDict() {
+  const base::DictValue* GetPrefDict() {
     return &prefs_.GetDict(kTestContentSettingPrefName);
   }
 
@@ -124,9 +124,8 @@ class ContentSettingsPrefTest : public testing::Test {
 TEST_F(ContentSettingsPrefTest, BasicReadWrite) {
   const char* pattern_pair = "http://example.com,*";
 
-  SetPrefDict(base::Value::Dict().Set(
-      pattern_pair,
-      base::Value::Dict().Set(kSettingKey, CONTENT_SETTING_BLOCK)));
+  SetPrefDict(base::DictValue().Set(
+      pattern_pair, base::DictValue().Set(kSettingKey, CONTENT_SETTING_BLOCK)));
   auto content_settings_pref =
       CreateContentSettingsPref(ContentSettingsType::STORAGE_ACCESS);
   auto check_value = [&](ContentSetting expected_value) {
@@ -157,9 +156,9 @@ TEST_F(ContentSettingsPrefTest, BasicReadWrite) {
 }
 
 TEST_F(ContentSettingsPrefTest, SetWebsiteSettingShouldRemoveSettingIfEmpty) {
-  SetPrefDict(base::Value::Dict().Set(
+  SetPrefDict(base::DictValue().Set(
       "http://example.com,*",
-      base::Value::Dict().Set(kSettingKey, CONTENT_SETTING_BLOCK)));
+      base::DictValue().Set(kSettingKey, CONTENT_SETTING_BLOCK)));
   auto content_settings_pref =
       CreateContentSettingsPref(ContentSettingsType::STORAGE_ACCESS);
   content_settings_pref->SetWebsiteSetting(
@@ -199,9 +198,9 @@ TEST_F(ContentSettingsPrefTest, SetWebsiteSettingWhenEmpty) {
 }
 
 TEST_F(ContentSettingsPrefTest, ClearAllContentSettingsRules) {
-  base::Value::Dict dummy_pref_value = base::Value::Dict().Set(
+  base::DictValue dummy_pref_value = base::DictValue().Set(
       kTestPatternCanonicalAlpha,
-      base::Value::Dict().Set(kSettingKey, CONTENT_SETTING_BLOCK));
+      base::DictValue().Set(kSettingKey, CONTENT_SETTING_BLOCK));
   SetPrefDict(dummy_pref_value.Clone());
 
   auto content_settings_pref =
@@ -217,11 +216,11 @@ TEST_F(ContentSettingsPrefTest, ClearAllContentSettingsRules) {
 
 TEST_F(ContentSettingsPrefTest, GetNumExceptions) {
   SetPrefDict(
-      base::Value::Dict()
+      base::DictValue()
           .Set(kTestPatternCanonicalAlpha,
-               base::Value::Dict().Set(kSettingKey, CONTENT_SETTING_BLOCK))
+               base::DictValue().Set(kSettingKey, CONTENT_SETTING_BLOCK))
           .Set(kTestPatternCanonicalBeta,
-               base::Value::Dict().Set(kSettingKey, CONTENT_SETTING_BLOCK)));
+               base::DictValue().Set(kSettingKey, CONTENT_SETTING_BLOCK)));
 
   auto content_settings_pref =
       CreateContentSettingsPref(ContentSettingsType::STORAGE_ACCESS);
@@ -263,7 +262,7 @@ TEST_F(ContentSettingsPrefTest, CanonicalizationWhileReadingFromPrefs) {
       {kTestPatternCanonicalBeta, kTestPatternCanonicalBeta},
   };
 
-  base::Value::Dict original_pref_value;
+  base::DictValue original_pref_value;
   for (const auto* pattern : kTestOriginalPatterns) {
     original_pref_value.Set(
         pattern, CreateDummyContentSettingValue(pattern, /*expired=*/false));
@@ -317,7 +316,7 @@ TEST_F(ContentSettingsPrefTest, ExpirationWhileReadingFromPrefs) {
 
   // Create pre-existing entries: one that is expired, one that never
   // expires, one that is non-restorable.
-  base::Value::Dict original_pref_value;
+  base::DictValue original_pref_value;
   original_pref_value.Set(
       kTestPatternCanonicalAlpha,
       CreateDummyContentSettingValue(kTestPatternCanonicalAlpha,
@@ -375,12 +374,12 @@ TEST_F(ContentSettingsPrefTest, ExpirationWhileReadingFromPrefs) {
 TEST_F(ContentSettingsPrefTest, LegacyLastModifiedLoad) {
   constexpr char kPatternPair[] = "http://example.com,*";
 
-  base::Value::Dict original_pref_value;
+  base::DictValue original_pref_value;
   const base::Time last_modified =
       base::Time::FromInternalValue(13189876543210000);
 
   // Create a single entry using our old internal value for last_modified.
-  base::Value::Dict pref_value;
+  base::DictValue pref_value;
   pref_value.Set(kLastModifiedKey,
                  base::NumberToString(last_modified.ToInternalValue()));
   pref_value.Set(kSettingKey, CONTENT_SETTING_BLOCK);

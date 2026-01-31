@@ -21,6 +21,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/scoped_observation.h"
+#include "base/sequence_checker.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/time/time.h"
@@ -35,7 +36,6 @@
 #include "components/autofill/core/common/form_data.h"
 #include "components/autofill/core/common/is_required.h"
 #include "components/autofill/core/common/language_code.h"
-#include "components/autofill/core/common/mojom/autofill_types.mojom-shared.h"
 #include "components/autofill/core/common/mojom/autofill_types.mojom.h"
 #include "components/autofill/core/common/signatures.h"
 #include "components/autofill/core/common/unique_ids.h"
@@ -322,11 +322,6 @@ class AutofillManager
   // Runs in linear time.
   const FormStructure* FindCachedFormById(const FieldGlobalId& field_id) const;
 
-  // Returns all FormStructures with the given `form_signature` and
-  // Runs in linear time.
-  std::vector<raw_ref<const FormStructure>> FindCachedFormsBySignature(
-      FormSignature form_signature) const;
-
   // Calls `fun` for each cached FormStructure.
   void ForEachCachedForm(
       base::FunctionRef<void(const FormStructure&)> fun) const;
@@ -370,12 +365,6 @@ class AutofillManager
     for (Observer& observer : observers_) {
       std::invoke(functor, observer, *this, args...);
     }
-  }
-
-  // Returns the present form structures seen by Autofill handler.
-  const std::map<FormGlobalId, std::unique_ptr<FormStructure>>&
-  form_structures() const {
-    return form_structures_;
   }
 
   AutofillDriver& driver() { return *driver_; }
@@ -467,12 +456,6 @@ class AutofillManager
 
   struct AsyncContext;
 
-  // Returns the number of FormStructures with the given |form_signature| and
-  // appends them to |form_structures|. Runs in linear time.
-  size_t FindCachedFormsBySignature(
-      FormSignature form_signature,
-      std::vector<raw_ref<FormStructure>>* form_structures) const;
-
   // Parses multiple forms in one go. The function proceeds in four stages:
   //
   // 1. Turn (almost) every FormData into a FormStructure.
@@ -513,9 +496,26 @@ class AutofillManager
   void RunMlModels(AsyncContext context,
                    base::OnceCallback<void(AsyncContext)> done_callback);
 
+  // Triggers the server predictions query for all `forms` that
+  // `ShouldBeQueried()`. This is used when kAutofillServerQueryPredictionsEarly
+  // is enabled.
+  void QueryServerPredictions(base::span<const FormData> forms);
+
+  // Populates the form cache with the queried form signatures from `response`
+  // if the feature kAutofillServerQueryPredictionsEarly is enabled.
+  void PopulateCacheForQueryResponse(
+      base::span<const FormData> forms,
+      const AutofillCrowdsourcingManager::QueryResponse& response);
+
   // Invoked by `AutofillCrowdsourcingManager`.
   void OnLoadedServerPredictions(
+      base::span<const FormData> forms,
       std::optional<AutofillCrowdsourcingManager::QueryResponse> response);
+
+  // Emits the metrics that result from a server query response in
+  // `OnLoadedServerPredictions()`.
+  void LogServerQueryResponseMetrics(
+      const std::vector<raw_ref<FormStructure>>& forms);
 
   // Invoked when forms from OnFormsSeen() have been parsed to
   // |form_structures|.
@@ -576,6 +576,9 @@ class AutofillManager
   scoped_refptr<base::SequencedTaskRunner> parsing_task_runner_ =
       base::ThreadPool::CreateSequencedTaskRunner(
           {base::TaskPriority::USER_VISIBLE});
+
+  SEQUENCE_CHECKER(sequence_checker_);
+
   base::WeakPtrFactory<AutofillManager> parsing_weak_ptr_factory_{this};
 };
 

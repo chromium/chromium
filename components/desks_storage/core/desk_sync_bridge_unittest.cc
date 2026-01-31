@@ -753,7 +753,7 @@ class DeskSyncBridgeTest : public testing::Test {
             "admin template 1", AdvanceAndGetTime()));
 
     std::string policy_json;
-    base::Value::List template_list;
+    base::ListValue template_list;
     template_list.Append(
         desk_template_conversion::SerializeDeskTemplateAsBaseValue(
             admin_template1.get(), cache_.get()));

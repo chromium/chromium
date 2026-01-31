@@ -39,6 +39,9 @@ class WebContents;
 namespace infobars {
 class InfoBar;
 }
+namespace tabs {
+class TabInterface;
+}
 
 class Profile;
 
@@ -92,9 +95,9 @@ class TabSharingUIViews : public TabSharingUI,
       TabStripModel* tab_strip_model,
       const TabStripModelChange& change,
       const TabStripSelectionChange& selection) override;
-  void TabChangedAt(content::WebContents* contents,
-                    int index,
-                    TabChangeType change_type) override;
+  void OnTabChangedAt(tabs::TabInterface* tab,
+                      int index,
+                      TabChangeType change_type) override;
 
   // InfoBarManager::Observer:
   void OnInfoBarRemoved(infobars::InfoBar* infobar, bool animate) override;

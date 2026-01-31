@@ -12,6 +12,7 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "components/spellcheck/browser/spell_check_host_impl.h"
+#include "components/spellcheck/common/spelling_marker.h"
 #include "components/spellcheck/spellcheck_buildflags.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 
@@ -80,8 +81,10 @@ class SpellCheckHostChromeImpl : public SpellCheckHostImpl {
                      CheckSpellingCallback callback) override;
   void FillSuggestionList(const std::u16string& word,
                           FillSuggestionListCallback callback) override;
-  void RequestTextCheck(const std::u16string& text,
-                        RequestTextCheckCallback callback) override;
+  void RequestTextCheck(
+      const std::u16string& text,
+      const std::vector<spellcheck::SpellingMarker>& spelling_markers,
+      RequestTextCheckCallback callback) override;
 
 #if BUILDFLAG(IS_WIN)
   void InitializeDictionaries(InitializeDictionariesCallback callback) override;

@@ -28,7 +28,8 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.Token;
-import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.supplier.ObservableSuppliers;
+import org.chromium.base.supplier.SettableNullableObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.collaboration.messaging.MessagingBackendServiceFactory;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -65,8 +66,8 @@ public class TabGroupLabellerUnitTest {
     @Captor private ArgumentCaptor<PersistentMessageObserver> mPersistentMessageObserverCaptor;
     @Captor private ArgumentCaptor<Map<Integer, TabCardLabelData>> mLabelDataCaptor;
 
-    private final ObservableSupplierImpl<TabGroupModelFilter> mTabGroupModelFilterSupplier =
-            new ObservableSupplierImpl<>();
+    private final SettableNullableObservableSupplier<TabGroupModelFilter>
+            mTabGroupModelFilterSupplier = ObservableSuppliers.createNullable();
 
     private Context mContext;
     private TabGroupLabeller mTabGroupLabeller;

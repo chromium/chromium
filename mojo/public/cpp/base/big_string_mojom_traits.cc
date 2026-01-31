@@ -21,10 +21,12 @@ bool StructTraits<mojo_base::mojom::BigStringDataView, std::string>::Read(
     mojo_base::mojom::BigStringDataView data,
     std::string* out) {
   mojo_base::BigBuffer buffer;
-  if (!data.ReadData(&buffer))
+  if (!data.ReadData(&buffer)) {
     return false;
-  if (buffer.size() % sizeof(char))
+  }
+  if (buffer.size() % sizeof(char)) {
     return false;
+  }
   *out = std::string(reinterpret_cast<const char*>(buffer.data()),
                      buffer.size() / sizeof(char));
   return true;

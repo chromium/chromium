@@ -140,7 +140,7 @@ bool NetworkAnonymizationKey::ToValue(base::Value* out_value) const {
       SerializeSiteWithNonce(*GetTopFrameSite());
   if (!top_frame_value)
     return false;
-  base::Value::List list;
+  base::ListValue list;
   list.Append(std::move(top_frame_value).value());
 
   list.Append(IsCrossSite());
@@ -158,7 +158,7 @@ bool NetworkAnonymizationKey::FromValue(
     return false;
   }
 
-  const base::Value::List& list = value.GetList();
+  const base::ListValue& list = value.GetList();
   if (list.empty()) {
     *network_anonymization_key = NetworkAnonymizationKey();
     return true;

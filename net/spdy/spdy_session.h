@@ -546,7 +546,7 @@ class NET_EXPORT SpdySession
 
   // Retrieves information on the current state of the SPDY session as a
   // Value.
-  base::Value::Dict GetInfoAsValue() const;
+  base::DictValue GetInfoAsValue() const;
 
   // Indicates whether the session is being reused after having successfully
   // used to send/receive data in the past or if the underlying socket was idle

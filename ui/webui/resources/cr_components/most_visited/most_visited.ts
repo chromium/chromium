@@ -21,7 +21,7 @@ import {EventTracker} from '//resources/js/event_tracker.js';
 import {FocusOutlineManager} from '//resources/js/focus_outline_manager.js';
 import {loadTimeData} from '//resources/js/load_time_data.js';
 import {isMac} from '//resources/js/platform.js';
-import {hasKeyModifiers} from '//resources/js/util.js';
+import {hasKeyModifiers, htmlEscape} from '//resources/js/util.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
 import {TileSource} from '//resources/mojo/components/ntp_tiles/tile_source.mojom-webui.js';
@@ -167,7 +167,6 @@ export class MostVisitedElement extends MostVisitedElementBase {
       tiles_: {type: Array, state: true},
       toastContent_: {type: String, state: true},
       toastSource_: {type: Number, state: true},
-      autoRemovalInProgress_: {type: Boolean, state: true},
 
       expandableTilesEnabled: {type: Boolean, reflect: true},
       maxTilesBeforeShowMore: {type: Number, reflect: true},
@@ -214,7 +213,6 @@ export class MostVisitedElement extends MostVisitedElementBase {
   private accessor maxVisibleColumnCount_: number = 0;
   protected accessor tiles_: MostVisitedTile[] = [];
   protected accessor toastSource_: TileSource = TileSource.CUSTOM_LINKS;
-  protected accessor autoRemovalInProgress_: boolean = false;
   protected accessor visible_: boolean = false;
   private adding_: boolean = false;
   private callbackRouter_: MostVisitedPageCallbackRouter;
@@ -276,6 +274,10 @@ export class MostVisitedElement extends MostVisitedElementBase {
           performance.measure('most-visited-mojo', 'most-visited-mojo-start');
           this.info_ = info;
         });
+
+    this.callbackRouter_.onMostVisitedTilesAutoRemoval.addListener(() => {
+      this.autoRemovalToast_();
+    });
 
     this.pageHandler_.getMostVisitedExpandedState().then(({isExpanded}) => {
       this.showAll_ = isExpanded;
@@ -501,7 +503,7 @@ export class MostVisitedElement extends MostVisitedElementBase {
     if (this.dialogSource_ === TileSource.ENTERPRISE_SHORTCUTS) {
       return false;
     }
-    return (this.tiles_ || []).some(({url: {url}}, index) => {
+    return (this.tiles_ || []).some(({url}, index) => {
       if (index === this.actionMenuTargetIndex_) {
         return false;
       }
@@ -723,7 +725,7 @@ export class MostVisitedElement extends MostVisitedElementBase {
     faviconUrl.searchParams.set('size', '24');
     faviconUrl.searchParams.set('scaleFactor', '1x');
     faviconUrl.searchParams.set('showFallbackMonogram', '');
-    faviconUrl.searchParams.set('pageUrl', url.url);
+    faviconUrl.searchParams.set('pageUrl', url);
     return faviconUrl.href;
   }
 
@@ -864,8 +866,9 @@ export class MostVisitedElement extends MostVisitedElementBase {
 
     const modifier = isMac ? e.metaKey && !e.ctrlKey : e.ctrlKey && !e.metaKey;
     if (modifier && e.key === 'z') {
-      e.preventDefault();
-      this.onUndoClick_();
+      if (this.onUndoClick_()) {
+        e.preventDefault();
+      }
     }
   }
 
@@ -926,7 +929,7 @@ export class MostVisitedElement extends MostVisitedElementBase {
     this.dialogTitle_ =
         loadTimeData.getString(isReadonly ? 'viewLinkTitle' : 'editLinkTitle');
     this.dialogTileTitle_ = tile.title;
-    this.dialogTileUrl_ = tile.url.url;
+    this.dialogTileUrl_ = tile.url;
     this.dialogTileUrlInvalid_ = false;
     this.$.dialog.showModal();
   }
@@ -950,7 +953,7 @@ export class MostVisitedElement extends MostVisitedElementBase {
       this.$.dialog.close();
       return;
     }
-    const newUrl = {url: normalizeUrl(this.dialogTileUrl_)!.href};
+    const newUrl = normalizeUrl(this.dialogTileUrl_)!.href;
     this.$.dialog.close();
     let newTitle = this.dialogTileTitle_.trim();
     if (newTitle.length === 0) {
@@ -964,7 +967,7 @@ export class MostVisitedElement extends MostVisitedElementBase {
           TileSource.TOP_SITES);
     } else {
       const oldTile = this.tiles_[this.actionMenuTargetIndex_]!;
-      if (oldTile.url.url !== newUrl.url || oldTile.title !== newTitle) {
+      if (oldTile.url !== newUrl || oldTile.title !== newTitle) {
         const {success} = await this.pageHandler_.updateMostVisitedTile(
             oldTile, newUrl, newTitle);
         this.toast_(
@@ -1099,20 +1102,13 @@ export class MostVisitedElement extends MostVisitedElementBase {
     }
   }
 
-  protected onUndoClick_() {
+  protected onUndoClick_(): boolean {
     if (!this.$.toastManager.isToastOpen || this.$.toastManager.slottedHidden) {
-      return;
+      return false;
     }
     this.$.toastManager.hide();
     this.pageHandler_.undoMostVisitedTileAction(this.toastSource_);
-  }
-
-  protected onUndoAutoRemovalClick_() {
-    if (!this.$.toastManager.isToastOpen || this.$.toastManager.slottedHidden) {
-      return;
-    }
-    this.$.toastManager.hide();
-    this.pageHandler_.undoMostVisitedAutoRemoval();
+    return true;
   }
 
   protected onTouchStart_(e: TouchEvent) {
@@ -1165,17 +1161,16 @@ export class MostVisitedElement extends MostVisitedElementBase {
     }
   }
 
-  // TODO(crbug.com/467437715): Make private and bind to listener once browser
-  // side is ready.
-  autoRemovalToast() {
-    this.autoRemovalInProgress_ = true;
-    this.$.toastManager.show(
-        loadTimeData.getString('shortcutsInactivityRemovalMsg'),
-        /* hideSlotted= */ false);
+  private autoRemovalToast_() {
+    this.fire('most-visited-auto-removed', {
+      message: loadTimeData.getString('shortcutsInactivityRemovalMsg'),
+      undo: () => {
+        this.pageHandler_.undoMostVisitedAutoRemoval();
+      },
+    });
   }
 
   private toast_(msgId: string, showButtons: boolean, source: TileSource) {
-    this.autoRemovalInProgress_ = false;
     this.toastSource_ = source;
     this.$.toastManager.show(loadTimeData.getString(msgId), !showButtons);
   }
@@ -1209,6 +1204,10 @@ export class MostVisitedElement extends MostVisitedElementBase {
     return loadTimeData.getString('shortcutMoreActions') ?
         loadTimeData.getStringF('shortcutMoreActions', title) :
         '';
+  }
+
+  protected getRemoveButtonText_(title: string): string {
+    return this.i18n('linkRemoveA11y', htmlEscape(title));
   }
 
   protected isFromEnterpriseShortcut_(source: number) {

@@ -8,6 +8,7 @@
 #include <memory>
 #include <vector>
 
+#include "base/functional/callback_forward.h"
 #include "base/memory/safe_ref.h"
 #include "base/types/expected.h"
 #include "chrome/browser/actor/aggregated_journal.h"
@@ -58,6 +59,7 @@ BuildToolRequestResult BuildToolRequest(
 // Builds the ActionsResult proto from the output of a call to the
 // ActorKeyedService::PerformActions API and fetches new observations for
 // tabs relevant to the actions.
+// TODO(bokan): Wrap the params in a struct
 void BuildActionsResultWithObservations(
     content::BrowserContext& browser_context,
     base::TimeTicks start_time,
@@ -67,9 +69,23 @@ void BuildActionsResultWithObservations(
     const ActorTask& task,
     bool skip_async_observation_information,
     base::OnceCallback<
-        void(std::unique_ptr<optimization_guide::proto::ActionsResult>,
+        void(base::TimeTicks start_time,
+             mojom::ActionResultCode result_code,
+             std::optional<size_t> index_of_failed_action,
+             std::vector<actor::ActionResultWithLatencyInfo> action_results,
+             actor::TaskId task_id,
+             bool skip_async_observation_information,
+             std::unique_ptr<optimization_guide::proto::ActionsResult>,
              std::unique_ptr<actor::AggregatedJournal::PendingAsyncEntry>)>
         callback);
+
+// For testing: when set, the callback is used to fill in the TabObservation
+// using the resulting FetchPageContextResult allowing tests to verify error
+// handling of the fetch.
+void SetTabObservationResultOverrideForTesting(
+    base::RepeatingCallback<void(
+        optimization_guide::proto::TabObservation*,
+        const page_content_annotations::FetchPageContextResult&)> callback);
 
 optimization_guide::proto::ActionsResult BuildErrorActionsResult(
     mojom::ActionResultCode result_code,
@@ -88,11 +104,13 @@ void CopyScriptToolResults(
     T& proto,
     const std::vector<ActionResultWithLatencyInfo>& action_results) {
   for (size_t i = 0; i < action_results.size(); ++i) {
-    if (action_results[i].result->script_tool_response) {
+    const auto& response = action_results[i].result->script_tool_response;
+    if (response && response->result) {
       auto* script_tool_result = proto.add_script_tool_results();
       script_tool_result->set_index_of_script_tool_action(i);
-      script_tool_result->set_result(
-          *action_results[i].result->script_tool_response);
+      script_tool_result->set_result(*response->result);
+      script_tool_result->set_tool_name(response->name);
+      script_tool_result->set_input_arguments(response->input_arguments);
     }
   }
 }
@@ -105,6 +123,9 @@ CreateActorJournalFetchPageProgressListener(
     TaskId task_id);
 
 std::string ToBase64(const optimization_guide::proto::Actions& actions);
+
+std::optional<mojom::ActionResultCode> MaybeGetErrorCodeForTab(
+    tabs::TabInterface* tab);
 
 }  // namespace actor
 

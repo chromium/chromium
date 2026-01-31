@@ -35,7 +35,7 @@ class HidGetDevicesFunction : public ExtensionFunction {
   // ExtensionFunction:
   ResponseAction Run() override;
 
-  void OnEnumerationComplete(base::Value::List devices);
+  void OnEnumerationComplete(base::ListValue devices);
 };
 
 class HidConnectFunction : public ExtensionFunction {

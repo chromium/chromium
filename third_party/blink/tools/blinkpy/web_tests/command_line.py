@@ -130,7 +130,6 @@ def add_configuration_options_group(parser: argparse.ArgumentParser,
                        action='store_false',
                        dest='use_xvfb',
                        help='Do not run tests with Xvfb')
-    group.add_argument('--coverage-dir', type=str, help=argparse.SUPPRESS)
     add_common_wpt_options(group)
     if not rwt:
         group.add_argument(
@@ -646,6 +645,10 @@ def add_android_options_group(parser: argparse.ArgumentParser):
                        action='store_true',
                        help=('Do not install packages to devices. '
                              'Use the packages preinstalled.'))
+    # Ignored, but can be passed to android builders as an arg.
+    group.add_argument('--use-persistent-shell',
+                       action='store_true',
+                       help=argparse.SUPPRESS)
     return group
 
 

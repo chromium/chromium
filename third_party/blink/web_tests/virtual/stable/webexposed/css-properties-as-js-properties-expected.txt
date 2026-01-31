@@ -24,6 +24,7 @@ animationRangeEnd
 animationRangeStart
 animationTimeline
 animationTimingFunction
+animationTrigger
 appRegion
 appearance
 ascentOverride
@@ -486,6 +487,7 @@ textEmphasisColor
 textEmphasisPosition
 textEmphasisStyle
 textIndent
+textJustify
 textOrientation
 textOverflow
 textRendering
@@ -499,6 +501,15 @@ textWrap
 textWrapMode
 textWrapStyle
 timelineScope
+timelineTrigger
+timelineTriggerActiveRange
+timelineTriggerActiveRangeEnd
+timelineTriggerActiveRangeStart
+timelineTriggerEntryRange
+timelineTriggerEntryRangeEnd
+timelineTriggerEntryRangeStart
+timelineTriggerName
+timelineTriggerSource
 top
 touchAction
 transform
@@ -512,6 +523,7 @@ transitionDuration
 transitionProperty
 transitionTimingFunction
 translate
+triggerScope
 types
 unicodeBidi
 unicodeRange

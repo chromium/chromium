@@ -849,11 +849,17 @@ void ResourceLoader::DidReceiveResponseInternal(
       fetcher_->GetUseCounter().CountUse(
           WebFeature::kDeviceBoundSessionRequestDeferral);
       [[fallthrough]];
-    case network::mojom::DeviceBoundSessionUsage::kInScopeNotDeferred:
+    case network::mojom::DeviceBoundSessionUsage::kInScopeRefreshNotYetNeeded:
+    case network::mojom::DeviceBoundSessionUsage::kInScopeRefreshNotAllowed:
+    case network::mojom::DeviceBoundSessionUsage::
+        kInScopeProactiveRefreshNotPossible:
+    case network::mojom::DeviceBoundSessionUsage::
+        kInScopeProactiveRefreshAttempted:
       fetcher_->GetUseCounter().CountUse(
           WebFeature::kDeviceBoundSessionRequestInScope);
       break;
-    case network::mojom::DeviceBoundSessionUsage::kNoUsage:
+    case network::mojom::DeviceBoundSessionUsage::kNoSiteMatchNotInScope:
+    case network::mojom::DeviceBoundSessionUsage::kSiteMatchNotInScope:
     case network::mojom::DeviceBoundSessionUsage::kUnknown:
       break;
   }
@@ -950,7 +956,11 @@ void ResourceLoader::DidReceiveResponseInternal(
   // A response should not serve partial content if it was not requested via a
   // Range header: https://fetch.spec.whatwg.org/#main-fetch
   if (response.GetType() == network::mojom::FetchResponseType::kOpaque &&
-      response.HttpStatusCode() == 206 && response.HasRangeRequested() &&
+      (response.HttpStatusCode() == 206 ||
+       (base::FeatureList::IsEnabled(
+            features::kBlockPartialResponseWithoutRange) &&
+        response.HttpStatusCode() == 416)) &&
+      response.HasRangeRequested() &&
       !initial_request.HttpHeaderFields().Contains(http_names::kRange)) {
     HandleError(ResourceError::CancelledDueToAccessCheckError(
         response.CurrentRequestUrl(), ResourceRequestBlockedReason::kOther));

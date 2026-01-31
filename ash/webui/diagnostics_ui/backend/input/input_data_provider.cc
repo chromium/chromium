@@ -180,24 +180,19 @@ void InputDataProvider::GetConnectedDevices(
 
 void InputDataProvider::GetConnectedDevicesHelper(
     GetConnectedDevicesCallback callback) {
-  std::vector<mojom::KeyboardInfoPtr> keyboard_vector;
-  keyboard_vector.reserve(keyboards_.size());
-  for (auto& keyboard_info : keyboards_) {
-    keyboard_vector.push_back(keyboard_info.second.Clone());
-  }
+  auto connected_devices = mojom::ConnectedDevices::New();
 
-  std::vector<mojom::TouchDeviceInfoPtr> touch_device_vector;
-  touch_device_vector.reserve(touch_devices_.size());
-  for (auto& touch_device_info : touch_devices_) {
-    touch_device_vector.push_back(touch_device_info.second.Clone());
-  }
+  connected_devices->keyboards.reserve(keyboards_.size());
+  std::ranges::transform(keyboards_,
+                         std::back_inserter(connected_devices->keyboards),
+                         [](const auto& pair) { return pair.second.Clone(); });
 
-  std::ranges::sort(keyboard_vector, std::less<>(), &mojom::KeyboardInfo::id);
-  std::ranges::sort(touch_device_vector, std::less<>(),
-                    &mojom::TouchDeviceInfo::id);
+  connected_devices->touch_devices.reserve(touch_devices_.size());
+  std::ranges::transform(touch_devices_,
+                         std::back_inserter(connected_devices->touch_devices),
+                         [](const auto& pair) { return pair.second.Clone(); });
 
-  std::move(callback).Run(std::move(keyboard_vector),
-                          std::move(touch_device_vector));
+  std::move(callback).Run(std::move(connected_devices));
 }
 
 void InputDataProvider::ObserveConnectedDevices(

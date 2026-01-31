@@ -8,7 +8,9 @@
 
 #include "base/functional/callback_helpers.h"
 #include "base/notreached.h"
+#include "base/test/test_future.h"
 #include "base/test/with_feature_override.h"
+#include "chrome/browser/ui/autofill/autofill_ai/entity_attribute_update_details.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/test/test_browser_dialog.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -103,36 +105,32 @@ class AutofillAiImportDataControllerImplTest
 IN_PROC_BROWSER_TEST_P(AutofillAiImportDataControllerImplTest,
                        UpdatedAttributesDetails_UpdateEntity) {
   ShowUi("UpdateEntity");
-  std::vector<AutofillAiImportDataController::EntityAttributeUpdateDetails>
-      update_details = controller()->GetUpdatedAttributesDetails();
+  std::vector<EntityAttributeUpdateDetails> update_details =
+      controller()->GetUpdatedAttributesDetails();
   // The first two values should have been edited and updated.
   ASSERT_GT(update_details.size(), 3u);
-  EXPECT_EQ(update_details[0].update_type,
-            AutofillAiImportDataController::EntityAttributeUpdateType::
-                kNewEntityAttributeUpdated);
-  EXPECT_EQ(update_details[0].attribute_value, u"Jon doe");
-  EXPECT_EQ(update_details[1].update_type,
-            AutofillAiImportDataController::EntityAttributeUpdateType::
-                kNewEntityAttributeAdded);
-  EXPECT_EQ(update_details[1].attribute_value, u"Sweden");
+  EXPECT_EQ(update_details[0].update_type(),
+            EntityAttributeUpdateType::kNewEntityAttributeUpdated);
+  EXPECT_EQ(update_details[0].attribute_value(), u"Jon doe");
+  EXPECT_EQ(update_details[1].update_type(),
+            EntityAttributeUpdateType::kNewEntityAttributeAdded);
+  EXPECT_EQ(update_details[1].attribute_value(), u"Sweden");
   controller()->OnBubbleClosed(
-      AutofillClient::AutofillAiBubbleClosedReason::kAccepted);
+      AutofillClient::AutofillAiBubbleResult::kAccepted);
 }
 
 IN_PROC_BROWSER_TEST_P(AutofillAiImportDataControllerImplTest,
                        UpdatedAttributesDetails_SaveNewEntity) {
   ShowUi("SaveNewEntity");
-  std::vector<AutofillAiImportDataController::EntityAttributeUpdateDetails>
-      update_details = controller()->GetUpdatedAttributesDetails();
+  std::vector<EntityAttributeUpdateDetails> update_details =
+      controller()->GetUpdatedAttributesDetails();
   // In the save new entity case, all values are from a new entity and are new.
-  for (const AutofillAiImportDataController::EntityAttributeUpdateDetails&
-           detail : update_details) {
-    EXPECT_EQ(detail.update_type,
-              AutofillAiImportDataController::EntityAttributeUpdateType::
-                  kNewEntityAttributeAdded);
+  for (const EntityAttributeUpdateDetails& detail : update_details) {
+    EXPECT_EQ(detail.update_type(),
+              EntityAttributeUpdateType::kNewEntityAttributeAdded);
   }
   controller()->OnBubbleClosed(
-      AutofillClient::AutofillAiBubbleClosedReason::kAccepted);
+      AutofillClient::AutofillAiBubbleResult::kAccepted);
 }
 
 // When clicking a link in the bubble the user is navigated to a new tab, which
@@ -183,6 +181,21 @@ IN_PROC_BROWSER_TEST_P(AutofillAiImportDataControllerImplTest,
   SetNewEntitiesOptions({.record_type = EntityInstance::RecordType::kLocal});
   ShowUi("SaveNewEntity");
   EXPECT_FALSE(controller()->IsWalletableEntity());
+}
+
+// Tests that calling `ShowPrompt()` when a bubble is already visible result in
+// the prompt closed callback being called with the `kUnknown` reason.
+IN_PROC_BROWSER_TEST_P(AutofillAiImportDataControllerImplTest,
+                       ShowPrompt_BubbleAlreadyVisible) {
+  ShowUi("SaveNewEntity");
+  ASSERT_TRUE(controller()->IsShowingBubble());
+
+  base::test::TestFuture<AutofillClient::AutofillAiBubbleResult>
+      prompt_result_future;
+  controller()->ShowPrompt(test::GetPassportEntityInstance(), std::nullopt,
+                           prompt_result_future.GetCallback());
+  EXPECT_EQ(prompt_result_future.Get(),
+            AutofillClient::AutofillAiBubbleResult::kUnknown);
 }
 
 INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(AutofillAiImportDataControllerImplTest);

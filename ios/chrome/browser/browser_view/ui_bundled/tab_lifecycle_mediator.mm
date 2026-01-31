@@ -4,11 +4,12 @@
 
 #import "ios/chrome/browser/browser_view/ui_bundled/tab_lifecycle_mediator.h"
 
+#import "components/webauthn/ios/passkey_tab_helper.h"
 #import "ios/chrome/browser/app_launcher/model/app_launcher_tab_helper.h"
 #import "ios/chrome/browser/autofill/model/autofill_tab_helper.h"
 #import "ios/chrome/browser/autofill/model/bottom_sheet/autofill_bottom_sheet_tab_helper.h"
 #import "ios/chrome/browser/autofill/model/form_suggestion_tab_helper.h"
-#import "ios/chrome/browser/browser_container/model/edit_menu_tab_helper.h"
+#import "ios/chrome/browser/browser_content/model/edit_menu_tab_helper.h"
 #import "ios/chrome/browser/commerce/model/price_notifications/price_notifications_tab_helper.h"
 #import "ios/chrome/browser/contextual_panel/model/contextual_panel_tab_helper.h"
 #import "ios/chrome/browser/download/coordinator/download_manager_coordinator.h"
@@ -123,6 +124,13 @@
     passwordTabHelper->SetPasswordControllerDelegate(
         _passwordControllerDelegate);
     passwordTabHelper->SetDispatcher(_commandDispatcher);
+  }
+
+  webauthn::PasskeyTabHelper* passkeyTabHelper =
+      webauthn::PasskeyTabHelper::FromWebState(webState);
+  if (passkeyTabHelper) {
+    passkeyTabHelper->SetIOSPasskeyClientCommandsHandler(
+        HandlerForProtocol(_commandDispatcher, IOSPasskeyClientCommands));
   }
 
   AutofillBottomSheetTabHelper* bottomSheetTabHelper =
@@ -267,6 +275,12 @@
       BWGTabHelper->SetLocationBarBadgeCommandsHandler(
           id<LocationBarBadgeCommands>(_commandDispatcher));
     }
+
+    if (IsGeminiImageRemixToolEnabled()) {
+      id<HelpCommands> helpCommandsHandler =
+          HandlerForProtocol(_commandDispatcher, HelpCommands);
+      BWGTabHelper->SetHelpCommandsHandler(helpCommandsHandler);
+    }
   }
 
   FindTabHelper* findTabHelper = FindTabHelper::FromWebState(webState);
@@ -303,6 +317,12 @@
   if (passwordTabHelper) {
     passwordTabHelper->SetPasswordControllerDelegate(nil);
     passwordTabHelper->SetDispatcher(nil);
+  }
+
+  webauthn::PasskeyTabHelper* passkeyTabHelper =
+      webauthn::PasskeyTabHelper::FromWebState(webState);
+  if (passkeyTabHelper) {
+    passkeyTabHelper->SetIOSPasskeyClientCommandsHandler(nil);
   }
 
   AutofillBottomSheetTabHelper* bottomSheetTabHelper =
@@ -399,6 +419,9 @@
     }
     if (IsAskGeminiChipEnabled()) {
       BWGTabHelper->SetLocationBarBadgeCommandsHandler(nil);
+    }
+    if (IsGeminiImageRemixToolEnabled()) {
+      BWGTabHelper->SetHelpCommandsHandler(nil);
     }
   }
 

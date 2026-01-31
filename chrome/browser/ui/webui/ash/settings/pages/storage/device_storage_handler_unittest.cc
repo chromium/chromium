@@ -334,7 +334,8 @@ TEST_F(StorageHandlerTest, RoundByteSize) {
   for (auto& c : cases) {
     int64_t rounded_bytes = RoundByteSize(c.bytes);
     EXPECT_EQ(base::ASCIIToUTF16(c.expected),
-              ui::FormatBytes(base::ByteCount(rounded_bytes)));
+              ui::FormatBytes(
+                  base::ByteSize(base::checked_cast<uint64_t>(rounded_bytes))));
   }
 }
 
@@ -360,7 +361,7 @@ TEST_F(StorageHandlerTest, GlobalSizeStat) {
   const base::Value* dictionary_value =
       GetWebUICallbackMessage("storage-size-stat-changed");
   ASSERT_TRUE(dictionary_value) << "No 'storage-size-stat-changed' callback";
-  const base::Value::Dict& dictionary = dictionary_value->GetDict();
+  const base::DictValue& dictionary = dictionary_value->GetDict();
 
   const std::string& storage_handler_available_size =
       *dictionary.FindString("availableSize");
@@ -368,10 +369,12 @@ TEST_F(StorageHandlerTest, GlobalSizeStat) {
       *dictionary.FindString("usedSize");
   double storage_handler_used_ratio = *dictionary.FindDouble("usedRatio");
 
-  EXPECT_EQ(ui::FormatBytes(base::ByteCount(available_size)),
+  EXPECT_EQ(ui::FormatBytes(
+                base::ByteSize(base::checked_cast<uint64_t>(available_size))),
             base::ASCIIToUTF16(storage_handler_available_size));
-  EXPECT_EQ(ui::FormatBytes(base::ByteCount(used_size)),
-            base::ASCIIToUTF16(storage_handler_used_size));
+  EXPECT_EQ(
+      ui::FormatBytes(base::ByteSize(base::checked_cast<uint64_t>(used_size))),
+      base::ASCIIToUTF16(storage_handler_used_size));
   double diff = used_ratio > storage_handler_used_ratio
                     ? used_ratio - storage_handler_used_ratio
                     : storage_handler_used_ratio - used_ratio;
@@ -720,7 +723,7 @@ TEST_F(StorageHandlerTest, OpenBrowsingDataSettings) {
                           .Resolve(chrome::kClearBrowserDataSubPage),
                       ash::NewWindowDelegate::OpenUrlFrom::kUserInteraction,
                       ash::NewWindowDelegate::Disposition::kSwitchToTab));
-  base::Value::List empty_args;
+  base::ListValue empty_args;
   web_ui_->HandleReceivedMessage("openBrowsingDataSettings", empty_args);
 }
 
@@ -729,7 +732,7 @@ TEST_F(StorageHandlerTest, StorageEncryptionInfo_Unknown) {
   EXPECT_CALL(userdataauth_, GetVaultProperties(WithAccountId(), _))
       .WillOnce(ReplyWith(BuildGetVaultPropertiesReply(
           user_data_auth::CRYPTOHOME_VAULT_ENCRYPTION_ANY)));
-  base::Value::List args;
+  base::ListValue args;
   args.Append(kEncryptionInfoCallbackId);
   web_ui_->HandleReceivedMessage("getStorageEncryptionInfo", args);
   task_environment_.RunUntilIdle();
@@ -746,7 +749,7 @@ TEST_F(StorageHandlerTest, StorageEncryptionInfo_Ecryptfs) {
   EXPECT_CALL(userdataauth_, GetVaultProperties(WithAccountId(), _))
       .WillOnce(ReplyWith(BuildGetVaultPropertiesReply(
           user_data_auth::CRYPTOHOME_VAULT_ENCRYPTION_ECRYPTFS)));
-  base::Value::List args;
+  base::ListValue args;
   args.Append(kEncryptionInfoCallbackId);
   web_ui_->HandleReceivedMessage("getStorageEncryptionInfo", args);
   task_environment_.RunUntilIdle();
@@ -763,7 +766,7 @@ TEST_F(StorageHandlerTest, StorageEncryptionInfo_Dmcrypt) {
   EXPECT_CALL(userdataauth_, GetVaultProperties(WithAccountId(), _))
       .WillOnce(ReplyWith(BuildGetVaultPropertiesReply(
           user_data_auth::CRYPTOHOME_VAULT_ENCRYPTION_DMCRYPT)));
-  base::Value::List args;
+  base::ListValue args;
   args.Append(kEncryptionInfoCallbackId);
   web_ui_->HandleReceivedMessage("getStorageEncryptionInfo", args);
   task_environment_.RunUntilIdle();
@@ -780,7 +783,7 @@ TEST_F(StorageHandlerTest, StorageEncryptionInfo_Fscrypt) {
   EXPECT_CALL(userdataauth_, GetVaultProperties(WithAccountId(), _))
       .WillOnce(ReplyWith(BuildGetVaultPropertiesReply(
           user_data_auth::CRYPTOHOME_VAULT_ENCRYPTION_FSCRYPT)));
-  base::Value::List args;
+  base::ListValue args;
   args.Append(kEncryptionInfoCallbackId);
   web_ui_->HandleReceivedMessage("getStorageEncryptionInfo", args);
   task_environment_.RunUntilIdle();

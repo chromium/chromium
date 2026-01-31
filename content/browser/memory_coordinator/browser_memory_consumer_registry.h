@@ -17,7 +17,7 @@
 #include "base/memory_coordinator/traits.h"
 #include "content/common/content_export.h"
 #include "content/common/memory_coordinator/mojom/memory_coordinator.mojom.h"
-#include "content/public/browser/child_process_id.h"
+#include "content/public/common/child_process_id.h"
 #include "content/public/common/process_type.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 

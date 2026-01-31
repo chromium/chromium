@@ -108,30 +108,96 @@ BASE_FEATURE(kChromeAndroidIdentitySurveyBookmarkPromo,
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+constexpr char kHatsSurveyProbabilityName[] = "probability";
+constexpr double kMediumSurveyProbability = 0.08;
+constexpr double kLowSurveyProbability = 0.008;
 BASE_FEATURE(kChromeIdentitySurveyAddressBubbleSignin,
              base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE_PARAM(double,
+                   kChromeIdentitySurveyAddressBubbleSigninProbability,
+                   &kChromeIdentitySurveyAddressBubbleSignin,
+                   kHatsSurveyProbabilityName,
+                   kMediumSurveyProbability);
 BASE_FEATURE(kChromeIdentitySurveyDiceWebSigninAccepted,
              base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE_PARAM(double,
+                   kChromeIdentitySurveyDiceWebSigninAcceptedProbability,
+                   &kChromeIdentitySurveyDiceWebSigninAccepted,
+                   kHatsSurveyProbabilityName,
+                   kMediumSurveyProbability);
 BASE_FEATURE(kChromeIdentitySurveyDiceWebSigninDeclined,
              base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE_PARAM(double,
+                   kChromeIdentitySurveyDiceWebSigninDeclinedProbability,
+                   &kChromeIdentitySurveyDiceWebSigninDeclined,
+                   kHatsSurveyProbabilityName,
+                   kMediumSurveyProbability);
 BASE_FEATURE(kChromeIdentitySurveyFirstRunSignin,
              base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE_PARAM(double,
+                   kChromeIdentitySurveyFirstRunSigninProbability,
+                   &kChromeIdentitySurveyFirstRunSignin,
+                   kHatsSurveyProbabilityName,
+                   kMediumSurveyProbability);
 BASE_FEATURE(kChromeIdentitySurveyPasswordBubbleSignin,
              base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE_PARAM(double,
+                   kChromeIdentitySurveyPasswordBubbleSigninProbability,
+                   &kChromeIdentitySurveyPasswordBubbleSignin,
+                   kHatsSurveyProbabilityName,
+                   kMediumSurveyProbability);
 BASE_FEATURE(kChromeIdentitySurveyProfileMenuDismissed,
              base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE_PARAM(double,
+                   kChromeIdentitySurveyProfileMenuDismissedProbability,
+                   &kChromeIdentitySurveyProfileMenuDismissed,
+                   kHatsSurveyProbabilityName,
+                   kLowSurveyProbability);
 BASE_FEATURE(kChromeIdentitySurveyProfileMenuSignin,
              base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE_PARAM(double,
+                   kChromeIdentitySurveyProfileMenuSigninProbability,
+                   &kChromeIdentitySurveyProfileMenuSignin,
+                   kHatsSurveyProbabilityName,
+                   kMediumSurveyProbability);
 BASE_FEATURE(kChromeIdentitySurveyProfilePickerAddProfileSignin,
              base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE_PARAM(
+    double,
+    kChromeIdentitySurveyProfilePickerAddProfileSigninProbability,
+    &kChromeIdentitySurveyProfilePickerAddProfileSignin,
+    kHatsSurveyProbabilityName,
+    kMediumSurveyProbability);
 BASE_FEATURE(kChromeIdentitySurveySigninInterceptProfileSeparation,
              base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE_PARAM(
+    double,
+    kChromeIdentitySurveySigninInterceptProfileSeparationProbability,
+    &kChromeIdentitySurveySigninInterceptProfileSeparation,
+    kHatsSurveyProbabilityName,
+    kMediumSurveyProbability);
 BASE_FEATURE(kChromeIdentitySurveySigninPromoBubbleDismissed,
              base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE_PARAM(double,
+                   kChromeIdentitySurveySigninPromoBubbleDismissedProbability,
+                   &kChromeIdentitySurveySigninPromoBubbleDismissed,
+                   kHatsSurveyProbabilityName,
+                   kMediumSurveyProbability);
 BASE_FEATURE(kChromeIdentitySurveySwitchProfileFromProfileMenu,
              base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE_PARAM(double,
+                   kChromeIdentitySurveySwitchProfileFromProfileMenuProbability,
+                   &kChromeIdentitySurveySwitchProfileFromProfileMenu,
+                   kHatsSurveyProbabilityName,
+                   kLowSurveyProbability);
 BASE_FEATURE(kChromeIdentitySurveySwitchProfileFromProfilePicker,
              base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE_PARAM(
+    double,
+    kChromeIdentitySurveySwitchProfileFromProfilePickerProbability,
+    &kChromeIdentitySurveySwitchProfileFromProfilePicker,
+    kHatsSurveyProbabilityName,
+    kMediumSurveyProbability);
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
@@ -194,15 +260,6 @@ bool IsChromeRefreshTokenBindingEnabled(const PrefService* profile_prefs) {
   return base::FeatureList::IsEnabled(kEnableChromeRefreshTokenBinding);
 }
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
-
-#if BUILDFLAG(IS_IOS)
-BASE_FEATURE(kEnableErrorBadgeOnIdentityDisc,
-             base::FEATURE_DISABLED_BY_DEFAULT);
-#endif
-
-#if BUILDFLAG(IS_IOS)
-BASE_FEATURE(kEnableIdentityInAuthError, base::FEATURE_ENABLED_BY_DEFAULT);
-#endif
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
 // Enables binding the OAuthMultilogin cookies to a device with DBSC prototype.
@@ -313,7 +370,7 @@ BASE_FEATURE(kFRESignInAlternativeSecondaryButtonText,
 BASE_FEATURE(kFullscreenSignInPromoUseDate, base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
 
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+#if !BUILDFLAG(IS_IOS)
 BASE_FEATURE(kGlicEligibilitySeparateAccountCapability,
              base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
@@ -321,21 +378,9 @@ BASE_FEATURE(kGlicEligibilitySeparateAccountCapability,
 BASE_FEATURE(kHandleMdmErrorsForDasherAccounts,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-#if BUILDFLAG(IS_ANDROID)
-// Enables a history sync educational tip in the magic stack on NTP.
-BASE_FEATURE(kHistoryOptInEducationalTip, base::FEATURE_ENABLED_BY_DEFAULT);
-// Determines which text should be shown on the history sync educational tip
-// button. No-op unless HistoryOptInEducationalTip is enabled.
-const base::FeatureParam<int> kHistoryOptInEducationalTipVariation(
-    &kHistoryOptInEducationalTip,
-    "history_opt_in_educational_tip_param",
-    1);
-#endif  // BUILDFLAG(IS_ANDROID)
-
-#if BUILDFLAG(IS_ANDROID)
-BASE_FEATURE(kMakeAccountsAvailableInIdentityManager,
-             base::FEATURE_ENABLED_BY_DEFAULT);
-#endif  // BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(IS_IOS)
+BASE_FEATURE(kIdentityInAuthErrorFollowUps, base::FEATURE_ENABLED_BY_DEFAULT);
+#endif
 
 #if BUILDFLAG(IS_ANDROID)
 // When enabled a new library is used to fetch accounts via
@@ -374,6 +419,8 @@ const base::FeatureParam<int>
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+BASE_FEATURE(kPasswordUploadUiUpdate, base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kProfileCreationDeclineSigninCTAExperiment,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
@@ -420,6 +467,10 @@ BASE_FEATURE(kRollbackDiceMigration, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kShowProfilePickerToAllUsersExperiment,
              base::FEATURE_DISABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+
+#if BUILDFLAG(IS_ANDROID)
+BASE_FEATURE(kSigninLevelUpButton, base::FEATURE_DISABLED_BY_DEFAULT);
+#endif  // BUILDFLAG(IS_ANDROID)
 
 BASE_FEATURE(kSigninPromoLimitsExperiment, base::FEATURE_DISABLED_BY_DEFAULT);
 const base::FeatureParam<int> kContextualSigninPromoShownThreshold(
@@ -487,6 +538,11 @@ BASE_FEATURE(kStableDeviceId, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kSupportAddSessionEmailPrefill, base::FEATURE_ENABLED_BY_DEFAULT);
 #endif
 
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+// Kill switch for displaying sign-in errors in the profile picker.
+BASE_FEATURE(kSupportErrorsInProfilePicker, base::FEATURE_ENABLED_BY_DEFAULT);
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+
 #if BUILDFLAG(IS_ANDROID)
 // Killswitch for the support of AddSession in web sign-in flow.
 BASE_FEATURE(kSupportWebSigninAddSession, base::FEATURE_ENABLED_BY_DEFAULT);
@@ -504,8 +560,11 @@ BASE_FEATURE(kSyncEnableBookmarksInTransportMode,
 // When enabled, Chrome will always use the /IssueToken endpoint to fetch access
 // tokens, no matter if a refresh token is bound or not.
 BASE_FEATURE(kUseIssueTokenToFetchAccessTokens,
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
+
+BASE_FEATURE(kUsePrimaryAndTonalButtonsForPromos,
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
 BASE_FEATURE(kWebSigninLeadsToImplicitlySignedInState,

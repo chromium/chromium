@@ -26,7 +26,6 @@
 using chrome_test_util::BackButton;
 using chrome_test_util::ForwardButton;
 using chrome_test_util::NTPCollectionView;
-using chrome_test_util::OmniboxText;
 using chrome_test_util::ShowTabsButton;
 using chrome_test_util::ToolsMenuButton;
 
@@ -89,18 +88,6 @@ std::unique_ptr<net::test_server::HttpResponse> CountResponse(
   return std::move(http_response);
 }
 
-// Returns true when omnibox contains `text`, otherwise returns false after
-// after a timeout.
-[[nodiscard]] bool WaitForOmniboxContaining(std::string text) {
-  return base::test::ios::WaitUntilConditionOrTimeout(
-      base::test::ios::kWaitForUIElementTimeout, ^bool {
-        NSError* error = nil;
-        [[EarlGrey selectElementWithMatcher:OmniboxText(text)]
-            assertWithMatcher:grey_notNil()
-                        error:&error];
-        return error == nil;
-      });
-}
 }  // namespace
 
 // Integration tests for restoring session history.
@@ -201,8 +188,7 @@ std::unique_ptr<net::test_server::HttpResponse> CountResponse(
 
   // Trigger a restore and confirm the background page is not reloaded.
   [self triggerRestore];
-  [[EarlGrey selectElementWithMatcher:OmniboxText(echoPage.GetContent())]
-      assertWithMatcher:grey_notNil()];
+  [ChromeEarlGrey waitForWebStateVisibleURL:echoPage];
   [ChromeEarlGrey waitForWebStateContainingText:"Echo"];
   GREYAssertEqual(1, visitCounter, @"The page should not reload");
 }
@@ -232,8 +218,7 @@ std::unique_ptr<net::test_server::HttpResponse> CountResponse(
       disabled:{}
       relaunchPolicy:ForceRelaunchByKilling];
   // Restore after crash and confirm the background page is not reloaded.
-  [[EarlGrey selectElementWithMatcher:OmniboxText(echoPage.GetContent())]
-      assertWithMatcher:grey_notNil()];
+  [ChromeEarlGrey waitForWebStateVisibleURL:echoPage];
   [ChromeEarlGrey waitForWebStateContainingText:"Echo"];
   GREYAssertEqual(1, visitCounter, @"The page should not reload");
 }
@@ -254,7 +239,7 @@ std::unique_ptr<net::test_server::HttpResponse> CountResponse(
 - (void)triggerRestore {
   [[AppLaunchManager sharedManager]
       ensureAppLaunchedWithFeaturesEnabled:{}
-                                  disabled:{kStartSurface}
+                                  disabled:{}
                             relaunchPolicy:ForceRelaunchByCleanShutdown];
 }
 
@@ -286,8 +271,7 @@ std::unique_ptr<net::test_server::HttpResponse> CountResponse(
 
   // Restore page2
   [self triggerRestore];
-  [[EarlGrey selectElementWithMatcher:OmniboxText(pageTwo.GetContent())]
-      assertWithMatcher:grey_notNil()];
+  [ChromeEarlGrey waitForWebStateVisibleURL:pageTwo];
   if (checkServerData) {
     [ChromeEarlGrey waitForWebStateContainingText:kPageTwoContent];
   }
@@ -306,34 +290,25 @@ std::unique_ptr<net::test_server::HttpResponse> CountResponse(
 
   // Go back to error page.
   [[EarlGrey selectElementWithMatcher:BackButton()] performAction:grey_tap()];
-  GREYAssert(
-      WaitForOmniboxContaining("invalid."),
-      @"Timeout while waiting for  omnibox text to become \"invalid.\".");
+  [ChromeEarlGrey waitForWebStateVisibleURL:GURL("http://invalid.")];
   [ChromeEarlGrey waitForWebStateContainingText:"ERR_"];
   [ChromeEarlGreyUI waitForAppToIdle];
   [self triggerRestore];
-  GREYAssert(
-      WaitForOmniboxContaining("invalid."),
-      @"Timeout while waiting for  omnibox text to become \"invalid.\".");
+  [ChromeEarlGrey waitForWebStateVisibleURL:GURL("http://invalid.")];
   [ChromeEarlGrey waitForWebStateContainingText:"ERR_"];
   [ChromeEarlGreyUI waitForAppToIdle];
 
   // Go back to chrome url.
   [[EarlGrey selectElementWithMatcher:BackButton()] performAction:grey_tap()];
-  GREYAssert(WaitForOmniboxContaining("chrome://chrome-urls"),
-             @"Timeout while waiting for  omnibox text to become "
-             @"\"chrome://chrome-urls\".");
+  [ChromeEarlGrey waitForWebStateVisibleURL:GURL("chrome://chrome-urls/")];
   [ChromeEarlGrey waitForWebStateContainingText:"List of Chrome"];
   [self triggerRestore];
-  GREYAssert(WaitForOmniboxContaining("chrome://chrome-urls"),
-             @"Timeout while waiting for  omnibox text to become "
-             @"\"chrome://chrome-urls\".");
+  [ChromeEarlGrey waitForWebStateVisibleURL:GURL("chrome://chrome-urls/")];
   [ChromeEarlGrey waitForWebStateContainingText:"List of Chrome"];
 
   // Go back to page1 and confirm page2 is still in the forward history.
   [[EarlGrey selectElementWithMatcher:BackButton()] performAction:grey_tap()];
-  [[EarlGrey selectElementWithMatcher:OmniboxText(pageOne.GetContent())]
-      assertWithMatcher:grey_notNil()];
+  [ChromeEarlGrey waitForWebStateVisibleURL:pageOne];
   if (checkServerData) {
     [ChromeEarlGrey waitForWebStateContainingText:kPageOneContent];
     [[EarlGrey selectElementWithMatcher:ForwardButton()]
@@ -348,8 +323,7 @@ std::unique_ptr<net::test_server::HttpResponse> CountResponse(
         performAction:grey_tap()];
   }
   [self triggerRestore];
-  [[EarlGrey selectElementWithMatcher:OmniboxText(pageOne.GetContent())]
-      assertWithMatcher:grey_notNil()];
+  [ChromeEarlGrey waitForWebStateVisibleURL:pageOne];
   if (checkServerData) {
     [ChromeEarlGrey waitForWebStateContainingText:kPageOneContent];
     [[EarlGrey selectElementWithMatcher:ForwardButton()]

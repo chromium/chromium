@@ -60,6 +60,8 @@ chromium-metrics-reviews@google.com.
   <int value="39" label="RendererCrashed"/>
   <int value="40" label="NotImplemented"/>
   <int value="41" label="InvokeCanceled"/>
+  <int value="42" label="kInvalidTaskStateForAct"/>
+  <int value="43" label="ActionsCancelled"/>
   <int value="100" label="NavigateInvalidUrl"/>
   <int value="101" label="NavigateFailedToStart"/>
   <int value="102" label="NavigateCommittedErrorPage"/>
@@ -110,10 +112,43 @@ chromium-metrics-reviews@google.com.
   <int value="1105" label="FormFillingNoLastTabObservation"/>
   <int value="1106" label="FormFillingInvalidSuggestionId"/>
   <int value="1200" label="ScriptToolNoResponse"/>
+  <int value="1201" label="ScriptToolInvalidName"/>
+  <int value="1202" label="ScriptToolInvalidInputArguments"/>
+  <int value="1203" label="ScriptToolInvocationFailed"/>
+  <int value="1204" label="ScriptToolCrossOriginNavigation"/>
   <int value="1300" label="ActorUiError"/>
 </enum>
 
 <!-- LINT.ThenChange(//chrome/common/actor.mojom:ActionResultCode) -->
+
+<!-- LINT.IfChange(ActorObservationOutcome) -->
+
+<enum name="ActorObservationOutcome">
+  <int value="0" label="Succeeded"/>
+  <int value="1" label="Succeeded after retry"/>
+  <int value="2" label="Failed"/>
+  <int value="3" label="FailedAfterRetry"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/actor/actor_metrics.cc:ActorObservationOutcome) -->
+
+<!-- LINT.IfChange(ActorTabObservationResult) -->
+
+<enum name="ActorTabObservationResult">
+  <int value="0" label="Success"/>
+  <int value="1" label="Tab went away"/>
+  <int value="2" label="Page crashed"/>
+  <int value="3" label="Unknown error"/>
+  <int value="4" label="Web contents changed"/>
+  <int value="5" label="Page context not eligible"/>
+  <int value="6" label="APC timeout"/>
+  <int value="7" label="APC error"/>
+  <int value="8" label="Screenshot timeout"/>
+  <int value="9" label="Screenshot error"/>
+  <int value="10" label="Both APC and Screenshot not OK"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/actor/actor_metrics.cc:ActorTabObservationResult) -->
 
 <!-- LINT.IfChange(ActorUiTabControllerError) -->
 
@@ -123,6 +158,15 @@ chromium-metrics-reviews@google.com.
 </enum>
 
 <!-- LINT.ThenChange(//chrome/browser/actor/ui/actor_ui_metrics_types.h:ActorUiTabControllerError) -->
+
+<!-- LINT.IfChange(ActorUiTaskIconError) -->
+
+<enum name="ActorUiTaskIconError">
+  <int value="0" label="kBubbleTaskDoesntExist"/>
+  <int value="1" label="kNudgeTaskDoesntExist"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/actor/ui/actor_ui_metrics_types.h:ActorUiTaskIconError) -->
 
 <!-- LINT.IfChange(ComputedTargetResult) -->
 
@@ -202,7 +246,7 @@ chromium-metrics-reviews@google.com.
 <enum name="TaskNudgeState">
   <int value="0" label="kDefault"/>
   <int value="1" label="kNeedsAttention"/>
-  <int value="2" label="kMultipleTasksNeedAttention"/>
+  <int value="2" label="(Obsolete) kMultipleTasksNeedAttention"/>
   <int value="3" label="kCompleteTasks"/>
 </enum>
 

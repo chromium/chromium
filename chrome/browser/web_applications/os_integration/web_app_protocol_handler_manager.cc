@@ -4,7 +4,6 @@
 
 #include "chrome/browser/web_applications/os_integration/web_app_protocol_handler_manager.h"
 
-#include "base/containers/contains.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/os_integration/web_app_protocol_handler_registration.h"
 #include "chrome/browser/web_applications/proto/web_app_install_state.pb.h"
@@ -56,8 +55,8 @@ WebAppProtocolHandlerManager::GetAppProtocolHandlerInfos(
 
   std::vector<apps::ProtocolHandlerInfo> protocol_handlers_infos;
   for (const auto& handler_info : web_app->protocol_handlers()) {
-    if (!base::Contains(web_app->disallowed_launch_protocols(),
-                        handler_info.protocol)) {
+    if (!web_app->disallowed_launch_protocols().contains(
+            handler_info.protocol)) {
       protocol_handlers_infos.push_back(handler_info);
     }
   }

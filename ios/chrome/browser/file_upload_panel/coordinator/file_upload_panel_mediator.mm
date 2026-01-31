@@ -21,7 +21,6 @@
 #import "base/strings/sys_string_conversions.h"
 #import "base/task/thread_pool.h"
 #import "base/uuid.h"
-#import "ios/chrome/browser/file_upload_panel/coordinator/file_upload_panel_media_item.h"
 #import "ios/chrome/browser/file_upload_panel/coordinator/file_upload_panel_picker_result_loader.h"
 #import "ios/chrome/browser/shared/public/commands/file_upload_panel_commands.h"
 #import "ios/chrome/browser/web/model/choose_file/choose_file_controller.h"
@@ -266,6 +265,14 @@ std::optional<base::FilePath> WriteImageToTemporaryLocationForTab(
   return self.event.allow_multiple_files;
 }
 
+- (BOOL)isPresentingFilePicker {
+  return _chooseFileController->IsPresentingFilePicker();
+}
+
+- (void)setIsPresentingFilePicker:(BOOL)isPresentingFilePicker {
+  _chooseFileController->SetIsPresentingFilePicker(isPresentingFilePicker);
+}
+
 #pragma mark - Public
 
 - (void)adjustCaptureTypeToAvailableDevices {
@@ -332,10 +339,13 @@ std::optional<base::FilePath> WriteImageToTemporaryLocationForTab(
 }
 
 - (void)disconnect {
-  // If the controller still exists when the UI is being disconnect, cancel the
-  // selection.
-  [self cancelFileSelection];
+  // Disconnecting `_fileUploadPanelHandler` first so that cancelling the file
+  // selection will not trigger another dismissal of the file upload panel.
+  _fileUploadPanelHandler = nil;
   _pickerResultLoader.reset();
+  // If the controller still exists when the UI is being disconnect, cancel the
+  // selection. This should be done last.
+  [self cancelFileSelection];
 }
 
 #pragma mark - ChooseFileControllerObserving
@@ -374,22 +384,20 @@ std::optional<base::FilePath> WriteImageToTemporaryLocationForTab(
   __weak __typeof(self) weakSelf = self;
   _pickerResultLoader =
       std::make_unique<FileUploadPanelPickerResultLoader>(results, _webStateID);
-  _pickerResultLoader->Load(
-      base::BindOnce(^(NSArray<FileUploadPanelMediaItem*>* loadedItems) {
-        [weakSelf handlePickerResultLoaderOutput:loadedItems];
-      }));
+  _pickerResultLoader->Load(base::BindOnce(^(NSArray<NSURL*>* loadedItems) {
+    [weakSelf handlePickerResultLoaderOutput:loadedItems];
+  }));
 }
 
 // Submits the file selection for a list of transcoded items, if any.
 // Cancels file selection if `loadedItems` is nil.
-- (void)handlePickerResultLoaderOutput:
-    (NSArray<FileUploadPanelMediaItem*>*)loadedItems {
+- (void)handlePickerResultLoaderOutput:(NSArray<NSURL*>*)loadedItems {
   const auto loader = std::move(_pickerResultLoader);
   if (!loadedItems) {
     [self cancelFileSelection];
     return;
   }
-  // TODO(crbug.com/441659098): Transcode and submit media items.
+  [self submitFileSelection:loadedItems];
 }
 
 @end

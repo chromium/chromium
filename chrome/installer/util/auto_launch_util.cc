@@ -37,9 +37,9 @@ std::wstring GetAutoLaunchKeyName() {
   if (!base::PathService::Get(chrome::DIR_USER_DATA, &path)) {
     return {};
   }
-  // Background auto-launch is only supported for the Default profile at the
-  // moment, but keep the door opened to a multi-profile implementation by
-  // encoding the Default profile in the hash.
+  // Auto-launch is only supported for the Default profile at the moment, but
+  // keep the door opened to a multi-profile implementation by encoding the
+  // Default profile in the hash.
   path = path.AppendASCII(chrome::kInitialProfile);
 
   const auto hash = crypto::hash::Sha256(path.AsUTF8Unsafe());
@@ -66,8 +66,9 @@ void EnableStartAtLogin(StartupLaunchMode startup_launch_mode) {
       cmd_line.AppendArgNative(app_launch_prefetch::GetPrefetchSwitch(
           app_launch_prefetch::SubprocessType::kBrowserBackground));
       break;
-    default:
-      NOTREACHED();
+    case StartupLaunchMode::kForeground:
+      cmd_line.AppendSwitch(switches::kStartupForegroundLaunch);
+      break;
   }
   if (auto key_name = GetAutoLaunchKeyName(); !key_name.empty()) {
     base::win::AddCommandToAutoRun(HKEY_CURRENT_USER, key_name,

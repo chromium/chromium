@@ -1,6 +1,10 @@
 {
     "0": {
         "crossbench": {
+            "speedometer_3": {
+                "display_name": "speedometer3.crossbench",
+                "arguments": []
+            },
             "jetstream_2": {
                 "display_name": "jetstream2.crossbench",
                 "arguments": []
@@ -10,8 +14,12 @@
     },
     "1": {
         "crossbench": {
-            "motionmark_1.3": {
-                "display_name": "motionmark1.3.crossbench",
+            "speedometer_3": {
+                "display_name": "speedometer3.crossbench",
+                "arguments": []
+            },
+            "jetstream_3": {
+                "display_name": "jetstream3.crossbench",
                 "arguments": []
             }
         },
@@ -19,8 +27,12 @@
     },
     "2": {
         "crossbench": {
-            "speedometer_2": {
-                "display_name": "speedometer2.crossbench",
+            "speedometer_3": {
+                "display_name": "speedometer3.crossbench",
+                "arguments": []
+            },
+            "motionmark_1.3": {
+                "display_name": "motionmark1.3.crossbench",
                 "arguments": []
             }
         },
@@ -31,19 +43,23 @@
             "speedometer_3": {
                 "display_name": "speedometer3.crossbench",
                 "arguments": []
+            },
+            "speedometer_2": {
+                "display_name": "speedometer2.crossbench",
+                "arguments": []
             }
         },
         "benchmarks": {}
     },
     "extra_infos": {
-        "num_stories": 4,
-        "predicted_min_shard_time": 60,
-        "predicted_min_shard_index": 2,
-        "predicted_max_shard_time": 360,
-        "predicted_max_shard_index": 1,
-        "shard #0": 180,
-        "shard #1": 360,
-        "shard #2": 60,
-        "shard #3": 60
+        "num_stories": 8,
+        "predicted_min_shard_time": 120,
+        "predicted_min_shard_index": 3,
+        "predicted_max_shard_time": 420,
+        "predicted_max_shard_index": 2,
+        "shard #0": 240,
+        "shard #1": 240,
+        "shard #2": 420,
+        "shard #3": 120
     }
 }

@@ -19,6 +19,7 @@
 #include "ash/shelf/shelf_app_button.h"
 #include "ash/shelf/shelf_view.h"
 #include "ash/shell.h"
+#include "base/check_deref.h"
 #include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "base/no_destructor.h"
@@ -35,8 +36,6 @@
 #include "chrome/browser/ash/login/demo_mode/demo_components.h"
 #include "chrome/browser/ash/login/demo_mode/demo_mode_dimensions.h"
 #include "chrome/browser/ash/login/demo_mode/demo_session.h"
-#include "chrome/browser/browser_process.h"
-#include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/feature_engagement/tracker_factory.h"
 #include "chrome/browser/metrics/chrome_metrics_service_accessor.h"
 #include "chrome/browser/profiles/profile_manager.h"
@@ -47,6 +46,7 @@
 #include "chromeos/ash/components/growth/campaigns_utils.h"
 #include "chromeos/ash/components/growth/growth_metrics.h"
 #include "chromeos/constants/chromeos_features.h"
+#include "components/application_locale_storage/application_locale_storage.h"
 #include "components/component_updater/ash/component_manager_ash.h"
 #include "components/feature_engagement/public/feature_constants.h"
 #include "components/feature_engagement/public/tracker.h"
@@ -71,11 +71,20 @@ Profile* GetProfile() {
 
 }  // namespace
 
-CampaignsManagerClientImpl::CampaignsManagerClientImpl() {
+CampaignsManagerClientImpl::CampaignsManagerClientImpl(
+    PrefService* local_state,
+    ApplicationLocaleStorage* application_locale_storage,
+    variations::VariationsService* variations_service,
+    scoped_refptr<component_updater::ComponentManagerAsh> component_manager_ash)
+    : application_locale_storage_(CHECK_DEREF(application_locale_storage)),
+      variations_service_(CHECK_DEREF(variations_service)),
+      component_manager_ash_(std::move(component_manager_ash)) {
+  CHECK(component_manager_ash_);
+
   // `show_nudge_performer_observation_` is used in `campaigns_manager_` ctor,
   // so it needs to be initialized first.
   campaigns_manager_ = std::make_unique<growth::CampaignsManager>(
-      /*client=*/this, g_browser_process->local_state());
+      /*client=*/this, local_state);
 }
 
 CampaignsManagerClientImpl::~CampaignsManagerClientImpl() = default;
@@ -94,11 +103,7 @@ void CampaignsManagerClientImpl::LoadCampaignsComponent(
   }
 
   // Loads campaigns component.
-  auto component_manager_ash =
-      g_browser_process->platform_part()->component_manager_ash();
-  CHECK(component_manager_ash);
-
-  component_manager_ash->Load(
+  component_manager_ash_->Load(
       kCampaignComponentName,
       component_updater::ComponentManagerAsh::MountPolicy::kMount,
       component_updater::ComponentManagerAsh::UpdatePolicy::kDontForce,
@@ -188,7 +193,7 @@ const std::string& CampaignsManagerClientImpl::GetApplicationLocale() const {
   // User selected locale, then resolved using
   // `l10n_util::CheckAndResolveLocale` to a platform locale.
   // For example: `en-IN` will be resolved to `en-GB`.
-  return g_browser_process->GetApplicationLocale();
+  return application_locale_storage_->Get();
 }
 
 const std::string& CampaignsManagerClientImpl::GetUserLocale() const {
@@ -200,7 +205,7 @@ const std::string& CampaignsManagerClientImpl::GetUserLocale() const {
 }
 
 const std::string CampaignsManagerClientImpl::GetCountryCode() const {
-  return g_browser_process->variations_service()->GetStoredPermanentCountry();
+  return variations_service_->GetStoredPermanentCountry();
 }
 
 const base::Version& CampaignsManagerClientImpl::GetDemoModeAppVersion() const {

@@ -50,7 +50,7 @@ class TestMimeHandlerViewGuest : public MimeHandlerViewGuest {
   // MimeHandlerViewGuest override:
   void CreateInnerPage(std::unique_ptr<GuestViewBase> owned_this,
                        scoped_refptr<content::SiteInstance> site_instance,
-                       const base::Value::Dict& create_params,
+                       const base::DictValue& create_params,
                        GuestPageCreatedCallback callback) override;
   void DidAttachToEmbedder() override;
 
@@ -63,7 +63,7 @@ class TestMimeHandlerViewGuest : public MimeHandlerViewGuest {
   void CallBaseCreateInnerPage(
       std::unique_ptr<GuestViewBase> owned_this,
       scoped_refptr<content::SiteInstance> site_instance,
-      base::Value::Dict create_params,
+      base::DictValue create_params,
       GuestPageCreatedCallback callback);
 
   // A value in milliseconds that the next creation of a guest's WebContents

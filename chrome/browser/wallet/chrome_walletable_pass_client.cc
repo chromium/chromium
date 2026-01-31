@@ -5,12 +5,12 @@
 #include "chrome/browser/wallet/chrome_walletable_pass_client.h"
 
 #include "base/check_deref.h"
-#include "chrome/browser/autofill/strike_database_factory.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
+#include "chrome/browser/strike_database/strike_database_factory.h"
 #include "chrome/browser/ui/wallet/walletable_pass_consent_bubble_controller.h"
 #include "chrome/browser/ui/wallet/walletable_pass_save_bubble_controller.h"
 #include "components/optimization_guide/core/hints/optimization_guide_decider.h"
@@ -19,7 +19,10 @@
 #include "components/strike_database/strike_database.h"
 #include "components/tabs/public/tab_interface.h"
 #include "components/variations/service/variations_service.h"
+#include "components/wallet/core/browser/network/wallet_http_client.h"
+#include "components/wallet/core/browser/network/wallet_http_client_impl.h"
 #include "content/public/browser/web_contents.h"
+#include "services/network/public/cpp/shared_url_loader_factory.h"
 
 namespace wallet {
 
@@ -46,7 +49,7 @@ strike_database::StrikeDatabaseBase*
 ChromeWalletablePassClient::GetStrikeDatabase() {
   Profile* profile =
       Profile::FromBrowserContext(tab_->GetContents()->GetBrowserContext());
-  return autofill::StrikeDatabaseFactory::GetForProfile(profile);
+  return StrikeDatabaseFactory::GetForProfile(profile);
 }
 
 PrefService* ChromeWalletablePassClient::GetPrefService() {
@@ -68,6 +71,17 @@ GeoIpCountryCode ChromeWalletablePassClient::GetGeoIpCountryCode() {
 
   return GeoIpCountryCode(base::ToUpperASCII(
       g_browser_process->variations_service()->GetStoredPermanentCountry()));
+}
+
+WalletHttpClient* ChromeWalletablePassClient::GetWalletHttpClient() {
+  if (!wallet_http_client_) {
+    Profile* profile =
+        Profile::FromBrowserContext(tab_->GetContents()->GetBrowserContext());
+    wallet_http_client_ = std::make_unique<WalletHttpClientImpl>(
+        IdentityManagerFactory::GetForProfile(profile),
+        profile->GetURLLoaderFactory());
+  }
+  return wallet_http_client_.get();
 }
 
 void ChromeWalletablePassClient::ShowWalletablePassConsentBubble(

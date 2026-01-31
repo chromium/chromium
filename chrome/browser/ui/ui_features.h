@@ -22,6 +22,8 @@ namespace features {
 
 BASE_DECLARE_FEATURE(kAllowEyeDropperWGCScreenCapture);
 
+BASE_DECLARE_FEATURE(kBrowserWidgetCacheThemeService);
+
 BASE_DECLARE_FEATURE(kCreateNewTabGroupAppMenuTopLevel);
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
@@ -144,73 +146,7 @@ BASE_DECLARE_FEATURE(kScrimForBrowserWindowModal);
 
 BASE_DECLARE_FEATURE(kSideBySide);
 
-BASE_DECLARE_FEATURE_PARAM(base::TimeDelta, kSideBySideShowDropTargetDelay);
-BASE_DECLARE_FEATURE_PARAM(base::TimeDelta,
-                           kSideBySideShowDropTargetForLinkDelay);
-BASE_DECLARE_FEATURE_PARAM(base::TimeDelta,
-                           kSideBySideShowDropTargetForLinkAfterHideDelay);
-BASE_DECLARE_FEATURE_PARAM(
-    base::TimeDelta,
-    kSideBySideShowDropTargetForLinkAfterHideLookbackWindow);
-BASE_DECLARE_FEATURE_PARAM(base::TimeDelta, kSideBySideHideDropTargetDelay);
-BASE_DECLARE_FEATURE_PARAM(base::TimeDelta, kSideBySideShowNudgeDelay);
-
-// Feature params for the width of the multi-contents drop target.
-// If the `kSideBySideDropTargetNudge` feature is enabled, then these only
-// apply for tab dragging.
-BASE_DECLARE_FEATURE_PARAM(int, kSideBySideDropTargetMinWidth);
-BASE_DECLARE_FEATURE_PARAM(int, kSideBySideDropTargetMaxWidth);
-BASE_DECLARE_FEATURE_PARAM(int, kSideBySideDropTargetTargetWidthPercentage);
-BASE_DECLARE_FEATURE_PARAM(int,
-                           kSideBySideDropTargetForLinkTargetWidthPercentage);
-
-// The size of the edge of the screen where the Split View drop target is hidden
-// will be the max of the width and the percentage times the screen width.
-BASE_DECLARE_FEATURE_PARAM(int, kSideBySideDropTargetHideForOSWidth);
-BASE_DECLARE_FEATURE_PARAM(double, kSideBySideDropTargetHideForOSPercentage);
-
-// Feature and params to control the "nudge" behavior of drop targets.
-BASE_DECLARE_FEATURE(kSideBySideDropTargetNudge);
-BASE_DECLARE_FEATURE_PARAM(int, kSideBySideDropTargetNudgeMinWidth);
-BASE_DECLARE_FEATURE_PARAM(int, kSideBySideDropTargetNudgeMaxWidth);
-BASE_DECLARE_FEATURE_PARAM(int,
-                           kSideBySideDropTargetNudgeTargetWidthPercentage);
-BASE_DECLARE_FEATURE_PARAM(int, kSideBySideDropTargetNudgeToFullMinWidth);
-BASE_DECLARE_FEATURE_PARAM(int, kSideBySideDropTargetNudgeToFullMaxWidth);
-BASE_DECLARE_FEATURE_PARAM(
-    int,
-    kSideBySideDropTargetNudgeToFullTargetWidthPercentage);
-// The ratio of window width that will trigger a nudge to show/hide.
-BASE_DECLARE_FEATURE_PARAM(double, kSideBySideDropTargetNudgeShowRatio);
-// The total amount of times the nudge may be shown before we stop showing it.
-BASE_DECLARE_FEATURE_PARAM(int, kSideBySideDropTargetNudgeShownLimit);
-// The total amount of times the drop target may be used with a link before we
-// stop showing the nudge.
-BASE_DECLARE_FEATURE_PARAM(int, kSideBySideDropTargetNudgeUsedLimit);
-
-enum class MiniToolbarActiveConfiguration {
-  // Hides the toolbar in the active view.
-  Hide,
-  // Shows only the menu button in the active view.
-  ShowMenu,
-  // Shows only the close button in the active view.
-  ShowClose,
-};
-
-BASE_DECLARE_FEATURE_PARAM(MiniToolbarActiveConfiguration,
-                           kSideBySideMiniToolbarActiveConfiguration);
-
-BASE_DECLARE_FEATURE_PARAM(int, kSideBySideSnapDistance);
-
-BASE_DECLARE_FEATURE_PARAM(int, kSideBySideIphTabSwitchCount);
-
-bool IsRestoringSplitViewEnabled();
-
 BASE_DECLARE_FEATURE(kSideBySideLinkMenuNewBadge);
-
-bool IsSideBySideKeyboardShortcutEnabled();
-
-BASE_DECLARE_FEATURE(kSideBySideFocusClearing);
 
 enum class SidePanelRelativeAlignment {
   // Shows the toolbar and content height side panels on the same side.
@@ -221,18 +157,7 @@ enum class SidePanelRelativeAlignment {
 BASE_DECLARE_FEATURE_PARAM(SidePanelRelativeAlignment,
                            kSidePanelRelativeAlignment);
 
-BASE_DECLARE_FEATURE(kAppBrowserUseNewLayout);
-
-BASE_DECLARE_FEATURE(kPopupBrowserUseNewLayout);
-
-BASE_DECLARE_FEATURE(kTabbedBrowserUseNewLayout);
-
 BASE_DECLARE_FEATURE(kTabDuplicateMetrics);
-
-BASE_DECLARE_FEATURE(kTabScrollingButtonPosition);
-
-inline constexpr char kTabScrollingButtonPositionParameterName[] =
-    "buttonPosition";
 
 BASE_DECLARE_FEATURE(kTabGroupsCollapseFreezing);
 BASE_DECLARE_FEATURE(kTabGroupHoverCards);
@@ -450,6 +375,12 @@ BASE_DECLARE_FEATURE(kNewTabAddsToActiveGroup);
 bool IsNewTabAddsToActiveGroupEnabled();
 
 bool IsWebUIReloadButtonEnabled();
+
+bool IsWebUISplitTabsButtonEnabled();
+
+bool IsWebUILocationBarEnabled();
+
+bool IsWebUIToolbarEnabled();
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 // Controls whether to show a toast for Chrome non milestone update.
@@ -470,6 +401,10 @@ bool IsAndroidAnimatedProgressBarInBrowserEnabled();
 BASE_DECLARE_FEATURE(kWhatsNewDesktopRefresh);
 
 BASE_DECLARE_FEATURE(kTabGroupsFocusing);
+
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+BASE_DECLARE_FEATURE(kUpdaterUI);
+#endif
 
 }  // namespace features
 

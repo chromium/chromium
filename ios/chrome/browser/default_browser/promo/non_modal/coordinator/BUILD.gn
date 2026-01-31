@@ -1,0 +1,30 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("coordinator") {
+  sources = [
+    "default_browser_promo_non_modal_coordinator.h",
+    "default_browser_promo_non_modal_coordinator.mm",
+    "default_promo_non_modal_presentation_delegate.h",
+  ]
+  deps = [
+    "//base",
+    "//components/feature_engagement/public",
+    "//components/feature_engagement/public:feature_constants",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/default_browser/model:features",
+    "//ios/chrome/browser/default_browser/model:utils",
+    "//ios/chrome/browser/default_browser/promo/non_modal/public",
+    "//ios/chrome/browser/feature_engagement/model",
+    "//ios/chrome/browser/infobars/ui_bundled/banners",
+    "//ios/chrome/browser/infobars/ui_bundled/coordinators",
+    "//ios/chrome/browser/main/ui_bundled:default_browser_scene_agent",
+    "//ios/chrome/browser/shared/coordinator/default_browser_promo",
+    "//ios/chrome/browser/shared/coordinator/scene:scene_state_header",
+    "//ios/chrome/browser/shared/model/browser",
+    "//ios/chrome/browser/shared/public/commands",
+    "//ios/public/provider/chrome/browser/branded_images:branded_images_api",
+    "//ui/base",
+  ]
+}

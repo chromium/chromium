@@ -268,14 +268,14 @@ class KeyboardControllerAppWindowTest
   scoped_refptr<const extensions::Extension> CreateDummyExtension() {
     auto extension =
         extensions::ExtensionBuilder()
-            .SetManifest(base::Value::Dict()
-                             .Set("name", "test extension")
-                             .Set("version", "1")
-                             .Set("manifest_version", 2)
-                             .Set("background",
-                                  base::Value::Dict().Set(
-                                      "scripts", base::Value::List().Append(
-                                                     "background.js"))))
+            .SetManifest(
+                base::DictValue()
+                    .Set("name", "test extension")
+                    .Set("version", "1")
+                    .Set("manifest_version", 2)
+                    .Set("background", base::DictValue().Set(
+                                           "scripts", base::ListValue().Append(
+                                                          "background.js"))))
             .Build();
     extension_registrar()->AddExtension(extension);
     return extension;

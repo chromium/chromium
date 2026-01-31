@@ -345,9 +345,8 @@ StyleTimeline CSSToStyleMap::MapAnimationTimeline(StyleResolverState& state,
     return StyleTimeline(ident->GetValueID());
   }
   if (auto* custom_ident = DynamicTo<CSSCustomIdentValue>(value)) {
-    return StyleTimeline(MakeGarbageCollected<ScopedCSSName>(
-        custom_ident->ComputeIdent(state.CssToLengthConversionData()),
-        custom_ident->GetTreeScope()));
+    return StyleTimeline(
+        custom_ident->ComputeIdent(state.CssToLengthConversionData()));
   }
   if (value.IsViewValue()) {
     const auto& view_value = To<cssvalue::CSSViewValue>(value);
@@ -748,18 +747,20 @@ EAnimationTriggerBehavior CSSToStyleMap::MapAnimationTimelineTriggerBehavior(
 }
 
 std::optional<TimelineOffset>
-CSSToStyleMap::MapAnimationTimelineTriggerRangeStart(StyleResolverState& state,
-                                                     const CSSValue& value) {
+CSSToStyleMap::MapAnimationTimelineTriggerEntryRangeStart(
+    StyleResolverState& state,
+    const CSSValue& value) {
   return MapAnimationRange(state, value, 0);
 }
 
 std::optional<TimelineOffset>
-CSSToStyleMap::MapAnimationTimelineTriggerRangeEnd(StyleResolverState& state,
-                                                   const CSSValue& value) {
+CSSToStyleMap::MapAnimationTimelineTriggerEntryRangeEnd(
+    StyleResolverState& state,
+    const CSSValue& value) {
   return MapAnimationRange(state, value, 100);
 }
 
-TimelineOffsetOrAuto CSSToStyleMap::MapAnimationTimelineTriggerExitRangeStart(
+TimelineOffsetOrAuto CSSToStyleMap::MapAnimationTimelineTriggerActiveRangeStart(
     StyleResolverState& state,
     const CSSValue& value) {
   if (auto* ident = DynamicTo<CSSIdentifierValue>(value);
@@ -769,7 +770,7 @@ TimelineOffsetOrAuto CSSToStyleMap::MapAnimationTimelineTriggerExitRangeStart(
   return TimelineOffsetOrAuto(MapAnimationRange(state, value, 0));
 }
 
-TimelineOffsetOrAuto CSSToStyleMap::MapAnimationTimelineTriggerExitRangeEnd(
+TimelineOffsetOrAuto CSSToStyleMap::MapAnimationTimelineTriggerActiveRangeEnd(
     StyleResolverState& state,
     const CSSValue& value) {
   if (auto* ident = DynamicTo<CSSIdentifierValue>(value);

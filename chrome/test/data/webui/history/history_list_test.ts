@@ -10,7 +10,6 @@ import {isMac} from 'chrome://resources/js/platform.js';
 import {PromiseResolver} from 'chrome://resources/js/promise_resolver.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertGT, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {pressAndReleaseKeyOn} from 'chrome://webui-test/keyboard_mock_interactions.js';
-import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 import {eventToPromise, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 import {TestBrowserService} from './test_browser_service.js';
@@ -94,7 +93,7 @@ suite('HistoryListTest', function() {
     element.dispatchEvent(new CustomEvent(
         'query-history', {detail: true, bubbles: true, composed: true}));
     await testService.handler.whenCalled('queryHistoryContinuation');
-    await flushTasks();
+    await microtasksFinished();
 
     assertFalse(element.isEmpty);
   });
@@ -110,7 +109,7 @@ suite('HistoryListTest', function() {
     await microtasksFinished();
     assertDeepEquals([true], getHistoryData().map(i => i.selected));
     toolbar.deleteSelectedItems();
-    await flushTasks();
+    await microtasksFinished();
     const dialog = element.$.dialog.get();
     assertTrue(dialog.open);
     testService.handler.resetResolver('queryHistory');
@@ -314,7 +313,7 @@ suite('HistoryListTest', function() {
     element.dispatchEvent(new CustomEvent(
         'query-history', {bubbles: true, composed: true, detail: false}));
     await testService.handler.whenCalled('queryHistory');
-    await flushTasks();
+    await microtasksFinished();
     assertTrue(element.$.noResults.hidden);
     assertFalse(element.$.infiniteList.hidden);
   });
@@ -645,7 +644,7 @@ suite('HistoryListTest', function() {
 
     testService.handler.resetResolver('queryHistory');
     webUIListenerCallback('history-deleted');
-    await flushTasks();
+    await microtasksFinished();
     assertEquals(0, testService.handler.getCallCount('queryHistory'));
   });
 

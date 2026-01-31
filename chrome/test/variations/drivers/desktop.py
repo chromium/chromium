@@ -10,8 +10,8 @@ import shutil
 from contextlib import contextmanager
 from typing import Optional
 
-from chrome.test.variations.drivers import DriverFactory
-from chrome.test.variations.test_utils.helper import timeout
+from chrome.test.variations.drivers import driver_factory
+from chrome.test.variations.test_utils.helper import timeout, retry
 from selenium import webdriver
 from selenium.common.exceptions import WebDriverException
 from selenium.webdriver import ChromeOptions
@@ -19,13 +19,14 @@ from selenium.webdriver import ChromeOptions
 _DRIVER_CREATION_TIMEOUT_SEC = 30
 
 @attr.attrs()
-class DesktopDriverFactory(DriverFactory):
+class DesktopDriverFactory(driver_factory.DriverFactory):
   """Driver factory for desktop platforms."""
   channel: Optional[str] = attr.attrib()
   crash_dump_dir: Optional[str] = attr.attrib()
 
+  @retry(driver_factory.DRIVER_CREATION_RETRY_COUNT)
   @timeout(_DRIVER_CREATION_TIMEOUT_SEC)
-  def _get_driver(self, options):
+  def get_driver(self, options):
     return webdriver.Chrome(service=self.get_driver_service(), options=options)
 
   @contextmanager
@@ -53,7 +54,7 @@ class DesktopDriverFactory(DriverFactory):
     try:
       logging.info('Launching Chrome w/ caps: %s',
                    options.to_capabilities())
-      driver = self._get_driver(options)
+      driver = self.get_driver(options)
       self.wait_for_window(driver)
       yield driver
     except WebDriverException as e:

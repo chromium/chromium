@@ -147,15 +147,16 @@ PushNotificationClientManager::GetClients() {
       PushNotificationClientId::kCommerce, PushNotificationClientId::kTips};
   client_ids.push_back(PushNotificationClientId::kContent);
   client_ids.push_back(PushNotificationClientId::kSports);
-  if (IsSafetyCheckNotificationsEnabled()) {
-    client_ids.push_back(PushNotificationClientId::kSafetyCheck);
-  }
+  client_ids.push_back(PushNotificationClientId::kSafetyCheck);
   if (base::FeatureList::IsEnabled(
           send_tab_to_self::kSendTabToSelfIOSPushNotifications)) {
     client_ids.push_back(PushNotificationClientId::kSendTab);
   }
   if (IsSendTabIOSPushNotificationsEnabledWithTabReminders()) {
     client_ids.push_back(PushNotificationClientId::kReminders);
+  }
+  if (IsMobilePromoOnDesktopNotificationsEnabled()) {
+    client_ids.push_back(PushNotificationClientId::kCrossPlatformPromos);
   }
   return client_ids;
 }
@@ -201,22 +202,19 @@ void PushNotificationClientManager::AddPerProfilePushNotificationClients() {
 
   AddPushNotificationClient(std::move(content_notification_client));
 
-  if (IsSafetyCheckNotificationsEnabled()) {
-    if (IsMultiProfilePushNotificationHandlingEnabled() && profile_) {
-      // Pass profile and task runner for multi-profile handling.
-      auto client = std::make_unique<SafetyCheckNotificationClient>(
-          profile_, task_runner_);
-      CHECK_EQ(client->GetClientScope(),
-               PushNotificationClientScope::kPerProfile);
-      AddPushNotificationClient(std::move(client));
-    } else {
-      // Pass only task runner for single-profile or default handling.
-      auto client =
-          std::make_unique<SafetyCheckNotificationClient>(task_runner_);
-      CHECK_EQ(client->GetClientScope(),
-               PushNotificationClientScope::kPerProfile);
-      AddPushNotificationClient(std::move(client));
-    }
+  if (IsMultiProfilePushNotificationHandlingEnabled() && profile_) {
+    // Pass profile and task runner for multi-profile handling.
+    auto client =
+        std::make_unique<SafetyCheckNotificationClient>(profile_, task_runner_);
+    CHECK_EQ(client->GetClientScope(),
+             PushNotificationClientScope::kPerProfile);
+    AddPushNotificationClient(std::move(client));
+  } else {
+    // Pass only task runner for single-profile or default handling.
+    auto client = std::make_unique<SafetyCheckNotificationClient>(task_runner_);
+    CHECK_EQ(client->GetClientScope(),
+             PushNotificationClientScope::kPerProfile);
+    AddPushNotificationClient(std::move(client));
   }
 
   // Add Send Tab To Self client if its push notifications are enabled.

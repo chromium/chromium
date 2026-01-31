@@ -658,6 +658,14 @@ TEST(CStringViewTest, Find) {
 #endif
 }
 
+TEST(CStringViewTest, Contains) {
+  static_assert(cstring_view("hello").contains("he"));
+  static_assert(cstring_view("hello").contains("ll"));
+  static_assert(cstring_view("hello").contains("lo"));
+  static_assert(!cstring_view("hello").contains("a"));
+  static_assert(!cstring_view("hello").contains("hl"));
+}
+
 TEST(CStringViewTest, Rfind) {
   // OOB `pos` will clamp to the end of the view. The NUL is never searched.
   static_assert(cstring_view("hello").rfind('h', 0u) == 0u);

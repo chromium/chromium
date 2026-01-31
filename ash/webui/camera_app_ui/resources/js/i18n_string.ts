@@ -28,6 +28,14 @@ export enum I18nString {
   BARCODE_LINK_CHIPTEXT = 'barcode_link_chiptext',
   BARCODE_WIFI_CHIPTEXT = 'barcode_wifi_chiptext',
   CANCEL_REVIEW_BUTTON = 'cancel_review_button',
+  CLOUD_SAVE_WARNING_DIALOG_ACK_BUTTON = 'cloud_save_warning_dialog_ack_button',
+  CLOUD_SAVE_WARNING_DIALOG_DISCLAIMER = 'cloud_save_warning_dialog_disclaimer',
+  CLOUD_SAVE_WARNING_DIALOG_SKIP_CHECKBOX =
+      'cloud_save_warning_dialog_skip_checkbox',
+  CLOUD_SAVE_WARNING_DIALOG_TITLE_GOOGLE_DRIVE =
+      'cloud_save_warning_dialog_title_google_drive',
+  CLOUD_SAVE_WARNING_DIALOG_TITLE_ONEDRIVE =
+      'cloud_save_warning_dialog_title_onedrive',
   CONFIRM_REVIEW_BUTTON = 'confirm_review_button',
   COPIED_DETECTED_CONTENT = 'copied_detected_content',
   DELETE_PAGE_BUTTON = 'delete_page_button',

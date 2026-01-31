@@ -5,6 +5,7 @@
 #include "components/webauthn/android/webauthn_cred_man_delegate_factory.h"
 
 #include "base/memory/raw_ptr.h"
+#include "components/webauthn/android/stub_webauthn_client_android.h"
 #include "components/webauthn/android/webauthn_cred_man_delegate.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/test/test_renderer_host.h"
@@ -19,9 +20,16 @@ class WebAuthnCredManDelegateFactoryTest
 
   void SetUp() override {
     content::RenderViewHostTestHarness::SetUp();
+    WebAuthnClientAndroid::SetClient(
+        std::make_unique<StubWebAuthnClientAndroid>());
     factory_ = WebAuthnCredManDelegateFactory::GetFactory(web_contents());
     content::RenderFrameHostTester::For(web_contents()->GetPrimaryMainFrame())
         ->InitializeRenderFrameIfNeeded();
+  }
+
+  void TearDown() override {
+    WebAuthnClientAndroid::ClearClientForTesting();
+    content::RenderViewHostTestHarness::TearDown();
   }
 
   WebAuthnCredManDelegateFactory* factory() { return factory_; }
@@ -54,6 +62,14 @@ TEST_F(WebAuthnCredManDelegateFactoryTest,
       factory()->GetRequestDelegate(web_contents()->GetPrimaryMainFrame());
   EXPECT_NE(delegate, nullptr);
   EXPECT_NE(delegate, factory()->GetRequestDelegate(child_frame));
+}
+
+// Verify that a client must exist in order to get a delegate.
+TEST_F(WebAuthnCredManDelegateFactoryTest, GetNoDelegateWithoutClient) {
+  WebAuthnClientAndroid::ClearClientForTesting();
+
+  EXPECT_EQ(nullptr, factory()->GetRequestDelegate(
+                         web_contents()->GetPrimaryMainFrame()));
 }
 
 }  // namespace webauthn

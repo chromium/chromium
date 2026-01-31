@@ -74,9 +74,6 @@ BASE_DECLARE_FEATURE(kDisableRaccoon);
 // Feature flag adds bugfix numbers to the iOS User-Agent header for Chrome
 BASE_DECLARE_FEATURE(kUserAgentBugFixVersion);
 
-// Enables logging JavaScript errors.
-BASE_DECLARE_FEATURE(kLogJavaScriptErrors);
-
 // Feature flag to let WebKit handle MarketplaceKit links. This is intended to
 // be used as a kill switch.
 BASE_DECLARE_FEATURE(kWebKitHandlesMarketplaceKitLinks);
@@ -112,6 +109,9 @@ bool CreateTabHelperOnlyForRealizedWebStates();
 // When enabled, trigger an update of the SSL status on navigation item
 // lazy creation. This is intended to be used as a kill switch.
 BASE_DECLARE_FEATURE(kUpdateSSLStatusOnNavigationItemLazyCreation);
+
+// Feature flag to enable BEContextMenuConfiguration.
+BASE_DECLARE_FEATURE(kEnableBEContextMenuConfiguration);
 
 }  // namespace web::features
 

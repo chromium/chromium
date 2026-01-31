@@ -17,6 +17,7 @@
 #include "chrome/browser/ui/hats/mock_hats_service.h"
 #include "chrome/browser/ui/hats/survey_config.h"
 #include "chrome/test/base/in_process_browser_test.h"
+#include "chrome/test/base/scoped_browser_locale.h"
 #include "components/keep_alive_registry/keep_alive_types.h"
 #include "components/keep_alive_registry/scoped_keep_alive.h"
 #include "components/prefs/pref_service.h"
@@ -110,14 +111,6 @@ IN_PROC_BROWSER_TEST_F(
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
 class ChromeSigninClientHatsSurveyBrowserTest : public InProcessBrowserTest {
  public:
-  ChromeSigninClientHatsSurveyBrowserTest() {
-    feature_list_.InitWithFeatures(
-        /*enabled_features=*/
-        {{switches::kChromeIdentitySurveyPasswordBubbleSignin,
-          switches::kChromeIdentitySurveyFirstRunSignin}},
-        /*disabled_features=*/{});
-  }
-
   void SetUpOnMainThread() override {
     mock_hats_service_ = static_cast<MockHatsService*>(
         HatsServiceFactory::GetInstance()->SetTestingFactoryAndUse(
@@ -130,7 +123,6 @@ class ChromeSigninClientHatsSurveyBrowserTest : public InProcessBrowserTest {
 
  private:
   raw_ptr<MockHatsService> mock_hats_service_ = nullptr;
-  base::test::ScopedFeatureList feature_list_;
 };
 
 // Tests that a HaTS survey is launched when a user signs in through an eligible
@@ -210,4 +202,28 @@ IN_PROC_BROWSER_TEST_F(ChromeSigninClientHatsSurveyBrowserTest,
   Browser* new_browser = CreateBrowser(profile);
   ASSERT_TRUE(new_browser);
 }
+
+// Tests that a HaTS survey is NOT launched when the locale is not supported,
+// even if the user signs in through an eligible access point.
+IN_PROC_BROWSER_TEST_F(ChromeSigninClientHatsSurveyBrowserTest,
+                       HatsSurveyNotLaunchedOnSigninUnsupportedLocale) {
+  // Set up the pseudo locale.
+  auto locale = std::make_unique<ScopedBrowserLocale>("en-XA");
+
+  // Expect that the HaTS service will NEVER launch any survey.
+  EXPECT_CALL(*mock_hats_service(), LaunchDelayedSurvey(_, _, _, _)).Times(0);
+
+  // Simulate a user signing in via the password bubble.
+  // This would normally trigger the survey if the locale was supported.
+  signin::IdentityManager* identity_manager =
+      IdentityManagerFactory::GetForProfile(browser()->profile());
+  signin::MakeAccountAvailable(
+      identity_manager,
+      signin::AccountAvailabilityOptionsBuilder()
+          .AsPrimary(signin::ConsentLevel::kSignin)
+          .WithAccessPoint(signin_metrics::AccessPoint::kPasswordBubble)
+          .Build("bob@example.com"));
+  signin::WaitForRefreshTokensLoaded(identity_manager);
+}
+
 #endif  // BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)

@@ -7,6 +7,7 @@
 
 #include "base/memory/scoped_refptr.h"
 #include "content/common/content_export.h"
+#include "content/public/common/child_process_id.h"
 #include "storage/browser/file_system/file_system_context.h"
 #include "ui/base/clipboard/file_info.h"
 
@@ -51,7 +52,7 @@ CONTENT_EXPORT bool FileSystemURLIsValid(storage::FileSystemContext* context,
 using DoGetPlatformPathCB = base::OnceCallback<void(const base::FilePath&)>;
 CONTENT_EXPORT void DoGetPlatformPath(
     scoped_refptr<storage::FileSystemContext> context,
-    int process_id,
+    ChildProcessId process_id,
     const GURL& path,
     const blink::StorageKey& storage_key,
     DoGetPlatformPathCB callback);
@@ -70,7 +71,7 @@ CONTENT_EXPORT void DoGetPlatformPath(
 CONTENT_EXPORT void PrepareDropDataForChildProcess(
     DropData* drop_data,
     ChildProcessSecurityPolicyImpl* security_policy,
-    int child_id,
+    ChildProcessId child_id,
     const storage::FileSystemContext* file_system_context);
 
 // Make it possible for local files to be read by `child_id`'s process. This is
@@ -79,7 +80,7 @@ CONTENT_EXPORT void PrepareDropDataForChildProcess(
 CONTENT_EXPORT std::string PrepareDataTransferFilenamesForChildProcess(
     std::vector<ui::FileInfo>& filenames,
     ChildProcessSecurityPolicyImpl* security_policy,
-    int child_id,
+    ChildProcessId child_id,
     const storage::FileSystemContext* file_system_context);
 
 }  // namespace content

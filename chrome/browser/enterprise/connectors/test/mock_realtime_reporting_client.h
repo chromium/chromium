@@ -22,7 +22,7 @@ class MockRealtimeReportingClient : public RealtimeReportingClient {
   MOCK_METHOD3(ReportRealtimeEvent,
                void(const std::string&,
                     const ReportingSettings& settings,
-                    base::Value::Dict event));
+                    base::DictValue event));
 
   MOCK_METHOD2(ReportEvent,
                void(::chrome::cros::reporting::proto::Event event,
@@ -31,7 +31,7 @@ class MockRealtimeReportingClient : public RealtimeReportingClient {
   MOCK_METHOD4(ReportPastEvent,
                void(const std::string& name,
                     const ReportingSettings& settings,
-                    base::Value::Dict event,
+                    base::DictValue event,
                     const base::Time& time));
 
   static std::unique_ptr<KeyedService> CreateMockRealtimeReportingClient(

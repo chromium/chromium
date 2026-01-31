@@ -6,11 +6,12 @@
 
 #include <algorithm>
 
-#include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
+#include "base/numerics/safe_conversions.h"
 #include "media/gpu/test/video_test_helpers.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -25,15 +26,14 @@ class BitstreamFileWriter::FrameFileWriter {
   FrameFileWriter(base::File output_file)
       : output_file_(std::move(output_file)) {}
 
-  bool WriteFrame(uint32_t data_size, uint64_t timestamp, const uint8_t* data) {
+  bool WriteFrame(uint64_t timestamp, base::span<const uint8_t> data) {
     if (ivf_writer_) {
-      return ivf_writer_->WriteFrame(data_size, timestamp, data);
+      return ivf_writer_->WriteFrame(base::checked_cast<uint32_t>(data.size()),
+                                     timestamp, data.data());
     }
     // For H.264.
     LOG_ASSERT(output_file_.IsValid());
-    return UNSAFE_TODO(output_file_.WriteAtCurrentPos(
-               reinterpret_cast<const char*>(data), data_size)) ==
-           static_cast<int>(data_size);
+    return output_file_.WriteAtCurrentPosAndCheck(data);
   }
 
  private:
@@ -167,10 +167,8 @@ void BitstreamFileWriter::WriteBitstreamTask(
     size_t frame_index) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(writer_thread_sequence_checker_);
   const DecoderBuffer& buffer = *bitstream->buffer.get();
-  auto buffer_span = base::span(buffer);
   bool success = frame_file_writer_->WriteFrame(
-      static_cast<uint32_t>(buffer_span.size()),
-      static_cast<uint64_t>(frame_index), buffer_span.data());
+      static_cast<uint64_t>(frame_index), buffer);
 
   base::AutoLock auto_lock(writer_lock_);
   num_errors_ += !success;

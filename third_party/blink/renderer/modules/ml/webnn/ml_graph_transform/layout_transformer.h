@@ -23,6 +23,8 @@ class LayoutTransformer : public MLGraphTransformer {
       : MLGraphTransformer(graph_builder) {}
   void Transform(MLNamedOperands& named_outputs) override;
 
+  const StringView Name() const override { return "LayoutTransformer"; }
+
  private:
   void InsertInputTranspose(MLOperator* op,
                             OperandIndex positional_input_index,

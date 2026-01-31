@@ -36,13 +36,13 @@
 
 namespace {
 
-base::Value::List GetChromePolicyNames(ProfileIOS* profile) {
+base::ListValue GetChromePolicyNames(ProfileIOS* profile) {
   policy::SchemaRegistry* registry =
       profile->GetPolicyConnector()->GetSchemaRegistry();
   scoped_refptr<policy::SchemaMap> schema_map = registry->schema_map();
 
   // Add Chrome policy names.
-  base::Value::List chrome_policy_names;
+  base::ListValue chrome_policy_names;
   policy::PolicyNamespace chrome_namespace(policy::POLICY_DOMAIN_CHROME, "");
   const policy::Schema* chrome_schema = schema_map->GetSchema(chrome_namespace);
   for (auto it = chrome_schema->GetPropertiesIterator(); !it.IsAtEnd();
@@ -58,8 +58,8 @@ base::Value::List GetChromePolicyNames(ProfileIOS* profile) {
 
 // Returns the version information to be displayed on the chrome://policy/logs
 // page.
-base::Value::Dict GetVersionInfo() {
-  base::Value::Dict version_info;
+base::DictValue GetVersionInfo() {
+  base::DictValue version_info;
 
   version_info.Set("revision", version_info::GetLastChange());
   version_info.Set("version", version_info::GetVersionNumber());
@@ -176,7 +176,7 @@ web::WebUIIOSDataSource* CreatePolicyUIHtmlSource(ProfileIOS* profile) {
     // input types.
     policy::Schema chrome_schema =
         policy::Schema::Wrap(policy::GetChromeSchemaData());
-    base::Value::List policy_names = GetChromePolicyNames(profile);
+    base::ListValue policy_names = GetChromePolicyNames(profile);
 
     std::optional<std::string> schema =
         base::WriteJson(PolicyUI::GetSchema(profile));
@@ -270,13 +270,13 @@ base::Value PolicyUI::GetSchema(ProfileIOS* profile) {
   // }
   // A dictionary is used to be consistent with other platforms sharing the
   // policy test page frontend implementation.
-  base::Value::Dict dict;
+  base::DictValue dict;
 
   // Create a string policy_names_to_types mapping policy names to their
   // input types.
   policy::Schema chrome_schema =
       policy::Schema::Wrap(policy::GetChromeSchemaData());
-  base::Value::List policy_names = GetChromePolicyNames(profile);
+  base::ListValue policy_names = GetChromePolicyNames(profile);
 
   // "chrome" is the only namespace on iOS.
   dict.Set("chrome", policy::utils::GetPolicyNameToTypeMapping(policy_names,

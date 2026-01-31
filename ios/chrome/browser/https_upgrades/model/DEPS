@@ -1,5 +1,7 @@
 include_rules = [
-  "+ios/chrome/browser/prerender/model",
+  # keep-sorted start
   "+ios/chrome/browser/content_settings/model",
   "+ios/chrome/browser/metrics/model",
+  "+ios/chrome/browser/prerender/model",
+  # keep-sorted end
 ]

@@ -21,7 +21,7 @@ class MockLogReceiver : public LogReceiver {
  public:
   MockLogReceiver() = default;
 
-  MOCK_METHOD(void, LogEntry, (const base::Value::Dict&), (override));
+  MOCK_METHOD(void, LogEntry, (const base::DictValue&), (override));
 };
 
 class AutofillLogRouterFactoryTest : public testing::Test {
@@ -51,7 +51,7 @@ TEST_F(AutofillLogRouterFactoryTest, ServiceActiveNonIncognito) {
   ASSERT_TRUE(log_router);
   log_router->RegisterReceiver(&receiver);
 
-  base::Value::Dict log_entry = LogRouter::CreateEntryForText(kTestText);
+  base::DictValue log_entry = LogRouter::CreateEntryForText(kTestText);
   EXPECT_CALL(receiver, LogEntry(testing::Eq(testing::ByRef(log_entry))))
       .Times(1);
   log_router->ProcessLog(kTestText);

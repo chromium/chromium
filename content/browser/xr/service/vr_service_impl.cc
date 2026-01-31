@@ -8,7 +8,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/containers/contains.h"
 #include "base/dcheck_is_on.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
@@ -85,7 +84,7 @@ std::vector<blink::PermissionType> GetRequiredPermissionsForFeatures(
     auto feature_permission =
         content::XrPermissionResults::GetPermissionFor(required_feature);
     if (feature_permission &&
-        !base::Contains(permissions, *feature_permission)) {
+        !std::ranges::contains(permissions, *feature_permission)) {
       permissions.push_back(*feature_permission);
     }
   }
@@ -94,7 +93,7 @@ std::vector<blink::PermissionType> GetRequiredPermissionsForFeatures(
     auto feature_permission =
         content::XrPermissionResults::GetPermissionFor(optional_feature);
     if (feature_permission &&
-        !base::Contains(permissions, *feature_permission)) {
+        !std::ranges::contains(permissions, *feature_permission)) {
       permissions.push_back(*feature_permission);
     }
   }
@@ -113,7 +112,7 @@ std::unordered_set<device::mojom::XRSessionFeature> GetMissingRequiredFeatures(
   std::unordered_set<device::mojom::XRSessionFeature> missing_required_features;
 
   for (const auto& required_feature : required_features) {
-    if (!base::Contains(enabled_features, required_feature)) {
+    if (!enabled_features.contains(required_feature)) {
       DVLOG(2) << __func__
                << ": one of the required features was not enabled on the "
                   "created session, feature: "
@@ -816,10 +815,10 @@ void VRServiceImpl::DoRequestSession(SessionRequestData request) {
   }
 
   bool use_dom_overlay =
-      base::Contains(runtime_options->required_features,
-                     device::mojom::XRSessionFeature::DOM_OVERLAY) ||
-      base::Contains(runtime_options->optional_features,
-                     device::mojom::XRSessionFeature::DOM_OVERLAY);
+      std::ranges::contains(runtime_options->required_features,
+                            device::mojom::XRSessionFeature::DOM_OVERLAY) ||
+      std::ranges::contains(runtime_options->optional_features,
+                            device::mojom::XRSessionFeature::DOM_OVERLAY);
 
   if (use_dom_overlay) {
     // Tell RenderFrameHostImpl that we're setting up the WebXR DOM Overlay,

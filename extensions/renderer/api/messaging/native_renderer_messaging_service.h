@@ -183,6 +183,9 @@ class NativeRendererMessagingService : public GinPort::Delegate {
       ScriptContext* script_context,
       const PortId& port_id);
 
+  // Invalidates any ports associated with the given `context`.
+  void InvalidatePorts(ScriptContext* context);
+
  private:
   class MessagePortScope;
   class RenderFrameMessagePorts;

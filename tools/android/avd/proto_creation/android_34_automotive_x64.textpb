@@ -22,9 +22,9 @@ avd_name: "android_34_automotive_x64"
 
 avd_settings {
   screen {
-    density: 160
-    height: 792
-    width: 1408
+    density: 180
+    height: 1152
+    width: 1536
   }
   advanced_features {
     key: "GLESDynamicVersion"

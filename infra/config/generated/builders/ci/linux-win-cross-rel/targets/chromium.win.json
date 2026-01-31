@@ -247,7 +247,7 @@
             "os": "Windows-10-19045"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
-          "shards": 10
+          "shards": 15
         },
         "test": "browser_tests",
         "test_id_prefix": "ninja://chrome/test:browser_tests/"
@@ -503,40 +503,6 @@
         },
         "test": "crashpad_tests",
         "test_id_prefix": "ninja://third_party/crashpad/crashpad:crashpad_tests/"
-      },
-      {
-        "merge": {
-          "script": "//testing/merge_scripts/standard_gtest_merge.py"
-        },
-        "module_name": "//components/cronet:cronet_tests",
-        "module_scheme": "gtest",
-        "name": "cronet_tests",
-        "swarming": {
-          "dimensions": {
-            "cpu": "x86-64",
-            "os": "Windows-10-19045"
-          },
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
-        },
-        "test": "cronet_tests",
-        "test_id_prefix": "ninja://components/cronet:cronet_tests/"
-      },
-      {
-        "merge": {
-          "script": "//testing/merge_scripts/standard_gtest_merge.py"
-        },
-        "module_name": "//components/cronet:cronet_unittests",
-        "module_scheme": "gtest",
-        "name": "cronet_unittests",
-        "swarming": {
-          "dimensions": {
-            "cpu": "x86-64",
-            "os": "Windows-10-19045"
-          },
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
-        },
-        "test": "cronet_unittests",
-        "test_id_prefix": "ninja://components/cronet:cronet_unittests/"
       },
       {
         "merge": {

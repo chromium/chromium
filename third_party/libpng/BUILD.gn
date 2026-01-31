@@ -76,7 +76,7 @@ source_set("libpng_sources") {
       "intel/intel_init.c",
     ]
     defines += [ "PNG_INTEL_SSE_OPT=1" ]
-  } else if ((current_cpu == "arm" || current_cpu == "arm64") && arm_use_neon) {
+  } else if (current_cpu == "arm" || current_cpu == "arm64") {
     sources += [
       "arm/arm_init.c",
       "arm/filter_neon_intrinsics.c",

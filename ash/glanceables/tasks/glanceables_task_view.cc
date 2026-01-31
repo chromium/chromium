@@ -26,7 +26,6 @@
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/sequenced_task_runner.h"
-#include "base/types/cxx23_to_underlying.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_header_macros.h"
@@ -134,7 +133,7 @@ class TaskViewTextField : public SystemTextfield,
         l10n_util::GetStringUTF16(IDS_GLANCEABLES_TASKS_TEXTFIELD_PLACEHOLDER));
     SetBackgroundColor(SK_ColorTRANSPARENT);
     SetController(this);
-    SetID(base::to_underlying(GlanceablesViewId::kTaskItemTitleTextField));
+    SetID(std::to_underlying(GlanceablesViewId::kTaskItemTitleTextField));
     SetPlaceholderText(
         l10n_util::GetStringUTF16(IDS_GLANCEABLES_TASKS_TEXTFIELD_PLACEHOLDER));
     SetFontList(TypographyProvider::Get()->ResolveTypographyToken(
@@ -194,7 +193,7 @@ class EditInBrowserButton : public views::LabelButton {
       : views::LabelButton(std::move(callback),
                            l10n_util::GetStringUTF16(
                                IDS_GLANCEABLES_TASKS_EDIT_IN_TASKS_LABEL)) {
-    SetID(base::to_underlying(GlanceablesViewId::kTaskItemEditInBrowserLabel));
+    SetID(std::to_underlying(GlanceablesViewId::kTaskItemEditInBrowserLabel));
     SetBorder(views::CreateEmptyBorder(gfx::Insets::VH(3, 6)));
     SetProperty(views::kMarginsKey, kEditInBrowserMargins);
     SetEnabledTextColors(cros_tokens::kCrosSysPrimary);
@@ -276,7 +275,7 @@ class GlanceablesTaskView::TaskTitleButton : public views::LabelButton {
     SetBorder(nullptr);
     views::FocusRing::Get(this)->SetColorId(cros_tokens::kCrosSysFocusRing);
 
-    label()->SetID(base::to_underlying(GlanceablesViewId::kTaskItemTitleLabel));
+    label()->SetID(std::to_underlying(GlanceablesViewId::kTaskItemTitleLabel));
     label()->SetLineHeight(TypographyProvider::Get()->ResolveLineHeight(
         TypographyToken::kCrosButton2));
     button_controller()->set_notify_action(
@@ -372,7 +371,7 @@ GlanceablesTaskView::GlanceablesTaskView(
     views::Label* due_date_label = SetupLabel(tasks_details_view_);
     due_date_label->SetText(formatted_due_date);
     due_date_label->SetID(
-        base::to_underlying(GlanceablesViewId::kTaskItemDueLabel));
+        std::to_underlying(GlanceablesViewId::kTaskItemDueLabel));
     due_date_label->SetFontList(
         TypographyProvider::Get()->ResolveTypographyToken(
             TypographyToken::kCrosAnnotation1));
@@ -410,7 +409,7 @@ GlanceablesTaskView::GlanceablesTaskView(
       origin_surface_type_icon_ =
           tasks_details_view_->AddChildView(CreateSecondRowIcon(*icon));
       origin_surface_type_icon_->SetID(
-          base::to_underlying(GlanceablesViewId::kOriginSurfaceTypeIcon));
+          std::to_underlying(GlanceablesViewId::kOriginSurfaceTypeIcon));
     }
   }
 
@@ -561,7 +560,7 @@ void GlanceablesTaskView::AddExtraContentForEditState() {
     assigned_task_notice->SetProperty(views::kMarginsKey,
                                       kDetailMarginsInEditState);
     assigned_task_notice->SetID(
-        base::to_underlying(GlanceablesViewId::kAssignedTaskNotice));
+        std::to_underlying(GlanceablesViewId::kAssignedTaskNotice));
 
     if (origin_surface_type_icon_) {
       auto* const icon =

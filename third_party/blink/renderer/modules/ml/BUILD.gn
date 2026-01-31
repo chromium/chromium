@@ -3,7 +3,18 @@
 # found in the LICENSE file.
 
 import("//build/buildflag_header.gni")
+import("//build/config/dcheck_always_on.gni")
 import("//third_party/blink/renderer/modules/modules.gni")
+
+declare_args() {
+  webnn_enable_graph_dump =
+      (is_win || is_linux || is_mac) && !is_official_build && dcheck_always_on
+}
+
+buildflag_header("buildflags") {
+  header = "buildflags.h"
+  flags = [ "WEBNN_ENABLE_GRAPH_DUMP=$webnn_enable_graph_dump" ]
+}
 
 blink_modules_sources("ml") {
   sources = [
@@ -47,10 +58,19 @@ blink_modules_sources("ml") {
   ]
 
   deps = [
+    ":buildflags",
     "//services/webnn/public/cpp",
     "//services/webnn/public/mojom:mojom_blink",
     "//third_party/blink/renderer/modules/webgpu",
   ]
+
+  if (webnn_enable_graph_dump) {
+    sources += [
+      "webnn/ml_graph_transform/utils/ml_graph_dump.cc",
+      "webnn/ml_graph_transform/utils/ml_graph_dump.h",
+    ]
+    deps += [ "//third_party/fp16" ]
+  }
 }
 
 source_set("operand_id_hash_traits") {
@@ -71,6 +91,7 @@ source_set("unit_tests") {
   ]
 
   deps = [
+    ":buildflags",
     "//services/webnn/public/mojom:mojom_blink",
     "//testing/gtest",
     "//third_party/blink/public:test_headers",

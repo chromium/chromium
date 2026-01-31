@@ -4,7 +4,6 @@
 
 #include "chrome/browser/extensions/api/identity/web_auth_flow_info_bar_delegate.h"
 
-#include "base/containers/contains.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/extensions/extension_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -21,8 +20,7 @@ TEST(WebAuthFlowInfoBarDelegateTest, LongExtensionName) {
   const WebAuthFlowInfoBarDelegate delegate(long_extension_name);
   const std::u16string infobar_text = delegate.GetMessageText();
 
-  EXPECT_FALSE(
-      base::Contains(infobar_text, base::UTF8ToUTF16(long_extension_name)));
-  EXPECT_TRUE(base::Contains(infobar_text, truncated_extension_name));
+  EXPECT_FALSE(infobar_text.contains(base::UTF8ToUTF16(long_extension_name)));
+  EXPECT_TRUE(infobar_text.contains(truncated_extension_name));
 }
 }  // namespace extensions

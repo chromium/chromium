@@ -26,8 +26,8 @@ namespace simple_devtools_protocol_client {
 
 class SimpleDevToolsProtocolClient : public content::DevToolsAgentHostClient {
  public:
-  typedef base::OnceCallback<void(base::Value::Dict)> ResponseCallback;
-  typedef base::RepeatingCallback<void(const base::Value::Dict&)> EventCallback;
+  typedef base::OnceCallback<void(base::DictValue)> ResponseCallback;
+  typedef base::RepeatingCallback<void(const base::DictValue&)> EventCallback;
 
   SimpleDevToolsProtocolClient();
   explicit SimpleDevToolsProtocolClient(const std::string& session_id);
@@ -49,13 +49,13 @@ class SimpleDevToolsProtocolClient : public content::DevToolsAgentHostClient {
                           const EventCallback& event_callback);
 
   void SendCommand(const std::string& method,
-                   base::Value::Dict params,
+                   base::DictValue params,
                    ResponseCallback response_callback);
 
   void SendCommand(const std::string& method,
                    ResponseCallback response_callback);
 
-  void SendCommand(const std::string& method, base::Value::Dict params);
+  void SendCommand(const std::string& method, base::DictValue params);
 
   void SendCommand(const std::string& method);
 
@@ -68,9 +68,9 @@ class SimpleDevToolsProtocolClient : public content::DevToolsAgentHostClient {
   void AgentHostClosed(content::DevToolsAgentHost* agent_host) override;
 
   // Virtual for tests.
-  virtual void DispatchProtocolMessageTask(base::Value::Dict message);
+  virtual void DispatchProtocolMessageTask(base::DictValue message);
 
-  void SendProtocolMessage(base::Value::Dict message);
+  void SendProtocolMessage(base::DictValue message);
 
   bool HasEventHandler(const std::string& event_name,
                        const EventCallback& event_callback);

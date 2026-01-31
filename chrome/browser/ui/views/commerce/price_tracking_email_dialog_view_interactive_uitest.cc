@@ -139,7 +139,7 @@ IN_PROC_BROWSER_TEST_F(PriceTrackingEmailDialogConsentViewInteractiveTest,
                        EmailConsentDialogShown) {
   signin::MakePrimaryAccountAvailable(
       IdentityManagerFactory::GetForProfile(browser()->profile()),
-      "test@example.com", signin::ConsentLevel::kSync);
+      "test@example.com", signin::ConsentLevel::kSignin);
 
   RunTestSequence(
       InstrumentTab(kShoppingTab),

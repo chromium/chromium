@@ -27,7 +27,7 @@ class WebStateImpl;
 - (void)handleNavigationWillChangeState;
 
 // Handles a navigation did push state message for the current webpage.
-- (void)handleNavigationDidPushStateMessage:(base::Value::Dict*)dict
+- (void)handleNavigationDidPushStateMessage:(base::DictValue*)dict
                                    webState:(web::WebStateImpl*)webStateImpl
                              hasUserGesture:(BOOL)hasUserGesture
                        userInteractionState:
@@ -35,7 +35,7 @@ class WebStateImpl;
                                  currentURL:(GURL)currentURL;
 
 // Handles a navigation did replace state message for the current webpage.
-- (void)handleNavigationDidReplaceStateMessage:(base::Value::Dict*)dict
+- (void)handleNavigationDidReplaceStateMessage:(base::DictValue*)dict
                                       webState:(web::WebStateImpl*)webStateImpl
                                 hasUserGesture:(BOOL)hasUserGesture
                           userInteractionState:

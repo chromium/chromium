@@ -19,6 +19,7 @@
 #include "content/browser/background_fetch/background_fetch.pb.h"
 #include "third_party/blink/public/common/manifest/manifest.h"
 #include "third_party/blink/public/common/safe_url_pattern.h"
+#include "third_party/blink/public/mojom/manifest/display_mode.mojom-forward.h"
 #include "third_party/protobuf/src/google/protobuf/repeated_ptr_field.h"
 
 namespace apps {
@@ -63,6 +64,12 @@ RunOnOsLoginMode ToRunOnOsLoginMode(proto::WebApp::RunOnOsLoginMode mode);
 
 proto::WebApp::RunOnOsLoginMode ToWebAppProtoRunOnOsLoginMode(
     RunOnOsLoginMode mode);
+
+blink::mojom::DisplayMode ToMojomDisplayMode(
+    proto::WebApp::DisplayMode display_mode);
+
+proto::WebApp::DisplayMode ToWebAppProtoDisplayMode(
+    blink::mojom::DisplayMode display_mode);
 
 std::optional<blink::SafeUrlPattern> ToUrlPattern(
     const proto::UrlPattern& proto_url_pattern);

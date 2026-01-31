@@ -463,7 +463,7 @@ IN_PROC_BROWSER_TEST_F(
   ASSERT_EQ(1u, GetLocalAddresses().size());
 
   // Disable addresses via the kSyncTypesListDisabled policy.
-  base::Value::List disabled_types;
+  base::ListValue disabled_types;
   disabled_types.Append("autofill");
   policy::PolicyMap policies;
   policies.Set(policy::key::kSyncTypesListDisabled,
@@ -500,7 +500,7 @@ IN_PROC_BROWSER_TEST_F(
   ASSERT_EQ(1u, GetLocalPasswords().size());
 
   // Disable passwords via the kSyncTypesListDisabled policy.
-  base::Value::List disabled_types;
+  base::ListValue disabled_types;
   disabled_types.Append("passwords");
   policy::PolicyMap policies;
   policies.Set(policy::key::kSyncTypesListDisabled,

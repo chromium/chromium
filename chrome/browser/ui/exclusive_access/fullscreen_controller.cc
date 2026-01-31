@@ -657,6 +657,10 @@ void FullscreenController::ExitFullscreenModeInternal() {
 bool FullscreenController::MaybeToggleFullscreenWithinTab(
     WebContents* web_contents,
     bool enter_fullscreen) {
+  if (disable_entering_fullscreen_within_tab_for_testing_) {
+    return false;
+  }
+
   if (enter_fullscreen) {
     if (web_contents->IsBeingVisiblyCaptured()) {
       FullscreenWithinTabHelper::CreateForWebContents(web_contents);

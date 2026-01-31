@@ -4,7 +4,7 @@
 
 module performance_manager.mojom;
 
-import "mojo/public/mojom/base/byte_count.mojom";
+import "mojo/public/mojom/base/byte_size.mojom";
 
 // All WebMemory* structs below are used for reporting the memory usage of the
 // page via the performance.measureUserAgentSpecificMemory Web API. These
@@ -58,11 +58,11 @@ struct WebMemoryBreakdownEntry {
   // The memory used in this breakdown. It is null for breakdowns that did not
   // have a memory measurement (for example a frame that was added after the
   // measurement started).
-  mojo_base.mojom.ByteCount? memory;
+  mojo_base.mojom.ByteSize? memory;
   // The memory used by canvas elements in this breakdown. It is null for
   // breakdowns that did not have a memory measurement (for example a frame
   // that was added after the measurement started).
-  mojo_base.mojom.ByteCount? canvas_memory;
+  mojo_base.mojom.ByteSize? canvas_memory;
 
   array<WebMemoryAttribution> attribution;
 };
@@ -82,11 +82,11 @@ struct WebMemoryMeasurement {
 
   // Memory that is used by V8 contexts that are no longer attached to any
   // ExecutionContext.
-  mojo_base.mojom.ByteCount? detached_memory;
+  mojo_base.mojom.ByteSize? detached_memory;
 
   // Memory that is not associated with any particular V8 context.
-  mojo_base.mojom.ByteCount? shared_memory;
+  mojo_base.mojom.ByteSize? shared_memory;
 
   // Memory used by Blink.
-  mojo_base.mojom.ByteCount? blink_memory;
+  mojo_base.mojom.ByteSize? blink_memory;
 };

@@ -142,7 +142,7 @@ class AppDiscoveryMetrics : public AppPlatformMetrics::Observer,
   bool IsAppListAtCapacity();
 
   // Builds a list based on current |app_installed_|.
-  base::Value::List BuildAppInstalledList();
+  base::ListValue BuildAppInstalledList();
 
   // Returns the string identifier to be logged for the given |profile_| and
   // |hashed_app_id|.

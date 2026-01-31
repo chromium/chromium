@@ -130,7 +130,8 @@ class PrefetchDataPipeTeeTest : public ::testing::Test,
         std::move(source_producer_handle));
 
     tee_ = base::MakeRefCounted<PrefetchDataPipeTee>(
-        std::move(source_consumer_handle), kBufferLimit);
+        std::move(source_consumer_handle), kBufferLimit,
+        perfetto::Flow::ProcessScoped(0));
 
     histogram_tester_ = std::make_unique<base::HistogramTester>();
   }

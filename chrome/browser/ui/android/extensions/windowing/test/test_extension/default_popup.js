@@ -39,19 +39,24 @@ function getWindowUpdateInfo() {
 
     switch (option) {
         case "focus":
-            const focusValue = document.querySelector('input[name="focus_value"]:checked').value === "true";
+            const focusValue = document.querySelector(
+                'input[name="focus_value"]:checked').value === "true";
             return { focused: focusValue };
         case "resize":
             const left = parseInt(document.getElementById("resize_left").value);
             const top = parseInt(document.getElementById("resize_top").value);
-            const width = parseInt(document.getElementById("resize_width").value);
-            const height = parseInt(document.getElementById("resize_height").value);
+            const width =
+                parseInt(document.getElementById("resize_width").value);
+            const height =
+                parseInt(document.getElementById("resize_height").value);
             return { left, top, width, height };
         case "state":
-            const stateValue = document.querySelector('input[name="state_value"]:checked').value;
+            const stateValue = document.querySelector(
+                'input[name="state_value"]:checked').value;
             return { state: stateValue };
         case "drawAttention":
-            const drawAttentionValue = document.querySelector('input[name="drawAttention_value"]:checked').value === "true";
+            const drawAttentionValue = document.querySelector(
+                'input[name="drawAttention_value"]:checked').value === "true";
             return { drawAttention: drawAttentionValue };
         default:
             throw `Unsupported option: ${option}`;
@@ -85,7 +90,8 @@ function updateVisibilityForWindowUpdateOptions() {
         'drawAttention': 'drawAttention_options',
     };
 
-    const checkedValue = document.querySelector('input[name="update_window_option"]:checked').value;
+    const checkedValue = document.querySelector(
+        'input[name="update_window_option"]:checked').value;
 
     for (const option in options) {
         document.getElementById(options[option]).style.display =
@@ -151,4 +157,56 @@ document.getElementById("update_window_button").onclick = async () => {
     }
 };
 
-document.getElementById('update_window_options_radio_group').addEventListener('change', updateVisibilityForWindowUpdateOptions);
+document.getElementById('update_window_options_radio_group').addEventListener(
+    'change', updateVisibilityForWindowUpdateOptions);
+
+document.getElementById("create_window_button").onclick = async () => {
+    try {
+        const createOptions = {};
+
+        createOptions.focused =
+            document.getElementById("create_window_focused_checkbox").checked;
+        createOptions.incognito =
+            document.getElementById("create_window_incognito_checkbox").checked;
+        createOptions.setSelfAsOpener =
+            document.getElementById("create_window_set_self_as_opener_checkbox")
+                .checked;
+
+        createOptions.type =
+            document.getElementById("create_window_type_select").value;
+
+        const state =
+            document.getElementById("create_window_state_select").value;
+        createOptions.state = state;
+
+        createOptions.left = parseInt(
+            document.getElementById("create_window_left_input").value);
+        createOptions.top = parseInt(
+            document.getElementById("create_window_top_input").value);
+        createOptions.width = parseInt(
+            document.getElementById("create_window_width_input").value);
+        createOptions.height = parseInt(
+            document.getElementById("create_window_height_input").value);
+
+        const url = document.getElementById("create_window_url_input").value;
+        if (url) {
+            createOptions.url = url;
+        }
+
+        const tabIdString =
+            document.getElementById("create_window_tab_id_input").value;
+        if (tabIdString) {
+            const tabId = parseInt(tabIdString);
+            if (isNaN(tabId)) {
+                throw `Invalid tab ID: ${tabIdString}`;
+            }
+            createOptions.tabId = tabId;
+        }
+
+        const window = await chrome.windows.create(createOptions);
+        const result = `Created window:\n\n${JSON.stringify(window, null, 2)}`;
+        setApiReturnValue(result);
+    } catch (error) {
+        setApiReturnValue(`${error}`);
+    }
+};

@@ -26,7 +26,7 @@ class MockMultipleRequestPaymentsNetworkInterface
       (const UploadCardRequestDetails&,
        base::OnceCallback<void(PaymentsAutofillClient::PaymentsRpcResult,
                                const std::u16string&,
-                               std::unique_ptr<base::Value::Dict>,
+                               std::unique_ptr<base::DictValue>,
                                std::vector<std::pair<int, int>>)>),
       (override));
 

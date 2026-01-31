@@ -112,19 +112,11 @@ LayoutInline* LayoutInline::CreateAnonymous(Document* document) {
 
 void LayoutInline::WillBeDestroyed() {
   NOT_DESTROYED();
-  // Make sure to destroy anonymous children first while they are still
-  // connected to the rest of the tree, so that they will properly dirty line
-  // boxes that they are removed from. Effects that do :before/:after only on
-  // hover could crash otherwise.
-  Children()->DestroyLeftoverChildren();
 
   if (TextAutosizer* text_autosizer = GetDocument().GetTextAutosizer())
     text_autosizer->Destroy(this);
 
   if (!DocumentBeingDestroyed()) {
-    if (Parent()) {
-      Parent()->DirtyLinesFromChangedChild(this);
-    }
     if (FirstInlineFragmentItemIndex()) {
       FragmentItems::LayoutObjectWillBeDestroyed(*this);
       ClearFirstInlineFragmentItemIndex();
@@ -220,6 +212,9 @@ bool LayoutInline::ComputeInitialShouldCreateBoxFragment(
 
   if (const Element* element = DynamicTo<Element>(GetNode())) {
     if (element->MayBeImplicitAnchor()) {
+      return true;
+    }
+    if (element->GetTrackedElementRect()) {
       return true;
     }
   }
@@ -577,9 +572,7 @@ static LayoutUnit ComputeMargin(const LayoutInline* layout_object,
     return LayoutUnit(margin.Pixels());
   if (margin.IsPercent() || margin.IsCalculated()) {
     return MinimumValueForLength(
-        margin,
-        std::max(LayoutUnit(),
-                 layout_object->ContainingBlock()->AvailableLogicalWidth()));
+        margin, layout_object->ContainingBlock()->ContentLogicalWidth());
   }
   return LayoutUnit();
 }
@@ -830,6 +823,7 @@ PaintLayerType LayoutInline::LayerTypeRequired() const {
 
 void LayoutInline::ChildBecameNonInline(LayoutObject* child) {
   NOT_DESTROYED();
+  DCHECK(!RuntimeEnabledFeatures::LayoutReinsertOnInFlowStateChangeEnabled());
   DCHECK(!child->IsInline());
   // Following tests reach here.
   //  * external/wpt/css/CSS2/positioning/toogle-abspos-on-relpos-inline-child.html
@@ -859,11 +853,6 @@ void LayoutInline::DirtyLinesFromChangedChild(LayoutObject* child) {
     if (const LayoutBlockFlow* container = FragmentItemsContainer())
       FragmentItems::DirtyLinesFromChangedChild(*child, *container);
   }
-}
-
-LayoutUnit LayoutInline::FirstLineHeight() const {
-  NOT_DESTROYED();
-  return LayoutUnit(FirstLineStyle()->ComputedLineHeight());
 }
 
 void LayoutInline::ImageChanged(WrappedImagePtr, CanDeferInvalidation) {

@@ -84,7 +84,7 @@ const Platform* kPlatformsWithReducedUserAgentSupport[] = {
     &kLinuxPlatform,
 };
 
-Status ParsePresetDeviceMetrics(const base::Value::Dict& device_metrics_dict,
+Status ParsePresetDeviceMetrics(const base::DictValue& device_metrics_dict,
                                 DeviceMetrics* device_metrics) {
   std::optional<int> maybe_width = device_metrics_dict.FindInt("width");
   std::optional<int> maybe_height = device_metrics_dict.FindInt("height");
@@ -115,7 +115,7 @@ Status ParsePresetDeviceMetrics(const base::Value::Dict& device_metrics_dict,
   return Status{kOk};
 }
 
-Status ParsePresetClientHints(const base::Value::Dict& client_hints_dict,
+Status ParsePresetClientHints(const base::DictValue& client_hints_dict,
                               ClientHints* client_hints) {
   std::optional<bool> mobile = client_hints_dict.FindBool("mobile");
   if (!mobile.has_value()) {
@@ -189,9 +189,9 @@ Status MobileDevice::FindMobileDevice(std::string device_name,
 
   if (!parsed_json->is_dict())
     return Status(kUnknownError, "malformed device metrics dictionary");
-  base::Value::Dict& mobile_devices = parsed_json->GetDict();
+  base::DictValue& mobile_devices = parsed_json->GetDict();
 
-  const base::Value::Dict* device =
+  const base::DictValue* device =
       mobile_devices.FindDictByDottedPath(device_name);
   if (!device)
     return Status(kUnknownError, "must be a valid device");
@@ -207,7 +207,7 @@ Status MobileDevice::FindMobileDevice(std::string device_name,
   Status status{kOk};
 
   // Parse device metrics
-  const base::Value::Dict* maybe_device_metrics_dict =
+  const base::DictValue* maybe_device_metrics_dict =
       device->FindDict("deviceMetrics");
   if (!maybe_device_metrics_dict) {
     return Status(kUnknownError,
@@ -224,7 +224,7 @@ Status MobileDevice::FindMobileDevice(std::string device_name,
   // Parsing the client hints
   ClientHints client_hints;
   if (device->Find("clientHints")) {
-    const base::Value::Dict* maybe_client_hints_dict =
+    const base::DictValue* maybe_client_hints_dict =
         device->FindDict("clientHints");
     if (!maybe_client_hints_dict) {
       return Status(kUnknownError,
@@ -279,7 +279,7 @@ Status MobileDevice::GetKnownMobileDeviceNamesForTesting(
   if (!parsed_json->is_dict()) {
     return Status(kUnknownError, "malformed device metrics dictionary");
   }
-  base::Value::Dict& mobile_devices = parsed_json->GetDict();
+  base::DictValue& mobile_devices = parsed_json->GetDict();
 
   for (auto [key, value] : mobile_devices) {
     result->push_back(std::move(key));

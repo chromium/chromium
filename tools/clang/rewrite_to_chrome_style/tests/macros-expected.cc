@@ -32,8 +32,10 @@ void F() {
   }
 }
 
-#define CALL_METHOD_FROM_MACRO()           \
-  void CallMethodFromMacro() { Method(); } \
+#define CALL_METHOD_FROM_MACRO() \
+  void CallMethodFromMacro() {   \
+    Method();                    \
+  }                              \
   void Pmethod() override {}
 
 struct WithMacroP {

@@ -4,6 +4,7 @@
 
 #include "ash/wm/overview/overview_item_view.h"
 
+#include <algorithm>
 #include <memory>
 
 #include "ash/strings/grit/ash_strings.h"
@@ -17,7 +18,6 @@
 #include "ash/wm/window_preview_view.h"
 #include "ash/wm/window_util.h"
 #include "ash/wm/wm_constants.h"
-#include "base/containers/contains.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/aura/window.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -252,7 +252,8 @@ bool OverviewItemView::CanAcceptEvent(const ui::Event& event) {
   // Do not process or accept press down events that are on the border.
   static ui::EventType press_types[] = {ui::EventType::kGestureTapDown,
                                         ui::EventType::kMousePressed};
-  if (event.IsLocatedEvent() && base::Contains(press_types, event.type())) {
+  if (event.IsLocatedEvent() &&
+      std::ranges::contains(press_types, event.type())) {
     const gfx::Rect content_bounds = GetContentsBounds();
     if (!content_bounds.Contains(event.AsLocatedEvent()->location()))
       accept_events = false;

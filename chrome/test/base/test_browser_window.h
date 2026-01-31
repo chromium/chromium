@@ -14,10 +14,10 @@
 #include "build/build_config.h"
 #include "chrome/browser/ui/autofill/test/test_autofill_bubble_handler.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_dialogs.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_list_observer.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/dialogs/browser_dialogs.h"
 #include "chrome/browser/ui/location_bar/location_bar.h"
 #include "chrome/browser/ui/translate/partial_translate_bubble_model.h"
 #include "chrome/browser/ui/webui/tab_search/tab_search.mojom.h"
@@ -133,7 +133,6 @@ class TestBrowserWindow : public BrowserWindow, public BrowserListObserver {
   void SetDevToolsScrimVisibility(bool visible) override {}
   void ResetToolbarTabState(content::WebContents* contents) override {}
   void FocusToolbar() override {}
-  ExtensionsContainer* GetExtensionsContainer() override;
   void ToolbarSizeChanged(bool is_animating) override {}
   void TabDraggingStatusChanged(bool is_dragging) override {}
   void LinkOpeningFromGesture(WindowOpenDisposition disposition) override {}
@@ -154,7 +153,7 @@ class TestBrowserWindow : public BrowserWindow, public BrowserListObserver {
   bool IsBookmarkBarVisible() const override;
   bool IsBookmarkBarAnimating() const override;
   bool IsTabStripEditable() const override;
-  void SetTabStripNotEditableForTesting() override;
+  void DisableTabStripEditingForTesting() override;
   void SetIsTabStripEditable(bool is_editable);
   bool IsToolbarVisible() const override;
   bool IsLocationBarVisible() const override;
@@ -203,9 +202,6 @@ class TestBrowserWindow : public BrowserWindow, public BrowserListObserver {
   void StartPartialTranslate(const std::string& source_language,
                              const std::string& target_language,
                              const std::u16string& text_selection) override;
-  void ShowOneClickSigninConfirmation(
-      const std::u16string& email,
-      base::OnceCallback<void(bool)> confirmed_callback) override {}
   DownloadBubbleUIController* GetDownloadBubbleUIController() override;
   void ConfirmBrowserCloseWithPendingDownloads(
       int download_count,
@@ -288,6 +284,7 @@ class TestBrowserWindow : public BrowserWindow, public BrowserListObserver {
     void Revert() override {}
     OmniboxView* GetOmniboxView() override;
     OmniboxController* GetOmniboxController() override;
+    ChipController* GetChipController() override;
     LocationBarTesting* GetLocationBarForTesting() override;
     LocationBarModel* GetLocationBarModel() override;
     content::WebContents* GetWebContents() override;
@@ -295,6 +292,13 @@ class TestBrowserWindow : public BrowserWindow, public BrowserListObserver {
         override;
     void OnChanged() override {}
     void UpdateWithoutTabRestore() override {}
+    bool IsVisible() const override;
+    gfx::Rect Bounds() const override;
+    gfx::Size MinimumSize() const override;
+    gfx::Size PreferredSize() const override;
+    void Update(content::WebContents* contents) override {}
+    void ResetTabState(content::WebContents* contents) override {}
+    bool HasSecurityStateChanged() override;
   };
 
   // BrowserListObserver:

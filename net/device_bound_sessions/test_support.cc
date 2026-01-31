@@ -46,7 +46,7 @@ constexpr std::array<uint8_t, 64> kTestOriginTrialPrivateKey = {
     0x90, 0x8,  0x8e, 0xa8, 0xe0, 0x56, 0x3a, 0x4,  0xd0};
 
 std::string GetOriginTrialToken(const GURL& base_url) {
-  base::Value::Dict token_data;
+  base::DictValue token_data;
   token_data.Set("origin", url::Origin::Create(base_url).Serialize());
   token_data.Set("feature", "DeviceBoundSessionCredentials");
   base::Time expiry = base::Time::Now() + base::Days(1);
@@ -73,7 +73,8 @@ std::string GetOriginTrialToken(const GURL& base_url) {
   return base::Base64Encode(token);
 }
 
-std::optional<std::string> GetQueryParameter(GURL url, const std::string& key) {
+std::optional<std::string> GetQueryParameter(const GURL& url,
+                                             const std::string& key) {
   std::string result;
   bool found = net::GetValueForKeyInQuery(url, key, &result);
   if (!found) {
@@ -91,48 +92,61 @@ std::unique_ptr<net::test_server::HttpResponse> RequestHandler(
     response->AddCustomHeader("Origin-Trial", GetOriginTrialToken(base_url));
     response->set_content_type("text/html");
     return response;
-  } else if (request.relative_url == "/dbsc_required") {
+  } else if (request.relative_url.starts_with("/dbsc_required")) {
+    std::string query_params = request.GetURL().GetQuery();
     response->AddCustomHeader(
         "Secure-Session-Registration",
-        "(RS256 "
-        "ES256);challenge=\"challenge_value\";path=\"dbsc_register_session\"");
+        base::StringPrintf("(RS256 "
+                           "ES256);challenge=\"challenge_value\";path=\"dbsc_"
+                           "register_session?%s\"",
+                           query_params));
     response->set_content_type("text/html");
     return response;
-  } else if (request.relative_url == "/dbsc_register_session" ||
-             request.relative_url == "/dbsc_refresh_session") {
-    response->AddCustomHeader("Set-Cookie",
-                              "auth_cookie=abcdef0123;SameSite=None;Secure");
+  } else if (request.relative_url.starts_with("/dbsc_register_session") ||
+             request.relative_url.starts_with("/dbsc_refresh_session")) {
+    std::string session_id = GetQueryParameter(request.GetURL(), "session_id")
+                                 .value_or("session_id");
+    std::string cookie_name = GetQueryParameter(request.GetURL(), "cookie_name")
+                                  .value_or("auth_cookie");
+    response->AddCustomHeader(
+        "Set-Cookie",
+        base::StringPrintf("%s=abcdef0123;SameSite=None;Secure", cookie_name));
+    std::string query_params = request.GetURL().GetQuery();
+    std::string refresh_path =
+        base::StringPrintf("/dbsc_refresh_session?%s", query_params);
 
     const auto registration_response =
-        base::Value::Dict()
-            .Set("session_identifier", "session_id")
-            .Set("refresh_url",
-                 base_url.Resolve("/dbsc_refresh_session").spec())
-            .Set("scope", base::Value::Dict()
+        base::DictValue()
+            .Set("session_identifier", session_id)
+            .Set("refresh_url", base_url.Resolve(refresh_path).spec())
+            .Set("scope", base::DictValue()
                               .Set("include_site", false)
                               .Set("scope_specification",
-                                   base::Value::List().Append(
-                                       base::Value::Dict()
+                                   base::ListValue().Append(
+                                       base::DictValue()
                                            .Set("type", "exclude")
                                            .Set("domain", base_url.GetHost())
                                            .Set("path", "/favicon.ico"))))
             .Set("credentials",
-                 base::Value::List().Append(
-                     base::Value::Dict()
+                 base::ListValue().Append(
+                     base::DictValue()
                          .Set("type", "cookie")
-                         .Set("name", "auth_cookie")
+                         .Set("name", cookie_name)
                          .Set("attributes", "SameSite=None; Secure")));
 
     std::optional<std::string> json = base::WriteJson(registration_response);
     EXPECT_TRUE(json.has_value());
     response->set_content(*json);
     return response;
-  } else if (request.relative_url == "/resource_triggered_dbsc_registration") {
+  } else if (request.relative_url.starts_with(
+                 "/resource_triggered_dbsc_registration")) {
+    std::string query_params = request.GetURL().GetQuery();
+    std::string path = base::StringPrintf("/dbsc_required?%s", query_params);
     response->AddCustomHeader("Origin-Trial", GetOriginTrialToken(base_url));
     response->set_content_type("text/html");
     response->set_content(base::StringPrintf(
         R"*(<html><body onload="fetch('%s')"></body></html>)*",
-        base_url.Resolve("/dbsc_required").spec()));
+        base_url.Resolve(path).spec()));
     return response;
   } else if (request.relative_url.starts_with("/set_early_challenge")) {
     std::string challenge = request.GetURL().GetQuery();
@@ -168,8 +182,7 @@ std::unique_ptr<net::test_server::HttpResponse> RequestHandler(
   return nullptr;
 }
 
-std::optional<std::vector<uint8_t>> Es256JwkToSpki(
-    const base::Value::Dict& jwk) {
+std::optional<std::vector<uint8_t>> Es256JwkToSpki(const base::DictValue& jwk) {
   const std::string* x = jwk.FindString("x");
   const std::string* y = jwk.FindString("y");
   if (!x || !y) {
@@ -320,19 +333,19 @@ bool VerifyEs256Jwt(std::string_view jwt) {
     return false;
   }
 
-  const std::optional<base::Value::Dict> header_json =
+  const std::optional<base::DictValue> header_json =
       base::JSONReader::ReadDict(header, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   if (!header_json) {
     return false;
   }
-  const std::optional<base::Value::Dict> payload_json =
+  const std::optional<base::DictValue> payload_json =
       base::JSONReader::ReadDict(payload, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   if (!payload_json) {
     return false;
   }
 
   // Extract the JWK.
-  const base::Value::Dict* jwk = header_json->FindDict("jwk");
+  const base::DictValue* jwk = header_json->FindDict("jwk");
   if (!jwk) {
     return false;
   }

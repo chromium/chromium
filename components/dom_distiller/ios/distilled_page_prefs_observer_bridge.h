@@ -13,7 +13,8 @@
 @protocol DistilledPagePrefsObserving <NSObject>
 @optional
 - (void)onChangeFontFamily:(dom_distiller::mojom::FontFamily)font;
-- (void)onChangeTheme:(dom_distiller::mojom::Theme)theme;
+- (void)onChangeTheme:(dom_distiller::mojom::Theme)theme
+           withSource:(dom_distiller::ThemeSettingsUpdateSource)source;
 - (void)onChangeFontScaling:(float)scaling;
 @end
 

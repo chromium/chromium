@@ -10,7 +10,9 @@
 #include "chrome/browser/actor/actor_policy_checker.h"
 #include "chrome/browser/preloading/preloading_features.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/ui/ui_features.h"
+#include "chrome/browser/ui/webui/settings/on_device_ai_settings_handler.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/web_ui_mocha_browser_test.h"
@@ -25,6 +27,8 @@
 #include "components/prefs/pref_service.h"
 #include "components/privacy_sandbox/privacy_sandbox_features.h"
 #include "components/safe_browsing/core/common/features.h"
+#include "components/signin/public/identity_manager/account_capabilities_test_mutator.h"
+#include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "content/public/common/content_features.h"
 #include "content/public/test/browser_test.h"
 #include "crypto/crypto_buildflags.h"
@@ -35,9 +39,13 @@
 #if BUILDFLAG(ENABLE_GLIC)
 #include "chrome/browser/glic/glic_pref_names.h"
 #include "chrome/browser/glic/test_support/glic_test_environment.h"
+#include "chrome/browser/glic/test_support/glic_test_util.h"
+#include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/subscription_eligibility/subscription_eligibility_prefs.h"
 #include "chrome/browser/subscription_eligibility/subscription_eligibility_service.h"
 #include "chrome/browser/subscription_eligibility/subscription_eligibility_service_factory.h"
+#include "components/signin/public/identity_manager/account_capabilities_test_mutator.h"
+#include "components/signin/public/identity_manager/identity_test_utils.h"
 #endif
 
 #if !BUILDFLAG(IS_CHROMEOS)
@@ -64,7 +72,6 @@ class SettingsBrowserTest : public WebUIMochaBrowserTest {
         /*disabled_features=*/
         {
 #if BUILDFLAG(ENABLE_GLIC)
-            features::kGlicClosedCaptioning,
             features::kGlicDefaultTabContextSetting
 #endif
         });
@@ -147,6 +154,10 @@ IN_PROC_BROWSER_TEST_F(SettingsTest, AutofillAiSection) {
 
 IN_PROC_BROWSER_TEST_F(SettingsTest, AutofillAiAddOrEditDialog) {
   RunTest("settings/autofill_ai_add_or_edit_dialog_test.js", "mocha.run()");
+}
+
+IN_PROC_BROWSER_TEST_F(SettingsTest, WalletablePassDetectionToggle) {
+  RunTest("settings/walletable_pass_detection_toggle_test.js", "mocha.run()");
 }
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC)
@@ -307,8 +318,8 @@ IN_PROC_BROWSER_TEST_F(SettingsTest, DISABLED_MainPage) {
   RunTest("settings/settings_main_test.js", "mocha.run()");
 }
 
-// TODO(crbug.com/454213441): Flaky on Linux debug builds.
-#if (BUILDFLAG(IS_LINUX) && !defined(NDEBUG))
+// TODO(crbug.com/454213441): Flaky on Linux builds and debug ChromeOS builds.
+#if BUILDFLAG(IS_LINUX) || (BUILDFLAG(IS_CHROMEOS) && !defined(NDEBUG))
 #define MAYBE_SettingsMain DISABLED_SettingsMain
 #else
 #define MAYBE_SettingsMain SettingsMain
@@ -513,23 +524,6 @@ IN_PROC_BROWSER_TEST_F(SettingsGlicSubpageLocationToggleLearnMoreTest,
           "runMochaSuite('GlicSubpage LocationToggleLearnMoreEnabled')");
 }
 
-class SettingsGlicSubageClosedCaptionsToggleTest : public SettingsBrowserTest {
- public:
-  SettingsGlicSubageClosedCaptionsToggleTest() {
-    scoped_feature_list_.InitWithFeatures({features::kGlicClosedCaptioning},
-                                          /*disabled_features=*/{});
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-IN_PROC_BROWSER_TEST_F(SettingsGlicSubageClosedCaptionsToggleTest,
-                       SettingsGlicSubageClosedCaptionsToggleEnabled) {
-  RunTest("settings/glic_subpage_test.js",
-          "runMochaSuite('GlicSubpage ClosedCaptionsToggleEnabled')");
-}
-
 class SettingsGlicSubpageKeepSidepanelOpenOnNewTabsToggleTest
     : public SettingsBrowserTest {
  public:
@@ -570,19 +564,83 @@ IN_PROC_BROWSER_TEST_F(SettingsGlicSubPageDefaultTabContextToggleTest,
       "runMochaSuite('GlicSubpage DefaultTabContextSettingFeatureEnabled')");
 }
 
-class SettingsGlicSubPageWebActuationToggleTest : public SettingsBrowserTest {
+class SettingsGlicSubPageTestBase : public SettingsBrowserTest {
+ protected:
+  void SigninAndEnableAccountCapability() {
+    glic::SigninWithPrimaryAccount(GetProfile());
+
+    auto* const identity_manager =
+        IdentityManagerFactory::GetForProfile(GetProfile());
+    AccountInfo primary_account =
+        identity_manager->FindExtendedAccountInfoByAccountId(
+            identity_manager->GetPrimaryAccountId(
+                signin::ConsentLevel::kSignin));
+
+    AccountCapabilitiesTestMutator mutator(&primary_account.capabilities);
+    mutator.set_can_use_model_execution_features(true);
+
+    signin::UpdateAccountInfoForAccount(identity_manager, primary_account);
+  }
+};
+
+class SettingsGlicSubPageClosedCaptionsToggleTest
+    : public SettingsGlicSubPageTestBase {};
+
+IN_PROC_BROWSER_TEST_F(SettingsGlicSubPageClosedCaptionsToggleTest,
+                       ToggleHiddenForUserWithoutAccountCapability) {
+  RunTest("settings/glic_subpage_test.js",
+          "runMochaSuite('GlicSubpage ClosedCaptionsToggleHidden')");
+}
+
+IN_PROC_BROWSER_TEST_F(SettingsGlicSubPageClosedCaptionsToggleTest,
+                       ToggleVisibleForUserWithAccountCapability) {
+  SigninAndEnableAccountCapability();
+  RunTest("settings/glic_subpage_test.js",
+          "runMochaSuite('GlicSubpage ClosedCaptionsToggleVisible')");
+}
+
+class SettingsGlicSubPageMicrophoneToggleTest
+    : public SettingsGlicSubPageTestBase {};
+
+IN_PROC_BROWSER_TEST_F(SettingsGlicSubPageMicrophoneToggleTest,
+                       ToggleHiddenForUserWithoutAccountCapability) {
+  RunTest("settings/glic_subpage_test.js",
+          "runMochaSuite('GlicSubpage MicrophoneToggleHidden')");
+}
+
+IN_PROC_BROWSER_TEST_F(SettingsGlicSubPageMicrophoneToggleTest,
+                       ToggleVisibleForUserWithAccountCapability) {
+  SigninAndEnableAccountCapability();
+  RunTest("settings/glic_subpage_test.js",
+          "runMochaSuite('GlicSubpage MicrophoneToggleVisible')");
+}
+
+class SettingsGlicSubPageWebActuationToggleTestBase
+    : public SettingsGlicSubPageTestBase {
+ protected:
+  void SetUserTier(int32_t tier) {
+    GetProfile()->GetPrefs()->SetInteger(
+        subscription_eligibility::prefs::kAiSubscriptionTier, tier);
+  }
+};
+
+class SettingsGlicSubPageWebActuationToggleTest
+    : public SettingsGlicSubPageWebActuationToggleTestBase {
  public:
   SettingsGlicSubPageWebActuationToggleTest() {
-    scoped_feature_list_.InitWithFeatures({features::kGlicWebActuationSetting},
-                                          /*disabled_features=*/{});
+    scoped_feature_list_.InitWithFeaturesAndParameters(
+        {{features::kGlicWebActuationSetting, {}},
+         {features::kGlicActor,
+          {{features::kGlicActorPolicyControlExemption.name, "true"},
+           {features::kGlicActorEligibleTiers.name, "100,200"}}}},
+        /*disabled_features=*/{});
   }
+
   void SetUpOnMainThread() override {
     SettingsBrowserTest::SetUpOnMainThread();
+    SigninAndEnableAccountCapability();
     GetProfile()->GetPrefs()->SetBoolean(
         glic::prefs::kGlicUserEnabledActuationOnWeb, false);
-    actor::ActorKeyedService::Get(browser()->profile())
-        ->GetPolicyChecker()
-        .SetActOnWebForTesting(true);
   }
 
  private:
@@ -602,17 +660,16 @@ IN_PROC_BROWSER_TEST_F(SettingsGlicSubPageWebActuationToggleTest,
 }
 
 class SettingsGlicSubPageWebActuationAllowedTierToggleTest
-    : public SettingsBrowserTest {
+    : public SettingsGlicSubPageWebActuationToggleTestBase {
  public:
   SettingsGlicSubPageWebActuationAllowedTierToggleTest() {
     // Set the allowed tiers to "100" and "200"
-    scoped_feature_list_.InitAndEnableFeatureWithParameters(
-        features::kGlicWebActuationSetting, {{"allowed_tiers", "100,200"}});
-  }
-
-  void SetUserTier(int32_t tier) {
-    GetProfile()->GetPrefs()->SetInteger(
-        subscription_eligibility::prefs::kAiSubscriptionTier, tier);
+    scoped_feature_list_.InitWithFeaturesAndParameters(
+        {{features::kGlicWebActuationSetting, {}},
+         {features::kGlicWebActuationSettingsToggle, {}},
+         {features::kGlicActor,
+          {{features::kGlicActorEligibleTiers.name, "100,200"}}}},
+        {});
   }
 
  private:
@@ -620,22 +677,29 @@ class SettingsGlicSubPageWebActuationAllowedTierToggleTest
 };
 
 IN_PROC_BROWSER_TEST_F(SettingsGlicSubPageWebActuationAllowedTierToggleTest,
-                       ToggleVisibleForAllowedTier) {
+                       ToggleHiddenForUserWithoutAccountCapability) {
   SetUserTier(100);
-  RunTest(
-      "settings/glic_subpage_test.js",
-      "runMochaSuite('GlicSubpage WebActuationToggleVisibleForAllowedTier')");
+  RunTest("settings/glic_subpage_test.js",
+          "runMochaSuite('GlicSubpage WebActuationToggleHidden')");
+}
+
+IN_PROC_BROWSER_TEST_F(SettingsGlicSubPageWebActuationAllowedTierToggleTest,
+                       ToggleVisibleForAllowedTier) {
+  SigninAndEnableAccountCapability();
+  SetUserTier(100);
+  RunTest("settings/glic_subpage_test.js",
+          "runMochaSuite('GlicSubpage WebActuationToggleVisible')");
 }
 
 IN_PROC_BROWSER_TEST_F(SettingsGlicSubPageWebActuationAllowedTierToggleTest,
                        ToggleHiddenForDisallowedTier) {
+  SigninAndEnableAccountCapability();
   SetUserTier(999);
   GetProfile()->GetPrefs()->SetBoolean(
       glic::prefs::kGlicUserEnabledActuationOnWeb, true);
 
-  RunTest(
-      "settings/glic_subpage_test.js",
-      "runMochaSuite('GlicSubpage WebActuationToggleHiddenForDisallowedTier')");
+  RunTest("settings/glic_subpage_test.js",
+          "runMochaSuite('GlicSubpage WebActuationToggleHidden')");
 }
 
 class SettingsGlicSubageDataProtectionTest : public SettingsBrowserTest {
@@ -950,7 +1014,19 @@ class SettingsSystemPageTest : public SettingsBrowserTest {
 IN_PROC_BROWSER_TEST_F(SettingsSystemPageTest, SystemPage) {
   RunTest("settings/system_page_test.js", "mocha.run()");
 }
-#endif
+
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+class SettingsSystemPageOfficialTest : public SettingsBrowserTest {
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_{
+      features::kShowOnDeviceAiSettings};
+};
+
+IN_PROC_BROWSER_TEST_F(SettingsSystemPageOfficialTest, SystemPageOfficial) {
+  RunTest("settings/system_page_official_test.js", "mocha.run()");
+}
+#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
+#endif  //! BUILDFLAG(IS_CHROMEOS)
 
 using SettingsAboutPageTest = SettingsBrowserTest;
 
@@ -1052,11 +1128,6 @@ IN_PROC_BROWSER_TEST_F(SettingsCookiesPageTest, ExceptionsList) {
   RunTest("settings/cookies_page_test.js", "runMochaSuite('ExceptionsList')");
 }
 
-IN_PROC_BROWSER_TEST_F(SettingsCookiesPageTest, TrackingProtectionSettings) {
-  RunTest("settings/cookies_page_test.js",
-          "runMochaSuite('TrackingProtectionSettings')");
-}
-
 // Test with --enable-pixel-output-in-tests enabled, required by fingerprint
 // element test using HTML canvas.
 class SettingsWithPixelOutputTest : public SettingsBrowserTest {
@@ -1147,9 +1218,7 @@ class SettingsPrivacyGuideTest : public SettingsBrowserTest {
  protected:
   SettingsPrivacyGuideTest() {
     scoped_feature_list_.InitWithFeatures(
-        {features::kPrivacyGuideForceAvailable,
-         content_settings::features::kTrackingProtection3pcd},
-        {});
+        {features::kPrivacyGuideForceAvailable}, {});
   }
 
  private:
@@ -1175,7 +1244,7 @@ IN_PROC_BROWSER_TEST_F(SettingsPrivacyGuideTest, HistorySyncCardNavigations) {
           "runMochaSuite('HistorySyncCardNavigations')");
 }
 
-IN_PROC_BROWSER_TEST_F(SettingsPrivacyGuideTest, afeBrowsingCardNavigations) {
+IN_PROC_BROWSER_TEST_F(SettingsPrivacyGuideTest, SafeBrowsingCardNavigations) {
   RunTest("settings/privacy_guide_page_test.js",
           "runMochaSuite('SafeBrowsingCardNavigations')");
 }
@@ -1193,16 +1262,6 @@ IN_PROC_BROWSER_TEST_F(SettingsPrivacyGuideTest, AdTopicsCardNavigations) {
 IN_PROC_BROWSER_TEST_F(SettingsPrivacyGuideTest, PrivacyGuideDialog) {
   RunTest("settings/privacy_guide_page_test.js",
           "runMochaSuite('PrivacyGuideDialog')");
-}
-
-// TODO(crbug.com/40942110): Re-enable when no longer flaky.
-#if (BUILDFLAG(IS_LINUX) && !defined(NDEBUG))
-#define MAYBE_3pcdOff DISABLED_3pcdOff
-#else
-#define MAYBE_3pcdOff 3pcdOff
-#endif
-IN_PROC_BROWSER_TEST_F(SettingsPrivacyGuideTest, MAYBE_3pcdOff) {
-  RunTest("settings/privacy_guide_page_test.js", "runMochaSuite('3pcdOff')");
 }
 
 IN_PROC_BROWSER_TEST_F(SettingsPrivacyGuideTest, Integration) {

@@ -8,9 +8,9 @@
 #include "chrome/test/chromedriver/chrome/status.h"
 
 CastTracker::CastTracker(DevToolsClient* client)
-    : sinks_(base::Value::List()), issue_("") {
+    : sinks_(base::ListValue()), issue_("") {
   client->AddListener(this);
-  client->SendCommand("Cast.enable", base::Value::Dict());
+  client->SendCommand("Cast.enable", base::DictValue());
 }
 
 CastTracker::~CastTracker() = default;
@@ -21,7 +21,7 @@ bool CastTracker::ListensToConnections() const {
 
 Status CastTracker::OnEvent(DevToolsClient* client,
                             const std::string& method,
-                            const base::Value::Dict& params) {
+                            const base::DictValue& params) {
   if (method == "Cast.sinksUpdated") {
     const base::Value* sinks = params.Find("sinks");
     if (sinks)

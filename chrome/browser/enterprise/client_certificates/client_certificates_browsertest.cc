@@ -149,19 +149,19 @@ class ClientCertificateBrowserTest : public MixinBasedPlatformBrowserTest,
   void SetCertificateAutoselectionPolicy() {
     std::string policy_value_json;
     ASSERT_TRUE(base::JSONWriter::Write(
-        base::Value::Dict()
+        base::DictValue()
             .Set("pattern", embedded_https_test_server()
                                 .GetURL("mtls.google.com", "/mtls")
                                 .spec())
-            .Set("filter", base::Value::Dict().Set(
-                               "ISSUER", base::Value::Dict().Set(
+            .Set("filter", base::DictValue().Set(
+                               "ISSUER", base::DictValue().Set(
                                              "CN", GetIssuerCommonName()))),
         &policy_value_json));
 
     base::flat_map<std::string, std::optional<base::Value>> policy_values;
     policy_values.insert(
         {policy::key::kAutoSelectCertificateForUrls,
-         base::Value(base::Value::List().Append(policy_value_json))});
+         base::Value(base::ListValue().Append(policy_value_json))});
 
     if (is_profile_scenario()) {
       management_mixin()->SetCloudUserPolicies(std::move(policy_values));

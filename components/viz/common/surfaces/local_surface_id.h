@@ -142,6 +142,10 @@ class VIZ_COMMON_EXPORT LocalSurfaceId {
   // this will return false.
   bool IsNewerThan(const LocalSurfaceId& other) const;
 
+  // Returns whether this LocalSurfaceId was generated after `other`. Same as
+  // IsNewerThan but ignores whether the embedding token is different.
+  bool IsNewerThanIgnoringEmbedToken(const LocalSurfaceId& other) const;
+
   // Returns whether this LocalSurfaceId was generated after |other|. In the
   // case where both `this` and `other` have advanced separate sequences, then
   // this will return false. In the case where `embed_token_` has changed, this

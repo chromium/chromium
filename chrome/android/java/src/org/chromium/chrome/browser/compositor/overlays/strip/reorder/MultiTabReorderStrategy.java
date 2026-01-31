@@ -15,7 +15,7 @@ import android.view.View;
 import org.chromium.base.MathUtils;
 import org.chromium.base.Token;
 import org.chromium.base.metrics.RecordUserAction;
-import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.supplier.SettableNullableObservableSupplier;
 import org.chromium.build.annotations.EnsuresNonNull;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -83,7 +83,7 @@ public class MultiTabReorderStrategy extends ReorderStrategyBase {
             TabModel model,
             TabGroupModelFilter tabGroupModelFilter,
             View containerView,
-            ObservableSupplierImpl<@Nullable Token> groupIdToHideSupplier,
+            SettableNullableObservableSupplier<Token> groupIdToHideSupplier,
             Supplier<Float> tabWidthSupplier,
             Supplier<Float> pinnedTabsBoundarySupplier,
             Supplier<Long> lastReorderScrollTimeSupplier,
@@ -174,7 +174,7 @@ public class MultiTabReorderStrategy extends ReorderStrategyBase {
                 reorderBlockIfThresholdReached(
                         stripViews, groupTitles, stripTabs, offset, tabsToReorder);
         if (reordered) {
-            if (!Boolean.TRUE.equals(mInReorderModeSupplier.get())) return;
+            if (!mInReorderModeSupplier.get()) return;
             setEdgeMarginsForReorder(stripTabs);
 
             offset =
@@ -366,7 +366,10 @@ public class MultiTabReorderStrategy extends ReorderStrategyBase {
     }
 
     @Override
-    public void stopReorderMode(StripLayoutView[] stripViews, StripLayoutGroupTitle[] groupTitles) {
+    public void stopReorderMode(
+            StripLayoutView[] stripViews,
+            StripLayoutGroupTitle[] groupTitles,
+            boolean isDragCancelled) {
         mAnimationHost.finishAnimationsAndPushTabUpdates();
         ArrayList<Animator> animationList = new ArrayList<>();
         Runnable onAnimationEnd =

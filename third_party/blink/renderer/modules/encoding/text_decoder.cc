@@ -106,6 +106,7 @@ String TextDecoder::Decode(base::span<const uint8_t> input,
       // behavior.
       // https://encoding.spec.whatwg.org/#dom-textdecoder-decode
       codec_ = NewTextCodec(encoding_);
+      CHECK(codec_) << encoding_.GetName();
     }
     bom_seen_ = false;
   }

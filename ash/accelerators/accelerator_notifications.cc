@@ -4,6 +4,7 @@
 
 #include "ash/accelerators/accelerator_notifications.h"
 
+#include <algorithm>
 #include <memory>
 #include <string>
 #include <vector>
@@ -21,7 +22,6 @@
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/system/model/enterprise_domain_model.h"
 #include "ash/system/model/system_tray_model.h"
-#include "base/containers/contains.h"
 #include "base/json/values_util.h"
 #include "base/strings/string_split.h"
 #include "base/strings/utf_string_conversions.h"
@@ -205,8 +205,8 @@ void MaybeShowDeprecatedAcceleratorNotification(const char* notification_id,
       Shell::Get()->accelerator_lookup()->GetAvailableAcceleratorsForAction(
           action_id);
 
-  if (!base::Contains(available_accelerators, replacement,
-                      &AcceleratorDetails::accelerator)) {
+  if (!std::ranges::contains(available_accelerators, replacement,
+                             &AcceleratorDetails::accelerator)) {
     // No current accelerators for the action or the replacement accelerator
     // is not available.
     return;
@@ -264,9 +264,11 @@ void ShowDockedMagnifierNotification() {
   std::vector<AcceleratorLookup::AcceleratorDetails> details =
       Shell::Get()->accelerator_lookup()->GetAvailableAcceleratorsForAction(
           AcceleratorAction::kToggleDockedMagnifier);
-  // This dialog is only shown when docked magnification was enabled from the
-  // accelerator.
-  CHECK(!details.empty());
+  if (details.empty()) {
+    // We should not show the notification if the activation source was not from
+    // the accelerator.
+    return;
+  }
   std::u16string accelerator =
       AcceleratorLookup::GetAcceleratorDetailsText(details[0]);
   ShowAccessibilityNotification(
@@ -289,9 +291,11 @@ void ShowFullscreenMagnifierNotification() {
   std::vector<AcceleratorLookup::AcceleratorDetails> details =
       Shell::Get()->accelerator_lookup()->GetAvailableAcceleratorsForAction(
           AcceleratorAction::kToggleFullscreenMagnifier);
-  // This dialog is only shown when fullscreen magnification was enabled from
-  // the accelerator.
-  CHECK(!details.empty());
+  if (details.empty()) {
+    // We should not show the notification if the activation source was not from
+    // the accelerator.
+    return;
+  }
   std::u16string accelerator =
       AcceleratorLookup::GetAcceleratorDetailsText(details[0]);
   ShowAccessibilityNotification(
@@ -314,9 +318,11 @@ void ShowHighContrastNotification() {
   std::vector<AcceleratorLookup::AcceleratorDetails> details =
       Shell::Get()->accelerator_lookup()->GetAvailableAcceleratorsForAction(
           AcceleratorAction::kToggleHighContrast);
-  // This dialog is only shown when high conrast was enabled from the
-  // accelerator.
-  CHECK(!details.empty());
+  if (details.empty()) {
+    // We should not show the notification if the activation source was not from
+    // the accelerator.
+    return;
+  }
   std::u16string accelerator =
       AcceleratorLookup::GetAcceleratorDetailsText(details[0]);
   ShowAccessibilityNotification(IDS_HIGH_CONTRAST_ACCEL_TITLE,

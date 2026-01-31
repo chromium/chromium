@@ -39,6 +39,17 @@ public class CollectionSaveForwarder implements Destroyable {
         return new CollectionSaveForwarder(nativePtr);
     }
 
+    /**
+     * @param profile The profile associated with the collection.
+     * @param collection The collection to forward payload saves for.
+     */
+    public static CollectionSaveForwarder createForTabStripCollection(
+            Profile profile, TabStripCollection collection) {
+        long nativePtr =
+                CollectionSaveForwarderJni.get().createForTabStripCollection(profile, collection);
+        return new CollectionSaveForwarder(nativePtr);
+    }
+
     @Override
     public void destroy() {
         assert mNativePtr != 0;
@@ -57,6 +68,10 @@ public class CollectionSaveForwarder implements Destroyable {
         long createForTabGroup(
                 @JniType("Profile*") Profile profile,
                 @JniType("base::Token") Token groupId,
+                @JniType("tabs::TabStripCollection*") TabStripCollection collection);
+
+        long createForTabStripCollection(
+                @JniType("Profile*") Profile profile,
                 @JniType("tabs::TabStripCollection*") TabStripCollection collection);
 
         void destroy(long nativeCollectionSaveForwarderAndroid);

@@ -64,7 +64,7 @@ void IPEndPoint::SetIndexToNameFuncForTesting(IndexToNameFunc func) {
 
 // static
 std::optional<uint32_t> IPEndPoint::ScopeIdFromDict(
-    const base::Value::Dict& dict) {
+    const base::DictValue& dict) {
   const std::string* name = dict.FindString(kInterfaceName);
   if (!name) {
     return std::nullopt;
@@ -104,7 +104,7 @@ base::Value IPEndPoint::ScopeIdToValue(std::optional<uint32_t> scope_id) {
 
 // static
 std::optional<IPEndPoint> IPEndPoint::FromValue(const base::Value& value) {
-  const base::Value::Dict* dict = value.GetIfDict();
+  const base::DictValue* dict = value.GetIfDict();
   if (!dict)
     return std::nullopt;
 
@@ -294,7 +294,7 @@ bool IPEndPoint::operator<(const IPEndPoint& other) const {
 }
 
 base::Value IPEndPoint::ToValue() const {
-  base::Value::Dict dict;
+  base::DictValue dict;
 
   DCHECK(address_.IsValid());
   dict.Set(kValueAddressKey, address_.ToValue());

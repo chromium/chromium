@@ -12,6 +12,8 @@
 // NOLINT(build/header_guard)
 // no-include-guard-because-multiply-included
 
+#include "build/branding_buildflags.h"
+
 // LINK_RESOURCE_ID is used for IDs that come from a .grd file.
 #ifndef LINK_RESOURCE_ID
 #error "LINK_RESOURCE_ID should be defined before including this file"
@@ -25,8 +27,6 @@
 // Autofill popup and keyboard accessory images.
 // We use Android's |VectorDrawableCompat| for the following images that are
 // displayed using |DropdownAdapter|.
-LINK_RESOURCE_ID(IDR_AUTOFILL_AFFIRM_LINKED, R.drawable.affirm_linked)
-LINK_RESOURCE_ID(IDR_AUTOFILL_AFFIRM_UNLINKED, R.drawable.affirm_unlinked)
 LINK_RESOURCE_ID(IDR_AUTOFILL_CC_AMEX_OLD, R.drawable.amex_card)
 LINK_RESOURCE_ID(IDR_AUTOFILL_CC_AMEX, R.drawable.amex_card)
 LINK_RESOURCE_ID(IDR_AUTOFILL_CC_DINERS_OLD, R.drawable.diners_card)
@@ -56,21 +56,9 @@ LINK_RESOURCE_ID(IDR_AUTOFILL_CC_VERVE, R.drawable.verve_card)
 LINK_RESOURCE_ID(IDR_AUTOFILL_CC_VISA_OLD, R.drawable.visa_card)
 LINK_RESOURCE_ID(IDR_AUTOFILL_CC_VISA, R.drawable.visa_card)
 LINK_RESOURCE_ID(IDR_AUTOFILL_GOOGLE_PAY, R.drawable.google_pay)
-// TODO(crbug.com/438784697): update the resource id once the internal assets
-// access is added.
-LINK_RESOURCE_ID(IDR_AUTOFILL_GOOGLE_PAY_AFFIRM, R.drawable.bnpl_icon_generic)
-LINK_RESOURCE_ID(IDR_AUTOFILL_GOOGLE_PAY_AFFIRM_DARK,
-                 R.drawable.bnpl_icon_generic)
-LINK_RESOURCE_ID(IDR_AUTOFILL_GOOGLE_PAY_AFTERPAY, R.drawable.bnpl_icon_generic)
-LINK_RESOURCE_ID(IDR_AUTOFILL_GOOGLE_PAY_AFTERPAY_DARK,
-                 R.drawable.bnpl_icon_generic)
-LINK_RESOURCE_ID(IDR_AUTOFILL_GOOGLE_PAY_KLARNA, R.drawable.bnpl_icon_generic)
-LINK_RESOURCE_ID(IDR_AUTOFILL_GOOGLE_PAY_KLARNA_DARK,
-                 R.drawable.bnpl_icon_generic)
-LINK_RESOURCE_ID(IDR_AUTOFILL_GOOGLE_PAY_ZIP, R.drawable.bnpl_icon_generic)
-LINK_RESOURCE_ID(IDR_AUTOFILL_GOOGLE_PAY_ZIP_DARK, R.drawable.bnpl_icon_generic)
-LINK_RESOURCE_ID(IDR_AUTOFILL_KLARNA_LINKED, R.drawable.klarna_linked)
-LINK_RESOURCE_ID(IDR_AUTOFILL_KLARNA_UNLINKED, R.drawable.klarna_unlinked)
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+LINK_RESOURCE_ID(IDR_AUTOFILL_GOOGLE_WALLET, R.drawable.googlewallet)
+#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 LINK_RESOURCE_ID(IDR_AUTOFILL_METADATA_BNPL_GENERIC,
                  R.drawable.bnpl_icon_generic)
 LINK_RESOURCE_ID(IDR_AUTOFILL_METADATA_BNPL_GENERIC_OLD,
@@ -117,8 +105,6 @@ LINK_RESOURCE_ID(IDR_AUTOFILL_METADATA_CC_VISA_OLD,
 LINK_RESOURCE_ID(IDR_AUTOFILL_METADATA_CC_VISA, R.drawable.visa_metadata_card)
 LINK_RESOURCE_ID(IDR_AUTOFILL_IBAN_OLD, R.drawable.iban_icon)
 LINK_RESOURCE_ID(IDR_AUTOFILL_IBAN, R.drawable.iban_icon)
-LINK_RESOURCE_ID(IDR_AUTOFILL_ZIP_LINKED, R.drawable.zip_linked)
-LINK_RESOURCE_ID(IDR_AUTOFILL_ZIP_UNLINKED, R.drawable.zip_unlinked)
 
 // Use DECLARE_RESOURCE_ID here as these resources are used for android only.
 DECLARE_RESOURCE_ID(IDR_ANDROID_AUTOFILL_CC_SCAN_NEW,
@@ -134,14 +120,19 @@ DECLARE_RESOURCE_ID(IDR_AUTOFILL_PLUS_ADDRESS,
                     R.drawable.ic_plus_addresses_logo_16dp)
 
 // Home and work icons.
-DECLARE_RESOURCE_ID(IDR_ANDROID_AUTOFILL_HOME, R.drawable.home_logo)
+DECLARE_RESOURCE_ID(IDR_ANDROID_AUTOFILL_HOME, R.drawable.ic_home_24dp)
 DECLARE_RESOURCE_ID(IDR_ANDROID_AUTOFILL_WORK, R.drawable.work_logo)
 
 // APC password recovery icon
 DECLARE_RESOURCE_ID(IDR_ANDROID_PASSWORD_HISTORY, R.drawable.ic_history_24dp)
 
 // Autofill AI icons.
+DECLARE_RESOURCE_ID(IDR_ANDROID_AUTOFILL_PASSPORT, R.drawable.passport)
 DECLARE_RESOURCE_ID(IDR_ANDROID_AUTOFILL_ID_CARD, R.drawable.id_card)
 DECLARE_RESOURCE_ID(IDR_ANDROID_AUTOFILL_FLIGHT, R.drawable.flight)
+DECLARE_RESOURCE_ID(IDR_ANDROID_AUTOFILL_TRAVEL_LUGGAGE_AND_BAGS,
+                    R.drawable.travel_luggage_and_bags)
 DECLARE_RESOURCE_ID(IDR_ANDROID_AUTOFILL_PERSON_CHECK, R.drawable.person_check)
 DECLARE_RESOURCE_ID(IDR_ANDROID_AUTOFILL_VEHICLE, R.drawable.directions_car)
+// Autofill AI icons.
+DECLARE_RESOURCE_ID(IDR_ANDROID_AUTOFILL_WALLET, R.drawable.wallet)

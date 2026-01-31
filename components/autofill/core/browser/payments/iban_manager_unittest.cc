@@ -67,15 +67,11 @@ class MockSuggestionsReturnedCallback
   std::list<OnSuggestionsReturnedCallback> callbacks_;
 };
 
-class IbanManagerTest : public testing::Test,
-                        public testing::WithParamInterface<bool> {
+class IbanManagerTest : public testing::Test {
  protected:
   IbanManagerTest() = default;
 
   void SetUp() override {
-    feature_list_metadata_.InitWithFeatureStates(
-        {{features::kAutofillEnableNewFopDisplayDesktop,
-          IsNewFopDisplayEnabled()}});
     payments_data_manager().SetAutofillPaymentMethodsEnabled(true);
     form_structure_ = std::make_unique<FormStructure>(
         test::CreateTestIbanFormData(/*value=*/""));
@@ -85,14 +81,6 @@ class IbanManagerTest : public testing::Test,
     ON_CALL(*autofill_client_.GetAutofillOptimizationGuideDecider(),
             ShouldBlockSingleFieldSuggestions)
         .WillByDefault(testing::Return(false));
-  }
-
-  bool IsNewFopDisplayEnabled() const {
-#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
-    return false;
-#else
-    return GetParam();
-#endif
   }
 
   // Sets up the TestPersonalDataManager with a local IBAN.
@@ -172,13 +160,11 @@ class IbanManagerTest : public testing::Test,
   base::test::ScopedFeatureList feature_list_metadata_;
 };
 
-INSTANTIATE_TEST_SUITE_P(IbanManagerTest, IbanManagerTest, ::testing::Bool());
-
 MATCHER_P(MatchesTextAndSuggestionType, suggestion, "") {
   return arg.main_text == suggestion.main_text && arg.type == suggestion.type;
 }
 
-TEST_P(IbanManagerTest, ShowsAllIbanSuggestions) {
+TEST_F(IbanManagerTest, ShowsAllIbanSuggestions) {
   payments_data_manager().SetAutofillWalletImportEnabled(true);
   Suggestion local_iban_suggestion_0 = GetSuggestionForIban(
       SetUpLocalIban("FR76 3000 6000 0112 3456 7890 189", kNickname_0));
@@ -214,7 +200,7 @@ TEST_P(IbanManagerTest, ShowsAllIbanSuggestions) {
       mock_callback.GetNewRef()));
 }
 
-TEST_P(IbanManagerTest, PaymentsAutofillEnabledPrefOff_NoIbanSuggestionsShown) {
+TEST_F(IbanManagerTest, PaymentsAutofillEnabledPrefOff_NoIbanSuggestionsShown) {
   payments_data_manager().SetAutofillPaymentMethodsEnabled(false);
   GetSuggestionForIban(SetUpLocalIban(test::kIbanValue, kNickname_0));
   GetSuggestionForIban(SetUpLocalIban(test::kIbanValue_1, kNickname_1));
@@ -229,7 +215,7 @@ TEST_P(IbanManagerTest, PaymentsAutofillEnabledPrefOff_NoIbanSuggestionsShown) {
       mock_callback.GetNewRef()));
 }
 
-TEST_P(IbanManagerTest, IbanSuggestions_SeparatorAndFooter) {
+TEST_F(IbanManagerTest, IbanSuggestions_SeparatorAndFooter) {
   Suggestion iban_suggestion_0 =
       GetSuggestionForIban(SetUpLocalIban(test::kIbanValue, kNickname_0));
   Suggestion iban_suggestion_1(SuggestionType::kSeparator);
@@ -254,7 +240,7 @@ TEST_P(IbanManagerTest, IbanSuggestions_SeparatorAndFooter) {
       mock_callback.GetNewRef()));
 }
 
-TEST_P(IbanManagerTest,
+TEST_F(IbanManagerTest,
        OnGetSingleFieldSuggestions_FieldEqualsLocalIban_NothingReturned) {
   Suggestion iban_suggestion_0 = GetSuggestionForIban(
       SetUpLocalIban("CH93 0076 2011 6238 5295 7", kNickname_0));
@@ -274,7 +260,7 @@ TEST_P(IbanManagerTest,
       mock_callback.GetNewRef()));
 }
 
-TEST_P(IbanManagerTest,
+TEST_F(IbanManagerTest,
        OnGetSingleFieldSuggestions_LocalIbansMatchingPrefix_Shows) {
   Suggestion iban_suggestion_0 =
       GetSuggestionForIban(SetUpLocalIban(test::kIbanValue_1, kNickname_0));
@@ -340,7 +326,7 @@ TEST_P(IbanManagerTest,
 
 // Test that when the input text field is shorter than IBAN's prefix, all
 // IBANs with matching prefixes should be returned.
-TEST_P(IbanManagerTest,
+TEST_F(IbanManagerTest,
        OnGetSingleFieldSuggestions_ServerIbansMatchingPrefix_Shows_All) {
   payments_data_manager().SetAutofillWalletImportEnabled(true);
   // Set up two server IBANs with different prefixes except for the first two
@@ -378,7 +364,7 @@ TEST_P(IbanManagerTest,
 
 // Test that when the input text field is shorter than IBAN's prefix, only
 // IBANs with matching prefixes should be returned.
-TEST_P(IbanManagerTest,
+TEST_F(IbanManagerTest,
        OnGetSingleFieldSuggestions_ServerIbansMatchingPrefix_Shows_Some) {
   payments_data_manager().SetAutofillWalletImportEnabled(true);
   // Set up two server IBANs with different prefixes except for the first two
@@ -416,7 +402,7 @@ TEST_P(IbanManagerTest,
 // Test that when there is no prefix present, all server IBANs should be
 // recommended when the character count of the input text is less than
 // `kFieldLengthLimitOnServerIbanSuggestion`.
-TEST_P(
+TEST_F(
     IbanManagerTest,
     OnGetSingleFieldSuggestions_ServerIbansLackingPrefix_ShowsIfFewCharsInField) {
   payments_data_manager().SetAutofillWalletImportEnabled(true);
@@ -475,7 +461,7 @@ TEST_P(
 // Test that when there is no prefix present, no server IBANs should be
 // recommended if the length equals or exceeds
 // `kFieldLengthLimitOnServerIbanSuggestion`.
-TEST_P(
+TEST_F(
     IbanManagerTest,
     OnGetSingleFieldSuggestions_ServerIbansLackingPrefix_HidesIfManyCharsInField) {
   payments_data_manager().SetAutofillWalletImportEnabled(true);
@@ -505,7 +491,7 @@ TEST_P(
       mock_callback.GetNewRef()));
 }
 
-TEST_P(IbanManagerTest, DoesNotShowIbansForBlockedWebsite) {
+TEST_F(IbanManagerTest, DoesNotShowIbansForBlockedWebsite) {
   SetUpLocalIban(test::kIbanValue, kNickname_0);
 
   // Setting up mock to verify that suggestions returning is not triggered if
@@ -525,7 +511,7 @@ TEST_P(IbanManagerTest, DoesNotShowIbansForBlockedWebsite) {
 // Test that suggestions are returned on platforms that don't have an
 // AutofillOptimizationGuideDecider. Having no AutofillOptimizationGuideDecider
 // means that suggestions cannot and will not be blocked.
-TEST_P(IbanManagerTest, ShowsIbanSuggestions_OptimizationGuideNotPresent) {
+TEST_F(IbanManagerTest, ShowsIbanSuggestions_OptimizationGuideNotPresent) {
   Suggestion iban_suggestion_0 =
       GetSuggestionForIban(SetUpLocalIban(test::kIbanValue, kNickname_0));
 
@@ -548,7 +534,7 @@ TEST_P(IbanManagerTest, ShowsIbanSuggestions_OptimizationGuideNotPresent) {
       mock_callback.GetNewRef()));
 }
 
-TEST_P(IbanManagerTest, NotIbanFieldFocused_NoSuggestionsShown) {
+TEST_F(IbanManagerTest, NotIbanFieldFocused_NoSuggestionsShown) {
   SetUpLocalIban(test::kIbanValue, kNickname_0);
 
   autofill_field_->set_value(std::u16string(test::kIbanValue16));
@@ -569,7 +555,7 @@ TEST_P(IbanManagerTest, NotIbanFieldFocused_NoSuggestionsShown) {
 
 // Tests that when showing IBAN suggestions is allowed by the site-specific
 // blocklist, appropriate metrics are logged.
-TEST_P(IbanManagerTest, Metrics_Suggestions_Allowed) {
+TEST_F(IbanManagerTest, Metrics_Suggestions_Allowed) {
   base::HistogramTester histogram_tester;
   SetUpLocalIban(test::kIbanValue, kNickname_0);
 
@@ -587,7 +573,7 @@ TEST_P(IbanManagerTest, Metrics_Suggestions_Allowed) {
 
 // Tests that when showing IBAN suggestions is blocked by the site-specific
 // blocklist, appropriate metrics are logged.
-TEST_P(IbanManagerTest, Metrics_Suggestions_Blocked) {
+TEST_F(IbanManagerTest, Metrics_Suggestions_Blocked) {
   base::HistogramTester histogram_tester;
   SetUpLocalIban(test::kIbanValue, kNickname_0);
 
@@ -611,7 +597,7 @@ TEST_P(IbanManagerTest, Metrics_Suggestions_Blocked) {
 
 // Tests that when showing IBAN suggestions and the site-specific blocklist is
 // not available, appropriate metrics are logged.
-TEST_P(IbanManagerTest, Metrics_Suggestions_BlocklistNotAccessible) {
+TEST_F(IbanManagerTest, Metrics_Suggestions_BlocklistNotAccessible) {
   base::HistogramTester histogram_tester;
   SetUpLocalIban(test::kIbanValue, kNickname_0);
   // Delete the AutofillOptimizationGuideDecider.
@@ -631,7 +617,7 @@ TEST_P(IbanManagerTest, Metrics_Suggestions_BlocklistNotAccessible) {
 
 // Test that the metrics for local IBAN suggestion selected (once and total
 // count) are logged correctly.
-TEST_P(IbanManagerTest, Metrics_LocalIbanSuggestionSelected) {
+TEST_F(IbanManagerTest, Metrics_LocalIbanSuggestionSelected) {
   base::HistogramTester histogram_tester;
   SetUpLocalIban(test::kIbanValue, kNickname_0);
   SetUpLocalIban(test::kIbanValue_1, kNickname_1);
@@ -673,7 +659,7 @@ TEST_P(IbanManagerTest, Metrics_LocalIbanSuggestionSelected) {
 
 // Test that the metrics for server IBAN suggestion selected (once and total
 // count) is logged correctly.
-TEST_P(IbanManagerTest, Metrics_ServerIbanSuggestionSelected) {
+TEST_F(IbanManagerTest, Metrics_ServerIbanSuggestionSelected) {
   base::HistogramTester histogram_tester;
   payments_data_manager().SetAutofillWalletImportEnabled(true);
   Suggestion suggestion = GetSuggestionForIban(SetUpServerIban(
@@ -713,7 +699,7 @@ TEST_P(IbanManagerTest, Metrics_ServerIbanSuggestionSelected) {
       1);
 }
 
-TEST_P(IbanManagerTest, Metrics_SuggestionSelected_CountryOfSelectedIban) {
+TEST_F(IbanManagerTest, Metrics_SuggestionSelected_CountryOfSelectedIban) {
   base::HistogramTester histogram_tester;
   // Simulate selecting one suggested IBAN.
   Suggestion suggestion(kIbanValue, SuggestionType::kIbanEntry);
@@ -723,7 +709,7 @@ TEST_P(IbanManagerTest, Metrics_SuggestionSelected_CountryOfSelectedIban) {
                                       Iban::IbanSupportedCountry::kFR, 1);
 }
 
-TEST_P(IbanManagerTest, Metrics_NoSuggestionShown) {
+TEST_F(IbanManagerTest, Metrics_NoSuggestionShown) {
   base::HistogramTester histogram_tester;
   SetUpLocalIban(test::kIbanValue, kNickname_0);
   SetUpLocalIban(test::kIbanValue_1, kNickname_1);

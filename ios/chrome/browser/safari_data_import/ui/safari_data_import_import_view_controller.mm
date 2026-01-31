@@ -9,7 +9,7 @@
 #import "base/check_op.h"
 #import "base/strings/sys_string_conversions.h"
 #import "ios/chrome/browser/data_import/ui/import_data_item_table_view.h"
-#import "ios/chrome/browser/first_run/ui_bundled/first_run_constants.h"
+#import "ios/chrome/browser/first_run/public/first_run_constants.h"
 #import "ios/chrome/browser/safari_data_import/public/safari_data_import_stage.h"
 #import "ios/chrome/browser/safari_data_import/public/ui_utils.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
@@ -69,7 +69,7 @@
       break;
     case SafariDataImportStage::kReadyForImport:
       [self showTableView];
-      [self showDisclaimerForEligibleUser];
+      [self showDisclaimer];
       self.configuration.primaryActionString = l10n_util::GetNSString(
           IDS_IOS_SAFARI_IMPORT_IMPORT_ACTION_BUTTON_IMPORT);
       self.configuration.loading = NO;
@@ -157,11 +157,8 @@
 }
 
 /// Displays the disclaimer informing user that the Safari items will be
-/// imported to their account store.
-- (void)showDisclaimerForEligibleUser {
-  if (!self.email) {
-    return;
-  }
+/// imported to their account or profile store.
+- (void)showDisclaimer {
   CHECK(self.itemTableView.superview);
   UITextView* disclaimer = CreateUITextViewWithTextKit1();
   disclaimer.scrollEnabled = NO;
@@ -172,9 +169,14 @@
   disclaimer.textAlignment = NSTextAlignmentCenter;
   disclaimer.adjustsFontForContentSizeCategory = YES;
   disclaimer.translatesAutoresizingMaskIntoConstraints = NO;
-  disclaimer.text = l10n_util::GetNSStringF(
-      IDS_IOS_SAFARI_IMPORT_IMPORT_ITEM_TYPE_PENDING_DISCLAIMER,
-      base::SysNSStringToUTF16(self.email));
+  if (self.email) {
+    disclaimer.text = l10n_util::GetNSStringF(
+        IDS_IOS_SAFARI_IMPORT_IMPORT_ITEM_TYPE_PENDING_DISCLAIMER_ACCOUNT_STORE,
+        base::SysNSStringToUTF16(self.email));
+  } else {
+    disclaimer.text = l10n_util::GetNSString(
+        IDS_IOS_SAFARI_IMPORT_IMPORT_ITEM_TYPE_PENDING_DISCLAIMER_PROFILE_STORE);
+  }
   [self.specificContentView addSubview:disclaimer];
   /// Bottom align the disclaimer view.
   [NSLayoutConstraint activateConstraints:@[

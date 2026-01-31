@@ -19,10 +19,9 @@
 #include "chrome/browser/screen_ai/screen_ai_service_router.h"
 #include "chrome/browser/screen_ai/screen_ai_service_router_factory.h"
 #include "chromeos/components/mahi/public/cpp/mahi_browser_util.h"
-#include "chromeos/components/mahi/public/cpp/mahi_util.h"
+#include "chromeos/components/mahi/public/cpp/mahi_types.h"
 #include "chromeos/components/mahi/public/mojom/content_extraction.mojom.h"
 #include "chromeos/constants/chromeos_features.h"
-#include "chromeos/crosapi/mojom/mahi.mojom.h"
 #include "content/public/browser/service_process_host.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -120,10 +119,10 @@ bool MahiContentExtractionDelegate::EnsureServiceIsConnected() {
 void MahiContentExtractionDelegate::ExtractContent(
     const WebContentState& web_content_state,
     const base::UnguessableToken& client_id,
-    GetContentCallback callback) {
+    chromeos::MahiGetContentCallback callback) {
   // Early returns if the snapshot is not valid.
   if (web_content_state.snapshot.root_id == ui::kInvalidAXNodeID) {
-    std::move(callback).Run(nullptr);
+    std::move(callback).Run(std::nullopt);
     return;
   }
 
@@ -138,7 +137,7 @@ void MahiContentExtractionDelegate::ExtractContent(
           /*updates=*/std::nullopt);
 
   if (!EnsureContentExtractionServiceIsSetUp() || !EnsureServiceIsConnected()) {
-    std::move(callback).Run(nullptr);
+    std::move(callback).Run(std::nullopt);
     LOG(ERROR) << "Remote content extraction service is not available.";
     return;
   }
@@ -156,7 +155,7 @@ void MahiContentExtractionDelegate::ExtractContent(
     const WebContentState& web_content_state,
     const std::vector<ui::AXTreeUpdate>& updates,
     const base::UnguessableToken& client_id,
-    GetContentCallback callback) {
+    chromeos::MahiGetContentCallback callback) {
   // Generates the extraction request.
   mojom::ExtractionRequestPtr extraction_request =
       mojom::ExtractionRequest::New(
@@ -168,7 +167,7 @@ void MahiContentExtractionDelegate::ExtractContent(
           /*updates=*/std::make_optional(updates));
 
   if (!EnsureContentExtractionServiceIsSetUp() || !EnsureServiceIsConnected()) {
-    std::move(callback).Run(nullptr);
+    std::move(callback).Run(std::nullopt);
     LOG(ERROR) << "Remote content extraction service is not available.";
     return;
   }
@@ -186,7 +185,7 @@ void MahiContentExtractionDelegate::OnGetContent(
     const base::UnguessableToken& page_id,
     const base::UnguessableToken& client_id,
     const GURL& url,
-    GetContentCallback callback,
+    chromeos::MahiGetContentCallback callback,
     mojom::ExtractionResponsePtr response) {
 #if DCHECK_IS_ON()
   // It's for debugging purpose, and save the extracted contents into disk.
@@ -200,11 +199,10 @@ void MahiContentExtractionDelegate::OnGetContent(
   }
 #endif
 
-  crosapi::mojom::MahiPageContentPtr page_content =
-      crosapi::mojom::MahiPageContent::New(
-          /*client_id=*/client_id,
-          /*page_id=*/page_id,
-          /*page_content=*/std::move(response->contents));
+  chromeos::MahiPageContent page_content;
+  page_content.client_id = client_id;
+  page_content.page_id = page_id;
+  page_content.page_content = std::move(response->contents);
 
   std::move(callback).Run(std::move(page_content));
 }

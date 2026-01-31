@@ -8,6 +8,7 @@
 #include <optional>
 #include <string>
 #include <string_view>
+#include <utility>
 
 #include "base/base64.h"
 #include "base/functional/callback.h"
@@ -15,7 +16,6 @@
 #include "base/strings/to_string.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
-#include "base/types/cxx23_to_underlying.h"
 #include "build/build_config.h"
 #include "chrome/browser/actor/actor_keyed_service.h"
 #include "chrome/browser/actor/actor_policy_checker.h"
@@ -79,7 +79,8 @@ GlicActorUiTest::GlicActorUiTest() {
       /*enabled_features=*/
       {// Increase timeout since tests are timing out with ASAN builds.
        {features::kGlic, {{"glic-max-loading-time-ms", "30000"}}},
-       {features::kGlicActor, {}},
+       {features::kGlicActor,
+        {{features::kGlicActorPolicyControlExemption.name, "true"}}},
        {features::kGlicActorToctouValidation, {}},
        {optimization_guide::features::
             kAnnotatedPageContentWithActionableElements,
@@ -94,9 +95,6 @@ void GlicActorUiTest::SetUpOnMainThread() {
   // Add rule for resolving cross origin host names.
   InteractiveGlicTest::SetUpOnMainThread();
   host_resolver()->AddRule("*", "127.0.0.1");
-  actor::ActorKeyedService::Get(browser()->profile())
-      ->GetPolicyChecker()
-      .SetActOnWebForTesting(true);
 }
 
 const actor::ActorTask* GlicActorUiTest::GetActorTask() {
@@ -119,7 +117,7 @@ content::WebContents* GlicActorUiTest::GetGlicHost(actor::TaskId& task_id) {
 MultiStep GlicActorUiTest::ExecuteAction(ActionProtoProvider proto_provider,
                                          ExpectedErrorResult expected_result) {
   static constexpr int kResultSuccess =
-      base::to_underlying(actor::mojom::ActionResultCode::kOk);
+      std::to_underlying(actor::mojom::ActionResultCode::kOk);
   static constexpr std::string_view kSuccessString = "<Success>";
 
   const std::string expected_result_string = std::visit(
@@ -136,15 +134,14 @@ MultiStep GlicActorUiTest::ExecuteAction(ActionProtoProvider proto_provider,
   auto result_buffer = std::make_unique<std::optional<int>>();
   std::optional<int>* buffer_raw = result_buffer.get();
   return Steps(
-      Do(
-          [this, result_out = buffer_raw,
-           actions_result_out = &last_execution_result_,
-           proto_provider = std::move(proto_provider)]() mutable {
-            content::WebContents* glic_contents = GetGlicContents();
-            // Distinguish errors from the action and errors from rejecting
-            // performAction by making the latter negative.
-            std::string script = content::JsReplace(
-                R"js(
+      Do([this, result_out = buffer_raw,
+          actions_result_out = &last_execution_result_,
+          proto_provider = std::move(proto_provider)]() mutable {
+        content::WebContents* glic_contents = GetGlicContents();
+        // Distinguish errors from the action and errors from rejecting
+        // performAction by making the latter negative.
+        std::string script = content::JsReplace(
+            R"js(
                         (async () => {
                           try {
                             const res = await client.browser.performActions(
@@ -155,23 +152,23 @@ MultiStep GlicActorUiTest::ExecuteAction(ActionProtoProvider proto_provider,
                           }
                         })();
                       )js",
-                std::move(proto_provider).Run());
-            content::EvalJsResult result =
-                content::EvalJs(glic_contents, std::move(script));
-            if (result.is_string()) {
-              auto actions_result =
-                  DecodeActionsResultProto(result.ExtractString());
-              if (actions_result) {
-                *result_out = actions_result->action_result();
-                *actions_result_out = actions_result;
-              } else {
-                *result_out = -static_cast<int>(
-                    mojom::PerformActionsErrorReason::kInvalidProto);
-              }
-            } else {
-              *result_out = -result.ExtractInt();
-            }
-          }),
+            std::move(proto_provider).Run());
+        content::EvalJsResult result =
+            content::EvalJs(glic_contents, std::move(script));
+        if (result.is_string()) {
+          auto actions_result =
+              DecodeActionsResultProto(result.ExtractString());
+          if (actions_result) {
+            *result_out = actions_result->action_result();
+            *actions_result_out = actions_result;
+          } else {
+            *result_out = -static_cast<int>(
+                mojom::PerformActionsErrorReason::kInvalidProto);
+          }
+        } else {
+          *result_out = -result.ExtractInt();
+        }
+      }),
       CheckResult(
           [result_in = std::move(result_buffer)]() {
             CHECK(result_in->has_value());
@@ -204,17 +201,15 @@ MultiStep GlicActorUiTest::ExecuteInGlic(
 
 MultiStep GlicActorUiTest::CreateTask(actor::TaskId& out_task,
                                       std::string_view title) {
-  return Steps(
-      Do([this, &out_task, title = std::string(title)]() {
-        content::WebContents* glic_contents = GetGlicContents();
-        const int result =
-            content::EvalJs(
-                glic_contents,
-                content::JsReplace("client.browser.createTask({title: $1})",
-                                   title))
-                .ExtractInt();
-        out_task = actor::TaskId(result);
-      }));
+  return Steps(Do([this, &out_task, title = std::string(title)]() {
+    content::WebContents* glic_contents = GetGlicContents();
+    const int result =
+        content::EvalJs(
+            glic_contents,
+            content::JsReplace("client.browser.createTask({title: $1})", title))
+            .ExtractInt();
+    out_task = actor::TaskId(result);
+  }));
 }
 
 MultiStep GlicActorUiTest::CreateTabAction(
@@ -383,20 +378,19 @@ MultiStep GlicActorUiTest::StopActorTask() {
 }
 
 MultiStep GlicActorUiTest::PauseActorTask() {
-  return Steps(Do(
-                   [this, &task_id = task_id_, &tab_handle = tab_handle_]() {
-                     content::WebContents* glic_contents = GetGlicContents();
-                     std::string script = content::JsReplace(
-                         "client.browser.pauseActorTask($1, /* pauseReason= "
-                         "*/0, /* tabId= */'$2');",
-                         task_id.value(), tab_handle.raw_value());
-                     ASSERT_TRUE(content::ExecJs(glic_contents, script));
-                   }),
+  return Steps(Do([this, &task_id = task_id_, &tab_handle = tab_handle_]() {
+                 content::WebContents* glic_contents = GetGlicContents();
+                 std::string script = content::JsReplace(
+                     "client.browser.pauseActorTask($1, /* pauseReason= "
+                     "*/0, /* tabId= */'$2');",
+                     task_id.value(), tab_handle.raw_value());
+                 ASSERT_TRUE(content::ExecJs(glic_contents, script));
+               }),
                RoundTrip(task_id_));
 }
 
 MultiStep GlicActorUiTest::ResumeActorTask(
-    base::Value::Dict context_options,
+    base::DictValue context_options,
     ExpectedResumeResult expected_result) {
   static constexpr std::string_view kFailureString = "<Failure>";
 
@@ -477,43 +471,40 @@ MultiStep GlicActorUiTest::WaitForActorTaskState(
   // Use PrepareForStopStateChange/WaitForActorTaskStateToStopped instead.
   EXPECT_NE(expected_state, mojom::ActorTaskState::kStopped);
 
-  return Steps(
-      Do([this, &task_id = task_id_, expected_state]() {
-        content::WebContents* glic_contents = GetGlicContents();
-        std::string script = content::JsReplace(
-            R"js(
+  return Steps(Do([this, &task_id = task_id_, expected_state]() {
+    content::WebContents* glic_contents = GetGlicContents();
+    std::string script = content::JsReplace(
+        R"js(
               client.browser.getActorTaskState($1).waitUntil((state) => {
                 return state == $2;
               });
               )js",
-            task_id.value(), base::to_underlying(expected_state));
-        ASSERT_TRUE(content::ExecJs(glic_contents, script));
-      }));
+        task_id.value(), std::to_underlying(expected_state));
+    ASSERT_TRUE(content::ExecJs(glic_contents, script));
+  }));
 }
 
 MultiStep GlicActorUiTest::PrepareForStopStateChange() {
-  return Steps(
-      Do([this, &task_id = task_id_]() {
-        content::WebContents* glic_contents = GetGlicContents();
-        std::string script = content::JsReplace(
-            "window.taskStateObs = "
-            "client.browser.getActorTaskState($1);",
-            task_id.value());
-        ASSERT_TRUE(content::ExecJs(glic_contents, script));
-      }));
+  return Steps(Do([this, &task_id = task_id_]() {
+    content::WebContents* glic_contents = GetGlicContents();
+    std::string script = content::JsReplace(
+        "window.taskStateObs = "
+        "client.browser.getActorTaskState($1);",
+        task_id.value());
+    ASSERT_TRUE(content::ExecJs(glic_contents, script));
+  }));
 }
 
 MultiStep GlicActorUiTest::WaitForActorTaskStateChangeToStopped() {
-  return Steps(
-      Do([this]() {
-        content::WebContents* glic_contents = GetGlicContents();
-        std::string script = content::JsReplace(
-            "window.taskStateObs.waitUntil((state) => { "
-            "  return state == $1; "
-            "});",
-            base::to_underlying(mojom::ActorTaskState::kStopped));
-        ASSERT_TRUE(content::ExecJs(glic_contents, script));
-      }));
+  return Steps(Do([this]() {
+    content::WebContents* glic_contents = GetGlicContents();
+    std::string script = content::JsReplace(
+        "window.taskStateObs.waitUntil((state) => { "
+        "  return state == $1; "
+        "});",
+        std::to_underlying(mojom::ActorTaskState::kStopped));
+    ASSERT_TRUE(content::ExecJs(glic_contents, script));
+  }));
 }
 
 MultiStep GlicActorUiTest::ActivateTaskTab() {
@@ -528,18 +519,17 @@ MultiStep GlicActorUiTest::ActivateTaskTab() {
 }
 
 MultiStep GlicActorUiTest::WaitForTaskTabForeground(bool expected_foreground) {
-  return Steps(
-      Do([this, &tab_handle = tab_handle_, expected_foreground]() {
-        content::WebContents* glic_contents = GetGlicContents();
-        std::string script = content::JsReplace(
-            R"js(
+  return Steps(Do([this, &tab_handle = tab_handle_, expected_foreground]() {
+    content::WebContents* glic_contents = GetGlicContents();
+    std::string script = content::JsReplace(
+        R"js(
             client.browser.getTabById('$1').waitUntil((tabData) => {
               return tabData.isActiveInWindow == $2;
             });
             )js",
-            tab_handle.raw_value(), expected_foreground);
-        ASSERT_TRUE(content::ExecJs(glic_contents, script));
-      }));
+        tab_handle.raw_value(), expected_foreground);
+    ASSERT_TRUE(content::ExecJs(glic_contents, script));
+  }));
 }
 
 GlicActorUiTest::ActionProtoProvider GlicActorUiTest::ArbitraryStringProvider(
@@ -547,8 +537,8 @@ GlicActorUiTest::ActionProtoProvider GlicActorUiTest::ArbitraryStringProvider(
   return base::BindLambdaForTesting([str]() { return std::string(str); });
 }
 
-base::Value::Dict GlicActorUiTest::UpdatedContextOptions() {
-  return base::Value::Dict()
+base::DictValue GlicActorUiTest::UpdatedContextOptions() {
+  return base::DictValue()
       .Set("annotatedPageContent", true)
 #if BUILDFLAG(IS_LINUX)
       // TODO(https://crbug.com/40191775): Tests on Linux aren't producing
@@ -569,7 +559,7 @@ MultiStep GlicActorUiTest::InitializeWithOpenGlicWindow() {
 
   return Steps(InstrumentTab(kCurrentActiveTabId),
                NavigateWebContents(kCurrentActiveTabId, start_url),
-               OpenGlicWindow(GlicWindowMode::kAttached));
+               DeprecatedOpenGlicWindow(GlicWindowMode::kAttached));
 }
 
 MultiStep GlicActorUiTest::GetPageContextForActorTab() {

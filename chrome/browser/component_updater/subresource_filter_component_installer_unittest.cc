@@ -164,7 +164,7 @@ class SubresourceFilterComponentInstallerTest : public PlatformTest {
   }
 
   void LoadSubresourceFilterRuleset(int ruleset_format) {
-    base::Value::Dict manifest;
+    base::DictValue manifest;
     manifest.Set(
         SubresourceFilterComponentInstallerPolicy::kManifestRulesetFormatKey,
         ruleset_format);

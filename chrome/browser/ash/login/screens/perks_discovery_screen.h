@@ -36,7 +36,7 @@ struct Content {
 // A wrapper struct for the OOBE Perks data.
 struct SinglePerkDiscoveryPayload {
  public:
-  explicit SinglePerkDiscoveryPayload(const base::Value::Dict& perk_data);
+  explicit SinglePerkDiscoveryPayload(const base::DictValue& perk_data);
   ~SinglePerkDiscoveryPayload();
   SinglePerkDiscoveryPayload(const SinglePerkDiscoveryPayload& perk_data);
 
@@ -47,8 +47,8 @@ struct SinglePerkDiscoveryPayload {
   std::string icon_url;
   Content content;
 
-  base::Value::Dict primary_button;
-  base::Value::Dict secondary_button;
+  base::DictValue primary_button;
+  base::DictValue secondary_button;
 };
 
 // Controller for the new perks discovery screen.
@@ -102,7 +102,7 @@ class PerksDiscoveryScreen : public BaseScreen {
   bool MaybeSkip(WizardContext& context) override;
   void ShowImpl() override;
   void HideImpl() override;
-  void OnUserAction(const base::Value::List& args) override;
+  void OnUserAction(const base::ListValue& args) override;
   void GetOobePerksPayloadAndShow();
   void ShowOverviewStep();
   void ExitScreenTimeout();
@@ -114,10 +114,10 @@ class PerksDiscoveryScreen : public BaseScreen {
   base::TimeDelta delay_exit_timeout_ = base::Minutes(1);
 
   // Called when the user finish all perks on the screen.
-  void OnPerksSelectionFinished(const base::Value::List& selected_perks);
+  void OnPerksSelectionFinished(const base::ListValue& selected_perks);
 
   // Forward the action to the campaign manager.
-  void PerformButtonAction(const base::Value::Dict& button_data);
+  void PerformButtonAction(const base::DictValue& button_data);
 
   std::vector<SinglePerkDiscoveryPayload> perks_data_;
   int campaign_id_;

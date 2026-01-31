@@ -12,9 +12,13 @@
 
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
+#include "chrome/browser/actor/actor_keyed_service.h"
+#include "chrome/browser/actor/actor_task.h"
 #include "chrome/browser/ui/webid/account_selection_view.h"
 #include "chrome/browser/webid/proto/fedcm_clickthrough_rate_metadata.pb.h"
 #include "components/segmentation_platform/public/result.h"
+#include "components/tabs/public/tab_interface.h"
+#include "content/public/browser/page_user_data.h"
 #include "content/public/browser/webid/identity_request_dialog_controller.h"
 #include "ui/gfx/native_ui_types.h"
 
@@ -38,6 +42,8 @@ using IdentityProviderDataPtr = scoped_refptr<content::IdentityProviderData>;
 using IdentityRequestAccountPtr =
     scoped_refptr<content::IdentityRequestAccount>;
 using TokenError = content::IdentityCredentialTokenError;
+
+class IdentityDialogControllerBrowserTest;
 
 // The IdentityDialogController controls the views that are used across
 // browser-mediated federated sign-in flows.
@@ -125,6 +131,7 @@ class IdentityDialogController
       blink::mojom::RpMode rp_mode,
       DismissCallback dismiss_callback) override;
   void CloseModalDialog() override;
+  void OnFlowCompleted(bool success) override;
   content::WebContents* GetRpWebContents() override;
   void RequestIdPRegistrationPermision(
       const url::Origin& origin,
@@ -163,12 +170,25 @@ class IdentityDialogController
   void CollectTrainingData(UserAction user_action);
 
  private:
+  friend class IdentityDialogControllerTest;
+  friend class IdentityDialogControllerBrowserTest;
+
   // Attempts to set `account_view_` if it is not already set -- directly on
   // Android, via TabFeatures on desktop.
   bool TrySetAccountView();
 
   // Gets the clickthrough rate on the RP aggregated across all users.
   webid::FedCmClickthroughRateMetadata GetFedCmClickthroughRateMetadata();
+
+  // Whether to show FedCM UI or not.
+  bool ShouldShowFedCmUi();
+
+  void OnActorTaskStateChanged(actor::TaskId task_id,
+                               actor::ActorTask::State state);
+
+  void UpdateTaskId(actor::TaskId task_id);
+
+  void DidInvokeShowUi();
 
   std::unique_ptr<AccountSelectionView> account_view_{nullptr};
   AccountSelectionCallback on_account_selection_;
@@ -178,6 +198,9 @@ class IdentityDialogController
   AccountsDisplayedCallback on_accounts_displayed_;
   raw_ptr<content::WebContents> rp_web_contents_{nullptr};
   blink::mojom::RpMode rp_mode_;
+  // Wheter we invoked any show methods. UI may be shown be not invoked in cases
+  // such as an active actor task.
+  bool did_invoke_show_ui_ = false;
   // Whether we show any FedCM UI or not. Excludes the loading dialog since that
   // one is not something that modifies user state or is actionable by the user.
   bool did_show_ui_ = false;
@@ -195,6 +218,10 @@ class IdentityDialogController
   // been navigated to. e.g. Aggregated FedCM clickthrough rate.
   raw_ptr<optimization_guide::OptimizationGuideDecider>
       optimization_guide_decider_{nullptr};
+
+  // The ID of the actor task currently acting on the tab, if any.
+  actor::TaskId acting_task_id_;
+  base::CallbackListSubscription actor_task_state_subscription_;
 
   base::WeakPtrFactory<IdentityDialogController> weak_ptr_factory_{this};
 };

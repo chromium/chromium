@@ -251,7 +251,7 @@ class ChildProcessLauncherHelper
 #endif
 
 #if BUILDFLAG(IS_ANDROID)
-  void OnChildProcessStarted(JNIEnv* env, jint handle);
+  void OnChildProcessStarted(JNIEnv* env, int32_t handle);
 
   void OnSpareRendererPriorityGraduatedOnClientThread(bool is_alive);
 

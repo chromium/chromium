@@ -7,7 +7,6 @@
 #include <string>
 #include <string_view>
 
-#include "base/containers/contains.h"
 #include "base/files/file_path.h"
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
@@ -72,7 +71,7 @@ class ChildProcessSecurityPolicyTestBrowserClient
   ChildProcessSecurityPolicyTestBrowserClient() {}
 
   bool IsHandledURL(const GURL& url) override {
-    return base::Contains(schemes_, url.GetScheme());
+    return schemes_.contains(url.GetScheme());
   }
 
   void ClearSchemes() {
@@ -153,7 +152,7 @@ class ChildProcessSecurityPolicyTest
     auto* policy = ChildProcessSecurityPolicyImpl::GetInstance();
     {
       base::AutoLock lock(policy->lock_);
-      EXPECT_EQ(0u, policy->security_state_.size())
+      EXPECT_EQ(0u, policy->security_states_.GetSizeForTesting())
           << "ChildProcessSecurityPolicy should not be tracking any processes "
           << "at test startup.  Some other test probably forgot to call "
           << "Remove() at the end.";
@@ -164,7 +163,7 @@ class ChildProcessSecurityPolicyTest
     auto* policy = ChildProcessSecurityPolicyImpl::GetInstance();
     {
       base::AutoLock lock(policy->lock_);
-      EXPECT_EQ(0u, policy->security_state_.size())
+      EXPECT_EQ(0u, policy->security_states_.GetSizeForTesting())
           << "ChildProcessSecurityPolicy should not be tracking any processes "
           << "at test shutdown.  Did you forget to call Remove() at the end of "
           << "a test?";
@@ -314,14 +313,14 @@ class ChildProcessSecurityPolicyTest
   void CheckHasNoFileSystemFilePermission(ChildProcessSecurityPolicyImpl* p,
                                           const base::FilePath& file,
                                           const storage::FileSystemURL& url) {
-    EXPECT_FALSE(p->CanReadFile(kRendererID, file));
+    EXPECT_FALSE(p->CanReadFile(kRendererProcess, file));
     EXPECT_FALSE(p->CanCreateReadWriteFile(kRendererID, file));
-    EXPECT_FALSE(p->CanReadFileSystemFile(kRendererID, url));
-    EXPECT_FALSE(p->CanWriteFileSystemFile(kRendererID, url));
-    EXPECT_FALSE(p->CanCreateFileSystemFile(kRendererID, url));
-    EXPECT_FALSE(p->CanCreateReadWriteFileSystemFile(kRendererID, url));
-    EXPECT_FALSE(p->CanCopyIntoFileSystemFile(kRendererID, url));
-    EXPECT_FALSE(p->CanDeleteFileSystemFile(kRendererID, url));
+    EXPECT_FALSE(p->CanReadFileSystemFile(kRendererProcess, url));
+    EXPECT_FALSE(p->CanWriteFileSystemFile(kRendererProcess, url));
+    EXPECT_FALSE(p->CanCreateFileSystemFile(kRendererProcess, url));
+    EXPECT_FALSE(p->CanCreateReadWriteFileSystemFile(kRendererProcess, url));
+    EXPECT_FALSE(p->CanCopyIntoFileSystemFile(kRendererProcess, url));
+    EXPECT_FALSE(p->CanDeleteFileSystemFile(kRendererProcess, url));
 
     auto handle = p->CreateHandle(kRendererProcess);
     EXPECT_FALSE(handle.CanReadFile(file));
@@ -780,7 +779,7 @@ TEST_P(ChildProcessSecurityPolicyTest, SpecificFile) {
   EXPECT_FALSE(p->CanCommitURL(kRendererID, icon_url));
   EXPECT_FALSE(p->CanCommitURL(kRendererID, sensitive_url));
 
-  p->GrantRequestOfSpecificFile(kRendererID, icon_path);
+  p->GrantRequestOfSpecificFile(kRendererProcess, icon_path);
   EXPECT_TRUE(p->CanRequestURL(kRendererID, icon_url));
   EXPECT_FALSE(p->CanRequestURL(kRendererID, sensitive_url));
   EXPECT_TRUE(p->CanRedirectToURL(icon_url));
@@ -825,7 +824,7 @@ TEST_P(ChildProcessSecurityPolicyTest, ContentUri) {
   EXPECT_FALSE(p->CanCommitURL(kRendererID, content_uri_sensitive));
 
   p->GrantRequestOfSpecificFile(
-      kRendererID,
+      kRendererProcess,
       base::FilePath::FromUTF8Unsafe(content_uri.possibly_invalid_spec()));
   EXPECT_TRUE(p->CanRequestURL(kRendererID, content_uri));
 #if BUILDFLAG(IS_ANDROID)
@@ -948,40 +947,40 @@ TEST_P(ChildProcessSecurityPolicyTest, FilePermissionGrantingAndRevoking) {
   CheckHasNoFileSystemFilePermission(p, file, url);
 
   // Testing every combination of permissions granting and revoking.
-  p->GrantReadFile(kRendererID, file);
-  EXPECT_TRUE(p->CanReadFile(kRendererID, file));
+  p->GrantReadFile(kRendererProcess, file);
+  EXPECT_TRUE(p->CanReadFile(kRendererProcess, file));
   EXPECT_FALSE(p->CanCreateReadWriteFile(kRendererID, file));
-  EXPECT_TRUE(p->CanReadFileSystemFile(kRendererID, url));
-  EXPECT_FALSE(p->CanWriteFileSystemFile(kRendererID, url));
-  EXPECT_FALSE(p->CanCreateFileSystemFile(kRendererID, url));
-  EXPECT_FALSE(p->CanCreateReadWriteFileSystemFile(kRendererID, url));
-  EXPECT_FALSE(p->CanCopyIntoFileSystemFile(kRendererID, url));
-  EXPECT_FALSE(p->CanDeleteFileSystemFile(kRendererID, url));
-  p->RevokeAllPermissionsForFile(kRendererID, file);
+  EXPECT_TRUE(p->CanReadFileSystemFile(kRendererProcess, url));
+  EXPECT_FALSE(p->CanWriteFileSystemFile(kRendererProcess, url));
+  EXPECT_FALSE(p->CanCreateFileSystemFile(kRendererProcess, url));
+  EXPECT_FALSE(p->CanCreateReadWriteFileSystemFile(kRendererProcess, url));
+  EXPECT_FALSE(p->CanCopyIntoFileSystemFile(kRendererProcess, url));
+  EXPECT_FALSE(p->CanDeleteFileSystemFile(kRendererProcess, url));
+  p->RevokeAllPermissionsForFile(kRendererProcess, file);
   CheckHasNoFileSystemFilePermission(p, file, url);
 
   p->GrantCreateReadWriteFile(kRendererID, file);
-  EXPECT_TRUE(p->CanReadFile(kRendererID, file));
+  EXPECT_TRUE(p->CanReadFile(kRendererProcess, file));
   EXPECT_TRUE(p->CanCreateReadWriteFile(kRendererID, file));
-  EXPECT_TRUE(p->CanReadFileSystemFile(kRendererID, url));
-  EXPECT_TRUE(p->CanWriteFileSystemFile(kRendererID, url));
-  EXPECT_TRUE(p->CanCreateFileSystemFile(kRendererID, url));
-  EXPECT_TRUE(p->CanCreateReadWriteFileSystemFile(kRendererID, url));
-  EXPECT_TRUE(p->CanCopyIntoFileSystemFile(kRendererID, url));
-  EXPECT_TRUE(p->CanDeleteFileSystemFile(kRendererID, url));
-  p->RevokeAllPermissionsForFile(kRendererID, file);
+  EXPECT_TRUE(p->CanReadFileSystemFile(kRendererProcess, url));
+  EXPECT_TRUE(p->CanWriteFileSystemFile(kRendererProcess, url));
+  EXPECT_TRUE(p->CanCreateFileSystemFile(kRendererProcess, url));
+  EXPECT_TRUE(p->CanCreateReadWriteFileSystemFile(kRendererProcess, url));
+  EXPECT_TRUE(p->CanCopyIntoFileSystemFile(kRendererProcess, url));
+  EXPECT_TRUE(p->CanDeleteFileSystemFile(kRendererProcess, url));
+  p->RevokeAllPermissionsForFile(kRendererProcess, file);
   CheckHasNoFileSystemFilePermission(p, file, url);
 
   // Test revoke permissions on renderer ID removal.
   p->GrantCreateReadWriteFile(kRendererID, file);
-  EXPECT_TRUE(p->CanReadFile(kRendererID, file));
+  EXPECT_TRUE(p->CanReadFile(kRendererProcess, file));
   EXPECT_TRUE(p->CanCreateReadWriteFile(kRendererID, file));
-  EXPECT_TRUE(p->CanReadFileSystemFile(kRendererID, url));
-  EXPECT_TRUE(p->CanWriteFileSystemFile(kRendererID, url));
-  EXPECT_TRUE(p->CanCreateFileSystemFile(kRendererID, url));
-  EXPECT_TRUE(p->CanCreateReadWriteFileSystemFile(kRendererID, url));
-  EXPECT_TRUE(p->CanCopyIntoFileSystemFile(kRendererID, url));
-  EXPECT_TRUE(p->CanDeleteFileSystemFile(kRendererID, url));
+  EXPECT_TRUE(p->CanReadFileSystemFile(kRendererProcess, url));
+  EXPECT_TRUE(p->CanWriteFileSystemFile(kRendererProcess, url));
+  EXPECT_TRUE(p->CanCreateFileSystemFile(kRendererProcess, url));
+  EXPECT_TRUE(p->CanCreateReadWriteFileSystemFile(kRendererProcess, url));
+  EXPECT_TRUE(p->CanCopyIntoFileSystemFile(kRendererProcess, url));
+  EXPECT_TRUE(p->CanDeleteFileSystemFile(kRendererProcess, url));
   p->Remove(kRendererProcess);
   CheckHasNoFileSystemFilePermission(p, file, url);
 
@@ -1102,7 +1101,7 @@ TEST_P(ChildProcessSecurityPolicyTest, FilePermissions) {
 
   // Revoke all permissions for the file (it should inherit its permissions
   // from the directory again).
-  p->RevokeAllPermissionsForFile(kRendererID, granted_file);
+  p->RevokeAllPermissionsForFile(kRendererProcess, granted_file);
   EXPECT_TRUE(
       p->HasPermissionsForFile(kRendererProcess, granted_file,
                                base::File::FLAG_OPEN | base::File::FLAG_READ));
@@ -1255,12 +1254,12 @@ TEST_P(ChildProcessSecurityPolicyTest, RemoveRace) {
   p->AddForTesting(kRendererProcess, browser_context());
 
   p->GrantCommitURL(kRendererID, url);
-  p->GrantReadFile(kRendererID, file);
+  p->GrantReadFile(kRendererProcess, file);
   p->GrantWebUIBindings(kRendererID, kWebUIBindingsPolicySet);
 
   EXPECT_TRUE(p->CanRequestURL(kRendererID, url));
   EXPECT_TRUE(p->CanRedirectToURL(url));
-  EXPECT_TRUE(p->CanReadFile(kRendererID, file));
+  EXPECT_TRUE(p->CanReadFile(kRendererProcess, file));
   EXPECT_TRUE(p->HasWebUIBindings(kRendererID));
 
   p->Remove(kRendererProcess);
@@ -1272,7 +1271,7 @@ TEST_P(ChildProcessSecurityPolicyTest, RemoveRace) {
   // In this case, we default to secure behavior.
   EXPECT_FALSE(p->CanRequestURL(kRendererID, url));
   EXPECT_TRUE(p->CanRedirectToURL(url));
-  EXPECT_FALSE(p->CanReadFile(kRendererID, file));
+  EXPECT_FALSE(p->CanReadFile(kRendererProcess, file));
   EXPECT_FALSE(p->HasWebUIBindings(kRendererID));
 }
 
@@ -1560,6 +1559,34 @@ TEST_P(ChildProcessSecurityPolicyTest, CanAccessDataForOrigin_Origin) {
     EXPECT_FALSE(p->CanAccessDataForOrigin(kRendererID, origin)) << origin;
 }
 
+// Tests that queries for Midi permissions work after RenderProcessHost removal
+// until the corresponding Handles are gone. See https://crbug.com/471021577.
+TEST_P(ChildProcessSecurityPolicyTest, MidiAfterProcessRemoval) {
+  ChildProcessSecurityPolicyImpl* p =
+      ChildProcessSecurityPolicyImpl::GetInstance();
+  p->AddForTesting(kRendererProcess, browser_context());
+  auto handle = p->CreateHandle(kRendererProcess);
+
+  p->GrantSendMidiMessage(kRendererID);
+  EXPECT_TRUE(p->CanSendMidiMessage(kRendererProcess));
+  EXPECT_FALSE(p->CanSendMidiSysExMessage(kRendererProcess));
+  p->GrantSendMidiSysExMessage(kRendererID);
+  EXPECT_TRUE(p->CanSendMidiMessage(kRendererProcess));
+  EXPECT_TRUE(p->CanSendMidiSysExMessage(kRendererProcess));
+
+  // Simulate RenderProcessHost deletion while Handles still exist.
+  p->Remove(kRendererProcess);
+
+  // Queries should still succeed while the Handle exists.
+  EXPECT_TRUE(p->CanSendMidiMessage(kRendererProcess));
+  EXPECT_TRUE(p->CanSendMidiSysExMessage(kRendererProcess));
+
+  // Queries should no longer succeed after the Handle is invalidated.
+  handle = ChildProcessSecurityPolicyImpl::Handle();
+  EXPECT_FALSE(p->CanSendMidiMessage(kRendererProcess));
+  EXPECT_FALSE(p->CanSendMidiSysExMessage(kRendererProcess));
+}
+
 // Exercise the basic functionality of how MatchesCommittedOrigin() matches URLs
 // against origins that have committed in a process. This test simulates an
 // unlocked process that may commit origins from different sites (e.g., in a
@@ -1818,7 +1845,33 @@ TEST_P(ChildProcessSecurityPolicyTest, OriginGranting) {
   EXPECT_TRUE(p->CanCommitURL(kRendererID, url_foo2));
   EXPECT_FALSE(p->CanCommitURL(kRendererID, url_bar));
 
+  // Create a handle that extends the lifetime of the SecurityState beyond the
+  // RenderProcessHost's lifetime.
+  auto handle = p->CreateHandle(kRendererProcess);
   p->Remove(kRendererProcess);
+
+  // Queries should still succeed while the Handle exists.
+  EXPECT_TRUE(p->CanRequestURL(kRendererID, url_foo1));
+  EXPECT_TRUE(p->CanRequestURL(kRendererID, url_foo1));
+  EXPECT_FALSE(p->CanRequestURL(kRendererID, url_bar));
+  EXPECT_TRUE(p->CanRedirectToURL(url_foo1));
+  EXPECT_TRUE(p->CanRedirectToURL(url_foo2));
+  EXPECT_TRUE(p->CanRedirectToURL(url_bar));
+  EXPECT_TRUE(p->CanCommitURL(kRendererID, url_foo1));
+  EXPECT_TRUE(p->CanCommitURL(kRendererID, url_foo2));
+  EXPECT_FALSE(p->CanCommitURL(kRendererID, url_bar));
+
+  // Queries should no longer succeed after the Handle is invalidated.
+  handle = ChildProcessSecurityPolicyImpl::Handle();
+  EXPECT_FALSE(p->CanRequestURL(kRendererID, url_foo1));
+  EXPECT_FALSE(p->CanRequestURL(kRendererID, url_foo1));
+  EXPECT_FALSE(p->CanRequestURL(kRendererID, url_bar));
+  EXPECT_TRUE(p->CanRedirectToURL(url_foo1));
+  EXPECT_TRUE(p->CanRedirectToURL(url_foo2));
+  EXPECT_TRUE(p->CanRedirectToURL(url_bar));
+  EXPECT_FALSE(p->CanCommitURL(kRendererID, url_foo1));
+  EXPECT_FALSE(p->CanCommitURL(kRendererID, url_foo2));
+  EXPECT_FALSE(p->CanCommitURL(kRendererID, url_bar));
 }
 
 #define LOCKED_EXPECT_THAT(lock, value, matcher) \
@@ -3299,6 +3352,37 @@ TEST_P(ChildProcessSecurityPolicyTest, CannotLockUsedProcessToSite) {
 
   // We need to remove it otherwise other tests may fail.
   p->Remove(kRendererProcess);
+}
+
+// Tests that queries for GetProcessLock work after RenderProcessHost removal
+// until the corresponding Handles are gone. See https://crbug.com/470831168.
+TEST_P(ChildProcessSecurityPolicyTest, GetProcessLockAfterProcessRemoval) {
+  ChildProcessSecurityPolicyImpl* p =
+      ChildProcessSecurityPolicyImpl::GetInstance();
+  TestBrowserContext context;
+
+  scoped_refptr<SiteInstanceImpl> foo_instance =
+      SiteInstanceImpl::CreateForTesting(&context, GURL("https://foo.com"));
+
+  // Lock process to foo.com.
+  p->Add(kRendererProcess, &context);
+  p->LockProcess(foo_instance->GetIsolationContext(), kRendererProcess,
+                 /*is_process_used=*/false,
+                 ProcessLock::FromSiteInfo(foo_instance->GetSiteInfo()));
+  EXPECT_TRUE(p->GetProcessLock(kRendererProcess).IsLockedToSite());
+  EXPECT_FALSE(p->GetProcessLock(kRendererProcess).AllowsAnySite());
+
+  // Create a handle that extends the lifetime of the SecurityState beyond the
+  // RenderProcessHost's lifetime.
+  auto handle = p->CreateHandle(kRendererProcess);
+  p->Remove(kRendererProcess);
+
+  // Queries should still succeed while the Handle exists.
+  EXPECT_TRUE(p->GetProcessLock(kRendererProcess).IsLockedToSite());
+
+  // Queries should no longer succeed after the Handle is invalidated.
+  handle = ChildProcessSecurityPolicyImpl::Handle();
+  EXPECT_FALSE(p->GetProcessLock(kRendererProcess).IsLockedToSite());
 }
 
 // Test that

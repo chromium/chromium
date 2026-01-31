@@ -6,13 +6,13 @@
 
 #include <cups/ipp.h>
 
+#include <algorithm>
 #include <array>
 #include <cstring>
 #include <memory>
 #include <string>
 #include <string_view>
 
-#include "base/containers/contains.h"
 #include "base/containers/fixed_flat_map.h"
 #include "base/logging.h"
 #include "base/notreached.h"
@@ -371,7 +371,8 @@ bool ParsePrinterInfo(ipp_t* response, PrinterInfo* printer_info) {
       std::vector<std::string> features;
       ParseCollection(attr, &features);
       printer_info->ipp_features = features;
-      printer_info->ipp_everywhere = base::Contains(features, kIppEverywhere);
+      printer_info->ipp_everywhere =
+          std::ranges::contains(features, kIppEverywhere);
     } else if (name == kDocumentFormatSupported) {
       ParseCollection(attr, &printer_info->document_formats);
     } else if (name == kOauthAuthorizationServerUri) {
@@ -472,7 +473,7 @@ CupsJob::CupsJob(const CupsJob& other) = default;
 CupsJob::~CupsJob() = default;
 
 bool CupsJob::ContainsStateReason(CupsJob::JobStateReason reason) const {
-  return base::Contains(state_reasons, ToJobStateReasonString(reason));
+  return std::ranges::contains(state_reasons, ToJobStateReasonString(reason));
 }
 
 PrinterInfo::PrinterInfo() = default;

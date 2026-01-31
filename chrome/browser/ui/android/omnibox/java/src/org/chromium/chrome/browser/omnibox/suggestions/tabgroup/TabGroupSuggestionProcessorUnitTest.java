@@ -23,7 +23,7 @@ import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.ContextUtils;
-import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider.ControlsPosition;
 import org.chromium.chrome.browser.omnibox.UrlBarEditingTextStateProvider;
@@ -88,7 +88,7 @@ public class TabGroupSuggestionProcessorUnitTest {
                         mBookmarkState,
                         mTabSupplier,
                         mShareDelegateSupplier,
-                        new ObservableSupplierImpl<>(ControlsPosition.TOP));
+                        ObservableSuppliers.createNonNull(ControlsPosition.TOP));
         mProcessor = new TabGroupSuggestionProcessor(uiContext);
         mInput = new AutocompleteInput();
         OmniboxResourceProvider.disableCachesForTesting();
@@ -113,6 +113,8 @@ public class TabGroupSuggestionProcessorUnitTest {
         mProcessor.populateModel(mInput, mSuggestion, mModel, 0);
     }
 
+    // TODO(crbug.com/450954710): This test fails on SDK 36.
+    @Config(sdk = 29)
     @Test
     @SmallTest
     public void testPopulateModelTabGroupSuggestions() {

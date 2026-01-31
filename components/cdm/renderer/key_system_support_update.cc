@@ -12,7 +12,6 @@
 #include <vector>
 
 #include "base/command_line.h"
-#include "base/containers/contains.h"
 #include "base/containers/flat_set.h"
 #include "base/feature_list.h"
 #include "base/logging.h"
@@ -335,7 +334,7 @@ void AddWidevine(const media::KeySystemCapability& capability,
     encryption_schemes = sw_secure_capability.encryption_schemes;
     session_types = UpdatePersistentLicenseSupport(
         can_persist_data, sw_secure_capability.session_types);
-    if (!base::Contains(session_types, CdmSessionType::kTemporary)) {
+    if (!session_types.contains(CdmSessionType::kTemporary)) {
       DVLOG(1) << "Temporary sessions must be supported.";
       return;
     }
@@ -360,7 +359,7 @@ void AddWidevine(const media::KeySystemCapability& capability,
     hw_secure_encryption_schemes = hw_secure_capability.encryption_schemes;
     hw_secure_session_types = UpdatePersistentLicenseSupport(
         can_persist_data, hw_secure_capability.session_types);
-    if (!base::Contains(hw_secure_session_types, CdmSessionType::kTemporary)) {
+    if (!hw_secure_session_types.contains(CdmSessionType::kTemporary)) {
       DVLOG(1) << "Temporary sessions must be supported.";
       return;
     }
@@ -500,8 +499,8 @@ void AddPlayReady(const media::KeySystemCapability& capability,
       !media::kHardwareSecureDecryptionForceSupportClearLead.Get());
   hw_secure_encryption_schemes =
       capability.hw_cdm_capability_or_status->encryption_schemes;
-  if (!base::Contains(capability.hw_cdm_capability_or_status->session_types,
-                      CdmSessionType::kTemporary)) {
+  if (!capability.hw_cdm_capability_or_status->session_types.contains(
+          CdmSessionType::kTemporary)) {
     DVLOG(1) << "Temporary sessions must be supported for hardware secure "
                 "PlayReady";
     return;

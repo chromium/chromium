@@ -6,27 +6,6 @@ module gfx.mojom;
 
 import "ui/gfx/mojom/native_handle_types.mojom";
 
-// gfx::BufferFormat
-enum BufferFormat {
-  R_8,
-  R_16,
-  RG_88,
-  RG_1616,
-  BGR_565,
-  RGBA_4444,
-  RGBX_8888,
-  RGBA_8888,
-  BGRX_8888,
-  BGRA_1010102,
-  RGBA_1010102,
-  BGRA_8888,
-  RGBA_F16,
-  YVU_420,
-  YUV_420_BIPLANAR,
-  YUVA_420_TRIPLANAR,
-  P010,
-};
-
 // gfx::BufferUsage
 enum BufferUsage {
   GPU_READ,

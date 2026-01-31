@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_SETTINGS_SETTINGS_DEFAULT_BROWSER_HANDLER_H_
 #define CHROME_BROWSER_UI_WEBUI_SETTINGS_SETTINGS_DEFAULT_BROWSER_HANDLER_H_
 
+#include <memory>
+
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/shell_integration.h"
 #include "chrome/browser/ui/webui/settings/settings_page_ui_handler.h"
@@ -12,6 +14,10 @@
 
 namespace content {
 class WebUI;
+}
+
+namespace default_browser {
+class DefaultBrowserController;
 }
 
 namespace settings {
@@ -41,15 +47,15 @@ class DefaultBrowserHandler : public SettingsPageUIHandler {
   friend class TestingDefaultBrowserHandler;
 
   // Called from WebUI to request the current state.
-  void RequestDefaultBrowserState(const base::Value::List& args);
+  void RequestDefaultBrowserState(const base::ListValue& args);
 
   // Called from WebUI to request the state of kUserValueDefaultBrowserStrings.
-  void HandleRequestUserValueStringsFeatureState(const base::Value::List& args);
+  void HandleRequestUserValueStringsFeatureState(const base::ListValue& args);
 
   // Makes this the default browser. Called from WebUI. If `args` is not empty,
   // and the first value is true, this method will attempt to pin Chrome to the
   // taskbar (currently Windows-only).
-  void SetAsDefaultBrowser(const base::Value::List& args);
+  void SetAsDefaultBrowser(const base::ListValue& args);
 
   // Called when there is a change to the default browser setting pref.
   void OnDefaultBrowserSettingChange();
@@ -72,9 +78,11 @@ class DefaultBrowserHandler : public SettingsPageUIHandler {
                               bool can_pin,
                               shell_integration::DefaultWebClientState state);
 
-  // Reference to a background worker that handles default browser settings.
-  scoped_refptr<shell_integration::DefaultBrowserWorker>
-      default_browser_worker_;
+  // Tracks whether user interacted with the "Set as Default" button.
+  bool did_user_interact_ = false;
+
+  std::unique_ptr<default_browser::DefaultBrowserController>
+      default_browser_controller_;
 
   // Used to listen for changes to if the default browser setting is managed.
   PrefChangeRegistrar local_state_pref_registrar_;

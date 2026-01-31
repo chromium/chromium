@@ -27,7 +27,7 @@
 #include "base/version.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/isolated_web_apps/install/isolated_web_app_install_source.h"
-#include "chrome/browser/web_applications/isolated_web_apps/install/pending_install_info.h"
+#include "chrome/browser/web_applications/isolated_web_apps/install/non_installed_bundle_inspection_context.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_features.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_integrity_block_data.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_trust_checker.h"
@@ -230,22 +230,9 @@ void UpdateBundlePathAndCreateStorageLocation(
              source.variant());
 }
 
-base::expected<std::reference_wrapper<const WebApp>, std::string>
-GetIsolatedWebAppById(const WebAppRegistrar& registrar,
-                      const webapps::AppId& iwa_id) {
-  auto* iwa = registrar.GetAppById(iwa_id);
-  if (!iwa) {
-    return base::unexpected("App is no longer installed.");
-  }
-  if (!iwa->isolation_data()) {
-    return base::unexpected("Installed app is not an Isolated Web App.");
-  }
-  return *iwa;
-}
-
 KeyRotationLookupResult LookupRotatedKey(
     const SignedWebBundleId& web_bundle_id,
-    base::optional_ref<base::Value::Dict> debug_log) {
+    base::optional_ref<base::DictValue> debug_log) {
   auto log_rotated_key = [&](const std::string& value) {
     if (debug_log) {
       debug_log->Set("rotated_key", value);
@@ -347,9 +334,14 @@ void IsolatedWebAppInstallCommandHelper::CheckTrustAndSignatures(
                   base::unexpected(std::string(kIwaDevModeNotEnabledMessage)));
               return;
             }
-            ValidateSignedWebBundleTrustAndSignatures(
+            RETURN_IF_ERROR(
+                IsolatedWebAppTrustChecker::IsTrusted(
+                    *profile, url_info_.web_bundle_id(), location.dev_mode()),
+                [&](const std::string& error) {
+                  std::move(callback).Run(base::unexpected(error));
+                });
+            ValidateSignedWebBundleSignatures(
                 profile, location.path(), url_info_.web_bundle_id(),
-                location.dev_mode(),
                 base::BindOnce(&ExpectedToExpectedOptional)
                     .Then(std::move(callback)));
           },
@@ -396,8 +388,8 @@ void IsolatedWebAppInstallCommandHelper::LoadInstallUrl(
   // order to determine the current state of content serving (installation
   // process vs application data serving) and source of data (proxy, web
   // bundle, etc...).
-  IsolatedWebAppPendingInstallInfo::FromWebContents(web_contents)
-      .set_source(source);
+  NonInstalledBundleInspectionContext::CreateForWebContents(&web_contents,
+                                                            source);
 
   GURL install_page_url =
       url_info_.origin().GetURL().Resolve(kGeneratedInstallPagePath);
@@ -406,7 +398,7 @@ void IsolatedWebAppInstallCommandHelper::LoadInstallUrl(
   load_params.transition_type = ui::PAGE_TRANSITION_GENERATED;
   // It is important to bypass a potentially registered Service Worker for two
   // reasons:
-  // 1. `IsolatedWebAppPendingInstallInfo` is attached to a `WebContents` and
+  // 1. `NonInstalledBundleInspectionContext` is attached to a `WebContents` and
   //    retrieved inside `IsolatedWebAppURLLoaderFactory` based on a frame tree
   //    node id. There is no frame tree node id for requests that are
   //    intercepted by Service Workers.

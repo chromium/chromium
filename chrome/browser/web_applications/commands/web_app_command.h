@@ -183,16 +183,20 @@ class WebAppCommand : public internal::CommandWithLock<LockType> {
     DCHECK_CALLED_ON_VALID_SEQUENCE(
         internal::CommandBase::command_sequence_checker_);
 
-    base::Value::Dict* metadata =
+    base::DictValue* metadata =
         internal::CommandBase::GetMutableDebugValue().EnsureDict("!metadata");
     CHECK(internal::CommandBase::command_manager())
         << "Command was never given to the command manager: "
         << internal::CommandBase::GetMutableDebugValue().DebugString();
     metadata->Set("command_result",
                   result == CommandResult::kSuccess ? "kSuccess" : "kFailure");
-    metadata->Set(
-        "!result",
-        base::ToString(std::tie<CallbackArgs&...>(args_for_callback...)));
+    if constexpr (sizeof...(CallbackArgs) == 1) {
+      metadata->Set("!result", base::ToString(args_for_callback...));
+    } else if constexpr (sizeof...(CallbackArgs) > 1) {
+      metadata->Set(
+          "!result",
+          base::ToString(std::tie<CallbackArgs&...>(args_for_callback...)));
+    }
     metadata->Set("completion_location", base::ToString(location));
     if (base::FeatureList::IsEnabled(features::kRecordWebAppDebugInfo)) {
       metadata->Set("completed_at", base::TimeFormatTimeOfDayWithMilliseconds(

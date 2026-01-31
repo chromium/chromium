@@ -19,16 +19,16 @@ using base::android::ScopedJavaLocalRef;
 static ScopedJavaLocalRef<jobject> JNI_WebContentsFactory_CreateWebContents(
     JNIEnv* env,
     Profile* profile,
-    jboolean initially_hidden,
-    jboolean initialize_renderer,
-    jboolean uses_platform_autofill,
-    jlong j_target_network,
+    bool initially_hidden,
+    bool initialize_renderer,
+    bool uses_platform_autofill,
+    int64_t j_target_network,
     const JavaRef<jthrowable>& j_creator_location) {
   content::WebContents::CreateParams params(profile);
-  params.initially_hidden = static_cast<bool>(initially_hidden);
+  params.initially_hidden = initially_hidden;
   params.initially_use_platform_autofill = uses_platform_autofill;
   params.desired_renderer_state =
-      static_cast<bool>(initialize_renderer)
+      initialize_renderer
           ? content::WebContents::CreateParams::
                 kInitializeAndWarmupRendererProcess
           : content::WebContents::CreateParams::kOkayToHaveRendererProcess;

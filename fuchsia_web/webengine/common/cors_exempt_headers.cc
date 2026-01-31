@@ -6,7 +6,6 @@
 
 #include <string_view>
 
-#include "base/containers/contains.h"
 #include "base/containers/flat_set.h"
 #include "base/lazy_instance.h"
 #include "base/strings/string_util.h"
@@ -30,6 +29,5 @@ bool IsHeaderCorsExempt(std::string_view header_name) {
   DCHECK(g_cors_exempt_headers_lowercase.IsCreated());
 
   const auto& cors_exempt_headers_set = g_cors_exempt_headers_lowercase.Get();
-  return base::Contains(cors_exempt_headers_set,
-                        base::ToLowerASCII(header_name));
+  return cors_exempt_headers_set.contains(base::ToLowerASCII(header_name));
 }

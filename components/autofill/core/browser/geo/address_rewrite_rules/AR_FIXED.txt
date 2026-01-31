@@ -30,7 +30,9 @@
 \bmonsieur\b	d
 \bquartier\b	ba
 \bautovia\b	ap
+\bavenida\b	av
 \bchannel\b	can
+\bgeneral\b	gral
 \blateral\b	lat
 \bvillage\b	ald
 \bbarrio\b	ba
@@ -44,6 +46,7 @@
 \bcanal\b	can
 \bnorte\b	n
 \boeste\b	o
+\bvilla\b	v
 \bdona\b	dna
 \beste\b	e
 \bmiss\b	dna

@@ -21,7 +21,6 @@ const size_t kCommandLineTailSize = 32;
 }  // namespace
 
 FallbackCrashHandlerLauncher::FallbackCrashHandlerLauncher() {
-  UNSAFE_TODO(memset(&exception_pointers_, 0, sizeof(exception_pointers_)));
 }
 
 FallbackCrashHandlerLauncher::~FallbackCrashHandlerLauncher() = default;
@@ -76,14 +75,18 @@ bool FallbackCrashHandlerLauncher::Initialize(
 DWORD FallbackCrashHandlerLauncher::LaunchAndWaitForHandler(
     EXCEPTION_POINTERS* exception_pointers) {
   DCHECK(!cmd_line_.empty());
-  DCHECK_EQ('=', cmd_line_[cmd_line_.size() - kCommandLineTailSize - 1]);
+  size_t tail_offset = cmd_line_.size() - kCommandLineTailSize;
+  DCHECK_EQ('=', cmd_line_[tail_offset - 1]);
   // This program has crashed. Try and not use anything but the stack.
 
   // Append the current thread's ID to the command line in-place.
-  int chars_appended =
-      wsprintf(UNSAFE_TODO(&cmd_line_.back() - kCommandLineTailSize + 1), L"%d",
-               GetCurrentThreadId());
-  DCHECK_GT(static_cast<int>(kCommandLineTailSize), chars_appended);
+
+  base::span<wchar_t> tail_span = base::span(cmd_line_).subspan(tail_offset);
+  // SAFETY: `tail_span` size is correct. TODO(crbug.com/40284755): Use
+  // spanified vswprintf when it exists.
+  int result = UNSAFE_BUFFERS(swprintf_s(tail_span.data(), tail_span.size(),
+                                         L"%u", GetCurrentThreadId()));
+  DCHECK_GE(result, 0);
 
   // Copy the exception pointers to our member variable, whose address is
   // already baked into the command line.

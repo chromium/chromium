@@ -4,11 +4,11 @@
 
 #include "chrome/browser/ash/child_accounts/time_limits/app_time_controller.h"
 
+#include <algorithm>
 #include <string>
 
 #include "ash/constants/notifier_catalogs.h"
 #include "ash/public/cpp/notification_utils.h"
-#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
@@ -331,7 +331,7 @@ void AppTimeController::RegisterProfilePrefObservers(
 void AppTimeController::TimeLimitsPolicyUpdated(const std::string& pref_name) {
   DCHECK_EQ(pref_name, prefs::kPerAppTimeLimitsPolicy);
 
-  const base::Value::Dict& policy =
+  const base::DictValue& policy =
       pref_registrar_->prefs()->GetDict(prefs::kPerAppTimeLimitsPolicy);
 
   std::map<AppId, AppLimit> app_limits = policy::AppLimitsFromDict(policy);
@@ -371,7 +371,7 @@ void AppTimeController::TimeLimitsAllowlistPolicyUpdated(
     const std::string& pref_name) {
   DCHECK_EQ(pref_name, prefs::kPerAppTimeLimitsAllowlistPolicy);
 
-  const base::Value::Dict& policy = pref_registrar_->prefs()->GetDict(
+  const base::DictValue& policy = pref_registrar_->prefs()->GetDict(
       prefs::kPerAppTimeLimitsAllowlistPolicy);
 
   // Figure out a way to avoid cloning
@@ -419,14 +419,14 @@ void AppTimeController::OnAppInstalled(const AppId& app_id) {
     return;
   }
 
-  const base::Value::Dict& allowlist_policy = pref_registrar_->prefs()->GetDict(
+  const base::DictValue& allowlist_policy = pref_registrar_->prefs()->GetDict(
       prefs::kPerAppTimeLimitsAllowlistPolicy);
   AppTimeLimitsAllowlistPolicyWrapper wrapper(&allowlist_policy);
-  if (base::Contains(wrapper.GetAllowlistAppList(), app_id)) {
+  if (std::ranges::contains(wrapper.GetAllowlistAppList(), app_id)) {
     app_registry_->SetAppAllowlisted(app_id);
   }
 
-  const base::Value::Dict& policy =
+  const base::DictValue& policy =
       pref_registrar_->prefs()->GetDict(prefs::kPerAppTimeLimitsPolicy);
 
   // Update the application's time limit.

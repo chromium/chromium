@@ -53,7 +53,7 @@ class LanguageSettingsPrivateDelegateTest
         disable_browser_spell_checker;
 #endif  // BUILDFLAG(IS_WIN)
 
-    base::Value::List language_codes;
+    base::ListValue language_codes;
     language_codes.Append("fr");
     profile()->GetPrefs()->Set(spellcheck::prefs::kSpellCheckDictionaries,
                                base::Value(std::move(language_codes)));

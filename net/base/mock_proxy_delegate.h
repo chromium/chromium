@@ -68,12 +68,6 @@ class MockProxyDelegate : public ProxyDelegate {
               SetProxyResolutionService,
               (ProxyResolutionService * proxy_resolution_service),
               (override));
-  MOCK_METHOD(bool,
-              AliasRequiresProxyOverride,
-              (const std::string scheme,
-               const std::vector<std::string>& dns_aliases,
-               const net::NetworkAnonymizationKey& network_anonymization_key),
-              (override));
 };
 
 }  // namespace net

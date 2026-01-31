@@ -55,7 +55,7 @@ class MigrationMessageHandler : public content::WebUIMessageHandler {
   }
 
   // WebUI "reauthenticateAccount" message callback.
-  void HandleReauthenticateAccount(const base::Value::List& args) {
+  void HandleReauthenticateAccount(const base::ListValue& args) {
     AllowJavascript();
 
     CHECK(!args.empty());
@@ -71,7 +71,7 @@ class MigrationMessageHandler : public content::WebUIMessageHandler {
     HandleCloseDialog(args);
   }
 
-  void HandleCloseDialog(const base::Value::List& args) {
+  void HandleCloseDialog(const base::ListValue& args) {
     AllowJavascript();
 
     close_dialog_closure_.Run();
@@ -125,7 +125,7 @@ AccountMigrationWelcomeUI::AccountMigrationWelcomeUI(content::WebUI* web_ui)
 
   web_ui->AddMessageHandler(std::make_unique<MigrationMessageHandler>(
       base::BindRepeating(&WebDialogUI::CloseDialog, weak_factory_.GetWeakPtr(),
-                          base::Value::List() /* args */)));
+                          base::ListValue() /* args */)));
 }
 
 AccountMigrationWelcomeUI::~AccountMigrationWelcomeUI() = default;

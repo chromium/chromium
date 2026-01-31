@@ -11,7 +11,7 @@
 
 #include "base/callback_list.h"
 #include "base/memory/raw_ptr.h"
-#include "chrome/browser/safe_browsing/cloud_content_scanning/binary_upload_service.h"
+#include "components/enterprise/connectors/core/cloud_content_scanning/binary_upload_service.h"
 #include "components/enterprise/connectors/core/cloud_content_scanning/connector_upload_request.h"
 #include "components/safe_browsing/core/browser/sync/safe_browsing_primary_account_token_fetcher.h"
 
@@ -21,7 +21,8 @@ namespace safe_browsing {
 
 // This class encapsulates the process of uploading a file for deep scanning,
 // and asynchronously retrieving a verdict.
-class CloudBinaryUploadService : public BinaryUploadService {
+class CloudBinaryUploadService
+    : public enterprise_connectors::BinaryUploadService {
  public:
   // The maximum number of uploads that can happen in parallel.
   static size_t GetParallelActiveRequestsMax();

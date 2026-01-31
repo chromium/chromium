@@ -12,10 +12,7 @@
 
 
 // Forward Declarations.
-JNI_ZERO_BOUNDARY_EXPORT jboolean Java_J_module_1N_MejItBT4(
-    JNIEnv* env,
-    jclass jcaller,
-    jboolean a);
+JNI_ZERO_BOUNDARY_EXPORT bool Java_J_module_1N_MejItBT4(JNIEnv* env, jclass jcaller, bool a);
 JNI_ZERO_BOUNDARY_EXPORT void Java_J_module_1N_MqDgXQiH(JNIEnv* env, jclass jcaller);
 
 // Helper Methods.

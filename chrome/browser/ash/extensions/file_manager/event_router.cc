@@ -17,7 +17,6 @@
 #include "ash/webui/file_manager/file_manager_ui.h"
 #include "base/command_line.h"
 #include "base/containers/adapters.h"
-#include "base/containers/contains.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -146,7 +145,7 @@ bool IsRecoveryToolRunning(Profile* profile) {
 void BroadcastEvent(Profile* profile,
                     extensions::events::HistogramValue histogram_value,
                     const std::string& event_name,
-                    base::Value::List event_args) {
+                    base::ListValue event_args) {
   extensions::EventRouter::Get(profile)->BroadcastEvent(
       std::make_unique<extensions::Event>(histogram_value, event_name,
                                           std::move(event_args)));
@@ -159,7 +158,7 @@ void DispatchEventToExtension(
     const std::string& extension_id,
     extensions::events::HistogramValue histogram_value,
     const std::string& event_name,
-    base::Value::List event_args) {
+    base::ListValue event_args) {
   extensions::EventRouter::Get(profile)->DispatchEventToExtension(
       extension_id, std::make_unique<extensions::Event>(
                         histogram_value, event_name, std::move(event_args)));
@@ -442,12 +441,12 @@ class DriveFsEventRouterImpl : public DriveFsEventRouter {
         DriveIntegrationServiceFactory::FindForProfile(profile_)
             ->GetMountPointPath();
     return base::FilePath("/").AppendRelativePath(path, &absolute_path) &&
-           base::Contains(*file_watchers_, absolute_path);
+           file_watchers_->contains(absolute_path);
   }
 
   void BroadcastEvent(extensions::events::HistogramValue histogram_value,
                       const std::string& event_name,
-                      base::Value::List event_args,
+                      base::ListValue event_args,
                       bool dispatch_to_system_notification = true) override {
     std::unique_ptr<extensions::Event> event =
         std::make_unique<extensions::Event>(histogram_value, event_name,

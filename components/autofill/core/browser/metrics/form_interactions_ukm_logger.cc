@@ -4,6 +4,7 @@
 
 #include "components/autofill/core/browser/metrics/form_interactions_ukm_logger.h"
 
+#include <utility>
 #include <variant>
 
 #include "base/check_deref.h"
@@ -14,6 +15,7 @@
 #include "components/autofill/core/browser/foundations/autofill_client.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics_utils.h"
+#include "components/autofill/core/browser/metrics/form_events/form_event_logger_base.h"
 #include "components/autofill/core/browser/metrics/prediction_quality_metrics.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_regexes.h"
@@ -41,7 +43,7 @@ void MaybeSet(UkmEvent& event,
 bool ShouldRecordUkm() {
   // We only need to generate this random number once while the current process
   // is running.
-  static const int random_value_per_session = base::RandInt(0, 99);
+  static const int random_value_per_session = base::RandIntInclusive(0, 99);
 
   const int kSamplingRate =
       base::FeatureList::IsEnabled(
@@ -109,7 +111,7 @@ void FormInteractionsUkmLogger::LogDidFillSuggestion(
 
   auto metric = ukm::builders::Autofill_SuggestionFilled(ukm_source_id);
   if (record_type) {
-    metric.SetRecordType(base::to_underlying(*record_type));
+    metric.SetRecordType(std::to_underlying(*record_type));
   }
   metric.SetIsForCreditCard(record_type.has_value())
       .SetMillisecondsSinceFormParsed(MillisecondsSinceFormParsed(
@@ -439,11 +441,11 @@ void FormInteractionsUkmLogger::LogAutofillFieldInfoAtFormRemove(
   builder.SetFormSessionIdentifier(FormGlobalIdToHash64Bit(form.global_id()))
       .SetFieldSessionIdentifier(FieldGlobalIdToHash64Bit(field.global_id()))
       .SetFieldSignature(HashFieldSignature(field.GetFieldSignature()))
-      .SetFormControlType2(base::to_underlying(field.form_control_type()))
-      .SetAutocompleteState(base::to_underlying(autocomplete_state))
+      .SetFormControlType2(std::to_underlying(field.form_control_type()))
+      .SetAutocompleteState(std::to_underlying(autocomplete_state))
       .SetFieldLogEventCount(field_log_events.size());
 
-  SetStatusVector(AutofillStatus::kIsFocusable, field.IsFocusable());
+  SetStatusVector(AutofillStatus::kIsFocusable, field.is_focusable());
   SetStatusVector(AutofillStatus::kUserTypedIntoField,
                   OptionalBooleanToBool(user_typed_into_field));
   SetStatusVector(AutofillStatus::kWasFocused, field.was_focused());
@@ -510,8 +512,8 @@ void FormInteractionsUkmLogger::LogAutofillFieldInfoAtFormRemove(
   }
 
   if (had_html_type) {
-    builder.SetHtmlFieldType(base::to_underlying(html_type))
-        .SetHtmlFieldMode(base::to_underlying(html_mode));
+    builder.SetHtmlFieldType(std::to_underlying(html_type))
+        .SetHtmlFieldMode(std::to_underlying(html_mode));
   }
 
   if (had_server_type) {
@@ -615,7 +617,7 @@ void FormInteractionsUkmLogger::
 
   // Determine whether `pattern` matches `value`.
   auto matches = [](const std::u16string& value,
-                    const icu::RegexPattern& pattern) {
+                    const icu::RegexPattern* pattern) {
     return !value.empty() && MatchesRegex(value, pattern);
   };
   // Count in `num_experimental_fields[i]` if `pattern[i]` matches the label,
@@ -625,9 +627,9 @@ void FormInteractionsUkmLogger::
     bool found_experimental_fields = false;
     for (size_t i = 0; i < kRegexPatterns->size(); ++i) {
       const icu::RegexPattern* pattern = (*kRegexPatterns)[i].get();
-      if (pattern && (matches(field.label(), *pattern) ||
-                      matches(field.id_attribute(), *pattern) ||
-                      matches(field.name_attribute(), *pattern))) {
+      if (pattern && (matches(field.label(), pattern) ||
+                      matches(field.id_attribute(), pattern) ||
+                      matches(field.name_attribute(), pattern))) {
         ++num_experimental_fields[i];
         found_experimental_fields = true;
       }
@@ -704,13 +706,14 @@ void FormInteractionsUkmLogger::LogFocusedComplexFormAtFormRemove(
     const FormStructure& form_structure,
     FormEventSet form_events,
     base::TimeTicks initial_interaction_timestamp,
-    base::TimeTicks form_submitted_timestamp) {
+    base::TimeTicks form_submitted_timestamp,
+    AutocompleteUnrecognizedBehavior ac_unrecognized_behavior) {
   if (!CanLog(ukm_source_id)) {
     return;
   }
 
   DenseSet<FormTypeNameForLogging> form_type_names_for_logging =
-      GetFormTypesForLogging(form_structure);
+      GetFormTypesForLogging(form_structure, ac_unrecognized_behavior);
 
   // To save bandwidth, only forms are reported that are a
   // kPostalAddressForm or a kCreditCardForm.
@@ -913,9 +916,7 @@ void FormInteractionsUkmLogger::LogKeyMetrics(
     bool suggestions_shown,
     bool edited_autofilled_field,
     bool suggestion_filled,
-    const FormInteractionCounts& form_interaction_counts,
-    const FormInteractionsFlowId& flow_id,
-    std::optional<int64_t> fast_checkout_run_id) {
+    const FormInteractionCounts& form_interaction_counts) {
   if (!CanLog(ukm_source_id)) {
     return;
   }
@@ -926,11 +927,7 @@ void FormInteractionsUkmLogger::LogKeyMetrics(
       .SetFormTypes(AutofillMetrics::FormTypesToBitVector(form_types))
       .SetAutofillFills(form_interaction_counts.autofill_fills)
       .SetFormElementUserModifications(
-          form_interaction_counts.form_element_user_modifications)
-      .SetFlowId(flow_id.value());
-  if (fast_checkout_run_id) {
-    builder.SetFastCheckoutRunId(fast_checkout_run_id.value());
-  }
+          form_interaction_counts.form_element_user_modifications);
   if (suggestions_shown) {
     builder.SetFillingAcceptance(suggestion_filled);
   }

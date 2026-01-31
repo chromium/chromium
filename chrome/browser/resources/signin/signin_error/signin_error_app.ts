@@ -33,42 +33,17 @@ export class SigninErrorAppElement extends SigninErrorAppElementBase {
 
   static override get properties() {
     return {
-      fromProfilePicker_: {type: Boolean},
       switchButtonUnavailable_: {type: Boolean},
       hideNormalError_: {type: Boolean},
-
-      /**
-       * An array of booleans indicating whether profile blocking messages
-       * should be hidden. Position 0 corresponds to the
-       * #profile-blocking-error-message container, and subsequent positions
-       * correspond to each of the 3 related messages respectively.
-       */
-      hideProfileBlockingErrors_: {type: Array},
     };
   }
 
-  protected accessor fromProfilePicker_: boolean =
-      loadTimeData.getBoolean('fromProfilePicker');
   protected accessor switchButtonUnavailable_: boolean = false;
   protected accessor hideNormalError_: boolean =
       loadTimeData.getString('signinErrorMessage').length === 0;
-  protected accessor hideProfileBlockingErrors_: boolean[];
 
   constructor() {
     super();
-
-    this.hideProfileBlockingErrors_ = (function() {
-      const hide = [
-        'profileBlockedMessage',
-        'profileBlockedAddPersonSuggestion',
-        'profileBlockedRemoveProfileSuggestion',
-      ].map(id => loadTimeData.getString(id).length === 0);
-
-      // Hide the container itself if all of each children are also hidden.
-      hide.unshift(hide.every(hideEntry => hideEntry));
-
-      return hide;
-    })();
   }
 
   override connectedCallback() {

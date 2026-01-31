@@ -106,6 +106,10 @@ static const MediaRecorderTestParams kMediaRecorderTestParams[] = {
     {true, false, "video/webm", "vp8", true},
     {true, false, "video/webm", "vp9", true},
     {true, false, "video/webm", "av01", false},
+    {true, false, "video/matroska", "vp9", true},
+    {true, false, "video/x-matroska", "vp9", true},
+    {false, true, "audio/matroska", "opus", true},
+    {false, true, "audio/x-matroska", "opus", true},
 #if BUILDFLAG(USE_PROPRIETARY_CODECS)
     {true, false, "video/x-matroska", "avc1", false},
     {true, false, "video/x-matroska", "avc3", false},
@@ -438,6 +442,10 @@ TEST_P(MediaRecorderHandlerTest, CanSupportMimeType) {
 
   const String mime_type_video("video/webm");
   EXPECT_TRUE(CanSupportMimeType(mime_type_video, String()));
+  const String mime_type_video_matroska("video/matroska");
+  EXPECT_TRUE(CanSupportMimeType(mime_type_video_matroska, String()));
+  const String mime_type_video_x_matroska("video/x-matroska");
+  EXPECT_TRUE(CanSupportMimeType(mime_type_video_x_matroska, String()));
   const String mime_type_video_uppercase("video/WEBM");
   EXPECT_TRUE(CanSupportMimeType(mime_type_video_uppercase, String()));
   const String example_good_codecs_1("vp8");
@@ -456,6 +464,10 @@ TEST_P(MediaRecorderHandlerTest, CanSupportMimeType) {
 
   const String mime_type_audio("audio/webm");
   EXPECT_TRUE(CanSupportMimeType(mime_type_audio, String()));
+  const String mime_type_audio_matroska("audio/matroska");
+  EXPECT_TRUE(CanSupportMimeType(mime_type_audio_matroska, String()));
+  const String mime_type_audio_x_matroska("audio/x-matroska");
+  EXPECT_TRUE(CanSupportMimeType(mime_type_audio_x_matroska, String()));
   const String example_good_codecs_5("opus");
   EXPECT_TRUE(CanSupportMimeType(mime_type_audio, example_good_codecs_5));
   const String example_good_codecs_6("OpUs");

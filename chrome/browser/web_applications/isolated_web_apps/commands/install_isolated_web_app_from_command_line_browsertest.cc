@@ -14,12 +14,13 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/web_applications/test/isolated_web_app_test_utils.h"
-#include "chrome/browser/web_applications/isolated_web_apps/install/isolated_web_app_installation_manager.h"
+#include "chrome/browser/web_applications/isolated_web_apps/install/isolated_web_app_dev_install_manager.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
 #include "chrome/browser/web_applications/isolated_web_apps/test/integrity_block_data_matcher.h"
 #include "chrome/browser/web_applications/isolated_web_apps/test/isolated_web_app_builder.h"
 #include "chrome/browser/web_applications/test/web_app_test_observers.h"
 #include "chrome/browser/web_applications/web_app.h"
+#include "chrome/browser/web_applications/web_app_filter.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/common/chrome_features.h"
@@ -93,8 +94,8 @@ IN_PROC_BROWSER_TEST_F(InstallIsolatedWebAppFromCommandLineFromUrlBrowserTest,
   WebAppTestInstallObserver observer(browser()->profile());
   webapps::AppId id = observer.BeginListeningAndWait();
 
-  EXPECT_EQ(proto::InstallState::INSTALLED_WITH_OS_INTEGRATION,
-            GetWebAppRegistrar().GetInstallState(id));
+  EXPECT_TRUE(
+      GetWebAppRegistrar().AppMatches(id, WebAppFilter::IsIsolatedApp()));
   EXPECT_THAT(
       GetWebAppRegistrar().GetAppById(id),
       test::IwaIs(
@@ -154,8 +155,8 @@ IN_PROC_BROWSER_TEST_F(InstallIsolatedWebAppFromCommandLineFromFileBrowserTest,
   ASSERT_EQ(
       id,
       IsolatedWebAppUrlInfo::CreateFromSignedWebBundleId(*bundle_id_).app_id());
-  ASSERT_EQ(proto::InstallState::INSTALLED_WITH_OS_INTEGRATION,
-            GetWebAppRegistrar().GetInstallState(id));
+  ASSERT_TRUE(
+      GetWebAppRegistrar().AppMatches(id, WebAppFilter::IsIsolatedApp()));
 
   // Check that the bundle was copied, not moved.
   base::ScopedAllowBlockingForTesting allow_blocking;

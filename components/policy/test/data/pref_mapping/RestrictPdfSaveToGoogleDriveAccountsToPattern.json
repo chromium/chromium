@@ -1,0 +1,18 @@
+[
+  {
+    "os": [
+      "linux",
+      "mac",
+      "win"
+    ],
+    "simple_policy_pref_mapping_test": {
+      "pref_name": "pdf.restrict_save_to_drive_accounts_to_pattern",
+      "pref_location": "local_state",
+      "default_value": "",
+      "values_to_test": [
+        ".*@example.com",
+        "test@example.com"
+      ]
+    }
+  }
+]

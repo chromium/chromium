@@ -112,8 +112,8 @@ V4UpdateProtocolManager::V4UpdateProtocolManager(
     : update_error_count_(0),
       update_back_off_mult_(1),
       next_update_interval_(
-          base::Seconds(base::RandInt(kV4TimerStartIntervalSecMin,
-                                      kV4TimerStartIntervalSecMax))),
+          base::Seconds(base::RandIntInclusive(kV4TimerStartIntervalSecMin,
+                                               kV4TimerStartIntervalSecMax))),
       config_(config),
       url_loader_factory_(url_loader_factory),
       update_callback_(update_callback),

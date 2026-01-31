@@ -3736,4 +3736,22 @@ TEST_F(IntersectionObserverTest,
   EXPECT_FALSE(root_frame_view->NeedsUpdateDelayedIntersectionForTesting());
 }
 
+TEST_F(IntersectionObserverTest, RootMarginPercentOverflow) {
+  IntersectionObserverInit* observer_init = IntersectionObserverInit::Create();
+  observer_init->setRootMargin("3e9%");
+
+  DummyExceptionStateForTesting exception_state;
+
+  TestIntersectionObserverDelegate* observer_delegate =
+      MakeGarbageCollected<TestIntersectionObserverDelegate>(GetDocument());
+
+  IntersectionObserver* observer = IntersectionObserver::Create(
+      observer_init, *observer_delegate,
+      LocalFrameUkmAggregator::kJavascriptIntersectionObserver,
+      exception_state);
+  ASSERT_FALSE(exception_state.HadException());
+  EXPECT_EQ(observer->rootMargin(),
+            "3.00000e+9% 3.00000e+9% 3.00000e+9% 3.00000e+9%");
+}
+
 }  // namespace blink

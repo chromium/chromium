@@ -10,7 +10,6 @@ use cxx::{CxxVector, UniquePtr};
 use std::io::Read;
 use std::mem;
 use std::pin::Pin;
-use zip;
 
 #[cfg(target_family = "unix")]
 use crate::json::STREAM_BUFFER_SIZE;
@@ -148,7 +147,7 @@ pub fn parse_stable_portability_history(
     history_size_threshold: usize,
 ) {
     let mut history = CxxVector::<ffi::StablePortabilityHistoryEntry>::new();
-    let result = (|| -> Result<(), String> {
+    let result = {
         let stream_reader = BufReader::with_capacity(STREAM_BUFFER_SIZE, file);
         json::deserialize_top_level::<StablePortabilityHistoryJSONEntry, std::fs::File>(
             stream_reader,
@@ -163,7 +162,7 @@ pub fn parse_stable_portability_history(
             },
             /* metadata_only= */ false,
         )
-    })();
+    };
     if result.is_ok() {
         // Send final batch if any, and completion signal.
         history_callback.as_mut().unwrap().import_entries(history, true);
@@ -175,11 +174,11 @@ pub fn parse_stable_portability_history(
 
 // Returns whether the file used by the stream reader is a history file.
 pub fn is_safari_history_file<'a, R: Read>(stream_reader: ZipEntryBufReader<'a, R>) -> bool {
-    return json::deserialize_top_level::<SafariHistoryJSONEntry, zip::read::ZipFile<'a, R>>(
+    json::deserialize_top_level::<SafariHistoryJSONEntry, zip::read::ZipFile<'a, R>>(
         stream_reader.inner,
         ffi::FileType::SafariHistory,
         |_| {},
         /* metadata_only= */ true,
     )
-    .is_ok();
+    .is_ok()
 }

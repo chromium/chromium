@@ -4,7 +4,6 @@
 
 #include "content/browser/devtools/worker_devtools_manager.h"
 
-#include "base/containers/contains.h"
 #include "base/metrics/histogram_functions.h"
 #include "content/browser/devtools/dedicated_worker_devtools_agent_host.h"
 #include "content/browser/devtools/devtools_instrumentation.h"
@@ -50,7 +49,7 @@ void WorkerDevToolsManager::WorkerCreated(
     const GlobalRenderFrameHostId& ancestor_render_frame_host_id,
     scoped_refptr<DevToolsThrottleHandle> throttle_handle) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  DCHECK(!base::Contains(hosts_, host));
+  DCHECK(!hosts_.contains(host));
 
   hosts_[host] = base::MakeRefCounted<DedicatedWorkerDevToolsAgentHost>(
       process_id,

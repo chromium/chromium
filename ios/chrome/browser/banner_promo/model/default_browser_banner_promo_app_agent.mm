@@ -15,9 +15,15 @@
 #import "ios/chrome/browser/default_browser/model/utils.h"
 #import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
 #import "ios/chrome/browser/shared/model/url/url_util.h"
-#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/web/public/navigation/navigation_context.h"
 #import "url/gurl.h"
+
+namespace {
+
+// Number of times the promo will show in a single session.
+const int kSessionImpressionLimit = 5;
+
+}  // namespace
 
 @interface DefaultBrowserBannerAppAgentObserverList
     : CRBProtocolObservers <DefaultBrowserBannerAppAgentObserver>
@@ -239,8 +245,7 @@
         break;
       }
     }
-  } else if (_sessionDisplayCount >=
-             kDefaultBrowserBannerPromoImpressionLimit.Get()) {
+  } else if (_sessionDisplayCount >= kSessionImpressionLimit) {
     base::UmaHistogramEnumeration(
         "IOS.DefaultBrowserBannerPromo.PromoSessionEnded",
         IOSDefaultBrowserBannerPromoPromoSessionEndedReason::kImpressionsMet);

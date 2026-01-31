@@ -4,7 +4,8 @@
 
 #include "chrome/browser/ui/webui/tab_search/tab_search_prefs.h"
 
-#include "base/types/cxx23_to_underlying.h"
+#include <utility>
+
 #include "chrome/browser/ui/webui/tab_search/tab_search.mojom.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_registry_simple.h"
@@ -57,7 +58,7 @@ tab_search::mojom::TabSearchSection GetTabSearchSectionFromInt(
 
 int GetIntFromTabSearchSection(
     const tab_search::mojom::TabSearchSection section) {
-  return base::to_underlying(section);
+  return std::to_underlying(section);
 }
 
 tab_search::mojom::TabOrganizationFeature GetTabOrganizationFeatureFromInt(
@@ -68,7 +69,7 @@ tab_search::mojom::TabOrganizationFeature GetTabOrganizationFeatureFromInt(
 
 int GetIntFromTabOrganizationFeature(
     const tab_search::mojom::TabOrganizationFeature feature) {
-  return base::to_underlying(feature);
+  return std::to_underlying(feature);
 }
 
 }  // namespace tab_search_prefs

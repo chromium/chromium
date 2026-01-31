@@ -133,8 +133,6 @@ class TestNetworkContext : public mojom::NetworkContext {
       const url::Origin& origin,
       const net::IsolationInfo& isolation_info,
       const base::flat_map<std::string, std::string>& endpoints) override {}
-  void SetEnterpriseReportingEndpoints(
-      const base::flat_map<std::string, GURL>& endpoints) override {}
   void SendReportsAndRemoveSource(
       const base::UnguessableToken& reporting_source) override {}
   void QueueReport(
@@ -143,11 +141,11 @@ class TestNetworkContext : public mojom::NetworkContext {
       const GURL& url,
       const std::optional<base::UnguessableToken>& reporting_source,
       const net::NetworkAnonymizationKey& network_anonymization_key,
-      base::Value::Dict body) override {}
+      base::DictValue body) override {}
   void QueueEnterpriseReport(const std::string& type,
                              const std::string& group,
                              const GURL& url,
-                             base::Value::Dict body) override {}
+                             base::DictValue body) override {}
   void QueueSignedExchangeReport(
       mojom::SignedExchangeReportPtr report,
       const net::NetworkAnonymizationKey& network_anonymization_key) override {}

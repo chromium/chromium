@@ -14,9 +14,8 @@ import android.view.MenuItem;
 
 import androidx.appcompat.widget.Toolbar;
 
-import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.ObservableSuppliers;
-import org.chromium.base.supplier.SettableObservableSupplier;
+import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
 import org.chromium.build.annotations.Initializer;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -32,6 +31,7 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.share.ShareDelegate;
 import org.chromium.chrome.browser.share.ShareDelegateImpl;
 import org.chromium.chrome.browser.tab.TabLaunchType;
+import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.document.ChromeAsyncTabLauncher;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
@@ -53,9 +53,9 @@ public class CreatorActivity extends SnackbarActivity {
     private final ActivityTabProvider mActivityTabProvider = new ActivityTabProvider();
     private final ActivityLifecycleDispatcherImpl mLifecycleDispatcher =
             new ActivityLifecycleDispatcherImpl(this);
-    private final SettableObservableSupplier<ShareDelegate> mShareDelegateSupplier =
+    private final SettableMonotonicObservableSupplier<ShareDelegate> mShareDelegateSupplier =
             ObservableSuppliers.createMonotonic();
-    private final SettableObservableSupplier<ShareDelegate> mTabShareDelegateSupplier =
+    private final SettableMonotonicObservableSupplier<ShareDelegate> mTabShareDelegateSupplier =
             ObservableSuppliers.createMonotonic();
 
     private static class TabShareDelegateImpl extends ShareDelegateImpl {
@@ -64,7 +64,7 @@ public class CreatorActivity extends SnackbarActivity {
                 @Nullable BottomSheetController controller,
                 ActivityLifecycleDispatcherImpl lifecycleDispatcher,
                 ActivityTabProvider tabProvider,
-                ObservableSupplierImpl tabModelSelectorProvider,
+                Supplier<TabModelSelector> tabModelSelectorProvider,
                 Supplier profileSupplier,
                 ShareSheetDelegate delegate,
                 boolean isCustomTab) {
@@ -124,7 +124,7 @@ public class CreatorActivity extends SnackbarActivity {
                         mBottomSheetController,
                         mLifecycleDispatcher,
                         mActivityTabProvider,
-                        /* tabModelSelectProvider */ new ObservableSupplierImpl<>(),
+                        /* tabModelSelectProvider */ ObservableSuppliers.createMonotonic(),
                         getProfileSupplier(),
                         new ShareDelegateImpl.ShareSheetDelegate(),
                         /* isCustomTab= */ false);
@@ -155,7 +155,7 @@ public class CreatorActivity extends SnackbarActivity {
                         mBottomSheetController,
                         mLifecycleDispatcher,
                         mActivityTabProvider,
-                        /* tabModelSelectProvider */ new ObservableSupplierImpl<>(),
+                        /* tabModelSelectProvider */ ObservableSuppliers.createMonotonic(),
                         getProfileSupplier(),
                         new ShareDelegateImpl.ShareSheetDelegate(),
                         /* isCustomTab= */ false,
@@ -196,15 +196,22 @@ public class CreatorActivity extends SnackbarActivity {
     @SuppressWarnings("NullAway")
     @Override
     protected void onDestroy() {
-        mLifecycleDispatcher.onDestroyStarted();
+        // Dispatch onDestroy() for objects created for the activity.
+        mLifecycleDispatcher.dispatchOnDestroy();
+        mTabShareDelegateSupplier.destroy();
+        mShareDelegateSupplier.destroy();
+
+        // Destroy ActivityWindowAndroid if it exists. This must be after
+        // mLifecycleDispatcher.dispatchOnDestroy() because objects subscribing to
+        // mLifecycleDispatcher's onDestroy events may have references to ActivityWindowAndroid.
         if (mWindowAndroid != null) {
             mWindowAndroid.destroy();
             mWindowAndroid = null;
         }
-        mTabShareDelegateSupplier.destroy();
-        mShareDelegateSupplier.destroy();
+
+        // Finally, destroy the activity. This must be after destroying ActivityWindowAndroid
+        // because it has a reference to the Activity.
         super.onDestroy();
-        mLifecycleDispatcher.dispatchOnDestroy();
     }
 
     // This implements the CreatorWebContents interface.

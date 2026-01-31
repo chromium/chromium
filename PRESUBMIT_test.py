@@ -178,6 +178,7 @@ class InvalidIfDefinedMacroNamesTest(unittest.TestCase):
             '#if !defined(TARGET_IPHONE_SIMULATOR)',
             '#elif defined(TARGET_IPHONE_SIMULATOR)',
             '#ifdef TARGET_IPHONE_SIMULATOR',
+            '#elifdef TARGET_IPHONE_SIMULATOR',
             ' # ifdef TARGET_IPHONE_SIMULATOR',
             '# if defined(VALID) || defined(TARGET_IPHONE_SIMULATOR)',
             '# else  // defined(TARGET_IPHONE_SIMULATOR)',
@@ -3041,13 +3042,24 @@ class BannedTypeCheckTest(unittest.TestCase):
                 '#if BUILDFLAG(IS_DESKTOP_ANDROID)',
                 '// some third line',
             ]),
+            # New test cases for nlohmann::json::parse
+            MockFile('some/cpp/problematic/json_parse.cc',
+                     ['nlohmann::json::parse(json_string);']),
+            MockFile('some/cpp/problematic/json_parse_no_namespace.cc',
+                     ['json::parse(json_string);']),
+            MockFile('third_party/json/ok/json_parse.cc',
+                     ['nlohmann::json::parse(json_string);']),
+            MockFile('v8/ok/v8_parse.cc',
+                     ['JSON::Parse(json_string);']),
+            MockFile('v8/ok/v8_json_parse.cc',
+                     ['v8::JSON::Parse(json_string);']),
         ]
 
         results = PRESUBMIT.CheckNoBannedPatterns(input_api, MockOutputApi())
 
         # Each entry in results corresponds to a BanRule with a violation, in
         # the order they were encountered.
-        self.assertEqual(9, len(results))
+        self.assertEqual(11, len(results))
         self.assertIn('some/cpp/problematic/file.cc', results[0].message)
         self.assertIn('third_party/blink/problematic/file.cc',
                       results[1].message)
@@ -3066,6 +3078,16 @@ class BannedTypeCheckTest(unittest.TestCase):
         self.assertIn('banned_ranges_usage.cc', results[6].message)
         self.assertIn('views_usage.cc', results[7].message)
         self.assertIn('content/desktop_android.cc', results[8].message)
+        self.assertIn('some/cpp/problematic/json_parse.cc', results[9].message)
+        self.assertIn('some/cpp/problematic/json_parse_no_namespace.cc',
+                      results[10].message)
+        self.assertTrue(
+            all('third_party/json/ok/json_parse.cc' not in r.message
+                for r in results))
+        self.assertTrue(
+            all('v8/ok/v8_parse.cc' not in r.message for r in results))
+        self.assertTrue(
+            all('v8/ok/v8_json_parse.cc' not in r.message for r in results))
 
         # Check ResultLocation data. Line nums start at 1.
         self.assertEqual(results[8].locations[0].file_path,
@@ -5004,6 +5026,11 @@ class CheckRawPtrUsageTest(unittest.TestCase):
             # Renderer code is generally allowed (except specifically
             # disallowed directories).
             MockAffectedFile('test30/renderer/foo.cc', ['raw_ptr<int>']),
+            # `functional.h` carries shared plumbing and is a special
+            # inclusion (against the rest of `platform/wtf/`).
+            MockAffectedFile(
+                'test31/third_party/blink/renderer/platform/wtf/functional.cc',
+                ['raw_ptr<int>']),
         ]
         mock_output_api = MockOutputApi()
         errors = PRESUBMIT.CheckRawPtrUsage(mock_input_api, mock_output_api)
@@ -5023,14 +5050,37 @@ class CheckRawPtrUsageTest(unittest.TestCase):
             MockAffectedFile(
                 'test4/third_party/blink/renderer/platform/fonts/foo.h',
                 ['raw_ptr<int>']),
+            # As above, but with `raw_ref`.
+            MockAffectedFile('test5/third_party/blink/renderer/core/foo.h',
+                             ['raw_ref<int>']),
+            MockAffectedFile(
+                'test6/third_party/blink/renderer/platform/heap/foo.cc',
+                ['raw_ref<int>']),
+            MockAffectedFile(
+                'test7/third_party/blink/renderer/platform/wtf/foo.cc',
+                ['raw_ref<int>']),
+            MockAffectedFile(
+                'test8/third_party/blink/renderer/platform/fonts/foo.h',
+                ['raw_ref<int>']),
+            # As above, but with `raw_span`.
+            MockAffectedFile('test9/third_party/blink/renderer/core/foo.h',
+                             ['raw_span<int>']),
+            MockAffectedFile(
+                'test10/third_party/blink/renderer/platform/heap/foo.cc',
+                ['raw_span<int>']),
+            MockAffectedFile(
+                'test11/third_party/blink/renderer/platform/wtf/foo.cc',
+                ['raw_span<int>']),
+            MockAffectedFile(
+                'test12/third_party/blink/renderer/platform/fonts/foo.h',
+                ['raw_span<int>']),
         ]
         mock_output_api = MockOutputApi()
         errors = PRESUBMIT.CheckRawPtrUsage(mock_input_api, mock_output_api)
         self.assertEqual(len(mock_input_api.files), len(errors))
         for error in errors:
-            self.assertIn(
-                'raw_ptr<T> should not be used in this renderer code',
-                error.message)
+            self.assertIn('` should not be used in this renderer code',
+                          error.message)
 
 
 class CheckAdvancedMemorySafetyChecksUsageTest(unittest.TestCase):
@@ -5942,6 +5992,88 @@ class CheckBaseFeatureMacroTest(unittest.TestCase):
 
         self.assertEqual(len(expected_warnings), len(warnings))
         self.assertCountEqual(expected_warnings, warnings)
+
+
+class CheckNoMojomDataViewIncludesTest(unittest.TestCase):
+
+    def testPositive(self):
+        input_api = MockInputApi()
+        input_api.files = [
+            MockAffectedFile('foo.cc', ['#include "foo.mojom-data-view.h"']),
+        ]
+        results = PRESUBMIT.CheckNoMojomDataViewIncludes(
+            input_api, MockOutputApi())
+        self.assertEqual(1, len(results))
+        self.assertEqual(
+            'Do not #include <...>.mojom-data-view.h; #include <...>.mojom-shared.h instead.',
+            results[0].message)
+
+    def testNegative(self):
+        input_api = MockInputApi()
+        input_api.files = [
+            MockAffectedFile('foo.cc', ['#include "foo.mojom-shared.h"']),
+        ]
+        results = PRESUBMIT.CheckNoMojomDataViewIncludes(
+            input_api, MockOutputApi())
+        self.assertEqual(0, len(results))
+
+    def testTraitsExcluded(self):
+        input_api = MockInputApi()
+        input_api.files = [
+            MockAffectedFile('foo_traits.cc',
+                             ['#include "foo.mojom-data-view.h"']),
+        ]
+        results = PRESUBMIT.CheckNoMojomDataViewIncludes(
+            input_api, MockOutputApi())
+        self.assertEqual(0, len(results))
+
+    def testSpecificFileExcluded(self):
+        input_api = MockInputApi()
+        input_api.files = [
+            MockAffectedFile('services/network/url_loader.cc',
+                             ['#include "foo.mojom-data-view.h"']),
+        ]
+        results = PRESUBMIT.CheckNoMojomDataViewIncludes(
+            input_api, MockOutputApi())
+        self.assertEqual(0, len(results))
+
+
+class TestFileNamesTest(unittest.TestCase):
+
+    def testInvalidTestNames(self):
+        input_api = MockInputApi()
+        input_api.files = [
+            MockFile('path/to/foo_unittests.cc', []),
+            MockFile('path/to/bar_browsertests.cc', []),
+            MockFile('path/to/baz_unittest.cc', []),
+            MockFile('path/to/qux_browsertest.cc', []),
+            MockFile('third_party/blink/renderer/core/foo_unittests.cc', []),
+        ]
+        results = PRESUBMIT.CheckTestFileNamesOnUpload(input_api,
+                                                       MockOutputApi())
+        self.assertEqual(1, len(results))
+        self.assertEqual(3, len(results[0].items))
+        self.assertIn(
+            'path/to/foo_unittests.cc (should be path/to/foo_unittest.cc)',
+            results[0].items)
+        self.assertIn(
+            'path/to/bar_browsertests.cc (should be path/to/bar_browsertest.cc)',
+            results[0].items)
+        self.assertIn(
+            'third_party/blink/renderer/core/foo_unittests.cc (should be third_party/blink/renderer/core/foo_unittest.cc)',
+            results[0].items)
+
+    def testNoInvalidTestNames(self):
+        input_api = MockInputApi()
+        input_api.files = [
+            MockFile('path/to/baz_unittest.cc', []),
+            MockFile('path/to/qux_browsertest.cc', []),
+            MockFile('path/to/run_all_unittests.cc', []),
+            MockFile('third_party/foo/bar_unittests.cc', []),
+        ]
+        results = PRESUBMIT.CheckTestFileNamesOnUpload(input_api,
+                                                       MockOutputApi())
+        self.assertEqual(0, len(results))
 
 
 if __name__ == '__main__':

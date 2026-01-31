@@ -1,6 +1,7 @@
 include_rules = [
-  "+components/security_interstitials/core/insecure_form_util.h",
+  # go/keep-sorted start
   "+components/leveldb_proto/public",
+  "+components/security_interstitials/core/insecure_form_util.h",
   "+components/security_state",
   "+components/sessions/core/session_id.h",
   "+components/shared_highlighting/core/common",
@@ -9,6 +10,7 @@ include_rules = [
   "+ios/components/enterprise/data_controls",
   "+ios/components/security_interstitials/https_only_mode/feature.h",
   "+ios/net",
+  "+ios/public/provider/web",
   "+ios/web",
   "+mojo/public",
   "+net",
@@ -17,6 +19,7 @@ include_rules = [
   "+services/network/public/cpp",
   "+services/network/public/mojom",
   "+ui",
+  # go/keep-sorted end
 
   # For tests.
   "+components/crash/core/common/objc_zombie.h",

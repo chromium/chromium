@@ -15,7 +15,7 @@
 #include <functional>
 #include <utility>
 
-#include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
 #include "base/memory/ref_counted.h"
@@ -261,11 +261,9 @@ void OnSigningSuccess(
         base::unexpected(UserVerifyingKeySigningError::kPlatformApiError));
     return;
   }
-
-  uint8_t* signature_data = nullptr;
-  uint32_t signature_length = 0;
-  hr = base::win::GetPointerToBufferData(signature_buffer.Get(),
-                                         &signature_data, &signature_length);
+  base::span<uint8_t> signature_span;
+  hr =
+      base::win::GetPointerToBufferData(signature_buffer.Get(), signature_span);
   if (FAILED(hr)) {
     LOG(ERROR) << FormatError("Failed to obtain data from signature buffer",
                               hr);
@@ -277,8 +275,8 @@ void OnSigningSuccess(
   }
 
   RecordSignAsyncResult(KeyCredentialSignResult::kSucceeded);
-  std::move(callback).Run(base::ok(std::vector<uint8_t>(
-      signature_data, UNSAFE_TODO(signature_data + signature_length))));
+  std::move(callback).Run(base::ok(
+      std::vector<uint8_t>(signature_span.begin(), signature_span.end())));
 }
 
 void OnSigningError(
@@ -297,8 +295,7 @@ void SignInternal(
     ComPtr<IKeyCredential> credential,
     UserVerifyingSigningKey::UserVerifyingKeySignatureCallback callback) {
   Microsoft::WRL::ComPtr<IBuffer> signing_buf;
-  HRESULT hr =
-      base::win::CreateIBufferFromData(data.data(), data.size(), &signing_buf);
+  HRESULT hr = base::win::CreateIBufferFromData(data, &signing_buf);
   if (FAILED(hr)) {
     LOG(ERROR) << FormatError("SignInternal: IBuffer creation failed", hr);
     RecordSignAsyncResult(KeyCredentialSignResult::kIBufferCreationFailed);
@@ -365,14 +362,11 @@ class UserVerifyingSigningKeyWin : public UserVerifyingSigningKey {
     CHECK(SUCCEEDED(hr)) << FormatError(
         "Failed to obtain public key from KeyCredential", hr);
 
-    uint8_t* pub_key_data = nullptr;
-    uint32_t pub_key_length = 0;
-    hr = base::win::GetPointerToBufferData(key_buf.Get(), &pub_key_data,
-                                           &pub_key_length);
+    base::span<uint8_t> pub_key_span;
+    hr = base::win::GetPointerToBufferData(key_buf.Get(), pub_key_span);
     CHECK(SUCCEEDED(hr)) << FormatError(
         "Failed to access public key buffer data", hr);
-    return std::vector<uint8_t>(pub_key_data,
-                                UNSAFE_TODO(pub_key_data + pub_key_length));
+    return std::vector<uint8_t>(pub_key_span.begin(), pub_key_span.end());
   }
 
   const UserVerifyingKeyLabel& GetKeyLabel() const override {

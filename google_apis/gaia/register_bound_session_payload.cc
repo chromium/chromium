@@ -24,7 +24,7 @@ ParseScopeType(std::string_view type) {
 
 base::expected<RegisterBoundSessionPayload::Scope,
                RegisterBoundSessionPayload::ParserError>
-ParseSessionScopeSpecification(const base::Value::Dict& dict) {
+ParseSessionScopeSpecification(const base::DictValue& dict) {
   RegisterBoundSessionPayload::Scope scope;
 
   const std::string* domain = dict.FindString("domain");
@@ -44,7 +44,7 @@ ParseSessionScopeSpecification(const base::Value::Dict& dict) {
 
 base::expected<RegisterBoundSessionPayload::Scope,
                RegisterBoundSessionPayload::ParserError>
-ParseCredentialScope(const base::Value::Dict& dict) {
+ParseCredentialScope(const base::DictValue& dict) {
   RegisterBoundSessionPayload::Scope scope;
 
   const std::string* domain = dict.FindString("domain");
@@ -63,11 +63,11 @@ ParseCredentialScope(const base::Value::Dict& dict) {
 
 base::expected<std::vector<RegisterBoundSessionPayload::Credential>,
                RegisterBoundSessionPayload::ParserError>
-ParseCredentials(const base::Value::List& credentials_list,
+ParseCredentials(const base::ListValue& credentials_list,
                  bool parse_for_dbsc_standard) {
   std::vector<RegisterBoundSessionPayload::Credential> credentials;
   for (const base::Value& credential_val : credentials_list) {
-    const base::Value::Dict* credential_dict = credential_val.GetIfDict();
+    const base::DictValue* credential_dict = credential_val.GetIfDict();
     if (!credential_dict) {
       continue;
     }
@@ -95,7 +95,7 @@ ParseCredentials(const base::Value::List& credentials_list,
       }
       credential.type = *type;
     } else {
-      const base::Value::Dict* scope = credential_dict->FindDict("scope");
+      const base::DictValue* scope = credential_dict->FindDict("scope");
       if (!scope) {
         return base::unexpected(kRequiredCredentialFieldMissing);
       }
@@ -110,7 +110,7 @@ ParseCredentials(const base::Value::List& credentials_list,
 
 base::expected<std::vector<std::string>,
                RegisterBoundSessionPayload::ParserError>
-ParseAllowedRefreshInitiators(const base::Value::List& list) {
+ParseAllowedRefreshInitiators(const base::ListValue& list) {
   std::vector<std::string> allowed_refresh_initiators;
   for (const base::Value& allowed_refresh_initiator_value : list) {
     const std::string* allowed_refresh_initiator =
@@ -125,7 +125,7 @@ ParseAllowedRefreshInitiators(const base::Value::List& list) {
 
 base::expected<RegisterBoundSessionPayload::SessionScope,
                RegisterBoundSessionPayload::ParserError>
-ParseSessionScope(const base::Value::Dict& dict) {
+ParseSessionScope(const base::DictValue& dict) {
   RegisterBoundSessionPayload::SessionScope scope;
 
   const std::string* origin = dict.FindString("origin");
@@ -138,13 +138,12 @@ ParseSessionScope(const base::Value::Dict& dict) {
     scope.include_site = *include_site;
   }
 
-  const base::Value::List* specifications =
-      dict.FindList("scope_specification");
+  const base::ListValue* specifications = dict.FindList("scope_specification");
   if (!specifications) {
     return scope;
   }
   for (const base::Value& specification_val : *specifications) {
-    const base::Value::Dict* specification_dict = specification_val.GetIfDict();
+    const base::DictValue* specification_dict = specification_val.GetIfDict();
     if (!specification_dict) {
       return base::unexpected(kMalformedSessionScopeSpecification);
     }
@@ -197,7 +196,7 @@ RegisterBoundSessionPayload& RegisterBoundSessionPayload::operator=(
 
 base::expected<RegisterBoundSessionPayload,
                RegisterBoundSessionPayload::ParserError>
-RegisterBoundSessionPayload::ParseFromJson(const base::Value::Dict& dict,
+RegisterBoundSessionPayload::ParseFromJson(const base::DictValue& dict,
                                            bool parse_for_dbsc_standard) {
   RegisterBoundSessionPayload payload;
   payload.parsed_for_dbsc_standard = parse_for_dbsc_standard;
@@ -214,7 +213,7 @@ RegisterBoundSessionPayload::ParseFromJson(const base::Value::Dict& dict,
   }
 
   payload.refresh_url = *refresh_url;
-  const base::Value::List* credentials_list = dict.FindList("credentials");
+  const base::ListValue* credentials_list = dict.FindList("credentials");
   if (!credentials_list || credentials_list->empty()) {
     return base::unexpected(kRequiredFieldMissing);
   }
@@ -224,13 +223,13 @@ RegisterBoundSessionPayload::ParseFromJson(const base::Value::Dict& dict,
       ParseCredentials(*credentials_list, parse_for_dbsc_standard));
 
   if (parse_for_dbsc_standard) {
-    const base::Value::Dict* scope = dict.FindDict("scope");
+    const base::DictValue* scope = dict.FindDict("scope");
     if (!scope) {
       return base::unexpected(kRequiredFieldMissing);
     }
     ASSIGN_OR_RETURN(payload.scope, ParseSessionScope(*scope));
 
-    const base::Value::List* allowed_refresh_initiators_list =
+    const base::ListValue* allowed_refresh_initiators_list =
         dict.FindList("allowed_refresh_initiators");
     if (allowed_refresh_initiators_list) {
       ASSIGN_OR_RETURN(

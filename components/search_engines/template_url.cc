@@ -16,7 +16,6 @@
 #include "base/check_op.h"
 #include "base/command_line.h"
 #include "base/containers/adapters.h"
-#include "base/containers/contains.h"
 #include "base/debug/dump_without_crashing.h"
 #include "base/feature_list.h"
 #include "base/format_macros.h"
@@ -1400,6 +1399,7 @@ std::string TemplateURLRef::HandleReplacements(
           case RequestSource::SEARCHBOX:
           case RequestSource::CROS_APP_LIST:
           case RequestSource::NTP_COMPOSEBOX:
+          case RequestSource::NTP_ACTION_CHIPS:
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
             HandleReplacement("sourceid", "chrome-mobile", replacement, &url);
 #else
@@ -1456,6 +1456,14 @@ std::string TemplateURLRef::HandleReplacements(
 #endif
             break;
           case RequestSource::NTP_COMPOSEBOX: {
+            // Co-browsing composebox uses a different client since its zps
+            // behave differently.
+            if (search_terms_args.page_classification ==
+                metrics::OmniboxEventProto::CO_BROWSING_COMPOSEBOX) {
+              HandleReplacement(std::string(), "chrome-cobrowse-compose",
+                                replacement, &url);
+              break;
+            }
             // RequestSource::NTP_COMPOSEBOX will use "chrome-omni" for delayed
             // context uploads. TODO(crbug.com/460858102) Figure out how to
             // support delayed uploads using "chrome-compose."
@@ -1469,6 +1477,11 @@ std::string TemplateURLRef::HandleReplacements(
                            : "chrome-compose")
                     : "chrome-omni";
             HandleReplacement(std::string(), client_replacement, replacement,
+                              &url);
+            break;
+          }
+          case RequestSource::NTP_ACTION_CHIPS: {
+            HandleReplacement(std::string(), "chrome-ntp-action", replacement,
                               &url);
             break;
           }
@@ -1504,6 +1517,7 @@ std::string TemplateURLRef::HandleReplacements(
           case RequestSource::NTP_MODULE:
           case RequestSource::LENS_OVERLAY:
           case RequestSource::NTP_COMPOSEBOX:
+          case RequestSource::NTP_ACTION_CHIPS:
             // No replacement. `gs_ri` is longer recommended for new clients.
             // New identifiers should be based on their client names.
             break;
@@ -2036,7 +2050,7 @@ bool TemplateURL::KeepSearchTermsInURL(const GURL& url,
   std::vector<std::string> query_params;
   if (keep_search_intent_params && !data().search_intent_params.empty()) {
     for (net::QueryIterator it(url); !it.IsAtEnd(); it.Advance()) {
-      if (!base::Contains(data().search_intent_params, it.GetKey())) {
+      if (!std::ranges::contains(data().search_intent_params, it.GetKey())) {
         continue;
       }
       query_params.push_back(base::StrCat({it.GetKey(), "=", it.GetValue()}));
@@ -2114,7 +2128,7 @@ void TemplateURL::EncodeSearchTerms(
     std::u16string* encoded_terms,
     std::u16string* encoded_original_query) const {
   std::vector<std::string> encodings(input_encodings());
-  if (!base::Contains(encodings, "UTF-8")) {
+  if (!std::ranges::contains(encodings, "UTF-8")) {
     encodings.push_back("UTF-8");
   }
   for (auto i = encodings.begin(); i != encodings.end(); ++i) {

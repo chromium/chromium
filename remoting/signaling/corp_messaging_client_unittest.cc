@@ -37,7 +37,11 @@ using internal::HostSendMessageRequest;
 using internal::HostSendMessageResponse;
 
 constexpr char kFakeUsername[] = "fake_user";
+#if BUILDFLAG(REMOTING_INTERNAL)
+// Only used for validation in REMOTING_INTERNAL builds.
 constexpr char kFakeAuthzToken[] = "fake_authz_token";
+#endif
+constexpr char kFakeAuthzTokenBase64[] = "ZmFrZV9hdXRoel90b2tlbg==";
 constexpr char kFakePublicKey[] = "fake_public_key";
 
 using DoneCallback = MessagingClient::DoneCallback;
@@ -59,9 +63,12 @@ class CorpMessagingClientTest : public testing::Test {
  protected:
   base::test::TaskEnvironment task_environment_;
   ProtobufHttpTestResponder test_responder_;
-  CorpMessagingClient messaging_client_{kFakeUsername, kFakePublicKey,
-                                        test_responder_.GetUrlLoaderFactory(),
-                                        CreateClientCertStoreInstance()};
+  base::MockCallback<CorpMessagingClient::SignalingAddressChangedCallback>
+      mock_on_signaling_address_changed_;
+  CorpMessagingClient messaging_client_{
+      kFakeUsername, kFakePublicKey, test_responder_.GetUrlLoaderFactory(),
+      CreateClientCertStoreInstance(),
+      mock_on_signaling_address_changed_.Get()};
 };
 
 TEST_F(CorpMessagingClientTest, TestSendMessage_Unauthenticated) {
@@ -69,7 +76,7 @@ TEST_F(CorpMessagingClientTest, TestSendMessage_Unauthenticated) {
 
   internal::PeerMessageStruct peer_message;
   messaging_client_.SendMessage(
-      SignalingAddress{kFakeAuthzToken},
+      SignalingAddress{kFakeAuthzTokenBase64},
       SignalingMessage(std::move(peer_message)),
       CheckStatusThenQuitRunLoopCallback(
           FROM_HERE, HttpStatus::Code::UNAUTHENTICATED, &run_loop));
@@ -82,7 +89,7 @@ TEST_F(CorpMessagingClientTest, TestSendMessage_SendOneMessage) {
   base::RunLoop run_loop;
   internal::PeerMessageStruct peer_message;
   messaging_client_.SendMessage(
-      SignalingAddress{kFakeAuthzToken},
+      SignalingAddress{kFakeAuthzTokenBase64},
       SignalingMessage(std::move(peer_message)),
       CheckStatusThenQuitRunLoopCallback(FROM_HERE, HttpStatus::Code::OK,
                                          &run_loop));

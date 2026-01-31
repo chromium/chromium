@@ -99,10 +99,10 @@ JNI_TabGroupSyncConversionsBridge_createGroup(JNIEnv* env,
 // static
 static void JNI_TabGroupSyncConversionsBridge_UpdateVisualData(
     JNIEnv* env,
-    jlong j_group_ptr,
+    int64_t j_group_ptr,
     const JavaRef<jobject>& j_group_id,
     const JavaRef<jstring>& j_title,
-    jint j_color) {
+    int32_t j_color) {
   // Set visuals on the given SavedTabGroup.
   SavedTabGroup* group = reinterpret_cast<SavedTabGroup*>(j_group_ptr);
   if (j_group_id) {
@@ -119,8 +119,8 @@ static void JNI_TabGroupSyncConversionsBridge_UpdateVisualData(
 // static
 static void JNI_TabGroupSyncConversionsBridge_AddTab(
     JNIEnv* env,
-    jlong j_group_ptr,
-    jint j_tab_id,
+    int64_t j_group_ptr,
+    int32_t j_tab_id,
     const JavaRef<jstring>& j_title,
     const JavaRef<jobject>& j_url) {
   SavedTabGroup* group = reinterpret_cast<SavedTabGroup*>(j_group_ptr);
@@ -174,7 +174,7 @@ ScopedJavaLocalRef<jobject> TabGroupSyncConversionsBridge::ToJavaTabGroupId(
 // static
 void TabGroupSyncConversionsBridge::FillNativeSavedTabGroup(
     JNIEnv* env,
-    const jlong native_saved_tab_group_ptr,
+    const int64_t native_saved_tab_group_ptr,
     const JavaRef<jobject>& j_saved_tab_group) {
   Java_TabGroupSyncConversionsBridge_toNativeSavedTabGroup(
       env, native_saved_tab_group_ptr, j_saved_tab_group);

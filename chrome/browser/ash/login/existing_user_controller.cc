@@ -1236,7 +1236,7 @@ void ExistingUserController::LoginAsPublicSessionWhenPolicyAvailable(
             .Get(policy::key::kSessionLocales);
     if (entry && entry->level == policy::POLICY_LEVEL_RECOMMENDED &&
         entry->value(base::Value::Type::LIST)) {
-      const base::Value::List& list =
+      const base::ListValue& list =
           entry->value(base::Value::Type::LIST)->GetList();
       if (!list.empty() && list[0].is_string()) {
         locale = list[0].GetString();
@@ -1461,11 +1461,11 @@ void ExistingUserController::SendAccessibilityAlert(
 
 void ExistingUserController::SetPublicSessionKeyboardLayoutAndLogin(
     const UserContext& user_context,
-    base::Value::List keyboard_layouts) {
+    base::ListValue keyboard_layouts) {
   UserContext new_user_context = user_context;
   std::string keyboard_layout;
   for (auto& entry : keyboard_layouts) {
-    base::Value::Dict& entry_dict = entry.GetDict();
+    base::DictValue& entry_dict = entry.GetDict();
     if (entry_dict.FindBool("selected").value_or(false)) {
       const std::string* keyboard_layout_ptr = entry_dict.FindString("value");
       if (keyboard_layout_ptr) {

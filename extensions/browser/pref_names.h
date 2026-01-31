@@ -73,7 +73,7 @@ inline constexpr char kExtensionManagement[] = "extensions.management";
 inline constexpr char kExtensionUnpublishedAvailability[] =
     "extensions.unpublished_availability";
 
-// A allowlist of extension ids the user can install: exceptions from the
+// An allowlist of extension ids the user can install: exceptions from the
 // following denylist.
 inline constexpr char kInstallAllowList[] = "extensions.install.allowlist";
 
@@ -129,11 +129,6 @@ inline constexpr char kPinnedExtensions[] = "extensions.pinned_extensions";
 // Pref for policy to enable/disable loading extension from command line
 inline constexpr char kExtensionInstallTypeBlocklist[] =
     "extensions.extension_install_type_blocklist";
-
-// Pref for policy to enable/disable force-install extensions with non-malware
-// violations.
-inline constexpr char kExtensionForceInstallWithNonMalwareViolationsEnabled[] =
-    "extensions.extension_force_install_with_non_malware_violations_enabled";
 
 // Properties in kExtensions dictionaries --------------------------------------
 

@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <algorithm>
 #include <optional>
 #include <string>
 
 #include "base/check.h"
 #include "base/command_line.h"
-#include "base/containers/contains.h"
 #include "base/containers/span.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/escape.h"
@@ -960,8 +960,8 @@ IN_PROC_BROWSER_TEST_F(AccessibilityActionBrowserTest,
       target->GetIntListAttribute(ax::mojom::IntListAttribute::kControlsIds);
   EXPECT_EQ(2u, control_list.size());
 
-  EXPECT_TRUE(base::Contains(control_list, radio1->GetId()));
-  EXPECT_TRUE(base::Contains(control_list, radio2->GetId()));
+  EXPECT_TRUE(std::ranges::contains(control_list, radio1->GetId()));
+  EXPECT_TRUE(std::ranges::contains(control_list, radio2->GetId()));
 }
 
 IN_PROC_BROWSER_TEST_F(AccessibilityActionBrowserTest, FocusLostOnDeletedNode) {

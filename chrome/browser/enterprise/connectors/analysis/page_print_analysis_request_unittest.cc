@@ -11,8 +11,8 @@
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "chrome/browser/enterprise/connectors/common.h"
-#include "chrome/browser/safe_browsing/cloud_content_scanning/binary_upload_service.h"
 #include "components/enterprise/common/proto/connectors.pb.h"
+#include "components/enterprise/connectors/core/cloud_content_scanning/binary_upload_service.h"
 #include "components/enterprise/connectors/core/cloud_content_scanning/common.h"
 #include "testing/gtest/include/gtest/gtest.h"
 

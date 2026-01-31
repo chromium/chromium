@@ -92,7 +92,7 @@ class OobeUI : public ui::MojoWebUIController {
   OobeScreensHandlerFactory* GetOobeScreensHandlerFactory();
 
   // Collects localized strings from the owned handlers.
-  base::Value::Dict GetLocalizedStrings();
+  base::DictValue GetLocalizedStrings();
 
   // Initializes the handlers.
   void InitializeHandlers();

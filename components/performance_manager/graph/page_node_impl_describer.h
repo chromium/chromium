@@ -28,7 +28,7 @@ class PageNodeImplDescriber : public GraphOwned,
   void OnTakenFromGraph(Graph* graph) override;
 
   // NodeDataDescriber implementation:
-  base::Value::Dict DescribePageNodeData(
+  base::DictValue DescribePageNodeData(
       const PageNode* page_node) const override;
 };
 

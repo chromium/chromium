@@ -122,11 +122,7 @@ void AddressFormEventLogger::OnDidFillFormFillingSuggestion(
   FieldType field_type = field.Type().GetAddressType();
   field_types_with_shown_suggestions_.erase(field_type);
   field_types_with_accepted_suggestions_.insert(field_type);
-
-  if (trigger_source != AutofillTriggerSource::kFastCheckout) {
-    ++form_interaction_counts_.autofill_fills;
-  }
-  UpdateFlowId();
+  ++form_interaction_counts_.autofill_fills;
 
   profile_categories_filled_.insert(GetCategoryOfProfile(profile));
 }
@@ -226,8 +222,9 @@ AddressFormEventLogger::GetSupportedFormTypeNamesForLogging() const {
 }
 
 DenseSet<FormTypeNameForLogging> AddressFormEventLogger::GetFormTypesForLogging(
-    const FormStructure& form) const {
-  return GetAddressFormTypesForLogging(form);
+    const FormStructure& form,
+    AutocompleteUnrecognizedBehavior ac_unrecognized_behavior) const {
+  return GetAddressFormTypesForLogging(form, ac_unrecognized_behavior);
 }
 
 }  // namespace autofill::autofill_metrics

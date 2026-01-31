@@ -74,7 +74,7 @@ TEST(TriggerDataMatchingTest, Parse) {
   for (const auto& test_case : kTestCases) {
     SCOPED_TRACE(test_case.desc);
 
-    const base::Value::Dict dict = base::test::ParseJsonDict(test_case.json);
+    const base::DictValue dict = base::test::ParseJsonDict(test_case.json);
 
     EXPECT_THAT(ParseTriggerDataMatching(dict), test_case.matches);
   }
@@ -83,22 +83,22 @@ TEST(TriggerDataMatchingTest, Parse) {
 TEST(TriggerDataMatchingTest, Serialize) {
   const struct {
     TriggerDataMatching trigger_data_matching;
-    base::Value::Dict expected;
+    base::DictValue expected;
   } kTestCases[] = {
       {
           TriggerDataMatching::kModulus,
-          base::Value::Dict().Set("trigger_data_matching", "modulus"),
+          base::DictValue().Set("trigger_data_matching", "modulus"),
       },
       {
           TriggerDataMatching::kExact,
-          base::Value::Dict().Set("trigger_data_matching", "exact"),
+          base::DictValue().Set("trigger_data_matching", "exact"),
       },
   };
 
   for (const auto& test_case : kTestCases) {
     SCOPED_TRACE(test_case.trigger_data_matching);
 
-    base::Value::Dict dict;
+    base::DictValue dict;
     Serialize(dict, test_case.trigger_data_matching);
     EXPECT_EQ(dict, test_case.expected);
   }
@@ -245,7 +245,7 @@ TEST(TriggerDataSetTest, Parse) {
   for (const auto& test_case : kTestCases) {
     SCOPED_TRACE(test_case.desc);
 
-    const base::Value::Dict dict = base::test::ParseJsonDict(test_case.json);
+    const base::DictValue dict = base::test::ParseJsonDict(test_case.json);
 
     EXPECT_THAT(TriggerDataSet::Parse(dict, test_case.source_type,
                                       test_case.trigger_data_matching),
@@ -257,7 +257,7 @@ TEST(TriggerDataSetTest, ToJson) {
   const auto kSet = *TriggerDataSet::Create(
       /*trigger_data=*/{1, 5, 3, 4294967295});
 
-  base::Value::Dict dict;
+  base::DictValue dict;
   kSet.Serialize(dict);
 
   EXPECT_THAT(dict, base::test::IsJson(R"json({

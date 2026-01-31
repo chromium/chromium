@@ -8,7 +8,6 @@
 #include <utility>
 
 #include "base/auto_reset.h"
-#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/notreached.h"
 #include "base/task/common/checked_lock_impl.h"
@@ -79,7 +78,7 @@ void PerfettoTaskRunner::AddFileDescriptorWatch(
     std::function<void()> callback) {
 #if BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
   DCHECK(task_runner_->RunsTasksInCurrentSequence());
-  DCHECK(!base::Contains(fd_controllers_, fd));
+  DCHECK(!fd_controllers_.contains(fd));
   // Set up the |fd| in the map to signal intent to add a watch. We need to
   // PostTask the WatchReadable creation because if we do it in this task we'll
   // race with perfetto setting up the connection on this task and the IO thread
@@ -90,7 +89,7 @@ void PerfettoTaskRunner::AddFileDescriptorWatch(
          std::function<void()> callback) {
         DCHECK(perfetto_runner->task_runner_->RunsTasksInCurrentSequence());
         // When this callback runs, we must not have removed |fd|'s watch.
-        CHECK(base::Contains(perfetto_runner->fd_controllers_, fd));
+        CHECK(perfetto_runner->fd_controllers_.contains(fd));
         auto& controller_and_cb = perfetto_runner->fd_controllers_[fd];
         // We should never overwrite an existing watch.
         CHECK(!controller_and_cb.controller);
@@ -111,7 +110,7 @@ void PerfettoTaskRunner::RemoveFileDescriptorWatch(
     perfetto::base::PlatformHandle fd) {
 #if BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
   DCHECK(task_runner_->RunsTasksInCurrentSequence());
-  DCHECK(base::Contains(fd_controllers_, fd));
+  DCHECK(fd_controllers_.contains(fd));
   // This also cancels the base::FileDescriptorWatcher::WatchReadable() task if
   // it's pending.
   fd_controllers_.erase(fd);

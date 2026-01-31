@@ -49,10 +49,9 @@ const char kPrefStringValueCnsa2[] = "cnsa2";
 // National Security Algorithm Suite versions 1.0 and 2.0 (CNSA 1.0 and 2.0).
 const char kPrefStringValueCnsa[] = "cnsa";
 
-// Converts a `base::Value::List` of StringValues into a vector of strings. Any
+// Converts a `base::ListValue` of StringValues into a vector of strings. Any
 // values which cannot be converted will be skipped.
-std::vector<std::string> ValueListToStringVector(
-    const base::Value::List& list) {
+std::vector<std::string> ValueListToStringVector(const base::ListValue& list) {
   std::vector<std::string> results;
   results.reserve(list.size());
   for (const auto& entry : list) {
@@ -203,9 +202,11 @@ void SSLConfigServiceManager::AddToNetworkContextParams(
 
 void SSLConfigServiceManager::UpdateTrustAnchorIDs(
     std::vector<std::vector<uint8_t>> trust_anchor_ids,
-    std::vector<std::vector<uint8_t>> mtc_trust_anchor_ids) {
+    std::vector<std::vector<uint8_t>> mtc_trust_anchor_ids,
+    int64_t mtc_update_time_seconds) {
   trust_anchor_ids_ = std::move(trust_anchor_ids);
   mtc_trust_anchor_ids_ = std::move(mtc_trust_anchor_ids);
+  mtc_update_time_seconds_ = mtc_update_time_seconds;
   network::mojom::SSLConfigPtr new_config = GetNewSSLConfig();
   network::mojom::SSLConfig* raw_config = new_config.get();
 
@@ -284,6 +285,7 @@ network::mojom::SSLConfigPtr SSLConfigServiceManager::GetNewSSLConfig() const {
           ? trust_anchor_ids_.value()
           : net::TrustStoreChrome::GetTrustAnchorIDsFromCompiledInRootStore();
   config->mtc_trust_anchor_ids = mtc_trust_anchor_ids_;
+  config->mtc_update_time_seconds = mtc_update_time_seconds_;
 #endif
 
   ConfigureSSLComplianceSettings(key_exchange_compliance_,
@@ -294,7 +296,7 @@ network::mojom::SSLConfigPtr SSLConfigServiceManager::GetNewSSLConfig() const {
 
 void SSLConfigServiceManager::OnDisabledCipherSuitesChange(
     PrefService* local_state) {
-  const base::Value::List& list =
+  const base::ListValue& list =
       local_state->GetList(prefs::kCipherSuiteBlacklist);
   disabled_cipher_suites_ = ParseCipherSuites(ValueListToStringVector(list));
 }

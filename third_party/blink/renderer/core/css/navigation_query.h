@@ -9,6 +9,7 @@
 #include "third_party/blink/renderer/core/route_matching/navigation_preposition.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
+#include "third_party/blink/renderer/platform/wtf/casting.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
 
 namespace blink {
@@ -69,22 +70,62 @@ class NavigationLocation : public GarbageCollected<NavigationLocation> {
 class NavigationTestExpression
     : public GarbageCollected<NavigationTestExpression> {
  public:
-  NavigationTestExpression(NavigationLocation& location,
-                           NavigationPreposition preposition)
+  virtual void Trace(Visitor*) const {}
+
+  // TODO(crbug.com/436805487): Do we need this? Only used by unit tests.
+  virtual bool IsNavigationLocationTestExpression() const { return false; }
+
+  virtual bool Matches(Document&) const = 0;
+  virtual void SerializeTo(StringBuilder&) const = 0;
+};
+
+// <navigation-location-test>
+//
+// https://drafts.csswg.org/css-navigation-1/#typedef-navigation-location-test
+class NavigationLocationTestExpression : public NavigationTestExpression {
+ public:
+  NavigationLocationTestExpression(NavigationLocation& location,
+                                   NavigationPreposition preposition)
       : navigation_location_(&location), preposition_(preposition) {}
 
-  void Trace(Visitor* v) const { v->Trace(navigation_location_); }
+  void Trace(Visitor* visitor) const override;
+
+  bool IsNavigationLocationTestExpression() const override { return true; }
 
   NavigationLocation& GetLocation() const { return *navigation_location_; }
   NavigationPreposition GetPreposition() const { return preposition_; }
 
-  bool Matches(Document&) const;
-
-  void SerializeTo(StringBuilder&) const;
+  bool Matches(Document&) const override;
+  void SerializeTo(StringBuilder&) const override;
 
  private:
   Member<NavigationLocation> navigation_location_;
   NavigationPreposition preposition_;
+};
+
+// TODO(crbug.com/436805487): Do we need to keep this? Only used by unit tests.
+template <>
+struct DowncastTraits<NavigationLocationTestExpression> {
+  static bool AllowFrom(const NavigationTestExpression& exp) {
+    return exp.IsNavigationLocationTestExpression();
+  }
+};
+
+// <navigation-type-test>
+//
+// https://drafts.csswg.org/css-navigation-1/#typedef-navigation-type-test
+class NavigationTypeTestExpression : public NavigationTestExpression {
+ public:
+  // TODO(crbug.com/436805487): Support "reload".
+  enum Type { kTraverse, kBack, kForward };
+
+  explicit NavigationTypeTestExpression(Type type) : type_(type) {}
+
+  bool Matches(Document&) const override;
+  void SerializeTo(StringBuilder&) const override;
+
+ private:
+  Type type_;
 };
 
 class NavigationExpNode : public ConditionalExpNode {

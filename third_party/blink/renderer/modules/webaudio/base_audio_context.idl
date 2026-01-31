@@ -22,7 +22,7 @@ callback DecodeSuccessCallback = void (AudioBuffer decodedData);
     readonly attribute double currentTime;
     readonly attribute AudioListener listener;
     readonly attribute AudioContextState state;
-    [RuntimeEnabled=WebAudioConfigurableRenderQuantum] readonly attribute unsigned long renderQuantumSize;
+    [RuntimeEnabled=WebAudioConfigurableRenderQuantum, MeasureAs=WebAudioRenderQuantumSize] readonly attribute unsigned long renderQuantumSize;
     [SecureContext] readonly attribute AudioWorklet audioWorklet;
     attribute EventHandler onstatechange;
 

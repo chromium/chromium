@@ -30,7 +30,6 @@
 #include "chrome/browser/ui/views/page_info/star_rating_view.h"
 #include "chrome/browser/vr/vr_tab_helper.h"
 #include "chrome/common/url_constants.h"
-#include "components/content_settings/core/common/cookie_blocking_3pcd_status.h"
 #include "components/page_info/core/about_this_site_service.h"
 #include "components/page_info/core/features.h"
 #include "components/page_info/page_info_ui_delegate.h"
@@ -324,7 +323,7 @@ void PageInfoMainView::SetPermissionInfo(
       layout_provider
           ->GetInsetsMetric(ChromeInsetsMetric::INSETS_PAGE_INFO_HOVER_BUTTON)
           .left() +
-      GetLayoutConstant(PAGE_INFO_ICON_SIZE) +
+      GetLayoutConstant(LayoutConstant::kPageInfoIconSize) +
       layout_provider->GetDistanceMetric(
           views::DISTANCE_RELATED_LABEL_HORIZONTAL);
   reset_button_->SetProperty(

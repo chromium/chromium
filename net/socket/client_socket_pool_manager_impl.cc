@@ -100,7 +100,7 @@ ClientSocketPool* ClientSocketPoolManagerImpl::GetSocketPool(
 }
 
 base::Value ClientSocketPoolManagerImpl::SocketPoolInfoToValue() const {
-  base::Value::List list;
+  base::ListValue list;
   for (const auto& socket_pool : socket_pools_) {
     // TODO(menke): Is this really needed?
     const char* type;

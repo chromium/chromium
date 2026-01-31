@@ -25,7 +25,6 @@
 <translation id="2669351694216016687">Google 會要求公司公開聲明，不跨網站使用這類資料追蹤使用者的活動。某些網站可能會根據使用者的活動記錄提供個人化體驗 (不限於廣告)，也可能會將活動記錄與網站中與該使用者相關的其他個人資訊整合在一起。公司必須負責向使用者告知資料用途。<ph name="BEGIN_LINK1" />詳情請參閱《隱私權政策》<ph name="LINK_END1" /></translation>
 <translation id="2842751064192268730">廣告主題可限制網站和廣告合作夥伴能取得哪些個人資訊，用於顯示個人化廣告。Chrome 可根據您最近瀏覽的網站，記錄感興趣的主題，此後，您造訪的網站可要求 Chrome 提供相關的主題資料，做為放送個人化廣告的依據。</translation>
 <translation id="2937236926373704734">你可以封鎖不喜歡的網站，Chromium 也會自動將 30 天前的網站從清單中刪除。</translation>
-<translation id="2979365474350987274">已限制第三方 Cookie</translation>
 <translation id="3045333309254072201">在無痕模式下，網站無法使用第三方 Cookie。如果依賴這些 Cookie 的網站無法運作，可以<ph name="START_LINK" />嘗試允許該網站暫時存取第三方 Cookie<ph name="END_LINK" />。</translation>
 <translation id="3046081401397887494">上網時是否會看到個人化廣告取決於許多因素，包括這項設定、<ph name="BEGIN_LINK1" />網站建議廣告<ph name="LINK_END1" />、<ph name="BEGIN_LINK2" />Cookie 設定<ph name="LINK_END2" />，以及網站是否放送個人化廣告。</translation>
 <translation id="3187472288455401631">廣告評估</translation>
@@ -66,7 +65,6 @@
 <translation id="5759648952769618186">系統會根據你最近的瀏覽記錄推測主題，限制網站和廣告合作夥伴能取得哪些個人資訊，用於顯示個人化廣告</translation>
 <translation id="5812448946879247580"><ph name="BEGIN_BOLD" />網站如何使用這類資料？<ph name="END_BOLD" />你造訪的網站可以要求 Chrome 提供相關資訊，協助網站評估廣告成效。為了保護你的隱私，Chrome 會限制網站之間可以彼此分享的資訊。</translation>
 <translation id="6053735090575989697">想進一步瞭解 Google 如何保護你的資料，請參閱《隱私權政策》。</translation>
-<translation id="6195163219142236913">已限制第三方 Cookie</translation>
 <translation id="6196640612572343990">封鎖第三方 Cookie</translation>
 <translation id="6282129116202535093">網站建議廣告有助於保護瀏覽記錄和身分資料，同時可讓網站向你顯示相關廣告。隨著你持續瀏覽，其他網站可以根據你的活動記錄推薦相關廣告。你可以在「設定」頁面查看這些網站的清單，封鎖不適合的網站。</translation>
 <translation id="6308169245546905162">網站可以透過第三方 Cookie，瞭解你在其他網站的操作</translation>
@@ -94,7 +92,6 @@
 <translation id="8712637175834984815">我知道了</translation>
 <translation id="877699835489047794"><ph name="BEGIN_BOLD" />如何管理這類資料？<ph name="END_BOLD" />Chrome 會自動刪除 4 週前的主題，但隨著你持續瀏覽內容，清單中可能會再次出現特定主題。你隨時可以在 Chrome 設定中封鎖不想讓 Chrome 與網站分享的主題，也可以關閉廣告主題設定。</translation>
 <translation id="8908886019881851657"><ph name="BEGIN_BOLD" />網站如何使用這類資料？<ph name="END_BOLD" />網站及其廣告合作夥伴可以根據你的活動記錄，在其他網站放送個人化廣告。舉例來說，如果你造訪某個網站尋找晚餐食譜，該網站可能會判定你對烹飪感興趣。之後，另一個網站可能會根據第一個網站的建議，向你顯示雜貨外送服務相關的廣告。</translation>
-<translation id="8944485226638699751">有限制</translation>
 <translation id="8984005569201994395">Google 會要求公司公開聲明，不跨網站使用這類資料追蹤使用者的活動。某些網站可能會根據使用者的活動記錄提供個人化體驗 (不限於廣告)，也可能會將活動記錄與網站中與該使用者相關的其他個人資訊整合在一起。公司必須負責向使用者告知資料用途。<ph name="BEGIN_LINK" />詳情請參閱《隱私權政策》<ph name="END_LINK" /></translation>
 <translation id="9039924186462989565">在無痕模式下，Chromium 會禁止網站使用第三方 Cookie</translation>
 <translation id="9162335340010958530">網站無法運用第三方 Cookie 提供個人化內容和廣告，也無法瞭解你在其他網站的操作，除非你允許相關網站存取這些 Cookie</translation>

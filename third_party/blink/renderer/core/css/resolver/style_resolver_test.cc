@@ -421,8 +421,8 @@ class StyleResolverFontRelativeUnitTest
 
 TEST_P(StyleResolverFontRelativeUnitTest,
        BaseNotReusableIfFontRelativeUnitPresent) {
-  GetDocument().documentElement()->SetInnerHTMLWithoutTrustedTypes(
-      String::Format("<div id=div style='width:1%s'>Test</div>", GetParam()));
+  GetDocument().documentElement()->SetInnerHTMLWithoutTrustedTypes(UNSAFE_TODO(
+      String::Format("<div id=div style='width:1%s'>Test</div>", GetParam())));
   UpdateAllLifecyclePhasesForTest();
 
   Element* div = GetDocument().getElementById(AtomicString("div"));
@@ -445,8 +445,8 @@ TEST_P(StyleResolverFontRelativeUnitTest,
 
 TEST_P(StyleResolverFontRelativeUnitTest,
        BaseReusableIfNoFontAffectingAnimation) {
-  GetDocument().documentElement()->SetInnerHTMLWithoutTrustedTypes(
-      String::Format("<div id=div style='width:1%s'>Test</div>", GetParam()));
+  GetDocument().documentElement()->SetInnerHTMLWithoutTrustedTypes(UNSAFE_TODO(
+      String::Format("<div id=div style='width:1%s'>Test</div>", GetParam())));
   UpdateAllLifecyclePhasesForTest();
 
   Element* div = GetDocument().getElementById(AtomicString("div"));
@@ -677,6 +677,32 @@ TEST_F(StyleResolverTest, FetchForAtPage) {
 
   const CSSValueList* bg_img_list = To<CSSValueList>(computed_value);
   EXPECT_FALSE(To<CSSImageValue>(bg_img_list->Item(0)).IsCachePending());
+}
+
+TEST_F(StyleResolverTest, SingleAxisAdjustOverflow) {
+  auto run_test = [&](String overflow_style, EOverflow expected_x,
+                      EOverflow expected_y) {
+    StringBuilder builder;
+    builder.Append("<div id='target' style='overflow-x: ");
+    builder.Append(overflow_style);
+    builder.Append("; overflow-y: scroll;'></div>");
+    SetBodyInnerHTML(builder.ToString());
+    const auto* style = StyleForId("target");
+    EXPECT_EQ(expected_x, style->OverflowX());
+    EXPECT_EQ(expected_y, style->OverflowY());
+  };
+
+  {
+    ScopedSingleAxisScrollContainersForTest single_axis_feature(false);
+    run_test("clip", EOverflow::kHidden, EOverflow::kScroll);
+    run_test("visible", EOverflow::kAuto, EOverflow::kScroll);
+  }
+
+  {
+    ScopedSingleAxisScrollContainersForTest single_axis_feature(true);
+    run_test("clip", EOverflow::kClip, EOverflow::kScroll);
+    run_test("visible", EOverflow::kVisible, EOverflow::kScroll);
+  }
 }
 
 TEST_F(StyleResolverTest, NoFetchForAtPage) {
@@ -1295,7 +1321,8 @@ const CSSValue* ParseCustomProperty(Document& document,
                                     const CustomProperty& property,
                                     const String& value) {
   const auto* context = MakeGarbageCollected<CSSParserContext>(document);
-  CSSParserLocalContext local_context;
+  CSSParserLocalContext local_context =
+      CSSParserLocalContext::CreateWithoutPropertyForTest();
 
   return property.Parse(value, *context, local_context);
 }

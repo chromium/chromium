@@ -5,19 +5,31 @@
 #include "chrome/browser/tab/tab_state_storage_database.h"
 
 #include <memory>
+#include <sstream>
+#include <string>
+#include <unordered_map>
 #include <utility>
+#include <vector>
 
 #include "base/check.h"
 #include "base/files/file_util.h"
 #include "base/functional/callback.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
+#include "base/strings/strcat.h"
+#include "base/strings/string_number_conversions.h"
+#include "base/strings/string_util.h"
 #include "base/types/pass_key.h"
+#include "chrome/browser/tab/payload_util.h"
+#include "chrome/browser/tab/protocol/children.pb.h"
+#include "chrome/browser/tab/protocol/token.pb.h"
+#include "chrome/browser/tab/storage_id.h"
 #include "chrome/browser/tab/storage_loaded_data.h"
 #include "sql/database.h"
 #include "sql/meta_table.h"
 #include "sql/statement.h"
 #include "sql/transaction.h"
+#include "third_party/abseil-cpp//absl/container/flat_hash_map.h"
 
 namespace tabs {
 namespace {
@@ -161,9 +173,10 @@ bool TabStateStorageDatabase::OpenTransaction::IsValid(
 }
 
 TabStateStorageDatabase::TabStateStorageDatabase(
-    const base::FilePath& profile_path)
+    const base::FilePath& profile_path,
+    bool support_off_the_record_data)
     : profile_path_(profile_path),
-
+      support_off_the_record_data_(support_off_the_record_data),
       db_(sql::DatabaseOptions().set_preload(true).set_exclusive_locking(true),
           sql::Database::Tag("TabStateStorage")) {}
 
@@ -196,18 +209,25 @@ bool TabStateStorageDatabase::Initialize() {
 
 bool TabStateStorageDatabase::SaveNode(OpenTransaction* transaction,
                                        StorageId id,
-                                       std::string window_tag,
+                                       std::string_view window_tag,
                                        bool is_off_the_record,
                                        TabStorageType type,
                                        std::vector<uint8_t> payload,
                                        std::vector<uint8_t> children) {
-  // TODO(crbug.com/451614469): Add support for OTR.
-  if (is_off_the_record) {
-    DLOG(ERROR) << "OTR saves are not supported yet.";
+  if (!support_off_the_record_data_ && is_off_the_record) {
+    DLOG(ERROR) << "OTR saves are not supported by this database.";
     // Pretend we succeeded to avoid rollback.
     return true;
   }
   DCHECK(OpenTransaction::IsValid(transaction));
+
+  if (is_off_the_record) {
+    auto maybe_payload = Seal(id, window_tag, payload);
+    if (!maybe_payload) {
+      return false;
+    }
+    payload = std::move(*maybe_payload);
+  }
 
   static constexpr char kInsertNodeSql[] =
       "INSERT OR REPLACE INTO nodes"
@@ -231,8 +251,18 @@ bool TabStateStorageDatabase::SaveNode(OpenTransaction* transaction,
 
 bool TabStateStorageDatabase::SaveNodePayload(OpenTransaction* transaction,
                                               StorageId id,
+                                              std::string_view window_tag,
+                                              bool is_off_the_record,
                                               std::vector<uint8_t> payload) {
   DCHECK(OpenTransaction::IsValid(transaction));
+
+  if (is_off_the_record) {
+    auto maybe_payload = Seal(id, window_tag, payload);
+    if (!maybe_payload) {
+      return false;
+    }
+    payload = std::move(*maybe_payload);
+  }
 
   static constexpr char kUpdatePayloadSql[] =
       "UPDATE nodes "
@@ -328,7 +358,7 @@ bool TabStateStorageDatabase::CloseTransaction(
 }
 
 std::unique_ptr<StorageLoadedData> TabStateStorageDatabase::LoadAllNodes(
-    const std::string& window_tag,
+    std::string_view window_tag,
     bool is_off_the_record,
     std::unique_ptr<StorageLoadedData::Builder> builder) {
   static constexpr char kSelectAllNodesSql[] =
@@ -342,8 +372,19 @@ std::unique_ptr<StorageLoadedData> TabStateStorageDatabase::LoadAllNodes(
     StorageId id = StorageIdFromBlob(select_statement.ColumnBlob(0));
     TabStorageType type =
         static_cast<TabStorageType>(select_statement.ColumnInt(1));
-    builder->AddNode(id, type, select_statement.ColumnBlob(2),
-                     base::PassKey<TabStateStorageDatabase>());
+    base::span<const uint8_t> payload = select_statement.ColumnBlob(2);
+    if (is_off_the_record) {
+      std::optional<std::vector<uint8_t>> open_payload =
+          Open(id, window_tag, payload);
+      if (!open_payload) {
+        continue;
+      }
+      builder->AddNode(id, type, *open_payload,
+                       base::PassKey<TabStateStorageDatabase>());
+    } else {
+      builder->AddNode(id, type, payload,
+                       base::PassKey<TabStateStorageDatabase>());
+    }
     builder->AddChildren(id, type, select_statement.ColumnBlob(3),
                          base::PassKey<TabStateStorageDatabase>());
   }
@@ -357,7 +398,7 @@ void TabStateStorageDatabase::ClearAllNodes() {
   delete_statement.Run();
 }
 
-void TabStateStorageDatabase::ClearWindow(const std::string& window_tag) {
+void TabStateStorageDatabase::ClearWindow(std::string_view window_tag) {
   static constexpr char kDeleteWindowSql[] =
       "DELETE FROM nodes WHERE window_tag = ?";
   sql::Statement delete_statement(
@@ -365,5 +406,130 @@ void TabStateStorageDatabase::ClearWindow(const std::string& window_tag) {
   delete_statement.BindString(0, window_tag);
   delete_statement.Run();
 }
+
+bool TabStateStorageDatabase::ClearNodesForWindowExcept(
+    std::string_view window_tag,
+    bool is_off_the_record,
+    const std::vector<StorageId>& ids) {
+  const std::string id_placeholders =
+      base::JoinString(std::vector<std::string_view>(ids.size(), "?"), ",");
+
+  const std::string kDeleteNodesExceptSql =
+      base::StrCat({"DELETE FROM nodes WHERE window_tag = ? AND "
+                    "is_off_the_record = ? AND id NOT IN (",
+                    id_placeholders, ")"});
+
+  sql::Statement delete_statement(
+      db_.GetUniqueStatement(kDeleteNodesExceptSql));
+  delete_statement.BindString(0, window_tag);
+  delete_statement.BindBool(1, is_off_the_record);
+
+  for (size_t i = 0; i < ids.size(); i++) {
+    delete_statement.BindBlob(i + 2, StorageIdToBlob(ids[i]));
+  }
+  return delete_statement.Run();
+}
+
+void TabStateStorageDatabase::SetKey(std::string window_tag,
+                                     std::vector<uint8_t> key) {
+  // TODO(crbug.com/462769977): Duplicate insertions seem to happen in tests
+  // likely due to restarts that somehow don't trigger RemoveKey. This should be
+  // investigated and fixed so this can be changed to a CHECK that insertion
+  // is successful.
+  keys_.insert_or_assign(std::move(window_tag), std::move(key));
+}
+
+void TabStateStorageDatabase::RemoveKey(std::string_view window_tag) {
+  keys_.erase(window_tag);
+}
+
+std::optional<std::vector<uint8_t>> TabStateStorageDatabase::Seal(
+    StorageId storage_id,
+    std::string_view window_tag,
+    base::span<const uint8_t> payload) {
+  auto it = keys_.find(window_tag);
+  if (it == keys_.end()) {
+    LOG(WARNING) << "Failed to seal payload, no key found for window tag: "
+                 << window_tag << " skipping save.";
+    return std::nullopt;
+  }
+  return SealPayload(it->second, payload, storage_id);
+}
+
+std::optional<std::vector<uint8_t>> TabStateStorageDatabase::Open(
+    StorageId storage_id,
+    std::string_view window_tag,
+    base::span<const uint8_t> payload) {
+  auto it = keys_.find(window_tag);
+  if (it == keys_.end()) {
+    LOG(WARNING)
+        << "Failed to open sealed payload, no key found for window tag: "
+        << window_tag << " skipping restore.";
+    return std::nullopt;
+  }
+  return OpenPayload(it->second, payload, storage_id);
+}
+
+#if defined(NDEBUG)
+void TabStateStorageDatabase::PrintAll() {
+  static constexpr char kSelectAllNodesSql[] =
+      "SELECT id, window_tag, is_off_the_record, type, children FROM nodes";
+  sql::Statement select_statement(
+      db_.GetCachedStatement(SQL_FROM_HERE, kSelectAllNodesSql));
+
+  int start_int = 0;
+  absl::flat_hash_map<StorageId, int> storage_id_to_int;
+  std::stringstream ss;
+
+  ss << "Nodes Table Dump:\n";
+  while (select_statement.Step()) {
+    StorageId id = StorageIdFromBlob(select_statement.ColumnBlob(0));
+    if (!storage_id_to_int.contains(id)) {
+      start_int++;
+      storage_id_to_int[id] = start_int;
+    }
+
+    std::string window_tag = select_statement.ColumnString(1);
+    bool is_off_the_record = select_statement.ColumnInt(2);
+    TabStorageType type =
+        static_cast<TabStorageType>(select_statement.ColumnInt(3));
+
+    base::span<const uint8_t> children_unparsed =
+        select_statement.ColumnBlob(4);
+    tabs_pb::Children children;
+    children.ParseFromArray(children_unparsed.data(), children_unparsed.size());
+    std::string children_str;
+
+    if (children.storage_id_size() != 0) {
+      for (int i = 0; i < children.storage_id_size(); i++) {
+        tabs_pb::Token child = children.storage_id().at(i);
+        StorageId child_id = StorageIdFromTokenProto(child);
+
+        if (!storage_id_to_int.contains(child_id)) {
+          start_int++;
+          storage_id_to_int[child_id] = start_int;
+        }
+
+        children_str += base::NumberToString(storage_id_to_int[child_id]);
+        if (i + 1 != children.storage_id_size()) {
+          children_str += ", ";
+        }
+      }
+      children_str = ", children=" + children_str;
+    }
+
+    ss << "Node: id=" << storage_id_to_int[id] << ", window_tag=" << window_tag
+       << ", is_off_the_record=" << is_off_the_record
+       << ", type=" << static_cast<int>(type) << children_str << "\n";
+  }
+
+  ss << "\nInt to Storage Id Map:\n";
+  for (const auto& [storage_id, temp_int] : storage_id_to_int) {
+    ss << "Entry: storage_id=" << storage_id.ToString()
+       << ", temp_int=" << temp_int << "\n";
+  }
+  VLOG(1) << ss.str();
+}
+#endif
 
 }  // namespace tabs

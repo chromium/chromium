@@ -98,7 +98,7 @@ bool OptionsPageInfo::ShouldOpenInTab(const Extension* extension) {
 
 std::unique_ptr<OptionsPageInfo> OptionsPageInfo::Create(
     Extension* extension,
-    const base::Value::Dict* options_ui_dict,
+    const base::DictValue* options_ui_dict,
     const std::string& options_page_string,
     std::vector<InstallWarning>* install_warnings,
     std::u16string* error) {
@@ -168,7 +168,7 @@ bool OptionsPageHandler::Parse(Extension* extension, std::u16string* error) {
     options_page_string = temp->GetString();
   }
 
-  const base::Value::Dict* options_ui_dict =
+  const base::DictValue* options_ui_dict =
       manifest->FindDictPath(keys::kOptionsUI);
 
   std::unique_ptr<OptionsPageInfo> info =

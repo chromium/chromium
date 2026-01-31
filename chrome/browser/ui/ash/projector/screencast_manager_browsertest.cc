@@ -58,7 +58,7 @@ constexpr double kTestVideoDurationMillisecond = 16682;
 void VerifyResponse(const content::EvalJsResult& result) {
   EXPECT_TRUE(result.is_ok());
 
-  const base::Value::Dict& dict = result.ExtractDict();
+  const base::DictValue& dict = result.ExtractDict();
   const std::string* file_id = dict.FindString("fileId");
   ASSERT_TRUE(file_id);
   EXPECT_EQ(*file_id, kVideoFileId);

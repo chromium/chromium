@@ -17,7 +17,7 @@ namespace {
 bool ParseAnswer(const std::string& answer_json,
                  omnibox::AnswerType answer_type,
                  omnibox::RichAnswerTemplate* answer) {
-  std::optional<base::Value::Dict> value = base::JSONReader::ReadDict(
+  std::optional<base::DictValue> value = base::JSONReader::ReadDict(
       answer_json, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   if (!value) {
     return false;

@@ -507,7 +507,7 @@ TestWebContents::GetPictureInPictureOptions() const {
   return WebContentsImpl::GetPictureInPictureOptions();
 }
 
-FrameTreeNodeId TestWebContents::AddPrerender(const GURL& url) {
+PrerenderHostId TestWebContents::AddPrerender(const GURL& url) {
   DCHECK(!base::FeatureList::IsEnabled(
       blink::features::kPrerender2MemoryControls));
 
@@ -530,7 +530,7 @@ FrameTreeNodeId TestWebContents::AddPrerender(const GURL& url) {
 
 TestRenderFrameHost* TestWebContents::AddPrerenderAndCommitNavigation(
     const GURL& url) {
-  FrameTreeNodeId host_id = AddPrerender(url);
+  PrerenderHostId host_id = AddPrerender(url);
   DCHECK(host_id);
 
   PrerenderHost* host =
@@ -547,7 +547,7 @@ TestRenderFrameHost* TestWebContents::AddPrerenderAndCommitNavigation(
 
 std::unique_ptr<NavigationSimulator>
 TestWebContents::AddPrerenderAndStartNavigation(const GURL& url) {
-  FrameTreeNodeId host_id = AddPrerender(url);
+  PrerenderHostId host_id = AddPrerender(url);
   DCHECK(host_id);
 
   PrerenderHost* host =
@@ -563,10 +563,10 @@ void TestWebContents::ActivatePrerenderedPage(const GURL& url) {
   PrerenderHostRegistry* registry = GetPrerenderHostRegistry();
   PrerenderHost* prerender_host = registry->FindHostByUrlForTesting(url);
   DCHECK(prerender_host);
-  FrameTreeNodeId prerender_host_id = prerender_host->frame_tree_node_id();
 
   // Activate the prerendered page.
-  test::PrerenderHostObserver prerender_host_observer(*this, prerender_host_id);
+  test::PrerenderHostObserver prerender_host_observer(
+      *this, prerender_host->prerender_host_id());
   std::unique_ptr<NavigationSimulatorImpl> navigation =
       NavigationSimulatorImpl::CreateRendererInitiated(url,
                                                        GetPrimaryMainFrame());
@@ -587,10 +587,10 @@ void TestWebContents::ActivatePrerenderedPageFromAddressBar(const GURL& url) {
   PrerenderHostRegistry* registry = GetPrerenderHostRegistry();
   PrerenderHost* prerender_host = registry->FindHostByUrlForTesting(url);
   DCHECK(prerender_host);
-  FrameTreeNodeId prerender_host_id = prerender_host->frame_tree_node_id();
 
   // Activate the prerendered page by navigation initiated by the address bar.
-  test::PrerenderHostObserver prerender_host_observer(*this, prerender_host_id);
+  test::PrerenderHostObserver prerender_host_observer(
+      *this, prerender_host->prerender_host_id());
   std::unique_ptr<NavigationSimulatorImpl> navigation =
       NavigationSimulatorImpl::CreateBrowserInitiated(url, this);
   navigation->SetTransition(ui::PageTransitionFromInt(

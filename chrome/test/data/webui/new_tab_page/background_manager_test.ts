@@ -83,8 +83,8 @@ suite('NewTabPageBackgroundManagerTest', () => {
     // Act.
     backgroundManager.setBackgroundImage({
       attributionUrl: null,
-      url: {url: 'https://example.com'},
-      url2x: {url: 'https://example2x.com'},
+      url: 'https://example.com',
+      url2x: 'https://example2x.com',
       size: 'cover',
       repeatX: 'no-repeat',
       repeatY: 'repeat',

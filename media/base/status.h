@@ -94,7 +94,7 @@ struct MEDIA_EXPORT StatusData {
   std::string message;
 
   // Stack frames
-  base::Value::List frames;
+  base::ListValue frames;
 
   // Store a root cause. Helpful for debugging, as it can end up containing
   // the chain of causes.

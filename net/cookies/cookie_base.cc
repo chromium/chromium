@@ -4,7 +4,8 @@
 
 #include "net/cookies/cookie_base.h"
 
-#include "base/containers/contains.h"
+#include <algorithm>
+
 #include "base/feature_list.h"
 #include "base/logging.h"
 #include "base/strings/strcat.h"
@@ -421,7 +422,7 @@ CookieAccessResult CookieBase::IsSetPermittedInContext(
     access_result = *cookie_access_result;
   }
 
-  if (!base::Contains(cookieable_schemes, source_url.scheme())) {
+  if (!std::ranges::contains(cookieable_schemes, source_url.scheme())) {
     access_result.status.AddExclusionReason(
         CookieInclusionStatus::ExclusionReason::EXCLUDE_NONCOOKIEABLE_SCHEME);
   }

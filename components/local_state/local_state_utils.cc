@@ -28,9 +28,9 @@ bool HasValidPrefix(const std::string& pref_name,
   return false;
 }
 
-base::Value::List GetPrefsMetadata(
+base::ListValue GetPrefsMetadata(
     PrefValueStore::PrefStoreType pref_value_store_type) {
-  base::Value::List metadata;
+  base::ListValue metadata;
   switch (pref_value_store_type) {
     case PrefValueStore::PrefStoreType::MANAGED_STORE:
       metadata.Append("managed");
@@ -91,7 +91,7 @@ std::optional<std::string> GetPrefsAsJson(
   std::vector<PrefService::PreferenceValueAndStore> values =
       pref_service->GetPreferencesValueAndStore();
 
-  base::Value::Dict local_state_values;
+  base::DictValue local_state_values;
   for (const auto& [name, value, pref_value_store_type] : values) {
     // Filter out the prefs to only include variations and UMA related fields,
     // which don't contain PII.
@@ -100,7 +100,7 @@ std::optional<std::string> GetPrefsAsJson(
       continue;
     }
 
-    base::Value::Dict pref_details;
+    base::DictValue pref_details;
     pref_details.Set("value", value.Clone());
     pref_details.Set("metadata", GetPrefsMetadata(pref_value_store_type));
     local_state_values.SetByDottedPath(name, std::move(pref_details));

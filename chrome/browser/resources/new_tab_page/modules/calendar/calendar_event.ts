@@ -71,7 +71,7 @@ export class CalendarEventElement extends CalendarEventElementBase {
     title: '',
     startTime: {internalValue: BigInt(0)},
     endTime: {internalValue: BigInt(0)},
-    url: {url: ''},
+    url: '',
     attachments: [],
     location: null,
     conferenceUrl: null,
@@ -158,7 +158,7 @@ export class CalendarEventElement extends CalendarEventElementBase {
   protected isAttachmentDisabled_(index: number): boolean {
     const attachment = this.event.attachments[index];
     assert(attachment);
-    return !attachment.resourceUrl?.url;
+    return !attachment.resourceUrl;
   }
 
   protected openAttachment_(e: Event) {
@@ -167,7 +167,7 @@ export class CalendarEventElement extends CalendarEventElementBase {
     const currentTarget = e.currentTarget as HTMLElement;
     const index = Number(currentTarget.dataset['index']);
     assert(this.event.attachments[index]);
-    const resourceUrl = this.event.attachments[index].resourceUrl?.url;
+    const resourceUrl = this.event.attachments[index].resourceUrl;
     if (resourceUrl) {
       WindowProxy.getInstance().navigate(resourceUrl);
     }
@@ -177,7 +177,7 @@ export class CalendarEventElement extends CalendarEventElementBase {
     this.dispatchEvent(new Event('usage', {composed: true, bubbles: true}));
     recordCalendarAction(
         CalendarAction.CONFERENCE_CALL_CLICKED, this.moduleName);
-    WindowProxy.getInstance().navigate(this.event.conferenceUrl!.url);
+    WindowProxy.getInstance().navigate(this.event.conferenceUrl!);
   }
 
   protected recordHeaderClick_() {
@@ -194,7 +194,7 @@ export class CalendarEventElement extends CalendarEventElementBase {
   }
 
   protected showConferenceButton_(): boolean {
-    return !!this.event.conferenceUrl?.url;
+    return !!this.event.conferenceUrl;
   }
 
   protected showAttachments_(): boolean {

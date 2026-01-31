@@ -18,7 +18,6 @@
 #include "base/barrier_closure.h"
 #include "base/check_op.h"
 #include "base/command_line.h"
-#include "base/containers/contains.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -61,7 +60,6 @@
 #include "storage/browser/quota/quota_client_type.h"
 #include "storage/browser/quota/quota_features.h"
 #include "storage/browser/quota/quota_macros.h"
-#include "storage/browser/quota/quota_manager_observer.mojom-forward.h"
 #include "storage/browser/quota/quota_manager_observer.mojom.h"
 #include "storage/browser/quota/quota_manager_proxy.h"
 #include "storage/browser/quota/quota_override_handle.h"
@@ -71,6 +69,7 @@
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/mojom/quota/quota_types.mojom-shared.h"
 #include "third_party/blink/public/mojom/storage_key/storage_key.mojom.h"
+#include "third_party/perfetto/include/perfetto/tracing/track.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -648,9 +647,10 @@ class QuotaManagerImpl::BucketDataDeleter {
             {"storage_key: ", bucket_.storage_key.Serialize(),
              ", is_default: ", bucket_.is_default ? "true" : "false",
              ", id: ", base::NumberToString(bucket_.id.value())});
-        TRACE_EVENT_NESTABLE_ASYNC_BEGIN2(
-            "browsing_data", "QuotaManagerImpl::BucketDataDeleter",
-            ++tracing_id, "client_type", client_type, "bucket", bucket_params);
+        TRACE_EVENT_BEGIN("browsing_data",
+                          "QuotaManagerImpl::BucketDataDeleter",
+                          perfetto::Track(++tracing_id), "client_type",
+                          client_type, "bucket", bucket_params);
         client->DeleteBucketData(
             bucket_, base::BindOnce(&BucketDataDeleter::DidDeleteBucketData,
                                     weak_factory_.GetWeakPtr(), tracing_id));
@@ -675,8 +675,9 @@ class QuotaManagerImpl::BucketDataDeleter {
                            blink::mojom::QuotaStatusCode status) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     DCHECK_GT(remaining_clients_, 0u);
-    TRACE_EVENT_NESTABLE_ASYNC_END0(
-        "browsing_data", "QuotaManagerImpl::BucketDataDeleter", tracing_id);
+    TRACE_EVENT_END("browsing_data",
+                    /*"QuotaManagerImpl::BucketDataDeleter"*/
+                    perfetto::Track(tracing_id));
 
     if (status != blink::mojom::QuotaStatusCode::kOk) {
       ++error_count_;
@@ -826,7 +827,7 @@ class QuotaManagerImpl::BucketSetDataDeleter {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     DCHECK(deleter->completed());
 
-    DCHECK(base::Contains(bucket_deleters_, deleter));
+    DCHECK(bucket_deleters_.contains(deleter));
     bucket_deleters_.erase(deleter);
 
     if (!entry.has_value()) {
@@ -2517,7 +2518,7 @@ void QuotaManagerImpl::WithdrawOverridesForHandle(int handle_id) {
 std::optional<int64_t> QuotaManagerImpl::GetQuotaOverrideForStorageKey(
     const StorageKey& storage_key) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!base::Contains(devtools_overrides_, storage_key)) {
+  if (!devtools_overrides_.contains(storage_key)) {
     return std::nullopt;
   }
   return devtools_overrides_[storage_key].quota_size;

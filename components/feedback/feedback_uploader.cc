@@ -4,12 +4,12 @@
 
 #include "components/feedback/feedback_uploader.h"
 
-#include <optional>
 #include <string>
 
 #include "base/command_line.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/task_traits.h"
@@ -268,7 +268,7 @@ void FeedbackUploader::DispatchReport() {
     DCHECK(url_loader_factory_);
   }
 
-  simple_url_loader_ptr->DownloadToStringOfUnboundedSizeUntilCrashAndDie(
+  simple_url_loader_ptr->DownloadHeadersOnly(
       url_loader_factory_.get(),
       base::BindOnce(&FeedbackUploader::OnDispatchComplete,
                      base::Unretained(this), std::move(it)));
@@ -276,13 +276,12 @@ void FeedbackUploader::DispatchReport() {
 
 void FeedbackUploader::OnDispatchComplete(
     UrlLoaderList::iterator it,
-    std::optional<std::string> response_body) {
+    scoped_refptr<net::HttpResponseHeaders> headers) {
   std::stringstream error_stream;
   network::SimpleURLLoader* simple_url_loader = it->get();
   int response_code = kHttpPostFailNoConnection;
-  if (simple_url_loader->ResponseInfo() &&
-      simple_url_loader->ResponseInfo()->headers) {
-    response_code = simple_url_loader->ResponseInfo()->headers->response_code();
+  if (headers) {
+    response_code = headers->response_code();
   }
   if (response_code == kHttpPostSuccessNoContent) {
     error_stream << "Success";

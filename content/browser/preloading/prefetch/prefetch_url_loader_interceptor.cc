@@ -29,8 +29,9 @@ BrowserContext* BrowserContextFromFrameTreeNodeId(
     FrameTreeNodeId frame_tree_node_id) {
   WebContents* web_content =
       WebContents::FromFrameTreeNodeId(frame_tree_node_id);
-  if (!web_content)
+  if (!web_content) {
     return nullptr;
+  }
   return web_content->GetBrowserContext();
 }
 

@@ -9,14 +9,15 @@ import shutil
 # This script updates the current directory with parts of the WindowsAPPSDK headers
 # needed in Chromium.
 
+version_info_header = "inc/abi/runtime/WindowsAppSDK-VersionInfo.h"
 windows_app_sdk_headers = [
-    "inc/abi/runtime/WindowsAppSDK-VersionInfo.h",
     "inc/abi/winml/Microsoft.Windows.AI.MachineLearning.h",
     "inc/abi/winml/winml/onnxruntime_c_api.h",
     "inc/abi/winml/winml/onnxruntime_ep_c_api.h",
     "inc/abi/winml/winml/onnxruntime_ep_device_ep_metadata_keys.h",
     "inc/abi/winml/winml/onnxruntime_session_options_config_keys.h",
 ]
+headers = [version_info_header] + windows_app_sdk_headers
 
 # The target revision of WindowsAppSDK
 revision = "c4f951addb693bae1084085f126fa8c392e2787d"
@@ -35,7 +36,7 @@ if os.path.exists(abs_src_dir):
     shutil.rmtree(abs_src_dir)
 
 # Update the WindowsAppSDK headers
-for header in windows_app_sdk_headers:
+for header in headers:
     header_path = os.path.join(abs_src_dir, header)
     os.makedirs(os.path.dirname(header_path), exist_ok=True)
     with open(header_path, "wb") as f:
@@ -73,12 +74,24 @@ build_file = '''# Copyright 2025 The Chromium Authors
 source_set("windows_app_sdk_headers") {{
   sources = {sources}
 
+  public_deps = [ ":version_info" ]
+
   visibility = [
     "//chrome/browser/webnn/*",
     "//services/webnn/*",
   ]
 }}
-'''.format(sources=format_headers(windows_app_sdk_headers))
+
+source_set("version_info") {{
+  sources = [ "src/{version_info}" ]
+
+  visibility = [
+    ":windows_app_sdk_headers",
+    "//chrome/browser/webnn/*",
+    "//services/webnn/*",
+  ]
+}}
+'''.format(sources=format_headers(windows_app_sdk_headers), version_info=version_info_header)
 
 with open(os.path.join(abs_path, "BUILD.gn"), "w", newline="\n") as f:
     f.write(build_file)

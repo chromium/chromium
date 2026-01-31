@@ -44,7 +44,7 @@ bool SendResponseHelper::GetResponse() {
 }
 
 void SendResponseHelper::OnResponse(ExtensionFunction::ResponseType response,
-                                    base::Value::List results,
+                                    base::ListValue results,
                                     const std::string& error,
                                     mojom::ExtraResponseDataPtr) {
   ASSERT_NE(ExtensionFunction::ResponseType::kBadMessage, response);
@@ -57,7 +57,7 @@ void SendResponseHelper::WaitForResponse() {
   run_loop_.Run();
 }
 
-bool GetBoolean(const base::Value::Dict& dict, const std::string& key) {
+bool GetBoolean(const base::DictValue& dict, const std::string& key) {
   std::optional<bool> value = dict.FindBool(key);
   if (!value.has_value()) {
     ADD_FAILURE() << key << " does not exist or is not a boolean.";
@@ -66,7 +66,7 @@ bool GetBoolean(const base::Value::Dict& dict, const std::string& key) {
   return *value;
 }
 
-int GetInteger(const base::Value::Dict& dict, const std::string& key) {
+int GetInteger(const base::DictValue& dict, const std::string& key) {
   std::optional<int> value = dict.FindInt(key);
   if (!value.has_value()) {
     ADD_FAILURE() << key << " does not exist or is not an integer.";
@@ -75,7 +75,7 @@ int GetInteger(const base::Value::Dict& dict, const std::string& key) {
   return *value;
 }
 
-std::string GetString(const base::Value::Dict& dict, const std::string& key) {
+std::string GetString(const base::DictValue& dict, const std::string& key) {
   const std::string* value = dict.FindString(key);
   if (!value) {
     ADD_FAILURE() << key << " does not exist or is not a string.";
@@ -84,48 +84,46 @@ std::string GetString(const base::Value::Dict& dict, const std::string& key) {
   return *value;
 }
 
-base::Value::List GetList(const base::Value::Dict& dict,
-                          const std::string& key) {
-  const base::Value::List* value = dict.FindList(key);
+base::ListValue GetList(const base::DictValue& dict, const std::string& key) {
+  const base::ListValue* value = dict.FindList(key);
   if (!value) {
     ADD_FAILURE() << key << " does not exist or is not a list.";
-    return base::Value::List();
+    return base::ListValue();
   }
   return value->Clone();
 }
 
-base::Value::Dict GetDict(const base::Value::Dict& dict,
-                          const std::string& key) {
-  const base::Value::Dict* value = dict.FindDict(key);
+base::DictValue GetDict(const base::DictValue& dict, const std::string& key) {
+  const base::DictValue* value = dict.FindDict(key);
   if (!value) {
     ADD_FAILURE() << key << " does not exist or is not a dict.";
-    return base::Value::Dict();
+    return base::DictValue();
   }
   return value->Clone();
 }
 
-base::Value::Dict ToDict(std::optional<base::ValueView> val) {
+base::DictValue ToDict(std::optional<base::ValueView> val) {
   if (!val) {
     ADD_FAILURE() << "val is nullopt";
-    return base::Value::Dict();
+    return base::DictValue();
   }
   base::Value result = val->ToValue();
   if (!result.is_dict()) {
     ADD_FAILURE() << "val is not a dictionary";
-    return base::Value::Dict();
+    return base::DictValue();
   }
   return std::move(result).TakeDict();
 }
 
-base::Value::List ToList(std::optional<base::ValueView> val) {
+base::ListValue ToList(std::optional<base::ValueView> val) {
   if (!val) {
     ADD_FAILURE() << "val is nullopt";
-    return base::Value::List();
+    return base::ListValue();
   }
   base::Value result = val->ToValue();
   if (!result.is_list()) {
     ADD_FAILURE() << "val is not a list";
-    return base::Value::List();
+    return base::ListValue();
   }
   return std::move(result).TakeList();
 }
@@ -139,7 +137,7 @@ std::optional<base::Value> RunFunctionWithDelegateAndReturnSingleResult(
   EXPECT_TRUE(function->GetError().empty())
       << "Function " << function->name()
       << " had unexpected error: " << function->GetError();
-  const base::Value::List* results = function->GetResultListForTest();
+  const base::ListValue* results = function->GetResultListForTest();
   if (!results || results->empty()) {
     return std::nullopt;
   }
@@ -165,7 +163,7 @@ std::string RunFunctionAndReturnError(scoped_refptr<ExtensionFunction> function,
   RunFunction(function, std::move(args), context, mode);
   // When sending a response, the function will set an empty list value if there
   // is no specified result.
-  const base::Value::List* results = function->GetResultListForTest();
+  const base::ListValue* results = function->GetResultListForTest();
   CHECK(results);
   EXPECT_TRUE(results->empty()) << "Did not expect a result";
   CHECK(function->response_type());
@@ -174,7 +172,7 @@ std::string RunFunctionAndReturnError(scoped_refptr<ExtensionFunction> function,
   return function->GetError();
 }
 
-base::expected<base::Value::List, std::string> RunFunctionAndReturnExpected(
+base::expected<base::ListValue, std::string> RunFunctionAndReturnExpected(
     scoped_refptr<ExtensionFunction> function,
     ArgsType args,
     content::BrowserContext* context,
@@ -192,7 +190,7 @@ base::expected<base::Value::List, std::string> RunFunctionAndReturnExpected(
       return base::unexpected(function->GetError());
 
     case ExtensionFunction::ResponseType::kSucceeded:
-      const base::Value::List* results = function->GetResultListForTest();
+      const base::ListValue* results = function->GetResultListForTest();
       CHECK(results);
       return results->Clone();
   }
@@ -211,7 +209,7 @@ bool RunFunction(scoped_refptr<ExtensionFunction> function,
                  std::unique_ptr<ExtensionFunctionDispatcher> dispatcher,
                  FunctionMode mode) {
   static_assert(std::variant_size<ArgsType>::value == 2, "Unhandled variant!");
-  base::Value::List parsed_args =
+  base::ListValue parsed_args =
       args.index() == 0 ? base::test::ParseJsonList(std::get<0>(args))
                         : std::move(std::get<1>(args));
   SendResponseHelper response_helper(function.get());

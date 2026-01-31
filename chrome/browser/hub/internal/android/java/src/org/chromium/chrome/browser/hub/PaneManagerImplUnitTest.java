@@ -28,7 +28,10 @@ import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.supplier.LazyOneshotSupplier;
 import org.chromium.base.supplier.LazyOneshotSupplierImpl;
-import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.supplier.ObservableSuppliers;
+import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
+import org.chromium.base.supplier.SettableNonNullObservableSupplier;
+import org.chromium.base.supplier.SettableNullableObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -44,23 +47,25 @@ public class PaneManagerImplUnitTest {
     @Mock private Pane mIncognitoTabSwitcherPane;
     @Mock private Supplier<Pane> mPaneSupplier;
 
-    private final ObservableSupplierImpl<Boolean> mHubVisibilitySupplier =
-            new ObservableSupplierImpl<>();
-    private final ObservableSupplierImpl<DisplayButtonData>
-            mTabSwitcherPaneReferenceButtonDataSupplier = new ObservableSupplierImpl<>();
-    private final ObservableSupplierImpl<DisplayButtonData>
-            mIncognitoTabSwitcherPaneReferenceButtonDataSupplier = new ObservableSupplierImpl<>();
+    private final SettableNonNullObservableSupplier<Boolean> mHubVisibilitySupplier =
+            ObservableSuppliers.createNonNull(false);
+    private SettableMonotonicObservableSupplier<DisplayButtonData>
+            mTabSwitcherPaneReferenceButtonDataSupplier;
+    private SettableNullableObservableSupplier<DisplayButtonData>
+            mIncognitoTabSwitcherPaneReferenceButtonDataSupplier;
 
     @Before
     public void setUp() {
+        mTabSwitcherPaneReferenceButtonDataSupplier =
+                ObservableSuppliers.createMonotonic(mReferenceButtonData);
+        mIncognitoTabSwitcherPaneReferenceButtonDataSupplier =
+                ObservableSuppliers.createNullable(mReferenceButtonData);
         when(mTabSwitcherPane.getPaneId()).thenReturn(PaneId.TAB_SWITCHER);
         when(mTabSwitcherPane.getReferenceButtonDataSupplier())
                 .thenReturn(mTabSwitcherPaneReferenceButtonDataSupplier);
-        mTabSwitcherPaneReferenceButtonDataSupplier.set(mReferenceButtonData);
         when(mIncognitoTabSwitcherPane.getPaneId()).thenReturn(PaneId.INCOGNITO_TAB_SWITCHER);
         when(mIncognitoTabSwitcherPane.getReferenceButtonDataSupplier())
                 .thenReturn(mIncognitoTabSwitcherPaneReferenceButtonDataSupplier);
-        mIncognitoTabSwitcherPaneReferenceButtonDataSupplier.set(mReferenceButtonData);
     }
 
     @Test

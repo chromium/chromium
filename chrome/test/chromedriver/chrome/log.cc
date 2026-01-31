@@ -41,7 +41,7 @@ void TruncateString(std::string* data) {
 base::Value SmartDeepCopy(const base::Value* value) {
   const size_t kMaxChildren = 20;
   if (value->is_dict()) {
-    base::Value::Dict dict_copy;
+    base::DictValue dict_copy;
     for (auto [dict_key, dict_value] : value->GetDict()) {
       if (dict_copy.size() >= kMaxChildren - 1) {
         dict_copy.Set("~~~", "...");
@@ -51,7 +51,7 @@ base::Value SmartDeepCopy(const base::Value* value) {
     }
     return base::Value(std::move(dict_copy));
   } else if (value->is_list()) {
-    base::Value::List list_copy;
+    base::ListValue list_copy;
     for (const base::Value& child : value->GetList()) {
       if (list_copy.size() >= kMaxChildren - 1) {
         list_copy.Append("...");

@@ -24,7 +24,7 @@
 #include "third_party/blink/renderer/platform/graphics/static_bitmap_image.h"
 #include "third_party/blink/renderer/platform/graphics/test/fake_gles2_interface.h"
 #include "third_party/blink/renderer/platform/graphics/test/fake_web_graphics_context_3d_provider.h"
-#include "third_party/blink/renderer/platform/graphics/test/gpu_memory_buffer_test_platform.h"
+#include "third_party/blink/renderer/platform/graphics/test/gpu_compositing_test_platform.h"
 #include "third_party/blink/renderer/platform/graphics/test/gpu_test_utils.h"
 #include "third_party/blink/renderer/platform/graphics/test/test_webgraphics_shared_image_interface_provider.h"
 #include "third_party/blink/renderer/platform/testing/task_environment.h"
@@ -39,6 +39,13 @@ using testing::Test;
 
 namespace blink {
 namespace {
+
+SkImageInfo GetSkImageInfo(CanvasResourceProvider* provider) {
+  return SkImageInfo::Make(
+      provider->Size().width(), provider->Size().height(),
+      viz::ToClosestSkColorType(provider->GetSharedImageFormat()),
+      provider->GetAlphaType(), provider->GetColorSpace().ToSkColorSpace());
+}
 
 constexpr int kMaxTextureSize = 1024;
 
@@ -95,12 +102,12 @@ class CanvasResourceProviderTest : public Test {
     test_context_provider_ = viz::TestContextProvider::CreateRaster();
     auto* test_raster = test_context_provider_->UnboundTestRasterInterface();
     test_raster->set_max_texture_size(kMaxTextureSize);
-    test_raster->set_supports_gpu_memory_buffer_format(
-        gfx::BufferFormat::RGBA_8888, true);
-    test_raster->set_supports_gpu_memory_buffer_format(
-        gfx::BufferFormat::BGRA_8888, true);
-    test_raster->set_supports_gpu_memory_buffer_format(
-        gfx::BufferFormat::RGBA_F16, true);
+    test_raster->set_supports_mappable_format(
+        viz::SinglePlaneFormat::kRGBA_8888, true);
+    test_raster->set_supports_mappable_format(
+        viz::SinglePlaneFormat::kBGRA_8888, true);
+    test_raster->set_supports_mappable_format(viz::SinglePlaneFormat::kRGBA_F16,
+                                              true);
 
     gpu::SharedImageCapabilities shared_image_caps;
     shared_image_caps.supports_scanout_shared_images = true;
@@ -136,7 +143,7 @@ class CanvasResourceProviderTest : public Test {
   ImageTrackingDecodeCache image_decode_cache_;
   scoped_refptr<viz::TestContextProvider> test_context_provider_;
   base::WeakPtr<WebGraphicsContext3DProviderWrapper> context_provider_wrapper_;
-  ScopedTestingPlatformSupport<GpuMemoryBufferTestPlatform> platform_;
+  ScopedTestingPlatformSupport<GpuCompositingTestPlatform> platform_;
 };
 
 TEST_F(CanvasResourceProviderTest,
@@ -203,19 +210,18 @@ TEST_F(CanvasResourceProviderTest, CanvasResourceProviderAcceleratedOverlay) {
   EXPECT_EQ(provider->Size(), kSize);
   EXPECT_TRUE(provider->IsValid());
   EXPECT_TRUE(provider->IsAccelerated());
-  EXPECT_TRUE(provider->SupportsDirectCompositing());
   EXPECT_TRUE(provider->IsSingleBuffered());
   // As it is an CanvasResourceProviderSharedImage and an accelerated canvas, it
   // will internally force it to RGBA8 on MacOS, or otherwise RGBA8 if not on
   // Windows
 #if BUILDFLAG(IS_MAC)
-  EXPECT_TRUE(provider->GetSkImageInfo() ==
+  EXPECT_TRUE(GetSkImageInfo(provider.get()) ==
               kInfo.makeColorType(kBGRA_8888_SkColorType));
 #elif !BUILDFLAG(IS_WIN)
-  EXPECT_TRUE(provider->GetSkImageInfo() ==
+  EXPECT_TRUE(GetSkImageInfo(provider.get()) ==
               kInfo.makeColorType(kRGBA_8888_SkColorType));
 #else
-  EXPECT_TRUE(provider->GetSkImageInfo() == kInfo);
+  EXPECT_TRUE(GetSkImageInfo(provider.get()) == kInfo);
 #endif
 }
 
@@ -234,11 +240,10 @@ TEST_F(CanvasResourceProviderTest, CanvasResourceProviderTexture) {
   EXPECT_EQ(provider->Size(), kSize);
   EXPECT_TRUE(provider->IsValid());
   EXPECT_TRUE(provider->IsAccelerated());
-  EXPECT_TRUE(provider->SupportsDirectCompositing());
   EXPECT_FALSE(provider->IsSingleBuffered());
   // As it is an CanvasResourceProviderSharedImage and an accelerated canvas, it
   // will internally force it to kRGBA8
-  EXPECT_EQ(provider->GetSkImageInfo(),
+  EXPECT_EQ(GetSkImageInfo(provider.get()),
             kInfo.makeColorType(kRGBA_8888_SkColorType));
 
   EXPECT_FALSE(provider->IsSingleBuffered());
@@ -262,12 +267,11 @@ TEST_F(CanvasResourceProviderTest, CanvasResourceProviderUnacceleratedOverlay) {
   EXPECT_EQ(provider->Size(), kSize);
   EXPECT_TRUE(provider->IsValid());
   EXPECT_FALSE(provider->IsAccelerated());
-  EXPECT_TRUE(provider->SupportsDirectCompositing());
 
   // We do not support single buffering for unaccelerated low latency canvas.
   EXPECT_FALSE(provider->IsSingleBuffered());
 
-  EXPECT_EQ(provider->GetSkImageInfo(), kInfo);
+  EXPECT_EQ(GetSkImageInfo(provider.get()), kInfo);
 
   EXPECT_FALSE(provider->IsSingleBuffered());
 }
@@ -288,7 +292,8 @@ std::unique_ptr<CanvasResourceProviderSharedImage> MakeCanvasResourceProvider(
       context_provider_wrapper, raster_mode, shared_image_usage_flags);
 }
 
-scoped_refptr<CanvasResource> UpdateResource(CanvasResourceProvider* provider) {
+scoped_refptr<CanvasResource> UpdateResource(
+    CanvasResourceProviderSharedImage* provider) {
   provider->ProduceCanvasResource(FlushReason::kOther);
   // Resource updated after draw.
   provider->Canvas().clear(SkColors::kWhite);
@@ -362,10 +367,10 @@ TEST_F(CanvasResourceProviderTest,
   // As it is an CanvasResourceProviderSharedImage and an accelerated canvas, it
   // will internally force it to RGBA8, or BGRA8 on MacOS
 #if BUILDFLAG(IS_MAC)
-  EXPECT_TRUE(provider->GetSkImageInfo() ==
+  EXPECT_TRUE(GetSkImageInfo(provider.get()) ==
               kInfo.makeColorType(kBGRA_8888_SkColorType));
 #else
-  EXPECT_TRUE(provider->GetSkImageInfo() ==
+  EXPECT_TRUE(GetSkImageInfo(provider.get()) ==
               kInfo.makeColorType(kRGBA_8888_SkColorType));
 #endif
 
@@ -544,10 +549,7 @@ TEST_F(CanvasResourceProviderTest, Canvas2DResourceProviderBitmap) {
   EXPECT_EQ(provider->Size(), kSize);
   EXPECT_TRUE(provider->IsValid());
   EXPECT_FALSE(provider->IsAccelerated());
-  EXPECT_FALSE(provider->SupportsDirectCompositing());
-  EXPECT_TRUE(provider->GetSkImageInfo() == kInfo);
-
-  EXPECT_FALSE(provider->IsSingleBuffered());
+  EXPECT_TRUE(GetSkImageInfo(provider.get()) == kInfo);
 }
 
 TEST_F(CanvasResourceProviderTest,
@@ -588,8 +590,7 @@ TEST_F(CanvasResourceProviderTest,
   EXPECT_EQ(provider->Size(), kSize);
   EXPECT_TRUE(provider->IsValid());
   EXPECT_FALSE(provider->IsAccelerated());
-  EXPECT_TRUE(provider->SupportsDirectCompositing());
-  EXPECT_TRUE(provider->GetSkImageInfo() == kInfo);
+  EXPECT_TRUE(GetSkImageInfo(provider.get()) == kInfo);
 
   EXPECT_FALSE(provider->IsSingleBuffered());
 }
@@ -614,19 +615,18 @@ TEST_F(CanvasResourceProviderTest,
   EXPECT_EQ(provider->Size(), kSize);
   EXPECT_TRUE(provider->IsValid());
   EXPECT_TRUE(provider->IsAccelerated());
-  EXPECT_TRUE(provider->SupportsDirectCompositing());
   EXPECT_TRUE(provider->IsSingleBuffered());
   // As it is an CanvasResourceProviderSharedImage and an accelerated canvas, it
   // will internally force it to RGBA8 on MacOS, or otherwise RGBA8 if not on
   // Windows
 #if BUILDFLAG(IS_MAC)
-  EXPECT_TRUE(provider->GetSkImageInfo() ==
+  EXPECT_TRUE(GetSkImageInfo(provider.get()) ==
               kInfo.makeColorType(kBGRA_8888_SkColorType));
 #elif !BUILDFLAG(IS_WIN)
-  EXPECT_TRUE(provider->GetSkImageInfo() ==
+  EXPECT_TRUE(GetSkImageInfo(provider.get()) ==
               kInfo.makeColorType(kRGBA_8888_SkColorType));
 #else
-  EXPECT_TRUE(provider->GetSkImageInfo() == kInfo);
+  EXPECT_TRUE(GetSkImageInfo(provider.get()) == kInfo);
 #endif
 }
 
@@ -637,15 +637,15 @@ TEST_F(CanvasResourceProviderTest, DimensionsExceedMaxTextureSize_Bitmap) {
   auto provider = Canvas2DResourceProviderBitmap::CreateForTesting(
       gfx::Size(kMaxTextureSize - 1, kMaxTextureSize), color_params,
       CanvasResourceProvider::ShouldInitialize::kCallClear);
-  EXPECT_FALSE(provider->SupportsDirectCompositing());
+  EXPECT_TRUE(provider && provider->IsValid());
   provider = Canvas2DResourceProviderBitmap::CreateForTesting(
       gfx::Size(kMaxTextureSize, kMaxTextureSize), color_params,
       CanvasResourceProvider::ShouldInitialize::kCallClear);
-  EXPECT_FALSE(provider->SupportsDirectCompositing());
+  EXPECT_TRUE(provider && provider->IsValid());
   provider = Canvas2DResourceProviderBitmap::CreateForTesting(
       gfx::Size(kMaxTextureSize + 1, kMaxTextureSize), color_params,
       CanvasResourceProvider::ShouldInitialize::kCallClear);
-  EXPECT_FALSE(provider->SupportsDirectCompositing());
+  EXPECT_TRUE(provider && provider->IsValid());
 }
 
 TEST_F(CanvasResourceProviderTest, DimensionsExceedMaxTextureSize_SharedImage) {
@@ -656,19 +656,19 @@ TEST_F(CanvasResourceProviderTest, DimensionsExceedMaxTextureSize_SharedImage) {
       gfx::Size(kMaxTextureSize - 1, kMaxTextureSize), color_params,
       CanvasResourceProvider::ShouldInitialize::kCallClear,
       context_provider_wrapper_, RasterMode::kGPU, gpu::SharedImageUsageSet());
-  EXPECT_TRUE(provider->SupportsDirectCompositing());
+  EXPECT_TRUE(provider && provider->IsValid());
   provider = CanvasResourceProvider::CreateSharedImageProvider(
       gfx::Size(kMaxTextureSize, kMaxTextureSize), color_params,
       CanvasResourceProvider::ShouldInitialize::kCallClear,
       context_provider_wrapper_, RasterMode::kGPU, gpu::SharedImageUsageSet());
-  EXPECT_TRUE(provider->SupportsDirectCompositing());
+  EXPECT_TRUE(provider && provider->IsValid());
   provider = CanvasResourceProvider::CreateSharedImageProvider(
       gfx::Size(kMaxTextureSize + 1, kMaxTextureSize), color_params,
       CanvasResourceProvider::ShouldInitialize::kCallClear,
       context_provider_wrapper_, RasterMode::kGPU, gpu::SharedImageUsageSet());
-  // The CanvasResourceProvider for SharedImage should not be created or valid
-  // if the texture size is greater than the maximum value
-  EXPECT_TRUE(!provider || !provider->IsValid());
+  // The CanvasResourceProvider for SharedImage should not be created
+  // if the texture size is greater than the maximum value.
+  EXPECT_FALSE(provider);
 }
 
 TEST_F(CanvasResourceProviderTest, FlushForImage) {

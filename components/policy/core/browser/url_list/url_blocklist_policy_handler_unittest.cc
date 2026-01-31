@@ -58,7 +58,7 @@ class URLBlocklistPolicyHandlerTest : public testing::Test {
     return handler_->ValidatePolicy(policy);
   }
   base::Value GetURLBlocklistPolicyValueWithEntries(size_t len) {
-    base::Value::List blocklist;
+    base::ListValue blocklist;
     for (size_t i = 0; i < len; ++i) {
       blocklist.Append(kTestBlocklistValue);
     }
@@ -134,7 +134,7 @@ TEST_F(URLBlocklistPolicyHandlerTest,
 TEST_F(URLBlocklistPolicyHandlerTest,
        ApplyPolicySettings_DisabledSchemesWrongElementType) {
   // The policy expects string-valued elements. Give it booleans.
-  base::Value::List in;
+  base::ListValue in;
   in.Append(false);
   SetPolicy(key::kDisabledSchemes, base::Value(std::move(in)));
   ApplyPolicies();
@@ -148,7 +148,7 @@ TEST_F(URLBlocklistPolicyHandlerTest,
 
 TEST_F(URLBlocklistPolicyHandlerTest,
        ApplyPolicySettings_DisabledSchemesSuccessful) {
-  base::Value::List in_disabled_schemes;
+  base::ListValue in_disabled_schemes;
   in_disabled_schemes.Append(kTestDisabledScheme);
   SetPolicy(key::kDisabledSchemes, base::Value(std::move(in_disabled_schemes)));
   ApplyPolicies();
@@ -164,11 +164,11 @@ TEST_F(URLBlocklistPolicyHandlerTest,
 }
 
 TEST_F(URLBlocklistPolicyHandlerTest, ApplyPolicySettings_MergeSuccessful) {
-  base::Value::List in_disabled_schemes;
+  base::ListValue in_disabled_schemes;
   in_disabled_schemes.Append(kTestDisabledScheme);
   SetPolicy(key::kDisabledSchemes, base::Value(std::move(in_disabled_schemes)));
 
-  base::Value::List in_url_blocklist;
+  base::ListValue in_url_blocklist;
   in_url_blocklist.Append(kTestBlocklistValue);
   SetPolicy(key::kURLBlocklist, base::Value(std::move(in_url_blocklist)));
   ApplyPolicies();
@@ -193,7 +193,7 @@ TEST_F(URLBlocklistPolicyHandlerTest, ApplyPolicySettings_MergeSuccessful) {
 // per policy limit.
 TEST_F(URLBlocklistPolicyHandlerTest,
        ApplyPolicySettings_CheckPolicySettingsMaxFiltersLimitExceeded_2) {
-  base::Value::List in_disabled_schemes;
+  base::ListValue in_disabled_schemes;
   in_disabled_schemes.Append(kTestDisabledScheme);
   SetPolicy(key::kDisabledSchemes, base::Value(std::move(in_disabled_schemes)));
 
@@ -239,7 +239,7 @@ TEST_F(URLBlocklistPolicyHandlerTest, ApplyPolicySettings_URLBlocklistEmpty) {
 TEST_F(URLBlocklistPolicyHandlerTest,
        ApplyPolicySettings_URLBlocklistWrongElementType) {
   // The policy expects string-valued elements. Give it booleans.
-  base::Value::List in;
+  base::ListValue in;
   in.Append(false);
   SetPolicy(key::kURLBlocklist, base::Value(std::move(in)));
   ApplyPolicies();
@@ -253,7 +253,7 @@ TEST_F(URLBlocklistPolicyHandlerTest,
 
 TEST_F(URLBlocklistPolicyHandlerTest,
        ApplyPolicySettings_URLBlocklistSuccessful) {
-  base::Value::List in_url_blocklist;
+  base::ListValue in_url_blocklist;
   in_url_blocklist.Append(kTestBlocklistValue);
   SetPolicy(key::kURLBlocklist, base::Value(std::move(in_url_blocklist)));
   ApplyPolicies();
@@ -330,7 +330,7 @@ TEST_F(URLBlocklistPolicyHandlerTest, ValidatePolicy) {
 // policy can still be applied, but an error is added to the error map to
 // indicate an invalid URL.
 TEST_F(URLBlocklistPolicyHandlerTest, CheckPolicyURLHostWithAsterik) {
-  base::Value::List blocked_urls;
+  base::ListValue blocked_urls;
   blocked_urls.Append("android.*.com");
   EXPECT_TRUE(
       CheckPolicy(key::kURLBlocklist, base::Value(std::move(blocked_urls))));

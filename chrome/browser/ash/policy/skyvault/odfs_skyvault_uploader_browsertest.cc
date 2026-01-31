@@ -63,7 +63,31 @@ class OdfsSkyvaultUploaderTest : public SkyvaultOneDriveTest {
       network_connection_tracker_;
 };
 
-IN_PROC_BROWSER_TEST_F(OdfsSkyvaultUploaderTest, SuccessfulUpload) {
+class OdfsSkyvaultUploaderParamTest
+    : public OdfsSkyvaultUploaderTest,
+      public ::testing::WithParamInterface<UploadTrigger> {
+ public:
+  OdfsSkyvaultUploaderParamTest() = default;
+  ~OdfsSkyvaultUploaderParamTest() override = default;
+
+  static std::string ParamToName(const testing::TestParamInfo<ParamType> info) {
+    switch (info.param) {
+      case UploadTrigger::kDownload:
+        return "download";
+      case UploadTrigger::kScreenCapture:
+        return "screen_capture";
+      case UploadTrigger::kMigration:
+        return "migration";
+      case UploadTrigger::kCamera:
+        return "camera";
+    }
+  }
+
+ protected:
+  UploadTrigger GetTrigger() { return GetParam(); }
+};
+
+IN_PROC_BROWSER_TEST_P(OdfsSkyvaultUploaderParamTest, SuccessfulUpload) {
   SetUpMyFiles();
   SetUpODFS();
   const std::string test_file_name = "video_long.ogv";
@@ -74,9 +98,9 @@ IN_PROC_BROWSER_TEST_F(OdfsSkyvaultUploaderTest, SuccessfulUpload) {
   base::MockCallback<base::RepeatingCallback<void(int64_t)>> progress_callback;
   base::test::TestFuture<bool, storage::FileSystemURL> upload_callback;
   EXPECT_CALL(progress_callback, Run(/*bytes_transferred=*/230096));
-  OdfsSkyvaultUploader::Upload(
-      profile(), source_file_path, UploadTrigger::kDownload,
-      progress_callback.Get(), upload_callback.GetCallback());
+  OdfsSkyvaultUploader::Upload(profile(), source_file_path, GetTrigger(),
+                               progress_callback.Get(),
+                               upload_callback.GetCallback());
   EXPECT_EQ(upload_callback.Get<bool>(), true);
 
   // Check that the source file has been moved to OneDrive.
@@ -84,7 +108,7 @@ IN_PROC_BROWSER_TEST_F(OdfsSkyvaultUploaderTest, SuccessfulUpload) {
 }
 
 // Tests an upload to a specific folder and relative path on OneDrive.
-IN_PROC_BROWSER_TEST_F(OdfsSkyvaultUploaderTest,
+IN_PROC_BROWSER_TEST_P(OdfsSkyvaultUploaderParamTest,
                        SuccessfulUploadWithRelativePath) {
   SetUpMyFiles();
   SetUpODFS();
@@ -104,8 +128,8 @@ IN_PROC_BROWSER_TEST_F(OdfsSkyvaultUploaderTest,
   OdfsSkyvaultUploader::Upload(
       profile(), source_file_path,
       /*relative_source_path=*/base::FilePath(test_dir),
-      /*upload_root=*/kUploadRootPrefix, UploadTrigger::kMigration,
-      progress_callback.Get(), upload_callback.GetCallback());
+      /*upload_root=*/kUploadRootPrefix, GetTrigger(), progress_callback.Get(),
+      upload_callback.GetCallback());
 
   auto [url, error, upload_root_path] = upload_callback.Get();
   EXPECT_FALSE(error.has_value());
@@ -119,6 +143,59 @@ IN_PROC_BROWSER_TEST_F(OdfsSkyvaultUploaderTest,
                             .AppendASCII(test_dir)
                             .AppendASCII(test_file_name));
 }
+
+IN_PROC_BROWSER_TEST_P(OdfsSkyvaultUploaderParamTest, CancelledUpload) {
+  SetUpMyFiles();
+  SetUpODFS();
+  const std::string test_file_name = "video_long.ogv";
+  base::FilePath source_file_path =
+      CopyTestFile(test_file_name, my_files_dir());
+
+  // Start the upload workflow and cancel the upload immediately.
+  base::MockCallback<base::RepeatingCallback<void(int64_t)>> progress_callback;
+  base::test::TestFuture<bool, storage::FileSystemURL> upload_callback;
+  base::WeakPtr<OdfsSkyvaultUploader> uploader = OdfsSkyvaultUploader::Upload(
+      profile(), source_file_path, GetTrigger(), progress_callback.Get(),
+      upload_callback.GetCallback());
+  uploader->Cancel();
+  EXPECT_EQ(upload_callback.Get<bool>(), false);
+
+  // Check that the source file has not been moved to OneDrive.
+  CheckPathNotFoundOnODFS(base::FilePath("/").AppendASCII(test_file_name));
+}
+
+IN_PROC_BROWSER_TEST_P(OdfsSkyvaultUploaderParamTest,
+                       FailToUploadDueToMemoryError) {
+  SetUpMyFiles();
+  SetUpODFS();
+  // Ensure Upload fails due to memory error and that reauthentication to
+  // OneDrive is not required.
+  provided_file_system_->SetCreateFileError(
+      base::File::Error::FILE_ERROR_NO_MEMORY);
+  provided_file_system_->SetReauthenticationRequired(false);
+  const std::string test_file_name = "id3Audio.mp3";
+  base::FilePath source_file_path =
+      CopyTestFile(test_file_name, my_files_dir());
+
+  // Start the upload workflow and end the test once the upload callback is run.
+  base::MockCallback<base::RepeatingCallback<void(int64_t)>> progress_callback;
+  base::test::TestFuture<bool, storage::FileSystemURL> upload_callback;
+  OdfsSkyvaultUploader::Upload(profile(), source_file_path, GetTrigger(),
+                               progress_callback.Get(),
+                               upload_callback.GetCallback());
+  EXPECT_EQ(upload_callback.Get<bool>(), false);
+
+  // Check that the source file has not been moved to OneDrive.
+  CheckPathNotFoundOnODFS(base::FilePath("/").AppendASCII(test_file_name));
+}
+
+INSTANTIATE_TEST_SUITE_P(SkyVault,
+                         OdfsSkyvaultUploaderParamTest,
+                         ::testing::Values(UploadTrigger::kDownload,
+                                           UploadTrigger::kScreenCapture,
+                                           UploadTrigger::kMigration,
+                                           UploadTrigger::kCamera),
+                         OdfsSkyvaultUploaderParamTest::ParamToName);
 
 // Tests that if triggered because of migration, an upload will wait for
 // connectivity instead of failing quickly.
@@ -162,50 +239,6 @@ IN_PROC_BROWSER_TEST_F(OdfsSkyvaultUploaderTest,
                             .AppendASCII(kUploadRootPrefix)
                             .AppendASCII(test_dir)
                             .AppendASCII(test_file_name));
-}
-
-IN_PROC_BROWSER_TEST_F(OdfsSkyvaultUploaderTest, CancelledUpload) {
-  SetUpMyFiles();
-  SetUpODFS();
-  const std::string test_file_name = "video_long.ogv";
-  base::FilePath source_file_path =
-      CopyTestFile(test_file_name, my_files_dir());
-
-  // Start the upload workflow and cancel the upload immediately.
-  base::MockCallback<base::RepeatingCallback<void(int64_t)>> progress_callback;
-  base::test::TestFuture<bool, storage::FileSystemURL> upload_callback;
-  base::WeakPtr<OdfsSkyvaultUploader> uploader = OdfsSkyvaultUploader::Upload(
-      profile(), source_file_path, UploadTrigger::kDownload,
-      progress_callback.Get(), upload_callback.GetCallback());
-  uploader->Cancel();
-  EXPECT_EQ(upload_callback.Get<bool>(), false);
-
-  // Check that the source file has not been moved to OneDrive.
-  CheckPathNotFoundOnODFS(base::FilePath("/").AppendASCII(test_file_name));
-}
-
-IN_PROC_BROWSER_TEST_F(OdfsSkyvaultUploaderTest, FailToUploadDueToMemoryError) {
-  SetUpMyFiles();
-  SetUpODFS();
-  // Ensure Upload fails due to memory error and that reauthentication to
-  // OneDrive is not required.
-  provided_file_system_->SetCreateFileError(
-      base::File::Error::FILE_ERROR_NO_MEMORY);
-  provided_file_system_->SetReauthenticationRequired(false);
-  const std::string test_file_name = "id3Audio.mp3";
-  base::FilePath source_file_path =
-      CopyTestFile(test_file_name, my_files_dir());
-
-  // Start the upload workflow and end the test once the upload callback is run.
-  base::MockCallback<base::RepeatingCallback<void(int64_t)>> progress_callback;
-  base::test::TestFuture<bool, storage::FileSystemURL> upload_callback;
-  OdfsSkyvaultUploader::Upload(
-      profile(), source_file_path, UploadTrigger::kDownload,
-      progress_callback.Get(), upload_callback.GetCallback());
-  EXPECT_EQ(upload_callback.Get<bool>(), false);
-
-  // Check that the source file has not been moved to OneDrive.
-  CheckPathNotFoundOnODFS(base::FilePath("/").AppendASCII(test_file_name));
 }
 
 // Test that when the reauthentication to ODFS is required, the sign-in required

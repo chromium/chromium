@@ -88,6 +88,10 @@ class COMPONENT_EXPORT(UKM_RECORDER) UkmRecorderImpl : public UkmRecorder {
   // Disables recording without updating the consent state.
   void DisableRecording();
 
+  // Returns the reference to the global instance of the decode map.
+  // Virtual for testing.
+  virtual const builders::DecodeMap& GetDecodeMap() const;
+
   // Controls sampling for testing purposes. Sampling is 1-in-N (N==rate).
   void SetSamplingForTesting(int rate) override;
 
@@ -163,8 +167,6 @@ class COMPONENT_EXPORT(UKM_RECORDER) UkmRecorderImpl : public UkmRecorder {
 
   // Like above but uses a passed |sampling_rate| instead of internal config.
   bool IsSampledIn(int64_t source_id, uint64_t event_id, int sampling_rate);
-
-  void InitDecodeMap();
 
   // Writes recordings into a report proto, and clears recordings.
   void StoreRecordingsInReport(Report* report);
@@ -328,9 +330,6 @@ class COMPONENT_EXPORT(UKM_RECORDER) UkmRecorderImpl : public UkmRecorder {
 
   // Callback for checking extension IDs.
   IsWebstoreExtensionCallback is_webstore_extension_callback_;
-
-  // Map from hashes to entry and metric names.
-  ukm::builders::DecodeMap decode_map_;
 
   // Sampling configurations, loaded from a field-trial.
   int default_sampling_rate_ = -1;  // -1 == not yet loaded

@@ -4,11 +4,12 @@
 
 #include "ash/accelerators/pre_target_accelerator_handler.h"
 
+#include <algorithm>
+
 #include "ash/accelerators/accelerator_controller_impl.h"
 #include "ash/accelerators/system_shortcut_behavior_policy.h"
 #include "ash/shell.h"
 #include "ash/wm/window_state.h"
-#include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "ui/aura/window.h"
 #include "ui/base/accelerators/accelerator.h"
@@ -88,7 +89,7 @@ bool PreTargetAcceleratorHandler::ShouldProcessAcceleratorNow(
     }
   }
 
-  if (base::Contains(Shell::GetAllRootWindows(), target))
+  if (std::ranges::contains(Shell::GetAllRootWindows(), target))
     return true;
 
   AcceleratorControllerImpl* accelerator_controller =

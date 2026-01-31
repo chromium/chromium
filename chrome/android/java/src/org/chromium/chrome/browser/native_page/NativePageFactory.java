@@ -20,9 +20,10 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.lifetime.Destroyable;
 import org.chromium.base.metrics.RecordUserAction;
-import org.chromium.base.supplier.ObservableSupplier;
-import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.supplier.MonotonicObservableSupplier;
+import org.chromium.base.supplier.NonNullObservableSupplier;
 import org.chromium.base.supplier.OneshotSupplier;
+import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
@@ -42,11 +43,11 @@ import org.chromium.chrome.browser.management.ManagementPage;
 import org.chromium.chrome.browser.metrics.StartupMetricsTracker;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager;
 import org.chromium.chrome.browser.ntp.IncognitoNewTabPage;
+import org.chromium.chrome.browser.ntp.IncognitoNtpMetrics;
 import org.chromium.chrome.browser.ntp.NewTabPage;
 import org.chromium.chrome.browser.ntp.NewTabPageCreationTracker;
 import org.chromium.chrome.browser.ntp.RecentTabsManager;
 import org.chromium.chrome.browser.ntp.RecentTabsPage;
-import org.chromium.chrome.browser.ntp_customization.edge_to_edge.TopInsetCoordinator;
 import org.chromium.chrome.browser.pdf.PdfInfo;
 import org.chromium.chrome.browser.pdf.PdfPage;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -59,6 +60,7 @@ import org.chromium.chrome.browser.tasks.HomeSurfaceTracker;
 import org.chromium.chrome.browser.toolbar.top.Toolbar;
 import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeController;
 import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeControllerFactory;
+import org.chromium.chrome.browser.ui.edge_to_edge.TopInsetProvider;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.ui.native_page.NativePage;
 import org.chromium.chrome.browser.ui.native_page.NativePage.NativePageType;
@@ -66,9 +68,11 @@ import org.chromium.chrome.browser.ui.native_page.NativePageHost;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.content_public.browser.LoadUrlParams;
+import org.chromium.ui.base.ActivityResultTracker;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.edge_to_edge.EdgeToEdgePadAdjuster;
+import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.util.ColorUtils;
 import org.chromium.url.GURL;
 
@@ -83,6 +87,7 @@ public class NativePageFactory {
     private final BottomSheetController mBottomSheetController;
     private final BrowserControlsManager mBrowserControlsManager;
     private final Supplier<@Nullable Tab> mCurrentTabSupplier;
+    private final Supplier<ModalDialogManager> mModalDialogManagerSupplier;
     private final Supplier<SnackbarManager> mSnackbarManagerSupplier;
     private final ActivityLifecycleDispatcher mLifecycleDispatcher;
     private final TabModelSelector mTabModelSelector;
@@ -90,11 +95,12 @@ public class NativePageFactory {
     private final WindowAndroid mWindowAndroid;
     private final Supplier<Toolbar> mToolbarSupplier;
     private final @Nullable HomeSurfaceTracker mHomeSurfaceTracker;
-    private final ObservableSupplier<TabContentManager> mTabContentManagerSupplier;
-    private final ObservableSupplier<Integer> mTabStripHeightSupplier;
+    private final ActivityResultTracker mActivityResultTracker;
+    private final MonotonicObservableSupplier<TabContentManager> mTabContentManagerSupplier;
+    private final NonNullObservableSupplier<Integer> mTabStripHeightSupplier;
     private final OneshotSupplier<ModuleRegistry> mModuleRegistrySupplier;
-    private final ObservableSupplier<EdgeToEdgeController> mEdgeToEdgeControllerSupplier;
-    private final ObservableSupplier<TopInsetCoordinator> mTopInsetCoordinatorSupplier;
+    private final MonotonicObservableSupplier<EdgeToEdgeController> mEdgeToEdgeControllerSupplier;
+    private final MonotonicObservableSupplier<TopInsetProvider> mTopInsetProviderSupplier;
     private final StartupMetricsTracker mStartupMetricsTracker;
     private @Nullable NewTabPageCreationTracker mNewTabPageCreationTracker;
 
@@ -109,6 +115,7 @@ public class NativePageFactory {
             BottomSheetController sheetController,
             BrowserControlsManager browserControlsManager,
             Supplier<@Nullable Tab> currentTabSupplier,
+            Supplier<ModalDialogManager> modalDialogManagerSupplier,
             Supplier<SnackbarManager> snackbarManagerSupplier,
             ActivityLifecycleDispatcher lifecycleDispatcher,
             TabModelSelector tabModelSelector,
@@ -116,11 +123,12 @@ public class NativePageFactory {
             WindowAndroid windowAndroid,
             Supplier<Toolbar> toolbarSupplier,
             @Nullable HomeSurfaceTracker homeSurfaceTracker,
-            ObservableSupplier<TabContentManager> tabContentManagerSupplier,
-            ObservableSupplier<Integer> tabStripHeightSupplier,
+            ActivityResultTracker activityResultTracker,
+            MonotonicObservableSupplier<TabContentManager> tabContentManagerSupplier,
+            NonNullObservableSupplier<Integer> tabStripHeightSupplier,
             OneshotSupplier<ModuleRegistry> moduleRegistrySupplier,
-            ObservableSupplier<EdgeToEdgeController> edgeToEdgeControllerSupplier,
-            ObservableSupplier<TopInsetCoordinator> topInsetCoordinatorSupplier,
+            MonotonicObservableSupplier<EdgeToEdgeController> edgeToEdgeControllerSupplier,
+            MonotonicObservableSupplier<TopInsetProvider> topInsetProviderSupplier,
             StartupMetricsTracker startupMetricsTracker,
             BackPressManager backPressManager,
             MultiInstanceManager multiInstanceManager,
@@ -129,6 +137,7 @@ public class NativePageFactory {
         mBottomSheetController = sheetController;
         mBrowserControlsManager = browserControlsManager;
         mCurrentTabSupplier = currentTabSupplier;
+        mModalDialogManagerSupplier = modalDialogManagerSupplier;
         mSnackbarManagerSupplier = snackbarManagerSupplier;
         mLifecycleDispatcher = lifecycleDispatcher;
         mTabModelSelector = tabModelSelector;
@@ -136,11 +145,12 @@ public class NativePageFactory {
         mWindowAndroid = windowAndroid;
         mToolbarSupplier = toolbarSupplier;
         mHomeSurfaceTracker = homeSurfaceTracker;
+        mActivityResultTracker = activityResultTracker;
         mTabContentManagerSupplier = tabContentManagerSupplier;
         mTabStripHeightSupplier = tabStripHeightSupplier;
         mModuleRegistrySupplier = moduleRegistrySupplier;
         mEdgeToEdgeControllerSupplier = edgeToEdgeControllerSupplier;
-        mTopInsetCoordinatorSupplier = topInsetCoordinatorSupplier;
+        mTopInsetProviderSupplier = topInsetProviderSupplier;
         mStartupMetricsTracker = startupMetricsTracker;
         mBackPressManager = backPressManager;
         mMultiInstanceManager = multiInstanceManager;
@@ -156,6 +166,7 @@ public class NativePageFactory {
                             mBottomSheetController,
                             mBrowserControlsManager,
                             mCurrentTabSupplier,
+                            mModalDialogManagerSupplier,
                             mSnackbarManagerSupplier,
                             mLifecycleDispatcher,
                             mTabModelSelector,
@@ -163,11 +174,12 @@ public class NativePageFactory {
                             mWindowAndroid,
                             mToolbarSupplier,
                             mHomeSurfaceTracker,
+                            mActivityResultTracker,
                             mTabContentManagerSupplier,
                             mTabStripHeightSupplier,
                             mModuleRegistrySupplier,
                             mEdgeToEdgeControllerSupplier,
-                            mTopInsetCoordinatorSupplier,
+                            mTopInsetProviderSupplier,
                             mStartupMetricsTracker,
                             mBackPressManager,
                             mMultiInstanceManager,
@@ -191,6 +203,7 @@ public class NativePageFactory {
         private final Supplier<NewTabPageCreationTracker> mNewTabPageCreationTracker;
         private final BrowserControlsManager mBrowserControlsManager;
         private final Supplier<@Nullable Tab> mCurrentTabSupplier;
+        private final Supplier<ModalDialogManager> mModalDialogManagerSupplier;
         private final Supplier<SnackbarManager> mSnackbarManagerSupplier;
         private final ActivityLifecycleDispatcher mLifecycleDispatcher;
         private final TabModelSelector mTabModelSelector;
@@ -198,11 +211,13 @@ public class NativePageFactory {
         private final WindowAndroid mWindowAndroid;
         private final Supplier<Toolbar> mToolbarSupplier;
         private final @Nullable HomeSurfaceTracker mHomeSurfaceTracker;
-        private final ObservableSupplier<TabContentManager> mTabContentManagerSupplier;
-        private final ObservableSupplier<Integer> mTabStripHeightSupplier;
+        private final ActivityResultTracker mActivityResultTracker;
+        private final MonotonicObservableSupplier<TabContentManager> mTabContentManagerSupplier;
+        private final NonNullObservableSupplier<Integer> mTabStripHeightSupplier;
         private final OneshotSupplier<ModuleRegistry> mModuleRegistrySupplier;
-        private final ObservableSupplier<EdgeToEdgeController> mEdgeToEdgeControllerSupplier;
-        private final ObservableSupplier<TopInsetCoordinator> mTopInsetCoordinatorSupplier;
+        private final MonotonicObservableSupplier<EdgeToEdgeController>
+                mEdgeToEdgeControllerSupplier;
+        private final MonotonicObservableSupplier<TopInsetProvider> mTopInsetProviderSupplier;
         private final StartupMetricsTracker mStartupMetricsTracker;
         private final BackPressManager mBackPressManager;
         private final MultiInstanceManager mMultiInstanceManager;
@@ -214,6 +229,7 @@ public class NativePageFactory {
                 BottomSheetController sheetController,
                 BrowserControlsManager browserControlsManager,
                 Supplier<@Nullable Tab> currentTabSupplier,
+                Supplier<ModalDialogManager> modalDialogManagerSupplier,
                 Supplier<SnackbarManager> snackbarManagerSupplier,
                 ActivityLifecycleDispatcher lifecycleDispatcher,
                 TabModelSelector tabModelSelector,
@@ -221,11 +237,12 @@ public class NativePageFactory {
                 WindowAndroid windowAndroid,
                 Supplier<Toolbar> toolbarSupplier,
                 @Nullable HomeSurfaceTracker homeSurfaceTracker,
-                ObservableSupplier<TabContentManager> tabContentManagerSupplier,
-                ObservableSupplier<Integer> tabStripHeightSupplier,
+                ActivityResultTracker activityResultTracker,
+                MonotonicObservableSupplier<TabContentManager> tabContentManagerSupplier,
+                NonNullObservableSupplier<Integer> tabStripHeightSupplier,
                 OneshotSupplier<ModuleRegistry> moduleRegistrySupplier,
-                ObservableSupplier<EdgeToEdgeController> edgeToEdgeControllerSupplier,
-                ObservableSupplier<TopInsetCoordinator> topInsetCoordinatorSupplier,
+                MonotonicObservableSupplier<EdgeToEdgeController> edgeToEdgeControllerSupplier,
+                MonotonicObservableSupplier<TopInsetProvider> topInsetProviderSupplier,
                 StartupMetricsTracker startupMetricsTracker,
                 BackPressManager backPressManager,
                 MultiInstanceManager multiInstanceManager,
@@ -235,6 +252,7 @@ public class NativePageFactory {
             mBottomSheetController = sheetController;
             mBrowserControlsManager = browserControlsManager;
             mCurrentTabSupplier = currentTabSupplier;
+            mModalDialogManagerSupplier = modalDialogManagerSupplier;
             mSnackbarManagerSupplier = snackbarManagerSupplier;
             mLifecycleDispatcher = lifecycleDispatcher;
             mTabModelSelector = tabModelSelector;
@@ -242,11 +260,12 @@ public class NativePageFactory {
             mWindowAndroid = windowAndroid;
             mToolbarSupplier = toolbarSupplier;
             mHomeSurfaceTracker = homeSurfaceTracker;
+            mActivityResultTracker = activityResultTracker;
             mTabContentManagerSupplier = tabContentManagerSupplier;
             mTabStripHeightSupplier = tabStripHeightSupplier;
             mModuleRegistrySupplier = moduleRegistrySupplier;
             mEdgeToEdgeControllerSupplier = edgeToEdgeControllerSupplier;
-            mTopInsetCoordinatorSupplier = topInsetCoordinatorSupplier;
+            mTopInsetProviderSupplier = topInsetProviderSupplier;
             mStartupMetricsTracker = startupMetricsTracker;
             mBackPressManager = backPressManager;
             mMultiInstanceManager = multiInstanceManager;
@@ -262,13 +281,18 @@ public class NativePageFactory {
                             mEdgeToEdgeControllerSupplier);
             if (tab.isIncognito()) {
                 return new IncognitoNewTabPage(
-                        mActivity, nativePageHost, tab.getProfile(), mEdgeToEdgeControllerSupplier);
+                        mActivity,
+                        nativePageHost,
+                        tab,
+                        mEdgeToEdgeControllerSupplier,
+                        createIncognitoNtpMetrics());
             }
 
             return new NewTabPage(
                     mActivity,
                     mBrowserControlsManager,
                     mCurrentTabSupplier,
+                    mModalDialogManagerSupplier,
                     mSnackbarManagerSupplier.get(),
                     mLifecycleDispatcher,
                     mTabModelSelector,
@@ -283,18 +307,23 @@ public class NativePageFactory {
                     mWindowAndroid,
                     mToolbarSupplier,
                     mHomeSurfaceTracker,
+                    mActivityResultTracker,
                     mTabContentManagerSupplier,
                     mTabStripHeightSupplier,
                     mModuleRegistrySupplier,
                     mEdgeToEdgeControllerSupplier,
-                    mTopInsetCoordinatorSupplier,
+                    mTopInsetProviderSupplier,
                     mStartupMetricsTracker,
                     mMultiInstanceManager);
         }
 
         protected NativePage buildBookmarksPage(Tab tab) {
             return new BookmarkPage(
+                    mWindowAndroid,
+                    mActivity,
                     mSnackbarManagerSupplier.get(),
+                    () -> mBottomSheetController,
+                    mActivityResultTracker,
                     tab.getProfile(),
                     new TabShim(
                             tab,
@@ -322,6 +351,8 @@ public class NativePageFactory {
 
         protected NativePage buildHistoryPage(Tab tab, String url) {
             return new HistoryPage(
+                    tab.getProfile(),
+                    mWindowAndroid,
                     mActivity,
                     new TabShim(
                             tab,
@@ -329,8 +360,9 @@ public class NativePageFactory {
                             mTabModelSelector,
                             mEdgeToEdgeControllerSupplier),
                     mSnackbarManagerSupplier.get(),
-                    tab.getProfile(),
                     mBottomSheetController,
+                    mModalDialogManagerSupplier,
+                    mActivityResultTracker,
                     mCurrentTabSupplier,
                     url,
                     mBackPressManager);
@@ -340,8 +372,13 @@ public class NativePageFactory {
             RecentTabsManager recentTabsManager =
                     new RecentTabsManager(
                             tab,
-                            tab.getProfile(),
+                            mWindowAndroid,
                             mActivity,
+                            tab.getProfile(),
+                            mActivityResultTracker,
+                            mBottomSheetController,
+                            mModalDialogManagerSupplier,
+                            mSnackbarManagerSupplier.get(),
                             () ->
                                     HistoryManagerUtils.showHistoryManager(
                                             mActivity, tab, tab.getProfile()),
@@ -384,6 +421,13 @@ public class NativePageFactory {
         protected NativePage buildPdfPage(Tab tab, String url, PdfInfo pdfInfo) {
             return NativePageFactory.buildPdfPage(
                     url, tab, pdfInfo, mBrowserControlsManager, mTabModelSelector, mActivity);
+        }
+
+        private @Nullable IncognitoNtpMetrics createIncognitoNtpMetrics() {
+            if (ChromeFeatureList.sRecordIncognitoNtpTimeToFirstNavigationMetric.isEnabled()) {
+                return new IncognitoNtpMetrics();
+            }
+            return null;
         }
     }
 
@@ -556,14 +600,15 @@ public class NativePageFactory {
         private final Tab mTab;
         private final BrowserControlsStateProvider mBrowserControlsStateProvider;
         private final TabModelSelector mTabModelSelector;
-        private final @Nullable ObservableSupplier<EdgeToEdgeController>
+        private final @Nullable MonotonicObservableSupplier<EdgeToEdgeController>
                 mEdgeToEdgeControllerSupplier;
 
         public TabShim(
                 Tab tab,
                 BrowserControlsStateProvider browserControlsStateProvider,
                 TabModelSelector tabModelSelector,
-                @Nullable ObservableSupplier<EdgeToEdgeController> edgeToEdgeControllerSupplier) {
+                @Nullable MonotonicObservableSupplier<EdgeToEdgeController>
+                        edgeToEdgeControllerSupplier) {
             mTab = tab;
             mBrowserControlsStateProvider = browserControlsStateProvider;
             mTabModelSelector = tabModelSelector;
@@ -606,7 +651,8 @@ public class NativePageFactory {
         }
 
         @Override
-        public Destroyable createDefaultMarginAdapter(ObservableSupplierImpl<Rect> supplierImpl) {
+        public Destroyable createDefaultMarginAdapter(
+                SettableMonotonicObservableSupplier<Rect> supplierImpl) {
             return BrowserControlsMarginAdapter.create(mBrowserControlsStateProvider, supplierImpl);
         }
 

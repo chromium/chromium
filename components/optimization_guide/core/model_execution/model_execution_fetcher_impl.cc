@@ -17,6 +17,7 @@
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/optimization_guide/core/optimization_guide_logger.h"
 #include "components/optimization_guide/core/optimization_guide_switches.h"
+#include "components/optimization_guide/core/optimization_guide_util.h"
 #include "components/variations/net/variations_http_headers.h"
 #include "google_apis/gaia/gaia_constants.h"
 #include "net/base/url_util.h"
@@ -32,7 +33,6 @@ namespace optimization_guide {
 
 namespace {
 
-constexpr char kGoogleAPITypeName[] = "type.googleapis.com/";
 
 net::NetworkTrafficAnnotationTag GetNetworkTrafficAnnotation(
     ModelBasedCapabilityKey feature) {
@@ -351,6 +351,9 @@ net::NetworkTrafficAnnotationTag GetNetworkTrafficAnnotation(
         }
       }
     })");
+    case ModelBasedCapabilityKey::kSkills:
+      // TODO(crbug.com/476214530): Add network traffic annotation.
+      return MISSING_TRAFFIC_ANNOTATION;
   }
 }
 
@@ -381,18 +384,21 @@ bool IsAccessTokenRequiredForFeature(ModelBasedCapabilityKey feature) {
     case ModelBasedCapabilityKey::kTest:
     case ModelBasedCapabilityKey::kHistorySearch:
     case ModelBasedCapabilityKey::kBlingPrototyping:
-    case ModelBasedCapabilityKey::kPasswordChangeSubmission:
     case ModelBasedCapabilityKey::kEnhancedCalendar:
     case ModelBasedCapabilityKey::kZeroStateSuggestions:
     case ModelBasedCapabilityKey::kWalletablePassExtraction:
     case ModelBasedCapabilityKey::kAmountExtraction:
     case ModelBasedCapabilityKey::kIosSmartTabGrouping:
+    case ModelBasedCapabilityKey::kSkills:
       return true;
     case ModelBasedCapabilityKey::kFormsClassifications:
       return !base::FeatureList::IsEnabled(
           features::kOptimizationGuideBypassFormsClassificationAuth);
     case ModelBasedCapabilityKey::kScamDetection:
       return false;
+    case ModelBasedCapabilityKey::kPasswordChangeSubmission:
+      return !base::FeatureList::IsEnabled(
+          features::kOptimizationGuideBypassPasswordChangeAuth);
   }
 }
 
@@ -445,12 +451,8 @@ void ModelExecutionFetcherImpl::ExecuteModel(
   model_execution_feature_ = feature;
   model_execution_callback_ = std::move(callback);
 
-  proto::ExecuteRequest execute_request;
-  execute_request.set_feature(ToModelExecutionFeatureProto(feature));
-  proto::Any* any_metadata = execute_request.mutable_request_metadata();
-  any_metadata->set_type_url(
-      base::StrCat({kGoogleAPITypeName, request_metadata.GetTypeName()}));
-  request_metadata.SerializeToString(any_metadata->mutable_value());
+  proto::ExecuteRequest execute_request =
+      ToExecuteRequest(feature, request_metadata);
   std::string serialized_request;
   execute_request.SerializeToString(&serialized_request);
 
@@ -549,11 +551,7 @@ void ModelExecutionFetcherImpl::OnURLLoadComplete(
                 ModelExecutionError::kGenericFailure)));
     return;
   }
-  base::UmaHistogramMediumTimes(
-      base::StrCat(
-          {"OptimizationGuide.ModelExecutionFetcher.FetchLatency.",
-           GetStringNameForModelExecutionFeature(*model_execution_feature_)}),
-      base::TimeTicks::Now() - fetch_start_time_);
+
   RecordRequestStatusHistogram(*model_execution_feature_,
                                FetcherRequestStatus::kSuccess);
   // This should be the last call, since the callback could be deleting `this`.

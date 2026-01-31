@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import type {BookmarksEditDialogElement} from 'chrome://bookmarks/bookmarks.js';
-import {BookmarksApiProxyImpl, normalizeNode, setDebouncerForTesting} from 'chrome://bookmarks/bookmarks.js';
+import {BookmarksApiProxyImpl, MAX_BOOKMARK_INPUT_LENGTH, normalizeNode, setDebouncerForTesting} from 'chrome://bookmarks/bookmarks.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {microtasksFinished} from 'chrome://webui-test/test_util.js';
 
@@ -98,26 +98,108 @@ suite('<bookmarks-edit-dialog>', function() {
     assertEquals('Permission Site', args.title);
   });
 
+  function setUrlValue(value: string) {
+    dialog.$.url.value = value;
+    dialog.$.url.dispatchEvent(new CustomEvent('value-changed', {
+      bubbles: true,
+      composed: true,
+      detail: {value: value},
+    }));
+  }
+
   test('validates urls correctly', async () => {
-    dialog.$.url.value = 'http://www.example.com';
+    setUrlValue('http://www.example.com');
     assertTrue(dialog.validateUrl());
 
-    dialog.$.url.value = 'https://a@example.com:8080';
+    setUrlValue('https://a@example.com:8080');
     assertTrue(dialog.validateUrl());
 
-    dialog.$.url.value = 'example.com';
+    setUrlValue('example.com');
     assertTrue(dialog.validateUrl());
     await microtasksFinished();
     assertEquals('http://example.com', dialog.$.url.value);
 
-    dialog.$.url.value = '';
+    setUrlValue('');
     assertFalse(dialog.validateUrl());
 
-    dialog.$.url.value = '~~~example.com~~~';
+    setUrlValue('~~~example.com~~~');
     assertTrue(dialog.validateUrl());
 
-    dialog.$.url.value = '^^^example.com^^^';
+    setUrlValue('^^^example.com^^^');
     assertFalse(dialog.validateUrl());
+    setUrlValue('a'.repeat(MAX_BOOKMARK_INPUT_LENGTH + 1));
+    assertFalse(dialog.validateUrl());
+
+    // Case: Exactly 500KB, valid URL.
+    // "http://" is 7 chars. "a" * (500*1024 - 7)
+    const validUrl = 'http://' +
+        'a'.repeat(MAX_BOOKMARK_INPUT_LENGTH - 7);
+    setUrlValue(validUrl);
+    assertTrue(dialog.validateUrl());
+  });
+
+  async function testPasteTruncation(
+      input: HTMLInputElement, maxLength: number) {
+    const longText = 'a'.repeat(maxLength + 100);
+
+    // Mock the clipboard event.
+    const clipboardData = new DataTransfer();
+    clipboardData.setData('text/plain', longText);
+    const pasteEvent = new ClipboardEvent('paste', {
+      bubbles: true,
+      cancelable: true,
+      composed: true,
+      clipboardData: clipboardData,
+    });
+
+    input.dispatchEvent(pasteEvent);
+    await microtasksFinished();
+
+    // Verify the text was truncated.
+    assertEquals(maxLength, input.value.length);
+    assertEquals(longText.substring(0, maxLength), input.value);
+  }
+
+  test('truncates long pasted URLs', async () => {
+    dialog.showAddDialog(false, '1');
+    await microtasksFinished();
+
+    await testPasteTruncation(
+        dialog.$.url.inputElement, MAX_BOOKMARK_INPUT_LENGTH);
+  });
+
+  test('truncates long pasted titles', async () => {
+    dialog.showAddDialog(false, '1');
+    await microtasksFinished();
+
+    await testPasteTruncation(
+        dialog.$.name.inputElement, MAX_BOOKMARK_INPUT_LENGTH);
+  });
+
+  test('should truncate title on save if it exceeds the limit', async () => {
+    dialog.showAddDialog(false, '1');
+    await microtasksFinished();
+
+    const longTitle = 'a'.repeat(MAX_BOOKMARK_INPUT_LENGTH + 100);
+    // Directly set the private property to avoid performance issues with
+    // rendering extremely long strings in cr-input during tests.
+    dialog['titleValue_'] = longTitle;
+    await microtasksFinished();
+
+    dialog.$.url.value = 'http://example.com';
+    dialog.$.url.dispatchEvent(new CustomEvent('value-changed', {
+      bubbles: true,
+      composed: true,
+      detail: {value: 'http://example.com'},
+    }));
+    await microtasksFinished();
+
+    setDebouncerForTesting();
+
+    dialog.$.saveButton.click();
+
+    const args = await bookmarksApi.whenCalled('create');
+    assertEquals(MAX_BOOKMARK_INPUT_LENGTH, args.title.length);
   });
 
   test('doesn\'t save when URL is invalid', async () => {

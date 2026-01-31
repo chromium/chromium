@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/route_matching/route_match_state.h"
 
+#include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/route_matching/route.h"
 #include "third_party/blink/renderer/core/route_matching/route_map.h"
 
@@ -14,12 +15,14 @@ RouteMatchState* RouteMatchState::Create(const RouteMap& map) {
   map.GetActiveRoutes(NavigationPreposition::kAt, &state->at_routes_);
   map.GetActiveRoutes(NavigationPreposition::kFrom, &state->from_routes_);
   map.GetActiveRoutes(NavigationPreposition::kTo, &state->to_routes_);
+  state->traverse_type_ = map.GetHistoryTraverseType();
   return state;
 }
 
 bool RouteMatchState::Equals(const RouteMatchState& other) const {
   return at_routes_ == other.at_routes_ && from_routes_ == other.from_routes_ &&
-         to_routes_ == other.to_routes_;
+         to_routes_ == other.to_routes_ &&
+         traverse_type_ == other.traverse_type_;
 }
 
 void RouteMatchState::Trace(Visitor* v) const {

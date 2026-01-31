@@ -28,6 +28,12 @@ s! {
         pub h_addr_list: *mut *mut c_char,
     }
 
+    pub struct pollfd {
+        pub fd: c_int,
+        pub events: c_int,
+        pub revents: c_int,
+    }
+
     pub struct sockaddr {
         pub sa_family: crate::sa_family_t,
         pub sa_data: [c_char; 26usize],
@@ -140,9 +146,6 @@ pub const MSG_WAITALL: c_int = 0;
 pub const MSG_MORE: c_int = 0;
 pub const MSG_NOSIGNAL: c_int = 0;
 pub const SOL_CONFIG: c_uint = 65534;
-
-pub const _SC_PAGESIZE: c_int = 8;
-pub const _SC_GETPW_R_SIZE_MAX: c_int = 51;
 
 pub const PTHREAD_STACK_MIN: size_t = 4096;
 pub const WNOHANG: c_int = 1;

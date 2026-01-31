@@ -10,7 +10,7 @@
  * #css_wrapper_metadata_end */
 
 :host {
-  --composebox-context-menu-entrypoint-button-color: var(--color-sys-primary);
+  --composebox-context-menu-entrypoint-button-color: var(--color-sys-on-surface);
   --cr-composebox-custom-font-size: var(--omnibox-font-size);
   --cr-composebox-expanded-border-radius: 16px;
   --cr-composebox-file-thumbnail-remove-button-fill-color: var(--color-omnibox-results-icon);
@@ -26,6 +26,7 @@
   --cr-composebox-text-container-padding-block-start: 0;
   --search-animated-glif-rotation-duration: 2000ms;
   --cr-composebox-cancel-button-top: 5px;
+  --cr-composebox-voice-icon-fill-color: var(--color-sys-on-surface);
 }
 
 cr-composebox {
@@ -33,8 +34,10 @@ cr-composebox {
   --color-composebox-cancel-button: unset; /* Lens only */
   --color-composebox-cancel-button-light: var(--color-omnibox-text-dimmed);
   --color-composebox-context-entrypoint-hover-background: var(--color-omnibox-action-icon-hover);
+  --color-composebox-context-entrypoint-text: var(--color-omnibox-context-entrypoint-text);
   --color-composebox-context-entrypoint-text-disabled: var(--color-omnibox-composebox-foreground-disabled);
   --color-composebox-file-carousel-remove-button: var(--color-omnibox-results-button-ink-drop-row-hovered);
+  --color-composebox-file-chip-spinner: var(--color-omnibox-composebox-primary-action);
 
   /* Themed gradient hover background color for the close button in
    * cr-composebox-file-thumbnail. */
@@ -62,28 +65,60 @@ cr-composebox {
   --color-composebox-type-ahead-chip: var(--color-omnibox-composebox-foreground-disabled);
   --color-composebox-upload-button: var(--omnibox-results-chip-background);
   --color-composebox-upload-button-disabled: var(--color-omnibox-composebox-foreground-disabled);
+  --color-composebox-voice-search-font: var(--color-omnibox-text);
   --cr-composebox-background-color: var(--color-omnibox-results-background);
   --cr-composebox-input-placeholder-color: var(--color-omnibox-text-dimmed);
   --cr-composebox-outline-hcm: none;
   --cr-composebox-submit-button-margin-inline-start: auto;
   --cr-composebox-suggestion-activity-bottom: 0;
   --cr-composebox-suggestion-activity-margin-top: 0;
-
+  --cr-composebox-submit-container-top: auto;
+  --cr-composebox-voice-icon-top: auto;
   position: relative;
 }
 
-cr-composebox[searchbox-layout-mode="Compact"] {
+cr-composebox[searchbox-layout-mode='Compact'] {
   --input-bottom-spacing: 14px;
+  --cr-composebox-context-margin-top: -12px;
 }
 
-cr-composebox[searchbox-layout-mode="Compact"]::part(context-menu-entrypoint-icon) {
+cr-composebox[searchbox-layout-mode='Compact']::part(context-menu-entrypoint-icon) {
   --cr-icon-button-icon-size: 20px;
   --cr-icon-button-size: 28px;
   left: 12px;
   top: 14px;
 }
 
-:host-context([dir='rtl']) cr-composebox[searchbox-layout-mode="Compact"]::part(context-menu-entrypoint-icon) {
+cr-composebox::part(voice-icon) {
+  --cr-icon-button-fill-color: var(--cr-composebox-voice-icon-fill-color);
+}
+
+cr-composebox[searchbox-layout-mode='TallBottomContext']::part(voice-icon) {
+  bottom: 6px;
+}
+
+cr-composebox[show-submit_][submit-enabled_][searchbox-layout-mode='TallBottomContext']:not([show-dropdown_])::part(submit) {
+    bottom: 6px;
+}
+
+cr-composebox[searchbox-layout-mode='TallTopContext'] {
+  --cr-composebox-submit-button-margin-inline-start: 0;
+}
+
+cr-composebox[show-submit_][submit-enabled_][searchbox-layout-mode='TallBottomContext']::part(voice-icon) {
+  inset-inline-end: calc(var(--cr-composebox-submit-container-size) + 6px);
+  margin-inline-end: 6px;
+}
+
+cr-composebox[show-submit_][submit-enabled_][searchbox-layout-mode='TallTopContext']::part(voice-icon) {
+  margin-inline-end: -2px;
+}
+
+cr-composebox[searchbox-layout-mode='TallBottomContext'][show-dropdown_]::part(voice-icon) {
+  bottom: 9px;
+}
+
+:host-context([dir='rtl']) cr-composebox[searchbox-layout-mode='Compact']::part(context-menu-entrypoint-icon) {
   left: unset;
   right: 12px;
 }

@@ -20,15 +20,39 @@ class RunningPositionsIterator {
   // This uses `auto_placement_cursor` and `span_size` to determine which index
   // to begin iteration through a vector for an eligible line that an item with
   // `span_size` could be placed. `is_reverse_direction` is used to determine
-  // the direction in which we iterate through the vector.
+  // the direction in which we iterate through the vector. This can iterate over
+  // a 1D vector. We use this in the case where we need access to the values
+  // within the vector, such as when we are working with `max_running_positions`
+  // in `GetFirstEligibleLine`.
   RunningPositionsIterator(bool is_reverse_direction,
                            wtf_size_t auto_placement_cursor,
                            wtf_size_t span_size,
                            Vector<LayoutUnit>& running_positions)
-      : is_reverse_direction_(is_reverse_direction),
+      : is_reverse_track_direction_(is_reverse_direction),
         max_index_(running_positions.size() - span_size),
         running_positions_(running_positions) {
-    if (is_reverse_direction_) {
+    InitializeIterator(auto_placement_cursor, span_size);
+  }
+
+  // Constructor for 2D vector, which allows `RunningPositionsIterator` to
+  // iterate over the first dimension of a 2D vector without accessing values
+  // within the vector. We currently use this in the case where we are iterating
+  // through `track_collection_openings_` in both forward and reverse
+  // directions.
+  RunningPositionsIterator(
+      bool is_reverse_direction,
+      wtf_size_t auto_placement_cursor,
+      wtf_size_t span_size,
+      Vector<Vector<GridLanesRunningPositions::TrackOpening>>&
+          track_collection_openings)
+      : is_reverse_track_direction_(is_reverse_direction),
+        max_index_(track_collection_openings.size() - span_size) {
+    InitializeIterator(auto_placement_cursor, span_size);
+  }
+
+  void InitializeIterator(wtf_size_t auto_placement_cursor,
+                          wtf_size_t span_size) {
+    if (is_reverse_track_direction_) {
       // If the auto placement cursor is less than the span size in the reverse
       // direction, we can't place an item there, and need to loop back to the
       // end of the vector.
@@ -49,7 +73,7 @@ class RunningPositionsIterator {
   // Post-increment operator.
   RunningPositionsIterator operator++(int) {
     RunningPositionsIterator prev_position(*this);
-    is_reverse_direction_ ? Decrement() : Increment();
+    is_reverse_track_direction_ ? Decrement() : Increment();
     return prev_position;
   }
 
@@ -58,6 +82,7 @@ class RunningPositionsIterator {
   wtf_size_t CurrentIndex() { return current_index_; }
 
   LayoutUnit CurrentRunningPosition() {
+    CHECK(!running_positions_.empty());
     return running_positions_[current_index_];
   }
 
@@ -78,7 +103,7 @@ class RunningPositionsIterator {
     }
   }
 
-  bool is_reverse_direction_{false};
+  bool is_reverse_track_direction_{false};
   // `end_index_` is the last index the iterator should access before it returns
   // to the starting index we accessed.
   wtf_size_t end_index_;
@@ -98,9 +123,13 @@ class RunningPositionsIterator {
 GridSpan GridLanesRunningPositions::GetFirstEligibleLine(
     wtf_size_t span_size,
     LayoutUnit& max_running_position) const {
-  DCHECK_LE(span_size, running_positions_.size());
-  DCHECK_LE(auto_placement_cursor_, running_positions_.size());
+  DCHECK_LE(span_size, track_collection_openings_.size());
+  DCHECK_LE(auto_placement_cursor_, track_collection_openings_.size());
 
+  // TODO(celestepan): Possibly add optimization here which directly iterates
+  // through `track_collection_openings_` instead of calling
+  // `GetMaxPositionsForAllTracks` for single-spanning items.
+  //
   // Find the minimum max-position and calculate the largest max-position that's
   // within the tie threshold of that minimum. Lines that span running positions
   // less than or equal to `largest_max_running_position_allowed` are possible
@@ -117,7 +146,7 @@ GridSpan GridLanesRunningPositions::GetFirstEligibleLine(
   // auto-placement cursor as the item's position in the grid axis; or if there
   // are none such, choose the first one."
   wtf_size_t first_eligible_line = kNotFound;
-  RunningPositionsIterator iterator(is_reverse_direction_,
+  RunningPositionsIterator iterator(is_reverse_track_direction_,
                                     auto_placement_cursor_, span_size,
                                     max_running_positions);
   do {
@@ -140,24 +169,30 @@ void GridLanesRunningPositions::UpdateRunningPositionsForSpan(
     std::optional<LayoutUnit> max_running_position_for_span) {
   const auto end_line = span.EndLine();
 
-  CHECK_LE(end_line, running_positions_.size());
+  CHECK_LE(end_line, track_collection_openings_.size());
 
   for (auto track_idx = span.StartLine(); track_idx < end_line; ++track_idx) {
-    const LayoutUnit current_running_position = running_positions_[track_idx];
+    TrackOpening& last_track_opening = GetLastTrackOpening(track_idx);
+    CHECK_EQ(last_track_opening.end_position, LayoutUnit::Max());
+    const LayoutUnit current_running_position =
+        GetRunningPositionForTrack(track_idx);
     // If the current running position is less than the new running position, it
-    // means that a opening will be formed after placement. We should only ever
-    // be accounting for track openings in the case of dense packing.
+    // means that an opening will be formed after placement. We should only be
+    // creating new track openings in the case of dense-packing.
     if (max_running_position_for_span &&
         (current_running_position < *max_running_position_for_span)) {
       DCHECK(is_dense_packing_);
       CHECK_LT(track_idx, track_collection_openings_.size());
-      track_collection_openings_[track_idx].emplace_back(TrackOpening{
-          current_running_position, *max_running_position_for_span});
+      last_track_opening.start_position = current_running_position;
+      last_track_opening.end_position = *max_running_position_for_span;
+      track_collection_openings_[track_idx].emplace_back(
+          TrackOpening(new_running_position, LayoutUnit::Max()));
+      continue;
     }
     // TODO(celestepan): Consider setting the running position of the track to
     // be the maximum between the current and the new, depending on how
     // https://github.com/w3c/csswg-drafts/issues/12918 resolves.
-    running_positions_[track_idx] = new_running_position;
+    last_track_opening.start_position = new_running_position;
   }
 }
 
@@ -165,19 +200,27 @@ void GridLanesRunningPositions::UpdateAutoPlacementCursor(
     const GridArea& resolved_position,
     const GridTrackSizingDirection grid_axis_direction) {
   auto_placement_cursor_ =
-      is_reverse_direction_ ? resolved_position.StartLine(grid_axis_direction)
-                            : resolved_position.EndLine(grid_axis_direction);
+      is_reverse_track_direction_
+          ? resolved_position.StartLine(grid_axis_direction)
+          : resolved_position.EndLine(grid_axis_direction);
 }
 
 LayoutUnit GridLanesRunningPositions::GetMaxPositionForSpan(
     const GridSpan& span) const {
-  DCHECK_LE(span.EndLine(), running_positions_.size());
+  DCHECK_LE(span.EndLine(), track_collection_openings_.size());
+  const wtf_size_t span_size = span.IntegerSpan();
 
-  const auto running_positions_for_span =
-      base::span(running_positions_)
-          .subspan(span.StartLine(), span.IntegerSpan());
-  return *(std::max_element(running_positions_for_span.begin(),
-                            running_positions_for_span.end()));
+  const auto start_line = span.StartLine();
+  LayoutUnit max_running_position_for_span = LayoutUnit::Min();
+  for (wtf_size_t offset = 0; offset < span_size; ++offset) {
+    const LayoutUnit running_position_for_track =
+        GetRunningPositionForTrack(start_line + offset);
+    if (running_position_for_track > max_running_position_for_span) {
+      max_running_position_for_span = running_position_for_track;
+    }
+  }
+
+  return max_running_position_for_span;
 }
 
 LayoutUnit GridLanesRunningPositions::CalculateUsedTrackSize(
@@ -192,17 +235,6 @@ LayoutUnit GridLanesRunningPositions::CalculateUsedTrackSize(
   return used_track_size;
 }
 
-// TODO(celestepan): Account for fully available tracks as track openings when
-// placing multi-span items.
-// Example case:
-// | Track 1       | Track 2       | Track 3       |
-// | <-- 30px--->  | <-- 30px--->  |               |
-// | <---50px--->  | <---50px--->  | <---------->  |
-// |               |               | <---------->  |
-// |               | <---80px--->  | <---------->  |
-// If we are placing a 2-span item with inline size of 30px, then we should be
-// able to place the item laid out across Track 1 and Track 2, even though Track
-// 1 doesn't technically have any track openings.
 bool GridLanesRunningPositions::AccumulateTrackOpeningsToAccommodateItem(
     LayoutUnit item_stacking_axis_contribution,
     LayoutUnit previous_track_opening_start_position,
@@ -228,7 +260,9 @@ bool GridLanesRunningPositions::AccumulateTrackOpeningsToAccommodateItem(
         std::min(previous_track_opening_end_position,
                  current_track_opening.end_position);
     const LayoutUnit overlap_range_size =
-        overlap_end_position - overlap_start_position;
+        overlap_start_position > overlap_end_position
+            ? LayoutUnit::Min()
+            : overlap_end_position - overlap_start_position;
 
     if (overlap_range_size >= item_stacking_axis_contribution) {
       // If this is the last track we needed to check, we can return the current
@@ -253,6 +287,8 @@ bool GridLanesRunningPositions::AccumulateTrackOpeningsToAccommodateItem(
           eligible_track_opening_result.start_position = overlap_start_position;
         }
         eligible_track_opening_result.track_opening_indices.emplace_back(i);
+        eligible_track_opening_result.starting_track_index =
+            track_to_check_for_openings;
         break;
       }
     }
@@ -263,9 +299,10 @@ bool GridLanesRunningPositions::AccumulateTrackOpeningsToAccommodateItem(
 LayoutUnit
 GridLanesRunningPositions::GetEligibleTrackOpeningAndUpdateGridLanesItemSpan(
     wtf_size_t start_offset,
-    GridItemData& grid_lanes_item,
     const LayoutUnit item_stacking_axis_contribution,
-    const GridLayoutTrackCollection& track_collection) {
+    const LayoutUnit auto_placement_stacking_axis_offset,
+    const GridLayoutTrackCollection& track_collection,
+    GridItemData& grid_lanes_item) {
   DCHECK(is_dense_packing_);
 
   const auto grid_axis_direction = track_collection.Direction();
@@ -274,17 +311,24 @@ GridLanesRunningPositions::GetEligibleTrackOpeningAndUpdateGridLanesItemSpan(
   const wtf_size_t span_size = initial_span.SpanSize();
   const LayoutUnit used_track_size = CalculateUsedTrackSize(initial_span);
 
+  // Initialize `highest_eligible_track_opening_result` with the values of the
+  // auto-placed item since eligible track openings spaces should be compared
+  // against the existing auto-placed location of the item.
   EligibleTrackOpeningPath highest_eligible_track_opening_result;
+  highest_eligible_track_opening_result.starting_track_index =
+      initial_span.StartLine();
+  highest_eligible_track_opening_result.start_position =
+      auto_placement_stacking_axis_offset;
 
   // Find the highest eligible opening iterating from the start of the tracks if
   // the item is auto-placed (if item placement direction is reversed, the
   // "start" should be the last track), otherwise within the author-specified
   // track(s).
   RunningPositionsIterator iterator(
-      is_reverse_direction_,
+      is_reverse_track_direction_,
       /*auto_placement_cursor=*/
-      is_reverse_direction_ ? running_positions_.size() : 0, span_size,
-      running_positions_);
+      is_reverse_track_direction_ ? track_collection_openings_.size() : 0,
+      span_size, track_collection_openings_);
   do {
     GridSpan item_span =
         grid_lanes_item.is_auto_placed
@@ -305,14 +349,13 @@ GridLanesRunningPositions::GetEligibleTrackOpeningAndUpdateGridLanesItemSpan(
     }
 
     wtf_size_t current_track = item_span.StartLine();
-    // If the current track does not have any openings OR the first track
-    // opening is already greater than the highest eligible opening found so
-    // far, we won't end up finding any better results that start with this
-    // track.
-    if (track_collection_openings_[current_track].empty() ||
-        (highest_eligible_track_opening_result.IsValid() &&
-         track_collection_openings_[current_track][0].start_position >=
-             highest_eligible_track_opening_result.start_position)) {
+
+    // If the first opening in the track is already greater than the highest
+    // eligible opening found so far, we won't end up finding any better results
+    // that start with this track.
+    if (!track_collection_openings_[current_track].empty() &&
+        track_collection_openings_[current_track][0].start_position >=
+            highest_eligible_track_opening_result.start_position) {
       continue;
     }
 
@@ -327,14 +370,26 @@ GridLanesRunningPositions::GetEligibleTrackOpeningAndUpdateGridLanesItemSpan(
 
     // Starting at `current_track`, find a series of adjacent track openings
     // that the item could be placed into starting at this line.  If there is
-    // not previous result for the highest eligible path of openings OR the
-    // series of adjacent track openings is higher than the previous highest
-    // series of adjacent track openings found, store the result in
+    // no previous result for the highest eligible path of openings, the series
+    // of adjacent track openings is higher than the previous highest series of
+    // adjacent track openings found or are in the same running position but an
+    // earlier track, store the result in
     // `highest_eligible_track_opening_result`.
+    const bool is_in_earlier_track =
+        is_reverse_track_direction_
+            ? eligible_track_opening_result.starting_track_index >
+                  highest_eligible_track_opening_result.starting_track_index
+            : eligible_track_opening_result.starting_track_index <
+                  highest_eligible_track_opening_result.starting_track_index;
+    const bool
+        track_opening_is_same_running_position_earlier_track_than_auto_placed =
+            (eligible_track_opening_result.start_position ==
+             highest_eligible_track_opening_result.start_position) &&
+            is_in_earlier_track;
     if (eligible_track_opening_result.IsValid() &&
-        (!highest_eligible_track_opening_result.IsValid() ||
-         eligible_track_opening_result.start_position <
-             highest_eligible_track_opening_result.start_position)) {
+        ((eligible_track_opening_result.start_position <
+          highest_eligible_track_opening_result.start_position) ||
+         track_opening_is_same_running_position_earlier_track_than_auto_placed)) {
       highest_eligible_track_opening_result = eligible_track_opening_result;
       highest_eligible_track_opening_result.starting_track_index =
           current_track;
@@ -366,17 +421,18 @@ GridLanesRunningPositions::GetEligibleTrackOpeningAndUpdateGridLanesItemSpan(
       } else {
         // If the item causes an opening to split, create a new track
         // opening above the item.
-        if (current_track_opening.start_position !=
+        if (current_track_opening.start_position <
             highest_eligible_track_opening_result.start_position) {
+          const TrackOpening new_opening_above_item(
+              current_track_opening.start_position,
+              highest_eligible_track_opening_result.start_position);
           track_collection_openings_[current_track_index].insert(
-              track_opening_index,
-              TrackOpening{
-                  current_track_opening.start_position,
-                  highest_eligible_track_opening_result.start_position});
+              track_opening_index, new_opening_above_item);
           ++track_opening_index;
         }
-        // If the item doesn't fill the opening, adjust the size of the track
-        // opening.
+
+        // We'll want to adjust the size of the track opening to
+        // account for the space the item now occupies.
         track_collection_openings_[current_track_index][track_opening_index]
             .start_position = current_track_opening.start_position +
                               item_stacking_axis_contribution;
@@ -397,7 +453,9 @@ GridLanesRunningPositions::GetEligibleTrackOpeningAndUpdateGridLanesItemSpan(
                                track_collection);
   }
 
-  return highest_eligible_track_opening_result.start_position;
+  return highest_eligible_track_opening_result.IsValid()
+             ? highest_eligible_track_opening_result.start_position
+             : LayoutUnit::Max();
 }
 
 void GridLanesRunningPositions::CalculateAndCacheTrackSizes(
@@ -425,16 +483,13 @@ void GridLanesRunningPositions::CalculateAndCacheTrackSizes(
 
 Vector<LayoutUnit> GridLanesRunningPositions::GetMaxPositionsForAllTracks(
     wtf_size_t span_size) const {
-  if (span_size == 1) {
-    return running_positions_;
-  }
-
   // For each track, if the item fits into the grid axis' span starting at that
   // track, calculate and store the max-position for that track span.
   const wtf_size_t first_non_fit_start_line =
-      (running_positions_.size() - span_size) + 1;
+      (track_collection_openings_.size() - span_size) + 1;
   Vector<LayoutUnit> max_running_positions;
-  max_running_positions.ReserveInitialCapacity(running_positions_.size());
+  max_running_positions.ReserveInitialCapacity(
+      track_collection_openings_.size() - span_size);
 
   for (auto span = GridSpan::TranslatedDefiniteGridSpan(0, span_size);
        span.StartLine() < first_non_fit_start_line; ++span) {
@@ -445,7 +500,7 @@ Vector<LayoutUnit> GridLanesRunningPositions::GetMaxPositionsForAllTracks(
   LayoutUnit max_running_position_for_last_span =
       max_running_positions[first_non_fit_start_line - 1];
   for (wtf_size_t idx = first_non_fit_start_line;
-       idx < running_positions_.size(); idx++) {
+       idx < track_collection_openings_.size(); idx++) {
     max_running_positions.emplace_back(max_running_position_for_last_span);
   }
 

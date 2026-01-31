@@ -74,7 +74,6 @@ class CONTENT_EXPORT ConfigFetcher {
   // Starts fetch of config and well-known files. Start() should be called at
   // most once per ConfigFetcher instance.
   void Start(const std::vector<FetchRequest>& requested_providers,
-             blink::mojom::RpMode rp_mode,
              int icon_ideal_size,
              int icon_minimum_size,
              RequesterCallback callback);

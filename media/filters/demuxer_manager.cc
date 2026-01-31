@@ -51,49 +51,6 @@ enum class MimeType {
   kMaxValue = kTextVtt,  // For UMA histograms.
 };
 
-MimeType TranslateMimeTypeToHistogramEnum(std::string_view mime_type) {
-  constexpr auto kCaseInsensitive = base::CompareCase::INSENSITIVE_ASCII;
-  if (base::StartsWith(mime_type, "application/dash+xml", kCaseInsensitive)) {
-    return MimeType::kApplicationDashXml;
-  }
-  if (base::StartsWith(mime_type, "application/ogg", kCaseInsensitive)) {
-    return MimeType::kApplicationOgg;
-  }
-  if (base::StartsWith(mime_type, "application/mpegurl", kCaseInsensitive)) {
-    return MimeType::kApplicationMpegUrl;
-  }
-  if (base::StartsWith(mime_type, "application/vnd.apple.mpegurl",
-                       kCaseInsensitive)) {
-    return MimeType::kApplicationVndAppleMpegUrl;
-  }
-  if (base::StartsWith(mime_type, "application/x-mpegurl", kCaseInsensitive)) {
-    return MimeType::kApplicationXMpegUrl;
-  }
-
-  if (base::StartsWith(mime_type, "audio/mpegurl", kCaseInsensitive)) {
-    return MimeType::kAudioMpegUrl;
-  }
-  if (base::StartsWith(mime_type, "audio/x-mpegurl", kCaseInsensitive)) {
-    return MimeType::kAudioXMpegUrl;
-  }
-
-  if (base::StartsWith(mime_type, "audio/", kCaseInsensitive)) {
-    return MimeType::kNonspecificAudio;
-  }
-  if (base::StartsWith(mime_type, "image/", kCaseInsensitive)) {
-    return MimeType::kNonspecificImage;
-  }
-  if (base::StartsWith(mime_type, "video/", kCaseInsensitive)) {
-    return MimeType::kNonspecificVideo;
-  }
-
-  if (base::StartsWith(mime_type, "text/vtt", kCaseInsensitive)) {
-    return MimeType::kTextVtt;
-  }
-
-  return MimeType::kOtherMimeType;
-}
-
 #endif  // BUILDFLAG(ENABLE_HLS_DEMUXER)
 
 #if BUILDFLAG(ENABLE_FFMPEG)
@@ -158,13 +115,6 @@ void DemuxerManager::OnPipelineError(PipelineStatus error) {
     // HLS content is considered CORS, but that will change.
     loaded_url_ = GetDataSourceUrlAfterRedirects().value();
     client_->UpdateLoadedUrl(loaded_url_);
-
-    if (auto* co_data_source = data_source_->GetAsCrossOriginDataSource()) {
-      MimeType mime_type =
-          TranslateMimeTypeToHistogramEnum(co_data_source->GetMimeType());
-      base::UmaHistogramEnumeration("Media.WebMediaPlayerImpl.HLS.MimeType",
-                                    mime_type);
-    }
 
     // The data source must be stopped after the client, after which the
     // old demuxer and data source can be freed.
@@ -385,12 +335,6 @@ void DemuxerManager::DurationChanged() {
 }
 
 bool DemuxerManager::WouldTaintOrigin() const {
-  if (hls_fallback_) {
-    // TODO(crbug.com/410588476): return data_source_info_->WouldTaintOrigin();
-    // For now, we should continue to assume that tainting is always true with
-    // HLS content.
-    return true;
-  }
   return data_source_info_ && data_source_info_->WouldTaintOrigin();
 }
 
@@ -445,6 +389,7 @@ std::unique_ptr<Demuxer> DemuxerManager::CreateChunkDemuxer() {
 }
 
 #if BUILDFLAG(ENABLE_FFMPEG)
+
 std::unique_ptr<Demuxer> DemuxerManager::CreateFFmpegDemuxer() {
   DCHECK(data_source_);
   return std::make_unique<FFmpegDemuxer>(
@@ -457,69 +402,7 @@ std::unique_ptr<Demuxer> DemuxerManager::CreateFFmpegDemuxer() {
                               weak_factory_.GetWeakPtr())),
       media_log_.get(), IsLocalFile(loaded_url_));
 }
-#endif  // BUILDFLAG(ENABLE_FFMPEG)
 
-#if BUILDFLAG(ENABLE_HLS_DEMUXER)
-std::tuple<raw_ptr<DataSourceInfo>, std::unique_ptr<Demuxer>>
-DemuxerManager::CreateHlsDemuxer() {
-  bool would_taint_origin =
-      data_source_info_ && data_source_info_->WouldTaintOrigin();
-  auto engine = std::make_unique<HlsManifestDemuxerEngine>(
-      client_->GetHlsDataSourceProvider(), media_task_runner_,
-      BindPostTaskToCurrentDefault(base::BindRepeating(
-          &DemuxerManager::AddTrack, weak_factory_.GetWeakPtr())),
-      BindPostTaskToCurrentDefault(base::BindRepeating(
-          &DemuxerManager::RemoveTrack, weak_factory_.GetWeakPtr())),
-      would_taint_origin, loaded_url_, media_log_.get());
-
-  raw_ptr<DataSourceInfo> datasource_info = engine.get();
-  return std::make_tuple(
-      datasource_info,
-      std::make_unique<ManifestDemuxer>(
-          media_task_runner_,
-          base::BindPostTaskToCurrentDefault(
-              base::BindRepeating(&DemuxerManager::DemuxerRequestsSeek,
-                                  weak_factory_.GetWeakPtr())),
-          std::move(engine), media_log_.get()));
-}
-#endif
-
-void DemuxerManager::SetDemuxer(std::unique_ptr<Demuxer> demuxer) {
-  DCHECK(!demuxer_);
-  CHECK(demuxer);
-
-  demuxer_ = std::move(demuxer);
-  if (client_) {
-    client_->MakeDemuxerThreadDumper(demuxer_.get());
-  }
-}
-
-void DemuxerManager::OnEncryptedMediaInitData(
-    EmeInitDataType init_data_type,
-    const std::vector<uint8_t>& init_data) {
-  if (client_) {
-    client_->OnEncryptedMediaInitData(init_data_type, init_data);
-  }
-}
-
-
-
-void DemuxerManager::OnChunkDemuxerOpened() {
-  CHECK(demuxer_);
-  CHECK(demuxer_->GetDemuxerType() == DemuxerType::kChunkDemuxer);
-  // TODO(crbug.com/40243452) Get rid of this static cast.
-  if (client_) {
-    client_->OnChunkDemuxerOpened(static_cast<ChunkDemuxer*>(demuxer_.get()));
-  }
-}
-
-void DemuxerManager::OnProgress() {
-  if (client_) {
-    client_->OnProgress();
-  }
-}
-
-#if BUILDFLAG(ENABLE_FFMPEG)
 void DemuxerManager::OnFFmpegMediaTracksUpdated(
     std::unique_ptr<MediaTracks> tracks) {
   DCHECK(demuxer_);
@@ -545,16 +428,82 @@ void DemuxerManager::OnFFmpegMediaTracksUpdated(
     }
   }
 }
+
 #endif  // BUILDFLAG(ENABLE_FFMPEG)
 
-#if BUILDFLAG(ENABLE_FFMPEG) || BUILDFLAG(ENABLE_HLS_DEMUXER)
+#if BUILDFLAG(ENABLE_HLS_DEMUXER)
+std::tuple<raw_ptr<DataSourceInfo>, std::unique_ptr<Demuxer>>
+DemuxerManager::CreateHlsDemuxer() {
+  bool would_taint_origin =
+      data_source_info_ && data_source_info_->WouldTaintOrigin();
+  std::unique_ptr<TrackManager> m = std::make_unique<ForwardingTrackManager>(
+      BindPostTaskToCurrentDefault(base::BindRepeating(
+          &DemuxerManager::AddTrack, weak_factory_.GetWeakPtr())),
+      BindPostTaskToCurrentDefault(base::BindRepeating(
+          &DemuxerManager::RemoveTrack, weak_factory_.GetWeakPtr())),
+      BindPostTaskToCurrentDefault(base::BindRepeating(
+          &DemuxerManager::SetTrackState, weak_factory_.GetWeakPtr())));
+  auto engine = std::make_unique<HlsManifestDemuxerEngine>(
+      client_->GetHlsDataSourceProvider(), media_task_runner_, std::move(m),
+      would_taint_origin, loaded_url_, media_log_.get());
+
+  raw_ptr<DataSourceInfo> datasource_info = engine.get();
+  return std::make_tuple(
+      datasource_info,
+      std::make_unique<ManifestDemuxer>(
+          media_task_runner_,
+          base::BindPostTaskToCurrentDefault(
+              base::BindRepeating(&DemuxerManager::DemuxerRequestsSeek,
+                                  weak_factory_.GetWeakPtr())),
+          std::move(engine), media_log_.get()));
+}
+
 void DemuxerManager::AddTrack(const MediaTrack& track) {
   client_->AddTrack(track);
 }
+
 void DemuxerManager::RemoveTrack(const MediaTrack& track) {
   client_->RemoveTrack(track);
 }
-#endif  // BUILDFLAG(ENABLE_FFMPEG) || BUILDFLAG(ENABLE_HLS_DEMUXER)
+
+void DemuxerManager::SetTrackState(const MediaTrack& t, MediaTrack::State s) {
+  client_->SetTrackState(t, s);
+}
+
+#endif
+
+void DemuxerManager::SetDemuxer(std::unique_ptr<Demuxer> demuxer) {
+  DCHECK(!demuxer_);
+  CHECK(demuxer);
+
+  demuxer_ = std::move(demuxer);
+  if (client_) {
+    client_->MakeDemuxerThreadDumper(demuxer_.get());
+  }
+}
+
+void DemuxerManager::OnEncryptedMediaInitData(
+    EmeInitDataType init_data_type,
+    const std::vector<uint8_t>& init_data) {
+  if (client_) {
+    client_->OnEncryptedMediaInitData(init_data_type, init_data);
+  }
+}
+
+void DemuxerManager::OnChunkDemuxerOpened() {
+  CHECK(demuxer_);
+  CHECK(demuxer_->GetDemuxerType() == DemuxerType::kChunkDemuxer);
+  // TODO(crbug.com/40243452) Get rid of this static cast.
+  if (client_) {
+    client_->OnChunkDemuxerOpened(static_cast<ChunkDemuxer*>(demuxer_.get()));
+  }
+}
+
+void DemuxerManager::OnProgress() {
+  if (client_) {
+    client_->OnProgress();
+  }
+}
 
 void DemuxerManager::DemuxerRequestsSeek(base::TimeDelta time) {
   if (!client_) {

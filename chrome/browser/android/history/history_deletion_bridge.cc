@@ -19,9 +19,9 @@
 using base::android::JavaRef;
 using base::android::ScopedJavaGlobalRef;
 
-static jlong JNI_HistoryDeletionBridge_Init(JNIEnv* env,
-                                            const JavaRef<jobject>& jobj,
-                                            Profile* profile) {
+static int64_t JNI_HistoryDeletionBridge_Init(JNIEnv* env,
+                                              const JavaRef<jobject>& jobj,
+                                              Profile* profile) {
   return reinterpret_cast<intptr_t>(new HistoryDeletionBridge(jobj, profile));
 }
 

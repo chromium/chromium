@@ -263,7 +263,7 @@ std::string QuicPacketPrinter::PrintWithQuicSession(
   quic::QuicPacketPrinter visitor(&framer, &stream, session);
   framer.set_visitor(&visitor);
 
-  if (version_.KnowsWhichDecrypterToUse()) {
+  if (version_.IsIetfQuic()) {
     framer.InstallDecrypter(
         quic::ENCRYPTION_FORWARD_SECURE,
         std::make_unique<quic::test::TaggingDecrypter>());  // IN-TEST

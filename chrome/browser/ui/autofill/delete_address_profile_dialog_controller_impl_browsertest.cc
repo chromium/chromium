@@ -135,6 +135,8 @@ IN_PROC_BROWSER_TEST_F(DeleteAddressProfileDialogControllerImplBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(DeleteAddressProfileDialogControllerImplBrowserTest,
                        SyncAddressProfile_AssertStrings) {
+  sync_service()->SetSignedIn(signin::ConsentLevel::kSync);
+
   ConfigureAddressSync(/*enable_address_sync=*/true);
   controller()->OfferDelete(/*is_account_address_profile=*/false,
                             /*delete_dialog_callback=*/base::DoNothing());

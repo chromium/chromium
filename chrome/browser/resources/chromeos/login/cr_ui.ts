@@ -169,7 +169,6 @@ export class Oobe extends DisplayManager {
                      .querySelector<EnterpriseEnrollmentElement>(
                          '#enterprise-enrollment')
                      ?.uiStep;
-    // TODO(crbug.com/1229130) - Improve this check.
     if (step === OobeTypes.EnrollmentStep.ATTRIBUTE_PROMPT) {
       // TODO(b/260015541): migrate logic to dedicated test api.
       chrome.send('oauthEnrollAttributes', ['', '']);

@@ -520,7 +520,7 @@ void PaintOpWriter::Write(const SkSamplingOptions& sampling) {
 }
 
 void PaintOpWriter::Write(
-    const SkGradientShader::Interpolation& interpolation) {
+    const SkGradient::Interpolation& interpolation) {
   WriteEnum(interpolation.fInPremul);
   WriteEnum(interpolation.fColorSpace);
   WriteEnum(interpolation.fHueMethod);

@@ -40,8 +40,8 @@ void CertVerifyResult::Reset() {
   ct_requirement_status = ct::CTRequirementsStatus::CT_NOT_REQUIRED;
 }
 
-base::Value::Dict CertVerifyResult::NetLogParams(int net_error) const {
-  base::Value::Dict dict;
+base::DictValue CertVerifyResult::NetLogParams(int net_error) const {
+  base::DictValue dict;
   DCHECK_NE(ERR_IO_PENDING, net_error);
   if (net_error < 0)
     dict.Set("net_error", net_error);
@@ -49,12 +49,12 @@ base::Value::Dict CertVerifyResult::NetLogParams(int net_error) const {
   dict.Set("cert_status", static_cast<int>(cert_status));
   // TODO(mattm): This double-wrapping of the certificate list is weird. Remove
   // this (probably requires updates to netlog-viewer).
-  base::Value::Dict certificate_dict;
+  base::DictValue certificate_dict;
   certificate_dict.Set("certificates",
                        net::NetLogX509CertificateList(verified_cert.get()));
   dict.Set("verified_cert", std::move(certificate_dict));
 
-  base::Value::List hashes;
+  base::ListValue hashes;
   for (const auto& public_key_hash : public_key_hashes)
     hashes.Append(HashValue(public_key_hash).ToString());
   dict.Set("public_key_hashes", std::move(hashes));

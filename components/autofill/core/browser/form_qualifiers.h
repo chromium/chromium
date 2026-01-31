@@ -34,8 +34,10 @@ class LogManager;
 
 // Returns true if heuristic autofill type detection should be attempted for
 // this form.
-[[nodiscard]] bool ShouldRunHeuristics(const FormData& form);
-[[nodiscard]] bool ShouldRunHeuristics(const FormStructure& form);
+[[nodiscard]] bool ShouldRunHeuristics(const FormData& form,
+                                       bool ignore_small_forms);
+[[nodiscard]] bool ShouldRunHeuristics(const FormStructure& form,
+                                       bool ignore_small_forms);
 
 // Returns true if autofill's heuristic field type detection should be attempted
 // for this form given that `kMinRequiredFieldsForHeuristics` is not met.
@@ -50,6 +52,7 @@ class LogManager;
 // and crowdsourced data should not be used to override this. Password fields
 // are different because there is no way to specify password generation
 // directly.
+[[nodiscard]] bool ShouldBeQueried(const FormData& form);
 [[nodiscard]] bool ShouldBeQueried(const FormStructure& form);
 
 // Returns true if we should upload Autofill votes for this form to the

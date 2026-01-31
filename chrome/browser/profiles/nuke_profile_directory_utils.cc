@@ -7,7 +7,6 @@
 #include <map>
 
 #include "base/check_op.h"
-#include "base/containers/contains.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/json/values_util.h"
@@ -139,7 +138,7 @@ bool IsProfileDirectoryMarkedForDeletion(const base::FilePath& profile_path) {
 }
 
 void CancelProfileDeletion(const base::FilePath& path) {
-  DCHECK(!base::Contains(ProfilesToDelete(), path) ||
+  DCHECK(!ProfilesToDelete().contains(path) ||
          ProfilesToDelete()[path] == ProfileDeletionStage::SCHEDULING);
   ProfilesToDelete().erase(path);
   ProfileMetrics::LogProfileDeleteUser(ProfileMetrics::DELETE_PROFILE_ABORTED);
@@ -148,7 +147,7 @@ void CancelProfileDeletion(const base::FilePath& path) {
 // Schedule a profile for deletion if it isn't already scheduled.
 // Returns whether the profile has been newly scheduled.
 bool ScheduleProfileDirectoryForDeletion(const base::FilePath& path) {
-  if (base::Contains(ProfilesToDelete(), path)) {
+  if (ProfilesToDelete().contains(path)) {
     return false;
   }
   ProfilesToDelete()[path] = ProfileDeletionStage::SCHEDULING;
@@ -156,7 +155,7 @@ bool ScheduleProfileDirectoryForDeletion(const base::FilePath& path) {
 }
 
 void MarkProfileDirectoryForDeletion(const base::FilePath& path) {
-  DCHECK(!base::Contains(ProfilesToDelete(), path) ||
+  DCHECK(!ProfilesToDelete().contains(path) ||
          ProfilesToDelete()[path] == ProfileDeletionStage::SCHEDULING);
   ProfilesToDelete()[path] = ProfileDeletionStage::MARKED;
   // Remember that this profile was deleted and files should have been deleted

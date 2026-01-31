@@ -39,4 +39,10 @@ message TestScriptMetric {
     // and should be used with cautions.
     DataPoints points = 3;
   }
+
+  // The tag is the combination of tags provided by Metric.tag function. If at
+  // least one tag is provided, tags will be surrounded by "|" and this field
+  // will be set. It helps to quickly filter the metrics with the same tags from
+  // the database.
+  string tag = 4;
 }

@@ -8,7 +8,6 @@
 #include <string>
 #include <string_view>
 
-#include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/uuid.h"
@@ -64,7 +63,7 @@ bool AuctionNonceManager::ClaimAuctionNonceIfAvailable(AuctionNonce nonce) {
   }
 
   uint32_t nonce_suffix = GetNonceSuffix(nonce);
-  if (base::Contains(claimed_auction_nonce_suffixes_, nonce_suffix)) {
+  if (claimed_auction_nonce_suffixes_.contains(nonce_suffix)) {
     devtools_instrumentation::LogWorkletMessage(
         *frame_host_, blink::mojom::ConsoleMessageLevel::kError,
         "Invalid AuctionConfig. The config provided an auctionNonce value "

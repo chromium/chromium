@@ -39,7 +39,7 @@ void InstallAttributesErrorScreen::ShowImpl() {
 
 void InstallAttributesErrorScreen::HideImpl() {}
 
-void InstallAttributesErrorScreen::OnUserAction(const base::Value::List& args) {
+void InstallAttributesErrorScreen::OnUserAction(const base::ListValue& args) {
   const std::string& action_id = args[0].GetString();
   if (action_id == kUserActionResetPowerwashPressed) {
     SessionManagerClient::Get()->StartDeviceWipe(base::DoNothing());

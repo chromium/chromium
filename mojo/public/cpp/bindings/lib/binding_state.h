@@ -6,6 +6,7 @@
 #define MOJO_PUBLIC_CPP_BINDINGS_LIB_BINDING_STATE_H_
 
 #include <stdint.h>
+
 #include <memory>
 #include <string_view>
 #include <utility>

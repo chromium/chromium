@@ -70,16 +70,17 @@ void WebContentsNSViewBridge::ResetParentNSView() {
   [ns_view_ removeFromSuperview];
 }
 
-void WebContentsNSViewBridge::SetBounds(const gfx::Rect& bounds_in_superview) {
+void WebContentsNSViewBridge::SetBounds(const gfx::Rect& bounds_in_superview,
+                                        int32_t superview_height) {
+  // superview.bounds can be stale during setFrameSize update, so use
+  // `superview_height` (from the host's content rect) for Y flipping instead.
   NSView* superview = [ns_view_ superview];
-  NSRect superview_bounds = [superview bounds];
-  NSRect ns_bounds_in_superview =
-      NSMakeRect(bounds_in_superview.x(),
-                 [superview isFlipped]
-                     ? bounds_in_superview.y()
-                     : superview_bounds.size.height - bounds_in_superview.y() -
-                           bounds_in_superview.height(),
-                 bounds_in_superview.width(), bounds_in_superview.height());
+  NSRect ns_bounds_in_superview = NSMakeRect(
+      bounds_in_superview.x(),
+      [superview isFlipped] ? bounds_in_superview.y()
+                            : superview_height - bounds_in_superview.y() -
+                                  bounds_in_superview.height(),
+      bounds_in_superview.width(), bounds_in_superview.height());
   [ns_view_ setFrame:ns_bounds_in_superview];
 }
 

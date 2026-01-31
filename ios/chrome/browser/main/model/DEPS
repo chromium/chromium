@@ -46,7 +46,7 @@ specific_include_rules = {
     "+ios/chrome/browser/tab_insertion/model",
     "+ios/chrome/browser/tabs/model/synced_window_delegate_browser_agent.h",
     "+ios/chrome/browser/tabs/model/tabs_dependency_installer_manager.h",
-    "+ios/chrome/browser/toolbar/ui_bundled/fullscreen/toolbars_size_browser_agent.h",
+    "+ios/chrome/browser/toolbar/legacy/ui_bundled/fullscreen/toolbars_size_browser_agent.h",
     "+ios/chrome/browser/url_loading/model/url_loading_browser_agent.h",
     "+ios/chrome/browser/url_loading/model/url_loading_notifier_browser_agent.h",
     "+ios/chrome/browser/view_source/model",

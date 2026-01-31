@@ -46,7 +46,7 @@ suite('TabOrganizationSelectorTest', () => {
   function createStaleTabs(count: number): Tab[] {
     const tabs: Tab[] = [];
     for (let i = 0; i < count; i++) {
-      tabs.push(createTab({title: 'Tab', url: {url: 'https://tab.com/'}}));
+      tabs.push(createTab({title: 'Tab', url: 'https://tab.com/'}));
     }
     return tabs;
   }

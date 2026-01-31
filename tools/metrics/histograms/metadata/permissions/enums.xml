@@ -32,16 +32,6 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="Blocked on the system level"/>
 </enum>
 
-<enum name="AutoDSEPermissionRevertTransition">
-  <int value="0" label="NO_DECISION_ASK"/>
-  <int value="1" label="PRESERVE_ALLOW"/>
-  <int value="2" label="CONFLICT_ASK"/>
-  <int value="3" label="PRESERVE_BLOCK_ASK"/>
-  <int value="4" label="PRESERVE_BLOCK_ALLOW"/>
-  <int value="5" label="PRESERVE_BLOCK_BLOCK"/>
-  <int value="6" label="INVALID_END_STATE"/>
-</enum>
-
 <enum name="BlockStateMetric">
   <int value="0" label="Denied by Default"/>
   <int value="1" label="mailto: Allowed by Default"/>
@@ -117,6 +107,8 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//components/permissions/permission_request_enums.h:LanguageDetectionStatus) -->
 
+<!-- LINT.IfChange(OneTimePermissionEvent) -->
+
 <enum name="OneTimePermissionEvent">
   <summary>One-time permission events.</summary>
   <int value="0" label="Granted one time"/>
@@ -126,6 +118,8 @@ chromium-metrics-reviews@google.com.
   <int value="4" label="Expired after maximum lifetime"/>
   <int value="5" label="Expired because the device was suspended"/>
 </enum>
+
+<!-- LINT.ThenChange(//components/permissions/permission_uma_util.h:OneTimePermissionEvent) -->
 
 <!-- LINT.IfChange(OsScreenAction) -->
 
@@ -158,13 +152,19 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//components/permissions/permission_request_enums.h:PermissionAiRelevanceModel) -->
 
+<!-- LINT.IfChange(PermissionChangeAction) -->
+
 <enum name="PermissionChangeAction">
   <int value="0" label="Revoked"/>
   <int value="1" label="Reallowed"/>
-  <int value="2" label="Reset from denied state"/>
-  <int value="3" label="Reset from allowed state"/>
+  <int value="2" label="Reset from allowed state"/>
+  <int value="3" label="Reset from denied state"/>
   <int value="4" label="Remember decision checkbox toggled"/>
 </enum>
+
+<!-- LINT.ThenChange(//components/permissions/permission_uma_util.h:PermissionChangeAction) -->
+
+<!-- LINT.IfChange(PermissionChangeInfo) -->
 
 <enum name="PermissionChangeInfo">
   <int value="0" label="Infobar shown, page reloaded, permission used"/>
@@ -178,13 +178,19 @@ chromium-metrics-reviews@google.com.
       label="Infobar not shown, no page reloaded, permission not used"/>
 </enum>
 
+<!-- LINT.ThenChange(//components/permissions/permission_uma_util.h:PermissionChangeInfo) -->
+
+<!-- LINT.IfChange(PermissionEmbargoStatus) -->
+
 <enum name="PermissionEmbargoStatus">
   <int value="0" label="NOT_EMBARGOED"/>
-  <int value="1" label="BLACKLISTED"/>
+  <int value="1" label="(Obsolete) BLACKLISTED"/>
   <int value="2" label="REPEATED_DISMISSALS"/>
   <int value="3" label="REPEATED_IGNORES"/>
   <int value="4" label="RECENT_DISPLAY"/>
 </enum>
+
+<!-- LINT.ThenChange(//components/permissions/permission_uma_util.h:PermissionEmbargoStatus) -->
 
 <!-- LINT.IfChange(PermissionPredictionSource) -->
 
@@ -192,7 +198,7 @@ chromium-metrics-reviews@google.com.
   <int value="0" label="No CPSS model"/>
   <int value="1" label="CPSSv1 model"/>
   <int value="2" label="CPSSv3 model"/>
-  <int value="3" label="AIv1 model"/>
+  <int value="3" label="(Obsolete) AIv1 model"/>
   <int value="4" label="AIv3 model"/>
   <int value="5" label="AIv4 model"/>
 </enum>
@@ -226,6 +232,8 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//components/permissions/permission_uma_util.h:DismissalType) -->
 
+<!-- LINT.IfChange(PermissionRequestIgnoredReason) -->
+
 <enum name="PermissionRequestIgnoredReason">
   <summary>
     Breaks down reasons for permission requests being categorized as ignored.
@@ -238,6 +246,8 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="Navigation"/>
   <int value="3" label="Other"/>
 </enum>
+
+<!-- LINT.ThenChange(//components/permissions/permission_uma_util.h:PermissionIgnoredReason) -->
 
 <!-- LINT.IfChange(PermissionRequestLikelihood) -->
 
@@ -265,6 +275,8 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(/components/permissions/permission_request_enums.h:PermissionRequestRelevance) -->
 
+<!-- LINT.IfChange(PermissionSourceUI) -->
+
 <enum name="PermissionSourceUI">
   <int value="0" label="Prompt"/>
   <int value="1" label="Page info bubble"/>
@@ -276,7 +288,12 @@ chromium-metrics-reviews@google.com.
   <int value="6" label="Automatic revocation from Safe Browsing"/>
   <int value="7" label="Automatic revocation from Safety Hub"/>
   <int value="8" label="Unidentified source"/>
+  <int value="9" label="Disruptive notification revocation"/>
 </enum>
+
+<!-- LINT.ThenChange(//components/permissions/permission_uma_util.h:PermissionSourceUI) -->
+
+<!-- LINT.IfChange(PermissionsPolicyConfiguration) -->
 
 <enum name="PermissionsPolicyConfiguration">
   <int value="0" label="HEADER_NOT_PRESENT_OR_INVALID"/>
@@ -286,6 +303,8 @@ chromium-metrics-reviews@google.com.
   <int value="4" label="FEATURE_ALLOWLIST_IS_NONE"/>
   <int value="5" label="FEATURE_ALLOWLIST_DOES_NOT_MATCH_ORIGIN"/>
 </enum>
+
+<!-- LINT.ThenChange(//components/permissions/permission_uma_util.h:PermissionHeaderPolicyForUMA) -->
 
 <enum name="SerialChooserOutcome">
   <int value="0" label="Chooser cancelled"/>

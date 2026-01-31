@@ -10,7 +10,6 @@
 #include <memory>
 #include <utility>
 
-#include "base/containers/contains.h"
 #include "base/containers/flat_set.h"
 #include "base/debug/crash_logging.h"
 #include "base/debug/dump_without_crashing.h"
@@ -53,7 +52,6 @@
 #include "storage/common/file_system/file_system_info.h"
 #include "storage/common/file_system/file_system_util.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
-#include "third_party/blink/public/mojom/quota/quota_types.mojom-shared.h"
 #include "third_party/blink/public/mojom/quota/quota_types.mojom.h"
 #include "third_party/leveldatabase/leveldb_chrome.h"
 #include "url/gurl.h"
@@ -223,8 +221,8 @@ FileSystemContext::FileSystemContext(
   // Chrome OS the additional backend ash::FileSystemBackend handles these
   // types.
   isolated_backend_ = std::make_unique<IsolatedFileSystemBackend>(
-      !base::Contains(backend_map_, kFileSystemTypeLocal),
-      !base::Contains(backend_map_, kFileSystemTypeLocalForPlatformApp));
+      !backend_map_.contains(kFileSystemTypeLocal),
+      !backend_map_.contains(kFileSystemTypeLocalForPlatformApp));
   RegisterBackend(isolated_backend_.get());
 }
 

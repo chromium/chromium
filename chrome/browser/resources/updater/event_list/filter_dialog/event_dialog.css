@@ -1,0 +1,22 @@
+/* Copyright 2025 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+/* #css_wrapper_metadata_start
+ * #type=style-lit
+ * #scheme=relative
+ * #import=chrome://resources/cr_elements/cr_shared_vars.css.js
+ * #import=./filter_dialog_shared.css.js
+ * #include=filter-dialog-shared
+ * #css_wrapper_metadata_end */
+
+:host {
+  display: block;
+}
+
+.filter-menu-section-header {
+  padding: 8px 16px;
+  font-weight: bold;
+  color: var(--cr-secondary-text-color);
+  font-size: 0.9em;
+}

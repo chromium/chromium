@@ -139,4 +139,8 @@ void InfoBar::MaybeDelete() {
   }
 }
 
+base::WeakPtr<InfoBar> InfoBar::AsWeakPtr() {
+  return weak_factory_.GetWeakPtr();
+}
+
 }  // namespace infobars

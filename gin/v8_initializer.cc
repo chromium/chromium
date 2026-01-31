@@ -169,7 +169,8 @@ base::File OpenV8File(const char* file_name,
   const int kMaxOpenAttempts = 5;
   const int kOpenRetryDelayMillis = 250;
 
-  int flags = base::File::FLAG_OPEN | base::File::FLAG_READ;
+  int flags = base::File::FLAG_OPEN | base::File::FLAG_READ |
+              base::File::FLAG_WIN_SHARE_DELETE;
   base::File file;
   for (int attempt = 0; attempt < kMaxOpenAttempts; attempt++) {
     file.Initialize(path, flags);
@@ -197,7 +198,7 @@ void SetV8FlagsFormatted(const char* format, ...) {
   char buffer[128];
   va_list args;
   va_start(args, format);
-  int length = base::VSpanPrintf(buffer, format, args);
+  int length = UNSAFE_TODO(base::VSpanPrintf(buffer, format, args));
   if (length <= 0 || sizeof(buffer) <= static_cast<unsigned>(length)) {
     PLOG(ERROR) << "Invalid formatted V8 flag: " << format;
     return;
@@ -362,12 +363,6 @@ void SetFeatureFlags() {
   SetV8FlagsIfOverridden(features::kV8OffThreadFinalization,
                          "--finalize-streaming-on-background",
                          "--no-finalize-streaming-on-background");
-  if (base::FeatureList::IsEnabled(features::kV8DelayMemoryReducer)) {
-    SetV8FlagsFormatted(
-        "--gc-memory-reducer-start-delay-ms=%i",
-        static_cast<int>(
-            features::kV8MemoryReducerStartDelay.Get().InMilliseconds()));
-  }
   SetV8FlagsIfOverridden(features::kV8ConcurrentMarkingHighPriorityThreads,
                          "--concurrent-marking-high-priority-threads",
                          "--no-concurrent-marking-high-priority-threads");

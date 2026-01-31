@@ -119,8 +119,6 @@ class WebAppRunOnOsLoginManagerTestBase : public WebAppTest {
   std::unique_ptr<NotificationDisplayServiceTester> tester_;
   std::vector<apps::AppLaunchParams> launched_apps_;
   std::unique_ptr<base::AutoReset<bool>> skip_run_on_os_login_startup_;
-  base::test::ScopedFeatureList scoped_feature_list_{
-      features::kDesktopPWAsRunOnOsLogin};
 };
 
 class WebAppRunOnOsLoginManagerParameterizedTest
@@ -178,9 +176,9 @@ class WebAppRunOnOsLoginManagerSimpleSettingsTest
   void SetWebAppSettingsPref() override {
     profile()->GetPrefs()->SetList(
         prefs::kWebAppSettings,
-        base::Value::List().Append(base::Value::Dict()
-                                       .Set(kManifestId, kTestApp)
-                                       .Set(kRunOnOsLogin, kRunWindowed)));
+        base::ListValue().Append(base::DictValue()
+                                     .Set(kManifestId, kTestApp)
+                                     .Set(kRunOnOsLogin, kRunWindowed)));
   }
 
   void InstallWebApp() {

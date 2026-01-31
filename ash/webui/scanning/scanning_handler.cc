@@ -108,9 +108,9 @@ void ScanningHandler::FileSelectionCanceled() {
                             CreateSelectedPathValue(base::FilePath()));
 }
 
-base::Value::Dict ScanningHandler::CreateSelectedPathValue(
+base::DictValue ScanningHandler::CreateSelectedPathValue(
     const base::FilePath& path) {
-  base::Value::Dict selected_path;
+  base::DictValue selected_path;
   selected_path.Set(kFilePath, path.value());
   selected_path.Set(kBaseName,
                     scanning_app_delegate_->GetBaseNameFromPath(path));
@@ -126,17 +126,17 @@ void ScanningHandler::SetWebUIForTest(content::WebUI* web_ui) {
   set_web_ui(web_ui);
 }
 
-void ScanningHandler::HandleInitialize(const base::Value::List& args) {
+void ScanningHandler::HandleInitialize(const base::ListValue& args) {
   DCHECK(args.empty());
   AllowJavascript();
 }
 
-void ScanningHandler::HandleOpenFilesInMediaApp(const base::Value::List& args) {
+void ScanningHandler::HandleOpenFilesInMediaApp(const base::ListValue& args) {
   if (!IsJavascriptAllowed())
     return;
 
   CHECK_EQ(1U, args.size());
-  const base::Value::List& value_list = args[0].GetList();
+  const base::ListValue& value_list = args[0].GetList();
   DCHECK(!value_list.empty());
 
   std::vector<base::FilePath> file_paths;
@@ -147,8 +147,7 @@ void ScanningHandler::HandleOpenFilesInMediaApp(const base::Value::List& args) {
   scanning_app_delegate_->OpenFilesInMediaApp(file_paths);
 }
 
-void ScanningHandler::HandleRequestScanToLocation(
-    const base::Value::List& args) {
+void ScanningHandler::HandleRequestScanToLocation(const base::ListValue& args) {
   if (!IsJavascriptAllowed())
     return;
 
@@ -173,7 +172,7 @@ void ScanningHandler::HandleRequestScanToLocation(
       base::FilePath::StringType() /* default_extension */, owning_window);
 }
 
-void ScanningHandler::HandleShowFileInLocation(const base::Value::List& args) {
+void ScanningHandler::HandleShowFileInLocation(const base::ListValue& args) {
   if (!IsJavascriptAllowed())
     return;
 
@@ -192,7 +191,7 @@ void ScanningHandler::OnShowFileInLocation(const std::string& callback,
                             base::Value(files_app_opened));
 }
 
-void ScanningHandler::HandleGetPluralString(const base::Value::List& args) {
+void ScanningHandler::HandleGetPluralString(const base::ListValue& args) {
   if (!IsJavascriptAllowed())
     return;
 
@@ -213,7 +212,7 @@ void ScanningHandler::HandleGetPluralString(const base::Value::List& args) {
                             base::Value(localized_string));
 }
 
-void ScanningHandler::HandleGetMyFilesPath(const base::Value::List& args) {
+void ScanningHandler::HandleGetMyFilesPath(const base::ListValue& args) {
   if (!IsJavascriptAllowed())
     return;
 
@@ -225,7 +224,7 @@ void ScanningHandler::HandleGetMyFilesPath(const base::Value::List& args) {
                             base::Value(my_files_path.value()));
 }
 
-void ScanningHandler::HandleSaveScanSettings(const base::Value::List& args) {
+void ScanningHandler::HandleSaveScanSettings(const base::ListValue& args) {
   if (!IsJavascriptAllowed())
     return;
 
@@ -234,7 +233,7 @@ void ScanningHandler::HandleSaveScanSettings(const base::Value::List& args) {
   scanning_app_delegate_->SaveScanSettingsToPrefs(scan_settings);
 }
 
-void ScanningHandler::HandleGetScanSettings(const base::Value::List& args) {
+void ScanningHandler::HandleGetScanSettings(const base::ListValue& args) {
   if (!IsJavascriptAllowed())
     return;
 
@@ -246,7 +245,7 @@ void ScanningHandler::HandleGetScanSettings(const base::Value::List& args) {
       base::Value(scanning_app_delegate_->GetScanSettingsFromPrefs()));
 }
 
-void ScanningHandler::HandleEnsureValidFilePath(const base::Value::List& args) {
+void ScanningHandler::HandleEnsureValidFilePath(const base::ListValue& args) {
   if (!IsJavascriptAllowed())
     return;
 

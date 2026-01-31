@@ -8,9 +8,9 @@
 #include <utility>
 #include <variant>
 
-#include "absl/functional/overload.h"
 #include "base/check_op.h"
 #include "components/policy/core/common/policy_bundle.h"
+#include "third_party/abseil-cpp/absl/functional/overload.h"
 
 namespace policy {
 

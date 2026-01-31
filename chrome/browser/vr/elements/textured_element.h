@@ -5,12 +5,12 @@
 #ifndef CHROME_BROWSER_VR_ELEMENTS_TEXTURED_ELEMENT_H_
 #define CHROME_BROWSER_VR_ELEMENTS_TEXTURED_ELEMENT_H_
 
+#include "base/functional/function_ref.h"
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/vr/elements/ui_element.h"
-#include "chrome/browser/vr/skia_surface_provider.h"
 #include "chrome/browser/vr/vr_ui_export.h"
 #include "device/vr/gl_bindings.h"
-#include "third_party/skia/include/core/SkRefCnt.h"
+#include "third_party/skia/include/core/SkCanvas.h"
 #include "ui/gfx/geometry/size.h"
 
 namespace vr {
@@ -26,7 +26,7 @@ class VR_UI_EXPORT TexturedElement : public UiElement {
 
   ~TexturedElement() override;
 
-  void Initialize(SkiaSurfaceProvider* provider) final;
+  void Initialize() final;
 
   bool HasDirtyTexture() const override;
   void UpdateTexture() override;
@@ -49,6 +49,18 @@ class VR_UI_EXPORT TexturedElement : public UiElement {
   bool PrepareToDraw() final;
 
  private:
+  class ContentTexture {
+   public:
+    ContentTexture(const gfx::Size& size,
+                   base::FunctionRef<void(SkCanvas*)> paint);
+    ~ContentTexture();
+
+    GLuint texture_id() const { return texture_id_; }
+
+   private:
+    GLuint texture_id_;
+  };
+
   // Subclasses must return true if redrawing a texture depends on measurement
   // (text, for example).  If true, a texture dirtied by user input (after
   // measurement) will not be redrawn until the following frame.
@@ -59,9 +71,7 @@ class VR_UI_EXPORT TexturedElement : public UiElement {
   gfx::Size texture_size_;
   bool initialized_ = false;
 
-  raw_ptr<SkiaSurfaceProvider, DanglingUntriaged> provider_ = nullptr;
-
-  std::unique_ptr<SkiaSurfaceProvider::Texture> skia_texture_;
+  std::unique_ptr<ContentTexture> skia_texture_;
 };
 
 }  // namespace vr

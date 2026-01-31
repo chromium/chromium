@@ -17,8 +17,11 @@
 #include <sys/syscall.h>
 #include <sys/types.h>
 
+#include "base/compiler_specific.h"
+#include "base/feature_list.h"
 #include "base/files/scoped_file.h"
 #include "base/posix/eintr_wrapper.h"
+#include "base/threading/platform_thread.h"
 #include "sandbox/linux/seccomp-bpf-helpers/sigsys_handlers.h"
 #include "sandbox/linux/seccomp-bpf/bpf_tests.h"
 #include "sandbox/linux/services/syscall_wrappers.h"
@@ -52,21 +55,36 @@ BPF_TEST_C(BaselinePolicyAndroid, Membarrier, BaselinePolicyAndroid) {
 }
 
 BPF_TEST_C(BaselinePolicyAndroid,
-           SchedGetAffinity_Blocked,
+           SchedGetAffinity_Maybe_Allowed,
            BaselinePolicyAndroid) {
   cpu_set_t set{};
-  errno = 0;
-  BPF_ASSERT_EQ(-1, sched_getaffinity(0, sizeof(set), &set));
-  BPF_ASSERT_EQ(EPERM, errno);
+  if (base::FeatureList::IsEnabled(base::kRestrictBigCoreThreadAffinity)) {
+    BPF_ASSERT_EQ(0, sched_getaffinity(0, sizeof(set), &set));
+  } else {
+    errno = 0;
+    BPF_ASSERT_EQ(-1, sched_getaffinity(0, sizeof(set), &set));
+    BPF_ASSERT_EQ(EPERM, errno);
+  }
 }
 
 BPF_TEST_C(BaselinePolicyAndroid,
-           SchedSetAffinity_Blocked,
+           SchedSetAffinity_Maybe_Allowed,
            BaselinePolicyAndroid) {
   cpu_set_t set{};
-  errno = 0;
-  BPF_ASSERT_EQ(-1, sched_setaffinity(0, sizeof(set), &set));
-  BPF_ASSERT_EQ(EPERM, errno);
+  // SAFETY: We don't control the implementation inside libc, but we use all the
+  // macros, so there is no possibility of out of bounds here.
+  UNSAFE_BUFFERS(CPU_ZERO(&set));
+  for (int i = 0; i < CPU_SETSIZE; i++) {
+    // SAFETY: Index is statically smaller than CPU_SETSIZE.
+    UNSAFE_BUFFERS(CPU_SET(i, &set));
+  }
+  if (base::FeatureList::IsEnabled(base::kRestrictBigCoreThreadAffinity)) {
+    BPF_ASSERT_EQ(0, sched_setaffinity(0, sizeof(set), &set));
+  } else {
+    errno = 0;
+    BPF_ASSERT_EQ(-1, sched_setaffinity(0, sizeof(set), &set));
+    BPF_ASSERT_EQ(EPERM, errno);
+  }
 }
 
 BPF_TEST_C(BaselinePolicyAndroid, Ioctl_Allowed, BaselinePolicyAndroid) {

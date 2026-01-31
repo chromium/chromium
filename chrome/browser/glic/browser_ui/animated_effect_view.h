@@ -16,7 +16,7 @@
 #include "ui/views/metadata/view_factory.h"
 #include "ui/views/view.h"
 
-class Browser;
+class Profile;
 class ThemeService;
 
 namespace content {
@@ -50,7 +50,9 @@ class AnimatedEffectView : public views::View,
 
   bool IsShowing() const;
 
-  // Called to start showing the view.
+  // Called to start showing the view. Note that consecutive calls will hide and
+  // restart the showing animation - callers should first check the state with
+  // `IsShowing()`.
   void Show();
 
   // Called to stop showing the view.
@@ -81,10 +83,13 @@ class AnimatedEffectView : public views::View,
   Tester* tester() const { return tester_.get(); }
 
  protected:
-  AnimatedEffectView(Browser* browser, std::unique_ptr<Tester> tester);
+  AnimatedEffectView(Profile* profile, std::unique_ptr<Tester> tester);
 
   // Returns whether the current effect's animation has completed.
   virtual bool IsCycleDone(base::TimeTicks timestamp) = 0;
+
+  // Returns the colors to be used for the shader effect.
+  virtual std::vector<SkColor> GetEffectColors();
 
   // Sets the shader uniforms for the given effect.
   virtual void PopulateShaderUniforms(
@@ -117,8 +122,6 @@ class AnimatedEffectView : public views::View,
 
   void SetDefaultColors(cc::PaintFlags& paint_flags,
                         const gfx::RectF& bounds) const;
-
-  raw_ptr<Browser> browser_ = nullptr;
 
   std::string shader_;
 
@@ -165,11 +168,18 @@ class AnimatedEffectView : public views::View,
 
   sk_sp<cc::PaintShader> cached_paint_shader_;
 
-  const std::vector<SkColor> colors_;
+  std::vector<SkColor> colors_;
   const std::vector<float> floats_;
 
   raw_ptr<ui::Compositor> compositor_ = nullptr;
   raw_ptr<ThemeService> theme_service_ = nullptr;
+
+  // Represents the state of the view if in a steady state, or the final state
+  // of the view if in an animating state. This means this is true when the view
+  // is animating in and when it is visible and not animating, and false when
+  // the view is animating out and when it is not visible and not animating. See
+  // crbug.com/477665728 for details.
+  bool is_showing_ = false;
 };
 
 BEGIN_VIEW_BUILDER(, AnimatedEffectView, views::View)

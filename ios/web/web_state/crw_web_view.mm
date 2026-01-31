@@ -189,42 +189,45 @@ using data_controls::RecordClipboardSourceMetrics;
 
 - (void)onCopyAllowed:(BOOL)allowed sender:(id)sender {
   RecordClipboardOutcomeMetrics(ClipboardAction::kCopy, allowed);
-  if (allowed) {
+  if (allowed && [super canPerformAction:@selector(copy:) withSender:sender]) {
     [super copy:sender];
   }
 }
 
 - (void)onPasteAllowed:(BOOL)allowed sender:(id)sender {
   RecordClipboardOutcomeMetrics(ClipboardAction::kPaste, allowed);
-  if (allowed) {
+  if (allowed && [super canPerformAction:@selector(paste:) withSender:sender]) {
     [super paste:sender];
   }
 }
 
 - (void)onCutAllowed:(BOOL)allowed sender:(id)sender {
   RecordClipboardOutcomeMetrics(ClipboardAction::kCut, allowed);
-  if (allowed) {
+  if (allowed && [super canPerformAction:@selector(cut:) withSender:sender]) {
     [super cut:sender];
   }
 }
 
 - (void)onPasteAndMatchStyleAllowed:(BOOL)allowed sender:(id)sender {
   RecordClipboardOutcomeMetrics(ClipboardAction::kPaste, allowed);
-  if (allowed) {
+  if (allowed && [super canPerformAction:@selector(pasteAndMatchStyle:)
+                              withSender:sender]) {
     [super pasteAndMatchStyle:sender];
   }
 }
 
 - (void)onPasteAndSearchAllowed:(BOOL)allowed sender:(id)sender {
   RecordClipboardOutcomeMetrics(ClipboardAction::kPaste, allowed);
-  if (allowed) {
+  if (allowed && [super canPerformAction:@selector(pasteAndSearch:)
+                              withSender:sender]) {
     [super pasteAndSearch:sender];
   }
 }
 
 - (void)onPasteAndGoAllowed:(BOOL)allowed sender:(id)sender {
   RecordClipboardOutcomeMetrics(ClipboardAction::kPaste, allowed);
-  if (allowed) {
+  if (allowed && [super canPerformAction:@selector(pasteAndGo:)
+                              withSender:sender]) {
     [super pasteAndGo:sender];
   }
 }

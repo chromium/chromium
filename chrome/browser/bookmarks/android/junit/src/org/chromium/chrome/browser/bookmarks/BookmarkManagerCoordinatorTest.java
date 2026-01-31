@@ -27,7 +27,6 @@ import org.robolectric.annotation.Config;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Features;
-import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.commerce.ShoppingServiceFactory;
 import org.chromium.chrome.browser.device_reauth.ReauthenticatorBridge;
@@ -43,13 +42,17 @@ import org.chromium.chrome.browser.sync.SyncServiceFactory;
 import org.chromium.chrome.browser.ui.favicon.FaviconHelperJni;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.test.util.browser.signin.AccountManagerTestRule;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.commerce.core.CommerceFeatureUtils;
 import org.chromium.components.commerce.core.CommerceFeatureUtilsJni;
 import org.chromium.components.commerce.core.ShoppingService;
+import org.chromium.components.signin.SigninFeatures;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.sync.SyncService;
+import org.chromium.ui.base.ActivityResultTracker;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.base.TestActivity;
+import org.chromium.ui.base.WindowAndroid;
 
 /** Unit tests for {@link BookmarkManagerCoordinator}. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -59,8 +62,8 @@ import org.chromium.ui.base.TestActivity;
     ChromeSwitches.DISABLE_NATIVE_INITIALIZATION
 })
 @Features.EnableFeatures({
-    ChromeFeatureList.UNO_PHASE_2_FOLLOW_UP,
-    ChromeFeatureList.ENABLE_ESCAPE_HANDLING_FOR_SECONDARY_ACTIVITIES
+    ChromeFeatureList.ENABLE_ESCAPE_HANDLING_FOR_SECONDARY_ACTIVITIES,
+    SigninFeatures.ENABLE_SEAMLESS_SIGNIN,
 })
 public class BookmarkManagerCoordinatorTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
@@ -71,7 +74,10 @@ public class BookmarkManagerCoordinatorTest {
 
     @Rule public AccountManagerTestRule mAccountManagerTestRule = new AccountManagerTestRule();
 
+    @Mock private WindowAndroid mWindowAndroid;
     @Mock private SnackbarManager mSnackbarManager;
+    @Mock private BottomSheetController mBottomSheetController;
+    @Mock private ActivityResultTracker mActivityResultTracker;
     @Mock private Profile mProfile;
     @Mock private FaviconHelperJni mFaviconHelperJni;
     @Mock private ImageServiceBridge.Natives mImageServiceBridgeJni;
@@ -119,10 +125,13 @@ public class BookmarkManagerCoordinatorTest {
                             mActivity = activity;
                             mCoordinator =
                                     new BookmarkManagerCoordinator(
+                                            mWindowAndroid,
                                             mActivity,
                                             /* isDialogUi= */ !DeviceFormFactor
                                                     .isNonMultiDisplayContextOnTablet(mActivity),
                                             mSnackbarManager,
+                                            () -> mBottomSheetController,
+                                            mActivityResultTracker,
                                             mProfile,
                                             mBookmarkUiPrefs,
                                             mBookmarkOpener,
@@ -145,17 +154,6 @@ public class BookmarkManagerCoordinatorTest {
 
     @Test
     public void testCreateView() {
-        FrameLayout parent = new FrameLayout(mActivity);
-        assertNotNull(mCoordinator.buildSectionHeaderView(parent));
-        assertNotNull(BookmarkManagerCoordinator.buildDividerView(parent));
-        assertNotNull(BookmarkManagerCoordinator.buildCompactImprovedBookmarkRow(parent));
-        assertNotNull(BookmarkManagerCoordinator.buildVisualImprovedBookmarkRow(parent));
-        assertNotNull(mCoordinator.buildSearchBoxRow(parent));
-    }
-
-    @Test
-    @EnableFeatures(ChromeFeatureList.UNO_PHASE_2_FOLLOW_UP)
-    public void testCreateViewUNOPhase2FollowUpEnabled() {
         FrameLayout parent = new FrameLayout(mActivity);
         assertNotNull(mCoordinator.buildBatchUploadCardView(parent));
         assertNotNull(mCoordinator.buildSectionHeaderView(parent));

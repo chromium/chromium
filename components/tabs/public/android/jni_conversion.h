@@ -27,7 +27,7 @@ inline base::android::ScopedJavaLocalRef<jobject>
 ToJniType<tabs::TabStripCollection>(JNIEnv* env,
                                     const tabs::TabStripCollection& input) {
   return Java_TabStripCollection_Constructor(env,
-                                             reinterpret_cast<jlong>(&input));
+                                             reinterpret_cast<int64_t>(&input));
 }
 
 }  // namespace jni_zero

@@ -66,7 +66,7 @@ class RequirementsCheckerTest : public ExtensionsTest {
   void RequireFeature(const char feature[]) {
     base::Value* features_list = manifest_dict_.Find(kFeaturesKey);
     if (!features_list) {
-      features_list = manifest_dict_.Set(kFeaturesKey, base::Value::List());
+      features_list = manifest_dict_.Set(kFeaturesKey, base::ListValue());
     }
     features_list->GetList().Append(feature);
   }
@@ -76,7 +76,7 @@ class RequirementsCheckerTest : public ExtensionsTest {
 
  private:
   scoped_refptr<Extension> extension_;
-  base::Value::Dict manifest_dict_;
+  base::DictValue manifest_dict_;
 };
 
 // Tests no requirements.

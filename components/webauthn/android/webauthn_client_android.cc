@@ -9,6 +9,7 @@
 #include <utility>
 
 #include "base/check.h"
+#include "base/check_is_test.h"
 #include "base/functional/callback.h"
 #include "components/webauthn/android/webauthn_cred_man_delegate.h"
 #include "components/webauthn/android/webauthn_cred_man_delegate_factory.h"
@@ -33,6 +34,18 @@ void WebAuthnClientAndroid::SetClient(
 WebAuthnClientAndroid* WebAuthnClientAndroid::GetClient() {
   DCHECK(g_webauthn_client);
   return g_webauthn_client;
+}
+
+// static
+bool WebAuthnClientAndroid::HasClient() {
+  return !!g_webauthn_client;
+}
+
+// static
+void WebAuthnClientAndroid::ClearClientForTesting() {
+  CHECK_IS_TEST();
+  delete g_webauthn_client;
+  g_webauthn_client = nullptr;
 }
 
 void WebAuthnClientAndroid::OnCredManConditionalRequestPending(

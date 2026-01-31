@@ -191,7 +191,7 @@ void AddExtension(const std::string& name,
   scoped_refptr<const extensions::Extension> extension =
       extensions::ExtensionBuilder(name)
           .SetManifestKey("host_permissions",
-                          base::Value::List().Append(kAllHostsPermission))
+                          base::ListValue().Append(kAllHostsPermission))
           .SetManifestKey(extensions::manifest_keys::kUpdateURL, update_url)
           .SetLocation(location)
           .SetID(kId)

@@ -61,13 +61,19 @@ class VerticalTabStripControllerInteractiveUiTest
                                gfx::Point(), base::TimeTicks::Now(), flags,
                                ui::EF_LEFT_MOUSE_BUTTON);
           view->OnMousePressed(event);
+          ui::MouseEvent release_event(ui::EventType::kMouseReleased,
+                                       gfx::Point(), gfx::Point(),
+                                       base::TimeTicks::Now(), flags,
+                                       ui::EF_LEFT_MOUSE_BUTTON);
+          view->OnMouseReleased(event);
         },
         flags);
   }
 };
 
+// TODO(crbug.com/478118942): This test is flaky on Mac and Win platforms.
 IN_PROC_BROWSER_TEST_F(VerticalTabStripControllerInteractiveUiTest,
-                       VerifyTabSelection) {
+                       DISABLED_VerifyTabSelection) {
   RunTestSequence(
       // Verify Vertical Tabs is showing.
       WaitForShow(kVerticalTabStripBottomContainerElementId),
@@ -119,8 +125,9 @@ IN_PROC_BROWSER_TEST_F(VerticalTabStripControllerInteractiveUiTest,
       WaitForHide(kFirstTabName));
 }
 
+// TODO(crbug.com/469912247): Fails on mac-rel-ready and linux-rel-ready bots.
 IN_PROC_BROWSER_TEST_F(VerticalTabStripControllerInteractiveUiTest,
-                       ShiftMultiTabSelection) {
+                       DISABLED_ShiftMultiTabSelection) {
   RunTestSequence(
       // Verify Vertical Tabs is showing.
       WaitForShow(kVerticalTabStripBottomContainerElementId),
@@ -172,8 +179,9 @@ IN_PROC_BROWSER_TEST_F(VerticalTabStripControllerInteractiveUiTest,
           0));
 }
 
+// TODO(crbug.com/478118942): This test is flaky on Mac and Win platforms.
 IN_PROC_BROWSER_TEST_F(VerticalTabStripControllerInteractiveUiTest,
-                       ToggleTabSelection) {
+                       DISABLED_ToggleTabSelection) {
   RunTestSequence(
       // Verify Vertical Tabs is showing.
       WaitForShow(kVerticalTabStripBottomContainerElementId),

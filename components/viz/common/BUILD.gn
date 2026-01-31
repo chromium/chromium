@@ -252,10 +252,6 @@ viz_component("common") {
     sources += [
       "display/use_layered_window.cc",
       "display/use_layered_window.h",
-      "overlay_state/win/overlay_state_aggregator.cc",
-      "overlay_state/win/overlay_state_aggregator.h",
-      "overlay_state/win/overlay_state_service.cc",
-      "overlay_state/win/overlay_state_service.h",
     ]
 
     deps += [ "//ui/base" ]
@@ -312,7 +308,6 @@ viz_source_set("unit_tests") {
     "surfaces/parent_local_surface_id_allocator_unittest.cc",
     "surfaces/scoped_surface_id_allocator_unittest.cc",
     "surfaces/surface_range_unittest.cc",
-    "yuv_readback_unittest.cc",
   ]
 
   if (enable_vulkan) {
@@ -337,14 +332,6 @@ viz_source_set("unit_tests") {
     "//ui/gfx/geometry",
     "//ui/latency",
   ]
-
-  if (is_win) {
-    sources += [ "overlay_state/win/overlay_state_service_unittest.cc" ]
-    deps += [
-      "//components/viz/test:test_suite",
-      "//media/mojo/mojom",
-    ]
-  }
 }
 
 viz_source_set("perf_tests") {

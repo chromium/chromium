@@ -186,11 +186,13 @@ bool Editor::HandleTextEvent(TextEvent* event) {
       ReplaceSelectionWithFragment(
           event->PastingFragment(), false, event->ShouldSmartReplace(),
           event->ShouldMatchStyle(), InputEvent::InputType::kInsertFromPaste,
+          EditCommand::PasswordEchoBehavior::kDoNotEcho,
           event->GetDataTransfer());
     } else {
       ReplaceSelectionWithText(event->data(), false,
                                event->ShouldSmartReplace(),
-                               InputEvent::InputType::kInsertFromPaste);
+                               InputEvent::InputType::kInsertFromPaste,
+                               EditCommand::PasswordEchoBehavior::kDoNotEcho);
     }
     return true;
   }
@@ -214,7 +216,24 @@ bool Editor::HandleTextEvent(TextEvent* event) {
     InsertLineBreak();
   }
 
-  return InsertTextWithoutSendingTextEvent(data, false, event);
+  EditCommand::PasswordEchoBehavior password_echo_behavior =
+      EditCommand::PasswordEchoBehavior::kEchoIfPasswordEchoPhysicalEnabled;
+#if BUILDFLAG(IS_ANDROID)
+  auto* underlying_event = event ? event->UnderlyingEvent() : nullptr;
+  const KeyboardEvent* keyboard_event =
+      underlying_event ? DynamicTo<KeyboardEvent>(underlying_event) : nullptr;
+  bool is_confirmed_physical_keyboard_input =
+      keyboard_event && keyboard_event->KeyEvent() &&
+      keyboard_event->KeyEvent()->is_confirmed_physical_keyboard_input;
+  password_echo_behavior =
+      is_confirmed_physical_keyboard_input
+          ? EditCommand::PasswordEchoBehavior::
+                kEchoIfPasswordEchoPhysicalEnabled
+          : EditCommand::PasswordEchoBehavior::kEchoIfPasswordEchoTouchEnabled;
+#endif
+  return InsertTextWithoutSendingTextEvent(data, false, event,
+                                           InputEvent::InputType::kInsertText,
+                                           password_echo_behavior);
 }
 
 bool Editor::CanEdit() const {
@@ -295,12 +314,14 @@ void Editor::DeleteSelectionWithSmartDelete(
       ->Apply();
 }
 
-void Editor::ReplaceSelectionWithFragment(DocumentFragment* fragment,
-                                          bool select_replacement,
-                                          bool smart_replace,
-                                          bool match_style,
-                                          InputEvent::InputType input_type,
-                                          DataTransfer* data_transfer) {
+void Editor::ReplaceSelectionWithFragment(
+    DocumentFragment* fragment,
+    bool select_replacement,
+    bool smart_replace,
+    bool match_style,
+    InputEvent::InputType input_type,
+    EditCommand::PasswordEchoBehavior password_echo_behavior,
+    DataTransfer* data_transfer) {
   DCHECK(!GetFrame().GetDocument()->NeedsLayoutTreeUpdate());
   const VisibleSelection& selection =
       GetFrameSelection().ComputeVisibleSelectionInDOMTree();
@@ -318,18 +339,21 @@ void Editor::ReplaceSelectionWithFragment(DocumentFragment* fragment,
     options |= ReplaceSelectionCommand::kMatchStyle;
   DCHECK(GetFrame().GetDocument());
   MakeGarbageCollected<ReplaceSelectionCommand>(
-      *GetFrame().GetDocument(), fragment, options, input_type, data_transfer)
+      *GetFrame().GetDocument(), fragment, options, password_echo_behavior,
+      input_type, data_transfer)
       ->Apply();
   RevealSelectionAfterEditingOperation();
 }
 
-void Editor::ReplaceSelectionWithText(const String& text,
-                                      bool select_replacement,
-                                      bool smart_replace,
-                                      InputEvent::InputType input_type) {
+void Editor::ReplaceSelectionWithText(
+    const String& text,
+    bool select_replacement,
+    bool smart_replace,
+    InputEvent::InputType input_type,
+    EditCommand::PasswordEchoBehavior password_echo_behavior) {
   ReplaceSelectionWithFragment(CreateFragmentFromText(SelectedRange(), text),
                                select_replacement, smart_replace, true,
-                               input_type);
+                               input_type, password_echo_behavior);
 }
 
 void Editor::ReplaceSelectionAfterDragging(DocumentFragment* fragment,
@@ -346,6 +370,7 @@ void Editor::ReplaceSelectionAfterDragging(DocumentFragment* fragment,
   DCHECK(GetFrame().GetDocument());
   MakeGarbageCollected<ReplaceSelectionCommand>(
       *GetFrame().GetDocument(), fragment, options,
+      EditCommand::PasswordEchoBehavior::kDoNotEcho,
       InputEvent::InputType::kInsertFromDrop, data_transfer)
       ->Apply();
 }
@@ -506,11 +531,13 @@ bool Editor::InsertText(const String& text, KeyboardEvent* triggering_event) {
                                                            triggering_event);
 }
 
-bool Editor::InsertTextWithoutSendingTextEvent(const String& text,
-                                               bool select_inserted_text,
-                                               TextEvent* triggering_event,
-                                               InputEvent::InputType input_type,
-                                               DataTransfer* data_transfer) {
+bool Editor::InsertTextWithoutSendingTextEvent(
+    const String& text,
+    bool select_inserted_text,
+    TextEvent* triggering_event,
+    InputEvent::InputType input_type,
+    EditCommand::PasswordEchoBehavior password_echo_behavior,
+    DataTransfer* data_transfer) {
   const VisibleSelection& selection =
       CreateVisibleSelection(SelectionForCommand(triggering_event));
   if (!selection.IsContentEditable())
@@ -521,7 +548,7 @@ bool Editor::InsertTextWithoutSendingTextEvent(const String& text,
   TypingCommand::InsertText(
       *selection.Start().GetDocument(), text, selection.AsSelection(),
       select_inserted_text ? TypingCommand::kSelectInsertedText : 0,
-      &editing_state,
+      &editing_state, password_echo_behavior,
       triggering_event && triggering_event->IsComposition()
           ? TypingCommand::kTextCompositionConfirm
           : TypingCommand::kTextCompositionNone,
@@ -987,7 +1014,8 @@ void Editor::ReplaceSelection(const String& text) {
   bool select_replacement = Behavior().ShouldSelectReplacement();
   bool smart_replace = false;
   ReplaceSelectionWithText(text, select_replacement, smart_replace,
-                           InputEvent::InputType::kInsertReplacementText);
+                           InputEvent::InputType::kInsertReplacementText,
+                           EditCommand::PasswordEchoBehavior::kDoNotEcho);
 }
 
 void Editor::ElementRemoved(Element* element) {

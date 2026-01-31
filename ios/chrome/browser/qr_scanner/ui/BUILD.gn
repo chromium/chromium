@@ -16,6 +16,7 @@ source_set("ui") {
     "//base",
     "//components/version_info",
     "//ios/chrome/app/strings",
+    "//ios/chrome/browser/composebox/coordinator",
     "//ios/chrome/browser/scanner/ui_bundled",
     "//ios/chrome/browser/shared/public/commands",
     "//ios/chrome/browser/shared/ui/util",

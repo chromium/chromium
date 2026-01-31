@@ -27,7 +27,7 @@ GetControlledFramePartitionWithLock(Profile* profile,
                                     const std::string& partition_name,
                                     bool in_memory,
                                     AppLock& lock,
-                                    base::Value::Dict& debug_info) {
+                                    base::DictValue& debug_info) {
   debug_info.Set("app_id", url_info.app_id());
   debug_info.Set("partition_name", partition_name);
   debug_info.Set("in_memory", in_memory);

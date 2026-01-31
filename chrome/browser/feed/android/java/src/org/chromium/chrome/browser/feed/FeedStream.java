@@ -11,6 +11,7 @@ import android.app.Activity;
 import android.util.DisplayMetrics;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewGroup.MarginLayoutParams;
@@ -29,8 +30,9 @@ import org.chromium.base.Callback;
 import org.chromium.base.Log;
 import org.chromium.base.ObserverList;
 import org.chromium.base.ThreadUtils;
-import org.chromium.base.supplier.ObservableSupplier;
-import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.supplier.NonNullObservableSupplier;
+import org.chromium.base.supplier.ObservableSuppliers;
+import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.build.annotations.EnsuresNonNullIf;
@@ -49,6 +51,7 @@ import org.chromium.chrome.browser.share.ChromeShareExtras;
 import org.chromium.chrome.browser.share.ShareDelegate;
 import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
+import org.chromium.chrome.browser.util.BrowserUiUtils;
 import org.chromium.chrome.browser.xsurface.HybridListRenderer;
 import org.chromium.chrome.browser.xsurface.ListLayoutHelper;
 import org.chromium.chrome.browser.xsurface.LoggingParameters;
@@ -113,8 +116,19 @@ public class FeedStream implements Stream {
                             new GURL(url),
                             getSliceIdFromView(options.actionSourceView()),
                             OpenActionType.DEFAULT);
-                    openSuggestionUrl(
-                            url, WindowOpenDisposition.CURRENT_TAB, /* inGroup= */ false, options);
+                    int disposition = WindowOpenDisposition.CURRENT_TAB;
+                    // Check if the click is from the feed content (RecyclerView) rather than the
+                    // 3-dot menu. Keyboard modifiers are only tracked for the RecyclerView.
+                    boolean isFromFeedContent =
+                            mRecyclerView != null
+                                    && findChildViewContainingDescendant(
+                                                    mRecyclerView, options.actionSourceView())
+                                            != null;
+                    if (isFromFeedContent) {
+                        disposition = BrowserUiUtils.getDispositionFromMetaState(mLastMetaState);
+                    }
+                    mLastMetaState = 0;
+                    openSuggestionUrl(url, disposition, /* inGroup= */ false, options);
                     break;
                 case OpenMode.NEW_TAB:
                     mBridge.reportOpenAction(
@@ -380,12 +394,10 @@ public class FeedStream implements Stream {
     class InProgressWorkTracker {
         private int mNextWorkId;
         private final HashSet<Integer> mActiveWork = new HashSet<>();
-        private final ObservableSupplierImpl<Boolean> mWorkPending = new ObservableSupplierImpl<>();
+        private final SettableNonNullObservableSupplier<Boolean> mWorkPending =
+                ObservableSuppliers.createNonNull(false);
 
-        InProgressWorkTracker() {
-            // ObservableSupplierImpl holds null by default.
-            mWorkPending.set(false);
-        }
+        InProgressWorkTracker() {}
 
         /**
          * Record that background work has begun, returns a runnable to be called when work is
@@ -400,9 +412,7 @@ public class FeedStream implements Stream {
 
         /** postTask to call runnable after all in-progress work is complete. */
         void postTaskAfterWorkComplete(Runnable runnable) {
-            Boolean workPendingValue = mWorkPending.get();
-            assert workPendingValue != null;
-            if (!workPendingValue) {
+            if (!mWorkPending.get()) {
                 PostTask.postTask(TaskTraits.UI_DEFAULT, runnable);
             } else {
                 new DoneWatcher(runnable);
@@ -658,9 +668,12 @@ public class FeedStream implements Stream {
     private final int mLoadMoreTriggerLookahead;
     private boolean mIsLoadingMoreContent;
 
+    private int mLastMetaState;
+
     // Things attached on bind.
     private final RestoreScrollObserver mRestoreScrollObserver = new RestoreScrollObserver();
     private final RecyclerView.OnScrollListener mMainScrollListener;
+    private final RecyclerView.OnItemTouchListener mMetaStateObserver;
     private @Nullable FeedSliceViewTracker mSliceViewTracker;
     private final ScrollReporter mScrollReporter;
     private final Map<String, Object> mHandlersMap;
@@ -773,6 +786,20 @@ public class FeedStream implements Stream {
                         mScrollReporter.trackScroll(dx, dy);
                     }
                 };
+        mMetaStateObserver =
+                new RecyclerView.OnItemTouchListener() {
+                    @Override
+                    public boolean onInterceptTouchEvent(RecyclerView rv, MotionEvent e) {
+                        mLastMetaState = e.getMetaState();
+                        return false;
+                    }
+
+                    @Override
+                    public void onTouchEvent(RecyclerView rv, MotionEvent e) {}
+
+                    @Override
+                    public void onRequestDisallowInterceptTouchEvent(boolean disallowIntercept) {}
+                };
 
         // Only watch for unread content on the web feed, not for-you feed.
         // Sort options only available for web feed right now.
@@ -847,6 +874,7 @@ public class FeedStream implements Stream {
         mSliceViewTracker.bind();
 
         rootView.addOnScrollListener(mMainScrollListener);
+        rootView.addOnItemTouchListener(mMetaStateObserver);
         assumeNonNull(renderer.getAdapter()).registerAdapterDataObserver(mRestoreScrollObserver);
         mRecyclerView = rootView;
         mContentManager = manager;
@@ -934,6 +962,7 @@ public class FeedStream implements Stream {
         mContentManager = null;
 
         mRecyclerView.removeOnScrollListener(mMainScrollListener);
+        mRecyclerView.removeOnItemTouchListener(mMetaStateObserver);
         assert mRenderer != null && mRenderer.getAdapter() != null;
         mRenderer.getAdapter().unregisterAdapterDataObserver(mRestoreScrollObserver);
         mRecyclerView = null;
@@ -1004,7 +1033,7 @@ public class FeedStream implements Stream {
     }
 
     @Override
-    public ObservableSupplier<Boolean> hasUnreadContent() {
+    public NonNullObservableSupplier<Boolean> hasUnreadContent() {
         return mUnreadContentObserver != null
                 ? mUnreadContentObserver.mHasUnreadContent
                 : Stream.super.hasUnreadContent();
@@ -1512,11 +1541,11 @@ public class FeedStream implements Stream {
 
     @VisibleForTesting
     static class UnreadContentObserver extends FeedServiceBridge.UnreadContentObserver {
-        ObservableSupplierImpl<Boolean> mHasUnreadContent = new ObservableSupplierImpl<>();
+        SettableNonNullObservableSupplier<Boolean> mHasUnreadContent =
+                ObservableSuppliers.createNonNull(false);
 
         UnreadContentObserver(boolean isWebFeed) {
             super(isWebFeed);
-            mHasUnreadContent.set(false);
         }
 
         @Override

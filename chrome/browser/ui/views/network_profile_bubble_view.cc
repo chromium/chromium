@@ -111,21 +111,21 @@ BEGIN_METADATA(NetworkProfileBubbleView)
 END_METADATA
 
 // static
-void NetworkProfileBubble::ShowNotification(Browser* browser) {
+void NetworkProfileBubble::ShowNotification(BrowserWindowInterface* browser) {
   views::View* anchor = NULL;
   BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser);
   if (browser_view && browser_view->toolbar()) {
     anchor = browser_view->toolbar_button_provider()->GetAppMenuButton();
   }
   NetworkProfileBubbleView* bubble =
-      new NetworkProfileBubbleView(anchor, browser, browser->profile());
+      new NetworkProfileBubbleView(anchor, browser, browser->GetProfile());
   views::BubbleDialogDelegateView::CreateBubble(bubble)->Show();
 
   NetworkProfileBubble::SetNotificationShown(true);
 
   // Mark the time of the last bubble and reduce the number of warnings left
   // before the next silence period starts.
-  PrefService* prefs = browser->profile()->GetPrefs();
+  PrefService* prefs = browser->GetProfile()->GetPrefs();
   prefs->SetInt64(prefs::kNetworkProfileLastWarningTime,
                   base::Time::Now().ToTimeT());
   int left_warnings = prefs->GetInteger(prefs::kNetworkProfileWarningsLeft);

@@ -35,7 +35,6 @@
 #include "ash/system/tray/tray_container.h"
 #include "ash/system/tray/tray_popup_utils.h"
 #include "ash/system/tray/tray_utils.h"
-#include "ash/webui/eche_app_ui/mojom/eche_app.mojom-shared.h"
 #include "ash/webui/eche_app_ui/mojom/eche_app.mojom.h"
 #include "ash/wm/window_state.h"
 #include "base/functional/bind.h"
@@ -163,10 +162,10 @@ std::unique_ptr<views::Button> CreateButton(
     int message_id) {
   auto button = views::CreateVectorImageButton(std::move(callback));
 
-  views::SetImageFromVectorIconWithColorId(
+  views::SetImageFromVectorIconWithColor(
       button.get(), icon,
-      static_cast<ui::ColorId>(cros_tokens::kCrosSysOnSurface),
-      static_cast<ui::ColorId>(cros_tokens::kButtonIconColorPrimaryDisabled));
+      {cros_tokens::kCrosSysOnSurface,
+       cros_tokens::kButtonIconColorPrimaryDisabled});
   button->SetTooltipText(l10n_util::GetStringUTF16(message_id));
   button->SizeToPreferredSize();
 
@@ -766,7 +765,6 @@ gfx::Size EcheTray::CalculateSizeForEche() const {
   height_scale = std::min(height_scale, 1.0f);
   gfx::Size size = gfx::ScaleToFlooredSize(kDefaultBubbleSize, height_scale);
 
-  // TODO(b/258306301): Verify the correct sizing for Landscape
   if (is_landscape_) {
     size = gfx::Size(size.height(), size.width());
   }

@@ -248,7 +248,7 @@ class CellularMetricsLoggerTest : public ::testing::Test {
 
   void SetCellularSimLock(const std::string lock_type) {
     auto sim_lock_status =
-        base::Value::Dict().Set(shill::kSIMLockTypeProperty, lock_type);
+        base::DictValue().Set(shill::kSIMLockTypeProperty, lock_type);
     network_config_helper_->network_state_helper()
         .device_test()
         ->SetDeviceProperty(
@@ -358,7 +358,7 @@ TEST_F(CellularMetricsLoggerTest, NoEuiccCachedProfiles) {
       std::u16string(u"nickname"), std::u16string(u"service_provider"),
       std::string("activation_code"));
   auto esim_profiles =
-      base::Value::List().Append(esim_profile.ToDictionaryValue());
+      base::ListValue().Append(esim_profile.ToDictionaryValue());
 
   TestingPrefServiceSimple device_prefs;
   CellularESimProfileHandlerImpl::RegisterLocalStatePrefs(
@@ -1452,7 +1452,7 @@ TEST_F(CellularMetricsLoggerTest,
   CellularESimProfileHandlerImpl::RegisterLocalStatePrefs(
       device_prefs.registry());
 
-  const std::optional<base::Value::Dict> policy = base::JSONReader::ReadDict(
+  const std::optional<base::DictValue> policy = base::JSONReader::ReadDict(
       kEnterpriseESimPolicy, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   ASSERT_TRUE(policy.has_value());
 
@@ -1511,7 +1511,7 @@ TEST_F(CellularMetricsLoggerTest,
   CellularESimProfileHandlerImpl::RegisterLocalStatePrefs(
       device_prefs.registry());
 
-  const std::optional<base::Value::Dict> policy = base::JSONReader::ReadDict(
+  const std::optional<base::DictValue> policy = base::JSONReader::ReadDict(
       kEnterpriseESimPolicy, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   ASSERT_TRUE(policy.has_value());
 

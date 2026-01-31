@@ -92,8 +92,6 @@ DedicatedWorkerGlobalScope* DedicatedWorkerGlobalScope::Create(
   KURL response_script_url = creation_params->script_url;
   network::mojom::ReferrerPolicy response_referrer_policy =
       creation_params->referrer_policy;
-  const bool parent_cross_origin_isolated_capability =
-      creation_params->parent_cross_origin_isolated_capability;
   const bool parent_is_isolated_context =
       creation_params->parent_is_isolated_context;
   base::TimeTicks start_time;
@@ -111,8 +109,8 @@ DedicatedWorkerGlobalScope* DedicatedWorkerGlobalScope::Create(
   auto* global_scope = MakeGarbageCollected<DedicatedWorkerGlobalScope>(
       base::PassKey<DedicatedWorkerGlobalScope>(), std::move(creation_params),
       thread, time_origin, std::move(inherited_trial_features),
-      begin_frame_provider_params, parent_cross_origin_isolated_capability,
-      parent_is_isolated_context, std::move(dedicated_worker_host),
+      begin_frame_provider_params, parent_is_isolated_context,
+      std::move(dedicated_worker_host),
       std::move(back_forward_cache_controller_host), start_time);
 
   if (global_scope->IsOffMainThreadScriptFetchDisabled()) {
@@ -155,7 +153,6 @@ DedicatedWorkerGlobalScope::DedicatedWorkerGlobalScope(
     std::unique_ptr<Vector<mojom::blink::OriginTrialFeature>>
         inherited_trial_features,
     const BeginFrameProviderParams& begin_frame_provider_params,
-    bool parent_cross_origin_isolated_capability,
     bool parent_is_isolated_context,
     mojo::PendingRemote<mojom::blink::DedicatedWorkerHost>
         dedicated_worker_host,
@@ -168,7 +165,6 @@ DedicatedWorkerGlobalScope::DedicatedWorkerGlobalScope(
           time_origin,
           std::move(inherited_trial_features),
           begin_frame_provider_params,
-          parent_cross_origin_isolated_capability,
           parent_is_isolated_context,
           std::move(dedicated_worker_host),
           std::move(back_forward_cache_controller_host),
@@ -181,7 +177,6 @@ DedicatedWorkerGlobalScope::DedicatedWorkerGlobalScope(
     std::unique_ptr<Vector<mojom::blink::OriginTrialFeature>>
         inherited_trial_features,
     const BeginFrameProviderParams& begin_frame_provider_params,
-    bool parent_cross_origin_isolated_capability,
     bool parent_is_isolated_context,
     mojo::PendingRemote<mojom::blink::DedicatedWorkerHost>
         dedicated_worker_host,
@@ -194,7 +189,7 @@ DedicatedWorkerGlobalScope::DedicatedWorkerGlobalScope(
                         false),
       token_(thread->WorkerObjectProxy().token()),
       parent_token_(parsed_creation_params.parent_context_token),
-      cross_origin_isolated_capability_(Agent::IsCrossOriginIsolated()),
+      cross_origin_isolated_capability_(GetAgent()->IsCrossOriginIsolated()),
       is_isolated_context_(Agent::IsIsolatedContext()),
       animation_frame_provider_(
           MakeGarbageCollected<WorkerAnimationFrameProvider>(
@@ -203,14 +198,6 @@ DedicatedWorkerGlobalScope::DedicatedWorkerGlobalScope(
       storage_access_api_status_(
           parsed_creation_params.parent_storage_access_api_status),
       dedicated_worker_start_time_(dedicated_worker_start_time) {
-  // https://html.spec.whatwg.org/C/#run-a-worker
-  // Step 14.10 "If shared is false and owner's cross-origin isolated
-  // capability is false, then set worker global scope's cross-origin isolated
-  // capability to false."
-  if (!parent_cross_origin_isolated_capability) {
-    cross_origin_isolated_capability_ = false;
-  }
-
   // TODO(mkwst): This needs a specification.
   if (!parent_is_isolated_context) {
     is_isolated_context_ = false;

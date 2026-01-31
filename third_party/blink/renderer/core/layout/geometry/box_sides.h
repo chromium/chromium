@@ -18,12 +18,14 @@ namespace blink {
 // initially.
 struct LogicalBoxSides {
  public:
-  bool inline_start = true;
-  bool inline_end = true;
-  bool block_start = true;
-  bool block_end = true;
+  bool inline_start;
+  bool inline_end;
+  bool block_start;
+  bool block_end;
 
-  LogicalBoxSides() = default;
+  explicit LogicalBoxSides(bool value = true) {
+    inline_start = inline_end = block_start = block_end = value;
+  }
   LogicalBoxSides(bool inline_start,
                   bool inline_end,
                   bool block_start,
@@ -84,12 +86,14 @@ struct LineLogicalBoxSides {
 // initially.
 struct PhysicalBoxSides {
  public:
-  bool top = true;
-  bool right = true;
-  bool bottom = true;
-  bool left = true;
+  bool top;
+  bool right;
+  bool bottom;
+  bool left;
 
-  PhysicalBoxSides() = default;
+  explicit PhysicalBoxSides(bool value = true) {
+    top = right = bottom = left = value;
+  }
   PhysicalBoxSides(bool top, bool right, bool bottom, bool left)
       : top(top), right(right), bottom(bottom), left(left) {}
   PhysicalBoxSides(LineLogicalBoxSides logical, WritingMode writing_mode) {

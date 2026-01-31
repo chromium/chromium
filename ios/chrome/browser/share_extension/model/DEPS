@@ -1,5 +1,7 @@
 include_rules = [
+  # keep-sorted start
   "+ios/chrome/browser/bookmarks/model",
   "+ios/chrome/browser/reading_list/model",
   "+ios/chrome/browser/signin/model",
+  # keep-sorted end
 ]

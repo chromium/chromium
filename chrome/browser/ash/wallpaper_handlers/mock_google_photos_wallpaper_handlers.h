@@ -38,7 +38,7 @@ class MockGooglePhotosAlbumsFetcher : public GooglePhotosAlbumsFetcher {
 
   MOCK_METHOD(GooglePhotosAlbumsCbkArgs,
               ParseResponse,
-              (const base::Value::Dict* response),
+              (const base::DictValue* response),
               (override));
 
   // Overridden to increase visibility.
@@ -70,7 +70,7 @@ class MockGooglePhotosSharedAlbumsFetcher
 
   MOCK_METHOD(GooglePhotosAlbumsCbkArgs,
               ParseResponse,
-              (const base::Value::Dict* response),
+              (const base::DictValue* response),
               (override));
 
   // Overridden to increase visibility.
@@ -99,7 +99,7 @@ class MockGooglePhotosEnabledFetcher : public GooglePhotosEnabledFetcher {
 
   MOCK_METHOD(GooglePhotosEnablementState,
               ParseResponse,
-              (const base::Value::Dict* response),
+              (const base::DictValue* response),
               (override));
 
   // Overridden to increase visibility.
@@ -132,7 +132,7 @@ class MockGooglePhotosPhotosFetcher : public GooglePhotosPhotosFetcher {
 
   MOCK_METHOD(GooglePhotosPhotosCbkArgs,
               ParseResponse,
-              (const base::Value::Dict* response),
+              (const base::DictValue* response),
               (override));
 
   // Overridden to increase visibility.

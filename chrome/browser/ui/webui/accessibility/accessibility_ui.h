@@ -79,19 +79,19 @@ class AccessibilityUIMessageHandler : public content::WebUIMessageHandler,
   static void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry);
 
  private:
-  void ToggleAccessibilityForWebContents(const base::Value::List& args);
-  void SetGlobalFlag(const base::Value::List& args);
-  void SetGlobalString(const base::Value::List& args);
+  void ToggleAccessibilityForWebContents(const base::ListValue& args);
+  void SetGlobalFlag(const base::ListValue& args);
+  void SetGlobalString(const base::ListValue& args);
 
-  void GetRequestTypeAndFilters(const base::Value::Dict& data,
+  void GetRequestTypeAndFilters(const base::DictValue& data,
                                 std::string& request_type,
                                 std::string& allow,
                                 std::string& allow_empty,
                                 std::string& deny);
-  void RequestWebContentsTree(const base::Value::List& args);
-  void RequestNativeUITree(const base::Value::List& args);
-  void RequestWidgetsTree(const base::Value::List& args);
-  void RequestAccessibilityEvents(const base::Value::List& args);
+  void RequestWebContentsTree(const base::ListValue& args);
+  void RequestNativeUITree(const base::ListValue& args);
+  void RequestWidgetsTree(const base::ListValue& args);
+  void RequestAccessibilityEvents(const base::ListValue& args);
   void Callback(const std::string&);
   void StopRecording(content::WebContents* web_contents);
 
@@ -110,7 +110,7 @@ class AccessibilityUIMessageHandler : public content::WebUIMessageHandler,
   std::unique_ptr<AccessibilityUIObserver> observer_;
 
   // The last data for display sent to the UI by OnUpdateDisplayTimer.
-  base::Value::Dict last_data_;
+  base::DictValue last_data_;
 
   // A timer that runs while the UI is visible to call OnUpdateDisplayTimer.
   base::RepeatingTimer update_display_timer_;

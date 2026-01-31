@@ -59,11 +59,14 @@
     "manifest_keys": {
       "key_string": {
         "type": "string",
-        "description": "String key."
+        "description": "String key.",
+        "optional": true
+
       },
       "key_ref": {
         "$ref": "TestType",
-        "description": "Reference key"
+        "description": "Reference key",
+        "optional": true
       },
       "key_obj": {
         "type": "object",
@@ -85,13 +88,15 @@
         }
       },
       "key_enum": {
-        "$ref": "TestEnum"
+        "$ref": "TestEnum",
+        "optional": true
       },
       "key_enum_array": {
         "type": "array",
         "items": {
           "$ref": "TestEnum"
-        }
+        },
+        "optional": true
       },
       "3d_key": {
         "optional": true,

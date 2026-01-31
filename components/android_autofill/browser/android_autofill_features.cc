@@ -20,7 +20,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kAndroidAutofillLazyFrameworkWrapper,
     &kAutofillVirtualViewStructureAndroidPasskeyLongPress,
     &kAndroidAutofillForwardIframeOrigin,
-    &kAndroidAutofillUpdateContextForWebContents,
     &kAndroidAutofillImprovedVisibilityDetection};
 
 }  // namespace
@@ -59,8 +58,10 @@ BASE_FEATURE(kAndroidAutofillUpdateContextForWebContents,
 BASE_FEATURE(kAndroidAutofillSupportForHttpAuth,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-static jlong JNI_AndroidAutofillFeatures_GetFeature(JNIEnv* env, jint ordinal) {
-  return reinterpret_cast<jlong>(UNSAFE_TODO(kFeaturesExposedToJava[ordinal]));
+static int64_t JNI_AndroidAutofillFeatures_GetFeature(JNIEnv* env,
+                                                      int32_t ordinal) {
+  return reinterpret_cast<int64_t>(
+      UNSAFE_TODO(kFeaturesExposedToJava[ordinal]));
 }
 
 }  // namespace autofill::features

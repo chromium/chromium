@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/system_web_apps/system_web_app_manager.h"
 
+#include <algorithm>
 #include <string>
 #include <tuple>
 #include <utility>
@@ -27,7 +28,6 @@
 #include "base/test/scoped_feature_list.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/apps/app_service/app_icon/app_icon_factory.h"
-#include "chrome/browser/apps/app_service/app_launch_params.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/apps/app_service/browser_app_launcher.h"
@@ -72,6 +72,7 @@
 #include "components/permissions/permission_util.h"
 #include "components/policy/core/common/policy_pref_names.h"
 #include "components/prefs/scoped_user_pref_update.h"
+#include "components/services/app_service/public/cpp/app_launch_params.h"
 #include "components/services/app_service/public/cpp/app_launch_util.h"
 #include "components/services/app_service/public/cpp/app_registry_cache.h"
 #include "components/services/app_service/public/cpp/app_types.h"
@@ -1158,9 +1159,9 @@ IN_PROC_BROWSER_TEST_P(SystemWebAppManagerInstallAllAppsBrowserTest,
 
   for (const auto& [app_type, app_delegate] : app_map) {
     if (app_delegate->IsAppEnabled() && app_delegate->ShouldShowInLauncher() &&
-        !base::Contains(kLauncherPositionExemptTypes, app_type)) {
-      EXPECT_TRUE(base::Contains(app_order,
-                                 GetManager().GetAppIdForSystemApp(app_type)))
+        !kLauncherPositionExemptTypes.contains(app_type)) {
+      EXPECT_TRUE(std::ranges::contains(
+          app_order, GetManager().GetAppIdForSystemApp(app_type)))
           << "System app '" << app_delegate->GetInternalName()
           << "' appears in the launcher but does not have an app order "
              "definition. Its app ID should be added to GetDefault() in "

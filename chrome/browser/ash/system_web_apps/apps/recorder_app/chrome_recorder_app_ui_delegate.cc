@@ -75,7 +75,7 @@ std::string ChromeRecorderAppUIDelegate::GetDefaultTranscriptionLanguage() {
 void ChromeRecorderAppUIDelegate::OpenAiFeedbackDialog(
     const std::string& description_template) {
   Profile* profile = Profile::FromWebUI(web_ui_);
-  base::Value::Dict ai_metadata;
+  base::DictValue ai_metadata;
   ai_metadata.Set(feedback::kConchMetadataKey, "true");
   chrome::ShowFeedbackPage(/*page_url=*/GURL(ash::kChromeUIRecorderAppURL),
                            /*profile=*/profile,
@@ -84,7 +84,7 @@ void ChromeRecorderAppUIDelegate::OpenAiFeedbackDialog(
                            /*description_placeholder_text=*/std::string(),
                            /*category_tag=*/"chromeos-recorder-app",
                            /*extra_diagnostics=*/std::string(),
-                           /*autofill_metadata=*/base::Value::Dict(),
+                           /*autofill_metadata=*/base::DictValue(),
                            /*ai_metadata=*/std::move(ai_metadata));
 }
 

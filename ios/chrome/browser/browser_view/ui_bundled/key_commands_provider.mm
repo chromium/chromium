@@ -29,7 +29,6 @@
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
-#import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/bookmarks_commands.h"
 #import "ios/chrome/browser/shared/public/commands/browser_coordinator_commands.h"
 #import "ios/chrome/browser/shared/public/commands/find_in_page_commands.h"
@@ -37,7 +36,9 @@
 #import "ios/chrome/browser/shared/public/commands/open_new_tab_command.h"
 #import "ios/chrome/browser/shared/public/commands/quick_delete_commands.h"
 #import "ios/chrome/browser/shared/public/commands/reading_list_add_command.h"
+#import "ios/chrome/browser/shared/public/commands/scene_commands.h"
 #import "ios/chrome/browser/shared/public/commands/settings_commands.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/util/layout_guide_names.h"
 #import "ios/chrome/browser/shared/ui/util/rtl_geometry.h"
@@ -309,15 +310,14 @@ using base::UserMetricsAction;
 
 - (void)keyCommand_openNewWindow {
   RecordAction(UserMetricsAction("MobileKeyCommandOpenNewWindow"));
-  [_applicationHandler
-      openNewWindowWithActivity:ActivityToLoadURL(
-                                    WindowActivityKeyCommandOrigin,
-                                    GURL(kChromeUINewTabURL))];
+  [_sceneHandler openNewWindowWithActivity:ActivityToLoadURL(
+                                               WindowActivityKeyCommandOrigin,
+                                               GURL(kChromeUINewTabURL))];
 }
 
 - (void)keyCommand_openNewIncognitoWindow {
   RecordAction(UserMetricsAction("MobileKeyCommandOpenNewIncognitoWindow"));
-  [_applicationHandler
+  [_sceneHandler
       openNewWindowWithActivity:ActivityToLoadURL(
                                     WindowActivityKeyCommandOrigin,
                                     GURL(kChromeUINewTabURL), web::Referrer(),
@@ -341,7 +341,7 @@ using base::UserMetricsAction;
     return;
   }
 
-  [_applicationHandler openURLInNewTab:[OpenNewTabCommand command]];
+  [_sceneHandler openURLInNewTab:[OpenNewTabCommand command]];
   RestoreTab(entry->id, WindowOpenDisposition::CURRENT_TAB, _browser.get());
 }
 
@@ -362,7 +362,7 @@ using base::UserMetricsAction;
 
 - (void)keyCommand_openLocation {
   RecordAction(UserMetricsAction("MobileKeyCommandOpenLocation"));
-  [_omniboxHandler focusOmnibox];
+  [self.browserCoordinatorHandler showComposebox];
 }
 
 - (void)keyCommand_closeTab {
@@ -448,7 +448,7 @@ using base::UserMetricsAction;
 
 - (void)keyCommand_showHistory {
   RecordAction(UserMetricsAction("MobileKeyCommandShowHistory"));
-  [_applicationHandler showHistory];
+  [_sceneHandler showHistory];
 }
 
 - (void)keyCommand_voiceSearch {
@@ -456,12 +456,12 @@ using base::UserMetricsAction;
   [LayoutGuideCenterForBrowser(_browser.get())
       referenceView:nil
           underName:kVoiceSearchButtonGuide];
-  [_applicationHandler startVoiceSearch];
+  [_sceneHandler startVoiceSearch];
 }
 
 - (void)keyCommand_showSettings {
   RecordAction(UserMetricsAction("MobileKeyCommandShowSettings"));
-  [_applicationHandler showSettingsFromViewController:_viewController];
+  [_sceneHandler showSettingsFromViewController:_viewController];
 }
 
 - (void)keyCommand_stop {
@@ -526,7 +526,7 @@ using base::UserMetricsAction;
 
 - (void)keyCommand_reportAnIssue {
   RecordAction(UserMetricsAction("MobileKeyCommandReportAnIssue"));
-  [_applicationHandler
+  [_sceneHandler
       showReportAnIssueFromViewController:_viewController
                                    sender:UserFeedbackSender::KeyCommand];
 }
@@ -558,8 +558,8 @@ using base::UserMetricsAction;
 
 - (void)keyCommand_goToTabGrid {
   RecordAction(UserMetricsAction("MobileKeyCommandGoToTabGrid"));
-  [_applicationHandler prepareTabSwitcher];
-  [_applicationHandler displayTabGridInMode:TabGridOpeningMode::kDefault];
+  [_sceneHandler prepareTabSwitcher];
+  [_sceneHandler displayTabGridInMode:TabGridOpeningMode::kDefault];
 }
 
 - (void)keyCommand_clearBrowsingData {
@@ -613,14 +613,14 @@ using base::UserMetricsAction;
 - (void)openNewRegularTab {
   OpenNewTabCommand* newTabCommand = [OpenNewTabCommand command];
   newTabCommand.shouldFocusOmnibox = YES;
-  [_applicationHandler openURLInNewTab:newTabCommand];
+  [_sceneHandler openURLInNewTab:newTabCommand];
 }
 
 - (void)openNewIncognitoTab {
   OpenNewTabCommand* newIncognitoTabCommand =
       [OpenNewTabCommand incognitoTabCommand];
   newIncognitoTabCommand.shouldFocusOmnibox = YES;
-  [_applicationHandler openURLInNewTab:newIncognitoTabCommand];
+  [_sceneHandler openURLInNewTab:newIncognitoTabCommand];
 }
 
 - (void)showTabAtIndex:(NSUInteger)index {

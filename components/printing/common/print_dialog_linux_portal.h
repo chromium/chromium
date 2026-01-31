@@ -59,12 +59,9 @@ class COMPONENT_EXPORT(PRINTING) PrintDialogLinuxPortal
 
   // Response handlers for portal requests.
   void OnPreparePrintResponse(dbus_xdg::Results results);
-  void OnPrintResponse(dbus_xdg::Results results);
 
   // Instantiates and delegates to the fallback dialog.
   void UseFallback(bool has_selection);
-
-  void StartPrintRequest(const std::string& title, base::ScopedFD fd);
 
   raw_ptr<PrintingContextLinux> context_;
   PrintingContextLinux::PrintSettingsCallback callback_;

@@ -971,4 +971,3 @@ ResourceKey* makeSize(HFSPlusVolumeHeader* volumeHeader) {
   printf("making size data\n");
   return insertData(NULL, "size", 2, "", 0, false, (const char*)(&size), sizeof(SizeResource), 0);
 }
-

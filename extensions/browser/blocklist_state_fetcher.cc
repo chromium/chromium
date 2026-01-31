@@ -7,7 +7,6 @@
 #include <optional>
 #include <string>
 
-#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/strings/escape.h"
 #include "base/task/single_thread_task_runner.h"
@@ -53,7 +52,7 @@ void BlocklistStateFetcher::Request(const std::string& id,
     }
   }
 
-  bool request_already_sent = base::Contains(callbacks_, id);
+  bool request_already_sent = callbacks_.contains(id);
   callbacks_.insert(std::make_pair(id, std::move(callback)));
   if (request_already_sent) {
     return;

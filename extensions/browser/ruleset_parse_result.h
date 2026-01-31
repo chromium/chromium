@@ -26,7 +26,7 @@ struct RulesetParseResult {
   // Valid if `error` is std::nullopt. Clients should not use these fields in
   // case of a failure since these may be partially populated.
   std::vector<InstallWarning> warnings;
-  base::Value::Dict ruleset_install_prefs;
+  base::DictValue ruleset_install_prefs;
 };
 
 }  // namespace extensions

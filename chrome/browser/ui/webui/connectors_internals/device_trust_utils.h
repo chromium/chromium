@@ -8,8 +8,8 @@
 #include <optional>
 
 #include "build/build_config.h"
-#include "chrome/browser/ui/webui/connectors_internals/connectors_internals.mojom.h"
 #include "components/enterprise/buildflags/buildflags.h"
+#include "components/enterprise/connectors/connectors_internals.mojom.h"
 
 #if BUILDFLAG(ENTERPRISE_CLIENT_CERTIFICATES)
 #include "components/enterprise/client_certificates/core/client_identity.h"

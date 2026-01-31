@@ -28,6 +28,7 @@
 #include "build/build_config.h"
 #include "components/component_updater/component_updater_service.h"
 #include "components/component_updater/pref_names.h"
+#include "components/optimization_guide/core/delivery/model_store_metadata_entry.h"
 #include "components/optimization_guide/core/delivery/model_util.h"
 #include "components/optimization_guide/core/delivery/optimization_target_model_observer.h"
 #include "components/optimization_guide/core/delivery/prediction_model_download_manager.h"
@@ -103,10 +104,8 @@ std::unique_ptr<proto::GetModelsResponse> BuildGetModelsResponse(
   return get_models_response;
 }
 
-proto::ModelCacheKey GetTestModelCacheKey() {
-  proto::ModelCacheKey model_cache_key;
-  model_cache_key.set_locale(kTestLocale);
-  return model_cache_key;
+ClientCacheKey GetTestModelCacheKey() {
+  return ClientCacheKey::FromLocale(kTestLocale);
 }
 
 class FakeOptimizationTargetModelObserver

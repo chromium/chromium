@@ -29,14 +29,14 @@ class InstanceIdentityToken final {
 
   ~InstanceIdentityToken();
 
-  const base::Value::Dict& header() const { return header_; }
-  const base::Value::Dict& payload() const { return payload_; }
+  const base::DictValue& header() const { return header_; }
+  const base::DictValue& payload() const { return payload_; }
 
  private:
-  InstanceIdentityToken(base::Value::Dict header, base::Value::Dict payload);
+  InstanceIdentityToken(base::DictValue header, base::DictValue payload);
 
-  base::Value::Dict header_;
-  base::Value::Dict payload_;
+  base::DictValue header_;
+  base::DictValue payload_;
 };
 
 std::ostream& operator<<(std::ostream& out, const InstanceIdentityToken& token);

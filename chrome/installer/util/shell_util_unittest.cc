@@ -20,16 +20,23 @@
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/strings/string_util.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/synchronization/atomic_flag.h"
 #include "base/test/scoped_path_override.h"
 #include "base/test/test_reg_util_win.h"
 #include "base/test/test_shortcut_win.h"
 #include "base/win/registry.h"
 #include "base/win/shortcut.h"
+#include "build/branding_buildflags.h"
 #include "chrome/install_static/install_util.h"
 #include "chrome/installer/util/install_util.h"
 #include "chrome/installer/util/util_constants.h"
 #include "testing/gtest/include/gtest/gtest.h"
+
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+#include "chrome/install_static/google_chrome_install_modes.h"
+#include "chrome/install_static/test/scoped_install_details.h"
+#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
 namespace {
 
@@ -1198,8 +1205,7 @@ TEST_F(ShellUtilRegistryTest, GetAppName) {
   EXPECT_TRUE(empty_app_name.empty());
 
   // Add file associations and test that GetAppName returns the registered app
-  // name. Pass kTestApplicationName for the open command, to handle the Win 7
-  // case, which returns the open command executable name as the app_name.
+  // name.
   ASSERT_TRUE(ShellUtil::AddFileAssociations(
       kTestProgId, OpenCommand(), kTestApplicationName, kTestFileTypeName,
       base::FilePath(kTestIconPath), FileExtensions()));

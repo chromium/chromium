@@ -14,7 +14,7 @@
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/chromeos/app_mode/kiosk_web_app_install_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/blink/public/mojom/devtools/console_message.mojom-data-view.h"
+#include "third_party/blink/public/mojom/devtools/console_message.mojom-shared.h"
 
 namespace chromeos {
 

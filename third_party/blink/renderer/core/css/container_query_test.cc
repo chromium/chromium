@@ -32,9 +32,12 @@ namespace blink {
 class ContainerQueryTest : public PageTestBase {
  public:
   bool HasUnknown(StyleRuleContainer* rule) {
-    return rule && (ContainerSelector::CollectFeatureFlags(
-                        rule->GetContainerQuery().Query()) &
-                    ContainerSelector::kFeatureUnknown);
+    if (!rule) {
+      return false;
+    }
+    const ConditionalExpNode* query = rule->GetContainerQuery().Query();
+    return query && (ContainerSelector::CollectFeatureFlags(*query) &
+                     ContainerSelector::kFeatureUnknown);
   }
 
   enum class UnknownHandling {
@@ -82,7 +85,7 @@ class ContainerQueryTest : public PageTestBase {
     if (!query) {
       return ContainerSelector();
     }
-    return ContainerSelector(g_null_atom, GetInnerQuery(*query));
+    return ContainerSelector(g_null_atom, &GetInnerQuery(*query));
   }
 
   String SerializeCondition(StyleRuleContainer* container) {
@@ -93,7 +96,7 @@ class ContainerQueryTest : public PageTestBase {
   }
 
   const ConditionalExpNode& GetInnerQuery(ContainerQuery& container_query) {
-    return container_query.Query();
+    return *container_query.Query();
   }
 
   const CSSValue* ComputedValue(Element* element, String property_name) {
@@ -177,8 +180,10 @@ TEST_F(ContainerQueryTest, PreludeParsing) {
                 ParseAtContainer("@container test_name ((max-width: 500px) "
                                  "or (max-height: 500px)) {}")));
 
+  EXPECT_EQ("test_name",
+            SerializeCondition(ParseAtContainer("@container test_name {}")));
+
   // Invalid:
-  EXPECT_FALSE(ParseAtContainer("@container test_name {}"));
   EXPECT_FALSE(ParseAtContainer("@container 100px {}"));
   EXPECT_FALSE(ParseAtContainer("@container calc(1) {}"));
   EXPECT_FALSE(ParseAtContainer("@container {}"));

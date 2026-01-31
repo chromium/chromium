@@ -115,7 +115,7 @@ void GamepadPlatformDataFetcherAndroid::OnAddedToProvider() {
 
 void GamepadPlatformDataFetcherAndroid::SetDualRumbleVibrationActuator(
     int source_id) {
-  DCHECK(!base::Contains(vibration_actuators_, source_id));
+  DCHECK(!vibration_actuators_.contains(source_id));
   vibration_actuators_.emplace(
       source_id, std::make_unique<HapticGamepadAndroid>(source_id));
 }
@@ -197,18 +197,18 @@ void GamepadPlatformDataFetcherAndroid::ResetVibration(
 }
 
 static void JNI_GamepadList_SetGamepadData(JNIEnv* env,
-                                           jlong data_fetcher,
-                                           jint index,
-                                           jboolean mapping,
-                                           jboolean connected,
+                                           int64_t data_fetcher,
+                                           int32_t index,
+                                           bool mapping,
+                                           bool connected,
                                            const JavaRef<jstring>& devicename,
-                                           jint vendor_id,
-                                           jint product_id,
-                                           jlong timestamp,
+                                           int32_t vendor_id,
+                                           int32_t product_id,
+                                           int64_t timestamp,
                                            const JavaRef<jfloatArray>& jaxes,
                                            const JavaRef<jfloatArray>& jbuttons,
-                                           jint buttons_length,
-                                           jboolean supports_dual_rumble) {
+                                           int32_t buttons_length,
+                                           bool supports_dual_rumble) {
   DCHECK(data_fetcher);
   GamepadPlatformDataFetcherAndroid* fetcher =
       reinterpret_cast<GamepadPlatformDataFetcherAndroid*>(data_fetcher);

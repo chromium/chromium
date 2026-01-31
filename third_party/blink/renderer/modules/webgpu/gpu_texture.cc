@@ -6,12 +6,15 @@
 
 #include "base/containers/heap_array.h"
 #include "gpu/command_buffer/client/webgpu_interface.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_gpu_feature_name.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_gpu_texture_descriptor.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_gpu_texture_view_descriptor.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_union_gputextureviewdimension_undefined.h"
 #include "third_party/blink/renderer/core/html/canvas/canvas_rendering_context.h"
 #include "third_party/blink/renderer/core/html/canvas/html_canvas_element.h"
 #include "third_party/blink/renderer/modules/webgpu/dawn_conversions.h"
 #include "third_party/blink/renderer/modules/webgpu/gpu_device.h"
+#include "third_party/blink/renderer/modules/webgpu/gpu_supported_features.h"
 #include "third_party/blink/renderer/modules/webgpu/gpu_texture_usage.h"
 #include "third_party/blink/renderer/modules/webgpu/gpu_texture_view.h"
 #include "third_party/blink/renderer/platform/graphics/accelerated_static_bitmap_image.h"
@@ -235,6 +238,8 @@ GPUTexture::GPUTexture(GPUDevice* device,
                        const String& label)
     : DawnObject<wgpu::Texture>(device, std::move(texture), label),
       dimension_(GetHandle().GetDimension()),
+      texture_binding_view_dimension_(
+          GetHandle().GetTextureBindingViewDimension()),
       format_(GetHandle().GetFormat()),
       usage_(GetHandle().GetUsage()) {}
 
@@ -253,6 +258,10 @@ GPUTexture::GPUTexture(GPUDevice* device,
 
   // Mailbox textures are all 2d texture.
   dimension_ = wgpu::TextureDimension::e2D;
+  texture_binding_view_dimension_ =
+      device->features()->Has(V8GPUFeatureName::Enum::kCoreFeaturesAndLimits)
+          ? wgpu::TextureViewDimension::Undefined
+          : wgpu::TextureViewDimension::e2D;
 }
 
 GPUTextureView* GPUTexture::createView(
@@ -327,6 +336,19 @@ uint32_t GPUTexture::sampleCount() const {
 
 V8GPUTextureDimension GPUTexture::dimension() const {
   return FromDawnEnum(GetHandle().GetDimension());
+}
+
+V8UnionGPUTextureViewDimensionOrUndefined*
+GPUTexture::textureBindingViewDimension() const {
+  wgpu::TextureViewDimension viewDimension =
+      GetHandle().GetTextureBindingViewDimension();
+  if (viewDimension == wgpu::TextureViewDimension::Undefined) {
+    return MakeGarbageCollected<V8UnionGPUTextureViewDimensionOrUndefined>(
+        ToV8UndefinedGenerator());
+  } else {
+    return MakeGarbageCollected<V8UnionGPUTextureViewDimensionOrUndefined>(
+        FromDawnEnum(viewDimension));
+  }
 }
 
 V8GPUTextureFormat GPUTexture::format() const {

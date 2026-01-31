@@ -26,7 +26,7 @@ namespace extensions {
 namespace {
 
 void AddAllSyncData(const ExtensionId& extension_id,
-                    const base::Value::Dict& src,
+                    const base::DictValue& src,
                     syncer::DataType type,
                     syncer::SyncDataList* dst) {
   for (auto it : src) {
@@ -35,8 +35,8 @@ void AddAllSyncData(const ExtensionId& extension_id,
   }
 }
 
-base::Value::Dict EmptyDict() {
-  return base::Value::Dict();
+base::DictValue EmptyDict() {
+  return base::DictValue();
 }
 
 value_store_util::ModelType ToFactoryModelType(syncer::DataType sync_type) {
@@ -78,7 +78,7 @@ value_store::ValueStore* SyncStorageBackend::GetStorage(
 
 SyncableSettingsStorage* SyncStorageBackend::GetOrCreateStorageWithSyncData(
     const ExtensionId& extension_id,
-    base::Value::Dict sync_data) const {
+    base::DictValue sync_data) const {
   DCHECK(IsOnBackendSequence());
 
   auto maybe_storage = storage_objs_.find(extension_id);
@@ -166,11 +166,11 @@ std::optional<syncer::ModelError> SyncStorageBackend::MergeDataAndStartSyncing(
   sync_processor_ = std::move(sync_processor);
 
   // Group the initial sync data by extension id.
-  std::map<ExtensionId, base::Value::Dict> grouped_sync_data;
+  std::map<ExtensionId, base::DictValue> grouped_sync_data;
 
   for (const syncer::SyncData& sync_data : initial_sync_data) {
     SettingSyncData data(sync_data);
-    base::Value::Dict& settings = grouped_sync_data[data.extension_id()];
+    base::DictValue& settings = grouped_sync_data[data.extension_id()];
     DCHECK(!settings.Find(data.key()))
         << "Duplicate settings for " << data.extension_id() << "/"
         << data.key();

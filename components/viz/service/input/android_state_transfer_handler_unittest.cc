@@ -54,8 +54,8 @@ MATCHER_P2(EqXYInPixels, x, y, "Matches x,y values of MotionEvent") {
   }
 }
 
-base::android::ScopedInputEvent GetInputEvent(jlong down_time_ms,
-                                              jlong event_time_ms,
+base::android::ScopedInputEvent GetInputEvent(int64_t down_time_ms,
+                                              int64_t event_time_ms,
                                               int action,
                                               float x,
                                               float y) {
@@ -95,7 +95,7 @@ TestInputStream GenerateEventsForSequence(int num_moves,
   x += 5;
   y += 5;
 
-  jlong down_time = event_time.ToUptimeMillis();
+  int64_t down_time = event_time.ToUptimeMillis();
   event_stream.down_time_ms = base::TimeTicks::FromUptimeMillis(down_time);
   event_stream.events.push_back(GetInputEvent(
       down_time, event_time.ToUptimeMillis(), kAndroidActionDown, x, y));
@@ -630,7 +630,7 @@ TEST_F(AndroidStateTransferHandlerTest, OlderStatesAreDropped) {
 
 TEST_F(AndroidStateTransferHandlerTest, DownEventUsesDownTimeAsEventTime) {
   base::TimeTicks event_time = base::TimeTicks::Now() - base::Milliseconds(100);
-  const jlong down_time_ms = event_time.ToUptimeMillis();
+  const int64_t down_time_ms = event_time.ToUptimeMillis();
   const base::TimeTicks down_time =
       base::TimeTicks::FromUptimeMillis(down_time_ms);
 
@@ -664,7 +664,7 @@ TEST_F(AndroidStateTransferHandlerTest, DownEventUsesDownTimeAsEventTime) {
 TEST_F(AndroidStateTransferHandlerTest,
        SystemTransfersFollowupSequenceIsNotDropped) {
   base::TimeTicks event_time = base::TimeTicks::Now() - base::Milliseconds(100);
-  jlong down_time_ms = event_time.ToUptimeMillis();
+  int64_t down_time_ms = event_time.ToUptimeMillis();
   base::TimeTicks down_time = base::TimeTicks::FromUptimeMillis(down_time_ms);
 
   {
@@ -748,6 +748,42 @@ TEST_F(AndroidStateTransferHandlerTest,
   for (auto& event : event_stream2.events) {
     handler_.OnMotionEvent(std::move(event), kRootCompositorFrameSinkId);
   }
+}
+
+TEST_F(AndroidStateTransferHandlerTest, FirstSequenceTransferredBackToBrowser) {
+  TestInputStream event_stream_1 = GenerateEventsForSequence(
+      /*num_moves*/ 1,
+      /*include_touch_up*/ true);
+
+  TestInputStream event_stream_2 = GenerateEventsForSequence(
+      /*num_moves*/ 1,
+      /*include_touch_up*/ false);
+
+  auto state1 = input::mojom::TouchTransferState::New();
+  state1->down_time_ms = event_stream_1.down_time_ms;
+  state1->browser_would_have_handled = true;
+
+  auto state2 = input::mojom::TouchTransferState::New();
+  state2->down_time_ms = event_stream_2.down_time_ms;
+  state2->root_widget_frame_sink_id = kRootWidgetFrameSinkId;
+
+  for (auto& event : event_stream_1.events) {
+    handler_.OnMotionEvent(std::move(event), kRootCompositorFrameSinkId);
+  }
+  for (auto& event : event_stream_2.events) {
+    handler_.OnMotionEvent(std::move(event), kRootCompositorFrameSinkId);
+  }
+  EXPECT_EQ(handler_.GetEventsBufferSizeForTesting(), 5u);
+
+  EXPECT_CALL(mock_rir_support_, OnTouchEvent(_, _)).Times(0);
+  handler_.StateOnTouchTransfer(std::move(state1),
+                                mock_rir_support_.GetWeakPtr());
+  EXPECT_EQ(handler_.GetEventsBufferSizeForTesting(), 2u);
+
+  EXPECT_CALL(mock_rir_support_, OnTouchEvent(_, _)).Times(2);
+  handler_.StateOnTouchTransfer(std::move(state2),
+                                mock_rir_support_.GetWeakPtr());
+  EXPECT_EQ(handler_.GetEventsBufferSizeForTesting(), 0u);
 }
 
 }  // namespace viz

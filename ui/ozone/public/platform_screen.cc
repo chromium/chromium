@@ -51,9 +51,9 @@ base::TimeDelta PlatformScreen::CalculateIdleTime() const {
   return base::Seconds(0);
 }
 
-base::Value::List PlatformScreen::GetGpuExtraInfo(
+base::ListValue PlatformScreen::GetGpuExtraInfo(
     const gfx::GpuExtraInfo& gpu_extra_info) {
-  return base::Value::List();
+  return base::ListValue();
 }
 
 std::optional<float>
@@ -67,9 +67,9 @@ bool PlatformScreen::IsHeadless() const {
 }
 
 void PlatformScreen::StorePlatformNameIntoListOfValues(
-    base::Value::List& values,
+    base::ListValue& values,
     const std::string& platform_name) {
-  base::Value::Dict dict;
+  base::DictValue dict;
   dict.Set("description", "Ozone platform");
   dict.Set("value", platform_name);
   values.Append(std::move(dict));

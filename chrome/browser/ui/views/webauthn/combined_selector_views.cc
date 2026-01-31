@@ -50,6 +50,35 @@ namespace {
 // grouping from any parent views.
 constexpr static int kGroupId = 1327;
 
+// Calculates the texts to be displayed for a given mechanism.
+// The texts are returned in the order they should be displayed in the
+// CombinedSelectorRowView.
+// - The first text is the name of the mechanism (title).
+// - The second text (if present) is the display name or the
+//   origin if it's a password mechanism.
+// - The last text is the description (e.g.
+// "IDS_PASSWORD_MANAGER_PASSKEY_FROM_GOOGLE_PASSWORD_MANAGER").
+std::vector<std::u16string_view> GetTextsForMechanism(
+    const AuthenticatorRequestDialogModel::Mechanism& mechanism) {
+  std::vector<std::u16string_view> texts;
+  if (mechanism.display_name.empty() ||
+      mechanism.display_name == mechanism.name) {
+    texts.push_back(mechanism.name);
+  } else {
+    texts.push_back(mechanism.display_name);
+    texts.push_back(mechanism.name);
+  }
+  if (const auto* password =
+          std::get_if<AuthenticatorRequestDialogModel::Mechanism::Password>(
+              &mechanism.type)) {
+    if (password->value().origin) {
+      texts.push_back(*password->value().origin);
+    }
+  }
+  texts.push_back(mechanism.description);
+  return texts;
+}
+
 }  // namespace
 
 CombinedSelectorRadioButton::CombinedSelectorRadioButton(Delegate* delegate,
@@ -245,13 +274,7 @@ CombinedSelectorListView::CombinedSelectorListView(
     const auto& mechanism = model->dialog_model()->mechanisms[i];
     auto image_model =
         ui::ImageModel::FromVectorIcon(*mechanism.icon, ui::kColorIcon, 20);
-    auto texts = mechanism.display_name.empty() ||
-                         (mechanism.display_name == mechanism.name)
-                     ? std::vector<std::u16string_view>{mechanism.name,
-                                                        mechanism.description}
-                     : std::vector<std::u16string_view>{mechanism.display_name,
-                                                        mechanism.name,
-                                                        mechanism.description};
+    auto texts = GetTextsForMechanism(mechanism);
     auto* row = wrapper->AddChildView(std::make_unique<CombinedSelectorRowView>(
         image_model, std::move(texts), model->GetSelectionStatus(i),
         !model->dialog_model()->ui_disabled_, delegate, i));

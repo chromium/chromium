@@ -86,7 +86,7 @@ std::unique_ptr<extensions::Event> BuildOnCertificatesUpdateRequestedEvent(
     int request_id) {
   api_cp::CertificatesUpdateRequest certificates_update_request;
   certificates_update_request.certificates_request_id = request_id;
-  base::Value::List event_args;
+  base::ListValue event_args;
   event_args.Append(certificates_update_request.ToValue());
   return std::make_unique<extensions::Event>(
       extensions::events::CERTIFICATEPROVIDER_ON_CERTIFICATES_UPDATE_REQUESTED,
@@ -96,7 +96,7 @@ std::unique_ptr<extensions::Event> BuildOnCertificatesUpdateRequestedEvent(
 // Constructs the legacy "onCertificatesRequested" event.
 std::unique_ptr<extensions::Event> BuildOnCertificatesRequestedEvent(
     int request_id) {
-  base::Value::List event_args;
+  base::ListValue event_args;
   event_args.Append(request_id);
   return std::make_unique<extensions::Event>(
       extensions::events::CERTIFICATEPROVIDER_ON_CERTIFICATES_REQUESTED,
@@ -142,7 +142,7 @@ std::unique_ptr<extensions::Event> BuildOnSignatureRequestedEvent(
       net::x509_util::CryptoBufferAsStringPiece(certificate.cert_buffer());
   request.certificate.assign(cert_der.begin(), cert_der.end());
 
-  base::Value::List event_args;
+  base::ListValue event_args;
   event_args.Append(request.ToValue());
 
   return std::make_unique<extensions::Event>(
@@ -190,7 +190,7 @@ std::unique_ptr<extensions::Event> BuildOnSignDigestRequestedEvent(
   }
   request.digest.resize(digest_len);
 
-  base::Value::List event_args;
+  base::ListValue event_args;
   event_args.Append(request_id);
   event_args.Append(request.ToValue());
 

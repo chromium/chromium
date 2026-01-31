@@ -1,0 +1,24 @@
+/* Copyright 2025 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+/* #css_wrapper_metadata_start
+ * #type=style-lit
+ * #scheme=relative
+ * #import=chrome://resources/cr_elements/cr_shared_vars.css.js
+ * #css_wrapper_metadata_end */
+
+.filter-menu-item {
+  padding: 8px 16px;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.filter-menu-item:focus,
+.filter-menu-item:hover {
+  background: var(--cr-hover-background-color);
+}
+
+.filter-menu-item input[type='checkbox'] {
+  margin-inline-end: 8px;
+}

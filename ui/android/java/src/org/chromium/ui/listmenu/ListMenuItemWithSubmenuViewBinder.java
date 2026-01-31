@@ -15,6 +15,7 @@ import static org.chromium.ui.listmenu.ListMenuItemProperties.IS_HIGHLIGHTED;
 import static org.chromium.ui.listmenu.ListMenuItemProperties.KEY_LISTENER;
 import static org.chromium.ui.listmenu.ListMenuItemProperties.START_ICON_BITMAP;
 import static org.chromium.ui.listmenu.ListMenuItemProperties.TITLE;
+import static org.chromium.ui.listmenu.ListMenuItemProperties.TOOLTIP;
 
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
@@ -42,6 +43,8 @@ class ListMenuItemWithSubmenuViewBinder {
             textView.setText(model.get(TITLE));
         } else if (propertyKey == CONTENT_DESCRIPTION) {
             view.setContentDescription(model.get(CONTENT_DESCRIPTION));
+        } else if (propertyKey == TOOLTIP) {
+            view.setTooltipText(model.get(TOOLTIP));
         } else if (propertyKey == START_ICON_BITMAP) {
             ImageView icon = view.findViewById(org.chromium.ui.R.id.menu_item_icon);
             Bitmap bitmap = model.get(ListMenuItemProperties.START_ICON_BITMAP);

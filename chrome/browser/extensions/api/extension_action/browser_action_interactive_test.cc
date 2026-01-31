@@ -24,7 +24,7 @@
 #include "chrome/browser/ui/extensions/extension_action_test_helper.h"
 #include "chrome/browser/ui/toolbar/toolbar_action_view_model.h"
 #include "chrome/browser/ui/toolbar/toolbar_actions_model.h"
-#include "chrome/browser/ui/views/extensions/extensions_toolbar_container.h"
+#include "chrome/browser/ui/views/extensions/extensions_toolbar_desktop.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/test/base/interactive_test_utils.h"
@@ -260,7 +260,7 @@ class BrowserActionInteractiveTest : public ExtensionApiTest {
     base::RunLoop().RunUntilIdle();
   }
 
-  ExtensionsToolbarContainer* extensions_container() {
+  ExtensionsToolbarDesktop* extensions_container() {
     return browser()->GetBrowserView().toolbar()->extensions_container();
   }
 
@@ -995,7 +995,8 @@ class NavigatingExtensionPopupInteractiveTest
 
     // Verify extension's action exists.
     ToolbarActionViewModel* model =
-        extensions_container()->GetActionForId(popup_extension().id());
+        extensions_container()->GetToolbarViewModel()->GetActionForId(
+            popup_extension().id());
     ASSERT_TRUE(model);
 
     // Trigger the extension's popup by executing its action.

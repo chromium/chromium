@@ -24,8 +24,8 @@ import org.chromium.chrome.browser.back_press.BackPressMetrics;
 import org.chromium.chrome.browser.back_press.BackPressMetrics.CaptureNativeViewResult;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.ui.native_page.NativePage;
-import org.chromium.components.embedder_support.delegate.ScreenshotResult;
 import org.chromium.ui.resources.dynamics.CaptureObserver;
+import org.chromium.ui.resources.dynamics.CaptureResult;
 import org.chromium.ui.resources.dynamics.CaptureUtils;
 import org.chromium.url.GURL;
 
@@ -54,8 +54,8 @@ public class NativePageBitmapCapturer {
      */
     public static boolean maybeCaptureNativeView(
             Tab tab,
-            Callback<@Nullable ScreenshotResult> callback,
-            ScreenshotResult.Destination destination) {
+            Callback<@Nullable CaptureResult> callback,
+            @CaptureResult.Destination int destination) {
         if (!isCapturable(tab)) {
             return false;
         }
@@ -100,11 +100,10 @@ public class NativePageBitmapCapturer {
                     callback,
                     destination);
         } else {
-            assert destination == ScreenshotResult.Destination.BITMAP;
+            assert destination == CaptureResult.Destination.BITMAP;
             Bitmap bitmap = capture(tab, false, 0);
             PostTask.postTask(
-                    TaskTraits.UI_USER_VISIBLE,
-                    () -> callback.onResult(new ScreenshotResult(bitmap)));
+                    TaskTraits.UI_USER_VISIBLE, () -> callback.onResult(new CaptureResult(bitmap)));
         }
         return true;
     }

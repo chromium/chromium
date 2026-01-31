@@ -4,7 +4,6 @@
 
 #include "chrome/browser/navigation_predictor/search_engine_preconnector.h"
 
-#include "base/containers/contains.h"
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -107,7 +106,7 @@ class SearchEnginePreconnectorBrowserTest
     }
 
     const GURL origin = url.DeprecatedGetOriginAsURL();
-    if (!base::Contains(preresolve_counts_, origin)) {
+    if (!preresolve_counts_.contains(origin)) {
       return;
     }
 
@@ -121,7 +120,7 @@ class SearchEnginePreconnectorBrowserTest
 
   void WaitForPreresolveCountForURL(const GURL& url, int expected_count) {
     const GURL origin = url.DeprecatedGetOriginAsURL();
-    EXPECT_TRUE(base::Contains(preresolve_counts_, origin));
+    EXPECT_TRUE(preresolve_counts_.contains(origin));
     while (preresolve_counts_[origin] < expected_count) {
       run_loops_[origin] = std::make_unique<base::RunLoop>();
       run_loops_[origin]->Run();
@@ -1137,7 +1136,7 @@ class SearchEnginePreconnectorWithBindReceiversEverytimeFeatureBrowserTest
     }
 
     const GURL origin = url.DeprecatedGetOriginAsURL();
-    if (!base::Contains(preresolve_counts_, origin)) {
+    if (!preresolve_counts_.contains(origin)) {
       return;
     }
 

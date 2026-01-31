@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<input type=date>
+<script>
+  testRunner.dumpAsText();
+  const input = document.querySelector('input');
+  const pickerIcon = internals.shadowRoot(input).querySelector('#picker');
+  pickerIcon.focus();
+
+  input.style = 'color-scheme: light';
+  const lightColor = getComputedStyle(pickerIcon).outlineColor;
+
+  input.style = 'color-scheme: dark';
+  const darkColor = getComputedStyle(pickerIcon).outlineColor;
+
+  input.remove();
+  document.body.appendChild(document.createTextNode('lightColor: ' + lightColor + ', darkColor: ' + darkColor));
+</script>

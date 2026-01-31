@@ -429,9 +429,7 @@ public class TabUiTestHelper {
                     }
                     createTabGroup(cta, isIncognito, tabGroup);
                     TabGroupModelFilter filter =
-                            cta.getTabModelSelector()
-                                    .getTabGroupModelFilterProvider()
-                                    .getTabGroupModelFilter(isIncognito);
+                            cta.getTabModelSelector().getTabGroupModelFilter(isIncognito);
                     assertEquals(1, filter.getTabGroupCount());
                     assertEquals(1, filter.getIndividualTabAndGroupCount());
                 });
@@ -505,10 +503,7 @@ public class TabUiTestHelper {
     public static void createTabGroup(
             ChromeTabbedActivity cta, boolean isIncognito, List<Tab> tabs) {
         if (tabs.size() == 0) return;
-        TabGroupModelFilter filter =
-                cta.getTabModelSelector()
-                        .getTabGroupModelFilterProvider()
-                        .getTabGroupModelFilter(isIncognito);
+        TabGroupModelFilter filter = cta.getTabModelSelector().getTabGroupModelFilter(isIncognito);
         Tab rootTab = tabs.get(0);
         for (int i = 1; i < tabs.size(); i++) {
             Tab tab = tabs.get(i);

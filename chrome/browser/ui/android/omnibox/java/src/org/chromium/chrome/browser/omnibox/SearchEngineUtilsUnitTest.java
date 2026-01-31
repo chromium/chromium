@@ -21,6 +21,8 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.robolectric.Shadows.shadowOf;
 
+import static org.chromium.chrome.browser.url_constants.UrlConstantResolver.getOriginalNativeNtpUrl;
+
 import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
@@ -51,7 +53,6 @@ import org.chromium.chrome.browser.omnibox.test.R;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.chrome.browser.ui.favicon.FaviconHelper;
-import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.metrics.OmniboxEventProtos.OmniboxEventProto.PageClassification;
 import org.chromium.components.omnibox.AutocompleteRequestType;
 import org.chromium.components.search_engines.TemplateUrl;
@@ -221,7 +222,7 @@ public class SearchEngineUtilsUnitTest {
 
     private void verifyNoSearchEngineSpecificDataInCache() {
         var jumpStartContext = CachedZeroSuggestionsManager.readJumpStartContext();
-        assertEquals(UrlConstants.NTP_URL, jumpStartContext.url.getSpec());
+        assertEquals(getOriginalNativeNtpUrl(), jumpStartContext.url.getSpec());
         assertEquals(
                 PageClassification.INSTANT_NTP_WITH_OMNIBOX_AS_STARTING_FOCUS_VALUE,
                 jumpStartContext.pageClass);

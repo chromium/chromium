@@ -4,11 +4,11 @@
 
 #include "third_party/blink/renderer/core/view_transition/view_transition_style_tracker.h"
 
+#include <algorithm>
 #include <limits>
 #include <unordered_map>
 
 #include "base/check.h"
-#include "base/containers/contains.h"
 #include "cc/base/features.h"
 #include "components/viz/common/view_transition_element_resource_id.h"
 #include "third_party/blink/public/common/features.h"
@@ -600,7 +600,7 @@ void ViewTransitionStyleTracker::AddTransitionElement(
                                });
   }
   // Find the existing name if one is there. If it is there, do nothing.
-  if (base::Contains(value, name, &std::pair<AtomicString, int>::first))
+  if (std::ranges::contains(value, name, &std::pair<AtomicString, int>::first))
     return;
   // Otherwise, insert a new sequence id with this name. We'll use the sequence
   // to sort later.
@@ -736,15 +736,14 @@ void ViewTransitionStyleTracker::AddTransitionElementsFromCSSRecursive(
   // (unless changed by something like z-index on the pseudo-elements).
   auto& root_object = root->GetLayoutObject();
   auto& root_style = root_object.StyleRef();
-
-  if ((root_style.Contain() & kContainsViewTransition) && element_ &&
-      (root_object.GetNode() != *element_)) {
-    // Having "contain: view-transition" on a descendant of the scoped element
-    // halts propagation of tag discovery into the descendant's subtree.
-    // If the scoped element itself has "contain: view-transition", the tag
+  if (element_ && (root_object.GetNode() != *element_) &&
+      (root_style.ViewTransitionScope() == EViewTransitionScope::kAuto)) {
+    // Having "view-transition-scope: auto" on a descendant of the scoped
+    // element halts propagation of tag discovery into the descendant's subtree.
+    // If the scoped element itself has "view-transition-scope: auto", the tag
     // discovery process proceeds normally.
-    // TODO(crbug.com/422522044): Should "contain: strict" include
-    // view-transition
+    // TODO(crbug.com/478214441): Handle "view-transition-scope: auto" on an
+    // element with "display: contents".
     return;
   }
 

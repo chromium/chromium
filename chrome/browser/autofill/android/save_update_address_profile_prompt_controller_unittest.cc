@@ -311,7 +311,9 @@ TEST_F(SaveUpdateAddressProfilePromptControllerTest,
   sync_service_.GetUserSettings()->SetSelectedTypes(
       /*sync_everything=*/false,
       /*types=*/{syncer::UserSelectableType::kAutofill});
-  SigninUser();
+  identity_test_env_.MakePrimaryAccountAvailable(kUserEmail,
+                                                 signin::ConsentLevel::kSync);
+  sync_service_.SetSignedIn(signin::ConsentLevel::kSync);
   SetUpController(SaveUpdateAddressProfilePromptMode::kMigrateProfile);
 
   EXPECT_EQ(l10n_util::GetStringUTF16(

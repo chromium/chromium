@@ -497,6 +497,7 @@ public class ExternalNavigationHandler {
         OverrideUrlLoadingResultType.NO_OVERRIDE,
         OverrideUrlLoadingResultType.OVERRIDE_CLOSING_AFTER_AUTH,
         OverrideUrlLoadingResultType.OVERRIDE_WITH_REPARENT_TO_BROWSER,
+        OverrideUrlLoadingResultType.OVERRIDE_WITH_REPARENT_TO_NEW_WINDOW,
         OverrideUrlLoadingResultType.NUM_ENTRIES
     })
     @Retention(RetentionPolicy.SOURCE)
@@ -515,7 +516,10 @@ public class ExternalNavigationHandler {
         /* We should move the navigation to a browser window. */
         int OVERRIDE_WITH_REPARENT_TO_BROWSER = 5;
 
-        int NUM_ENTRIES = 6;
+        /* We should move the navigation to a new window. */
+        int OVERRIDE_WITH_REPARENT_TO_NEW_WINDOW = 6;
+
+        int NUM_ENTRIES = 7;
     }
 
     // LINT.ThenChange(:printDebugShouldOverrideUrlLoadingResultType)
@@ -636,6 +640,12 @@ public class ExternalNavigationHandler {
         public static OverrideUrlLoadingResult forReparentToBrowser() {
             return new OverrideUrlLoadingResult(
                     OverrideUrlLoadingResultType.OVERRIDE_WITH_REPARENT_TO_BROWSER);
+        }
+
+        /** Use this result when the navigation should be moved to a new window. */
+        public static OverrideUrlLoadingResult forReparentToNewWindow() {
+            return new OverrideUrlLoadingResult(
+                    OverrideUrlLoadingResultType.OVERRIDE_WITH_REPARENT_TO_NEW_WINDOW);
         }
     }
 
@@ -790,6 +800,9 @@ public class ExternalNavigationHandler {
                 break;
             case OverrideUrlLoadingResultType.OVERRIDE_WITH_REPARENT_TO_BROWSER:
                 resultString = "OVERRIDE_WITH_REPARENT_TO_BROWSER";
+                break;
+            case OverrideUrlLoadingResultType.OVERRIDE_WITH_REPARENT_TO_NEW_WINDOW:
+                resultString = "OVERRIDE_WITH_REPARENT_TO_NEW_WINDOW";
                 break;
             case OverrideUrlLoadingResultType.NO_OVERRIDE: // Fall through.
             default:
@@ -1214,6 +1227,8 @@ public class ExternalNavigationHandler {
 
         if (params.getRedirectHandler().canInitialNavigationLeaveChrome()) return false;
 
+        if (mDelegate.wasTabLaunchedFromLinkCreatingNewWindow()) return false;
+
         if (debug()) Log.i(TAG, "Initial intent navigation.");
         return true;
     }
@@ -1301,6 +1316,10 @@ public class ExternalNavigationHandler {
                 && UrlUtilities.isHttpOrHttps(params.getUrl())) {
             if (debug()) Log.i(TAG, "No specialized handler found, reparent to browser.");
             return OverrideUrlLoadingResult.forReparentToBrowser();
+        }
+        if (mDelegate.shouldLaunchNewWindow(params)) {
+            if (debug()) Log.i(TAG, "No specialized handler found, reparent to new window.");
+            return OverrideUrlLoadingResult.forReparentToNewWindow();
         }
         if (debug()) Log.i(TAG, "No specialized handler for URL");
         return OverrideUrlLoadingResult.forNoOverride();
@@ -1805,7 +1824,9 @@ public class ExternalNavigationHandler {
             return OverrideUrlLoadingResult.forNoOverride();
         }
 
-        if (isLinkFromChromeInternalPage(params)) return OverrideUrlLoadingResult.forNoOverride();
+        if (isLinkFromChromeInternalPage(params)) {
+            return OverrideUrlLoadingResult.forNoOverride();
+        }
 
         if (isDirectFormSubmit(params, isExternalProtocol)) {
             return OverrideUrlLoadingResult.forNoOverride();
@@ -1819,6 +1840,11 @@ public class ExternalNavigationHandler {
         }
 
         if (isYoutubePairingCode(params.getUrl())) return OverrideUrlLoadingResult.forNoOverride();
+
+        if (mDelegate.shouldLaunchNewWindow(params) && !params.isTabInPWA()) {
+            if (debug()) Log.i(TAG, "Launch new window from a non-PWA.");
+            return OverrideUrlLoadingResult.forReparentToNewWindow();
+        }
 
         if (shouldStayInIncognito(params, isExternalProtocol)) {
             return OverrideUrlLoadingResult.forNoOverride();
@@ -1845,6 +1871,19 @@ public class ExternalNavigationHandler {
         }
 
         boolean shouldReturnAsResult = mDelegate.shouldReturnAsActivityResult(intentTargetUrl);
+
+        // TODO(crbug.com/450253146): Revisit the logic here because we're not handling everything
+        // correctly yet.
+        if (maybeSetAppForCurrentPage(
+                mDelegate.shouldSetAppForCurrentPage(),
+                params,
+                shouldReturnAsResult,
+                targetIntent)) {
+            return OverrideUrlLoadingResult.forNoOverride();
+        } else {
+            clearAppForCurrentPage();
+        }
+
         @NavigationChainResult
         int navigationChainResult =
                 navigationChainBlocksExternalNavigation(
@@ -1912,6 +1951,10 @@ public class ExternalNavigationHandler {
                 targetIntent.getExtras() != null && !targetIntent.getExtras().isEmpty();
         prepareExternalIntent(targetIntent, params, resolvingInfos.get());
 
+        if (mDelegate.shouldSelfNavigationLaunchAsMultipleTask(params)) {
+            targetIntent.addFlags(Intent.FLAG_ACTIVITY_MULTIPLE_TASK);
+        }
+
         if (params.isIncognito()) {
             return handleIncognitoIntent(
                     params,
@@ -1951,6 +1994,7 @@ public class ExternalNavigationHandler {
                         params);
             }
         }
+
         return startActivity(
                 targetIntent,
                 params,
@@ -1959,6 +2003,50 @@ public class ExternalNavigationHandler {
                 resolveActivity,
                 browserFallbackUrl,
                 intentTargetUrl);
+    }
+
+    private boolean maybeSetAppForCurrentPage(
+            boolean shouldSetAppForCurrentPage,
+            ExternalNavigationParams params,
+            boolean shouldReturnAsResult,
+            Intent targetIntent) {
+        if (!shouldSetAppForCurrentPage
+                || !UrlUtilities.isHttpOrHttps(params.getUrl())
+                || shouldReturnAsResult) {
+            return false;
+        }
+
+        var resolveActivity = new ResolveActivitySupplier(targetIntent).get();
+        if (resolveActivity == null) return false;
+
+        Context context = mDelegate.getContext();
+        if (context == null) return false;
+
+        var targetPackage = resolveActivity.activityInfo.packageName;
+
+        // We're setting the package explicitly to make sure the app that this intent launches
+        // matches what's expected based on the other data in resolveActivity.
+        targetIntent.setPackage(targetPackage);
+
+        Context activity = ContextUtils.activityFromContext(context);
+        if (activity == null) {
+            context = ContextUtils.getApplicationContext();
+            targetIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        }
+        if (debug()) {
+            Log.i(TAG, "Setting app for current page to package: " + targetPackage);
+        }
+        var finalContext = context;
+        mDelegate.setAppForCurrentPage(
+                resolveActivity, () -> doStartActivity(targetIntent, finalContext));
+        return true;
+    }
+
+    private void clearAppForCurrentPage() {
+        if (debug()) {
+            Log.i(TAG, "Clearing app for current page.");
+        }
+        mDelegate.clearAppForCurrentPage();
     }
 
     // https://crbug.com/1249964
@@ -2196,6 +2284,11 @@ public class ExternalNavigationHandler {
         String packageName = pickWebApkIfSoleIntentHandler(params, resolvingInfos);
         if (packageName == null) return false;
 
+        if (mDelegate.shouldLaunchNewWindow(params)) {
+            if (debug()) Log.i(TAG, "Launching WebAPK in a new window");
+            targetIntent.addFlags(Intent.FLAG_ACTIVITY_MULTIPLE_TASK);
+        }
+
         Intent webApkIntent = new Intent(targetIntent);
         webApkIntent.setPackage(packageName);
         try {
@@ -2368,29 +2461,37 @@ public class ExternalNavigationHandler {
             params.getRedirectHandler().setShouldNotOverrideUrlLoadingOnCurrentRedirectChain();
         }
 
+        forcePdfViewerAsIntentHandlerIfNeeded(intent);
+        Context context = ContextUtils.activityFromContext(mDelegate.getContext());
+        if (context == null) {
+            context = ContextUtils.getApplicationContext();
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        }
+        if (requiresIntentChooser) {
+            assumeNonNull(resolvingInfos);
+            assumeNonNull(resolveActivity);
+            return startActivityWithChooser(
+                    intent,
+                    resolvingInfos,
+                    resolveActivity,
+                    browserFallbackUrl,
+                    intentTargetUrl,
+                    params,
+                    context);
+        }
+        mDelegate.notifyCctPasswordSavingRecorderOfExternalNavigation();
+        return doStartActivity(intent, context);
+    }
+
+    private OverrideUrlLoadingResult doStartActivity(Intent intent, Context context) {
         // Only touches disk on Kitkat. See http://crbug.com/617725 for more context.
         StrictMode.ThreadPolicy oldPolicy = StrictMode.allowThreadDiskWrites();
         try {
-            forcePdfViewerAsIntentHandlerIfNeeded(intent);
-            Context context = ContextUtils.activityFromContext(mDelegate.getContext());
-            if (context == null) {
-                context = ContextUtils.getApplicationContext();
-                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-            }
-            if (requiresIntentChooser) {
-                assumeNonNull(resolvingInfos);
-                assumeNonNull(resolveActivity);
-                return startActivityWithChooser(
-                        intent,
-                        resolvingInfos,
-                        resolveActivity,
-                        browserFallbackUrl,
-                        intentTargetUrl,
-                        params,
-                        context);
-            }
-            mDelegate.notifyCctPasswordSavingRecorderOfExternalNavigation();
-            return doStartActivity(intent, context);
+            if (debug()) Log.i(TAG, "startActivity");
+            context.startActivity(intent);
+            recordExternalNavigationDispatched(intent);
+            mDelegate.reportIntentToSafeBrowsing(intent);
+            return OverrideUrlLoadingResult.forExternalIntent();
         } catch (SecurityException e) {
             // https://crbug.com/808494: Handle the URL internally if dispatching to another
             // application fails with a SecurityException. This happens due to malformed
@@ -2408,15 +2509,8 @@ public class ExternalNavigationHandler {
         } finally {
             StrictMode.setThreadPolicy(oldPolicy);
         }
-        return OverrideUrlLoadingResult.forNoOverride();
-    }
 
-    private OverrideUrlLoadingResult doStartActivity(Intent intent, Context context) {
-        if (debug()) Log.i(TAG, "startActivity");
-        context.startActivity(intent);
-        recordExternalNavigationDispatched(intent);
-        mDelegate.reportIntentToSafeBrowsing(intent);
-        return OverrideUrlLoadingResult.forExternalIntent();
+        return OverrideUrlLoadingResult.forNoOverride();
     }
 
     // If the |resolvingInfos| from queryIntentActivities don't contain the result of

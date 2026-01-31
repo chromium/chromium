@@ -7,7 +7,6 @@
 #include <optional>
 #include <vector>
 
-#include "base/containers/contains.h"
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
 #include "base/notreached.h"
@@ -27,6 +26,7 @@
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_delegate.h"
 #include "chrome/browser/ui/ui_features.h"
+#include "chrome/browser/ui/views/tabs/tab_group_accessibility.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/tab_groups/tab_group_color.h"
 #include "components/tab_groups/tab_group_id.h"
@@ -47,17 +47,6 @@
 
 namespace {
 constexpr int kIconSize = 14;
-
-// TODO(crbug.com/418774949) Move to TabGroupFeatures for desktop.
-std::u16string GetContentString(const TabGroup& group) {
-  constexpr size_t kContextMenuTabTitleMaxLength = 30;
-  std::u16string format_string = l10n_util::GetPluralStringFUTF16(
-      IDS_TAB_CXMENU_PLACEHOLDER_GROUP_TITLE, group.tab_count() - 1);
-  std::u16string short_title;
-  gfx::ElideString(TabUIHelper::From(group.GetFirstTab())->GetTitle(),
-                   kContextMenuTabTitleMaxLength, &short_title);
-  return base::ReplaceStringPlaceholders(format_string, short_title, nullptr);
-}
 
 // Ungroups all of the tabs specified by |tab_indices_to_close| and then tries
 // to close them and adds their URL to the end of the closed saved group
@@ -96,11 +85,8 @@ void MaybeDeleteTabsAndAddToSavedTabGroup(
   // Ungroup any tabs that are in open but not saved groups.
   // Keep a vector of tab pointers in case the indices change after the
   // ungrouping operation.
-  std::vector<tabs::TabInterface*> tab_ptrs_to_close;
-
-  for (int index : tab_indices_to_close) {
-    tab_ptrs_to_close.push_back(tab_strip_model->GetTabAtIndex(index));
-  }
+  std::vector<tabs::TabInterface*> tab_ptrs_to_close =
+      tab_strip_model->GetTabsAtIndices(tab_indices_to_close);
 
   tab_strip_model->RemoveFromGroup(tab_indices_to_close);
 
@@ -222,7 +208,8 @@ ExistingTabGroupSubMenuModel::GetMenuItemsFromModel(
     // TODO(dljames): Add method to tab_group.cc to return displayed_title.
     // TODO(dljames): Add unit tests for all of tab_group.h
     const std::u16string displayed_title =
-        group_title.empty() ? GetContentString(*tab_group) : group_title;
+        group_title.empty() ? tab_groups::GetGroupContentString(tab_group)
+                            : group_title;
 
     menu_item_infos.emplace_back(
         CreateMenuItemInfo(displayed_title, tab_group->visual_data()->color()));
@@ -426,8 +413,8 @@ bool ExistingTabGroupSubMenuModel::ShouldShowGroup(
       return true;
     }
   } else {
-    for (int index : model->selection_model().selected_indices()) {
-      if (group != model->GetTabGroupForTab(index)) {
+    for (tabs::TabInterface* t : model->selection_model().selected_tabs()) {
+      if (group != t->GetGroup()) {
         return true;
       }
     }
@@ -435,6 +422,7 @@ bool ExistingTabGroupSubMenuModel::ShouldShowGroup(
   return false;
 }
 
+// TODO(crbug.com/435178910) Remove this usage of ListSelectionModel.
 std::vector<int> ExistingTabGroupSubMenuModel::GetSelectedIndices() {
   if (!model()->IsTabSelected(GetContextIndex())) {
     // If the context index is not selected, set it as the selected index.
@@ -442,7 +430,7 @@ std::vector<int> ExistingTabGroupSubMenuModel::GetSelectedIndices() {
   } else {
     // Use the currently selected indices.
     const ui::ListSelectionModel::SelectedIndices selection_indices =
-        model()->selection_model().selected_indices();
+        model()->selection_model().GetListSelectionModel().selected_indices();
     return std::vector<int>(selection_indices.begin(), selection_indices.end());
   }
 }

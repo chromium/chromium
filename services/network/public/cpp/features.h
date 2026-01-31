@@ -68,6 +68,8 @@ BASE_DECLARE_FEATURE(kOffloadAcceptCHFrameCheck);
 COMPONENT_EXPORT(NETWORK_CPP_FLAGS_AND_SWITCHES)
 BASE_DECLARE_FEATURE_PARAM(bool, kAcceptCHFrameOffloadNotAllowedHints);
 COMPONENT_EXPORT(NETWORK_CPP_FLAGS_AND_SWITCHES)
+BASE_DECLARE_FEATURE_PARAM(bool, kAlwaysGenerateNotAllowedClientHints);
+COMPONENT_EXPORT(NETWORK_CPP_FLAGS_AND_SWITCHES)
 BASE_DECLARE_FEATURE_PARAM(bool, kAcceptCHOffloadWithRedirect);
 COMPONENT_EXPORT(NETWORK_CPP_FLAGS_AND_SWITCHES)
 BASE_DECLARE_FEATURE_PARAM(bool, kAcceptCHOffloadForSubframe);
@@ -319,12 +321,6 @@ BASE_DECLARE_FEATURE(kProtectedAudienceCorsSafelistKVv2Signals);
 // calculating storage access status.
 COMPONENT_EXPORT(NETWORK_CPP_FLAGS_AND_SWITCHES)
 BASE_DECLARE_FEATURE(kStorageAccessHeadersRespectPermissionsPolicy);
-
-// When enabled, a shared remote Mojo interface of
-// DeviceBoundSessionAccessObserver is used to reduce Clone() IPC.
-// See https://crbug.com/407680127 for more details.
-COMPONENT_EXPORT(NETWORK_CPP_FLAGS_AND_SWITCHES)
-BASE_DECLARE_FEATURE(kDeviceBoundSessionAccessObserverSharedRemote);
 
 COMPONENT_EXPORT(NETWORK_CPP_FLAGS_AND_SWITCHES)
 BASE_DECLARE_FEATURE(kCSPScriptSrcV2);

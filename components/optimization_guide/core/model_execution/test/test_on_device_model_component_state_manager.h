@@ -31,6 +31,7 @@ class TestComponentState final {
   }
   bool installer_registered() const { return !!registered_manager_; }
   bool uninstall_called() const { return uninstall_called_; }
+  bool request_update_called() const { return request_update_called_; }
 
   void Install(std::unique_ptr<FakeBaseModelAsset> asset);
   void SimulateShutdown() {
@@ -48,6 +49,7 @@ class TestComponentState final {
   base::ByteCount free_disk_space_ = base::GiB(100);
   base::WeakPtr<OnDeviceModelComponentStateManager> registered_manager_;
   bool uninstall_called_ = false;
+  bool request_update_called_ = false;
   std::unique_ptr<FakeBaseModelAsset> installed_asset_;
   base::WeakPtrFactory<TestComponentState> weak_ptr_factory_{this};
 };

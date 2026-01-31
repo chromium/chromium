@@ -50,10 +50,10 @@ ReadAnythingService::ReadAnythingService(Profile* profile) : profile_(profile) {
     // timer to uninstall it.
     // TODO(https://crbug.com/362787711): This logic also needs to run if the
     // feature is disabled.
-    local_side_panel_switch_delay_timer_.Start(
+    local_reading_mode_switch_delay_timer_.Start(
         FROM_HERE, base::Seconds(kRemoveExtensionDelaySeconds),
         base::BindRepeating(
-            &ReadAnythingService::OnLocalSidePanelSwitchDelayTimeout,
+            &ReadAnythingService::OnLocalReadingModeSwitchDelayTimeout,
             weak_ptr_factory_.GetWeakPtr()));
   }
   if (features::IsDataCollectionModeForScreen2xEnabled() &&
@@ -74,7 +74,7 @@ ReadAnythingService* ReadAnythingService::Get(Profile* profile) {
       profile);
 }
 
-void ReadAnythingService::OnReadAnythingSidePanelEntryShown() {
+void ReadAnythingService::OnReadAnythingShown() {
 // The TTS download extension should only be installed on non-ChromeOS devices
 // when the Read Aloud flag is enabled.
 #if !BUILDFLAG(IS_CHROMEOS)
@@ -85,7 +85,7 @@ void ReadAnythingService::OnReadAnythingSidePanelEntryShown() {
     return;
   }
 
-  active_local_side_panel_count_++;
+  active_local_reading_mode_count_++;
   InstallGDocsHelperExtension();
 }
 
@@ -105,6 +105,11 @@ void ReadAnythingService::SetupDesktopEngine() {
   // component updater flag is enabled.
   if (features::IsReadAnythingReadAloudEnabled() &&
       !features::IsWasmTtsEngineAutoInstallDisabled()) {
+    // Trigger an on-demand update of the engine to ensure the TTS extension
+    // is available to provide natural voices as soon as reading mode is opened.
+    component_updater::WasmTtsEngineComponentInstallerPolicy::
+        UpdateWasmComponentOnDemand();
+
     // Signal that the reading mode panel is opened and it's now safe to
     // install the WasmTtsEngineComponent.
     component_updater::WasmTtsEngineComponentInstallerPolicy::
@@ -113,13 +118,13 @@ void ReadAnythingService::SetupDesktopEngine() {
 }
 #endif  // !BUILDFLAG(IS_CHROMEOS)
 
-void ReadAnythingService::OnReadAnythingSidePanelEntryHidden() {
+void ReadAnythingService::OnReadAnythingHidden() {
   if (!features::IsReadAnythingDocsIntegrationEnabled()) {
     return;
   }
 
-  active_local_side_panel_count_--;
-  local_side_panel_switch_delay_timer_.Reset();
+  active_local_reading_mode_count_--;
+  local_reading_mode_switch_delay_timer_.Reset();
 }
 
 void ReadAnythingService::InstallGDocsHelperExtension() {
@@ -160,8 +165,8 @@ void ReadAnythingService::RemoveGDocsHelperExtension() {
 #endif  // BUILDFLAG(IS_CHROMEOS)
 }
 
-void ReadAnythingService::OnLocalSidePanelSwitchDelayTimeout() {
-  if (active_local_side_panel_count_ > 0) {
+void ReadAnythingService::OnLocalReadingModeSwitchDelayTimeout() {
+  if (active_local_reading_mode_count_ > 0) {
     return;
   }
 

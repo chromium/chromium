@@ -24,7 +24,7 @@ import org.chromium.chrome.test.transit.ChromeTransitTestRules;
 import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
 import org.chromium.chrome.test.transit.ntp.RegularNewTabPageStation;
 import org.chromium.chrome.test.transit.page.WebPageStation;
-import org.chromium.components.embedder_support.delegate.ScreenshotResult;
+import org.chromium.ui.resources.dynamics.CaptureResult;
 
 import java.util.concurrent.TimeoutException;
 
@@ -58,7 +58,7 @@ public class NativePageBitmapCapturerTest {
                                         Assert.assertNotNull(result.getBitmap());
                                         callbackHelper.notifyCalled();
                                     },
-                                    ScreenshotResult.Destination.BITMAP));
+                                    CaptureResult.Destination.BITMAP));
                 });
 
         callbackHelper.waitForOnly();
@@ -76,14 +76,14 @@ public class NativePageBitmapCapturerTest {
                     Assert.assertTrue(
                             NativePageBitmapCapturer.maybeCaptureNativeView(
                                     ntp.getTab(),
-                                    (ScreenshotResult result) -> {
+                                    (CaptureResult result) -> {
                                         Assert.assertNotNull(result);
                                         Assert.assertNotNull(result.getHardwareBuffer());
                                         Runnable releaseCallback = result.getReleaseCallback();
                                         callbackHelper.notifyCalled();
                                         releaseCallback.run();
                                     },
-                                    ScreenshotResult.Destination.HARDWARE_BUFFER));
+                                    CaptureResult.Destination.HARDWARE_BUFFER));
                 });
 
         callbackHelper.waitForOnly();
@@ -103,7 +103,7 @@ public class NativePageBitmapCapturerTest {
                                     (result) -> {
                                         callbackHelper.notifyCalled();
                                     },
-                                    ScreenshotResult.Destination.BITMAP));
+                                    CaptureResult.Destination.BITMAP));
                 });
 
         // Capture will be finished before the following task.

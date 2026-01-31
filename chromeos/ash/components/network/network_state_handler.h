@@ -480,18 +480,17 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkStateHandler
   // This adds new entries to |network_list_| or |device_list_| and deletes any
   // entries that are no longer in the list.
   void UpdateManagedList(ManagedState::ManagedType type,
-                         const base::Value::List& entries) override;
+                         const base::ListValue& entries) override;
 
   // The list of profiles changed (i.e. a user has logged in). Re-request
   // properties for all services since they may have changed.
-  void ProfileListChanged(const base::Value::List& profile_list) override;
+  void ProfileListChanged(const base::ListValue& profile_list) override;
 
   // Parses the properties for the network service or device. Mostly calls
   // managed->PropertyChanged(key, value) for each dictionary entry.
-  void UpdateManagedStateProperties(
-      ManagedState::ManagedType type,
-      const std::string& path,
-      const base::Value::Dict& properties) override;
+  void UpdateManagedStateProperties(ManagedState::ManagedType type,
+                                    const std::string& path,
+                                    const base::DictValue& properties) override;
 
   // Called by ShillPropertyHandler when a watched service property changes.
   void UpdateNetworkServiceProperty(const std::string& service_path,
@@ -508,7 +507,7 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkStateHandler
   void UpdateIPConfigProperties(ManagedState::ManagedType type,
                                 const std::string& path,
                                 const std::string& ip_config_path,
-                                base::Value::Dict properties) override;
+                                base::DictValue properties) override;
 
   void CheckPortalListChanged(const std::string& check_portal_list) override;
   void HostnameChanged(const std::string& hostname) override;
@@ -597,7 +596,7 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkStateHandler
   // NetworkState specific method for UpdateManagedStateProperties which
   // notifies observers.
   void UpdateNetworkStateProperties(NetworkState* network,
-                                    const base::Value::Dict& properties);
+                                    const base::DictValue& properties);
 
   // Ensure a valid GUID for NetworkState.
   void UpdateGuid(NetworkState* network);
@@ -743,7 +742,7 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkStateHandler
   void SetDefaultNetworkValues(const std::string& path, bool metered);
 
   // Determines whether the user is logged in and sets |is_user_logged_in_|.
-  void ProcessIsUserLoggedIn(const base::Value::List& profile_list);
+  void ProcessIsUserLoggedIn(const base::ListValue& profile_list);
 
   // Requests an update for an existing DeviceState. This is a no-op if
   // there's no device state for the given `device_path`.
@@ -789,7 +788,7 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkStateHandler
   std::optional<base::ElapsedTimer> time_in_portal_;
 
   // Tracks the default network proxy config for triggering PortalStateChanged.
-  std::optional<base::Value::Dict> default_network_proxy_config_;
+  std::optional<base::DictValue> default_network_proxy_config_;
 
   // DHCP Hostname.
   std::string hostname_;

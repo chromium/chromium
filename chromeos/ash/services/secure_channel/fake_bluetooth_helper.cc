@@ -4,7 +4,6 @@
 
 #include "chromeos/ash/services/secure_channel/fake_bluetooth_helper.h"
 
-#include "base/containers/contains.h"
 
 namespace ash::secure_channel {
 
@@ -42,7 +41,7 @@ void FakeBluetoothHelper::SetBluetoothPublicAddress(
 std::unique_ptr<DataWithTimestamp>
 FakeBluetoothHelper::GenerateForegroundAdvertisement(
     const DeviceIdPair& device_id_pair) {
-  if (!base::Contains(device_id_pair_to_service_data_map_, device_id_pair))
+  if (!device_id_pair_to_service_data_map_.contains(device_id_pair))
     return nullptr;
 
   return std::make_unique<DataWithTimestamp>(
@@ -53,8 +52,8 @@ std::optional<BluetoothHelper::DeviceWithBackgroundBool>
 FakeBluetoothHelper::PerformIdentifyRemoteDevice(
     const std::string& service_data,
     const DeviceIdPairSet& device_id_pair_set) {
-  if (!base::Contains(service_data_to_device_with_background_bool_map_,
-                      service_data)) {
+  if (!service_data_to_device_with_background_bool_map_.contains(
+          service_data)) {
     return std::nullopt;
   }
 

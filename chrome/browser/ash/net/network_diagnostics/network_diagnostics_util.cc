@@ -4,10 +4,10 @@
 
 #include "chrome/browser/ash/net/network_diagnostics/network_diagnostics_util.h"
 
+#include <algorithm>
 #include <string>
 #include <vector>
 
-#include "base/containers/contains.h"
 #include "base/no_destructor.h"
 #include "base/rand_util.h"
 #include "base/strings/string_number_conversions.h"
@@ -30,7 +30,7 @@ std::vector<std::string> GetRandomPrefixes(size_t num_prefixes, int length) {
   while (random_prefixes.size() != num_prefixes) {
     std::string prefix = GetRandomString(length);
     // Check that the prefix doesn't already exist.
-    if (!base::Contains(random_prefixes, prefix)) {
+    if (!std::ranges::contains(random_prefixes, prefix)) {
       random_prefixes.push_back(prefix);
     }
   }
@@ -54,7 +54,7 @@ const std::vector<std::string>& GetFixedHosts() {
 std::string GetRandomString(int length) {
   std::string prefix;
   for (int i = 0; i < length; i++) {
-    prefix += ('a' + base::RandInt(0, 25));
+    prefix += ('a' + base::RandIntInclusive(0, 25));
   }
   return prefix;
 }

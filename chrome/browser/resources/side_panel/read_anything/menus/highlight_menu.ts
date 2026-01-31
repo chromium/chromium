@@ -8,13 +8,14 @@ import {WebUiListenerMixinLit} from '//resources/cr_elements/web_ui_listener_mix
 import {loadTimeData} from '//resources/js/load_time_data.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 
-import type {SettingsPrefs} from '../content/read_anything_types.js';
+import type {SettingsPrefs, ShowAtConfigPrefs} from '../content/read_anything_types.js';
+import {DEFAULT_SETTINGS, ToolbarEvent} from '../content/read_anything_types.js';
 import {ReadAloudSettingsChange} from '../shared/metrics_browser_proxy.js';
 import {ReadAnythingLogger} from '../shared/read_anything_logger.js';
 
 import {getHtml} from './highlight_menu.html.js';
 import {getIndexOfSetting} from './menu_util.js';
-import type {MenuStateItem} from './menu_util.js';
+import type {MenuStateItem, ToolbarMenu} from './menu_util.js';
 import type {SimpleActionMenuElement} from './simple_action_menu.js';
 
 export interface HighlightMenuElement {
@@ -26,7 +27,8 @@ export interface HighlightMenuElement {
 const HighlightMenuElementBase = WebUiListenerMixinLit(CrLitElement);
 
 // Stores and propagates the data for the highlight menu.
-export class HighlightMenuElement extends HighlightMenuElementBase {
+export class HighlightMenuElement extends HighlightMenuElementBase implements
+    ToolbarMenu {
   static get is() {
     return 'highlight-menu';
   }
@@ -36,17 +38,14 @@ export class HighlightMenuElement extends HighlightMenuElementBase {
   }
 
   static override get properties() {
-    return {settingsPrefs: {type: Object}};
+    return {
+      settingsPrefs: {type: Object},
+      nonModal: {type: Boolean},
+    };
   }
 
-  accessor settingsPrefs: SettingsPrefs = {
-    letterSpacing: 0,
-    lineSpacing: 0,
-    theme: 0,
-    speechRate: 0,
-    font: '',
-    highlightGranularity: 0,
-  };
+  accessor settingsPrefs: SettingsPrefs = DEFAULT_SETTINGS;
+  accessor nonModal: boolean = false;
 
   protected options_: Array<MenuStateItem<number>> = [
     {
@@ -73,8 +72,12 @@ export class HighlightMenuElement extends HighlightMenuElementBase {
 
   private logger_: ReadAnythingLogger = ReadAnythingLogger.getInstance();
 
-  open(anchor: HTMLElement) {
-    this.$.menu.open(anchor);
+  open(anchor: HTMLElement, showAtConfig?: ShowAtConfigPrefs) {
+    this.$.menu.open(anchor, showAtConfig);
+  }
+
+  close() {
+    this.$.menu.close();
   }
 
   protected restoredHighlightIndex_(): number {
@@ -87,6 +90,7 @@ export class HighlightMenuElement extends HighlightMenuElementBase {
     this.logger_.logSpeechSettingsChange(
         ReadAloudSettingsChange.HIGHLIGHT_CHANGE);
     this.logger_.logHighlightGranularity(event.detail.data);
+    this.fire(ToolbarEvent.CLOSE_ALL_MENUS);
   }
 }
 

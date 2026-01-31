@@ -295,6 +295,10 @@ function getCSS() {
       -webkit-mask-image: url(../foreground/images/filetype/filetype_gmap.svg);
     }
 
+    :host([type="gproject"]) span {
+      -webkit-mask-image: url(../foreground/images/filetype/filetype_gproject.svg);
+    }
+
     :host([type="gsheet"]) span {
       -webkit-mask-image: url(../foreground/images/filetype/filetype_gsheet.svg);
     }
@@ -467,6 +471,10 @@ function getCSS() {
     :host([type='gsite']) span,
     :host([type='sites']) span {
       background-color: var(--cros-sys-file_site);
+    }
+
+    :host([type='gproject']) span {
+      background-color: var(--cros-sys-file_project);
     }
 
     :host([type='excel']) span {

@@ -32,7 +32,7 @@
 #include "base/threading/platform_thread.h"
 #include "base/threading/thread_id_name_manager.h"
 #include "base/types/expected.h"
-#include "content/common/process_visibility_tracker.h"
+#include "content/common/process_priority_tracker.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/common/process_type.h"
 
@@ -249,7 +249,7 @@ class ProcessCpuTimeMetrics::DetailedCpuTimeMetrics {
     DETACH_FROM_SEQUENCE(thread_pool_);
   }
 
-  void CollectOnThreadPool(std::optional<bool> is_visible) {
+  void CollectOnThreadPool(std::optional<bool> is_foregrounded) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(thread_pool_);
 
     // This might overflow. We only care that it is different for each cycle.
@@ -305,7 +305,7 @@ class ProcessCpuTimeMetrics::DetailedCpuTimeMetrics {
         unattributed_delta -= thread_delta;
 
         ReportThreadCpuTimeDelta(thread_details->type, thread_delta,
-                                 is_visible);
+                                 is_foregrounded);
         thread_details->reported_cpu_time = cumulative_time;
       }
 
@@ -327,7 +327,7 @@ class ProcessCpuTimeMetrics::DetailedCpuTimeMetrics {
     // GetCumulativeCPUUsage() failed so `unattributed_delta` started at 0.
     if (unattributed_delta.is_positive()) {
       ReportThreadCpuTimeDelta(CpuTimeMetricsThreadType::kUnattributedThread,
-                               unattributed_delta, is_visible);
+                               unattributed_delta, is_foregrounded);
     }
   }
 
@@ -340,7 +340,7 @@ class ProcessCpuTimeMetrics::DetailedCpuTimeMetrics {
 
   void ReportThreadCpuTimeDelta(CpuTimeMetricsThreadType type,
                                 base::TimeDelta cpu_time_delta,
-                                std::optional<bool> is_visible) {
+                                std::optional<bool> is_foregrounded) {
     // Histogram name cannot change after being used once. That's ok since this
     // only depends on the process type, which also doesn't change.
     static const char* histogram_name =
@@ -358,8 +358,8 @@ class ProcessCpuTimeMetrics::DetailedCpuTimeMetrics {
     UMA_HISTOGRAM_SCALED_ENUMERATION(histogram_name, type, capped_value,
                                      base::Time::kMicrosecondsPerSecond);
 
-    if (is_visible.has_value()) {
-      if (*is_visible) {
+    if (is_foregrounded.has_value()) {
+      if (*is_foregrounded) {
         UMA_HISTOGRAM_SCALED_ENUMERATION(histogram_name_foreground, type,
                                          capped_value,
                                          base::Time::kMicrosecondsPerSecond);
@@ -439,11 +439,11 @@ ProcessCpuTimeMetrics::~ProcessCpuTimeMetrics() {
   // the members and observer registrations but assume that the test takes
   // care of any threading issues.
   base::CurrentThread::Get()->RemoveTaskObserver(this);
-  ProcessVisibilityTracker::GetInstance()->RemoveObserver(this);
+  ProcessPriorityTracker::GetInstance()->RemoveObserver(this);
 }
 
 void ProcessCpuTimeMetrics::InitializeOnThreadPool() {
-  ProcessVisibilityTracker::GetInstance()->AddObserver(this);
+  ProcessPriorityTracker::GetInstance()->AddObserver(this);
   PerformFullCollectionOnThreadPool();
 }
 
@@ -468,20 +468,21 @@ void ProcessCpuTimeMetrics::DidProcessTask(
   }
 }
 
-// ProcessVisibilityTracker::ProcessVisibilityObserver implementation:
-void ProcessCpuTimeMetrics::OnVisibilityChanged(bool visible) {
+// ProcessPriorityTracker::ProcessPriorityObserver implementation:
+void ProcessCpuTimeMetrics::OnPriorityChanged(
+    base::Process::Priority priority) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(thread_pool_);
   // Collect high-level metrics that include a visibility breakdown and
-  // attribute them to the old value of |is_visible_| before updating it.
+  // attribute them to the old value of |is_foregrounded_| before updating it.
   CollectHighLevelMetricsOnThreadPool();
-  detailed_metrics_->CollectOnThreadPool(is_visible_);
-  is_visible_ = visible;
+  detailed_metrics_->CollectOnThreadPool(is_foregrounded_);
+  is_foregrounded_ = (priority != base::Process::Priority::kBestEffort);
 }
 
 void ProcessCpuTimeMetrics::PerformFullCollectionOnThreadPool() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(thread_pool_);
   CollectHighLevelMetricsOnThreadPool();
-  detailed_metrics_->CollectOnThreadPool(is_visible_);
+  detailed_metrics_->CollectOnThreadPool(is_foregrounded_);
 }
 
 void ProcessCpuTimeMetrics::CollectHighLevelMetricsOnThreadPool() {
@@ -507,8 +508,8 @@ void ProcessCpuTimeMetrics::CollectHighLevelMetricsOnThreadPool() {
                                      process_type_,
                                      process_cpu_time_delta.InMicroseconds(),
                                      base::Time::kMicrosecondsPerSecond);
-    if (is_visible_.has_value()) {
-      if (*is_visible_) {
+    if (is_foregrounded_.has_value()) {
+      if (*is_foregrounded_) {
         UMA_HISTOGRAM_SCALED_ENUMERATION(
             "Power.CpuTimeSecondsPerProcessType.Foreground", process_type_,
             process_cpu_time_delta.InMicroseconds(),

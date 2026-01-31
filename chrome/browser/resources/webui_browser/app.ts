@@ -141,7 +141,7 @@ export class WebuiBrowserAppElement extends CrLitElement implements
 
   async activeTabUpdated(tabData: Tab) {
     let displayUrl = '';
-    const activeTabUrl = tabData.url.url;
+    const activeTabUrl = tabData.url;
     // TODO(webium): Should match
     // ChromeLocationBarModelDelegate::ShouldDisplayURL and
     // LocationBarModelImpl::GetFormattedURL logic.

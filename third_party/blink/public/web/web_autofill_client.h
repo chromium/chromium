@@ -31,10 +31,15 @@
 #ifndef THIRD_PARTY_BLINK_PUBLIC_WEB_WEB_AUTOFILL_CLIENT_H_
 #define THIRD_PARTY_BLINK_PUBLIC_WEB_WEB_AUTOFILL_CLIENT_H_
 
+#include "base/functional/callback.h"
 #include "third_party/blink/public/web/web_element.h"
 #include "third_party/blink/public/web/web_form_control_element.h"
 #include "third_party/blink/public/web/web_form_related_change_type.h"
 #include "third_party/blink/public/web/web_local_frame.h"
+
+namespace base {
+class UnguessableToken;
+}
 
 namespace blink {
 
@@ -109,6 +114,18 @@ class WebAutofillClient {
   // Called when the empty value is set for the given input element, which is
   // or has been a password field.
   virtual void PasswordFieldReset(const WebInputElement& element) {}
+
+  // Callback type for refill completion. The bool indicates success (true) or
+  // failure (false).
+  using RefillCallback = base::OnceCallback<void(bool success)>;
+
+  // Called when a refill is requested after the autofill event handler
+  // completes. This allows the page to prepare forms before autofill fills
+  // them. The `fill_id` is the identifier of the original fill operation,
+  // used to associate the refill request with the correct fill context.
+  // The `callback` should be invoked when the refill completes (or fails).
+  virtual void RequestRefill(const base::UnguessableToken& fill_id,
+                             RefillCallback callback) {}
 
  protected:
   virtual ~WebAutofillClient() = default;

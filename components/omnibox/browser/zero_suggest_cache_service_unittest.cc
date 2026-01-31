@@ -186,7 +186,7 @@ TEST_F(ZeroSuggestCacheServiceTest, ClearCacheResultsInEmptyPersistencePrefs) {
   // Store ZPS response on NTP in user prefs.
   prefs->SetString(omnibox::kZeroSuggestCachedResults, ntp_entry.response);
 
-  base::Value::Dict prefs_dict;
+  base::DictValue prefs_dict;
   prefs_dict.Set(srp_entry.url, srp_entry.response);
   prefs_dict.Set(web_entry.url, web_entry.response);
 

@@ -4,6 +4,7 @@
 
 #include "net/cookies/cookie_util.h"
 
+#include <algorithm>
 #include <memory>
 #include <optional>
 #include <string>
@@ -11,7 +12,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/containers/contains.h"
 #include "base/functional/callback.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_split.h"
@@ -206,7 +206,8 @@ TEST(CookieUtilTest, GetCookieDomainWithString_ETldDifferentUrl) {
   CookieInclusionStatus status;
   EXPECT_FALSE(cookie_util::GetCookieDomainWithString(GURL("http://nhs.gov.uk"),
                                                       "gov.uk", status));
-  EXPECT_TRUE(status.HasExactlyExclusionReasonsForTesting({}));
+  EXPECT_TRUE(status.HasExactlyExclusionReasonsForTesting(
+      {CookieInclusionStatus::ExclusionReason::EXCLUDE_DOMAIN_MISMATCH}));
 }
 
 // A cookie domain with a different eTLD+1 ("organization-identifying host")
@@ -215,7 +216,8 @@ TEST(CookieUtilTest, GetCookieDomainWithString_DifferentOrgHost) {
   CookieInclusionStatus status;
   EXPECT_FALSE(cookie_util::GetCookieDomainWithString(
       GURL("http://portal.globex.com"), "portal.initech.com", status));
-  EXPECT_TRUE(status.HasExactlyExclusionReasonsForTesting({}));
+  EXPECT_TRUE(status.HasExactlyExclusionReasonsForTesting(
+      {CookieInclusionStatus::ExclusionReason::EXCLUDE_DOMAIN_MISMATCH}));
 }
 
 // A cookie domain that matches the URL results in a domain cookie domain.
@@ -261,7 +263,8 @@ TEST(CookieUtilTest, GetCookieDomainWithString_SubstringButUrlNotSubdomain) {
   std::string result;
   EXPECT_FALSE(cookie_util::GetCookieDomainWithString(
       GURL("http://myglobex.com"), "globex.com", status));
-  EXPECT_TRUE(status.HasExactlyExclusionReasonsForTesting({}));
+  EXPECT_TRUE(status.HasExactlyExclusionReasonsForTesting(
+      {CookieInclusionStatus::ExclusionReason::EXCLUDE_DOMAIN_MISMATCH}));
 }
 
 // A URL which has a different subdomain of the eTLD+1 than the cookie domain is
@@ -301,10 +304,12 @@ TEST(CookieUtilTest,
   CookieInclusionStatus status;
   EXPECT_FALSE(cookie_util::GetCookieDomainWithString(GURL("http://foo.com/"),
                                                       ".foo.com..", status));
-  EXPECT_TRUE(status.HasExactlyExclusionReasonsForTesting({}));
+  EXPECT_TRUE(status.HasExactlyExclusionReasonsForTesting(
+      {CookieInclusionStatus::ExclusionReason::EXCLUDE_DOMAIN_MISMATCH}));
   EXPECT_FALSE(cookie_util::GetCookieDomainWithString(GURL("http://foo.com/"),
                                                       ".foo.com.", status));
-  EXPECT_TRUE(status.HasExactlyExclusionReasonsForTesting({}));
+  EXPECT_TRUE(status.HasExactlyExclusionReasonsForTesting(
+      {CookieInclusionStatus::ExclusionReason::EXCLUDE_DOMAIN_MISMATCH}));
 }
 
 // A URL containing an IP address is allowed, if that IP matches the cookie
@@ -920,7 +925,7 @@ class CookieUtilComputeSameSiteContextTest
     std::vector<GURL> cross_site_urls;
     std::vector<GURL> same_site_urls = GetSameSiteUrls();
     for (const GURL& url : GetAllUrls()) {
-      if (!base::Contains(same_site_urls, url))
+      if (!std::ranges::contains(same_site_urls, url))
         cross_site_urls.push_back(url);
     }
     return cross_site_urls;
@@ -943,8 +948,8 @@ class CookieUtilComputeSameSiteContextTest
     std::vector<SiteForCookies> cross_site_sfc;
     std::vector<SiteForCookies> same_site_sfc = GetSameSiteSitesForCookies();
     for (const SiteForCookies& sfc : GetAllSitesForCookies()) {
-      if (!base::Contains(same_site_sfc, sfc.RepresentativeUrl(),
-                          &SiteForCookies::RepresentativeUrl)) {
+      if (!std::ranges::contains(same_site_sfc, sfc.RepresentativeUrl(),
+                                 &SiteForCookies::RepresentativeUrl)) {
         cross_site_sfc.push_back(sfc);
       }
     }
@@ -975,7 +980,7 @@ class CookieUtilComputeSameSiteContextTest
     std::vector<std::optional<url::Origin>> same_site_initiators =
         GetSameSiteInitiators();
     for (const std::optional<url::Origin>& initiator : GetAllInitiators()) {
-      if (!base::Contains(same_site_initiators, initiator))
+      if (!std::ranges::contains(same_site_initiators, initiator))
         cross_site_initiators.push_back(initiator);
     }
     return cross_site_initiators;

@@ -7,6 +7,7 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <utility>
 
 #include "ash/api/tasks/tasks_client.h"
 #include "ash/api/tasks/tasks_types.h"
@@ -34,7 +35,6 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
-#include "base/types/cxx23_to_underlying.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/l10n/time_format.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -134,7 +134,7 @@ class AddNewTaskButton : public views::LabelButton {
             std::move(callback),
             l10n_util::GetStringUTF16(
                 IDS_GLANCEABLES_TASKS_ADD_NEW_TASK_BUTTON_LABEL)) {
-    SetID(base::to_underlying(GlanceablesViewId::kTasksBubbleAddNewButton));
+    SetID(std::to_underlying(GlanceablesViewId::kTasksBubbleAddNewButton));
     SetImageModel(
         views::Button::ButtonState::STATE_NORMAL,
         ui::ImageModel::FromVectorIcon(kGlanceablesTasksAddNewTaskIcon,

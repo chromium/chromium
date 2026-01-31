@@ -80,9 +80,6 @@ class BrowserDesktopWindowTreeHostLinux
   void CloseNow() override;
   void Show(ui::mojom::WindowShowState show_state,
             const gfx::Rect& restore_bounds) override;
-  bool SupportsMouseLock() override;
-  void LockMouse(aura::Window* window) override;
-  void UnlockMouse(aura::Window* window) override;
   void ClientDestroyedWidget() override;
 
   // ui::X11ExtensionDelegate:

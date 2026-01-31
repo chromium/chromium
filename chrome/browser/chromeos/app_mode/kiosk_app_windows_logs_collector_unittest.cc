@@ -25,7 +25,7 @@
 #include "extensions/browser/extension_registrar.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/manifest_constants.h"
-#include "extensions/common/mojom/manifest.mojom-data-view.h"
+#include "extensions/common/mojom/manifest.mojom-shared.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace chromeos {
@@ -45,7 +45,7 @@ constexpr int kDefaultLineNumber3 = 200;
 constexpr char kLaunchURL[] = "https://foo.example/";
 
 scoped_refptr<extensions::Extension> AddChromeApp(const std::string& app_id) {
-  base::Value::Dict manifest;
+  base::DictValue manifest;
   manifest.SetByDottedPath(extensions::manifest_keys::kName,
                            "Kiosk app windows logs test.");
   manifest.SetByDottedPath(extensions::manifest_keys::kVersion, "1");

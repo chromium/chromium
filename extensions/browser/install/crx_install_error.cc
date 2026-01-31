@@ -4,8 +4,9 @@
 
 #include "extensions/browser/install/crx_install_error.h"
 
+#include <algorithm>
+
 #include "base/check_op.h"
-#include "base/containers/contains.h"
 #include "extensions/browser/install/sandboxed_unpacker_failure_reason.h"
 
 namespace extensions {
@@ -78,7 +79,8 @@ bool CrxInstallError::IsCrxVerificationFailedError() const {
   }
   const SandboxedUnpackerFailureReason unpacker_failure_reason =
       sandbox_failure_detail();
-  return base::Contains(kVerificationFailureReasons, unpacker_failure_reason);
+  return std::ranges::contains(kVerificationFailureReasons,
+                               unpacker_failure_reason);
 }
 
 // Returns true if the error occurred during crx installation due to mismatch in

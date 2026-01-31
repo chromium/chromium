@@ -661,6 +661,15 @@ class ProfileMenuViewPixelTest
   void ShowUi(const std::string& name) override {
     CHECK(browser());
 
+    // The browser window might not be visible yet, e.g. if its showing is
+    // deferred. Wait for the browser window to be visible before opening the
+    // menu.
+    views::Widget* browser_widget =
+        BrowserView::GetBrowserViewForBrowser(browser())->GetWidget();
+    if (!browser_widget->IsVisible()) {
+      views::test::WidgetVisibleWaiter(browser_widget).Wait();
+    }
+
     views::NamedWidgetShownWaiter widget_waiter(
         views::test::AnyWidgetTestPasskey{}, "ProfileMenuViewBase");
 

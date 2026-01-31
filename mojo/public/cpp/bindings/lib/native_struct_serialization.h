@@ -64,8 +64,9 @@ struct NativeStructSerializerImpl {
   static bool Deserialize(native::internal::NativeStruct_Data* data,
                           UserType* out,
                           Message* message) {
-    if (!data)
+    if (!data) {
       return false;
+    }
 
     // Construct a temporary base::Pickle view over the array data. Note that
     // the Array_Data is laid out like this:
@@ -95,8 +96,9 @@ struct NativeStructSerializerImpl {
         return false;
       }
 
-      if (!Traits::Read(&message_view, &iter, out))
+      if (!Traits::Read(&message_view, &iter, out)) {
         return false;
+      }
     }
 
     // Return the header to its original state.

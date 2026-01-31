@@ -71,7 +71,7 @@ void DownloadsHandler::OnJavascriptDisallowed() {
   pref_registrar_.RemoveAll();
 }
 
-void DownloadsHandler::HandleInitialize(const base::Value::List& args) {
+void DownloadsHandler::HandleInitialize(const base::ListValue& args) {
   AllowJavascript();
   SendAutoOpenDownloadsToJavascript();
 }
@@ -85,14 +85,14 @@ void DownloadsHandler::SendAutoOpenDownloadsToJavascript() {
 }
 
 void DownloadsHandler::HandleResetAutoOpenFileTypes(
-    const base::Value::List& args) {
+    const base::ListValue& args) {
   base::RecordAction(UserMetricsAction("Options_ResetAutoOpenFiles"));
   content::DownloadManager* manager = profile_->GetDownloadManager();
   DownloadPrefs::FromDownloadManager(manager)->ResetAutoOpenByUser();
 }
 
 void DownloadsHandler::HandleSelectDownloadLocation(
-    const base::Value::List& args) {
+    const base::ListValue& args) {
   // Early return if the select folder dialog is already active.
   if (select_folder_dialog_) {
     return;
@@ -128,7 +128,7 @@ void DownloadsHandler::FileSelectionCanceled() {
 
 #if BUILDFLAG(IS_CHROMEOS)
 void DownloadsHandler::HandleGetDownloadLocationText(
-    const base::Value::List& args) {
+    const base::ListValue& args) {
   AllowJavascript();
   CHECK_EQ(2U, args.size());
   const std::string& callback_id = args[0].GetString();

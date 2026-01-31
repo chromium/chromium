@@ -257,7 +257,7 @@ suite('Tab', function() {
 
   test('sets the favicon to the favicon URL', () => {
     const expectedFaviconUrl = 'data:mock-favicon';
-    tabElement.tab = createTabData({faviconUrl: {url: expectedFaviconUrl}});
+    tabElement.tab = createTabData({faviconUrl: expectedFaviconUrl});
     const faviconElement =
         tabElement.shadowRoot!.querySelector<HTMLElement>('#favicon')!;
     assertEquals(
@@ -277,7 +277,7 @@ suite('Tab', function() {
 
   test('removes the favicon if the tab is waiting', () => {
     tabElement.tab = createTabData({
-      faviconUrl: {url: 'data:mock-favicon'},
+      faviconUrl: 'data:mock-favicon',
       networkState: TabNetworkState.kWaiting,
     });
     const faviconElement =
@@ -289,7 +289,7 @@ suite('Tab', function() {
       'removes the favicon if the tab is loading with a default favicon',
       () => {
         tabElement.tab = createTabData({
-          faviconUrl: {url: 'data:mock-favicon'},
+          faviconUrl: 'data:mock-favicon',
           isDefaultFavicon: true,
           networkState: TabNetworkState.kWaiting,
         });

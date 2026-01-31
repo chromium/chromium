@@ -48,7 +48,7 @@ class CORE_EXPORT ContainerSelector {
         has_scrollable_query_(scroll_state),
         has_scrolled_query_(scroll_state),
         has_anchored_query_(anchored_query) {}
-  ContainerSelector(AtomicString name, const ConditionalExpNode&);
+  ContainerSelector(AtomicString name, const ConditionalExpNode* query);
 
   enum FeatureFlag {
     kFeatureUnknown = 1 << 1,
@@ -94,6 +94,7 @@ class CORE_EXPORT ContainerSelector {
            logical_axes_ != kLogicalAxesNone;
   }
 
+  bool SelectsNamedContainers() const { return !name_.IsNull(); }
   bool SelectsStyleContainers() const { return has_style_query_; }
   bool SelectsStickyContainers() const { return has_sticky_query_; }
   bool SelectsSnapContainers() const { return has_snap_query_; }
@@ -107,8 +108,9 @@ class CORE_EXPORT ContainerSelector {
   bool HasUnknownFeature() const { return has_unknown_feature_; }
   bool SelectsAnyContainer() const {
     return !HasUnknownFeature() &&
-           (SelectsSizeContainers() || SelectsStyleContainers() ||
-            SelectsScrollStateContainers() || SelectsAnchoredContainers());
+           (SelectsNamedContainers() || SelectsSizeContainers() ||
+            SelectsStyleContainers() || SelectsScrollStateContainers() ||
+            SelectsAnchoredContainers());
   }
 
   PhysicalAxes GetPhysicalAxes() const { return physical_axes_; }

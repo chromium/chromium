@@ -47,11 +47,12 @@ bool DeviceAuthenticatorChromeOS::CanAuthenticateWithBiometrics() {
 }
 
 bool DeviceAuthenticatorChromeOS::CanAuthenticateWithBiometricOrScreenLock() {
-  // We check if we can authenticate strictly with biometrics first as this
-  // function has important side effects such as logging metrics related to how
-  // often users have biometrics available, and setting a pref that denotes that
-  // at one point biometrics was available on this device.
-  return CanAuthenticateWithBiometrics();
+  // Check for biometrics availability.
+  bool has_biometrics = CanAuthenticateWithBiometrics();
+  // Read the cached value for PIN availability.
+  bool has_pin = g_browser_process->local_state()->GetBoolean(
+      password_manager::prefs::kPinAuthenticationAvailableOnChromeOS);
+  return has_biometrics || has_pin;
 }
 
 void DeviceAuthenticatorChromeOS::AuthenticateWithMessage(
@@ -87,4 +88,14 @@ void DeviceAuthenticatorChromeOS::OnAuthenticationCompleted(bool success) {
 
   RecordAuthenticationTimeIfSuccessful(success);
   std::move(callback_).Run(success);
+}
+
+// static
+void DeviceAuthenticatorChromeOS::CacheIfPinIsAvailable(
+    AuthenticatorChromeOSInterface* authenticator) {
+  authenticator->CheckIfPinIsAvailable(base::BindOnce([](bool has_pin) {
+    g_browser_process->local_state()->SetBoolean(
+        password_manager::prefs::kPinAuthenticationAvailableOnChromeOS,
+        has_pin);
+  }));
 }

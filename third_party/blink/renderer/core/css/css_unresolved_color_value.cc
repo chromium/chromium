@@ -286,4 +286,11 @@ Color CSSUnresolvedColorValue::Resolve(
                                channels[2], alpha);
 }
 
+bool CSSUnresolvedColorValue::HasRandomFunctions() const {
+  return (channels_[0] && channels_[0]->HasRandomFunctions()) ||
+         (channels_[1] && channels_[1]->HasRandomFunctions()) ||
+         (channels_[2] && channels_[2]->HasRandomFunctions()) ||
+         (alpha_ && alpha_->HasRandomFunctions());
+}
+
 }  // namespace blink::cssvalue

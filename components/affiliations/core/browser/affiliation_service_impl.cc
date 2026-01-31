@@ -7,7 +7,6 @@
 #include <algorithm>
 #include <vector>
 
-#include "base/containers/contains.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
@@ -201,8 +200,7 @@ void AffiliationServiceImpl::PrefetchChangePasswordURL(
     const GURL& url,
     base::OnceClosure callback) {
   FacetURI facet_uri = ConvertGURLToFacet(url);
-  if (!facet_uri.is_valid() ||
-      base::Contains(change_password_urls_, facet_uri)) {
+  if (!facet_uri.is_valid() || change_password_urls_.contains(facet_uri)) {
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, std::move(callback));
     return;
@@ -226,7 +224,7 @@ GURL AffiliationServiceImpl::GetChangePasswordURL(const GURL& url) const {
     return it->second.change_password_url;
   }
   auto requested_facet_uris = fetcher_manager_->GetRequestedFacetURIs();
-  if (base::Contains(requested_facet_uris, uri)) {
+  if (std::ranges::contains(requested_facet_uris, uri)) {
     LogFetchResult(GetChangePasswordUrlMetric::kNotFetchedYet);
   } else {
     LogFetchResult(GetChangePasswordUrlMetric::kNoUrlOverrideAvailable);
@@ -339,6 +337,10 @@ void AffiliationServiceImpl::OnPSLExtensionsLoaded(
     std::vector<std::string> psl_extensions) {
   psl_extension_list_ = base::flat_set<std::string>(psl_extensions);
   std::move(callback).Run(std::move(psl_extensions));
+}
+
+base::WeakPtr<AffiliationService> AffiliationServiceImpl::AsWeakPtr() {
+  return weak_ptr_factory_.GetWeakPtr();
 }
 
 }  // namespace affiliations

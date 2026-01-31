@@ -196,9 +196,9 @@ void cmd_addall(Volume* volume, IncomingSymlinksPolicy symlink_policy,
 	}
 
 	if (argc > 2) {
-		addall_hfs_2(volume, argv[1], argv[2], symlink_policy, assign_special_permissions);
+		addall_hfs_with_policies(volume, argv[1], argv[2], symlink_policy, assign_special_permissions);
 	} else {
-		addall_hfs_2(volume, argv[1], "/", symlink_policy, assign_special_permissions);
+		addall_hfs_with_policies(volume, argv[1], "/", symlink_policy, assign_special_permissions);
 	}
 }
 

@@ -326,7 +326,8 @@ void HardwareRenderer::OnViz::DrawAndSwapOnViz(
     requests.swap(child_frame->copy_requests);
     for (auto& copy_request : requests) {
       manager->RequestCopyOfOutput(child_id, std::move(copy_request),
-                                   /*capture_exact_surface_id=*/false);
+                                   /*capture_exact_surface_id=*/false,
+                                   base::TimeDelta());
     }
   }
 
@@ -610,11 +611,9 @@ HardwareRenderer::HardwareRenderer(RenderThreadManager* state,
   if (base::FeatureList::IsEnabled(::features::kWebViewEnableADPF)) {
     std::string soc_allowlist =
         ::features::kWebViewADPFSocManufacturerAllowlist.Get();
-    std::string soc_blocklist =
-        ::features::kWebViewADPFSocManufacturerBlocklist.Get();
     std::string soc = base::SysInfo::SocManufacturer();
     report_rendering_threads_ =
-        ::features::ShouldUseAdpfForSoc(soc_allowlist, soc_blocklist, soc);
+        ::features::ShouldUseAdpfForSoc(soc_allowlist, soc);
   }
 
   VizCompositorThreadRunnerWebView::GetInstance()->ScheduleOnVizAndBlock(

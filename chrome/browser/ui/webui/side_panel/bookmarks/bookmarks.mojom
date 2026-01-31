@@ -40,7 +40,6 @@ enum ViewType {
   kCount = 2,
 };
 
-
 // Representation of a Bookmark node to be used by the renderer for display.
 // Nodes are mapped using the the `id` and `parent_id` (that can be pointing to
 // a Side Panel specific fixed ID for merged nodes), any actions or
@@ -85,6 +84,11 @@ interface BookmarksPageHandler {
   // Bookmarks the current active tab in the given folder.
   BookmarkCurrentTabInFolder(string folder_id);
 
+  // Checks if the bookmarks specified by `side_panel_ids` can be opened in
+  // incognito window.
+  CanOpenBookmarksInIncognitoWindow(array<string> side_panel_ids)
+      => (bool can_open_in_incognito);
+
   // Creates a folder in `folder_id` at the first position with `title`.
   // Returns the id of the newly created node.
   CreateFolder(string folder_id, string title) => (string new_folder_id);
@@ -105,28 +109,29 @@ interface BookmarksPageHandler {
   // using the same logic as the native bookmarks context menu.
   // Some of the `side_panel_ids` may be a folder or a url node, so it could
   // also map to a merged node that has an actual string representation.
-  ExecuteOpenInNewTabCommand(array<string> side_panel_ids, ActionSource source);
+  ExecuteOpenInNewTabCommand(
+      array<string> side_panel_ids, ActionSource source);
 
   // Opens the bookmarks specified by `side_panel_ids` in a new window,
   // using the same logic as the native bookmarks context menu.
   // Some of the `side_panel_ids` may be a folder or a url node, so it could
   // also map to a merged node that has an actual string representation.
-  ExecuteOpenInNewWindowCommand(array<string> side_panel_ids,
-                                ActionSource source);
+  ExecuteOpenInNewWindowCommand(
+      array<string> side_panel_ids, ActionSource source);
 
   // Opens the bookmarks specified by `side_panel_ids` in a new incognito
   // window, using the same logic as the native bookmarks context menu.
   // Some of the `side_panel_ids` may be a folder or a url node, so it could
   // also map to a merged node that has an actual string representation.
-  ExecuteOpenInIncognitoWindowCommand(array<string> side_panel_ids,
-                                      ActionSource source);
+  ExecuteOpenInIncognitoWindowCommand(
+      array<string> side_panel_ids, ActionSource source);
 
   // Opens the bookmarks specified by `side_panel_ids` in a new tab group, using
   // the same logic as the native bookmarks context menu.
   // Some of the `side_panel_ids` may be a folder or a url node, so it could
   // also map to a merged node that has an actual string representation.
-  ExecuteOpenInNewTabGroupCommand(array<string> side_panel_ids,
-                                  ActionSource source);
+  ExecuteOpenInNewTabGroupCommand(
+      array<string> side_panel_ids, ActionSource source);
 
   // Opens the bookmarks specified by node_ids in a new split view, using
   // the same logic as the native bookmarks context menu.
@@ -149,7 +154,8 @@ interface BookmarksPageHandler {
   // Opens the bookmark specified by node_id. Passes the parent folder
   // depth for metrics collection and the action source to identify
   // from which surface this request is made.
-  OpenBookmark(int64 node_id, int32 parent_folder_depth,
+  OpenBookmark(int64 node_id,
+               int32 parent_folder_depth,
                ui.mojom.ClickModifiers click_modifiers,
                ActionSource source);
 
@@ -201,14 +207,20 @@ interface BookmarksPageHandler {
 interface BookmarksPage {
   // Send the information of the newly added node to the Ui.
   OnBookmarkNodeAdded(BookmarksTreeNode node);
+
   // Send all the node ids that were removed to the Ui.
   OnBookmarkNodesRemoved(array<string> node_ids);
+
   // Send the list of children ids of `folder_id` after a reorder event.
-  OnBookmarkParentFolderChildrenReordered(string folder_id,
-                                          array<string> children_ordered_ids);
+  OnBookmarkParentFolderChildrenReordered(
+      string folder_id, array<string> children_ordered_ids);
+
   // Send the node index of a moved element: old and new Ui indices.
-  OnBookmarkNodeMoved(string old_parent_index, uint32 old_node_index,
-                      string new_parent_index, uint32 new_node_index);
+  OnBookmarkNodeMoved(string old_parent_index,
+                      uint32 old_node_index,
+                      string new_parent_index,
+                      uint32 new_node_index);
+
   // Send the new information of the bookmark.
   OnBookmarkNodeChanged(string id, string new_title, string new_url);
 };

@@ -7,7 +7,6 @@
 #include <optional>
 
 #include "base/check.h"
-#include "base/containers/contains.h"
 #include "base/containers/fixed_flat_set.h"
 #include "base/debug/crash_logging.h"
 #include "base/debug/dump_without_crashing.h"
@@ -19,6 +18,7 @@
 #include "net/cookies/cookie_inclusion_status.h"
 #include "net/cookies/cookie_util.h"
 #include "net/cookies/parsed_cookie.h"
+#include "net/device_bound_sessions/cookie_craving_display.h"
 #include "net/device_bound_sessions/proto/storage.pb.h"
 #include "net/device_bound_sessions/session_error.h"
 #include "net/url_request/url_request.h"
@@ -122,7 +122,7 @@ base::expected<CookieCraving, SessionError> CookieCraving::Create(
           {"domain", "path", "secure", "httponly", "samesite"});
   if (!parsed_cookie.ForEachAttribute(
           [](std::string_view attribute, std::string_view value) {
-            return base::Contains(kPermittedAttributes, attribute);
+            return kPermittedAttributes.contains(attribute);
           })) {
     return base::unexpected(SessionError{
         SessionError::kInvalidCredentialsCookieUnpermittedAttribute});
@@ -402,6 +402,11 @@ std::optional<CookieCraving> CookieCraving::CreateFromProto(
   }
 
   return cookie_craving;
+}
+
+CookieCravingDisplay CookieCraving::ToDisplay() const {
+  return CookieCravingDisplay(Name(), Domain(), Path(), SecureAttribute(),
+                              IsHttpOnly(), SameSite());
 }
 
 bool CookieCraving::ShouldIncludeForRequest(

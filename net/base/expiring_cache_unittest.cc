@@ -7,7 +7,6 @@
 #include <functional>
 #include <string>
 
-#include "base/containers/contains.h"
 #include "base/strings/stringprintf.h"
 #include "base/time/time.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -118,16 +117,16 @@ TEST(ExpiringCacheTest, Compact) {
   }
   EXPECT_EQ(10U, cache.size());
 
-  EXPECT_TRUE(base::Contains(cache.entries_, "valid0"));
-  EXPECT_TRUE(base::Contains(cache.entries_, "valid1"));
-  EXPECT_TRUE(base::Contains(cache.entries_, "valid2"));
-  EXPECT_TRUE(base::Contains(cache.entries_, "valid3"));
-  EXPECT_TRUE(base::Contains(cache.entries_, "valid4"));
-  EXPECT_TRUE(base::Contains(cache.entries_, "expired0"));
-  EXPECT_TRUE(base::Contains(cache.entries_, "expired1"));
-  EXPECT_TRUE(base::Contains(cache.entries_, "expired2"));
-  EXPECT_TRUE(base::Contains(cache.entries_, "negative0"));
-  EXPECT_TRUE(base::Contains(cache.entries_, "negative1"));
+  EXPECT_TRUE(cache.entries_.contains("valid0"));
+  EXPECT_TRUE(cache.entries_.contains("valid1"));
+  EXPECT_TRUE(cache.entries_.contains("valid2"));
+  EXPECT_TRUE(cache.entries_.contains("valid3"));
+  EXPECT_TRUE(cache.entries_.contains("valid4"));
+  EXPECT_TRUE(cache.entries_.contains("expired0"));
+  EXPECT_TRUE(cache.entries_.contains("expired1"));
+  EXPECT_TRUE(cache.entries_.contains("expired2"));
+  EXPECT_TRUE(cache.entries_.contains("negative0"));
+  EXPECT_TRUE(cache.entries_.contains("negative1"));
 
   // Shrink the new max constraints bound and compact. The "negative" and
   // "expired" entries should be dropped.
@@ -135,16 +134,16 @@ TEST(ExpiringCacheTest, Compact) {
   cache.Compact(now);
   EXPECT_EQ(5U, cache.size());
 
-  EXPECT_TRUE(base::Contains(cache.entries_, "valid0"));
-  EXPECT_TRUE(base::Contains(cache.entries_, "valid1"));
-  EXPECT_TRUE(base::Contains(cache.entries_, "valid2"));
-  EXPECT_TRUE(base::Contains(cache.entries_, "valid3"));
-  EXPECT_TRUE(base::Contains(cache.entries_, "valid4"));
-  EXPECT_FALSE(base::Contains(cache.entries_, "expired0"));
-  EXPECT_FALSE(base::Contains(cache.entries_, "expired1"));
-  EXPECT_FALSE(base::Contains(cache.entries_, "expired2"));
-  EXPECT_FALSE(base::Contains(cache.entries_, "negative0"));
-  EXPECT_FALSE(base::Contains(cache.entries_, "negative1"));
+  EXPECT_TRUE(cache.entries_.contains("valid0"));
+  EXPECT_TRUE(cache.entries_.contains("valid1"));
+  EXPECT_TRUE(cache.entries_.contains("valid2"));
+  EXPECT_TRUE(cache.entries_.contains("valid3"));
+  EXPECT_TRUE(cache.entries_.contains("valid4"));
+  EXPECT_FALSE(cache.entries_.contains("expired0"));
+  EXPECT_FALSE(cache.entries_.contains("expired1"));
+  EXPECT_FALSE(cache.entries_.contains("expired2"));
+  EXPECT_FALSE(cache.entries_.contains("negative0"));
+  EXPECT_FALSE(cache.entries_.contains("negative1"));
 
   // Shrink further -- this time the compact will start dropping valid entries
   // to make space.

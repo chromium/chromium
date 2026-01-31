@@ -5,6 +5,7 @@
 #include "net/server/http_connection.h"
 
 #include <ranges>
+#include <string_view>
 #include <utility>
 
 #include "base/containers/span.h"
@@ -110,7 +111,7 @@ bool HttpConnection::QueuedWriteIOBuffer::IsEmpty() const {
   return pending_data_.empty();
 }
 
-bool HttpConnection::QueuedWriteIOBuffer::Append(const std::string& data) {
+bool HttpConnection::QueuedWriteIOBuffer::Append(std::string_view data) {
   if (data.empty())
     return true;
 

@@ -83,6 +83,10 @@ class LocalHistoryZeroSuggestProviderTest
         &test_url_loader_factory_);
 
     client_ = std::make_unique<FakeAutocompleteProviderClient>();
+
+    ON_CALL(*client_, SearchSuggestEnabled())
+        .WillByDefault(testing::Return(true));
+
     client_->set_identity_manager(identity_env_->identity_manager());
     CHECK(history_dir_.CreateUniqueTempDir());
     client_->set_history_service(

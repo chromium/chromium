@@ -39,8 +39,7 @@
         }
       ],
       "retry_failed_shards": false,
-      "targets_spec_directory": "infra/config/generated/builders/try/win11-arm64-blink-rel/targets",
-      "targets_spec_directory_relative_to_source_dir": true
+      "targets_spec_directory": "infra/config/generated/builders/try/win11-arm64-blink-rel/targets"
     }
   },
   "$build/siso": {
@@ -49,11 +48,10 @@
       "remote-link"
     ],
     "enable_cloud_monitoring": true,
-    "enable_cloud_profiler": true,
     "enable_cloud_trace": true,
     "experiments": [],
-    "metrics_project": "chromium-reclient-metrics",
     "output_local_strategy": "minimum",
+    "profile_mode": "cloud",
     "project": "rbe-chromium-untrusted",
     "remote_jobs": 150
   },

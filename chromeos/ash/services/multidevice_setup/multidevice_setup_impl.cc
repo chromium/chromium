@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "ash/constants/ash_features.h"
-#include "base/containers/contains.h"
 #include "base/containers/flat_set.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_functions.h"
@@ -209,7 +208,7 @@ void MultiDeviceSetupImpl::GetEligibleActiveHostDevices(
   for (const auto& host_device :
        eligible_host_devices_provider_->GetEligibleActiveHostDevices()) {
     // For metrics.
-    if (base::Contains(name_set, host_device.remote_device.name())) {
+    if (name_set.contains(host_device.remote_device.name())) {
       has_duplicate_host_name = true;
       PA_LOG(WARNING) << "MultiDeviceSetupImpl::GetEligibleActiveHostDevices: "
                       << "Detected duplicate eligible host device name \""

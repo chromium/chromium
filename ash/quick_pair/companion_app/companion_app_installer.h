@@ -5,8 +5,7 @@
 #ifndef ASH_QUICK_PAIR_COMPANION_APP_COMPANION_APP_INSTALLER_H_
 #define ASH_QUICK_PAIR_COMPANION_APP_COMPANION_APP_INSTALLER_H_
 
-namespace ash {
-namespace quick_pair {
+namespace ash::quick_pair {
 
 // CompanionAppInstaller downloads and installs the device's companion app
 class CompanionAppInstaller {
@@ -17,7 +16,6 @@ class CompanionAppInstaller {
   ~CompanionAppInstaller();
 };
 
-}  // namespace quick_pair
-}  // namespace ash
+}  // namespace ash::quick_pair
 
 #endif  // ASH_QUICK_PAIR_COMPANION_APP_COMPANION_APP_INSTALLER_H_

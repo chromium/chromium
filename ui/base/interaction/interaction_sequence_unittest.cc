@@ -6218,7 +6218,7 @@ TEST_P(InteractionSequenceSubsequenceTest, NamedElements) {
                         EXPECT_EQ(&element2, el)
                             << "Original named element should be unchanged.";
                         EXPECT_FALSE(
-                            base::Contains(seq->named_elements_, kElementName2))
+                            seq->named_elements_.contains(kElementName2))
                             << "Element named in subsequence should not be "
                                "present here.";
                       })))

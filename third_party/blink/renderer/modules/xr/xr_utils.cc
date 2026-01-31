@@ -305,8 +305,6 @@ V8XREye GetV8Eye(const device::mojom::blink::XREye& eye) {
 device::mojom::blink::XRLayerLayout V8ToMojomLayerLayout(
     V8XRLayerLayout::Enum layout) {
   switch (layout) {
-    case V8XRLayerLayout::Enum::kDefault:
-      return device::mojom::blink::XRLayerLayout::kDefault;
     case V8XRLayerLayout::Enum::kMono:
       return device::mojom::blink::XRLayerLayout::kMono;
     case V8XRLayerLayout::Enum::kStereo:
@@ -315,11 +313,14 @@ device::mojom::blink::XRLayerLayout V8ToMojomLayerLayout(
       return device::mojom::blink::XRLayerLayout::kStereoLeftRight;
     case V8XRLayerLayout::Enum::kStereoTopBottom:
       return device::mojom::blink::XRLayerLayout::kStereoTopBottom;
+    case V8XRLayerLayout::Enum::kDefault:
+      // "default" layout must have been resolved.
+      NOTREACHED();
   }
 }
 
-uint16_t GetHorizontalViewCount(V8XRLayerLayout layout) {
-  switch (layout.AsEnum()) {
+uint16_t GetHorizontalViewCount(V8XRLayerLayout::Enum layout) {
+  switch (layout) {
     case V8XRLayerLayout::Enum::kDefault:
     case V8XRLayerLayout::Enum::kMono:
     case V8XRLayerLayout::Enum::kStereo:
@@ -330,8 +331,8 @@ uint16_t GetHorizontalViewCount(V8XRLayerLayout layout) {
   }
 }
 
-uint16_t GetVerticalViewCount(V8XRLayerLayout layout) {
-  switch (layout.AsEnum()) {
+uint16_t GetVerticalViewCount(V8XRLayerLayout::Enum layout) {
+  switch (layout) {
     case V8XRLayerLayout::Enum::kDefault:
     case V8XRLayerLayout::Enum::kMono:
     case V8XRLayerLayout::Enum::kStereo:

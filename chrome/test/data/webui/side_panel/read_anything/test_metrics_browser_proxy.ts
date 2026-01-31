@@ -19,6 +19,7 @@ export class TestMetricsBrowserProxy extends TestBrowserProxy implements
       'recordHighlightOn',
       'recordHighlightGranularity',
       'recordLanguage',
+      'recordLineFocusSession',
       'recordNewPage',
       'recordNewPageWithSpeech',
       'recordSpeechError',
@@ -38,6 +39,10 @@ export class TestMetricsBrowserProxy extends TestBrowserProxy implements
 
   recordEmptyState() {
     this.methodCalled('recordEmptyState');
+  }
+
+  recordLineFocusSession() {
+    this.methodCalled('recordLineFocusSession');
   }
 
   recordNewPage() {

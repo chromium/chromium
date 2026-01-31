@@ -382,11 +382,14 @@ INSTANTIATE_TEST_SUITE_P(All,
 
 // TODO(crbug.com/40744542): Real desktop capture is flaky on below platforms.
 // TODO(crbug.com/41493366): enable this flaky test.
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+// TODO(crbug.com/461258716): enable this flaky test.
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || \
+    (BUILDFLAG(IS_LINUX) && defined(MEMORY_SANITIZER))
 #define MAYBE_ScreenCaptureVideo DISABLED_ScreenCaptureVideo
 #else
 #define MAYBE_ScreenCaptureVideo ScreenCaptureVideo
-#endif  // BUILDFLAG(IS_WIN)
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || (BUILDFLAG(IS_LINUX) &&
+        // defined(MEMORY_SANITIZER))
 IN_PROC_BROWSER_TEST_P(WebRtcScreenCaptureBrowserTestWithPicker,
                        MAYBE_ScreenCaptureVideo) {
   if (!test_config_.should_prefer_current_tab &&
@@ -453,13 +456,15 @@ IN_PROC_BROWSER_TEST_P(WebRtcScreenCaptureBrowserTestWithPicker,
 
 // TODO(crbug.com/40744542): Real desktop capture is flaky on below platforms.
 // TODO(crbug.com/41493366): enable this flaky test.
+// TODO(crbug.com/461258716): enable this flaky test.
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
 #define MAYBE_ScreenCaptureVideoAndAudio DISABLED_ScreenCaptureVideoAndAudio
 // On linux debug bots, it's flaky as well.
 #elif BUILDFLAG(IS_LINUX) && !defined(NDEBUG)
 #define MAYBE_ScreenCaptureVideoAndAudio DISABLED_ScreenCaptureVideoAndAudio
-// On linux asan bots, it's flaky as well - msan and other rel bot are fine.
-#elif BUILDFLAG(IS_LINUX) && defined(ADDRESS_SANITIZER)
+// On linux asan and msan bots, it's flaky as well.
+#elif BUILDFLAG(IS_LINUX) && \
+    (defined(ADDRESS_SANITIZER) || defined(MEMORY_SANITIZER))
 #define MAYBE_ScreenCaptureVideoAndAudio DISABLED_ScreenCaptureVideoAndAudio
 #else
 #define MAYBE_ScreenCaptureVideoAndAudio ScreenCaptureVideoAndAudio
@@ -511,8 +516,14 @@ class WebRtcScreenCaptureBrowserTestWithFakeUI
   const TestConfigForFakeUI test_config_;
 };
 
+// TODO(crbug.com/461258716): enable this flaky test.
+#if (BUILDFLAG(IS_LINUX) && defined(MEMORY_SANITIZER))
+#define MAYBE_ScreenCaptureVideo_1 DISABLED_ScreenCaptureVideo
+#else
+#define MAYBE_ScreenCaptureVideo_1 ScreenCaptureVideo
+#endif  // (BUILDFLAG(IS_LINUX) && defined(MEMORY_SANITIZER))
 IN_PROC_BROWSER_TEST_P(WebRtcScreenCaptureBrowserTestWithFakeUI,
-                       ScreenCaptureVideo) {
+                       MAYBE_ScreenCaptureVideo_1) {
   ASSERT_TRUE(embedded_test_server()->Start());
 
   content::WebContents* tab = OpenTestPageInNewTab(kMainHtmlPage);
@@ -676,7 +687,7 @@ class WebRtcAppWindowCaptureBrowserTestWithPicker
 
     // We will restrict all pages to "Tab Capture" only. This should force App
     // Windows to show up in the tabs list, and thus make it selectable.
-    base::Value::List matchlist;
+    base::ListValue matchlist;
     matchlist.Append("*");
     browser()->profile()->GetPrefs()->SetList(
         prefs::kTabCaptureAllowedByOrigins, std::move(matchlist));
@@ -685,7 +696,7 @@ class WebRtcAppWindowCaptureBrowserTestWithPicker
   void TearDownOnMainThread() override {
     extensions::PlatformAppBrowserTest::TearDownOnMainThread();
     browser()->profile()->GetPrefs()->SetList(
-        prefs::kTabCaptureAllowedByOrigins, base::Value::List());
+        prefs::kTabCaptureAllowedByOrigins, base::ListValue());
   }
 
   extensions::AppWindow* CreateAppWindowWithTitle(const std::u16string& title) {
@@ -742,7 +753,7 @@ class WebRtcSameOriginPolicyBrowserTest
     ASSERT_TRUE(embedded_test_server()->Start());
 
     // Restrict all origins to SameOrigin tab capture only.
-    base::Value::List matchlist;
+    base::ListValue matchlist;
     matchlist.Append("*");
     browser()->profile()->GetPrefs()->SetList(
         prefs::kSameOriginTabCaptureAllowedByOrigins, std::move(matchlist));
@@ -751,7 +762,7 @@ class WebRtcSameOriginPolicyBrowserTest
   void TearDownOnMainThread() override {
     WebRtcScreenCaptureBrowserTest::TearDownOnMainThread();
     browser()->profile()->GetPrefs()->SetList(
-        prefs::kSameOriginTabCaptureAllowedByOrigins, base::Value::List());
+        prefs::kSameOriginTabCaptureAllowedByOrigins, base::ListValue());
   }
 };
 
@@ -1539,7 +1550,7 @@ IN_PROC_BROWSER_TEST_P(GetDisplayMediaTransientActivationRequiredTest, Check) {
 
   if (policy_allowlist_value_.has_value()) {
     policy::PolicyMap policy_map;
-    base::Value::List allowed_origins;
+    base::ListValue allowed_origins;
     allowed_origins.Append(base::Value(*policy_allowlist_value_));
     policy_map.Set(policy::key::kScreenCaptureWithoutGestureAllowedForOrigins,
                    policy::POLICY_LEVEL_MANDATORY, policy::POLICY_SCOPE_USER,
@@ -1935,7 +1946,7 @@ class CaptureSessionDetails {
     content::EvalJsResult js_result = content::EvalJs(
         capturing_tab_->GetPrimaryMainFrame(), "getSupportedZoomLevels();");
 
-    const base::Value::List& list = js_result.ExtractList();
+    const base::ListValue& list = js_result.ExtractList();
     EXPECT_GE(list.size(), 1u);
     if (list.size() == 1u) {
       // Reserved for an error.

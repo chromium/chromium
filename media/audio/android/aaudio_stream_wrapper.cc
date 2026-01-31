@@ -13,6 +13,7 @@
 #include "base/android/device_info.h"
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
+#include "base/memory/aligned_memory.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
@@ -39,6 +40,8 @@ constexpr char kAAudioFramesPerBurstMetricsPrefix[] =
     "Media.Audio.Android.AAudioFramesPerBurst.";
 constexpr char kAAudioFramesPerBurstChangedMetricsPrefix[] =
     "Media.Audio.Android.AAudioFramesPerBurstChanged.";
+constexpr char kAAudioXRunCountPrefix[] =
+    "Media.Audio.Android.AAudioXRunCount.";
 
 std::string_view StreamTypeToStringView(AAudioStreamWrapper::StreamType type) {
   return type == AAudioStreamWrapper::StreamType::kInput ? "Input" : "Output";
@@ -56,6 +59,64 @@ void LogSparseHistogram(std::string_view prefix,
 }
 
 }  // namespace
+
+// Reports underruns/overruns coming from the Android platform, every
+// `kLogInterval`. Also reports glitches on stream closure, when less than
+// `kLogInterval` time has elapsed, to account for short lived streams.
+// Note: The AAudio documentation mentions that some input devices do not
+// support `AAudioStream_getXRunCount()` calls, and will always report 0 in that
+// case.
+class AAudioGlitchReporter {
+ public:
+  static constexpr char kInterval[] = ".Interval";
+  static constexpr char kShort[] = ".Short";
+  static constexpr base::TimeDelta kLogInterval = base::Seconds(10);
+
+  explicit AAudioGlitchReporter(AAudioStreamWrapper::StreamType stream_type)
+      : stream_direction_(StreamTypeToStringView(stream_type)),
+        last_log_time_(base::TimeTicks::Now()) {}
+  ~AAudioGlitchReporter() = default;
+
+  void MaybeLogGlitches(AAudioStream* stream) {
+    CHECK(stream);
+
+    auto now = base::TimeTicks::Now();
+    if (now - last_log_time_ < kLogInterval) {
+      return;
+    }
+
+    LogGlitches(stream, kInterval);
+
+    last_log_time_ = now;
+  }
+
+  void LogOnClose(AAudioStream* stream) { LogGlitches(stream, kShort); }
+
+ private:
+  void LogGlitches(AAudioStream* stream, std::string_view interval_type) {
+    // A "glitch" according to this API does not necessarily map to a
+    // specific duration or number of frames. It is simply one instance of an
+    // underrun or overrun detected by the framework. This means that, given the
+    // same total glitch duration, the number of glitches reported by two
+    // streams might greatly differ.
+    const int32_t xrun_count = AAudioStream_getXRunCount(stream);
+    const int32_t new_glitches = xrun_count - last_xrun_count_;
+
+    // Assuming a 20ms buffer size, `kLogInterval` accounts for 500 buffers.
+    // Choose 100 as an upper bound to keep bucket sizes reasonable, and since
+    // a glitch might span multiple buffers.
+    base::UmaHistogramCounts100(
+        base::StrCat(
+            {kAAudioXRunCountPrefix, stream_direction_, interval_type}),
+        new_glitches);
+
+    last_xrun_count_ = xrun_count;
+  }
+
+  const std::string_view stream_direction_;
+  int last_xrun_count_ = 0;
+  base::TimeTicks last_log_time_;
+};
 
 // Used to circumvent issues where the AAudio thread callbacks continue
 // after AAudioStream_requestStop() completes. See crbug.com/1183255.
@@ -238,12 +299,11 @@ AAudioStreamWrapper::AAudioStreamWrapper(DataCallback* callback,
       requested_device_(std::move(device)),
       stream_type_(stream_type),
       usage_(usage),
-      callback_(callback),
+      callback_(*callback),
       ns_per_frame_(base::Time::kNanosecondsPerSecond /
                     static_cast<double>(params.sample_rate())),
       destruction_helper_(std::make_unique<AAudioDestructionHelper>(this)) {
   CHECK(params.IsValid());
-  CHECK(callback_);
 
   switch (params.latency_tag()) {
     case AudioLatency::Type::kExactMS:
@@ -361,6 +421,7 @@ bool AAudioStreamWrapper::Open() {
   }
 
   CHECK_EQ(AAUDIO_FORMAT_PCM_FLOAT, AAudioStream_getFormat(aaudio_stream_));
+  CHECK_EQ(params_.channels(), AAudioStream_getChannelCount(aaudio_stream_));
 
   if (!requested_device_.GetId().IsDefault()) {
     // `AAudioStreamBuilder_setDeviceId` is not guaranteed to set the specified
@@ -376,6 +437,8 @@ bool AAudioStreamWrapper::Open() {
       return false;
     }
   }
+
+  glitch_reporter_ = std::make_unique<AAudioGlitchReporter>(stream_type_);
 
   // After opening the stream, sets the effective buffer size to 3X the burst
   // size to prevent glitching if the burst is small (e.g. < 128). On some
@@ -412,6 +475,7 @@ void AAudioStreamWrapper::Close() {
 
   if (aaudio_stream_) {
     LogFramesPerBurstChangesToUma();
+    glitch_reporter_->LogOnClose(aaudio_stream_);
   }
 
   Stop();
@@ -549,7 +613,16 @@ base::TimeTicks AAudioStreamWrapper::GetCaptureTimestamp() {
 aaudio_data_callback_result_t AAudioStreamWrapper::OnAudioDataRequested(
     void* audio_data,
     int32_t num_frames) {
-  return callback_->OnAudioDataRequested(audio_data, num_frames)
+  CHECK(aaudio_stream_);
+  glitch_reporter_->MaybeLogGlitches(aaudio_stream_);
+
+  // SAFETY: `audio_data` is provided by AAudio, and we CHECK that we are using
+  // `AAUDIO_FORMAT_PCM_FLOAT` and the right number of channels in `Open()`.
+  CHECK(base::IsAligned(audio_data, sizeof(float)));
+  auto data_span = UNSAFE_BUFFERS(
+      base::span(reinterpret_cast<float*>(audio_data),
+                 base::checked_cast<size_t>(num_frames * params_.channels())));
+  return callback_->OnAudioDataRequested(data_span)
              ? AAUDIO_CALLBACK_RESULT_CONTINUE
              : AAUDIO_CALLBACK_RESULT_STOP;
 }

@@ -41,11 +41,7 @@ constexpr gfx::Size kMultiContentsViewSize(500, 500);
 constexpr gfx::Point kDragPointForStartDropTargetShow(1, 250);
 constexpr gfx::Point kDragPointForEndDropTargetShow(499, 250);
 constexpr gfx::Point kDragPointForHiddenTargets(250, 250);
-constexpr base::TimeDelta kShowDropTargetForLinkDelay =
-    base::Milliseconds(1400);
-constexpr base::TimeDelta kShowDropTargetForLinkAfterHideDelay =
-    base::Milliseconds(3000);
-constexpr base::TimeDelta kShowDropTargetForTabDelay = base::Milliseconds(500);
+// Increase to cover the increased delay for subsequent drags.
 constexpr base::TimeDelta kHideDropTargetDelay = base::Milliseconds(100);
 constexpr base::TimeDelta kHideDropTargetAnimation = base::Milliseconds(450);
 
@@ -56,13 +52,6 @@ content::DropData ValidUrlDropData() {
   content::DropData valid_url_data;
   valid_url_data.url_infos = {
       ui::ClipboardUrlInfo(GURL("https://mail.google.com"), u"")};
-  return valid_url_data;
-}
-
-content::DropData NonStandardUrlDropData() {
-  content::DropData valid_url_data;
-  valid_url_data.url_infos = {
-      ui::ClipboardUrlInfo(GURL("mailto:me@google.com"), u"")};
   return valid_url_data;
 }
 
@@ -83,18 +72,19 @@ class MockDropDelegate
   MOCK_METHOD(void,
               HandleTabDrop,
               (MultiContentsDropTargetView::DropSide,
-               TabDragDelegate::DragController&),
+               TabDragTarget::DragController&),
               (override));
   MOCK_METHOD(void, OnDragEntered, (const ui::DropTargetEvent& event));
 };
 
-class MockTabDragController : public TabDragDelegate::DragController {
+class MockTabDragController : public TabDragTarget::DragController {
  public:
   MOCK_METHOD(std::unique_ptr<tabs::TabModel>,
               DetachTabAtForInsertion,
               (int drag_idx),
               (override));
   MOCK_METHOD(const DragSessionData&, GetSessionData, (), (const, override));
+  MOCK_METHOD(const TabDragContext*, GetAttachedContext, (), (const, override));
 };
 
 class MockTabSlotView : public TabSlotView {
@@ -104,11 +94,10 @@ class MockTabSlotView : public TabSlotView {
   MOCK_METHOD(TabSizeInfo, GetTabSizeInfo, (), (const, override));
 };
 
-class MultiContentsViewDropTargetControllerTestBase
-    : public ChromeViewsTestBase {
+class MultiContentsViewDropTargetControllerTest : public ChromeViewsTestBase {
  public:
-  MultiContentsViewDropTargetControllerTestBase() = default;
-  ~MultiContentsViewDropTargetControllerTestBase() override = default;
+  MultiContentsViewDropTargetControllerTest() = default;
+  ~MultiContentsViewDropTargetControllerTest() override = default;
 
   void SetUp() override {
     ChromeViewsTestBase::SetUp();
@@ -198,12 +187,14 @@ class MultiContentsViewDropTargetControllerTestBase
     ASSERT_EQ(0,
               prefs()->GetInteger(prefs::kSplitViewDragAndDropNudgeShownCount));
 
-    // Show the nudge the first kSideBySideDropTargetNudgeShownLimit times.
+    // Show the nudge the first kNudgeShownLimit times.
     for (int expected_count = 1;
-         expected_count <= features::kSideBySideDropTargetNudgeShownLimit.Get();
+         expected_count <=
+         MultiContentsViewDropTargetController::kNudgeShownLimit;
          ++expected_count) {
       DragURLTo(kDragPointForStartDropTargetShow);
-      FastForward(kShowDropTargetForLinkDelay);
+      FastForward(MultiContentsViewDropTargetController::
+                      kShowDropTargetForLinkAfterHideDelay);
       EXPECT_TRUE(drop_target_view().GetVisible());
       EXPECT_EQ(drop_target_view().state().value(),
                 MultiContentsDropTargetView::DropTargetState::kNudge);
@@ -214,23 +205,26 @@ class MultiContentsViewDropTargetControllerTestBase
           prefs()->GetInteger(prefs::kSplitViewDragAndDropNudgeShownCount));
 
       reset_nudge();
-      FastForward(kShowDropTargetForLinkDelay);
+      FastForward(MultiContentsViewDropTargetController::
+                      kShowDropTargetForLinkAfterHideDelay);
       EXPECT_FALSE(drop_target_view().GetVisible());
     }
 
     // Afterwards, the nudge should not be shown.
     DragURLTo(kDragPointForStartDropTargetShow);
-    FastForward(kShowDropTargetForLinkDelay);
+    FastForward(MultiContentsViewDropTargetController::
+                    kShowDropTargetForLinkAfterHideDelay);
     EXPECT_TRUE(drop_target_view().GetVisible());
     EXPECT_EQ(drop_target_view().state().value(),
               MultiContentsDropTargetView::DropTargetState::kFull);
-    EXPECT_EQ(features::kSideBySideDropTargetNudgeShownLimit.Get(),
+    EXPECT_EQ(MultiContentsViewDropTargetController::kNudgeShownLimit,
               user_action_tester.GetActionCount(kNudgeShownUserActionName));
-    EXPECT_EQ(features::kSideBySideDropTargetNudgeShownLimit.Get(),
+    EXPECT_EQ(MultiContentsViewDropTargetController::kNudgeShownLimit,
               prefs()->GetInteger(prefs::kSplitViewDragAndDropNudgeShownCount));
 
     reset_nudge();
-    FastForward(kShowDropTargetForLinkDelay);
+    FastForward(MultiContentsViewDropTargetController::
+                    kShowDropTargetForLinkAfterHideDelay);
     EXPECT_FALSE(drop_target_view().GetVisible());
   }
 
@@ -251,246 +245,8 @@ class MultiContentsViewDropTargetControllerTestBase
   std::unique_ptr<TestingPrefServiceSimple> prefs_;
 };
 
-// Tests link-dragging behaviour while the "nudge" feature is disabled.
-class MultiContentsViewDropTargetControllerNudgeDisabledTest
-    : public MultiContentsViewDropTargetControllerTestBase {
- public:
-  MultiContentsViewDropTargetControllerNudgeDisabledTest() {
-    feature_list_.InitWithFeaturesAndParameters(
-        {{features::kSideBySide,
-          {{features::kSideBySideShowDropTargetDelay.name,
-            base::NumberToString(kShowDropTargetForTabDelay.InMilliseconds()) +
-                "ms"},
-           {features::kSideBySideShowDropTargetForLinkDelay.name,
-            base::NumberToString(kShowDropTargetForLinkDelay.InMilliseconds()) +
-                "ms"},
-           {features::kSideBySideShowDropTargetForLinkAfterHideDelay.name,
-            base::NumberToString(
-                kShowDropTargetForLinkAfterHideDelay.InMilliseconds()) +
-                "ms"}}}},
-        {features::kSideBySideDropTargetNudge});
-  }
-  ~MultiContentsViewDropTargetControllerNudgeDisabledTest() override = default;
-};
-
-// Tests that the start drop target is shown when a drag reaches enters the
-// "drop area" and a valid url is being dragged.
-TEST_F(MultiContentsViewDropTargetControllerNudgeDisabledTest,
-       OnWebContentsDragUpdate_ShowAndHideStartDropTarget) {
-  DragURLTo(kDragPointForStartDropTargetShow);
-  EXPECT_FALSE(drop_target_view().GetVisible());
-
-  FastForward(kShowDropTargetForLinkDelay);
-  EXPECT_TRUE(drop_target_view().GetVisible());
-  ASSERT_TRUE(drop_target_view().side().has_value());
-  EXPECT_EQ(drop_target_view().side().value(),
-            MultiContentsDropTargetView::DropSide::START);
-
-  // Move the drag back to the center to hide the drop target.
-  DragURLTo(kDragPointForHiddenTargets);
-  FastForward(kHideDropTargetDelay + kHideDropTargetAnimation);
-  EXPECT_FALSE(drop_target_view().GetVisible());
-}
-
-// Tests that the drop target takes longer to show if it has been recently
-// hidden.
-TEST_F(MultiContentsViewDropTargetControllerNudgeDisabledTest,
-       OnWebContentsDragUpdate_ShowAfterHideDropTarget) {
-  DragURLTo(kDragPointForStartDropTargetShow);
-  EXPECT_FALSE(drop_target_view().GetVisible());
-
-  FastForward(kShowDropTargetForLinkDelay);
-  EXPECT_TRUE(drop_target_view().GetVisible());
-
-  // Move the drag back to the center to hide the drop target.
-  DragURLTo(kDragPointForHiddenTargets);
-  FastForward(kHideDropTargetDelay + kHideDropTargetAnimation);
-  EXPECT_FALSE(drop_target_view().GetVisible());
-
-  // Now move back over the drop target.
-  DragURLTo(kDragPointForStartDropTargetShow);
-  FastForward(kShowDropTargetForLinkDelay);
-  EXPECT_FALSE(drop_target_view().GetVisible());
-
-  // After waiting the longer delay, it does show.
-  FastForward(kShowDropTargetForLinkAfterHideDelay -
-              kShowDropTargetForLinkDelay);
-  EXPECT_TRUE(drop_target_view().GetVisible());
-}
-
-// Tests that the end drop target is shown when a drag reaches enters the
-// "drop area" and a valid url is being dragged.
-TEST_F(MultiContentsViewDropTargetControllerNudgeDisabledTest,
-       OnWebContentsDragUpdate_ShowEndDropTarget) {
-  DragURLTo(kDragPointForEndDropTargetShow);
-  EXPECT_FALSE(drop_target_view().GetVisible());
-
-  FastForward(kShowDropTargetForLinkDelay);
-  EXPECT_TRUE(drop_target_view().GetVisible());
-  ASSERT_TRUE(drop_target_view().side().has_value());
-  EXPECT_EQ(drop_target_view().side().value(),
-            MultiContentsDropTargetView::DropSide::END);
-}
-
-// With RTL enabled, tests that the "end" area's drag coordinates will show
-// the "start" drop target.
-TEST_F(MultiContentsViewDropTargetControllerNudgeDisabledTest,
-       OnWebContentsDragUpdate_ShowStartDropTarget_RTL) {
-  SetRTL(true);
-  DragURLTo(kDragPointForEndDropTargetShow);
-  EXPECT_FALSE(drop_target_view().GetVisible());
-
-  FastForward(kShowDropTargetForLinkDelay);
-  EXPECT_TRUE(drop_target_view().GetVisible());
-  ASSERT_TRUE(drop_target_view().side().has_value());
-  EXPECT_EQ(drop_target_view().side().value(),
-            MultiContentsDropTargetView::DropSide::START);
-}
-
-// With RTL enabled, tests that the "start" area's drag coordinates will show
-// the "end" drop target.
-TEST_F(MultiContentsViewDropTargetControllerNudgeDisabledTest,
-       OnWebContentsDragUpdate_ShowEndDropTarget_RTL) {
-  SetRTL(true);
-  DragURLTo(kDragPointForStartDropTargetShow);
-  EXPECT_FALSE(drop_target_view().GetVisible());
-
-  FastForward(kShowDropTargetForLinkDelay);
-  EXPECT_TRUE(drop_target_view().GetVisible());
-  ASSERT_TRUE(drop_target_view().side().has_value());
-  EXPECT_EQ(drop_target_view().side().value(),
-            MultiContentsDropTargetView::DropSide::END);
-}
-
-// Tests that the drop target is shown even if the timer was started from a drag
-// in a different region.
-TEST_F(MultiContentsViewDropTargetControllerNudgeDisabledTest,
-       OnWebContentsDragUpdate_DragMovedBetweenDropTargets) {
-  DragURLTo(kDragPointForEndDropTargetShow);
-  EXPECT_FALSE(drop_target_view().GetVisible());
-
-  FastForward(0.25 * kShowDropTargetForLinkDelay);
-  EXPECT_FALSE(drop_target_view().GetVisible());
-
-  DragURLTo(kDragPointForStartDropTargetShow);
-  FastForward(0.25 * kShowDropTargetForLinkDelay);
-  EXPECT_FALSE(drop_target_view().GetVisible());
-
-  // Fast forward to the end of the animtion. The start-side drop target should
-  // be shown, even though the timer started with a drag to the end-side.
-  FastForward(0.50 * kShowDropTargetForLinkDelay);
-  EXPECT_TRUE(drop_target_view().GetVisible());
-  ASSERT_TRUE(drop_target_view().side().has_value());
-  EXPECT_EQ(drop_target_view().side().value(),
-            MultiContentsDropTargetView::DropSide::START);
-}
-
-// Tests that the drop target is not shown when an invalid url is being dragged.
-TEST_F(MultiContentsViewDropTargetControllerNudgeDisabledTest,
-       OnWebContentsDragUpdate_HideDropTargetOnNonStandardURL) {
-  controller().OnWebContentsDragUpdate(NonStandardUrlDropData(),
-                                       kDragPointForStartDropTargetShow, false);
-  FastForward(kShowDropTargetForLinkDelay);
-  EXPECT_FALSE(drop_target_view().GetVisible());
-}
-
-// Tests that the drop target is not shown when a non-standard url is being
-// dragged.
-TEST_F(MultiContentsViewDropTargetControllerNudgeDisabledTest,
-       OnWebContentsDragUpdate_HideDropTargetOnInvalidURL) {
-  controller().OnWebContentsDragUpdate(content::DropData(),
-                                       kDragPointForStartDropTargetShow, false);
-  FastForward(kShowDropTargetForLinkDelay);
-  EXPECT_FALSE(drop_target_view().GetVisible());
-}
-
-// Tests that the drop target is not shown when a drag is started from a
-// tab that is already in a split view.
-TEST_F(MultiContentsViewDropTargetControllerNudgeDisabledTest,
-       OnWebContentsDragUpdate_HideDropTargetWhenInSplitView) {
-  controller().OnWebContentsDragUpdate(ValidUrlDropData(),
-                                       kDragPointForStartDropTargetShow, true);
-  FastForward(kShowDropTargetForLinkDelay);
-  EXPECT_FALSE(drop_target_view().GetVisible());
-}
-
-// Tests that the drop target is not shown when a drag is outside of the
-// contents view.
-TEST_F(MultiContentsViewDropTargetControllerNudgeDisabledTest,
-       OnWebContentsDragUpdate_HideDropTargetWhenDragIsOutOfBounds) {
-  controller().OnWebContentsDragUpdate(ValidUrlDropData(), gfx::Point(-1, 250),
-                                       false);
-  FastForward(kShowDropTargetForLinkDelay);
-  EXPECT_FALSE(drop_target_view().GetVisible());
-
-  controller().OnWebContentsDragUpdate(ValidUrlDropData(),
-                                       gfx::Point(1000, 250), false);
-  FastForward(kShowDropTargetForLinkDelay);
-  EXPECT_FALSE(drop_target_view().GetVisible());
-}
-
-// Tests that the drop target timer is cancelled when a drag is not in the
-// "drop area".
-TEST_F(MultiContentsViewDropTargetControllerNudgeDisabledTest,
-       OnWebContentsDragUpdate_HideDropTargetOnOutOfBounds) {
-  DragURLTo(kDragPointForStartDropTargetShow);
-  EXPECT_FALSE(drop_target_view().GetVisible());
-
-  controller().OnWebContentsDragUpdate(ValidUrlDropData(),
-                                       kDragPointForHiddenTargets, false);
-  FastForward(kShowDropTargetForLinkDelay);
-  EXPECT_FALSE(drop_target_view().GetVisible());
-}
-
-// Tests that the drop target timer is cancelled when a drag exits the contents
-// view.
-TEST_F(MultiContentsViewDropTargetControllerNudgeDisabledTest,
-       OnWebContentsDragExit) {
-  DragURLTo(kDragPointForStartDropTargetShow);
-  controller().OnWebContentsDragExit();
-  FastForward(kShowDropTargetForLinkDelay);
-  EXPECT_FALSE(drop_target_view().GetVisible());
-}
-
-// Tests that the drop target is hidden when the drag ends.
-TEST_F(MultiContentsViewDropTargetControllerNudgeDisabledTest,
-       OnWebContentsDragEnded) {
-  // First, show the drop target.
-  DragURLTo(kDragPointForStartDropTargetShow);
-  FastForward(kShowDropTargetForLinkDelay);
-  EXPECT_TRUE(drop_target_view().GetVisible());
-
-  // Ending the drag should hide it.
-  controller().OnWebContentsDragEnded();
-  FastForward(kHideDropTargetDelay + kHideDropTargetAnimation);
-  EXPECT_FALSE(drop_target_view().GetVisible());
-}
-
-class MultiContentsViewDropTargetControllerDragTest
-    : public MultiContentsViewDropTargetControllerTestBase {
- public:
-  MultiContentsViewDropTargetControllerDragTest() {
-    feature_list_.InitWithFeaturesAndParameters(
-        {{features::kSideBySide,
-          {{features::kSideBySideShowDropTargetDelay.name,
-            base::NumberToString(kShowDropTargetForTabDelay.InMilliseconds()) +
-                "ms"},
-           {features::kSideBySideShowDropTargetForLinkDelay.name,
-            base::NumberToString(kShowDropTargetForLinkDelay.InMilliseconds()) +
-                "ms"},
-           {features::kSideBySideHideDropTargetDelay.name,
-            base::NumberToString(kHideDropTargetDelay.InMilliseconds()) + "ms"},
-           {features::kSideBySideShowDropTargetForLinkAfterHideLookbackWindow
-                .name,
-            "0ms"}}},
-         {features::kSideBySideDropTargetNudge, {}}},
-        {});
-  }
-  ~MultiContentsViewDropTargetControllerDragTest() override = default;
-};
-
 // Tests that the drop target is hidden when dragging more than one tab.
-TEST_F(MultiContentsViewDropTargetControllerDragTest,
+TEST_F(MultiContentsViewDropTargetControllerTest,
        OnTabDragUpdated_HidesTargetWhenDraggingMultipleTabs) {
   MockTabDragController mock_tab_drag_controller;
   DragSessionData session_data;
@@ -510,7 +266,8 @@ TEST_F(MultiContentsViewDropTargetControllerDragTest,
 
   // Simulate showing the drop target first.
   DragTabTo(kDragPointForStartDropTargetShow);
-  FastForward(kShowDropTargetForTabDelay);
+  FastForward(
+      MultiContentsViewDropTargetController::kShowDropTargetForTabDelay);
   EXPECT_TRUE(drop_target_view().GetVisible());
 
   // Dragging multiple tabs should immediately hide it.
@@ -523,7 +280,7 @@ TEST_F(MultiContentsViewDropTargetControllerDragTest,
 }
 
 // Tests that the drag updated event is handled correctly for a single tab.
-TEST_F(MultiContentsViewDropTargetControllerDragTest,
+TEST_F(MultiContentsViewDropTargetControllerTest,
        OnTabDragUpdated_ShowsAndHidesTargetWhenDraggingSingleTab) {
   MockTabDragController mock_tab_drag_controller;
   DragSessionData session_data;
@@ -540,7 +297,8 @@ TEST_F(MultiContentsViewDropTargetControllerDragTest,
 
   controller().OnTabDragUpdated(mock_tab_drag_controller,
                                 kDragPointForStartDropTargetShow);
-  FastForward(kShowDropTargetForTabDelay);
+  FastForward(
+      MultiContentsViewDropTargetController::kShowDropTargetForTabDelay);
   EXPECT_TRUE(drop_target_view().GetVisible());
   EXPECT_EQ(drop_target_view().side().value(),
             MultiContentsDropTargetView::DropSide::START);
@@ -553,10 +311,11 @@ TEST_F(MultiContentsViewDropTargetControllerDragTest,
 }
 
 // Tests that the drop target is hidden when the drag exits the view.
-TEST_F(MultiContentsViewDropTargetControllerDragTest, OnTabDragExited) {
+TEST_F(MultiContentsViewDropTargetControllerTest, OnTabDragExited) {
   // First, show the drop target.
   DragTabTo(kDragPointForStartDropTargetShow);
-  FastForward(kShowDropTargetForTabDelay);
+  FastForward(
+      MultiContentsViewDropTargetController::kShowDropTargetForTabDelay);
   EXPECT_TRUE(drop_target_view().GetVisible());
 
   // Exiting the drag should hide it.
@@ -566,10 +325,11 @@ TEST_F(MultiContentsViewDropTargetControllerDragTest, OnTabDragExited) {
 }
 
 // Tests that the drop target is hidden when the drag ends.
-TEST_F(MultiContentsViewDropTargetControllerDragTest, OnTabDragEnded) {
+TEST_F(MultiContentsViewDropTargetControllerTest, OnTabDragEnded) {
   // First, show the drop target.
   DragTabTo(kDragPointForStartDropTargetShow);
-  FastForward(kShowDropTargetForTabDelay);
+  FastForward(
+      MultiContentsViewDropTargetController::kShowDropTargetForTabDelay);
   EXPECT_TRUE(drop_target_view().GetVisible());
 
   // Ending the drag should hide it.
@@ -580,7 +340,7 @@ TEST_F(MultiContentsViewDropTargetControllerDragTest, OnTabDragEnded) {
 
 // Tests that the drop target timer is cancelled when a tab drag is not in the
 // "drop area".
-TEST_F(MultiContentsViewDropTargetControllerDragTest,
+TEST_F(MultiContentsViewDropTargetControllerTest,
        OnTabDragUpdated_HideDropTargetOnOutOfBounds) {
   MockTabDragController mock_tab_drag_controller;
   DragSessionData session_data;
@@ -597,7 +357,8 @@ TEST_F(MultiContentsViewDropTargetControllerDragTest,
 
   controller().OnTabDragUpdated(mock_tab_drag_controller,
                                 kDragPointForStartDropTargetShow);
-  FastForward(kShowDropTargetForTabDelay);
+  FastForward(
+      MultiContentsViewDropTargetController::kShowDropTargetForTabDelay);
   EXPECT_TRUE(drop_target_view().GetVisible());
 
   controller().OnTabDragUpdated(mock_tab_drag_controller,
@@ -607,13 +368,14 @@ TEST_F(MultiContentsViewDropTargetControllerDragTest,
 }
 
 // Tests that CanDropTab returns true only when the drop target is visible.
-TEST_F(MultiContentsViewDropTargetControllerDragTest, CanDropTab) {
+TEST_F(MultiContentsViewDropTargetControllerTest, CanDropTab) {
   // Target is initially not visible.
   EXPECT_FALSE(controller().CanDropTab());
 
   // Show the drop target by simulating a link drag.
   DragURLTo(kDragPointForEndDropTargetShow);
-  FastForward(kShowDropTargetForLinkDelay);
+  FastForward(MultiContentsViewDropTargetController::
+                  kShowDropTargetForLinkAfterHideDelay);
   EXPECT_TRUE(drop_target_view().GetVisible());
 
   // Now, CanDropTab should be true.
@@ -622,8 +384,7 @@ TEST_F(MultiContentsViewDropTargetControllerDragTest, CanDropTab) {
 
 // Tests that the destruction callback is fired when the controller is
 // destroyed.
-TEST_F(MultiContentsViewDropTargetControllerDragTest,
-       RegisterWillDestroyCallback) {
+TEST_F(MultiContentsViewDropTargetControllerTest, RegisterWillDestroyCallback) {
   bool callback_fired = false;
   auto subscription = controller().RegisterWillDestroyCallback(
       base::BindOnce([](bool* fired) { *fired = true; }, &callback_fired));
@@ -634,11 +395,12 @@ TEST_F(MultiContentsViewDropTargetControllerDragTest,
   EXPECT_TRUE(callback_fired);
 }
 
-TEST_F(MultiContentsViewDropTargetControllerDragTest, ShowAndHideNudge) {
+TEST_F(MultiContentsViewDropTargetControllerTest, ShowAndHideNudge) {
   // Drag to the start of the screen should show the nudge on the start side.
   DragURLTo(kDragPointForStartDropTargetShow);
   EXPECT_FALSE(drop_target_view().GetVisible());
-  FastForward(kShowDropTargetForLinkDelay);
+  FastForward(MultiContentsViewDropTargetController::
+                  kShowDropTargetForLinkAfterHideDelay);
   EXPECT_TRUE(drop_target_view().GetVisible());
   EXPECT_EQ(drop_target_view().side().value(),
             MultiContentsDropTargetView::DropSide::START);
@@ -648,14 +410,16 @@ TEST_F(MultiContentsViewDropTargetControllerDragTest, ShowAndHideNudge) {
   // Dragging within 40% of the edge should not hide the target.
   DragURLTo(gfx::Point(kMultiContentsViewSize.width() * 0.39f,
                        kMultiContentsViewSize.height()));
-  FastForward(kShowDropTargetForLinkDelay);
+  FastForward(MultiContentsViewDropTargetController::
+                  kShowDropTargetForLinkAfterHideDelay);
   EXPECT_TRUE(drop_target_view().GetVisible());
   EXPECT_EQ(drop_target_view().state().value(),
             MultiContentsDropTargetView::DropTargetState::kNudge);
 
   // Drag to the end of the screen should show the nudge on the end side.
   DragURLTo(kDragPointForEndDropTargetShow);
-  FastForward(kShowDropTargetForLinkDelay);
+  FastForward(MultiContentsViewDropTargetController::
+                  kShowDropTargetForLinkAfterHideDelay);
   EXPECT_TRUE(drop_target_view().GetVisible());
   EXPECT_EQ(drop_target_view().side().value(),
             MultiContentsDropTargetView::DropSide::END);
@@ -664,30 +428,30 @@ TEST_F(MultiContentsViewDropTargetControllerDragTest, ShowAndHideNudge) {
 }
 
 // Tests that the nudge is shown a limited amount of times.
-TEST_F(MultiContentsViewDropTargetControllerDragTest, NudgeShownLimit) {
+TEST_F(MultiContentsViewDropTargetControllerTest, NudgeShownLimit) {
   TestNudgeShownLimit(true);
 }
 
 // Tests that multiple nudges within the same drag count independently towards
 // the limit.
-TEST_F(MultiContentsViewDropTargetControllerDragTest,
-       NudgeShownLimitSingleDrag) {
+TEST_F(MultiContentsViewDropTargetControllerTest, NudgeShownLimitSingleDrag) {
   TestNudgeShownLimit(false);
 }
 
 // Tests that if the nudge is no longer shown after using the drop zone a
 // certain number of times.
-TEST_F(MultiContentsViewDropTargetControllerDragTest, NudgeUsedLimit) {
+TEST_F(MultiContentsViewDropTargetControllerTest, NudgeUsedLimit) {
   base::UserActionTester user_action_tester;
   ASSERT_EQ(0, user_action_tester.GetActionCount(kNudgeUsedUserActionName));
   ASSERT_EQ(0, prefs()->GetInteger(prefs::kSplitViewDragAndDropNudgeUsedCount));
 
-  // The first kSideBySideDropTargetNudgeUsedLimit drags should show the nudge.
+  // The first kNudgeUsedLimit drags should show the nudge.
   for (int expected_count = 1;
-       expected_count <= features::kSideBySideDropTargetNudgeUsedLimit.Get();
+       expected_count <= MultiContentsViewDropTargetController::kNudgeUsedLimit;
        ++expected_count) {
     DragURLTo(kDragPointForStartDropTargetShow);
-    FastForward(kShowDropTargetForLinkDelay);
+    FastForward(MultiContentsViewDropTargetController::
+                    kShowDropTargetForLinkAfterHideDelay);
     EXPECT_TRUE(drop_target_view().GetVisible());
     EXPECT_EQ(drop_target_view().state().value(),
               MultiContentsDropTargetView::DropTargetState::kNudge);
@@ -710,7 +474,8 @@ TEST_F(MultiContentsViewDropTargetControllerDragTest, NudgeUsedLimit) {
 
   // Afterwards, the nudge should not be shown during a drag.
   DragURLTo(kDragPointForStartDropTargetShow);
-  FastForward(kShowDropTargetForLinkDelay);
+  FastForward(MultiContentsViewDropTargetController::
+                  kShowDropTargetForLinkAfterHideDelay);
   EXPECT_TRUE(drop_target_view().GetVisible());
   EXPECT_EQ(drop_target_view().state().value(),
             MultiContentsDropTargetView::DropTargetState::kFull);
@@ -724,18 +489,19 @@ TEST_F(MultiContentsViewDropTargetControllerDragTest, NudgeUsedLimit) {
   DropLink();
   FastForward(kHideDropTargetDelay + kHideDropTargetAnimation);
   EXPECT_FALSE(drop_target_view().GetVisible());
-  EXPECT_EQ(features::kSideBySideDropTargetNudgeUsedLimit.Get(),
+  EXPECT_EQ(MultiContentsViewDropTargetController::kNudgeUsedLimit,
             user_action_tester.GetActionCount(kNudgeUsedUserActionName));
-  EXPECT_EQ(features::kSideBySideDropTargetNudgeUsedLimit.Get(),
+  EXPECT_EQ(MultiContentsViewDropTargetController::kNudgeUsedLimit,
             prefs()->GetInteger(prefs::kSplitViewDragAndDropNudgeUsedCount));
 }
 
-TEST_F(MultiContentsViewDropTargetControllerDragTest, ShowAndHideNudgeRTL) {
+TEST_F(MultiContentsViewDropTargetControllerTest, ShowAndHideNudgeRTL) {
   SetRTL(true);
 
   // Drag to the start of the screen should show the nudge on the end side.
   DragURLTo(kDragPointForStartDropTargetShow);
-  FastForward(kShowDropTargetForLinkDelay);
+  FastForward(MultiContentsViewDropTargetController::
+                  kShowDropTargetForLinkAfterHideDelay);
   EXPECT_TRUE(drop_target_view().GetVisible());
   EXPECT_EQ(drop_target_view().side().value(),
             MultiContentsDropTargetView::DropSide::END);
@@ -752,7 +518,8 @@ TEST_F(MultiContentsViewDropTargetControllerDragTest, ShowAndHideNudgeRTL) {
 
   // Drag to the end of the screen should show the nudge on the start side.
   DragURLTo(kDragPointForEndDropTargetShow);
-  FastForward(kShowDropTargetForLinkDelay);
+  FastForward(MultiContentsViewDropTargetController::
+                  kShowDropTargetForLinkAfterHideDelay);
   EXPECT_TRUE(drop_target_view().GetVisible());
   EXPECT_EQ(drop_target_view().side().value(),
             MultiContentsDropTargetView::DropSide::START);
@@ -760,10 +527,11 @@ TEST_F(MultiContentsViewDropTargetControllerDragTest, ShowAndHideNudgeRTL) {
             MultiContentsDropTargetView::DropTargetState::kNudge);
 }
 
-TEST_F(MultiContentsViewDropTargetControllerDragTest, NudgeToFull) {
+TEST_F(MultiContentsViewDropTargetControllerTest, NudgeToFull) {
   // Drag to the start of the screen should show the nudge on the start side.
   DragURLTo(kDragPointForStartDropTargetShow);
-  FastForward(kShowDropTargetForLinkDelay);
+  FastForward(MultiContentsViewDropTargetController::
+                  kShowDropTargetForLinkAfterHideDelay);
   EXPECT_TRUE(drop_target_view().GetVisible());
   EXPECT_EQ(drop_target_view().state().value(),
             MultiContentsDropTargetView::DropTargetState::kNudge);
@@ -777,10 +545,11 @@ TEST_F(MultiContentsViewDropTargetControllerDragTest, NudgeToFull) {
             MultiContentsDropTargetView::DropTargetState::kNudgeToFull);
 }
 
-TEST_F(MultiContentsViewDropTargetControllerDragTest, NudgeToFullToHidden) {
+TEST_F(MultiContentsViewDropTargetControllerTest, NudgeToFullToHidden) {
   // Drag to the start of the screen should show the nudge on the start side.
   DragURLTo(kDragPointForStartDropTargetShow);
-  FastForward(kShowDropTargetForLinkDelay);
+  FastForward(MultiContentsViewDropTargetController::
+                  kShowDropTargetForLinkAfterHideDelay);
   EXPECT_TRUE(drop_target_view().GetVisible());
 
   // Fire the drag entered event to expand the nudge.
@@ -803,7 +572,7 @@ TEST_F(MultiContentsViewDropTargetControllerDragTest, NudgeToFullToHidden) {
   EXPECT_FALSE(drop_target_view().IsClosing());
 }
 
-TEST_F(MultiContentsViewDropTargetControllerDragTest, HandleTabDrop) {
+TEST_F(MultiContentsViewDropTargetControllerTest, HandleTabDrop) {
   MockTabDragController mock_tab_drag_controller;
   DragSessionData session_data;
   MockTabSlotView tab1;
@@ -822,7 +591,8 @@ TEST_F(MultiContentsViewDropTargetControllerDragTest, HandleTabDrop) {
 
   controller().OnTabDragUpdated(mock_tab_drag_controller,
                                 kDragPointForEndDropTargetShow);
-  FastForward(kShowDropTargetForTabDelay);
+  FastForward(
+      MultiContentsViewDropTargetController::kShowDropTargetForTabDelay);
   EXPECT_TRUE(drop_target_view().GetVisible());
   ASSERT_EQ(drop_target_view().side().value(),
             MultiContentsDropTargetView::DropSide::END);
@@ -834,7 +604,7 @@ TEST_F(MultiContentsViewDropTargetControllerDragTest, HandleTabDrop) {
   controller().HandleTabDrop(mock_tab_drag_controller);
 }
 
-TEST_F(MultiContentsViewDropTargetControllerDragTest, DragDelegateMethods) {
+TEST_F(MultiContentsViewDropTargetControllerTest, DragDelegateMethods) {
   // GetDropFormats
   int formats = 0;
   std::set<ui::ClipboardFormatType> format_types;
@@ -883,10 +653,8 @@ TEST_F(MultiContentsViewDropTargetControllerDragTest, DragDelegateMethods) {
   EXPECT_FALSE(drop_target_view().GetVisible());
 }
 
-TEST_F(MultiContentsViewDropTargetControllerDragTest,
+TEST_F(MultiContentsViewDropTargetControllerTest,
        ShowsFullDropTargetWhenAnimationsDisabled) {
-  ASSERT_TRUE(
-      base::FeatureList::IsEnabled(features::kSideBySideDropTargetNudge));
   auto animation_mode_reset = gfx::AnimationTestApi::SetRichAnimationRenderMode(
       gfx::Animation::RichAnimationRenderMode::FORCE_DISABLED);
   ASSERT_FALSE(drop_target_view().ShouldShowAnimation());
@@ -894,18 +662,20 @@ TEST_F(MultiContentsViewDropTargetControllerDragTest,
 
   // Drag to the start of the screen.
   DragURLTo(kDragPointForStartDropTargetShow);
-  FastForward(kShowDropTargetForLinkDelay);
+  FastForward(MultiContentsViewDropTargetController::
+                  kShowDropTargetForLinkAfterHideDelay);
 
   EXPECT_TRUE(drop_target_view().GetVisible());
   EXPECT_EQ(drop_target_view().state().value(),
             MultiContentsDropTargetView::DropTargetState::kFull);
 }
 
-TEST_F(MultiContentsViewDropTargetControllerDragTest,
+TEST_F(MultiContentsViewDropTargetControllerTest,
        FullToNudgeTransitionNotAllowed) {
   // Drag to the start of the screen should show the nudge on the start side.
   DragURLTo(kDragPointForStartDropTargetShow);
-  FastForward(kShowDropTargetForLinkDelay);
+  FastForward(MultiContentsViewDropTargetController::
+                  kShowDropTargetForLinkAfterHideDelay);
   EXPECT_TRUE(drop_target_view().GetVisible());
   EXPECT_EQ(drop_target_view().state().value(),
             MultiContentsDropTargetView::DropTargetState::kNudge);
@@ -920,7 +690,8 @@ TEST_F(MultiContentsViewDropTargetControllerDragTest,
 
   // Dragging to the nudge area should not transition back to nudge.
   DragURLTo(kDragPointForStartDropTargetShow);
-  FastForward(kShowDropTargetForLinkDelay);
+  FastForward(MultiContentsViewDropTargetController::
+                  kShowDropTargetForLinkAfterHideDelay);
   EXPECT_TRUE(drop_target_view().GetVisible());
   EXPECT_EQ(drop_target_view().state().value(),
             MultiContentsDropTargetView::DropTargetState::kNudgeToFull);
@@ -928,10 +699,11 @@ TEST_F(MultiContentsViewDropTargetControllerDragTest,
 
 // Tests that the drag type is correctly set to `DragType::kLink` when
 // dragging a link.
-TEST_F(MultiContentsViewDropTargetControllerDragTest,
+TEST_F(MultiContentsViewDropTargetControllerTest,
        OnWebContentsDragUpdate_SetsDragTypeToLink) {
   DragURLTo(kDragPointForStartDropTargetShow);
-  FastForward(kShowDropTargetForLinkDelay);
+  FastForward(MultiContentsViewDropTargetController::
+                  kShowDropTargetForLinkAfterHideDelay);
   EXPECT_TRUE(drop_target_view().GetVisible());
   ASSERT_TRUE(drop_target_view().drag_type().has_value());
   EXPECT_EQ(drop_target_view().drag_type().value(),
@@ -940,7 +712,7 @@ TEST_F(MultiContentsViewDropTargetControllerDragTest,
 
 // Tests that the drag type is correctly set to `DragType::kTab` when
 // dragging a tab.
-TEST_F(MultiContentsViewDropTargetControllerDragTest,
+TEST_F(MultiContentsViewDropTargetControllerTest,
        OnTabDragUpdated_SetsDragTypeToTab) {
   MockTabDragController mock_tab_drag_controller;
   DragSessionData session_data;
@@ -957,7 +729,8 @@ TEST_F(MultiContentsViewDropTargetControllerDragTest,
 
   controller().OnTabDragUpdated(mock_tab_drag_controller,
                                 kDragPointForStartDropTargetShow);
-  FastForward(kShowDropTargetForLinkDelay);
+  FastForward(MultiContentsViewDropTargetController::
+                  kShowDropTargetForLinkAfterHideDelay);
   EXPECT_TRUE(drop_target_view().GetVisible());
   ASSERT_TRUE(drop_target_view().drag_type().has_value());
   EXPECT_EQ(drop_target_view().drag_type().value(),

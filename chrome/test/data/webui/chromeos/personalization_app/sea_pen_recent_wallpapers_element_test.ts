@@ -247,18 +247,18 @@ suite('SeaPenRecentWallpapersElementTest', function() {
     recentImages = getDisplayedRecentImages();
     assertEquals(1, recentImages.length, '1 image done loading');
     assertDeepEquals(
-        {url: 'data:image/jpeg;base64,image111data'}, recentImages[0]!.src);
+        'data:image/jpeg;base64,image111data', recentImages[0]!.src);
 
     // Set loading failed for second thumbnail.
     personalizationStore.data.wallpaper.seaPen = {
       ...personalizationStore.data.wallpaper.seaPen,
       recentImageData: {
         111: {
-          url: {url: 'data:image/jpeg;base64,image111data'},
+          url: 'data:image/jpeg;base64,image111data',
           imageInfo: null,
         },
         222: {
-          url: {url: ''},
+          url: '',
           imageInfo: seaPenProvider.recentImageInfo2,
         },
       },
@@ -281,7 +281,7 @@ suite('SeaPenRecentWallpapersElementTest', function() {
     recentImages = getDisplayedRecentImages();
     assertEquals(1, recentImages.length, '1 image loaded successfully');
     assertDeepEquals(
-        {url: 'data:image/jpeg;base64,image111data'}, recentImages[0]!.src,
+        'data:image/jpeg;base64,image111data', recentImages[0]!.src,
         'src equals successfully loaded image url');
   });
 
@@ -627,9 +627,9 @@ suite('SeaPenRecentWallpapersElementTest', function() {
     recentImages = getDisplayedRecentImages();
     assertEquals(2, recentImages.length, 'only 2 images should display.');
     assertDeepEquals(
-        {url: 'data:image/jpeg;base64,image222data'}, recentImages[0]!.src);
+        'data:image/jpeg;base64,image222data', recentImages[0]!.src);
     assertDeepEquals(
-        {url: 'data:image/jpeg;base64,image333data'}, recentImages[1]!.src);
+        'data:image/jpeg;base64,image333data', recentImages[1]!.src);
   });
 
   test('clicks on a recent wallpaper to set wallpaper', async () => {

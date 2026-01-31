@@ -12,12 +12,10 @@
 #import "components/autofill/core/common/unique_ids.h"
 #import "components/autofill/ios/browser/autofill_util.h"
 #import "components/autofill/ios/browser/new_frame_catcher.h"
-#import "components/autofill/ios/browser/test_autofill_java_script_feature_container.h"
 #import "components/autofill/ios/common/features.h"
 #import "components/autofill/ios/form_util/autofill_test_with_web_state.h"
 #import "components/autofill/ios/form_util/child_frame_registrar.h"
 #import "components/autofill/ios/form_util/form_handlers_java_script_feature.h"
-#import "components/autofill/ios/form_util/form_util_java_script_feature.h"
 #import "ios/web/public/js_messaging/web_frame.h"
 #import "ios/web/public/js_messaging/web_frames_manager.h"
 #import "ios/web/public/test/fakes/fake_web_client.h"
@@ -41,18 +39,18 @@ class RemoteFrameTokenRegistrationTest : public web::WebTestWithWebState {
     web::FakeWebClient* web_client =
         static_cast<web::FakeWebClient*>(GetWebClient());
     web_client->SetJavaScriptFeatures({
-        form_handlers_java_script_feature(),
+        FormHandlersJavaScriptFeature::GetInstance(),
     });
   }
 
  protected:
   web::WebFramesManager* web_frames_manager() {
-    return js_feature_container.form_handlers_java_script_feature()
-        ->GetWebFramesManager(web_state());
+    return FormHandlersJavaScriptFeature::GetInstance()->GetWebFramesManager(
+        web_state());
   }
 
   FormHandlersJavaScriptFeature* form_handlers_java_script_feature() {
-    return js_feature_container.form_handlers_java_script_feature();
+    return FormHandlersJavaScriptFeature::GetInstance();
   }
 
   ChildFrameRegistrar* frame_registrar() {
@@ -105,14 +103,6 @@ class RemoteFrameTokenRegistrationTest : public web::WebTestWithWebState {
       RemoteFrameToken remote_frame_token) {
     return frame_registrar()->LookupChildFrame(remote_frame_token);
   }
-
- private:
-  //  Test instances of JavaScriptFeature's that are injected in a different
-  //  content world depending on kAutofillIsolatedWorldForJavascriptIos.
-  //  TODO(crbug.com/359538514): Remove this variable and use
-  //  FormHandlersJavaScriptFeature::GetInstance() once Autofill in the isolated
-  //  world is launched.
-  TestAutofillJavaScriptFeatureContainer js_feature_container;
 };
 
 // Verifies that the main frame registers a remote frame token associated to its

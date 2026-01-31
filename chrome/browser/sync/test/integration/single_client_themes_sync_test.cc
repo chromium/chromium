@@ -21,6 +21,7 @@
 #include "chrome/browser/themes/theme_service_utils.h"
 #include "chrome/browser/themes/theme_syncable_service.h"
 #include "chrome/common/pref_names.h"
+#include "components/browser_sync/browser_sync_switches.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/base/signin_pref_names.h"
 #include "components/signin/public/base/signin_switches.h"
@@ -32,6 +33,7 @@
 #include "components/sync/test/fake_server.h"
 #include "components/sync/test/test_matchers.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/test_launcher.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
 namespace {
@@ -1117,5 +1119,93 @@ IN_PROC_BROWSER_TEST_P(
 }
 
 #endif  // !BUILDFLAG(IS_CHROMEOS)
+
+class SingleClientThemesMigrateSyncingUserToSignedInSyncTest
+    : public SingleClientThemesSyncTestWithAccountThemesSeparation {
+ public:
+  SingleClientThemesMigrateSyncingUserToSignedInSyncTest() {
+    std::vector<base::test::FeatureRef> enabled_features = {
+        syncer::kReplaceSyncPromosWithSignInPromos,
+        syncer::kSeparateLocalAndAccountThemes};
+    std::vector<base::test::FeatureRef> disabled_features;
+    if (content::IsPreTest()) {
+      disabled_features.push_back(switches::kMigrateSyncingUserToSignedIn);
+    } else {
+      enabled_features.push_back(switches::kMigrateSyncingUserToSignedIn);
+    }
+    scoped_feature_list_.InitWithFeatures(enabled_features, disabled_features);
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+INSTANTIATE_TEST_SUITE_P(
+    ,
+    SingleClientThemesMigrateSyncingUserToSignedInSyncTest,
+    testing::Values(SyncTest::SetupSyncMode::kSyncTheFeature),
+    testing::PrintToStringParamName());
+
+IN_PROC_BROWSER_TEST_P(SingleClientThemesMigrateSyncingUserToSignedInSyncTest,
+                       PRE_ShouldDeduplicateSameLocalAndAccountTheme) {
+  ASSERT_TRUE(SetupClients());
+
+  UseCustomTheme(GetProfile(0), 0);
+  ASSERT_TRUE(CustomThemeChecker(GetProfile(0)).Wait());
+
+  // Same theme on the server.
+  GetFakeServer()->InjectEntity(CreateCustomThemeEntity(GetCustomTheme(0)));
+  ASSERT_TRUE(SetupSyncWithMode(SyncTest::SetupSyncMode::kSyncTheFeature));
+  ASSERT_TRUE(UsingCustomTheme(GetProfile(0)));
+}
+
+IN_PROC_BROWSER_TEST_P(SingleClientThemesMigrateSyncingUserToSignedInSyncTest,
+                       ShouldDeduplicateSameLocalAndAccountTheme) {
+  ASSERT_TRUE(SetupClients());
+  // The migration is triggered right after the initial sync. Since the local
+  // theme was the same as the account theme, the saved local theme will get
+  // removed.
+  ASSERT_TRUE(GetClient(0)->AwaitSyncTransportActive());
+
+  ASSERT_TRUE(UsingCustomTheme(GetProfile(0)));
+  // Disable sync.
+  ASSERT_TRUE(
+      GetClient(0)->DisableSelectableType(syncer::UserSelectableType::kThemes));
+
+  // The saved local theme was de-duped. Thus upon turning off the themes sync,
+  // since no local theme is saved, the default theme is applied.
+  EXPECT_TRUE(DefaultThemeChecker(GetProfile(0)).Wait());
+  EXPECT_FALSE(UsingCustomTheme(GetProfile(0)));
+}
+
+IN_PROC_BROWSER_TEST_P(SingleClientThemesMigrateSyncingUserToSignedInSyncTest,
+                       PRE_ShouldNotDeduplicateDifferentLocalAndAccountTheme) {
+  ASSERT_TRUE(SetupClients());
+
+  UseCustomTheme(GetProfile(0), 0);
+  ASSERT_TRUE(CustomThemeChecker(GetProfile(0)).Wait());
+
+  // Different theme on the server.
+  GetFakeServer()->InjectEntity(CreateGrayscaleThemeEntity());
+
+  ASSERT_TRUE(SetupSyncWithMode(SyncTest::SetupSyncMode::kSyncTheFeature));
+  ASSERT_TRUE(GrayscaleThemeChecker(GetProfile(0)).Wait());
+}
+
+IN_PROC_BROWSER_TEST_P(SingleClientThemesMigrateSyncingUserToSignedInSyncTest,
+                       ShouldNotDeduplicateDifferentLocalAndAccountTheme) {
+  ASSERT_TRUE(SetupClients());
+  // The migration is triggered right after the initial sync. However, since the
+  // local theme is different from the account theme, no de-duplication happens.
+  ASSERT_TRUE(GetClient(0)->AwaitSyncTransportActive());
+
+  // Disable sync.
+  ASSERT_TRUE(
+      GetClient(0)->DisableSelectableType(syncer::UserSelectableType::kThemes));
+
+  // The saved local theme is not de-duped. Thus upon turning off the themes
+  // sync, the saved local theme is applied.
+  EXPECT_TRUE(CustomThemeChecker(GetProfile(0)).Wait());
+}
 
 }  // namespace

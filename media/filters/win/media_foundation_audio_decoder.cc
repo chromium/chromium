@@ -15,7 +15,6 @@
 #include "base/containers/span_writer.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
-#include "base/metrics/histogram_functions.h"
 #include "base/task/bind_post_task.h"
 #include "base/win/scoped_co_mem.h"
 #include "base/win/windows_version.h"
@@ -201,10 +200,6 @@ void MediaFoundationAudioDecoder::Initialize(const AudioDecoderConfig& config,
 
   HRESULT hr = CreateDecoder();
   if (FAILED(hr)) {
-    if (config_.profile() == AudioCodecProfile::kXHE_AAC) {
-      base::UmaHistogramSparse(
-          "Media.MediaFoundationAudioDecoder.CreateDecoderFailure.XheAac", hr);
-    }
     base::BindPostTaskToCurrentDefault(std::move(init_cb))
         .Run(DecoderStatus(DecoderStatus::Codes::kUnsupportedCodec));
     return;

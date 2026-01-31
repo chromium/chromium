@@ -31,6 +31,7 @@
 #include "components/sync/protocol/entity_specifics.pb.h"
 #include "components/sync/protocol/extension_setting_specifics.pb.h"
 #include "components/sync/protocol/extension_specifics.pb.h"
+#include "components/sync/protocol/gemini_thread_specifics.pb.h"
 #include "components/sync/protocol/history_delete_directive_specifics.pb.h"
 #include "components/sync/protocol/history_specifics.pb.h"
 #include "components/sync/protocol/nigori_specifics.pb.h"
@@ -122,7 +123,7 @@ namespace {
 //    For example let's say you want to clobber a sensitive field:
 //
 //    base::Value ToValue(const sync_pb::GreenProto& proto) const {
-//      base::Value::Dict value = ToValueDictImpl(proto);
+//      base::DictValue value = ToValueDictImpl(proto);
 //      value.Set("secret", "<clobbered>");
 //      return base::Value(value);
 //    }
@@ -138,7 +139,7 @@ class ToValueVisitor {
  public:
   explicit ToValueVisitor(const ProtoValueConversionOptions& options =
                               ProtoValueConversionOptions(),
-                          base::Value::Dict* value = nullptr)
+                          base::DictValue* value = nullptr)
       : options_(options), value_(value) {}
 
   template <class P>
@@ -155,7 +156,7 @@ class ToValueVisitor {
       const char* field_name,
       const google::protobuf::RepeatedPtrField<std::string>& repeated_field) {
     if (!repeated_field.empty()) {
-      base::Value::List list;
+      base::ListValue list;
       for (const auto& field : repeated_field) {
         list.Append(base::Base64Encode(base::as_byte_span(field)));
       }
@@ -181,7 +182,7 @@ class ToValueVisitor {
              const char* field_name,
              const google::protobuf::RepeatedPtrField<F>& repeated_field) {
     if (!repeated_field.empty()) {
-      base::Value::List list;
+      base::ListValue list;
       for (const auto& field : repeated_field) {
         list.Append(ToValue(field));
       }
@@ -194,7 +195,7 @@ class ToValueVisitor {
              const char* field_name,
              const google::protobuf::RepeatedField<F>& repeated_field) {
     if (!repeated_field.empty()) {
-      base::Value::List list;
+      base::ListValue list;
       for (const auto& field : repeated_field) {
         list.Append(ToValue(field));
       }
@@ -226,7 +227,7 @@ class ToValueVisitor {
 
   // GetUpdateTriggers.
   base::Value ToValue(const sync_pb::GetUpdateTriggers& proto) const {
-    base::Value::Dict dict = ToValueDictImpl(proto);
+    base::DictValue dict = ToValueDictImpl(proto);
     if (!options_.include_full_get_update_triggers) {
       if (!proto.client_dropped_hints()) {
         dict.Remove("client_dropped_hints");
@@ -255,7 +256,7 @@ class ToValueVisitor {
 
   // AutofillWalletSpecifics
   base::Value ToValue(const sync_pb::AutofillWalletSpecifics& proto) const {
-    base::Value::Dict dict = ToValueDictImpl(proto);
+    base::DictValue dict = ToValueDictImpl(proto);
     // TODO(crbug.com/40252694): consider whether the VISIT_SECRET macro in
     // proto_visitors.h could replace this.
     if (proto.type() != sync_pb::AutofillWalletSpecifics::POSTAL_ADDRESS) {
@@ -285,8 +286,8 @@ class ToValueVisitor {
 
  private:
   template <class P>
-  base::Value::Dict ToValueDictImpl(const P& proto) const {
-    base::Value::Dict dict;
+  base::DictValue ToValueDictImpl(const P& proto) const {
+    base::DictValue dict;
     ToValueVisitor visitor(options_, &dict);
     VisitProtoFields(visitor, proto);
     return dict;
@@ -320,7 +321,7 @@ class ToValueVisitor {
   }
 
   const ProtoValueConversionOptions options_;
-  const raw_ptr<base::Value::Dict> value_;
+  const raw_ptr<base::DictValue> value_;
 };
 
 }  // namespace
@@ -357,6 +358,7 @@ IMPLEMENT_PROTO_TO_VALUE(CookieSpecifics)
 IMPLEMENT_PROTO_TO_VALUE(CrossUserSharingPublicKey)
 IMPLEMENT_PROTO_TO_VALUE(DebugEventInfo)
 IMPLEMENT_PROTO_TO_VALUE(DebugInfo)
+IMPLEMENT_PROTO_TO_VALUE(DesktopToMobilePromoMessage)
 IMPLEMENT_PROTO_TO_VALUE(DeviceDetails)
 IMPLEMENT_PROTO_TO_VALUE(DeviceInfoSpecifics)
 IMPLEMENT_PROTO_TO_VALUE(DictionarySpecifics)
@@ -367,6 +369,7 @@ IMPLEMENT_PROTO_TO_VALUE(EwalletDetails)
 IMPLEMENT_PROTO_TO_VALUE(ExtensionSettingSpecifics)
 IMPLEMENT_PROTO_TO_VALUE(ExtensionSpecifics)
 IMPLEMENT_PROTO_TO_VALUE(GlobalIdDirective)
+IMPLEMENT_PROTO_TO_VALUE(GeminiThreadSpecifics)
 IMPLEMENT_PROTO_TO_VALUE(HistoryDeleteDirectiveSpecifics)
 IMPLEMENT_PROTO_TO_VALUE(HistorySpecifics)
 IMPLEMENT_PROTO_TO_VALUE(IncomingPasswordSharingInvitationSpecifics)
@@ -392,6 +395,7 @@ IMPLEMENT_PROTO_TO_VALUE(PrinterSpecifics)
 IMPLEMENT_PROTO_TO_VALUE(PrintersAuthorizationServerSpecifics)
 IMPLEMENT_PROTO_TO_VALUE(PriorityPreferenceSpecifics)
 IMPLEMENT_PROTO_TO_VALUE(ProductComparisonSpecifics)
+IMPLEMENT_PROTO_TO_VALUE(PushNotificationMessage)
 IMPLEMENT_PROTO_TO_VALUE(ReadingListSpecifics)
 IMPLEMENT_PROTO_TO_VALUE(SavedTabGroupSpecifics)
 IMPLEMENT_PROTO_TO_VALUE(SearchEngineSpecifics)

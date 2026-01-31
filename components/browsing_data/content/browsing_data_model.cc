@@ -4,13 +4,13 @@
 
 #include "components/browsing_data/content/browsing_data_model.h"
 
+#include <algorithm>
 #include <set>
 #include <string>
 #include <variant>
 
 #include "base/barrier_closure.h"
 #include "base/check.h"
-#include "base/containers/contains.h"
 #include "base/containers/enum_set.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
@@ -438,7 +438,7 @@ void StorageRemoverHelper::BackendFinished() {
 
 // Only websafe state is considered browsing data.
 bool HasStorageScheme(const url::Origin& origin) {
-  return base::Contains(url::GetWebStorageSchemes(), origin.scheme());
+  return std::ranges::contains(url::GetWebStorageSchemes(), origin.scheme());
 }
 
 void OnTrustTokenIssuanceInfoLoaded(

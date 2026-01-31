@@ -26,14 +26,14 @@ class POLICY_EXPORT PolicyMapAndroid {
 
   ~PolicyMapAndroid();
 
-  jboolean HasValue(JNIEnv* env,
-                    const base::android::JavaRef<jstring>& policy) const;
+  bool HasValue(JNIEnv* env,
+                const base::android::JavaRef<jstring>& policy) const;
 
-  jint GetIntValue(JNIEnv* env,
-                   const base::android::JavaRef<jstring>& policy) const;
+  int32_t GetIntValue(JNIEnv* env,
+                      const base::android::JavaRef<jstring>& policy) const;
 
-  jboolean GetBooleanValue(JNIEnv* env,
-                           const base::android::JavaRef<jstring>& policy) const;
+  bool GetBooleanValue(JNIEnv* env,
+                       const base::android::JavaRef<jstring>& policy) const;
 
   base::android::ScopedJavaLocalRef<jstring> GetStringValue(
       JNIEnv* env,
@@ -47,8 +47,7 @@ class POLICY_EXPORT PolicyMapAndroid {
       JNIEnv* env,
       const base::android::JavaRef<jstring>& policy) const;
 
-  jboolean Equals(JNIEnv* env,
-                  jlong other) const;
+  bool Equals(JNIEnv* env, int64_t other) const;
 
   base::android::ScopedJavaLocalRef<jobject> GetJavaObject();
 

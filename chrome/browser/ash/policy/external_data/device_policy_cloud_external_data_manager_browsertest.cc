@@ -114,7 +114,7 @@ class DevicePolicyCloudExternalDataManagerTest
     return base::ComputeDirectorySize(device_policy_external_data_path);
   }
 
-  void SetDevicePrintersExternalData(const base::Value::Dict& policy_dict) {
+  void SetDevicePrintersExternalData(const base::DictValue& policy_dict) {
     std::string policy;
     EXPECT_TRUE(base::JSONWriter::Write(policy_dict, &policy));
     device_policy()->payload().mutable_device_printers()->set_external_policy(

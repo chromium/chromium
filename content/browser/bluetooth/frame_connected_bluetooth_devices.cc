@@ -6,7 +6,6 @@
 
 #include <optional>
 
-#include "base/containers/contains.h"
 #include "base/strings/string_util.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/public/browser/web_contents.h"
@@ -110,7 +109,7 @@ void FrameConnectedBluetoothDevices::CloseConnectionsToDevicesNotInList(
   std::set<blink::WebBluetoothDeviceId> ids_to_delete;
 
   for (const auto& device_pair : device_id_to_connection_map_) {
-    if (!base::Contains(permitted_ids, device_pair.first))
+    if (!permitted_ids.contains(device_pair.first))
       ids_to_delete.insert(device_pair.first);
   }
 

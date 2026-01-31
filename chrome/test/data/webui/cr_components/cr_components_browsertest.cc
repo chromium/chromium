@@ -90,7 +90,13 @@ IN_PROC_BROWSER_TEST_F(CrComponentsSearchboxTest, RealboxMatchTest) {
   RunTest("cr_components/searchbox/searchbox_match_test.js", "mocha.run()");
 }
 
-IN_PROC_BROWSER_TEST_F(CrComponentsSearchboxTest, RealboxTest) {
+// TODO(crbug.com/453570027): Test is flaky.
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_CHROMEOS)
+#define MAYBE_RealboxTest DISABLED_RealboxTest
+#else
+#define MAYBE_RealboxTest RealboxTest
+#endif
+IN_PROC_BROWSER_TEST_F(CrComponentsSearchboxTest, MAYBE_RealboxTest) {
   set_test_loader_host(chrome::kChromeUINewTabPageHost);
   RunTest("cr_components/searchbox/searchbox_test.js", "mocha.run()");
 }
@@ -108,6 +114,11 @@ IN_PROC_BROWSER_TEST_F(CrComponentsSearchboxTest, SearchboxDropdownTest) {
 IN_PROC_BROWSER_TEST_F(CrComponentsSearchboxTest, SearchboxIconTest) {
   set_test_loader_host(chrome::kChromeUINewTabPageHost);
   RunTest("cr_components/searchbox/searchbox_icon_test.js", "mocha.run()");
+}
+
+IN_PROC_BROWSER_TEST_F(CrComponentsSearchboxTest, SearchboxFocusTest) {
+  set_test_loader_host(chrome::kChromeUINewTabPageHost);
+  RunTest("cr_components/searchbox/searchbox_focus_test.js", "mocha.run()");
 }
 
 class CrComponentsHistoryClustersTest : public WebUIMochaBrowserTest {
@@ -266,6 +277,16 @@ IN_PROC_BROWSER_TEST_F(CrComponentsComposeboxTest, ContextMenuEntrypoint) {
           "mocha.run()");
 }
 
+IN_PROC_BROWSER_TEST_F(CrComponentsComposeboxTest, ContextualEntrypointButton) {
+  RunTest("cr_components/composebox/contextual_entrypoint_button_test.js",
+          "mocha.run()");
+}
+
+IN_PROC_BROWSER_TEST_F(CrComponentsComposeboxTest, ContextualActionMenu) {
+  RunTest("cr_components/composebox/contextual_action_menu_test.js",
+          "mocha.run()");
+}
+
 IN_PROC_BROWSER_TEST_F(CrComponentsComposeboxTest, LensSearch) {
   RunTest("cr_components/composebox/composebox_lens_search_test.js",
           "mocha.run()");
@@ -282,5 +303,15 @@ IN_PROC_BROWSER_TEST_F(CrComponentsComposeboxTest, ComposeboxVoiceSearch) {
 
 IN_PROC_BROWSER_TEST_F(CrComponentsComposeboxTest, ComposeboxDragAndDrop) {
   RunTest("cr_components/composebox/composebox_drag_drop_test.js",
+          "mocha.run()");
+}
+
+IN_PROC_BROWSER_TEST_F(CrComponentsComposeboxTest, ComposeboxFileCarousel) {
+  RunTest("cr_components/composebox/file_carousel_test.js", "mocha.run()");
+}
+
+IN_PROC_BROWSER_TEST_F(CrComponentsComposeboxTest,
+                       ComposeboxAudioWaveAnimation) {
+  RunTest("cr_components/composebox/composebox_audio_animation_test.js",
           "mocha.run()");
 }

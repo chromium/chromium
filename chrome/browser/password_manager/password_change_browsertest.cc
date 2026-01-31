@@ -28,8 +28,8 @@
 #include "chrome/browser/password_manager/password_change_delegate_impl.h"
 #include "chrome/browser/password_manager/password_change_service_factory.h"
 #include "chrome/browser/password_manager/password_manager_test_base.h"
+#include "chrome/browser/password_manager/password_manager_test_util.h"
 #include "chrome/browser/password_manager/passwords_navigation_observer.h"
-#include "chrome/browser/password_manager/profile_password_store_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/passwords/bubble_controllers/password_bubble_controller_base.h"
@@ -305,6 +305,13 @@ class PasswordChangeBrowserTest : public PasswordManagerBrowserTestBase {
               std::move(callback).Run(std::move(result), /*log_entry=*/nullptr);
             })));
     run_loop.Run();
+    // The previous EXPECT posts the limitation that there must not be more
+    // calls to ExecuteModel after login check. This causes flakiness in many
+    // tests, that proceed with filling and submitting the form. So this
+    // should allow further calls to ExecuteModel for the following steps, which
+    // may or may not follow depending on the test.
+    testing::Mock::VerifyAndClearExpectations(
+        mock_optimization_guide_keyed_service());
   }
 
   void MockSuccessfulSubmitButtonClick(PasswordChangeDelegate* delegate) {
@@ -408,13 +415,13 @@ class PasswordChangeBrowserTest : public PasswordManagerBrowserTestBase {
 };
 
 // Flaky: crbug.com/456247817
-#if BUILDFLAG(IS_LINUX)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS)
 #define MAYBE_ChangePasswordFormIsFilledAutomatically \
   DISABLED_ChangePasswordFormIsFilledAutomatically
 #else
 #define MAYBE_ChangePasswordFormIsFilledAutomatically \
   ChangePasswordFormIsFilledAutomatically
-#endif  // BUILDFLAG(IS_LINUX)
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS)
 IN_PROC_BROWSER_TEST_F(PasswordChangeBrowserTest,
                        MAYBE_ChangePasswordFormIsFilledAutomatically) {
   SetPrivacyNoticeAcceptedPref();
@@ -549,9 +556,7 @@ IN_PROC_BROWSER_TEST_F(PasswordChangeBrowserTest, OldPasswordIsUpdated) {
       WebContents(),
       embedded_test_server()->GetURL("/password/simple_password.html")));
   password_manager::PasswordStoreInterface* password_store =
-      ProfilePasswordStoreFactory::GetForProfile(
-          browser()->profile(), ServiceAccessType::IMPLICIT_ACCESS)
-          .get();
+      GetDefaultPasswordStore(browser()->profile());
   password_manager::PasswordForm form = CreatePasswordForm(
       WebContents()->GetLastCommittedURL(), u"test", u"pa$$word");
   password_store->AddLogin(form);

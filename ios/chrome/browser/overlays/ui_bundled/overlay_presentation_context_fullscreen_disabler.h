@@ -15,7 +15,6 @@
 
 class Browser;
 class AnimatedScopedFullscreenDisabler;
-class FullscreenController;
 
 // A helper object that disables fullscreen while overlays are displayed.
 class OverlayContainerFullscreenDisabler {
@@ -32,8 +31,7 @@ class OverlayContainerFullscreenDisabler {
   // Helper object that disables fullscreen when overlays are presented.
   class FullscreenDisabler : public OverlayPresenterObserver {
    public:
-    FullscreenDisabler(FullscreenController* fullscreen_controller,
-                       OverlayPresenter* overlay_presenter);
+    FullscreenDisabler(Browser* browser, OverlayModality modality);
     ~FullscreenDisabler() override;
 
    private:
@@ -45,9 +43,7 @@ class OverlayContainerFullscreenDisabler {
                         OverlayRequest* request) override;
     void OverlayPresenterDestroyed(OverlayPresenter* presenter) override;
 
-    // The FullscreenController being disabled.
-    raw_ptr<FullscreenController, DanglingUntriaged> fullscreen_controller_ =
-        nullptr;
+    raw_ptr<Browser> browser_ = nullptr;
     // The animated disabler.
     std::unique_ptr<AnimatedScopedFullscreenDisabler> disabler_;
     base::ScopedObservation<OverlayPresenter, OverlayPresenterObserver>

@@ -7,7 +7,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/containers/contains.h"
 #include "base/time/time.h"
 #include "base/values.h"
 #include "build/build_config.h"
@@ -48,7 +47,10 @@ CoreAccountInfo GetDefaultAccountInfo() {
 
 TestSyncService::TestSyncService()
     : user_settings_(this), last_cycle_snapshot_(MakeDefaultCycleSnapshot()) {
-  SetSignedIn(signin::ConsentLevel::kSync);
+  SetSignedIn(
+      base::FeatureList::IsEnabled(syncer::kReplaceSyncPromosWithSignInPromos)
+          ? signin::ConsentLevel::kSignin
+          : signin::ConsentLevel::kSync);
 }
 
 TestSyncService::~TestSyncService() = default;
@@ -420,7 +422,7 @@ void TestSyncService::RemoveProtocolEventObserver(
     ProtocolEventObserver* observer) {}
 
 void TestSyncService::GetAllNodesForDebugging(
-    base::OnceCallback<void(base::Value::List)> callback) {}
+    base::OnceCallback<void(base::ListValue)> callback) {}
 
 SyncService::DataTypeDownloadStatus TestSyncService::GetDownloadStatusFor(
     DataType type) const {
@@ -492,7 +494,8 @@ void TestSyncService::SelectTypeAndMigrateLocalDataItemsWhenActive(
     DataType data_type,
     std::vector<LocalDataItemModel::DataId> items) {}
 
-void TestSyncService::AcknowledgeBookmarksLimitExceededError() {
+void TestSyncService::AcknowledgeBookmarksLimitExceededError(
+    BookmarksLimitExceededHelpClickedSource source) {
   bookmarks_limit_exceeded_ = false;
 }
 

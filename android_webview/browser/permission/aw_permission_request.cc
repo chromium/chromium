@@ -39,7 +39,7 @@ AwPermissionRequest::AwPermissionRequest(
 
   JNIEnv* env = AttachCurrentThread();
   *java_peer = Java_AwPermissionRequest_create(
-      env, reinterpret_cast<jlong>(this), GetOrigin().spec(), GetResources());
+      env, reinterpret_cast<int64_t>(this), GetOrigin().spec(), GetResources());
   java_ref_ = JavaObjectWeakGlobalRef(env, *java_peer);
 }
 
@@ -47,8 +47,7 @@ AwPermissionRequest::~AwPermissionRequest() {
   OnAcceptInternal(false);
 }
 
-void AwPermissionRequest::OnAccept(JNIEnv* env,
-                                   jboolean accept) {
+void AwPermissionRequest::OnAccept(JNIEnv* env, bool accept) {
   OnAcceptInternal(accept);
 }
 

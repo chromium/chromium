@@ -25,8 +25,6 @@ namespace storage {
 
 namespace {
 
-const char kSessionStorageDirectory[] = "Session Storage";
-
 // We don't use out-of-process Storage Service on Android, so we can avoid
 // pulling all the related code (including Directory mojom) into the build.
 #if !BUILDFLAG(IS_ANDROID)
@@ -147,7 +145,6 @@ void StorageServiceImpl::BindSessionStorageControl(
       path.has_value() ? SessionStorageImpl::BackingMode::kRestoreDiskState
                        : SessionStorageImpl::BackingMode::kNoDisk,
 #endif
-      std::string(kSessionStorageDirectory),
       base::OnceCallback<void(SessionStorageImpl*)>(
           base::BindOnce(&StorageServiceImpl::ShutDownAndRemoveSessionStorage,
                          weak_ptr_factory_.GetWeakPtr())),
@@ -165,8 +162,9 @@ void StorageServiceImpl::BindTestApi(
 
 void StorageServiceImpl::ShutDownAndRemoveSessionStorage(
     SessionStorageImpl* storage) {
-  if (!storage->GetStoragePath().empty()) {
-    persistent_session_storage_map_.erase(storage->GetStoragePath());
+  if (!storage->GetStoragePartitionDirectory().empty()) {
+    persistent_session_storage_map_.erase(
+        storage->GetStoragePartitionDirectory());
   }
 
   auto it = session_storages_.find(storage);
@@ -177,8 +175,9 @@ void StorageServiceImpl::ShutDownAndRemoveSessionStorage(
 
 void StorageServiceImpl::ShutDownAndRemoveLocalStorage(
     LocalStorageImpl* storage) {
-  if (!storage->GetStoragePath().empty()) {
-    persistent_local_storage_map_.erase(storage->GetStoragePath());
+  if (!storage->GetStoragePartitionDirectory().empty()) {
+    persistent_local_storage_map_.erase(
+        storage->GetStoragePartitionDirectory());
   }
 
   auto it = local_storages_.find(storage);

@@ -12,9 +12,9 @@
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
-#import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/browser_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
+#import "ios/chrome/browser/shared/public/commands/scene_commands.h"
 #import "ios/chrome/browser/shared/public/commands/settings_commands.h"
 #import "ios/chrome/browser/shared/public/commands/snackbar_commands.h"
 #import "ios/chrome/browser/signin/model/authentication_service.h"
@@ -46,7 +46,7 @@ class AuthenticationFlowInProfilePerformerTest : public PlatformTest {
     fake_identity_ = [FakeSystemIdentity fakeIdentity1];
 
     NSArray<Protocol*>* command_protocols = @[
-      @protocol(ApplicationCommands), @protocol(BrowserCommands),
+      @protocol(SceneCommands), @protocol(BrowserCommands),
       @protocol(SettingsCommands), @protocol(SnackbarCommands)
     ];
     fake_command_endpoint_ =

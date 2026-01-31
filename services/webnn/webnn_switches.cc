@@ -36,6 +36,7 @@ base::span<const char* const> GetWebNNSwitchesCopiedFromGpuProcessHost() {
       kWebNNOrtEpLibraryPathForTesting,
       kWebNNOrtEpDevice,
       kWebNNOrtIgnoreEpBlocklist,
+      kWebNNOrtIgnoreIhvEps,
       kWebNNOrtGraphOptimizationLevel,
       kWebNNOrtEnableProfiling,
       kWebNNOrtDisableCpuFallback,

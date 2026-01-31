@@ -194,19 +194,18 @@ void OffsetAdjuster::MergeSequentialAdjustments(
 // alterations to the string that are not one-character-to-one-character.
 // It will always be sorted by increasing offset.
 template <typename SrcChar, typename DestStdString>
-bool ConvertUnicode(const SrcChar* src,
-                    size_t src_len,
+bool ConvertUnicode(std::basic_string_view<SrcChar> src,
                     DestStdString* output,
                     OffsetAdjuster::Adjustments* adjustments) {
   if (adjustments) {
     adjustments->clear();
   }
   bool success = true;
-  for (size_t i = 0; i < src_len; i++) {
+  for (size_t i = 0; i < src.size(); i++) {
     base_icu::UChar32 code_point;
     size_t original_i = i;
     size_t chars_written = 0;
-    if (ReadUnicodeCharacter(src, src_len, &i, &code_point)) {
+    if (ReadUnicodeCharacter(src, &i, &code_point)) {
       chars_written = WriteUnicodeCharacter(code_point, output);
     } else {
       chars_written = WriteUnicodeCharacter(0xFFFD, output);
@@ -227,19 +226,18 @@ bool ConvertUnicode(const SrcChar* src,
 }
 
 bool UTF8ToUTF16WithAdjustments(
-    const char* src,
-    size_t src_len,
+    std::string_view src,
     std::u16string* output,
     base::OffsetAdjuster::Adjustments* adjustments) {
-  PrepareForUTF16Or32Output(src, src_len, output);
-  return ConvertUnicode(src, src_len, output, adjustments);
+  PrepareForUTF16Or32Output(src, output);
+  return ConvertUnicode(src, output, adjustments);
 }
 
 std::u16string UTF8ToUTF16WithAdjustments(
     std::string_view utf8,
     base::OffsetAdjuster::Adjustments* adjustments) {
   std::u16string result;
-  UTF8ToUTF16WithAdjustments(utf8.data(), utf8.length(), &result, adjustments);
+  UTF8ToUTF16WithAdjustments(utf8, &result, adjustments);
   return result;
 }
 
@@ -266,9 +264,9 @@ std::string UTF16ToUTF8AndAdjustOffsets(
     }
   }
   std::string result;
-  PrepareForUTF8Output(utf16.data(), utf16.length(), &result);
+  PrepareForUTF8Output(utf16, &result);
   OffsetAdjuster::Adjustments adjustments;
-  ConvertUnicode(utf16.data(), utf16.length(), &result, &adjustments);
+  ConvertUnicode(utf16, &result, &adjustments);
   OffsetAdjuster::AdjustOffsets(adjustments, offsets_for_adjustment);
   return result;
 }

@@ -292,7 +292,7 @@ class GetAllScreensMediaBrowserTestBase
   void SetAllowedOriginsPolicy(
       const std::vector<std::string>& allow_listed_origins) {
     policy::PolicyMap policies;
-    base::Value::List allowed_origins;
+    base::ListValue allowed_origins;
     for (const auto& allowed_origin : allow_listed_origins) {
       allowed_origins.Append(base::Value(allowed_origin));
     }

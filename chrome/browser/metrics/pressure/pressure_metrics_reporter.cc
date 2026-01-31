@@ -31,17 +31,18 @@ constexpr base::TimeDelta kDelayBetweenSamples = base::Minutes(10);
 constexpr base::TimeDelta kDelayBetweenTracingSamples = base::Seconds(1);
 
 // Tracing caterogies to emit the memory pressure related trace events.
-const char kTraceCategoryForPressureEvents[] = "resources";
+constexpr const char kTraceCategoryForPressureEvents[] = "resources";
 
 }  // anonymous namespace
 
-class PressureMetricsWorker {
+class PressureMetricsWorker final
+    : public base::trace_event::TraceSessionObserver {
  public:
   PressureMetricsWorker();
-  ~PressureMetricsWorker();
+  ~PressureMetricsWorker() override;
 
-  void OnTracingEnabled();
-  void OnTracingDisabled();
+  // base::trace_event::TraceSessionObserver implementation:
+  void OnStart(const perfetto::DataSourceBase::StartArgs&) override;
 
  private:
   void ReadAndEmitCounters();
@@ -53,6 +54,7 @@ class PressureMetricsWorker {
 };
 
 PressureMetricsWorker::PressureMetricsWorker() {
+  base::trace_event::TraceSessionObserverList::AddObserver(this);
   pressure_metrics_.emplace_back(kCPUPressureHistogramName,
                                  base::FilePath(kCPUPressureFilePath));
   pressure_metrics_.emplace_back(kIOPressureHistogramName,
@@ -66,14 +68,21 @@ PressureMetricsWorker::PressureMetricsWorker() {
       FROM_HERE, kDelayBetweenSamples,
       base::BindRepeating(&PressureMetricsWorker::ReadAndEmitUMA,
                           base::Unretained(this)));
+  // It is possible with startup tracing that tracing was enabled before this
+  // class has register its observer.
+  OnStart({});
 }
 
-PressureMetricsWorker::~PressureMetricsWorker() = default;
+PressureMetricsWorker::~PressureMetricsWorker() {
+  base::trace_event::TraceSessionObserverList::RemoveObserver(this);
+}
 
-void PressureMetricsWorker::OnTracingEnabled() {
-  const uint8_t* category_enabled = TRACE_EVENT_API_GET_CATEGORY_GROUP_ENABLED(
-      kTraceCategoryForPressureEvents);
-  if (*category_enabled) {
+void PressureMetricsWorker::OnStart(
+    const perfetto::DataSourceBase::StartArgs&) {
+  if (tracing_sampling_timer_.IsRunning()) {
+    return;
+  }
+  if (TRACE_EVENT_CATEGORY_ENABLED(kTraceCategoryForPressureEvents)) {
     // It is safe to use base::Unretained(this) since the timer is own by this
     // class.
     tracing_sampling_timer_.Start(
@@ -83,11 +92,11 @@ void PressureMetricsWorker::OnTracingEnabled() {
   }
 }
 
-void PressureMetricsWorker::OnTracingDisabled() {
-  tracing_sampling_timer_.Stop();
-}
-
 void PressureMetricsWorker::ReadAndEmitCounters() {
+  if (!TRACE_EVENT_CATEGORY_ENABLED(kTraceCategoryForPressureEvents)) {
+    tracing_sampling_timer_.Stop();
+    return;
+  }
   for (const auto& metric : pressure_metrics_) {
     std::optional<PressureMetrics::Sample> current_pressure =
         metric.CollectCurrentPressure();
@@ -111,26 +120,7 @@ PressureMetricsReporter::PressureMetricsReporter()
     : worker_(base::ThreadPool::CreateSequencedTaskRunner(
           {base::TaskPriority::BEST_EFFORT, base::MayBlock(),
            base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN})) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  base::trace_event::TraceLog::GetInstance()->AddEnabledStateObserver(this);
-  // It is possible with startup tracing that tracing was enabled before this
-  // class has register its observer.
-  base::trace_event::TraceLog* trace_log =
-      base::trace_event::TraceLog::GetInstance();
-  if (trace_log->IsEnabled()) {
-    OnTraceLogEnabled();
-  }
 }
 
 PressureMetricsReporter::~PressureMetricsReporter() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  base::trace_event::TraceLog::GetInstance()->RemoveEnabledStateObserver(this);
-}
-
-void PressureMetricsReporter::OnTraceLogEnabled() {
-  worker_.AsyncCall(&PressureMetricsWorker::OnTracingEnabled);
-}
-
-void PressureMetricsReporter::OnTraceLogDisabled() {
-  worker_.AsyncCall(&PressureMetricsWorker::OnTracingDisabled);
 }

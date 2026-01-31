@@ -17,6 +17,7 @@
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/signin/model/fake_system_identity.h"
 #import "ios/chrome/browser/signin/model/test_constants.h"
+#import "ios/chrome/browser/start_surface/ui_bundled/home_surface_egtest_utils.h"
 #import "ios/chrome/browser/start_surface/ui_bundled/start_surface_features.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
@@ -58,24 +59,13 @@ void AssertSnackbarNotShownForIdentity(FakeSystemIdentity* identity) {
 
 @implementation IdentitySnackbarMessageTestCase
 
-- (AppLaunchConfiguration)appConfigurationForTestCase {
-  AppLaunchConfiguration config = [super appConfigurationForTestCase];
-
-  config.relaunch_policy = ForceRelaunchByCleanShutdown;
-  config.additional_args.push_back(
-      "--enable-features=" + std::string(kStartSurface.name) + "<" +
-      std::string(kStartSurface.name));
-  config.additional_args.push_back(
-      "--force-fieldtrials=" + std::string(kStartSurface.name) + "/Test");
-  config.additional_args.push_back(
-      "--force-fieldtrial-params=" + std::string(kStartSurface.name) +
-      ".Test:" + std::string(kReturnToStartSurfaceInactiveDurationInSeconds) +
-      "/" + "0");
-
-  return config;
+- (void)setUp {
+  [super setUp];
+  MakeHomeSurfaceOpenImmediately();
 }
 
 - (void)tearDownHelper {
+  ResetMakeHomeSurfaceOpenImmediately();
   [ChromeEarlGrey signOutAndClearIdentities];
   [super tearDownHelper];
 }

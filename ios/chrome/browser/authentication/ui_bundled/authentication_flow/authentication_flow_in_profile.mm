@@ -4,6 +4,8 @@
 
 #import "ios/chrome/browser/authentication/ui_bundled/authentication_flow/authentication_flow_in_profile.h"
 
+#import <algorithm>
+
 #import "base/check_op.h"
 #import "base/functional/callback_helpers.h"
 #import "base/notreached.h"
@@ -24,6 +26,7 @@
 #import "ios/chrome/browser/shared/model/browser/browser_observer_bridge.h"
 #import "ios/chrome/browser/shared/model/profile/profile_attributes_storage_ios.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios_util.h"
 #import "ios/chrome/browser/shared/model/profile/profile_manager_ios.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/signin/model/authentication_service.h"
@@ -303,7 +306,7 @@ enum class AuthenticationFlowInProfileState {
       IdentityManagerFactory::GetForProfile(profile);
   std::vector<CoreAccountInfo> accountsInProfile =
       identityManager->GetAccountsWithRefreshTokens();
-  BOOL isValidIdentityInProfile = base::Contains(
+  BOOL isValidIdentityInProfile = std::ranges::contains(
       accountsInProfile, _identityToSignIn.gaiaId, &CoreAccountInfo::gaia);
   if (!isValidIdentityInProfile) {
     [self handleAuthenticationError:ios::provider::
@@ -390,18 +393,16 @@ enum class AuthenticationFlowInProfileState {
   // back to that managed profile would be "more correct". However, that would
   // be significantly more complicated (e.g. what if that profile doesn't exist
   // anymore), and this is a supposedly-impossible error case anyway.
-  std::string personalProfileName = GetApplicationContext()
-                                        ->GetProfileManager()
-                                        ->GetProfileAttributesStorage()
-                                        ->GetPersonalProfileName();
-  bool inPersonalProfile =
-      personalProfileName == [self originalProfile]->GetProfileName();
-  if (inPersonalProfile) {
+  if (IsPersonalProfile([self originalProfile])) {
     // Already in the personal profile, no switching necessary.
     [self continueFlow];
     return;
   }
   SceneState* sceneState = _browser->GetSceneState();
+  std::string personalProfileName = GetApplicationContext()
+                                        ->GetProfileManager()
+                                        ->GetProfileAttributesStorage()
+                                        ->GetPersonalProfileName();
   [_performer switchToProfileWithName:personalProfileName
                            sceneState:sceneState
                                reason:ChangeProfileReason::kAuthenticationError

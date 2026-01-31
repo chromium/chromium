@@ -36,7 +36,7 @@ class EventRouterForwarder
   // Safe to call on any thread.
   void BroadcastEventToRenderers(events::HistogramValue histogram_value,
                                  const std::string& event_name,
-                                 base::Value::List event_args,
+                                 base::ListValue event_args,
                                  bool dispatch_to_off_the_record_profiles);
 
  protected:
@@ -48,7 +48,7 @@ class EventRouterForwarder
   virtual void CallEventRouter(Profile* profile,
                                events::HistogramValue histogram_value,
                                const std::string& event_name,
-                               base::Value::List event_args);
+                               base::ListValue event_args);
 
  private:
   friend class base::RefCountedThreadSafe<EventRouterForwarder>;

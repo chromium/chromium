@@ -166,6 +166,43 @@ void SafeArchiveAnalyzer::AnalyzeObfuscatedZipFile(
                         std::move(temp_file_getter_callback), &results_);
 }
 
+void SafeArchiveAnalyzer::AnalyzeObfuscatedRarFile(
+    base::File rar_file,
+    const std::optional<std::string>& password,
+    chrome::mojom::ObfuscatedFileUtilHeaderDataPtr header_data,
+    mojo::PendingRemote<chrome::mojom::TemporaryFileGetter> temp_file_getter,
+    AnalyzeObfuscatedRarFileCallback callback) {
+#if USE_UNRAR
+  DCHECK(rar_file.IsValid());
+  temp_file_getter_.Bind(std::move(temp_file_getter));
+  callback_ = std::move(callback);
+  AnalysisFinishedCallback analysis_finished_callback =
+      base::BindOnce(&SafeArchiveAnalyzer::AnalysisFinished,
+                     weak_factory_.GetWeakPtr(), base::FilePath());
+
+  base::RepeatingCallback<void(GetTempFileCallback callback)>
+      temp_file_getter_callback =
+          base::BindRepeating(&SafeArchiveAnalyzer::RequestTemporaryFile,
+                              weak_factory_.GetWeakPtr());
+  timeout_timer_.Start(FROM_HERE, kArchiveAnalysisTimeout, this,
+                       &SafeArchiveAnalyzer::Timeout);
+
+  enterprise_obfuscation::HeaderData data(
+      base::span<const uint8_t, 32>(header_data->derived_key),
+      std::vector<uint8_t>(header_data->nonce_prefix.begin(),
+                           header_data->nonce_prefix.end()));
+
+  rar_analyzer_.SetAnalysisDelegate(
+      std::make_unique<safe_browsing::ObfuscatedArchiveAnalysisDelegate>(
+          std::move(data)));
+  rar_analyzer_.Analyze(std::move(rar_file), base::FilePath(), password,
+                        std::move(analysis_finished_callback),
+                        std::move(temp_file_getter_callback), &results_);
+#else
+  std::move(callback).Run(safe_browsing::ArchiveAnalyzerResults());
+#endif
+}
+
 void SafeArchiveAnalyzer::RequestTemporaryFile(GetTempFileCallback callback) {
   temp_file_getter_->RequestTemporaryFile(std::move(callback));
 }

@@ -16,6 +16,7 @@
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/strings/string_view_util.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/threading/platform_thread.h"
 #include "base/threading/thread.h"
@@ -253,9 +254,8 @@ static void LockFileAndPreventChange(base::FilePath path,
   base::File file(path, base::File::FLAG_CREATE_ALWAYS | base::File::FLAG_READ |
                             base::File::FLAG_WRITE);
   CHECK(file.IsValid());
-  constexpr char kPattern[] = "Not a valid proto";
-  CHECK_EQ(UNSAFE_TODO(file.Write(0, kPattern, sizeof(kPattern))),
-           static_cast<int>(sizeof(kPattern)));
+  constexpr std::string_view kPattern = "Not a valid proto";
+  CHECK(file.WriteAndCheck(0, base::as_byte_span(kPattern)));
 
   // 2. Lock the file
   CHECK_EQ(HANDLE_EINTR(flock(file.GetPlatformFile(), LOCK_EX)), 0);
@@ -274,10 +274,9 @@ static void LockFileAndPreventChange(base::FilePath path,
   base::PlatformThreadBase::Sleep(base::Seconds(5));
 
   // 5. CHECK that the file still contains the original pattern.
-  char buffer[sizeof(kPattern) + 1];
-  UNSAFE_TODO(CHECK_EQ(file.Read(0, buffer, sizeof(buffer)),
-                       static_cast<int>(sizeof(kPattern))));
-  CHECK_EQ(std::string(buffer), std::string(kPattern));
+  uint8_t buffer[kPattern.size()];
+  CHECK(file.ReadAndCheck(0, buffer));
+  CHECK_EQ(kPattern, base::as_string_view(buffer));
 }
 
 TEST_F(StackSamplingRecorderTest, DoesNotWriteToLockedFile) {

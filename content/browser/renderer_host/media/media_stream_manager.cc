@@ -15,7 +15,6 @@
 
 #include "base/command_line.h"
 #include "base/compiler_specific.h"
-#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
@@ -447,17 +446,18 @@ bool ChangeSourceSupported(const MediaStreamDevices& devices) {
     return false;  // Killswitch engaged.
   }
 
-  if (!base::Contains(devices, MediaStreamType::DISPLAY_VIDEO_CAPTURE,
-                      &MediaStreamDevice::type) &&
-      !base::Contains(devices, MediaStreamType::DISPLAY_VIDEO_CAPTURE_THIS_TAB,
-                      &MediaStreamDevice::type)) {
+  if (!std::ranges::contains(devices, MediaStreamType::DISPLAY_VIDEO_CAPTURE,
+                             &MediaStreamDevice::type) &&
+      !std::ranges::contains(devices,
+                             MediaStreamType::DISPLAY_VIDEO_CAPTURE_THIS_TAB,
+                             &MediaStreamDevice::type)) {
     return false;  // Not an API call that supports share-this-tab-instead.
   }
 
   if (!base::FeatureList::IsEnabled(
           media::kShareThisTabInsteadButtonGetDisplayMediaAudio) &&
-      base::Contains(devices, MediaStreamType::DISPLAY_AUDIO_CAPTURE,
-                     &MediaStreamDevice::type)) {
+      std::ranges::contains(devices, MediaStreamType::DISPLAY_AUDIO_CAPTURE,
+                            &MediaStreamDevice::type)) {
     // The user chose to capture audio, but the killswitch against
     // share-this-tab-instead with audio is engaged.
     return false;

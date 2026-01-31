@@ -154,10 +154,10 @@ TEST_F(AccountsMutatorTest, UpdateAccountInfo) {
 
   AccountInfo original_account_info =
       identity_manager()->FindExtendedAccountInfoByAccountId(account_id);
-  EXPECT_EQ(original_account_info.account_id, account_id);
-  EXPECT_EQ(original_account_info.email, kTestEmail);
-  EXPECT_EQ(Tribool::kUnknown, original_account_info.is_child_account);
-  EXPECT_FALSE(original_account_info.is_under_advanced_protection);
+  EXPECT_EQ(original_account_info.GetAccountId(), account_id);
+  EXPECT_EQ(original_account_info.GetEmail(), kTestEmail);
+  EXPECT_EQ(original_account_info.IsChildAccount(), Tribool::kUnknown);
+  EXPECT_FALSE(original_account_info.IsUnderAdvancedProtection());
 
   accounts_mutator()->UpdateAccountInfo(
       account_id,
@@ -168,13 +168,14 @@ TEST_F(AccountsMutatorTest, UpdateAccountInfo) {
 
   // Only |is_child_account| changed so far, everything else remains the same.
   EXPECT_EQ(identity_manager()->GetAccountsWithRefreshTokens().size(), 1U);
-  EXPECT_EQ(updated_account_info_1.account_id,
-            original_account_info.account_id);
-  EXPECT_EQ(updated_account_info_1.email, original_account_info.email);
-  EXPECT_NE(updated_account_info_1.is_child_account,
-            original_account_info.is_child_account);
-  EXPECT_EQ(updated_account_info_1.is_under_advanced_protection,
-            original_account_info.is_under_advanced_protection);
+  EXPECT_EQ(updated_account_info_1.GetAccountId(),
+            original_account_info.GetAccountId());
+  EXPECT_EQ(updated_account_info_1.GetEmail(),
+            original_account_info.GetEmail());
+  EXPECT_NE(updated_account_info_1.IsChildAccount(),
+            original_account_info.IsChildAccount());
+  EXPECT_EQ(updated_account_info_1.IsUnderAdvancedProtection(),
+            original_account_info.IsUnderAdvancedProtection());
 
   accounts_mutator()->UpdateAccountInfo(
       account_id, /*is_child_account=*/Tribool::kUnknown,
@@ -184,15 +185,15 @@ TEST_F(AccountsMutatorTest, UpdateAccountInfo) {
 
   // |is_under_advanced_protection| has changed now, but |is_child_account|
   // remains the same since we previously set it to |true| in the previous step.
-  EXPECT_NE(updated_account_info_2.is_under_advanced_protection,
-            original_account_info.is_under_advanced_protection);
-  EXPECT_EQ(updated_account_info_2.is_child_account,
-            updated_account_info_1.is_child_account);
+  EXPECT_NE(updated_account_info_2.IsUnderAdvancedProtection(),
+            original_account_info.IsUnderAdvancedProtection());
+  EXPECT_EQ(updated_account_info_2.IsChildAccount(),
+            updated_account_info_1.IsChildAccount());
 
   // Last, reset |is_child_account| and |is_under_advanced_protection| together
   // to its initial |false| value, which is no longer the case.
-  EXPECT_EQ(Tribool::kTrue, updated_account_info_2.is_child_account);
-  EXPECT_TRUE(updated_account_info_2.is_under_advanced_protection);
+  EXPECT_EQ(updated_account_info_2.IsChildAccount(), Tribool::kTrue);
+  EXPECT_TRUE(updated_account_info_2.IsUnderAdvancedProtection());
 
   accounts_mutator()->UpdateAccountInfo(
       account_id, /*is_child_account=*/Tribool::kFalse,
@@ -201,12 +202,12 @@ TEST_F(AccountsMutatorTest, UpdateAccountInfo) {
       identity_manager()->FindExtendedAccountInfoByAccountId(account_id);
 
   // is_under_advanced_protection is back to its original state now.
-  EXPECT_EQ(reset_account_info.is_under_advanced_protection,
-            original_account_info.is_under_advanced_protection);
-  EXPECT_FALSE(reset_account_info.is_under_advanced_protection);
+  EXPECT_EQ(reset_account_info.IsUnderAdvancedProtection(),
+            original_account_info.IsUnderAdvancedProtection());
+  EXPECT_FALSE(reset_account_info.IsUnderAdvancedProtection());
   // It is not possible to reset is_child_account to unknown, it is reset to
   // false instead.
-  EXPECT_EQ(Tribool::kFalse, reset_account_info.is_child_account);
+  EXPECT_EQ(reset_account_info.IsChildAccount(), Tribool::kFalse);
 }
 
 #if !BUILDFLAG(IS_CHROMEOS)

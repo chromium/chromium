@@ -39,8 +39,8 @@ class POLICY_EXPORT RealtimeReportingJobConfiguration
   // info given in |context| that corresponds to the Device, Browser and Profile
   // proto, to a UploadEventsRequest proto defined in
   // google3/google/internal/chrome/reporting/v1/chromereporting.proto.
-  static base::Value::Dict BuildReport(base::Value::List events,
-                                       base::Value::Dict context);
+  static base::DictValue BuildReport(base::ListValue events,
+                                     base::DictValue context);
 
   // Configures a request to send real-time reports to the |server_url|
   // endpoint. |callback| is invoked once the report is uploaded.
@@ -72,7 +72,7 @@ class POLICY_EXPORT RealtimeReportingJobConfiguration
   // is not specific to the event.
   //
   // Returns true if the report was added successfully.
-  bool AddReportDeprecated(base::Value::Dict report);
+  bool AddReportDeprecated(base::DictValue report);
 
  protected:
   // ReportingJobConfigurationBase

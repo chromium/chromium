@@ -14,19 +14,17 @@
 #import "ios/chrome/browser/settings/ui_bundled/privacy/incognito/incognito_lock_coordinator.h"
 #import "ios/chrome/browser/settings/ui_bundled/privacy/incognito/incognito_lock_coordinator_delegate.h"
 #import "ios/chrome/browser/settings/ui_bundled/privacy/lockdown_mode/lockdown_mode_coordinator.h"
-#import "ios/chrome/browser/settings/ui_bundled/privacy/privacy_guide/privacy_guide_main_coordinator.h"
-#import "ios/chrome/browser/settings/ui_bundled/privacy/privacy_guide/privacy_guide_main_coordinator_delegate.h"
 #import "ios/chrome/browser/settings/ui_bundled/privacy/privacy_navigation_commands.h"
 #import "ios/chrome/browser/settings/ui_bundled/privacy/privacy_safe_browsing_coordinator.h"
 #import "ios/chrome/browser/settings/ui_bundled/privacy/privacy_table_view_controller.h"
 #import "ios/chrome/browser/settings/ui_bundled/settings_navigation_controller.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
-#import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/browser_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/open_new_tab_command.h"
 #import "ios/chrome/browser/shared/public/commands/quick_delete_commands.h"
+#import "ios/chrome/browser/shared/public/commands/scene_commands.h"
 #import "ios/chrome/browser/shared/public/commands/settings_commands.h"
 #import "ios/chrome/browser/shared/public/commands/snackbar_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
@@ -35,7 +33,6 @@
 
 @interface PrivacyCoordinator () <
     IncognitoLockCoordinatorDelegate,
-    PrivacyGuideMainCoordinatorDelegate,
     PrivacyNavigationCommands,
     PrivacySafeBrowsingCoordinatorDelegate,
     PrivacyTableViewControllerPresentationDelegate,
@@ -53,9 +50,6 @@
 // Coordinator for Lockdown Mode settings.
 @property(nonatomic, strong) LockdownModeCoordinator* lockdownModeCoordinator;
 
-// Coordinator for the Privacy Guide screen.
-@property(nonatomic, strong)
-    PrivacyGuideMainCoordinator* privacyGuideMainCoordinator;
 @end
 
 @implementation PrivacyCoordinator {
@@ -86,8 +80,7 @@
   self.viewController = viewController;
 
   CommandDispatcher* dispatcher = self.browser->GetCommandDispatcher();
-  viewController.applicationHandler =
-      HandlerForProtocol(dispatcher, ApplicationCommands);
+  viewController.sceneHandler = HandlerForProtocol(dispatcher, SceneCommands);
   viewController.browserHandler =
       HandlerForProtocol(dispatcher, BrowserCommands);
   viewController.settingsHandler =
@@ -178,14 +171,6 @@
   [self.lockdownModeCoordinator start];
 }
 
-- (void)showPrivacyGuide {
-  DCHECK(!self.privacyGuideMainCoordinator);
-  self.privacyGuideMainCoordinator = [[PrivacyGuideMainCoordinator alloc]
-      initWithBaseViewController:self.baseNavigationController
-                         browser:self.browser];
-  self.privacyGuideMainCoordinator.delegate = self;
-  [self.privacyGuideMainCoordinator start];
-}
 #pragma mark - SafeBrowsingCoordinatorDelegate
 
 - (void)privacySafeBrowsingCoordinatorDidRemove:
@@ -209,14 +194,6 @@
   [self stopLockdownModeCoordinator];
 }
 
-#pragma mark - PrivacyGuideMainCoordinatorDelegate
-
-- (void)privacyGuideMainCoordinatorDidRemove:
-    (PrivacyGuideMainCoordinator*)coordinator {
-  DCHECK_EQ(self.privacyGuideMainCoordinator, coordinator);
-  [self stopPrivacyGuideMainCoordinator];
-}
-
 #pragma mark - Private
 
 - (void)stopLockdownModeCoordinator {
@@ -235,12 +212,6 @@
   [self.safeBrowsingCoordinator stop];
   self.safeBrowsingCoordinator.delegate = nil;
   self.safeBrowsingCoordinator = nil;
-}
-
-- (void)stopPrivacyGuideMainCoordinator {
-  [self.privacyGuideMainCoordinator stop];
-  self.privacyGuideMainCoordinator.delegate = nil;
-  self.privacyGuideMainCoordinator = nil;
 }
 
 @end

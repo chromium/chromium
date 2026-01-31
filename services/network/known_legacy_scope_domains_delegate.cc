@@ -31,13 +31,13 @@ void KnownLegacyScopeDomainsPrefDelegate::RegisterPrefs(
   pref_registry->RegisterDictionaryPref(kPrefPath);
 }
 
-const base::Value::Dict& KnownLegacyScopeDomainsPrefDelegate::GetLegacyDomains()
+const base::DictValue& KnownLegacyScopeDomainsPrefDelegate::GetLegacyDomains()
     const {
   return pref_service_->GetDict(kPrefPath);
 }
 
 void KnownLegacyScopeDomainsPrefDelegate::SetLegacyDomains(
-    base::Value::Dict dict) {
+    base::DictValue dict) {
   pref_service_->SetDict(kPrefPath, std::move(dict));
 }
 

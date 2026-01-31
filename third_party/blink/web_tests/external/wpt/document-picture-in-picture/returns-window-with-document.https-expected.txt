@@ -1,0 +1,5 @@
+This is a testharness.js-based test.
+[FAIL] requestWindow timing
+  assert_equals: Got the expected order of actions expected "requestWindow,microtask,enter" but got "microtask,enter,requestWindow"
+Harness: the test ran to completion.
+

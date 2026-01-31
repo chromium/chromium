@@ -314,7 +314,7 @@ TEST_F(WebAppGuardrailsMLTest, MLGuardrailAppSpecificDismissForDays) {
 
   // Dismissing the same app within 14 days should trigger the guardrail
   // response.
-  int randDays = base::RandInt(1, 13);
+  int randDays = base::RandIntInclusive(1, 13);
   base::Time forwarded_time = base::Time::Now() + base::Days(randDays);
   guardrails().RecordDismiss(app_id, forwarded_time);
   auto dismiss_time_new =
@@ -398,7 +398,7 @@ TEST_F(WebAppGuardrailsMLTest, MLGuardrailConsecutiveAppAgnosticDismissDays) {
 
   // Dismissing any app within the last 7 days should trigger the app agnostic
   // dismiss guardrail response.
-  int randDays = base::RandInt(0, 6);
+  int randDays = base::RandIntInclusive(0, 6);
   guardrails().RecordDismiss(app_id1, base::Time::Now() - base::Days(randDays));
   auto last_dismissed_time =
       GetTimeWebAppPref(app_id1, kMlPromoPrefNames.last_dismiss_time_name);
@@ -537,7 +537,7 @@ TEST_F(WebAppPrefsMLGuardrailsMaxStorageTest, ClearAndResetGuardrails) {
   EXPECT_FALSE(IsMLBlockedByGuardrails("app"));
   EXPECT_FALSE(IsMLPromoBlockedTimeSet());
 
-  const base::Value::Dict& dict =
+  const base::DictValue& dict =
       prefs()->GetDict(prefs::kWebAppsAppAgnosticMlState);
   std::optional<int> agnostic_not_installed_count =
       dict.FindInt(kMlPromoPrefNames.not_accepted_count_name);
@@ -661,7 +661,7 @@ TEST_F(WebAppPrefsLinkCapturingIPHGuardrailsTest, ClearAndResetGuardrails) {
   EXPECT_FALSE(IsDesktopLinkCapturingIphBlocked("app"));
   EXPECT_FALSE(IsDesktopIphBlockedTimeSet());
 
-  const base::Value::Dict& dict =
+  const base::DictValue& dict =
       prefs()->GetDict(prefs::kWebAppsAppAgnosticIPHLinkCapturingState);
   std::optional<int> agnostic_not_installed_count =
       dict.FindInt(kIPHNavigationCapturingPrefNames.not_accepted_count_name);

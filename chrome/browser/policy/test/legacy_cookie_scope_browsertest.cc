@@ -146,7 +146,7 @@ IN_PROC_BROWSER_TEST_P(LegacyCookieScopePolicyBrowserTest,
   // Otherwise they are not aliasing and just overwrite.
   EXPECT_EQ(cookies.size(), AreFeaturesEnabled() ? 6u : 2u);
 
-  base::Value::List policy_value;
+  base::ListValue policy_value;
   // Set the policy to enable legacy cookie scope for the domains in the list.
   policy_value.Append("example.com");
   policy_value.Append("foo.com");
@@ -204,7 +204,7 @@ IN_PROC_BROWSER_TEST_P(LegacyCookieScopePolicyBrowserTest,
     EXPECT_EQ(cookies.size(), 2u);
   }
 
-  base::Value::List policy_value;
+  base::ListValue policy_value;
   // Set the policy to enable legacy cookie scope for the example.com
   // Aliases under foo.com should not be deleted due to this.
   policy_value.Append("example.com");
@@ -299,7 +299,7 @@ IN_PROC_BROWSER_TEST_P(
   // Otherwise they are not aliasing and just overwrite.
   EXPECT_EQ(cookies.size(), AreFeaturesEnabled() ? 6u : 2u);
 
-  base::Value::List policy_value;
+  base::ListValue policy_value;
   // Set the policy to enable legacy cookie scope for the domains in the list.
   policy_value.Append("example.com");
   policy_value.Append("foo.com");
@@ -385,7 +385,7 @@ IN_PROC_BROWSER_TEST_P(LegacyCookieScopePolicyBrowserTest,
   // Otherwise they are not aliasing and just overwrite.
   EXPECT_EQ(cookies.size(), AreFeaturesEnabled() ? 6u : 2u);
 
-  base::Value::List policy_value;
+  base::ListValue policy_value;
   // Set the policy to enable legacy cookie scope for the domains in the list.
   policy_value.Append("example.com");
   policy_value.Append("foo.com");

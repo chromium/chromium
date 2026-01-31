@@ -1,0 +1,60 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("ui") {
+  sources = [
+    "form_input_accessory_consumer.h",
+    "form_input_accessory_view_controller.h",
+    "form_input_accessory_view_controller.mm",
+    "form_input_accessory_view_controller_delegate.h",
+    "form_suggestion_label.h",
+    "form_suggestion_label.mm",
+    "form_suggestion_view.h",
+    "form_suggestion_view.mm",
+  ]
+  deps = [
+    "//base",
+    "//components/autofill/core/browser",
+    "//components/autofill/core/common",
+    "//components/autofill/ios/browser",
+    "//components/password_manager/ios",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/autofill/form_input_accessory/public",
+    "//ios/chrome/browser/autofill/model:constants",
+    "//ios/chrome/browser/autofill/model:features",
+    "//ios/chrome/browser/autofill/model:model_shared",
+    "//ios/chrome/browser/autofill/ui_bundled/branding:branding_ui",
+    "//ios/chrome/browser/autofill/ui_bundled/manual_fill:manual_fill_constants",
+    "//ios/chrome/browser/shared/public/features",
+    "//ios/chrome/browser/shared/ui/symbols",
+    "//ios/chrome/browser/shared/ui/util",
+    "//ios/chrome/browser/shared/ui/util:util_swift",
+    "//ios/chrome/browser/toolbar/legacy/ui_bundled/public",
+    "//ios/chrome/common/ui/colors",
+    "//ios/chrome/common/ui/elements:form_input_accessory",
+    "//ios/chrome/common/ui/util",
+    "//ui/base",
+  ]
+  frameworks = [ "UIKit.framework" ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [
+    "form_input_accessory_view_controller+testing.h",
+    "form_input_accessory_view_controller_unittest.mm",
+  ]
+  deps = [
+    ":ui",
+    "//base/test:test_support",
+    "//components/autofill/ios/browser",
+    "//ios/chrome/browser/autofill/form_input_accessory/ui",
+    "//ios/chrome/browser/autofill/model:features",
+    "//ios/chrome/browser/autofill/ui_bundled/branding:branding_ui",
+    "//ios/chrome/common/ui/elements:form_input_accessory",
+    "//ios/chrome/test:test_support",
+    "//testing/gtest",
+    "//third_party/ocmock",
+  ]
+}

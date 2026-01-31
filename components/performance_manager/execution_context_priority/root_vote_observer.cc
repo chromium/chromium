@@ -71,7 +71,7 @@ void RootVoteObserver::OnVoteInvalidated(
   DCHECK_EQ(voter_id_, voter_id);
   SetPriorityAndReason(
       execution_context,
-      PriorityAndReason(base::TaskPriority::LOWEST,
+      PriorityAndReason(base::Process::Priority::kMinValue,
                         FrameNodeImpl::kDefaultPriorityReason));
 }
 

@@ -4,13 +4,13 @@
 
 package org.chromium.chrome.browser.bookmarks;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.app.Activity;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-
-import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.NullableObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.offlinepages.OfflinePageUtils;
 import org.chromium.chrome.browser.price_tracking.PriceDropNotificationManager;
 import org.chromium.chrome.browser.tab.Tab;
@@ -31,7 +31,7 @@ import java.util.function.Supplier;
 @NullMarked
 public class TabBookmarker {
     private final Activity mActivity;
-    private final Supplier<BookmarkModel> mBookmarkModelSupplier;
+    private final Supplier<@Nullable BookmarkModel> mBookmarkModelSupplier;
     private final Supplier<BottomSheetController> mBottomSheetControllerSupplier;
     private final Supplier<SnackbarManager> mSnackbarManagerSupplier;
     private final BookmarkManagerOpener mBookmarkManagerOpener;
@@ -51,13 +51,13 @@ public class TabBookmarker {
      *     which manages price drop notifications.
      */
     public TabBookmarker(
-            @NonNull Activity activity,
-            @NonNull ObservableSupplier<BookmarkModel> bookmarkModelSupplier,
-            @NonNull Supplier<BottomSheetController> bottomSheetControllerSupplier,
-            @NonNull Supplier<SnackbarManager> snackbarManagerSupplier,
-            @NonNull BookmarkManagerOpener bookmarkManagerOpener,
-            @NonNull Supplier<PriceDropNotificationManager> priceDropNotificationManagerSupplier,
-            @NonNull Supplier<Boolean> bookmarkBarVisibilitySupplier) {
+            Activity activity,
+            NullableObservableSupplier<BookmarkModel> bookmarkModelSupplier,
+            Supplier<BottomSheetController> bottomSheetControllerSupplier,
+            Supplier<SnackbarManager> snackbarManagerSupplier,
+            BookmarkManagerOpener bookmarkManagerOpener,
+            Supplier<PriceDropNotificationManager> priceDropNotificationManagerSupplier,
+            Supplier<Boolean> bookmarkBarVisibilitySupplier) {
         mActivity = activity;
         mBookmarkModelSupplier = bookmarkModelSupplier;
         mBottomSheetControllerSupplier = bottomSheetControllerSupplier;
@@ -94,7 +94,8 @@ public class TabBookmarker {
      * @param currentTab The tab being currently shown.
      */
     public void startOrModifyPriceTracking(@Nullable Tab currentTab) {
-        BookmarkId bookmarkId = mBookmarkModelSupplier.get().getUserBookmarkIdForTab(currentTab);
+        BookmarkId bookmarkId =
+                assumeNonNull(mBookmarkModelSupplier.get()).getUserBookmarkIdForTab(currentTab);
         if (bookmarkId == null) {
             addOrEditBookmark(currentTab, BookmarkType.NORMAL, /* fromExplicitTrackUi= */ true);
         } else {

@@ -150,8 +150,9 @@ IN_PROC_BROWSER_TEST_F(HorizontalTabStripRegionViewTest,
       RunScheduledLayouts();
       waiter.Wait();
     }
-    EXPECT_LE(tab_strip_region_view()->GetNewTabButton()->bounds().right(),
-              kTabStripRegionViewWidth);
+    EXPECT_LE(
+        tab_strip_region_view()->new_tab_button_for_testing()->bounds().right(),
+        kTabStripRegionViewWidth);
   }
 }
 
@@ -170,7 +171,7 @@ IN_PROC_BROWSER_TEST_F(HorizontalTabStripRegionViewTest,
     waiter.Wait();
   }
 
-  EXPECT_EQ(tab_strip_region_view()->GetNewTabButton()->bounds().x(),
+  EXPECT_EQ(tab_strip_region_view()->new_tab_button_for_testing()->bounds().x(),
             tab_strip()->tab_at(0)->bounds().right());
 }
 
@@ -178,15 +179,16 @@ IN_PROC_BROWSER_TEST_F(HorizontalTabStripRegionViewTest,
 // enabled.
 IN_PROC_BROWSER_TEST_F(HorizontalTabStripRegionViewTest, DISABLED_NewTabButtonInkDrop) {
   constexpr int kTabStripRegionViewWidth = 500;
-  tab_strip_region_view()->SetBounds(0, 0, kTabStripRegionViewWidth,
-                                     GetLayoutConstant(TAB_STRIP_HEIGHT));
+  tab_strip_region_view()->SetBounds(
+      0, 0, kTabStripRegionViewWidth,
+      GetLayoutConstant(LayoutConstant::kTabStripHeight));
 
   // Add a few tabs and simulate the new tab button's ink drop animation. This
   // should not cause any crashes since the ink drop layer size as well as the
   // ink drop container size should remain equal to the new tab button visible
   // bounds size. https://crbug.com/814105.
   auto* button = static_cast<TabStripControlButton*>(
-      tab_strip_region_view()->GetNewTabButton());
+      tab_strip_region_view()->new_tab_button_for_testing());
   for (int i = 0; i < 10; ++i) {
     button->AnimateToStateForTesting(views::InkDropState::ACTION_TRIGGERED);
     chrome::AddTabAt(browser(), GURL("about:blank"), -1, true);
@@ -228,7 +230,7 @@ IN_PROC_BROWSER_TEST_F(HorizontalTabStripRegionViewTest,
   // The new tab button should sit flush with the top of the
   // |tab_strip_region_view()|.
   gfx::Point new_tab_button_origin(
-      tab_strip_region_view()->GetNewTabButton()->bounds().origin());
+      tab_strip_region_view()->new_tab_button_for_testing()->bounds().origin());
   views::View::ConvertPointToTarget(tab_strip(), tab_strip_region_view(),
                                     &new_tab_button_origin);
   EXPECT_EQ(0, new_tab_button_origin.y());
@@ -311,7 +313,7 @@ IN_PROC_BROWSER_TEST_F(HorizontalTabStripRegionViewWithTabstripTabSearchTest,
       HorizontalTabStripRegionView::TabSearchPositionEnum;
   const bool tab_search_trailing_tabstrip =
       tabs::GetTabSearchPosition(browser()->profile()) ==
-      tabs::TabSearchPosition::kTrailingTabstrip;
+      tabs::TabSearchPosition::kTrailingHorizontalTabstrip;
   TabSearchPositionEnum expected_enum_val =
       tab_search_trailing_tabstrip ? TabSearchPositionEnum::kTrailing
                                    : TabSearchPositionEnum::kLeading;

@@ -191,6 +191,7 @@ chrome_internal_verifier(
 )
 
 chrome_internal_verifier(
+    branch_selector = branches.selector.ANDROID_BRANCHES,
     builder = "cronet-arm64-gn2bp-debug",
     # The limited traffic to the location_filters specified below makes this
     # use of owner_whitelist acceptable (see
@@ -290,22 +291,6 @@ chrome_internal_verifier(
 
 chrome_internal_verifier(
     builder = "linux-autofill-captured-sites-rel",
-)
-
-chrome_internal_verifier(
-    builder = "linux-bluebird-rel",
-    owner_whitelist = [
-        "google/glic-internal-cq@google.com",
-    ],
-    tryjob = try_.job(
-        location_filters = [
-            "chrome/browser/actor/.+",
-            "chrome/browser/glic/.+",
-            "chrome/common/actor/.+",
-            "chrome/renderer/actor/.+",
-            "chrome/test/data/actor/.+",
-        ],
-    ),
 )
 
 chrome_internal_verifier(
@@ -448,8 +433,7 @@ chrome_internal_verifier(
 )
 
 chrome_internal_verifier(
-    branch_selector = branches.selector.ANDROID_BRANCHES,
-    builder = "webview-arm64-rel-ready",
+    builder = "test-tablet",
 )
 
 chrome_internal_verifier(

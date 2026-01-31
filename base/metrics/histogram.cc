@@ -246,6 +246,22 @@ HistogramBase* Histogram::Factory::Build() {
                        static_cast<Sample32>(name_hash));
     DLOG(ERROR) << "Histogram " << name_
                 << " has mismatched construction arguments";
+
+    // TODO(crbug.com/477033836): Most histograms hitting this are unmapped.
+    // Dump to find out which ones. Some known bad histograms are excluded.
+    static const std::string_view kKnownBadHistogramsHashes[] = {
+        "DevTools.IssueCreated",
+        "DevTools.ActionTaken",
+        "DevTools.DeveloperResourceLoaded",
+        "DevTools.DeveloperResourceScheme",
+        "DevTools.ExperimentEnabledAtLaunch",
+        "DevTools.PanelShown",
+    };
+    if (std::ranges::contains(kKnownBadHistogramsHashes, name_)) {
+      DEBUG_ALIAS_FOR_CSTR(hist_name, std::string(name_).c_str(), 32);
+      debug::DumpWithoutCrashing();
+    }
+
     return DummyHistogram::GetInstance();
   }
   return histogram;
@@ -617,7 +633,7 @@ bool Histogram::AddSamplesFromPickle(PickleIterator* iter) {
   return unlogged_samples_->AddFromPickle(iter);
 }
 
-base::Value::Dict Histogram::ToGraphDict() const {
+base::DictValue Histogram::ToGraphDict() const {
   std::unique_ptr<SampleVector> snapshot = SnapshotAllSamples();
   return snapshot->ToGraphDict(histogram_name(), flags());
 }
@@ -757,8 +773,8 @@ std::unique_ptr<SampleVector> Histogram::SnapshotUnloggedSamplesImpl() const {
   return samples;
 }
 
-Value::Dict Histogram::GetParameters() const {
-  Value::Dict params;
+DictValue Histogram::GetParameters() const {
+  DictValue params;
   params.Set("type", HistogramTypeToString(GetHistogramType()));
   params.Set("min", declared_min());
   params.Set("max", declared_max());

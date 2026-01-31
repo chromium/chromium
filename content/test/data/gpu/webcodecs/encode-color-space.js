@@ -186,7 +186,9 @@ async function main(arg) {
 
   let decoder = new VideoDecoder(decoderInit);
   for (var i = 0; i < outputChunks.length; ++i) {
-    if ('decoderConfig' in outputMetadata[i]) {
+    // Multiple configs may be emitted during encoding, they should all be the
+    // same since we drop the color space though.
+    if ('decoderConfig' in outputMetadata[i] && i == 0) {
       let config = {...outputMetadata[i].decoderConfig};
 
       // Removes the color space provided by the encoder so that color space

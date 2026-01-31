@@ -6,7 +6,7 @@ import("//build/config/chromeos/ui_mode.gni")
 import("//chrome/common/features.gni")
 import("//components/captive_portal/core/features.gni")
 import("//components/enterprise/buildflags/buildflags.gni")
-import("//components/services/on_device_translation/buildflags/features.gni")
+import("//components/on_device_translation/buildflags/features.gni")
 import("//components/signin/features.gni")
 import("//extensions/buildflags/buildflags.gni")
 
@@ -240,6 +240,10 @@ source_set("profile_util_impl") {
     ]
   }
 
+  if (is_android) {
+    deps += [ "//components/supervised_user/core/browser/android" ]
+  }
+
   if (is_chromeos) {
     deps += [
       "//chrome/browser/ash/login/users",
@@ -281,6 +285,7 @@ source_set("profiles_extra_parts_impl") {
     "//chrome/browser/consent_auditor",
     "//chrome/browser/content_index",
     "//chrome/browser/content_settings:content_settings_factory",
+    "//chrome/browser/contextual_cueing",
     "//chrome/browser/contextual_search",
     "//chrome/browser/contextual_tasks",
     "//chrome/browser/custom_handlers",
@@ -318,6 +323,7 @@ source_set("profiles_extra_parts_impl") {
     "//chrome/browser/segmentation_platform",
     "//chrome/browser/send_tab_to_self",
     "//chrome/browser/serial",
+    "//chrome/browser/sharing",
     "//chrome/browser/signin",
     "//chrome/browser/storage_access_api",
     "//chrome/browser/subscription_eligibility",
@@ -373,22 +379,22 @@ source_set("profiles_extra_parts_impl") {
     deps += [
       "//chrome/browser/auxiliary_search",
       "//chrome/browser/commerce/merchant_viewer:merchant_viewer_data_manager",
-      "//chrome/browser/fast_checkout",
       "//chrome/browser/tab",
       "//components/commerce/core:merchant_signal_db_proto",
     ]
   } else {
     deps += [
       "//chrome/browser/accessibility/tree_fixing:service",
+      "//chrome/browser/accessibility_annotator/content_annotator",
       "//chrome/browser/apps/app_service",
       "//chrome/browser/autofill",
       "//chrome/browser/badging",
-      "//chrome/browser/contextual_cueing",
       "//chrome/browser/contextual_tasks:ui",
       "//chrome/browser/device_api",
       "//chrome/browser/devtools",
       "//chrome/browser/feedback",
       "//chrome/browser/hid",
+      "//chrome/browser/legion",
       "//chrome/browser/media/router/discovery/access_code:access_code_sink_service",
       "//chrome/browser/screen_ai:screen_ai_service_router_factory",
       "//chrome/browser/search",
@@ -406,7 +412,7 @@ source_set("profiles_extra_parts_impl") {
       "//chrome/browser/ui/views/side_panel",
       "//chrome/browser/ui/waap",
       "//chrome/browser/ui/webui/signin",
-      "//chrome/browser/ui/webui/signin:login",
+      "//chrome/browser/ui/webui/signin:login_ui_service",
       "//chrome/browser/user_education",
     ]
   }
@@ -468,10 +474,10 @@ source_set("profiles_extra_parts_impl") {
   }
 
   if (enable_glic) {
-    deps += [
-      "//chrome/browser/glic",
-      "//chrome/browser/ui/tabs:glic",
-    ]
+    deps += [ "//chrome/browser/glic" ]
+    if (!is_android) {
+      deps += [ "//chrome/browser/ui/tabs:glic" ]
+    }
   }
 
   if (enable_on_device_translation) {

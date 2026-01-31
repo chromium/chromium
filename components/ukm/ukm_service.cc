@@ -259,7 +259,6 @@ UkmService::UkmService(PrefService* pref_service,
   bool fast_startup = client_->ShouldStartUpFast();
   scheduler_ = std::make_unique<UkmRotationScheduler>(
       rotate_callback, fast_startup, get_upload_interval_callback);
-  InitDecodeMap();
 
   DelegatingUkmRecorder::Get()->AddDelegate(self_ptr_factory_.GetWeakPtr());
 }

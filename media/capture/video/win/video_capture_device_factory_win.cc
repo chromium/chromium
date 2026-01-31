@@ -28,7 +28,6 @@
 #include <vector>
 
 #include "base/command_line.h"
-#include "base/containers/contains.h"
 #include "base/containers/fixed_flat_set.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
@@ -54,7 +53,6 @@
 #include "media/base/win/mf_initializer.h"
 #include "media/capture/capture_switches.h"
 #include "media/capture/video/video_capture_device_descriptor.h"
-#include "media/capture/video/video_capture_metrics.h"
 #include "media/capture/video/win/metrics.h"
 #include "media/capture/video/win/video_capture_device_mf_win.h"
 #include "media/capture/video/win/video_capture_device_win.h"
@@ -316,10 +314,10 @@ std::string GetDeviceModelId(const std::string& device_id) {
 
 bool DevicesInfoContainsDeviceId(const DevicesInfo& devices_info,
                                  const std::string& device_id) {
-  return base::Contains(devices_info, device_id,
-                        [](const VideoCaptureDeviceInfo& device_info) {
-                          return device_info.descriptor.device_id;
-                        });
+  return std::ranges::contains(devices_info, device_id,
+                               [](const VideoCaptureDeviceInfo& device_info) {
+                                 return device_info.descriptor.device_id;
+                               });
 }
 
 // Returns a non DirectShow descriptor DevicesInfo with the provided name and
@@ -512,7 +510,8 @@ class VideoCaptureDeviceFactoryWin::UsageReportHandler
   void UpdateDevicesInfoAvailability(
       std::vector<VideoCaptureDeviceInfo>* devices_info) {
     base::AutoLock lock(cache_lock_);
-    std::set<std::string_view> device_ids;
+    absl::flat_hash_set<std::string_view> device_ids;
+    device_ids.reserve(devices_info->size());
     for (auto& info : *devices_info) {
       device_ids.emplace(info.descriptor.device_id);
       auto it = availability_cache_.find(info.descriptor.device_id);
@@ -521,7 +520,7 @@ class VideoCaptureDeviceFactoryWin::UsageReportHandler
       }
     }
     std::erase_if(availability_cache_, [&device_ids](const auto& entry) {
-      return !base::Contains(device_ids, entry.first);
+      return !device_ids.contains(entry.first);
     });
   }
 
@@ -623,7 +622,6 @@ VideoCaptureErrorOrDevice VideoCaptureDeviceFactoryWin::CreateDevice(
           DVLOG(1) << " MediaFoundation Device: "
                    << device_descriptor.display_name();
           if (device->Init()) {
-            LogCaptureDeviceHashedModelId(device_descriptor);
             return VideoCaptureErrorOrDevice(std::move(device));
           }
           return VideoCaptureErrorOrDevice(
@@ -649,7 +647,6 @@ VideoCaptureErrorOrDevice VideoCaptureDeviceFactoryWin::CreateDevice(
           device_descriptor, std::move(capture_filter));
       DVLOG(1) << " DirectShow Device: " << device_descriptor.display_name();
       if (device->Init()) {
-        LogCaptureDeviceHashedModelId(device_descriptor);
         return VideoCaptureErrorOrDevice(std::move(device));
       }
       return VideoCaptureErrorOrDevice(

@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.gesturenav;
 
 import static org.chromium.chrome.browser.gesturenav.NavigationSheetCoordinator.NAVIGATION_LIST_ITEM_TYPE_ID;
+import static org.chromium.chrome.browser.url_constants.UrlConstantResolver.getOriginalNativeHistoryUrl;
 
 import android.content.Context;
 import android.graphics.Bitmap;
@@ -21,7 +22,6 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.ui.favicon.FaviconHelper;
 import org.chromium.chrome.browser.ui.favicon.FaviconUtils;
 import org.chromium.components.browser_ui.widget.RoundedIconGenerator;
-import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.content_public.browser.NavigationEntry;
 import org.chromium.content_public.browser.NavigationHistory;
@@ -128,7 +128,7 @@ class NavigationSheetMediator {
             if (!requestedUrls.contains(pageUrl)) {
                 FaviconHelper.FaviconImageCallback imageCallback =
                         (bitmap, iconUrl) -> onFaviconAvailable(pageUrl, bitmap);
-                if (!pageUrl.getSpec().equals(UrlConstants.NATIVE_HISTORY_URL)) {
+                if (!pageUrl.getSpec().equals(getOriginalNativeHistoryUrl())) {
                     mFaviconHelper.getLocalFaviconImageForURL(
                             mProfile, pageUrl, mFaviconSize, imageCallback);
                     requestedUrls.add(pageUrl);

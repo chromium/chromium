@@ -16,6 +16,14 @@
 // expanded differently in some places. The macro has the following signature:
 // ACCOUNT_CAPABILITY(cpp_label, java_label, name).
 
+// To define a new account capability that is flag-guarded, add a
+// ACCOUNT_CAPABILITY_F(cpp_label, java_label, name, feature_flag) macro
+// instead of ACCOUNT_CAPABILITY. This allows the capability to be submitted
+// before it is fully rolled out server-side.
+// - This is currently not supported for capabilities exposed on Android
+// - The #include for the feature flag must be added to account_capabilities.cc
+//   and not to this file
+
 // Here we rely on build_config.h to not introduce any symbols that can be
 // textually inserted in the code. If that changes in the future, this header
 // should be removed from this file and included transitively instead.
@@ -31,9 +39,11 @@ ACCOUNT_CAPABILITY(kCanFetchFamilyMemberInfoCapabilityName,
                    CAN_FETCH_FAMILY_MEMBER_INFO_CAPABILITY_NAME,
                    "accountcapabilities/ge2dinbnmnqxa")
 
+#if !BUILDFLAG(IS_IOS)
 ACCOUNT_CAPABILITY(kCanHaveEmailAddressDisplayedCapabilityName,
                    CAN_HAVE_EMAIL_ADDRESS_DISPLAYED_CAPABILITY_NAME,
                    "accountcapabilities/haytqlldmfya")
+#endif
 
 #if !BUILDFLAG(IS_ANDROID)
 ACCOUNT_CAPABILITY(kCanMakeChromeSearchEngineChoiceScreenChoice,
@@ -41,46 +51,58 @@ ACCOUNT_CAPABILITY(kCanMakeChromeSearchEngineChoiceScreenChoice,
                    "accountcapabilities/ge4tenznmnqxa")
 #endif
 
+#if !BUILDFLAG(IS_IOS)
 ACCOUNT_CAPABILITY(kCanRunChromePrivacySandboxTrialsCapabilityName,
                    CAN_RUN_CHROME_PRIVACY_SANDBOX_TRIALS_CAPABILITY_NAME,
                    "accountcapabilities/gu2dqlldmfya")
+#endif
 
 ACCOUNT_CAPABILITY(
     kCanShowHistorySyncOptInsWithoutMinorModeRestrictionsCapabilityName,
     CAN_SHOW_HISTORY_SYNC_OPT_INS_WITHOUT_MINOR_MODE_RESTRICTIONS_CAPABILITY_NAME,
     "accountcapabilities/gi2tklldmfya")
 
+#if BUILDFLAG(IS_CHROMEOS)
 ACCOUNT_CAPABILITY(kCanToggleAutoUpdatesName,
                    CAN_TOGGLE_AUTO_UPDATES_NAME,
                    "accountcapabilities/gu4dmlldmfya")
+#endif
 
-ACCOUNT_CAPABILITY(kCanUseChromeIpProtectionName,
-                   CAN_USE_CHROME_IP_PROTECTION_NAME,
-                   "accountcapabilities/geydgnznmnqxa")
-
+#if BUILDFLAG(IS_CHROMEOS)
 ACCOUNT_CAPABILITY(kCanUseChromeOSGenerativeAi,
                    CAN_USE_CHROMEOS_GENERATIVE_AI,
                    "accountcapabilities/ge3dgmjnmnqxa")
+#endif
 
-ACCOUNT_CAPABILITY(kCanUseCopyEditorFeatureName,
-                   CAN_USE_COPYEDITOR_FEATURE_NAME,
-                   "accountcapabilities/ge2tkmznmnqxa")
-
+#if !BUILDFLAG(IS_IOS)
 ACCOUNT_CAPABILITY(kCanUseDevToolsGenerativeAiFeaturesCapabilityName,
                    CAN_USE_DEVTOOLS_GENERATIVE_AI_FEATURES_CAPABILITY_NAME,
                    "accountcapabilities/geztenjnmnqxa")
+#endif
 
+#if !BUILDFLAG(IS_IOS)
 ACCOUNT_CAPABILITY(kCanUseEduFeaturesCapabilityName,
                    CAN_USE_EDU_FEATURES_CAPABILITY_NAME,
                    "accountcapabilities/gezdsmbnmnqxa")
+#endif
 
+#if !BUILDFLAG(IS_IOS)
+ACCOUNT_CAPABILITY(kCanUseGeminiInChromeCapabilityName,
+                   CAN_USE_GEMINI_IN_CHROME_CAPABILITY_NAME,
+                   "accountcapabilities/giytmnrnmnqxa")
+#endif
+
+#if BUILDFLAG(IS_CHROMEOS)
 ACCOUNT_CAPABILITY(kCanUseGenerativeAiInRecorderApp,
                    CAN_USE_GENERATIVE_AI_IN_RECORDER_APP,
                    "accountcapabilities/ge2tkobnmnqxa")
+#endif
 
+#if BUILDFLAG(IS_CHROMEOS)
 ACCOUNT_CAPABILITY(kCanUseGenerativeAiPhotoEditing,
                    CAN_USE_GENERATIVE_AI_PHOTO_EDITING,
                    "accountcapabilities/ge3dgobnmnqxa")
+#endif
 
 ACCOUNT_CAPABILITY(kCanUseMantaServiceName,
                    CAN_USE_MANTA_SERVICE_NAME,
@@ -102,9 +124,10 @@ ACCOUNT_CAPABILITY(kIsOptedInToParentalSupervisionCapabilityName,
                    IS_OPTED_IN_TO_PARENTAL_SUPERVISION_CAPABILITY_NAME,
                    "accountcapabilities/guzdslldmfya")
 
-ACCOUNT_CAPABILITY(kIsSubjectToAccountLevelEnterprisePoliciesCapabilityName,
-                   IS_SUBJECT_TO_ACCOUNT_LEVEL_ENTERPRISE_POLICIES_CAPABILITY_NAME,
-                   "accountcapabilities/ge4tgnznmnqxa")
+ACCOUNT_CAPABILITY(
+    kIsSubjectToAccountLevelEnterprisePoliciesCapabilityName,
+    IS_SUBJECT_TO_ACCOUNT_LEVEL_ENTERPRISE_POLICIES_CAPABILITY_NAME,
+    "accountcapabilities/ge4tgnznmnqxa")
 
 ACCOUNT_CAPABILITY(
     kIsSubjectToChromePrivacySandboxRestrictedMeasurementNotice,

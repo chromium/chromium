@@ -12,7 +12,6 @@
 #include <vector>
 
 #include "base/check_op.h"
-#include "base/containers/contains.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -240,7 +239,7 @@ class ExtensionGalleriesHost {
       const MediaGalleryPrefInfo& gallery_info =
           galleries_info.find(pref_id)->second;
       const std::string& device_id = gallery_info.device_id;
-      if (!base::Contains(*attached_devices, device_id)) {
+      if (!attached_devices->contains(device_id)) {
         continue;
       }
 
@@ -292,7 +291,7 @@ class ExtensionGalleriesHost {
       base::FilePath path = gallery.AbsolutePath();
       const std::string& device_id = gallery.device_id;
 
-      if (base::Contains(pref_id_map_, gallery.pref_id)) {
+      if (pref_id_map_.contains(gallery.pref_id)) {
         result = base::File::FILE_OK;
       } else if (MediaStorageUtil::CanCreateFileSystem(device_id, path) &&
                  file_system_context_->RegisterFileSystem(device_id, fs_name,
@@ -400,7 +399,7 @@ void MediaFileSystemRegistry::RegisterMediaFileSystemForExtension(
       preferences->GalleriesForExtension(*extension);
 
   if (gallery == preferences->known_galleries().end() ||
-      !base::Contains(permitted_galleries, pref_id)) {
+      !permitted_galleries.contains(pref_id)) {
     content::GetIOThreadTaskRunner({})->PostTask(
         FROM_HERE,
         base::BindOnce(std::move(callback), base::File::FILE_ERROR_NOT_FOUND));
@@ -420,9 +419,9 @@ void MediaFileSystemRegistry::RegisterMediaFileSystemForExtension(
 MediaGalleriesPreferences* MediaFileSystemRegistry::GetPreferences(
     Profile* profile) {
   // Create an empty ExtensionHostMap for this profile on first initialization.
-  if (!base::Contains(extension_hosts_map_, profile)) {
+  if (!extension_hosts_map_.contains(profile)) {
     extension_hosts_map_[profile] = ExtensionHostMap();
-    DCHECK(!base::Contains(profile_subscription_map_, profile));
+    DCHECK(!profile_subscription_map_.contains(profile));
     profile_subscription_map_[profile] =
         MediaFileSystemRegistryShutdownNotifierFactory::GetInstance()
             ->Get(profile)
@@ -620,7 +619,7 @@ void MediaFileSystemRegistry::OnGalleryRemoved(
         extension_registry->enabled_extensions().GetByID(it->first));
   }
   for (size_t i = 0; i < extensions.size(); ++i) {
-    if (!base::Contains(extension_hosts_map_, profile)) {
+    if (!extension_hosts_map_.contains(profile)) {
       break;
     }
     auto gallery_host_it = extension_host_map.find(extensions[i]->id());

@@ -176,6 +176,9 @@ class BookmarkBubbleViewTest : public BookmarkBubbleViewTestBase {
 };
 
 // Verifies that the sync promo is not displayed for a signed in user.
+// TODO(crbug.com/40066949): Remove once kSync becomes unreachable or is
+// deleted from the codebase. See ConsentLevel::kSync documentation for
+// details.
 TEST_F(BookmarkBubbleViewTest, SyncPromoSignedIn) {
   signin::MakePrimaryAccountAvailable(
       IdentityManagerFactory::GetForProfile(profile()),

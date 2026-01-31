@@ -29,7 +29,7 @@ class UnexportablePrivateKeyFactory : public PrivateKeyFactory {
   void LoadPrivateKey(
       const client_certificates_pb::PrivateKey& serialized_private_key,
       PrivateKeyCallback callback) override;
-  void LoadPrivateKeyFromDict(const base::Value::Dict& serialized_private_key,
+  void LoadPrivateKeyFromDict(const base::DictValue& serialized_private_key,
                               PrivateKeyCallback callback) override;
 
  private:

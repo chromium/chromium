@@ -41,6 +41,8 @@ import java.util.Scanner;
 public class ValidationTest {
     @Rule public MojoTestRule mTestRule = new MojoTestRule();
 
+    private static final int INTERFACE_ID = 999; // doesn't matter
+
     /** The path where validation test data is. */
     private static final File VALIDATION_TEST_DATA_PATH =
             new File(
@@ -130,19 +132,30 @@ public class ValidationTest {
                 handles.add(new HandleMock());
             }
             Message message = new Message(test.inputData.getData(), handles);
-            boolean passed = messageReceiver.accept(message);
-            if (passed && !test.expectedResult.equals("PASS")) {
-                Assert.fail(
-                        "Input: "
-                                + test.dataFile.getName()
-                                + ": The message should have been refused. Expected error: "
-                                + test.expectedResult);
-            }
-            if (!passed && test.expectedResult.equals("PASS")) {
-                Assert.fail(
-                        "Input: "
-                                + test.dataFile.getName()
-                                + ": The message should have been accepted.");
+            try {
+                boolean passed = messageReceiver.accept(message);
+                if (passed && !test.expectedResult.equals("PASS")) {
+                    Assert.fail(
+                            "Input: "
+                                    + test.dataFile.getName()
+                                    + ": The message should have been refused. Expected error: "
+                                    + test.expectedResult);
+                }
+                if (!passed && test.expectedResult.equals("PASS")) {
+                    Assert.fail(
+                            "Input: "
+                                    + test.dataFile.getName()
+                                    + ": The message should have been accepted.");
+                }
+            } catch (BadMessageException e) {
+                if (test.expectedResult.equals("PASS")) {
+                    Assert.fail(
+                            "Input: "
+                                    + test.dataFile.getName()
+                                    + ": The message should have been accepted, but failed with"
+                                    + " exception: "
+                                    + e);
+                }
             }
         }
     }
@@ -161,7 +174,7 @@ public class ValidationTest {
          * @see MessageReceiver#accept(Message)
          */
         @Override
-        public boolean accept(Message message) {
+        public boolean accept(Message message) throws BadMessageException {
             try {
                 MessageHeader header = message.asServiceMessage().getHeader();
                 if (header.hasFlag(MessageHeader.MESSAGE_IS_RESPONSE_FLAG)) {
@@ -184,7 +197,7 @@ public class ValidationTest {
     /** A trivial message receiver that refuses all messages it receives. */
     private static class SinkMessageReceiver implements MessageReceiverWithResponder {
         @Override
-        public boolean accept(Message message) {
+        public boolean accept(Message message) throws BadMessageException {
             return true;
         }
 
@@ -192,7 +205,8 @@ public class ValidationTest {
         public void close() {}
 
         @Override
-        public boolean acceptWithResponder(Message message, MessageReceiver responder) {
+        public boolean acceptWithResponder(Message message, MessageReceiver responder)
+                throws BadMessageException {
             return true;
         }
     }
@@ -206,7 +220,8 @@ public class ValidationTest {
                 ConformanceTestInterface.MANAGER.buildStub(
                         CoreImpl.getInstance(),
                         ConformanceTestInterface.MANAGER.buildProxy(
-                                CoreImpl.getInstance(), new SinkMessageReceiver())));
+                                CoreImpl.getInstance(), new SinkMessageReceiver()),
+                        INTERFACE_ID));
     }
 
     /** Testing the integration suite for message headers. */
@@ -219,7 +234,8 @@ public class ValidationTest {
                         IntegrationTestInterface.MANAGER.buildStub(
                                 null,
                                 IntegrationTestInterface.MANAGER.buildProxy(
-                                        null, new SinkMessageReceiver())),
+                                        null, new SinkMessageReceiver()),
+                                INTERFACE_ID),
                         IntegrationTestInterfaceTestHelper
                                 .newIntegrationTestInterfaceMethodCallback()));
     }
@@ -234,7 +250,8 @@ public class ValidationTest {
                         IntegrationTestInterface.MANAGER.buildStub(
                                 null,
                                 IntegrationTestInterface.MANAGER.buildProxy(
-                                        null, new SinkMessageReceiver())),
+                                        null, new SinkMessageReceiver()),
+                                INTERFACE_ID),
                         IntegrationTestInterfaceTestHelper
                                 .newIntegrationTestInterfaceMethodCallback()));
     }
@@ -249,7 +266,8 @@ public class ValidationTest {
                         IntegrationTestInterface.MANAGER.buildStub(
                                 null,
                                 IntegrationTestInterface.MANAGER.buildProxy(
-                                        null, new SinkMessageReceiver())),
+                                        null, new SinkMessageReceiver()),
+                                INTERFACE_ID),
                         IntegrationTestInterfaceTestHelper
                                 .newIntegrationTestInterfaceMethodCallback()));
     }

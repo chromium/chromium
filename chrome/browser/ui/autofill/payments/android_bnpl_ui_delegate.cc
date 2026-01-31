@@ -20,14 +20,10 @@ namespace autofill::payments {
 
 BnplIssuerTosDetail::BnplIssuerTosDetail(
     BnplIssuer::IssuerId issuer_id,
-    int header_icon_id,
-    int header_icon_id_dark,
     bool is_linked_issuer,
     std::u16string issuer_name,
     std::vector<LegalMessageLine> legal_message_lines)
     : issuer_id(issuer_id),
-      header_icon_id(header_icon_id),
-      header_icon_id_dark(header_icon_id_dark),
       is_linked_issuer(is_linked_issuer),
       issuer_name(std::move(issuer_name)),
       legal_message_lines(std::move(legal_message_lines)) {}
@@ -56,7 +52,8 @@ AndroidBnplUiDelegate::~AndroidBnplUiDelegate() = default;
 void AndroidBnplUiDelegate::ShowSelectBnplIssuerUi(
     std::vector<BnplIssuerContext> bnpl_issuer_context,
     std::string app_locale,
-    base::OnceCallback<void(autofill::BnplIssuer)> selected_issuer_callback,
+    base::RepeatingCallback<void(autofill::BnplIssuer)>
+        selected_issuer_callback,
     base::OnceClosure cancel_callback,
     bool has_seen_ai_terms) {
   client_->ShowTouchToFillBnplIssuers(bnpl_issuer_context, app_locale,
@@ -102,27 +99,6 @@ void AndroidBnplUiDelegate::CloseProgressUi(
 void AndroidBnplUiDelegate::ShowAutofillErrorUi(
     AutofillErrorDialogContext context) {
   client_->ShowTouchToFillError(context);
-}
-
-// Static.
-int AndroidBnplUiDelegate::GetDuoBrandedIconForBnplIssuer(
-    BnplIssuer::IssuerId issuer_id,
-    bool is_dark_mode) {
-  switch (issuer_id) {
-    case BnplIssuer::IssuerId::kBnplAffirm:
-      return is_dark_mode ? IDR_AUTOFILL_GOOGLE_PAY_AFFIRM_DARK
-                          : IDR_AUTOFILL_GOOGLE_PAY_AFFIRM;
-    case BnplIssuer::IssuerId::kBnplAfterpay:
-      return is_dark_mode ? IDR_AUTOFILL_GOOGLE_PAY_AFTERPAY_DARK
-                          : IDR_AUTOFILL_GOOGLE_PAY_AFTERPAY;
-    case BnplIssuer::IssuerId::kBnplKlarna:
-      return is_dark_mode ? IDR_AUTOFILL_GOOGLE_PAY_KLARNA_DARK
-                          : IDR_AUTOFILL_GOOGLE_PAY_KLARNA;
-    case BnplIssuer::IssuerId::kBnplZip:
-      return is_dark_mode ? IDR_AUTOFILL_GOOGLE_PAY_ZIP_DARK
-                          : IDR_AUTOFILL_GOOGLE_PAY_ZIP;
-  }
-  NOTREACHED();
 }
 
 }  // namespace autofill::payments

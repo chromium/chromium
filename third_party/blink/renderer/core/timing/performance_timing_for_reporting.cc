@@ -19,7 +19,6 @@
 #include "third_party/blink/renderer/core/paint/timing/paint_timing.h"
 #include "third_party/blink/renderer/core/paint/timing/paint_timing_detector.h"
 #include "third_party/blink/renderer/core/timing/performance.h"
-#include "third_party/blink/renderer/core/timing/soft_navigation_heuristics.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_load_timing.h"
 
 namespace blink {
@@ -72,9 +71,7 @@ LargestContentfulPaintDetailsForReporting PerformanceTimingForReporting::
       MonotonicTimeToPseudoWallTime(
           timing.resource_load_timings.discovery_time),
       MonotonicTimeToPseudoWallTime(timing.resource_load_timings.load_start),
-      MonotonicTimeToPseudoWallTime(timing.resource_load_timings.load_end)
-
-  };
+      MonotonicTimeToPseudoWallTime(timing.resource_load_timings.load_end)};
 
   std::optional<base::TimeTicks> merged_unclamped_paint_time =
       MergeLargestContentfulPaintValues(timing);
@@ -240,19 +237,6 @@ PerformanceTimingForReporting::LargestContentfulPaintDetailsForMetrics() const {
 
   auto timing =
       paint_timing_detector->LargestContentfulPaintDetailsForMetrics();
-
-  return PopulateLargestContentfulPaintDetailsForReporting(timing);
-}
-
-LargestContentfulPaintDetailsForReporting PerformanceTimingForReporting::
-    SoftNavigationLargestContentfulPaintDetailsForMetrics() const {
-  SoftNavigationHeuristics* heuristics = GetSoftNavigationHeuristics();
-  if (!heuristics) {
-    return {};
-  }
-
-  auto timing =
-      heuristics->SoftNavigationLargestContentfulPaintDetailsForMetrics();
 
   return PopulateLargestContentfulPaintDetailsForReporting(timing);
 }
@@ -503,14 +487,6 @@ PaintTimingDetector* PerformanceTimingForReporting::GetPaintTimingDetector()
   if (!DomWindow())
     return nullptr;
   return &DomWindow()->GetFrame()->View()->GetPaintTimingDetector();
-}
-
-SoftNavigationHeuristics*
-PerformanceTimingForReporting::GetSoftNavigationHeuristics() const {
-  if (!DomWindow()) {
-    return nullptr;
-  }
-  return DomWindow()->GetSoftNavigationHeuristics();
 }
 
 std::optional<base::TimeDelta>

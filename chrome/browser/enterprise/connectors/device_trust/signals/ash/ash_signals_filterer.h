@@ -18,11 +18,11 @@ class AshSignalsFilterer : public SignalsFilterer {
 
   // Removes or modifies a subset of `signals` depending on the current device
   // context.
-  void Filter(base::Value::Dict& signals) override;
+  void Filter(base::DictValue& signals) override;
 
  private:
   // Removes all signals which contain stable device identifiers from `signals`.
-  void RemoveStableDeviceIdentifiers(base::Value::Dict& signals);
+  void RemoveStableDeviceIdentifiers(base::DictValue& signals);
 
   bool ShouldRemoveStableDeviceIdentifiers();
 };

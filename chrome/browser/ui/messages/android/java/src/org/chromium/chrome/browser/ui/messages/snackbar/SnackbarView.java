@@ -4,8 +4,6 @@
 
 package org.chromium.chrome.browser.ui.messages.snackbar;
 
-import static org.chromium.build.NullUtil.assumeNonNull;
-
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.animation.ObjectAnimator;
@@ -30,18 +28,16 @@ import androidx.core.view.ViewCompat;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeController;
-import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeControllerFactory;
 import org.chromium.chrome.ui.messages.R;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.browser_ui.widget.text.TemplatePreservingTextView;
 import org.chromium.ui.base.WindowAndroid;
-import org.chromium.ui.edge_to_edge.EdgeToEdgePadAdjuster;
 import org.chromium.ui.insets.InsetObserver;
 import org.chromium.ui.interpolators.Interpolators;
 
 /**
- * Visual representation of a snackbar. On phone it matches the width of the activity; on tablet it
- * has a fixed width and is anchored at the start-bottom corner of the current window.
+ * Visual representation of a snackbar. It has a fixed maximum width and is anchored at the
+ * bottom-center of the screen, floating above the content.
  */
 // TODO (jianli): Change this class and its methods back to package protected after the offline
 // indicator experiment is done.
@@ -57,10 +53,9 @@ public class SnackbarView implements InsetObserver.WindowInsetObserver {
     private final TextView mActionButtonView;
     private final ImageView mProfileImageView;
     private final int mAnimationDuration;
-    private final boolean mIsTablet;
-    private final @Nullable EdgeToEdgeController mEdgeToEdgeSupplier;
-    private final @Nullable EdgeToEdgePadAdjuster mEdgeToEdgePadAdjuster;
     private final ViewGroup mOriginalParent;
+    private final int mMaxWidth;
+    private final int mSnackbarMargin;
     protected ViewGroup mParent;
     protected Snackbar mSnackbar;
     private final View mRootContentView;
@@ -96,26 +91,6 @@ public class SnackbarView implements InsetObserver.WindowInsetObserver {
      * @param parentView The ViewGroup used to display this snackbar.
      * @param windowAndroid The WindowAndroid used for starting animation. If it is null,
      *     Animator#start is called instead.
-     */
-    public SnackbarView(
-            Activity activity,
-            SnackbarManager manager,
-            Snackbar snackbar,
-            ViewGroup parentView,
-            @Nullable WindowAndroid windowAndroid,
-            boolean isTablet) {
-        this(activity, manager, snackbar, parentView, windowAndroid, null, isTablet);
-    }
-
-    /**
-     * Creates an instance of the {@link SnackbarView}.
-     *
-     * @param activity The activity that displays the snackbar.
-     * @param manager The {@link SnackbarManager} that manages this view.
-     * @param snackbar The snackbar to be displayed.
-     * @param parentView The ViewGroup used to display this snackbar.
-     * @param windowAndroid The WindowAndroid used for starting animation. If it is null,
-     *     Animator#start is called instead.
      * @param edgeToEdgeSupplier The supplier publishes the changes of the edge-to-edge state and
      *     the expected bottom paddings when edge-to-edge is on.
      */
@@ -125,22 +100,17 @@ public class SnackbarView implements InsetObserver.WindowInsetObserver {
             Snackbar snackbar,
             ViewGroup parentView,
             @Nullable WindowAndroid windowAndroid,
-            @Nullable EdgeToEdgeController edgeToEdgeSupplier,
-            boolean isTablet) {
-        mIsTablet = isTablet;
+            @Nullable EdgeToEdgeController edgeToEdgeSupplier) {
         mOriginalParent = parentView;
         mWindowAndroid = windowAndroid;
 
         mRootContentView = activity.findViewById(android.R.id.content);
         mParent = mOriginalParent;
 
-        int snackbarLayout =
-                SnackbarManager.isFloatingSnackbarEnabled()
-                        ? R.layout.floating_snackbar
-                        : R.layout.snackbar;
-
         mContainerView =
-                (ViewGroup) LayoutInflater.from(activity).inflate(snackbarLayout, mParent, false);
+                (ViewGroup)
+                        LayoutInflater.from(activity)
+                                .inflate(R.layout.floating_snackbar, mParent, false);
 
         // Make sure clicks are not consumed by content beneath the container view.
         mContainerView.setClickable(true);
@@ -159,26 +129,17 @@ public class SnackbarView implements InsetObserver.WindowInsetObserver {
         mActionButtonView = (TextView) mContainerView.findViewById(R.id.snackbar_button);
         mActionButtonView.setOnClickListener(manager);
         mProfileImageView = (ImageView) mContainerView.findViewById(R.id.snackbar_profile_image);
-        mEdgeToEdgeSupplier = edgeToEdgeSupplier;
-        // TODO(crbug.com/451807932): Replace with a custom pad adjuster to account for inset
-        //  changes.
-        if (SnackbarManager.isFloatingSnackbarEnabled()) {
-            // Add bottom margin to extend the snackbar view into the bottom window inset. This
-            // margin has to be applied to the snackbar view itself to avoid weird visual clipping
-            // in its dismissal animation.
-            FrameLayout.LayoutParams lp = getLayoutParams();
-            int bottomInsetPx =
-                    edgeToEdgeSupplier != null ? edgeToEdgeSupplier.getBottomInsetPx() : 0;
-            lp.bottomMargin = lp.bottomMargin + bottomInsetPx;
-            mContainerView.setLayoutParams(lp);
-
-            mEdgeToEdgePadAdjuster = null;
-        } else {
-            mEdgeToEdgePadAdjuster =
-                    edgeToEdgeSupplier != null
-                            ? EdgeToEdgeControllerFactory.createForView(mSnackbarView)
-                            : null;
-        }
+        // Add bottom margin to extend the snackbar view into the bottom window inset. This
+        // margin has to be applied to the snackbar view itself to avoid weird visual clipping
+        // in its dismissal animation.
+        FrameLayout.LayoutParams lp = getLayoutParams();
+        int bottomInsetPx = edgeToEdgeSupplier != null ? edgeToEdgeSupplier.getBottomInsetPx() : 0;
+        lp.bottomMargin = lp.bottomMargin + bottomInsetPx;
+        mContainerView.setLayoutParams(lp);
+        // Set a max width of 480dp for both mobile and tablet.
+        mMaxWidth = mParent.getResources().getDimensionPixelSize(R.dimen.snackbar_width_max);
+        mSnackbarMargin =
+                mParent.getResources().getDimensionPixelSize(R.dimen.snackbar_floating_margin);
         updateInternal(snackbar, false);
     }
 
@@ -206,14 +167,6 @@ public class SnackbarView implements InsetObserver.WindowInsetObserver {
                         startAnimatorOnSurfaceView(animator);
                     }
                 });
-
-        if (!SnackbarManager.isFloatingSnackbarEnabled()) {
-            // We do not use mEdgeToEdgePadAdjuster if FloatingSnackbar is enabled.
-            if (mEdgeToEdgeSupplier != null) {
-                assumeNonNull(mEdgeToEdgePadAdjuster);
-                mEdgeToEdgeSupplier.registerAdjuster(mEdgeToEdgePadAdjuster);
-            }
-        }
     }
 
     public void dismiss() {
@@ -231,13 +184,6 @@ public class SnackbarView implements InsetObserver.WindowInsetObserver {
                     public void onAnimationEnd(Animator animation) {
                         mRootContentView.removeOnLayoutChangeListener(mLayoutListener);
                         mParent.removeView(mContainerView);
-
-                        // Remove the pad adjuster after the animation to avoid the view
-                        // changes its size before animation ends.
-                        if (mEdgeToEdgeSupplier != null && mEdgeToEdgePadAdjuster != null) {
-                            mEdgeToEdgePadAdjuster.destroy();
-                            mEdgeToEdgeSupplier.unregisterAdjuster(mEdgeToEdgePadAdjuster);
-                        }
                     }
                 });
         startAnimatorOnSurfaceView(moveAnimator);
@@ -257,26 +203,8 @@ public class SnackbarView implements InsetObserver.WindowInsetObserver {
             int prevWidth = lp.width;
             int prevGravity = lp.gravity;
 
-            if (SnackbarManager.isFloatingSnackbarEnabled()) {
-                // If floating snackbar is enabled, set a max width of 480dp for both mobile and
-                // tablet.
-                int maxWidth =
-                        mParent.getResources().getDimensionPixelSize(R.dimen.snackbar_width_max);
-                int snackbarMargin =
-                        mParent.getResources()
-                                .getDimensionPixelSize(R.dimen.snackbar_floating_margin);
-                lp.width = Math.min(maxWidth, mParent.getWidth() - 2 * snackbarMargin);
-                lp.gravity = Gravity.CENTER_HORIZONTAL | Gravity.BOTTOM;
-            } else if (mIsTablet) {
-                // Floating Snackbar disabled && mIsTablet.
-                int margin =
-                        mParent.getResources()
-                                .getDimensionPixelSize(R.dimen.snackbar_margin_tablet);
-                int width =
-                        mParent.getResources().getDimensionPixelSize(R.dimen.snackbar_width_tablet);
-                lp.width = Math.min(width, mParent.getWidth() - 2 * margin);
-                lp.gravity = Gravity.CENTER_HORIZONTAL | Gravity.BOTTOM;
-            }
+            lp.width = Math.min(mMaxWidth, mParent.getWidth() - 2 * mSnackbarMargin);
+            lp.gravity = Gravity.CENTER_HORIZONTAL | Gravity.BOTTOM;
             if (prevWidth != lp.width || prevGravity != lp.gravity) {
                 mContainerView.setLayoutParams(lp);
             }
@@ -364,11 +292,7 @@ public class SnackbarView implements InsetObserver.WindowInsetObserver {
             return snackbar.getBackgroundColor();
         }
 
-        if (SnackbarManager.isFloatingSnackbarEnabled()) {
-            return SemanticColorUtils.getFloatingSnackbarBackgroundColor(view.getContext());
-        }
-
-        return SemanticColorUtils.getSnackbarBackgroundColor(view.getContext());
+        return SemanticColorUtils.getFloatingSnackbarBackgroundColor(view.getContext());
     }
 
     public @ColorInt int getBackgroundColor() {
@@ -409,26 +333,11 @@ public class SnackbarView implements InsetObserver.WindowInsetObserver {
 
         mBackgroundColor = calculateBackgroundColor(mContainerView, snackbar);
 
-        if (SnackbarManager.isFloatingSnackbarEnabled()) {
-            // Round the corners for snackbars in both tablets and non-tablets.
-            mSnackbarView.setBackgroundResource(R.drawable.snackbar_background);
-            GradientDrawable backgroundDrawable =
-                    (GradientDrawable) mSnackbarView.getBackground().mutate();
-            backgroundDrawable.setColor(mBackgroundColor);
-        } else if (mIsTablet) {
-            // isFloatingSnackbarEnabled == false, mIsTablet == true
-            // On tablet, snackbars have rounded corners.
-            mSnackbarView.setBackgroundResource(R.drawable.snackbar_background_tablet);
-            GradientDrawable backgroundDrawable =
-                    (GradientDrawable) mSnackbarView.getBackground().mutate();
-            backgroundDrawable.setColor(mBackgroundColor);
-
-            mContainerView.findViewById(R.id.snackbar_shadow_left).setVisibility(View.VISIBLE);
-            mContainerView.findViewById(R.id.snackbar_shadow_right).setVisibility(View.VISIBLE);
-        } else {
-            // isFloatingSnackbarEnabled == false, mIsTablet == false
-            mSnackbarView.setBackgroundColor(mBackgroundColor);
-        }
+        // Round the corners for snackbars in both tablets and non-tablets.
+        mSnackbarView.setBackgroundResource(R.drawable.snackbar_background);
+        GradientDrawable backgroundDrawable =
+                (GradientDrawable) mSnackbarView.getBackground().mutate();
+        backgroundDrawable.setColor(mBackgroundColor);
 
         if (snackbar.getActionText() != null) {
             mActionButtonView.setVisibility(View.VISIBLE);
@@ -492,9 +401,5 @@ public class SnackbarView implements InsetObserver.WindowInsetObserver {
 
     public ViewGroup getViewForTesting() {
         return mSnackbarView;
-    }
-
-    public @Nullable EdgeToEdgePadAdjuster getEdgeToEdgePadAdjusterForTesting() {
-        return mEdgeToEdgePadAdjuster;
     }
 }

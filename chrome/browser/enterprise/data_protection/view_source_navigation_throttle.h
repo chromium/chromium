@@ -10,6 +10,8 @@
 #include "components/safe_browsing/core/browser/realtime/url_lookup_service_base.h"
 #include "content/public/browser/navigation_throttle.h"
 
+class Profile;
+
 namespace enterprise_data_protection {
 
 // This NavigationThrottle is responsible for checking `view-source:`
@@ -61,6 +63,7 @@ class ViewSourceNavigationThrottle : public content::NavigationThrottle {
   base::WeakPtr<safe_browsing::RealTimeUrlLookupServiceBase>
       url_lookup_service_ = nullptr;
   raw_ptr<safe_browsing::SafeBrowsingUIManager> manager_;
+  raw_ptr<Profile> profile_;
 
   base::WeakPtrFactory<ViewSourceNavigationThrottle> weak_factory_{this};
 };

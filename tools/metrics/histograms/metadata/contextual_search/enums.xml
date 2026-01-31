@@ -46,6 +46,15 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//components/contextual_search/contextual_search_types.h:AimToolState) -->
 
+<!-- LINT.IfChange(ContextualSearchErrorPage) -->
+
+<enum name="ContextualSearchErrorPage">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="Page context not eligible"/>
+</enum>
+
+<!-- LINT.ThenChange(//components/contextual_search/contextual_search_types.h:ContextualSearchErrorPage) -->
+
 <!-- LINT.IfChange(FileValidationError) -->
 
 <enum name="ContextualSearchFileValidationError">

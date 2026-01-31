@@ -48,6 +48,7 @@
 <translation id="2761536921376153655">स्क्यानको प्रकार</translation>
 <translation id="28682968802727151">प्रिभ्यू मिरर गर्नुहोस्</translation>
 <translation id="2879583609344924966"><ph name="CAMERA" /> जोडिएको छ।</translation>
+<translation id="3063987824612038785">क्यामेरामा भएका सबै फाइलहरू Google Drive मा सेभ हुने छन्</translation>
 <translation id="3067436040345934772">दायाँतिर प्यान गर्नुहोस्</translation>
 <translation id="3081586908890909590">भिडियो रेकर्ड गर्ने मोड प्रयोग गर्नुहोस्</translation>
 <translation id="3091480460059548935">प्रिभ्यूमा भएको टेक्स्ट पत्ता लगाउने सुविधा</translation>
@@ -67,6 +68,7 @@
 <translation id="3642192109456033823">भिडियो प्रोसेस गरिँदै छ…</translation>
 <translation id="3789724198583203151">घडी घुम्ने दिशाको विपरीत दिशामा ९० डिग्री घुमाउनुहोस्</translation>
 <translation id="3810838688059735925">भिडियो</translation>
+<translation id="386366972082231038">क्यामेरामा भएका सबै फाइलहरू OneDrive मा सेभ हुने छन्</translation>
 <translation id="4060608699153044055">डिभाइसको भण्डारणमा खाली ठाउँ कम भएकाले तपाईं रेकर्ड गर्न सक्नुहुन्न। तपाईं रेकर्डिङ सुरु गर्न चाहनुहुन्छ भने तपाईंले आफ्नो डिभाइसको भण्डारणमा ठाउँ खाली गर्नु पर्ने हुन्छ।</translation>
 <translation id="4061162772429051350"><ph name="MAGAPIXELS_AMOUNT" /> मेगापिक्सेल</translation>
 <translation id="4118525110028899586">रेकर्डिङ पज गर्नुहोस्</translation>
@@ -100,6 +102,7 @@
 <translation id="5634947914995388399">यो डायलग एक्स्पान्ड गर्नुहोस् र स्क्यान गर्न छाड्नुहोस्</translation>
 <translation id="5662366948659129155">पेज <ph name="COUNT" /> स्क्यान गरिँदै छ</translation>
 <translation id="5671277269877808209">वर्गाकार</translation>
+<translation id="5725797473946373607">यो डायलग अर्को पटक नदेखाउनुहोस्</translation>
 <translation id="574392208103952083">मध्यम</translation>
 <translation id="5746169159649715125">पीडीएपको रूपमा बचत गर्नुहोस्</translation>
 <translation id="5753488212459587150">विशेषज्ञ मोड अन गर्नुहोस्</translation>
@@ -156,6 +159,7 @@
 <translation id="7983668134180549431">टेक्स्ट भेट्टियो।</translation>
 <translation id="8079255378695216066">रेकर्डिङ सुरु गर्न मिल्दैन</translation>
 <translation id="8120146556401698679">प्यान गर्नुहोस्, ढल्काउनुहोस्, जुम गर्नुहोस्</translation>
+<translation id="8127459436205030819">तपाईंका एड्मिन तपाईंका फाइलहरू हेर्न सक्नु हुने छ</translation>
 <translation id="8131740175452115882">निश्चित</translation>
 <translation id="8145038249676204903">तस्बिर खिच्ने मोड प्रयोग गर्नुहोस्</translation>
 <translation id="8167081290930651932">फोटोका रूपमा सेभ गर्नुहोस्</translation>
@@ -165,6 +169,7 @@
 <translation id="8609951387004618906"><ph name="URL" /> खोल्नुहोस्</translation>
 <translation id="8629662593426079630">३६० पिक्सेल</translation>
 <translation id="8711011893539266636">माइक्रोफोनका हकमा म्युट गर्ने सुविधासम्बन्धी सेटिङ टगल गर्नुहोस्। म्युट गर्ने सुविधा अन छ</translation>
+<translation id="8712637175834984815">भयो</translation>
 <translation id="8730621377337864115">गरियो</translation>
 <translation id="8732462232047530626">मेटाडेटाको पूर्वावलोकन</translation>
 <translation id="874854738381978209">Wi-Fi नेटवर्क पत्ता लाग्यो।</translation>

@@ -45,12 +45,13 @@ source_set("browser_tests") {
       "access_code_cast/access_code_cast_browsertest.cc",
       "actor_overlay/actor_overlay_browsertest.cc",
       "bookmarks/bookmarks_browsertest.cc",
-      "chrome_timeticks_browsertest.cc",
-      "commerce/product_specifications/product_specifications_browsertest.cc",
+      "chrome_apis/chrome_histograms_browsertest.cc",
+      "chrome_apis/chrome_timeticks_browsertest.cc",
       "contextual_tasks/contextual_tasks_browsertest.cc",
       "cr_components/cr_components_browsertest.cc",
       "css/css_browsertest.cc",
       "data_sharing/data_sharing_browsertest.cc",
+      "device_log/device_log_ui_browsertest.cc",
       "downloads/downloads_browsertest.cc",
       "engagement/site_engagement_browsertest.cc",
       "feedback/feedback_browsertest.cc",
@@ -137,7 +138,7 @@ source_set("browser_tests") {
     sources += [ "certificate_manager/certificate_manager_browsertest.cc" ]
   }
 
-  if (enable_glic) {
+  if (enable_glic && !is_android) {
     sources += [ "glic/glic_browsertest.cc" ]
     deps += [ "//chrome/browser/glic/test_support" ]
   }
@@ -182,7 +183,6 @@ source_set("browser_tests") {
     }
   } else if (!is_android) {
     sources += [
-      "inline_login/inline_login_browsertest.cc",
       "signin/profile_picker_browsertest.cc",
       "signin/signin_browsertest.cc",
     ]
@@ -193,12 +193,20 @@ source_set("browser_tests") {
     }
   }
 
-  if (enable_dice_support || is_chromeos) {
+  if (is_win || is_chromeos) {
     sources += [ "gaia_auth_host/gaia_auth_host_browsertest.cc" ]
   }
 
+  if (is_win) {
+    sources += [ "inline_login/inline_login_browsertest.cc" ]
+  }
+
   if (is_win || is_mac || is_linux || is_chromeos) {
-    sources += [ "discards/discards_browsertest.cc" ]
+    sources += [
+      "discards/discards_browsertest.cc",
+      "skills/skills_browsertest.cc",
+    ]
+    deps += [ "//components/skills:features" ]
   }
 
   if (is_win || is_mac || is_linux) {
@@ -303,6 +311,12 @@ source_set("browser_tests") {
     deps += [
       "//chrome/browser/ui/toasts",
       "//chrome/browser/ui/webui/signin:signin_utils",
+    ]
+  }
+
+  if (is_mac) {
+    sources += [
+      "unexportable_keys_internals/unexportable_keys_internals_browsertest.cc",
     ]
   }
 }
@@ -456,6 +470,7 @@ webui_ts_library("build_ts") {
     "mock_timer_test.ts",
     "test_browser_proxy.ts",
     "test_mock.ts",
+    "test_mock_test.ts",
     "test_plural_string_proxy.ts",
     "test_util.ts",
     "test_open_window_proxy.ts",
@@ -463,7 +478,6 @@ webui_ts_library("build_ts") {
 
   if (!is_android) {
     in_files += [
-      "chrome_timeticks_test.ts",
       "fake_settings_private.ts",
       "metrics_test_support.ts",
       "mocked_metrics_reporter.ts",
@@ -486,7 +500,6 @@ webui_ts_library("build_ts") {
     definitions += [
       "//tools/typescript/definitions/chrome_event.d.ts",
       "//tools/typescript/definitions/chrome_send.d.ts",
-      "//tools/typescript/definitions/chrome_timeticks.d.ts",
       "//tools/typescript/definitions/metrics_private.d.ts",
       "//tools/typescript/definitions/settings_private.d.ts",
     ]
@@ -544,7 +557,7 @@ generate_grd("build_grd") {
       "access_code_cast:build_grdp",
       "actor_overlay:build_grdp",
       "bookmarks:build_grdp",
-      "commerce/product_specifications:build_grdp",
+      "chrome_apis:build_grdp",
       "contextual_tasks:build_grdp",
       "cr_components:build_grdp",
       "cr_components/composebox:build_grdp",
@@ -556,6 +569,7 @@ generate_grd("build_grd") {
       "cr_components/theme_color_picker:build_grdp",
       "css:build_grdp",
       "data_sharing:build_grdp",
+      "device_log:build_grdp",
       "discards:build_grdp",
       "downloads:build_grdp",
       "engagement:build_grdp",
@@ -596,10 +610,10 @@ generate_grd("build_grd") {
     grdp_files += [
       "$target_gen_dir/about_sys/resources.grdp",
       "$target_gen_dir/access_code_cast/resources.grdp",
+      "$target_gen_dir/chrome_apis/resources.grdp",
       "$target_gen_dir/actor_overlay/resources.grdp",
       "$target_gen_dir/webview/resources.grdp",
       "$target_gen_dir/bookmarks/resources.grdp",
-      "$target_gen_dir/commerce/product_specifications/resources.grdp",
       "$target_gen_dir/contextual_tasks/resources.grdp",
       "$target_gen_dir/cr_components/resources.grdp",
       "$target_gen_dir/cr_components/cr_shortcut_input/resources.grdp",
@@ -611,6 +625,7 @@ generate_grd("build_grd") {
       "$target_gen_dir/cr_components/theme_color_picker/resources.grdp",
       "$target_gen_dir/css/resources.grdp",
       "$target_gen_dir/data_sharing/resources.grdp",
+      "$target_gen_dir/device_log/resources.grdp",
       "$target_gen_dir/discards/resources.grdp",
       "$target_gen_dir/downloads/resources.grdp",
       "$target_gen_dir/engagement/resources.grdp",
@@ -707,7 +722,12 @@ generate_grd("build_grd") {
     ]
   }
 
-  if (enable_dice_support || is_chromeos) {
+  if (is_win || is_mac || is_linux || is_chromeos) {
+    deps += [ "skills:build_grdp" ]
+    grdp_files += [ "$target_gen_dir/skills/resources.grdp" ]
+  }
+
+  if (is_win || is_chromeos) {
     deps += [ "gaia_auth_host:build_grdp" ]
     grdp_files += [ "$target_gen_dir/gaia_auth_host/resources.grdp" ]
   }
@@ -800,12 +820,10 @@ generate_grd("build_grd") {
     ]
   } else if (!is_android) {
     deps += [
-      "inline_login:build_grdp",
       "intro:build_grdp",
       "signin:build_grdp",
     ]
     grdp_files += [
-      "$target_gen_dir/inline_login/resources.grdp",
       "$target_gen_dir/intro/resources.grdp",
       "$target_gen_dir/signin/resources.grdp",
     ]
@@ -817,9 +835,21 @@ generate_grd("build_grd") {
     }
   }
 
+  if (is_win) {
+    deps += [ "inline_login:build_grdp" ]
+
+    grdp_files += [ "$target_gen_dir/inline_login/resources.grdp" ]
+  }
+
   if (enable_compose) {
     deps += [ "compose:build_grdp" ]
     grdp_files += [ "$target_gen_dir/compose/resources.grdp" ]
+  }
+
+  if (is_mac) {
+    deps += [ "unexportable_keys_internals:build_grdp" ]
+    grdp_files +=
+        [ "$target_gen_dir/unexportable_keys_internals/resources.grdp" ]
   }
 
   manifest_files =

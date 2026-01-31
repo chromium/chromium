@@ -27,7 +27,6 @@ source_set("utils") {
     "//ios/chrome/browser/push_notification/model:push_notification_client",
     "//ios/chrome/browser/push_notification/model:push_notification_client_id",
     "//ios/chrome/browser/push_notification/model:push_notification_settings_util_header",
-    "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/shared/public/features:system_flags",
     "//ui/base",
   ]

@@ -4,8 +4,9 @@
 
 #include "components/safe_browsing/core/browser/hashprefix_realtime/hash_realtime_service.h"
 
+#include <algorithm>
+
 #include "base/base64url.h"
-#include "base/containers/contains.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/escape.h"
@@ -49,7 +50,7 @@ SBThreatType MapFullHashDetailToSbThreatType(
   // Note that for hash-prefix real-time checks, there is no need to use
   // the FRAME_ONLY enum in the attributes field, because all the checks are for
   // frame URLs.
-  if (base::Contains(detail.attributes(), V5::ThreatAttribute::CANARY)) {
+  if (std::ranges::contains(detail.attributes(), V5::ThreatAttribute::CANARY)) {
     return SBThreatType::SB_THREAT_TYPE_SUSPICIOUS_SITE;
   }
   switch (detail.threat_type()) {
@@ -203,7 +204,7 @@ int HashRealTimeService::GetThreatSeverity(
     const V5::FullHash::FullHashDetail& detail) {
   // These values should be consistent with the ones in GetThreatSeverity in
   // v4_local_database_manager.cc.
-  if (base::Contains(detail.attributes(), V5::ThreatAttribute::CANARY)) {
+  if (std::ranges::contains(detail.attributes(), V5::ThreatAttribute::CANARY)) {
     // ThreatAttribute::CANARY should be equivalent to SUSPICIOUS.
     return 4;
   }
@@ -496,8 +497,7 @@ void HashRealTimeService::RemoveUnmatchedFullHashes(
       std::remove_if(
           mutable_full_hashes->begin(), mutable_full_hashes->end(),
           [requested_hash_prefixes_set](const V5::FullHash& full_hash) {
-            return !base::Contains(
-                requested_hash_prefixes_set,
+            return !requested_hash_prefixes_set.contains(
                 hash_realtime_utils::GetHashPrefix(full_hash.full_hash()));
           }),
       mutable_full_hashes->end());

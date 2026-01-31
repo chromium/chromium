@@ -135,6 +135,18 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(/components/sync_bookmarks/bookmark_model_merger.cc:BookmarksGUIDDuplicates) -->
 
+<!-- LINT.IfChange(BookmarksLimitExceededHelpClickedSource) -->
+
+<enum name="BookmarksLimitExceededHelpClickedSource">
+  <int value="0" label="Settings"/>
+  <int value="1" label="Sync Error Message"/>
+  <int value="2" label="Profile Menu"/>
+  <int value="3" label="Identity Error Info Pill"/>
+  <int value="4" label="Account Menu"/>
+</enum>
+
+<!-- LINT.ThenChange(/components/sync/service/sync_service.h:BookmarksLimitExceededHelpClickedSource) -->
+
 <enum name="BooleanIsFirstSync">
   <int value="0" label="Not first sync"/>
   <int value="1" label="First sync"/>
@@ -166,7 +178,7 @@ chromium-metrics-reviews@google.com.
   </int>
 </enum>
 
-<!-- LINT.ThenChange(/components/sync_preferences/cross_device_pref_tracker/cross_device_pref_tracker.h:CrossDevicePrefTrackerAvailabilityAtQuery) -->
+<!-- LINT.ThenChange(/components/sync_preferences/cross_device_pref_tracker/cross_device_pref_tracker.h:ServiceStatus) -->
 
 <!-- LINT.IfChange(InvalidBookmarkSpecificsError) -->
 
@@ -398,6 +410,7 @@ chromium-metrics-reviews@google.com.
   <int value="109" label="ShowAiModeOmniboxButton"/>
   <int value="110" label="AutofillAiSyncedOptInStatus"/>
   <int value="111" label="iOSPromoReminder"/>
+  <int value="112" label="AutofillAiReauthBeforeViewingSensitiveData"/>
 <!-- LINT.ThenChange(/components/sync_preferences/common_syncable_prefs_database.cc:CommonSyncablePref)-->
 
 <!-- LINT.IfChange(ChromeSyncablePref) -->
@@ -807,6 +820,7 @@ chromium-metrics-reviews@google.com.
   <int value="100368" label="ClassManagementToolsKioskReceiverCodes"/>
   <int value="100369" label="PinContextualTaskButton"/>
   <int value="100370" label="AccessibilityReadAnythingOmniboxChipIgnoredCount"/>
+  <int value="100371" label="AccessibilityReadAnythingLineFocus"/>
 <!-- LINT.ThenChange(/chrome/browser/sync/prefs/chrome_syncable_prefs_database.cc:ChromeSyncablePref)-->
 
 <!-- LINT.IfChange(IosSyncablePref) -->
@@ -1014,9 +1028,119 @@ chromium-metrics-reviews@google.com.
   <int value="73" label="AI Thread"/>
   <int value="74" label="Contextual Task"/>
   <int value="75" label="Autofill Valuable Metadata"/>
+  <int value="76" label="Skill"/>
+  <int value="77" label="Gemini Thread"/>
 </enum>
 
 <!-- LINT.ThenChange(/components/sync/base/data_type.h:SyncDataTypes) -->
+
+<!-- LINT.IfChange(SyncDeviceStatisticsHistoryOptInSummary) -->
+
+<enum name="SyncDeviceStatisticsHistoryOptInSummary">
+  <int value="0"
+      label="Primary account is opted in to history on this device; no other
+             devices exist"/>
+  <int value="1"
+      label="Primary account is NOT opted in to history on this device; no
+             other devices exist"/>
+  <int value="2"
+      label="Primary account is opted in to history on both this device and
+             at least one other device"/>
+  <int value="3"
+      label="Primary account is opted in to history on this device, but not
+             on any other devices"/>
+  <int value="4"
+      label="Primary account is NOT opted in to history on this device, but
+             it IS opted in on at least one other device"/>
+  <int value="5"
+      label="Primary account is NOT opted in to history on this device, nor
+             on any other devices"/>
+</enum>
+
+<!-- LINT.ThenChange(/components/sync/service/device_statistics_tracker.h:SyncDeviceStatisticsHistoryOptInSummary) -->
+
+<!-- LINT.IfChange(SyncDeviceStatisticsMultiDeviceReadiness) -->
+
+<enum name="SyncDeviceStatisticsMultiDeviceReadiness">
+  <int value="0" label="Signed out (no primary account)"/>
+  <int value="1"
+      label="Single-device (primary account does not have other devices)"/>
+  <int value="2"
+      label="Multi-device without history (primary account has other devices,
+             but is missing history opt-in across this and other devices)"/>
+  <int value="3"
+      label="Multi-device with history (primary account has other devices,
+             and both the current device and at least one other device have
+             history opt-in)"/>
+</enum>
+
+<!-- LINT.ThenChange(/components/sync/service/device_statistics_tracker.h:SyncDeviceStatisticsMultiDeviceReadiness) -->
+
+<!-- LINT.IfChange(SyncDeviceStatisticsOutcome) -->
+
+<enum name="SyncDeviceStatisticsOutcome">
+  <int value="0"
+      label="Primary account has other devices; no non-primary accounts"/>
+  <int value="1"
+      label="Primary account does not have other devices; no non-primary
+             accounts"/>
+  <int value="2"
+      label="Primary account has other devices; at least one non-primary
+             account has other devices"/>
+  <int value="3"
+      label="Primary account has other devices; at least one non-primary
+             account exists, but none of them have any other devices"/>
+  <int value="4"
+      label="Primary account does not have other devices; at least one
+             non-primary account has other devices"/>
+  <int value="5"
+      label="Primary account does not have other devices; at least one
+             non-primary account exists, but none of them have any other
+             devices"/>
+  <int value="6"
+      label="Primary account does not exist; at least one non-primary account
+             has other devices"/>
+  <int value="7"
+      label="Primary account does not exist; at least one non-primary account
+             exists, but none of them have any other devices"/>
+  <int value="8" label="No accounts"/>
+</enum>
+
+<!-- LINT.ThenChange(/components/sync/service/device_statistics_tracker.h:SyncDeviceStatisticsOutcome) -->
+
+<!-- LINT.IfChange(SyncDeviceStatisticsPlatform) -->
+
+<enum name="SyncDeviceStatisticsPlatform">
+  <int value="0" label="Windows"/>
+  <int value="1" label="Mac"/>
+  <int value="2" label="Linux"/>
+  <int value="3" label="ChromeOS"/>
+  <int value="4" label="Android"/>
+  <int value="5" label="iOS"/>
+</enum>
+
+<!-- LINT.ThenChange(/components/sync/service/device_statistics_tracker.h:SyncDeviceStatisticsPlatform) -->
+
+<!-- LINT.IfChange(SyncDeviceStatisticsSuccess) -->
+
+<enum name="SyncDeviceStatisticsSuccess">
+  <int value="0" label="Success: All requests succeeded"/>
+  <int value="1"
+      label="Success: Request for primary account succeeded, but at least one
+             non-primary failed"/>
+  <int value="2"
+      label="Failure: Request for primary account failed, but at least one
+             non-primary succeeded"/>
+  <int value="3" label="Failure: All requests failed"/>
+  <int value="4"
+      label="Failure: The primary account was changed (or removed) while
+             requests were ongoing"/>
+  <int value="5"
+      label="Success: Primary account does not exist; some but not all
+             non-primary succeeded"/>
+</enum>
+
+<!-- LINT.ThenChange(/components/sync/service/device_statistics_tracker.h:SyncDeviceStatisticsSuccess) -->
 
 <!-- LINT.IfChange(SyncEntityChange) -->
 
@@ -1160,6 +1284,7 @@ chromium-metrics-reviews@google.com.
   <int value="12" label="GU_TRIGGER"/>
   <int value="13" label="(deprecated) RETRY"/>
   <int value="14" label="PROGRAMMATIC"/>
+  <int value="15" label="DEVICE_STATISTICS_METRICS"/>
 </enum>
 
 <!-- LINT.ThenChange(/components/sync/protocol/sync_enums.proto:SyncGetUpdatesOrigin) -->
@@ -1565,6 +1690,18 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(/components/sync/base/data_type_histogram.h:SyncToSigninMigrationReadingListStep) -->
 
+<!-- LINT.IfChange(SyncToSigninMigrationType) -->
+
+<enum name="SyncToSigninMigrationType">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="Migrated"/>
+  <int value="2" label="Force migrated"/>
+  <int value="3" label="Not migrated yet"/>
+  <int value="4" label="Migration not needed"/>
+</enum>
+
+<!-- LINT.ThenChange(/components/browser_sync/sync_to_signin_migration.cc:SyncToSigninMigrationType) -->
+
 <!-- LINT.IfChange(SyncUserEventType) -->
 
 <enum name="SyncUserEventType">
@@ -1633,6 +1770,8 @@ chromium-metrics-reviews@google.com.
   <int value="5" label="Account menu"/>
   <int value="6" label="Password Manager Settings"/>
   <int value="7" label="Password Manager keyboard accessory"/>
+  <int value="8" label="Passkey Unlock Profile Menu"/>
+  <int value="9" label="Passkey Authenticator Window"/>
 </enum>
 
 <!-- LINT.ThenChange(/components/trusted_vault/trusted_vault_client.h:TrustedVaultUserActionTrigger) -->

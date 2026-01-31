@@ -50,6 +50,7 @@
 #include "content/public/common/sandboxed_process_launcher_delegate.h"
 #include "mojo/public/cpp/bindings/scoped_message_error_crash_key.h"
 #include "mojo/public/cpp/system/platform_handle.h"
+#include "services/network/public/mojom/network_service.mojom.h"
 #include "services/tracing/public/cpp/trace_startup.h"
 #include "services/tracing/public/cpp/trace_startup_config.h"
 
@@ -682,6 +683,9 @@ void BrowserChildProcessHostImpl::OnProcessLaunched() {
   child_process()->EnableSystemTracingService(
       system_tracing_service_->BindAndPassPendingRemote());
 #endif
+
+  memory_pressure_listener_registration_.emplace(
+      base::MemoryPressureListenerTag::kBrowserChildProcessHostImpl, this);
 }
 
 void BrowserChildProcessHostImpl::RegisterCoordinatorClient(
@@ -718,6 +722,21 @@ void BrowserChildProcessHostImpl::RegisterCoordinatorClient(
                   static_cast<ProcessType>(data_.process_type)),
               child_process_launcher_->GetProcess().Pid(),
               delegate_->GetServiceName()));
+}
+
+void BrowserChildProcessHostImpl::OnMemoryPressure(
+    base::MemoryPressureLevel memory_pressure_level) {
+  // Match the existing behavior of only sending the memory pressure level to
+  // select process types.
+  // TODO(pmonette): Enable for all child processes.
+#if BUILDFLAG(IS_ANDROID)
+  child_process()->OnMemoryPressure(memory_pressure_level);
+#else
+  if (data_.process_type == PROCESS_TYPE_GPU ||
+      delegate_->GetServiceName() == network::mojom::NetworkService::Name_) {
+    child_process()->OnMemoryPressure(memory_pressure_level);
+  }
+#endif
 }
 
 bool BrowserChildProcessHostImpl::IsProcessLaunched() const {

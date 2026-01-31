@@ -40,7 +40,10 @@ static_library("browser") {
 
 source_set("unit_tests") {
   testonly = true
-  sources = [ "partial_translate_manager_unittest.cc" ]
+  sources = [
+    "content_translate_driver_unittest.cc",
+    "partial_translate_manager_unittest.cc",
+  ]
 
   deps = [
     ":browser",

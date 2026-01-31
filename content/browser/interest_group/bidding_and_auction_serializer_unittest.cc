@@ -92,10 +92,7 @@ class BiddingAndAuctionSerializerTest : public testing::Test {
                               blink::features::
                                   kFledgeEnableSampleDebugReportOnCookieSetting,
                               features::kFledgeSendDebugReportCooldownsToBandA},
-        /*disabled_features=*/{
-            // We don't want CookieDeprecationFacilitatedTesting since it
-            // prevents coverage of KAnon code.
-            features::kCookieDeprecationFacilitatedTesting});
+        /*disabled_features=*/{});
   }
 
   void AddGroupsToSerializer(BiddingAndAuctionSerializer& serializer) {

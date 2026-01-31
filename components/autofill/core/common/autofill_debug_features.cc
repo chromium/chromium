@@ -66,6 +66,10 @@ BASE_FEATURE(kAutofillDisableSilentProfileUpdates,
 BASE_FEATURE(kAutofillDisableSuggestionStrikeDatabase,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// When enabled `ChromeAutofillClient` will always behave as if there is an
+// active `ActorTask`.
+BASE_FEATURE(kAutofillForceActorMode, base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enables logging the content of chrome://autofill-internals to the terminal.
 BASE_FEATURE(kAutofillLogToTerminal, base::FEATURE_DISABLED_BY_DEFAULT);
 

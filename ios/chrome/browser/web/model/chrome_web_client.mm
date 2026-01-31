@@ -40,7 +40,7 @@
 #import "components/webauthn/ios/features.h"
 #import "components/webauthn/ios/passkey_java_script_feature.h"
 #import "ios/chrome/browser/autofill/model/bottom_sheet/autofill_bottom_sheet_java_script_feature.h"
-#import "ios/chrome/browser/browser_container/model/edit_menu_tab_helper.h"
+#import "ios/chrome/browser/browser_content/model/edit_menu_tab_helper.h"
 #import "ios/chrome/browser/content_settings/model/host_content_settings_map_factory.h"
 #import "ios/chrome/browser/enterprise/connectors/ios_enterprise_interstitial.h"
 #import "ios/chrome/browser/enterprise/connectors/reporting/ios_reporting_event_router_factory.h"
@@ -259,7 +259,7 @@ NSString* GetSupervisedUserErrorPageHTML(web::WebState* web_state,
   std::string error_page_content =
       supervised_user::SupervisedUserInterstitial::GetHTMLContentsWithApprovals(
           SupervisedUserServiceFactory::GetForProfile(profile),
-          error_info->filtering_behavior_reason(),
+          error_info->filtering_result().reason,
           container->IsRemoteApprovalPendingForUrl(url),
           error_info->is_main_frame(),
           GetApplicationContext()->GetApplicationLocaleStorage()->Get(),
@@ -410,13 +410,9 @@ std::vector<web::JavaScriptFeature*> ChromeWebClient::GetJavaScriptFeatures(
 
   features.push_back(autofill::AutofillJavaScriptFeature::GetInstance());
   features.push_back(autofill::FormHandlersJavaScriptFeature::GetInstance());
-
-  if (base::FeatureList::IsEnabled(kAutofillIsolatedWorldForJavascriptIos)) {
-    features.push_back(
-        autofill::ProgrammaticFormSubmissionHandlerJavaScriptFeature::
-            GetInstance());
-  }
-
+  features.push_back(
+      autofill::ProgrammaticFormSubmissionHandlerJavaScriptFeature::
+          GetInstance());
   features.push_back(
       autofill::SuggestionControllerJavaScriptFeature::GetInstance());
   features.push_back(AutofillBottomSheetJavaScriptFeature::GetInstance());

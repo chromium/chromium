@@ -40,11 +40,13 @@ import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.Callback;
+import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Features.DisableFeatures;
+import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.cc.input.BrowserControlsState;
 import org.chromium.chrome.R;
@@ -100,6 +102,7 @@ public class TabStripTransitionCoordinatorUnitTest {
     private final TabObscuringHandler mTabObscuringHandler = new TabObscuringHandler();
     private TestHandler mTestHandler;
     private TestDelegate mDelegate;
+    private OneshotSupplierImpl<TabStripTransitionDelegate> mDelegateSupplier;
     private int mReservedTopPadding;
 
     // Test variables
@@ -1003,6 +1006,73 @@ public class TabStripTransitionCoordinatorUnitTest {
                 mTestHandler.heightRequested);
     }
 
+    @Test
+    @EnableFeatures({
+        ChromeFeatureList.TOP_CONTROLS_REFACTOR,
+        ChromeFeatureList.TOP_CONTROLS_REFACTOR_V2,
+        ChromeFeatureList.LOCK_TOP_CONTROLS_ON_LARGE_TABLETS_V2
+                + ":adjust_tab_strip_on_startup/true"
+    })
+    @Config(qualifiers = "sw720dp")
+    public void adjustOnStartup_OnDesktopWindowUpdate_Wide() {
+        // Deliberately having the resource adapter no-op to test startup flow.
+        doNothing().when(mViewResourceAdapter).triggerBitmapCapture();
+
+        // Set up the coordinator. Launching Chrome in DW mode, verify that the coordinator request
+        // goes through without waiting for the resource adapter.
+        setUpTabStripTransitionCoordinator(
+                true, LARGE_NORMAL_WINDOW_WIDTH, /* initDelegate= */ false);
+        Assert.assertEquals(
+                "Height request should go through without waiting for the capture.",
+                TEST_TAB_STRIP_HEIGHT + mReservedTopPadding,
+                mTestHandler.heightRequested);
+        Assert.assertFalse(
+                "Height request should go through without waiting for the capture.",
+                mTestHandler.applyScrimOverlay);
+    }
+
+    @Test
+    @EnableFeatures({
+        ChromeFeatureList.TOP_CONTROLS_REFACTOR,
+        ChromeFeatureList.TOP_CONTROLS_REFACTOR_V2,
+        ChromeFeatureList.LOCK_TOP_CONTROLS_ON_LARGE_TABLETS_V2
+                + ":adjust_tab_strip_on_startup/false"
+    })
+    public void adjustOnStartup_OnDesktopWindowUpdate_FeatureDisabled() {
+        // Deliberately having the resource adapter no-op to test startup flow.
+        doNothing().when(mViewResourceAdapter).triggerBitmapCapture();
+
+        // Set up the coordinator. Launching Chrome in DW mode, verify that the coordinator request
+        // does not go through.
+        setUpTabStripTransitionCoordinator(
+                true, LARGE_NORMAL_WINDOW_WIDTH, /* initDelegate= */ false);
+        Assert.assertEquals(
+                "Height request should not go through when feature disabled.",
+                NOTHING_OBSERVED,
+                mTestHandler.heightRequested);
+    }
+
+    @Test
+    @EnableFeatures({
+        ChromeFeatureList.TOP_CONTROLS_REFACTOR,
+        ChromeFeatureList.TOP_CONTROLS_REFACTOR_V2,
+        ChromeFeatureList.LOCK_TOP_CONTROLS_ON_LARGE_TABLETS_V2
+                + ":adjust_tab_strip_on_startup/true"
+    })
+    public void adjustOnStartup_NotInDesktopWindow() {
+        // Deliberately having the resource adapter no-op to test startup flow.
+        doNothing().when(mViewResourceAdapter).triggerBitmapCapture();
+
+        // Set up the coordinator. Launching Chrome in non-DW mode, verify that the coordinator
+        // request does not go through.
+        setUpTabStripTransitionCoordinator(
+                false, LARGE_NORMAL_WINDOW_WIDTH, /* initDelegate= */ false);
+        Assert.assertEquals(
+                "Height request should not go through when not in desktop windowing mode.",
+                NOTHING_OBSERVED,
+                mTestHandler.heightRequested);
+    }
+
     private void doTestDesktopWindowModeChanged(
             boolean enterDesktopWindow,
             boolean smallSourceWindow,
@@ -1093,6 +1163,12 @@ public class TabStripTransitionCoordinatorUnitTest {
     }
 
     private void setUpTabStripTransitionCoordinator(boolean isInDesktopWindow, int windowWidth) {
+        setUpTabStripTransitionCoordinator(
+                isInDesktopWindow, windowWidth, /* initDelegate= */ true);
+    }
+
+    private void setUpTabStripTransitionCoordinator(
+            boolean isInDesktopWindow, int windowWidth, boolean initDelegate) {
         if (mDesktopWindowStateManager != null) {
             int stripHeight = TEST_TAB_STRIP_HEIGHT + (isInDesktopWindow ? mReservedTopPadding : 0);
             var appHeaderRect =
@@ -1102,6 +1178,10 @@ public class TabStripTransitionCoordinatorUnitTest {
         }
 
         mDelegate = new TestDelegate();
+        mDelegateSupplier = new OneshotSupplierImpl<>();
+        if (initDelegate) {
+            mDelegateSupplier.set(mDelegate);
+        }
         mTestHandler = new TestHandler();
         mCoordinator =
                 new TabStripTransitionCoordinator(
@@ -1110,7 +1190,7 @@ public class TabStripTransitionCoordinatorUnitTest {
                         TEST_TAB_STRIP_HEIGHT,
                         mTabObscuringHandler,
                         mDesktopWindowStateManager,
-                        mDelegate,
+                        mDelegateSupplier,
                         mTestHandler);
         ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
     }
@@ -1280,11 +1360,13 @@ public class TabStripTransitionCoordinatorUnitTest {
 
     static class TestHandler implements TabStripTransitionHandler {
         public int heightRequested = NOTHING_OBSERVED;
+        public boolean applyScrimOverlay;
 
         @Override
         public void onTransitionRequested(
                 int newHeight, boolean applyScrimOverlay, Runnable transitionStartedCallback) {
-            heightRequested = newHeight;
+            this.heightRequested = newHeight;
+            this.applyScrimOverlay = applyScrimOverlay;
         }
 
         void reset() {

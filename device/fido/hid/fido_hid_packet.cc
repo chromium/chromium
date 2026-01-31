@@ -7,7 +7,6 @@
 #include <algorithm>
 #include <utility>
 
-#include "base/containers/contains.h"
 #include "base/memory/ptr_util.h"
 #include "base/numerics/safe_conversions.h"
 
@@ -35,7 +34,7 @@ std::unique_ptr<FidoHidInitPacket> FidoHidInitPacket::CreateFromSerializedData(
   channel_id |= serialized[index++] & 0xff;
 
   auto command = static_cast<FidoHidDeviceCommand>(serialized[index++] & 0x7f);
-  if (!base::Contains(GetFidoHidDeviceCommandList(), command)) {
+  if (!std::ranges::contains(GetFidoHidDeviceCommandList(), command)) {
     return nullptr;
   }
 

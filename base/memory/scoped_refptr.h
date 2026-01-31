@@ -321,7 +321,7 @@ class TRIVIAL_ABI scoped_refptr {
   template <typename U>
   friend bool operator==(const scoped_refptr<T>& lhs,
                          const scoped_refptr<U>& rhs) {
-    return lhs.ptr_ == rhs.ptr_;
+    return lhs.ptr_ == rhs.get();
   }
 
   // This operator is an optimization to avoid implicitly constructing a
@@ -339,7 +339,7 @@ class TRIVIAL_ABI scoped_refptr {
   template <typename U>
   friend auto operator<=>(const scoped_refptr<T>& lhs,
                           const scoped_refptr<U>& rhs) {
-    return lhs.ptr_ <=> rhs.ptr_;
+    return lhs.ptr_ <=> rhs.get();
   }
 
   friend auto operator<=>(const scoped_refptr<T>& lhs, std::nullptr_t null) {

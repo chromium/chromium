@@ -407,6 +407,33 @@ public class ContentSettingsResources {
                         R.drawable.router_off_24,
                         R.string.website_settings_local_network_access_ask,
                         R.string.website_settings_local_network_access_block);
+
+            case ContentSettingsType.LOCAL_NETWORK:
+                return new ResourceItem(
+                        R.drawable.router_24,
+                        R.string.local_network_permission_title,
+                        ContentSetting.ASK,
+                        ContentSetting.BLOCK,
+                        R.string.website_settings_category_local_network_ask,
+                        R.string.website_settings_category_local_network_blocked,
+                        R.string.website_settings_category_local_network_a11y,
+                        R.drawable.router_off_24,
+                        R.string.website_settings_local_network_ask,
+                        R.string.website_settings_local_network_block);
+
+            case ContentSettingsType.LOOPBACK_NETWORK:
+                return new ResourceItem(
+                        R.drawable.ic_mobile_24dp,
+                        R.string.loopback_network_permission_title,
+                        ContentSetting.ASK,
+                        ContentSetting.BLOCK,
+                        R.string.website_settings_category_loopback_network_ask,
+                        R.string.website_settings_category_loopback_network_blocked,
+                        R.string.website_settings_category_loopback_network_a11y,
+                        R.drawable.ic_mobile_off_24dp,
+                        R.string.website_settings_loopback_network_ask,
+                        R.string.website_settings_loopback_network_block);
+
             case ContentSettingsType.MEDIASTREAM_CAMERA:
                 return new ResourceItem(
                                 R.drawable.ic_videocam_fill_24dp,
@@ -1031,13 +1058,6 @@ public class ContentSettingsResources {
         }
         assert false;
         return 0;
-    }
-
-    /** Returns the summary for the Tracking Protection setting to be displayed in site settings. */
-    public static int getTrackingProtectionListSummary(boolean blockAll) {
-        return blockAll
-                ? R.string.third_party_cookies_link_row_sub_label_disabled
-                : R.string.third_party_cookies_link_row_sub_label_limited;
     }
 
     /**

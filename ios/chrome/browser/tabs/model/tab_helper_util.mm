@@ -26,7 +26,7 @@
 #import "ios/chrome/browser/autofill/model/autofill_tab_helper.h"
 #import "ios/chrome/browser/autofill/model/bottom_sheet/autofill_bottom_sheet_tab_helper.h"
 #import "ios/chrome/browser/autofill/model/form_suggestion_tab_helper.h"
-#import "ios/chrome/browser/browser_container/model/edit_menu_tab_helper.h"
+#import "ios/chrome/browser/browser_content/model/edit_menu_tab_helper.h"
 #import "ios/chrome/browser/collaboration/model/data_sharing_tab_helper.h"
 #import "ios/chrome/browser/commerce/model/price_alert_util.h"
 #import "ios/chrome/browser/commerce/model/price_notifications/price_notifications_tab_helper.h"
@@ -75,8 +75,8 @@
 #import "ios/chrome/browser/optimization_guide/model/optimization_guide_validation_tab_helper.h"
 #import "ios/chrome/browser/overlays/model/public/overlay_request_queue.h"
 #import "ios/chrome/browser/overscroll_actions/model/overscroll_actions_tab_helper.h"
+#import "ios/chrome/browser/page_info/features/features.h"
 #import "ios/chrome/browser/page_info/model/about_this_site_tab_helper.h"
-#import "ios/chrome/browser/page_info/ui_bundled/features.h"
 #import "ios/chrome/browser/passwords/model/password_controller.h"
 #import "ios/chrome/browser/passwords/model/password_tab_helper.h"
 #import "ios/chrome/browser/passwords/model/well_known_change_password_tab_helper.h"
@@ -316,7 +316,7 @@ void AttachTabHelpers(web::WebState* web_state, TabHelperFilter filter_flags) {
       .WithFactory<DistillerServiceFactory>(profile);
 
   attacher.Create<security_interstitials::IOSBlockingPageTabHelper>();
-  attacher.Create<password_manager::WellKnownChangePasswordTabHelper>();
+  attacher.Create<WellKnownChangePasswordTabHelper>();
   attacher.Create<InvalidUrlTabHelper>();
 
   attacher.CreateWhen<InfobarOverlayRequestInserter>(
@@ -395,7 +395,7 @@ void AttachTabHelpers(web::WebState* web_state, TabHelperFilter filter_flags) {
   attacher.CreateWhen<AutofillTabHelper>(attacher.IsNotInTabHelperFilter());
 
   // Special case for use of GetOrCreateForWebState.
-  if (!attacher.IsForStandardNavigation()) {
+  if (attacher.IsForStandardNavigation()) {
     InfobarBadgeTabHelper::GetOrCreateForWebState(web_state);
   }
   // Needs to be created after `InfobarBadgeTabHelper`.
@@ -437,7 +437,7 @@ void AttachTabHelpers(web::WebState* web_state, TabHelperFilter filter_flags) {
 
   attacher
       .CreateDeferredWhen<ContextualPanelTabHelper>(
-          attacher.IsForStandardNavigation() && IsContextualPanelEnabled())
+          attacher.IsForStandardNavigation())
       .With([&]() {
         ContextualPanelModelService* model_service =
             ContextualPanelModelServiceFactory::GetForProfile(profile);

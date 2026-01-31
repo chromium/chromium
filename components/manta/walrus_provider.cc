@@ -66,14 +66,14 @@ void OnServerResponseOrErrorReceived(
     MantaStatus manta_status) {
   if (manta_response == nullptr || !manta_response->filtered_data_size()) {
     // Return the status if the text/images are not blocked.
-    std::move(callback).Run(base::Value::Dict(), std::move(manta_status));
+    std::move(callback).Run(base::DictValue(), std::move(manta_status));
     return;
   }
 
   CHECK(manta_response != nullptr);
 
   // Add extra information for the invalid inputs.
-  auto output_data = base::Value::Dict();
+  auto output_data = base::DictValue();
   for (const auto& filtered_data : manta_response->filtered_data()) {
     auto filtered_reason = filtered_data.reason();
     switch (filtered_reason) {
@@ -175,7 +175,7 @@ void WalrusProvider::Filter(const std::optional<std::string>& text_prompt,
                             MantaGenericCallback done_callback) {
   if (images.size() != image_types.size()) {
     std::move(done_callback)
-        .Run(base::Value::Dict(), {MantaStatusCode::kInvalidInput});
+        .Run(base::DictValue(), {MantaStatusCode::kInvalidInput});
     return;
   }
 
@@ -207,7 +207,7 @@ void WalrusProvider::Filter(const std::optional<std::string>& text_prompt,
 
   if (!request.input_data_size()) {
     std::move(done_callback)
-        .Run(base::Value::Dict(), {MantaStatusCode::kInvalidInput});
+        .Run(base::DictValue(), {MantaStatusCode::kInvalidInput});
     return;
   }
 

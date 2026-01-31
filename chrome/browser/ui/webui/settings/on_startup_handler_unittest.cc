@@ -78,7 +78,7 @@ class OnStartupHandlerTest : public testing::Test {
 };
 
 TEST_F(OnStartupHandlerTest, HandleGetNtpExtension) {
-  base::Value::List list_args;
+  base::ListValue list_args;
   list_args.Append(kCallbackId);
   handler()->HandleGetNtpExtension(list_args);
 
@@ -95,7 +95,7 @@ TEST_F(OnStartupHandlerTest, HandleGetNtpExtension) {
 }
 
 TEST_F(OnStartupHandlerTest, HandleValidateStartupPage_Valid) {
-  base::Value::List list_args;
+  base::ListValue list_args;
   list_args.Append(kCallbackId);
   list_args.Append("http://example.com");
   handler()->HandleValidateStartupPage(list_args);
@@ -116,7 +116,7 @@ TEST_F(OnStartupHandlerTest, HandleValidateStartupPage_Valid) {
 }
 
 TEST_F(OnStartupHandlerTest, HandleValidateStartupPage_Invalid) {
-  base::Value::List list_args;
+  base::ListValue list_args;
   list_args.Append(kCallbackId);
   list_args.Append("@");
   handler()->HandleValidateStartupPage(list_args);

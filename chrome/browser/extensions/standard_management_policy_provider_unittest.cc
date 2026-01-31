@@ -164,7 +164,7 @@ TEST_F(StandardManagementPolicyProviderTest,
                                        extension_urls::kChromeWebstoreUpdateURL)
                        .AddFlags(Extension::FROM_WEBSTORE)
                        .Build();
-  base::Value::Dict forced_list_pref;
+  base::DictValue forced_list_pref;
   ExternalPolicyLoader::AddExtension(forced_list_pref, extension->id(),
                                      extension_urls::kChromeWebstoreUpdateURL);
   profile_.GetTestingPrefService()->SetManagedPref(
@@ -252,7 +252,7 @@ TEST_F(StandardManagementPolicyProviderTest, NotRequiredExtension) {
 TEST_F(StandardManagementPolicyProviderTest, ThemeExtension) {
   auto extension = ExtensionBuilder("testTheme")
                        .SetLocation(ManifestLocation::kInternal)
-                       .SetManifestKey("theme", base::Value::Dict())
+                       .SetManifestKey("theme", base::DictValue())
                        .Build();
   std::u16string error16;
 

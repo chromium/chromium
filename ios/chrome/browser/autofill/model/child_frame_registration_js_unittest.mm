@@ -116,7 +116,6 @@ class ChildFrameRegistrationJavascriptTest : public web::JavascriptTest {
     web::JavascriptTest::SetUp();
 
     AddGCrWebScript();
-    AddCommonScript();
     AddUserScript(@"autofill_form_features");
     AddUserScript(@"fill_util_test");
   }

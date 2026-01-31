@@ -6,7 +6,6 @@
 
 #import <set>
 
-#import "base/containers/contains.h"
 #import "base/memory/raw_ptr.h"
 #import "base/strings/string_number_conversions.h"
 #import "base/test/ios/wait_util.h"
@@ -79,9 +78,9 @@ class HttpsOnlyModeBlockingPageTest : public PlatformTest {
   FakeWebState web_state_;
   raw_ptr<web::FakeNavigationManager> navigation_manager_ = nullptr;
   GURL url_;
-  std::unique_ptr<IOSSecurityInterstitialPage> page_;
   base::HistogramTester histogram_tester_;
   std::unique_ptr<HttpsUpgradeService> service_;
+  std::unique_ptr<IOSSecurityInterstitialPage> page_;
 };
 
 // Tests that the blocking page handles the proceed command by updating the

@@ -28,6 +28,8 @@ const char AudioDeviceDescription::kLoopbackAllDevicesId[] =
     "loopbackAllDevices";
 const char AudioDeviceDescription::kApplicationLoopbackDeviceId[] =
     "applicationLoopback";
+const char AudioDeviceDescription::kRestrictOwnAudioBrowserLoopbackDeviceId[] =
+    "restrictOwnAudioBrowserLoopback";
 
 namespace {
 // Sanitize names which are known to contain the user's name, such as AirPods'
@@ -84,7 +86,8 @@ bool AudioDeviceDescription::IsLoopbackDevice(std::string_view device_id) {
 // static
 bool AudioDeviceDescription::IsApplicationLoopbackDevice(
     std::string_view device_id) {
-  return base::StartsWith(device_id, kApplicationLoopbackDeviceId);
+  return base::StartsWith(device_id, kApplicationLoopbackDeviceId) ||
+         base::StartsWith(device_id, kRestrictOwnAudioBrowserLoopbackDeviceId);
 }
 
 // static

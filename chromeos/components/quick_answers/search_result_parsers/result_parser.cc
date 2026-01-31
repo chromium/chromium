@@ -13,16 +13,13 @@
 
 namespace quick_answers {
 namespace {
-using base::Value;
-
 const constexpr char* kKnownHTMLTags[] = {"<b>", "</b>", "<i>", "</i>"};
-
 }  // namespace
 
-const Value::Dict* ResultParser::GetFirstDictElementFromList(
-    const Value::Dict& dict,
+const base::DictValue* ResultParser::GetFirstDictElementFromList(
+    const base::DictValue& dict,
     const std::string& path) {
-  const Value::List* entries = dict.FindListByDottedPath(path);
+  const base::ListValue* entries = dict.FindListByDottedPath(path);
 
   if (!entries) {
     // No list found.
@@ -46,7 +43,7 @@ std::string ResultParser::RemoveKnownHtmlTags(const std::string& input) {
 }
 
 std::unique_ptr<StructuredResult> ResultParser::ParseInStructuredResult(
-    const base::Value::Dict& result) {
+    const base::DictValue& result) {
   return nullptr;
 }
 

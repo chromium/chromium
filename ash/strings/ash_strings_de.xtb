@@ -342,6 +342,7 @@
 <translation id="2201071101391734388">Vor Kurzem aufgenommenes Foto <ph name="INDEX" /> von <ph name="TOTAL_COUNT" />.</translation>
 <translation id="2201687081523799384">Google Tasks minimieren</translation>
 <translation id="2208323208084708176">Unified Desktop-Modus</translation>
+<translation id="2210311543574621570">Die Zwischenablage wird angezeigt, wenn du Strg + V gedrückt hältst. Du kannst diese Tastenkombination deaktivieren, indem du unter „chrome://flags“ das Flag „#clipboard-history-longpress“ deaktivierst.</translation>
 <translation id="2215920961700443347">Kein Internet. Stell eine Internetverbindung her und versuche es noch einmal.</translation>
 <translation id="2222841058024245321">Desktop 7</translation>
 <translation id="2223384056430485343">In einem Splitscreen</translation>
@@ -2260,7 +2261,7 @@ Halte zum Herunterfahren des Geräts die Ein-/Aus-Taste noch einmal gedrückt.</
 <translation id="851458219935658693">Fenster des aktuellen Desktops werden angezeigt, Optionsfeld ausgewählt</translation>
 <translation id="851660987304951246">Mit „Erstelle einen Überblick für mich“ kannst du Inhalte schnell zusammenfassen lassen oder Fragen stellen</translation>
 <translation id="8517041960877371778">Dein <ph name="DEVICE_TYPE" /> wird möglicherweise nicht aufgeladen, wenn es eingeschaltet ist.</translation>
-<translation id="8519329096920173967">Mit Google Lens auf dem Bildschirm suchen</translation>
+<translation id="8519329096920173967">Mit Google Lens anhand von Bildschirminhalt suchen</translation>
 <translation id="8535393432370007982">Sortierung nach Farbe rückgängig machen</translation>
 <translation id="8536886494750559755">Quick Share-Einstellungen anzeigen. Für alle <ph name="TIME_REMAINING" /> lang sichtbar.</translation>
 <translation id="8539803091108018926">Text in Zwischenablage kopiert</translation>

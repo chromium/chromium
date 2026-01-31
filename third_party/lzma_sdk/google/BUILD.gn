@@ -47,3 +47,13 @@ fuzzer_test("seven_zip_reader_fuzzer") {
 
   seed_corpus = "fuzzer_corpus"
 }
+
+source_set("seven_zip_c_buf_stream") {
+  sources = [ "seven_zip_c_buf_stream.c" ]
+
+  public = [ "seven_zip_c_buf_stream.h" ]
+
+  deps = [
+    "//third_party/lzma_sdk",
+  ]
+}

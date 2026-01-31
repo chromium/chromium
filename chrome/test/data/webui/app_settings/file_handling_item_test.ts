@@ -77,7 +77,7 @@ suite('AppManagementFileHandlingItemTest', function() {
     assertTrue(!!learnMore);
     let link = learnMore.shadowRoot.querySelector('a');
     assertTrue(!!link);
-    assertEquals(link.href, app.fileHandlingState!.learnMoreUrl!.url);
+    assertEquals(link.href, app.fileHandlingState!.learnMoreUrl!);
 
     // Clear the learn more url; it should now be handled by the browser proxy.
     const app2 = createTestApp('app');

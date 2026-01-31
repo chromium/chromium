@@ -11,7 +11,6 @@
 #include "base/android/jni_android.h"
 #include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
-#include "base/containers/contains.h"
 #include "base/debug/crash_logging.h"
 #include "base/debug/dump_without_crashing.h"
 #include "base/metrics/histogram_macros.h"
@@ -150,11 +149,11 @@ ScopedJavaLocalRef<jobjectArray> AutocompleteResult::BuildJavaMatches(
 bool AutocompleteResult::VerifyCoherency(
     JNIEnv* env,
     const JavaRef<jlongArray>& j_matches_array,
-    jint match_index,
-    jint verification_point) {
+    int32_t match_index,
+    int32_t verification_point) {
   DCHECK(j_matches_array);
 
-  std::vector<jlong> j_matches;
+  std::vector<int64_t> j_matches;
   base::android::JavaLongArrayToLongVector(env, j_matches_array, &j_matches);
 
   if (j_matches.size() != size()) {

@@ -55,7 +55,6 @@ import org.chromium.android_webview.common.CommandLineUtil;
 import org.chromium.android_webview.common.DeveloperModeUtils;
 import org.chromium.android_webview.common.FlagOverrideHelper;
 import org.chromium.android_webview.common.Lifetime;
-import org.chromium.android_webview.common.PlatformServiceBridge;
 import org.chromium.android_webview.common.ProductionSupportedFlagList;
 import org.chromium.android_webview.common.SafeModeController;
 import org.chromium.android_webview.common.WebViewCachedFlags;
@@ -73,8 +72,6 @@ import org.chromium.base.StrictModeContext;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.ScopedSysTraceEvent;
-import org.chromium.base.task.PostTask;
-import org.chromium.base.task.TaskTraits;
 import org.chromium.base.version_info.VersionConstants;
 import org.chromium.blink_public.common.BlinkFeatures;
 import org.chromium.build.BuildConfig;
@@ -667,11 +664,6 @@ public class WebViewChromiumFactoryProvider implements WebViewFactoryProvider {
 
             if (WebViewCachedFlags.get()
                     .isCachedFeatureEnabled(AwFeatures.WEBVIEW_MOVE_WORK_TO_PROVIDER_INIT)) {
-                PostTask.postTask(
-                        TaskTraits.USER_VISIBLE,
-                        () -> {
-                            PlatformServiceBridge.getInstance();
-                        });
                 mAwInit.runNonUiThreadCapableStartupTasks();
             }
 
@@ -729,14 +721,28 @@ public class WebViewChromiumFactoryProvider implements WebViewFactoryProvider {
         }
     }
 
+    // The startup tasks are setup to run based on the following logic:
+    // 1. The AndroidX preference is checked first,
+    // 2. If it's not set, the manifest metadata is checked,
+    // 3. Then the commandline switch is checked,
+    // 4. Finally, the feature flag is checked.
     private void setupStartupTaskExperiments(AndroidXProcessGlobalConfig androidXConfig) {
         switch (androidXConfig.getUiThreadStartupMode()) {
             case ProcessGlobalConfigConstants.UI_THREAD_STARTUP_MODE_DEFAULT:
-                setStartupTaskExperimentValues(
-                        shouldEnableStartupTasksExperiment(),
-                        shouldEnableStartupTasksExperimentP2(),
-                        shouldEnableStartupTasksYieldToNativeExperiment());
-                return;
+                {
+                    if (ManifestMetadataUtil.shouldForceSyncBrowserStartup()) {
+                        setStartupTaskExperimentValues(
+                                /* enablePhase1= */ false,
+                                /* enablePhase2= */ false,
+                                /* enableYieldToNative= */ false);
+                    } else {
+                        setStartupTaskExperimentValues(
+                                shouldEnableStartupTasksExperiment(),
+                                shouldEnableStartupTasksExperimentP2(),
+                                shouldEnableStartupTasksYieldToNativeExperiment());
+                    }
+                    return;
+                }
             case ProcessGlobalConfigConstants.UI_THREAD_STARTUP_MODE_SYNC:
                 setStartupTaskExperimentValues(
                         /* enablePhase1= */ false,

@@ -11,6 +11,7 @@
 
 #include "ash/constants/web_app_id_constants.h"
 #include "ash/public/cpp/notification_utils.h"
+#include "base/byte_size.h"
 #include "base/feature_list.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
@@ -999,8 +1000,9 @@ std::u16string DownloadItemNotification::GetWarningStatusString() const {
           IDS_PROMPT_DOWNLOAD_SENSITIVE_CONTENT_WARNING);
     }
     case download::DOWNLOAD_DANGER_TYPE_FORCE_SAVE_TO_GDRIVE:
+    case download::DOWNLOAD_DANGER_TYPE_FORCE_SAVE_TO_ONEDRIVE:
       return l10n_util::GetStringUTF16(
-          IDS_PROMPT_DOWNLOAD_FORCED_SAVE_TO_GDRIVE);
+          IDS_PROMPT_DOWNLOAD_FORCED_SAVE_TO_CLOUD);
     case download::DOWNLOAD_DANGER_TYPE_SENSITIVE_CONTENT_BLOCK: {
       return l10n_util::GetStringUTF16(
           IDS_PROMPT_DOWNLOAD_SENSITIVE_CONTENT_BLOCKED);
@@ -1154,8 +1156,8 @@ std::u16string DownloadItemNotification::GetStatusString() const {
       } else {
         // Otherwise, the download should be completed.
         // "3.4 MB from example.com"
-        std::u16string size =
-            ui::FormatBytes(base::ByteCount(item_->GetCompletedBytes()));
+        std::u16string size = ui::FormatBytes(base::ByteSize(
+            base::checked_cast<uint64_t>(item_->GetCompletedBytes())));
         return l10n_util::GetStringFUTF16(
             IDS_DOWNLOAD_NOTIFICATION_STATUS_COMPLETED, size, host_name);
       }
@@ -1169,7 +1171,8 @@ std::u16string DownloadItemNotification::GetStatusString() const {
   std::u16string size =
       show_size_ratio
           ? item_->GetProgressSizesString()
-          : ui::FormatBytes(base::ByteCount(item_->GetCompletedBytes()));
+          : ui::FormatBytes(base::ByteSize(
+                base::checked_cast<uint64_t>(item_->GetCompletedBytes())));
 
   return l10n_util::GetStringFUTF16(IDS_DOWNLOAD_NOTIFICATION_STATUS_SHORT,
                                     size, host_name);

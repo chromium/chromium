@@ -32,6 +32,7 @@ import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.embedder_support.view.ContentView;
+import org.chromium.ui.base.DeviceInput;
 import org.chromium.ui.util.ColorUtils;
 import org.chromium.url.GURL;
 
@@ -133,7 +134,7 @@ public class LinkHoverStatusBarCoordinator extends EmptyTabObserver
             mExpandStatusBarCancelableRunnable = null;
         }
 
-        if (!url.isEmpty()) {
+        if (!url.isEmpty() && DeviceInput.supportsPrecisionPointer()) {
             mLinkHoverStatusBar.setText(mCurrentUrl.getSpec());
             boolean isIncognito = tab.isIncognitoBranded();
             boolean isNightMode = ColorUtils.inNightMode(mContext);

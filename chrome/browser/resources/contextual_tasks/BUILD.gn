@@ -30,24 +30,29 @@ build_webui("build") {
   }
 
   ts_files = [
-    "app.ts",
     "app.html.ts",
-    "composebox.ts",
+    "app.ts",
     "composebox.html.ts",
-    "error_page.ts",
-    "error_page.html.ts",
+    "composebox.ts",
+    "constants.ts",
     "contextual_tasks_browser_proxy.ts",
-    "favicon_group.ts",
+    "error_page.html.ts",
+    "error_page.ts",
     "favicon_group.html.ts",
+    "favicon_group.ts",
+    "ghost_loader.ts",
+    "ghost_loader.html.ts",
     "icons.html.ts",
-    "post_message_handler.ts",
-    "sources_menu.ts",
-    "sources_menu.html.ts",
-    "top_toolbar.ts",
-    "top_toolbar.html.ts",
-    "internals/app.ts",
     "internals/app.html.ts",
+    "internals/app.ts",
     "internals/browser_proxy.ts",
+    "onboarding_tooltip.html.ts",
+    "onboarding_tooltip.ts",
+    "post_message_handler.ts",
+    "sources_menu.html.ts",
+    "sources_menu.ts",
+    "top_toolbar.html.ts",
+    "top_toolbar.ts",
   ]
 
   css_files = [
@@ -55,9 +60,11 @@ build_webui("build") {
     "composebox.css",
     "error_page.css",
     "favicon_group.css",
+    "ghost_loader.css",
+    "internals/app.css",
+    "onboarding_tooltip.css",
     "sources_menu.css",
     "top_toolbar.css",
-    "internals/app.css",
   ]
 
   mojo_files_deps = [
@@ -77,8 +84,8 @@ build_webui("build") {
   ts_definitions = [
     "//tools/typescript/definitions/chrome_event.d.ts",
     "//tools/typescript/definitions/metrics_private.d.ts",
-    "//tools/typescript/definitions/webview_tag.d.ts",
     "//tools/typescript/definitions/web_request.d.ts",
+    "//tools/typescript/definitions/webview_tag.d.ts",
   ]
 
   ts_deps = [

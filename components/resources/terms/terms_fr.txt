@@ -1,0 +1,13 @@
+Conditions d'utilisation supplémentaires de Google Chrome et ChromeOS
+
+Dernière modification : 30 septembre 2025
+
+En utilisant Chrome ou ChromeOS, vous acceptez les Conditions d'utilisation de Google disponibles sur https://policies.google.com/terms et les présentes Conditions d'utilisation supplémentaires de Google Chrome et ChromeOS.
+
+Ces Conditions d'utilisation supplémentaires de Google Chrome et ChromeOS s'appliquent à la version du code exécutable de Google Chrome et ChromeOS. La majeure partie du code source de Google Chrome est disponible gratuitement dans le cadre de contrats de licence de logiciel Open Source à l'adresse suivante : chrome://credits.
+
+Votre utilisation de certains composants de Chrome et ChromeOS est régie par les conditions ci-dessous :
+
+AVC
+
+CE PRODUIT EST CONCÉDÉ SOUS LICENCE DANS LE CADRE DE LA LICENCE DU PORTEFEUILLE DES BREVETS AVC EN VUE D'UNE UTILISATION PRIVÉE OU NE GÉNÉRANT PAS DE REVENUS PAR UN UTILISATEUR SOUHAITANT (i) CODER UNE VIDÉO CONFORMÉMENT À LA NORME AVC ("VIDÉO AVC") ET/OU (ii) DÉCODER UNE VIDÉO AVC CODÉE PAR UN UTILISATEUR DANS LE CADRE D'UNE ACTIVITÉ PRIVÉE ET/OU OBTENUE AUPRÈS D'UN FOURNISSEUR VIDÉO AUTORISÉ À FOURNIR DES VIDÉOS AVC. AUCUNE LICENCE N'EST ACCORDÉE DE MANIÈRE EXPLICITE OU IMPLICITE POUR TOUTE AUTRE UTILISATION. POUR PLUS D'INFORMATIONS, CONSULTEZ LE SITE DE MPEG LA, L.L.C À L'ADRESSE HTTPS://WWW.VIA-LA.COM.

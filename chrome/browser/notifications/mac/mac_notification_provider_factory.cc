@@ -30,7 +30,7 @@ LaunchOutOfProcessProvider() {
       content::ServiceProcessHost::Options()
           .WithDisplayName("Notification Service")
           .WithExtraCommandLineSwitches({switches::kMessageLoopTypeUi})
-          .WithChildFlags(base::to_underlying(
+          .WithChildFlags(std::to_underlying(
               ChildProcessHostFlags::kChildProcessHelperAlerts))
           .Pass());
 }

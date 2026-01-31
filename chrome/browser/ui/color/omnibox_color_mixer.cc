@@ -179,7 +179,8 @@ void ApplyOmniboxCR2023FallbackColors(ui::ColorMixer& mixer,
   mixer[kColorOmniboxResultsButtonInkDropSelectedRowSelected] = {ui::SetAlpha(
       kColorOmniboxResultsButtonInkDropSelected, std::ceil(0.16f * 255.0f))};
 
-  mixer[kColorOmniboxContextEntrypointText] = {ui::kColorSysOnSurface};
+  mixer[kColorOmniboxContextEntrypointText] =
+      ui::GetColorWithMaxContrast(kColorToolbarBackgroundSubtleEmphasis);
 }
 
 // Apply updates to the Omnibox color tokens per CR2023 guidelines.
@@ -453,9 +454,10 @@ void AddOmniboxColorMixer(ui::ColorProvider* provider,
   mixer[kColorOmniboxComposeboxFaviconBackground] = {
       kColorOmniboxComposeboxChipBackground};
   mixer[kColorOmniboxComposeboxForegroundDisabled] = {kColorOmniboxTextDimmed};
-  mixer[kColorOmniboxComposeboxSubmitButtonBackground] =
-      ui::SelectBasedOnDarkInput(kColorOmniboxResultsBackground,
-                                 gfx::kGoogleBlue200, gfx::kGoogleBlue600);
+  mixer[kColorOmniboxComposeboxPrimaryAction] = ui::SelectBasedOnDarkInput(
+      kColorOmniboxResultsBackground, gfx::kGoogleBlue200, gfx::kGoogleBlue600);
+  mixer[kColorOmniboxComposeboxSubmitButtonBackground] = {
+      kColorOmniboxComposeboxPrimaryAction};
   mixer[kColorOmniboxComposeboxSubmitButtonIcon] = ui::SelectBasedOnDarkInput(
       kColorOmniboxResultsBackground, gfx::kGoogleGrey900, gfx::kGoogleBlue200);
 

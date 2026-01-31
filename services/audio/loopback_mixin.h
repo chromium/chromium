@@ -27,8 +27,10 @@ class LoopbackSignalProviderInterface;
 
 BASE_DECLARE_FEATURE(kRestrictOwnAudioAddChromiumBack);
 
-// Mixes the loopback audio with the primary audio source and
-// forwards the result to a pre-configured callback.
+// Mixes the loopback audio with audio from a primary source and forwards the
+// result to a pre-configured callback. It can also be configured not to include
+// the audio from the primary source. The mixing is always driven by the
+// callbacks from the primary source.
 class LoopbackMixin {
  public:
   // Callback to deliver the mixed audio data. The signature matches
@@ -75,19 +77,26 @@ class LoopbackMixin {
  protected:
   // `signal_provider` is the source of the loopback audio.
   // `params` are the audio parameters of both the main source and
-  // `signal_provider`. `on_data_callback` is the callback to which the mixed
-  // audio will be sent.
+  // `signal_provider`.
+  // If `include_primary_source` is true, the audio from the primary source will
+  // included in the mixed audio.
+  //`on_data_callback` is the callback to which the mixed audio will be sent.
   LoopbackMixin(
       std::unique_ptr<LoopbackSignalProviderInterface> signal_provider,
       const media::AudioParameters& params,
+      bool include_primary_source,
       OnDataCallback on_data_callback);
 
  private:
+  friend class LoopbackMixinTest;
+
   // Provides the loopback audio signal.
   const std::unique_ptr<LoopbackSignalProviderInterface> signal_provider_;
 
   // An intermediate AudioBus to hold the mix.
   const std::unique_ptr<media::AudioBus> mix_bus_;
+
+  const bool include_primary_source_;
 
   // The callback to which the mixed audio is passed.
   OnDataCallback on_data_callback_;

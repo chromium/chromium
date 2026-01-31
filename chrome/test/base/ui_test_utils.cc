@@ -9,7 +9,6 @@
 #include <memory>
 
 #include "base/command_line.h"
-#include "base/containers/contains.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
@@ -71,7 +70,6 @@
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/browser/web_contents.h"
-#include "content/public/browser/web_contents_observer.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/download_test_observer.h"
 #include "content/public/test/test_navigation_observer.h"
@@ -115,7 +113,7 @@ BrowserWindowInterface* WaitForBrowserNotInSet(
   if (!new_browser) {
     new_browser = WaitForBrowserToOpen();
     // The new browser should never be in |excluded_browsers|.
-    DCHECK(!base::Contains(excluded_browsers, new_browser));
+    DCHECK(!excluded_browsers.contains(new_browser));
   }
   return new_browser;
 }
@@ -1083,6 +1081,28 @@ void ViewBoundsWaiter::OnViewBoundsChanged(views::View* observed_view) {
   }
 }
 
+ViewVisibilityWaiter::ViewVisibilityWaiter(views::View* observed_view,
+                                           bool expected_visible)
+    : view_(observed_view), expected_visible_(expected_visible) {
+  observation_.Observe(view_.get());
+}
+
+ViewVisibilityWaiter::~ViewVisibilityWaiter() = default;
+
+void ViewVisibilityWaiter::Wait() {
+  if (expected_visible_ != view_->GetVisible()) {
+    run_loop_.Run();
+  }
+}
+
+void ViewVisibilityWaiter::OnViewVisibilityChanged(views::View* observed_view,
+                                                   views::View* starting_view,
+                                                   bool visible) {
+  if (expected_visible_ == observed_view->GetVisible()) {
+    run_loop_.Quit();
+  }
+}
+
 namespace {
 
 class WebModalShowWaiter
@@ -1118,6 +1138,27 @@ class WebModalShowWaiter
 
 void WaitForWebModalDialog(content::WebContents* web_contents) {
   WebModalShowWaiter(web_contents).Wait();
+}
+
+WebContentsFocusEventTracker::WebContentsFocusEventTracker(
+    content::WebContents* web_contents)
+    : content::WebContentsObserver(web_contents) {}
+
+WebContentsFocusEventTracker::~WebContentsFocusEventTracker() = default;
+
+void WebContentsFocusEventTracker::OnWebContentsFocused(
+    content::RenderWidgetHost* render_widget_host) {
+  focused_count_++;
+}
+
+void WebContentsFocusEventTracker::OnWebContentsLostFocus(
+    content::RenderWidgetHost* render_widget_host) {
+  lost_focus_count_++;
+}
+
+void WebContentsFocusEventTracker::Reset() {
+  focused_count_ = 0;
+  lost_focus_count_ = 0;
 }
 
 }  // namespace ui_test_utils

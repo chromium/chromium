@@ -33,8 +33,9 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.shadows.ShadowLooper;
 
-import org.chromium.base.supplier.ObservableSupplier;
-import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.supplier.MonotonicObservableSupplier;
+import org.chromium.base.supplier.ObservableSuppliers;
+import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.bookmarks.BookmarkModel;
 import org.chromium.chrome.browser.bookmarks.TabBookmarker;
@@ -72,8 +73,8 @@ public class PinnedTabStripMediatorTest {
     public ActivityScenarioRule<TestActivity> mActivityScenarioRule =
             new ActivityScenarioRule<>(TestActivity.class);
 
-    private final ObservableSupplierImpl<TabGroupModelFilter> mTabGroupModelFilterSupplier =
-            new ObservableSupplierImpl<>();
+    private final SettableMonotonicObservableSupplier<TabGroupModelFilter>
+            mTabGroupModelFilterSupplier = ObservableSuppliers.createMonotonic();
 
     @Mock private GridLayoutManager mLayoutManager;
     @Mock private TabListCoordinator mTabListCoordinator;
@@ -89,7 +90,7 @@ public class PinnedTabStripMediatorTest {
     @Mock private TabGroupSyncService mTabGroupSyncService;
     @Mock private CollaborationService mCollaborationService;
     @Mock private BookmarkModel mBookmarkModel;
-    @Mock private ObservableSupplier<TabBookmarker> mTabBookmarkerSupplier;
+    @Mock private MonotonicObservableSupplier<TabBookmarker> mTabBookmarkerSupplier;
     @Mock private BottomSheetController mBottomSheetController;
     @Mock private ModalDialogManager mModalDialogManager;
     @Mock private Runnable mOnTabGroupCreation;
@@ -556,6 +557,17 @@ public class PinnedTabStripMediatorTest {
 
         verify(mTabGroupModelFilter).removeObserver(any());
         verify(mIncognitoTabGroupModelFilter).addObserver(any());
+    }
+
+    @Test
+    public void testOnTabGroupModelFilterChanged_NullProfile() {
+        when(mTabGroupModelFilter.getTabModel()).thenReturn(mTabModel);
+        when(mTabModel.getProfile()).thenReturn(null);
+
+        mTabGroupModelFilterSupplier.set(mTabGroupModelFilter);
+
+        // Verify that the downstream dependencies are not created.
+        verify(mOnTabGroupCreation, times(0)).run();
     }
 
     @Test

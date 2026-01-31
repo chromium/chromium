@@ -56,9 +56,9 @@ bool IsReadOnlyField(const chromeos::onc::OncValueSignature& value_signature,
 
 // Inserts |true| at every field name in |result| that is recommended in
 // |policy|.
-void MarkRecommendedFieldnames(const base::Value::Dict& policy,
-                               base::Value::Dict* result) {
-  const base::Value::List* recommended_value =
+void MarkRecommendedFieldnames(const base::DictValue& policy,
+                               base::DictValue* result) {
+  const base::ListValue* recommended_value =
       policy.FindList(::onc::kRecommended);
   if (!recommended_value) {
     return;
@@ -84,8 +84,8 @@ base::Value GetDefaultValue(const chromeos::onc::OncFieldSignature* field) {
 
 // Returns a dictionary which contains |true| at each path that is editable by
 // the user. No other fields are set.
-base::Value::Dict GetEditableFlags(const base::Value::Dict& policy) {
-  base::Value::Dict result;
+base::DictValue GetEditableFlags(const base::DictValue& policy) {
+  base::DictValue result;
   MarkRecommendedFieldnames(policy, &result);
 
   // Recurse into nested dictionaries.
@@ -100,9 +100,7 @@ base::Value::Dict GetEditableFlags(const base::Value::Dict& policy) {
 
 // If `dict` doesn't have key `key` yet, set it to `value`.
 template <typename ValueType>
-void SetIfNotSet(base::Value::Dict& dict,
-                 std::string_view key,
-                 ValueType value) {
+void SetIfNotSet(base::DictValue& dict, std::string_view key, ValueType value) {
   if (dict.Find(key)) {
     return;
   }
@@ -125,7 +123,7 @@ class MergeListOfDictionaries {
     kDeviceEditableIndex,
     kLength,
   };
-  using DictPointers = std::array<const base::Value::Dict*, kLength>;
+  using DictPointers = std::array<const base::DictValue*, kLength>;
   using ValuePointers = std::array<const base::Value*, kLength>;
 
   MergeListOfDictionaries() = default;
@@ -139,10 +137,10 @@ class MergeListOfDictionaries {
   // located at that path in each of the dictionaries. This function returns a
   // new dictionary containing all results of those calls at the respective
   // paths. The resulting dictionary doesn't contain empty dictionaries.
-  base::Value::Dict MergeDictionaries(const DictPointers& dicts) {
-    base::Value::Dict result;
+  base::DictValue MergeDictionaries(const DictPointers& dicts) {
+    base::DictValue result;
     std::set<std::string> visited;
-    for (const base::Value::Dict* dict_outer : dicts) {
+    for (const base::DictValue* dict_outer : dicts) {
       if (!dict_outer) {
         continue;
       }
@@ -160,7 +158,7 @@ class MergeListOfDictionaries {
             dicts_for_key[i] = dicts[i] ? dicts[i]->FindDict(key) : nullptr;
           }
 
-          base::Value::Dict merged_dict =
+          base::DictValue merged_dict =
               MergeNestedDictionaries(key, dicts_for_key);
           if (!merged_dict.empty()) {
             result.Set(key, std::move(merged_dict));
@@ -188,8 +186,8 @@ class MergeListOfDictionaries {
   virtual base::Value MergeListOfValues(const std::string& key,
                                         const ValuePointers& values) = 0;
 
-  virtual base::Value::Dict MergeNestedDictionaries(const std::string& key,
-                                                    const DictPointers& dicts) {
+  virtual base::DictValue MergeNestedDictionaries(const std::string& key,
+                                                  const DictPointers& dicts) {
     return MergeDictionaries(dicts);
   }
 };
@@ -216,21 +214,20 @@ class MergeSettingsAndPolicies : public MergeListOfDictionaries {
   // MergeValues is called. Its results are collected in a new dictionary which
   // is then returned. The resulting dictionary never contains empty
   // dictionaries.
-  base::Value::Dict MergeDictionaries(
-      const base::Value::Dict* user_policy,
-      const base::Value::Dict* device_policy,
-      const base::Value::Dict* user_settings,
-      const base::Value::Dict* shared_settings,
-      const base::Value::Dict* active_settings) {
+  base::DictValue MergeDictionaries(const base::DictValue* user_policy,
+                                    const base::DictValue* device_policy,
+                                    const base::DictValue* user_settings,
+                                    const base::DictValue* shared_settings,
+                                    const base::DictValue* active_settings) {
     has_user_policy_ = (user_policy != nullptr);
     has_device_policy_ = (device_policy != nullptr);
 
-    base::Value::Dict user_editable;
+    base::DictValue user_editable;
     if (user_policy) {
       user_editable = GetEditableFlags(*user_policy);
     }
 
-    base::Value::Dict device_editable;
+    base::DictValue device_editable;
     if (device_policy) {
       device_editable = GetEditableFlags(*device_policy);
     }
@@ -383,13 +380,13 @@ class MergeToAugmented : public MergeToEffective {
   MergeToAugmented(const MergeToAugmented&) = delete;
   MergeToAugmented& operator=(const MergeToAugmented&) = delete;
 
-  base::Value::Dict MergeDictionaries(
+  base::DictValue MergeDictionaries(
       const chromeos::onc::OncValueSignature& signature,
-      const base::Value::Dict* user_policy,
-      const base::Value::Dict* device_policy,
-      const base::Value::Dict* user_settings,
-      const base::Value::Dict* shared_settings,
-      const base::Value::Dict* active_settings) {
+      const base::DictValue* user_policy,
+      const base::DictValue* device_policy,
+      const base::DictValue* user_settings,
+      const base::DictValue* shared_settings,
+      const base::DictValue* active_settings) {
     signature_ = &signature;
     return MergeToEffective::MergeDictionaries(user_policy, device_policy,
                                                user_settings, shared_settings,
@@ -437,7 +434,7 @@ class MergeToAugmented : public MergeToEffective {
       return base::Value();
     }
 
-    base::Value::Dict augmented_value;
+    base::DictValue augmented_value;
 
     if (values.active_setting) {
       augmented_value.Set(::onc::kAugmentationActiveSetting,
@@ -518,9 +515,8 @@ class MergeToAugmented : public MergeToEffective {
   }
 
   // MergeListOfDictionaries override.
-  base::Value::Dict MergeNestedDictionaries(
-      const std::string& key,
-      const DictPointers& dicts) override {
+  base::DictValue MergeNestedDictionaries(const std::string& key,
+                                          const DictPointers& dicts) override {
     if (signature_) {
       const chromeos::onc::OncValueSignature* enclosing_signature = signature_;
       signature_ = nullptr;
@@ -530,7 +526,7 @@ class MergeToAugmented : public MergeToEffective {
       if (field) {
         signature_ = field->value_signature;
       }
-      base::Value::Dict result =
+      base::DictValue result =
           MergeToEffective::MergeNestedDictionaries(key, dicts);
       signature_ = enclosing_signature;
       return result;
@@ -544,23 +540,23 @@ class MergeToAugmented : public MergeToEffective {
 
 }  // namespace
 
-base::Value::Dict MergeSettingsAndPoliciesToEffective(
-    const base::Value::Dict* user_policy,
-    const base::Value::Dict* device_policy,
-    const base::Value::Dict* user_settings,
-    const base::Value::Dict* shared_settings) {
+base::DictValue MergeSettingsAndPoliciesToEffective(
+    const base::DictValue* user_policy,
+    const base::DictValue* device_policy,
+    const base::DictValue* user_settings,
+    const base::DictValue* shared_settings) {
   MergeToEffective merger;
   return merger.MergeDictionaries(user_policy, device_policy, user_settings,
                                   shared_settings, nullptr);
 }
 
-base::Value::Dict MergeSettingsAndPoliciesToAugmented(
+base::DictValue MergeSettingsAndPoliciesToAugmented(
     const chromeos::onc::OncValueSignature& signature,
-    const base::Value::Dict* user_policy,
-    const base::Value::Dict* device_policy,
-    const base::Value::Dict* user_settings,
-    const base::Value::Dict* shared_settings,
-    const base::Value::Dict* active_settings) {
+    const base::DictValue* user_policy,
+    const base::DictValue* device_policy,
+    const base::DictValue* user_settings,
+    const base::DictValue* shared_settings,
+    const base::DictValue* active_settings) {
   MergeToAugmented merger;
   return merger.MergeDictionaries(signature, user_policy, device_policy,
                                   user_settings, shared_settings,

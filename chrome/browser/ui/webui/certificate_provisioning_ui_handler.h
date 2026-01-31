@@ -58,7 +58,7 @@ class CertificateProvisioningUiHandler : public content::WebUIMessageHandler {
   // the UI when it loads.
   // |args| is expected to be empty.
   void HandleRefreshCertificateProvisioningProcesses(
-      const base::Value::List& args);
+      const base::ListValue& args);
 
   // Trigger an update / refresh on a certificate provisioning process.
   // |args| is expected to contain two arguments:
@@ -67,7 +67,7 @@ class CertificateProvisioningUiHandler : public content::WebUIMessageHandler {
   // index 1 is a boolean specifying whether the process is a user-specific
   // (false) or a device-wide (true) certificate provisioning process.
   void HandleTriggerCertificateProvisioningProcessUpdate(
-      const base::Value::List& args);
+      const base::ListValue& args);
 
   // Triggers a reset to a particular certificate provisioning process.
   // |args| is expected to contain two arguments:
@@ -76,7 +76,7 @@ class CertificateProvisioningUiHandler : public content::WebUIMessageHandler {
   // index 1 is a boolean specifying whether the process is a user-specific
   // (false) or a device-wide (true) certificate provisioning process.
   void HandleTriggerCertificateProvisioningProcessReset(
-      const base::Value::List& args);
+      const base::ListValue& args);
 
   // Send the list of certificate provisioning processes to the UI.
   void RefreshCertificateProvisioningProcesses();

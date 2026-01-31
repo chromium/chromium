@@ -12,6 +12,7 @@
 #include <string_view>
 
 #include "base/feature_list.h"
+#include "base/memory/safety_checks.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
@@ -103,6 +104,10 @@ gfx::Size OmniboxTextView::CalculatePreferredSize(
 }
 
 void OmniboxTextView::OnPaint(gfx::Canvas* canvas) {
+  // Omnibox interaction is a critical user journey we exclude it from
+  // additional memory safety checks.
+  // TODO(crbug.com/478634529): Optimize and remove if possible.
+  base::ScopedSafetyChecksExclusion excluded;
   View::OnPaint(canvas);
 
   if (!render_text_) {

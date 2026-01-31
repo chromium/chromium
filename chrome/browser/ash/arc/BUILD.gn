@@ -90,6 +90,7 @@ static_library("arc") {
     "//chromeos/components/mgs",
     "//chromeos/dbus/power",
     "//chromeos/dbus/power:power_manager_proto",
+    "//components/application_locale_storage",
     "//components/consent_auditor",
     "//components/prefs",
     "//components/signin/public/base",

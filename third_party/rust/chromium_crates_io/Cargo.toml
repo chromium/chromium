@@ -16,26 +16,31 @@ version = "0.1.0"
 [workspace]
 
 [dependencies]
+antlr4rust = "0.5.2"
 anyhow = "1.0.98"
 base64 = "0.22"
 bitflags = "2"
 bytes = "1"
 cxx = "1"
 fend-core = "1"
-font-types = "0.10"
+font-types = "0.11"
 hex = "0.4"
-jxl = "0.1.4"
+hmac-sha256 = "1.1.12"
+indexmap = "2.12.1"
 lazy_static = "1"
 libc = "0.2"
+minijinja = "2.14.0"
+ordered-float = "5.1.0"
 png = "=0.18.0-rc"
 proc-macro2 = "1"
 prost = "0.14.1"
 qr_code = "2"
 quote = "1"
-read-fonts = "0.36.0"
+read-fonts = "0.37.0"
 rustc-demangle-capi = "0.1"
 serde = "1.0.219"
-skrifa = "0.39.0"
+serde_json = "1.0.149"
+skrifa = "0.40.0"
 small_ctor = "0.1"
 static_assertions = "1"
 xml = "1.2.0"
@@ -83,6 +88,15 @@ features = ["compiled_data"]
 [dependencies.icu_provider]
 version = "2.1.1"
 default-features = false
+
+[dependencies.image]
+version = "0.25.9"
+default-features = false
+features = ["bmp"]
+
+[dependencies.jxl]
+version = "0.3.0"
+features = ["all-simd"]
 
 [dependencies.llguidance]
 version = "1.0.0"
@@ -133,7 +147,6 @@ default-features = false
 features = ["float64_representable_durations"]
 
 [dependencies.zip]
-version = "6.0.0"
+version = "7.1.0"
 default-features = false
 features = ["deflate-flate2"]
-

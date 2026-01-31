@@ -9,6 +9,8 @@ import {assert} from '//resources/js/assert.js';
 import {loadTimeData} from '//resources/js/load_time_data.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 
+import type {PageHandlerRemote} from './composebox.mojom-webui.js';
+import {ComposeboxProxyImpl} from './composebox_proxy.js';
 import {getCss} from './composebox_voice_search.css.js';
 import {getHtml} from './composebox_voice_search.html.js';
 import {WindowProxy} from './window_proxy.js';
@@ -57,6 +59,8 @@ enum State {
 enum Error {
   // Error given when voice search permission enabled.
   NOT_ALLOWED = 0,
+  // All other errors, like network.
+  OTHER = 1,
 }
 
 // TODO(crbug.com/40449919): Remove when bug is fixed.
@@ -69,6 +73,7 @@ declare global {
 export interface ComposeboxVoiceSearchElement {
   $: {
     input: HTMLInputElement,
+    closeButton: HTMLElement,
   };
 }
 
@@ -103,7 +108,7 @@ export class ComposeboxVoiceSearchElement extends
   private accessor state_: State = State.UNINITIALIZED;
   protected accessor transcript_: string = '';
   protected accessor listeningPlaceholder_: string =
-      loadTimeData.getString('listening');
+      loadTimeData.getString('voiceListening');
   private voiceRecognition_: SpeechRecognition;
   protected accessor finalResult_: string = '';
   protected accessor interimResult_: string = '';
@@ -113,7 +118,8 @@ export class ComposeboxVoiceSearchElement extends
   protected detailsUrl_: string =
       `https://support.google.com/chrome/?p=ui_voice_search&hl=${
           window.navigator.language}`;
-
+  private pageHandler_: PageHandlerRemote =
+      ComposeboxProxyImpl.getInstance().handler;
   protected get showErrorScrim_(): boolean {
     return !!this.errorMessage_;
   }
@@ -226,13 +232,25 @@ export class ComposeboxVoiceSearchElement extends
       case State.AUDIO_RECEIVED:
       case State.SPEECH_RECEIVED:
       case State.RESULT_RECEIVED:
-        this.fire('voice-search-cancel');
+        // No metric recorded:
+        this.fire('voice-search-cancel', /*canceled-by-user=*/ false);
         return;
       case State.ERROR_RECEIVED:
         // All other errors should close voice search.
         if (this.error_ !== Error.NOT_ALLOWED) {
+          /* Cannot abort voice recognition here; will call `onEnd()_`
+           * again if do that again, leading to infinite recursion.
+           */
           this.resetState_();
-          this.fire('voice-search-cancel');
+          /* No metric recorded through this event firing.
+           * This event is fired just to hide voice overlay:
+           */
+          this.fire('voice-search-cancel', /*canceled-by-user=*/ false);
+          // Metric recorded through this event firing:
+          this.fire('voice-search-error', /*canceled-by-error=*/ true);
+        } else {
+          // Metric recorded through this event firing:
+          this.fire('voice-search-error', /*canceled-by-error=*/ false);
         }
         return;
       case State.RESULT_FINAL:  // Query already submitted if is this state
@@ -246,10 +264,11 @@ export class ComposeboxVoiceSearchElement extends
     this.state_ = State.ERROR_RECEIVED;
     switch (webkitError) {
       case 'not-allowed':
+        this.errorMessage_ = loadTimeData.getString('voicePermissionError');
         this.error_ = Error.NOT_ALLOWED;
-        this.errorMessage_ = loadTimeData.getString('permissionError');
         return;
       default:
+        this.error_ = Error.OTHER;
         return;
     }
   }
@@ -264,13 +283,17 @@ export class ComposeboxVoiceSearchElement extends
       return;
     }
     this.state_ = State.RESULT_FINAL;
+    // Metric recorded through this event firing:
     this.fire('voice-search-final-result', this.finalResult_);
     this.voiceModeEndCleanup_();
   }
 
   protected onCloseClick_() {
     this.voiceModeEndCleanup_();
-    this.fire('voice-search-cancel');
+    // Record metric by setting canceled-by-user param to true in this event:
+    this.fire(
+        'voice-search-cancel',
+        /*canceled-by-user=*/ true);
   }
 
   private resetState_() {
@@ -281,8 +304,18 @@ export class ComposeboxVoiceSearchElement extends
     this.errorMessage_ = '';
   }
 
-  protected onLinkClick_() {
-    this.fire('voice-search-cancel');
+  protected onLinkClick_(e: Event) {
+    // Manually handle navigation to support WebView environments where default
+    // link clicks may be ignored.
+    e.preventDefault();
+    const href = (e.currentTarget as HTMLAnchorElement).href;
+    if (href) {
+      this.pageHandler_.navigateUrl(href);
+    }
+    /* Do not record metric by setting canceled-by-user
+     * param to false in this event:
+     */
+    this.fire('voice-search-cancel', /*canceled-by-user=*/ false);
   }
 }
 

@@ -1,0 +1,24 @@
+source_set("unit_tests") {
+  testonly = true
+  sources = [
+    "default_browser_feature_engagement_unittest.mm",
+    "default_browser_instructions_view_controller_unittest.mm",
+    "default_browser_off_cycle_promo_display_handler_unittest.mm",
+    "default_browser_remind_me_later_promo_display_handler_unittest.mm",
+  ]
+  deps = [
+    "//base/test:test_support",
+    "//components/feature_engagement/public",
+    "//components/feature_engagement/test:test_support",
+    "//ios/chrome/browser/default_browser/promo/model:promo_handler",
+    "//ios/chrome/browser/default_browser/promo/ui",
+    "//ios/chrome/browser/promos_manager/model:constants",
+    "//ios/chrome/browser/promos_manager/model:types",
+    "//ios/chrome/browser/shared/public/commands",
+    "//ios/chrome/common/ui/button_stack:constants",
+    "//ios/chrome/common/ui/confirmation_alert:constants",
+    "//ios/public/provider/chrome/browser/lottie:lottie_animation_api",
+    "//testing/gtest",
+  ]
+  frameworks = [ "UIKit.framework" ]
+}

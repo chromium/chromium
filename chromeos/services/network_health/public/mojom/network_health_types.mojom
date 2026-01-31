@@ -39,9 +39,12 @@ enum NetworkState {
   kOnline,
 };
 
-// Wrapper for optional uint32. Any backwards compatible struct including this
-// as a field will not be able to be upgraded when https://crbug.com/657632 is
-// resolved.
+// Wrapper to allow for an optional uint32. This exists because primitive types
+// did not used to be able to be optional (see https://crbug.com/40489779), so
+// this struct was made to hold a uint32, and then the struct could be made
+// optional. Alas, even though now primitives can now be optional, all the
+// backwards compatible structs that included this workaround are now stuck
+// using it forever.
 [Stable]
 struct UInt32Value {
   // The value of the uint32.

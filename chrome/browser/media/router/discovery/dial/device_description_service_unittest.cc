@@ -7,7 +7,6 @@
 #include <memory>
 #include <utility>
 
-#include "base/containers/contains.h"
 #include "base/memory/raw_ref.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
@@ -246,7 +245,7 @@ TEST_F(DeviceDescriptionServiceTest, TestCleanUpCacheEntries) {
 
   device_description_service_.CleanUpCacheEntries();
   EXPECT_EQ(size_t(1), description_cache_->size());
-  EXPECT_TRUE(base::Contains(*description_cache_, device_data_3.label()));
+  EXPECT_TRUE(description_cache_->contains(device_data_3.label()));
 
   AddToCache(device_data_3.label(), ParsedDialDeviceDescription(),
              true /* expired*/);

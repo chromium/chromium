@@ -62,9 +62,7 @@ class StructWithTraitsImpl {
   }
   std::vector<std::string>& get_mutable_string_array() { return string_array_; }
 
-  const std::set<std::string>& get_string_set() const {
-    return string_set_;
-  }
+  const std::set<std::string>& get_string_set() const { return string_set_; }
   std::set<std::string>& get_mutable_string_set() { return string_set_; }
 
   const NestedStructWithTraitsImpl& get_struct() const { return struct_; }

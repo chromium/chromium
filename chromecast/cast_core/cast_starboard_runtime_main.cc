@@ -63,7 +63,7 @@ class JSONArgsParser {
     // JSON must be the following format. All keys and values are strings.
     // {"parameters":{"argv":["arg1", ...]}}
     std::string argv1 = std::string(argv[1]);
-    std::optional<base::Value::Dict> root =
+    std::optional<base::DictValue> root =
         base::JSONReader::ReadDict(argv1, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
     if (!root) {
       // Try to fix unquoted JSON
@@ -86,12 +86,12 @@ class JSONArgsParser {
       return false;
     }
 
-    base::Value::Dict* v = root->FindDict(kParametersKey);
+    base::DictValue* v = root->FindDict(kParametersKey);
     if (!v) {
       return false;
     }
 
-    base::Value::List* argv_list = v->FindList(kArgvKey);
+    base::ListValue* argv_list = v->FindList(kArgvKey);
     if (!argv_list) {
       return false;
     }

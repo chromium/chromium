@@ -6,9 +6,9 @@
 
 #include <stdint.h>
 
+#include <algorithm>
 #include <vector>
 
-#include "base/containers/contains.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/task_manager/providers/task.h"
@@ -99,12 +99,12 @@ class FallbackTaskProviderTest : public testing::Test,
 
   // task_manager::TaskProviderObserver:
   void TaskAdded(Task* task) override {
-    EXPECT_FALSE(base::Contains(seen_tasks_, task));
+    EXPECT_FALSE(std::ranges::contains(seen_tasks_, task));
     seen_tasks_.emplace_back(task);
   }
 
   void TaskRemoved(Task* task) override {
-    EXPECT_TRUE(base::Contains(seen_tasks_, task));
+    EXPECT_TRUE(std::ranges::contains(seen_tasks_, task));
     std::erase(seen_tasks_, task);
   }
 

@@ -33,10 +33,6 @@ namespace os_crypt_async {
 
 namespace features {
 
-// If enabled, App-Bound encryption will request that the version 3 key be used
-// for data encryption by the elevated service.
-BASE_DECLARE_FEATURE(kAppBoundEncryptionKeyV3);
-
 // If enabled, will re-generate a new key for catastrophic failures. See
 // `DetermineErrorType` in the cc file for the two current cases.
 BASE_DECLARE_FEATURE(kRegenerateKeyForCatastrophicFailures);

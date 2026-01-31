@@ -28,6 +28,7 @@ class VariationsService;
 namespace regional_capabilities {
 class RegionalCapabilitiesService;
 struct ChoiceScreenEligibilityConfig;
+enum class SearchEngineChoiceScreenConditions;
 }  // namespace regional_capabilities
 namespace TemplateURLPrepopulateData {
 class Resolver;
@@ -48,7 +49,6 @@ namespace search_engines {
 class ChoiceScreenData;
 class SearchEngineChoiceService;
 enum class ChoiceMadeLocation;
-enum class SearchEngineChoiceScreenConditions;
 enum class SearchEngineChoiceScreenEvents;
 enum class SearchEngineChoiceWipeReason;
 struct ChoiceCompletionMetadata;
@@ -122,7 +122,8 @@ class SearchEngineChoiceService : public KeyedService {
   // checks dynamic conditions, that can change from one call to the other
   // during a profile's lifetime. Should be checked right before showing a
   // choice screen.
-  SearchEngineChoiceScreenConditions GetDynamicChoiceScreenConditions(
+  regional_capabilities::SearchEngineChoiceScreenConditions
+  GetDynamicChoiceScreenConditions(
       const TemplateURLService& template_url_service) const;
 
   // Returns the choice screen eligibility condition most relevant for the
@@ -130,19 +131,20 @@ class SearchEngineChoiceService : public KeyedService {
   // such that if a non-eligible condition is returned, it would take at least a
   // restart for the state to change. So this state can be checked and cached
   // ahead of showing a choice screen.
-  SearchEngineChoiceScreenConditions GetStaticChoiceScreenConditions(
+  regional_capabilities::SearchEngineChoiceScreenConditions
+  GetStaticChoiceScreenConditions(
       const policy::PolicyService& policy_service,
       const TemplateURLService& template_url_service) const;
 
   // Records the specified choice screen condition at profile initialization.
   void RecordProfileLoadEligibility(
-      SearchEngineChoiceScreenConditions condition);
+      regional_capabilities::SearchEngineChoiceScreenConditions condition);
 
 #if BUILDFLAG(IS_IOS)
   // Records only the legacy static eligibility histograms. Note that on iOS,
   // the legacy histograms are not recorded by `RecordProfileLoadEligibility()`
   void RecordLegacyStaticEligibility(
-      SearchEngineChoiceScreenConditions condition);
+      regional_capabilities::SearchEngineChoiceScreenConditions condition);
 
   // Indicates whether the choice screen can be shown on a surface with a
   // particular "first run experience" status.
@@ -151,7 +153,7 @@ class SearchEngineChoiceService : public KeyedService {
 
   // Records the specified choice screen condition for relevant navigations.
   void RecordTriggeringEligibility(
-      SearchEngineChoiceScreenConditions condition);
+      regional_capabilities::SearchEngineChoiceScreenConditions condition);
 
   // Records the specified choice screen event.
   void RecordChoiceScreenEvent(SearchEngineChoiceScreenEvents event);
@@ -186,40 +188,48 @@ class SearchEngineChoiceService : public KeyedService {
   // used by this service.
   Client& GetClientForTesting();
 
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
+  //
+  // LINT.IfChange(ChoiceStatus)
   enum class ChoiceStatus {
     // Metadata indicates that a search engine choice has been made and is
     // considered valid.
-    kValid,
+    kValid = 0,
     // No search engine choice has been made yet.
-    kNotMade,
+    kNotMade = 1,
     // The current search engine choice has been made on a different device.
-    kFromRestoredDevice,
+    kFromRestoredDevice = 2,
     // There is no default search provider available, likely disabled by
     // enterprise policies.
-    kDefaultSearchDisabled,
+    kDefaultSearchDisabled = 3,
     // The current default search provider is set by enterprise policies.
-    kCurrentIsSetByPolicy,
+    kCurrentIsSetByPolicy = 4,
     // The current default search provider is set by an extension.
-    kCurrentIsSetByExtension,
+    kCurrentIsSetByExtension = 5,
     // The current default search provider is non-Google prepopulated one.
-    kCurrentIsNonGooglePrepopulated,
+    kCurrentIsNonGooglePrepopulated = 6,
     // The current default search provider is a custom, client-specified URL.
     // For example, it could be entered manually by the user or picked up as
     // site search.
-    kCurrentIsNotPrepopulated,
+    kCurrentIsNotPrepopulated = 7,
     // The current default search provider is coming from search provider
     // overrides set by the admin or non-standard distribution channel.
-    kCurrentIsDistributionCustom,
+    kCurrentIsDistributionCustom = 8,
     // The current default search provider has a prepopulated ID that doesn't
     // match any of the preopulated engines currently available.
-    kCurrentIsUnknownPrepopulated,
+    kCurrentIsUnknownPrepopulated = 9,
     // The user is not eligible for the choice screen based on their account
     // capabilities.
-    kAccountNotEligible,
+    kAccountNotEligible = 10,
     // The device is not eligible for the choice screen based on its management
     // status.
-    kManaged,
+    kManaged = 11,
+
+    kMaxValue = kManaged
   };
+  // LINT.ThenChange(/tools/metrics/histograms/metadata/search/enums.xml:SearchEngineChoiceStatus)
+
   ChoiceStatus EvaluateSearchProviderChoiceForTesting(
       const TemplateURLService& template_url_service);
 
@@ -241,7 +251,7 @@ class SearchEngineChoiceService : public KeyedService {
 
   void RemoveObserver(Observer* obs) { observers_.RemoveObserver(obs); }
 
-  std::optional<SearchEngineChoiceScreenConditions>
+  std::optional<regional_capabilities::SearchEngineChoiceScreenConditions>
   recorded_profile_load_choice_screen_eligibility() const {
     return recorded_profile_load_choice_screen_eligibility_;
   }
@@ -292,7 +302,7 @@ class SearchEngineChoiceService : public KeyedService {
   const raw_ref<policy::ManagementService> platform_management_service_;
   base::ObserverList<Observer> observers_;
 
-  std::optional<SearchEngineChoiceScreenConditions>
+  std::optional<regional_capabilities::SearchEngineChoiceScreenConditions>
       recorded_profile_load_choice_screen_eligibility_;
 
   // Used to track whether `MaybeRecordChoiceScreenDisplayState()` has already

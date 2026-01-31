@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.privacy_sandbox;
 
+import static org.chromium.chrome.browser.url_constants.UrlConstantResolver.getOriginalNativeNtpUrl;
+
 import android.view.View;
 
 import androidx.test.espresso.UiController;
@@ -36,7 +38,6 @@ import org.chromium.chrome.test.OverrideContextWrapperTestRule;
 import org.chromium.chrome.test.transit.ChromeTransitTestRules;
 import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
 import org.chromium.chrome.test.transit.ntp.RegularNewTabPageStation;
-import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.messages.DismissReason;
 import org.chromium.components.messages.MessageBannerProperties;
 import org.chromium.components.messages.MessageDispatcher;
@@ -175,7 +176,7 @@ public class PrivacySandboxSurveyControllerIntegrationTest {
     @Test
     @MediumTest
     public void sentimentSurveyNotShown() {
-        mActivityTestRule.loadUrlInNewTab(UrlConstants.NTP_URL);
+        mActivityTestRule.loadUrlInNewTab(getOriginalNativeNtpUrl());
         Assert.assertFalse(
                 "Survey was displayed.",
                 mTestSurveyComponentRule.isPromptShownForTriggerId(

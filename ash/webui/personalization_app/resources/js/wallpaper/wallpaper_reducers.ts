@@ -294,7 +294,7 @@ function localReducer(
         images: Array.isArray(state.images) ?
             state.images.filter(img => isNonEmptyFilePath(img)) :
             null,
-        data: {...state.data, [kDefaultImageSymbol]: {url: ''}},
+        data: {...state.data, [kDefaultImageSymbol]: ''},
       };
 
     case WallpaperActionName.SET_LOCAL_IMAGES: {
@@ -325,7 +325,7 @@ function localReducer(
               return result;
             },
             // Set the default value for |kDefaultImageSymbol| here.
-            {[kDefaultImageSymbol]: {url: ''}} as typeof state.data),
+            {[kDefaultImageSymbol]: ''} as typeof state.data),
       };
     }
     case WallpaperActionName.SET_LOCAL_IMAGE_DATA:

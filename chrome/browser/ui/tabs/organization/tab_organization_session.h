@@ -42,7 +42,6 @@ class TabOrganizationSession : public TabOrganization::Observer {
   TabOrganizationSession();
   explicit TabOrganizationSession(
       std::unique_ptr<TabOrganizationRequest> request,
-      TabOrganizationEntryPoint entrypoint = TabOrganizationEntryPoint::kNone,
       const tabs::TabInterface* base_session_tab = nullptr);
   ~TabOrganizationSession() override;
 
@@ -59,7 +58,6 @@ class TabOrganizationSession : public TabOrganization::Observer {
 
   static std::unique_ptr<TabOrganizationSession> CreateSessionForBrowser(
       const Browser* browser,
-      const TabOrganizationEntryPoint entrypoint,
       const tabs::TabInterface* base_session_tab = nullptr);
 
   const TabOrganization* GetNextTabOrganization() const;
@@ -112,9 +110,6 @@ class TabOrganizationSession : public TabOrganization::Observer {
   // Represents whether the user has provided feedback via the thumbs UI.
   optimization_guide::proto::UserFeedback feedback_ =
       optimization_guide::proto::UserFeedback::USER_FEEDBACK_UNSPECIFIED;
-
-  // Entry point used to create the session. Used for logging.
-  TabOrganizationEntryPoint entrypoint_;
 
   // Active tab web contents tied to the session, if any.
   raw_ptr<const tabs::TabInterface> base_session_tab_;

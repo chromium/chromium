@@ -51,8 +51,9 @@ class AutofillPaymentMethodsDelegate {
   void DeleteSavedCvcs(JNIEnv* env);
 
  private:
-  raw_ptr<Profile> profile_;                            // weak reference
-  raw_ptr<PersonalDataManager> personal_data_manager_;  // weak reference
+  raw_ptr<Profile> profile_ = nullptr;  // weak reference
+  raw_ptr<PersonalDataManager> personal_data_manager_ =
+      nullptr;  // weak reference
   std::unique_ptr<payments::MultipleRequestPaymentsNetworkInterface>
       multiple_request_payments_network_interface_;
   std::unique_ptr<VirtualCardEnrollmentManager>

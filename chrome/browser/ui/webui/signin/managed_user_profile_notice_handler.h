@@ -96,13 +96,13 @@ class ManagedUserProfileNoticeHandler
       ManagedUserProfileNoticeHandlerTest,
       GetManagedAccountTitleWithEmailInterceptionEnforcedByInterceptedAccount);
 
-  void HandleInitialized(const base::Value::List& args);
+  void HandleInitialized(const base::ListValue& args);
   // Handles the web ui message sent when the html content is done being laid
   // out and it's time to resize the native view hosting it to fit. |args| is
   // a single integer value for the height the native view should resize to.
-  void HandleInitializedWithSize(const base::Value::List& args);
-  void HandleProceed(const base::Value::List& args);
-  void HandleCancel(const base::Value::List& args);
+  void HandleInitializedWithSize(const base::ListValue& args);
+  void HandleProceed(const base::ListValue& args);
+  void HandleCancel(const base::ListValue& args);
 
   void OnLongProcessingTime();
 
@@ -119,7 +119,7 @@ class ManagedUserProfileNoticeHandler
       const std::u16string& email);
 
   // Computes the profile info (avatar and strings) to be sent to the WebUI.
-  base::Value::Dict GetProfileInfoValue();
+  base::DictValue GetProfileInfoValue();
 
   // Returns the ProfilesAttributesEntry associated with the current profile.
   ProfileAttributesEntry* GetProfileEntry() const;

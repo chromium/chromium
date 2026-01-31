@@ -13,6 +13,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/notreached.h"
+#include "base/pickle.h"
 #include "base/scoped_observation.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
@@ -67,8 +68,8 @@ class BookmarkUIOperationsHelperTest : public testing::Test {
     profile_ = profile_builder.Build();
     profile_->GetTestingPrefService()->SetManagedPref(
         bookmarks::prefs::kManagedBookmarks,
-        base::Value::List().Append(
-            base::Value::Dict()
+        base::ListValue().Append(
+            base::DictValue()
                 .Set("name", "Google")
                 .Set("url", GURL("http://google.com/").spec())));
     CHECK(managed_bookmark_service());
@@ -430,6 +431,41 @@ TYPED_TEST(BookmarkUIOperationsHelperTest, PasteNonEditableNodes) {
   // But it can't be pasted into a non-editable folder.
   helper = this->CreateHelper(this->managed_bookmark_service()->managed_node());
   EXPECT_FALSE(helper->CanPasteFromClipboard());
+}
+
+TYPED_TEST(BookmarkUIOperationsHelperTest, PasteBookmarkFromEmptyBookmarkNode) {
+  // Only when bookmarks are copied to the BookmarkPermanentNode will
+  // PermanentFolderOrderingTracker::AddNodesAsCopiesOfNodeData be invoked.
+  const BookmarkNode* bar_folder = this->model()->bookmark_bar_node();
+  internal::BookmarkUIOperationsHelper* helper = this->CreateHelper(bar_folder);
+
+  // Now we shouldn't be able to paste from the clipboard.
+  EXPECT_FALSE(helper->CanPasteFromClipboard());
+  EXPECT_FALSE(bookmarks::BookmarkNodeData::ClipboardContainsBookmarks());
+
+  // Write empty bookmark node to the clipboard.
+  std::string url = "http://www.google.com/";
+  base::Pickle pickle;
+  bookmarks::BookmarkNodeData().WriteToPickle(base::FilePath(), &pickle);
+  {
+    ui::ScopedClipboardWriter clipboard_writer(ui::ClipboardBuffer::kCopyPaste);
+    clipboard_writer.WriteBookmark(u"foobar", url);
+    clipboard_writer.WritePickledData(
+        pickle, ui::ClipboardFormatType::CustomPlatformType(
+                    std::string("chromium/x-bookmark-entries")));
+  }
+
+  // Now we should be able to paste from the clipboard.
+  EXPECT_TRUE(helper->CanPasteFromClipboard());
+  EXPECT_TRUE(bookmarks::BookmarkNodeData::ClipboardContainsBookmarks());
+
+  // Load from the pickle data first; the bookmark node data is empty at this
+  // point, fall back to loading from Clipboard::BookmarkData. Otherwise, the
+  // empty BookmarkNodeData::Element will trigger a CHECK assertion in
+  // PermanentFolderOrderingTracker::AddNodesAsCopiesOfNodeData.
+  helper->PasteFromClipboard(0);
+  ASSERT_EQ(1u, bar_folder->children().size());
+  EXPECT_EQ(url, bar_folder->children()[0]->url().spec());
 }
 
 #endif  // !BUILDFLAG(IS_MAC)

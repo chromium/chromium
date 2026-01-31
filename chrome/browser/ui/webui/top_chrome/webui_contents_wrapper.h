@@ -74,8 +74,6 @@ class WebUIContentsWrapper : public content::WebContentsDelegate,
         const blink::mojom::WindowFeatures& window_features,
         bool user_gesture,
         bool* was_blocked);
-    virtual bool PreHandleGestureEvent(content::WebContents* source,
-                                       const blink::WebGestureEvent& event);
   };
 
   WebUIContentsWrapper(const GURL& webui_url,
@@ -125,8 +123,6 @@ class WebUIContentsWrapper : public content::WebContentsDelegate,
       const blink::mojom::WindowFeatures& window_features,
       bool user_gesture,
       bool* was_blocked) override;
-  bool PreHandleGestureEvent(content::WebContents* source,
-                             const blink::WebGestureEvent& event) override;
 
   // content::WebContentsObserver:
   void PrimaryPageChanged(content::Page& page) override;

@@ -185,7 +185,7 @@ const char* HttpAuth::AuthorizationResultToString(
 }
 
 // static
-base::Value::Dict HttpAuth::NetLogAuthorizationResultParams(
+base::DictValue HttpAuth::NetLogAuthorizationResultParams(
     const char* name,
     AuthorizationResult authorization_result) {
   return NetLogParamsWithString(

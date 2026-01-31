@@ -101,7 +101,7 @@ void TabStripModelAdapterImpl::MoveTab(tabs::TabHandle tab,
   const tabs::TabCollection* collection = collection_handle.value().Get();
   const bool to_pinned =
       (collection->type() == tabs::TabCollection::Type::PINNED);
-  if (to_pinned != tab_strip_model_->IsTabPinned(index)) {
+  if (to_pinned != tab.Get()->IsPinned()) {
     // Modify the start position if tab has been moved from pinned to
     // unpinned or vice versa.
     index = tab_strip_model_->SetTabPinned(index, to_pinned);

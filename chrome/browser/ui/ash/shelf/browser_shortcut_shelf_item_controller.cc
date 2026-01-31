@@ -155,7 +155,8 @@ ash::BrowserDelegate* FindNormalBrowserOnActiveDesk(
 }
 
 AccountId GetAccountId(Profile* profile) {
-  return CHECK_DEREF(ash::AnnotatedAccountId::Get(profile));
+  return CHECK_DEREF(
+      ash::AnnotatedAccountId::Get(profile->GetOriginalProfile()));
 }
 
 }  // namespace

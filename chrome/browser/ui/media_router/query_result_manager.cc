@@ -8,7 +8,6 @@
 #include <unordered_set>
 #include <utility>
 
-#include "base/containers/contains.h"
 #include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "components/media_router/browser/media_router.h"
@@ -173,7 +172,7 @@ std::vector<MediaSinkWithCastModes> QueryResultManager::GetSinksWithCastModes()
     sinks.push_back(sink_with_cast_modes);
   }
   for (const auto& sink : all_sinks_) {
-    if (!base::Contains(sinks_with_sources_, sink.id())) {
+    if (!sinks_with_sources_.contains(sink.id())) {
       sinks.emplace_back(sink);
     }
   }
@@ -190,7 +189,7 @@ void QueryResultManager::RemoveOldSourcesForCastMode(
   }
 
   for (const MediaSource& source : cast_mode_it->second) {
-    if (!base::Contains(new_sources, source)) {
+    if (!std::ranges::contains(new_sources, source)) {
       sinks_observers_.erase(source);
       SetSinksCompatibleWithSource(cast_mode, source, std::vector<MediaSink>());
     }
@@ -202,7 +201,7 @@ void QueryResultManager::AddObserversForCastMode(
     const std::vector<MediaSource>& sources,
     const url::Origin& origin) {
   for (const MediaSource& source : sources) {
-    if (!base::Contains(sinks_observers_, source)) {
+    if (!sinks_observers_.contains(source)) {
       auto observer = std::make_unique<MediaSourceMediaSinksObserver>(
           cast_mode, source, origin, router_, this);
       observer->Init();
@@ -226,7 +225,7 @@ void QueryResultManager::SetSinksCompatibleWithSource(
        /* no-op */) {
     const MediaSink::Id& sink_id = it->first;
     CastModesWithMediaSources& sources_for_sink = it->second;
-    if (!base::Contains(new_sink_ids, sink_id)) {
+    if (!new_sink_ids.contains(sink_id)) {
       sources_for_sink.RemoveSource(cast_mode, source);
     }
     if (sources_for_sink.IsEmpty()) {
@@ -279,8 +278,9 @@ bool QueryResultManager::AreSourcesValidForCastMode(
   // If a source has already been registered, then it must be associated with
   // |cast_mode|.
   return std::ranges::none_of(sources, [=, this](const MediaSource& source) {
-    return base::Contains(sinks_observers_, source) &&
-           (!has_cast_mode || !base::Contains(cast_mode_it->second, source));
+    return sinks_observers_.contains(source) &&
+           (!has_cast_mode ||
+            !std::ranges::contains(cast_mode_it->second, source));
   });
 }
 

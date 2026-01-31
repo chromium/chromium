@@ -170,13 +170,13 @@ void ReloadExtension(const std::string& extension_id, Profile* profile) {
 }  // namespace
 
 // Keys for the information we store about individual BackgroundContents in
-// prefs. There is one top-level base::Value::Dict (stored at
+// prefs. There is one top-level base::DictValue (stored at
 // prefs::kRegisteredBackgroundContents). Information about each
-// BackgroundContents is stored under that top-level base::Value::Dict, keyed
+// BackgroundContents is stored under that top-level base::DictValue, keyed
 // by the parent application ID for easy lookup.
 //
 // kRegisteredBackgroundContents:
-//    base::Value::Dict {
+//    base::DictValue {
 //       <appid_1>: { "url": <url1>, "name": <frame_name> },
 //       <appid_2>: { "url": <url2>, "name": <frame_name> },
 //         ... etc ...
@@ -418,7 +418,7 @@ void BackgroundContentsService::RestartForceInstalledExtensionOnCrash(
 void BackgroundContentsService::LoadBackgroundContentsFromPrefs() {
   if (!prefs_)
     return;
-  const base::Value::Dict& contents =
+  const base::DictValue& contents =
       prefs_->GetDict(prefs::kRegisteredBackgroundContents);
   extensions::ExtensionRegistry* extension_registry =
       extensions::ExtensionRegistry::Get(profile_);
@@ -481,19 +481,19 @@ void BackgroundContentsService::LoadBackgroundContentsForExtension(
   // Now look in the prefs.
   if (!prefs_)
     return;
-  const base::Value::Dict& contents =
+  const base::DictValue& contents =
       prefs_->GetDict(prefs::kRegisteredBackgroundContents);
   LoadBackgroundContentsFromDictionary(extension_id, contents);
 }
 
 void BackgroundContentsService::LoadBackgroundContentsFromDictionary(
     const std::string& extension_id,
-    const base::Value::Dict& contents) {
+    const base::DictValue& contents) {
   extensions::ExtensionService* extensions_service =
       extensions::ExtensionSystem::Get(profile_)->extension_service();
   DCHECK(extensions_service);
 
-  const base::Value::Dict* dict = contents.FindDict(extension_id);
+  const base::DictValue* dict = contents.FindDict(extension_id);
   if (!dict)
     return;
 
@@ -577,14 +577,14 @@ void BackgroundContentsService::RegisterBackgroundContents(
   // We store the first URL we receive for a given application. If there's
   // already an entry for this application, no need to do anything.
   ScopedDictPrefUpdate update(prefs_, prefs::kRegisteredBackgroundContents);
-  base::Value::Dict& pref = update.Get();
+  base::DictValue& pref = update.Get();
   const std::string& appid = GetParentApplicationId(background_contents);
   if (pref.FindDict(appid)) {
     return;
   }
 
   // No entry for this application yet, so add one.
-  base::Value::Dict dict;
+  base::DictValue dict;
   dict.Set(kUrlKey, background_contents->GetURL().spec());
   dict.Set(kFrameNameKey, contents_map_[appid].frame_name);
   pref.Set(appid, std::move(dict));
@@ -594,7 +594,7 @@ bool BackgroundContentsService::HasRegisteredBackgroundContents(
     const std::string& app_id) {
   if (!prefs_)
     return false;
-  const base::Value::Dict& contents =
+  const base::DictValue& contents =
       prefs_->GetDict(prefs::kRegisteredBackgroundContents);
   return contents.Find(app_id);
 }

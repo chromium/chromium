@@ -49,7 +49,7 @@ constexpr char kDisableCodeGenConfigKey[] = "disable-codegen";
 
 // Returns the value of |config_key| or false if it is not set.
 bool GetConfigBool(std::string_view config_key) {
-  const std::optional<base::Value::Dict>& config =
+  const std::optional<base::DictValue>& config =
       fuchsia_component_support::LoadPackageConfig();
   if (config)
     return config->FindBool(config_key).value_or(false);

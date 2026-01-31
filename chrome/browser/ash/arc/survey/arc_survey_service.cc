@@ -121,8 +121,7 @@ bool ArcSurveyService::LoadSurveyData(std::string survey_data) {
   }
 
   // Load package names
-  const base::Value::List* list =
-      root->GetDict().FindList(kJSONKeyPackageNames);
+  const base::ListValue* list = root->GetDict().FindList(kJSONKeyPackageNames);
   if (!list) {
     VLOG(1) << "List of package names not found in the survey data.";
     return false;

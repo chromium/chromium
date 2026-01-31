@@ -16,7 +16,7 @@ class MandatoryReauthBubbleController;
 class MandatoryReauthConfirmationBubbleView : public AutofillLocationBarBubble {
  public:
   MandatoryReauthConfirmationBubbleView(
-      views::View* anchor_view,
+      views::BubbleAnchor anchor,
       content::WebContents* web_contents,
       MandatoryReauthBubbleController* controller);
   MandatoryReauthConfirmationBubbleView(

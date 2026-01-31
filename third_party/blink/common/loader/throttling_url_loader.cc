@@ -4,10 +4,10 @@
 
 #include "third_party/blink/public/common/loader/throttling_url_loader.h"
 
+#include <algorithm>
 #include <string_view>
 #include <vector>
 
-#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
@@ -28,6 +28,7 @@
 #include "services/network/public/mojom/early_hints.mojom.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "third_party/blink/public/mojom/origin_trials/origin_trial_feature.mojom-shared.h"
+#include "third_party/perfetto/include/perfetto/tracing/track_event_args.h"
 
 namespace blink {
 
@@ -43,7 +44,7 @@ void RemoveModifiedHeadersBeforeMerge(
 void MergeRemovedHeaders(std::vector<std::string>* removed_headers_A,
                          const std::vector<std::string>& removed_headers_B) {
   for (auto& header : removed_headers_B) {
-    if (!base::Contains(*removed_headers_A, header))
+    if (!std::ranges::contains(*removed_headers_A, header))
       removed_headers_A->emplace_back(std::move(header));
   }
 }
@@ -68,7 +69,7 @@ void CheckThrottleWillNotCauseCorsPreflight(
   base::flat_set<std::string> cors_exempt_header_flat_set(
       cors_exempt_header_list);
   for (auto& header : headers.GetHeaderVector()) {
-    if (!base::Contains(initial_headers, header.key) &&
+    if (!initial_headers.contains(header.key) &&
         !network::cors::IsCorsSafelistedHeader(header.key, header.value) &&
         net::HttpUtil::IsSafeHeader(header.key, header.value)) {
       bool is_cors_exempt = cors_exempt_header_flat_set.count(header.key);
@@ -85,7 +86,7 @@ void CheckThrottleWillNotCauseCorsPreflight(
 
   for (auto& header : cors_exempt_headers.GetHeaderVector()) {
     if (cors_exempt_header_flat_set.count(header.key) == 0 &&
-        !base::Contains(initial_cors_exempt_headers, header.key)) {
+        !initial_cors_exempt_headers.contains(header.key)) {
       NOTREACHED()
           << "Throttle added cors exempt header " << header.key
           << " but it wasn't configured as cors exempt by the browser. See "
@@ -294,8 +295,8 @@ std::unique_ptr<ThrottlingURLLoader> ThrottlingURLLoader::CreateLoaderAndStart(
 }
 
 ThrottlingURLLoader::~ThrottlingURLLoader() {
-  TRACE_EVENT_WITH_FLOW0("loading", "ThrottlingURLLoader::~ThrottlingURLLoader",
-                         TRACE_ID_LOCAL(this), TRACE_EVENT_FLAG_FLOW_IN);
+  TRACE_EVENT("loading", "ThrottlingURLLoader::~ThrottlingURLLoader",
+              perfetto::TerminatingFlow::FromPointer(this));
   if (inside_delegate_calls_ > 0) {
     // A throttle is calling into this object. In this case, delay destruction
     // of the throttles, so that throttles don't need to worry about any
@@ -407,8 +408,8 @@ ThrottlingURLLoader::ThrottlingURLLoader(
     : forwarding_client_(client),
       client_receiver_delegate_(std::move(client_receiver_delegate)),
       traffic_annotation_(traffic_annotation) {
-  TRACE_EVENT_WITH_FLOW0("loading", "ThrottlingURLLoader::ThrottlingURLLoader",
-                         TRACE_ID_LOCAL(this), TRACE_EVENT_FLAG_FLOW_OUT);
+  TRACE_EVENT("loading", "ThrottlingURLLoader::ThrottlingURLLoader",
+              perfetto::Flow::FromPointer(this));
   throttles_.reserve(throttles.size());
   for (auto& throttle : throttles)
     throttles_.emplace_back(this, std::move(throttle));
@@ -422,10 +423,8 @@ void ThrottlingURLLoader::Start(
     scoped_refptr<base::SequencedTaskRunner> task_runner,
     std::optional<std::vector<std::string>> cors_exempt_header_list,
     const std::vector<int>* initiator_origin_trial_features) {
-  TRACE_EVENT_WITH_FLOW1("loading", "ThrottlingURLLoader::Start",
-                         TRACE_ID_LOCAL(this),
-                         TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT,
-                         "request_id", request_id);
+  TRACE_EVENT("loading", "ThrottlingURLLoader::Start",
+              perfetto::Flow::FromPointer(this), "request_id", request_id);
   DCHECK_EQ(DEFERRED_NONE, deferred_stage_);
   DCHECK(!loader_completed_);
 
@@ -486,11 +485,11 @@ void ThrottlingURLLoader::Start(
   }
 
   if (initiator_origin_trial_features &&
-      (base::Contains(
+      (std::ranges::contains(
            *initiator_origin_trial_features,
            static_cast<int>(
                mojom::OriginTrialFeature::kDeviceBoundSessionCredentials)) ||
-       base::Contains(
+       std::ranges::contains(
            *initiator_origin_trial_features,
            static_cast<int>(
                mojom::OriginTrialFeature::kDeviceBoundSessionCredentials2)))) {
@@ -508,9 +507,8 @@ void ThrottlingURLLoader::Start(
 }
 
 void ThrottlingURLLoader::StartNow() {
-  TRACE_EVENT_WITH_FLOW0("loading", "ThrottlingURLLoader::StartNow",
-                         TRACE_ID_LOCAL(this),
-                         TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT);
+  TRACE_EVENT("loading", "ThrottlingURLLoader::StartNow",
+              perfetto::Flow::FromPointer(this));
   DCHECK(start_info_);
   if (!throttle_will_start_redirect_url_.is_empty()) {
     auto first_party_url_policy =
@@ -646,10 +644,9 @@ void ThrottlingURLLoader::OnReceiveResponse(
   DCHECK_EQ(DEFERRED_NONE, deferred_stage_);
   DCHECK(!loader_completed_);
   DCHECK(deferring_throttles_.empty());
-  TRACE_EVENT_WITH_FLOW1("loading", "ThrottlingURLLoader::OnReceiveResponse",
-                         TRACE_ID_LOCAL(this),
-                         TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT,
-                         "url", response_url_.possibly_invalid_spec());
+  TRACE_EVENT("loading", "ThrottlingURLLoader::OnReceiveResponse",
+              perfetto::Flow::FromPointer(this), "url",
+              response_url_.possibly_invalid_spec());
   if (client_receiver_delegate_) {
     client_receiver_delegate_->OnReceiveResponse(
         std::move(response_head), std::move(body), std::move(cached_metadata));

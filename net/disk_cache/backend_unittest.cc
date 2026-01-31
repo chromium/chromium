@@ -16,6 +16,7 @@
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/memory_pressure_listener.h"
+#include "base/memory/memory_pressure_listener_registry.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/field_trial.h"
 #include "base/run_loop.h"
@@ -210,6 +211,9 @@ class DiskCacheBackendTest : public DiskCacheTestWithCache {
   void Test2GiBLimit(net::CacheType type,
                      net::BackendType backend_type,
                      bool expect_limit);
+
+ private:
+  base::MemoryPressureListenerRegistry memory_pressure_listener_registry_;
 };
 
 class DiskCacheGenericBackendTest
@@ -4310,7 +4314,13 @@ TEST_F(DiskCacheBackendTest, SimpleCacheLateDoom) {
             simple_cache_impl_->index()->init_method());
 }
 
-TEST_F(DiskCacheBackendTest, SimpleCacheNegMaxSize) {
+// TODO(crbug.com/475586889): Test has flaked regularly.
+#if BUILDFLAG(IS_ANDROID)
+#define MAYBE_SimpleCacheNegMaxSize DISABLED_SimpleCacheNegMaxSize
+#else
+#define MAYBE_SimpleCacheNegMaxSize SimpleCacheNegMaxSize
+#endif
+TEST_F(DiskCacheBackendTest, MAYBE_SimpleCacheNegMaxSize) {
   SetCacheType(net::GENERATED_BYTE_CODE_CACHE);
 
   SetMaxSize(-1);
@@ -5932,3 +5942,17 @@ INSTANTIATE_TEST_SUITE_P(
     [](const testing::TestParamInfo<BackendToTest>& info) {
       return DiskCacheTestWithCache::BackendToTestName(info.param);
     });
+
+#if !BUILDFLAG(IS_FUCHSIA)
+TEST_F(DiskCacheTest, TimeToInitDiskCache) {
+  base::HistogramTester histogram_tester;
+  TestBackendResultCompletionCallback cb;
+  disk_cache::BackendResult rv = disk_cache::CreateCacheBackend(
+      net::DISK_CACHE, net::CACHE_BACKEND_DEFAULT,
+      /*file_operations=*/nullptr, cache_path_, 0,
+      disk_cache::ResetHandling::kNeverReset, nullptr, nullptr, cb.callback());
+  rv = cb.GetResult(std::move(rv));
+  ASSERT_THAT(rv.net_error, IsOk());
+  histogram_tester.ExpectTotalCount("HttpCache.TimeToInitDiskCache", 1);
+}
+#endif  // !BUILDFLAG(IS_FUCHSIA)

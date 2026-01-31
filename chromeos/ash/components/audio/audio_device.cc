@@ -7,7 +7,6 @@
 #include <stdint.h>
 
 #include "ash/constants/ash_features.h"
-#include "base/containers/contains.h"
 #include "base/format_macros.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
@@ -96,42 +95,42 @@ std::string AudioDevice::GetTypeString(AudioDeviceType type) {
 
 // static
 AudioDeviceType AudioDevice::GetAudioType(const std::string& node_type) {
-  if (base::Contains(node_type, "HEADPHONE")) {
+  if (node_type.contains("HEADPHONE")) {
     return AudioDeviceType::kHeadphone;
-  } else if (base::Contains(node_type, "INTERNAL_MIC")) {
+  } else if (node_type.contains("INTERNAL_MIC")) {
     return AudioDeviceType::kInternalMic;
-  } else if (base::Contains(node_type, "FRONT_MIC")) {
+  } else if (node_type.contains("FRONT_MIC")) {
     return AudioDeviceType::kFrontMic;
-  } else if (base::Contains(node_type, "REAR_MIC")) {
+  } else if (node_type.contains("REAR_MIC")) {
     return AudioDeviceType::kRearMic;
-  } else if (base::Contains(node_type, "KEYBOARD_MIC")) {
+  } else if (node_type.contains("KEYBOARD_MIC")) {
     return AudioDeviceType::kKeyboardMic;
-  } else if (base::Contains(node_type, "BLUETOOTH_NB_MIC")) {
+  } else if (node_type.contains("BLUETOOTH_NB_MIC")) {
     return AudioDeviceType::kBluetoothNbMic;
-  } else if (base::Contains(node_type, "MIC")) {
+  } else if (node_type.contains("MIC")) {
     return AudioDeviceType::kMic;
-  } else if (base::Contains(node_type, "USB")) {
+  } else if (node_type.contains("USB")) {
     return AudioDeviceType::kUsb;
-  } else if (base::Contains(node_type, "BLUETOOTH")) {
+  } else if (node_type.contains("BLUETOOTH")) {
     return AudioDeviceType::kBluetooth;
-  } else if (base::Contains(node_type, "HDMI")) {
+  } else if (node_type.contains("HDMI")) {
     return AudioDeviceType::kHdmi;
-  } else if (base::Contains(node_type, "INTERNAL_SPEAKER")) {
+  } else if (node_type.contains("INTERNAL_SPEAKER")) {
     return AudioDeviceType::kInternalSpeaker;
   }
   // TODO(hychao): Remove the 'AOKR' matching line after CRAS switches
   // node type naming to 'HOTWORD'.
-  else if (base::Contains(node_type, "AOKR")) {
+  else if (node_type.contains("AOKR")) {
     return AudioDeviceType::kHotword;
-  } else if (base::Contains(node_type, "HOTWORD")) {
+  } else if (node_type.contains("HOTWORD")) {
     return AudioDeviceType::kHotword;
-  } else if (base::Contains(node_type, "LINEOUT")) {
+  } else if (node_type.contains("LINEOUT")) {
     return AudioDeviceType::kLineout;
-  } else if (base::Contains(node_type, "POST_MIX_LOOPBACK")) {
+  } else if (node_type.contains("POST_MIX_LOOPBACK")) {
     return AudioDeviceType::kPostMixLoopback;
-  } else if (base::Contains(node_type, "POST_DSP_LOOPBACK")) {
+  } else if (node_type.contains("POST_DSP_LOOPBACK")) {
     return AudioDeviceType::kPostDspLoopback;
-  } else if (base::Contains(node_type, "ALSA_LOOPBACK")) {
+  } else if (node_type.contains("ALSA_LOOPBACK")) {
     return AudioDeviceType::kAlsaLoopback;
   } else {
     return AudioDeviceType::kOther;

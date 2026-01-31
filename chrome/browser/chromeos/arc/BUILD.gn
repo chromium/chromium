@@ -58,6 +58,7 @@ source_set("unit_tests") {
     "//chrome/app:generated_resources",
     "//chrome/browser",
     "//chrome/browser/ash/browser_delegate:impl",
+    "//chrome/browser/sharing",
     "//chrome/test:test_support",
     "//chromeos/ash/experiences/arc:arc_test_support",
     "//chromeos/ash/experiences/arc/intent_helper",

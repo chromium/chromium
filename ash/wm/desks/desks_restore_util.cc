@@ -104,11 +104,11 @@ void RestorePrimaryUserDesks() {
     return;
   }
 
-  const base::Value::List& desks_names_list =
+  const base::ListValue& desks_names_list =
       primary_user_prefs->GetList(prefs::kDesksNamesList);
-  const base::Value::List& desks_guids_list =
+  const base::ListValue& desks_guids_list =
       primary_user_prefs->GetList(prefs::kDesksGuidsList);
-  const base::Value::List& desks_metrics_list =
+  const base::ListValue& desks_metrics_list =
       primary_user_prefs->GetList(prefs::kDesksMetricsList);
 
   // First create the same number of desks.
@@ -227,7 +227,7 @@ void UpdatePrimaryUserDeskNamesPrefs() {
   }
 
   ScopedListPrefUpdate name_update(primary_user_prefs, prefs::kDesksNamesList);
-  base::Value::List& name_pref_data = name_update.Get();
+  base::ListValue& name_pref_data = name_update.Get();
   name_pref_data.clear();
 
   const auto& desks = DesksController::Get()->desks();
@@ -255,7 +255,7 @@ void UpdatePrimaryUserDeskGuidsPrefs() {
   }
 
   ScopedListPrefUpdate guid_update(primary_user_prefs, prefs::kDesksGuidsList);
-  base::Value::List& guid_pref_data = guid_update.Get();
+  base::ListValue& guid_pref_data = guid_update.Get();
   guid_pref_data.clear();
 
   const auto& desks = DesksController::Get()->desks();
@@ -279,14 +279,14 @@ void UpdatePrimaryUserDeskMetricsPrefs() {
   // Save per-desk metrics.
   ScopedListPrefUpdate metrics_update(primary_user_prefs,
                                       prefs::kDesksMetricsList);
-  base::Value::List& metrics_pref_data = metrics_update.Get();
+  base::ListValue& metrics_pref_data = metrics_update.Get();
   metrics_pref_data.clear();
 
   auto* desks_controller = DesksController::Get();
   const auto& desks = desks_controller->desks();
   for (const auto& desk : desks) {
-    base::Value::Dict metrics_dict =
-        base::Value::Dict()
+    base::DictValue metrics_dict =
+        base::DictValue()
             .Set(kCreationTimeKey,
                  desk->creation_time().ToDeltaSinceWindowsEpoch().InMinutes())
             .Set(kFirstDayVisitedKey, desk->first_day_visited())

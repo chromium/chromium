@@ -154,7 +154,7 @@ BASE_EXPORT CpuFrequencyInfo GetCpuFrequencyInfo() {
 }
 
 #if BUILDFLAG(IS_WIN)
-void GenerateCpuInfoForTracingMetadata(base::Value::Dict* metadata) {
+void GenerateCpuInfoForTracingMetadata(base::DictValue* metadata) {
   size_t num_cpu = static_cast<size_t>(base::SysInfo::NumberOfProcessors());
   std::vector<PROCESSOR_POWER_INFORMATION> info(num_cpu);
   if (!NT_SUCCESS(CallNtPowerInformation(

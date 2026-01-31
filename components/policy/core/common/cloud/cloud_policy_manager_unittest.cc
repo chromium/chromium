@@ -61,9 +61,9 @@ class TestHarness : public PolicyProviderTestHarness {
   void InstallBooleanPolicy(const std::string& policy_name,
                             bool policy_value) override;
   void InstallStringListPolicy(const std::string& policy_name,
-                               const base::Value::List& policy_value) override;
+                               const base::ListValue& policy_value) override;
   void InstallDictionaryPolicy(const std::string& policy_name,
-                               const base::Value::Dict& policy_value) override;
+                               const base::DictValue& policy_value) override;
 
   // Creates harnesses for mandatory and recommended levels, respectively.
   static PolicyProviderTestHarness* CreateMandatory();
@@ -134,17 +134,15 @@ void TestHarness::InstallBooleanPolicy(const std::string& policy_name,
                           nullptr);
 }
 
-void TestHarness::InstallStringListPolicy(
-    const std::string& policy_name,
-    const base::Value::List& policy_value) {
+void TestHarness::InstallStringListPolicy(const std::string& policy_name,
+                                          const base::ListValue& policy_value) {
   store_->policy_map_.Set(policy_name, policy_level(), policy_scope(),
                           POLICY_SOURCE_CLOUD,
                           base::Value(policy_value.Clone()), nullptr);
 }
 
-void TestHarness::InstallDictionaryPolicy(
-    const std::string& policy_name,
-    const base::Value::Dict& policy_value) {
+void TestHarness::InstallDictionaryPolicy(const std::string& policy_name,
+                                          const base::DictValue& policy_value) {
   store_->policy_map_.Set(policy_name, policy_level(), policy_scope(),
                           POLICY_SOURCE_CLOUD,
                           base::Value(policy_value.Clone()), nullptr);
@@ -203,6 +201,9 @@ class CloudPolicyManagerTest : public testing::Test {
         task_environment_.GetMainThreadTaskRunner());
     manager_->Init(&schema_registry_);
     Mock::VerifyAndClearExpectations(store_.get());
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+    Mock::VerifyAndClearExpectations(extension_install_store_.get());
+#endif
     manager_->AddObserver(&observer_);
   }
 
@@ -242,6 +243,9 @@ TEST_F(CloudPolicyManagerTest, InitAndShutdown) {
       std::make_unique<em::PolicyData>(policy_.policy_data()));
   EXPECT_CALL(observer_, OnUpdatePolicy(manager_.get()));
   store_->NotifyStoreLoaded();
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+  extension_install_store_->NotifyStoreLoaded();
+#endif
   Mock::VerifyAndClearExpectations(&observer_);
   EXPECT_TRUE(expected_bundle_.Equals(manager_->policies()));
   EXPECT_TRUE(manager_->IsInitializationComplete(POLICY_DOMAIN_CHROME));
@@ -265,6 +269,9 @@ TEST_F(CloudPolicyManagerTest, InitAndShutdown) {
 TEST_F(CloudPolicyManagerTest, RegistrationAndFetch) {
   EXPECT_CALL(observer_, OnUpdatePolicy(manager_.get()));
   store_->NotifyStoreLoaded();
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+  extension_install_store_->NotifyStoreLoaded();
+#endif
   Mock::VerifyAndClearExpectations(&observer_);
   EXPECT_TRUE(manager_->IsInitializationComplete(POLICY_DOMAIN_CHROME));
 
@@ -289,6 +296,9 @@ TEST_F(CloudPolicyManagerTest, RegistrationAndFetch) {
 TEST_F(CloudPolicyManagerTest, Update) {
   EXPECT_CALL(observer_, OnUpdatePolicy(manager_.get()));
   store_->NotifyStoreLoaded();
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+  extension_install_store_->NotifyStoreLoaded();
+#endif
   Mock::VerifyAndClearExpectations(&observer_);
   EXPECT_TRUE(manager_->IsInitializationComplete(POLICY_DOMAIN_CHROME));
   PolicyBundle empty_bundle;
@@ -308,6 +318,9 @@ TEST_F(CloudPolicyManagerTest, RefreshNotRegistered) {
 
   EXPECT_CALL(observer_, OnUpdatePolicy(manager_.get()));
   store_->NotifyStoreLoaded();
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+  extension_install_store_->NotifyStoreLoaded();
+#endif
   Mock::VerifyAndClearExpectations(&observer_);
 
   // A refresh on a non-registered store should not block.
@@ -326,6 +339,9 @@ TEST_F(CloudPolicyManagerTest, RefreshSuccessful) {
   EXPECT_CALL(observer_, OnUpdatePolicy(manager_.get()));
   EXPECT_CALL(*client, SetupRegistration(_, _, _));
   store_->NotifyStoreLoaded();
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+  extension_install_store_->NotifyStoreLoaded();
+#endif
   Mock::VerifyAndClearExpectations(client);
   Mock::VerifyAndClearExpectations(&observer_);
 
@@ -377,6 +393,9 @@ TEST_F(CloudPolicyManagerTest, ComponentPolicyInitWithPendingRefresh) {
   EXPECT_CALL(observer_, OnUpdatePolicy(manager_.get()));
   EXPECT_CALL(*client, SetupRegistration(_, _, _));
   store_->NotifyStoreLoaded();
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+  extension_install_store_->NotifyStoreLoaded();
+#endif
   Mock::VerifyAndClearExpectations(client);
   Mock::VerifyAndClearExpectations(&observer_);
 
@@ -416,6 +435,9 @@ TEST_F(CloudPolicyManagerTest, SignalOnError) {
   store_->set_policy_data_for_testing(
       std::make_unique<em::PolicyData>(policy_.policy_data()));
   EXPECT_CALL(observer_, OnUpdatePolicy(manager_.get()));
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+  extension_install_store_->NotifyStoreLoaded();
+#endif
   store_->NotifyStoreError();
   Mock::VerifyAndClearExpectations(&observer_);
 

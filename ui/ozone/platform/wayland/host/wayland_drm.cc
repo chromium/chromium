@@ -11,7 +11,7 @@
 #include "base/compiler_specific.h"
 #include "base/files/scoped_file.h"
 #include "base/logging.h"
-#include "ui/gfx/buffer_types.h"
+#include "components/viz/common/resources/shared_image_format.h"
 #include "ui/gfx/linux/drm_util_linux.h"
 #include "ui/ozone/platform/wayland/host/wayland_buffer_factory.h"
 #include "ui/ozone/platform/wayland/host/wayland_connection.h"
@@ -120,13 +120,14 @@ void WaylandDrm::AddSupportedFourCCFormat(uint32_t fourcc_format) {
   if (!IsValidBufferFormat(fourcc_format))
     return;
 
-  gfx::BufferFormat format = GetBufferFormatFromFourCCFormat(fourcc_format);
+  viz::SharedImageFormat format =
+      GetSharedImageFormatFromFourCCFormat(fourcc_format);
   // Modifiers are not supported by the |wl_drm|, but for consistency with the
   // WaylandZwpLinuxDmabuf we use the same map type, which is passed to the
   // WaylandBufferManagerGpu later during initialization stage of the GPU
   // process.
   std::vector<uint64_t> modifiers;
-  supported_buffer_formats_.emplace(format, std::move(modifiers));
+  supported_formats_.emplace(format, std::move(modifiers));
 }
 
 void WaylandDrm::Authenticate(const char* drm_device_path) {

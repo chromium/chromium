@@ -66,11 +66,6 @@ class OpaqueBrowserFrameViewLayout : public views::LayoutManager {
   // Retrieves the given frame button, if present.
   const views::Button* GetFrameButton(views::FrameButton which) const;
 
-  gfx::Rect GetBoundsForTabStripRegion(const gfx::Size& tabstrip_minimum_size,
-                                       int total_width) const;
-  gfx::Rect GetBoundsForWebAppFrameToolbar(
-      const gfx::Size& toolbar_preferred_size) const;
-
   // Returns the bounds of the window required to display the content area at
   // the specified bounds.
   gfx::Rect GetWindowBoundsForClientBounds(
@@ -183,6 +178,8 @@ class OpaqueBrowserFrameViewLayout : public views::LayoutManager {
   int minimum_size_for_buttons_ = 0;
 
  private:
+  friend class OpaqueBrowserFrameViewLayoutTest;
+
   // Layout various sub-components of this view.
   void LayoutWindowControls();
   void LayoutTitleBar();

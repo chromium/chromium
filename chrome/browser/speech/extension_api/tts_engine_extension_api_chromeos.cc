@@ -57,7 +57,7 @@ void TtsExtensionEngineChromeOS::Speak(content::TtsUtterance* utterance,
     current_utterance_profile_observer_.Observe(profile);
   }
 
-  base::Value::List args = BuildSpeakArgs(utterance, voice);
+  base::ListValue args = BuildSpeakArgs(utterance, voice);
   if (!RefreshAudioStreamOptionsForExtension(engine_id, profile) &&
       playback_tts_stream_ && audio_parameters_) {
     Play(std::move(args), engine_id, profile);
@@ -73,7 +73,7 @@ void TtsExtensionEngineChromeOS::Speak(content::TtsUtterance* utterance,
           playback_tts_stream_.BindNewPipeAndPassReceiver(),
           audio_parameters_.Clone(),
           base::BindOnce(
-              [](extensions::EventRouter* event_router, base::Value::List args,
+              [](extensions::EventRouter* event_router, base::ListValue args,
                  const std::string& engine_id, Profile* profile,
                  TtsExtensionEngineChromeOS* owner,
                  chromeos::tts::mojom::AudioParametersPtr audio_parameters) {
@@ -207,7 +207,7 @@ bool TtsExtensionEngineChromeOS::RefreshAudioStreamOptionsForExtension(
   return true;
 }
 
-void TtsExtensionEngineChromeOS::Play(base::Value::List args,
+void TtsExtensionEngineChromeOS::Play(base::ListValue args,
                                       const std::string& engine_id,
                                       Profile* profile) {
   // This function can be called from a callback where args are bound, so the
@@ -220,7 +220,7 @@ void TtsExtensionEngineChromeOS::Play(base::Value::List args,
 
   // Add audio stream options.
   DCHECK(audio_parameters_);
-  base::Value::Dict audio_stream_options;
+  base::DictValue audio_stream_options;
   audio_stream_options.Set(tts_extension_api_constants::kSampleRateKey,
                            audio_parameters_->sample_rate);
   audio_stream_options.Set(tts_extension_api_constants::kBufferSizeKey,

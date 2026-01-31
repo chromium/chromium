@@ -2,25 +2,26 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/test/chromedriver/chrome/chrome_finder.h"
+
 #include <stddef.h>
 
+#include <algorithm>
 #include <string>
 #include <vector>
 
-#include "base/containers/contains.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/strings/string_util.h"
 #include "chrome/common/chrome_constants.h"
-#include "chrome/test/chromedriver/chrome/chrome_finder.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace {
 
 bool PathIn(const std::vector<base::FilePath>& list,
             const base::FilePath& path) {
-  return base::Contains(list, path);
+  return std::ranges::contains(list, path);
 }
 
 void AssertFound(const base::FilePath& found,

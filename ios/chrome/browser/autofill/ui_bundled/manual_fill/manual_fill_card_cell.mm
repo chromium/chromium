@@ -453,7 +453,16 @@ CGFloat GPayIconTopAnchorOffset() {
       setLabelText:
           l10n_util::GetNSString(
               IDS_AUTOFILL_FILLED_CARD_INFORMATION_BUBBLE_EXP_DATE_LABEL_VIRTUAL_CARD_IOS)
-      buttonTitles:@[ card.expirationMonth, card.expirationYear ]];
+      buttonTitles:@[
+        card.recordType == kVirtualCard
+            ? base::SysUTF16ToNSString(
+                  autofill::CreditCard::GetMidlineEllipsisDots(2))
+            : card.expirationMonth,
+        card.recordType == kVirtualCard
+            ? base::SysUTF16ToNSString(
+                  autofill::CreditCard::GetMidlineEllipsisDots(2))
+            : card.expirationYear
+      ]];
   [self.cardholderLabeledChip
       setLabelText:
           l10n_util::GetNSString(

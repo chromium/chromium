@@ -340,16 +340,20 @@ export class SettingsPeoplePageElement extends SettingsPeoplePageElementBase {
 
   // <if expr="not is_chromeos">
   private computeShouldShowGoogleAccount_(): boolean {
-    if (this.replaceSyncPromosWithSignInPromos_) {
-      return false;
-    }
-
     if (this.storedAccounts === undefined || this.syncStatus === undefined) {
       return false;
     }
 
-    return (this.storedAccounts!.length > 0 || this.isSyncing_()) &&
-        !this.syncStatus!.hasError;
+    if (this.syncStatus!.hasError &&
+        this.syncStatus!.statusAction !== StatusAction.UPGRADE_CLIENT &&
+        this.syncStatus!.statusAction !==
+            StatusAction.SHOW_BOOKMARKS_LIMIT_HELP_ARTICLE) {
+      return false;
+    }
+
+    return (!this.replaceSyncPromosWithSignInPromos_ &&
+            this.storedAccounts!.length > 0) ||
+        this.isSyncing_();
   }
   // </if>
 
@@ -464,10 +468,16 @@ export class SettingsPeoplePageElement extends SettingsPeoplePageElementBase {
   }
 
   private getAccountRowSubtitle_(): string {
-    if (!!this.syncStatus && !!this.syncStatus.statusText &&
-        this.syncStatus.statusAction === StatusAction.ENTER_PASSPHRASE) {
-      return loadTimeData.substituteString(
-          this.syncStatus.statusText, this.primaryAccountEmail_);
+    if (this.syncStatus && this.syncStatus.statusText) {
+      if (this.syncStatus.statusAction === StatusAction.ENTER_PASSPHRASE) {
+        return loadTimeData.substituteString(
+            this.syncStatus.statusText, this.primaryAccountEmail_);
+      }
+
+      if (this.syncStatus.statusAction ===
+          StatusAction.SHOW_BOOKMARKS_LIMIT_HELP_ARTICLE) {
+        return this.syncStatus.statusText;
+      }
     }
 
     return this.primaryAccountEmail_;

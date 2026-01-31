@@ -7,6 +7,7 @@
 #include <memory>
 #include <utility>
 
+#include "chrome/browser/ui/read_anything/read_anything_controller.h"
 #include "chrome/browser/ui/read_anything/read_anything_immersive_web_view.h"
 #include "chrome/browser/ui/view_ids.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -26,9 +27,9 @@ void ReadAnythingImmersiveOverlayView::ShowUI(
     ReadAnythingOpenTrigger trigger) {
   CHECK(!immersive_web_view_);
   auto immersive_web_view = std::make_unique<ReadAnythingImmersiveWebView>(
+      base::BindOnce(&views::View::SetVisible, base::Unretained(this), true),
       std::move(contents_wrapper), trigger);
   immersive_web_view_ = AddChildView(std::move(immersive_web_view));
-  SetVisible(true);
 }
 
 std::unique_ptr<WebUIContentsWrapperT<ReadAnythingUntrustedUI>>
@@ -39,7 +40,7 @@ ReadAnythingImmersiveOverlayView::CloseUI() {
   std::unique_ptr<ReadAnythingImmersiveWebView> web_view =
       RemoveChildViewT(immersive_web_view_);
   immersive_web_view_ = nullptr;
-  return web_view->TakeContentsWrapper();
+  return web_view->CloseAndTakeContentsWrapper();
 }
 
 BEGIN_METADATA(ReadAnythingImmersiveOverlayView)

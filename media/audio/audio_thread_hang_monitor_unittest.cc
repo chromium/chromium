@@ -79,9 +79,8 @@ class AudioThreadHangMonitorTest : public Test {
     // We keep |event_| as a member of the test fixture to make sure that the
     // audio thread terminates before |event_| is destructed.
     event_.Reset();
-    audio_thread_.task_runner()->PostTask(
-        FROM_HERE,
-        base::BindOnce(&base::WaitableEvent::Wait, base::Unretained(&event_)));
+    audio_thread_.task_runner()->PostTask(FROM_HERE,
+                                          event_.GetWaitCallbackForTesting());
   }
 
   MOCK_METHOD0(HangActionDump, void());

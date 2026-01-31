@@ -6,11 +6,16 @@
 #include <memory>
 
 #include "base/memory/scoped_refptr.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_timeouts.h"
 #include "base/values.h"
-#include "chrome/browser/shell_integration.h"
+#include "chrome/browser/default_browser/default_browser_controller.h"
+#include "chrome/browser/default_browser/default_browser_manager.h"
+#include "chrome/browser/default_browser/test_support/fake_default_browser_setter.h"
+#include "chrome/browser/default_browser/test_support/fake_shell_delegate.h"
+#include "chrome/browser/global_features.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/testing_browser_process.h"
@@ -21,6 +26,7 @@
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_web_ui.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/unowned_user_data/user_data_factory.h"
 
 namespace {
 
@@ -28,28 +34,6 @@ const char kRequestDefaultBrowserStateCallback[] =
     "requestDefaultBrowserStateCallback";
 const char kRequestUserValueStringsFeatureStateCallback[] =
     "requestUserValueStringsFeatureStateCallback";
-
-class FakeDefaultBrowserWorker
-    : public shell_integration::DefaultBrowserWorker {
- public:
-  explicit FakeDefaultBrowserWorker(
-      shell_integration::DefaultWebClientState os_state)
-      : os_state_(os_state) {}
-
- private:
-  ~FakeDefaultBrowserWorker() override = default;
-
-  shell_integration::DefaultWebClientState CheckIsDefaultImpl() override {
-    return os_state_;
-  }
-
-  void SetAsDefaultImpl(base::OnceClosure on_finished_callback) override {
-    os_state_ = shell_integration::IS_DEFAULT;
-    std::move(on_finished_callback).Run();
-  }
-
-  shell_integration::DefaultWebClientState os_state_;
-};
 
 }  // namespace
 
@@ -64,9 +48,11 @@ class TestingDefaultBrowserHandler : public DefaultBrowserHandler {
 
   void OnJavascriptAllowed() override {
     DefaultBrowserHandler::OnJavascriptAllowed();
-    // Override the worker with a mock.
-    default_browser_worker_ = base::MakeRefCounted<FakeDefaultBrowserWorker>(
-        shell_integration::NOT_DEFAULT);
+    // Override the controller with a mock.
+    default_browser_controller_ =
+        std::make_unique<default_browser::DefaultBrowserController>(
+            std::make_unique<default_browser::FakeDefaultBrowserSetter>(),
+            default_browser::DefaultBrowserEntrypointType::kSettingsPage);
   }
 
  private:
@@ -78,6 +64,16 @@ class DefaultBrowserHandlerTest : public testing::Test {
   DefaultBrowserHandlerTest() = default;
 
   void SetUp() override {
+    scoped_override_ =
+        GlobalFeatures::GetUserDataFactoryForTesting().AddOverrideForTesting(
+            base::BindRepeating([](BrowserProcess& browser_process) {
+              return std::make_unique<default_browser::DefaultBrowserManager>(
+                  &browser_process,
+                  std::make_unique<default_browser::FakeShellDelegate>());
+            }));
+    TestingBrowserProcess::GetGlobal()->SetUpGlobalFeaturesForTesting(
+        /*profile_manager=*/false);
+
     handler_ = std::make_unique<TestingDefaultBrowserHandler>();
 
     profile_ = std::make_unique<TestingProfile>();
@@ -92,6 +88,7 @@ class DefaultBrowserHandlerTest : public testing::Test {
   }
 
   void TearDown() override {
+    TestingBrowserProcess::GetGlobal()->TearDownGlobalFeaturesForTesting();
     handler_.reset();
     test_web_ui_.reset();
     test_web_contents_.reset();
@@ -100,7 +97,7 @@ class DefaultBrowserHandlerTest : public testing::Test {
 
  protected:
   void CallRequestDefaultBrowserState() {
-    base::Value::List args;
+    base::ListValue args;
     args.Append(kRequestDefaultBrowserStateCallback);
     test_web_ui()->HandleReceivedMessage("requestDefaultBrowserState", args);
 
@@ -116,7 +113,7 @@ class DefaultBrowserHandlerTest : public testing::Test {
 
   void CallRequestUserValueStringsFeatureState() {
     // Simulate the WebUI call to the handler.
-    base::Value::List args;
+    base::ListValue args;
     args.Append(kRequestUserValueStringsFeatureStateCallback);
     test_web_ui()->HandleReceivedMessage("requestUserValueStringsFeatureState",
                                          args);
@@ -136,7 +133,7 @@ class DefaultBrowserHandlerTest : public testing::Test {
   }
 
   void CallSetDefaultBrowser() {
-    base::Value::List empty_args;
+    base::ListValue empty_args;
     test_web_ui()->HandleReceivedMessage("setAsDefaultBrowser", empty_args);
 
     WaitForSingleCallData();
@@ -201,6 +198,8 @@ class DefaultBrowserHandlerTest : public testing::Test {
   std::unique_ptr<content::TestWebUI> test_web_ui_;
 
   std::unique_ptr<TestingDefaultBrowserHandler> handler_;
+
+  ui::UserDataFactory::ScopedOverride scoped_override_;
 };
 
 TEST_F(DefaultBrowserHandlerTest, RequestDefaultBrowserState) {
@@ -235,11 +234,16 @@ TEST_F(DefaultBrowserHandlerTest,
 }
 
 TEST_F(DefaultBrowserHandlerTest, SetDefaultBrowser) {
+  base::HistogramTester histogram_tester;
   CallSetDefaultBrowser();
 
   VerifyDefaultBrowserState(GetCallData().arg2(), /*expected_is_default=*/true,
                             /*expected_is_unknown_error=*/false,
                             /*expected_is_disabled_by_policy=*/false);
+
+  histogram_tester.ExpectUniqueSample(
+      "DefaultBrowser.SettingsPage.Interaction",
+      default_browser::DefaultBrowserInteractionType::kAccepted, 1);
 }
 
 // Check that changing the default browser policy triggers an event.

@@ -29,7 +29,7 @@ namespace {
 class BookmarkPermanentNodeLoader {
  public:
   BookmarkPermanentNodeLoader(std::unique_ptr<BookmarkPermanentNode> node,
-                              base::Value::List initial_bookmarks,
+                              base::ListValue initial_bookmarks,
                               int title_id)
       : node_(std::move(node)),
         initial_bookmarks_(std::move(initial_bookmarks)),
@@ -56,7 +56,7 @@ class BookmarkPermanentNodeLoader {
 
  private:
   std::unique_ptr<BookmarkPermanentNode> node_;
-  base::Value::List initial_bookmarks_;
+  base::ListValue initial_bookmarks_;
   int title_id_;
 };
 

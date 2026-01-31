@@ -4,28 +4,33 @@
 
 package org.chromium.base;
 
-import android.app.ActivityManager;
 import android.app.ActivityManager.AppTask;
+import android.app.ActivityOptions;
 import android.content.Context;
 import android.content.Context.BindServiceFlags;
 import android.content.ServiceConnection;
 import android.graphics.Rect;
 import android.graphics.RectF;
 import android.hardware.display.DisplayManager;
+import android.os.Bundle;
+import android.os.OutcomeReceiver;
 import android.util.Pair;
 import android.util.SparseArray;
 import android.view.Display;
-import android.view.View;
 import android.view.ViewConfiguration;
 import android.view.Window;
 import android.view.accessibility.AccessibilityEvent;
+import android.view.inputmethod.EditorInfo;
+import android.view.inputmethod.TextAttribute;
 import android.webkit.WebViewDelegate;
 
 import androidx.core.view.accessibility.AccessibilityNodeInfoCompat;
 
+import org.chromium.base.serial.SerialManager;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 
+import java.util.List;
 import java.util.concurrent.Executor;
 
 /** Interface to call unreleased Android APIs that are guarded by aconfig flags. */
@@ -48,16 +53,6 @@ public interface AconfigFlaggedApiDelegate {
 
     static void setInstanceForTesting(AconfigFlaggedApiDelegate testInstance) {
         ServiceLoaderUtil.setInstanceForTesting(AconfigFlaggedApiDelegate.class, testInstance);
-    }
-
-    /**
-     * Calls the {@link android.app.ActivityManager#isTaskMoveAllowedOnDisplay} method if supported,
-     * otherwise returns false.
-     *
-     * @param am {@link android.app.ActivityManager} on which the method should be called.
-     */
-    default boolean isTaskMoveAllowedOnDisplay(ActivityManager am, int displayId) {
-        return false;
     }
 
     /**
@@ -155,6 +150,31 @@ public interface AconfigFlaggedApiDelegate {
     }
 
     /**
+     * Calls {@link
+     * android.view.accessibility.AccessibilityEvent#setTextChangeTypes(@TextChangeTypes int types)}
+     * method if supported.
+     */
+    default void setTextChangeTypes(AccessibilityEvent event, int subType) {}
+
+    /**
+     * Calls {@link android.view.inputmethod.TextAttribute#isTextSuggestionSelected()} method if
+     * supported.
+     */
+    default boolean isTextSuggestionSelected(@Nullable TextAttribute textAttribute) {
+        return false;
+    }
+
+    /**
+     * Sets {@link
+     * android.view.inputmethod.EditorInfo.TYPE_TEXT_FLAG_ENABLE_TEXT_SUGGESTION_SELECTED} if
+     * supported.
+     *
+     * @param outAttrs The {@link android.view.inputmethod.EditorInfo} object used to describe the
+     *     attributes of the input connection being created.
+     */
+    default void setTextFlagEnableTextSuggestionSelected(EditorInfo outAttrs) {}
+
+    /**
      * Calls the {@link android.content.Context#rebindService(ServiceConnection, BindServiceFlags)}
      * method if supported.
      *
@@ -178,32 +198,6 @@ public interface AconfigFlaggedApiDelegate {
      */
     default int getTextCursorBlinkInterval(ViewConfiguration viewConfiguration) {
         return DEFAULT_TEXT_CURSOR_BLINK_INTERVAL_MS;
-    }
-
-    /**
-     * Calls {@link android.view.View#requestRectangleOnScreen(Rect, boolean, int)} if supported,
-     * with focus type of {@link android.view.View#RECTANGLE_ON_SCREEN_REQUEST_SOURCE_INPUT_FOCUS}.
-     *
-     * @param view view on which the method should be called
-     * @param boundsInView the rect to request on screen, in coordinates relative to {@code view}
-     * @return whether the Android API was invoked
-     */
-    default boolean requestInputFocusOnScreen(View view, Rect boundsInView) {
-        // TODO(crbug.com/450540343) inline internal delegate into callsites when API 36.1 releases.
-        return false;
-    }
-
-    /**
-     * Calls {@link View#requestRectangleOnScreen(Rect, boolean, int)} if supported, with focus type
-     * of {@link View#RECTANGLE_ON_SCREEN_REQUEST_SOURCE_TEXT_CURSOR}.
-     *
-     * @param view view on which the method should be called
-     * @param boundsInView the rect to request on screen, in coordinates relative to {@code view}
-     * @return whether the Android API was invoked
-     */
-    default boolean requestTextCursorOnScreen(View view, Rect boundsInView) {
-        // TODO(crbug.com/450540343) inline internal delegate into callsites when API 36.1 releases.
-        return false;
     }
 
     /**
@@ -273,8 +267,164 @@ public interface AconfigFlaggedApiDelegate {
      */
     default void clearSelection(AccessibilityNodeInfoCompat info) {}
 
+    /**
+     * @return True if requirements for processing ACTION_SET_EXTENDED_SELECTION are supported by
+     *     the platform.
+     */
+    default boolean isActionSetExtendedSelectionSupported() {
+        return false;
+    }
+
+    /**
+     * Calls {@link android.view.accessibility.AccessibilityNodeInfoCompat#getSelection()} if
+     * supported.
+     *
+     * @param arguments Arguments sent with the ACTION_SET_EXTENDED_SELECTION action.
+     * @return Null if selection is empty or feature is not available, otherwise a pair of two
+     *     integers, representing startVirtualDescendentId and startOffset for the selection start
+     *     node.
+     */
+    default @Nullable Pair<Integer, Integer> getActionSetExtendedSelectionStartArgument(
+            Bundle arguments) {
+        return null;
+    }
+
+    /**
+     * Calls {@link android.view.accessibility.AccessibilityNodeInfoCompat#getSelection()} if
+     * supported.
+     *
+     * @param arguments Arguments sent with the ACTION_SET_EXTENDED_SELECTION action.
+     * @return Null if selection is empty or feature is not available, otherwise a pair of two
+     *     integers, representing startVirtualDescendentId and startOffset for the selection end
+     *     node.
+     */
+    default @Nullable Pair<Integer, Integer> getActionSetExtendedSelectionEndArgument(
+            Bundle arguments) {
+        return null;
+    }
+
+    /** Checks if native-only services are available on this build of Android */
+    default boolean areNativeOnlyServicesEnabled() {
+        return false;
+    }
+
     /** Checks if {@link android.content.pm.webapp.WebAppManager} service is available. */
     default boolean isWebAppServiceEnabled() {
         return false;
+    }
+
+    /**
+     * Constructs {@link WebAppInstallRequest} and calls {@link
+     * android.content.pm.webapp.WebAppManager#install(@NonNull WebAppInstallRequest
+     * request, @NonNull @CallbackExecutor Executor executor, @NonNull ObjIntConsumer<String>
+     * callback)} with it if supported. Returns whether the method was successfully called.
+     *
+     * @param title The title of the web app to install.
+     * @param manifestUrl The manifest URL to install from.
+     * @param installSucceededCallback The callback to run when the install finished successfully.
+     * @param installFailedCallback The callback to run when the install failed.
+     * @param installCancelledCallback The callback to run when the user cancelled the installation.
+     */
+    default boolean installTwa(
+            String title,
+            String manifestUrl,
+            Runnable installSucceededCallback,
+            Runnable installFailedCallback,
+            Runnable installCancelledCallback) {
+        installFailedCallback.run();
+        return false;
+    }
+
+    /** Whether the feature to split the Android setting 'Show passwords' is enabled. */
+    default boolean isShowPasswordsSplitEnabled() {
+        return false;
+    }
+
+    /**
+     * Constructs {@link WebAppQueryRequest} and calls {@link
+     * android.content.pm.webapp.WebAppManager#query(@NonNull WebAppQueryRequest
+     * request, @NonNull @CallbackExecutor Executor executor, @NonNull IntConsumer callback)} with
+     * it if supported.
+     *
+     * @param title The title of the web app to query.
+     * @return A promise fulfilled with true if the TWA is installed, false otherwise.
+     */
+    default Promise<Boolean> isInstalled(String title) {
+        return Promise.fulfilled(false);
+    }
+
+    static class FrameRateVelocityPoint {
+        private final float mFramePerSecond;
+        private final float mDpPerSecond;
+
+        public FrameRateVelocityPoint(float framePerSecond, float dpPerSecond) {
+            mFramePerSecond = framePerSecond;
+            mDpPerSecond = dpPerSecond;
+        }
+
+        public float getFramePerSecond() {
+            return mFramePerSecond;
+        }
+
+        public float getDpPerSecond() {
+            return mDpPerSecond;
+        }
+    }
+
+    /** Calls Display.getFrameRateVelocityMapping if supported; returns null otherwise. */
+    default @Nullable List<FrameRateVelocityPoint> getFrameRateVelocityMapping(Display display) {
+        return null;
+    }
+
+    /**
+     * Takes an {@link android.app.ActivityOptions} object, copies it, applies {@link
+     * android.app.ActivityOptions#setMovableTaskRequired(boolean)} with {@code true} to the copy
+     * and returns it, if the Android SDK available on the device contains the {@link
+     * android.app.ActivityOptions#setMovableTaskRequired(boolean)} method.
+     *
+     * <p>If the Android SDK available on the device does not contain the {@link
+     * android.app.ActivityOptions#setMovableTaskRequired(boolean)}, returns {@code null}.
+     *
+     * @param activityOptions The {@link android.app.ActivityOptions} object to copy and modify.
+     */
+    default @Nullable ActivityOptions setMovableTaskRequired(ActivityOptions activityOptions) {
+        return null;
+    }
+
+    /**
+     * Checks whether an exception is of type {@link
+     * android.app.InfeasibleActivityOptionsException}, if the Android SDK available on the device
+     * contains this class's definition.
+     *
+     * <p>If the Android SDK available on the device does not contain the {@link
+     * android.app.InfeasibleActivityOptionsException} class's definition, returns {@code false}.
+     *
+     * @param e The {@link Exception} to be checked.
+     */
+    default boolean isInfeasibleActivityOptionsException(Exception e) {
+        return false;
+    }
+
+    /**
+     * Calls the {@link android.app.ActivityManager.AppTask#requestWindowingLayer(AppTask,
+     * AppTask.WINDOWING_LAYER_PINNED, Executor, OutcomeReceiver<Integer, Exception>)} method.
+     *
+     * @param appTask {@link android.app.ActivityManager.AppTask} on which the method should be
+     *     called.
+     * @param executor {@link java.util.concurrent.Executor} The executor specifying the thread on
+     *     which the callbacks will be invoked.
+     * @return A promise fulfilled if going into pinned windowing layer is successful, rejected
+     *     otherwise with {@link UnsupportedOperationException} if not supported or with the
+     *     exception received from the API call.
+     */
+    default Promise<Void> requestPinnedWindowingLayer(AppTask appTask, Executor executor) {
+        Promise<Void> promise = new Promise<>();
+        promise.reject(new UnsupportedOperationException("Not supported"));
+        return promise;
+    }
+
+    /** Gets an Android SerialManager wrapped in an intermediary object. */
+    default @Nullable SerialManager getSerialManager() {
+        return null;
     }
 }

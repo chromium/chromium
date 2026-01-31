@@ -207,7 +207,7 @@ enum Setting {
   // Note: Value 804 was for deprecated kCrostiniAdbDebugging. Do not reuse.
   kCrostiniDiskResize = 805,
   kCrostiniMicAccess = 806,
-  kCrostiniContainerUpgrade = 807,
+  // Note: Value 807 was deprecated. Do not reuse.
   kBruschettaMicAccess = 808,
   kGuestUsbNotification = 809,
   kGuestUsbPersistentPassthrough = 810,
@@ -360,7 +360,7 @@ enum Setting {
   kReportAnIssue = 1705,
   kTermsOfService = 1706,
   kDiagnostics = 1707,
-  kChangeDeviceName = 1708,
+  // [Deprecated] kChangeDeviceName = 1708,
   kFirmwareUpdates = 1709,
 
   // Kerberos section.

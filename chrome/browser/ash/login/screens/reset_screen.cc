@@ -244,7 +244,7 @@ void ResetScreen::HideImpl() {
   scoped_guest_button_blocker_.reset();
 }
 
-void ResetScreen::OnUserAction(const base::Value::List& args) {
+void ResetScreen::OnUserAction(const base::ListValue& args) {
   const std::string& action_id = args[0].GetString();
   if (action_id == kUserActionCancelReset) {
     OnCancel();

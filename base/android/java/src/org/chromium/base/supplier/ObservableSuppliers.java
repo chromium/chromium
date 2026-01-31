@@ -10,12 +10,8 @@ import org.chromium.build.annotations.Nullable;
 /** Factory methods for ObservableSuppliers. */
 @NullMarked
 public class ObservableSuppliers {
-    private static final NonNullObservableSupplier<Boolean> ALWAYS_FALSE =
-            new BaseObservableSupplierImpl<>(false, /* allowSetToNull= */ false);
-    private static final NonNullObservableSupplier<Boolean> ALWAYS_TRUE =
-            new BaseObservableSupplierImpl<>(true, /* allowSetToNull= */ false);
-    private static final ObservableSupplier<?> ALWAYS_NULL =
-            new BaseObservableSupplierImpl<>(null, /* allowSetToNull= */ false);
+    private static final MonotonicObservableSupplier<?> ALWAYS_NULL =
+            new BaseObservableSupplierImpl<>(/* allowSetToNull= */ false);
 
     /** Creates an ObservableSupplier that can be set to null. */
     public static <T> SettableNullableObservableSupplier<T> createNullable() {
@@ -32,7 +28,7 @@ public class ObservableSuppliers {
      * Creates an ObservableSupplier that can start null, but not be set to null (enforced via an
      * assert).
      */
-    public static <T> SettableObservableSupplier<T> createMonotonic() {
+    public static <T> SettableMonotonicObservableSupplier<T> createMonotonic() {
         return new ObservableSupplierImpl<T>(/* initialValue= */ null, /* allowSetToNull= */ false);
     }
 
@@ -40,7 +36,8 @@ public class ObservableSuppliers {
      * Creates an ObservableSupplier that can start null, but not be set to null (enforced via an
      * assert).
      */
-    public static <T> SettableObservableSupplier<T> createMonotonic(@Nullable T initialValue) {
+    public static <T> SettableMonotonicObservableSupplier<T> createMonotonic(
+            @Nullable T initialValue) {
         return new ObservableSupplierImpl<T>(
                 /* initialValue= */ initialValue, /* allowSetToNull= */ false);
     }
@@ -50,17 +47,23 @@ public class ObservableSuppliers {
         return new ObservableSupplierImpl<T>(initialValue, /* allowSetToNull= */ false);
     }
 
-    @SuppressWarnings("Unchecked")
+    // Convenience methods. These cannot be changed to share an instance (like alwaysNull), because
+    // addObserver() posts a callback that must be cancelled if removeObserver() is called before it
+    // gets schedules.
     public static NonNullObservableSupplier<Boolean> alwaysTrue() {
-        return ALWAYS_TRUE;
+        return createNonNull(true);
     }
 
     public static NonNullObservableSupplier<Boolean> alwaysFalse() {
-        return ALWAYS_FALSE;
+        return createNonNull(false);
     }
 
-    public static <T> ObservableSupplier<T> alwaysNull() {
-        return (ObservableSupplier<T>) ALWAYS_NULL;
+    public static NonNullObservableSupplier<Integer> alwaysZero() {
+        return createNonNull(0);
+    }
+
+    public static <T> MonotonicObservableSupplier<T> alwaysNull() {
+        return (MonotonicObservableSupplier<T>) ALWAYS_NULL;
     }
 
     private ObservableSuppliers() {}

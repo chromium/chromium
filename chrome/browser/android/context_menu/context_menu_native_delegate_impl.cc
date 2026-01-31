@@ -137,7 +137,7 @@ ContextMenuNativeDelegateImpl::ContextMenuNativeDelegateImpl(
 
 void ContextMenuNativeDelegateImpl::StartDownload(JNIEnv* env,
                                                   const GURL& url,
-                                                  jboolean jis_media) {
+                                                  bool jis_media) {
   DownloadControllerBase::Get()->StartContextMenuDownload(
       url, *context_menu_params_, web_contents_, jis_media);
 }
@@ -155,8 +155,8 @@ void ContextMenuNativeDelegateImpl::SearchForImage(
 void ContextMenuNativeDelegateImpl::InspectElement(
     JNIEnv* env,
     content::RenderFrameHost* render_frame_host,
-    jint x,
-    jint y) {
+    int32_t x,
+    int32_t y) {
 #if BUILDFLAG(ENABLE_DEVTOOLS_FRONTEND)
   if (!render_frame_host) {
     return;
@@ -171,9 +171,9 @@ void ContextMenuNativeDelegateImpl::RetrieveImageForShare(
     JNIEnv* env,
     content::RenderFrameHost* render_frame_host,
     const JavaRef<jobject>& jcallback,
-    jint max_width_px,
-    jint max_height_px,
-    jint jimage_format) {
+    int32_t max_width_px,
+    int32_t max_height_px,
+    int32_t jimage_format) {
   RetrieveImageInternal(env, base::BindOnce(&OnRetrieveImageForShare),
                         render_frame_host, jcallback, max_width_px,
                         max_height_px, ToChromeMojomImageFormat(jimage_format));
@@ -183,8 +183,8 @@ void ContextMenuNativeDelegateImpl::RetrieveImageForContextMenu(
     JNIEnv* env,
     content::RenderFrameHost* render_frame_host,
     const JavaRef<jobject>& jcallback,
-    jint max_width_px,
-    jint max_height_px) {
+    int32_t max_width_px,
+    int32_t max_height_px) {
   // For context menu, Image needs to be PNG for receiving transparency pixels.
   RetrieveImageInternal(env, base::BindOnce(&OnRetrieveImageForContextMenu),
                         render_frame_host, jcallback, max_width_px,
@@ -196,8 +196,8 @@ void ContextMenuNativeDelegateImpl::RetrieveImageInternal(
     ImageRetrieveCallback retrieve_callback,
     content::RenderFrameHost* render_frame_host,
     const JavaRef<jobject>& jcallback,
-    jint max_width_px,
-    jint max_height_px,
+    int32_t max_width_px,
+    int32_t max_height_px,
     chrome::mojom::ImageFormat image_format) {
   if (!render_frame_host)
     return;
@@ -219,7 +219,7 @@ void ContextMenuNativeDelegateImpl::RetrieveImageInternal(
 void ContextMenuNativeDelegateImpl::SetPictureInPicture(
     JNIEnv* env,
     content::RenderFrameHost* render_frame_host,
-    jboolean enter_pip) {
+    bool enter_pip) {
   if (!render_frame_host) {
     return;
   }
@@ -230,7 +230,7 @@ void ContextMenuNativeDelegateImpl::SetPictureInPicture(
           blink::mojom::MediaPlayerActionType::kPictureInPicture, enter_pip));
 }
 
-static jlong JNI_ContextMenuNativeDelegateImpl_Init(
+static int64_t JNI_ContextMenuNativeDelegateImpl_Init(
     JNIEnv* env,
     content::WebContents* web_contents,
     const JavaRef<jobject>& jcontext_menu_params) {

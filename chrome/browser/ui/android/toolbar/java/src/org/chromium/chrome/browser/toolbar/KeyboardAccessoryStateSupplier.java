@@ -7,8 +7,8 @@ package org.chromium.chrome.browser.toolbar;
 import android.view.View;
 
 import org.chromium.base.Callback;
+import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.base.supplier.NonNullObservableSupplier;
-import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
@@ -25,7 +25,8 @@ public class KeyboardAccessoryStateSupplier {
 
     private final Callback<ManualFillingComponent> mManualFillingAvailableCallback =
             this::onManualFillingComponentAvailable;
-    private final ObservableSupplier<ManualFillingComponent> mManualFillingComponentSupplier;
+    private final MonotonicObservableSupplier<ManualFillingComponent>
+            mManualFillingComponentSupplier;
     private final Callback<Integer> mInsetChangeCallback = this::onInsetChange;
     private @Nullable ManualFillingComponent mManualFillingComponent;
     private final SettableNonNullObservableSupplier<Boolean> mIsSheetShowingSupplier =
@@ -35,7 +36,8 @@ public class KeyboardAccessoryStateSupplier {
             ObservableSuppliers.createNonNull(0);
 
     public KeyboardAccessoryStateSupplier(
-            ObservableSupplier<ManualFillingComponent> manualFillingComponentSupplier, View view) {
+            MonotonicObservableSupplier<ManualFillingComponent> manualFillingComponentSupplier,
+            View view) {
         mManualFillingComponentSupplier = manualFillingComponentSupplier;
         mView = view;
         ManualFillingComponent manualFillingComponent =

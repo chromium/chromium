@@ -5,7 +5,6 @@
 #include "ash/webui/common/backend/plural_string_handler.h"
 
 #include "base/check.h"
-#include "base/containers/contains.h"
 #include "base/logging.h"
 #include "base/values.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
@@ -25,17 +24,17 @@ void PluralStringHandler::RegisterMessages() {
 
 void PluralStringHandler::AddStringToPluralMap(const std::string& name,
                                                int string_id) {
-  DCHECK(!base::Contains(string_id_map_, name));
+  DCHECK(!string_id_map_.contains(name));
   string_id_map_[name] = string_id;
 }
 
-void PluralStringHandler::HandleGetPluralString(const base::Value::List& args) {
+void PluralStringHandler::HandleGetPluralString(const base::ListValue& args) {
   AllowJavascript();
   CHECK_EQ(3U, args.size());
   const std::string callback = args[0].GetString();
   const std::string name = args[1].GetString();
   const int count = args[2].GetInt();
-  if (!base::Contains(string_id_map_, name)) {
+  if (!string_id_map_.contains(name)) {
     // Only reachable if the WebUI renderer is misbehaving.
     LOG(ERROR) << "Invalid string ID received: " << name;
     return;

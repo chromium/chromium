@@ -146,7 +146,7 @@ class CodeCacheBrowserTest
     // GeneratedCodeCache (>1024 characters).
     if (absolute_url.GetPath() == "/cacheable.js") {
       if (trigger_validation_requests_ &&
-          base::Contains(request.headers, "If-Modified-Since")) {
+          request.headers.contains("If-Modified-Since")) {
         auto http_response =
             std::make_unique<net::test_server::BasicHttpResponse>();
         http_response->set_code(net::HTTP_NOT_MODIFIED);

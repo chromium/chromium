@@ -23,8 +23,8 @@ impl<'a> ImplKey<'a> {
     /// present in two places, which is accomplished using trait impls and the
     /// orphan rule. Every instantiation of a C++ template like `CxxVector<T>`
     /// and Rust generic type like `Vec<T>` requires the implementation of
-    /// traits defined by the `cxx` crate for some local type. (TODO: or for a
-    /// fundamental type like `Box<LocalType>`)
+    /// traits defined by the `cxx` crate for some local type or for a
+    /// fundamental type like `Box<LocalType>`.
     pub(crate) fn is_implicit_impl_ok(&self, types: &Types) -> bool {
         // TODO: relax this for Rust generics to allow Vec<Vec<T>> etc.
         types.is_local(self.inner())

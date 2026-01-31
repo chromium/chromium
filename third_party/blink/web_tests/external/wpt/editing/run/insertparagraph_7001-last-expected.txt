@@ -1,0 +1,6 @@
+This is a testharness.js-based test.
+Found 1 FAIL, 0 TIMEOUT, 0 NOTRUN.
+[FAIL] [["defaultparagraphseparator","div"],["insertparagraph",""]] " <span contenteditable=\\"false\\">A</span>[] ; <span contenteditable=\\"false\\">B</span> ; <span contenteditable=\\"false\\">C</span> " compare innerHTML
+  assert_in_array: Unexpected innerHTML (after normalizing inline style) value " <span contenteditable=\\"false\\">A</span><br><div> ; <span contenteditable=\\"false\\">B</span> ; <span contenteditable=\\"false\\">C</span> </div>" not in array [" <div><span contenteditable=\\"false\\">A</span></div><div>&nbsp;; <span contenteditable=\\"false\\">B</span> ; <span contenteditable=\\"false\\">C</span></div> ", " <span contenteditable=\\"false\\">A</span><div>&nbsp;; <span contenteditable=\\"false\\">B</span> ; <span contenteditable=\\"false\\">C</span></div> "]
+Harness: the test ran to completion.
+

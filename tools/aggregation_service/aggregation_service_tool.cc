@@ -102,17 +102,17 @@ bool AggregationServiceTool::SetPublicKeysFromFile(
   return succeeded;
 }
 
-base::Value::Dict AggregationServiceTool::AssembleReport(
+base::DictValue AggregationServiceTool::AssembleReport(
     std::string operation_str,
     std::string bucket_str,
     std::string value_str,
     url::Origin reporting_origin,
     GURL processing_url,
     bool is_debug_mode_enabled,
-    base::Value::Dict additional_fields,
+    base::DictValue additional_fields,
     std::string api_version,
     std::string api_identifier) {
-  base::Value::Dict result;
+  base::DictValue result;
 
   std::optional<content::TestAggregationService::Operation> operation =
       ConvertToOperation(operation_str);
@@ -148,8 +148,8 @@ base::Value::Dict AggregationServiceTool::AssembleReport(
   agg_service_->AssembleReport(
       std::move(request),
       base::BindOnce(
-          [](base::OnceClosure quit, base::Value::Dict& result_out,
-             base::Value::Dict result_in) {
+          [](base::OnceClosure quit, base::DictValue& result_out,
+             base::DictValue result_in) {
             result_out = std::move(result_in);
             std::move(quit).Run();
           },

@@ -19,10 +19,11 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
-#include "chrome/browser/ui/views/frame/immersive_mode_controller.h"
 #include "chromeos/ash/components/boca/boca_metrics_util.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
 #include "chromeos/ui/frame/frame_header.h"
+#include "chromeos/ui/frame/immersive/immersive_fullscreen_controller.h"
+#include "chromeos/ui/frame/immersive/immersive_revealed_lock.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -138,9 +139,15 @@ void OnTaskPodControllerImpl::ToggleTabStripVisibility(bool show,
   }
 
   // Acquire lock to reveal the tab strip.
-  tab_strip_reveal_lock_ =
-      ImmersiveModeController::From(&browser_->GetBrowser())
-          ->GetRevealedLock(ImmersiveModeController::ANIMATE_REVEAL_YES);
+  auto* widget =
+      views::Widget::GetWidgetForNativeWindow(browser_->GetNativeWindow());
+  chromeos::ImmersiveFullscreenController* controller =
+      widget ? chromeos::ImmersiveFullscreenController::Get(widget) : nullptr;
+  tab_strip_reveal_lock_.reset(
+      controller ? controller->GetRevealedLock(
+                       chromeos::ImmersiveRevealedLock::Delegate::
+                           AnimateReveal::ANIMATE_REVEAL_YES)
+                 : nullptr);
 }
 
 void OnTaskPodControllerImpl::SetSnapLocation(
@@ -274,7 +281,7 @@ views::Widget* OnTaskPodControllerImpl::GetPodWidgetForTesting() {
   return pod_widget_.get();
 }
 
-ImmersiveRevealedLock*
+chromeos::ImmersiveRevealedLock*
 OnTaskPodControllerImpl::GetTabStripRevealLockForTesting() {
   if (!tab_strip_reveal_lock_) {
     return nullptr;

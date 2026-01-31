@@ -1,0 +1,7 @@
+CONSOLE WARNING: XSLTProcessor and XSLT Processing Instructions have been removed in this browser. See https://chromestatus.com/feature/4709671889534976.
+Make sure that XSLT works in a subframe. 
+
+--------
+Frame: '<!--framePath //<!--frame0-->-->'
+--------
+

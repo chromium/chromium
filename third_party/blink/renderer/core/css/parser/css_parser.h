@@ -6,12 +6,14 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_CSS_PARSER_CSS_PARSER_H_
 
 #include <memory>
+
 #include "third_party/blink/public/mojom/frame/color_scheme.mojom-blink-forward.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/css/css_property_names.h"
 #include "third_party/blink/renderer/core/css/css_property_value_set.h"
 #include "third_party/blink/renderer/core/css/parser/css_nesting_type.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_context.h"
+#include "third_party/blink/renderer/core/css/parser/css_parser_local_context.h"
 #include "third_party/blink/renderer/core/css/parser/css_tokenizer.h"
 
 namespace ui {
@@ -33,6 +35,7 @@ class StyleRuleKeyframe;
 class StyleSheetContents;
 class CSSValue;
 class CSSPrimitiveValue;
+class CSSParserLocalContext;
 enum class ParseSheetResult;
 enum class SecureContextMode;
 struct KeyframeOffset;
@@ -163,6 +166,7 @@ class CORE_EXPORT CSSParser {
   static CSSPrimitiveValue* ParseLengthPercentage(
       const String&,
       const CSSParserContext*,
+      CSSParserLocalContext&,
       CSSPrimitiveValue::ValueRange);
 
   // https://html.spec.whatwg.org/multipage/canvas.html#dom-context-2d-font

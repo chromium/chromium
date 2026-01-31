@@ -7,15 +7,14 @@
 #include "base/command_line.h"
 #include "base/feature_list.h"
 #include "base/test/scoped_feature_list.h"
+#include "build/build_config.h"
 #include "chrome/browser/contextual_cueing/contextual_cueing_features.h"
 #include "chrome/browser/contextual_cueing/contextual_cueing_service.h"
 #include "chrome/browser/contextual_cueing/contextual_cueing_service_factory.h"
 #include "chrome/browser/contextual_cueing/mock_contextual_cueing_service.h"
-#include "chrome/browser/glic/test_support/glic_test_environment.h"
 #include "chrome/browser/global_features.h"
 #include "chrome/browser/optimization_guide/mock_optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
-#include "chrome/browser/page_content_annotations/page_content_extraction_service.h"
 #include "chrome/browser/page_content_annotations/page_content_extraction_service_factory.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/common/chrome_features.h"
@@ -24,8 +23,13 @@
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile_manager.h"
 #include "components/history/core/browser/features.h"
+#include "components/page_content_annotations/content/page_content_extraction_service.h"
 #include "content/public/test/mock_navigation_handle.h"
 #include "content/public/test/navigation_simulator.h"
+
+#if BUILDFLAG(ENABLE_GLIC) && !BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/glic/test_support/glic_test_environment.h"
+#endif
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/ash/test/glic_user_session_test_helper.h"
@@ -34,7 +38,7 @@
 namespace contextual_cueing {
 namespace {
 
-#if BUILDFLAG(ENABLE_GLIC)
+#if BUILDFLAG(ENABLE_GLIC) && !BUILDFLAG(IS_ANDROID)
 
 using ::testing::Return;
 
@@ -64,10 +68,9 @@ class ContextualCueingHelperTest : public ChromeRenderViewHostTestHarness {
   }
 
   void SetUp() override {
-    profile_manager_ = std::make_unique<TestingProfileManager>(
-        TestingBrowserProcess::GetGlobal());
-    ASSERT_TRUE(profile_manager_->SetUp());
-    TestingBrowserProcess::GetGlobal()->CreateGlobalFeaturesForTesting();
+    profile_manager_ =
+        TestingBrowserProcess::GetGlobal()->SetUpGlobalFeaturesForTesting(
+            /*profile_manager=*/true);
 #if BUILDFLAG(IS_CHROMEOS)
     glic_user_session_test_helper_.PreProfileSetUp(
         profile_manager_->profile_manager());
@@ -91,9 +94,9 @@ class ContextualCueingHelperTest : public ChromeRenderViewHostTestHarness {
     }
 
     ChromeRenderViewHostTestHarness::TearDown();
-    TestingBrowserProcess::GetGlobal()->GetFeatures()->Shutdown();
 
-    profile_manager_.reset();
+    profile_manager_ = nullptr;
+    TestingBrowserProcess::GetGlobal()->TearDownGlobalFeaturesForTesting();
 
 #if BUILDFLAG(IS_CHROMEOS)
     glic_user_session_test_helper_.PostProfileTearDown();
@@ -133,7 +136,7 @@ class ContextualCueingHelperTest : public ChromeRenderViewHostTestHarness {
  private:
   glic::GlicUnitTestEnvironment glic_test_env_;
   base::test::ScopedFeatureList scoped_feature_list_;
-  std::unique_ptr<TestingProfileManager> profile_manager_;
+  raw_ptr<TestingProfileManager> profile_manager_ = nullptr;
 #if BUILDFLAG(IS_CHROMEOS)
   ash::GlicUserSessionTestHelper glic_user_session_test_helper_;
 #endif  // BUILDFLAG(IS_CHROMEOS)
@@ -214,7 +217,7 @@ INSTANTIATE_TEST_SUITE_P(All,
                          ContextualCueingHelperResponseCodeTest,
                          ::testing::Bool());
 
-#endif  // BUILDFLAG(ENABLE_GLIC)
+#endif  // BUILDFLAG(ENABLE_GLIC) && !BUILDFLAG(IS_ANDROID)
 
 }  // namespace
 }  // namespace contextual_cueing

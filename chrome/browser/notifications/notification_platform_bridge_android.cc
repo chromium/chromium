@@ -90,43 +90,16 @@ NotificationActionType GetNotificationActionType(
                             : NotificationActionType::BUTTON;
 }
 
-ScopedJavaLocalRef<jobjectArray> ConvertToJavaActionInfos(
-    const std::vector<message_center::ButtonInfo>& buttons) {
-  JNIEnv* env = AttachCurrentThread();
-  ScopedJavaLocalRef<jclass> clazz = base::android::GetClass(
-      env, "org/chromium/chrome/browser/notifications/ActionInfo");
-  jobjectArray actions = env->NewObjectArray(buttons.size(), clazz.obj(),
-                                             nullptr /* initialElement */);
-  base::android::CheckException(env);
-
-  for (size_t i = 0; i < buttons.size(); ++i) {
-    const auto& button = buttons[i];
-    std::u16string title = button.title;
-    int type = GetNotificationActionType(button);
-    std::u16string placeholder;
-    if (button.placeholder) {
-      placeholder = *button.placeholder;
-    }
-    ScopedJavaLocalRef<jobject> icon =
-        JNI_NotificationPlatformBridge_ConvertToJavaBitmap(env, button.icon);
-    ScopedJavaLocalRef<jobject> action_info = Java_ActionInfo_createActionInfo(
-        AttachCurrentThread(), title, icon, type, placeholder);
-    env->SetObjectArrayElement(actions, i, action_info.obj());
-  }
-
-  return ScopedJavaLocalRef<jobjectArray>::Adopt(env, actions);
-}
-
-constexpr jint NotificationTypeToJava(
+constexpr int32_t NotificationTypeToJava(
     NotificationHandler::Type notification_type) {
-  return static_cast<jint>(notification_type);
+  return static_cast<int32_t>(notification_type);
 }
 
 constexpr NotificationHandler::Type JavaToNotificationType(
-    jint notification_type) {
-  constexpr jint kMinValue =
+    int32_t notification_type) {
+  constexpr int32_t kMinValue =
       NotificationTypeToJava(NotificationHandler::Type::WEB_PERSISTENT);
-  constexpr jint kMaxValue =
+  constexpr int32_t kMaxValue =
       NotificationTypeToJava(NotificationHandler::Type::MAX);
 
   if (notification_type >= kMinValue && notification_type <= kMaxValue)
@@ -169,13 +142,13 @@ NotificationPlatformBridgeAndroid::~NotificationPlatformBridgeAndroid() {
 void NotificationPlatformBridgeAndroid::OnNotificationClicked(
     JNIEnv* env,
     std::string& notification_id,
-    jint java_notification_type,
+    int32_t java_notification_type,
     std::string& java_origin_str,
     std::string& scope_url_str,
     std::string& profile_id,
-    jboolean incognito,
+    bool incognito,
     std::string& webapk_package,
-    jint java_action_index,
+    int32_t java_action_index,
     const JavaRef<jstring>& java_reply) {
   std::optional<std::u16string> reply;
   if (java_reply)
@@ -225,11 +198,11 @@ void NotificationPlatformBridgeAndroid::
 void NotificationPlatformBridgeAndroid::OnNotificationClosed(
     JNIEnv* env,
     std::string& notification_id,
-    jint java_notification_type,
+    int32_t java_notification_type,
     std::string& origin,
     std::string& profile_id,
-    jboolean incognito,
-    jboolean by_user) {
+    bool incognito,
+    bool by_user) {
   // The notification was closed by the platform, so clear all local state.
   regenerated_notification_infos_.erase(notification_id);
 
@@ -254,11 +227,11 @@ void NotificationPlatformBridgeAndroid::OnNotificationClosed(
 void NotificationPlatformBridgeAndroid::OnNotificationDisablePermission(
     JNIEnv* env,
     std::string& notification_id,
-    jint java_notification_type,
+    int32_t java_notification_type,
     std::string& origin,
     std::string& profile_id,
-    jboolean incognito,
-    jboolean is_suspicious) {
+    bool incognito,
+    bool is_suspicious) {
   ProfileManager* profile_manager = g_browser_process->profile_manager();
   DCHECK(profile_manager);
 
@@ -287,7 +260,7 @@ void NotificationPlatformBridgeAndroid::OnReportNotificationAsSafe(
     std::string& notification_id,
     std::string& origin,
     std::string& profile_id,
-    jboolean incognito) {
+    bool incognito) {
   ProfileManager* profile_manager = g_browser_process->profile_manager();
   CHECK(profile_manager);
 
@@ -306,7 +279,7 @@ void NotificationPlatformBridgeAndroid::OnReportWarnedNotificationAsSpam(
     std::string& notification_id,
     std::string& origin,
     std::string& profile_id,
-    jboolean incognito) {
+    bool incognito) {
   ProfileManager* profile_manager = g_browser_process->profile_manager();
   CHECK(profile_manager);
 
@@ -325,7 +298,7 @@ void NotificationPlatformBridgeAndroid::OnReportUnwarnedNotificationAsSpam(
     std::string& notification_id,
     std::string& origin,
     std::string& profile_id,
-    jboolean incognito) {
+    bool incognito) {
   ProfileManager* profile_manager = g_browser_process->profile_manager();
   CHECK(profile_manager);
 
@@ -344,7 +317,7 @@ void NotificationPlatformBridgeAndroid::OnNotificationShowOriginalNotification(
     const base::android::JavaRef<jobject>& java_object,
     std::string& origin,
     std::string& profile_id,
-    jboolean incognito) {
+    bool incognito) {
   ProfileManager* profile_manager = g_browser_process->profile_manager();
   CHECK(profile_manager);
 
@@ -363,7 +336,7 @@ void NotificationPlatformBridgeAndroid::OnNotificationAlwaysAllowFromOrigin(
     std::string& notification_id,
     std::string& origin,
     std::string& profile_id,
-    jboolean incognito) {
+    bool incognito) {
   ProfileManager* profile_manager = g_browser_process->profile_manager();
   CHECK(profile_manager);
 
@@ -417,10 +390,7 @@ void NotificationPlatformBridgeAndroid::Display(
 
   SkBitmap badge_bitmap = notification.small_image().AsBitmap();
 
-  ScopedJavaLocalRef<jobjectArray> actions =
-      ConvertToJavaActionInfos(notification.buttons());
-
-  jint j_notification_type = NotificationTypeToJava(notification_type);
+  int32_t j_notification_type = NotificationTypeToJava(notification_type);
 
   Java_NotificationPlatformBridge_displayNotification(
       env, java_object_, notification.id(), j_notification_type,
@@ -429,7 +399,7 @@ void NotificationPlatformBridgeAndroid::Display(
       image_bitmap, *notification_icon_bitmap, badge_bitmap,
       notification.vibration_pattern(),
       notification.timestamp().InMillisecondsSinceUnixEpoch(),
-      notification.renotify(), notification.silent(), actions,
+      notification.renotify(), notification.silent(), notification.buttons(),
       should_use_test_is_suspicious_value_
           ? test_is_suspicious_value_
           : (persistent_notification_metadata
@@ -519,8 +489,8 @@ void NotificationPlatformBridgeAndroid::AlwaysAllowNotifications(
       ContentSettingsPattern::FromURLNoWildcard(url),
       ContentSettingsPattern::Wildcard(),
       ContentSettingsType::ARE_SUSPICIOUS_NOTIFICATIONS_ALLOWLISTED_BY_USER,
-      base::Value(base::Value::Dict().Set(
-          safe_browsing::kIsAllowlistedByUserKey, true)));
+      base::Value(
+          base::DictValue().Set(safe_browsing::kIsAllowlistedByUserKey, true)));
 
   safe_browsing::NotificationContentDetectionUkmUtil::
       RecordSuspiciousNotificationInteractionUkm(
@@ -587,6 +557,20 @@ NotificationPlatformBridgeAndroid::RegeneratedNotificationInfo::
 
 NotificationPlatformBridgeAndroid::RegeneratedNotificationInfo::
     ~RegeneratedNotificationInfo() = default;
+
+base::android::ScopedJavaLocalRef<jobject> ConvertToJavaActionInfo(
+    JNIEnv* env,
+    const message_center::ButtonInfo& button) {
+  std::u16string title = button.title;
+  int type = GetNotificationActionType(button);
+  std::u16string placeholder;
+  if (button.placeholder) {
+    placeholder = *button.placeholder;
+  }
+  ScopedJavaLocalRef<jobject> icon =
+      JNI_NotificationPlatformBridge_ConvertToJavaBitmap(env, button.icon);
+  return Java_ActionInfo_createActionInfo(env, title, icon, type, placeholder);
+}
 
 DEFINE_JNI(ActionInfo)
 DEFINE_JNI(NotificationPlatformBridge)

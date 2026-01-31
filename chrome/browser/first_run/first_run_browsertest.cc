@@ -3,12 +3,12 @@
 // found in the LICENSE file.
 #include "chrome/browser/first_run/first_run.h"
 
+#include <algorithm>
 #include <memory>
 #include <string>
 
 #include "base/base_switches.h"
 #include "base/command_line.h"
-#include "base/containers/contains.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
@@ -379,7 +379,7 @@ IN_PROC_BROWSER_TEST_P(FirstRunMasterPrefsVariationsSeedTest, PRE_SecondRun) {
   // states. Persist the state so that we can verify its randomization persists
   // in FirstRunMasterPrefsVariationsSeedTest.SecondRun.
   const std::string group_name = base::FieldTrialList::FindFullName(kTrialName);
-  ASSERT_TRUE(base::Contains(kTrialGroups, group_name)) << group_name;
+  ASSERT_TRUE(std::ranges::contains(kTrialGroups, group_name)) << group_name;
   // Ensure trial is active (not disabled).
   ASSERT_TRUE(base::FieldTrialList::IsTrialActive(kTrialName));
   WriteTrialGroupToTestFile(group_name);
@@ -389,7 +389,7 @@ IN_PROC_BROWSER_TEST_P(FirstRunMasterPrefsVariationsSeedTest, SecondRun) {
   // This test runs after PRE_SecondRun and verifies that the trial state on
   // the second run matches what was seen in the PRE_ test.
   const std::string group_name = base::FieldTrialList::FindFullName(kTrialName);
-  ASSERT_TRUE(base::Contains(kTrialGroups, group_name)) << group_name;
+  ASSERT_TRUE(std::ranges::contains(kTrialGroups, group_name)) << group_name;
   // Ensure trial is active (not disabled).
   ASSERT_TRUE(base::FieldTrialList::IsTrialActive(kTrialName));
   // Read the trial group name that was saved by PRE_ForceTrials from the

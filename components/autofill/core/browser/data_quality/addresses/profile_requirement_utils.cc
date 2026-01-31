@@ -4,10 +4,10 @@
 
 #include "components/autofill/core/browser/data_quality/addresses/profile_requirement_utils.h"
 
+#include <algorithm>
 #include <string_view>
 #include <vector>
 
-#include "base/containers/contains.h"
 #include "base/debug/crash_logging.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -188,8 +188,9 @@ bool ValidateNonEmptyValues(const AutofillProfile& profile,
 bool IsMinimumAddress(const AutofillProfile& profile, LogBuffer* log_buffer) {
   const std::vector<std::string>& country_codes =
       CountryDataMap::GetInstance()->country_codes();
-  if (!base::Contains(country_codes, base::UTF16ToUTF8(profile.GetRawInfo(
-                                         ADDRESS_HOME_COUNTRY)))) {
+  if (!std::ranges::contains(
+          country_codes,
+          base::UTF16ToUTF8(profile.GetRawInfo(ADDRESS_HOME_COUNTRY)))) {
     return false;
   }
   std::vector<AddressImportRequirement> address_requirements =
@@ -197,8 +198,8 @@ bool IsMinimumAddress(const AutofillProfile& profile, LogBuffer* log_buffer) {
   return std::ranges::none_of(
       kMinimumAddressRequirementViolations,
       [&](AddressImportRequirement address_requirement_violation) {
-        return base::Contains(address_requirements,
-                              address_requirement_violation);
+        return std::ranges::contains(address_requirements,
+                                     address_requirement_violation);
       });
 }
 

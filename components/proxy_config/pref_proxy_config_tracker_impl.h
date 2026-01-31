@@ -10,6 +10,7 @@
 #include "base/feature_list.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/threading/thread_checker.h"
 #include "components/prefs/pref_change_registrar.h"
@@ -58,6 +59,8 @@ class ProxyConfigServiceImpl : public net::ProxyConfigService,
   void UpdateProxyConfig(ProxyPrefs::ConfigState config_state,
                          const net::ProxyConfigWithAnnotation& config);
 
+  base::WeakPtr<ProxyConfigServiceImpl> AsWeakPtr();
+
  private:
   // ProxyConfigService::Observer implementation:
   void OnProxyConfigChanged(const net::ProxyConfigWithAnnotation& config,
@@ -81,6 +84,8 @@ class ProxyConfigServiceImpl : public net::ProxyConfigService,
   bool registered_observer_;
 
   base::ThreadChecker thread_checker_;
+
+  base::WeakPtrFactory<ProxyConfigServiceImpl> weak_ptr_factory_{this};
 };
 
 // A class that tracks proxy preferences. It translates the configuration
@@ -176,8 +181,7 @@ class PROXY_CONFIG_EXPORT PrefProxyConfigTrackerImpl
   net::ProxyConfigWithAnnotation pref_config_;
 
   raw_ptr<PrefService> pref_service_;
-  raw_ptr<ProxyConfigServiceImpl, DanglingUntriaged>
-      proxy_config_service_impl_;  // Weak ptr.
+  base::WeakPtr<ProxyConfigServiceImpl> proxy_config_service_impl_;
   PrefChangeRegistrar proxy_prefs_;
 
   // State of |active_config_|.  |active_config_| is only valid if

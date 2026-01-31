@@ -65,21 +65,16 @@ class SidePanelExtensionsTest : public testing::Test {
 
  protected:
   // Empty filepath doesn't exist test coverage.
-  // TODO(crbug.com/41317803): Continue removing std::string error and
-  // replacing with std::u16string.
-  scoped_refptr<Extension> CreateExtension(const base::Value::Dict& manifest,
-                                           std::string* error) {
-    base::Value::Dict manifest_base;
+  scoped_refptr<Extension> CreateExtension(const base::DictValue& manifest,
+                                           std::u16string* error) {
+    base::DictValue manifest_base;
     manifest_base.Set("name", "test");
     manifest_base.Set("version", "1.0");
     manifest_base.Set("manifest_version", 3);
     manifest_base.Merge(manifest.Clone());
-    std::u16string utf16_error;
-    scoped_refptr<Extension> extension = Extension::Create(
-        temp_dir_.GetPath(), mojom::ManifestLocation::kUnpacked, manifest_base,
-        Extension::NO_FLAGS, "", &utf16_error);
-    *error = base::UTF16ToUTF8(utf16_error);
-    return extension;
+    return Extension::Create(temp_dir_.GetPath(),
+                             mojom::ManifestLocation::kUnpacked, manifest_base,
+                             Extension::NO_FLAGS, "", error);
   }
 
  private:
@@ -100,34 +95,34 @@ TEST_F(SidePanelExtensionsTest, ValidateFileInvalid) {
   for (const auto& test_case : test_cases) {
     SCOPED_TRACE(test_case.relative_path);
 
-    base::Value::Dict side_panel;
+    base::DictValue side_panel;
     side_panel.Set("default_path", test_case.relative_path);
-    base::Value::Dict manifest;
+    base::DictValue manifest;
     manifest.Set("side_panel", base::Value(std::move(side_panel)));
 
-    std::string error;
+    std::u16string error;
     auto extension = CreateExtension(manifest, &error);
     ASSERT_FALSE(extension);
-    ASSERT_EQ(base::UTF16ToUTF8(
-                  manifest_errors::kSidePanelManifestDefaultPathInvalid),
-              error);
+    ASSERT_EQ(manifest_errors::kSidePanelManifestDefaultPathInvalid, error);
   }
 }
 
 // Error loading extension when filepath doesn't exist.
 TEST_F(SidePanelExtensionsTest, ValidateFileDoesntExist) {
-  base::Value::Dict side_panel;
+  base::DictValue side_panel;
   side_panel.Set("default_path", "does_not_exist.html");
-  base::Value::Dict manifest;
+  base::DictValue manifest;
   manifest.Set("side_panel", base::Value(std::move(side_panel)));
 
-  std::string error;
+  std::u16string error;
   auto extension = CreateExtension(manifest, &error);
   ASSERT_TRUE(extension);
 
   std::vector<InstallWarning> warnings;
-  ManifestHandler::ValidateExtension(extension.get(), &error, &warnings);
-  ASSERT_EQ(manifest_errors::kSidePanelManifestDefaultPathDoesNotExist, error);
+  std::string utf8_error;
+  ManifestHandler::ValidateExtension(extension.get(), &utf8_error, &warnings);
+  ASSERT_EQ(manifest_errors::kSidePanelManifestDefaultPathDoesNotExist,
+            utf8_error);
 }
 
 }  // namespace extensions

@@ -33,7 +33,7 @@
 #include "components/optimization_guide/core/hints/optimization_guide_decider.h"
 #include "components/os_crypt/async/browser/os_crypt_async.h"
 #include "components/page_content_annotations/core/page_content_annotations_service.h"
-#include "components/passage_embeddings/passage_embeddings_types.h"
+#include "components/passage_embeddings/core/passage_embeddings_types.h"
 #include "url/gurl.h"
 
 namespace history_embeddings {

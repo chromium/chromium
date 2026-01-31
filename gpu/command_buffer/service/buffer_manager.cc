@@ -943,14 +943,16 @@ bool BufferManager::RequestBufferAccessV(ErrorState* error_state,
   DCHECK(error_state);
 
   if (!buffer || buffer->IsDeleted()) {
-    std::string message_tag = base::StringPrintV(error_message_format, varargs);
+    std::string message_tag =
+        UNSAFE_TODO(base::StringPrintV(error_message_format, varargs));
     std::string msg = base::StringPrintf("%s : no buffer", message_tag.c_str());
     ERRORSTATE_SET_GL_ERROR(error_state, GL_INVALID_OPERATION, func_name,
                             msg.c_str());
     return false;
   }
   if (buffer->GetMappedRange()) {
-    std::string message_tag = base::StringPrintV(error_message_format, varargs);
+    std::string message_tag =
+        UNSAFE_TODO(base::StringPrintV(error_message_format, varargs));
     std::string msg = base::StringPrintf("%s : buffer is mapped",
                                          message_tag.c_str());
     ERRORSTATE_SET_GL_ERROR(error_state, GL_INVALID_OPERATION, func_name,
@@ -958,7 +960,8 @@ bool BufferManager::RequestBufferAccessV(ErrorState* error_state,
     return false;
   }
   if (buffer->IsBoundForTransformFeedbackAndOther()) {
-    std::string message_tag = base::StringPrintV(error_message_format, varargs);
+    std::string message_tag =
+        UNSAFE_TODO(base::StringPrintV(error_message_format, varargs));
     std::string msg = base::StringPrintf(
         "%s : buffer is bound for transform feedback and other use "
         "simultaneously",

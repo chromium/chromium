@@ -5,6 +5,9 @@
 #ifndef CONTENT_BROWSER_DEVTOOLS_PROTOCOL_MEMORY_HANDLER_H_
 #define CONTENT_BROWSER_DEVTOOLS_PROTOCOL_MEMORY_HANDLER_H_
 
+#include <optional>
+
+#include "base/memory/memory_pressure_listener_registry.h"
 #include "content/browser/devtools/protocol/devtools_domain_handler.h"
 #include "content/browser/devtools/protocol/memory.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -53,6 +56,10 @@ class MemoryHandler : public DevToolsDomainHandler,
       prepare_for_leak_detection_callback_;
   std::unique_ptr<GetDOMCountersForLeakDetectionCallback>
       get_dom_counters_for_leak_detection_callback_;
+
+  // Suppresses memory pressure notifications when engaged.
+  std::optional<base::MemoryPressureSuppressionToken>
+      memory_pressure_suppression_token_;
 };
 
 }  // namespace protocol

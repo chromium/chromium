@@ -21,7 +21,7 @@ using ParserError = ::RegisterBoundSessionPayload::ParserError;
 using Scope = ::RegisterBoundSessionPayload::Scope;
 
 TEST(RegisterBoundSessionPayloadTest, ParseFromJsonSuccess) {
-  const base::Value::Dict dict = base::test::ParseJsonDict(R"(
+  const base::DictValue dict = base::test::ParseJsonDict(R"(
     {
       "session_identifier": "id",
       "credentials": [
@@ -69,7 +69,7 @@ TEST(RegisterBoundSessionPayloadTest, ParseFromJsonSuccess) {
 }
 
 TEST(RegisterBoundSessionPayloadTest, ParseFromJsonMissingSessionId) {
-  const base::Value::Dict dict = base::test::ParseJsonDict(R"(
+  const base::DictValue dict = base::test::ParseJsonDict(R"(
     {
       "credentials": [
         {
@@ -91,7 +91,7 @@ TEST(RegisterBoundSessionPayloadTest, ParseFromJsonMissingSessionId) {
 }
 
 TEST(RegisterBoundSessionPayloadTest, ParseFromJsonMissingRefreshUrl) {
-  const base::Value::Dict dict = base::test::ParseJsonDict(R"(
+  const base::DictValue dict = base::test::ParseJsonDict(R"(
     {
       "session_identifier": "id",
       "credentials": [
@@ -113,7 +113,7 @@ TEST(RegisterBoundSessionPayloadTest, ParseFromJsonMissingRefreshUrl) {
 }
 
 TEST(RegisterBoundSessionPayloadTest, ParseFromJsonMissingCredentials) {
-  const base::Value::Dict dict = base::test::ParseJsonDict(R"(
+  const base::DictValue dict = base::test::ParseJsonDict(R"(
     {
       "session_identifier": "id",
       "refresh_url": "/RotateBoundCookies"
@@ -126,7 +126,7 @@ TEST(RegisterBoundSessionPayloadTest, ParseFromJsonMissingCredentials) {
 }
 
 TEST(RegisterBoundSessionPayloadTest, ParseFromJsonMissingCredentialName) {
-  const base::Value::Dict dict = base::test::ParseJsonDict(R"(
+  const base::DictValue dict = base::test::ParseJsonDict(R"(
     {
       "session_identifier": "id",
       "credentials": [
@@ -148,7 +148,7 @@ TEST(RegisterBoundSessionPayloadTest, ParseFromJsonMissingCredentialName) {
 }
 
 TEST(RegisterBoundSessionPayloadTest, ParseFromJsonMissingCredentialType) {
-  const base::Value::Dict dict = base::test::ParseJsonDict(R"(
+  const base::DictValue dict = base::test::ParseJsonDict(R"(
     {
       "session_identifier": "id",
       "credentials": [
@@ -180,7 +180,7 @@ TEST(RegisterBoundSessionPayloadTest, ParseFromJsonMissingCredentialType) {
 }
 
 TEST(RegisterBoundSessionPayloadTest, ParseFromJsonMissingCredentialScope) {
-  const base::Value::Dict dict = base::test::ParseJsonDict(R"(
+  const base::DictValue dict = base::test::ParseJsonDict(R"(
     {
       "session_identifier": "id",
       "credentials": [
@@ -200,7 +200,7 @@ TEST(RegisterBoundSessionPayloadTest, ParseFromJsonMissingCredentialScope) {
 
 TEST(RegisterBoundSessionPayloadTest,
      ParseFromJsonMissingCredentialScopeDomain) {
-  const base::Value::Dict dict = base::test::ParseJsonDict(R"(
+  const base::DictValue dict = base::test::ParseJsonDict(R"(
     {
       "session_identifier": "id",
       "credentials": [
@@ -222,7 +222,7 @@ TEST(RegisterBoundSessionPayloadTest,
 }
 
 TEST(RegisterBoundSessionPayloadTest, ParseFromJsonMissingCredentialScopePath) {
-  const base::Value::Dict dict = base::test::ParseJsonDict(R"(
+  const base::DictValue dict = base::test::ParseJsonDict(R"(
     {
       "session_identifier": "id",
       "credentials": [
@@ -244,7 +244,7 @@ TEST(RegisterBoundSessionPayloadTest, ParseFromJsonMissingCredentialScopePath) {
 }
 
 TEST(RegisterBoundSessionPayloadTest, ParseFromJsonStandardFormatSuccess) {
-  const base::Value::Dict dict = base::test::ParseJsonDict(R"(
+  const base::DictValue dict = base::test::ParseJsonDict(R"(
     {
       "session_identifier": "session_id",
       "refresh_url": "/refresh_url",
@@ -303,7 +303,7 @@ TEST(RegisterBoundSessionPayloadTest, ParseFromJsonStandardFormatSuccess) {
 
 TEST(RegisterBoundSessionPayloadTest,
      ParseFromJsonStandardFormatSessionScopeOriginMissing) {
-  const base::Value::Dict dict = base::test::ParseJsonDict(R"(
+  const base::DictValue dict = base::test::ParseJsonDict(R"(
     {
       "session_identifier": "session_id",
       "refresh_url": "/refresh_url",
@@ -336,7 +336,7 @@ TEST(RegisterBoundSessionPayloadTest,
 
 TEST(RegisterBoundSessionPayloadTest,
      ParseFromJsonStandardFormatSessionScopeSpecificationMissing) {
-  const base::Value::Dict dict = base::test::ParseJsonDict(R"(
+  const base::DictValue dict = base::test::ParseJsonDict(R"(
     {
       "session_identifier": "session_id",
       "refresh_url": "/refresh_url",
@@ -364,7 +364,7 @@ TEST(RegisterBoundSessionPayloadTest,
 
 TEST(RegisterBoundSessionPayloadTest,
      ParseFromJsonStandardFormatSessionScopeSpecificationDomainMissing) {
-  const base::Value::Dict dict = base::test::ParseJsonDict(R"(
+  const base::DictValue dict = base::test::ParseJsonDict(R"(
     {
       "session_identifier": "session_id",
       "refresh_url": "/refresh_url",
@@ -398,7 +398,7 @@ TEST(RegisterBoundSessionPayloadTest,
 
 TEST(RegisterBoundSessionPayloadTest,
      ParseFromJsonStandardFormatSessionScopeSpecificationPathMissing) {
-  const base::Value::Dict dict = base::test::ParseJsonDict(R"(
+  const base::DictValue dict = base::test::ParseJsonDict(R"(
     {
       "session_identifier": "session_id",
       "refresh_url": "/refresh_url",
@@ -432,7 +432,7 @@ TEST(RegisterBoundSessionPayloadTest,
 
 TEST(RegisterBoundSessionPayloadTest,
      ParseFromJsonStandardFormatSuccessSessionScopeIncludeSiteMissing) {
-  const base::Value::Dict dict = base::test::ParseJsonDict(R"(
+  const base::DictValue dict = base::test::ParseJsonDict(R"(
     {
       "session_identifier": "session_id",
       "refresh_url": "/refresh_url",
@@ -466,7 +466,7 @@ TEST(RegisterBoundSessionPayloadTest,
 
 TEST(RegisterBoundSessionPayloadTest,
      ParseFromJsonStandardFormatSuccessCredentialAttributesMissing) {
-  const base::Value::Dict dict = base::test::ParseJsonDict(R"(
+  const base::DictValue dict = base::test::ParseJsonDict(R"(
     {
       "session_identifier": "session_id",
       "refresh_url": "/refresh_url",
@@ -498,7 +498,7 @@ TEST(RegisterBoundSessionPayloadTest,
 
 TEST(RegisterBoundSessionPayloadTest,
      ParseFromJsonStandardFormatSuccessRefreshInitiatorsMissing) {
-  const base::Value::Dict dict = base::test::ParseJsonDict(R"(
+  const base::DictValue dict = base::test::ParseJsonDict(R"(
     {
       "session_identifier": "session_id",
       "refresh_url": "/refresh_url",
@@ -531,7 +531,7 @@ TEST(RegisterBoundSessionPayloadTest,
 
 TEST(RegisterBoundSessionPayloadTest,
      ParseFromJsonStandardFormatSessionScopeMissing) {
-  const base::Value::Dict dict = base::test::ParseJsonDict(R"(
+  const base::DictValue dict = base::test::ParseJsonDict(R"(
     {
       "session_identifier": "session_id",
       "refresh_url": "/refresh_url",
@@ -550,7 +550,7 @@ TEST(RegisterBoundSessionPayloadTest,
 
 TEST(RegisterBoundSessionPayloadTest,
      ParseFromJsonStandardFormatSessionScopeMalformed) {
-  const base::Value::Dict dict = base::test::ParseJsonDict(R"(
+  const base::DictValue dict = base::test::ParseJsonDict(R"(
     {
       "session_identifier": "session_id",
       "refresh_url": "/refresh_url",
@@ -575,7 +575,7 @@ TEST(RegisterBoundSessionPayloadTest,
 
 TEST(RegisterBoundSessionPayloadTest,
      ParseFromJsonStandardFormatSessionScopeSpecificationInvalidType) {
-  const base::Value::Dict dict = base::test::ParseJsonDict(R"(
+  const base::DictValue dict = base::test::ParseJsonDict(R"(
     {
       "session_identifier": "session_id",
       "refresh_url": "/refresh_url",
@@ -605,7 +605,7 @@ TEST(RegisterBoundSessionPayloadTest,
 
 TEST(RegisterBoundSessionPayloadTest,
      ParseFromJsonStandardFormatCredentialsMissing) {
-  const base::Value::Dict dict = base::test::ParseJsonDict(R"(
+  const base::DictValue dict = base::test::ParseJsonDict(R"(
     {
       "session_identifier": "session_id",
       "refresh_url": "/refresh_url",
@@ -630,7 +630,7 @@ TEST(RegisterBoundSessionPayloadTest,
 
 TEST(RegisterBoundSessionPayloadTest,
      ParseFromJsonStandardFormatCredentialTypeMissing) {
-  const base::Value::Dict dict = base::test::ParseJsonDict(R"(
+  const base::DictValue dict = base::test::ParseJsonDict(R"(
     {
       "session_identifier": "session_id",
       "refresh_url": "/refresh_url",
@@ -659,7 +659,7 @@ TEST(RegisterBoundSessionPayloadTest,
 
 TEST(RegisterBoundSessionPayloadTest,
      ParseFromJsonStandardFormatCredentialTypeInvalid) {
-  const base::Value::Dict dict = base::test::ParseJsonDict(R"(
+  const base::DictValue dict = base::test::ParseJsonDict(R"(
     {
       "session_identifier": "session_id",
       "refresh_url": "/refresh_url",
@@ -689,7 +689,7 @@ TEST(RegisterBoundSessionPayloadTest,
 
 TEST(RegisterBoundSessionPayloadTest,
      ParseFromJsonStandardFormatCredentialNameMissing) {
-  const base::Value::Dict dict = base::test::ParseJsonDict(R"(
+  const base::DictValue dict = base::test::ParseJsonDict(R"(
     {
       "session_identifier": "session_id",
       "refresh_url": "/refresh_url",
@@ -718,7 +718,7 @@ TEST(RegisterBoundSessionPayloadTest,
 
 TEST(RegisterBoundSessionPayloadTest,
      ParseFromJsonStandardFormatRefreshInitiatorsMalformed) {
-  const base::Value::Dict dict = base::test::ParseJsonDict(R"(
+  const base::DictValue dict = base::test::ParseJsonDict(R"(
     {
       "session_identifier": "session_id",
       "refresh_url": "/refresh_url",

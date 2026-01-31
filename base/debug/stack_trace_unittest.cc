@@ -11,7 +11,6 @@
 #include <string>
 
 #include "base/allocator/buildflags.h"
-#include "base/containers/contains.h"
 #include "base/debug/debugging_buildflags.h"
 #include "base/immediate_crash.h"
 #include "base/logging.h"
@@ -174,23 +173,23 @@ namespace {
 // In an actual implementation, this could cause infinite recursion into the
 // signal handler or other problems. Because malloc() is not guaranteed to be
 // async signal safe.
-void* BadMalloc(size_t, void*) {
+void* BadMalloc(size_t, AllocToken, void*) {
   base::ImmediateCrash();
 }
 
-void* BadCalloc(size_t, size_t, void* context) {
+void* BadCalloc(size_t, size_t, AllocToken, void* context) {
   base::ImmediateCrash();
 }
 
-void* BadAlignedAlloc(size_t, size_t, void*) {
+void* BadAlignedAlloc(size_t, size_t, AllocToken, void*) {
   base::ImmediateCrash();
 }
 
-void* BadAlignedRealloc(void*, size_t, size_t, void*) {
+void* BadAlignedRealloc(void*, size_t, size_t, AllocToken, void*) {
   base::ImmediateCrash();
 }
 
-void* BadRealloc(void*, size_t, void*) {
+void* BadRealloc(void*, size_t, AllocToken, void*) {
   base::ImmediateCrash();
 }
 
@@ -467,14 +466,14 @@ TEST(CheckExitCodeAfterSignalHandlerDeathTest, CheckSIGILL) {
 #if BUILDFLAG(IS_WIN)
 TEST(StackTraceTest, EnabledStackTraces) {
   // This is slightly pointless as this is also enabled by the test harness, but
-  // it ensures we are exercising the InProcessStackDumpingEnabled() path.
+  // it ensures we are exercising the enabled path.
   EXPECT_TRUE(base::debug::EnableInProcessStackDumping());
-  EXPECT_TRUE(base::debug::InProcessStackDumpingEnabled());
+  EXPECT_TRUE(base::debug::InProcessStackDumpingEnabledForTesting());
 }
 
 TEST(StackTraceTest, UnsymbolizedStackTraces) {
   EXPECT_TRUE(base::debug::DisableInProcessStackDumpingForTesting());
-  EXPECT_FALSE(base::debug::InProcessStackDumpingEnabled());
+  EXPECT_FALSE(base::debug::InProcessStackDumpingEnabledForTesting());
 
   StackTrace trace;
   auto as_string = trace.ToString();

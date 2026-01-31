@@ -7,7 +7,6 @@
 #include <memory>
 #include <set>
 
-#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
@@ -90,7 +89,7 @@ void ExtensionTestNotificationObserver::NotificationSet::OnWebContentsCreated(
 
 void ExtensionTestNotificationObserver::NotificationSet::
     StartObservingWebContents(content::WebContents* web_contents) {
-  CHECK(!base::Contains(web_contents_observers_, web_contents));
+  CHECK(!web_contents_observers_.contains(web_contents));
   web_contents_observers_[web_contents] =
       std::make_unique<ForwardingWebContentsObserver>(web_contents, this);
 }

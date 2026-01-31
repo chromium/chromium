@@ -97,13 +97,13 @@ void MemoryMeasurementDelegateImpl::OnMemorySummary(
         ProcessContext::FromProcessNode(process_node),
         MemorySummaryMeasurement{
             .resident_set_size =
-                base::KiB(process_dump.os_dump().resident_set_kb),
+                base::KiBU(process_dump.os_dump().resident_set_kb),
             .private_footprint =
-                base::KiB(process_dump.os_dump().private_footprint_kb),
+                base::KiBU(process_dump.os_dump().private_footprint_kb),
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
             // `private_footprint_swap_kb` is only defined on these platforms
             .private_swap =
-                base::KiB(process_dump.os_dump().private_footprint_swap_kb),
+                base::KiBU(process_dump.os_dump().private_footprint_swap_kb),
 #endif
         });
   }

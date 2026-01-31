@@ -11,6 +11,7 @@
 #include <string>
 #include <vector>
 
+#include "base/cancelable_callback.h"
 #include "base/files/file_path.h"
 #include "base/functional/callback_forward.h"
 #include "base/gtest_prod_util.h"
@@ -26,6 +27,7 @@
 #include "chrome/browser/webauthn/enclave_manager_interface.h"
 #include "chrome/browser/webauthn/local_authentication_token.h"
 #include "components/os_crypt/async/common/encryptor.h"
+#include "components/trusted_vault/trusted_vault_client.h"
 #include "components/trusted_vault/trusted_vault_connection.h"
 #include "content/public/browser/global_routing_id.h"
 #include "crypto/user_verifying_key.h"
@@ -199,16 +201,16 @@ class EnclaveManager : public EnclaveManagerInterface {
   bool is_idle() const;
   // Returns true if the persistent state has been loaded from the disk. (Or
   // else the loading failed and an empty state is being used.)
-  bool is_loaded() const override;
+  bool IsLoaded() const override;
   // Returns true if the current user has been registered with the enclave.
-  bool is_registered() const override;
+  bool IsRegistered() const override;
   // Returns true if `StoreKeys` has been called and thus `AddDeviceToAccount`
   // or `AddDeviceAndPINToAccount` can be called.
   bool has_pending_keys() const;
   // Returns true if the current user has joined the security domain and has one
   // or more wrapped security domain secrets available. (This implies
-  // `is_registered`.)
-  bool is_ready() const override;
+  // `IsRegistered`.)
+  bool IsReady() const override;
   // Returns the number of times that `StoreKeys` has been called.
   unsigned store_keys_count() const;
 
@@ -371,9 +373,12 @@ class EnclaveManager : public EnclaveManagerInterface {
   // successfully completes recovery. It must be called either with a lock
   // outstanding from `GetStoreKeysLock`, or without a lock (but in this case
   // the keys will be stored only if a system UV is available).
-  void StoreKeys(const GaiaId& gaia_id,
-                 std::vector<std::vector<uint8_t>> keys,
-                 int last_key_version);
+  void StoreKeys(
+      const GaiaId& gaia_id,
+      std::vector<std::vector<uint8_t>> keys,
+      int last_key_version,
+      std::optional<trusted_vault::TrustedVaultUserActionTriggerForUMA>
+          user_action_trigger);
 
   // Slowly compute a PIN claim for the given PIN for submission to the enclave.
   static std::unique_ptr<device::enclave::ClaimedPIN> MakeClaimedPINSlowly(
@@ -547,6 +552,10 @@ class EnclaveManager : public EnclaveManagerInterface {
   void OpportunisticStoreKeysAddComplete(bool success);
   void NotifyObserversAboutOutOfContextRecoveryOutcome(
       OutOfContextRecoveryOutcome outcome);
+  void TemporarilyCachePendingOpportunisticKeys(
+      const GaiaId& gaia_id,
+      std::vector<std::vector<uint8_t>> keys,
+      int last_key_version);
 
   const base::FilePath file_path_;
   const raw_ptr<signin::IdentityManager> identity_manager_;
@@ -570,6 +579,8 @@ class EnclaveManager : public EnclaveManagerInterface {
   base::OnceClosure write_finished_callback_;
 
   std::unique_ptr<StoreKeysArgs> pending_keys_;
+  std::unique_ptr<StoreKeysArgs> opportunistic_pending_keys_;
+  base::CancelableOnceClosure opportunistic_pending_keys_invalidation_task_;
   std::unique_ptr<StateMachine> state_machine_;
   std::vector<base::OnceClosure> load_callbacks_;
   std::deque<std::unique_ptr<PendingAction>> pending_actions_;

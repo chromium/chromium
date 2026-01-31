@@ -61,7 +61,7 @@ class CORE_EXPORT CSSLengthResolver {
   // Invoked to notify the resolver that there is a function with
   // a tree-scoped reference, e.g. anchor(--a top).
   //
-  // https://drafts.csswg.org/css-scoping-1/#css-tree-scoped-reference
+  // https://drafts.csswg.org/css-shadow-1/#css-tree-scoped-reference
   virtual void ReferenceTreeScope() const = 0;
 
   // Called when anchor() or anchor-size() functions are evaluated.
@@ -70,8 +70,12 @@ class CORE_EXPORT CSSLengthResolver {
   virtual void ReferenceAnchor() const = 0;
 
   // Called when sibling-index() or sibling-count() functions are evaluated.
-  // Used so that we can mark the resulting style as not cacheable in the MPC.
+  // Used to mark the resulting style as not cacheable in the MPC.
   virtual void ReferenceSibling() const = 0;
+
+  // Called when element-dependent random() functions are evaluated. Used to
+  // mark the resulting style as not cacheable in the MPC.
+  virtual void ReferenceElementDependentRandom() const = 0;
 
   // The AnchorEvaluator used to evaluate anchor()/anchor-size() queries.
   virtual AnchorEvaluator* GetAnchorEvaluator() const { return nullptr; }

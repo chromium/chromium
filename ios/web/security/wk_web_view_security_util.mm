@@ -17,7 +17,6 @@ namespace web {
 // These keys were determined by inspecting userInfo dict of an SSL error.
 NSString* const kNSErrorPeerCertificateChainKey =
     @"NSErrorPeerCertificateChainKey";
-NSString* const kNSErrorFailingURLKey = @"NSErrorFailingURLKey";
 }  // namespace web
 
 namespace {

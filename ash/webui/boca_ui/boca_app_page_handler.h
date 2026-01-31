@@ -8,9 +8,8 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <utility>
 
-#include "ash/webui/boca_ui/mojom/boca.mojom-forward.h"
-#include "ash/webui/boca_ui/mojom/boca.mojom-shared.h"
 #include "ash/webui/boca_ui/mojom/boca.mojom.h"
 #include "ash/webui/boca_ui/provider/classroom_page_handler_impl.h"
 #include "ash/webui/boca_ui/provider/content_settings_handler.h"
@@ -232,7 +231,7 @@ class BocaAppHandler : public mojom::PageHandler,
   void OnCreateSessionResponse(
       CreateSessionCallback callback,
       base::expected<std::unique_ptr<::boca::Session>,
-                     google_apis::ApiErrorCode> result);
+                     std::pair<google_apis::ApiErrorCode, std::string>> result);
 
   void OnEndSessionResponse(EndSessionCallback callback,
                             base::expected<std::unique_ptr<::boca::Session>,

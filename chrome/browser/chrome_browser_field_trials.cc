@@ -111,7 +111,7 @@ void ChromeBrowserFieldTrials::RegisterFeatureOverrides(
   // On Linux/Desktop platform variants, such as ozone/wayland, some features
   // might need to be disabled as per OzonePlatform's runtime properties.
   // OzonePlatform selection and initialization, in turn, depend on Chrome flags
-  // processing, namely 'ozone-platform-hint', so do it here.
+  // processing, namely 'ozone-platform', so do it here.
   //
   // TODO(nickdiego): Move it back to
   // ChromeMainDelegate::PostEarlyInitialization.
@@ -131,16 +131,6 @@ void ChromeBrowserFieldTrials::RegisterFeatureOverrides(
   // override in the generic IS_ANDROID block below, guarded by an appropriate
   // runtime check.
 
-  // If enabled, then use desktop page webprefs for Android devices that have
-  // large displays, specifically tablets and desktops.
-  feature_overrides.EnableFeature(
-      blink::features::kAndroidDesktopWebPrefsLargeDisplays);
-
-  // Enables the caret browsing a11y feature - can use arrow keys to navigate
-  // through web pages.
-  // TODO(crbug.com/369139090): Remove when rollout is complete
-  feature_overrides.EnableFeature(features::kAndroidCaretBrowsing);
-
   // Enable the link hover status bar.
   // TODO(crbug.com/404678510): Remove when the feature is stable.
   feature_overrides.EnableFeature(chrome::android::kLinkHoverStatusBar);
@@ -150,11 +140,6 @@ void ChromeBrowserFieldTrials::RegisterFeatureOverrides(
   // will allow tabs in unfocused windows to be prioritized for OOM kill in
   // low-memory scenarios.
   feature_overrides.EnableFeature(chrome::android::kChangeUnfocusedPriority);
-
-  // Enables media capture (tab+window+screen sharing).
-  // TODO(crbug.com/352187279): Remove when tablet rollout is complete.
-  feature_overrides.EnableFeature(kAndroidMediaPicker);
-  feature_overrides.EnableFeature(features::kUserMediaScreenCapturing);
 
   // Enable desktop tab management features.
   // TODO(crbug.com/422902625): Remove when rollout is complete to all form
@@ -169,9 +154,6 @@ void ChromeBrowserFieldTrials::RegisterFeatureOverrides(
   // Enable V8 optimizations for high-end Android Desktop devices.
   // TODO(crbug.com/425860368): Remove when the feature is stable.
   feature_overrides.EnableFeature(features::kV8AndroidDesktopHighEndConfig);
-  // TODO(b/432367402): Use a new Android API to replace this hack with a proper
-  // solution.
-  feature_overrides.EnableFeature(features::kAndroidCaptureKeyEvents);
   // TODO(crbug.com/438369690): Remove when we enable DevTools frontend for all
   // clank users.
   feature_overrides.EnableFeature(features::kAndroidDevToolsFrontend);
@@ -210,18 +192,10 @@ void ChromeBrowserFieldTrials::RegisterFeatureOverrides(
   feature_overrides.DisableFeature(media::kAllowEnhancedPipTransition);
   // Enable by default for desktop platforms, pending a phone / foldable /
   // tablet rollout using the same flag.
-  // TODO(crbug.com/413776899): Remove when rollout on other form factors is
-  // complete.
-  feature_overrides.EnableFeature(chrome::android::kInstanceSwitcherV2);
   // TODO(crbug.com/442327273): Remove when rollout is complete to all form
   // factors.
   feature_overrides.EnableFeature(
       autofill::features::kAutofillAndroidDesktopKeyboardAccessoryRevamp);
-  // TODO(crbug.com/444486763): Remove when rollout is complete to all form
-  // factors.
-  feature_overrides.EnableFeature(chrome::android::kAndroidTabHighlighting);
-  // TODO(b/441672693): Remove when the feature is stable on other form factors.
-  feature_overrides.EnableFeature(features::kAndroidAudioDeviceListener);
   // Enable by default for desktop platforms, pending a tablet rollout using the
   // same flag.
   // TODO(crbug.com/445475304): Remove when tablet rollout is complete.
@@ -230,13 +204,6 @@ void ChromeBrowserFieldTrials::RegisterFeatureOverrides(
   // TODO(crbug.com/427242080): Remove when tablet rollout is complete.
   feature_overrides.EnableFeature(
       chrome::android::kAndroidPinnedTabsTabletTabStrip);
-
-  // Three flags are required for the bookmarks bar feature.
-  // TODO(crbug.com/430059235): Remove once feature is launched to 100% on all
-  // form factors.
-  feature_overrides.EnableFeature(chrome::android::kAndroidBookmarkBar);
-  feature_overrides.EnableFeature(chrome::android::kAndroidAppearanceSettings);
-  feature_overrides.EnableFeature(chrome::android::kTopControlsRefactor);
 
   // Enable ANGLE/Vulkan features.
   // TODO (crbug.com//376280554): Enable these features with runtime checks
@@ -265,12 +232,10 @@ void ChromeBrowserFieldTrials::RegisterFeatureOverrides(
   // stable on desktop Android.
   feature_overrides.EnableFeature(chrome::android::kChromeNativeUrlOverriding);
 
-  // Enable desktop full screen feature flags by default for desktop platforms.
-  // This includes: Display Edge to Edge fullscreen and full screen to any
-  // screen
+  // Enable desktop full screen to a screen feature flag by default for desktop
+  // platforms.
   // TODO(crbug.com/417426218) Remove once feature is launched to 100% on all
   // form factors.
-  feature_overrides.EnableFeature(features::kDisplayEdgeToEdgeFullscreen);
   feature_overrides.EnableFeature(
       features::kEnableFullscreenToAnyScreenAndroid);
 

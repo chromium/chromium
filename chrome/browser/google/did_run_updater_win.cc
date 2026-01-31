@@ -8,11 +8,14 @@
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "chrome/installer/util/update_did_run_state.h"
+#include "components/activity_reporter/buildflags.h"
 
 void DidRunUpdater::OnRenderProcessHostCreated(
     content::RenderProcessHost* process_host) {
+#if BUILDFLAG(USE_LEGACY_ACTIVE_DEFINITION)
   base::ThreadPool::PostTask(FROM_HERE,
                              {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
                               base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN},
                              base::BindOnce(&installer::UpdateDidRunState));
+#endif
 }

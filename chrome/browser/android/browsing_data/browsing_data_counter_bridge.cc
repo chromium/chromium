@@ -22,8 +22,8 @@ BrowsingDataCounterBridge::BrowsingDataCounterBridge(
     JNIEnv* env,
     const base::android::JavaRef<jobject>& obj,
     Profile* profile,
-    jint selected_time_period,
-    jint data_type)
+    int32_t selected_time_period,
+    int32_t data_type)
     : jobject_(obj) {
   DCHECK_GE(data_type, 0);
   DCHECK_LE(data_type,
@@ -58,7 +58,7 @@ BrowsingDataCounterBridge::~BrowsingDataCounterBridge() = default;
 
 void BrowsingDataCounterBridge::SetSelectedTimePeriod(
     JNIEnv* env,
-    jint selected_time_period) {
+    int32_t selected_time_period) {
   if (!counter_) {
     return;
   }
@@ -80,12 +80,12 @@ void BrowsingDataCounterBridge::onCounterFinished(
                                                                   profile_));
 }
 
-static jlong JNI_BrowsingDataCounterBridge_InitWithoutPeriodPref(
+static int64_t JNI_BrowsingDataCounterBridge_InitWithoutPeriodPref(
     JNIEnv* env,
     const base::android::JavaRef<jobject>& obj,
     Profile* profile,
-    jint selected_time_period,
-    jint data_type) {
+    int32_t selected_time_period,
+    int32_t data_type) {
   return reinterpret_cast<intptr_t>(new BrowsingDataCounterBridge(
       env, obj, profile, selected_time_period, data_type));
 }

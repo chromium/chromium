@@ -14,7 +14,17 @@ const IGNORED_HIGHLIGHT_CHARACTERS_REGEX: RegExp = /^[.,!?'"(){}\[\]]+$/;
 const OPENING_PUNCTUATION_CHARACTERS_REGEX: RegExp = /[({<[]+$/;
 
 export function getCurrentSpeechRate(): number {
-  return parseFloat(chrome.readingMode.speechRate.toFixed(1));
+  let rate = chrome.readingMode.speechRate;
+  // <if expr="not is_chromeos">
+  // ChromeOS supports speech rates of 3.0 and 4.0, which is unsupported
+  // on reading mode on Windows, Mac, and Linux. If a user has set their
+  // preferences to be a voice speed of higher than 2x on ChromeOS and then
+  // uses reading mode on a non-ChromeOS platform, cap the speech rate
+  // at 2x.
+  rate = Math.min(chrome.readingMode.speechRate, 2.0);
+  // </if>
+
+  return parseFloat(rate.toFixed(1));
 }
 
 // If a highlight is just white space or punctuation, we can skip

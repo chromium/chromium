@@ -5,7 +5,7 @@
 #ifndef COMPONENTS_GUEST_VIEW_BROWSER_BAD_MESSAGE_H_
 #define COMPONENTS_GUEST_VIEW_BROWSER_BAD_MESSAGE_H_
 
-#include "content/public/browser/child_process_id.h"
+#include "content/public/common/child_process_id.h"
 
 namespace content {
 class RenderProcessHost;

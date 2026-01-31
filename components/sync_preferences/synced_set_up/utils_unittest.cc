@@ -25,6 +25,8 @@
 
 namespace {
 
+using ServiceStatus = ::sync_preferences::CrossDevicePrefTracker::ServiceStatus;
+
 // Test implementation of `CrossDevicePrefTracker`.
 class TestCrossDevicePrefTracker
     : public sync_preferences::CrossDevicePrefTracker {
@@ -38,6 +40,7 @@ class TestCrossDevicePrefTracker
   // `CrossDevicePrefTracker` overrides.
   void AddObserver(Observer* observer) override {}
   void RemoveObserver(Observer* observer) override {}
+  ServiceStatus GetServiceStatus() const override { return service_status_; }
 
   std::vector<sync_preferences::TimestampedPrefValue> GetValues(
       std::string_view pref_name,
@@ -78,7 +81,7 @@ class TestCrossDevicePrefTracker
       const base::android::JavaRef<jstring>& pref_name,
       std::optional<int> os_type,
       std::optional<int> form_factor,
-      std::optional<jlong> max_sync_recency_microseconds) const override {
+      std::optional<int64_t> max_sync_recency_microseconds) const override {
     return base::android::ScopedJavaLocalRef<jobjectArray>();
   }
 
@@ -87,7 +90,7 @@ class TestCrossDevicePrefTracker
       const base::android::JavaRef<jstring>& pref_name,
       std::optional<int> os_type,
       std::optional<int> form_factor,
-      std::optional<jlong> max_sync_recency_microseconds) const override {
+      std::optional<int64_t> max_sync_recency_microseconds) const override {
     return base::android::ScopedJavaLocalRef<jobject>();
   }
 #endif  // BUILDFLAG(IS_ANDROID)
@@ -98,6 +101,7 @@ class TestCrossDevicePrefTracker
   std::map<std::string_view,
            std::vector<sync_preferences::TimestampedPrefValue>>
       pref_values_;
+  ServiceStatus service_status_ = ServiceStatus::kAvailable;
 };
 
 }  // namespace
@@ -145,7 +149,8 @@ class SyncedSetUpUtilsTest : public PlatformTest {
         /*paask_info=*/std::nullopt,
         /*fcm_registration_token=*/std::string(),
         /*interested_data_types=*/syncer::DataTypeSet(),
-        /*auto_sign_out_last_signin_timestamp=*/std::nullopt);
+        /*auto_sign_out_last_signin_timestamp=*/std::nullopt,
+        /*desktop_to_ios_promo_receiving_enabled=*/false);
   }
 
   // Helper for configuring a TimestampedPrefValue.

@@ -9,7 +9,6 @@
 #include <string_view>
 
 #include "base/command_line.h"
-#include "base/containers/contains.h"
 #include "base/containers/fixed_flat_set.h"
 #include "base/environment.h"
 #include "base/logging.h"
@@ -118,11 +117,11 @@ void RemoteOpenUrlClientDelegateLinux::OpenUrlOnFallbackBrowser(
       environment_->GetVar(kXdgCurrentDesktopEnvVar).value_or(std::string());
 
   const char* host_setting_key = kLinuxPreviousDefaultWebBrowserGeneric;
-  if (base::Contains(current_desktop, "Cinnamon")) {
+  if (current_desktop.contains("Cinnamon")) {
     host_setting_key = kLinuxPreviousDefaultWebBrowserCinnamon;
-  } else if (base::Contains(current_desktop, "XFCE")) {
+  } else if (current_desktop.contains("XFCE")) {
     host_setting_key = kLinuxPreviousDefaultWebBrowserXfce;
-  } else if (base::Contains(current_desktop, "GNOME")) {
+  } else if (current_desktop.contains("GNOME")) {
     host_setting_key = kLinuxPreviousDefaultWebBrowserGnome;
   } else {
     LOG(WARNING) << "Unknown desktop environment: " << current_desktop

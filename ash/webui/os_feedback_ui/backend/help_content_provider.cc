@@ -10,7 +10,6 @@
 #include <string>
 
 #include "ash/webui/os_feedback_ui/mojom/os_feedback_ui.mojom.h"
-#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
@@ -147,7 +146,7 @@ bool IsLoaderSuccessful(const network::SimpleURLLoader* loader) {
 //       ...
 //     },
 // ]
-HelpContentPtr GetHelpContent(const base::Value::Dict& data) {
+HelpContentPtr GetHelpContent(const base::DictValue& data) {
   HelpContentPtr help_content = HelpContent::New();
 
   const std::string* title = data.FindString("title");
@@ -186,7 +185,7 @@ std::string ConvertSearchRequestToJson(
     const std::string& app_locale,
     bool is_child_account,
     const os_feedback_ui::mojom::SearchRequestPtr& request) {
-  base::Value::Dict request_dict;
+  base::DictValue request_dict;
 
   request_dict.Set("helpcenter", "chromeos");
   request_dict.Set("query", request->query);
@@ -213,7 +212,7 @@ HelpContentType ToHelpContentType(const std::string& result_type) {
     return HelpContentType::kArticle;
   }
 
-  if (base::Contains(result_type, "FORUM")) {
+  if (result_type.contains("FORUM")) {
     return HelpContentType::kForum;
   }
   LOG(WARNING) << "HelpContentProvider unknown content type: " << result_type;
@@ -233,7 +232,7 @@ void PopulateSearchResponse(const std::string& app_locale,
   }
   DVLOG(2) << "HelpContentProvider response body after safe parsed: "
            << search_result;
-  const base::Value::Dict& dict = search_result.GetDict();
+  const base::DictValue& dict = search_result.GetDict();
 
   // Extract totalResults.
   const std::string* total_results_str = dict.FindString("totalResults");
@@ -244,7 +243,7 @@ void PopulateSearchResponse(const std::string& app_locale,
   }
 
   // Extract resource.
-  const base::Value::List* resources = dict.FindList("resource");
+  const base::ListValue* resources = dict.FindList("resource");
   if (resources == nullptr) {
     return;
   }
@@ -258,7 +257,7 @@ void PopulateSearchResponse(const std::string& app_locale,
     if (!resource.is_dict()) {
       continue;
     }
-    const base::Value::Dict& res_dict = resource.GetDict();
+    const base::DictValue& res_dict = resource.GetDict();
     const std::string* lang_str = res_dict.FindString("language");
     // Take items in the same language (regardless of regions). If the account
     // is a child account, we only add articles to the result.

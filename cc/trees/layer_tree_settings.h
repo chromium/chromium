@@ -110,7 +110,13 @@ class CC_EXPORT LayerTreeSettings {
   size_t max_memory_for_prepaint_percentage = 100;
   bool use_zero_copy = false;
   bool use_partial_raster = false;
-  bool enable_elastic_overscroll = false;
+
+  // Whether to enable the overscroll effect on the root scroller.
+  bool enable_elastic_overscroll_on_root = false;
+
+  // Whether to enable the overscroll effect on non-root scrollers.
+  bool enable_elastic_overscroll_for_subscroll = false;
+
   size_t scheduled_raster_task_limit = 32;
   bool use_occlusion_for_tile_prioritization = false;
   bool use_layer_lists = false;

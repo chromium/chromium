@@ -98,16 +98,14 @@ class PolicyProviderTestHarness {
                                     int policy_value) = 0;
   virtual void InstallBooleanPolicy(const std::string& policy_name,
                                     bool policy_value) = 0;
-  virtual void InstallStringListPolicy(
-      const std::string& policy_name,
-      const base::Value::List& policy_value) = 0;
-  virtual void InstallDictionaryPolicy(
-      const std::string& policy_name,
-      const base::Value::Dict& policy_value) = 0;
+  virtual void InstallStringListPolicy(const std::string& policy_name,
+                                       const base::ListValue& policy_value) = 0;
+  virtual void InstallDictionaryPolicy(const std::string& policy_name,
+                                       const base::DictValue& policy_value) = 0;
 
   // Not every provider supports installing 3rd party policy. Those who do
   // should override this method; the default just makes the test fail.
-  virtual void Install3rdPartyPolicy(const base::Value::Dict& policies);
+  virtual void Install3rdPartyPolicy(const base::DictValue& policies);
 
  private:
   PolicyLevel level_;

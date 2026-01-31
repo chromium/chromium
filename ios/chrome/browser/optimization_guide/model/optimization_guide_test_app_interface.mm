@@ -35,18 +35,29 @@ void OptimizationGuideTestAppInterfaceWrapper::SetOptimizationGuideServiceUrl(
       ->OverrideOptimizationGuideServiceUrlForTesting(gurl);
 }
 
-optimization_guide::testing::TestHintsComponentCreator
-    test_hints_component_creator;
+@implementation OptimizationGuideTestAppInterface {
+  optimization_guide::testing::TestHintsComponentCreator
+      _testHintsComponentCreator;
+}
 
-@implementation OptimizationGuideTestAppInterface
++ (instancetype)sharedInstance {
+  static OptimizationGuideTestAppInterface* sharedInstance = nil;
+  static dispatch_once_t onceToken;
+  dispatch_once(&onceToken, ^{
+    sharedInstance = [[OptimizationGuideTestAppInterface alloc] init];
+  });
+  return sharedInstance;
+}
 
 + (void)setGetHintsURL:(NSString*)url {
   OptimizationGuideTestAppInterfaceWrapper::SetOptimizationGuideServiceUrl(url);
 }
 
 + (void)setComponentUpdateHints:(NSString*)url {
+  OptimizationGuideTestAppInterface* shared =
+      [OptimizationGuideTestAppInterface sharedInstance];
   const optimization_guide::HintsComponentInfo& component_info =
-      test_hints_component_creator.CreateHintsComponentInfoWithPageHints(
+      shared->_testHintsComponentCreator.CreateHintsComponentInfoWithPageHints(
           optimization_guide::proto::NOSCRIPT, {base::SysNSStringToUTF8(url)},
           "*");
 

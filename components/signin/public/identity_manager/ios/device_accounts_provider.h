@@ -14,40 +14,25 @@
 #include "base/time/time.h"
 #include "base/types/expected.h"
 #include "google_apis/gaia/gaia_id.h"
-
-enum AuthenticationErrorCategory {
-  // Unknown errors.
-  kAuthenticationErrorCategoryUnknownErrors,
-  // Authorization errors.
-  kAuthenticationErrorCategoryAuthorizationErrors,
-  // Authorization errors with HTTP_FORBIDDEN (403) error code.
-  kAuthenticationErrorCategoryAuthorizationForbiddenErrors,
-  // Network server errors includes parsing error and should be treated as
-  // transient/offline errors.
-  kAuthenticationErrorCategoryNetworkServerErrors,
-  // User cancellation errors should be handled by treating them as a no-op.
-  kAuthenticationErrorCategoryUserCancellationErrors,
-  // User identity not found errors.
-  kAuthenticationErrorCategoryUnknownIdentityErrors,
-};
+#include "google_apis/gaia/google_service_auth_error.h"
 
 // Interface that provides a mechanism for interacting with the underlying
 // device accounts support.
 class DeviceAccountsProvider {
  public:
   // Account information.
-  class AccountInfo {
+  class DeviceAccountInfo {
    public:
     // `gaia` and `email` can't be empty.
-    AccountInfo(GaiaId gaia,
-                std::string email,
-                std::string hosted_domain,
-                bool has_persistent_auth_error = false);
-    AccountInfo(const AccountInfo& other);
-    AccountInfo& operator=(const AccountInfo& other);
-    AccountInfo(AccountInfo&& other);
-    AccountInfo& operator=(AccountInfo&& other);
-    ~AccountInfo();
+    DeviceAccountInfo(GaiaId gaia,
+                      std::string email,
+                      std::string hosted_domain,
+                      bool has_persistent_auth_error = false);
+    DeviceAccountInfo(const DeviceAccountInfo& other);
+    DeviceAccountInfo& operator=(const DeviceAccountInfo& other);
+    DeviceAccountInfo(DeviceAccountInfo&& other);
+    DeviceAccountInfo& operator=(DeviceAccountInfo&& other);
+    ~DeviceAccountInfo();
 
     // Account's Gaia id. Guaranteed to be non-empty.
     const GaiaId& GetGaiaId() const;
@@ -78,13 +63,13 @@ class DeviceAccountsProvider {
 
     virtual void OnAccountsOnDeviceChanged() {}
     virtual void OnAccountOnDeviceUpdated(
-        const DeviceAccountsProvider::AccountInfo& device_account) {}
+        const DeviceAccountsProvider::DeviceAccountInfo& device_account) {}
   };
 
   // Result of GetAccessToken() passed to the callback. Contains either
   // a valid AccessTokenInfo or the error.
   using AccessTokenResult =
-      base::expected<AccessTokenInfo, AuthenticationErrorCategory>;
+      base::expected<AccessTokenInfo, GoogleServiceAuthError>;
 
   // Callback invoked when access token have been fetched.
   using AccessTokenCallback =
@@ -97,12 +82,12 @@ class DeviceAccountsProvider {
   virtual void RemoveObserver(Observer* observer) = 0;
 
   // Returns the IDs of all accounts that are assigned to the current profile.
-  virtual std::vector<AccountInfo> GetAccountsForProfile() const;
+  virtual std::vector<DeviceAccountInfo> GetAccountsForProfile() const;
 
   // Returns the IDs of all accounts that exist on the device, including the
   // ones that are assigned to different profiles, in the order in which they're
   // provided by the SystemIdentityManager.
-  virtual std::vector<AccountInfo> GetAccountsOnDevice() const;
+  virtual std::vector<DeviceAccountInfo> GetAccountsOnDevice() const;
 
   // Starts fetching an access token for the account with id |gaia_id| with
   // the given |scopes|. Once the token is obtained, |callback| is called.

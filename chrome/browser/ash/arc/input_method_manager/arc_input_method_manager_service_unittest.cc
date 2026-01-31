@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/arc/input_method_manager/arc_input_method_manager_service.h"
 
+#include <algorithm>
 #include <memory>
 #include <tuple>
 #include <utility>
@@ -13,7 +14,6 @@
 #include "ash/public/cpp/keyboard/arc/arc_input_method_bounds_tracker.h"
 #include "ash/public/cpp/keyboard/keyboard_switches.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller_test_api.h"
-#include "base/containers/contains.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
@@ -132,7 +132,7 @@ class TestInputMethodManager : public im::MockInputMethodManager {
     }
 
     void AddEnabledInputMethodId(const std::string& ime_id) {
-      if (!base::Contains(enabled_input_method_ids_, ime_id)) {
+      if (!std::ranges::contains(enabled_input_method_ids_, ime_id)) {
         enabled_input_method_ids_.push_back(ime_id);
       }
     }

@@ -39,6 +39,15 @@ bool VideoCaptureBufferTracker::IsSameGpuMemoryBuffer(
   return false;
 }
 
+media::mojom::VideoBufferHandlePtr
+VideoCaptureBufferTracker::GetVideoBufferHandle() {
+  if (GetBufferType() == VideoCaptureBufferType::kGpuMemoryBuffer) {
+    return media::mojom::VideoBufferHandle::NewGpuMemoryBufferHandle(
+        GetGpuMemoryBufferHandle());
+  }
+  return nullptr;
+}
+
 void VideoCaptureBufferTracker::OnHeldByConsumersChanged(
     bool is_held_by_consumers) {}
 

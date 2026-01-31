@@ -5,10 +5,12 @@
 #include "chrome/browser/ui/views/tabs/vertical/vertical_tab_strip_top_container.h"
 
 #include <memory>
+#include <optional>
 
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/browser_window/test/mock_browser_window_interface.h"
+#include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/tabs/vertical_tab_strip_state_controller.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/grit/generated_resources.h"
@@ -34,10 +36,14 @@ class VerticalTabStripTopContainerTest : public ChromeViewsTestBase {
     SessionID test_session_id = SessionID::FromSerializedValue(kSessionIDValue);
     EXPECT_CALL(mock_browser_window_interface_, GetUnownedUserDataHost)
         .WillRepeatedly(testing::ReturnRef(unowned_user_data_host_));
+    pref_service_.registry()->RegisterBooleanPref(prefs::kVerticalTabsEnabled,
+                                                  true);
     controller_ = std::make_unique<tabs::VerticalTabStripStateController>(
         &mock_browser_window_interface_, &pref_service_,
         /*root_action_item=*/nullptr,
-        /*session_service*/ nullptr, test_session_id);
+        /*session_service=*/nullptr, test_session_id,
+        /*restored_state_collapsed=*/std::nullopt,
+        /*restored_state_uncollapsed_width=*/std::nullopt);
 
     action_item_ = actions::ActionItem::Builder().Build();
     action_item_->AddChild(
@@ -95,8 +101,8 @@ class VerticalTabStripTopContainerTest : public ChromeViewsTestBase {
 };
 
 TEST_F(VerticalTabStripTopContainerTest, LayoutWithoutExclusionZone) {
-  top_container()->SetExclusionWidthForLayout(0);
-  top_container()->SetToolbarHeightForLayout(0);
+  top_container()->SetExclusionWidthForLayout(1);
+  top_container()->SetToolbarHeightForLayout(1);
   LayoutView();
 
   const gfx::Rect container_bounds = top_container()->bounds();
@@ -116,12 +122,11 @@ TEST_F(VerticalTabStripTopContainerTest, LayoutWithoutExclusionZone) {
 }
 
 TEST_F(VerticalTabStripTopContainerTest, LayoutWithFullWidthExclusionZone) {
-  top_container()->SetExclusionWidthForLayout(0);
-  top_container()->SetToolbarHeightForLayout(0);
+  top_container()->SetExclusionWidthForLayout(1);
+  top_container()->SetToolbarHeightForLayout(1);
   LayoutView();
 
   const gfx::Rect initial_search_bounds = tab_search_button()->bounds();
-  const gfx::Rect initial_collapse_bounds = collapse_button()->bounds();
 
   top_container()->SetExclusionWidthForLayout(kTopContainerWidth);
   constexpr int kExclusionHeight = 50;
@@ -131,16 +136,19 @@ TEST_F(VerticalTabStripTopContainerTest, LayoutWithFullWidthExclusionZone) {
   const gfx::Rect search_bounds = tab_search_button()->bounds();
   const gfx::Rect collapse_bounds = collapse_button()->bounds();
 
-  // Both buttons are shifted down
+  // Both buttons are shifted down to match the height of the bookmarks bar.
+  const int expected_y_center =
+      kExclusionHeight +
+      GetLayoutConstant(LayoutConstant::kBookmarkBarHeight) / 2;
+
   EXPECT_EQ(search_bounds.top_right().x(),
             initial_search_bounds.top_right().x());
-  EXPECT_EQ(search_bounds.right_center().y(),
-            initial_search_bounds.right_center().y() + kExclusionHeight);
+  EXPECT_EQ(search_bounds.right_center().y(), expected_y_center);
 
-  EXPECT_EQ(collapse_bounds.top_right().x(),
-            initial_collapse_bounds.top_right().x());
-  EXPECT_EQ(collapse_bounds.right_center().y(),
-            initial_collapse_bounds.right_center().y() + kExclusionHeight);
+  EXPECT_EQ(
+      collapse_bounds.x(),
+      GetLayoutConstant(LayoutConstant::kVerticalTabStripTopButtonPadding));
+  EXPECT_EQ(collapse_bounds.right_center().y(), expected_y_center);
 }
 
 TEST_F(VerticalTabStripTopContainerTest, LayoutWithPartialWidthExclusionZone) {

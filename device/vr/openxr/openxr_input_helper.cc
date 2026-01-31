@@ -206,8 +206,7 @@ XrResult OpenXRInputHelper::SyncActions(XrTime predicted_display_time) {
   RETURN_IF_XR_FAILED(xrSyncActions(session_, &sync_info));
 
   for (auto& controller_state : controller_states_) {
-    RETURN_IF_XR_FAILED(controller_state.controller.Update(
-        local_space_, predicted_display_time));
+    controller_state.controller.Update(local_space_, predicted_display_time);
   }
 
   return XR_SUCCESS;

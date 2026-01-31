@@ -27,6 +27,7 @@
 #import "ios/chrome/browser/shared/model/url/url_util.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list_observer_bridge.h"
+#import "ios/chrome/browser/shared/public/commands/browser_coordinator_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/lens_commands.h"
 #import "ios/chrome/browser/shared/public/commands/lens_overlay_commands.h"
@@ -209,9 +210,7 @@ const base::TimeDelta kCloseLensViewTimeout = base::Seconds(10);
         [weakSelf openWebLoadParams:params];
       }));
 
-  if (IsSegmentationTipsManagerEnabled()) {
-    [self recordLensUsage];
-  }
+  [self recordLensUsage];
 }
 
 - (void)lensOverlayDidDismissWithCause:
@@ -228,9 +227,9 @@ const base::TimeDelta kCloseLensViewTimeout = base::Seconds(10);
   // Cancel any omnibox editing.
   Browser* browser = self.browser;
   CommandDispatcher* dispatcher = browser->GetCommandDispatcher();
-  id<OmniboxCommands> omniboxCommandsHandler =
-      HandlerForProtocol(dispatcher, OmniboxCommands);
-  [omniboxCommandsHandler cancelOmniboxEdit];
+  id<BrowserCoordinatorCommands> browserCoordinatorHandler =
+      HandlerForProtocol(dispatcher, BrowserCoordinatorCommands);
+  [browserCoordinatorHandler hideComposebox];
 
   // Early return if Lens is not available.
   if (!ios::provider::IsLensSupported()) {
@@ -341,9 +340,7 @@ const base::TimeDelta kCloseLensViewTimeout = base::Seconds(10);
   GetApplicationContext()->GetLocalState()->SetTime(prefs::kLensLastOpened,
                                                     base::Time::Now());
 
-  if (IsSegmentationTipsManagerEnabled()) {
-    [self recordLensUsage];
-  }
+  [self recordLensUsage];
 
   // Notify Welcome Back to remove Lens from the eligible features.
   if (IsWelcomeBackEnabled()) {
@@ -492,8 +489,6 @@ const base::TimeDelta kCloseLensViewTimeout = base::Seconds(10);
 // Manager to provide relevant tips or guidance to the user about the Lens
 // feature.
 - (void)recordLensUsage {
-  CHECK(IsSegmentationTipsManagerEnabled());
-
   if (!self.browser) {
     return;
   }
@@ -501,8 +496,10 @@ const base::TimeDelta kCloseLensViewTimeout = base::Seconds(10);
   TipsManagerIOS* tipsManager =
       TipsManagerIOSFactory::GetForProfile(self.profile);
 
-  tipsManager->NotifySignal(
-      segmentation_platform::tips_manager::signals::kLensUsed);
+  if (tipsManager) {
+    tipsManager->NotifySignal(
+        segmentation_platform::tips_manager::signals::kLensUsed);
+  }
 }
 
 - (void)openWebLoadParams:(const web::NavigationManager::WebLoadParams&)params {

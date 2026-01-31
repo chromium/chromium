@@ -26,7 +26,7 @@ public final class SuggestionsConfig {
      * Maximum number of tiles that is explicitly supported. UMA relies on this value, so even if
      * the UI supports it, getting more can raise unexpected issues.
      */
-    public static final int MAX_TILE_COUNT = 12;
+    public static final int MAX_TILE_COUNT = 8;
 
     /** Maximum number of custom tiles supported. In C++ backend this is `kMaxNumCustomLinks`. */
     public static final int MAX_NUM_CUSTOM_LINKS = 8;

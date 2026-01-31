@@ -267,9 +267,6 @@ class PasswordGenerationAgentTest : public ChromeRenderViewTest {
                                           AutomaticGenerationStatus available);
   void ExpectGenerationElementLostFocus(const char* new_element_id);
   void ExpectEditingPopupOnFieldFocus(const char* element_id);
-  void ExpectFormClassifierVoteReceived(
-      bool received,
-      const std::u16string& expected_generation_element);
   void SelectGenerationFallbackAndExpect(bool available);
   void ExpectAttribute(const WebElement& element,
                        std::string_view attribute,
@@ -287,8 +284,13 @@ class PasswordGenerationAgentTest : public ChromeRenderViewTest {
                     autofill::password_generation::PasswordGenerationUIData>&));
 
   FakeContentAutofillDriver fake_autofill_driver_;
-  FakeMojoPasswordManagerDriver fake_driver_;
+  testing::NiceMock<FakeMojoPasswordManagerDriver> fake_driver_;
   testing::StrictMock<FakePasswordGenerationDriver> fake_pw_client_;
+
+  int called_inform_about_user_input_count_ = 0;
+  std::optional<autofill::FormData> form_data_maybe_submitted_;
+  autofill::mojom::FocusedFieldType last_focused_field_type_ =
+      autofill::mojom::FocusedFieldType::kUnknown;
 };
 
 void PasswordGenerationAgentTest::RegisterMainFrameRemoteInterfaces() {
@@ -310,6 +312,19 @@ void PasswordGenerationAgentTest::RegisterMainFrameRemoteInterfaces() {
       base::BindRepeating(
           &PasswordGenerationAgentTest::BindPasswordManagerDriver,
           base::Unretained(this)));
+
+  ON_CALL(fake_driver_, InformAboutUserInput)
+      .WillByDefault([this](const autofill::FormData& form_data) {
+        called_inform_about_user_input_count_++;
+        form_data_maybe_submitted_ = form_data;
+      });
+
+  ON_CALL(fake_driver_, FocusedInputChanged)
+      .WillByDefault(
+          [this](autofill::FieldRendererId focused_field_id,
+                 autofill::mojom::FocusedFieldType focused_field_type) {
+            last_focused_field_type_ = focused_field_type;
+          });
 }
 
 void PasswordGenerationAgentTest::SetUp() {
@@ -425,21 +440,6 @@ void PasswordGenerationAgentTest::ExpectEditingPopupOnFieldFocus(
   FocusField(new_element_id);
   base::RunLoop().RunUntilIdle();
   testing::Mock::VerifyAndClearExpectations(&fake_pw_client_);
-}
-
-void PasswordGenerationAgentTest::ExpectFormClassifierVoteReceived(
-    bool received,
-    const std::u16string& expected_generation_element) {
-  base::RunLoop().RunUntilIdle();
-  if (received) {
-    ASSERT_TRUE(fake_driver_.called_save_generation_field());
-    EXPECT_EQ(expected_generation_element,
-              fake_driver_.save_generation_field());
-  } else {
-    ASSERT_FALSE(fake_driver_.called_save_generation_field());
-  }
-
-  fake_driver_.reset_save_generation_field();
 }
 
 void PasswordGenerationAgentTest::SelectGenerationFallbackAndExpect(
@@ -664,12 +664,10 @@ TEST_F(PasswordGenerationAgentTest, EditingTest) {
   EXPECT_EQ(edited_password, second_password_element.Value().Utf16());
   EXPECT_TRUE(first_password_element.IsAutofilled());
   EXPECT_TRUE(second_password_element.IsAutofilled());
-  ASSERT_TRUE(fake_driver_.form_data_maybe_submitted().has_value());
-  EXPECT_THAT(FindFieldById(*fake_driver_.form_data_maybe_submitted(),
-                            "first_password"),
+  ASSERT_TRUE(form_data_maybe_submitted_.has_value());
+  EXPECT_THAT(FindFieldById(*form_data_maybe_submitted_, "first_password"),
               testing::Property(&FormFieldData::value, edited_password));
-  EXPECT_THAT(FindFieldById(*fake_driver_.form_data_maybe_submitted(),
-                            "second_password"),
+  EXPECT_THAT(FindFieldById(*form_data_maybe_submitted_, "second_password"),
               testing::Property(&FormFieldData::value, edited_password));
   base::RunLoop().RunUntilIdle();
   testing::Mock::VerifyAndClearExpectations(&fake_pw_client_);
@@ -685,12 +683,10 @@ TEST_F(PasswordGenerationAgentTest, EditingTest) {
   EXPECT_FALSE(second_password_element.IsAutofilled());
   EXPECT_FALSE(first_password_element.ShouldRevealPassword());
   EXPECT_FALSE(second_password_element.ShouldRevealPassword());
-  ASSERT_TRUE(fake_driver_.form_data_maybe_submitted().has_value());
-  EXPECT_THAT(FindFieldById(*fake_driver_.form_data_maybe_submitted(),
-                            "first_password"),
+  ASSERT_TRUE(form_data_maybe_submitted_.has_value());
+  EXPECT_THAT(FindFieldById(*form_data_maybe_submitted_, "first_password"),
               testing::Property(&FormFieldData::value, std::u16string()));
-  EXPECT_THAT(FindFieldById(*fake_driver_.form_data_maybe_submitted(),
-                            "second_password"),
+  EXPECT_THAT(FindFieldById(*form_data_maybe_submitted_, "second_password"),
               testing::Property(&FormFieldData::value, std::u16string()));
 }
 
@@ -724,7 +720,7 @@ TEST_F(PasswordGenerationAgentTest, EditingEventsTest) {
     fake_pw_client_.Flush();
     fake_driver_.Flush();
     EXPECT_EQ(FocusedFieldType::kFillablePasswordField,
-              fake_driver_.last_focused_field_type());
+              last_focused_field_type_);
     testing::Mock::VerifyAndClearExpectations(&fake_pw_client_);
   }
 
@@ -735,8 +731,7 @@ TEST_F(PasswordGenerationAgentTest, EditingEventsTest) {
   fake_pw_client_.Flush();
   // Last focused element shouldn't change while editing.
   fake_driver_.Flush();
-  EXPECT_EQ(FocusedFieldType::kFillablePasswordField,
-            fake_driver_.last_focused_field_type());
+  EXPECT_EQ(FocusedFieldType::kFillablePasswordField, last_focused_field_type_);
 }
 
 TEST_F(PasswordGenerationAgentTest, UnblocklistedMultipleTest) {
@@ -1101,20 +1096,20 @@ TEST_F(PasswordGenerationAgentTest, FallbackForSaving) {
   LoadHTMLWithUserGesture(kAccountCreationFormHTML);
   FocusField("first_password");
   SelectGenerationFallbackAndExpect(true);
-  EXPECT_EQ(0, fake_driver_.called_inform_about_user_input_count());
+  EXPECT_EQ(0, called_inform_about_user_input_count_);
   std::u16string password = u"random_password";
   EXPECT_CALL(fake_pw_client_, PresaveGeneratedPassword(_, Eq(password)))
       .WillOnce(testing::InvokeWithoutArgs([this]() {
         // Make sure that generation event was propagated to the browser before
         // the fallback showing. Otherwise, the fallback for saving provides a
         // save bubble instead of a confirmation bubble.
-        EXPECT_EQ(0, fake_driver_.called_inform_about_user_input_count());
+        EXPECT_EQ(0, called_inform_about_user_input_count_);
       }));
   password_generation_->GeneratedPasswordAccepted(password);
   fake_driver_.Flush();
   // Two fallback requests are expected because generation changes either new
   // password and confirmation fields.
-  EXPECT_EQ(2, fake_driver_.called_inform_about_user_input_count());
+  EXPECT_EQ(2, called_inform_about_user_input_count_);
 }
 
 TEST_F(PasswordGenerationAgentTest, AcceptAfterNavigation) {
@@ -1132,12 +1127,6 @@ TEST_F(PasswordGenerationAgentTest, AcceptAfterNavigation) {
   LoadHTMLWithUserGesture(kSigninFormHTML);
   EXPECT_CALL(fake_pw_client_, PresaveGeneratedPassword).Times(0);
   password_generation_->GeneratedPasswordAccepted(u"random_password");
-}
-
-TEST_F(PasswordGenerationAgentTest, FormClassifierDisabled) {
-  LoadHTMLWithUserGesture(kSigninFormHTML);
-  ExpectFormClassifierVoteReceived(false /* vote is not expected */,
-                                   std::u16string());
 }
 
 TEST_F(PasswordGenerationAgentTest, RevealPassword) {

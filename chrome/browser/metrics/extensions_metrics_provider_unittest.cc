@@ -6,11 +6,11 @@
 
 #include <stdint.h>
 
+#include <algorithm>
 #include <memory>
 #include <optional>
 #include <string>
 
-#include "base/containers/contains.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
@@ -74,21 +74,21 @@ class TestExtensionsMetricsProvider : public ExtensionsMetricsProvider {
       Profile* profile) override {
     extensions::ExtensionSet extensions;
     extensions.Insert(extensions::ExtensionBuilder()
-                          .SetManifest(base::Value::Dict()
+                          .SetManifest(base::DictValue()
                                            .Set("name", "Test extension")
                                            .Set("version", "1.0.0")
                                            .Set("manifest_version", 2))
                           .SetID("ahfgeienlihckogmohjhadlkjgocpleb")
                           .Build());
     extensions.Insert(extensions::ExtensionBuilder()
-                          .SetManifest(base::Value::Dict()
+                          .SetManifest(base::DictValue()
                                            .Set("name", "Test extension 2")
                                            .Set("version", "1.0.0")
                                            .Set("manifest_version", 2))
                           .SetID("pknkgggnfecklokoggaggchhaebkajji")
                           .Build());
     extensions.Insert(extensions::ExtensionBuilder()
-                          .SetManifest(base::Value::Dict()
+                          .SetManifest(base::DictValue()
                                            .Set("name", "Colliding Extension")
                                            .Set("version", "1.0.0")
                                            .Set("manifest_version", 2))
@@ -224,6 +224,11 @@ class ExtensionMetricsProviderInstallsTest
     prefs_ = extensions::ExtensionPrefs::Get(profile());
 
     last_sample_time_ = base::Time::Now() - base::Minutes(30);
+  }
+
+  void TearDown() override {
+    prefs_ = nullptr;
+    ExtensionServiceTestBase::TearDown();
   }
 
   ExtensionInstallProto ConstructProto(const Extension& extension) {
@@ -510,8 +515,9 @@ TEST_F(ExtensionMetricsProviderInstallsTest,
   ASSERT_EQ(2u, installs.size());
   // One should be the extension, and the other should be the app. We don't
   // check the specifics of the proto, since that's tested above.
-  EXPECT_TRUE(base::Contains(installs, ExtensionInstallProto::EXTENSION,
-                             &ExtensionInstallProto::type));
-  EXPECT_TRUE(base::Contains(installs, ExtensionInstallProto::PLATFORM_APP,
-                             &ExtensionInstallProto::type));
+  EXPECT_TRUE(std::ranges::contains(installs, ExtensionInstallProto::EXTENSION,
+                                    &ExtensionInstallProto::type));
+  EXPECT_TRUE(std::ranges::contains(installs,
+                                    ExtensionInstallProto::PLATFORM_APP,
+                                    &ExtensionInstallProto::type));
 }

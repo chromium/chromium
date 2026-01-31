@@ -39,7 +39,7 @@ class CORE_EXPORT DocumentStyleEnvironmentVariables
                                    Vector<unsigned> indices,
                                    bool record_metrics);
 
-  void SetPreferredTextScale(double);
+  void UpdatePreferredTextScaleFromDocument();
 
   // Resolve the variable |name| and return the data. This will also cause
   // future changes to this variable to invalidate the associated document's

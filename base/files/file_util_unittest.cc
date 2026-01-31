@@ -3077,12 +3077,12 @@ TEST_F(FileUtilTest, OpenFileNoInheritance) {
 
 // Character set handling is leaking according to ASAN. http://crbug.com/883698
 #if defined(ADDRESS_SANITIZER)
-  static constexpr const char* modes[] = {"wb", "r"};
+  static constexpr base::cstring_view modes[] = {"wb", "r"};
 #else
-  static constexpr const char* modes[] = {"wb", "r,ccs=UTF-8"};
+  static constexpr base::cstring_view modes[] = {"wb", "r,ccs=UTF-8"};
 #endif
 
-  for (const char* mode : modes) {
+  for (base::cstring_view mode : modes) {
     SCOPED_TRACE(mode);
     ASSERT_NO_FATAL_FAILURE(CreateTextFile(file_path, L"Geepers"));
     FILE* file = OpenFile(file_path, mode);

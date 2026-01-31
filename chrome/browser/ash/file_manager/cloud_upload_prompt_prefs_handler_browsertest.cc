@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/file_manager/cloud_upload_prompt_prefs_handler.h"
 
+#include <algorithm>
 #include <tuple>
 
 #include "base/notreached.h"
@@ -90,11 +91,11 @@ IN_PROC_BROWSER_TEST_F(CloudUploadPromptPrefsHandlerTestBase,
                            ->GetDependencyGraphForTesting()
                            .GetConstructionOrder(&nodes);
   EXPECT_TRUE(success);
-  base::Contains(
+  EXPECT_TRUE(std::ranges::contains(
       nodes, "CloudUploadPromptPrefsHandlerFactory",
       [](const DependencyNode* node) -> std::string_view {
         return static_cast<const KeyedServiceBaseFactory*>(node)->name();
-      });
+      }));
 }
 
 class CloudUploadPromptPrefsHandlerTest

@@ -59,10 +59,7 @@ static_library("security_interstitial_page") {
     "utils.h",
   ]
 
-  public_deps = [
-    "//components/captive_portal/core:buildflags",
-    "//components/safe_browsing/core/browser/db:hit_report",
-  ]
+  public_deps = [ "//components/captive_portal/core:buildflags" ]
 
   deps = [
     ":proto",

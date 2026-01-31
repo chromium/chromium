@@ -27,6 +27,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_EDITING_IME_INPUT_METHOD_CONTROLLER_H_
 
 #include "base/gtest_prod_util.h"
+#include "third_party/blink/public/mojom/input/input_handler.mojom-blink.h"
 #include "third_party/blink/public/platform/web_text_input_info.h"
 #include "third_party/blink/public/platform/web_text_input_type.h"
 #include "third_party/blink/renderer/core/core_export.h"
@@ -68,10 +69,12 @@ class CORE_EXPORT InputMethodController final
 
   // international text input composition
   bool HasComposition() const;
-  void SetComposition(const String& text,
-                      const Vector<ImeTextSpan>& ime_text_spans,
-                      int selection_start,
-                      int selection_end);
+  void SetComposition(
+      const String& text,
+      const Vector<ImeTextSpan>& ime_text_spans,
+      int selection_start,
+      int selection_end,
+      mojom::blink::ImeState ime_state = mojom::blink::ImeState::kNone);
   void SetCompositionFromExistingText(const Vector<ImeTextSpan>& ime_text_spans,
                                       unsigned composition_start,
                                       unsigned composition_end);

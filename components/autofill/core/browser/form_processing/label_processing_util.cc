@@ -39,10 +39,7 @@ std::vector<std::u16string_view> SplitBySeparators(std::u16string_view label) {
           base::SplitStringPieceUsingSubstr(component, separator,
                                             base::TRIM_WHITESPACE,
                                             base::SPLIT_WANT_NONEMPTY);
-      // TODO(crbug.com/40100455): Use `std::vector::append_range()` when
-      // C++23 is available.
-      new_components.insert(new_components.end(), subcomponents.begin(),
-                            subcomponents.end());
+      new_components.append_range(subcomponents);
     }
     components = std::move(new_components);
   }
@@ -105,7 +102,7 @@ base::flat_map<FieldGlobalId, std::u16string> GetParseableLabels(
   std::vector<std::u16string_view> field_labels;
   field_labels.reserve(fields.size());
   for (const T& field : fields) {
-    if (!get(field).IsTextInputElement() || !get(field).IsFocusable()) {
+    if (!get(field).IsTextInputElement() || !get(field).is_focusable()) {
       continue;
     }
     field_labels.push_back(get(field).label());
@@ -121,7 +118,7 @@ base::flat_map<FieldGlobalId, std::u16string> GetParseableLabels(
   // later.
   auto it = parseable_labels.rbegin();
   for (const T& field : base::Reversed(fields)) {
-    if (!get(field).IsTextInputElement() || !get(field).IsFocusable()) {
+    if (!get(field).IsTextInputElement() || !get(field).is_focusable()) {
       continue;
     }
     CHECK(it != parseable_labels.rend());
@@ -130,7 +127,7 @@ base::flat_map<FieldGlobalId, std::u16string> GetParseableLabels(
             features::kAutofillEnableSupportForParsingWithSharedLabels)) {
       label_map.emplace_back(get(field).global_id(), std::u16string(*it));
     }
-    it++;
+    ++it;
   }
   return label_map;
 }

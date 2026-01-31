@@ -11,7 +11,6 @@
 #include <utility>
 
 #include "base/check_is_test.h"
-#include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/files/file_util.h"
 #include "base/functional/callback_helpers.h"
@@ -263,7 +262,7 @@ void ServiceWorkerStorage::FindRegistrationForClientUrl(
   }
 
   // Bypass database lookup when there is no stored registration.
-  if (!base::Contains(registered_keys_, key)) {
+  if (!registered_keys_.contains(key)) {
     std::optional<std::vector<GURL>> scopes = std::vector<GURL>();
     storage_shared_buffer().PutRegistrationScopes(key, *scopes);
     std::move(callback).Run(
@@ -300,7 +299,7 @@ void ServiceWorkerStorage::FindRegistrationForScope(
   }
 
   // Bypass database lookup when there is no stored registration.
-  if (!base::Contains(registered_keys_, key)) {
+  if (!registered_keys_.contains(key)) {
     RunSoon(FROM_HERE,
             base::BindOnce(std::move(callback),
                            /*data=*/nullptr, /*resources=*/nullptr,
@@ -334,7 +333,7 @@ void ServiceWorkerStorage::FindRegistrationForId(
   }
 
   // Bypass database lookup when there is no stored registration.
-  if (!base::Contains(registered_keys_, key)) {
+  if (!registered_keys_.contains(key)) {
     std::move(callback).Run(
         /*data=*/nullptr, /*resources=*/nullptr,
         ServiceWorkerDatabase::Status::kErrorNotFound);
@@ -710,6 +709,7 @@ void ServiceWorkerStorage::PerformStorageCleanup(base::OnceClosure callback) {
 
 void ServiceWorkerStorage::CreateResourceReader(
     int64_t resource_id,
+    const std::optional<net::SHA256HashValue>& sha256_checksum,
     mojo::PendingReceiver<mojom::ServiceWorkerResourceReader> receiver) {
   DCHECK_NE(resource_id, blink::mojom::kInvalidServiceWorkerResourceId);
   switch (state_) {
@@ -719,19 +719,24 @@ void ServiceWorkerStorage::CreateResourceReader(
     case STORAGE_STATE_UNINITIALIZED:
       LazyInitialize(base::BindOnce(&ServiceWorkerStorage::CreateResourceReader,
                                     weak_factory_.GetWeakPtr(), resource_id,
-                                    std::move(receiver)));
+                                    sha256_checksum, std::move(receiver)));
       return;
     case STORAGE_STATE_INITIALIZED:
       break;
   }
 
   uint64_t resource_operation_id = GetNextResourceOperationId();
-  DCHECK(!base::Contains(resource_readers_, resource_operation_id));
+  DCHECK(!resource_readers_.contains(resource_operation_id));
+  std::optional<const net::SHA256HashValue> checksum_copy;
+  if (sha256_checksum) {
+    checksum_copy.emplace(*sha256_checksum);
+  }
   resource_readers_[resource_operation_id] =
       std::make_unique<ServiceWorkerResourceReaderImpl>(
           resource_id, disk_cache()->GetWeakPtr(), std::move(receiver),
           base::BindOnce(&ServiceWorkerStorage::OnResourceReaderDisconnected,
-                         weak_factory_.GetWeakPtr(), resource_operation_id));
+                         weak_factory_.GetWeakPtr(), resource_operation_id),
+          checksum_copy);
 }
 
 void ServiceWorkerStorage::CreateResourceWriter(
@@ -752,7 +757,7 @@ void ServiceWorkerStorage::CreateResourceWriter(
   }
 
   uint64_t resource_operation_id = GetNextResourceOperationId();
-  DCHECK(!base::Contains(resource_writers_, resource_operation_id));
+  DCHECK(!resource_writers_.contains(resource_operation_id));
   resource_writers_[resource_operation_id] =
       std::make_unique<ServiceWorkerResourceWriterImpl>(
           resource_id, disk_cache()->GetWeakPtr(), std::move(receiver),
@@ -779,7 +784,7 @@ void ServiceWorkerStorage::CreateResourceMetadataWriter(
   }
 
   uint64_t resource_operation_id = GetNextResourceOperationId();
-  DCHECK(!base::Contains(resource_metadata_writers_, resource_operation_id));
+  DCHECK(!resource_metadata_writers_.contains(resource_operation_id));
   resource_metadata_writers_[resource_operation_id] =
       std::make_unique<ServiceWorkerResourceMetadataWriterImpl>(
           resource_id, disk_cache()->GetWeakPtr(), std::move(receiver),
@@ -1604,19 +1609,19 @@ void ServiceWorkerStorage::ClearSessionOnlyOrigins() {
 
 void ServiceWorkerStorage::OnResourceReaderDisconnected(
     uint64_t resource_operation_id) {
-  DCHECK(base::Contains(resource_readers_, resource_operation_id));
+  DCHECK(resource_readers_.contains(resource_operation_id));
   resource_readers_.erase(resource_operation_id);
 }
 
 void ServiceWorkerStorage::OnResourceWriterDisconnected(
     uint64_t resource_operation_id) {
-  DCHECK(base::Contains(resource_writers_, resource_operation_id));
+  DCHECK(resource_writers_.contains(resource_operation_id));
   resource_writers_.erase(resource_operation_id);
 }
 
 void ServiceWorkerStorage::OnResourceMetadataWriterDisconnected(
     uint64_t resource_operation_id) {
-  DCHECK(base::Contains(resource_metadata_writers_, resource_operation_id));
+  DCHECK(resource_metadata_writers_.contains(resource_operation_id));
   resource_metadata_writers_.erase(resource_operation_id);
 }
 

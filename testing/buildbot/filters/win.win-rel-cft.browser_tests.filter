@@ -1,5 +1,6 @@
 # Run a smoke set of browser tests relevant to CfT (crbug.com/1421409)
-ChromeForTestingInfoBarTest.*
+# TODO(crbug.com/469533286): reenable ChromeForTestingInfoBarTest
+# ChromeForTestingInfoBarTest.*
 ClientHintsBrowserTest.*
 RecordLanguagesMetricsBrowserTest.*
 CrSettingsAboutPageTest.AboutPage*
@@ -113,6 +114,7 @@ BrowserRootViewBrowserTest.*
 
 # Gardener: disable failing tests.
 # TODO (crbug.com/417895560): fix test and re-enable
+-ChromeForTestingInfoBarTest.*
 -EnableDisableSingleClientTest.*
 -LocalSyncTest.*
 -MigrationSingleClientTest.*

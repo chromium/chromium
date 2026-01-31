@@ -16,10 +16,6 @@ namespace web {
 class WebState;
 }
 
-namespace supervised_user {
-class UrlFormatter;
-}  // namespace supervised_user
-
 // iOS-specific implementation of the web content handler.
 class IOSWebContentHandlerImpl : public supervised_user::WebContentHandler {
  public:
@@ -33,10 +29,9 @@ class IOSWebContentHandlerImpl : public supervised_user::WebContentHandler {
 
   // supervised_user::WebContentHandler implementation:
   void RequestLocalApproval(
-      const GURL& url,
+      const GURL& target_url,
+      supervised_user::WebFilteringResult filtering_result,
       const std::u16string& child_display_name,
-      const supervised_user::UrlFormatter& url_formatter,
-      const supervised_user::FilteringBehaviorReason& filtering_behavior_reason,
       ApprovalRequestInitiatedCallback callback) override;
   bool IsMainFrame() const override;
   void CleanUpInfoBarOnMainFrame() override;
@@ -59,7 +54,7 @@ class IOSWebContentHandlerImpl : public supervised_user::WebContentHandler {
 
   const bool is_main_frame_;
   bool is_bottomsheet_shown_ = false;
-  raw_ptr<web::WebState, DanglingUntriaged> web_state_;
+  raw_ptr<web::WebState> web_state_;
   __weak id<ParentAccessCommands> commands_handler_;
   base::WeakPtrFactory<IOSWebContentHandlerImpl> weak_factory_{this};
 };

@@ -243,7 +243,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionApiTest, ChromeRuntimeOpenOptionsPageError) {
 
 IN_PROC_BROWSER_TEST_P(RuntimeGetPlatformInfoTest,
                        ChromeRuntimeGetPlatformInfo) {
-  base::Value::Dict dict =
+  base::DictValue dict =
       api_test_utils::ToDict(api_test_utils::RunFunctionAndReturnSingleResult(
           new RuntimeGetPlatformInfoFunction(), "[]", profile()));
   EXPECT_TRUE(dict.contains("os"));

@@ -79,7 +79,7 @@ class TabCollectionTabModelImpl {
   void CreateTabGroup(JNIEnv* env,
                       const base::Token& tab_group_id,
                       const std::u16string& tab_group_title,
-                      jint j_color_id,
+                      int32_t j_color_id,
                       bool is_collapsed);
 
   // Moves the tab group to a the new index. Returns the final index of the
@@ -117,12 +117,12 @@ class TabCollectionTabModelImpl {
       JNIEnv* env,
       const base::Token& tab_group_id,
       const std::optional<std::u16string>& tab_group_title,
-      const std::optional<jint>& j_color_id,
+      const std::optional<int32_t>& j_color_id,
       const std::optional<bool>& is_collapsed);
 
   // Getters for tab group visual data.
   std::u16string GetTabGroupTitle(JNIEnv* env, const base::Token& tab_group_id);
-  jint GetTabGroupColor(JNIEnv* env, const base::Token& tab_group_id);
+  int32_t GetTabGroupColor(JNIEnv* env, const base::Token& tab_group_id);
   bool GetTabGroupCollapsed(JNIEnv* env, const base::Token& tab_group_id);
 
   // Checks if a detached tab group exists.

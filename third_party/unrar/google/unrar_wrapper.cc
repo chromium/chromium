@@ -14,12 +14,46 @@
 
 namespace third_party_unrar {
 
-RarReader::RarReader() {}
+FileReader::FileReader(base::File file) : file_(std::move(file)) {}
+FileReader::~FileReader() = default;
 
-RarReader::~RarReader() {}
+int64_t FileReader::Read(base::span<uint8_t> data) {
+  std::optional<size_t> bytes_read = file_.ReadAtCurrentPos(data);
+  return bytes_read.has_value() ? base::checked_cast<int64_t>(*bytes_read) : -1;
+}
 
-bool RarReader::Open(base::File rar_file, base::File temp_file) {
-  rar_file_ = std::move(rar_file);
+bool FileReader::Seek(int64_t offset) {
+  return file_.Seek(base::File::FROM_BEGIN, offset) != -1;
+}
+
+int64_t FileReader::Tell() {
+  return file_.Seek(base::File::FROM_CURRENT, 0);
+}
+
+int64_t FileReader::GetLength() {
+  return file_.GetLength();
+}
+
+FileWriter::FileWriter(base::File file) : file_(std::move(file)) {}
+FileWriter::~FileWriter() = default;
+
+bool FileWriter::Write(base::span<const uint8_t> data) {
+  if (!file_.IsValid())
+    return false;
+  return file_.WriteAtCurrentPos(data).has_value();
+}
+
+void FileWriter::Close() { }
+
+RarReader::RarReader() = default;
+
+RarReader::~RarReader() {
+  ErrHandler.Clean();
+}
+
+bool RarReader::Open(std::unique_ptr<RarReaderDelegate> delegate,
+                     base::File temp_file) {
+  reader_ = std::move(delegate);
   temp_file_ = std::move(temp_file);
 
   command_ = std::make_unique<CommandData>();
@@ -29,12 +63,18 @@ bool RarReader::Open(base::File rar_file, base::File temp_file) {
   std::wstring password_flag =
       L"-p" + (password_.empty() ? L"x" : base::UTF8ToWide(password_));
   command_->ParseArg(password_flag.data());
-  command_->ParseArg(const_cast<wchar_t*>(L"x"));
+  command_->ParseArg(const_cast<wchar_t*>(L"t"));
+
+  if (!writer_) {
+    // If no custom writer is set, use the default FileWriter writing to temp_file.
+    writer_ = std::make_unique<FileWriter>(temp_file_.Duplicate());
+  }
+
   command_->ParseDone();
 
   archive_ = std::make_unique<Archive>(command_.get());
-  archive_->SetFileHandle(rar_file_.GetPlatformFile());
-  archive_->SetTempFileHandle(temp_file_.GetPlatformFile());
+  archive_->SetReaderDelegate(reader_.get());
+  archive_->SetWriterDelegate(writer_.get());
 
   bool open_success = archive_->Open(L"dummy.rar");
   if (!open_success)
@@ -51,6 +91,7 @@ bool RarReader::Open(base::File rar_file, base::File temp_file) {
 }
 
 bool RarReader::ExtractNextEntry() {
+  write_error_ = false;
   bool success = true, repeat = true;
   while (success || repeat) {
     temp_file_.Seek(base::File::Whence::FROM_BEGIN, 0);
@@ -75,7 +116,9 @@ bool RarReader::ExtractNextEntry() {
       current_entry_.contents_valid =
           success && ErrHandler.GetErrorCode() == RARX_SUCCESS;
       ErrHandler.Clean();
-
+      if (writer_) {
+        writer_->Close();
+      }
       if (success) {
         return true;
       }
@@ -104,12 +147,20 @@ void RarReader::SetPassword(const std::string& password) {
   password_ = password;
 }
 
+void RarReader::SetWriterDelegate(std::unique_ptr<RarWriterDelegate> writer) {
+  writer_ = std::move(writer);
+}
+
 bool RarReader::HeadersEncrypted() const {
   return archive_->Encrypted;
 }
 
 bool RarReader::HeaderDecryptionFailed() const {
   return archive_->FailedHeaderDecryption;
+}
+
+bool RarReader::HasWriteError() const {
+   return write_error_;
 }
 
 }  // namespace third_party_unrar

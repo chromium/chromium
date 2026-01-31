@@ -420,36 +420,24 @@ bool MediaCodecAudioDecoder::OnDecodedFrame(
         sample_format_, channel_layout_, channel_count_, sample_rate_,
         frame_count, out.size, pool_);
 
-    // TODO(crbug.com/373960632): Use spans from AudioBuffer directly once that
-    // class is spanified.
-    auto dst = UNSAFE_TODO(
-        base::span<uint8_t>(audio_buffer->channel_data()[0], out.size));
-
-    MediaCodecResult result =
-        media_codec->CopyFromOutputBuffer(out.index, out.offset, dst);
+    auto channels = audio_buffer->channels();
+    CHECK(!channels.empty());
+    MediaCodecResult result = media_codec->CopyFromOutputBuffer(
+        out.index, out.offset, channels.front());
 
     if (!result.is_ok()) {
       media_codec->ReleaseOutputBuffer(out.index, false);
       return false;
     }
 
-    // TODO(crbug.com/373960632): Use spans from AudioBuffer directly once that
-    // class is spanified.
-    auto data = UNSAFE_TODO(
-        base::span<const uint8_t>(audio_buffer->channel_data()[0], out.size));
-
     if (config_.codec() == AudioCodec::kAC3) {
-      frame_count = Ac3Util::ParseTotalAc3SampleCount(data);
+      frame_count = Ac3Util::ParseTotalAc3SampleCount(channels.front());
     } else if (config_.codec() == AudioCodec::kEAC3) {
-      frame_count = Ac3Util::ParseTotalEac3SampleCount(data);
+      frame_count = Ac3Util::ParseTotalEac3SampleCount(channels.front());
 #if BUILDFLAG(ENABLE_PLATFORM_DTS_AUDIO)
     } else if (config_.codec() == AudioCodec::kDTS) {
-      frame_count = media::dts::ParseTotalSampleCount(
-          // TODO(crbug.com/373960632): Use spans from AudioBuffer directly once
-          // that class is spanified.
-          UNSAFE_TODO(base::span<const uint8_t>(audio_buffer->channel_data()[0],
-                                                out.size)),
-          AudioCodec::kDTS);
+      frame_count =
+          media::dts::ParseTotalSampleCount(channels.front(), AudioCodec::kDTS);
       DVLOG(2) << ": DTS Frame Count = " << frame_count;
 #endif  // BUILDFLAG(ENABLE_PLATFORM_DTS_AUDIO)
     } else {
@@ -474,13 +462,10 @@ bool MediaCodecAudioDecoder::OnDecodedFrame(
   // Copy data into AudioBuffer.
   CHECK_LE(out.size, audio_buffer->data_size());
 
-  // TODO(crbug.com/373960632): Use spans from AudioBuffer directly once that
-  // class is spanified.
-  auto dst = UNSAFE_TODO(
-      base::span<uint8_t>(audio_buffer->channel_data()[0], out.size));
-
-  MediaCodecResult result =
-      media_codec->CopyFromOutputBuffer(out.index, out.offset, dst);
+  auto channels = audio_buffer->channels();
+  CHECK(!channels.empty());
+  MediaCodecResult result = media_codec->CopyFromOutputBuffer(
+      out.index, out.offset, channels.front());
 
   // Release MediaCodec output buffer.
   media_codec->ReleaseOutputBuffer(out.index, false);

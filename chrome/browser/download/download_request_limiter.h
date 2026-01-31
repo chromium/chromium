@@ -231,15 +231,16 @@ class DownloadRequestLimiter
 
   // Returns the download status for a page. This does not change the state in
   // anyway.
-  DownloadStatus GetDownloadStatus(content::WebContents* web_contents);
+  DownloadStatus GetDownloadStatus(content::WebContents* web_contents) const;
 
   // Returns the download UI status for a page for the purposes of showing an
   // omnibox decoration.
-  DownloadUiStatus GetDownloadUiStatus(content::WebContents* web_contents);
+  DownloadUiStatus GetDownloadUiStatus(
+      content::WebContents* web_contents) const;
 
   // Returns the download origin that is associated with the current UI status
   // for the purposes of showing an omnibox decoration.
-  GURL GetDownloadOrigin(content::WebContents* web_contents);
+  GURL GetDownloadOrigin(content::WebContents* web_contents) const;
 
   // Check if download can proceed and notifies the callback on UI thread.
   void CanDownload(const content::WebContents::Getter& web_contents_getter,
@@ -277,15 +278,22 @@ class DownloadRequestLimiter
 
   ~DownloadRequestLimiter();
 
+  // Gets the download state for the specified controller. Returns nullptr if
+  // the TabDownloadState does not exist.
+  //
+  // The returned TabDownloadState is owned by the DownloadRequestLimiter and
+  // deleted when no longer needed (the Remove method is invoked).
+  TabDownloadState* GetDownloadState(content::WebContents* web_contents) const;
+
   // Gets the download state for the specified controller. If the
-  // TabDownloadState does not exist and |create| is true, one is created.
+  // TabDownloadState does not exist, one is created.
   // See TabDownloadState's constructor description for details on the two
   // controllers.
   //
   // The returned TabDownloadState is owned by the DownloadRequestLimiter and
   // deleted when no longer needed (the Remove method is invoked).
-  TabDownloadState* GetDownloadState(content::WebContents* web_contents,
-                                     bool create);
+  TabDownloadState* GetOrCreateDownloadState(
+      content::WebContents* web_contents);
 
   // Does the work of updating the download status on the UI thread and
   // potentially prompting the user.

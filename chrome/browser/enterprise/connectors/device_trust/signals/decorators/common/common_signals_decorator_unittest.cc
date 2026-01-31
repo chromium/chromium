@@ -43,7 +43,7 @@ class CommonSignalsDecoratorTest : public testing::Test {
 TEST_F(CommonSignalsDecoratorTest, Decorate_StaticValuesPresent) {
   base::RunLoop run_loop;
 
-  base::Value::Dict signals;
+  base::DictValue signals;
   decorator_.Decorate(signals, run_loop.QuitClosure());
 
   run_loop.Run();
@@ -60,7 +60,7 @@ TEST_F(CommonSignalsDecoratorTest, Decorate_StaticValuesPresent) {
 
   // Run a second time to exercise the caching code.
   base::RunLoop second_run_loop;
-  base::Value::Dict second_signals;
+  base::DictValue second_signals;
   decorator_.Decorate(second_signals, second_run_loop.QuitClosure());
   second_run_loop.Run();
 

@@ -139,11 +139,11 @@ CreateAccessCodeMediaSink(const DiscoveryDevice& discovery_device) {
   return std::make_pair(cast_sink, CreateCastMediaSinkResult::kOk);
 }
 
-base::Value::Dict CreateValueDictFromMediaSinkInternal(
+base::DictValue CreateValueDictFromMediaSinkInternal(
     const MediaSinkInternal& sink) {
   const CastSinkExtraData& extra_data = sink.cast_data();
 
-  base::Value::Dict extra_data_dict;
+  base::DictValue extra_data_dict;
   extra_data_dict.Set(
       kCapabilitiesKey,
       static_cast<int>(extra_data.capabilities.ToEnumBitmask()));
@@ -152,11 +152,11 @@ base::Value::Dict CreateValueDictFromMediaSinkInternal(
                       extra_data.ip_endpoint.address().ToString());
   extra_data_dict.Set(kModelName, extra_data.model_name);
 
-  base::Value::Dict sink_dict;
+  base::DictValue sink_dict;
   sink_dict.Set(kSinkIdKey, sink.id());
   sink_dict.Set(kDisplayNameKey, sink.sink().name());
 
-  base::Value::Dict value_dict;
+  base::DictValue value_dict;
   value_dict.Set(kSinkDictKey, std::move(sink_dict));
   value_dict.Set(kExtraDataDictKey, std::move(extra_data_dict));
 
@@ -176,7 +176,7 @@ base::Value::Dict CreateValueDictFromMediaSinkInternal(
 //     },
 //   }
 std::optional<MediaSinkInternal> ParseValueDictIntoMediaSinkInternal(
-    const base::Value::Dict& value_dict) {
+    const base::DictValue& value_dict) {
   const auto* extra_data_dict = value_dict.FindDict(kExtraDataDictKey);
   if (!extra_data_dict) {
     return std::nullopt;
@@ -273,7 +273,7 @@ AccessCodeCastAddSinkResult AddSinkResultMetricsHelper(
 }
 
 std::optional<net::IPEndPoint> GetIPEndPointFromValueDict(
-    const base::Value::Dict& value_dict) {
+    const base::DictValue& value_dict) {
   const auto* extra_data_dict = value_dict.FindDict(kExtraDataDictKey);
   if (!extra_data_dict) {
     return std::nullopt;

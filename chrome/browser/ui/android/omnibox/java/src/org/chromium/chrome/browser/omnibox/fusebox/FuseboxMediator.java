@@ -23,8 +23,8 @@ import android.provider.MediaStore;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Callback;
-import org.chromium.base.supplier.ObservableSupplier;
-import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.supplier.MonotonicObservableSupplier;
+import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.base.task.AsyncTask;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -41,6 +41,8 @@ import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
+import org.chromium.components.browser_ui.styles.ChromeColors;
+import org.chromium.components.browser_ui.util.ChromeItemPickerExtras;
 import org.chromium.components.omnibox.AutocompleteRequestType;
 import org.chromium.components.omnibox.OmniboxFeatures;
 import org.chromium.ui.base.Clipboard;
@@ -61,16 +63,6 @@ import java.util.Set;
 /** Mediator for the Fusebox component. */
 @NullMarked
 public class FuseboxMediator {
-    // TODO(crbug.com/457825183): Supply this class name and extra strings externally.
-    @VisibleForTesting
-    /* package */ static final String CHROME_ITEM_PICKER_ACTIVITY_CLASS =
-            "org.chromium.chrome.browser.chrome_item_picker.ChromeItemPickerActivity";
-
-    public static final String EXTRA_PRESELECTED_TAB_IDS = "EXTRA_PRESELECTED_TAB_IDS";
-    public static final String EXTRA_IS_INCOGNITO_BRANDED = "EXTRA_IS_INCOGNITO_BRANDED";
-    public static final String EXTRA_ATTACHMENT_TAB_IDS = "TAB_IDS";
-    public static final String EXTRA_ALLOWED_SELECTION_COUNT = "ALLOWED_SELECTION_COUNT";
-
     private final Context mContext;
     private final Profile mProfile;
     private final WindowAndroid mWindowAndroid;
@@ -78,15 +70,14 @@ public class FuseboxMediator {
     private final PropertyModel mModel;
     private final FuseboxPopup mPopup;
     private final FuseboxAttachmentModelList mModelList;
-    private final ObservableSupplier<TabModelSelector> mTabModelSelectorSupplier;
-    private final ObservableSupplierImpl<@AutocompleteRequestType Integer>
+    private final MonotonicObservableSupplier<TabModelSelector> mTabModelSelectorSupplier;
+    private final SettableNonNullObservableSupplier<@AutocompleteRequestType Integer>
             mAutocompleteRequestTypeSupplier;
     private final ComposeBoxQueryControllerBridge mComposeBoxQueryControllerBridge;
-    private final ObservableSupplierImpl<@FuseboxState Integer> mFuseboxStateSupplier;
+    private final SettableNonNullObservableSupplier<@FuseboxState Integer> mFuseboxStateSupplier;
     private final Callback<@AutocompleteRequestType Integer> mOnAutocompleteRequestTypeChanged =
             this::onAutocompleteRequestTypeChanged;
     private final SnackbarManager mSnackbarManager;
-    private final Snackbar mAttachmentLimitSnackbar;
     private final Snackbar mAttachmentUploadFailedSnackbar;
 
     FuseboxMediator(
@@ -96,11 +87,11 @@ public class FuseboxMediator {
             PropertyModel model,
             FuseboxViewHolder viewHolder,
             FuseboxAttachmentModelList modelList,
-            ObservableSupplierImpl<@AutocompleteRequestType Integer>
+            SettableNonNullObservableSupplier<@AutocompleteRequestType Integer>
                     autocompleteRequestTypeSupplier,
-            ObservableSupplier<TabModelSelector> tabModelSelectorSupplier,
+            MonotonicObservableSupplier<TabModelSelector> tabModelSelectorSupplier,
             ComposeBoxQueryControllerBridge composeBoxQueryControllerBridge,
-            ObservableSupplierImpl<@FuseboxState Integer> fuseboxStateSupplier,
+            SettableNonNullObservableSupplier<@FuseboxState Integer> fuseboxStateSupplier,
             SnackbarManager snackbarManager) {
         mContext = context;
         mProfile = profile;
@@ -117,19 +108,10 @@ public class FuseboxMediator {
 
         mAutocompleteRequestTypeSupplier.addObserver(mOnAutocompleteRequestTypeChanged);
 
-        CharSequence snackbarLimitText = context.getText(R.string.fusebox_max_attachments);
-        mAttachmentLimitSnackbar =
-                Snackbar.make(
-                        snackbarLimitText,
-                        null,
-                        Snackbar.TYPE_NOTIFICATION,
-                        Snackbar.UMA_FUSEBOX_MAX_ATTACHMENTS);
-        CharSequence snackbarUploadFailedText = context.getText(R.string.fusebox_upload_failed);
+        // Create the upload failed snackbar
         mAttachmentUploadFailedSnackbar =
-                Snackbar.make(
-                        snackbarUploadFailedText,
-                        null,
-                        Snackbar.TYPE_NOTIFICATION,
+                createStyledSnackbar(
+                        context.getText(R.string.fusebox_upload_failed),
                         Snackbar.UMA_FUSEBOX_UPLOAD_FAILED);
 
         mModel.set(FuseboxProperties.BUTTON_ADD_CLICKED, this::onToggleAttachmentsPopup);
@@ -167,6 +149,22 @@ public class FuseboxMediator {
 
     public void destroy() {
         mAutocompleteRequestTypeSupplier.removeObserver(mOnAutocompleteRequestTypeChanged);
+    }
+
+    private Snackbar createStyledSnackbar(CharSequence text, int snackbarIdentifier) {
+        Snackbar snackbar =
+                Snackbar.make(text, null, Snackbar.TYPE_NOTIFICATION, snackbarIdentifier);
+        boolean isIncognito = mProfile.isOffTheRecord();
+        snackbar.setBackgroundColor(ChromeColors.getInverseBgColor(mContext, isIncognito));
+
+        int textAppearanceResId =
+                isIncognito
+                        ? org.chromium.components.browser_ui.styles.R.style
+                                .TextAppearance_TextMedium_Primary_Baseline_Dark
+                        : org.chromium.components.browser_ui.styles.R.style
+                                .TextAppearance_TextMedium_Primary_OnInverseSurface;
+        snackbar.setTextAppearance(textAppearanceResId);
+        return snackbar;
     }
 
     /** Apply a variant of the branded color scheme to Fusebox UI elements */
@@ -320,9 +318,7 @@ public class FuseboxMediator {
         var attachment = FuseboxAttachment.forTab(tab, mContext.getResources());
 
         // Use FuseboxModelList's add method which handles upload automatically
-        if (!mModelList.add(attachment)) {
-            warnForMaxAttachments();
-        }
+        mModelList.add(attachment);
     }
 
     /**
@@ -350,8 +346,6 @@ public class FuseboxMediator {
         if (mModelList.getRemainingAttachments() > 0 && !isImageGenerationUsed) {
             return false;
         }
-
-        warnForMaxAttachments();
         return true;
     }
 
@@ -360,6 +354,7 @@ public class FuseboxMediator {
         mModel.set(
                 FuseboxProperties.POPUP_CREATE_IMAGE_BUTTON_ENABLED,
                 areAttachmentsCompatibleWithCreateImage());
+        updatePopupButtonEnabledStates();
     }
 
     private boolean areAttachmentsCompatibleWithCreateImage() {
@@ -389,8 +384,14 @@ public class FuseboxMediator {
         ArrayList<Integer> preselectedTabIds = new ArrayList<>(mModelList.getAttachedTabIds());
         try {
             intent =
-                    new Intent(mContext, Class.forName(CHROME_ITEM_PICKER_ACTIVITY_CLASS))
-                            .putIntegerArrayListExtra(EXTRA_PRESELECTED_TAB_IDS, preselectedTabIds);
+                    new Intent(
+                                    mContext,
+                                    Class.forName(
+                                            ChromeItemPickerExtras
+                                                    .CHROME_ITEM_PICKER_ACTIVITY_CLASS))
+                            .putIntegerArrayListExtra(
+                                    ChromeItemPickerExtras.EXTRA_PRESELECTED_TAB_IDS,
+                                    preselectedTabIds);
             ProfileIntentUtils.addProfileToIntent(mProfile, intent);
 
             TabModelSelector tabModelSelector = mTabModelSelectorSupplier.get();
@@ -399,13 +400,18 @@ public class FuseboxMediator {
                 isIncognitoBrandedModelSelected =
                         tabModelSelector.isIncognitoBrandedModelSelected();
             }
-            intent.putExtra(EXTRA_IS_INCOGNITO_BRANDED, isIncognitoBrandedModelSelected);
+            intent.putExtra(
+                    ChromeItemPickerExtras.EXTRA_IS_INCOGNITO_BRANDED,
+                    isIncognitoBrandedModelSelected);
         } catch (ClassNotFoundException e) {
             return;
         }
 
         int maxAllowedTabs = preselectedTabIds.size() + remainingAttachments;
-        intent.putExtra(EXTRA_ALLOWED_SELECTION_COUNT, maxAllowedTabs);
+        intent.putExtra(ChromeItemPickerExtras.EXTRA_ALLOWED_SELECTION_COUNT, maxAllowedTabs);
+
+        boolean isSingleContextMode = !OmniboxFeatures.sMultiattachmentFusebox.getValue();
+        intent.putExtra(ChromeItemPickerExtras.EXTRA_IS_SINGLE_CONTEXT_MODE, isSingleContextMode);
 
         mWindowAndroid.showCancelableIntent(
                 intent, this::onTabPickerResult, R.string.low_memory_error);
@@ -413,7 +419,8 @@ public class FuseboxMediator {
 
     void onTabPickerResult(int resultCode, @Nullable Intent data) {
         if (resultCode != Activity.RESULT_OK || data == null || data.getExtras() == null) return;
-        ArrayList<Integer> tabIds = data.getIntegerArrayListExtra(EXTRA_ATTACHMENT_TAB_IDS);
+        ArrayList<Integer> tabIds =
+                data.getIntegerArrayListExtra(ChromeItemPickerExtras.EXTRA_ATTACHMENT_TAB_IDS);
         // tabIds will be null when the activity finishes with cancel using the back button.
         if (tabIds == null) return;
         updateCurrentlyAttachedTabs(new HashSet<>(tabIds));
@@ -456,7 +463,6 @@ public class FuseboxMediator {
                                     FuseboxAttachment.forTab(
                                             assumeNonNull(tab), mContext.getResources()));
                     if (addFailed) {
-                        warnForMaxAttachments();
                         break;
                     }
                 }
@@ -489,10 +495,24 @@ public class FuseboxMediator {
                 type == AutocompleteRequestType.SEARCH
                         && OmniboxFeatures.sCompactFusebox.getValue());
         mModel.set(FuseboxProperties.AUTOCOMPLETE_REQUEST_TYPE, type);
-        boolean allowNonImage = type != AutocompleteRequestType.IMAGE_GENERATION;
+        updatePopupButtonEnabledStates();
+    }
+
+    private void updatePopupButtonEnabledStates() {
+        // Disable Camera and Gallery Selection popup buttons if no remaining attachments are left.
+        boolean allowByCapacity = mModelList.getRemainingAttachments() > 0;
+
+        // Disables popup buttons for Current Tab, Tab Picker, and File selection if the
+        // autocomplete request is not image generation and if there are no remaining attachments.
+        boolean allowNonImage =
+                mAutocompleteRequestTypeSupplier.get() != AutocompleteRequestType.IMAGE_GENERATION
+                        && allowByCapacity;
+
         mModel.set(FuseboxProperties.CURRENT_TAB_BUTTON_ENABLED, allowNonImage);
         mModel.set(FuseboxProperties.POPUP_FILE_BUTTON_ENABLED, allowNonImage);
         mModel.set(FuseboxProperties.POPUP_TAB_PICKER_ENABLED, allowNonImage);
+        mModel.set(FuseboxProperties.POPUP_CAMERA_BUTTON_ENABLED, allowByCapacity);
+        mModel.set(FuseboxProperties.POPUP_GALLERY_BUTTON_ENABLED, allowByCapacity);
     }
 
     @VisibleForTesting
@@ -642,10 +662,6 @@ public class FuseboxMediator {
                 .executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
     }
 
-    private void warnForMaxAttachments() {
-        mSnackbarManager.showSnackbar(mAttachmentLimitSnackbar);
-    }
-
     /**
      * Add an attachment to the Fusebox toolbar.
      *
@@ -658,9 +674,7 @@ public class FuseboxMediator {
         }
 
         // Use FuseboxModelList's unified add method.
-        if (!mModelList.add(attachment)) {
-            warnForMaxAttachments();
-        }
+        mModelList.add(attachment);
         maybeActivateAiMode(AiModeActivationSource.IMPLICIT);
     }
 

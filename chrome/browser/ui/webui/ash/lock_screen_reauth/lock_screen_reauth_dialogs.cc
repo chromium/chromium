@@ -4,10 +4,10 @@
 
 #include "chrome/browser/ui/webui/ash/lock_screen_reauth/lock_screen_reauth_dialogs.h"
 
+#include <algorithm>
 #include <memory>
 #include <string>
 
-#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/json/json_writer.h"
@@ -513,8 +513,8 @@ bool LockScreenStartReauthDialog::Matches(content::WebContents* web_contents) {
   // are open in the user's active session. We use NavigationController objects
   // for comparison because `LoginHandler` uses them as the source of
   // proxy-related notifications.
-  return base::Contains(webui()->GetWebContents()->GetInnerWebContents(),
-                        web_contents);
+  return std::ranges::contains(webui()->GetWebContents()->GetInnerWebContents(),
+                               web_contents);
 }
 
 void LockScreenStartReauthDialog::ReenableNetworkUpdates() {

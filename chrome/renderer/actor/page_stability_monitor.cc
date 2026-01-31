@@ -15,7 +15,6 @@
 #include "base/state_transitions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
-#include "base/types/cxx23_to_underlying.h"
 #include "chrome/common/actor/actor_logging.h"
 #include "chrome/common/actor/journal_details_builder.h"
 #include "chrome/common/chrome_features.h"
@@ -63,7 +62,7 @@ PageStabilityMonitor::PageStabilityMonitor(content::RenderFrame& frame,
       journal_(journal),
       paint_stability_monitor_(
           supports_paint_stability
-              ? PaintStabilityMonitor::MaybeCreate(frame, task_id, journal)
+              ? PaintStabilityMonitor::Create(frame, task_id, journal)
               : nullptr),
       network_and_main_thread_stability_monitor_(
           std::make_unique<NetworkAndMainThreadStabilityMonitor>(frame,

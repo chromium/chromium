@@ -376,6 +376,7 @@ class CONTENT_EXPORT StoragePartitionImpl
           auth_challenge_responder) override;
   void OnLocalNetworkAccessPermissionRequired(
       network::mojom::TransportType transport_type,
+      network::mojom::IPAddressSpace ip_address_space,
       OnLocalNetworkAccessPermissionRequiredCallback callback) override;
   void OnClearSiteData(
       const GURL& url,
@@ -387,8 +388,8 @@ class CONTENT_EXPORT StoragePartitionImpl
   void OnLoadingStateUpdate(network::mojom::LoadInfoPtr info,
                             OnLoadingStateUpdateCallback callback) override;
   void OnDataUseUpdate(int32_t network_traffic_annotation_id_hash,
-                       int64_t recv_bytes,
-                       int64_t sent_bytes) override;
+                       base::ByteSize recv_bytes,
+                       base::ByteSize sent_bytes) override;
   void OnSharedStorageHeaderReceived(
       const url::Origin& request_origin,
       std::vector<network::mojom::SharedStorageModifierMethodWithOptionsPtr>
@@ -423,6 +424,12 @@ class CONTENT_EXPORT StoragePartitionImpl
       mojo::PendingRemote<storage::mojom::IndexedDBClientStateChecker>
           client_state_checker_remote,
       mojo::PendingReceiver<blink::mojom::IDBFactory> receiver);
+
+  // Binds the mojo endpoint for a `LockManager`.
+  void BindLockManager(
+      const blink::StorageKey& storage_key,
+      const base::UnguessableToken& token,
+      mojo::PendingReceiver<blink::mojom::LockManager> receiver);
 
   // Called by each renderer process to bind its global DomStorage interface.
   // Returns the id of the created receiver.
@@ -752,6 +759,12 @@ class CONTENT_EXPORT StoragePartitionImpl
 
   void ClearNoncesInNetworkContextAfterDelayCallback(
       const std::vector<base::UnguessableToken>& nonces);
+
+  // The callback for BindLockManager, invoked after bucket info is resolved.
+  void CreateLockManagerWithBucketInfo(
+      mojo::PendingReceiver<blink::mojom::LockManager> receiver,
+      const base::UnguessableToken& token,
+      storage::QuotaErrorOr<storage::BucketInfo> bucket);
 
   // Raw pointer that should always be valid. The BrowserContext owns the
   // StoragePartitionImplMap which then owns StoragePartitionImpl. When the

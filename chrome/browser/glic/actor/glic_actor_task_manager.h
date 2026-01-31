@@ -7,12 +7,14 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
-#include "chrome/browser/actor/tools/observation_delay_controller.h"
+#include "build/build_config.h"
 #include "chrome/browser/glic/host/glic.mojom.h"
-#include "chrome/common/actor.mojom-forward.h"
 #include "chrome/common/actor/task_id.h"
 #include "chrome/common/actor_webui.mojom.h"
+#include "components/optimization_guide/proto/features/actions_data.pb.h"
 #include "components/tabs/public/tab_interface.h"
+#include "chrome/browser/actor/tools/observation_delay_controller.h"
+#include "chrome/common/actor.mojom-forward.h"
 
 class Profile;
 
@@ -20,7 +22,6 @@ namespace actor {
 struct ActionResultWithLatencyInfo;
 class ActorKeyedService;
 class ActorTaskDelegate;
-class ActorTask;
 }  // namespace actor
 
 namespace glic {
@@ -28,8 +29,7 @@ namespace glic {
 // Manages actor-related tasks for GlicKeyedService.
 class GlicActorTaskManager {
  public:
-  GlicActorTaskManager(Profile* profile,
-                       actor::ActorKeyedService* actor_keyed_service);
+  explicit GlicActorTaskManager(Profile* profile);
   GlicActorTaskManager(const GlicActorTaskManager&) = delete;
   GlicActorTaskManager& operator=(const GlicActorTaskManager&) = delete;
   ~GlicActorTaskManager();
@@ -39,6 +39,8 @@ class GlicActorTaskManager {
                   mojom::WebClientHandler::CreateTaskCallback callback);
   void PerformActions(const std::vector<uint8_t>& actions_proto,
                       mojom::WebClientHandler::PerformActionsCallback callback);
+  void CancelActions(actor::TaskId task_id,
+                     mojom::WebClientHandler::CancelActionsCallback callback);
   void StopActorTask(actor::TaskId task_id,
                      mojom::ActorTaskStopReason stop_reason);
   void PauseActorTask(actor::TaskId task_id,
@@ -64,6 +66,7 @@ class GlicActorTaskManager {
   base::WeakPtr<GlicActorTaskManager> GetWeakPtr();
 
  private:
+#if !BUILDFLAG(IS_ANDROID)  // NEEDS_ANDROID_IMPL
   void PerformActionsFinished(
       mojom::WebClientHandler::PerformActionsCallback callback,
       actor::TaskId task_id,
@@ -72,7 +75,20 @@ class GlicActorTaskManager {
       actor::mojom::ActionResultCode result_code,
       std::optional<size_t> index_of_failed_action,
       std::vector<actor::ActionResultWithLatencyInfo> action_results);
-  void ReloadTab(actor::ActorTask& task, base::OnceClosure callback);
+  void DidFinishBuildObservation(
+      mojom::WebClientHandler::PerformActionsCallback callback,
+      base::TimeTicks start_time,
+      actor::mojom::ActionResultCode result_code,
+      std::optional<size_t> index_of_failed_action,
+      std::vector<actor::ActionResultWithLatencyInfo> action_results,
+      actor::TaskId task_id,
+      bool skip_async_observation_information,
+      std::unique_ptr<optimization_guide::proto::ActionsResult> result,
+      std::unique_ptr<actor::AggregatedJournal::PendingAsyncEntry>
+          journal_entry);
+  void ReloadCrashedTab(tabs::TabInterface& crashed_tab,
+                        actor::TaskId task_id,
+                        base::OnceClosure callback);
   void CreateActorTabFinished(
       glic::mojom::WebClientHandler::CreateActorTabCallback callback,
       tabs::TabInterface* new_tab);
@@ -83,10 +99,17 @@ class GlicActorTaskManager {
 
   raw_ptr<Profile> profile_;
   raw_ptr<actor::ActorKeyedService> actor_keyed_service_;
-
   actor::TaskId current_task_id_;
-  bool attempted_reload_ = false;
+  // Only attempt to reload a crashed tab once *per task*. Crashes should be
+  // rare so if we're getting repeated crashes it's likely being triggered by
+  // actor code; retrying repeatedly will only trigger more crashes. After the
+  // second crash we prefer to proceed to observation code with a crashed tab
+  // which will be noticed there and return with a TAB_OBSERVATION_PAGE_CRASHED
+  // code.
+  bool attempted_reload_after_crash_ = false;
+  bool attempted_observation_retry_ = false;
   std::unique_ptr<actor::ObservationDelayController> reload_observer_;
+#endif
 
   base::WeakPtrFactory<GlicActorTaskManager> weak_ptr_factory_{this};
 };

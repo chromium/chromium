@@ -1,5 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] HighlightRegistry is a maplike interface that works as expected even if Map.prototype is tampered.
-  Failed to construct 'HighlightRegistry': Illegal constructor
-Harness: the test ran to completion.
-

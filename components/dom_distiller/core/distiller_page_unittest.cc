@@ -194,7 +194,7 @@ TEST_F(DistillerPageTest, ReadabilityObjectIsExtracted) {
                              {{"use_distiller", "true"}, {"min_content_length", "0"}}}},
       /*disabled_features=*/{});
 
-  base::Value::Dict readability_result;
+  base::DictValue readability_result;
   const std::string title = "test_title";
   readability_result.Set(kReadabilityTitle, title);
   const std::string content = "test content";
@@ -236,7 +236,7 @@ TEST_F(DistillerPageTest,
                              {{"use_distiller", "true"}, {"min_content_length", "0"}}}},
       /*disabled_features=*/{});
 
-  base::Value::Dict readability_result;
+  base::DictValue readability_result;
   const std::string title = "test_title";
   readability_result.Set(kReadabilityTitle, title);
   const std::string content = "test content";
@@ -306,7 +306,7 @@ TEST_F(DistillerPageTest, DistillationFailsWhenMinContentLengthNotMet) {
                              {{"use_distiller", "true"}, {"min_content_length", "1000"}}}},
       /*disabled_features=*/{});
 
-  base::Value::Dict readability_result;
+  base::DictValue readability_result;
   const std::string title = "test_title";
   readability_result.Set(kReadabilityTitle, title);
   const std::string content = "test content";

@@ -12,7 +12,6 @@
 #include <memory>
 
 #include "base/check.h"
-#include "base/containers/contains.h"
 #include "base/memory/ref_counted.h"
 #include "base/test/gtest_util.h"
 #include "base/test/scoped_feature_list.h"
@@ -1023,9 +1022,9 @@ TEST_F(DiscardableImageMapTest, DecodingModeHintsBasic) {
       display_list->GenerateDiscardableImageMap(ScrollOffsetMap(),
                                                 &decode_hints);
   EXPECT_EQ(decode_hints.size(), 3u);
-  EXPECT_TRUE(base::Contains(decode_hints, 1));
-  EXPECT_TRUE(base::Contains(decode_hints, 2));
-  EXPECT_TRUE(base::Contains(decode_hints, 3));
+  EXPECT_TRUE(decode_hints.contains(1));
+  EXPECT_TRUE(decode_hints.contains(2));
+  EXPECT_TRUE(decode_hints.contains(3));
   EXPECT_EQ(decode_hints[1], PaintImage::DecodingMode::kUnspecified);
   EXPECT_EQ(decode_hints[2], PaintImage::DecodingMode::kAsync);
   EXPECT_EQ(decode_hints[3], PaintImage::DecodingMode::kSync);
@@ -1088,9 +1087,9 @@ TEST_F(DiscardableImageMapTest, DecodingModeHintsDuplicates) {
                                                 &decode_hints);
 
   EXPECT_EQ(decode_hints.size(), 3u);
-  EXPECT_TRUE(base::Contains(decode_hints, 1));
-  EXPECT_TRUE(base::Contains(decode_hints, 2));
-  EXPECT_TRUE(base::Contains(decode_hints, 3));
+  EXPECT_TRUE(decode_hints.contains(1));
+  EXPECT_TRUE(decode_hints.contains(2));
+  EXPECT_TRUE(decode_hints.contains(3));
   // 1 was unspecified and async, so the result should be unspecified.
   EXPECT_EQ(decode_hints[1], PaintImage::DecodingMode::kUnspecified);
   // 2 was unspecified and sync, so the result should be sync.

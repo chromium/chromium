@@ -65,8 +65,7 @@ public class ReparentingTask implements UserData {
 
     /**
      * @param tab {@link Tab} object.
-     * @return {@link ReparentingTask} object for a given {@link Tab}. Creates one
-     *         if not present.
+     * @return {@link ReparentingTask} object for a given {@link Tab}. Creates one if not present.
      */
     public static ReparentingTask from(Tab tab) {
         ReparentingTask reparentingTask = get(tab);
@@ -89,6 +88,9 @@ public class ReparentingTask implements UserData {
      * Begins the tab reparenting process. Detaches the tab from its current activity and fires an
      * Intent to reparent the tab into its new host activity.
      *
+     * <p>This may return early and revert any actions performed on the {@link Tab} object
+     * associated with this {@link ReparentingTask}, if launching the intent was not successful.
+     *
      * @param context {@link Context} object used to start a new activity.
      * @param intent An optional intent with the desired component, flags, or extras to use when
      *     launching the new host activity. This intent's URI and action will be overridden. This
@@ -96,15 +98,23 @@ public class ReparentingTask implements UserData {
      * @param startActivityOptions Options to pass to {@link Activity#startActivity(Intent, Bundle)}
      * @param finalizeCallback A callback that will be called after the tab is attached to the new
      *     host activity in {@link #attachAndFinishReparenting}.
+     * @return {@code true}, if the intent was successfully launched; {@code false} otherwise.
      */
-    public void begin(
+    public boolean begin(
             @Nullable Context context,
             Intent intent,
             @Nullable Bundle startActivityOptions,
             @Nullable Runnable finalizeCallback) {
-        if (context == null) return;
+        if (context == null) return false;
+        final WindowAndroid originalWindow = mTab.getWindowAndroidChecked();
         setupIntent(intent, finalizeCallback);
-        context.startActivity(intent, startActivityOptions);
+
+        if (!PopupCreator.tryStartActivity(context, intent, startActivityOptions)) {
+            finishAsNoOp(originalWindow);
+            return false;
+        }
+
+        return true;
     }
 
     /**
@@ -201,6 +211,32 @@ public class ReparentingTask implements UserData {
         mTab.updateAttachment(window, tabDelegateFactory);
         if (mTab.getWebContents() == null) return;
         ReparentingTaskJni.get().attachTab(mTab.getWebContents());
+    }
+
+    private void finishAsNoOp(WindowAndroid originalWindow) {
+        AsyncTabParamsManagerSingleton.getInstance().remove(mTab.getId());
+        finish(
+                new Delegate() {
+                    @Override
+                    public @Nullable CompositorViewHolder getCompositorViewHolder() {
+                        return null;
+                    }
+
+                    @Override
+                    public WindowAndroid getWindowAndroid() {
+                        return originalWindow;
+                    }
+
+                    @Override
+                    public @Nullable TabDelegateFactory getTabDelegateFactory() {
+                        return null;
+                    }
+                },
+                null);
+    }
+
+    public Tab getTabForTesting() {
+        return mTab;
     }
 
     @NativeMethods

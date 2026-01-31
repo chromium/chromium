@@ -1,3 +1,4 @@
 include_rules = [
+  "+third_party/abseil-cpp/absl/time",
   "+third_party/oak/chromium/proto",
 ]

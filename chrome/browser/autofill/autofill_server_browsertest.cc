@@ -91,7 +91,7 @@ class WindowedNetworkObserver {
     static const char kDefaultAutofillServerURL[] =
         "https://content-autofill.googleapis.com/";
     DCHECK(params);
-    network::ResourceRequest resource_request = params->url_request;
+    const network::ResourceRequest& resource_request = params->url_request;
     if (resource_request.url.spec().find(kDefaultAutofillServerURL) ==
         std::string::npos) {
       return false;

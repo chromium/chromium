@@ -309,6 +309,9 @@
       <message name="IDS_EXTENSION_MANIFEST_VERSION_NOT_SUPPORTED" desc="Error message when an extension doesn't meet minimum manifest version required by administrator policy.">
         The administrator of this machine requires <ph name="EXTENSION_NAME">$1<ex>Google Talk</ex></ph> to have a minimum manifest version of 3.
       </message>
+      <message name="IDS_EXTENSION_CANT_INSTALL_BLOCKED_BY_RISK_SCORE" desc="Error message when a user tries to install an extension that is blocked due to the extension's risk score heuristics.">
+        Access to this extension is blocked under your organization's extension risk policy.
+      </message>
       <!--
         Device API strings. Please keep alphabetized.
 

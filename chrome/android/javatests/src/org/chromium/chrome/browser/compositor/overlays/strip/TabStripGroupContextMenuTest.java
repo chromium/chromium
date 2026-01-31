@@ -21,6 +21,7 @@ import static androidx.test.espresso.matcher.ViewMatchers.withParentIndex;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
 import static org.hamcrest.CoreMatchers.allOf;
+import static org.hamcrest.Matchers.not;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
@@ -29,10 +30,14 @@ import static org.chromium.chrome.test.util.ChromeTabUtils.getTabCountOnUiThread
 import static org.chromium.ui.test.util.ViewUtils.onViewWaiting;
 
 import android.view.KeyEvent;
+import android.view.View;
+import android.widget.ListView;
 
 import androidx.test.filters.SmallTest;
 import androidx.test.platform.app.InstrumentationRegistry;
 
+import org.hamcrest.BaseMatcher;
+import org.hamcrest.Description;
 import org.hamcrest.Matchers;
 import org.junit.After;
 import org.junit.Before;
@@ -65,6 +70,7 @@ import org.chromium.chrome.test.transit.ntp.IncognitoNewTabPageStation;
 import org.chromium.components.tab_groups.TabGroupColorId;
 import org.chromium.ui.KeyboardVisibilityDelegate;
 import org.chromium.ui.base.DeviceFormFactor;
+import org.chromium.ui.hierarchicalmenu.HierarchicalMenuController;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 
@@ -78,6 +84,7 @@ import org.chromium.ui.modaldialog.ModalDialogManager;
     ChromeFeatureList.GRID_TAB_SWITCHER_UPDATE,
     ChromeFeatureList.ANDROID_THEME_MODULE,
 })
+@Features.EnableFeatures(ChromeFeatureList.SUBMENUS_TAB_CONTEXT_MENU_LFF_TAB_STRIP)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 @Restriction(DeviceFormFactor.TABLET_OR_DESKTOP)
 public class TabStripGroupContextMenuTest {
@@ -375,11 +382,13 @@ public class TabStripGroupContextMenuTest {
         // Update tab group title and verify.
         title = "newTitle";
         updateGroupTitle(title);
+        showMenu();
         onView(withText(title)).check(matches(isDisplayed()));
 
         // Delete the group title by clearing the edit box and verify its default to "N tabs".
         title = "";
         updateGroupTitle(title);
+        showMenu();
         onView(withText("2 tabs")).check(matches(isDisplayed()));
     }
 
@@ -446,6 +455,108 @@ public class TabStripGroupContextMenuTest {
         assertEquals(
                 numTabsBeforeClick + 1,
                 getTabCountOnUiThread(mActivityTestRule.getActivity().getCurrentTabModel()));
+    }
+
+    @Test
+    @SmallTest
+    public void testSubMenuScrollability() throws InterruptedException {
+        // Specifically test the drill-down case.
+        HierarchicalMenuController.setDrillDownOverrideValueForTesting(true);
+        // Prepare standard state and show menu.
+        prepareStandardState();
+        showMenu();
+
+        BaseMatcher<View> isScrollContainerMatcher =
+                new BaseMatcher<>() {
+                    @Override
+                    public void describeTo(Description description) {
+                        description.appendText("isScrollContainer");
+                    }
+
+                    @Override
+                    public boolean matches(Object o) {
+                        if (o instanceof ListView listView) {
+                            return listView.isScrollContainer();
+                        }
+                        return false;
+                    }
+
+                    @Override
+                    public void describeMismatch(Object o, Description description) {
+                        description.appendText(
+                                "Expected "
+                                        + o
+                                        + " to be a listView where isScrollContainer was true");
+                    }
+                };
+
+        BaseMatcher<View> layoutParamsMatcher =
+                new BaseMatcher<>() {
+                    @Override
+                    public void describeTo(Description description) {
+                        description.appendText("has no excess space");
+                    }
+
+                    @Override
+                    public boolean matches(Object o) {
+                        if (o instanceof ListView listView) {
+                            View lastChild = listView.getChildAt(listView.getChildCount() - 1);
+                            return listView.getHeight()
+                                            - listView.getPaddingBottom()
+                                            - (lastChild.getY() + lastChild.getHeight())
+                                    < 10;
+                        }
+                        return false;
+                    }
+
+                    @Override
+                    public void describeMismatch(Object o, Description description) {
+                        description.appendText(
+                                "Expected "
+                                        + o
+                                        + " to be a ListView without excess space at the bottom,"
+                                        + " but ");
+                        if (o instanceof ListView listView) {
+                            View lastChild = listView.getChildAt(listView.getChildCount() - 1);
+                            description.appendText(
+                                    "the height of the ListView (minus padding) was at "
+                                            + (listView.getHeight() - listView.getPaddingBottom())
+                                            + " and its last child's bottom was at "
+                                            + (lastChild.getY() + lastChild.getHeight())
+                                            + ", I think the last child is = "
+                                            + lastChild);
+                        } else {
+                            description.appendText(o + " was not a ListView");
+                        }
+                    }
+                };
+
+        // Get the ListView of the context menu.
+        onView(withId(R.id.tab_group_action_menu_list))
+                .check(matches(not(isScrollContainerMatcher)));
+
+        String moveToAnotherWindow =
+                mActivityTestRule
+                        .getActivity()
+                        .getResources()
+                        .getQuantityString(
+                                org.chromium.chrome.tab_ui.R.plurals
+                                        .move_group_to_another_window_context_menu_item,
+                                2);
+
+        // Click on "Move tab to other window" to open a submenu.
+        onView(withText(moveToAnotherWindow)).perform(click());
+
+        // Sub-menu should be scrollable and should not have excess space.
+        onView(withId(R.id.tab_group_action_menu_list)).check(matches(isScrollContainerMatcher));
+        onView(withId(R.id.tab_group_action_menu_list)).check(matches(layoutParamsMatcher));
+
+        // Go back to the main menu.
+        onView(withText(moveToAnotherWindow)).perform(click());
+
+        // Main menu should not be scrollable again.
+        onView(withId(R.id.tab_group_action_menu_list))
+                .check(matches(not(isScrollContainerMatcher)));
     }
 
     private void prepareStandardState() {

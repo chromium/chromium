@@ -18,21 +18,6 @@ TEST(SigninURLUtilsTest, ParseParameterlessSyncConfirmationURL) {
             GetSyncConfirmationStyle(url));
 }
 
-TEST(SigninURLUtilsTest, AddAndGetFromProfilePickerURLParam) {
-  // Create a basic url, e.g. chrome://signin-error/.
-  GURL url(chrome::kChromeUISigninErrorURL);
-  ASSERT_FALSE(HasFromProfilePickerURLParameter(url));
-
-  // Append the profile picker tag
-  url = AddFromProfilePickerURLParameter(url);
-
-  // Checks that the raw url contains the tag.
-  EXPECT_TRUE(url.spec().find("from_profile_picker=true"));
-  EXPECT_TRUE(url.is_valid());
-  // Test the getter function that checks the tag.
-  EXPECT_TRUE(HasFromProfilePickerURLParameter(url));
-}
-
 TEST(SigninURLUtilsSyncConfirmationURLTest, GetAndParseURL) {
   // Modal version.
   GURL url = AppendSyncConfirmationQueryParams(

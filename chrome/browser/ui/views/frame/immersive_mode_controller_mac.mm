@@ -105,7 +105,9 @@ void ImmersiveModeControllerMac::SetEnabled(bool enabled) {
   }
   enabled_ = enabled;
   if (enabled) {
-    if (separate_tab_strip_) {
+    // Vertical tab strip should stay visible and will not be reparented to the
+    // tab overlay.
+    if (separate_tab_strip_ && !browser_view_->ShouldDrawVerticalTabStrip()) {
       tab_widget_height_ = browser_view_->tab_strip_view()->height();
       tab_widget_height_ += static_cast<BrowserFrameViewMac*>(
                                 browser_view_->browser_widget()->GetFrameView())
@@ -263,16 +265,6 @@ bool ImmersiveModeControllerMac::IsEnabled() const {
   return enabled_;
 }
 
-bool ImmersiveModeControllerMac::ShouldHideTopViews() const {
-  // Always return false to ensure the top UI is pre-rendered and ready for
-  // display. We don't have full control over the visibility of the top UI. For
-  // instance, in auto-hide mode, the top UI is revealed when the user hovers
-  // over the screen's upper border. Notifications about this visibility change
-  // arrive only after the UI is already displayed, so it's crucial to have the
-  // top UI fully rendered by then.
-  return false;
-}
-
 bool ImmersiveModeControllerMac::IsRevealed() const {
   return enabled_ && is_revealed_;
 }
@@ -305,7 +297,7 @@ bool ImmersiveModeControllerMac::ShouldStayImmersiveAfterExitingFullscreen() {
 }
 
 int ImmersiveModeControllerMac::GetMinimumContentOffset() const {
-  if (find_bar_visible_ &&
+  if ((find_bar_visible_ || HasVisibleBubbleInOverlay()) &&
       !fullscreen_utils::IsAlwaysShowToolbarEnabled(browser_view_->browser()) &&
       !fullscreen_utils::IsInContentFullscreen(browser_view_->browser())) {
     return overlay_height_;
@@ -363,7 +355,12 @@ void ImmersiveModeControllerMac::OnViewBoundsChanged(
     return;
   }
   overlay_height_ = bounds.height();
-  if (separate_tab_strip_) {
+  // TODO(b/475222200): Currently tab strips are duplicated when switching to
+  // vertical tabs while in immersive leaves behind the horizontal tab, and
+  // OnViewBoundsChanged does not get called.
+  // tab_overlay_widget size should only be set if we aren't drawing the
+  // vertical tabstrip.
+  if (separate_tab_strip_ && !browser_view_->ShouldDrawVerticalTabStrip()) {
     gfx::Size new_size(bounds.width(), tab_widget_height_);
     browser_view_->tab_overlay_widget()->SetSize(new_size);
     browser_view_->tab_overlay_view()->SetSize(new_size);
@@ -405,6 +402,20 @@ void ImmersiveModeControllerMac::MoveChildren(views::Widget* from_widget,
                                         to_widget->GetNativeView());
     }
   }
+}
+
+bool ImmersiveModeControllerMac::HasVisibleBubbleInOverlay() const {
+  if (!browser_view_->overlay_widget()) {
+    return false;
+  }
+  for (views::Widget* widget : views::Widget::GetAllChildWidgets(
+           browser_view_->overlay_widget()->GetNativeView())) {
+    if (widget->IsVisible() && widget->widget_delegate() &&
+        widget->widget_delegate()->AsBubbleDialogDelegate()) {
+      return true;
+    }
+  }
+  return false;
 }
 
 bool ImmersiveModeControllerMac::ShouldMoveChild(views::Widget* child) {
@@ -598,8 +609,21 @@ void ImmersiveModeOverlayWidgetObserver::OnWidgetBoundsChanged(
     views::Widget* widget,
     const gfx::Rect& new_bounds) {
   // Update web dialog position when the overlay widget moves by invalidating
-  // the browse view layout.
+  // the browser view layout.
   controller_->browser_view()->InvalidateLayout();
+
+  // The overlay widget moving can affect the position of its child widgets
+  // (e.g. bubbles) relative to their anchors (which might be in the browser
+  // widget). We need to re-anchor them.
+  for (views::Widget* child :
+       views::Widget::GetAllChildWidgets(widget->GetNativeView())) {
+    if (views::WidgetDelegate* widget_delegate = child->widget_delegate()) {
+      if (views::BubbleDialogDelegate* bubble =
+              widget_delegate->AsBubbleDialogDelegate()) {
+        bubble->OnAnchorBoundsChanged();
+      }
+    }
+  }
 }
 
 void ImmersiveModeOverlayWidgetObserver::OnWidgetDestroying(

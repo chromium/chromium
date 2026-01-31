@@ -49,7 +49,10 @@ source_set("unit_tests") {
   sources = [ "location_bar_badge_view_controller_unittest.mm" ]
   deps = [
     ":ui",
+    "//base/test:test_support",
     "//ios/chrome/browser/contextual_panel/entrypoint/ui",
+    "//ios/chrome/browser/contextual_panel/model:public",
+    "//ios/chrome/browser/intelligence/features",
     "//ios/chrome/browser/location_bar/badge/model",
     "//testing/gtest",
     "//third_party/ocmock",

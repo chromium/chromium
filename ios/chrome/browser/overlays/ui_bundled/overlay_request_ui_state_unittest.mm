@@ -23,8 +23,7 @@ class OverlayRequestUIStateTest : public PlatformTest {
       : PlatformTest(),
         profile_(TestProfileIOS::Builder().Build()),
         browser_(std::make_unique<TestBrowser>(profile_.get())),
-        request_(OverlayRequest::CreateWithConfig<FakeOverlayUserData>()),
-        state_(request_.get()) {}
+        request_(OverlayRequest::CreateWithConfig<FakeOverlayUserData>()) {}
 
   OverlayRequest* request() { return request_.get(); }
   OverlayRequestUIState& state() { return state_; }

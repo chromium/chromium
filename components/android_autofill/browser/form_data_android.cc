@@ -153,7 +153,7 @@ std::vector<int> FormDataAndroid::UpdateFieldVisibilities(
   // reserve space in the vector.
   std::vector<int> indices;
   for (size_t i = 0; i < form_.fields().size(); ++i) {
-    if (form_.fields()[i].IsFocusable() != form.fields()[i].IsFocusable()) {
+    if (form_.fields()[i].is_focusable() != form.fields()[i].is_focusable()) {
       fields_[i]->OnFormFieldVisibilityDidChange(form.fields()[i]);
       indices.push_back(i);
     }

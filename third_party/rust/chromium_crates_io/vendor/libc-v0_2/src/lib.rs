@@ -88,6 +88,14 @@ cfg_if! {
         pub use crate::vxworks::*;
 
         prelude!();
+    } else if #[cfg(target_os = "qurt")] {
+        mod primitives;
+        pub use crate::primitives::*;
+
+        mod qurt;
+        pub use crate::qurt::*;
+
+        prelude!();
     } else if #[cfg(target_os = "solid_asp3")] {
         mod primitives;
         pub use crate::primitives::*;

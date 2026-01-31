@@ -39,7 +39,7 @@ enum class CacheMetric {
   kMaxValue = kStale,
 };
 
-base::Value::Dict NetLogCacheStatusParams(const CacheMetric metric) {
+base::DictValue NetLogCacheStatusParams(const CacheMetric metric) {
   std::string cache_status;
   switch (metric) {
     case CacheMetric::kHitAndPass:
@@ -56,7 +56,7 @@ base::Value::Dict NetLogCacheStatusParams(const CacheMetric metric) {
       break;
   }
 
-  return base::Value::Dict().Set("status", cache_status);
+  return base::DictValue().Set("status", cache_status);
 }
 
 void RecordCacheMetricNetLog(CacheMetric metric,
@@ -203,7 +203,8 @@ void PreflightCache::MayPurge(size_t max_entries, size_t purge_unit) {
   }
   DCHECK_GE(cache_.size(), purge_unit);
   auto purge_begin_entry = cache_.begin();
-  std::advance(purge_begin_entry, base::RandInt(0, cache_.size() - purge_unit));
+  std::advance(purge_begin_entry,
+               base::RandIntInclusive(0, cache_.size() - purge_unit));
   auto purge_end_entry = purge_begin_entry;
   std::advance(purge_end_entry, purge_unit);
   cache_.erase(purge_begin_entry, purge_end_entry);

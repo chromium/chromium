@@ -40,6 +40,10 @@ bool DesktopBrowserWindowCapabilities::IsAttemptingToCloseBrowser() const {
   return delegate_->IsAttemptingToCloseBrowser();
 }
 
+gfx::Size DesktopBrowserWindowCapabilities::GetContentsSize() const {
+  return browser_window_->GetContentsSize();
+}
+
 void DesktopBrowserWindowCapabilities::SetWebContentsBlocked(
     content::WebContents* web_contents,
     bool blocked) {

@@ -18,7 +18,7 @@
 #include "url/gurl.h"
 
 namespace base {
-class Value;
+class DictValue;
 }
 
 namespace content::webid {
@@ -55,7 +55,7 @@ using ParseJsonCallback =
                             data_decoder::DataDecoder::ValueOrError)>;
 
 GURL ExtractEndpoint(const GURL& provider,
-                     const base::Value::Dict& response,
+                     const base::DictValue& response,
                      const char* key);
 
 CONTENT_EXPORT std::optional<GURL> ComputeWellKnownUrl(const GURL& provider,

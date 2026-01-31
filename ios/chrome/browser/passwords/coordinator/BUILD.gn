@@ -1,0 +1,27 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("coordinator") {
+  sources = [
+    "password_export_handler.h",
+    "password_exporter.h",
+    "password_exporter.mm",
+    "password_utils.h",
+    "password_utils.mm",
+  ]
+  deps = [
+    "//base",
+    "//components/device_reauth",
+    "//components/password_manager/core/browser:metrics_util",
+    "//components/password_manager/core/browser/export",
+    "//components/password_manager/core/browser/ui",
+    "//components/password_manager/core/browser/ui:credential_ui_entry",
+    "//components/password_manager/core/common",
+    "//components/strings",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/settings/ui_bundled/password/password_settings:common",
+    "//ios/chrome/common/ui/reauthentication",
+    "//ui/base",
+  ]
+}

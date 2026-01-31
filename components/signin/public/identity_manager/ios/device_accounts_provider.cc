@@ -4,10 +4,11 @@
 
 #include "components/signin/public/identity_manager/ios/device_accounts_provider.h"
 
-DeviceAccountsProvider::AccountInfo::AccountInfo(GaiaId gaia,
-                                                 std::string email,
-                                                 std::string hosted_domain,
-                                                 bool has_persistent_auth_error)
+DeviceAccountsProvider::DeviceAccountInfo::DeviceAccountInfo(
+    GaiaId gaia,
+    std::string email,
+    std::string hosted_domain,
+    bool has_persistent_auth_error)
     : gaia_(std::move(gaia)),
       email_(std::move(email)),
       hosted_domain_(std::move(hosted_domain)),
@@ -16,45 +17,47 @@ DeviceAccountsProvider::AccountInfo::AccountInfo(GaiaId gaia,
   CHECK(!email_.empty());
 }
 
-DeviceAccountsProvider::AccountInfo::AccountInfo(const AccountInfo& other) =
-    default;
+DeviceAccountsProvider::DeviceAccountInfo::DeviceAccountInfo(
+    const DeviceAccountInfo& other) = default;
 
-DeviceAccountsProvider::AccountInfo&
-DeviceAccountsProvider::AccountInfo::operator=(const AccountInfo& other) =
-    default;
+DeviceAccountsProvider::DeviceAccountInfo&
+DeviceAccountsProvider::DeviceAccountInfo::operator=(
+    const DeviceAccountInfo& other) = default;
 
-DeviceAccountsProvider::AccountInfo::AccountInfo(AccountInfo&& other) = default;
+DeviceAccountsProvider::DeviceAccountInfo::DeviceAccountInfo(
+    DeviceAccountInfo&& other) = default;
 
-DeviceAccountsProvider::AccountInfo&
-DeviceAccountsProvider::AccountInfo::operator=(AccountInfo&& other) = default;
+DeviceAccountsProvider::DeviceAccountInfo&
+DeviceAccountsProvider::DeviceAccountInfo::operator=(
+    DeviceAccountInfo&& other) = default;
 
-DeviceAccountsProvider::AccountInfo::~AccountInfo() = default;
+DeviceAccountsProvider::DeviceAccountInfo::~DeviceAccountInfo() = default;
 
-const GaiaId& DeviceAccountsProvider::AccountInfo::GetGaiaId() const {
+const GaiaId& DeviceAccountsProvider::DeviceAccountInfo::GetGaiaId() const {
   return gaia_;
 }
 
-const std::string& DeviceAccountsProvider::AccountInfo::GetEmail() const {
+const std::string& DeviceAccountsProvider::DeviceAccountInfo::GetEmail() const {
   return email_;
 }
 
-const std::string& DeviceAccountsProvider::AccountInfo::GetHostedDomain()
+const std::string& DeviceAccountsProvider::DeviceAccountInfo::GetHostedDomain()
     const {
   return hosted_domain_;
 }
 
-bool DeviceAccountsProvider::AccountInfo::HasPersistentAuthError() const {
+bool DeviceAccountsProvider::DeviceAccountInfo::HasPersistentAuthError() const {
   return has_persistent_auth_error_;
 }
 
-std::vector<DeviceAccountsProvider::AccountInfo>
+std::vector<DeviceAccountsProvider::DeviceAccountInfo>
 DeviceAccountsProvider::GetAccountsForProfile() const {
-  return std::vector<DeviceAccountsProvider::AccountInfo>();
+  return std::vector<DeviceAccountsProvider::DeviceAccountInfo>();
 }
 
-std::vector<DeviceAccountsProvider::AccountInfo>
+std::vector<DeviceAccountsProvider::DeviceAccountInfo>
 DeviceAccountsProvider::GetAccountsOnDevice() const {
-  return std::vector<DeviceAccountsProvider::AccountInfo>();
+  return std::vector<DeviceAccountsProvider::DeviceAccountInfo>();
 }
 
 void DeviceAccountsProvider::GetAccessToken(const GaiaId& gaia_id,

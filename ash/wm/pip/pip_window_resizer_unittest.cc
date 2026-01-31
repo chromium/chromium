@@ -108,9 +108,10 @@ class PipWindowResizerTest : public AshTestBase,
     return widget;
   }
 
-  PipWindowResizer* CreateResizerForTest(int window_component) {
+  PipWindowResizer* CreateResizerForTest(int window_component,
+                                         bool for_pinch = false) {
     return CreateResizerForTest(window_component, window(),
-                                window()->bounds().CenterPoint());
+                                window()->bounds().CenterPoint(), for_pinch);
   }
 
   PipWindowResizer* CreateResizerForTest(int window_component,
@@ -120,12 +121,13 @@ class PipWindowResizerTest : public AshTestBase,
 
   PipWindowResizer* CreateResizerForTest(int window_component,
                                          aura::Window* window,
-                                         const gfx::Point& point_in_parent) {
+                                         const gfx::Point& point_in_parent,
+                                         bool for_pinch = false) {
     WindowState* window_state = WindowState::Get(window);
     window_state->CreateDragDetails(gfx::PointF(point_in_parent),
                                     window_component,
                                     ::wm::WINDOW_MOVE_SOURCE_MOUSE);
-    return new PipWindowResizer(window_state);
+    return new PipWindowResizer(window_state, for_pinch);
   }
 
   gfx::PointF CalculateDragPoint(const WindowResizer& resizer,
@@ -216,7 +218,10 @@ TEST_P(PipWindowResizerTest, PipWindowCanPinchResize) {
 
   PreparePipWindow(gfx::ToRoundedRect(initial_bounds));
 
-  std::unique_ptr<PipWindowResizer> resizer(CreateResizerForTest(HTCAPTION));
+  // Use component which usually do not start resize operation.
+  std::unique_ptr<PipWindowResizer> resizer(
+      CreateResizerForTest(HTCLIENT,
+                           /*for_pinch=*/true));
   ASSERT_TRUE(resizer.get());
 
   window()->SetProperty(aura::client::kAspectRatio, gfx::SizeF(3.f, 2.f));

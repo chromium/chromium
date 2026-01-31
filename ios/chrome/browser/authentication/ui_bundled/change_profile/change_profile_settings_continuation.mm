@@ -9,8 +9,8 @@
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser/browser_provider.h"
 #import "ios/chrome/browser/shared/model/browser/browser_provider_interface.h"
-#import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
+#import "ios/chrome/browser/shared/public/commands/scene_commands.h"
 
 namespace {
 
@@ -21,11 +21,11 @@ void ChangeProfileSettingsContinuation(SceneState* scene_state,
       scene_state.browserProviderInterface.currentBrowserProvider.browser;
   CHECK(browser);
 
-  id<ApplicationCommands> applicationHandler =
-      HandlerForProtocol(browser->GetCommandDispatcher(), ApplicationCommands);
+  id<SceneCommands> sceneHandler =
+      HandlerForProtocol(browser->GetCommandDispatcher(), SceneCommands);
   // The history promo may be opened first, in which case, don’t open the
   // settings.
-  [applicationHandler maybeShowSettingsFromViewController];
+  [sceneHandler maybeShowSettingsFromViewController];
 
   std::move(closure).Run();
 }

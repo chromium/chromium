@@ -5,8 +5,8 @@ found in the LICENSE file.
 -->
 
 <!--
-This file is used to generate a comprehensive list of HangWatcher histograms
-along with a detailed description for each histogram.
+This file is used to generate a comprehensive list of PersistentCache and
+SandboxedVfs histograms along with a detailed description for each histogram.
 
 For best practices on writing histogram descriptions, see
 https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histograms/README.md
@@ -22,9 +22,14 @@ chromium-metrics-reviews@google.com.
 
 <histograms>
 
-<variants name="BackendType">
-  <variant name="SQLite" summary="SQLite"/>
+<!-- LINT.IfChange(Client) -->
+
+<variants name="Client">
+  <variant name="CodeCache"/>
+  <variant name="ShaderCache"/>
 </variants>
+
+<!-- LINT.ThenChange(//components/persistent_cache/client.h:Client) -->
 
 <variants name="FileType">
   <variant name="DbFile" summary="database file"/>
@@ -37,102 +42,103 @@ chromium-metrics-reviews@google.com.
   <variant name="ReadWrite" summary="read/write"/>
 </variants>
 
-<histogram name="PersistentCache.BackendInitialize.{BackendType}.{Mode}"
+<!-- LINT.IfChange(VfsClient) -->
+
+<variants name="VfsClient">
+  <variant name="CodeCache"/>
+  <variant name="ShaderCache"/>
+  <variant name="Test"/>
+</variants>
+
+<!-- LINT.ThenChange(//components/sqlite_vfs/client.h:VfsClient) -->
+
+<histogram name="PersistentCache.BackendInitialize.{Mode}.{Client}"
     units="microseconds" expires_after="2026-06-09">
   <owner>olivierli@chromium.org</owner>
   <owner>catan-team@chromium.org</owner>
   <summary>
-    Time it took to initialize a {BackendType} backend in {Mode} mode. Recorded
-    every time a backend is successfully initialized.
+    Time it took to initialize a backend for the {Client} in {Mode} mode.
+    Recorded every time a backend is successfully initialized.
 
-    Note: This metric is dropped for clients without high-precision clocks.
+    WARNING: This metric is not recorded on clients with low-resolution clocks,
+    which means measurments are biased against a portion of the population on
+    Windows. See Windows.HasHighResolutionTimeTicks for the affected sample.
   </summary>
+  <token key="Client" variants="Client"/>
   <token key="Mode" variants="Mode"/>
 </histogram>
 
-<histogram name="PersistentCache.Find.{BackendType}.{Mode}"
-    units="microseconds" expires_after="2026-07-02">
+<histogram name="PersistentCache.Find.{Mode}.{Client}" units="microseconds"
+    expires_after="2026-07-02">
   <owner>olivierli@chromium.org</owner>
   <owner>catan-team@chromium.org</owner>
   <summary>
-    Time it took to attempt to find an entry in a {BackendType} backend in
-    {Mode} mode. Recorded for one out of every 100 operations.
+    Time it took to attempt to find an entry for the {Client} in {Mode} mode.
+    Recorded for one out of every 100 operations.
 
-    Note: This metric is dropped for clients without high-precision clocks.
+    WARNING: This metric is not recorded on clients with low-resolution clocks,
+    which means measurments are biased against a portion of the population on
+    Windows. See Windows.HasHighResolutionTimeTicks for the affected sample.
   </summary>
+  <token key="Client" variants="Client"/>
   <token key="Mode" variants="Mode"/>
 </histogram>
 
-<histogram name="PersistentCache.Insert.{BackendType}.{Mode}"
-    units="microseconds" expires_after="2026-07-02">
+<histogram name="PersistentCache.Insert.{Client}" units="microseconds"
+    expires_after="2026-07-02">
   <owner>olivierli@chromium.org</owner>
   <owner>catan-team@chromium.org</owner>
   <summary>
-    Time it took to attempt to insert an entry into a {BackendType} backend in
-    {Mode} mode. Recorded for one out of every 100 operations.
+    Time it took to attempt to insert an entry for the {Client}. Recorded for
+    one out of every 100 operations.
 
-    Note: This metric is dropped for clients without high-precision clocks.
+    WARNING: This metric is not recorded on clients with low-resolution clocks,
+    which means measurments are biased against a portion of the population on
+    Windows. See Windows.HasHighResolutionTimeTicks for the affected sample.
   </summary>
-  <token key="Mode" variants="Mode"/>
+  <token key="Client" variants="Client"/>
 </histogram>
 
-<histogram name="PersistentCache.ParamsManager.FilenameCharactersOverLimit"
-    units="Characters" expires_after="2026-06-09">
-  <owner>olivierli@chromium.org</owner>
-  <owner>catan-team@chromium.org</owner>
-  <summary>
-    Logs how many characters over the OS defined limit the path of a backing
-    file was after it was calculated. Logged when file creation fails and the
-    path is too long.
-  </summary>
-</histogram>
-
-<histogram name="PersistentCache.ParamsManager.{FileType}.DeleteSuccess"
-    enum="Boolean" expires_after="2026-06-09">
-  <owner>olivierli@chromium.org</owner>
-  <owner>catan-team@chromium.org</owner>
-  <summary>
-    Whether BackendParams manager succeeded in deleting a {FileType}.
-
-    Logged every time there is an attempt to delete a {FileType}.
-  </summary>
-  <token key="FileType" variants="FileType"/>
-</histogram>
-
-<histogram name="PersistentCache.SandboxedFile.LockStateOnAbandon"
-    enum="LockState" expires_after="2026-11-04">
-  <owner>olivierli@chromium.org</owner>
-  <owner>catan-team@chromium.org</owner>
-  <summary>
-    The state of the shared atomic lock at the moment a file is abandoned. The
-    lock being held on abandonment either causes loss of entries or copying
-    overhead. This is not expected to be a common case and this metric should be
-    monitored as such. Logged each time a file is abandoned.
-  </summary>
-</histogram>
-
-<histogram name="PersistentCache.Sqlite.LockResult" enum="PlatformFileError"
+<histogram name="SandboxedVfs.LockResult.{VfsClient}" enum="PlatformFileError"
     expires_after="2026-11-06">
   <owner>grt@chromium.org</owner>
   <owner>catan-team@chromium.org</owner>
   <summary>
-    Reports the result of locking a PersistentCache's primary database file when
-    opened for use by only a single connection.
+    Reports the result of locking a sandboxed SQLite file set's primary database
+    file when opened for use by only a single connection for the {VfsClient}.
   </summary>
+  <token key="VfsClient" variants="VfsClient"/>
 </histogram>
 
-<histogram name="PersistentCache.Sqlite.{FileType}.{Operation}"
+<histogram name="SandboxedVfs.LockStateOnAbandon.{VfsClient}" enum="LockState"
+    expires_after="2026-11-04">
+  <owner>olivierli@chromium.org</owner>
+  <owner>catan-team@chromium.org</owner>
+  <summary>
+    The state of the shared atomic lock at the moment a sandboxed SQLite file
+    set is abandoned for the {VfsClient}. The lock being held on abandonment
+    either causes loss of entries or copying overhead. This is not expected to
+    be a common case and this metric should be monitored as such. Logged each
+    time a file is abandoned.
+  </summary>
+  <token key="VfsClient" variants="VfsClient"/>
+</histogram>
+
+<histogram name="SandboxedVfs.{FileType}.{Operation}.{VfsClient}"
     enum="PlatformFileError" expires_after="2026-11-06">
   <owner>grt@chromium.org</owner>
   <owner>catan-team@chromium.org</owner>
   <summary>
-    Reports the result of {Operation} a PersistentCache's {FileType}.
+    Reports the result of {Operation} a sandboxed SQLite file set's {FileType}
+    for the {VfsClient}.
   </summary>
   <token key="FileType" variants="FileType"/>
   <token key="Operation">
     <variant name="CreateResult" summary="creating or opening"/>
-    <variant name="SetLengthResult" summary="deleting"/>
+    <variant name="DeleteResult" summary="deleting"/>
+    <variant name="SetLengthResult" summary="truncating"/>
   </token>
+  <token key="VfsClient" variants="VfsClient"/>
 </histogram>
 
 </histograms>

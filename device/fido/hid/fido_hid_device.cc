@@ -4,13 +4,13 @@
 
 #include "device/fido/hid/fido_hid_device.h"
 
+#include <algorithm>
 #include <limits>
 #include <string_view>
 #include <vector>
 
 #include "base/command_line.h"
 #include "base/compiler_specific.h"
-#include "base/containers/contains.h"
 #include "base/containers/fixed_flat_set.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
@@ -451,7 +451,7 @@ void FidoHidDevice::MessageReceived(FidoHidMessage message) {
   constexpr FidoHidDeviceCommand kValidCommands[] = {
       FidoHidDeviceCommand::kMsg, FidoHidDeviceCommand::kCbor,
       FidoHidDeviceCommand::kWink, FidoHidDeviceCommand::kError};
-  if (!base::Contains(kValidCommands, cmd)) {
+  if (!std::ranges::contains(kValidCommands, cmd)) {
     FIDO_LOG(ERROR) << "Unknown CTAPHID command: " << static_cast<int>(cmd)
                     << " " << base::HexEncode(response);
     Transition(State::kDeviceError);
@@ -621,7 +621,7 @@ void FidoHidDevice::DiscoverSupportedProtocolAndDeviceInfo(
           "20a0:4287",  // Nitrokey FIDO U2F
       });
 
-  if (base::Contains(kForceU2fCompatibilitySet, VidPidToString(device_info_))) {
+  if (kForceU2fCompatibilitySet.contains(VidPidToString(device_info_))) {
     supported_protocol_ = ProtocolVersion::kU2f;
     DCHECK(SupportedProtocolIsInitialized());
     std::move(done).Run();

@@ -69,7 +69,7 @@ GURL EnterpriseWarnPage::request_url() const {
 }
 
 void EnterpriseWarnPage::PopulateInterstitialStrings(
-    base::Value::Dict& load_time_data) {
+    base::DictValue& load_time_data) {
   PopulateStrings(load_time_data);
 }
 
@@ -129,9 +129,8 @@ int EnterpriseWarnPage::GetHTMLTemplateId() {
 }
 
 std::string EnterpriseWarnPage::GetCustomMessageForTesting() {
-  base::Value::Dict load_time_data;
+  base::DictValue load_time_data;
   PopulateInterstitialStrings(load_time_data);
   std::string custom_message = *load_time_data.FindString("primaryParagraph");
   return custom_message;
 }
-

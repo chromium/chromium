@@ -37,19 +37,20 @@ public class CompositorViewImpl implements CompositorView {
 
     /**
      * Creates a {@link CompositorView} backed by a {@link Surface}. The surface is provided by
-     * a either a {@link TextureView} or {@link SurfaceView}.
+     * either a {@link TextureView} or a {@link SurfaceView}.
+     *
      * @param context The context to create this view.
      * @param windowAndroid The associated {@code WindowAndroid} on which the view is to be
-     *         displayed.
+     *     displayed.
      * @param constraints A set of constraints associated with this view.
      */
     public CompositorViewImpl(
             Context context, WindowAndroid windowAndroid, ThinWebViewConstraints constraints) {
         mContext = context;
         mViewConstraints = constraints.clone();
-        mView = useSurfaceView() ? createSurfaceView() : createTextureView();
         mNativeCompositorViewImpl =
                 CompositorViewImplJni.get().init(this, windowAndroid, constraints.backgroundColor);
+        mView = useSurfaceView() ? createSurfaceView() : createTextureView();
     }
 
     @Override
@@ -183,9 +184,10 @@ public class CompositorViewImpl implements CompositorView {
 
     private boolean useSurfaceView() {
         if (mViewConstraints.supportsOpacity) return false;
-        // TODO(shaktisahu): Use TextureView for M81. Revert back in M82 when surface control is
-        // fully enabled in Q (crbug/1031636).
-        return false;
+
+        // TODO(crbug.com/40110537): Temporary check during feature rollout. Once verified,
+        // SurfaceView should be used by default.
+        return CompositorViewImplJni.get().shouldUseSurfaceView();
     }
 
     @NativeMethods
@@ -207,5 +209,7 @@ public class CompositorViewImpl implements CompositorView {
                 Surface surface);
 
         void setNeedsComposite(long nativeCompositorViewImpl);
+
+        boolean shouldUseSurfaceView();
     }
 }

@@ -34,7 +34,7 @@ TEST(PersistentMetricsData, SerializesAndDeserializes) {
   data.did_report_good_visit = true;
   data.did_scroll_in_visit = true;
 
-  const base::Value::Dict serialized_dict = PersistentMetricsDataToDict(data);
+  const base::DictValue serialized_dict = PersistentMetricsDataToDict(data);
   const PersistentMetricsData deserialized_dict =
       PersistentMetricsDataFromDict(serialized_dict);
 
@@ -66,7 +66,7 @@ TEST(PersistentMetricsData, DefaultValuesForGoodVisits) {
   data.accumulated_time_spent_in_feed = base::Hours(2);
   data.current_day_start = base::Time::UnixEpoch();
 
-  const base::Value::Dict serialized_dict = PersistentMetricsDataToDict(data);
+  const base::DictValue serialized_dict = PersistentMetricsDataToDict(data);
   const PersistentMetricsData deserialized_dict =
       PersistentMetricsDataFromDict(serialized_dict);
 

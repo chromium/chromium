@@ -6,6 +6,7 @@
 
 #include "base/containers/span.h"
 #include "base/containers/to_vector.h"
+#include "base/strings/strcat.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_instance.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_type.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_type_names.h"
@@ -22,6 +23,7 @@ using ::testing::ElementsAre;
 using enum AttributeTypeName;
 
 constexpr char16_t kSeparator[] = u" - ";
+constexpr std::u16string kDots = u"\u2022\u2060\u2006\u2060";
 
 class AutofillAiLabelsTest : public testing::Test {
  public:
@@ -29,13 +31,15 @@ class AutofillAiLabelsTest : public testing::Test {
       base::span<const EntityInstance* const> entities,
       DenseSet<AttributeTypeName> attribute_type_names_to_ignore,
       bool only_disambiguating_types,
+      bool obfuscate_sensitive_types = false,
       const std::string& app_locale = "en-US") {
     DenseSet<AttributeType> attribute_types_to_ignore(
         attribute_type_names_to_ignore,
         [](AttributeTypeName name) { return AttributeType(name); });
     return base::ToVector(
         GetLabelsForEntities(entities, attribute_types_to_ignore,
-                             only_disambiguating_types, app_locale),
+                             only_disambiguating_types,
+                             obfuscate_sensitive_types, app_locale),
         [&](const EntityLabel& label) {
           return base::JoinString(label, kSeparator);
         });
@@ -153,14 +157,49 @@ TEST_F(AutofillAiLabelsTest, FlightDepartureDate_IsLocaleDependent) {
   EXPECT_THAT(GetLabels({&flight_1, &flight_2}, {},
                         /*only_disambiguating_types=*/true),
               ElementsAre(u"Jan 1", u"Jan 2"));
-  EXPECT_THAT(
-      GetLabels({&flight_1, &flight_2}, {},
-                /*only_disambiguating_types=*/true, /*app_locale=*/"de-DE"),
-      ElementsAre(u"1. Jan.", u"2. Jan."));
-  EXPECT_THAT(
-      GetLabels({&flight_1, &flight_2}, {},
-                /*only_disambiguating_types=*/true, /*app_locale=*/"pl-PL"),
-      ElementsAre(u"1 sty", u"2 sty"));
+  EXPECT_THAT(GetLabels({&flight_1, &flight_2}, {},
+                        /*only_disambiguating_types=*/true,
+                        /*obfuscate_sensitive_types=*/false,
+                        /*app_locale=*/"de-DE"),
+              ElementsAre(u"1. Jan.", u"2. Jan."));
+  EXPECT_THAT(GetLabels({&flight_1, &flight_2}, {},
+                        /*only_disambiguating_types=*/true,
+                        /*obfuscate_sensitive_types=*/false,
+                        /*app_locale=*/"pl-PL"),
+              ElementsAre(u"1 sty", u"2 sty"));
+}
+
+TEST_F(AutofillAiLabelsTest, ObfuscateSensitiveTypes) {
+  // Note that number is an obfuscated field.
+  EntityInstance passport_1 =
+      test::GetDriversLicenseEntityInstanceWithRandomGuid({
+          .name = u"",
+          .region = u"",
+          .number = u"1234567890",
+          .expiration_date = u"",
+          .issue_date = u"",
+
+      });
+  EntityInstance passport_2 =
+      test::GetDriversLicenseEntityInstanceWithRandomGuid({
+          .name = u"",
+          .region = u"",
+          .number = u"0987654321",
+          .expiration_date = u"",
+          .issue_date = u"",
+      });
+
+  // Use only_disambiguating_types=false to force usage of drivers license
+  // number.
+  std::vector<std::u16string> labels = GetLabels(
+      {&passport_1, &passport_2}, /*attribute_type_names_to_ignore=*/{},
+      /*only_disambiguating_types=*/false, /*obfuscate_sensitive_types=*/true);
+
+  ASSERT_EQ(labels.size(), 2u);
+  EXPECT_EQ(labels[0],
+            base::StrCat({kDots, kDots, kDots, kDots, kDots, kDots, u"7890"}));
+  EXPECT_EQ(labels[1],
+            base::StrCat({kDots, kDots, kDots, kDots, kDots, kDots, u"4321"}));
 }
 
 }  // namespace

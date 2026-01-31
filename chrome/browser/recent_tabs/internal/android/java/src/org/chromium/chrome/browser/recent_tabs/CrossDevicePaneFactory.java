@@ -6,7 +6,7 @@ package org.chromium.chrome.browser.recent_tabs;
 
 import android.content.Context;
 
-import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.hub.Pane;
 import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeController;
@@ -26,7 +26,7 @@ public class CrossDevicePaneFactory {
     public static Pane create(
             Context context,
             DoubleConsumer onToolbarAlphaChange,
-            ObservableSupplier<EdgeToEdgeController> edgeToEdgeSupplier) {
+            MonotonicObservableSupplier<EdgeToEdgeController> edgeToEdgeSupplier) {
         return new CrossDevicePaneImpl(context, onToolbarAlphaChange, edgeToEdgeSupplier);
     }
 }

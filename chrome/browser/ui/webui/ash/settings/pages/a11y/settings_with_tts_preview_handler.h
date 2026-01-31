@@ -30,8 +30,8 @@ class SettingsWithTtsPreviewHandler : public ::settings::SettingsPageUIHandler,
 
   void FireTtsPreviewEvent();
 
-  void HandleGetAllTtsVoiceData(const base::Value::List& args);
-  void HandlePreviewTtsVoice(const base::Value::List& args);
+  void HandleGetAllTtsVoiceData(const base::ListValue& args);
+  void HandlePreviewTtsVoice(const base::ListValue& args);
 
   // SettingsPageUIHandler implementation.
   void RegisterMessages() override;
@@ -41,7 +41,7 @@ class SettingsWithTtsPreviewHandler : public ::settings::SettingsPageUIHandler,
   virtual GURL GetSourceURL() const = 0;
 
  private:
-  void RefreshTtsVoices(const base::Value::List& args);
+  void RefreshTtsVoices(const base::ListValue& args);
 
   base::ScopedObservation<content::TtsController,
                           content::VoicesChangedDelegate>

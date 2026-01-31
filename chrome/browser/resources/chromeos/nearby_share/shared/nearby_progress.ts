@@ -108,13 +108,12 @@ export class NearbyProgressElement extends PolymerElement {
 
   private getTargetImageUrl_(): string {
     if (!(this.shareTarget && this.shareTarget.imageUrl &&
-          this.shareTarget.imageUrl.url &&
-          this.shareTarget.imageUrl.url.length)) {
+          this.shareTarget.imageUrl.length)) {
       return '';
     }
 
     // Adds the parameter to resize to the desired size.
-    return this.shareTarget.imageUrl.url + '=s' + this.targetImageSize;
+    return this.shareTarget.imageUrl + '=s' + this.targetImageSize;
   }
 
   private listenToTargetImageLoad_(): void {

@@ -8,8 +8,7 @@
 #include <ostream>
 #include "base/component_export.h"
 
-namespace ash {
-namespace quick_pair {
+namespace ash::quick_pair {
 
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused. This enum should be kept in sync with
@@ -41,7 +40,6 @@ enum class AccountKeyFailure {
 COMPONENT_EXPORT(QUICK_PAIR_COMMON)
 std::ostream& operator<<(std::ostream& stream, AccountKeyFailure protocol);
 
-}  // namespace quick_pair
-}  // namespace ash
+}  // namespace ash::quick_pair
 
 #endif  // ASH_QUICK_PAIR_COMMON_ACCOUNT_KEY_FAILURE_H_

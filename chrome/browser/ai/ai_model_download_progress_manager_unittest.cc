@@ -11,7 +11,7 @@
 #include "base/test/gtest_util.h"
 #include "base/time/time.h"
 #include "chrome/browser/ai/ai_test_utils.h"
-#include "chrome/browser/ai/ai_utils.h"
+#include "components/on_device_ai/ai_utils.h"
 #include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "testing/gtest/include/gtest/gtest.h"
 

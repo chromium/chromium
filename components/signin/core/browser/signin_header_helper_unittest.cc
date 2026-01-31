@@ -76,8 +76,7 @@ class SigninHeaderHelperTest : public testing::Test {
         &prefs_, false /* is_off_the_record */, false /* store_last_modified */,
         false /* restore_session */, false /* should_record_metrics */);
     cookie_settings_ = new content_settings::CookieSettings(
-        settings_map_.get(), &prefs_, /*tracking_protection_settings_=*/nullptr,
-        false,
+        settings_map_.get(), &prefs_, false,
         content_settings::CookieSettings::NoFedCmSharingPermissionsCallback(),
         /*tpcd_metadata_manager=*/nullptr, "");
   }

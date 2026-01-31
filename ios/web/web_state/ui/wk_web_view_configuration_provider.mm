@@ -22,7 +22,6 @@
 #import "base/uuid.h"
 #import "components/safe_browsing/core/common/features.h"
 #import "ios/web/common/features.h"
-#import "ios/web/js_features/window_error/catch_gcrweb_script_errors_java_script_feature.h"
 #import "ios/web/js_messaging/java_script_feature_manager.h"
 #import "ios/web/js_messaging/java_script_feature_util_impl.h"
 #import "ios/web/js_messaging/web_frames_manager_java_script_feature.h"
@@ -286,13 +285,6 @@ void WKWebViewConfigurationProvider::UpdateScripts() {
   for (JavaScriptFeature* feature :
        GetWebClient()->GetJavaScriptFeatures(browser_state_)) {
     features.push_back(feature);
-  }
-  if (base::FeatureList::IsEnabled(features::kLogJavaScriptErrors)) {
-    // CatchGCrWebScriptErrorsJavaScriptFeature must be added last after all
-    // other scripts have setup their gCrWeb functions because this feature
-    // iterates over all such functions, wrapping them in
-    // `catchAndReportErrors`.
-    features.push_back(CatchGCrWebScriptErrorsJavaScriptFeature::GetInstance());
   }
   java_script_feature_manager->ConfigureFeatures(features);
 

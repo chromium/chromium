@@ -28,7 +28,6 @@ Si la casella <ph name="SERVICE_SCRIPT_NAME" /> ja està marcada, desmarca-la i 
 <translation id="2329392777730037872">No s'ha pogut obrir <ph name="URL" /> al client.</translation>
 <translation id="2359808026110333948">Continua</translation>
 <translation id="2366718077645204424">No es pot connectar amb l'amfitrió. Probablement, això passa a causa de la configuració de la xarxa que esteu fent servir.</translation>
-<translation id="242591256144136845">Copyright 2025. Google LLC. Tots els drets reservats.</translation>
 <translation id="2504109125669302160">Concedeix a <ph name="PRODUCT_NAME" /> el permís Accessibilitat</translation>
 <translation id="2509394361235492552">Connectat a <ph name="HOSTNAME" /></translation>
 <translation id="2540992418118313681">Voleu compartir aquest ordinador perquè un altre usuari el pugui veure i controlar?</translation>
@@ -47,6 +46,7 @@ Si la casella <ph name="SERVICE_SCRIPT_NAME" /> ja està marcada, desmarca-la i 
 <translation id="3150823315463303127">L'amfitrió no ha pogut llegir la política.</translation>
 <translation id="3171922709365450819">El client no admet aquest dispositiu perquè requereix autenticació externa.</translation>
 <translation id="3197730452537982411">Escriptori remot</translation>
+<translation id="3236334139428307578">Copyright 2026. Els autors de Chromium. Tots els drets reservats.</translation>
 <translation id="324272851072175193">Envia aquestes instruccions per correu electrònic</translation>
 <translation id="3305934114213025800"><ph name="PRODUCT_NAME" /> vol fer canvis.</translation>
 <translation id="3339299787263251426">Accediu a l'ordinador des d'Internet amb seguretat</translation>
@@ -111,6 +111,7 @@ Si la casella <ph name="SERVICE_SCRIPT_NAME" /> ja està marcada, desmarca-la i 
 <translation id="5823554426827907568"><ph name="CLIENT_USERNAME" /> ha sol·licitat accés per veure la teva pantalla i controlar el teclat i el ratolí. Prem <ph name="IDS_SHARE_CONFIRM_DIALOG_DECLINE" /> si no esperaves aquesta sol·licitud. En cas contrari, selecciona <ph name="IDS_SHARE_CONFIRM_DIALOG_CONFIRM" /> per permetre la connexió quan estiguis a punt.</translation>
 <translation id="5823658491130719298">Obre Chrome a l'ordinador al qual vulguis accedir de manera remota i ves a la pàgina <ph name="INSTALLATION_LINK" /></translation>
 <translation id="5841343754884244200">Opcions de visualització</translation>
+<translation id="5965133372831030509">Copyright 2026. Google LLC. Tots els drets reservats.</translation>
 <translation id="6033507038939587647">Opcions del teclat</translation>
 <translation id="6040143037577758943">Tanca</translation>
 <translation id="6062854958530969723">Hi ha hagut un error en iniciar l'amfitrió.</translation>
@@ -138,7 +139,6 @@ Si la casella <ph name="SERVICE_SCRIPT_NAME" /> ja està marcada, desmarca-la i 
 <translation id="7067321367069083429">La pantalla fa de pantalla tàctil</translation>
 <translation id="7116737094673640201">Et donem la benvinguda a Escriptori remot de Chrome</translation>
 <translation id="7144878232160441200">Torna-ho a provar</translation>
-<translation id="7298392173540380852">Copyright 2025. Els autors de Chromium. Tots els drets reservats.</translation>
 <translation id="7312846573060934304">L'amfitrió no està connectat</translation>
 <translation id="7319983568955948908">Deixa de compartir</translation>
 <translation id="7359298090707901886">No es pot utilitzar el navegador escollit per obrir URL a l'equip local.</translation>

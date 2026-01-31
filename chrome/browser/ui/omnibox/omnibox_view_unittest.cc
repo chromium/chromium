@@ -25,6 +25,7 @@
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/bookmarks/test/test_bookmark_client.h"
 #include "components/omnibox/browser/autocomplete_match.h"
+#include "components/omnibox/browser/omnibox_pref_names.h"
 #include "components/omnibox/browser/omnibox_text_util.h"
 #include "components/omnibox/browser/test_omnibox_client.h"
 #include "components/omnibox/common/omnibox_features.h"
@@ -56,6 +57,11 @@ class OmniboxViewTest : public testing::Test {
  public:
   OmniboxViewTest()
       : bookmark_model_(bookmarks::TestBookmarkClient::CreateModel()) {
+    // Register the preference needed by `OmniboxEditModel`.
+    pref_service_ = std::make_unique<TestingPrefServiceSimple>();
+    pref_service_->registry()->RegisterBooleanPref(
+        omnibox::kShowAiModeOmniboxButton, true);
+
     // Create the controller and the view and wire them together.
     auto omnibox_client = std::make_unique<TestOmniboxClient>();
     omnibox_client_ = omnibox_client.get();
@@ -64,8 +70,9 @@ class OmniboxViewTest : public testing::Test {
     omnibox_controller_ =
         std::make_unique<OmniboxController>(std::move(omnibox_client));
     omnibox_controller_->SetEditModelForTesting(
-        std::make_unique<TestOmniboxEditModel>(omnibox_controller_.get(),
-                                               /*pref_service=*/nullptr));
+        std::make_unique<TestOmniboxEditModel>(
+            omnibox_controller_.get(),
+            /*pref_service=*/pref_service_.get()));
     view_ = std::make_unique<TestOmniboxView>(omnibox_controller_.get());
   }
 
@@ -84,6 +91,7 @@ class OmniboxViewTest : public testing::Test {
 
  private:
   base::test::TaskEnvironment task_environment_;
+  std::unique_ptr<TestingPrefServiceSimple> pref_service_;
   std::unique_ptr<OmniboxController> omnibox_controller_;
   std::unique_ptr<TestOmniboxView> view_;
   std::unique_ptr<bookmarks::BookmarkModel> bookmark_model_;
@@ -93,6 +101,11 @@ class OmniboxViewTest : public testing::Test {
 class OmniboxViewPopupTest : public testing::Test {
  public:
   OmniboxViewPopupTest() {
+    // Register the preference needed by `OmniboxEditModel`.
+    pref_service_ = std::make_unique<TestingPrefServiceSimple>();
+    pref_service_->registry()->RegisterBooleanPref(
+        omnibox::kShowAiModeOmniboxButton, true);
+
     // Create the controller and the view and wire them together.
     auto omnibox_client = std::make_unique<TestOmniboxClient>();
     omnibox_client_ = omnibox_client.get();
@@ -100,7 +113,7 @@ class OmniboxViewPopupTest : public testing::Test {
         std::make_unique<OmniboxController>(std::move(omnibox_client));
     omnibox_controller_->SetEditModelForTesting(
         std::make_unique<TestOmniboxEditModel>(omnibox_controller_.get(),
-                                               /*pref_service=*/nullptr));
+                                               pref_service_.get()));
     view_ = std::make_unique<TestOmniboxView>(omnibox_controller_.get());
 
     model()->set_popup_view(&popup_view_);
@@ -121,6 +134,7 @@ class OmniboxViewPopupTest : public testing::Test {
 
  private:
   base::test::TaskEnvironment task_environment_;
+  std::unique_ptr<TestingPrefServiceSimple> pref_service_;
   std::unique_ptr<OmniboxController> omnibox_controller_;
   std::unique_ptr<TestOmniboxView> view_;
   raw_ptr<TestOmniboxClient> omnibox_client_;

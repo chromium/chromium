@@ -6,7 +6,6 @@
 
 #include <algorithm>
 
-#include "base/containers/contains.h"
 #include "base/memory/ref_counted_memory.h"
 #include "components/device_event_log/device_event_log.h"
 #include "services/device/public/cpp/hid/hid_blocklist.h"
@@ -179,17 +178,20 @@ bool HidConnection::IsReportProtected(uint8_t report_id,
     // Deny access to reports that match HID blocklist rules.
     if (report_type == HidReportType::kInput) {
       if (device.protected_input_report_ids.has_value() &&
-          base::Contains(*device.protected_input_report_ids, report_id)) {
+          std::ranges::contains(*device.protected_input_report_ids,
+                                report_id)) {
         return true;
       }
     } else if (report_type == HidReportType::kOutput) {
       if (device.protected_output_report_ids.has_value() &&
-          base::Contains(*device.protected_output_report_ids, report_id)) {
+          std::ranges::contains(*device.protected_output_report_ids,
+                                report_id)) {
         return true;
       }
     } else if (report_type == HidReportType::kFeature) {
       if (device.protected_feature_report_ids.has_value() &&
-          base::Contains(*device.protected_feature_report_ids, report_id)) {
+          std::ranges::contains(*device.protected_feature_report_ids,
+                                report_id)) {
         return true;
       }
     }

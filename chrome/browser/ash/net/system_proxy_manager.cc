@@ -4,10 +4,10 @@
 
 #include "chrome/browser/ash/net/system_proxy_manager.h"
 
+#include <algorithm>
 #include <string>
 
 #include "ash/constants/ash_features.h"
-#include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/memory/weak_ptr.h"
@@ -486,7 +486,8 @@ bool SystemProxyManager::CanUsePolicyCredentials(
     return false;
 
   if (!policy_credentials_auth_schemes_.empty()) {
-    if (!base::Contains(policy_credentials_auth_schemes_, auth_info.scheme)) {
+    if (!std::ranges::contains(policy_credentials_auth_schemes_,
+                               auth_info.scheme)) {
       VLOG(1) << "Auth scheme not allowed by policy";
       return false;
     }
@@ -536,7 +537,7 @@ void SystemProxyManager::OnProxyConfigChanged() {
 bool SystemProxyManager::IsManagedProxyConfigured() {
   DCHECK(NetworkHandler::IsInitialized());
   NetworkHandler* network_handler = NetworkHandler::Get();
-  base::Value::Dict proxy_settings;
+  base::DictValue proxy_settings;
 
   // |ui_proxy_config_service| may be missing in tests. If the device is offline
   // (no network connected) the |DefaultNetwork| is null.

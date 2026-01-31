@@ -6,16 +6,20 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
 #include "chrome/browser/ui/autofill/payments/payments_view_factory.h"
+#include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/views/autofill/payments/bnpl_tos_dialog.h"
 #include "chrome/browser/ui/views/autofill/payments/bnpl_tos_view_desktop.h"
 #include "chrome/test/base/interactive_test_utils.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
+#include "components/autofill/content/browser/content_autofill_client.h"
 #include "components/autofill/core/browser/data_model/payments/bnpl_issuer.h"
 #include "components/autofill/core/browser/foundations/test_autofill_client.h"
 #include "components/autofill/core/browser/metrics/payments/bnpl_metrics.h"
 #include "components/autofill/core/browser/payments/bnpl_util.h"
 #include "components/autofill/core/browser/payments/constants.h"
+#include "components/autofill/core/browser/payments/payments_autofill_client.h"
 #include "components/autofill/core/browser/ui/payments/bnpl_tos_controller_impl.h"
+#include "components/autofill/core/browser/ui/payments/bnpl_ui_delegate.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "content/public/test/browser_test.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -40,25 +44,6 @@ class BnplTosViewDesktopInteractiveUiTest : public InteractiveBrowserTest {
       const BnplTosViewDesktopInteractiveUiTest&) = delete;
   ~BnplTosViewDesktopInteractiveUiTest() override = default;
 
-  void SetUpOnMainThread() override {
-    InteractiveBrowserTest::SetUpOnMainThread();
-    test_autofill_client_ = std::make_unique<TestAutofillClient>();
-    static_cast<TestPaymentsDataManager&>(
-        test_autofill_client_->GetPaymentsAutofillClient()
-            ->GetPaymentsDataManager())
-        .SetAccountInfoForPayments(
-            test_autofill_client_->identity_test_environment()
-                .MakePrimaryAccountAvailable("somebody@example.test",
-                                             signin::ConsentLevel::kSignin));
-    controller_ =
-        std::make_unique<BnplTosControllerImpl>(test_autofill_client_.get());
-  }
-
-  void TearDownOnMainThread() override {
-    controller_.reset();
-    InteractiveBrowserTest::TearDownOnMainThread();
-  }
-
   InteractiveBrowserTestApi::MultiStep InvokeUiAndWaitForShow(
       BnplIssuer::IssuerId bnpl_issuer_id) {
     return Steps(
@@ -80,10 +65,12 @@ class BnplTosViewDesktopInteractiveUiTest : public InteractiveBrowserTest {
                   base::JSON_PARSE_CHROMIUM_EXTENSIONS)
                   ->GetDict(),
               &model.legal_message_lines, true);
-          controller_->Show(
-              base::BindOnce(&CreateAndShowBnplTos, controller_->GetWeakPtr(),
-                             base::Unretained(web_contents())),
-              std::move(model), accept_callback_.Get(), cancel_callback_.Get());
+
+          ContentAutofillClient::FromWebContents(web_contents())
+              ->GetPaymentsAutofillClient()
+              ->GetBnplUiDelegate()
+              ->ShowBnplTosUi(std::move(model), accept_callback_.Get(),
+                              cancel_callback_.Get());
         }),
         InAnyContext(WaitForShow(views::DialogClientView::kTopViewId)));
   }
@@ -91,9 +78,6 @@ class BnplTosViewDesktopInteractiveUiTest : public InteractiveBrowserTest {
   content::WebContents* web_contents() {
     return browser()->tab_strip_model()->GetActiveWebContents();
   }
-
-  std::unique_ptr<TestAutofillClient> test_autofill_client_;
-  std::unique_ptr<BnplTosControllerImpl> controller_;
 
   base::MockOnceClosure accept_callback_;
   base::MockOnceClosure cancel_callback_;
@@ -272,6 +256,26 @@ IN_PROC_BROWSER_TEST_F(BnplTosViewDesktopInteractiveUiTest,
             EXPECT_EQ(widget->widget_delegate()->GetAccessibleWindowTitle(),
                       expected_title);
           })));
+}
+
+IN_PROC_BROWSER_TEST_F(BnplTosViewDesktopInteractiveUiTest,
+                       DialogResultLoggedWhenTabClosed) {
+  base::HistogramTester histogram_tester;
+
+  RunTestSequence(InvokeUiAndWaitForShow(BnplIssuer::IssuerId::kBnplAffirm),
+
+                  // Close the active tab.
+                  Do([this]() {
+                    browser()->tab_strip_model()->CloseWebContentsAt(
+                        browser()->tab_strip_model()->active_index(),
+                        TabCloseTypes::CLOSE_USER_GESTURE);
+                  }),
+
+                  Check([&histogram_tester]() {
+                    return histogram_tester.GetBucketCount(
+                               "Autofill.Bnpl.TosDialogResult.Affirm",
+                               BnplTosDialogResult::kTabOrBrowserClosed) == 1;
+                  }));
 }
 
 }  // namespace autofill

@@ -188,7 +188,7 @@ TEST_P(SpellingServiceClientTest, RequestTextCheck) {
                                      test_case.sanitized_request_text,
                                      test_case.corrected_text);
 
-  base::Value::List dictionary;
+  base::ListValue dictionary;
   dictionary.Append(test_case.language);
   pref->SetList(spellcheck::prefs::kSpellCheckDictionaries,
                 std::move(dictionary));
@@ -213,7 +213,7 @@ TEST_P(SpellingServiceClientTest, RequestTextCheck) {
       intercepted_body, base::JSON_ALLOW_TRAILING_COMMAS);
   ASSERT_TRUE(value);
   ASSERT_TRUE(value->is_dict());
-  const base::Value::Dict& dict = value->GetDict();
+  const base::DictValue& dict = value->GetDict();
 
   EXPECT_FALSE(dict.FindString("method"));
   EXPECT_FALSE(dict.FindString("apiVersion"));
@@ -360,8 +360,7 @@ TEST_F(SpellingServiceClientTest, AvailableServices) {
   // SpellingServiceClient::IsAvailable() describes why this function returns
   // false for suggestions.) If there is no language set, then we
   // do not allow any remote.
-  pref->SetList(spellcheck::prefs::kSpellCheckDictionaries,
-                base::Value::List());
+  pref->SetList(spellcheck::prefs::kSpellCheckDictionaries, base::ListValue());
 
   EXPECT_FALSE(client_.IsAvailable(&profile_, kSuggest));
   EXPECT_FALSE(client_.IsAvailable(&profile_, kSpellcheck));
@@ -377,7 +376,7 @@ TEST_F(SpellingServiceClientTest, AvailableServices) {
   // If spellcheck is allowed, then suggest is not since spellcheck is a
   // superset of suggest.
   for (size_t i = 0; i < std::size(kSupported); ++i) {
-    base::Value::List dictionary;
+    base::ListValue dictionary;
     dictionary.Append(kSupported[i]);
     pref->SetList(spellcheck::prefs::kSpellCheckDictionaries,
                   std::move(dictionary));
@@ -396,7 +395,7 @@ TEST_F(SpellingServiceClientTest, AvailableServices) {
   });
   for (size_t i = 0; i < std::size(kUnsupported); ++i) {
     SCOPED_TRACE(std::string("Expected language ") + kUnsupported[i]);
-    base::Value::List dictionary;
+    base::ListValue dictionary;
     dictionary.Append(kUnsupported[i]);
     pref->SetList(spellcheck::prefs::kSpellCheckDictionaries,
                   std::move(dictionary));

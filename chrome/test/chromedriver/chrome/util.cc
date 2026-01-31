@@ -18,7 +18,7 @@ Status SerializeAsJsonT(const T& value, std::string* json) {
 
 }  // namespace
 
-Status SerializeAsJson(const base::Value::Dict& value, std::string* json) {
+Status SerializeAsJson(const base::DictValue& value, std::string* json) {
   return SerializeAsJsonT(value, json);
 }
 

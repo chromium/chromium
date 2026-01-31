@@ -366,7 +366,7 @@ TEST_F(NetworkPortalSigninControllerTest, ProxyPref) {
   SimulateLogin();
   std::string_view expected_url =
       SetProbeUrl(captive_portal::CaptivePortalDetector::GetDefaultUrl());
-  base::Value::Dict proxy_config;
+  base::DictValue proxy_config;
   proxy_config.Set("mode", ProxyPrefs::kPacScriptProxyModeName);
   proxy_config.Set("pac_url", "http://proxy");
   GetPrefs()->SetDict(::proxy_config::prefs::kProxy, std::move(proxy_config));

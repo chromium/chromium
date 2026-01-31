@@ -21,21 +21,36 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
+import static org.chromium.base.test.transit.ViewElement.expectInvisibleOption;
+import static org.chromium.base.test.transit.ViewFinder.waitForView;
 import static org.chromium.chrome.browser.autofill.AutofillTestHelper.createClickActionWithFlags;
 import static org.chromium.chrome.browser.keyboard_accessory.sheet_component.AccessorySheetProperties.ACTIVE_TAB_INDEX;
+import static org.chromium.chrome.browser.keyboard_accessory.sheet_component.AccessorySheetProperties.BACKGROUND;
+import static org.chromium.chrome.browser.keyboard_accessory.sheet_component.AccessorySheetProperties.BAR_SHADOW_VISIBLE;
+import static org.chromium.chrome.browser.keyboard_accessory.sheet_component.AccessorySheetProperties.ELEVATION;
+import static org.chromium.chrome.browser.keyboard_accessory.sheet_component.AccessorySheetProperties.GRAVITY;
 import static org.chromium.chrome.browser.keyboard_accessory.sheet_component.AccessorySheetProperties.HEIGHT;
+import static org.chromium.chrome.browser.keyboard_accessory.sheet_component.AccessorySheetProperties.HORIZONTAL_PADDING;
+import static org.chromium.chrome.browser.keyboard_accessory.sheet_component.AccessorySheetProperties.MAX_WIDTH;
 import static org.chromium.chrome.browser.keyboard_accessory.sheet_component.AccessorySheetProperties.SHOW_KEYBOARD_CALLBACK;
 import static org.chromium.chrome.browser.keyboard_accessory.sheet_component.AccessorySheetProperties.TABS;
+import static org.chromium.chrome.browser.keyboard_accessory.sheet_component.AccessorySheetProperties.TOP_OFFSET;
 import static org.chromium.chrome.browser.keyboard_accessory.sheet_component.AccessorySheetProperties.TOP_SHADOW_VISIBLE;
 import static org.chromium.chrome.browser.keyboard_accessory.sheet_component.AccessorySheetProperties.VISIBLE;
 import static org.chromium.ui.test.util.ViewUtils.onViewWaiting;
 
+import android.content.Context;
+import android.content.res.Resources;
+import android.graphics.drawable.Drawable;
+import android.view.Gravity;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import androidx.appcompat.content.res.AppCompatResources;
+import androidx.coordinatorlayout.widget.CoordinatorLayout;
 import androidx.test.filters.MediumTest;
 
 import org.junit.Before;
@@ -61,7 +76,6 @@ import org.chromium.ui.AsyncViewStub;
 import org.chromium.ui.ViewProvider;
 import org.chromium.ui.modelutil.LazyConstructionPropertyMcp;
 import org.chromium.ui.modelutil.PropertyModel;
-import org.chromium.ui.test.util.ViewUtils;
 
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
@@ -137,7 +151,7 @@ public class AccessorySheetViewTest {
                             .add(
                                     new Tab(
                                             "Passwords",
-                                            null,
+                                            0,
                                             null,
                                             R.layout.empty_accessory_sheet,
                                             AccessoryTabType.PASSWORDS,
@@ -252,15 +266,57 @@ public class AccessorySheetViewTest {
                     mModel.set(TOP_SHADOW_VISIBLE, false);
                     mModel.set(VISIBLE, true);
                 }); // Render view.
-        ViewUtils.waitForViewCheckingState(
-                withId(R.id.accessory_sheet_shadow), ViewUtils.VIEW_INVISIBLE);
+        waitForView(withId(R.id.accessory_sheet_shadow), expectInvisibleOption());
 
         ThreadUtils.runOnUiThreadBlocking(() -> mModel.set(TOP_SHADOW_VISIBLE, true));
         onView(withId(R.id.accessory_sheet_shadow)).check(matches(isDisplayed()));
 
         ThreadUtils.runOnUiThreadBlocking(() -> mModel.set(TOP_SHADOW_VISIBLE, false));
-        ViewUtils.waitForViewCheckingState(
-                withId(R.id.accessory_sheet_shadow), ViewUtils.VIEW_INVISIBLE);
+        waitForView(withId(R.id.accessory_sheet_shadow), expectInvisibleOption());
+    }
+
+    @Test
+    @MediumTest
+    public void testUndockedStyleSetByModel() throws InterruptedException {
+        final int kMaxWidth = 100;
+        final int kPadding = 20;
+        final int kElevation = 5;
+        final int kTopOffset = 15;
+
+        Resources res = mActivityTestRule.getActivity().getResources();
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mModel.get(TABS).add(createTestTabWithTextView("SomeTab"));
+                    mModel.set(MAX_WIDTH, kMaxWidth);
+                    mModel.set(HORIZONTAL_PADDING, kPadding);
+                    mModel.set(GRAVITY, Gravity.CENTER | Gravity.TOP);
+                    mModel.set(ELEVATION, kElevation);
+                    mModel.set(TOP_OFFSET, kTopOffset);
+                    mModel.set(BACKGROUND, R.drawable.keyboard_accessory_shadow_shape);
+                    mModel.set(BAR_SHADOW_VISIBLE, false);
+                    mModel.set(VISIBLE, true);
+                }); // Render view.
+        AccessorySheetView view = mViewPager.take();
+
+        waitForView(withId(R.id.sheet_header_shadow), expectInvisibleOption());
+
+        assertEquals(kMaxWidth, view.getWidth());
+        assertEquals(kPadding, view.getPaddingStart());
+        assertEquals(kPadding, view.getPaddingEnd());
+        CoordinatorLayout.LayoutParams params =
+                (CoordinatorLayout.LayoutParams) view.getLayoutParams();
+        assertEquals(Gravity.CENTER | Gravity.TOP, params.gravity);
+        assertEquals(kElevation, view.getElevation(), 0.1f);
+        assertEquals(kTopOffset, params.topMargin);
+
+        Context context = mActivityTestRule.getActivity();
+        Drawable actualBackground = view.getBackground();
+        Drawable expectedBackground =
+                AppCompatResources.getDrawable(context, R.drawable.keyboard_accessory_shadow_shape);
+
+        assertNotNull(actualBackground);
+        assertNotNull(expectedBackground);
+        assertEquals(expectedBackground.getConstantState(), actualBackground.getConstantState());
     }
 
     @Test
@@ -330,7 +386,7 @@ public class AccessorySheetViewTest {
     private Tab createTestTabWithTextView(String textViewCaption) {
         return new Tab(
                 "Passwords",
-                null,
+                0,
                 null,
                 R.layout.empty_accessory_sheet,
                 AccessoryTabType.PASSWORDS,

@@ -11,8 +11,8 @@ namespace password_manager {
 enum class PasswordCheckReferrer;
 }  // namespace password_manager
 
-@protocol ApplicationCommands;
 @class SafetyCheckCoordinator;
+@protocol SceneCommands;
 
 // Delegate that allows to dereference the SafetyCheckCoordinator.
 @protocol SafetyCheckCoordinatorDelegate

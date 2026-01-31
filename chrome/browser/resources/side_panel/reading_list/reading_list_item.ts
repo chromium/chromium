@@ -56,7 +56,7 @@ export class ReadingListItemElement extends ReadingListItemElementBase {
 
   accessor data: ReadLaterEntry = {
     title: '',
-    url: {url: ''},
+    url: '',
     displayUrl: '',
     updateTime: 0n,
     read: false,

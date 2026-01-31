@@ -15,11 +15,13 @@
 #include "chrome/browser/ui/tabs/split_tab_metrics.h"
 #include "chrome/browser/ui/tabs/tab_model.h"
 #include "chrome/browser/ui/ui_features.h"
+#include "chrome/browser/ui/views/frame/custom_floating_corner.h"
 #include "chrome/browser/ui/views/frame/multi_contents_drop_target_view.h"
 #include "chrome/browser/ui/views/frame/multi_contents_view_drop_target_controller.h"
 #include "chrome/browser/ui/views/tabs/dragging/tab_drag_controller.h"
 #include "chrome/browser/ui/views/test/split_view_browser_test_mixin.h"
 #include "chrome/common/pref_names.h"
+#include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/prefs/pref_service.h"
@@ -40,6 +42,7 @@
 #include "ui/ozone/public/ozone_platform.h"
 #include "ui/views/controls/separator.h"
 #include "ui/views/interaction/element_tracker_views.h"
+#include "ui/views/layout/proposed_layout.h"
 #include "ui/views/view_utils.h"
 #include "url/gurl.h"
 #include "url/url_constants.h"
@@ -49,7 +52,7 @@ using testing::ReturnRef;
 
 namespace {
 
-class MockDragController : public TabDragDelegate::DragController {
+class MockDragController : public TabDragTarget::DragController {
  public:
   MockDragController() = default;
   MockDragController(const MockDragController&) = delete;
@@ -61,7 +64,27 @@ class MockDragController : public TabDragDelegate::DragController {
               (int),
               (override));
   MOCK_METHOD(const DragSessionData&, GetSessionData, (), (const, override));
+  MOCK_METHOD(const TabDragContext*, GetAttachedContext, (), (const, override));
 };
+
+void CompareLayouts(const std::vector<views::ChildLayout>& expected,
+                    const std::vector<views::ChildLayout>& actual) {
+  EXPECT_EQ(actual.size(), expected.size());
+  for (const auto& expected_child : expected) {
+    bool found = false;
+    for (const auto& actual_child : actual) {
+      if (expected_child.child_view == actual_child.child_view) {
+        found = true;
+        EXPECT_EQ(expected_child, actual_child)
+            << "Expected layout " << actual_child.ToString() << " to equal "
+            << expected_child.ToString();
+        break;
+      }
+    }
+    EXPECT_TRUE(found) << "Expected to find layout for "
+                       << expected_child.child_view->GetClassName();
+  }
+}
 
 }  // namespace
 
@@ -327,6 +350,24 @@ IN_PROC_BROWSER_TEST_F(MultiContentsViewBrowserTest, DragAndDropEnabledPref) {
   EXPECT_TRUE(multi_contents_view()->IsDragAndDropEnabled());
 }
 
+IN_PROC_BROWSER_TEST_F(MultiContentsViewBrowserTest,
+                       DragAndDropDisabledForChromePages) {
+  // Drag and drop should be enabled for normal pages.
+  ASSERT_TRUE(
+      ui_test_utils::NavigateToURL(browser(), GURL(url::kAboutBlankURL)));
+  EXPECT_TRUE(multi_contents_view()->IsDragAndDropEnabled());
+
+  // Drag and drop should be disabled for chrome:// pages.
+  ASSERT_TRUE(
+      ui_test_utils::NavigateToURL(browser(), GURL("chrome://version")));
+  EXPECT_FALSE(multi_contents_view()->IsDragAndDropEnabled());
+
+  // Drag and drop should be enabled for chrome://newtab.
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(),
+                                           GURL(chrome::kChromeUINewTabURL)));
+  EXPECT_TRUE(multi_contents_view()->IsDragAndDropEnabled());
+}
+
 // Test class for WebContents ReLayout.
 class MultiContentsViewWebContentsReLayoutBrowserTest
     : public SplitViewBrowserTestMixin<InProcessBrowserTest> {
@@ -535,9 +576,9 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_EQ(GetResizeCount(split_tab), 3);
 }
 
-IN_PROC_BROWSER_TEST_F(MultiContentsViewBrowserTest, SeparatorLayout) {
+IN_PROC_BROWSER_TEST_F(MultiContentsViewBrowserTest, LeadingSeparatorLayout) {
   MultiContentsView* view = multi_contents_view();
-  view->SetShouldShowTrailingSeparator(true);
+  view->SetShouldShowTrailingSeparator(false);
   view->SetShouldShowLeadingSeparator(true);
   view->SetShouldShowTopSeparator(true);
 
@@ -552,7 +593,7 @@ IN_PROC_BROWSER_TEST_F(MultiContentsViewBrowserTest, SeparatorLayout) {
   gfx::Rect expected_remaining_space(
       initial_bounds.x() + kSeparatorThickness,
       initial_bounds.y() + kSeparatorThickness,
-      initial_bounds.width() - 2 * kSeparatorThickness,
+      initial_bounds.width() - kSeparatorThickness,
       initial_bounds.height() - kSeparatorThickness);
   EXPECT_EQ(expected_remaining_space, remaining_space);
 
@@ -564,26 +605,64 @@ IN_PROC_BROWSER_TEST_F(MultiContentsViewBrowserTest, SeparatorLayout) {
       view->contents_separators_.leading_separator.get(), true,
       gfx::Rect(10, 20, kSeparatorThickness, 80));
   expected_separator_layouts.emplace_back(
+      view->contents_separators_.trailing_separator.get(), false,
+      gfx::Rect(10 + 100, 20, 0, 80));
+  expected_separator_layouts.emplace_back(
+      view->contents_separators_.corner_separator.get(), true,
+      gfx::Rect(
+          initial_bounds.origin(),
+          view->contents_separators_.corner_separator->GetPreferredSize()));
+
+  CompareLayouts(expected_separator_layouts, actual_child_layouts);
+  EXPECT_EQ(
+      CustomFloatingCorner::CornerOrientation::kTopLeading,
+      view->contents_separators_.corner_separator->orientation_for_testing());
+}
+
+IN_PROC_BROWSER_TEST_F(MultiContentsViewBrowserTest, TrailingSeparatorLayout) {
+  MultiContentsView* view = multi_contents_view();
+  view->SetShouldShowTrailingSeparator(true);
+  view->SetShouldShowLeadingSeparator(false);
+  view->SetShouldShowTopSeparator(true);
+
+  gfx::Rect initial_bounds(10, 20, 100, 80);
+  std::vector<views::ChildLayout> actual_child_layouts;
+
+  gfx::Rect remaining_space =
+      view->CalculateSeparatorLayouts(initial_bounds, actual_child_layouts);
+
+  constexpr int kSeparatorThickness = views::Separator::kThickness;
+
+  gfx::Rect expected_remaining_space(
+      initial_bounds.x(), initial_bounds.y() + kSeparatorThickness,
+      initial_bounds.width() - kSeparatorThickness,
+      initial_bounds.height() - kSeparatorThickness);
+  EXPECT_EQ(expected_remaining_space, remaining_space);
+
+  std::vector<views::ChildLayout> expected_separator_layouts;
+  expected_separator_layouts.emplace_back(
+      view->contents_separators_.top_separator.get(), true,
+      gfx::Rect(10, 20, 100, kSeparatorThickness));
+  expected_separator_layouts.emplace_back(
+      view->contents_separators_.leading_separator.get(), false,
+      gfx::Rect(10, 20, 0, 80));
+  expected_separator_layouts.emplace_back(
       view->contents_separators_.trailing_separator.get(), true,
       gfx::Rect(10 + 100 - kSeparatorThickness, 20, kSeparatorThickness, 80));
   expected_separator_layouts.emplace_back(
-      view->contents_separators_.top_leading_rounded_corner.get(), true,
-      gfx::Rect(initial_bounds.origin(),
-                view->contents_separators_.top_leading_rounded_corner
-                    ->GetPreferredSize()));
-  expected_separator_layouts.emplace_back(
-      view->contents_separators_.top_trailing_rounded_corner.get(), true,
+      view->contents_separators_.corner_separator.get(), true,
       gfx::Rect(
           gfx::Point(initial_bounds.right() -
-                         view->contents_separators_.top_trailing_rounded_corner
+                         view->contents_separators_.corner_separator
                              ->GetPreferredSize()
                              .width(),
                      initial_bounds.y()),
-          view->contents_separators_.top_trailing_rounded_corner
-              ->GetPreferredSize()));
+          view->contents_separators_.corner_separator->GetPreferredSize()));
 
-  EXPECT_THAT(actual_child_layouts,
-              testing::UnorderedElementsAreArray(expected_separator_layouts));
+  CompareLayouts(expected_separator_layouts, actual_child_layouts);
+  EXPECT_EQ(
+      CustomFloatingCorner::CornerOrientation::kTopTrailing,
+      view->contents_separators_.corner_separator->orientation_for_testing());
 }
 
 IN_PROC_BROWSER_TEST_F(MultiContentsViewBrowserTest, DropTargetLayout) {
@@ -628,8 +707,7 @@ IN_PROC_BROWSER_TEST_F(MultiContentsViewBrowserTest, DropTargetLayout) {
         view->drop_target_view_.get(), true,
         gfx::Rect(initial_bounds.x(), initial_bounds.y(), drop_target_width,
                   initial_bounds.height()));
-    EXPECT_THAT(actual_child_layouts,
-                testing::UnorderedElementsAreArray(expected_child_layouts));
+    CompareLayouts(expected_child_layouts, actual_child_layouts);
   }
 
   // Drop target is on the END side.
@@ -656,7 +734,6 @@ IN_PROC_BROWSER_TEST_F(MultiContentsViewBrowserTest, DropTargetLayout) {
         gfx::Rect(initial_bounds.right() - drop_target_width,
                   initial_bounds.y(), drop_target_width,
                   initial_bounds.height()));
-    EXPECT_THAT(actual_child_layouts,
-                testing::UnorderedElementsAreArray(expected_child_layouts));
+    CompareLayouts(expected_child_layouts, actual_child_layouts);
   }
 }

@@ -1799,7 +1799,7 @@ TEST_F(AutofillAgentTestWithFeatures, RequestRefill) {
   }
   LoadHTML(R"(<form><input></form>)");
   WaitForFormsSeen();
-  autofill_agent().RequestRefill(fill_id, on_refill.Get());
+  autofill_agent().RequestRefill(*fill_id, on_refill.Get());
   std::move(run_loop).Run();
 }
 
@@ -1838,7 +1838,7 @@ TEST_F(AutofillAgentTestWithFeatures, RequestRefillTimesOut) {
   }
   LoadHTML(R"(<form><input></form>)");
   WaitForFormsSeen();
-  autofill_agent().RequestRefill(fill_id, on_refill.Get());
+  autofill_agent().RequestRefill(*fill_id, on_refill.Get());
   std::move(run_loop).Run();
 }
 

@@ -51,6 +51,22 @@ SetCurrentTaskStateIfTopLevel(scheduler::TaskAttributionInfo* task_state,
                  : std::nullopt;
 }
 
+// Sets the given `resource_timing_context` in preparation for executing script
+// in `execution_context`. Does nothing if the corresponding `execution_context`
+// is not a Window or if the Window is detached.
+[[nodiscard]] inline std::optional<scheduler::TaskAttributionTracker::TaskScope>
+SetTaskStateVariable(ResourceTimingContext* resource_timing_context,
+                     ExecutionContext* context) {
+  if (!context || context->IsContextDestroyed()) {
+    return std::nullopt;
+  }
+  auto* tracker =
+      scheduler::TaskAttributionTracker::From(context->GetIsolate());
+  if (!tracker) {
+    return std::nullopt;
+  }
+  return tracker->SetTaskStateVariable(resource_timing_context);
+}
 }  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_CORE_SCHEDULER_TASK_ATTRIBUTION_UTIL_H_

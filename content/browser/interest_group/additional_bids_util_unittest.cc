@@ -125,17 +125,17 @@ std::string ComputeBidNonce(const base::Uuid& auction_nonce,
 
 class AdditionalBidsUtilTest : public testing::Test {
  protected:
-  base::Value::Dict MakeMinimalValid() {
-    base::Value::Dict ig_dict;
+  base::DictValue MakeMinimalValid() {
+    base::DictValue ig_dict;
     ig_dict.Set("name", "trainfans");
     ig_dict.Set("biddingLogicURL", "https://rollingstock.test/logic.js");
     ig_dict.Set("owner", "https://rollingstock.test/");
 
-    base::Value::Dict bid_dict;
+    base::DictValue bid_dict;
     bid_dict.Set("bid", 10.0);
     bid_dict.Set("render", "https://en.wikipedia.test/wiki/Train");
 
-    base::Value::Dict additional_bid_dict;
+    base::DictValue additional_bid_dict;
     additional_bid_dict.Set("auctionNonce", kAuctionNonce.AsLowercaseString());
     additional_bid_dict.Set("seller", "https://seller.test");
     additional_bid_dict.Set("topLevelSeller", "https://top-organizer.test");
@@ -144,11 +144,11 @@ class AdditionalBidsUtilTest : public testing::Test {
     return additional_bid_dict;
   }
 
-  base::Value::Dict MakeValidWithMultipleNegativeIGs() {
-    base::Value::Dict additional_bid_dict = MakeMinimalValid();
-    base::Value::Dict negative_igs_dict;
+  base::DictValue MakeValidWithMultipleNegativeIGs() {
+    base::DictValue additional_bid_dict = MakeMinimalValid();
+    base::DictValue negative_igs_dict;
     negative_igs_dict.Set("joiningOrigin", "https://depot.test");
-    base::Value::List negative_ig_names_list;
+    base::ListValue negative_ig_names_list;
     negative_ig_names_list.Append("negative_group");
     negative_ig_names_list.Append("another negative group");
     negative_igs_dict.Set("interestGroupNames",
@@ -158,17 +158,17 @@ class AdditionalBidsUtilTest : public testing::Test {
     return additional_bid_dict;
   }
 
-  static base::Value::Dict MakeValidSignedBid() {
-    base::Value::Dict signed_dict;
+  static base::DictValue MakeValidSignedBid() {
+    base::DictValue signed_dict;
     signed_dict.Set("bid", kPretendBid);
 
-    base::Value::List sigs_list;
-    base::Value::Dict sig1;
+    base::ListValue sigs_list;
+    base::DictValue sig1;
     sig1.Set("key", kKey1Base64);
     sig1.Set("signature", kSig1Base64);
     sigs_list.Append(std::move(sig1));
 
-    base::Value::Dict sig2;
+    base::DictValue sig2;
     sig2.Set("key", kKey2Base64);
     sig2.Set("signature", kSig2Base64);
     sigs_list.Append(std::move(sig2));
@@ -215,7 +215,7 @@ TEST_F(AdditionalBidsUtilTest, FailNoNonce) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndDisableFeature(blink::features::kFledgeSellerNonce);
 
-  base::Value::Dict additional_bid_dict = MakeMinimalValid();
+  base::DictValue additional_bid_dict = MakeMinimalValid();
   additional_bid_dict.Remove("auctionNonce");
   base::Value input(std::move(additional_bid_dict));
 
@@ -234,7 +234,7 @@ TEST_F(AdditionalBidsUtilTest, FailInvalidNonce) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndDisableFeature(blink::features::kFledgeSellerNonce);
 
-  base::Value::Dict additional_bid_dict = MakeMinimalValid();
+  base::DictValue additional_bid_dict = MakeMinimalValid();
   additional_bid_dict.Set("auctionNonce", "not-a-nonce");
   base::Value input(std::move(additional_bid_dict));
 
@@ -250,7 +250,7 @@ TEST_F(AdditionalBidsUtilTest, FailInvalidNonce) {
 }
 
 TEST_F(AdditionalBidsUtilTest, FailNoNonceWithSellerNonce) {
-  base::Value::Dict additional_bid_dict = MakeMinimalValid();
+  base::DictValue additional_bid_dict = MakeMinimalValid();
   additional_bid_dict.Remove("auctionNonce");
   base::Value input(std::move(additional_bid_dict));
 
@@ -266,7 +266,7 @@ TEST_F(AdditionalBidsUtilTest, FailNoNonceWithSellerNonce) {
 }
 
 TEST_F(AdditionalBidsUtilTest, FailInvalidNonceWithSellerNonce) {
-  base::Value::Dict additional_bid_dict = MakeMinimalValid();
+  base::DictValue additional_bid_dict = MakeMinimalValid();
   additional_bid_dict.Set("auctionNonce", "not-a-nonce");
   base::Value input(std::move(additional_bid_dict));
 
@@ -285,7 +285,7 @@ TEST_F(AdditionalBidsUtilTest, FailInvalidNonceWithSellerNonce) {
 }
 
 TEST_F(AdditionalBidsUtilTest, FailBothAuctionNonceAndBidNonce) {
-  base::Value::Dict additional_bid_dict = MakeMinimalValid();
+  base::DictValue additional_bid_dict = MakeMinimalValid();
   additional_bid_dict.Set("auctionNonce", kAuctionNonce.AsLowercaseString());
   additional_bid_dict.Set("bidNonce", kBidNonce);
   base::Value input(std::move(additional_bid_dict));
@@ -303,7 +303,7 @@ TEST_F(AdditionalBidsUtilTest, FailBothAuctionNonceAndBidNonce) {
 }
 
 TEST_F(AdditionalBidsUtilTest, FailBidNoSellerNonceButNoAuctionNonce) {
-  base::Value::Dict additional_bid_dict = MakeMinimalValid();
+  base::DictValue additional_bid_dict = MakeMinimalValid();
   additional_bid_dict.Remove("auctionNonce");
   additional_bid_dict.Set("bidNonce", kBidNonce);
   base::Value input(std::move(additional_bid_dict));
@@ -320,7 +320,7 @@ TEST_F(AdditionalBidsUtilTest, FailBidNoSellerNonceButNoAuctionNonce) {
 }
 
 TEST_F(AdditionalBidsUtilTest, FailBidSellerNonceButNoBidNonce) {
-  base::Value::Dict additional_bid_dict = MakeMinimalValid();
+  base::DictValue additional_bid_dict = MakeMinimalValid();
   additional_bid_dict.Set("auctionNonce", kAuctionNonce.AsLowercaseString());
   base::Value input(std::move(additional_bid_dict));
 
@@ -337,7 +337,7 @@ TEST_F(AdditionalBidsUtilTest, FailBidSellerNonceButNoBidNonce) {
 }
 
 TEST_F(AdditionalBidsUtilTest, FailInvalidBidNonce) {
-  base::Value::Dict additional_bid_dict = MakeMinimalValid();
+  base::DictValue additional_bid_dict = MakeMinimalValid();
   additional_bid_dict.Remove("auctionNonce");
   // Set bidNonce to base64(sha256("incorrect")).
   constexpr char kIncorrectNonce[] =
@@ -362,7 +362,7 @@ TEST_F(AdditionalBidsUtilTest, FailInvalidBidNonce) {
 }
 
 TEST_F(AdditionalBidsUtilTest, FailMissingSeller) {
-  base::Value::Dict additional_bid_dict = MakeMinimalValid();
+  base::DictValue additional_bid_dict = MakeMinimalValid();
   additional_bid_dict.Remove("seller");
   base::Value input(std::move(additional_bid_dict));
 
@@ -378,7 +378,7 @@ TEST_F(AdditionalBidsUtilTest, FailMissingSeller) {
 }
 
 TEST_F(AdditionalBidsUtilTest, FailInvalidSeller) {
-  base::Value::Dict additional_bid_dict = MakeMinimalValid();
+  base::DictValue additional_bid_dict = MakeMinimalValid();
   additional_bid_dict.Set("seller", "http://notseller.test");
   base::Value input(std::move(additional_bid_dict));
 
@@ -409,7 +409,7 @@ TEST_F(AdditionalBidsUtilTest, FailInvalidTopLevelSeller) {
 
 // Not specifying topLevelSeller in component auction bid is also a problem.
 TEST_F(AdditionalBidsUtilTest, FailInvalidTopLevelSeller2) {
-  base::Value::Dict additional_bid_dict = MakeMinimalValid();
+  base::DictValue additional_bid_dict = MakeMinimalValid();
   additional_bid_dict.Remove("topLevelSeller");
   base::Value input(std::move(additional_bid_dict));
 
@@ -427,7 +427,7 @@ TEST_F(AdditionalBidsUtilTest, FailInvalidTopLevelSeller2) {
 // An incorrect topLevelSeller in a bid in a component auction is also a
 // problem.
 TEST_F(AdditionalBidsUtilTest, FailInvalidTopLevelSeller3) {
-  base::Value::Dict additional_bid_dict = MakeMinimalValid();
+  base::DictValue additional_bid_dict = MakeMinimalValid();
   additional_bid_dict.Set("topLevelSeller", "https://wrong-organizer.test");
   base::Value input(std::move(additional_bid_dict));
 
@@ -444,7 +444,7 @@ TEST_F(AdditionalBidsUtilTest, FailInvalidTopLevelSeller3) {
 
 // Missing IG dictionary.
 TEST_F(AdditionalBidsUtilTest, FailNoIGDictionary) {
-  base::Value::Dict additional_bid_dict = MakeMinimalValid();
+  base::DictValue additional_bid_dict = MakeMinimalValid();
   additional_bid_dict.Remove("interestGroup");
   base::Value input(std::move(additional_bid_dict));
 
@@ -460,7 +460,7 @@ TEST_F(AdditionalBidsUtilTest, FailNoIGDictionary) {
 }
 
 TEST_F(AdditionalBidsUtilTest, FailMissingInterestGroupName) {
-  base::Value::Dict additional_bid_dict = MakeMinimalValid();
+  base::DictValue additional_bid_dict = MakeMinimalValid();
   additional_bid_dict.RemoveByDottedPath("interestGroup.name");
   base::Value input(std::move(additional_bid_dict));
 
@@ -476,7 +476,7 @@ TEST_F(AdditionalBidsUtilTest, FailMissingInterestGroupName) {
 }
 
 TEST_F(AdditionalBidsUtilTest, FailMissingInterestGroupBiddingScript) {
-  base::Value::Dict additional_bid_dict = MakeMinimalValid();
+  base::DictValue additional_bid_dict = MakeMinimalValid();
   additional_bid_dict.RemoveByDottedPath("interestGroup.biddingLogicURL");
   base::Value input(std::move(additional_bid_dict));
 
@@ -492,7 +492,7 @@ TEST_F(AdditionalBidsUtilTest, FailMissingInterestGroupBiddingScript) {
 }
 
 TEST_F(AdditionalBidsUtilTest, FailMissingInterestGroupOwner) {
-  base::Value::Dict additional_bid_dict = MakeMinimalValid();
+  base::DictValue additional_bid_dict = MakeMinimalValid();
   additional_bid_dict.RemoveByDottedPath("interestGroup.owner");
   base::Value input(std::move(additional_bid_dict));
 
@@ -508,7 +508,7 @@ TEST_F(AdditionalBidsUtilTest, FailMissingInterestGroupOwner) {
 }
 
 TEST_F(AdditionalBidsUtilTest, FailNonHttpsInterestGroupOwner) {
-  base::Value::Dict additional_bid_dict = MakeMinimalValid();
+  base::DictValue additional_bid_dict = MakeMinimalValid();
   additional_bid_dict.SetByDottedPath("interestGroup.owner",
                                       "http://rollingstock.test/");
   base::Value input(std::move(additional_bid_dict));
@@ -525,7 +525,7 @@ TEST_F(AdditionalBidsUtilTest, FailNonHttpsInterestGroupOwner) {
 }
 
 TEST_F(AdditionalBidsUtilTest, FailDomainMismatchBetweenOwnerAndBiddingScript) {
-  base::Value::Dict additional_bid_dict = MakeMinimalValid();
+  base::DictValue additional_bid_dict = MakeMinimalValid();
   additional_bid_dict.SetByDottedPath("interestGroup.owner",
                                       "https://trainstuff.test/");
   base::Value input(std::move(additional_bid_dict));
@@ -543,7 +543,7 @@ TEST_F(AdditionalBidsUtilTest, FailDomainMismatchBetweenOwnerAndBiddingScript) {
 
 // The additional bid owner is missing from interestGroupBuyers.
 TEST_F(AdditionalBidsUtilTest, AdditionalBidOwnerNotInInterestGroupBuyers) {
-  base::Value::Dict additional_bid_dict = MakeMinimalValid();
+  base::DictValue additional_bid_dict = MakeMinimalValid();
   base::Value input(std::move(additional_bid_dict));
 
   const base::flat_set<url::Origin> wrong_interest_group_buyers{
@@ -562,7 +562,7 @@ TEST_F(AdditionalBidsUtilTest, AdditionalBidOwnerNotInInterestGroupBuyers) {
 }
 
 TEST_F(AdditionalBidsUtilTest, FailMissingBid) {
-  base::Value::Dict additional_bid_dict = MakeMinimalValid();
+  base::DictValue additional_bid_dict = MakeMinimalValid();
   additional_bid_dict.Remove("bid");
   base::Value input(std::move(additional_bid_dict));
 
@@ -578,7 +578,7 @@ TEST_F(AdditionalBidsUtilTest, FailMissingBid) {
 }
 
 TEST_F(AdditionalBidsUtilTest, FailMissingBidCreative) {
-  base::Value::Dict additional_bid_dict = MakeMinimalValid();
+  base::DictValue additional_bid_dict = MakeMinimalValid();
   additional_bid_dict.RemoveByDottedPath("bid.render");
   base::Value input(std::move(additional_bid_dict));
 
@@ -594,7 +594,7 @@ TEST_F(AdditionalBidsUtilTest, FailMissingBidCreative) {
 }
 
 TEST_F(AdditionalBidsUtilTest, FailMissingBidValue) {
-  base::Value::Dict additional_bid_dict = MakeMinimalValid();
+  base::DictValue additional_bid_dict = MakeMinimalValid();
   additional_bid_dict.RemoveByDottedPath("bid.bid");
   base::Value input(std::move(additional_bid_dict));
 
@@ -610,7 +610,7 @@ TEST_F(AdditionalBidsUtilTest, FailMissingBidValue) {
 }
 
 TEST_F(AdditionalBidsUtilTest, FailInvalidBidValue) {
-  base::Value::Dict additional_bid_dict = MakeMinimalValid();
+  base::DictValue additional_bid_dict = MakeMinimalValid();
   additional_bid_dict.SetByDottedPath("bid.bid", 0.0);
   base::Value input(std::move(additional_bid_dict));
 
@@ -670,7 +670,7 @@ TEST_F(AdditionalBidsUtilTest, MinimalValid) {
 }
 
 TEST_F(AdditionalBidsUtilTest, MinimalValidWithSellerNonce) {
-  base::Value::Dict additional_bid_dict = MakeMinimalValid();
+  base::DictValue additional_bid_dict = MakeMinimalValid();
   additional_bid_dict.Remove("auctionNonce");
   additional_bid_dict.Set("bidNonce", kBidNonce);
   base::Value input(std::move(additional_bid_dict));
@@ -717,7 +717,7 @@ TEST_F(AdditionalBidsUtilTest, MinimalValidWithSellerNonce) {
 }
 
 TEST_F(AdditionalBidsUtilTest, InvalidBidCurrencyType) {
-  base::Value::Dict additional_bid_dict = MakeMinimalValid();
+  base::DictValue additional_bid_dict = MakeMinimalValid();
   additional_bid_dict.SetByDottedPath("bid.bidCurrency", 5);
   base::Value input(std::move(additional_bid_dict));
 
@@ -733,7 +733,7 @@ TEST_F(AdditionalBidsUtilTest, InvalidBidCurrencyType) {
 }
 
 TEST_F(AdditionalBidsUtilTest, InvalidBidCurrencySyntax) {
-  base::Value::Dict additional_bid_dict = MakeMinimalValid();
+  base::DictValue additional_bid_dict = MakeMinimalValid();
   additional_bid_dict.SetByDottedPath("bid.bidCurrency", "Dollars");
   base::Value input(std::move(additional_bid_dict));
 
@@ -749,7 +749,7 @@ TEST_F(AdditionalBidsUtilTest, InvalidBidCurrencySyntax) {
 }
 
 TEST_F(AdditionalBidsUtilTest, ValidBidCurrency) {
-  base::Value::Dict additional_bid_dict = MakeMinimalValid();
+  base::DictValue additional_bid_dict = MakeMinimalValid();
   additional_bid_dict.SetByDottedPath("bid.bidCurrency", "USD");
   base::Value input(std::move(additional_bid_dict));
 
@@ -764,7 +764,7 @@ TEST_F(AdditionalBidsUtilTest, ValidBidCurrency) {
 }
 
 TEST_F(AdditionalBidsUtilTest, InvalidAdCost) {
-  base::Value::Dict additional_bid_dict = MakeMinimalValid();
+  base::DictValue additional_bid_dict = MakeMinimalValid();
   additional_bid_dict.SetByDottedPath("bid.adCost", "big");
   base::Value input(std::move(additional_bid_dict));
 
@@ -780,7 +780,7 @@ TEST_F(AdditionalBidsUtilTest, InvalidAdCost) {
 }
 
 TEST_F(AdditionalBidsUtilTest, ValidAdCost) {
-  base::Value::Dict additional_bid_dict = MakeMinimalValid();
+  base::DictValue additional_bid_dict = MakeMinimalValid();
   additional_bid_dict.SetByDottedPath("bid.adCost", 15.5);
   base::Value input(std::move(additional_bid_dict));
 
@@ -797,7 +797,7 @@ TEST_F(AdditionalBidsUtilTest, ValidAdCost) {
 // We have a tradition of ignoring modeling signals if they're out of range,
 // so this follows.
 TEST_F(AdditionalBidsUtilTest, InvalidModelingSignals) {
-  base::Value::Dict additional_bid_dict = MakeMinimalValid();
+  base::DictValue additional_bid_dict = MakeMinimalValid();
   additional_bid_dict.SetByDottedPath("bid.modelingSignals", 4096);
   base::Value input(std::move(additional_bid_dict));
 
@@ -811,7 +811,7 @@ TEST_F(AdditionalBidsUtilTest, InvalidModelingSignals) {
 }
 
 TEST_F(AdditionalBidsUtilTest, InvalidModelingSignals2) {
-  base::Value::Dict additional_bid_dict = MakeMinimalValid();
+  base::DictValue additional_bid_dict = MakeMinimalValid();
   additional_bid_dict.SetByDottedPath("bid.modelingSignals", -0.001);
   base::Value input(std::move(additional_bid_dict));
 
@@ -826,7 +826,7 @@ TEST_F(AdditionalBidsUtilTest, InvalidModelingSignals2) {
 
 // Bad-type modeling signals still an error, however.
 TEST_F(AdditionalBidsUtilTest, BadTypeModelingSignals) {
-  base::Value::Dict additional_bid_dict = MakeMinimalValid();
+  base::DictValue additional_bid_dict = MakeMinimalValid();
   additional_bid_dict.SetByDottedPath("bid.modelingSignals", "string");
   base::Value input(std::move(additional_bid_dict));
 
@@ -842,11 +842,11 @@ TEST_F(AdditionalBidsUtilTest, BadTypeModelingSignals) {
 }
 
 TEST_F(AdditionalBidsUtilTest, ValidAggregateWinSignals) {
-  base::Value::Dict additional_bid_dict = MakeMinimalValid();
-  base::Value::Dict aggregate_win_signals_dict;
+  base::DictValue additional_bid_dict = MakeMinimalValid();
+  base::DictValue aggregate_win_signals_dict;
   aggregate_win_signals_dict.Set("test_string", "hello");
   aggregate_win_signals_dict.Set("test_number", 1.0);
-  base::Value::List test_array;
+  base::ListValue test_array;
   test_array.Append(1);
   test_array.Append(2);
   test_array.Append(3);
@@ -868,15 +868,15 @@ TEST_F(AdditionalBidsUtilTest, ValidAggregateWinSignals) {
 }
 
 TEST_F(AdditionalBidsUtilTest, InvalidAggregateWinSignals) {
-  base::Value::Dict additional_bid_dict = MakeMinimalValid();
-  base::Value::Dict aggregate_win_signals_dict;
+  base::DictValue additional_bid_dict = MakeMinimalValid();
+  base::DictValue aggregate_win_signals_dict;
 
   // Create a deeply nested list that exceeds the maximum depth
   // for JSON serialization.
   const size_t kMaxDepth = 200;
-  base::Value::List deep_list;
+  base::ListValue deep_list;
   for (size_t i = 0; i < kMaxDepth + 1; ++i) {
-    base::Value::List new_top_list;
+    base::ListValue new_top_list;
     new_top_list.Append(std::move(deep_list));
     deep_list = std::move(new_top_list);
   }
@@ -900,7 +900,7 @@ TEST_F(AdditionalBidsUtilTest, InvalidAggregateWinSignals) {
 }
 
 TEST_F(AdditionalBidsUtilTest, ValidModelingSignals) {
-  base::Value::Dict additional_bid_dict = MakeMinimalValid();
+  base::DictValue additional_bid_dict = MakeMinimalValid();
   additional_bid_dict.SetByDottedPath("bid.modelingSignals", 0);
   base::Value input(std::move(additional_bid_dict));
 
@@ -915,7 +915,7 @@ TEST_F(AdditionalBidsUtilTest, ValidModelingSignals) {
 }
 
 TEST_F(AdditionalBidsUtilTest, ValidModelingSignals2) {
-  base::Value::Dict additional_bid_dict = MakeMinimalValid();
+  base::DictValue additional_bid_dict = MakeMinimalValid();
   additional_bid_dict.SetByDottedPath("bid.modelingSignals", 2.5);
   base::Value input(std::move(additional_bid_dict));
 
@@ -930,7 +930,7 @@ TEST_F(AdditionalBidsUtilTest, ValidModelingSignals2) {
 }
 
 TEST_F(AdditionalBidsUtilTest, ValidModelingSignals3) {
-  base::Value::Dict additional_bid_dict = MakeMinimalValid();
+  base::DictValue additional_bid_dict = MakeMinimalValid();
   additional_bid_dict.SetByDottedPath("bid.modelingSignals", 4095.5);
   base::Value input(std::move(additional_bid_dict));
 
@@ -945,7 +945,7 @@ TEST_F(AdditionalBidsUtilTest, ValidModelingSignals3) {
 }
 
 TEST_F(AdditionalBidsUtilTest, InvalidAdComponents) {
-  base::Value::Dict additional_bid_dict = MakeMinimalValid();
+  base::DictValue additional_bid_dict = MakeMinimalValid();
   additional_bid_dict.SetByDottedPath("bid.adComponents", "oops");
   base::Value input(std::move(additional_bid_dict));
 
@@ -961,8 +961,8 @@ TEST_F(AdditionalBidsUtilTest, InvalidAdComponents) {
 }
 
 TEST_F(AdditionalBidsUtilTest, InvalidAdComponentsEntry) {
-  base::Value::Dict additional_bid_dict = MakeMinimalValid();
-  base::Value::List ad_components_list;
+  base::DictValue additional_bid_dict = MakeMinimalValid();
+  base::ListValue ad_components_list;
   ad_components_list.Append(10);
   additional_bid_dict.SetByDottedPath("bid.adComponents",
                                       std::move(ad_components_list));
@@ -980,8 +980,8 @@ TEST_F(AdditionalBidsUtilTest, InvalidAdComponentsEntry) {
 }
 
 TEST_F(AdditionalBidsUtilTest, TooManyAdComponents) {
-  base::Value::Dict additional_bid_dict = MakeMinimalValid();
-  base::Value::List ad_components_list;
+  base::DictValue additional_bid_dict = MakeMinimalValid();
+  base::ListValue ad_components_list;
   const size_t kMaxAdAuctionAdComponents = blink::MaxAdAuctionAdComponents();
   for (size_t i = 0; i < kMaxAdAuctionAdComponents + 1; ++i) {
     ad_components_list.Append("https://en.wikipedia.test/wiki/Locomotive");
@@ -1002,8 +1002,8 @@ TEST_F(AdditionalBidsUtilTest, TooManyAdComponents) {
 }
 
 TEST_F(AdditionalBidsUtilTest, ValidAdComponents) {
-  base::Value::Dict additional_bid_dict = MakeMinimalValid();
-  base::Value::List ad_components_list;
+  base::DictValue additional_bid_dict = MakeMinimalValid();
+  base::ListValue ad_components_list;
   ad_components_list.Append("https://en.wikipedia.test/wiki/Locomotive");
   ad_components_list.Append("https://en.wikipedia.test/wiki/High-speed_rail");
   additional_bid_dict.SetByDottedPath("bid.adComponents",
@@ -1044,8 +1044,8 @@ TEST_F(AdditionalBidsUtilTest, ValidAdComponents) {
 }
 
 TEST_F(AdditionalBidsUtilTest, ValidAdComponentsEmpty) {
-  base::Value::Dict additional_bid_dict = MakeMinimalValid();
-  base::Value::List ad_components_list;
+  base::DictValue additional_bid_dict = MakeMinimalValid();
+  base::ListValue ad_components_list;
   additional_bid_dict.SetByDottedPath("bid.adComponents",
                                       std::move(ad_components_list));
   base::Value input(std::move(additional_bid_dict));
@@ -1066,8 +1066,8 @@ TEST_F(AdditionalBidsUtilTest, ValidAdComponentsEmpty) {
 }
 
 TEST_F(AdditionalBidsUtilTest, ValidAdMetadata) {
-  base::Value::Dict additional_bid_dict = MakeMinimalValid();
-  base::Value::Dict metadata_dict;
+  base::DictValue additional_bid_dict = MakeMinimalValid();
+  base::DictValue metadata_dict;
   metadata_dict.Set("a", "hello");
   metadata_dict.Set("b", 1.0);
   additional_bid_dict.SetByDottedPath("bid.ad", std::move(metadata_dict));
@@ -1084,7 +1084,7 @@ TEST_F(AdditionalBidsUtilTest, ValidAdMetadata) {
 }
 
 TEST_F(AdditionalBidsUtilTest, ValidSingleNegativeIG) {
-  base::Value::Dict additional_bid_dict = MakeMinimalValid();
+  base::DictValue additional_bid_dict = MakeMinimalValid();
   additional_bid_dict.Set("negativeInterestGroup", "not_if_here");
 
   auto result = DecodeAdditionalBid(
@@ -1098,7 +1098,7 @@ TEST_F(AdditionalBidsUtilTest, ValidSingleNegativeIG) {
 }
 
 TEST_F(AdditionalBidsUtilTest, InvalidSingleNegativeIG) {
-  base::Value::Dict additional_bid_dict = MakeMinimalValid();
+  base::DictValue additional_bid_dict = MakeMinimalValid();
   additional_bid_dict.Set("negativeInterestGroup", false);
 
   auto result = DecodeAdditionalBid(
@@ -1113,7 +1113,7 @@ TEST_F(AdditionalBidsUtilTest, InvalidSingleNegativeIG) {
 }
 
 TEST_F(AdditionalBidsUtilTest, InvalidBothKindsOfNegativeIG) {
-  base::Value::Dict additional_bid_dict = MakeMinimalValid();
+  base::DictValue additional_bid_dict = MakeMinimalValid();
   additional_bid_dict.Set("negativeInterestGroup", "not_if_here");
   additional_bid_dict.Set("negativeInterestGroups", "boo");
 
@@ -1130,7 +1130,7 @@ TEST_F(AdditionalBidsUtilTest, InvalidBothKindsOfNegativeIG) {
 }
 
 TEST_F(AdditionalBidsUtilTest, ValidMultipleNegativeIG) {
-  base::Value::Dict additional_bid_dict = MakeValidWithMultipleNegativeIGs();
+  base::DictValue additional_bid_dict = MakeValidWithMultipleNegativeIGs();
 
   auto result = DecodeAdditionalBid(
       /*auction=*/nullptr, base::Value(std::move(additional_bid_dict)),
@@ -1148,7 +1148,7 @@ TEST_F(AdditionalBidsUtilTest, ValidMultipleNegativeIG) {
 
 // Non-string joining origin.
 TEST_F(AdditionalBidsUtilTest, InvalidMultipleNegativeIG) {
-  base::Value::Dict additional_bid_dict = MakeValidWithMultipleNegativeIGs();
+  base::DictValue additional_bid_dict = MakeValidWithMultipleNegativeIGs();
   additional_bid_dict.SetByDottedPath("negativeInterestGroups.joiningOrigin",
                                       10);
   auto result = DecodeAdditionalBid(
@@ -1164,7 +1164,7 @@ TEST_F(AdditionalBidsUtilTest, InvalidMultipleNegativeIG) {
 
 // Non-HTTPS joining origin.
 TEST_F(AdditionalBidsUtilTest, InvalidMultipleNegativeIG2) {
-  base::Value::Dict additional_bid_dict = MakeValidWithMultipleNegativeIGs();
+  base::DictValue additional_bid_dict = MakeValidWithMultipleNegativeIGs();
   additional_bid_dict.SetByDottedPath("negativeInterestGroups.joiningOrigin",
                                       "http://example.org");
   auto result = DecodeAdditionalBid(
@@ -1180,7 +1180,7 @@ TEST_F(AdditionalBidsUtilTest, InvalidMultipleNegativeIG2) {
 
 // Missing joining origin.
 TEST_F(AdditionalBidsUtilTest, InvalidMultipleNegativeIG3) {
-  base::Value::Dict additional_bid_dict = MakeValidWithMultipleNegativeIGs();
+  base::DictValue additional_bid_dict = MakeValidWithMultipleNegativeIGs();
   additional_bid_dict.RemoveByDottedPath(
       "negativeInterestGroups.joiningOrigin");
   auto result = DecodeAdditionalBid(
@@ -1196,7 +1196,7 @@ TEST_F(AdditionalBidsUtilTest, InvalidMultipleNegativeIG3) {
 
 // Missing interestGroupNames.
 TEST_F(AdditionalBidsUtilTest, InvalidMultipleNegativeIG4) {
-  base::Value::Dict additional_bid_dict = MakeValidWithMultipleNegativeIGs();
+  base::DictValue additional_bid_dict = MakeValidWithMultipleNegativeIGs();
   additional_bid_dict.RemoveByDottedPath(
       "negativeInterestGroups.interestGroupNames");
   auto result = DecodeAdditionalBid(
@@ -1213,7 +1213,7 @@ TEST_F(AdditionalBidsUtilTest, InvalidMultipleNegativeIG4) {
 
 // interestGroupNames not a list.
 TEST_F(AdditionalBidsUtilTest, InvalidMultipleNegativeIG5) {
-  base::Value::Dict additional_bid_dict = MakeValidWithMultipleNegativeIGs();
+  base::DictValue additional_bid_dict = MakeValidWithMultipleNegativeIGs();
   additional_bid_dict.SetByDottedPath(
       "negativeInterestGroups.interestGroupNames", "hi");
   auto result = DecodeAdditionalBid(
@@ -1230,7 +1230,7 @@ TEST_F(AdditionalBidsUtilTest, InvalidMultipleNegativeIG5) {
 
 // Non-string entry in interestGroupNames
 TEST_F(AdditionalBidsUtilTest, InvalidMultipleNegativeIG6) {
-  base::Value::Dict additional_bid_dict = MakeValidWithMultipleNegativeIGs();
+  base::DictValue additional_bid_dict = MakeValidWithMultipleNegativeIGs();
   additional_bid_dict
       .FindListByDottedPath("negativeInterestGroups.interestGroupNames")
       ->Append(50);
@@ -1247,7 +1247,7 @@ TEST_F(AdditionalBidsUtilTest, InvalidMultipleNegativeIG6) {
 
 // Wrong type for negativeInterestGroups
 TEST_F(AdditionalBidsUtilTest, InvalidMultipleNegativeIG7) {
-  base::Value::Dict additional_bid_dict = MakeValidWithMultipleNegativeIGs();
+  base::DictValue additional_bid_dict = MakeValidWithMultipleNegativeIGs();
   additional_bid_dict.Set("negativeInterestGroups", "boo");
   auto result = DecodeAdditionalBid(
       /*auction=*/nullptr, base::Value(std::move(additional_bid_dict)),
@@ -1263,7 +1263,7 @@ TEST_F(AdditionalBidsUtilTest, InvalidMultipleNegativeIG7) {
 TEST_F(AdditionalBidsUtilTest, DecodeBasicSignedBid) {
   for (bool require_forgiving_base64 : {false, true}) {
     SCOPED_TRACE(require_forgiving_base64);
-    base::Value::Dict signed_bid_dict = MakeValidSignedBid();
+    base::DictValue signed_bid_dict = MakeValidSignedBid();
     if (require_forgiving_base64) {
       *((*signed_bid_dict.FindList("signatures"))[1].GetDict().FindString(
           "signature")) = kSig2Base64Sloppy;
@@ -1287,7 +1287,7 @@ TEST_F(AdditionalBidsUtilTest, SignedNotDict) {
 }
 
 TEST_F(AdditionalBidsUtilTest, DecodeSignedMissingBid) {
-  base::Value::Dict signed_bid_dict = MakeValidSignedBid();
+  base::DictValue signed_bid_dict = MakeValidSignedBid();
   signed_bid_dict.Remove("bid");
   auto result =
       DecodeSignedAdditionalBid(base::Value(std::move(signed_bid_dict)));
@@ -1297,7 +1297,7 @@ TEST_F(AdditionalBidsUtilTest, DecodeSignedMissingBid) {
 }
 
 TEST_F(AdditionalBidsUtilTest, DecodeSignedMissingSignatures) {
-  base::Value::Dict signed_bid_dict = MakeValidSignedBid();
+  base::DictValue signed_bid_dict = MakeValidSignedBid();
   signed_bid_dict.Remove("signatures");
   auto result =
       DecodeSignedAdditionalBid(base::Value(std::move(signed_bid_dict)));
@@ -1307,7 +1307,7 @@ TEST_F(AdditionalBidsUtilTest, DecodeSignedMissingSignatures) {
 }
 
 TEST_F(AdditionalBidsUtilTest, DecodeSignedInvalidSignatures) {
-  base::Value::Dict signed_bid_dict = MakeValidSignedBid();
+  base::DictValue signed_bid_dict = MakeValidSignedBid();
   signed_bid_dict.FindList("signatures")->Append(40);
   auto result =
       DecodeSignedAdditionalBid(base::Value(std::move(signed_bid_dict)));
@@ -1317,7 +1317,7 @@ TEST_F(AdditionalBidsUtilTest, DecodeSignedInvalidSignatures) {
 }
 
 TEST_F(AdditionalBidsUtilTest, DecodeSignedMissingSignatureKey) {
-  base::Value::Dict signed_bid_dict = MakeValidSignedBid();
+  base::DictValue signed_bid_dict = MakeValidSignedBid();
   (*signed_bid_dict.FindList("signatures"))[0].GetDict().Remove("key");
   auto result =
       DecodeSignedAdditionalBid(base::Value(std::move(signed_bid_dict)));
@@ -1328,7 +1328,7 @@ TEST_F(AdditionalBidsUtilTest, DecodeSignedMissingSignatureKey) {
 }
 
 TEST_F(AdditionalBidsUtilTest, DecodeSignedInvalidSignatureKey) {
-  base::Value::Dict signed_bid_dict = MakeValidSignedBid();
+  base::DictValue signed_bid_dict = MakeValidSignedBid();
   (*signed_bid_dict.FindList("signatures"))[0].GetDict().Set("key", "$$$");
   auto result =
       DecodeSignedAdditionalBid(base::Value(std::move(signed_bid_dict)));
@@ -1339,7 +1339,7 @@ TEST_F(AdditionalBidsUtilTest, DecodeSignedInvalidSignatureKey) {
 TEST_F(AdditionalBidsUtilTest, DecodeSignedInvalidSignatureKeyLength) {
   const char kLength31[] = "r7J39NbxqA5AvGD57ENOYdOvxzHPwA6KoehNIFCjDw==";
 
-  base::Value::Dict signed_bid_dict = MakeValidSignedBid();
+  base::DictValue signed_bid_dict = MakeValidSignedBid();
   (*signed_bid_dict.FindList("signatures"))[0].GetDict().Set("key", kLength31);
   auto result =
       DecodeSignedAdditionalBid(base::Value(std::move(signed_bid_dict)));
@@ -1348,7 +1348,7 @@ TEST_F(AdditionalBidsUtilTest, DecodeSignedInvalidSignatureKeyLength) {
 }
 
 TEST_F(AdditionalBidsUtilTest, DecodeSignedMissingSignatureSig) {
-  base::Value::Dict signed_bid_dict = MakeValidSignedBid();
+  base::DictValue signed_bid_dict = MakeValidSignedBid();
   (*signed_bid_dict.FindList("signatures"))[0].GetDict().Remove("signature");
   auto result =
       DecodeSignedAdditionalBid(base::Value(std::move(signed_bid_dict)));
@@ -1360,7 +1360,7 @@ TEST_F(AdditionalBidsUtilTest, DecodeSignedMissingSignatureSig) {
 }
 
 TEST_F(AdditionalBidsUtilTest, DecodeSignedInvalidSignatureSig) {
-  base::Value::Dict signed_bid_dict = MakeValidSignedBid();
+  base::DictValue signed_bid_dict = MakeValidSignedBid();
   (*signed_bid_dict.FindList("signatures"))[0].GetDict().Set("signature",
                                                              "$$$");
   auto result =
@@ -1374,7 +1374,7 @@ TEST_F(AdditionalBidsUtilTest, DecodeSignedInvalidSignatureSigLength) {
       "rq9Nm5seElZB7vH9u8o6Cjt4v72LkPKGVKVl6k4uOlmV8Y7n023fmOk47R2bPRNYx/"
       "EzpBSXdJainpItZwK5DTI=";
 
-  base::Value::Dict signed_bid_dict = MakeValidSignedBid();
+  base::DictValue signed_bid_dict = MakeValidSignedBid();
   (*signed_bid_dict.FindList("signatures"))[0].GetDict().Set("signature",
                                                              kLength65);
   auto result =

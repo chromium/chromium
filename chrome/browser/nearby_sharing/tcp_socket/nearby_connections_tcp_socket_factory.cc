@@ -4,7 +4,6 @@
 
 #include "chrome/browser/nearby_sharing/tcp_socket/nearby_connections_tcp_socket_factory.h"
 
-#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
 #include "chromeos/ash/services/nearby/public/cpp/tcp_server_socket_port.h"
@@ -153,6 +152,6 @@ void NearbyConnectionsTcpSocketFactory::OnTcpConnectedSocketCreated(
     mojo::ScopedDataPipeProducerHandle send_stream) {
   std::move(callback).Run(result, local_addr, peer_addr,
                           std::move(receive_stream), std::move(send_stream));
-  DCHECK(base::Contains(connect_tasks_, task_id));
+  DCHECK(connect_tasks_.contains(task_id));
   connect_tasks_.erase(task_id);
 }

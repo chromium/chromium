@@ -7,10 +7,7 @@
     Exposed=(Window,LayoutWorklet,PaintWorklet)
 ] interface StylePropertyMapReadOnly {
     iterable<CSSOMString, sequence<CSSStyleValue>>;
-    /* TODO: This should return (undefined or CSSStyleValue),
-       but IDL doesn't have anything like that yet. See:
-       https://github.com/heycam/webidl/issues/60 */
-    [RaisesException, CallWith=ExecutionContext] CSSStyleValue? get(CSSOMString property);
+    [RaisesException, CallWith=ExecutionContext] (undefined or CSSStyleValue) get(CSSOMString property);
     [RaisesException, CallWith=ExecutionContext] sequence<CSSStyleValue> getAll(CSSOMString property);
     [RaisesException, CallWith=ExecutionContext] boolean has(CSSOMString property);
     readonly attribute unsigned long size;

@@ -4,7 +4,6 @@
 
 #include "content/browser/first_party_sets/first_party_sets_handler_database_helper.h"
 
-#include "base/containers/contains.h"
 #include "base/logging.h"
 #include "content/browser/first_party_sets/database/first_party_sets_database.h"
 #include "net/base/schemeful_site.h"

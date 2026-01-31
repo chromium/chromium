@@ -68,6 +68,7 @@ source_set("compiler_files") {
     "src/include/codegen/python.cc",
     "src/include/codegen/python.h",
     "src/include/flatbuffers/code_generators.h",
+    "src/include/flatbuffers/file_manager.h",
     "src/include/flatbuffers/flatc.h",
     "src/include/flatbuffers/grpc.h",
     "src/include/flatbuffers/hash.h",
@@ -87,6 +88,8 @@ source_set("compiler_files") {
     "src/src/binary_annotator.cpp",
     "src/src/binary_annotator.h",
     "src/src/code_generators.cpp",
+    "src/src/file_manager.cpp",
+    "src/src/file_name_manager.cpp",
     "src/src/flatc.cpp",
     "src/src/idl_gen_binary.cpp",
     "src/src/idl_gen_binary.h",
@@ -169,6 +172,7 @@ source_set("flatbuffers_test_files") {
   sources = [
     "src/include/flatbuffers/base.h",
     "src/include/flatbuffers/code_generators.h",
+    "src/include/flatbuffers/file_manager.h",
     "src/include/flatbuffers/flatbuffers.h",
     "src/include/flatbuffers/flexbuffers.h",
     "src/include/flatbuffers/grpc.h",
@@ -181,6 +185,8 @@ source_set("flatbuffers_test_files") {
     "src/include/flatbuffers/stl_emulation.h",
     "src/include/flatbuffers/util.h",
     "src/src/code_generators.cpp",
+    "src/src/file_manager.cpp",
+    "src/src/file_name_manager.cpp",
     "src/src/idl_gen_fbs.cpp",
     "src/src/idl_gen_text.cpp",
     "src/src/idl_gen_text.h",
@@ -230,6 +236,8 @@ test("flatbuffers_unittests") {
     "src/tests/test_builder.h",
     "src/tests/util_test.cpp",
     "src/tests/util_test.h",
+    "src/tests/vector_table_naked_ptr_test.cpp",
+    "src/tests/vector_table_naked_ptr_test.h",
   ]
   deps = [
     ":flatbuffers",

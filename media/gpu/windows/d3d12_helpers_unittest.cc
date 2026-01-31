@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "media/gpu/windows/d3d12_helpers.h"
 
 #include <dxva.h>
@@ -14,6 +9,7 @@
 #include <numeric>
 #include <vector>
 
+#include "base/compiler_specific.h"
 #include "base/rand_util.h"
 #include "media/base/video_codecs.h"
 #include "media/base/win/d3d12_mocks.h"
@@ -84,7 +80,8 @@ TEST_F(D3D12Helpers, D3D12ReferenceFrameList) {
     D3D12_VIDEO_DECODE_REFERENCE_FRAMES reference_frames;
     reference_frame_list.WriteTo(&reference_frames);
     EXPECT_GT(reference_frames.NumTexture2Ds, index);
-    EXPECT_EQ(reference_frames.ppTexture2Ds[index], resource.Get());
+    EXPECT_EQ(UNSAFE_TODO(reference_frames.ppTexture2Ds[index]),
+              resource.Get());
   }
 }
 

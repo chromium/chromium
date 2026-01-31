@@ -127,7 +127,6 @@ MEDIA_EXPORT BASE_DECLARE_FEATURE(kAudioDecoderAudioFileReader);
 #endif
 
 MEDIA_EXPORT BASE_DECLARE_FEATURE(kAudioFocusDuckFlash);
-MEDIA_EXPORT BASE_DECLARE_FEATURE(kAudioInputConfirmReadsViaShmem);
 MEDIA_EXPORT BASE_DECLARE_FEATURE(kAutoPictureInPictureForVideoPlayback);
 MEDIA_EXPORT BASE_DECLARE_FEATURE(kAutoplayDisableSettings);
 MEDIA_EXPORT BASE_DECLARE_FEATURE(kAVDColorSpaceChanges);
@@ -216,9 +215,6 @@ MEDIA_EXPORT BASE_DECLARE_FEATURE(kFileDialogsTuckPictureInPicture);
 MEDIA_EXPORT BASE_DECLARE_FEATURE(kGetDisplayMediaConfersActivation);
 MEDIA_EXPORT BASE_DECLARE_FEATURE(kGlobalMediaControls);
 MEDIA_EXPORT BASE_DECLARE_FEATURE(kGlobalMediaControlsAutoDismiss);
-#if !BUILDFLAG(IS_CHROMEOS)
-MEDIA_EXPORT BASE_DECLARE_FEATURE(kGlobalMediaControlsUpdatedUI);
-#endif  // !BUILDFLAG(IS_CHROMEOS)
 #if !BUILDFLAG(IS_ANDROID)
 MEDIA_EXPORT BASE_DECLARE_FEATURE(kMediaRemotingWithoutFullscreen);
 #endif
@@ -238,6 +234,7 @@ MEDIA_EXPORT extern const base::FeatureParam<int>
 MEDIA_EXPORT extern const base::FeatureParam<bool>
     kHardwareSecureDecryptionFallbackOnHardwareContextReset;
 MEDIA_EXPORT BASE_DECLARE_FEATURE(kHardwareSecureDecryptionAv1);
+MEDIA_EXPORT BASE_DECLARE_FEATURE(kHardwareSecureDecryptionVp9);
 #if BUILDFLAG(IS_WIN)
 MEDIA_EXPORT BASE_DECLARE_FEATURE(kProtectedMediaIdentifierIndicator);
 MEDIA_EXPORT BASE_DECLARE_FEATURE(kHardwareSecureDecryptionRequireServerCert);
@@ -255,10 +252,14 @@ MEDIA_EXPORT BASE_DECLARE_FEATURE(kLiveCaptionUseWaitK);
 MEDIA_EXPORT BASE_DECLARE_FEATURE(kLiveCaptionWebAudio);
 MEDIA_EXPORT BASE_DECLARE_FEATURE(kLiveTranslate);
 MEDIA_EXPORT BASE_DECLARE_FEATURE(kLogSodaLoadFailures);
+#if BUILDFLAG(IS_WIN)
+MEDIA_EXPORT BASE_DECLARE_FEATURE(kApplicationAudioCaptureWin);
+#endif
 #if BUILDFLAG(IS_MAC)
 MEDIA_EXPORT BASE_DECLARE_FEATURE(kMacCatapLoopbackAudioForCast);
 MEDIA_EXPORT BASE_DECLARE_FEATURE(kMacCatapLoopbackAudioForScreenShare);
 MEDIA_EXPORT BASE_DECLARE_FEATURE(kUseSCContentSharingPicker);
+MEDIA_EXPORT BASE_DECLARE_FEATURE(kApplicationAudioCaptureMac);
 #endif  // BUILDFLAG(IS_MAC)
 MEDIA_EXPORT BASE_DECLARE_FEATURE(kMediaCapabilitiesQueryGpuFactories);
 MEDIA_EXPORT BASE_DECLARE_FEATURE(kMediaCapabilitiesWithParameters);
@@ -276,6 +277,8 @@ MEDIA_EXPORT BASE_DECLARE_FEATURE(kPauseBackgroundTimer);
 MEDIA_EXPORT BASE_DECLARE_FEATURE(kPictureInPictureOcclusionTracking);
 MEDIA_EXPORT BASE_DECLARE_FEATURE(kPictureInPictureShowWindowAnimation);
 MEDIA_EXPORT BASE_DECLARE_FEATURE(kVideoPipDisplaySmoothnessOptimization);
+MEDIA_EXPORT BASE_DECLARE_FEATURE(
+    kVideoPipForceTrustedForMediaPlaybackForTesting);
 #endif  // !BUILDFLAG(IS_ANDROID)
 MEDIA_EXPORT BASE_DECLARE_FEATURE(kPlatformAudioEncoder);
 MEDIA_EXPORT BASE_DECLARE_FEATURE(kEnableRtcpReporting);
@@ -337,6 +340,7 @@ MEDIA_EXPORT BASE_DECLARE_FEATURE(kV4L2H264TemporalLayerHWEncoding);
 #endif  // BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
 MEDIA_EXPORT BASE_DECLARE_FEATURE(kVideoBlitColorAccuracy);
 MEDIA_EXPORT BASE_DECLARE_FEATURE(kCastVideoEncoderFrameDrop);
+MEDIA_EXPORT BASE_DECLARE_FEATURE(kWebCodecsDecoderFlushOptimizations);
 MEDIA_EXPORT BASE_DECLARE_FEATURE(kWebCodecsVideoEncoderFrameDrop);
 MEDIA_EXPORT BASE_DECLARE_FEATURE(kWebRTCHardwareVideoEncoderFrameDrop);
 MEDIA_EXPORT BASE_DECLARE_FEATURE(kWebRTCColorAccuracy);
@@ -491,8 +495,9 @@ MEDIA_EXPORT BASE_DECLARE_FEATURE(kAutoPictureInPicturePageInfoDetails);
 // than encoding it inside the URL.
 MEDIA_EXPORT BASE_DECLARE_FEATURE(kUsePostBodyForUrlProvisionFetcher);
 
-// Treats H.264 SEI recovery points with a `recovery_frame_cnt=0` as keyframes.
-MEDIA_EXPORT BASE_DECLARE_FEATURE(kTreatSEIRecoveryPointAsKeyframe);
+// Causes the AVC parser to output Treats H.264 SEI recovery points with a
+// `recovery_frame_cnt=0` as keyframes.
+MEDIA_EXPORT BASE_DECLARE_FEATURE(kParseSEIRecoveryPoints);
 
 // Based on a |command_line| and the current platform, returns the effective
 // autoplay policy. In other words, it will take into account the default policy
@@ -521,6 +526,10 @@ MEDIA_EXPORT bool IsMacSckSystemLoopbackCaptureSupported();
 // Returns true if system audio loopback capture is implemented for the current
 // OS.
 MEDIA_EXPORT bool IsSystemLoopbackCaptureSupported();
+
+// Returns true if application audio loopback capture is implemented for the
+// current OS.
+MEDIA_EXPORT bool IsApplicationLoopbackCaptureSupported();
 
 // Returns true if loopback-based AEC can be used for audio input streams that
 // are configured to do so.

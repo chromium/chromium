@@ -18,7 +18,6 @@
 #include "components/autofill/core/browser/data_model/valuables/loyalty_card.h"
 #include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/browser/foundations/autofill_manager.h"
-#include "components/autofill/core/browser/integrators/fast_checkout/fast_checkout_client.h"
 #include "components/autofill/core/browser/integrators/touch_to_fill/touch_to_fill_delegate.h"
 #include "components/autofill/core/common/form_data.h"
 #include "components/autofill/core/common/form_field_data.h"
@@ -67,8 +66,7 @@ enum class TouchToFillPaymentMethodTriggerOutcome {
   // TouchToFill is not supported for this field type. This value is not logged
   // to UMA.
   kUnsupportedFieldType = 10,
-  // Fast Checkout was shown before TouchToFill could be triggered.
-  kFastCheckoutWasShown = 11,
+  // kFastCheckoutWasShown = 11, // DEPRECATED
   // Form is considered to be already filled if fields of payment method info
   // already have non-empty values.
   kFormAlreadyFilled = 12,
@@ -119,6 +117,10 @@ class TouchToFillDelegateAndroidImpl : public TouchToFillDelegate {
   bool TryToShowTouchToFill(const FormData& form,
                             const FormFieldData& field) override;
 
+  // Shows the TTF surface displaying the full list of loyalty cards.
+  bool ShowTouchToFillForAllLoyaltyCards(const FormData& form,
+                                         const FormFieldData& field) override;
+
   // Returns whether the TTF surface is currently being shown.
   bool IsShowingTouchToFill() override;
 
@@ -130,6 +132,7 @@ class TouchToFillDelegateAndroidImpl : public TouchToFillDelegate {
 
   // TouchToFillDelegate:
   bool ShouldShowScanCreditCard() override;
+  bool ShouldShowGPayLogo() const override;
   void ScanCreditCard() override;
   void OnCreditCardScanned(const CreditCard& card) override;
   void ShowPaymentMethodSettings() override;
@@ -216,9 +219,9 @@ class TouchToFillDelegateAndroidImpl : public TouchToFillDelegate {
   DryRunResult DryRunForCreditCard(const AutofillField& field,
                                    const FormStructure& form);
 
-  // Returns a DryRunResult with the user's fillable loyalty cards, or
-  // an error reason if TTF should not be triggered.
-  DryRunResult DryRunForLoyaltyCard();
+  // Returns a DryRunResult with the user's fillable affiliated loyalty cards,
+  // or an error reason if TTF should not be triggered.
+  DryRunResult DryRunForAffiliatedLoyaltyCard();
 
   // Creates a list of booleans which denotes if credit cards are acceptable by
   // the merchant. The returned list has the same size as `credit_cards`, and

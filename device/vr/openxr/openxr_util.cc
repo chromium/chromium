@@ -62,6 +62,10 @@ device::Pose ZNormalXrPoseToYNormalDevicePose(const XrPosef& pose) {
   return *maybe_pose;
 }
 
+gfx::Point3F ZNormalPositionToYNormalPosition(const gfx::Point3F& point) {
+  return kZNormalToYNormalTransform.MapPoint(point);
+}
+
 XrPosef GfxTransformToXrPose(const gfx::Transform& transform) {
   std::optional<gfx::DecomposedTransform> decomposed_transform =
       transform.Decompose();

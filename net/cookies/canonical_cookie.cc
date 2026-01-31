@@ -52,7 +52,6 @@
 
 #include "base/check_is_test.h"
 #include "base/compiler_specific.h"
-#include "base/containers/contains.h"
 #include "base/dcheck_is_on.h"
 #include "base/feature_list.h"
 #include "base/format_macros.h"
@@ -393,6 +392,12 @@ std::unique_ptr<CanonicalCookie> CanonicalCookie::Create(
         "Cookie.DomainHasNonASCII.Subsampled",
         parsed_cookie.Domain() &&
             !base::IsStringASCII(parsed_cookie.Domain().value()));
+  }
+
+  UMA_HISTOGRAM_BOOLEAN("Cookie.Parse.EmptyName", parsed_cookie.Name().empty());
+  if (parsed_cookie.Name().empty()) {
+    UMA_HISTOGRAM_BOOLEAN("Cookie.Parse.EmptyNameAmbiguousValue",
+                          parsed_cookie.Value().contains('='));
   }
 
   std::optional<std::string> cookie_domain =

@@ -206,7 +206,7 @@ class SigninProfileExtensionsPolicyTest
 
 }  // namespace
 
-// Tests that a allowlisted app gets installed.
+// Tests that an allowlisted app gets installed.
 IN_PROC_BROWSER_TEST_F(SigninProfileExtensionsPolicyTest,
                        AllowlistedAppInstallation) {
   EXPECT_TRUE(extension_force_install_mixin_.ForceInstallFromCrx(
@@ -237,7 +237,7 @@ IN_PROC_BROWSER_TEST_F(SigninProfileExtensionsPolicyTest,
       kNotAllowlistedAppId));
 }
 
-// Tests that a allowlisted extension is installed. Force-installed extensions
+// Tests that an allowlisted extension is installed. Force-installed extensions
 // on the sign-in screen should also automatically have the
 // |login_screen_extension| type.
 IN_PROC_BROWSER_TEST_F(SigninProfileExtensionsPolicyTest,

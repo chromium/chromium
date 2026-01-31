@@ -29,8 +29,8 @@ void ScrimViewController::OnTabStripModelChanged(
   }
 }
 
-void ScrimViewController::TabBlockedStateChanged(content::WebContents* contents,
-                                                 int index) {
+void ScrimViewController::OnTabBlockedStateChanged(tabs::TabInterface* tab,
+                                                   int index) {
   UpdateScrimViews();
 }
 

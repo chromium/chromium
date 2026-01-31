@@ -65,7 +65,7 @@ class PreviewServerProxy {
       base::OnceCallback<
           void(const DataSharingService::SharedDataPreviewOrFailureOutcome&)>
           callback,
-      std::optional<base::Value::Dict> result);
+      std::optional<base::DictValue> result);
 
   std::string GetPreviewServerURLString() const;
 

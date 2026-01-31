@@ -34,7 +34,8 @@ class RateAdjusterTest : public testing::Test {
     last_timestamp_ = timestamp;
     last_value_ = value;
 
-    int64_t jittered_value = value + base::RandInt(-max_jitter, max_jitter);
+    int64_t jittered_value =
+        value + base::RandIntInclusive(-max_jitter, max_jitter);
 
     rate_adjuster_->AddError(jittered_value - timestamp, timestamp);
   }

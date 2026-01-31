@@ -320,7 +320,7 @@ class MODULES_EXPORT PeerConnectionTracker
                                 const String& callback_type,
                                 const String& value);
 
-  void AddStandardStats(int lid, base::Value::List value);
+  void AddStandardStats(int lid, base::ListValue value);
 
   // This map stores the local ID assigned to each RTCPeerConnectionHandler.
   typedef HashMap<RTCPeerConnectionHandler*, int> PeerConnectionLocalIdMap;

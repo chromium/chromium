@@ -80,6 +80,7 @@
 #include "base/threading/thread_checker.h"
 #include "base/time/time.h"
 #include "base/timer/elapsed_timer.h"
+#include "base/trace_event/trace_event.h"
 #include "net/base/isolation_info.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 #include "net/base/schemeful_site.h"
@@ -568,6 +569,8 @@ void CookieMonster::GetCookieListWithOptionsAsync(
     const CookieOptions& options,
     const CookiePartitionKeyCollection& cookie_partition_key_collection,
     GetCookieListCallback callback) {
+  TRACE_EVENT("net", "CookieMonster::GetCookieListWithOptionsAsync");
+
   DoCookieCallbackForURL(
       base::BindOnce(
           // base::Unretained is safe as DoCookieCallbackForURL stores
@@ -763,6 +766,7 @@ void CookieMonster::GetCookieListWithOptions(
     const CookieOptions& options,
     const CookiePartitionKeyCollection& cookie_partition_key_collection,
     GetCookieListCallback callback) {
+  TRACE_EVENT("net", "CookieMonster::GetCookieListWithOptions");
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
   std::optional<base::ElapsedTimer> timer;
@@ -2681,10 +2685,10 @@ CookieScopeSemantics CookieMonster::CheckAndActivateLegacyScopeBehavior(
   if (!pref_delegate_dict_) {
     // TODO(crbug.com/378827534) Add CHECK once callbacks are supported.
     if (pref_delegate_ && pref_delegate_->IsPrefReady()) {
-      pref_delegate_dict_ = std::make_unique<base::Value::Dict>(
+      pref_delegate_dict_ = std::make_unique<base::DictValue>(
           pref_delegate_->GetLegacyDomains().Clone());
     } else {
-      pref_delegate_dict_ = std::make_unique<base::Value::Dict>();
+      pref_delegate_dict_ = std::make_unique<base::DictValue>();
     }
   }
   bool is_in_pref = pref_delegate_dict_->Find(cookie_key);

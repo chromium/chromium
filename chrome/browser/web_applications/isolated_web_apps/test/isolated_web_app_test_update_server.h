@@ -40,7 +40,7 @@ class IsolatedWebAppTestUpdateServer {
 
   // Generates a policy entry that can be appended to
   // `prefs::kIsolatedWebAppInstallForceList` in order to force-install the IWA.
-  base::Value::Dict CreateForceInstallPolicyEntry(
+  base::DictValue CreateForceInstallPolicyEntry(
       const web_package::SignedWebBundleId& web_bundle_id,
       const std::optional<UpdateChannel>& update_channel = std::nullopt,
       const std::optional<IwaVersion>& pinned_version = std::nullopt,
@@ -48,7 +48,7 @@ class IsolatedWebAppTestUpdateServer {
 
   // Returns the update manifest for `web_bundle_id`. Will CHECK if there are no
   // bundles served for this `web_bundle_id`.
-  base::Value::Dict GetUpdateManifest(
+  base::DictValue GetUpdateManifest(
       const web_package::SignedWebBundleId& web_bundle_id) const;
 
   // Adds a bundle to the update server and starts tracking it in the

@@ -9,7 +9,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/notimplemented.h"
@@ -266,7 +265,7 @@ void CastMediaRouteProvider::SendRouteBinaryMessage(
 void CastMediaRouteProvider::StartObservingMediaSinks(
     const std::string& media_source) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (base::Contains(sink_queries_, media_source)) {
+  if (sink_queries_.contains(media_source)) {
     return;
   }
 

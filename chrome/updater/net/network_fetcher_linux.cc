@@ -113,7 +113,8 @@ class LibcurlNetworkFetcherImpl {
       const base::flat_map<std::string, std::string>& response_headers,
       const std::string& header) {
     const std::string lower = base::ToLowerASCII(header);
-    return response_headers.contains(lower) ? response_headers.at(lower) : "";
+    auto it = response_headers.find(lower);
+    return it != response_headers.end() ? it->second : "";
   }
 
   CurlUniquePtr curl_;

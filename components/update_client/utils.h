@@ -79,10 +79,9 @@ CrxInstaller::Result InstallFunctionWrapper(
     base::OnceCallback<bool()> callback);
 
 // Deserializes the CRX manifest. The top level must be a dictionary.
-// Returns a base::Value::Dict object of type dictionary on success, or nullopt
+// Returns a base::DictValue object of type dictionary on success, or nullopt
 // on failure.
-std::optional<base::Value::Dict> ReadManifest(
-    const base::FilePath& unpack_path);
+std::optional<base::DictValue> ReadManifest(const base::FilePath& unpack_path);
 
 // Returns a string representation of the processor architecture. Uses
 // `base::win::OSInfo::IsWowX86OnARM64` and

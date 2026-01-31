@@ -116,8 +116,8 @@ class DeviceOAuth2TokenServiceTest : public testing::Test {
   }
 
   std::unique_ptr<OAuth2AccessTokenManager::Request> StartTokenRequest() {
-    return oauth2_service_->StartAccessTokenRequest(std::set<std::string>(),
-                                                    &consumer_);
+    return oauth2_service_->StartAccessTokenRequest(
+        OAuth2AccessTokenManager::ScopeSet(), &consumer_);
   }
 
   void SetUp() override {}

@@ -34,10 +34,10 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.supplier.LazyOneshotSupplier;
-import org.chromium.base.supplier.ObservableSupplier;
-import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.OneshotSupplierImpl;
+import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
 import org.chromium.base.supplier.SettableNullableObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.back_press.BackPressManager;
@@ -75,7 +75,7 @@ public class HubManagerImplUnitTest {
     @Mock private ViewGroup mIncognitoTabSwitcherPaneView;
     @Mock private MenuOrKeyboardActionHandler mIncognitoTabSwitcherMenuOrKeyboardActionHandler;
     @Mock private HubLayoutController mHubLayoutController;
-    @Mock private ObservableSupplier<Integer> mPreviousLayoutTypeSupplier;
+    @Mock private MonotonicObservableSupplier<Integer> mPreviousLayoutTypeSupplier;
     @Mock private MenuOrKeyboardActionController mMenuOrKeyboardActionController;
     @Mock private SnackbarManager mSnackbarManager;
     @Mock private MenuButtonCoordinator mMenuButtonCoordinator;
@@ -88,13 +88,12 @@ public class HubManagerImplUnitTest {
 
     private final SettableNullableObservableSupplier<Tab> mTabSupplier =
             ObservableSuppliers.createNullable();
-    private final ObservableSupplierImpl<DisplayButtonData> mReferenceButtonDataSupplier =
-            new ObservableSupplierImpl<>();
-    private final ObservableSupplierImpl<FullButtonData> mActionButtonDataSupplier =
-            new ObservableSupplierImpl<>();
+    private SettableMonotonicObservableSupplier<DisplayButtonData> mReferenceButtonDataSupplier;
+    private final SettableMonotonicObservableSupplier<FullButtonData> mActionButtonDataSupplier =
+            ObservableSuppliers.createMonotonic();
     private final OneshotSupplierImpl<ProfileProvider> mProfileProviderSupplier =
             new OneshotSupplierImpl<>();
-    private final ObservableSupplier<EdgeToEdgeController> mEdgeToEdgeSupplier =
+    private final MonotonicObservableSupplier<EdgeToEdgeController> mEdgeToEdgeSupplier =
             ObservableSuppliers.alwaysNull();
     private static final int SNACKBAR_OVERRIDE_TOKEN = 1;
 
@@ -104,7 +103,7 @@ public class HubManagerImplUnitTest {
     @Before
     public void setUp() {
         TrackerFactory.setTrackerForTests(mTracker);
-        mReferenceButtonDataSupplier.set(mReferenceButtonData);
+        mReferenceButtonDataSupplier = ObservableSuppliers.createMonotonic(mReferenceButtonData);
         mProfileProviderSupplier.set(mProfileProvider);
         when(mTabSwitcherPane.getPaneId()).thenReturn(PaneId.TAB_SWITCHER);
         when(mTabSwitcherPane.getColorScheme()).thenReturn(HubColorScheme.DEFAULT);
@@ -135,7 +134,7 @@ public class HubManagerImplUnitTest {
         when(mHubLayoutController.getPreviousLayoutTypeSupplier())
                 .thenReturn(mPreviousLayoutTypeSupplier);
         when(mHubLayoutController.getIsAnimatingSupplier())
-                .thenReturn(new ObservableSupplierImpl<>());
+                .thenReturn(ObservableSuppliers.alwaysFalse());
 
         when(mTab.getId()).thenReturn(TAB_ID);
         when(mProfileProvider.getOriginalProfile()).thenReturn(mProfile);

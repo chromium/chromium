@@ -6,7 +6,7 @@
 
 #include <string>
 
-#include "base/byte_count.h"
+#include "base/byte_size.h"
 #include "base/functional/callback_helpers.h"
 #include "base/run_loop.h"
 #include "chrome/browser/favicon/favicon_utils.h"
@@ -20,6 +20,7 @@
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/thumbnails/thumbnail_image.h"
 #include "chrome/browser/ui/thumbnails/thumbnail_tab_helper.h"
+#include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/data_sharing/public/features.h"
@@ -108,35 +109,6 @@ IN_PROC_BROWSER_TEST_F(TabRendererDataTest, PinnedStateChange) {
   EXPECT_NE(data_before, data_after_pinning);
   EXPECT_NE(data_after_pinning, data_after_unpinning);
   EXPECT_EQ(data_before, data_after_unpinning);
-}
-
-IN_PROC_BROWSER_TEST_F(TabRendererDataTest, TabInterfaceWeakPtr) {
-  ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
-      browser(), GURL(url::kAboutBlankURL), WindowOpenDisposition::CURRENT_TAB,
-      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
-  TabStripModel* tab_strip_model = browser()->tab_strip_model();
-
-  content::WebContents* wc1 = tab_strip_model->GetWebContentsAt(0);
-
-  UpdateTitleForEntry(wc1, u"First Tab");
-
-  TabRendererData data1 = TabRendererData::FromTabInModel(tab_strip_model, 0);
-
-  EXPECT_EQ(data1.title, u"First Tab");
-  EXPECT_EQ(data1.tab_interface->GetContents(), wc1);
-
-  {
-    ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
-        browser(), GURL(url::kAboutBlankURL),
-        WindowOpenDisposition::NEW_FOREGROUND_TAB,
-        ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
-    content::WebContents* wc2 = tab_strip_model->GetWebContentsAt(1);
-    TabRendererData data2 = TabRendererData::FromTabInModel(tab_strip_model, 1);
-    EXPECT_EQ(data2.tab_interface->GetContents(), wc2);
-    tab_strip_model->CloseWebContentsAt(1, CLOSE_NONE);
-    EXPECT_FALSE(data2.tab_interface);
-    EXPECT_FALSE(data2.pinned);
-  }
 }
 
 IN_PROC_BROWSER_TEST_F(TabRendererDataTest, TitleChange) {
@@ -240,6 +212,31 @@ IN_PROC_BROWSER_TEST_F(TabRendererDataTest, Urls) {
   EXPECT_FALSE(data.should_render_empty_title);
 }
 
+IN_PROC_BROWSER_TEST_F(TabRendererDataTest, DomainUrlHiddenForNtpAndTabSearch) {
+  struct TestCase {
+    GURL url;
+    bool expected_domain_visible;
+  };
+
+  TestCase test_cases[] = {
+      {GURL("https://example.com"), true},
+      {GURL(chrome::kChromeUIVersionURL), true},
+      {GURL(chrome::kChromeUINewTabURL), false},
+      {GURL(chrome::kChromeUINewTabPageURL), false},
+      {GURL(chrome::kChromeUITabSearchURL), false},
+  };
+
+  for (const auto& test_case : test_cases) {
+    ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
+        browser(), test_case.url, WindowOpenDisposition::CURRENT_TAB,
+        ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
+    TabStripModel* tab_strip_model = browser()->tab_strip_model();
+    TabRendererData data = TabRendererData::FromTabInModel(tab_strip_model, 0);
+    EXPECT_EQ(data.should_display_url, test_case.expected_domain_visible)
+        << test_case.url;
+  }
+}
+
 IN_PROC_BROWSER_TEST_F(TabRendererDataTest, UncomittedNavigationUrl) {
   // The /nocontent navigation won't commit so it reverts back to the initial
   // navigation.
@@ -289,15 +286,19 @@ IN_PROC_BROWSER_TEST_F(TabRendererDataTest, CrashedStatus) {
   content::WebContents* wc = tab_strip_model->GetWebContentsAt(0);
   TabRendererData data_initial =
       TabRendererData::FromTabInModel(tab_strip_model, 0);
-  EXPECT_EQ(data_initial.crashed_status,
-            base::TERMINATION_STATUS_STILL_RUNNING);
-  EXPECT_FALSE(data_initial.IsCrashed());
+  EXPECT_FALSE(data_initial.is_crashed);
   content::CrashTab(wc);
   TabRendererData data_crashed =
       TabRendererData::FromTabInModel(tab_strip_model, 0);
-  EXPECT_EQ(data_crashed.crashed_status,
-            base::TERMINATION_STATUS_PROCESS_WAS_KILLED);
-  EXPECT_TRUE(data_crashed.IsCrashed());
+  EXPECT_TRUE(data_crashed.is_crashed);
+
+  // The tab should not be crashed after navigating to another site.
+  ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
+      browser(), GURL(url::kAboutBlankURL), WindowOpenDisposition::CURRENT_TAB,
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
+  TabRendererData data_navigation =
+      TabRendererData::FromTabInModel(tab_strip_model, 0);
+  EXPECT_FALSE(data_navigation.is_crashed);
 }
 
 IN_PROC_BROWSER_TEST_F(TabRendererDataTest, NetworkState) {
@@ -400,12 +401,12 @@ IN_PROC_BROWSER_TEST_F(TabRendererDataTest, TabLifecycleManagement) {
   EXPECT_TRUE(data_default.discarded_memory_savings.is_zero());
   EXPECT_TRUE(data_default.tab_resource_usage);
   TabResourceUsageTabHelper::From(tab_strip_model->GetTabAtIndex(0))
-      ->SetMemoryUsage(base::ByteCount(1234));
+      ->SetMemoryUsage(base::ByteSize(1234));
   TabRendererData data_usage =
       TabRendererData::FromTabInModel(tab_strip_model, 0);
   ASSERT_TRUE(data_usage.tab_resource_usage);
   EXPECT_EQ(data_usage.tab_resource_usage->memory_usage(),
-            base::ByteCount(1234));
+            base::ByteSize(1234));
 }
 
 IN_PROC_BROWSER_TEST_F(TabRendererDataTest,

@@ -19,7 +19,7 @@
 
 namespace tabs {
 
-static jlong JNI_StorageRestoreOrchestratorFactory_Build(
+static int64_t JNI_StorageRestoreOrchestratorFactory_Build(
     JNIEnv* env,
     Profile* profile,
     tabs::TabStripCollection* collection,

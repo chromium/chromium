@@ -8,6 +8,7 @@
 #include "base/scoped_observation.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
+#include "base/test/test_future.h"
 #include "build/build_config.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/sync/test/integration/apps_helper.h"
@@ -22,6 +23,8 @@
 #include "chrome/browser/web_applications/test/os_integration_test_override_impl.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/test/web_app_test_observers.h"
+#include "chrome/browser/web_applications/web_app_command_scheduler.h"
+#include "chrome/browser/web_applications/web_app_filter.h"
 #include "chrome/browser/web_applications/web_app_icon_manager.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
@@ -170,6 +173,45 @@ IN_PROC_BROWSER_TEST_P(TwoClientWebAppsSyncTest, Basic) {
   EXPECT_TRUE(AllProfilesHaveSameWebAppIds());
 }
 
+IN_PROC_BROWSER_TEST_P(TwoClientWebAppsSyncTest, MigratingAppsDoNotSync) {
+  WebAppProvider* provider1 = WebAppProvider::GetForTest(GetProfile(0));
+
+  auto start_url = GURL("http://www.chromium.org/path");
+  auto info = WebAppInstallInfo::CreateWithStartUrlForTesting(start_url);
+  info->title = u"Test name";
+  info->description = u"Test description";
+  info->scope = GURL("http://www.chromium.org/");
+  info->user_display_mode = mojom::UserDisplayMode::kStandalone;
+
+  web_app::proto::WebAppMigrationSource source;
+  source.set_manifest_id("http://migration.chromium.org/start.html");
+  info->migration_sources.push_back(std::move(source));
+
+  // Install app on first profile, mark it suggested for migration.
+  base::test::TestFuture<const webapps::AppId&, webapps::InstallResultCode>
+      install_future;
+  WebAppInstallParams params;
+  params.add_to_applications_menu = false;
+  params.add_to_desktop = false;
+  params.add_to_quick_launch_bar = false;
+  params.install_state = proto::InstallState::SUGGESTED_FROM_MIGRATION;
+  provider1->scheduler().InstallFromInfoWithParams(
+      std::move(info), /*overwrite_existing_manifest_fields=*/false,
+      webapps::WebappInstallSource::OMNIBOX_INSTALL_ICON,
+      install_future.GetCallback(), params);
+  ASSERT_TRUE(install_future.Wait());
+  webapps::AppId app_id = install_future.Get<webapps::AppId>();
+  EXPECT_EQ(proto::SUGGESTED_FROM_MIGRATION,
+            provider1->registrar_unsafe().GetInstallState(app_id));
+
+  // Wait for any syncing to complete, verify app is not synced.
+  ASSERT_TRUE(apps_helper::AwaitWebAppQuiescence(GetAllProfiles()));
+  EXPECT_FALSE(AllProfilesHaveSameWebAppIds());
+  EXPECT_FALSE(GetRegistrar(GetProfile(/*index=*/1))
+                   .GetInstallState(app_id)
+                   .has_value());
+}
+
 IN_PROC_BROWSER_TEST_P(TwoClientWebAppsSyncTest, Minimal) {
   WebAppTestInstallObserver install_observer(GetProfile(1));
   install_observer.BeginListening();
@@ -215,8 +257,10 @@ IN_PROC_BROWSER_TEST_P(TwoClientWebAppsSyncTest, IsLocallyInstalled) {
 
   webapps::AppId app_id = web_app::test::InstallDummyWebApp(
       GetProfile(0), "Test name", GURL("http://www.chromium.org/"));
-  EXPECT_EQ(GetRegistrar(GetProfile(0)).GetInstallState(app_id),
-            web_app::proto::INSTALLED_WITH_OS_INTEGRATION);
+  EXPECT_TRUE(
+      GetRegistrar(GetProfile(0))
+          .AppMatches(app_id,
+                      WebAppFilter::InstalledInOperatingSystemForTesting()));
 
   EXPECT_EQ(install_observer.Wait(), app_id);
   web_app::proto::InstallState expected_state;
@@ -305,8 +349,6 @@ IN_PROC_BROWSER_TEST_P(TwoClientWebAppsSyncTest,
 // Tests that we don't crash when syncing an icon info with no size.
 // Context: https://crbug.com/1058283
 IN_PROC_BROWSER_TEST_P(TwoClientWebAppsSyncTest, SyncFaviconOnly) {
-  ASSERT_TRUE(embedded_test_server()->Start());
-
   Profile* sourceProfile = GetProfile(0);
   Profile* destProfile = GetProfile(1);
 
@@ -357,8 +399,6 @@ IN_PROC_BROWSER_TEST_P(TwoClientWebAppsSyncTest, SyncFaviconOnly) {
 // Tests that we don't use the manifest start_url if it differs from what came
 // through sync.
 IN_PROC_BROWSER_TEST_P(TwoClientWebAppsSyncTest, SyncUsingStartUrlFallback) {
-  ASSERT_TRUE(embedded_test_server()->Start());
-
   Profile* source_profile = GetProfile(0);
   Profile* dest_profile = GetProfile(1);
 
@@ -385,8 +425,6 @@ IN_PROC_BROWSER_TEST_P(TwoClientWebAppsSyncTest, SyncUsingStartUrlFallback) {
 // from e.g. login redirects or loading pages.
 // Context: https://crbug.com/1078286
 IN_PROC_BROWSER_TEST_P(TwoClientWebAppsSyncTest, SyncUsingNameFallback) {
-  ASSERT_TRUE(embedded_test_server()->Start());
-
   Profile* source_profile = GetProfile(0);
   Profile* dest_profile = GetProfile(1);
 
@@ -411,8 +449,6 @@ IN_PROC_BROWSER_TEST_P(TwoClientWebAppsSyncTest, SyncUsingNameFallback) {
 // if there's a name provided by the manifest during sync, except for the
 // trusted icons infrastructure.
 IN_PROC_BROWSER_TEST_P(TwoClientWebAppsSyncTest, SyncWithoutUsingNameFallback) {
-  ASSERT_TRUE(embedded_test_server()->Start());
-
   Profile* source_profile = GetProfile(0);
   Profile* dest_profile = GetProfile(1);
 
@@ -445,8 +481,6 @@ IN_PROC_BROWSER_TEST_P(TwoClientWebAppsSyncTest, SyncWithoutUsingNameFallback) {
 }
 
 IN_PROC_BROWSER_TEST_P(TwoClientWebAppsSyncTest, SyncUsingIconUrlFallback) {
-  ASSERT_TRUE(embedded_test_server()->Start());
-
   Profile* source_profile = GetProfile(0);
   Profile* dest_profile = GetProfile(1);
 

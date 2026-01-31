@@ -102,15 +102,17 @@ struct TabInfo {
   string title;
   // The URL of the tab.
   url.mojom.Url url;
-  // Whether the tab is suitable for display in the recent tab chip.
-  bool show_in_recent_tab_chip;
+  // Whether the tab is suitable for display in the current tab chip.
+  bool show_in_current_tab_chip;
+  // Whether the tab is suitable for display in the previous tab chip.
+  bool show_in_previous_tab_chip;
   // The time the tab was last active.
   mojo_base.mojom.TimeTicks last_active;
 };
 
 // LINT.IfChange(ToolMode)
 // See also:
-// https://crsrc.org/c/third_party/omnibox_proto/aim_tools_and_models.proto
+// https://crsrc.org/c/third_party/omnibox_proto/aim_tools.proto
 enum ToolMode {
   kDefault = 0,
   kDeepSearch = 1,
@@ -119,10 +121,8 @@ enum ToolMode {
 // LINT.ThenChange(//ui/webui/resources/cr_components/composebox/contextual_entrypoint_and_carousel.ts:ComposeboxMode)
 
 // Represents a file attachment who's upload was started browser-side (currently
-// an image or PDF only). The stub name is intended to indicate that usage of
-// this struct is being iterated on and usage must currently be flagged with
-// `MojomWorkInProgress`.
-struct FileAttachmentStub {
+// an image or PDF only).
+struct FileAttachment {
   // A client-side unique identifier referring to a specific file upload. The
   // UUID is assigned on the browser-side.
   mojo_base.mojom.UnguessableToken uuid;
@@ -136,10 +136,7 @@ struct FileAttachmentStub {
 };
 
 // Represents a tab attachment chosen browser-side and communicated to WebUI.
-// The stub name is intended to indicate that usage of
-// this struct is being iterated on and usage must currently be flagged with
-// `MojomWorkInProgress`.
-struct TabAttachmentStub {
+struct TabAttachment {
   // The unique identifier of the tab.
   int32 tab_id;
   // The title of the tab.
@@ -152,17 +149,17 @@ struct TabAttachmentStub {
 // The stub name is intended to indicate that usage of
 // this struct is being iterated on and usage must currently be flagged with
 // `MojomWorkInProgress`.
-union SearchContextAttachmentStub {
-  FileAttachmentStub file_attachment;
-  TabAttachmentStub tab_attachment;
+union SearchContextAttachment {
+  FileAttachment file_attachment;
+  TabAttachment tab_attachment;
 };
 
 // Represents the context of a search query.
-struct SearchContextStub {
+struct SearchContext {
   // The input text of the search query.
   string input;
   // A list of attachments to the search context.
-  array<SearchContextAttachmentStub> attachments;
+  array<SearchContextAttachment> attachments;
   // The mode of the search query.
   ToolMode tool_mode;
 };
@@ -356,6 +353,14 @@ interface PageHandler {
               bool ctrl_key,
               bool meta_key,
               bool shift_key);
+
+  // Opens the Lens search UI.
+  OpenLensSearch();
+
+  // Called when a user enables a tool.
+  SetActiveToolMode(composebox_query.mojom.ToolMode tool);
+  // Called when a user enables a model.
+  SetActiveModelMode(composebox_query.mojom.ModelMode model);
 };
 
 // WebUI-side handler for requests from the browser.
@@ -392,6 +397,9 @@ interface Page {
   // Notifies the page that the tab strip has changed.
   OnTabStripChanged();
 
+  // Notifies the page that the input state has changed.
+  OnInputStateChanged(composebox_query.mojom.InputState input_state);
+
   // Adds a contextual input to the UI.
   AddFileContext(mojo_base.mojom.UnguessableToken token,
                  SelectedFileInfo file_info);
@@ -403,4 +411,13 @@ interface Page {
 
   // Called when Lens search eligibility changes.
   UpdateLensSearchEligibility(bool eligible);
+
+  // Called when content sharing policy changes.
+  UpdateContentSharingPolicy(bool enabled);
+
+  // Notifies the UI to show or hide AI features.
+  UpdateAimEligibility(bool eligible);
+
+  // Called when pref 'omnibox::kShowAiModeOmniboxButton' changes.
+  OnShowAiModePrefChanged(bool canShow);
 };

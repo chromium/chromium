@@ -59,28 +59,28 @@ class CompositorView : public content::CompositorClient,
   void SurfaceDestroyed(JNIEnv* env);
   std::optional<int> SurfaceChanged(
       JNIEnv* env,
-      jint format,
-      jint width,
-      jint height,
+      int32_t format,
+      int32_t width,
+      int32_t height,
       bool can_be_used_with_surface_control,
       const base::android::JavaRef<jobject>& surface,
       const base::android::JavaRef<jobject>& browser_input_token);
   void OnPhysicalBackingSizeChanged(
       JNIEnv* env,
       const base::android::JavaRef<jobject>& jweb_contents,
-      jint width,
-      jint height);
+      int32_t width,
+      int32_t height);
   void OnControlsResizeViewChanged(
       JNIEnv* env,
       const base::android::JavaRef<jobject>& jweb_contents,
-      jboolean controls_resize_view);
+      bool controls_resize_view);
   void NotifyVirtualKeyboardOverlayRect(
       JNIEnv* env,
       const base::android::JavaRef<jobject>& jweb_contents,
-      jint x,
-      jint y,
-      jint width,
-      jint height);
+      int32_t x,
+      int32_t y,
+      int32_t width,
+      int32_t height);
 
   void SetOverlayVideoMode(JNIEnv* env,
                            bool enabled);
@@ -99,7 +99,7 @@ class CompositorView : public content::CompositorClient,
   void EvictCachedBackBuffer(JNIEnv* env);
   void OnTabChanged(JNIEnv* env);
   void PreserveChildSurfaceControls(JNIEnv* env);
-  void SetDidSwapBuffersCallbackEnabled(JNIEnv* env, jboolean enable);
+  void SetDidSwapBuffersCallbackEnabled(JNIEnv* env, bool enable);
 
   // CompositorClient implementation:
   void RecreateSurface() override;

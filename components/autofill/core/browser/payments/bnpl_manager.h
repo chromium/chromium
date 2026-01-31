@@ -108,16 +108,15 @@ class BnplManager {
     OngoingFlowState& operator=(const OngoingFlowState&) = delete;
     ~OngoingFlowState();
 
+    // True if the ToS UI was shown, and false otherwise.
+    // Used to determine which UI to close during the BNPL flow.
+    bool tos_ui_was_shown = false;
+
     // Billing customer number for the user's Google Payments account.
     int64_t billing_customer_number;
 
     // The user's current app locale.
     std::string app_locale;
-
-    // BNPL Issuer Data - Populated when user selects a BNPL issuer
-    // Instrument ID used by the server to identify a specific BNPL issuer. This
-    // is selected by the user.
-    std::string instrument_id;
 
     // Risk data contains the fingerprint data for the user and the device.
     std::string risk_data;
@@ -311,6 +310,11 @@ class BnplManager {
   // Set to true after the first time a BNPL suggestion being unavailable is
   // logged. Ensures that logging occurs only once per page load.
   bool has_logged_bnpl_suggestion_unavailable_reason_ = false;
+
+  // Set to true after the first time it is logged whether an extracted amount
+  // is within an issuer's range. Ensures that logging occurs only once per
+  // page load.
+  bool has_logged_ai_amount_extracted_in_issuer_range_ = false;
 
   // Callback to collect the current shown suggestion list and checkout
   // amount, and insert BNPL suggestion if the amount is eligible.

@@ -6,14 +6,23 @@
 #define CHROME_BROWSER_UI_ANDROID_AUTOFILL_AUTOFILL_AI_SAVE_UPDATE_ENTITY_FLOW_MANAGER_H_
 
 #include <memory>
+#include <optional>
+#include <string>
 
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/autofill/autofill_message_controller.h"
 #include "chrome/browser/ui/autofill/autofill_message_model.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_instance.h"
+#include "components/autofill/core/browser/foundations/autofill_client.h"
+
+namespace content {
+class WebContents;
+}  // namespace content
 
 namespace autofill {
+
+class AutofillAiSaveUpdateEntityPromptController;
 
 // Class to manage save/update Autofill AI entities on Android. The flow
 // consists of 3 steps:
@@ -27,7 +36,9 @@ class AutofillAiSaveUpdateEntityFlowManager {
   static constexpr int kDescriptionMaxLines = 2;
 
   explicit AutofillAiSaveUpdateEntityFlowManager(
-      AutofillMessageController* autofill_message_controller);
+      content::WebContents* web_contents,
+      AutofillMessageController* autofill_message_controller,
+      std::string app_locale);
   AutofillAiSaveUpdateEntityFlowManager(
       const AutofillAiSaveUpdateEntityFlowManager&) = delete;
   AutofillAiSaveUpdateEntityFlowManager& operator=(
@@ -36,17 +47,34 @@ class AutofillAiSaveUpdateEntityFlowManager {
 
   // Triggers a confirmation flow for saving or updating an Autofill AI entity.
   // If another flow is in progress, the incoming offer will be auto-declined.
-  void OfferSave(const EntityInstance& entity);
+  void OfferSave(
+      EntityInstance entity,
+      std::optional<EntityInstance> old_entity,
+      AutofillClient::EntityImportPromptResultCallback prompt_result_callback);
 
  private:
-  void OnMessagePrimaryAction();
+  void OnMessagePrimaryAction(EntityInstance entity,
+                              std::optional<EntityInstance> old_entity);
 
   void OnMessageDismissed(messages::DismissReason dismiss_reason);
 
   std::unique_ptr<AutofillMessageModel> CreateMessageModel(
-      const EntityInstance& entity);
+      EntityInstance entity,
+      std::optional<EntityInstance> old_entity);
 
-  base::raw_ref<AutofillMessageController> autofill_message_controller_;
+  void RunPromptClosedCallback(AutofillClient::AutofillAiBubbleResult result);
+
+  raw_ptr<content::WebContents> web_contents_;
+  raw_ref<AutofillMessageController> autofill_message_controller_;
+  std::unique_ptr<AutofillAiSaveUpdateEntityPromptController>
+      save_update_entity_prompt_controller_;
+
+  // Callback to notify the data provider about the user decision for the save
+  // or update prompt.
+  AutofillClient::EntityImportPromptResultCallback prompt_result_callback_;
+
+  const std::string app_locale_;
+
   base::WeakPtrFactory<AutofillAiSaveUpdateEntityFlowManager> weak_ptr_factory_{
       this};
 };

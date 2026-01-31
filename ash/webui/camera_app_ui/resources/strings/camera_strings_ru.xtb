@@ -48,6 +48,7 @@
 <translation id="2761536921376153655">Тип сканирования</translation>
 <translation id="28682968802727151">Зеркальный режим</translation>
 <translation id="2879583609344924966">Подключено устройство <ph name="CAMERA" />.</translation>
+<translation id="3063987824612038785">Все файлы с камеры будут сохраняться на Google Диске</translation>
 <translation id="3067436040345934772">Панорамировать вправо</translation>
 <translation id="3081586908890909590">Переключиться на видеосъемку</translation>
 <translation id="3091480460059548935">Распознавание текста во время предпросмотра</translation>
@@ -67,6 +68,7 @@
 <translation id="3642192109456033823">Обработка видео…</translation>
 <translation id="3789724198583203151">Повернуть на 90 градусов против часовой стрелки</translation>
 <translation id="3810838688059735925">Видео</translation>
+<translation id="386366972082231038">Все файлы с камеры будут сохраняться в OneDrive</translation>
 <translation id="4060608699153044055">В хранилище недостаточно свободного места. Удалите ненужные файлы, чтобы начать запись.</translation>
 <translation id="4061162772429051350"><ph name="MAGAPIXELS_AMOUNT" /> Mпкс</translation>
 <translation id="4118525110028899586">Приостановить запись</translation>
@@ -100,6 +102,7 @@
 <translation id="5634947914995388399">Раскрыть диалоговое окно и остановить сканирование</translation>
 <translation id="5662366948659129155">Сканирование страницы <ph name="COUNT" /></translation>
 <translation id="5671277269877808209">Квадрат</translation>
+<translation id="5725797473946373607">Больше не показывать это диалоговое окно</translation>
 <translation id="574392208103952083">Средний</translation>
 <translation id="5746169159649715125">Сохранить как PDF</translation>
 <translation id="5753488212459587150">Включить режим эксперта</translation>
@@ -156,6 +159,7 @@
 <translation id="7983668134180549431">Обнаружен текст.</translation>
 <translation id="8079255378695216066">Не удалось начать запись</translation>
 <translation id="8120146556401698679">Панорамирование, изменение ракурса, масштабирование</translation>
+<translation id="8127459436205030819">Ваши файлы могут быть видны администратору.</translation>
 <translation id="8131740175452115882">Подтвердить</translation>
 <translation id="8145038249676204903">Переключиться на фотосъемку</translation>
 <translation id="8167081290930651932">Сохранить как фото</translation>
@@ -165,6 +169,7 @@
 <translation id="8609951387004618906">Открыть страницу <ph name="URL" /></translation>
 <translation id="8629662593426079630">360p</translation>
 <translation id="8711011893539266636">Микрофон отключен.</translation>
+<translation id="8712637175834984815">OK</translation>
 <translation id="8730621377337864115">Готово</translation>
 <translation id="8732462232047530626">Просмотр метаданных</translation>
 <translation id="874854738381978209">Обнаружена сеть Wi-Fi.</translation>

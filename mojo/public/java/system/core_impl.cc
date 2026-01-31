@@ -24,7 +24,7 @@ namespace android {
 using base::android::JavaRef;
 using base::android::ScopedJavaLocalRef;
 
-static jlong JNI_CoreImpl_GetTimeTicksNow(JNIEnv* env) {
+static int64_t JNI_CoreImpl_GetTimeTicksNow(JNIEnv* env) {
   return MojoGetTimeTicksNow();
 }
 
@@ -73,7 +73,7 @@ static ScopedJavaLocalRef<jobject> JNI_CoreImpl_CreateDataPipe(
 static ScopedJavaLocalRef<jobject> JNI_CoreImpl_CreateSharedBuffer(
     JNIEnv* env,
     const JavaRef<jobject>& options_buffer,
-    jlong num_bytes) {
+    int64_t num_bytes) {
   const MojoCreateSharedBufferOptions* options = 0;
   if (options_buffer) {
     const void* buffer_start =
@@ -91,14 +91,13 @@ static ScopedJavaLocalRef<jobject> JNI_CoreImpl_CreateSharedBuffer(
   return Java_CoreImpl_newResultAndLong(env, result, handle);
 }
 
-static jint JNI_CoreImpl_Close(JNIEnv* env,
-                               jlong mojo_handle) {
+static int32_t JNI_CoreImpl_Close(JNIEnv* env, int64_t mojo_handle) {
   return MojoClose(mojo_handle);
 }
 
-static jint JNI_CoreImpl_QueryHandleSignalsState(
+static int32_t JNI_CoreImpl_QueryHandleSignalsState(
     JNIEnv* env,
-    jlong mojo_handle,
+    int64_t mojo_handle,
     const JavaRef<jobject>& buffer) {
   MojoHandleSignalsState* signals_state = static_cast<MojoHandleSignalsState*>(
       env->GetDirectBufferAddress(buffer.obj()));
@@ -108,12 +107,12 @@ static jint JNI_CoreImpl_QueryHandleSignalsState(
   return MojoQueryHandleSignalsState(mojo_handle, signals_state);
 }
 
-static jint JNI_CoreImpl_WriteMessage(JNIEnv* env,
-                                      jlong mojo_handle,
-                                      const JavaRef<jobject>& bytes,
-                                      jint num_bytes,
-                                      const JavaRef<jobject>& handles_buffer,
-                                      jint flags) {
+static int32_t JNI_CoreImpl_WriteMessage(JNIEnv* env,
+                                         int64_t mojo_handle,
+                                         const JavaRef<jobject>& bytes,
+                                         int32_t num_bytes,
+                                         const JavaRef<jobject>& handles_buffer,
+                                         int32_t flags) {
   const void* buffer_start = 0;
   uint32_t buffer_size = 0;
   if (bytes) {
@@ -122,13 +121,13 @@ static jint JNI_CoreImpl_WriteMessage(JNIEnv* env,
     DCHECK(env->GetDirectBufferCapacity(bytes.obj()) >= num_bytes);
     buffer_size = num_bytes;
   }
-  const jlong* java_handles = nullptr;
+  const int64_t* java_handles = nullptr;
   uint32_t num_handles = 0;
   if (handles_buffer) {
-    java_handles =
-        static_cast<jlong*>(env->GetDirectBufferAddress(handles_buffer.obj()));
+    java_handles = static_cast<int64_t*>(
+        env->GetDirectBufferAddress(handles_buffer.obj()));
     num_handles =
-        env->GetDirectBufferCapacity(handles_buffer.obj()) / sizeof(jlong);
+        env->GetDirectBufferCapacity(handles_buffer.obj()) / sizeof(int64_t);
   }
 
   // Truncate handle values if necessary.
@@ -143,13 +142,14 @@ static jint JNI_CoreImpl_WriteMessage(JNIEnv* env,
 }
 
 static ScopedJavaLocalRef<jobject> JNI_CoreImpl_ReadMessage(JNIEnv* env,
-                                                            jlong mojo_handle,
-                                                            jint flags) {
+                                                            int64_t mojo_handle,
+                                                            int32_t flags) {
   ScopedMessageHandle message;
   MojoResult result =
       ReadMessageNew(MessagePipeHandle(mojo_handle), &message, flags);
-  if (result != MOJO_RESULT_OK)
+  if (result != MOJO_RESULT_OK) {
     return Java_CoreImpl_newReadMessageResult(env, result, nullptr, nullptr);
+  }
   DCHECK(message.is_valid());
 
   result = MojoSerializeMessage(message->value(), nullptr);
@@ -170,8 +170,9 @@ static ScopedJavaLocalRef<jobject> JNI_CoreImpl_ReadMessage(JNIEnv* env,
                                 handles.data(), &num_handles);
   }
 
-  if (result != MOJO_RESULT_OK)
+  if (result != MOJO_RESULT_OK) {
     return Java_CoreImpl_newReadMessageResult(env, result, nullptr, nullptr);
+  }
 
   // Extend handles to 64-bit values if necessary.
   std::vector<int64_t> java_handles(handles.size());
@@ -185,10 +186,10 @@ static ScopedJavaLocalRef<jobject> JNI_CoreImpl_ReadMessage(JNIEnv* env,
 
 static ScopedJavaLocalRef<jobject> JNI_CoreImpl_ReadData(
     JNIEnv* env,
-    jlong mojo_handle,
+    int64_t mojo_handle,
     const JavaRef<jobject>& elements,
-    jint elements_capacity,
-    jint flags) {
+    int32_t elements_capacity,
+    int32_t flags) {
   void* buffer_start = 0;
   uint32_t buffer_size = elements_capacity;
   if (elements) {
@@ -205,10 +206,11 @@ static ScopedJavaLocalRef<jobject> JNI_CoreImpl_ReadData(
       env, result, (result == MOJO_RESULT_OK) ? buffer_size : 0);
 }
 
-static ScopedJavaLocalRef<jobject> JNI_CoreImpl_BeginReadData(JNIEnv* env,
-                                                              jlong mojo_handle,
-                                                              jint num_bytes,
-                                                              jint flags) {
+static ScopedJavaLocalRef<jobject> JNI_CoreImpl_BeginReadData(
+    JNIEnv* env,
+    int64_t mojo_handle,
+    int32_t num_bytes,
+    int32_t flags) {
   void const* buffer = 0;
   uint32_t buffer_size = num_bytes;
 
@@ -227,18 +229,18 @@ static ScopedJavaLocalRef<jobject> JNI_CoreImpl_BeginReadData(JNIEnv* env,
   }
 }
 
-static jint JNI_CoreImpl_EndReadData(JNIEnv* env,
-                                     jlong mojo_handle,
-                                     jint num_bytes_read) {
+static int32_t JNI_CoreImpl_EndReadData(JNIEnv* env,
+                                        int64_t mojo_handle,
+                                        int32_t num_bytes_read) {
   return MojoEndReadData(mojo_handle, num_bytes_read, nullptr);
 }
 
 static ScopedJavaLocalRef<jobject> JNI_CoreImpl_WriteData(
     JNIEnv* env,
-    jlong mojo_handle,
+    int64_t mojo_handle,
     const JavaRef<jobject>& elements,
-    jint limit,
-    jint flags) {
+    int32_t limit,
+    int32_t flags) {
   void* buffer_start = env->GetDirectBufferAddress(elements.obj());
   DCHECK(buffer_start);
   DCHECK(limit <= env->GetDirectBufferCapacity(elements.obj()));
@@ -255,9 +257,9 @@ static ScopedJavaLocalRef<jobject> JNI_CoreImpl_WriteData(
 
 static ScopedJavaLocalRef<jobject> JNI_CoreImpl_BeginWriteData(
     JNIEnv* env,
-    jlong mojo_handle,
-    jint num_bytes,
-    jint flags) {
+    int64_t mojo_handle,
+    int32_t num_bytes,
+    int32_t flags) {
   void* buffer = 0;
   uint32_t buffer_size = num_bytes;
   MojoBeginWriteDataOptions options;
@@ -275,15 +277,15 @@ static ScopedJavaLocalRef<jobject> JNI_CoreImpl_BeginWriteData(
   }
 }
 
-static jint JNI_CoreImpl_EndWriteData(JNIEnv* env,
-                                      jlong mojo_handle,
-                                      jint num_bytes_written) {
+static int32_t JNI_CoreImpl_EndWriteData(JNIEnv* env,
+                                         int64_t mojo_handle,
+                                         int32_t num_bytes_written) {
   return MojoEndWriteData(mojo_handle, num_bytes_written, nullptr);
 }
 
 static ScopedJavaLocalRef<jobject> JNI_CoreImpl_Duplicate(
     JNIEnv* env,
-    jlong mojo_handle,
+    int64_t mojo_handle,
     const JavaRef<jobject>& options_buffer) {
   const MojoDuplicateBufferHandleOptions* options = 0;
   if (options_buffer) {
@@ -303,10 +305,10 @@ static ScopedJavaLocalRef<jobject> JNI_CoreImpl_Duplicate(
 }
 
 static ScopedJavaLocalRef<jobject> JNI_CoreImpl_Map(JNIEnv* env,
-                                                    jlong mojo_handle,
-                                                    jlong offset,
-                                                    jlong num_bytes,
-                                                    jint flags) {
+                                                    int64_t mojo_handle,
+                                                    int64_t offset,
+                                                    int64_t num_bytes,
+                                                    int32_t flags) {
   void* buffer = 0;
   MojoMapBufferOptions options;
   options.struct_size = sizeof(options);
@@ -329,18 +331,20 @@ static int JNI_CoreImpl_Unmap(JNIEnv* env, const JavaRef<jobject>& buffer) {
   return MojoUnmapBuffer(buffer_start);
 }
 
-static jint JNI_CoreImpl_GetNativeBufferOffset(JNIEnv* env,
-                                               const JavaRef<jobject>& buffer,
-                                               jint alignment) {
-  jint offset =
+static int32_t JNI_CoreImpl_GetNativeBufferOffset(
+    JNIEnv* env,
+    const JavaRef<jobject>& buffer,
+    int32_t alignment) {
+  int32_t offset =
       reinterpret_cast<uintptr_t>(env->GetDirectBufferAddress(buffer.obj())) %
       alignment;
-  if (offset == 0)
+  if (offset == 0) {
     return 0;
+  }
   return alignment - offset;
 }
 
-static jlong JNI_CoreImpl_CreatePlatformHandle(JNIEnv* env, jint fd) {
+static int64_t JNI_CoreImpl_CreatePlatformHandle(JNIEnv* env, int32_t fd) {
   mojo::ScopedHandle handle =
       mojo::WrapPlatformHandle(mojo::PlatformHandle(base::ScopedFD(fd)));
   return handle.release().value();

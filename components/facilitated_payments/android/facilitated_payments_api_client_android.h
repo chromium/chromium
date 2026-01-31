@@ -49,11 +49,11 @@ class FacilitatedPaymentsApiClientAndroid
       const SecurePayload& secure_payload,
       base::OnceCallback<void(PurchaseActionResult)> callback) override;
 
-  void OnIsAvailable(JNIEnv* env, jboolean is_available);
+  void OnIsAvailable(JNIEnv* env, bool is_available);
   void OnGetClientToken(
       JNIEnv* env,
       const base::android::JavaRef<jbyteArray>& jclient_token_byte_array);
-  void OnPurchaseActionResultEnum(JNIEnv* env, jint purchase_action_result);
+  void OnPurchaseActionResultEnum(JNIEnv* env, int32_t purchase_action_result);
 
  private:
   bool IsAnyCallbackPending() const;

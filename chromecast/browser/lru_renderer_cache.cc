@@ -56,8 +56,10 @@ std::unique_ptr<RendererPrelauncher> LRURendererCache::TakeRendererPrelauncher(
 
 void LRURendererCache::EvictCache() {
   // Evict least-recently-used renderers so that the total number of renderers
-  // doesn't exceed |max_renderers_|, or until the cache is empty.
-  while (!cache_.empty() && in_use_count_ + cache_.size() > max_renderers_) {
+  // doesn't exceed |GetCurrentMaxRenderers()|, or until the cache is empty.
+  const size_t current_max_renderers = GetCurrentMaxRenderers();
+  while (!cache_.empty() &&
+         in_use_count_ + cache_.size() > current_max_renderers) {
     LOG(INFO) << "Evicting pre-launched SiteInstance: " << cache_.back()->url();
     cache_.pop_back();
   }
@@ -66,7 +68,7 @@ void LRURendererCache::EvictCache() {
 void LRURendererCache::ReleaseRendererPrelauncher(const GURL& page_url) {
   DCHECK(in_use_count_ > 0);
   in_use_count_--;
-  if (in_use_count_ >= max_renderers_) {
+  if (in_use_count_ >= GetCurrentMaxRenderers()) {
     DCHECK(cache_.empty());
     // We don't have room to maintain a cache, so don't prelaunch this site even
     // though it's the most recently used.
@@ -80,14 +82,14 @@ void LRURendererCache::ReleaseRendererPrelauncher(const GURL& page_url) {
   // renderer process for the next site. We post this as a task to ensure that
   // the prior site (which is in the process of being released) has completed
   // destruction; otherwise, its renderer process will overlap with the next
-  // pre-launched process, temporarily exceeding |max_renderers_|.
+  // pre-launched process, temporarily exceeding |GetCurrentMaxRenderers()|.
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(&LRURendererCache::StartNextPrelauncher,
                                 weak_factory_.GetWeakPtr(), page_url));
 }
 
 void LRURendererCache::StartNextPrelauncher(const GURL& page_url) {
-  if (in_use_count_ >= max_renderers_) {
+  if (in_use_count_ >= GetCurrentMaxRenderers()) {
     DCHECK(cache_.empty());
     // The maximum number of renderers is already in use, so the cache must
     // remain empty.
@@ -107,10 +109,13 @@ void LRURendererCache::StartNextPrelauncher(const GURL& page_url) {
 
 void LRURendererCache::OnMemoryPressure(
     base::MemoryPressureLevel memory_pressure_level) {
-  if (memory_pressure_level == base::MEMORY_PRESSURE_LEVEL_CRITICAL) {
-    DLOG(INFO) << "Dropping prelauncher cache due to memory pressure.";
-    cache_.clear();
-  }
+  // Memory pressure has changed, so the renderer limit may have been updated.
+  // Evict renderers to match the new limit.
+  EvictCache();
+}
+
+size_t LRURendererCache::GetCurrentMaxRenderers() const {
+  return max_renderers_ * GetMemoryLimitRatio();
 }
 
 void LRURendererCache::SetFactoryForTesting(

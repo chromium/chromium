@@ -43,14 +43,14 @@ constexpr int kInterItemPadding = 4;
 }  // namespace
 
 SharingHubBubbleViewImpl::SharingHubBubbleViewImpl(
-    views::View* anchor_view,
+    views::BubbleAnchor anchor,
     share::ShareAttempt attempt,
     SharingHubBubbleController* controller)
-    : LocationBarBubbleDelegateView(anchor_view,
+    : LocationBarBubbleDelegateView(anchor,
                                     attempt.web_contents.get(),
                                     /*autosize=*/true),
       attempt_(attempt) {
-  DCHECK(anchor_view);
+  DCHECK(!std::holds_alternative<std::nullptr_t>(anchor));
   DCHECK(controller);
 
   SetBackgroundColor(ui::kColorMenuBackground);

@@ -20,7 +20,6 @@
 #include "components/media_router/common/media_route.h"
 #include "components/vector_icons/vector_icons.h"
 #include "content/public/test/browser_task_environment.h"
-#include "media/base/media_switches.h"
 #include "net/url_request/referrer_policy.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -91,9 +90,6 @@ class MockSessionController : public CastMediaSessionController {
 class CastMediaNotificationItemTest : public testing::Test {
  public:
   void SetUp() override {
-#if !BUILDFLAG(IS_CHROMEOS)
-    feature_list_.InitAndEnableFeature(media::kGlobalMediaControlsUpdatedUI);
-#endif
     auto session_controller =
         std::make_unique<testing::NiceMock<MockSessionController>>(
             mojo::Remote<media_router::mojom::MediaController>());

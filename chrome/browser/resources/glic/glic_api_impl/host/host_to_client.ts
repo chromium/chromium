@@ -7,10 +7,10 @@
 import {loadTimeData} from '//resources/js/load_time_data.js';
 
 import type {PageMetadata as PageMetadataMojo} from '../../ai_page_content_metadata.mojom-webui.js';
-import type {ActorTaskState as ActorTaskStateMojo, AdditionalContext as AdditionalContextMojo, FocusedTabData as FocusedTabDataMojo, OpenPanelInfo as OpenPanelInfoMojo, PanelOpeningData as PanelOpeningDataMojo, PanelState as PanelStateMojo, TabData as TabDataMojo, ViewChangeRequest as ViewChangeRequestMojo, WebClientInterface, ZeroStateSuggestionsOptions as ZeroStateSuggestionsOptionsMojo, ZeroStateSuggestionsV2 as ZeroStateSuggestionsV2Mojo} from '../../glic.mojom-webui.js';
+import type {ActorTaskState as ActorTaskStateMojo, AdditionalContext as AdditionalContextMojo, FocusedTabData as FocusedTabDataMojo, OpenPanelInfo as OpenPanelInfoMojo, PanelOpeningData as PanelOpeningDataMojo, PanelState as PanelStateMojo, Skill as SkillMojo, SkillPreview as SkillPreviewMojo, TabData as TabDataMojo, ViewChangeRequest as ViewChangeRequestMojo, WebClientInterface, ZeroStateSuggestionsOptions as ZeroStateSuggestionsOptionsMojo, ZeroStateSuggestionsV2 as ZeroStateSuggestionsV2Mojo} from '../../glic.mojom-webui.js';
 import type * as api from '../../glic_api/glic_api.js';
-import type {ViewChangeRequest} from '../../glic_api/glic_api.js';
 import {ClientView} from '../../glic_api/glic_api.js';
+import type {SkillSource, ViewChangeRequest} from '../../glic_api/glic_api.js';
 
 import type {NavigationConfirmationRequest as NavigationConfirmationRequestMojo, NavigationConfirmationResponse as NavigationConfirmationResponseMojo, SelectAutofillSuggestionsDialogRequest as SelectAutofillSuggestionsDialogRequestMojo, SelectAutofillSuggestionsDialogResponse as SelectAutofillSuggestionsDialogResponseMojo, SelectCredentialDialogRequest as SelectCredentialDialogRequestMojo, SelectCredentialDialogResponse as SelectCredentialDialogResponseMojo, UserConfirmationDialogRequest as UserConfirmationDialogRequestMojo, UserConfirmationDialogResponse as UserConfirmationDialogResponseMojo} from './../../actor_webui.mojom-webui.js';
 import {ResponseExtras} from './../post_message_transport.js';
@@ -184,6 +184,47 @@ export class WebClientImpl implements WebClientInterface {
         `${tabData.tabId}`);
   }
 
+  notifySkillPreviewsChanged(skillPreviews: SkillPreviewMojo[]): void {
+    this.sender.sendLatestWhenActive(
+        'glicWebClientNotifySkillPreviewsChanged', {
+          skillPreviews: skillPreviews.map(
+              s => ({...s, source: s.source as number as SkillSource})),
+        });
+  }
+
+  notifySkillPreviewChanged(skillPreview: SkillPreviewMojo): void {
+    this.sender.sendLatestWhenActive(
+        'glicWebClientNotifySkillPreviewChanged', {
+          skillPreview: {
+            ...skillPreview,
+            source: skillPreview.source as number as SkillSource,
+          },
+        },
+        [],
+        // Cache only one entry per skill ID.
+        `skill-${skillPreview.id}`);
+  }
+
+  notifySkillDeleted(skillId: string): void {
+    this.sender.requestNoResponse(
+        'glicWebClientNotifySkillDeleted', {
+          skillId,
+        });
+  }
+
+  notifySkillToInvokeChanged(skill: SkillMojo): void {
+    this.sender.sendLatestWhenActive(
+        'glicWebClientNotifySkillToInvokeChanged', {
+          skill: {
+            ...skill,
+            preview: {
+              ...skill.preview,
+              source: skill.preview.source as number as SkillSource,
+            },
+          },
+        });
+  }
+
   notifyZeroStateSuggestionsChanged(
       suggestions: ZeroStateSuggestionsV2Mojo,
       options: ZeroStateSuggestionsOptionsMojo): void {
@@ -197,15 +238,6 @@ export class WebClientImpl implements WebClientInterface {
     this.sender.requestNoResponse(
         'glicWebClientNotifyActorTaskStateChanged',
         {taskId, state: clientState});
-  }
-
-  notifyTabDataChanged(tabData: TabDataMojo): void {
-    const extras = new ResponseExtras();
-    this.sender.requestNoResponse(
-        'glicWebClientNotifyTabDataChanged', {
-          tabData: tabDataToClient(tabData, extras),
-        },
-        extras.transfers);
   }
 
   requestViewChange(requestMojo: ViewChangeRequestMojo): void {
@@ -287,6 +319,7 @@ export class WebClientImpl implements WebClientInterface {
     });
 
     const clientContext: AdditionalContextPrivate = {
+      source: context.source as number as api.AdditionalContextSource,
       name: optionalToClient(context.name),
       tabId: idToClient(context.tabId),
       origin: originToClient(context.origin),
@@ -302,6 +335,16 @@ export class WebClientImpl implements WebClientInterface {
   notifyActOnWebCapabilityChanged(canActOnWeb: boolean): void {
     this.sender.requestNoResponse(
         'glicWebClientNotifyActOnWebCapabilityChanged', {canActOnWeb});
+  }
+
+  notifyOnboardingCompletedChanged(completed: boolean): void {
+    this.sender.requestNoResponse(
+        'glicWebClientOnboardingCompletedChanged', {completed});
+  }
+
+  notifyActorTaskListRowClicked(taskId: number): void {
+    this.sender.requestNoResponse(
+        'glicWebClientNotifyActorTaskListRowClicked', {taskId});
   }
 
   async requestToShowAutofillSuggestionsDialog(

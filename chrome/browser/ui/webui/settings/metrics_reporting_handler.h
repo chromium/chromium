@@ -33,16 +33,16 @@ class MetricsReportingHandler : public SettingsPageUIHandler {
  protected:
   // Handler for "getMetricsReporting" message. No arguments. Protected for
   // testing.
-  void HandleGetMetricsReporting(const base::Value::List& args);
+  void HandleGetMetricsReporting(const base::ListValue& args);
 
  private:
-  // Describes the state of metrics reporting in a `base::Value::Dict`.
+  // Describes the state of metrics reporting in a `base::DictValue`.
   // Friends with ChromeMetricsServiceAccessor.
-  base::Value::Dict CreateMetricsReportingDict();
+  base::DictValue CreateMetricsReportingDict();
 
   // Handler for "setMetricsReportingEnabled" message. Passed a single,
   // |enabled| boolean argument.
-  void HandleSetMetricsReportingEnabled(const base::Value::List& args);
+  void HandleSetMetricsReportingEnabled(const base::ListValue& args);
 
   // Called when the local state pref controlling metrics reporting changes.
   void OnPrefChanged(const std::string& pref_name);

@@ -141,11 +141,11 @@ void ParseThresholds(const V8UnionDoubleOrDoubleSequence* threshold_parameter,
   switch (threshold_parameter->GetContentType()) {
     case V8UnionDoubleOrDoubleSequence::ContentType::kDouble:
       thresholds.push_back(
-          base::MakeClampedNum<float>(threshold_parameter->GetAsDouble()));
+          base::ClampedNumeric<float>(threshold_parameter->GetAsDouble()));
       break;
     case V8UnionDoubleOrDoubleSequence::ContentType::kDoubleSequence:
       for (auto threshold_value : threshold_parameter->GetAsDoubleSequence())
-        thresholds.push_back(base::MakeClampedNum<float>(threshold_value));
+        thresholds.push_back(base::ClampedNumeric<float>(threshold_value));
       break;
   }
 
@@ -211,10 +211,11 @@ String StringifyMargin(const Vector<Length>& margin) {
   StringBuilder string_builder;
 
   const auto append_length = [&](const Length& length) {
-    string_builder.AppendNumber(length.IntValue());
     if (length.IsPercent()) {
+      string_builder.AppendNumber(length.Percent());
       string_builder.Append('%');
     } else {
+      string_builder.AppendNumber(length.IntValue());
       string_builder.Append(base::byte_span_from_cstring("px"));
     }
   };

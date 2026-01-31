@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.lifecycle;
 
 import android.os.Bundle;
+import android.os.PersistableBundle;
 
 import org.chromium.build.annotations.NullMarked;
 
@@ -16,4 +17,7 @@ import org.chromium.build.annotations.NullMarked;
 public interface SaveInstanceStateObserver extends LifecycleObserver {
     /** Called before activity begins to stop. */
     void onSaveInstanceState(Bundle outState);
+
+    /** Called before activity begins to stop. */
+    void onSaveInstanceState(Bundle outState, PersistableBundle outPersistentState);
 }

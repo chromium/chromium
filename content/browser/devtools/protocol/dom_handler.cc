@@ -42,8 +42,7 @@ Response DOMHandler::SetFileInputFiles(
   if (host_) {
     for (const std::string& file : *files) {
       ChildProcessSecurityPolicyImpl::GetInstance()->GrantReadFile(
-          host_->GetProcess()->GetDeprecatedID(),
-          base::FilePath::FromUTF8Unsafe(file));
+          host_->GetProcess()->GetID(), base::FilePath::FromUTF8Unsafe(file));
     }
   }
   return Response::FallThrough();

@@ -15,7 +15,6 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.ActivityTabProvider;
 import org.chromium.chrome.browser.ActivityTabProvider.ActivityTabTabObserver;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.page_info.SiteSettingsHelper;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -65,9 +64,7 @@ public class PrivacySandbox3pcdRollbackMessageController {
         final PrefService prefService = UserPrefs.get(mProfile);
         // The message should only be shown for regular profiles when the associated pref and
         // feature are true.
-        if (!prefService.getBoolean(Pref.SHOW_ROLLBACK_UI_MODE_B)
-                || mProfile.isOffTheRecord()
-                || !ChromeFeatureList.isEnabled(ChromeFeatureList.ROLL_BACK_MODE_B)) {
+        if (!prefService.getBoolean(Pref.SHOW_ROLLBACK_UI_MODE_B) || mProfile.isOffTheRecord()) {
             return false;
         }
 

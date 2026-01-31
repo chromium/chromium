@@ -7,6 +7,7 @@ package org.chromium.chrome.test.util;
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.matcher.ViewMatchers.hasDescendant;
+import static androidx.test.espresso.matcher.ViewMatchers.isDescendantOfA;
 import static androidx.test.espresso.matcher.ViewMatchers.withEffectiveVisibility;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
@@ -156,6 +157,16 @@ public class BookmarkTestUtil {
             throw new RuntimeException(ex);
         }
         BookmarkTestUtil.waitForBookmarkModelLoaded();
+    }
+
+    public static ViewInteraction getSearchBoxViewInteraction() {
+        return onView(
+                allOf(
+                        withId(R.id.search_text),
+                        isDescendantOfA(
+                                allOf(
+                                        withId(R.id.search_view),
+                                        isDescendantOfA(withId(R.id.bookmark_toolbar))))));
     }
 
     public static ChromeTabbedActivity waitForTabbedActivity() {

@@ -14,12 +14,13 @@
 #include "base/run_loop.h"
 #include "base/scoped_add_feature_flags.h"
 #include "base/task/current_thread.h"
+#include "base/test/gmock_expected_support.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/thread_annotations.h"
 #include "base/time/time.h"
-#include "base/types/cxx23_to_underlying.h"
+#include "base/types/expected.h"
 #include "build/build_config.h"
 #include "components/optimization_guide/core/model_execution/model_broker_state.h"
 #include "components/optimization_guide/core/model_execution/model_execution_prefs.h"
@@ -30,12 +31,12 @@
 #include "components/optimization_guide/core/optimization_guide_enums.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/optimization_guide/core/optimization_guide_switches.h"
-#include "components/optimization_guide/public/mojom/model_broker.mojom-data-view.h"
+#include "components/optimization_guide/public/mojom/model_broker.mojom.h"
 #include "components/prefs/testing_pref_service.h"
 #include "services/on_device_model/public/cpp/cpu.h"
 #include "services/on_device_model/public/cpp/features.h"
 #include "services/on_device_model/public/cpp/test_support/fake_service.h"
-#include "services/on_device_model/public/mojom/on_device_model.mojom-data-view.h"
+#include "services/on_device_model/public/mojom/on_device_model.mojom.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -51,6 +52,7 @@ using model_execution::prefs::localstate::
 using model_execution::prefs::localstate::
     kLastTimeEligibleForOnDeviceModelDownload;
 using model_execution::prefs::localstate::kLastUsageByFeature;
+using model_execution::prefs::localstate::kOnDeviceAiUserSettingsEnabled;
 using model_execution::prefs::localstate::kOnDevicePerformanceClassVersion;
 using ::on_device_model::mojom::PerformanceClass;
 
@@ -67,14 +69,15 @@ std::vector<proto::OnDeviceModelPerformanceHint> AllHints() {
 
 class StubObserver : public OnDeviceModelComponentStateManager::Observer {
  public:
-  void StateChanged(const OnDeviceModelComponentState* state) override {
-    state_ = state;
+  void StateChanged(MaybeOnDeviceModelComponentState state) override {
+    state_ = std::move(state);
   }
 
-  const OnDeviceModelComponentState* GetState() { return state_; }
+  const MaybeOnDeviceModelComponentState& GetState() { return state_; }
 
  private:
-  raw_ptr<const OnDeviceModelComponentState> state_;
+  MaybeOnDeviceModelComponentState state_ =
+      base::unexpected(OnDeviceModelStatus::kNotReadyForUnknownReason);
 };
 
 class OnDeviceModelComponentTest : public testing::Test {
@@ -171,6 +174,14 @@ TEST_F(OnDeviceModelComponentTest, InstallsWhenEligible) {
       true, 1);
   histograms_.ExpectUniqueSample(
       "OptimizationGuide.ModelExecution.OnDeviceModelInstallCriteria."
+      "AtRegistration.EnabledByEnterprisePolicy",
+      true, 1);
+  histograms_.ExpectUniqueSample(
+      "OptimizationGuide.ModelExecution.OnDeviceModelInstallCriteria."
+      "AtRegistration.EnabledByUserSetting",
+      true, 1);
+  histograms_.ExpectUniqueSample(
+      "OptimizationGuide.ModelExecution.OnDeviceModelInstallCriteria."
       "AtRegistration.All",
       true, 1);
 }
@@ -252,13 +263,47 @@ TEST_F(OnDeviceModelComponentTest, DynamicEnterprisePolicyChange) {
       static_cast<int>(
           GenAILocalFoundationalModelEnterprisePolicySettings::kDisallowed));
   EXPECT_TRUE(base::test::RunUntil(
-      [&]() { return broker_.component_state().uninstall_called(); }));
+      [&] { return broker_.component_state().uninstall_called(); }));
 
   // Enabling the policy should trigger installation.
   broker_.local_state().SetInteger(
       kGenAILocalFoundationalModelEnterprisePolicySettings,
       static_cast<int>(
           GenAILocalFoundationalModelEnterprisePolicySettings::kAllowed));
+  task_environment_.RunUntilIdle();
+  ASSERT_TRUE(WaitUntilInstallerRegistered());
+}
+
+TEST_F(OnDeviceModelComponentTest, DoesNotInstallWhenDisabledByUserSetting) {
+  // It should not install when disabled by user setting.
+  broker_.local_state().SetBoolean(kOnDeviceAiUserSettingsEnabled, false);
+  DoStartup();
+  EnsurePerformanceClassAvailable();
+  ASSERT_FALSE(WaitForUnexpectedInstallerRegistered());
+  histograms_.ExpectUniqueSample(
+      "OptimizationGuide.ModelExecution.OnDeviceModelInstallCriteria."
+      "AtRegistration.EnabledByUserSetting",
+      false, 1);
+}
+
+// Dynamically change the on-device AI enabled pref and ensure the component is
+// installed/uninstalled accordingly.
+TEST_F(OnDeviceModelComponentTest, DynamicOnDeviceAIEnabledChange) {
+  DoStartup();
+  EnsurePerformanceClassAvailable();
+  ASSERT_TRUE(WaitUntilInstallerRegistered());
+  histograms_.ExpectUniqueSample(
+      "OptimizationGuide.ModelExecution.OnDeviceModelInstallCriteria."
+      "AtRegistration.EnabledByUserSetting",
+      true, 1);
+
+  // Disabling the pref should trigger uninstallation.
+  broker_.local_state().SetBoolean(kOnDeviceAiUserSettingsEnabled, false);
+  EXPECT_TRUE(base::test::RunUntil(
+      [&] { return broker_.component_state().uninstall_called(); }));
+
+  // Enabling the pref should trigger installation.
+  broker_.local_state().SetBoolean(kOnDeviceAiUserSettingsEnabled, true);
   task_environment_.RunUntilIdle();
   ASSERT_TRUE(WaitUntilInstallerRegistered());
 }
@@ -341,7 +386,7 @@ TEST_F(OnDeviceModelComponentTest, UninstallNeeded) {
   EnsurePerformanceClassAvailable();
 
   EXPECT_TRUE(base::test::RunUntil(
-      [&]() { return broker_.component_state().uninstall_called(); }));
+      [&] { return broker_.component_state().uninstall_called(); }));
 
   manager().UninstallComplete();
 
@@ -363,7 +408,7 @@ TEST_F(OnDeviceModelComponentTest, UninstallNeededDueToDiskSpace) {
   DoStartup();
   EnsurePerformanceClassAvailable();
   EXPECT_TRUE(base::test::RunUntil(
-      [&]() { return broker_.component_state().uninstall_called(); }));
+      [&] { return broker_.component_state().uninstall_called(); }));
 }
 
 TEST_F(OnDeviceModelComponentTest, KeepInstalledWhileNotEligible) {
@@ -497,7 +542,10 @@ TEST_F(OnDeviceModelComponentTest, SetReady) {
 
   EXPECT_FALSE(state->GetInstallDirectory().empty());
   EXPECT_EQ(state->GetComponentVersion(), base::Version("0.0.1"));
-  ASSERT_EQ(observer.GetState(), state);
+
+  ASSERT_OK_AND_ASSIGN(const OnDeviceModelComponentState& observer_state,
+                       observer.GetState());
+  EXPECT_EQ(&observer_state, state);
 }
 
 TEST_F(OnDeviceModelComponentTest, InstallAfterEligibleFeatureWasUsed) {
@@ -509,6 +557,7 @@ TEST_F(OnDeviceModelComponentTest, InstallAfterEligibleFeatureWasUsed) {
   broker_.GetOrCreateBrokerState().usage_tracker().OnDeviceEligibleFeatureUsed(
       mojom::OnDeviceFeature::kCompose);
   EXPECT_TRUE(WaitUntilInstallerRegistered());
+  EXPECT_TRUE(broker_.component_state().request_update_called());
 }
 
 TEST_F(OnDeviceModelComponentTest, LogsStatusOnUse) {
@@ -685,6 +734,87 @@ TEST_F(OnDeviceModelComponentTest, GpuCapableDeviceAndCpuOnlyManifest) {
   EXPECT_EQ(manager().GetState()->GetBaseModelSpec().model_version, "0.0.1");
   EXPECT_EQ(manager().GetState()->GetBaseModelSpec().selected_performance_hint,
             proto::ON_DEVICE_MODEL_PERFORMANCE_HINT_CPU);
+}
+
+TEST_F(OnDeviceModelComponentTest, BackgroundDownloadStartsRegistration) {
+  broker_.local_state().ClearPref(kLastUsageByFeature);
+  DoStartup();
+  EnsurePerformanceClassAvailable();
+  manager().MaybeBeginBackgroundModelDownload();
+  ASSERT_TRUE(WaitUntilInstallerRegistered());
+  EXPECT_FALSE(broker_.component_state().request_update_called());
+}
+
+TEST_F(OnDeviceModelComponentTest, FeatureUseUpgradesToOnDemand) {
+  broker_.local_state().ClearPref(kLastUsageByFeature);
+  DoStartup();
+  EnsurePerformanceClassAvailable();
+  manager().MaybeBeginBackgroundModelDownload();
+  ASSERT_TRUE(WaitUntilInstallerRegistered());
+
+  broker_.GetOrCreateBrokerState().usage_tracker().OnDeviceEligibleFeatureUsed(
+      mojom::OnDeviceFeature::kCompose);
+  task_environment_.RunUntilIdle();
+  EXPECT_TRUE(broker_.component_state().request_update_called());
+}
+
+TEST_F(OnDeviceModelComponentTest, FeatureUseSkipsUpdateIfAlreadyInstalled) {
+  broker_.local_state().ClearPref(kLastUsageByFeature);
+  DoStartup();
+  EnsurePerformanceClassAvailable();
+  manager().MaybeBeginBackgroundModelDownload();
+  ASSERT_TRUE(WaitUntilInstallerRegistered());
+
+  // Simulate install completion.
+  broker_.component_state().Install(
+      std::make_unique<FakeBaseModelAsset>(AllHints()));
+
+  broker_.GetOrCreateBrokerState().usage_tracker().OnDeviceEligibleFeatureUsed(
+      mojom::OnDeviceFeature::kCompose);
+  task_environment_.RunUntilIdle();
+  EXPECT_FALSE(broker_.component_state().request_update_called());
+}
+
+TEST_F(OnDeviceModelComponentTest, UninstallWhileRegistrationPending) {
+  DoStartup();
+  EnsurePerformanceClassAvailable();
+  // Trigger registration.
+  manager().MaybeBeginBackgroundModelDownload();
+  ASSERT_TRUE(base::test::RunUntil(
+      [&] { return broker_.component_state().installer_registered(); }));
+
+  // Trigger uninstallation immediately.
+  broker_.local_state().SetBoolean(kOnDeviceAiUserSettingsEnabled, false);
+  task_environment_.RunUntilIdle();
+  EXPECT_TRUE(base::test::RunUntil(
+      [&] { return broker_.component_state().uninstall_called(); }));
+  task_environment_.FastForwardBy(base::Seconds(1));
+  EXPECT_FALSE(manager().GetState());
+}
+
+TEST_F(OnDeviceModelComponentTest, RegisterWhileUninstallPending) {
+  DoStartup();
+  EnsurePerformanceClassAvailable();
+  // 1. Complete installation.
+  manager().MaybeBeginBackgroundModelDownload();
+  ASSERT_TRUE(WaitUntilInstallerRegistered());
+  broker_.component_state().Install(
+      std::make_unique<FakeBaseModelAsset>(AllHints()));
+  ASSERT_TRUE(manager().GetState());
+
+  // 2. Trigger Uninstall.
+  broker_.local_state().SetBoolean(kOnDeviceAiUserSettingsEnabled, false);
+  task_environment_.RunUntilIdle();
+  EXPECT_TRUE(base::test::RunUntil(
+      [&] { return broker_.component_state().uninstall_called(); }));
+  // 3. Trigger Register while Uninstall is pending.
+  broker_.local_state().SetBoolean(kOnDeviceAiUserSettingsEnabled, true);
+  task_environment_.RunUntilIdle();
+  task_environment_.FastForwardBy(base::Seconds(1));
+  // 4. Verify it eventually installs.
+  ASSERT_TRUE(base::test::RunUntil(
+      [&] { return broker_.component_state().installer_registered(); }));
+  ASSERT_TRUE(WaitUntilInstallerRegistered());
 }
 
 }  // namespace

@@ -67,7 +67,7 @@ class CORE_EXPORT DevToolsHost final : public ScriptWrappable {
                               float y,
                               const HeapVector<Member<ShowContextMenuItem>>&,
                               Document* = nullptr);
-  void sendMessageToEmbedder(base::Value::Dict message);
+  void sendMessageToEmbedder(base::DictValue message);
   void sendMessageToEmbedder(const String& message);
 
   bool isHostedMode();

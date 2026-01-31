@@ -61,6 +61,10 @@ size_t SSLClientSessionCache::size() const {
   return cache_.size();
 }
 
+size_t SSLClientSessionCache::max_size() const {
+  return cache_.max_size();
+}
+
 bssl::UniquePtr<SSL_SESSION> SSLClientSessionCache::Lookup(
     const Key& cache_key) {
   // Expire stale sessions.
@@ -92,8 +96,15 @@ void SSLClientSessionCache::Insert(uint64_t generation_number,
     return;
   }
   auto iter = cache_.Get(cache_key);
-  if (iter == cache_.end())
+  if (iter == cache_.end()) {
     iter = cache_.Put(cache_key, Entry());
+  }
+
+  // Insertion can fail if the max size was zero due to memory pressure.
+  if (iter == cache_.end()) {
+    CHECK_EQ(cache_.max_size(), 0U);
+    return;
+  }
   iter->second.Push(std::move(session));
 }
 
@@ -206,12 +217,13 @@ void SSLClientSessionCache::OnMemoryPressure(
     base::MemoryPressureLevel memory_pressure_level) {
   switch (memory_pressure_level) {
     case base::MEMORY_PRESSURE_LEVEL_NONE:
+      cache_.UpdateMaxSize(config_.max_entries);
       break;
     case base::MEMORY_PRESSURE_LEVEL_MODERATE:
-      FlushExpiredSessions();
+      cache_.UpdateMaxSize(config_.max_entries / 2);
       break;
     case base::MEMORY_PRESSURE_LEVEL_CRITICAL:
-      Flush();
+      cache_.UpdateMaxSize(0);
       break;
   }
 }

@@ -624,4 +624,46 @@ TEST_F(TransientWindowManagerTest,
   EXPECT_FALSE(tracker.windows().empty());
 }
 
+// Tests that there is no crash if a window is removed from its parent while its
+// transient children are being restacked. (crbug.com/468794860)
+TEST_F(TransientWindowManagerTest, RemoveWindowDuringRestack) {
+  // Create a parent window.
+  std::unique_ptr<Window> parent(CreateTestWindow(
+      {.parent = root_window(), .bounds = {100, 100}, .window_id = 1}));
+
+  // Create transient children.
+  std::unique_ptr<Window> t1(CreateTestWindow(
+      {.parent = root_window(), .bounds = {100, 100}, .window_id = 2}));
+  std::unique_ptr<Window> t2(CreateTestWindow(
+      {.parent = root_window(), .bounds = {100, 100}, .window_id = 3}));
+
+  AddTransientChild(parent.get(), t1.get());
+  AddTransientChild(parent.get(), t2.get());
+
+  // When t2 is restacked, remove t1 from parent.
+  class RemovalObserver : public aura::WindowObserver {
+   public:
+    RemovalObserver(Window* parent, Window* window_to_remove)
+        : parent_(parent), window_to_remove_(window_to_remove) {}
+
+    void OnWindowStackingChanged(aura::Window* window) override {
+      if (window_to_remove_->parent() == parent_) {
+        parent_->RemoveChild(window_to_remove_);
+      }
+    }
+
+   private:
+    raw_ptr<Window> parent_;
+    raw_ptr<Window> window_to_remove_;
+  };
+
+  RemovalObserver observer(root_window(), t1.get());
+  t2->AddObserver(&observer);
+
+  // Trigger restacking. This should cause t2 to be stacked above parent.
+  root_window()->StackChildAtTop(parent.get());
+
+  t2->RemoveObserver(&observer);
+}
+
 }  // namespace wm

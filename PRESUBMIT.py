@@ -105,7 +105,7 @@ _TEST_CODE_EXCLUDED_PATHS = (
     # Chromium Codelab
     r'codelabs/*')
 
-_THIRD_PARTY_EXCEPT_BLINK = 'third_party/(?!blink/)'
+_THIRD_PARTY_EXCEPT_BLINK = '(?:ios/)?third_party/(?!blink/)'
 
 _TEST_ONLY_WARNING = (
     'You might be calling functions intended only for testing from\n'
@@ -855,17 +855,10 @@ _BANNED_CPP_FUNCTIONS: Sequence[BanRule] = (
             r'chrome/browser/nearby_sharing/contacts/nearby_share_contact_manager_impl_unittest\.cc',
             r'chrome/browser/nearby_sharing/contacts/nearby_share_contacts_sorter_unittest\.cc',
             r'chrome/browser/web_applications/test/web_app_test_utils\.cc',
-            r'chrome/browser/web_applications/test/web_app_test_utils\.cc',
-            r'chrome/browser/win/conflicts/module_blocklist_cache_util_unittest\.cc',
             r'chromeos/ash/components/memory/userspace_swap/swap_storage_unittest\.cc',
             r'chromeos/ash/components/memory/userspace_swap/userspace_swap\.cc',
-            r'components/metrics/metrics_state_manager\.cc',
             r'components/omnibox/browser/history_quick_provider_performance_unittest\.cc',
             r'components/zucchini/disassembler_elf_unittest\.cc',
-            r'content/browser/webid/federated_auth_request_impl\.cc',
-            r'content/browser/webid/federated_auth_request_impl\.cc',
-            r'media/cast/test/utility/udp_proxy\.h',
-            r'sql/recover_module/module_unittest\.cc',
             r'components/regional_capabilities/regional_capabilities_utils.cc',
             # Do not add new entries to this list. If you have a use case which is
             # not satisfied by the current APIs (i.e. you need an explicitly-seeded
@@ -944,6 +937,10 @@ _BANNED_CPP_FUNCTIONS: Sequence[BanRule] = (
             r'base/containers/span_unittest.cc',
             # //base/numerics can't use base or absl. So it uses std.
             r'base/numerics/.*',
+            # These files are in a separate build target and use std::span to
+            # interface with a 3P library, while avoiding a circular dependency
+            # on //base.
+            r'base/simdutf_shim.*',
 
             # The early zone registration can't use base or absl. So it uses
             # std.
@@ -1241,6 +1238,104 @@ _BANNED_CPP_FUNCTIONS: Sequence[BanRule] = (
         ],
     ),
     BanRule(
+        pattern=r'#warning',
+        explanation=('Use of #warning isn`t allowed. If you need it, contact '
+                     'cxx@chromium.org.', ),
+        treat_as_error=True,
+        excluded_paths=[_THIRD_PARTY_EXCEPT_BLINK],
+    ),
+    BanRule(
+        pattern=r'/\[\[assume[^[]*\]\]',
+        explanation=('Use of [[assume(...)]] isn`t allowed. If you need it, '
+                     'contact cxx@chromium.org.', ),
+        treat_as_error=True,
+        excluded_paths=[_THIRD_PARTY_EXCEPT_BLINK],
+    ),
+    BanRule(
+        pattern=r'/#(include|import) <expected>',
+        explanation=('Use of <expected> isn`t allowed. If you need it, '
+                     'contact cxx@chromium.org.', ),
+        treat_as_error=True,
+        excluded_paths=[_THIRD_PARTY_EXCEPT_BLINK],
+    ),
+    BanRule(
+        pattern=r'/#(include|import) <print>',
+        explanation=('Use of <print> isn`t allowed. If you need it, contact '
+                     'cxx@chromium.org.', ),
+        treat_as_error=True,
+        excluded_paths=[_THIRD_PARTY_EXCEPT_BLINK],
+    ),
+    BanRule(
+        pattern=r'/#(include|import) <generator>',
+        explanation=('Use of <generator> isn`t allowed. If you need it, '
+                     'contact cxx@chromium.org.', ),
+        treat_as_error=True,
+        excluded_paths=[_THIRD_PARTY_EXCEPT_BLINK],
+    ),
+    BanRule(
+        pattern=r'/#(include|import) <stacktrace>',
+        explanation=('Use of <stacktrace> isn`t allowed. If you need it, '
+                     'contact cxx@chromium.org.', ),
+        treat_as_error=True,
+        excluded_paths=[_THIRD_PARTY_EXCEPT_BLINK],
+    ),
+    BanRule(
+        pattern=r'std::move_only_function',
+        explanation=('Use of std::move_only_function isn`t allowed. If you '
+                     'need it, contact cxx@chromium.org.', ),
+        treat_as_error=True,
+        excluded_paths=[_THIRD_PARTY_EXCEPT_BLINK],
+    ),
+    BanRule(
+        pattern=r'std::unreachable',
+        explanation=('Use of std::unreachable isn`t allowed. If you need it, '
+                     'contact cxx@chromium.org.', ),
+        treat_as_error=True,
+        excluded_paths=[_THIRD_PARTY_EXCEPT_BLINK],
+    ),
+    BanRule(
+        pattern=r'/#(include|import) <flat_(set|map)>',
+        explanation=('Use of std flat containers isn`t allowed. If you need '
+                     'it, contact cxx@chromium.org.', ),
+        treat_as_error=True,
+        excluded_paths=[_THIRD_PARTY_EXCEPT_BLINK],
+    ),
+    BanRule(
+        pattern=r'/#(include|import) <mdspan>',
+        explanation=('Use of <mdspan> isn`t allowed. If you need it, contact '
+                     'cxx@chromium.org.', ),
+        treat_as_error=True,
+        excluded_paths=[_THIRD_PARTY_EXCEPT_BLINK],
+    ),
+    BanRule(
+        pattern=r'/#(include|import) <spanstream>',
+        explanation=('Use of <spanstream> isn`t allowed. If you need it, '
+                     'contact cxx@chromium.org.', ),
+        treat_as_error=True,
+        excluded_paths=[_THIRD_PARTY_EXCEPT_BLINK],
+    ),
+    BanRule(
+        pattern=r'/#(include|import) <stdfloat>',
+        explanation=('Use of <stdfloat> isn`t allowed. If you need it, '
+                     'contact cxx@chromium.org.', ),
+        treat_as_error=True,
+        excluded_paths=[_THIRD_PARTY_EXCEPT_BLINK],
+    ),
+    BanRule(
+        pattern=r'/std::(in)?out_ptr',
+        explanation=('Use of std::{out_ptr,inout_ptr} isn`t allowed. If you '
+                     'need it, contact cxx@chromium.org.', ),
+        treat_as_error=True,
+        excluded_paths=[_THIRD_PARTY_EXCEPT_BLINK],
+    ),
+    BanRule(
+        pattern=r'std::start_lifetime_as',
+        explanation=('Use of std::start_lifetime_as isn`t allowed. If you '
+                     'need it, contact cxx@chromium.org.', ),
+        treat_as_error=True,
+        excluded_paths=[_THIRD_PARTY_EXCEPT_BLINK],
+    ),
+    BanRule(
         # Ban everything except specifically allowlisted constructs.
         pattern=r'/std::ranges::(?!(?:' + '|'.join((
             # From https://en.cppreference.com/w/cpp/ranges:
@@ -1301,6 +1396,22 @@ _BANNED_CPP_FUNCTIONS: Sequence[BanRule] = (
             # Constrained algorithms: non-modifying sequence operations
             'all_of',
             'any_of',
+            'contains',
+            'contains_subrange',
+            'starts_with',
+            'ends_with',
+            'find_last',
+            'find_last_if',
+            'find_last_if_not',
+            'iota',
+            'shift_left',
+            'shift_right',
+            'fold_left',
+            'fold_left_first',
+            'fold_right',
+            'fold_right_last',
+            'fold_left_with_iter',
+            'fold_left_first_with_iter',
             'none_of',
             'for_each',
             'for_each_n',
@@ -1661,11 +1772,33 @@ _BANNED_CPP_FUNCTIONS: Sequence[BanRule] = (
         (),
     ),
     BanRule(
-        r'/\bTRACE_EVENT(_NESTABLE)?_ASYNC_',
+        r'/\bTRACE_EVENT(_COPY)?(_NESTABLE)?_ASYNC_',
         (
-            'Please use TRACE_EVENT_BEGIN/END/INSTANT macros instead',
-            'of TRACE_EVENT_ASYNC_.. and TRACE_EVENT_NESTABLE_ASYNC_... (crbug.com/432427382).',
+            'Please use TRACE_EVENT_BEGIN/END/INSTANT macros instead of ',
+            'TRACE_EVENT_ASYNC_.. and TRACE_EVENT_NESTABLE_ASYNC_... (crbug.com/432427382).',
         ),
+        False,
+        (
+            r'^base/trace_event/.*',
+            r'^base/tracing/.*',
+        ),
+    ),
+    BanRule(
+        r'/\bTRACE_EVENT_WITH_FLOW',
+        (
+            'Please use perfetto::Flow instead of TRACE_EVENT_WITH_FLOW.. ',
+            '(crbug.com/432427382).',
+        ),
+        False,
+        (
+            r'^base/trace_event/.*',
+            r'^base/tracing/.*',
+        ),
+    ),
+    BanRule(
+        r'/\bTRACE_EVENT_SCOPE_',
+        ('Please use perfetto Track API instead of '
+         'TRACE_EVENT_SCOPE_GLOBAL/PROCESS/THREAD (crbug.com/432427382).', ),
         False,
         (
             r'^base/trace_event/.*',
@@ -1851,20 +1984,6 @@ _BANNED_CPP_FUNCTIONS: Sequence[BanRule] = (
         ),
     ),
     BanRule(
-        pattern=r'ContentSettingsType::TRACKING_PROTECTION',
-        explanation=
-        ('Do not directly use ContentSettingsType::TRACKING_PROTECTION to check '
-         'for tracking protection exceptions. Instead rely on the '
-         'privacy_sandbox::TrackingProtectionSettings API.', ),
-        treat_as_error=False,
-        excluded_paths=(
-            '^chrome/browser/ui/content_settings/',
-            '^components/content_settings/',
-            '^components/privacy_sandbox/tracking_protection_settings.cc',
-            '.*test.cc',
-        ),
-    ),
-    BanRule(
         pattern=r'/\bg_signal_connect',
         explanation=('Use ScopedGSignal instead of g_signal_connect*()', ),
         treat_as_error=True,
@@ -1989,6 +2108,14 @@ _BANNED_CPP_FUNCTIONS: Sequence[BanRule] = (
          'be sure to justify in a // SAFETY comment why other options are not '
          'available, and why the code is safe.', ),
         treat_as_error=False,
+    ),
+    BanRule(
+        pattern=r'/(nlohmann::)?json::parse\b',
+        explanation=
+        ('Do not use nlohmann::json::parse directly. Instead, use the safe ',
+         'parsing functions in "base/json/json_reader.h" (base::JSONReader).'),
+        treat_as_error=True,
+        excluded_paths=[_THIRD_PARTY_EXCEPT_BLINK],
     ),
     BanRule(
         pattern='BrowserWithTestWindowTest',
@@ -2395,6 +2522,7 @@ _GENERIC_PYDEPS_FILES = [
     'tools/binary_size/sizes.pydeps',
     'tools/binary_size/supersize.pydeps',
     'tools/cygprofile/generate_orderfile.pydeps',
+    'tools/grit/grit.pydeps',
     "tools/metrics/histograms/generate_allowlist_from_histograms_file.pydeps",
     'tools/perf/process_perf_results.pydeps',
     'tools/pgo/generate_profile.pydeps',
@@ -6341,7 +6469,9 @@ def CheckForIncludeGuards(input_api, output_api):
                                            'partition_allocator'))
                 and (not file_with_path.startswith('third_party')
                      or file_with_path.startswith(
-                         input_api.os_path.join('third_party', 'blink'))))
+                         input_api.os_path.join('third_party', 'blink')))
+                and not file_with_path.startswith(
+                    input_api.os_path.join('ios', 'third_party')))
 
     def replace_special_with_underscore(string):
         return input_api.re.sub(r'[+\\/.-]', '_', string)
@@ -7152,6 +7282,41 @@ def CheckStableMojomChanges(input_api, output_api):
     return []
 
 
+def CheckNoMojomDataViewIncludes(input_api, output_api):
+    """Checks that .mojom-data-view.h is not included."""
+    problems = []
+
+    # Exclude files containing 'traits' and specific files.
+    def FileFilter(affected_file):
+        path = affected_file.LocalPath()
+        if 'traits' in path:
+            return False
+        if path in [
+                'services/network/url_loader.cc',
+                'services/on_device_model/public/cpp/model_assets.h'
+        ]:
+            return False
+        return input_api.FilterSourceFile(
+            affected_file, files_to_check=[r'.*\.cc$', r'.*\.h$'])
+
+    include_pattern = input_api.re.compile(
+        r'#include\s+.*\.mojom-data-view\.h"')
+
+    for f in input_api.AffectedSourceFiles(FileFilter):
+        for line_num, line in f.ChangedContents():
+            if include_pattern.search(line):
+                problems.append('%s:%d\n    %s' %
+                                (f.LocalPath(), line_num, line.strip()))
+
+    if problems:
+        return [
+            output_api.PresubmitError(
+                'Do not #include <...>.mojom-data-view.h; '
+                '#include <...>.mojom-shared.h instead.', problems)
+        ]
+    return []
+
+
 def CheckDeprecationOfPreferences(input_api, output_api):
     """Removing a preference should come with a deprecation."""
 
@@ -7327,8 +7492,13 @@ def _IsMiraclePtrDisallowed(input_api, affected_file):
     # directories, however, are specifically disallowed, for perf reasons.
     if ('third_party/blink/renderer/core/' in path
             or 'third_party/blink/renderer/platform/heap/' in path
-            or 'third_party/blink/renderer/platform/wtf/' in path
             or 'third_party/blink/renderer/platform/fonts/' in path):
+        return True
+
+    # `functional.h` contains some shared plumbing, and should not be
+    # excluded directly.
+    if ('third_party/blink/renderer/platform/wtf/' in path and
+            'third_party/blink/renderer/platform/wtf/functional' not in path):
         return True
 
     # We assume that everything else may be used outside of Renderer processes.
@@ -7343,16 +7513,18 @@ def CheckRawPtrUsage(input_api, output_api):
     errors = []
     # The regex below matches "raw_ptr<" following a word boundary, but not in a
     # C++ comment.
-    raw_ptr_matcher = input_api.re.compile(r'^((?!//).)*\braw_ptr<')
+    raw_ptr_matcher = input_api.re.compile(r'^((?!//).)*\braw_(ptr|ref|span)<')
     file_filter = lambda f: _IsMiraclePtrDisallowed(input_api, f)
     for f, line_num, line in input_api.RightHandSideLines(file_filter):
-        if raw_ptr_matcher.search(line):
+        match_result = raw_ptr_matcher.search(line)
+        if match_result:
             errors.append(
                 output_api.PresubmitError(
                     f'Problem on {f.LocalPath()}:{line_num} - '
-                    'raw_ptr<T> should not be used in this renderer code '
-                    '(as documented in the "Pointers to unprotected memory" '
-                    'section in //base/memory/raw_ptr.md)'))
+                    f'`raw_{match_result.group(2)}` should not be used in this '
+                    'renderer code (as documented in the "Pointers to '
+                    'unprotected memory" section in //base/memory/raw_ptr.md)')
+            )
     return errors
 
 
@@ -7664,9 +7836,20 @@ def CheckDanglingUntriaged(input_api, output_api):
         )
 
     count = 0
-    for f in input_api.AffectedFiles(file_filter=FilterFile):
-        count -= sum([l.count('DanglingUntriaged') for l in f.OldContents()])
-        count += sum([l.count('DanglingUntriaged') for l in f.NewContents()])
+    try:
+        for f in input_api.AffectedFiles(file_filter=FilterFile):
+            count -= sum(
+                [l.count('DanglingUntriaged') for l in f.OldContents()])
+            count += sum(
+                [l.count('DanglingUntriaged') for l in f.NewContents()])
+    except RuntimeError as e:
+        if 'Provided diff does not apply cleanly' in str(e):
+            # When files are moved.
+            return [
+                output_api.PresubmitNotifyResult(
+                    'Skipping CheckDanglingUntriaged due to moved files.')
+            ]
+        raise
 
     # Most likely, nothing changed:
     if count == 0:
@@ -7860,3 +8043,54 @@ def CheckBaseFeatureMacro(input_api, output_api):
         output_api.PresubmitPromptWarning('BASE_FEATURE() macro naming:',
                                           warnings)
     ]
+
+
+def CheckTestFileNamesOnUpload(input_api, output_api):
+    """Warns if file names end with _unittests.cc or _browsertests.cc."""
+    bad_files = []
+    for f in input_api.AffectedFiles(include_deletes=False):
+        local_path = f.LocalPath()
+        if input_api.os_path.basename(local_path) == 'run_all_unittests.cc':
+            continue
+        if 'third_party/' in local_path and 'third_party/blink/' not in local_path:
+            continue
+
+        if local_path.endswith('_unittests.cc'):
+            bad_files.append(
+                '%s (should be %s)' %
+                (local_path, local_path.replace('_unittests.cc',
+                                                '_unittest.cc')))
+        elif local_path.endswith('_browsertests.cc'):
+            bad_files.append(
+                '%s (should be %s)' %
+                (local_path,
+                 local_path.replace('_browsertests.cc', '_browsertest.cc')))
+
+    if not bad_files:
+        return []
+
+    return [
+        output_api.PresubmitPromptWarning(
+            'File names should be singular (_unittest.cc or _browsertest.cc), '
+            'not plural (_unittests.cc or _browsertests.cc).',
+            items=bad_files)
+    ]
+
+
+def CheckAyeAye(input_api, output_api):
+    """Runs AyeAye checks locally via the alint tool.
+
+    These checks get run automatically behind the scenes on CLs in
+    Gerrit. Running them locally should surface any warnings or errors
+    earlier.
+    """
+    try:
+        command = ['git', 'config', '--get', '--type=bool', 'localayeaye.enable']
+        opted_in = input_api.subprocess.check_output(command)
+        # TODO(crbug.com/467912454): Roll this out by default.
+        if not opted_in:
+            return []
+    except Exception:
+        return []
+    print("User opted-in to AyeAye checks as top-level presubmit...")
+    return input_api.canned_checks.CheckAyeAye(input_api, output_api)

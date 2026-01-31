@@ -19,6 +19,7 @@
 #include "content/browser/web_contents/web_contents_view.h"
 #include "content/browser/web_contents/web_contents_view_drag_security_info.h"
 #include "content/common/content_export.h"
+#include "content/public/browser/clipboard_types.h"
 #include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/visibility.h"
 #include "content/public/browser/web_contents_view_delegate.h"
@@ -135,8 +136,6 @@ class CONTENT_EXPORT WebContentsViewAura
   FRIEND_TEST_ALL_PREFIXES(WebContentsViewAuraTest, DragDropVirtualFiles);
   FRIEND_TEST_ALL_PREFIXES(WebContentsViewAuraTest,
                            DragDropVirtualFilesOriginateFromRenderer);
-  FRIEND_TEST_ALL_PREFIXES(WebContentsViewAuraTest,
-                           DragDropVirtualFileGetsNonEmptyContents);
   FRIEND_TEST_ALL_PREFIXES(WebContentsViewAuraTest, DragDropUrlData);
   FRIEND_TEST_ALL_PREFIXES(WebContentsViewAuraTest, DragDropOnOopif);
   FRIEND_TEST_ALL_PREFIXES(WebContentsViewAuraTest,
@@ -186,8 +185,12 @@ class CONTENT_EXPORT WebContentsViewAura
   void PrepareDropData(DropData* drop_data,
                        const ui::OSExchangeData& data) const;
 
-  void EndDrag(base::WeakPtr<RenderWidgetHostImpl> source_rwh_weak_ptr,
-               ui::mojom::DragOperation op);
+  // Virtual for testing.
+  virtual bool IsDragAllowedByDataControlPolicy(const ClipboardEndpoint& source,
+                                                const DropData& drop_data);
+
+  virtual void EndDrag(base::WeakPtr<RenderWidgetHostImpl> source_rwh_weak_ptr,
+                       ui::mojom::DragOperation op);
 
   void InstallOverscrollControllerDelegate(RenderWidgetHostViewAura* view);
 
@@ -416,6 +419,10 @@ class CONTENT_EXPORT WebContentsViewAura
   // class. It means it gets true when drag enters and gets reset when either
   // drop happens or drag exits.
   bool drag_in_progress_;
+
+  // Used to determine which enum value to fire for the "Event.DragDrop.Surface"
+  // histogram.
+  bool dropped_in_this_web_contents_ = false;
 
   bool init_rwhv_with_null_parent_for_testing_;
 

@@ -28,15 +28,13 @@ FullscreenJavaScriptFeature* FullscreenJavaScriptFeature::GetInstance() {
 }
 
 FullscreenJavaScriptFeature::FullscreenJavaScriptFeature()
-    : JavaScriptFeature(
-          ContentWorld::kIsolatedWorld,
-          {FeatureScript::CreateWithFilename(
-              kScriptName,
-              FeatureScript::InjectionTime::kDocumentEnd,
-              FeatureScript::TargetFrames::kMainFrame,
-              FeatureScript::ReinjectionBehavior::
-                  kReinjectOnDocumentRecreation)},
-          {web::java_script_features::GetCommonJavaScriptFeature()}) {}
+    : JavaScriptFeature(ContentWorld::kIsolatedWorld,
+                        {FeatureScript::CreateWithFilename(
+                            kScriptName,
+                            FeatureScript::InjectionTime::kDocumentEnd,
+                            FeatureScript::TargetFrames::kMainFrame,
+                            FeatureScript::ReinjectionBehavior::
+                                kReinjectOnDocumentRecreation)}) {}
 FullscreenJavaScriptFeature::~FullscreenJavaScriptFeature() = default;
 
 std::optional<std::string>
@@ -47,7 +45,7 @@ FullscreenJavaScriptFeature::GetScriptMessageHandlerName() const {
 void FullscreenJavaScriptFeature::ScriptMessageReceived(
     WebState* web_state,
     const ScriptMessage& script_message) {
-  const base::Value::Dict* script_dict =
+  const base::DictValue* script_dict =
       script_message.body() ? script_message.body()->GetIfDict() : nullptr;
   if (!script_dict) {
     return;

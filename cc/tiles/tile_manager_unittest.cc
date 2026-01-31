@@ -5,11 +5,11 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <algorithm>
 #include <array>
 #include <cmath>
 #include <utility>
 
-#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
@@ -935,7 +935,7 @@ TEST_F(TileManagerTilePriorityQueueTest, DebugNameAppearsInMemoryDump) {
   host_impl()->resource_pool()->OnMemoryDump(dump_args, &memory_dump);
   bool found_debug_name = false;
   for (const auto& allocator_map_pair : memory_dump.allocator_dumps()) {
-    if (base::Contains(allocator_map_pair.first, "debug-name")) {
+    if (allocator_map_pair.first.contains("debug-name")) {
       found_debug_name = true;
       break;
     }
@@ -1127,7 +1127,7 @@ TEST_F(TileManagerTilePriorityQueueTest,
     const TilePriority& pending_priority = prioritized_tile.priority();
     EXPECT_NE(std::numeric_limits<float>::infinity(),
               pending_priority.distance_to_visible);
-    if (base::Contains(all_pending_child_tiles, tile)) {
+    if (all_pending_child_tiles.contains(tile)) {
       EXPECT_EQ(TilePriority::EVENTUALLY, pending_priority.priority_bin);
     } else {
       EXPECT_EQ(TilePriority::NOW, pending_priority.priority_bin);
@@ -2824,7 +2824,7 @@ TEST_F(TileManagerReadyToDrawTest, TilePrioritiesUpdated) {
         final_num_prepaint++;
       } else {
         final_num_required++;
-        if (base::Contains(prepaint_tiles, tile)) {
+        if (std::ranges::contains(prepaint_tiles, tile)) {
           found_one_prepaint_to_required_transition = true;
         }
       }

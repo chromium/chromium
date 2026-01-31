@@ -584,7 +584,8 @@ InlineBoxState* LogicalLineBuilder::PlaceRubyColumn(
     }
   }
   std::pair<LayoutUnit, LayoutUnit> base_insets =
-      ApplyRubyAlign(line_available_size.value_or(item_result.inline_size),
+      ApplyRubyAlign(line_available_size.value_or(item_result.inline_size -
+                                                  item_result.spacing_before),
                      on_start_edge, on_end_edge, ruby_column.base_line);
 
   // Set up LogicalRubyColumns. This should be done before consuming the base
@@ -627,6 +628,7 @@ InlineBoxState* LogicalLineBuilder::PlaceRubyColumn(
     }
     if (i == 0) {
       logical_column.base_insets = base_insets;
+      logical_column.base_insets.first += item_result.spacing_before;
     }
     logical_column.size = column_base_size;
     PlaceRubyAnnotation(item_result, line_available_size, i,
@@ -645,7 +647,8 @@ void LogicalLineBuilder::PlaceRubyAnnotation(
   std::pair<LayoutUnit, LayoutUnit> insets =
       ApplyRubyAlign(line_available_size.value_or(
                          item_result.inline_size -
-                         item_result.ruby_column->last_base_glyph_spacing),
+                         item_result.ruby_column->last_base_glyph_spacing -
+                         item_result.spacing_before),
                      /* on_start_edge */ false,
                      /* on_end_edge */ false, annotation_line);
 
@@ -669,7 +672,8 @@ void LogicalLineBuilder::PlaceRubyAnnotation(
                              base::span(*line_items));
 
   logical_column.state_stack.ComputeInlinePositions(
-      line_items, LayoutUnit(), /* ignore_box_margin_border_padding */ false);
+      line_items, item_result.spacing_before,
+      /* ignore_box_margin_border_padding */ false);
 
   logical_column.annotation_items = line_items;
 }

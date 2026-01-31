@@ -66,9 +66,9 @@ PacFileDataWithSource::PacFileDataWithSource(const PacFileDataWithSource&) =
 PacFileDataWithSource& PacFileDataWithSource::operator=(
     const PacFileDataWithSource&) = default;
 
-base::Value::Dict PacFileDecider::PacSource::NetLogParams(
+base::DictValue PacFileDecider::PacSource::NetLogParams(
     const GURL& effective_pac_url) const {
-  base::Value::Dict dict;
+  base::DictValue dict;
   std::string source;
   switch (type) {
     case PacSource::WPAD_DHCP:

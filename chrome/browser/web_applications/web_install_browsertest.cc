@@ -53,6 +53,13 @@
 #include "components/user_manager/user_names.h"
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+#include "chrome/browser/web_applications/web_app_utils.h"
+#include "components/policy/core/browser/browser_policy_connector.h"
+#include "components/policy/core/common/mock_configuration_policy_provider.h"
+#include "components/policy/policy_constants.h"
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+
 namespace {
 constexpr webapps::WebappInstallSource kInstallSource =
     webapps::WebappInstallSource::WEB_INSTALL;
@@ -720,6 +727,87 @@ IN_PROC_BROWSER_TEST_F(WebInstallGuestModeTest,
             ukm::SourceIdType::APP_ID);
 }
 
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+class WebInstallPolicyDisabledTest
+    : public WebInstallCurrentDocumentBrowserTest {
+ public:
+  WebInstallPolicyDisabledTest() = default;
+  WebInstallPolicyDisabledTest(const WebInstallPolicyDisabledTest&) = delete;
+
+  void SetUpInProcessBrowserTestFixture() override {
+    WebAppBrowserTestBase::SetUpInProcessBrowserTestFixture();
+
+    // Set up the policy provider to disable web app installs
+    policy_provider_.SetDefaultReturns(
+        /*is_initialization_complete_return=*/true,
+        /*is_first_policy_load_complete_return=*/true);
+    policy::BrowserPolicyConnector::SetPolicyProviderForTesting(
+        &policy_provider_);
+
+    // Create policy map with disabled web app installs
+    policy::PolicyMap policies;
+    policies.Set(policy::key::kWebAppInstallByUserEnabled,
+                 policy::POLICY_LEVEL_MANDATORY, policy::POLICY_SCOPE_USER,
+                 policy::POLICY_SOURCE_ENTERPRISE_DEFAULT, base::Value(false),
+                 nullptr);
+    policy_provider_.UpdateChromePolicy(policies);
+  }
+
+ private:
+  testing::NiceMock<policy::MockConfigurationPolicyProvider> policy_provider_;
+};
+
+IN_PROC_BROWSER_TEST_F(WebInstallPolicyDisabledTest,
+                       NotSupportedDialogInstallPolicy) {
+  // Verify the policy is disabled from startup
+  ASSERT_FALSE(
+      web_app::IsWebAppInstallByUserPolicyEnabled(browser()->profile()));
+
+  // Navigate to a valid URL in the browser.
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), https_server()->GetURL("/simple.html")));
+
+  views::NamedWidgetShownWaiter widget_waiter(
+      views::test::AnyWidgetTestPasskey{}, "WebAppInstallNotSupportedDialog");
+  content::WebContents* web_contents_ptr = web_contents();
+
+  base::HistogramTester histograms;
+
+  // Trigger the Install Not Supported dialog by initiating an install request.
+  ExecuteScriptAsync(web_contents_ptr,
+                     "navigator.install()"
+                     ".then(result => {"
+                     "  webInstallResult = result;"
+                     "}).catch(error => {"
+                     "  webInstallError = error;"
+                     "});");
+
+  // Confirm Install Not Supported Dialog shows.
+  views::Widget* widget = widget_waiter.WaitIfNeededAndGet();
+  ASSERT_NE(widget, nullptr);
+  views::test::WidgetDestroyedWaiter destroyed(widget);
+
+  // Verify dialog title for Policy mode.
+  EXPECT_EQ(
+      widget->widget_delegate()->AsBubbleDialogDelegate()->GetWindowTitle(),
+      u"Web app installation is blocked by administrator policy.");
+
+  // Simulate the user accepting the dialog.
+  views::test::AcceptDialog(widget);
+  destroyed.Wait();
+
+  // Validate JS results.
+  EXPECT_FALSE(ResultExists(web_contents_ptr));
+  EXPECT_TRUE(ErrorExists(web_contents_ptr));
+  EXPECT_EQ(GetErrorName(web_contents_ptr), kAbortError);
+
+  histograms.ExpectBucketCount(
+      kInstallResultUma, web_app::WebInstallApiResult::kUnsupportedProfile, 1);
+  histograms.ExpectBucketCount(kInstallTypeUma,
+                               web_app::WebInstallApiType::kCurrentDocument, 1);
+}
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+
 // Manifest validation for current document installs.
 using WebInstallCurrentDocumentBrowserTestManifestErrors =
     WebInstallCurrentDocumentBrowserTest;
@@ -736,7 +824,7 @@ IN_PROC_BROWSER_TEST_F(WebInstallCurrentDocumentBrowserTestManifestErrors,
 
   EXPECT_FALSE(ResultExists());
   EXPECT_TRUE(ErrorExists());
-  EXPECT_EQ(GetErrorName(), kAbortError);
+  EXPECT_EQ(GetErrorName(), kDataError);
   histograms.ExpectBucketCount(
       kInstallResultUma, web_app::WebInstallApiResult::kInstallCommandFailed,
       1);

@@ -9,10 +9,13 @@
 #include <tuple>
 
 #include "base/strings/stringprintf.h"
+#include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "build/buildflag.h"
 #include "build/chromecast_buildflags.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/renderer/platform/image-decoders/bmp/bmp_decoder_factory.h"
+#include "third_party/blink/renderer/platform/image-decoders/bmp/bmp_features.h"
 #include "third_party/blink/renderer/platform/image-decoders/image_decoder_base_test.h"
 #include "third_party/blink/renderer/platform/image-decoders/image_decoder_test_helpers.h"
 #include "third_party/blink/renderer/platform/wtf/shared_buffer.h"
@@ -31,14 +34,33 @@ namespace blink {
 namespace {
 
 std::unique_ptr<ImageDecoder> CreateBMPDecoder() {
-  return std::make_unique<BMPImageDecoder>(
-      ImageDecoder::kAlphaNotPremultiplied, ColorBehavior::kTransformToSRGB,
-      ImageDecoder::kNoDecodedImageByteLimit);
+  return CreateBmpImageDecoder(
+      ImageDecoder::kAlphaNotPremultiplied, ImageDecoder::kDefaultBitDepth,
+      ColorBehavior::kTransformToSRGB, ImageDecoder::kNoDecodedImageByteLimit);
 }
+
+enum class RustFeatureState { kRustEnabled, kRustDisabled };
+
+class BMPImageDecoderTest : public testing::TestWithParam<RustFeatureState> {
+ public:
+  BMPImageDecoderTest() {
+    switch (GetParam()) {
+      case RustFeatureState::kRustEnabled:
+        features_.InitAndEnableFeature(kRustyBmpFeature);
+        break;
+      case RustFeatureState::kRustDisabled:
+        features_.InitAndDisableFeature(kRustyBmpFeature);
+        break;
+    }
+  }
+
+ protected:
+  base::test::ScopedFeatureList features_;
+};
 
 }  // anonymous namespace
 
-TEST(BMPImageDecoderTest, isSizeAvailable) {
+TEST_P(BMPImageDecoderTest, isSizeAvailable) {
   // This image is 256x256.
   static constexpr char kBmpFile[] = "/images/resources/gracehopper.bmp";
   scoped_refptr<SharedBuffer> data = ReadFileToSharedBuffer(kBmpFile);
@@ -51,6 +73,8 @@ TEST(BMPImageDecoderTest, isSizeAvailable) {
   EXPECT_EQ(256, decoder->Size().height());
 }
 
+// TODO(crbug.com/452666425): Make it parametrized to test also with RustyBMP
+// enabled.
 TEST(BMPImageDecoderTest, parseAndDecode) {
   // This image is 256x256.
   static constexpr char kBmpFile[] = "/images/resources/gracehopper.bmp";
@@ -69,6 +93,8 @@ TEST(BMPImageDecoderTest, parseAndDecode) {
 }
 
 // Test if a BMP decoder returns a proper error while decoding an empty image.
+// TODO(crbug.com/452666425): Make it parametrized to test also with RustyBMP
+// enabled.
 TEST(BMPImageDecoderTest, emptyImage) {
   static constexpr char kBmpFile[] = "/images/resources/0x0.bmp";  // 0x0
   scoped_refptr<SharedBuffer> data = ReadFileToSharedBuffer(kBmpFile);
@@ -83,7 +109,7 @@ TEST(BMPImageDecoderTest, emptyImage) {
   EXPECT_TRUE(decoder->Failed());
 }
 
-TEST(BMPImageDecoderTest, int32MinHeight) {
+TEST_P(BMPImageDecoderTest, int32MinHeight) {
   static constexpr char kBmpFile[] =
       "/images/resources/1xint32_min.bmp";  // 0xINT32_MIN
   scoped_refptr<SharedBuffer> data = ReadFileToSharedBuffer(kBmpFile);
@@ -95,7 +121,7 @@ TEST(BMPImageDecoderTest, int32MinHeight) {
 }
 
 // Verify that decoding this image does not crash.
-TEST(BMPImageDecoderTest, crbug752898) {
+TEST_P(BMPImageDecoderTest, crbug752898) {
   static constexpr char kBmpFile[] = "/images/resources/crbug752898.bmp";
   scoped_refptr<SharedBuffer> data = ReadFileToSharedBuffer(kBmpFile);
   ASSERT_TRUE(data.get());
@@ -106,7 +132,7 @@ TEST(BMPImageDecoderTest, crbug752898) {
 }
 
 // Verify that decoding this image does not crash.
-TEST(BMPImageDecoderTest, invalidBitmapOffset) {
+TEST_P(BMPImageDecoderTest, invalidBitmapOffset) {
   static constexpr char kBmpFile[] =
       "/images/resources/invalid-bitmap-offset.bmp";
   scoped_refptr<SharedBuffer> data = ReadFileToSharedBuffer(kBmpFile);
@@ -119,6 +145,8 @@ TEST(BMPImageDecoderTest, invalidBitmapOffset) {
 }
 
 // Verify that decoding an image with an unnecessary EOF marker does not crash.
+// TODO(crbug.com/452666425): Make it parametrized to test also with RustyBMP
+// enabled.
 TEST(BMPImageDecoderTest, allowEOFWhenPastEndOfImage) {
   static constexpr char kBmpFile[] = "/images/resources/unnecessary-eof.bmp";
   scoped_refptr<SharedBuffer> data = ReadFileToSharedBuffer(kBmpFile);
@@ -131,8 +159,53 @@ TEST(BMPImageDecoderTest, allowEOFWhenPastEndOfImage) {
   EXPECT_FALSE(decoder->Failed());
 }
 
-using BMPSuiteEntry = std::tuple<std::string, std::string>;
-class BMPImageDecoderTest : public testing::TestWithParam<BMPSuiteEntry> {};
+class BMPSuiteEntry {
+ public:
+  // `entry_dir` and `entry_bmp` are primarily used to locate the input test
+  // file (and also to construct Skia Gold test name) - the file will be read
+  // from:
+  // `third_party/blink/web_tests/images/bmp-suite/<entry_dir>/<entry_bmp>.bmp`
+  //
+  // `revision` is a Skia Gold revision number, which needs to be increased
+  // every time test expectations change - see also documentation of
+  // `PositiveIfOnlyImageAlgorithm` used by `BMPImageDecoderTest`:
+  // https://source.chromium.org/chromium/chromium/src/+/main:ui/base/test/skia_gold_matching_algorithm.h;l=97-133;drc=31a129ff9b513950f7f96f7fba885e8341f52158
+  BMPSuiteEntry(std::string entry_dir,
+                std::string entry_bmp,
+                std::string revision = "rev0")
+      : entry_dir_(std::move(entry_dir)),
+        entry_bmp_(std::move(entry_bmp)),
+        revision_(std::move(revision)) {}
+
+  const std::string& entry_dir() const { return entry_dir_; }
+  const std::string& entry_bmp() const { return entry_bmp_; }
+  const std::string& revision() const { return revision_; }
+
+ private:
+  std::string entry_dir_;
+  std::string entry_bmp_;
+  std::string revision_;
+};
+
+class BMPImageDecoderSuiteTest
+    : public testing::TestWithParam<
+          std::tuple<BMPSuiteEntry, RustFeatureState>> {
+ public:
+  BMPImageDecoderSuiteTest() {
+    const auto& [_, rust_state] = GetParam();
+    std::vector<base::test::FeatureRef> enabled_features;
+    std::vector<base::test::FeatureRef> disabled_features;
+    if (rust_state == RustFeatureState::kRustEnabled) {
+      enabled_features.push_back(kRustyBmpFeature);
+    } else {
+      disabled_features.push_back(kRustyBmpFeature);
+    }
+    scoped_feature_list_.InitWithFeatures(enabled_features, disabled_features);
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
 
 #if BUILDFLAG(IS_LINUX)
 #define MAYBE_VerifyBMPSuiteImage DISABLED_VerifyBMPSuiteImage
@@ -140,11 +213,12 @@ class BMPImageDecoderTest : public testing::TestWithParam<BMPSuiteEntry> {};
 #define MAYBE_VerifyBMPSuiteImage VerifyBMPSuiteImage
 #endif
 // TODO(crbug.com/422362214): Re-enable once flakiness is addressed.
-TEST_P(BMPImageDecoderTest, MAYBE_VerifyBMPSuiteImage) {
+TEST_P(BMPImageDecoderSuiteTest, MAYBE_VerifyBMPSuiteImage) {
   // Load the BMP file under test.
-  const auto& [entry_dir, entry_bmp] = GetParam();
-  std::string bmp_path = base::StringPrintf(
-      "/images/bmp-suite/%s/%s.bmp", entry_dir.c_str(), entry_bmp.c_str());
+  const auto& [entry, _] = GetParam();
+  std::string bmp_path =
+      base::StringPrintf("/images/bmp-suite/%s/%s.bmp",
+                         entry.entry_dir().c_str(), entry.entry_bmp().c_str());
   scoped_refptr<SharedBuffer> data = ReadFileToSharedBuffer(bmp_path.c_str());
   ASSERT_NE(data.get(), nullptr) << "unable to load '" << bmp_path << "'";
   ASSERT_FALSE(data->empty());
@@ -163,7 +237,7 @@ TEST_P(BMPImageDecoderTest, MAYBE_VerifyBMPSuiteImage) {
     result_image = &frame->Bitmap();
   } else {
     // Images in the "good" directory should always decode successfully.
-    EXPECT_NE(entry_dir, "good");
+    EXPECT_NE(entry.entry_dir(), "good");
     // Represent failures as a 1x1 transparent black pixel in Skia Gold.
     EXPECT_TRUE(decoder->Failed());
     empty_bitmap.allocPixels(SkImageInfo::MakeN32(1, 1, kPremul_SkAlphaType));
@@ -181,109 +255,122 @@ TEST_P(BMPImageDecoderTest, MAYBE_VerifyBMPSuiteImage) {
   ui::test::PositiveIfOnlyImageAlgorithm positive_if_exact_image_only;
   std::string golden_name = ui::test::SkiaGoldPixelDiff::GetGoldenImageName(
       "BMPImageDecoderTest", "VerifyBMPSuite",
-      base::StringPrintf("%s_%s.rev0", entry_dir.c_str(), entry_bmp.c_str()));
+      base::StringPrintf("%s_%s.%s", entry.entry_dir().c_str(),
+                         entry.entry_bmp().c_str(), entry.revision().c_str()));
   EXPECT_TRUE(skia_gold->CompareScreenshot(golden_name, *result_image,
                                            &positive_if_exact_image_only))
       << bmp_path;
 #endif
 }
 
+INSTANTIATE_TEST_SUITE_P(All,
+                         BMPImageDecoderTest,
+                         testing::Values(RustFeatureState::kRustEnabled,
+                                         RustFeatureState::kRustDisabled));
+
 INSTANTIATE_TEST_SUITE_P(
     BMPSuite,
-    BMPImageDecoderTest,
-    testing::Values(
-        BMPSuiteEntry{"good", "pal1"},
-        BMPSuiteEntry{"good", "pal1wb"},
-        BMPSuiteEntry{"good", "pal1bg"},
-        BMPSuiteEntry{"good", "pal4"},
-        BMPSuiteEntry{"good", "pal4gs"},
-        BMPSuiteEntry{"good", "pal4rle"},
-        BMPSuiteEntry{"good", "pal8"},
-        BMPSuiteEntry{"good", "pal8-0"},
-        BMPSuiteEntry{"good", "pal8gs"},
-        BMPSuiteEntry{"good", "pal8rle"},
-        BMPSuiteEntry{"good", "pal8w126"},
-        BMPSuiteEntry{"good", "pal8w125"},
-        BMPSuiteEntry{"good", "pal8w124"},
-        BMPSuiteEntry{"good", "pal8topdown"},
-        BMPSuiteEntry{"good", "pal8nonsquare"},
-        BMPSuiteEntry{"good", "pal8os2"},
-        BMPSuiteEntry{"good", "pal8v4"},
-        BMPSuiteEntry{"good", "pal8v5"},
-        BMPSuiteEntry{"good", "rgb16"},
-        BMPSuiteEntry{"good", "rgb16bfdef"},
-        BMPSuiteEntry{"good", "rgb16-565"},
-        BMPSuiteEntry{"good", "rgb16-565pal"},
-        BMPSuiteEntry{"good", "rgb24"},
-        BMPSuiteEntry{"good", "rgb24pal"},
-        BMPSuiteEntry{"good", "rgb32"},
-        BMPSuiteEntry{"good", "rgb32bfdef"},
-        BMPSuiteEntry{"good", "rgb32bf"},
+    BMPImageDecoderSuiteTest,
+    testing::Combine(
+        testing::Values(
+            BMPSuiteEntry{"good", "pal1"},
+            BMPSuiteEntry{"good", "pal1wb"},
+            BMPSuiteEntry{"good", "pal1bg"},
+            BMPSuiteEntry{"good", "pal4"},
+            BMPSuiteEntry{"good", "pal4gs"},
+            BMPSuiteEntry{"good", "pal4rle"},
+            BMPSuiteEntry{"good", "pal8"},
+            BMPSuiteEntry{"good", "pal8-0"},
+            BMPSuiteEntry{"good", "pal8gs"},
+            BMPSuiteEntry{"good", "pal8rle"},
+            BMPSuiteEntry{"good", "pal8w126"},
+            BMPSuiteEntry{"good", "pal8w125"},
+            BMPSuiteEntry{"good", "pal8w124"},
+            BMPSuiteEntry{"good", "pal8topdown"},
+            BMPSuiteEntry{"good", "pal8nonsquare"},
+            BMPSuiteEntry{"good", "pal8os2"},
+            BMPSuiteEntry{"good", "pal8v4"},
+            BMPSuiteEntry{"good", "pal8v5"},
+            BMPSuiteEntry{"good", "rgb16"},
+            BMPSuiteEntry{"good", "rgb16bfdef"},
+            BMPSuiteEntry{"good", "rgb16-565"},
+            BMPSuiteEntry{"good", "rgb16-565pal"},
+            BMPSuiteEntry{"good", "rgb24"},
+            BMPSuiteEntry{"good", "rgb24pal"},
+            BMPSuiteEntry{"good", "rgb32"},
+            BMPSuiteEntry{"good", "rgb32bfdef"},
+            BMPSuiteEntry{"good", "rgb32bf"},
 
-        BMPSuiteEntry{"questionable", "pal1p1"},
-        BMPSuiteEntry{"questionable", "pal2"},
-        BMPSuiteEntry{"questionable", "pal2color"},
-        BMPSuiteEntry{"questionable", "pal4rletrns"},
-        BMPSuiteEntry{"questionable", "pal4rlecut"},
-        BMPSuiteEntry{"questionable", "pal8rletrns"},
-        BMPSuiteEntry{"questionable", "pal8rlecut"},
-        BMPSuiteEntry{"questionable", "pal8offs"},
-        BMPSuiteEntry{"questionable", "pal8oversizepal"},
-        BMPSuiteEntry{"questionable", "pal8os2-sz"},
-        BMPSuiteEntry{"questionable", "pal8os2-hs"},
-        BMPSuiteEntry{"questionable", "pal8os2sp"},
-        BMPSuiteEntry{"questionable", "pal8os2v2"},
-        BMPSuiteEntry{"questionable", "pal8os2v2-16"},
-        BMPSuiteEntry{"questionable", "pal8os2v2-sz"},
-        BMPSuiteEntry{"questionable", "pal8os2v2-40sz"},
-        BMPSuiteEntry{"questionable", "rgb24rle24"},
-        BMPSuiteEntry{"questionable", "pal1huffmsb"},  // Unsupported encoding.
-        BMPSuiteEntry{"questionable", "rgb16faketrns"},
-        BMPSuiteEntry{"questionable", "rgb16-231"},
-        BMPSuiteEntry{"questionable", "rgb16-3103"},
-        BMPSuiteEntry{"questionable", "rgba16-4444"},
-        BMPSuiteEntry{"questionable", "rgba16-5551"},
-        BMPSuiteEntry{"questionable", "rgba16-1924"},
-        BMPSuiteEntry{"questionable", "rgb24largepal"},
-        //           {"questionable", "rgb24prof"},  Omitted--not public domain.
-        //           {"questionable", "rgb24prof2"},    "       "    "      "
-        //           {"questionable", "rgb24lprof"},    "       "    "      "
-        BMPSuiteEntry{"questionable", "rgb24jpeg"},
-        BMPSuiteEntry{"questionable", "rgb24png"},
-        BMPSuiteEntry{"questionable", "rgb32h52"},
-        BMPSuiteEntry{"questionable", "rgb32-xbgr"},
-        BMPSuiteEntry{"questionable", "rgb32fakealpha"},
-        BMPSuiteEntry{"questionable", "rgb32-111110"},
-        BMPSuiteEntry{"questionable", "rgb32-7187"},
-        BMPSuiteEntry{"questionable", "rgba32-1"},
-        BMPSuiteEntry{"questionable", "rgba32-1010102"},
-        BMPSuiteEntry{"questionable", "rgba32-81284"},
-        BMPSuiteEntry{"questionable", "rgba32-61754"},
-        BMPSuiteEntry{"questionable", "rgba32abf"},
-        BMPSuiteEntry{"questionable", "rgba32h56"},
-        // TODO: crbug.com/40244265 - a bitcount of 64 is not yet supported.
-        BMPSuiteEntry{"questionable", "rgba64"},
+            BMPSuiteEntry{"questionable", "pal1p1"},
+            BMPSuiteEntry{"questionable", "pal2"},
+            BMPSuiteEntry{"questionable", "pal2color"},
+            BMPSuiteEntry{"questionable", "pal4rletrns"},
+            BMPSuiteEntry{"questionable", "pal4rlecut"},
+            BMPSuiteEntry{"questionable", "pal8rletrns"},
+            BMPSuiteEntry{"questionable", "pal8rlecut"},
+            BMPSuiteEntry{"questionable", "pal8offs"},
+            BMPSuiteEntry{"questionable", "pal8oversizepal"},
+            BMPSuiteEntry{"questionable", "pal8os2-sz"},
+            BMPSuiteEntry{"questionable", "pal8os2-hs"},
+            BMPSuiteEntry{"questionable", "pal8os2sp"},
+            BMPSuiteEntry{"questionable", "pal8os2v2"},
+            BMPSuiteEntry{"questionable", "pal8os2v2-16"},
+            BMPSuiteEntry{"questionable", "pal8os2v2-sz"},
+            BMPSuiteEntry{"questionable", "pal8os2v2-40sz"},
+            BMPSuiteEntry{"questionable", "rgb24rle24"},
+            BMPSuiteEntry{"questionable",
+                          "pal1huffmsb"},  // Unsupported encoding.
+            BMPSuiteEntry{"questionable", "rgb16faketrns"},
+            BMPSuiteEntry{"questionable", "rgb16-231"},
+            BMPSuiteEntry{"questionable", "rgb16-3103"},
+            BMPSuiteEntry{"questionable", "rgba16-4444"},
+            BMPSuiteEntry{"questionable", "rgba16-5551"},
+            BMPSuiteEntry{"questionable", "rgba16-1924"},
+            BMPSuiteEntry{"questionable", "rgb24largepal"},
+            //           {"questionable", "rgb24prof"},  Omitted--not public
+            //           domain.
+            //           {"questionable", "rgb24prof2"},    "       "    " "
+            //           {"questionable", "rgb24lprof"},    "       "    " "
+            BMPSuiteEntry{"questionable", "rgb24jpeg", "rev1"},
+            BMPSuiteEntry{"questionable", "rgb24png", "rev1"},
+            BMPSuiteEntry{"questionable", "rgb32h52"},
+            BMPSuiteEntry{"questionable", "rgb32-xbgr"},
+            BMPSuiteEntry{"questionable", "rgb32fakealpha"},
+            BMPSuiteEntry{"questionable", "rgb32-111110"},
+            BMPSuiteEntry{"questionable", "rgb32-7187"},
+            BMPSuiteEntry{"questionable", "rgba32-1"},
+            BMPSuiteEntry{"questionable", "rgba32-1010102"},
+            BMPSuiteEntry{"questionable", "rgba32-81284"},
+            BMPSuiteEntry{"questionable", "rgba32-61754"},
+            BMPSuiteEntry{"questionable", "rgba32abf"},
+            BMPSuiteEntry{"questionable", "rgba32h56"},
+            // TODO: crbug.com/40244265 - a bitcount of 64 is not yet supported.
+            BMPSuiteEntry{"questionable", "rgba64"},
 
-        BMPSuiteEntry{"bad", "badbitcount"},
-        BMPSuiteEntry{"bad", "badbitssize"},
-        BMPSuiteEntry{"bad", "baddens1"},
-        BMPSuiteEntry{"bad", "baddens2"},
-        BMPSuiteEntry{"bad", "badfilesize"},
-        BMPSuiteEntry{"bad", "badheadersize"},
-        BMPSuiteEntry{"bad", "badpalettesize"},
-        BMPSuiteEntry{"bad", "badplanes"},
-        BMPSuiteEntry{"bad", "badrle"},
-        BMPSuiteEntry{"bad", "badrle4"},
-        BMPSuiteEntry{"bad", "badrle4bis"},
-        BMPSuiteEntry{"bad", "badrle4ter"},
-        BMPSuiteEntry{"bad", "badrlebis"},
-        BMPSuiteEntry{"bad", "badrleter"},
-        BMPSuiteEntry{"bad", "badwidth"},
-        BMPSuiteEntry{"bad", "pal8badindex"},
-        BMPSuiteEntry{"bad", "reallybig"},
-        BMPSuiteEntry{"bad", "rgb16-880"},
-        BMPSuiteEntry{"bad", "rletopdown"},
-        BMPSuiteEntry{"bad", "shortfile"}));
+            BMPSuiteEntry{"bad", "badbitcount"},
+            BMPSuiteEntry{"bad", "badbitssize"},
+            BMPSuiteEntry{"bad", "baddens1"},
+            BMPSuiteEntry{"bad", "baddens2"},
+            BMPSuiteEntry{"bad", "badfilesize"},
+            BMPSuiteEntry{"bad", "badheadersize"},
+            BMPSuiteEntry{"bad", "badpalettesize"},
+            BMPSuiteEntry{"bad", "badplanes"},
+            BMPSuiteEntry{"bad", "badrle"},
+            BMPSuiteEntry{"bad", "badrle4"},
+            BMPSuiteEntry{"bad", "badrle4bis"},
+            BMPSuiteEntry{"bad", "badrle4ter"},
+            BMPSuiteEntry{"bad", "badrlebis"},
+            BMPSuiteEntry{"bad", "badrleter"},
+            BMPSuiteEntry{"bad", "badwidth"},
+            BMPSuiteEntry{"bad", "pal8badindex"},
+            BMPSuiteEntry{"bad", "reallybig"},
+            BMPSuiteEntry{"bad", "rgb16-880"},
+            BMPSuiteEntry{"bad", "rletopdown"},
+            BMPSuiteEntry{"bad", "shortfile"}),
+        // TODO(crbug.com/452666425): Include rust enabled case once incremental
+        // decoding is integrated
+        testing::Values(/* RustFeatureState::kRustEnabled, */
+                        RustFeatureState::kRustDisabled)));
 
 class BMPImageDecoderCorpusTest : public ImageDecoderBaseTest {
  public:

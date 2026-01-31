@@ -5525,7 +5525,11 @@ TEST_F(WebViewTest, SubframeBeforeUnloadUseCounter) {
   {
     frame->ExecuteScript(
         WebScriptSource("addEventListener('beforeunload', function() {});"));
-    web_view->MainFrameImpl()->DispatchBeforeUnloadEvent(false);
+    base::TimeTicks before_unload_dialog_opened_time;
+    base::TimeTicks before_unload_dialog_closed_time;
+    web_view->MainFrameImpl()->DispatchBeforeUnloadEvent(
+        false, before_unload_dialog_opened_time,
+        before_unload_dialog_closed_time);
     EXPECT_FALSE(
         document->IsUseCounted(WebFeature::kSubFrameBeforeUnloadFired));
   }
@@ -5536,9 +5540,12 @@ TEST_F(WebViewTest, SubframeBeforeUnloadUseCounter) {
     frame->ExecuteScript(WebScriptSource(
         "document.getElementsByTagName('iframe')[0].contentWindow."
         "addEventListener('beforeunload', function() {});"));
+    base::TimeTicks before_unload_dialog_opened_time;
+    base::TimeTicks before_unload_dialog_closed_time;
     To<WebLocalFrameImpl>(
         web_view->MainFrame()->FirstChild()->ToWebLocalFrame())
-        ->DispatchBeforeUnloadEvent(false);
+        ->DispatchBeforeUnloadEvent(false, before_unload_dialog_opened_time,
+                                    before_unload_dialog_closed_time);
 
     Document* child_document = To<LocalFrame>(web_view_helper_.GetWebView()
                                                   ->GetPage()

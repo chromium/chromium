@@ -6,7 +6,6 @@
 
 #include "ash/public/cpp/tab_cluster/tab_cluster_ui_item.h"
 #include "ash/public/cpp/tab_cluster/undirected_graph.h"
-#include "base/containers/contains.h"
 #include "base/logging.h"
 
 namespace ash {
@@ -84,7 +83,7 @@ std::vector<TabClusterUIItem*> Clusterer::GetUpdatedClusterInfo(
     const std::string& source = tab_item.get()->current_info().source;
     // Tab item source might not be present in result map yet when users have
     // yet to navigate between two tabs that are not ignored.
-    if (!base::Contains(result_map, source)) {
+    if (!result_map.contains(source)) {
       continue;
     }
 
@@ -138,7 +137,7 @@ void Clusterer::AddEdge(const std::string& from_source,
 }
 
 size_t Clusterer::GetNodeForSource(const std::string& source) {
-  if (base::Contains(source_to_node_, source)) {
+  if (source_to_node_.contains(source)) {
     return source_to_node_.at(source);
   }
   size_t curr_size = source_to_node_.size();

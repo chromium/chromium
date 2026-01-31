@@ -42,9 +42,12 @@ import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.res.ColorStateList;
 import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Looper;
 import android.view.View;
 import android.view.View.MeasureSpec;
+import android.view.ViewGroup.LayoutParams;
+import android.view.ViewGroup.MarginLayoutParams;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 
@@ -66,6 +69,8 @@ import org.robolectric.Shadows;
 import org.robolectric.annotation.LooperMode;
 import org.robolectric.shadows.ShadowLooper;
 
+import org.chromium.base.supplier.ObservableSuppliers;
+import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
@@ -76,6 +81,7 @@ import org.chromium.chrome.browser.omnibox.LocationBarCoordinator;
 import org.chromium.chrome.browser.omnibox.LocationBarCoordinatorTablet;
 import org.chromium.chrome.browser.omnibox.LocationBarLayout;
 import org.chromium.chrome.browser.omnibox.NewTabPageDelegate;
+import org.chromium.chrome.browser.omnibox.fusebox.FuseboxCoordinator.FuseboxState;
 import org.chromium.chrome.browser.omnibox.status.StatusCoordinator;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.IncognitoStateProvider;
@@ -103,6 +109,8 @@ import org.chromium.chrome.browser.toolbar.top.ToolbarUtils.ToolbarComponentId;
 import org.chromium.chrome.browser.toolbar.top.TopToolbarCoordinator.ToolbarColorObserver;
 import org.chromium.chrome.browser.toolbar.top.tab_strip.TabStripTransitionCoordinator;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
+import org.chromium.components.browser_ui.styles.SemanticColorUtils;
+import org.chromium.components.omnibox.OmniboxFeatureList;
 import org.chromium.ui.widget.ChromeImageButton;
 import org.chromium.ui.widget.ToastManager;
 
@@ -153,6 +161,9 @@ public final class ToolbarTabletUnitTest {
     private ToolbarProgressBar mProgressBar;
     private Set<TintObserver> mTintObservers;
     private Set<IncognitoStateObserver> mIncognitoStateObservers;
+    private final SettableNonNullObservableSupplier<Integer> mFuseboxStateSupplier =
+            ObservableSuppliers.createNonNull(FuseboxState.DISABLED);
+    private final MarginLayoutParams mLayoutParams = new MarginLayoutParams(100, 100);
 
     private final Answer<Object> mAddIncognitoObserverInIncognitoMode =
             (invocation) -> {
@@ -188,6 +199,7 @@ public final class ToolbarTabletUnitTest {
         ToolbarTablet realView =
                 (ToolbarTablet)
                         mActivity.getLayoutInflater().inflate(R.layout.toolbar_tablet, null);
+        realView.setLayoutParams(mLayoutParams);
         mToolbarTablet = Mockito.spy(realView);
         when(mLocationBar.getTabletCoordinator()).thenReturn(mLocationBarTablet);
         when(mLocationBar.getBookmarkButtonToolbarWidthConsumer())
@@ -200,6 +212,7 @@ public final class ToolbarTabletUnitTest {
                 .thenReturn(mLocationBarLensButtonWidthConsumer);
         when(mLocationBar.getZoomButtonToolbarWidthConsumer())
                 .thenReturn(mLocationBarZoomButtonWidthConsumer);
+        when(mLocationBar.getFuseboxStateSupplier()).thenReturn(mFuseboxStateSupplier);
         mToolbarTablet.setLocationBarCoordinator(mLocationBar);
         LocationBarLayout locationBarLayout = mToolbarTablet.findViewById(R.id.location_bar);
         locationBarLayout.setStatusCoordinatorForTesting(mStatusCoordinator);
@@ -237,24 +250,44 @@ public final class ToolbarTabletUnitTest {
                         .getResources()
                         .getDimensionPixelSize(R.dimen.toolbar_button_width);
 
-        doReturn(buttonWidth).when(mHomeButtonCoordinator).updateVisibility(geq(buttonWidth));
-        doReturn(0).when(mHomeButtonCoordinator).updateVisibility(lt(buttonWidth));
+        doReturn(buttonWidth)
+                .when(mHomeButtonCoordinator)
+                .updateVisibility(geq(buttonWidth), anyInt(), anyInt());
+        doReturn(0)
+                .when(mHomeButtonCoordinator)
+                .updateVisibility(lt(buttonWidth), anyInt(), anyInt());
 
-        doReturn(buttonWidth).when(mReloadButtonCoordinator).updateVisibility(geq(buttonWidth));
-        doReturn(0).when(mReloadButtonCoordinator).updateVisibility(lt(buttonWidth));
+        doReturn(buttonWidth)
+                .when(mReloadButtonCoordinator)
+                .updateVisibility(geq(buttonWidth), anyInt(), anyInt());
+        doReturn(0)
+                .when(mReloadButtonCoordinator)
+                .updateVisibility(lt(buttonWidth), anyInt(), anyInt());
 
-        doReturn(buttonWidth).when(mBackButtonCoordinator).updateVisibility(geq(buttonWidth));
-        doReturn(0).when(mBackButtonCoordinator).updateVisibility(lt(buttonWidth));
+        doReturn(buttonWidth)
+                .when(mBackButtonCoordinator)
+                .updateVisibility(geq(buttonWidth), anyInt(), anyInt());
+        doReturn(0)
+                .when(mBackButtonCoordinator)
+                .updateVisibility(lt(buttonWidth), anyInt(), anyInt());
 
         doReturn(buttonWidth)
                 .when(mTabSwitcherButtonCoordinator)
-                .updateVisibility(geq(buttonWidth));
-        doReturn(0).when(mTabSwitcherButtonCoordinator).updateVisibility(lt(buttonWidth));
+                .updateVisibility(geq(buttonWidth), anyInt(), anyInt());
+        doReturn(0)
+                .when(mTabSwitcherButtonCoordinator)
+                .updateVisibility(lt(buttonWidth), anyInt(), anyInt());
 
-        doReturn(buttonWidth).when(mMenuButtonCoordinator).updateVisibility(geq(buttonWidth));
-        doReturn(0).when(mMenuButtonCoordinator).updateVisibility(lt(buttonWidth));
+        doReturn(buttonWidth)
+                .when(mMenuButtonCoordinator)
+                .updateVisibility(geq(buttonWidth), anyInt(), anyInt());
+        doReturn(0)
+                .when(mMenuButtonCoordinator)
+                .updateVisibility(lt(buttonWidth), anyInt(), anyInt());
 
-        doReturn(buttonWidth * 3).when(mIncognitoIndicatorCoordinator).updateVisibility(anyInt());
+        doReturn(buttonWidth * 3)
+                .when(mIncognitoIndicatorCoordinator)
+                .updateVisibility(anyInt(), anyInt(), anyInt());
         doReturn(false).when(mIncognitoIndicatorCoordinator).needsUpdateBeforeShowing();
 
         mockToolbarWidthConsumer(mLocationBarBookmarkButtonWidthConsumer, buttonWidth);
@@ -278,8 +311,8 @@ public final class ToolbarTabletUnitTest {
     }
 
     private static void mockToolbarWidthConsumer(ToolbarWidthConsumer consumer, int width) {
-        doReturn(width).when(consumer).updateVisibility(geq(width));
-        doReturn(0).when(consumer).updateVisibility(lt(width));
+        doReturn(width).when(consumer).updateVisibility(geq(width), anyInt(), anyInt());
+        doReturn(0).when(consumer).updateVisibility(lt(width), anyInt(), anyInt());
     }
 
     @After
@@ -581,6 +614,14 @@ public final class ToolbarTabletUnitTest {
     }
 
     @Test
+    public void testIsReadyForTextureCapture_inLayout() {
+        mToolbarTablet.requestLayout();
+        CaptureReadinessResult result = mToolbarTablet.isReadyForTextureCapture();
+        Assert.assertFalse(result.isReady);
+        Assert.assertEquals(TopToolbarBlockCaptureReason.LAYOUT_REQUESTED, result.blockReason);
+    }
+
+    @Test
     public void testOptionalButtonTooltipText() {
         updateOptionalButton(
                 /* buttonVariant= */ AdaptiveToolbarButtonVariant.READER_MODE,
@@ -665,6 +706,8 @@ public final class ToolbarTabletUnitTest {
     @Test
     @DisableFeatures(ChromeFeatureList.TOOLBAR_TABLET_RESIZE_REFACTOR)
     public void testIsReadyForTextureCapture_ButtonShowAnimationInProgress_Legacy() {
+        mToolbarTablet.measure(300, 300);
+        mToolbarTablet.layout(0, 0, 0, 0);
         mToolbarTablet.setToolbarButtonsVisibleForTesting(false);
         mToolbarTablet.enableButtonVisibilityChangeAnimationForTesting();
 
@@ -690,6 +733,8 @@ public final class ToolbarTabletUnitTest {
     @Test
     @DisableFeatures(ChromeFeatureList.TOOLBAR_TABLET_RESIZE_REFACTOR)
     public void testIsReadyForTextureCapture_ButtonHideAnimationInProgress_Legacy() {
+        mToolbarTablet.measure(300, 300);
+        mToolbarTablet.layout(0, 0, 0, 0);
         mToolbarTablet.setToolbarButtonsVisibleForTesting(true);
         mToolbarTablet.enableButtonVisibilityChangeAnimationForTesting();
 
@@ -699,7 +744,8 @@ public final class ToolbarTabletUnitTest {
                 .thenReturn(List.of(animator));
 
         // Run animation.
-        mToolbarTablet.measure(300, 300);
+        mToolbarTablet.measure(310, 310);
+        mToolbarTablet.layout(0, 1, 0, 1);
         CaptureReadinessResult result = mToolbarTablet.isReadyForTextureCapture();
         Assert.assertFalse(result.isReady);
         Assert.assertEquals(
@@ -714,6 +760,8 @@ public final class ToolbarTabletUnitTest {
 
     @Test
     public void testIsReadyForTextureCapture_Snapshot() {
+        mToolbarTablet.measure(300, 300);
+        mToolbarTablet.layout(0, 0, 0, 0);
         {
             CaptureReadinessResult result = mToolbarTablet.isReadyForTextureCapture();
             Assert.assertTrue(result.isReady);
@@ -1169,6 +1217,24 @@ public final class ToolbarTabletUnitTest {
         assertFalse(mToolbarTablet.areAnyToolbarComponentsMissingForWidth(new int[] {RELOAD}));
     }
 
+    @Test
+    @EnableFeatures(OmniboxFeatureList.OMNIBOX_MULTIMODAL_INPUT)
+    public void testFuseboxState() {
+        View fixedHeightBg = mToolbarTablet.findViewById(R.id.toolbar_tablet_fixed_height_bg);
+        ColorDrawable backgroundDrawable = (ColorDrawable) mToolbarTablet.getBackground();
+        assertEquals(100, mToolbarTablet.getLayoutParams().height);
+        assertEquals(View.GONE, fixedHeightBg.getVisibility());
+        assertEquals(
+                SemanticColorUtils.getDefaultBgColor(mToolbarTablet.getContext()),
+                backgroundDrawable.getColor());
+
+        mFuseboxStateSupplier.set(FuseboxState.EXPANDED);
+        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+        assertEquals(LayoutParams.WRAP_CONTENT, mToolbarTablet.getLayoutParams().height);
+        assertEquals(View.VISIBLE, fixedHeightBg.getVisibility());
+        assertEquals(Color.TRANSPARENT, backgroundDrawable.getColor());
+    }
+
     @SuppressWarnings("DirectInvocationOnMock")
     private void assertToolbarComponentsReceivedWidth(
             @ToolbarComponentId Set<Integer> visibleComponents) {
@@ -1184,65 +1250,79 @@ public final class ToolbarTabletUnitTest {
                         .getDimensionPixelSize(R.dimen.tablet_toolbar_start_padding);
 
         if (visibleComponents.contains(HOME)) {
-            verify(mHomeButtonCoordinator).updateVisibility(geq(buttonWidth));
+            verify(mHomeButtonCoordinator).updateVisibility(geq(buttonWidth), anyInt(), anyInt());
         } else {
-            verify(mHomeButtonCoordinator, never()).updateVisibility(geq(buttonWidth));
+            verify(mHomeButtonCoordinator, never())
+                    .updateVisibility(geq(buttonWidth), anyInt(), anyInt());
         }
 
         if (visibleComponents.contains(BACK)) {
-            verify(mBackButtonCoordinator).updateVisibility(geq(buttonWidth));
+            verify(mBackButtonCoordinator).updateVisibility(geq(buttonWidth), anyInt(), anyInt());
         } else {
-            verify(mBackButtonCoordinator, never()).updateVisibility(geq(buttonWidth));
+            verify(mBackButtonCoordinator, never())
+                    .updateVisibility(geq(buttonWidth), anyInt(), anyInt());
         }
 
         if (visibleComponents.contains(RELOAD)) {
-            verify(mReloadButtonCoordinator).updateVisibility(geq(buttonWidth));
+            verify(mReloadButtonCoordinator).updateVisibility(geq(buttonWidth), anyInt(), anyInt());
         } else {
-            verify(mReloadButtonCoordinator, never()).updateVisibility(geq(buttonWidth));
+            verify(mReloadButtonCoordinator, never())
+                    .updateVisibility(geq(buttonWidth), anyInt(), anyInt());
         }
 
         if (visibleComponents.contains(TAB_SWITCHER)) {
-            verify(mTabSwitcherButtonCoordinator).updateVisibility(geq(buttonWidth));
+            verify(mTabSwitcherButtonCoordinator)
+                    .updateVisibility(geq(buttonWidth), anyInt(), anyInt());
         } else {
-            verify(mTabSwitcherButtonCoordinator, never()).updateVisibility(geq(buttonWidth));
+            verify(mTabSwitcherButtonCoordinator, never())
+                    .updateVisibility(geq(buttonWidth), anyInt(), anyInt());
         }
 
         if (visibleComponents.contains(MENU)) {
-            verify(mMenuButtonCoordinator).updateVisibility(geq(buttonWidth));
+            verify(mMenuButtonCoordinator).updateVisibility(geq(buttonWidth), anyInt(), anyInt());
         } else {
-            verify(mMenuButtonCoordinator, never()).updateVisibility(geq(buttonWidth));
+            verify(mMenuButtonCoordinator, never())
+                    .updateVisibility(geq(buttonWidth), anyInt(), anyInt());
         }
 
         if (visibleComponents.contains(OMNIBOX_BOOKMARK)) {
-            verify(mLocationBarBookmarkButtonWidthConsumer).updateVisibility(geq(buttonWidth));
+            verify(mLocationBarBookmarkButtonWidthConsumer)
+                    .updateVisibility(geq(buttonWidth), anyInt(), anyInt());
         } else {
             verify(mLocationBarBookmarkButtonWidthConsumer, never())
-                    .updateVisibility(geq(buttonWidth));
+                    .updateVisibility(geq(buttonWidth), anyInt(), anyInt());
         }
 
         if (visibleComponents.contains(OMNIBOX_ZOOM)) {
-            verify(mLocationBarZoomButtonWidthConsumer).updateVisibility(geq(buttonWidth));
+            verify(mLocationBarZoomButtonWidthConsumer)
+                    .updateVisibility(geq(buttonWidth), anyInt(), anyInt());
         } else {
-            verify(mLocationBarZoomButtonWidthConsumer, never()).updateVisibility(geq(buttonWidth));
+            verify(mLocationBarZoomButtonWidthConsumer, never())
+                    .updateVisibility(geq(buttonWidth), anyInt(), anyInt());
         }
 
         if (visibleComponents.contains(OMNIBOX_INSTALL)) {
-            verify(mLocationBarInstallButtonWidthConsumer).updateVisibility(geq(buttonWidth));
+            verify(mLocationBarInstallButtonWidthConsumer)
+                    .updateVisibility(geq(buttonWidth), anyInt(), anyInt());
         } else {
             verify(mLocationBarInstallButtonWidthConsumer, never())
-                    .updateVisibility(geq(buttonWidth));
+                    .updateVisibility(geq(buttonWidth), anyInt(), anyInt());
         }
 
         if (visibleComponents.contains(OMNIBOX_MIC)) {
-            verify(mLocationBarMicButtonWidthConsumer).updateVisibility(geq(buttonWidth));
+            verify(mLocationBarMicButtonWidthConsumer)
+                    .updateVisibility(geq(buttonWidth), anyInt(), anyInt());
         } else {
-            verify(mLocationBarMicButtonWidthConsumer, never()).updateVisibility(geq(buttonWidth));
+            verify(mLocationBarMicButtonWidthConsumer, never())
+                    .updateVisibility(geq(buttonWidth), anyInt(), anyInt());
         }
 
         if (visibleComponents.contains(OMNIBOX_LENS)) {
-            verify(mLocationBarLensButtonWidthConsumer).updateVisibility(geq(buttonWidth));
+            verify(mLocationBarLensButtonWidthConsumer)
+                    .updateVisibility(geq(buttonWidth), anyInt(), anyInt());
         } else {
-            verify(mLocationBarLensButtonWidthConsumer, never()).updateVisibility(geq(buttonWidth));
+            verify(mLocationBarLensButtonWidthConsumer, never())
+                    .updateVisibility(geq(buttonWidth), anyInt(), anyInt());
         }
 
         Mockito.clearInvocations(

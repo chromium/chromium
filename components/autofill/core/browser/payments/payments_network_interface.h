@@ -42,7 +42,7 @@ namespace payments {
 using GetCardUploadDetailsCallback = base::OnceCallback<void(
     PaymentsAutofillClient::PaymentsRpcResult result,
     const std::u16string& context_token,
-    std::unique_ptr<base::Value::Dict> legal_message,
+    std::unique_ptr<base::DictValue> legal_message,
     std::vector<std::pair<int, int>> supported_card_bin_ranges)>;
 
 // PaymentsNetworkInterface issues Payments RPCs and manages responses and failure
@@ -148,7 +148,7 @@ class PaymentsNetworkInterface : public PaymentsNetworkInterfaceBase {
       base::OnceCallback<void(PaymentsAutofillClient::PaymentsRpcResult result,
                               const std::u16string& validation_regex,
                               const std::u16string& context_token,
-                              std::unique_ptr<base::Value::Dict>)> callback);
+                              std::unique_ptr<base::DictValue>)> callback);
 
   // The user has indicated that they would like to upload an IBAN. This request
   // will fail server-side if a successful call to GetIbanUploadDetails has not

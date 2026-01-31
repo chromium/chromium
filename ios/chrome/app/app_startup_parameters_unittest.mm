@@ -89,7 +89,6 @@ class AppStartupParamsTest : public PlatformTest {
   void SetUp() override {
     helper_ = [[TestApplicationModeFetcherProviderTestHelper alloc] init];
     ios::provider::test::SetApplicationModeFetcherProviderTestHelper(helper_);
-    feature_list_.InitAndEnableFeature(kYoutubeIncognito);
   }
 
   void TearDown() override {

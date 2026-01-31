@@ -17,7 +17,7 @@ import org.chromium.base.Callback;
 import org.chromium.base.CommandLine;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
-import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.NullUnmarked;
 import org.chromium.build.annotations.Nullable;
@@ -74,7 +74,7 @@ public class OfflineIndicatorControllerV2 {
     private final StatusIndicatorCoordinator mStatusIndicator;
     private Handler mHandler;
     private OfflineDetector mOfflineDetector;
-    private ObservableSupplier<Boolean> mIsUrlBarFocusedSupplier;
+    private MonotonicObservableSupplier<Boolean> mIsUrlBarFocusedSupplier;
     private final Supplier<Boolean> mCanAnimateBrowserControlsSupplier;
     private Callback<Boolean> mOnUrlBarFocusChanged;
     private final Runnable mShowRunnable;
@@ -94,7 +94,7 @@ public class OfflineIndicatorControllerV2 {
      * @param context The {@link Context}.
      * @param statusIndicator The {@link StatusIndicatorCoordinator} instance this controller will
      *     control based on the connectivity.
-     * @param isUrlBarFocusedSupplier The {@link ObservableSupplier} that will supply the UrlBar's
+     * @param isUrlBarFocusedSupplier The {@link MonotonicObservableSupplier} that will supply the UrlBar's
      *     focus state and notify a listener when it changes.
      * @param canAnimateNativeBrowserControls Will supply a boolean meaning whether the native
      *     browser controls can be animated. This is used for collecting metrics. TODO(sinansahin):
@@ -103,7 +103,7 @@ public class OfflineIndicatorControllerV2 {
     public OfflineIndicatorControllerV2(
             Context context,
             StatusIndicatorCoordinator statusIndicator,
-            ObservableSupplier<Boolean> isUrlBarFocusedSupplier,
+            MonotonicObservableSupplier<Boolean> isUrlBarFocusedSupplier,
             Supplier<Boolean> canAnimateNativeBrowserControls) {
         // If "force online connection state" switch is set, the offline indicator should never
         // show.

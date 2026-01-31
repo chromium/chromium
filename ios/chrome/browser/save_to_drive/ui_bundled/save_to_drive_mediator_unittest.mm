@@ -15,9 +15,9 @@
 #import "ios/chrome/browser/drive/model/upload_task.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/shared/public/commands/account_picker_commands.h"
-#import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/manage_storage_alert_commands.h"
 #import "ios/chrome/browser/shared/public/commands/save_to_drive_commands.h"
+#import "ios/chrome/browser/shared/public/commands/scene_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/signin/model/chrome_account_manager_service_factory.h"
 #import "ios/chrome/browser/signin/model/fake_system_identity.h"
@@ -77,8 +77,7 @@ class SaveToDriveMediatorTest : public PlatformTest {
         OCMStrictProtocolMock(@protocol(SaveToDriveCommands));
     manage_storage_alert_commands_handler_ =
         OCMStrictProtocolMock(@protocol(ManageStorageAlertCommands));
-    application_commands_handler_ =
-        OCMStrictProtocolMock(@protocol(ApplicationCommands));
+    scene_handler_ = OCMStrictProtocolMock(@protocol(SceneCommands));
     account_picker_commands_handler_ =
         OCMStrictProtocolMock(@protocol(AccountPickerCommands));
     mediator_ = [[SaveToDriveMediator alloc]
@@ -120,7 +119,7 @@ class SaveToDriveMediatorTest : public PlatformTest {
   std::unique_ptr<web::FakeDownloadTask> download_task_;
   id save_to_drive_commands_handler_;
   id manage_storage_alert_commands_handler_;
-  id application_commands_handler_;
+  id scene_handler_;
   id account_picker_commands_handler_;
   SaveToDriveMediator* mediator_;
 };
@@ -136,6 +135,7 @@ TEST_F(SaveToDriveMediatorTest, HidesSaveToDriveOnDownloadTaskDestroyed) {
 // Tests that the Save to Drive UI is hidden when the `WebState` is destroyed.
 TEST_F(SaveToDriveMediatorTest, HidesSaveToDriveOnWebStateDestroyed) {
   OCMExpect([save_to_drive_commands_handler_ hideSaveToDrive]);
+  download_task_->SetWebState(/*web_state=*/nullptr);
   web_state_.reset();
   EXPECT_OCMOCK_VERIFY(save_to_drive_commands_handler_);
 }

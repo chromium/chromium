@@ -12,7 +12,7 @@
 namespace enterprise_connectors {
 
 void EnterpriseInterstitialBase::PopulateStrings(
-    base::Value::Dict& load_time_data) const {
+    base::DictValue& load_time_data) const {
   load_time_data.Set("overridable", false);
   load_time_data.Set("hide_primary_button", false);
   load_time_data.Set("openDetails", "");

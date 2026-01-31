@@ -101,7 +101,7 @@ public class WebsiteParentApprovalNativesTest {
         mSigninTestRule.addChildTestAccountThenWaitForSignin();
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    SupervisedUserSettingsTestBridge.setFilteringBehavior(
+                    FamilyLinkSettingsTestBridge.setFilteringBehavior(
                             mTabbedActivityTestRule.getProfile(/* incognito= */ false),
                             FilteringBehavior.BLOCK);
                 });

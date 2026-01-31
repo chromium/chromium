@@ -188,7 +188,7 @@ void SecurityTokenSamlTest::SetClientCertAutoSelectPolicy() {
         .Append(policy_item_value);
   } else {
     // Set the new policy value.
-    base::Value::List policy_value;
+    base::ListValue policy_value;
     policy_value.Append(policy_item_value);
     policy_map.Set(policy::key::kAutoSelectCertificateForUrls,
                    policy::POLICY_LEVEL_MANDATORY, policy::POLICY_SCOPE_MACHINE,
@@ -218,7 +218,7 @@ void SecurityTokenSamlTest::StartObservingLoginUiMessages() {
 }
 
 // Called when the Login Screen UI notifies that the PIN dialog is shown.
-void SecurityTokenSamlTest::OnPinDialogShownMessage(const base::Value::List&) {
+void SecurityTokenSamlTest::OnPinDialogShownMessage(const base::ListValue&) {
   ++pin_dialog_shown_count_;
   if (pin_dialog_shown_run_loop_)
     pin_dialog_shown_run_loop_->Quit();

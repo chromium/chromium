@@ -29,7 +29,7 @@ class SingleFieldFillRouter {
   // is used to eventually return suggestions. `field_id` identifies the field
   // the query refer to. `suggestions` is the list of fetched suggestions.
   using OnSuggestionsReturnedCallback =
-      base::OnceCallback<void(FieldGlobalId, const std::vector<Suggestion>&)>;
+      base::OnceCallback<void(FieldGlobalId, std::vector<Suggestion>)>;
 
   explicit SingleFieldFillRouter(
       AutocompleteHistoryManager* autocomplete_history_manager,

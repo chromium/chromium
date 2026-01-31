@@ -47,8 +47,8 @@ class MockObject {
   MockObject(const MockObject&) = delete;
   MockObject& operator=(const MockObject&) = delete;
 
-  MOCK_METHOD1(Task, void(scoped_refptr<ObjectToDelete>));
-  MOCK_METHOD1(Reply, void(scoped_refptr<ObjectToDelete>));
+  MOCK_METHOD(void, Task, (scoped_refptr<ObjectToDelete>));
+  MOCK_METHOD(void, Reply, (scoped_refptr<ObjectToDelete>));
 
   WeakPtr<MockObject> GetWeakPtr() { return weak_factory_.GetWeakPtr(); }
 

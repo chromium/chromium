@@ -4,6 +4,8 @@
 
 #include "ash/wm/window_restore/window_restore_controller.h"
 
+#include <algorithm>
+
 #include "ash/accelerators/accelerator_controller_impl.h"
 #include "ash/app_list/app_list_controller_impl.h"
 #include "ash/screen_util.h"
@@ -23,7 +25,6 @@
 #include "ash/wm/window_positioning_utils.h"
 #include "ash/wm/window_state.h"
 #include "base/cancelable_callback.h"
-#include "base/containers/contains.h"
 #include "base/containers/flat_map.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
@@ -83,7 +84,7 @@ class WindowRestoreControllerTest : public AshTestBase,
   int GetSaveWindowsCount(aura::Window* window) const {
     const int32_t restore_window_id =
         window->GetProperty(app_restore::kRestoreWindowIdKey);
-    if (!base::Contains(fake_window_restore_file_, restore_window_id))
+    if (!fake_window_restore_file_.contains(restore_window_id))
       return 0;
     return fake_window_restore_file_.at(restore_window_id).call_count;
   }
@@ -109,7 +110,7 @@ class WindowRestoreControllerTest : public AshTestBase,
       aura::Window* window) const {
     const int32_t restore_window_id =
         window->GetProperty(app_restore::kRestoreWindowIdKey);
-    if (!base::Contains(fake_window_restore_file_, restore_window_id)) {
+    if (!fake_window_restore_file_.contains(restore_window_id)) {
       return std::nullopt;
     }
     return fake_window_restore_file_.at(restore_window_id).info;
@@ -276,8 +277,8 @@ class WindowRestoreControllerTest : public AshTestBase,
     std::vector<chromeos::AppType> kSupportedAppTypes = {
         chromeos::AppType::BROWSER, chromeos::AppType::CHROME_APP,
         chromeos::AppType::ARC_APP};
-    if (!base::Contains(kSupportedAppTypes,
-                        window->GetProperty(chromeos::kAppTypeKey))) {
+    if (!std::ranges::contains(kSupportedAppTypes,
+                               window->GetProperty(chromeos::kAppTypeKey))) {
       return;
     }
 

@@ -155,9 +155,10 @@ void VideoFrameValidator::ProcessVideoFrameTask(
   DCHECK_CALLED_ON_VALID_SEQUENCE(validator_thread_sequence_checker_);
 
   scoped_refptr<const VideoFrame> frame = video_frame;
-  // If this is a DMABuf-backed memory frame we need to map it before accessing.
+  // If this is a MappableSI-backed memory frame we need to map it before
+  // accessing.
 #if BUILDFLAG(USE_LINUX_VIDEO_ACCELERATION)
-  if (frame->storage_type() == VideoFrame::STORAGE_MAPPABLE_SHARED_IMAGE) {
+  if (frame->HasMappableSharedImage()) {
     // TODO(andrescj): This is a workaround. ClientNativePixmapFactoryDmabuf
     // creates ClientNativePixmapOpaque, which cannot be mapped via MappableSI,
     // for SCANOUT_VDA_WRITE buffers. However, we need to map the contents of
@@ -168,7 +169,7 @@ void VideoFrameValidator::ProcessVideoFrameTask(
     frame = CreateDmabufVideoFrame(frame.get());
     if (!frame) {
       LOG(ERROR) << "Failed to create Dmabuf-backed VideoFrame from "
-                 << "GpuMemoryBuffer-based VideoFrame";
+                 << "MappableSI-based VideoFrame";
       return;
     }
   }

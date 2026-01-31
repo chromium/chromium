@@ -53,6 +53,7 @@ class SplitViewDragIndicatorsTest : public AshTestBase {
         true);
   }
   void TearDown() override {
+    overview_session_ = nullptr;
     ui::PresentationTimeRecorder::SetReportPresentationTimeImmediatelyForTest(
         false);
     AshTestBase::TearDown();
@@ -102,7 +103,7 @@ class SplitViewDragIndicatorsTest : public AshTestBase {
   }
 
  protected:
-  raw_ptr<OverviewSession, DanglingUntriaged> overview_session_ = nullptr;
+  raw_ptr<OverviewSession> overview_session_ = nullptr;
 };
 
 TEST_F(SplitViewDragIndicatorsTest, DraggingBasic) {

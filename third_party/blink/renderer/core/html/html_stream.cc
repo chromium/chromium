@@ -4,10 +4,12 @@
 
 #include "third_party/blink/renderer/core/html/html_stream.h"
 
+#include "third_party/blink/renderer/bindings/core/v8/v8_set_html_unsafe_options.h"
 #include "third_party/blink/renderer/core/dom/container_node.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/shadow_root.h"
 #include "third_party/blink/renderer/core/html/parser/html_document_parser.h"
+#include "third_party/blink/renderer/core/sanitizer/sanitizer_api.h"
 #include "third_party/blink/renderer/core/streams/underlying_sink_base.h"
 #include "third_party/blink/renderer/core/streams/writable_stream.h"
 #include "third_party/blink/renderer/platform/bindings/exception_code.h"
@@ -22,7 +24,9 @@ namespace blink {
 namespace {
 class HTMLSink : public UnderlyingSinkBase {
  public:
-  explicit HTMLSink(ContainerNode& new_target) : target(new_target) {
+  explicit HTMLSink(ContainerNode& new_target,
+                    SetHTMLUnsafeOptions* new_options)
+      : target(new_target), options(new_options) {
     CHECK(target->IsElementNode() || target->IsShadowRoot());
   }
 
@@ -30,23 +34,34 @@ class HTMLSink : public UnderlyingSinkBase {
     UnderlyingSinkBase::Trace(visitor);
     visitor->Trace(target);
     visitor->Trace(parser);
+    visitor->Trace(options);
   }
 
   ScriptPromise<IDLUndefined> start(ScriptState* script_state,
                                     WritableStreamDefaultController*,
-                                    ExceptionState&) override {
+                                    ExceptionState& exception_state) override {
     Element* context_element = DynamicTo<Element>(target.Get());
     if (!context_element) {
       if (ShadowRoot* shadow = DynamicTo<ShadowRoot>(target.Get())) {
         context_element = &shadow->host();
       }
     }
+
+    // TODO(nrosenthal): support safe sanitizer.
+    StreamingSanitizer* sanitizer =
+        SanitizerAPI::CreateStreamingSanitizerUnsafeInternal(options, target,
+                                                             exception_state);
     // FIXME(nrosenthal): support more methods. This currently assumes "append".
     // FIXME(nrosenthal): custom element registry support?
     parser = MakeGarbageCollected<HTMLDocumentParser>(
         target, context_element,
-        ParserContentPolicy::kAllowScriptingContentAndDoNotMarkAlreadyStarted,
-        ParserPrefetchPolicy::kDisallowPrefetching, /*registry*/ nullptr);
+        options->runScripts()
+            ? ParserContentPolicy::
+                  kAllowScriptingContentAndDoNotMarkAlreadyStarted
+            : ParserContentPolicy::kAllowScriptingContent,
+        ParserPrefetchPolicy::kDisallowPrefetching, /*registry*/ nullptr,
+        /*sanitizer*/ sanitizer);
+
     return ToResolvedUndefinedPromise(script_state);
   }
 
@@ -86,15 +101,17 @@ class HTMLSink : public UnderlyingSinkBase {
 
   Member<ContainerNode> target;
   Member<DocumentParser> parser;
+  Member<SetHTMLUnsafeOptions> options;
 };
 }  // namespace
 
 // static
 WritableStream* HTMLStream::Create(ScriptState* script_state,
                                    ContainerNode* target,
+                                   SetHTMLUnsafeOptions* options,
                                    ExceptionState& exception_state) {
   CHECK(RuntimeEnabledFeatures::DocumentPatchingEnabled());
-  HTMLSink* sink = MakeGarbageCollected<HTMLSink>(*target);
+  HTMLSink* sink = MakeGarbageCollected<HTMLSink>(*target, options);
   return WritableStream::CreateWithCountQueueingStrategy(script_state, sink, 1);
 }
 }  // namespace blink

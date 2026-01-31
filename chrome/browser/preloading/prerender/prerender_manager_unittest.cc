@@ -144,7 +144,7 @@ TEST_F(PrerenderManagerTest, StartCleanSearchSuggestionPrerender) {
   prerender_manager()->StartPrerenderSearchResult(
       canonical_url, prerendering_url, /*attempt=*/nullptr);
   registry_observer.WaitForTrigger(prerendering_url);
-  content::FrameTreeNodeId prerender_host_id =
+  content::PrerenderHostId prerender_host_id =
       prerender_helper().GetHostForUrl(prerendering_url);
   EXPECT_TRUE(prerender_host_id);
 }
@@ -160,9 +160,14 @@ TEST_F(PrerenderManagerTest, StartNewSuggestionPrerender) {
       canonical_url1, prerendering_url1, /*attempt=*/nullptr);
 
   registry_observer.WaitForTrigger(prerendering_url1);
-  content::FrameTreeNodeId prerender_host_id1 =
+  content::PrerenderHostId prerender_host_id1 =
       prerender_helper().GetHostForUrl(prerendering_url1);
   ASSERT_TRUE(prerender_host_id1);
+  content::FrameTreeNodeId prerender_frame_tree_node_id1 =
+      prerender_helper()
+          .GetPrerenderedMainFrameHost(prerender_host_id1)
+          ->GetFrameTreeNodeId();
+  ASSERT_TRUE(prerender_frame_tree_node_id1);
   content::test::PrerenderHostObserver host_observer(*GetActiveWebContents(),
                                                      prerender_host_id1);
   GURL prerendering_url2 = GetSearchSuggestionUrl("prer", "prerender");
@@ -174,9 +179,16 @@ TEST_F(PrerenderManagerTest, StartNewSuggestionPrerender) {
   EXPECT_TRUE(prerender_manager()->HasSearchResultPagePrerendered());
   EXPECT_EQ(canonical_url2,
             prerender_manager()->GetPrerenderCanonicalSearchURLForTesting());
-  content::FrameTreeNodeId prerender_host_id2 =
+  content::PrerenderHostId prerender_host_id2 =
       prerender_helper().GetHostForUrl(prerendering_url2);
-  EXPECT_EQ(prerender_host_id1, prerender_host_id2);
+  content::FrameTreeNodeId prerender_frame_tree_node_id2 =
+      prerender_helper()
+          .GetPrerenderedMainFrameHost(prerender_host_id2)
+          ->GetFrameTreeNodeId();
+  // Search prerender reuses existing frames, so `FrameTreeNodeId`s should be
+  // the same, while `PrerenderHostId`s should be different.
+  EXPECT_EQ(prerender_frame_tree_node_id1, prerender_frame_tree_node_id2);
+  EXPECT_NE(prerender_host_id1, prerender_host_id2);
 }
 
 // Tests that the old prerender is not destroyed when starting prerendering the
@@ -189,7 +201,7 @@ TEST_F(PrerenderManagerTest, StartSameSuggestionPrerender) {
   prerender_manager()->StartPrerenderSearchResult(
       canonical_url, prerendering_url1, /*attempt=*/nullptr);
   registry_observer.WaitForTrigger(prerendering_url1);
-  content::FrameTreeNodeId prerender_host_id1 =
+  content::PrerenderHostId prerender_host_id1 =
       prerender_helper().GetHostForUrl(prerendering_url1);
   EXPECT_TRUE(prerender_host_id1);
   GURL prerendering_url2 = GetSearchSuggestionUrl("prer", "prerender");
@@ -199,7 +211,7 @@ TEST_F(PrerenderManagerTest, StartSameSuggestionPrerender) {
 
   // The created prerender for `prerendering_url1` still exists, so the
   // prerender_host_id should be the same.
-  content::FrameTreeNodeId prerender_host_id2 =
+  content::PrerenderHostId prerender_host_id2 =
       prerender_helper().GetHostForUrl(prerendering_url2);
   EXPECT_EQ(prerender_host_id2, prerender_host_id1);
 }
@@ -211,7 +223,7 @@ TEST_F(PrerenderManagerTest, StartCleanPrerenderDirectUrlInput) {
 
   TriggerDirectUrlInputPrerender(prerendering_url);
   registry_observer.WaitForTrigger(prerendering_url);
-  content::FrameTreeNodeId prerender_host_id =
+  content::PrerenderHostId prerender_host_id =
       prerender_helper().GetHostForUrl(prerendering_url);
   EXPECT_TRUE(prerender_host_id);
 }
@@ -225,7 +237,7 @@ TEST_F(PrerenderManagerTest, StartNewPrerenderDirectUrlInput) {
   content::PreloadingAttempt* preloading_attempt =
       TriggerDirectUrlInputPrerender(prerendering_url);
   registry_observer.WaitForTrigger(prerendering_url);
-  content::FrameTreeNodeId prerender_host_id =
+  content::PrerenderHostId prerender_host_id =
       prerender_helper().GetHostForUrl(prerendering_url);
   EXPECT_TRUE(prerender_host_id);
   content::test::PrerenderHostObserver host_observer(*GetActiveWebContents(),
@@ -260,7 +272,7 @@ class PrerenderManagerBasicRequirementTest
     }
   }
 
-  content::FrameTreeNodeId StartPrerender() {
+  content::PrerenderHostId StartPrerender() {
     content::test::PrerenderHostRegistryObserver registry_observer(
         *GetActiveWebContents());
     GURL prerendering_url;
@@ -306,7 +318,7 @@ INSTANTIATE_TEST_SUITE_P(
 // Tests that the PrerenderHandle is destroyed when the primary page changed.
 TEST_P(PrerenderManagerBasicRequirementTest, NavigateAway) {
   base::HistogramTester histogram_tester;
-  content::FrameTreeNodeId prerender_host_id = StartPrerender();
+  content::PrerenderHostId prerender_host_id = StartPrerender();
   ASSERT_TRUE(prerender_host_id);
   content::test::PrerenderHostObserver host_observer(*GetActiveWebContents(),
                                                      prerender_host_id);
@@ -349,9 +361,9 @@ TEST_F(PrerenderManagerPrewarmTest, StartPrewarmSearchResult) {
 
   // Prewarm page should not be found here as it's matcher was set as not
   // matching to any URL.
-  content::FrameTreeNodeId prerender_host_id =
+  content::PrerenderHostId prerender_host_id =
       prerender_helper().GetHostForUrl(prewarm_url);
-  EXPECT_EQ(prerender_host_id, content::FrameTreeNodeId());
+  EXPECT_EQ(prerender_host_id, content::PrerenderHostId());
 }
 
 #if BUILDFLAG(IS_CHROMEOS)

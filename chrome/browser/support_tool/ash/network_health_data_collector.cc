@@ -9,7 +9,6 @@
 #include <string>
 #include <string_view>
 
-#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/strings/stringprintf.h"
@@ -128,8 +127,7 @@ void NetworkHealthDataCollector::ExportCollectedDataWithPII(
     scoped_refptr<base::SequencedTaskRunner> task_runner_for_redaction_tool,
     scoped_refptr<redaction::RedactionToolContainer> redaction_tool_container,
     DataCollectorDoneCallback on_exported_callback) {
-  if (!base::Contains(pii_types_to_keep,
-                      redaction::PIIType::kStableIdentifier)) {
+  if (!pii_types_to_keep.contains(redaction::PIIType::kStableIdentifier)) {
     // `system_logs::kNetworkHealthSnapshotEntry` contains network names and
     // they should be anonymised specially since
     // `SystemLogSourceDataCollectorAdaptor::ExportCollectedDataWithPII()` can't

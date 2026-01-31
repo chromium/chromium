@@ -100,7 +100,7 @@ void AttributionReportNetworkSender::SendReport(
 
 void AttributionReportNetworkSender::SendReport(
     AggregatableDebugReport report,
-    base::Value::Dict report_body,
+    base::DictValue report_body,
     AggregatableDebugReportSentCallback callback) {
   GURL url(report.ReportUrl());
   url::Origin origin(report.reporting_origin());

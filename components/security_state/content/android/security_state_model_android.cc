@@ -74,7 +74,7 @@ SecurityStateModelDelegate* GetSecurityStateModelDelegate() {
 }  // namespace security_state::internal
 
 // The actual JNI function, now a thin wrapper.
-static jint JNI_SecurityStateModel_GetMaliciousContentStatusForWebContents(
+static int32_t JNI_SecurityStateModel_GetMaliciousContentStatusForWebContents(
     JNIEnv* env,
     content::WebContents* web_contents) {
   return security_state::internal::
@@ -84,7 +84,7 @@ static jint JNI_SecurityStateModel_GetMaliciousContentStatusForWebContents(
 }
 
 // The actual JNI function, now a thin wrapper.
-static jint JNI_SecurityStateModel_GetSecurityLevelForWebContents(
+static int32_t JNI_SecurityStateModel_GetSecurityLevelForWebContents(
     JNIEnv* env,
     content::WebContents* web_contents) {
   return security_state::internal::GetSecurityLevelForWebContentsInternal(

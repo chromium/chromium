@@ -28,6 +28,7 @@ import org.chromium.base.task.TaskTraits;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features.DisableFeatures;
@@ -61,6 +62,7 @@ import org.chromium.content_public.browser.test.util.JavaScriptUtils;
 import org.chromium.content_public.browser.test.util.TestTouchUtils;
 import org.chromium.content_public.browser.test.util.TouchCommon;
 import org.chromium.content_public.browser.test.util.UiUtils;
+import org.chromium.ui.base.DeviceFormFactor;
 
 import java.util.Objects;
 import java.util.concurrent.TimeoutException;
@@ -71,6 +73,7 @@ import java.util.concurrent.TimeoutException;
     ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE,
 })
 @Batch(Batch.PER_CLASS)
+@DisableIf.Device(DeviceFormFactor.DESKTOP) // https://crbug.com/446934111
 public class FullscreenManagerTest {
     @Rule
     public FreshCtaTransitTestRule mActivityTestRule =
@@ -473,7 +476,9 @@ public class FullscreenManagerTest {
     @Feature({"Fullscreen"})
     @DisableFeatures({
         ChromeFeatureList.FULLSCREEN_INSETS_API_MIGRATION,
-        ChromeFeatureList.FULLSCREEN_INSETS_API_MIGRATION_ON_AUTOMOTIVE
+        ChromeFeatureList.FULLSCREEN_INSETS_API_MIGRATION_ON_AUTOMOTIVE,
+        // TODO(crbug.com/473893732): Update the test for lock top control or use restriction.
+        ChromeFeatureList.LOCK_TOP_CONTROLS_ON_LARGE_TABLETS_V2
     })
     public void testExitPersistentFullscreenAllowsManualFullscreenLegacy() {
         FullscreenManagerTestUtils.disableBrowserOverrides();
@@ -540,7 +545,9 @@ public class FullscreenManagerTest {
     @Feature({"Fullscreen"})
     @DisableFeatures({
         ChromeFeatureList.FULLSCREEN_INSETS_API_MIGRATION,
-        ChromeFeatureList.FULLSCREEN_INSETS_API_MIGRATION_ON_AUTOMOTIVE
+        ChromeFeatureList.FULLSCREEN_INSETS_API_MIGRATION_ON_AUTOMOTIVE,
+        // TODO(crbug.com/473893732): Update the test for lock top control or use restriction.
+        ChromeFeatureList.LOCK_TOP_CONTROLS_ON_LARGE_TABLETS_V2
     })
     public void testManualHidingShowingBrowserControlsLegacy() {
         FullscreenManagerTestUtils.disableBrowserOverrides();
@@ -568,6 +575,8 @@ public class FullscreenManagerTest {
         ChromeFeatureList.FULLSCREEN_INSETS_API_MIGRATION,
         ChromeFeatureList.FULLSCREEN_INSETS_API_MIGRATION_ON_AUTOMOTIVE
     })
+    // TODO(crbug.com/473893732): Update the test for lock top control or use restriction.
+    @DisableFeatures(ChromeFeatureList.LOCK_TOP_CONTROLS_ON_LARGE_TABLETS_V2)
     public void testManualHidingShowingBrowserControls() {
         FullscreenManagerTestUtils.disableBrowserOverrides();
         WebPageStation page = mActivityTestRule.startOnUrl(LONG_HTML_TEST_PAGE);
@@ -592,7 +601,9 @@ public class FullscreenManagerTest {
     @DisableFeatures({
         ChromeFeatureList.FULLSCREEN_INSETS_API_MIGRATION,
         ChromeFeatureList.FULLSCREEN_INSETS_API_MIGRATION_ON_AUTOMOTIVE,
-        ChromeFeatureList.EDGE_TO_EDGE_BOTTOM_CHIN
+        ChromeFeatureList.EDGE_TO_EDGE_BOTTOM_CHIN,
+        // TODO(crbug.com/473893732): Update the test for lock top control or use restriction.
+        ChromeFeatureList.LOCK_TOP_CONTROLS_ON_LARGE_TABLETS_V2
     })
     public void testHidingBrowserControlsPreservesScrollOffsetLegacy() throws TimeoutException {
         FullscreenManagerTestUtils.disableBrowserOverrides();
@@ -643,6 +654,7 @@ public class FullscreenManagerTest {
         ChromeFeatureList.FULLSCREEN_INSETS_API_MIGRATION_ON_AUTOMOTIVE
     })
     @DisableFeatures(ChromeFeatureList.EDGE_TO_EDGE_BOTTOM_CHIN)
+    @DisabledTest(message = "Flaky: crbug.com/475145490")
     public void testHidingBrowserControlsPreservesScrollOffset() throws TimeoutException {
         FullscreenManagerTestUtils.disableBrowserOverrides();
         WebPageStation page = mActivityTestRule.startOnUrl(SCROLL_OFFSET_TEST_PAGE);
@@ -755,7 +767,9 @@ public class FullscreenManagerTest {
     @Restriction(RESTRICTION_TYPE_NON_LOW_END_DEVICE)
     @DisableFeatures({
         ChromeFeatureList.FULLSCREEN_INSETS_API_MIGRATION,
-        ChromeFeatureList.FULLSCREEN_INSETS_API_MIGRATION_ON_AUTOMOTIVE
+        ChromeFeatureList.FULLSCREEN_INSETS_API_MIGRATION_ON_AUTOMOTIVE,
+        // TODO(crbug.com/473893732): Update the test for lock top control or use restriction.
+        ChromeFeatureList.LOCK_TOP_CONTROLS_ON_LARGE_TABLETS_V2
     })
     public void testControlsShownOnUnresponsiveRendererLegacy() {
         FullscreenManagerTestUtils.disableBrowserOverrides();
@@ -789,6 +803,8 @@ public class FullscreenManagerTest {
         ChromeFeatureList.FULLSCREEN_INSETS_API_MIGRATION,
         ChromeFeatureList.FULLSCREEN_INSETS_API_MIGRATION_ON_AUTOMOTIVE
     })
+    // TODO(crbug.com/473893732): Update the test for lock top control or use restriction.
+    @DisableFeatures(ChromeFeatureList.LOCK_TOP_CONTROLS_ON_LARGE_TABLETS_V2)
     public void testControlsShownOnUnresponsiveRenderer() {
         FullscreenManagerTestUtils.disableBrowserOverrides();
         WebPageStation page = mActivityTestRule.startOnUrl(LONG_HTML_TEST_PAGE);
@@ -818,7 +834,9 @@ public class FullscreenManagerTest {
     @Feature({"Fullscreen"})
     @DisableFeatures({
         ChromeFeatureList.FULLSCREEN_INSETS_API_MIGRATION,
-        ChromeFeatureList.FULLSCREEN_INSETS_API_MIGRATION_ON_AUTOMOTIVE
+        ChromeFeatureList.FULLSCREEN_INSETS_API_MIGRATION_ON_AUTOMOTIVE,
+        // TODO(crbug.com/473893732): Update the test for lock top control or use restriction.
+        ChromeFeatureList.LOCK_TOP_CONTROLS_ON_LARGE_TABLETS_V2
     })
     public void testControlsShownOnUnresponsiveRendererUponExitingTabSwitcherModeLegacy()
             throws Exception {
@@ -852,6 +870,8 @@ public class FullscreenManagerTest {
         ChromeFeatureList.FULLSCREEN_INSETS_API_MIGRATION,
         ChromeFeatureList.FULLSCREEN_INSETS_API_MIGRATION_ON_AUTOMOTIVE
     })
+    // TODO(crbug.com/473893732): Update the test for lock top control or use restriction.
+    @DisableFeatures(ChromeFeatureList.LOCK_TOP_CONTROLS_ON_LARGE_TABLETS_V2)
     public void testControlsShownOnUnresponsiveRendererUponExitingTabSwitcherMode()
             throws Exception {
         FullscreenManagerTestUtils.disableBrowserOverrides();
@@ -934,7 +954,9 @@ public class FullscreenManagerTest {
     @Feature({"Fullscreen"})
     @DisableFeatures({
         ChromeFeatureList.FULLSCREEN_INSETS_API_MIGRATION,
-        ChromeFeatureList.FULLSCREEN_INSETS_API_MIGRATION_ON_AUTOMOTIVE
+        ChromeFeatureList.FULLSCREEN_INSETS_API_MIGRATION_ON_AUTOMOTIVE,
+        // TODO(crbug.com/473893732): Update the test for lock top control or use restriction.
+        ChromeFeatureList.LOCK_TOP_CONTROLS_ON_LARGE_TABLETS_V2
     })
     public void testBrowserControlsShownWhenInputIsFocusedLegacy() throws TimeoutException {
         FullscreenManagerTestUtils.disableBrowserOverrides();
@@ -974,6 +996,8 @@ public class FullscreenManagerTest {
         ChromeFeatureList.FULLSCREEN_INSETS_API_MIGRATION,
         ChromeFeatureList.FULLSCREEN_INSETS_API_MIGRATION_ON_AUTOMOTIVE
     })
+    // TODO(crbug.com/473893732): Update the test for lock top control or use restriction.
+    @DisableFeatures(ChromeFeatureList.LOCK_TOP_CONTROLS_ON_LARGE_TABLETS_V2)
     @DisabledTest(message = "https://crbug.com/373808956")
     public void testBrowserControlsShownWhenInputIsFocused() throws TimeoutException {
         FullscreenManagerTestUtils.disableBrowserOverrides();
@@ -1011,7 +1035,9 @@ public class FullscreenManagerTest {
     @Feature({"Fullscreen"})
     @DisableFeatures({
         ChromeFeatureList.FULLSCREEN_INSETS_API_MIGRATION,
-        ChromeFeatureList.FULLSCREEN_INSETS_API_MIGRATION_ON_AUTOMOTIVE
+        ChromeFeatureList.FULLSCREEN_INSETS_API_MIGRATION_ON_AUTOMOTIVE,
+        // TODO(crbug.com/473893732): Update the test for lock top control or use restriction.
+        ChromeFeatureList.LOCK_TOP_CONTROLS_ON_LARGE_TABLETS_V2
     })
     public void testPersistentFullscreenWithOptionsLegacy() {
         FullscreenManagerTestUtils.disableBrowserOverrides();

@@ -48,6 +48,7 @@
 <translation id="2761536921376153655">Тип сканування</translation>
 <translation id="28682968802727151">Попередній перегляд віддзеркаленого зображення</translation>
 <translation id="2879583609344924966">Камеру <ph name="CAMERA" /> підключено.</translation>
+<translation id="3063987824612038785">Усі файли з камери зберігатимуться на Google Диску</translation>
 <translation id="3067436040345934772">Перемістити вправо</translation>
 <translation id="3081586908890909590">Перейти в режим запису відео</translation>
 <translation id="3091480460059548935">Виявлення тексту в режимі попереднього перегляду</translation>
@@ -67,6 +68,7 @@
 <translation id="3642192109456033823">Триває обробка відео…</translation>
 <translation id="3789724198583203151">Повернути на 90 градусів проти годинникової стрілки</translation>
 <translation id="3810838688059735925">Відео</translation>
+<translation id="386366972082231038">Усі файли з камери зберігатимуться у OneDrive</translation>
 <translation id="4060608699153044055">На пристрої недостатньо пам’яті. Щоб почати запис, звільніть місце.</translation>
 <translation id="4061162772429051350"><ph name="MAGAPIXELS_AMOUNT" /> Мп</translation>
 <translation id="4118525110028899586">Призупинити запис</translation>
@@ -100,6 +102,7 @@
 <translation id="5634947914995388399">Розгорнути вікно й зупинити сканування</translation>
 <translation id="5662366948659129155">Сканування сторінки <ph name="COUNT" /></translation>
 <translation id="5671277269877808209">Квадрат</translation>
+<translation id="5725797473946373607">Більше не показувати це вікно</translation>
 <translation id="574392208103952083">Середній</translation>
 <translation id="5746169159649715125">Зберегти у форматі PDF</translation>
 <translation id="5753488212459587150">Увімкнути режим експерта</translation>
@@ -156,6 +159,7 @@
 <translation id="7983668134180549431">Виявлений текст.</translation>
 <translation id="8079255378695216066">Не вдається почати запис</translation>
 <translation id="8120146556401698679">Панорамування нахил масштаб</translation>
+<translation id="8127459436205030819">Адміністратор може бачити ваші файли</translation>
 <translation id="8131740175452115882">Підтвердити</translation>
 <translation id="8145038249676204903">Перейти в режим фотозйомки</translation>
 <translation id="8167081290930651932">Зберегти як фото</translation>
@@ -165,6 +169,7 @@
 <translation id="8609951387004618906">Відкрити посилання <ph name="URL" /></translation>
 <translation id="8629662593426079630">360p</translation>
 <translation id="8711011893539266636">Увімкнути або вимкнути мікрофон. Мікрофон вимкнено</translation>
+<translation id="8712637175834984815">OK</translation>
 <translation id="8730621377337864115">Готово</translation>
 <translation id="8732462232047530626">Переглянути метадані</translation>
 <translation id="874854738381978209">Виявлено мережу Wi-Fi.</translation>

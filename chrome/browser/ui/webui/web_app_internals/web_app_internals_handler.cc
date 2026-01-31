@@ -19,6 +19,7 @@
 #include "base/strings/to_string.h"
 #include "base/task/thread_pool.h"
 #include "base/types/expected_macros.h"
+#include "base/types/pass_key.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "chrome/browser/profiles/profile.h"
@@ -83,9 +84,9 @@ constexpr char kNeedsRecordWebAppDebugInfo[] =
     "No debugging info available! Please enable: "
     "chrome://flags/#record-web-app-debug-info";
 
-base::Value::Dict BuildIndexJson() {
-  return base::Value::Dict().Set(
-      "Index", base::Value::List()
+base::DictValue BuildIndexJson() {
+  return base::DictValue().Set(
+      "Index", base::ListValue()
                    // App state
                    .Append(kInstalledWebApps)
 #if BUILDFLAG(IS_MAC)
@@ -116,14 +117,14 @@ base::Value::Dict BuildIndexJson() {
                    .Append(kWebAppDirectoryDiskState));
 }
 
-base::Value::Dict BuildInstalledWebAppsJson(web_app::WebAppProvider& provider) {
-  return base::Value::Dict().Set(kInstalledWebApps,
-                                 provider.registrar_unsafe().AsDebugValue());
+base::DictValue BuildInstalledWebAppsJson(web_app::WebAppProvider& provider) {
+  return base::DictValue().Set(kInstalledWebApps,
+                               provider.registrar_unsafe().AsDebugValue());
 }
 
-base::Value::Dict BuildPreinstalledWebAppConfigsJson(
+base::DictValue BuildPreinstalledWebAppConfigsJson(
     web_app::WebAppProvider& provider) {
-  base::Value::Dict root;
+  base::DictValue root;
 
   const web_app::PreinstalledWebAppManager::DebugInfo* debug_info =
       provider.preinstalled_web_app_manager().debug_info();
@@ -133,14 +134,14 @@ base::Value::Dict BuildPreinstalledWebAppConfigsJson(
   }
 
   auto config_to_dict = [](const auto& config) {
-    return base::Value::Dict()
+    return base::DictValue()
         .Set("!Reason", config.second)
         .Set("Config", config.first.AsDebugValue());
   };
 
   root.Set(
       kPreinstalledWebAppConfigs,
-      base::Value::Dict()
+      base::DictValue()
           .Set("ConfigParseErrors", base::ToValueList(debug_info->parse_errors))
           .Set("UninstallConfigs",
                base::ToValueList(debug_info->uninstall_configs, config_to_dict))
@@ -152,7 +153,7 @@ base::Value::Dict BuildPreinstalledWebAppConfigsJson(
                base::ToValueList(
                    debug_info->install_results,
                    [](const auto& install_result) {
-                     return base::Value::Dict()
+                     return base::DictValue()
                          .Set("InstallUrl", install_result.first.spec())
                          .Set("ResultCode",
                               base::ToString(install_result.second.code))
@@ -164,7 +165,7 @@ base::Value::Dict BuildPreinstalledWebAppConfigsJson(
                base::ToValueList(
                    debug_info->uninstall_results,
                    [](const auto& uninstall_result) {
-                     return base::Value::Dict()
+                     return base::DictValue()
                          .Set("InstallUrl", uninstall_result.first.spec())
                          .Set("Success",
                               base::ToString(uninstall_result.second));
@@ -173,70 +174,70 @@ base::Value::Dict BuildPreinstalledWebAppConfigsJson(
   return root;
 }
 
-base::Value::Dict BuildUserUninstalledPreinstalledWebAppPrefsJson(
+base::DictValue BuildUserUninstalledPreinstalledWebAppPrefsJson(
     Profile* profile) {
-  return base::Value::Dict().Set(
+  return base::DictValue().Set(
       kUserUninstalledPreinstalledWebAppPrefs,
       profile->GetPrefs()
           ->GetDict(prefs::kUserUninstalledPreinstalledWebAppPref)
           .Clone());
 }
 
-base::Value::Dict BuildWebAppsPrefsJson(Profile* profile) {
-  return base::Value::Dict().Set(
+base::DictValue BuildWebAppsPrefsJson(Profile* profile) {
+  return base::DictValue().Set(
       kWebAppPreferences,
       profile->GetPrefs()->GetDict(prefs::kWebAppsPreferences).Clone());
 }
 
-base::Value::Dict BuildWebAppIphPrefsJson(Profile* profile) {
-  return base::Value::Dict().Set(
+base::DictValue BuildWebAppIphPrefsJson(Profile* profile) {
+  return base::DictValue().Set(
       kWebAppIphPreferences,
       profile->GetPrefs()->GetDict(prefs::kWebAppsAppAgnosticIphState).Clone());
 }
 
-base::Value::Dict BuildWebAppMlPrefsJson(Profile* profile) {
-  return base::Value::Dict().Set(
+base::DictValue BuildWebAppMlPrefsJson(Profile* profile) {
+  return base::DictValue().Set(
       kWebAppMlPreferences,
       profile->GetPrefs()->GetDict(prefs::kWebAppsAppAgnosticMlState).Clone());
 }
 
-base::Value::Dict BuildWebAppLinkCapturingIphPrefsJson(Profile* profile) {
-  return base::Value::Dict().Set(
+base::DictValue BuildWebAppLinkCapturingIphPrefsJson(Profile* profile) {
+  return base::DictValue().Set(
       kWebAppIphLcPreferences,
       profile->GetPrefs()
           ->GetDict(prefs::kWebAppsAppAgnosticIPHLinkCapturingState)
           .Clone());
 }
 
-base::Value::Dict BuildShouldGarbageCollectStoragePartitionsPrefsJson(
+base::DictValue BuildShouldGarbageCollectStoragePartitionsPrefsJson(
     Profile* profile) {
-  return base::Value::Dict().Set(
+  return base::DictValue().Set(
       kShouldGarbageCollectStoragePartitions,
       profile->GetPrefs()->GetBoolean(
           prefs::kShouldGarbageCollectStoragePartitions));
 }
 
-base::Value::Dict BuildLockManagerJson(web_app::WebAppProvider& provider) {
-  return base::Value::Dict().Set(
+base::DictValue BuildLockManagerJson(web_app::WebAppProvider& provider) {
+  return base::DictValue().Set(
       kLockManager, provider.command_manager().lock_manager().ToDebugValue());
 }
 
-base::Value::Dict BuildCommandManagerJson(web_app::WebAppProvider& provider) {
-  return base::Value::Dict().Set(kCommandManager,
-                                 provider.command_manager().ToDebugValue());
+base::DictValue BuildCommandManagerJson(web_app::WebAppProvider& provider) {
+  return base::DictValue().Set(kCommandManager,
+                               provider.command_manager().ToDebugValue());
 }
 
-base::Value::Dict BuildDatabaseLogJson(web_app::WebAppProvider& provider) {
+base::DictValue BuildDatabaseLogJson(web_app::WebAppProvider& provider) {
   const web_app::PersistableLog* log =
       provider.sync_bridge_unsafe().database_log();
   if (!log) {
-    return base::Value::Dict();
+    return base::DictValue();
   }
   return base::DictValue().Set(kDatabaseLog, log->CloneToList());
 }
 
-base::Value::Dict BuildIconErrorLogJson(web_app::WebAppProvider& provider) {
-  base::Value::Dict root;
+base::DictValue BuildIconErrorLogJson(web_app::WebAppProvider& provider) {
+  base::DictValue root;
 
   const std::vector<std::string>* error_log =
       provider.icon_manager().error_log();
@@ -252,41 +253,44 @@ base::Value::Dict BuildIconErrorLogJson(web_app::WebAppProvider& provider) {
 }
 
 #if BUILDFLAG(IS_MAC)
-base::Value::Dict BuildAppShimRegistryLocalStorageJson() {
-  return base::Value::Dict().Set(kAppShimRegistryLocalStorage,
-                                 AppShimRegistry::Get()->AsDebugDict().Clone());
+base::DictValue BuildAppShimRegistryLocalStorageJson() {
+  return base::DictValue().Set(kAppShimRegistryLocalStorage,
+                               AppShimRegistry::Get()->AsDebugDict().Clone());
 }
 #endif
 
 base::Value BuildIsolatedWebAppUpdaterManagerJson(
     web_app::WebAppProvider& provider) {
-  return base::Value(
-      base::Value::Dict().Set(kIsolatedWebAppUpdateManager,
-                              provider.iwa_update_manager().AsDebugValue()));
+  return base::Value(base::DictValue().Set(
+      kIsolatedWebAppUpdateManager,
+      provider.isolated_web_app_update_manager().AsDebugValue()));
 }
 
 base::Value BuildIsolatedWebAppPolicyManagerJson(
     web_app::WebAppProvider& provider) {
-  return base::Value(
-      base::Value::Dict().Set(kIsolatedWebAppPolicyManager,
-                              provider.iwa_policy_manager().GetDebugValue()));
+  return base::Value(base::DictValue().Set(
+      kIsolatedWebAppPolicyManager,
+      provider.isolated_web_app_policy_manager().GetDebugValue()));
 }
 
-base::Value BuildIwaKeyDistributionInfoProviderJson() {
-  return base::Value(base::Value::Dict().Set(
+base::Value BuildIwaKeyDistributionInfoProviderJson(
+    base::PassKey<WebAppInternalsHandler> pass_key) {
+  return base::Value(base::DictValue().Set(
       kIwaKeyDistributionInfoProvider,
-      web_app::IwaKeyDistributionInfoProvider::GetInstance().AsDebugValue()));
+      web_app::IwaKeyDistributionInfoProvider::GetInstance(pass_key)
+          .AsDebugValue()));
 }
 
 #if BUILDFLAG(IS_CHROMEOS)
 base::Value BuildIwaCacheManagerJson(web_app::WebAppProvider& provider) {
-  return base::Value(base::Value::Dict().Set(
-      kIwaBundleCacheManager, provider.iwa_cache_manager().GetDebugValue()));
+  return base::Value(base::DictValue().Set(
+      kIwaBundleCacheManager,
+      provider.isolated_web_app_cache_manager().GetDebugValue()));
 }
 #endif  //  BUILDFLAG(IS_CHROMEOS)
 
 void BuildDirectoryState(base::FilePath file_or_folder,
-                         base::Value::Dict* folder) {
+                         base::DictValue* folder) {
   base::File::Info info;
   bool success = base::GetFileInfo(file_or_folder, &info);
   if (!success) {
@@ -301,7 +305,7 @@ void BuildDirectoryState(base::FilePath file_or_folder,
     return;
   }
 
-  base::Value::Dict contents;
+  base::DictValue contents;
   base::FileEnumerator files(
       file_or_folder, false,
       base::FileEnumerator::FILES | base::FileEnumerator::DIRECTORIES);
@@ -313,19 +317,18 @@ void BuildDirectoryState(base::FilePath file_or_folder,
 }
 
 base::Value BuildWebAppDiskStateJson(base::FilePath root_directory,
-                                     base::Value::List root) {
-  base::Value::Dict contents;
+                                     base::ListValue root) {
+  base::DictValue contents;
   BuildDirectoryState(root_directory, &contents);
 
   root.Append(
-      base::Value::Dict().Set(kWebAppDirectoryDiskState, std::move(contents)));
+      base::DictValue().Set(kWebAppDirectoryDiskState, std::move(contents)));
   return base::Value(std::move(root));
 }
 
-base::Value::Dict BuildNavigationCapturingLog(
-    web_app::WebAppProvider& provider) {
-  return base::Value::Dict().Set(kNavigationCapturing,
-                                 provider.navigation_capturing_log().GetLog());
+base::DictValue BuildNavigationCapturingLog(web_app::WebAppProvider& provider) {
+  return base::DictValue().Set(kNavigationCapturing,
+                               provider.navigation_capturing_log().GetLog());
 }
 
 }  // namespace
@@ -336,8 +339,8 @@ void WebAppInternalsHandler::BuildDebugInfo(
     base::OnceCallback<void(base::Value root)> callback) {
   auto* provider = web_app::WebAppProvider::GetForLocalAppsUnchecked(profile);
 
-  base::Value::List root =
-      base::Value::List()
+  base::ListValue root =
+      base::ListValue()
           .Append(BuildIndexJson())
           // App state
           .Append(BuildInstalledWebAppsJson(*provider))
@@ -364,7 +367,8 @@ void WebAppInternalsHandler::BuildDebugInfo(
 #if BUILDFLAG(IS_CHROMEOS)
           .Append(BuildIwaCacheManagerJson(*provider))
 #endif  //  BUILDFLAG(IS_CHROMEOS)
-          .Append(BuildIwaKeyDistributionInfoProviderJson());
+          .Append(BuildIwaKeyDistributionInfoProviderJson(
+              base::PassKey<WebAppInternalsHandler>()));
 
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, {base::TaskPriority::USER_VISIBLE, base::MayBlock()},

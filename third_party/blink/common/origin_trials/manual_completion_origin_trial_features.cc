@@ -7,7 +7,8 @@
 // changes to it require review from the origin trials team, listed in the
 // OWNERS file.
 
-#include "base/containers/contains.h"
+#include <algorithm>
+
 #include "third_party/blink/public/common/origin_trials/origin_trials.h"
 #include "third_party/blink/public/mojom/origin_trials/origin_trial_feature.mojom-shared.h"
 
@@ -25,7 +26,7 @@ bool FeatureHasExpiryGracePeriod(blink::mojom::OriginTrialFeature feature) {
       // Production grace period trials start here:
       blink::mojom::OriginTrialFeature::kRTCEncodedFrameSetMetadata,
   };
-  return base::Contains(kHasExpiryGracePeriod, feature);
+  return std::ranges::contains(kHasExpiryGracePeriod, feature);
 }
 
 }  // namespace blink::origin_trials

@@ -8,7 +8,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doNothing;
@@ -16,13 +15,13 @@ import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
+import android.content.Context;
+
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.InOrder;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
@@ -35,6 +34,7 @@ import org.chromium.chrome.browser.price_tracking.PriceTrackingUtilities;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.state.ShoppingPersistedTabData;
+import org.chromium.chrome.browser.tasks.tab_management.MessageCardView.ServiceDismissActionProvider;
 import org.chromium.chrome.browser.tasks.tab_management.PriceMessageService.PriceMessageType;
 import org.chromium.chrome.browser.tasks.tab_management.PriceMessageService.PriceTabData;
 import org.chromium.chrome.browser.tasks.tab_management.TabSwitcherMessageManager.MessageType;
@@ -51,9 +51,10 @@ public class PriceMessageServiceUnitTest {
 
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
 
+    @Mock Context mContext;
     @Mock PriceMessageService.PriceWelcomeMessageProvider mMessageProvider;
     @Mock PriceMessageService.PriceWelcomeMessageReviewActionProvider mReviewActionProvider;
-    @Mock MessageService.MessageObserver mMessageObserver;
+    @Mock ServiceDismissActionProvider<@MessageType Integer> mServiceDismissActionProvider;
     @Mock Profile mProfile;
 
     private PriceMessageService mMessageService;
@@ -67,9 +68,6 @@ public class PriceMessageServiceUnitTest {
                         BINDING_TAB_ID,
                         new ShoppingPersistedTabData.PriceDrop(PRICE, PREVIOUS_PRICE));
 
-        doNothing().when(mMessageObserver).messageReady(anyInt(), any());
-        doNothing().when(mMessageObserver).messageInvalidate(anyInt());
-
         FeatureOverrides.enable(ChromeFeatureList.PRICE_ANNOTATIONS);
 
         PriceTrackingFeatures.setPriceAnnotationsEnabledForTesting(true);
@@ -82,8 +80,8 @@ public class PriceMessageServiceUnitTest {
 
         mMessageService =
                 new PriceMessageService(
-                        mProfile, () -> mMessageProvider, () -> mReviewActionProvider);
-        mMessageService.addObserver(mMessageObserver);
+                        mContext, mProfile, () -> mMessageProvider, () -> mReviewActionProvider);
+        mMessageService.initialize(mServiceDismissActionProvider);
     }
 
     @Test(expected = AssertionError.class)
@@ -105,12 +103,10 @@ public class PriceMessageServiceUnitTest {
 
     @Test
     public void testPrepareMessage_PriceWelcome() {
-        InOrder inOrder = Mockito.inOrder(mMessageObserver);
         mMessageService.preparePriceMessage(PriceMessageType.PRICE_WELCOME, mPriceTabData);
-        inOrder.verify(mMessageObserver, times(1)).messageInvalidate(eq(MessageType.PRICE_MESSAGE));
+        verify(mServiceDismissActionProvider, times(1)).dismiss(eq(MessageType.PRICE_MESSAGE));
         assertEquals(mPriceTabData, mMessageService.getPriceTabDataForTesting());
-        inOrder.verify(mMessageObserver, times(1))
-                .messageReady(eq(MessageType.PRICE_MESSAGE), any());
+        assertFalse(mMessageService.getMessageItems().isEmpty());
         assertEquals(
                 INITIAL_SHOW_COUNT + 1,
                 PriceTrackingUtilities.getPriceWelcomeMessageCardShowCount());
@@ -152,9 +148,9 @@ public class PriceMessageServiceUnitTest {
     public void testInvalidateMessage() {
         mMessageService.preparePriceMessage(PriceMessageType.PRICE_WELCOME, mPriceTabData);
         assertEquals(mPriceTabData, mMessageService.getPriceTabDataForTesting());
-        verify(mMessageObserver, times(1)).messageInvalidate(eq(MessageType.PRICE_MESSAGE));
+        verify(mServiceDismissActionProvider, times(1)).dismiss(eq(MessageType.PRICE_MESSAGE));
         mMessageService.invalidateMessage();
         assertNull(mMessageService.getPriceTabDataForTesting());
-        verify(mMessageObserver, times(2)).messageInvalidate(eq(MessageType.PRICE_MESSAGE));
+        verify(mServiceDismissActionProvider, times(2)).dismiss(eq(MessageType.PRICE_MESSAGE));
     }
 }

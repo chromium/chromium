@@ -51,7 +51,7 @@ class DefaultSearchPolicyHandlerTest
   // method.
   void BuildDefaultSearchPolicy(PolicyMap* policy);
 
-  base::Value::List default_alternate_urls_;
+  base::ListValue default_alternate_urls_;
 };
 
 const char DefaultSearchPolicyHandlerTest::kSearchURL[] =
@@ -75,7 +75,7 @@ const char DefaultSearchPolicyHandlerTest::kNewTabURL[] =
 
 void DefaultSearchPolicyHandlerTest::
     BuildDefaultSearchPolicy(PolicyMap* policy) {
-  base::Value::List encodings;
+  base::ListValue encodings;
   encodings.Append("UTF-16");
   encodings.Append("UTF-8");
   policy->Set(key::kDefaultSearchProviderEnabled, POLICY_LEVEL_MANDATORY,
@@ -199,7 +199,7 @@ TEST_F(DefaultSearchPolicyHandlerTest, FullyDefined) {
   const base::Value* temp = nullptr;
   EXPECT_TRUE(store_->GetValue(
       DefaultSearchManager::kDefaultSearchProviderDataPrefName, &temp));
-  const base::Value::Dict* dictionary = temp->GetIfDict();
+  const base::DictValue* dictionary = temp->GetIfDict();
   ASSERT_TRUE(dictionary);
 
   ASSERT_EQ(
@@ -219,10 +219,10 @@ TEST_F(DefaultSearchPolicyHandlerTest, FullyDefined) {
       value = dictionary->FindString(DefaultSearchManager::kSuggestionsURL));
   EXPECT_EQ(kSuggestURL, *value);
 
-  base::Value::List encodings;
+  base::ListValue encodings;
   encodings.Append("UTF-16");
   encodings.Append("UTF-8");
-  const base::Value::List* list_value = nullptr;
+  const base::ListValue* list_value = nullptr;
   ASSERT_TRUE(list_value =
                   dictionary->FindList(DefaultSearchManager::kInputEncodings));
   EXPECT_EQ(encodings, *list_value);
@@ -264,7 +264,7 @@ TEST_F(DefaultSearchPolicyHandlerTest, DisabledByPolicy) {
 
   EXPECT_TRUE(store_->GetValue(
       DefaultSearchManager::kDefaultSearchProviderDataPrefName, &temp));
-  const base::Value::Dict* dictionary = temp->GetIfDict();
+  const base::DictValue* dictionary = temp->GetIfDict();
   ASSERT_TRUE(dictionary);
   std::optional<bool> disabled =
       dictionary->FindBool(DefaultSearchManager::kDisabledByPolicy);
@@ -301,7 +301,7 @@ TEST_F(DefaultSearchPolicyHandlerTest, MinimallyDefined) {
   const base::Value* temp = nullptr;
   EXPECT_TRUE(store_->GetValue(
       DefaultSearchManager::kDefaultSearchProviderDataPrefName, &temp));
-  const base::Value::Dict* dictionary = temp->GetIfDict();
+  const base::DictValue* dictionary = temp->GetIfDict();
   ASSERT_TRUE(dictionary);
 
   // Name and keyword should be derived from host.
@@ -320,13 +320,13 @@ TEST_F(DefaultSearchPolicyHandlerTest, MinimallyDefined) {
   ASSERT_TRUE(
       value = dictionary->FindString(DefaultSearchManager::kSuggestionsURL));
   EXPECT_EQ(std::string(), *value);
-  const base::Value::List* list_value = nullptr;
+  const base::ListValue* list_value = nullptr;
   ASSERT_TRUE(list_value =
                   dictionary->FindList(DefaultSearchManager::kInputEncodings));
-  EXPECT_EQ(base::Value::List(), *list_value);
+  EXPECT_EQ(base::ListValue(), *list_value);
   ASSERT_TRUE(list_value =
                   dictionary->FindList(DefaultSearchManager::kAlternateURLs));
-  EXPECT_EQ(base::Value::List(), *list_value);
+  EXPECT_EQ(base::ListValue(), *list_value);
   ASSERT_TRUE(value = dictionary->FindString(DefaultSearchManager::kImageURL));
   EXPECT_EQ(std::string(), *value);
   ASSERT_TRUE(value = dictionary->FindString(
@@ -356,7 +356,7 @@ TEST_F(DefaultSearchPolicyHandlerTest, FileURL) {
 
   EXPECT_TRUE(store_->GetValue(
       DefaultSearchManager::kDefaultSearchProviderDataPrefName, &temp));
-  const base::Value::Dict* dictionary = temp->GetIfDict();
+  const base::DictValue* dictionary = temp->GetIfDict();
   ASSERT_TRUE(dictionary);
 
   ASSERT_EQ(

@@ -6,6 +6,7 @@
 
 #include <stddef.h>
 
+#include <algorithm>
 #include <memory>
 #include <set>
 #include <vector>
@@ -16,7 +17,6 @@
 #include "ash/public/cpp/event_rewriter_controller.h"
 #include "ash/public/cpp/window_tree_host_lookup.h"
 #include "ash/webui/settings/public/constants/routes_util.h"
-#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/json/json_writer.h"
 #include "base/notreached.h"
@@ -259,7 +259,7 @@ ExtensionFunction::ResponseAction
 AccessibilityPrivateGetDisplayBoundsFunction::Run() {
   const std::vector<display::Display>& displays =
       display::Screen::Get()->GetAllDisplays();
-  base::Value::List result;
+  base::ListValue result;
   for (auto& display : displays) {
     const gfx::Rect& bounds = display.bounds();
     auto screen_rect = accessibility_private::ScreenRect();
@@ -1273,7 +1273,7 @@ AccessibilityPrivateUpdateSwitchAccessBubbleFunction::Run() {
        *(params->actions)) {
     std::string action = accessibility_private::ToString(extension_action);
     // Check that this action is not already in our actions list.
-    if (base::Contains(actions_to_show, action)) {
+    if (std::ranges::contains(actions_to_show, action)) {
       continue;
     }
     actions_to_show.push_back(action);

@@ -13,7 +13,6 @@
 
 #include "base/allocator/partition_alloc_features.h"
 #include "base/command_line.h"
-#include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
@@ -2747,7 +2746,7 @@ IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTestClientHintsEnabled,
   const std::string mobile_id = network::GetClientHintToNameMap().at(
       network::mojom::WebClientHintsType::kUAMobile);
   const net::test_server::HttpRequest& request = request_future.Get();
-  ASSERT_TRUE(base::Contains(request.headers, mobile_id));
+  ASSERT_TRUE(request.headers.contains(mobile_id));
   // "?!" corresponds to "mobile=true".
   EXPECT_EQ("?1", request.headers.at(mobile_id));
   ShellContentBrowserClient::Get()
@@ -3677,7 +3676,7 @@ IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest, SyncRendererPrefs) {
     DLOG(INFO) << "render_view_host=" << render_view_host;
 
     // Multiple frame hosts can be associated to the same RenderViewHost.
-    if (!base::Contains(render_view_hosts, render_view_host)) {
+    if (!std::ranges::contains(render_view_hosts, render_view_host)) {
       render_view_hosts.push_back(render_view_host);
     }
   }
@@ -4513,9 +4512,29 @@ IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest, InnerWebContentsVisibility) {
 // WebContentsViewChildFrame as its view.
 #if !BUILDFLAG(IS_ANDROID)
 class UnownedInnerWebContentsBrowserTest : public WebContentsImplBrowserTest {
+ public:
+  UnownedInnerWebContentsBrowserTest()
+      : prerender_helper_(base::BindRepeating(
+            &UnownedInnerWebContentsBrowserTest::web_contents,
+            base::Unretained(this))) {}
+
+  // PrerenderTestHelper must be created at test creation time and requires
+  // WebContents::Getter.
+  WebContents* web_contents() { return prerender_target_web_contents_.get(); }
+
+  void set_prerender_target_web_contents(WebContents* web_contents) {
+    prerender_target_web_contents_ = web_contents->GetWeakPtr();
+  }
+
+  content::test::PrerenderTestHelper& prerender_helper() {
+    return prerender_helper_;
+  }
+
  private:
   base::test::ScopedFeatureList scoped_feature_list_{
       features::kAttachUnownedInnerWebContents};
+  content::test::PrerenderTestHelper prerender_helper_;
+  base::WeakPtr<WebContents> prerender_target_web_contents_;
 };
 
 IN_PROC_BROWSER_TEST_F(UnownedInnerWebContentsBrowserTest,
@@ -4577,10 +4596,11 @@ IN_PROC_BROWSER_TEST_F(UnownedInnerWebContentsBrowserTest,
       inner_wc->GetPrimaryMainFrame()->GetParentOrOuterDocumentOrEmbedder());
   EXPECT_EQ(nullptr,
             inner_wc->GetPrimaryMainFrame()->GetParentOrOuterDocument());
-  EXPECT_TRUE(base::Contains(CollectAllRenderFrameHosts(outer_wc),
-                             inner_wc->GetPrimaryMainFrame()));
+  EXPECT_TRUE(std::ranges::contains(CollectAllRenderFrameHosts(outer_wc),
+                                    inner_wc->GetPrimaryMainFrame()));
 
-  EXPECT_TRUE(base::Contains(outer_wc->GetInnerWebContents(), inner_wc.get()));
+  EXPECT_TRUE(
+      std::ranges::contains(outer_wc->GetInnerWebContents(), inner_wc.get()));
 
   // Verify that the inner WebContents can navigate while attached.
   EXPECT_TRUE(NavigateToURL(inner_wc.get(), another_url));
@@ -4680,12 +4700,13 @@ IN_PROC_BROWSER_TEST_F(UnownedInnerWebContentsBrowserTest,
   // Verify that the connection is broken.
   EXPECT_EQ(nullptr, inner_wc->GetOuterWebContents());
   EXPECT_TRUE(inner_wc_impl->GetOuterDelegateFrameTreeNodeId().is_null());
-  EXPECT_FALSE(base::Contains(outer_wc->GetInnerWebContents(), inner_wc.get()));
+  EXPECT_FALSE(
+      std::ranges::contains(outer_wc->GetInnerWebContents(), inner_wc.get()));
   EXPECT_EQ(
       nullptr,
       inner_wc->GetPrimaryMainFrame()->GetParentOrOuterDocumentOrEmbedder());
-  EXPECT_FALSE(base::Contains(CollectAllRenderFrameHosts(outer_wc),
-                              inner_wc->GetPrimaryMainFrame()));
+  EXPECT_FALSE(std::ranges::contains(CollectAllRenderFrameHosts(outer_wc),
+                                     inner_wc->GetPrimaryMainFrame()));
   EXPECT_FALSE(iframe_rfh->frame_tree_node()->render_manager()
             ->is_attaching_inner_delegate());
 
@@ -5230,6 +5251,145 @@ IN_PROC_BROWSER_TEST_F(
   }
 }
 
+IN_PROC_BROWSER_TEST_F(UnownedInnerWebContentsBrowserTest,
+                       AttachUnownedInnerWebContentsWithPrerender) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  const GURL outer_url(
+      embedded_test_server()->GetURL("a.com", "/page_with_iframe.html"));
+  const GURL inner_url(embedded_test_server()->GetURL("a.com", "/title1.html"));
+  const GURL prerender_url(
+      embedded_test_server()->GetURL("a.com", "/simple_page.html"));
+
+  // Setup outer WebContents.
+  ASSERT_TRUE(NavigateToURL(shell(), outer_url));
+  WebContentsImpl* outer_wc =
+      static_cast<WebContentsImpl*>(shell()->web_contents());
+  RenderFrameHostImpl* iframe_rfh = static_cast<RenderFrameHostImpl*>(
+      ChildFrameAt(outer_wc->GetPrimaryMainFrame(), 0));
+  ASSERT_TRUE(iframe_rfh);
+
+  // Setup inner WebContents with a prerender.
+  WebContents::CreateParams inner_params(
+      shell()->web_contents()->GetBrowserContext());
+  std::unique_ptr<WebContents> inner_wc = WebContents::Create(inner_params);
+  // Setup Delegate for inner WebContents so that prerender request would not be
+  // dropped by PrerenderHostRegistry::CreateAndStartHost.
+  // In production code, inner WebContents is expected to have delegate set.
+  inner_wc->SetDelegate(outer_wc->GetDelegate());
+  set_prerender_target_web_contents(inner_wc.get());
+  ASSERT_TRUE(NavigateToURL(inner_wc.get(), inner_url));
+  // Add a prerender in inner WebContents.
+  PrerenderHostId prerender_host_id =
+      prerender_helper().AddPrerender(prerender_url);
+
+  // Get the RenderFrameHosts in inner WebContents.
+  RenderFrameHost* inner_rfh = inner_wc->GetPrimaryMainFrame();
+  ASSERT_TRUE(inner_rfh);
+  RenderFrameHost* prerender_rfh =
+      prerender_helper().GetPrerenderedMainFrameHost(prerender_host_id);
+  ASSERT_TRUE(prerender_rfh);
+
+  // Verify that RenderWidgetHostViews have not changed to
+  // RenderWidgetHostViewChildFrame yet.
+  {
+    auto* rwhv = static_cast<RenderWidgetHostViewBase*>(inner_rfh->GetView());
+    ASSERT_TRUE(rwhv);
+    ASSERT_FALSE(rwhv->IsRenderWidgetHostViewChildFrame());
+    auto* prerender_rwhv =
+        static_cast<RenderWidgetHostViewBase*>(prerender_rfh->GetView());
+    ASSERT_TRUE(prerender_rwhv);
+    ASSERT_FALSE(prerender_rwhv->IsRenderWidgetHostViewChildFrame());
+  }
+
+  // Attach the inner WebContents.
+  outer_wc->AttachUnownedInnerWebContents(
+      UnownedInnerWebContentsClient::GetPassKeyForTesting(), inner_wc.get(),
+      iframe_rfh);
+  ASSERT_EQ(outer_wc, inner_wc->GetOuterWebContents());
+
+  // Verify that the inner WebContents's RFHs are still alive and not changed.
+  EXPECT_TRUE(inner_rfh->IsRenderFrameLive());
+  EXPECT_TRUE(prerender_rfh->IsRenderFrameLive());
+  EXPECT_EQ(inner_rfh, inner_wc->GetPrimaryMainFrame());
+  EXPECT_EQ(prerender_rfh,
+            prerender_helper().GetPrerenderedMainFrameHost(prerender_host_id));
+
+  // Verify that RenderWidgetHostViews have updated to be
+  // RenderWidgetHostViewChildFrame.
+  {
+    auto* rwhv = static_cast<RenderWidgetHostViewBase*>(inner_rfh->GetView());
+    ASSERT_TRUE(rwhv);
+    EXPECT_TRUE(rwhv->IsRenderWidgetHostViewChildFrame());
+    auto* prerender_rwhv =
+        static_cast<RenderWidgetHostViewBase*>(prerender_rfh->GetView());
+    ASSERT_TRUE(prerender_rwhv);
+    EXPECT_TRUE(prerender_rwhv->IsRenderWidgetHostViewChildFrame());
+  }
+
+  // Detach the inner WebContents.
+  outer_wc->DetachUnownedInnerWebContents(
+      UnownedInnerWebContentsClient::GetPassKeyForTesting(), inner_wc.get());
+  ASSERT_EQ(nullptr, inner_wc->GetOuterWebContents());
+
+  // Verify that the inner WebContents's RFHs are still alive and not changed.
+  EXPECT_TRUE(inner_rfh->IsRenderFrameLive());
+  EXPECT_TRUE(prerender_rfh->IsRenderFrameLive());
+  EXPECT_EQ(inner_rfh, inner_wc->GetPrimaryMainFrame());
+  EXPECT_EQ(prerender_rfh,
+            prerender_helper().GetPrerenderedMainFrameHost(prerender_host_id));
+
+  // Verify that RenderWidgetHostViews have changed to platform views and not
+  // RenderWidgetHostViewChildFrame.
+  {
+    auto* rwhv = static_cast<RenderWidgetHostViewBase*>(inner_rfh->GetView());
+    ASSERT_TRUE(rwhv);
+    ASSERT_FALSE(rwhv->IsRenderWidgetHostViewChildFrame());
+    auto* prerender_rwhv =
+        static_cast<RenderWidgetHostViewBase*>(prerender_rfh->GetView());
+    ASSERT_TRUE(prerender_rwhv);
+    ASSERT_FALSE(prerender_rwhv->IsRenderWidgetHostViewChildFrame());
+  }
+
+  // Attach the inner WebContents again.
+  outer_wc->AttachUnownedInnerWebContents(
+      UnownedInnerWebContentsClient::GetPassKeyForTesting(), inner_wc.get(),
+      iframe_rfh);
+  ASSERT_EQ(outer_wc, inner_wc->GetOuterWebContents());
+
+  // Verify that the inner WebContents's RFHs are still alive and not changed.
+  EXPECT_TRUE(inner_rfh->IsRenderFrameLive());
+  EXPECT_TRUE(prerender_rfh->IsRenderFrameLive());
+  EXPECT_EQ(inner_rfh, inner_wc->GetPrimaryMainFrame());
+  EXPECT_EQ(prerender_rfh,
+            prerender_helper().GetPrerenderedMainFrameHost(prerender_host_id));
+
+  // Verify that RenderWidgetHostViews have updated to be
+  // RenderWidgetHostViewChildFrame.
+  {
+    auto* rwhv = static_cast<RenderWidgetHostViewBase*>(inner_rfh->GetView());
+    ASSERT_TRUE(rwhv);
+    EXPECT_TRUE(rwhv->IsRenderWidgetHostViewChildFrame());
+    auto* prerender_rwhv =
+        static_cast<RenderWidgetHostViewBase*>(prerender_rfh->GetView());
+    ASSERT_TRUE(prerender_rwhv);
+    EXPECT_TRUE(prerender_rwhv->IsRenderWidgetHostViewChildFrame());
+  }
+
+  // Navigation to activate the prerendered page.
+  prerender_helper().NavigatePrimaryPage(prerender_url);
+
+  // Verify the prerendered rfh is switched to be the current rfh.
+  ASSERT_EQ(prerender_rfh, inner_wc->GetPrimaryMainFrame());
+
+  // Verify that RenderWidgetHostViews are still RenderWidgetHostViewChildFrame.
+  {
+    auto* prerender_rwhv =
+        static_cast<RenderWidgetHostViewBase*>(prerender_rfh->GetView());
+    ASSERT_TRUE(prerender_rwhv);
+    ASSERT_TRUE(prerender_rwhv->IsRenderWidgetHostViewChildFrame());
+  }
+}
+
 // Tests destroying the outer delegate node while there is an unowned inner
 // WebContents attached. Ensures that the inner WebContents' RFH is still alive
 // and the WebContents can be re-attached to the outer WebContents.
@@ -5453,8 +5613,9 @@ IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest,
 // frame and mouse up is on OOF iframe, the mouse up event is delivered to the
 // main frame as well to clear cached mouse states including autoscroll
 // selection state.
-#if BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_CHROMEOS)
 // TODO(crbug.com/421826783): Re-enable this test
+// TODO(crbug.com/475802008): Re-enable this test
 #define MAYBE_MouseUpInOOPIframeShouldCancelMainFrameAutoscrollSelection \
   DISABLED_MouseUpInOOPIframeShouldCancelMainFrameAutoscrollSelection
 #else
@@ -7115,7 +7276,7 @@ IN_PROC_BROWSER_TEST_F(WebContentsPrerenderBrowserTest,
 
   // Prerender a page that has a MIME type, text/plain.
   const GURL prerendering_url = embedded_test_server()->GetURL("/plain.txt");
-  FrameTreeNodeId host_id = prerender_helper().AddPrerender(prerendering_url);
+  PrerenderHostId host_id = prerender_helper().AddPrerender(prerendering_url);
 
   // Check MIME type for each page.
   EXPECT_EQ("text/html",
@@ -7150,7 +7311,7 @@ IN_PROC_BROWSER_TEST_F(WebContentsPrerenderWithDiscardBrowserTest,
 
   // Prerender a page.
   const GURL prerendering_url = embedded_test_server()->GetURL("/plain.txt");
-  const FrameTreeNodeId host_id =
+  const PrerenderHostId host_id =
       prerender_helper().AddPrerender(prerendering_url);
   PrerenderHostRegistry* registry =
       static_cast<WebContentsImpl*>(web_contents())->GetPrerenderHostRegistry();

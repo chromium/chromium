@@ -13,7 +13,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
@@ -251,7 +250,7 @@ class BubbleDialogDelegate::AnchorViewObserver : public ViewObserver {
  private:
   void AddToAnchorVector() {
     auto& vector = GetAnchorVector(anchor_view_);
-    DCHECK(!base::Contains(vector, parent_));
+    DCHECK(!std::ranges::contains(vector, parent_));
     vector.push_back(parent_);
   }
 
@@ -504,7 +503,7 @@ BubbleDialogDelegate::~BubbleDialogDelegate() {
 Widget* BubbleDialogDelegate::CreateBubble(
     BubbleDialogDelegate* bubble_delegate,
     Widget::InitParams::Ownership ownership) {
-  // On Mac, MODAL_TYPE_WINDOW is implemented using sheets, which can't be
+  // On Mac, ModalType::kWindow is implemented using sheets, which can't be
   // anchored at a specific point - they are always placed near the top center
   // of the window. To avoid unpleasant surprises, disallow setting an anchor
   // view or rectangle on these types of bubbles.
@@ -933,8 +932,8 @@ void BubbleDialogDelegate::BubbleUmaLogger::LogMetric(
   }
 
   if (allowed_class_names_for_testing_.has_value()) {
-    if (!base::Contains(allowed_class_names_for_testing_.value(),
-                        bubble_name.value())) {
+    if (!std::ranges::contains(allowed_class_names_for_testing_.value(),
+                               bubble_name.value())) {
       return;
     }
   } else if (!views_metrics::IsValidBubbleName(bubble_name.value())) {

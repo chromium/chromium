@@ -34,8 +34,8 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) KnownLegacyScopeDomainsPrefDelegate
   static void RegisterPrefs(PrefRegistrySimple* pref_registry);
 
   // net::CookieMonster::PrefDelegate implementations.
-  const base::Value::Dict& GetLegacyDomains() const override;
-  void SetLegacyDomains(base::Value::Dict dict) override;
+  const base::DictValue& GetLegacyDomains() const override;
+  void SetLegacyDomains(base::DictValue dict) override;
   void WaitForPrefLoad(base::OnceClosure callback) override;
 
   bool IsPrefReady() override;

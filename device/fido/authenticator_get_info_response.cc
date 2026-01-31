@@ -7,7 +7,6 @@
 #include <algorithm>
 #include <utility>
 
-#include "base/containers/contains.h"
 #include "base/numerics/safe_conversions.h"
 #include "components/cbor/values.h"
 #include "components/cbor/writer.h"
@@ -36,8 +35,7 @@ AuthenticatorGetInfoResponse::AuthenticatorGetInfoResponse(
     : versions(std::move(in_versions)),
       ctap2_versions(std::move(in_ctap2_versions)),
       aaguid(fido_parsing_utils::Materialize(in_aaguid)) {
-  DCHECK_NE(base::Contains(versions, ProtocolVersion::kCtap2),
-            ctap2_versions.empty());
+  DCHECK_NE(versions.contains(ProtocolVersion::kCtap2), ctap2_versions.empty());
 }
 
 AuthenticatorGetInfoResponse::AuthenticatorGetInfoResponse(
@@ -62,6 +60,9 @@ std::vector<uint8_t> AuthenticatorGetInfoResponse::EncodeToCBOR(
               break;
             case Ctap2Version::kCtap2_1:
               version_array.emplace_back(kCtap2_1Version);
+              break;
+            case Ctap2Version::kCtap2_2:
+              version_array.emplace_back(kCtap2_2Version);
               break;
           }
         }

@@ -10,6 +10,7 @@
 
 #include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
+#include "build/blink_buildflags.h"
 #include "build/build_config.h"
 #include "services/device/public/cpp/device_features_export.h"
 #include "services/device/public/mojom/geolocation_internals.mojom-shared.h"
@@ -18,8 +19,6 @@ namespace features {
 
 // The features should be documented alongside the definition of their values
 // in the .cc file.
-DEVICE_FEATURES_EXPORT BASE_DECLARE_FEATURE(
-    kComputePressureBreakCalibrationMitigation);
 DEVICE_FEATURES_EXPORT BASE_DECLARE_FEATURE(kGenericSensorExtraClasses);
 DEVICE_FEATURES_EXPORT BASE_DECLARE_FEATURE(kSerialPortConnected);
 DEVICE_FEATURES_EXPORT BASE_DECLARE_FEATURE(kWebUsbBlocklist);
@@ -33,10 +32,6 @@ extern const DEVICE_FEATURES_EXPORT base::FeatureParam<int>
     kWinSystemLocationPermissionPollingParam;
 #endif  // BUILDFLAG(IS_WIN)
 DEVICE_FEATURES_EXPORT BASE_DECLARE_FEATURE(kLocationProviderManager);
-
-#if BUILDFLAG(IS_CHROMEOS)
-DEVICE_FEATURES_EXPORT BASE_DECLARE_FEATURE(kUsbDeviceLinuxOpenCrashKey);
-#endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_ANDROID)
 DEVICE_FEATURES_EXPORT BASE_DECLARE_FEATURE(
@@ -64,6 +59,12 @@ DEVICE_FEATURES_EXPORT BASE_DECLARE_FEATURE(kSerialSplitDtrAndRts);
 #if BUILDFLAG(IS_MAC)
 DEVICE_FEATURES_EXPORT BASE_DECLARE_FEATURE(kHidReportRequestExactLength);
 #endif  // BUILDFLAG(IS_MAC)
+
+#if BUILDFLAG(IS_APPLE) && BUILDFLAG(USE_BLINK)
+// Controls whether to use the ellipsoidal altitude from Core Location
+// instead of the default altitude attribute.
+DEVICE_FEATURES_EXPORT BASE_DECLARE_FEATURE(kEllipsoidalAltitude);
+#endif  // BUILDFLAG(IS_APPLE) && BUILDFLAG(USE_BLINK)
 
 }  // namespace features
 

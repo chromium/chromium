@@ -283,7 +283,7 @@ void WebstoreStandaloneInstaller::OnWebstoreResponseParseFailure(
 void WebstoreStandaloneInstaller::OnWebstoreParseSuccess(
     const std::string& id,
     const SkBitmap& icon,
-    base::Value::Dict manifest) {
+    base::DictValue manifest) {
   CHECK_EQ(id_, id);
 
   if (!CheckRequestorAlive()) {

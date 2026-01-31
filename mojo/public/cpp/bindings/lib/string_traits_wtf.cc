@@ -13,8 +13,9 @@ namespace mojo {
 
 // static
 void StringTraits<blink::String>::SetToNull(blink::String* output) {
-  if (output->IsNull())
+  if (output->IsNull()) {
     return;
+  }
 
   blink::String result;
   output->swap(result);

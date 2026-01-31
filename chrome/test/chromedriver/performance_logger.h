@@ -52,7 +52,7 @@ class PerformanceLogger : public DevToolsEventListener, public CommandListener {
   // Calls HandleInspectorEvents or HandleTraceEvents depending on client type.
   Status OnEvent(DevToolsClient* client,
                  const std::string& method,
-                 const base::Value::Dict& params) override;
+                 const base::DictValue& params) override;
 
   // Before allowed commands, if tracing enabled, calls CollectTraceEvents.
   Status BeforeCommand(const std::string& command_name) override;
@@ -61,11 +61,11 @@ class PerformanceLogger : public DevToolsEventListener, public CommandListener {
   void AddLogEntry(Log::Level level,
                    const std::string& webview,
                    const std::string& method,
-                   const base::Value::Dict& params);
+                   const base::DictValue& params);
 
   void AddLogEntry(const std::string& webview,
                    const std::string& method,
-                   const base::Value::Dict& params);
+                   const base::DictValue& params);
 
   // Enables Network and Page domains according to |PerfLoggingPrefs|.
   Status EnableInspectorDomains(DevToolsClient* client);
@@ -73,12 +73,12 @@ class PerformanceLogger : public DevToolsEventListener, public CommandListener {
   // Logs Network and Page events.
   Status HandleInspectorEvents(DevToolsClient* client,
                                const std::string& method,
-                               const base::Value::Dict& params);
+                               const base::DictValue& params);
 
   // Logs trace events and monitors trace buffer usage.
   Status HandleTraceEvents(DevToolsClient* client,
                            const std::string& method,
-                           const base::Value::Dict& params);
+                           const base::DictValue& params);
 
   bool ShouldReportTracingError();
   Status StartTrace();  // Must not call before browser-wide client connects.

@@ -7,6 +7,7 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <utility>
 
 #include "ash/api/tasks/tasks_client.h"
 #include "ash/api/tasks/tasks_types.h"
@@ -20,7 +21,6 @@
 #include "base/test/test_future.h"
 #include "base/time/time.h"
 #include "base/time/time_override.h"
-#include "base/types/cxx23_to_underlying.h"
 #include "chromeos/ash/components/settings/scoped_timezone_settings.h"
 #include "google_apis/common/api_error_codes.h"
 #include "ui/accessibility/ax_enums.mojom.h"
@@ -89,7 +89,7 @@ TEST_F(GlanceablesTaskViewTest, FormatsDueDate) {
 
     const auto* const due_label =
         views::AsViewClass<views::Label>(view.GetViewByID(
-            base::to_underlying(GlanceablesViewId::kTaskItemDueLabel)));
+            std::to_underlying(GlanceablesViewId::kTaskItemDueLabel)));
     ASSERT_TRUE(due_label);
 
     EXPECT_EQ(due_label->GetText(), tc.expected_text);
@@ -120,7 +120,7 @@ TEST_F(GlanceablesTaskViewTest,
 
   const auto* const title_label =
       views::AsViewClass<views::Label>(view->GetViewByID(
-          base::to_underlying(GlanceablesViewId::kTaskItemTitleLabel)));
+          std::to_underlying(GlanceablesViewId::kTaskItemTitleLabel)));
   ASSERT_TRUE(title_label);
   EXPECT_TRUE(title_label->IsDrawn());
 
@@ -166,7 +166,7 @@ TEST_F(GlanceablesTaskViewTest, UpdatingTaskTriggersErrorMessageIfNoNetwork) {
   ASSERT_TRUE(checkbox);
   const auto* const title_label =
       views::AsViewClass<views::Label>(view->GetViewByID(
-          base::to_underlying(GlanceablesViewId::kTaskItemTitleLabel)));
+          std::to_underlying(GlanceablesViewId::kTaskItemTitleLabel)));
   ASSERT_TRUE(title_label);
   EXPECT_TRUE(title_label->IsDrawn());
 
@@ -190,10 +190,10 @@ TEST_F(GlanceablesTaskViewTest, UpdatingTaskTriggersErrorMessageIfNoNetwork) {
     // Clicking on the title label when no network connected will not show the
     // textfield.
     GestureTapOn(title_label);
-    EXPECT_EQ(title_label, view->GetViewByID(base::to_underlying(
+    EXPECT_EQ(title_label, view->GetViewByID(std::to_underlying(
                                GlanceablesViewId::kTaskItemTitleLabel)));
     const auto* title_text_field = view->GetViewByID(
-        base::to_underlying(GlanceablesViewId::kTaskItemTitleTextField));
+        std::to_underlying(GlanceablesViewId::kTaskItemTitleTextField));
     EXPECT_FALSE(title_text_field);
     const auto [task_error_type, button_action_type] = error_future.Take();
     EXPECT_EQ(task_error_type,
@@ -267,10 +267,10 @@ TEST_F(GlanceablesTaskViewTest, EntersAndExitsEditState) {
   {
     const auto* const title_label =
         views::AsViewClass<views::Label>(view->GetViewByID(
-            base::to_underlying(GlanceablesViewId::kTaskItemTitleLabel)));
+            std::to_underlying(GlanceablesViewId::kTaskItemTitleLabel)));
     const auto* const title_text_field =
         views::AsViewClass<views::Textfield>(view->GetViewByID(
-            base::to_underlying(GlanceablesViewId::kTaskItemTitleTextField)));
+            std::to_underlying(GlanceablesViewId::kTaskItemTitleTextField)));
 
     ASSERT_TRUE(title_label);
     EXPECT_TRUE(title_label->IsDrawn());
@@ -284,10 +284,10 @@ TEST_F(GlanceablesTaskViewTest, EntersAndExitsEditState) {
   {
     const auto* const title_label =
         views::AsViewClass<views::Label>(view->GetViewByID(
-            base::to_underlying(GlanceablesViewId::kTaskItemTitleLabel)));
+            std::to_underlying(GlanceablesViewId::kTaskItemTitleLabel)));
     const auto* const title_text_field =
         views::AsViewClass<views::Textfield>(view->GetViewByID(
-            base::to_underlying(GlanceablesViewId::kTaskItemTitleTextField)));
+            std::to_underlying(GlanceablesViewId::kTaskItemTitleTextField)));
 
     EXPECT_FALSE(title_label);
 
@@ -307,10 +307,10 @@ TEST_F(GlanceablesTaskViewTest, EntersAndExitsEditState) {
   {
     const auto* const title_label =
         views::AsViewClass<views::Label>(view->GetViewByID(
-            base::to_underlying(GlanceablesViewId::kTaskItemTitleLabel)));
+            std::to_underlying(GlanceablesViewId::kTaskItemTitleLabel)));
     const auto* const title_text_field =
         views::AsViewClass<views::Textfield>(view->GetViewByID(
-            base::to_underlying(GlanceablesViewId::kTaskItemTitleTextField)));
+            std::to_underlying(GlanceablesViewId::kTaskItemTitleTextField)));
 
     ASSERT_TRUE(title_label);
     EXPECT_TRUE(title_label->IsDrawn());
@@ -433,15 +433,15 @@ TEST_F(GlanceablesTaskViewTest, CommitEditedTaskOnTab) {
   }
 
   const auto* title_label = views::AsViewClass<views::Label>(view->GetViewByID(
-      base::to_underlying(GlanceablesViewId::kTaskItemTitleLabel)));
+      std::to_underlying(GlanceablesViewId::kTaskItemTitleLabel)));
   EXPECT_FALSE(title_label);
   const auto* title_text_field =
       views::AsViewClass<views::Textfield>(view->GetViewByID(
-          base::to_underlying(GlanceablesViewId::kTaskItemTitleTextField)));
+          std::to_underlying(GlanceablesViewId::kTaskItemTitleTextField)));
   ASSERT_TRUE(title_text_field);
   EXPECT_TRUE(title_text_field->IsDrawn());
   const auto* edit_in_browser_button = view->GetViewByID(
-      base::to_underlying(GlanceablesViewId::kTaskItemEditInBrowserLabel));
+      std::to_underlying(GlanceablesViewId::kTaskItemEditInBrowserLabel));
   ASSERT_TRUE(edit_in_browser_button);
   EXPECT_TRUE(edit_in_browser_button->HasFocus());
 
@@ -461,7 +461,7 @@ TEST_F(GlanceablesTaskViewTest, CommitEditedTaskOnTab) {
   }
 
   edit_in_browser_button = view->GetViewByID(
-      base::to_underlying(GlanceablesViewId::kTaskItemEditInBrowserLabel));
+      std::to_underlying(GlanceablesViewId::kTaskItemEditInBrowserLabel));
   ASSERT_TRUE(edit_in_browser_button);
   EXPECT_TRUE(edit_in_browser_button->HasFocus());
 
@@ -469,14 +469,14 @@ TEST_F(GlanceablesTaskViewTest, CommitEditedTaskOnTab) {
   base::RunLoop().RunUntilIdle();
 
   title_label = views::AsViewClass<views::Label>(view->GetViewByID(
-      base::to_underlying(GlanceablesViewId::kTaskItemTitleLabel)));
+      std::to_underlying(GlanceablesViewId::kTaskItemTitleLabel)));
   ASSERT_TRUE(title_label);
   EXPECT_TRUE(title_label->IsDrawn());
   title_text_field = views::AsViewClass<views::Textfield>(view->GetViewByID(
-      base::to_underlying(GlanceablesViewId::kTaskItemTitleTextField)));
+      std::to_underlying(GlanceablesViewId::kTaskItemTitleTextField)));
   EXPECT_FALSE(title_text_field);
   edit_in_browser_button = view->GetViewByID(
-      base::to_underlying(GlanceablesViewId::kTaskItemEditInBrowserLabel));
+      std::to_underlying(GlanceablesViewId::kTaskItemEditInBrowserLabel));
   EXPECT_FALSE(edit_in_browser_button);
 }
 
@@ -572,7 +572,7 @@ TEST_F(GlanceablesTaskViewTest, HandlesPressingCheckButtonWhileAdding) {
 
   const auto* const title_label =
       views::AsViewClass<views::Label>(view->GetViewByID(
-          base::to_underlying(GlanceablesViewId::kTaskItemTitleLabel)));
+          std::to_underlying(GlanceablesViewId::kTaskItemTitleLabel)));
   ASSERT_TRUE(title_label);
   EXPECT_TRUE(title_label->IsDrawn());
   const auto* const title_button =
@@ -601,7 +601,7 @@ TEST_F(GlanceablesTaskViewTest, DisplaysOriginSurfaceType) {
                                    api::Task::OriginSurfaceType::kUnknown}) {
     SCOPED_TRACE(::testing::Message()
                  << "origin_surface_type="
-                 << base::to_underlying(origin_surface_type));
+                 << std::to_underlying(origin_surface_type));
 
     const auto task = api::Task("task-id", "Task title",
                                 /*due=*/std::nullopt, /*completed=*/false,
@@ -621,7 +621,7 @@ TEST_F(GlanceablesTaskViewTest, DisplaysOriginSurfaceType) {
 
     const auto* const origin_surface_type_icon =
         views::AsViewClass<views::ImageView>(view->GetViewByID(
-            base::to_underlying(GlanceablesViewId::kOriginSurfaceTypeIcon)));
+            std::to_underlying(GlanceablesViewId::kOriginSurfaceTypeIcon)));
 
     // Check presence of the origin surface type icon. It's only added to
     // assigned/shared tasks except `kUnknown` and visible by default.
@@ -630,7 +630,7 @@ TEST_F(GlanceablesTaskViewTest, DisplaysOriginSurfaceType) {
       ASSERT_TRUE(origin_surface_type_icon);
       EXPECT_TRUE(origin_surface_type_icon->GetVisible());
       EXPECT_FALSE(views::AsViewClass<views::View>(view->GetViewByID(
-          base::to_underlying(GlanceablesViewId::kAssignedTaskNotice))));
+          std::to_underlying(GlanceablesViewId::kAssignedTaskNotice))));
     } else {
       EXPECT_FALSE(origin_surface_type_icon);
     }
@@ -638,7 +638,7 @@ TEST_F(GlanceablesTaskViewTest, DisplaysOriginSurfaceType) {
     {
       const auto* const title_label =
           views::AsViewClass<views::Label>(view->GetViewByID(
-              base::to_underlying(GlanceablesViewId::kTaskItemTitleLabel)));
+              std::to_underlying(GlanceablesViewId::kTaskItemTitleLabel)));
       ASSERT_TRUE(title_label);
       LeftClickOn(title_label);
     }
@@ -652,7 +652,7 @@ TEST_F(GlanceablesTaskViewTest, DisplaysOriginSurfaceType) {
     // ...and the notice should appear for all tasks except `kRegular`.
     if (origin_surface_type != api::Task::OriginSurfaceType::kRegular) {
       EXPECT_TRUE(views::AsViewClass<views::View>(view->GetViewByID(
-          base::to_underlying(GlanceablesViewId::kAssignedTaskNotice))));
+          std::to_underlying(GlanceablesViewId::kAssignedTaskNotice))));
     }
   }
 }

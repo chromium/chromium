@@ -101,9 +101,15 @@ GetUIInfoForTrustedVaultRecoverabilityDegradedErrorForEverything() {
 // Gets the AccountErrorUIInfo data representing the kBookmarksLimitExceeded
 // error.
 AccountErrorUIInfo* GetUIInfoForBookmarksLimitExceededError() {
-  // TODO(crbug.com/452968646): forward to  the concrete help center article
-  // link.
-  return nil;
+  AccountErrorUIInfo* error_info = [[AccountErrorUIInfo alloc]
+       initWithErrorType:syncer::SyncService::UserActionableError::
+                             kBookmarksLimitExceeded
+      userActionableType:AccountErrorUserActionableType::
+                             kAcknowledgeBookmarkError
+               messageID:IDS_IOS_SYNC_ERROR_BOOKMARKS_LIMIT_EXCEEDED_MESSAGE
+           buttonLabelID:IDS_IOS_SYNC_ERROR_BOOKMARKS_LIMIT_EXCEEDED_BUTTON];
+
+  return error_info;
 }
 
 }  // namespace
@@ -113,10 +119,7 @@ AccountErrorUIInfo* GetAccountErrorUIInfo(syncer::SyncService* sync_service) {
 
   switch (sync_service->GetUserActionableError()) {
     case syncer::SyncService::UserActionableError::kSignInNeedsUpdate:
-      if (base::FeatureList::IsEnabled(switches::kEnableIdentityInAuthError)) {
-        return GetUIInfoForAuthenticationError();
-      }
-      break;
+      return GetUIInfoForAuthenticationError();
     case syncer::SyncService::UserActionableError::kNeedsPassphrase:
       return GetUIInfoForPassphraseError();
     case syncer::SyncService::UserActionableError::

@@ -160,7 +160,7 @@ public class ScreenCapture implements ImageHandler.Delegate {
         assert oldPickState == null;
     }
 
-    static void resetStaticStateForTesting() {
+    public static void resetStaticStateForTesting() {
         sLatch.close();
         sNextPickState.set(null);
     }

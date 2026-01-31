@@ -694,12 +694,12 @@ void AccountManagedStatusFinder::OutcomeDeterminedAsync(Outcome type) {
 }
 
 #if BUILDFLAG(IS_ANDROID)
-static jlong JNI_AccountManagedStatusFinder_CreateNativeObject(
+static int64_t JNI_AccountManagedStatusFinder_CreateNativeObject(
     JNIEnv* env,
     IdentityManager* identity_manager,
     CoreAccountInfo& account,
     base::RepeatingClosure& callback,
-    jlong timeout_in_millis) {
+    int64_t timeout_in_millis) {
   base::TimeDelta timeout = timeout_in_millis < 0
                                 ? base::TimeDelta::Max()
                                 : base::Milliseconds(timeout_in_millis);
@@ -712,8 +712,9 @@ void AccountManagedStatusFinder::DestroyNativeObject(JNIEnv* env) {
   delete this;
 }
 
-jint AccountManagedStatusFinder::GetOutcomeFromNativeObject(JNIEnv* env) const {
-  return static_cast<jint>(GetOutcome());
+int32_t AccountManagedStatusFinder::GetOutcomeFromNativeObject(
+    JNIEnv* env) const {
+  return static_cast<int32_t>(GetOutcome());
 }
 #endif
 

@@ -48,8 +48,9 @@ void WebSocketQuicSpdyStream::OnInitialHeadersComplete(
 
 void WebSocketQuicSpdyStream::OnClose() {
   quic::QuicSpdyStream::OnClose();
-  if (delegate_) {
-    delegate_->OnClose(MapQuicErrorToNetError());
+  Delegate* delegate = std::exchange(delegate_, nullptr);
+  if (delegate) {
+    delegate->OnClose(MapQuicErrorToNetError());
   }
 }
 
@@ -79,6 +80,13 @@ void WebSocketQuicSpdyStream::OnCanWriteNewData() {
   if (delegate_) {
     delegate_->OnCanWriteNewData();
   }
+}
+
+void WebSocketQuicSpdyStream::DetachDelegate() {
+  CHECK(!read_side_closed());
+  CHECK(!write_side_closed());
+  delegate_ = nullptr;
+  Reset(quic::QUIC_STREAM_CANCELLED);
 }
 
 int WebSocketQuicSpdyStream::MapQuicErrorToNetError() {

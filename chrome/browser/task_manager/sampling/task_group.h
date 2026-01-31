@@ -103,29 +103,28 @@ class TaskGroup {
   }
   base::Time start_time() const { return start_time_; }
   base::TimeDelta cpu_time() const { return cpu_time_; }
-  void set_footprint(base::ByteCount footprint) {
+  void set_footprint(base::ByteSize footprint) {
     memory_footprint_ = footprint;
   }
-  base::ByteCount footprint_bytes() const { return memory_footprint_; }
+  std::optional<base::ByteSize> footprint_bytes() const {
+    return memory_footprint_;
+  }
 #if BUILDFLAG(IS_CHROMEOS)
-  base::ByteCount swapped_bytes() const { return swapped_mem_; }
-  void set_swapped_bytes(base::ByteCount swapped_bytes) {
+  std::optional<base::ByteSize> swapped_bytes() const { return swapped_mem_; }
+  void set_swapped_bytes(base::ByteSize swapped_bytes) {
     swapped_mem_ = swapped_bytes;
   }
 #endif  // BUILDFLAG(IS_CHROMEOS)
-  base::ByteCount gpu_memory() const { return gpu_memory_; }
-  void set_gpu_memory(base::ByteCount gpu_mem_bytes) {
+  std::optional<base::ByteSize> gpu_memory() const { return gpu_memory_; }
+  void set_gpu_memory(base::ByteSize gpu_mem_bytes) {
     gpu_memory_ = gpu_mem_bytes;
   }
   bool gpu_memory_has_duplicates() const { return gpu_memory_has_duplicates_; }
   void set_gpu_memory_has_duplicates(bool has_duplicates) {
     gpu_memory_has_duplicates_ = has_duplicates;
   }
-  base::ByteCount per_process_network_usage_rate() const {
+  std::optional<base::ByteSize> per_process_network_usage_rate() const {
     return per_process_network_usage_rate_;
-  }
-  base::ByteCount cumulative_per_process_network_usage() const {
-    return cumulative_per_process_network_usage_;
   }
   bool is_backgrounded() const { return is_backgrounded_; }
   void set_is_backgrounded(bool is_backgrounded) {
@@ -160,7 +159,7 @@ class TaskGroup {
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC)
 
   void OnCpuRefreshDone(double cpu_usage);
-  void OnSwappedMemRefreshDone(base::ByteCount swapped_mem_bytes);
+  void OnSwappedMemRefreshDone(base::ByteSize swapped_mem_bytes);
   void OnProcessPriorityDone(base::Process::Priority priority);
   void OnIdleWakeupsRefreshDone(int idle_wakeups_per_second);
 
@@ -205,17 +204,13 @@ class TaskGroup {
       std::numeric_limits<double>::quiet_NaN();
   base::Time start_time_;     // Only calculated On Windows now.
   base::TimeDelta cpu_time_;  // Only calculated On Windows now.
-  base::ByteCount swapped_mem_ = base::ByteCount(-1);
-  base::ByteCount memory_footprint_ = base::ByteCount(-1);
-  base::ByteCount gpu_memory_ = base::ByteCount(-1);
+  std::optional<base::ByteSize> swapped_mem_;
+  std::optional<base::ByteSize> memory_footprint_;
+  std::optional<base::ByteSize> gpu_memory_;
 
   // The network usage in bytes per second as the sum of all network usages of
   // the individual tasks sharing the same process.
-  base::ByteCount per_process_network_usage_rate_ = base::ByteCount(-1);
-
-  // A continuously updating sum of all bytes that have been downloaded and
-  // uploaded by all tasks in this process.
-  base::ByteCount cumulative_per_process_network_usage_ = base::ByteCount(0);
+  std::optional<base::ByteSize> per_process_network_usage_rate_;
 
 #if BUILDFLAG(IS_WIN)
   // Windows GDI and USER Handles.

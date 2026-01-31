@@ -10,7 +10,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
 #include "third_party/blink/renderer/core/css/cssom/prepopulated_computed_style_property_map.h"
 #include "third_party/blink/renderer/core/dom/document.h"
-#include "third_party/blink/renderer/core/dom/node_rare_data.h"
+#include "third_party/blink/renderer/core/dom/element_rare_data_vector.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/layout/layout_object.h"
@@ -92,7 +92,7 @@ int PaintWorklet::GetPaintsBeforeSwitching() {
   // according to the actual paints per frame. For example, if we found that
   // there are typically ~1000 paints in each frame, we'd want to set the number
   // to average at 500.
-  return base::RandInt(0, kMaxPaintCountToSwitch - 1);
+  return base::RandIntInclusive(0, kMaxPaintCountToSwitch - 1);
 }
 
 wtf_size_t PaintWorklet::SelectNewGlobalScope() {

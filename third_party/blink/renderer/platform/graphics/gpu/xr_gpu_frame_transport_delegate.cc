@@ -51,9 +51,8 @@ gpu::SyncToken XrGpuFrameTransportDelegate::GenerateSyncToken() {
 }
 
 std::pair<gfx::GpuMemoryBufferHandle, gpu::SyncToken>
-XrGpuFrameTransportDelegate::CopyImage(
-    const scoped_refptr<StaticBitmapImage>& image,
-    bool last_transfer_succeeded) {
+XrGpuFrameTransportDelegate::CopyImage(SharedImageHolder* image,
+                                       bool last_transfer_succeeded) {
   // CopyImage is only used with SUBMIT_AS_TEXTURE_HANDLE, which we don't
   // support.
   NOTREACHED();

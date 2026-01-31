@@ -4,8 +4,9 @@
 
 #import "ios/chrome/browser/ntp/shared/metrics/feed_metrics_utils.h"
 
+#import <utility>
+
 #import "base/logging.h"
-#import "base/types/cxx23_to_underlying.h"
 #import "components/prefs/pref_service.h"
 #import "ios/chrome/browser/metrics/model/constants.h"
 #import "ios/chrome/browser/ntp/shared/metrics/feed_metrics_constants.h"
@@ -13,10 +14,10 @@
 FeedActivityBucket FeedActivityBucketForPrefs(PrefService* prefs) {
   const int activity_bucket = prefs->GetInteger(kActivityBucketKey);
   switch (activity_bucket) {
-    case base::to_underlying(FeedActivityBucket::kNoActivity):
-    case base::to_underlying(FeedActivityBucket::kLowActivity):
-    case base::to_underlying(FeedActivityBucket::kMediumActivity):
-    case base::to_underlying(FeedActivityBucket::kHighActivity):
+    case std::to_underlying(FeedActivityBucket::kNoActivity):
+    case std::to_underlying(FeedActivityBucket::kLowActivity):
+    case std::to_underlying(FeedActivityBucket::kMediumActivity):
+    case std::to_underlying(FeedActivityBucket::kHighActivity):
       return static_cast<FeedActivityBucket>(activity_bucket);
 
     default:

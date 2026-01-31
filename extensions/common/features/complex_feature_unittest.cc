@@ -21,8 +21,10 @@ using extensions::mojom::ManifestLocation;
 namespace extensions {
 
 TEST(ComplexFeatureTest, MultipleRulesAllowlist) {
-  const HashedExtensionId kIdFoo("fooabbbbccccddddeeeeffffgggghhhh");
-  const HashedExtensionId kIdBar("barabbbbccccddddeeeeffffgggghhhh");
+  const HashedExtensionId kIdFoo(
+      ExtensionId("fooabbbbccccddddeeeeffffgggghhhh"));
+  const HashedExtensionId kIdBar(
+      ExtensionId("barabbbbccccddddeeeeffffgggghhhh"));
   std::vector<Feature*> features;
 
   {

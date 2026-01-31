@@ -1,0 +1,17 @@
+include_rules = [
+  "+components/keyed_service/core",
+  "+components/page_content_annotations/content",
+  "+components/passage_embeddings/core",
+  "+content/public/browser",
+  "+components/optimization_guide/proto",
+  "+services/passage_embeddings/public/mojom",
+]
+
+specific_include_rules = {
+  ".*unittest\.cc": [
+    "+chrome/browser/page_content_annotations",
+    "+chrome/test/base",
+    "+components/os_crypt/async/browser/test_utils.h",
+    "+content/public/test",
+  ],
+}

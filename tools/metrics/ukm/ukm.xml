@@ -801,6 +801,13 @@ be describing additional metrics about the same event.
       returns the average of the densities accumulated over the page load time
       rounded to the nearest integer.
     </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <quantiles type="std-percentiles"/>
+        </statistics>
+      </history>
+    </aggregation>
   </metric>
   <metric name="KurtosisViewportAdDensity">
     <summary>
@@ -2388,7 +2395,31 @@ be describing additional metrics about the same event.
   </metric>
 </event>
 
-<event name="Autofill.AiAmountExtractionComplete" singular="true">
+<event name="Autofill.AiAmountExtraction.ApcFetchResult" singular="true">
+  <owner>jamessun@google.com</owner>
+  <owner>payments-autofill-team@google.com</owner>
+  <summary>
+    Records whether the Annotated Page Content (APC) fetch was successful. APC
+    fetching is triggered at the start of the AI-based amount extraction process
+    to generate the structured page data that will subsequently be analyzed by
+    the model to retrieve the checkout amount. Recorded once per page load when
+    the APC fetch attempt completes.
+  </summary>
+  <metric name="ApcFetchResult" enum="BooleanSuccess">
+    <summary>
+      The result of the APC fetch.
+    </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <enumeration/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+</event>
+
+<event name="Autofill.AiAmountExtraction.Result" singular="true">
   <owner>jamessun@google.com</owner>
   <owner>payments-autofill-team@google.com</owner>
   <summary>
@@ -2397,6 +2428,45 @@ be describing additional metrics about the same event.
     (successfully, with failure, or with invalid data) or when the client-side
     timeout is reached.
   </summary>
+  <metric name="FailureLatencyInMillis">
+    <summary>
+      Records duration in milliseconds from when the AI amount extraction is
+      initialized to when an empty response is received from the model.
+    </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <quantiles type="std-percentiles"/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+  <metric name="InvalidResponseLatencyInMillis">
+    <summary>
+      Records duration in milliseconds from when the AI amount extraction is
+      initialized to when an invalid response is received from the model.
+    </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <quantiles type="std-percentiles"/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+  <metric name="InvalidResponseReason"
+      enum="AiAmountExtractionInvalidResponseReason">
+    <summary>
+      The reason the AI amount extraction response was invalid.
+    </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <enumeration/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
   <metric name="Result" enum="AiAmountExtractionResult">
     <summary>
       The result of the AI amount extraction.
@@ -2405,6 +2475,19 @@ be describing additional metrics about the same event.
       <history>
         <statistics>
           <enumeration/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+  <metric name="SuccessLatencyInMillis">
+    <summary>
+      Records duration in milliseconds from when the AI amount extraction is
+      initialized to when a non-empty valid response is received from the model.
+    </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <quantiles type="std-percentiles"/>
         </statistics>
       </history>
     </aggregation>
@@ -2458,6 +2541,41 @@ be describing additional metrics about the same event.
       <history>
         <statistics>
           <quantiles type="std-percentiles"/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+</event>
+
+<event name="Autofill.Bnpl.AiAmountExtraction.AmountInIssuerRange">
+  <owner>jamessun@google.com</owner>
+  <owner>payments-autofill-team@google.com</owner>
+  <summary>
+    Records whether the AI-based checkout amount is within the issuer's
+    transaction range. Recorded once per page load when AI amount extraction
+    completes.
+  </summary>
+  <metric name="Issuer" enum="BnplIssuerId">
+    <summary>
+      The ID of the BNPL issuer.
+    </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <enumeration/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+  <metric name="IsWithinRange" enum="Boolean">
+    <summary>
+      True if the amount is within the issuer's supported range, False
+      otherwise.
+    </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <enumeration/>
         </statistics>
       </history>
     </aggregation>
@@ -2927,12 +3045,6 @@ be describing additional metrics about the same event.
       Number of Autofill fills invoked by the user on the current form.
     </summary>
   </metric>
-  <metric name="FastCheckoutRunId">
-    <summary>
-      Optional, only set if a form was filled by Fast Checkout. Unique ID of a
-      Fast Checkout run.
-    </summary>
-  </metric>
   <metric name="FillingAcceptance">
     <summary>
       Has value 1 if user accepted the suggestion to fill values on a submitted
@@ -2969,12 +3081,6 @@ be describing additional metrics about the same event.
       It does not matter whether the user actually requested to fill the data.
       It does not matter either whether the data available for filling
       corresponded to the submitted data.
-    </summary>
-  </metric>
-  <metric name="FlowId">
-    <summary>
-      Hashed GUID linking together multiple emissions of this event if emitted
-      within a 20 minutes timeframe.
     </summary>
   </metric>
   <metric name="FormElementUserModifications">
@@ -7806,7 +7912,7 @@ be describing additional metrics about the same event.
 
 <event name="ContextualCueing.NudgeDecision">
   <owner>sophiechang@chromium.org</owner>
-  <owner>rajendrant@chromium.org</owner>
+  <owner>zekunjiang@google.com</owner>
   <summary>
     Recorded when a decision to nudge an optimization type was made for the page
     load.
@@ -7825,13 +7931,18 @@ be describing additional metrics about the same event.
 
 <event name="ContextualCueing.NudgeInteraction">
   <owner>sophiechang@chromium.org</owner>
-  <owner>rajendrant@chromium.org</owner>
+  <owner>zekunjiang@google.com</owner>
   <summary>
     Recorded only if a contextual cueing nudge was shown to the user.
   </summary>
   <metric name="NudgeInteraction" enum="ContextualCueingNudgeInteraction">
     <summary>
       The interaction the user had with the contextual cueing nudge.
+    </summary>
+  </metric>
+  <metric name="NudgeIsDynamic" enum="Boolean">
+    <summary>
+      Whether the nudge is showing a dynamic cue (vs. a static cue).
     </summary>
   </metric>
   <metric name="NudgeLatencyAfterPageLoad">
@@ -9398,56 +9509,6 @@ be describing additional metrics about the same event.
     <summary>
       The number of Iframes that were blocked by the supervised user filtering
       logic in this page load. Exponentially bucketed.
-    </summary>
-  </metric>
-</event>
-
-<event name="FastCheckout.FormStatus">
-  <owner>bwolfgang@google.com</owner>
-  <owner>jkeitel@google.com</owner>
-  <owner>vizcay@google.com</owner>
-  <summary>
-    Recorded at the end of a Fast Checkout run.
-  </summary>
-  <metric name="Filled" enum="Boolean">
-    <summary>
-      1 if the form was filled by Fast Checkout, 0 otherwise.
-    </summary>
-  </metric>
-  <metric name="FormSignature">
-    <summary>
-      An approximately 10-bit hash of the form's actual signature.
-    </summary>
-  </metric>
-  <metric name="FormTypes">
-    <summary>
-      Type of form. Stored as bitvector. A set i-th bit implies enum
-      FormTypeNameForLogging's i-th type was detected. Multiple types are
-      possible.
-    </summary>
-  </metric>
-  <metric name="RunId">
-    <summary>
-      Unique run ID for linking to other UKM events.
-    </summary>
-  </metric>
-</event>
-
-<event name="FastCheckout.RunOutcome">
-  <owner>bwolfgang@google.com</owner>
-  <owner>jkeitel@google.com</owner>
-  <owner>vizcay@google.com</owner>
-  <summary>
-    Recorded at the end of a Fast Checkout run.
-  </summary>
-  <metric name="RunId">
-    <summary>
-      Unique run ID for linking to other UKM events.
-    </summary>
-  </metric>
-  <metric name="RunOutcome" enum="FastCheckoutRunOutcome">
-    <summary>
-      States if the run was successful or why it was not.
     </summary>
   </metric>
 </event>
@@ -13819,6 +13880,25 @@ be describing additional metrics about the same event.
 </event>
 
 <event
+    name="Media.AutoPictureInPicture.EnterPictureInPicture.AutomaticReason.BrowserInitiated">
+  <owner>bkeen@google.com</owner>
+  <owner>media-dev@chromium.org</owner>
+  <summary>
+    Recorded when browser-initiated automatic picture-in-picture is triggered.
+    This can be a dry run (the feature is enabled, but the action is not taken),
+    or it can result in entering picture-in-picture. This event allows analysis
+    of the feature impact.
+  </summary>
+  <metric name="IsDryRun" enum="Boolean">
+    <summary>
+      True if the event was a dry run, meaning the feature was enabled but the
+      action was not taken. False if the browser actually entered
+      picture-in-picture.
+    </summary>
+  </metric>
+</event>
+
+<event
     name="Media.AutoPictureInPicture.EnterPictureInPicture.AutomaticReason.PromptResultV2">
   <owner>bkeen@google.com</owner>
   <owner>media-dev@chromium.org</owner>
@@ -14278,6 +14358,45 @@ be describing additional metrics about the same event.
     <summary>
       The number of blocks that can bypass the decoder present in an encrypted
       playback.
+    </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <quantiles type="std-percentiles"/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+  <metric name="DecoderCheck1ErrorCount">
+    <summary>
+      The number of video frames that returned an error result when running
+      decoder check1 in an encrypted playback.
+    </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <quantiles type="std-percentiles"/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+  <metric name="DecoderCheck1SuccessCount">
+    <summary>
+      The number of video frames that returned a successful result when running
+      decoder check1 in an encrypted playback.
+    </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <quantiles type="std-percentiles"/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+  <metric name="DecoderCheck1WarningCount">
+    <summary>
+      The number of video frames that returned a warning result when running
+      decoder check1 in an encrypted playback.
     </summary>
     <aggregation>
       <history>
@@ -15261,11 +15380,12 @@ be describing additional metrics about the same event.
     screen capture or opening a webcam or microphone, and the result of that
     request.
   </summary>
-  <metric name="VideoCaptureGenerateStreamResult"
-      enum="MediaStreamRequestResult2">
+  <metric name="VideoCaptureGenerateStreamResult2"
+      enum="MediaStreamRequestResult">
     <summary>
       The result of a page's request to open a video capture device (e.g.,
-      webcam).
+      webcam). The suffix 2 was added when the MediaStreamRequestResult enum was
+      updated with new entries.
     </summary>
     <aggregation>
       <history>
@@ -16169,6 +16289,24 @@ be describing additional metrics about the same event.
       Whether the first redirect response is received yet.
     </summary>
   </metric>
+  <metric name="FirstRequestConnectDelayMs">
+    <summary>
+      The delay in milliseconds caused by connection setup for the first HTTP
+      request which is sent for the main resource of a main frame navigation.
+    </summary>
+  </metric>
+  <metric name="FirstRequestDomainLookupDelayMs">
+    <summary>
+      The delay in milliseconds caused by domain lookup for the first HTTP
+      request which is sent for the main resource of a main frame navigation.
+    </summary>
+  </metric>
+  <metric name="FirstRequestSslDelayMs">
+    <summary>
+      The delay in milliseconds caused by SSL handshake for the first HTTP
+      request which is sent for the main resource of a main frame navigation.
+    </summary>
+  </metric>
   <metric name="HasImpression" enum="Boolean">
     <summary>
       Whether the current navigation has any impression associated. This is set
@@ -16796,6 +16934,31 @@ be describing additional metrics about the same event.
       Recorded at the point when a navigation finishes committing, i.e. finishes
       processing the DidCommitNavigation message. A corresponding event is also
       emitted for tracing.
+    </summary>
+  </metric>
+  <metric name="InteractionToActualNavigationStartDurationMs">
+    <summary>
+      The duration in milliseconds from a) the OS-level timestamp of the user
+      input event that started a navigation to b) when the navigation starts.
+      This metric is recorded only for cross-document navigations where a user
+      interaction timestamp is available.
+    </summary>
+  </metric>
+  <metric name="InteractionToNavigationFinishedDurationMs">
+    <summary>
+      The duration in milliseconds from a) the OS-level timestamp of the user
+      input event that started a navigation to b) when the navigation finishes
+      committing. This metric is recorded only for cross-document navigations
+      where a user interaction timestamp is available.
+    </summary>
+  </metric>
+  <metric name="InteractionToNavigationFinishedExcludingBeforeUnloadDurationMs">
+    <summary>
+      The duration in milliseconds from a) the OS-level timestamp of the user
+      input event that started a navigation to b) when the navigation finishes,
+      excluding the time spent running beforeunload handlers/dialogs. This
+      metric is recorded only for cross-document navigations where a user
+      interaction timestamp is available.
     </summary>
   </metric>
   <metric name="LoaderStartToFetchStartDuration">
@@ -18552,9 +18715,6 @@ be describing additional metrics about the same event.
       <history>
         <index fields="profile.country"/>
         <index fields="profile.country,profile.system_ram"/>
-        <index fields="profile.gender"/>
-        <index fields="profile.gender,profile.generation"/>
-        <index fields="profile.generation"/>
         <index fields="profile.is_dominant_version"/>
         <index fields="profile.is_latest_version"/>
         <index fields="profile.system_ram"/>
@@ -18727,6 +18887,59 @@ be describing additional metrics about the same event.
       been discarded because of performance interventions or critical memory
       pressure.
     </summary>
+  </metric>
+</event>
+
+<event name="PageLoad.CaptchaFrameActivation">
+  <owner>ryankalla@google.com</owner>
+  <owner>potassium-anti-fraud-team@google.com</owner>
+  <summary>
+    Records when a frame from a known CAPTCHA provider is activated by the
+    client. This could mean the user clicked or tapped on the frame.
+
+    CAPTCHA frames are determined by matching the frame's src url against a list
+    of known CAPTCHA frame url patterns. The list of known CAPTCHA url patterns
+    is served via the component updater.
+  </summary>
+  <metric name="AgentContext" enum="CaptchaFrameAgentContext">
+    <summary>
+      This metric is split by whether an AI agent was active on the tab at the
+      time of the frame activation. AI agent activity is determined by
+      ActorKeyedService::IsActiveOnTab(), which is used by the Glic Agent.
+    </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <enumeration/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+</event>
+
+<event name="PageLoad.CaptchaFrameLoad">
+  <owner>ryankalla@google.com</owner>
+  <owner>potassium-anti-fraud-team@google.com</owner>
+  <summary>
+    Records when a sub-frame is loaded from a known CAPTCHA provider.
+
+    CAPTCHA frames are determined by matching the frame's src url against a list
+    of known CAPTCHA frame url patterns. The list of known CAPTCHA url patterns
+    is served via the component updater.
+  </summary>
+  <metric name="AgentContext" enum="CaptchaFrameAgentContext">
+    <summary>
+      This metric is split by whether an AI agent was active on the tab at the
+      time of the frame load. AI agent activity is determined by
+      ActorKeyedService::IsActiveOnTab(), which is used by the Glic Agent.
+    </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <enumeration/>
+        </statistics>
+      </history>
+    </aggregation>
   </metric>
 </event>
 
@@ -26158,6 +26371,11 @@ be describing additional metrics about the same event.
       Allocation limit on golbal consumed memory used before the current full
       garbage collection cycle. This is rounded down to the nearest exponential
       bucket (with a bucket ratio of 1.3).
+    </summary>
+  </metric>
+  <metric name="IsInputHandling" enum="Boolean">
+    <summary>
+      Indicates whether the cycle started while input handling state was true.
     </summary>
   </metric>
   <metric name="IsLoading" enum="Boolean">

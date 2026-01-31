@@ -52,8 +52,8 @@ class MockObserver : public TaskQueueSelector::Observer {
   MockObserver& operator=(const MockObserver&) = delete;
   ~MockObserver() override = default;
 
-  MOCK_METHOD1(OnTaskQueueEnabled, void(internal::TaskQueueImpl*));
-  MOCK_METHOD0(OnWorkAvailable, void());
+  MOCK_METHOD(void, OnTaskQueueEnabled, (internal::TaskQueueImpl*), (override));
+  MOCK_METHOD(void, OnWorkAvailable, (), (override));
 };
 
 class TaskQueueSelectorForTest : public TaskQueueSelector {

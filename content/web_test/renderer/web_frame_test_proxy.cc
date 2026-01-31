@@ -884,12 +884,12 @@ void WebFrameTestProxy::ProcessWorkItem(mojom::WorkItemPtr work_item) {
 }
 
 void WebFrameTestProxy::ReplicateWorkQueueStates(
-    base::Value::Dict work_queue_states) {
+    base::DictValue work_queue_states) {
   test_runner_->ReplicateWorkQueueStates(std::move(work_queue_states), *this);
 }
 
 void WebFrameTestProxy::ReplicateWebTestRuntimeFlagsChanges(
-    base::Value::Dict changed_layout_test_runtime_flags) {
+    base::DictValue changed_layout_test_runtime_flags) {
   test_runner_->ReplicateWebTestRuntimeFlagsChanges(
       std::move(changed_layout_test_runtime_flags));
 }

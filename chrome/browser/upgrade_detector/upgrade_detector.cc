@@ -23,7 +23,7 @@
 #include "base/values.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/lifetime/application_lifetime.h"
-#include "chrome/browser/ui/browser_list.h"
+#include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_otr_state.h"
 #include "chrome/browser/upgrade_detector/version_history_client.h"
 #include "chrome/common/chrome_switches.h"
@@ -322,8 +322,7 @@ UpgradeDetector::GetRelaunchWindowPolicyValue() {
   const base::Value* policy_value = preference->GetValue();
   DCHECK(policy_value->is_dict());
 
-  const base::Value::List* entries =
-      policy_value->GetDict().FindList("entries");
+  const base::ListValue* entries = policy_value->GetDict().FindList("entries");
   if (!entries || entries->empty()) {
     return std::nullopt;
   }
@@ -483,7 +482,7 @@ void UpgradeDetector::CheckIdle() {
   // Don't proceed while an off-the-record or Guest window is open. The timer
   // will still keep firing, so this function will get a chance to re-evaluate
   // this.
-  if (IsOffTheRecordSessionActive() || BrowserList::GetGuestBrowserCount()) {
+  if (IsOffTheRecordSessionActive() || chrome::GetGuestBrowserCount()) {
     return;
   }
 

@@ -24,6 +24,14 @@ class DiceTabHelper;
 class ProfilePickerWebContentsHost;
 class SigninUIError;
 
+// Delegate class for the the sign-in flow.
+class ProfilePickerSignInProviderDelegate {
+ public:
+  // Shows a sign-in error to the user.
+  virtual void ShowSigninError(Profile* profile,
+                               const SigninUIError& error) = 0;
+};
+
 BASE_DECLARE_FEATURE(kProfilePickerGaiaBlankContinueUrl);
 
 namespace content {
@@ -32,33 +40,31 @@ class RenderFrameHost;
 class WebContents;
 }  // namespace content
 
+// Forwards the profile and account specific arguments obtained from the
+// sign-in step to the caller.
+using SignInStepFinishedCallback = base::OnceCallback<void(
+    Profile*,
+    const CoreAccountInfo&,
+    std::unique_ptr<content::WebContents>,
+    StepSwitchFinishedCallback step_switch_finished_callback)>;
+
 // Class responsible for the GAIA sign-in within profile management flows.
 class ProfilePickerSignInProvider : public content::WebContentsDelegate,
                                     public ChromeWebModalDialogManagerDelegate {
  public:
-  // The callback returns the newly created profile and a valid WebContents
-  // instance within this profile. If the account info is empty, sign-in is not
-  // completed there yet. Otherwise, the newly created profile has the account
-  // in its `IdentityManager`, but the account may not be set as primary yet.
-  // If the flow gets canceled by closing the window, the callback never gets
-  // called.
-  // TODO(crbug.com/40785551): Properly support saml sign in so that the special
-  // casing is not needed here.
-  using SignedInCallback =
-      base::OnceCallback<void(Profile*,
-                              const CoreAccountInfo&,
-                              std::unique_ptr<content::WebContents>,
-                              const SigninUIError&)>;
-
   // Creates a new provider that will render the Gaia sign-in flow in `host` for
   // a profile at `profile_path`.
   // `initial_email` is used to pre-fill the email field in the sign-in screen.
   // If no `profile_path` is provided, a new profile (and associated directory)
   // will be created.
+  // When the sign-in finishes (if it ever happens), `signin_finished_callback`
+  // gets called.
   explicit ProfilePickerSignInProvider(
       ProfilePickerWebContentsHost* host,
+      ProfilePickerSignInProviderDelegate* delegate,
       signin_metrics::AccessPoint signin_access_point,
       const std::string& initial_email,
+      SignInStepFinishedCallback signin_finished_callback,
       base::FilePath profile_path = base::FilePath());
   ~ProfilePickerSignInProvider() override;
   ProfilePickerSignInProvider(const ProfilePickerSignInProvider&) = delete;
@@ -69,10 +75,7 @@ class ProfilePickerSignInProvider : public content::WebContentsDelegate,
   // If a sign-in was in progress before in the lifetime of this class, it only
   // (synchronously) switches the view to show the ongoing sign-in again. When
   // the sign-in screen is displayed, `switch_finished_callback` gets called.
-  // When the sign-in finishes (if it ever happens), `signin_finished_callback`
-  // gets called.
-  void SwitchToSignIn(StepSwitchFinishedCallback switch_finished_callback,
-                      SignedInCallback signin_finished_callback);
+  void SwitchToSignIn(StepSwitchFinishedCallback switch_finished_callback);
 
   // Reloads the sign-in page if applicable.
   void ReloadSignInPage();
@@ -155,6 +158,8 @@ class ProfilePickerSignInProvider : public content::WebContentsDelegate,
 
   // The host must outlive this object.
   const raw_ptr<ProfilePickerWebContentsHost> host_;
+  // The delegate may outlive this object.
+  const raw_ptr<ProfilePickerSignInProviderDelegate> delegate_;
 
   const signin_metrics::AccessPoint signin_access_point_;
 
@@ -166,7 +171,7 @@ class ProfilePickerSignInProvider : public content::WebContentsDelegate,
   const base::FilePath profile_path_;
 
   // Sign-in callback, valid until it's called.
-  SignedInCallback callback_;
+  SignInStepFinishedCallback callback_;
 
   raw_ptr<Profile> profile_ = nullptr;
 

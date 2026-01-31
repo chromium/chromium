@@ -24,6 +24,7 @@ import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
 import android.os.Handler;
 import android.util.AttributeSet;
+import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
@@ -44,7 +45,7 @@ import com.google.android.material.tabs.TabLayout.OnTabSelectedListener;
 import com.google.android.material.tabs.TabLayout.Tab;
 
 import org.chromium.base.Callback;
-import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -67,18 +68,19 @@ public class HubToolbarView extends LinearLayout {
     private EditText mSearchBoxTextView;
     private ImageView mSearchLoupeView;
     private ImageView mHairline;
-    private ImageButton mBackButton;
-    private @Nullable View mSpacer;
     private FrameLayout mPaneSwitcherCard;
 
     private Callback<Integer> mToolbarOverviewColorSetter;
     private @Nullable OnTabSelectedListener mOnTabSelectedListener;
     private boolean mBlockTabSelectionCallback;
     private boolean mApplyDelayForSearchBoxAnimation;
+    private boolean mManualSearchBoxAnimation;
     private final AnimationHandler mHubSearchAnimatorHandler;
     private final Handler mHandler;
-    private @Nullable ObservableSupplier<Boolean> mXrSpaceModeObservableSupplier;
+    private @Nullable MonotonicObservableSupplier<Boolean> mXrSpaceModeObservableSupplier;
     private @Nullable List<FullButtonData> mCachedButtonDataList;
+    private final int mSearchBoxHeightPx;
+    private final boolean mIsSquishAnimationEnabled;
 
     /** Default {@link LinearLayout} constructor called by inflation. */
     public HubToolbarView(Context context, AttributeSet attributeSet) {
@@ -86,6 +88,10 @@ public class HubToolbarView extends LinearLayout {
         mHubSearchAnimatorHandler = new AnimationHandler();
         mHandler = new Handler();
         mToolbarOverviewColorSetter = (color) -> {};
+        mSearchBoxHeightPx = getResources().getDimensionPixelSize(R.dimen.hub_search_box_height);
+        mIsSquishAnimationEnabled =
+                ChromeFeatureList.sAndroidPinnedTabs.isEnabled()
+                        && ChromeFeatureList.sAndroidPinnedTabsSearchBoxSquishAnimation.getValue();
     }
 
     @Override
@@ -105,10 +111,7 @@ public class HubToolbarView extends LinearLayout {
         mSearchBoxLayout = findViewById(R.id.search_box);
         mSearchBoxTextView = findViewById(R.id.search_box_text);
         mSearchLoupeView = findViewById(R.id.search_loupe);
-        mBackButton = findViewById(R.id.toolbar_back_button);
-        mSpacer = findViewById(R.id.margin_spacer);
         mHairline = findViewById(R.id.toolbar_bottom_hairline);
-        updateSpacerVisibility();
     }
 
     void setMenuButtonVisible(boolean visible) {
@@ -354,16 +357,6 @@ public class HubToolbarView extends LinearLayout {
                             ImageViewCompat.setImageTintList(mMenuButton, menuButtonColor);
                         }));
 
-        mixer.registerBlend(
-                new SingleHubViewColorBlend(
-                        PANE_COLOR_BLEND_ANIMATION_DURATION_MS,
-                        colorScheme -> HubColors.getIconColor(context, colorScheme),
-                        interpolatedColor -> {
-                            ColorStateList backButtonColor =
-                                    HubColors.getButtonColorStateList(context, interpolatedColor);
-                            ImageViewCompat.setImageTintList(mBackButton, backButtonColor);
-                        }));
-
         // We don't want to pass a method reference. Lambdas will ensure we run the most recent
         // setter.
         mixer.registerBlend(
@@ -447,6 +440,14 @@ public class HubToolbarView extends LinearLayout {
     }
 
     void setSearchBoxVisible(boolean visible) {
+        // When manual search box animation is enabled, the visibility is controlled directly
+        // by the HubToolbarMediator and HubToolbarViewBinder via the
+        // SEARCH_BOX_VISIBILITY_FRACTION property, and no animation is applied here.
+        if (mManualSearchBoxAnimation) {
+            mSearchBoxLayout.setVisibility(visible ? View.VISIBLE : View.GONE);
+            return;
+        }
+
         AnimatorSet hubSearchTransitionAnimation = getHubSearchBoxTransitionAnimation(visible);
         AnimatorListenerAdapter animationListener =
                 new AnimatorListenerAdapter() {
@@ -472,6 +473,15 @@ public class HubToolbarView extends LinearLayout {
         mSearchBoxLayout.setEnabled(enabled);
         mSearchBoxTextView.setEnabled(enabled);
         mSearchLoupeView.setEnabled(enabled);
+
+        // Manually apply disabled alpha since the color is applied programmatically and not through
+        // a color state list.
+        TypedValue disabledAlpha = new TypedValue();
+        getResources().getValue(R.dimen.default_disabled_alpha, disabledAlpha, true);
+        float alpha = enabled ? 1.0f : disabledAlpha.getFloat();
+        mSearchBoxLayout.setAlpha(alpha);
+        mSearchBoxTextView.setAlpha(alpha);
+        mSearchLoupeView.setAlpha(alpha);
     }
 
     void setHairlineVisibility(boolean visible) {
@@ -486,6 +496,34 @@ public class HubToolbarView extends LinearLayout {
         mApplyDelayForSearchBoxAnimation = applyDelay;
     }
 
+    void setManualSearchBoxAnimation(boolean manual) {
+        mManualSearchBoxAnimation = manual;
+    }
+
+    void setSearchBoxVisibilityFraction(float fraction) {
+        if (!mManualSearchBoxAnimation) return;
+
+        mSearchBoxLayout.setAlpha(fraction);
+        if (mIsSquishAnimationEnabled) {
+            mSearchBoxLayout.setPivotY(0);
+            mSearchBoxLayout.setScaleY(fraction);
+            mSearchBoxLayout.setTranslationY(0);
+        } else {
+            mSearchBoxLayout.setTranslationY((fraction - 1) * mSearchBoxHeightPx);
+            mSearchBoxLayout.setScaleY(1.0f);
+        }
+
+        // Physical Height Reduction (Reduces the Canvas size).
+        int targetHeight =
+                Math.max(1, Math.round(mSearchBoxHeightPx * fraction)); // Avoid 0 height.
+
+        ViewGroup.LayoutParams params = mSearchBoxLayout.getLayoutParams();
+        if (params.height != targetHeight) {
+            params.height = targetHeight;
+            mSearchBoxLayout.setLayoutParams(params);
+        }
+    }
+
     public void setSearchLoupeVisible(boolean visible) {
         mSearchLoupeView.setVisibility(visible ? View.VISIBLE : View.GONE);
     }
@@ -494,36 +532,6 @@ public class HubToolbarView extends LinearLayout {
         mSearchBoxLayout.setOnClickListener(v -> searchBarListener.run());
         mSearchBoxTextView.setOnClickListener(v -> searchBarListener.run());
         mSearchLoupeView.setOnClickListener(v -> searchBarListener.run());
-    }
-
-    /**
-     * In the event there is no back button and the GTS update is enabled, we need to show a spacer
-     * view so that that new tab button is vertically aligned with the tabs in the tab switcher.
-     * Once the back button launches we can remove this spacer.
-     */
-    private void updateSpacerVisibility() {
-        if (mSpacer == null || !HubUtils.isGtsUpdateEnabled()) return;
-
-        boolean shouldShowSpacer = mBackButton.getVisibility() == View.GONE;
-        mSpacer.setVisibility(shouldShowSpacer ? View.VISIBLE : View.GONE);
-    }
-
-    void setBackButtonVisible(boolean visible) {
-        if (!ChromeFeatureList.sHubBackButton.isEnabled()) {
-            updateSpacerVisibility();
-            return;
-        }
-
-        mBackButton.setVisibility(visible ? View.VISIBLE : View.GONE);
-        updateSpacerVisibility();
-    }
-
-    void setBackButtonEnabled(boolean enabled) {
-        mBackButton.setEnabled(enabled);
-    }
-
-    void setBackButtonListener(Runnable backButtonListener) {
-        mBackButton.setOnClickListener(v -> backButtonListener.run());
     }
 
     void setToolbarColorOverviewListener(Callback<Integer> colorSetter) {
@@ -581,9 +589,11 @@ public class HubToolbarView extends LinearLayout {
     }
 
     AnimatorSet getHubSearchBoxTransitionAnimation(boolean visible) {
-        boolean isSquishAnimationEnabled =
-                ChromeFeatureList.sAndroidPinnedTabs.isEnabled()
-                        && ChromeFeatureList.sAndroidPinnedTabsSearchBoxSquishAnimation.getValue();
+        // Reset the search box height to its default for regular transitions.
+        // This is necessary because manual animation might have adjusted its height.
+        ViewGroup.LayoutParams layoutParams = mSearchBoxLayout.getLayoutParams();
+        layoutParams.height = mSearchBoxHeightPx;
+        mSearchBoxLayout.setLayoutParams(layoutParams);
 
         AnimatorSet transitionAnimator = new AnimatorSet();
 
@@ -593,7 +603,7 @@ public class HubToolbarView extends LinearLayout {
                 ObjectAnimator.ofFloat(mSearchBoxLayout, View.ALPHA, fadeAlphaFrom, fadeAlphaTo);
 
         Animator primaryAnimator;
-        if (isSquishAnimationEnabled) {
+        if (mIsSquishAnimationEnabled) {
             primaryAnimator = createSquishAnimation(visible);
         } else {
             primaryAnimator = createSlideAnimation(visible);
@@ -633,7 +643,7 @@ public class HubToolbarView extends LinearLayout {
     }
 
     public void setXrSpaceModeObservableSupplier(
-            @Nullable ObservableSupplier<Boolean> xrSpaceModeObservableSupplier) {
+            @Nullable MonotonicObservableSupplier<Boolean> xrSpaceModeObservableSupplier) {
         mXrSpaceModeObservableSupplier = xrSpaceModeObservableSupplier;
         HubColors.setXrSpaceModeObservableSupplier(xrSpaceModeObservableSupplier);
     }

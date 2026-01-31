@@ -12,6 +12,10 @@
 namespace enterprise_encryption {
 
 bool ShouldEncryptHttpCache(const PrefService* prefs) {
+  if (base::FeatureList::IsEnabled(kEnableCacheEncryptionForTesting)) {
+    return true;
+  }
+
   if (!prefs) {
     return false;
   }

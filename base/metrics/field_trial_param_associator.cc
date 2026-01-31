@@ -4,7 +4,6 @@
 
 #include "base/metrics/field_trial_param_associator.h"
 
-#include "base/containers/contains.h"
 #include "base/logging.h"
 #include "base/metrics/field_trial.h"
 
@@ -30,7 +29,7 @@ bool FieldTrialParamAssociator::AssociateFieldTrialParams(
 
   AutoLock scoped_lock(lock_);
   const FieldTrialKey key(trial_name, group_name);
-  if (Contains(field_trial_params_, key)) {
+  if (field_trial_params_.contains(key)) {
     DLOG(ERROR) << "You can't override the existing params for field trial: "
                 << trial_name << "." << group_name;
     return false;

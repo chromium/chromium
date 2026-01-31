@@ -65,8 +65,8 @@ void InsecureDownloadDialogBridge::CreateDialog(
 }
 
 void InsecureDownloadDialogBridge::OnConfirmed(JNIEnv* env,
-                                               jlong callback_id,
-                                               jboolean accepted) {
+                                               int64_t callback_id,
+                                               bool accepted) {
   if (!validator_.ValidateAndClearJavaCallback(callback_id))
     return;
   // Convert java long long int to c++ pointer, take ownership.

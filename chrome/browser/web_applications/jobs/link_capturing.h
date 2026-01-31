@@ -15,7 +15,7 @@ void SetAppCapturesSupportedLinksDisableOverlapping(
     const webapps::AppId& app_id,
     bool set_to_preferred,
     AllAppsLock& lock,
-    base::Value::Dict& debug_value);
+    base::DictValue& debug_value);
 
 }  // namespace web_app
 

@@ -10,7 +10,10 @@
 #include "components/prefs/pref_service.h"
 #include "components/safe_browsing/core/common/features.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
+#include "components/sync/base/features.h"
+#include "components/sync/base/user_selectable_type.h"
 #include "components/sync/service/sync_service.h"
+#include "components/sync/service/sync_user_settings.h"
 #include "content/public/browser/web_contents.h"
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_WIN) || \
@@ -69,18 +72,26 @@ void SafeBrowsingPrefChangeHandler::
 
   syncer::SyncService* sync_service =
       SyncServiceFactory::GetForProfile(profile_);
-  if (sync_service && sync_service->IsSyncFeatureEnabled()) {
-    base::Time tailored_security_update_time = profile_->GetPrefs()->GetTime(
-        prefs::kAccountTailoredSecurityUpdateTimestamp);
-    if (tailored_security_update_time.is_null()) {
-      // The TailoredSecurityService has never run. Suppress this
-      // toast, which is reacting to stale data. When a user enables ESB through
-      // the Tailored Security flow, the
-      // `kEnhancedProtectionEnabledViaTailoredSecurity` pref is set to true.
-      // This allows us to distinguish between changes made by Tailored Security
-      // and changes that are synced from other devices. But if the update time
-      // is null, this means the Tailored Security service hasn't run yet.
-      return;
+  if (sync_service) {
+    const bool is_sync_enabled =
+        base::FeatureList::IsEnabled(syncer::kReplaceSyncPromosWithSignInPromos)
+            ? sync_service->GetUserSettings()->GetSelectedTypes().Has(
+                  syncer::UserSelectableType::kPreferences)
+            : sync_service->IsSyncFeatureEnabled();
+    if (is_sync_enabled) {
+      base::Time tailored_security_update_time = profile_->GetPrefs()->GetTime(
+          prefs::kAccountTailoredSecurityUpdateTimestamp);
+      if (tailored_security_update_time.is_null()) {
+        // The TailoredSecurityService has never run. Suppress this
+        // toast, which is reacting to stale data. When a user enables ESB
+        // through the Tailored Security flow, the
+        // `kEnhancedProtectionEnabledViaTailoredSecurity` pref is set to true.
+        // This allows us to distinguish between changes made by Tailored
+        // Security and changes that are synced from other devices. But if the
+        // update time is null, this means the Tailored Security service hasn't
+        // run yet.
+        return;
+      }
     }
   }
 

@@ -96,16 +96,16 @@ class TestMetricsConsentHandler : public MetricsConsentHandler {
   ~TestMetricsConsentHandler() override = default;
 
   void GetMetricsConsentState() {
-    base::Value::List args;
+    base::ListValue args;
     args.Append("callback-id");
     HandleGetMetricsConsentState(args);
   }
 
   void UpdateMetricsConsent(bool metrics_consent) {
-    base::Value::List args;
+    base::ListValue args;
     args.Append("callback-id");
 
-    base::Value::Dict dict;
+    base::DictValue dict;
     dict.Set("consent", metrics_consent);
     args.Append(std::move(dict));
 
@@ -222,7 +222,7 @@ class MetricsConsentHandlerTest : public testing::Test {
         return false;
       }
 
-      const base::Value::Dict& metrics_consent_state = data->arg3()->GetDict();
+      const base::DictValue& metrics_consent_state = data->arg3()->GetDict();
       *pref_name = *metrics_consent_state.FindString("prefName");
       *is_configurable = *metrics_consent_state.FindBool("isConfigurable");
 

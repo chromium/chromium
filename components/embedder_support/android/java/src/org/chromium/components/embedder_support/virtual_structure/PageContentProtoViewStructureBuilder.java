@@ -92,7 +92,7 @@ public class PageContentProtoViewStructureBuilder implements VirtualStructurePro
             case CONTENT_ATTRIBUTE_IMAGE -> {
                 return "IMG";
             }
-            case CONTENT_ATTRIBUTE_SVG -> {
+            case CONTENT_ATTRIBUTE_SVG_ROOT -> {
                 return "SVG";
             }
             case CONTENT_ATTRIBUTE_CANVAS -> {

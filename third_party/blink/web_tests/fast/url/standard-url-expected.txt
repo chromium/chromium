@@ -10,7 +10,7 @@ PASS canonicalize('ht	tp:@www.google.com:80/;p?#') is 'http://www.google.com/;p?
 PASS canonicalize('http:////////user:@google.com:99?foo') is 'http://user@google.com:99/?foo'
 PASS canonicalize('www.google.com') is 'file:///www.google.com'
 PASS canonicalize('http://192.0x00A80001') is 'http://192.168.0.1/'
-PASS canonicalize('http://www/foo%2Ehtml') is 'http://www/foo.html'
+PASS canonicalize('http://www/foo%2Ehtml') is 'http://www/foo%2Ehtml'
 PASS canonicalize('http://user:pass@/') is 'http://user:pass@/'
 PASS canonicalize('http://%25DOMAIN:foobar@foodomain.com/') is 'http://%25DOMAIN:foobar@foodomain.com/'
 PASS canonicalize('http:\\\\www.google.com\\foo') is 'http://www.google.com/foo'

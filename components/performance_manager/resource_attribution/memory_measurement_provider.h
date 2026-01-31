@@ -44,12 +44,11 @@ class MemoryMeasurementProvider
   void RequestMemorySummary(ResultCallback callback);
 
   // NodeDataDescriber:
-  base::Value::Dict DescribeFrameNodeData(const FrameNode* node) const override;
-  base::Value::Dict DescribePageNodeData(const PageNode* node) const override;
-  base::Value::Dict DescribeProcessNodeData(
+  base::DictValue DescribeFrameNodeData(const FrameNode* node) const override;
+  base::DictValue DescribePageNodeData(const PageNode* node) const override;
+  base::DictValue DescribeProcessNodeData(
       const ProcessNode* node) const override;
-  base::Value::Dict DescribeWorkerNodeData(
-      const WorkerNode* node) const override;
+  base::DictValue DescribeWorkerNodeData(const WorkerNode* node) const override;
 
  private:
   void OnMemorySummary(
@@ -58,7 +57,7 @@ class MemoryMeasurementProvider
 
   // Returns description of the most recent measurement of `context` for
   // NodeDataDescriber, or an empty dict if there is none.
-  base::Value::Dict DescribeContextData(const ResourceContext& context) const;
+  base::DictValue DescribeContextData(const ResourceContext& context) const;
 
   SEQUENCE_CHECKER(sequence_checker_);
 

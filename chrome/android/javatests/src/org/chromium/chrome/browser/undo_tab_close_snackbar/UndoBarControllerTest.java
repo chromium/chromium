@@ -21,6 +21,7 @@ import org.junit.runner.RunWith;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
@@ -159,6 +160,7 @@ public class UndoBarControllerTest {
 
     @Test
     @SmallTest
+    @DisableIf.Device(DeviceFormFactor.DESKTOP) // crbug.com/477995172
     public void testCloseTabGroup_Undo() throws Exception {
         ChromeTabUtils.newTabFromMenu(
                 InstrumentationRegistry.getInstrumentation(), mActivityTestRule.getActivity());
@@ -205,6 +207,7 @@ public class UndoBarControllerTest {
 
     @Test
     @SmallTest
+    @Restriction(DeviceFormFactor.PHONE_OR_TABLET)
     public void testCloseTabGroup_EmptyTitle_Undo() throws Exception {
         ChromeTabUtils.newTabFromMenu(
                 InstrumentationRegistry.getInstrumentation(), mActivityTestRule.getActivity());
@@ -251,6 +254,7 @@ public class UndoBarControllerTest {
 
     @Test
     @SmallTest
+    @Restriction(DeviceFormFactor.PHONE_OR_TABLET)
     public void testDeleteTabGroup_Undo() throws Exception {
         ChromeTabUtils.newTabFromMenu(
                 InstrumentationRegistry.getInstrumentation(), mActivityTestRule.getActivity());
@@ -288,6 +292,7 @@ public class UndoBarControllerTest {
 
     @Test
     @SmallTest
+    @Restriction(DeviceFormFactor.PHONE_OR_TABLET)
     public void testDeleteTabGroup_WithOtherTab_Undo() throws Exception {
         ChromeTabUtils.newTabFromMenu(
                 InstrumentationRegistry.getInstrumentation(), mActivityTestRule.getActivity());
@@ -327,6 +332,7 @@ public class UndoBarControllerTest {
 
     @Test
     @SmallTest
+    @Restriction(DeviceFormFactor.PHONE_OR_TABLET)
     public void testCloseTabGroup_WithOtherTabs_Undo() throws Exception {
         ChromeTabUtils.newTabFromMenu(
                 InstrumentationRegistry.getInstrumentation(), mActivityTestRule.getActivity());
@@ -410,6 +416,7 @@ public class UndoBarControllerTest {
 
     @Test
     @SmallTest
+    @DisableIf.Device(DeviceFormFactor.DESKTOP)
     public void testDeleteTabGroups_Undo() throws Exception {
         ChromeTabUtils.newTabFromMenu(
                 InstrumentationRegistry.getInstrumentation(), mActivityTestRule.getActivity());
@@ -445,6 +452,7 @@ public class UndoBarControllerTest {
 
     @Test
     @SmallTest
+    @Restriction(DeviceFormFactor.PHONE_OR_TABLET)
     public void testCloseTabGroups_Undo() throws Exception {
         ChromeTabUtils.newTabFromMenu(
                 InstrumentationRegistry.getInstrumentation(), mActivityTestRule.getActivity());
@@ -616,6 +624,7 @@ public class UndoBarControllerTest {
 
     @Test
     @SmallTest
+    @Restriction(DeviceFormFactor.PHONE_OR_TABLET)
     public void testThrottleUndo_UndoNotViaSnackbar() throws Exception {
         ChromeTabbedActivity cta = mActivityTestRule.getActivity();
         UndoBarController undoBarController = cta.getUndoBarControllerForTesting();

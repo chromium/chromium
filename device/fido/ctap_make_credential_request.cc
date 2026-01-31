@@ -169,6 +169,14 @@ std::optional<CtapMakeCredentialRequest> CtapMakeCredentialRequest::Parse(
           return std::nullopt;
         }
         request.hmac_secret = extension.second.GetBool();
+      } else if (extension_name == kExtensionHmacSecretMc) {
+        if (!extension.second.is_map()) {
+          return std::nullopt;
+        }
+        request.hmac_secret_mc = HMACSecret::Parse(extension.second.GetMap());
+        if (!request.hmac_secret_mc) {
+          return std::nullopt;
+        }
       } else if (extension_name == kExtensionPRF) {
         if (!extension.second.is_map()) {
           return std::nullopt;
@@ -317,6 +325,12 @@ AsCTAPRequestValuePair(const CtapMakeCredentialRequest& request) {
 
   if (request.hmac_secret) {
     extensions[cbor::Value(kExtensionHmacSecret)] = cbor::Value(true);
+  }
+
+  if (request.hmac_secret_mc) {
+    extensions.emplace(
+        kExtensionHmacSecretMc,
+        request.hmac_secret_mc->AsCBORMapValue(request.pin_protocol));
   }
 
   if (request.prf) {

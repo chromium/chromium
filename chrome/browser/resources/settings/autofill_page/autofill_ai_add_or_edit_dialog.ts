@@ -131,6 +131,14 @@ export class SettingsAutofillAiAddOrEditDialogElement extends
         value: false,
       },
 
+      /**
+         Holds the error to display (or empty string if valid)
+       */
+      validationError_: {
+        type: String,
+        value: '',
+      },
+
       months_: {
         type: Array,
         // [1, 2, ..., 12]
@@ -170,10 +178,12 @@ export class SettingsAutofillAiAddOrEditDialogElement extends
   declare private allFieldsAreEmpty_: boolean;
   declare private canSave_: boolean;
   declare private userClickedSaveButton_: boolean;
+  declare private validationError_: string;
   declare private months_: string[];
   declare private days_: string[];
   declare private years_: string[];
 
+  private requiredAttributeTypes_: AttributeType[] = [];
   private entityDataManager_: EntityDataManagerProxy =
       EntityDataManagerProxyImpl.getInstance();
   private countryDetailManager_: CountryDetailManagerProxy =
@@ -181,14 +191,20 @@ export class SettingsAutofillAiAddOrEditDialogElement extends
 
   override async connectedCallback(): Promise<void> {
     super.connectedCallback();
+    assert(this.entityInstance);
 
     this.countryList_ = await this.countryDetailManager_.getCountryList(
         /*forAccountStorage=*/ false);
 
-    assert(this.entityInstance);
-    this.completeAttributeTypesList_ =
-        await this.entityDataManager_.getAllAttributeTypesForEntityTypeName(
-            this.entityInstance.type.typeName);
+    const [attributeTypes, requiredAttributes] = await Promise.all([
+      this.entityDataManager_.getAllAttributeTypesForEntityTypeName(
+          this.entityInstance.type.typeName),
+      this.entityDataManager_.getRequiredAttributeTypesForEntityTypeName(
+          this.entityInstance.type.typeName),
+    ]);
+
+    this.completeAttributeTypesList_ = attributeTypes;
+    this.requiredAttributeTypes_ = requiredAttributes;
 
     // TODO(crbug.com/407794687): Decide whether the code should show a spinner
     // instead of delaying the display of the dialog. Keep this decision
@@ -196,6 +212,19 @@ export class SettingsAutofillAiAddOrEditDialogElement extends
     // etc.).
     // Open the modal only after all the properties are computed.
     this.$.dialog.showModal();
+  }
+
+  private checkRequiredFields_(): boolean {
+    if (this.requiredAttributeTypes_.length === 0) {
+      return true;
+    }
+
+    // At least one of the attributes in the list must be non-empty.
+    return this.requiredAttributeTypes_.some(req => {
+      const attribute = this.completeAttributeInstanceList_.find(
+          attr => attr.type.typeName === req.typeName);
+      return attribute && this.isAttributeInstanceNotEmpty(attribute);
+    });
   }
 
   private computeCompleteAttributeInstanceList_(): AttributeInstance[] {
@@ -347,8 +376,6 @@ export class SettingsAutofillAiAddOrEditDialogElement extends
     this.onAttributeInstanceFieldInput_(e);
   }
 
-
-
   private isExistingYearOutOfBounds_(
       attributeInstance: AttributeInstance, years: string[]): boolean {
     const year = this.getExistingYear_(attributeInstance);
@@ -374,6 +401,11 @@ export class SettingsAutofillAiAddOrEditDialogElement extends
         !this.userClickedSaveButton_) {
       return false;
     }
+
+    if (this.isFieldInvalid_(attributeInstance, this.validationError_)) {
+      return true;
+    }
+
     const value: DateValue = attributeInstance.value as DateValue;
     const month = value.month;
     const day = value.day;
@@ -404,6 +436,25 @@ export class SettingsAutofillAiAddOrEditDialogElement extends
   }
 
   /**
+   * Returns true if the field should be highlighted as invalid due to
+   * missing requirements.
+   */
+  private isFieldInvalid_(
+      attributeInstance: AttributeInstance, validationError: string): boolean {
+    // Don't show errors before the user tries to save.
+    if (!this.userClickedSaveButton_ || !validationError) {
+      return false;
+    }
+
+    // Check if this specific field is one of the required candidates.
+    const isRequiredCandidate = this.requiredAttributeTypes_.some(
+        req => req.typeName === attributeInstance.type.typeName);
+
+    return isRequiredCandidate &&
+        !this.isAttributeInstanceNotEmpty(attributeInstance);
+  }
+
+  /**
    * Returns true if the value is not empty and it is not made out only of
    * whitespaces.
    * For dates, at least one of month, day and year has to be not empty. An
@@ -429,9 +480,33 @@ export class SettingsAutofillAiAddOrEditDialogElement extends
     this.allFieldsAreEmpty_ = !this.completeAttributeInstanceList_.some(
         attributeInstance =>
             this.isAttributeInstanceNotEmpty(attributeInstance));
+
     const invalidDateExists = this.completeAttributeInstanceList_.some(
         attributeInstance => this.isDateInvalid_(attributeInstance));
-    this.canSave_ = !this.allFieldsAreEmpty_ && !invalidDateExists;
+
+    const requiredFieldsMet = this.checkRequiredFields_();
+
+    if (!requiredFieldsMet) {
+      const requiredFieldNames =
+          this.requiredAttributeTypes_.map(type => type.typeNameAsString);
+
+      const formatter = new Intl.ListFormat(document.documentElement.lang, {
+        style: 'long',
+        type: 'disjunction',
+      });
+
+      const formattedList = formatter.format(requiredFieldNames);
+      this.validationError_ = this.i18n(
+          'autofillAiAddOrEditDialogRequiredFieldError', formattedList);
+    } else if (this.allFieldsAreEmpty_) {
+      this.validationError_ =
+          this.i18n('autofillAiAddOrEditDialogValidationError');
+    } else {
+      this.validationError_ = '';
+    }
+
+    this.canSave_ =
+        !this.allFieldsAreEmpty_ && !invalidDateExists && requiredFieldsMet;
   }
 
   private onCancelClick_(): void {

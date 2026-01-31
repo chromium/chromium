@@ -18,6 +18,7 @@
 #include "base/time/time.h"
 #include "chrome/browser/ash/arc/vmm/arc_vmm_swap_scheduler.h"
 #include "chrome/browser/ash/arc/vmm/arcvm_working_set_trim_executor.h"
+#include "chrome/browser/browser_process.h"
 #include "chromeos/ash/components/dbus/concierge/concierge_client.h"
 #include "chromeos/ash/experiences/arc/arc_browser_context_keyed_service_factory_base.h"
 #include "chromeos/ash/experiences/arc/arc_features.h"
@@ -111,6 +112,10 @@ ArcVmmManager* ArcVmmManager::GetForBrowserContextForTesting(
 ArcVmmManager::ArcVmmManager(content::BrowserContext* context,
                              ArcBridgeService* bridge)
     : context_(context), bridge_service_(bridge) {
+  // Exceptionally allow `g_browser_process` here since this class is created by
+  // `ArcVmmManagerFactory`, which lives in a base::NoDestructor.
+  PrefService* local_state = g_browser_process->local_state();
+
   app_instance_observation_.Observe(bridge_service_->app());
 
   auto* client = ash::ConciergeClient::Get();
@@ -128,6 +133,7 @@ ArcVmmManager::ArcVmmManager(content::BrowserContext* context,
   if (base::FeatureList::IsEnabled(kVmmSwapPolicy)) {
     swap_out_delay_ = base::Seconds(kVmmSwapOutDelaySecond.Get());
     scheduler_ = std::make_unique<ArcVmmSwapScheduler>(
+        local_state,
         base::BindRepeating(
             [](base::WeakPtr<ArcVmmManager> manager, bool enable) {
               if (manager) {

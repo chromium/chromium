@@ -47,7 +47,7 @@ class CONTENT_EXPORT URLDataManager : public base::SupportsUserData::Data {
   void AddDataSource(URLDataSourceImpl* source);
 
   void UpdateWebUIDataSource(const std::string& source_name,
-                             const base::Value::Dict& update);
+                             const base::DictValue& update);
 
   // Deletes any data sources no longer referenced. This is normally invoked
   // for you, but can be invoked to force deletion (such as during shutdown).
@@ -66,7 +66,7 @@ class CONTENT_EXPORT URLDataManager : public base::SupportsUserData::Data {
   // Updates an existing WebUI data source.
   static void UpdateWebUIDataSource(BrowserContext* browser_context,
                                     const std::string& source_name,
-                                    const base::Value::Dict& update);
+                                    const base::DictValue& update);
 
  private:
   friend class URLDataSourceImpl;

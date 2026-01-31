@@ -72,6 +72,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_list.h"
+#include "chrome/browser/ui/browser_window/public/browser_collection_observer.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"  // nogncheck crbug.com/40147906
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
@@ -160,7 +161,7 @@ class LocalTestInfoBarVisibilityManager :
 #if BUILDFLAG(IS_ANDROID)
     public TabModelObserver
 #else
-    public BrowserListObserver,
+    public BrowserCollectionObserver,
     public TabStripModelObserver
 #endif  // BUILDFLAG(IS_ANDROID)
 {
@@ -186,21 +187,21 @@ class LocalTestInfoBarVisibilityManager :
     }
   }
 #else
-  void OnBrowserAdded(Browser* browser) override {
+  void OnBrowserCreated(BrowserWindowInterface* browser) override {
     DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
     CHECK(browser);
 
-    browser->tab_strip_model()->AddObserver(this);
+    // TODO(crbug.com/452120900): TabStripModel auto-unregistered by dtor
+    browser->GetTabStripModel()->AddObserver(this);
   }
 
-  void OnBrowserRemoved(Browser* browser) override {
+  void OnBrowserClosed(BrowserWindowInterface* browser) override {
     DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
     CHECK(browser);
 
     if (GlobalBrowserCollection::GetInstance()->IsEmpty()) {
-      BrowserList::GetInstance()->RemoveObserver(this);
+      browser_collection_observation_.Reset();
     }
-    browser->tab_strip_model()->RemoveObserver(this);
   }
 
   void OnTabStripModelChanged(
@@ -236,7 +237,7 @@ class LocalTestInfoBarVisibilityManager :
         [this](BrowserWindowInterface* browser) {
           CHECK(browser);
 
-          OnBrowserAdded(browser->GetBrowserForMigrationOnly());
+          OnBrowserCreated(browser);
 
           TabStripModel* const tab_strip_model = browser->GetTabStripModel();
           for (int i = 0; i < tab_strip_model->count(); i++) {
@@ -245,7 +246,8 @@ class LocalTestInfoBarVisibilityManager :
           }
           return true;
         });
-    BrowserList::GetInstance()->AddObserver(this);
+    browser_collection_observation_.Observe(
+        GlobalBrowserCollection::GetInstance());
 #endif  // BUILDFLAG(IS_ANDROID)
     infobar_active_ = true;
   }
@@ -288,7 +290,7 @@ class LocalTestInfoBarVisibilityManager :
           }
           return true;
         });
-    BrowserList::GetInstance()->RemoveObserver(this);
+    browser_collection_observation_.Reset();
 #endif  // BUILDFLAG(IS_ANDROID)
     infobar_active_ = false;
   }
@@ -311,6 +313,10 @@ class LocalTestInfoBarVisibilityManager :
 
  private:
   bool infobar_active_ = false;
+#if !BUILDFLAG(IS_ANDROID)
+  base::ScopedObservation<GlobalBrowserCollection, BrowserCollectionObserver>
+      browser_collection_observation_{this};
+#endif  // !BUILDFLAG(IS_ANDROID)
 };
 }  // namespace internal
 

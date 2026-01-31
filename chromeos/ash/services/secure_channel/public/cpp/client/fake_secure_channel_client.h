@@ -10,7 +10,6 @@
 #include <string>
 #include <vector>
 
-#include "base/containers/contains.h"
 #include "base/functional/callback.h"
 #include "chromeos/ash/components/multidevice/remote_device_ref.h"
 #include "chromeos/ash/services/secure_channel/public/cpp/client/connection_attempt.h"
@@ -69,8 +68,8 @@ class FakeSecureChannelClient : public SecureChannelClient {
       multidevice::RemoteDeviceRef device_to_connect,
       multidevice::RemoteDeviceRef local_device) {
     auto device_id_pair = std::make_pair(device_to_connect, local_device);
-    if (!base::Contains(device_pair_to_next_initiate_connection_attempt_,
-                        device_id_pair)) {
+    if (!device_pair_to_next_initiate_connection_attempt_.contains(
+            device_id_pair)) {
       return nullptr;
     }
 
@@ -82,8 +81,8 @@ class FakeSecureChannelClient : public SecureChannelClient {
       multidevice::RemoteDeviceRef device_to_connect,
       multidevice::RemoteDeviceRef local_device) {
     auto device_id_pair = std::make_pair(device_to_connect, local_device);
-    if (!base::Contains(device_pair_to_next_listen_connection_attempt_,
-                        device_id_pair)) {
+    if (!device_pair_to_next_listen_connection_attempt_.contains(
+            device_id_pair)) {
       return nullptr;
     }
 

@@ -44,7 +44,7 @@ void ExtensionInputMethodEventRouter::InputMethodChanged(
   if (!router->HasEventListener(OnChanged::kEventName))
     return;
 
-  base::Value::List args;
+  base::ListValue args;
   args.Append(manager->GetActiveIMEState()->GetCurrentInputMethod().id());
 
   // The router will only send the event to extensions that are listening.

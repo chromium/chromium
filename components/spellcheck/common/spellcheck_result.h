@@ -6,34 +6,24 @@
 #define COMPONENTS_SPELLCHECK_COMMON_SPELLCHECK_RESULT_H_
 
 #include <stdint.h>
+
 #include <string>
 #include <vector>
 
+#include "components/spellcheck/common/spellcheck_decoration.h"
 
 // This class mirrors blink::WebTextCheckingResult which holds a
 // misspelled range inside the checked text. It also contains a
 // possible replacement of the misspelling if it is available.
 struct SpellCheckResult {
-  // LINT.IfChange(DecorationEnum)
-  enum Decoration {
-    // Red underline for misspelled words.
-    SPELLING,
-
-    // Gray underline for correctly spelled words that are incorrectly used in
-    // their context.
-    GRAMMAR,
-    LAST = GRAMMAR,
-  };
-  // LINT.ThenChange(/components/spellcheck/browser/android/java/src/org/chromium/components/spellcheck/SpellCheckerSessionBridge.java:SpellCheckResultDecoration)
-
   explicit SpellCheckResult(
-      Decoration d = SPELLING,
+      spellcheck::Decoration d = spellcheck::Decoration::SPELLING,
       int loc = 0,
       int len = 0,
       const std::vector<std::u16string>& rep = std::vector<std::u16string>(),
       bool should_hide_suggestion_menu = false);
 
-  explicit SpellCheckResult(Decoration d,
+  explicit SpellCheckResult(spellcheck::Decoration d,
                             int loc,
                             int len,
                             const std::u16string& rep,
@@ -42,7 +32,7 @@ struct SpellCheckResult {
   ~SpellCheckResult();
   SpellCheckResult(const SpellCheckResult&);
 
-  Decoration decoration;
+  spellcheck::Decoration decoration;
 
   // The zero-based index where the misspelling starts. For spell check results
   // returned by the local spell check infrastructure, this is measured by

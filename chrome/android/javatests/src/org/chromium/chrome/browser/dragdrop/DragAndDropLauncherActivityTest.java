@@ -30,6 +30,7 @@ import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.base.test.util.Matchers;
@@ -222,6 +223,7 @@ public class DragAndDropLauncherActivityTest {
      */
     @Test
     @LargeTest
+    @DisabledTest(message = "https://crbug.com/477788301")
     public void testDraggedTab_newWindow() throws Exception {
         HistogramWatcher histogramExpectation =
                 HistogramWatcher.newSingleRecordWatcher(
@@ -482,7 +484,6 @@ public class DragAndDropLauncherActivityTest {
                                     mActivityTestRule
                                             .getActivity()
                                             .getTabModelSelector()
-                                            .getTabGroupModelFilterProvider()
                                             .getTabGroupModelFilter(false),
                                     draggedTabGroup,
                                     sourceWindowId,
@@ -527,6 +528,7 @@ public class DragAndDropLauncherActivityTest {
             TabGroupMetadata tabGroupMetadata, boolean allowDragToCreateNewInstance) {
         return new ChromeTabGroupDropDataAndroid.Builder()
                 .withTabGroupMetadata(tabGroupMetadata)
+                .withTabs(new ArrayList<Tab>()) // Unimportant for this test; must be non-null.
                 .withAllowDragToCreateInstance(allowDragToCreateNewInstance)
                 .build();
     }

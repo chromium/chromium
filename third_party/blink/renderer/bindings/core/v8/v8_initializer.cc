@@ -495,6 +495,22 @@ static bool ContentSecurityPolicyCodeGenerationCheck(
   return false;
 }
 
+// Check whether Content Security Policy allows 'eval' in a Trusted Types
+// context, via the "script-src 'trusted-types-eval'" directive + keyword.
+static bool ContentSecurityPolicyTrustedTypesCodeGenerationCheck(
+    v8::Local<v8::Context> context) {
+  if (ExecutionContext* execution_context = ToExecutionContext(context)) {
+    if (ContentSecurityPolicy* policy =
+            execution_context->GetContentSecurityPolicyForCurrentWorld()) {
+      v8::Context::Scope scope(context);
+      return policy->AllowTrustedTypesEval(
+          ReportingDisposition::kReport,
+          ContentSecurityPolicy::kWillThrowException);
+    }
+  }
+  return false;
+}
+
 std::pair<bool, v8::MaybeLocal<v8::String>> TrustedTypesCodeGenerationCheck(
     v8::Local<v8::Context> context,
     v8::Local<v8::Value> source,
@@ -504,6 +520,14 @@ std::pair<bool, v8::MaybeLocal<v8::String>> TrustedTypesCodeGenerationCheck(
   if (!source->IsString() && !is_code_like &&
       !V8TrustedScript::HasInstance(isolate, source)) {
     return {true, v8::MaybeLocal<v8::String>()};
+  }
+
+  // If CSP allows eval in a Trusted Types environment ('trusted-types-eval'),
+  // then pass it through.
+  if (RuntimeEnabledFeatures::TrustedTypesHTMLEnabled()) {
+    if (ContentSecurityPolicyTrustedTypesCodeGenerationCheck(context)) {
+      return {true, v8::MaybeLocal<v8::String>()};
+    }
   }
 
   v8::TryCatch try_catch(isolate);
@@ -550,6 +574,13 @@ V8Initializer::CodeGenerationCheckCallbackInMainThread(
     v8::Local<v8::Context> context,
     v8::Local<v8::Value> source,
     bool is_code_like) {
+  // The code generation callback should only be installed on "normal" JS
+  // contexts, which in turn should always have an associated ExecutionContext.
+  // If this invariant holds, we can simplify this code a little bit.
+  // We're probing this invariant to ensure it won't cause issues in practice.
+  // See also: Discussion on crrev.com/c/7207201.
+  CHECK(ToExecutionContext(context), base::NotFatalUntil::M150);
+
   // The TC39 "Dynamic Code Brand Check" feature is currently behind a flag.
   if (!RuntimeEnabledFeatures::TrustedTypesUseCodeLikeEnabled())
     is_code_like = false;

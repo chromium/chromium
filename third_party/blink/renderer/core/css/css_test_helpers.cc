@@ -199,7 +199,8 @@ const CSSValue* ParseLonghand(Document& document,
   }
 
   const auto* context = MakeGarbageCollected<CSSParserContext>(document);
-  CSSParserLocalContext local_context;
+  CSSParserLocalContext local_context =
+      CSSParserLocalContext::CreateWithoutPropertyForTest();
 
   CSSParserTokenStream stream(value);
   return longhand->ParseSingleValue(stream, *context, local_context);
@@ -235,7 +236,9 @@ const CSSValue* ParseValue(Document& document, String syntax, String value) {
     return nullptr;
   }
   const auto* context = MakeGarbageCollected<CSSParserContext>(document);
-  return syntax_definition->Parse(value, *context,
+  CSSParserLocalContext local_context =
+      CSSParserLocalContext::CreateWithoutPropertyForTest();
+  return syntax_definition->Parse(value, *context, local_context,
                                   /* is_animation_tainted */ false);
 }
 

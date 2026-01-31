@@ -75,7 +75,7 @@ std::vector<PushMessagingUnsubscribedEntry>
 PushMessagingUnsubscribedEntry::GetAll(Profile* profile) {
   std::vector<PushMessagingUnsubscribedEntry> result;
 
-  const base::Value::List& list = profile->GetPrefs()->GetList(
+  const base::ListValue& list = profile->GetPrefs()->GetList(
       prefs::kPushMessagingUnsubscribedEntriesList);
   for (const auto& entry : list) {
     if (entry.is_string()) {
@@ -93,7 +93,7 @@ PushMessagingUnsubscribedEntry::GetAll(Profile* profile) {
 // static
 void PushMessagingUnsubscribedEntry::DeleteAllFromPrefs(Profile* profile) {
   profile->GetPrefs()->SetList(prefs::kPushMessagingUnsubscribedEntriesList,
-                               base::Value::List());
+                               base::ListValue());
 }
 
 void PushMessagingUnsubscribedEntry::PersistToPrefs(Profile* profile) const {
@@ -101,7 +101,7 @@ void PushMessagingUnsubscribedEntry::PersistToPrefs(Profile* profile) const {
 
   ScopedListPrefUpdate update(profile->GetPrefs(),
                               prefs::kPushMessagingUnsubscribedEntriesList);
-  base::Value::List& list = update.Get();
+  base::ListValue& list = update.Get();
 
   std::string pref_value =
       MakePrefValue(origin_, service_worker_registration_id_);
@@ -116,7 +116,7 @@ void PushMessagingUnsubscribedEntry::DeleteFromPrefs(Profile* profile) const {
   DCheckValid();
   ScopedListPrefUpdate update(profile->GetPrefs(),
                               prefs::kPushMessagingUnsubscribedEntriesList);
-  base::Value::List& list = update.Get();
+  base::ListValue& list = update.Get();
   std::string pref_value =
       MakePrefValue(origin_, service_worker_registration_id_);
   list.EraseIf([&pref_value](const base::Value& entry) {

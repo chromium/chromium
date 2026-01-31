@@ -69,7 +69,7 @@ TEST_F(EnterpriseHardwarePlatformAPITest, GetHardwarePlatformInfoAllowed) {
                                                        browser_context());
   ASSERT_TRUE(result);
   ASSERT_TRUE(result->is_dict());
-  const base::Value::Dict& result_dict = result->GetDict();
+  const base::DictValue& result_dict = result->GetDict();
   ASSERT_EQ(result_dict.size(), 2u);
 
   const std::string* manufacturer = result_dict.FindString("manufacturer");

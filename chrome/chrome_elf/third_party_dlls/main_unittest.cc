@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/command_line.h"
+#include "base/containers/span.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/hash/sha1.h"
@@ -214,14 +215,11 @@ class ThirdPartyTest : public testing::Test {
     PackedListMetadata meta = {kInitialVersion,
                                static_cast<uint32_t>(list.size())};
 
-    if (bl_file_.Write(0, reinterpret_cast<const char*>(&meta), sizeof(meta)) !=
-        static_cast<int>(sizeof(meta))) {
+    if (!bl_file_.WriteAndCheck(0, base::byte_span_from_ref(meta))) {
       return false;
     }
-    int size = static_cast<int>(list.size() * sizeof(PackedListModule));
-    if (bl_file_.Write(sizeof(PackedListMetadata),
-                       reinterpret_cast<const char*>(list.data()),
-                       size) != size) {
+    if (!bl_file_.WriteAndCheck(sizeof(PackedListMetadata),
+                                base::as_byte_span(list))) {
       return false;
     }
 

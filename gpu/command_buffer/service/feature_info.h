@@ -9,6 +9,7 @@
 #include <string>
 #include <string_view>
 
+#include "base/containers/flat_set.h"
 #include "base/memory/ref_counted.h"
 #include "gpu/command_buffer/common/context_creation_attribs.h"
 #include "gpu/command_buffer/service/gles2_cmd_decoder.h"
@@ -34,12 +35,9 @@ class GPU_GLES2_EXPORT FeatureInfo : public base::RefCounted<FeatureInfo> {
  public:
   struct FeatureFlags {
     FeatureFlags();
+    ~FeatureFlags();
 
-    gfx::GpuMemoryBufferFormatSet gpu_memory_buffer_formats = {
-        gfx::BufferFormat::BGR_565,   gfx::BufferFormat::RGBA_4444,
-        gfx::BufferFormat::RGBA_8888, gfx::BufferFormat::RGBX_8888,
-        gfx::BufferFormat::YVU_420,   gfx::BufferFormat::YUV_420_BIPLANAR,
-    };
+    base::flat_set<viz::SharedImageFormat> mappable_formats;
     // Use glBlitFramebuffer() and glRenderbufferStorageMultisample() with
     // GL_EXT_framebuffer_multisample-style semantics (as opposed to
     // GL_EXT_multisampled_render_to_texture semantics).

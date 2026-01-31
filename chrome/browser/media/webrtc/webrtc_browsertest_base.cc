@@ -506,7 +506,7 @@ WebRtcTestBase::GetStatsReportDictionary(content::WebContents* tab) const {
   std::optional<base::Value> parsed_json = base::JSONReader::Read(
       result.substr(3), base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   CHECK(parsed_json);
-  base::Value::Dict* dictionary = parsed_json->GetIfDict();
+  base::DictValue* dictionary = parsed_json->GetIfDict();
   CHECK(dictionary);
   return base::MakeRefCounted<content::TestStatsReportDictionary>(
       std::move(*dictionary));

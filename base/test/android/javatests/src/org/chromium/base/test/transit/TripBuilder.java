@@ -29,16 +29,16 @@ public class TripBuilder {
 
     private final List<Facility<?>> mFacilitiesToEnter = new ArrayList<>();
     private final List<Facility<?>> mFacilitiesToExit = new ArrayList<>();
-    private final List<CarryOn> mCarryOnsToPickUp = new ArrayList<>();
-    private final List<CarryOn> mCarryOnsToDrop = new ArrayList<>();
+    private final List<State> mStatesToEnter = new ArrayList<>();
+    private final List<State> mStatesToExit = new ArrayList<>();
     private final List<Condition> mConditions = new ArrayList<>();
-    private @Nullable Trigger mTrigger;
+    private final List<Trigger> mTriggers = new ArrayList<>();
     private TransitionOptions mOptions = TransitionOptions.DEFAULT;
     private @Nullable Station<?> mDestinationStation;
     private @Nullable Station<?> mOriginStation;
     private @Nullable Station<?> mContextStation;
     private @Nullable Facility<?> mContextFacility;
-    private @Nullable CarryOn mContextCarryOn;
+    private @Nullable State mContextState;
     private boolean mInNewTask;
     private boolean mIsComplete;
 
@@ -47,14 +47,23 @@ public class TripBuilder {
     /** Set the Trigger to a |runnable|. */
     @CheckReturnValue
     public TripBuilder withRunnableTrigger(Runnable runnable) {
-        mTrigger = runnable::run;
+        mTriggers.clear();
+        mTriggers.add(runnable::run);
         return this;
     }
 
     /** Set the Trigger to a |trigger|. */
     @CheckReturnValue
     public TripBuilder withTrigger(Trigger trigger) {
-        mTrigger = trigger;
+        mTriggers.clear();
+        mTriggers.add(trigger);
+        return this;
+    }
+
+    /** Add a |trigger| to run after the already set triggers. */
+    @CheckReturnValue
+    public TripBuilder withAdditionalTrigger(Trigger trigger) {
+        mTriggers.add(trigger);
         return this;
     }
 
@@ -74,8 +83,8 @@ public class TripBuilder {
         } else if (conditionalState instanceof Facility<?> facility) {
             mContextFacility = facility;
             mContextStation = facility.getHostStation();
-        } else if (conditionalState instanceof CarryOn carryOn) {
-            mContextCarryOn = carryOn;
+        } else if (conditionalState instanceof State state) {
+            mContextState = state;
         }
         return this;
     }
@@ -156,23 +165,23 @@ public class TripBuilder {
     }
 
     @CheckReturnValue
-    public TripBuilder pickUpCarryOnAnd(CarryOn carryOn) {
-        carryOn.assertInPhase(Phase.NEW);
-        mCarryOnsToPickUp.add(carryOn);
+    public TripBuilder enterStateAnd(State state) {
+        state.assertInPhase(Phase.NEW);
+        mStatesToEnter.add(state);
         return this;
     }
 
     @CheckReturnValue
-    public TripBuilder dropCarryOnAnd() {
-        assert mContextCarryOn != null
-                : "Context CarryOn not set, pass the not to drop as a parameter";
-        return dropCarryOnAnd(mContextCarryOn);
+    public TripBuilder exitStateAnd() {
+        assert mContextState != null
+                : "Context State not set, pass the state to exit as a parameter";
+        return exitStateAnd(mContextState);
     }
 
     @CheckReturnValue
-    public TripBuilder dropCarryOnAnd(CarryOn carryOn) {
-        carryOn.assertInPhase(Phase.ACTIVE);
-        mCarryOnsToDrop.add(carryOn);
+    public TripBuilder exitStateAnd(State state) {
+        state.assertInPhase(Phase.ACTIVE);
+        mStatesToExit.add(state);
         return this;
     }
 
@@ -233,17 +242,17 @@ public class TripBuilder {
         waitForAnd(conditions).complete();
     }
 
-    public <CarryOnT extends CarryOn> CarryOnT pickUpCarryOn(CarryOnT carryOn) {
-        pickUpCarryOnAnd(carryOn).complete();
-        return carryOn;
+    public <StateT extends State> StateT enterState(StateT state) {
+        enterStateAnd(state).complete();
+        return state;
     }
 
-    public void dropCarryOn() {
-        dropCarryOnAnd().complete();
+    public void exitState() {
+        exitStateAnd().complete();
     }
 
-    public void dropCarryOn(CarryOn carryOn) {
-        dropCarryOnAnd(carryOn).complete();
+    public void exitState(State state) {
+        exitStateAnd(state).complete();
     }
 
     /** Execute the transition synchronously, entering |facility| and returning it. */
@@ -303,7 +312,7 @@ public class TripBuilder {
     /** Build and perform the Transition synchronously. */
     public Trip complete() {
         assert !mIsComplete : "Transition already completed";
-        assert mTrigger != null : "Trigger not set";
+        assert !mTriggers.isEmpty() : "Trigger not set";
         assert !mInNewTask || mDestinationStation != null
                 : "A new Station needs to be entered in the new task";
 
@@ -367,10 +376,10 @@ public class TripBuilder {
                         mDestinationStation,
                         mFacilitiesToExit,
                         mFacilitiesToEnter,
-                        mCarryOnsToDrop,
-                        mCarryOnsToPickUp,
+                        mStatesToExit,
+                        mStatesToEnter,
                         mOptions,
-                        mTrigger);
+                        buildCompleteTrigger());
         trip.transitionSync();
 
         mIsComplete = true;
@@ -392,28 +401,44 @@ public class TripBuilder {
      * @throws AssertionError if there are any Conditions to wait for already set.
      */
     public void executeTriggerWithoutTransition() {
-        assert mTrigger != null : "Trigger not set";
+        assert !mTriggers.isEmpty() : "Trigger not set";
         String justRunErrorMessage =
                 "justRun() will not enter or leave any ConditionalStates or check any Conditions";
         assert mOriginStation == null : justRunErrorMessage;
         assert mDestinationStation == null : justRunErrorMessage;
         assert mFacilitiesToExit.isEmpty() : justRunErrorMessage;
         assert mFacilitiesToEnter.isEmpty() : justRunErrorMessage;
-        assert mCarryOnsToDrop.isEmpty() : justRunErrorMessage;
-        assert mCarryOnsToPickUp.isEmpty() : justRunErrorMessage;
+        assert mStatesToExit.isEmpty() : justRunErrorMessage;
+        assert mStatesToEnter.isEmpty() : justRunErrorMessage;
         assert mConditions.isEmpty() : justRunErrorMessage;
 
+        Trigger trigger = buildCompleteTrigger();
+        assert trigger != null;
         try {
             if (mOptions.getRunTriggerOnUiThread()) {
                 Log.i(TAG, "Will run trigger on UI thread");
-                ThreadUtils.runOnUiThread(mTrigger::triggerTransition);
+                ThreadUtils.runOnUiThread(trigger::triggerTransition);
             } else {
                 Log.i(TAG, "Will run trigger on Instrumentation thread");
-                mTrigger.triggerTransition();
+                trigger.triggerTransition();
             }
             Log.i(TAG, "Finished running trigger");
         } catch (Throwable e) {
             throw TravelException.newTravelException(String.format("Trigger threw "), e);
+        }
+    }
+
+    private @Nullable Trigger buildCompleteTrigger() {
+        if (mTriggers.isEmpty()) {
+            return null;
+        } else if (mTriggers.size() == 1) {
+            return mTriggers.get(0);
+        } else {
+            return () -> {
+                for (Trigger trigger : mTriggers) {
+                    trigger.triggerTransition();
+                }
+            };
         }
     }
 }

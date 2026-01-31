@@ -8,6 +8,7 @@
 #import "base/strings/sys_string_conversions.h"
 #import "components/password_manager/core/browser/ui/affiliated_group.h"
 #import "components/strings/grit/components_strings.h"
+#import "ios/chrome/browser/credential_exchange/public/metrics.h"
 #import "ios/chrome/browser/credential_exchange/ui/credential_export_constants.h"
 #import "ios/chrome/browser/credential_exchange/ui/credential_export_favicon_provider.h"
 #import "ios/chrome/browser/credential_exchange/ui/credential_export_view_controller_presentation_delegate.h"
@@ -18,6 +19,7 @@
 #import "ios/chrome/browser/shared/ui/table_view/content_configuration/favicon_content_configuration.h"
 #import "ios/chrome/browser/shared/ui/table_view/content_configuration/table_view_cell_content_configuration.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_utils.h"
+#import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/favicon/favicon_attributes.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util.h"
@@ -54,6 +56,7 @@ NSString* const kCredentialSectionIdentifier = @"CredentialSection";
   [super viewDidLoad];
 
   self.title = l10n_util::GetNSString(IDS_IOS_EXPORT_PASSWORDS_AND_PASSKEYS);
+  self.tableView.separatorStyle = UITableViewCellSeparatorStyleSingleLine;
 
   self.navigationItem.rightBarButtonItem = [self createContinueButton];
   _toggleAllButton = [self createToggleAllButton];
@@ -86,6 +89,9 @@ NSString* const kCredentialSectionIdentifier = @"CredentialSection";
 #pragma mark - Actions
 
 - (void)didTapDone {
+  LogCredentialExportScreenAction(
+      CredentialExportScreenAction::kContinuePressed);
+
   NSArray<NSIndexPath*>* selectedIndexPaths =
       self.tableView.indexPathsForSelectedRows;
   NSMutableArray<CredentialGroupIdentifier*>* selectedItems =
@@ -105,14 +111,39 @@ NSString* const kCredentialSectionIdentifier = @"CredentialSection";
   NSUInteger totalCount = _affiliatedGroups.size();
 
   if (selectedCount == totalCount) {
+    LogCredentialExportScreenAction(
+        CredentialExportScreenAction::kDeselectAllPressed);
     [self deselectAllItems];
   } else {
+    LogCredentialExportScreenAction(
+        CredentialExportScreenAction::kSelectAllPressed);
     [self selectAllItems];
   }
 }
 
 - (void)didTapExportCSV {
-  // TODO(crbug.com/40284755): Implement export selected passwords to csv.
+  LogCredentialExportScreenAction(
+      CredentialExportScreenAction::kDownloadToCSVPressed);
+
+  std::vector<password_manager::CredentialUIEntry> credentialsToExport;
+
+  for (NSIndexPath* path in self.tableView.indexPathsForSelectedRows) {
+    CredentialGroupIdentifier* item =
+        [_dataSource itemIdentifierForIndexPath:path];
+
+    const password_manager::AffiliatedGroup& group = item.affiliatedGroup;
+
+    base::span<const password_manager::CredentialUIEntry> credentialEntries =
+        group.GetCredentials();
+
+    for (const password_manager::CredentialUIEntry& entry : credentialEntries) {
+      if (entry.passkey_credential_id.empty()) {
+        credentialsToExport.push_back(entry);
+      }
+    }
+  }
+
+  [self.delegate exportCredentialsToCSV:std::move(credentialsToExport)];
 }
 
 #pragma mark - CredentialExportConsumer
@@ -213,6 +244,11 @@ NSString* const kCredentialSectionIdentifier = @"CredentialSection";
   NSArray<NSIndexPath*>* selectedPaths =
       self.tableView.indexPathsForSelectedRows;
   NSUInteger totalCount = _affiliatedGroups.size();
+
+  for (NSIndexPath* indexPath in self.tableView.indexPathsForVisibleRows) {
+    UITableViewCell* cell = [self.tableView cellForRowAtIndexPath:indexPath];
+    [self updateAccessibilityTraitsForCell:cell indexPath:indexPath];
+  }
 
   self.navigationItem.rightBarButtonItem.enabled = (selectedPaths.count > 0);
 
@@ -355,6 +391,7 @@ NSString* const kCredentialSectionIdentifier = @"CredentialSection";
   const password_manager::AffiliatedGroup& group = identifier.affiliatedGroup;
 
   [self configureCell:cell withGroup:group identifier:identifier];
+  [self updateAccessibilityTraitsForCell:cell indexPath:indexPath];
 
   return cell;
 }
@@ -379,6 +416,10 @@ NSString* const kCredentialSectionIdentifier = @"CredentialSection";
   cell.contentConfiguration = contentConfig;
   cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
   cell.accessibilityTraits |= UIAccessibilityTraitButton;
+
+  UIView* selectedBackgroundView = [[UIView alloc] init];
+  selectedBackgroundView.backgroundColor = [UIColor colorNamed:kBlueHaloColor];
+  cell.selectedBackgroundView = selectedBackgroundView;
 }
 
 // Helper to load favicon and update configuration.
@@ -437,6 +478,16 @@ NSString* const kCredentialSectionIdentifier = @"CredentialSection";
     }
   }
   return NO;
+}
+
+// Helper to update accessibility traits based on selection state.
+- (void)updateAccessibilityTraitsForCell:(UITableViewCell*)cell
+                               indexPath:(NSIndexPath*)indexPath {
+  if ([self.tableView.indexPathsForSelectedRows containsObject:indexPath]) {
+    cell.accessibilityTraits |= UIAccessibilityTraitSelected;
+  } else {
+    cell.accessibilityTraits &= ~UIAccessibilityTraitSelected;
+  }
 }
 
 @end

@@ -4,9 +4,13 @@
 
 package org.chromium.chrome.browser.keyboard_accessory.bar_component;
 
+import androidx.annotation.IntDef;
 import androidx.annotation.Px;
 
 import org.chromium.build.annotations.NullMarked;
+
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 
 /**
  * Encapsulates the styling properties for a keyboard accessory view.
@@ -25,13 +29,62 @@ public class KeyboardAccessoryStyle {
     private final int mHorizontalOffset;
     private final int mVerticalOffset;
     private final int mMaxWidth;
+    private final @NotchPosition int mNotchPosition;
 
-    public KeyboardAccessoryStyle(
-            boolean isDocked, @Px int horizontalOffset, @Px int verticalOffset, @Px int maxWidth) {
+    @IntDef({
+        NotchPosition.TOP,
+        NotchPosition.BOTTOM,
+        NotchPosition.HIDDEN,
+    })
+    @Retention(RetentionPolicy.SOURCE)
+    public @interface NotchPosition {
+        int TOP = 0;
+        int BOTTOM = 1;
+        int HIDDEN = 2;
+    }
+
+    private KeyboardAccessoryStyle(
+            boolean isDocked,
+            @Px int horizontalOffset,
+            @Px int verticalOffset,
+            @Px int maxWidth,
+            @NotchPosition int notchPosition) {
         this.mIsDocked = isDocked;
         this.mHorizontalOffset = horizontalOffset;
         this.mVerticalOffset = verticalOffset;
         this.mMaxWidth = maxWidth;
+        this.mNotchPosition = notchPosition;
+    }
+
+    /**
+     * Creates a style for a docked keyboard accessory.
+     *
+     * @param verticalOffset The vertical offset in pixels from the bottom.
+     * @return A new {@link KeyboardAccessoryStyle} instance for a docked accessory.
+     */
+    public static KeyboardAccessoryStyle createDockedKeyboardAccessoryStyle(
+            @Px int verticalOffset) {
+        return new KeyboardAccessoryStyle(true, 0, verticalOffset, 0, NotchPosition.HIDDEN);
+    }
+
+    /**
+     * Creates a style for an undocked (floating) keyboard accessory.
+     *
+     * @param horizontalOffset The horizontal offset in pixels from the left.
+     * @param verticalOffset The vertical offset in pixels from the top.
+     * @param maxWidth The maximum width in pixels. 0 means no max width.
+     * @param notchPosition Position of the notch used for the dynamic positioning. Only TOP and
+     *     BOTTOM is allowed.
+     * @return A new {@link KeyboardAccessoryStyle} instance for an undocked accessory.
+     */
+    public static KeyboardAccessoryStyle createUndockedKeyboardAccessoryStyle(
+            @Px int horizontalOffset,
+            @Px int verticalOffset,
+            @Px int maxWidth,
+            @NotchPosition int notchPosition) {
+        assert notchPosition != NotchPosition.HIDDEN;
+        return new KeyboardAccessoryStyle(
+                false, horizontalOffset, verticalOffset, maxWidth, notchPosition);
     }
 
     /**
@@ -63,5 +116,12 @@ public class KeyboardAccessoryStyle {
      */
     public @Px int getMaxWidth() {
         return mMaxWidth;
+    }
+
+    /**
+     * @return Returns the position (TOP/BOTTOM/HIDDEN) of the notch pointing to the field.
+     */
+    public @NotchPosition int getNotchPosition() {
+        return mNotchPosition;
     }
 }

@@ -44,6 +44,7 @@ static_library("sync_device_info") {
     "//components/sync/protocol",
   ]
   deps = [
+    "//components/desktop_to_mobile_promos",
     "//components/keyed_service/core",
     "//components/metrics",
     "//components/prefs",

@@ -34,7 +34,7 @@ TEST_F(ChromeSafeBrowsingUIManagerDelegateTest, IsHostingExtension) {
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
   // Create a WebContents instance that *is* hosting an extension.
-  base::Value::Dict manifest;
+  base::DictValue manifest;
   manifest.Set(extensions::manifest_keys::kName, "TestComponentApp");
   manifest.Set(extensions::manifest_keys::kVersion, "0.0.0.0");
   manifest.SetByDottedPath(

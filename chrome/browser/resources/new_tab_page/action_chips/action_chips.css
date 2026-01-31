@@ -49,8 +49,33 @@
 }
 
 :host([show-simplified-ui_]) .action-chips-container {
+  animation:
+    chips-slide var(--chip-slide-duration) 220ms
+      var(--chip-animation-curve) forwards,
+    chips-fade-in var(--chip-fade-duration) 370ms
+      var(--chip-animation-curve) forwards;
+  border-radius: 16px;
+  box-sizing: border-box;
+  display: flex;
   flex-direction: column;
+  flex-wrap: wrap;
   gap: 4px;
+  justify-content: center;
+  opacity: 0;
+  padding: 10px;
+  transform: translateY(-56px);
+  width: 100%;
+}
+
+:host([show-simplified-ui_][show-background])
+.action-chips-container {
+  background-color:
+    rgb(
+      from
+        var(--color-new-tab-page-action-chip-background, transparent) r g b
+        / 0.8
+    );
+  overflow: hidden;
 }
 
 .banana {
@@ -67,6 +92,11 @@
   background-color: var(--color-sys-on-surface-subtle);
   background-size: 24px;
   -webkit-mask-image: url(chrome://new-tab-page/icons/suggestion.svg);
+}
+
+:host([show-simplified-ui_]) .deep-dive {
+  background-size: 20px;
+  mask-size: 20px;
 }
 
 .deep-search {
@@ -101,8 +131,10 @@
 
 :host([show-simplified-ui_]) .action-chip {
   background-color: transparent;
-  height: 32px;
-  padding: 0px 20px;
+  border-radius: 12px;
+  gap: 6px;
+  height: 36px;
+  padding: 0px 8px;
   width: 100%;
 }
 
@@ -183,17 +215,12 @@
   gap: 4px;
 }
 
-:host([show-simplified-ui_]) .action-chip-text-container {
-  flex-direction: row;
-  gap: 4px;
-}
-
 .chip-title {
   color: var(--color-sys-on-surface);
   font-size: 13px;
   font-weight: 500;
-  overflow: hidden;
   line-height: 20px;
+  overflow: hidden;
   text-align: left;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -211,7 +238,10 @@
   font-size: 12px;
   font-weight: 400;
   line-height: 18px;
+  overflow: hidden;
   text-align: start;
+  text-overflow: ellipsis;
+  white-space: nowrap;
   width: 100%;
 }
 
@@ -239,8 +269,23 @@
   display: -webkit-box;
   overflow: hidden;
   word-break: break-word;
+  white-space: normal;
   -webkit-box-orient: vertical;
   -webkit-line-clamp: 2;
+}
+
+.chip-remove-button {
+  --cr-icon-button-icon-size: 16px;
+  --cr-icon-button-size: 24px;
+  --cr-icon-image: url('chrome://resources/images/icon_clear.svg');
+  align-self: center;
+  display: none;
+  position: absolute;
+  right: 16px;
+}
+
+:host([show-simplified-ui_]) .action-chip:hover .chip-remove-button {
+  display: block;
 }
 
 @media (min-width: 560px) {

@@ -337,6 +337,12 @@ void WebSettingsImpl::SetWideViewportQuirkEnabled(
   settings_->SetWideViewportQuirkEnabled(wide_viewport_quirk_enabled);
 }
 
+void WebSettingsImpl::SetScaleAllFontsIfNoMetaTextScaleTag(
+    bool scale_all_fonts_if_no_meta_text_scale_tag) {
+  settings_->SetScaleAllFontsIfNoMetaTextScaleTag(
+      scale_all_fonts_if_no_meta_text_scale_tag);
+}
+
 void WebSettingsImpl::SetUseWideViewport(bool use_wide_viewport) {
   settings_->SetUseWideViewport(use_wide_viewport);
 }
@@ -545,10 +551,6 @@ void WebSettingsImpl::SetStrictMixedContentChecking(bool enabled) {
 
 void WebSettingsImpl::SetStrictMixedContentCheckingForPlugin(bool enabled) {
   settings_->SetStrictMixedContentCheckingForPlugin(enabled);
-}
-
-void WebSettingsImpl::SetStrictPowerfulFeatureRestrictions(bool enabled) {
-  settings_->SetStrictPowerfulFeatureRestrictions(enabled);
 }
 
 void WebSettingsImpl::SetStrictlyBlockBlockableMixedContent(bool enabled) {

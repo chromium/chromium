@@ -63,9 +63,10 @@ void MockWidgetInputHandler::ImeSetComposition(
     const gfx::Range& range,
     int32_t start,
     int32_t end,
+    blink::mojom::ImeState ime_state,
     ImeSetCompositionCallback callback) {
   dispatched_messages_.emplace_back(std::make_unique<DispatchedIMEMessage>(
-      "SetComposition", text, ime_text_spans, range, start, end));
+      "SetComposition", text, ime_text_spans, range, start, end, ime_state));
   if (callback)
     std::move(callback).Run();
 }
@@ -78,7 +79,7 @@ void MockWidgetInputHandler::ImeCommitText(
     ImeCommitTextCallback callback) {
   dispatched_messages_.emplace_back(std::make_unique<DispatchedIMEMessage>(
       "CommitText", text, ime_text_spans, range, relative_cursor_position,
-      relative_cursor_position));
+      relative_cursor_position, blink::mojom::ImeState::kNone));
   if (callback)
     std::move(callback).Run();
 }
@@ -119,6 +120,8 @@ void MockWidgetInputHandler::WaitForInputProcessed(
     WaitForInputProcessedCallback callback) {
   NOTREACHED();
 }
+
+void MockWidgetInputHandler::PingMainThread(PingMainThreadCallback callback) {}
 
 MockWidgetInputHandler::MessageVector
 MockWidgetInputHandler::GetAndResetDispatchedMessages() {
@@ -191,13 +194,15 @@ MockWidgetInputHandler::DispatchedIMEMessage::DispatchedIMEMessage(
     const std::vector<ui::ImeTextSpan>& text_spans,
     const gfx::Range& range,
     int32_t start,
-    int32_t end)
+    int32_t end,
+    blink::mojom::ImeState ime_state)
     : DispatchedMessage(name),
       text_(text),
       text_spans_(text_spans),
       range_(range),
       start_(start),
-      end_(end) {}
+      end_(end),
+      ime_state_(ime_state) {}
 
 MockWidgetInputHandler::DispatchedIMEMessage::~DispatchedIMEMessage() {}
 
@@ -211,9 +216,10 @@ bool MockWidgetInputHandler::DispatchedIMEMessage::Matches(
     const std::vector<ui::ImeTextSpan>& ime_text_spans,
     const gfx::Range& range,
     int32_t start,
-    int32_t end) const {
+    int32_t end,
+    blink::mojom::ImeState ime_state) const {
   return text_ == text && text_spans_ == ime_text_spans && range_ == range &&
-         start_ == start && end_ == end;
+         start_ == start && end_ == end && ime_state_ == ime_state;
 }
 
 MockWidgetInputHandler::DispatchedEditCommandMessage::

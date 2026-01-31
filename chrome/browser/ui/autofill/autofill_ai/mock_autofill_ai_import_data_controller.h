@@ -31,6 +31,7 @@ class MockAutofillAiImportDataController
   MOCK_METHOD(void, OnSaveButtonClicked, (), (override));
   MOCK_METHOD(std::u16string, GetDialogTitle, (), (const override));
   MOCK_METHOD(std::u16string, GetPrimaryAccountEmail, (), (const override));
+  MOCK_METHOD(std::u16string, GetDialogPrimaryButtonText, (), (const override));
   MOCK_METHOD(std::vector<EntityAttributeUpdateDetails>,
               GetUpdatedAttributesDetails,
               (),
@@ -41,7 +42,7 @@ class MockAutofillAiImportDataController
   MOCK_METHOD((int), GetTitleImagesResourceId, (), (const override));
   MOCK_METHOD(void,
               OnBubbleClosed,
-              (AutofillClient::AutofillAiBubbleClosedReason),
+              (AutofillClient::AutofillAiBubbleResult),
               (override));
   base::WeakPtr<AutofillAiImportDataController> GetWeakPtr() override {
     return weak_ptr_factory_.GetWeakPtr();

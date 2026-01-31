@@ -33,7 +33,11 @@ enum class GuestViewHistogramValue {
   // Isolated Web Apps).
   kControlledFrame,
 
-  kMaxValue = kControlledFrame,
+  // A slim implementation of the <webview> tag, used by webui on Android
+  // mobile.
+  kSlimWebView,
+
+  kMaxValue = kSlimWebView,
 };
 
 }  // namespace guest_view

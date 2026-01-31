@@ -7,6 +7,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <algorithm>
 #include <array>
 #include <memory>
 #include <optional>
@@ -18,7 +19,6 @@
 #include "base/barrier_closure.h"
 #include "base/base64.h"
 #include "base/command_line.h"
-#include "base/containers/contains.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
 #include "base/features.h"
@@ -161,12 +161,12 @@ constexpr char kBAndAKeyPath[] = "/interest_group/b_and_a_keys.json";
 
 // Returns kTestBaPublicKey as a JSON response to be returned by kBAndAKeyPath.
 std::string JSONSerializedKeys() {
-  base::Value::Dict key;
+  base::DictValue key;
   key.Set("key", base::Base64Encode(kTestPrivacySandboxCoordinatorPublicKey));
   key.Set("id", kTestPrivacySandboxCoordinatorIdString);
-  base::Value::List keys;
+  base::ListValue keys;
   keys.Append(std::move(key));
-  base::Value::Dict outer;
+  base::DictValue outer;
   outer.Set("keys", std::move(keys));
 
   return base::WriteJson(outer).value_or(std::string());
@@ -445,7 +445,7 @@ class NetworkResponder {
   // Returns true if the network request for path received a response.
   bool ReportSent(const std::string& path) const {
     base::AutoLock auto_lock(lock_);
-    return base::Contains(sent_reports_, path);
+    return std::ranges::contains(sent_reports_, path);
   }
 
   // Indicates whether `stored_url_loader_client_` is connected to a receiver.
@@ -10971,8 +10971,6 @@ class AdAuctionServiceImplKAnonTest
       case auction_worklet::mojom::KAnonymityBidMode::kEnforce:
         enabled_features.push_back(blink::features::kFledgeConsiderKAnonymity);
         enabled_features.push_back(blink::features::kFledgeEnforceKAnonymity);
-        disabled_features.push_back(
-            features::kCookieDeprecationFacilitatedTesting);
         break;
       case auction_worklet::mojom::KAnonymityBidMode::kSimulate:
         enabled_features.push_back(blink::features::kFledgeConsiderKAnonymity);
@@ -13162,7 +13160,7 @@ TEST_F(AdAuctionServiceImplBAndATest, EncryptsPayloadWithKAnon) {
           blink::features::kFledgeConsiderKAnonymity,
           blink::features::kFledgeEnforceKAnonymity,
       },
-      {features::kCookieDeprecationFacilitatedTesting});
+      {});
   ProvideKeys();
   NavigateAndCommit(kUrlA);
   url::Origin test_origin = url::Origin::Create(GURL(kOriginStringA));
@@ -17897,15 +17895,13 @@ class AdAuctionServiceImplBAndAKAnonEnabledTest
             /*enabled_features=*/{features::kEnableBandAKAnonEnforcement,
                                   blink::features::kFledgeConsiderKAnonymity},
             /*disabled_features=*/{blink::features::kFledgeEnforceKAnonymity});
-
         break;
       case KAnonState::kEnforceOnDeviceEnforceOnServer:
         feature_list_.InitWithFeatures(
             /*enabled_features=*/{blink::features::kFledgeConsiderKAnonymity,
                                   blink::features::kFledgeEnforceKAnonymity,
                                   features::kEnableBandAKAnonEnforcement},
-            /*disabled_features=*/{
-                features::kCookieDeprecationFacilitatedTesting});
+            /*disabled_features=*/{});
         break;
     }
   }
@@ -18014,18 +18010,18 @@ TEST_P(AdAuctionServiceImplBAndAKAnonEnabledTest, AdInResponseNotInGroup) {
           ContextMapKey(*auction_data->request_id, kOriginA));
 
   base::Value response_value = base::Value(
-      base::Value::Dict()
+      base::DictValue()
           .Set("adRenderURL", "https://c.test/different_ad.html")
           .Set("interestGroupName", "cars")
           .Set("interestGroupOwner", kOriginA.Serialize())
           .Set("biddingGroups",
-               base::Value(base::Value::Dict().Set(
+               base::Value(base::DictValue().Set(
                    "https://a.test/",
-                   base::Value(base::Value::List().Append(0).Append(1)))))
+                   base::Value(base::ListValue().Append(0).Append(1)))))
           .Set(
               "kAnonWinnerJoinCandidates",
               base::Value(
-                  base::Value::Dict()
+                  base::DictValue()
                       .Set("adRenderURLHash",
                            AsBlobValue(blink::HashedKAnonKeyForAdBid(
                                interest_group.owner,
@@ -18131,19 +18127,19 @@ TEST_P(AdAuctionServiceImplBAndAKAnonEnabledTest, OnlyGhostWinner) {
   int win_idx =
       request_context->group_names.begin()->second[0] == "bikes" ? 0 : 1;
   base::Value response_value = base::Value(
-      base::Value::Dict()
+      base::DictValue()
           .Set("biddingGroups",
-               base::Value(base::Value::Dict().Set(
+               base::Value(base::DictValue().Set(
                    "https://a.test/",
-                   base::Value(base::Value::List().Append(0).Append(1)))))
+                   base::Value(base::ListValue().Append(0).Append(1)))))
           .Set(
               "kAnonGhostWinners",
-              base::Value(base::Value::List().Append(base::Value(
-                  base::Value::Dict()
+              base::Value(base::ListValue().Append(base::Value(
+                  base::DictValue()
                       .Set(
                           "kAnonJoinCandidates",
                           base::Value(
-                              base::Value::Dict()
+                              base::DictValue()
                                   .Set("adRenderURLHash",
                                        AsBlobValue(HashedKAnonKeyForAdBid(
                                            interest_group2,
@@ -18250,17 +18246,16 @@ TEST_P(AdAuctionServiceImplBAndAKAnonEnabledTest, WinnerBadAdHash) {
 
   ASSERT_EQ(request_context->group_names.begin()->second.size(), 1u);
   base::Value response_value = base::Value(
-      base::Value::Dict()
+      base::DictValue()
           .Set("adRenderURL", interest_group1.ads.value()[0].render_url())
           .Set("interestGroupName", "cars")
           .Set("interestGroupOwner", kOriginA.Serialize())
-          .Set("biddingGroups",
-               base::Value(base::Value::Dict().Set(
-                   "https://a.test/",
-                   base::Value(base::Value::List().Append(0)))))
+          .Set("biddingGroups", base::Value(base::DictValue().Set(
+                                    "https://a.test/",
+                                    base::Value(base::ListValue().Append(0)))))
           .Set("kAnonWinnerJoinCandidates",
                base::Value(
-                   base::Value::Dict()
+                   base::DictValue()
                        .Set("adRenderURLHash",
                             AsBlobValue(blink::HashedKAnonKeyForAdComponentBid(
                                 "BadHash")))
@@ -18364,17 +18359,16 @@ TEST_P(AdAuctionServiceImplBAndAKAnonEnabledTest, WinnerBadReportingHash) {
 
   ASSERT_EQ(request_context->group_names.begin()->second.size(), 1u);
   base::Value response_value = base::Value(
-      base::Value::Dict()
+      base::DictValue()
           .Set("adRenderURL", interest_group1.ads.value()[0].render_url())
           .Set("interestGroupName", "cars")
           .Set("interestGroupOwner", kOriginA.Serialize())
-          .Set("biddingGroups",
-               base::Value(base::Value::Dict().Set(
-                   "https://a.test/",
-                   base::Value(base::Value::List().Append(0)))))
+          .Set("biddingGroups", base::Value(base::DictValue().Set(
+                                    "https://a.test/",
+                                    base::Value(base::ListValue().Append(0)))))
           .Set("kAnonWinnerJoinCandidates",
                base::Value(
-                   base::Value::Dict()
+                   base::DictValue()
                        .Set("adRenderURLHash",
                             AsBlobValue(HashedKAnonKeyForAdBid(
                                 interest_group1,
@@ -18491,17 +18485,17 @@ TEST_P(AdAuctionServiceImplBAndAKAnonEnabledTest, WinnerAndGhostWinner) {
   int win_idx =
       request_context->group_names.begin()->second[0] == "bikes" ? 0 : 1;
   base::Value response_value = base::Value(
-      base::Value::Dict()
+      base::DictValue()
           .Set("adRenderURL", interest_group1.ads.value()[0].render_url())
           .Set("interestGroupName", "cars")
           .Set("interestGroupOwner", kOriginA.Serialize())
           .Set("biddingGroups",
-               base::Value(base::Value::Dict().Set(
+               base::Value(base::DictValue().Set(
                    "https://a.test/",
-                   base::Value(base::Value::List().Append(0).Append(1)))))
+                   base::Value(base::ListValue().Append(0).Append(1)))))
           .Set("kAnonWinnerJoinCandidates",
                base::Value(
-                   base::Value::Dict()
+                   base::DictValue()
                        .Set("adRenderURLHash",
                             AsBlobValue(HashedKAnonKeyForAdBid(
                                 interest_group1,
@@ -18513,12 +18507,12 @@ TEST_P(AdAuctionServiceImplBAndAKAnonEnabledTest, WinnerAndGhostWinner) {
                                 std::nullopt)))))
           .Set(
               "kAnonGhostWinners",
-              base::Value(base::Value::List().Append(base::Value(
-                  base::Value::Dict()
+              base::Value(base::ListValue().Append(base::Value(
+                  base::DictValue()
                       .Set(
                           "kAnonJoinCandidates",
                           base::Value(
-                              base::Value::Dict()
+                              base::DictValue()
                                   .Set("adRenderURLHash",
                                        AsBlobValue(HashedKAnonKeyForAdBid(
                                            interest_group2,
@@ -18655,17 +18649,17 @@ TEST_P(AdAuctionServiceImplBAndAKAnonEnabledTest,
   int win_idx =
       request_context->group_names.begin()->second[0] == "bikes" ? 0 : 1;
   base::Value response_value = base::Value(
-      base::Value::Dict()
+      base::DictValue()
           .Set("adRenderURL", interest_group1.ads.value()[0].render_url())
           .Set("interestGroupName", "cars")
           .Set("interestGroupOwner", kOriginA.Serialize())
           .Set("biddingGroups",
-               base::Value(base::Value::Dict().Set(
+               base::Value(base::DictValue().Set(
                    "https://a.test/",
-                   base::Value(base::Value::List().Append(0).Append(1)))))
+                   base::Value(base::ListValue().Append(0).Append(1)))))
           .Set("kAnonWinnerJoinCandidates",
                base::Value(
-                   base::Value::Dict()
+                   base::DictValue()
                        .Set("adRenderURLHash",
                             AsBlobValue(HashedKAnonKeyForAdBid(
                                 interest_group1,
@@ -18677,12 +18671,12 @@ TEST_P(AdAuctionServiceImplBAndAKAnonEnabledTest,
                                 std::nullopt)))))
           .Set(
               "kAnonGhostWinners",
-              base::Value(base::Value::List().Append(base::Value(
-                  base::Value::Dict()
+              base::Value(base::ListValue().Append(base::Value(
+                  base::DictValue()
                       .Set(
                           "kAnonJoinCandidates",
                           base::Value(
-                              base::Value::Dict()
+                              base::DictValue()
                                   .Set("adRenderURLHash",
                                        AsBlobValue(HashedKAnonKeyForAdBid(
                                            interest_group2,
@@ -18699,8 +18693,8 @@ TEST_P(AdAuctionServiceImplBAndAKAnonEnabledTest,
                       .Set("interestGroupIndex", base::Value(win_idx))
                       .Set("owner", base::Value("https://a.test/"))
                       .Set("ghostWinnerPrivateAggregationSignals",
-                           base::Value::List().Append(base::Value(
-                               base::Value::Dict()
+                           base::ListValue().Append(base::Value(
+                               base::DictValue()
                                    .Set("bucket",
                                         base::Value(
                                             std::vector<uint8_t>{0x04, 0x01}))
@@ -18840,25 +18834,25 @@ TEST_P(AdAuctionServiceImplBAndAKAnonEnabledTest,
   int win_idx =
       request_context->group_names.begin()->second[0] == "bikes" ? 0 : 1;
   base::Value response_value = base::Value(
-      base::Value::Dict()
+      base::DictValue()
           .Set("adRenderURL", interest_group1.ads.value()[0].render_url())
-          .Set("components", base::Value(base::Value::List().Append(
+          .Set("components", base::Value(base::ListValue().Append(
                                  "https://c.test/ad_component.html")))
           .Set("interestGroupName", "cars")
           .Set("interestGroupOwner", kOriginA.Serialize())
           .Set("biddingGroups",
-               base::Value(base::Value::Dict().Set(
+               base::Value(base::DictValue().Set(
                    "https://a.test/",
-                   base::Value(base::Value::List().Append(0).Append(1)))))
+                   base::Value(base::ListValue().Append(0).Append(1)))))
           .Set("kAnonWinnerJoinCandidates",
                base::Value(
-                   base::Value::Dict()
+                   base::DictValue()
                        .Set("adRenderURLHash",
                             AsBlobValue(HashedKAnonKeyForAdBid(
                                 interest_group1,
                                 interest_group1.ads.value()[0].render_url())))
                        .Set("adComponentRenderURLsHash",
-                            base::Value(base::Value::List().Append(AsBlobValue(
+                            base::Value(base::ListValue().Append(AsBlobValue(
                                 blink::HashedKAnonKeyForAdComponentBid(
                                     interest_group1.ad_components.value()[0]
                                         .render_url())))))
@@ -18869,12 +18863,12 @@ TEST_P(AdAuctionServiceImplBAndAKAnonEnabledTest,
                                 std::nullopt)))))
           .Set(
               "kAnonGhostWinners",
-              base::Value(base::Value::List().Append(base::Value(
-                  base::Value::Dict()
+              base::Value(base::ListValue().Append(base::Value(
+                  base::DictValue()
                       .Set(
                           "kAnonJoinCandidates",
                           base::Value(
-                              base::Value::Dict()
+                              base::DictValue()
                                   .Set("adRenderURLHash",
                                        AsBlobValue(HashedKAnonKeyForAdBid(
                                            interest_group2,
@@ -18882,8 +18876,8 @@ TEST_P(AdAuctionServiceImplBAndAKAnonEnabledTest,
                                                .render_url())))
                                   .Set(
                                       "adComponentRenderURLsHash",
-                                      base::Value(base::Value::List().Append(
-                                          AsBlobValue(
+                                      base::Value(
+                                          base::ListValue().Append(AsBlobValue(
                                               blink::
                                                   HashedKAnonKeyForAdComponentBid(
                                                       interest_group2
@@ -19042,25 +19036,25 @@ TEST_P(AdAuctionServiceImplBAndAKAnonEnabledTest,
   int win_idx =
       request_context->group_names.begin()->second[0] == "bikes" ? 0 : 1;
   base::Value response_value = base::Value(
-      base::Value::Dict()
+      base::DictValue()
           .Set("adRenderURL", interest_group1.ads.value()[0].render_url())
-          .Set("components", base::Value(base::Value::List().Append(
+          .Set("components", base::Value(base::ListValue().Append(
                                  "https://c.test/ad_component.html")))
           .Set("interestGroupName", "cars")
           .Set("interestGroupOwner", kOriginA.Serialize())
           .Set("biddingGroups",
-               base::Value(base::Value::Dict().Set(
+               base::Value(base::DictValue().Set(
                    "https://a.test/",
-                   base::Value(base::Value::List().Append(0).Append(1)))))
+                   base::Value(base::ListValue().Append(0).Append(1)))))
           .Set("kAnonWinnerJoinCandidates",
                base::Value(
-                   base::Value::Dict()
+                   base::DictValue()
                        .Set("adRenderURLHash",
                             AsBlobValue(HashedKAnonKeyForAdBid(
                                 interest_group1,
                                 interest_group1.ads.value()[0].render_url())))
                        .Set("adComponentRenderURLsHash",
-                            base::Value(base::Value::List().Append(AsBlobValue(
+                            base::Value(base::ListValue().Append(AsBlobValue(
                                 blink::HashedKAnonKeyForAdComponentBid(
                                     interest_group1.ad_components.value()[0]
                                         .render_url())))))
@@ -19071,12 +19065,12 @@ TEST_P(AdAuctionServiceImplBAndAKAnonEnabledTest,
                                 std::nullopt)))))
           .Set(
               "kAnonGhostWinners",
-              base::Value(base::Value::List().Append(base::Value(
-                  base::Value::Dict()
+              base::Value(base::ListValue().Append(base::Value(
+                  base::DictValue()
                       .Set(
                           "kAnonJoinCandidates",
                           base::Value(
-                              base::Value::Dict()
+                              base::DictValue()
                                   .Set("adRenderURLHash",
                                        AsBlobValue(HashedKAnonKeyForAdBid(
                                            interest_group2,
@@ -19084,8 +19078,8 @@ TEST_P(AdAuctionServiceImplBAndAKAnonEnabledTest,
                                                .render_url())))
                                   .Set(
                                       "adComponentRenderURLsHash",
-                                      base::Value(base::Value::List().Append(
-                                          AsBlobValue(
+                                      base::Value(
+                                          base::ListValue().Append(AsBlobValue(
                                               blink::
                                                   HashedKAnonKeyForAdComponentBid(
                                                       "InvalidComponent")))))
@@ -19191,20 +19185,19 @@ TEST_P(AdAuctionServiceImplBAndAKAnonEnabledTest,
           ContextMapKey(*auction_data->request_id, kOriginA));
 
   base::Value response_value = base::Value(
-      base::Value::Dict()
+      base::DictValue()
           .Set("adRenderURL", interest_group1.ads.value()[0].render_url())
           .Set("interestGroupName", "cars")
           .Set("interestGroupOwner", kOriginA.Serialize())
-          .Set(
-              "biddingGroups",
-              base::Value(base::Value::Dict()
-                              .Set("https://a.test/",
-                                   base::Value(base::Value::List().Append(0)))
-                              .Set("https://b.test/",
-                                   base::Value(base::Value::List().Append(0)))))
+          .Set("biddingGroups",
+               base::Value(base::DictValue()
+                               .Set("https://a.test/",
+                                    base::Value(base::ListValue().Append(0)))
+                               .Set("https://b.test/",
+                                    base::Value(base::ListValue().Append(0)))))
           .Set("kAnonWinnerJoinCandidates",
                base::Value(
-                   base::Value::Dict()
+                   base::DictValue()
                        .Set("adRenderURLHash",
                             AsBlobValue(HashedKAnonKeyForAdBid(
                                 interest_group1,
@@ -19216,12 +19209,12 @@ TEST_P(AdAuctionServiceImplBAndAKAnonEnabledTest,
                                 std::nullopt)))))
           .Set(
               "kAnonGhostWinners",
-              base::Value(base::Value::List().Append(base::Value(
-                  base::Value::Dict()
+              base::Value(base::ListValue().Append(base::Value(
+                  base::DictValue()
                       .Set(
                           "kAnonJoinCandidates",
                           base::Value(
-                              base::Value::Dict()
+                              base::DictValue()
                                   .Set("adRenderURLHash",
                                        AsBlobValue(HashedKAnonKeyForAdBid(
                                            interest_group2,
@@ -19362,20 +19355,20 @@ TEST_P(AdAuctionServiceImplBAndAKAnonEnabledTest,
   int win_idx =
       request_context->group_names.begin()->second[0] == "bikes" ? 0 : 1;
   base::Value response_value = base::Value(
-      base::Value::Dict()
+      base::DictValue()
           .Set("adRenderURL", interest_group1.ads.value()[0].render_url())
           .Set("interestGroupName", "cars")
           .Set("interestGroupOwner", kOriginA.Serialize())
           .Set("biddingGroups",
-               base::Value(base::Value::Dict().Set(
+               base::Value(base::DictValue().Set(
                    "https://a.test/",
-                   base::Value(base::Value::List().Append(0).Append(1)))))
+                   base::Value(base::ListValue().Append(0).Append(1)))))
           .Set("buyerReportingId", "ad1_buyer_id")
           .Set("buyerAndSellerReportingId", "ad1_bas_id")
           .Set("selectedBuyerAndSellerReportingId", ad1_sbas_id)
           .Set("kAnonWinnerJoinCandidates",
                base::Value(
-                   base::Value::Dict()
+                   base::DictValue()
                        .Set("adRenderURLHash",
                             AsBlobValue(HashedKAnonKeyForAdBid(
                                 interest_group1,
@@ -19385,11 +19378,11 @@ TEST_P(AdAuctionServiceImplBAndAKAnonEnabledTest,
                                 interest_group1, interest_group1.ads.value()[0],
                                 ad1_sbas_id)))))
           .Set("kAnonGhostWinners",
-               base::Value(base::Value::List().Append(base::Value(
-                   base::Value::Dict()
+               base::Value(base::ListValue().Append(base::Value(
+                   base::DictValue()
                        .Set("kAnonJoinCandidates",
                             base::Value(
-                                base::Value::Dict()
+                                base::DictValue()
                                     .Set("adRenderURLHash",
                                          AsBlobValue(HashedKAnonKeyForAdBid(
                                              interest_group2,
@@ -19545,21 +19538,21 @@ function reportResult(auctionConfig, browserSignals) {}
   int win_idx =
       request_context->group_names.begin()->second[0] == "bikes" ? 0 : 1;
   base::Value response_value = base::Value(
-      base::Value::Dict()
+      base::DictValue()
           .Set("adRenderURL", interest_group1.ads.value()[0].render_url())
           .Set("interestGroupName", "cars")
           .Set("interestGroupOwner", kOriginA.Serialize())
           .Set("biddingGroups",
-               base::Value(base::Value::Dict().Set(
+               base::Value(base::DictValue().Set(
                    "https://a.test/",
-                   base::Value(base::Value::List().Append(0).Append(1)))))
+                   base::Value(base::ListValue().Append(0).Append(1)))))
           .Set("bid", 100)
           .Set("bidCurrency", "XAU")
           .Set("topLevelSeller", kOriginA.Serialize())
           .Set("adMetadata", "\"foo\"")
           .Set("kAnonWinnerJoinCandidates",
                base::Value(
-                   base::Value::Dict()
+                   base::DictValue()
                        .Set("adRenderURLHash",
                             AsBlobValue(HashedKAnonKeyForAdBid(
                                 interest_group1,
@@ -19571,12 +19564,12 @@ function reportResult(auctionConfig, browserSignals) {}
                                 std::nullopt)))))
           .Set(
               "kAnonGhostWinners",
-              base::Value(base::Value::List().Append(base::Value(
-                  base::Value::Dict()
+              base::Value(base::ListValue().Append(base::Value(
+                  base::DictValue()
                       .Set(
                           "kAnonJoinCandidates",
                           base::Value(
-                              base::Value::Dict()
+                              base::DictValue()
                                   .Set("adRenderURLHash",
                                        AsBlobValue(HashedKAnonKeyForAdBid(
                                            interest_group2,
@@ -19593,7 +19586,7 @@ function reportResult(auctionConfig, browserSignals) {}
                       .Set("interestGroupIndex", base::Value(win_idx))
                       .Set("owner", base::Value("https://a.test/"))
                       .Set("ghostWinnerForTopLevelAuction",
-                           base::Value::Dict()
+                           base::DictValue()
                                .Set("adRenderURL",
                                     interest_group2.ads.value()[0].render_url())
                                .Set("modifiedBid", 10)
@@ -19759,21 +19752,21 @@ function reportResult(auctionConfig, browserSignals) {}
   int win_idx =
       request_context->group_names.begin()->second[0] == "bikes" ? 0 : 1;
   base::Value response_value = base::Value(
-      base::Value::Dict()
+      base::DictValue()
           .Set("adRenderURL", interest_group1.ads.value()[0].render_url())
           .Set("interestGroupName", "cars")
           .Set("interestGroupOwner", kOriginA.Serialize())
           .Set("biddingGroups",
-               base::Value(base::Value::Dict().Set(
+               base::Value(base::DictValue().Set(
                    "https://a.test/",
-                   base::Value(base::Value::List().Append(0).Append(1)))))
+                   base::Value(base::ListValue().Append(0).Append(1)))))
           .Set("bid", 100)
           .Set("bidCurrency", "XAU")
           .Set("topLevelSeller", kOriginA.Serialize())
           .Set("adMetadata", "\"foo\"")
           .Set("kAnonWinnerJoinCandidates",
                base::Value(
-                   base::Value::Dict()
+                   base::DictValue()
                        .Set("adRenderURLHash",
                             AsBlobValue(HashedKAnonKeyForAdBid(
                                 interest_group1,
@@ -19785,12 +19778,12 @@ function reportResult(auctionConfig, browserSignals) {}
                                 std::nullopt)))))
           .Set(
               "kAnonGhostWinners",
-              base::Value(base::Value::List().Append(base::Value(
-                  base::Value::Dict()
+              base::Value(base::ListValue().Append(base::Value(
+                  base::DictValue()
                       .Set(
                           "kAnonJoinCandidates",
                           base::Value(
-                              base::Value::Dict()
+                              base::DictValue()
                                   .Set("adRenderURLHash",
                                        AsBlobValue(HashedKAnonKeyForAdBid(
                                            interest_group2,
@@ -19807,7 +19800,7 @@ function reportResult(auctionConfig, browserSignals) {}
                       .Set("interestGroupIndex", base::Value(win_idx))
                       .Set("owner", base::Value("https://a.test/"))
                       .Set("ghostWinnerForTopLevelAuction",
-                           base::Value::Dict()
+                           base::DictValue()
                                .Set("adRenderURL",
                                     interest_group2.ads.value()[0].render_url())
                                .Set("modifiedBid", 10)
@@ -19952,14 +19945,14 @@ function reportResult(auctionConfig, browserSignals) {}
   int win_idx =
       request_context->group_names.begin()->second[0] == "bikes" ? 0 : 1;
   base::Value response_value = base::Value(
-      base::Value::Dict()
+      base::DictValue()
           .Set("adRenderURL", interest_group1.ads.value()[0].render_url())
           .Set("interestGroupName", "cars")
           .Set("interestGroupOwner", kOriginA.Serialize())
           .Set("biddingGroups",
-               base::Value(base::Value::Dict().Set(
+               base::Value(base::DictValue().Set(
                    "https://a.test/",
-                   base::Value(base::Value::List().Append(0).Append(1)))))
+                   base::Value(base::ListValue().Append(0).Append(1)))))
           .Set("buyerReportingId", "ad1_buyer_id")
           .Set("buyerAndSellerReportingId", "ad1_bas_id")
           .Set("selectedBuyerAndSellerReportingId", ad1_sbas_id)
@@ -19969,7 +19962,7 @@ function reportResult(auctionConfig, browserSignals) {}
           .Set("adMetadata", "\"foo\"")
           .Set("kAnonWinnerJoinCandidates",
                base::Value(
-                   base::Value::Dict()
+                   base::DictValue()
                        .Set("adRenderURLHash",
                             AsBlobValue(HashedKAnonKeyForAdBid(
                                 interest_group1,
@@ -19980,12 +19973,12 @@ function reportResult(auctionConfig, browserSignals) {}
                                 ad1_sbas_id)))))
           .Set(
               "kAnonGhostWinners",
-              base::Value(base::Value::List().Append(base::Value(
-                  base::Value::Dict()
+              base::Value(base::ListValue().Append(base::Value(
+                  base::DictValue()
                       .Set(
                           "kAnonJoinCandidates",
                           base::Value(
-                              base::Value::Dict()
+                              base::DictValue()
                                   .Set("adRenderURLHash",
                                        AsBlobValue(HashedKAnonKeyForAdBid(
                                            interest_group2,
@@ -20002,7 +19995,7 @@ function reportResult(auctionConfig, browserSignals) {}
                       .Set("interestGroupIndex", base::Value(win_idx))
                       .Set("owner", base::Value("https://a.test/"))
                       .Set("ghostWinnerForTopLevelAuction",
-                           base::Value::Dict()
+                           base::DictValue()
                                .Set("adRenderURL",
                                     interest_group2.ads.value()[0].render_url())
                                .Set("modifiedBid", 10)
@@ -20286,9 +20279,7 @@ class AdAuctionServiceImplFacilitatedTestingTest
   AdAuctionServiceImplFacilitatedTestingTest() {
     features_.InitWithFeaturesAndParameters(
         /*enabled_features=*/
-        {{features::kCookieDeprecationFacilitatedTesting,
-          {{"label", "LabelForTesting"}}},
-         {features::kFledgeFacilitatedTestingSignalsHeaders, {}}},
+        {{features::kFledgeFacilitatedTestingSignalsHeaders, {}}},
         /*disabled_features=*/{});
   }
 

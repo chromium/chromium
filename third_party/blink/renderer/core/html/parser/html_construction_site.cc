@@ -75,6 +75,7 @@
 #include "third_party/blink/renderer/core/html_element_factory.h"
 #include "third_party/blink/renderer/core/html_names.h"
 #include "third_party/blink/renderer/core/loader/frame_loader.h"
+#include "third_party/blink/renderer/core/sanitizer/streaming_sanitizer.h"
 #include "third_party/blink/renderer/core/script/ignore_destructive_write_count_incrementer.h"
 #include "third_party/blink/renderer/core/svg/svg_script_element.h"
 #include "third_party/blink/renderer/platform/bindings/v8_per_isolate_data.h"
@@ -292,7 +293,10 @@ static inline void ExecuteTakeAllChildrenTask(HTMLConstructionSiteTask& task) {
 static inline void ExecuteRemoveChildrenTask(HTMLConstructionSiteTask& task) {
   DCHECK_EQ(task.operation, HTMLConstructionSiteTask::kRemoveChildren);
 
-  task.parent->ParserRemoveAllChildren();
+  // Note that there is currently no special "ParserRemoveChildren" method, as
+  // removing children by patch templates has the same effect as removing them
+  // with a JS call.
+  task.parent->RemoveChildren();
 }
 
 static inline void ExecuteReplaceChildTask(HTMLConstructionSiteTask& task) {
@@ -443,8 +447,9 @@ void HTMLConstructionSite::FlushPendingText() {
     task.parent = pending_text_.parent;
     task.next_child = pending_text_.next_child;
     task.child = Text::Create(task.parent->GetDocument(), std::move(substring));
-    PreprocessInsertionTask(task);
-    QueueTask(task, false);
+    if (PreprocessInsertionTask(task)) {
+      QueueTask(task, false);
+    }
     DCHECK_EQ(To<Text>(task.child.Get())->length(),
               break_index - current_position);
     current_position = break_index;
@@ -481,7 +486,9 @@ void HTMLConstructionSite::AttachLater(ContainerNode* parent,
     return;
   }
 
-  PreprocessInsertionTask(task);
+  if (!PreprocessInsertionTask(task)) {
+    return;
+  }
 
   // Add as a sibling of the parent if we have reached the maximum depth
   // allowed.
@@ -528,7 +535,8 @@ HTMLConstructionSite::HTMLConstructionSite(
     ParserContentPolicy parser_content_policy,
     ContainerNode* fragment_target,
     Element* context_element,
-    CustomElementRegistry* registry)
+    CustomElementRegistry* registry,
+    StreamingSanitizer* sanitizer)
     : reentry_permit_(reentry_permit),
       document_(&document),
       attachment_root_(fragment_target && fragment_target->IsDocumentFragment()
@@ -544,7 +552,8 @@ HTMLConstructionSite::HTMLConstructionSite(
       is_parsing_fragment_(fragment_target),
       redirect_attach_to_foster_parent_(false),
       in_quirks_mode_(document.InQuirksMode()),
-      custom_element_registry_(registry) {
+      custom_element_registry_(registry),
+      sanitizer_(sanitizer) {
   DCHECK(document_->IsHTMLDocument() || document_->IsXHTMLDocument() ||
          is_parsing_fragment_);
 
@@ -579,6 +588,7 @@ void HTMLConstructionSite::Trace(Visitor* visitor) const {
   visitor->Trace(pending_text_);
   visitor->Trace(pending_dom_parts_);
   visitor->Trace(custom_element_registry_);
+  visitor->Trace(sanitizer_);
 }
 
 void HTMLConstructionSite::Detach() {
@@ -599,9 +609,9 @@ void HTMLConstructionSite::InsertHTMLHtmlStartTagBeforeHTML(
   DCHECK(document_);
   HTMLHtmlElement* element;
   if (const auto* is_attribute = token->GetAttributeItem(html_names::kIsAttr)) {
-    element = To<HTMLHtmlElement>(
-        document_->CreateElement(html_names::kHTMLTag, GetCreateElementFlags(),
-                                 is_attribute->Value(), /*registry*/ nullptr));
+    element = To<HTMLHtmlElement>(document_->CreateElement(
+        html_names::kHTMLTag, GetCreateElementFlags(), is_attribute->Value(),
+        CustomElementRegistry::DefaultRegistry(*document_)));
   } else {
     element = MakeGarbageCollected<HTMLHtmlElement>(*document_);
   }
@@ -1092,7 +1102,7 @@ void HTMLConstructionSite::InsertScriptElement(AtomicHTMLToken* token) {
   if (const auto* is_attribute = token->GetAttributeItem(html_names::kIsAttr)) {
     element = To<HTMLScriptElement>(OwnerDocumentForCurrentNode().CreateElement(
         html_names::kScriptTag, flags, is_attribute->Value(),
-        /*registry*/ nullptr));
+        CustomElementRegistry::DefaultRegistry(OwnerDocumentForCurrentNode())));
   } else {
     element = MakeGarbageCollected<HTMLScriptElement>(
         OwnerDocumentForCurrentNode(), flags);
@@ -1527,20 +1537,41 @@ void HTMLConstructionSite::FinishedTemplateElement(
   }
 }
 
-void HTMLConstructionSite::PreprocessInsertionTask(
+bool HTMLConstructionSite::PreprocessInsertionTask(
     HTMLConstructionSiteTask& task) {
   CHECK(task.operation == HTMLConstructionSiteTask::Operation::kInsert ||
         task.operation == HTMLConstructionSiteTask::Operation::kInsertText);
-  if (!RuntimeEnabledFeatures::DocumentPatchingEnabled() ||
-      OpenElements()->StackDepth() < 2 || !task.child) {
-    return;
+  if (!RuntimeEnabledFeatures::DocumentPatchingEnabled() || !task.child) {
+    return true;
+  }
+
+  if (sanitizer_) {
+    if (!sanitizer_->Sanitize(task.child)) {
+      return false;
+    }
+
+    HTMLStackItem* next = open_elements_.TopStackItem();
+
+    // Find the next item in stack that should not be replaced with children
+    // according to the sanitizer.
+    while (sanitizer_->ShouldReplaceWithChildren(next->GetNode())) {
+      next = next->NextItemInStack();
+      task.parent = next->GetNode();
+    }
+    if (!task.parent) {
+      return false;
+    }
+  }
+
+  if (OpenElements()->StackDepth() < 2) {
+    return true;
   }
   HTMLStackItem* top = open_elements_.TopStackItem();
   CHECK(top);
 
   HTMLStackItem* one_below_top = top->NextItemInStack();
   if (task.parent != top->GetNode() || !one_below_top) {
-    return;
+    return true;
   }
 
   // This means that we have a <template contentmethod> grandparent,
@@ -1555,21 +1586,21 @@ void HTMLConstructionSite::PreprocessInsertionTask(
     Node* adjusted_next_child = one_below_top->AdjustedInsertionNextChild();
     if (adjusted_next_child &&
         adjusted_next_child->parentNode() != insertion_target) {
-      return;
+      return true;
     }
     task.parent = insertion_target;
 
     if (adjusted_next_child && !task.next_child) {
       task.next_child = adjusted_next_child;
     }
-    return;
+    return true;
   }
 
   HTMLTemplateElement* top_template =
       DynamicTo<HTMLTemplateElement>(top->GetElement());
 
   if (!top_template || top_template->IsShadowRootModeTemplate()) {
-    return;
+    return true;
   }
 
   top->SetAdjustedInsertionTarget(nullptr);
@@ -1577,12 +1608,12 @@ void HTMLConstructionSite::PreprocessInsertionTask(
 
   const ContentMethod content_method = GetContentMethod(top_template);
   if (content_method == ContentMethod::kNone) {
-    return;
+    return true;
   }
   Element* child_element = DynamicTo<Element>(*task.child);
   if (!child_element ||
       !child_element->FastHasAttribute(html_names::kContentnameAttr)) {
-    return;
+    return true;
   }
 
   ContainerNode* context_node = one_below_top->GetNode();
@@ -1609,7 +1640,7 @@ void HTMLConstructionSite::PreprocessInsertionTask(
       });
 
   if (result.AtEnd()) {
-    return;
+    return true;
   }
 
   Element* target = *result;
@@ -1618,22 +1649,22 @@ void HTMLConstructionSite::PreprocessInsertionTask(
     task.parent = target->parentNode();
     task.next_child = target;
     task.operation = HTMLConstructionSiteTask::Operation::kReplaceChild;
-    return;
+    return true;
   }
 
   top->SetAdjustedInsertionTarget(target);
   switch (content_method) {
     case ContentMethod::kAppend:
-      return;
+      return true;
     case ContentMethod::kPrepend:
       top->SetAdjustedInsertionNextChild(target->firstChild());
-      return;
+      return true;
     case ContentMethod::kReplaceChildren: {
       HTMLConstructionSiteTask remove_task(
           HTMLConstructionSiteTask::kRemoveChildren);
       remove_task.parent = target;
       QueueTask(remove_task, /*flush_pending_text=*/false);
-      return;
+      return true;
     }
     default:
       NOTREACHED();

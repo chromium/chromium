@@ -53,7 +53,6 @@ AccountPickerConfiguration* GetAccountPickerConfiguration(
   accountPickerConfiguration.submitButtonTitle =
       l10n_util::GetNSString(IDS_IOS_SAVE_TO_DRIVE_ACCOUNT_PICKER_SUBMIT);
   accountPickerConfiguration.alwaysBounceVertical = YES;
-  accountPickerConfiguration.defaultCornerRadius = YES;
   return accountPickerConfiguration;
 }
 

@@ -49,12 +49,14 @@ public class DuplicateDownloadClickableSpan extends ClickableSpan {
 
     private class ClickableSpanAsyncTask extends AsyncTask<@Nullable String> {
         private @Nullable String mMimeType;
+        private @Nullable String mFileName;
 
         @Override
         protected @Nullable String doInBackground() {
             File file = new File(mFilePath);
             if (DownloadCollectionBridge.shouldPublishDownload(mFilePath)) {
-                Uri uri = DownloadCollectionBridge.getDownloadUriForFileName(file.getName());
+                mFileName = file.getName();
+                Uri uri = DownloadCollectionBridge.getDownloadUriForFileName(mFileName);
                 mMimeType = getMimeTypeFromUri(Uri.fromFile(file));
                 return uri == null ? null : uri.toString();
             } else {
@@ -68,7 +70,7 @@ public class DuplicateDownloadClickableSpan extends ClickableSpan {
             if (mRunnable != null) mRunnable.run();
             if (filePath != null) {
                 DownloadUtils.openDownload(
-                        filePath, mMimeType, null, mOtrProfileId, null, null, mSource);
+                        filePath, mMimeType, null, mOtrProfileId, null, null, mSource, mFileName);
             } else {
                 DownloadManagerService.openDownloadsPage(mOtrProfileId, mSource);
             }

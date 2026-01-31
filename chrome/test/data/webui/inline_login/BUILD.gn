@@ -4,7 +4,7 @@
 
 import("../build_webui_tests.gni")
 
-assert(!is_chromeos)
+assert(is_win)
 
 build_webui_tests("build") {
   files = [

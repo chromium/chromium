@@ -55,7 +55,7 @@
 #import "ios/chrome/browser/signin/model/about_signin_internals_factory.h"
 #import "ios/chrome/browser/signin/model/chrome_account_manager_service_factory.h"
 #import "ios/chrome/browser/signin/model/identity_manager_factory.h"
-#import "ios/chrome/browser/supervised_user/model/supervised_user_settings_service_factory.h"
+#import "ios/chrome/browser/supervised_user/model/family_link_settings_service_factory.h"
 #import "ios/chrome/browser/sync/model/data_type_store_service_factory.h"
 #import "ios/chrome/browser/sync/model/device_info_sync_service_factory.h"
 #import "ios/chrome/browser/sync/model/ios_chrome_sync_client.h"
@@ -138,8 +138,9 @@ syncer::DataTypeController::TypeVector CreateControllers(
           ? IOSSharingMessageBridgeFactory::GetForProfile(profile)
           : nullptr);
 #if BUILDFLAG(ENABLE_SUPERVISED_USERS)
-  builder.SetSupervisedUserSettingsService(
-      SupervisedUserSettingsServiceFactory::GetForProfile(profile));
+  builder.SetFamilyLinkSettingsService(
+      supervised_user::FamilyLinkSettingsServiceFactory::GetForProfile(
+          profile));
 #endif  // BUILDFLAG(ENABLE_SUPERVISED_USERS)
   builder.SetTabGroupSyncService(
       tab_groups::TabGroupSyncServiceFactory::GetForProfile(profile));
@@ -162,7 +163,8 @@ std::unique_ptr<syncer::SyncClient> BuildSyncClient(ProfileIOS* profile) {
       SyncInvalidationsServiceFactory::GetForProfile(profile),
       DeviceInfoSyncServiceFactory::GetForProfile(profile),
       DataTypeStoreServiceFactory::GetForProfile(profile),
-      SupervisedUserSettingsServiceFactory::GetForProfile(profile));
+      supervised_user::FamilyLinkSettingsServiceFactory::GetForProfile(
+          profile));
 }
 
 std::unique_ptr<KeyedService> BuildSyncService(ProfileIOS* profile) {
@@ -317,7 +319,7 @@ SyncServiceFactory::SyncServiceFactory()
   DependsOn(ReadingListModelFactory::GetInstance());
   DependsOn(SendTabToSelfSyncServiceFactory::GetInstance());
   DependsOn(SessionSyncServiceFactory::GetInstance());
-  DependsOn(SupervisedUserSettingsServiceFactory::GetInstance());
+  DependsOn(supervised_user::FamilyLinkSettingsServiceFactory::GetInstance());
   DependsOn(SyncInvalidationsServiceFactory::GetInstance());
   DependsOn(tab_groups::TabGroupSyncServiceFactory::GetInstance());
 }

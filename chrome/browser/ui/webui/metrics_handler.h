@@ -31,7 +31,7 @@ class MetricsHandler : public content::WebUIMessageHandler {
 
   // Callback for the "metricsHandler:recordAction" message. This records a
   // user action.
-  void HandleRecordAction(const base::Value::List& args);
+  void HandleRecordAction(const base::ListValue& args);
 
   // TODO(dbeam): http://crbug.com/104338
 
@@ -40,27 +40,27 @@ class MetricsHandler : public content::WebUIMessageHandler {
   // and the maximum allowed value, which can be at most 4000. The histogram
   // will use at most 100 buckets, one for each 1, 10, or 100 different values,
   // depending on the maximum value.
-  void HandleRecordInHistogram(const base::Value::List& args);
+  void HandleRecordInHistogram(const base::ListValue& args);
 
   // Callback for the "metricsHandler:recordBooleanHistogram" message. This
   // records into a boolean histogram. |args| contains the histogram name, and
   // the value to record.
-  void HandleRecordBooleanHistogram(const base::Value::List& args);
+  void HandleRecordBooleanHistogram(const base::ListValue& args);
 
   // Records a millisecond time value in a histogram, similar to
   // UMA_HISTOGRAM_TIMES. Handles times between 1ms and 10sec. |args|
   // contains the histogram name and a value in milliseconds.
-  void HandleRecordTime(const base::Value::List& args);
+  void HandleRecordTime(const base::ListValue& args);
 
   // Records a millisecond time value in a histogram, similar to
   // UmaHistogramMedium. Handles times up to 3 minutes. |args| contains the
   // histogram name and a value in milliseconds.
-  void HandleRecordMediumTime(const base::Value::List& args);
+  void HandleRecordMediumTime(const base::ListValue& args);
 
   // Callback for the "metricsHandler:recordSparseHistogram" message. This
   // records into a sparse histogram. |args| contains the histogram name and
   // the sample value to record.
-  void HandleRecordSparseHistogram(const base::Value::List& args);
+  void HandleRecordSparseHistogram(const base::ListValue& args);
 };
 
 #endif  // CHROME_BROWSER_UI_WEBUI_METRICS_HANDLER_H_

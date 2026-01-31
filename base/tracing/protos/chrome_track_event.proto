@@ -42,6 +42,7 @@ message BlinkTaskScope {
     TASK_SCOPE_SOFT_NAVIGATION = 9;
     TASK_SCOPE_MISC_EVENT = 10;
     TASK_SCOPE_MICROTASK = 11;
+    TASK_SCOPE_RESOURCE_TIMING = 12;
   }
   optional TaskScopeType type = 1;
   optional int64 scope_task_id = 2;
@@ -890,6 +891,7 @@ message EventLatency {
   //
   // To simplify the documentation below, we use "this frame" to refer to the
   // frame in which the scroll update was presented.
+  // LINT.IfChange
   message ScrollJankV4Result {
     // Next ID: 13
 
@@ -902,7 +904,6 @@ message EventLatency {
 
     // Reason why Chrome's scroll jank v4 metric marked a scroll update as
     // janky. A single scroll update can be janky for more than one reason.
-    // LINT.IfChange(JankReason)
     enum JankReason {
       JANK_REASON_UNSPECIFIED = 0;
 
@@ -921,7 +922,6 @@ message EventLatency {
       // Chrome missed one or more VSyncs in the middle of a fling.
       MISSED_VSYNC_DURING_FLING = 4;
     }
-    // LINT.ThenChange(//cc/metrics/scroll_jank_v4_result.h:JankReason,//tools/metrics/histograms/metadata/event/histograms.xml:ScrollJankReasonV4)
 
     // Number of VSyncs that that Chrome missed before presenting the scroll
     // update for each reason. Essentially a map<JankReason, int32>.
@@ -1109,6 +1109,7 @@ message EventLatency {
     // BeginFrameArgs.
     optional int64 vsync_interval_us = 12;
   }
+  // LINT.ThenChange(//base/tracing/stdlib/chrome/scroll_jank_v4.sql)
 
   // Deprecated in favor of top-level `ChromeTrackEvent.scroll_jank_v4`.
   optional ScrollJankV4Result scroll_jank_v4 = 10 [deprecated = true];
@@ -1803,6 +1804,8 @@ message WebContentInteraction {
   optional int64 total_duration_ms = 2;
 }
 
+// Deprecated in favor of the Perfetto Scroll Jank plugin which has a more
+// in-depth track. See `org.chromium.ChromeScrollJank/scroll_track.ts`
 message ScrollMetrics {
   optional int64 frame_count = 1;
   optional int64 vsync_count = 2;
@@ -2047,7 +2050,7 @@ message ChromeCompositorStateMachineV2 {
   optional MinorStateV2 minor_state = 2;
 }
 
-// Next id: 12
+// Next id: 13
 message BeginFrameArgsV2 {
   // JSON format has a "type" field that was always just "BeginFrameArgs" we
   // drop this in the proto representation, and instead make the JSON format
@@ -2077,6 +2080,7 @@ message BeginFrameArgsV2 {
     SourceLocation source_location = 10;
   }
   optional int64 frames_throttled_since_last = 11;
+  optional int64 unthrottled_interval_delta_us = 12;
 }
 
 // Next id: 7
@@ -2247,6 +2251,7 @@ message WebViewStartup {
     STATIC_SET_RENDERER_LIBRARY_PREFETCH_MODE = 105;
     STATIC_GET_RENDERER_LIBRARY_PREFETCH_MODE = 106;
     GET_DEFAULT_COOKIE_MANAGER = 107;
+    GET_PROFILE_STORE = 108;
     // Remember to update WebViewStartupCallSite in enums.xml when adding new
     // values here.
   }
@@ -2767,6 +2772,32 @@ message InputTransferHandler {
   };
   // LINT.ThenChange(//tools/metrics/histograms/metadata/android/enums.xml:TransferInputToVizResult)
   optional TransferInputToVizResult transfer_result = 1;
+
+  // LINT.IfChange(InputOnVizSequenceDroppedReason)
+  enum InputOnVizSequenceDroppedReason {
+    UNKNOWN_BROWSER_DROPPED_REASON = 0;
+    ACTIVE_SEQ_ON_VIZ_ABNORMAL_DOWN_TIME = 1;
+    FAILED_TO_TRANSFER_POTENTIAL_POINTER = 2;
+    ANDROID_OS_TRANSFERRED_A_NEW_SEQUENCE = 3;
+  };
+  // LINT.ThenChange(
+  //     //tools/metrics/histograms/metadata/android/enums.xml:InputOnVizSequenceDroppedReason,
+  //     //content/browser/renderer_host/input/input_transfer_handler_android.h:InputOnVizSequenceDroppedReason
+  // )
+
+  optional InputOnVizSequenceDroppedReason browser_sequence_dropped_reason = 2;
+
+  // LINT.IfChange(VizSequenceDroppedReason)
+  enum VizSequenceDroppedReason {
+    UNKNOWN_VIZ_DROPPED_REASON = 0;
+    OLDER_SEQUENCE_IN_QUEUE = 1;
+  };
+  // LINT.ThenChange(
+  //    //tools/metrics/histograms/metadata/android/enums.xml:VizSequenceDroppedReason,
+  //    //components/viz/service/input/android_state_transfer_handler.cc:VizSequenceDroppedReason
+  // )
+
+  optional VizSequenceDroppedReason viz_sequence_dropped_reason = 3;
 };
 
 message ResponseInfo {
@@ -2920,7 +2951,7 @@ message ChromeTrackEvent {
     optional AnimationFrameScriptTimingInfo animation_frame_script_timing_info =
         1065;
 
-    optional ScrollMetrics scroll_metrics = 1066;
+    optional ScrollMetrics scroll_metrics = 1066 [deprecated = true];
 
     optional MainFramePipeline main_frame_pipeline = 1067;
 

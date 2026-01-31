@@ -7,8 +7,6 @@
 #include "ash/constants/ash_pref_names.h"
 #include "ash/public/cpp/test/test_new_window_delegate.h"
 #include "ash/public/cpp/test/test_system_tray_client.h"
-#include "ash/public/mojom/input_device_settings.mojom-forward.h"
-#include "ash/public/mojom/input_device_settings.mojom-shared.h"
 #include "ash/public/mojom/input_device_settings.mojom.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
@@ -18,7 +16,6 @@
 #include "ash/system/toast/anchored_nudge.h"
 #include "ash/system/toast/anchored_nudge_manager_impl.h"
 #include "ash/test/ash_test_base.h"
-#include "base/containers/contains.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -467,9 +464,8 @@ TEST_F(InputDeviceSettingsNotificationControllerTest,
   NotifyMouseFirstTimeConnected(*mojom_mouse);
   EXPECT_EQ(prefs->GetList(prefs::kWelcomeExperienceNotificationSeen).size(),
             1u);
-  EXPECT_TRUE(
-      base::Contains(prefs->GetList(prefs::kWelcomeExperienceNotificationSeen),
-                     base::Value("0001:0001")));
+  EXPECT_TRUE(prefs->GetList(prefs::kWelcomeExperienceNotificationSeen)
+                  .contains("0001:0001"));
   NotifyMouseFirstTimeConnected(*mojom_mouse);
   EXPECT_EQ(prefs->GetList(prefs::kWelcomeExperienceNotificationSeen).size(),
             1u);
@@ -483,9 +479,8 @@ TEST_F(InputDeviceSettingsNotificationControllerTest,
   NotifyMouseFirstTimeConnected(*mojom_mouse);
   EXPECT_EQ(prefs->GetList(prefs::kWelcomeExperienceNotificationSeen).size(),
             2u);
-  EXPECT_TRUE(
-      base::Contains(prefs->GetList(prefs::kWelcomeExperienceNotificationSeen),
-                     base::Value("0001:0002")));
+  EXPECT_TRUE(prefs->GetList(prefs::kWelcomeExperienceNotificationSeen)
+                  .contains("0001:0002"));
   EXPECT_EQ(expected_notification_count, message_center()->NotificationCount());
   EXPECT_TRUE(
       message_center()->FindVisibleNotificationById("welcome_experience_2"));
@@ -500,9 +495,8 @@ TEST_F(InputDeviceSettingsNotificationControllerTest,
   NotifyMouseFirstTimeConnected(*mojom_mouse);
   EXPECT_EQ(prefs->GetList(prefs::kWelcomeExperienceNotificationSeen).size(),
             3u);
-  EXPECT_TRUE(
-      base::Contains(prefs->GetList(prefs::kWelcomeExperienceNotificationSeen),
-                     base::Value("0001:0003")));
+  EXPECT_TRUE(prefs->GetList(prefs::kWelcomeExperienceNotificationSeen)
+                  .contains("0001:0003"));
   EXPECT_EQ(expected_notification_count, message_center()->NotificationCount());
   EXPECT_FALSE(
       message_center()->FindVisibleNotificationById("welcome_experience_3"));
@@ -526,9 +520,8 @@ TEST_F(InputDeviceSettingsNotificationControllerTest,
             message_center()->NotificationCount());
   EXPECT_TRUE(
       message_center()->FindVisibleNotificationById("welcome_experience_1"));
-  EXPECT_TRUE(
-      base::Contains(prefs->GetList(prefs::kWelcomeExperienceNotificationSeen),
-                     base::Value("0002:0001")));
+  EXPECT_TRUE(prefs->GetList(prefs::kWelcomeExperienceNotificationSeen)
+                  .contains("0002:0001"));
   NotifyGraphicsTabletFirstTimeConnected(*mojom_graphics_tablet);
   EXPECT_EQ(prefs->GetList(prefs::kWelcomeExperienceNotificationSeen).size(),
             1u);
@@ -538,9 +531,8 @@ TEST_F(InputDeviceSettingsNotificationControllerTest,
   NotifyGraphicsTabletFirstTimeConnected(*mojom_graphics_tablet);
   EXPECT_EQ(prefs->GetList(prefs::kWelcomeExperienceNotificationSeen).size(),
             2u);
-  EXPECT_TRUE(
-      base::Contains(prefs->GetList(prefs::kWelcomeExperienceNotificationSeen),
-                     base::Value("0002:0002")));
+  EXPECT_TRUE(prefs->GetList(prefs::kWelcomeExperienceNotificationSeen)
+                  .contains("0002:0002"));
   EXPECT_EQ(expected_notification_count, message_center()->NotificationCount());
   EXPECT_TRUE(
       message_center()->FindVisibleNotificationById("welcome_experience_2"));
@@ -556,9 +548,8 @@ TEST_F(InputDeviceSettingsNotificationControllerTest,
   NotifyGraphicsTabletFirstTimeConnected(*mojom_graphics_tablet);
   EXPECT_EQ(prefs->GetList(prefs::kWelcomeExperienceNotificationSeen).size(),
             3u);
-  EXPECT_TRUE(
-      base::Contains(prefs->GetList(prefs::kWelcomeExperienceNotificationSeen),
-                     base::Value("0002:0003")));
+  EXPECT_TRUE(prefs->GetList(prefs::kWelcomeExperienceNotificationSeen)
+                  .contains("0002:0003"));
   EXPECT_EQ(expected_notification_count, message_center()->NotificationCount());
   EXPECT_FALSE(
       message_center()->FindVisibleNotificationById("welcome_experience_3"));
@@ -575,9 +566,8 @@ TEST_F(InputDeviceSettingsNotificationControllerTest,
   NotifyGraphicsTabletFirstTimeConnected(*mojom_graphics_tablet);
   EXPECT_EQ(prefs->GetList(prefs::kWelcomeExperienceNotificationSeen).size(),
             4u);
-  EXPECT_TRUE(
-      base::Contains(prefs->GetList(prefs::kWelcomeExperienceNotificationSeen),
-                     base::Value("0002:0004")));
+  EXPECT_TRUE(prefs->GetList(prefs::kWelcomeExperienceNotificationSeen)
+                  .contains("0002:0004"));
   EXPECT_EQ(expected_notification_count, message_center()->NotificationCount());
   EXPECT_FALSE(
       message_center()->FindVisibleNotificationById("welcome_experience_4"));
@@ -625,13 +615,13 @@ TEST_F(InputDeviceSettingsNotificationControllerTest,
       Shell::Get()->anchored_nudge_manager()->GetNudgeIfShown(
           kSixPackKeyNoMatchNudgeId);
   ASSERT_FALSE(nudge);
-  base::Value::Dict overrides;
+  base::DictValue overrides;
   overrides.Set(prefs::kSixPackKeyInsert, /*kSearch*/ 2);
   overrides.Set(prefs::kSixPackKeyDelete, /*kAlt*/ 1);
   overrides.Set(prefs::kSixPackKeyHome, /*kSearch*/ 2);
   overrides.Set(prefs::kSixPackKeyPageUp, /*kAlt*/ 1);
   overrides.Set(prefs::kSixPackKeyEnd, /*kSearch*/ 2);
-  base::Value::Dict remappings;
+  base::DictValue remappings;
   remappings.Set(prefs::kKeyboardSettingSixPackKeyRemappings,
                  std::move(overrides));
   Shell::Get()->session_controller()->GetActivePrefService()->SetDict(
@@ -776,9 +766,8 @@ TEST_F(InputDeviceSettingsNotificationControllerTest,
   NotifyKeyboardFirstTimeConnected(*mojom_keyboard);
   EXPECT_EQ(prefs->GetList(prefs::kWelcomeExperienceNotificationSeen).size(),
             1u);
-  EXPECT_TRUE(
-      base::Contains(prefs->GetList(prefs::kWelcomeExperienceNotificationSeen),
-                     base::Value("0001:0001")));
+  EXPECT_TRUE(prefs->GetList(prefs::kWelcomeExperienceNotificationSeen)
+                  .contains("0001:0001"));
   NotifyKeyboardFirstTimeConnected(*mojom_keyboard);
   EXPECT_EQ(prefs->GetList(prefs::kWelcomeExperienceNotificationSeen).size(),
             1u);
@@ -798,9 +787,8 @@ TEST_F(InputDeviceSettingsNotificationControllerTest,
   NotifyKeyboardFirstTimeConnected(*mojom_keyboard);
   EXPECT_EQ(prefs->GetList(prefs::kWelcomeExperienceNotificationSeen).size(),
             2u);
-  EXPECT_TRUE(
-      base::Contains(prefs->GetList(prefs::kWelcomeExperienceNotificationSeen),
-                     base::Value("0001:0002")));
+  EXPECT_TRUE(prefs->GetList(prefs::kWelcomeExperienceNotificationSeen)
+                  .contains("0001:0002"));
   EXPECT_EQ(expected_notification_count, message_center()->NotificationCount());
   EXPECT_TRUE(
       message_center()->FindVisibleNotificationById("welcome_experience_2"));
@@ -824,9 +812,8 @@ TEST_F(InputDeviceSettingsNotificationControllerTest,
   NotifyTouchpadFirstTimeConnected(*mojom_touchpad);
   EXPECT_EQ(prefs->GetList(prefs::kWelcomeExperienceNotificationSeen).size(),
             1u);
-  EXPECT_TRUE(
-      base::Contains(prefs->GetList(prefs::kWelcomeExperienceNotificationSeen),
-                     base::Value("0001:0001")));
+  EXPECT_TRUE(prefs->GetList(prefs::kWelcomeExperienceNotificationSeen)
+                  .contains("0001:0001"));
   NotifyTouchpadFirstTimeConnected(*mojom_touchpad);
   EXPECT_EQ(prefs->GetList(prefs::kWelcomeExperienceNotificationSeen).size(),
             1u);
@@ -845,9 +832,8 @@ TEST_F(InputDeviceSettingsNotificationControllerTest,
   NotifyTouchpadFirstTimeConnected(*mojom_touchpad);
   EXPECT_EQ(prefs->GetList(prefs::kWelcomeExperienceNotificationSeen).size(),
             2u);
-  EXPECT_TRUE(
-      base::Contains(prefs->GetList(prefs::kWelcomeExperienceNotificationSeen),
-                     base::Value("0001:0002")));
+  EXPECT_TRUE(prefs->GetList(prefs::kWelcomeExperienceNotificationSeen)
+                  .contains("0001:0002"));
   EXPECT_EQ(expected_notification_count, message_center()->NotificationCount());
   EXPECT_TRUE(
       message_center()->FindVisibleNotificationById("welcome_experience_2"));
@@ -870,9 +856,8 @@ TEST_F(InputDeviceSettingsNotificationControllerTest,
   controller()->NotifyPointingStickFirstTimeConnected(*mojom_pointing_stick);
   EXPECT_EQ(prefs->GetList(prefs::kWelcomeExperienceNotificationSeen).size(),
             1u);
-  EXPECT_TRUE(
-      base::Contains(prefs->GetList(prefs::kWelcomeExperienceNotificationSeen),
-                     base::Value("0001:0001")));
+  EXPECT_TRUE(prefs->GetList(prefs::kWelcomeExperienceNotificationSeen)
+                  .contains("0001:0001"));
   controller()->NotifyPointingStickFirstTimeConnected(*mojom_pointing_stick);
   EXPECT_EQ(prefs->GetList(prefs::kWelcomeExperienceNotificationSeen).size(),
             1u);
@@ -887,9 +872,8 @@ TEST_F(InputDeviceSettingsNotificationControllerTest,
   controller()->NotifyPointingStickFirstTimeConnected(*mojom_pointing_stick);
   EXPECT_EQ(prefs->GetList(prefs::kWelcomeExperienceNotificationSeen).size(),
             2u);
-  EXPECT_TRUE(
-      base::Contains(prefs->GetList(prefs::kWelcomeExperienceNotificationSeen),
-                     base::Value("0001:0002")));
+  EXPECT_TRUE(prefs->GetList(prefs::kWelcomeExperienceNotificationSeen)
+                  .contains("0001:0002"));
   EXPECT_EQ(expected_notification_count, message_center()->NotificationCount());
   EXPECT_TRUE(
       message_center()->FindVisibleNotificationById("welcome_experience_2"));

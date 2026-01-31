@@ -104,7 +104,7 @@ std::unique_ptr<BrowserFrameView> CreateBrowserFrameViewWin(
     return std::make_unique<BrowserFrameViewWin>(widget, browser_view);
   }
 
-  auto opaque_browser_view = std::make_unique<OpaqueBrowserFrameViewWin>(
+  auto opaque_browser_view = std::make_unique<OpaqueBrowserFrameView>(
       widget, browser_view, new OpaqueBrowserFrameViewLayout());
   opaque_browser_view->InitViews();
 

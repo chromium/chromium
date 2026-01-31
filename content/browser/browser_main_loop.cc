@@ -156,7 +156,6 @@
 #include "services/tracing/public/cpp/trace_startup_config.h"
 #include "services/video_capture/public/cpp/features.h"
 #include "skia/ext/event_tracer_impl.h"
-#include "skia/ext/font_utils.h"
 #include "skia/ext/legacy_display_globals.h"
 #include "skia/ext/skia_memory_dump_provider.h"
 #include "sql/sql_memory_dump_provider.h"
@@ -573,8 +572,7 @@ int BrowserMainLoop::EarlyInitialization() {
   // SetCurrentThreadType relies on CurrentUIThread on some platforms. The
   // MessagePumpForUI needs to be bound to the main thread by this point.
   DCHECK(base::CurrentUIThread::IsSet());
-  base::PlatformThread::SetCurrentThreadType(
-      base::ThreadType::kDisplayCritical);
+  base::PlatformThread::SetCurrentThreadType(base::ThreadType::kPresentation);
 
 #if BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || \
     BUILDFLAG(IS_ANDROID)
@@ -638,7 +636,10 @@ void BrowserMainLoop::CreateMainMessageLoop() {
 
   TRACE_EVENT0("startup", "BrowserMainLoop::CreateMainMessageLoop");
 
-  base::PlatformThread::SetName("CrBrowserMain");
+  if (!base::CommandLine::ForCurrentProcess()->HasSwitch(
+          switches::kDisableMainThreadNameOverride)) {
+    base::PlatformThread::SetName("CrBrowserMain");
+  }
 
   // Register the main thread. The main thread's task runner should already have
   // been initialized but it's not yet known as BrowserThread::UI.
@@ -1003,7 +1004,6 @@ int BrowserMainLoop::PreMainMessageLoopRun() {
           font_render_params.subpixel_rendering),
       font_render_params.text_contrast, font_render_params.text_gamma);
   viz::GpuHostImpl::InitFontRenderParams(font_render_params);
-  skia::InitializeFontRendering();
 
 #if BUILDFLAG(IS_ANDROID)
   bool use_display_wide_color_gamut =

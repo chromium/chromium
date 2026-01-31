@@ -131,7 +131,7 @@ class DiscountsIconViewBrowserTest : public UiBrowserTest {
   }
 
   LocationBarView* GetLocationBarView() {
-    return GetBrowserView()->toolbar()->location_bar();
+    return GetBrowserView()->toolbar()->location_bar_view();
   }
 
   std::vector<commerce::DiscountInfo> discount_infos_;

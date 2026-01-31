@@ -51,7 +51,7 @@ IN_PROC_BROWSER_TEST_F(InputImeApiTest, Basic) {
   ash::input_method::InputMethodManager::Get()
       ->GetActiveIMEState()
       ->SetEnabledExtensionImes(extension_ime_ids);
-  ASSERT_TRUE(RunExtensionTest("input_ime")) << message_;
+  ASSERT_TRUE(RunExtensionTest("input_ime/basic")) << message_;
 }
 
 // Tests that if an extension service worker shuts down due to idle timeout that
@@ -72,7 +72,7 @@ IN_PROC_BROWSER_TEST_F(InputImeApiTest, WakeWorkerAfterShutdown) {
   service_worker_test_utils::TestServiceWorkerContextObserver
       worker_stopped_observer(profile());
   const Extension* extension = LoadExtension(
-      test_data_dir_.AppendASCII("input_ime_worker_shutdown"),
+      test_data_dir_.AppendASCII("input_ime/worker_shutdown"),
       {.wait_for_renderers = true, .wait_for_registration_stored = true});
   ASSERT_TRUE(extension);
   const int64_t worker_version_id =

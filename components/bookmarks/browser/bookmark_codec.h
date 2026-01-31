@@ -40,11 +40,10 @@ class BookmarkCodec {
   // Either none or all permanent nodes must be null. The null case it useful to
   // encode sync metadata only (which is useful in error cases, when a user may
   // contain too many bookmarks in sync, server-side).
-  base::Value::Dict Encode(
-      const BookmarkNode* bookmark_bar_node,
-      const BookmarkNode* other_folder_node,
-      const BookmarkNode* mobile_folder_node,
-      std::string sync_metadata_str);
+  base::DictValue Encode(const BookmarkNode* bookmark_bar_node,
+                         const BookmarkNode* other_folder_node,
+                         const BookmarkNode* mobile_folder_node,
+                         std::string sync_metadata_str);
 
   // Decodes the previously encoded value to the specified nodes as well as
   // setting `max_node_id` to the greatest node id. Returns true on success,
@@ -57,7 +56,7 @@ class BookmarkCodec {
   // these ids. If such collisions exist, ids will be reassigned as if the file
   // itself contained id collisions, noticeable via `ids_reassigned()` returning
   // true.
-  bool Decode(const base::Value::Dict& value,
+  bool Decode(const base::DictValue& value,
               std::set<int64_t> already_assigned_ids,
               BookmarkNode* bb_node,
               BookmarkNode* other_folder_node,
@@ -118,21 +117,21 @@ class BookmarkCodec {
 
  private:
   // Encodes node and all its children into a Value object and returns it.
-  base::Value::Dict EncodeNode(const BookmarkNode* node);
+  base::DictValue EncodeNode(const BookmarkNode* node);
 
   // Encodes the given meta info into a Value object and returns it.
-  base::Value::Dict EncodeMetaInfo(
+  base::DictValue EncodeMetaInfo(
       const BookmarkNode::MetaInfoMap& meta_info_map);
 
   // Helper to perform decoding.
   bool DecodeHelper(BookmarkNode* bb_node,
                     BookmarkNode* other_folder_node,
                     BookmarkNode* mobile_folder_node,
-                    const base::Value::Dict& value,
+                    const base::DictValue& value,
                     std::string* sync_metadata_str);
 
   // Decodes the children of the specified node.
-  void DecodeChildren(const base::Value::List& child_value_list,
+  void DecodeChildren(const base::ListValue& child_value_list,
                       BookmarkNode* parent);
 
   // Reassigns bookmark IDs for those that require doing so (if any).
@@ -142,19 +141,19 @@ class BookmarkCodec {
   // dictionary value. Child nodes are created appropriately by way of
   // DecodeChildren. If node is NULL a new node is created and added to parent
   // (parent must then be non-NULL), otherwise node is used.
-  void DecodeNode(const base::Value::Dict& value,
+  void DecodeNode(const base::DictValue& value,
                   BookmarkNode* parent,
                   BookmarkNode* node);
 
   // Decodes the meta info from the supplied value. meta_info_map must not be
   // nullptr.
-  bool DecodeMetaInfo(const base::Value::Dict& value,
+  bool DecodeMetaInfo(const base::DictValue& value,
                       BookmarkNode::MetaInfoMap* meta_info_map);
 
   // Decodes the meta info from the supplied sub-node dictionary. The values
   // found will be inserted in meta_info_map with the given prefix added to the
   // start of their keys.
-  void DecodeMetaInfoHelper(const base::Value::Dict& dict,
+  void DecodeMetaInfoHelper(const base::DictValue& dict,
                             const std::string& prefix,
                             BookmarkNode::MetaInfoMap* meta_info_map);
 

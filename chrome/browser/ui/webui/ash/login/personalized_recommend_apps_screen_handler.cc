@@ -38,7 +38,7 @@ void PersonalizedRecommendAppsScreenHandler::Show() {
 }
 
 void PersonalizedRecommendAppsScreenHandler::SetAppsAndUseCasesData(
-    base::Value::List useCasesApps) {
+    base::ListValue useCasesApps) {
   CallExternalAPI("setAppsAndUseCasesData", std::move(useCasesApps));
 }
 

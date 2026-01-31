@@ -6,7 +6,6 @@
 
 #include "base/check_op.h"
 #include "base/containers/adapters.h"
-#include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
@@ -541,11 +540,11 @@ void HttpServerProperties::OnDefaultNetworkChanged() {
 base::Value HttpServerProperties::GetAlternativeServiceInfoAsValue() const {
   const base::Time now = clock_->Now();
   const base::TimeTicks now_ticks = tick_clock_->NowTicks();
-  base::Value::List dict_list;
+  base::ListValue dict_list;
   for (const auto& server_info : server_info_map_) {
     if (!server_info.second.alternative_services.has_value())
       continue;
-    base::Value::List alternative_service_list;
+    base::ListValue alternative_service_list;
     const ServerInfoMapKey& key = server_info.first;
     for (const AlternativeServiceInfo& alternative_service_info :
          server_info.second.alternative_services.value()) {
@@ -584,7 +583,7 @@ base::Value HttpServerProperties::GetAlternativeServiceInfoAsValue() const {
     }
     if (alternative_service_list.empty())
       continue;
-    base::Value::Dict dict;
+    base::DictValue dict;
     dict.Set("server", key.server.Serialize());
     dict.Set("network_anonymization_key",
              key.network_anonymization_key.ToDebugString());
@@ -1339,7 +1338,7 @@ void HttpServerProperties::OnServerInfoLoaded(
                             kCanonicalPort),
         it.first.network_anonymization_key);
     // If we already have a valid canonical server, we're done.
-    if (base::Contains(canonical_alt_svc_map_, key)) {
+    if (canonical_alt_svc_map_.contains(key)) {
       auto key_it = server_info_map_.Peek(key);
       if (key_it != server_info_map_.end() &&
           key_it->second.alternative_services.has_value()) {

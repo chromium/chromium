@@ -189,7 +189,7 @@ void NearbyShareDialogUI::WebContentsCreated(
   Navigate(&nav_params);
 }
 
-void NearbyShareDialogUI::HandleClose(const base::Value::List& args) {
+void NearbyShareDialogUI::HandleClose(const base::ListValue& args) {
   if (!sharesheet_controller_) {
     return;
   }

@@ -24,6 +24,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/trace_event/trace_event.h"
 #include "chrome/browser/android/resource_mapper.h"
+#include "chrome/browser/autofill/android/autofill_fallback_surface_launcher.h"
 #include "chrome/browser/keyboard_accessory/android/accessory_sheet_data.h"
 #include "chrome/browser/keyboard_accessory/android/accessory_sheet_enums.h"
 #include "chrome/browser/keyboard_accessory/android/manual_filling_controller.h"
@@ -40,7 +41,6 @@
 #include "chrome/browser/plus_addresses/plus_address_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ssl/chrome_security_state_tab_helper.h"
-#include "chrome/browser/ui/android/autofill/autofill_fallback_surface_launcher.h"
 #include "chrome/browser/ui/passwords/ui_utils.h"
 #include "chrome/browser/ui/plus_addresses/android/all_plus_addresses_bottom_sheet_controller.h"
 #include "chrome/browser/webauthn/android/webauthn_request_delegate_android.h"
@@ -747,8 +747,7 @@ void PasswordAccessoryControllerImpl::ChangeCurrentOriginSavePasswordsStatus(
       password_manager::GetSignonRealm(origin_as_gurl), origin_as_gurl);
 
   password_manager::PasswordStoreInterface* store;
-  if (password_client_->GetPasswordFeatureManager()
-          ->IsAccountStorageEnabled()) {
+  if (password_client_->GetPasswordFeatureManager()->IsAccountStorageActive()) {
     store = password_client_->GetAccountPasswordStore();
   } else {
     store = password_client_->GetProfilePasswordStore();
@@ -926,22 +925,19 @@ void PasswordAccessoryControllerImpl::RefreshSuggestions() {
 
   bool sheet_provides_value = last_focus_info_->is_generation_allowed_in_frame;
 
-  if (base::FeatureList::IsEnabled(
-          password_manager::features::
-              kRetrieveTrustedVaultKeyKeyboardAccessoryAction)) {
-    ShouldShowAction show_unlock_password(
-        (last_focus_info_->focused_field_type ==
-             FocusedFieldType::kFillableUsernameField ||
-         last_focus_info_->focused_field_type ==
-             FocusedFieldType::kFillablePasswordField) &&
-        RequiresTrustedVaultRetrieval(credential_cache_->backend_error()));
-    sheet_provides_value |= show_unlock_password.value();
-    GetManualFillingController()->OnAccessoryActionAvailabilityChanged(
-        show_unlock_password,
-        autofill::AccessoryAction::RETRIEVE_TRUSTED_VAULT_KEY);
-  }
+  ShouldShowAction show_unlock_password(
+      (last_focus_info_->focused_field_type ==
+           FocusedFieldType::kFillableUsernameField ||
+       last_focus_info_->focused_field_type ==
+           FocusedFieldType::kFillablePasswordField) &&
+      RequiresTrustedVaultRetrieval(credential_cache_->backend_error()));
+  sheet_provides_value |= show_unlock_password.value();
+  GetManualFillingController()->OnAccessoryActionAvailabilityChanged(
+      show_unlock_password,
+      autofill::AccessoryAction::RETRIEVE_TRUSTED_VAULT_KEY);
 
   all_passwords_helper_.ClearUpdateCallback();
+
   if (!all_passwords_helper_.available_credentials().has_value()) {
     all_passwords_helper_.SetUpdateCallback(base::BindOnce(
         &PasswordAccessoryControllerImpl::RefreshSuggestionsForField,

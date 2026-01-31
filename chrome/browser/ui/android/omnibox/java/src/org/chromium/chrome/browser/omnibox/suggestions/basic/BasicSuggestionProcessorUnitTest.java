@@ -31,7 +31,7 @@ import org.robolectric.annotation.Config;
 
 import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
-import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider.ControlsPosition;
 import org.chromium.chrome.browser.omnibox.ShadowUrlBarData;
@@ -67,7 +67,7 @@ import java.util.function.Supplier;
         manifest = Config.NONE,
         shadows = {ShadowUrlBarData.class})
 public class BasicSuggestionProcessorUnitTest {
-    private static final @DrawableRes int ICON_BOOKMARK = R.drawable.star_outline_24dp;
+    private static final @DrawableRes int ICON_BOOKMARK = R.drawable.ic_star_24dp;
     private static final @DrawableRes int ICON_GLOBE = R.drawable.ic_globe_24dp;
     private static final @DrawableRes int ICON_HISTORY = R.drawable.ic_history_24dp;
     private static final @DrawableRes int ICON_MAGNIFIER = R.drawable.ic_suggestion_magnifier;
@@ -151,7 +151,7 @@ public class BasicSuggestionProcessorUnitTest {
                         mIsBookmarked,
                         mTabSupplier,
                         mShareDelegateSupplier,
-                        new ObservableSupplierImpl<>(ControlsPosition.TOP));
+                        ObservableSuppliers.createNonNull(ControlsPosition.TOP));
         mProcessor = new BasicSuggestionProcessor(uiContext);
         mInput = new AutocompleteInput();
         OmniboxResourceProvider.disableCachesForTesting();

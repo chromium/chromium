@@ -4,10 +4,10 @@
 
 #include "components/visited_url_ranking/internal/url_grouping/grouping_heuristics.h"
 
+#include <algorithm>
 #include <unordered_map>
 #include <variant>
 
-#include "base/containers/contains.h"
 #include "base/containers/fixed_flat_map.h"
 #include "base/containers/flat_map.h"
 #include "base/json/json_writer.h"
@@ -183,7 +183,7 @@ class SimilarSourceHeuristic : public GroupingHeuristics::Heuristic {
       for (const auto& pair : tab_id_to_parent_id_map) {
         float tab_id = pair.first;
         float parent_id = pair.second;
-        if (base::Contains(tab_id_to_parent_id_map, parent_id) &&
+        if (tab_id_to_parent_id_map.contains(parent_id) &&
             tab_id_to_parent_id_map[parent_id] != parent_id) {
           new_tab_id_to_parent_id_map[tab_id] =
               tab_id_to_parent_id_map[parent_id];
@@ -288,7 +288,7 @@ bool IsGroupVisible(const GroupSuggestion& suggestion,
     }
 
     int tab_id = tab_data->last_active_tab.id;
-    if (!base::Contains(suggestion.tab_ids, tab_id)) {
+    if (!std::ranges::contains(suggestion.tab_ids, tab_id)) {
       continue;
     }
 
@@ -472,7 +472,7 @@ void GroupingHeuristics::GetSuggestions(
     signals.push_back(AsInputContext(kSuggestionsPredictionSchema, candidate));
   }
   for (const auto type : heuristics_priority) {
-    if (!base::Contains(heuristics_, type)) {
+    if (!heuristics_.contains(type)) {
       continue;
     }
     auto& heuristic = heuristics_[type];

@@ -33,7 +33,7 @@ class PollGetUpdatesRequestEvent : public ProtocolEvent {
   base::Time GetTimestamp() const override;
   std::string GetType() const override;
   std::string GetDetails() const override;
-  base::Value::Dict GetProtoMessage(bool include_specifics) const override;
+  base::DictValue GetProtoMessage(bool include_specifics) const override;
 
   const base::Time timestamp_;
   const sync_pb::ClientToServerMessage request_;

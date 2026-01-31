@@ -143,9 +143,11 @@ bool CloudPolicyManager::IsFirstPolicyLoadComplete(PolicyDomain domain) const {
 }
 
 void CloudPolicyManager::RefreshPolicies(PolicyFetchReason reason) {
-  if (service()) {
+  // Both services trigger the same flow, so we can use either one.
+  auto* service_to_use = service() ? service() : extension_install_service();
+  if (service_to_use) {
     waiting_for_policy_refresh_ = true;
-    service()->RefreshPolicy(
+    service_to_use->RefreshPolicy(
         base::BindOnce(&CloudPolicyManager::OnRefreshComplete,
                        base::Unretained(this)),
         reason);
@@ -177,6 +179,12 @@ bool CloudPolicyManager::CanPublishPolicy() const {
   if (!IsInitializationComplete(POLICY_DOMAIN_CHROME)) {
     return false;
   }
+
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+  if (!IsInitializationComplete(POLICY_DOMAIN_EXTENSION_INSTALL)) {
+    return false;
+  }
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
   if (!waiting_for_policy_refresh_) {
     return true;

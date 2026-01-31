@@ -9,6 +9,7 @@
 #import "base/files/file_path.h"
 #import "base/memory/raw_ptr.h"
 #import "base/run_loop.h"
+#import "base/strings/stringprintf.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/bind.h"
 #import "base/test/scoped_command_line.h"
@@ -30,6 +31,7 @@
 #import "components/policy/core/common/policy_map.h"
 #import "components/policy/core/common/schema_registry.h"
 #import "components/signin/public/base/signin_metrics.h"
+#import "components/signin/public/identity_manager/identity_test_utils.h"
 #import "ios/chrome/browser/enterprise/identifiers/profile_id_service_factory_ios.h"
 #import "ios/chrome/browser/policy/model/browser_policy_connector_ios.h"
 #import "ios/chrome/browser/policy/model/profile_policy_connector_mock.h"
@@ -45,6 +47,9 @@
 #import "ios/chrome/browser/signin/model/fake_authentication_service_delegate.h"
 #import "ios/chrome/browser/signin/model/fake_system_identity.h"
 #import "ios/chrome/browser/signin/model/fake_system_identity_manager.h"
+#import "ios/chrome/browser/signin/model/identity_manager_factory.h"
+#import "ios/chrome/browser/signin/model/identity_test_environment_browser_state_adaptor.h"
+#import "ios/chrome/browser/signin/model/signin_client_factory.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "services/network/test/test_network_connection_tracker.h"
@@ -64,9 +69,30 @@ constexpr char kFakeProfileId[] = "profile-id";
 constexpr char kFakeBrowserDmToken[] = "browser_dm_token";
 constexpr char kFakeMachineDomain[] = "example.com";
 
+constexpr char kFakeEmail[] = "foo@example.com";
+constexpr char kFakeHostedDomain[] = "example.com";
+constexpr char kFakeFullName[] = "Full Name";
+constexpr char kFakeGivenName[] = "Full";
+constexpr char kFakeLocale[] = "en-US";
+
 std::unique_ptr<KeyedService> CreateProfileIdService(ProfileIOS* profile) {
   return std::make_unique<enterprise::ProfileIdService>(kFakeProfileId);
 }
+
+enum class ProfileReporting {
+  kEnabled,
+  kDisabled,
+};
+
+enum class ProfileName {
+  kProfileName,
+  kEmail,
+};
+
+struct TestParams {
+  ProfileReporting profile_reporting;
+  ProfileName profile_name;
+};
 
 }  // namespace
 
@@ -75,16 +101,26 @@ enum class Affiliation {
   kNotAffiliated,
 };
 
-class ProfileReportGeneratorIOSTest : public PlatformTest,
-                                      public testing::WithParamInterface<bool> {
+class ProfileReportGeneratorIOSTest
+    : public PlatformTest,
+      public testing::WithParamInterface<TestParams> {
  public:
   ProfileReportGeneratorIOSTest() : generator_(&delegate_factory_) {}
 
+  void TearDown() override {
+    GetApplicationContext()
+        ->GetBrowserPolicyConnector()
+        ->SetMachineLevelUserCloudPolicyManagerForTesting(/*manager=*/nullptr);
+  }
+
   void Init(Affiliation affiliation) {
-    if (IsProfileReportingEnabled()) {
-      feature_list_.InitAndEnableFeature(
-          enterprise_reporting::kCloudProfileReporting);
-    }
+    base::flat_map<base::test::FeatureRef, bool> feature_states;
+    feature_states[enterprise_reporting::kCloudProfileReporting] =
+        IsProfileReportingEnabled();
+    feature_states[enterprise_reporting::kUseEmailAsProfileName] =
+        ShouldUseEmailAsProfileName();
+    feature_list_.InitWithFeatureStates(feature_states);
+
     command_line_.GetProcessCommandLine()->AppendSwitch(
         switches::kEnableChromeBrowserCloudManagement);
 
@@ -102,6 +138,10 @@ class ProfileReportGeneratorIOSTest : public PlatformTest,
     builder.AddTestingFactory(
         enterprise::ProfileIdServiceFactoryIOS::GetInstance(),
         base::BindRepeating(&CreateProfileIdService));
+    builder.AddTestingFactory(
+        IdentityManagerFactory::GetInstance(),
+        base::BindRepeating(IdentityTestEnvironmentBrowserStateAdaptor::
+                                BuildIdentityManagerForTests));
     if (affiliation == Affiliation::kAffiliated) {
       InitProfileAffiliation();
     }
@@ -131,12 +171,18 @@ class ProfileReportGeneratorIOSTest : public PlatformTest,
     return policy_service;
   }
 
-  bool IsProfileReportingEnabled() const { return GetParam(); }
+  bool IsProfileReportingEnabled() const {
+    return GetParam().profile_reporting == ProfileReporting::kEnabled;
+  }
+
+  bool ShouldUseEmailAsProfileName() const {
+    return GetParam().profile_name == ProfileName::kEmail;
+  }
 
   void InitPolicyMap() {
     policy_map_.Set("kPolicyName1", policy::POLICY_LEVEL_MANDATORY,
                     policy::POLICY_SCOPE_USER, policy::POLICY_SOURCE_CLOUD,
-                    base::Value(base::Value::List()), nullptr);
+                    base::Value(base::ListValue()), nullptr);
     policy_map_.Set("kPolicyName2", policy::POLICY_LEVEL_RECOMMENDED,
                     policy::POLICY_SCOPE_MACHINE, policy::POLICY_SOURCE_MERGED,
                     base::Value(true), nullptr);
@@ -195,15 +241,16 @@ class ProfileReportGeneratorIOSTest : public PlatformTest,
     policy_store_->SetPolicy(std::move(policy_data));
   }
 
-  FakeSystemIdentity* SignIn() {
-    FakeSystemIdentityManager* fake_system_identity_manager =
-        FakeSystemIdentityManager::FromSystemIdentityManager(
-            GetApplicationContext()->GetSystemIdentityManager());
-    FakeSystemIdentity* fake_identity = [FakeSystemIdentity fakeIdentity1];
-    fake_system_identity_manager->AddIdentity(fake_identity);
-    authentication_service_->SignIn(fake_identity,
-                                    signin_metrics::AccessPoint::kUnknown);
-    return fake_identity;
+  AccountInfo SignIn() {
+    signin::IdentityManager* identity_manager =
+        IdentityManagerFactory::GetForProfile(profile_);
+    AccountInfo account_info = signin::MakePrimaryAccountAvailable(
+        identity_manager, kFakeEmail, signin::ConsentLevel::kSignin);
+    signin::SimulateSuccessfulFetchOfAccountInfo(
+        identity_manager, account_info.account_id, account_info.email,
+        account_info.gaia, kFakeHostedDomain, kFakeFullName, kFakeGivenName,
+        kFakeLocale, "");
+    return account_info;
   }
 
   std::unique_ptr<em::ChromeUserProfileInfo> GenerateReport() {
@@ -226,7 +273,15 @@ class ProfileReportGeneratorIOSTest : public PlatformTest,
     return report;
   }
 
-  const std::string& GetProfileName() const {
+  std::string GetProfileName() const {
+    if (ShouldUseEmailAsProfileName()) {
+      signin::IdentityManager* identity_manager =
+          IdentityManagerFactory::GetForProfile(profile_);
+      if (!identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSignin)) {
+        return std::string();
+      }
+      return kFakeFullName;
+    }
     return profile_->GetProfileName();
   }
 
@@ -261,14 +316,15 @@ TEST_P(ProfileReportGeneratorIOSTest, UnsignedInProfile) {
 
 TEST_P(ProfileReportGeneratorIOSTest, SignedInProfile) {
   Init(Affiliation::kNotAffiliated);
-  FakeSystemIdentity* fake_identity = SignIn();
+  AccountInfo fake_identity = SignIn();
   auto report = GenerateReport();
   ASSERT_TRUE(report);
   EXPECT_TRUE(report->has_chrome_signed_in_user());
-  EXPECT_EQ(base::SysNSStringToUTF8(fake_identity.userEmail),
-            report->chrome_signed_in_user().email());
-  EXPECT_EQ(fake_identity.gaiaId.ToString(),
+  EXPECT_EQ(fake_identity.email, report->chrome_signed_in_user().email());
+  EXPECT_EQ(fake_identity.gaia.ToString(),
             report->chrome_signed_in_user().obfuscated_gaia_id());
+  EXPECT_EQ(GetProfileName(), report->name());
+  EXPECT_NE(std::string(), report->name());
 }
 
 TEST_P(ProfileReportGeneratorIOSTest, PoliciesReportedOnlyWhenEnabled) {
@@ -303,6 +359,12 @@ TEST_P(ProfileReportGeneratorIOSTest, ProfileId) {
   }
 }
 
+TEST_P(ProfileReportGeneratorIOSTest, ProfileName) {
+  Init(Affiliation::kNotAffiliated);
+  std::unique_ptr<em::ChromeUserProfileInfo> report = GenerateReport();
+  EXPECT_EQ(GetProfileName(), report->name());
+}
+
 TEST_P(ProfileReportGeneratorIOSTest, NotAffiliated) {
   Init(Affiliation::kNotAffiliated);
   std::unique_ptr<em::ChromeUserProfileInfo> report = GenerateReport();
@@ -330,8 +392,21 @@ TEST_P(ProfileReportGeneratorIOSTest, Affiliated) {
   }
 }
 
-INSTANTIATE_TEST_SUITE_P(All,
-                         ProfileReportGeneratorIOSTest,
-                         testing::Values(false, true));
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    ProfileReportGeneratorIOSTest,
+    testing::Values(
+        TestParams{ProfileReporting::kDisabled, ProfileName::kProfileName},
+        TestParams{ProfileReporting::kEnabled, ProfileName::kProfileName},
+        TestParams{ProfileReporting::kDisabled, ProfileName::kEmail}),
+    [](const testing::TestParamInfo<TestParams>& info) {
+      return base::StringPrintf(
+          "%s_%s",
+          info.param.profile_reporting == ProfileReporting::kEnabled
+              ? "ProfileReporting"
+              : "NoProfileReporting",
+          info.param.profile_name == ProfileName::kEmail ? "UseEmail"
+                                                         : "NoUseEmail");
+    });
 
 }  // namespace enterprise_reporting

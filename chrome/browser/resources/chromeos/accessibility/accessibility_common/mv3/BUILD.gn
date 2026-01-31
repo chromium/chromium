@@ -109,13 +109,13 @@ ts_definitions = [
   "//tools/typescript/definitions/pending.d.ts",
 ]
 
-ts_library("ts_build") {
+ts_library("build_ts") {
   root_dir = "$ts_build_staging_dir"
   out_dir = tsc_out_dir
 
   composite = true
 
-  deps = [ "../../common:ts_build" ]
+  deps = [ "../../common:build_ts" ]
 
   # Targets that need to run before running the TS build.
   extra_deps = [
@@ -156,13 +156,13 @@ run_jsbundler("copied_files") {
     "magnifier",
   ]
   deps = [
+    ":build_ts",
     ":copy_mediapipe_files",
-    ":ts_build",
     "../../common:copied_files",
   ]
 
   sources =
-      misc_sources + filter_include(get_target_outputs(":ts_build"), [ "*.js" ])
+      misc_sources + filter_include(get_target_outputs(":build_ts"), [ "*.js" ])
 
   rewrite_rules = [
     rebase_path("$tsc_out_dir", root_build_dir) + ":",
@@ -256,7 +256,7 @@ js2gtest("accessibility_common_extjs_tests") {
 
   # The test base classes generate C++ code with these deps.
   deps = [
-    ":ts_build",
+    ":build_ts",
     "//ash",
     "//ash/keyboard/ui",
     "//base",

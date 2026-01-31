@@ -187,24 +187,6 @@ TEST(ProtoUtilTest, InfoCardTrackingStates) {
                                       .info_card_tracking_state(1)));
 }
 
-TEST(ProtoUtilTest, StampEnabled) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures({kFeedStamp}, {});
-  feedwire::FeedRequest request =
-      CreateFeedQueryRefreshRequest(
-          StreamType(StreamKind::kForYou), feedwire::FeedQuery::MANUAL_REFRESH,
-          /*request_metadata=*/{},
-          /*consistency_token=*/std::string(), SingleWebFeedEntryPoint::kOther,
-          /*doc_view_counts=*/{})
-          .feed_request();
-
-  ASSERT_THAT(request.client_capability(),
-              Contains(feedwire::Capability::SILK_AMP_OPEN_COMMAND));
-  ASSERT_THAT(request.client_capability(),
-              Contains(feedwire::Capability::AMP_STORY_PLAYER));
-  ASSERT_THAT(request.client_capability(),
-              Contains(feedwire::Capability::AMP_GROUP_DATASTORE));
-}
 
 // ReadLater is enabled by default everywhere with the exception of iOS which
 // has a build-flag to enable it.

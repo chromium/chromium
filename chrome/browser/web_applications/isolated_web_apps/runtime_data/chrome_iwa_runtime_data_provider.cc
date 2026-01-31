@@ -5,6 +5,7 @@
 #include "chrome/browser/web_applications/isolated_web_apps/runtime_data/chrome_iwa_runtime_data_provider.h"
 
 #include "base/auto_reset.h"
+#include "base/check_is_test.h"
 #include "base/values.h"
 
 namespace web_app {
@@ -15,8 +16,8 @@ ChromeIwaRuntimeDataProvider* g_instance = nullptr;
 
 base::Value
 ChromeIwaRuntimeDataProvider::SpecialAppPermissionsInfo::AsDebugValue() const {
-  return base::Value(base::Value::Dict().Set(
-      "skip_capture_started_notification", skip_capture_started_notification));
+  return base::Value(base::DictValue().Set("skip_capture_started_notification",
+                                           skip_capture_started_notification));
 }
 
 ChromeIwaRuntimeDataProvider::UserInstallAllowlistItemData::
@@ -32,8 +33,7 @@ ChromeIwaRuntimeDataProvider::UserInstallAllowlistItemData::
 base::Value
 ChromeIwaRuntimeDataProvider::UserInstallAllowlistItemData::AsDebugValue()
     const {
-  return base::Value(
-      base::Value::Dict().Set("enterprise_name", enterprise_name));
+  return base::Value(base::DictValue().Set("enterprise_name", enterprise_name));
 }
 
 // static
@@ -48,6 +48,7 @@ ChromeIwaRuntimeDataProvider& ChromeIwaRuntimeDataProvider::GetInstance() {
 
 // static
 void ChromeIwaRuntimeDataProvider::SetInstance(
+    base::PassKey<BrowserProcessImpl, TestingBrowserProcess>,
     ChromeIwaRuntimeDataProvider* instance) {
   g_instance = instance;
 }
@@ -56,6 +57,7 @@ void ChromeIwaRuntimeDataProvider::SetInstance(
 base::AutoReset<ChromeIwaRuntimeDataProvider*>
 ChromeIwaRuntimeDataProvider::SetInstanceForTesting(
     ChromeIwaRuntimeDataProvider* instance) {
+  CHECK_IS_TEST();
   return base::AutoReset<ChromeIwaRuntimeDataProvider*>(&g_instance, instance);
 }
 

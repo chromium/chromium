@@ -130,7 +130,7 @@ ChromePluginPlaceholder* ChromePluginPlaceholder::CreateLoadableMissingPlugin(
       ui::ResourceBundle::GetSharedInstance().LoadDataResourceString(
           IDR_BLOCKED_PLUGIN_HTML);
 
-  base::Value::Dict values;
+  base::DictValue values;
   values.Set("name", "");
   values.Set("message", l10n_util::GetStringUTF8(IDS_PLUGIN_NOT_SUPPORTED));
 
@@ -153,7 +153,7 @@ ChromePluginPlaceholder* ChromePluginPlaceholder::CreateBlockedPlugin(
     const std::u16string& name,
     int template_id,
     const std::u16string& message) {
-  base::Value::Dict values;
+  base::DictValue values;
   values.Set("message", message);
   values.Set("name", name);
   values.Set("hide", l10n_util::GetStringUTF8(IDS_PLUGIN_HIDE));

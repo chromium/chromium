@@ -2,6 +2,6 @@ This is a testharness.js-based test.
 [FAIL] Can set 'overflow-wrap' to the 'break-spaces' keyword: break-spaces
   Failed to execute 'set' on 'StylePropertyMap': Invalid type for property
 [FAIL] 'overflow-wrap' does not support 'break-overflow break-spaces'
-  assert_not_equals: Unsupported value must not be null got disallowed value null
+  assert_class_string: Unsupported value must be a CSSStyleValue and not one of its subclasses expected "[object CSSStyleValue]" but got "[object Undefined]"
 Harness: the test ran to completion.
 

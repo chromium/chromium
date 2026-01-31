@@ -11,9 +11,9 @@
 namespace enterprise_connectors {
 
 // static
-safe_browsing::BinaryUploadService*
-LocalBinaryUploadServiceFactory::GetForProfile(Profile* profile) {
-  return static_cast<safe_browsing::BinaryUploadService*>(
+BinaryUploadService* LocalBinaryUploadServiceFactory::GetForProfile(
+    Profile* profile) {
+  return static_cast<BinaryUploadService*>(
       GetInstance()->GetServiceForBrowserContext(profile, /* create= */
                                                  true));
 }

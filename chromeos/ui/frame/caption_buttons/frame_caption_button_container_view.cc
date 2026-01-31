@@ -48,6 +48,7 @@
 #include "ui/views/background.h"
 #include "ui/views/border.h"
 #include "ui/views/layout/box_layout.h"
+#include "ui/views/view_class_properties.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_delegate.h"
 #include "ui/views/window/caption_button_types.h"
@@ -212,12 +213,16 @@ class DefaultCaptionButtonModel : public CaptionButtonModel {
 
 }  // namespace
 
+DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(FrameCaptionButtonContainerView,
+                                      kElementId);
+
 FrameCaptionButtonContainerView::FrameCaptionButtonContainerView(
     views::Widget* widget,
     bool is_close_button_enabled,
     std::unique_ptr<views::FrameCaptionButton> custom_button)
     : views::AnimationDelegateViews(widget->GetRootView()), widget_(widget) {
-  SetID(ViewID::VIEW_ID_CAPTION_BUTTON_CONTAINER);
+  SetProperty(views::kElementIdentifierKey,
+              chromeos::FrameCaptionButtonContainerView::kElementId);
 
   auto default_caption_button_model =
       std::make_unique<DefaultCaptionButtonModel>(widget,

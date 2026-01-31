@@ -7,6 +7,7 @@ package org.chromium.chrome.test.transit.ntp;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 
 import static org.chromium.base.test.transit.Condition.whether;
+import static org.chromium.chrome.browser.url_constants.UrlConstantResolver.getOriginalNativeNtpUrl;
 
 import android.view.View;
 
@@ -20,7 +21,6 @@ import org.chromium.chrome.browser.omnibox.UrlBar;
 import org.chromium.chrome.browser.suggestions.SiteSuggestion;
 import org.chromium.chrome.test.transit.page.CtaPageStation;
 import org.chromium.chrome.test.transit.page.NativePageCondition;
-import org.chromium.components.embedder_support.util.UrlConstants;
 
 import java.util.Collections;
 import java.util.List;
@@ -37,7 +37,7 @@ public class RegularNewTabPageStation extends CtaPageStation {
     public Element<NewTabPage> nativePageElement;
 
     public RegularNewTabPageStation(Config config) {
-        super(config.withIncognito(false).withExpectedUrlSubstring(UrlConstants.NTP_URL));
+        super(config.withIncognito(false).withExpectedUrlSubstring(getOriginalNativeNtpUrl()));
 
         declareElementFactory(
                 mActivityElement,

@@ -23,11 +23,13 @@ class Map_Data {
   static bool Validate(const void* data,
                        ValidationContext* validation_context,
                        const ContainerValidateParams* validate_params) {
-    if (!data)
+    if (!data) {
       return true;
+    }
 
-    if (!ValidateStructHeaderAndClaimMemory(data, validation_context))
+    if (!ValidateStructHeaderAndClaimMemory(data, validation_context)) {
       return false;
+    }
 
     const Map_Data* object = static_cast<const Map_Data*>(data);
     if (object->header_.num_bytes != sizeof(Map_Data) ||

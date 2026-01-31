@@ -6,13 +6,13 @@
 
 #include <stddef.h>
 
+#include <algorithm>
 #include <memory>
 #include <optional>
 #include <string>
 #include <utility>
 #include <vector>
 
-#include "base/containers/contains.h"
 #include "base/lazy_instance.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/trace_event/trace_event.h"
@@ -105,7 +105,7 @@ void IdentityAPI::EraseStaleGaiaIdsForAllExtensions() {
     std::optional<GaiaId> gaia_id = GetGaiaIdForExtension(extension_id);
     if (!gaia_id)
       continue;
-    if (!base::Contains(accounts, *gaia_id, &CoreAccountInfo::gaia)) {
+    if (!std::ranges::contains(accounts, *gaia_id, &CoreAccountInfo::gaia)) {
       EraseGaiaIdForExtension(extension_id);
     }
   }

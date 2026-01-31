@@ -21,6 +21,7 @@
 #include "components/policy/core/common/management/scoped_management_service_override_for_testing.h"
 #include "components/policy/policy_constants.h"
 #include "components/regional_capabilities/regional_capabilities_country_id.h"
+#include "components/regional_capabilities/regional_capabilities_metrics.h"
 #include "components/regional_capabilities/regional_capabilities_switches.h"
 #include "components/regional_capabilities/regional_capabilities_test_utils.h"
 #include "components/search_engines/choice_made_location.h"
@@ -50,13 +51,13 @@
 
 namespace {
 
-using country_codes::CountryId;
-using search_engines::ChoiceMadeLocation;
-using search_engines::SearchEngineChoiceScreenConditions;
-using search_engines::SearchEngineChoiceWipeReason;
-using search_engines::SearchEnginesTestEnvironment;
-using search_engines::WipeSearchEngineChoicePrefs;
-using ChoiceStatus = search_engines::SearchEngineChoiceService::ChoiceStatus;
+using ::country_codes::CountryId;
+using ::regional_capabilities::SearchEngineChoiceScreenConditions;
+using ::search_engines::ChoiceMadeLocation;
+using ::search_engines::SearchEngineChoiceWipeReason;
+using ::search_engines::SearchEnginesTestEnvironment;
+using ::search_engines::WipeSearchEngineChoicePrefs;
+using ChoiceStatus = ::search_engines::SearchEngineChoiceService::ChoiceStatus;
 
 #if BUILDFLAG(CHOICE_SCREEN_IN_CHROME)
 constexpr regional_capabilities::ProgramSettings
@@ -231,7 +232,7 @@ class SearchEngineChoiceEligibilityTest
 // overridden in the intial_preferences file.
 TEST_F(SearchEngineChoiceEligibilityTest,
        DoNotShowChoiceScreenWithProviderListOverride) {
-  base::Value::List override_list;
+  base::ListValue override_list;
   pref_service()->SetList(prefs::kSearchProviderOverrides,
                           override_list.Clone());
 
@@ -257,7 +258,7 @@ TEST_F(SearchEngineChoiceEligibilityTest,
                    policy::POLICY_LEVEL_MANDATORY, policy::POLICY_SCOPE_USER,
                    policy::POLICY_SOURCE_CLOUD, base::Value(false), nullptr);
 
-  base::Value::Dict dict;
+  base::DictValue dict;
   dict.Set(DefaultSearchManager::kDisabledByPolicy, true);
   pref_service()->SetManagedPref(
       DefaultSearchManager::kDefaultSearchProviderDataPrefName,
@@ -303,7 +304,7 @@ TEST_F(SearchEngineChoiceEligibilityTest,
 
   TemplateURLData data_from_policies;
   data_from_policies.SetURL("test");
-  base::Value::Dict dict = TemplateURLDataToDictionary(data_from_policies);
+  base::DictValue dict = TemplateURLDataToDictionary(data_from_policies);
   dict.Set(
       DefaultSearchManager::kPolicyOrigin,
       static_cast<int>(TemplateURLData::PolicyOrigin::kDefaultSearchProvider));
@@ -1114,10 +1115,10 @@ INSTANTIATE_TEST_SUITE_P(
                               Spec::ExpectationsWithServices{
                                   .static_condition =
                                       SearchEngineChoiceScreenConditions::
-                                          kEligible,
+                                          kEligibleForRestore,
                                   .dynamic_condition =
                                       SearchEngineChoiceScreenConditions::
-                                          kEligible,
+                                          kEligibleForRestore,
                                   .current_dse_prepopulate_id =
                                       TemplateURLPrepopulateData::google.id,
                               },
@@ -1262,10 +1263,10 @@ INSTANTIATE_TEST_SUITE_P(
                               Spec::ExpectationsWithServices{
                                   .static_condition =
                                       SearchEngineChoiceScreenConditions::
-                                          kEligible,
+                                          kEligibleForRestore,
                                   .dynamic_condition =
                                       SearchEngineChoiceScreenConditions::
-                                          kEligible,
+                                          kEligibleForRestore,
                                   .current_dse_prepopulate_id =
                                       TemplateURLPrepopulateData::bing.id,
                               },
@@ -1428,10 +1429,10 @@ INSTANTIATE_TEST_SUITE_P(
                              Spec::ExpectationsWithServices{
                                  .static_condition =
                                      SearchEngineChoiceScreenConditions::
-                                         kEligible,
+                                         kEligibleForRestore,
                                  .dynamic_condition =
                                      SearchEngineChoiceScreenConditions::
-                                         kEligible,
+                                         kEligibleForRestore,
                                  .current_dse_prepopulate_id =
                                      TemplateURLPrepopulateData::google.id,
                              },
@@ -1537,10 +1538,10 @@ INSTANTIATE_TEST_SUITE_P(
                              Spec::ExpectationsWithServices{
                                  .static_condition =
                                      SearchEngineChoiceScreenConditions::
-                                         kEligible,
+                                         kEligibleForRestore,
                                  .dynamic_condition =
                                      SearchEngineChoiceScreenConditions::
-                                         kEligible,
+                                         kEligibleForRestore,
                                  .current_dse_prepopulate_id =
                                      TemplateURLPrepopulateData::google.id,
                              },

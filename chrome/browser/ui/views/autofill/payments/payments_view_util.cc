@@ -108,15 +108,57 @@ std::unique_ptr<views::ImageView> CreateIconView(
           *ui::ResourceBundle::GetSharedInstance().GetImageSkiaNamed(
               IDR_AUTOFILL_GOOGLE_PAY_KLARNA_DARK));
       break;
+    case TitleWithIconAfterLabelView::Icon::GOOGLE_WALLET:
+      model = ui::ImageModel::FromImageSkia(
+          *ui::ResourceBundle::GetSharedInstance().GetImageSkiaNamed(
+              IDR_AUTOFILL_GOOGLE_WALLET_ICON));
+      break;
+    case TitleWithIconAfterLabelView::Icon::AFFIRM:
+      model = ui::ImageModel::FromImageSkia(
+          *ui::ResourceBundle::GetSharedInstance().GetImageSkiaNamed(
+              IDR_AUTOFILL_AFFIRM));
+      model_dark = ui::ImageModel::FromImageSkia(
+          *ui::ResourceBundle::GetSharedInstance().GetImageSkiaNamed(
+              IDR_AUTOFILL_AFFIRM_DARK));
+      break;
+    case TitleWithIconAfterLabelView::Icon::AFTERPAY:
+      model = ui::ImageModel::FromImageSkia(
+          *ui::ResourceBundle::GetSharedInstance().GetImageSkiaNamed(
+              IDR_AUTOFILL_AFTERPAY));
+      model_dark = ui::ImageModel::FromImageSkia(
+          *ui::ResourceBundle::GetSharedInstance().GetImageSkiaNamed(
+              IDR_AUTOFILL_AFTERPAY_DARK));
+      break;
+    case TitleWithIconAfterLabelView::Icon::KLARNA:
+      model = ui::ImageModel::FromImageSkia(
+          *ui::ResourceBundle::GetSharedInstance().GetImageSkiaNamed(
+              IDR_AUTOFILL_KLARNA));
+      model_dark = ui::ImageModel::FromImageSkia(
+          *ui::ResourceBundle::GetSharedInstance().GetImageSkiaNamed(
+              IDR_AUTOFILL_KLARNA_DARK));
+      break;
+    case TitleWithIconAfterLabelView::Icon::ZIP:
+      model = ui::ImageModel::FromImageSkia(
+          *ui::ResourceBundle::GetSharedInstance().GetImageSkiaNamed(
+              IDR_AUTOFILL_ZIP));
+      model_dark = ui::ImageModel::FromImageSkia(
+          *ui::ResourceBundle::GetSharedInstance().GetImageSkiaNamed(
+              IDR_AUTOFILL_ZIP_DARK));
+      break;
     case TitleWithIconAfterLabelView::Icon::GOOGLE_G: {
       const gfx::VectorIcon& icon = vector_icons::kGoogleGLogoIcon;
 #else
     case TitleWithIconAfterLabelView::Icon::GOOGLE_PAY:
+    case TitleWithIconAfterLabelView::Icon::GOOGLE_WALLET:
     case TitleWithIconAfterLabelView::Icon::GOOGLE_G:
     case TitleWithIconAfterLabelView::Icon::GOOGLE_PAY_AND_AFFIRM:
     case TitleWithIconAfterLabelView::Icon::GOOGLE_PAY_AND_AFTERPAY:
     case TitleWithIconAfterLabelView::Icon::GOOGLE_PAY_AND_ZIP:
-    case TitleWithIconAfterLabelView::Icon::GOOGLE_PAY_AND_KLARNA: {
+    case TitleWithIconAfterLabelView::Icon::GOOGLE_PAY_AND_KLARNA:
+    case TitleWithIconAfterLabelView::Icon::AFFIRM:
+    case TitleWithIconAfterLabelView::Icon::AFTERPAY:
+    case TitleWithIconAfterLabelView::Icon::KLARNA:
+    case TitleWithIconAfterLabelView::Icon::ZIP: {
       const gfx::VectorIcon& icon = kCreditCardIcon;
 #endif
       model = ui::ImageModel::FromVectorIcon(icon, ui::kColorIcon, kIconHeight);
@@ -209,6 +251,7 @@ TitleWithIconAfterLabelView::TitleWithIconAfterLabelView(
                 view->GetColorProvider()->GetColor(ui::kColorDialogBackground));
           },
           base::Unretained(this))));
+  icon_view->SetID(DialogViewId::BUBBLE_TITLE_ICON);
 
   // Center the icon against the first line of the title label. This needs to be
   // done after we create the title label, so that we can use its preferred

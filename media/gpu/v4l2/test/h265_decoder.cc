@@ -11,7 +11,6 @@
 
 #include <linux/videodev2.h>
 
-#include "base/containers/contains.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/notreached.h"
@@ -1152,7 +1151,7 @@ std::set<uint32_t> H265Decoder::GetReusableReferenceSlots(
       continue;
     }
 
-    const bool is_buffer_in_use = base::Contains(buffer_ids_in_use, i);
+    const bool is_buffer_in_use = buffer_ids_in_use.contains(i);
     if (is_buffer_in_use) {
       continue;
     }

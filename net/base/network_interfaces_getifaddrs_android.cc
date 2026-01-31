@@ -5,16 +5,12 @@
 // Taken from WebRTC's own implementation.
 // https://webrtc.googlesource.com/src/+/4cad08ff199a46087f8ffe91ef89af60a4dc8df9/rtc_base/ifaddrs_android.cc
 
+#include "net/base/network_interfaces_getifaddrs_android.h"
+
 #ifdef UNSAFE_BUFFERS_BUILD
 // TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
 #pragma allow_unsafe_buffers
 #endif
-
-#include "build/build_config.h"
-
-#if BUILDFLAG(IS_ANDROID)
-
-#include "net/base/network_interfaces_getifaddrs_android.h"
 
 #include <errno.h>
 #include <linux/netlink.h>
@@ -29,6 +25,8 @@
 #include <sys/utsname.h>
 #include <unistd.h>
 
+#include "base/logging.h"
+#include "base/notreached.h"
 #include "base/scoped_generic.h"
 
 namespace net::internal {
@@ -87,11 +85,19 @@ int set_addresses(struct ifaddrs* ifaddr,
                   void* data,
                   size_t len) {
   if (msg->ifa_family == AF_INET) {
+    if (len != sizeof(struct in_addr)) {
+      DLOG(ERROR) << "Received an invalid length for an IPv4 address: " << len;
+      return -1;
+    }
     sockaddr_in* sa = new sockaddr_in;
     sa->sin_family = AF_INET;
     memcpy(&sa->sin_addr, data, len);
     ifaddr->ifa_addr = reinterpret_cast<sockaddr*>(sa);
   } else if (msg->ifa_family == AF_INET6) {
+    if (len != sizeof(struct in6_addr)) {
+      DLOG(ERROR) << "Received an invalid length for an IPv6 address: " << len;
+      return -1;
+    }
     sockaddr_in6* sa = new sockaddr_in6;
     sa->sin6_family = AF_INET6;
     sa->sin6_scope_id = msg->ifa_index;
@@ -152,6 +158,25 @@ int populate_ifaddrs(struct ifaddrs* ifaddr,
     return -1;
   }
   return 0;
+}
+
+// Deletes `sa` by casting to the appropriate pointer type. This is necessary
+// because the gwp_asan memory checker verifies that the size matches the
+// expected size, but these types are all different sizes.
+void delete_sockaddr(sockaddr* sa) {
+  if (!sa) {
+    return;
+  }
+  switch (sa->sa_family) {
+    case AF_INET:
+      delete reinterpret_cast<sockaddr_in*>(sa);
+      break;
+    case AF_INET6:
+      delete reinterpret_cast<sockaddr_in6*>(sa);
+      break;
+    default:
+      NOTREACHED();
+  }
 }
 
 }  // namespace
@@ -234,8 +259,8 @@ void Freeifaddrs(struct ifaddrs* addrs) {
   struct ifaddrs* cursor = addrs;
   while (cursor) {
     delete[] cursor->ifa_name;
-    delete cursor->ifa_addr;
-    delete cursor->ifa_netmask;
+    delete_sockaddr(cursor->ifa_addr);
+    delete_sockaddr(cursor->ifa_netmask);
     last = cursor;
     cursor = cursor->ifa_next;
     delete last;
@@ -243,5 +268,3 @@ void Freeifaddrs(struct ifaddrs* addrs) {
 }
 
 }  // namespace net::internal
-
-#endif  // BUILDFLAG(IS_ANDROID)

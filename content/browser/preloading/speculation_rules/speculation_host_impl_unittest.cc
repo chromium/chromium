@@ -274,68 +274,6 @@ TEST_F(SpeculationHostImplTest, ReportEmptySpeculationRulesTags) {
   EXPECT_EQ("SH_EMPTY_TAGS", bad_message_error);
 }
 
-class TestSpeculationHostDelegate : public SpeculationHostDelegate {
- public:
-  TestSpeculationHostDelegate() = default;
-  ~TestSpeculationHostDelegate() override = default;
-
-  // Disallows copy and move operations.
-  TestSpeculationHostDelegate(const TestSpeculationHostDelegate&) = delete;
-  TestSpeculationHostDelegate& operator=(const TestSpeculationHostDelegate&) =
-      delete;
-
-  // SpeculationRulesDelegate implementation.
-  void ProcessCandidates(
-      std::vector<blink::mojom::SpeculationCandidatePtr>& candidates) override {
-    candidates.clear();
-  }
-};
-
-class ScopedSpeculationHostImplContentBrowserClient
-    : public TestContentBrowserClient {
- public:
-  ScopedSpeculationHostImplContentBrowserClient() {
-    old_browser_client_ = SetBrowserClientForTesting(this);
-  }
-
-  ~ScopedSpeculationHostImplContentBrowserClient() override {
-    EXPECT_EQ(this, SetBrowserClientForTesting(old_browser_client_));
-  }
-
-  // ContentBrowserClient implementation.
-  std::unique_ptr<SpeculationHostDelegate> CreateSpeculationHostDelegate(
-      RenderFrameHost& render_frame_host) override {
-    return std::make_unique<TestSpeculationHostDelegate>();
-  }
-
- private:
-  raw_ptr<ContentBrowserClient> old_browser_client_;
-};
-
-// Tests that SpeculationHostDelegate can take the process candidates away and
-// SpeculationHostImpl cannot handle the processed ones.
-TEST_F(SpeculationHostImplTest, AllCandidatesProcessedByDelegate) {
-  ScopedSpeculationHostImplContentBrowserClient test_browser_client;
-  RenderFrameHostImpl* render_frame_host = GetRenderFrameHost();
-  PrerenderHostRegistry* registry = GetPrerenderHostRegistry();
-  mojo::Remote<blink::mojom::SpeculationHost> remote;
-  SpeculationHostImpl::Bind(render_frame_host,
-                            remote.BindNewPipeAndPassReceiver());
-
-  const GURL kPrerenderingUrl = GetSameOriginUrl("/empty.html");
-  std::vector<blink::mojom::SpeculationCandidatePtr> candidates;
-  candidates.push_back(CreatePrerenderCandidate(kPrerenderingUrl));
-
-  remote->UpdateSpeculationCandidates(
-      std::move(candidates),
-      /*enable_cross_origin_prerender_iframes=*/false);
-  remote.FlushForTesting();
-
-  // Since SpeculationHostDelegate has removed all candidates,
-  // SpeculationHostImpl cannot start prerendering for the prerender candidate.
-  EXPECT_FALSE(registry->FindHostByUrlForTesting(kPrerenderingUrl));
-}
-
 class SpeculationHostImplLinkPreviewTest : public SpeculationHostImplTest {
  public:
   SpeculationHostImplLinkPreviewTest() {
@@ -349,8 +287,6 @@ class SpeculationHostImplLinkPreviewTest : public SpeculationHostImplTest {
 };
 
 TEST_F(SpeculationHostImplLinkPreviewTest, BasicLinkPreview) {
-  ScopedSpeculationHostImplContentBrowserClient test_browser_client;
-
   // Get the RenderFrameHost.
   RenderFrameHostImpl* render_frame_host = GetRenderFrameHost();
   mojo::Remote<blink::mojom::SpeculationHost> remote;
@@ -371,8 +307,6 @@ TEST_F(SpeculationHostImplLinkPreviewTest, BasicLinkPreview) {
 
 // Verify link preview works in fenced frame.
 TEST_F(SpeculationHostImplLinkPreviewTest, FencedFrameLinkPreview) {
-  ScopedSpeculationHostImplContentBrowserClient test_browser_client;
-
   // Add a fenced frame RenderFrameHost.
   TestRenderFrameHost* fenced_frame_rfh =
       static_cast<TestRenderFrameHost*>(GetRenderFrameHost())
@@ -397,8 +331,6 @@ TEST_F(SpeculationHostImplLinkPreviewTest, FencedFrameLinkPreview) {
 // access.
 TEST_F(SpeculationHostImplLinkPreviewTest,
        FencedFrameNetworkCutoffDisablesLinkPreview) {
-  ScopedSpeculationHostImplContentBrowserClient test_browser_client;
-
   // Add a fenced frame RenderFrameHost.
   TestRenderFrameHost* fenced_frame_rfh =
       static_cast<TestRenderFrameHost*>(GetRenderFrameHost())

@@ -75,7 +75,7 @@ constexpr char kMostDelayedQueryDeltaHistogram[] =
 }  // namespace
 
 TEST(FirstPartySetsHandlerImplInstance, ValidateEnterprisePolicy_ValidPolicy) {
-  base::Value::Dict input = base::test::ParseJsonDict(R"(
+  base::DictValue input = base::test::ParseJsonDict(R"(
              {
                 "replacements": [
                   {
@@ -99,7 +99,7 @@ TEST(FirstPartySetsHandlerImplInstance, ValidateEnterprisePolicy_ValidPolicy) {
 TEST(FirstPartySetsHandlerImplInstance,
      ValidateEnterprisePolicy_ValidPolicyWithWarnings) {
   // Some input that matches our policies schema but returns non-fatal warnings.
-  base::Value::Dict input = base::test::ParseJsonDict(R"(
+  base::DictValue input = base::test::ParseJsonDict(R"(
               {
                 "replacements": [],
                 "additions": [
@@ -127,7 +127,7 @@ TEST(FirstPartySetsHandlerImplInstance,
      ValidateEnterprisePolicy_InvalidPolicy) {
   // Some input that matches our policies schema but breaks FPS invariants.
   // For more test coverage, see the ParseSetsFromEnterprisePolicy unit tests.
-  base::Value::Dict input = base::test::ParseJsonDict(R"(
+  base::DictValue input = base::test::ParseJsonDict(R"(
               {
                 "replacements": [
                   {
@@ -177,7 +177,7 @@ class FirstPartySetsHandlerImplTest : public ::testing::Test {
   }
 
   net::FirstPartySetsContextConfig GetContextConfigForPolicy(
-      base::optional_ref<const base::Value::Dict> policy) {
+      base::optional_ref<const base::DictValue> policy) {
     base::test::TestFuture<net::FirstPartySetsContextConfig> future;
     handler().GetContextConfigForPolicy(policy, future.GetCallback());
     return future.Take();
@@ -793,8 +793,7 @@ class FirstPartySetsHandlerGetContextConfigForPolicyTest
 TEST_F(FirstPartySetsHandlerGetContextConfigForPolicyTest,
        DefaultOverridesPolicy_DefaultContextConfigs) {
   base::test::TestFuture<net::FirstPartySetsContextConfig> future;
-  handler().GetContextConfigForPolicy(base::Value::Dict(),
-                                      future.GetCallback());
+  handler().GetContextConfigForPolicy(base::DictValue(), future.GetCallback());
 
   InitPublicFirstPartySets();
   EXPECT_EQ(future.Take(), net::FirstPartySetsContextConfig());

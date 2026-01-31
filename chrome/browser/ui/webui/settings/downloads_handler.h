@@ -37,16 +37,16 @@ class DownloadsHandler : public SettingsPageUIHandler,
 
   // Callback for the "initializeDownloads" message. This starts observers and
   // retrieves the current browser state.
-  void HandleInitialize(const base::Value::List& args);
+  void HandleInitialize(const base::ListValue& args);
 
   void SendAutoOpenDownloadsToJavascript();
 
   // Resets the list of filetypes that are auto-opened after download.
-  void HandleResetAutoOpenFileTypes(const base::Value::List& args);
+  void HandleResetAutoOpenFileTypes(const base::ListValue& args);
 
   // Callback for the "selectDownloadLocation" message. This will prompt the
   // user for a destination folder using platform-specific APIs.
-  void HandleSelectDownloadLocation(const base::Value::List& args);
+  void HandleSelectDownloadLocation(const base::ListValue& args);
 
   // SelectFileDialog::Listener implementation.
   void FileSelected(const ui::SelectedFileInfo& file, int index) override;
@@ -56,7 +56,7 @@ class DownloadsHandler : public SettingsPageUIHandler,
   // Callback for the "getDownloadLocationText" message.  Converts actual
   // paths in chromeos to values suitable to display to users.
   // E.g. /home/chronos/u-<hash>/MyFiles/Downloads => "My Files > Downloads".
-  void HandleGetDownloadLocationText(const base::Value::List& args);
+  void HandleGetDownloadLocationText(const base::ListValue& args);
 #endif
 
   raw_ptr<Profile> profile_;

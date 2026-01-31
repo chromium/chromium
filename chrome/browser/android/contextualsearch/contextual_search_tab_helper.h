@@ -32,7 +32,7 @@ class ContextualSearchTabHelper {
   void InstallUnhandledTapNotifierIfNeeded(
       JNIEnv* env,
       const base::android::JavaRef<jobject>& j_base_web_contents,
-      jfloat device_scale_factor);
+      float device_scale_factor);
 
  private:
   ~ContextualSearchTabHelper();

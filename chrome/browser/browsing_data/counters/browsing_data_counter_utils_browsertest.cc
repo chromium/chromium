@@ -52,8 +52,20 @@ IN_PROC_BROWSER_TEST_F(BrowsingDataCounterUtilsBrowserTest,
   // Sign the profile in.
   EXPECT_TRUE(GetClient(0)->SignInPrimaryAccount());
 
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+  // Users on Dice platforms are explicitly signed in.
+  // Cookies are rebuilt on clearing cookie events.
+  EXPECT_TRUE(ShouldShowCookieException(GetProfile(0)));
+
+  // Verify it's you state.
+  GetClient(0)->SignOutPrimaryAccount();
+
+  // There's no point in showing the cookie exception.
+  EXPECT_FALSE(ShouldShowCookieException(GetProfile(0)));
+#else
   // Sign-in alone shouldn't lead to a cookie exception.
   EXPECT_FALSE(ShouldShowCookieException(GetProfile(0)));
+#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
   // Enable sync.
   EXPECT_TRUE(GetClient(0)->SetupSync());

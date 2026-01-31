@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Script tool definition with navigation after response</title>
+</head>
+<body>
+  <script>
+    function echo(obj) {
+      setTimeout(() => {
+        location.href = "blank.html"
+      }, 0);
+      return obj.text;
+    }
+
+    navigator.modelContext.registerTool({
+      execute: echo,
+      name: "echo",
+      description: "echo input",
+      inputSchema: {
+          type: "object",
+          properties: {
+              "text": {
+                  description: "Value to echo",
+                  type: "string",
+              }
+          },
+          required: ["text"]
+      },
+      annotations: {
+        readOnlyHint: "true"
+      },
+    });
+  </script>
+</body>
+</html>

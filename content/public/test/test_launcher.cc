@@ -15,7 +15,6 @@
 #include "base/base_paths.h"
 #include "base/check_op.h"
 #include "base/command_line.h"
-#include "base/containers/contains.h"
 #include "base/containers/span.h"
 #include "base/debug/debugger.h"
 #include "base/environment.h"
@@ -234,7 +233,7 @@ base::CommandLine WrapperTestLauncherDelegate::GetCommandLine(
   new_cmd_line.AppendSwitchPath(switches::kTestLauncherOutput, *output_file);
 
   // Selecting sample tests to enable switches::kEnableTracing.
-  if (base::Contains(switches, switches::kEnableTracingFraction)) {
+  if (switches.contains(switches::kEnableTracingFraction)) {
     double enable_tracing_fraction = 0;
     if (!base::StringToDouble(switches[switches::kEnableTracingFraction],
                               &enable_tracing_fraction) ||

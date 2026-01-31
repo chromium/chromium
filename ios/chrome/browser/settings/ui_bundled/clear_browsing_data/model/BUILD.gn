@@ -1,0 +1,27 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("model") {
+  sources = [
+    "browsing_data_counter_wrapper_producer.h",
+    "browsing_data_counter_wrapper_producer.mm",
+  ]
+  deps = [
+    "//components/prefs",
+    "//ios/chrome/browser/browsing_data/model",
+    "//ios/chrome/browser/shared/model/profile",
+  ]
+}
+
+source_set("test_support") {
+  testonly = true
+  sources = [
+    "fake_browsing_data_counter_wrapper_producer.h",
+    "fake_browsing_data_counter_wrapper_producer.mm",
+  ]
+  deps = [
+    ":model",
+    "//base",
+  ]
+}

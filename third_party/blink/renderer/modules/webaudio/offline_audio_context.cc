@@ -44,6 +44,7 @@
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
 #include "third_party/blink/renderer/platform/wtf/math_extras.h"
 #include "third_party/blink/renderer/platform/wtf/text/strcat.h"
@@ -146,8 +147,10 @@ OfflineAudioContext* OfflineAudioContext::Create(
     const OfflineAudioContextOptions* options,
     ExceptionState& exception_state) {
   uint32_t render_quantum_frames = 128;
-  if (RuntimeEnabledFeatures::WebAudioConfigurableRenderQuantumEnabled() &&
+  if (RuntimeEnabledFeatures::WebAudioConfigurableRenderQuantumEnabled(
+          context) &&
       options->hasRenderSizeHint()) {
+    UseCounter::Count(context, WebFeature::kWebAudioRenderSizeHint);
     if (options->renderSizeHint()->IsUnsignedLong()) {
       render_quantum_frames = options->renderSizeHint()->GetAsUnsignedLong();
     }
@@ -277,7 +280,7 @@ ScriptPromise<IDLUndefined> OfflineAudioContext::suspendContext(
   // The suspend time should be earlier than the total render frame. If the
   // requested suspension time is equal to the total render frame, the promise
   // will be rejected.
-  double total_render_duration = total_render_frames_ / sampleRate();
+  const double total_render_duration = total_render_frames_ / sampleRate();
   if (total_render_duration <= when) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kInvalidStateError,
@@ -293,16 +296,18 @@ ScriptPromise<IDLUndefined> OfflineAudioContext::suspendContext(
 
   // Find the sample frame and round up to the nearest render quantum
   // boundary.  This assumes the render quantum is a power of two.
-  size_t frame = when * sampleRate();
-  frame = GetDeferredTaskHandler().RenderQuantumFrames() *
-          ((frame + GetDeferredTaskHandler().RenderQuantumFrames() - 1) /
-           GetDeferredTaskHandler().RenderQuantumFrames());
+  const size_t unrounded_frame = when * sampleRate();
+  const size_t frame =
+      GetDeferredTaskHandler().RenderQuantumFrames() *
+      ((unrounded_frame + GetDeferredTaskHandler().RenderQuantumFrames() - 1) /
+       GetDeferredTaskHandler().RenderQuantumFrames());
 
   // The specified suspend time is in the past; reject the promise.
-  if (frame < CurrentSampleFrame()) {
-    size_t current_frame_clamped =
-        std::min(CurrentSampleFrame(), static_cast<size_t>(length()));
-    double current_time_clamped =
+  const size_t current_frame = CurrentSampleFrame();
+  if (frame < current_frame) {
+    const size_t current_frame_clamped =
+        std::min(current_frame, static_cast<size_t>(length()));
+    const double current_time_clamped =
         std::min(currentTime(), length() / static_cast<double>(sampleRate()));
     exception_state.ThrowDOMException(
         DOMExceptionCode::kInvalidStateError,

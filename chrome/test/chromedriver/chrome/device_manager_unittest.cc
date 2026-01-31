@@ -86,13 +86,13 @@ class FakeAdb : public Adb {
 
   Status SetPreferences(const std::string& device_serial,
                         const std::string& path,
-                        const base::Value::Dict* custom_prefs) override {
+                        const base::DictValue* custom_prefs) override {
     return Status(kOk);
   }
 
   Status SetLocalState(const std::string& device_serial,
                        const std::string& path,
-                       const base::Value::Dict* custom_local_state) override {
+                       const base::DictValue* custom_local_state) override {
     return Status(kOk);
   }
 };

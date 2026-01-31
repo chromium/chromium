@@ -62,7 +62,7 @@
 #include "components/search_engines/search_engines_pref_names.h"
 #include "components/signin/public/base/signin_pref_names.h"
 #include "components/signin/public/base/signin_switches.h"
-#include "components/supervised_user/core/browser/supervised_user_content_filters_service.h"
+#include "components/supervised_user/core/browser/device_parental_controls.h"
 #include "components/supervised_user/core/browser/supervised_user_pref_store.h"
 #include "components/sync/base/data_type.h"
 #include "components/sync/base/features.h"
@@ -313,29 +313,15 @@ void CleanupObsoleteStandaloneBrowserPrefsFile(
 }
 #endif
 
-void PrepareFactory(
-    sync_preferences::PrefServiceSyncableFactory* factory,
-    const base::FilePath& pref_filename,
-    policy::PolicyService* policy_service,
-    supervised_user::SupervisedUserSettingsService* supervised_user_settings,
-    supervised_user::SupervisedUserContentFiltersService*
-        content_filters_service,
-    scoped_refptr<PersistentPrefStore> user_pref_store,
-    scoped_refptr<PrefStore> extension_prefs,
-    bool async,
-    policy::BrowserPolicyConnector* policy_connector) {
+void PrepareFactory(sync_preferences::PrefServiceSyncableFactory* factory,
+                    const base::FilePath& pref_filename,
+                    policy::PolicyService* policy_service,
+                    scoped_refptr<PersistentPrefStore> user_pref_store,
+                    scoped_refptr<PrefStore> extension_prefs,
+                    bool async,
+                    policy::BrowserPolicyConnector* policy_connector) {
   factory->SetManagedPolicies(policy_service, policy_connector);
   factory->SetRecommendedPolicies(policy_service, policy_connector);
-  if (supervised_user_settings) {
-    // supervised_user_prefs handles the case when content_filters_service is
-    // nullptr. It's simply not subscribing to empty service's notifications.
-    scoped_refptr<PrefStore> supervised_user_prefs =
-        base::MakeRefCounted<SupervisedUserPrefStore>(supervised_user_settings,
-                                                      content_filters_service);
-    DCHECK(async || supervised_user_prefs->IsInitializationComplete());
-    factory->set_supervised_user_prefs(supervised_user_prefs);
-  }
-
   factory->set_async(async);
   factory->set_extension_prefs(std::move(extension_prefs));
   factory->set_command_line_prefs(
@@ -346,6 +332,27 @@ void PrepareFactory(
   factory->set_user_prefs(std::move(user_pref_store));
   factory->SetPrefModelAssociatorClient(
       base::MakeRefCounted<ChromePrefModelAssociatorClient>());
+}
+
+void PrepareFactory(
+    sync_preferences::PrefServiceSyncableFactory* factory,
+    const base::FilePath& pref_filename,
+    policy::PolicyService* policy_service,
+    supervised_user::FamilyLinkSettingsService* family_link_settings_service,
+    supervised_user::DeviceParentalControls& device_parental_controls,
+    scoped_refptr<PersistentPrefStore> user_pref_store,
+    scoped_refptr<PrefStore> extension_prefs,
+    bool async,
+    policy::BrowserPolicyConnector* policy_connector) {
+  PrepareFactory(factory, pref_filename, policy_service,
+                 std::move(user_pref_store), std::move(extension_prefs), async,
+                 policy_connector);
+
+  scoped_refptr<PrefStore> supervised_user_prefs =
+      base::MakeRefCounted<SupervisedUserPrefStore>(
+          family_link_settings_service, device_parental_controls);
+  DCHECK(async || supervised_user_prefs->IsInitializationComplete());
+  factory->set_supervised_user_prefs(supervised_user_prefs);
 }
 
 class ResetOnLoadObserverImpl : public prefs::mojom::ResetOnLoadObserver {
@@ -384,13 +391,9 @@ std::unique_ptr<PrefService> CreateLocalState(
     scoped_refptr<PrefRegistry> pref_registry,
     policy::BrowserPolicyConnector* policy_connector) {
   sync_preferences::PrefServiceSyncableFactory factory;
-  PrepareFactory(&factory, pref_filename, policy_service,
-                 /*supervised_user_settings=*/nullptr,
-                 /*content_filters_service=*/nullptr,
-                 pref_store,
+  PrepareFactory(&factory, pref_filename, policy_service, pref_store,
                  /*extension_prefs=*/nullptr,
                  /*async=*/false, policy_connector);
-
   return factory.Create(std::move(pref_registry));
 }
 
@@ -399,9 +402,8 @@ std::unique_ptr<sync_preferences::PrefServiceSyncable> CreateProfilePrefs(
     mojo::PendingRemote<prefs::mojom::TrackedPreferenceValidationDelegate>
         validation_delegate,
     policy::PolicyService* policy_service,
-    supervised_user::SupervisedUserSettingsService* supervised_user_settings,
-    supervised_user::SupervisedUserContentFiltersService*
-        content_filters_service,
+    supervised_user::FamilyLinkSettingsService* family_link_settings_service,
+    supervised_user::DeviceParentalControls& device_parental_controls,
     scoped_refptr<PrefStore> extension_prefs,
     scoped_refptr<user_prefs::PrefRegistrySyncable> pref_registry,
     policy::BrowserPolicyConnector* connector,
@@ -429,9 +431,15 @@ std::unique_ptr<sync_preferences::PrefServiceSyncable> CreateProfilePrefs(
       base::BindOnce(&CleanupObsoleteStandaloneBrowserPrefsFile, profile_path));
 #endif
 
-  PrepareFactory(&factory, profile_path, policy_service,
-                 supervised_user_settings, content_filters_service,
-                 user_pref_store, std::move(extension_prefs), async, connector);
+  if (family_link_settings_service) {
+    PrepareFactory(&factory, profile_path, policy_service,
+                   family_link_settings_service, device_parental_controls,
+                   user_pref_store, std::move(extension_prefs), async,
+                   connector);
+  } else {
+    PrepareFactory(&factory, profile_path, policy_service, user_pref_store,
+                   std::move(extension_prefs), async, connector);
+  }
 
 #if !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_ANDROID)
   // Get raw pointers to the filters before moving user_pref_store.
@@ -557,7 +565,7 @@ void DisableDomainCheckForTesting() {
 
 bool InitializePrefsFromMasterPrefs(
     const base::FilePath& profile_path,
-    base::Value::Dict master_prefs,
+    base::DictValue master_prefs,
     os_crypt_async::OSCryptAsync* os_crypt_async) {
   return CreateProfilePrefStoreManager(profile_path)
       ->InitializePrefsFromMasterPrefs(GetTrackingConfiguration(),
@@ -573,7 +581,7 @@ void ClearResetTime(Profile* profile) {
   ProfilePrefStoreManager::ClearResetTime(profile->GetPrefs());
 }
 
-const base::Value::List& GetTamperedPrefList(Profile* profile) {
+const base::ListValue& GetTamperedPrefList(Profile* profile) {
   return profile->GetPrefs()->GetList(user_prefs::kTrackedPreferencesReset);
 }
 

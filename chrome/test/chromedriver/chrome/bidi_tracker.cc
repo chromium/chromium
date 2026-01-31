@@ -23,7 +23,7 @@ bool BidiTracker::ListensToConnections() const {
 
 Status BidiTracker::OnEvent(DevToolsClient* client,
                             const std::string& method,
-                            const base::Value::Dict& params) {
+                            const base::DictValue& params) {
   if (method != "Runtime.bindingCalled") {
     return Status(kOk);
   }
@@ -35,7 +35,7 @@ Status BidiTracker::OnEvent(DevToolsClient* client,
     // We are not interested in this function call
     return Status(kOk);
   }
-  const base::Value::Dict* payload = params.FindDict("payload");
+  const base::DictValue* payload = params.FindDict("payload");
   if (payload == nullptr) {
     return Status(kUnknownError, "Runtime.bindingCalled missing 'payload'");
   }

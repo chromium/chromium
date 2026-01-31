@@ -132,21 +132,41 @@
 
 // Creates the native UIMenu object using the provided list of menu items.
 - (void)createMenu:(const std::vector<blink::mojom::MenuItemPtr>&)items {
-  NSMutableArray* actions = [NSMutableArray array];
+  NSMutableArray<UIMenu*>* menuGroups = [NSMutableArray array];
+  NSMutableArray<UIAction*>* currentGroup = [NSMutableArray array];
 
   for (size_t i = 0; i < items.size(); ++i) {
+    if (items[i]->type == blink::mojom::MenuItem::Type::kSeparator) {
+      if (currentGroup.count > 0) {
+        [menuGroups addObject:[self menuWithActions:currentGroup]];
+        currentGroup = [NSMutableArray array];
+      }
+      continue;
+    }
+
     UIAction* action = [self addItem:items[i] itemIndex:i];
     if (i == _selectedIndex) {
       action.state = UIMenuElementStateOn;
     }
-    [actions addObject:action];
+    [currentGroup addObject:action];
   }
 
-  _menu = [UIMenu menuWithTitle:@""
-                          image:nil
-                     identifier:nil
-                        options:UIMenuOptionsDisplayInline
-                       children:actions];
+  if (currentGroup.count > 0) {
+    [menuGroups addObject:[self menuWithActions:currentGroup]];
+  }
+
+  _menu = (menuGroups.count == 1) ? menuGroups.firstObject
+                                  : [UIMenu menuWithChildren:menuGroups];
+}
+
+// Creates an inline submenu. When a parent menu contains multiple inline
+// submenus, UIKit renders a divider between them (used for kSeparator items).
+- (UIMenu*)menuWithActions:(NSArray<UIAction*>*)actions {
+  return [UIMenu menuWithTitle:@""
+                         image:nil
+                    identifier:nil
+                       options:UIMenuOptionsDisplayInline
+                      children:actions];
 }
 
 // Worker function used during initialization.

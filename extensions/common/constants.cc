@@ -6,7 +6,6 @@
 
 #include <string_view>
 
-#include "base/containers/contains.h"
 #include "base/containers/fixed_flat_set.h"
 #include "build/build_config.h"
 #include "build/chromecast_buildflags.h"
@@ -75,7 +74,7 @@ bool IsDemoModeChromeApp(std::string_view extension_id) {
       kBlazeyHighlightsAppId
       // clang-format on
   });
-  return base::Contains(kDemoModeApps, extension_id);
+  return kDemoModeApps.contains(extension_id);
 }
 
 bool IsSystemUIApp(std::string_view extension_id) {
@@ -87,7 +86,7 @@ bool IsSystemUIApp(std::string_view extension_id) {
       kScreensaverAppId,
       // clang-format on
   });
-  return base::Contains(kApps, extension_id);
+  return kApps.contains(extension_id);
 }
 
 #endif  // BUILDFLAG(IS_CHROMEOS)
@@ -100,7 +99,7 @@ bool IsQuickOfficeExtension(std::string_view extension_id) {
       kQuickOfficeInternalExtensionId,
       kQuickOfficeExtensionId,
   });
-  return base::Contains(kQuickOfficeIds, extension_id);
+  return kQuickOfficeIds.contains(extension_id);
 }
 
 // TODO(crbug.com/40796281): remove after default app migration is done.
@@ -115,7 +114,7 @@ bool IsPreinstalledAppId(std::string_view app_id) {
       kYoutubeAppId,
       // clang-format on
   });
-  return base::Contains(kPreinstalledApps, app_id);
+  return kPreinstalledApps.contains(app_id);
 }
 
 }  // namespace extension_misc

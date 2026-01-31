@@ -98,6 +98,7 @@ TabSearchUI::TabSearchUI(content::WebUI* web_ui)
       {"searchTabs", IDS_TAB_SEARCH_SEARCH_TABS},
       {"tabCount", IDS_TAB_SEARCH_TAB_COUNT},
       {"tabSearchTabName", IDS_TAB_SEARCH_TAB_NAME},
+      {"viewSourceSource", IDS_HOVER_CARD_VIEW_SOURCE_URL_SOURCE},
       // Auto tab groups UI strings
       {"a11yTabExcludedFromGroup", IDS_TAB_ORGANIZATION_A11Y_TAB_EXCLUDED},
       {"clearAriaLabel", IDS_TAB_ORGANIZATION_CLEAR_ARIA_LABEL},
@@ -233,7 +234,7 @@ TabSearchUI::TabSearchUI(content::WebUI* web_ui)
   source->AddString(
       "declutterInactiveBody",
       l10n_util::GetStringFUTF16(IDS_DECLUTTER_INACTIVE_BODY, u"7"));
-  source->AddString("newTabPageUrl", chrome::kChromeUINewTabPageURL);
+  source->AddString("newTabPageUrl", chrome::kChromeUINewTabURL);
 
   webui::SetupWebUIDataSource(source, kTabSearchResources,
                               IDR_TAB_SEARCH_TAB_SEARCH_HTML);

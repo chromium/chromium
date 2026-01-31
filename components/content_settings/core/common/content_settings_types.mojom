@@ -60,7 +60,7 @@ enum ContentSettingsType {
   PROTECTED_MEDIA_IDENTIFIER,
   APP_BANNER,
   SITE_ENGAGEMENT,
-  DURABLE_STORAGE,
+  PERSISTENT_STORAGE,
   USB_CHOOSER_DATA,
   BLUETOOTH_GUARD,
   BACKGROUND_SYNC,
@@ -331,10 +331,6 @@ enum ContentSettingsType {
   // should be enabled.
   ANTI_ABUSE,
 
-  // Content setting used to indicate whether third-party storage partitioning
-  // should be enabled.
-  THIRD_PARTY_STORAGE_PARTITIONING,
-
   // Used to indicate whether HTTPS-First Mode is enabled on the hostname.
   HTTPS_ENFORCED,
 
@@ -406,11 +402,6 @@ enum ContentSettingsType {
   // Website setting which is used for RevokedPermissionsService to store
   // auto-revoked notification permissions from abusive sites.
   REVOKED_ABUSIVE_NOTIFICATION_PERMISSIONS,
-
-  // Content setting that controls tracking protection status per site.
-  // BLOCK: Protections enabled. This is the default state.
-  // ALLOW: Protections disabled.
-  TRACKING_PROTECTION,
 
   // With this permission, when the application calls `getDisplayMedia()`, a
   // system audio track can be returned without showing the display media

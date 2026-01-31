@@ -40,7 +40,7 @@ TEST(SpdyLogUtilTest, ElideHttpHeaderBlockForNetLog) {
   headers["foo"] = "bar";
   headers["cookie"] = "name=value";
 
-  base::Value::List list =
+  base::ListValue list =
       ElideHttpHeaderBlockForNetLog(headers, NetLogCaptureMode::kDefault);
 
   ASSERT_EQ(2u, list.size());
@@ -68,7 +68,7 @@ TEST(SpdyLogUtilTest, HttpHeaderBlockNetLogParams) {
   headers["foo"] = "bar";
   headers["cookie"] = "name=value";
 
-  base::Value::Dict dict =
+  base::DictValue dict =
       HttpHeaderBlockNetLogParams(&headers, NetLogCaptureMode::kDefault);
 
   ASSERT_EQ(1u, dict.size());
@@ -106,7 +106,7 @@ TEST(SpdyLogUtilTest, ElideHttpHeaderBlockForNetLogWithNonUTF8Characters) {
   headers["O\xe2"] = "bar";
   headers["\xde\xad"] = "\xbe\xef";
 
-  base::Value::List list =
+  base::ListValue list =
       ElideHttpHeaderBlockForNetLog(headers, NetLogCaptureMode::kDefault);
 
   ASSERT_EQ(3u, list.size());

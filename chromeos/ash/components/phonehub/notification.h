@@ -46,8 +46,8 @@ class Notification {
     bool operator==(const AppMetadata& other) const;
     bool operator!=(const AppMetadata& other) const;
 
-    static AppMetadata FromValue(const base::Value::Dict& value);
-    base::Value::Dict ToValue() const;
+    static AppMetadata FromValue(const base::DictValue& value);
+    base::DictValue ToValue() const;
 
     std::u16string visible_app_name;
     std::string package_name;

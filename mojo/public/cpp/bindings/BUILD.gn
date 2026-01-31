@@ -113,6 +113,7 @@ component("bindings_base") {
     "lib/validation_util.h",
     "map_data_view.h",
     "map_traits.h",
+    "map_traits_absl.h",
     "map_traits_flat_map.h",
     "map_traits_stl.h",
     "message.h",

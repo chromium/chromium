@@ -128,7 +128,8 @@ class AudioStreamMonitorTest : public RenderViewHostTestHarness {
   static base::TimeDelta one_time_step() { return base::Seconds(1) / 15; }
 
   static base::TimeDelta holding_period() {
-    return base::Milliseconds(AudioStreamMonitor::kHoldOnMilliseconds);
+    return base::Milliseconds(
+        std::to_underlying(AudioStreamMonitor::kHoldOnMilliseconds));
   }
 
   void StartMonitoring(GlobalRenderFrameHostId render_frame_host_id,

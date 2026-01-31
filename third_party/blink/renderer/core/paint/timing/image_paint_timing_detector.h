@@ -35,6 +35,7 @@
 
 namespace blink {
 
+class LargestContentfulPaintCalculator;
 class LayoutObject;
 class LocalFrameView;
 class PropertyTreeStateOrAlias;
@@ -42,7 +43,6 @@ class Image;
 class PaintTimingCallbackManager;
 class StyleImage;
 struct DOMPaintTimingInfo;
-class SoftNavigationContext;
 
 static constexpr double kMinimumEntropyForLCP = 0.05;
 
@@ -67,36 +67,28 @@ class CORE_EXPORT ImageRecordsManager {
   ImageRecordsManager& operator=(const ImageRecordsManager&) = delete;
   ImageRecord* LargestImage() const;
 
-  inline void RemoveRecord(MediaRecordIdHash record_id_hash) {
+  inline ImageRecord* RemoveRecord(MediaRecordIdHash record_id_hash) {
     recorded_images_.erase(record_id_hash);
     image_finished_times_.erase(record_id_hash);
     auto it = pending_images_.find(record_id_hash);
     if (it != pending_images_.end()) {
-      if (largest_pending_image_ && (largest_pending_image_ == it->value)) {
-        largest_pending_image_ = nullptr;
+      ImageRecord* record = it->value;
+      if (largest_ignored_image_ == record) {
+        largest_ignored_image_ = nullptr;
       }
-      it->value->OnImageOrTextRemovedWhilePending();
+      record->OnImageOrTextRemovedWhilePending();
       pending_images_.erase(it);
       // Leave out |images_queued_for_paint_time_| intentionally because the
       // null record can be removed in
       // |AssignPaintTimeToRegisteredQueuedRecords|.
+      return record;
     }
+    return nullptr;
   }
 
   inline void RecordImage(MediaRecordIdHash record_id_hash) {
     recorded_images_.insert(record_id_hash);
   }
-
-  // Always adds media record to `recorded_images_`, and might create a new
-  // ImageRecord to add to `pending_images_`.
-  ImageRecord* RecordFirstPaintAndMaybeCreateImageRecord(
-      bool is_recording_lcp,
-      const MediaRecordId& record_id,
-      const uint64_t& visual_size,
-      const gfx::Rect& frame_visual_rect,
-      const gfx::RectF& root_visual_rect,
-      double entropy_for_lcp,
-      SoftNavigationContext* soft_navigation_context);
 
   bool IsRecordedImage(MediaRecordIdHash record_id_hash) const {
     return recorded_images_.Contains(record_id_hash);
@@ -134,18 +126,22 @@ class CORE_EXPORT ImageRecordsManager {
                                       bool is_recording_lcp);
   // If `largest_ignored_image_` is non-null and the corresponding node is still
   // attached to the DOM, this marks first image paint (always) and reports the
-  // image as an LCP candidate (if `is_recording_lcp` is true). Returns true iff
-  // the image record is considered an LCP candidate.
-  bool ReportLargestIgnoredImage(uint32_t current_frame_index,
-                                 bool is_recording_lcp);
+  // image as an LCP candidate (if `is_recording_lcp` is true). Returns the
+  // relevant `ImageRecord` if the image is considered an LCP candidate, or
+  // nullptr otherwise.
+  ImageRecord* ReportLargestIgnoredImage(uint32_t current_frame_index,
+                                         bool is_recording_lcp);
 
   void AssignPaintTimeToRegisteredQueuedRecords(
       const base::TimeTicks&,
       const DOMPaintTimingInfo&,
       uint32_t last_queued_frame_index,
-      bool is_recording_lcp);
+      LargestContentfulPaintCalculator*);
 
-  void AddPendingImage(ImageRecord* record, bool is_recording_lcp);
+  void AddPendingImage(ImageRecord* record) {
+    pending_images_.insert(record->Hash(), record);
+  }
+
   void ClearImagesQueuedForPaintTime();
 
   inline void QueueToMeasurePaintTime(ImageRecord* record,
@@ -163,14 +159,6 @@ class CORE_EXPORT ImageRecordsManager {
   }
 
   void OnImageLoadedInternal(ImageRecord*, uint32_t current_frame_index);
-
-  // The ImageRecord corresponding to the largest image that has been loaded and
-  // painted.
-  Member<ImageRecord> largest_painted_image_;
-
-  // The ImageRecord corresponding to the largest image that has been loaded,
-  // but not necessarily painted.
-  Member<ImageRecord> largest_pending_image_;
 
   // MediaRecordId for images for which we have seen a first paint. A
   // MediaRecordId is added to this set regardless of whether the image could be
@@ -256,9 +244,6 @@ class CORE_EXPORT ImagePaintTimingDetector final
                                         const DOMPaintTimingInfo&)>>
   TakePaintTimingCallback();
 
-  // Return the image LCP candidate and whether the candidate has changed.
-  std::pair<ImageRecord*, bool> UpdateMetricsCandidate();
-
   // Called when documentElement changes from zero to nonzero opacity. Makes the
   // largest image that was hidden due to this a Largest Contentful Paint
   // candidate.
@@ -293,6 +278,8 @@ class CORE_EXPORT ImagePaintTimingDetector final
                                 const PropertyTreeStateOrAlias&,
                                 const LayoutObject&,
                                 const MediaTiming&);
+
+  LargestContentfulPaintCalculator* GetLargestContentfulPaintCalculator() const;
 
   // Used to decide which frame a record belongs to, monotonically increasing.
   uint32_t frame_index_ = 1;

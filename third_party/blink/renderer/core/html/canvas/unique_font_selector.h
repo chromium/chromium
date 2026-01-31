@@ -52,6 +52,10 @@ class CORE_EXPORT UniqueFontSelector
   // base::MemoryPressureListener:
   void OnMemoryPressure(base::MemoryPressureLevel) override;
 
+  unsigned GetCurrentMaxFonts() const;
+
+  void EvictExcessEntries();
+
   Member<FontSelector> base_selector_;
 
   struct CacheValue {

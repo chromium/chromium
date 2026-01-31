@@ -54,7 +54,7 @@ chromium-metrics-reviews@google.com.
 </variants>
 
 <variants name="SecurityInterstitialSBWithSourceSubtype">
-  <variant name=".scam_experiment_catch_all_enforcement"/>
+  <variant name=".scam_experiment_catch_all"/>
   <variant name=".scam_experiment_verdict_1"
       summary="scam detection verdict 1"/>
   <variant name=".scam_experiment_verdict_2"
@@ -84,7 +84,7 @@ chromium-metrics-reviews@google.com.
 </variants>
 
 <histogram name="interstitial.captive_portal"
-    enum="CaptivePortalBlockingPageEvent" expires_after="2026-01-18">
+    enum="CaptivePortalBlockingPageEvent" expires_after="2027-01-18">
   <owner>meacer@chromium.org</owner>
   <owner>michaeldo@chromium.org</owner>
   <summary>
@@ -167,7 +167,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="interstitial.phishing.decision{RepeatVisit}.from_client_side_detection{SecurityInterstitialSBWithSourceSubtype}"
-    enum="SecurityInterstitialDecision" expires_after="2026-04-09">
+    enum="SecurityInterstitialDecision" expires_after="2026-07-19">
   <owner>andysjlim@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@Google.com</owner>
   <summary>
@@ -196,7 +196,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="interstitial.phishing.show_delay{TimeRange}.from_client_side_detection{SecurityInterstitialSBWithSourceSubtype}"
-    enum="SecurityInterstitialDecision" expires_after="2026-04-09">
+    enum="SecurityInterstitialDecision" expires_after="2026-07-19">
   <owner>andysjlim@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@Google.com</owner>
   <summary>
@@ -394,7 +394,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="interstitial.{SecurityInterstitialSBType}decision{RepeatVisit}{IsPostCommitInterstitialSuffix}"
-    enum="SecurityInterstitialDecision" expires_after="2026-05-03">
+    enum="SecurityInterstitialDecision" expires_after="2026-07-05">
   <owner>xinghuilu@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
@@ -445,7 +445,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="interstitial.{SecurityInterstitialSBType}interaction{IsPostCommitInterstitialSuffix}"
-    enum="SecurityInterstitialInteraction" expires_after="2025-12-28">
+    enum="SecurityInterstitialInteraction" expires_after="2026-12-22">
   <owner>xinghuilu@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
@@ -486,7 +486,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="interstitial.{SecurityInterstitialSBType}show_delay{TimeRange}{SecurityInterstitialSBWithSourceType}"
-    units="ms" expires_after="2026-05-03">
+    units="ms" expires_after="2026-07-05">
   <owner>xinghuilu@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>

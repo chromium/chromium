@@ -14,7 +14,6 @@
 
 #include "base/check.h"
 #include "base/command_line.h"
-#include "base/containers/contains.h"
 #include "base/dcheck_is_on.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
@@ -192,7 +191,10 @@ Compositor::Compositor(const viz::FrameSinkId& frame_sink_id,
   // Using CoreAnimation to composite requires using GpuMemoryBuffers, which
   // require zero copy.
   settings.use_gpu_memory_buffer_resources = settings.use_zero_copy;
-  settings.enable_elastic_overscroll = true;
+  settings.enable_elastic_overscroll_on_root = true;
+  settings.enable_elastic_overscroll_for_subscroll =
+      base::FeatureList::IsEnabled(
+          features::kOverscrollEffectOnNonRootScrollers);
 #endif
 
 #if BUILDFLAG(IS_WIN)
@@ -946,7 +948,7 @@ Compositor::TrackerState::~TrackerState() = default;
 void Compositor::StartMetricsTracker(
     TrackerId tracker_id,
     CompositorMetricsTrackerHost::ReportCallback callback) {
-  DCHECK(!base::Contains(compositor_metrics_tracker_map_, tracker_id));
+  DCHECK(!compositor_metrics_tracker_map_.contains(tracker_id));
 
   auto& tracker_state = compositor_metrics_tracker_map_[tracker_id];
   tracker_state.report_callback = std::move(callback);

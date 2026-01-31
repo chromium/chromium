@@ -1,7 +1,7 @@
 monorail: {
   component: "UI>Notifications"
 }
-team_email: "platform-capabilities@chromium.org"
+team_email: "pwa-dev@chromium.org"
 buganizer_public: {
   component_id: 1457361
 }

@@ -28,12 +28,18 @@ class CORE_EXPORT MenuItemListIterator final {
       const HTMLElement& owner_menu,
       StartingPoint starting_point = StartingPoint::kStart);
 
-  HTMLMenuItemElement& operator*();
-  HTMLMenuItemElement* operator->();
+  HTMLMenuItemElement& operator*() const;
+  HTMLMenuItemElement* operator->() const;
   MenuItemListIterator& operator++();
   MenuItemListIterator& operator--();
   explicit operator bool() const;
+  operator HTMLMenuItemElement*() const;
   bool operator==(const MenuItemListIterator& other) const;
+  MenuItemListIterator& operator=(const MenuItemListIterator& other) {
+    CHECK_EQ(owner_menu_, other.owner_menu_);
+    current_ = other.current_;
+    return *this;
+  }
 
  private:
   // These functions returns only a <menuitem> descendant of owner_menu_.

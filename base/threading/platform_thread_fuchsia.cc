@@ -94,14 +94,15 @@ void PlatformThread::SetName(const std::string& name) {
 
 // static
 bool PlatformThread::CanChangeThreadType(ThreadType from, ThreadType to) {
-  return from == to || to == ThreadType::kDisplayCritical ||
+  return from == to || to == ThreadType::kPresentation ||
          to == ThreadType::kInteractive || to == ThreadType::kRealtimeAudio;
 }
 
 namespace internal {
 
 void SetCurrentThreadTypeImpl(ThreadType thread_type,
-                              MessagePumpType pump_type_hint) {
+                              MessagePumpType pump_type_hint,
+                              bool may_change_affinity) {
   switch (thread_type) {
     case ThreadType::kDefault:
       SetThreadRole("chromium.base.threading.default");
@@ -116,7 +117,7 @@ void SetCurrentThreadTypeImpl(ThreadType thread_type,
       SetThreadRole("chromium.base.threading.utility");
       break;
 
-    case ThreadType::kDisplayCritical:
+    case ThreadType::kPresentation:
     case ThreadType::kInteractive:
       SetThreadRole("chromium.base.threading.display", kDisplaySchedulingPeriod,
                     kDisplaySchedulingCapacity);
@@ -135,9 +136,10 @@ PlatformPriorityOverride SetThreadTypeOverride(
   return false;
 }
 
-void RemoveThreadTypeOverrideImpl(
+void RemoveThreadTypeOverride(
+    PlatformThreadHandle thread_handle,
     const PlatformPriorityOverride& priority_override_handle,
-    ThreadType thread_type) {}
+    ThreadType initial_thread_type) {}
 
 }  // namespace internal
 
@@ -147,7 +149,7 @@ ThreadType PlatformThread::GetCurrentEffectiveThreadTypeForTest() {
   // Use ThreadType stored in TLS as a proxy.
   const ThreadType thread_type = PlatformThread::GetCurrentThreadType();
   if (thread_type == ThreadType::kInteractive) {
-    return ThreadType::kDisplayCritical;
+    return ThreadType::kPresentation;
   }
   return thread_type;
 }

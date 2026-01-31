@@ -4,8 +4,8 @@
 
 import("//chrome/common/features.gni")
 import("//components/enterprise/buildflags/buildflags.gni")
+import("//components/on_device_translation/buildflags/features.gni")
 import("//components/safe_browsing/buildflags.gni")
-import("//components/services/on_device_translation/buildflags/features.gni")
 import("//extensions/buildflags/buildflags.gni")
 import("//pdf/features.gni")
 
@@ -62,7 +62,9 @@ source_set("impl") {
     "//chrome/browser:browser_process",
     "//chrome/browser:flags",
     "//chrome/browser/autocomplete:aim_eligibility_service",
+    "//chrome/browser/contextual_cueing",
     "//chrome/browser/devtools",
+    "//chrome/browser/gcm",
     "//chrome/browser/media/prefs",
     "//chrome/browser/media/router:media_router_feature",
     "//chrome/browser/media/router/discovery/access_code:access_code_cast_feature",
@@ -131,7 +133,6 @@ source_set("impl") {
     "//components/plus_addresses/core/common:prefs",
     "//components/pref_registry",
     "//components/privacy_sandbox:privacy_sandbox_prefs",
-    "//components/privacy_sandbox:tpcd",
     "//components/proxy_config",
     "//components/reading_list/core",
     "//components/regional_capabilities",
@@ -146,6 +147,7 @@ source_set("impl") {
     "//components/subresource_filter/content/browser",
     "//components/subresource_filter/core/common",
     "//components/supervised_user/core/browser",
+    "//components/supervised_user/core/browser:device_parental_controls",
     "//components/sync_preferences",
     "//components/sync_preferences/cross_device_pref_tracker/prefs",
     "//components/sync_sessions",
@@ -197,7 +199,6 @@ source_set("impl") {
       "//chrome/browser/ash/crostini",
       "//chrome/browser/ash/cryptauth",
       "//chrome/browser/ash/customization",
-      "//chrome/browser/ash/device_name",
       "//chrome/browser/ash/extensions",
       "//chrome/browser/ash/file_manager",
       "//chrome/browser/ash/file_system_provider",
@@ -309,7 +310,6 @@ source_set("impl") {
   } else {
     deps += [
       "//chrome/browser/actor/ui",
-      "//chrome/browser/contextual_cueing",
       "//chrome/browser/device_identity",
       "//chrome/browser/promos:utils",
       "//chrome/browser/screen_ai:prefs",
@@ -372,10 +372,10 @@ source_set("impl") {
   }
 
   if (enable_glic) {
-    deps += [
-      "//chrome/browser/background/glic",
-      "//chrome/browser/glic",
-    ]
+    deps += [ "//chrome/browser/glic" ]
+    if (!is_android) {
+      deps += [ "//chrome/browser/background/glic" ]
+    }
   }
 
   if (!is_android && !is_chromeos) {

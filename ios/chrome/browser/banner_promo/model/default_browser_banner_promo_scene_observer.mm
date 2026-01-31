@@ -7,17 +7,18 @@
 #import "base/scoped_observation.h"
 #import "ios/chrome/browser/banner_promo/model/default_browser_banner_promo_app_agent.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
+#import "ios/chrome/browser/shared/coordinator/scene/state/incognito_state.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser/browser_provider.h"
 #import "ios/chrome/browser/shared/model/browser/browser_provider_interface.h"
 #import "ios/chrome/browser/shared/model/web_state_list/active_web_state_observation_forwarder.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list_observer_bridge.h"
-#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/web/public/navigation/navigation_context.h"
 #import "ios/web/public/web_state_observer_bridge.h"
 
 @interface DefaultBrowserBannerPromoSceneObserver () <CRWWebStateObserver,
+                                                      IncognitoStateObserver,
                                                       WebStateListObserving>
 @end
 
@@ -54,6 +55,7 @@
     _appAgent = appAgent;
 
     [_sceneState addObserver:self];
+    [_sceneState.incognitoState addObserver:self];
 
     _sceneIsForeground =
         sceneState.activationLevel >= SceneActivationLevelForegroundInactive;
@@ -105,7 +107,8 @@
 
   web::WebState* activeMainWebState = webStateList->GetActiveWebState();
 
-  if (_sceneIsForeground && !_sceneState.incognitoContentVisible) {
+  if (_sceneIsForeground &&
+      !_sceneState.incognitoState.incognitoContentVisible) {
     _webStateListObservation->Observe(webStateList);
     _activeWebStateObservationForwarder =
         std::make_unique<ActiveWebStateObservationForwarder>(
@@ -141,10 +144,6 @@
 
 - (void)sceneState:(SceneState*)sceneState
     transitionedToActivationLevel:(SceneActivationLevel)level {
-  if (!IsDefaultBrowserBannerPromoEnabled()) {
-    return;
-  }
-
   // Alert the owning app agent so it can clean up this observer.
   if (level == SceneActivationLevelDisconnected) {
     [_appAgent onSceneDisconnected:_sceneState];
@@ -162,25 +161,22 @@
   [self sceneStateChangedData];
 }
 
-- (void)sceneState:(SceneState*)sceneState
-    isDisplayingIncognitoContent:(BOOL)incognitoContentVisible {
-  if (!IsDefaultBrowserBannerPromoEnabled()) {
+- (void)sceneStateDidEnableUI:(SceneState*)sceneState {
+  // If the scene is not in the foreground yet, skip this change.
+  if (!_sceneIsForeground) {
     return;
   }
 
   [self sceneStateChangedData];
 }
 
-- (void)sceneStateDidEnableUI:(SceneState*)sceneState {
-  if (!IsDefaultBrowserBannerPromoEnabled()) {
-    return;
-  }
+#pragma mark - IncognitoStateObserver
 
-  // If the scene is not in the foreground yet, skip this change.
-  if (!_sceneIsForeground) {
-    return;
-  }
+- (void)willEnterIncognitoForState:(IncognitoState*)incognitoState {
+  [self sceneStateChangedData];
+}
 
+- (void)willExitIncognitoForState:(IncognitoState*)incognitoState {
   [self sceneStateChangedData];
 }
 

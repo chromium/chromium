@@ -215,7 +215,6 @@ class WebSettings {
                                      UScriptCode = USCRIPT_COMMON) = 0;
   virtual void SetStrictMixedContentChecking(bool) = 0;
   virtual void SetStrictMixedContentCheckingForPlugin(bool) = 0;
-  virtual void SetStrictPowerfulFeatureRestrictions(bool) = 0;
   virtual void SetStrictlyBlockBlockableMixedContent(bool) = 0;
   virtual void SetSupportDeprecatedTargetDensityDPI(bool) = 0;
   virtual void SetSupportsMultipleWindows(bool) = 0;
@@ -255,6 +254,7 @@ class WebSettings {
   virtual void SetWebGLErrorsToConsoleEnabled(bool) = 0;
   virtual void SetWebSecurityEnabled(bool) = 0;
   virtual void SetWideViewportQuirkEnabled(bool) = 0;
+  virtual void SetScaleAllFontsIfNoMetaTextScaleTag(bool) = 0;
   virtual void SetMediaControlsEnabled(bool) = 0;
   virtual void SetDoNotUpdateSelectionOnMutatingSelectionRange(bool) = 0;
   virtual void SetLowPriorityIframesThreshold(WebEffectiveConnectionType) = 0;

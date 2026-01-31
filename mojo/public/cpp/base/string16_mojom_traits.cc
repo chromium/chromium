@@ -33,10 +33,12 @@ bool StructTraits<mojo_base::mojom::BigString16DataView, std::u16string>::Read(
     mojo_base::mojom::BigString16DataView data,
     std::u16string* out) {
   mojo_base::BigBuffer buffer;
-  if (!data.ReadData(&buffer))
+  if (!data.ReadData(&buffer)) {
     return false;
-  if (buffer.size() % sizeof(char16_t))
+  }
+  if (buffer.size() % sizeof(char16_t)) {
     return false;
+  }
   *out = std::u16string(reinterpret_cast<const char16_t*>(buffer.data()),
                         buffer.size() / sizeof(char16_t));
   return true;

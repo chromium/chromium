@@ -48,7 +48,7 @@ namespace {
 
 using extensions::api::types::ChromeSettingScope;
 
-bool RemoveContentType(base::Value::List& args,
+bool RemoveContentType(base::ListValue& args,
                        ContentSettingsType* content_type) {
   if (args.empty() || !args[0].is_string())
     return false;
@@ -179,7 +179,7 @@ ContentSettingsContentSettingGetFunction::Run() {
                 net::CookieSettingOverrides(), nullptr)
           : map->GetContentSetting(primary_url, secondary_url, content_type);
 
-  base::Value::Dict result;
+  base::DictValue result;
   std::string setting_string =
       content_settings::ContentSettingToString(setting);
   DCHECK(!setting_string.empty());

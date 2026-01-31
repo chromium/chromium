@@ -239,6 +239,8 @@ class NET_EXPORT_PRIVATE WebSocketQuicStreamAdapter
   int write_length_ = 0u;
   CompletionOnceCallback read_callback_;
   CompletionOnceCallback write_callback_;
+
+  base::WeakPtrFactory<WebSocketQuicStreamAdapter> weak_factory_{this};
 };
 
 }  // namespace net

@@ -33,7 +33,7 @@ FakeDeviceTrustConnectorService::FakeDeviceTrustConnectorService(
 FakeDeviceTrustConnectorService::~FakeDeviceTrustConnectorService() = default;
 
 void FakeDeviceTrustConnectorService::UpdateInlinePolicy(
-    base::Value::List new_urls,
+    base::ListValue new_urls,
     DTCPolicyLevel policy_level) {
   test_prefs_->SetManagedPref(ToPrefName(policy_level),
                               base::Value(std::move(new_urls)));

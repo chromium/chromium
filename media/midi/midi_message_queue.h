@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "base/containers/circular_deque.h"
+#include "base/containers/span.h"
 #include "media/midi/midi_export.h"
 
 namespace midi {
@@ -52,8 +53,7 @@ class MIDI_EXPORT MidiMessageQueue {
   ~MidiMessageQueue();
 
   // Enqueues |data| to the internal buffer.
-  void Add(const std::vector<uint8_t>& data);
-  void Add(const uint8_t* data, size_t length);
+  void Add(base::span<const uint8_t> data);
 
   // Fills the next complete MIDI message into |message|. If |message| is
   // not empty, the data sequence falls into one of the following types of

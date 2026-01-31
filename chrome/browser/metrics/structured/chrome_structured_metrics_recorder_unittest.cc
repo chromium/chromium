@@ -92,7 +92,7 @@ class ChromeStructuredMetricsRecorderTest : public testing::Test {
     key.set_last_rotation(today);
     key.set_rotation_period(90);
 
-    base::Value::Dict dict =
+    base::DictValue dict =
         prefs_.GetDict(prefs::kDeviceKeyDataPrefName).Clone();
     const validator::Validators* validators = validator::Validators::Get();
     auto project_name = validators->GetProjectName(kProjectFourHash);

@@ -43,7 +43,8 @@ void InstallAppLocallyCommand::StartWithLock(
     std::unique_ptr<AppLock> app_lock) {
   app_lock_ = std::move(app_lock);
 
-  if (!app_lock_->registrar().IsInRegistrar(app_id_)) {
+  if (!app_lock_->registrar().AppMatches(
+          app_id_, WebAppFilter::IsAppSurfaceableToUser())) {
     GetMutableDebugValue().Set("command_result", "app_not_in_registry");
     CompleteAndSelfDestruct(CommandResult::kSuccess);
     return;
@@ -58,7 +59,7 @@ void InstallAppLocallyCommand::StartWithLock(
     if (web_app_to_update) {
       web_app_to_update->SetInstallState(
           proto::InstallState::INSTALLED_WITH_OS_INTEGRATION);
-        web_app_to_update->AddSource(WebAppManagement::kUserInstalled);
+      web_app_to_update->AddSource(WebAppManagement::kUserInstalled);
     }
   }
 

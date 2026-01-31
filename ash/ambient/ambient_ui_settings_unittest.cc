@@ -30,7 +30,7 @@ using ::testing::Eq;
 class AmbientUiSettingsTest : public ::testing::Test {
  protected:
   AmbientUiSettingsTest() {
-    base::Value::Dict default_settings;
+    base::DictValue default_settings;
     default_settings.Set(ambient::prefs::kAmbientUiSettingsFieldTheme,
                          static_cast<int>(kDefaultAmbientTheme));
     test_pref_service_.registry()->RegisterDictionaryPref(
@@ -55,7 +55,7 @@ TEST_F(AmbientUiSettingsTest, DefaultAmbientUiSettings) {
   // No prior set up for kAmbientUiSettings prefs. Without TOD features,
   // kDefaultAmbientTheme (kSlideShow) is set as default.
   test_pref_service_.SetDict(ambient::prefs::kAmbientUiSettings,
-                             base::Value::Dict());
+                             base::DictValue());
   EXPECT_THAT(
       AmbientUiSettings::ReadFromPrefService(test_pref_service_).theme(),
       Eq(kDefaultAmbientTheme));
@@ -67,7 +67,7 @@ TEST_F(AmbientUiSettingsTest, DefaultAmbientUiSettings) {
   // No prior set up for kAmbientUiSettings prefs. With TOD features, kVideo is
   // set as default.
   test_pref_service_.SetDict(ambient::prefs::kAmbientUiSettings,
-                             base::Value::Dict());
+                             base::DictValue());
   EXPECT_THAT(
       AmbientUiSettings::ReadFromPrefService(test_pref_service_).theme(),
       Eq(AmbientTheme::kVideo));
@@ -87,7 +87,7 @@ TEST_F(AmbientUiSettingsTest, DefaultAmbientUiSettingsWithCustomizationId) {
   // No prior set up for kAmbientUiSettings prefs. With TOD features, kVideo
   // is set as default.
   test_pref_service_.SetDict(ambient::prefs::kAmbientUiSettings,
-                             base::Value::Dict());
+                             base::DictValue());
   EXPECT_THAT(
       AmbientUiSettings::ReadFromPrefService(test_pref_service_).theme(),
       Eq(AmbientTheme::kVideo));
@@ -121,7 +121,7 @@ TEST_F(AmbientUiSettingsTest, PrefManagement) {
 
 TEST_F(AmbientUiSettingsTest, HandlesCorruptedPrefStorage) {
   {
-    base::Value::Dict invalid_settings;
+    base::DictValue invalid_settings;
     invalid_settings.Set(ambient::prefs::kAmbientUiSettingsFieldTheme,
                          static_cast<int>(AmbientTheme::kMaxValue) + 1);
     test_pref_service_.SetDict(ambient::prefs::kAmbientUiSettings,
@@ -131,7 +131,7 @@ TEST_F(AmbientUiSettingsTest, HandlesCorruptedPrefStorage) {
       AmbientUiSettings::ReadFromPrefService(test_pref_service_).theme(),
       Eq(kDefaultAmbientTheme));
   {
-    base::Value::Dict invalid_settings;
+    base::DictValue invalid_settings;
     invalid_settings.Set(ambient::prefs::kAmbientUiSettingsFieldTheme,
                          static_cast<int>(AmbientTheme::kVideo));
     invalid_settings.Set(ambient::prefs::kAmbientUiSettingsFieldVideo,

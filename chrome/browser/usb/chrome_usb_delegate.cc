@@ -8,13 +8,12 @@
 #include <utility>
 #include <vector>
 
-#include "base/containers/contains.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/browser_dialogs.h"
 #include "chrome/browser/ui/browser_finder.h"
+#include "chrome/browser/ui/dialogs/browser_dialogs.h"
 #include "chrome/browser/usb/usb_blocklist.h"
 #include "chrome/browser/usb/usb_chooser_context.h"
 #include "chrome/browser/usb/usb_chooser_context_factory.h"
@@ -96,7 +95,7 @@ bool IsDevicePermissionAutoGranted(
   // Note: The `DeviceHasInterfaceWithClass()` call is made after checking the
   // origin, since that method call is expensive.
   if (origin.scheme() == extensions::kExtensionScheme &&
-      base::Contains(kSmartCardPrivilegedExtensionIds, origin.host()) &&
+      kSmartCardPrivilegedExtensionIds.contains(origin.host()) &&
       DeviceHasInterfaceWithClass(device_info,
                                   device::mojom::kUsbSmartCardClass)) {
     return true;
@@ -245,12 +244,12 @@ void ChromeUsbDelegate::AdjustProtectedInterfaceClasses(
           "moklfjoegmpoolceggbebbmgbddlhdgp",
       });
 
-  if (base::Contains(kHidPrivilegedExtensionIds, origin.host())) {
+  if (kHidPrivilegedExtensionIds.contains(origin.host())) {
     std::erase(classes, device::mojom::kUsbHidClass);
   }
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
-  if (base::Contains(kSmartCardPrivilegedExtensionIds, origin.host())) {
+  if (kSmartCardPrivilegedExtensionIds.contains(origin.host())) {
     std::erase(classes, device::mojom::kUsbSmartCardClass);
   }
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
@@ -393,7 +392,7 @@ void ChromeUsbDelegate::RemoveObserver(content::BrowserContext* browser_context,
 ChromeUsbDelegate::ContextObservation* ChromeUsbDelegate::GetContextObserver(
     content::BrowserContext* browser_context) {
   CHECK(browser_context);
-  if (!base::Contains(observations_, browser_context)) {
+  if (!observations_.contains(browser_context)) {
     observations_.emplace(browser_context, std::make_unique<ContextObservation>(
                                                this, browser_context));
   }

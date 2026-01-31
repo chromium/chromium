@@ -48,6 +48,7 @@
 <translation id="2761536921376153655">Սկանավորման տեսակը</translation>
 <translation id="28682968802727151">Հայելապատճենման ռեժիմ</translation>
 <translation id="2879583609344924966">Միացված է <ph name="CAMERA" /> սարքը։</translation>
+<translation id="3063987824612038785">Տեսախցիկի բոլոր ֆայլերը կպահվեն Google Drive-ում</translation>
 <translation id="3067436040345934772">Տեղաշարժել աջ</translation>
 <translation id="3081586908890909590">Տեսագրել</translation>
 <translation id="3091480460059548935">Տեքստի հայտնաբերում նախադիտման ռեժիմում</translation>
@@ -67,6 +68,7 @@
 <translation id="3642192109456033823">Տեսանյութը մշակվում է…</translation>
 <translation id="3789724198583203151">Պտտել 90 աստիճան ժամացույցի սլաքի հակառակ ուղղությամբ</translation>
 <translation id="3810838688059735925">Տեսանյութ</translation>
+<translation id="386366972082231038">Տեսախցիկի բոլոր ֆայլերը կպահվեն OneDrive-ում</translation>
 <translation id="4060608699153044055">Դուք չեք կարող տեսագրել, քանի որ սարքում բավարար տարածք չկա։ Տեսագրումը սկսելու համար անհրաժեշտ է սարքում տարածք ազատել։</translation>
 <translation id="4061162772429051350"><ph name="MAGAPIXELS_AMOUNT" /> ՄՊ</translation>
 <translation id="4118525110028899586">Դադարեցնել տեսագրումը</translation>
@@ -100,6 +102,7 @@
 <translation id="5634947914995388399">Ծավալել երկխոսության պատուհանը և կանգնեցնել սկանավորումը</translation>
 <translation id="5662366948659129155">Սկանավորվում է էջ <ph name="COUNT" />-ը</translation>
 <translation id="5671277269877808209">Քառակուսի</translation>
+<translation id="5725797473946373607">Այլևս չցուցադրել այս երկխոսության պատուհանը</translation>
 <translation id="574392208103952083">Միջին</translation>
 <translation id="5746169159649715125">Պահել որպես PDF</translation>
 <translation id="5753488212459587150">Միացնել փորձագետի ռեժիմը</translation>
@@ -156,6 +159,7 @@
 <translation id="7983668134180549431">Հայտնաբերվել է տեքստ։</translation>
 <translation id="8079255378695216066">Հնարավոր չէ սկսել տեսագրումը</translation>
 <translation id="8120146556401698679">Տեղաշարժում/թեքում/մասշտաբավորում</translation>
+<translation id="8127459436205030819">Ձեր ֆայլերը կարող են տեսանելի լինել ձեր ադմինիստրատորին</translation>
 <translation id="8131740175452115882">Հաստատել</translation>
 <translation id="8145038249676204903">Լուսանկարել</translation>
 <translation id="8167081290930651932">Պահել որպես լուսանկար</translation>
@@ -165,6 +169,7 @@
 <translation id="8609951387004618906">Բացել հղումը՝ <ph name="URL" /></translation>
 <translation id="8629662593426079630">360p</translation>
 <translation id="8711011893539266636">Միացնել/անջատել խոսափողը։ Խոսափողն անջատված է։</translation>
+<translation id="8712637175834984815">Պատրաստ է</translation>
 <translation id="8730621377337864115">Պատրաստ է</translation>
 <translation id="8732462232047530626">Դիտել մետատվյալները</translation>
 <translation id="874854738381978209">Wi-Fi ցանց է հայտնաբերվել։</translation>

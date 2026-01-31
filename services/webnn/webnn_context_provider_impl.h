@@ -26,6 +26,10 @@
 #include "services/webnn/public/mojom/webnn_context_provider.mojom.h"
 #include "services/webnn/webnn_context_impl.h"
 
+#if BUILDFLAG(IS_WIN)
+#include "base/types/expected.h"
+#endif
+
 namespace gpu {
 class Scheduler;
 }  // namespace gpu
@@ -33,6 +37,12 @@ class Scheduler;
 namespace webnn {
 
 class ScopedGpuSequence;
+
+#if BUILDFLAG(IS_WIN)
+namespace ort {
+class Environment;
+}
+#endif
 
 // Maintain a set of WebNNContextImpl instances that are created by the context
 // provider.
@@ -78,9 +88,8 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) WebNNContextProviderImpl
   void RemoveWebNNContextImpl(const blink::WebNNContextToken& handle);
 
 #if BUILDFLAG(IS_WIN)
-  // Send the contexts lost reason to the renderer process and kill the GPU
-  // process to destroy all contexts.
-  void DestroyAllContextsAndKillGpuProcess(const std::string& reason);
+  // Kill the GPU process to destroy all contexts.
+  void DestroyAllContextsAndKillGpuProcess();
 #endif  // BUILDFLAG(IS_WIN)
 
   // Retrieves a `WebNNContextImpl` instance created from this provider.
@@ -107,6 +116,8 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) WebNNContextProviderImpl
         scoped_refptr<base::SingleThreadTaskRunner> main_task_runner,
         CreateWebNNContextCallback callback) = 0;
   };
+
+  void CreateWeightsFile(base::OnceCallback<void(base::File)> callback);
 
   static void SetBackendForTesting(BackendForTesting* backend_for_testing);
 
@@ -157,6 +168,21 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) WebNNContextProviderImpl
 #endif  // BUILDFLAG(WEBNN_USE_TFLITE)
 
 #if BUILDFLAG(IS_WIN)
+  void OnOrtEnvCreated(ScopedTrace scoped_trace,
+                       mojom::CreateContextOptionsPtr options,
+                       mojo::ScopedDataPipeProducerHandle write_tensor_producer,
+                       mojo::ScopedDataPipeConsumerHandle write_tensor_consumer,
+                       mojo::ScopedDataPipeProducerHandle read_tensor_producer,
+                       mojo::ScopedDataPipeConsumerHandle read_tensor_consumer,
+                       gpu::CommandBufferId command_buffer_id,
+                       std::unique_ptr<ScopedGpuSequence> gpu_sequence,
+                       scoped_refptr<base::SingleThreadTaskRunner> task_runner,
+                       mojo::PendingReceiver<mojom::WebNNContext> receiver,
+                       mojo::PendingRemote<mojom::WebNNContext> remote,
+                       CreateWebNNContextCallback callback,
+                       base::expected<scoped_refptr<ort::Environment>,
+                                      std::string> env_creation_results);
+
   void DidEnsureWebNNExecutionProvidersReady(
       ScopedTrace scoped_trace,
       mojom::CreateContextOptionsPtr options,

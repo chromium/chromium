@@ -19,7 +19,7 @@ public class BaseFeatureList {
 
     public static final MutableFlagWithSafeDefault sEffectiveBindingState =
             new MutableFlagWithSafeDefault(
-                    BaseFeatureMap.getInstance(), BaseFeatures.EFFECTIVE_BINDING_STATE, false);
+                    BaseFeatureMap.getInstance(), BaseFeatures.EFFECTIVE_BINDING_STATE, true);
 
     public static final MutableFlagWithSafeDefault sRebindingChildServiceConnectionController =
             new MutableFlagWithSafeDefault(
@@ -39,7 +39,7 @@ public class BaseFeatureList {
 
     public static final MutableFlagWithSafeDefault sUseIsUnboundCheck =
             new MutableFlagWithSafeDefault(
-                    BaseFeatureMap.getInstance(), BaseFeatures.USE_IS_UNBOUND_CHECK, false);
+                    BaseFeatureMap.getInstance(), BaseFeatures.USE_IS_UNBOUND_CHECK, true);
 
     public static final MutableFlagWithSafeDefault sUseSharedRebindServiceConnection =
             new MutableFlagWithSafeDefault(

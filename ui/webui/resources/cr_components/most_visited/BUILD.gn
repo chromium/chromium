@@ -30,8 +30,8 @@ build_webui("build") {
   css_files = [ "most_visited.css" ]
 
   static_files = [
-    "expand_content.svg",
     "collapse_content.svg",
+    "expand_content.svg",
   ]
 
   mojo_files_deps = [
@@ -39,8 +39,8 @@ build_webui("build") {
     "//components/ntp_tiles:mojo_bindings_ts__generator",
   ]
   mojo_files = [
-    "$target_gen_dir/most_visited.mojom-webui.ts",
     "$root_gen_dir/components/ntp_tiles/tile_source.mojom-webui.ts",
+    "$target_gen_dir/most_visited.mojom-webui.ts",
   ]
 
   ts_out_dir = "$root_gen_dir/ui/webui/resources/tsc/cr_components/most_visited"

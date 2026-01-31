@@ -14,7 +14,6 @@
 #import "components/variations/pref_names.h"
 #import "components/variations/scoped_variations_ids_provider.h"
 #import "components/variations/seed_response.h"
-#import "components/variations/service/ui_string_overrider.h"
 #import "components/variations/service/variations_service.h"
 #import "components/variations/variations_switches.h"
 #import "components/variations/variations_test_utils.h"
@@ -34,18 +33,18 @@
 
 namespace {
 
-using ::variations::kTestSeedData;
 using ::variations::SeedApplicationStage;
+using ::variations::TestSeedData;
 
 // Returns a seed. If `valid` is true, this will return a seed using
-// kTestSeedData, otherwise it will return a seed with unmatching signature.
+// TestSeedData(), otherwise it will return a seed with unmatching signature.
 std::unique_ptr<variations::SeedResponse> GetSeed(bool valid) {
   std::string data;
-  base::Base64Decode(kTestSeedData.base64_compressed_data, &data);
+  base::Base64Decode(TestSeedData().base64_compressed_data, &data);
 
   auto seed = std::make_unique<variations::SeedResponse>();
   seed->signature =
-      valid ? kTestSeedData.base64_signature : "invalid signature";
+      valid ? TestSeedData().base64_signature : "invalid signature";
   seed->data = data;
   seed->is_gzip_compressed = true;
   seed->date = base::Time::Now();
@@ -106,7 +105,6 @@ class IOSChromeVariationsSeedStoreTest : public PlatformTest {
     variations_service_ = variations::VariationsService::Create(
         std::make_unique<IOSChromeVariationsServiceClient>(), GetLocalState(),
         GetMetricsStateManager(), "dummy-disable-background-switch",
-        variations::UIStringOverrider(),
         network::TestNetworkConnectionTracker::CreateGetter());
   }
 
@@ -124,7 +122,7 @@ class IOSChromeVariationsSeedStoreTest : public PlatformTest {
   // Verify that the study in the test seed is `applied`.
   void VerifyTestSeedTrialExists(bool applied) {
     bool trial_exists =
-        base::FieldTrialList::TrialExists(kTestSeedData.study_names[0]);
+        base::FieldTrialList::TrialExists(TestSeedData().study_names[0]);
     EXPECT_EQ(applied, trial_exists);
   }
 

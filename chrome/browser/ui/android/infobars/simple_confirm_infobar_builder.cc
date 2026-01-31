@@ -148,13 +148,13 @@ bool SimpleConfirmInfoBarDelegate::Cancel() {
 static void JNI_SimpleConfirmInfoBarBuilder_Create(
     JNIEnv* env,
     const JavaRef<jobject>& j_web_contents,
-    jint j_identifier,
+    int32_t j_identifier,
     const JavaRef<jobject>& j_icon,
     const JavaRef<jstring>& j_message,
     const JavaRef<jstring>& j_primary,
     const JavaRef<jstring>& j_secondary,
     const JavaRef<jstring>& j_link_text,
-    jboolean auto_expire,
+    bool auto_expire,
     const JavaRef<jobject>& j_listener) {
   infobars::InfoBarDelegate::InfoBarIdentifier infobar_identifier =
       static_cast<infobars::InfoBarDelegate::InfoBarIdentifier>(j_identifier);

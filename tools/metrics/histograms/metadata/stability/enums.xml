@@ -498,6 +498,7 @@ Called by update_bad_message_reasons.py.-->
   <int value="330" label="RFH_CRASH_REPORT_STORAGE_SIZE_TOO_LARGE"/>
   <int value="331" label="RFH_CRASH_REPORT_STORAGE_ALREADY_INITIALIZED"/>
   <int value="332" label="RFH_INVALID_DOCUMENT_SEQUENCE_NUMBER"/>
+  <int value="333" label="RFH_NEW_ISOLATED_WEB_APP_PERMISSION_POLICIES"/>
 </enum>
 
 <enum name="BadMessageReasonExtensions">
@@ -692,19 +693,6 @@ Called by update_debug_scenarios.py.-->
   <int value="4" label="Show safe mode"/>
 </enum>
 
-<enum name="IOSStabilityUserVisibleTerminationType">
-  <summary>
-    One of several separate stability metrics. The values are non-contiguous as
-    they are a subset of values matching fields of the Stability proto (from the
-    SystemProfile).
-  </summary>
-  <int value="0"
-      label="Termination caused by system signal (f.e. EXC_BAD_ACCESS)"/>
-  <int value="1"
-      label="Termination caused by Hang / UI Thread freeze (ui thread was
-             locked for 9+ seconds and the app was quit by OS or the user)."/>
-</enum>
-
 <enum name="MobileSessionShutdownType">
   <int value="0" label="Shutdown in background"/>
   <int value="1" label="Shutdown in foreground; no log; no memory warning"/>
@@ -712,7 +700,9 @@ Called by update_debug_scenarios.py.-->
   <int value="3" label="Shutdown in foreground; no log; with memory warning"/>
   <int value="4" label="Shutdown in foreground; with log; with memory warning"/>
   <int value="5" label="First launch after upgrade"/>
-  <int value="6" label="Shutdown in foreground, main thread not responding"/>
+  <int value="6"
+      label="(Obsolete Jan 2026) Shutdown in foreground, main thread not
+             responding"/>
 </enum>
 
 <enum name="OOMShutdownHint">
@@ -834,6 +824,7 @@ Called by update_debug_scenarios.py.-->
   <int value="7" label="Launch failed"/>
   <int value="8" label="OOM"/>
   <int value="9" label="Integrity failure (Win)"/>
+  <int value="10" label="Browser reclaim memory"/>
 </enum>
 
 <enum name="UtilityProcessNameHash">

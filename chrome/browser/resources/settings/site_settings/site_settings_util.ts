@@ -61,6 +61,10 @@ export function getLocalizationStringForContentType(
       return 'siteSettingsFontAccessMidSentence';
     case ContentSettingsTypes.LOCAL_NETWORK_ACCESS:
       return 'siteSettingsLocalNetworkAccessMidSentence';
+    case ContentSettingsTypes.LOCAL_NETWORK:
+      return 'siteSettingsLocalNetworkMidSentence';
+    case ContentSettingsTypes.LOOPBACK_NETWORK:
+      return 'siteSettingsLoopbackNetworkMidSentence';
     case ContentSettingsTypes.MIC:
       return 'siteSettingsMicMidSentence';
     case ContentSettingsTypes.MIDI_DEVICES:
@@ -105,7 +109,6 @@ export function getLocalizationStringForContentType(
     case ContentSettingsTypes.PERFORMANCE:
     case ContentSettingsTypes.PRIVATE_NETWORK_DEVICES:
     case ContentSettingsTypes.SITE_DATA:
-    case ContentSettingsTypes.TRACKING_PROTECTION:
     case ContentSettingsTypes.OFFER_WRITING_HELP:
     case ContentSettingsTypes.SMART_CARD_READERS:
       return null;

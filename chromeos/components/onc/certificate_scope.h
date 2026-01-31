@@ -37,7 +37,7 @@ class COMPONENT_EXPORT(CHROMEOS_ONC) CertificateScope {
   // Parses a CertificateScope from |scope_dict|, which should be a dictionary
   // containing the ONC "Scope" object.
   static std::optional<CertificateScope> ParseFromOncValue(
-      const base::Value::Dict& scope_dict);
+      const base::DictValue& scope_dict);
 
   CertificateScope& operator=(const CertificateScope& other);
   bool operator<(const CertificateScope& other) const;

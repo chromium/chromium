@@ -13,8 +13,10 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/tab/CollectionStorageObserverFactory.java",
     "java/src/org/chromium/chrome/browser/tab/CurrentTabObserver.java",
     "java/src/org/chromium/chrome/browser/tab/EmptyTabObserver.java",
+    "java/src/org/chromium/chrome/browser/tab/LookAheadObservableSupplier.java",
     "java/src/org/chromium/chrome/browser/tab/SadTab.java",
     "java/src/org/chromium/chrome/browser/tab/SadTabView.java",
+    "java/src/org/chromium/chrome/browser/tab/ScopedStorageBatch.java",
     "java/src/org/chromium/chrome/browser/tab/StorageCollectionSynchronizer.java",
     "java/src/org/chromium/chrome/browser/tab/StorageLoadedData.java",
     "java/src/org/chromium/chrome/browser/tab/StorageRestoreOrchestratorFactory.java",
@@ -25,6 +27,7 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/tab/TabContextMenuData.java",
     "java/src/org/chromium/chrome/browser/tab/TabCreationState.java",
     "java/src/org/chromium/chrome/browser/tab/TabDelegateFactory.java",
+    "java/src/org/chromium/chrome/browser/tab/TabDragStateData.java",
     "java/src/org/chromium/chrome/browser/tab/TabGroupCollectionData.java",
     "java/src/org/chromium/chrome/browser/tab/TabHidingType.java",
     "java/src/org/chromium/chrome/browser/tab/TabId.java",
@@ -70,6 +73,7 @@ android_library("java") {
   ]
 
   srcjar_deps = [
+    ":enums_java",
     ":jni_headers",
 
     # TabSelectionType, TabLaunchType
@@ -175,6 +179,7 @@ robolectric_library("junit") {
     "java/src/org/chromium/chrome/browser/tab/CurrentTabObserverTest.java",
     "java/src/org/chromium/chrome/browser/tab/TabAssociatedAppTest.java",
     "java/src/org/chromium/chrome/browser/tab/TabContextMenuDataUnitTest.java",
+    "java/src/org/chromium/chrome/browser/tab/TabDragStateDataTest.java",
     "java/src/org/chromium/chrome/browser/tab/TabIdManagerTest.java",
     "java/src/org/chromium/chrome/browser/tab/TabStateAttributesTest.java",
     "java/src/org/chromium/chrome/browser/tab/TabStateExtractorTest.java",
@@ -191,6 +196,7 @@ robolectric_library("junit") {
     "//chrome/browser/preferences:java",
     "//chrome/browser/profiles/android:java",
     "//chrome/browser/tab/protocol:proto_java",
+    "//chrome/browser/url_constants/android:java",
     "//chrome/test/android:chrome_java_test_support_common",
     "//components/embedder_support/android:util_java",
     "//content/public/android:content_full_java",
@@ -299,4 +305,8 @@ source_set("unit_tests") {
     "//components/tabs:public",
     "//testing/gtest",
   ]
+}
+
+java_cpp_enum("enums_java") {
+  sources = [ "tab_storage_type.h" ]
 }

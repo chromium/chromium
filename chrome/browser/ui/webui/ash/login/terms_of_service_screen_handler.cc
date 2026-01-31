@@ -51,7 +51,7 @@ void TermsOfServiceScreenHandler::DeclareLocalizedValues(
 }
 
 void TermsOfServiceScreenHandler::Show(const std::string& manager) {
-  base::Value::Dict data;
+  base::DictValue data;
   data.Set("manager", manager);
 
   ShowInWebUI(std::move(data));

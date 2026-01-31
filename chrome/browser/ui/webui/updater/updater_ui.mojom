@@ -1,0 +1,71 @@
+// Copyright 2025 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module updater_ui.mojom;
+
+import "chrome/updater/mojom/updater_service.mojom";
+import "mojo/public/mojom/base/file_path.mojom";
+import "mojo/public/mojom/base/time.mojom";
+
+// Factory ensures that the Page and PageHandler interfaces are always created
+// together without requiring an initialization call from the WebUI to the
+// handler.
+interface PageHandlerFactory {
+  // Create a page handler and link it to the UI.
+  CreatePageHandler(
+      pending_remote<Page> page, pending_receiver<PageHandler> handler);
+};
+
+// A snapshot of an updater installation's state.
+struct UpdaterState {
+  // The active version of the updater.
+  string active_version;
+  // Any inactive versions of the updater present in this installation.
+  array<string> inactive_versions;
+  // The time at which the updater last performed an update check.
+  mojo_base.mojom.JSTime? last_checked;
+  // The time at which the updater last attempted its periodic tasks.
+  mojo_base.mojom.JSTime? last_started;
+  // The location on the filesystem of the updater's installation.
+  mojo_base.mojom.FilePath installation_directory;
+  // Enterprise policies governing the behavior of the updater, represented as a
+  // JSON blob conforming to the "Policy Set" format defined in history_log.md.
+  // The Renderer performs no validation of this blob.
+  string policies;
+};
+
+struct GetUpdaterStatesResponse {
+  // The state of the per-system updater, if one is present on the system.
+  UpdaterState? system;
+  // The state of the per-user updater, if one is present for the user.
+  UpdaterState? user;
+};
+
+struct GetUpdaterStatesError {};
+
+enum UpdaterScope {
+  kSystem,
+  kUser,
+};
+
+// Called from TS side of chrome://updater (Renderer -> Browser).
+interface PageHandler {
+  // Retrieves the contents of all available updater history logs. Events are
+  // expected to be JSON blobs conforming to the format defined in
+  // //docs/updater/history_log.md, however the Renderer performs no validation
+  // of event fields. Returned data is untrusted.
+  GetAllUpdaterEvents() => (array<string> events);
+
+  // Retrieves the states of the per-user (for the current user) and per-system
+  // updater installations present on the machine.
+  GetUpdaterStates()
+      => result<GetUpdaterStatesResponse, GetUpdaterStatesError>;
+
+  // Opens the directory containing the updater installation on the filesystem
+  // at the requested scope. Fails silently if the directory does not exist.
+  ShowUpdaterDirectory(UpdaterScope scope);
+};
+
+// Called from C++ side of chrome://updater (Browser -> Renderer).
+interface Page {};

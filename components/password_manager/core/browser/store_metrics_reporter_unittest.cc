@@ -1486,7 +1486,7 @@ TEST_F(StoreMetricsReporterTest, MultiStoreMetrics) {
       test_sync_service()->GetUserSettings()->SetSelectedTypes(
           /*sync_everything=*/false, syncer::UserSelectableTypeSet());
     }
-    ASSERT_EQ(features_util::IsAccountStorageEnabled(sync_service()),
+    ASSERT_EQ(features_util::IsAccountStorageActive(sync_service()),
               account_storage_enabled);
 
     // In every pass in the loop, StoreMetricsReporter uses the same pref

@@ -177,16 +177,6 @@ public interface SiteSettingsDelegate {
      */
     boolean isPartOfManagedRelatedWebsiteSet(String origin);
 
-    /**
-     * @return true if the Tracking Protection UI should be displayed.
-     */
-    boolean shouldShowTrackingProtectionUi();
-
-    /**
-     * @return true if all third-party cookies are blocked when Tracking Protection is on.
-     */
-    boolean isBlockAll3pcEnabledInTrackingProtection();
-
     /** Enables/disables Related Website Sets data access. */
     void setRelatedWebsiteSetsDataAccessEnabled(boolean enabled);
 

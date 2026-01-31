@@ -3,6 +3,8 @@
 // found in the LICENSE file.
 
 #include "extensions/browser/management_policy.h"
+
+#include "base/barrier_callback.h"
 #include "base/logging.h"
 
 namespace extensions {
@@ -15,6 +17,43 @@ void GetExtensionNameAndId(const Extension* extension,
   // The extension may be NULL in testing.
   *id = extension ? extension->id() : "[test]";
   *name = extension ? extension->name() : "test";
+}
+
+// Context object for UserMayInstall, instead of passing a lot of arguments
+// around.
+struct UserMayInstallContext {
+  scoped_refptr<const Extension> extension;
+#if DCHECK_IS_ON() && !defined(NDEBUG)
+  // Extra context for logging in debug builds.
+  const char* debug_operation_name;
+  std::vector<std::string> provider_names;
+#endif  // DCHECK_IS_ON() && !defined(NDEBUG)
+};
+
+// Callback for the BarrierCallback in UserMayInstall().
+void OnUserMayInstallDone(
+    UserMayInstallContext context,
+    base::OnceCallback<void(ManagementPolicy::Decision)> callback,
+    std::vector<ManagementPolicy::Decision> decisions) {
+  const bool normal_result = true;
+  for (size_t i = 0; i < decisions.size(); ++i) {
+    const ManagementPolicy::Decision& decision = decisions[i];
+    if (decision.allowed != normal_result) {
+#if DCHECK_IS_ON() && !defined(NDEBUG)
+      std::string extension_name;
+      std::string extension_id;
+      GetExtensionNameAndId(context.extension.get(), &extension_name,
+                            &extension_id);
+      DCHECK(i < context.provider_names.size());
+      DVLOG(1) << context.debug_operation_name << " of extension "
+               << extension_name << " (" << extension_id << ")"
+               << " prohibited by " << context.provider_names[i];
+#endif  // DCHECK_IS_ON() && !defined(NDEBUG)
+      std::move(callback).Run({!normal_result, std::move(decision.error)});
+      return;
+    }
+  }
+  std::move(callback).Run({normal_result, std::u16string()});
 }
 
 }  // namespace
@@ -30,9 +69,12 @@ bool ManagementPolicy::Provider::UserMayLoad(const Extension* extension,
   return true;
 }
 
-bool ManagementPolicy::Provider::UserMayInstall(const Extension* extension,
-                                                std::u16string* error) const {
-  return UserMayLoad(extension, error);
+void ManagementPolicy::Provider::UserMayInstall(
+    scoped_refptr<const Extension> extension,
+    base::OnceCallback<void(Decision)> callback) const {
+  std::u16string error;
+  bool may_load = UserMayLoad(extension.get(), &error);
+  std::move(callback).Run({may_load, std::move(error)});
 }
 
 bool ManagementPolicy::Provider::UserMayModifySettings(
@@ -91,10 +133,24 @@ bool ManagementPolicy::UserMayLoad(const Extension* extension) const {
                              extension, /*error=*/nullptr);
 }
 
-bool ManagementPolicy::UserMayInstall(const Extension* extension,
-                                      std::u16string* error) const {
-  return ApplyToProviderList(&Provider::UserMayInstall, "Installation", true,
-                             extension, error);
+void ManagementPolicy::UserMayInstall(
+    scoped_refptr<const Extension> extension,
+    base::OnceCallback<void(Decision)> callback) const {
+  UserMayInstallContext context;
+  context.extension = extension;
+#if DCHECK_IS_ON() && !defined(NDEBUG)
+  context.debug_operation_name = "Installation";
+  std::ranges::transform(providers_, std::back_inserter(context.provider_names),
+                         &Provider::GetDebugPolicyProviderName);
+#endif  // DCHECK_IS_ON() && !defined(NDEBUG)
+
+  auto barrier = base::BarrierCallback<Decision>(
+      providers_.size(),
+      base::BindOnce(&OnUserMayInstallDone, std::move(context),
+                     std::move(callback)));
+  for (const Provider* provider : providers_) {
+    provider->UserMayInstall(extension, barrier);
+  }
 }
 
 bool ManagementPolicy::UserMayModifySettings(const Extension* extension,

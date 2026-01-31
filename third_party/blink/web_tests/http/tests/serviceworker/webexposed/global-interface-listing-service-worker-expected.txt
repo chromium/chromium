@@ -688,6 +688,7 @@ interface GPUBuffer
     method destroy
     method getMappedRange
     method mapAsync
+    method mapSync
     method unmap
     setter label
 interface GPUCanvasContext
@@ -967,6 +968,7 @@ interface GPUTexture
     getter label
     getter mipLevelCount
     getter sampleCount
+    getter textureBindingViewDimension
     getter usage
     getter width
     method constructor
@@ -3678,6 +3680,7 @@ namespace GPUTextureUsage
     attribute RENDER_ATTACHMENT
     attribute STORAGE_BINDING
     attribute TEXTURE_BINDING
+    attribute TRANSIENT_ATTACHMENT
 namespace Temporal
     attribute @@toStringTag
     attribute Now

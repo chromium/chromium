@@ -8,6 +8,7 @@
 #include <map>
 #include <memory>
 #include <set>
+#include <string_view>
 #include <vector>
 
 #include "base/functional/callback.h"
@@ -15,10 +16,10 @@
 #include "base/scoped_observation.h"
 #include "chrome/browser/supervised_user/classify_url_navigation_throttle.h"
 #include "chrome/common/supervised_user_commands.mojom.h"
+#include "components/prefs/pref_change_registrar.h"
 #include "components/sessions/core/serialized_navigation_entry.h"
 #include "components/supervised_user/core/browser/supervised_user_error_page.h"
 #include "components/supervised_user/core/browser/supervised_user_service_observer.h"
-#include "components/supervised_user/core/browser/supervised_user_url_filter.h"
 #include "components/supervised_user/core/browser/supervised_user_utils.h"
 #include "components/supervised_user/core/common/supervised_users.h"
 #include "content/public/browser/render_frame_host_receiver_set.h"
@@ -27,6 +28,7 @@
 
 namespace supervised_user {
 class SupervisedUserService;
+class SupervisedUserUrlFilteringService;
 class SupervisedUserInterstitial;
 }  // namespace supervised_user
 
@@ -64,8 +66,7 @@ class SupervisedUserNavigationObserver
 
   // Called when a network request to |url| is blocked.
   static void OnRequestBlocked(content::WebContents* web_contents,
-                               const GURL& url,
-                               supervised_user::FilteringBehaviorReason reason,
+                               supervised_user::WebFilteringResult result,
                                int64_t navigation_id,
                                content::FrameTreeNodeId frame_id,
                                const OnInterstitialResultCallback& callback);
@@ -79,7 +80,6 @@ class SupervisedUserNavigationObserver
 
   // SupervisedUserServiceObserver:
   void OnURLFilterChanged() override;
-  void OnSearchContentFiltersChanged() override;
 
   // Called when interstitial error page is no longer being shown in the main
   // frame.
@@ -100,23 +100,22 @@ class SupervisedUserNavigationObserver
 
   explicit SupervisedUserNavigationObserver(content::WebContents* web_contents);
 
-  void OnRequestBlockedInternal(const GURL& url,
-                                supervised_user::FilteringBehaviorReason reason,
-                                int64_t navigation_id,
-                                content::FrameTreeNodeId frame_id,
-                                const OnInterstitialResultCallback& callback);
+  void OnRequestBlockedInternal(
+      supervised_user::WebFilteringResult filtering_result,
+      int64_t navigation_id,
+      content::FrameTreeNodeId frame_id,
+      const OnInterstitialResultCallback& callback);
 
-  void URLFilterCheckCallback(
-      int render_frame_process_id,
-      int render_frame_routing_id,
-      supervised_user::SupervisedUserURLFilter::Result result);
+  void URLFilterCheckCallback(int render_frame_process_id,
+                              int render_frame_routing_id,
+                              supervised_user::WebFilteringResult result);
 
-  void MaybeShowInterstitial(const GURL& url,
-                             supervised_user::FilteringBehaviorReason reason,
-                             bool initial_page_load,
-                             int64_t navigation_id,
-                             content::FrameTreeNodeId frame_id,
-                             const OnInterstitialResultCallback& callback);
+  void MaybeShowInterstitial(
+      supervised_user::WebFilteringResult filtering_result,
+      bool initial_page_load,
+      int64_t navigation_id,
+      content::FrameTreeNodeId frame_id,
+      const OnInterstitialResultCallback& callback);
 
   // Filters the RenderFrameHost if render frame is live.
   void FilterRenderFrame(content::RenderFrameHost* render_frame_host);
@@ -141,9 +140,19 @@ class SupervisedUserNavigationObserver
   // clear up  entries in |requested_hosts_| which have been allowed.
   void MaybeUpdateRequestedHosts();
 
+  void RecordPageLoadUKM(content::RenderFrameHost* render_frame_host);
+
   content::FrameTreeNodeId frame_tree_node_id();
 
   supervised_user::SupervisedUserService* supervised_user_service() const;
+  supervised_user::SupervisedUserUrlFilteringService*
+  supervised_user_url_filtering_service() const;
+
+#if BUILDFLAG(IS_ANDROID)
+  // Observes changes to the force google safe search pref and reloads the
+  // current page if client-side safe search was turned on for supervised users.
+  void OnForceGoogleSafeSearchChanged(std::string_view safe_search_pref_name);
+#endif  // BUILDFLAG(IS_ANDROID)
 
   base::ScopedObservation<supervised_user::SupervisedUserService,
                           SupervisedUserServiceObserver>
@@ -164,10 +173,13 @@ class SupervisedUserNavigationObserver
       supervised_user::mojom::SupervisedUserCommands>
       receivers_;
 
+#if BUILDFLAG(IS_ANDROID)
+  // Observes safe search feature driver in pref service.
+  PrefChangeRegistrar pref_change_registrar_;
+#endif  // BUILDFLAG(IS_ANDROID)
+
   base::WeakPtrFactory<SupervisedUserNavigationObserver> weak_ptr_factory_{
       this};
-
-  void RecordPageLoadUKM(content::RenderFrameHost* render_frame_host);
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 };

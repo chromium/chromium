@@ -22,6 +22,9 @@ inline constexpr char kUsageStatsEnabledValueEnabled[] = "1";
 
 inline constexpr char kSetupMutex[] = SETUP_MUTEX;
 
+// The value of `request.updater` sent to the update server.
+inline constexpr char kProdId[] = PRODUCT_FULLNAME_STRING;
+
 }  // namespace updater
 
 #endif  // CHROME_UPDATER_BRANDED_CONSTANTS_H_

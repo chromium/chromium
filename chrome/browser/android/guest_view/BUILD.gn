@@ -1,0 +1,31 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/android/config.gni")
+import("//components/guest_view/buildflags/buildflags.gni")
+import("//extensions/buildflags/buildflags.gni")
+
+assert(is_android)
+assert(enable_guest_view)
+assert(!enable_extensions_core)
+
+source_set("guest_view") {
+  sources = [
+    "chrome_content_browser_client_guest_view_part.cc",
+    "chrome_content_browser_client_guest_view_part.h",
+    "chrome_guest_view.cc",
+    "chrome_guest_view.h",
+    "chrome_guest_view_manager_delegate.cc",
+    "chrome_guest_view_manager_delegate.h",
+  ]
+  deps = [
+    "//chrome/browser:chrome_content_browser_client_parts",
+    "//chrome/browser/glic",
+    "//chrome/browser/task_manager",
+    "//components/guest_view/browser",
+    "//components/guest_view/browser/slim_web_view",
+    "//components/guest_view/common:mojom",
+    "//content/public/browser",
+  ]
+}

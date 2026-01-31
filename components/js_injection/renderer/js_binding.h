@@ -18,8 +18,8 @@
 #include "gin/wrappable.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
 #include "third_party/blink/public/common/messaging/string_message_codec.h"
-#include "v8/include/v8.h"
 #include "v8/include/cppgc/persistent.h"
+#include "v8/include/v8.h"
 
 namespace v8 {
 template <typename T>
@@ -40,16 +40,17 @@ class JsCommunication;
 class JsBinding final : public gin::Wrappable<JsBinding>,
                         public mojom::BrowserToJsMessaging {
  public:
-  static constexpr gin::WrapperInfo kWrapperInfo = {
-      {gin::kEmbedderNativeGin}, gin::kJsBinding};
+  static constexpr gin::WrapperInfo kWrapperInfo = {{gin::kEmbedderNativeGin},
+                                                    gin::kJsBinding};
 
   JsBinding(const JsBinding&) = delete;
   JsBinding& operator=(const JsBinding&) = delete;
 
   // Make public for cppgc::MakeGarbageCollected.
   JsBinding(content::RenderFrame* render_frame,
-                     const std::u16string& js_object_name,
-                     base::WeakPtr<JsCommunication> js_communication);
+            const std::u16string& js_object_name,
+            base::WeakPtr<JsCommunication> js_communication,
+            int32_t world_id);
   ~JsBinding() override;
 
   static cppgc::WeakPersistent<JsBinding> Install(
@@ -57,7 +58,10 @@ class JsBinding final : public gin::Wrappable<JsBinding>,
       const std::u16string& js_object_name,
       base::WeakPtr<JsCommunication> js_communication,
       v8::Isolate* isolate,
-      v8::Local<v8::Context> context);
+      v8::Local<v8::Context> context,
+      int32_t world_id);
+
+  int32_t world_id() const { return world_id_; }
 
   // mojom::BrowserToJsMessaging implementation.
   void OnPostMessage(blink::WebMessagePayload message) override;
@@ -99,6 +103,7 @@ class JsBinding final : public gin::Wrappable<JsBinding>,
   std::u16string js_object_name_;
   v8::Global<v8::Function> on_message_;
   std::vector<v8::Global<v8::Function>> listeners_;
+  int32_t world_id_;
 
   base::WeakPtr<JsCommunication> js_communication_;
 

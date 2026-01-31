@@ -147,6 +147,7 @@ class DevToolsEmbedderMessageDispatcher {
                                     const std::string& request) = 0;
     virtual void RegisterAidaClientEvent(DispatchCallback callback,
                                          const std::string& request) = 0;
+    virtual void SetChromeFlag(const std::string& flag_name, bool value) = 0;
     virtual void DispatchHttpRequest(
         DispatchCallback callback,
         const DevToolsDispatchHttpRequestParams& body) = 0;
@@ -157,7 +158,7 @@ class DevToolsEmbedderMessageDispatcher {
   virtual ~DevToolsEmbedderMessageDispatcher() = default;
   virtual bool Dispatch(DispatchCallback callback,
                         const std::string& method,
-                        const base::Value::List& params) = 0;
+                        const base::ListValue& params) = 0;
 
   static std::unique_ptr<DevToolsEmbedderMessageDispatcher>
   CreateForDevToolsFrontend(Delegate* delegate);

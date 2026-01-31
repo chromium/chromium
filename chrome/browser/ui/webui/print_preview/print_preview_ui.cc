@@ -203,6 +203,7 @@ void AddPrintPreviewStrings(content::WebUIDataSource* source) {
       {"noMargins", IDS_PRINT_PREVIEW_NO_MARGINS},
       {"nonIsotropicDpiItemLabel",
        IDS_PRINT_PREVIEW_NON_ISOTROPIC_DPI_ITEM_LABEL},
+      {"optionActualSize", IDS_PRINT_PREVIEW_OPTION_ACTUAL_SIZE},
       {"optionAllPages", IDS_PRINT_PREVIEW_OPTION_ALL_PAGES},
       {"optionBackgroundColorsAndImages",
        IDS_PRINT_PREVIEW_OPTION_BACKGROUND_COLORS_AND_IMAGES},
@@ -320,7 +321,7 @@ void AddPrintPreviewStrings(content::WebUIDataSource* source) {
 #endif
 
   // Register strings for the PDF viewer, so that $i18n{} replacements work.
-  base::Value::Dict pdf_strings = pdf_extension_util::GetStrings(
+  base::DictValue pdf_strings = pdf_extension_util::GetStrings(
       pdf_extension_util::PdfViewerContext::kPrintPreview);
   source->AddLocalizedStrings(pdf_strings);
 }
@@ -901,7 +902,7 @@ void PrintPreviewUI::DidGetDefaultPageLayout(
     return;
   }
 
-  base::Value::Dict layout;
+  base::DictValue layout;
   layout.Set(kSettingMarginTop, page_layout_in_points->margin_top);
   layout.Set(kSettingMarginLeft, page_layout_in_points->margin_left);
   layout.Set(kSettingMarginBottom, page_layout_in_points->margin_bottom);

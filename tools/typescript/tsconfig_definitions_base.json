@@ -1,6 +1,8 @@
 {
   "compilerOptions": {
-    "module": "ESNext",
+    "module": "preserve",
+    "moduleResolution": "bundler",
+    "resolvePackageJsonExports": false,
     "target": "ESNext",
     "noEmitOnError": true,
 

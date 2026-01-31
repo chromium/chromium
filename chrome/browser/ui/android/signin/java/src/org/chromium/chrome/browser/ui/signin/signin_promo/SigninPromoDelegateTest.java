@@ -8,10 +8,8 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.eq;
 import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
 
 import android.content.Context;
 import android.graphics.drawable.BitmapDrawable;
@@ -49,6 +47,7 @@ import org.chromium.chrome.browser.ui.signin.BottomSheetSigninAndHistorySyncConf
 import org.chromium.chrome.browser.ui.signin.SigninAndHistorySyncActivityLauncher;
 import org.chromium.chrome.browser.ui.signin.history_sync.HistorySyncHelper;
 import org.chromium.chrome.test.util.browser.signin.AccountManagerTestRule;
+import org.chromium.components.signin.SigninFeatures;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.identitymanager.IdentityManager;
@@ -61,6 +60,7 @@ import java.util.Collections;
 import java.util.Set;
 
 @RunWith(BaseRobolectricTestRunner.class)
+@EnableFeatures(SigninFeatures.ENABLE_SEAMLESS_SIGNIN)
 public class SigninPromoDelegateTest {
     @Rule
     public final MockitoRule mMockitoRule = MockitoJUnit.rule().strictness(Strictness.STRICT_STUBS);
@@ -113,6 +113,7 @@ public class SigninPromoDelegateTest {
                 .removeKey(ChromePreferenceKeys.SIGNIN_PROMO_BOOKMARKS_DECLINED);
         ChromeSharedPreferences.getInstance()
                 .removeKey(ChromePreferenceKeys.SIGNIN_PROMO_NTP_PROMO_DISMISSED);
+        SigninPreferencesManager.getInstance().clearNewTabPageSigninPromoSuppressionPeriodStart();
     }
 
     @Test
@@ -395,8 +396,38 @@ public class SigninPromoDelegateTest {
         mAccountManagerTestRule.addAccount(TestAccounts.ACCOUNT1);
         doReturn(TestAccounts.ACCOUNT1)
                 .when(mIdentityManager)
-                .findExtendedAccountInfoByEmailAddress(TestAccounts.ACCOUNT1.getEmail());
+                .findExtendedAccountInfoByAccountId(TestAccounts.ACCOUNT1.getId());
         setupDelegate(SigninAccessPoint.NTP_FEED_TOP_PROMO, TestAccounts.ACCOUNT1);
+
+        assertTrue(mDelegate.canShowPromo());
+    }
+
+    @Test
+    public void testNtpPromoHidden_withinSuppressionPeriod() {
+        SigninPreferencesManager.getInstance()
+                .setNewTabPageSigninPromoSuppressionPeriodStart(System.currentTimeMillis());
+        setupDelegate(SigninAccessPoint.NTP_FEED_TOP_PROMO, /* visibleAccount= */ null);
+
+        assertFalse(mDelegate.canShowPromo());
+    }
+
+    @Test
+    public void testNtpPromoShown_outsideSuppressionPeriod() {
+        doReturn(true).when(mSigninManager).isSigninAllowed();
+        SigninPreferencesManager.getInstance()
+                .setNewTabPageSigninPromoSuppressionPeriodStart(
+                        System.currentTimeMillis()
+                                - NtpSigninPromoDelegate.SUPPRESSION_PERIOD_MS
+                                - 1);
+        setupDelegate(SigninAccessPoint.NTP_FEED_TOP_PROMO, /* visibleAccount= */ null);
+
+        assertTrue(mDelegate.canShowPromo());
+    }
+
+    @Test
+    public void testNtpPromoShown_noSuppressionSet() {
+        doReturn(true).when(mSigninManager).isSigninAllowed();
+        setupDelegate(SigninAccessPoint.NTP_FEED_TOP_PROMO, /* visibleAccount= */ null);
 
         assertTrue(mDelegate.canShowPromo());
     }
@@ -485,7 +516,6 @@ public class SigninPromoDelegateTest {
     }
 
     @Test
-    @EnableFeatures("EnableSeamlessSignin")
     public void testRecentTabsPromo_seamlessFlow_accountOnDevice_launchesSeamlessSignin() {
         HistorySyncHelper.setInstanceForTesting(mHistorySyncHelper);
         doReturn(true).when(mHistorySyncHelper).shouldDisplayHistorySync();
@@ -494,102 +524,91 @@ public class SigninPromoDelegateTest {
         setupDelegate(SigninAccessPoint.RECENT_TABS, TestAccounts.ACCOUNT1);
         assertTrue(mDelegate.canShowPromo());
 
-        mDelegate.onPrimaryButtonClicked(TestAccounts.ACCOUNT1);
-
-        BottomSheetSigninAndHistorySyncConfig config = getBottomSheetConfiguration();
+        BottomSheetSigninAndHistorySyncConfig config =
+                mDelegate.getConfigForPrimaryButtonClick(TestAccounts.ACCOUNT1);
         assertEquals(WithAccountSigninMode.SEAMLESS_SIGNIN, config.withAccountSigninMode);
     }
 
     @Test
-    @EnableFeatures("EnableSeamlessSignin")
     public void testBookmarkPromo_seamlessFlow_accountOnDevice_launchesSeamlessSignin() {
         doReturn(true).when(mSigninManager).isSigninAllowed();
         mAccountManagerTestRule.addAccount(TestAccounts.ACCOUNT1);
         setupDelegate(SigninAccessPoint.BOOKMARK_MANAGER, TestAccounts.ACCOUNT1);
         assertTrue(mDelegate.canShowPromo());
 
-        mDelegate.onPrimaryButtonClicked(TestAccounts.ACCOUNT1);
-
-        BottomSheetSigninAndHistorySyncConfig config = getBottomSheetConfiguration();
+        BottomSheetSigninAndHistorySyncConfig config =
+                mDelegate.getConfigForPrimaryButtonClick(TestAccounts.ACCOUNT1);
         assertEquals(WithAccountSigninMode.SEAMLESS_SIGNIN, config.withAccountSigninMode);
     }
 
     @Test
-    @EnableFeatures("EnableSeamlessSignin")
     public void testNtpPromo_seamlessFlow_accountOnDevice_launchesSeamlessSignin() {
         doReturn(true).when(mSigninManager).isSigninAllowed();
         mAccountManagerTestRule.addAccount(TestAccounts.ACCOUNT1);
         doReturn(TestAccounts.ACCOUNT1)
                 .when(mIdentityManager)
-                .findExtendedAccountInfoByEmailAddress(TestAccounts.ACCOUNT1.getEmail());
+                .findExtendedAccountInfoByAccountId(TestAccounts.ACCOUNT1.getId());
         setupDelegate(SigninAccessPoint.NTP_FEED_TOP_PROMO, TestAccounts.ACCOUNT1);
         assertTrue(mDelegate.canShowPromo());
 
-        mDelegate.onPrimaryButtonClicked(TestAccounts.ACCOUNT1);
-
-        BottomSheetSigninAndHistorySyncConfig config = getBottomSheetConfiguration();
+        BottomSheetSigninAndHistorySyncConfig config =
+                mDelegate.getConfigForPrimaryButtonClick(TestAccounts.ACCOUNT1);
         assertEquals(WithAccountSigninMode.SEAMLESS_SIGNIN, config.withAccountSigninMode);
     }
 
     @Test
-    @EnableFeatures("EnableSeamlessSignin")
     public void testNtpPromoLaunches_seamlessFlow_noAccountOnDevice_fallbacksToBottomSheet() {
         doReturn(true).when(mSigninManager).isSigninAllowed();
         setupDelegate(SigninAccessPoint.NTP_FEED_TOP_PROMO, /* visibleAccount= */ null);
         assertTrue(mDelegate.canShowPromo());
 
-        mDelegate.onPrimaryButtonClicked(null);
-
-        BottomSheetSigninAndHistorySyncConfig config = getBottomSheetConfiguration();
+        BottomSheetSigninAndHistorySyncConfig config =
+                mDelegate.getConfigForPrimaryButtonClick(null);
         assertEquals(
                 WithAccountSigninMode.DEFAULT_ACCOUNT_BOTTOM_SHEET, config.withAccountSigninMode);
     }
 
     @Test
-    @EnableFeatures("EnableSeamlessSignin")
     public void testNtpPromo_seamlessFlow_accountOnDevice_secondaryButtonShowsSnackbar() {
         doReturn(true).when(mSigninManager).isSigninAllowed();
         mAccountManagerTestRule.addAccount(TestAccounts.ACCOUNT1);
         doReturn(TestAccounts.ACCOUNT1)
                 .when(mIdentityManager)
-                .findExtendedAccountInfoByEmailAddress(TestAccounts.ACCOUNT1.getEmail());
+                .findExtendedAccountInfoByAccountId(TestAccounts.ACCOUNT1.getId());
         setupDelegate(SigninAccessPoint.NTP_FEED_TOP_PROMO, TestAccounts.ACCOUNT1);
         assertTrue(mDelegate.canShowPromo());
 
-        mDelegate.onSecondaryButtonClicked();
+        BottomSheetSigninAndHistorySyncConfig config = mDelegate.getConfigForSecondaryButtonClick();
 
-        BottomSheetSigninAndHistorySyncConfig config = getBottomSheetConfiguration();
         assertEquals(
                 WithAccountSigninMode.CHOOSE_ACCOUNT_BOTTOM_SHEET, config.withAccountSigninMode);
         assertTrue(config.shouldShowSigninSnackbar);
-    }
-
-    private BottomSheetSigninAndHistorySyncConfig getBottomSheetConfiguration() {
-        verify(mLauncher)
-                .createBottomSheetSigninIntentOrShowError(
-                        eq(mContext),
-                        eq(mProfile),
-                        mConfigCaptor.capture(),
-                        eq(mDelegate.getAccessPoint()));
-        return mConfigCaptor.getValue();
     }
 
     private void setupDelegate(
             @SigninAccessPoint int accessPoint, @Nullable CoreAccountInfo visibleAccount) {
         mDelegate =
                 switch (accessPoint) {
-                    case SigninAccessPoint.BOOKMARK_MANAGER -> new BookmarkSigninPromoDelegate(
-                            mContext, mProfile, mLauncher, mOnPromoStateChange, mOnOpenSettings);
-                    case SigninAccessPoint.HISTORY_PAGE -> new HistoryPageSigninPromoDelegate(
-                            mContext,
-                            mProfile,
-                            mLauncher,
-                            mOnPromoStateChange,
-                            /* isCreatedInCct= */ false);
-                    case SigninAccessPoint.NTP_FEED_TOP_PROMO -> new NtpSigninPromoDelegate(
-                            mContext, mProfile, mLauncher, mOnPromoStateChange);
-                    case SigninAccessPoint.RECENT_TABS -> new RecentTabsSigninPromoDelegate(
-                            mContext, mProfile, mLauncher, mOnPromoStateChange);
+                    case SigninAccessPoint.BOOKMARK_MANAGER ->
+                            new BookmarkSigninPromoDelegate(
+                                    mContext,
+                                    mProfile,
+                                    mLauncher,
+                                    mOnPromoStateChange,
+                                    mOnOpenSettings);
+                    case SigninAccessPoint.HISTORY_PAGE ->
+                            new HistoryPageSigninPromoDelegate(
+                                    mContext,
+                                    mProfile,
+                                    mLauncher,
+                                    mOnPromoStateChange,
+                                    /* isCreatedInCct= */ false);
+                    case SigninAccessPoint.NTP_FEED_TOP_PROMO ->
+                            new NtpSigninPromoDelegate(
+                                    mContext, mProfile, mLauncher, mOnPromoStateChange);
+                    case SigninAccessPoint.RECENT_TABS ->
+                            new RecentTabsSigninPromoDelegate(
+                                    mContext, mProfile, mLauncher, mOnPromoStateChange);
                     default -> throw new IllegalArgumentException();
                 };
         mDelegate.refreshPromoState(visibleAccount);

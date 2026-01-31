@@ -111,7 +111,7 @@ void ReduceAcceptLanguageService::PersistReducedLanguage(
 
   const base::TimeTicks start_time = base::TimeTicks::Now();
 
-  base::Value::Dict accept_language_dictionary;
+  base::DictValue accept_language_dictionary;
   base::TimeDelta cache_duration =
       network::features::kReduceAcceptLanguageCacheDuration.Get();
 

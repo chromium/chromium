@@ -35,6 +35,7 @@
 #include "third_party/blink/renderer/core/editing/visible_position.h"
 #include "third_party/blink/renderer/core/editing/visible_selection.h"
 #include "third_party/blink/renderer/core/editing/visible_units.h"
+#include "third_party/blink/renderer/core/html/custom/custom_element_registry.h"
 #include "third_party/blink/renderer/core/html/html_br_element.h"
 #include "third_party/blink/renderer/core/html/html_element.h"
 #include "third_party/blink/renderer/core/html/html_li_element.h"
@@ -100,7 +101,7 @@ bool IndentOutdentCommand::TryIndentingAsListItem(
   // CSS selector.
   auto* new_list = To<HTMLElement>(GetDocument().CreateElement(
       list_element->TagQName(), CreateElementFlags::ByCloneNode(), g_null_atom,
-      /*registry*/ nullptr));
+      CustomElementRegistry::DefaultRegistry(GetDocument())));
   InsertNodeBefore(new_list, selected_list_item, editing_state);
   if (editing_state->IsAborted())
     return false;

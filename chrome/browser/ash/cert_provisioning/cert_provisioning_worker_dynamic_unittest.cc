@@ -4758,7 +4758,7 @@ TEST_F(CertProvisioningWorkerDynamicTest, SerializationSuccessRsaKeys) {
 
   StrictMock<PrefServiceObserver> pref_observer(
       &testing_pref_service_, GetPrefNameForSerialization(kCertScope));
-  base::Value::Dict pref_val;
+  base::DictValue pref_val;
 
   EXPECT_CALL(state_change_callback_observer_, StateChangeCallback)
       .Times(AtLeast(1));
@@ -5101,7 +5101,7 @@ TEST_F(CertProvisioningWorkerDynamicTest, SerializationSuccessEcKeys) {
 
   StrictMock<PrefServiceObserver> pref_observer(
       &testing_pref_service_, GetPrefNameForSerialization(kCertScope));
-  base::Value::Dict pref_val;
+  base::DictValue pref_val;
 
   EXPECT_CALL(state_change_callback_observer_, StateChangeCallback)
       .Times(AtLeast(1));
@@ -5439,7 +5439,7 @@ TEST_F(CertProvisioningWorkerDynamicTest, SerializationOnFailureRsaKeys) {
 
   PrefServiceObserver pref_observer(&testing_pref_service_,
                                     GetPrefNameForSerialization(kCertScope));
-  base::Value::Dict pref_val;
+  base::DictValue pref_val;
 
   EXPECT_CALL(state_change_callback_observer_, StateChangeCallback)
       .Times(AtLeast(1));
@@ -5516,7 +5516,7 @@ TEST_F(CertProvisioningWorkerDynamicTest, SerializationOnFailureEcKeys) {
 
   PrefServiceObserver pref_observer(&testing_pref_service_,
                                     GetPrefNameForSerialization(kCertScope));
-  base::Value::Dict pref_val;
+  base::DictValue pref_val;
 
   EXPECT_CALL(state_change_callback_observer_, StateChangeCallback)
       .Times(AtLeast(1));
@@ -5727,7 +5727,7 @@ TEST_F(CertProvisioningWorkerDynamicTest, CancelDeviceWorkerRsaKeys) {
 
   PrefServiceObserver pref_observer(&testing_pref_service_,
                                     GetPrefNameForSerialization(kCertScope));
-  base::Value::Dict pref_val;
+  base::DictValue pref_val;
 
   {
     testing::InSequence seq;
@@ -5815,7 +5815,7 @@ TEST_F(CertProvisioningWorkerDynamicTest, CancelDeviceWorkerEcKeys) {
 
   PrefServiceObserver pref_observer(&testing_pref_service_,
                                     GetPrefNameForSerialization(kCertScope));
-  base::Value::Dict pref_val;
+  base::DictValue pref_val;
 
   {
     testing::InSequence seq;

@@ -30,7 +30,7 @@ class FakePagePrintRequestHandler : public PagePrintRequestHandler {
       base::OnceCallback<void(std::unique_ptr<BinaryUploadRequest>)>
           upload_callback,
       ContentAnalysisInfo* content_analysis_info,
-      safe_browsing::BinaryUploadService* upload_service,
+      BinaryUploadService* upload_service,
       Profile* profile,
       GURL url,
       const std::string& printer_name,
@@ -344,8 +344,7 @@ bool FakeContentAnalysisDelegate::CancelDialog() {
   return ContentAnalysisDelegate::CancelDialog();
 }
 
-safe_browsing::BinaryUploadService*
-FakeContentAnalysisDelegate::GetBinaryUploadService() {
+BinaryUploadService* FakeContentAnalysisDelegate::GetBinaryUploadService() {
   // This class overrides the upload service, so just return null here.
   return nullptr;
 }

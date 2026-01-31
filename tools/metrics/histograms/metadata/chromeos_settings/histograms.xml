@@ -44,7 +44,7 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ChromeOS.Settings.Accessibility.CaretBlinkInterval" units="ms"
-    expires_after="2026-05-31">
+    expires_after="2026-09-23">
   <owner>katie@chromium.org</owner>
   <owner>chrome-a11y-core@google.com</owner>
   <summary>
@@ -76,7 +76,7 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ChromeOS.Settings.Accessibility.ConnectBrailleDisplay"
-    enum="BooleanConnected" expires_after="2026-02-01">
+    enum="BooleanConnected" expires_after="2026-09-23">
   <owner>dtseng@chromium.org</owner>
   <owner>katie@chromium.org</owner>
   <owner>chrome-a11y-core@google.com</owner>
@@ -125,7 +125,7 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ChromeOS.Settings.Accessibility.MagnifierFollowsChromeVox"
-    enum="BooleanToggled" expires_after="2026-01-25">
+    enum="BooleanToggled" expires_after="2026-09-23">
   <owner>aldietz@google.com</owner>
   <owner>chromeos-a11y-eng@google.com</owner>
   <summary>
@@ -135,7 +135,7 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ChromeOS.Settings.Accessibility.{SettingType}.Enabled"
-    enum="BooleanToggled" expires_after="2026-05-31">
+    enum="BooleanToggled" expires_after="2026-09-23">
   <owner>katie@chromium.org</owner>
   <owner>chromeos-a11y-eng@google.com</owner>
   <summary>
@@ -227,7 +227,7 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ChromeOS.Settings.Device.Keyboard.BrightnessSliderAdjusted"
-    units="%" expires_after="2026-03-01">
+    units="%" expires_after="2027-03-01">
   <owner>longbo@google.com</owner>
   <owner>jimmyxgong@chromium.org</owner>
   <owner>cros-device-enablement@google.com</owner>
@@ -352,7 +352,7 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ChromeOS.Settings.Display.MirrorModeStatus"
-    enum="DisplaySettingsBoolean" expires_after="2026-01-11">
+    enum="DisplaySettingsBoolean" expires_after="2026-06-28">
   <owner>zhangwenyu@google.com</owner>
   <owner>cros-device-enablement@google.com</owner>
   <summary>
@@ -362,7 +362,7 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ChromeOS.Settings.Display.NewDisplayConnected"
-    enum="DisplayType" expires_after="2026-05-24">
+    enum="DisplayType" expires_after="2026-07-26">
   <owner>zhangwenyu@google.com</owner>
   <owner>cros-device-enablement@google.com</owner>
   <summary>
@@ -384,7 +384,7 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ChromeOS.Settings.Display.{DisplayType}"
-    enum="DisplaySettingsType" expires_after="2026-05-24">
+    enum="DisplaySettingsType" expires_after="2026-07-26">
   <owner>zhangwenyu@google.com</owner>
   <owner>cros-device-enablement@google.com</owner>
   <summary>
@@ -426,7 +426,7 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ChromeOS.Settings.Display.{DisplayType}.Orientation"
-    enum="DisplaySettingsOrientationOption" expires_after="2026-04-26">
+    enum="DisplaySettingsOrientationOption" expires_after="2026-06-28">
   <owner>zhangwenyu@google.com</owner>
   <owner>cros-device-enablement@google.com</owner>
   <summary>
@@ -621,7 +621,7 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ChromeOS.Settings.MagicBoost.Enabled" enum="BooleanToggled"
-    expires_after="2026-04-26">
+    expires_after="2026-06-28">
   <owner>alanlxl@google.com</owner>
   <owner>thanhdng@chromium.org</owner>
   <summary>
@@ -651,7 +651,7 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ChromeOS.Settings.MagicBoost.LobsterEnabled"
-    enum="BooleanToggled" expires_after="2026-05-24">
+    enum="BooleanToggled" expires_after="2026-07-26">
   <owner>curtismcmullan@google.com</owner>
   <owner>hdchuong@google.com</owner>
   <summary>
@@ -758,7 +758,7 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ChromeOS.Settings.OverscrollHistoryNavigation.Enabled"
-    enum="BooleanEnabled" expires_after="2026-03-01">
+    enum="BooleanEnabled" expires_after="2026-09-23">
   <owner>katie@chromium.org</owner>
   <owner>chrome-a11y-core@google.com</owner>
   <summary>

@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/views/frame/layout/browser_view_layout_impl.h"
 
 #include "chrome/browser/ui/views/bookmarks/bookmark_bar_view.h"
+#include "chrome/browser/ui/views/frame/custom_corners_background.h"
 #include "chrome/browser/ui/views/frame/immersive_mode_controller.h"
 #include "chrome/browser/ui/views/frame/layout/browser_view_layout_delegate.h"
 #include "ui/base/ui_base_features.h"
@@ -189,19 +190,14 @@ gfx::Rect BrowserViewLayoutImpl::GetTopContainerBoundsInParent(
     // If the immersive mode controller is animating the top container overlay,
     // it may be partly offscreen. The controller knows where the container
     // needs to be.
-    top =
-        delegate().GetImmersiveModeController()->GetTopContainerVerticalOffset(
-            gfx::Size(parent_params.visual_client_area.width(), height));
+    top = controller->GetTopContainerVerticalOffset(
+        gfx::Size(parent_params.visual_client_area.width(), height));
   }
 
   gfx::Rect bounds = local_bounds;
   bounds.set_y(top);
   bounds.Offset(parent_params.visual_client_area.OffsetFromOrigin());
   return bounds;
-}
-
-int BrowserViewLayoutImpl::GetMinWebContentsWidthForTesting() const {
-  return kContentsContainerMinimumWidth;
 }
 
 // Layout logic.
@@ -270,8 +266,32 @@ void BrowserViewLayoutImpl::Layout(views::View* host) {
     apply_bottom_paint_allowance(views().top_container);
   }
 
+  // Change how the top container is painted based on layout.
+  auto* const background = static_cast<CustomCornersBackground*>(
+      views().top_container->background());
+  ConfigureTopContainerBackground(params, background);
+
   // Do any additional adjustments required by the specific layout.
-  DoPostLayoutVisualAdjustments();
+  DoPostLayoutVisualAdjustments(params);
+
+  // Update bubbles (like the find bar).
+  UpdateBubbles();
+}
+
+void BrowserViewLayoutImpl::ConfigureTopContainerBackground(
+    const BrowserLayoutParams& params,
+    CustomCornersBackground* background) {
+  if (delegate().GetBrowserWindowState() == WindowState::kFullscreen) {
+    // When in immersive mode, top container is painted with the frame color.
+    // The color matches the active frame, allowing the tabstrip to paint
+    // correctly.
+    background->SetVisible(true);
+    background->SetPrimaryColor(ui::kColorFrameActive);
+    background->SetCorners(CustomCornersBackground::Corners());
+  } else {
+    // No need to paint otherwise.
+    background->SetVisible(false);
+  }
 }
 
 // Dialog positioning.
@@ -311,9 +331,6 @@ gfx::Point BrowserViewLayoutImpl::GetDialogPosition(
   const int dialog_y = GetDialogTop(layout);
   gfx::Rect dialog_rect(dialog_x, dialog_y, dialog_size.width(),
                         dialog_size.height());
-
-  // Convert to widget coordinates.
-  dialog_rect = views().browser_view->ConvertRectToWidget(dialog_rect);
 
   // TODO: consider whether this should change in RTL?
   return gfx::Point(dialog_rect.origin());

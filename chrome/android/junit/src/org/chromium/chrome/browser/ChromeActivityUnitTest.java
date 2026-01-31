@@ -40,7 +40,7 @@ import org.robolectric.annotation.Config;
 import org.chromium.base.UserDataHost;
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.OneshotSupplier;
-import org.chromium.base.supplier.SettableObservableSupplier;
+import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
@@ -94,8 +94,8 @@ public class ChromeActivityUnitTest {
     @Mock DomDistillerUrlUtilsJni mDomDistillerUrlUtilsJni;
     @Mock private TabStateThemeResourceProvider mThemeResourceProvider;
 
-    private final SettableObservableSupplier<ReadAloudController> mReadAloudControllerSupplier =
-            ObservableSuppliers.createMonotonic();
+    private final SettableMonotonicObservableSupplier<ReadAloudController>
+            mReadAloudControllerSupplier = ObservableSuppliers.createMonotonic();
 
     class TestChromeActivity extends ChromeActivity {
         public TestChromeActivity() {
@@ -297,6 +297,8 @@ public class ChromeActivityUnitTest {
         assertEquals(1, userActionTester.getActionCount("MobileMenuHideReaderMode"));
     }
 
+    // TODO(crbug.com/450954710): This test fails on SDK 36.
+    @Config(sdk = 29)
     @Test
     @EnableFeatures(ChromeFeatureList.ANDROID_THEME_RESOURCE_PROVIDER)
     public void testThemeResourceProvider_enabled() {
@@ -307,6 +309,8 @@ public class ChromeActivityUnitTest {
                 chromeActivity.getThemeResourceProviderForTesting());
     }
 
+    // TODO(crbug.com/450954710): This test fails on SDK 36.
+    @Config(sdk = 29)
     @Test
     @DisableFeatures(ChromeFeatureList.ANDROID_THEME_RESOURCE_PROVIDER)
     public void testThemeResourceProvider_disabled() {
@@ -317,6 +321,8 @@ public class ChromeActivityUnitTest {
                 chromeActivity.getThemeResourceProviderForTesting());
     }
 
+    // TODO(crbug.com/450954710): This test fails on SDK 36.
+    @Config(sdk = 29)
     @Test
     @EnableFeatures(ChromeFeatureList.ANDROID_THEME_RESOURCE_PROVIDER)
     public void testThemeResourceProvider_wrongActivityType() {

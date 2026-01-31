@@ -629,7 +629,7 @@ std::optional<std::string> AppUpdate::SelectedLocale() const {
 bool AppUpdate::SelectedLocaleChanged() const {
     RETURN_OPTIONAL_VALUE_CHANGED(selected_locale)}
 
-std::optional<base::Value::Dict> AppUpdate::Extra() const {
+std::optional<base::DictValue> AppUpdate::Extra() const {
   if (delta_ && delta_->extra.has_value()) {
     return delta_->extra->Clone();
   }

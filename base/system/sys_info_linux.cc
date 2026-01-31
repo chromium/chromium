@@ -11,7 +11,6 @@
 #include <sstream>
 #include <type_traits>
 
-#include "base/byte_count.h"
 #include "base/byte_size.h"
 #include "base/check.h"
 #include "base/files/file_util.h"
@@ -26,27 +25,27 @@
 
 namespace {
 
-base::ByteCount AmountOfMemory(int pages_name) {
+base::ByteSize AmountOfMemory(int pages_name) {
   long pages = sysconf(pages_name);
   long page_size = sysconf(_SC_PAGESIZE);
   if (pages < 0 || page_size < 0) {
-    return base::ByteCount(0);
+    return base::ByteSize(0);
   }
-  return base::ByteCount(page_size) * pages;
+  return base::ByteSize(base::checked_cast<unsigned long>(page_size)) * pages;
 }
 
-base::ByteCount AmountOfPhysicalMemory() {
+base::ByteSize AmountOfPhysicalMemory() {
   return AmountOfMemory(_SC_PHYS_PAGES);
 }
 using LazyPhysicalMemory =
-    base::internal::LazySysInfoValue<base::ByteCount, AmountOfPhysicalMemory>;
+    base::internal::LazySysInfoValue<base::ByteSize, AmountOfPhysicalMemory>;
 
 }  // namespace
 
 namespace base {
 
 // static
-ByteCount SysInfo::AmountOfPhysicalMemoryImpl() {
+ByteSize SysInfo::AmountOfTotalPhysicalMemoryImpl() {
   static_assert(std::is_trivially_destructible<LazyPhysicalMemory>::value);
   static LazyPhysicalMemory physical_memory;
   return physical_memory.value();

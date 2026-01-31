@@ -51,6 +51,7 @@ public class EducationalTipModuleViewUnitTest {
     @Before
     public void setUp() {
         mContext = ApplicationProvider.getApplicationContext();
+        mContext.setTheme(R.style.Theme_BrowserUI_DayNight);
 
         mModuleView =
                 (EducationalTipModuleView)
@@ -128,5 +129,48 @@ public class EducationalTipModuleViewUnitTest {
                 .onLayoutChange(mMockContentTitleView, 0, 0, 0, 0, 0, 0, 0, 0);
 
         verify(mMockContentTitleView, times(1)).post(any());
+    }
+
+    @Test
+    @SmallTest
+    public void testSetCompleted_True() {
+        mModuleView.setCompleted(true);
+        verifySetCompleted();
+    }
+
+    @Test
+    @SmallTest
+    public void testSetCompleted_False() {
+        // Call setCompleted(true) first to change from default
+        mModuleView.setCompleted(true);
+        // Then call setCompleted(false) to attempt to reset
+        mModuleView.setCompleted(false);
+
+        // In the current implementation, setCompleted(false) doesn't revert the changes.
+        // So, the styles should still be the disabled ones.
+        verifySetCompleted();
+    }
+
+    private void verifySetCompleted() {
+        TextView contentTitleView =
+                mModuleView.findViewById(R.id.educational_tip_module_content_title);
+        TextView contentDescriptionView =
+                mModuleView.findViewById(R.id.educational_tip_module_content_description);
+        TextView buttonView = mModuleView.findViewById(R.id.educational_tip_module_button);
+
+        int disabledColor = mContext.getColor(R.color.default_text_color_disabled_list);
+
+        Assert.assertEquals(disabledColor, contentTitleView.getCurrentTextColor());
+        Assert.assertTrue(
+                (contentTitleView.getPaintFlags() & android.graphics.Paint.STRIKE_THRU_TEXT_FLAG)
+                        != 0);
+        Assert.assertEquals(disabledColor, contentDescriptionView.getCurrentTextColor());
+        Assert.assertTrue(
+                (contentDescriptionView.getPaintFlags()
+                                & android.graphics.Paint.STRIKE_THRU_TEXT_FLAG)
+                        != 0);
+
+        Assert.assertFalse(buttonView.isEnabled());
+        Assert.assertEquals(disabledColor, buttonView.getCurrentTextColor());
     }
 }

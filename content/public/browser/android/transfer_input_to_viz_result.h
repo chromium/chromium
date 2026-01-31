@@ -20,7 +20,7 @@ enum class TransferInputToVizResult {
   kSelectionHandlesActive = 4,
   // Obsolete: kCanTriggerBackGesture = 5,
   kImeIsActive = 6,
-  kRequestedByEmbedder = 7,
+  // Obsolete: kRequestedByEmbedder = 7,
   kSystemServerDidNotTransfer = 8,
   kBrowserTokenChanged = 9,
   kMultipleBrowserWindowsOpen = 10,

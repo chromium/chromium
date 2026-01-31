@@ -60,15 +60,10 @@ mojom("mojom") {
     {
       types = [
         {
-          mojom = "gfx.mojom.BufferFormat"
-          cpp = "::gfx::BufferFormat"
-        },
-        {
           mojom = "gfx.mojom.BufferUsage"
           cpp = "::gfx::BufferUsage"
         },
       ]
-
       traits_headers = [ "buffer_types_mojom_traits.h" ]
       traits_public_deps = [ ":shared_mojom_traits" ]
     },
@@ -515,10 +510,12 @@ component("native_handle_types_mojom_traits") {
     "//ui/gfx",
   ]
 
-  frameworks = [
-    "CoreFoundation.framework",
-    "IOSurface.framework",
-  ]
+  if (is_apple) {
+    frameworks = [
+      "CoreFoundation.framework",
+      "IOSurface.framework",
+    ]
+  }
 }
 
 mojom("hdr_metadata") {

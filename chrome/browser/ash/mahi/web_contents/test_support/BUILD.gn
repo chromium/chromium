@@ -20,8 +20,6 @@ static_library("test_support") {
     "//base",
     "//chrome/browser/ash/mahi/web_contents",
     "//chromeos/components/mahi/public/cpp",
-    "//chromeos/crosapi/mojom",
-    "//mojo/public/cpp/bindings",
     "//testing/gmock",
     "//ui/gfx",
     "//ui/gfx:test_support",

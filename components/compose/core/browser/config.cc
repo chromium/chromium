@@ -4,6 +4,8 @@
 
 #include "components/compose/core/browser/config.h"
 
+#include <utility>
+
 #include "base/containers/fixed_flat_set.h"
 #include "base/containers/flat_set.h"
 #include "base/feature_list.h"
@@ -11,7 +13,6 @@
 #include "base/no_destructor.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
-#include "base/types/cxx23_to_underlying.h"
 #include "components/compose/core/browser/compose_features.h"
 #include "components/segmentation_platform/public/features.h"
 
@@ -188,7 +189,7 @@ Config::Config() {
   positioning_strategy = static_cast<DialogFallbackPositioningStrategy>(
       base::GetFieldTrialParamByFeatureAsInt(
           features::kComposeUiParams, "positioning_strategy",
-          base::to_underlying(positioning_strategy)));
+          std::to_underlying(positioning_strategy)));
 
   request_latency_timeout =
       base::Seconds(base::GetFieldTrialParamByFeatureAsInt(

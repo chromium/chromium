@@ -6,56 +6,17 @@
 
 #include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
+#include "chrome/browser/ui/layout_constants.h"
+#include "chrome/browser/ui/tabs/features.h"
 #include "chrome/browser/ui/tabs/vertical_tab_strip_state_controller.h"
-#include "chrome/browser/ui/views/toolbar/toolbar_ink_drop_util.h"
+#include "chrome/browser/ui/views/tabs/vertical/top_container_button.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/views/actions/action_view_controller.h"
 #include "ui/views/controls/button/label_button.h"
 #include "ui/views/layout/delegating_layout_manager.h"
+#include "ui/views/layout/layout_types.h"
 #include "ui/views/layout/proposed_layout.h"
 #include "ui/views/view_class_properties.h"
-
-namespace {
-constexpr int kTopButtonContainerHeight = 28;
-constexpr int kTopButtonPadding = 4;
-}  // namespace
-
-namespace {
-
-class TopContainerButton : public views::LabelButton {
-  METADATA_HEADER(TopContainerButton, views::LabelButton)
- public:
-  TopContainerButton() { ConfigureInkDropForToolbar(this); }
-
-  // views::LabelButton:
-  std::unique_ptr<views::ActionViewInterface> GetActionViewInterface() override;
-};
-BEGIN_METADATA(TopContainerButton)
-END_METADATA
-
-class TopContainerButtonActionViewInterface
-    : public views::LabelButtonActionViewInterface {
- public:
-  explicit TopContainerButtonActionViewInterface(
-      TopContainerButton* action_view)
-      : views::LabelButtonActionViewInterface(action_view),
-        action_view_(action_view) {}
-
-  void ActionItemChangedImpl(actions::ActionItem* action_item) override {
-    ButtonActionViewInterface::ActionItemChangedImpl(action_item);
-    action_view_->SetImageModel(views::Button::STATE_NORMAL,
-                                action_item->GetImage());
-  }
-
- private:
-  raw_ptr<TopContainerButton> action_view_ = nullptr;
-};
-
-std::unique_ptr<views::ActionViewInterface>
-TopContainerButton::GetActionViewInterface() {
-  return std::make_unique<TopContainerButtonActionViewInterface>(this);
-}
-}  // namespace
 
 VerticalTabStripTopContainer::VerticalTabStripTopContainer(
     tabs::VerticalTabStripStateController* state_controller,
@@ -63,80 +24,147 @@ VerticalTabStripTopContainer::VerticalTabStripTopContainer(
     : state_controller_(state_controller),
       root_action_item_(root_action_item),
       action_view_controller_(std::make_unique<views::ActionViewController>()) {
+  SetProperty(views::kElementIdentifierKey,
+              kVerticalTabStripTopContainerElementId);
   SetLayoutManager(std::make_unique<views::DelegatingLayoutManager>(this));
 
   tab_search_button_ = AddChildButtonFor(kActionTabSearch);
-
-  collapse_button_ = AddChildButtonFor(kActionToggleCollapseVertical);
-
   tab_search_button_->SetProperty(views::kElementIdentifierKey,
                                   kTabSearchButtonElementId);
 
+  collapse_button_ = AddChildButtonFor(kActionToggleCollapseVertical);
   collapse_button_->SetProperty(views::kElementIdentifierKey,
                                 kVerticalTabStripCollapseButtonElementId);
-
-  SetProperty(views::kElementIdentifierKey,
-              kVerticalTabStripTopContainerElementId);
 }
 
 VerticalTabStripTopContainer::~VerticalTabStripTopContainer() = default;
 
-// TODO(crbug.com/445528000): Update height calculation after child components
-// are added
 views::ProposedLayout VerticalTabStripTopContainer::CalculateProposedLayout(
     const views::SizeBounds& size_bounds) const {
   views::ProposedLayout layout;
   gfx::Size host_size =
       gfx::Size(size_bounds.width().is_bounded() ? size_bounds.width().value()
                                                  : parent()->width(),
-                kTopButtonContainerHeight);
+                toolbar_height_);
+
+  std::vector<views::LabelButton*> container_buttons;
 
   CHECK(tab_search_button_);
+  container_buttons.push_back(tab_search_button_);
+
   CHECK(collapse_button_);
+  container_buttons.push_back(collapse_button_);
 
-  const gfx::Size tab_search_button_pref_size =
-      tab_search_button_->GetPreferredSize();
-  const gfx::Size collapse_button_pref_size =
-      collapse_button_->GetPreferredSize();
+  const int padding =
+      GetLayoutConstant(LayoutConstant::kVerticalTabStripTopButtonPadding);
 
-  // If there is not enough space for the buttons on a single line with caption
-  // buttons, shift them below.
-  if (exclusion_width_ > 0 &&
-      exclusion_width_ + tab_search_button_pref_size.width() +
-              kTopButtonPadding + collapse_button_pref_size.width() >
-          host_size.width()) {
-    host_size.Enlarge(0, toolbar_height_);
+  if (state_controller_->IsCollapsed()) {
+    // If the vertical tab strip is collapsed, then lay out the buttons
+    // vertically in reverse order from top-to-bottom.
+    int total_height = exclusion_width_ == 0 ? 0 : toolbar_height_;
+    for (views::LabelButton* container_button : container_buttons) {
+      total_height += container_button->GetPreferredSize().height();
+    }
+    total_height += (container_buttons.size() - 1) * padding;
+
+    if (total_height > host_size.height()) {
+      host_size.set_height(total_height);
+    }
+
+    int current_y = 0;
+
+    for (views::LabelButton* container_button :
+         base::Reversed(container_buttons)) {
+      const gfx::Size pref_size = container_button->GetPreferredSize();
+      gfx::Rect bounds(std::max(0, (host_size.width() - pref_size.width()) / 2),
+                       current_y, pref_size.width(), pref_size.height());
+      layout.child_layouts.emplace_back(container_button,
+                                        container_button->GetVisible(), bounds);
+
+      host_size.SetToMax(gfx::Size(bounds.right(), 0));
+
+      current_y += pref_size.height() + padding;
+    }
+  } else {
+    // If the vertical tab strip is uncollapsed, then lay out the buttons
+    // horizontally. The exact y-level of the buttons depends on if they can lay
+    // on one line or not.
+    int total_width = exclusion_width_;
+    for (views::LabelButton* container_button : container_buttons) {
+      total_width += container_button->GetPreferredSize().width();
+    }
+
+    total_width += (container_buttons.size() - 1) * padding;
+
+    // If we're trying to get the minimum size, it will ask for layout for size
+    // bounds {0, 0}, but overflow is based on available size.
+    const int available_width =
+        host_size.width() > 0
+            ? host_size.width()
+            : parent()->GetAvailableSize(this).width().value_or(0);
+
+    // If there is not enough space for the buttons on a single line with
+    // caption buttons, shift them below.
+    const bool wrapped_due_to_overflow = size_bounds.width().is_bounded() &&
+                                         exclusion_width_ > 0 &&
+                                         total_width > available_width;
+
+    if (wrapped_due_to_overflow) {
+      host_size.Enlarge(0,
+                        GetLayoutConstant(LayoutConstant::kBookmarkBarHeight));
+
+      const int y_baseline =
+          toolbar_height_ +
+          GetLayoutConstant(LayoutConstant::kBookmarkBarHeight) / 2;
+
+      // If there is not enough space for all of the buttons to be on the same
+      // line as the caption buttons, then we lay them out with collapse_button_
+      // anchored to the left and tab_search_ on the right.
+      if (collapse_button_) {
+        const gfx::Size pref_size = collapse_button_->GetPreferredSize();
+        gfx::Rect bounds(GetLayoutConstant(
+                             LayoutConstant::kVerticalTabStripTopButtonPadding),
+                         std::max(0, y_baseline - pref_size.height() / 2),
+                         pref_size.width(), pref_size.height());
+        layout.child_layouts.emplace_back(
+            collapse_button_.get(), collapse_button_->GetVisible(), bounds);
+        host_size.SetToMax(gfx::Size(0, bounds.bottom()));
+      }
+
+      if (tab_search_button_) {
+        const gfx::Size pref_size = tab_search_button_->GetPreferredSize();
+        gfx::Rect bounds(host_size.width() - pref_size.width(),
+                         std::max(0, y_baseline - pref_size.height() / 2),
+                         pref_size.width(), pref_size.height());
+        layout.child_layouts.emplace_back(
+            tab_search_button_.get(), tab_search_button_->GetVisible(), bounds);
+        host_size.SetToMax(gfx::Size(0, bounds.bottom()));
+      }
+    } else {
+      int current_x = host_size.width();
+
+      // Calculate bounds to right-align the button horizontally and center it
+      // vertically within the available space.
+      for (views::LabelButton* container_button : container_buttons) {
+        const gfx::Size pref_size = container_button->GetPreferredSize();
+        gfx::Rect bounds(
+            current_x - pref_size.width(),
+            std::max(0, (host_size.height() - pref_size.height()) / 2),
+            pref_size.width(), pref_size.height());
+        layout.child_layouts.emplace_back(
+            container_button, container_button->GetVisible(), bounds);
+
+        host_size.SetToMax(gfx::Size(0, bounds.bottom()));
+
+        current_x -= (pref_size.width() +
+                      GetLayoutConstant(
+                          LayoutConstant::kVerticalTabStripTopButtonPadding));
+      }
+    }
   }
 
-  int current_x = host_size.width();
-  int current_y = host_size.height();
-
-  // Calculate bounds to right-align the button horizontally and center it
-  // vertically within the available space.
-  gfx::Rect tab_search_button_bounds(
-      current_x - tab_search_button_pref_size.width(),
-      current_y -
-          (kTopButtonContainerHeight + tab_search_button_pref_size.height()) /
-              2,
-      tab_search_button_pref_size.width(),
-      tab_search_button_pref_size.height());
-  layout.child_layouts.emplace_back(
-      tab_search_button_.get(), tab_search_button_->GetVisible(),
-      tab_search_button_bounds, views::SizeBounds(tab_search_button_pref_size));
-
-  current_x = tab_search_button_bounds.x() - kTopButtonPadding;
-
-  // Re-calculate bounds based on new x value, offset by the tab search button.
-  gfx::Rect collapse_button_bounds(
-      current_x - collapse_button_pref_size.width(),
-      current_y -
-          (kTopButtonContainerHeight + collapse_button_pref_size.height()) / 2,
-      collapse_button_pref_size.width(), collapse_button_pref_size.height());
-  layout.child_layouts.emplace_back(
-      collapse_button_.get(), collapse_button_->GetVisible(),
-      collapse_button_bounds, views::SizeBounds(collapse_button_pref_size));
-
   layout.host_size = host_size;
+
   return layout;
 }
 
@@ -151,32 +179,22 @@ views::LabelButton* VerticalTabStripTopContainer::AddChildButtonFor(
   action_view_controller_->CreateActionViewRelationship(
       container_button.get(), action_item->GetAsWeakPtr());
 
-  TopContainerButton* raw_container_button =
+  TopContainerButton* container_button_ptr =
       AddChildView(std::move(container_button));
 
-  raw_container_button->SetHorizontalAlignment(gfx::ALIGN_RIGHT);
+  container_button_ptr->SetHorizontalAlignment(gfx::ALIGN_RIGHT);
 
-  return raw_container_button;
+  return container_button_ptr;
 }
 
 bool VerticalTabStripTopContainer::IsPositionInWindowCaption(
     const gfx::Point& point) {
-  const auto get_target_rect = [&](views::View* target) {
-    const gfx::Rect& rect = gfx::Rect(point, gfx::Size(1, 1));
-    gfx::RectF rect_in_target_coords_f(rect);
-    View::ConvertRectToTarget(this, target, &rect_in_target_coords_f);
-    return gfx::ToEnclosingRect(rect_in_target_coords_f);
-  };
-
-  if (tab_search_button_ && tab_search_button_->GetLocalBounds().Intersects(
-                                get_target_rect(tab_search_button_))) {
-    return !tab_search_button_->HitTestRect(
-        get_target_rect(tab_search_button_));
+  if (tab_search_button_ && IsHitInView(tab_search_button_, point)) {
+    return false;
   }
 
-  if (collapse_button_ && collapse_button_->GetLocalBounds().Intersects(
-                              get_target_rect(collapse_button_))) {
-    return !collapse_button_->HitTestRect(get_target_rect(collapse_button_));
+  if (collapse_button_ && IsHitInView(collapse_button_, point)) {
+    return false;
   }
 
   return true;
@@ -184,11 +202,20 @@ bool VerticalTabStripTopContainer::IsPositionInWindowCaption(
 
 void VerticalTabStripTopContainer::SetToolbarHeightForLayout(
     const int toolbar_height) {
+  if (toolbar_height_ == toolbar_height) {
+    return;
+  }
   toolbar_height_ = toolbar_height;
+  InvalidateLayout();
 }
+
 void VerticalTabStripTopContainer::SetExclusionWidthForLayout(
     const int exclusion_width) {
+  if (exclusion_width_ == exclusion_width) {
+    return;
+  }
   exclusion_width_ = exclusion_width;
+  InvalidateLayout();
 }
 
 BEGIN_METADATA(VerticalTabStripTopContainer)

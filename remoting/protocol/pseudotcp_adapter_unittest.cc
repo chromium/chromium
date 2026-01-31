@@ -19,6 +19,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
+#include "base/types/expected.h"
 #include "components/webrtc/thread_wrapper.h"
 #include "net/base/io_buffer.h"
 #include "net/base/net_errors.h"
@@ -79,7 +80,7 @@ class LeakyBucket : public RateLimiter {
 
 class FakeSocket : public P2PDatagramSocket {
  public:
-  FakeSocket() : rate_limiter_(nullptr), latency_ms_(0) {}
+  FakeSocket() = default;
   ~FakeSocket() override = default;
 
   void AppendInputPacket(const std::vector<char>& data) {
@@ -88,9 +89,10 @@ class FakeSocket : public P2PDatagramSocket {
     }
 
     if (!read_callback_.is_null()) {
-      int size = std::min(read_buffer_size_, static_cast<int>(data.size()));
+      base::ByteSize size =
+          std::min(read_buffer_size_, base::ByteSize(data.size()));
       UNSAFE_TODO(memcpy(read_buffer_->data(), &data[0], data.size()));
-      net::CompletionRepeatingCallback cb = read_callback_;
+      P2PDatagramSocket::Callback cb = read_callback_;
       read_callback_.Reset();
       read_buffer_.reset();
       cb.Run(size);
@@ -105,43 +107,45 @@ class FakeSocket : public P2PDatagramSocket {
     rate_limiter_ = rate_limiter;
   }
 
-  void set_latency(int latency_ms) { latency_ms_ = latency_ms; }
+  void set_latency(base::TimeDelta latency) { latency_ = latency; }
 
   // P2PDatagramSocket interface.
-  int Recv(const scoped_refptr<net::IOBuffer>& buf,
-           int buf_len,
-           const net::CompletionRepeatingCallback& callback) override {
+  base::expected<base::ByteSize, net::Error> Recv(
+      const scoped_refptr<net::IOBuffer>& buf,
+      base::ByteSize buf_len,
+      P2PDatagramSocket::Callback callback) override {
     CHECK(read_callback_.is_null());
     CHECK(buf);
 
     if (incoming_packets_.size() > 0) {
       scoped_refptr<net::IOBuffer> buffer(buf);
-      int size =
-          std::min(static_cast<int>(incoming_packets_.front().size()), buf_len);
-      UNSAFE_TODO(
-          memcpy(buffer->data(), &*incoming_packets_.front().begin(), size));
+      base::ByteSize size =
+          std::min(base::ByteSize(incoming_packets_.front().size()), buf_len);
+      UNSAFE_TODO(memcpy(buffer->data(), &*incoming_packets_.front().begin(),
+                         size.InBytes()));
       incoming_packets_.pop_front();
       return size;
     } else {
       read_callback_ = callback;
       read_buffer_ = buf;
       read_buffer_size_ = buf_len;
-      return net::ERR_IO_PENDING;
+      return base::unexpected(net::ERR_IO_PENDING);
     }
   }
 
-  int Send(const scoped_refptr<net::IOBuffer>& buf,
-           int buf_len,
-           const net::CompletionRepeatingCallback& callback) override {
+  base::expected<base::ByteSize, net::Error> Send(
+      const scoped_refptr<net::IOBuffer>& buf,
+      base::ByteSize buf_len,
+      P2PDatagramSocket::Callback callback) override {
     DCHECK(buf);
     if (peer_socket_) {
       base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
           FROM_HERE,
-          base::BindOnce(&FakeSocket::AppendInputPacket,
-                         base::Unretained(peer_socket_),
-                         std::vector<char>(buf->data(),
-                                           UNSAFE_TODO(buf->data() + buf_len))),
-          base::Milliseconds(latency_ms_));
+          base::BindOnce(
+              &FakeSocket::AppendInputPacket, base::Unretained(peer_socket_),
+              std::vector<char>(buf->data(),
+                                UNSAFE_TODO(buf->data() + buf_len.InBytes()))),
+          latency_);
     }
 
     return buf_len;
@@ -149,14 +153,14 @@ class FakeSocket : public P2PDatagramSocket {
 
  private:
   scoped_refptr<net::IOBuffer> read_buffer_;
-  int read_buffer_size_;
-  net::CompletionRepeatingCallback read_callback_;
+  base::ByteSize read_buffer_size_;
+  P2PDatagramSocket::Callback read_callback_;
 
   base::circular_deque<std::vector<char>> incoming_packets_;
 
   raw_ptr<FakeSocket, AcrossTasksDanglingUntriaged> peer_socket_;
   raw_ptr<RateLimiter> rate_limiter_;
-  int latency_ms_;
+  base::TimeDelta latency_;
 };
 
 class TCPChannelTester : public base::RefCountedThreadSafe<TCPChannelTester> {
@@ -347,16 +351,16 @@ TEST_F(PseudoTcpAdapterTest, DataTransfer) {
 }
 
 TEST_F(PseudoTcpAdapterTest, LimitedChannel) {
-  const int kLatencyMs = 20;
+  const base::TimeDelta kLatency = base::Milliseconds(20);
   const int kPacketsPerSecond = 400;
   const int kBurstPackets = 10;
   base::RunLoop loop;
   LeakyBucket host_limiter(kBurstPackets, kPacketsPerSecond);
-  host_socket_->set_latency(kLatencyMs);
+  host_socket_->set_latency(kLatency);
   host_socket_->set_rate_limiter(&host_limiter);
 
   LeakyBucket client_limiter(kBurstPackets, kPacketsPerSecond);
-  host_socket_->set_latency(kLatencyMs);
+  host_socket_->set_latency(kLatency);
   client_socket_->set_rate_limiter(&client_limiter);
 
   net::TestCompletionCallback host_connect_cb;

@@ -47,7 +47,7 @@ class TabCaptureRegistry : public BrowserContextKeyedAPI,
 
   // List all pending, active and stopped capture requests.
   void GetCapturedTabs(const std::string& extension_id,
-                       base::Value::List* capture_info_list) const;
+                       base::ListValue* capture_info_list) const;
 
   // Add a tab capture request to the registry when a stream is requested
   // through the API and create a randomly generated device id after user

@@ -134,7 +134,7 @@ export class EmojiImageComponent extends PolymerElement {
    * Returns visual content preview url.
    */
   private getUrl(item: EmojiVariants) {
-    return item.base.visualContent?.url.preview.url;
+    return item.base.visualContent?.url.preview;
   }
 
   private getStyles(item: EmojiVariants) {

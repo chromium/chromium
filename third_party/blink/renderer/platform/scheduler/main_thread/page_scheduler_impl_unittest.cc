@@ -9,6 +9,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/location.h"
+#include "base/memory/memory_pressure_listener_registry.h"
 #include "base/metrics/field_trial.h"
 #include "base/metrics/field_trial_param_associator.h"
 #include "base/metrics/field_trial_params.h"
@@ -257,6 +258,8 @@ class PageSchedulerImplTest : public testing::Test {
     test_task_runner_->FastForwardUntilNoTasksRemain();
     EXPECT_EQ(5, counter);
   }
+
+  base::MemoryPressureListenerRegistry memory_pressure_listener_registry_;
 
   base::test::TaskEnvironment task_environment_;
 

@@ -38,11 +38,13 @@ class FormFieldParserTest : public FormFieldParserTestBase,
   // Parses all added fields using `ParseFormFields`.
   // Returns the number of fields parsed.
   int ParseFormFields(GeoIpCountryCode client_country = GeoIpCountryCode(""),
-                      LanguageCode language = LanguageCode("")) {
+                      LanguageCode language = LanguageCode(""),
+                      bool ignore_small_forms = true) {
     ParsingContext context(fields_, client_country, language,
                            GetActivePatternFile().value(),
                            GetActiveRegexFeatures(), /*log_manager=*/nullptr);
-    FormFieldParser::ParseFormFields(context, fields_, field_candidates_map_);
+    FormFieldParser::ParseFormFields(context, fields_, field_candidates_map_,
+                                     ignore_small_forms);
     return field_candidates_map_.size();
   }
 
@@ -228,6 +230,17 @@ TEST_F(FormFieldParserTest, ParseSingleFieldsIban) {
   TestClassificationExpectations();
 }
 
+// Verifies that for forms with less than `kMinRequiredFieldsForHeuristics`
+// fields, the predictions are not cleared if the small forms are ignored.
+TEST_F(FormFieldParserTest, ParseFormFields_SmallFormRequirementIgnored) {
+  AddTextFormFieldData("", "name", NAME_FULL);
+  AddTextFormFieldData("", "Address line 1", ADDRESS_HOME_LINE1);
+
+  EXPECT_EQ(2, ParseFormFields(GeoIpCountryCode(""), LanguageCode(""),
+                               /*ignore_small_forms=*/false));
+  TestClassificationExpectations();
+}
+
 // Tests that loyalty cards are parsed as part of `ParseFormFields`.
 TEST_F(FormFieldParserTest, ParseFormFieldsFieldsLoyaltyCard) {
   base::test::ScopedFeatureList scoped_feature_list_{
@@ -324,7 +337,7 @@ TEST_P(ParseInAnyOrderTest, ParseInAnyOrder) {
   std::vector<FormFieldData> fields;
   // Creates n fields and encodes their ids in `max_length`, as `id_attribute`
   // is a string.
-  for (size_t i = 0; i < n; i++) {
+  for (size_t i = 0; i < n; ++i) {
     FormFieldData form_field_data;
     form_field_data.set_max_length(i);
     fields.push_back(form_field_data);
@@ -360,7 +373,7 @@ TEST_P(ParseInAnyOrderTest, ParseInAnyOrder) {
   std::vector<
       std::pair<raw_ptr<const FormFieldData>*, base::FunctionRef<bool()>>>
       fields_and_parsers;
-  for (size_t i = 0; i < n; i++) {
+  for (size_t i = 0; i < n; ++i) {
     fields_and_parsers.emplace_back(&matched_fields[i], callbacks[i]);
   }
 
@@ -371,7 +384,7 @@ TEST_P(ParseInAnyOrderTest, ParseInAnyOrder) {
   if (expect_success) {
     EXPECT_TRUE(scanner.IsEnd());
     ASSERT_EQ(testcase.expected_permutation.size(), n);
-    for (size_t i = 0; i < n; i++) {
+    for (size_t i = 0; i < n; ++i) {
       EXPECT_EQ(matched_fields[i], &fields[testcase.expected_permutation[i]]);
     }
   } else {

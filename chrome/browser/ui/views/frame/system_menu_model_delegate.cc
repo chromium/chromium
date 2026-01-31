@@ -124,12 +124,14 @@ std::u16string SystemMenuModelDelegate::GetLabelForCommandId(
         }
       }
       break;
-    case IDC_TOGGLE_VERTICAL_TABS:
-      string_id = tabs::VerticalTabStripStateController::From(browser_)
-                          ->ShouldDisplayVerticalTabs()
+    case IDC_TOGGLE_VERTICAL_TABS: {
+      auto* controller = tabs::VerticalTabStripStateController::From(browser_);
+      CHECK(controller);
+      string_id = controller->ShouldDisplayVerticalTabs()
                       ? IDS_SWITCH_TO_HORIZONTAL_TAB
                       : IDS_SWITCH_TO_VERTICAL_TAB;
       break;
+    }
 #if BUILDFLAG(ENABLE_GLIC)
     case IDC_GLIC_TOGGLE_PIN:
       string_id = browser_->profile()->GetPrefs()->GetBoolean(

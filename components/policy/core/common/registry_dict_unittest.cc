@@ -227,12 +227,12 @@ TEST(RegistryDictTest, ConvertToJSON) {
   std::optional<base::Value> actual(test_dict.ConvertToJSON(*schema));
   ASSERT_TRUE(actual);
 
-  base::Value::Dict expected;
+  base::DictValue expected;
   expected.Set("one", int_value.Clone());
-  base::Value::Dict expected_subdict1;
+  base::DictValue expected_subdict1;
   expected_subdict1.Set("two", string_value.Clone());
   expected.Set("three", std::move(expected_subdict1));
-  base::Value::List expected_list1;
+  base::ListValue expected_list1;
   expected_list1.Append(string_value.Clone());
   expected.Set("dict-to-list", std::move(expected_list1));
   expected.Set("int-to-bool", true);
@@ -240,9 +240,9 @@ TEST(RegistryDictTest, ConvertToJSON) {
   expected.Set("string-to-bool", false);
   expected.Set("string-to-double", 0.0);
   expected.Set("string-to-int", static_cast<int>(0));
-  base::Value::List expected_list2;
+  base::ListValue expected_list2;
   expected_list2.Append("value");
-  base::Value::Dict expected_subdict2;
+  base::DictValue expected_subdict2;
   expected_subdict2.Set("key", std::move(expected_list2));
   expected.Set("string-to-dict", std::move(expected_subdict2));
 
@@ -274,8 +274,8 @@ TEST(RegistryDictTest, NonSequentialConvertToJSON) {
   std::optional<base::Value> actual(test_dict.ConvertToJSON(*schema));
   ASSERT_TRUE(actual);
 
-  base::Value::Dict expected;
-  base::Value::List expected_list;
+  base::DictValue expected;
+  base::ListValue expected_list;
   expected_list.Append("1");
   expected_list.Append("2");
   expected_list.Append("4");
@@ -338,11 +338,11 @@ TEST(RegistryDictTest, PatternPropertySchema) {
   std::optional<base::Value> actual(test_dict.ConvertToJSON(*schema));
   ASSERT_TRUE(actual);
 
-  base::Value::Dict expected;
-  base::Value::Dict expected_extension_settings;
-  base::Value::List list_value;
+  base::DictValue expected;
+  base::DictValue expected_extension_settings;
+  base::ListValue list_value;
   list_value.Append("*://*.google.com");
-  base::Value::Dict restrictions_properties;
+  base::DictValue restrictions_properties;
   restrictions_properties.Set("runtime_blocked_hosts", list_value.Clone());
   restrictions_properties.Set("runtime_allowed_hosts", list_value.Clone());
   restrictions_properties.Set("minimum_version_required",

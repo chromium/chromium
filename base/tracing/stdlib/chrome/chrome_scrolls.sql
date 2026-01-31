@@ -56,7 +56,6 @@ SELECT
   chrome_event_latency.scroll_id,
   chrome_event_latency.is_presented,
   chrome_event_latency.is_janky,
-  chrome_event_latency.is_janky_v3,
   chrome_event_latency.event_type = 'INERTIAL_GESTURE_SCROLL_UPDATE' AS is_inertial,
   chrome_event_latency.event_type = 'FIRST_GESTURE_SCROLL_UPDATE' AS is_first_scroll_update_in_scroll,
   chrome_event_latency.ts AS generation_ts,
@@ -134,10 +133,6 @@ CREATE PERFETTO TABLE chrome_scroll_update_input_pipeline (
   -- Event.ScrollJank.DelayedFramesPercentage.FixedWindow metric. This comes
   -- directly from `perfetto.protos.EventLatency.is_janky_scrolled_frame`.
   is_janky BOOL,
-  -- Whether the corresponding frame is janky based on the
-  -- Event.ScrollJank.DelayedFramesPercentage.FixedWindow3 metric. This comes
-  -- directly from `perfetto.protos.EventLatency.is_janky_scrolled_frame_v3`.
-  is_janky_v3 BOOL,
   -- Whether the corresponding scroll is inertial (fling).
   -- If this is `true`, "generation" and "touch_move" related timestamps and
   -- durations will be null.
@@ -206,7 +201,6 @@ WITH
       presented_in_frame_id,
       is_presented,
       is_janky,
-      is_janky_v3,
       is_inertial,
       is_first_scroll_update_in_scroll,
       row_number() OVER (PARTITION BY presented_in_frame_id ORDER BY generation_ts ASC) = 1 AS is_first_scroll_update_in_frame,
@@ -256,7 +250,6 @@ SELECT
   presented_in_frame_id,
   is_presented,
   is_janky,
-  is_janky_v3,
   is_inertial,
   is_first_scroll_update_in_scroll,
   is_first_scroll_update_in_frame,
@@ -683,10 +676,6 @@ CREATE PERFETTO TABLE chrome_scroll_update_info (
   -- Event.ScrollJank.DelayedFramesPercentage.FixedWindow metric. This comes
   -- directly from `perfetto.protos.EventLatency.is_janky_scrolled_frame`.
   is_janky BOOL,
-  -- Whether the corresponding frame is janky based on the
-  -- Event.ScrollJank.DelayedFramesPercentage.FixedWindow3 metric. This comes
-  -- directly from `perfetto.protos.EventLatency.is_janky_scrolled_frame_v3`.
-  is_janky_v3 BOOL,
   -- Whether the corresponding scroll is inertial (fling).
   -- If this is `true`, "generation" and "touch_move" related timestamps and
   -- durations will be null.
@@ -829,7 +818,6 @@ SELECT
   frame.vsync_interval_ms,
   input.is_presented,
   input.is_janky,
-  input.is_janky_v3,
   input.is_inertial,
   input.is_first_scroll_update_in_scroll,
   input.is_first_scroll_update_in_frame,
@@ -971,10 +959,6 @@ CREATE PERFETTO TABLE chrome_scroll_frame_info (
   -- Event.ScrollJank.DelayedFramesPercentage.FixedWindow metric. This comes
   -- directly from `perfetto.protos.EventLatency.is_janky_scrolled_frame`.
   is_janky BOOL,
-  -- Whether the corresponding frame is janky based on the
-  -- Event.ScrollJank.DelayedFramesPercentage.FixedWindow3 metric. This comes
-  -- directly from `perfetto.protos.EventLatency.is_janky_scrolled_frame_v3`.
-  is_janky_v3 BOOL,
   -- Whether the corresponding scroll is inertial (fling).
   is_inertial BOOL,
   -- Sum of all input deltas for all scroll updates in this frame.
@@ -1104,7 +1088,6 @@ SELECT
   vsync_interval_ms,
   cast_int!(vsync_interval_ms * 1e6) AS vsync_interval_dur,
   is_janky,
-  is_janky_v3,
   is_inertial,
   (
     SELECT

@@ -72,7 +72,7 @@ TEST(SyncPolicyHandlerTest, SyncTypesListDisabled) {
 
   // Create a policy that disables some types.
   policy::PolicyMap policy;
-  auto disabled_types = base::Value::List()
+  auto disabled_types = base::ListValue()
                             .Append("bookmarks")
                             .Append("readingList")
                             .Append("preferences");
@@ -114,7 +114,7 @@ TEST(SyncPolicyHandlerTest, SyncTypesListDisabledAutofill) {
 
   // Create a policy that disables autofill.
   policy::PolicyMap policy;
-  auto disabled_types = base::Value::List().Append("autofill");
+  auto disabled_types = base::ListValue().Append("autofill");
   policy.Set(policy::key::kSyncTypesListDisabled,
              policy::POLICY_LEVEL_MANDATORY, policy::POLICY_SCOPE_USER,
              policy::POLICY_SOURCE_CLOUD,
@@ -148,7 +148,7 @@ TEST(SyncPolicyHandlerTest, SyncTypesListDisabled_TabsAndSavedTabGroups) {
 
   // Create a policy that disables tabs.
   policy::PolicyMap policy;
-  auto disabled_types = base::Value::List().Append("tabs");
+  auto disabled_types = base::ListValue().Append("tabs");
   policy.Set(policy::key::kSyncTypesListDisabled,
              policy::POLICY_LEVEL_MANDATORY, policy::POLICY_SCOPE_USER,
              policy::POLICY_SOURCE_CLOUD,
@@ -178,7 +178,7 @@ TEST(SyncPolicyHandlerTest, SyncTypesListDisabledInvalidEntry) {
   // entry in the list.
   policy::PolicyMap policy;
   auto disabled_types =
-      base::Value::List().Append("bookmarks").Append(123).Append("preferences");
+      base::ListValue().Append("bookmarks").Append(123).Append("preferences");
   policy.Set(policy::key::kSyncTypesListDisabled,
              policy::POLICY_LEVEL_MANDATORY, policy::POLICY_SCOPE_USER,
              policy::POLICY_SOURCE_CLOUD,
@@ -222,7 +222,7 @@ TEST(SyncPolicyHandlerTest, SyncTypesListDisabledUnknownEntry) {
   // or a new data type that this version of the browser doesn't know about yet,
   // or just a typo in the configuration).
   policy::PolicyMap policy;
-  auto disabled_types = base::Value::List()
+  auto disabled_types = base::ListValue()
                             .Append("bookmarks")
                             .Append("nonexistent")
                             .Append("preferences");
@@ -268,7 +268,7 @@ TEST(SyncPolicyHandlerOsTest, SyncTypesListDisabled_OsTypes) {
 
   // Create a policy that disables the types.
   policy::PolicyMap policy;
-  auto disabled_types = base::Value::List()
+  auto disabled_types = base::ListValue()
                             .Append("osApps")
                             .Append("osPreferences")
                             .Append("osWifiConfigurations");
@@ -299,7 +299,7 @@ TEST(SyncPolicyHandlerOsTest, SyncTypesListDisabled_MigratedTypes) {
   // Create a policy that disables the types, but using the original browser
   // policy names from before the SplitSettingsSync launch.
   policy::PolicyMap policy;
-  auto disabled_types = base::Value::List()
+  auto disabled_types = base::ListValue()
                             .Append("apps")
                             .Append("wifiConfigurations")
                             .Append("preferences");

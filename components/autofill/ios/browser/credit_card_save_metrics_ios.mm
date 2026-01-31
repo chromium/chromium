@@ -56,16 +56,12 @@ std::string_view GetSuffixForSaveType(
     case payments::PaymentsAutofillClient::CardSaveType::kCardSaveWithCvc:
       return ".SavingWithCvc";
     case payments::PaymentsAutofillClient::CardSaveType::kCardSaveOnly:
-      // The kCardSaveOnly metric does not have a suffix, to preserve
-      // continuity with data logged prior to the introduction of CVC saving
-      // features.
-      return "";
+      return ".SavingWithoutCvc";
     case payments::PaymentsAutofillClient::CardSaveType::kCvcSaveOnly:
       // This flow is now logged via LogSaveCvcPromptOfferedIOS.
       NOTREACHED();
   }
 }
-
 }  // namespace
 
 void LogSaveCreditCardPromptResultIOS(
@@ -130,21 +126,8 @@ void LogSaveCreditCardPromptOfferMetricIos(
        SaveCreditCardPromptOverlayTypeToMetricSuffix(overlay_type)});
 
   // Determine the metric suffix based on the card save type.
-  const std::string_view save_type_suffix = [&]() {
-    switch (save_credit_card_options.card_save_type) {
-      case payments::PaymentsAutofillClient::CardSaveType::kCardSaveWithCvc:
-        return ".SavingWithCvc";
-      case payments::PaymentsAutofillClient::CardSaveType::kCardSaveOnly:
-        // The kCardSaveOnly metric does not have a suffix, to preserve
-        // continuity with data logged prior to the introduction of CVC saving
-        // features.
-        return "";
-      case payments::PaymentsAutofillClient::CardSaveType::kCvcSaveOnly:
-        // This flow is now logged via LogSaveCvcPromptOfferedIOS.
-        break;
-    }
-    NOTREACHED();
-  }();
+  const std::string_view save_type_suffix =
+      GetSuffixForSaveType(save_credit_card_options);
 
   base::UmaHistogramEnumeration(
       base::StrCat({base_histogram_name, save_type_suffix}), metric);

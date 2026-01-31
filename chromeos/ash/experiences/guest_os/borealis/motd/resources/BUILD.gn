@@ -7,13 +7,24 @@ assert(is_chromeos)
 
 build_webui("resources") {
   grd_prefix = "borealis_motd"
+  grit_output_dir = "$root_gen_dir/chromeos/ash"
 
   static_files = [
     "index.css",
     "index.html",
   ]
 
-  ts_files = [ "index.ts" ]
+  ts_files = [
+    "index.ts",
+    "browser_proxy.ts",
+  ]
 
-  grit_output_dir = "$root_gen_dir/chromeos/ash"
+  mojo_files = [ "$root_gen_dir/chromeos/ash/experiences/guest_os/borealis/motd/borealis_motd.mojom-webui.ts" ]
+
+  mojo_files_deps = [ "//chromeos/ash/experiences/guest_os/borealis/motd:mojo_bindings_ts__generator" ]
+
+  ts_deps = [
+    "//ash/webui/common/resources:build_ts",
+    "//ui/webui/resources/mojo:build_ts",
+  ]
 }

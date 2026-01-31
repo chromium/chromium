@@ -11,6 +11,7 @@
 #include "base/auto_reset.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
+#include "base/observer_list_types.h"
 #include "v8/include/v8.h"
 
 namespace extensions {
@@ -30,13 +31,16 @@ bool IsContextValid(v8::Local<v8::Context> context);
 // Same as above, but throws an exception in the `context` if it is invalid.
 bool IsContextValidOrThrowError(v8::Local<v8::Context> context);
 
+// Initializes the given `context`.
+void InitializeContext(v8::Local<v8::Context> context);
+
 // Marks the given `context` as invalid.
 void InvalidateContext(v8::Local<v8::Context> context);
 
 // A helper class to watch for context invalidation. If the context is
 // invalidated before this object is destroyed, the passed in closure will be
 // called.
-class ContextInvalidationListener {
+class ContextInvalidationListener : public base::CheckedObserver {
  public:
   ContextInvalidationListener(v8::Local<v8::Context> context,
                               base::OnceClosure on_invalidated);
@@ -45,7 +49,7 @@ class ContextInvalidationListener {
   ContextInvalidationListener& operator=(const ContextInvalidationListener&) =
       delete;
 
-  ~ContextInvalidationListener();
+  ~ContextInvalidationListener() override;
 
   void OnInvalidated();
 

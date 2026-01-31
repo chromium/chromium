@@ -79,7 +79,7 @@ void PageTracker::DeletePage(const std::string& page_id) {
 
 Status PageTracker::OnEvent(DevToolsClient* client,
                             const std::string& method,
-                            const base::Value::Dict& params) {
+                            const base::DictValue& params) {
   if (method == "Target.attachedToTarget") {
     const std::string* session_id = params.FindString("sessionId");
     if (!session_id) {

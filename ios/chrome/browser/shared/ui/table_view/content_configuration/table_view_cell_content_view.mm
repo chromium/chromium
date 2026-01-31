@@ -18,7 +18,7 @@ namespace {
 constexpr CGFloat kTitleSubtitleToTrailingWidthRatio = 3;
 
 // Spacing between the different labels, vertically.
-constexpr CGFloat kLabelVerticalSpacing = 4;
+constexpr CGFloat kLabelVerticalSpacing = 2;
 
 // Spacing between the different labels, horizontally.
 constexpr CGFloat kLabelHorizontalSpacing = 8;

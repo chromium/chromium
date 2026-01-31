@@ -24,8 +24,8 @@ void NetLogUDPDataTransfer(const NetLogWithSource& net_log,
                            const IPEndPoint* address);
 
 // Creates NetLog parameters describing a UDP connect event.
-base::Value::Dict CreateNetLogUDPConnectParams(const IPEndPoint& address,
-                                               handles::NetworkHandle network);
+base::DictValue CreateNetLogUDPConnectParams(const IPEndPoint& address,
+                                             handles::NetworkHandle network);
 
 }  // namespace net
 

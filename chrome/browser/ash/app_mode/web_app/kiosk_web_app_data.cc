@@ -32,7 +32,7 @@
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/simple_url_loader.h"
-#include "services/network/public/mojom/fetch_api.mojom-data-view.h"
+#include "services/network/public/mojom/fetch_api.mojom-shared.h"
 #include "skia/ext/image_operations.h"
 #include "ui/gfx/image/image_skia.h"
 
@@ -215,7 +215,7 @@ KioskWebAppData::KioskWebAppData(
 KioskWebAppData::~KioskWebAppData() = default;
 
 bool KioskWebAppData::LoadFromCache() {
-  const base::Value::Dict& dict = local_state_->GetDict(dictionary_name());
+  const base::DictValue& dict = local_state_->GetDict(dictionary_name());
 
   if (!LoadFromDictionary(dict)) {
     return false;
@@ -316,8 +316,7 @@ void KioskWebAppData::SetStatus(Status status, bool notify) {
   }
 }
 
-bool KioskWebAppData::LoadLaunchUrlFromDictionary(
-    const base::Value::Dict& dict) {
+bool KioskWebAppData::LoadLaunchUrlFromDictionary(const base::DictValue& dict) {
   // All the previous keys should be present since this function is executed
   // after LoadFromDictionary().
   const std::string* launch_url_string =
@@ -333,7 +332,7 @@ bool KioskWebAppData::LoadLaunchUrlFromDictionary(
   return true;
 }
 
-GURL KioskWebAppData::GetLastIconUrl(const base::Value::Dict& dict) const {
+GURL KioskWebAppData::GetLastIconUrl(const base::DictValue& dict) const {
   // All the previous keys should be present since this function is executed
   // after LoadFromDictionary().
   const std::string* icon_url_string = dict.FindDict(KioskAppDataBase::kKeyApps)

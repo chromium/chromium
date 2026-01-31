@@ -7,7 +7,6 @@ import json
 import logging
 import multiprocessing
 import os
-import pathlib
 import queue
 import re
 import subprocess
@@ -17,7 +16,6 @@ import threading
 import time
 import zipfile
 from concurrent.futures import ThreadPoolExecutor
-import ast
 
 from devil.utils import cmd_helper
 from py_utils import tempfile_ext
@@ -26,9 +24,6 @@ from pylib.base import base_test_result
 from pylib.base import test_run
 from pylib.constants import host_paths
 from pylib.results import json_results
-
-sys.path.append(str(pathlib.Path(__file__).parents[3] / 'gyp'))
-from util import md5_check
 
 # Chosen after timing test runs of chrome_junit_tests with 7,16,32,
 # and 64 workers in threadpool and different classes_per_job.
@@ -48,6 +43,7 @@ _LOGCAT_RE = re.compile(r' ?\d+\| (:?\d+\| )?[A-Z]/[\w\d_-]+:')
 # [ FAILED|CRASHED|TIMEOUT ] org.ui.ForeignBinderUnitTest.test_phone[28] (56 ms)
 _TEST_START_RE = re.compile(r'.*\[\s+RUN\s+\]\s(.*)')
 _TEST_FAILED_RE = re.compile(r'.*\[\s+(?:FAILED|CRASHED|TIMEOUT)\s+\]')
+_TEST_FINISHED_RE = re.compile(r'.*\[\s+(?:OK|SKIPPED)\s+\]')
 
 
 @dataclasses.dataclass
@@ -96,7 +92,7 @@ class LocalMachineJunitTestRun(test_run.TestRun):
                  'android_resource_apk=%s\n' % resource_apk)
       props = [
           'application = android.app.Application',
-          'sdk = 29',
+          'sdk = 29,36',
           ('shadows = org.chromium.testing.local.'
            'CustomShadowApplicationPackageManager'),
       ]
@@ -157,6 +153,28 @@ class LocalMachineJunitTestRun(test_run.TestRun):
       num_workers = max(1, multiprocessing.cpu_count() // 2)
     return min(num_workers, num_jobs)
 
+  def _ApplyExternalSharding(self, json_config):
+    shard_index = self._test_instance.external_shard_index
+    total_shards = self._test_instance.total_external_shards
+    if total_shards <= 1:
+      return json_config
+
+    logging.info('Using external sharding settings. This is shard %d/%d',
+                 shard_index, total_shards)
+
+    all_groups = GroupTests(json_config, _MAX_TESTS_PER_JOB)
+    selected_groups = [
+        g for i, g in enumerate(all_groups) if i % total_shards == shard_index
+    ]
+
+    new_configs = {}
+    for group in selected_groups:
+      if group.config not in new_configs:
+        new_configs[group.config] = {}
+      new_configs[group.config].update(group.methods_by_class)
+
+    return {**json_config, 'configs': new_configs}
+
   @property
   def _wrapper_path(self):
     return os.path.join(constants.GetOutDirectory(), 'bin', 'helper',
@@ -208,84 +226,23 @@ class LocalMachineJunitTestRun(test_run.TestRun):
       # 3 seconds per method.
       num_classes = len(test_group.methods_by_class)
       num_tests = sum(len(x) for x in test_group.methods_by_class.values())
-      timeout = 30 + 5 * num_classes + num_tests * 3
+      timeout = 60 + 10 * num_classes + num_tests * 5
     return _Job(shard_id=shard_id,
                 cmd=cmd,
                 timeout=timeout,
                 json_config=job_json_config,
                 json_results_path=json_results_path)
 
-  def _GetJsonConfig(self, list_only: bool = False):
-    # The test list is expensive to generate, so cache it. The cache is
-    # invalidated when the classpath or this file changes.
-    cache_dir = pathlib.Path(
-        constants.GetOutDirectory()) / 'junit_test_list_cache'
-    os.makedirs(cache_dir, exist_ok=True)
-
-    # Cache --list-tests separately so that changing test filters does not
-    # invalidate its cache.
-    if list_only:
-      record_path = (cache_dir / f'{self._test_instance.suite}_list.stamp')
-      cached_test_list_path = (cache_dir /
-                               f'{self._test_instance.suite}_list.json')
-    else:
-      record_path = cache_dir / f'{self._test_instance.suite}.stamp'
-      cached_test_list_path = cache_dir / f'{self._test_instance.suite}.json'
-
-    # Extract the classpath from the wrapper script.
-    wrapper_script_source = ''
-    print(f'Wrapper path: {self._wrapper_path}')
-    with open(self._wrapper_path) as f:
-      wrapper_script_source = f.read()
-    classpath_re = re.compile(r'classpath = (\[[^\]]+\])', re.MULTILINE)
-    matches = classpath_re.search(wrapper_script_source)
-    classpath_str = matches.group(1)
-    classpath_list = ast.literal_eval(classpath_str)
-    # The paths in the wrapper script are relative to the script's location. We
-    # need to make them relative to the current working directory.
-    wrapper_dir = pathlib.Path(self._wrapper_path).parent
-    classpath = [str(wrapper_dir / p) for p in classpath_list]
-
-    # Filters affect the test list so changes in filter should invalidate the
-    # cache.
-    input_strings = self._GetFilterArgs()
-
-    # We don't want to rebuild the cache if only method implementations have
-    # been changed and no new tests have been added. This would be common when
-    # iterating on private methods or tests method content. We should only
-    # invalidate the cache if the public interface changes, which is likely
-    # when a new test is added or tests are removed. But avoid this
-    # optimization when listing tests as for parameterized tests, turbine jars
-    # do not change when parameters are updated (this does not affect modifying
-    # parameters and then running the test as robolectric loads the correct
-    # values at runtime).
-    if not list_only:
-      for i, p in enumerate(classpath):
-        if 'javac' in p:
-          turbine_p = p.replace('javac', 'turbine')
-          if os.path.exists(turbine_p):
-            classpath[i] = turbine_p
-
-    def do_query_test_json_config():
-      with tempfile_ext.NamedTemporaryDirectory() as temp_dir:
-        result = self._QueryTestJsonConfig(temp_dir,
-                                           allow_debugging=False,
-                                           enable_shadow_allowlist=True)
-        with open(cached_test_list_path, 'w') as f:
-          json.dump(result, f)
-
-    md5_check.CallAndRecordIfStale(do_query_test_json_config,
-                                   record_path=str(record_path),
-                                   input_paths=classpath + [__file__],
-                                   input_strings=input_strings,
-                                   output_paths=[str(cached_test_list_path)])
-
-    with open(cached_test_list_path) as f:
-      return json.load(f)
+  def _GetJsonConfig(self):
+    with tempfile_ext.NamedTemporaryDirectory() as temp_dir:
+      return self._QueryTestJsonConfig(temp_dir,
+                                       allow_debugging=False,
+                                       enable_shadow_allowlist=True)
 
   #override
   def GetTestsForListing(self):
-    json_config = self._GetJsonConfig(list_only=True)
+    json_config = self._GetJsonConfig()
+    json_config = self._ApplyExternalSharding(json_config)
     ret = []
     for config in json_config['configs'].values():
       for class_name, methods in config.items():
@@ -308,6 +265,7 @@ class LocalMachineJunitTestRun(test_run.TestRun):
       except (subprocess.CalledProcessError, IOError):
         results.append(_MakeUnknownFailureResult('Filter matched no tests'))
         return
+    json_config = self._ApplyExternalSharding(json_config)
     test_groups = GroupTests(json_config, _MAX_TESTS_PER_JOB)
 
     shard_list = list(range(len(test_groups)))
@@ -339,13 +297,17 @@ class LocalMachineJunitTestRun(test_run.TestRun):
     failed_test_logs = {}
     log_lines = []
     current_test = None
-    for line in RunCommandsAndSerializeOutput(jobs, num_workers):
+    for line in RunCommandsAndSerializeOutput(jobs,
+                                              num_workers,
+                                              quiet=self._test_instance.quiet):
       if raw_logs_fh:
         raw_logs_fh.write(line)
-      if show_logcat or not _LOGCAT_RE.match(line):
-        sys.stdout.write(line)
-      else:
-        num_omitted_lines += 1
+
+      if not self._test_instance.quiet:
+        if show_logcat or not _LOGCAT_RE.match(line):
+          sys.stdout.write(line)
+        else:
+          num_omitted_lines += 1
 
       # Collect log data between a test starting and the test failing.
       # There can be info after a test fails and before the next test starts
@@ -357,6 +319,11 @@ class LocalMachineJunitTestRun(test_run.TestRun):
       elif _TEST_FAILED_RE.match(line) and current_test:
         log_lines.append(line)
         failed_test_logs[current_test] = ''.join(log_lines)
+        if self._test_instance.quiet:
+          for l in log_lines:
+            sys.stdout.write(l)
+        current_test = None
+      elif _TEST_FINISHED_RE.match(line) and current_test:
         current_test = None
       else:
         log_lines.append(line)
@@ -389,7 +356,7 @@ class LocalMachineJunitTestRun(test_run.TestRun):
                                           base_test_result.ResultType.UNKNOWN)
       ]
 
-    if failed_jobs:
+    if failed_jobs and not self._test_instance.quiet:
       for job in failed_jobs:
         print(f'To re-run failed shard {job.shard_id}, use --json-config '
               'config.json, where config.json contains:')
@@ -465,7 +432,7 @@ def _DumpJavaStacks(pid):
   return result.stdout
 
 
-def RunCommandsAndSerializeOutput(jobs, num_workers):
+def RunCommandsAndSerializeOutput(jobs, num_workers, quiet=False):
   """Runs multiple commands in parallel and yields serialized output lines.
 
   Raises:
@@ -479,8 +446,9 @@ def RunCommandsAndSerializeOutput(jobs, num_workers):
   for _ in range(len(jobs) - 1):
     temp_files.append(tempfile.TemporaryFile(mode='w+t', encoding='utf-8'))
 
-  yield '\n'
-  yield f'Shard {jobs[0].shard_id} output:\n'
+  if not quiet:
+    yield '\n'
+    yield f'Shard {jobs[0].shard_id} output:\n'
 
   timeout_dumps = {}
 
@@ -512,7 +480,9 @@ def RunCommandsAndSerializeOutput(jobs, num_workers):
   with ThreadPoolExecutor(max_workers=num_workers) as pool:
     futures = [pool.submit(run_proc, idx=i) for i in range(len(jobs))]
 
-    yield from _StreamFirstShardOutput(jobs[0], futures[0].result())
+    yield from _StreamFirstShardOutput(jobs[0],
+                                       futures[0].result(),
+                                       quiet=quiet)
 
     for i, job in enumerate(jobs[1:], 1):
       shard_id = job.shard_id
@@ -520,11 +490,15 @@ def RunCommandsAndSerializeOutput(jobs, num_workers):
       # a proc.wait().
       futures[i].result()
       f = temp_files[i]
-      yield '\n'
-      yield f'Shard {shard_id} output:\n'
+      if not quiet:
+        yield '\n'
+        yield f'Shard {shard_id} output:\n'
       f.seek(0)
       for line in f.readlines():
-        yield f'{shard_id:2}| {line}'
+        if quiet:
+          yield line
+        else:
+          yield f'{shard_id:2}| {line}'
       f.close()
 
   # Output stacks
@@ -543,7 +517,7 @@ def RunCommandsAndSerializeOutput(jobs, num_workers):
     raise cmd_helper.TimeoutError('Junit shards timed out.')
 
 
-def _StreamFirstShardOutput(job, shard_proc):
+def _StreamFirstShardOutput(job, shard_proc, quiet=False):
   shard_id = job.shard_id
   # The following will be run from a thread to pump Shard 0 results, allowing
   # live output while allowing timeout.
@@ -563,7 +537,10 @@ def _StreamFirstShardOutput(job, shard_proc):
       line = shard_queue.get(timeout=max(0, deadline - time.time()))
       if line is None:
         break
-      yield f'{shard_id:2}| {line}'
+      if quiet:
+        yield line
+      else:
+        yield f'{shard_id:2}| {line}'
     except queue.Empty:
       if time.time() > deadline:
         break
@@ -573,4 +550,7 @@ def _StreamFirstShardOutput(job, shard_proc):
   while not shard_queue.empty():
     line = shard_queue.get()
     if line:
-      yield f'{shard_id:2}| {line}'
+      if quiet:
+        yield line
+      else:
+        yield f'{shard_id:2}| {line}'

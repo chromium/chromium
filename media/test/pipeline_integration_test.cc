@@ -808,15 +808,7 @@ TEST_F(PipelineIntegrationTest, TrackStatusChangesAfterPipelineEnded) {
   OnSelectedVideoTrackChanged(MediaTrack::Id("1"));
 }
 
-// TODO(crbug.com/40101269): Enable test when MacOS flake is fixed.
-#if BUILDFLAG(IS_MAC)
-#define MAYBE_TrackStatusChangesWhileSuspended \
-  DISABLED_TrackStatusChangesWhileSuspended
-#else
-#define MAYBE_TrackStatusChangesWhileSuspended TrackStatusChangesWhileSuspended
-#endif
-
-TEST_F(PipelineIntegrationTest, MAYBE_TrackStatusChangesWhileSuspended) {
+TEST_F(PipelineIntegrationTest, TrackStatusChangesWhileSuspended) {
   ASSERT_EQ(PIPELINE_OK, Start("bear-320x240.webm", kNoClockless));
   Play();
 
@@ -2964,7 +2956,7 @@ TEST_F(PipelineIntegrationTest, NegativeVideoTimestamps) {
   ASSERT_TRUE(WaitUntilOnEnded());
   EXPECT_EQ("dd059004f04a4d7a910123e5b306639a4559b5d7df7c0879d523649ff12a8a43",
             GetVideoHash());
-  EXPECT_AUDIO_HASH("89.10,30.04,90.81,29.89,89.55,29.20,");
+  EXPECT_AUDIO_HASH("87.50,29.76,89.21,29.61,87.86,28.83,");
 }
 
 TEST_F(PipelineIntegrationTest, Rotated_Metadata_0) {

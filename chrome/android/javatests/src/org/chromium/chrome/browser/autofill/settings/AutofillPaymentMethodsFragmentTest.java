@@ -110,6 +110,7 @@ import java.util.concurrent.TimeoutException;
     ChromeFeatureList.AUTOFILL_ENABLE_CARD_BENEFITS_FOR_AMERICAN_EXPRESS,
     ChromeFeatureList.AUTOFILL_ENABLE_CARD_BENEFITS_FOR_BMO,
     ChromeFeatureList.AUTOFILL_ENABLE_FLAT_RATE_CARD_BENEFITS_FROM_CURINOS,
+    ChromeFeatureList.AUTOFILL_ENABLE_WALLET_BRANDING,
 })
 @Batch(Batch.PER_CLASS)
 public class AutofillPaymentMethodsFragmentTest {
@@ -1078,7 +1079,10 @@ public class AutofillPaymentMethodsFragmentTest {
     @Test
     @MediumTest
     @EnableFeatures({ChromeFeatureList.AUTOFILL_ENABLE_CVC_STORAGE})
-    public void testDeleteSavedCvcsButton_whenClicked_confirmationDialogIsShown() throws Exception {
+    @DisableFeatures({ChromeFeatureList.AUTOFILL_ENABLE_WALLET_BRANDING})
+    public void
+            testDeleteSavedCvcsButton_whenClicked_confirmationDialogIsShown_walletBrandingDisabled()
+                    throws Exception {
         mAutofillTestHelper.addServerCreditCard(SAMPLE_CARD_WITH_CVC);
 
         SettingsActivity activity = mSettingsActivityTestRule.startSettingsActivity();
@@ -1094,6 +1098,37 @@ public class AutofillPaymentMethodsFragmentTest {
                 .inRoot(isDialog())
                 .check(matches(isDisplayed()));
         onView(withText(R.string.autofill_delete_saved_cvcs_confirmation_dialog_message))
+                .check(matches(isDisplayed()));
+        onView(
+                        withText(
+                                R.string
+                                        .autofill_delete_saved_cvcs_confirmation_dialog_delete_button_label))
+                .check(matches(isDisplayed()));
+        onView(withText(android.R.string.cancel)).check(matches(isDisplayed()));
+    }
+
+    @Test
+    @MediumTest
+    @EnableFeatures({
+        ChromeFeatureList.AUTOFILL_ENABLE_CVC_STORAGE,
+        ChromeFeatureList.AUTOFILL_ENABLE_WALLET_BRANDING
+    })
+    public void testDeleteSavedCvcsButton_whenClicked_confirmationDialogIsShown() throws Exception {
+        mAutofillTestHelper.addServerCreditCard(SAMPLE_CARD_WITH_CVC);
+
+        SettingsActivity activity = mSettingsActivityTestRule.startSettingsActivity();
+        Preference deleteSavedCvcsToggle =
+                getPreferenceScreen(activity)
+                        .findPreference(AutofillPaymentMethodsFragment.PREF_DELETE_SAVED_CVCS);
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    deleteSavedCvcsToggle.performClick();
+                });
+
+        onView(withText(R.string.autofill_delete_saved_cvcs_confirmation_dialog_title))
+                .inRoot(isDialog())
+                .check(matches(isDisplayed()));
+        onView(withText(R.string.autofill_delete_saved_cvcs_in_wallet_confirmation_dialog_message))
                 .check(matches(isDisplayed()));
         onView(
                         withText(
@@ -1819,7 +1854,6 @@ public class AutofillPaymentMethodsFragmentTest {
 
     @Test
     @MediumTest
-    @EnableFeatures({ChromeFeatureList.THIRD_PARTY_DISABLE_CHROME_AUTOFILL_SETTINGS_SCREEN})
     public void testSettingsState_SaveAndFillPaymentMethodsDisabledInThirdPartyMode()
             throws Exception {
         ThreadUtils.runOnUiThreadBlocking(
@@ -1840,9 +1874,6 @@ public class AutofillPaymentMethodsFragmentTest {
 
     @Test
     @MediumTest
-    @Features.EnableFeatures({
-        ChromeFeatureList.THIRD_PARTY_DISABLE_CHROME_AUTOFILL_SETTINGS_SCREEN
-    })
     @Restriction(DeviceRestriction.RESTRICTION_TYPE_NON_AUTO)
     public void testSettingsState_MandatoryReauthDisabledInThirdPartyMode() throws Exception {
         ThreadUtils.runOnUiThreadBlocking(
@@ -1859,9 +1890,6 @@ public class AutofillPaymentMethodsFragmentTest {
 
     @Test
     @MediumTest
-    @Features.EnableFeatures({
-        ChromeFeatureList.THIRD_PARTY_DISABLE_CHROME_AUTOFILL_SETTINGS_SCREEN
-    })
     public void testSettingsState_SaveCVCDisabledInThirdPartyMode() throws Exception {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
@@ -1879,9 +1907,6 @@ public class AutofillPaymentMethodsFragmentTest {
 
     @Test
     @MediumTest
-    @Features.EnableFeatures({
-        ChromeFeatureList.THIRD_PARTY_DISABLE_CHROME_AUTOFILL_SETTINGS_SCREEN
-    })
     public void testSettingsState_CardBenefitsHiddenInThirdPartyMode() throws Exception {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
@@ -1899,9 +1924,6 @@ public class AutofillPaymentMethodsFragmentTest {
 
     @Test
     @MediumTest
-    @Features.EnableFeatures({
-        ChromeFeatureList.THIRD_PARTY_DISABLE_CHROME_AUTOFILL_SETTINGS_SCREEN
-    })
     public void testSettingsState_CardsListShownInThirdPartyMode() throws Exception {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
@@ -1919,9 +1941,6 @@ public class AutofillPaymentMethodsFragmentTest {
 
     @Test
     @MediumTest
-    @Features.EnableFeatures({
-        ChromeFeatureList.THIRD_PARTY_DISABLE_CHROME_AUTOFILL_SETTINGS_SCREEN
-    })
     public void testSettingsState_IbanListShownInThirdPartyMode() throws Exception {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
@@ -1939,9 +1958,6 @@ public class AutofillPaymentMethodsFragmentTest {
 
     @Test
     @MediumTest
-    @Features.EnableFeatures({
-        ChromeFeatureList.THIRD_PARTY_DISABLE_CHROME_AUTOFILL_SETTINGS_SCREEN
-    })
     public void testSettingsState_AddCardHiddenInThirdPartyMode() throws Exception {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
@@ -1958,9 +1974,6 @@ public class AutofillPaymentMethodsFragmentTest {
 
     @Test
     @MediumTest
-    @Features.EnableFeatures({
-        ChromeFeatureList.THIRD_PARTY_DISABLE_CHROME_AUTOFILL_SETTINGS_SCREEN
-    })
     public void testSettingsState_AddIbanButtonHiddenInthirdPartyMode() throws Exception {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
@@ -1978,9 +1991,6 @@ public class AutofillPaymentMethodsFragmentTest {
 
     @Test
     @MediumTest
-    @Features.EnableFeatures({
-        ChromeFeatureList.THIRD_PARTY_DISABLE_CHROME_AUTOFILL_SETTINGS_SCREEN
-    })
     public void testSettingsState_PaymentAppsShownInThirdPartyMode() throws Exception {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
@@ -2010,9 +2020,6 @@ public class AutofillPaymentMethodsFragmentTest {
 
     @Test
     @MediumTest
-    @Features.EnableFeatures({
-        ChromeFeatureList.THIRD_PARTY_DISABLE_CHROME_AUTOFILL_SETTINGS_SCREEN
-    })
     public void testSettingsState_LoyaltyCardsDisabledInThirdPartyMode() throws Exception {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
@@ -2032,7 +2039,6 @@ public class AutofillPaymentMethodsFragmentTest {
     @Test
     @MediumTest
     @EnableFeatures({
-        ChromeFeatureList.THIRD_PARTY_DISABLE_CHROME_AUTOFILL_SETTINGS_SCREEN,
         ChromeFeatureList.AUTOFILL_SYNC_EWALLET_ACCOUNTS,
         ChromeFeatureList.AUTOFILL_ENABLE_SEPARATE_PIX_PREFERENCE_ITEM
     })
@@ -2068,7 +2074,6 @@ public class AutofillPaymentMethodsFragmentTest {
     @Test
     @MediumTest
     @EnableFeatures({
-        ChromeFeatureList.THIRD_PARTY_DISABLE_CHROME_AUTOFILL_SETTINGS_SCREEN,
         ChromeFeatureList.AUTOFILL_SYNC_EWALLET_ACCOUNTS,
     })
     @DisableFeatures({ChromeFeatureList.AUTOFILL_ENABLE_SEPARATE_PIX_PREFERENCE_ITEM})
@@ -2093,7 +2098,6 @@ public class AutofillPaymentMethodsFragmentTest {
     @Test
     @MediumTest
     @EnableFeatures({
-        ChromeFeatureList.THIRD_PARTY_DISABLE_CHROME_AUTOFILL_SETTINGS_SCREEN,
         ChromeFeatureList.AUTOFILL_ENABLE_SEPARATE_PIX_PREFERENCE_ITEM
     })
     @DisableFeatures({ChromeFeatureList.AUTOFILL_ENABLE_SEPARATE_PIX_PREFERENCE_ITEM})
@@ -2117,9 +2121,6 @@ public class AutofillPaymentMethodsFragmentTest {
 
     @Test
     @MediumTest
-    @Features.EnableFeatures({
-        ChromeFeatureList.THIRD_PARTY_DISABLE_CHROME_AUTOFILL_SETTINGS_SCREEN
-    })
     public void testDisabledSettingsText_shownInThirdPartyMode() throws Exception {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
@@ -2135,7 +2136,6 @@ public class AutofillPaymentMethodsFragmentTest {
 
     @Test
     @MediumTest
-    @EnableFeatures({ChromeFeatureList.THIRD_PARTY_DISABLE_CHROME_AUTOFILL_SETTINGS_SCREEN})
     public void testDisabledSettingsText_linksToAutofillOptionsPage() throws Exception {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {

@@ -33,6 +33,7 @@ import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.CriteriaNotSatisfiedException;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.content_public.browser.MessagePayload;
 import org.chromium.content_public.browser.MessagePort;
@@ -537,6 +538,7 @@ public class PopupWindowTest extends AwParameterizedTest {
     @Feature({"AndroidWebView"})
     @SkipMutations(
             reason = "This test depends on a combination of AwSettings, see crbug.com/1494038")
+    @DisabledTest(message = "Flaky, see crbug.com/468684305")
     public void testSingleWindowModeJsInjection() throws Throwable {
         // Choose a free port which is different from |mWebServer| so they have different origins.
         TestWebServer crossOriginWebServer = TestWebServer.startAdditional();

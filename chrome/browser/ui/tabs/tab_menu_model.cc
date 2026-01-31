@@ -51,6 +51,7 @@
 #include "chrome/browser/glic/public/glic_keyed_service.h"
 #include "chrome/browser/glic/public/glic_keyed_service_factory.h"
 #include "chrome/browser/glic/resources/grit/glic_browser_resources.h"
+#include "chrome/browser/ui/tabs/glic_tab_sub_menu_model.h"
 #endif
 
 using base::UserMetricsAction;
@@ -87,8 +88,8 @@ void TabMenuModel::BuildForWebApp(TabStripModel* tab_strip, int index) {
 
   if (!web_app::IsPinnedHomeTab(tab_strip, index) &&
       (!web_app::HasPinnedHomeTab(tab_strip) ||
-       *tab_strip->selection_model().selected_indices().begin() != 0)) {
-    int num_tabs = tab_strip->selection_model().selected_indices().size();
+       !tab_strip->selection_model().IsSelected(*tab_strip->begin()))) {
+    int num_tabs = tab_strip->selection_model().size();
     if (ExistingWindowSubMenuModel::ShouldShowSubmenuForApp(
             tab_menu_model_delegate_)) {
       // Create submenu with existing windows
@@ -123,7 +124,7 @@ void TabMenuModel::Build(TabStripModel* tab_strip, int index) {
   std::vector<int> indices;
   if (tab_strip->IsTabSelected(index)) {
     const ui::ListSelectionModel::SelectedIndices sel =
-        tab_strip->selection_model().selected_indices();
+        tab_strip->selection_model().GetListSelectionModel().selected_indices();
     indices = std::vector<int>(sel.begin(), sel.end());
   } else {
     indices = {index};
@@ -131,11 +132,10 @@ void TabMenuModel::Build(TabStripModel* tab_strip, int index) {
 
   int num_tabs = indices.size();
 
+  auto* controller = tabs::VerticalTabStripStateController::From(
+      tab_strip->delegate()->GetBrowserWindowInterface());
   bool showing_vertical_tabs =
-      tabs::IsVerticalTabsFeatureEnabled() &&
-      tabs::VerticalTabStripStateController::From(
-          tab_strip->delegate()->GetBrowserWindowInterface())
-          ->ShouldDisplayVerticalTabs();
+      controller && controller->ShouldDisplayVerticalTabs();
 
   if (showing_vertical_tabs) {
     AddItemWithStringId(TabStripModel::CommandNewTabToRight,
@@ -307,7 +307,27 @@ void TabMenuModel::Build(TabStripModel* tab_strip, int index) {
   }
 
 #if BUILDFLAG(ENABLE_GLIC)
-  if (display_share_with_glic) {
+  if (glic::GlicEnabling::IsReadyForProfile(tab_strip->profile()) &&
+      glic::GlicEnabling::IsMultiInstanceEnabled() &&
+      base::FeatureList::IsEnabled(features::kGlicMITabContextMenu)) {
+    glic_tab_sub_menu_model_ =
+        std::make_unique<glic::GlicTabSubMenuModel>(tab_strip, index);
+    AddSubMenu(TabStripModel::CommandGlicShare,
+               l10n_util::GetPluralStringFUTF16(IDS_TAB_CXMENU_GLIC_START_SHARE,
+                                                num_tabs),
+               glic_tab_sub_menu_model_.get());
+
+    auto* service = glic::GlicKeyedServiceFactory::GetGlicKeyedService(
+        tab_strip->profile());
+    CHECK(service);
+    if (std::ranges::any_of(indices, [&](int index) {
+          return service->IsTabPinnedToAnyInstance(
+              tab_strip->GetTabAtIndex(index)->GetHandle());
+        })) {
+      AddItem(TabStripModel::CommandGlicUnshare,
+              l10n_util::GetStringUTF16(IDS_TAB_CXMENU_GLIC_UNSHARE));
+    }
+  } else if (display_share_with_glic) {
     auto* service = glic::GlicKeyedServiceFactory::GetGlicKeyedService(
         tab_strip->profile());
     bool start_sharing = false;

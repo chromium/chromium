@@ -700,13 +700,13 @@ bool XkbKeyboardLayoutEngine::CanSetCurrentLayout() const {
 
 void XkbKeyboardLayoutEngine::SetCurrentLayoutByName(
     const std::string& layout_name,
-    base::OnceCallback<void(bool)> callback) {
+    base::OnceCallback<void(bool success)> callback) {
 #if BUILDFLAG(IS_CHROMEOS)
   current_layout_name_ = layout_name;
   for (const auto& entry : xkb_keymaps_) {
     if (entry.layout_name == layout_name) {
       SetKeymap(entry.keymap);
-      std::move(callback).Run(true);
+      std::move(callback).Run(/*success=*/true);
       return;
     }
   }
@@ -725,7 +725,7 @@ void XkbKeyboardLayoutEngine::SetCurrentLayoutByName(
 }
 
 void XkbKeyboardLayoutEngine::OnKeymapLoaded(
-    base::OnceCallback<void(bool)> callback,
+    base::OnceCallback<void(bool success)> callback,
     const std::string& layout_name,
     std::unique_ptr<char, base::FreeDeleter> keymap_str) {
   if (keymap_str) {
@@ -736,9 +736,9 @@ void XkbKeyboardLayoutEngine::OnKeymapLoaded(
     xkb_keymaps_.push_back(entry);
     if (layout_name == current_layout_name_) {
       SetKeymap(keymap);
-      std::move(callback).Run(true);
+      std::move(callback).Run(/*success=*/true);
     } else {
-      std::move(callback).Run(false);
+      std::move(callback).Run(/*success=*/false);
     }
   } else {
     LOG(FATAL) << "Keymap file failed to load: " << layout_name;

@@ -98,9 +98,7 @@ suite('AvatarListElementTest', function() {
 
     image.click();
     await testUserProvider.whenCalled('selectProfileImage');
-    assertDeepEquals(testUserProvider.profileImage, {
-      url: 'data://updated_test_url',
-    });
+    assertEquals(testUserProvider.profileImage, 'data://updated_test_url');
   });
 
   test('hides open camera button if no camera present', async () => {

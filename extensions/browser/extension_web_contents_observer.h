@@ -56,9 +56,7 @@ class ExtensionFrameHost;
 // we detect that the unexpected URL and unregister the frame.
 // With OOPIF only the first notification is sufficient in most cases, except
 // for sandboxed frames with a unique origin.
-class ExtensionWebContentsObserver
-    : public content::WebContentsObserver,
-      public ExtensionFunctionDispatcher::Delegate {
+class ExtensionWebContentsObserver : public content::WebContentsObserver {
  public:
   ExtensionWebContentsObserver(const ExtensionWebContentsObserver&) = delete;
   ExtensionWebContentsObserver& operator=(const ExtensionWebContentsObserver&) =
@@ -127,9 +125,6 @@ class ExtensionWebContentsObserver
   // Creates ExtensionFrameHost which implements mojom::LocalFrameHost.
   virtual std::unique_ptr<ExtensionFrameHost> CreateExtensionFrameHost(
       content::WebContents* web_contents);
-
-  // ExtensionFunctionDispatcher::Delegate overrides.
-  content::WebContents* GetAssociatedWebContents() const override;
 
   // content::WebContentsObserver overrides.
   void RenderFrameDeleted(content::RenderFrameHost* render_frame_host) override;

@@ -37,13 +37,13 @@ TEST_P(GcpWinHttpUrlFetcherTest,
       GURL("https://test-service.googleapis.com/v1/testEndpoint");
   const std::string access_token = "test-access-token";
 
-  base::Value::Dict request;
+  base::DictValue request;
   request.Set("request-str-key", "request-str-value");
   request.Set("request-int-key", 1234);
   base::TimeDelta request_timeout = base::Milliseconds(timeout_in_millis);
-  std::optional<base::Value::Dict> request_result;
+  std::optional<base::DictValue> request_result;
 
-  auto expected_result = base::Value::Dict()
+  auto expected_result = base::DictValue()
                              .Set("response-str-key", "response-str-value")
                              .Set("response-int-key", 4321);
   std::string expected_response = base::WriteJson(expected_result).value_or("");
@@ -134,12 +134,12 @@ TEST_P(GcpWinHttpUrlFetcherTest,
   const std::string access_token = "test-access-token";
 
   // send empty request dictionary
-  base::Value::Dict request;
+  base::DictValue request;
 
   base::TimeDelta request_timeout = base::Milliseconds(timeout_in_millis);
-  std::optional<base::Value::Dict> request_result;
+  std::optional<base::DictValue> request_result;
 
-  auto expected_result = base::Value::Dict()
+  auto expected_result = base::DictValue()
                              .Set("response-str-key", "response-str-value")
                              .Set("response-int-key", 4321);
   std::string expected_response = base::WriteJson(expected_result).value_or("");

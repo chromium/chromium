@@ -43,7 +43,7 @@ constexpr uint32_t DefaultTriggerDataCardinality(SourceType source_type) {
 
 base::expected<TriggerDataSet::TriggerData, SourceRegistrationError>
 ParseTriggerData(const base::Value& value) {
-  const base::Value::List* list = value.GetIfList();
+  const base::ListValue* list = value.GetIfList();
   if (!list) {
     return base::unexpected(SourceRegistrationError::kTriggerDataListInvalid);
   }
@@ -96,7 +96,7 @@ ValidateTriggerDataForTriggerDataMatching(
 }  // namespace
 
 base::expected<TriggerDataMatching, SourceRegistrationError>
-ParseTriggerDataMatching(const base::Value::Dict& dict) {
+ParseTriggerDataMatching(const base::DictValue& dict) {
   const base::Value* value = dict.Find(kTriggerDataMatching);
   if (!value) {
     return TriggerDataMatching::kModulus;
@@ -116,7 +116,7 @@ ParseTriggerDataMatching(const base::Value::Dict& dict) {
   }
 }
 
-void Serialize(base::Value::Dict& dict,
+void Serialize(base::DictValue& dict,
                TriggerDataMatching trigger_data_matching) {
   switch (trigger_data_matching) {
     case TriggerDataMatching::kExact:
@@ -152,7 +152,7 @@ std::optional<uint32_t> TriggerDataSet::find(
 
 // static
 base::expected<TriggerDataSet, SourceRegistrationError> TriggerDataSet::Parse(
-    const base::Value::Dict& registration,
+    const base::DictValue& registration,
     SourceType source_type,
     TriggerDataMatching trigger_data_matching) {
   const base::Value* trigger_data = registration.Find(kTriggerData);
@@ -207,15 +207,14 @@ TriggerDataSet::TriggerDataSet(TriggerDataSet&&) = default;
 
 TriggerDataSet& TriggerDataSet::operator=(TriggerDataSet&&) = default;
 
-base::Value::Dict TriggerDataSet::ToJson() const {
-  base::Value::Dict dict;
+base::DictValue TriggerDataSet::ToJson() const {
+  base::DictValue dict;
   Serialize(dict);
   return dict;
 }
 
-void TriggerDataSet::Serialize(base::Value::Dict& dict) const {
-  auto trigger_data_list =
-      base::Value::List::with_capacity(trigger_data_.size());
+void TriggerDataSet::Serialize(base::DictValue& dict) const {
+  auto trigger_data_list = base::ListValue::with_capacity(trigger_data_.size());
 
   for (const uint32_t trigger_data : trigger_data_) {
     trigger_data_list.Append(Uint32ToJson(trigger_data));

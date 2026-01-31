@@ -47,7 +47,6 @@
 #include "ash/user_education/welcome_tour/welcome_tour_metrics.h"
 #include "ash/wm/mru_window_tracker.h"
 #include "ash/wm/window_state.h"
-#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/i18n/case_conversion.h"
 #include "base/i18n/rtl.h"
@@ -58,7 +57,6 @@
 #include "base/rand_util.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/types/cxx23_to_underlying.h"
 #include "chromeos/ash/services/assistant/public/cpp/assistant_browser_delegate.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "chromeos/ui/vector_icons/vector_icons.h"
@@ -225,7 +223,7 @@ bool IsSubstringCaseInsensitive(std::u16string haystack_expr,
   std::u16string needle = base::i18n::ToLower(needle_expr);
 
   // Find substring in the given string
-  return base::Contains(haystack, needle);
+  return haystack.contains(needle);
 }
 
 void RecordAutocompleteMatchMetric(SearchBoxTextMatch match_type) {
@@ -433,7 +431,7 @@ class FilterMenuAdapter : public views::MenuModelAdapter {
   views::MenuItemView* GetFilterMenuItemByCategory(
       AppListSearchControlCategory category) {
     std::optional<size_t> index =
-        model_->GetIndexOfCommandId(base::to_underlying(category));
+        model_->GetIndexOfCommandId(std::to_underlying(category));
     CHECK(index.has_value());
     return GetFilterMenuItemByIdx(index.value());
   }
@@ -1751,8 +1749,8 @@ CategoryEnableStateMap SearchBoxView::GetSearchCategoryEnableState() {
   CategoryEnableStateMap category_to_state;
 
   // Initialize the map.
-  for (int i = base::to_underlying(AppListSearchControlCategory::kMinValue);
-       i <= base::to_underlying(AppListSearchControlCategory::kMaxValue); ++i) {
+  for (int i = std::to_underlying(AppListSearchControlCategory::kMinValue);
+       i <= std::to_underlying(AppListSearchControlCategory::kMaxValue); ++i) {
     auto category = static_cast<AppListSearchControlCategory>(i);
     // Cannot toggle is not a category.
     if (category == AppListSearchControlCategory::kCannotToggle) {

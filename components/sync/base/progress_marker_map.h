@@ -18,7 +18,7 @@ namespace syncer {
 // DataTypeProgressMarkers.
 using ProgressMarkerMap = std::map<DataType, std::string>;
 
-base::Value::Dict ProgressMarkerMapToValueDict(
+base::DictValue ProgressMarkerMapToValueDict(
     const ProgressMarkerMap& marker_map);
 
 }  // namespace syncer

@@ -55,6 +55,7 @@
 #include "components/autofill/core/browser/metrics/autofill_metrics_utils.h"
 #include "components/autofill/core/browser/payments/payments_autofill_client.h"
 #include "components/autofill/core/browser/payments/test/mock_mandatory_reauth_manager.h"
+#include "components/autofill/core/browser/payments/test/mock_multiple_request_payments_network_interface.h"
 #include "components/autofill/core/browser/payments/test/mock_virtual_card_enrollment_manager.h"
 #include "components/autofill/core/browser/payments/test_credit_card_save_manager.h"
 #include "components/autofill/core/browser/payments/test_payments_autofill_client.h"
@@ -213,7 +214,8 @@ std::unique_ptr<FormStructure> ConstructFormStructureFromFormData(
     GeoIpCountryCode geo_country = GeoIpCountryCode("")) {
   auto form_structure = std::make_unique<FormStructure>(form);
   const RegexPredictions regex_predictions = DetermineRegexTypes(
-      geo_country, LanguageCode(""), form_structure->ToFormData(), nullptr);
+      geo_country, LanguageCode(""), form_structure->ToFormData(), nullptr,
+      /*ignore_small_forms=*/true);
   regex_predictions.ApplyTo(form_structure->fields());
   form_structure->RationalizeAndAssignSections(geo_country, LanguageCode(""),
                                                nullptr);
@@ -537,11 +539,14 @@ class FormDataImporterTest : public testing::Test {
     test_api(address_data_manager()).set_auto_accept_address_imports(true);
     personal_data_manager().SetSyncServiceForTest(&sync_service_);
 
+    payments_client().set_multiple_request_payments_network_interface(
+        std::make_unique<payments::MockMultipleRequestPaymentsNetworkInterface>(
+            client().GetURLLoaderFactory(), *client().GetIdentityManager()));
     auto virtual_card_enrollment_manager =
         std::make_unique<MockVirtualCardEnrollmentManager>(
             &payments_data_manager(),
             static_cast<payments::MultipleRequestPaymentsNetworkInterface*>(
-                nullptr),
+                payments_client().GetMultipleRequestPaymentsNetworkInterface()),
             &client());
     payments_client().set_virtual_card_enrollment_manager(
         std::move(virtual_card_enrollment_manager));
@@ -4060,6 +4065,39 @@ TEST_F(FormDataImporterTest,
   EXPECT_THAT(guids, IsEmpty());
 }
 
+TEST_F(FormDataImporterTest,
+       ImportAddressProfiles_PrefilledStateAndCountry_Imported) {
+  base::test::ScopedFeatureList feature_list{
+    features::kAutofillEnableImportOfUnchangedValuesForCountryAndState};
+
+  // Create a form with a prefilled state and country.
+  FormData form = ConstructFormDateFromTypeValuePairs({
+      {NAME_FULL, "Pablo Diego Ruiz y Picasso"},
+      {EMAIL_ADDRESS, "theprez@gmail.com"},
+      {ADDRESS_HOME_LINE1, "21 Laussat St"},
+      {ADDRESS_HOME_CITY, "San Francisco"},
+      {ADDRESS_HOME_STATE, "California"},
+      {ADDRESS_HOME_ZIP, "94102"},
+      {ADDRESS_HOME_COUNTRY, "United States"},
+  });
+
+  std::unique_ptr<FormStructure> form_structure =
+      ConstructFormStructureFromFormData(form);
+
+  // ConstructFormStructureFromFormData resets initial_value to an empty string.
+  // Set the fields back to simulate a prefilled field.
+  test_api(*form_structure->field(4)).set_initial_value(u"California");
+  test_api(*form_structure->field(6)).set_initial_value(u"United States");
+
+  ExtractAddressProfiles(/*extraction_successful=*/true, *form_structure);
+
+  const std::vector<const AutofillProfile*>& results =
+      address_data_manager().GetProfiles();
+  ASSERT_EQ(1U, results.size());
+  EXPECT_EQ(results[0]->GetRawInfo(ADDRESS_HOME_STATE), u"California");
+  EXPECT_EQ(results[0]->GetRawInfo(ADDRESS_HOME_COUNTRY), u"US");
+}
+
 class SkipSaveCardInFormDataImporterTest
     : public FormDataImporterTest,
       public testing::WithParamInterface<bool> {
@@ -4344,17 +4382,9 @@ TEST_F(FormDataImporterTest_ExtractCreditCardFromForm,
   EXPECT_FALSE(r.has_duplicate_credit_card_field_type);
 }
 
-// Test fixture with flag "AutofillRelaxAddressImport" enabled.
-class FormDataImporterTest_RelaxAddressImport : public FormDataImporterTest {
- private:
-  base::test::ScopedFeatureList scoped_feature_list_{
-      features::kAutofillRelaxAddressImport};
-};
-
 // Tests that duplicate fields with identical field values are valid. They would
 // thus not abandon the import of the address.
-TEST_F(FormDataImporterTest_RelaxAddressImport,
-       DuplicateFieldsWithIdenticalValuesAreValid) {
+TEST_F(FormDataImporterTest, DuplicateFieldsWithIdenticalValuesAreValid) {
   AutofillField field;
   field.SetTypeTo(AutofillType(NAME_FIRST),
                   AutofillPredictionSource::kHeuristics);
@@ -4370,8 +4400,7 @@ TEST_F(FormDataImporterTest_RelaxAddressImport,
 
 // Tests that duplicate fields with different field values are invalid. They
 // would thus abandon the import of the address.
-TEST_F(FormDataImporterTest_RelaxAddressImport,
-       DuplicateFieldsWithDifferentValuesAreInvalid) {
+TEST_F(FormDataImporterTest, DuplicateFieldsWithDifferentValuesAreInvalid) {
   AutofillField field;
   field.SetTypeTo(AutofillType(NAME_FIRST),
                   AutofillPredictionSource::kHeuristics);
@@ -4389,8 +4418,7 @@ TEST_F(FormDataImporterTest_RelaxAddressImport,
 // case where a <select> field follows an <input> field and the input field's
 // value is the selected option's value. They would thus not abandon the import
 // of the address.
-TEST_F(FormDataImporterTest_RelaxAddressImport,
-       InputFollowedBySelectWithIdenticalValuesAreValid) {
+TEST_F(FormDataImporterTest, InputFollowedBySelectWithIdenticalValuesAreValid) {
   AutofillField field;
   field.SetTypeTo(AutofillType(ADDRESS_HOME_COUNTRY),
                   AutofillPredictionSource::kHeuristics);
@@ -4414,8 +4442,7 @@ TEST_F(FormDataImporterTest_RelaxAddressImport,
 // case where a <select> field is followed by an <input> field and the input
 // field's value is the selected option's value. They would thus not abandon the
 // import of the address.
-TEST_F(FormDataImporterTest_RelaxAddressImport,
-       SelectFollowedByInputWithIdenticalValuesAreValid) {
+TEST_F(FormDataImporterTest, SelectFollowedByInputWithIdenticalValuesAreValid) {
   AutofillField field(
       test::CreateTestSelectField("Country", "country", "US", "country",
                                   {"DE", "US"}, {"Germany", "United States"}));

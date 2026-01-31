@@ -32,22 +32,24 @@ import java.util.Locale;
 @NullMarked
 public class VeryLongPressAction implements ViewAction {
     private final float mLongPressMultiple;
+    private final @Nullable Matcher<View> mConstraints;
 
     /**
      * @param longPressMultiple The multiple of (@link ViewConfiguration#getLongPressTimeout()} to
      *     long press for.
+     * @param constraints The constraints that the View must satisfy for the action to be performed.
      */
-    public VeryLongPressAction(float longPressMultiple) {
+    public VeryLongPressAction(float longPressMultiple, @Nullable Matcher<View> constraints) {
         mLongPressMultiple = longPressMultiple;
+        mConstraints = constraints;
 
         assert Math.abs(longPressMultiple - 1.0f) > 0.2f
                 : "Avoid values close to the long press threshold to avoid flakiness";
     }
 
     @Override
-    @Nullable
-    public Matcher<View> getConstraints() {
-        return null;
+    public @Nullable Matcher<View> getConstraints() {
+        return mConstraints;
     }
 
     @Override

@@ -23,8 +23,9 @@ import org.jni_zero.NativeMethods;
 
 import org.chromium.base.ObserverList;
 import org.chromium.base.SysUtils;
-import org.chromium.base.supplier.ObservableSupplier;
-import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.supplier.MonotonicObservableSupplier;
+import org.chromium.base.supplier.ObservableSuppliers;
+import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
 import org.chromium.blink_public.input.SelectionGranularity;
 import org.chromium.build.annotations.Initializer;
 import org.chromium.build.annotations.NullMarked;
@@ -170,8 +171,8 @@ public class ContextualSearchManager
 
     // The panel.
     private ContextualSearchPanel mSearchPanel;
-    private final ObservableSupplierImpl<OverlayPanelStateProvider>
-            mOverlayPanelStateProviderSupplier = new ObservableSupplierImpl<>();
+    private final SettableMonotonicObservableSupplier<OverlayPanelStateProvider>
+            mOverlayPanelStateProviderSupplier = ObservableSuppliers.createMonotonic();
 
     // The native manager associated with this object.
     private long mNativeContextualSearchManagerPtr;
@@ -277,7 +278,7 @@ public class ContextualSearchManager
             BrowserControlsStateProvider browserControlsStateProvider,
             WindowAndroid windowAndroid,
             TabModelSelector tabModelSelector,
-            ObservableSupplier<EdgeToEdgeController> edgeToEdgeControllerSupplier) {
+            MonotonicObservableSupplier<EdgeToEdgeController> edgeToEdgeControllerSupplier) {
         mActivity = activity;
         mProfile = profile;
         mTabPromotionDelegate = tabPromotionDelegate;
@@ -413,7 +414,7 @@ public class ContextualSearchManager
 
         if (mSearchPanel != null) mSearchPanel.destroy();
         mSearchPanel = null;
-        mOverlayPanelStateProviderSupplier.set(null);
+        mOverlayPanelStateProviderSupplier.destroy();
     }
 
     @Override
@@ -1971,7 +1972,8 @@ public class ContextualSearchManager
      * @return the {@link OverlayPanelStateProvider} for observing changes to the Overlay Panel
      *     state.
      */
-    public ObservableSupplier<OverlayPanelStateProvider> getOverlayPanelStateProviderSupplier() {
+    public MonotonicObservableSupplier<OverlayPanelStateProvider>
+            getOverlayPanelStateProviderSupplier() {
         return mOverlayPanelStateProviderSupplier;
     }
 

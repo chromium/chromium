@@ -28,10 +28,9 @@ AccessMainThreadForWebGraphicsContext3DProvider() {
 
 namespace {
 
-
-
 void CreateWebGPUGraphicsContextOnMainThreadAsync(
     KURL url,
+    Platform::WebGPUReplyThread reply_thread,
     scoped_refptr<base::SingleThreadTaskRunner> task_runner,
     CrossThreadOnceFunction<void(std::unique_ptr<WebGraphicsContext3DProvider>)>
         callback) {
@@ -40,7 +39,8 @@ void CreateWebGPUGraphicsContextOnMainThreadAsync(
       *task_runner, FROM_HERE,
       CrossThreadBindOnce(
           std::move(callback),
-          Platform::Current()->CreateWebGPUGraphicsContext3DProvider(url)));
+          Platform::Current()->CreateWebGPUGraphicsContext3DProvider(
+              url, reply_thread)));
 }
 
 }  // namespace
@@ -122,12 +122,13 @@ CreateWebGLGraphicsContextProvider(bool prefer_low_power_gpu,
 
 void CreateWebGPUGraphicsContext3DProviderAsync(
     const KURL& url,
+    Platform::WebGPUReplyThread reply_thread,
     scoped_refptr<base::SingleThreadTaskRunner> current_thread_task_runner,
     CrossThreadOnceFunction<void(std::unique_ptr<WebGraphicsContext3DProvider>)>
         callback) {
   if (IsMainThread()) {
     Platform::Current()->CreateWebGPUGraphicsContext3DProviderAsync(
-        url, ConvertToBaseOnceCallback(std::move(callback)));
+        url, reply_thread, ConvertToBaseOnceCallback(std::move(callback)));
   } else {
     // Posts a task to the main thread to create context provider
     // because the current RendererBlinkPlatformImpl and viz::Gpu
@@ -142,7 +143,8 @@ void CreateWebGPUGraphicsContext3DProviderAsync(
             AccessMainThreadForWebGraphicsContext3DProvider()),
         FROM_HERE,
         CrossThreadBindOnce(&CreateWebGPUGraphicsContextOnMainThreadAsync, url,
-                            current_thread_task_runner, std::move(callback)));
+                            reply_thread, current_thread_task_runner,
+                            std::move(callback)));
   }
 }
 

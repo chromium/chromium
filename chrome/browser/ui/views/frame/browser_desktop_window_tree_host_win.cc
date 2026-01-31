@@ -25,11 +25,14 @@
 #include "chrome/browser/themes/theme_service_factory.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/browser_frame_view.h"
+#include "chrome/browser/ui/views/frame/browser_frame_view_win.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/browser_widget.h"
 #include "chrome/browser/ui/views/frame/browser_window_property_manager_win.h"
+#include "chrome/browser/ui/views/frame/opaque_browser_frame_view.h"
 #include "chrome/browser/ui/views/frame/system_menu_insertion_delegate_win.h"
 #include "chrome/browser/ui/views/frame/tab_strip_region_view.h"
+#include "chrome/browser/ui/views/frame/windows_caption_button.h"
 #include "chrome/browser/ui/views/tabs/tab_strip.h"
 #include "chrome/browser/win/app_icon.h"
 #include "chrome/browser/win/titlebar_config.h"
@@ -45,6 +48,21 @@
 #include "ui/gfx/image/image_family.h"
 #include "ui/gfx/win/icon_util.h"
 #include "ui/views/controls/menu/native_menu_win.h"
+#include "ui/views/view_utils.h"
+
+namespace {
+
+int GetTopAreaHeight(const BrowserFrameView* frame) {
+  if (auto* const opaque = views::AsViewClass<OpaqueBrowserFrameView>(frame)) {
+    return opaque->GetTopAreaHeight();
+  } else if (auto* const frame_win =
+                 views::AsViewClass<BrowserFrameViewWin>(frame)) {
+    return frame_win->TopAreaHeight(false);
+  }
+  return 0;
+}
+
+}  // namespace
 
 class VirtualDesktopHelper
     : public base::RefCountedDeleteOnSequence<VirtualDesktopHelper> {
@@ -375,13 +393,15 @@ bool BrowserDesktopWindowTreeHostWin::GetDwmFrameInsetsInPixels(
     *insets = gfx::Insets();
   } else {
     // The glass should extend to the bottom of the tabstrip.
-    gfx::Rect tabstrip_region_bounds(
-        browser_widget_->GetFrameView()->GetBoundsForTabStripRegion(
-            browser_view_->tab_strip_view()->GetMinimumSize()));
-    tabstrip_region_bounds = display::win::GetScreenWin()->DIPToClientRect(
-        GetHWND(), tabstrip_region_bounds);
-
-    *insets = gfx::Insets::TLBR(tabstrip_region_bounds.bottom(), 0, 0, 0);
+    auto* const frame = browser_widget_->GetFrameView();
+    const int bottom =
+        GetTopAreaHeight(frame) +
+        browser_view_->GetFrameElementInfo().tabstrip_preferred_height;
+    const int tabstrip_region_bottom =
+        display::win::GetScreenWin()
+            ->DIPToClientPoint(GetHWND(), gfx::Point(0, bottom))
+            .y();
+    *insets = gfx::Insets::TLBR(tabstrip_region_bottom, 0, 0, 0);
   }
   return true;
 }

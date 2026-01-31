@@ -77,6 +77,9 @@ enum DialogViewId : int {
                      // bubble and during ongoing enrollment in virtual card
                      //  enroll bubble.
 
+  // The following are views::ImageView objects.
+  BUBBLE_TITLE_ICON,  // The icon created in a TitleWithIconAfterLabelView.
+
 };
 
 }  // namespace autofill

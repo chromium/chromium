@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/command_line.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/scoped_blocking_call.h"
 #include "build/build_config.h"

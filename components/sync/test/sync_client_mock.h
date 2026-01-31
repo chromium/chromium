@@ -42,6 +42,7 @@ class SyncClientMock : public SyncClient {
               RegisterTrustedVaultAutoUpgradeSyntheticFieldTrial,
               (const TrustedVaultAutoUpgradeSyntheticFieldTrialGroup&),
               (override));
+  MOCK_METHOD(bool, IsMetricsAndCrashReportingEnabled, (), (override));
 };
 
 }  // namespace syncer

@@ -205,14 +205,42 @@ If `media_unittests` or `ffmpeg_regression_tests` fail:
     configs: `./media/ffmpeg/scripts/robosushi.py --auto-merge
     --force-gn-rebuild`
 
-## Patches and Generated Files
+## Generated Files
 
-**Patches File** We track changes to FFmpeg in `chromium/patches/README`.
-This file is **automatically generated** by `find_patches.py` (called by
-robosushi). You generally do not need to edit it manually.
-
-**README.chromium** This file tracks the upstream SHA1 and merge dates.
+**README.chromium** - This file tracks the upstream SHA1 and merge dates.
 Robosushi updates this automatically.
+
+## Git Tips and Tricks
+
+### How to see what a patch originally looked like
+
+During a merge conflict, it can be helpful to see the original patch that
+modified a file to understand the intent of the local change.
+
+To see the history of a file in the current branch (Chromium's copy):
+
+```bash
+git log HEAD -- path/to/file
+```
+
+You can then inspect specific commits to see the original patch:
+
+```bash
+git show <commit_hash>
+```
+
+To see the version of the file from the upstream branch you are merging:
+
+```bash
+git show MERGE_HEAD:path/to/file
+```
+
+To see the common ancestor (what the file looked like before both sides
+diverged):
+
+```bash
+git show $(git merge-base HEAD MERGE_HEAD):path/to/file
+```
 
 ## Manual Fallback / Under the Hood
 
@@ -233,12 +261,11 @@ is what is happening under the hood.
     - `check_merge.py` verifies licenses and bad files.
 5. **Testing**: `media_unittests` and `ffmpeg_regression_tests` are compiled and
    run.
-6. **Patch Generation**: `find_patches.py` updates `CHROMIUM.patches`.
-7. **Upload**: `git cl upload` sends the GN config changes and patches for
+6. **Upload**: `git cl upload` sends the GN config changes and patches for
    review.
-8. **Merge Back**: After review, the sushi branch is merged into
+7. **Merge Back**: After review, the sushi branch is merged into
    `origin/master`.
-9. **DEPS Roll**: A standard Chromium DEPS roll is started pointing to the new
+8. **DEPS Roll**: A standard Chromium DEPS roll is started pointing to the new
    `origin/master` tip.
 
 ## Want to Clean Things Up?

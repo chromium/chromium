@@ -30,10 +30,10 @@ std::unique_ptr<GetDetailsForCreateCardRequest> CreateRequest() {
 TEST(GetDetailsForCreateCardRequestTest,
      GetRequestContent_ContainsExpectedData) {
   std::unique_ptr<GetDetailsForCreateCardRequest> request = CreateRequest();
-  base::Value::Dict expected_request_content =
-      base::Value::Dict()
+  base::DictValue expected_request_content =
+      base::DictValue()
           .Set("context",
-               base::Value::Dict()
+               base::DictValue()
                    .Set("billable_service",
                         payments::kUploadPaymentMethodBillableServiceNumber)
                    .Set("customer_context",
@@ -41,12 +41,12 @@ TEST(GetDetailsForCreateCardRequestTest,
                             kBillingCustomerNumber))
                    .Set("language_code", "en"))
           .Set("chrome_user_context",
-               base::Value::Dict().Set(
+               base::DictValue().Set(
                    "client_behavior_signals",
-                   base::Value::List().Append(static_cast<int>(
+                   base::ListValue().Append(static_cast<int>(
                        ClientBehaviorConstants::kOfferingToSaveCvc))))
           .Set("card_info",
-               base::Value::Dict()
+               base::DictValue()
                    .Set("unique_country_code", "US")
                    .Set("upload_card_source", "UPSTREAM_SAVE_AND_FILL"));
 
@@ -56,14 +56,14 @@ TEST(GetDetailsForCreateCardRequestTest,
 
 TEST(GetDetailsForCreateCardRequestTest, ParseResponse_ResponseIsComplete) {
   std::unique_ptr<GetDetailsForCreateCardRequest> request = CreateRequest();
-  base::Value::Dict response =
-      base::Value::Dict()
+  base::DictValue response =
+      base::DictValue()
           .Set("context_token", u"some token")
           .Set("legal_message",
-               base::Value::Dict().Set("terms_of_service", "Terms of Service"))
+               base::DictValue().Set("terms_of_service", "Terms of Service"))
           .Set("card_details",
-               base::Value::Dict().Set("supported_card_bin_ranges_string",
-                                       "1234,30000-55555,765"));
+               base::DictValue().Set("supported_card_bin_ranges_string",
+                                     "1234,30000-55555,765"));
 
   request->ParseResponse(response);
 
@@ -75,13 +75,13 @@ TEST(GetDetailsForCreateCardRequestTest, ParseResponse_ResponseIsComplete) {
 
 TEST(GetDetailsForCreateCardRequestTest, ParseResponse_MissingContextToken) {
   std::unique_ptr<GetDetailsForCreateCardRequest> request = CreateRequest();
-  base::Value::Dict response =
-      base::Value::Dict()
+  base::DictValue response =
+      base::DictValue()
           .Set("legal_message",
-               base::Value::Dict().Set("terms_of_service", "Terms of Service"))
+               base::DictValue().Set("terms_of_service", "Terms of Service"))
           .Set("card_details",
-               base::Value::Dict().Set("supported_card_bin_ranges_string",
-                                       "1234,30000-55555,765"));
+               base::DictValue().Set("supported_card_bin_ranges_string",
+                                     "1234,30000-55555,765"));
 
   request->ParseResponse(response);
 
@@ -90,12 +90,12 @@ TEST(GetDetailsForCreateCardRequestTest, ParseResponse_MissingContextToken) {
 
 TEST(GetDetailsForCreateCardRequestTest, ParseResponse_MissingLegalMessage) {
   std::unique_ptr<GetDetailsForCreateCardRequest> request = CreateRequest();
-  base::Value::Dict response =
-      base::Value::Dict()
+  base::DictValue response =
+      base::DictValue()
           .Set("context_token", u"some token")
           .Set("card_details",
-               base::Value::Dict().Set("supported_card_bin_ranges_string",
-                                       "1234,30000-55555,765"));
+               base::DictValue().Set("supported_card_bin_ranges_string",
+                                     "1234,30000-55555,765"));
 
   request->ParseResponse(response);
 
@@ -105,11 +105,11 @@ TEST(GetDetailsForCreateCardRequestTest, ParseResponse_MissingLegalMessage) {
 TEST(GetDetailsForCreateCardRequestTest,
      ParseResponse_MissingSupportedCardBinRanges) {
   std::unique_ptr<GetDetailsForCreateCardRequest> request = CreateRequest();
-  base::Value::Dict response =
-      base::Value::Dict()
+  base::DictValue response =
+      base::DictValue()
           .Set("context_token", u"some token")
           .Set("legal_message",
-               base::Value::Dict().Set("terms_of_service", "Terms of Service"));
+               base::DictValue().Set("terms_of_service", "Terms of Service"));
 
   request->ParseResponse(response);
 

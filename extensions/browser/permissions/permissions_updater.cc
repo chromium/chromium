@@ -152,9 +152,10 @@ void PermissionsUpdater::NetworkPermissionsUpdateHelper::UpdatePermissions(
     base::OnceClosure completion_callback) {
   // If there is no difference in allowlist/blocklist for the extension, we can
   // synchronously finish it without updating the CORS access list.
-  // We do not apply this optimization for POLICY event_type, since callers do
+  // We do not apply this optimization for kPolicy event_type, since callers do
   // not pass effective |changed| argument.
-  if (event_type != POLICY && changed.effective_hosts().is_empty()) {
+  if (event_type != EventType::kPolicy &&
+      changed.effective_hosts().is_empty()) {
     PermissionsUpdater::NotifyPermissionsUpdated(
         browser_context, event_type, std::move(extension), changed.Clone(),
         std::move(completion_callback));
@@ -224,7 +225,7 @@ void PermissionsUpdater::NetworkPermissionsUpdateHelper::
 }
 
 PermissionsUpdater::PermissionsUpdater(content::BrowserContext* browser_context)
-    : PermissionsUpdater(browser_context, INIT_FLAG_NONE) {}
+    : PermissionsUpdater(browser_context, InitFlag::kNone) {}
 
 PermissionsUpdater::PermissionsUpdater(content::BrowserContext* browser_context,
                                        InitFlag init_flag)
@@ -253,7 +254,9 @@ void PermissionsUpdater::GrantOptionalPermissions(
   // permission increase. We should address this as we continue working on
   // reducing the different ways we store permissions into a unified concept.
   constexpr int permissions_store_mask =
-      kActivePermissions | kGrantedPermissions | kRuntimeGrantedPermissions;
+      PermissionsStore::kActivePermissions |
+      PermissionsStore::kGrantedPermissions |
+      PermissionsStore::kRuntimeGrantedPermissions;
   AddPermissionsImpl(extension, permissions, permissions_store_mask,
                      permissions, std::move(completion_callback));
 }
@@ -289,7 +292,8 @@ void PermissionsUpdater::GrantRuntimePermissions(
   // granted or active permissions store, so that behavior taken with the
   // runtime host permissions feature is confined to when the experiment is
   // enabled.
-  constexpr int permissions_store_mask = kRuntimeGrantedPermissions;
+  constexpr int permissions_store_mask =
+      std::to_underlying(PermissionsStore::kRuntimeGrantedPermissions);
   AddPermissionsImpl(extension, *active_permissions_to_add,
                      permissions_store_mask, permissions,
                      std::move(completion_callback));
@@ -310,9 +314,11 @@ void PermissionsUpdater::RevokeOptionalPermissions(
   // `remove_type` == REMOVE_HARD). This allows the extension to add them again
   // without prompting the user. They are always removed from the active set,
   // which is the set of permissions the extension currently requests.
-  int permissions_store_mask = kActivePermissions;
-  if (remove_type == REMOVE_HARD) {
-    permissions_store_mask |= kGrantedPermissions | kRuntimeGrantedPermissions;
+  int permissions_store_mask =
+      std::to_underlying(PermissionsStore::kActivePermissions);
+  if (remove_type == RemoveType::kHard) {
+    permissions_store_mask |= PermissionsStore::kGrantedPermissions |
+                              PermissionsStore::kRuntimeGrantedPermissions;
 
     // We don't allow the hard-removal of user-permitted sites on a per-
     // extension basis. Instead, these permissions must be removed by removing
@@ -431,7 +437,8 @@ void PermissionsUpdater::RevokeRuntimePermissions(
   // separately, and not considered runtime-granted permissions. This ensures
   // that when a user changes a site from permitted to non-permitted or vice
   // versa, and extension's specific stored permissions are unaffected.
-  constexpr int permissions_store_mask = kRuntimeGrantedPermissions;
+  constexpr int permissions_store_mask =
+      std::to_underlying(PermissionsStore::kRuntimeGrantedPermissions);
   RemovePermissionsImpl(extension, std::move(new_active_permissions),
                         permissions, permissions_store_mask,
                         /*withhold_optional_permissions=*/true,
@@ -464,20 +471,22 @@ void PermissionsUpdater::SetPolicyHostRestrictions(
   // Update the BrowserContext origin lists, and send notification to the
   // currently running renderers of the runtime block hosts settings.
   NetworkPermissionsUpdateHelper::UpdatePermissions(
-      browser_context_, POLICY, extension, PermissionSet(), base::DoNothing());
+      browser_context_, EventType::kPolicy, extension, PermissionSet(),
+      base::DoNothing());
 }
 
 void PermissionsUpdater::SetUsesDefaultHostRestrictions(
     const Extension* extension) {
   extension->permissions_data()->SetUsesDefaultHostRestrictions();
   NetworkPermissionsUpdateHelper::UpdatePermissions(
-      browser_context_, POLICY, extension, PermissionSet(), base::DoNothing());
+      browser_context_, EventType::kPolicy, extension, PermissionSet(),
+      base::DoNothing());
 }
 
 void PermissionsUpdater::SetDefaultPolicyHostRestrictions(
     const URLPatternSet& default_runtime_blocked_hosts,
     const URLPatternSet& default_runtime_allowed_hosts) {
-  DCHECK_EQ(0, init_flag_ & INIT_FLAG_TRANSIENT);
+  DCHECK_EQ(0, init_flag_ & InitFlag::kTransient);
 
   PermissionsData::SetDefaultPolicyHostRestrictions(
       util::GetBrowserContextId(browser_context_),
@@ -512,7 +521,7 @@ void PermissionsUpdater::RemovePermissionsUnsafe(
   SetPermissions(extension, std::move(total),
                  /*withhold_optional_permissions=*/true);
   NetworkPermissionsUpdateHelper::UpdatePermissions(
-      browser_context_, REMOVED, extension, *successfully_removed,
+      browser_context_, EventType::kRemoved, extension, *successfully_removed,
       base::DoNothing());
 }
 
@@ -556,7 +565,7 @@ void PermissionsUpdater::InitializePermissions(const Extension* extension) {
 
   // If |extension| is a transient dummy extension, we do not want to look for
   // it in preferences.
-  if (init_flag_ & INIT_FLAG_TRANSIENT) {
+  if (init_flag_ & InitFlag::kTransient) {
     desired_permissions = &extension->permissions_data()->active_permissions();
   } else {
     desired_permissions_wrapper =
@@ -568,7 +577,7 @@ void PermissionsUpdater::InitializePermissions(const Extension* extension) {
       permissions_manager->GetEffectivePermissionsToGrant(*extension,
                                                           *desired_permissions);
 
-  if ((init_flag_ & INIT_FLAG_TRANSIENT) == 0) {
+  if ((init_flag_ & InitFlag::kTransient) == 0) {
     // Set the desired permissions in prefs.
     // - For new installs, this initializes the desired active permissions.
     // - For updates, this ensures the desired active permissions contain any
@@ -595,7 +604,8 @@ void PermissionsUpdater::InitializePermissions(const Extension* extension) {
 void PermissionsUpdater::AddPermissionsForTesting(
     const Extension& extension,
     const PermissionSet& permissions) {
-  AddPermissionsImpl(extension, permissions, kNone, permissions,
+  AddPermissionsImpl(extension, permissions,
+                     std::to_underlying(PermissionsStore::kNone), permissions,
                      base::DoNothing());
 }
 
@@ -657,19 +667,19 @@ void PermissionsUpdater::NotifyPermissionsUpdated(
     scoped_refptr<const Extension> extension,
     std::unique_ptr<const PermissionSet> changed,
     base::OnceClosure completion_callback) {
-  if ((changed->IsEmpty() && event_type != POLICY) ||
+  if ((changed->IsEmpty() && event_type != EventType::kPolicy) ||
       browser_context->ShutdownStarted()) {
     std::move(completion_callback).Run();
     return;
   }
 
   PermissionsManager::UpdateReason reason;
-  if (event_type == REMOVED) {
+  if (event_type == EventType::kRemoved) {
     reason = PermissionsManager::UpdateReason::kRemoved;
-  } else if (event_type == ADDED) {
+  } else if (event_type == EventType::kAdded) {
     reason = PermissionsManager::UpdateReason::kAdded;
   } else {
-    DCHECK_EQ(POLICY, event_type);
+    DCHECK_EQ(EventType::kPolicy, event_type);
     reason = PermissionsManager::UpdateReason::kPolicy;
   }
 
@@ -768,23 +778,26 @@ void PermissionsUpdater::AddPermissionsImpl(
                  /*withhold_optional_permissions=*/true);
 
   ExtensionPrefs* prefs = ExtensionPrefs::Get(browser_context_);
-  if ((prefs_permissions_store_mask & kActivePermissions) != 0) {
+  if ((prefs_permissions_store_mask & PermissionsStore::kActivePermissions) !=
+      0) {
     prefs->AddDesiredActivePermissions(extension.id(),
                                        permissions_to_add_to_prefs);
   }
 
-  if ((prefs_permissions_store_mask & kGrantedPermissions) != 0) {
+  if ((prefs_permissions_store_mask & PermissionsStore::kGrantedPermissions) !=
+      0) {
     prefs->AddGrantedPermissions(extension.id(), permissions_to_add_to_prefs);
   }
 
-  if ((prefs_permissions_store_mask & kRuntimeGrantedPermissions) != 0) {
+  if ((prefs_permissions_store_mask &
+       PermissionsStore::kRuntimeGrantedPermissions) != 0) {
     prefs->AddRuntimeGrantedPermissions(extension.id(),
                                         permissions_to_add_to_prefs);
   }
 
   NetworkPermissionsUpdateHelper::UpdatePermissions(
-      browser_context_, ADDED, &extension, active_permissions_to_add,
-      std::move(completion_callback));
+      browser_context_, EventType::kAdded, &extension,
+      active_permissions_to_add, std::move(completion_callback));
 }
 
 void PermissionsUpdater::RemovePermissionsImpl(
@@ -798,19 +811,22 @@ void PermissionsUpdater::RemovePermissionsImpl(
                  withhold_optional_permissions);
 
   ExtensionPrefs* prefs = ExtensionPrefs::Get(browser_context_);
-  if ((prefs_permissions_store_mask & kActivePermissions) != 0) {
+  if ((prefs_permissions_store_mask & PermissionsStore::kActivePermissions) !=
+      0) {
     prefs->RemoveDesiredActivePermissions(extension.id(),
                                           permissions_to_remove_from_prefs);
   }
 
   // NOTE: Currently, this code path is only reached in unit tests. See comment
   // above REMOVE_HARD in the header file.
-  if ((prefs_permissions_store_mask & kGrantedPermissions) != 0) {
+  if ((prefs_permissions_store_mask & PermissionsStore::kGrantedPermissions) !=
+      0) {
     prefs->RemoveGrantedPermissions(extension.id(),
                                     permissions_to_remove_from_prefs);
   }
 
-  if ((prefs_permissions_store_mask & kRuntimeGrantedPermissions) != 0) {
+  if ((prefs_permissions_store_mask &
+       PermissionsStore::kRuntimeGrantedPermissions) != 0) {
     prefs->RemoveRuntimeGrantedPermissions(extension.id(),
                                            permissions_to_remove_from_prefs);
   }
@@ -819,8 +835,8 @@ void PermissionsUpdater::RemovePermissionsImpl(
   // permissions to remove from preferences, rather than the new active
   // permissions (which can include things like user-permitted sites).
   NetworkPermissionsUpdateHelper::UpdatePermissions(
-      browser_context_, REMOVED, &extension, permissions_to_remove_from_prefs,
-      std::move(completion_callback));
+      browser_context_, EventType::kRemoved, &extension,
+      permissions_to_remove_from_prefs, std::move(completion_callback));
 }
 
 // static

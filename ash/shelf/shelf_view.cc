@@ -50,7 +50,6 @@
 #include "base/auto_reset.h"
 #include "base/check_op.h"
 #include "base/containers/adapters.h"
-#include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
@@ -1922,7 +1921,7 @@ bool ShelfView::ShouldFocusOut(bool reverse, views::View* button) {
 }
 
 std::pair<size_t, size_t> ShelfView::GetDragRange(size_t index) {
-  DCHECK(base::Contains(visible_views_indices_, index));
+  DCHECK(std::ranges::contains(visible_views_indices_, index));
   const ShelfItem& dragged_item = model_->items()[index];
 
   // If |drag_view_| is allowed to be dragged across the separator, return the
@@ -1952,7 +1951,7 @@ std::pair<size_t, size_t> ShelfView::GetDragRange(size_t index) {
 }
 
 bool ShelfView::ShouldUpdateDraggedViewPinStatus(size_t dragged_view_index) {
-  DCHECK(base::Contains(visible_views_indices_, dragged_view_index));
+  DCHECK(std::ranges::contains(visible_views_indices_, dragged_view_index));
   bool is_moved_item_pinned =
       IsPinnedShelfItemType(model_->items()[dragged_view_index].type);
   if (!separator_index_.has_value()) {
@@ -2697,8 +2696,9 @@ void ShelfView::OnBoundsAnimatorDone(views::BoundsAnimator* animator) {
       // previously hidden status can be shown again. Since the button itself
       // might have gone away or changed locations we check that the button
       // is still in the shelf and show its status again.
-      if (base::Contains(view_model_->entries(), snap_back_from_rip_off_view_,
-                         &views::ViewModelBase::Entry::view))
+      if (std::ranges::contains(view_model_->entries(),
+                                snap_back_from_rip_off_view_,
+                                &views::ViewModelBase::Entry::view))
         snap_back_from_rip_off_view_->ClearState(ShelfAppButton::STATE_HIDDEN);
 
       snap_back_from_rip_off_view_ = nullptr;

@@ -107,8 +107,8 @@
 // Starts a LoadQuery handler that stores the last query loaded.
 + (void)startLoadQueryHandler;
 
-// Asserts that the loaded query matches `query` and `immediately`.
-+ (NSError*)assertQueryLoaded:(NSString*)query immediately:(BOOL)immediately;
+// Asserts that the loaded query matches `query`.
++ (NSError*)assertQueryLoaded:(NSString*)query;
 
 @end
 

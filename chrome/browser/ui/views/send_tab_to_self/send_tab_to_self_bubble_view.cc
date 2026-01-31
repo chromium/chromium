@@ -9,9 +9,9 @@
 namespace send_tab_to_self {
 
 SendTabToSelfBubbleView::SendTabToSelfBubbleView(
-    views::View* anchor_view,
+    views::BubbleAnchor anchor,
     content::WebContents* web_contents)
-    : LocationBarBubbleDelegateView(anchor_view, web_contents) {}
+    : LocationBarBubbleDelegateView(anchor, web_contents) {}
 
 BEGIN_METADATA(SendTabToSelfBubbleView)
 END_METADATA

@@ -7,6 +7,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "components/input/features.h"
+#include "components/viz/common/features.h"
 #include "components/viz/service/frame_sinks/external_begin_frame_source_android.h"
 #include "components/viz/service/frame_sinks/frame_sink_manager_impl.h"
 #include "components/viz/service/gl/mock_gpu_service_impl.h"
@@ -57,7 +58,8 @@ class FlingSchedulerTest : public testing::Test,
     frame_sink_manager_ =
         std::make_unique<FrameSinkManagerImpl>(std::move(init_params));
     scoped_feature_list_.InitWithFeatures(
-        /* enabled_features */ {input::features::kInputOnViz},
+        /* enabled_features */ {input::features::kInputOnViz,
+                                features::kFlingSchedulingImprovements},
         /* disabled_features */ {});
   }
 
@@ -181,8 +183,8 @@ class FlingSchedulerTest : public testing::Test,
 
   // Checks if a [Root]CompositorFrameSinkImpl exists for |frame_sink_id|.
   bool CompositorFrameSinkExists(const FrameSinkId& frame_sink_id) {
-    return base::Contains(frame_sink_manager_->sink_map_, frame_sink_id) ||
-           base::Contains(frame_sink_manager_->root_sink_map_, frame_sink_id);
+    return frame_sink_manager_->sink_map_.contains(frame_sink_id) ||
+           frame_sink_manager_->root_sink_map_.contains(frame_sink_id);
   }
 
   // Creates a CompositorFrameSinkImpl.

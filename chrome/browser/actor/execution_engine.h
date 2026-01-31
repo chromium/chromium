@@ -11,14 +11,17 @@
 
 #include "base/callback_list.h"
 #include "base/functional/callback.h"
+#include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/safe_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/types/id_type.h"
 #include "base/types/optional_ref.h"
+#include "base/types/pass_key.h"
 #include "chrome/browser/actor/actor_task.h"
 #include "chrome/browser/actor/aggregated_journal.h"
+#include "chrome/browser/actor/origin_checker.h"
 #include "chrome/browser/actor/site_policy.h"
 #include "chrome/browser/actor/tools/tool_controller.h"
 #include "chrome/browser/actor/tools/tool_delegate.h"
@@ -27,6 +30,7 @@
 #include "chrome/common/actor/task_id.h"
 #include "components/autofill/core/browser/integrators/glic/actor_form_filling_types.h"
 #include "components/tabs/public/tab_interface.h"
+#include "content/public/browser/navigation_throttle.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
 
@@ -105,6 +109,9 @@ class ExecutionEngine : public ToolDelegate {
   };
 
   explicit ExecutionEngine(Profile* profile);
+  ExecutionEngine(base::PassKey<ExecutionEngine>,
+                  Profile* profile,
+                  std::unique_ptr<ui::UiEventDispatcher> ui_event_dispatcher);
   ExecutionEngine(const ExecutionEngine&) = delete;
   ExecutionEngine& operator=(const ExecutionEngine&) = delete;
   ~ExecutionEngine() override;
@@ -117,7 +124,7 @@ class ExecutionEngine : public ToolDelegate {
   // ExecutionEngine, then the ActorTask.
   void SetOwner(ActorTask* task);
 
-  // Cancels any in-progress actions with the reason: "kTaskPaused".
+  // Cancels any ongoing actions.
   void CancelOngoingActions(mojom::ActionResultCode reason);
 
   // If there is an ongoing tool request, treat it as having failed with the
@@ -157,9 +164,8 @@ class ExecutionEngine : public ToolDelegate {
   void InterruptFromTool() override;
   void UninterruptFromTool() override;
 
-  using AllowedOriginSet = absl::flat_hash_set<url::Origin>;
   void AddWritableMainframeOrigins(
-      const AllowedOriginSet& added_writable_mainframe_origins);
+      const absl::flat_hash_set<url::Origin>& added_writable_mainframe_origins);
 
   // Callback invoked when ConfirmCrossOriginNavigation, which spawns an IPC to
   // the web client, receives its response. This callback gets a boolean
@@ -167,11 +173,13 @@ class ExecutionEngine : public ToolDelegate {
   using NavigationDecisionCallback =
       base::OnceCallback<void(bool may_continue)>;
 
-  // Returns a boolean indicating if ActorNavigationThrottle should defer a
-  // navigation until the decision callback is invoked. This method can only
-  // be called on the primary main frame or a prerendered main frame.
-  bool ShouldGateNavigation(content::NavigationHandle& navigation_handle,
-                            NavigationDecisionCallback callback);
+  // Returns a value indicating how the given navigation should be handled
+  // (proceed, cancel and ignore, defer, etc.). This method must only be called
+  // on the primary main frame or a prerendered main frame. `callback` will be
+  // invoked iff this function returns `content::NavigationThrottle::DEFER`.
+  content::NavigationThrottle::ThrottleAction ShouldDeferNavigation(
+      content::NavigationHandle& navigation_handle,
+      NavigationDecisionCallback callback);
 
   static std::string StateToString(State state);
 
@@ -201,11 +209,17 @@ class ExecutionEngine : public ToolDelegate {
 
   void RemoveObserver(StateObserver* observer);
 
+  void DidUninterruptTask();
+
+  void set_tool_invoke_complete_callback_for_testing(
+      base::OnceClosure callback) {
+    tool_invoke_complete_callback_for_testing_ = std::move(callback);
+  }
+
+  State state() { return state_; }
+
  private:
   class NewTabWebContentsObserver;
-  // Used by tests only.
-  ExecutionEngine(Profile* profile,
-                  std::unique_ptr<ui::UiEventDispatcher> ui_event_dispatcher);
 
   void SetState(State state);
 
@@ -255,32 +269,27 @@ class ExecutionEngine : public ToolDelegate {
   size_t InProgressActionIndex() const;
   const ToolRequest& GetInProgressAction() const;
 
-  // `std::nullopt` is returned when the decision to gate the navigation is done
-  // async.
-  GatingDecision ShouldGateNavigationInternal(
-      content::NavigationHandle& navigation_handle,
-      NavigationDecisionCallback callback);
   void LogNavigationGating(
       base::optional_ref<const url::Origin> initiator_origin,
       const GURL& navigation_url,
-      bool applied_gate);
+      bool applied_gate) const;
 
   // Returns the highest-priority navigation gating decision. Prioritizes
   // blocking navigations over allowing (except on same origin navigations).
   GatingDecision DetermineGatingDecision(const GURL& source_url,
                                          const GURL& destination_url) const;
 
-  void CheckNavigationBlocklist(
+  void CheckNavigationSensitiveUrlList(
       base::optional_ref<const url::Origin> initiator_origin,
       const GURL& navigation_url,
       bool skip_prompt,
       NavigationDecisionCallback callback);
-  void OnNavigationBlocklistDecision(
+  void OnNavigationSensitiveUrlListChecked(
       base::optional_ref<const url::Origin> initiator_origin,
       const GURL navigation_url,
       bool skip_prompt,
       NavigationDecisionCallback callback,
-      bool not_on_blocklist);
+      bool not_sensitive);
 
   // Called when the browser detects the actor needs to confirm a
   // client-side-initiated navigation to a novel origin.
@@ -296,16 +305,16 @@ class ExecutionEngine : public ToolDelegate {
       webui::mojom::NavigationConfirmationResponsePtr response);
 
   // Called when the browser detects the actor navigating to an origin in the
-  // blocklist. The web client should confirm with the user that the actor is
-  // allowed to navigate to this origin.
+  // sensitive origin list. The web client should confirm with the user that the
+  // actor is allowed to navigate to this origin.
   // This may also be called when the browser detects the actor navigating to
   // a novel origin when `kGlicPromptUserForNavigationToNewOrigins` is enabled.
   void SendUserConfirmationDialogRequest(const url::Origin& navigation_origin,
-                                         bool for_blocklisted_origin,
+                                         bool for_sensitive_origin,
                                          NavigationDecisionCallback callback);
   void OnPromptUserToConfirmNavigationDecision(
       url::Origin navigation_origin,
-      bool for_blocklisted_origin,
+      bool for_sensitive_origin,
       NavigationDecisionCallback callback,
       webui::mojom::UserConfirmationDialogResponsePtr response);
 
@@ -344,16 +353,9 @@ class ExecutionEngine : public ToolDelegate {
   // The results for actions so far.
   std::vector<ActionResultWithLatencyInfo> action_results_;
 
-  // Origins which the browser is allowed to navigate to under actor control
-  // without needing to confirm the navigation with the web client. This set can
-  // have origins added to it by the server actions or by confirming the new
-  // origin with the model or user. Sensitive origins that are on the
-  // optimization guide blocklist are not exempt by this list.
-  AllowedOriginSet allowed_navigation_origins_;
-  // Separate allowlist for sensitive origins on the optimization guide
-  // blocklist. We cache these origins separately to not double prompt the user
-  // when they already confirmed the actor can interact with the origin.
-  AllowedOriginSet user_confirmed_blocklisted_origins_;
+  // Manages the sets of origins that have been allowed for navigations and
+  // sensitive operations.
+  OriginChecker origin_checker_;
 
   // For multi-step login, this is the credential that the user has chosen to
   // allow the actor to use. The key is the
@@ -365,6 +367,12 @@ class ExecutionEngine : public ToolDelegate {
   std::optional<mojom::ActionResultCode> user_takeover_result_;
 
   base::ObserverList<StateObserver> observers_;
+
+  // If a tool finishes while the task is in a waiting state, the finish
+  // callback and processing is deferred until the task is resumed.
+  base::OnceClosure deferred_finish_tool_invoke_;
+
+  base::OnceClosure tool_invoke_complete_callback_for_testing_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 

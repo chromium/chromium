@@ -28,8 +28,29 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_OSAUTH) AuthRequest {
     kPasswordManager = 0,
     kSettings = 1,
     kWebAuthN = 2,
-    kMaxValue = kWebAuthN
+    kPaymentsAutofill = 3,
+    kMaxValue = kPaymentsAutofill
   };
+
+  // The result of an authentication attempt.
+  // These values are used in histograms, do not remove/renumber entries.
+  enum class AuthResult {
+    kSuccess = 0,
+    kAuthFailed,
+    kAuthNotAvailable,  // No authentication factors are configured or
+                        // available.
+    kSystemError,       // An unexpected system error occurred.
+    kMaxValue = kSystemError
+  };
+
+  // Notifies clients of the authentication flow's outcome.
+  // The user_context parameter's nullability depends on the result:
+  //  - AuthResult::kSuccess: non-null.
+  //  - AuthResult::kAuthFailed: is null.
+  //  - AuthResult::kAuthNotAvailable: non-null.
+  //  - AuthResult::kSystemError: is null.
+  virtual void NotifyAuthResult(std::unique_ptr<UserContext> user_context,
+                                AuthResult result) = 0;
 
   // Returns the AuthSession intent to be used for the AuthRequest.
   // This differs from `GetAuthReason` in that in returns the
@@ -46,10 +67,6 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_OSAUTH) AuthRequest {
   // describing the purpose of the authentication. i.e "ChromeOS
   // settings would like to know it's you".
   virtual const std::u16string GetDescription() const = 0;
-
-  // Notified clients of the authentication of success or failure.
-  virtual void NotifyAuthSuccess(std::unique_ptr<UserContext> user_context) = 0;
-  virtual void NotifyAuthFailure() = 0;
 
   virtual ~AuthRequest() = default;
 };

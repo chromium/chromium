@@ -59,9 +59,6 @@ class CrostiniFeatures {
   // true when advanced access controls feature flag is disabled.
   virtual bool IsRootAccessAllowed(Profile*) const;
 
-  // Returns true if container upgrade ui is allowed by flag.
-  virtual bool IsContainerUpgradeUIAllowed(Profile*) const;
-
   using CanChangeAdbSideloadingCallback =
       base::OnceCallback<void(bool can_change_adb_sideloading)>;
 
@@ -82,9 +79,6 @@ class CrostiniFeatures {
 
   // Returns whether we are running a baguette (containerless) crostini.
   virtual bool IsBaguette(Profile* profile) const;
-
-  // Returns true if user is allowed to use multiple (non-default) containers.
-  virtual bool IsMultiContainerAllowed(Profile*) const;
 
   // TODO(crbug.com/40647881): Move other functions from crostini_util to here.
 

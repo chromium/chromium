@@ -9,7 +9,6 @@
 #include <utility>
 
 #include "base/check.h"
-#include "base/containers/contains.h"
 #include "base/location.h"
 #include "base/logging.h"
 #include "build/build_config.h"
@@ -197,7 +196,7 @@ std::vector<std::string> TestPrintBackend::GetPrinterDriverInfo(
 }
 
 bool TestPrintBackend::IsValidPrinter(const std::string& printer_name) {
-  return base::Contains(printer_map_, printer_name);
+  return printer_map_.contains(printer_name);
 }
 
 #if BUILDFLAG(IS_WIN)

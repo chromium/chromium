@@ -71,13 +71,13 @@ bool UpdateStudentActivitiesRequest::GetContentData(
     std::string* upload_content_type,
     std::string* upload_content) {
   *upload_content_type = boca::kContentTypeApplicationJson;
-  base::Value::Dict root;
-  base::Value::List activities;
+  base::DictValue root;
+  base::ListValue activities;
   // TODO(b/371450038): Immediately dispatch event when they occur for now since
   // we only have one type of user activity, consider buffer and batch
   if (!active_tab_title_.empty()) {
-    base::Value::Dict activity;
-    base::Value::Dict tab;
+    base::DictValue activity;
+    base::DictValue tab;
     tab.Set(kTitle, active_tab_title_);
     activity.Set(kActiveTab, std::move(tab));
     activities.Append(std::move(activity));

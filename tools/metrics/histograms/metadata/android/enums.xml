@@ -89,6 +89,13 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="FALLBACK_ON_TIMEOUT_UNSANDBOXED"/>
 </enum>
 
+<enum name="AndroidChildProcessConnectionServiceNames">
+  <int value="0" label="JavaSandboxed"/>
+  <int value="1" label="NativeOnlySandboxed"/>
+  <int value="2" label="Privileged"/>
+  <int value="3" label="Other"/>
+</enum>
+
 <!-- LINT.IfChange(AndroidDefaultBrowserState) -->
 
 <enum name="AndroidDefaultBrowserPromoOutcomeType">
@@ -692,7 +699,7 @@ chromium-metrics-reviews@google.com.
   <int value="158" label="BackForwardCacheSettings.getMaxPagesInCache"/>
   <int value="159" label="Profile.preconnect"/>
   <int value="160" label="WebSettingsCompat.setHyperlinkContextMenuItems"/>
-  <int value="161" label="Page.isPrerendering"/>
+  <int value="161" label="Page.isPrerendering (deprecated)"/>
   <int value="162" label="Profile.addCustomHeader"/>
   <int value="163" label="Profile.getCustomHeaders"/>
   <int value="164" label="WebSettingsCompat.setRendererLibraryPrefetchMode"/>
@@ -702,6 +709,7 @@ chromium-metrics-reviews@google.com.
   <int value="168" label="WebSettingsCompat.addWebNavigationListener"/>
   <int value="169" label="WebSettingsCompat.removeWebNavigationListener"/>
   <int value="170" label="Profile.addQuicHints"/>
+  <int value="171" label="Page.getUrl"/>
 <!-- LINT.ThenChange(/android_webview/support_library/java/src/org/chromium/support_lib_glue/SupportLibWebViewChromiumFactory.java:ApiCall) -->
 
 </enum>
@@ -778,6 +786,11 @@ chromium-metrics-reviews@google.com.
   <int value="32" label="Safety Hub fetch task"/>
   <int value="33" label="Auxiliary search donate task"/>
   <int value="34" label="Chrome signals reporting task"/>
+  <int value="35" label="UMA upload task"/>
+  <int value="36" label="UKM upload task"/>
+  <int value="37" label="DWA upload task"/>
+  <int value="38" label="PUMA upload task"/>
+  <int value="39" label="Structured Metrics upload task"/>
 </enum>
 
 <enum name="BackPressConsumer">
@@ -808,13 +821,13 @@ chromium-metrics-reviews@google.com.
   <int value="16" label="(17) FIND_TOOLBAR"/>
   <int value="17" label="(14) LOCATION_BAR"/>
   <int value="18" label="(01) XR_DELEGATE"/>
-  <int value="19" label="(04) PAGE_INSIGHTS_BOTTOM_SHEET"/>
+  <int value="19" label="(XX) PAGE_INSIGHTS_BOTTOM_SHEET (Deprecated)"/>
   <int value="20" label="(18) BOTTOM_CONTROLS"/>
   <int value="21" label="(07) HUB"/>
   <int value="22" label="(06) ARCHIVED_TABS_DIALOG"/>
   <int value="23" label="(20) NATIVE_PAGE"/>
   <int value="24" label="(12) CANCEL_TAB_STRIP_DRAG"/>
-  <int value="25" label="(13) CANCEL_TAB_SWITCHER_DRAG"/>
+  <int value="25" label="(04) CANCEL_TAB_SWITCHER_DRAG"/>
 </enum>
 
 <!-- LINT.IfChange(BackPressTabCloseType) -->
@@ -923,6 +936,7 @@ chromium-metrics-reviews@google.com.
   <int value="1" label="Window manager"/>
   <int value="2" label="Instance retention period expiration"/>
   <int value="3" label="No tabs in window"/>
+  <int value="4" label="Recent Tabs page"/>
 </enum>
 
 <enum name="ContactsPickerDialogAction">
@@ -1242,6 +1256,22 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="yes"/>
 </enum>
 
+<enum name="LockRetryResult">
+  <int value="0" label="Succeeded the first time"/>
+  <int value="1"
+      label="Succeeded with one retry, no OverlappingFileLockException"/>
+  <int value="2"
+      label="Succeeded with one retry, saw OverlappingFileLockException"/>
+  <int value="3"
+      label="Succeeded with 2-3 retries, no OverlappingFileLockException"/>
+  <int value="4"
+      label="Succeeded with 2-3 retries, saw OverlappingFileLockException"/>
+  <int value="5"
+      label="Succeeded with 4+ retries, no OverlappingFileLockException"/>
+  <int value="6"
+      label="Succeeded with 4+ retries, saw OverlappingFileLockException"/>
+</enum>
+
 <enum name="MainFrameIntentLaunch">
   <int value="0" label="Not from external app, to intent scheme"/>
   <int value="1" label="Not from external app, to custom scheme"/>
@@ -1335,6 +1365,7 @@ chromium-metrics-reviews@google.com.
   <int value="65" label="MultiInstanceCreationLimit"/>
   <int value="66" label="PermissionPromptLoud"/>
   <int value="67" label="SaveUpdateEntity"/>
+  <int value="68" label="SigninSurvey"/>
 </enum>
 
 <!-- LINT.ThenChange(//components/messages/android/message_enums.h:MessageIdentifier) -->
@@ -1410,6 +1441,9 @@ chromium-metrics-reviews@google.com.
 <enum name="NewWindowAppSource">
   <int value="0" label="Undefined app source."/>
   <int value="1" label="Menu option (eg. app menu, context menu, etc.)"/>
+  <int value="2" label="Window Manager in app menu."/>
+  <int value="3" label="Keyboard shortcut."/>
+  <int value="4" label="Recent Tabs page."/>
 </enum>
 
 <enum name="NightMode">
@@ -1622,6 +1656,7 @@ chromium-metrics-reviews@google.com.
   <int value="4" label="TABBED_ROOT_UI_COORDINATOR"/>
   <int value="5" label="HISTORY_ACTIVITY"/>
   <int value="6" label="SETTINGS_ACTIVITY"/>
+  <int value="7" label="BOOKMARK_ACTIVITY"/>
 </enum>
 
 <!-- LINT.ThenChange(//components/browser_ui/widget/android/java/src/org/chromium/components/browser_ui/widget/scrim/ScrimManager.java:ScrimClient) -->
@@ -1946,7 +1981,7 @@ chromium-metrics-reviews@google.com.
   <int value="4" label="SelectionHandlesActive"/>
   <int value="5" label="(Obsolete) CanTriggerBackGesture"/>
   <int value="6" label="ImeIsActive"/>
-  <int value="7" label="RequestedByEmbedder"/>
+  <int value="7" label="(Obsolete) RequestedByEmbedder"/>
   <int value="8" label="SystemServerDidNotTransfer"/>
   <int value="9" label="BrowserTokenChanged"/>
   <int value="10" label="MultipleBrowserWindowsOpen"/>
@@ -1959,6 +1994,15 @@ chromium-metrics-reviews@google.com.
 </enum>
 
 <!-- LINT.ThenChange(//content/public/browser/android/transfer_input_to_viz_result.h:TransferInputToVizResult)-->
+
+<!-- LINT.IfChange(TransferredSequenceType) -->
+
+<enum name="TransferredSequenceType">
+  <int value="0" label="ActionDown"/>
+  <int value="1" label="PointerDown"/>
+</enum>
+
+<!-- LINT.ThenChange(//content/browser/renderer_host/input/input_transfer_handler_android.h:TransferredSequenceType) -->
 
 <enum name="UrlTargetType">
   <int value="0" label="URL"/>
@@ -2389,6 +2433,15 @@ chromium-metrics-reviews@google.com.
   <int value="14" label="WebView.onWindowFocusChanged"/>
 </enum>
 
+<enum name="WebViewApiCallTracingController">
+<!-- LINT.IfChange(WebViewApiCallTracingController) -->
+
+  <int value="0" label="WebView.TracingStart"/>
+  <int value="1" label="WebView.TracingStartWithMemoryDump"/>
+<!-- LINT.ThenChange(/android_webview/browser/tracing/aw_tracing_controller.h:WebViewApiCallTracingController) -->
+
+</enum>
+
 <enum name="WebViewCallbackType">
   <int value="0" label="WebViewClient.onReceivedLoginRequest"/>
   <int value="1" label="WebViewClient.onReceivedClientCertRequest"/>
@@ -2604,6 +2657,16 @@ chromium-metrics-reviews@google.com.
   <int value="8" label="Text dark, night mode off"/>
 </enum>
 
+<!-- LINT.IfChange(WebViewRendererKeepAliveEvent) -->
+
+<enum name="WebViewRendererKeepAliveEvent">
+  <int value="0" label="Reused"/>
+  <int value="1" label="Timed out"/>
+  <int value="2" label="Pending reuse"/>
+</enum>
+
+<!-- LINT.ThenChange(//android_webview/browser/aw_render_process_keep_alive.cc:RendererKeepAliveEvent) -->
+
 <!-- LINT.IfChange(WebViewSendIntentState) -->
 
 <enum name="WebViewSendIntentState">
@@ -2737,6 +2800,7 @@ chromium-metrics-reviews@google.com.
   <int value="105" label="staticSetRendererLibraryPrefetchMode"/>
   <int value="106" label="staticGetRendererLibraryPrefetchMode"/>
   <int value="107" label="getDefaultCookieManager"/>
+  <int value="108" label="getProfileStore"/>
 </enum>
 
 <!-- LINT.ThenChange(//base/tracing/protos/chrome_track_event.proto:WebViewStartup) -->

@@ -4,6 +4,8 @@
 
 source_set("proto_utils") {
   sources = [
+    "attestation_evidence_utils.cc",
+    "attestation_evidence_utils.h",
     "generate_content_response_utils.cc",
     "generate_content_response_utils.h",
     "google_rpc_code.cc",
@@ -12,18 +14,24 @@ source_set("proto_utils") {
   deps = [
     "//base",
     "//components/legion:proto",
+    "//components/legion/attestation",
+    "//third_party/oak:oak_proto",
   ]
 }
 
 source_set("unit_tests") {
   testonly = true
   sources = [
+    "attestation_evidence_utils_unittest.cc",
     "generate_content_response_utils_unittest.cc",
     "google_rpc_code_unittest.cc",
   ]
   deps = [
     ":proto_utils",
+    "//base/test:test_support",
     "//components/legion:proto",
+    "//components/legion/attestation",
     "//testing/gtest",
+    "//third_party/oak:oak_proto",
   ]
 }

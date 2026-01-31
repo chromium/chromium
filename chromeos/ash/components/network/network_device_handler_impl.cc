@@ -13,7 +13,6 @@
 
 #include "ash/constants/ash_features.h"
 #include "base/compiler_specific.h"
-#include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
@@ -59,7 +58,7 @@ std::string GetErrorNameForShillError(const std::string& shill_error_name) {
 
 void GetPropertiesCallback(const std::string& device_path,
                            network_handler::ResultCallback callback,
-                           std::optional<base::Value::Dict> result) {
+                           std::optional<base::DictValue> result) {
   if (!result) {
     NET_LOG(ERROR) << "GetProperties failed: " << NetworkPathId(device_path);
     std::move(callback).Run(device_path, std::nullopt);
@@ -378,7 +377,7 @@ void NetworkDeviceHandlerImpl::HandleWifiFeatureSupportedProperty(
     std::string support_property_name,
     WifiFeatureSupport* feature_support_to_set,
     const std::string& device_path,
-    std::optional<base::Value::Dict> properties) {
+    std::optional<base::DictValue> properties) {
   if (!properties) {
     return;
   }
@@ -475,8 +474,8 @@ bool NetworkDeviceHandlerImpl::IsUsbEnabledDevice(
   return device_state && device_state->link_up() &&
          device_state->Matches(NetworkTypePattern::Ethernet()) &&
          device_state->device_bus_type() == shill::kDeviceBusTypeUsb &&
-         !base::Contains(mac_address_change_not_supported_,
-                         device_state->mac_address());
+         !mac_address_change_not_supported_.contains(
+             device_state->mac_address());
 }
 
 void NetworkDeviceHandlerImpl::UpdatePrimaryEnabledUsbEthernetDevice() {

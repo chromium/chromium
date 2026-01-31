@@ -25,11 +25,6 @@ found in the LICENSE file.
         android:title="@string/third_party_cookies_link_row_label"
         android:fragment="org.chromium.components.browser_ui.site_settings.SingleCategorySettings" />
     <Preference
-        android:key="tracking_protection"
-        android:title="@string/third_party_cookies_link_row_label"
-        android:fragment="org.chromium.components.privacy_sandbox.TrackingProtectionSettings"
-        app:isPreferenceVisible="false" />
-    <Preference
         android:key="privacy_sandbox"
         android:title="@string/ad_privacy_link_row_label"
         android:fragment="org.chromium.chrome.browser.privacy_sandbox.PrivacySandboxSettingsFragment" />

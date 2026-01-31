@@ -47,6 +47,20 @@ public class PermissionDialogController {
                 WindowAndroid window,
                 @ContentSettingsType.EnumType int[] permissions,
                 @ContentSetting int result);
+
+        /**
+         * Notifies the observer that a quiet permission icon should be shown.
+         *
+         * @param window The {@link WindowAndroid} where the icon should be shown.
+         */
+        default void showPermissionClapperQuietIcon(WindowAndroid window) {}
+
+        /**
+         * Notifies the observer that a quiet permission icon should be dismissed.
+         *
+         * @param window The {@link WindowAndroid} where the icon should be dismissed.
+         */
+        default void dismissPermissionClapperQuietIcon(WindowAndroid window) {}
     }
 
     private class PermissionDialogCoordinatorDelegate
@@ -107,13 +121,57 @@ public class PermissionDialogController {
     }
 
     /**
+     * Called by native code to show the quiet permission icon.
+     *
+     * @param window The {@link WindowAndroid} where the icon should be shown.
+     */
+    @CalledByNative
+    public static void showPermissionClapperQuietIcon(WindowAndroid window) {
+        PermissionDialogController.getInstance().notifyShowPermissionClapperQuietIcon(window);
+    }
+
+    /**
+     * Called by native code to dismiss the quiet permission icon.
+     *
+     * @param window The {@link WindowAndroid} where the icon should be dismissed.
+     */
+    @CalledByNative
+    public static void dismissPermissionClapperQuietIcon(WindowAndroid window) {
+        PermissionDialogController.getInstance().notifyDismissPermissionClapperQuietIcon(window);
+    }
+
+    /**
+     * Notifies observers that a quiet permission icon should be shown.
+     *
+     * @param window The {@link WindowAndroid} where the icon should be shown.
+     */
+    public void notifyShowPermissionClapperQuietIcon(WindowAndroid window) {
+        for (Observer obs : mObservers) {
+            obs.showPermissionClapperQuietIcon(window);
+        }
+    }
+
+    /**
+     * Notifies observers that a quiet permission icon should be dismissed.
+     *
+     * @param window The {@link WindowAndroid} where the icon should be dismissed.
+     */
+    public void notifyDismissPermissionClapperQuietIcon(WindowAndroid window) {
+        for (Observer obs : mObservers) {
+            obs.dismissPermissionClapperQuietIcon(window);
+        }
+    }
+
+    /**
      * @param observer An observer to be notified of changes.
      */
     public void addObserver(Observer observer) {
         mObservers.addObserver(observer);
     }
 
-    /** @param observer The observer to remove. */
+    /**
+     * @param observer The observer to remove.
+     */
     public void removeObserver(Observer observer) {
         mObservers.removeObserver(observer);
     }

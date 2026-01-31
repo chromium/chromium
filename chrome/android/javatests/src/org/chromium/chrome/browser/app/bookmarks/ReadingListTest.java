@@ -19,6 +19,8 @@ import static org.mockito.Mockito.doReturn;
 
 import static org.chromium.base.ThreadUtils.runOnUiThreadBlocking;
 import static org.chromium.base.test.util.Restriction.RESTRICTION_TYPE_NON_LOW_END_DEVICE;
+import static org.chromium.chrome.browser.url_constants.UrlConstantResolver.getOriginalNativeBookmarksUrl;
+import static org.chromium.chrome.browser.url_constants.UrlConstantResolver.getOriginalNonNativeNtpUrl;
 
 import android.view.MenuItem;
 import android.view.View;
@@ -39,6 +41,7 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
@@ -60,11 +63,11 @@ import org.chromium.chrome.browser.bookmarks.BookmarkManagerOpenerImpl;
 import org.chromium.chrome.browser.bookmarks.BookmarkManagerTestingDelegate;
 import org.chromium.chrome.browser.bookmarks.BookmarkModel;
 import org.chromium.chrome.browser.bookmarks.BookmarkPage;
-import org.chromium.chrome.browser.bookmarks.BookmarkPromoHeader;
 import org.chromium.chrome.browser.bookmarks.BookmarkToolbar;
 import org.chromium.chrome.browser.bookmarks.BookmarkUiPrefs.BookmarkRowDisplayPref;
 import org.chromium.chrome.browser.bookmarks.BookmarkUiState.BookmarkUiMode;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.ui.signin.signin_promo.SigninPromoCoordinator;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
@@ -78,7 +81,6 @@ import org.chromium.components.bookmarks.BookmarkId;
 import org.chromium.components.bookmarks.BookmarkType;
 import org.chromium.components.browser_ui.widget.RecyclerViewTestUtils;
 import org.chromium.components.browser_ui.widget.selectable_list.SelectableListToolbar;
-import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.content_public.browser.test.util.TouchCommon;
 import org.chromium.ui.accessibility.AccessibilityState;
 import org.chromium.ui.base.DeviceFormFactor;
@@ -110,6 +112,7 @@ public class ReadingListTest {
     // trigger native load / CommandLineFlag setup.
     private GURL mTestUrlA;
     private @Nullable BookmarkActivity mBookmarkActivity;
+    private @Mock Profile mProfile;
 
     @Before
     public void setUp() {
@@ -136,7 +139,7 @@ public class ReadingListTest {
         BookmarkTestUtil.waitForBookmarkModelLoaded();
 
         if (mActivityTestRule.getActivity().isTablet()) {
-            mActivityTestRule.loadUrl(UrlConstants.BOOKMARKS_NATIVE_URL);
+            mActivityTestRule.loadUrl(getOriginalNativeBookmarksUrl());
             mItemsContainer =
                     mActivityTestRule
                             .getActivity()
@@ -211,7 +214,8 @@ public class ReadingListTest {
         // We should default to the root bookmark.
         Assert.assertEquals(BookmarkUiMode.FOLDER, delegate.getCurrentUiMode());
         Assert.assertEquals(
-                "chrome-native://bookmarks/folder/0", mBookmarkManagerOpener.getLastUsedUrl());
+                "chrome-native://bookmarks/folder/0",
+                mBookmarkManagerOpener.getLastUsedUrl(mProfile));
         Assert.assertEquals("Bookmarks", toolbar.getTitle());
 
         // When opening "Mobile bookmarks", we should come back to it when within the same session.
@@ -231,14 +235,14 @@ public class ReadingListTest {
         // Reopen and make sure we're back in "Mobile bookmarks".
         Assert.assertEquals(BookmarkUiMode.FOLDER, delegate.getCurrentUiMode());
         Assert.assertEquals(
-                "chrome-native://bookmarks/folder/3", mBookmarkManagerOpener.getLastUsedUrl());
+                "chrome-native://bookmarks/folder/3",
+                mBookmarkManagerOpener.getLastUsedUrl(mProfile));
     }
 
     @Test
     @SmallTest
     public void testReadingListItemMenuItems() throws Exception {
         SigninPromoCoordinator.disablePromoForTesting();
-        BookmarkPromoHeader.forcePromoVisibilityForTesting(false);
         addReadingListBookmark(TEST_PAGE_TITLE_GOOGLE, mTestUrlA);
 
         openBookmarkManager();
@@ -265,7 +269,6 @@ public class ReadingListTest {
     @SmallTest
     public void testReadingListItemMenuItems_ReadItem() throws Exception {
         SigninPromoCoordinator.disablePromoForTesting();
-        BookmarkPromoHeader.forcePromoVisibilityForTesting(false);
         BookmarkId id = addReadingListBookmark(TEST_PAGE_TITLE_GOOGLE, mTestUrlA);
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
@@ -297,7 +300,6 @@ public class ReadingListTest {
     @Restriction(DeviceRestriction.RESTRICTION_TYPE_NON_AUTO) // crbug.com/372854032
     public void testSearchReadingList_Deletion() throws Exception {
         SigninPromoCoordinator.disablePromoForTesting();
-        BookmarkPromoHeader.forcePromoVisibilityForTesting(false);
         addReadingListBookmark(TEST_PAGE_TITLE_GOOGLE, mTestUrlA);
 
         openBookmarkManager();
@@ -306,7 +308,8 @@ public class ReadingListTest {
 
         // On tablets, the search UI is always visible. On phones, we have to open it.
         if (DeviceFormFactor.isNonMultiDisplayContextOnTablet(mActivityTestRule.getActivity())) {
-            onView(withId(R.id.row_search_text)).perform(replaceText(TEST_PAGE_TITLE_GOOGLE));
+            BookmarkTestUtil.getSearchBoxViewInteraction()
+                    .perform(replaceText(TEST_PAGE_TITLE_GOOGLE));
         } else {
             // Enter search UI, but don't enter any search key word.
             ThreadUtils.runOnUiThreadBlocking(getBookmarkDelegate()::openSearchUi);
@@ -340,7 +343,6 @@ public class ReadingListTest {
     @Restriction(RESTRICTION_TYPE_NON_LOW_END_DEVICE)
     public void testReadingListEmptyStateView() throws Exception {
         SigninPromoCoordinator.disablePromoForTesting();
-        BookmarkPromoHeader.forcePromoVisibilityForTesting(false);
         openBookmarkManager();
         openRootFolder();
         openReadingList();
@@ -366,7 +368,6 @@ public class ReadingListTest {
     @DisabledTest(message = "Flaky, crbug.com/409606217")
     public void testReadingListOpenInRegularTab() throws Exception {
         SigninPromoCoordinator.disablePromoForTesting();
-        BookmarkPromoHeader.forcePromoVisibilityForTesting(false);
         addReadingListBookmark(TEST_PAGE_TITLE_GOOGLE, mTestUrlA);
 
         openBookmarkManager();
@@ -401,10 +402,9 @@ public class ReadingListTest {
     @DisabledTest(message = "crbug.com/383562582")
     public void testReadingListOpenInIncognitoTab() throws Exception {
         SigninPromoCoordinator.disablePromoForTesting();
-        BookmarkPromoHeader.forcePromoVisibilityForTesting(false);
         addReadingListBookmark(TEST_PAGE_TITLE_GOOGLE, mTestUrlA);
 
-        mActivityTestRule.loadUrlInNewTab(UrlConstants.NTP_NON_NATIVE_URL, /* incognito= */ true);
+        mActivityTestRule.loadUrlInNewTab(getOriginalNonNativeNtpUrl(), /* incognito= */ true);
 
         openBookmarkManager();
         openRootFolder();
@@ -437,7 +437,6 @@ public class ReadingListTest {
     @DisabledTest(message = "crbug.com/393441283")
     public void testReadingListFolderShown() throws Exception {
         SigninPromoCoordinator.disablePromoForTesting();
-        BookmarkPromoHeader.forcePromoVisibilityForTesting(false);
         openBookmarkManager();
         openRootFolder();
 
@@ -467,7 +466,6 @@ public class ReadingListTest {
     @SmallTest
     public void testReadingListFolderShownOneUnreadPage() throws Exception {
         SigninPromoCoordinator.disablePromoForTesting();
-        BookmarkPromoHeader.forcePromoVisibilityForTesting(false);
         // Add two reading list items and set one as read.
         setReadStatusForReadingList(
                 addReadingListBookmark("a", new GURL("https://a.com/reading_list_0")), true);
@@ -489,7 +487,6 @@ public class ReadingListTest {
     @SmallTest
     public void testReadingListFolderShownMultipleUnreadPages() throws Exception {
         SigninPromoCoordinator.disablePromoForTesting();
-        BookmarkPromoHeader.forcePromoVisibilityForTesting(false);
         // Add three reading list items and set one as read.
         setReadStatusForReadingList(
                 addReadingListBookmark("a", new GURL("https://a.com/reading_list_0")), true);
@@ -512,7 +509,6 @@ public class ReadingListTest {
     @SmallTest
     public void testReadingListFolderShown_SetReadingListStatus() throws Exception {
         SigninPromoCoordinator.disablePromoForTesting();
-        BookmarkPromoHeader.forcePromoVisibilityForTesting(false);
         // Add three reading list items and set one as read.
         BookmarkId id1 = addReadingListBookmark("a", new GURL("https://a.com/reading_list_0"));
         BookmarkId id2 = addReadingListBookmark("b", new GURL("https://a.com/reading_list_1"));
@@ -538,7 +534,6 @@ public class ReadingListTest {
     @SmallTest
     public void testReadingListItemsInSelectionMode() throws Exception {
         SigninPromoCoordinator.disablePromoForTesting();
-        BookmarkPromoHeader.forcePromoVisibilityForTesting(false);
         addReadingListBookmark(TEST_PAGE_TITLE_GOOGLE, mTestUrlA);
 
         openBookmarkManager();
@@ -587,7 +582,6 @@ public class ReadingListTest {
     @SmallTest
     public void testReadingListItemsInSelectionMode_SearchMode() throws Exception {
         SigninPromoCoordinator.disablePromoForTesting();
-        BookmarkPromoHeader.forcePromoVisibilityForTesting(false);
         addReadingListBookmark(TEST_PAGE_TITLE_GOOGLE, mTestUrlA);
 
         openBookmarkManager();

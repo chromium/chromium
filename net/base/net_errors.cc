@@ -86,6 +86,7 @@ bool IsRequestBlockedError(int error) {
     case ERR_BLOCKED_BY_CLIENT:
     case ERR_BLOCKED_BY_ADMINISTRATOR:
     case ERR_BLOCKED_BY_CSP:
+    case ERR_BLOCKED_IN_INCOGNITO_BY_ADMINISTRATOR:
       return true;
     default:
       return false;

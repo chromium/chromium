@@ -39,6 +39,11 @@ class MockDeviceBoundSessionManager : public mojom::DeviceBoundSessionManager {
       (const GURL& url,
        mojo::PendingRemote<mojom::DeviceBoundSessionAccessObserver> observer),
       (override));
+  MOCK_METHOD(
+      void,
+      AddEventObserver,
+      (mojo::PendingRemote<mojom::DeviceBoundSessionEventObserver> observer),
+      (override));
   MOCK_METHOD(void,
               CreateBoundSessions,
               (std::vector<net::device_bound_sessions::SessionParams> params,

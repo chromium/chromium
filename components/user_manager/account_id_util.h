@@ -29,16 +29,16 @@ USER_MANAGER_EXPORT extern const char kAccountTypeKey[];
 // Attempts to construct `AccountId` based on provided `dict`.
 // Resulting `AccountId` is not guaranteed to be fully resolved.
 USER_MANAGER_EXPORT std::optional<AccountId> LoadAccountId(
-    const base::Value::Dict& dict);
+    const base::DictValue& dict);
 
 // Returns true if `account_id` matches the data in the dict.
 // Note that match by id takes precedence over matching by e-mail.
 USER_MANAGER_EXPORT bool AccountIdMatches(const AccountId& account_id,
-                                          const base::Value::Dict& dict);
+                                          const base::DictValue& dict);
 
 // Stores data relevant to `account_id` to `dict`.
 USER_MANAGER_EXPORT void StoreAccountId(const AccountId& account_id,
-                                        base::Value::Dict& dict);
+                                        base::DictValue& dict);
 
 }  // namespace user_manager
 

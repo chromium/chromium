@@ -243,17 +243,9 @@ class TabSharingUIViewsBrowserTestBase : public InProcessBrowserTest {
             features.enable_tab_capture_infobar_links) {
     // TODO(crbug.com/40248833): Use HTTPS URLs in tests to avoid having to
     // disable kHttpsUpgrades feature.
-#if BUILDFLAG(IS_CHROMEOS)
-    features_.InitWithFeatureStates(
-        {{features::kTabCaptureBlueBorderCrOS, true},
-         {features::kHttpsUpgrades, false},
-         { features::kTabCaptureInfobarLinks,
-           enable_tab_capture_infobar_links_ }});
-#else
     features_.InitWithFeatureStates({{features::kHttpsUpgrades, false},
                                      {features::kTabCaptureInfobarLinks,
                                       enable_tab_capture_infobar_links_}});
-#endif  // BUILDFLAG(IS_CHROMEOS)
   }
 
   void SetUpOnMainThread() override {
@@ -298,7 +290,9 @@ class TabSharingUIViewsBrowserTestBase : public InProcessBrowserTest {
     int capturing_tab;
     int captured_tab;
     size_t infobar_count = 1;
+#if !BUILDFLAG(IS_CHROMEOS)
     bool has_border = true;
+#endif
     int tab_with_disabled_button = kNullTabIndex;
     bool has_captured_surface_control_indicator = false;
   };
@@ -312,7 +306,11 @@ class TabSharingUIViewsBrowserTestBase : public InProcessBrowserTest {
     const int capturing_tab = expectations.capturing_tab;
     const int captured_tab = expectations.captured_tab;
     const size_t infobar_count = expectations.infobar_count;
+#if !BUILDFLAG(IS_CHROMEOS)
     const bool has_border = expectations.has_border;
+#else
+    const bool has_border = false;
+#endif
     const int tab_with_disabled_button = expectations.tab_with_disabled_button;
     const bool has_captured_surface_control_indicator =
         expectations.has_captured_surface_control_indicator;
@@ -452,10 +450,14 @@ IN_PROC_BROWSER_TEST_P(TabSharingUIViewsBrowserTest, StartSharing) {
                           .capturing_tab = kNullTabIndex,
                           .captured_tab = kNullTabIndex,
                           .infobar_count = 0,
-                          .has_border = false});
+#if !BUILDFLAG(IS_CHROMEOS)
+                          .has_border = false
+#endif
+  });
 
   // Create UI and start sharing the tab at index 1.
-  CreateUiAndStartSharing(browser(), /*capturing_tab=*/0, /*captured_tab=*/1);
+  CreateUiAndStartSharing(browser(), /*capturing_tab=*/0,
+                          /*captured_tab=*/1);
 
   // Test that infobars were created, and contents border and tab capture
   // indicator are displayed on the shared tab.
@@ -536,9 +538,11 @@ IN_PROC_BROWSER_TEST_P(TabSharingUIViewsBrowserTest,
   VerifyUi(UiExpectations{
       .browser = new_browser, .capturing_tab = 0, .captured_tab = 2});
 
+#if !BUILDFLAG(IS_CHROMEOS)
   auto contents_border_weakptr = GetContentsBorder(new_browser)->GetWeakPtr();
   CloseBrowserSynchronously(new_browser);
   EXPECT_FALSE(contents_border_weakptr);
+#endif
 }
 
 IN_PROC_BROWSER_TEST_P(TabSharingUIViewsBrowserTest,
@@ -560,7 +564,10 @@ IN_PROC_BROWSER_TEST_P(TabSharingUIViewsBrowserTest,
                           .capturing_tab = kNullTabIndex,
                           .captured_tab = kNullTabIndex,
                           .infobar_count = 1,
-                          .has_border = false});
+#if !BUILDFLAG(IS_CHROMEOS)
+                          .has_border = false
+#endif
+  });
 
   // Close a tab different than the shared one and test that the UI has not
   // changed.
@@ -572,7 +579,10 @@ IN_PROC_BROWSER_TEST_P(TabSharingUIViewsBrowserTest,
                           .capturing_tab = kNullTabIndex,
                           .captured_tab = kNullTabIndex,
                           .infobar_count = 1,
-                          .has_border = false});
+#if !BUILDFLAG(IS_CHROMEOS)
+                          .has_border = false
+#endif
+  });
 
   // Close the shared tab in the incognito browser and test that the UI is
   // removed.
@@ -586,7 +596,10 @@ IN_PROC_BROWSER_TEST_P(TabSharingUIViewsBrowserTest,
                           .capturing_tab = kNullTabIndex,
                           .captured_tab = kNullTabIndex,
                           .infobar_count = 0,
-                          .has_border = false});
+#if !BUILDFLAG(IS_CHROMEOS)
+                          .has_border = false
+#endif
+  });
 }
 
 IN_PROC_BROWSER_TEST_P(TabSharingUIViewsBrowserTest, KillTab) {
@@ -758,7 +771,9 @@ IN_PROC_BROWSER_TEST_P(TabSharingUIViewsBrowserTest,
                           .capturing_tab = 0,
                           .captured_tab = 1,
                           .infobar_count = 1,
+#if !BUILDFLAG(IS_CHROMEOS)
                           .has_border = true,
+#endif
                           .tab_with_disabled_button = kNullTabIndex});
 
   constexpr int kRestrictedTab = 2;
@@ -772,7 +787,9 @@ IN_PROC_BROWSER_TEST_P(TabSharingUIViewsBrowserTest,
                           .capturing_tab = 0,
                           .captured_tab = 1,
                           .infobar_count = 1,
+#if !BUILDFLAG(IS_CHROMEOS)
                           .has_border = true,
+#endif
                           .tab_with_disabled_button = kRestrictedTab});
 
   // Navigate to unrestricted URL.
@@ -783,7 +800,9 @@ IN_PROC_BROWSER_TEST_P(TabSharingUIViewsBrowserTest,
                           .capturing_tab = 0,
                           .captured_tab = 1,
                           .infobar_count = 1,
+#if !BUILDFLAG(IS_CHROMEOS)
                           .has_border = true,
+#endif
                           .tab_with_disabled_button = kNullTabIndex});
 }
 #endif  // BUILDFLAG(IS_CHROMEOS)
@@ -883,12 +902,6 @@ IN_PROC_BROWSER_TEST_P(TabSharingMessageLinksBrowserTest,
 
 class MultipleTabSharingUIViewsBrowserTest : public InProcessBrowserTest {
  public:
-#if BUILDFLAG(IS_CHROMEOS)
-  MultipleTabSharingUIViewsBrowserTest() {
-    features_.InitAndEnableFeature(features::kTabCaptureBlueBorderCrOS);
-  }
-#endif  // BUILDFLAG(IS_CHROMEOS)
-
   void CreateUIsAndStartSharing(Browser* browser,
                                 int capturing_tab,
                                 int captured_tab_first,
@@ -923,10 +936,6 @@ class MultipleTabSharingUIViewsBrowserTest : public InProcessBrowserTest {
   }
 
  private:
-#if BUILDFLAG(IS_CHROMEOS)
-  base::test::ScopedFeatureList features_;
-#endif  // BUILDFLAG(IS_CHROMEOS)
-
   std::vector<std::unique_ptr<TabSharingUI>> tab_sharing_ui_views_;
 };
 
@@ -950,6 +959,7 @@ IN_PROC_BROWSER_TEST_F(MultipleTabSharingUIViewsBrowserTest, VerifyUi) {
         capture_indicator->IsBeingMirrored(GetWebContents(browser(), i)));
   }
 
+#if !BUILDFLAG(IS_CHROMEOS)
   views::Widget* contents_border = GetContentsBorder(browser());
   // The capturing tab, which is not itself being captured, does not have
   // the contents-border.
@@ -961,6 +971,7 @@ IN_PROC_BROWSER_TEST_F(MultipleTabSharingUIViewsBrowserTest, VerifyUi) {
     ActivateTab(browser(), i);
     ASSERT_TRUE(contents_border->IsVisible());
   }
+#endif
 }
 
 IN_PROC_BROWSER_TEST_F(MultipleTabSharingUIViewsBrowserTest, StopSharing) {
@@ -1136,12 +1147,6 @@ IN_PROC_BROWSER_TEST_F(MultipleTabSharingUIViewsBrowserTest,
 class TabSharingUIViewsPreferCurrentTabBrowserTest
     : public InProcessBrowserTest {
  public:
-#if BUILDFLAG(IS_CHROMEOS)
-  TabSharingUIViewsPreferCurrentTabBrowserTest() {
-    features_.InitAndEnableFeature(features::kTabCaptureBlueBorderCrOS);
-  }
-#endif  // BUILDFLAG(IS_CHROMEOS)
-
   ~TabSharingUIViewsPreferCurrentTabBrowserTest() override = default;
 
   void ManualSetUp(int captured_tab) {
@@ -1174,10 +1179,6 @@ class TabSharingUIViewsPreferCurrentTabBrowserTest
  protected:
   const int kTab0 = 0;
   const int kTab1 = 1;
-
-#if BUILDFLAG(IS_CHROMEOS)
-  base::test::ScopedFeatureList features_;
-#endif  // BUILDFLAG(IS_CHROMEOS)
 
   std::unique_ptr<TabSharingUI> tab_sharing_ui_views_;
 };

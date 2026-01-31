@@ -570,7 +570,7 @@ bool DoResolveRelativeUrl(std::string_view base_url,
     int base_len = base_parsed.Length();
     base_len -= base_parsed.ref.len + 1;
     out_parsed->ref.reset();
-    output->Append(base_url.data(), base_len);
+    output->Append(base_url.substr(0, base_len));
     return true;
   }
 

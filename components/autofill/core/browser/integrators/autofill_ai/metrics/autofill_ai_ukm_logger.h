@@ -39,7 +39,7 @@ class AutofillAiUkmLogger {
       AutofillClient::AutofillAiImportPromptType prompt_type,
       EntityType entity_type,
       EntityInstance::RecordType record_type,
-      AutofillClient::AutofillAiBubbleClosedReason close_reason,
+      AutofillClient::AutofillAiBubbleResult result,
       ukm::SourceId ukm_source_id);
 
   // These values are persisted to logs. Entries should not be renumbered and

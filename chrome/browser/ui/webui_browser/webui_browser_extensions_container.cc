@@ -14,7 +14,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/extensions/extension_action_view_model.h"
 #include "chrome/browser/ui/toolbar/toolbar_actions_model.h"
-#include "chrome/browser/ui/views/extensions/extension_action_platform_delegate_views.h"
+#include "chrome/browser/ui/views/extensions/extension_action_delegate_desktop.h"
 #include "chrome/browser/ui/webui/util/image_util.h"
 #include "chrome/browser/ui/webui_browser/webui_browser_ui.h"
 #include "chrome/browser/ui/webui_browser/webui_browser_window.h"
@@ -43,10 +43,11 @@ class WebUIBrowserExtensionsContainer::ActionInfo {
       : extensions_container_(extensions_container),
         browser_(browser),
         model_(std::move(model)),
-        model_subscription_(model_->RegisterUpdateObserver(base::BindRepeating(
-            &WebUIBrowserExtensionsContainer::NotifyOfOneAction,
-            base::Unretained(extensions_container_),
-            model_->GetId()))) {}
+        model_subscription_(
+            model_->RegisterIconUpdateObserver(base::BindRepeating(
+                &WebUIBrowserExtensionsContainer::NotifyOfOneAction,
+                base::Unretained(extensions_container_),
+                model_->GetId()))) {}
 
   ui::TrackedElement* GetAnchor() {
     // TODO(webium): Use the proper button once TrackedElement supports
@@ -167,7 +168,7 @@ WebUIBrowserExtensionsContainer::WebUIBrowserExtensionsContainer(
       window_(window),
       model_(*ToolbarActionsModel::Get(browser.profile())),
       extensions_menu_coordinator_(
-          std::make_unique<ExtensionsMenuCoordinator>(&browser_.get())) {
+          std::make_unique<ExtensionsMenuCoordinator>(&browser_.get(), this)) {
   CreateActions();
   observe_actions_.Observe(&model_.get());
 }
@@ -182,6 +183,41 @@ ToolbarActionViewModel* WebUIBrowserExtensionsContainer::GetActionForId(
     const std::string& action_id) {
   auto it = actions_.find(action_id);
   return it != actions_.end() ? it->second->model() : nullptr;
+}
+
+void WebUIBrowserExtensionsContainer::HideActivePopup() {
+  if (popup_owner_) {
+    popup_owner_->HidePopup();
+  }
+  DCHECK(!popup_owner_);
+}
+
+bool WebUIBrowserExtensionsContainer::CloseOverflowMenuIfOpen() {
+  if (extensions_menu_coordinator_->IsShowing()) {
+    extensions_menu_coordinator_->Hide();
+    return true;
+  }
+  return false;
+}
+
+bool WebUIBrowserExtensionsContainer::ShowToolbarActionPopupForAPICall(
+    const std::string& action_id,
+    ShowPopupCallback callback) {
+  NOTIMPLEMENTED();
+  return true;
+}
+
+void WebUIBrowserExtensionsContainer::ToggleExtensionsMenu() {
+  if (extensions_menu_coordinator_->IsShowing()) {
+    extensions_menu_coordinator_->Hide();
+  } else {
+    extensions_menu_coordinator_->Show(window_->GetExtensionsMenuButtonAnchor(),
+                                       this);
+  }
+}
+
+bool WebUIBrowserExtensionsContainer::HasAnyExtensions() const {
+  return !actions_.empty();
 }
 
 std::optional<extensions::ExtensionId>
@@ -221,21 +257,6 @@ void WebUIBrowserExtensionsContainer::SetPopupOwner(
   popup_owner_ = popup_owner;
 }
 
-void WebUIBrowserExtensionsContainer::HideActivePopup() {
-  if (popup_owner_) {
-    popup_owner_->HidePopup();
-  }
-  DCHECK(!popup_owner_);
-}
-
-bool WebUIBrowserExtensionsContainer::CloseOverflowMenuIfOpen() {
-  if (extensions_menu_coordinator_->IsShowing()) {
-    extensions_menu_coordinator_->Hide();
-    return true;
-  }
-  return false;
-}
-
 void WebUIBrowserExtensionsContainer::PopOutAction(
     const extensions::ExtensionId& action_id,
     base::OnceClosure closure) {
@@ -243,26 +264,6 @@ void WebUIBrowserExtensionsContainer::PopOutAction(
   popped_out_action_ = action_id;
   NotifyOfOneAction(action_id);
   NotifyActionPoppedOut(std::move(closure));
-}
-
-bool WebUIBrowserExtensionsContainer::ShowToolbarActionPopupForAPICall(
-    const std::string& action_id,
-    ShowPopupCallback callback) {
-  NOTIMPLEMENTED();
-  return true;
-}
-
-void WebUIBrowserExtensionsContainer::ToggleExtensionsMenu() {
-  if (extensions_menu_coordinator_->IsShowing()) {
-    extensions_menu_coordinator_->Hide();
-  } else {
-    extensions_menu_coordinator_->Show(window_->GetExtensionsMenuButtonAnchor(),
-                                       this);
-  }
-}
-
-bool WebUIBrowserExtensionsContainer::HasAnyExtensions() const {
-  return !actions_.empty();
 }
 
 void WebUIBrowserExtensionsContainer::ShowContextMenuAsFallback(
@@ -418,8 +419,8 @@ void WebUIBrowserExtensionsContainer::CreateActionForId(
       *this, browser_.get(),
       ExtensionActionViewModel::Create(
           action_id, &browser_.get(),
-          std::make_unique<ExtensionActionPlatformDelegateViews>(
-              &browser_.get(), this)));
+          std::make_unique<ExtensionActionDelegateDesktop>(&browser_.get(),
+                                                           this, this)));
   action_info->model()->RegisterCommand();
   actions_[action_id] = std::move(action_info);
 }

@@ -9,8 +9,8 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Callback;
 import org.chromium.base.lifetime.Destroyable;
+import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.base.supplier.NullableObservableSupplier;
-import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 
@@ -40,7 +40,7 @@ public class TabSupplierObserver extends EmptyTabObserver implements Destroyable
      * Create a new {@link TabObserver} that only observes the tab from the given supplier. It
      * doesn't trigger for the initial tab being attached to after creation.
      *
-     * @param tabSupplier An {@link ObservableSupplier} to get the current tab.
+     * @param tabSupplier An {@link MonotonicObservableSupplier} to get the current tab.
      * @param shouldTrigger Whether the observer should be triggered for the initial tab after
      *     creation.
      */

@@ -41,7 +41,7 @@ MultiDeviceSetupScreenHandler::AsWeakPtr() {
 }
 
 void MultiDeviceSetupScreenHandler::GetAdditionalParameters(
-    base::Value::Dict* dict) {
+    base::DictValue* dict) {
   dict->Set("wifiSyncEnabled",
             base::Value(features::IsWifiSyncAndroidEnabled()));
 }

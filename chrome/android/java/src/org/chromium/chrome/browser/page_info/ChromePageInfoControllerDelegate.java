@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.page_info;
 
+import static org.chromium.build.NullUtil.assertNonNull;
 import static org.chromium.components.browser_ui.site_settings.SingleWebsiteSettings.EXTRA_SITE;
 
 import android.app.Activity;
@@ -37,7 +38,6 @@ import org.chromium.chrome.browser.omnibox.ChromeAutocompleteSchemeClassifier;
 import org.chromium.chrome.browser.paint_preview.TabbedPaintPreview;
 import org.chromium.chrome.browser.pdf.PdfUtils;
 import org.chromium.chrome.browser.pdf.PdfUtils.PdfPageType;
-import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.privacy_sandbox.PrivacySandboxReferrer;
 import org.chromium.chrome.browser.privacy_sandbox.PrivacySandboxSettingsBaseFragment;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -65,7 +65,6 @@ import org.chromium.components.page_info.PageInfoMainController;
 import org.chromium.components.page_info.PageInfoRowView;
 import org.chromium.components.page_info.PageInfoSubpageController;
 import org.chromium.components.page_info.PageInfoView;
-import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.content_public.browser.BrowserContextHandle;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.modaldialog.ModalDialogManager;
@@ -86,7 +85,7 @@ import java.util.function.Supplier;
 @NullMarked
 public class ChromePageInfoControllerDelegate extends PageInfoControllerDelegate {
     private final WebContents mWebContents;
-    private final Supplier<ModalDialogManager> mModalDialogManagerSupplier;
+    private final Supplier<@Nullable ModalDialogManager> mModalDialogManagerSupplier;
     private final @Nullable Supplier<EphemeralTabCoordinator> mEphemeralTabCoordinatorSupplier;
     private final Context mContext;
     private final Profile mProfile;
@@ -103,7 +102,7 @@ public class ChromePageInfoControllerDelegate extends PageInfoControllerDelegate
     public ChromePageInfoControllerDelegate(
             Context context,
             WebContents webContents,
-            Supplier<ModalDialogManager> modalDialogManagerSupplier,
+            Supplier<@Nullable ModalDialogManager> modalDialogManagerSupplier,
             OfflinePageLoadUrlDelegate offlinePageLoadUrlDelegate,
             @Nullable Supplier<StoreInfoActionHandler> storeInfoActionHandlerSupplier,
             @Nullable Supplier<EphemeralTabCoordinator> ephemeralTabCoordinatorSupplier,
@@ -157,7 +156,7 @@ public class ChromePageInfoControllerDelegate extends PageInfoControllerDelegate
     /** {@inheritDoc} */
     @Override
     public ModalDialogManager getModalDialogManager() {
-        return mModalDialogManagerSupplier.get();
+        return assertNonNull(mModalDialogManagerSupplier.get());
     }
 
     /** {@inheritDoc} */
@@ -401,17 +400,6 @@ public class ChromePageInfoControllerDelegate extends PageInfoControllerDelegate
     @Override
     public boolean isIncognito() {
         return mProfile.isOffTheRecord();
-    }
-
-    @Override
-    public boolean showTrackingProtectionUi() {
-        return getSiteSettingsDelegate().shouldShowTrackingProtectionUi();
-    }
-
-    @Override
-    public boolean allThirdPartyCookiesBlockedTrackingProtection() {
-        return UserPrefs.get(mProfile).getBoolean(Pref.BLOCK_ALL3PC_TOGGLE_ENABLED)
-                || isIncognito();
     }
 
     private PageInfoRowView.ViewParams getAppInfoRowParams(

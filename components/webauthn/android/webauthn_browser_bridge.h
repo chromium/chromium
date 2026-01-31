@@ -25,7 +25,7 @@ class WebauthnBrowserBridge {
       JNIEnv* env,
       const base::android::JavaRef<jobjectArray>& credentials,
       const base::android::JavaRef<jobject>& jframe_host,
-      jint mediation_type,
+      int32_t mediation_type,
       const base::android::JavaRef<jobject>& jcredential_callback,
       const base::android::JavaRef<jobject>& jhybrid_callback,
       const base::android::JavaRef<jobject>& jnon_credential_callback) const;
@@ -40,12 +40,12 @@ class WebauthnBrowserBridge {
   void OnCredManConditionalRequestPending(
       JNIEnv* env,
       const base::android::JavaRef<jobject>& jframe_host,
-      jboolean jhas_results,
+      bool jhas_results,
       const base::android::JavaRef<jobject>& jfull_request_runnable);
 
   void OnCredManUiClosed(JNIEnv* env,
                          const base::android::JavaRef<jobject>& jframe_host,
-                         jboolean jsuccess);
+                         bool jsuccess);
 
   void OnPasswordCredentialReceived(
       JNIEnv* env,

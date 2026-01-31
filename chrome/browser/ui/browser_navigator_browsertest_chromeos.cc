@@ -10,6 +10,7 @@
 #include "ash/shell.h"
 #include "ash/wm/window_pin_util.h"
 #include "base/command_line.h"
+#include "chrome/browser/ash/boca/on_task/on_task_locked_controller.h"
 #include "chrome/browser/ash/login/chrome_restart_request.h"
 #include "chrome/browser/ash/login/test/device_state_mixin.h"
 #include "chrome/browser/ash/login/test/login_manager_mixin.h"
@@ -108,7 +109,8 @@ IN_PROC_BROWSER_TEST_F(BrowserNavigatorTestChromeOS,
   // Set locked fullscreen state.
   aura::Window* const window = browser()->window()->GetNativeWindow();
   ash::PinWindow(window, /*trusted=*/true);
-  browser()->SetLockedForOnTask(true);
+  ash::boca::OnTaskLockedController::From(browser())->set_locked_for_on_task(
+      true);
 
   // Navigate to a page.
   const GURL kUrl(chrome::kChromeUIVersionURL);

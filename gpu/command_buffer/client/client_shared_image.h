@@ -7,7 +7,7 @@
 
 #include <optional>
 
-#include "base/byte_count.h"
+#include "base/byte_size.h"
 #include "base/containers/span.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
@@ -44,6 +44,8 @@ class VideoFrame;
 
 namespace viz {
 class CopyOutputSharedImageResult;
+struct ReturnedResource;
+struct ReturnedResourceViz;
 }  // namespace viz
 
 namespace wgpu::dawn::wire::client {
@@ -89,12 +91,42 @@ struct SharedImageMetadata {
   SharedImageUsageSet usage;
 };
 
-class SharedImageExportResult {
+class GPU_COMMAND_BUFFER_CLIENT_EXPORT SharedImageExportResult {
  public:
+  SharedImageExportResult() = default;
   ~SharedImageExportResult() = default;
+
+  // Used in FrameSinkResourceManager to facilitate creating a dummy
+  // ReturnedResource for callback clearing.
+  static SharedImageExportResult CreateEmptyResult() {
+    return SharedImageExportResult(SyncToken());
+  }
+
+  static SharedImageExportResult CreateForTesting(const SyncToken& sync_token) {
+    return SharedImageExportResult(sync_token);
+  }
+
+  // The two IsEqualForTesting methods allow easy SyncToken comparison without
+  // unpacking SharedImageExportResult.
+  bool IsEqualForTesting(const SyncToken& sync_token) const {
+    return sync_token_ == sync_token;
+  }
+
+  bool IsEqualForTesting(const SharedImageExportResult& other_result) const {
+    return IsEqualForTesting(other_result.sync_token_);
+  }
+
+  bool HasData() const { return sync_token_.HasData(); }
+
+  std::string ToDebugString() const { return sync_token_.ToDebugString(); }
 
  private:
   friend class ClientSharedImage;
+
+  // Allows ReturnedResourceViz to convert SyncToken to SharedImageExportResult.
+  friend struct viz::ReturnedResourceViz;
+  friend struct mojo::StructTraits<gpu::mojom::SharedImageExportResultDataView,
+                                   SharedImageExportResult>;
 
   explicit SharedImageExportResult(const SyncToken& sync_token);
 
@@ -179,8 +211,8 @@ class GPU_COMMAND_BUFFER_CLIENT_EXPORT ClientSharedImage
 
   const Mailbox& mailbox() const { return mailbox_; }
   viz::SharedImageFormat format() const { return metadata_.format; }
-  base::ByteCount EstimatedSizeInBytes() const {
-    return base::ByteCount::FromUnsigned(format().EstimatedSizeInBytes(size()));
+  base::ByteSize EstimatedSizeInBytes() const {
+    return base::ByteSize(format().EstimatedSizeInBytes(size()));
   }
   gfx::Size size() const { return metadata_.size; }
   const gfx::ColorSpace& color_space() const { return metadata_.color_space; }
@@ -350,16 +382,12 @@ class GPU_COMMAND_BUFFER_CLIENT_EXPORT ClientSharedImage
   friend class SharedImageTexture;
   ~ClientSharedImage();
 
-  // static
   std::unique_ptr<MappableBuffer> CreateMappableBufferFromHandle(
       gfx::GpuMemoryBufferHandle handle,
       const gfx::Size& size,
       viz::SharedImageFormat format,
       gfx::BufferUsage usage,
       gpu::SharedImageUsageSet si_usage,
-      MappableBuffer::CopyNativeBufferToShMemCallback
-          copy_native_buffer_to_shmem_callback =
-              MappableBuffer::CopyNativeBufferToShMemCallback(),
       scoped_refptr<base::UnsafeSharedMemoryPool> pool = nullptr);
 
   // This constructor is used only when importing an owned ClientSharedImage,
@@ -411,6 +439,11 @@ class GPU_COMMAND_BUFFER_CLIENT_EXPORT ClientSharedImage
       gfx::GpuMemoryBufferHandle buffer_handle,
       base::UnsafeSharedMemoryRegion memory_region,
       base::OnceCallback<void(bool)> callback);
+
+  void RunOnTaskRunner(MappableBuffer::CopyNativeBufferToShMemCallback callback,
+                       gfx::GpuMemoryBufferHandle buffer_handle,
+                       base::UnsafeSharedMemoryRegion memory_region,
+                       base::OnceCallback<void(bool)> result_cb);
 
   // This pair of functions are used by SharedImageTexture to notify
   // ClientSharedImage of the beginning and the end of a scoped access.

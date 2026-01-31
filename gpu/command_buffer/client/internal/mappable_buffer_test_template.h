@@ -11,6 +11,7 @@
 #include <stddef.h>
 #include <string.h>
 
+#include <algorithm>
 #include <memory>
 
 #include "base/compiler_specific.h"
@@ -26,7 +27,6 @@
 #include "mojo/public/cpp/base/shared_memory_mojom_traits.h"
 #include "mojo/public/cpp/test_support/test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "ui/gfx/buffer_format_util.h"
 #include "ui/gfx/buffer_usage_util.h"
 #include "ui/gfx/mojom/buffer_types.mojom.h"
 #include "ui/gl/gl_display.h"
@@ -260,7 +260,7 @@ TYPED_TEST_P(MappableBufferTest, CreateFromHandle) {
 #if BUILDFLAG(IS_OZONE)
       if (TypeParam::kBufferType != gfx::SHARED_MEMORY_BUFFER &&
           !ui::OzonePlatform::GetInstance()->IsNativePixmapConfigSupported(
-              viz::SharedImageFormatToBufferFormat(format), usage)) {
+              format, usage)) {
         continue;
       }
 #endif
@@ -289,7 +289,7 @@ TYPED_TEST_P(MappableBufferTest, CreateFromHandleSmallBuffer) {
 #if BUILDFLAG(IS_OZONE)
       if (TypeParam::kBufferType != gfx::SHARED_MEMORY_BUFFER &&
           !ui::OzonePlatform::GetInstance()->IsNativePixmapConfigSupported(
-              viz::SharedImageFormatToBufferFormat(format), usage)) {
+              format, usage)) {
         continue;
       }
 #endif
@@ -322,8 +322,8 @@ TYPED_TEST_P(MappableBufferTest, Map) {
   // Use a multiple of 4 for both dimensions to support compressed formats.
   const gfx::Size kBufferSize(4, 4);
 
-  if (!base::Contains(TestFixture::usages(),
-                      gfx::BufferUsage::GPU_READ_CPU_READ_WRITE)) {
+  if (!std::ranges::contains(TestFixture::usages(),
+                             gfx::BufferUsage::GPU_READ_CPU_READ_WRITE)) {
     GTEST_SKIP();
   }
 
@@ -331,8 +331,7 @@ TYPED_TEST_P(MappableBufferTest, Map) {
 #if BUILDFLAG(IS_OZONE)
     if (TypeParam::kBufferType != gfx::SHARED_MEMORY_BUFFER &&
         !ui::OzonePlatform::GetInstance()->IsNativePixmapConfigSupported(
-            viz::SharedImageFormatToBufferFormat(format),
-            gfx::BufferUsage::GPU_READ_CPU_READ_WRITE)) {
+            format, gfx::BufferUsage::GPU_READ_CPU_READ_WRITE)) {
       continue;
     }
 #endif
@@ -391,8 +390,8 @@ TYPED_TEST_P(MappableBufferTest, PersistentMap) {
   // Use a multiple of 4 for both dimensions to support compressed formats.
   const gfx::Size kBufferSize(4, 4);
 
-  if (!base::Contains(TestFixture::usages(),
-                      gfx::BufferUsage::GPU_READ_CPU_READ_WRITE)) {
+  if (!std::ranges::contains(TestFixture::usages(),
+                             gfx::BufferUsage::GPU_READ_CPU_READ_WRITE)) {
     GTEST_SKIP();
   }
 
@@ -400,8 +399,7 @@ TYPED_TEST_P(MappableBufferTest, PersistentMap) {
 #if BUILDFLAG(IS_OZONE)
     if (TypeParam::kBufferType != gfx::SHARED_MEMORY_BUFFER &&
         !ui::OzonePlatform::GetInstance()->IsNativePixmapConfigSupported(
-            viz::SharedImageFormatToBufferFormat(format),
-            gfx::BufferUsage::GPU_READ_CPU_READ_WRITE)) {
+            format, gfx::BufferUsage::GPU_READ_CPU_READ_WRITE)) {
       continue;
     }
 #endif
@@ -485,7 +483,7 @@ TYPED_TEST_P(MappableBufferTest, SerializeAndDeserialize) {
 #if BUILDFLAG(IS_OZONE)
       if (TypeParam::kBufferType != gfx::SHARED_MEMORY_BUFFER &&
           !ui::OzonePlatform::GetInstance()->IsNativePixmapConfigSupported(
-              viz::SharedImageFormatToBufferFormat(format), usage)) {
+              format, usage)) {
         continue;
       }
 #endif

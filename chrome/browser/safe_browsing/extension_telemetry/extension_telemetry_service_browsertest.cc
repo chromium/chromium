@@ -5,7 +5,6 @@
 #include "chrome/browser/safe_browsing/extension_telemetry/extension_telemetry_service.h"
 
 #include "base/command_line.h"
-#include "base/containers/contains.h"
 #include "base/files/file_path.h"
 #include "base/path_service.h"
 #include "base/test/protobuf_matchers.h"
@@ -78,8 +77,7 @@ class ExtensionTelemetryServiceBrowserTest
   ExtensionTelemetryServiceBrowserTest() {
     scoped_feature_list_.InitWithFeatures(
         /*enabled_features=*/
-        {kExtensionTelemetryDeclarativeNetRequestActionSignal,
-         kExtensionTelemetrySearchHijackingSignal,
+        {kExtensionTelemetrySearchHijackingSignal,
          extensions_features::kIncludeJSCallStackInExtensionApiRequest},
         /*disabled_features=*/{});
     CHECK(base::PathService::Get(chrome::DIR_TEST_DATA, &test_extension_dir_));

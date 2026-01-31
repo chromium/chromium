@@ -46,9 +46,7 @@ import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Feature;
-import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.multiwindow.InstanceInfo;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager.PersistedInstanceType;
@@ -66,7 +64,6 @@ import org.chromium.chrome.browser.tabmodel.NextTabPolicy.NextTabPolicySupplier;
 import org.chromium.chrome.browser.tabmodel.TabClosureParams;
 import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
-import org.chromium.chrome.browser.tabmodel.TabGroupModelFilterProvider;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabReparentingParams;
@@ -107,7 +104,6 @@ public class TabWindowManagerImplUnitTest {
     @Mock private Destroyable mDestroyable;
     @Mock private TabModelSelector mTabModelSelector;
     @Mock private TabModel mTabModel;
-    @Mock private TabGroupModelFilterProvider mTabGroupModelFilterProvider;
     @Mock private TabGroupModelFilter mTabGroupModelFilter;
     @Mock private TabGroupSyncService mTabGroupSyncService;
 
@@ -766,17 +762,7 @@ public class TabWindowManagerImplUnitTest {
             destroyActivity(activityController1);
         }
 
-        String umaPreExistingActivityDestroyed =
-                "Android.MultiWindowMode.AssertIndicesMatch.PreExistingActivityDestroyed";
-        String umaTimeToPreExistingActivityDestruction =
-                "Android.MultiWindowMode.MismatchedIndices.TimeToPreExistingActivityDestruction";
-        try (var ignored =
-                HistogramWatcher.newBuilder()
-                        .expectAnyRecord(umaPreExistingActivityDestroyed)
-                        .expectAnyRecord(umaTimeToPreExistingActivityDestruction)
-                        .build()) {
-            destroyActivity(activityController0);
-        }
+        destroyActivity(activityController0);
     }
 
     @Test
@@ -1173,9 +1159,7 @@ public class TabWindowManagerImplUnitTest {
                 .thenReturn(new Pair<>(mTabModelSelector, mDestroyable));
         when(mTabModelSelector.isTabStateInitialized()).thenReturn(true);
         when(mTabModelSelector.getModel(anyBoolean())).thenReturn(mTabModel);
-        when(mTabModelSelector.getTabGroupModelFilterProvider())
-                .thenReturn(mTabGroupModelFilterProvider);
-        when(mTabGroupModelFilterProvider.getTabGroupModelFilter(anyBoolean()))
+        when(mTabModelSelector.getTabGroupModelFilter(anyBoolean()))
                 .thenReturn(mTabGroupModelFilter);
         when(mTabGroupModelFilter.getTabModel()).thenReturn(mTabModel);
         when(mTabGroupModelFilter.getGroupLastShownTabId(GROUP_ID)).thenReturn(TAB_ID);
@@ -1189,14 +1173,11 @@ public class TabWindowManagerImplUnitTest {
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.TAB_GROUP_ANDROID_VISUAL_DATA_CLEANUP)
     public void testKeepAllTabModelsLoaded_fallback() {
         TabGroupSyncServiceFactory.setForTesting(mTabGroupSyncService);
         when(mTabModelSelector.isTabStateInitialized()).thenReturn(true);
         when(mTabModelSelector.getModel(anyBoolean())).thenReturn(mTabModel);
-        when(mTabModelSelector.getTabGroupModelFilterProvider())
-                .thenReturn(mTabGroupModelFilterProvider);
-        when(mTabGroupModelFilterProvider.getTabGroupModelFilter(anyBoolean()))
+        when(mTabModelSelector.getTabGroupModelFilter(anyBoolean()))
                 .thenReturn(mTabGroupModelFilter);
         when(mTabGroupSyncService.getAllGroupIds()).thenReturn(new String[] {});
         // This is the behavior a pre-31 device would exhibit.
@@ -1227,9 +1208,7 @@ public class TabWindowManagerImplUnitTest {
         when(mTabModelSelectorFactory.buildHeadlessSelector(anyInt(), any()))
                 .thenReturn(new Pair<>(mTabModelSelector, mDestroyable));
         when(mTabModelSelector.isTabStateInitialized()).thenReturn(true);
-        when(mTabModelSelector.getTabGroupModelFilterProvider())
-                .thenReturn(mTabGroupModelFilterProvider);
-        when(mTabGroupModelFilterProvider.getTabGroupModelFilter(anyBoolean()))
+        when(mTabModelSelector.getTabGroupModelFilter(anyBoolean()))
                 .thenReturn(mTabGroupModelFilter);
         when(mTabGroupModelFilter.tabGroupExists(GROUP_ID)).thenReturn(true);
         TabWindowManager tabWindowManager = createTabWindowManager(mTabModelSelectorFactory);

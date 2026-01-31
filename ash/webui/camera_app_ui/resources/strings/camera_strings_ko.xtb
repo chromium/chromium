@@ -48,6 +48,7 @@
 <translation id="2761536921376153655">스캔 유형</translation>
 <translation id="28682968802727151">미러링 미리보기</translation>
 <translation id="2879583609344924966"><ph name="CAMERA" /> 카메라가 연결되었습니다.</translation>
+<translation id="3063987824612038785">모든 카메라 파일이 Google Drive에 저장됩니다</translation>
 <translation id="3067436040345934772">오른쪽으로 화면 이동</translation>
 <translation id="3081586908890909590">동영상 녹화 모드로 전환</translation>
 <translation id="3091480460059548935">미리보기에서 텍스트 감지</translation>
@@ -67,6 +68,7 @@
 <translation id="3642192109456033823">동영상 처리 중…</translation>
 <translation id="3789724198583203151">시계 반대 방향으로 90도 회전</translation>
 <translation id="3810838688059735925">동영상</translation>
+<translation id="386366972082231038">모든 카메라 파일이 OneDrive에 저장됩니다</translation>
 <translation id="4060608699153044055">기기 저장공간이 부족하여 녹화할 수 없습니다. 녹화를 시작하려면 기기에서 여유 공간을 확보해야 합니다.</translation>
 <translation id="4061162772429051350"><ph name="MAGAPIXELS_AMOUNT" />MP</translation>
 <translation id="4118525110028899586">녹화 일시중지</translation>
@@ -100,6 +102,7 @@
 <translation id="5634947914995388399">대화상자 펼치기 및 스캔 중지</translation>
 <translation id="5662366948659129155"><ph name="COUNT" />페이지 스캔 중</translation>
 <translation id="5671277269877808209">정사각형</translation>
+<translation id="5725797473946373607">다음에 이 대화상자를 표시하지 않음</translation>
 <translation id="574392208103952083">보통</translation>
 <translation id="5746169159649715125">PDF로 저장</translation>
 <translation id="5753488212459587150">전문가 모드 사용 설정</translation>
@@ -156,6 +159,7 @@
 <translation id="7983668134180549431">텍스트가 감지되었습니다.</translation>
 <translation id="8079255378695216066">녹화를 시작할 수 없음</translation>
 <translation id="8120146556401698679">이동, 기울이기, 확대/축소</translation>
+<translation id="8127459436205030819">관리자가 내 파일을 볼 수 있습니다.</translation>
 <translation id="8131740175452115882">확인</translation>
 <translation id="8145038249676204903">사진 촬영 모드로 전환</translation>
 <translation id="8167081290930651932">사진으로 저장</translation>
@@ -165,6 +169,7 @@
 <translation id="8609951387004618906"><ph name="URL" /> 열기</translation>
 <translation id="8629662593426079630">360p</translation>
 <translation id="8711011893539266636">마이크 음소거 모드를 변경합니다. 음소거가 설정되었습니다.</translation>
+<translation id="8712637175834984815">확인</translation>
 <translation id="8730621377337864115">완료</translation>
 <translation id="8732462232047530626">메타데이터 미리보기</translation>
 <translation id="874854738381978209">Wi-Fi 네트워크가 감지되었습니다.</translation>

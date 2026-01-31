@@ -56,7 +56,7 @@
 #include "chrome/browser/printing/printer_query_oop.h"
 #include "chrome/browser/task_manager/task_manager_browsertest_util.h"
 #include "chrome/browser/task_manager/task_manager_interface.h"
-#include "chrome/browser/ui/browser_dialogs.h"
+#include "chrome/browser/ui/dialogs/browser_dialogs.h"
 #include "chrome/services/printing/public/mojom/print_backend_service.mojom.h"
 #endif
 
@@ -371,7 +371,7 @@ class TestPrinterQuery : public PrinterQuery {
                    TestPrintJobWorker::PrintCallbacks* callbacks)
       : PrinterQuery(rfh_id), callbacks_(callbacks) {}
 
-  void UpdatePrintSettings(base::Value::Dict new_settings,
+  void UpdatePrintSettings(base::DictValue new_settings,
                            SettingsCallback callback) override {
     PrinterQuery::UpdatePrintSettings(
         std::move(new_settings),
@@ -3342,7 +3342,7 @@ class TestPrintViewManagerForContentAnalysis : public TestPrintViewManager {
     // The settings passed to this function should match the content of the
     // print Connector policy.
     EXPECT_EQ(scanning_data.settings.tags.size(), 1u);
-    EXPECT_TRUE(base::Contains(scanning_data.settings.tags, "dlp"));
+    EXPECT_TRUE(scanning_data.settings.tags.contains("dlp"));
     if (scanning_data.settings.cloud_or_local_settings.is_cloud_analysis()) {
       EXPECT_EQ(scanning_data.settings.cloud_or_local_settings.dm_token(),
                 kFakeDmToken);

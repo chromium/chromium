@@ -100,7 +100,9 @@ void NativeExtensionBindingsSystemUnittest::OnWillDisposeContext(
     ASSERT_TRUE(allow_unregistered_contexts_);
     return;
   }
-  bindings_system_->WillReleaseScriptContext(*iter);
+  if (bindings_system_) {
+    bindings_system_->WillReleaseScriptContext(*iter);
+  }
   script_context_set_->Remove(*iter);
   raw_script_contexts_.erase(iter);
 }
@@ -120,6 +122,10 @@ void NativeExtensionBindingsSystemUnittest::RegisterExtension(
 
 bool NativeExtensionBindingsSystemUnittest::UseStrictIPCMessageSender() {
   return false;
+}
+
+void NativeExtensionBindingsSystemUnittest::DestroyBindingsSystem() {
+  bindings_system_.reset();
 }
 
 ScriptContextSetIterable*

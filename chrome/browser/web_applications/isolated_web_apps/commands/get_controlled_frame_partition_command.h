@@ -33,7 +33,7 @@ GetControlledFramePartitionWithLock(Profile* profile,
                                     const std::string& partition_name,
                                     bool in_memory,
                                     AppLock& lock,
-                                    base::Value::Dict& debug_info);
+                                    base::DictValue& debug_info);
 
 }  // namespace web_app
 

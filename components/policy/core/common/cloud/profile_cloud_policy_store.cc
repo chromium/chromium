@@ -75,8 +75,7 @@ ProfileCloudPolicyStore::CreateForExtensionInstall(
 
 std::unique_ptr<UserCloudPolicyValidator>
 ProfileCloudPolicyStore::CreateValidator(
-    std::unique_ptr<enterprise_management::PolicyFetchResponse>
-        policy_fetch_response,
+    std::unique_ptr<em::PolicyFetchResponse> policy_fetch_response,
     CloudPolicyValidatorBase::ValidateTimestampOption option) {
   auto validator = std::make_unique<UserCloudPolicyValidator>(
       std::move(policy_fetch_response), background_task_runner());
@@ -100,22 +99,47 @@ ProfileCloudPolicyStore::CreateValidator(
 }
 
 void ProfileCloudPolicyStore::Validate(
-    std::unique_ptr<enterprise_management::PolicyFetchResponse> policy,
-    std::unique_ptr<enterprise_management::PolicySigningKey> key,
+    std::unique_ptr<em::PolicyFetchResponse> policy,
+    std::unique_ptr<em::PolicySigningKey> key,
     bool validate_in_background,
     UserCloudPolicyValidator::CompletionCallback callback) {
+  auto validator = CreateValidator(
+      std::move(policy), CloudPolicyValidatorBase::TIMESTAMP_VALIDATED);
+  ValidateImpl<em::CloudPolicySettings>(std::move(validator), std::move(key),
+                                        validate_in_background,
+                                        std::move(callback));
+}
+
+void ProfileCloudPolicyStore::ValidateExtensionInstallPolicy(
+    std::unique_ptr<em::PolicyFetchResponse> policy,
+    std::unique_ptr<em::PolicySigningKey> key,
+    bool validate_in_background,
+    ExtensionInstallCloudPolicyValidator::CompletionCallback callback) {
+  auto validator = CreateExtensionInstallValidator(
+      std::move(policy), CloudPolicyValidatorBase::TIMESTAMP_VALIDATED);
+  ValidateImpl<em::ExtensionInstallPolicies>(
+      std::move(validator), std::move(key), validate_in_background,
+      std::move(callback));
+}
+
+template <typename PayloadProto>
+void ProfileCloudPolicyStore::ValidateImpl(
+    std::unique_ptr<CloudPolicyValidator<PayloadProto>> validator,
+    std::unique_ptr<em::PolicySigningKey> cached_key,
+    bool validate_in_background,
+    typename CloudPolicyValidator<PayloadProto>::CompletionCallback callback) {
+  static_assert(std::is_same<PayloadProto, em::CloudPolicySettings>() ||
+                std::is_same<PayloadProto, em::ExtensionInstallPolicies>());
+
   if (is_dasherless_) {
     VLOG_POLICY(2, OIDC_ENROLLMENT)
         << "Started policy validation for dasherless profile policies.";
   }
-  std::unique_ptr<UserCloudPolicyValidator> validator = CreateValidator(
-      std::move(policy), CloudPolicyValidatorBase::TIMESTAMP_VALIDATED);
-
-  ValidateKeyAndSignature(validator.get(), key.get(), std::string());
+  ValidateKeyAndSignature(validator.get(), cached_key.get(), std::string());
 
   if (validate_in_background) {
-    UserCloudPolicyValidator::StartValidation(std::move(validator),
-                                              std::move(callback));
+    CloudPolicyValidator<PayloadProto>::StartValidation(std::move(validator),
+                                                        std::move(callback));
   } else {
     validator->RunValidation();
     std::move(callback).Run(validator.get());

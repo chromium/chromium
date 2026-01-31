@@ -28,7 +28,6 @@ import org.chromium.components.data_sharing.member_role.MemberRole;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
-import org.chromium.ui.widget.RectProvider;
 import org.chromium.ui.widget.ViewRectProvider;
 
 import java.util.function.Supplier;
@@ -107,8 +106,13 @@ public class TabListGroupMenuCoordinator extends TabGroupOverflowMenuCoordinator
      * @param tabGroupId The tab group ID of the interacting tab group.
      * @param focusable True if the menu should be focusable by default, false otherwise.
      */
-    public void showMenu(RectProvider anchorViewRectProvider, Token tabGroupId, boolean focusable) {
+    public void showMenu(
+            ViewRectProvider anchorViewRectProvider, Token tabGroupId, boolean focusable) {
         mIsMenuFocusableUponCreation = focusable;
+        dismiss();
+
+        if (!anchorViewRectProvider.isViewShown()) return;
+
         createAndShowMenu(
                 anchorViewRectProvider,
                 tabGroupId,

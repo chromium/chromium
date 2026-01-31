@@ -51,7 +51,7 @@ class ImportantSitesUtil {
   // Do not change the values here, as they are used for UMA histograms.
   enum ImportantReason {
     ENGAGEMENT = 0,
-    DURABLE = 1,
+    PERSISTENT = 1,
     BOOKMARKS = 2,
     HOME_SCREEN = 3,
     NOTIFICATIONS = 4,

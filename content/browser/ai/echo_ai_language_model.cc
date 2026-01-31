@@ -147,7 +147,9 @@ void EchoAILanguageModel::Fork(
       std::move(language_model),
       blink::mojom::AILanguageModelInstanceInfo::New(
           EchoAIManagerImpl::kMaxContextSizeInTokens, current_tokens_,
-          sampling_params_->Clone(), base::ToVector(input_types_)));
+          sampling_params_->Clone(), base::ToVector(input_types_),
+          /*audio_sample_rate_hz=*/std::nullopt,
+          /*audio_channel_count=*/std::nullopt));
 }
 
 void EchoAILanguageModel::Destroy() {

@@ -317,6 +317,7 @@ struct AccessibilityFeatures {
   bool switch_access_enabled;
 };
 
+// [Deprecated]
 // Interface to interact with a custom tab.
 // Close the interface pointer to close the custom tab.
 // Next method ID: 1
@@ -326,7 +327,7 @@ interface CustomTabSession {
 };
 
 // Handles intents from ARC in Chrome.
-// Deprecated method ID: 4, 9, 10, 16, 18
+// Deprecated method ID: 4, 9, 10, 16, 17, 18
 // Next method ID: 24
 interface IntentHelperHost {
   // Called when icons associated with the package are no longer up to date.

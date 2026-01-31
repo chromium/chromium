@@ -86,15 +86,16 @@ class TrackerImplAndroid : public base::SupportsUserData::Data {
       const base::android::JavaRef<jstring>& jfeature);
   virtual bool HasEverTriggered(JNIEnv* env,
                                 const base::android::JavaRef<jstring>& jfeature,
-                                const jboolean j_from_window);
-  virtual jint GetTriggerState(JNIEnv* env,
-                               const base::android::JavaRef<jstring>& jfeature);
+                                const bool j_from_window);
+  virtual int32_t GetTriggerState(
+      JNIEnv* env,
+      const base::android::JavaRef<jstring>& jfeature);
   virtual void Dismissed(JNIEnv* env,
                          const base::android::JavaRef<jstring>& jfeature);
   virtual void DismissedWithSnooze(
       JNIEnv* env,
       const base::android::JavaRef<jstring>& jfeature,
-      const jint snooze_action);
+      const int32_t snooze_action);
   virtual base::android::ScopedJavaLocalRef<jobject> AcquireDisplayLock(
       JNIEnv* env);
   virtual void SetPriorityNotification(

@@ -428,7 +428,7 @@ TEST_F(OriginTrialContextTest, PermissionsPolicy) {
   PolicyParserMessageBuffer logger;
   network::ParsedPermissionsPolicy result;
   result = PermissionsPolicyParser::ParsePermissionsPolicyForTest(
-      "frobulate=*", security_origin, nullptr, logger, feature_map, window);
+      "frobulate=*", *security_origin, nullptr, logger, feature_map, window);
   EXPECT_TRUE(logger.GetMessages().empty());
   ASSERT_EQ(1u, result.size());
   EXPECT_EQ(network::mojom::PermissionsPolicyFeature::kFrobulate,

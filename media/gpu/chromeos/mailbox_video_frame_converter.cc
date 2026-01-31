@@ -4,7 +4,6 @@
 
 #include "media/gpu/chromeos/mailbox_video_frame_converter.h"
 
-#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/location.h"
@@ -135,9 +134,8 @@ void MailboxVideoFrameConverter::ConvertFrameImpl(
     return OnError(FROM_HERE, "Initialized without SharedImageInterface");
   }
 
-  if (!frame ||
-      (frame->storage_type() != VideoFrame::STORAGE_DMABUFS &&
-       frame->storage_type() != VideoFrame::STORAGE_MAPPABLE_SHARED_IMAGE)) {
+  if (!frame || (frame->storage_type() != VideoFrame::STORAGE_DMABUFS &&
+                 !frame->HasMappableSharedImage())) {
     return OnError(FROM_HERE, "Invalid frame.");
   }
 
@@ -192,7 +190,7 @@ void MailboxVideoFrameConverter::WrapSharedImageAndVideoFrameAndOutput(
   DCHECK(shared_image);
 
   const UniqueID origin_frame_id = origin_frame->unique_id();
-  DCHECK(base::Contains(shared_images_, origin_frame_id));
+  DCHECK(shared_images_.contains(origin_frame_id));
 
   // GenerateSharedImage() should have checked the |origin_frame|'s format
   // (which should be the same as the |frame|'s format).
@@ -201,7 +199,7 @@ void MailboxVideoFrameConverter::WrapSharedImageAndVideoFrameAndOutput(
   const gfx::Size coded_size = to_coded_size(frame);
   scoped_refptr<VideoFrame> mailbox_frame = VideoFrame::WrapSharedImage(
       frame->format(), shared_image, shared_image_sync_token,
-      /*mailbox_holder_release_cb=*/{}, coded_size, frame->visible_rect(),
+      /*shared_image_release_cb=*/{}, coded_size, frame->visible_rect(),
       frame->natural_size(), frame->timestamp());
   mailbox_frame->set_color_space(shared_image->color_space());
   mailbox_frame->set_hdr_metadata(frame->hdr_metadata());
@@ -240,12 +238,18 @@ MailboxVideoFrameConverter::GenerateSharedImage(
 
   const gfx::Size shared_image_size = to_shared_image_size(origin_frame, frame);
 
-  // The allocated SharedImages should be usable for the (Display) compositor
-  // and, potentially, for overlays (Scanout). The shared image can be copied to
-  // GL texture over WebGL either directly or over raster interface.
+  // The allocated SharedImages should be usable for the (Display) compositor.
+  // The shared image can be copied to GL texture over WebGL either directly or
+  // over raster interface.
   gpu::SharedImageUsageSet shared_image_usage =
-      gpu::SHARED_IMAGE_USAGE_DISPLAY_READ | gpu::SHARED_IMAGE_USAGE_SCANOUT |
+      gpu::SHARED_IMAGE_USAGE_DISPLAY_READ |
       gpu::SHARED_IMAGE_USAGE_GLES2_READ | gpu::SHARED_IMAGE_USAGE_RASTER_READ;
+
+  // These SharedImage can potentially be used for overlays (Scanout).
+  if (shared_image_interface_->GetCapabilities()
+          .supports_scanout_shared_images) {
+    shared_image_usage |= gpu::SHARED_IMAGE_USAGE_SCANOUT;
+  }
 
   // These SharedImages might also be used for zero-copy import into WebGPU to
   // serve as the sources of WebGPU reads (e.g., for video effects processing).
@@ -276,7 +280,7 @@ void MailboxVideoFrameConverter::RegisterSharedImage(
   DVLOGF(4) << "frame: " << origin_frame->unique_id();
   DCHECK(parent_task_runner()->RunsTasksInCurrentSequence());
   DCHECK(client_shared_image);
-  DCHECK(!base::Contains(shared_images_, origin_frame->unique_id()) ||
+  DCHECK(!shared_images_.contains(origin_frame->unique_id()) ||
          shared_images_.find(origin_frame->unique_id())->second !=
              client_shared_image);
 

@@ -12,6 +12,7 @@
 #include "base/command_line.h"
 #include "base/debug/debugging_buildflags.h"
 #include "base/i18n/message_formatter.h"
+#include "base/memory/ref_counted_memory.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -24,6 +25,7 @@
 #include "chrome/common/url_constants.h"
 #include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
+#include "chrome/grit/theme_resources.h"
 #include "components/embedder_support/user_agent_utils.h"
 #include "components/grit/components_scaled_resources.h"
 #include "components/grit/version_ui_resources.h"
@@ -38,6 +40,7 @@
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_data_source.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/resource/resource_bundle.h"
 #include "ui/base/webui/web_ui_util.h"
 #include "ui/webui/webui_util.h"
 #include "v8/include/v8-version-string.h"
@@ -108,7 +111,7 @@ void CreateAndAddVersionUIDataSource(Profile* profile) {
   VersionUI::AddVersionDetailStrings(html_source);
 
   html_source->AddResourcePaths(kVersionUiResources);
-  html_source->AddResourcePath("", IDR_VERSION_UI_ABOUT_VERSION_HTML);
+  html_source->SetDefaultResource(IDR_VERSION_UI_ABOUT_VERSION_HTML);
   html_source->UseStringsJs();
 
 #if BUILDFLAG(IS_ANDROID)
@@ -210,6 +213,13 @@ int VersionUI::VersionProcessorVariation() {
 #else
 #error Update for a processor that is neither 32-bit nor 64-bit.
 #endif
+}
+
+// static
+base::RefCountedMemory* VersionUI::GetFaviconResourceBytes(
+    ui::ResourceScaleFactor scale_factor) {
+  return ui::ResourceBundle::GetSharedInstance().LoadDataResourceBytesForScale(
+      IDR_PRODUCT_FAVICON, scale_factor);
 }
 
 // static

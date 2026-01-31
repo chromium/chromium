@@ -1,0 +1,197 @@
+diff --git a/third_party/libdmg-hfsplus/src/dmg/compress.c b/third_party/libdmg-hfsplus/src/dmg/compress.c
+index 4331c2a623f3e..6c413e30f5203 100644
+--- a/third_party/libdmg-hfsplus/src/dmg/compress.c
++++ b/third_party/libdmg-hfsplus/src/dmg/compress.c
+@@ -1,47 +1,94 @@
++#include "common.h"
++#include "dmg/adc.h"
+ #include "dmg/dmg.h"
+ #include "dmg/compress.h"
+ 
+-#include <zlib.h>
+ #include <bzlib.h>
+-#include "dmg/adc.h"
+-
+-#ifdef HAVE_LIBLZMA
+-  #include <lzma.h>
+-
+-  // LZMA_FAIL_FAST was introduced in 5.3.3, attempting to use it in earlier versions
+-  // yields an error.
+-  #ifdef LZMA_FAIL_FAST
+-    #define LZMA_DECODE_OPTS LZMA_FAIL_FAST
+-  #else
+-    #define LZMA_DECODE_OPTS 0
+-  #endif
+-
+-  static int lzmaDecompress(unsigned char* inBuffer, size_t inSize, unsigned char* outBuffer, size_t outBufSize, size_t *decompSize)
+-  {
+-    lzma_ret lret;
+-    /* More memory than lzma ever needs */
+-    uint64_t error_if_memory_usage_exceeds = 65 * 1024 * 1024;
+-    size_t inPos = 0;
+-    *decompSize = 0;
+-
+-    lret = lzma_stream_buffer_decode(&error_if_memory_usage_exceeds, LZMA_DECODE_OPTS, NULL,
+-      inBuffer, &inPos, inSize, outBuffer, decompSize, outBufSize);
+-    return lret != LZMA_OK;
+-  }
+-
+-  static int lzmaCompress(unsigned char *inBuffer, size_t inSize,
+-                          unsigned char *outBuffer, size_t outBufSize, size_t *compSize, int level)
+-  {
+-    lzma_ret lret;
+-
+-    *compSize = 0;
+-    if (level == COMPRESSION_LEVEL_DEFAULT)
+-      level = LZMA_PRESET_DEFAULT;
+-    lret = lzma_easy_buffer_encode(level, LZMA_CHECK_NONE, NULL, inBuffer, inSize, outBuffer,
+-      compSize, outBufSize);
+-    return lret != LZMA_OK;
+-  }
+-#endif
++#include <pthread.h>
++#include <zlib.h>
++
++#include "third_party/lzma_sdk/C/Alloc.h"
++#include "third_party/lzma_sdk/C/7zCrc.h"
++#include "third_party/lzma_sdk/C/7zTypes.h"
++#include "third_party/lzma_sdk/C/Lzma2Enc.h"
++#include "third_party/lzma_sdk/C/Xz.h"
++#include "third_party/lzma_sdk/C/XzCrc64.h"
++#include "third_party/lzma_sdk/C/XzEnc.h"
++#include "third_party/lzma_sdk/google/seven_zip_c_buf_stream.h"
++
++// Calls once-only initialization functions for `lzma_sdk`. Not threadsafe.
++static void reallyInitLzmaCrc()
++{
++  CrcGenerateTable();
++  Crc64GenerateTable();
++}
++
++// Calls once-only initialization functions for `lzma_sdk` once per process.
++// Threadsafe. If `pthread_once` fails, the application crashes.
++static void mustInitLzmaCrcIfNeeded()
++{
++  static pthread_once_t once = PTHREAD_ONCE_INIT;
++  ASSERT(!pthread_once(&once, reallyInitLzmaCrc), "can't initialize LZMA CRC tables");
++}
++
++// Decodes an XZ block. Returns 0 on success.
++static int lzmaDecompress(unsigned char* inBuffer, size_t inSize, unsigned char* outBuffer, size_t outBufSize, size_t* decompSize)
++{
++  mustInitLzmaCrcIfNeeded();
++
++  CXzUnpacker unpacker;
++  ECoderStatus status = CODER_STATUS_NOT_SPECIFIED;
++  XzUnpacker_Construct(&unpacker, &g_Alloc);
++
++  SRes result = XzUnpacker_CodeFull(&unpacker, outBuffer, &outBufSize,
++    inBuffer, &inSize, CODER_FINISH_ANY, &status);
++
++  // `lzma_sdk` reports final size by writing back into its destLen arg; report
++  // that via `decompSize`, matching the existing API designed around `xz`.
++  *decompSize = outBufSize;
++
++  int ret = (result != SZ_OK) || (!XzUnpacker_IsStreamWasFinished(&unpacker));
++
++  XzUnpacker_Free(&unpacker);
++  return ret;
++}
++
++static int lzmaCompress(unsigned char* inBuffer, size_t inSize,
++                        unsigned char* outBuffer, size_t outBufSize, size_t* compSize, int level)
++{
++  mustInitLzmaCrcIfNeeded();
++
++  Z7CBufSeqInStream inWrapper = {
++    .buf = inBuffer,
++    .bufSz = inSize,
++    .offset = 0
++  };
++  Z7CBufSeqInStream_CreateVTable(&inWrapper);
++
++  Z7CBufSeqOutStream outWrapper = {
++    .buf = outBuffer,
++    .bufSz = outBufSize,
++    .offset = 0
++  };
++  Z7CBufSeqOutStream_CreateVTable(&outWrapper);
++
++  CXzProps props;
++  XzProps_Init(&props);
++  // `lzma_sdk` recognizes any negative value for `CLzmaEncProps.level` as
++  // "use default". `libdmg-hfsplus`'s "default" sentinel is negative, so
++  // this code does not check for it, instead letting `Xz_Encode` eventually
++  // handle it.
++  props.lzma2Props.lzmaProps.level = level;
++  props.lzma2Props.lzmaProps.reduceSize = inSize;
++  props.lzma2Props.blockSize = LZMA2_ENC_PROPS_BLOCK_SIZE_SOLID;
++  props.reduceSize = inSize;
++  props.blockSize = XZ_PROPS_BLOCK_SIZE_SOLID;
++  props.checkId = XZ_CHECK_NO;
++
++  SRes codeResult = Xz_Encode(&outWrapper.vt, &inWrapper.vt, &props, NULL);
++  *compSize = outWrapper.offset;
++  return codeResult != SZ_OK;
++}
+ 
+ #ifdef HAVE_LZFSE
+   #include <lzfse.h>
+@@ -64,8 +111,9 @@ static int bz2Compress(unsigned char *inBuffer, size_t inSize,
+                        unsigned char *outBuffer, size_t outBufSize, size_t *compSize, int level)
+ {
+   unsigned int bz2CompSize = outBufSize;
+-  if (level == COMPRESSION_LEVEL_DEFAULT)
++  if (level == COMPRESSION_LEVEL_DEFAULT) {
+     level = 9;
++  }
+   int ret = (BZ2_bzBuffToBuffCompress((char*)outBuffer, &bz2CompSize, (char*)inBuffer, inSize, level, 0, 0) != BZ_OK);
+   *compSize = bz2CompSize;
+   return ret;
+@@ -75,8 +123,9 @@ static int zlibCompress(unsigned char *inBuffer, size_t inSize,
+                         unsigned char *outBuffer, size_t outBufSize, size_t *compSize, int level)
+ {
+   *compSize = outBufSize;
+-  if (level == COMPRESSION_LEVEL_DEFAULT)
++  if (level == COMPRESSION_LEVEL_DEFAULT) {
+     level = Z_DEFAULT_COMPRESSION;
++  }
+   return (compress2(outBuffer, compSize, inBuffer, inSize, level) != Z_OK);
+ }
+ 
+@@ -116,14 +165,12 @@ int getCompressor(Compressor* comp, char *name)
+     comp->decompressBuffer = oldDecompressBuffer;
+     return 0;
+   }
+-#ifdef HAVE_LIBLZMA
+   if (strcasecmp(name, "lzma") == 0) {
+     comp->block_type = BLOCK_LZMA;
+     comp->compressFn = lzmaCompress;
+     comp->decompressBuffer = modernDecompressBuffer;
+     return 0;
+   }
+-#endif
+ #ifdef HAVE_LZFSE
+   if (strcasecmp(name, "lzfse") == 0) {
+     comp->block_type = BLOCK_LZFSE;
+@@ -154,9 +201,7 @@ int compressionBlockTypeSupported(uint32_t type)
+     case BLOCK_ADC:
+     case BLOCK_BZIP2:
+     case BLOCK_ZLIB:
+-#ifdef HAVE_LIBLZMA
+     case BLOCK_LZMA:
+-#endif
+ #ifdef HAVE_LZFSE
+     case BLOCK_LZFSE:
+ #endif
+@@ -181,10 +226,8 @@ int decompressRun(uint32_t type,
+     unsigned int bz2DecompSize = expectedSize;
+     ret = (BZ2_bzBuffToBuffDecompress((char*)outBuffer, &bz2DecompSize, (char*)inBuffer, inSize, 0, 0) != BZ_OK);
+     decompSize = bz2DecompSize;
+-#ifdef HAVE_LIBLZMA
+   } else if (type == BLOCK_LZMA) {
+     ret = lzmaDecompress(inBuffer, inSize, outBuffer, expectedSize, &decompSize);
+-#endif
+ #ifdef HAVE_LZFSE
+   } else if (type == BLOCK_LZFSE) {
+     ret = lzfseDecompress(inBuffer, inSize, outBuffer, expectedSize, &decompSize);

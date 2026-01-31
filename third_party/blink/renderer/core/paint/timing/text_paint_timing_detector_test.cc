@@ -101,10 +101,6 @@ class TextPaintTimingDetectorTest : public testing::Test {
         .texts_queued_for_paint_time_.size();
   }
 
-  wtf_size_t ContainerTotalSize() {
-    return CountRecordedSize() + TextQueuedForPaintTimeSize(GetFrameView());
-  }
-
   bool HasLargestIgnoredText() {
     return !!GetLargestTextPaintManager().LargestIgnoredText();
   }
@@ -124,17 +120,15 @@ class TextPaintTimingDetectorTest : public testing::Test {
   void InvokeCallback() {
     DCHECK_GT(mock_callback_manager_->CountCallbacks(), 0u);
     InvokePresentationTimeCallback(mock_callback_manager_);
-    // Outside the tests, this is invoked by
-    // |PaintTimingCallbackManagerImpl::ReportPaintTime|.
-    GetLargestTextPaintManager().UpdateMetricsCandidate();
+    // Outside the tests, this is invoked by PaintTimingMixin.
+    GetPaintTimingDetector().UpdateLcpCandidate();
   }
 
   void ChildFramePresentationTimeCallBack() {
     DCHECK_GT(child_frame_mock_callback_manager_->CountCallbacks(), 0u);
     InvokePresentationTimeCallback(child_frame_mock_callback_manager_);
-    // Outside the tests, this is invoked by
-    // |PaintTimingCallbackManagerImpl::ReportPaintTime|.
-    GetChildFrameTextPaintTimingDetector().UpdateMetricsCandidate();
+    // Outside the tests, this is invoked by PaintTimingMixin.
+    return GetChildFrameView().GetPaintTimingDetector().UpdateLcpCandidate();
   }
 
   void InvokePresentationTimeCallback(
@@ -168,6 +162,8 @@ class TextPaintTimingDetectorTest : public testing::Test {
     mock_callback_manager_ =
         MakeGarbageCollected<MockPaintTimingCallbackManager>();
     GetTextPaintTimingDetector()->ResetCallbackManager(mock_callback_manager_);
+    main_frame_lcp_calculator_ =
+        GetPaintTimingDetector().GetLargestContentfulPaintCalculator();
     UpdateAllLifecyclePhases();
   }
 
@@ -179,6 +175,9 @@ class TextPaintTimingDetectorTest : public testing::Test {
         MakeGarbageCollected<MockPaintTimingCallbackManager>();
     GetChildFrameTextPaintTimingDetector().ResetCallbackManager(
         child_frame_mock_callback_manager_);
+    child_frame_lcp_calculator_ = GetChildFrameView()
+                                      .GetPaintTimingDetector()
+                                      .GetLargestContentfulPaintCalculator();
     UpdateAllLifecyclePhases();
   }
 
@@ -232,14 +231,11 @@ class TextPaintTimingDetectorTest : public testing::Test {
   }
 
   TextRecord* TextRecordOfLargestTextPaint() {
-    return GetLargestTextPaintManager().LargestText();
+    return main_frame_lcp_calculator_->LargestTextForTest();
   }
 
   TextRecord* ChildFrameTextRecordOfLargestTextPaint() {
-    return GetChildFrameView()
-        .GetPaintTimingDetector()
-        .GetTextPaintTimingDetector()
-        .ltp_manager_.LargestText();
+    return child_frame_lcp_calculator_->LargestTextForTest();
   }
 
   void SetFontSize(Element* font_element, uint16_t font_size) {
@@ -274,6 +270,9 @@ class TextPaintTimingDetectorTest : public testing::Test {
   scoped_refptr<base::TestMockTimeTaskRunner> test_task_runner_;
   Persistent<MockPaintTimingCallbackManager> mock_callback_manager_;
   Persistent<MockPaintTimingCallbackManager> child_frame_mock_callback_manager_;
+  // Cache the LCP calculators so they can still be accessed after input events.
+  Persistent<LargestContentfulPaintCalculator> main_frame_lcp_calculator_;
+  Persistent<LargestContentfulPaintCalculator> child_frame_lcp_calculator_;
 };
 
 constexpr base::TimeDelta TextPaintTimingDetectorTest::kQuantumOfTime;
@@ -334,7 +333,7 @@ TEST_F(TextPaintTimingDetectorTest, LargestTextPaint_TraceEvent_Candidate) {
   EXPECT_TRUE(events[0]->HasStringArg("frame"));
 
   ASSERT_TRUE(events[0]->HasDictArg("data"));
-  base::Value::Dict arg_dict = events[0]->GetKnownArgAsDict("data");
+  base::DictValue arg_dict = events[0]->GetKnownArgAsDict("data");
   EXPECT_GT(arg_dict.FindInt("DOMNodeId").value_or(-1), 0);
   EXPECT_GT(arg_dict.FindInt("size").value_or(-1), 0);
   EXPECT_EQ(arg_dict.FindInt("candidateIndex").value_or(-1), 1);
@@ -387,7 +386,7 @@ TEST_F(TextPaintTimingDetectorTest,
   EXPECT_TRUE(events[0]->HasStringArg("frame"));
 
   ASSERT_TRUE(events[0]->HasDictArg("data"));
-  base::Value::Dict arg_dict = events[0]->GetKnownArgAsDict("data");
+  base::DictValue arg_dict = events[0]->GetKnownArgAsDict("data");
   EXPECT_GT(arg_dict.FindInt("DOMNodeId").value_or(-1), 0);
   EXPECT_GT(arg_dict.FindInt("size").value_or(-1), 0);
   EXPECT_EQ(arg_dict.FindInt("candidateIndex").value_or(-1), 1);
@@ -571,44 +570,6 @@ TEST_F(TextPaintTimingDetectorTest, LargestTextPaint_RemovedText) {
   // LCP values should remain unchanged.
   EXPECT_EQ(LargestPaintSize(), size_before_remove);
   EXPECT_EQ(LargestPaintTime(), time_before_remove);
-}
-
-TEST_F(TextPaintTimingDetectorTest,
-       RemoveRecordFromAllContainerAfterTextRemoval) {
-  SetBodyInnerHTML(R"HTML(
-  )HTML");
-  Element* text = AppendDivElementToBody("text");
-  UpdateAllLifecyclePhasesAndSimulatePresentationTime();
-  EXPECT_EQ(ContainerTotalSize(), 1u);
-
-  RemoveElement(text);
-  EXPECT_EQ(ContainerTotalSize(), 0u);
-}
-
-TEST_F(TextPaintTimingDetectorTest,
-       RemoveRecordFromAllContainerAfterRepeatedAttachAndDetach) {
-  SetBodyInnerHTML(R"HTML(
-  )HTML");
-  Element* text1 = AppendDivElementToBody("text");
-  UpdateAllLifecyclePhasesAndSimulatePresentationTime();
-  EXPECT_EQ(ContainerTotalSize(), 1u);
-
-  Element* text2 = AppendDivElementToBody("text2");
-  UpdateAllLifecyclePhasesAndSimulatePresentationTime();
-  EXPECT_EQ(ContainerTotalSize(), 2u);
-
-  RemoveElement(text1);
-  EXPECT_EQ(ContainerTotalSize(), 1u);
-
-  GetDocument().body()->AppendChild(text1);
-  UpdateAllLifecyclePhasesAndSimulatePresentationTime();
-  EXPECT_EQ(ContainerTotalSize(), 2u);
-
-  RemoveElement(text1);
-  EXPECT_EQ(ContainerTotalSize(), 1u);
-
-  RemoveElement(text2);
-  EXPECT_EQ(ContainerTotalSize(), 0u);
 }
 
 TEST_F(TextPaintTimingDetectorTest,

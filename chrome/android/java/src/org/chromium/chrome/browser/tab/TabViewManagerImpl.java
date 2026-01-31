@@ -13,7 +13,8 @@ import androidx.annotation.ColorInt;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.lifetime.Destroyable;
-import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.supplier.ObservableSuppliers;
+import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsMarginAdapter;
@@ -68,8 +69,8 @@ class TabViewManagerImpl implements TabViewManager, Comparator<TabViewProvider> 
     private final PriorityQueue<TabViewProvider> mTabViewProviders;
     private final TabImpl mTab;
     private @Nullable View mCurrentView;
-    private final ObservableSupplierImpl<Rect> mBrowserControlsMarginsSupplier =
-            new ObservableSupplierImpl<>();
+    private final SettableMonotonicObservableSupplier<Rect> mBrowserControlsMarginsSupplier =
+            ObservableSuppliers.createMonotonic();
     private @Nullable Destroyable mMarginsAdapter;
 
     TabViewManagerImpl(TabImpl tab) {

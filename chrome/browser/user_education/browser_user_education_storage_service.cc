@@ -144,7 +144,7 @@ std::optional<user_education::KeyedFeaturePromoDataMap::value_type> ReadKeyData(
 // Writes keyed promo data to a `base::Value`.
 base::Value WriteKeyData(const std::string& key,
                          const user_education::KeyedFeaturePromoData& data) {
-  base::Value::Dict value;
+  base::DictValue value;
   value.Set(kKeyedPromoKey, key);
   value.Set(kKeyedPromoShowCount, data.show_count);
   value.Set(kKeyedPromoLastShownTime, base::TimeToValue(data.last_shown_time));
@@ -231,7 +231,7 @@ BrowserUserEducationStorageService::ReadPromoData(
       pref_data.FindIntByDottedPath(path_prefix + kIPHShowCountPath);
   std::optional<int> promo_index =
       pref_data.FindIntByDottedPath(path_prefix + kIPHPromoIndexPath);
-  const base::Value::List* keyed_data =
+  const base::ListValue* keyed_data =
       pref_data.FindListByDottedPath(path_prefix + kIPHShownForAppsPath);
 
   std::optional<user_education::FeaturePromoData> promo_data;
@@ -314,7 +314,7 @@ void BrowserUserEducationStorageService::SavePromoData(
   pref_data.SetByDottedPath(path_prefix + kIPHPromoIndexPath,
                             promo_data.promo_index);
 
-  base::Value::List shown_for;
+  base::ListValue shown_for;
   for (auto& [key, data] : promo_data.shown_for_keys) {
     shown_for.Append(WriteKeyData(key, data));
   }
@@ -456,7 +456,7 @@ std::optional<user_education::NtpPromoData>
 BrowserUserEducationStorageService::ReadNtpPromoData(
     const user_education::NtpPromoIdentifier& id) const {
   const auto& ntp_prefs = profile_->GetPrefs()->GetDict(kKeyedNtpPromosPath);
-  const base::Value::Dict* promo_prefs = ntp_prefs.FindDict(id);
+  const base::DictValue* promo_prefs = ntp_prefs.FindDict(id);
   if (!promo_prefs) {
     return std::nullopt;
   }
@@ -484,9 +484,9 @@ void BrowserUserEducationStorageService::SaveNtpPromoData(
     const user_education::NtpPromoIdentifier& id,
     const user_education::NtpPromoData& data) {
   ScopedDictPrefUpdate update(profile_->GetPrefs(), kKeyedNtpPromosPath);
-  base::Value::Dict& pref_data = update.Get();
+  base::DictValue& pref_data = update.Get();
 
-  base::Value::Dict promo_pref;
+  base::DictValue promo_pref;
   promo_pref.Set(kKeyedNtpPromoLastClicked,
                  base::TimeToValue(data.last_clicked));
   promo_pref.Set(kKeyedNtpPromoCompleted, base::TimeToValue(data.completed));

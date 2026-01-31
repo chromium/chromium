@@ -132,10 +132,4 @@ function stopLogging() {
 document.addEventListener('DOMContentLoaded', function() {
   $('start-logging').onclick = startLogging;
   $('stop-logging').onclick = stopLogging;
-
-  // Expose |logMessageReceived| and |tabClosed| functions through global
-  // namespace as they will be called from the native app.
-  __gCrWeb.inspectWebUI = {};
-  __gCrWeb.inspectWebUI.logMessageReceived = logMessageReceived;
-  __gCrWeb.inspectWebUI.tabClosed = tabClosed;
 });

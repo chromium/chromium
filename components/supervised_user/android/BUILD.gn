@@ -12,7 +12,7 @@ generate_jni("jni_headers") {
     ":*",
     "//chrome/android:jni_headers",
     "//components/supervised_user/core/browser",
-    "//components/supervised_user/core/browser/android:content_filters_observer_bridge",
+    "//components/supervised_user/core/browser/android",
   ]
 }
 

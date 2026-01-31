@@ -106,6 +106,10 @@ void InitializeAllocatorShim() {
 
 }  // namespace allocator_shim
 
+#if PA_BUILDFLAG(SHIM_SUPPORTS_ALLOC_TOKEN)
+#include "partition_alloc/shim/allocator_shim_alloc_token_symbols_apple.h"
+#endif
+
 // Cross-checks.
 
 #if defined(MEMORY_TOOL_REPLACES_ALLOCATOR)

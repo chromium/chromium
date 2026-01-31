@@ -9,7 +9,6 @@
 #include <memory>
 #include <utility>
 
-#include "base/containers/contains.h"
 #include "services/accessibility/android/accessibility_info_data_wrapper.h"
 #include "services/accessibility/android/accessibility_node_info_data_wrapper.h"
 #include "services/accessibility/android/accessibility_window_info_data_wrapper.h"
@@ -195,10 +194,10 @@ TEST_F(AutoCompleteHandlerTest, Create) {
   ASSERT_EQ(2U, create_result.size());
 
   // Check both IDs are included.
-  ASSERT_TRUE(base::Contains(create_result, 1,
-                             &AutoCompleteHandler::IdAndHandler::first));
-  ASSERT_TRUE(base::Contains(create_result, 2,
-                             &AutoCompleteHandler::IdAndHandler::first));
+  ASSERT_TRUE(std::ranges::contains(create_result, 1,
+                                    &AutoCompleteHandler::IdAndHandler::first));
+  ASSERT_TRUE(std::ranges::contains(create_result, 2,
+                                    &AutoCompleteHandler::IdAndHandler::first));
 }
 
 TEST_F(AutoCompleteHandlerTest, PreEventAndPostSerialize) {

@@ -73,15 +73,10 @@ class SignInStepController : public ProfileManagementStepController {
  public:
   explicit SignInStepController(
       ProfilePickerWebContentsHost* host,
-      std::unique_ptr<ProfilePickerSignInProvider> sign_in_provider,
-      SignInStepFinishedCallback signed_in_callback,
-      SigninErrorCallback signin_error_callback)
+      std::unique_ptr<ProfilePickerSignInProvider> sign_in_provider)
       : ProfileManagementStepController(host),
-        signed_in_callback_(std::move(signed_in_callback)),
-        signin_error_callback_(std::move(signin_error_callback)),
         sign_in_provider_(std::move(sign_in_provider)) {
-    CHECK(signed_in_callback_);
-    CHECK(signin_error_callback_);
+    CHECK(sign_in_provider_);
   }
 
   ~SignInStepController() override = default;
@@ -89,13 +84,8 @@ class SignInStepController : public ProfileManagementStepController {
   void Show(StepSwitchFinishedCallback step_shown_callback,
             bool reset_state) override {
     CHECK(!step_shown_callback->is_null());
-    DCHECK(signed_in_callback_) << "Attempting to show the sign-in step again "
-                                   "while it was previously completed";
     // Unretained ok because the provider is owned by `this`.
-    sign_in_provider_->SwitchToSignIn(
-        std::move(step_shown_callback),
-        base::BindOnce(&SignInStepController::OnStepFinished,
-                       base::Unretained(this)));
+    sign_in_provider_->SwitchToSignIn(std::move(step_shown_callback));
   }
 
   void OnHidden() override {
@@ -124,26 +114,6 @@ class SignInStepController : public ProfileManagementStepController {
   }
 
  private:
-  void OnStepFinished(Profile* profile,
-                      const CoreAccountInfo& account_info,
-                      std::unique_ptr<content::WebContents> contents,
-                      const SigninUIError& error) {
-    if (!error.IsOk()) {
-      std::move(signin_error_callback_).Run(profile, contents.get(), error);
-      return;
-    }
-
-    std::move(signed_in_callback_)
-        .Run(profile, account_info, std::move(contents),
-             StepSwitchFinishedCallback());
-
-    // The step controller can be destroyed when `signed_in_callback_`
-    // or `signin_error_callback_` runs. Don't interact with members below.
-  }
-
-  SignInStepFinishedCallback signed_in_callback_;
-  SigninErrorCallback signin_error_callback_;
-
   std::unique_ptr<ProfilePickerSignInProvider> sign_in_provider_;
 };
 
@@ -389,12 +359,9 @@ ProfileManagementStepController::CreateForProfilePickerApp(
 std::unique_ptr<ProfileManagementStepController>
 ProfileManagementStepController::CreateForSignIn(
     ProfilePickerWebContentsHost* host,
-    std::unique_ptr<ProfilePickerSignInProvider> sign_in_provider,
-    SignInStepFinishedCallback signed_in_callback,
-    SigninErrorCallback signin_error_callback) {
-  return std::make_unique<SignInStepController>(
-      host, std::move(sign_in_provider), std::move(signed_in_callback),
-      std::move(signin_error_callback));
+    std::unique_ptr<ProfilePickerSignInProvider> sign_in_provider) {
+  return std::make_unique<SignInStepController>(host,
+                                                std::move(sign_in_provider));
 }
 
 // static

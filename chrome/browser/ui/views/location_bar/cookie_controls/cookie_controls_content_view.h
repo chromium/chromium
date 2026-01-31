@@ -90,10 +90,6 @@ class CookieControlsContentView : public views::View {
 
   base::RepeatingCallbackList<void(bool)> toggle_button_callback_list_;
 
-  // Used for Tracking protections UI.
-  void AddThirdPartyCookiesSummaryForTrackingProtectionsUi();
-  raw_ptr<views::Label> tp_bubble_3pc_summary_ = nullptr;
-
   base::RepeatingClosureList feedback_button_callback_list_;
 };
 

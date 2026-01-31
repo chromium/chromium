@@ -102,6 +102,13 @@ bool ShouldUseInfiniteCullRect(
     return true;
   }
 
+  if (RuntimeEnabledFeatures::CanvasDrawElementEnabled()) {
+    auto* element = DynamicTo<Element>(object.GetNode());
+    if (element && element->IsInCanvasSubtree()) {
+      return true;
+    }
+  }
+
   if (const auto* properties = object.FirstFragment().PaintProperties()) {
     // Cull rects and clips can't be propagated across a filter which moves
     // pixels, since the input of the filter may be outside the cull rect /

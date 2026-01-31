@@ -1,0 +1,34 @@
+caption: Block Gemini app integrations to directly act on specified sites
+desc: |-
+  Allows to set a list of URL patterns that specify on which sites Gemini app integrations cannot directly act on web pages.
+
+  URLs matching neither the allowlist or the blocklist use <ph name="GEMINI_ACT_ON_WEB_SETTINGS_POLICY_NAME">GeminiActOnWebSettings</ph>.
+
+  URLs matching both the allowlist and the blocklist are allowed.
+
+  For detailed information on valid url patterns, please see https://support.google.com/chrome/a?p=url_blocklist_filter_format.
+
+owners:
+- liuwilliam@chromium.org
+- mcnee@chromium.org
+- file://chrome/browser/glic/OWNERS
+example_value:
+- example.com
+- https://ssl.server.com
+- hosting.com/bad_path
+- https://server:8080/path
+- .exact.hostname.com
+future_on:
+- android
+supported_on:
+- chrome.*:146-
+- chrome_os:146-
+features:
+  dynamic_refresh: true
+  per_profile: true
+type: list
+schema:
+  items:
+    type: string
+  type: array
+tags: []

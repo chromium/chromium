@@ -29,10 +29,9 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.shadows.ShadowLooper;
 
-import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.supplier.ObservableSuppliers;
+import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.Features.EnableFeatures;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyObservable;
@@ -50,12 +49,13 @@ public class HubPaneHostMediatorUnitTest {
     private @Mock ViewGroup mSnackbarContainer;
     private @Mock HubColorMixer mColorMixer;
 
-    private ObservableSupplierImpl<Pane> mPaneSupplier;
+    private final SettableMonotonicObservableSupplier<Pane> mPaneSupplier =
+            ObservableSuppliers.createMonotonic();
+
     private PropertyModel mModel;
 
     @Before
     public void setUp() {
-        mPaneSupplier = new ObservableSupplierImpl<>();
         mModel =
                 new PropertyModel.Builder(HubPaneHostProperties.ALL_KEYS)
                         .with(COLOR_MIXER, mColorMixer)
@@ -107,14 +107,10 @@ public class HubPaneHostMediatorUnitTest {
 
         mPaneSupplier.set(mPane);
         assertEquals(mRootView, mModel.get(PANE_ROOT_VIEW));
-
-        mPaneSupplier.set(null);
-        assertNull(mModel.get(PANE_ROOT_VIEW));
     }
 
     @Test
     @SmallTest
-    @EnableFeatures(ChromeFeatureList.HUB_SLIDE_ANIMATION)
     public void testSlideAnimationDirection_NewPaneToTheRight() {
         // ORDER: PaneId.TAB_SWITCHER, PaneId.INCOGNITO_TAB_SWITCHER
         new HubPaneHostMediator(
@@ -133,7 +129,6 @@ public class HubPaneHostMediatorUnitTest {
 
     @Test
     @SmallTest
-    @EnableFeatures(ChromeFeatureList.HUB_SLIDE_ANIMATION)
     public void testSlideAnimationDirection_NewPaneToTheLeft() {
         // ORDER: PaneId.TAB_SWITCHER, PaneId.INCOGNITO_TAB_SWITCHER
         new HubPaneHostMediator(
@@ -152,7 +147,6 @@ public class HubPaneHostMediatorUnitTest {
 
     @Test
     @SmallTest
-    @EnableFeatures(ChromeFeatureList.HUB_SLIDE_ANIMATION)
     public void testSlideAnimationDirection_multiplePaneChanges() {
         // ORDER: PaneId.TAB_SWITCHER, PaneId.INCOGNITO_TAB_SWITCHER
         new HubPaneHostMediator(

@@ -1,0 +1,40 @@
+/* Copyright 2026 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+/* #css_wrapper_metadata_start
+ * #type=style-lit
+ * #import=//resources/cr_elements/cr_shared_style_lit.css.js
+ * #import=//resources/cr_elements/cr_shared_vars.css.js
+ * #scheme=relative
+ * #include=cr-shared-style-lit
+ * #css_wrapper_metadata_end */
+
+h1 {
+  font-size: 22px;
+  font-weight: 600;
+  margin-bottom: 8px;
+  color: var(--google-grey-900-rgb);
+}
+
+p.description {
+  font-size: 14px;
+  color: var(--google-grey-700-rgb);
+  margin-bottom: 24px;
+}
+
+.form-group {
+  margin-bottom: 24px;
+}
+
+cr-textarea {
+  --cr-input-border-radius: 8px;
+  --cr-input-border-bottom: none;
+  /* TODO(b/477970994): Follow up with UX on component customization. */
+}
+
+.buttons-group {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+}

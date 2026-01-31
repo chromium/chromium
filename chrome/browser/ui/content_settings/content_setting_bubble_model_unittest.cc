@@ -53,6 +53,7 @@
 #include "components/strings/grit/components_strings.h"
 #include "components/url_formatter/elide_url.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/common/content_features.h"
 #include "content/public/test/mock_render_process_host.h"
 #include "content/public/test/web_contents_tester.h"
 #include "net/base/schemeful_site.h"
@@ -947,6 +948,7 @@ class ContentSettingBubbleModelIsolatedWebAppTest
 };
 
 TEST_F(ContentSettingBubbleModelIsolatedWebAppTest, IsolatedWebAppUrl) {
+  base::test::ScopedFeatureList scoped_feature_list{features::kIsolatedWebApps};
   const std::string app_name("Test IWA Name");
   std::unique_ptr<web_app::ScopedBundledIsolatedWebApp> iwa =
       web_app::IsolatedWebAppBuilder(
@@ -1705,7 +1707,7 @@ TEST_F(ContentSettingBubbleModelUnusedPermissionRevocationForAllSurfacesTest,
   DownloadRequestLimiter* limiter =
       g_browser_process->download_request_limiter();
   DownloadRequestLimiter::TabDownloadState* tab_download_state =
-      limiter->GetDownloadState(web_contents(), /* create */ true);
+      limiter->GetOrCreateDownloadState(web_contents());
   tab_download_state->set_download_seen();
   tab_download_state->SetDownloadStatusAndNotify(
       url::Origin::Create(url), DownloadRequestLimiter::DOWNLOADS_NOT_ALLOWED);

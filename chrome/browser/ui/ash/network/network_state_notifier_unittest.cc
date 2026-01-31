@@ -194,7 +194,7 @@ class NetworkStateNotifierTest : public BrowserWithTestWindowTest {
     ShillDeviceClient::TestInterface* device_test =
         network_handler_test_helper_->device_test();
 
-    base::Value::Dict sim_lock_status;
+    base::DictValue sim_lock_status;
     sim_lock_status.Set(shill::kSIMLockTypeProperty, lock_type);
     device_test->SetDeviceProperty(
         kCellularDevicePath, shill::kSIMLockStatusProperty,
@@ -239,8 +239,8 @@ class NetworkStateNotifierTest : public BrowserWithTestWindowTest {
         kCellular1ServicePath, shill::kActivationStateProperty,
         base::Value(shill::kActivationStateActivated));
 
-    base::Value::List sim_slot_infos;
-    base::Value::Dict slot_info_item;
+    base::ListValue sim_slot_infos;
+    base::DictValue slot_info_item;
     slot_info_item.Set(shill::kSIMSlotInfoICCID, kCellular1Iccid);
     slot_info_item.Set(shill::kSIMSlotInfoPrimary, true);
     sim_slot_infos.Append(std::move(slot_info_item));

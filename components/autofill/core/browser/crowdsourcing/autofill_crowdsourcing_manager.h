@@ -21,6 +21,7 @@
 #include "components/autofill/core/browser/autofill_type.h"
 #include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/browser/proto/server.pb.h"
+#include "components/autofill/core/common/form_data.h"
 #include "components/autofill/core/common/signatures.h"
 #include "components/version_info/channel.h"
 #include "net/base/backoff_entry.h"
@@ -85,8 +86,7 @@ class AutofillCrowdsourcingManager {
   // Returns true if a query is made.
   // TODO: crbug.com/40100455 - Make the return type `void`.
   virtual bool StartQueryRequest(
-      const std::vector<raw_ptr<const FormStructure, VectorExperimental>>&
-          forms,
+      const std::vector<FormData>& forms,
       std::optional<net::IsolationInfo> isolation_info,
       base::OnceCallback<void(std::optional<QueryResponse>)> callback);
 

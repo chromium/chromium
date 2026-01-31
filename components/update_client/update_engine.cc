@@ -35,14 +35,15 @@
 #include "components/update_client/update_client.h"
 #include "components/update_client/update_client_errors.h"
 #include "components/update_client/utils.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 
 namespace update_client {
 
 namespace {
 
-base::Value::Dict MakeEvent(UpdateClient::PingParams ping_params,
-                            const base::Version& previous_version) {
-  base::Value::Dict event;
+base::DictValue MakeEvent(UpdateClient::PingParams ping_params,
+                          const base::Version& previous_version) {
+  base::DictValue event;
   event.Set("eventtype", ping_params.event_type);
   event.Set("eventresult", ping_params.result);
   if (ping_params.error_code) {
@@ -276,8 +277,9 @@ void UpdateEngine::UpdateCheckResultsAvailable(
   if (error) {
     CHECK(!results);
     for (const auto& id : update_context->components_to_check_for_updates) {
-      CHECK_EQ(1u, update_context->components.count(id));
-      auto& component = update_context->components.at(id);
+      auto it = update_context->components.find(id);
+      CHECK(it != update_context->components.end());
+      auto& component = it->second;
       component->SetUpdateCheckResult(std::nullopt, ErrorCategory::kUpdateCheck,
                                       error, complete);
     }
@@ -287,14 +289,16 @@ void UpdateEngine::UpdateCheckResultsAvailable(
   CHECK(results);
   CHECK_EQ(0, error);
 
-  std::map<std::string, ProtocolParser::App> id_to_result;
+  absl::flat_hash_map<std::string, ProtocolParser::App> id_to_result;
+  id_to_result.reserve(results->apps.size());
   for (const auto& result : results->apps) {
     id_to_result[result.app_id] = result;
   }
 
   for (const auto& id : update_context->components_to_check_for_updates) {
-    CHECK_EQ(1u, update_context->components.count(id));
-    auto& component = update_context->components.at(id);
+    auto components_it = update_context->components.find(id);
+    CHECK(components_it != update_context->components.end());
+    auto& component = components_it->second;
     const auto& it = id_to_result.find(id);
     if (it != id_to_result.end()) {
       const auto& result = it->second;
@@ -364,8 +368,9 @@ void UpdateEngine::UpdateCheckComplete(
 
     // Handle the |kChecking| state and transition the component to the
     // next state, depending on the update check results.
-    CHECK_EQ(1u, update_context->components.count(id));
-    auto& component = update_context->components.at(id);
+    auto components_it = update_context->components.find(id);
+    CHECK(components_it != update_context->components.end());
+    auto& component = components_it->second;
     CHECK_EQ(component->state(), ComponentState::kChecking);
     component->Handle(base::DoNothing());
   }
@@ -394,8 +399,9 @@ void UpdateEngine::HandleComponent(
   }
 
   const auto& id = queue.front();
-  CHECK_EQ(1u, update_context->components.count(id));
-  const auto& component = update_context->components.at(id);
+  auto components_it = update_context->components.find(id);
+  CHECK(components_it != update_context->components.end());
+  auto& component = components_it->second;
   CHECK(component);
 
   auto& next_update_delay = update_context->next_update_delay;
@@ -421,8 +427,9 @@ void UpdateEngine::HandleComponentComplete(
   CHECK(!queue.empty());
 
   const auto& id = queue.front();
-  CHECK_EQ(1u, update_context->components.count(id));
-  const auto& component = update_context->components.at(id);
+  auto components_it = update_context->components.find(id);
+  CHECK(components_it != update_context->components.end());
+  auto& component = components_it->second;
   CHECK(component);
 
   base::OnceClosure callback =
@@ -491,7 +498,7 @@ void UpdateEngine::SendPing(const CrxComponent& crx_component,
                             UpdateClient::PingParams ping_params,
                             Callback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  std::vector<base::Value::Dict> events;
+  std::vector<base::DictValue> events;
   events.push_back(MakeEvent(ping_params, crx_component.version));
   ping_manager_->SendPing(
       base::StrCat(

@@ -13,7 +13,6 @@
 #include <variant>
 #include <vector>
 
-#include "base/containers/contains.h"
 #include "base/containers/flat_set.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -130,7 +129,7 @@ std::string DumpPdfAccessibilityTree(const ui::AXTreeUpdate& ax_tree,
 
     // Exclude the status subtree from `ax_tree_dump` if they exist in the tree.
     // Tests don't expect them to be included in the dump.
-    if (base::Contains(status_subtree_ids, node.id)) {
+    if (status_subtree_ids.contains(node.id)) {
       continue;
     }
 
@@ -680,7 +679,7 @@ class PDFExtensionAccessibilityTextExtractionTest
   void FindAXNodes(ui::AXNode* current,
                    const base::flat_set<ax::mojom::Role>& roles,
                    std::vector<ui::AXNode*>* results) {
-    if (base::Contains(roles, current->GetRole())) {
+    if (roles.contains(current->GetRole())) {
       results->push_back(current);
     }
     for (ui::AXNode* child : current->children()) {
@@ -976,12 +975,9 @@ class PDFExtensionAccessibilityTreeDumpTest
       case ui::AXApiType::kFuchsia:
         return;
     }
-    EXPECT_TRUE(base::Contains(output_lines[1], banner_role))
-        << output_lines[1];
-    EXPECT_TRUE(base::Contains(output_lines[2], status_role))
-        << output_lines[2];
-    EXPECT_TRUE(base::Contains(output_lines[3], static_text_role))
-        << output_lines[3];
+    EXPECT_TRUE(output_lines[1].contains(banner_role)) << output_lines[1];
+    EXPECT_TRUE(output_lines[2].contains(status_role)) << output_lines[2];
+    EXPECT_TRUE(output_lines[3].contains(static_text_role)) << output_lines[3];
 
     output_lines.erase(output_lines.begin() + 1, output_lines.begin() + 4);
   }

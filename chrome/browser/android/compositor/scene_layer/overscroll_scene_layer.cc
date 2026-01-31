@@ -30,10 +30,10 @@ std::unique_ptr<ui::EdgeEffect> OverscrollSceneLayer::CreateEdgeEffect() {
 }
 
 void OverscrollSceneLayer::Prepare(JNIEnv* env,
-                                   jfloat start_x,
-                                   jfloat start_y,
-                                   jint width,
-                                   jint height) {
+                                   float start_x,
+                                   float start_y,
+                                   int32_t width,
+                                   int32_t height) {
   start_pos_ = gfx::Vector2dF(start_x, start_y);
   const gfx::SizeF viewport_size(width, height);
 
@@ -49,10 +49,10 @@ void OverscrollSceneLayer::Prepare(JNIEnv* env,
                                content_scroll_offset);
 }
 
-jboolean OverscrollSceneLayer::Update(JNIEnv* env,
-                                      const JavaRef<jobject>& jresource_manager,
-                                      jfloat accumulated_overscroll_x,
-                                      jfloat delta_x) {
+bool OverscrollSceneLayer::Update(JNIEnv* env,
+                                  const JavaRef<jobject>& jresource_manager,
+                                  float accumulated_overscroll_x,
+                                  float delta_x) {
   if (!resource_manager_) {
     if (jresource_manager.is_null()) {
       return false;
@@ -103,9 +103,9 @@ void OverscrollSceneLayer::OnReset(JNIEnv* env) {
   glow_effect_->Reset();
 }
 
-static jlong JNI_OverscrollSceneLayer_Init(JNIEnv* env,
-                                           const JavaRef<jobject>& jobj,
-                                           const JavaRef<jobject>& jwindow) {
+static int64_t JNI_OverscrollSceneLayer_Init(JNIEnv* env,
+                                             const JavaRef<jobject>& jobj,
+                                             const JavaRef<jobject>& jwindow) {
   // This will automatically bind to the Java object and pass ownership there.
   OverscrollSceneLayer* tree_provider =
       new OverscrollSceneLayer(env, jobj, jwindow);

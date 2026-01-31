@@ -41,14 +41,14 @@ class MessageBundleTest : public testing::Test {
 
   void CreateContentTree(const std::string& name,
                          const std::string& content,
-                         base::Value::Dict& dict) {
-    base::Value::Dict content_tree;
+                         base::DictValue& dict) {
+    base::DictValue content_tree;
     content_tree.Set(MessageBundle::kContentKey, content);
     dict.Set(name, std::move(content_tree));
   }
 
-  void CreatePlaceholdersTree(base::Value::Dict& dict) {
-    base::Value::Dict placeholders_tree;
+  void CreatePlaceholdersTree(base::DictValue& dict) {
+    base::DictValue placeholders_tree;
     CreateContentTree("a", "A", placeholders_tree);
     CreateContentTree("b", "B", placeholders_tree);
     CreateContentTree("c", "C", placeholders_tree);
@@ -58,8 +58,8 @@ class MessageBundleTest : public testing::Test {
   void CreateMessageTree(const std::string& name,
                          const std::string& message,
                          bool create_placeholder_subtree,
-                         base::Value::Dict& dict) {
-    base::Value::Dict message_tree;
+                         base::DictValue& dict) {
+    base::DictValue message_tree;
     if (create_placeholder_subtree) {
       CreatePlaceholdersTree(message_tree);
     }
@@ -67,16 +67,16 @@ class MessageBundleTest : public testing::Test {
     dict.Set(name, std::move(message_tree));
   }
 
-  base::Value::Dict CreateGoodDictionary() {
-    base::Value::Dict dict;
+  base::DictValue CreateGoodDictionary() {
+    base::DictValue dict;
     CreateMessageTree("n1", "message1 $a$ $b$", true, dict);
     CreateMessageTree("n2", "message2 $c$", true, dict);
     CreateMessageTree("n3", "message3", false, dict);
     return dict;
   }
 
-  base::Value::Dict CreateBadDictionary(enum BadDictionary what_is_bad) {
-    base::Value::Dict dict = CreateGoodDictionary();
+  base::DictValue CreateBadDictionary(enum BadDictionary what_is_bad) {
+    base::DictValue dict = CreateGoodDictionary();
     // Now remove/break things.
     switch (what_is_bad) {
       case INVALID_NAME:
@@ -86,7 +86,7 @@ class MessageBundleTest : public testing::Test {
         dict.Set("n4", "whatever");
         break;
       case EMPTY_NAME_TREE:
-        dict.Set("n4", base::Value::Dict());
+        dict.Set("n4", base::DictValue());
         break;
       case MISSING_MESSAGE:
         RemoveDictionaryPath(dict, /*path=*/"n1", /*key*/ "message");
@@ -95,7 +95,7 @@ class MessageBundleTest : public testing::Test {
         dict.SetByDottedPath("n1.placeholders", "whatever");
         break;
       case EMPTY_PLACEHOLDER_TREE:
-        dict.SetByDottedPath("n1.placeholders", base::Value::Dict());
+        dict.SetByDottedPath("n1.placeholders", base::DictValue());
         break;
       case CONTENT_MISSING:
         RemoveDictionaryPath(dict, /*path=*/"n1.placeholders.a",
@@ -103,7 +103,7 @@ class MessageBundleTest : public testing::Test {
         break;
       case MESSAGE_PLACEHOLDER_DOESNT_MATCH:
         RemoveDictionaryPath(dict, /*path=*/"n1.placeholders", /*key=*/"a");
-        base::Value::Dict* value = dict.FindDictByDottedPath("n1.placeholders");
+        base::DictValue* value = dict.FindDictByDottedPath("n1.placeholders");
         EXPECT_TRUE(value);
         CreateContentTree("x", "X", *value);
         break;
@@ -112,10 +112,10 @@ class MessageBundleTest : public testing::Test {
     return dict;
   }
 
-  void RemoveDictionaryPath(base::Value::Dict& dict,
+  void RemoveDictionaryPath(base::DictValue& dict,
                             std::string_view path,
                             std::string_view key) {
-    base::Value::Dict* value = dict.FindDictByDottedPath(path);
+    base::DictValue* value = dict.FindDictByDottedPath(path);
     ASSERT_TRUE(value);
     value->Remove(key);
   }
@@ -189,7 +189,7 @@ TEST_F(MessageBundleTest, InitAppDictConsultedFirst) {
   catalogs_.push_back(CreateGoodDictionary());
   catalogs_.push_back(CreateGoodDictionary());
 
-  base::Value::Dict& app_dict = catalogs_[0];
+  base::DictValue& app_dict = catalogs_[0];
   // Flip placeholders in message of n1 tree.
   app_dict.SetByDottedPath("n1.message", "message1 $b$ $a$");
   // Remove one message from app dict.
@@ -258,7 +258,7 @@ TEST_F(MessageBundleTest, InitBadAppDict) {
 TEST_F(MessageBundleTest, ReservedMessagesOverrideDeveloperMessages) {
   catalogs_.push_back(CreateGoodDictionary());
 
-  base::Value::Dict& dict = catalogs_[0];
+  base::DictValue& dict = catalogs_[0];
   CreateMessageTree(MessageBundle::kUILocaleKey, "x", false, dict);
 
   std::string error = CreateMessageBundle();

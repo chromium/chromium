@@ -13,7 +13,6 @@
 
 #include "base/check_op.h"
 #include "base/command_line.h"
-#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/json/json_writer.h"
 #include "base/memory/ptr_util.h"
@@ -1095,7 +1094,7 @@ base::WeakPtr<Layer> Layer::AsWeakPtr() {
 }
 
 bool Layer::ContainsMirrorForTest(Layer* mirror) const {
-  return base::Contains(mirrors_, mirror, &LayerMirror::dest);
+  return std::ranges::contains(mirrors_, mirror, &LayerMirror::dest);
 }
 
 void Layer::SetTransferableResource(const viz::TransferableResource& resource,

@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "base/strings/utf_string_conversions.h"
 
 #include <limits.h>
@@ -17,6 +12,7 @@
 #include <string_view>
 #include <type_traits>
 
+#include "base/compiler_specific.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_ostream_operators.h"
 #include "base/strings/utf_string_conversion_utils.h"
@@ -80,7 +76,8 @@ template <typename Char>
 void UnicodeAppendUnsafe(Char* out,
                          size_t* size,
                          base_icu::UChar32 code_point) {
-  CBU8_APPEND_UNSAFE(reinterpret_cast<uint8_t*>(out), *size, code_point);
+  UNSAFE_TODO(
+      CBU8_APPEND_UNSAFE(reinterpret_cast<uint8_t*>(out), *size, code_point));
 }
 
 template <typename Char>
@@ -88,7 +85,7 @@ template <typename Char>
 void UnicodeAppendUnsafe(Char* out,
                          size_t* size,
                          base_icu::UChar32 code_point) {
-  CBU16_APPEND_UNSAFE(out, *size, code_point);
+  UNSAFE_TODO(CBU16_APPEND_UNSAFE(out, *size, code_point));
 }
 
 template <typename Char>
@@ -96,7 +93,7 @@ template <typename Char>
 void UnicodeAppendUnsafe(Char* out,
                          size_t* size,
                          base_icu::UChar32 code_point) {
-  out[(*size)++] = static_cast<Char>(code_point);
+  UNSAFE_TODO(out[(*size)++]) = static_cast<Char>(code_point);
 }
 
 // DoUTFConversion ------------------------------------------------------------
@@ -112,7 +109,8 @@ bool DoUTFConversion(const char* src,
 
   for (size_t i = 0; i < src_len;) {
     base_icu::UChar32 code_point;
-    CBU8_NEXT(reinterpret_cast<const uint8_t*>(src), i, src_len, code_point);
+    UNSAFE_TODO(CBU8_NEXT(reinterpret_cast<const uint8_t*>(src), i, src_len,
+                          code_point));
 
     if (!IsValidCodepoint(code_point)) {
       success = false;
@@ -147,15 +145,16 @@ bool DoUTFConversion(const char16_t* src,
   while (i + 1 < src_len) {
     base_icu::UChar32 code_point;
 
-    if (CBU16_IS_LEAD(src[i]) && CBU16_IS_TRAIL(src[i + 1])) {
-      code_point = CBU16_GET_SUPPLEMENTARY(src[i], src[i + 1]);
+    if (UNSAFE_TODO(CBU16_IS_LEAD(src[i])) &&
+        UNSAFE_TODO(CBU16_IS_TRAIL(src[i + 1]))) {
+      code_point = UNSAFE_TODO(CBU16_GET_SUPPLEMENTARY(src[i], src[i + 1]));
       if (!IsValidCodepoint(code_point)) {
         code_point = kErrorCodePoint;
         success = false;
       }
       i += 2;
     } else {
-      code_point = ConvertSingleChar(src[i]);
+      code_point = ConvertSingleChar(UNSAFE_TODO(src[i]));
       ++i;
     }
 
@@ -163,7 +162,7 @@ bool DoUTFConversion(const char16_t* src,
   }
 
   if (i < src_len) {
-    UnicodeAppendUnsafe(dest, dest_len, ConvertSingleChar(src[i]));
+    UnicodeAppendUnsafe(dest, dest_len, ConvertSingleChar(UNSAFE_TODO(src[i])));
   }
 
   return success;
@@ -179,7 +178,7 @@ bool DoUTFConversion(const wchar_t* src,
   bool success = true;
 
   for (size_t i = 0; i < src_len; ++i) {
-    auto code_point = static_cast<base_icu::UChar32>(src[i]);
+    auto code_point = static_cast<base_icu::UChar32>(UNSAFE_TODO(src[i]));
 
     if (!IsValidCodepoint(code_point)) {
       success = false;
@@ -257,7 +256,7 @@ std::string UTF16ToUTF8(std::u16string_view utf16) {
 // When wide == UTF-16 the conversions are a NOP.
 
 bool WideToUTF16(const wchar_t* src, size_t src_len, std::u16string* output) {
-  output->assign(src, src + src_len);
+  output->assign(src, UNSAFE_TODO(src + src_len));
   return true;
 }
 
@@ -266,7 +265,7 @@ std::u16string WideToUTF16(std::wstring_view wide) {
 }
 
 bool UTF16ToWide(const char16_t* src, size_t src_len, std::wstring* output) {
-  output->assign(src, src + src_len);
+  output->assign(src, UNSAFE_TODO(src + src_len));
   return true;
 }
 

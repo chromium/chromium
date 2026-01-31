@@ -126,12 +126,12 @@ PowerHandler::TestAPI::TestAPI(PowerHandler* handler) : handler_(handler) {}
 PowerHandler::TestAPI::~TestAPI() = default;
 
 void PowerHandler::TestAPI::RequestPowerManagementSettings() {
-  handler_->HandleRequestPowerManagementSettings(base::Value::List());
+  handler_->HandleRequestPowerManagementSettings(base::ListValue());
 }
 
 void PowerHandler::TestAPI::SetIdleBehavior(IdleBehavior behavior,
                                             bool when_on_ac) {
-  base::Value::List args;
+  base::ListValue args;
   args.Append(static_cast<int>(behavior));
   args.Append(when_on_ac);
   handler_->HandleSetIdleBehavior(args);
@@ -139,13 +139,13 @@ void PowerHandler::TestAPI::SetIdleBehavior(IdleBehavior behavior,
 
 void PowerHandler::TestAPI::SetLidClosedBehavior(
     PowerPolicyController::Action behavior) {
-  base::Value::List args;
+  base::ListValue args;
   args.Append(behavior);
   handler_->HandleSetLidClosedBehavior(args);
 }
 
 void PowerHandler::TestAPI::SetAdaptiveCharging(bool enabled) {
-  base::Value::List args;
+  base::ListValue args;
   args.Append(enabled);
   handler_->HandleSetAdaptiveCharging(args);
 }
@@ -153,7 +153,7 @@ void PowerHandler::TestAPI::SetAdaptiveCharging(bool enabled) {
 void PowerHandler::TestAPI::SetOptimizedCharging(
     PowerPolicyController::OptimizedChargingStrategy strategy,
     bool enabled) {
-  base::Value::List args;
+  base::ListValue args;
   args.Append(strategy);
   args.Append(enabled);
   handler_->HandleSetOptimizedCharging(args);
@@ -246,12 +246,12 @@ void PowerHandler::LidEventReceived(PowerManagerClient::LidState state,
   SendPowerManagementSettings(false /* force */);
 }
 
-void PowerHandler::HandleUpdatePowerStatus(const base::Value::List& args) {
+void PowerHandler::HandleUpdatePowerStatus(const base::ListValue& args) {
   AllowJavascript();
   chromeos::PowerManagerClient::Get()->RequestStatusUpdate();
 }
 
-void PowerHandler::HandleSetPowerSource(const base::Value::List& args) {
+void PowerHandler::HandleSetPowerSource(const base::ListValue& args) {
   AllowJavascript();
 
   const std::string& id = args[0].GetString();
@@ -259,12 +259,12 @@ void PowerHandler::HandleSetPowerSource(const base::Value::List& args) {
 }
 
 void PowerHandler::HandleRequestPowerManagementSettings(
-    const base::Value::List& args) {
+    const base::ListValue& args) {
   AllowJavascript();
   SendPowerManagementSettings(true /* force */);
 }
 
-void PowerHandler::HandleSetIdleBehavior(const base::Value::List& args) {
+void PowerHandler::HandleSetIdleBehavior(const base::ListValue& args) {
   AllowJavascript();
 
   const auto& list = args;
@@ -314,7 +314,7 @@ void PowerHandler::HandleSetIdleBehavior(const base::Value::List& args) {
   }
 }
 
-void PowerHandler::HandleSetLidClosedBehavior(const base::Value::List& args) {
+void PowerHandler::HandleSetLidClosedBehavior(const base::ListValue& args) {
   AllowJavascript();
 
   const auto& list = args;
@@ -333,7 +333,7 @@ void PowerHandler::HandleSetLidClosedBehavior(const base::Value::List& args) {
   }
 }
 
-void PowerHandler::HandleSetAdaptiveCharging(const base::Value::List& args) {
+void PowerHandler::HandleSetAdaptiveCharging(const base::ListValue& args) {
   AllowJavascript();
 
   CHECK_GE(args.size(), 1u);
@@ -342,7 +342,7 @@ void PowerHandler::HandleSetAdaptiveCharging(const base::Value::List& args) {
   prefs_->SetBoolean(ash::prefs::kPowerAdaptiveChargingEnabled, enabled);
 }
 
-void PowerHandler::HandleSetOptimizedCharging(const base::Value::List& args) {
+void PowerHandler::HandleSetOptimizedCharging(const base::ListValue& args) {
   using OptimizedChargingStrategy =
       PowerPolicyController::OptimizedChargingStrategy;
   AllowJavascript();
@@ -405,7 +405,7 @@ void PowerHandler::SendBatteryStatus() {
   }
 
   auto battery_dict =
-      base::Value::Dict()
+      base::DictValue()
           .Set(
               "present",
               proto->battery_state() !=
@@ -422,11 +422,11 @@ void PowerHandler::SendPowerSources() {
   const std::optional<power_manager::PowerSupplyProperties>& proto =
       PowerManagerClient::Get()->GetLastStatus();
   DCHECK(proto);
-  base::Value::List sources_list;
+  base::ListValue sources_list;
   for (int i = 0; i < proto->available_external_power_source_size(); i++) {
     const auto& source = proto->available_external_power_source(i);
     sources_list.Append(
-        base::Value::Dict()
+        base::DictValue()
             .Set("id", source.id())
             .Set("is_dedicated_charger", source.active_by_default())
             .Set("description",
@@ -480,7 +480,7 @@ void PowerHandler::SendPowerManagementSettings(bool force) {
   }
 
   auto dict =
-      base::Value::Dict()
+      base::DictValue()
           .Set(kCurrentAcIdleBehaviorKey,
                static_cast<int>(ac_idle_info.current_behavior))
           .Set(kCurrentBatteryIdleBehaviorKey,
@@ -496,7 +496,7 @@ void PowerHandler::SendPowerManagementSettings(bool force) {
           .Set(kOptimizedChargingStrategyKey, optimized_charging_strategy)
           .Set(kBatterySaverFeatureEnabledKey, battery_saver_feature_enabled);
 
-  base::Value::List* list = dict.EnsureList(kPossibleAcIdleBehaviorsKey);
+  base::ListValue* list = dict.EnsureList(kPossibleAcIdleBehaviorsKey);
   for (auto idle_behavior : ac_idle_info.possible_behaviors) {
     list->Append(static_cast<int>(idle_behavior));
   }

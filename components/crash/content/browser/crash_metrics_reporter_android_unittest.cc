@@ -58,8 +58,8 @@ class CrashMetricsReporterTest : public testing::Test {
   blink::OomInterventionMetrics InterventionMetrics(bool allocation_failed) {
     blink::OomInterventionMetrics metrics;
     metrics.allocation_failed = allocation_failed;
-    metrics.current_available_memory = base::KiB(100);
-    metrics.current_swap_free = base::KiB(0);
+    metrics.current_available_memory = base::KiBU(100);
+    metrics.current_swap_free = base::KiBU(0);
     return metrics;
   }
 

@@ -43,7 +43,7 @@ void CreateAndAddPowerControlDataSource(Profile* profile) {
       network::mojom::CSPDirectiveName::ScriptSrc,
       "script-src chrome://resources 'self';");
 
-  base::Value::Dict localized_strings;
+  base::DictValue localized_strings;
   const std::string& app_locale = g_browser_process->GetApplicationLocale();
   webui::SetLoadTimeDataDefaults(app_locale, &localized_strings);
   source->AddLocalizedStrings(localized_strings);

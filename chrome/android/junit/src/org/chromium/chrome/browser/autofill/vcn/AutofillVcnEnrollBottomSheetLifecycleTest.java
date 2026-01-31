@@ -24,7 +24,7 @@ import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.Callback;
 import org.chromium.base.CallbackUtils;
-import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider.LayoutStateObserver;
@@ -41,8 +41,8 @@ public final class AutofillVcnEnrollBottomSheetLifecycleTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Mock private LayoutStateProvider mLayoutStateProvider;
-    @Mock private ObservableSupplier<TabModelSelector> mTabModelSelectorSupplier;
-    @Mock private ObservableSupplier<TabModel> mCurrentTabModelSupplier;
+    @Mock private MonotonicObservableSupplier<TabModelSelector> mTabModelSelectorSupplier;
+    @Mock private MonotonicObservableSupplier<TabModel> mCurrentTabModelSupplier;
     @Mock private TabModelSelector mTabModelSelector;
     @Mock private TabModel mTabModel;
     @Mock private TabModel mNewTabModel;

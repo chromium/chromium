@@ -161,7 +161,7 @@ IN_PROC_BROWSER_TEST_F(PrefetchPageLoadMetricsObserverPrerenderBrowserTest,
 
   // Load a prerender page and prerendering should not increase the total count.
   GURL prerender_url = embedded_test_server()->GetURL("/index.html");
-  content::FrameTreeNodeId host_id =
+  content::PrerenderHostId host_id =
       prerender_test_helper().AddPrerender(prerender_url);
   content::test::PrerenderHostObserver host_observer(*GetWebContents(),
                                                      host_id);

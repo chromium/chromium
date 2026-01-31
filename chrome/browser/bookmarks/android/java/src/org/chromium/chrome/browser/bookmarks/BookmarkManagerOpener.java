@@ -64,6 +64,10 @@ public interface BookmarkManagerOpener {
     // TODO(crbug.com/400793505): Remove this function.
     void finishActivityOnPhone(Context context);
 
-    /** Returns the last used URL for the bookmarks manager. */
-    String getLastUsedUrl();
+    /**
+     * Returns the last used URL for the bookmarks manager.
+     *
+     * @param profile The URL for the profile associated with the bookmarks.
+     */
+    String getLastUsedUrl(Profile profile);
 }

@@ -55,9 +55,9 @@ class PasswordsPrivateEventRouter : public KeyedService {
       const std::string& file_path,
       const std::string& folder_name);
 
-  // Notifies listeners about a (possible) change to the enabled state for the
+  // Notifies listeners about a (possible) change to the active state for the
   // account-scoped password storage.
-  void OnAccountStorageEnabledStateChanged(bool enabled);
+  void OnAccountStorageActiveStateChanged(bool active);
 
   // Notifies listeners about a (possible) change to the visibility state of the
   // account storage toggle in settings.
@@ -86,8 +86,8 @@ class PasswordsPrivateEventRouter : public KeyedService {
 
   // Cached parameters which are saved so that when new listeners are added, the
   // most up-to-date lists can be sent to them immediately.
-  std::optional<base::Value::List> cached_saved_password_parameters_;
-  std::optional<base::Value::List> cached_password_exception_parameters_;
+  std::optional<base::ListValue> cached_saved_password_parameters_;
+  std::optional<base::ListValue> cached_password_exception_parameters_;
 };
 
 }  // namespace extensions

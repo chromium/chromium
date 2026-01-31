@@ -116,10 +116,10 @@ void OnHybridAssertionInvoked(
   base::android::RunRunnableAndroid(jcallback);
 }
 
-static jlong JNI_WebauthnBrowserBridge_CreateNativeWebauthnBrowserBridge(
+static int64_t JNI_WebauthnBrowserBridge_CreateNativeWebauthnBrowserBridge(
     JNIEnv* env,
     const base::android::JavaRef<jobject>& jbridge) {
-  return reinterpret_cast<jlong>(new WebauthnBrowserBridge(env, jbridge));
+  return reinterpret_cast<int64_t>(new WebauthnBrowserBridge(env, jbridge));
 }
 
 WebauthnBrowserBridge::WebauthnBrowserBridge(
@@ -133,7 +133,7 @@ void WebauthnBrowserBridge::OnCredentialsDetailsListReceived(
     JNIEnv* env,
     const base::android::JavaRef<jobjectArray>& credentials,
     const base::android::JavaRef<jobject>& jframe_host,
-    jint mediation_type,
+    int32_t mediation_type,
     const base::android::JavaRef<jobject>& jcredential_callback,
     const base::android::JavaRef<jobject>& jhybrid_callback,
     const base::android::JavaRef<jobject>& jnon_credential_callback) const {
@@ -199,7 +199,7 @@ void TriggerFullRequest(
 void WebauthnBrowserBridge::OnCredManConditionalRequestPending(
     JNIEnv* env,
     const base::android::JavaRef<jobject>& jframe_host,
-    jboolean jhas_results,
+    bool jhas_results,
     const base::android::JavaRef<jobject>& jfull_request_runnable) {
   auto* client = WebAuthnClientAndroid::GetClient();
   auto* render_frame_host =
@@ -218,7 +218,7 @@ void WebauthnBrowserBridge::OnCredManConditionalRequestPending(
 void WebauthnBrowserBridge::OnCredManUiClosed(
     JNIEnv* env,
     const base::android::JavaRef<jobject>& jframe_host,
-    jboolean jsuccess) {
+    bool jsuccess) {
   auto* client = WebAuthnClientAndroid::GetClient();
   auto* render_frame_host =
       content::RenderFrameHost::FromJavaRenderFrameHost(jframe_host);

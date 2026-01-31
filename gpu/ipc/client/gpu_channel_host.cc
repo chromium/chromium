@@ -8,7 +8,6 @@
 #include <utility>
 
 #include "base/atomic_sequence_num.h"
-#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_macros.h"
@@ -23,6 +22,7 @@
 #include "gpu/ipc/common/gpu_watchdog_timeout.h"
 #include "ipc/ipc_channel.h"
 #include "mojo/public/cpp/bindings/sync_call_restrictions.h"
+#include "third_party/perfetto/include/perfetto/tracing/track_event_args.h"
 #include "url/gurl.h"
 
 using base::AutoLock;
@@ -103,21 +103,26 @@ uint32_t GpuChannelHost::OrderingBarrier(
     EnqueuePendingOrderingBarrier();
   }
 
-  unsigned int trace_event_flags = TRACE_EVENT_FLAG_FLOW_OUT;
+  bool terminating_flow = true;
   if (!pending_ordering_barrier_) {
+    terminating_flow = false;
     pending_ordering_barrier_.emplace();
     pending_ordering_barrier_->deferred_message_id =
         next_deferred_message_id_++;
-  } else {
-    trace_event_flags |= TRACE_EVENT_FLAG_FLOW_IN;
   }
 
   const uint64_t global_flush_id = GlobalFlushTracingId(
       channel_id_, pending_ordering_barrier_->deferred_message_id);
-  TRACE_EVENT_WITH_FLOW0(
-      "gpu,toplevel.flow", "CommandBuffer::OrderingBarrier",
-      TRACE_ID_WITH_SCOPE("CommandBuffer::Flush", global_flush_id),
-      trace_event_flags);
+  TRACE_EVENT("gpu,toplevel.flow", "CommandBuffer::OrderingBarrier",
+              [&](perfetto::EventContext& ctx) {
+                if (terminating_flow) {
+                  perfetto::TerminatingFlow::Global(
+                      global_flush_id, "CommandBuffer::Flush")(ctx);
+                } else {
+                  perfetto::Flow::Global(global_flush_id,
+                                         "CommandBuffer::Flush")(ctx);
+                }
+              });
 
   pending_ordering_barrier_->route_id = route_id;
   pending_ordering_barrier_->put_offset = put_offset;
@@ -250,6 +255,7 @@ void GpuChannelHost::VerifyFlush(uint32_t deferred_message_id) {
 
   // Flush is needed.
   if (ipc_needed) {
+    TRACE_EVENT0("gpu", "GpuChannelHost::VerifyFlush");
     mojo::SyncCallRestrictions::ScopedAllowSyncCall allow_sync;
     GetGpuChannel().Flush();
   }
@@ -262,10 +268,8 @@ void GpuChannelHost::EnqueuePendingOrderingBarrier() {
 
   const uint64_t global_flush_id = GlobalFlushTracingId(
       channel_id_, pending_ordering_barrier_->deferred_message_id);
-  TRACE_EVENT_WITH_FLOW0(
-      "gpu,toplevel.flow", "CommandBuffer::OrderingBarrier",
-      TRACE_ID_WITH_SCOPE("CommandBuffer::Flush", global_flush_id),
-      TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT);
+  TRACE_EVENT("gpu,toplevel.flow", "CommandBuffer::OrderingBarrier",
+              perfetto::Flow::Global(global_flush_id, "CommandBuffer::Flush"));
 
   DCHECK_LT(enqueued_deferred_message_id_,
             pending_ordering_barrier_->deferred_message_id);
@@ -313,10 +317,9 @@ void GpuChannelHost::InternalFlush(uint32_t deferred_message_id) {
             auto& flush = command_buffer_request->params->get_async_flush();
             const uint64_t global_flush_id =
                 GlobalFlushTracingId(channel_id_, flush->flush_id);
-            TRACE_EVENT_WITH_FLOW0(
-                "gpu,toplevel.flow", "GpuChannel::Flush",
-                TRACE_ID_WITH_SCOPE("CommandBuffer::Flush", global_flush_id),
-                TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT);
+            TRACE_EVENT("gpu,toplevel.flow", "GpuChannel::Flush",
+                        perfetto::Flow::Global(global_flush_id,
+                                               "CommandBuffer::Flush"));
           }
         }
       }
@@ -396,7 +399,7 @@ bool GpuChannelHost::ConnectionTracker::AddObserverIfNotAlreadyLost(
   if (!is_connected()) {
     return false;
   }
-  CHECK(!base::Contains(observer_list_, obs));
+  CHECK(!std::ranges::contains(observer_list_, obs));
   observer_list_.push_back(obs);
   return true;
 }

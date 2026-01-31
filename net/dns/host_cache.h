@@ -305,7 +305,7 @@ class NET_EXPORT HostCache {
                       int network_changes,
                       EntryStaleness* out) const;
 
-    base::Value::Dict GetAsValue(bool include_staleness) const;
+    base::DictValue GetAsValue(bool include_staleness) const;
 
     // The resolve results for this entry.
     int error_ = ERR_FAILED;
@@ -433,13 +433,13 @@ class NET_EXPORT HostCache {
   // Fills the provided base::Value with the contents of the cache for
   // serialization. `entry_list` must be non-null list, and will be cleared
   // before adding the cache contents.
-  void GetList(base::Value::List& entry_list,
+  void GetList(base::ListValue& entry_list,
                bool include_staleness,
                SerializationType serialization_type) const;
   // Takes a base::Value list representing cache entries and stores them in the
   // cache, skipping any that already have entries. Returns true on success,
   // false on failure.
-  bool RestoreFromListValue(const base::Value::List& old_cache);
+  bool RestoreFromListValue(const base::ListValue& old_cache);
   // Returns the number of entries that were restored in the last call to
   // RestoreFromListValue().
   size_t last_restore_size() const { return restore_size_; }

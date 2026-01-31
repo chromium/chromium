@@ -71,9 +71,16 @@ public interface InterceptNavigationDelegateClient {
     boolean isInDesktopWindowingMode();
 
     /**
-     * Starts the repareting process for this Tab. Reparenting is an async task that "moves" an
+     * Starts the reparenting process for this Tab. Reparenting is an async task that "moves" an
      * existing tab into a separate Task. Currently, only reparenting towards Chrome browser is
      * supported.
      */
     void startReparentingTask();
+
+    /**
+     * Starts the reparenting process for this Tab to a new window. Reparenting is an async task
+     * that "moves" an existing tab into a separate Task. Currently, only reparenting towards Chrome
+     * browser is supported.
+     */
+    void startReparentingTaskToNewWindow();
 }

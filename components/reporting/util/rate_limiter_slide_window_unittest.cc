@@ -55,8 +55,8 @@ TEST_F(RateLimiterSlideWindowTest, RandomizedEventsStream) {
     if (i >= kBucketCount) {
       ASSERT_FALSE(rate_limiter_.Acquire(1u));
     }
-    task_environment_.FastForwardBy(kBucket +
-                                    base::Milliseconds(base::RandInt(0, 100)));
+    task_environment_.FastForwardBy(
+        kBucket + base::Milliseconds(base::RandIntInclusive(0, 100)));
   }
 }
 

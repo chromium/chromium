@@ -59,7 +59,7 @@ SettingsWithTtsPreviewHandler::SettingsWithTtsPreviewHandler() = default;
 SettingsWithTtsPreviewHandler::~SettingsWithTtsPreviewHandler() = default;
 
 void SettingsWithTtsPreviewHandler::HandleGetAllTtsVoiceData(
-    const base::Value::List& args) {
+    const base::ListValue& args) {
   OnVoicesChanged();
 }
 
@@ -69,7 +69,7 @@ void SettingsWithTtsPreviewHandler::FireTtsPreviewEvent() {
 }
 
 void SettingsWithTtsPreviewHandler::HandlePreviewTtsVoice(
-    const base::Value::List& args) {
+    const base::ListValue& args) {
   DCHECK_EQ(2U, args.size());
   const std::string& text = args[0].GetString();
   const std::string& voice_id = args[1].GetString();
@@ -125,7 +125,7 @@ void SettingsWithTtsPreviewHandler::OnJavascriptDisallowed() {
 }
 
 void SettingsWithTtsPreviewHandler::RefreshTtsVoices(
-    const base::Value::List& args) {
+    const base::ListValue& args) {
   content::TtsController::GetInstance()->RefreshVoices();
 }
 

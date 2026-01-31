@@ -32,8 +32,9 @@ constexpr VideoCodecProfile kAV1Profile = AV1PROFILE_PROFILE_MAIN;
 class MockD3D12VideoEncodeAV1Delegate : public D3D12VideoEncodeAV1Delegate {
  public:
   explicit MockD3D12VideoEncodeAV1Delegate(
-      Microsoft::WRL::ComPtr<ID3D12VideoDevice3> video_device)
-      : D3D12VideoEncodeAV1Delegate(std::move(video_device)) {}
+      Microsoft::WRL::ComPtr<ID3D12VideoDevice3> video_device,
+      const gpu::GpuDriverBugWorkarounds& gpu_workarounds)
+      : D3D12VideoEncodeAV1Delegate(std::move(video_device), gpu_workarounds) {}
 
   MOCK_METHOD(EncoderStatus::Or<size_t>,
               GetEncodedBitstreamWrittenBytesCount,
@@ -111,8 +112,9 @@ class D3D12VideoEncodeAV1DelegateTest
           return S_OK;
         });
 
-    encoder_delegate_ =
-        std::make_unique<MockD3D12VideoEncodeAV1Delegate>(video_device3_);
+    const gpu::GpuDriverBugWorkarounds gpu_workarounds{};
+    encoder_delegate_ = std::make_unique<MockD3D12VideoEncodeAV1Delegate>(
+        video_device3_, gpu_workarounds);
     encoder_delegate_->SetFactoriesForTesting(
         base::BindRepeating(&CreateVideoEncoderWrapper),
         base::BindRepeating(&CreateVideoProcessorWrapper));
@@ -249,8 +251,9 @@ TEST_F(D3D12VideoEncodeAV1DelegateTest, EncodeFrame) {
     constexpr size_t kBufferSize = 4096;
     constexpr size_t kStreamSize = 3072;
     auto shared_memory = base::UnsafeSharedMemoryRegion::Create(kBufferSize);
-    BitstreamBuffer bitstream_buffer(base::RandInt(0, 7 /*MaxDPBSize - 1*/),
-                                     shared_memory.Duplicate(), kBufferSize);
+    BitstreamBuffer bitstream_buffer(
+        base::RandIntInclusive(0, 7 /*MaxDPBSize - 1*/),
+        shared_memory.Duplicate(), kBufferSize);
     EXPECT_CALL(*GetVideoEncoderWrapper(), Encode)
         .WillOnce(Return(EncoderStatus::Codes::kOk));
     EXPECT_CALL(*GetVideoEncoderWrapper(), GetEncoderOutputMetadata)
@@ -291,8 +294,9 @@ TEST_F(D3D12VideoEncodeAV1DelegateTest, ExternalRateControl) {
     constexpr size_t kBufferSize = 4096;
     constexpr size_t kStreamSize = 3072;
     auto shared_memory = base::UnsafeSharedMemoryRegion::Create(kBufferSize);
-    BitstreamBuffer bitstream_buffer(base::RandInt(0, 7 /*MaxDPBSize - 1*/),
-                                     shared_memory.Duplicate(), kBufferSize);
+    BitstreamBuffer bitstream_buffer(
+        base::RandIntInclusive(0, 7 /*MaxDPBSize - 1*/),
+        shared_memory.Duplicate(), kBufferSize);
     EXPECT_CALL(*GetVideoEncoderWrapper(), Encode)
         .WillOnce(Return(EncoderStatus::Codes::kOk));
     EXPECT_CALL(*GetVideoEncoderWrapper(), GetEncoderOutputMetadata)

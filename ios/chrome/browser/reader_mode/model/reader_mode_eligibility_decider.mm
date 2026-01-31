@@ -67,7 +67,7 @@ ReaderModeEligibilityDecider::~ReaderModeEligibilityDecider() = default;
 void ReaderModeEligibilityDecider::HandleReaderModeHeuristicResult(
     ReaderModeHeuristicResult result) {
   if (result == ReaderModeHeuristicResult::kReaderModeEligible &&
-      optimization_guide_decider_ &&
+      optimization_guide_decider_ && eligibility_heuristic_url_.has_value() &&
       IsReaderModeOptimizationGuideEligibilityAvailable()) {
     // Do additional checks.
     optimization_guide_decider_->CanApplyOptimization(
@@ -89,7 +89,7 @@ void ReaderModeEligibilityDecider::StartDecision(const GURL& url) {
   ResetDecision(url);
 
   trigger_reader_mode_timer_.Start(
-      FROM_HERE, ReaderModeHeuristicPageLoadDelay(),
+      FROM_HERE, kReaderModeHeuristicPageLoadDelay,
       base::BindOnce(&ReaderModeEligibilityDecider::TriggerReaderModeHeuristic,
                      weak_ptr_factory_.GetWeakPtr(), url));
 }

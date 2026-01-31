@@ -12,6 +12,7 @@
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ui/autofill/autofill_ai/autofill_ai_import_data_controller.h"
+#include "chrome/browser/ui/autofill/autofill_ai/entity_attribute_update_details.h"
 #include "chrome/browser/ui/views/accessibility/theme_tracking_non_accessible_image_view.h"
 #include "chrome/browser/ui/views/autofill/autofill_bubble_utils.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
@@ -49,25 +50,25 @@ namespace autofill {
 
 namespace {
 
-AutofillClient::AutofillAiBubbleClosedReason
-GetAutofillAiBubbleClosedReasonFromWidget(const views::Widget* widget) {
+AutofillClient::AutofillAiBubbleResult GetAutofillAiBubbleResultFromWidget(
+    const views::Widget* widget) {
   DCHECK(widget);
   if (!widget->IsClosed()) {
-    return AutofillClient::AutofillAiBubbleClosedReason::kUnknown;
+    return AutofillClient::AutofillAiBubbleResult::kUnknown;
   }
 
   switch (widget->closed_reason()) {
     case views::Widget::ClosedReason::kUnspecified:
-      return AutofillClient::AutofillAiBubbleClosedReason::kNotInteracted;
+      return AutofillClient::AutofillAiBubbleResult::kNotInteracted;
     case views::Widget::ClosedReason::kEscKeyPressed:
     case views::Widget::ClosedReason::kCloseButtonClicked:
-      return AutofillClient::AutofillAiBubbleClosedReason::kClosed;
+      return AutofillClient::AutofillAiBubbleResult::kClosed;
     case views::Widget::ClosedReason::kLostFocus:
-      return AutofillClient::AutofillAiBubbleClosedReason::kLostFocus;
+      return AutofillClient::AutofillAiBubbleResult::kLostFocus;
     case views::Widget::ClosedReason::kAcceptButtonClicked:
-      return AutofillClient::AutofillAiBubbleClosedReason::kAccepted;
+      return AutofillClient::AutofillAiBubbleResult::kAccepted;
     case views::Widget::ClosedReason::kCancelButtonClicked:
-      return AutofillClient::AutofillAiBubbleClosedReason::kCancelled;
+      return AutofillClient::AutofillAiBubbleResult::kCancelled;
   }
 }
 
@@ -111,11 +112,9 @@ AutofillAiImportDataBubbleView::AutofillAiImportDataBubbleView(
           .SetAccessibleRole(ax::mojom::Role::kDescriptionList)
           .Build());
 
-  const std::vector<
-      AutofillAiImportDataController::EntityAttributeUpdateDetails>
-      attributes_details = controller_->GetUpdatedAttributesDetails();
-  for (const AutofillAiImportDataController::EntityAttributeUpdateDetails&
-           detail : attributes_details) {
+  const std::vector<EntityAttributeUpdateDetails> attributes_details =
+      controller_->GetUpdatedAttributesDetails();
+  for (const EntityAttributeUpdateDetails& detail : attributes_details) {
     attributes_wrapper->AddChildView(BuildEntityAttributeRow(detail));
   }
 
@@ -123,12 +122,8 @@ AutofillAiImportDataBubbleView::AutofillAiImportDataBubbleView(
       ui::mojom::DialogButton::kCancel,
       l10n_util::GetStringUTF16(
           IDS_AUTOFILL_PREDICTION_IMPROVEMENTS_SAVE_DIALOG_NO_THANKS_BUTTON));
-  DialogDelegate::SetButtonLabel(
-      ui::mojom::DialogButton::kOk,
-      l10n_util::GetStringUTF16(
-          controller_->IsSavePrompt()
-              ? IDS_AUTOFILL_PREDICTION_IMPROVEMENTS_SAVE_DIALOG_SAVE_BUTTON
-              : IDS_AUTOFILL_PREDICTION_IMPROVEMENTS_UPDATE_DIALOG_UPDATE_BUTTON));
+  DialogDelegate::SetButtonLabel(ui::mojom::DialogButton::kOk,
+                                 controller_->GetDialogPrimaryButtonText());
   SetAcceptCallback(
       base::BindOnce(&AutofillAiImportDataBubbleView::OnDialogAccepted,
                      base::Unretained(this)));
@@ -139,29 +134,26 @@ AutofillAiImportDataBubbleView::~AutofillAiImportDataBubbleView() = default;
 
 std::unique_ptr<views::View>
 AutofillAiImportDataBubbleView::BuildEntityAttributeRow(
-    const AutofillAiImportDataController::EntityAttributeUpdateDetails&
-        detail) {
+    const EntityAttributeUpdateDetails& detail) {
   const bool existing_entity_added_or_updated_attribute =
       !controller_->IsSavePrompt() &&
-      detail.update_type !=
-          AutofillAiImportDataController::EntityAttributeUpdateType::
-              kNewEntityAttributeUnchanged;
+      detail.update_type() !=
+          EntityAttributeUpdateType::kNewEntityAttributeUnchanged;
   const bool should_value_have_medium_weight =
       controller_->IsSavePrompt() || existing_entity_added_or_updated_attribute;
 
   std::optional<std::u16string> accessibility_value;
   if (existing_entity_added_or_updated_attribute) {
     accessibility_value = l10n_util::GetStringFUTF16(
-        detail.update_type ==
-                AutofillAiImportDataController::EntityAttributeUpdateType::
-                    kNewEntityAttributeAdded
+        detail.update_type() ==
+                EntityAttributeUpdateType::kNewEntityAttributeAdded
             ? IDS_AUTOFILL_AI_UPDATE_ENTITY_DIALOG_NEW_ATTRIBUTE_ACCESSIBLE_NAME
             : IDS_AUTOFILL_AI_UPDATE_ENTITY_DIALOG_UPDATED_ATTRIBUTE_ACCESSIBLE_NAME,
-        detail.attribute_value);
+        detail.attribute_value());
   }
 
   return CreateAutofillAiBubbleAttributeRow(
-      detail.attribute_name, detail.attribute_value, accessibility_value,
+      detail.attribute_name(), detail.attribute_value(), accessibility_value,
       existing_entity_added_or_updated_attribute,
       should_value_have_medium_weight);
 }
@@ -214,7 +206,7 @@ void AutofillAiImportDataBubbleView::Hide() {
   CloseBubble();
   if (controller_) {
     controller_->OnBubbleClosed(
-        GetAutofillAiBubbleClosedReasonFromWidget(GetWidget()));
+        GetAutofillAiBubbleResultFromWidget(GetWidget()));
   }
   controller_ = nullptr;
 }
@@ -241,7 +233,7 @@ void AutofillAiImportDataBubbleView::WindowClosing() {
   CloseBubble();
   if (controller_) {
     controller_->OnBubbleClosed(
-        GetAutofillAiBubbleClosedReasonFromWidget(GetWidget()));
+        GetAutofillAiBubbleResultFromWidget(GetWidget()));
   }
   controller_ = nullptr;
 }

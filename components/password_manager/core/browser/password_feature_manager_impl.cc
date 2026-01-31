@@ -53,8 +53,8 @@ bool PasswordFeatureManagerImpl::IsBiometricAuthenticationBeforeFillingEnabled()
 #endif
 }
 
-bool PasswordFeatureManagerImpl::IsAccountStorageEnabled() const {
-  return features_util::IsAccountStorageEnabled(sync_service_);
+bool PasswordFeatureManagerImpl::IsAccountStorageActive() const {
+  return features_util::IsAccountStorageActive(sync_service_);
 }
 
 features_util::PasswordAccountStorageUsageLevel

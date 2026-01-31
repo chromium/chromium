@@ -102,9 +102,7 @@ ActionTracker::ActionTracker(content::BrowserContext* browser_context)
   StartTrimRulesTask();
 }
 
-ActionTracker::~ActionTracker() {
-  DCHECK(pending_navigation_actions_.empty());
-}
+ActionTracker::~ActionTracker() = default;
 
 void ActionTracker::SetClockForTests(const base::Clock* clock) {
   g_test_clock = clock;
@@ -437,7 +435,7 @@ void ActionTracker::DispatchOnRuleMatchedDebugIfNeeded(
   matched_rule_info_debug.rule = std::move(matched_rule);
   matched_rule_info_debug.request = std::move(request_details);
 
-  base::Value::List args;
+  base::ListValue args;
   args.Append(matched_rule_info_debug.ToValue());
 
   auto event = std::make_unique<Event>(

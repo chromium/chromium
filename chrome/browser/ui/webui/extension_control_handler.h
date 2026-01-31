@@ -24,7 +24,7 @@ class ExtensionControlHandler : public content::WebUIMessageHandler {
  private:
   // Handler for the "disableExtension" message. Extension ID is passed as the
   // single string argument.
-  void HandleDisableExtension(const base::Value::List& args);
+  void HandleDisableExtension(const base::ListValue& args);
 };
 
 #endif  // CHROME_BROWSER_UI_WEBUI_EXTENSION_CONTROL_HANDLER_H_

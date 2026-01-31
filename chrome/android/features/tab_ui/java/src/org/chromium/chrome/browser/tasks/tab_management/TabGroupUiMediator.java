@@ -25,9 +25,9 @@ import org.chromium.base.Token;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.LazyOneshotSupplier;
+import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.base.supplier.NonNullObservableSupplier;
-import org.chromium.base.supplier.ObservableSupplier;
-import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
@@ -133,8 +133,8 @@ public class TabGroupUiMediator implements BackPressHandler {
     private final Callback<@Nullable List<GroupMember>> mOnGroupMembersChanged =
             this::onGroupMembersChanged;
     private final Callback mOnTokenComponentChange = this::onTokenComponentChange;
-    private final ObservableSupplierImpl<Integer> mWidthPxSupplier =
-            new ObservableSupplierImpl<>(0);
+    private final SettableNonNullObservableSupplier<Integer> mWidthPxSupplier =
+            ObservableSuppliers.createNonNull(0);
     private final ThemeColorObserver mThemeColorObserver = this::onThemeColorChanged;
     private final TintObserver mTintObserver = this::onTintChanged;
     private final PropertyModel mModel;
@@ -147,11 +147,11 @@ public class TabGroupUiMediator implements BackPressHandler {
             mVisibilityController;
     private final @Nullable LazyOneshotSupplier<DialogController> mTabGridDialogControllerSupplier;
     private final Callback<TabModel> mCurrentTabModelObserver;
-    private final ObservableSupplier<Boolean> mOmniboxFocusStateSupplier;
+    private final NonNullObservableSupplier<Boolean> mOmniboxFocusStateSupplier;
     private final SettableNonNullObservableSupplier<Boolean> mHandleBackPressChangedSupplier;
     private final ThemeColorProvider mThemeColorProvider;
     private final Callback<Object> mOnSnapshotTokenChange;
-    private final ObservableSupplier<Object> mChildTokenSupplier;
+    private final MonotonicObservableSupplier<Object> mChildTokenSupplier;
 
     // These should only be used when regular (non-incognito) tabs are set in the model.
     private final @Nullable SharedImageTilesCoordinator mSharedImageTilesCoordinator;
@@ -178,12 +178,12 @@ public class TabGroupUiMediator implements BackPressHandler {
             TabCreatorManager tabCreatorManager,
             OneshotSupplier<LayoutStateProvider> layoutStateProviderSupplier,
             @Nullable LazyOneshotSupplier<DialogController> dialogControllerSupplier,
-            ObservableSupplier<Boolean> omniboxFocusStateSupplier,
+            NonNullObservableSupplier<Boolean> omniboxFocusStateSupplier,
             @Nullable SharedImageTilesCoordinator sharedImageTilesCoordinator,
             SharedImageTilesConfig.@Nullable Builder sharedImageTilesConfigBuilder,
             ThemeColorProvider themeColorProvider,
             Callback<Object> onSnapshotTokenChange,
-            ObservableSupplierImpl<Object> childTokenSupplier) {
+            MonotonicObservableSupplier<Object> childTokenSupplier) {
         mResetHandler = resetHandler;
         mModel = model;
         mTabModelSelector = tabModelSelector;
@@ -336,16 +336,15 @@ public class TabGroupUiMediator implements BackPressHandler {
                     }
                 };
 
-        var filterProvider = mTabModelSelector.getTabGroupModelFilterProvider();
-        assumeNonNull(filterProvider.getTabGroupModelFilter(false))
+        assumeNonNull(tabModelSelector.getTabGroupModelFilter(false))
                 .addTabGroupObserver(mTabGroupModelFilterObserver);
-        assumeNonNull(filterProvider.getTabGroupModelFilter(true))
+        assumeNonNull(tabModelSelector.getTabGroupModelFilter(true))
                 .addTabGroupObserver(mTabGroupModelFilterObserver);
 
         mOmniboxFocusObserver = isFocus -> resetTabStrip();
         mOmniboxFocusStateSupplier.addObserver(mOmniboxFocusObserver);
 
-        filterProvider.addTabGroupModelFilterObserver(mTabModelObserver);
+        tabModelSelector.addTabGroupModelFilterObserver(mTabModelObserver);
         mTabModelSelector.getCurrentTabModelSupplier().addObserver(mCurrentTabModelObserver);
 
         if (layoutStateProvider != null) {
@@ -476,15 +475,10 @@ public class TabGroupUiMediator implements BackPressHandler {
         handler.post(() -> mModel.set(INITIAL_SCROLL_INDEX, indexSupplier.get()));
     }
 
-    private boolean isOmniboxFocused() {
-        @Nullable Boolean focused = mOmniboxFocusStateSupplier.get();
-        return Boolean.TRUE.equals(focused);
-    }
-
     private void resetTabStrip() {
         if (!mTabModelSelector.isTabStateInitialized()) return;
 
-        if (mIsShowingHub || isOmniboxFocused()) {
+        if (mIsShowingHub || mOmniboxFocusStateSupplier.get()) {
             hideTabStrip();
             return;
         }
@@ -542,8 +536,7 @@ public class TabGroupUiMediator implements BackPressHandler {
     }
 
     private TabGroupModelFilter getCurrentTabGroupModelFilter() {
-        return assumeNonNull(
-                mTabModelSelector.getTabGroupModelFilterProvider().getCurrentTabGroupModelFilter());
+        return assumeNonNull(mTabModelSelector.getCurrentTabGroupModelFilter());
     }
 
     private void onTokenComponentChange(Object ignored) {
@@ -555,7 +548,7 @@ public class TabGroupUiMediator implements BackPressHandler {
                 new NestedSnapshot(
                         mChildTokenSupplier.get(),
                         mThemeColorProvider.getThemeColor(),
-                        assumeNonNull(mWidthPxSupplier.get()));
+                        mWidthPxSupplier.get());
         mOnSnapshotTokenChange.onResult(token);
     }
 
@@ -581,14 +574,12 @@ public class TabGroupUiMediator implements BackPressHandler {
     @SuppressWarnings("NullAway")
     public void destroy() {
         if (mTabModelSelector != null) {
-            var filterProvider = mTabModelSelector.getTabGroupModelFilterProvider();
-
-            filterProvider.removeTabGroupModelFilterObserver(mTabModelObserver);
+            mTabModelSelector.removeTabGroupModelFilterObserver(mTabModelObserver);
             mTabModelSelector.getCurrentTabModelSupplier().removeObserver(mCurrentTabModelObserver);
             if (mTabGroupModelFilterObserver != null) {
-                assumeNonNull(filterProvider.getTabGroupModelFilter(false))
+                assumeNonNull(mTabModelSelector.getTabGroupModelFilter(false))
                         .removeTabGroupObserver(mTabGroupModelFilterObserver);
-                assumeNonNull(filterProvider.getTabGroupModelFilter(true))
+                assumeNonNull(mTabModelSelector.getTabGroupModelFilter(true))
                         .removeTabGroupObserver(mTabGroupModelFilterObserver);
             }
         }

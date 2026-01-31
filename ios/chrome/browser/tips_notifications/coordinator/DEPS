@@ -1,3 +1,5 @@
 include_rules = [
+  # keep-sorted start
   "+ios/chrome/browser/lens/ui_bundled",
+  # keep-sorted end
 ]

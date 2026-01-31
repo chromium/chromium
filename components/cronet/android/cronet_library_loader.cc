@@ -159,7 +159,7 @@ void InitializePerfetto() {
 }  // namespace
 
 static void JNI_CronetLibraryLoader_NativeInit(JNIEnv* env,
-                                               jboolean initializePerfetto) {
+                                               bool initializePerfetto) {
   logging::InitLogging(logging::LoggingSettings());
 
   if (!base::ThreadPoolInstance::Get()) {
@@ -187,7 +187,7 @@ bool OnInitThread() {
 }
 
 // Checks the available version of JNI. Also, caches Java reflection artifacts.
-jint CronetOnLoad(JavaVM* vm, void* reserved) {
+int32_t CronetOnLoad(JavaVM* vm, void* reserved) {
   base::android::InitVM(vm);
   JNIEnv* env = base::android::AttachCurrentThread();
   if (!RegisterNatives(env)) {
@@ -266,7 +266,7 @@ static ScopedJavaLocalRef<jstring> JNI_CronetLibraryLoader_GetCronetVersion(
 }
 
 static void JNI_CronetLibraryLoader_SetMinLogLevel(JNIEnv* env,
-                                                   jint jlog_level) {
+                                                   int32_t jlog_level) {
   logging::SetMinLogLevel(jlog_level);
 }
 

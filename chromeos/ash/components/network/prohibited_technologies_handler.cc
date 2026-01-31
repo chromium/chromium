@@ -8,7 +8,6 @@
 #include <set>
 #include <vector>
 
-#include "base/containers/contains.h"
 #include "chromeos/ash/components/network/managed_network_configuration_handler.h"
 #include "chromeos/ash/components/network/network_state_handler.h"
 #include "chromeos/ash/components/network/network_util.h"
@@ -66,7 +65,7 @@ void ProhibitedTechnologiesHandler::PoliciesApplied(
 }
 
 void ProhibitedTechnologiesHandler::SetProhibitedTechnologies(
-    const base::Value::List& prohibited_list) {
+    const base::ListValue& prohibited_list) {
   // Build up prohibited network type list and save it for further use when
   // enforced
   session_prohibited_technologies_.clear();
@@ -87,7 +86,7 @@ void ProhibitedTechnologiesHandler::EnforceProhibitedTechnologies() {
   // ProhibitedTechnologies which may include ethernet, making users can
   // not find Ethernet at next boot or logging out unless user log out first
   // and then shutdown.
-  if (base::Contains(prohibited_technologies_, shill::kTypeEthernet)) {
+  if (std::ranges::contains(prohibited_technologies_, shill::kTypeEthernet)) {
     return;
   }
   if (network_state_handler_->IsTechnologyAvailable(
@@ -115,7 +114,7 @@ ProhibitedTechnologiesHandler::GetCurrentlyProhibitedTechnologies() {
 
 void ProhibitedTechnologiesHandler::AddGloballyProhibitedTechnology(
     const std::string& technology) {
-  if (!base::Contains(globally_prohibited_technologies_, technology)) {
+  if (!std::ranges::contains(globally_prohibited_technologies_, technology)) {
     globally_prohibited_technologies_.push_back(technology);
   }
   EnforceProhibitedTechnologies();

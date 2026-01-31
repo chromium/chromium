@@ -64,7 +64,7 @@ v8::Local<v8::Value> GinJavaFunctionInvocationHelper::Invoke(
     return v8::Undefined(args->isolate());
   }
 
-  base::Value::List arguments;
+  base::ListValue arguments;
   {
     v8::HandleScope handle_scope(args->isolate());
     v8::Local<v8::Context> context = args->isolate()->GetCurrentContext();
@@ -84,7 +84,7 @@ v8::Local<v8::Value> GinJavaFunctionInvocationHelper::Invoke(
 
   std::unique_ptr<base::Value> result;
   if (auto* remote = object->GetRemote()) {
-    base::Value::List result_wrapper;
+    base::ListValue result_wrapper;
     if (remote->InvokeMethod(method_name_, std::move(arguments), &error,
                              &result_wrapper)) {
       if (!result_wrapper.empty()) {

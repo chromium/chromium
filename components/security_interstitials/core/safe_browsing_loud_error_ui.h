@@ -40,7 +40,7 @@ class SafeBrowsingLoudErrorUI
   ~SafeBrowsingLoudErrorUI() override;
 
   // Implement BaseSafeBrowsingErrorUI.
-  void PopulateStringsForHtml(base::Value::Dict& load_time_data) override;
+  void PopulateStringsForHtml(base::DictValue& load_time_data) override;
   void HandleCommand(SecurityInterstitialCommand command) override;
 
   int GetHTMLTemplateId() const override;
@@ -48,12 +48,12 @@ class SafeBrowsingLoudErrorUI
  private:
   // Fills the passed dictionary with the values to be passed to the template
   // when creating the HTML.
-  void PopulateExtendedReportingOption(base::Value::Dict& load_time_data);
-  void PopulateMalwareLoadTimeData(base::Value::Dict& load_time_data);
-  void PopulateHarmfulLoadTimeData(base::Value::Dict& load_time_data);
-  void PopulatePhishingLoadTimeData(base::Value::Dict& load_time_data);
-  void PopulateBillingLoadTimeData(base::Value::Dict& load_time_data);
-  void PopulateEnhancedProtectionMessage(base::Value::Dict& load_time_data);
+  void PopulateExtendedReportingOption(base::DictValue& load_time_data);
+  void PopulateMalwareLoadTimeData(base::DictValue& load_time_data);
+  void PopulateHarmfulLoadTimeData(base::DictValue& load_time_data);
+  void PopulatePhishingLoadTimeData(base::DictValue& load_time_data);
+  void PopulateBillingLoadTimeData(base::DictValue& load_time_data);
+  void PopulateEnhancedProtectionMessage(base::DictValue& load_time_data);
 
   // Handle update to interstitial_interaction_data_ when a command occurs.
   void UpdateInterstitialInteractionData(SecurityInterstitialCommand command);

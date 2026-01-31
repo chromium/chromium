@@ -16,12 +16,12 @@
 #include "base/memory/singleton.h"
 #include "base/observer_list.h"
 #include "base/values.h"
-#include "chrome/browser/extensions/forced_extensions/install_stage_tracker.h"
 #include "chrome/browser/extensions/managed_installation_mode.h"
 #include "chrome/browser/profiles/profile_keyed_service_factory.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "extensions/browser/extension_management_client.h"
+#include "extensions/browser/forced_extensions/install_stage_tracker.h"
 #include "extensions/browser/management_policy.h"
 #include "extensions/buildflags/buildflags.h"
 #include "extensions/common/extension_id.h"
@@ -93,6 +93,7 @@ class ExtensionManagement : public KeyedService,
   const URLPatternSet& GetPolicyAllowedHosts(
       const Extension* extension) override;
   bool UsesDefaultPolicyHostRestrictions(const Extension* extension) override;
+  bool BlocklistedByDefault() const override;
 
   void AddObserver(Observer* observer);
   void RemoveObserver(Observer* observer);
@@ -101,11 +102,6 @@ class ExtensionManagement : public KeyedService,
   // management policy settings.
   const std::vector<std::unique_ptr<ManagementPolicy::Provider>>& GetProviders()
       const;
-
-  // Checks if extensions are blocklisted by default, by policy. When true,
-  // this means that even extensions without an ID should be blocklisted (e.g.
-  // from the command line, or when loaded as an unpacked extension).
-  bool BlocklistedByDefault() const;
 
 #if BUILDFLAG(ENABLE_DESKTOP_ANDROID_EXTENSIONS)
   // Checks if extensions are enabled for Desktop Android for the current
@@ -125,10 +121,10 @@ class ExtensionManagement : public KeyedService,
 
   // Returns the force install list, in format specified by
   // ExternalPolicyLoader::AddExtension().
-  base::Value::Dict GetForceInstallList() const;
+  base::DictValue GetForceInstallList() const;
 
   // Like GetForceInstallList(), but returns recommended install list instead.
-  base::Value::Dict GetRecommendedInstallList() const;
+  base::DictValue GetRecommendedInstallList() const;
 
   // Returns `true` if there is at least one extension with
   // `INSTALLATION_ALLOWED` as installation mode. This excludes force installed
@@ -259,7 +255,7 @@ class ExtensionManagement : public KeyedService,
   // `extension_id`. Returns true if it succeeds, otherwise returns false and
   // removes the entry from `settings_by_id_`.
   bool ParseById(const std::string& extension_id,
-                 const base::Value::Dict& subdict);
+                 const base::DictValue& subdict);
 
   // Returns the individual settings for `extension_id` if it exists, otherwise
   // returns nullptr. This method will also lazy load the settings if they're
@@ -280,13 +276,13 @@ class ExtensionManagement : public KeyedService,
 
   // Loads the dictionary preference with name `pref_name` - see
   // `LoadPreference` for more details.
-  const base::Value::Dict* LoadDictPreference(const char* pref_name,
-                                              bool force_managed) const;
+  const base::DictValue* LoadDictPreference(const char* pref_name,
+                                            bool force_managed) const;
 
   // Loads the list preference with name `pref_name` - see `LoadPreference` for
   // more details.
-  const base::Value::List* LoadListPreference(const char* pref_name,
-                                              bool force_managed) const;
+  const base::ListValue* LoadListPreference(const char* pref_name,
+                                            bool force_managed) const;
 
   void OnExtensionPrefChanged();
   void NotifyExtensionManagementPrefChanged();
@@ -301,11 +297,11 @@ class ExtensionManagement : public KeyedService,
 
   // Helper to return an extension install list, in format specified by
   // ExternalPolicyLoader::AddExtension().
-  base::Value::Dict GetInstallListByMode(
+  base::DictValue GetInstallListByMode(
       ManagedInstallationMode installation_mode) const;
 
   // Helper to update `extension_dict` for forced installs.
-  void UpdateForcedExtensions(const base::Value::Dict* extension_dict);
+  void UpdateForcedExtensions(const base::DictValue* extension_dict);
 
   // Helper function to access `settings_by_id_` with `id` as key.
   // Adds a new IndividualSettings entry to `settings_by_id_` if none exists for

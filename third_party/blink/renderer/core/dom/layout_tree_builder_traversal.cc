@@ -29,11 +29,14 @@
 #include "base/containers/adapters.h"
 #include "third_party/blink/renderer/core/css/style_engine.h"
 #include "third_party/blink/renderer/core/dom/column_pseudo_element.h"
+#include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/dom/flat_tree_traversal.h"
+#include "third_party/blink/renderer/core/dom/indexed_pseudo_element.h"
 #include "third_party/blink/renderer/core/dom/pseudo_element.h"
 #include "third_party/blink/renderer/core/html_names.h"
 #include "third_party/blink/renderer/core/layout/layout_object.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
+#include "third_party/blink/renderer/core/overscroll/overscroll_area_tracker.h"
 #include "third_party/blink/renderer/core/style/computed_style_constants.h"
 #include "third_party/blink/renderer/core/view_transition/view_transition_pseudo_element_base.h"
 
@@ -45,7 +48,8 @@ inline static bool HasDisplayContentsStyle(const Node& node) {
 }
 
 static bool IsLayoutObjectReparented(const LayoutObject* layout_object) {
-  return layout_object->IsInTopOrViewTransitionLayer();
+  return layout_object->IsInTopOrViewTransitionLayer() ||
+         layout_object->Style()->IsInternalOverscrollPositionAuto();
 }
 
 static Node* PreviousLayoutSiblingOfElement(Element& element) {
@@ -180,37 +184,14 @@ Node* LayoutTreeBuilderTraversal::NextSibling(const Node& node) {
       }
       [[fallthrough]];
     case kPseudoIdScrollButtonBlockEnd:
-      if (const ScopedCSSNameList* overscroll_areas =
-              parent_element->GetComputedStyle()->OverscrollArea()) {
-        if (!overscroll_areas->GetNames().empty()) {
-          Node* next = parent_element->GetPseudoElement(
-              kPseudoIdOverscrollAreaParent,
-              overscroll_areas->GetNames().front()->GetName());
-          CHECK(next);
-          return next;
-        }
-      }
-      if (Node* next = parent_element->GetPseudoElement(kPseudoIdCheckMark)) {
+      if (Node* next =
+              parent_element->GetPseudoElement(kPseudoIdOverscrollAreaParent)) {
         return next;
       }
       [[fallthrough]];
     case kPseudoIdOverscrollAreaParent:
-      if (const ScopedCSSNameList* overscroll_areas =
-              parent_element->GetComputedStyle()
-                  ? parent_element->GetComputedStyle()->OverscrollArea()
-                  : nullptr;
-          overscroll_areas && !overscroll_areas->GetNames().empty()) {
-        // Only return the first if we fell through to this branch.
-        bool return_next = pseudo_id != kPseudoIdOverscrollAreaParent;
-        for (const auto& name : overscroll_areas->GetNames()) {
-          if (return_next) {
-            Node* next = parent_element->GetPseudoElement(
-                kPseudoIdOverscrollAreaParent, name->GetName());
-            CHECK(next);
-            return next;
-          }
-          return_next = pseudo_argument == name->GetName();
-        }
+      if (Node* next = parent_element->GetPseudoElement(kPseudoIdCheckMark)) {
+        return next;
       }
       [[fallthrough]];
     case kPseudoIdCheckMark:
@@ -371,27 +352,14 @@ Node* LayoutTreeBuilderTraversal::PreviousSibling(const Node& node) {
       [[fallthrough]];
     case kPseudoIdCheckMark:
       if (Node* previous =
-              parent_element->GetPseudoElement(kPseudoIdScrollButtonBlockEnd)) {
+              parent_element->GetPseudoElement(kPseudoIdOverscrollAreaParent)) {
         return previous;
       }
       [[fallthrough]];
     case kPseudoIdOverscrollAreaParent:
-      if (const ScopedCSSNameList* overscroll_areas =
-              parent_element->GetComputedStyle()
-                  ? parent_element->GetComputedStyle()->OverscrollArea()
-                  : nullptr;
-          overscroll_areas && !overscroll_areas->GetNames().empty()) {
-        // Only return the first if we fell through to this branch.
-        bool return_next = pseudo_id != kPseudoIdOverscrollAreaParent;
-        for (const auto& name : base::Reversed(overscroll_areas->GetNames())) {
-          if (return_next) {
-            Node* next = parent_element->GetPseudoElement(
-                kPseudoIdOverscrollAreaParent, name->GetName());
-            CHECK(next);
-            return next;
-          }
-          return_next = pseudo_argument == name->GetName();
-        }
+      if (Node* previous =
+              parent_element->GetPseudoElement(kPseudoIdScrollButtonBlockEnd)) {
+        return previous;
       }
       [[fallthrough]];
     case kPseudoIdScrollButtonBlockEnd:
@@ -549,15 +517,8 @@ Node* LayoutTreeBuilderTraversal::FirstChild(const Node& node) {
           current_element->GetPseudoElement(kPseudoIdScrollButtonBlockEnd)) {
     return first;
   }
-  if (const ScopedCSSNameList* overscroll_areas =
-          current_element->GetComputedStyle()
-              ? current_element->GetComputedStyle()->OverscrollArea()
-              : nullptr;
-      overscroll_areas && !overscroll_areas->GetNames().empty()) {
-    const auto& name = overscroll_areas->GetNames()[0];
-    Node* first = current_element->GetPseudoElement(
-        kPseudoIdOverscrollAreaParent, name->GetName());
-    CHECK(first);
+  if (Node* first =
+          current_element->GetPseudoElement(kPseudoIdOverscrollAreaParent)) {
     return first;
   }
   if (const ColumnPseudoElementsVector* columns =

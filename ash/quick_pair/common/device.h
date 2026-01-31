@@ -15,8 +15,7 @@
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
 
-namespace ash {
-namespace quick_pair {
+namespace ash::quick_pair {
 
 enum class DeviceFastPairVersion {
   kV1,
@@ -131,7 +130,6 @@ std::ostream& operator<<(std::ostream& stream, const Device& device);
 COMPONENT_EXPORT(QUICK_PAIR_COMMON)
 std::ostream& operator<<(std::ostream& stream, scoped_refptr<Device> device);
 
-}  // namespace quick_pair
-}  // namespace ash
+}  // namespace ash::quick_pair
 
 #endif  // ASH_QUICK_PAIR_COMMON_DEVICE_H_

@@ -241,7 +241,7 @@ TEST_F(SearchEngineTableViewControllerNonEEATest, TestChangeProvider) {
   histogram_tester_.ExpectTotalCount(kUmaSelectDefaultSearchEngine, 3);
 
   // Check that the selection was written back to the prefs.
-  const base::Value::Dict& searchProviderDict =
+  const base::DictValue& searchProviderDict =
       profile_->GetTestingPrefService()->GetDict(
           DefaultSearchManager::kDefaultSearchProviderDataPrefName);
   const std::string* short_name =

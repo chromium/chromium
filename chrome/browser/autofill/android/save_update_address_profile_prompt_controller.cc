@@ -4,10 +4,10 @@
 
 #include "chrome/browser/autofill/android/save_update_address_profile_prompt_controller.h"
 
+#include <algorithm>
 #include <string>
 #include <utility>
 
-#include "base/containers/contains.h"
 #include "base/notimplemented.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
@@ -31,7 +31,7 @@
 #include "ui/base/l10n/l10n_util.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
-#include "chrome/android/chrome_jni_headers/SaveUpdateAddressProfilePromptController_jni.h"
+#include "chrome/browser/autofill/android/jni_headers/SaveUpdateAddressProfilePromptController_jni.h"
 
 namespace autofill {
 
@@ -240,7 +240,7 @@ std::u16string SaveUpdateAddressProfilePromptController::GetPhoneNumber()
 std::u16string SaveUpdateAddressProfilePromptController::GetSubtitle() const {
   DCHECK(original_profile_);
   const std::string locale = g_browser_process->GetApplicationLocale();
-  bool address_updated = base::Contains(
+  bool address_updated = std::ranges::contains(
       differences_for_ui_, ADDRESS_HOME_ADDRESS, &ProfileValueDifference::type);
   return GetProfileDescription(
       original_profile_.value(), locale,

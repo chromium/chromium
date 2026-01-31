@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="sk">
 <translation id="1076643793026027628">Chrome automaticky otvára odkazy na YouTube v režime inkognito.</translation>
+<translation id="1081114897601629648">Nasledujúce heslá neboli importované do Správcu hesiel Google, pretože nespĺňajú požiadavky.</translation>
 <translation id="1086486568852410168">Vyhľadávať pomocou funkcie Google Lens</translation>
 <translation id="1088490543924960890">Začnite ukladať prístupové kľúče pomocou Správcu hesiel Google</translation>
 <translation id="1143896152279775643">Heslo bude uložené do správcu hesiel Google v účte <ph name="EMAIL" />.</translation>
@@ -85,6 +86,9 @@ Pred odhlásením skúste počkať niekoľko minút. Ak sa odhlásite teraz, tie
 <translation id="2767464022270041271">Žiadne uložené heslá. Správca hesiel Google môže kontrolovať heslá, keď ich uložíte.</translation>
 <translation id="2788811701191021538">Otvorí stránku nastavení spôsobov platby v Chrome.</translation>
 <translation id="2876628302275096482"><ph name="BEGIN_LINK" />Ako Chrome uchováva vaše údaje v súkromí<ph name="END_LINK" /></translation>
+<translation id="288992067439702510">Dosiahli ste limit záložiek (<ph name="LIMIT" />) v Google Chrome, takže niektoré vaše záložky ešte neboli uložené vo vašom účte Google.
+
+Nové záložky sa nebudú môcť ukladať do vášho účtu, kým niektoré neodstránite. Ak sa teraz odhlásite, neuložené záložky budú odstránené.</translation>
 <translation id="2922914028977213693">Klepnite tu a začnite využívať Chrome v iPade naplno.</translation>
 <translation id="292371311537977079">Nastavenia Chromu</translation>
 <translation id="2923827943290349720">Uzamknúť karty inkognito pri zavretí Chromu</translation>
@@ -115,6 +119,7 @@ Pred odhlásením skúste počkať niekoľko minút. Ak sa odhlásite teraz, tie
 <translation id="3460369101684070455">Ak chcete ľahko získať svoje uložené heslá v iných aplikáciách, vyberte automatické dopĺňanie v Chrome</translation>
 <translation id="3472587960215700950">Chrome vám pomocou Máp Google poskytuje trasy a miestne informácie o rozpoznaných adresách.</translation>
 <translation id="3482807551645716768">Získavajte prístup k Chromu rýchlejšie z plochy iPadu.</translation>
+<translation id="3491067552520121605">Pre zobrazené weby už máte v Správcovi hesiel Google heslá alebo prístupové kľúče. Vyberte účet, v ktorom sa majú ponechať zobrazené prihlasovacie údaje, čím sa prepíšu údaje v Správcovi hesiel Google.</translation>
 <translation id="3503014945441706099">Získajte Zlepšené bezpečné prehliadanie aj pre tento profil Chromu</translation>
 <translation id="3522659714780527202">Ak chcete vidieť svoje karty vo všetkých zariadeniach, v ktorých používate Chrome, zapnite synchronizáciu</translation>
 <translation id="364480321352456989">Váš Chrome je zastaraný.</translation>
@@ -134,6 +139,7 @@ Pred odhlásením skúste počkať niekoľko minút. Ak sa odhlásite teraz, tie
 <translation id="4167555379306984168">Pozrite si, čo je nové v Chrome</translation>
 <translation id="417201473131094001">Nepodporované vo verzii Chrome Canary</translation>
 <translation id="424864128008805179">Odhlásiť sa z Chromu?</translation>
+<translation id="4409545895715116037">Nasledujúce prístupové kľúče neboli importované do Správcu hesiel Google, pretože nespĺňajú požiadavky.</translation>
 <translation id="4430797724889237570">Otvárajte odkazy z aplikácií Gmail, Mapy, YouTube a ďalších v Chrome</translation>
 <translation id="447252321002412580">Pomáhať s vylepšovaním funkcií a výkonu Chromu</translation>
 <translation id="4523886039239821078">Niektoré doplnky spôsobujú zlyhanie prehliadača Chrome. Odinštalujte ich.</translation>
@@ -272,6 +278,7 @@ Ak chcete toto nastavenie zmeniť, <ph name="BEGIN_LINK" />odstráňte údaje Ch
 <translation id="7284245284340063465">Ak ste zabudli prístupovú frázu alebo chcete toto nastavenie zmeniť, <ph name="BEGIN_LINK" />odstráňte údaje Chromu vo svojom účte<ph name="END_LINK" />.</translation>
 <translation id="7296102444587051536">Chrome pre iOS</translation>
 <translation id="7299681342915173313">Chrome môžete teraz kedykoľvek použiť klepnutím na odkazy v správach, dokumentoch a ďalších aplikáciách.</translation>
+<translation id="7334364820047587268">Heslá týchto účtov už máte v Správcovi hesiel Google. Ak importujete jedno z hesiel uvedených nižšie, nahradí existujúce.</translation>
 <translation id="7344094882820374540">Získajte najúčinnejšie zabezpečenie Chromu pred nebezpečnými webmi</translation>
 <translation id="7349129508108954623">Povoľte Chromu používať Mapy Google na účely poskytovania trás a miestnych informácií o rozpoznaných adresách.</translation>
 <translation id="7371674917547846460">Majte prehľad o užitočných tipoch pre Chrome a ďalšom obsahu.</translation>
@@ -300,11 +307,11 @@ Ak chcete toto nastavenie zmeniť, <ph name="BEGIN_LINK" />odstráňte údaje Ch
 <translation id="7787205077729386167">V zariadení iOS otvorte nastavenia Chromu, klepnite na Predvolený prehliadač a vyberte Chrome.</translation>
 <translation id="778855399387580014">Začnite vyhľadávanie na novej karte Chrome.</translation>
 <translation id="7792140019572081272">Chrome chráni vaše citlivé údaje pomocou funkcie Face ID.</translation>
+<translation id="7825648984449922731">Upravte obrázok pomocou Gemini v Chrome</translation>
 <translation id="7855730255114109580">Google Chrome je aktuálny</translation>
 <translation id="787226752901403048">Prihláste sa do Chromu, aby ste mohli zdieľať skupiny kariet, pripájať sa k nim a spolupracovať na nápadoch</translation>
 <translation id="7897703007638178753">Zobraziť nedávne karty v Chrome</translation>
 <translation id="7948283758957877064">Novinky v Chrome</translation>
-<translation id="7996707498590516621">Vytvorte obrázok pomocou Gemini v Chrome</translation>
 <translation id="8000174216052461231">Tip pre Chrome: získajte najúčinnejšie zabezpečenie Chromu</translation>
 <translation id="8006014511203279255">Chrome môžete kedykoľvek použiť klepnutím na odkazy v správach a ďalších aplikáciách.</translation>
 <translation id="8014670471808569312">Chrome vám ponúkne uloženie hesla.</translation>

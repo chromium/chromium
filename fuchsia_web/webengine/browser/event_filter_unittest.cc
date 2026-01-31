@@ -6,7 +6,8 @@
 
 #include <fuchsia/web/cpp/fidl.h>
 
-#include "base/types/cxx23_to_underlying.h"
+#include <utility>
+
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/events/event.h"
 #include "ui/events/test/test_event.h"
@@ -63,7 +64,7 @@ constexpr ui::EventType kAlwaysAllowedEventTypes[] = {
 };
 
 constexpr ui::EventType kUserEvent =
-    static_cast<ui::EventType>(base::to_underlying(ui::EventType::kLast) + 1);
+    static_cast<ui::EventType>(std::to_underlying(ui::EventType::kLast) + 1);
 
 class EventFilterTest : public testing::Test {
  public:

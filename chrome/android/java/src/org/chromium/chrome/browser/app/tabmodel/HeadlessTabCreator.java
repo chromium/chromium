@@ -20,6 +20,8 @@ import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.url.GURL;
 
+import java.util.concurrent.CompletableFuture;
+
 /** This implementation always creates tabs as frozen/pending, never with web contents. */
 @NullMarked
 public class HeadlessTabCreator implements TabCreator, NeedsTabModel {
@@ -93,13 +95,14 @@ public class HeadlessTabCreator implements TabCreator, NeedsTabModel {
     }
 
     @Override
-    public Tab createTabWithWebContents(
+    public @Nullable Tab createTabWithWebContents(
             @Nullable Tab parent,
             boolean shouldPin,
             WebContents webContents,
             @TabLaunchType int type,
             GURL url,
-            boolean addTabToModel) {
+            int index,
+            CompletableFuture<Boolean> addTabToModel) {
         throw new RuntimeException("Headless does not support live web contents.");
     }
 

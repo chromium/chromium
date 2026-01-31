@@ -58,12 +58,6 @@ class MockHost : public WebUIContentsWrapper::Host {
     return nullptr;
   }
 
-  bool PreHandleGestureEvent(content::WebContents* source,
-                             const blink::WebGestureEvent& event) override {
-    ++pre_handle_gesture_event_called_;
-    return true;
-  }
-
   base::WeakPtr<MockHost> GetWeakPtr() {
     return weak_ptr_factory_.GetWeakPtr();
   }
@@ -81,10 +75,6 @@ class MockHost : public WebUIContentsWrapper::Host {
   }
   int add_new_contents_called() const { return add_new_contents_called_; }
 
-  int pre_handle_gesture_event_called() const {
-    return pre_handle_gesture_event_called_;
-  }
-
  private:
   int show_ui_called_ = 0;
   int close_ui_called_ = 0;
@@ -92,7 +82,6 @@ class MockHost : public WebUIContentsWrapper::Host {
   int resize_due_to_auto_resize_called_ = 0;
   int draggable_regions_changed_called_ = 0;
   int add_new_contents_called_ = 0;
-  int pre_handle_gesture_event_called_ = 0;
   base::WeakPtrFactory<MockHost> weak_ptr_factory_{this};
 };
 
@@ -292,28 +281,5 @@ TEST_F(WebUIContentsWrapperTest, HostNotifiedOnAddNewContents) {
       false /* user_gesture */, &blocked /* was_blocked */);
   EXPECT_EQ(1, host.add_new_contents_called());
 }
-
-TEST_F(WebUIContentsWrapperTest, ForwardsGestureEventsToHost) {
-  MockHost host;
-  EXPECT_EQ(0, host.pre_handle_gesture_event_called());
-
-  contents_wrapper()->SetHost(host.GetWeakPtr());
-
-  blink::WebGestureEvent event(
-      blink::WebInputEvent::Type::kGesturePinchBegin,
-      blink::WebInputEvent::kNoModifiers,
-      blink::WebInputEvent::GetStaticTimeStampForTests());
-
-  EXPECT_TRUE(contents_wrapper()->PreHandleGestureEvent(
-      contents_wrapper()->web_contents(), event));
-  EXPECT_EQ(1, host.pre_handle_gesture_event_called());
-
-  contents_wrapper()->SetHost(nullptr);
-  EXPECT_FALSE(contents_wrapper()->PreHandleGestureEvent(
-      contents_wrapper()->web_contents(), event));
-
-  EXPECT_EQ(1, host.pre_handle_gesture_event_called());
-}
-
 }  // namespace test
 }  // namespace views

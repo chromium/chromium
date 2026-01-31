@@ -50,7 +50,7 @@ void VerifyCorrectString(std::string str, size_t size) {
   SANDBOX_ASSERT_EQ(str.size(), size);
   size_t curr_path_part_pos = 0;
   for (char ch : str) {
-    UNSAFE_TODO(SANDBOX_ASSERT(ch == kPathPart[curr_path_part_pos]));
+    SANDBOX_ASSERT(ch == kPathPart[curr_path_part_pos]);
     curr_path_part_pos++;
     curr_path_part_pos %= strlen(kPathPart.data());
   }

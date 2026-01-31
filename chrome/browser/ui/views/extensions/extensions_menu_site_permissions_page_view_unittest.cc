@@ -7,8 +7,8 @@
 #include "base/feature_list.h"
 #include "chrome/browser/extensions/chrome_test_extension_loader.h"
 #include "chrome/browser/ui/views/extensions/extensions_menu_coordinator.h"
+#include "chrome/browser/ui/views/extensions/extensions_menu_delegate_desktop.h"
 #include "chrome/browser/ui/views/extensions/extensions_menu_main_page_view.h"
-#include "chrome/browser/ui/views/extensions/extensions_menu_view_platform_delegate_views.h"
 #include "chrome/browser/ui/views/extensions/extensions_request_access_button.h"
 #include "chrome/browser/ui/views/extensions/extensions_toolbar_button.h"
 #include "chrome/browser/ui/views/extensions/extensions_toolbar_unittest.h"
@@ -70,10 +70,11 @@ class ExtensionsSitePermissionsPageViewUnitTest
 
   // ExtensionsToolbarUnitTest:
   void SetUp() override;
+  void TearDown() override;
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
-  raw_ptr<content::WebContentsTester, DanglingUntriaged> web_contents_tester_;
+  raw_ptr<content::WebContentsTester> web_contents_tester_;
 };
 
 ExtensionsSitePermissionsPageViewUnitTest::
@@ -120,14 +121,14 @@ void ExtensionsSitePermissionsPageViewUnitTest::LayoutMenuIfNecessary() {
 
 ExtensionsMenuMainPageView*
 ExtensionsSitePermissionsPageViewUnitTest::main_page() {
-  ExtensionsMenuViewPlatformDelegateViews* menu_delegate =
+  ExtensionsMenuDelegateDesktop* menu_delegate =
       menu_coordinator()->GetDelegateForTesting();
   return menu_delegate ? menu_delegate->GetMainPageViewForTesting() : nullptr;
 }
 
 ExtensionsMenuSitePermissionsPageView*
 ExtensionsSitePermissionsPageViewUnitTest::site_permissions_page() {
-  ExtensionsMenuViewPlatformDelegateViews* menu_delegate =
+  ExtensionsMenuDelegateDesktop* menu_delegate =
       menu_coordinator()->GetDelegateForTesting();
   return menu_delegate ? menu_delegate->GetSitePermissionsPageForTesting()
                        : nullptr;
@@ -138,6 +139,11 @@ void ExtensionsSitePermissionsPageViewUnitTest::SetUp() {
   // Menu needs web contents at construction, so we need to add them to every
   // test.
   web_contents_tester_ = AddWebContentsAndGetTester();
+}
+
+void ExtensionsSitePermissionsPageViewUnitTest::TearDown() {
+  web_contents_tester_ = nullptr;
+  ExtensionsToolbarUnitTest::TearDown();
 }
 
 TEST_F(ExtensionsSitePermissionsPageViewUnitTest,

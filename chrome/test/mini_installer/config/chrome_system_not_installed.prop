@@ -30,16 +30,16 @@
     "HKEY_LOCAL_MACHINE\\Software\\Classes\\$CHROME_HTML_PROG_ID": {
       "exists": "forbidden"
     },
-    "HKEY_LOCAL_MACHINE\\Software\\Classes\\$CHROME_SHORT_NAME": {
-      "exists": "forbidden"
-    },
-    "HKEY_LOCAL_MACHINE\\Software\\Clients\\StartMenuInternet\\$CHROME_SHORT_NAME": {
-      "exists": "forbidden"
-    },
     "HKEY_LOCAL_MACHINE\\Software\\RegisteredApplications": {
       "exists": "optional",
       "values": {
         "$CHROME_LONG_NAME": {}
+      }
+    },
+    "HKEY_LOCAL_MACHINE\\Software\\Classes\\.pdf\\OpenWithProgids": {
+      "exists": "optional",
+      "values": {
+        "$CHROME_PDF_PROG_ID": {}
       }
     },
     "HKEY_LOCAL_MACHINE\\Software\\Classes\\CLSID\\$CHROME_TOAST_ACTIVATOR_CLSID": {
@@ -58,6 +58,9 @@
       "exists": "forbidden"
     },
     "HKEY_LOCAL_MACHINE\\SYSTEM\\CurrentControlSet\\Services\\$CHROME_ELEVATION_SERVICE_NAME": {
+      "exists": "forbidden"
+    },
+    "HKEY_LOCAL_MACHINE\\Software\\Classes\\$CHROME_DIRECT_LAUNCH_SCHEME": {
       "exists": "forbidden"
     }
   }

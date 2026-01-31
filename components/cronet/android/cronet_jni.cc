@@ -12,4 +12,3 @@ extern "C" jint JNI_OnLoad(JavaVM* vm, void* reserved) {
 extern "C" void JNI_OnUnLoad(JavaVM* vm, void* reserved) {
   cronet::CronetOnUnLoad(vm, reserved);
 }
-

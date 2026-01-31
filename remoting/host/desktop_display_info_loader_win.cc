@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/strings/utf_string_conversions.h"
 
 namespace remoting {
@@ -112,8 +113,13 @@ DesktopDisplayInfo DesktopDisplayInfoLoaderWin::GetCurrentDisplayInfo() {
     // get the friendly name for the device.
     std::string monitor_name;
     for (const auto& entry : paths_with_names) {
-      if (UNSAFE_TODO(wcscmp(entry.source_device_name.viewGdiDeviceName,
-                             device.DeviceName)) == 0) {
+      // Wrap the Win32 fixed-size buffers in wstring_views.
+      // This is safe because these Win32 GDI structures are guaranteed
+      // to be null-terminated or have a fixed length.
+      std::wstring_view source_name(entry.source_device_name.viewGdiDeviceName);
+      std::wstring_view device_name(device.DeviceName);
+
+      if (source_name == device_name) {
         monitor_name = GetFriendlyDeviceName(entry.path);
         break;
       }

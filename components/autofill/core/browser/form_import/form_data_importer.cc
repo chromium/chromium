@@ -122,10 +122,7 @@ bool FieldValueMatchesPrecedingField(const ValueForImport& current_values,
       current_values.value_for_import) {
     field_values_match = true;
   }
-
-  // TODO(crbug.com/40735892) Remove feature check when launched.
-  return field_values_match &&
-         base::FeatureList::IsEnabled(features::kAutofillRelaxAddressImport);
+  return field_values_match;
 }
 
 // Return true if the `field_type` and `current_values` are valid within the
@@ -417,7 +414,7 @@ FormDataImporter::ExtractedFormData FormDataImporter::ExtractFormData(
     FormSignature form_signature = submitted_form.form_signature();
     // If multiple complete address profiles were extracted, this most likely
     // corresponds to billing and shipping sections within the same form.
-    for (size_t i = 0; i < num_complete_address_profiles; i++) {
+    for (size_t i = 0; i < num_complete_address_profiles; ++i) {
       form_associator_.TrackFormAssociations(
           origin, form_signature, FormAssociator::FormType::kAddressForm);
     }
@@ -637,6 +634,8 @@ FormDataImporter::GetAddressObservedFieldValues(
             import_log_buffer)) {
       has_invalid_field_types = true;
     }
+
+    const auto field_and_value_it = preceding_values.find(field_type);
     // Found phone number component field.
     // TODO(crbug.com/40735892) Remove feature check when launched.
     if (GroupTypeOfFieldType(field_type) == FieldTypeGroup::kPhone &&
@@ -649,7 +648,7 @@ FormDataImporter::GetAddressObservedFieldValues(
       // type a second time implies that it belongs to a new number. Since
       // Autofill currently supports storing only one phone number per profile,
       // ignore this and all subsequent phone number fields.
-      if (preceding_values.contains(field_type)) {
+      if (field_and_value_it != preceding_values.end()) {
         ignore_phone_number_fields = true;
         continue;
       }
@@ -658,8 +657,8 @@ FormDataImporter::GetAddressObservedFieldValues(
     // (which is typically user-friendly) is prioritized over the potentially
     // less readable option value that might be present in a corresponding
     // <input> field.
-    if (!preceding_values.contains(field_type) ||
-        !preceding_values[field_type].selected_option_value.has_value() ||
+    if (field_and_value_it == preceding_values.end() ||
+        !field_and_value_it->second.selected_option_value.has_value() ||
         selected_option_value.has_value()) {
       preceding_values.insert_or_assign(
           field_type, ValueForImport{.value_for_import = std::move(value),

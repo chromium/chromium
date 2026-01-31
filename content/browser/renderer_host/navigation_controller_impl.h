@@ -242,6 +242,7 @@ class CONTENT_EXPORT NavigationControllerImpl : public NavigationController {
       scoped_refptr<network::SharedURLLoaderFactory> blob_url_loader_factory,
       bool is_form_submission,
       const std::optional<blink::Impression>& impression,
+      bool has_user_gesture,
       blink::mojom::NavigationInitiatorActivationAndAdStatus
           initiator_activation_and_ad_status,
       base::TimeTicks actual_navigation_start_time,
@@ -550,6 +551,8 @@ class CONTENT_EXPORT NavigationControllerImpl : public NavigationController {
                            SetSkipOnBackForwardDoSkipForGoToOffsetWithSkipping);
   FRIEND_TEST_ALL_PREFIXES(NavigationControllerHistoryInterventionBrowserTest,
                            SetSkipOnBackForwardDoNotSkipForGoToOffset);
+  FRIEND_TEST_ALL_PREFIXES(NavigationControllerHistoryInterventionBrowserTest,
+                           GetIndexForGoBackForwardWithSkipping);
 
   // Defines possible actions that are returned by
   // DetermineActionForHistoryNavigation().
@@ -748,12 +751,18 @@ class CONTENT_EXPORT NavigationControllerImpl : public NavigationController {
       bool has_user_gesture);
 
   // Creates and returns a NavigationRequest based on |load_params| for a
-  // new navigation in |node|.
-  // Will return nullptr if the parameters are invalid and the navigation cannot
-  // start.
-  // |override_user_agent|, |should_replace_current_entry| and
-  // |has_user_gesture| will override the values from |load_params|. The same
-  // values should be passed to CreateNavigationEntryFromLoadParams.
+  // new navigation in |node|. Will return nullptr if the parameters are invalid
+  // and the navigation cannot start.
+  //
+  // |override_user_agent| and |should_replace_current_entry| will override the
+  // values from |load_params|. The same values should be passed to
+  // CreateNavigationEntryFromLoadParams.
+  //
+  // If `from_frame_proxy` is true, the navigation is initiated via a proxy. In
+  // this case, the CommonNavigationParams sent to the renderer will be
+  // initialized with `has_user_gesture = false`, regardless of the status
+  // within `load_params`.
+  //
   // TODO(clamy): Remove the dependency on NavigationEntry and
   // FrameNavigationEntry.
   std::unique_ptr<NavigationRequest> CreateNavigationRequestFromLoadParams(
@@ -761,13 +770,13 @@ class CONTENT_EXPORT NavigationControllerImpl : public NavigationController {
       const LoadURLParams& load_params,
       bool override_user_agent,
       bool should_replace_current_entry,
-      bool has_user_gesture,
       network::mojom::SourceLocationPtr source_location,
       ReloadType reload_type,
       NavigationEntryImpl* entry,
       FrameNavigationEntry* frame_entry,
       base::TimeTicks actual_navigation_start_time,
       base::TimeTicks navigation_start_time,
+      bool from_frame_proxy,
       bool is_embedder_initiated_fenced_frame_navigation = false,
       bool is_unfenced_top_navigation = false,
       bool is_container_initiated = false,
@@ -927,6 +936,30 @@ class CONTENT_EXPORT NavigationControllerImpl : public NavigationController {
   // This does not account for skippable entries or the history manipulation
   // intervention.
   int GetIndexForOffset(int offset);
+
+  // Helper for `GetIndexForGoBack()` and `CanGoToOffsetWithSkipping()`.
+  // Scans backwards starting from `from_index` - 1 to find the first entry that
+  // should not be skipped on the back/forward UI. Returns nullopt if no such
+  // entry exists.
+  std::optional<int> GetIndexForGoBackWithSkipping(int from_index);
+
+  // Helper for `GetIndexForGoForward()` and `CanGoToOffsetWithSkipping()`.
+  // Scans forwards starting from `from_index` + 1 to find the first entry that
+  // should not be skipped on the back/forward UI. Returns nullopt if no such
+  // entry exists.
+  std::optional<int> GetIndexForGoForwardWithSkipping(int from_index);
+
+#if BUILDFLAG(IS_ANDROID)
+  // Helper used by CanGoToOffsetWithSkipping()` and GoToOffsetWithSkipping().
+  //
+  // Returns the index of the entry at the specified `offset` from the current
+  // entry, skipping entries that are marked to be skipped on back/forward UI
+  // (e.g., due to the history manipulation intervention).
+  //
+  // Returns std::nullopt if the offset cannot be traversed (e.g., if there are
+  // not enough non-skippable entries).
+  std::optional<int> GetIndexForOffsetWithSkipping(int offset);
+#endif
 
   // History Manipulation intervention:
   // The previous document that started this navigation needs to be skipped in

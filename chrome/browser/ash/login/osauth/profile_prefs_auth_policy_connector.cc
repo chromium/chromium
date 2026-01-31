@@ -4,9 +4,10 @@
 
 #include "chrome/browser/ash/login/osauth/profile_prefs_auth_policy_connector.h"
 
+#include <algorithm>
+
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
-#include "base/containers/contains.h"
 #include "base/notimplemented.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
@@ -95,11 +96,11 @@ std::optional<AuthFactorsSet>
 ProfilePrefsAuthPolicyConnector::AllowedLocalAuthFactors(
     const AccountId& account) {
   const PrefService* pref_service = GetPrefsForUser(account);
-  if (!pref_service->HasPrefPath(prefs::kLocalAuthFactors)) {
+  if (!pref_service->HasPrefPath(prefs::kAllowedLocalAuthFactors)) {
     return std::nullopt;
   }
-  const base::Value::List* allowed_auth_factors =
-      &pref_service->GetList(prefs::kLocalAuthFactors);
+  const base::ListValue* allowed_auth_factors =
+      &pref_service->GetList(prefs::kAllowedLocalAuthFactors);
   return GetAuthFactorsSetFromPolicyList(allowed_auth_factors);
 }
 
@@ -131,7 +132,7 @@ bool ProfilePrefsAuthPolicyConnector::IsAuthFactorUserModifiable(
     }
     case AshAuthFactor::kLegacyPin: {
       // Lists of factors that are allowed for some purpose.
-      const base::Value::List* pref_lists[] = {
+      const base::ListValue* pref_lists[] = {
           &prefs->GetList(prefs::kQuickUnlockModeAllowlist),
           &prefs->GetList(prefs::kWebAuthnFactors),
       };
@@ -144,7 +145,7 @@ bool ProfilePrefsAuthPolicyConnector::IsAuthFactorUserModifiable(
 
       for (const auto* pref_list : pref_lists) {
         for (const auto& pref_list_value : pref_list_values) {
-          if (base::Contains(*pref_list, pref_list_value)) {
+          if (std::ranges::contains(*pref_list, pref_list_value)) {
             return true;
           }
         }

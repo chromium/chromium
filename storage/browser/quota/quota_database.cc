@@ -12,7 +12,6 @@
 #include <vector>
 
 #include "base/auto_reset.h"
-#include "base/containers/contains.h"
 #include "base/dcheck_is_on.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
@@ -657,7 +656,7 @@ QuotaErrorOr<std::set<BucketLocator>> QuotaDatabase::GetBucketsForEviction(
     }
 
     BucketId read_bucket_id = BucketId(statement.ColumnInt64(0));
-    if (base::Contains(bucket_exceptions, read_bucket_id)) {
+    if (bucket_exceptions.contains(read_bucket_id)) {
       continue;
     }
 
@@ -665,7 +664,7 @@ QuotaErrorOr<std::set<BucketLocator>> QuotaDatabase::GetBucketsForEviction(
     const bool is_default = statement.ColumnStringView(2) == kDefaultBucketName;
     const GURL read_gurl = read_storage_key->origin().GetURL();
     if (is_default && special_storage_policy &&
-        (special_storage_policy->IsStorageDurable(read_gurl) ||
+        (special_storage_policy->IsStoragePersistent(read_gurl) ||
          special_storage_policy->IsStorageUnlimited(read_gurl))) {
       continue;
     }
@@ -797,7 +796,7 @@ QuotaErrorOr<std::set<BucketInfo>> QuotaDatabase::GetExpiredBuckets(
     // Only the default bucket is persisted by `navigator.storage.persist()`.
     const GURL read_gurl = bucket->storage_key.origin().GetURL();
     if (bucket->is_default() && special_storage_policy &&
-        (special_storage_policy->IsStorageDurable(read_gurl) ||
+        (special_storage_policy->IsStoragePersistent(read_gurl) ||
          special_storage_policy->IsStorageUnlimited(read_gurl))) {
       continue;
     }

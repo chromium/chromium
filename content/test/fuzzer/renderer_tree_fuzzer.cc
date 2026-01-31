@@ -93,7 +93,7 @@ class Node {
   Node() {}
 
   virtual base::Value ToJson() = 0;
-  virtual void ParseJson(const base::Value::Dict& dict) = 0;
+  virtual void ParseJson(const base::DictValue& dict) = 0;
   virtual void WriteHtml(std::string* out) = 0;
 
  private:
@@ -128,7 +128,7 @@ class NodeList : public std::vector<std::unique_ptr<Node>> {
   }
 
   base::Value ToJson() const {
-    base::Value::List result;
+    base::ListValue result;
     for (const auto& node : *this) {
       result.Append(node->ToJson());
     }
@@ -156,7 +156,7 @@ class NodeList : public std::vector<std::unique_ptr<Node>> {
 
   AttrPosition PickRandomAttribute(Random* rnd);
 
-  void ParseJsonList(const base::Value::List& list) {
+  void ParseJsonList(const base::ListValue& list) {
     for (const auto& item : list) {
       std::unique_ptr<Node> node(Node::FromValue(item));
       if (node) {
@@ -231,13 +231,13 @@ class Element : public Node {
   }
 
   base::Value ToJson() override {
-    base::Value::Dict dict;
+    base::DictValue dict;
 
     dict.Set("e", tag_name_);
     if (!children_.empty())
       dict.Set("c", children_.ToJson());
     if (!attrs_.empty()) {
-      base::Value::Dict attrs_dict;
+      base::DictValue attrs_dict;
       for (const auto& pair : attrs_) {
         attrs_dict.Set(pair.first, pair.second);
       }
@@ -248,7 +248,7 @@ class Element : public Node {
   }
 
  protected:
-  void ParseJson(const base::Value::Dict& dict) override {
+  void ParseJson(const base::DictValue& dict) override {
     const base::Value* e_value = dict.Find("e");
     CHECK(e_value);
     const std::string* e_str = e_value->GetIfString();
@@ -256,11 +256,11 @@ class Element : public Node {
       tag_name_ = *e_str;
     }
 
-    const base::Value::List* c_list = dict.FindList("c");
+    const base::ListValue* c_list = dict.FindList("c");
     if (c_list)
       children_.ParseJsonList(*c_list);
 
-    const base::Value::Dict* a_dict = dict.FindDict("a");
+    const base::DictValue* a_dict = dict.FindDict("a");
     if (a_dict) {
       for (const auto item : *a_dict) {
         if (item.second.is_string())
@@ -299,12 +299,12 @@ class Text : public Node {
   void WriteHtml(std::string* out) override { *out += text_; }
 
   base::Value ToJson() override {
-    base::Value::Dict result;
+    base::DictValue result;
     result.Set("t", text_);
     return base::Value(std::move(result));
   }
 
-  void ParseJson(const base::Value::Dict& dict) override {
+  void ParseJson(const base::DictValue& dict) override {
     const base::Value* t_value = dict.Find("t");
     CHECK(t_value);
     const std::string* t_str = t_value->GetIfString();
@@ -381,7 +381,7 @@ std::unique_ptr<Node> Node::FromValue(const base::Value& value) {
     return nullptr;
   }
 
-  const base::Value::Dict& dict = value.GetDict();
+  const base::DictValue& dict = value.GetDict();
   std::unique_ptr<Node> node;
   if (dict.Find("t")) {
     node.reset(new Text());

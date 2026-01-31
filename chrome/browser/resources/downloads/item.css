@@ -85,7 +85,7 @@ cr-button {
   display: flex;
   flex: 1;
   flex-direction: column;
-  min-width: 0;  /* This allows #url to ellide correctly. */
+  min-width: 0;  /* This allows #file-link to elide correctly. */
   padding-bottom: 16px;
   padding-inline-end: 16px;
   padding-inline-start: var(--downloads-card-margin);
@@ -193,19 +193,14 @@ cr-button {
 }
 
 #name,
-#file-link,
-#url {
-  max-width: 100%;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-#name,
 #file-link {
   font-weight: 500;
-  word-break: break-all;
+  max-width: 100%;
+  overflow: hidden;
   text-align: start;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  word-break: break-all;
 }
 
 @media (prefers-color-scheme: light) {
@@ -224,17 +219,6 @@ cr-button {
   margin-inline-start: 12px;
 }
 
-#url {
-  color: inherit;
-  display: block;
-  margin-top: 6px;
-  min-height: 0;
-  text-decoration: none;
-  /* Ellipsize beginning and preserve the end to always display the eTLD+1. */
-  direction: rtl;
-  text-align: end;
-}
-
 #initiator-origin {
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -243,20 +227,12 @@ cr-button {
   margin-top: 6px;
 }
 
-:host-context([dir=rtl]) #url {
-  direction: ltr;
-}
-
 :host-context([dir=rtl]) #name {
   direction: ltr;
 }
 
 :host-context([dir=rtl]) #file-link {
   direction: ltr;
-}
-
-.is-active #url {
-  color: var(--cr-secondary-text-color);
 }
 
 #progress,

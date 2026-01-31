@@ -41,8 +41,8 @@ class WindowController;
 // This class should also implement ExtensionFunctionDispatcher::Delegate.
 //
 // Note that a single ExtensionFunctionDispatcher does *not* correspond to a
-// single RVH, a single extension, or a single URL. This is by design so that
-// we can gracefully handle cases like WebContents, where the RVH, extension,
+// single RFH, a single extension, or a single URL. This is by design so that
+// we can gracefully handle cases like WebContents, where the RFH, extension,
 // and URL can all change over the lifetime of the tab. Instead, these items
 // are all passed into each request.
 class ExtensionFunctionDispatcher {
@@ -51,18 +51,7 @@ class ExtensionFunctionDispatcher {
    public:
     // Returns the WindowController associated with this delegate, or NULL if no
     // window is associated with the delegate.
-    virtual WindowController* GetExtensionWindowController() const;
-
-    // Asks the delegate for any relevant WebContents associated with this
-    // context. For example, the WebContents in which an infobar or
-    // chrome-extension://<id> URL are being shown. Callers must check for a
-    // NULL return value (as in the case of a background page).
-    virtual content::WebContents* GetAssociatedWebContents() const;
-
-    // If the associated web contents is not null, returns that. Otherwise,
-    // returns the next most relevant visible web contents. Callers must check
-    // for a NULL return value (as in the case of a background page).
-    virtual content::WebContents* GetVisibleWebContents() const;
+    virtual WindowController* GetExtensionWindowController();
 
    protected:
     virtual ~Delegate() {}
@@ -82,7 +71,7 @@ class ExtensionFunctionDispatcher {
                 mojom::LocalFrameHost::RequestCallback callback);
 
   // Message handlers.
-  // Dispatches a request for service woker and the response is sent to the
+  // Dispatches a request for service worker and the response is sent to the
   // corresponding render process in an ExtensionMsg_ResponseWorker message.
   void DispatchForServiceWorker(
       mojom::RequestParamsPtr params,
@@ -96,9 +85,7 @@ class ExtensionFunctionDispatcher {
   // See the Delegate class for documentation on these methods.
   // TODO(devlin): None of these belong here. We should kill
   // ExtensionFunctionDispatcher::Delegate.
-  WindowController* GetExtensionWindowController() const;
-  content::WebContents* GetAssociatedWebContents() const;
-  content::WebContents* GetVisibleWebContents() const;
+  WindowController* GetExtensionWindowController();
 
   // The BrowserContext that this dispatcher is associated with.
   content::BrowserContext* browser_context() { return browser_context_; }

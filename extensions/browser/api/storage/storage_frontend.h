@@ -51,7 +51,7 @@ class StorageFrontend : public BrowserContextKeyedAPI {
     ~GetKeysResult();
 
     ResultStatus status;
-    std::optional<base::Value::List> data;
+    std::optional<base::ListValue> data;
   };
 
   struct GetResult {
@@ -61,7 +61,7 @@ class StorageFrontend : public BrowserContextKeyedAPI {
     ~GetResult();
 
     ResultStatus status;
-    std::optional<base::Value::Dict> data;
+    std::optional<base::DictValue> data;
   };
 
   // Returns the current instance for `context`.
@@ -125,7 +125,7 @@ class StorageFrontend : public BrowserContextKeyedAPI {
   // `values` in storage and fires `callback`.
   void Set(scoped_refptr<const Extension> extension,
            StorageAreaNamespace storage_area,
-           base::Value::Dict values,
+           base::DictValue values,
            base::OnceCallback<void(ResultStatus)> callback);
 
   // For a given `extension` and `storage_area`, removes the items specified by

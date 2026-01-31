@@ -32,7 +32,16 @@ found in the LICENSE file.
         android:focusable="false"
         android:contentDescription="@string/local_bookmarks_section_header" />
 
-    <org.chromium.ui.listmenu.ListMenuButton
+    <ImageView
+        android:id="@+id/drag_handle"
+        style="@style/ListItemEndIcon"
+        android:visibility="gone"
+        android:layout_gravity="end"
+        android:src="@drawable/ic_drag_handle_24dp"
+        app:tint="@color/default_icon_color_tint_list"
+        android:importantForAccessibility="no" />
+
+  <org.chromium.ui.listmenu.ListMenuButton
         android:id="@+id/more"
         android:visibility="gone"
         android:layout_width="@dimen/min_touch_target_size"

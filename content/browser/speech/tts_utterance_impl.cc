@@ -107,11 +107,11 @@ const std::string& TtsUtteranceImpl::GetText() {
   return text_;
 }
 
-void TtsUtteranceImpl::SetOptions(base::Value::Dict options) {
+void TtsUtteranceImpl::SetOptions(base::DictValue options) {
   options_ = std::move(options);
 }
 
-const base::Value::Dict* TtsUtteranceImpl::GetOptions() {
+const base::DictValue* TtsUtteranceImpl::GetOptions() {
   return &options_;
 }
 

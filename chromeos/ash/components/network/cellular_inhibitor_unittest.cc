@@ -170,7 +170,7 @@ class CellularInhibitorTest : public testing::Test {
 
  private:
   void GetPropertiesCallback(const std::string& device_path,
-                             std::optional<base::Value::Dict> properties) {
+                             std::optional<base::DictValue> properties) {
     properties_ = std::move(properties);
   }
 
@@ -180,7 +180,7 @@ class CellularInhibitorTest : public testing::Test {
   CellularInhibitor cellular_inhibitor_;
   TestObserver observer_;
 
-  std::optional<base::Value::Dict> properties_;
+  std::optional<base::DictValue> properties_;
 };
 
 TEST_F(CellularInhibitorTest, SuccessSingleRequest) {

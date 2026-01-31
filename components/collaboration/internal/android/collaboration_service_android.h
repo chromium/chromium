@@ -24,22 +24,22 @@ class CollaborationServiceAndroid : public base::SupportsUserData::Data,
   // CollaborationService Java API methods, implemented by native service:
   bool IsEmptyService(JNIEnv* env);
   void StartJoinFlow(JNIEnv* env,
-                     jlong delegate,
+                     int64_t delegate,
                      const base::android::JavaRef<jobject>& j_url);
   void StartShareOrManageFlow(
       JNIEnv* env,
-      jlong delegate,
+      int64_t delegate,
       const base::android::JavaRef<jstring>& j_sync_group_id,
       const base::android::JavaRef<jobject>& j_local_group_id,
-      jint entry);
+      int32_t entry);
   void StartLeaveOrDeleteFlow(
       JNIEnv* env,
-      jlong delegate,
+      int64_t delegate,
       const base::android::JavaRef<jstring>& j_sync_group_id,
       const base::android::JavaRef<jobject>& j_local_group_id,
-      jint entry);
+      int32_t entry);
   base::android::ScopedJavaLocalRef<jobject> GetServiceStatus(JNIEnv* env);
-  jint GetCurrentUserRoleForGroup(
+  int32_t GetCurrentUserRoleForGroup(
       JNIEnv* env,
       const base::android::JavaRef<jstring>& group_id);
   jni_zero::ScopedJavaLocalRef<jobject> GetGroupData(

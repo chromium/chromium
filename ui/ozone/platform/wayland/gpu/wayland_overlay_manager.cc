@@ -62,8 +62,7 @@ void WaylandOverlayManager::CheckOverlaySupport(
 bool WaylandOverlayManager::CanHandleCandidate(
     const OverlaySurfaceCandidate& candidate,
     gfx::AcceleratedWidget widget) const {
-  if (!manager_gpu_->SupportsFormat(
-          viz::SharedImageFormatToBufferFormat(candidate.format))) {
+  if (!manager_gpu_->SupportsFormat(candidate.format)) {
     return false;
   }
 

@@ -21,8 +21,20 @@ ScopedPrewarmFeatureList::ScopedPrewarmFeatureList(PrewarmState state) {
     case PrewarmState::kEnabledWithDefaultTrigger:
       scoped_feature_list_.InitAndEnableFeatureWithParameters(
           features::kPrewarm,
-          {{"url", "https://search.example.com/prewarm.html"},
-           {"zero_suggest_trigger", "true"}});
+          {
+              {"url", "https://search.example.com/prewarm.html"},
+              {"zero_suggest_trigger", "true"},
+              {"user_interaction_trigger", "false"},
+          });
+      break;
+    case PrewarmState::kEnabledWithInterationTrigger:
+      scoped_feature_list_.InitAndEnableFeatureWithParameters(
+          features::kPrewarm,
+          {
+              {"url", "https://search.example.com/prewarm.html"},
+              {"zero_suggest_trigger", "false"},
+              {"user_interaction_trigger", "true"},
+          });
       break;
   }
 }

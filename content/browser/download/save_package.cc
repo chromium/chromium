@@ -9,7 +9,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/containers/contains.h"
 #include "base/containers/flat_map.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -591,7 +590,7 @@ bool SavePackage::GenerateFileName(const std::string& disposition,
                              base::StrCat({"(", base::NumberToString(i), ")"}))
                          .AddExtension(file_name_ext);
       base::FilePath::StringType new_name = new_filepath.value();
-      if (!base::Contains(file_name_set_, new_name)) {
+      if (!file_name_set_.contains(new_name)) {
         // Resolved name conflict.
         file_name = new_name;
         file_name_count_map_[base_file_name] = ++i;
@@ -699,7 +698,7 @@ void SavePackage::PutInProgressItemToSavedMap(SaveItem* save_item) {
 
   SaveItemIdMap& map = save_item->success() ?
       saved_success_items_ : saved_failed_items_;
-  DCHECK(!base::Contains(map, save_item->id()));
+  DCHECK(!map.contains(save_item->id()));
   map[save_item->id()] = std::move(owned_item);
 }
 
@@ -961,7 +960,7 @@ void SavePackage::SaveNextFile(bool process_all_remaining_items) {
     waiting_item_queue_.pop_front();
 
     // Add the item to |in_progress_items_|.
-    DCHECK(!base::Contains(in_progress_items_, save_item->id()));
+    DCHECK(!in_progress_items_.contains(save_item->id()));
     in_progress_items_[save_item_ptr->id()] = std::move(save_item);
     save_item_ptr->Start();
 
@@ -1219,7 +1218,7 @@ void SavePackage::OnDidReceiveSerializedHtmlData(
       }
     }
 
-    if (base::Contains(saved_failed_items_, save_item->id()))
+    if (saved_failed_items_.contains(save_item->id()))
       wrote_to_failed_file_ = true;
 
     return;

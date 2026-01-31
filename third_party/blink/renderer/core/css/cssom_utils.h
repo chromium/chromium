@@ -33,6 +33,9 @@ class CSSOMUtils {
 
   static bool HasGridRepeatValue(const CSSValueList* value_list);
 
+  static bool IsGridLanesNormalDirectionValue(
+      const CSSValue* grid_lanes_direction_values);
+
   static bool IsGridLanesColumnDirectionValue(
       const CSSValue* grid_lanes_direction_values);
 
@@ -69,12 +72,11 @@ class CSSOMUtils {
       const CSSValue* template_area_values);
   // Returns a `CSSValueList` containing the computed value for
   // the `grid-lanes` shorthand, based on provided `grid-template-tracks`,
-  // `grid-template-areas`, `grid-lanes-direction`, and `grid-lanes-fill`.
+  // `grid-template-areas`, and `grid-lanes-direction`.
   static CSSValueList* ComputedValueForGridLanesShorthand(
       const CSSValue* grid_template_tracks_values,
       const CSSValue* template_area_values,
-      const CSSValue* grid_lanes_direction_values,
-      const CSSValue* grid_lanes_fill_values);
+      const CSSValue* grid_lanes_direction_values);
 };
 
 }  // namespace blink

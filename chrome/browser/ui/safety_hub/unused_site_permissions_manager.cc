@@ -110,10 +110,10 @@ const std::set<ContentSettingsType> GetRevokedUnusedSitePermissionTypes(
   return permissions_without_revoked_abusive_notification_manager;
 }
 
-base::Value::List ConvertContentSettingsIntValuesToString(
-    const base::Value::List& content_settings_values_list,
+base::ListValue ConvertContentSettingsIntValuesToString(
+    const base::ListValue& content_settings_values_list,
     bool* successful_migration) {
-  base::Value::List string_value_list;
+  base::ListValue string_value_list;
   for (const base::Value& setting_value : content_settings_values_list) {
     if (setting_value.is_int()) {
       int setting_int = setting_value.GetInt();
@@ -135,9 +135,9 @@ base::Value::List ConvertContentSettingsIntValuesToString(
   return string_value_list;
 }
 
-base::Value::Dict ConvertChooserContentSettingsIntValuesToString(
-    const base::Value::Dict& chooser_content_settings_values_dict) {
-  base::Value::Dict string_keyed_dict;
+base::DictValue ConvertChooserContentSettingsIntValuesToString(
+    const base::DictValue& chooser_content_settings_values_dict) {
+  base::DictValue string_keyed_dict;
   for (const auto [key, value] : chooser_content_settings_values_dict) {
     int number = -1;
     base::StringToInt(key, &number);
@@ -292,7 +292,7 @@ void UnusedSitePermissionsManager::RevokeUnusedPermissions(
         unused_site_permissions.front().source.secondary_pattern;
 
     std::set<ContentSettingsType> revoked_permissions;
-    base::Value::Dict chooser_permissions_data;
+    base::DictValue chooser_permissions_data;
     for (auto permission_itr = unused_site_permissions.begin();
          permission_itr != unused_site_permissions.end();) {
       const ContentSettingEntry& entry = *permission_itr;
@@ -417,7 +417,7 @@ void UnusedSitePermissionsManager::RegrantPermissionsForOrigin(
     return;
   }
 
-  base::Value::List* permission_type_list =
+  base::ListValue* permission_type_list =
       stored_value.GetDict().FindList(permissions::kRevokedKey);
   CHECK(permission_type_list);
   // Set this to true to prevent `OnContentSettingChanged` from removing
@@ -527,7 +527,7 @@ void UnusedSitePermissionsManager::
 
 void UnusedSitePermissionsManager::StorePermissionInUnusedSitePermissionSetting(
     const std::set<ContentSettingsType>& permissions,
-    const base::Value::Dict& chooser_permissions_data,
+    const base::DictValue& chooser_permissions_data,
     const std::optional<content_settings::ContentSettingConstraints> constraint,
     const ContentSettingsPattern& primary_pattern,
     const ContentSettingsPattern& secondary_pattern) {
@@ -544,12 +544,12 @@ void UnusedSitePermissionsManager::StorePermissionInUnusedSitePermissionSetting(
   base::Value cur_value(hcsm()->GetWebsiteSetting(
       url, url, ContentSettingsType::REVOKED_UNUSED_SITE_PERMISSIONS));
 
-  base::Value::Dict dict = cur_value.is_dict() ? std::move(cur_value.GetDict())
-                                               : base::Value::Dict();
-  base::Value::List permission_type_list =
+  base::DictValue dict =
+      cur_value.is_dict() ? std::move(cur_value.GetDict()) : base::DictValue();
+  base::ListValue permission_type_list =
       dict.FindList(permissions::kRevokedKey)
           ? std::move(*dict.FindList(permissions::kRevokedKey))
-          : base::Value::List();
+          : base::ListValue();
 
   for (const auto& permission : unused_site_permission_types) {
     // Chooser permissions (not ContentSettingsRegistry-based) should have
@@ -561,14 +561,14 @@ void UnusedSitePermissionsManager::StorePermissionInUnusedSitePermissionSetting(
   }
 
   dict.Set(permissions::kRevokedKey,
-           base::Value::List(std::move(permission_type_list)));
+           base::ListValue(std::move(permission_type_list)));
 
   if (IsChooserPermissionSupported() && !chooser_permissions_data.empty()) {
-    base::Value::Dict existing_chooser_permissions_data =
+    base::DictValue existing_chooser_permissions_data =
         dict.FindDict(permissions::kRevokedChooserPermissionsKey)
             ? std::move(
                   *dict.FindDict(permissions::kRevokedChooserPermissionsKey))
-            : base::Value::Dict();
+            : base::DictValue();
     for (auto data : chooser_permissions_data) {
       // Chooser permissions data should have its permission type included in
       // `permissions` set.
@@ -576,7 +576,7 @@ void UnusedSitePermissionsManager::StorePermissionInUnusedSitePermissionSetting(
       existing_chooser_permissions_data.Set(data.first, data.second.Clone());
     }
     dict.Set(permissions::kRevokedChooserPermissionsKey,
-             base::Value::Dict(std::move(existing_chooser_permissions_data)));
+             base::DictValue(std::move(existing_chooser_permissions_data)));
   }
 
   content_settings::ContentSettingConstraints default_constraint(clock_->Now());
@@ -635,21 +635,21 @@ void UnusedSitePermissionsManager::UpdateIntegerValuesToGroupName() {
     CHECK(stored_value.is_dict());
     base::Value updated_dict(stored_value.Clone());
 
-    const base::Value::List* permission_value_list =
+    const base::ListValue* permission_value_list =
         stored_value.GetDict().FindList(permissions::kRevokedKey);
     if (permission_value_list) {
-      base::Value::List updated_permission_value_list =
+      base::ListValue updated_permission_value_list =
           ConvertContentSettingsIntValuesToString(
               permission_value_list->Clone(), &successful_migration);
       updated_dict.GetDict().Set(permissions::kRevokedKey,
                                  std::move(updated_permission_value_list));
     }
 
-    const base::Value::Dict* chooser_permission_value_dict =
+    const base::DictValue* chooser_permission_value_dict =
         stored_value.GetDict().FindDict(
             permissions::kRevokedChooserPermissionsKey);
     if (chooser_permission_value_dict) {
-      base::Value::Dict updated_chooser_permission_value_dict =
+      base::DictValue updated_chooser_permission_value_dict =
           ConvertChooserContentSettingsIntValuesToString(
               chooser_permission_value_dict->Clone());
       updated_dict.GetDict().Set(

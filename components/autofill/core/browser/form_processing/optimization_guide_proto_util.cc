@@ -71,7 +71,7 @@ void PopulateExtensionAPISpecificFields(
   // Add additional field-level metadata.
   CHECK_EQ(form_data.fields().size(),
            static_cast<size_t>(form_proto.fields_size()));
-  for (size_t i = 0; i < form_data.fields().size(); i++) {
+  for (size_t i = 0; i < form_data.fields().size(); ++i) {
     const FormFieldData& field = form_data.fields()[i];
     *form_proto.mutable_fields(i)->mutable_global_id() =
         ToGlobalIdProto(field.global_id());

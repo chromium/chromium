@@ -21,7 +21,6 @@
 #include "base/base_paths.h"
 #include "base/command_line.h"
 #include "base/containers/adapters.h"
-#include "base/containers/contains.h"
 #include "base/file_version_info.h"
 #include "base/files/file_enumerator.h"
 #include "base/files/file_path.h"
@@ -398,7 +397,8 @@ base::Process LaunchOfflineInstallProcess(bool is_legacy_install,
                                           const std::wstring& app_id,
                                           const std::wstring& offline_dir_guid,
                                           bool is_silent_install,
-                                          const std::string& language) {
+                                          const std::string& language,
+                                          const std::string& install_source) {
   auto launch_legacy_offline_install = [&] {
     auto build_legacy_switch =
         [](const std::string& switch_name) -> std::wstring {
@@ -422,6 +422,11 @@ base::Process LaunchOfflineInstallProcess(bool is_legacy_install,
         base::CommandLine::QuoteForCommandLineToArgvW(offline_dir_guid),
 
         is_silent_install ? build_legacy_switch(updater::kSilentSwitch) : L"",
+
+        install_source.empty()
+            ? L""
+            : build_legacy_switch(updater::kInstallSourceSwitch),
+        base::UTF8ToWide(install_source),
     };
 
     return base::LaunchProcess(base::JoinString(install_cmd_args, L" "), {});
@@ -442,6 +447,11 @@ base::Process LaunchOfflineInstallProcess(bool is_legacy_install,
                                    offline_dir_guid);
     if (is_silent_install) {
       install_cmd.AppendSwitch(updater::kSilentSwitch);
+    }
+
+    if (!install_source.empty()) {
+      install_cmd.AppendSwitchUTF8(updater::kInstallSourceSwitch,
+                                   install_source);
     }
 
     return base::LaunchProcess(install_cmd, {});
@@ -537,6 +547,7 @@ void RunOfflineInstallWithManifest(UpdaterScope scope,
                                    bool is_silent_install,
                                    int installer_result,
                                    int installer_error,
+                                   const std::string& install_source,
                                    base::cstring_view platform,
                                    int string_resource_id_to_find,
                                    const std::string& language,
@@ -663,7 +674,7 @@ void RunOfflineInstallWithManifest(UpdaterScope scope,
   // Trigger offline install.
   ASSERT_TRUE(LaunchOfflineInstallProcess(
                   is_legacy_install, updater_exe.value(), scope, kTestAppID,
-                  offline_dir_guid, is_silent_install, language)
+                  offline_dir_guid, is_silent_install, language, install_source)
                   .IsValid());
 
   // * Silent installs do not show any UI.
@@ -1549,7 +1560,7 @@ void ExpectProcessLauncherLaunchCmdLineSucceeds(UpdaterScope scope) {
 void ExpectLegacyAppCommandWebSucceeds(UpdaterScope scope,
                                        const std::string& app_id,
                                        const std::string& command_id,
-                                       const base::Value::List& parameters,
+                                       const base::ListValue& parameters,
                                        int expected_exit_code) {
   const size_t kMaxParameters = 9;
   ASSERT_LE(parameters.size(), kMaxParameters);
@@ -1713,7 +1724,7 @@ void LegacyInstallApp(UpdaterScope scope,
 }
 
 void InvokeTestServiceFunction(const std::string& function_name,
-                               const base::Value::Dict& arguments) {
+                               const base::DictValue& arguments) {
   std::string arguments_json_string;
   EXPECT_TRUE(base::JSONWriter::Write(arguments, &arguments_json_string));
 
@@ -1991,16 +2002,16 @@ void CloseInstallCompleteDialog(const std::u16string& bundle_name,
           base::win::EnumerateChildWindows(
               ::GetDesktopWindow(), base::BindLambdaForTesting([&](HWND hwnd) {
                 if (!base::win::IsSystemDialog(hwnd) ||
-                    !base::Contains(base::win::GetWindowTextString(hwnd),
-                                    window_title)) {
+                    !base::win::GetWindowTextString(hwnd).contains(
+                        window_title)) {
                   return false;
                 }
                 // Enumerate the child windows to search for
                 // `child_window_text_to_find`. If found, close the dialog.
                 base::win::EnumerateChildWindows(
                     hwnd, base::BindLambdaForTesting([&](HWND hwnd) {
-                      if (!base::Contains(base::win::GetWindowTextString(hwnd),
-                                          child_window_text_to_find)) {
+                      if (!base::win::GetWindowTextString(hwnd).contains(
+                              child_window_text_to_find)) {
                         return false;
                       }
                       const HWND parent_hwnd = ::GetParent(hwnd);
@@ -2141,21 +2152,22 @@ void RunOfflineInstall(UpdaterScope scope,
                        bool is_legacy_install,
                        bool is_silent_install,
                        int installer_result,
-                       int installer_error) {
-  RunOfflineInstallWithManifest(scope, is_legacy_install, is_silent_install,
-                                installer_result, installer_error, "win",
-                                IDS_BUNDLE_INSTALLED_SUCCESSFULLY_BASE, "en",
-                                !installer_result);
+                       int installer_error,
+                       const std::string& install_source) {
+  RunOfflineInstallWithManifest(
+      scope, is_legacy_install, is_silent_install, installer_result,
+      installer_error, install_source, "win",
+      IDS_BUNDLE_INSTALLED_SUCCESSFULLY_BASE, "en", !installer_result);
 }
 
 void RunOfflineInstallOsNotSupported(UpdaterScope scope,
                                      bool is_legacy_install,
                                      bool is_silent_install,
                                      const std::string& language) {
-  RunOfflineInstallWithManifest(scope, is_legacy_install, is_silent_install,
-                                /*installer_result=*/0, /*installer_error=*/0,
-                                "minix", IDS_UPDATER_OS_NOT_SUPPORTED_BASE,
-                                language, false);
+  RunOfflineInstallWithManifest(
+      scope, is_legacy_install, is_silent_install,
+      /*installer_result=*/0, /*installer_error=*/0, /*install_source=*/"",
+      "minix", IDS_UPDATER_OS_NOT_SUPPORTED_BASE, language, false);
 }
 
 void RunMockOfflineMetaInstall(UpdaterScope scope,
@@ -2221,7 +2233,7 @@ base::CommandLine MakeElevated(base::CommandLine command_line) {
   return command_line;
 }
 
-void SetPlatformPolicies(const base::Value::Dict& values) {
+void SetPlatformPolicies(const base::DictValue& values) {
   base::win::RegKey policy_key;
   ASSERT_EQ(ERROR_SUCCESS,
             policy_key.Create(HKEY_LOCAL_MACHINE, UPDATER_POLICIES_KEY,

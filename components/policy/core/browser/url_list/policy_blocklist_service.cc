@@ -13,8 +13,8 @@
 constexpr char kAllTrafficWildcard[] = "*";
 
 // Returns a URL filter that covers all URL navigations.
-base::Value::List GetAllTrafficFilter() {
-  base::Value::List all_traffic;
+base::ListValue GetAllTrafficFilter() {
+  base::ListValue all_traffic;
   all_traffic.Append(kAllTrafficWildcard);
   return all_traffic;
 }
@@ -36,11 +36,11 @@ class AlwaysOnVpnPreConnectBlocklistSource : public policy::BlocklistSource {
       const AlwaysOnVpnPreConnectBlocklistSource&) = delete;
   ~AlwaysOnVpnPreConnectBlocklistSource() override = default;
 
-  const base::Value::List* GetBlocklistSpec() const override {
+  const base::ListValue* GetBlocklistSpec() const override {
     return &blocklist_;
   }
 
-  const base::Value::List* GetAllowlistSpec() const override {
+  const base::ListValue* GetAllowlistSpec() const override {
     return &pref_change_registrar_.prefs()->GetList(
         policy::policy_prefs::kAlwaysOnVpnPreConnectUrlAllowlist);
   }
@@ -56,7 +56,7 @@ class AlwaysOnVpnPreConnectBlocklistSource : public policy::BlocklistSource {
   }
 
  private:
-  const base::Value::List blocklist_;
+  const base::ListValue blocklist_;
   PrefChangeRegistrar pref_change_registrar_;
 };
 
@@ -84,14 +84,26 @@ PolicyBlocklistService::~PolicyBlocklistService() = default;
 
 policy::URLBlocklist::URLBlocklistState
 PolicyBlocklistService::GetURLBlocklistState(const GURL& url) const {
+  return GetURLBlocklistStateWithPolicySource(url).url_blocklist_state;
+}
+
+PolicyBlocklistService::PolicyBlocklistState
+PolicyBlocklistService::GetURLBlocklistStateWithPolicySource(
+    const GURL& url) const {
   if (incognito_url_blocklist_manager_) {
     const auto incognito_state =
         incognito_url_blocklist_manager_->GetURLBlocklistState(url);
     if (incognito_state != policy::URLBlocklist::URL_NEUTRAL_STATE) {
-      return incognito_state;
+      return {
+          .url_blocklist_state = incognito_state,
+          .policy_source =
+              PolicyBlocklistService::PolicyBlocklistState::INCOGNITO_POLICY};
     }
   }
-  return url_blocklist_manager_->GetURLBlocklistState(url);
+  return {
+      .url_blocklist_state = url_blocklist_manager_->GetURLBlocklistState(url),
+      .policy_source =
+          PolicyBlocklistService::PolicyBlocklistState::URL_POLICY};
 }
 
 #if BUILDFLAG(IS_CHROMEOS)

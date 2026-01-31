@@ -15,7 +15,6 @@
 
 #include "base/base64.h"
 #include "base/command_line.h"
-#include "base/containers/contains.h"
 #include "base/containers/span.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
@@ -107,9 +106,9 @@ bool IsWebAuthnRPIDListedInSecurityKeyPermitAttestationPolicy(
     const std::string& relying_party_id) {
   const Profile* profile = Profile::FromBrowserContext(browser_context);
   const PrefService* prefs = profile->GetPrefs();
-  const base::Value::List& permit_attestation =
+  const base::ListValue& permit_attestation =
       prefs->GetList(prefs::kSecurityKeyPermitAttestation);
-  return base::Contains(permit_attestation, relying_party_id);
+  return permit_attestation.contains(relying_party_id);
 }
 
 bool IsOriginListedInEnterpriseAttestationSwitch(
@@ -200,9 +199,10 @@ void DeleteUnacceptedPasskeys(
            webauthn::PasskeyModel::ShadowedCredentials::kExclude)) {
     if (std::vector<uint8_t>(passkey.user_id().begin(),
                              passkey.user_id().end()) == user_id &&
-        !base::Contains(all_accepted_credentials_ids,
-                        std::vector<uint8_t>(passkey.credential_id().begin(),
-                                             passkey.credential_id().end()))) {
+        !std::ranges::contains(
+            all_accepted_credentials_ids,
+            std::vector<uint8_t>(passkey.credential_id().begin(),
+                                 passkey.credential_id().end()))) {
       passkey_store->DeletePasskey(passkey.credential_id(), FROM_HERE);
       is_passkey_deleted = true;
     }
@@ -256,10 +256,10 @@ void HideAndRestorePasskeys(
             kNoPasskeyChanged);
     return;
   }
-  bool passkey_in_list =
-      base::Contains(all_accepted_credentials_ids,
-                     std::vector<uint8_t>(passkey_it->credential_id().begin(),
-                                          passkey_it->credential_id().end()));
+  bool passkey_in_list = std::ranges::contains(
+      all_accepted_credentials_ids,
+      std::vector<uint8_t>(passkey_it->credential_id().begin(),
+                           passkey_it->credential_id().end()));
   if ((passkey_in_list && !passkey_it->hidden()) ||
       (!passkey_in_list && passkey_it->hidden())) {
     LogSignalAllAcceptedCredentials(

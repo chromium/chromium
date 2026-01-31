@@ -43,7 +43,8 @@ TEST_F(PermissionsManagerImplTest, Test) {
   EXPECT_FALSE(HasPermission(blink::PermissionType::NOTIFICATIONS, sub_url));
   EXPECT_FALSE(HasPermission(blink::PermissionType::NOTIFICATIONS, other_url));
   EXPECT_FALSE(HasPermission(blink::PermissionType::MIDI, app_url_));
-  EXPECT_FALSE(HasPermission(blink::PermissionType::DURABLE_STORAGE, app_url_));
+  EXPECT_FALSE(
+      HasPermission(blink::PermissionType::PERSISTENT_STORAGE, app_url_));
 
   permissions_manager_.AddPermission(blink::PermissionType::NOTIFICATIONS);
   EXPECT_TRUE(HasPermission(blink::PermissionType::NOTIFICATIONS, app_url_));
@@ -51,7 +52,8 @@ TEST_F(PermissionsManagerImplTest, Test) {
   EXPECT_TRUE(HasPermission(blink::PermissionType::NOTIFICATIONS, sub_url));
   EXPECT_FALSE(HasPermission(blink::PermissionType::NOTIFICATIONS, other_url));
   EXPECT_FALSE(HasPermission(blink::PermissionType::MIDI, app_url_));
-  EXPECT_FALSE(HasPermission(blink::PermissionType::DURABLE_STORAGE, app_url_));
+  EXPECT_FALSE(
+      HasPermission(blink::PermissionType::PERSISTENT_STORAGE, app_url_));
 
   permissions_manager_.AddOrigin(url::Origin::Create(http_url));
   EXPECT_TRUE(HasPermission(blink::PermissionType::NOTIFICATIONS, app_url_));
@@ -59,7 +61,8 @@ TEST_F(PermissionsManagerImplTest, Test) {
   EXPECT_TRUE(HasPermission(blink::PermissionType::NOTIFICATIONS, sub_url));
   EXPECT_FALSE(HasPermission(blink::PermissionType::NOTIFICATIONS, other_url));
   EXPECT_FALSE(HasPermission(blink::PermissionType::MIDI, app_url_));
-  EXPECT_FALSE(HasPermission(blink::PermissionType::DURABLE_STORAGE, app_url_));
+  EXPECT_FALSE(
+      HasPermission(blink::PermissionType::PERSISTENT_STORAGE, app_url_));
 
   permissions_manager_.AddPermission(blink::PermissionType::MIDI);
   EXPECT_TRUE(HasPermission(blink::PermissionType::NOTIFICATIONS, app_url_));
@@ -67,7 +70,8 @@ TEST_F(PermissionsManagerImplTest, Test) {
   EXPECT_TRUE(HasPermission(blink::PermissionType::NOTIFICATIONS, sub_url));
   EXPECT_FALSE(HasPermission(blink::PermissionType::NOTIFICATIONS, other_url));
   EXPECT_TRUE(HasPermission(blink::PermissionType::MIDI, app_url_));
-  EXPECT_FALSE(HasPermission(blink::PermissionType::DURABLE_STORAGE, app_url_));
+  EXPECT_FALSE(
+      HasPermission(blink::PermissionType::PERSISTENT_STORAGE, app_url_));
 }
 
 }  // namespace cast_receiver

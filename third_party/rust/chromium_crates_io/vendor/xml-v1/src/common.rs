@@ -102,6 +102,7 @@ impl XmlVersion {
     /// assert_eq!(XmlVersion::Version10.as_str(), "1.0");
     /// assert_eq!(XmlVersion::Version11.as_str(), "1.1");
     /// ```
+    #[must_use] 
     pub fn as_str(self) -> &'static str {
         match self {
             Self::Version10 => "1.0",

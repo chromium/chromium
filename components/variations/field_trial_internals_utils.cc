@@ -8,7 +8,6 @@
 #include <string>
 #include <string_view>
 
-#include "base/containers/contains.h"
 #include "base/logging.h"
 #include "base/metrics/field_trial.h"
 #include "base/metrics/histogram_functions.h"
@@ -34,7 +33,7 @@ bool ContainsExperiment(const std::vector<variations::StudyGroupNames>& studies,
                         std::string_view experiment_name) {
   for (const auto& study : studies) {
     if (study.name == study_name) {
-      if (base::Contains(study.groups, experiment_name)) {
+      if (std::ranges::contains(study.groups, experiment_name)) {
         return true;
       }
     }

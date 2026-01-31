@@ -621,7 +621,6 @@ public class NotificationPlatformBridge {
         }
 
         // This code parses the notification id that was generated in notification_id_generator.cc
-        // TODO(crbug.com/41364310): Extract this to a separate class.
         String[] parts = tag.split(NotificationConstants.NOTIFICATION_TAG_SEPARATOR);
         assert parts.length >= 3;
         try {
@@ -733,7 +732,7 @@ public class NotificationPlatformBridge {
             final long timestamp,
             final boolean renotify,
             final boolean silent,
-            final ActionInfo[] actions,
+            @JniType("std::vector<message_center::ButtonInfo>") final ActionInfo[] actions,
             final boolean isSuspicious,
             final boolean skipUAButtons) {
         final boolean vibrateEnabled =
@@ -1069,8 +1068,6 @@ public class NotificationPlatformBridge {
                                         origin, SchemeDisplay.OMIT_HTTP_AND_HTTPS));
 
         if (shouldSetChannelId(forWebApk)) {
-            // TODO(crbug.com/40544272): Channel ID should be retrieved from cache in native and
-            // passed through to here with other notification parameters.
             notificationBuilder.setChannelId(identifyingAttributes.channelId);
         }
 

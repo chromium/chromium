@@ -14,6 +14,7 @@
 #import "ios/chrome/browser/credential_exchange/ui/credential_export_favicon_provider.h"
 #import "ios/chrome/browser/credential_exchange/ui/credential_export_view_controller.h"
 #import "ios/chrome/browser/credential_exchange/ui/credential_export_view_controller_presentation_delegate.h"
+#import "ios/chrome/browser/passwords/coordinator/password_export_handler.h"
 
 namespace password_manager {
 class AffiliatedGroup;
@@ -23,7 +24,12 @@ namespace webauthn {
 class PasskeyModel;
 }  // namespace webauthn
 
+namespace syncer {
+class SyncService;
+}  // namespace syncer
+
 class FaviconLoader;
+@protocol ReauthenticationProtocol;
 
 // Protocol for the Mediator to request UI actions from the Coordinator.
 @protocol CredentialExportMediatorDelegate <NSObject>
@@ -51,7 +57,10 @@ class FaviconLoader;
                                    affiliatedGroups
                   passkeyModel:(webauthn::PasskeyModel*)passkeyModel
                  faviconLoader:(FaviconLoader*)faviconLoader
-    NS_DESIGNATED_INITIALIZER;
+        reauthenticationModule:(id<ReauthenticationProtocol>)reauthModule
+                 exportHandler:(id<PasswordExportHandler>)exportHandler
+                   syncService:(syncer::SyncService*)syncService
+                     userEmail:(NSString*)userEmail NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)init NS_UNAVAILABLE;
 

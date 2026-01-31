@@ -4,11 +4,10 @@
 
 #include "ui/base/interaction/element_identifier.h"
 
-#include <cstring>
+#include <string_view>
 
 #include "base/check.h"
 #include "base/compiler_specific.h"
-#include "base/containers/contains.h"
 #include "base/no_destructor.h"
 
 namespace ui {
@@ -33,14 +32,14 @@ ElementIdentifier ElementIdentifier::FromRawValue(intptr_t value) {
     return ElementIdentifier();
   const auto* impl =
       reinterpret_cast<const internal::ElementIdentifierImpl*>(value);
-  CHECK(base::Contains(GetKnownIdentifiers(), impl));
+  CHECK(GetKnownIdentifiers().contains(impl));
   return ElementIdentifier(impl);
 }
 
 // static
 ElementIdentifier ElementIdentifier::FromName(const char* name) {
   for (const auto* impl : GetKnownIdentifiers()) {
-    if (!UNSAFE_TODO(strcmp(impl->name, name))) {
+    if (std::string_view(impl->name) == name) {
       return ElementIdentifier(impl);
     }
   }

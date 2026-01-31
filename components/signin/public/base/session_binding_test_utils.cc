@@ -126,7 +126,7 @@ testing::AssertionResult VerifyJwtSignature(
              : (testing::AssertionFailure() << "Invalid signature");
 }
 
-std::optional<base::Value::Dict> ExtractHeaderFromJwt(std::string_view jwt) {
+std::optional<base::DictValue> ExtractHeaderFromJwt(std::string_view jwt) {
   std::optional<std::string> header = ExtractJwtPart(jwt, JwtPart::kHeader);
   if (!header) {
     return std::nullopt;
@@ -136,7 +136,7 @@ std::optional<base::Value::Dict> ExtractHeaderFromJwt(std::string_view jwt) {
                                     base::JSON_PARSE_CHROMIUM_EXTENSIONS);
 }
 
-std::optional<base::Value::Dict> ExtractPayloadFromJwt(std::string_view jwt) {
+std::optional<base::DictValue> ExtractPayloadFromJwt(std::string_view jwt) {
   std::optional<std::string> payload = ExtractJwtPart(jwt, JwtPart::kPayload);
   if (!payload) {
     return std::nullopt;

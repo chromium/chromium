@@ -8,8 +8,6 @@ source_set("public") {
     "badge_constants.mm",
     "badge_item.h",
     "badge_type.h",
-    "badges_histograms.h",
-    "badges_histograms.mm",
   ]
   deps = [ "//ios/chrome/browser/infobars/model:badge_state_public" ]
 }
@@ -67,6 +65,7 @@ source_set("ui_bundled") {
     "//components/password_manager/core/common",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/badges/model:features",
+    "//ios/chrome/browser/contextual_panel/model:public",
     "//ios/chrome/browser/fullscreen/ui_bundled:ui",
     "//ios/chrome/browser/infobars/model",
     "//ios/chrome/browser/infobars/model:badge",
@@ -78,6 +77,9 @@ source_set("ui_bundled") {
     "//ios/chrome/browser/location_bar/ui_bundled:constants",
     "//ios/chrome/browser/overlays/model",
     "//ios/chrome/browser/overlays/model/public/common/infobars",
+    "//ios/chrome/browser/reader_mode/model",
+    "//ios/chrome/browser/reader_mode/model:constants",
+    "//ios/chrome/browser/reader_mode/model:features",
     "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
     "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/model/url",
@@ -127,8 +129,4 @@ source_set("unit_tests") {
     "//ios/web/public/test/fakes",
     "//testing/gtest",
   ]
-
-  # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
-  # enable the diagnostic by removing this line.
-  configs += [ "//build/config/compiler:no_exit_time_destructors" ]
 }

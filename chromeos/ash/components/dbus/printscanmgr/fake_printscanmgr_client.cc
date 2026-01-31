@@ -4,7 +4,6 @@
 
 #include "chromeos/ash/components/dbus/printscanmgr/fake_printscanmgr_client.h"
 
-#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/task/single_thread_task_runner.h"
 
@@ -44,7 +43,7 @@ void FakePrintscanmgrClient::CupsRemovePrinter(
     chromeos::DBusMethodCallback<printscanmgr::CupsRemovePrinterResponse>
         callback,
     base::OnceClosure error_callback) {
-  const bool has_printer = base::Contains(printers_, request.name());
+  const bool has_printer = printers_.contains(request.name());
   if (has_printer) {
     printers_.erase(request.name());
   }

@@ -10,7 +10,6 @@ import type {HistoryEntry, QueryResult} from 'chrome://resources/cr_components/h
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PromiseResolver} from 'chrome://resources/js/promise_resolver.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
-import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 import {TestMock} from 'chrome://webui-test/test_mock.js';
 import {microtasksFinished} from 'chrome://webui-test/test_util.js';
 
@@ -44,7 +43,7 @@ suite('history-toolbar', function() {
     app = document.createElement('history-app');
     document.body.appendChild(app);
     await testService.handler.whenCalled('queryHistory');
-    return flushTasks();
+    return microtasksFinished();
   });
 
   test('selecting checkbox causes toolbar to change', async function() {
@@ -69,7 +68,7 @@ suite('history-toolbar', function() {
 
     item.$.checkbox.click();
     await item.$.checkbox.updateComplete;
-    await flushTasks();
+    await microtasksFinished();
 
     // Ensure that when an item is deselected the count held by the
     // toolbar decreases.

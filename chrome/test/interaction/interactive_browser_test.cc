@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "ui/base/interaction/element_identifier.h"
+#include "ui/views/controls/webview/webview.h"
 
 InteractiveBrowserTestApi::MultiStep
 InteractiveBrowserTestApi::InstrumentNonTabWebView(ui::ElementIdentifier id,

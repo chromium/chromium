@@ -26,7 +26,7 @@ class IOSSharingServiceFactoryTest : public PlatformTest {
 
     profile_ = TestProfileIOS::Builder().Build();
     profile_->GetSyncablePrefs()->SetDict(prefs::kSharingFCMRegistration,
-                                          base::Value::Dict());
+                                          base::DictValue());
   }
 
   base::test::ScopedFeatureList scoped_feature_list_;

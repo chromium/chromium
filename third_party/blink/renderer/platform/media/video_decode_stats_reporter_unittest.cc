@@ -6,6 +6,7 @@
 
 #include <memory>
 #include <optional>
+#include <utility>
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
@@ -387,9 +388,11 @@ class VideoDecodeStatsReporterTest : public ::testing::Test {
 };
 
 const base::TimeDelta VideoDecodeStatsReporterTest::kRecordingInterval =
-    base::Milliseconds(VideoDecodeStatsReporter::kRecordingIntervalMs);
+    base::Milliseconds(
+        std::to_underlying(VideoDecodeStatsReporter::kRecordingIntervalMs));
 const base::TimeDelta VideoDecodeStatsReporterTest::kTinyFpsWindowDuration =
-    base::Milliseconds(VideoDecodeStatsReporter::kTinyFpsWindowMs);
+    base::Milliseconds(
+        std::to_underlying(VideoDecodeStatsReporter::kTinyFpsWindowMs));
 
 TEST_F(VideoDecodeStatsReporterTest, RecordWhilePlaying) {
   StartPlayingAndStabilizeFramerate();

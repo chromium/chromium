@@ -1,0 +1,11 @@
+Name: byteorder-lite
+URL: https://crates.io/crates/byteorder-lite
+Version: 0.1.0
+Revision: 7d44da06a48fe10d7e23efd9a932d18a7a2def63
+Update Mechanism: Manual (https://crbug.com/449898466)
+License: MIT
+License File: //third_party/rust/chromium_crates_io/vendor/byteorder-lite-v0_1/LICENSE-MIT
+Shipped: yes
+Security Critical: yes
+
+Description: Library for reading/writing numbers in big-endian and little-endian.

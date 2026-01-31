@@ -519,6 +519,9 @@ struct AutocompleteUnrecognizedTypeTestCase {
   bool is_server_overwrite = false;
   // Expected value of `ShouldSuppressSuggestionsAndFillingByDefault()`.
   bool expect_should_suppress_suggestions_and_filling;
+  // Whether the unrecognized autocomplete attribute value should lead to
+  // suppressing suggestions.
+  AutocompleteUnrecognizedBehavior ac_unrecognized_behavior;
   const AutofillPredictionSource expected_source;
 };
 
@@ -535,7 +538,8 @@ TEST_P(AutocompleteUnrecognizedTypeTest, TypePredictions) {
 
   // Expect that the predicted type wins over ac=unrecognized.
   EXPECT_THAT(field.Type().GetTypes(), ElementsAre(test.predicted_type));
-  EXPECT_EQ(field.ShouldSuppressSuggestionsAndFillingByDefault(),
+  EXPECT_EQ(field.ShouldSuppressSuggestionsAndFillingByDefault(
+                test.ac_unrecognized_behavior),
             test.expect_should_suppress_suggestions_and_filling);
   EXPECT_EQ(field.PredictionSource(), test.expected_source);
 }
@@ -548,20 +552,49 @@ INSTANTIATE_TEST_SUITE_P(
         AutocompleteUnrecognizedTypeTestCase{
             .predicted_type = ADDRESS_HOME_CITY,
             .expect_should_suppress_suggestions_and_filling = true,
+            .ac_unrecognized_behavior =
+                AutocompleteUnrecognizedBehavior::kSuggestionsSuppressed,
             .expected_source = AutofillPredictionSource::kServerCrowdsourcing},
         // Server overwrite: Expect suggestions/filling.
         AutocompleteUnrecognizedTypeTestCase{
             .predicted_type = ADDRESS_HOME_CITY,
             .is_server_overwrite = true,
             .expect_should_suppress_suggestions_and_filling = false,
+            .ac_unrecognized_behavior =
+                AutocompleteUnrecognizedBehavior::kSuggestionsSuppressed,
             .expected_source = AutofillPredictionSource::kServerOverride},
         // Credit card prediction: They ignore ac=unrecognized independently of
         // the feature. Thus, expect suggestions/filling.
         AutocompleteUnrecognizedTypeTestCase{
             .predicted_type = CREDIT_CARD_NUMBER,
             .expect_should_suppress_suggestions_and_filling = false,
+            .ac_unrecognized_behavior =
+                AutocompleteUnrecognizedBehavior::kSuggestionsSuppressed,
+            .expected_source = AutofillPredictionSource::kServerCrowdsourcing},
+        // Predicted address type but suppressing ac=unrecognized is disabled.
+        // This expect suggestions/filling.
+        AutocompleteUnrecognizedTypeTestCase{
+            .predicted_type = ADDRESS_HOME_LINE1,
+            .expect_should_suppress_suggestions_and_filling = false,
+            .ac_unrecognized_behavior =
+                AutocompleteUnrecognizedBehavior::kSuggestionsAllowed,
             .expected_source =
                 AutofillPredictionSource::kServerCrowdsourcing}));
+
+// Tests the kill switch: when disabled, unrecognized fields are suppressed
+// by default even if the caller suggests otherwise.
+TEST(AutocompleteUnrecognizedTypeKillSwitchTest,
+     AlwaysSuppressIfFieldEligible) {
+  base::test::ScopedFeatureList features;
+  features.InitAndDisableFeature(
+      features::kAutofillEnableSkippingUnrecognizedAttribute);
+
+  AutofillField field;
+  field.SetHtmlType(HtmlFieldType::kUnrecognized, HtmlFieldMode::kNone);
+
+  EXPECT_TRUE(field.ShouldSuppressSuggestionsAndFillingByDefault(
+      AutocompleteUnrecognizedBehavior::kSuggestionsAllowed));
+}
 
 // Parameters for `AutofillLocalHeuristicsOverridesTest`
 struct AutofillLocalHeuristicsOverridesParams {
@@ -710,7 +743,7 @@ INSTANTIATE_TEST_SUITE_P(
             .heuristic_type = LOYALTY_MEMBERSHIP_ID,
             .expected_result = PHONE_HOME_NUMBER,
             .expected_source = AutofillPredictionSource::kServerCrowdsourcing},
-        // Test non-override behaviour.
+        // Test non-override behavior.
         AutofillLocalHeuristicsOverridesParams{
             .html_field_type = HtmlFieldType::kStreetAddress,
             .server_type = ADDRESS_HOME_STREET_ADDRESS,

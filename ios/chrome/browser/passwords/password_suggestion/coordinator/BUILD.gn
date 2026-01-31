@@ -1,0 +1,34 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("coordinator") {
+  sources = [
+    "password_suggestion_coordinator.h",
+    "password_suggestion_coordinator.mm",
+  ]
+  deps = [
+    "//base",
+    "//components/autofill/core/common",
+    "//components/password_manager/core/browser/features:password_features",
+    "//components/password_manager/ios",
+    "//components/password_manager/ios:password_manager_feature_header",
+    "//components/prefs",
+    "//ios/chrome/browser/autofill/model:model_shared",
+    "//ios/chrome/browser/autofill/model/bottom_sheet",
+    "//ios/chrome/browser/passwords/password_suggestion/ui",
+    "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
+    "//ios/chrome/browser/shared/model/browser",
+    "//ios/chrome/browser/shared/model/prefs:pref_names",
+    "//ios/chrome/browser/shared/model/profile",
+    "//ios/chrome/browser/shared/model/web_state_list",
+    "//ios/chrome/browser/shared/public/commands",
+    "//ios/chrome/browser/signin/model:authentication_service",
+    "//ios/chrome/browser/signin/model:authentication_service_factory",
+    "//ios/chrome/common/ui/confirmation_alert",
+    "//ios/web/public",
+    "//ios/web/public/js_messaging",
+    "//ui/base",
+  ]
+  frameworks = [ "UIKit.framework" ]
+}

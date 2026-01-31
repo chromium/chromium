@@ -57,6 +57,9 @@ class WTF_EXPORT AtomicString {
   USING_FAST_MALLOC(AtomicString);
 
  public:
+  using size_type = string_size_t;
+  static constexpr size_type npos = kNotFound;
+
   // The function is defined in StringStatics.cpp.
   static void Init();
 
@@ -163,12 +166,6 @@ class WTF_EXPORT AtomicString {
       TextCaseSensitivity case_sensitivity = kTextCaseSensitive) const {
     return string_.EndsWith(suffix, case_sensitivity);
   }
-  // Unicode aware case insensitive string matching. Non-ASCII characters might
-  // match to ASCII characters. This function is rarely used to implement web
-  // platform features.  See crbug.com/40476285.
-  bool DeprecatedEndsWithIgnoringCase(const StringView& suffix) const {
-    return string_.DeprecatedEndsWithIgnoringCase(suffix);
-  }
   bool EndsWith(UChar character) const { return string_.EndsWith(character); }
 
   // Returns a lowercase/uppercase version of the string.
@@ -235,20 +232,20 @@ class WTF_EXPORT AtomicString {
 
   String string_;
 
-  ALWAYS_INLINE static scoped_refptr<StringImpl> Add(
-      scoped_refptr<StringImpl>&& r) {
-    if (!r || r->IsAtomic())
+  ALWAYS_INLINE static String Add(String&& r) {
+    if (!r || r.Impl()->IsAtomic()) {
       return std::move(r);
+    }
     return AddSlowCase(std::move(r));
   }
 
-  ALWAYS_INLINE static scoped_refptr<StringImpl> Add(StringImpl* r) {
+  ALWAYS_INLINE static String Add(StringImpl* r) {
     if (!r || r->IsAtomic())
       return r;
     return AddSlowCase(r);
   }
-  static scoped_refptr<StringImpl> AddSlowCase(scoped_refptr<StringImpl>&&);
-  static scoped_refptr<StringImpl> AddSlowCase(StringImpl*);
+  static String AddSlowCase(String&&);
+  static String AddSlowCase(StringImpl*);
 };
 
 inline bool operator==(const AtomicString& a, const AtomicString& b) {

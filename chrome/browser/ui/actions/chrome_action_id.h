@@ -93,6 +93,7 @@
   E(kActionShowMemorySaverChip) \
   E(kActionShowJsOptimizationsIcon) \
   E(kActionShowCookieControls) \
+  E(kActionUnfocusTabGroup, IDC_UNFOCUS_TAB_GROUP) \
   /* Page-manipulation commands that target a specified tab, which may not */ \
   /* be the active one. */ \
   E(kActionMuteTargetSite, IDC_MUTE_TARGET_SITE) \
@@ -514,6 +515,8 @@
   E(kActionCommerceDiscounts) \
   /*Vertical Tabs*/ \
   E(kActionToggleCollapseVertical) \
+  /*Projects Panel*/ \
+  E(kActionToggleProjectsPanel) \
   /*Omnibox Context Menu*/       \
   E(kActionOmniboxContextAddImage, IDC_OMNIBOX_CONTEXT_ADD_IMAGE)\
   E(kActionOmniboxContextAddFile, IDC_OMNIBOX_CONTEXT_ADD_FILE)  \

@@ -34,7 +34,7 @@ class QuickDeleteBridge {
 
   void Destroy(JNIEnv* env);
 
-  void RestartCounterForTimePeriod(JNIEnv* env, const jint time_period);
+  void RestartCounterForTimePeriod(JNIEnv* env, const int32_t time_period);
 
  private:
   base::android::ScopedJavaGlobalRef<jobject> jobject_;

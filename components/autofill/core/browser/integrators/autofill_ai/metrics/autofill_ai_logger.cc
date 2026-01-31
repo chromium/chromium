@@ -179,26 +179,26 @@ void AutofillAiLogger::OnImportPromptResult(
     AutofillClient::AutofillAiImportPromptType prompt_type,
     EntityType entity_type,
     EntityInstance::RecordType record_type,
-    AutofillClient::AutofillAiBubbleClosedReason close_reason,
+    AutofillClient::AutofillAiBubbleResult result,
     ukm::SourceId ukm_source_id) {
   base::UmaHistogramEnumeration(
       base::StrCat({"Autofill.Ai.",
                     EntityPromptTypeToMetricsString(prompt_type), ".",
                     EntityTypeToMetricsString(entity_type), ".",
                     EntityRecordTypeToMetricsString(record_type)}),
-      close_reason);
+      result);
   base::UmaHistogramEnumeration(
       base::StrCat({"Autofill.Ai.",
                     EntityPromptTypeToMetricsString(prompt_type), ".",
                     EntityTypeToMetricsString(entity_type)}),
-      close_reason);
+      result);
   base::UmaHistogramEnumeration(
       base::StrCat({"Autofill.Ai.",
                     EntityPromptTypeToMetricsString(prompt_type),
                     ".AllEntities"}),
-      close_reason);
+      result);
   ukm_logger_.LogImportPromptResult(form, prompt_type, entity_type, record_type,
-                                    close_reason, ukm_source_id);
+                                    result, ukm_source_id);
 }
 
 void AutofillAiLogger::RecordFormMetrics(const FormStructure& form,

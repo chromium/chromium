@@ -28,7 +28,6 @@
 #include "chrome/browser/web_applications/generated_icon_fix_manager.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_integrity_block_data.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolation_data.h"
-#include "chrome/browser/web_applications/mojom/user_display_mode.mojom-shared.h"
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
 #include "chrome/browser/web_applications/proto/web_app.pb.h"
 #include "chrome/browser/web_applications/proto/web_app_database_metadata.pb.h"
@@ -310,14 +309,15 @@ TEST_F(WebAppDatabaseTest, MigrateFromMissingShortcutsSizes) {
   proto_without_shortcut_info.clear_shortcuts_menu_item_infos();
   // Fail to parse when fewer shortcut infos than downloaded sizes. No evidence
   // this happens in the wild.
-  EXPECT_EQ(ParseWebAppProto(proto_without_shortcut_info), nullptr);
+  EXPECT_EQ(ParseWebAppProto(proto_without_shortcut_info, app_id), nullptr);
 
   // If DB is missing downloaded shortcut icon sizes information, expect to pad
   // the vector with empty IconSizes structs so the vectors in WebApp have equal
   // length.
   proto::WebApp proto_without_downloaded_sizes(*base_proto);
   proto_without_downloaded_sizes.clear_downloaded_shortcuts_menu_icons_sizes();
-  auto roundtrip_app = ParseWebAppProto(proto_without_downloaded_sizes);
+  auto roundtrip_app = ParseWebAppProto(proto_without_downloaded_sizes,
+                                        /*expected_app_id=*/app_id);
 
   auto app_with_empty_downloaded_sizes = std::make_unique<WebApp>(*base_app);
   shortcut_item_info.downloaded_icon_sizes = {};

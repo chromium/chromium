@@ -46,13 +46,14 @@ import org.mockito.stubbing.Answer;
 import org.chromium.base.Callback;
 import org.chromium.base.DeviceInfo;
 import org.chromium.base.ThreadUtils;
-import org.chromium.base.supplier.SettableObservableSupplier;
+import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CloseableOnMainThread;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features.DisableFeatures;
@@ -72,7 +73,6 @@ import org.chromium.chrome.browser.ephemeraltab.EphemeralTabCoordinator;
 import org.chromium.chrome.browser.firstrun.FirstRunStatus;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
-import org.chromium.chrome.browser.multiwindow.MultiInstanceManager.SupportedProfileType;
 import org.chromium.chrome.browser.share.ChromeShareExtras;
 import org.chromium.chrome.browser.share.LensUtils;
 import org.chromium.chrome.browser.share.ShareDelegate;
@@ -81,6 +81,7 @@ import org.chromium.chrome.browser.share.ShareDelegateSupplier;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabContextMenuItemDelegate;
 import org.chromium.chrome.browser.tab.TabCreationState;
+import org.chromium.chrome.browser.tabmodel.SupportedProfileType;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorObserver;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
@@ -753,6 +754,7 @@ public class ContextMenuTest {
     @Test
     @LargeTest
     @Restriction(DeviceFormFactor.DESKTOP)
+    @DisabledTest(message = "https://crbug.com/445993228")
     @EnableFeatures({ChromeFeatureList.CONTEXT_MENU_EMPTY_SPACE})
     @DisableFeatures({UiAndroidFeatures.ANDROID_WINDOW_OCCLUSION})
     public void testSavePageRightClick() throws TimeoutException {
@@ -892,6 +894,7 @@ public class ContextMenuTest {
     @Test
     @SmallTest
     @Feature({"Browser", "ContextMenu"})
+    @DisableIf.Device(DeviceFormFactor.DESKTOP) // https://crbug.com/394673741
     public void testContextMenuRetrievesLinkOptions() throws TimeoutException {
         Tab tab = mActivityTestRule.getActivityTab();
         mMenuCoordinator = ContextMenuUtils.openContextMenu(tab, "testLink");
@@ -994,6 +997,7 @@ public class ContextMenuTest {
     @Test
     @SmallTest
     @Feature({"Browser", "ContextMenu"})
+    @DisableIf.Device(DeviceFormFactor.DESKTOP) // https://crbug.com/394673741
     public void testContextMenuRetrievesImageLinkOptions() throws TimeoutException {
         LensUtils.setFakePassableLensEnvironmentForTesting(true);
 
@@ -1076,6 +1080,7 @@ public class ContextMenuTest {
     @Test
     @SmallTest
     @Feature({"Browser", "ContextMenu"})
+    @DisableIf.Device(DeviceFormFactor.DESKTOP) // https://crbug.com/446934111
     public void testCopyImage() throws Throwable {
         doAnswer(sCopyIsAllowedByPolicy)
                 .when(mDataProtectionBridgeMock)
@@ -1154,6 +1159,7 @@ public class ContextMenuTest {
     @Test
     @SmallTest
     @Feature({"Browser", "ContextMenu"})
+    @DisableIf.Device(DeviceFormFactor.DESKTOP) // https://crbug.com/446934111
     public void testContextMenuOpenedFromHighlight() {
         when(mItemDelegate.isIncognito()).thenReturn(false);
         when(mItemDelegate.getPageTitle()).thenReturn("");
@@ -1222,7 +1228,7 @@ public class ContextMenuTest {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     var supplier =
-                            (SettableObservableSupplier<ShareDelegate>)
+                            (SettableMonotonicObservableSupplier<ShareDelegate>)
                                     ShareDelegateSupplier.from(
                                             mActivityTestRule.getActivity().getWindowAndroid());
                     Mockito.doReturn(true).when(mShareDelegate).isSharingHubEnabled();
@@ -1268,7 +1274,7 @@ public class ContextMenuTest {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     var supplier =
-                            (SettableObservableSupplier<ShareDelegate>)
+                            (SettableMonotonicObservableSupplier<ShareDelegate>)
                                     ShareDelegateSupplier.from(
                                             mActivityTestRule.getActivity().getWindowAndroid());
                     supplier.set(mShareDelegate);
@@ -1312,7 +1318,7 @@ public class ContextMenuTest {
                     // Set share delegate before triggering context menu, so the mocked share
                     // delegate is used.
                     var supplier =
-                            (SettableObservableSupplier<ShareDelegate>)
+                            (SettableMonotonicObservableSupplier<ShareDelegate>)
                                     ShareDelegateSupplier.from(
                                             mActivityTestRule.getActivity().getWindowAndroid());
                     supplier.set(mShareDelegate);
@@ -1359,7 +1365,7 @@ public class ContextMenuTest {
                     // Set share delegate before triggering context menu, so the mocked share
                     // delegate is used.
                     var supplier =
-                            (SettableObservableSupplier<ShareDelegate>)
+                            (SettableMonotonicObservableSupplier<ShareDelegate>)
                                     ShareDelegateSupplier.from(
                                             mActivityTestRule.getActivity().getWindowAndroid());
                     supplier.set(mShareDelegate);
@@ -1423,6 +1429,7 @@ public class ContextMenuTest {
     @Test
     @MediumTest
     @Restriction(DeviceFormFactor.DESKTOP)
+    @DisabledTest(message = "https://crbug.com/445993228")
     @EnableFeatures({ChromeFeatureList.CONTEXT_MENU_EMPTY_SPACE})
     @DisableFeatures({UiAndroidFeatures.ANDROID_WINDOW_OCCLUSION})
     public void testPrintPageRightClick() throws Exception {

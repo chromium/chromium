@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import type {LineFocus} from './read_anything_types.js';
+import {LineFocusMovement, LineFocusStyle} from './read_anything_types.js';
 
 export class LineFocusModel {
   // The min y position allowed for the line focus element.
@@ -12,7 +12,7 @@ export class LineFocusModel {
 
   // The y position of the line focus element. If the element is a line, this is
   // where the top of the line should go. If the element is a window, this is
-  // where the bottom of the window should go.
+  // where the center of the window should go.
   private y_: number = 0;
 
   // The top value of the line focus element. If the element is a line, this is
@@ -22,13 +22,27 @@ export class LineFocusModel {
   // The height of the line focus element if it is a window. This should be 0
   // otherwise.
   private windowHeight_: number = 0;
-  // The default window height to use if the window is being moved with the
-  // mouse. Since mouse movement has to be continuous, we can't measure the
-  // exact window height based on location.
-  private defaultWindowHeight_: number = 0;
 
   // The current line focus mode.
-  private currentLineFocus_?: LineFocus;
+  private currentLineFocusStyle_: LineFocusStyle = LineFocusStyle.OFF;
+  private currentLineFocusMovement_: LineFocusMovement =
+      LineFocusMovement.STATIC;
+  // The last line focus mode that was used when it was on. Used for toggling on
+  // line focus with the last used line focus mode.
+  private lastEnabledLineFocusStyle_: LineFocusStyle =
+      LineFocusStyle.defaultValue();
+
+  // The index of the current line in textLineBottoms_ being focused. Null if
+  // line focus is moving continuously with the mouse instead of discretely.
+  private currentLineIndex_: number|null = null;
+  // The precomputed bounding boxes of each line of text.
+  private textBounds_: DOMRect[] = [];
+
+  // Used for logging line focus session scroll distance.
+  private lastScrollTop_: number = 0;
+
+  // Whether line focus caused the latest scroll action.
+  private initiatedScroll_: boolean = false;
 
   getMinY(): number {
     return this.minY_;
@@ -70,19 +84,59 @@ export class LineFocusModel {
     this.windowHeight_ = height;
   }
 
-  getDefaultWindowHeight(): number {
-    return this.defaultWindowHeight_;
+  getCurrentLineFocusStyle(): LineFocusStyle {
+    return this.currentLineFocusStyle_;
   }
 
-  setDefaultWindowHeight(height: number): void {
-    this.defaultWindowHeight_ = height;
+  setCurrentLineFocusStyle(style: LineFocusStyle): void {
+    this.currentLineFocusStyle_ = style;
   }
 
-  getCurrentLineFocus(): LineFocus|null {
-    return this.currentLineFocus_ || null;
+  getCurrentLineFocusMovement(): LineFocusMovement {
+    return this.currentLineFocusMovement_;
   }
 
-  setCurrentLineFocus(lineFocus: LineFocus): void {
-    this.currentLineFocus_ = lineFocus;
+  setCurrentLineFocusMovement(movement: LineFocusMovement): void {
+    this.currentLineFocusMovement_ = movement;
+  }
+
+  getLastEnabledLineFocusStyle(): LineFocusStyle {
+    return this.lastEnabledLineFocusStyle_;
+  }
+
+  setLastEnabledLineFocusStyle(style: LineFocusStyle): void {
+    this.lastEnabledLineFocusStyle_ = style;
+  }
+
+  getCurrentLineIndex(): number|null {
+    return this.currentLineIndex_;
+  }
+
+  setCurrentLineIndex(index: number|null): void {
+    this.currentLineIndex_ = index;
+  }
+
+  getTextBounds(): DOMRect[] {
+    return this.textBounds_;
+  }
+
+  setTextBounds(bounds: DOMRect[]): void {
+    this.textBounds_ = bounds;
+  }
+
+  getLastScrollTop(): number {
+    return this.lastScrollTop_;
+  }
+
+  setLastScrollTop(top: number): void {
+    this.lastScrollTop_ = top;
+  }
+
+  getInitiatedScroll(): boolean {
+    return this.initiatedScroll_;
+  }
+
+  setInitiatedScroll(initiated: boolean) {
+    this.initiatedScroll_ = initiated;
   }
 }

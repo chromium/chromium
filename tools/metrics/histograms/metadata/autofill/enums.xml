@@ -167,7 +167,7 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="Import with section union"/>
 </enum>
 
-<enum name="AutofillAiBubbleClosedReason">
+<enum name="AutofillAiBubbleResult">
   <int value="0" label="The prompt was for closed due to an unknown reason"/>
   <int value="1" label="The prompt was accepted"/>
   <int value="2" label="The user clicked the cancel button"/>
@@ -1338,6 +1338,7 @@ Called by update_autofill_enums.py.-->
   <int value="10" label="CARD_INFO_RETRIEVAL_PERMANENT_ERROR"/>
   <int value="11" label="BNPL_TEMPORARY_ERROR"/>
   <int value="12" label="BNPL_PERMANENT_ERROR"/>
+  <int value="13" label="BNPL_UNSUPPORTED_CURRENCY_ERROR"/>
 </enum>
 
 <enum name="AutofillExpirationDateFixFlowPromptEvent">
@@ -3077,8 +3078,8 @@ Called by update_autofill_enums.py.-->
   <int value="19"
       label="The context menu is shown instead of the autofill suggestions."/>
   <int value="20"
-      label="The Fast Checkout surface is shown instead of autofill
-             suggestions."/>
+      label="DEPRECATED: The Fast Checkout surface is shown instead of
+             autofill suggestions."/>
   <int value="21"
       label="The Picture-in-picture window overlaps with the autofill
              suggestion."/>
@@ -3261,6 +3262,8 @@ Called by update_autofill_enums.py.-->
   <int value="313" label="ClearLocalCvcsUpToMay2025: Failure"/>
   <int value="314" label="CleanupForCrbug445879524: Success"/>
   <int value="315" label="CleanupForCrbug445879524: Failure"/>
+  <int value="316" label="AddOrUpdateValuableMetadata: Success"/>
+  <int value="317" label="AddOrUpdateValuableMetadata: Failure"/>
 </enum>
 
 <!-- LINT.ThenChange(/components/autofill/core/browser/webdata/autofill_webdata_backend_impl.cc:Result) -->
@@ -3347,6 +3350,7 @@ Called by update_autofill_enums.py.-->
 <enum name="BnplTosDialogResult">
   <int value="0" label="The cancel button was pressed"/>
   <int value="1" label="The accept button was pressed"/>
+  <int value="2" label="The tab or browser was closed"/>
 </enum>
 
 <!-- LINT.ThenChange(/components/autofill/core/browser/metrics/payments/bnpl_metrics.h:BnplTosDialogResult) -->
@@ -3574,59 +3578,6 @@ Called by update_autofill_enums.py.-->
   <int value="3"
       label="FalseNegative: overall_type=not email, submitted text matches
              email"/>
-</enum>
-
-<enum name="FastCheckoutCacheStateForIsTriggerFormSupported">
-  <summary>
-    Possible different cache states that `FastCheckoutCapabilitiesFetcherImpl`
-    can encounter when `IsTriggerFormSupported` is called.
-  </summary>
-  <int value="0" label="Availability request has not completed yet."/>
-  <int value="1" label="Entry available and form not supported."/>
-  <int value="2" label="Entry available and form supported."/>
-  <int value="3" label="Entry not available."/>
-</enum>
-
-<enum name="FastCheckoutCapabilitiesParsingResult">
-  <summary>
-    Possible states of parsing the response body when a fetch completes in
-    `FastCheckoutCapabilitiesFetcherImpl`.
-  </summary>
-  <int value="0" label="Failure: The response body was null."/>
-  <int value="1"
-      label="Failure: The response body could not be parsed as
-             `FastCheckoutFunnels` proto message."/>
-  <int value="2" label="Success: Parsing was successful."/>
-</enum>
-
-<enum name="FastCheckoutRunOutcome">
-  <summary>Defines possible outcomes of a Fast Checkout run.</summary>
-  <int value="0"
-      label="Failure: Script did not run because the user has declined
-             onboarding."/>
-  <int value="1"
-      label="Failure: Script run did not complete or never started."/>
-  <int value="2" label="Failure: Script run failed."/>
-  <int value="3" label="Success: Script ran successfully."/>
-</enum>
-
-<enum name="FastCheckoutTriggerOutcome">
-  <summary>
-    Classifies different outcomes of the attempt to trigger showing a
-    FastCheckout bottomsheet on a form that is known to support FastCheckout and
-    for a user that has the FastCheckout feature enabled.
-  </summary>
-  <int value="0" label="Success: The bottom sheet is shown."/>
-  <int value="1" label="Failure: The sheet has already been shown before."/>
-  <int value="2" label="Failure: The clicked field is not focusable."/>
-  <int value="3" label="Failure: The clicked field is not empty."/>
-  <int value="4" label="Failure: The Autofill Ui cannot be shown."/>
-  <int value="5" label="Failure: There is no valid credit card."/>
-  <int value="6" label="Failure: There is no valid Autofill profile."/>
-  <int value="7" label="Failure: AutofillProfile setting is disabled."/>
-  <int value="8" label="Failure: AutofillCreditCard settings is disabled."/>
-  <int value="9" label="Failure: Unsuported field type."/>
-  <int value="10" label="Failure: Unsuported country."/>
 </enum>
 
 <enum name="FieldFillingStatus">
@@ -4305,6 +4256,7 @@ Called by update_autofill_enums.py.-->
 <enum name="SelectBnplIssuerDialogResult">
   <int value="0" label="The cancel button was pressed"/>
   <int value="1" label="An issuer was selected"/>
+  <int value="2" label="The tab or browser was closed"/>
 </enum>
 
 <!-- LINT.ThenChange(/components/autofill/core/browser/metrics/payments/bnpl_metrics.h:SelectBnplIssuerDialogResult) -->
@@ -4438,6 +4390,11 @@ Called by update_autofill_enums.py.-->
   <int value="4" label="Bottom sheet dismissed"/>
 </enum>
 
+<enum name="TouchToFill.LoyaltyCard.Source">
+  <int value="0" label="Field with affiliated loyalty card selected"/>
+  <int value="1" label="Your loyalty cards keyboard accessory option selected"/>
+</enum>
+
 <enum name="TouchToFill.PaymentMethod.TriggerOutcome">
   <int value="0" label="Shown"/>
   <int value="1" label="Not shown: clicked field not focusable or not empty"/>
@@ -4453,7 +4410,7 @@ Called by update_autofill_enums.py.-->
   <int value="8" label="Not shown: unknown form"/>
   <int value="9" label="Not shown: unknown field"/>
   <int value="10" label="Not shown: unsupported field type"/>
-  <int value="11" label="Not shown: Fast Checkout was shown"/>
+  <int value="11" label="DEPRECATED: Not shown: Fast Checkout was shown"/>
   <int value="12" label="Not shown: some inputs already contain values"/>
 </enum>
 

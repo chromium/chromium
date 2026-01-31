@@ -21,8 +21,8 @@
 #include "ui/gfx/android/java_bitmap.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
-#include "components/permissions/android/jni_headers/PermissionDialogController_jni.h"
 #include "components/permissions/android/jni_headers/PermissionDialogDelegate_jni.h"
+#include "components/permissions/android/permission_prompt/permission_dialog_controller.h"
 
 using base::android::ConvertUTF16ToJavaString;
 
@@ -63,7 +63,7 @@ void PermissionDialogJavaDelegate::CreateDialog(
   // Send the Java delegate to the Java PermissionDialogController for display.
   // When the Java delegate is no longer needed it will in turn reset the native
   // java delegate (PermissionDialogJavaDelegate).
-  Java_PermissionDialogController_createDialog(env, j_delegate_);
+  PermissionDialogController::CreateDialog(env, j_delegate_);
 
   if (permission_prompt_->ShouldUseRequestingOriginFavicon()) {
     // In order to update the dialog, we need to make sure it has been created
@@ -145,7 +145,7 @@ std::unique_ptr<PermissionDialogDelegate> PermissionDialogDelegate::Create(
   CHECK(web_contents);
   // If we don't have a window, just act as though the prompt was dismissed.
   if (!web_contents->GetTopLevelNativeWindow()) {
-    permission_prompt->Closing();
+    permission_prompt->Dismiss(/*prompt_options=*/std::monostate());
     return nullptr;
   }
   std::unique_ptr<PermissionDialogJavaDelegate> java_delegate(
@@ -166,22 +166,22 @@ PermissionDialogDelegate::CreateForTesting(
 
 void PermissionDialogDelegate::Accept(JNIEnv* env) {
   CHECK(permission_prompt_);
-  permission_prompt_->Accept();
+  permission_prompt_->Accept(prompt_options_);
 }
 
 void PermissionDialogDelegate::AcceptThisTime(JNIEnv* env) {
   CHECK(permission_prompt_);
-  permission_prompt_->AcceptThisTime();
+  permission_prompt_->AcceptThisTime(prompt_options_);
 }
 
 void PermissionDialogDelegate::Acknowledge(JNIEnv* env) {
   CHECK(permission_prompt_);
-  permission_prompt_->Acknowledge();
+  permission_prompt_->Acknowledge(prompt_options_);
 }
 
 void PermissionDialogDelegate::Deny(JNIEnv* env) {
   CHECK(permission_prompt_);
-  permission_prompt_->Deny();
+  permission_prompt_->Deny(prompt_options_);
 }
 
 void PermissionDialogDelegate::Resumed(JNIEnv* env) {
@@ -200,8 +200,7 @@ void PermissionDialogDelegate::SystemPermissionResolved(JNIEnv* env,
   permission_prompt_->SystemPermissionResolved(accepted);
 }
 
-void PermissionDialogDelegate::Dismissed(JNIEnv* env,
-                                         int dismissalType) {
+void PermissionDialogDelegate::Dismissed(JNIEnv* env, int dismissalType) {
   CHECK(permission_prompt_);
   std::vector<ContentSettingsType> content_settings_types;
   for (size_t i = 0; i < permission_prompt_->PermissionCount(); ++i) {
@@ -229,7 +228,7 @@ void PermissionDialogDelegate::Dismissed(JNIEnv* env,
     // signal as a way to tell if the `PermissionPrompt` creation failed.
     DestroyJavaDelegate();
   }
-  permission_prompt_->Closing();
+  permission_prompt_->Dismiss(prompt_options_);
 }
 
 void PermissionDialogDelegate::Destroy(JNIEnv* env) {
@@ -289,18 +288,17 @@ void PermissionDialogDelegate::WebContentsDestroyed() {
 }
 
 void PermissionDialogDelegate::OnGeolocationAccuracySelected(JNIEnv* env,
-                                                             jint accuracy) {
-  CHECK(permission_prompt_);
-
-  permission_prompt_->SetPromptOptions(GeolocationPromptOptions{
-      .selected_accuracy = static_cast<GeolocationAccuracy>(accuracy)});
+                                                             int32_t accuracy) {
+  prompt_options_ = GeolocationPromptOptions{
+      .selected_accuracy = static_cast<GeolocationAccuracy>(accuracy)};
 }
 
-static jint JNI_PermissionDialogDelegate_GetRequestTypeEnumSize(JNIEnv* env) {
+static int32_t JNI_PermissionDialogDelegate_GetRequestTypeEnumSize(
+    JNIEnv* env) {
   return static_cast<int>(RequestType::kMaxValue) + 1;
 }
 
-jint PermissionDialogDelegate::GetInitialGeolocationAccuracySelection(
+int32_t PermissionDialogDelegate::GetInitialGeolocationAccuracySelection(
     JNIEnv* env) const {
   CHECK(permission_prompt_);
   CHECK_EQ(permission_prompt_->PermissionCount(), 1u);
@@ -312,5 +310,4 @@ jint PermissionDialogDelegate::GetInitialGeolocationAccuracySelection(
 
 }  // namespace permissions
 
-DEFINE_JNI(PermissionDialogController)
 DEFINE_JNI(PermissionDialogDelegate)

@@ -26,9 +26,9 @@ void PerksDiscoveryScreenHandler::Show() {
 
 void PerksDiscoveryScreenHandler::SetPerksData(
     const std::vector<SinglePerkDiscoveryPayload>& perks) {
-  base::Value::List perks_list;
+  base::ListValue perks_list;
   for (const auto& perk : perks) {
-    base::Value::Dict perk_dict;
+    base::DictValue perk_dict;
     perk_dict.Set("perkId", base::Value(perk.id));
     perk_dict.Set("title", base::Value(perk.title));
     perk_dict.Set("subtitle", base::Value(perk.subtitle));

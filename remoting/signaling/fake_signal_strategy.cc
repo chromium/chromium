@@ -204,9 +204,8 @@ void FakeSignalStrategy::NotifyListeners(
   jingle_xmpp::XmlElement* stanza_ptr = stanza.get();
   received_messages_.push_back(std::move(stanza));
 
-  std::string to_error;
   SignalingAddress to =
-      SignalingAddress::Parse(stanza_ptr, SignalingAddress::TO, &to_error);
+      SignalingAddress::Parse(stanza_ptr, SignalingAddress::TO);
   if (to != address_) {
     LOG(WARNING) << "Dropping stanza that is addressed to " << to.id()
                  << ". Local address: " << address_.id()

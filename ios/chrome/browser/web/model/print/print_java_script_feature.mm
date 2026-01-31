@@ -22,8 +22,7 @@ PrintJavaScriptFeature::PrintJavaScriptFeature()
               kScriptName,
               FeatureScript::InjectionTime::kDocumentStart,
               FeatureScript::TargetFrames::kAllFrames,
-              FeatureScript::ReinjectionBehavior::kInjectOncePerWindow)},
-          {web::java_script_features::GetCommonJavaScriptFeature()}) {}
+              FeatureScript::ReinjectionBehavior::kInjectOncePerWindow)}) {}
 
 PrintJavaScriptFeature::~PrintJavaScriptFeature() = default;
 

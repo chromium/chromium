@@ -17,6 +17,9 @@ import static androidx.test.espresso.matcher.ViewMatchers.withText;
 import static org.hamcrest.CoreMatchers.allOf;
 import static org.junit.Assert.assertEquals;
 
+import static org.chromium.chrome.browser.url_constants.UrlConstantResolver.getOriginalNativeBookmarksUrl;
+import static org.chromium.chrome.browser.url_constants.UrlConstantResolver.getOriginalNativeNtpUrl;
+
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.test.filters.MediumTest;
 import androidx.test.filters.SmallTest;
@@ -79,7 +82,7 @@ public class BookmarkTabletTest {
     private void openBookmarkManager() throws InterruptedException {
         BookmarkTestUtil.waitForBookmarkModelLoaded();
 
-        mActivityTestRule.loadUrl(UrlConstants.BOOKMARKS_NATIVE_URL);
+        mActivityTestRule.loadUrl(getOriginalNativeBookmarksUrl());
         mItemsContainer =
                 mActivityTestRule.getActivity().findViewById(R.id.selectable_list_recycler_view);
         mItemsContainer.setItemAnimator(null); // Disable animation to reduce flakiness.
@@ -123,7 +126,7 @@ public class BookmarkTabletTest {
                 mBookmarkManagerCoordinator.getBookmarkDelegateForTesting(),
                 mBookmarkModel);
 
-        mActivityTestRule.loadUrlInNewTab(UrlConstants.NTP_URL);
+        mActivityTestRule.loadUrlInNewTab(getOriginalNativeNtpUrl());
         selectTab(false, bookmarksTab.getId());
         InstrumentationRegistry.getInstrumentation().waitForIdleSync();
 
@@ -167,7 +170,7 @@ public class BookmarkTabletTest {
                                 }
                             });
                 });
-        mActivityTestRule.loadUrl(UrlConstants.BOOKMARKS_NATIVE_URL);
+        mActivityTestRule.loadUrl(getOriginalNativeBookmarksUrl());
         onView(withText("Mobile bookmarks")).check(matches(isDisplayed()));
         assertEquals(0, callbackHelper.getCallCount());
     }
@@ -178,9 +181,9 @@ public class BookmarkTabletTest {
         openBookmarkManager();
 
         // The search bar should be focused automatically.
-        onView(withId(R.id.row_search_text)).check(matches(isFocused()));
+        BookmarkTestUtil.getSearchBoxViewInteraction().check(matches(isFocused()));
         // users should be able to directly type "google" in the search bar
-        onView(withId(R.id.row_search_text)).perform(replaceText("google"));
+        BookmarkTestUtil.getSearchBoxViewInteraction().perform(replaceText("google"));
         onView(allOf(isDescendantOfA(withId(R.id.action_bar)), withText("Bookmarks")))
                 .check(matches(isDisplayed()));
 
@@ -190,13 +193,13 @@ public class BookmarkTabletTest {
                 .check(matches(isDisplayed()));
 
         // After navigating to a new folder, the search bar should be focused again.
-        onView(withId(R.id.row_search_text)).check(matches(isFocused()));
+        BookmarkTestUtil.getSearchBoxViewInteraction().check(matches(isFocused()));
         // And the search text should be cleared.
-        onView(withId(R.id.row_search_text)).check(matches(withText("")));
+        BookmarkTestUtil.getSearchBoxViewInteraction().check(matches(withText("")));
         // go back to the bookmark page
         onView(withId(R.id.back_button)).perform(click());
         // user's query is empty in the search bar
-        onView(withId(R.id.row_search_text)).perform(replaceText(""));
+        BookmarkTestUtil.getSearchBoxViewInteraction().perform(replaceText(""));
         // user's query is empty the context inside bookmarks should not change
         onView(withText("Mobile bookmarks")).check(matches(isDisplayed()));
     }

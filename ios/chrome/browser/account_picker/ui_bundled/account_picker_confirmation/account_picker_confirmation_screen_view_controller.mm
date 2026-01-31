@@ -35,8 +35,8 @@ constexpr NSTimeInterval kIdentityButtonAnimationDuration = 0.1;
 constexpr CGFloat kContentMargin = 16.;
 // Space between elements in `_contentView`.
 constexpr CGFloat kContentSpacing = 16.;
-// Vertical insets of primary button.
-constexpr CGFloat kPrimaryButtonVerticalInsets = 15.5;
+// Corner radius for the identity button.
+constexpr CGFloat kIdentityButtonControlCornerRadius = 24.;
 
 // The coefficient to multiply the title view font with to get the logo size.
 constexpr CGFloat kLogoTitleFontMultiplier = 1.75;
@@ -210,6 +210,8 @@ UILabel* CreateGooglePhotosTitleLabel(NSString* title) {
       self.navigationItem.titleView =
           CreateGooglePhotosTitleLabel(_configuration.titleText);
     }
+  } else if (@available(iOS 26, *)) {
+    self.navigationItem.title = _configuration.titleText;
   } else {
     // Set the navigation title in the left bar button item to have left
     // alignment.
@@ -230,11 +232,10 @@ UILabel* CreateGooglePhotosTitleLabel(NSString* title) {
   self.navigationController.navigationBar.maximumContentSizeCategory =
       UIContentSizeCategoryExtraExtraLarge;
   // Create the skip button.
-  UIBarButtonItem* cancelButtonItem =
-      [[UIBarButtonItem alloc] initWithTitle:l10n_util::GetNSString(IDS_CANCEL)
-                                       style:UIBarButtonItemStylePlain
-                                      target:self
-                                      action:@selector(cancelButtonAction:)];
+  UIBarButtonItem* cancelButtonItem = [[UIBarButtonItem alloc]
+      initWithBarButtonSystemItem:UIBarButtonSystemItemCancel
+                           target:self
+                           action:@selector(cancelButtonAction:)];
   cancelButtonItem.accessibilityIdentifier =
       kAccountPickerCancelButtonAccessibilityIdentifier;
   self.navigationItem.rightBarButtonItem = cancelButtonItem;
@@ -395,11 +396,6 @@ UILabel* CreateGooglePhotosTitleLabel(NSString* title) {
   // Add the primary button (the "Continue as"/"Sign in" button).
   _primaryButton =
       [[ChromeButton alloc] initWithStyle:ChromeButtonStylePrimary];
-  UIButtonConfiguration* buttonConfiguration = _primaryButton.configuration;
-  buttonConfiguration.contentInsets = NSDirectionalEdgeInsetsMake(
-      kPrimaryButtonVerticalInsets, 0, kPrimaryButtonVerticalInsets, 0);
-  _primaryButton.configuration = buttonConfiguration;
-
   _primaryButton.accessibilityIdentifier =
       kAccountPickerPrimaryButtonAccessibilityIdentifier;
   _primaryButton.translatesAutoresizingMaskIntoConstraints = NO;
@@ -414,9 +410,12 @@ UILabel* CreateGooglePhotosTitleLabel(NSString* title) {
         constraintEqualToAnchor:_contentView.widthAnchor]
   ]];
 
-  if (!_configuration.defaultCornerRadius) {
-    // Adjust the identity button control rounded corners to the same value than
-    // the "continue as" button.
+  // Adjust the identity button control rounded corners to the same value than
+  // the "continue as" button.
+  if (@available(iOS 26, *)) {
+    _groupedIdentityButtonSection.layer.cornerRadius =
+        kIdentityButtonControlCornerRadius;
+  } else {
     _groupedIdentityButtonSection.layer.cornerRadius =
         _primaryButton.configuration.background.cornerRadius;
   }

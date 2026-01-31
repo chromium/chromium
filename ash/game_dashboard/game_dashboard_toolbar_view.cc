@@ -5,6 +5,7 @@
 #include "ash/game_dashboard/game_dashboard_toolbar_view.h"
 
 #include <memory>
+#include <utility>
 
 #include "ash/app_list/app_list_util.h"
 #include "ash/capture_mode/capture_mode_controller.h"
@@ -20,7 +21,6 @@
 #include "ash/style/icon_button.h"
 #include "ash/style/system_shadow.h"
 #include "base/check.h"
-#include "base/types/cxx23_to_underlying.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
@@ -197,7 +197,7 @@ class ToolbarDragHandler : public ui::EventHandler {
       case ui::EventType::kGestureScrollEnd:
         DCHECK(is_dragging_) << "Attempting to call end drag logic but the "
                                 "toolbar wasn't dragging. Event = "
-                             << base::to_underlying(event->type());
+                             << std::to_underlying(event->type());
         is_dragging_ = false;
         toolbar_view_->EndDraggingToolbar(GetOffset(event_location));
         previous_location_in_screen_.SetPoint(0, 0);
@@ -380,7 +380,7 @@ void GameDashboardToolbarView::AddShortcutTiles() {
   gamepad_button_ = AddChildView(CreateIconButton(
       base::BindRepeating(&GameDashboardToolbarView::OnGamepadButtonPressed,
                           base::Unretained(this)),
-      &kGdToolbarIcon, base::to_underlying(ToolbarViewId::kGamepadButton),
+      &kGdToolbarIcon, std::to_underlying(ToolbarViewId::kGamepadButton),
       l10n_util::GetStringUTF16(
           IDS_ASH_GAME_DASHBOARD_TOOLBAR_TILE_BUTTON_TITLE),
       /*is_togglable=*/false, /*icon_color=*/cros_tokens::kCrosSysPrimary));
@@ -395,7 +395,7 @@ void GameDashboardToolbarView::AddShortcutTiles() {
         base::BindRepeating(&GameDashboardToolbarView::OnRecordButtonPressed,
                             base::Unretained(this)),
         &kGdRecordGameIcon,
-        base::to_underlying(ToolbarViewId::kScreenRecordButton),
+        std::to_underlying(ToolbarViewId::kScreenRecordButton),
         l10n_util::GetStringUTF16(
             IDS_ASH_GAME_DASHBOARD_RECORD_GAME_TILE_BUTTON_TITLE),
         /*is_togglable=*/true));
@@ -412,7 +412,7 @@ void GameDashboardToolbarView::AddShortcutTiles() {
   auto* screenshot_button = AddChildView(CreateIconButton(
       base::BindRepeating(&GameDashboardToolbarView::OnScreenshotButtonPressed,
                           base::Unretained(this)),
-      &kGdScreenshotIcon, base::to_underlying(ToolbarViewId::kScreenshotButton),
+      &kGdScreenshotIcon, std::to_underlying(ToolbarViewId::kScreenshotButton),
       l10n_util::GetStringUTF16(
           IDS_ASH_GAME_DASHBOARD_SCREENSHOT_TILE_BUTTON_TITLE),
       /*is_togglable=*/false));
@@ -432,7 +432,7 @@ void GameDashboardToolbarView::MayAddGameControlsTile() {
           &GameDashboardToolbarView::OnGameControlsButtonPressed,
           base::Unretained(this)),
       /*icon=*/&kGdGameControlsIcon,
-      base::to_underlying(ToolbarViewId::kGameControlsButton),
+      std::to_underlying(ToolbarViewId::kGameControlsButton),
       l10n_util::GetStringUTF16(
           IDS_ASH_GAME_DASHBOARD_CONTROLS_TILE_BUTTON_TITLE),
       /*is_togglable=*/true));

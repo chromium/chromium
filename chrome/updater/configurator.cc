@@ -24,6 +24,7 @@
 #include "base/version.h"
 #include "build/build_config.h"
 #include "chrome/updater/activity.h"
+#include "chrome/updater/branded_constants.h"
 #include "chrome/updater/constants.h"
 #include "chrome/updater/crx_downloader_factory.h"
 #include "chrome/updater/external_constants.h"

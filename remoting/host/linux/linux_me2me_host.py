@@ -684,8 +684,9 @@ class Desktop(abc.ABC):
     self.child_env["LD_LIBRARY_PATH"] = library_path
 
   def _setup_gnubby(self):
-    self.ssh_auth_sockname = ("/tmp/chromoting.%s.ssh_auth_sock" %
-                              os.environ["USER"])
+    self.ssh_auth_sockname = os.path.join(
+        xdg.BaseDirectory.get_runtime_dir(strict=False),
+        "crd_ssh_auth_sock")
     self.child_env["SSH_AUTH_SOCK"] = self.ssh_auth_sockname
 
   def _launch_pipewire(self, instance_name, runtime_path, sink_name):
@@ -811,11 +812,25 @@ class Desktop(abc.ABC):
     If a virtual desktop needs to do some setup before launching the host
     process, it can override this method and ensure that the required setup is
     done before returning from this process.
+
+    Returns:
+      True if setup completed successfully and the host process can be started.
     """
-    pass
+    return True
 
   def launch_host(self, extra_start_host_args, backoff_time):
-    self._wait_for_setup_before_host_launch()
+    if not self._wait_for_setup_before_host_launch():
+      logging.error("Could not start the host process, since some required "
+                    "setup failed.")
+
+      # The failure might be temporary, for example, if the Wayland compositor
+      # takes a long time to start up after a fresh system boot. This should
+      # be consistent with launch_desktop_session().
+      sys.exit(RELAUNCH_EXIT_CODE)
+
+      # TODO: crbug.com/475260233 - Refactor both places to cleanly tear down
+      # and restart all processes, taking into account any inhibitors.
+
     logging.info("Launching host process")
 
     # Start remoting host
@@ -1248,7 +1263,7 @@ class WaylandDesktop(Desktop):
   """Manage a single virtual wayland based desktop"""
 
   WL_SERVER_CHECK_DELAY_SECONDS = 1
-  WL_SERVER_CHECK_TIMEOUT_SECONDS = 10
+  WL_SERVER_CHECK_TIMEOUT_SECONDS = 30
   WL_SERVER_REPLY_TIMEOUT_SECONDS = 1
 
   def __init__(self, sizes, host_config, wayland_session):
@@ -1386,7 +1401,8 @@ class WaylandDesktop(Desktop):
     """
     if not self._wait_for_wayland_compositor_running():
       logging.error("Aborting wayland session since compositor isn't running")
-      sys.exit(1)
+      sys.exit(RELAUNCH_EXIT_CODE)
+
     logging.info("Wayland compositor is running, restarting the portal "
                  "services now")
     try:
@@ -1397,8 +1413,9 @@ class WaylandDesktop(Desktop):
       logging.error("Unable to import env vars into systemd, "
                     "returncode: %s, output: %s" % (err.returncode,
                                                     err.output))
-      # Host process will not be functional without these services.
-      sys.exit(1)
+      logging.error("Continuing without restarting Portal services - "
+                    "this may cause some unexpected problems.")
+      return
 
     try:
       portals = \
@@ -1408,8 +1425,13 @@ class WaylandDesktop(Desktop):
     except subprocess.CalledProcessError as err:
       logging.error("Unable to restart portal services on the host, "
                     "returncode: %s, output: %s" % (err.returncode, err.output))
-      # Host process will not be functional without these services.
-      sys.exit(1)
+      # For GNOME, the Portal services are not required, since the host process
+      # uses the private GNOME APIs. For non-GNOME desktops, the Portal services
+      # are needed, but a failure to restart them here is not necessarily fatal.
+      # If the Portal services are needed but are not running, the host process
+      # can detect this condition and terminate with an exit-code.
+      return
+
     logging.info("Done restarting the portal services")
 
   def _wait_for_setup_before_host_launch(self):

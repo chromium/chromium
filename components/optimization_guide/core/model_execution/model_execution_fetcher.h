@@ -39,6 +39,11 @@ class ModelExecutionFetcher {
       const google::protobuf::MessageLite& request_metadata,
       std::optional<base::TimeDelta> timeout,
       ModelExecuteResponseCallback callback) = 0;
+
+ protected:
+  proto::ExecuteRequest ToExecuteRequest(
+      ModelBasedCapabilityKey feature,
+      const google::protobuf::MessageLite& request_metadata);
 };
 
 }  // namespace optimization_guide

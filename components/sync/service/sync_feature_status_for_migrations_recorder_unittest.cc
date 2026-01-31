@@ -24,6 +24,9 @@ class SyncFeatureStatusForMigrationsRecorderTest : public testing::Test {
   SyncFeatureStatusForMigrationsRecorderTest() {
     SyncFeatureStatusForMigrationsRecorder::RegisterProfilePrefs(
         pref_service_.registry());
+
+    // Sync should be initially active.
+    sync_service_.SetSignedIn(signin::ConsentLevel::kSync);
   }
   ~SyncFeatureStatusForMigrationsRecorderTest() override { DestroyRecorder(); }
 

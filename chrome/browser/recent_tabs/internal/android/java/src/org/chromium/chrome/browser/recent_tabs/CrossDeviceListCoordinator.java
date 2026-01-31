@@ -9,7 +9,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ListView;
 
-import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.recent_tabs.ui.CrossDevicePaneView;
 import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeController;
@@ -32,7 +32,7 @@ public class CrossDeviceListCoordinator {
      * @param edgeToEdgeSupplier Supplier to the {@link EdgeToEdgeController} instance.
      */
     public CrossDeviceListCoordinator(
-            Context context, ObservableSupplier<EdgeToEdgeController> edgeToEdgeSupplier) {
+            Context context, MonotonicObservableSupplier<EdgeToEdgeController> edgeToEdgeSupplier) {
         ModelList listItems = new ModelList();
         ModelListAdapter adapter = new ModelListAdapter(listItems);
 

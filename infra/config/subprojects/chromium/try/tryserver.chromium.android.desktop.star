@@ -26,13 +26,14 @@ try_.defaults.set(
     },
     orchestrator_cores = 4,
     service_account = try_constants.DEFAULT_SERVICE_ACCOUNT,
+    siso_keep_going = siso.KEEP_GOING,
     siso_project = siso.project.DEFAULT_UNTRUSTED,
     siso_remote_jobs = siso.remote_jobs.LOW_JOBS_FOR_CQ,
 )
 
 consoles.list_view(
     name = "tryserver.chromium.android.desktop",
-    branch_selector = branches.selector.MAIN,
+    branch_selector = branches.selector.ANDROID_BRANCHES,
 )
 
 try_.builder(
@@ -69,6 +70,7 @@ try_.builder(
 
 try_.builder(
     name = "android-desktop-arm64-compile-rel",
+    branch_selector = branches.selector.ANDROID_BRANCHES,
     mirrors = [
         "ci/android-desktop-arm64-compile-rel",
     ],
@@ -84,6 +86,7 @@ try_.builder(
 
 try_.orchestrator_builder(
     name = "android-desktop-x64-rel",
+    branch_selector = branches.selector.ANDROID_BRANCHES,
     description_html = "Run Chromium tests on Android Desktop emulators.",
     mirrors = [
         "ci/android-desktop-x64-compile-rel",
@@ -115,12 +118,14 @@ try_.orchestrator_builder(
 
 try_.compilator_builder(
     name = "android-desktop-x64-rel-compilator",
+    branch_selector = branches.selector.ANDROID_BRANCHES,
     description_html = "Compilator builder for android-desktop-x64-rel",
     main_list_view = "try",
 )
 
 try_.builder(
     name = "android-desktop-arm64-compile-dbg",
+    branch_selector = branches.selector.ANDROID_BRANCHES,
     mirrors = [
         "ci/android-desktop-arm64-compile-dbg",
     ],
@@ -136,6 +141,7 @@ try_.builder(
 
 try_.builder(
     name = "android-desktop-x64-compile-dbg",
+    branch_selector = branches.selector.ANDROID_BRANCHES,
     mirrors = [
         "ci/android-desktop-x64-compile-dbg",
     ],

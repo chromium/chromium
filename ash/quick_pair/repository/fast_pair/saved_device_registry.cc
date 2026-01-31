@@ -8,7 +8,6 @@
 
 #include "ash/quick_pair/common/quick_pair_browser_delegate.h"
 #include "base/base64.h"
-#include "base/containers/contains.h"
 #include "components/cross_device/logging/logging.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
@@ -83,7 +82,7 @@ bool SavedDeviceRegistry::DeleteAccountKey(
     return false;
   }
 
-  const base::Value::Dict& saved_devices =
+  const base::DictValue& saved_devices =
       pref_service->GetDict(kFastPairSavedDevicesPref);
   std::string encoded_key = base::Base64Encode(account_key);
   for (const auto it : saved_devices) {
@@ -145,7 +144,7 @@ bool SavedDeviceRegistry::IsAccountKeySavedToRegistry(
     RemoveDevicesIfRemovedFromDifferentUser(pref_service);
   }
 
-  const base::Value::Dict& saved_devices =
+  const base::DictValue& saved_devices =
       pref_service->GetDict(kFastPairSavedDevicesPref);
   std::string encoded_key = base::Base64Encode(account_key);
   for (const auto it : saved_devices) {
@@ -174,11 +173,11 @@ void SavedDeviceRegistry::RemoveDevicesIfRemovedFromDifferentUser(
   // Iterate over the list of devices in the registry, and if there are any in
   // the registry that are no longer paired to the adapter (determined by mac
   // address), remove them from the registry.
-  const base::Value::Dict& saved_devices =
+  const base::DictValue& saved_devices =
       pref_service->GetDict(kFastPairSavedDevicesPref);
   for (const auto it : saved_devices) {
     const std::string& mac_address = it.first;
-    if (!base::Contains(paired_devices, mac_address)) {
+    if (!paired_devices.contains(mac_address)) {
       ScopedDictPrefUpdate update(pref_service, kFastPairSavedDevicesPref);
       update->Remove(it.first);
       CD_LOG(VERBOSE, Feature::FP)

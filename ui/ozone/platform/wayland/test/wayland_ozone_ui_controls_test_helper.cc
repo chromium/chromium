@@ -4,7 +4,6 @@
 
 #include "ui/ozone/platform/wayland/test/wayland_ozone_ui_controls_test_helper.h"
 
-#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
@@ -124,7 +123,7 @@ void WaylandOzoneUIControlsTestHelper::RequestProcessed(uint32_t request_id) {
   // https://crbug.com/1443374#c3 for details.
   wl::WaylandProxy::GetInstance()->RoundTripQueue();
 
-  if (base::Contains(pending_closures_, request_id)) {
+  if (pending_closures_.contains(request_id)) {
     if (!pending_closures_[request_id].is_null()) {
       // PostTask to avoid re-entrancy.
       base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(

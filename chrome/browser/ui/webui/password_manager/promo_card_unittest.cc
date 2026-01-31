@@ -22,6 +22,7 @@
 #include "chrome/browser/ui/webui/password_manager/promo_cards/web_password_manager_promo.h"
 #include "chrome/browser/web_applications/test/fake_web_app_provider.h"
 #include "chrome/browser/web_applications/test/web_app_test.h"
+#include "chrome/browser/web_applications/test/web_app_test_utils.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/common/webui_url_constants.h"
@@ -35,6 +36,7 @@
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "components/prefs/testing_pref_service.h"
+#include "components/sync/base/features.h"
 #include "components/sync/test/test_sync_service.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
@@ -96,10 +98,7 @@ class FakePromoCard : public PasswordPromoCardBase {
 
 std::unique_ptr<web_app::WebApp> CreateWebApp() {
   GURL url(chrome::kChromeUIPasswordManagerURL);
-  auto web_app = std::make_unique<web_app::WebApp>(
-      /*manifest_id=*/web_app::GenerateManifestIdFromStartUrlOnly(url),
-      /*start_url=*/url,
-      /*scope=*/url.GetWithoutFilename());
+  auto web_app = web_app::test::CreateWebApp(url);
   web_app->SetUserDisplayMode(web_app::mojom::UserDisplayMode::kStandalone);
   return web_app;
 }
@@ -135,7 +134,7 @@ TEST_F(PromoCardBaseTest, InitAddsPref) {
   FakePromoCard card(pref_service());
   // There should be a record now in prefs since the constructor takes care of
   // registering it when it doesn't exist.
-  const base::Value::List& promo_card_prefs =
+  const base::ListValue& promo_card_prefs =
       pref_service()->GetList(prefs::kPasswordManagerPromoCardsList);
   EXPECT_THAT(promo_card_prefs,
               ElementsAre(PromoCardPrefInfo(PrefInfo{card.GetPromoID()})));
@@ -144,7 +143,7 @@ TEST_F(PromoCardBaseTest, InitAddsPref) {
 TEST_F(PromoCardBaseTest, PrefValuesReflectedInCard) {
   base::Time now = base::Time::Now();
   {
-    base::Value::Dict promo_card_pref_entry;
+    base::DictValue promo_card_pref_entry;
     promo_card_pref_entry.Set("id", FakePromoCard::kId);
     promo_card_pref_entry.Set("number_of_times_shown", 31);
     promo_card_pref_entry.Set("last_time_shown", base::TimeToValue(now));
@@ -156,7 +155,7 @@ TEST_F(PromoCardBaseTest, PrefValuesReflectedInCard) {
   }
 
   FakePromoCard card(pref_service());
-  const base::Value::List& promo_card_prefs =
+  const base::ListValue& promo_card_prefs =
       pref_service()->GetList(prefs::kPasswordManagerPromoCardsList);
   ASSERT_THAT(promo_card_prefs, ElementsAre(PromoCardPrefInfo(PrefInfo{
                                     card.GetPromoID(), 31, now, true})));
@@ -176,7 +175,7 @@ TEST_F(PromoCardBaseTest, OnPromoCardDismissed) {
   card.OnPromoCardDismissed();
   EXPECT_TRUE(card.was_dismissed());
 
-  const base::Value::List& promo_card_prefs =
+  const base::ListValue& promo_card_prefs =
       pref_service()->GetList(prefs::kPasswordManagerPromoCardsList);
   ASSERT_THAT(promo_card_prefs,
               ElementsAre(PromoCardPrefInfo(
@@ -195,7 +194,7 @@ TEST_F(PromoCardBaseTest, OnPromoCardShown) {
   EXPECT_EQ(1, card.number_of_times_shown());
   EXPECT_EQ(base::Time::Now(), card.last_time_shown());
 
-  const base::Value::List& promo_card_prefs =
+  const base::ListValue& promo_card_prefs =
       pref_service()->GetList(prefs::kPasswordManagerPromoCardsList);
   ASSERT_THAT(promo_card_prefs,
               ElementsAre(PromoCardPrefInfo(
@@ -316,9 +315,18 @@ TEST_F(PromoCardCheckupTest, PromoShownIn7DaysAfterDismiss) {
   histogram_tester.ExpectUniqueSample("PasswordManager.PromoCard.Shown", 0, 1);
 }
 
-class PromoCardInWebTest : public PromoCardBaseTest {
+class PromoCardInWebTest
+    : public PromoCardBaseTest,
+      public ::testing::WithParamInterface<signin::ConsentLevel> {
  public:
   void SetUp() override {
+    if (GetParam() == signin::ConsentLevel::kSignin) {
+      feature_list_.InitWithFeatures(
+          {syncer::kReplaceSyncPromosWithSignInPromos}, {});
+    } else {
+      feature_list_.InitWithFeatures(
+          {}, {syncer::kReplaceSyncPromosWithSignInPromos});
+    }
     PromoCardBaseTest::SetUp();
     sync_service_ = static_cast<syncer::TestSyncService*>(
         SyncServiceFactory::GetInstance()->SetTestingFactoryAndUse(
@@ -338,11 +346,22 @@ class PromoCardInWebTest : public PromoCardBaseTest {
 
  private:
   raw_ptr<syncer::TestSyncService> sync_service_;
+  base::test::ScopedFeatureList feature_list_;
 };
 
-TEST_F(PromoCardInWebTest, NoPromoIfNotSyncing) {
+INSTANTIATE_TEST_SUITE_P(ConsentLevel,
+                         PromoCardInWebTest,
+                         ::testing::Values(signin::ConsentLevel::kSignin,
+                                           signin::ConsentLevel::kSync));
+
+TEST_P(PromoCardInWebTest, NoPromoIfNotSyncing) {
   sync_service()->SetSignedOut();
-  ASSERT_FALSE(sync_service()->IsSyncFeatureEnabled());
+
+  if (GetParam() == signin::ConsentLevel::kSignin) {
+    ASSERT_FALSE(sync_service()->GetActiveDataTypes().Has(syncer::PASSWORDS));
+  } else {
+    ASSERT_FALSE(sync_service()->IsSyncFeatureEnabled());
+  }
 
   ASSERT_THAT(pref_service()->GetList(prefs::kPasswordManagerPromoCardsList),
               IsEmpty());
@@ -355,8 +374,12 @@ TEST_F(PromoCardInWebTest, NoPromoIfNotSyncing) {
   EXPECT_FALSE(promo->ShouldShowPromo());
 }
 
-TEST_F(PromoCardInWebTest, PromoIsShownWhenSyncing) {
-  ASSERT_TRUE(sync_service()->IsSyncFeatureEnabled());
+TEST_P(PromoCardInWebTest, PromoIsShownWhenSyncing) {
+  if (GetParam() == signin::ConsentLevel::kSignin) {
+    ASSERT_TRUE(sync_service()->GetActiveDataTypes().Has(syncer::PASSWORDS));
+  } else {
+    ASSERT_TRUE(sync_service()->IsSyncFeatureEnabled());
+  }
 
   ASSERT_THAT(pref_service()->GetList(prefs::kPasswordManagerPromoCardsList),
               IsEmpty());
@@ -366,8 +389,12 @@ TEST_F(PromoCardInWebTest, PromoIsShownWhenSyncing) {
   EXPECT_TRUE(promo->ShouldShowPromo());
 }
 
-TEST_F(PromoCardInWebTest, ShouldShowPromoFirstThreeTimes) {
-  ASSERT_TRUE(sync_service()->IsSyncFeatureEnabled());
+TEST_P(PromoCardInWebTest, ShouldShowPromoFirstThreeTimes) {
+  if (GetParam() == signin::ConsentLevel::kSignin) {
+    ASSERT_TRUE(sync_service()->GetActiveDataTypes().Has(syncer::PASSWORDS));
+  } else {
+    ASSERT_TRUE(sync_service()->IsSyncFeatureEnabled());
+  }
 
   ASSERT_THAT(pref_service()->GetList(prefs::kPasswordManagerPromoCardsList),
               IsEmpty());
@@ -383,10 +410,14 @@ TEST_F(PromoCardInWebTest, ShouldShowPromoFirstThreeTimes) {
   EXPECT_FALSE(promo->ShouldShowPromo());
 }
 
-TEST_F(PromoCardInWebTest, PromoNotShownAfterDismiss) {
+TEST_P(PromoCardInWebTest, PromoNotShownAfterDismiss) {
   base::HistogramTester histogram_tester;
 
-  ASSERT_TRUE(sync_service()->IsSyncFeatureEnabled());
+  if (GetParam() == signin::ConsentLevel::kSignin) {
+    ASSERT_TRUE(sync_service()->GetActiveDataTypes().Has(syncer::PASSWORDS));
+  } else {
+    ASSERT_TRUE(sync_service()->IsSyncFeatureEnabled());
+  }
 
   ASSERT_THAT(pref_service()->GetList(prefs::kPasswordManagerPromoCardsList),
               IsEmpty());

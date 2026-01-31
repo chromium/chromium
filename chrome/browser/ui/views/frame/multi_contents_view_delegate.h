@@ -55,7 +55,7 @@ class MultiContentsViewDelegateImpl : public MultiContentsViewDelegate {
   // Detaches a dragged tab from its current tabstrip and inserts it into a
   // split view in this delegate's tab strip.
   void HandleTabDrop(MultiContentsDropTargetView::DropSide side,
-                     TabDragDelegate::DragController& drag_controller) override;
+                     TabDragTarget::DragController& drag_controller) override;
 
  private:
   // TODO(crbug.com/431000266): Use a browser window feature instead.

@@ -4,6 +4,7 @@
 
 #include "ash/wm/overview/overview_test_base.h"
 
+#include <algorithm>
 #include <tuple>
 
 #include "ash/public/cpp/test/test_saved_desk_delegate.h"
@@ -211,7 +212,7 @@ void OverviewTestBase::TearDown() {
 }
 
 void OverviewTestBase::CheckForDuplicateTraceName(const std::string& trace) {
-  DCHECK(!base::Contains(trace_names_, trace)) << trace;
+  DCHECK(!std::ranges::contains(trace_names_, trace)) << trace;
   trace_names_.push_back(trace);
 }
 

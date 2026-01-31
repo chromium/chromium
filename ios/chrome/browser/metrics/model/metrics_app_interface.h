@@ -111,8 +111,23 @@ constexpr base::TimeDelta kSyncDWAOperationsTimeout = base::Seconds(60);
 // Purges DWA recorder.
 + (void)clearDWARecorder;
 
-// Returns the country id from the PUMA service for testing.
-+ (NSString*)pumaCountryIdForTesting;
+// Returns whether PUMA reporting is active.
++ (BOOL)isPumaReportingEnabled;
+
+// Returns whether there are unsent PUMA logs.
++ (BOOL)hasUnsentPumaLogs;
+
+// Purges unsent PUMA logs.
++ (void)purgePumaLogs;
+
+// Records a test PUMA metric.
++ (void)recordTestPumaMetric;
+
+// Flushes the PUMA service.
++ (void)flushPumaService;
+
+// Returns the last PUMA RC profile as a dictionary.
++ (NSDictionary*)lastPumaRcProfile;
 
 // Creates a chrome_test_util::HistogramTester that will record every histogram
 // sent during test.

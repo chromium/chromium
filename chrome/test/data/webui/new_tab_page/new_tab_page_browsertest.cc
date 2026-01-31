@@ -58,6 +58,10 @@ IN_PROC_BROWSER_TEST_F(NewTabPageTest, BackgroundManager) {
   RunTest("new_tab_page/background_manager_test.js", "mocha.run()");
 }
 
+IN_PROC_BROWSER_TEST_F(NewTabPageTest, BackgroundImage) {
+  RunTest("new_tab_page/background_image_test.js", "mocha.run()");
+}
+
 IN_PROC_BROWSER_TEST_F(NewTabPageTest, MiddleSlotPromo) {
   RunTest("new_tab_page/middle_slot_promo_test.js", "mocha.run()");
 }
@@ -82,9 +86,15 @@ IN_PROC_BROWSER_TEST_F(NewTabPageTest, ComposeboxFileThumbnail) {
   RunTest("new_tab_page/composebox/file_thumbnail_test.js", "mocha.run()");
 }
 
-IN_PROC_BROWSER_TEST_F(NewTabPageTest, ContextualEntrypointAndCarousel) {
+// TODO(crbug.com/452644435): Test is flaky on no_field_trial.
+IN_PROC_BROWSER_TEST_F(NewTabPageTest,
+                       DISABLED_ContextualEntrypointAndCarousel) {
   RunTest("new_tab_page/composebox/contextual_entrypoint_and_carousel_test.js",
           "mocha.run()");
+}
+
+IN_PROC_BROWSER_TEST_F(NewTabPageTest, ThreadsRail) {
+  RunTest("new_tab_page/composebox/threads_rail_test.js", "mocha.run()");
 }
 
 IN_PROC_BROWSER_TEST_F(NewTabPageTest, ActionChips) {
@@ -264,6 +274,11 @@ IN_PROC_BROWSER_TEST_F(NewTabPageAppTest, ActionChips) {
           "runMochaSuite('NewTabPageAppTest ActionChips')");
 }
 
+IN_PROC_BROWSER_TEST_F(NewTabPageAppTest, ThreadsRail) {
+  RunTest("new_tab_page/app_test.js",
+          "runMochaSuite('NewTabPageAppTest ThreadsRail')");
+}
+
 // TODO(crbug.com/428156129): Re-enable test
 IN_PROC_BROWSER_TEST_F(NewTabPageAppTest, DISABLED_WallpaperSearch) {
   RunTest("new_tab_page/app_test.js",
@@ -278,6 +293,11 @@ IN_PROC_BROWSER_TEST_F(NewTabPageAppTest, MicrosoftAuth) {
 IN_PROC_BROWSER_TEST_F(NewTabPageAppTest, NewTabFooter) {
   RunTest("new_tab_page/app_test.js",
           "runMochaSuite('NewTabPageAppTest NewTabFooter')");
+}
+
+IN_PROC_BROWSER_TEST_F(NewTabPageAppTest, AutoRemovalToast) {
+  RunTest("new_tab_page/app_test.js",
+          "runMochaSuite('NewTabPageAppTest AutoRemovalToast')");
 }
 
 class NewTabPageModulesMostRelevantTabResumptionModuleTest

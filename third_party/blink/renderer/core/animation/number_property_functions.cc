@@ -132,6 +132,7 @@ double NumberPropertyFunctions::ClampNumber(const CSSProperty& property,
     case CSSPropertyID::kColumnCount:
       return ClampTo<uint16_t>(round(value), 1);
 
+    case CSSPropertyID::kMathDepth:
     case CSSPropertyID::kOrder:
     case CSSPropertyID::kReadingOrder:
     case CSSPropertyID::kZIndex:

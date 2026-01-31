@@ -157,7 +157,7 @@ void TestPrintViewManager::PrintPreviewAllowedForTesting() {
 }
 
 void TestPrintViewManager::UpdatePrintSettings(
-    base::Value::Dict job_settings,
+    base::DictValue job_settings,
     UpdatePrintSettingsCallback callback) {
   PrintViewManagerBase::UpdatePrintSettings(
       std::move(job_settings),

@@ -12,6 +12,9 @@ specific_include_rules = {
   "dxgi_helpers.cc": [
     "+third_party/libyuv/include/libyuv/planar_functions.h",
   ],
+  "capabilities_mojom_traits.h": [
+    "+services/viz/public/cpp/compositing/shared_image_format_mojom_traits.h",
+  ],
   "shared_image_metadata_mojom_traits.h": [
     "+services/viz/public/cpp/compositing/shared_image_format_mojom_traits.h",
   ],

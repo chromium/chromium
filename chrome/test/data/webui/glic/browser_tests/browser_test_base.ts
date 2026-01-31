@@ -76,6 +76,10 @@ export class SequencedSubscriber<T> {
   waitForValue(targetValue: T) {
     return this.waitFor(v => v === targetValue);
   }
+  waitForComplete(): Promise<void> {
+    return waitFor(this.completed, undefined, 'waitForComplete timed out');
+  }
+
   async waitFor(condition: (v: T) => boolean): Promise<T> {
     let lastValueSaw: {some: T}|undefined = undefined;
     if (this.current !== undefined) {

@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_UI_EXTENSIONS_APP_LAUNCH_PARAMS_H_
 #define CHROME_BROWSER_UI_EXTENSIONS_APP_LAUNCH_PARAMS_H_
 
-#include "chrome/browser/apps/app_service/app_launch_params.h"
+#include "components/services/app_service/public/cpp/app_launch_params.h"
 #include "components/services/app_service/public/cpp/app_launch_util.h"
 #include "ui/base/window_open_disposition.h"
 

@@ -48,8 +48,9 @@ Channel::MessagePtr WaitForBrokerMessage(
     error = true;
   }
 
-  if (error)
+  if (error) {
     return nullptr;
+  }
 
   const BrokerMessageHeader* header =
       reinterpret_cast<const BrokerMessageHeader*>(message->payload());
@@ -59,8 +60,9 @@ Channel::MessagePtr WaitForBrokerMessage(
   }
 
   incoming_handles->reserve(incoming_fds.size());
-  for (size_t i = 0; i < incoming_fds.size(); ++i)
+  for (size_t i = 0; i < incoming_fds.size(); ++i) {
     incoming_handles->emplace_back(std::move(incoming_fds[i]));
+  }
 
   return message;
 }
@@ -78,8 +80,9 @@ Broker::Broker(PlatformHandle handle, bool wait_for_channel_handle)
   flags = fcntl(fd, F_SETFL, flags & ~O_NONBLOCK);
   PCHECK(flags != -1);
 
-  if (!wait_for_channel_handle)
+  if (!wait_for_channel_handle) {
     return;
+  }
 
   // Wait for the first message, which should contain a handle.
   std::vector<PlatformHandle> incoming_platform_handles;
@@ -131,15 +134,17 @@ base::WritableSharedMemoryRegion Broker::GetWritableSharedMemoryRegion(
       kNumExpectedHandles, sizeof(BufferResponseData), &handles);
   if (message) {
     const BufferResponseData* data;
-    if (!GetBrokerMessageData(message.get(), &data))
+    if (!GetBrokerMessageData(message.get(), &data)) {
       return base::WritableSharedMemoryRegion();
+    }
     std::optional<base::UnguessableToken> guid =
         base::UnguessableToken::Deserialize(data->guid_high, data->guid_low);
     if (!guid.has_value()) {
       return base::WritableSharedMemoryRegion();
     }
-    if (handles.size() == 1)
+    if (handles.size() == 1) {
       handles.emplace_back();
+    }
     return base::WritableSharedMemoryRegion::Deserialize(
         base::subtle::PlatformSharedMemoryRegion::Take(
             CreateSharedMemoryRegionHandleFromPlatformHandles(

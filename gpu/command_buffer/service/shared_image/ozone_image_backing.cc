@@ -9,7 +9,6 @@
 #include <memory>
 #include <utility>
 
-#include "base/containers/contains.h"
 #include "base/debug/crash_logging.h"
 #include "base/logging.h"
 #include "base/memory/scoped_refptr.h"
@@ -747,7 +746,7 @@ void OzoneImageBacking::EndAccess(bool readonly,
       read_fences_[access_stream] = std::move(fence);
     }
   } else {
-    DCHECK(!base::Contains(read_fences_, access_stream));
+    DCHECK(!read_fences_.contains(access_stream));
     write_fence_ = std::move(fence);
     last_write_stream_ = access_stream;
   }

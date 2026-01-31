@@ -17,6 +17,7 @@ class XRCubeLayer : public XRShapedLayer {
 
  public:
   XRCubeLayer(const XRCubeLayerInit* init,
+              V8XRLayerLayout::Enum final_layout,
               XRGraphicsBinding* binding,
               XRLayerDrawingContext* drawing_context);
   ~XRCubeLayer() override = default;

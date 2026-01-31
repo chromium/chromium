@@ -195,7 +195,7 @@ PasskeyUpgradeBubbleView::PasskeyUpgradeBubbleView(
           /*action_image_icon=*/
           ui::ImageModel::FromVectorIcon(
               vector_icons::kLaunchIcon, ui::kColorIconSecondary,
-              GetLayoutConstant(PAGE_INFO_ICON_SIZE))));
+              GetLayoutConstant(LayoutConstant::kPageInfoIconSize))));
 
   // The base class sets a fixed dialog width, but that might not fit the
   // manage passkeys hover button. Instead, size the bubble dynamically and

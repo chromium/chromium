@@ -44,11 +44,6 @@ const char kSkipTouchEventFilterTrialProcessParamName[] =
     "skip_filtering_process";
 const char kSkipTouchEventFilterTrialTypeParamName[] = "type";
 
-// Width and height of area of rectangle to hit test for potentially important
-// input fields to write into. This improves the chances of writing into the
-// intended input if the user starts writing close to it.
-const size_t kStylusWritableAdjustmentSizeDip = 30;
-
 size_t ToPointerTypeIndex(WebPointerProperties::PointerType t) {
   return static_cast<size_t>(t);
 }
@@ -418,7 +413,7 @@ bool PointerEventManager::ShouldAdjustStylusPointerEvent(
 }
 
 void PointerEventManager::SetHandwritingRadius(int handwriting_radius) {
-  if (handwriting_radius_.value_or(0) != handwriting_radius) {
+  if (handwriting_radius_ != handwriting_radius) {
     // TODO(crbug.com/455656777): On the cc side, we calculate the TouchAction
     // based on kStylusWritingHitTestRadius. It needs to use
     // handwriting_radius_. This is currently WIP.
@@ -456,8 +451,7 @@ void PointerEventManager::AdjustPointerEvent(WebPointerEvent& pointer_event,
                WebPointerProperties::PointerType::kEraser);
     float page_scale_factor = frame_->GetPage()->PageScaleFactor();
     adjustment_width = adjustment_height =
-        handwriting_radius_.value_or(kStylusWritableAdjustmentSizeDip) *
-        (device_scale_factor / page_scale_factor);
+        handwriting_radius_ * (device_scale_factor / page_scale_factor);
   }
 
   PhysicalSize hit_rect_size = GetHitTestRectForAdjustment(

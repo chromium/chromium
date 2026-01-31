@@ -53,8 +53,16 @@ export class HistoryQueryManagerElement extends CrLitElement {
     };
   }
 
-  accessor queryState: QueryState;
-  accessor queryResult: QueryResult;
+  accessor queryState: QueryState = {
+    incremental: false,
+    querying: false,
+    searchTerm: '',
+    after: null,
+  };
+  accessor queryResult: QueryResult = {
+    info: null,
+    value: [],
+  };
   private eventTracker_: EventTracker = new EventTracker();
   /**
    * When this is non-null, that means there's a QueryResult that's pending
@@ -63,19 +71,6 @@ export class HistoryQueryManagerElement extends CrLitElement {
    * these trivial queries the user typed through.
    */
   private resultPendingMetricsTimestamp_: number|null = null;
-
-  constructor() {
-    super();
-
-    this.queryState = {
-      // Whether the most recent query was incremental.
-      incremental: false,
-      // A query is initiated by page load.
-      querying: true,
-      searchTerm: '',
-      after: '',
-    };
-  }
 
   override connectedCallback() {
     super.connectedCallback();

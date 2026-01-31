@@ -4,12 +4,12 @@
 
 #include "net/http/http_auth_handler_factory.h"
 
+#include <algorithm>
 #include <array>
 #include <optional>
 #include <set>
 #include <string_view>
 
-#include "base/containers/contains.h"
 #include "base/memory/ptr_util.h"
 #include "base/strings/string_util.h"
 #include "build/build_config.h"
@@ -35,14 +35,14 @@ namespace net {
 
 namespace {
 
-base::Value::Dict NetLogParamsForCreateAuth(
+base::DictValue NetLogParamsForCreateAuth(
     std::string_view scheme,
     std::string_view challenge,
     const int net_error,
     const url::SchemeHostPort& scheme_host_port,
     const std::optional<bool>& allows_default_credentials,
     NetLogCaptureMode capture_mode) {
-  base::Value::Dict dict;
+  base::DictValue dict;
   dict.Set("scheme", NetLogStringValue(scheme));
   if (NetLogCaptureIncludesSensitive(capture_mode)) {
     dict.Set("challenge", NetLogStringValue(challenge));
@@ -260,9 +260,9 @@ bool HttpAuthHandlerRegistryFactory::IsSchemeAllowedForTesting(
 bool HttpAuthHandlerRegistryFactory::IsSchemeAllowed(
     const std::string& scheme) const {
   if (http_auth_preferences() && http_auth_preferences()->allowed_schemes()) {
-    return base::Contains(*http_auth_preferences()->allowed_schemes(), scheme);
+    return http_auth_preferences()->allowed_schemes()->contains(scheme);
   }
-  return base::Contains(kDefaultAuthSchemes, scheme);
+  return std::ranges::contains(kDefaultAuthSchemes, scheme);
 }
 
 #if BUILDFLAG(USE_KERBEROS) && !BUILDFLAG(IS_ANDROID) && BUILDFLAG(IS_POSIX)

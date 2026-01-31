@@ -97,6 +97,14 @@ void TabStripServiceMojoHandler::UpdateTabGroupVisual(
       tab_strip_service_->UpdateTabGroupVisual(id, visual_data));
 }
 
+void TabStripServiceMojoHandler::ShowTabContextMenu(
+    const tabs_api::NodeId& tab_id,
+    const gfx::Point& location,
+    ShowTabContextMenuCallback callback) {
+  std::move(callback).Run(
+      tab_strip_service_->ShowTabContextMenu(tab_id, location));
+}
+
 void TabStripServiceMojoHandler::OnTabEvents(
     const std::vector<tabs_api::mojom::TabsEventPtr>& events) {
   for (auto& observer : observers_) {

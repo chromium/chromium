@@ -133,10 +133,10 @@ class CreditCardFidoAuthenticatorTest
     return masked_server_card;
   }
 
-  base::Value::Dict GetTestRequestOptions(std::string challenge,
-                                          std::string relying_party_id,
-                                          std::string credential_id) {
-    base::Value::Dict request_options;
+  base::DictValue GetTestRequestOptions(std::string challenge,
+                                        std::string relying_party_id,
+                                        std::string credential_id) {
+    base::DictValue request_options;
 
     // Building the following JSON structure--
     // request_options = {
@@ -150,7 +150,7 @@ class CreditCardFidoAuthenticatorTest
     request_options.Set("challenge", base::Value(challenge));
     request_options.Set("relying_party_id", base::Value(relying_party_id));
 
-    base::Value::Dict key_info;
+    base::DictValue key_info;
     key_info.Set("credential_id", base::Value(credential_id));
     key_info.Set("authenticator_transport_support",
                  base::Value(base::Value::Type::LIST));
@@ -161,9 +161,9 @@ class CreditCardFidoAuthenticatorTest
     return request_options;
   }
 
-  base::Value::Dict GetTestCreationOptions(std::string challenge,
-                                           std::string relying_party_id) {
-    base::Value::Dict creation_options;
+  base::DictValue GetTestCreationOptions(std::string challenge,
+                                         std::string relying_party_id) {
+    base::DictValue creation_options;
     if (!challenge.empty())
       creation_options.Set("challenge", base::Value(challenge));
     creation_options.Set("relying_party_id", base::Value(relying_party_id));
@@ -302,7 +302,7 @@ TEST_F(CreditCardFidoAuthenticatorTest, IsUserVerifiable_False) {
 }
 
 TEST_F(CreditCardFidoAuthenticatorTest, ParseRequestOptions) {
-  base::Value::Dict request_options_json = GetTestRequestOptions(
+  base::DictValue request_options_json = GetTestRequestOptions(
       kTestChallenge, kTestRelyingPartyId, kTestCredentialId);
 
   blink::mojom::PublicKeyCredentialRequestOptionsPtr request_options_ptr =
@@ -321,7 +321,7 @@ TEST_F(CreditCardFidoAuthenticatorTest, ParseAssertionResponse) {
   assertion_response_ptr->info->raw_id = Base64ToBytes(kTestCredentialId);
   assertion_response_ptr->signature = Base64ToBytes(kTestSignature);
 
-  base::Value::Dict assertion_response_json =
+  base::DictValue assertion_response_json =
       fido_authenticator().ParseAssertionResponse(
           std::move(assertion_response_ptr));
   EXPECT_EQ(kTestCredentialId,
@@ -330,7 +330,7 @@ TEST_F(CreditCardFidoAuthenticatorTest, ParseAssertionResponse) {
 }
 
 TEST_F(CreditCardFidoAuthenticatorTest, ParseCreationOptions) {
-  base::Value::Dict creation_options_json =
+  base::DictValue creation_options_json =
       GetTestCreationOptions(kTestChallenge, kTestRelyingPartyId);
 
   blink::mojom::PublicKeyCredentialCreationOptionsPtr creation_options_ptr =
@@ -355,7 +355,7 @@ TEST_F(CreditCardFidoAuthenticatorTest, ParseAttestationResponse) {
   attestation_response_ptr->info = blink::mojom::CommonCredentialInfo::New();
   attestation_response_ptr->attestation_object = Base64ToBytes(kTestSignature);
 
-  base::Value::Dict attestation_response_json =
+  base::DictValue attestation_response_json =
       fido_authenticator().ParseAttestationResponse(
           std::move(attestation_response_ptr));
   EXPECT_EQ(kTestSignature, *attestation_response_json.FindStringByDottedPath(
@@ -366,7 +366,7 @@ TEST_F(CreditCardFidoAuthenticatorTest, AuthenticateCard_BadRequestOptions) {
   CreditCard card = CreateServerCard(kTestGUID, kTestNumber);
 
   fido_authenticator().Authenticate(card, requester().GetWeakPtr(),
-                                    base::Value::Dict());
+                                    base::DictValue());
   EXPECT_FALSE((*requester().did_succeed()));
 }
 
@@ -646,7 +646,7 @@ TEST_F(CreditCardFidoAuthenticatorTest,
   SetUserOptInPreference(true);
 
   fido_authenticator().Authorize(requester().GetWeakPtr(), kTestAuthToken,
-                                 base::Value::Dict());
+                                 base::DictValue());
 
   histogram_tester.ExpectUniqueSample(kEnrollmentOfferedHistogramName,
                                       /*sample=*/false,

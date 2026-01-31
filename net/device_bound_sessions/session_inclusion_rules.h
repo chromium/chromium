@@ -13,11 +13,13 @@
 #include "net/base/net_export.h"
 #include "net/base/scheme_host_port_matcher_rule.h"
 #include "net/base/schemeful_site.h"
+#include "net/device_bound_sessions/inclusion_result.h"
 #include "net/device_bound_sessions/session_error.h"
 #include "net/device_bound_sessions/session_params.h"
 #include "url/origin.h"
 
 namespace net::device_bound_sessions {
+struct SessionInclusionRulesDisplay;
 
 namespace proto {
 class SessionInclusionRules;
@@ -45,14 +47,6 @@ class SessionInclusionRules;
 // about the request URL, not any other properties of the request.
 class NET_EXPORT SessionInclusionRules final {
  public:
-  enum InclusionResult {
-    // Definitely do not defer a request on behalf of this DBSC session.
-    kExclude,
-    // Consider a request eligible for deferral on behalf of this session, if
-    // other conditions are met.
-    kInclude,
-  };
-
   static base::expected<SessionInclusionRules, SessionError> Create(
       const url::Origin& origin,
       const SessionParams::Scope& scope_params,
@@ -85,6 +79,10 @@ class NET_EXPORT SessionInclusionRules final {
   proto::SessionInclusionRules ToProto() const;
   static std::optional<SessionInclusionRules> CreateFromProto(
       const proto::SessionInclusionRules& proto);
+
+  // Returns a display-friendly version of this SessionInclusionRules. Used for
+  // DevTools.
+  SessionInclusionRulesDisplay ToDisplay() const;
 
   std::string DebugString() const;
 

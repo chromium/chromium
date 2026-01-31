@@ -91,7 +91,7 @@ void WaitForURLBlockedStatus(const GURL& url, bool blocked) {
 // Tests that pages are not blocked when the blocklist exists, but is empty.
 - (void)testEmptyBlocklist {
   GREYAssertTrue(
-      SetPolicyValue(base::Value(base::Value::List()), /*block_url=*/true),
+      SetPolicyValue(base::Value(base::ListValue()), /*block_url=*/true),
       @"policy value couldn't be set");
 
   [ChromeEarlGrey loadURL:self.testServer->GetURL("/echo")];
@@ -102,7 +102,7 @@ void WaitForURLBlockedStatus(const GURL& url, bool blocked) {
 // Tests that a page load is blocked when the URLBlocklist policy is set to
 // block all URLs.
 - (void)FormDatatestWildcardBlocklist {
-  GREYAssertTrue(SetPolicyValue(base::Value(base::Value::List().Append("*")),
+  GREYAssertTrue(SetPolicyValue(base::Value(base::ListValue().Append("*")),
                                 /*block_url=*/true),
                  @"policy value couldn't be set");
   WaitForURLBlockedStatus(self.testServer->GetURL("/echo"), true);
@@ -116,7 +116,7 @@ void WaitForURLBlockedStatus(const GURL& url, bool blocked) {
 
 // Tests that the NTP is not blocked by the wildcard blocklist.
 - (void)FormDatatestNTPIsNotBlocked {
-  GREYAssertTrue(SetPolicyValue(base::Value(base::Value::List().Append("*")),
+  GREYAssertTrue(SetPolicyValue(base::Value(base::ListValue().Append("*")),
                                 /*block_url=*/true),
                  @"policy value couldn't be set");
   WaitForURLBlockedStatus(self.testServer->GetURL("/echo"), true);
@@ -128,10 +128,9 @@ void WaitForURLBlockedStatus(const GURL& url, bool blocked) {
 // Tests that a page is blocked when the URLBlocklist policy is set to block a
 // specific URL.
 - (void)FormDatatestExplicitBlocklist {
-  GREYAssertTrue(
-      SetPolicyValue(base::Value(base::Value::List().Append("*/echo")),
-                     /*block_url=*/true),
-      @"policy value couldn't be set");
+  GREYAssertTrue(SetPolicyValue(base::Value(base::ListValue().Append("*/echo")),
+                                /*block_url=*/true),
+                 @"policy value couldn't be set");
   WaitForURLBlockedStatus(self.testServer->GetURL("/echo"), true);
 
   [ChromeEarlGrey loadURL:self.testServer->GetURL("/echo")];
@@ -146,16 +145,15 @@ void WaitForURLBlockedStatus(const GURL& url, bool blocked) {
   // The URLBlocklistPolicyHandler will discard policy updates that occur while
   // it is already computing a new blocklist, so wait between calls to set new
   // policy values.
-  GREYAssertTrue(SetPolicyValue(base::Value(base::Value::List().Append("*")),
+  GREYAssertTrue(SetPolicyValue(base::Value(base::ListValue().Append("*")),
                                 /*block_url=*/true),
                  @"policy value couldn't be set");
 
   WaitForURLBlockedStatus(self.testServer->GetURL("/testpage"), true);
 
-  GREYAssertTrue(
-      SetPolicyValue(base::Value(base::Value::List().Append("*/echo")),
-                     /*block_url=*/false),
-      @"policy value couldn't be set");
+  GREYAssertTrue(SetPolicyValue(base::Value(base::ListValue().Append("*/echo")),
+                                /*block_url=*/false),
+                 @"policy value couldn't be set");
   WaitForURLBlockedStatus(self.testServer->GetURL("/echo"), false);
 
   [ChromeEarlGrey loadURL:self.testServer->GetURL("/echo")];

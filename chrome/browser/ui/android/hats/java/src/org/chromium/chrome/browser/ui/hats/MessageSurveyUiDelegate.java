@@ -99,7 +99,7 @@ public class MessageSurveyUiDelegate implements SurveyUiDelegate {
     private final PropertyModel mMessageModel;
     private final MessageDispatcher mMessageDispatcher;
     private final TabModelSelector mTabModelSelector;
-    private final Supplier<@Nullable Boolean> mCrashUploadPermissionSupplier;
+    private final Supplier<Boolean> mCrashUploadPermissionSupplier;
 
     private @State int mState;
 
@@ -133,12 +133,11 @@ public class MessageSurveyUiDelegate implements SurveyUiDelegate {
             PropertyModel customModel,
             MessageDispatcher messageDispatcher,
             TabModelSelector modelSelector,
-            Supplier<@Nullable Boolean> crashUploadPermissionSupplier) {
+            Supplier<Boolean> crashUploadPermissionSupplier) {
         mMessageModel = customModel;
         mTabModelSelector = modelSelector;
         mMessageDispatcher = messageDispatcher;
         mCrashUploadPermissionSupplier = crashUploadPermissionSupplier;
-
         mState = State.NOT_STARTED;
     }
 
@@ -213,7 +212,7 @@ public class MessageSurveyUiDelegate implements SurveyUiDelegate {
      * @return Whether survey can be shown in the current session.
      */
     private boolean canShowSurveyPrompt() {
-        return Boolean.TRUE.equals(mCrashUploadPermissionSupplier.get());
+        return mCrashUploadPermissionSupplier.get();
     }
 
     private void showSurveyIfReady() {

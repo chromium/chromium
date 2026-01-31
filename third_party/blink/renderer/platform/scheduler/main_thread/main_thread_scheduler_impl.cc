@@ -11,7 +11,6 @@
 #include <utility>
 
 #include "base/check_op.h"
-#include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/message_loop/message_pump.h"
@@ -72,6 +71,10 @@
 
 #if BUILDFLAG(IS_ANDROID)
 #include "base/android/self_compaction_manager.h"
+#include "base/functional/callback_forward.h"
+#include "base/functional/callback_helpers.h"
+#include "base/task/thread_pool.h"
+#include "base/task/thread_pool/thread_pool_instance.h"
 #endif
 
 namespace base {
@@ -86,6 +89,24 @@ namespace scheduler {
 // threads.
 BASE_FEATURE(kLowerPriorityForCompositorGestures,
              base::FEATURE_DISABLED_BY_DEFAULT);
+
+#if BUILDFLAG(IS_ANDROID)
+// On devices with at least 3 CPU clusters, only selectively allow the renderer
+// main thread to run on the bigggest one.
+BASE_FEATURE(kRestrictMainThreadBigCoreAffinity,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+namespace {
+bool ShouldRestrictMainThreadBigCoreAffinity() {
+  // Make sure to not query the feature before checking eligibility, so that the
+  // control group only contains eligible devices, as experiments become active
+  // when features are queried.
+  return base::IsEligibleForBigCoreAffinityChange() &&
+         base::FeatureList::IsEnabled(kRestrictMainThreadBigCoreAffinity);
+}
+}  // namespace
+
+#endif
 
 using base::sequence_manager::TaskQueue;
 using base::sequence_manager::TaskTimeObserver;
@@ -185,14 +206,13 @@ BASE_FEATURE_PARAM(base::TimeDelta,
                    "busy_loop_for",
                    base::Milliseconds(2));
 
-// Use PerformanceScenario instead of UseCase to compute the current RAILMode.
-BASE_FEATURE(kComputeCurrentRailModeFromPerformanceScenario,
+// Treat "input handling" specially in V8.
+BASE_FEATURE(kInputHandlingModeFromUseCase, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kInputHandlingModeFromPerformanceScenario,
              base::FEATURE_DISABLED_BY_DEFAULT);
-// Treat "input" as "loading when computing the current RAILMode.
-BASE_FEATURE(kRAILInputAsLoading, base::FEATURE_DISABLED_BY_DEFAULT);
-// Do not call |SetIsLoading|. This is used for a holdback experiment to
-// determine the impact of |SetIsLoading|.
-BASE_FEATURE(kSetIsLoadingAblation, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kLoadingModeFromRAILMode, base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kLoadingModeFromPerformanceScenario,
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 void MaybeSetBusyLoop(raw_ptr<base::MessagePump> message_pump,
                       double scale_factor) {
@@ -204,6 +224,73 @@ void MaybeSetBusyLoop(raw_ptr<base::MessagePump> message_pump,
 }
 
 }  // namespace
+
+#if BUILDFLAG(IS_ANDROID)
+// static
+uint64_t ThreadAffinityBoost::depth_ = 0;
+// static
+base::TaskRunner* ThreadAffinityBoost::task_runner_for_testing_ = nullptr;
+// static
+base::RepeatingCallback<void(base::PlatformThreadId, bool)>*
+    ThreadAffinityBoost::set_can_run_on_big_core_override_ = nullptr;
+
+ThreadAffinityBoost::ThreadAffinityBoost()
+    : thread_id_(base::PlatformThread::CurrentId()) {
+  TRACE_EVENT("blink", __PRETTY_FUNCTION__);
+  base::AutoLock guard(lock());
+  TRACE_EVENT_BEGIN("blink", "ThreadAffinityBoost",
+                    perfetto::Track(reinterpret_cast<uintptr_t>(this)), "depth",
+                    depth_ + 1);
+  if (depth_++ == 0) {
+    if (set_can_run_on_big_core_override_) {
+      set_can_run_on_big_core_override_->Run(thread_id_, true);
+    } else {
+      base::SetCanRunOnBigCore(thread_id_, true);
+    }
+  }
+}
+
+ThreadAffinityBoost::~ThreadAffinityBoost() {
+  // A lock is needed, with atomics we could race with the main thread raising
+  // its priority again.
+  base::AutoLock guard(lock());
+  TRACE_EVENT("blink", __PRETTY_FUNCTION__, "depth", depth_);
+  TRACE_EVENT_END("blink", perfetto::Track(reinterpret_cast<uintptr_t>(this)));
+
+  if (--depth_ == 0) {
+    if (set_can_run_on_big_core_override_) {
+      set_can_run_on_big_core_override_->Run(thread_id_, false);
+    } else {
+      base::SetCanRunOnBigCore(thread_id_, false);
+    }
+  }
+}
+
+// static
+void ThreadAffinityBoost::StopDelayed(
+    std::unique_ptr<ThreadAffinityBoost> boost,
+    base::TimeDelta delay) {
+  TRACE_EVENT("blink", __PRETTY_FUNCTION__);
+  DCHECK(boost);
+  if (!delay.is_zero()) {
+    base::OnceClosure task = base::DoNothingWithBoundArgs(std::move(boost));
+    if (task_runner_for_testing_) {
+      task_runner_for_testing_->PostDelayedTask(FROM_HERE, std::move(task),
+                                                delay);
+    } else if (base::ThreadPoolInstance::Get()) {
+      base::ThreadPool::PostDelayedTask(FROM_HERE, std::move(task), delay);
+    }
+  } else {
+    // The unique_ptr<> will destroy the boost at the end of the scope.
+  }
+}
+
+// static
+base::Lock& ThreadAffinityBoost::lock() {
+  static base::NoDestructor<base::Lock> lock;
+  return *lock;
+}
+#endif  // BUILDFLAG(IS_ANDROID)
 
 MainThreadSchedulerImpl::MainThreadSchedulerImpl(
     std::unique_ptr<base::sequence_manager::SequenceManager> sequence_manager)
@@ -314,8 +401,15 @@ MainThreadSchedulerImpl::MainThreadSchedulerImpl(
   // Register a tracing state observer unless we're running in a test without a
   // task runner. Note that it's safe to remove a non-existent observer.
   if (base::SingleThreadTaskRunner::HasCurrentDefault()) {
-    base::trace_event::TraceLog::GetInstance()->AddAsyncEnabledStateObserver(
-        weak_factory_.GetWeakPtr());
+    trace_event::AddTraceSessionObserver(this);
+  }
+
+  if (base::FeatureList::IsEnabled(kInputHandlingModeFromPerformanceScenario)) {
+    if (auto performance_scenario_observer_list =
+            performance_scenarios::PerformanceScenarioObserverList::GetForScope(
+                performance_scenarios::ScenarioScope::kCurrentProcess)) {
+      performance_scenario_observer_list->AddObserver(this);
+    }
   }
 
   internal::ProcessState::Get()->is_process_backgrounded =
@@ -328,6 +422,18 @@ MainThreadSchedulerImpl::MainThreadSchedulerImpl(
   // the main thread scheduler.
   memory_purge_task_queue_->SetQueuePriority(
       ComputePriority(memory_purge_task_queue_.get()));
+
+#if BUILDFLAG(IS_ANDROID)
+  if (ShouldRestrictMainThreadBigCoreAffinity()) {
+    // Start with a "boost", that is initially allow the renderer to run
+    // everywhere. This is meant to help with initialization. In the worst case,
+    // the current use case never changes, and the renderer is always allowed to
+    // run on all cores. But that would also mean a renderer that didn't load
+    // anything, ad was never interacted with, which then means it should not
+    // use a lot of resources.
+    main_thread_only().affinity_boost = std::make_unique<ThreadAffinityBoost>();
+  }
+#endif
 }
 
 MainThreadSchedulerImpl::~MainThreadSchedulerImpl() {
@@ -344,8 +450,14 @@ MainThreadSchedulerImpl::~MainThreadSchedulerImpl() {
   CHECK(main_thread_only().detached_task_queues.empty());
   CHECK(!virtual_time_control_task_queue_);
 
-  base::trace_event::TraceLog::GetInstance()->RemoveAsyncEnabledStateObserver(
-      this);
+  if (base::FeatureList::IsEnabled(kInputHandlingModeFromPerformanceScenario)) {
+    if (auto performance_scenario_observer_list =
+            performance_scenarios::PerformanceScenarioObserverList::GetForScope(
+                performance_scenarios::ScenarioScope::kCurrentProcess)) {
+      performance_scenario_observer_list->RemoveObserver(this);
+    }
+  }
+  trace_event::RemoveTraceSessionObserver(this);
 }
 
 // static
@@ -362,6 +474,29 @@ WebThreadScheduler& WebThreadScheduler::MainThreadScheduler() {
   // `WebThreadScheduler` is needed.
   CHECK(scheduler);
   return *scheduler;
+}
+
+void MainThreadSchedulerImpl::OnInputScenarioChanged(
+    performance_scenarios::ScenarioScope scope,
+    performance_scenarios::InputScenario old_scenario,
+    performance_scenarios::InputScenario new_scenario) {
+  DCHECK(
+      base::FeatureList::IsEnabled(kInputHandlingModeFromPerformanceScenario));
+  if (isolate()) {
+    isolate()->SetIsInputHandling(
+        ComputeIsInputHandlingFromPerformanceScenario(new_scenario));
+  }
+}
+
+void MainThreadSchedulerImpl::OnLoadingScenarioChanged(
+    performance_scenarios::ScenarioScope scope,
+    performance_scenarios::LoadingScenario old_scenario,
+    performance_scenarios::LoadingScenario new_scenario) {
+  DCHECK(base::FeatureList::IsEnabled(kLoadingModeFromPerformanceScenario));
+  if (isolate()) {
+    isolate()->SetIsLoading(
+        ComputeIsLoadingFromPerformanceScenario(new_scenario));
+  }
 }
 
 MainThreadSchedulerImpl::MainThreadOnly::MainThreadOnly(
@@ -1490,11 +1625,22 @@ void MainThreadSchedulerImpl::UpdatePolicyLocked(UpdateType update_type) {
     return;
   }
 
+  if (new_policy.use_case != main_thread_only().current_policy.use_case) {
+    if (isolate()) {
+      if (base::FeatureList::IsEnabled(kInputHandlingModeFromUseCase)) {
+        isolate()->SetIsInputHandling(
+            ComputeIsInputHandlingFromUseCase(new_policy.use_case));
+      }
+    }
+  }
+
   // NOTE: Code below only executes for forced updates or when the policy has
   // changed.
   if (new_policy.rail_mode != main_thread_only().current_policy.rail_mode) {
     if (isolate()) {
-      if (!base::FeatureList::IsEnabled(kSetIsLoadingAblation)) {
+      if (base::FeatureList::IsEnabled(kLoadingModeFromRAILMode)) {
+        DCHECK(
+            !base::FeatureList::IsEnabled(kLoadingModeFromPerformanceScenario));
         isolate()->SetIsLoading(new_policy.rail_mode == RAILMode::kLoad);
       }
     }
@@ -1529,7 +1675,7 @@ void MainThreadSchedulerImpl::UpdatePolicyLocked(UpdateType update_type) {
         desired_thread_type = base::ThreadType::kDefault;
         break;
       default:
-        desired_thread_type = base::ThreadType::kDisplayCritical;
+        desired_thread_type = base::ThreadType::kPresentation;
         break;
     }
 
@@ -1537,46 +1683,85 @@ void MainThreadSchedulerImpl::UpdatePolicyLocked(UpdateType update_type) {
       base::PlatformThread::SetCurrentThreadType(desired_thread_type);
     }
   }
-}
 
-RAILMode ComputeCurrentRAILModeFromPerformanceScenario() {
-  using performance_scenarios::LoadingScenario;
-  using performance_scenarios::ScenarioScope;
-  auto loading_state = GetLoadingScenario(ScenarioScope::kCurrentProcess)
-                           ->load(std::memory_order_relaxed);
-  switch (loading_state) {
-    case LoadingScenario::kFocusedPageLoading:
-    case LoadingScenario::kVisiblePageLoading:
-      return RAILMode::kLoad;
-    case LoadingScenario::kBackgroundPageLoading:
-    case LoadingScenario::kNoPageLoading:
-      break;
-  }
-
-  if (base::FeatureList::IsEnabled(kRAILInputAsLoading)) {
-    using performance_scenarios::InputScenario;
-    auto input_state = GetInputScenario(ScenarioScope::kCurrentProcess)
-                           ->load(std::memory_order_relaxed);
-    switch (input_state) {
-      case InputScenario::kTyping:
-      case InputScenario::kTap:
-      case InputScenario::kScroll:
-        return RAILMode::kLoad;
-      case InputScenario::kNoInput:
+#if BUILDFLAG(IS_ANDROID)
+  if (ShouldRestrictMainThreadBigCoreAffinity()) {
+    switch (main_thread_only().current_use_case) {
+      case UseCase::kNone:
+        if (main_thread_only().affinity_boost) {
+          bool was_loading = previous_use_case == UseCase::kLoading ||
+                             previous_use_case == UseCase::kEarlyLoading;
+          base::TimeDelta delay =
+              was_loading ? base::Milliseconds(500) : base::TimeDelta();
+          ThreadAffinityBoost::StopDelayed(
+              std::move(main_thread_only().affinity_boost), delay);
+        }
         break;
+      default:
+        if (!main_thread_only().affinity_boost) {
+          main_thread_only().affinity_boost =
+              std::make_unique<ThreadAffinityBoost>();
+        }
     }
   }
+#endif  // BUILDFLAG(IS_ANDROID)
+}
 
-  return RAILMode::kDefault;
+bool MainThreadSchedulerImpl::ComputeIsInputHandlingFromPerformanceScenario(
+    performance_scenarios::InputScenario input_scenario) const {
+  DCHECK(!base::FeatureList::IsEnabled(kInputHandlingModeFromUseCase));
+  using performance_scenarios::InputScenario;
+  using performance_scenarios::ScenarioScope;
+
+  switch (input_scenario) {
+    case InputScenario::kTyping:
+    case InputScenario::kTap:
+    case InputScenario::kScroll:
+      return true;
+    case InputScenario::kNoInput:
+      return false;
+  }
+
+  NOTREACHED();
+}
+
+bool MainThreadSchedulerImpl::ComputeIsInputHandlingFromUseCase(
+    UseCase use_case) const {
+  DCHECK(
+      !base::FeatureList::IsEnabled(kInputHandlingModeFromPerformanceScenario));
+  switch (use_case) {
+    case UseCase::kDiscreteInputResponse:
+    case UseCase::kTouchstart:
+    case UseCase::kCompositorGesture:
+    case UseCase::kSynchronizedGesture:
+    case UseCase::kMainThreadGesture:
+    case UseCase::kMainThreadCustomInputHandling:
+      return true;
+    default:
+      return false;
+  }
+  NOTREACHED();
+}
+
+bool MainThreadSchedulerImpl::ComputeIsLoadingFromPerformanceScenario(
+    performance_scenarios::LoadingScenario loading_scenario) const {
+  DCHECK(!base::FeatureList::IsEnabled(kLoadingModeFromRAILMode));
+  using performance_scenarios::LoadingScenario;
+  using performance_scenarios::ScenarioScope;
+
+  switch (loading_scenario) {
+    case LoadingScenario::kNoPageLoading:
+      return false;
+    case LoadingScenario::kBackgroundPageLoading:
+    case LoadingScenario::kFocusedPageLoading:
+    case LoadingScenario::kVisiblePageLoading:
+      return true;
+  }
+  NOTREACHED();
 }
 
 RAILMode MainThreadSchedulerImpl::ComputeCurrentRAILMode(
     UseCase use_case) const {
-  if (base::FeatureList::IsEnabled(
-          kComputeCurrentRailModeFromPerformanceScenario)) {
-    return ComputeCurrentRAILModeFromPerformanceScenario();
-  }
-
   switch (use_case) {
     case UseCase::kDiscreteInputResponse:
       // TODO(crbug.com/350540984): This really should be `RAILMode::kDefault`,
@@ -1590,11 +1775,7 @@ RAILMode MainThreadSchedulerImpl::ComputeCurrentRAILMode(
     case UseCase::kSynchronizedGesture:
     case UseCase::kMainThreadGesture:
     case UseCase::kMainThreadCustomInputHandling:
-      // TODO(crbug.com/444705203): Don't ship this as-is. Likely want to
-      // update the RAILModes if we decide to ship.
-      return base::FeatureList::IsEnabled(kRAILInputAsLoading)
-                 ? RAILMode::kLoad
-                 : RAILMode::kDefault;
+      return RAILMode::kDefault;
 
     case UseCase::kNone:
       return RAILMode::kDefault;
@@ -2022,11 +2203,22 @@ void MainThreadSchedulerImpl::DidCommitProvisionalLoad(
         isolate()) {
       // V8 was already informed that the load started, but now that the load is
       // committed, update the start timestamp.
-      if (!base::FeatureList::IsEnabled(kSetIsLoadingAblation)) {
+      if (base::FeatureList::IsEnabled(kLoadingModeFromRAILMode)) {
         isolate()->SetIsLoading(true);
       }
     }
   }
+
+#if BUILDFLAG(IS_ANDROID)
+  if (ShouldRestrictMainThreadBigCoreAffinity()) {
+    // A new frame has been committed, let the main thread run on the biggest
+    // core for the next 500ms. We do it even if we are currently boosting,
+    // because we want to make sure that the boost doesn't expire before the
+    // delay.
+    ThreadAffinityBoost::StopDelayed(std::make_unique<ThreadAffinityBoost>(),
+                                     base::Milliseconds(500));
+  }
+#endif
 }
 
 void MainThreadSchedulerImpl::OnMainFramePaint() {
@@ -2295,7 +2487,7 @@ void MainThreadSchedulerImpl::AddPageScheduler(
 
 void MainThreadSchedulerImpl::RemovePageScheduler(
     PageSchedulerImpl* page_scheduler) {
-  DCHECK(base::Contains(main_thread_only().page_schedulers, page_scheduler));
+  DCHECK(main_thread_only().page_schedulers.Contains(page_scheduler));
   main_thread_only().page_schedulers.erase(page_scheduler);
   if (page_scheduler->IsOrdinary()) {
     memory_purge_manager_.OnPageDestroyed(
@@ -2339,15 +2531,6 @@ void MainThreadSchedulerImpl::OnPageFrozen(
           // |memory_purge_manager_| is a member of |this|, and will be deleted
           // first, so a raw pointer is safe here.
           weak_factory_.GetWeakPtr()));
-  memory_purge_manager_.SetOnAllPagesFrozenCallback(base::BindRepeating(
-      [](MainThreadSchedulerImpl* s, bool is_frozen) {
-        if (s->isolate()) {
-          s->isolate()->Freeze(is_frozen);
-        }
-      },
-      // |memory_purge_manager_| is a member of |this|, and will be deleted
-      // first, so a raw pointer is safe here.
-      base::Unretained(this)));
 #endif
   memory_purge_manager_.OnPageFrozen(called_from);
   UpdatePolicy();
@@ -2494,15 +2677,14 @@ MainThreadSchedulerImpl::CreateCPUTimeBudgetPoolForTesting(const char* name) {
                                              NowTicks());
 }
 
-void MainThreadSchedulerImpl::OnTraceLogEnabled() {
+void MainThreadSchedulerImpl::OnStart(
+    const perfetto::DataSourceBase::StartArgs&) {
   CreateTraceEventObjectSnapshot();
   tracing_controller_.OnTraceLogEnabled();
   for (PageSchedulerImpl* page_scheduler : main_thread_only().page_schedulers) {
     page_scheduler->OnTraceLogEnabled();
   }
 }
-
-void MainThreadSchedulerImpl::OnTraceLogDisabled() {}
 
 base::WeakPtr<MainThreadSchedulerImpl> MainThreadSchedulerImpl::GetWeakPtr() {
   return weak_factory_.GetWeakPtr();

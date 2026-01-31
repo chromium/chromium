@@ -30,6 +30,7 @@ enum DangerType {
   kDeepScannedOpenedDangerous,
   kBlockedScanFailed,
   kForcedSaveToGdrive,
+  kForcedSaveToOnedrive,
 };
 
 // This corresponds to DownloadUIModel::TailoredWarningType.
@@ -106,9 +107,6 @@ struct Data {
   // original URL. Omitted if the URL should not be clickable on the downloads
   // page, due to URL size limits requiring truncation.
   url.mojom.Url? url;
-  // The display string for the URL in the UI. May be truncated/elided from the
-  // original URL, and IDN domains may be converted to Unicode.
-  mojo_base.mojom.String16 display_url;
   // Safe Browsing protection level of the profile in which the item was
   // downloaded. Used to determine whether to show a special warning message.
   SafeBrowsingState safe_browsing_state;

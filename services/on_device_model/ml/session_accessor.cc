@@ -4,11 +4,14 @@
 
 #include "services/on_device_model/ml/session_accessor.h"
 
+#include <thread>
+
 #include "base/compiler_specific.h"
 #include "base/trace_event/trace_event.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "services/on_device_model/ml/chrome_ml.h"
 #include "services/on_device_model/ml/chrome_ml_types.h"
+#include "services/on_device_model/ml/constraint_factory.h"
 
 namespace ml {
 
@@ -111,15 +114,19 @@ ChromeMLCancelFn SessionAccessor::Append(
 
 ChromeMLCancelFn SessionAccessor::Generate(
     on_device_model::mojom::GenerateOptionsPtr options,
-    ChromeMLConstraint constraint,
+    ConstraintFactory* constraint_factory,
+    const std::optional<std::string>& model_response_prefix,
     ChromeMLExecutionOutputFn output_fn) {
   TRACE_EVENT("optimization_guide", "SessionAccessor::Generate");
   DCHECK(output_fn);
   auto canceler = base::MakeRefCounted<Canceler>(chrome_ml_.get());
   task_runner_->PostTask(
-      FROM_HERE, base::BindOnce(&SessionAccessor::GenerateInternal,
-                                base::Unretained(this), std::move(options),
-                                constraint, std::move(output_fn), canceler));
+      FROM_HERE,
+      base::BindOnce(&SessionAccessor::GenerateInternal, base::Unretained(this),
+                     // Unretained safe since `constrained_factory` is deleted
+                     // on the sequence.
+                     std::move(options), base::Unretained(constraint_factory),
+                     model_response_prefix, std::move(output_fn), canceler));
   return [canceler] { canceler->Cancel(); };
 }
 
@@ -241,11 +248,23 @@ void SessionAccessor::AppendInternal(
 DISABLE_CFI_DLSYM
 void SessionAccessor::GenerateInternal(
     on_device_model::mojom::GenerateOptionsPtr generate_options,
-    ChromeMLConstraint constraint,
+    ConstraintFactory* constraint_factory,
+    std::optional<std::string> model_response_prefix,
     ChromeMLExecutionOutputFn output_fn,
     scoped_refptr<Canceler> canceler) {
   TRACE_EVENT("optimization_guide", "SessionAccessor::GenerateInternal");
   DCHECK(task_runner_->RunsTasksInCurrentSequence());
+  ChromeMLConstraint constraint = 0;
+  if (generate_options->constraint) {
+    constraint = constraint_factory->CreateConstraint(
+        session_, model_, *generate_options->constraint, model_response_prefix);
+    if (!constraint) {
+      ChromeMLGenerateOutput output{ChromeMLGenerateStatus::kInvalidConstraint,
+                                    nullptr};
+      output_fn(&output);
+      return;
+    }
+  }
   ChromeMLGenerateOptions options{
       .max_output_tokens = generate_options->max_output_tokens,
       .constraint = constraint,

@@ -23,6 +23,7 @@
 \bgorontalo\b	go
 \bindonesia\b	id
 \bjalan\s+tol\b	jl tol
+\bkabupaten\b	kab
 \bkecamatan\b	district
 \bkyai\s+haji\b	kh
 \bbengkulu\b	be
@@ -37,15 +38,15 @@
 \blorong\b	lrg
 \bmaluku\b	ma
 \bmesjid\b	masjid
-\bnumber\b	#
+\bnumber\b	 
 \balley\b	gg
 \bbarat\b	w
 \bblock\b	blk
-\bblok\.\b	blk
+\bblok\b	blk
 \bjalan\b	jl
 \bjambi\b	ja
 \blebar\b	lbr
-\bnomor\b	#
+\bnomor\b	 
 \bnorth\b	n
 \bpapua\b	pa
 \bsouth\b	s
@@ -53,7 +54,7 @@
 \butara\b	n
 \baceh\b	ac
 \bbali\b	ba
-\bblk\.\b	blk
+\bblk\b	blk
 \bblok\b	blk
 \beast\b	e
 \bgang\b	gg
@@ -61,6 +62,6 @@
 \broad\b	rd
 \bwest\b	w
 \bjln\b	jl
-\bno\.\b	#
-\bnum\b	#
-\bno\b	#
+\bno\b	 
+\bnum\b	 
+\bno\b	 

@@ -17,6 +17,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.browser.ActivityUtils;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
@@ -28,6 +29,7 @@ import org.chromium.components.payments.PaymentAppServiceBridge;
 import org.chromium.components.payments.PaymentFeatureList;
 import org.chromium.components.payments.SupportedDelegations;
 import org.chromium.content_public.browser.WebContents;
+import org.chromium.ui.base.DeviceFormFactor;
 
 import java.util.concurrent.TimeoutException;
 
@@ -38,11 +40,14 @@ import java.util.concurrent.TimeoutException;
     // Prevent crawling the web for real payment apps.
     "disable-features=" + PaymentFeatureList.SERVICE_WORKER_PAYMENT_APPS
 })
+@DisableIf.Device(DeviceFormFactor.DESKTOP) // https://crbug.com/376100658
 public class PaymentRequestServiceWorkerPaymentAppTest {
     @Rule
     public PaymentRequestTestRule mPaymentRequestTestRule =
             new PaymentRequestTestRule(
                     "payment_request_bobpay_and_basic_card_with_modifier_optional_data_test.html");
+
+    private int mFactoryCount;
 
     /**
      * Installs a mock service worker based payment app with given supported delegations for
@@ -60,8 +65,9 @@ public class PaymentRequestServiceWorkerPaymentAppTest {
             String name,
             boolean withIcon,
             SupportedDelegations supportedDelegations) {
+        String factoryId = "testFactoryId_" + mFactoryCount++;
         PaymentAppService.getInstance()
-                .addFactory(
+                .addUniqueFactory(
                         new PaymentAppFactoryInterface() {
                             @Override
                             public void create(PaymentAppFactoryDelegate delegate) {
@@ -88,7 +94,8 @@ public class PaymentRequestServiceWorkerPaymentAppTest {
                                                 supportedDelegations));
                                 delegate.onDoneCreatingPaymentApps(this);
                             }
-                        });
+                        },
+                        factoryId);
     }
 
     /**

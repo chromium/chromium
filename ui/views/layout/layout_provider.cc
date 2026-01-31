@@ -218,10 +218,6 @@ ShapeSysTokens GetShapeSysToken(ShapeContextTokens id) {
           {ShapeContextTokens::kMenuTouchRadius, ShapeSysTokens::kMediumSmall},
           {ShapeContextTokens::kOmniboxExpandedRadius, ShapeSysTokens::kMedium},
           {ShapeContextTokens::kTextfieldRadius, ShapeSysTokens::kSmall},
-          {ShapeContextTokens::kToolbarHeightSidePanelContentRadius,
-           ShapeSysTokens::kSmall},
-          {ShapeContextTokens::kSidePanelContentRadius,
-           ShapeSysTokens::kMedium},
           {ShapeContextTokens::kContentSeparatorRadius, ShapeSysTokens::kSmall},
       });
   const auto it = shape_token_map.find(id);

@@ -155,8 +155,8 @@ void SchedulerLoopQuarantineBranch<thread_bound>::Configure(
   largest_bucket_index_ =
       BucketIndexLookup::GetIndexForDenserBuckets(config.max_quarantine_size);
   PA_CHECK(largest_bucket_index_ < BucketIndexLookup::kNumBuckets);
-  PA_UNSAFE_TODO(PA_CHECK(&allocator_root_->buckets[largest_bucket_index_] <=
-                          &allocator_root_->sentinel_bucket));
+  PA_UNSAFE_TODO(PA_CHECK(&allocator_root_->buckets_[largest_bucket_index_] <=
+                          &allocator_root_->sentinel_bucket_));
 }
 
 template <bool thread_bound>
@@ -199,34 +199,26 @@ void SchedulerLoopQuarantineBranch<thread_bound>::Destroy() {
 template <bool thread_bound>
 void SchedulerLoopQuarantineBranch<thread_bound>::Quarantine(
     SlotStart slot_start,
-    SlotSpanMetadata* slot_span) {
-  auto size_details = allocator_root_->SlotSpanToBucketSizeDetails(slot_span);
-  return QuarantineWithSize(slot_start, slot_span, size_details);
-}
-
-template <bool thread_bound>
-void SchedulerLoopQuarantineBranch<thread_bound>::QuarantineWithSize(
-    SlotStart slot_start,
     SlotSpanMetadata* slot_span,
     const internal::BucketSizeDetails& size_details) {
 #if PA_BUILDFLAG(DCHECKS_ARE_ON)
   PA_DCHECK(!being_destructed_);
 #endif  // PA_BUILDFLAG(DCHECKS_ARE_ON)
   if (!enable_quarantine_ || pause_quarantine_) [[unlikely]] {
-    return allocator_root_->RawFreeWithThreadCacheWithSize(
-        slot_start, size_details, slot_span);
+    return allocator_root_->RawFreeWithThreadCache(slot_start, size_details,
+                                                   slot_span);
   }
   if (size_details.slot_size > BucketIndexLookup::kMaxBucketSize ||
       largest_bucket_index_ < size_details.bucket_index) [[unlikely]] {
     // The allocation is direct-mapped or larger than `largest_bucket_index_`.
-    return allocator_root_->RawFreeWithThreadCacheWithSize(
-        slot_start, size_details, slot_span);
+    return allocator_root_->RawFreeWithThreadCache(slot_start, size_details,
+                                                   slot_span);
   }
   PA_DCHECK(!allocator_root_->IsDirectMapped(slot_span));
   PA_DCHECK(
-      slot_span->bucket >= PA_UNSAFE_TODO(&allocator_root_->buckets[0]) &&
+      slot_span->bucket >= PA_UNSAFE_TODO(&allocator_root_->buckets_[0]) &&
       slot_span->bucket <=
-          PA_UNSAFE_TODO(&allocator_root_->buckets[largest_bucket_index_]));
+          PA_UNSAFE_TODO(&allocator_root_->buckets_[largest_bucket_index_]));
 
   const size_t slot_size = size_details.slot_size;
   const size_t capacity_in_bytes =
@@ -234,8 +226,8 @@ void SchedulerLoopQuarantineBranch<thread_bound>::QuarantineWithSize(
   if (capacity_in_bytes < slot_size) [[unlikely]] {
     // Even if this branch dequarantines all entries held by it, this entry
     // cannot fit within the capacity.
-    allocator_root_->RawFreeWithThreadCacheWithSize(slot_start, size_details,
-                                                    slot_span);
+    allocator_root_->RawFreeWithThreadCache(slot_start, size_details,
+                                            slot_span);
     root_->quarantine_miss_count_.fetch_add(1u, std::memory_order_relaxed);
     return;
   }
@@ -307,8 +299,10 @@ SchedulerLoopQuarantineBranch<thread_bound>::PurgeInternal(
       // Unless during its destruction, we can assume ThreadCache is valid
       // because this branch is embedded inside ThreadCache.
 #if PA_BUILDFLAG(DCHECKS_ARE_ON)
-      PA_DCHECK(being_destructed_ || ThreadCache::IsValid(ThreadCache::Get()));
-      PA_DCHECK(being_destructed_ || ThreadCache::Get() == tcache_);
+      PA_DCHECK(being_destructed_ ||
+                ThreadCache::IsValid(allocator_root_->GetThreadCache()));
+      PA_DCHECK(being_destructed_ ||
+                allocator_root_->GetThreadCache() == tcache_);
 #endif  // PA_BUILDFLAG(DCHECKS_ARE_ON)
 
       std::optional<size_t> slot_size_opt =

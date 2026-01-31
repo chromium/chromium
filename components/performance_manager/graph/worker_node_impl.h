@@ -8,7 +8,7 @@
 #include <memory>
 #include <string>
 
-#include "base/byte_count.h"
+#include "base/byte_size.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/types/pass_key.h"
@@ -59,8 +59,8 @@ class WorkerNodeImpl
   const GURL& GetURL() const override;
   const url::Origin& GetOrigin() const override;
   const PriorityAndReason& GetPriorityAndReason() const override;
-  base::ByteCount GetResidentSetEstimate() const override;
-  base::ByteCount GetPrivateFootprintEstimate() const override;
+  base::ByteSize GetResidentSetEstimate() const override;
+  base::ByteSize GetPrivateFootprintEstimate() const override;
 
   // Invoked when a frame starts/stops being a client of this worker.
   void AddClientFrame(FrameNodeImpl* frame_node);
@@ -72,8 +72,8 @@ class WorkerNodeImpl
 
   // Setters are not thread safe.
   void SetPriorityAndReason(const PriorityAndReason& priority_and_reason);
-  void SetResidentSetEstimate(base::ByteCount rss_estimate);
-  void SetPrivateFootprintEstimate(base::ByteCount pmf_estimate);
+  void SetResidentSetEstimate(base::ByteSize rss_estimate);
+  void SetPrivateFootprintEstimate(base::ByteSize pmf_estimate);
 
   // Invoked when the worker script was fetched and the final response URL is
   // available.
@@ -144,16 +144,16 @@ class WorkerNodeImpl
   // distinction between client workers and child workers.
   NodeSet child_workers_ GUARDED_BY_CONTEXT(sequence_checker_);
 
-  base::ByteCount resident_set_estimate_;
+  base::ByteSize resident_set_estimate_;
 
-  base::ByteCount private_footprint_estimate_;
+  base::ByteSize private_footprint_estimate_;
 
   // Worker priority information. Set via ExecutionContextPriorityDecorator.
   ObservedProperty::NotifiesOnlyOnChangesWithPreviousValue<
       PriorityAndReason,
       &WorkerNodeObserver::OnPriorityAndReasonChanged>
       priority_and_reason_ GUARDED_BY_CONTEXT(sequence_checker_){
-          PriorityAndReason(base::TaskPriority::LOWEST,
+          PriorityAndReason(base::Process::Priority::kMinValue,
                             kDefaultPriorityReason)};
 
   base::WeakPtrFactory<WorkerNodeImpl> weak_factory_

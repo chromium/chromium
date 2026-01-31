@@ -6,7 +6,6 @@
 
 #include <vector>
 
-#include "base/containers/contains.h"
 #include "base/files/file_enumerator.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -78,7 +77,7 @@ class PathDeleterOnTestEnd : public testing::EmptyTestEventListener {
                   GetPathsAllowedToLeak(),
                   [&failed_to_delete =
                        failed_to_delete.value()](const auto& allowed_to_leak) {
-                    return base::Contains(failed_to_delete, allowed_to_leak);
+                    return failed_to_delete.contains(allowed_to_leak);
                   })) {
             ++num_non_ignored_files;
           }

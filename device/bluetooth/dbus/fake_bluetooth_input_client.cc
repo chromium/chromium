@@ -6,7 +6,6 @@
 
 #include <map>
 
-#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
@@ -73,7 +72,7 @@ FakeBluetoothInputClient::Properties* FakeBluetoothInputClient::GetProperties(
 
 void FakeBluetoothInputClient::AddInputDevice(
     const dbus::ObjectPath& object_path) {
-  if (base::Contains(properties_map_, object_path)) {
+  if (properties_map_.contains(object_path)) {
     return;
   }
 

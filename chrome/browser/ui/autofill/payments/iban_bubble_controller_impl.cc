@@ -188,7 +188,9 @@ std::u16string IbanBubbleControllerImpl::GetWindowTitle() const {
 std::u16string IbanBubbleControllerImpl::GetExplanatoryMessage() const {
   if (current_bubble_type_ == IbanBubbleType::kUploadSave) {
     return l10n_util::GetStringUTF16(
-        IDS_AUTOFILL_UPLOAD_IBAN_PROMPT_EXPLANATION);
+        base::FeatureList::IsEnabled(features::kAutofillEnableWalletBranding)
+            ? IDS_AUTOFILL_UPLOAD_IBAN_TO_WALLET_PROMPT_EXPLANATION
+            : IDS_AUTOFILL_UPLOAD_IBAN_PROMPT_EXPLANATION);
   }
   return std::u16string();
 }

@@ -24,13 +24,13 @@ const int kMaximumMultiParameterValueSize = 256;
 
 @implementation CrashReportMultiParameter {
   raw_ptr<crash_reporter::CrashKeyString<kMaximumMultiParameterValueSize>> _key;
-  base::Value::Dict _dictionary;
+  base::DictValue _dictionary;
 }
 
 - (instancetype)initWithKey:
     (crash_reporter::CrashKeyString<kMaximumMultiParameterValueSize>&)key {
   if ((self = [super init])) {
-    _dictionary = base::Value::Dict();
+    _dictionary = base::DictValue();
     _key = &key;
   }
   return self;

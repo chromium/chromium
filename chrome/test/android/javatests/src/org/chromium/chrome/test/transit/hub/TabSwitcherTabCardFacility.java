@@ -48,6 +48,6 @@ public class TabSwitcherTabCardFacility extends TabSwitcherCardFacility {
     /** Long press the tab card to show the context menu. */
     public <PageStationT extends TabSwitcherStation>
             TabSwitcherTabCardContextMenuFacility<PageStationT> showContextMenu() {
-        return veryLongPressTo().enterFacility(new TabSwitcherTabCardContextMenuFacility<>());
+        return veryLongPressTo().enterFacility(new TabSwitcherTabCardContextMenuFacility<>(mTabId));
     }
 }

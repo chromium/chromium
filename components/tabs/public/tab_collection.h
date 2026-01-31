@@ -10,11 +10,11 @@
 #include <memory>
 #include <optional>
 #include <set>
-#include <unordered_set>
 #include <variant>
 #include <vector>
 
 #include "base/check.h"
+#include "base/containers/enum_set.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/stack_allocated.h"
 #include "base/observer_list.h"
@@ -124,7 +124,17 @@ class TabCollection : public SupportsHandles<TabCollectionHandleFactory> {
   // - GROUP:     A container to grouped tabs.
   // - SPLIT:     A container for split tabs.
   // LINT.IfChange(TYPE)
-  enum class Type { TABSTRIP, PINNED, UNPINNED, GROUP, SPLIT };
+  enum class Type {
+    MIN,
+    TABSTRIP = MIN,
+    PINNED,
+    UNPINNED,
+    GROUP,
+    SPLIT,
+    MAX = SPLIT  // Update value of MAX if adding a new type.
+  };
+
+  using TypeEnumSet = base::EnumSet<Type, Type::MIN, Type::MAX>;
   // LINT.ThenChange(chrome/browser/ui/views/tabs/vertical/tab_collection_node.h:TYPE)
 
   ~TabCollection() override;
@@ -190,7 +200,6 @@ class TabCollection : public SupportsHandles<TabCollectionHandleFactory> {
 
   // Manipulate direct child tabs.
   TabInterface* AddTab(std::unique_ptr<TabInterface> tab, size_t index);
-  void MoveTab(TabInterface* tab, size_t index);
   // Removes the tab if it is a direct child of this collection. This is then
   // returned to the caller as an unique_ptr. If the tab is not present it will
   // crash. This may overridden to return nullptr if the collection does not
@@ -204,7 +213,7 @@ class TabCollection : public SupportsHandles<TabCollectionHandleFactory> {
   template <std::derived_from<TabCollection> T>
   T* AddCollection(std::unique_ptr<T> collection, size_t index) {
     CHECK(collection);
-    CHECK(supported_child_collections_.contains(collection->type()));
+    CHECK(supported_child_collections_.Has(collection->type()));
     CHECK(index <= ChildCount());
 
     TabCollection* added_collection =
@@ -283,7 +292,7 @@ class TabCollection : public SupportsHandles<TabCollectionHandleFactory> {
 
  protected:
   explicit TabCollection(Type type,
-                         std::unordered_set<Type> supported_child_collections,
+                         TypeEnumSet supported_child_collections,
                          bool supports_tabs,
                          bool send_notifications_immediately = true);
 
@@ -299,7 +308,7 @@ class TabCollection : public SupportsHandles<TabCollectionHandleFactory> {
  private:
   raw_ptr<TabCollection> parent_ = nullptr;
   Type type_;
-  std::unordered_set<Type> supported_child_collections_;
+  TypeEnumSet supported_child_collections_;
   bool supports_tabs_;
 
   // Mutable to allow adding/removing `TabCollectionObserver`'s through a const

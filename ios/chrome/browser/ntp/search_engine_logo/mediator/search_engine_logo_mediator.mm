@@ -12,7 +12,6 @@
 #import "base/task/bind_post_task.h"
 #import "build/branding_buildflags.h"
 #import "components/image_fetcher/ios/ios_image_data_fetcher_wrapper.h"
-#import "components/omnibox/common/omnibox_features.h"
 #import "components/search/search.h"
 #import "ios/chrome/browser/google/model/google_logo_service.h"
 #import "ios/chrome/browser/metrics/model/new_tab_page_uma.h"
@@ -237,16 +236,6 @@ void OnLogoAvailable(SearchEngineLogoMediator* mediator,
     _containerView =
         [[SearchEngineLogoContainerView alloc] initWithFrame:CGRectZero];
     [_containerView setDelegate:self];
-    if (!base::FeatureList::IsEnabled(omnibox::kOmniboxMobileParityUpdateV3)) {
-      // Those values are now automatically set when changing default search
-      // engine.
-      // Set the accessibility label of the container to the alt text for the
-      // logo.
-      _containerView.isAccessibilityElement = YES;
-      _containerView.accessibilityLabel =
-          l10n_util::GetNSString(IDS_IOS_NEW_TAB_LOGO_ACCESSIBILITY_LABEL);
-      _containerView.shrunkLogoView.image = [self offlineGoogleLogoImage];
-    }
   }
   return _containerView;
 }
@@ -261,6 +250,7 @@ void OnLogoAvailable(SearchEngineLogoMediator* mediator,
   }
   // The consumer should not be set after disconnect.
   CHECK(_templateURLService);
+  [_consumer searchEngineLogoStateDidChange:self.logoState];
   [self searchEngineChanged];
 }
 
@@ -364,8 +354,7 @@ void OnLogoAvailable(SearchEngineLogoMediator* mediator,
 // Returns whether a logo or doodle can be shown with the current search engine.
 - (BOOL)canShowLogoOrDoodle {
   return search::DefaultSearchProviderIsGoogle(_templateURLService) ||
-         (base::FeatureList::IsEnabled(omnibox::kOmniboxMobileParityUpdateV3) &&
-          _defaultSearchProvider &&
+         (_defaultSearchProvider &&
           (_defaultSearchProvider->doodle_url().is_valid() ||
            _defaultSearchProvider->logo_url().is_valid()));
 }
@@ -430,8 +419,7 @@ void OnLogoAvailable(SearchEngineLogoMediator* mediator,
     return;
   }
 
-  if (base::FeatureList::IsEnabled(omnibox::kOmniboxMobileParityUpdateV3) &&
-      logo->metadata.fingerprint != "") {
+  if (logo->metadata.fingerprint != "") {
     // The -updateLogo call can be noisy. Don't reload the image if the
     // fingerprint hasn't changed.
     // TODO(crbug.com/436747442): fingerprint is empty for 3rd party search
@@ -471,8 +459,7 @@ void OnLogoAvailable(SearchEngineLogoMediator* mediator,
       self.logoState = SearchEngineLogoState::kDoodle;
       break;
   }
-  if (self.logoState == SearchEngineLogoState::kLogo &&
-      base::FeatureList::IsEnabled(omnibox::kOmniboxMobileParityUpdateV3)) {
+  if (self.logoState == SearchEngineLogoState::kLogo) {
     RecordDownloadedLogoMetric(
         search::DefaultSearchProviderIsGoogle(_templateURLService));
     // For 3rd party search engine, the logo needs to fit the image view.

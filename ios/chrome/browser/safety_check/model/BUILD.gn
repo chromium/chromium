@@ -22,7 +22,7 @@ source_set("model") {
     "//components/password_manager/core/browser/leak_detection",
     "//components/safe_browsing/core/common:safe_browsing_prefs",
     "//components/version_info",
-    "//ios/chrome/browser/content_suggestions/ui_bundled:constants",
+    "//ios/chrome/browser/content_suggestions/public:constants",
     "//ios/chrome/browser/ntp/shared/metrics:home_metrics",
     "//ios/chrome/browser/omaha/model",
     "//ios/chrome/browser/passwords/model:password_checkup_utils",

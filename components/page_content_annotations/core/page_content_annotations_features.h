@@ -122,11 +122,6 @@ bool RemotePageMetadataEnabled(const std::string& locale,
 COMPONENT_EXPORT(PAGE_CONTENT_ANNOTATIONS_FEATURES)
 int GetMinimumPageCategoryScoreToPersist();
 
-// Whether to persist salient image metadata for each visit.
-COMPONENT_EXPORT(PAGE_CONTENT_ANNOTATIONS_FEATURES)
-bool ShouldPersistSalientImageMetadata(const std::string& locale,
-                                       const std::string& country_code);
-
 // Returns whether the page visibility model should be executed on page content
 // for a user using |locale| as their browser language.
 COMPONENT_EXPORT(PAGE_CONTENT_ANNOTATIONS_FEATURES)

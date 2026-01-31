@@ -4,7 +4,6 @@
 
 #include "chrome/browser/ash/printing/usb_printer_notification_controller.h"
 
-#include "base/containers/contains.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/stringprintf.h"
 #include "chrome/browser/profiles/profile.h"
@@ -23,7 +22,7 @@ class UsbPrinterNotificationControllerImpl
   }
 
   void RemoveNotification(const std::string& printer_id) override {
-    if (!base::Contains(notifications_, printer_id)) {
+    if (!notifications_.contains(printer_id)) {
       return;
     }
     notifications_[printer_id]->CloseNotification();
@@ -31,7 +30,7 @@ class UsbPrinterNotificationControllerImpl
   }
 
   bool IsNotificationDisplayed(const std::string& printer_id) const override {
-    return base::Contains(notifications_, printer_id);
+    return notifications_.contains(printer_id);
   }
 
   void ShowSavedNotification(const chromeos::Printer& printer) override {
@@ -47,7 +46,7 @@ class UsbPrinterNotificationControllerImpl
  private:
   void ShowNotification(const chromeos::Printer& printer,
                         UsbPrinterNotification::Type type) {
-    if (base::Contains(notifications_, printer.id())) {
+    if (notifications_.contains(printer.id())) {
       return;
     }
 

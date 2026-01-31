@@ -10,7 +10,6 @@
 
 #include "base/check.h"
 #include "base/check_is_test.h"
-#include "base/containers/contains.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/ptr_util.h"
 #include "base/numerics/safe_conversions.h"
@@ -197,7 +196,7 @@ void DocumentScanAPIHandler::OpenScanner(
     const std::string& scanner_id,
     OpenScannerCallback callback) {
   const ExtensionState& state = extension_state_[extension->id()];
-  if (!base::Contains(state.active_scanner_ids, scanner_id)) {
+  if (!state.active_scanner_ids.contains(scanner_id)) {
     auto response = crosapi::mojom::OpenScannerResponse::New();
     response->scanner_id = scanner_id;
     response->result = crosapi::mojom::ScannerOperationResult::kInvalid;
@@ -229,7 +228,7 @@ void DocumentScanAPIHandler::OnOpenScannerResponse(
   }
 
   ExtensionState& state = extension_state_[extension_id];
-  if (!base::Contains(state.active_scanner_ids, scanner_id)) {
+  if (!state.active_scanner_ids.contains(scanner_id)) {
     response_out.result = api::document_scan::OperationResult::kInvalid;
     std::move(callback).Run(std::move(response_out));
     return;
@@ -267,7 +266,7 @@ void DocumentScanAPIHandler::GetOptionGroups(
     GetOptionGroupsCallback callback) {
   // Ensure this scanner is allocated to this extension.
   ExtensionState& state = extension_state_[extension->id()];
-  if (!base::Contains(state.scanner_handles, scanner_handle)) {
+  if (!state.scanner_handles.contains(scanner_handle)) {
     auto response = crosapi::mojom::GetOptionGroupsResponse::New();
     response->scanner_handle = scanner_handle;
     response->result = crosapi::mojom::ScannerOperationResult::kInvalid;
@@ -294,7 +293,7 @@ void DocumentScanAPIHandler::CloseScanner(
     CloseScannerCallback callback) {
   // Ensure this scanner is allocated to this extension.
   ExtensionState& state = extension_state_[extension->id()];
-  if (!base::Contains(state.scanner_handles, scanner_handle)) {
+  if (!state.scanner_handles.contains(scanner_handle)) {
     auto response = crosapi::mojom::CloseScannerResponse::New();
     response->scanner_handle = scanner_handle;
     response->result = crosapi::mojom::ScannerOperationResult::kInvalid;
@@ -336,7 +335,7 @@ void DocumentScanAPIHandler::SetOptions(
     SetOptionsCallback callback) {
   // Ensure this scanner is allocated to this extension.
   ExtensionState& state = extension_state_[extension->id()];
-  if (!base::Contains(state.scanner_handles, scanner_handle)) {
+  if (!state.scanner_handles.contains(scanner_handle)) {
     auto response = crosapi::mojom::SetOptionsResponse::New();
     response->scanner_handle = scanner_handle;
     for (const auto& option : options_in) {
@@ -453,7 +452,7 @@ void DocumentScanAPIHandler::StartScan(
   ExtensionState& state = extension_state_[extension->id()];
   auto handle_it = state.scanner_handles.find(scanner_handle);
   if (handle_it == state.scanner_handles.end() ||
-      !base::Contains(state.active_scanner_ids, handle_it->second)) {
+      !state.active_scanner_ids.contains(handle_it->second)) {
     auto response = crosapi::mojom::StartPreparedScanResponse::New();
     response->scanner_handle = scanner_handle;
     response->result = crosapi::mojom::ScannerOperationResult::kInvalid;

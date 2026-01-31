@@ -9,26 +9,27 @@
 #include <array>
 #include <map>
 #include <string>
-#include <unordered_map>
+#include <utility>
 #include <vector>
 
 #include "base/containers/adapters.h"
 #include "base/files/file_path.h"
 #include "base/json/json_writer.h"
 #include "base/json/string_escape.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/strings/stringprintf.h"
-#include "base/trace_event/traced_value.h"
 #include "base/values.h"
 #include "services/resource_coordinator/public/mojom/memory_instrumentation/memory_instrumentation.mojom.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 
 namespace heap_profiling {
 namespace {
 
 // Maps strings to integers for the JSON string table.
-using StringTable = std::unordered_map<std::string, int>;
+using StringTable = absl::flat_hash_map<std::string, int>;
 
 // Maps allocation site to node_id of the top frame.
-using AllocationToNodeId = std::unordered_map<const AllocationSite*, int>;
+using AllocationToNodeId = absl::flat_hash_map<const AllocationSite*, int>;
 
 constexpr int kAllocatorCount = static_cast<int>(AllocatorType::kMaxValue) + 1;
 
@@ -70,7 +71,7 @@ const char* StringForAllocatorType(uint32_t type) {
 // Writes the top-level allocators section. This section is used by the tracing
 // UI to show a small summary for each allocator. It's necessary as a
 // placeholder to allow the stack-viewing UI to be shown.
-base::Value::Dict BuildAllocatorsSummary(const AllocationMap& allocations) {
+base::DictValue BuildAllocatorsSummary(const AllocationMap& allocations) {
   // Aggregate stats for each allocator type.
   std::array<size_t, kAllocatorCount> total_size = {};
   std::array<size_t, kAllocatorCount> total_count = {};
@@ -80,44 +81,44 @@ base::Value::Dict BuildAllocatorsSummary(const AllocationMap& allocations) {
     total_count[index] += alloc_pair.second.count;
   }
 
-  base::Value::Dict result;
+  base::DictValue result;
   for (int i = 0; i < kAllocatorCount; i++) {
     const char* alloc_type = StringForAllocatorType(i);
 
     // Overall sizes.
-    base::Value::Dict sizes;
+    base::DictValue sizes;
     sizes.Set("type", "scalar");
     sizes.Set("units", "bytes");
     sizes.Set("value", base::StringPrintf("%zx", total_size[i]));
 
-    base::Value::Dict attrs;
+    base::DictValue attrs;
     attrs.Set("virtual_size", sizes.Clone());
     attrs.Set("size", std::move(sizes));
 
-    base::Value::Dict allocator;
+    base::DictValue allocator;
     allocator.Set("attrs", std::move(attrs));
     result.Set(alloc_type, std::move(allocator));
 
     // Allocated objects.
-    base::Value::Dict shim_allocated_objects_count;
+    base::DictValue shim_allocated_objects_count;
     shim_allocated_objects_count.Set("type", "scalar");
     shim_allocated_objects_count.Set("units", "objects");
     shim_allocated_objects_count.Set("value",
                                      base::StringPrintf("%zx", total_count[i]));
 
-    base::Value::Dict shim_allocated_objects_size;
+    base::DictValue shim_allocated_objects_size;
     shim_allocated_objects_size.Set("type", "scalar");
     shim_allocated_objects_size.Set("units", "bytes");
     shim_allocated_objects_size.Set("value",
                                     base::StringPrintf("%zx", total_size[i]));
 
-    base::Value::Dict allocated_objects_attrs;
+    base::DictValue allocated_objects_attrs;
     allocated_objects_attrs.Set("shim_allocated_objects_count",
                                 std::move(shim_allocated_objects_count));
     allocated_objects_attrs.Set("shim_allocated_objects_size",
                                 std::move(shim_allocated_objects_size));
 
-    base::Value::Dict allocated_objects;
+    base::DictValue allocated_objects;
     allocated_objects.Set("attrs", std::move(allocated_objects_attrs));
     result.Set(alloc_type + std::string("/allocated_objects"),
                std::move(allocated_objects));
@@ -134,72 +135,66 @@ std::string ApplyPathFiltering(const std::string& file,
   return file;
 }
 
-void MemoryMapsAsValueInto(
+base::Value MemoryMapsAsValue(
     const std::vector<memory_instrumentation::mojom::VmRegionPtr>& memory_maps,
-    base::trace_event::TracedValue* value,
     bool is_argument_filtering_enabled) {
   static const char kHexFmt[] = "%" PRIx64;
 
   // Refer to the design doc goo.gl/sxfFY8 for the semantics of these fields.
-  value->BeginArray("vm_regions");
+  base::ListValue vm_regions;
   for (const auto& region : memory_maps) {
-    value->BeginDictionary();
+    base::DictValue region_dict =
+        base::DictValue()
+            .Set("sa", base::StringPrintf(kHexFmt, region->start_address))
+            .Set("sz", base::StringPrintf(kHexFmt, region->size_in_bytes))
+            .Set("pf", base::saturated_cast<int>(region->protection_flags))
+            // The module path will be the basename when argument filtering is
+            // activated. The allowlisting implemented for filtering string
+            // values doesn't allow rewriting. Therefore, a different path is
+            // produced here when argument filtering is activated.
+            .Set("mf", ApplyPathFiltering(region->mapped_file,
+                                          is_argument_filtering_enabled));
 
-    value->SetString("sa", base::StringPrintf(kHexFmt, region->start_address));
-    value->SetString("sz", base::StringPrintf(kHexFmt, region->size_in_bytes));
     if (region->module_timestamp) {
-      value->SetString("ts",
-                       base::StringPrintf(kHexFmt, region->module_timestamp));
+      region_dict.Set("ts",
+                      base::StringPrintf(kHexFmt, region->module_timestamp));
     }
     if (!region->module_debugid.empty()) {
-      value->SetString("id", region->module_debugid);
+      region_dict.Set("id", region->module_debugid);
     }
     if (!region->module_debug_path.empty()) {
-      value->SetString("df", ApplyPathFiltering(region->module_debug_path,
-                                                is_argument_filtering_enabled));
+      region_dict.Set("df", ApplyPathFiltering(region->module_debug_path,
+                                               is_argument_filtering_enabled));
     }
-    value->SetInteger("pf", region->protection_flags);
-
-    // The module path will be the basename when argument filtering is
-    // activated. The allowlisting implemented for filtering string values
-    // doesn't allow rewriting. Therefore, a different path is produced here
-    // when argument filtering is activated.
-    value->SetString("mf", ApplyPathFiltering(region->mapped_file,
-                                              is_argument_filtering_enabled));
 
 // The following stats are only well defined on Linux-derived OSes.
 #if !BUILDFLAG(IS_MAC) && !BUILDFLAG(IS_WIN)
-    value->BeginDictionary("bs");  // byte stats
-    value->SetString(
-        "pss",
-        base::StringPrintf(kHexFmt, region->byte_stats_proportional_resident));
-    value->SetString(
-        "pd",
-        base::StringPrintf(kHexFmt, region->byte_stats_private_dirty_resident));
-    value->SetString(
-        "pc",
-        base::StringPrintf(kHexFmt, region->byte_stats_private_clean_resident));
-    value->SetString(
-        "sd",
-        base::StringPrintf(kHexFmt, region->byte_stats_shared_dirty_resident));
-    value->SetString(
-        "sc",
-        base::StringPrintf(kHexFmt, region->byte_stats_shared_clean_resident));
-    value->SetString("sw",
-                     base::StringPrintf(kHexFmt, region->byte_stats_swapped));
-    value->EndDictionary();
+    // byte stats
+    region_dict.Set(
+        "bs",
+        base::Value::Dict()
+            .Set("pss", base::StringPrintf(
+                            kHexFmt, region->byte_stats_proportional_resident))
+            .Set("pd", base::StringPrintf(
+                           kHexFmt, region->byte_stats_private_dirty_resident))
+            .Set("pc", base::StringPrintf(
+                           kHexFmt, region->byte_stats_private_clean_resident))
+            .Set("sd", base::StringPrintf(
+                           kHexFmt, region->byte_stats_shared_dirty_resident))
+            .Set("sc", base::StringPrintf(
+                           kHexFmt, region->byte_stats_shared_clean_resident))
+            .Set("sw",
+                 base::StringPrintf(kHexFmt, region->byte_stats_swapped)));
 #endif
 
-    value->EndDictionary();
+    vm_regions.Append(std::move(region_dict));
   }
-  value->EndArray();
+  return base::Value(
+      base::DictValue().Set("vm_regions", std::move(vm_regions)));
 }
 
 base::Value BuildMemoryMaps(const ExportParams& params) {
-  base::trace_event::TracedValueJSON traced_value;
-  MemoryMapsAsValueInto(params.maps, &traced_value,
-                        params.strip_path_from_mapped_files);
-  return std::move(*traced_value.ToBaseValue());
+  return MemoryMapsAsValue(params.maps, params.strip_path_from_mapped_files);
 }
 
 // Inserts or retrieves the ID for a string in the string table.
@@ -259,11 +254,11 @@ int AppendBacktraceStrings(const AllocationSite& alloc,
   return parent;  // Last item is the top of this stack.
 }
 
-base::Value::List BuildStrings(const StringTable& string_table) {
-  base::Value::List strings;
+base::ListValue BuildStrings(const StringTable& string_table) {
+  base::ListValue strings;
   strings.reserve(string_table.size());
   for (const auto& string_pair : string_table) {
-    base::Value::Dict item;
+    base::DictValue item;
     item.Set("id", string_pair.second);
     item.Set("string", string_pair.first);
     strings.Append(std::move(item));
@@ -271,11 +266,11 @@ base::Value::List BuildStrings(const StringTable& string_table) {
   return strings;
 }
 
-base::Value::List BuildMapNodes(const BacktraceTable& nodes) {
-  base::Value::List items;
+base::ListValue BuildMapNodes(const BacktraceTable& nodes) {
+  base::ListValue items;
   items.reserve(nodes.size());
   for (const auto& node_pair : nodes) {
-    base::Value::Dict item;
+    base::DictValue item;
     item.Set("id", node_pair.second);
     item.Set("name_sid", node_pair.first.string_id());
     if (node_pair.first.parent() != BacktraceNode::kNoParent)
@@ -285,11 +280,11 @@ base::Value::List BuildMapNodes(const BacktraceTable& nodes) {
   return items;
 }
 
-base::Value::List BuildTypeNodes(const std::map<int, int>& type_to_string) {
-  base::Value::List items;
+base::ListValue BuildTypeNodes(const std::map<int, int>& type_to_string) {
+  base::ListValue items;
   items.reserve(type_to_string.size());
   for (const auto& pair : type_to_string) {
-    base::Value::Dict item;
+    base::DictValue item;
     item.Set("id", pair.first);
     item.Set("name_sid", pair.second);
     items.Append(std::move(item));
@@ -297,12 +292,12 @@ base::Value::List BuildTypeNodes(const std::map<int, int>& type_to_string) {
   return items;
 }
 
-base::Value::Dict BuildAllocations(const AllocationMap& allocations,
-                                   const AllocationToNodeId& alloc_to_node_id) {
-  std::array<base::Value::List, kAllocatorCount> counts;
-  std::array<base::Value::List, kAllocatorCount> sizes;
-  std::array<base::Value::List, kAllocatorCount> types;
-  std::array<base::Value::List, kAllocatorCount> nodes;
+base::DictValue BuildAllocations(const AllocationMap& allocations,
+                                 const AllocationToNodeId& alloc_to_node_id) {
+  std::array<base::ListValue, kAllocatorCount> counts;
+  std::array<base::ListValue, kAllocatorCount> sizes;
+  std::array<base::ListValue, kAllocatorCount> types;
+  std::array<base::ListValue, kAllocatorCount> nodes;
 
   for (const auto& alloc : allocations) {
     int allocator = static_cast<int>(alloc.first.allocator);
@@ -314,9 +309,9 @@ base::Value::Dict BuildAllocations(const AllocationMap& allocations,
     nodes[allocator].Append(alloc_to_node_id.at(&alloc.first));
   }
 
-  base::Value::Dict allocators;
+  base::DictValue allocators;
   for (uint32_t i = 0; i < kAllocatorCount; i++) {
-    base::Value::Dict allocator;
+    base::DictValue allocator;
     allocator.Set("counts", std::move(counts[i]));
     allocator.Set("sizes", std::move(sizes[i]));
     allocator.Set("types", std::move(types[i]));
@@ -332,13 +327,13 @@ ExportParams::ExportParams() = default;
 ExportParams::~ExportParams() = default;
 
 std::string ExportMemoryMapsAndV2StackTraceToJSON(ExportParams* params) {
-  base::Value::Dict result;
+  base::DictValue result;
 
   result.Set("level_of_detail", "detailed");
   result.Set("process_mmaps", BuildMemoryMaps(*params));
   result.Set("allocators", BuildAllocatorsSummary(params->allocs));
 
-  base::Value::Dict heaps_v2;
+  base::DictValue heaps_v2;
 
   // Output Heaps_V2 format version. Currently "1" is the only valid value.
   heaps_v2.Set("version", 1);
@@ -360,7 +355,7 @@ std::string ExportMemoryMapsAndV2StackTraceToJSON(ExportParams* params) {
   }
 
   // Maps section.
-  base::Value::Dict maps;
+  base::DictValue maps;
   maps.Set("strings", BuildStrings(string_table));
   maps.Set("nodes", BuildMapNodes(nodes));
   maps.Set("types", BuildTypeNodes(context_to_string_id_map));

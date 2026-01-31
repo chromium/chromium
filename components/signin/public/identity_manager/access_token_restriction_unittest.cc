@@ -100,8 +100,12 @@ INSTANTIATE_TEST_SUITE_P(,
                          ::testing::ValuesIn(kTestParams));
 
 TEST(AccessTokenRestrictionTest, PrivilegedOAuth2Consumer) {
-  EXPECT_TRUE(signin::IsPrivilegedOAuth2Consumer("extensions_identity_api"));
-  EXPECT_FALSE(signin::IsPrivilegedOAuth2Consumer("IpProtectionService"));
+  EXPECT_TRUE(signin::IsPrivilegedOAuth2Consumer(
+      signin::OAuthConsumerId::kExtensionsIdentityAPI));
+  EXPECT_TRUE(signin::IsPrivilegedOAuth2Consumer(
+      signin::OAuthConsumerId::kSyncDeviceStatisticsMetrics));
+  EXPECT_FALSE(signin::IsPrivilegedOAuth2Consumer(
+      signin::OAuthConsumerId::kIpProtectionService));
 }
 
 }  // namespace

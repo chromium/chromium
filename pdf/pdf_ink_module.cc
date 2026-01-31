@@ -79,12 +79,11 @@ constexpr int kEraserSize = 3;
 
 // `is_ink` represents the Ink thumbnail when true, and the PDF thumbnail when
 // false.
-base::Value::Dict CreateUpdateThumbnailMessage(
-    int page_index,
-    bool is_ink,
-    std::vector<uint8_t> image_data,
-    const gfx::Size& thumbnail_size) {
-  return base::Value::Dict()
+base::DictValue CreateUpdateThumbnailMessage(int page_index,
+                                             bool is_ink,
+                                             std::vector<uint8_t> image_data,
+                                             const gfx::Size& thumbnail_size) {
+  return base::DictValue()
       .Set("type", "updateInk2Thumbnail")
       .Set("pageNumber", page_index + 1)
       .Set("isInk", is_ink)
@@ -97,10 +96,20 @@ ink::StrokeInput::ToolType GetToolTypeFromTouchEvent(
     const blink::WebTouchEvent& event) {
   // Assumes the caller already handled multi-touch events.
   CHECK_EQ(event.touches_length, 1u);
-  return event.touches[0].pointer_type ==
-                 blink::WebPointerProperties::PointerType::kPen
-             ? ink::StrokeInput::ToolType::kStylus
-             : ink::StrokeInput::ToolType::kTouch;
+  blink::WebPointerProperties::PointerType pointer_type =
+      event.touches[0].pointer_type;
+  CHECK_NE(pointer_type, blink::WebPointerProperties::PointerType::kEraser);
+  if (pointer_type == blink::WebPointerProperties::PointerType::kPen) {
+    return ink::StrokeInput::ToolType::kStylus;
+  }
+  return ink::StrokeInput::ToolType::kTouch;
+}
+
+// Returns true if the touch event is from an eraser tip on a pen device.
+bool IsEraserTipEvent(const blink::WebTouchEvent& event) {
+  return event.touches_length == 1 &&
+         event.touches[0].pointer_type ==
+             blink::WebPointerProperties::PointerType::kEraser;
 }
 
 PdfInkBrush CreateDefaultHighlighterBrush() {
@@ -321,24 +330,42 @@ bool PdfInkModule::HandleInputEvent(const blink::WebInputEvent& event) {
     case blink::WebInputEvent::Type::kMouseMove:
       return OnMouseMove(static_cast<const blink::WebMouseEvent&>(event));
     // Touch and pen input events are blink::WebTouchEvent instances.
-    case blink::WebInputEvent::Type::kTouchStart:
-      return OnTouchStart(static_cast<const blink::WebTouchEvent&>(event));
-    case blink::WebInputEvent::Type::kTouchEnd:
-      return OnTouchEnd(static_cast<const blink::WebTouchEvent&>(event));
-    case blink::WebInputEvent::Type::kTouchMove:
-      return OnTouchMove(static_cast<const blink::WebTouchEvent&>(event));
+    // Check for eraser tip events first and route to dedicated handlers.
+    case blink::WebInputEvent::Type::kTouchStart: {
+      const auto& touch_event = static_cast<const blink::WebTouchEvent&>(event);
+      if (IsEraserTipEvent(touch_event)) {
+        return OnEraserTipTouchStart(touch_event);
+      }
+      return OnTouchStart(touch_event);
+    }
+    case blink::WebInputEvent::Type::kTouchEnd: {
+      const auto& touch_event = static_cast<const blink::WebTouchEvent&>(event);
+      if (IsEraserTipEvent(touch_event)) {
+        return OnEraserTipTouchEnd(touch_event);
+      }
+      return OnTouchEnd(touch_event);
+    }
+    case blink::WebInputEvent::Type::kTouchMove: {
+      const auto& touch_event = static_cast<const blink::WebTouchEvent&>(event);
+      if (IsEraserTipEvent(touch_event)) {
+        return OnEraserTipTouchMove(touch_event);
+      }
+      return OnTouchMove(touch_event);
+    }
     default:
       return false;
   }
 }
 
-bool PdfInkModule::OnMessage(const base::Value::Dict& message) {
-  using MessageHandler = void (PdfInkModule::*)(const base::Value::Dict&);
+bool PdfInkModule::OnMessage(const base::DictValue& message) {
+  using MessageHandler = void (PdfInkModule::*)(const base::DictValue&);
 
   static constexpr auto kMessageHandlers =
       base::MakeFixedFlatMap<std::string_view, MessageHandler>({
           {"annotationRedo", &PdfInkModule::HandleAnnotationRedoMessage},
           {"annotationUndo", &PdfInkModule::HandleAnnotationUndoMessage},
+          {"editTextAnnotation",
+           &PdfInkModule::HandleEditTextAnnotationMessage},
           {"finishTextAnnotation",
            &PdfInkModule::HandleFinishTextAnnotationMessage},
           {"getAllTextAnnotations",
@@ -348,8 +375,6 @@ bool PdfInkModule::OnMessage(const base::Value::Dict& message) {
           {"setAnnotationBrush",
            &PdfInkModule::HandleSetAnnotationBrushMessage},
           {"setAnnotationMode", &PdfInkModule::HandleSetAnnotationModeMessage},
-          {"startTextAnnotation",
-           &PdfInkModule::HandleStartTextAnnotationMessage},
       });
 
   auto it = kMessageHandlers.find(*message.FindString("type"));
@@ -554,6 +579,40 @@ bool PdfInkModule::OnMouseMove(const blink::WebMouseEvent& event) {
       state.input_last_event_position.value(), base::TimeTicks::Now()));
 }
 
+bool PdfInkModule::OnEraserTipTouchStart(const blink::WebTouchEvent& event) {
+  CHECK_EQ(InkAnnotationMode::kDraw, mode_);
+  CHECK_EQ(event.touches_length, 1u);
+
+  constexpr auto tool_type = ink::StrokeInput::ToolType::kStylus;
+  MaybeRecordPenInput(tool_type);
+
+  const blink::WebTouchPoint& touch_point = event.touches[0];
+  gfx::PointF position = touch_point.PositionInWidget();
+
+  // Finish any in-progress stroke or text highlight before switching to erase.
+  if (is_drawing_stroke()) {
+    saved_brush_type_for_eraser_tip_ = drawing_stroke_state().brush_type;
+    DrawingStrokeState& state = drawing_stroke_state();
+    if (state.start_time.has_value()) {
+      CHECK(state.input_last_event.has_value());
+      const EventDetails& input_last_event = state.input_last_event.value();
+      FinishStroke(input_last_event.position, input_last_event.timestamp,
+                   input_last_event.tool_type, /*properties=*/nullptr);
+    }
+  } else if (is_text_highlighting()) {
+    saved_brush_type_for_eraser_tip_ = PdfInkBrush::Type::kHighlighter;
+    const EventDetails& input_last_event =
+        text_highlight_state().input_last_event;
+    FinishTextHighlight(input_last_event.position, /*is_multi_click=*/false,
+                        input_last_event.tool_type);
+  }
+
+  if (!is_erasing_stroke()) {
+    current_tool_state_.emplace<EraserState>();
+  }
+  return StartEraseStroke(position, tool_type);
+}
+
 bool PdfInkModule::OnTouchStart(const blink::WebTouchEvent& event) {
   CHECK_EQ(InkAnnotationMode::kDraw, mode_);
 
@@ -569,6 +628,7 @@ bool PdfInkModule::OnTouchStart(const blink::WebTouchEvent& event) {
 
   const blink::WebTouchPoint& touch_point = event.touches[0];
   gfx::PointF position = touch_point.PositionInWidget();
+
   if (is_erasing_stroke()) {
     return StartEraseStroke(position, tool_type);
   }
@@ -590,6 +650,29 @@ bool PdfInkModule::OnTouchStart(const blink::WebTouchEvent& event) {
   return StartStroke(position, event.TimeStamp(), tool_type, &touch_point);
 }
 
+bool PdfInkModule::OnEraserTipTouchEnd(const blink::WebTouchEvent& event) {
+  CHECK_EQ(InkAnnotationMode::kDraw, mode_);
+  CHECK_EQ(event.touches_length, 1u);
+
+  constexpr auto tool_type = ink::StrokeInput::ToolType::kStylus;
+  MaybeRecordPenInput(tool_type);
+
+  const blink::WebTouchPoint& touch_point = event.touches[0];
+  gfx::PointF position = touch_point.PositionInWidget();
+
+  bool result = FinishEraseStroke(position, tool_type);
+
+  // Restore the previous brush type after eraser tip action completes.
+  if (saved_brush_type_for_eraser_tip_.has_value()) {
+    current_tool_state_.emplace<DrawingStrokeState>();
+    drawing_stroke_state().brush_type =
+        saved_brush_type_for_eraser_tip_.value();
+    saved_brush_type_for_eraser_tip_.reset();
+    MaybeSetCursor();
+  }
+  return result;
+}
+
 bool PdfInkModule::OnTouchEnd(const blink::WebTouchEvent& event) {
   CHECK_EQ(InkAnnotationMode::kDraw, mode_);
 
@@ -608,11 +691,25 @@ bool PdfInkModule::OnTouchEnd(const blink::WebTouchEvent& event) {
   if (features::kPdfInk2TextHighlighting.Get() && is_text_highlighting()) {
     return FinishTextHighlight(position, /*is_multi_click=*/false, tool_type);
   }
-
   if (is_drawing_stroke()) {
     return FinishStroke(position, event.TimeStamp(), tool_type, &touch_point);
   }
   return FinishEraseStroke(position, tool_type);
+}
+
+bool PdfInkModule::OnEraserTipTouchMove(const blink::WebTouchEvent& event) {
+  CHECK_EQ(InkAnnotationMode::kDraw, mode_);
+  CHECK_EQ(event.touches_length, 1u);
+
+  constexpr auto tool_type = ink::StrokeInput::ToolType::kStylus;
+  MaybeRecordPenInput(tool_type);
+
+  if (is_erasing_stroke()) {
+    const blink::WebTouchPoint& touch_point = event.touches[0];
+    gfx::PointF position = touch_point.PositionInWidget();
+    return ContinueEraseStroke(position, tool_type);
+  }
+  return false;
 }
 
 bool PdfInkModule::OnTouchMove(const blink::WebTouchEvent& event) {
@@ -633,7 +730,6 @@ bool PdfInkModule::OnTouchMove(const blink::WebTouchEvent& event) {
   if (features::kPdfInk2TextHighlighting.Get() && is_text_highlighting()) {
     return ContinueTextHighlight(position);
   }
-
   if (is_drawing_stroke()) {
     return ContinueStroke(position, event.TimeStamp(), tool_type, &touch_point);
   }
@@ -1265,29 +1361,27 @@ bool PdfInkModule::ShouldIgnoreTouchInput(
          tool_type == ink::StrokeInput::ToolType::kTouch;
 }
 
-void PdfInkModule::HandleAnnotationRedoMessage(
-    const base::Value::Dict& message) {
+void PdfInkModule::HandleAnnotationRedoMessage(const base::DictValue& message) {
   ApplyUndoRedoCommands(undo_redo_model_.Redo());
 }
 
-void PdfInkModule::HandleAnnotationUndoMessage(
-    const base::Value::Dict& message) {
+void PdfInkModule::HandleAnnotationUndoMessage(const base::DictValue& message) {
   ApplyUndoRedoCommands(undo_redo_model_.Undo());
 }
 
 void PdfInkModule::HandleGetAllTextAnnotationsMessage(
-    const base::Value::Dict& message) {
+    const base::DictValue& message) {
   // TODO(crbug.com/408926609): Fill in this method. For now, just return an
   // empty set of annotations.
   client_->PostMessage(
-      PrepareReplyMessage(message).Set("annotations", base::Value::List()));
+      PrepareReplyMessage(message).Set("annotations", base::ListValue()));
 }
 
 void PdfInkModule::HandleGetAnnotationBrushMessage(
-    const base::Value::Dict& message) {
+    const base::DictValue& message) {
   CHECK_EQ(InkAnnotationMode::kDraw, mode_);
 
-  base::Value::Dict reply = PrepareReplyMessage(message);
+  base::DictValue reply = PrepareReplyMessage(message);
 
   // Get the brush type from `message` or the current brush type if not
   // provided.
@@ -1302,7 +1396,7 @@ void PdfInkModule::HandleGetAnnotationBrushMessage(
             : "eraser";
   }
 
-  base::Value::Dict data;
+  base::DictValue data;
   data.Set("type", brush_type_string);
 
   if (brush_type_string == "eraser") {
@@ -1319,7 +1413,7 @@ void PdfInkModule::HandleGetAnnotationBrushMessage(
   data.Set("size", ink_brush.GetSize());
 
   SkColor color = GetSkColorFromInkBrush(ink_brush);
-  data.Set("color", base::Value::Dict()
+  data.Set("color", base::DictValue()
                         .Set("r", static_cast<int>(SkColorGetR(color)))
                         .Set("g", static_cast<int>(SkColorGetG(color)))
                         .Set("b", static_cast<int>(SkColorGetB(color))));
@@ -1329,10 +1423,10 @@ void PdfInkModule::HandleGetAnnotationBrushMessage(
 }
 
 void PdfInkModule::HandleSetAnnotationBrushMessage(
-    const base::Value::Dict& message) {
+    const base::DictValue& message) {
   CHECK_EQ(InkAnnotationMode::kDraw, mode_);
 
-  const base::Value::Dict* data = message.FindDict("data");
+  const base::DictValue* data = message.FindDict("data");
   CHECK(data);
 
   const std::string& brush_type_string = *data->FindString("type");
@@ -1380,7 +1474,7 @@ void PdfInkModule::HandleSetAnnotationBrushMessage(
   }
 
   // All brush types except the eraser should have a color and size.
-  const base::Value::Dict* color = data->FindDict("color");
+  const base::DictValue* color = data->FindDict("color");
   CHECK(color);
 
   int color_r = color->FindInt("r").value();
@@ -1411,7 +1505,7 @@ void PdfInkModule::HandleSetAnnotationBrushMessage(
 }
 
 void PdfInkModule::HandleSetAnnotationModeMessage(
-    const base::Value::Dict& message) {
+    const base::DictValue& message) {
   const std::string* mode = message.FindString("mode");
   CHECK(mode);
   if (*mode == "off") {
@@ -1440,16 +1534,14 @@ void PdfInkModule::HandleSetAnnotationModeMessage(
   MaybeSetCursor();
 }
 
-void PdfInkModule::HandleStartTextAnnotationMessage(
-    const base::Value::Dict& message) {
-  // TODO(crbug.com/409439509): Fill in this method. For now, just create it
-  // so the backend doesn't CHECK when it's sent from the frontend.
+void PdfInkModule::HandleEditTextAnnotationMessage(
+    const base::DictValue& message) {
+  // TODO(crbug.com/408976049): Implement.
 }
 
 void PdfInkModule::HandleFinishTextAnnotationMessage(
-    const base::Value::Dict& message) {
-  // TODO(crbug.com/409439509): Fill in this method. For now, just create it
-  // so the backend doesn't CHECK when it's sent from the frontend.
+    const base::DictValue& message) {
+  // TODO(crbug.com/408976049): Implement.
 }
 
 bool PdfInkModule::IsHighlightingTextAtPosition(

@@ -7,20 +7,18 @@
 #include <windows.h>
 
 #include <Windows.ApplicationModel.store.preview.installcontrol.h>
-#include <appmodel.h>
 #include <wrl.h>
 
-#include <ranges>
-#include <string_view>
-
 #include "base/files/file_path.h"
+#include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/path_service.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/task/bind_post_task.h"
+#include "base/synchronization/lock.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/scoped_blocking_call.h"
 #include "base/win/core_winrt_util.h"
+#include "base/win/hstring_reference.h"
 #include "base/win/post_async_results.h"
 #include "base/win/scoped_hstring.h"
 #include "base/win/windows_version.h"
@@ -29,9 +27,14 @@
 #include "chrome/common/chrome_paths.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/browser_thread.h"
+#include "services/webnn/buildflags.h"
 #include "services/webnn/public/cpp/platform_functions_win.h"
 #include "services/webnn/public/cpp/win_app_runtime_package_info.h"
 #include "services/webnn/public/mojom/features.mojom-features.h"
+
+#if BUILDFLAG(WEBNN_INSTALL_RUNTIME_IN_CHROME_INSTALLER)
+#include "chrome/installer/util/helper.h"  // nogncheck
+#endif  // BUILDFLAG(WEBNN_INSTALL_RUNTIME_IN_CHROME_INSTALLER)
 
 namespace webnn {
 
@@ -46,9 +49,6 @@ using AppInstallStatusChangedHandler =
     __FITypedEventHandler_2_Windows__CApplicationModel__CStore__CPreview__CInstallControl__CAppInstallItem_IInspectable;
 using AppInstallItems =
     __FIVectorView_1_Windows__CApplicationModel__CStore__CPreview__CInstallControl__CAppInstallItem;
-
-// The product ID of the Windows App Runtime package in Microsoft Store.
-constexpr std::wstring_view kWinAppRuntimeProductId = L"9NKRJ3SJ9SDG";
 
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
@@ -90,6 +90,8 @@ std::wstring TryCreateWinAppRuntimePackageDependency() {
 // dependency is created successfully. Updates the local state prefs with the
 // package information and provided dependency ID.
 void UpdatePrefs(const std::wstring& dependency_id) {
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
   PrefService* local_state = g_browser_process->local_state();
   local_state->SetString(prefs::kWinAppRuntimePackageDependencyId,
                          base::WideToUTF8(dependency_id));
@@ -99,24 +101,104 @@ void UpdatePrefs(const std::wstring& dependency_id) {
                          kWinAppRuntimePackageMinVersionString);
 }
 
-// Called after `AppInstallItem` reaches the complete state (succeeded,
-// canceled or failed). `app_install_manager` is kept alive by this function to
-// ensure the registered status change callbacks will be invoked.
-void OnInstallationCompleted(
-    Microsoft::WRL::ComPtr<
-        abi_install::IAppInstallManager> /*app_install_manager*/,
-    bool success) {
-  if (!success) {
-    return;
-  }
-
+// Called when `AppInstallItem` reaches the completed state.
+void OnInstallationSucceeded() {
   std::wstring dependency_id = TryCreateWinAppRuntimePackageDependency();
   if (dependency_id.empty()) {
     return;
   }
-
   UpdatePrefs(dependency_id);
 }
+
+// Implements the AppInstallStatusChangedHandler.
+class AppInstallStatusChangedHandlerImpl
+    : public Microsoft::WRL::RuntimeClass<
+          Microsoft::WRL::RuntimeClassFlags<Microsoft::WRL::ClassicCom>,
+          AppInstallStatusChangedHandler> {
+ public:
+  AppInstallStatusChangedHandlerImpl(
+      std::unique_ptr<EventRegistrationToken> token,
+      Microsoft::WRL::ComPtr<abi_install::IAppInstallManager>
+          app_install_manager)
+      : token_(std::move(token)),
+        app_install_manager_(std::move(app_install_manager)) {}
+
+  IFACEMETHODIMP Invoke(abi_install::IAppInstallItem* sender,
+                        IInspectable* args) override {
+    Microsoft::WRL::ComPtr<abi_install::IAppInstallStatus> status;
+    HRESULT hr = sender->GetCurrentStatus(&status);
+    CHECK_EQ(hr, S_OK);
+
+    abi_install::AppInstallState state;
+    hr = status->get_InstallState(&state);
+    CHECK_EQ(hr, S_OK);
+
+    switch (state) {
+      case abi_install::AppInstallState::AppInstallState_Completed: {
+        RecordInstallState(WinAppRuntimeInstallStateUma::kCompleted);
+        OnCompleted(sender, /*success=*/true);
+        break;
+      }
+      case abi_install::AppInstallState::AppInstallState_Error: {
+        RecordInstallState(WinAppRuntimeInstallStateUma::kError);
+        OnCompleted(sender, /*success=*/false);
+        break;
+      }
+      case abi_install::AppInstallState::AppInstallState_Canceled: {
+        RecordInstallState(WinAppRuntimeInstallStateUma::kCanceled);
+        OnCompleted(sender, /*success=*/false);
+        break;
+      }
+      case abi_install::AppInstallState::AppInstallState_Paused: {
+        RecordInstallState(WinAppRuntimeInstallStateUma::kPaused);
+        break;
+      }
+      case abi_install::AppInstallState::AppInstallState_PausedLowBattery: {
+        RecordInstallState(WinAppRuntimeInstallStateUma::kPausedLowBattery);
+        break;
+      }
+      case abi_install::AppInstallState::
+          AppInstallState_PausedWiFiRecommended: {
+        RecordInstallState(
+            WinAppRuntimeInstallStateUma::kPausedWiFiRecommended);
+        break;
+      }
+      case abi_install::AppInstallState::AppInstallState_PausedWiFiRequired: {
+        RecordInstallState(WinAppRuntimeInstallStateUma::kPausedWiFiRequired);
+        break;
+      }
+      default:
+        break;
+    }
+    return S_OK;
+  }
+
+ private:
+  // Posts a task to continue processing on the UI thread. Does nothing if
+  // called more than once.
+  void OnCompleted(abi_install::IAppInstallItem* sender, bool success) {
+    base::AutoLock auto_lock(lock_);
+    if (app_install_manager_) {
+      sender->remove_StatusChanged(*token_);
+      app_install_manager_ = nullptr;
+
+      if (success) {
+        content::GetUIThreadTaskRunner()->PostTask(
+            FROM_HERE, base::BindOnce(&OnInstallationSucceeded));
+      }
+    }
+  }
+
+  // Used to unregister the status changed handler.
+  const std::unique_ptr<EventRegistrationToken> token_;
+  // Used to ensure `OnInstallationSucceeded()` is run only once since
+  // `Invoke()` can be called on different background threads.
+  base::Lock lock_;
+  // `app_install_manager_` is kept alive here to ensure the registered status
+  // changed callbacks will be invoked.
+  Microsoft::WRL::ComPtr<abi_install::IAppInstallManager> app_install_manager_
+      GUARDED_BY(lock_);
+};
 
 // Called after `StartProductInstallAsync()` completes. Adds a callback for
 // `AppInstallItem` to track the installation status.
@@ -142,79 +224,13 @@ void OnInstallationStarted(
     }
 
     // `token` receives the value assigned by `add_StatusChanged()` below.
-    // It is used to unregister the status change event handler.
     auto token = std::make_unique<EventRegistrationToken>();
     auto* token_ptr = token.get();
 
-    auto callback = base::BindPostTaskToCurrentDefault(base::BindOnce(
-        &OnInstallationCompleted, std::move(app_install_manager)));
-
     // Register the status change event handler for `item`.
     item->add_StatusChanged(
-        Microsoft::WRL::Callback<AppInstallStatusChangedHandler>(
-            [token = std::move(token), callback = std::move(callback)](
-                abi_install::IAppInstallItem* item,
-                IInspectable* args) mutable {
-              Microsoft::WRL::ComPtr<abi_install::IAppInstallStatus> status;
-              HRESULT hr = item->GetCurrentStatus(&status);
-              CHECK_EQ(hr, S_OK);
-
-              abi_install::AppInstallState state;
-              hr = status->get_InstallState(&state);
-              CHECK_EQ(hr, S_OK);
-
-              switch (state) {
-                case abi_install::AppInstallState::AppInstallState_Completed: {
-                  RecordInstallState(WinAppRuntimeInstallStateUma::kCompleted);
-                  item->remove_StatusChanged(*token);
-                  if (callback) {
-                    std::move(callback).Run(true);
-                  }
-                  break;
-                }
-                case abi_install::AppInstallState::AppInstallState_Error: {
-                  RecordInstallState(WinAppRuntimeInstallStateUma::kError);
-                  item->remove_StatusChanged(*token);
-                  if (callback) {
-                    std::move(callback).Run(false);
-                  }
-                  break;
-                }
-                case abi_install::AppInstallState::AppInstallState_Canceled: {
-                  RecordInstallState(WinAppRuntimeInstallStateUma::kCanceled);
-                  item->remove_StatusChanged(*token);
-                  if (callback) {
-                    std::move(callback).Run(false);
-                  }
-                  break;
-                }
-                case abi_install::AppInstallState::AppInstallState_Paused: {
-                  RecordInstallState(WinAppRuntimeInstallStateUma::kPaused);
-                  break;
-                }
-                case abi_install::AppInstallState::
-                    AppInstallState_PausedLowBattery: {
-                  RecordInstallState(
-                      WinAppRuntimeInstallStateUma::kPausedLowBattery);
-                  break;
-                }
-                case abi_install::AppInstallState::
-                    AppInstallState_PausedWiFiRecommended: {
-                  RecordInstallState(
-                      WinAppRuntimeInstallStateUma::kPausedWiFiRecommended);
-                  break;
-                }
-                case abi_install::AppInstallState::
-                    AppInstallState_PausedWiFiRequired: {
-                  RecordInstallState(
-                      WinAppRuntimeInstallStateUma::kPausedWiFiRequired);
-                  break;
-                }
-                default:
-                  break;
-              }
-              return S_OK;
-            })
+        Microsoft::WRL::Make<AppInstallStatusChangedHandlerImpl>(
+            std::move(token), std::move(app_install_manager))
             .Get(),
         token_ptr);
 
@@ -224,59 +240,47 @@ void OnInstallationStarted(
   RecordInstallState(WinAppRuntimeInstallStateUma::kInstallationFailedToStart);
 }
 
-// Activates and returns the IAppInstallManager instance.
-Microsoft::WRL::ComPtr<abi_install::IAppInstallManager>
-ActivateAppInstallManager() {
-  // `RoActivateInstance()` below loads Microsoft Store Install Service dlls.
-  base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
-                                                base::BlockingType::MAY_BLOCK);
-
-  // `app_install_manager` must remain valid throughout the entire asynchronous
-  // installation process, otherwise WinRT may release related resources
-  // prematurely, causing the callbacks not to be triggered.
+// Starts the installation using the IAppInstallManager API.
+void StartInstallation() {
+  HRESULT hr = S_OK;
+  // `app_install_manager` must remain valid throughout the entire
+  // asynchronous installation process, otherwise WinRT may release related
+  // resources prematurely, causing the callbacks not to be triggered.
   Microsoft::WRL::ComPtr<abi_install::IAppInstallManager> app_install_manager;
-  HRESULT hr = base::win::RoActivateInstance(
-      base::win::ScopedHString::Create(
-          RuntimeClass_Windows_ApplicationModel_Store_Preview_InstallControl_AppInstallManager)
-          .get(),
-      &app_install_manager);
+  {
+    // `RoActivateInstance()` below loads Microsoft Store Install Service dlls.
+    base::ScopedBlockingCall scoped_blocking_call(
+        FROM_HERE, base::BlockingType::MAY_BLOCK);
+
+    hr = base::win::RoActivateInstance(
+        base::win::HStringReference(
+            RuntimeClass_Windows_ApplicationModel_Store_Preview_InstallControl_AppInstallManager)
+            .Get(),
+        &app_install_manager);
+  }
   if (FAILED(hr)) {
     RecordInstallState(WinAppRuntimeInstallStateUma::kActivationFailure);
-    return nullptr;
-  }
-  return app_install_manager;
-}
-
-// Starts the installation using the IAppInstallManager API.
-void StartInstallation(Microsoft::WRL::ComPtr<abi_install::IAppInstallManager>
-                           app_install_manager) {
-  if (!app_install_manager) {
     return;
   }
 
   Microsoft::WRL::ComPtr<abi_install::IAppInstallManager3>
       app_install_manager_3;
-  HRESULT hr = app_install_manager.As(&app_install_manager_3);
+  hr = app_install_manager.As(&app_install_manager_3);
   CHECK_EQ(hr, S_OK);
-
-  auto catalog_id = base::win::ScopedHString::Create(std::wstring_view());
-  auto flight_id = base::win::ScopedHString::Create(std::wstring_view());
-  auto client_id = base::win::ScopedHString::Create(std::wstring_view());
-  auto correlation_vector =
-      base::win::ScopedHString::Create(std::wstring_view());
 
   Microsoft::WRL::ComPtr<AppInstallAsyncOp> async_op;
   hr = app_install_manager_3->StartProductInstallAsync(
-      base::win::ScopedHString::Create(kWinAppRuntimeProductId).get(),
-      catalog_id.get(), flight_id.get(), client_id.get(),
+      base::win::HStringReference(kWinAppRuntimeProductId.c_str()).Get(),
+      /*catalogId=*/nullptr, /*flightId=*/nullptr, /*clientId=*/nullptr,
       /*repair=*/false, /*forceUseOfNonRemovableStorage=*/false,
-      correlation_vector.get(), /*targetVolume=*/nullptr, &async_op);
+      /*correlationVector=*/nullptr, /*targetVolume=*/nullptr, &async_op);
   if (FAILED(hr)) {
     RecordInstallState(
         WinAppRuntimeInstallStateUma::kInstallationFailedToStart);
     return;
   }
 
+  // Post a handler to wait for the completion of `StartProductInstallAsync()`.
   hr = base::win::PostAsyncHandlers(
       async_op.Get(),
       base::BindOnce(&OnInstallationStarted, std::move(app_install_manager)),
@@ -293,6 +297,8 @@ void StartInstallation(Microsoft::WRL::ComPtr<abi_install::IAppInstallManager>
 // Ensures the Windows App Runtime package is installed and up to date.
 // Runs on browser's UI thread.
 void EnsureInstallation() {
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
   PrefService* local_state = g_browser_process->local_state();
   const std::string& dependency_id =
       local_state->GetString(prefs::kWinAppRuntimePackageDependencyId);
@@ -314,8 +320,7 @@ void EnsureInstallation() {
   }
 
   // Before starting the installation, first try to create the package
-  // dependency, in case it has already been installed by another application on
-  // the system.
+  // dependency to check if it has already been installed.
   std::wstring new_dependency_id = TryCreateWinAppRuntimePackageDependency();
   if (!new_dependency_id.empty()) {
     RecordInstallState(WinAppRuntimeInstallStateUma::kRuntimeAlreadyPresent);
@@ -323,12 +328,12 @@ void EnsureInstallation() {
     return;
   }
 
-  base::ThreadPool::PostTaskAndReplyWithResult(
-      FROM_HERE,
-      {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
-       base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN},
-      base::BindOnce(&ActivateAppInstallManager),
-      base::BindOnce(&StartInstallation));
+  // Post the installation to a Multi-Threaded Apartment (MTA) background
+  // thread to prevent a potential hung issue on a Single-Threaded Apartment
+  // (STA) thread, see crbug.com/464001953.
+  base::ThreadPool::CreateSequencedTaskRunner(
+      {base::MayBlock(), base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN})
+      ->PostTask(FROM_HERE, base::BindOnce(&StartInstallation));
 }
 
 }  // namespace
@@ -341,13 +346,32 @@ void SchedulePlatformRuntimeInstallationIfRequired() {
     return;
   }
 
-  if (base::win::GetVersion() < base::win::Version::WIN11_24H2) {
+  if (base::win::GetVersion() < kWinAppRuntimeSupportedMinVersion) {
     RecordInstallState(WinAppRuntimeInstallStateUma::kWindowsVersionTooOld);
     return;
   }
 
+#if BUILDFLAG(WEBNN_INSTALL_RUNTIME_IN_CHROME_INSTALLER)
+  // Check if the browser process was installed by the Chrome installer. If so,
+  // skip the installation check here as the installer is responsible for
+  // handling this. The installation in the browser process is only for
+  // developer builds.
+  base::ThreadPool::PostTaskAndReplyWithResult(
+      FROM_HERE,
+      {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
+       base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN},
+      base::BindOnce(&installer::IsCurrentProcessInstalled),
+      base::BindOnce([](bool is_browser_process_installed) {
+        if (is_browser_process_installed) {
+          return;
+        }
+        content::GetUIThreadTaskRunner({base::TaskPriority::BEST_EFFORT})
+            ->PostTask(FROM_HERE, base::BindOnce(&EnsureInstallation));
+      }));
+#else
   content::GetUIThreadTaskRunner({base::TaskPriority::BEST_EFFORT})
       ->PostTask(FROM_HERE, base::BindOnce(&EnsureInstallation));
+#endif  // BUILDFLAG(WEBNN_INSTALL_RUNTIME_IN_CHROME_INSTALLER)
 }
 
 }  // namespace webnn

@@ -132,9 +132,8 @@ class AutofillProfile : public FormGroup {
     return stored_types;
   }();
 
-  // The values used to represent Autofill in the `initial_creator_id()` and
-  // `last_modifier_id()`.
-  static constexpr int kInitialCreatorOrModifierChrome = 70073;
+  // The values used to represent Autofill in the `initial_creator_id()`.
+  static constexpr int kInitialCreatorChrome = 70073;
   AutofillProfile(const std::string& guid,
                   RecordType record_type,
                   AddressCountryCode country_code);
@@ -291,11 +290,8 @@ class AutofillProfile : public FormGroup {
   // users to recognize a profile (like their full name) and a possible second
   // label if this leads to two profiles having the same label, for example if
   // there are two profiles with the same full name, it might add their email
-  // data to differentiate them. In this context the `triggering_field_type` is
-  // used to help deciding whether the differentiate label is needed. If the
-  // profile value for `triggering_field_type` is unique (and therefore the
-  // `Suggestion::main_text`), no differentiating label will be added. If
-  // `suggested_fields` is not nullopt, the resulting label fields are drawn
+  // data to differentiate them.
+  // If `suggested_fields` is not nullopt, the resulting label fields are drawn
   // from it minus those in `excluded_fields`. Otherwise, the label fields are
   // drawn from a default set. Each label includes at least
   // `minimal_fields_shown` fields, if possible.
@@ -304,11 +300,9 @@ class AutofillProfile : public FormGroup {
   static std::vector<std::u16string> CreateInferredLabels(
       base::span<const AutofillProfile* const> profiles,
       const std::optional<FieldTypeSet> suggested_fields,
-      std::optional<FieldType> triggering_field_type,
       FieldTypeSet excluded_fields,
       size_t minimal_fields_shown,
-      std::string_view app_locale,
-      bool use_improved_labels_order = false);
+      std::string_view app_locale);
 
   // Builds inferred label from the first `num_fields_to_include` non-empty
   // fields in `label_fields`. Uses as many fields as possible if there are not
@@ -371,11 +365,6 @@ class AutofillProfile : public FormGroup {
     initial_creator_id_ = creator_id;
   }
 
-  int last_modifier_id() const { return last_modifier_id_; }
-  void set_last_modifier_id(int modifier_id) {
-    last_modifier_id_ = modifier_id;
-  }
-
   // Converts a non-`kAccount` profile to a `kAccount` profile and returns it.
   // The converted profile shares the same content, but with a different GUID
   // and with `record_type` `kAccount`. Additional `kAccount`-specific metadata
@@ -430,7 +419,6 @@ class AutofillProfile : public FormGroup {
       const std::vector<FieldType>& field_types,
       size_t num_fields_to_include,
       std::string_view app_locale,
-      bool force_differentiating_label_in_front,
       std::vector<std::u16string>& labels);
 
   // Utilities for listing and lookup of the data members that constitute
@@ -483,16 +471,14 @@ class AutofillProfile : public FormGroup {
 
   RecordType record_type_;
 
-  // Indicates the application that initially created the profile and the
-  // application that performed the last non-metadata modification of it.
+  // Indicates the application that initially created the profile.
   // Only relevant for `record_type_ == kAccount` profiles, since
   // `kLocalOrSyncable` profiles are only used within Autofill. The integer
   // values represent a server-side enum `BillableService`, which is not
   // duplicated in Chromium. For Autofill, the exact application that
-  // created/modified the profile is thus opaque. However, Autofill is
-  // represented by the value `kInitialCreatorOrModifierChrome`.
+  // created the profile is thus opaque. However, Autofill is
+  // represented by the value `kInitialCreatorChrome`.
   int initial_creator_id_ = 0;
-  int last_modifier_id_ = 0;
 
   // Stores information about the quality of this profile's stored types.
   ProfileTokenQuality token_quality_;

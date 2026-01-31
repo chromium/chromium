@@ -15,6 +15,7 @@ import './history_sync_promo.js';
 // </if>
 import './history_list.js';
 import './history_toolbar.js';
+import './filter_chips.js';
 import './query_manager.js';
 import './router.js';
 import './side_bar.js';
@@ -66,8 +67,7 @@ function onDocumentClick(evt: Event) {
   const eventPath = e.composedPath() as HTMLElement[];
   let anchor: HTMLAnchorElement|null = null;
   if (eventPath) {
-    for (let i = 0; i < eventPath.length; i++) {
-      const element = eventPath[i];
+    for (const element of eventPath) {
       if (element.tagName === 'A' && (element as HTMLAnchorElement).href) {
         anchor = element as HTMLAnchorElement;
         break;
@@ -173,6 +173,11 @@ export class HistoryAppElement extends HistoryAppElementBase {
       nonEmbeddingsResultClicked_: {type: Boolean},
       numCharsTypedInSearch_: {type: Number},
       historyEmbeddingsDisclaimerLinkClicked_: {type: Boolean},
+      includeActorVisits_: {type: Boolean},
+      includeUserVisits_: {type: Boolean},
+      isBrowsingHistoryActorIntegrationM3Enabled_: {
+        type: Boolean,
+      },
     };
   }
 
@@ -189,7 +194,7 @@ export class HistoryAppElement extends HistoryAppElementBase {
       loadTimeData.getBoolean('unoPhase2FollowUp');
   protected accessor shouldShowHistorySyncPromo_: boolean = false;
   // </if>
-  protected accessor hasDrawer_: boolean;
+  protected accessor hasDrawer_: boolean = false;
   protected accessor historyClustersEnabled_: boolean =
       loadTimeData.getBoolean('isHistoryClustersEnabled');
   protected accessor historyClustersVisible_: boolean =
@@ -233,6 +238,10 @@ export class HistoryAppElement extends HistoryAppElementBase {
   protected accessor tabContentScrollOffset_: number = 0;
   protected accessor numCharsTypedInSearch_: number = 0;
   protected accessor nonEmbeddingsResultClicked_: boolean = false;
+  protected accessor includeActorVisits_: boolean = true;
+  protected accessor includeUserVisits_: boolean = true;
+  protected accessor isBrowsingHistoryActorIntegrationM3Enabled_: boolean =
+      loadTimeData.getBoolean('isBrowsingHistoryActorIntegrationM3Enabled');
 
   private browserService_: BrowserService = BrowserServiceImpl.getInstance();
   private callbackRouter_: PageCallbackRouter =
@@ -336,7 +345,7 @@ export class HistoryAppElement extends HistoryAppElementBase {
       // Change in the currently selected tab requires change in the currently
       // selected page.
       if (!this.selectedPage_ || TABBED_PAGES.includes(this.selectedPage_)) {
-        this.selectedPage_ = TABBED_PAGES[this.selectedTab_];
+        this.selectedPage_ = TABBED_PAGES[this.selectedTab_]!;
       }
     }
 
@@ -754,9 +763,16 @@ export class HistoryAppElement extends HistoryAppElementBase {
   }
 
   // <if expr="not is_chromeos">
-  // TODO(https://crbug.com/418144407): add more conditions e.g. sync disabled
+  // History sync promo is shown based on the following conditions:
+  // 1. UNO phase 2 follow up feature flag is enabled.
+  // 2. Should be shown based on user prefs (the promo was closed < 5 times)
+  // 3. History sync is not disabled.
+  // 4. User is not already signed in and syncing history.
   protected shouldShowHistoryPageHistorySyncPromo_(): boolean {
-    return this.unoPhase2FollowUpEnabled_ && this.shouldShowHistorySyncPromo_;
+    return this.unoPhase2FollowUpEnabled_ && this.shouldShowHistorySyncPromo_ &&
+        this.identityState_.historySync !== SyncState.DISABLED &&
+        !(this.identityState_.signIn === HistorySignInState.SIGNED_IN &&
+          this.identityState_.historySync === SyncState.TURNED_ON);
   }
 
   private handleShouldShowHistoryPageHistorySyncPromoChanged_(
@@ -801,14 +817,14 @@ export class HistoryAppElement extends HistoryAppElementBase {
     const historyEmbeddingsItem = e.detail;
     this.fire_(
         'change-query',
-        {search: 'host:' + new URL(historyEmbeddingsItem.url.url).hostname});
+        {search: 'host:' + new URL(historyEmbeddingsItem.url).hostname});
   }
 
   protected onHistoryEmbeddingsItemRemoveClick_(
       e: HistoryEmbeddingsMoreActionsClickEvent) {
     const historyEmbeddingsItem = e.detail;
     this.pageHandler_.removeVisits([{
-      url: historyEmbeddingsItem.url.url,
+      url: historyEmbeddingsItem.url,
       timestamps: [historyEmbeddingsItem.lastUrlVisitTimestamp],
     }]);
   }
@@ -825,7 +841,7 @@ export class HistoryAppElement extends HistoryAppElementBase {
     assert(historyEmbeddingsContainer);
     this.historyEmbeddingsResizeObserver_ = new ResizeObserver((entries) => {
       assert(entries.length === 1);
-      this.tabContentScrollOffset_ = entries[0].contentRect.height;
+      this.tabContentScrollOffset_ = entries[0]!.contentRect.height;
     });
     this.historyEmbeddingsResizeObserver_.observe(historyEmbeddingsContainer);
   }
@@ -879,6 +895,18 @@ export class HistoryAppElement extends HistoryAppElementBase {
 
   protected onHistoryClustersVisibleChanged_(e: CustomEvent<{value: boolean}>) {
     this.historyClustersVisible_ = e.detail.value;
+  }
+
+  protected onFilterChipsChanged_(
+      e: CustomEvent<{userVisits: boolean, actorVisits: boolean}>) {
+    this.includeUserVisits_ = e.detail.userVisits;
+    this.includeActorVisits_ = e.detail.actorVisits;
+    /* TODO: Implement firing the change query here. */
+  }
+
+  protected showFilterChips_(): boolean {
+    return this.isBrowsingHistoryActorIntegrationM3Enabled_ &&
+        !this.getShowResultsByGroup_();
   }
 }
 

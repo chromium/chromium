@@ -88,7 +88,7 @@ class GlicDelegatingSharingManagerBase : public GlicSharingManager {
       mojom::GetPinCandidatesOptionsPtr options,
       mojo::PendingRemote<mojom::PinCandidatesObserver> observer) override;
   void OnConversationTurnSubmitted() override;
-  GlicFocusedBrowserManagerInterface& focused_browser_manager() override;
+  GlicFocusedBrowserManager& focused_browser_manager() override;
   base::WeakPtr<GlicSharingManager> GetWeakPtr() override;
 
  protected:

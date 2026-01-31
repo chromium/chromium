@@ -41,7 +41,7 @@ class UnresponsiveFilesRequestHandler : public FilesRequestHandler {
 
   static std::unique_ptr<FilesRequestHandler> Create(
       ContentAnalysisInfo* content_analysis_info,
-      safe_browsing::BinaryUploadService* upload_service,
+      BinaryUploadService* upload_service,
       Profile* profile,
       GURL url,
       const std::string& source,

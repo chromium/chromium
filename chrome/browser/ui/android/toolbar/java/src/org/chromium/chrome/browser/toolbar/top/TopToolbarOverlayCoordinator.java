@@ -8,13 +8,13 @@ import android.content.Context;
 import android.graphics.RectF;
 
 import org.chromium.base.Callback;
+import org.chromium.base.supplier.MonotonicObservableSupplier;
+import org.chromium.base.supplier.NonNullObservableSupplier;
 import org.chromium.base.supplier.NullableObservableSupplier;
-import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsOffsetTagsInfo;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.layouts.CompositorModelChangeProcessor;
 import org.chromium.chrome.browser.layouts.LayoutManager;
 import org.chromium.chrome.browser.layouts.SceneOverlay;
@@ -54,16 +54,15 @@ public class TopToolbarOverlayCoordinator implements SceneOverlay {
             BrowserControlsStateProvider browserControlsStateProvider,
             Supplier<ResourceManager> resourceManagerSupplier,
             TopUiThemeColorProvider topUiThemeColorProvider,
-            ObservableSupplier<Integer> bottomToolbarControlsOffsetSupplier,
-            ObservableSupplier<Boolean> suppressToolbarSceneLayerSupplier,
+            NonNullObservableSupplier<Integer> bottomToolbarControlsOffsetSupplier,
+            NonNullObservableSupplier<Boolean> suppressToolbarSceneLayerSupplier,
             int layoutsToShowOn,
             boolean isVisibilityManuallyControlled,
-            ObservableSupplier<Long> captureResourceIdSupplier,
+            MonotonicObservableSupplier<Long> captureResourceIdSupplier,
             @Nullable ToolbarProgressBar progressBar) {
         // If BCIV is enabled, we always show the hairline on the composited
         // toolbar, and let renderer+viz control the visibility during scrolls.
         mContext = context;
-        boolean showHairline = ChromeFeatureList.sBrowserControlsInViz.isEnabled();
         mModel =
                 new PropertyModel.Builder(TopToolbarOverlayProperties.ALL_KEYS)
                         .with(TopToolbarOverlayProperties.RESOURCE_ID, R.id.control_container)
@@ -76,7 +75,7 @@ public class TopToolbarOverlayCoordinator implements SceneOverlay {
                                 TopToolbarOverlayProperties.LEGACY_CONTENT_OFFSET,
                                 browserControlsStateProvider.getContentOffset())
                         .with(TopToolbarOverlayProperties.ANONYMIZE, false)
-                        .with(TopToolbarOverlayProperties.SHOW_SHADOW, showHairline)
+                        .with(TopToolbarOverlayProperties.SHOW_SHADOW, true)
                         .build();
         mSceneLayer = new TopToolbarSceneLayer(resourceManagerSupplier);
         mChangeProcessor =

@@ -74,7 +74,8 @@ RemoveObsoleteBundleVersionsResult RemoveObsoleteBundleVersionsCacheCommandImpl(
 base::expected<IwaVersion, RemoveObsoleteBundleVersionsError> GetIwaVersion(
     WebAppRegistrar& registrar,
     const webapps::AppId& app_id) {
-  const WebApp* app = registrar.GetAppById(app_id);
+  const WebApp* app =
+      registrar.GetAppById(app_id, WebAppFilter::IsIsolatedApp());
   if (!app) {
     return base::unexpected(RemoveObsoleteBundleVersionsError{
         RemoveObsoleteBundleVersionsError::Type::kAppNotInstalled});

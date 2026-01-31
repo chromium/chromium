@@ -14,6 +14,7 @@
 #include "base/threading/sequence_bound.h"
 #include "base/timer/timer.h"
 #include "components/optimization_guide/proto/features/common_quality_data.pb.h"
+#include "components/page_content_annotations/core/page_content_store.h"
 
 class GURL;
 
@@ -54,7 +55,7 @@ class PageContentCache {
   PageContentCache& operator=(const PageContentCache&) = delete;
 
   using GetPageContentCallback = base::OnceCallback<void(
-      std::optional<optimization_guide::proto::PageContext>)>;
+      std::optional<optimization_guide::PageContentResult>)>;
   using GetAllTabIdsCallback = base::OnceCallback<void(std::vector<int64_t>)>;
 
   // Retrieves the page content for a given tab ID.

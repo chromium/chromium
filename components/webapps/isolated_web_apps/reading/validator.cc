@@ -15,7 +15,6 @@
 #include "components/web_package/signed_web_bundles/identity_validator.h"
 #include "components/web_package/signed_web_bundles/signed_web_bundle_id.h"
 #include "components/web_package/signed_web_bundles/signed_web_bundle_integrity_block.h"
-#include "components/webapps/isolated_web_apps/client.h"
 #include "components/webapps/isolated_web_apps/error/unusable_swbn_file_error.h"
 #include "components/webapps/isolated_web_apps/types/iwa_origin.h"
 #include "url/gurl.h"
@@ -28,8 +27,7 @@ namespace {
 base::expected<void, std::string> ValidateIntegrityBlockImpl(
     content::BrowserContext* browser_context,
     const web_package::SignedWebBundleId& expected_web_bundle_id,
-    const web_package::SignedWebBundleIntegrityBlock& integrity_block,
-    bool dev_mode) {
+    const web_package::SignedWebBundleIntegrityBlock& integrity_block) {
   if (expected_web_bundle_id.is_for_proxy_mode()) {
     return base::unexpected(
         "Web Bundle IDs of type ProxyMode are not supported.");
@@ -48,9 +46,6 @@ base::expected<void, std::string> ValidateIntegrityBlockImpl(
       web_package::IdentityValidator::GetInstance()->ValidateWebBundleIdentity(
           derived_web_bundle_id.id(),
           integrity_block.signature_stack().public_keys()));
-
-  RETURN_IF_ERROR(IwaClient::GetInstance()->ValidateTrust(
-      browser_context, expected_web_bundle_id, dev_mode));
 
   return base::ok();
 }
@@ -106,10 +101,9 @@ base::expected<void, UnusableSwbnFileError>
 IsolatedWebAppValidator::ValidateIntegrityBlock(
     content::BrowserContext* browser_context,
     const web_package::SignedWebBundleId& expected_web_bundle_id,
-    const web_package::SignedWebBundleIntegrityBlock& integrity_block,
-    bool dev_mode) {
+    const web_package::SignedWebBundleIntegrityBlock& integrity_block) {
   return ValidateIntegrityBlockImpl(browser_context, expected_web_bundle_id,
-                                    integrity_block, dev_mode)
+                                    integrity_block)
       .transform_error([](const auto& error) {
         return UnusableSwbnFileError(
             UnusableSwbnFileError::Error::kIntegrityBlockValidationError,
@@ -128,6 +122,21 @@ IsolatedWebAppValidator::ValidateMetadata(
         return UnusableSwbnFileError(
             UnusableSwbnFileError::Error::kMetadataValidationError, error);
       });
+}
+
+// static
+base::expected<void, UnusableSwbnFileError>
+IsolatedWebAppValidator::ValidateIntegrityBlockAndMetadata(
+    content::BrowserContext* browser_context,
+    const web_package::SignedWebBundleId& expected_web_bundle_id,
+    const web_package::SignedWebBundleIntegrityBlock& integrity_block,
+    const std::optional<GURL>& primary_url,
+    const std::vector<GURL>& entries) {
+  RETURN_IF_ERROR(IsolatedWebAppValidator::ValidateIntegrityBlock(
+      browser_context, expected_web_bundle_id, integrity_block));
+  RETURN_IF_ERROR(IsolatedWebAppValidator::ValidateMetadata(
+      expected_web_bundle_id, primary_url, entries));
+  return base::ok();
 }
 
 }  // namespace web_app

@@ -143,19 +143,6 @@ int BrowserFrameViewLinux::GetTranslucentTopAreaHeight() const {
   return 0;
 }
 
-void BrowserFrameViewLinux::LayoutWebAppWindowTitle(
-    const gfx::Rect& available_space,
-    views::Label& window_title_label) const {
-  constexpr int kIconTitleSpacing = 4;
-  constexpr int kCaptionSpacing = 5;
-
-  gfx::Rect bounds = available_space;
-  bounds.Inset(gfx::Insets::TLBR(0, kIconTitleSpacing, 0, kCaptionSpacing));
-  window_title_label.SetSubpixelRenderingEnabled(false);
-  window_title_label.SetHorizontalAlignment(gfx::ALIGN_LEFT);
-  window_title_label.SetBoundsRect(bounds);
-}
-
 BrowserLayoutParams BrowserFrameViewLinux::GetBrowserLayoutParams() const {
   BrowserLayoutParams params;
   params.visual_client_area = GetBoundsForClientView();

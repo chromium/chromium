@@ -63,13 +63,13 @@ class ShellDevToolsBindings : public WebContentsObserver,
   void DispatchProtocolMessage(DevToolsAgentHost* agent_host,
                                base::span<const uint8_t> message) override;
 
-  void HandleMessageFromDevToolsFrontend(base::Value::Dict message);
+  void HandleMessageFromDevToolsFrontend(base::DictValue message);
 
   // WebContentsObserver overrides
   void ReadyToCommitNavigation(NavigationHandle* navigation_handle) override;
   void WebContentsDestroyed() override;
 
-  void SendMessageAck(int request_id, const base::Value::Dict arg);
+  void SendMessageAck(int request_id, const base::DictValue arg);
   void AttachInternal();
 
   raw_ptr<WebContents, FlakyDanglingUntriaged> inspected_contents_;
@@ -85,7 +85,7 @@ class ShellDevToolsBindings : public WebContentsObserver,
   std::set<std::unique_ptr<NetworkResourceLoader>, base::UniquePtrComparator>
       loaders_;
 
-  base::Value::Dict preferences_;
+  base::DictValue preferences_;
 
   using ExtensionsAPIs = std::map<std::string, std::string>;
   ExtensionsAPIs extensions_api_;

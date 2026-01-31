@@ -8,14 +8,13 @@
 
 #include "ash/constants/ash_features.h"
 #include "base/base64.h"
-#include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/files/file_util.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/string_util.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/task_runner.h"
-#include "base/types/fixed_array.h"
 #include "chromeos/ash/components/carrier_lock/carrier_lock.pb.h"
 #include "chromeos/ash/components/carrier_lock/fcm_topic_subscriber_impl.h"
 #include "chromeos/ash/components/carrier_lock/metrics.h"
@@ -351,11 +350,8 @@ void CarrierLockManager::Initialize() {
   const base::FilePath oem_path(kManufacturerNamePath);
   if (base::PathExists(oem_path)) {
     base::File file(oem_path, base::File::FLAG_OPEN | base::File::FLAG_READ);
-    int64_t length = file.GetLength();
-    base::FixedArray<char> buffer(length + 1);
-    UNSAFE_TODO(file.Read(0, buffer.data(), length));
-    buffer[length] = '\0';
-    manufacturer_ = buffer.data();
+    manufacturer_.resize(base::checked_cast<size_t>(file.GetLength()));
+    file.Read(0, base::as_writable_byte_span(manufacturer_));
   } else {
     LOG(WARNING) << "Manufacturer name file doesn't exist!";
   }
@@ -363,11 +359,8 @@ void CarrierLockManager::Initialize() {
   const base::FilePath model_path(kModelNamePath);
   if (base::PathExists(model_path)) {
     base::File file(model_path, base::File::FLAG_OPEN | base::File::FLAG_READ);
-    int64_t length = file.GetLength();
-    base::FixedArray<char> buffer(length + 1);
-    UNSAFE_TODO(file.Read(0, buffer.data(), length));
-    buffer[length] = '\0';
-    model_ = buffer.data();
+    model_.resize(base::checked_cast<size_t>(file.GetLength()));
+    file.Read(0, base::as_writable_byte_span(model_));
   } else {
     LOG(WARNING) << "Model name file doesn't exist!";
   }

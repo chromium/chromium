@@ -1,3 +1,5 @@
 include_rules = [
+  # keep-sorted start
   "+ios/chrome/browser/tabs/model/tabs_dependency_installer.h",
+  # keep-sorted end
 ]

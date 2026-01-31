@@ -6,7 +6,6 @@
 
 #include <string>
 
-#include "base/containers/contains.h"
 #include "base/files/file_util.h"
 #include "base/functional/callback.h"
 #include "base/run_loop.h"
@@ -154,14 +153,14 @@ class InitialExternalExtensionLoaderRestartBrowserTest
   }
 
   // Returns current initial install list from the prefs.
-  const base::Value::List& InitialInstallList() {
+  const base::ListValue& InitialInstallList() {
     return profile()->GetPrefs()->GetList(pref_names::kInitialInstallList);
   }
 
   // Adds `kTestExtensionId` to the initial install list (overwriting any
   // previous list to ensure deterministic state).
   void SeedInitialInstallListWithTestExtension() {
-    base::Value::List ids;
+    base::ListValue ids;
     ids.Append(kTestExtensionId);
     profile()->GetPrefs()->SetList(pref_names::kInitialInstallList,
                                    std::move(ids));
@@ -233,8 +232,7 @@ IN_PROC_BROWSER_TEST_F(InitialExternalExtensionLoaderRestartBrowserTest,
 // must *not* reinstall it.
 IN_PROC_BROWSER_TEST_F(InitialExternalExtensionLoaderRestartBrowserTest,
                        PRE_InitialExternalExtension) {
-  EXPECT_TRUE(
-      base::Contains(InitialInstallList(), base::Value(kTestExtensionId)));
+  EXPECT_TRUE(InitialInstallList().contains(kTestExtensionId));
 
   Extension* extension = GetInstalledExtension();
   ASSERT_TRUE(extension);
@@ -256,8 +254,7 @@ IN_PROC_BROWSER_TEST_F(InitialExternalExtensionLoaderRestartBrowserTest,
   // that the user preference is respected.
   PrepareExtensionInstallation();
 
-  EXPECT_TRUE(
-      base::Contains(InitialInstallList(), base::Value(kTestExtensionId)));
+  EXPECT_TRUE(InitialInstallList().contains(kTestExtensionId));
 
   EXPECT_FALSE(GetInstalledExtension());
 

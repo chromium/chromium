@@ -76,7 +76,7 @@ class IncognitoNavigationThrottleBrowserTest
 
   void SetMandatoryExtensionsForIncognitoNavigation(
       const std::vector<std::string>& extensions) {
-    base::Value::List values;
+    base::ListValue values;
     for (const auto& ids : extensions) {
       values.Append(ids);
     }
@@ -243,6 +243,29 @@ IN_PROC_BROWSER_TEST_F(IncognitoNavigationThrottleBrowserTest,
   NavigateToSimplePage(incognito_browser());
   EXPECT_TRUE(
       IsMissingExtensionsBlockingPageSown(incognito_browser(), extensions));
+}
+
+IN_PROC_BROWSER_TEST_F(IncognitoNavigationThrottleBrowserTest,
+                       Policy_AllowsTopChromeWebUI) {
+  const extensions::Extension* extension = InstallExtension();
+  SetMandatoryExtensionsForIncognitoNavigation({extension->id()});
+
+  // Incognito mode is blocked.
+  NavigateToSimplePage(incognito_browser());
+  EXPECT_TRUE(IsUnallowedExtensionsBlockingPageSown(incognito_browser(),
+                                                    {extension->name()}));
+
+  // Navigate to a Top Chrome WebUI URL. Content is allowed.
+  const GURL top_chrome_url(chrome::kChromeUITabSearchURL);
+  ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
+      incognito_browser(), top_chrome_url, WindowOpenDisposition::CURRENT_TAB,
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
+
+  content::WebContents* web_contents =
+      incognito_browser()->tab_strip_model()->GetActiveWebContents();
+  EXPECT_EQ(top_chrome_url, web_contents->GetLastCommittedURL());
+  EXPECT_FALSE(IsUnallowedExtensionsBlockingPageSown(incognito_browser(),
+                                                     {extension->name()}));
 }
 
 }  // namespace enterprise_incognito

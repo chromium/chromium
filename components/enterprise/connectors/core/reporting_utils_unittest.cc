@@ -484,7 +484,7 @@ TEST(ReportingUtilsTest, TestAddReferrerChainToEvent) {
   google::protobuf::RepeatedPtrField<safe_browsing::ReferrerChainEntry>
       referrer_chain;
   referrer_chain.Add(test::MakeReferrerChainEntry());
-  base::Value::Dict event;
+  base::DictValue event;
   AddReferrerChainToEvent(referrer_chain, event);
   EXPECT_EQ(event.size(), 1u);
   EXPECT_EQ(event.FindList(kKeyReferrers)->size(), 1u);
@@ -493,7 +493,7 @@ TEST(ReportingUtilsTest, TestAddReferrerChainToEvent) {
 TEST(ReportingUtilsTest, TestEmptyReferrerChainAdded) {
   google::protobuf::RepeatedPtrField<safe_browsing::ReferrerChainEntry>
       referrer_chain;
-  base::Value::Dict event;
+  base::DictValue event;
   AddReferrerChainToEvent(referrer_chain, event);
   EXPECT_EQ(event.size(), 1u);
   EXPECT_TRUE(event.contains(kKeyReferrers));
@@ -505,10 +505,10 @@ TEST(ReportingUtilsTest, TestAddFrameUrlChainToEvent) {
   *frame_url_chain.Add() = "https://frame1.com/";
   *frame_url_chain.Add() = "https://frame2.com/";
 
-  base::Value::Dict event;
+  base::DictValue event;
   AddFrameUrlChainToEvent(frame_url_chain, event);
 
-  const base::Value::List* iframe_urls = event.FindList(kKeyIframeUrls);
+  const base::ListValue* iframe_urls = event.FindList(kKeyIframeUrls);
   ASSERT_TRUE(iframe_urls);
   ASSERT_EQ(iframe_urls->size(), 2u);
   EXPECT_EQ((*iframe_urls)[0].GetString(), "https://frame1.com/");

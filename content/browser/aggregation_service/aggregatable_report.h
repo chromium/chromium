@@ -87,7 +87,7 @@ struct CONTENT_EXPORT AggregatableReportSharedInfo {
                                base::Uuid report_id,
                                url::Origin reporting_origin,
                                DebugMode debug_mode,
-                               base::Value::Dict additional_fields,
+                               base::DictValue additional_fields,
                                std::string api_version,
                                std::string api_identifier);
 
@@ -109,7 +109,7 @@ struct CONTENT_EXPORT AggregatableReportSharedInfo {
   base::Uuid report_id;  // Used to prevent double counting.
   url::Origin reporting_origin;
   DebugMode debug_mode;
-  base::Value::Dict additional_fields;
+  base::DictValue additional_fields;
   std::string api_version;
 
   // Enum string that indicates which API created the report.
@@ -241,7 +241,7 @@ class CONTENT_EXPORT AggregatableReport {
   // value. Additionally, if requested, the outer JSON will have an extra field:
   // `"debug_key": "<unsigned 64-bit integer>"` along with any other extra
   // fields specified in `additional_fields_`.
-  base::Value::Dict GetAsJson() const;
+  base::DictValue GetAsJson() const;
 
   // TODO(crbug.com/40196851): Expose static method to validate that a
   // base::Value appears to represent a valid report.

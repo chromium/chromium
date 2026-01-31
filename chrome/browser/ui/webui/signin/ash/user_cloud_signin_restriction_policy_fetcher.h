@@ -126,7 +126,7 @@ class UserCloudSigninRestrictionPolicyFetcher
   // Protected for testing.
  protected:
   // UserInfoFetcher::Delegate.
-  void OnGetUserInfoSuccess(const base::Value::Dict& user_info) override;
+  void OnGetUserInfoSuccess(const base::DictValue& user_info) override;
   void OnGetUserInfoFailure(const GoogleServiceAuthError& error) override;
 
   // UserInfoFetcher::OAuth2AccessTokenConsumer.

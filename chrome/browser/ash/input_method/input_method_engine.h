@@ -400,7 +400,7 @@ class InputMethodEngine : virtual public TextInputMethod,
 
   std::unique_ptr<PrefChangeRegistrar> pref_change_registrar_;
 
-  base::Value::Dict input_method_settings_snapshot_;
+  base::DictValue input_method_settings_snapshot_;
 
   ScreenProjectionChangeMonitor screen_projection_change_monitor_;
 

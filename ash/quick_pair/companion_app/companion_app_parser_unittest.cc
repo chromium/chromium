@@ -41,8 +41,7 @@ constexpr char kEmptyParameterIntentURI[] =
 constexpr char kEmptyIntentURI[] = "";
 }  // namespace
 
-namespace ash {
-namespace quick_pair {
+namespace ash::quick_pair {
 
 class CompanionAppParserUnitTest : public testing::Test {
  public:
@@ -141,5 +140,4 @@ TEST_F(CompanionAppParserUnitTest, NoMetadata) {
   base::RunLoop().RunUntilIdle();
 }
 
-}  // namespace quick_pair
-}  // namespace ash
+}  // namespace ash::quick_pair

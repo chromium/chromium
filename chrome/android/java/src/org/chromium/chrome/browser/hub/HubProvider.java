@@ -12,8 +12,8 @@ import org.chromium.base.Callback;
 import org.chromium.base.CallbackController;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.supplier.LazyOneshotSupplier;
+import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.base.supplier.NullableObservableSupplier;
-import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -70,9 +70,9 @@ public class HubProvider {
             Supplier<SnackbarManager> snackbarManagerSupplier,
             Supplier<TabModelSelector> tabModelSelectorSupplier,
             Supplier<MenuButtonCoordinator> menuButtonCoordinatorSupplier,
-            ObservableSupplier<EdgeToEdgeController> edgeToEdgeSupplier,
+            MonotonicObservableSupplier<EdgeToEdgeController> edgeToEdgeSupplier,
             SearchActivityClient searchActivityClient,
-            @Nullable ObservableSupplier<Boolean> xrSpaceModeObservableSupplier,
+            @Nullable MonotonicObservableSupplier<Boolean> xrSpaceModeObservableSupplier,
             @PaneId int defaultPaneId) {
         mPaneListBuilder = new PaneListBuilder(orderController);
         mTabModelSelectorSupplier = tabModelSelectorSupplier;

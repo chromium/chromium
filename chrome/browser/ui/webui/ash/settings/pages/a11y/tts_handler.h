@@ -21,10 +21,10 @@ class TtsHandler : public SettingsWithTtsPreviewHandler {
 
   ~TtsHandler() override;
 
-  void HandleGetAllTtsVoiceData(const base::Value::List& args);
-  void HandleGetTtsExtensions(const base::Value::List& args);
-  void HandleGetDisplayNameForLocale(const base::Value::List& args);
-  void HandleGetApplicationLocale(const base::Value::List& args);
+  void HandleGetAllTtsVoiceData(const base::ListValue& args);
+  void HandleGetTtsExtensions(const base::ListValue& args);
+  void HandleGetDisplayNameForLocale(const base::ListValue& args);
+  void HandleGetApplicationLocale(const base::ListValue& args);
 
   // SettingsPageUIHandler implementation.
   void RegisterMessages() override;
@@ -36,7 +36,7 @@ class TtsHandler : public SettingsWithTtsPreviewHandler {
   GURL GetSourceURL() const override;
 
  private:
-  void WakeTtsEngine(const base::Value::List& args);
+  void WakeTtsEngine(const base::ListValue& args);
   void OnTtsEngineAwake(bool success);
   int GetVoiceLangMatchScore(const content::VoiceData* voice,
                              const std::string& app_locale);

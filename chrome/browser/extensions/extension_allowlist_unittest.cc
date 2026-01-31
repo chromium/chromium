@@ -71,7 +71,7 @@ class ExtensionAllowlistUnitTestBase : public ExtensionServiceTestBase {
   void PerformActionBasedOnOmahaAttributes(const ExtensionId& extension_id,
                                            bool is_malware,
                                            bool is_allowlisted) {
-    auto attributes = base::Value::Dict().Set("_esbAllowlist", is_allowlisted);
+    auto attributes = base::DictValue().Set("_esbAllowlist", is_allowlisted);
     if (is_malware) {
       attributes.Set("_malware", true);
     }
@@ -102,10 +102,8 @@ class ExtensionAllowlistUnitTestBase : public ExtensionServiceTestBase {
 class ExtensionAllowlistUnitTest : public ExtensionAllowlistUnitTestBase {
  public:
   ExtensionAllowlistUnitTest() {
-    feature_list_.InitWithFeatures(
-        {extensions_features::kSafeBrowsingCrxAllowlistShowWarnings,
-         extensions_features::kSafeBrowsingCrxAllowlistAutoDisable},
-        {});
+    feature_list_.InitAndEnableFeature(
+        extensions_features::kSafeBrowsingCrxAllowlistAutoDisable);
   }
 
  private:
@@ -484,7 +482,7 @@ TEST_F(ExtensionAllowlistUnitTest, MissingAttributeAreIgnored) {
       testing::UnorderedElementsAre(disable_reason::DISABLE_NOT_ALLOWLISTED));
 
   // Simulate an update check with no custom attribute defined.
-  base::Value::Dict attributes;
+  base::DictValue attributes;
   service()->PerformActionBasedOnOmahaAttributes(kExtensionId1, attributes);
   service()->PerformActionBasedOnOmahaAttributes(kExtensionId2, attributes);
 
@@ -729,9 +727,8 @@ class ExtensionAllowlistWithFeatureDisabledUnitTest
  public:
   ExtensionAllowlistWithFeatureDisabledUnitTest() {
     // Test with warnings enabled but auto disable disabled.
-    feature_list_.InitWithFeatures(
-        {extensions_features::kSafeBrowsingCrxAllowlistShowWarnings},
-        {extensions_features::kSafeBrowsingCrxAllowlistAutoDisable});
+    feature_list_.InitAndDisableFeature(
+        extensions_features::kSafeBrowsingCrxAllowlistAutoDisable);
   }
 
  private:

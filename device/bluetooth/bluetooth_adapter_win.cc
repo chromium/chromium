@@ -9,7 +9,6 @@
 #include <utility>
 
 #include "base/check.h"
-#include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
@@ -240,14 +239,14 @@ void BluetoothAdapterWin::DevicesPolled(
   DeviceAddressSet changed_devices =
       base::STLSetIntersection<DeviceAddressSet>(known_devices, new_devices);
   for (const auto& device_state : devices) {
-    if (base::Contains(added_devices, device_state->address)) {
+    if (added_devices.contains(device_state->address)) {
       auto device_win = std::make_unique<BluetoothDeviceWin>(
           this, *device_state, ui_task_runner_, socket_thread_);
       BluetoothDeviceWin* device_win_raw = device_win.get();
       devices_[device_state->address] = std::move(device_win);
       for (auto& observer : observers_)
         observer.DeviceAdded(this, device_win_raw);
-    } else if (base::Contains(changed_devices, device_state->address)) {
+    } else if (changed_devices.contains(device_state->address)) {
       auto iter = devices_.find(device_state->address);
       CHECK(iter != devices_.end());
       BluetoothDeviceWin* device_win =

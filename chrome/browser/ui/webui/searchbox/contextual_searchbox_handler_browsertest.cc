@@ -4,12 +4,17 @@
 
 #include "chrome/browser/ui/webui/cr_components/searchbox/contextual_searchbox_handler.h"
 
+#include "base/test/bind.h"
+#include "chrome/browser/contextual_search/contextual_search_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/contextual_search/tab_contextualization_controller.h"
 #include "chrome/browser/ui/omnibox/omnibox_controller.h"
+#include "chrome/browser/ui/webui/new_tab_page/composebox/variations/composebox_fieldtrial.h"
 #include "chrome/browser/ui/webui/searchbox/searchbox_test_utils.h"
 #include "chrome/test/base/in_process_browser_test.h"
-#include "components/lens/tab_contextualization_controller.h"
+#include "components/contextual_search/contextual_search_service.h"
+#include "components/contextual_search/contextual_search_session_handle.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -21,13 +26,14 @@ class TestSearchboxHandler : public ContextualSearchboxHandler {
   TestSearchboxHandler(
       mojo::PendingReceiver<searchbox::mojom::PageHandler> pending_page_handler,
       Profile* profile,
-      content::WebContents* web_contents)
+      content::WebContents* web_contents,
+      GetSessionHandleCallback get_session_callback)
       : ContextualSearchboxHandler(std::move(pending_page_handler),
                                    profile,
                                    web_contents,
                                    std::make_unique<OmniboxController>(
-                                       std::make_unique<TestOmniboxClient>())) {
-  }
+                                       std::make_unique<TestOmniboxClient>()),
+                                   std::move(get_session_callback)) {}
 
   ~TestSearchboxHandler() override = default;
 
@@ -37,14 +43,29 @@ class TestSearchboxHandler : public ContextualSearchboxHandler {
 class ContextualSearchboxHandlerBrowserTest : public InProcessBrowserTest {
  protected:
   testing::NiceMock<MockSearchboxPage> page_;
+  std::unique_ptr<contextual_search::ContextualSearchSessionHandle>
+      session_handle_;
   std::unique_ptr<TestSearchboxHandler> handler_;
 
   void SetUpOnMainThread() override {
     InProcessBrowserTest::SetUpOnMainThread();
+
+    auto* service =
+        ContextualSearchServiceFactory::GetForProfile(browser()->profile());
+    session_handle_ = service->CreateSession(
+        ntp_composebox::CreateQueryControllerConfigParams(),
+        contextual_search::ContextualSearchSource::kUnknown,
+        /*invocation_source=*/std::nullopt);
+    // Check the search content sharing settings to notify the session handle
+    // that the client is properly checking the pref value.
+    session_handle_->CheckSearchContentSharingSettings(
+        browser()->profile()->GetPrefs());
+
     handler_ = std::make_unique<TestSearchboxHandler>(
         mojo::PendingReceiver<searchbox::mojom::PageHandler>(),
         browser()->profile(),
-        /*web_contents=*/browser()->tab_strip_model()->GetActiveWebContents());
+        /*web_contents=*/browser()->tab_strip_model()->GetActiveWebContents(),
+        base::BindLambdaForTesting([&]() { return session_handle_.get(); }));
     handler_->SetPage(page_.BindAndGetRemote());
   }
 
@@ -97,4 +118,15 @@ IN_PROC_BROWSER_TEST_F(ContextualSearchboxHandlerBrowserTestDSF2,
   ASSERT_TRUE(options.has_value());
   EXPECT_EQ(options->max_width, expected_width);
   EXPECT_EQ(options->max_height, expected_height);
+}
+
+IN_PROC_BROWSER_TEST_F(ContextualSearchboxHandlerBrowserTest,
+                       ResetInputStateModel) {
+  // Access private member via friend class.
+  ContextualSearchboxHandler* base_handler = handler_.get();
+  ASSERT_TRUE(base_handler->input_state_model_);
+
+  handler_->ResetInputStateModel();
+
+  EXPECT_FALSE(base_handler->input_state_model_);
 }

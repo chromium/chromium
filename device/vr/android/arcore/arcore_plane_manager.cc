@@ -4,7 +4,6 @@
 
 #include "device/vr/android/arcore/arcore_plane_manager.h"
 
-#include "base/containers/contains.h"
 #include "base/containers/heap_array.h"
 #include "device/vr/android/arcore/vr_service_type_converters.h"
 #include "device/vr/public/mojom/plane_id.h"
@@ -181,7 +180,7 @@ void ArCorePlaneManager::Update(ArFrame* ar_frame) {
 
         // Inspect the tracking state of this plane in the previous frame. If it
         // changed, mark the plane as updated.
-        if (base::Contains(plane_id_to_plane_info_, plane_id) &&
+        if (plane_id_to_plane_info_.contains(plane_id) &&
             plane_id_to_plane_info_.at(plane_id).tracking_state !=
                 tracking_state) {
           updated_plane_ids.insert(plane_id);
@@ -201,8 +200,7 @@ void ArCorePlaneManager::Update(ArFrame* ar_frame) {
   // |new_plane_id_to_plane_info| map, they are no longer tracked.
   absl::erase_if(plane_address_to_id_, [&new_plane_id_to_plane_info](
                                            const auto& plane_address_and_id) {
-    return !base::Contains(new_plane_id_to_plane_info,
-                           plane_address_and_id.second);
+    return !new_plane_id_to_plane_info.contains(plane_address_and_id.second);
   });
 
   plane_id_to_plane_info_.swap(new_plane_id_to_plane_info);
@@ -307,7 +305,7 @@ PlaneId ArCorePlaneManager::GetOrCreatePlaneId(ArPlane* plane_address,
 }
 
 bool ArCorePlaneManager::PlaneExists(PlaneId id) const {
-  return base::Contains(plane_id_to_plane_info_, id);
+  return plane_id_to_plane_info_.contains(id);
 }
 
 std::optional<gfx::Transform> ArCorePlaneManager::GetMojoFromPlane(

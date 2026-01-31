@@ -58,9 +58,13 @@ bool CheckVlogIsOn(LoggingSeverity severity, const char (&file)[N]) {
                                    webrtc::ERRCTX_##ctx, err, ##__VA_ARGS__) \
           .stream()
 
+#define RTC_LOG_FILE_LINE(sev, file, line)                                  \
+  webrtc::LogMessageVoidify() &                                             \
+      webrtc::DiagnosticLogMessage(file, line, sev, webrtc::ERRCTX_NONE, 0) \
+          .stream()
+
 #define RTC_LOG_CHECK_LEVEL(sev) CheckVlogIsOn(webrtc::sev, __FILE__)
 #define RTC_LOG_CHECK_LEVEL_V(sev) CheckVlogIsOn(sev, __FILE__)
-
 #define RTC_LOG_V(sev) DIAGNOSTIC_LOG(sev, NONE, 0)
 #undef RTC_LOG
 #define RTC_LOG(sev) DIAGNOSTIC_LOG(webrtc::sev, NONE, 0)

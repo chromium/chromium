@@ -2,7 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import './filter_dialog.js';
+import './filter_dialog/filter_dialog.js';
+import './filter_dialog/app_dialog.js';
+import './filter_dialog/event_dialog.js';
+import './filter_dialog/outcome_dialog.js';
+import './filter_dialog/scope_dialog.js';
+import './filter_dialog/date_dialog.js';
+import './filter_dialog/type_dialog.js';
 import '//resources/cr_elements/cr_chip/cr_chip.js';
 import '//resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import '//resources/cr_elements/icons.html.js';
@@ -14,42 +20,28 @@ import '../icons.html.js';
 
 import {assertNotReachedCase} from '//resources/js/assert.js';
 import {EventTracker} from '//resources/js/event_tracker.js';
-import {loadTimeData} from '//resources/js/load_time_data.js';
 import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 
-import {localizeEventType, localizeUpdateOutcome} from '../event_history.js';
-import type {CommonUpdateOutcome, EventType} from '../event_history.js';
+import {localizeEventType, localizeScope, localizeUpdateOutcome} from '../event_history.js';
+import type {CommonUpdateOutcome, EventType, Scope} from '../event_history.js';
+import {loadTimeData} from '../i18n_setup.js';
+import {formatDateDigits} from '../tools.js';
 
 import {getCss} from './filter_bar.css.js';
 import {getHtml} from './filter_bar.html.js';
-import type {FilterMenuState} from './filter_dialog.js';
-
-const DATE_FORMATTER = new Intl.DateTimeFormat(undefined, {
-  year: 'numeric',
-  month: '2-digit',
-  day: '2-digit',
-  hour: '2-digit',
-  minute: '2-digit',
-});
-
-/**
- * The filter settings for the event list.
- */
-export interface FilterSettings {
-  activeAppFilters: Set<string>;
-  activeEventTypeFilters: Set<EventType>;
-  activeUpdateOutcomeFilters: Set<CommonUpdateOutcome>;
-  startDateFilter: Date|null;
-  endDateFilter: Date|null;
-}
+import {createDefaultFilterSettings} from './filter_settings.js';
+import type {FilterSettings} from './filter_settings.js';
 
 export enum FilterCategory {
   APP = 'app',
   EVENT = 'event',
   OUTCOME = 'outcome',
   DATE = 'date',
+  SCOPE = 'scope',
 }
+
+export type FilterMenuState = FilterCategory|'closed'|'type';
 
 /**
  * Returns the filter category associated with an element via the
@@ -91,21 +83,7 @@ export class FilterBarElement extends CrLitElement {
 
   private eventTracker: EventTracker = new EventTracker();
 
-  accessor filterSettings: FilterSettings = {
-    activeAppFilters: (() => {
-      const defaultApps = loadTimeData.getString('defaultAppFilters');
-      return new Set(defaultApps === '' ? [] : defaultApps.split(','));
-    })(),
-    activeEventTypeFilters: new Set<EventType>([
-      'INSTALL',
-      'UPDATE',
-      'UNINSTALL',
-    ]),
-    activeUpdateOutcomeFilters:
-        new Set<CommonUpdateOutcome>(['UPDATED', 'UPDATE_ERROR']),
-    startDateFilter: null,
-    endDateFilter: null,
-  };
+  accessor filterSettings: FilterSettings = createDefaultFilterSettings();
   protected accessor filterOrder: FilterCategory[] = [];
   protected accessor filterMenuState: FilterMenuState = 'closed';
   protected accessor menuHost: 'chip'|'input' = 'input';
@@ -133,17 +111,19 @@ export class FilterBarElement extends CrLitElement {
     });
     if (this.filterOrder.length === 0) {
       const initialFilterOrder: FilterCategory[] = [];
-      if (this.filterSettings.activeAppFilters.size > 0) {
+      if (this.filterSettings.apps.size > 0) {
         initialFilterOrder.push(FilterCategory.APP);
       }
-      if (this.filterSettings.activeEventTypeFilters.size > 0) {
-        initialFilterOrder.push(FilterCategory.DATE);
-      }
-      if (this.filterSettings.activeUpdateOutcomeFilters.size > 0) {
+      if (this.filterSettings.eventTypes.size > 0) {
         initialFilterOrder.push(FilterCategory.EVENT);
       }
-      if (this.filterSettings.startDateFilter ||
-          this.filterSettings.endDateFilter) {
+      if (this.filterSettings.updateOutcomes.size > 0) {
+        initialFilterOrder.push(FilterCategory.OUTCOME);
+      }
+      if (this.filterSettings.scopes.size > 0) {
+        initialFilterOrder.push(FilterCategory.SCOPE);
+      }
+      if (this.filterSettings.startDate || this.filterSettings.endDate) {
         initialFilterOrder.push(FilterCategory.DATE);
       }
       this.filterOrder = initialFilterOrder;
@@ -159,17 +139,16 @@ export class FilterBarElement extends CrLitElement {
     super.willUpdate(changedProperties);
     if (changedProperties.has('filterSettings')) {
       this.updateFilterOrder(
-          FilterCategory.APP, this.filterSettings.activeAppFilters.size > 0);
+          FilterCategory.APP, this.filterSettings.apps.size > 0);
       this.updateFilterOrder(
-          FilterCategory.EVENT,
-          this.filterSettings.activeEventTypeFilters.size > 0);
+          FilterCategory.EVENT, this.filterSettings.eventTypes.size > 0);
       this.updateFilterOrder(
-          FilterCategory.OUTCOME,
-          this.filterSettings.activeUpdateOutcomeFilters.size > 0);
+          FilterCategory.OUTCOME, this.filterSettings.updateOutcomes.size > 0);
+      this.updateFilterOrder(
+          FilterCategory.SCOPE, this.filterSettings.scopes.size > 0);
       this.updateFilterOrder(
           FilterCategory.DATE,
-          !!(this.filterSettings.startDateFilter ||
-             this.filterSettings.endDateFilter));
+          !!(this.filterSettings.startDate || this.filterSettings.endDate));
     }
   }
 
@@ -179,17 +158,20 @@ export class FilterBarElement extends CrLitElement {
     this.updateFilterOrder(category, false);
     switch (category) {
       case FilterCategory.APP:
-        this.filterSettings.activeAppFilters.clear();
+        this.filterSettings.apps.clear();
         break;
       case FilterCategory.EVENT:
-        this.filterSettings.activeEventTypeFilters.clear();
+        this.filterSettings.eventTypes.clear();
         break;
       case FilterCategory.OUTCOME:
-        this.filterSettings.activeUpdateOutcomeFilters.clear();
+        this.filterSettings.updateOutcomes.clear();
+        break;
+      case FilterCategory.SCOPE:
+        this.filterSettings.scopes.clear();
         break;
       case FilterCategory.DATE:
-        this.filterSettings.startDateFilter = null;
-        this.filterSettings.endDateFilter = null;
+        this.filterSettings.startDate = null;
+        this.filterSettings.endDate = null;
         break;
       default:
         assertNotReachedCase(category);
@@ -217,19 +199,24 @@ export class FilterBarElement extends CrLitElement {
     switch (category) {
       case FilterCategory.APP:
         return loadTimeData.getStringF(
-            'filterChipApp',
-            Array.from(this.filterSettings.activeAppFilters).join(', '));
+            'filterChipApp', Array.from(this.filterSettings.apps).join(', '));
       case FilterCategory.EVENT:
         return loadTimeData.getStringF(
             'filterChipEventType',
-            Array.from(this.filterSettings.activeEventTypeFilters)
+            Array.from(this.filterSettings.eventTypes)
                 .map(localizeEventType)
                 .join(', '));
       case FilterCategory.OUTCOME:
         return loadTimeData.getStringF(
             'filterChipUpdateOutcome',
-            Array.from(this.filterSettings.activeUpdateOutcomeFilters)
+            Array.from(this.filterSettings.updateOutcomes)
                 .map(localizeUpdateOutcome)
+                .join(', '));
+      case FilterCategory.SCOPE:
+        return loadTimeData.getStringF(
+            'filterChipUpdaterScope',
+            Array.from(this.filterSettings.scopes)
+                .map(localizeScope)
                 .join(', '));
       case FilterCategory.DATE:
         return loadTimeData.getStringF(
@@ -260,49 +247,56 @@ export class FilterBarElement extends CrLitElement {
     }
   }
 
-  protected onTypeSelectionChanged(e: CustomEvent<FilterMenuState>) {
+  protected onTypeSelectionChanged(e: CustomEvent<FilterCategory>) {
     this.filterMenuState = e.detail;
   }
 
-  protected async onAppFilterChanged(e: CustomEvent<Set<string>>) {
+  protected async onAppFilterChange(e: CustomEvent<Set<string>>) {
     this.updateFilterOrder(FilterCategory.APP, e.detail.size > 0);
-    this.filterSettings.activeAppFilters = new Set(e.detail);
+    this.filterSettings.apps = new Set(e.detail);
     this.closeFilterMenu();
     await this.onFiltersChanged();
   }
 
-  protected async onEventTypeFilterChanged(e: CustomEvent<Set<EventType>>) {
+  protected async onEventTypeFilterChange(e: CustomEvent<Set<EventType>>) {
     this.updateFilterOrder(FilterCategory.EVENT, e.detail.size > 0);
-    this.filterSettings.activeEventTypeFilters = new Set(e.detail);
+    this.filterSettings.eventTypes = new Set(e.detail);
     this.closeFilterMenu();
     await this.onFiltersChanged();
   }
 
-  protected async onUpdateOutcomeFilterChanged(
+  protected async onUpdateOutcomeFilterChange(
       e: CustomEvent<Set<CommonUpdateOutcome>>) {
     this.updateFilterOrder(FilterCategory.OUTCOME, e.detail.size > 0);
-    this.filterSettings.activeUpdateOutcomeFilters = new Set(e.detail);
+    this.filterSettings.updateOutcomes = new Set(e.detail);
     this.closeFilterMenu();
     await this.onFiltersChanged();
   }
 
-  protected async onDateFilterChanged(
+  protected async onScopeFilterChange(e: CustomEvent<Set<Scope>>) {
+    this.updateFilterOrder(FilterCategory.SCOPE, e.detail.size > 0);
+    this.filterSettings.scopes = new Set(e.detail);
+    this.closeFilterMenu();
+    await this.onFiltersChanged();
+  }
+
+  protected async onDateFilterChange(
       e: CustomEvent<{start: Date | null, end: Date|null}>) {
     this.updateFilterOrder(
         FilterCategory.DATE, !!(e.detail.start || e.detail.end));
-    this.filterSettings.startDateFilter = e.detail.start;
-    this.filterSettings.endDateFilter = e.detail.end;
+    this.filterSettings.startDate = e.detail.start;
+    this.filterSettings.endDate = e.detail.end;
     this.closeFilterMenu();
     await this.onFiltersChanged();
   }
 
   protected getDateFilterString(): string {
-    const format = (d: Date) => DATE_FORMATTER.format(d);
-    const start = this.filterSettings.startDateFilter ?
-        format(this.filterSettings.startDateFilter) :
+    const format = (d: Date) => formatDateDigits(d);
+    const start = this.filterSettings.startDate ?
+        format(this.filterSettings.startDate) :
         undefined;
-    const end = this.filterSettings.endDateFilter ?
-        format(this.filterSettings.endDateFilter) :
+    const end = this.filterSettings.endDate ?
+        format(this.filterSettings.endDate) :
         undefined;
     if (start && end) {
       return loadTimeData.getStringF('dateFilterRange', start, end);
@@ -318,26 +312,38 @@ export class FilterBarElement extends CrLitElement {
 
   private async onFiltersChanged() {
     await this.updateComplete;
-    this.fire('filters-changed', this.filterSettings);
+    this.fire('filters-changed');
     this.requestUpdate();
   }
 
   protected async onClearFiltersClick() {
-    this.filterSettings.activeAppFilters.clear();
-    this.filterSettings.activeEventTypeFilters.clear();
-    this.filterSettings.activeUpdateOutcomeFilters.clear();
-    this.filterSettings.startDateFilter = null;
-    this.filterSettings.endDateFilter = null;
+    this.filterSettings.apps.clear();
+    this.filterSettings.eventTypes.clear();
+    this.filterSettings.updateOutcomes.clear();
+    this.filterSettings.scopes.clear();
+    this.filterSettings.startDate = null;
+    this.filterSettings.endDate = null;
     this.filterOrder = [];
     await this.onFiltersChanged();
+  }
+
+  protected isEditing(): boolean {
+    return this.filterMenuState !== 'closed';
   }
 
   protected isEditingViaInput(category: FilterCategory): boolean {
     return this.filterMenuState === category && this.menuHost === 'input';
   }
 
-  protected isEditingViaChip(category: FilterCategory): boolean {
-    return this.filterMenuState === category && this.menuHost === 'chip';
+  protected getDialogAnchor(): HTMLElement|null {
+    if (this.menuHost === 'input') {
+      return this.shadowRoot.querySelector('#add-filter-button');
+    }
+    if (this.filterMenuState !== 'closed') {
+      return this.shadowRoot.querySelector(
+          `.chip[data-filter-category="${this.filterMenuState}"]`);
+    }
+    return null;
   }
 
   protected onAddFilterClick() {

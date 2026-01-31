@@ -7,7 +7,6 @@
 
 #include <string>
 
-#include "base/containers/contains.h"
 #include "base/functional/callback_forward.h"
 #include "base/strings/utf_string_conversions.h"
 #include "extensions/browser/extension_user_script_loader.h"
@@ -91,8 +90,8 @@ std::set<std::string> CreateDynamicScriptIds(
 
     std::string new_script_id =
         scripting::AddPrefixToDynamicScriptId(script.id, source);
-    if (base::Contains(existing_script_ids, new_script_id) ||
-        base::Contains(new_script_ids, new_script_id)) {
+    if (existing_script_ids.contains(new_script_id) ||
+        new_script_ids.contains(new_script_id)) {
       *error = ErrorUtils::FormatErrorMessage("Duplicate script ID '*'",
                                               script.id.c_str());
       return std::set<std::string>();
@@ -149,7 +148,7 @@ UserScriptList UpdateScripts(
   UserScriptList parsed_scripts;
   parsed_scripts.reserve(scripts_to_update.size());
   for (Script& new_script : scripts_to_update) {
-    CHECK(base::Contains(loaded_scripts_metadata, new_script.id));
+    CHECK(loaded_scripts_metadata.contains(new_script.id));
     Script& existent_script = loaded_scripts_metadata[new_script.id];
 
     // Note: `new_script` and `existent_script` may be unsafe to use after this.

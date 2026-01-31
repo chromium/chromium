@@ -27,7 +27,7 @@ include_rules = [
   "+chrome/browser/ui/ash/assistant",
   "+chrome/browser/ui/ash/login",
   "+chrome/browser/ui/ash/multi_user",
-  "+chrome/browser/ui/browser_dialogs.h",
+  "+chrome/browser/ui/dialogs/browser_dialogs.h",
   "+chrome/browser/ui/managed_ui.h",
   "+chrome/common",
   "+chrome/grit",

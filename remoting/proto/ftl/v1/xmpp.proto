@@ -1,0 +1,263 @@
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto2";
+
+option optimize_for = LITE_RUNTIME;
+
+package remoting.ftl;
+
+import "webrtc.proto";
+
+// Top-level message envelope, replacing an XMPP IQ stanza wrapper.
+// All session negotiation messages are sent as an IqStanza.
+message IqStanza {
+  // Unique identifier for the stanza, used for pairing requests (type=SET)
+  // and responses (type=RESULT or type=ERROR).
+  optional string id = 1;
+
+  // JID (e.g., FTL ID) of the sender.
+  // Corresponds to the 'from' field in the IqStanza XML representation.
+  optional JabberId sender = 2;
+
+  // JID (e.g., FTL ID) of the recipient.
+  // Corresponds to the 'to' field in the IqStanza XML representation.
+  optional JabberId receiver = 3;
+
+  // Defines the role of this stanza in the IQ request/response pattern.
+  enum Type {
+    TYPE_UNSPECIFIED = 0;
+
+    // A request to perform an action or change state, expecting a RESULT or
+    // ERROR in response. Contains a JingleMessage payload.
+    SET = 1;
+
+    // A successful response to a SET stanza. Does not contain a JingleMessage
+    // or Error payload.
+    RESULT = 2;
+
+    // An error response to a SET stanza. Contains an Error payload.
+    ERROR = 3;
+  }
+
+  optional Type type = 4;
+
+  // The Jingle message payload, present if type = SET.
+  optional JingleMessage jingle = 5;
+
+  // Error details, present if type = ERROR.
+  optional ErrorStanza error = 6;
+}
+
+// Defines the set of fields needed to form a JabberId.
+// See https://datatracker.ietf.org/doc/html/rfc7622
+message JabberId {
+  // Represents a user or machine (e.g., a username or UUID). Although this is
+  // optional in the spec, it is required for routing in our use case.
+  optional string local_part = 1;
+
+  // Represents the domain of the service which is handling the message.
+  // For example: corp.google.com is a Google Corp server.
+  optional string domain_part = 2;
+
+  // Represents a specific user or connection. For FTL this is the registration
+  // id which is associated with a specific machine or browser tab on the client
+  // machine.
+  optional string resource_part = 3;
+}
+
+// Represents an IQ-level error, distinct from a session-terminate error.
+// Replaces <error type="...">...</error> in an IQ response.
+message ErrorStanza {
+  // Mirrors JingleMessage.Error in the client website for errors returned in
+  // response to invalid or unexpected requests.
+  enum Condition {
+    CONDITION_UNSPECIFIED = 0;
+
+    // Corresponds to 'bad-request'.
+    BAD_REQUEST = 1;
+
+    // Corresponds to 'feature-bad-request'.
+    NOT_IMPLEMENTED = 2;
+
+    // Corresponds to 'item-not-found', returned for an invalid session ID.
+    INVALID_SID = 3;
+
+    // Corresponds to 'unexpected-request', returned for a message received in
+    // an invalid state.
+    UNEXPECTED_REQUEST = 4;
+
+    // Corresponds to 'feature-not-implemented', returned for a session-info
+    // message received without an authentication payload.
+    UNSUPPORTED_INFO = 5;
+  }
+
+  optional Condition condition = 1;
+
+  // Optional descriptive text, e.g., 'Invalid SID'.
+  optional string text = 2;
+}
+
+// Represents a Jingle message payload for session negotiation.
+message JingleMessage {
+  // The unique identifier for this Jingle session.
+  optional string session_id = 1;
+
+  // The specific Jingle action this message represents.
+  oneof action {
+    SessionInitiate session_initiate = 2;
+    SessionAccept session_accept = 3;
+    SessionInfo session_info = 4;
+    TransportInfo transport_info = 5;
+    SessionTerminate session_terminate = 6;
+  }
+
+  // Additional payloads provided by plugins.
+  // Replaces the `attachments` attribute in an XML IQ Stanza.
+  repeated Attachment attachments = 7;
+}
+
+// Provides additional payloads provided by plugins.
+message Attachment {
+  oneof attachment {
+    // Replaces the host-attributes attribute in an XML IqStanza.
+    HostAttributesAttachment host_attributes = 1;
+
+    // Replaces the host-configuration attribute in an XML IqStanza.
+    HostConfigAttachment host_config = 2;
+  }
+}
+
+// An attachment sent from the host which contains a list of attributes to
+// describe itself.
+message HostAttributesAttachment {
+  // A list of attributes sent from the host to describe itself.
+  // Example: ["Debug-Build", "HWEncoder"]
+  repeated string attribute = 1;
+}
+
+// An attachment sent from the client to configure the session.
+message HostConfigAttachment {
+  // A map of config values sent from the client to configure the session.
+  // Example: {"Av1-Encoder-Speed":"11"}
+  map<string, string> settings = 1;
+}
+
+// Defines the set of possible authentication methods for a session.
+enum AuthenticationMethod {
+  // No Authentication method specified.
+  AUTHENTICATION_METHOD_UNSPECIFIED = 0;
+
+  // Used for Me2Me PIN and It2Me Access Code authentication.
+  AUTHENTICATION_METHOD_SPAKE2_CURVE25519 = 1;
+
+  // Used for Me2Me paired PIN authentication.
+  AUTHENTICATION_METHOD_PAIRED_SPAKE2_CURVE25519 = 2;
+
+  // Used for Google Corp sessions which use the Corp SessionAuthz service.
+  AUTHENTICATION_METHOD_CORP_SESSION_AUTHZ_SPAKE2_CURVE25519 = 3;
+
+  // Used for Compute Engine sessions which use the Cloud SessionAuthz service.
+  AUTHENTICATION_METHOD_CLOUD_SESSION_AUTHZ_SPAKE2_CURVE25519 = 4;
+}
+
+// The authentication payload used in session-initiate, session-accept, and
+// session-info messages.
+message Authentication {
+  // The supported authentication methods.
+  repeated AuthenticationMethod supported_methods = 1;
+
+  // The current auth method.
+  optional AuthenticationMethod method = 2;
+
+  // Base64-encoded SPAKE message.
+  optional bytes spake_message = 3;
+
+  // Base64-encoded verification hash.
+  optional bytes verification_hash = 4;
+
+  // SessionAuthz host token.
+  optional bytes session_authz_host_token = 5;
+
+  // SessionAuthz session token.
+  optional bytes session_authz_session_token = 6;
+}
+
+// Jingle action "session-initiate": Sent by client to start a session.
+message SessionInitiate {
+  // JID of the session initiator (the client).
+  optional JabberId initiator = 1;
+
+  // Authentication payload.
+  optional Authentication authentication = 2;
+}
+
+// Jingle action "session-accept": Sent by host to accept a session.
+message SessionAccept {
+  // Authentication payload.
+  optional Authentication authentication = 1;
+}
+
+// Jingle action "session-info": Used to exchange additional authentication
+// messages.
+message SessionInfo {
+  // Authentication payload.
+  optional Authentication authentication = 1;
+}
+
+// Jingle action "transport-info": Exchanges SDP offer/answer or ICE
+// candidates.
+message TransportInfo {
+  // A list of ICE candidates.
+  repeated IceCandidate candidates = 1;
+
+  // An SDP offer or answer.
+  optional SessionDescription session_description = 2;
+}
+
+// Jingle action "session-terminate": Sent by either party to end the session.
+message SessionTerminate {
+  // The reason for termination. See XEP-0166, section 7.2.
+  // Mirrors values in the client website Reason enum.
+  enum Reason {
+    // No reason was specified.
+    REASON_UNSPECIFIED = 0;
+
+    // 'success'
+    SUCCESS = 1;
+
+    // 'decline'
+    DECLINE = 2;
+
+    // 'cancel'
+    CANCEL = 3;
+
+    // 'expired'
+    EXPIRED = 4;
+
+    // 'general-error'
+    GENERAL_ERROR = 5;
+
+    // 'failed-application'
+    FAILED_APPLICATION = 6;
+
+    // 'incompatible-parameters'
+    INCOMPATIBLE_PARAMETERS = 7;
+
+    // 'unknown-reason'
+    UNKNOWN_REASON = 8;
+  }
+
+  optional Reason reason = 1;
+
+  // CRD-specific error code, provides more detail than `reason`.
+  // Mirrors values in the client website ErrorCode enum.
+  optional string error_code = 2;
+
+  // Optional human-readable details about the error.
+  optional string error_details = 3;
+
+  // Optional string indicating the code location where the error occurred.
+  optional string error_location = 4;
+}

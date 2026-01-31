@@ -91,6 +91,8 @@ base::flat_map<std::string, std::string> GetCriteria(
       base::ToString(criteria->enabled_by_feature);
   mojom_criteria["enabled by enterprise policy"] =
       base::ToString(criteria->enabled_by_enterprise_policy);
+  mojom_criteria["enabled by user setting"] =
+      base::ToString(criteria->enabled_by_user_setting);
   mojom_criteria["out of retention"] =
       base::ToString(criteria->out_of_retention);
   mojom_criteria["is already installing"] =

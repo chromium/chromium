@@ -16,6 +16,7 @@
 #include "content/public/renderer/render_thread.h"
 #include "content/public/renderer/v8_value_converter.h"
 #include "content/renderer/web_ui_extension_data.h"
+#include "content/renderer/web_ui_histograms_extension.h"
 #include "gin/arguments.h"
 #include "gin/function_template.h"
 #include "third_party/blink/public/platform/scheduler/web_agent_group_scheduler.h"
@@ -78,7 +79,30 @@ v8::Local<v8::Object> GetOrCreateChildObject(v8::Local<v8::Object> parent,
 
 }  // namespace
 
-// Exposes three methods:
+void WebUIExtension::Install(blink::WebLocalFrame* frame,
+                             BindingsPolicySet bindings) {
+  v8::Isolate* isolate = frame->GetAgentGroupScheduler()->Isolate();
+  v8::HandleScope handle_scope(isolate);
+  v8::Local<v8::Context> context = frame->MainWorldScriptContext();
+  if (context.IsEmpty()) {
+    return;
+  }
+
+  v8::Context::Scope context_scope(context);
+  v8::Local<v8::Object> chrome = GetOrCreateChromeObject(isolate, context);
+
+  if (bindings.Has(BindingsPolicyValue::kWebUi)) {
+    InstallDefaultWebUIExtension(isolate, context, chrome);
+  }
+
+  if (bindings.Has(BindingsPolicyValue::kWebUiHistograms)) {
+    InstallWebUIHistogramsExtension(isolate, context, chrome);
+  }
+}
+
+// static
+//
+// Exposes the following methods:
 //  - chrome.send: Used to send messages to the browser. Requires the message
 //      name as the first argument and can have an optional second argument that
 //      should be an array.
@@ -86,16 +110,10 @@ v8::Local<v8::Object> GetOrCreateChildObject(v8::Local<v8::Object> parent,
 //      a value was set by the browser. Else will return an empty string.
 //  - chrome.timeTicks.nowInMicroseconds: Returns base::TimeTicks::Now() in
 //      microseconds. Used for performance measuring.
-void WebUIExtension::Install(blink::WebLocalFrame* frame) {
-  v8::Isolate* isolate = frame->GetAgentGroupScheduler()->Isolate();
-  v8::HandleScope handle_scope(isolate);
-  v8::Local<v8::Context> context = frame->MainWorldScriptContext();
-  if (context.IsEmpty())
-    return;
-
-  v8::Context::Scope context_scope(context);
-
-  v8::Local<v8::Object> chrome = GetOrCreateChromeObject(isolate, context);
+void WebUIExtension::InstallDefaultWebUIExtension(
+    v8::Isolate* isolate,
+    v8::Local<v8::Context> context,
+    v8::Local<v8::Object> chrome) {
   chrome
       ->Set(context, gin::StringToSymbol(isolate, "send"),
             gin::CreateFunctionTemplate(
@@ -137,7 +155,7 @@ void WebUIExtension::Send(gin::Arguments* args) {
 
   // If they've provided an optional message parameter, convert that into a
   // Value to send to the browser process.
-  base::Value::List content;
+  base::ListValue content;
   if (!args->PeekNext().IsEmpty() && !args->PeekNext()->IsUndefined()) {
     v8::Local<v8::Object> obj;
     if (!args->GetNext(&obj)) {

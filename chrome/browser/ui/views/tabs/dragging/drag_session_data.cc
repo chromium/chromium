@@ -33,7 +33,8 @@ TabDragData::TabDragData(TabDragContext* source_context, TabSlotView* view)
       view_type(view->GetTabSlotViewType()) {
   if (source_model_index.has_value()) {
     contents = source_context->GetContentsForTab(view);
-    pinned = source_context->IsTabPinned(view);
+    pinned = source_context->GetTabStripModel()->IsTabPinned(
+        source_model_index.value());
   }
   std::optional<tab_groups::TabGroupId> tab_group_id = view->group();
   if (tab_group_id.has_value()) {

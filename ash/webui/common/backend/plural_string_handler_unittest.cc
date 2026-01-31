@@ -48,7 +48,7 @@ class PluralStringHandlerTest : public testing::Test {
 
 TEST_F(PluralStringHandlerTest, PluralString) {
   const size_t call_data_count_before_call = web_ui_.call_data().size();
-  base::Value::List args;
+  base::ListValue args;
   args.Append(kHandlerFunctionName);
   args.Append("editButtonLabel");
   args.Append(/*count=*/2);
@@ -66,7 +66,7 @@ TEST_F(PluralStringHandlerTest, PluralString) {
 
 TEST_F(PluralStringHandlerTest, SingularString) {
   const size_t call_data_count_before_call = web_ui_.call_data().size();
-  base::Value::List args;
+  base::ListValue args;
   args.Append(kHandlerFunctionName);
   args.Append("editButtonLabel");
   args.Append(/*count=*/1);
@@ -83,7 +83,7 @@ TEST_F(PluralStringHandlerTest, SingularString) {
 }
 
 TEST_F(PluralStringHandlerTest, InvalidPluralStringRequest) {
-  base::Value::List args;
+  base::ListValue args;
   args.Append(kHandlerFunctionName);
   args.Append(/*name=*/"invalidKey");
   args.Append(/*count=*/2);

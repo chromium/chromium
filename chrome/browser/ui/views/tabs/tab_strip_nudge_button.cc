@@ -8,7 +8,7 @@
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/tabs/organization/tab_organization_service.h"
-#include "chrome/browser/ui/views/tabs/tab_strip_controller.h"
+#include "chrome/browser/ui/views/tabs/tab_strip_control_button.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -42,7 +42,7 @@ constexpr gfx::Insets GetLabelInsets(bool show_close_button) {
 }  // namespace
 
 TabStripNudgeButton::TabStripNudgeButton(
-    TabStripController* tab_strip_controller,
+    BrowserWindowInterface* browser_window_interface,
     PressedCallback pressed_callback,
     PressedCallback close_pressed_callback,
     const std::u16string& label_text,
@@ -50,7 +50,7 @@ TabStripNudgeButton::TabStripNudgeButton(
     Edge flat_edge,
     const gfx::VectorIcon& icon,
     const bool show_close_button)
-    : TabStripControlButton(tab_strip_controller,
+    : TabStripControlButton(browser_window_interface,
                             std::move(pressed_callback),
                             icon,
                             label_text,
@@ -172,6 +172,10 @@ void TabStripNudgeButton::SetIsShowingNudge(bool is_showing) {
     SetFocusBehavior(FocusBehavior::NEVER);
     SetCloseButtonFocusBehavior(FocusBehavior::NEVER);
   }
+}
+
+bool TabStripNudgeButton::GetIsShowingNudge() const {
+  return is_showing_nudge_;
 }
 
 void TabStripNudgeButton::SetCloseButtonFocusBehavior(

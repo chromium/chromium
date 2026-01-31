@@ -104,7 +104,7 @@ void MediaFragmentURIParser::ParseFragments() {
   if (!url_.HasFragmentIdentifier()) {
     return;
   }
-  String fragment_string = url_.FragmentIdentifier().ToString();
+  StringView fragment_string = url_.FragmentIdentifier();
   if (fragment_string.empty())
     return;
 
@@ -132,14 +132,13 @@ void MediaFragmentURIParser::ParseFragments() {
     //     3986. If either name or value are not valid percent-encoded strings,
     //     then remove the name-value pair from the list.
     String name = DecodeURLEscapeSequences(
-        fragment_string.Substring(parameter_start,
-                                  equal_offset - parameter_start),
+        fragment_string.substr(parameter_start, equal_offset - parameter_start),
         DecodeURLMode::kUTF8OrIsomorphic);
     String value;
     if (equal_offset != parameter_end) {
       value = DecodeURLEscapeSequences(
-          fragment_string.Substring(equal_offset + 1,
-                                    parameter_end - equal_offset - 1),
+          fragment_string.substr(equal_offset + 1,
+                                 parameter_end - equal_offset - 1),
           DecodeURLMode::kUTF8OrIsomorphic);
     }
 

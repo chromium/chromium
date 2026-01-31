@@ -8,8 +8,7 @@
 #include <set>
 #include <string>
 
-#include "base/containers/span.h"
-#include "base/memory/raw_ptr_exclusion.h"
+#include "base/memory/raw_span.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/metrics/field_trial.h"
 #include "base/test/mock_entropy_provider.h"
@@ -31,32 +30,26 @@ struct ClientFilterableState;
 // Packages signed variations seed data into a tuple for use with
 // WriteSeedData(). This allows for encapsulated seed information to be created
 // below for generic test seeds as well as seeds which cause crashes.
+//
+// Note: To manually get the raw data, you can use the following command:
+// echo -n base64_compressed_data | base64 -d | hexdump -e '8 1 ", 0x%x"'
 struct SignedSeedData {
-  // TODO(367764863) Rewrite to base::raw_span.
-  RAW_PTR_EXCLUSION base::span<const char*>
-      study_names;  // Names of all studies in the seed.
+  // Names of all studies in the seed.
+  base::raw_span<const char*> study_names;
   const char* base64_uncompressed_data;
   const char* base64_compressed_data;
   const char* base64_signature;
-  const uint8_t* compressed_data;
-  size_t compressed_data_size;
 
-  // Out-of-line constructor/destructor/copy/move required for 'complex'
-  // classes.
-  SignedSeedData(base::span<const char*> in_study_names,
+  // Out-of-line ctor/dtor/copy/move required for 'complex' classes.
+  SignedSeedData(base::raw_span<const char*> in_study_names,
                  const char* in_base64_uncompressed_data,
                  const char* in_base64_compressed_data,
-                 const char* in_base64_signature,
-                 const uint8_t* in_compressed_data,
-                 size_t in_compressed_data_size);
+                 const char* in_base64_signature);
   ~SignedSeedData();
   SignedSeedData(const SignedSeedData&);
   SignedSeedData(SignedSeedData&&);
   SignedSeedData& operator=(const SignedSeedData&);
   SignedSeedData& operator=(SignedSeedData&&);
-
-  // Converts SignedSeedData's compressed data to a string.
-  std::string_view GetCompressedData() const;
 };
 
 // Packages variations seed pref keys into a tuple for use with StoreSeedInfo().
@@ -71,12 +64,12 @@ struct SignedSeedPrefKeys {
 // "UMA-Uniformity-Trial-10-Percent", and ten equally weighted groups: "default"
 // and "group_01" through "group_09". The study is not associated with channels,
 // platforms, or features.
-extern const SignedSeedData kTestSeedData;
+const SignedSeedData& TestSeedData();
 
 // The crashing seed data contains a CrashingStudy that enables the
 // variations::kForceFieldTrialSetupCrashForTesting feature at 100% on all
 // platforms and on all channels except Unknown.
-extern const SignedSeedData kCrashingSeedData;
+const SignedSeedData& CrashingSeedData();
 
 // The pref keys used to store safe signed variations seed data.
 extern const SignedSeedPrefKeys kSafeSeedPrefKeys;
@@ -135,10 +128,6 @@ bool FieldTrialListHasAllStudiesFrom(const SignedSeedData& seed_data);
 // Resets variations. Ensures that maps can be cleared between tests since they
 // are stored as process singleton.
 void ResetVariations();
-
-// A no-op UIStringOverrideCallback implementation.
-inline void NoopUIStringOverrideCallback(uint32_t hash,
-                                         const std::u16string& string) {}
 
 // Create a ClientFilterableState with valid, but unimportant values.
 // Tests that actually expect specific values should set them on the result.

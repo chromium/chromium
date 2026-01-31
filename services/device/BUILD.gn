@@ -303,7 +303,7 @@ source_set("tests") {
 
   if (is_serial_enabled_platform) {
     sources += [
-      "serial/bluetooth_serial_device_enumerator_unittests.cc",
+      "serial/bluetooth_serial_device_enumerator_unittest.cc",
       "serial/bluetooth_serial_port_impl_unittest.cc",
       "serial/serial_device_enumerator_unittest.cc",
       "serial/serial_port_impl_unittest.cc",
@@ -316,6 +316,14 @@ source_set("tests") {
 
     if (is_posix) {
       sources += [ "serial/serial_io_handler_posix_unittest.cc" ]
+    }
+
+    if (is_android) {
+      sources += [ "serial/serial_device_enumerator_android_unittest.cc" ]
+      deps += [
+        "//services/device/serial:native_unittests_jni_headers",
+        "//third_party/jni_zero:jni_zero_java",
+      ]
     }
 
     if (is_linux || is_chromeos) {
@@ -395,7 +403,7 @@ source_set("tests") {
   if (is_win) {
     sources += [
       "generic_sensor/platform_sensor_provider_winrt_unittest.cc",
-      "generic_sensor/platform_sensor_reader_winrt_unittests.cc",
+      "generic_sensor/platform_sensor_reader_winrt_unittest.cc",
       "geolocation/win/fake_geocoordinate_winrt.cc",
       "geolocation/win/fake_geocoordinate_winrt.h",
       "geolocation/win/fake_geolocator_winrt.cc",
@@ -485,6 +493,7 @@ if (is_android) {
       "//services/device/public/java:nfc_java",
       "//services/device/public/mojom:mojom_java",
       "//services/device/screen_orientation:java",
+      "//services/device/serial:java",
       "//services/device/time_zone_monitor:java",
       "//services/device/usb:java",
       "//services/device/vibration/android:vibration_manager_java",

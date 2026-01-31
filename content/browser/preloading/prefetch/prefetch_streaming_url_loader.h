@@ -13,6 +13,7 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/network/public/mojom/url_loader.mojom.h"
 #include "services/network/public/mojom/url_response_head.mojom-forward.h"
+#include "third_party/perfetto/include/perfetto/tracing/track_event_args.h"
 
 namespace network {
 class SharedURLLoaderFactory;
@@ -55,14 +56,16 @@ class CONTENT_EXPORT PrefetchStreamingURLLoader
       PrefetchServiceWorkerState initial_service_worker_state,
       BrowserContext* browser_context_for_service_worker,
       OnServiceWorkerStateDeterminedCallback
-          on_service_worker_state_determined_callback);
+          on_service_worker_state_determined_callback,
+      perfetto::Flow flow);
 
   // Must be called only from `CreateAndStart()`.
   PrefetchStreamingURLLoader(
       OnPrefetchResponseStartedCallback on_prefetch_response_started_callback,
       OnPrefetchRedirectCallback on_prefetch_redirect_callback,
       OnServiceWorkerStateDeterminedCallback
-          on_service_worker_state_determined_callback);
+          on_service_worker_state_determined_callback,
+      perfetto::Flow flow);
 
   ~PrefetchStreamingURLLoader() override;
 
@@ -73,17 +76,17 @@ class CONTENT_EXPORT PrefetchStreamingURLLoader
   void SetResponseReader(base::WeakPtr<PrefetchResponseReader> response_reader);
 
   // Informs the URL loader of how to handle the most recent redirect. This
-  // should only be called after |on_prefetch_redirect_callback_| is called. The
-  // value of |new_status| should only be one of the following:
-  // - |kFollowRedirect|, if the redirect should be followed by |this|.
-  // - |kStopSwitchInNetworkContextForRedirect|, if the redirect will be
-  //   followed by a different |PrefetchStreamingURLLoader| due to a change in
-  //   network context.
-  // - |kFailedInvalidRedirect|, if the redirect should not be followed by
-  //   |this|.
+  // should only be called after `on_prefetch_redirect_callback_` is called. The
+  // value of `redirect_status` should be:
+  // - `kFollow`, if the redirect should be followed by `this`.
+  //   `update_headers_params` must be provided.
+  // - `kSwitchNetworkContext`, if the redirect will be followed by a different
+  //   `PrefetchStreamingURLLoader` due to a change in network context.
+  // - `kFail`, if the redirect should not be followed by `this`.
   void HandleRedirect(PrefetchRedirectStatus redirect_status,
                       const net::RedirectInfo& redirect_info,
-                      network::mojom::URLResponseHeadPtr redirect_head);
+                      network::mojom::URLResponseHeadPtr redirect_head,
+                      PrefetchUpdateHeadersParams update_headers_params);
 
   // Called from PrefetchResponseReader.
   void SetPriority(net::RequestPriority priority, int32_t intra_priority_value);
@@ -180,6 +183,8 @@ class CONTENT_EXPORT PrefetchStreamingURLLoader
   // ServiceWorker controller, indicated by `ServiceWorkerState`.
   OnServiceWorkerStateDeterminedCallback
       on_service_worker_state_determined_callback_;
+
+  perfetto::Flow flow_;
 
   base::WeakPtr<PrefetchResponseReader> response_reader_;
 

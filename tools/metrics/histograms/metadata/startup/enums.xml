@@ -111,6 +111,7 @@ chromium-metrics-reviews@google.com.
   <int value="1" label="Service"/>
   <int value="2" label="Content Provider"/>
   <int value="3" label="Broadcast Receiver"/>
+  <int value="4" label="Other"/>
 </enum>
 
 <!-- LINT.IfChange(StartupTemperature) -->

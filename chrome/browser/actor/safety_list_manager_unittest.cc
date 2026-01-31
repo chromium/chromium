@@ -29,7 +29,7 @@ class SafetyListManagerTest : public ::testing::Test,
              }}},
         },
         /*disabled_features=*/{});
-    manager_.emplace();
+    manager_ = SafetyListManager::CreateForTesting();
   }
 
  protected:

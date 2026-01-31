@@ -11,7 +11,7 @@
 #include "base/functional/callback_forward.h"
 #include "chrome/browser/chromeos/app_mode/kiosk_app_level_logs_saver.h"
 #include "content/public/browser/web_contents_observer.h"
-#include "third_party/blink/public/mojom/devtools/console_message.mojom-data-view.h"
+#include "third_party/blink/public/mojom/devtools/console_message.mojom-shared.h"
 
 namespace chromeos {
 

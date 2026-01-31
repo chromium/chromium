@@ -310,7 +310,7 @@ class CORE_EXPORT CSSToLengthConversionData : public CSSLengthResolver {
     kDynamicViewport = 1u << 5,
     // cq*
     kContainerRelative = 1u << 6,
-    // https://drafts.csswg.org/css-scoping-1/#css-tree-scoped-reference
+    // https://drafts.csswg.org/css-shadow-1/#css-tree-scoped-reference
     kTreeScopedReference = 1u << 7,
     // vi, vb, cqi, cqb, etc
     kLogicalDirectionRelative = 1u << 8,
@@ -337,6 +337,8 @@ class CORE_EXPORT CSSToLengthConversionData : public CSSLengthResolver {
     kRexRelative = 1u << 18,
     // sibling-index(), sibling-count()
     kSiblingRelative = 1u << 19,
+    // random() without element-shared
+    kElementDependentRandom = 1u << 20,
     // Adjust the Flags type above if adding more bits below.
   };
 
@@ -411,6 +413,8 @@ class CORE_EXPORT CSSToLengthConversionData : public CSSLengthResolver {
 
   void ReferenceAnchor() const override;
   void ReferenceSibling() const override;
+
+  void ReferenceElementDependentRandom() const override;
 
   AnchorEvaluator* GetAnchorEvaluator() const override {
     return anchor_data_.GetEvaluator();

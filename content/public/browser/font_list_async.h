@@ -18,7 +18,7 @@ namespace content {
 // the font list from the system can be slow. The callback will be executed on
 // the calling sequence.
 CONTENT_EXPORT void GetFontListAsync(
-    base::OnceCallback<void(base::Value::List)> callback);
+    base::OnceCallback<void(base::ListValue)> callback);
 
 }  // namespace content
 

@@ -8,7 +8,6 @@
 #include <vector>
 
 #include "base/check.h"
-#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
@@ -46,9 +45,9 @@ Status Device::SetUp(const std::string& package,
                      bool keep_app_data_dir,
                      int* devtools_port,
                      const std::string& prefs_file,
-                     const base::Value::Dict* custom_prefs,
+                     const base::DictValue* custom_prefs,
                      const std::string& local_state_file,
-                     const base::Value::Dict* custom_local_state) {
+                     const base::DictValue* custom_local_state) {
   if (!active_package_.empty())
     return Status(kUnknownError,
         active_package_ + " was launched and has not been quit");
@@ -261,7 +260,7 @@ Status DeviceManager::AcquireSpecificDevice(const std::string& device_serial,
   if (status.IsError())
     return status;
 
-  if (!base::Contains(devices, device_serial)) {
+  if (!std::ranges::contains(devices, device_serial)) {
     return Status(kUnknownError, "Device " + device_serial + " is not online");
   }
 
@@ -289,5 +288,5 @@ Device* DeviceManager::LockDevice(const std::string& device_serial) {
 }
 
 bool DeviceManager::IsDeviceLocked(const std::string& device_serial) {
-  return base::Contains(active_devices_, device_serial);
+  return std::ranges::contains(active_devices_, device_serial);
 }

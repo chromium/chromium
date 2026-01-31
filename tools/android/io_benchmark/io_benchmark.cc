@@ -103,8 +103,9 @@ std::pair<int64_t, int64_t> WriteReadData(int size,
     CHECK(f.IsValid());
 
     auto tick = base::TimeTicks::Now();
-    int read = f.ReadAtCurrentPos(reinterpret_cast<char*>(&data[0]), size);
-    CHECK_EQ(size, read);
+    const std::optional<size_t> read = f.ReadAtCurrentPos(data);
+    CHECK(read.has_value());
+    CHECK_EQ(size, static_cast<int>(read.value()));
     auto tock = base::TimeTicks::Now();
 
     LOG(INFO) << DurationLogMessage("\tRead", tick, tock, size);

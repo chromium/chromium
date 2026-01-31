@@ -654,7 +654,8 @@ TEST_P(ViewTransitionTest, ViewTransitionPseudoTree) {
       [](const v8::FunctionCallbackInfo<v8::Value>& info) {};
   auto start_setup_callback =
       v8::Function::New(script_state->GetContext(), start_setup_lambda,
-                        v8::External::New(script_state->GetIsolate(), &data))
+                        v8::External::New(script_state->GetIsolate(), &data,
+                                          gin::kViewTransitionTestDataTag))
           .ToLocalChecked();
 
   auto* transition = ViewTransitionSupplement::startViewTransition(
@@ -721,7 +722,8 @@ TEST_P(ViewTransitionTest, ScopedPseudoTree) {
   auto lambda = [](const v8::FunctionCallbackInfo<v8::Value>& info) {};
   auto* callback = V8ViewTransitionCallback::Create(
       v8::Function::New(script_state->GetContext(), lambda,
-                        v8::External::New(script_state->GetIsolate(), document))
+                        v8::External::New(script_state->GetIsolate(), document,
+                                          gin::kViewTransitionTestDocumentTag))
           .ToLocalChecked());
 
   auto* transition = ScopedViewTransition::startViewTransition(

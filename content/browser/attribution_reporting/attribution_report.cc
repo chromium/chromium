@@ -36,7 +36,7 @@ namespace {
 
 using ::attribution_reporting::SuitableOrigin;
 
-void PopulateReportBody(base::Value::Dict& dict,
+void PopulateReportBody(base::DictValue& dict,
                         const AttributionReport::AggregatableData& data) {
   if (const auto& assembled_report = data.assembled_report();
       assembled_report.has_value()) {
@@ -191,8 +191,8 @@ GURL AttributionReport::ReportURL(bool debug) const {
   return reporting_origin_->GetURL().ReplaceComponents(replacements);
 }
 
-base::Value::Dict AttributionReport::ReportBody() const {
-  base::Value::Dict dict;
+base::DictValue AttributionReport::ReportBody() const {
+  base::DictValue dict;
 
   std::visit(
       absl::Overload{

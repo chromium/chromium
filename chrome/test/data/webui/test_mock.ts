@@ -7,6 +7,9 @@ import {PromiseResolver} from '//resources/js/promise_resolver.js';
 
 type Constructor<T> = new (...args: any[]) => T;
 
+type PromiseFunction<T, K extends keyof T> =
+    T[K] extends(...args: any[]) => Promise<any>? K : never;
+
 interface MethodData {
   resolver: PromiseResolver<any>;
   args: any[];
@@ -144,6 +147,24 @@ export class TestMock<T> {
    */
   setResultFor(methodName: keyof T, value: any) {
     this.getMethodData_(methodName).resultMapper = () => value;
+  }
+
+  /**
+   * Sets the return value of a method to be a Promise that resolves with
+   * |value|.
+   */
+  setPromiseResolveFor<K extends keyof T>(
+      methodName: K&PromiseFunction<T, K>, value?: any) {
+    this.getMethodData_(methodName).resultMapper = () => Promise.resolve(value);
+  }
+
+  /**
+   * Sets the return value of a method to be a Promise that rejects with
+   * |value|.
+   */
+  setPromiseRejectFor<K extends keyof T>(
+      methodName: K&PromiseFunction<T, K>, value?: any) {
+    this.getMethodData_(methodName).resultMapper = () => Promise.reject(value);
   }
 
   /**

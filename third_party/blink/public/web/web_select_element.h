@@ -44,7 +44,9 @@ class HTMLSelectElement;
 // Provides readonly access to some properties of a DOM select element node.
 class BLINK_EXPORT WebSelectElement final : public WebFormControlElement {
  public:
-  WebSelectElement() : WebFormControlElement() {}
+  explicit WebSelectElement(
+      cppgc::SourceLocation loc = BLINK_WEB_NODE_LOCATION_FROM_HERE)
+      : WebFormControlElement(loc) {}
   WebSelectElement(const WebSelectElement& element) = default;
 
   WebSelectElement& operator=(const WebSelectElement& element) {

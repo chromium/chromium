@@ -88,7 +88,7 @@ class MockEventDispatcher : public mojom::EventDispatcher {
 
   // mojom::EventDispatcher:
   void DispatchEvent(mojom::DispatchEventParamsPtr params,
-                     base::Value::List event_args,
+                     base::ListValue event_args,
                      DispatchEventCallback callback) override {
     std::move(callback).Run(
         /*event_will_run_in_lazy_background_page_script=*/false);
@@ -102,13 +102,13 @@ using EventListenerConstructor =
     base::RepeatingCallback<std::unique_ptr<EventListener>(
         const std::string& /* event_name */,
         content::RenderProcessHost* /* process */,
-        base::Value::Dict /* filter */)>;
+        base::DictValue /* filter */)>;
 
 std::unique_ptr<EventListener> CreateEventListenerForExtension(
     const ExtensionId& extension_id,
     const std::string& event_name,
     content::RenderProcessHost* process,
-    base::Value::Dict filter) {
+    base::DictValue filter) {
   return EventListener::ForExtension(event_name, extension_id, process,
                                      std::move(filter));
 }
@@ -117,7 +117,7 @@ std::unique_ptr<EventListener> CreateEventListenerForURL(
     const GURL& listener_url,
     const std::string& event_name,
     content::RenderProcessHost* process,
-    base::Value::Dict filter) {
+    base::DictValue filter) {
   return EventListener::ForURL(event_name, listener_url, process,
                                std::move(filter));
 }
@@ -128,7 +128,7 @@ std::unique_ptr<EventListener> CreateEventListenerForExtensionServiceWorker(
     int worker_thread_id,
     const std::string& event_name,
     content::RenderProcessHost* process,
-    base::Value::Dict filter) {
+    base::DictValue filter) {
   content::BrowserContext* browser_context =
       process ? process->GetBrowserContext() : nullptr;
   return EventListener::ForExtensionServiceWorker(
@@ -143,7 +143,7 @@ std::unique_ptr<EventListener> CreateEventListenerForExtensionServiceWorker(
 scoped_refptr<const Extension> CreateExtension(bool component,
                                                bool persistent) {
   ExtensionBuilder builder;
-  auto manifest = base::Value::Dict()
+  auto manifest = base::DictValue()
                       .Set("name", "foo")
                       .Set("version", "1.0.0")
                       .Set("manifest_version", 2);
@@ -159,7 +159,7 @@ scoped_refptr<const Extension> CreateExtension(bool component,
 
 scoped_refptr<const Extension> CreateServiceWorkerExtension() {
   ExtensionBuilder builder;
-  auto manifest = base::Value::Dict()
+  auto manifest = base::DictValue()
                       .Set("name", "foo")
                       .Set("version", "1.0.0")
                       .Set("manifest_version", 2);
@@ -168,14 +168,14 @@ scoped_refptr<const Extension> CreateServiceWorkerExtension() {
   return builder.Build();
 }
 
-base::Value::Dict CreateHostSuffixFilter(const std::string& suffix) {
-  base::Value::Dict filter_dict;
+base::DictValue CreateHostSuffixFilter(const std::string& suffix) {
+  base::DictValue filter_dict;
   filter_dict.Set("hostSuffix", Value(suffix));
 
-  base::Value::List filter_list;
+  base::ListValue filter_list;
   filter_list.Append(std::move(filter_dict));
 
-  base::Value::Dict filter;
+  base::DictValue filter;
   filter.Set("url", std::move(filter_list));
   return filter;
 }
@@ -274,7 +274,7 @@ class EventRouterFilterTest : public ExtensionsTest,
 
   EventRouter* event_router() { return EventRouter::Get(browser_context()); }
 
-  const base::Value::Dict* GetFilteredEvents(const ExtensionId& extension_id) {
+  const base::DictValue* GetFilteredEvents(const ExtensionId& extension_id) {
     return event_router()->GetFilteredEvents(
         extension_id, is_for_service_worker()
                           ? EventRouter::RegisteredEventType::kServiceWorker
@@ -283,8 +283,8 @@ class EventRouterFilterTest : public ExtensionsTest,
 
   bool ContainsFilter(const ExtensionId& extension_id,
                       const std::string& event_name,
-                      const base::Value::Dict& to_check) {
-    const base::Value::List* filter_list =
+                      const base::DictValue& to_check) {
+    const base::ListValue* filter_list =
         GetFilterList(extension_id, event_name);
     if (!filter_list) {
       ADD_FAILURE();
@@ -306,9 +306,9 @@ class EventRouterFilterTest : public ExtensionsTest,
   bool is_for_service_worker() const { return GetParam(); }
 
  private:
-  const base::Value::List* GetFilterList(const ExtensionId& extension_id,
-                                         const std::string& event_name) {
-    const base::Value::Dict* filtered_events = GetFilteredEvents(extension_id);
+  const base::ListValue* GetFilterList(const ExtensionId& extension_id,
+                                       const std::string& event_name) {
+    const base::DictValue* filtered_events = GetFilteredEvents(extension_id);
     const auto iter = filtered_events->begin();
     if (iter->first != event_name) {
       return nullptr;
@@ -333,7 +333,7 @@ void EventRouterTest::RunEventRouterObserverTest(
     const EventListenerConstructor& constructor) {
   EventRouter router(browser_context(), nullptr);
   std::unique_ptr<EventListener> listener =
-      constructor.Run("event_name", render_process_host(), base::Value::Dict());
+      constructor.Run("event_name", render_process_host(), base::DictValue());
 
   // Add/remove works without any observers.
   router.OnListenerAdded(listener.get());
@@ -368,8 +368,8 @@ void EventRouterTest::RunEventRouterObserverTest(
   // Adding a listener with a sub-event notifies the main observer with
   // proper details.
   matching_observer.Reset();
-  std::unique_ptr<EventListener> sub_event_listener = constructor.Run(
-      "event_name/1", render_process_host(), base::Value::Dict());
+  std::unique_ptr<EventListener> sub_event_listener =
+      constructor.Run("event_name/1", render_process_host(), base::DictValue());
   router.OnListenerAdded(sub_event_listener.get());
   EXPECT_EQ(1, matching_observer.listener_added_count());
   EXPECT_EQ(0, matching_observer.listener_removed_count());
@@ -485,7 +485,7 @@ TEST_F(EventRouterTest, WebUIEventsDoNotCrossIncognitoBoundaries) {
   // Sending an otr event should not trigger the regular observer.
   auto otr_event =
       std::make_unique<Event>(extensions::events::FOR_TEST, event_name,
-                              base::Value::List(), incognito_context());
+                              base::ListValue(), incognito_context());
   router.BroadcastEvent(std::move(otr_event));
   EXPECT_EQ(0, regular_counter.dispatch_count);
   EXPECT_EQ(1, otr_counter.dispatch_count);
@@ -493,7 +493,7 @@ TEST_F(EventRouterTest, WebUIEventsDoNotCrossIncognitoBoundaries) {
   // Setting a regular event should not trigger the otr observer.
   std::unique_ptr<Event> regular_event =
       std::make_unique<Event>(extensions::events::FOR_TEST, event_name,
-                              base::Value::List(), browser_context());
+                              base::ListValue(), browser_context());
   router.BroadcastEvent(std::move(regular_event));
   EXPECT_EQ(1, regular_counter.dispatch_count);
   EXPECT_EQ(1, otr_counter.dispatch_count);
@@ -503,7 +503,7 @@ TEST_F(EventRouterTest, MultipleEventRouterObserver) {
   EventRouter router(browser_context(), nullptr);
   std::unique_ptr<EventListener> listener =
       EventListener::ForURL("event_name", GURL("http://google.com/path"),
-                            render_process_host(), base::Value::Dict());
+                            render_process_host(), base::DictValue());
 
   // Add/remove works without any observers.
   router.OnListenerAdded(listener.get());
@@ -584,7 +584,7 @@ TEST_F(EventRouterTest, TestReportEvent) {
 TEST_P(EventRouterFilterTest, DISABLED_Basic) {
   // For the purpose of this test, "." is important in |event_name| as it
   // exercises the code path that uses |event_name| as a key in
-  // base::Value::Dict.
+  // base::DictValue.
   const std::string kEventName = "webNavigation.onBeforeNavigate";
 
   const std::string kExtensionId = "mbflcebpggnecokmikipoihdbecnjfoj";
@@ -598,16 +598,16 @@ TEST_P(EventRouterFilterTest, DISABLED_Basic) {
         99,    // Dummy version_id.
         199);  // Dummy thread_id.
   }
-  std::vector<base::Value::Dict> filters;
+  std::vector<base::DictValue> filters;
   for (const auto& host_suffix : kHostSuffixes) {
-    base::Value::Dict filter = CreateHostSuffixFilter(host_suffix);
+    base::DictValue filter = CreateHostSuffixFilter(host_suffix);
     event_router()->AddFilteredEventListener(
         kEventName, render_process_host(), param.Clone(), worker_context.get(),
         filter, true);
     filters.push_back(std::move(filter));
   }
 
-  const base::Value::Dict* filtered_events = GetFilteredEvents(kExtensionId);
+  const base::DictValue* filtered_events = GetFilteredEvents(kExtensionId);
   ASSERT_TRUE(filtered_events);
   ASSERT_EQ(1u, filtered_events->size());
 
@@ -649,7 +649,7 @@ TEST_P(EventRouterFilterTest, DISABLED_Basic) {
 TEST_P(EventRouterFilterTest, DISABLED_URLBasedFilteredEventListener) {
   const std::string kEventName = "windows.onRemoved";
   const GURL kUrl("chrome-untrusted://terminal");
-  base::Value::Dict filter;
+  base::DictValue filter;
   bool lazy = false;
   EXPECT_FALSE(event_router()->HasEventListener(kEventName));
   event_router()->AddFilteredEventListener(
@@ -715,7 +715,7 @@ TEST_F(EventRouterDispatchTest, TestDispatch) {
     scoped_refptr<const Extension> extension =
         ExtensionBuilder()
             .SetID(id)
-            .SetManifest(base::Value::Dict()
+            .SetManifest(base::DictValue()
                              .Set("name", "Test app")
                              .Set("version", "1.0")
                              .Set("manifest_version", 2))
@@ -726,7 +726,7 @@ TEST_F(EventRouterDispatchTest, TestDispatch) {
   add_extension(ext2);
   auto event = [](std::string name) {
     return std::make_unique<extensions::Event>(extensions::events::FOR_TEST,
-                                               name, base::Value::List());
+                                               name, base::ListValue());
   };
 
   // Register both extensions and both URLs for event.
@@ -785,7 +785,7 @@ TEST_F(EventRouterDispatchTest, DISABLED_TestDispatchCallback) {
   std::vector<extensions::EventTarget> dispatched;
   auto create_event = [&](const std::string& name) {
     auto event = std::make_unique<extensions::Event>(
-        extensions::events::FOR_TEST, name, base::Value::List());
+        extensions::events::FOR_TEST, name, base::ListValue());
     return event;
   };
 

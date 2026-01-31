@@ -4,6 +4,7 @@
 
 #include "ash/app_list/app_list_presenter_impl.h"
 
+#include <algorithm>
 #include <optional>
 #include <utility>
 
@@ -23,7 +24,6 @@
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/wm/container_finder.h"
-#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
@@ -543,8 +543,8 @@ void AppListPresenterImpl::OnWindowFocused(aura::Window* gained_focus,
   // change since the app list is still visible for the most part.
   const bool gained_focus_hides_app_list =
       gained_focus_container_id != kShellWindowId_Invalid &&
-      !base::Contains(kIdsOfContainersThatWontHideAppList,
-                      gained_focus_container_id);
+      !std::ranges::contains(kIdsOfContainersThatWontHideAppList,
+                             gained_focus_container_id);
 
   const bool app_list_gained_focus = applist_window->Contains(gained_focus) ||
                                      applist_container->Contains(gained_focus);

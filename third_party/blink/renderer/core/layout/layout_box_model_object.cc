@@ -200,7 +200,9 @@ void LayoutBoxModelObject::StyleDidChange(
 
       CreateLayerAfterStyleChange();
     }
-  } else if (Layer() && Layer()->Parent()) {
+  } else if (Layer() && (RuntimeEnabledFeatures::
+                             LayoutReinsertOnInFlowStateChangeEnabled() ||
+                         Layer()->Parent())) {
     Layer()->UpdateFilters(diff, old_style, StyleRef());
     Layer()->UpdateBackdropFilters(old_style, StyleRef());
     Layer()->UpdateClipPath(old_style, StyleRef());
@@ -582,7 +584,7 @@ LayoutBoxModelObject::ComputeStickyPositionConstraints() const {
       // It's unclear whether this is totally fine.
       // Compute the container-relative area within which the sticky element is
       // allowed to move.
-      LayoutUnit max_width = sticky_container->AvailableLogicalWidth();
+      LayoutUnit max_width = sticky_container->ContentLogicalWidth();
       scroll_container_relative_containing_block_rect.ContractEdges(
           MinimumValueForLength(StyleRef().MarginTop(), max_width),
           MinimumValueForLength(StyleRef().MarginRight(), max_width),
@@ -655,13 +657,15 @@ LayoutBoxModelObject::ComputeStickyPositionConstraints() const {
     std::optional<LayoutUnit> bottom =
         ResolveInset(style.Bottom(), available_size.height);
 
-    // Skip the end inset if there is not enough space to honor both insets.
+    // Reduce the end inset if there is not enough space to honor both insets.
     if (left && right) {
-      if (*left + *right + sticky_box_rect.Width() > available_size.width) {
+      const LayoutUnit free_space =
+          available_size.width - sticky_box_rect.Width() - *left - *right;
+      if (free_space < LayoutUnit()) {
         if (style.IsLeftToRightDirection()) {
-          right = std::nullopt;
+          *right += free_space;
         } else {
-          left = std::nullopt;
+          *left += free_space;
         }
       }
     }
@@ -669,8 +673,10 @@ LayoutBoxModelObject::ComputeStickyPositionConstraints() const {
       // TODO(flackr): Exclude top or bottom edge offset depending on the
       // writing mode when related sections are fixed in spec. See
       // http://lists.w3.org/Archives/Public/www-style/2014May/0286.html
-      if (*top + *bottom + sticky_box_rect.Height() > available_size.height) {
-        bottom = std::nullopt;
+      const LayoutUnit free_space =
+          available_size.height - sticky_box_rect.Height() - *top - *bottom;
+      if (free_space < LayoutUnit()) {
+        *bottom += free_space;
       }
     }
 
@@ -777,7 +783,7 @@ LayoutUnit LayoutBoxModelObject::ComputedCSSPadding(
 
 LayoutUnit LayoutBoxModelObject::ContainingBlockLogicalWidthForContent() const {
   NOT_DESTROYED();
-  return ContainingBlock()->AvailableLogicalWidth();
+  return ContainingBlock()->ContentLogicalWidth();
 }
 
 LogicalRect LayoutBoxModelObject::LocalCaretRectForEmptyElement(
@@ -874,7 +880,8 @@ LogicalRect LayoutBoxModelObject::LocalCaretRectForEmptyElement(
   // primaryFont is null.
   if (font_data)
     height = LayoutUnit(font_data->GetFontMetrics().Height());
-  LayoutUnit vertical_space = FirstLineHeight() - height;
+  LayoutUnit vertical_space =
+      current_style.ComputedLineHeightAsFixed() - height;
   LayoutUnit block_start = border_padding.block_start + (vertical_space / 2);
   // Care-shape applies to text or elements that accept text input.
   const Node* node = GetNode();
@@ -988,6 +995,38 @@ LayoutBox* LayoutBoxModelObject::CreateAnonymousBoxToSplit(
     const LayoutBox* box_to_split) const {
   NOT_DESTROYED();
   return box_to_split->CreateAnonymousBoxWithSameTypeAs(this);
+}
+
+void LayoutBoxModelObject::AttemptToMerge(LayoutBoxModelObject* prev,
+                                          LayoutBoxModelObject* next) {
+  if (!prev || !prev->IsAnonymous()) {
+    return;
+  }
+
+  if (!next || !next->IsAnonymous()) {
+    return;
+  }
+
+  DCHECK_EQ(prev->NextSibling(), next);
+
+  DCHECK_EQ(prev->CanMergeWith(*next), next->CanMergeWith(*prev));
+  if (!prev->CanMergeWith(*next)) {
+    return;
+  }
+
+  LayoutBoxModelObject* last_child =
+      DynamicTo<LayoutBoxModelObject>(prev->SlowLastChild());
+  LayoutBoxModelObject* first_child =
+      DynamicTo<LayoutBoxModelObject>(next->SlowFirstChild());
+
+  // Shift all the children of `next` into `prev`, and destroy the
+  // (now empty) sibling.
+  next->MoveAllChildrenTo(prev, true);
+  next->Destroy();
+
+  // We now need to recurse, as there may be multiple levels of anonymous
+  // objects which need to be stitched together.
+  AttemptToMerge(last_child, first_child);
 }
 
 bool LayoutBoxModelObject::BackgroundTransfersToView(

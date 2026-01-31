@@ -30,8 +30,9 @@ void SetDefaultProcessErrorHandler(DefaultProcessErrorHandler handler) {
   MojoSetDefaultProcessErrorHandler(nullptr, nullptr);
   auto& global_handler = GetDefaultProcessErrorHandler();
   global_handler = std::move(handler);
-  if (global_handler)
+  if (global_handler) {
     MojoSetDefaultProcessErrorHandler(&HandleError, nullptr);
+  }
 }
 
 }  // namespace mojo

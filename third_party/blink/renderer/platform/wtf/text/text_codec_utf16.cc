@@ -27,9 +27,11 @@
 
 #include <unicode/utf16.h>
 
+#include <bit>
 #include <memory>
 
 #include "base/numerics/byte_conversions.h"
+#include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
 #include "third_party/blink/renderer/platform/wtf/text/character_names.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_buffer.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
@@ -37,18 +39,26 @@
 
 namespace blink {
 
+bool TextCodecUtf16::IsSupported(StringView canonical_name) {
+  return EqualIgnoringASCIICase(canonical_name, "UTF-16LE") ||
+         EqualIgnoringASCIICase(canonical_name, "UTF-16BE");
+}
+
 void TextCodecUtf16::RegisterEncodingNames(EncodingNameRegistrar registrar) {
-  registrar("UTF-16LE", "UTF-16LE");
-  registrar("UTF-16BE", "UTF-16BE");
+  AtomicString utf_16le("UTF-16LE");
+  AtomicString utf_16be("UTF-16BE");
 
-  registrar("ISO-10646-UCS-2", "UTF-16LE");
-  registrar("UCS-2", "UTF-16LE");
-  registrar("UTF-16", "UTF-16LE");
-  registrar("Unicode", "UTF-16LE");
-  registrar("csUnicode", "UTF-16LE");
-  registrar("unicodeFEFF", "UTF-16LE");
+  registrar("UTF-16LE", utf_16le);
+  registrar("UTF-16BE", utf_16be);
 
-  registrar("unicodeFFFE", "UTF-16BE");
+  registrar("ISO-10646-UCS-2", utf_16le);
+  registrar("UCS-2", utf_16le);
+  registrar("UTF-16", utf_16le);
+  registrar("Unicode", utf_16le);
+  registrar("csUnicode", utf_16le);
+  registrar("unicodeFEFF", utf_16le);
+
+  registrar("unicodeFFFE", utf_16be);
 }
 
 static std::unique_ptr<TextCodec> NewStreamingTextDecoderUtf16le(
@@ -123,7 +133,7 @@ String TextCodecUtf16::Decode(base::span<const uint8_t> bytes,
     UChar c = lead_byte_ | (in_span.take_first_elem() << 8);
 
     if (!little_endian_) {
-      c = base::ByteSwap(c);
+      c = std::byteswap(c);
     }
 
     have_lead_byte_ = false;
@@ -134,7 +144,7 @@ String TextCodecUtf16::Decode(base::span<const uint8_t> bytes,
   for (wtf_size_t i = 0; i < num_chars_in; ++i) {
     UChar c = base::U16FromLittleEndian(in_span.take_first<2ul>());
     if (!little_endian_) {
-      c = base::ByteSwap(c);
+      c = std::byteswap(c);
     }
     decode(c);
   }

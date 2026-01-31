@@ -24,10 +24,6 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/system/invitation.h"
 
-#if BUILDFLAG(IS_ANDROID)
-#include "base/memory/memory_pressure_listener.h"
-#endif
-
 namespace IPC {
 class Channel;
 }  // namespace IPC
@@ -81,11 +77,6 @@ class CONTENT_EXPORT ChildProcessHostImpl : public ChildProcessHost,
 
   base::Process& GetPeerProcess();
   mojom::ChildProcess* child_process() { return child_process_.get(); }
-
-#if BUILDFLAG(IS_ANDROID)
-  // Notifies the child process of memory pressure level.
-  void NotifyMemoryPressureToChildProcess(base::MemoryPressureLevel level);
-#endif
 
  private:
   friend class content::ChildProcessHost;

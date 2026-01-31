@@ -27,10 +27,9 @@ namespace remoting {
 // A DesktopDisplayInfoMonitor implementation that monitors display config
 // changes by polling the current display config.
 // This class ensures that the DisplayInfo is fetched on the UI thread, which
-// may be different from the calling thread. This is helpful on platforms where
-// REMOTING_MULTI_PROCESS == false, allowing this class to be used on the
-// network thread. When REMOTING_MULTI_PROCESS == true, this instance lives in
-// the Desktop process.
+// may be different from the calling thread. This is helpful on multi-process
+// host platforms, allowing this class to be used on the network thread.
+// On multi-process host platforms, this instance lives in the Desktop process.
 class PollingDesktopDisplayInfoMonitor : public DesktopDisplayInfoMonitor {
  public:
   explicit PollingDesktopDisplayInfoMonitor(

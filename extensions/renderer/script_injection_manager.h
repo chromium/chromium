@@ -23,11 +23,17 @@
 #include "extensions/renderer/script_injection.h"
 #include "extensions/renderer/user_script_set_manager.h"
 
+namespace blink {
+class WebLocalFrame;
+}
+
 namespace content {
 class RenderFrame;
 }
 
 namespace extensions {
+
+class ExtensionFrameHelper;
 
 // The ScriptInjectionManager manages extensions injecting scripts into frames
 // via both content/user scripts and tabs.executeScript(). It is responsible for
@@ -59,6 +65,12 @@ class ScriptInjectionManager : public UserScriptSetManager::Observer {
                                 const ExtensionId& extension_id,
                                 const std::string& script_id,
                                 const GURL& url);
+
+  // Starts streaming JS sources for injected scripts at document start
+  // to V8, so they can be compiled in the background while the document loads.
+  void StartStreamingJSSources(blink::WebLocalFrame* web_frame,
+                               const GURL& document_url,
+                               ExtensionFrameHelper* frame_helper);
 
   void set_activity_logging_enabled(bool enabled) {
     activity_logging_enabled_ = enabled;

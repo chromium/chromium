@@ -98,4 +98,12 @@ const CSSValue* CSSRelativeColorValue::Alpha() const {
   return alpha_;
 }
 
+bool CSSRelativeColorValue::HasRandomFunctions() const {
+  return (channel0_ && channel0_->HasRandomFunctions()) ||
+         (channel1_ && channel1_->HasRandomFunctions()) ||
+         (channel2_ && channel2_->HasRandomFunctions()) ||
+         (alpha_ && alpha_->HasRandomFunctions()) ||
+         (origin_color_ && origin_color_->HasRandomFunctions());
+}
+
 }  // namespace blink::cssvalue

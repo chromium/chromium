@@ -15,8 +15,8 @@ import androidx.annotation.Nullable;
 import androidx.annotation.RequiresExtension;
 import androidx.annotation.VisibleForTesting;
 
-import org.chromium.build.BuildConfig;
 import org.chromium.net.CronetEngine;
+import org.chromium.net.AndroidProxyOptions;
 import org.chromium.net.ExperimentalCronetEngine;
 import org.chromium.net.ICronetEngineBuilder;
 import org.chromium.net.impl.CronetLogger.CronetSource;
@@ -183,17 +183,10 @@ class AndroidHttpEngineBuilderWrapper extends ICronetEngineBuilder {
 
     @Override
     public Set<Integer> getSupportedConfigOptions() {
-        // For now, HttpEngineNativeProvider can successfully translate proxy options only when
-        // building in the Android repo (the new APIs are available only there).
-        // TODO(https://crbug.com/460408392): Change this to an SDK Extension check once the APIs
-        // have been released.
-        if (BuildConfig.CRONET_FOR_AOSP_BUILD) {
-            Set<Integer> supportedConfigOptions = new HashSet<>();
-            supportedConfigOptions.add(PROXY_OPTIONS);
-            return Collections.unmodifiableSet(supportedConfigOptions);
-        } else {
-            return Collections.emptySet();
-        }
+        // Whether PROXY_OPTIONS are supported or not is handled within AndroidProxyOptions#apply.
+        Set<Integer> supportedConfigOptions = new HashSet<>();
+        supportedConfigOptions.add(PROXY_OPTIONS);
+        return Collections.unmodifiableSet(supportedConfigOptions);
     }
 
     @VisibleForTesting

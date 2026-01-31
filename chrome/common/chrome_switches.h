@@ -49,6 +49,7 @@ extern const char kAppLaunchUrlForShortcutsMenuItem[];
 extern const char kAppModeAuthCode[];
 extern const char kAppModeOAuth2Token[];
 extern const char kAppRunOnOsLoginMode[];
+extern const char kAppShim[];
 extern const char kAppsGalleryDownloadURL[];
 extern const char kAppsGalleryUpdateURL[];
 extern const char kAppsGalleryURL[];
@@ -217,6 +218,7 @@ extern const char kWebRtcRemoteEventLogProactivePruningDelta[];
 extern const char kWebRtcRemoteEventLogUploadDelayMs[];
 extern const char kWebRtcRemoteEventLogUploadNoSuppression[];
 extern const char kWebRtcIPHandlingPolicy[];
+extern const char kWhatsNewUseStaging[];
 extern const char kWindowName[];
 extern const char kWindowPosition[];
 extern const char kWindowSize[];
@@ -282,6 +284,7 @@ extern const char kPwaLauncherVersion[];
 extern const char kShowIcons[];
 extern const char kSourceAppId[];
 extern const char kSourceShortcut[];
+extern const char kStartupForegroundLaunch[];
 extern const char kUninstall[];
 extern const char kUninstallAppId[];
 #endif  // BUILDFLAG(IS_WIN)
@@ -294,7 +297,6 @@ extern const char kDebugPrint[];
     BUILDFLAG(IS_WIN)
 extern const char kEnableNewAppMenuIcon[];
 extern const char kGuest[];
-extern const char kForceNtpMobilePromo[];
 #endif
 
 #if BUILDFLAG(ENABLE_GLIC)
@@ -310,6 +312,11 @@ extern const char kGlicSkipReloadAfterNavigation[];
 extern const char kGlicHostLogging[];
 extern const char kGlicAdminRedirectPatterns[];
 extern const char kGlicAlwaysShowWebActuationToggle[];
+extern const char kGlicResetMultiInstanceEnabledByTier[];
+extern const char kGlicForceG1StatusForMultiInstance[];
+extern const char kGlicGuestUrlPresetAutopush[];
+extern const char kGlicGuestUrlPresetPreprod[];
+extern const char kGlicGuestUrlPresetProd[];
 #endif
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)

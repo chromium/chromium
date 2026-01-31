@@ -5,6 +5,9 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_DOM_DOCUMENT_DATA_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_DOM_DOCUMENT_DATA_H_
 
+#include <optional>
+
+#include "base/time/time.h"
 #include "services/network/public/mojom/trust_tokens.mojom-blink.h"
 #include "third_party/blink/public/mojom/permissions/permission.mojom-blink.h"
 #include "third_party/blink/renderer/platform/bindings/script_regexp.h"
@@ -68,6 +71,11 @@ class DocumentData final : public GarbageCollected<DocumentData> {
   // Measures SVGImage performance per document.
   int svg_image_processed_count_ = 0;
   base::TimeDelta accumulated_svg_image_elapsed_time_;
+
+  // Start time of XML parser. Used for benchmarking XML parsing performance.
+  std::optional<base::TimeTicks> xml_parser_start_time_;
+  // Whether the Rust XML parser is used.
+  bool using_rust_xml_parser_ = false;
 
   friend class Document;
 };

@@ -186,7 +186,7 @@ class ClearBrowsingDataAction : public Action,
         {ActionType::kClearAutofill, BrowsingDataRemoveMask::REMOVE_FORM_DATA}};
     BrowsingDataRemoveMask result = BrowsingDataRemoveMask::REMOVE_NOTHING;
     for (const auto& [action_type, mask] : entries) {
-      if (base::Contains(action_types_, action_type)) {
+      if (action_types_.contains(action_type)) {
         result |= mask;
       }
     }

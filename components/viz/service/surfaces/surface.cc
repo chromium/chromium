@@ -14,7 +14,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/containers/contains.h"
 #include "base/debug/alias.h"
 #include "base/debug/crash_logging.h"
 #include "base/debug/dump_without_crashing.h"
@@ -34,6 +33,7 @@
 #include "components/viz/service/surfaces/surface_manager.h"
 #include "components/viz/service/viz_service_export.h"
 #include "third_party/perfetto/include/perfetto/tracing/track.h"
+#include "third_party/perfetto/include/perfetto/tracing/track_event_args.h"
 #include "ui/gfx/presentation_feedback.h"
 #include "ui/gfx/swap_result.h"
 
@@ -324,9 +324,9 @@ Surface::QueueFrameResult Surface::CommitFrame(FrameData frame) {
       const auto& token = directive.transition_token();
       // If there is no SurfaceAnimationManager for the `token` and an Animate
       // directive has been issued, then previous frame is held up and has not
-      // performed Save directive yet for a cross-document view transition. So
-      // add this token as dependency for new document's surface which needs to
-      // be resolved for activation.
+      // performed Save directive yet for it's view transition. So add this
+      // token as dependency for new document's surface which needs to be
+      // resolved for activation.
       if (directive.type() ==
               CompositorFrameTransitionDirective::Type::kAnimateRenderer &&
           !surface_manager_->FrameSinkManagerHasViewTransitionToken(token) &&
@@ -387,13 +387,13 @@ Surface::QueueFrameResult Surface::CommitFrame(FrameData frame) {
 }
 
 void Surface::RequestCopyOfOutput(
-    PendingCopyOutputRequest pending_copy_output_request) {
+    std::unique_ptr<PendingCopyOutputRequest> pending_copy_output_request) {
   TRACE_EVENT1("viz", "Surface::RequestCopyOfOutput", "has_active_frame_data",
                !!active_frame_data_);
-
-  if (!pending_copy_output_request.subtree_capture_id.is_valid()) {
+  CHECK(!pending_copy_output_request->IsTimedOut());
+  if (!pending_copy_output_request->subtree_capture_id.is_valid()) {
     RequestCopyOfOutputOnRootRenderPass(
-        std::move(pending_copy_output_request.copy_output_request));
+        std::move(pending_copy_output_request->copy_output_request));
     return;
   }
 
@@ -402,9 +402,9 @@ void Surface::RequestCopyOfOutput(
 
   for (auto& render_pass : GetActiveFrame().render_pass_list) {
     if (render_pass->subtree_capture_id ==
-        pending_copy_output_request.subtree_capture_id) {
+        pending_copy_output_request->subtree_capture_id) {
       RequestCopyOfOutputOnRenderPass(
-          std::move(pending_copy_output_request.copy_output_request),
+          std::move(pending_copy_output_request->copy_output_request),
           *render_pass);
       return;
     }
@@ -708,13 +708,13 @@ void Surface::ActivateFrame(FrameData frame_data) {
     surface_client_->OnSurfaceActivated(this);
 
   if (!seen_first_frame_activation_) {
-    TRACE_EVENT_WITH_FLOW2(
+    TRACE_EVENT(
         TRACE_DISABLED_BY_DEFAULT("viz.surface_id_flow"),
         "LocalSurfaceId.Submission.Flow",
-        TRACE_ID_GLOBAL(
+        perfetto::TerminatingFlow::Global(
             surface_info_.id().local_surface_id().submission_trace_id()),
-        TRACE_EVENT_FLAG_FLOW_IN, "step", "FirstSurfaceActivation",
-        "surface_id", surface_info_.id().ToString());
+        "step", "FirstSurfaceActivation", "surface_id",
+        surface_info_.id().ToString());
 
     seen_first_frame_activation_ = true;
     allocation_group_->OnFirstSurfaceActivation(this);
@@ -800,7 +800,7 @@ void Surface::UpdateActivationDependencies(
        current_frame.metadata.activation_dependencies) {
     SurfaceAllocationGroup* group =
         surface_manager_->GetOrCreateAllocationGroupForSurfaceId(surface_id);
-    if (base::Contains(new_blocking_allocation_groups, group))
+    if (new_blocking_allocation_groups.contains(group))
       continue;
     if (group)
       group->UpdateLastPendingReferenceAndMaybeActivate(surface_id);
@@ -816,12 +816,12 @@ void Surface::UpdateActivationDependencies(
       group->RegisterBlockedEmbedder(this, surface_id);
       new_blocking_allocation_groups.insert(group);
     }
-    TRACE_EVENT_WITH_FLOW2(
+    TRACE_EVENT(
         TRACE_DISABLED_BY_DEFAULT("viz.surface_id_flow"),
         "LocalSurfaceId.Embed.Flow",
-        TRACE_ID_GLOBAL(surface_id.local_surface_id().embed_trace_id()),
-        TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT, "step",
-        "AddedActivationDependency", "child_surface_id", surface_id.ToString());
+        perfetto::Flow::Global(surface_id.local_surface_id().embed_trace_id()),
+        "step", "AddedActivationDependency", "child_surface_id",
+        surface_id.ToString());
     new_activation_dependencies.push_back(surface_id);
   }
   activation_dependencies_ = std::move(new_activation_dependencies);
@@ -846,7 +846,7 @@ void Surface::TakeCopyOutputRequests(Surface::CopyRequestsMap* copy_requests) {
 void Surface::TakeCopyOutputRequestsFromClient() {
   if (!surface_client_)
     return;
-  for (PendingCopyOutputRequest& request_params :
+  for (std::unique_ptr<PendingCopyOutputRequest>& request_params :
        surface_client_->TakeCopyOutputRequests(
            surface_id().local_surface_id())) {
     RequestCopyOfOutput(std::move(request_params));
@@ -955,12 +955,13 @@ void Surface::UnrefFrameResourcesAndRunCallbacks(
   if (!frame_data || !surface_client_)
     return;
 
-  std::vector<ReturnedResource> resources =
-      TransferableResource::ReturnResources(frame_data->frame.resource_list);
+  std::vector<ReturnedResourceViz> resources_viz =
+      TransferableResource::ReturnResourcesViz(frame_data->frame.resource_list);
   // No point in returning same sync token to sender.
-  for (auto& resource : resources)
-    resource.sync_token.Clear();
-  surface_client_->UnrefResources(std::move(resources));
+  for (auto& resource_viz : resources_viz) {
+    resource_viz.sync_token.Clear();
+  }
+  surface_client_->UnrefResources(std::move(resources_viz));
 
   frame_data->SendAckIfNeeded(surface_client_.get());
 
@@ -1023,12 +1024,12 @@ void Surface::OnWillBeDrawn() {
   if (!seen_first_surface_embedding_) {
     seen_first_surface_embedding_ = true;
 
-    TRACE_EVENT_WITH_FLOW2(
-        TRACE_DISABLED_BY_DEFAULT("viz.surface_id_flow"),
-        "LocalSurfaceId.Embed.Flow",
-        TRACE_ID_GLOBAL(surface_info_.id().local_surface_id().embed_trace_id()),
-        TRACE_EVENT_FLAG_FLOW_IN, "step", "FirstSurfaceEmbedding", "surface_id",
-        surface_info_.id().ToString());
+    TRACE_EVENT(TRACE_DISABLED_BY_DEFAULT("viz.surface_id_flow"),
+                "LocalSurfaceId.Embed.Flow",
+                perfetto::TerminatingFlow::Global(
+                    surface_info_.id().local_surface_id().embed_trace_id()),
+                "step", "FirstSurfaceEmbedding", "surface_id",
+                surface_info_.id().ToString());
   }
   surface_manager_->SurfaceWillBeDrawn(this);
   MarkAsDrawn();

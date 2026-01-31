@@ -7,20 +7,22 @@
 
 #import <Foundation/Foundation.h>
 
+#import "base/memory/raw_ptr.h"
 #import "base/scoped_observation.h"
 #import "ios/chrome/browser/home_customization/model/home_background_customization_service_observer.h"
 
 class HomeBackgroundCustomizationService;
 
-// Observes HomeBackgroundCustomizationService events in Objective-C.
+// Observes `HomeBackgroundCustomizationService` events in Objective-C.
 @protocol HomeBackgroundCustomizationServiceObserving <NSObject>
 
 // Called when the background changes.
-- (void)onBackgroundChanged;
+- (void)homeBackgroundCustomizationServiceDidChangeBackground:
+    (HomeBackgroundCustomizationService*)service;
 
 @end
 
-// Bridge to observe HomeBackgroundCustomizationService in Objective-C.
+// Bridge to observe `HomeBackgroundCustomizationService` in Objective-C.
 class HomeBackgroundCustomizationServiceObserverBridge
     : public HomeBackgroundCustomizationServiceObserver {
  public:
@@ -35,11 +37,12 @@ class HomeBackgroundCustomizationServiceObserverBridge
 
   ~HomeBackgroundCustomizationServiceObserverBridge() override;
 
-  // HomeBackgroundCustomizationServiceObserver:
+  // `HomeBackgroundCustomizationServiceObserver` overrides.
   void OnBackgroundChanged() override;
 
  private:
   __weak id<HomeBackgroundCustomizationServiceObserving> observer_ = nil;
+  raw_ptr<HomeBackgroundCustomizationService> service_ = nullptr;
   base::ScopedObservation<HomeBackgroundCustomizationService,
                           HomeBackgroundCustomizationServiceObserver>
       scoped_observation_{this};

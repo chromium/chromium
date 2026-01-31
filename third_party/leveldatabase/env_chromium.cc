@@ -30,6 +30,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/system/sys_info.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/time/time.h"
@@ -352,8 +353,7 @@ Status ChromiumWritableFile::SyncParent() {
 
 Status ChromiumWritableFile::Append(const Slice& data) {
   DCHECK(file_.IsValid());
-  int bytes_written = file_.WriteAtCurrentPos(data.data(), data.size());
-  if (static_cast<size_t>(bytes_written) != data.size()) {
+  if (!file_.WriteAtCurrentPosAndCheck(base::as_byte_span(data))) {
     base::File::Error error = base::File::GetLastFileError();
     return MakeIOError(filename_, base::File::ErrorToString(error),
                        kWritableFileAppend, error);

@@ -117,9 +117,6 @@ void GlicFocusedTabManager::OnFocusedBrowserChanged(
   // can be in a different browser window (i.e., the user drag-n-drop the
   // focused tab into a new window). Let the subscribers to decide what to do in
   // this case.
-  //
-  // TODO(crbug.com/393578218): We should have dedicated subscription lists for
-  // different types of notifications.
   MaybeUpdateFocusedTab(/*force_notify=*/true);
 }
 
@@ -176,10 +173,12 @@ void GlicFocusedTabManager::MaybeUpdateFocusedTab(bool force_notify) {
                           base::Unretained(this)));
 
   if (focused_instance_changed) {
-    NotifyFocusedTabInstanceChanged(focused_tab_state_.focused_tab.get());
     NotifyFocusedTabDataChanged(
         {{TabDataChangeCause::kTabChanged},
-         CreateTabData(focused_tab_state_.focused_tab.get())});
+         CreateTabData(focused_tab_state_.focused_tab
+                           ? tabs::TabInterface::GetFromContents(
+                                 focused_tab_state_.focused_tab.get())
+                           : nullptr)});
   }
 
   if (focused_or_candidate_instance_changed) {
@@ -454,10 +453,7 @@ void GlicPinAwareDetachedFocusedTabManager::OnTabPinningStatusChanged(
         GetPinAwareFocusedTabData(focused_tab_data);
     NotifyFocusedTabChanged(pin_aware_focused_tab_data);
     NotifyFocusedTabDataChanged(
-        CreateTabData(pin_aware_focused_tab_data.focus()
-                          ? pin_aware_focused_tab_data.focus()->GetContents()
-                          : nullptr)
-            .get());
+        CreateTabData(pin_aware_focused_tab_data.focus()).get());
   }
 }
 

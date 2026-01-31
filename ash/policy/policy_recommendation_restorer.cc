@@ -7,7 +7,6 @@
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "base/check.h"
-#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_service.h"
@@ -35,7 +34,7 @@ void PolicyRecommendationRestorer::ObservePref(const std::string& pref_name) {
   PrefService* prefs =
       Shell::Get()->session_controller()->GetSigninScreenPrefService();
   DCHECK(prefs);
-  DCHECK(!base::Contains(pref_names_, pref_name));
+  DCHECK(!pref_names_.contains(pref_name));
 
   if (!pref_change_registrar_) {
     pref_change_registrar_ = std::make_unique<PrefChangeRegistrar>();

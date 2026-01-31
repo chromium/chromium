@@ -76,19 +76,19 @@ std::vector<uint8_t> MakeJsonVector(const base::ValueView& value);
 
 // Reads "//components/test/data/webcrypto/" + test_file_name as a JSON
 // file, asserts that the contained JSON is a list, and returns that list.
-base::Value::List ReadJsonTestFileAsList(const char* test_file_name);
+base::ListValue ReadJsonTestFileAsList(const char* test_file_name);
 
 // Reads a string property from the dictionary |dict| with path |property_name|
 // (which can include periods for nested dictionaries). Interprets the
 // string as a hex encoded string and converts it to a bytes list.
 //
 // Returns empty vector on failure.
-std::vector<uint8_t> GetBytesFromHexString(const base::Value::Dict& dict,
+std::vector<uint8_t> GetBytesFromHexString(const base::DictValue& dict,
                                            std::string_view property_name);
 
 // Reads a string property with path "property_name" and converts it to a
 // WebCryptoAlgorithm. Returns null algorithm on failure.
-blink::WebCryptoAlgorithm GetDigestAlgorithm(const base::Value::Dict& dict,
+blink::WebCryptoAlgorithm GetDigestAlgorithm(const base::DictValue& dict,
                                              const char* property_name);
 
 // Returns true if any of the vectors in the input list have identical content.
@@ -131,13 +131,13 @@ Status ImportKeyJwkFromDict(const base::ValueView& dict,
                             blink::WebCryptoKey* key);
 
 // Parses a vector of JSON into a dictionary.
-std::optional<base::Value::Dict> GetJwkDictionary(
+std::optional<base::DictValue> GetJwkDictionary(
     const std::vector<uint8_t>& json);
 
 // Verifies the input dictionary contains the expected values. Exact matches are
 // required on the fields examined.
 ::testing::AssertionResult VerifyJwk(
-    const base::Value::Dict& dict,
+    const base::DictValue& dict,
     std::string_view kty_expected,
     std::string_view alg_expected,
     blink::WebCryptoKeyUsageMask use_mask_expected);
@@ -180,17 +180,17 @@ Status GenerateKeyPair(const blink::WebCryptoAlgorithm& algorithm,
 // Reads a key format string as used in some JSON test files and converts it to
 // a WebCryptoKeyFormat.
 blink::WebCryptoKeyFormat GetKeyFormatFromJsonTestCase(
-    const base::Value::Dict& test);
+    const base::DictValue& test);
 
 // Extracts the key data bytes from |test| as used insome JSON test files.
 std::vector<uint8_t> GetKeyDataFromJsonTestCase(
-    const base::Value::Dict& test,
+    const base::DictValue& test,
     blink::WebCryptoKeyFormat key_format);
 
 // Reads the "crv" string from a JSON test case and returns it as a
 // WebCryptoNamedCurve.
 blink::WebCryptoNamedCurve GetCurveNameFromDictionary(
-    const base::Value::Dict& dict);
+    const base::DictValue& dict);
 
 blink::WebCryptoNamedCurve CurveNameToCurve(std::string_view name);
 

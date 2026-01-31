@@ -19,6 +19,7 @@
 #include "base/timer/timer.h"
 #include "base/trace_event/trace_event.h"
 #include "base/types/expected.h"
+#include "base/types/optional_ref.h"
 #include "net/base/completion_once_callback.h"
 #include "net/base/ip_endpoint.h"
 #include "net/base/load_states.h"
@@ -195,8 +196,10 @@ class HttpStreamPool::AttemptManager
   // Cancels all jobs.
   void CancelJobs(int error, StreamSocketCloseReason cancel_reason);
 
-  // Cancels the QuicAttempt if it exists.
-  void CancelQuicAttempt(int error);
+  // Completes the QuicAttempt with `result` if not completed before.
+  void CompleteQuicAttempt(
+      int result,
+      base::optional_ref<NetErrorDetails> net_error_details = std::nullopt);
 
   // Returns the current load state.
   LoadState GetLoadState() const;
@@ -240,9 +243,9 @@ class HttpStreamPool::AttemptManager
   void OnQuicAttemptSlow();
 
   // Retrieves information on the current state of `this` as a base::Value.
-  base::Value::Dict GetInfoAsValue() const;
+  base::DictValue GetInfoAsValue() const;
 
-  base::Value::Dict GetStatesAsNetLogParams() const;
+  base::DictValue GetStatesAsNetLogParams() const;
 
   MultiplexedSessionCreationInitiator
   CalculateMultiplexedSessionCreationInitiator();
@@ -275,10 +278,13 @@ class HttpStreamPool::AttemptManager
   enum class CanAttemptResult {
     kAttempt,
     kNoPendingJob,
-    kBlockedTcpBasedAttempt,
+    kTcpWaitingOnUdp,
     kThrottledForSpdy,
     kReachedGroupLimit,
     kReachedPoolLimit,
+    kTcpNotAllowed,
+    kUdpSucceeded,
+    kShuttingDown,
   };
 
   // The state of TCP/TLS connection attempts.
@@ -346,8 +352,7 @@ class HttpStreamPool::AttemptManager
   void MaybeAttemptTcpBased();
 
   // Creates and starts a TCP based attempt.
-  void CreateAndStartTcpBasedAttempt(bool using_tls,
-                                     IPEndPoint ip_endpoint,
+  void CreateAndStartTcpBasedAttempt(IPEndPoint ip_endpoint,
                                      TcpBasedAttemptSlot* slot);
 
   // Finds or allocates a TcpBasedAttemptSlot for `ip_endpoint`. If under the
@@ -518,7 +523,7 @@ class HttpStreamPool::AttemptManager
   // Called when `tcp_based_attempt_delay_timer_` is fired.
   void OnTcpBasedAttemptDelayPassed();
 
-  bool CanUseTcpBasedProtocols();
+  bool CanUseTcpBasedProtocols() const;
 
   bool CanUseQuic() const;
 
@@ -528,7 +533,7 @@ class HttpStreamPool::AttemptManager
   // or not attempted.
   void MaybeMarkQuicBroken();
 
-  base::Value::Dict GetTcpBasedAttemptSlotsAsValue() const;
+  base::DictValue GetTcpBasedAttemptSlotsAsValue() const;
 
   // Returns true when this can complete.
   bool CanComplete() const;

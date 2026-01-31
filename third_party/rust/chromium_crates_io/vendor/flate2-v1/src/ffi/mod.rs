@@ -59,16 +59,28 @@ pub trait DeflateBackend: Backend {
     fn reset(&mut self);
 }
 
-// Default to Rust implementation unless explicitly opted in to a different backend.
-#[cfg(feature = "any_zlib")]
+// Default to Rust implementation unless explicitly opted in to a different
+// backend.
+#[cfg(feature = "any_c_zlib")]
 mod c;
-#[cfg(feature = "any_zlib")]
+#[cfg(feature = "any_c_zlib")]
 pub use self::c::*;
 
+// Only bring in `zlib-rs` if there is no C-based backend.
+#[cfg(all(not(feature = "any_c_zlib"), feature = "zlib-rs"))]
+mod zlib_rs;
+#[cfg(all(not(feature = "any_c_zlib"), feature = "zlib-rs"))]
+pub use self::zlib_rs::*;
+
+// Use miniz_oxide when no fully compliant zlib is selected.
 #[cfg(all(not(feature = "any_zlib"), feature = "miniz_oxide"))]
-mod rust;
+mod miniz_oxide;
 #[cfg(all(not(feature = "any_zlib"), feature = "miniz_oxide"))]
-pub use self::rust::*;
+pub use self::miniz_oxide::*;
+
+// If no backend is enabled, fail fast with a clear error message.
+#[cfg(not(feature = "any_impl"))]
+compile_error!("No compression backend selected; enable one of `zlib`, `zlib-ng`, `zlib-rs`, or the default `rust_backend` feature.");
 
 impl std::fmt::Debug for ErrorMessage {
     fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {

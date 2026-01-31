@@ -789,6 +789,21 @@ TEST_F(FeatureListTest, SetEarlyAccessInstance_ReplaceByRealList) {
   EXPECT_FALSE(FeatureList::IsEnabled(kFeatureOffByDefault));
 }
 
+TEST_F(FeatureListTest, ParseFeatureString_WithIllegalFeatures) {
+  // Normal feature format: Feature<Trial.Group:param=value.
+  // Leading or trailing separators ('<', '.', ':') make the string invalid.
+  const std::string enable_features = ":Feature,.Feature";
+  for (const auto& enable_feature :
+       FeatureList::SplitFeatureListString(enable_features)) {
+    std::string feature_name;
+    std::string study;
+    std::string group;
+    std::string feature_params;
+    FeatureList::ParseEnableFeatureString(enable_feature, &feature_name, &study,
+                                          &group, &feature_params);
+  }
+}
+
 #if BUILDFLAG(ENABLE_BANNED_BASE_FEATURE_PREFIX) && \
     defined(GTEST_HAS_DEATH_TEST)
 using FeatureListDeathTest = FeatureListTest;

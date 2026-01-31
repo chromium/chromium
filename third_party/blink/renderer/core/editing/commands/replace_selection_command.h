@@ -51,6 +51,7 @@ class CORE_EXPORT ReplaceSelectionCommand final : public CompositeEditCommand {
   ReplaceSelectionCommand(Document&,
                           DocumentFragment*,
                           CommandOptions,
+                          PasswordEchoBehavior,
                           InputEvent::InputType = InputEvent::InputType::kNone,
                           DataTransfer* = nullptr);
 
@@ -133,7 +134,9 @@ class CORE_EXPORT ReplaceSelectionCommand final : public CompositeEditCommand {
                                     Position& position_only_to_be_updated,
                                     EditingState*);
 
-  bool PerformTrivialReplace(const ReplacementFragment&, EditingState*);
+  bool PerformTrivialReplace(const ReplacementFragment&,
+                             EditingState*,
+                             PasswordEchoBehavior);
   void SetUpStyle(const VisibleSelection&);
   void InsertParagraphSeparatorIfNeeds(const VisibleSelection&,
                                        const ReplacementFragment&,
@@ -148,6 +151,7 @@ class CORE_EXPORT ReplaceSelectionCommand final : public CompositeEditCommand {
   Member<DocumentFragment> document_fragment_;
   bool prevent_nesting_;
   const bool moving_paragraph_;
+  PasswordEchoBehavior password_echo_behavior_;
   InputEvent::InputType input_type_;
   const bool sanitize_fragment_;
   bool should_merge_end_;

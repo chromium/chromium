@@ -8,6 +8,7 @@ import static org.chromium.build.NullUtil.assumeNonNull;
 
 import android.animation.Animator;
 import android.animation.ValueAnimator;
+import android.graphics.Color;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
 
@@ -39,11 +40,11 @@ class ScrimMediator implements TouchEventDelegate {
     private final @ColorInt int mDefaultScrimColor;
     // TODO(skym): Re-implement to not have legacy suppliers.
     private final SettableNonNullObservableSupplier<Integer> mFullScrimColorSupplier =
-            ObservableSuppliers.createNonNull(ScrimProperties.INVALID_COLOR);
+            ObservableSuppliers.createNonNull(Color.TRANSPARENT);
     private final SettableNonNullObservableSupplier<Integer> mStatusBarColorSupplier =
-            ObservableSuppliers.createNonNull(ScrimProperties.INVALID_COLOR);
+            ObservableSuppliers.createNonNull(Color.TRANSPARENT);
     private final SettableNonNullObservableSupplier<Integer> mNavigationBarColorSupplier =
-            ObservableSuppliers.createNonNull(ScrimProperties.INVALID_COLOR);
+            ObservableSuppliers.createNonNull(Color.TRANSPARENT);
     private final SettableNonNullObservableSupplier<Float> mStatusBarScrimFractionSupplier =
             ObservableSuppliers.createNonNull(0f);
     private final SettableNonNullObservableSupplier<Float> mNavigationBarScrimFractionSupplier =
@@ -94,14 +95,14 @@ class ScrimMediator implements TouchEventDelegate {
 
     private @ColorInt int calculateCurrentCompositeColor(
             ReadableBooleanPropertyKey isAffectedProperty) {
-        if (mModel == null) return ScrimProperties.INVALID_COLOR;
+        if (mModel == null) return Color.TRANSPARENT;
 
         boolean isAffected = mModel.get(isAffectedProperty);
-        if (!isAffected) return ScrimProperties.INVALID_COLOR;
+        if (!isAffected) return Color.TRANSPARENT;
 
         float alpha = mModel.get(ScrimProperties.ALPHA);
         if (MathUtils.areFloatsEqual(alpha, 0f)) {
-            return ScrimProperties.INVALID_COLOR;
+            return Color.TRANSPARENT;
         }
 
         @ColorInt int color = mModel.get(ScrimProperties.BACKGROUND_COLOR);
@@ -258,7 +259,7 @@ class ScrimMediator implements TouchEventDelegate {
 
         if (mIsHidingOrHidden && !isVisible && mModel != null) {
             mModel = null;
-            mFullScrimColorSupplier.set(ScrimProperties.INVALID_COLOR);
+            mFullScrimColorSupplier.set(Color.TRANSPARENT);
             mScrimHiddenRunnable.run();
         }
     }

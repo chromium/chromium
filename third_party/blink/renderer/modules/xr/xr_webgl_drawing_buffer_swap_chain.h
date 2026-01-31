@@ -12,7 +12,7 @@ namespace blink {
 
 // This swap chain wraps a XRWebGLDrawingBuffer, which enables it to behave more
 // like a XRWebGLLayer and make use of the SUBMIT_AS_TEXTURE_HANDLE and
-// SUBMIT_AS_MAILBOX_HOLDER transport methods.
+// SUBMIT_AS_TEST transport methods.
 // TODO(crbug.com/40700985): This swap chain variant can be removed once
 // DRAW_INTO_TEXTURE_MAILBOX is the only remaining transport method.
 class XRWebGLDrawingBufferSwapChain final : public XRWebGLSwapChain {
@@ -24,7 +24,7 @@ class XRWebGLDrawingBufferSwapChain final : public XRWebGLSwapChain {
 
   WebGLUnownedTexture* ProduceTexture() override;
 
-  scoped_refptr<StaticBitmapImage> TransferToStaticBitmapImage() override;
+  std::unique_ptr<SharedImageHolder> TransferToSharedImageHolder() override;
 
   void OnFrameEnd() override;
 

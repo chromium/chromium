@@ -9,7 +9,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "services/network/enterprise/encryption/encrypted_cache_file.h"
 
-namespace network::enterprise {
+namespace network::enterprise_encryption {
 
 UnboundEncryptedBackendFileOperations::UnboundEncryptedBackendFileOperations(
     std::unique_ptr<disk_cache::UnboundBackendFileOperations> decorated_ops)
@@ -90,4 +90,4 @@ bool EncryptedBackendFileOperations::IsEncrypted() const {
   return true;
 }
 
-}  // namespace network::enterprise
+}  // namespace network::enterprise_encryption

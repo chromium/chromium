@@ -176,6 +176,35 @@ HlsDemuxerStatusCallback BindOkContinuation(
       std::move(err), std::move(ok));
 }
 
+// Takes two sorted vector<T> and removes the shared elements. This is the
+// similar to discarding the intersection in a venn diagram:
+//       ╭─────────╮      ╭─────────╮
+//    ╭──╯░░░░░░░░░╰──╮╭──╯░░░░░░░░░╰──╮
+//  ╭─╯░░░░░░░░░░░░░░╭╰╯╮░░░░░░░░░░░░░░╰─╮
+// ╭╯░░░░░░░░░░░░░░░╭╯  ╰╮░░░░░░░░░░░░░░░╰╮
+// │░░░░░░░░░░░░░░░░│    │░░░░░░░░░░░░░░░░│
+// │░░░░░░░░░░░░░░░░│    │░░░░░░░░░░░░░░░░│
+// │░░░░░░░░░░░░░░░░│    │░░░░░░░░░░░░░░░░│
+// ╰╮░░░░░░░░░░░░░░░╰╮  ╭╯░░░░░░░░░░░░░░░╭╯
+//  ╰─╮░░░░░░░░░░░░░░╰╭╮╯░░░░░░░░░░░░░░╭─╯
+//    ╰──╮░░░░░░░░░╭──╯╰──╮░░░░░░░░░╭──╯
+//       ╰─────────╯      ╰─────────╯
+template <typename T>
+std::tuple<std::vector<T>, std::vector<T>> DisjointSets(
+    const std::vector<T>& left,
+    const std::vector<T>& right) {
+  std::vector<T> left_comp;
+  std::vector<T> right_comp;
+  auto comp = [](const T& A, const T& B) {
+    return A.stream_id() < B.stream_id();
+  };
+  std::set_difference(left.begin(), left.end(), right.begin(), right.end(),
+                      std::back_inserter(left_comp), comp);
+  std::set_difference(right.begin(), right.end(), left.begin(), left.end(),
+                      std::back_inserter(right_comp), comp);
+  return std::make_tuple(std::move(left_comp), std::move(right_comp));
+}
+
 }  // namespace
 
 HlsManifestDemuxerEngine::~HlsManifestDemuxerEngine() = default;
@@ -183,14 +212,12 @@ HlsManifestDemuxerEngine::~HlsManifestDemuxerEngine() = default;
 HlsManifestDemuxerEngine::HlsManifestDemuxerEngine(
     base::SequenceBound<HlsDataSourceProvider> dsp,
     scoped_refptr<base::SequencedTaskRunner> media_task_runner,
-    base::RepeatingCallback<void(const MediaTrack&)> add_track,
-    base::RepeatingCallback<void(const MediaTrack&)> remove_track,
+    std::unique_ptr<TrackManager> track_manager,
     bool was_already_tainted,
     GURL root_playlist_uri,
     MediaLog* media_log)
     : media_task_runner_(std::move(media_task_runner)),
-      add_track_(std::move(add_track)),
-      remove_track_(std::move(remove_track)),
+      track_manager_(std::move(track_manager)),
       root_playlist_uri_(std::move(root_playlist_uri)),
       media_log_(media_log->Clone()),
       network_access_(std::make_unique<HlsNetworkAccessImpl>(std::move(dsp))),
@@ -292,14 +319,42 @@ void HlsManifestDemuxerEngine::Stop() {
   host_ = nullptr;
 }
 
-void HlsManifestDemuxerEngine::SelectVideoVariant(const MediaTrack::Id&) {
-  // TODO(crbug.com/361853710): Implement behavior here once `add_track_` and
-  // `remove_track_` are called.
+void HlsManifestDemuxerEngine::SelectVideoTrack(const MediaTrack::Id& track) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(media_sequence_checker_);
+  if (rendition_manager_) {
+    rendition_manager_->SetPreferredVideoRendition(track);
+  }
 }
 
-void HlsManifestDemuxerEngine::SelectAudioRendition(const MediaTrack::Id&) {
-  // TODO(crbug.com/361853710): Implement behavior here once `add_track_` and
-  // `remove_track_` are called.
+void HlsManifestDemuxerEngine::SelectAudioTrack(const MediaTrack::Id& track) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(media_sequence_checker_);
+  if (rendition_manager_) {
+    rendition_manager_->SetPreferredAudioRendition(track);
+  }
+}
+
+std::vector<DemuxerStream*> HlsManifestDemuxerEngine::FilterDemuxerStreams(
+    std::vector<DemuxerStream*>&& all_streams) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(media_sequence_checker_);
+  if (rendition_manager_) {
+    switch (rendition_manager_->GetSupportedStreamTypes()) {
+      case hls::RenditionManager::CodecSupportType::kSupportedAudioOnly: {
+        std::erase_if(all_streams, [](DemuxerStream* stream) {
+          return stream->type() != DemuxerStream::AUDIO;
+        });
+        break;
+      }
+      case hls::RenditionManager::CodecSupportType::kSupportedVideoOnly: {
+        std::erase_if(all_streams, [](DemuxerStream* stream) {
+          return stream->type() != DemuxerStream::VIDEO;
+        });
+        break;
+      }
+      default:
+        break;
+    }
+  }
+  return all_streams;
 }
 
 void HlsManifestDemuxerEngine::Seek(base::TimeDelta time,
@@ -544,7 +599,6 @@ void HlsManifestDemuxerEngine::OnRenditionsReselected(
     std::optional<hls::RenditionGroup::RenditionTrack> primary,
     std::optional<hls::RenditionGroup::RenditionTrack> extra) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(media_sequence_checker_);
-  stats_reporter_.OnAdaptation(reason);
   ProcessAsyncAction<HlsDemuxerStatus>(
       base::BindOnce(&HlsManifestDemuxerEngine::CheckActionState,
                      weak_factory_.GetWeakPtr()),
@@ -575,7 +629,6 @@ void HlsManifestDemuxerEngine::UpdateHlsDataSourceStats(
   }
   auto stream = std::move(result).value();
   origin_tainted_ |= stream->would_taint_origin();
-  stats_reporter_.SetWouldTaintOrigin(origin_tainted_);
   total_stream_memory_ = stream->memory_usage();
   std::move(cb).Run(std::move(stream));
 }
@@ -661,7 +714,6 @@ void HlsManifestDemuxerEngine::ParsePlaylist(
             .Run(HlsDemuxerStatus::Codes::kRecursiveMultivariantPlaylists);
         return;
       }
-      stats_reporter_.SetIsMultivariantPlaylist(true);
       auto playlist = hls::MultivariantPlaylist::Parse(
           stream->AsString(), parse_info.uri, (*m_info).version);
       if (!playlist.has_value()) {
@@ -680,7 +732,6 @@ void HlsManifestDemuxerEngine::ParsePlaylist(
         // Only a root playlist is allowed to be multivariant, so if the root
         // is only a media playlist, then this entire playback is not
         // multivariant.
-        stats_reporter_.SetIsMultivariantPlaylist(false);
       }
       auto playlist = ParseMediaPlaylistFromStringSource(
           stream->AsString(), parse_info.uri, (*m_info).version);
@@ -787,6 +838,10 @@ void HlsManifestDemuxerEngine::OnRenditionsSelected(
     return;
   }
 
+  // after rebinding the playlists to our internal map, update the set of tracks
+  // that we expose to the front end.
+  UpdateSelectableTrackLists();
+
   // Update the codecs list
   std::vector<std::string> no_codecs;
   selected_variant_codecs_ = variant->GetCodecs().value_or(no_codecs);
@@ -794,12 +849,51 @@ void HlsManifestDemuxerEngine::OnRenditionsSelected(
   if (extra.has_value()) {
     on_complete = BindPlaylistLoader(extra.value(), kAudioOverride,
                                      std::move(on_complete));
+    track_manager_->SetTrackState(std::get<0>(extra.value()),
+                                  MediaTrack::State::kActive);
   }
   if (primary.has_value()) {
     on_complete =
         BindPlaylistLoader(primary.value(), kPrimary, std::move(on_complete));
+    track_manager_->SetTrackState(std::get<0>(primary.value()),
+                                  MediaTrack::State::kActive);
   }
   std::move(on_complete).Run(OkStatus());
+}
+
+void HlsManifestDemuxerEngine::UpdateSelectableTrackLists() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(media_sequence_checker_);
+  auto audio_seq = rendition_manager_->GetSelectableAudioRenditions();
+  auto video_seq = rendition_manager_->GetSelectableVideoRenditions();
+
+  std::vector<MediaTrack> audio_tracks{audio_seq.begin(), audio_seq.end()};
+  std::vector<MediaTrack> video_tracks{video_seq.begin(), video_seq.end()};
+
+  auto track_sort = [](const MediaTrack& l, const MediaTrack& r) {
+    return l.stream_id() < r.stream_id();
+  };
+
+  std::sort(audio_tracks.begin(), audio_tracks.end(), track_sort);
+  std::sort(video_tracks.begin(), video_tracks.end(), track_sort);
+
+  auto [old_video, new_video] = DisjointSets(video_tracks_, video_tracks);
+  auto [old_audio, new_audio] = DisjointSets(audio_tracks_, audio_tracks);
+
+  for (const auto& track : old_video) {
+    track_manager_->RemoveTrack(track);
+  }
+  for (const auto& track : old_audio) {
+    track_manager_->RemoveTrack(track);
+  }
+  for (const auto& track : new_video) {
+    track_manager_->AddTrack(track);
+  }
+  for (const auto& track : new_audio) {
+    track_manager_->AddTrack(track);
+  }
+
+  audio_tracks_ = std::move(audio_tracks);
+  video_tracks_ = std::move(video_tracks);
 }
 
 void HlsManifestDemuxerEngine::LoadPlaylist(
@@ -876,7 +970,6 @@ void HlsManifestDemuxerEngine::OnStreamContainerDetermined(
   }
 
   is_seekable_ = seekable;
-  stats_reporter_.SetIsLiveContent(!seekable);
   renditions_[parse_info.role] = std::move(rendition);
   std::move(parse_complete_cb).Run(OkStatus());
 }

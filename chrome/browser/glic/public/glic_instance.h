@@ -12,7 +12,7 @@
 #include "base/uuid.h"
 #include "chrome/browser/glic/host/glic.mojom.h"
 
-class Browser;
+class BrowserWindowInterface;
 namespace views {
 class Widget;
 }  // namespace views
@@ -27,7 +27,7 @@ using InstanceId = base::Uuid;
 
 struct PanelStateContext {
   // Provided only when kGlicMultiInstance is off.
-  raw_ptr<Browser> attached_browser = nullptr;
+  raw_ptr<BrowserWindowInterface> attached_browser = nullptr;
   // Provided only when kGlicMultiInstance is off.
   raw_ptr<views::Widget> glic_widget = nullptr;
 };
@@ -86,7 +86,12 @@ class GlicInstance : public glic_instance_internal::UIDelegate {
   // Get the current conversation ID for this instance.
   virtual std::optional<std::string> conversation_id() const = 0;
 
-  virtual base::TimeTicks GetLastActiveTime() const = 0;
+  // Returns the timestamp when the instance last became active.
+  virtual base::Time GetLastActivationTimestamp() const = 0;
+
+  // Returns the duration since the instance was last active.
+  // Returns base::TimeDelta() if the instance is currently active.
+  virtual base::TimeDelta GetTimeSinceLastActive() const = 0;
 
   virtual GlicInstanceMetrics* instance_metrics() = 0;
 };

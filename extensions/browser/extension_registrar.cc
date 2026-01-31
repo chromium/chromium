@@ -6,7 +6,6 @@
 
 #include "base/check_is_test.h"
 #include "base/check_op.h"
-#include "base/containers/contains.h"
 #include "base/debug/alias.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
@@ -149,10 +148,10 @@ void ExtensionRegistrar::AddExtension(
     return;
   }
 
-  bool is_extension_loaded = false;
+  bool is_extension_installed = false;
   const Extension* old = registry_->GetInstalledExtension(extension->id());
   if (old) {
-    is_extension_loaded = true;
+    is_extension_installed = true;
     int version_compare_result = extension->version().CompareTo(old->version());
     // Other than for unpacked extensions, we should not be downgrading.
     if (!Manifest::IsUnpackedLocation(extension->location()) &&
@@ -187,7 +186,7 @@ void ExtensionRegistrar::AddExtension(
     failed_to_reload_unpacked_extensions_.erase(extension->path());
     ReplaceReloadedExtension(extension);
   } else {
-    if (is_extension_loaded) {
+    if (is_extension_installed) {
       // To upgrade an extension in place, remove the old one and then activate
       // the new one. ReloadExtension disables the extension, which is
       // sufficient.
@@ -245,7 +244,7 @@ void ExtensionRegistrar::AddNewOrUpdatedExtension(
     int install_flags,
     const syncer::StringOrdinal& page_ordinal,
     const std::string& install_parameter,
-    base::Value::Dict ruleset_install_prefs) {
+    base::DictValue ruleset_install_prefs) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   extension_prefs_->OnExtensionInstalled(
       extension, disable_reasons, page_ordinal, install_flags,
@@ -262,7 +261,7 @@ void ExtensionRegistrar::OnExtensionInstalled(
     const Extension* extension,
     const syncer::StringOrdinal& page_ordinal,
     int install_flags,
-    base::Value::Dict ruleset_install_prefs) {
+    base::DictValue ruleset_install_prefs) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   delegate_->OnExtensionInstalled(extension, page_ordinal, install_flags,
                                   std::move(ruleset_install_prefs));
@@ -825,8 +824,7 @@ void ExtensionRegistrar::OnBlocklistStateAdded(
   if (blocklist_prefs::HasAcknowledgedBlocklistState(
           extension_id, BitMapBlocklistState::BLOCKLISTED_MALWARE,
           extension_prefs_)) {
-    DCHECK(base::Contains(registry_->blocklisted_extensions().GetIDs(),
-                          extension_id));
+    DCHECK(registry_->blocklisted_extensions().GetIDs().contains(extension_id));
     return;
   }
 
@@ -950,7 +948,7 @@ void ExtensionRegistrar::TerminateExtension(const ExtensionId& extension_id) {
   // even if it's not permanently installed.
   unloaded_extension_paths_[extension->id()] = extension->path();
 
-  DCHECK(!base::Contains(reloading_extensions_, extension->id()))
+  DCHECK(!reloading_extensions_.contains(extension->id()))
       << "Enabled extension shouldn't be marked for reloading";
 
   registry_->AddTerminated(extension);
@@ -1220,13 +1218,16 @@ bool ExtensionRegistrar::ReplaceReloadedExtension(
   // The extension must already be disabled, and the original extension has
   // been unloaded.
   CHECK(registry_->disabled_extensions().Contains(extension->id()));
-  if (!delegate_->CanEnableExtension(extension.get()))
+  if (!delegate_->CanEnableExtension(extension.get())) {
     return false;
+  }
 
-  // TODO(michaelpg): Other disable reasons might have been added after the
-  // reload started. We may want to keep the extension disabled and just remove
-  // the DISABLE_RELOAD reason in that case.
-  extension_prefs_->ClearDisableReasons(extension->id());
+  // We want to keep the extension disabled if there are other disable reasons.
+  extension_prefs_->RemoveDisableReason(extension->id(),
+                                        disable_reason::DISABLE_RELOAD);
+  if (!extension_prefs_->GetDisableReasons(extension->id()).empty()) {
+    return false;
+  }
 
   // Move it over to the enabled list.
   CHECK(registry_->RemoveDisabled(extension->id()));
@@ -1247,8 +1248,7 @@ void ExtensionRegistrar::MaybeSpinUpLazyContext(const Extension* extension,
 
   // For orphaned devtools, we will reconnect devtools to it later in
   // DidCreateMainFrameForBackgroundPage().
-  bool has_orphaned_dev_tools =
-      base::Contains(orphaned_dev_tools_, extension->id());
+  bool has_orphaned_dev_tools = orphaned_dev_tools_.contains(extension->id());
 
   // Reloading component extension does not trigger install, so RuntimeAPI won't
   // be able to detect its loading. Therefore, we need to spin up its lazy

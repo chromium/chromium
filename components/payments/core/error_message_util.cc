@@ -58,16 +58,12 @@ std::string GetAppsSkippedForPartialDelegationErrorMessage(
 
 std::string GenerateHttpStatusCodeError(const GURL& url,
                                         int http_response_code) {
-  std::optional<net::HttpStatusCode> http_status_code =
-      net::TryToGetHttpStatusCode(http_response_code);
-  const char* http_reason_phrase =
-      http_status_code.has_value()
-          ? net::TryToGetHttpReasonPhrase(http_status_code.value())
-          : nullptr;
+  std::string_view status_string =
+      net::GetHttpReasonPhrase(http_response_code, /*default_value=*/"Unknown");
   return base::ReplaceStringPlaceholders(
       errors::kPaymentManifestDownloadFailedWithHttpStatusCode,
       {url.spec(), base::NumberToString(http_response_code),
-       http_reason_phrase != nullptr ? http_reason_phrase : "Unknown"},
+       std::string(status_string)},
       nullptr);
 }
 

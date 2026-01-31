@@ -619,6 +619,201 @@ TEST_F(PdfAccessibilityTreeTest, HeadingsDetectedFromTags) {
                    ax::mojom::IntAttribute::kHierarchicalLevel));
 }
 
+TEST_F(PdfAccessibilityTreeTest, TestSelectionConversionViaFindNodeOffset) {
+  // TODO(crbug.com/40707542): Parameterized this test. Should work in both
+  // structured and heuristic modes.
+
+  base::test::ScopedFeatureList pdf_tags;
+  pdf_tags.InitAndEnableFeature(chrome_pdf::features::kPdfTags);
+  CreatePdfAccessibilityTree();
+
+  constexpr size_t kTextRunLength = 6;
+
+  chrome_pdf::AccessibilityTextRunInfo first_run;
+  first_run.start_index = 0;
+  first_run.len = kTextRunLength;
+  first_run.bounds = gfx::RectF(26.0f, 189.0f, 84.0f, 13.0f);
+  first_run.direction = chrome_pdf::AccessibilityTextDirection::kNone;
+  text_runs_.push_back(first_run);
+
+  // Different location of second and later text run causes a paragraph
+  // break for unstructured/heuristic mode.
+  chrome_pdf::AccessibilityTextRunInfo second_run;
+  second_run.start_index = kTextRunLength;
+  second_run.len = kTextRunLength;
+  second_run.bounds = gfx::RectF(26.0f, 210.0f, 84.0f, 13.0f);
+  second_run.direction = chrome_pdf::AccessibilityTextDirection::kNone;
+  text_runs_.push_back(second_run);
+
+  chrome_pdf::AccessibilityTextRunInfo third_run;
+  third_run.start_index = kTextRunLength * 2;
+  third_run.len = kTextRunLength;
+  third_run.bounds = gfx::RectF(26.0f, 210.0f, 84.0f, 13.0f);
+  third_run.direction = chrome_pdf::AccessibilityTextDirection::kNone;
+  text_runs_.push_back(third_run);
+
+  chrome_pdf::AccessibilityTextRunInfo fourth_run;
+  fourth_run.start_index = kTextRunLength * 3;
+  fourth_run.len = kTextRunLength;
+  fourth_run.bounds = gfx::RectF(26.0f, 210.0f, 84.0f, 13.0f);
+  fourth_run.direction = chrome_pdf::AccessibilityTextDirection::kNone;
+  text_runs_.push_back(fourth_run);
+
+  chrome_pdf::AccessibilityTextRunInfo fifth_run;
+  fifth_run.start_index = kTextRunLength * 4;
+  fifth_run.len = kTextRunLength;
+  fifth_run.bounds = gfx::RectF(26.0f, 210.0f, 84.0f, 13.0f);
+  fifth_run.direction = chrome_pdf::AccessibilityTextDirection::kNone;
+  text_runs_.push_back(fifth_run);
+
+  // Create characters: "aaaaaa" for first run
+  for (size_t i = 0; i < kTextRunLength; ++i) {
+    chars_.push_back({static_cast<uint32_t>('a'), 10});
+  }
+  // Create characters: "bbbbbb" for second run
+  for (size_t i = 0; i < kTextRunLength; ++i) {
+    chars_.push_back({static_cast<uint32_t>('b'), 10});
+  }
+  // Create characters: "cccccc" for third run
+  for (size_t i = 0; i < kTextRunLength; ++i) {
+    chars_.push_back({static_cast<uint32_t>('c'), 10});
+  }
+  // Create characters: "dddddd" for fourth run
+  for (size_t i = 0; i < kTextRunLength; ++i) {
+    chars_.push_back({static_cast<uint32_t>('d'), 10});
+  }
+  // Create characters: "eeeeee" for fifth run
+  for (size_t i = 0; i < kTextRunLength; ++i) {
+    chars_.push_back({static_cast<uint32_t>('e'), 10});
+  }
+
+  // Build structure tree:
+  // Document -> Part -> [Sect -> Sect -> P (first text run), P (second, third,
+  // and fourth text run)]
+  auto doc_structure_root =
+      std::make_unique<chrome_pdf::AccessibilityStructureElement>();
+  doc_structure_root->type = chrome_pdf::PdfTagType::kDocument;
+
+  auto page_structure =
+      std::make_unique<chrome_pdf::AccessibilityStructureElement>();
+  page_structure->type = chrome_pdf::PdfTagType::kPart;
+
+  // First element: Sect -> Sect -> P (first text run)
+  auto outer_sect =
+      std::make_unique<chrome_pdf::AccessibilityStructureElement>();
+  outer_sect->type = chrome_pdf::PdfTagType::kSect;
+
+  auto inner_sect =
+      std::make_unique<chrome_pdf::AccessibilityStructureElement>();
+  inner_sect->type = chrome_pdf::PdfTagType::kSect;
+
+  auto first_para =
+      std::make_unique<chrome_pdf::AccessibilityStructureElement>();
+  first_para->type = chrome_pdf::PdfTagType::kP;
+  first_para->associated_text_runs_if_available.push_back(&text_runs_[0]);
+
+  inner_sect->children.push_back(std::move(first_para));
+  outer_sect->children.push_back(std::move(inner_sect));
+
+  // Second element: P (second, third and fourth text runs)
+  auto second_para =
+      std::make_unique<chrome_pdf::AccessibilityStructureElement>();
+  second_para->type = chrome_pdf::PdfTagType::kP;
+  second_para->associated_text_runs_if_available.push_back(&text_runs_[1]);
+  second_para->associated_text_runs_if_available.push_back(&text_runs_[2]);
+  second_para->associated_text_runs_if_available.push_back(&text_runs_[3]);
+  second_para->associated_text_runs_if_available.push_back(&text_runs_[4]);
+
+  page_structure->children.push_back(std::move(outer_sect));
+  page_structure->children.push_back(std::move(second_para));
+  doc_structure_root->children.push_back(std::move(page_structure));
+
+  page_info_.text_run_count = text_runs_.size();
+  page_info_.char_count = chars_.size();
+
+  std::unique_ptr<chrome_pdf::AccessibilityDocInfo> doc_info =
+      CreateAccessibilityDocInfo();
+  doc_info->is_tagged = true;
+  doc_info->structure_tree_root = std::move(doc_structure_root);
+
+  pdf_accessibility_tree_->SetAccessibilityDocInfo(std::move(doc_info));
+  pdf_accessibility_tree_->SetAccessibilityViewportInfo(viewport_info_);
+  pdf_accessibility_tree_->SetAccessibilityPageInfo(page_info_, text_runs_,
+                                                    chars_, page_objects_);
+
+  WaitForThreadTasks();
+  WaitForThreadDelayedTasks();
+
+  const ui::AXNode* pdf_root = pdf_accessibility_tree_->GetRoot();
+  CheckRootAndStatusNodes(pdf_root, page_count_,
+                          /*is_pdf_ocr_test=*/false, /*is_ocr_completed=*/false,
+                          /*create_empty_ocr_results=*/false);
+
+  ASSERT_GT(pdf_root->GetChildCount(), 1u);
+  const ui::AXNode* page = pdf_root->GetChildAtIndex(1u);
+  ASSERT_NE(nullptr, page);
+
+  // Get the first StaticText node:
+  // If structured: Page -> Section -> Section -> Paragraph -> StaticText
+  // If not structured: Page -> Paragraph -> StaticText
+  ui::AXNode* static_text = page->GetChildAtIndex(0u);
+  while (static_text->GetRole() != ax::mojom::Role::kStaticText &&
+         static_text->GetChildAtIndex(0u)) {
+    static_text = static_text->GetChildAtIndex(0u);
+  }
+  ASSERT_NE(nullptr, static_text);
+
+  // Verify that the calculated selection is at the zeroth index of
+  // the first node.
+  auto tree_data = pdf_accessibility_tree_->tree_data_for_testing();
+  EXPECT_EQ(0, tree_data.sel_anchor_offset);
+  EXPECT_EQ(0, tree_data.sel_focus_offset);
+
+  // Verify that the selection anchor node ID matches the first StaticText node.
+  EXPECT_EQ(static_text->id(), tree_data.sel_anchor_object_id);
+  EXPECT_EQ(static_text->id(), tree_data.sel_focus_object_id);
+
+  int32_t out_node_id = -1;
+  int32_t out_node_char_index = 0;
+
+  // Now get the node associated with the 10 character.
+  pdf_accessibility_tree_->FindNodeOffsetForTesting(
+      /*end_of_selection=*/false, 0, 10, &out_node_id, &out_node_char_index);
+
+  // Get the last StaticText node:
+  // Page -> Paragraph (second child of Page) -> StaticText
+  const ui::AXNode* second_static_text =
+      page->GetChildAtIndex(1u)->GetChildAtIndex(0u);
+  ASSERT_NE(nullptr, second_static_text);
+  EXPECT_EQ(ax::mojom::Role::kStaticText, second_static_text->GetRole());
+  EXPECT_EQ(4, out_node_char_index);
+  EXPECT_EQ(second_static_text->id(), out_node_id);
+
+  // Get the node and offset associated with the 11 character
+  pdf_accessibility_tree_->FindNodeOffsetForTesting(
+      /*end_of_selection=*/false, 0, 11, &out_node_id, &out_node_char_index);
+  ASSERT_NE(nullptr, second_static_text);
+  EXPECT_EQ(ax::mojom::Role::kStaticText, second_static_text->GetRole());
+  EXPECT_EQ(5, out_node_char_index);
+  EXPECT_EQ(second_static_text->id(), out_node_id);
+
+  // Get the node and offset associated with the 22 character
+  pdf_accessibility_tree_->FindNodeOffsetForTesting(
+      /*end_of_selection=*/false, 0, 22, &out_node_id, &out_node_char_index);
+  ASSERT_NE(nullptr, second_static_text);
+  EXPECT_EQ(ax::mojom::Role::kStaticText, second_static_text->GetRole());
+  EXPECT_EQ(16, out_node_char_index);
+  EXPECT_EQ(second_static_text->id(), out_node_id);
+
+  // Get the node and offset associated with the 24 character (end of selection)
+  pdf_accessibility_tree_->FindNodeOffsetForTesting(
+      /*end_of_selection=*/true, 0, 24, &out_node_id, &out_node_char_index);
+  ASSERT_NE(nullptr, second_static_text);
+  EXPECT_EQ(ax::mojom::Role::kStaticText, second_static_text->GetRole());
+  EXPECT_EQ(18, out_node_char_index);
+  EXPECT_EQ(second_static_text->id(), out_node_id);
+}
+
 TEST_F(PdfAccessibilityTreeTest, StructureTree) {
   base::test::ScopedFeatureList pdf_tags;
   pdf_tags.InitAndEnableFeature(chrome_pdf::features::kPdfTags);
@@ -779,6 +974,141 @@ TEST_F(PdfAccessibilityTreeTest, StructureTree) {
   const ui::AXNode* link_node = page->GetChildAtIndex(6u);
   ASSERT_NE(nullptr, link_node);
   EXPECT_EQ(ax::mojom::Role::kImage, link_node->GetRole());
+}
+
+TEST_F(PdfAccessibilityTreeTest, PartiallyTaggedPdfPreservesSemanticStructure) {
+  base::test::ScopedFeatureList pdf_tags;
+  pdf_tags.InitAndEnableFeature(chrome_pdf::features::kPdfTags);
+  CreatePdfAccessibilityTree();
+
+  // Create 5 text runs.
+  // text_run[0]: untagged, at beginning - contains "0000000"
+  // text_run[1]: tagged, in first list item - contains "1111111"
+  // text_run[2]: untagged, after tagged run - contains "2222222"
+  // text_run[3]: tagged, in second list item - contains "3333333"
+  // text_run[4]: tagged, in second list item - contains "4444444"
+  constexpr size_t kTotalRuns = 5;
+  for (size_t i = 0; i < kTotalRuns; ++i) {
+    text_runs_.push_back(kFirstRunMultiLine);
+    text_runs_.back().start_index = i * kFirstRunMultiLine.len;
+  }
+  // Create characters with each text run having its index repeated.
+  for (size_t i = 0; i < kTotalRuns * kFirstRunMultiLine.len; ++i) {
+    char digit = '0' + (i / kFirstRunMultiLine.len);
+    chars_.push_back({static_cast<uint32_t>(digit), 10});
+  }
+
+  // Build structure tree with a list containing 2 list items.
+  auto doc_structure_root =
+      std::make_unique<chrome_pdf::AccessibilityStructureElement>();
+  doc_structure_root->type = chrome_pdf::PdfTagType::kDocument;
+
+  auto page_structure =
+      std::make_unique<chrome_pdf::AccessibilityStructureElement>();
+  page_structure->type = chrome_pdf::PdfTagType::kPart;
+
+  // Set unassociated text run ranges for text_run[0] and text_run[2].
+  page_structure->unassociated_text_run_ranges_for_page.push_back({0, 0});
+  page_structure->unassociated_text_run_ranges_for_page.push_back({2, 2});
+
+  auto list = std::make_unique<chrome_pdf::AccessibilityStructureElement>();
+  list->type = chrome_pdf::PdfTagType::kL;
+
+  // First list item contains text_run[1].
+  auto list_item1 =
+      std::make_unique<chrome_pdf::AccessibilityStructureElement>();
+  list_item1->type = chrome_pdf::PdfTagType::kLI;
+  list_item1->associated_text_runs_if_available.push_back(&text_runs_[1]);
+
+  // Second list item contains text_run[3] and text_run[4].
+  auto list_item2 =
+      std::make_unique<chrome_pdf::AccessibilityStructureElement>();
+  list_item2->type = chrome_pdf::PdfTagType::kLI;
+  list_item2->associated_text_runs_if_available.push_back(&text_runs_[3]);
+  list_item2->associated_text_runs_if_available.push_back(&text_runs_[4]);
+
+  // text_run[0] and text_run[2] are intentionally not tagged.
+
+  list->children.push_back(std::move(list_item1));
+  list->children.push_back(std::move(list_item2));
+  page_structure->children.push_back(std::move(list));
+  doc_structure_root->children.push_back(std::move(page_structure));
+
+  page_info_.text_run_count = text_runs_.size();
+  page_info_.char_count = chars_.size();
+
+  std::unique_ptr<chrome_pdf::AccessibilityDocInfo> doc_info =
+      CreateAccessibilityDocInfo();
+  doc_info->is_tagged = true;
+  doc_info->structure_tree_root = std::move(doc_structure_root);
+
+  pdf_accessibility_tree_->SetAccessibilityDocInfo(std::move(doc_info));
+  pdf_accessibility_tree_->SetAccessibilityViewportInfo(viewport_info_);
+  pdf_accessibility_tree_->SetAccessibilityPageInfo(page_info_, text_runs_,
+                                                    chars_, page_objects_);
+
+  WaitForThreadTasks();
+  WaitForThreadDelayedTasks();
+
+  const ui::AXNode* pdf_root = pdf_accessibility_tree_->GetRoot();
+  CheckRootAndStatusNodes(pdf_root, page_count_,
+                          /*is_pdf_ocr_test=*/false, /*is_ocr_completed=*/false,
+                          /*create_empty_ocr_results=*/false);
+
+  ASSERT_GT(pdf_root->GetChildCount(), 1u);
+  const ui::AXNode* page = pdf_root->GetChildAtIndex(1u);
+  ASSERT_NE(nullptr, page);
+
+  // Expected structure:
+  // Page
+  //   - Paragraph (for text_run[0] - untagged)
+  //   - List
+  //     - ListItem 1 (contains text_run[1] and text_run[2] - untagged)
+  //     - ListItem 2 (contains text_run[3] and text_run[4])
+  ASSERT_EQ(2u, page->GetChildCount());
+
+  // First child: paragraph containing text_run[0].
+  const ui::AXNode* first_para = page->GetChildAtIndex(0u);
+  ASSERT_NE(nullptr, first_para);
+  EXPECT_EQ(ax::mojom::Role::kParagraph, first_para->GetRole());
+  ASSERT_EQ(1u, first_para->GetChildCount());
+  const ui::AXNode* first_para_static_text = first_para->GetChildAtIndex(0u);
+  EXPECT_EQ(ax::mojom::Role::kStaticText, first_para_static_text->GetRole());
+  EXPECT_EQ(1u, first_para_static_text->GetChildCount());
+
+  // Second child: list with 2 list items.
+  const ui::AXNode* list_node = page->GetChildAtIndex(1u);
+  ASSERT_NE(nullptr, list_node);
+  EXPECT_EQ(ax::mojom::Role::kList, list_node->GetRole());
+  ASSERT_EQ(2u, list_node->GetChildCount());
+
+  // First child of list: list item 1 containing text_run[1] and text_run[2].
+  const ui::AXNode* list_item1_node = list_node->GetChildAtIndex(0u);
+  ASSERT_NE(nullptr, list_item1_node);
+  EXPECT_EQ(ax::mojom::Role::kListItem, list_item1_node->GetRole());
+  ASSERT_EQ(1u, list_item1_node->GetChildCount());
+  const ui::AXNode* list_item1_static_text =
+      list_item1_node->GetChildAtIndex(0u);
+  EXPECT_EQ(ax::mojom::Role::kStaticText, list_item1_static_text->GetRole());
+  // List item 1 contains 2 inline text boxes (text_run[1] and text_run[2]).
+  EXPECT_EQ(2u, list_item1_static_text->GetChildCount());
+
+  // Second child of list: list item 2 containing text_run[3] and text_run[4].
+  const ui::AXNode* list_item2_node = list_node->GetChildAtIndex(1u);
+  ASSERT_NE(nullptr, list_item2_node);
+  EXPECT_EQ(ax::mojom::Role::kListItem, list_item2_node->GetRole());
+  ASSERT_EQ(1u, list_item2_node->GetChildCount());
+  const ui::AXNode* list_item2_static_text =
+      list_item2_node->GetChildAtIndex(0u);
+  EXPECT_EQ(ax::mojom::Role::kStaticText, list_item2_static_text->GetRole());
+  // List item 2 contains 2 inline text boxes (text_run[3] and text_run[4]).
+  EXPECT_EQ(2u, list_item2_static_text->GetChildCount());
+
+  // Verify total count of inline text boxes equals total runs.
+  size_t total_inline_text_box_count = first_para_static_text->GetChildCount() +
+                                       list_item1_static_text->GetChildCount() +
+                                       list_item2_static_text->GetChildCount();
+  EXPECT_EQ(kTotalRuns, total_inline_text_box_count);
 }
 
 TEST_F(PdfAccessibilityTreeTest, TestOverlappingAnnots) {
@@ -2684,9 +3014,6 @@ TEST_F(PdfAccessibilityTreeTest, StitchChildTreeAction) {
 }
 
 #if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
-// TODO(crbug.com/40267312): Add test for end result on a non-synthetic
-// multi-page PDF.
-
 using PdfOcrTest = PdfAccessibilityTreeTest;
 
 TEST_F(PdfOcrTest, CheckLiveRegionPoliteStatus) {

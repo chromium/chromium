@@ -65,15 +65,15 @@ class TestHarness : public PolicyProviderTestHarness {
   void InstallBooleanPolicy(const std::string& policy_name,
                             bool policy_value) override;
   void InstallStringListPolicy(const std::string& policy_name,
-                               const base::Value::List& policy_value) override;
+                               const base::ListValue& policy_value) override;
   void InstallDictionaryPolicy(const std::string& policy_name,
-                               const base::Value::Dict& policy_value) override;
-  void Install3rdPartyPolicy(const base::Value::Dict& policies) override;
+                               const base::DictValue& policy_value) override;
+  void Install3rdPartyPolicy(const base::DictValue& policies) override;
 
   const base::FilePath& test_dir() { return test_dir_.GetPath(); }
 
   // JSON-encode a dictionary and write it to a file.
-  void WriteConfigFile(const base::Value::Dict& dict,
+  void WriteConfigFile(const base::DictValue& dict,
                        const std::string& file_name);
   void WriteConfigFile(const std::string& data, const std::string& file_name);
 
@@ -109,54 +109,52 @@ ConfigurationPolicyProvider* TestHarness::CreateProvider(
 }
 
 void TestHarness::InstallEmptyPolicy() {
-  base::Value::Dict dict;
+  base::DictValue dict;
   WriteConfigFile(dict, NextConfigFileName());
 }
 
 void TestHarness::InstallStringPolicy(const std::string& policy_name,
                                       const std::string& policy_value) {
-  base::Value::Dict dict;
+  base::DictValue dict;
   dict.Set(policy_name, policy_value);
   WriteConfigFile(dict, NextConfigFileName());
 }
 
 void TestHarness::InstallIntegerPolicy(const std::string& policy_name,
                                        int policy_value) {
-  base::Value::Dict dict;
+  base::DictValue dict;
   dict.Set(policy_name, policy_value);
   WriteConfigFile(dict, NextConfigFileName());
 }
 
 void TestHarness::InstallBooleanPolicy(const std::string& policy_name,
                                        bool policy_value) {
-  base::Value::Dict dict;
+  base::DictValue dict;
   dict.Set(policy_name, policy_value);
   WriteConfigFile(dict, NextConfigFileName());
 }
 
-void TestHarness::InstallStringListPolicy(
-    const std::string& policy_name,
-    const base::Value::List& policy_value) {
-  base::Value::Dict dict;
+void TestHarness::InstallStringListPolicy(const std::string& policy_name,
+                                          const base::ListValue& policy_value) {
+  base::DictValue dict;
   dict.Set(policy_name, policy_value.Clone());
   WriteConfigFile(dict, NextConfigFileName());
 }
 
-void TestHarness::InstallDictionaryPolicy(
-    const std::string& policy_name,
-    const base::Value::Dict& policy_value) {
-  base::Value::Dict dict;
+void TestHarness::InstallDictionaryPolicy(const std::string& policy_name,
+                                          const base::DictValue& policy_value) {
+  base::DictValue dict;
   dict.Set(policy_name, policy_value.Clone());
   WriteConfigFile(dict, NextConfigFileName());
 }
 
-void TestHarness::Install3rdPartyPolicy(const base::Value::Dict& policies) {
-  base::Value::Dict dict;
+void TestHarness::Install3rdPartyPolicy(const base::DictValue& policies) {
+  base::DictValue dict;
   dict.Set("3rdparty", policies.Clone());
   WriteConfigFile(dict, NextConfigFileName());
 }
 
-void TestHarness::WriteConfigFile(const base::Value::Dict& dict,
+void TestHarness::WriteConfigFile(const base::DictValue& dict,
                                   const std::string& file_name) {
   std::string data;
   JSONStringValueSerializer serializer(&data);
@@ -248,12 +246,12 @@ TEST_F(ConfigDirPolicyLoaderTest, ReadPrefsMergePrefs) {
   // provider not respecting lexicographic ordering when reading them. Since the
   // filesystem may return files in arbitrary order, there is no way to be sure,
   // but this is better than nothing.
-  base::Value::Dict test_dict_bar;
+  base::DictValue test_dict_bar;
   const char kHomepageLocation[] = "HomepageLocation";
   test_dict_bar.Set(kHomepageLocation, "http://bar.com");
   for (unsigned int i = 1; i <= 4; ++i)
     harness_.WriteConfigFile(test_dict_bar, base::NumberToString(i));
-  base::Value::Dict test_dict_foo;
+  base::DictValue test_dict_foo;
   test_dict_foo.Set(kHomepageLocation, "http://foo.com");
   harness_.WriteConfigFile(test_dict_foo, "9");
   for (unsigned int i = 5; i <= 8; ++i)

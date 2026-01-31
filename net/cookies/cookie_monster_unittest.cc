@@ -1136,10 +1136,8 @@ class CookieMonsterLegacyScopeTest : public CookieMonsterTest {
 // For testing the Get and Set functions are all that are needed.
 class TestPrefDelegate : public CookieMonster::PrefDelegate {
  public:
-  const base::Value::Dict& GetLegacyDomains() const override {
-    return test_dict;
-  }
-  void SetLegacyDomains(base::Value::Dict dict) override {
+  const base::DictValue& GetLegacyDomains() const override { return test_dict; }
+  void SetLegacyDomains(base::DictValue dict) override {
     test_dict = std::move(dict);
   }
 
@@ -1147,7 +1145,7 @@ class TestPrefDelegate : public CookieMonster::PrefDelegate {
     NOTREACHED();
   }
   bool IsPrefReady() override { return true; }
-  base::Value::Dict test_dict;
+  base::DictValue test_dict;
 };
 
 TEST_F(DeferredCookieTaskTest, DeferredGetCookieList) {

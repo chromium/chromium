@@ -1353,31 +1353,41 @@ TEST_P(PrintContextTest, WhiteRootBackgroundWithShouldPrintBackgroundEnabled) {
   PrintSinglePage(canvas);
 }
 
-// Test env(safe-printable-inset).
 TEST_P(PrintContextFrameTest, SafePrintableInset) {
   SetBodyInnerHTML(R"HTML(
-      <div id="target" style="height:env(safe-printable-inset);"></div>
+      <style>
+        @page {
+          margin: 10px;
+          page-margin-safety: add;
+        }
+        body {
+          margin: 0;
+        }
+      </style>
+      <div id="target" style="position:absolute; width:100%; height:100%;"></div>
 )HTML");
-  gfx::SizeF page_size(400, 400);
+  gfx::SizeF page_size(400, 300);
   auto* target = GetDocument().getElementById(AtomicString("target"));
 
   WebPrintParams params(page_size);
   // top, right, bottom, left insets: 20px, 50px, 0, 10px (see page_size).
-  params.printable_area_in_css_pixels = gfx::RectF(10, 20, 340, 380);
+  params.printable_area_in_css_pixels = gfx::RectF(10, 20, 340, 280);
 
-  // Test that it only works when printing.
-  EXPECT_EQ(target->OffsetHeight(), 0);
+  // Page size is 400 by 300 pixels. Subtract unsafe area (50px at each edge) in
+  // page margins.
   GetDocument().GetFrame()->StartPrinting(params);
-  EXPECT_EQ(target->OffsetHeight(), 50);
+  EXPECT_EQ(target->OffsetWidth(), 280);
+  EXPECT_EQ(target->OffsetHeight(), 180);
   GetDocument().GetFrame()->EndPrinting();
-  EXPECT_EQ(target->OffsetHeight(), 0);
 
   // Test n-up printing (multiple pages per sheet). The printing code makes sure
-  // that the pages steer clear of any unprintable area near the paper edges, so
-  // env(safe-printable-inset) should just be 0.
+  // that the pages steer clear of any unprintable area near the paper edges
+  // (content will be scaled down to fit), so no margin adjustments should be
+  // made for each individual page.
   params.pages_per_sheet = 4;
   GetDocument().GetFrame()->StartPrinting(params);
-  EXPECT_EQ(target->OffsetHeight(), 0);
+  EXPECT_EQ(target->OffsetWidth(), 380);
+  EXPECT_EQ(target->OffsetHeight(), 280);
   GetDocument().GetFrame()->EndPrinting();
 }
 

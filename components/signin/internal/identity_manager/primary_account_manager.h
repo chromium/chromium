@@ -29,7 +29,6 @@
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
 #include "base/scoped_observation.h"
-#include "components/prefs/pref_member.h"
 #include "components/signin/internal/identity_manager/profile_oauth2_token_service_observer.h"
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/base/signin_client.h"
@@ -66,16 +65,23 @@ class PrimaryAccountManager : public ProfileOAuth2TokenServiceObserver {
   };
 
   // Enum for histogram 'Signin.PAMInitialize.PrimaryAccountInfoState'.
+  //
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
+  //
+  // LINT.IfChange(InitializeAccountInfoState)
   enum class InitializeAccountInfoState {
     kAccountInfoAvailable = 0,
     kEmptyAccountInfo_RestoreFailedNotSyncConsented = 1,
     kEmptyAccountInfo_RestoreFailedNoLastSyncGaiaId = 2,
     kEmptyAccountInfo_RestoreFailedNoLastSyncEmail = 3,
     kEmptyAccountInfo_RestoreFailedAccountIdDontMatch = 4,
-    kEmptyAccountInfo_RestoreFailedAsRestoreFeatureIsDisabled = 5,
+    // kEmptyAccountInfo_RestoreFailedAsRestoreFeatureIsDisabled = 5, // no
+    // longer used, related feature flag has been removed
     kEmptyAccountInfo_RestoreSuccessFromLastSyncInfo = 6,
     kMaxValue = kEmptyAccountInfo_RestoreSuccessFromLastSyncInfo,
   };
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/signin/enums.xml:PAMInitializePrimaryAccountInfoState)
 
   PrimaryAccountManager(SigninClient* client,
                         ProfileOAuth2TokenService* token_service,
@@ -219,13 +225,6 @@ class PrimaryAccountManager : public ProfileOAuth2TokenServiceObserver {
   // account was initialized.
   const PrimaryAccount& GetPrimaryAccount() const;
 
-  // Callback to changes of `prefs::kSigninAllowed` pref.
-  void OnSigninAllowedPrefChanged();
-
-  // Returns true if the `prefs::kSigninAllowed` pref should modify the primary
-  // account, based on the current state.
-  bool ShouldSigninAllowedPrefAffectPrimaryAccount(bool is_sync_consent);
-
   // The SigninClient instance associated with this object. Must outlive this
   // object.
   raw_ptr<SigninClient> client_;
@@ -244,15 +243,10 @@ class PrimaryAccountManager : public ProfileOAuth2TokenServiceObserver {
   // this field.
   std::optional<PrimaryAccount> primary_account_;
 
-  BooleanPrefMember signin_allowed_;
-
   base::ObserverList<Observer> observers_;
   base::ScopedObservation<ProfileOAuth2TokenService,
                           ProfileOAuth2TokenServiceObserver>
       token_service_observation_{this};
 };
-
-// Internal feature - exposed only unit testing.
-BASE_DECLARE_FEATURE(kRestorePrimaryAccountInfo);
 
 #endif  // COMPONENTS_SIGNIN_INTERNAL_IDENTITY_MANAGER_PRIMARY_ACCOUNT_MANAGER_H_

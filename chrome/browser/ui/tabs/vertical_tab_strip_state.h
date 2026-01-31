@@ -7,12 +7,14 @@
 
 namespace tabs {
 
+inline constexpr int kVerticalTabStripDefaultUncollapsedWidth = 240;
+
 // Per-window state for the vertical tab strip.
 struct VerticalTabStripState {
   // Whether the vertical tab strip is collapsed.
   bool collapsed = false;
   // The width of the vertical tab strip when it is not collapsed.
-  int uncollapsed_width = 0;
+  int uncollapsed_width = kVerticalTabStripDefaultUncollapsedWidth;
 };
 
 }  // namespace tabs

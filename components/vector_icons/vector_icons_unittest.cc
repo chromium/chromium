@@ -21,9 +21,8 @@ class VectorIconsTest : public ::testing::Test {
     for (size_t i = 0; i < path_elements.size(); ++i) {
       EXPECT_EQ(icon.reps[i].path.size(), path_elements[i].size());
       for (size_t j = 0; j < path_elements[i].size(); ++j) {
-        EXPECT_EQ(
-            0, UNSAFE_TODO(memcmp(&path_elements[i][j], &icon.reps[i].path[j],
-                                  sizeof(gfx::PathElement))));
+        EXPECT_EQ(path_elements[i][j].command, icon.reps[i].path[j].command);
+        EXPECT_EQ(path_elements[i][j].arg, icon.reps[i].path[j].arg);
       }
     }
   }

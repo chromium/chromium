@@ -242,7 +242,7 @@ class PlayerMediator implements InteractionHandler {
             onSpeedChange(ReadAloudPrefs.getSpeed(mDelegate.getPrefService()));
             mModel.set(
                     PlayerProperties.HIGHLIGHTING_ENABLED,
-                    assumeNonNull(mDelegate.getHighlightingEnabledSupplier().get()));
+                    mDelegate.getHighlightingEnabledSupplier().get());
             mModel.set(
                     PlayerProperties.HIGHLIGHTING_SUPPORTED,
                     mDelegate.isHighlightingSupported(metadata.playbackMode()));

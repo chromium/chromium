@@ -183,14 +183,9 @@ export function getHtml(this: ItemElement) {
         icon-class="cr20:kite"
         icon-aria-label="$i18n{parentDisabledPermissions}">
     </cr-tooltip-icon>
-    <cr-tooltip id="enable-toggle-tooltip" for="enableToggle"
-        position="${this.enableToggleTooltipPosition_}"
-        aria-hidden="true" animation-delay="0" fit-to-visible-bounds>
-      ${this.getEnableToggleTooltipText_()}
-    </cr-tooltip>
     <cr-toggle id="enableToggle"
         aria-label="${this.getEnableToggleAriaLabel_()}"
-        aria-describedby="a11yAssociation enable-toggle-tooltip"
+        aria-describedby="a11yAssociation"
         ?checked="${this.isEnabled_()}" @change="${this.onEnableToggleChange_}"
         ?disabled="${!this.isEnableToggleEnabled_()}"
         ?hidden="${!this.showEnableToggle_()}">

@@ -48,6 +48,7 @@ class SyncService;
 @property(nonatomic, assign, readonly) BOOL ignoreDismissGesture;
 // Delegate of the mediator.
 @property(nonatomic, weak) id<FullscreenSigninScreenMediatorDelegate> delegate;
+@property(nonatomic, assign, readonly) BOOL signinInProgress;
 
 // The designated initializer.
 // `accountManagerService` account manager service.

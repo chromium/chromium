@@ -62,25 +62,25 @@ base::android::ScopedJavaLocalRef<jobjectArray> ConvertResponseHeadersToJava(
 
 }  // namespace
 
-static jlong JNI_CronetUrlRequest_CreateRequestAdapter(
+static int64_t JNI_CronetUrlRequest_CreateRequestAdapter(
     JNIEnv* env,
     const JavaRef<jobject>& jurl_request,
-    jlong jurl_request_context_adapter,
+    int64_t jurl_request_context_adapter,
     const JavaRef<jstring>& jurl_string,
-    jint jpriority,
-    jboolean jdisable_cache,
-    jboolean jdisable_connection_migration,
-    jboolean jtraffic_stats_tag_set,
-    jint jtraffic_stats_tag,
-    jboolean jtraffic_stats_uid_set,
-    jint jtraffic_stats_uid,
-    jint jidempotency,
+    int32_t jpriority,
+    bool jdisable_cache,
+    bool jdisable_connection_migration,
+    bool jtraffic_stats_tag_set,
+    int32_t jtraffic_stats_tag,
+    bool jtraffic_stats_uid_set,
+    int32_t jtraffic_stats_uid,
+    int32_t jidempotency,
     const base::android::JavaRef<jbyteArray>& jdictionary_sha256_hash,
     const base::android::JavaRef<jobject>& jdictionary_byte_buffer,
-    jint jdictionary_position,
-    jint jdictionary_limit,
+    int32_t jdictionary_position,
+    int32_t jdictionary_limit,
     const base::android::JavaRef<jstring>& jdictionary_id,
-    jlong jnetwork_handle) {
+    int64_t jnetwork_handle) {
   CHECK(jdictionary_id);
   CronetContextAdapter* context_adapter =
       reinterpret_cast<CronetContextAdapter*>(jurl_request_context_adapter);
@@ -106,7 +106,7 @@ static jlong JNI_CronetUrlRequest_CreateRequestAdapter(
           /*dictionary_id=*/jdictionary_id),
       jnetwork_handle);
 
-  return reinterpret_cast<jlong>(adapter);
+  return reinterpret_cast<int64_t>(adapter);
 }
 
 CronetURLRequestAdapter::CronetURLRequestAdapter(
@@ -115,15 +115,15 @@ CronetURLRequestAdapter::CronetURLRequestAdapter(
     const base::android::JavaRef<jobject>& jurl_request,
     const GURL& url,
     net::RequestPriority priority,
-    jboolean jdisable_cache,
-    jboolean jdisable_connection_migration,
-    jboolean jtraffic_stats_tag_set,
-    jint jtraffic_stats_tag,
-    jboolean jtraffic_stats_uid_set,
-    jint jtraffic_stats_uid,
+    bool jdisable_cache,
+    bool jdisable_connection_migration,
+    bool jtraffic_stats_tag_set,
+    int32_t jtraffic_stats_tag,
+    bool jtraffic_stats_uid_set,
+    int32_t jtraffic_stats_uid,
     net::Idempotency idempotency,
     scoped_refptr<net::SharedDictionary> shared_dictionary,
-    jlong network)
+    int64_t network)
     : request_(new CronetURLRequest(context->cronet_url_request_context(),
                                     base::WrapUnique<>(this),
                                     url,
@@ -143,17 +143,15 @@ CronetURLRequestAdapter::CronetURLRequestAdapter(
 CronetURLRequestAdapter::~CronetURLRequestAdapter() {
 }
 
-jboolean CronetURLRequestAdapter::SetHttpMethod(
-    JNIEnv* env,
-    const JavaRef<jstring>& jmethod) {
+bool CronetURLRequestAdapter::SetHttpMethod(JNIEnv* env,
+                                            const JavaRef<jstring>& jmethod) {
   std::string method(base::android::ConvertJavaStringToUTF8(env, jmethod));
   return request_->SetHttpMethod(method) ? JNI_TRUE : JNI_FALSE;
 }
 
-jboolean CronetURLRequestAdapter::AddRequestHeader(
-    JNIEnv* env,
-    const JavaRef<jstring>& jname,
-    const JavaRef<jstring>& jvalue) {
+bool CronetURLRequestAdapter::AddRequestHeader(JNIEnv* env,
+                                               const JavaRef<jstring>& jname,
+                                               const JavaRef<jstring>& jvalue) {
   std::string name(base::android::ConvertJavaStringToUTF8(env, jname));
   std::string value(base::android::ConvertJavaStringToUTF8(env, jvalue));
   return request_->AddRequestHeader(name, value) ? JNI_TRUE : JNI_FALSE;
@@ -182,10 +180,10 @@ void CronetURLRequestAdapter::FollowDeferredRedirect(JNIEnv* env) {
   request_->FollowDeferredRedirect();
 }
 
-jboolean CronetURLRequestAdapter::ReadData(JNIEnv* env,
-                                           const JavaRef<jobject>& jbyte_buffer,
-                                           jint jposition,
-                                           jint jlimit) {
+bool CronetURLRequestAdapter::ReadData(JNIEnv* env,
+                                       const JavaRef<jobject>& jbyte_buffer,
+                                       int32_t jposition,
+                                       int32_t jlimit) {
   DCHECK_LT(jposition, jlimit);
 
   IOBufferWithByteBuffer* read_buffer =
@@ -196,8 +194,7 @@ jboolean CronetURLRequestAdapter::ReadData(JNIEnv* env,
   return JNI_TRUE;
 }
 
-void CronetURLRequestAdapter::Destroy(JNIEnv* env,
-                                      jboolean jsend_on_canceled) {
+void CronetURLRequestAdapter::Destroy(JNIEnv* env, bool jsend_on_canceled) {
   // Destroy could be called from any thread, including network thread (if
   // posting task to executor throws an exception), but is posted, so |this|
   // is valid until calling task is complete. Destroy() is always called from
@@ -232,7 +229,8 @@ void CronetURLRequestAdapter::OnResponseStarted(
     bool was_cached,
     const std::string& negotiated_protocol,
     const std::string& proxy_server,
-    int64_t received_byte_count) {
+    int64_t received_byte_count,
+    bool is_proxied) {
   JNIEnv* env = base::android::AttachCurrentThread();
   cronet::Java_CronetUrlRequest_onResponseStarted(
       env, owner_, http_status_code,
@@ -240,7 +238,8 @@ void CronetURLRequestAdapter::OnResponseStarted(
       ConvertResponseHeadersToJava(env, headers),
       was_cached ? JNI_TRUE : JNI_FALSE,
       ConvertUTF8ToJavaString(env, negotiated_protocol),
-      ConvertUTF8ToJavaString(env, proxy_server), received_byte_count);
+      ConvertUTF8ToJavaString(env, proxy_server), received_byte_count,
+      is_proxied);
 }
 
 void CronetURLRequestAdapter::OnReadCompleted(

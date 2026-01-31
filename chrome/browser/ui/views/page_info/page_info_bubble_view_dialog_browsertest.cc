@@ -34,7 +34,6 @@
 #include "components/content_settings/browser/page_specific_content_settings.h"
 #include "components/content_settings/core/browser/content_settings_registry.h"
 #include "components/content_settings/core/browser/permission_settings_registry.h"
-#include "components/content_settings/core/common/cookie_blocking_3pcd_status.h"
 #include "components/content_settings/core/common/cookie_controls_state.h"
 #include "components/content_settings/core/common/features.h"
 #include "components/optimization_guide/core/optimization_guide_proto_util.h"
@@ -79,7 +78,7 @@ constexpr char kMerchantTrustUrlWithoutSummary[] = "c.test";
 void OpenPageInfoBubble(Browser* browser) {
   BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser);
   LocationIconView* location_icon_view =
-      browser_view->toolbar()->location_bar()->location_icon_view();
+      browser_view->toolbar()->location_bar_view()->location_icon_view();
   ASSERT_TRUE(location_icon_view);
   ui::test::TestEvent event;
   location_icon_view->ShowBubble(event);
@@ -497,8 +496,8 @@ IN_PROC_BROWSER_TEST_F(PageInfoBubbleViewDialogBrowserTest,
 // set. All permissions will show regardless of its factory default value.
 IN_PROC_BROWSER_TEST_F(PageInfoBubbleViewDialogBrowserTest,
                        InvokeUi_AllowAllPermissions) {
-  // Last updated in crrev.com/c/5784580.
-  set_baseline("5784580");
+  // Last updated in crrev.com/c/7233078.
+  set_baseline("7233078");
   ShowAndVerifyUi();
 }
 
@@ -506,8 +505,8 @@ IN_PROC_BROWSER_TEST_F(PageInfoBubbleViewDialogBrowserTest,
 // set. All permissions will show regardless of its factory default value.
 IN_PROC_BROWSER_TEST_F(PageInfoBubbleViewDialogBrowserTest,
                        InvokeUi_BlockAllPermissions) {
-  // Last updated in crrev.com/c/5784580.
-  set_baseline("5784580");
+  // Last updated in crrev.com/c/7233078.
+  set_baseline("7233078");
   ShowAndVerifyUi();
 }
 

@@ -47,6 +47,7 @@ class ProfilePickerFlowController : public ProfileManagementFlowControllerImpl {
   void SwitchToSignedOutPostIdentityFlow(Profile* profile);
 
   // ProfileManagementFlowControllerImpl:
+  void ShowSigninError(Profile* profile, const SigninUIError& error) override;
   void PickProfile(
       const base::FilePath& profile_path,
       ProfilePicker::ProfilePickingArgs args,

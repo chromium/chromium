@@ -51,12 +51,15 @@ component("network_service") {
     "devtools_durable_msg_collector.h",
     "devtools_durable_msg_collector_manager.cc",
     "devtools_durable_msg_collector_manager.h",
+    "devtools_durable_msg_writer.h",
     "disk_cache/mojo_backend_file_operations.cc",
     "disk_cache/mojo_backend_file_operations.h",
     "disk_cache/mojo_backend_file_operations_factory.cc",
     "disk_cache/mojo_backend_file_operations_factory.h",
     "dns_config_change_manager.cc",
     "dns_config_change_manager.h",
+    "enterprise/encryption/chunked_encryptor.cc",
+    "enterprise/encryption/chunked_encryptor.h",
     "enterprise/encryption/encrypted_backend_file_operations.cc",
     "enterprise/encryption/encrypted_backend_file_operations.h",
     "enterprise/encryption/encrypted_backend_file_operations_factory.cc",
@@ -88,6 +91,8 @@ component("network_service") {
     "known_legacy_scope_domains_delegate.h",
     "mojo_host_resolver_impl.cc",
     "mojo_host_resolver_impl.h",
+    "multiple_durable_message_writer_impl.cc",
+    "multiple_durable_message_writer_impl.h",
     "net_log_exporter.cc",
     "net_log_exporter.h",
     "net_log_proxy_sink.cc",
@@ -347,6 +352,7 @@ component("network_service") {
     "//components/content_settings/core/common",
     "//components/cookie_config",
     "//components/domain_reliability",
+    "//components/enterprise/buildflags",
     "//components/network_session_configurator/browser",
     "//components/network_session_configurator/common",
     "//components/os_crypt/async/common",
@@ -357,6 +363,7 @@ component("network_service") {
     "//components/url_pattern",
     "//components/web_package",
     "//components/webrtc:fake_ssl_socket",
+    "//crypto",
     "//mojo/public/cpp/base",
     "//mojo/public/cpp/base:protobuf_support",
     "//mojo/public/cpp/bindings",
@@ -410,10 +417,7 @@ component("network_service") {
   }
 
   if (is_android) {
-    deps += [
-      "//crypto",
-      "//third_party/boringssl",
-    ]
+    deps += [ "//third_party/boringssl" ]
   }
 
   if (is_win) {
@@ -463,6 +467,8 @@ source_set("tests") {
     "devtools_durable_msg_collector_manager_unittest.cc",
     "devtools_durable_msg_collector_unittest.cc",
     "dns_config_change_manager_unittest.cc",
+    "enterprise/encryption/chunked_encryptor_unittest.cc",
+    "enterprise/encryption/encrypted_cache_file_unittest.cc",
     "enterprise/encryption/os_crypt_cache_encryption_delegate_unittest.cc",
     "host_resolver_unittest.cc",
     "http_cache_data_counter_unittest.cc",
@@ -471,6 +477,7 @@ source_set("tests") {
     "keepalive_statistics_recorder_unittest.cc",
     "known_legacy_scope_domains_delegate_unittest.cc",
     "mojo_host_resolver_impl_unittest.cc",
+    "multiple_durable_message_writer_impl_unittest.cc",
     "net_log_proxy_sink_unittest.cc",
     "network_change_manager_unittest.cc",
     "network_context_unittest.cc",
@@ -581,6 +588,7 @@ source_set("tests") {
     ":network_service",
     ":test_support",
     "//base",
+    "//components/enterprise/buildflags",
     "//components/network_session_configurator/browser",
     "//components/os_crypt/async/browser:test_support",
     "//components/os_crypt/sync:test_support",

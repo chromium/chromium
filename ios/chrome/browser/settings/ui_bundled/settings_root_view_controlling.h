@@ -7,15 +7,15 @@
 
 #import <Foundation/Foundation.h>
 
-@protocol ApplicationCommands;
-@protocol SettingsCommands;
 @protocol BrowserCommands;
+@protocol SceneCommands;
+@protocol SettingsCommands;
 @protocol SnackbarCommands;
 
 // Protocol allowing the dispatcher to be passed to the settings ViewController.
 @protocol SettingsRootViewControlling
 
-@property(nonatomic, weak) id<ApplicationCommands> applicationHandler;
+@property(nonatomic, weak) id<SceneCommands> sceneHandler;
 
 // BrowserCommands handler.
 @property(nonatomic, weak) id<BrowserCommands> browserHandler;

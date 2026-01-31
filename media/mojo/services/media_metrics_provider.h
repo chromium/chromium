@@ -85,6 +85,7 @@ class MEDIA_MOJO_EXPORT MediaMetricsProvider
     bool has_video = false;
     bool is_eme = false;
     bool video_decoder_changed = false;
+    bool has_track_change_ = false;
     AudioCodec audio_codec = AudioCodec::kUnknown;
     VideoCodec video_codec = VideoCodec::kUnknown;
     VideoPipelineInfo video_pipeline_info;
@@ -119,6 +120,7 @@ class MEDIA_MOJO_EXPORT MediaMetricsProvider
   void SetHasVideo(VideoCodec video_codec) override;
   void SetHaveEnough() override;
   void SetIsEME() override;
+  void SetHasTrackChange() override;
   void SetTimeToMetadata(base::TimeDelta elapsed) override;
   void SetTimeToFirstFrame(base::TimeDelta elapsed) override;
   void SetTimeToPlayReady(base::TimeDelta elapsed) override;

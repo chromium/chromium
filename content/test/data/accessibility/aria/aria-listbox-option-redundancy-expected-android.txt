@@ -1,0 +1,4 @@
+android.webkit.WebView focusable focused
+++android.widget.ListView clickable collection interesting name='Search suggestions' item_count=1 row_count=1 column_count=1 selection_mode=1
+++++android.view.View clickable collection_item name='Search result' row_span=1 column_span=1
+++++++android.widget.TextView name='Search result'

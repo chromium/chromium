@@ -54,7 +54,7 @@ struct MediaLogRecord {
 
   MediaPlayerLoggingID id;
   Type type;
-  base::Value::Dict params;
+  base::DictValue params;
   base::TimeTicks time;
 };
 

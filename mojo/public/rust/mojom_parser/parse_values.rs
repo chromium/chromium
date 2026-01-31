@@ -24,7 +24,6 @@ use std::sync::Arc;
 
 /// Parse a type without nested data, i.e. anything but a struct or array
 fn parse_leaf_element(data: &mut ParserData, ty: &PackedLeafType) -> ParsingResult<MojomValue> {
-    let _ = (parse_f32, parse_f64); // Silence dead code warning until this is used
     match ty {
         PackedLeafType::Bool => Ok(MojomValue::Bool(parse_u8(data)? == 1)),
         PackedLeafType::UInt8 => Ok(MojomValue::UInt8(parse_u8(data)?)),
@@ -35,6 +34,8 @@ fn parse_leaf_element(data: &mut ParserData, ty: &PackedLeafType) -> ParsingResu
         PackedLeafType::Int16 => Ok(MojomValue::Int16(parse_i16(data)?)),
         PackedLeafType::Int32 => Ok(MojomValue::Int32(parse_i32(data)?)),
         PackedLeafType::Int64 => Ok(MojomValue::Int64(parse_i64(data)?)),
+        PackedLeafType::Float32 => Ok(MojomValue::Float32(parse_f32(data)?.into())),
+        PackedLeafType::Float64 => Ok(MojomValue::Float64(parse_f64(data)?.into())),
         PackedLeafType::Enum { is_valid } => {
             let value = parse_u32(data)?;
             if is_valid.call(value) {
@@ -148,7 +149,15 @@ pub fn parse_struct(
 ) -> ParsingResult<MojomValue> {
     // Parse the struct header
     let size_in_bytes = parse_size(data, false, false)?;
-    let _version_number = parse_u32(data)?; // We're ignoring versioning for now
+    let version_number = parse_u32(data)?;
+
+    // We're ignoring versioning for now
+    if version_number != 0 {
+        return Err(ParsingError::not_implemented(
+            data.bytes_parsed() - 4,
+            "Versioning".to_string(),
+        ));
+    }
 
     let (parsed_names, parsed_fields) = parse_structured_body(
         data,
@@ -193,7 +202,7 @@ fn parse_array(
     let num_tag_bitfields = if element_type.is_nullable_primitive() {
         // Nullable primitives need some bitfields at the beginning to hold
         // the tag bits; one bitfield for every 8 elements.
-        (num_elements + 7) / 8 // Divide by 8, rounding up
+        num_elements.div_ceil(8) // Divide by 8, rounding up
     } else {
         0
     };
@@ -376,15 +385,17 @@ fn parse_string(
     size_in_bytes: usize,
     num_elements: usize,
 ) -> ParsingResult<MojomValue> {
-    let string_contents = parse_raw_bytes(data, num_elements)?.to_vec();
     // Array header size should be the size of the header (8) + the number of bytes
     if size_in_bytes != num_elements + 8 {
         return Err(ParsingError::wrong_size(data.bytes_parsed(), size_in_bytes, num_elements + 8));
     }
+    let string_bytes = parse_raw_bytes(data, num_elements)?.to_vec();
+    let rust_string = String::from_utf8(string_bytes)
+        .map_err(|err| ParsingError::non_utf8_string(data.bytes_parsed(), err))?;
     // Array bodies always end at 8 byte alignment, though it's not
     // reflected in the header's reported size.
     skip_to_alignment(data, 8)?;
-    Ok(MojomValue::String(MojomString::from_bytes(string_contents)))
+    Ok(MojomValue::String(rust_string))
 }
 
 const DUMMY_MOJOMVALUE: MojomValue = MojomValue::Int8(0);
@@ -488,7 +499,7 @@ where
 
                         let nested_info = NestedDataInfo {
                             ty: nested_data_type,
-                            ordinal: ordinal,
+                            ordinal,
                             field_name: name.clone(),
                             expected_offset: data.bytes_parsed() - initial_bytes_parsed
                         - 8 // Don't count the bytes we just parsed
@@ -654,4 +665,33 @@ pub fn parse_single_value_for_testing(
         }
         _ => panic!("Invalid argument to parse_single_value_for_testing: {wire_type:?}"),
     }
+}
+
+/// Deserialize a single value from the given bytes, and return the remaining
+/// unparsed bytes.
+pub fn parse_top_level_value<'a>(
+    data_slice: &'a [u8],
+    ty: &MojomWireType,
+) -> ParsingResult<(&'a [u8], MojomValue)> {
+    let mut data = ParserData::new(data_slice);
+    match ty {
+        MojomWireType::Pointer {
+            nested_data_type:
+                PackedStructuredType::Struct {
+                    packed_field_names,
+                    packed_field_types,
+                    num_elements_in_value,
+                },
+            ..
+        } => {
+            return crate::parse_values::parse_struct(
+                &mut data,
+                packed_field_names,
+                packed_field_types,
+                *num_elements_in_value,
+            )
+            .map(|ret| (data.into_bytes(), ret));
+        }
+        _ => panic!("All message bodies are structs"),
+    };
 }

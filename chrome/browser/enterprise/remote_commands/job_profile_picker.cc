@@ -27,7 +27,7 @@ JobProfilePicker::JobProfilePicker(ProfileManager* profile_manager)
 JobProfilePicker::~JobProfilePicker() = default;
 
 bool JobProfilePicker::ParseCommandPayload(
-    const base::Value::Dict& command_payload) {
+    const base::DictValue& command_payload) {
   if (std::holds_alternative<raw_ptr<Profile>>(profile_or_profile_manager_)) {
     return true;
   }

@@ -13,6 +13,10 @@ enum class GuidedTourStep;
 
 - (void)dismissGuidedTourPromo;
 - (void)nextTappedForStep:(GuidedTourStep)step;
+- (void)showSyncedSetUp;
+- (void)showFirstRunUI;
+- (void)performNextPostFirstRunAction;
+
 @end
 
 #endif  // IOS_CHROME_APP_PROFILE_FIRST_RUN_PROFILE_AGENT_TESTING_H_

@@ -263,7 +263,7 @@ void ClearPrefs() {
   ScopedDictPrefUpdate update(
       Shell::Get()->session_controller()->GetLastActiveUserPrefService(),
       prefs::kContextualTooltips);
-  base::Value::Dict& nudges_dict = update.Get();
+  base::DictValue& nudges_dict = update.Get();
   if (!nudges_dict.empty())
     nudges_dict.clear();
 }

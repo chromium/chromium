@@ -8,7 +8,6 @@ import type {HistoryEntry, HistoryItemElement, HistoryListElement} from 'chrome:
 import {BrowserServiceImpl} from 'chrome://history/history.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
-import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 import {eventToPromise, isVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 import {TestBrowserService} from './test_browser_service.js';
@@ -137,7 +136,7 @@ suite('<history-item> integration test', function() {
     assertTrue(items[2]!.hasTimeGap);
 
     element.removeItemsByIndexForTesting([3]);
-    await flushTasks();
+    await microtasksFinished();
 
     // Checks time gap separator is removed.
     assertEquals(4, element.$.infiniteList.items.length);

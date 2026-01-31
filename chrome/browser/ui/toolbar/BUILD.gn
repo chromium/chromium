@@ -21,6 +21,7 @@ source_set("toolbar") {
     "//chrome/browser/ui/login",
     "//chrome/common",
     "//chrome/common:constants",
+    "//components/contextual_tasks/public:feature_list",
     "//components/google/core/common",
     "//components/offline_pages/buildflags",
     "//components/omnibox/browser",
@@ -47,15 +48,12 @@ source_set("toolbar") {
       "back_forward_menu_model.h",
       "bookmark_sub_menu_model.h",
       "reading_list_sub_menu_model.h",
-      "toolbar_action_hover_card_types.h",
-      "toolbar_action_view_model.h",
       "toolbar_pref_names.cc",
       "toolbar_pref_names.h",
     ]
     public_deps += [
       "//base",
       "//chrome/app:command_ids",
-      "//chrome/browser/ui/extensions:extension_popup_types",
       "//chrome/browser/ui/global_error",
       "//chrome/browser/ui/safety_hub",
       "//chrome/browser/upgrade_detector",
@@ -81,14 +79,18 @@ source_set("toolbar") {
 
   if (enable_extensions_core) {
     sources += [
+      "toolbar_action_hover_card_types.h",
+      "toolbar_action_view_model.h",
       "toolbar_actions_model.h",
       "toolbar_actions_model_factory.h",
     ]
     public_deps += [
       "//chrome/browser/profiles:profile",
+      "//chrome/browser/ui/extensions:extension_popup_types",
       "//components/keyed_service/core",
       "//components/prefs",
       "//extensions/browser",
+      "//ui/base",
     ]
     deps += [ "//extensions/common:common_constants" ]
   }
@@ -118,7 +120,6 @@ source_set("impl") {
       "//chrome/app/theme:theme_resources",
       "//chrome/app/vector_icons",
       "//chrome/browser:browser_process",
-      "//chrome/browser/contextual_tasks:ui",
       "//chrome/browser/favicon",
       "//chrome/browser/media/router:media_router_feature",
       "//chrome/browser/prefs",
@@ -429,5 +430,11 @@ if (!is_android) {
         ]
       }
     }
+  }
+}
+
+if (is_android && enable_extensions_core) {
+  java_cpp_enum("toolbar_action_view_model_enums") {
+    sources = [ "toolbar_action_view_model.h" ]
   }
 }

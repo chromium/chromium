@@ -60,7 +60,7 @@ std::optional<base::Value> CrowdStrikeSignals::ToValue() const {
     return std::nullopt;
   }
 
-  base::Value::Dict dict_value;
+  base::DictValue dict_value;
 
   if (!customer_id.empty()) {
     dict_value.Set(names::kCustomerId, customer_id);

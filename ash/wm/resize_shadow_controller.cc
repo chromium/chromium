@@ -4,6 +4,7 @@
 
 #include "ash/wm/resize_shadow_controller.h"
 
+#include <array>
 #include <memory>
 
 #include "ash/public/cpp/window_properties.h"
@@ -29,9 +30,10 @@ ResizeShadowController::~ResizeShadowController() {
 }
 
 void ResizeShadowController::ShowShadow(aura::Window* window, int hit_test) {
-  RecreateShadowIfNeeded(window);
-  if (ShouldShowShadowForWindow(window) && window->IsVisible())
+  if (ShouldShowShadowForWindow(window) && window->IsVisible()) {
+    RecreateShadowIfNeeded(window);
     GetShadowForWindow(window)->ShowForHitTest(hit_test);
+  }
 }
 
 void ResizeShadowController::TryShowAllShadows() {
@@ -220,17 +222,12 @@ void ResizeShadowController::UpdateShadowVisibility(aura::Window* window,
 
 bool ResizeShadowController::ShouldShowShadowForWindow(
     aura::Window* window) const {
-  // Hide the shadow if it's a maximized/fullscreen/minimized window or the
-  // overview mode is active or if the shadow is disabled.
-  if (window->GetProperty(kDisableResizeShadow)) {
+  if (window->GetProperty(kDisableResizeShadow) ||
+      Shell::Get()->overview_controller()->InOverviewSession()) {
     return false;
   }
-  ui::mojom::WindowShowState show_state =
-      window->GetProperty(aura::client::kShowStateKey);
-  return show_state != ui::mojom::WindowShowState::kFullscreen &&
-         show_state != ui::mojom::WindowShowState::kMaximized &&
-         show_state != ui::mojom::WindowShowState::kMinimized &&
-         !Shell::Get()->overview_controller()->InOverviewSession();
+
+  return chromeos::ShouldShowResizeBorder(window);
 }
 
 }  // namespace ash

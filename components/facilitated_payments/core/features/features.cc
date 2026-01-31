@@ -12,6 +12,9 @@ namespace payments::facilitated {
 BASE_FEATURE(kEnablePixPaymentsInLandscapeMode,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Use the Rust implementation of the Pix code validator.
+BASE_FEATURE(kUseRustPixCodeValidator, base::FEATURE_DISABLED_BY_DEFAULT);
+
 #if BUILDFLAG(IS_ANDROID)
 // When enabled, the check for matching the main frame domain with the
 // allowlisted domains will be disabled.
@@ -24,6 +27,10 @@ BASE_FEATURE(kEnablePixAccountLinking, base::FEATURE_DISABLED_BY_DEFAULT);
 
 // When enabled, static qr code will be supported for pix pay flow.
 BASE_FEATURE(kEnableStaticQrCodeForPix, base::FEATURE_DISABLED_BY_DEFAULT);
+
+// When enabled, pix pay flow will be triggered when users click the copy button
+// within iframe.
+BASE_FEATURE(kEnableIframeForPix, base::FEATURE_DISABLED_BY_DEFAULT);
 
 // When enabled, Chrome will offer to pay with eWallet accounts if a payment
 // link is detected.

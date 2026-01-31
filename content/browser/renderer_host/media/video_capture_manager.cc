@@ -10,7 +10,6 @@
 #include <utility>
 
 #include "base/command_line.h"
-#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/location.h"
@@ -263,7 +262,7 @@ void VideoCaptureManager::DoStopDevice(VideoCaptureController* controller) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
   TRACE_EVENT0(TRACE_DISABLED_BY_DEFAULT("video_and_image_capture"),
                "VideoCaptureManager::DoStopDevice");
-  DCHECK(base::Contains(controllers_, controller));
+  DCHECK(std::ranges::contains(controllers_, controller));
 
   // If start request has not yet started processing, i.e. if it is not at the
   // beginning of the queue, remove it from the queue.
@@ -896,8 +895,8 @@ VideoCaptureManager::LookupControllerByMediaTypeAndDeviceId(
 bool VideoCaptureManager::IsControllerPointerValid(
     const VideoCaptureController* controller) const {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
-  return base::Contains(controllers_, controller,
-                        &scoped_refptr<VideoCaptureController>::get);
+  return std::ranges::contains(controllers_, controller,
+                               &scoped_refptr<VideoCaptureController>::get);
 }
 
 scoped_refptr<VideoCaptureController>

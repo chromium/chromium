@@ -29,7 +29,7 @@ class FakeFilesRequestHandler : public FilesRequestHandler {
 
   FakeFilesRequestHandler(FakeFileUploadCallback fake_file_upload_callback,
                           ContentAnalysisInfo* content_analysis_info,
-                          safe_browsing::BinaryUploadService* upload_service,
+                          BinaryUploadService* upload_service,
                           Profile* profile,
                           GURL url,
                           const std::string& source,
@@ -44,7 +44,7 @@ class FakeFilesRequestHandler : public FilesRequestHandler {
   static std::unique_ptr<FilesRequestHandler> Create(
       FakeFileUploadCallback fake_file_upload_callback,
       ContentAnalysisInfo* content_analysis_info,
-      safe_browsing::BinaryUploadService* upload_service,
+      BinaryUploadService* upload_service,
       Profile* profile,
       GURL url,
       const std::string& source,

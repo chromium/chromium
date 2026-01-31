@@ -16,6 +16,8 @@
 #include "third_party/blink/renderer/core/url_pattern/url_pattern_options.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
+#include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
+#include "third_party/blink/renderer/platform/wtf/vector.h"
 #include "third_party/liburlpattern/parse.h"
 
 namespace blink {
@@ -114,6 +116,24 @@ class CORE_EXPORT URLPattern : public ScriptWrappable {
                               const URLPattern* left,
                               const URLPattern* right);
 
+  // Matched :group values. This is essentially a C++ version of
+  // the URLPatternResult API (but without inputs).
+  struct MatchResult {
+    Vector<std::pair<String, String>> protocol;
+    Vector<std::pair<String, String>> username;
+    Vector<std::pair<String, String>> password;
+    Vector<std::pair<String, String>> hostname;
+    Vector<std::pair<String, String>> port;
+    Vector<std::pair<String, String>> pathname;
+    Vector<std::pair<String, String>> search;
+    Vector<std::pair<String, String>> hash;
+  };
+
+  // Match the specified URL against this pattern. Return true if it's a match,
+  // false otherwise. Populate `result` with matched :group values in each
+  // component, if not nullptr.
+  bool Match(const KURL& url, MatchResult* = nullptr) const;
+
   // Throws a TypeError if the pattern does not meet the requirements to be
   // safe. i.e. has no regexp groups.
   std::optional<SafeUrlPattern> ToSafeUrlPattern(
@@ -133,6 +153,22 @@ class CORE_EXPORT URLPattern : public ScriptWrappable {
              const String& base_url,
              URLPatternResult* result,
              ExceptionState& exception_state) const;
+
+  // String representations of each component of a URL used to match against a
+  // URLPattern.
+  struct MatchInput {
+    String protocol = g_empty_string;
+    String username = g_empty_string;
+    String password = g_empty_string;
+    String hostname = g_empty_string;
+    String port = g_empty_string;
+    String pathname = g_empty_string;
+    String search = g_empty_string;
+    String hash = g_empty_string;
+  };
+
+  static void URLToMatchInput(const KURL&, MatchInput&);
+  bool Match(const MatchInput&, MatchResult* = nullptr) const;
 
   std::array<std::pair<const Member<Component>&, const char*>, 8>
   ComponentsWithNames() const {

@@ -16,6 +16,7 @@
 #include <vector>
 
 #include "build/chromeos_buildflags.h"
+#include "chromeos/ash/components/platform_keys/keystore_types.h"
 #include "chromeos/crosapi/mojom/keystore_error.mojom.h"
 #include "chromeos/crosapi/mojom/keystore_service.mojom.h"
 #include "extensions/browser/extension_function.h"
@@ -89,7 +90,7 @@ class EnterprisePlatformKeysChallengeMachineKeyFunction
   ResponseAction Run() override;
 
   void OnChallengeAttestationOnlyKeystore(
-      crosapi::mojom::ChallengeAttestationOnlyKeystoreResultPtr result);
+      chromeos::ChallengeAttestationOnlyKeystoreResult result);
   DECLARE_EXTENSION_FUNCTION("enterprise.platformKeys.challengeMachineKey",
                              ENTERPRISE_PLATFORMKEYS_CHALLENGEMACHINEKEY)
 };
@@ -101,7 +102,7 @@ class EnterprisePlatformKeysChallengeUserKeyFunction
   ResponseAction Run() override;
 
   void OnChallengeAttestationOnlyKeystore(
-      crosapi::mojom::ChallengeAttestationOnlyKeystoreResultPtr result);
+      chromeos::ChallengeAttestationOnlyKeystoreResult result);
   DECLARE_EXTENSION_FUNCTION("enterprise.platformKeys.challengeUserKey",
                              ENTERPRISE_PLATFORMKEYS_CHALLENGEUSERKEY)
 };
@@ -112,7 +113,7 @@ class EnterprisePlatformKeysChallengeKeyFunction : public ExtensionFunction {
   ResponseAction Run() override;
 
   void OnChallengeAttestationOnlyKeystore(
-      crosapi::mojom::ChallengeAttestationOnlyKeystoreResultPtr result);
+      chromeos::ChallengeAttestationOnlyKeystoreResult result);
   DECLARE_EXTENSION_FUNCTION("enterprise.platformKeys.challengeKey",
                              ENTERPRISE_PLATFORMKEYS_CHALLENGEKEY)
 };

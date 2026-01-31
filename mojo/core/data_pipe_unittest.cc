@@ -85,10 +85,12 @@ class DataPipeTest : public test::MojoTestBase {
   DataPipeTest& operator=(const DataPipeTest&) = delete;
 
   ~DataPipeTest() override {
-    if (producer_ != MOJO_HANDLE_INVALID)
+    if (producer_ != MOJO_HANDLE_INVALID) {
       CHECK_EQ(MOJO_RESULT_OK, MojoClose(producer_));
-    if (consumer_ != MOJO_HANDLE_INVALID)
+    }
+    if (consumer_ != MOJO_HANDLE_INVALID) {
       CHECK_EQ(MOJO_RESULT_OK, MojoClose(consumer_));
+    }
   }
 
   MojoResult ReadEmptyMessageWithHandles(MojoHandle pipe,
@@ -101,8 +103,9 @@ class DataPipeTest : public test::MojoTestBase {
     if (rv == MOJO_RESULT_OK) {
       CHECK_EQ(0u, bytes.size());
       CHECK_EQ(num_handles, handles.size());
-      for (size_t i = 0; i < num_handles; ++i)
+      for (size_t i = 0; i < num_handles; ++i) {
         UNSAFE_TODO(out_handles[i]) = handles[i].release().value();
+      }
     }
     return rv;
   }
@@ -126,10 +129,12 @@ class DataPipeTest : public test::MojoTestBase {
                       bool all_or_none = false,
                       bool peek = false) {
     MojoReadDataFlags flags = MOJO_READ_DATA_FLAG_NONE;
-    if (all_or_none)
+    if (all_or_none) {
       flags |= MOJO_READ_DATA_FLAG_ALL_OR_NONE;
-    if (peek)
+    }
+    if (peek) {
       flags |= MOJO_READ_DATA_FLAG_PEEK;
+    }
 
     MojoReadDataOptions options;
     options.struct_size = sizeof(options);
@@ -146,8 +151,9 @@ class DataPipeTest : public test::MojoTestBase {
 
   MojoResult DiscardData(uint32_t* num_bytes, bool all_or_none = false) {
     MojoReadDataFlags flags = MOJO_READ_DATA_FLAG_DISCARD;
-    if (all_or_none)
+    if (all_or_none) {
       flags |= MOJO_READ_DATA_FLAG_ALL_OR_NONE;
+    }
     MojoReadDataOptions options;
     options.struct_size = sizeof(options);
     options.flags = flags;
@@ -874,8 +880,9 @@ TEST_F(DataPipeTest, BasicTwoPhaseWaiting) {
 }
 
 void Seq(int32_t start, size_t count, int32_t* out) {
-  for (size_t i = 0; i < count; i++)
+  for (size_t i = 0; i < count; i++) {
     UNSAFE_TODO(out[i]) = start + static_cast<int32_t>(i);
+  }
 }
 
 TEST_F(DataPipeTest, AllOrNone) {
@@ -959,8 +966,9 @@ TEST_F(DataPipeTest, AllOrNone) {
   for (size_t i = 0; i < kMaxPoll; i++) {
     num_bytes = 0u;
     ASSERT_EQ(MOJO_RESULT_OK, QueryData(&num_bytes));
-    if (num_bytes >= 10u * sizeof(int32_t))
+    if (num_bytes >= 10u * sizeof(int32_t)) {
       break;
+    }
 
     base::PlatformThread::Sleep(EpsilonDeadline());
   }
@@ -1052,8 +1060,9 @@ TEST_F(DataPipeTest, WrapAround) {
   }
 
   std::array<unsigned char, 1000> test_data;
-  for (size_t i = 0; i < std::size(test_data); i++)
+  for (size_t i = 0; i < std::size(test_data); i++) {
     test_data[i] = static_cast<unsigned char>(i);
+  }
 
   const MojoCreateDataPipeOptions options = {
       kSizeOfOptions,                   // |struct_size|.
@@ -1171,8 +1180,9 @@ TEST_F(DataPipeTest, WriteCloseProducerRead) {
   for (size_t i = 0; i < kMaxPoll; i++) {
     num_bytes = 0u;
     ASSERT_EQ(MOJO_RESULT_OK, QueryData(&num_bytes));
-    if (num_bytes >= 2u * kTestDataSize)
+    if (num_bytes >= 2u * kTestDataSize) {
       break;
+    }
 
     base::PlatformThread::Sleep(EpsilonDeadline());
   }
@@ -1693,8 +1703,9 @@ bool WriteAllData(MojoHandle producer,
       num_bytes -= write_bytes;
       elements =
           UNSAFE_TODO(static_cast<const uint8_t*>(elements) + write_bytes);
-      if (num_bytes == 0)
+      if (num_bytes == 0) {
         return true;
+      }
     } else {
       EXPECT_EQ(MOJO_RESULT_SHOULD_WAIT, result);
     }
@@ -1894,8 +1905,9 @@ TEST_F(DataPipeTest, Multiprocess) {
     int seq = 0;
     for (int i = 0; i < kMultiprocessMaxIter; ++i) {
       for (uint32_t size = 1; size <= kMultiprocessCapacity; size++) {
-        for (unsigned int j = 0; j < size; ++j)
+        for (unsigned int j = 0; j < size; ++j) {
           UNSAFE_TODO(buffer[j]) = seq + j;
+        }
         EXPECT_TRUE(WriteAllData(producer_, buffer, size));
         seq += size;
       }
@@ -1954,8 +1966,9 @@ DEFINE_TEST_CLIENT_TEST_WITH_PIPE(MultiprocessClient, DataPipeTest, client_mp) {
   std::array<uint8_t, 100> expected_buffer;
   for (int i = 0; i < kMultiprocessMaxIter; ++i) {
     for (uint32_t size = 1; size <= kMultiprocessCapacity; ++size) {
-      for (unsigned int j = 0; j < size; ++j)
+      for (unsigned int j = 0; j < size; ++j) {
         expected_buffer[j] = seq + j;
+      }
       EXPECT_TRUE(ReadAllData(consumer, buffer, size, false));
       UNSAFE_TODO(EXPECT_EQ(0, memcmp(buffer, expected_buffer.data(), size)));
 
@@ -2124,8 +2137,9 @@ DEFINE_TEST_CLIENT_TEST_WITH_PIPE(DataPipeStatusChangeInTransitClient,
     auto callback = base::BindRepeating(
         [](base::RunLoop* loop, int* count, MojoResult result) {
           EXPECT_EQ(MOJO_RESULT_OK, result);
-          if (++*count == 2)
+          if (++*count == 2) {
             loop->Quit();
+          }
         },
         &run_loop, &count);
     SimpleWatcher producer_watcher(
@@ -2158,16 +2172,18 @@ DEFINE_TEST_CLIENT_TEST_WITH_PIPE(DataPipeStatusChangeInTransitClient,
   } while (result == MOJO_RESULT_SHOULD_WAIT);
   EXPECT_EQ(MOJO_RESULT_FAILED_PRECONDITION, result);
 
-  for (size_t i = 0; i < 6; ++i)
+  for (size_t i = 0; i < 6; ++i) {
     CloseHandle(UNSAFE_TODO(handles[i]));
+  }
   EXPECT_EQ(MOJO_RESULT_OK, MojoClose(parent));
 }
 
 TEST_F(DataPipeTest, StatusChangeInTransit) {
   std::array<MojoHandle, 6> producers;
   std::array<MojoHandle, 6> consumers;
-  for (size_t i = 0; i < 6; ++i)
+  for (size_t i = 0; i < 6; ++i) {
     CreateDataPipe(&producers[i], &consumers[i], 1);
+  }
 
   RunTestClient("DataPipeStatusChangeInTransitClient", [&](MojoHandle child) {
     MojoHandle handles[] = {producers[0], producers[1], producers[2],
@@ -2177,10 +2193,12 @@ TEST_F(DataPipeTest, StatusChangeInTransit) {
     // peers' closure.
     WriteMessageWithHandles(child, "o_O", handles, 6);
 
-    for (size_t i = 0; i < 3; ++i)
+    for (size_t i = 0; i < 3; ++i) {
       CloseHandle(consumers[i]);
-    for (size_t i = 3; i < 6; ++i)
+    }
+    for (size_t i = 3; i < 6; ++i) {
       CloseHandle(producers[i]);
+    }
   });
 }
 

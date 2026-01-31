@@ -544,7 +544,7 @@ class UpdateRequiredScreenPolicyPresentTest : public OobeBaseTest {
         base::DefaultClock::GetInstance()->Now() - base::Days(1));
   }
 
-  void SetAndRefreshMinimumChromeVersionPolicy(base::Value::Dict value) {
+  void SetAndRefreshMinimumChromeVersionPolicy(base::DictValue value) {
     policy::DevicePolicyBuilder* const device_policy(
         policy_helper_.device_policy());
     em::ChromeDeviceSettingsProto& proto(device_policy->payload());

@@ -23,8 +23,10 @@ suite('MicrosoftFilesModule', () => {
   const modulesMicrosoftFilesName = 'SharePoint and OneDrive files';
 
   setup(() => {
-    loadTimeData.overrideValues(
-        {modulesMicrosoftFilesName: modulesMicrosoftFilesName});
+    loadTimeData.overrideValues({
+      modulesMicrosoftFilesName: modulesMicrosoftFilesName,
+      hideDismissModules: false,
+    });
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     handler = installMock(
         MicrosoftFilesPageHandlerRemote,
@@ -42,8 +44,8 @@ suite('MicrosoftFilesModule', () => {
         justificationText: 'Trending in your organization',
         title: `Document ${i}`,
         id: `${i}`,
-        iconUrl: {url: 'https://foo.com/'},
-        itemUrl: {url: `https://foo.com/${i}`},
+        iconUrl: 'https://foo.com/',
+        itemUrl: `https://foo.com/${i}`,
         recommendationType: RecommendationType.kUsed,
       });
     }
@@ -52,7 +54,7 @@ suite('MicrosoftFilesModule', () => {
 
   test('clicking the info button opens the ntp info dialog box', async () => {
     // Arrange.
-    handler.setResultFor('getFiles', Promise.resolve({files: createFiles(6)}));
+    handler.setPromiseResolveFor('getFiles', {files: createFiles(6)});
     const microsoftFilesModule =
         await microsoftFilesModuleDescriptor.initialize(0) as
         MicrosoftFilesModuleElement;
@@ -74,7 +76,7 @@ suite('MicrosoftFilesModule', () => {
 
   test('clicking the disable button fires a disable module event', async () => {
     // Arrange.
-    handler.setResultFor('getFiles', Promise.resolve({files: createFiles(6)}));
+    handler.setPromiseResolveFor('getFiles', {files: createFiles(6)});
     const microsoftFilesModule =
         await microsoftFilesModuleDescriptor.initialize(0) as
         MicrosoftFilesModuleElement;
@@ -99,7 +101,7 @@ suite('MicrosoftFilesModule', () => {
 
   test('clicking the sign out button sends sign out request', async () => {
     // Arrange.
-    handler.setResultFor('getFiles', Promise.resolve({files: createFiles(6)}));
+    handler.setPromiseResolveFor('getFiles', {files: createFiles(6)});
     const microsoftFilesModule =
         await microsoftFilesModuleDescriptor.initialize(0) as
         MicrosoftFilesModuleElement;
@@ -120,7 +122,7 @@ suite('MicrosoftFilesModule', () => {
 
   test('creates module', async () => {
     // Set up module.
-    handler.setResultFor('getFiles', Promise.resolve({files: createFiles(6)}));
+    handler.setPromiseResolveFor('getFiles', {files: createFiles(6)});
     const microsoftFilesModule =
         await microsoftFilesModuleDescriptor.initialize(0) as
         MicrosoftFilesModuleElement;
@@ -136,7 +138,7 @@ suite('MicrosoftFilesModule', () => {
   });
 
   test('module not created when there are no files', async () => {
-    handler.setResultFor('getFiles', Promise.resolve({files: createFiles(0)}));
+    handler.setPromiseResolveFor('getFiles', {files: createFiles(0)});
     const microsoftFilesModule =
         await microsoftFilesModuleDescriptor.initialize(0) as
         MicrosoftFilesModuleElement;
@@ -146,7 +148,7 @@ suite('MicrosoftFilesModule', () => {
 
   test('dismiss and restore module', async () => {
     // Set up module.
-    handler.setResultFor('getFiles', Promise.resolve({files: createFiles(3)}));
+    handler.setPromiseResolveFor('getFiles', {files: createFiles(3)});
     const microsoftFilesModule =
         await microsoftFilesModuleDescriptor.initialize(0) as
         MicrosoftFilesModuleElement;
@@ -177,8 +179,7 @@ suite('MicrosoftFilesModule', () => {
     const metrics = fakeMetricsPrivate();
     // Set up module.
     const numFiles = 3;
-    handler.setResultFor(
-        'getFiles', Promise.resolve({files: createFiles(numFiles)}));
+    handler.setPromiseResolveFor('getFiles', {files: createFiles(numFiles)});
     const microsoftFilesModule =
         await microsoftFilesModuleDescriptor.initialize(0) as
         MicrosoftFilesModuleElement;

@@ -33,7 +33,7 @@ TEST_F(WallpaperInfoTest, FromDictReturnsNullOptForInvalidValues) {
     WallpaperInfo actual_info =
         WallpaperInfo(std::string(), WALLPAPER_LAYOUT_CENTER_CROPPED,
                       WallpaperType::kCount, base::Time::Now(), std::string());
-    base::Value::Dict dict = actual_info.ToDict();
+    base::DictValue dict = actual_info.ToDict();
     EXPECT_FALSE(WallpaperInfo::FromDict(dict));
   }
   {
@@ -41,7 +41,7 @@ TEST_F(WallpaperInfoTest, FromDictReturnsNullOptForInvalidValues) {
     WallpaperInfo actual_info =
         WallpaperInfo(std::string(), NUM_WALLPAPER_LAYOUT,
                       WallpaperType::kOnline, base::Time::Now(), std::string());
-    base::Value::Dict dict = actual_info.ToDict();
+    base::DictValue dict = actual_info.ToDict();
     EXPECT_FALSE(WallpaperInfo::FromDict(dict));
   }
 }
@@ -58,7 +58,7 @@ TEST_F(WallpaperInfoTest, ToAndFromDict) {
         {{kAssetId, GURL("https://example.com/image.png"),
           backdrop::Image::IMAGE_TYPE_UNKNOWN}});
     WallpaperInfo actual_info = WallpaperInfo(params, params.variants[0]);
-    base::Value::Dict dict = actual_info.ToDict();
+    base::DictValue dict = actual_info.ToDict();
     std::optional<WallpaperInfo> expected_info = WallpaperInfo::FromDict(dict);
     EXPECT_TRUE(actual_info.MatchesAsset(expected_info.value()));
   }
@@ -68,7 +68,7 @@ TEST_F(WallpaperInfoTest, ToAndFromDict) {
         kAccountId1, "id", /*daily_refresh_enabled=*/false,
         WALLPAPER_LAYOUT_CENTER_CROPPED, /*preview_mode=*/false, "dedup_key");
     WallpaperInfo actual_info = WallpaperInfo(params);
-    base::Value::Dict dict = actual_info.ToDict();
+    base::DictValue dict = actual_info.ToDict();
     std::optional<WallpaperInfo> expected_info = WallpaperInfo::FromDict(dict);
     EXPECT_TRUE(actual_info.MatchesAsset(expected_info.value()));
   }
@@ -77,7 +77,7 @@ TEST_F(WallpaperInfoTest, ToAndFromDict) {
     WallpaperInfo actual_info = WallpaperInfo(
         std::string(), WALLPAPER_LAYOUT_CENTER_CROPPED,
         WallpaperType::kCustomized, base::Time::Now(), std::string());
-    base::Value::Dict dict = actual_info.ToDict();
+    base::DictValue dict = actual_info.ToDict();
     std::optional<WallpaperInfo> expected_info = WallpaperInfo::FromDict(dict);
     EXPECT_TRUE(actual_info.MatchesAsset(expected_info.value()));
   }

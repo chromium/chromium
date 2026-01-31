@@ -323,7 +323,7 @@ void ExtractUrls(scoped_refptr<Action> action, Profile* profile) {
   if (action->arg_url().is_valid())
     return;
 
-  base::Value::List& args_list = action->mutable_args();
+  base::ListValue& args_list = action->mutable_args();
 
   GURL arg_url;
   bool arg_incognito = action->page_incognito();
@@ -373,7 +373,7 @@ void ExtractUrls(scoped_refptr<Action> action, Profile* profile) {
         if (arg_url.is_valid())
           args_list[url_index] = base::Value(kArgUrlPlaceholder);
       } else if (args_list[url_index].is_list()) {
-        base::Value::List& tab_list = args_list[url_index].GetList();
+        base::ListValue& tab_list = args_list[url_index].GetList();
         // A list of possible IDs to translate.  Work through in reverse order
         // so the last one translated is left in arg_url.
         int extracted_index = -1;  // Which list item is copied to arg_url?
@@ -428,7 +428,7 @@ bool IsExtensionAllowlisted(const std::string& extension_id) {
 void LogApiActivity(content::BrowserContext* browser_context,
                     const std::string& extension_id,
                     const std::string& activity_name,
-                    const base::Value::List& args,
+                    const base::ListValue& args,
                     Action::ActionType type) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   if (IsExtensionAllowlisted(extension_id))
@@ -448,7 +448,7 @@ void LogApiActivity(content::BrowserContext* browser_context,
 void LogApiEvent(content::BrowserContext* browser_context,
                  const std::string& extension_id,
                  const std::string& event_name,
-                 const base::Value::List& args) {
+                 const base::ListValue& args) {
   LogApiActivity(browser_context, extension_id, event_name, args,
                  Action::ACTION_API_EVENT);
 }
@@ -457,7 +457,7 @@ void LogApiEvent(content::BrowserContext* browser_context,
 void LogApiFunction(content::BrowserContext* browser_context,
                     const std::string& extension_id,
                     const std::string& event_name,
-                    const base::Value::List& args) {
+                    const base::ListValue& args) {
   LogApiActivity(browser_context, extension_id, event_name, args,
                  Action::ACTION_API_CALL);
 }
@@ -468,7 +468,7 @@ void LogWebRequestActivity(content::BrowserContext* browser_context,
                            const GURL& url,
                            bool is_incognito,
                            const std::string& api_call,
-                           base::Value::Dict details) {
+                           base::DictValue details) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   if (IsExtensionAllowlisted(extension_id))
     return;
@@ -702,7 +702,7 @@ void ActivityLog::LogAction(scoped_refptr<Action> action) {
       base::StartsWith(action->api_name(), kDomXhrPrefix,
                        base::CompareCase::SENSITIVE) &&
       action->other()) {
-    base::Value::Dict& other = action->mutable_other();
+    base::DictValue& other = action->mutable_other();
     std::optional<int> dom_verb = other.FindInt(constants::kActionDomVerb);
     if (dom_verb == DomActionType::METHOD)
       other.Set(constants::kActionDomVerb, DomActionType::XHR);

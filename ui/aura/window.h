@@ -536,8 +536,9 @@ class AURA_EXPORT Window : public ui::LayerDelegate,
   // See comment for |frame_sink_id_| below for more details.
   void SetEmbedFrameSinkId(const viz::FrameSinkId& embed_frame_sink_id);
 
-  // Starts occlusion state tracking.
+  // Starts/Ends occlusion state tracking.
   void TrackOcclusionState();
+  void UntrackOcclusionState();
 
   // Notifies observers of the state of a resize loop.
   void NotifyResizeLoopStarted();
@@ -579,6 +580,15 @@ class AURA_EXPORT Window : public ui::LayerDelegate,
   //       enable window shape based occlusion.
   void SetOpaqueRegionsForOcclusion(
       const std::vector<gfx::Rect>& opaque_regions_for_occlusion);
+
+#if BUILDFLAG(IS_CHROMEOS)
+  // Override the occlusion state on this window.
+  // TODO(crbug.com/476220853): Remove this once the better fix is landed.
+  void SetOcclusionStateOverride(std::optional<OcclusionState> occlusion_state);
+  bool has_occlusion_state_override() const {
+    return !!occlusion_state_override_;
+  }
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   const std::vector<gfx::Rect>& opaque_regions_for_occlusion() const {
     return opaque_regions_for_occlusion_;
@@ -783,6 +793,9 @@ class AURA_EXPORT Window : public ui::LayerDelegate,
 
   // Occlusion state of the window.
   OcclusionState occlusion_state_ = OcclusionState::UNKNOWN;
+#if BUILDFLAG(IS_CHROMEOS)
+  std::optional<OcclusionState> occlusion_state_override_ = std::nullopt;
+#endif
 
   // Occluded region of the window in the root window coordinates.
   SkRegion occluded_region_in_root_;

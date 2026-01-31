@@ -50,6 +50,4 @@ DEFINE_PROTO_FUZZER(
     if (!features.AddRealFeature(real_feature.name(), real_feature.value()))
       return;
   }
-
-  scorer->ComputeScore(features);
 }

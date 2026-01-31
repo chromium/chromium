@@ -4,7 +4,9 @@
 
 #include <algorithm>
 #include <memory>
+#include <string_view>
 #include <utility>
+#include <vector>
 
 #include "base/check_op.h"
 #include "base/command_line.h"
@@ -298,6 +300,64 @@ class DNSErrorPageTest : public ErrorPageTest {
     return URLRequestFailedJob::GetMockHttpUrl(net::ERR_NAME_NOT_RESOLVED);
   }
 
+  // Set up JS mocks for navigator.maxTouchPoints and matchMedia.
+  void SetupMockCapabilities(content::WebContents* web_contents,
+                             int max_touch_points,
+                             bool hover) {
+    std::string script =
+        base::StringPrintf(R"(
+      window.mockTouchPoints = %d;
+      window.mockHover = %s;
+      // Attempt to override maxTouchPoints on the prototype.
+      try {
+        Object.defineProperty(Navigator.prototype, 'maxTouchPoints', {
+          get: () => window.mockTouchPoints,
+          configurable: true
+        });
+      } catch (e) {
+        console.error('Failed to define maxTouchPoints:', e);
+      }
+      window.matchMedia = (q) => ({
+        matches: (q === '(hover: hover)' && window.mockHover),
+        media: q,
+        onchange: null,
+        addListener: () => {},
+        removeListener: () => {},
+        addEventListener: () => {},
+        removeEventListener: () => {},
+        dispatchEvent: () => {},
+      });
+      // Force the page to re-evaluate the input capabilities (maxTouchPoints,
+      // hover) using the mocked values, and then re-render the template data
+      // into the DOM. This is necessary because the initial page load happened
+      // before these mocks were injected.
+      window.updateInitialInstruction(window.loadTimeDataRaw);
+      window.onTemplateDataReceived(window.loadTimeDataRaw);
+    )",
+                           max_touch_points, hover ? "true" : "false");
+    ASSERT_TRUE(content::ExecJs(web_contents, script));
+  }
+
+  // Checks that the dino game instruction text contains all strings in
+  // `must_have` and none of the strings in `must_not_have`.
+  void CheckInputInstruction(
+      const std::vector<std::string_view>& must_have,
+      const std::vector<std::string_view>& must_not_have) {
+    content::WebContents* web_contents =
+        browser()->tab_strip_model()->GetActiveWebContents();
+    std::string text =
+        content::EvalJs(web_contents, "document.querySelector('h1').innerText;")
+            .ExtractString();
+    for (std::string_view s : must_have) {
+      EXPECT_NE(std::string::npos, text.find(s))
+          << "Expected to find '" << s << "' in '" << text << "'";
+    }
+    for (std::string_view s : must_not_have) {
+      EXPECT_EQ(std::string::npos, text.find(s))
+          << "Expected NOT to find '" << s << "' in '" << text << "'";
+    }
+  }
+
  private:
   std::unique_ptr<content::URLLoaderInterceptor> url_loader_interceptor_;
 };
@@ -346,6 +406,50 @@ IN_PROC_BROWSER_TEST_F(DNSErrorPageTest, DNSError_Basic) {
   EXPECT_FALSE(IsDisplayingText(
       browser(), l10n_util::GetStringUTF8(
                      IDS_ERRORPAGES_SUGGESTION_CHECK_CONNECTION_BODY)));
+}
+
+// Test that the dino game instructions are updated based on the available input
+// devices.
+// Case 1: Keyboard/Mouse only.
+// Expect: "Press space to play"
+IN_PROC_BROWSER_TEST_F(DNSErrorPageTest, InputInstructions_KeyboardOnly) {
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(),
+      URLRequestFailedJob::GetMockHttpUrl(net::ERR_INTERNET_DISCONNECTED)));
+  ExpectDisplayingErrorPage(browser(), net::ERR_INTERNET_DISCONNECTED);
+
+  SetupMockCapabilities(browser()->tab_strip_model()->GetActiveWebContents(),
+                        /*max_touch_points=*/0, /*hover=*/false);
+
+  CheckInputInstruction({"space"}, {"Tap"});
+}
+
+// Case 2: Touchscreen only.
+// Expect: "Tap the dino to play"
+IN_PROC_BROWSER_TEST_F(DNSErrorPageTest, InputInstructions_TouchOnly) {
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(),
+      URLRequestFailedJob::GetMockHttpUrl(net::ERR_INTERNET_DISCONNECTED)));
+  ExpectDisplayingErrorPage(browser(), net::ERR_INTERNET_DISCONNECTED);
+
+  SetupMockCapabilities(browser()->tab_strip_model()->GetActiveWebContents(),
+                        /*max_touch_points=*/1, /*hover=*/false);
+
+  CheckInputInstruction({"Tap"}, {"space"});
+}
+
+// Case 3: Hybrid (Touch + Mouse/Keyboard).
+// Expect: "Tap the dino or press space to play"
+IN_PROC_BROWSER_TEST_F(DNSErrorPageTest, InputInstructions_Hybrid) {
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(),
+      URLRequestFailedJob::GetMockHttpUrl(net::ERR_INTERNET_DISCONNECTED)));
+  ExpectDisplayingErrorPage(browser(), net::ERR_INTERNET_DISCONNECTED);
+
+  SetupMockCapabilities(browser()->tab_strip_model()->GetActiveWebContents(),
+                        /*max_touch_points=*/1, /*hover=*/true);
+
+  CheckInputInstruction({"Tap", "space"}, {});
 }
 
 // Test that a DNS error occurring in the main frame does not result in an

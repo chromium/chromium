@@ -26,7 +26,7 @@ constexpr char kKeyLaunchError[] = "launch_error";
 constexpr char kKeyCryptohomeFailure[] = "cryptohome_failure";
 
 // Get Kiosk dictionary value. It is replaced after each update.
-const base::Value::Dict& GetKioskDictionary() {
+const base::DictValue& GetKioskDictionary() {
   return g_browser_process->local_state()->GetDict(
       KioskChromeAppManager::kKioskDictionaryName);
 }

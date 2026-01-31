@@ -420,6 +420,7 @@ bool ImageContextImpl::BeginAccessIfNecessaryInternal(
   representation_scoped_read_access_ =
       representation_->BeginScopedReadAccess(begin_semaphores, end_semaphores);
   if (!representation_scoped_read_access_) {
+    clear_image();
     representation_ = nullptr;
     DLOG(ERROR) << "Failed to fulfill the promise texture - SharedImage "
                    "begin read access failed..";

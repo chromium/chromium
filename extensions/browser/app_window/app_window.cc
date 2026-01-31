@@ -79,7 +79,7 @@ const int kDefaultHeight = 384;
 
 void SetConstraintProperty(const std::string& name,
                            int value,
-                           base::Value::Dict* bounds_properties) {
+                           base::DictValue* bounds_properties) {
   DCHECK(bounds_properties);
   if (value != SizeConstraints::kUnboundedSize)
     bounds_properties->Set(name, value);
@@ -91,9 +91,9 @@ void SetBoundsProperties(const gfx::Rect& bounds,
                          const gfx::Size& min_size,
                          const gfx::Size& max_size,
                          const std::string& bounds_name,
-                         base::Value::Dict* window_properties) {
+                         base::DictValue* window_properties) {
   DCHECK(window_properties);
-  base::Value::Dict bounds_properties;
+  base::DictValue bounds_properties;
 
   bounds_properties.Set("left", bounds.x());
   bounds_properties.Set("top", bounds.y());
@@ -301,6 +301,7 @@ void AppWindow::Init(const GURL& url,
   WebContentsModalDialogManager::CreateForWebContents(web_contents());
 
   web_contents()->SetDelegate(this);
+  web_contents()->SetIgnoreZoomGestures(true);
   WebContentsModalDialogManager::FromWebContents(web_contents())
       ->SetDelegate(this);
 
@@ -457,11 +458,6 @@ void AppWindow::RequestPointerLock(WebContents* web_contents,
                                    bool last_unlocked_by_target) {
   DCHECK_EQ(AppWindow::web_contents(), web_contents);
   helper_->RequestPointerLock();
-}
-
-bool AppWindow::PreHandleGestureEvent(WebContents* source,
-                                      const blink::WebGestureEvent& event) {
-  return AppWebContentsHelper::ShouldSuppressGestureEvent(event);
 }
 
 content::PictureInPictureResult AppWindow::EnterPictureInPicture(
@@ -778,7 +774,7 @@ void AppWindow::RestoreAlwaysOnTop() {
     UpdateNativeAlwaysOnTop();
 }
 
-void AppWindow::GetSerializedState(base::Value::Dict* properties) const {
+void AppWindow::GetSerializedState(base::DictValue* properties) const {
   DCHECK(properties);
 
   properties->Set("fullscreen", native_app_window_->IsFullscreenOrPending());
@@ -979,12 +975,8 @@ blink::mojom::DisplayMode AppWindow::GetDisplayMode(
                         : blink::mojom::DisplayMode::kStandalone;
 }
 
-WindowController* AppWindow::GetExtensionWindowController() const {
+WindowController* AppWindow::GetExtensionWindowController() {
   return app_window_contents_->GetWindowController();
-}
-
-content::WebContents* AppWindow::GetAssociatedWebContents() const {
-  return web_contents();
 }
 
 void AppWindow::OnExtensionUnloaded(BrowserContext* browser_context,

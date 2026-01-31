@@ -7,7 +7,7 @@
 
 #import <UIKit/UIKit.h>
 
-#import "ios/chrome/browser/content_suggestions/ui_bundled/user_account_image_update_delegate.h"
+#import "ios/chrome/browser/content_suggestions/ui/user_account_image_update_delegate.h"
 #import "ios/chrome/browser/location_bar/ui_bundled/fakebox_buttons_snapshot_provider.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_header_consumer.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_header_view_controller_delegate.h"
@@ -65,13 +65,9 @@
 @property(nonatomic, weak) NewTabPageMetricsRecorder* NTPMetricsRecorder;
 
 // Identity disc shown in this ViewController.
-// TODO(crbug.com/40165977): Remove once the Feed header properly supports
-// ContentSuggestions.
 @property(nonatomic, strong, readonly) UIButton* identityDiscButton;
 
 // Customization menu button shown in this ViewController.
-// TODO(crbug.com/40165977): Remove once the Feed header properly supports
-// ContentSuggestions.
 @property(nonatomic, readonly) UIButton* customizationMenuButton;
 
 // Should be set to YES if an animation will run that requires animating the

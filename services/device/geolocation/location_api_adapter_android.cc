@@ -19,20 +19,19 @@ using base::android::AttachCurrentThread;
 using base::android::JavaRef;
 using device::LocationApiAdapterAndroid;
 
-static void JNI_LocationProviderAdapter_NewLocationAvailable(
-    JNIEnv* env,
-    jdouble latitude,
-    jdouble longitude,
-    jdouble time_stamp,
-    jboolean has_altitude,
-    jdouble altitude,
-    jboolean has_accuracy,
-    jdouble accuracy,
-    jboolean has_heading,
-    jdouble heading,
-    jboolean has_speed,
-    jdouble speed,
-    jboolean is_precise) {
+static void JNI_LocationProviderAdapter_NewLocationAvailable(JNIEnv* env,
+                                                             double latitude,
+                                                             double longitude,
+                                                             double time_stamp,
+                                                             bool has_altitude,
+                                                             double altitude,
+                                                             bool has_accuracy,
+                                                             double accuracy,
+                                                             bool has_heading,
+                                                             double heading,
+                                                             bool has_speed,
+                                                             double speed,
+                                                             bool is_precise) {
   LocationApiAdapterAndroid::OnNewLocationAvailable(
       latitude, longitude, time_stamp, has_altitude, altitude, has_accuracy,
       accuracy, has_heading, heading, has_speed, speed, is_precise);

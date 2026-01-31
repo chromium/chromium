@@ -77,7 +77,7 @@ class POLICY_EXPORT PolicyConversions {
     Delegate& operator=(const Delegate&) = delete;
     virtual ~Delegate();
 
-    virtual base::Value::Dict ToValueDict() = 0;
+    virtual base::DictValue ToValueDict() = 0;
 
    protected:
     PolicyConversionsClient* client() { return client_; }
@@ -129,7 +129,7 @@ class POLICY_EXPORT PolicyConversions {
   // Returns the policy data as a JSON string;
   std::string ToJSON();
 
-  base::Value::Dict ToValueDict();
+  base::DictValue ToValueDict();
 
  private:
   std::unique_ptr<PolicyConversionsClient> client_;
@@ -145,16 +145,16 @@ class POLICY_EXPORT DefaultPolicyConversions
   DefaultPolicyConversions& operator=(const DefaultPolicyConversions&) = delete;
   ~DefaultPolicyConversions() override;
 
-  base::Value::Dict ToValueDict() override;
+  base::DictValue ToValueDict() override;
 
  private:
 #if BUILDFLAG(ENABLE_EXTENSIONS)
-  base::Value::Dict GetExtensionPolicies();
-  base::Value::Dict GetExtensionPolicies(PolicyDomain policy_domain);
+  base::DictValue GetExtensionPolicies();
+  base::DictValue GetExtensionPolicies(PolicyDomain policy_domain);
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 #if BUILDFLAG(IS_CHROMEOS)
-  base::Value::Dict GetDeviceLocalAccountPolicies();
+  base::DictValue GetDeviceLocalAccountPolicies();
 #endif
 };
 
@@ -168,12 +168,12 @@ class POLICY_EXPORT ChromePolicyConversions
   ChromePolicyConversions& operator=(const ChromePolicyConversions&) = delete;
   ~ChromePolicyConversions() override;
 
-  base::Value::Dict ToValueDict() override;
+  base::DictValue ToValueDict() override;
 
  private:
-  base::Value::Dict GetChromePolicies();
+  base::DictValue GetChromePolicies();
 #if !BUILDFLAG(IS_CHROMEOS)
-  base::Value::Dict GetPrecedencePolicies();
+  base::DictValue GetPrecedencePolicies();
 #endif  // !BUILDFLAG(IS_CHROMEOS)
 };
 

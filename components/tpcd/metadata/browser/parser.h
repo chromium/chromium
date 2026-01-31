@@ -19,40 +19,12 @@
 #include "components/tpcd/metadata/common/proto/metadata.pb.h"
 
 namespace tpcd::metadata {
-// These values are persisted to logs. Entries should not be renumbered and
-// numeric values should never be reused.
-//
-// NOTE: Keep in sync with `TpcdMetadataInstallationResult` at
-// src/tools/metrics/histograms/metadata/navigation/enums.xml
-enum class InstallationResult {
-  // The metadata component was successfully .
-  kSuccessful = 0,
-  // The component file wasn't present.
-  kMissingMetadataFile = 1,
-  // Reading from the component file failed.
-  kReadingMetadataFileFailed = 2,
-  // The raw metadata string was unable to be parsed into the proto.
-  kParsingToProtoFailed = 3,
-  // One or more of the specs are erroneous or missing.
-  kErroneousSpec = 4,
-  // The Source field is erroneous or missing.
-  kErroneousSource = 5,
-  // The DTRP or its override field is erroneous or missing.
-  kErroneousDtrp = 6,
-  // The DTRP or its override field shouldn't be set.
-  kIllicitDtrp = 7,
-  kMaxValue = kIllicitDtrp,
-};
-
 // Enumerates the source of the `MetadataEntry` list return by `GetMetadata()`.
 enum class MetadataSource {
   kServer = 0,
   kClient,
   kFeatureParams,
 };
-
-using RecordInstallationResultCallback =
-    base::OnceCallback<void(InstallationResult)>;
 
 using MetadataEntries = std::vector<MetadataEntry>;
 using TpcdMetadataRuleSource = content_settings::mojom::TpcdMetadataRuleSource;
@@ -112,9 +84,7 @@ class Parser {
   // `content_settings::RuleSource` enum value.
   static TpcdMetadataRuleSource ToRuleSource(const std::string& source);
 
-  static bool IsValidMetadata(
-      const Metadata& metadata,
-      RecordInstallationResultCallback callback = base::NullCallback());
+  static bool IsValidMetadata(const Metadata& metadata);
 
   // Start Parser testing methods:
   MetadataEntries GetInstalledMetadataForTesting();

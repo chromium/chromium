@@ -35,8 +35,8 @@ export enum DialogCloseReason {
 }
 
 export class BrowserProxy {
-  callbackRouter: PageCallbackRouter;
-  handler: PageHandlerInterface;
+  callbackRouter: PageCallbackRouter|undefined;
+  handler: PageHandlerInterface|undefined;
 
   constructor(omitHandler?: boolean) {
     if (omitHandler) {

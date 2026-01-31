@@ -4,7 +4,8 @@
 
 #include "base/cpu.h"
 
-#include "base/containers/contains.h"
+#include <string>
+
 #include "base/containers/span.h"
 #include "base/logging.h"
 #include "base/memory/protected_memory_buildflags.h"
@@ -16,8 +17,8 @@
 // Tests whether we can run extended instructions represented by the CPU
 // information. This test actually executes some extended instructions (such as
 // MMX, SSE, etc.) supported by the CPU and sees we can run them without
-// "undefined instruction" exceptions. That is, this test succeeds when this
-// test finishes without a crash.
+// "undefined instruction" exceptions. That is, this test succeeds when it
+// finishes without a crash.
 TEST(CPU, RunExtendedInstructions) {
   // Retrieve the CPU information.
   base::CPU cpu;
@@ -137,8 +138,8 @@ TEST(CPU, RunExtendedInstructions) {
 // For https://crbug.com/249713
 TEST(CPU, BrandAndVendorContainsNoNUL) {
   base::CPU cpu;
-  EXPECT_FALSE(base::Contains(cpu.cpu_brand(), '\0'));
-  EXPECT_FALSE(base::Contains(cpu.vendor_name(), '\0'));
+  EXPECT_FALSE(cpu.cpu_brand().contains('\0'));
+  EXPECT_FALSE(cpu.vendor_name().contains('\0'));
 }
 
 #if defined(ARCH_CPU_X86_FAMILY)

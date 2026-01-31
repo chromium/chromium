@@ -35,7 +35,6 @@
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
-#include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/common/pref_names.h"
@@ -63,7 +62,7 @@ void RemoveFromLastActiveProfilesPrefList(const base::FilePath& path) {
   PrefService* local_state = g_browser_process->local_state();
   DCHECK(local_state);
   ScopedListPrefUpdate update(local_state, prefs::kProfilesLastActive);
-  base::Value::List& profile_list = update.Get();
+  base::ListValue& profile_list = update.Get();
   base::Value entry_value = base::Value(path.BaseName().AsUTF8Unsafe());
   profile_list.EraseValue(entry_value);
 }
@@ -150,14 +149,15 @@ void DeleteProfileHelper::MaybeScheduleProfileForDeletion(
     // Close all browser windows before deleting the profile. If the user
     // cancels the closing of any tab in an OnBeforeUnload event, profile
     // deletion is also cancelled. (crbug.com/289390)
-    BrowserList::CloseAllBrowsersWithProfile(
+    chrome::CloseAllBrowsersWithProfile(
         profile,
+        /*skip_beforeunload=*/false,
         base::BindRepeating(
             &DeleteProfileHelper::EnsureActiveProfileExistsBeforeDeletion,
             base::Unretained(this), base::Passed(std::move(keep_alive)),
             base::Passed(std::move(profile_keep_alive)),
             base::Passed(std::move(callback))),
-        base::BindRepeating(&CancelProfileDeletion), false);
+        base::BindRepeating(&CancelProfileDeletion));
   } else {
     EnsureActiveProfileExistsBeforeDeletion(std::move(keep_alive),
                                             /*profile_keep_alive=*/nullptr,
@@ -237,7 +237,7 @@ void DeleteProfileHelper::CleanUpEphemeralProfiles() {
 void DeleteProfileHelper::CleanUpDeletedProfiles() {
   PrefService* local_state = g_browser_process->local_state();
   DCHECK(local_state);
-  const base::Value::List& deleted_profiles =
+  const base::ListValue& deleted_profiles =
       local_state->GetList(prefs::kProfilesDeleted);
 
   for (const base::Value& value : deleted_profiles) {

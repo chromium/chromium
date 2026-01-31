@@ -469,7 +469,7 @@ TEST_F(ProcessUtilTest, HandlesToTransferClosedOnSpawnFailure) {
   EXPECT_EQ(
       zx_object_wait_one(handles[1].get(), ZX_CHANNEL_PEER_CLOSED, 0, nullptr),
       ZX_OK);
-  EXPECT_EQ(ZX_ERR_BAD_HANDLE, zx_handle_close(handles[0].get()));
+  EXPECT_EQ(ZX_ERR_NOT_FOUND, zx_handle_check_valid(handles[0].get()));
   std::ignore = handles[0].release();
 }
 
@@ -495,7 +495,7 @@ TEST_F(ProcessUtilTest, HandlesToTransferClosedOnBadPathToMapFailure) {
   EXPECT_EQ(
       zx_object_wait_one(handles[1].get(), ZX_CHANNEL_PEER_CLOSED, 0, nullptr),
       ZX_OK);
-  EXPECT_EQ(ZX_ERR_BAD_HANDLE, zx_handle_close(handles[0].get()));
+  EXPECT_EQ(ZX_ERR_NOT_FOUND, zx_handle_check_valid(handles[0].get()));
   std::ignore = handles[0].release();
 }
 

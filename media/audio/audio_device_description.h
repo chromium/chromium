@@ -58,6 +58,11 @@ struct MEDIA_EXPORT AudioDeviceDescription {
   // id is formatted as "applicationLoopback:<application id>"
   static const char kApplicationLoopbackDeviceId[];
 
+  // Prefix of the device id for loopback of a whole chromium instance when
+  // restrictOwnAudio is enabled. The full device id is formatted as
+  // "restrictOwnAudioBrowserLoopback:<browser process id>"
+  static const char kRestrictOwnAudioBrowserLoopbackDeviceId[];
+
   // TODO(b/338470954): Rename to IsVirtualDefaultDevice(...)
   // Returns true if |device_id| represents the virtual default device.
   static bool IsDefaultDevice(std::string_view device_id);

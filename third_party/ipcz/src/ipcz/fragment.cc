@@ -24,7 +24,8 @@ Fragment Fragment::MappedFromDescriptor(const FragmentDescriptor& descriptor,
   if (end > mapping.bytes().size()) {
     return {};
   }
-  return Fragment{descriptor, mapping.address_at(descriptor.offset())};
+  return Fragment{descriptor,
+                  mapping.bytes().subspan(descriptor.offset()).data()};
 }
 
 // static

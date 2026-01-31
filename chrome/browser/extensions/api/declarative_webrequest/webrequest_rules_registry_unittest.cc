@@ -12,7 +12,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/containers/contains.h"
 #include "base/run_loop.h"
 #include "base/test/values_test_util.h"
 #include "base/values.h"
@@ -106,27 +105,27 @@ class WebRequestRulesRegistryTest : public testing::Test {
   // Returns a rule that roughly matches http://*.example.com and
   // https://www.example.com and cancels it
   api::events::Rule CreateRule1() {
-    base::Value::List scheme_http;
+    base::ListValue scheme_http;
     scheme_http.Append("http");
-    base::Value::Dict http_condition_dict;
+    base::DictValue http_condition_dict;
     http_condition_dict.Set(keys2::kHostSuffixKey, "example.com");
-    base::Value::Dict http_condition_url_filter;
+    base::DictValue http_condition_url_filter;
     http_condition_url_filter.Set(keys::kInstanceTypeKey,
                                   keys::kRequestMatcherType);
 
     scheme_http.Append("https");
-    base::Value::Dict https_condition_dict;
-    https_condition_dict.Set(keys2::kSchemesKey, base::Value::List());
+    base::DictValue https_condition_dict;
+    https_condition_dict.Set(keys2::kSchemesKey, base::ListValue());
     https_condition_dict.Set(keys2::kHostSuffixKey, "example.com");
     https_condition_dict.Set(keys2::kHostPrefixKey, "www");
 
-    base::Value::Dict https_condition_url_filter;
+    base::DictValue https_condition_url_filter;
     https_condition_url_filter.Set(keys::kUrlKey,
                                    std::move(https_condition_dict));
     https_condition_url_filter.Set(keys::kInstanceTypeKey,
                                    keys::kRequestMatcherType);
 
-    base::Value::Dict action_dict;
+    base::DictValue action_dict;
     action_dict.Set(keys::kInstanceTypeKey, keys::kCancelRequestType);
 
     api::events::Rule rule;
@@ -143,10 +142,10 @@ class WebRequestRulesRegistryTest : public testing::Test {
 
   // Returns a rule that matches anything and cancels it.
   api::events::Rule CreateRule2() {
-    base::Value::Dict condition_dict;
+    base::DictValue condition_dict;
     condition_dict.Set(keys::kInstanceTypeKey, keys::kRequestMatcherType);
 
-    base::Value::Dict action_dict;
+    base::DictValue action_dict;
     action_dict.Set(keys::kInstanceTypeKey, keys::kCancelRequestType);
 
     api::events::Rule rule;
@@ -158,10 +157,10 @@ class WebRequestRulesRegistryTest : public testing::Test {
   }
 
   api::events::Rule CreateRedirectRule(const std::string& destination) {
-    base::Value::Dict condition_dict;
+    base::DictValue condition_dict;
     condition_dict.Set(keys::kInstanceTypeKey, keys::kRequestMatcherType);
 
-    base::Value::Dict action_dict;
+    base::DictValue action_dict;
     action_dict.Set(keys::kInstanceTypeKey, keys::kRedirectRequestType);
     action_dict.Set(keys::kRedirectUrlKey, destination);
 
@@ -176,13 +175,13 @@ class WebRequestRulesRegistryTest : public testing::Test {
   // Create a rule to ignore all other rules for a destination that
   // contains index.html.
   api::events::Rule CreateIgnoreRule() {
-    base::Value::Dict condition_dict;
-    base::Value::Dict http_condition_dict;
+    base::DictValue condition_dict;
+    base::DictValue http_condition_dict;
     http_condition_dict.Set(keys2::kPathContainsKey, "index.html");
     condition_dict.Set(keys::kInstanceTypeKey, keys::kRequestMatcherType);
     condition_dict.Set(keys::kUrlKey, std::move(http_condition_dict));
 
-    base::Value::Dict action_dict;
+    base::DictValue action_dict;
     action_dict.Set(keys::kInstanceTypeKey, keys::kIgnoreRulesType);
     action_dict.Set(keys::kLowerPriorityThanKey, 150);
 
@@ -212,7 +211,7 @@ class WebRequestRulesRegistryTest : public testing::Test {
   api::events::Rule CreateCancellingRule(
       const char* rule_id,
       const std::vector<const std::string*>& attributes) {
-    base::Value::Dict action_dict;
+    base::DictValue action_dict;
     action_dict.Set(keys::kInstanceTypeKey, keys::kCancelRequestType);
 
     api::events::Rule rule;
@@ -285,10 +284,8 @@ TEST_F(WebRequestRulesRegistryTest, AddRulesImpl) {
   std::set<WebRequestRule::GlobalRuleId> matches_ids;
   for (const auto* match : matches)
     matches_ids.insert(match->id());
-  EXPECT_TRUE(
-      base::Contains(matches_ids, std::make_pair(kExtensionId, kRuleId1)));
-  EXPECT_TRUE(
-      base::Contains(matches_ids, std::make_pair(kExtensionId, kRuleId2)));
+  EXPECT_TRUE(matches_ids.contains(std::make_pair(kExtensionId, kRuleId1)));
+  EXPECT_TRUE(matches_ids.contains(std::make_pair(kExtensionId, kRuleId2)));
 
   GURL foobar_url("http://www.foobar.com");
   WebRequestInfo foobar_request_info(CreateRequestParams(foobar_url));
@@ -528,8 +525,8 @@ TEST_F(WebRequestRulesRegistryTest, IgnoreRulesByTag) {
       "  \"priority\": 300                                               \n"
       "}                                                                 ";
 
-  base::Value::Dict value1 = base::test::ParseJsonDict(kRule1);
-  base::Value::Dict value2 = base::test::ParseJsonDict(kRule2);
+  base::DictValue value1 = base::test::ParseJsonDict(kRule1);
+  base::DictValue value2 = base::test::ParseJsonDict(kRule2);
 
   std::optional<api::events::Rule> rule1 = api::events::Rule::FromValue(value1);
   std::optional<api::events::Rule> rule2 = api::events::Rule::FromValue(value2);
@@ -686,7 +683,7 @@ TEST(WebRequestRulesRegistrySimpleTest, StageChecker) {
       "  \"priority\": 200                                                \n"
       "}                                                                  ";
 
-  base::Value::Dict value = base::test::ParseJsonDict(kRule);
+  base::DictValue value = base::test::ParseJsonDict(kRule);
 
   std::optional<api::events::Rule> rule = api::events::Rule::FromValue(value);
   ASSERT_TRUE(rule);
@@ -720,7 +717,7 @@ TEST(WebRequestRulesRegistrySimpleTest, HostPermissionsChecker) {
       "}                                                             ";
   base::Value action_value = base::test::ParseJson(kAction);
 
-  base::Value::List actions;
+  base::ListValue actions;
   actions.Append(std::move(action_value));
 
   std::string error;
@@ -772,7 +769,7 @@ TEST_F(WebRequestRulesRegistryTest, CheckOriginAndPathRegEx) {
       "  \"priority\": 200                                               \n"
       "}                                                                 ";
 
-  base::Value::Dict value = base::test::ParseJsonDict(kRule);
+  base::DictValue value = base::test::ParseJsonDict(kRule);
 
   std::optional<api::events::Rule> rule = api::events::Rule::FromValue(value);
   ASSERT_TRUE(rule);

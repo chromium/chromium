@@ -199,6 +199,7 @@ source_set("unit_tests") {
     "//services/network/public/cpp",
     "//sql",
     "//sql:test_support",
+    "//testing/gmock",
     "//testing/gtest",
     "//ui/gfx",
     "//ui/gfx:test_support",

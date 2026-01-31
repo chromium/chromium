@@ -14,7 +14,6 @@
 #include "base/base64.h"
 #include "base/base_switches.h"
 #include "base/command_line.h"
-#include "base/containers/contains.h"
 #include "base/files/file_util.h"
 #include "base/metrics/field_trial.h"
 #include "base/path_service.h"
@@ -104,7 +103,7 @@ IN_PROC_BROWSER_TEST_F(VariationsSafeModeEndToEndBrowserTestHelper,
   const bool is_first_run = (crash_streak == 0);
   const bool is_null_seed = (crash_streak == kCrashStreakNullSeedThreshold);
   const bool safe_seed_was_used =
-      FieldTrialListHasAllStudiesFrom(kTestSeedData);
+      FieldTrialListHasAllStudiesFrom(TestSeedData());
   EXPECT_NE(is_first_run || is_null_seed, safe_seed_was_used)  // ==> XOR
       << "crash_streak=" << crash_streak;
 }
@@ -236,18 +235,18 @@ TEST_P(VariationsSafeModeEndToEndBrowserTest, ExtendedSafeSeedEndToEnd) {
     local_state->SetInteger(prefs::kVariationsCrashStreak, initial_crash_count);
 
     std::string crashing_seed_uncompressed_data;
-    ASSERT_TRUE(base::Base64Decode(kCrashingSeedData.base64_uncompressed_data,
+    ASSERT_TRUE(base::Base64Decode(CrashingSeedData().base64_uncompressed_data,
                                    &crashing_seed_uncompressed_data));
     StoredSeedInfo stored_seed_info;
     stored_seed_info.set_data(crashing_seed_uncompressed_data);
-    stored_seed_info.set_signature(kCrashingSeedData.base64_signature);
+    stored_seed_info.set_signature(CrashingSeedData().base64_signature);
 
     std::string test_seed_uncompressed_data;
-    ASSERT_TRUE(base::Base64Decode(kTestSeedData.base64_uncompressed_data,
+    ASSERT_TRUE(base::Base64Decode(TestSeedData().base64_uncompressed_data,
                                    &test_seed_uncompressed_data));
     StoredSeedInfo stored_safe_seed_info;
     stored_safe_seed_info.set_data(test_seed_uncompressed_data);
-    stored_safe_seed_info.set_signature(kTestSeedData.base64_signature);
+    stored_safe_seed_info.set_signature(TestSeedData().base64_signature);
 
     ASSERT_EQ(local_state->GetString(prefs::kVariationsCompressedSeed), "");
     ASSERT_EQ(local_state->GetString(prefs::kVariationsSafeCompressedSeed), "");
@@ -260,8 +259,8 @@ TEST_P(VariationsSafeModeEndToEndBrowserTest, ExtendedSafeSeedEndToEnd) {
     // TODO(crbug.com/379869158): Remove after Seed File experiment is complete.
     auto local_state = LoadLocalState(local_state_file());
     local_state->SetInteger(prefs::kVariationsCrashStreak, initial_crash_count);
-    WriteSeedData(local_state.get(), kTestSeedData, kSafeSeedPrefKeys);
-    WriteSeedData(local_state.get(), kCrashingSeedData, kRegularSeedPrefKeys);
+    WriteSeedData(local_state.get(), TestSeedData(), kSafeSeedPrefKeys);
+    WriteSeedData(local_state.get(), CrashingSeedData(), kRegularSeedPrefKeys);
   }
 
   // The next run will be |kCrashStreakSafeSeedThreshold| crashing runs of the
@@ -297,11 +296,11 @@ TEST_P(VariationsSafeModeEndToEndBrowserTest, ExtendedNullSeedEndToEnd) {
     auto local_state = LoadLocalState(local_state_file());
     local_state->SetInteger(prefs::kVariationsCrashStreak, initial_crash_count);
     std::string seed_uncompressed_data;
-    ASSERT_TRUE(base::Base64Decode(kCrashingSeedData.base64_uncompressed_data,
+    ASSERT_TRUE(base::Base64Decode(CrashingSeedData().base64_uncompressed_data,
                                    &seed_uncompressed_data));
     StoredSeedInfo stored_seed_info;
     stored_seed_info.set_data(seed_uncompressed_data);
-    stored_seed_info.set_signature(kCrashingSeedData.base64_signature);
+    stored_seed_info.set_signature(CrashingSeedData().base64_signature);
 
     ASSERT_EQ(local_state->GetString(prefs::kVariationsCompressedSeed), "");
     ASSERT_EQ(local_state->GetString(prefs::kVariationsSafeCompressedSeed), "");
@@ -314,8 +313,8 @@ TEST_P(VariationsSafeModeEndToEndBrowserTest, ExtendedNullSeedEndToEnd) {
     // TODO(crbug.com/391565578): Remove after Seed File experiment is complete.
     auto local_state = LoadLocalState(local_state_file());
     local_state->SetInteger(prefs::kVariationsCrashStreak, initial_crash_count);
-    WriteSeedData(local_state.get(), kCrashingSeedData, kSafeSeedPrefKeys);
-    WriteSeedData(local_state.get(), kCrashingSeedData, kRegularSeedPrefKeys);
+    WriteSeedData(local_state.get(), CrashingSeedData(), kSafeSeedPrefKeys);
+    WriteSeedData(local_state.get(), CrashingSeedData(), kRegularSeedPrefKeys);
   }
 
   // The next run will be |kCrashStreakNullSeedThreshold| crashing runs of the

@@ -26,6 +26,16 @@ class AccessorySheetProperties {
             new WritableIntPropertyKey("active_tab_index");
     static final WritableBooleanPropertyKey VISIBLE = new WritableBooleanPropertyKey("visible");
     static final WritableIntPropertyKey HEIGHT = new WritableIntPropertyKey("height");
+    static final WritableObjectPropertyKey<Integer> MAX_WIDTH =
+            new WritableObjectPropertyKey<>("max_width");
+    static final WritableIntPropertyKey HORIZONTAL_PADDING =
+            new WritableIntPropertyKey("horizontal_padding");
+    static final WritableIntPropertyKey GRAVITY = new WritableIntPropertyKey("gravity");
+    static final WritableIntPropertyKey ELEVATION = new WritableIntPropertyKey("elevation");
+    static final WritableIntPropertyKey TOP_OFFSET = new WritableIntPropertyKey("top_offset");
+    static final WritableIntPropertyKey BACKGROUND = new WritableIntPropertyKey("background");
+    static final WritableBooleanPropertyKey BAR_SHADOW_VISIBLE =
+            new WritableBooleanPropertyKey("bar_shadow_visible");
     static final WritableBooleanPropertyKey TOP_SHADOW_VISIBLE =
             new WritableBooleanPropertyKey("top_shadow_visible");
     static final WritableObjectPropertyKey<ViewPager.OnPageChangeListener> PAGE_CHANGE_LISTENER =
@@ -41,13 +51,21 @@ class AccessorySheetProperties {
                         ACTIVE_TAB_INDEX,
                         VISIBLE,
                         HEIGHT,
+                        MAX_WIDTH,
+                        HORIZONTAL_PADDING,
+                        GRAVITY,
+                        ELEVATION,
+                        TOP_OFFSET,
+                        BACKGROUND,
+                        BAR_SHADOW_VISIBLE,
                         TOP_SHADOW_VISIBLE,
                         PAGE_CHANGE_LISTENER,
                         SHOW_KEYBOARD_CALLBACK)
                 .with(TABS, new ListModel<>())
                 .with(ACTIVE_TAB_INDEX, NO_ACTIVE_TAB)
                 .with(VISIBLE, false)
-                .with(TOP_SHADOW_VISIBLE, false);
+                .with(TOP_SHADOW_VISIBLE, false)
+                .with(BAR_SHADOW_VISIBLE, true);
     }
 
     private AccessorySheetProperties() {}

@@ -47,6 +47,7 @@ import org.chromium.components.browser_ui.widget.DualControlLayout;
 import org.chromium.components.browser_ui.widget.DualControlLayout.ButtonType;
 import org.chromium.components.browser_ui.widget.TintedDrawable;
 import org.chromium.ui.HorizontalListDividerDrawable;
+import org.chromium.ui.UiUtils;
 import org.chromium.ui.base.ViewUtils;
 import org.chromium.ui.interpolators.Interpolators;
 
@@ -969,9 +970,8 @@ public abstract class PaymentRequestSection extends LinearLayout implements View
                         drawableTint = R.color.default_icon_color_accent1_tint_list;
                     }
 
-                    TintedDrawable tintedDrawable =
-                            TintedDrawable.constructTintedDrawable(
-                                    context, drawableId, drawableTint);
+                    var tintedDrawable =
+                            UiUtils.getTintedDrawable(context, drawableId, drawableTint);
                     ImageButton button = new ImageButton(context);
                     button.setBackground(null);
                     button.setImageDrawable(tintedDrawable);

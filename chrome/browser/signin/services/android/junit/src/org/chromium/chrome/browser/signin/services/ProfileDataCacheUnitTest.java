@@ -4,7 +4,6 @@
 
 package org.chromium.chrome.browser.signin.services;
 
-import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
@@ -20,10 +19,6 @@ import org.robolectric.annotation.LooperMode;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.test.util.browser.signin.AccountManagerTestRule;
 import org.chromium.components.signin.base.AccountInfo;
-import org.chromium.components.signin.identitymanager.AccountInfoServiceProvider;
-import org.chromium.components.signin.identitymanager.IdentityManagerImpl;
-import org.chromium.components.signin.identitymanager.IdentityManagerImplJni;
-import org.chromium.components.signin.test.util.FakeIdentityManager;
 import org.chromium.google_apis.gaia.GaiaId;
 
 /** Unit tests for {@link ProfileDataCache} */
@@ -40,28 +35,16 @@ public class ProfileDataCacheUnitTest {
     @Rule
     public final AccountManagerTestRule mAccountManagerTestRule = new AccountManagerTestRule();
 
-    @Mock private IdentityManagerImpl.Natives mIdentityManagerNativeMock;
-
     @Mock private ProfileDataCache.Observer mObserverMock;
-
-    private final FakeIdentityManager mIdentityManager = new FakeIdentityManager();
 
     private ProfileDataCache mProfileDataCache;
 
     @Before
     public void setUp() {
-        IdentityManagerImplJni.setInstanceForTesting(mIdentityManagerNativeMock);
         mProfileDataCache =
                 ProfileDataCache.createWithDefaultImageSizeAndNoBadge(
-                        RuntimeEnvironment.application.getApplicationContext(),mIdentityManager );
-
-        // Add an observer for IdentityManager::onExtendedAccountInfoUpdated.
-        mAccountManagerTestRule.observeIdentityManager(mIdentityManager);
-    }
-
-    @After
-    public void tearDown() {
-        AccountInfoServiceProvider.resetForTests();
+                        RuntimeEnvironment.application.getApplicationContext(),
+                        mAccountManagerTestRule.getIdentityManager());
     }
 
     @Test
@@ -74,7 +57,7 @@ public class ProfileDataCacheUnitTest {
         Assert.assertNull(
                 mProfileDataCache.getProfileDataOrDefault(ACCOUNT.getEmail()).getFullName());
 
-        mIdentityManager.addOrUpdateExtendedAccountInfo(accountWithFullName);
+        mAccountManagerTestRule.addAccount(accountWithFullName);
 
         Assert.assertTrue(mProfileDataCache.hasProfileDataForTesting(ACCOUNT.getEmail()));
         Assert.assertEquals(
@@ -92,7 +75,7 @@ public class ProfileDataCacheUnitTest {
         Assert.assertNull(
                 mProfileDataCache.getProfileDataOrDefault(ACCOUNT.getEmail()).getGivenName());
 
-        mIdentityManager.addOrUpdateExtendedAccountInfo(accountWithGivenName);
+        mAccountManagerTestRule.addAccount(accountWithGivenName);
 
         Assert.assertTrue(mProfileDataCache.hasProfileDataForTesting(ACCOUNT.getEmail()));
         Assert.assertEquals(
@@ -110,7 +93,7 @@ public class ProfileDataCacheUnitTest {
         mProfileDataCache.addObserver(mObserverMock);
         Assert.assertFalse(mProfileDataCache.hasProfileDataForTesting(ACCOUNT.getEmail()));
 
-        mIdentityManager.addOrUpdateExtendedAccountInfo(ACCOUNT);
+        mAccountManagerTestRule.addAccount(ACCOUNT);
 
         Assert.assertTrue(mProfileDataCache.hasProfileDataForTesting(ACCOUNT.getEmail()));
     }

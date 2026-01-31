@@ -20,8 +20,7 @@
 #include "device/bluetooth/test/mock_bluetooth_adapter.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace ash {
-namespace quick_pair {
+namespace ash::quick_pair {
 
 class FastPairFeatureUsageMetricsLoggerTest : public ::testing::Test {
  protected:
@@ -226,5 +225,4 @@ TEST_F(FastPairFeatureUsageMetricsLoggerTest, IsAccessible_Ineligible_Enabled) {
   EXPECT_FALSE(feature_usage_metrics.IsEnabled());
 }
 
-}  // namespace quick_pair
-}  // namespace ash
+}  // namespace ash::quick_pair

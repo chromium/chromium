@@ -26,7 +26,7 @@ class ActionMove : public Action {
   ~ActionMove() override;
 
   // Override from Action.
-  bool ParseFromJson(const base::Value::Dict& value) override;
+  bool ParseFromJson(const base::DictValue& value) override;
   bool InitByAddingNewAction(const gfx::Point& target_pos) override;
   void InitByChangingActionType(Action* action) override;
   bool RewriteEvent(const ui::Event& origin,
@@ -64,7 +64,7 @@ class ActionMove : public Action {
   //     {}
   //   ]
   // }
-  bool ParseJsonFromKeyboard(const base::Value::Dict& value);
+  bool ParseJsonFromKeyboard(const base::DictValue& value);
   // Json value format:
   // {
   //   "id": 0,
@@ -88,7 +88,7 @@ class ActionMove : public Action {
   //       {}
   //   }
   // }
-  bool ParseJsonFromMouse(const base::Value::Dict& value);
+  bool ParseJsonFromMouse(const base::DictValue& value);
   bool RewriteKeyEvent(const ui::KeyEvent* key_event,
                        const gfx::RectF& content_bounds,
                        const gfx::Transform* rotation_transform,

@@ -1,0 +1,13 @@
+Termos de Serviço adicionais do Google Chrome e do ChromeOS
+
+Última modificação: 30 de setembro de 2025
+
+Ao usar o Chrome ou o ChromeOS, você concorda com os Termos de Serviço do Google localizados em https://policies.google.com/terms e com estes Termos de Serviço adicionais do Google Chrome e do ChromeOS.
+
+Estes Termos de Serviço adicionais do Google Chrome e do ChromeOS se aplicam à versão do código executável do Chrome e do ChromeOS. A maioria dos códigos-fonte do Chrome está disponível gratuitamente mediante contratos de licença de software de código aberto em chrome://credits.
+
+O uso de determinados componentes do Chrome e do ChromeOS está sujeito aos seguintes termos:
+
+AVC
+
+ESTE PRODUTO É LICENCIADO SOB A LICENÇA DE PORTFÓLIO DE PATENTES AVC PARA USO PESSOAL DE UM CONSUMIDOR OU OUTROS USOS EM QUE ELE NÃO RECEBA REMUNERAÇÃO PARA (i) CODIFICAR VÍDEOS EM CONFORMIDADE COM O PADRÃO AVC ("VÍDEO AVC") E/OU (ii) DECODIFICAR VÍDEOS AVC QUE TENHAM SIDO CODIFICADOS POR UM CONSUMIDOR ENVOLVIDO EM UMA ATIVIDADE PESSOAL E/OU TENHAM SIDO ADQUIRIDOS DE UM PROVEDOR DE VÍDEOS LICENCIADO PARA FORNECER VÍDEOS AVC. NENHUMA LICENÇA SERÁ CONCEDIDA NEM SERÁ CONSIDERADA IMPLÍCITA PARA OUTRO USO. MAIS INFORMAÇÕES ESTÃO DISPONÍVEIS JUNTO À MPEG LA, L.L.C., EM HTTPS://WWW.VIA-LA.COM.

@@ -13,9 +13,9 @@
 #import "components/safe_browsing/core/browser/sync/safe_browsing_primary_account_token_fetcher.h"
 #import "ios/chrome/browser/enterprise/connectors/connectors_service_factory.h"
 #import "ios/chrome/browser/enterprise/connectors/connectors_util.h"
+#import "ios/chrome/browser/policy/model/browser_management_service.h"
+#import "ios/chrome/browser/policy/model/browser_management_service_factory.h"
 #import "ios/chrome/browser/policy/model/browser_policy_connector_ios.h"
-#import "ios/chrome/browser/policy/model/management_service_ios.h"
-#import "ios/chrome/browser/policy/model/management_service_ios_factory.h"
 #import "ios/chrome/browser/safe_browsing/model/user_population_helper.h"
 #import "ios/chrome/browser/safe_browsing/model/verdict_cache_manager_factory.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
@@ -75,7 +75,7 @@ ChromeEnterpriseRealTimeUrlLookupServiceFactory::
   DependsOn(enterprise_connectors::ConnectorsServiceFactory::GetInstance());
   // SyncServiceFactory dependency through GetUserPopulationForProfile.
   DependsOn(SyncServiceFactory::GetInstance());
-  DependsOn(policy::ManagementServiceIOSFactory::GetInstance());
+  DependsOn(policy::BrowserManagementServiceFactory::GetInstance());
 }
 
 ChromeEnterpriseRealTimeUrlLookupServiceFactory::
@@ -94,7 +94,7 @@ ChromeEnterpriseRealTimeUrlLookupServiceFactory::BuildServiceInstanceFor(
       IdentityManagerFactory::GetForProfile(profile);
 
   auto* management_service =
-      policy::ManagementServiceIOSFactory::GetForProfile(profile);
+      policy::BrowserManagementServiceFactory::GetForProfile(profile);
   CHECK(management_service);
 
   return std::make_unique<ChromeEnterpriseRealTimeUrlLookupService>(
@@ -118,7 +118,8 @@ ChromeEnterpriseRealTimeUrlLookupServiceFactory::BuildServiceInstanceFor(
           &enterprise_connectors::GetNavigationActiveContentAreaUser,
           IdentityManagerFactory::GetForProfile(profile)),
       base::BindRepeating(&IsProfileAffiliated, profile),
-      IsCommandLineSwitchEnabled());
+      IsCommandLineSwitchEnabled(),
+      /*intelligent_scan_delegate=*/nullptr);
 }
 
 }  // namespace safe_browsing

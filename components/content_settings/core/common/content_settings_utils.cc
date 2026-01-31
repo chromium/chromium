@@ -11,6 +11,7 @@
 #include "base/feature_list.h"
 #include "base/values.h"
 #include "components/content_settings/core/common/content_settings.h"
+#include "components/content_settings/core/common/content_settings_types.h"
 #include "components/content_settings/core/common/features.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 #include "third_party/abseil-cpp/absl/functional/overload.h"
@@ -102,6 +103,13 @@ PermissionOption ToPermissionOption(ContentSetting setting) {
     default:
       NOTREACHED() << setting;
   }
+}
+
+ContentSettingsType GeolocationContentSettingsType() {
+  return base::FeatureList::IsEnabled(
+             features::kApproximateGeolocationPermission)
+             ? ContentSettingsType::GEOLOCATION_WITH_OPTIONS
+             : ContentSettingsType::GEOLOCATION;
 }
 
 }  // namespace content_settings

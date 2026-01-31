@@ -31,6 +31,8 @@ class AutofillMessageModel {
     // Used when the user is prompted to save a new or update an existing
     // `EntityInstance`.
     kEntitySaveUpdateFlow = 3,
+    // Used to ask the user to save or update an address profile.
+    kAddressSaveUpdateFlow = 4,
   };
 
   AutofillMessageModel(std::unique_ptr<messages::MessageWrapper> message,
@@ -52,6 +54,9 @@ class AutofillMessageModel {
   static std::unique_ptr<AutofillMessageModel>
   CreateForVirtualCardEnrollFailure(std::u16string card_label);
 
+  // Converts a message model type to a string for debugging and metrics.
+  static std::string_view TypeToString(Type message_type);
+
   messages::MessageWrapper& GetMessage(
       base::PassKey<AutofillMessageControllerImpl> pass_key);
   const Type& GetType() const;
@@ -61,10 +66,7 @@ class AutofillMessageModel {
   void OnDismissed(messages::DismissReason reason);
 
  private:
-  friend class AutofillMessageModelTest;
-
-  // Converts a message model type to a string for debugging and metrics.
-  static std::string_view TypeToString(Type message_type);
+  friend class AutofillMessageModelTestApi;
 
   // The message contains the Android message (populated with the appropriate
   // text and icons) which can be used with the MessageDispatcherBridge.

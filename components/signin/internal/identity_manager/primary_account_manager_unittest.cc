@@ -308,14 +308,6 @@ TEST_F(PrimaryAccountManagerTest, SignOutWhileProhibited) {
       {.sign_in = AccessPoint::kUnknown, .sync_opt_in = AccessPoint::kUnknown});
 
   signin_client()->set_is_clear_primary_account_allowed_for_testing(
-      SigninClient::SignoutDecision::REVOKE_SYNC_DISALLOWED);
-  manager_->ClearPrimaryAccount(signin_metrics::ProfileSignout::kTest);
-  EXPECT_EQ(0, num_successful_signouts_);
-  EXPECT_TRUE(manager_->HasPrimaryAccount(ConsentLevel::kSync));
-  CheckSigninMetrics(
-      {.sign_in = AccessPoint::kUnknown, .sync_opt_in = AccessPoint::kUnknown});
-
-  signin_client()->set_is_clear_primary_account_allowed_for_testing(
       SigninClient::SignoutDecision::ALLOW);
   manager_->ClearPrimaryAccount(signin_metrics::ProfileSignout::kTest);
   EXPECT_EQ(1, num_successful_signouts_);
@@ -494,7 +486,7 @@ TEST_F(PrimaryAccountManagerTest, GaiaIdMigration) {
                            AccountTrackerService::MIGRATION_NOT_STARTED);
   ScopedListPrefUpdate update(client_prefs, prefs::kAccountInfo);
   update->clear();
-  base::Value::Dict dict;
+  base::DictValue dict;
   dict.Set("account_id", email);
   dict.Set("email", email);
   dict.Set("gaia", gaia_id.ToString());
@@ -524,7 +516,7 @@ TEST_F(PrimaryAccountManagerTest, GaiaIdMigrationCrashInTheMiddle) {
                            AccountTrackerService::MIGRATION_NOT_STARTED);
   ScopedListPrefUpdate update(client_prefs, prefs::kAccountInfo);
   update->clear();
-  base::Value::Dict dict;
+  base::DictValue dict;
   dict.Set("account_id", email);
   dict.Set("email", email);
   dict.Set("gaia", gaia_id.ToString());
@@ -815,28 +807,6 @@ TEST_F(PrimaryAccountManagerTest, RestoreFailedNotSyncing) {
           kEmptyAccountInfo_RestoreFailedNotSyncConsented);
 }
 
-TEST_F(PrimaryAccountManagerTest, RestoreFailedFeatureNotEnabled) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndDisableFeature(kRestorePrimaryAccountInfo);
-
-  user_prefs_.SetString(prefs::kGoogleServicesLastSyncingUsername,
-                        "user@gmail.com");
-  user_prefs_.SetString(prefs::kGoogleServicesLastSyncingGaiaId, "gaia_id");
-  CoreAccountId account_id = account_tracker()->PickAccountIdForAccount(
-      GaiaId("gaia_id"), "user@gmail.com");
-  ASSERT_FALSE(account_id.empty());
-  ASSERT_TRUE(account_tracker()->GetAccountInfo(account_id).IsEmpty());
-  user_prefs_.SetString(prefs::kGoogleServicesAccountId, account_id.ToString());
-  user_prefs_.SetBoolean(prefs::kGoogleServicesConsentedToSync, true);
-  CreatePrimaryAccountManager();
-
-  EXPECT_FALSE(manager_->HasPrimaryAccount(ConsentLevel::kSignin));
-  EXPECT_TRUE(account_tracker()->GetAccountInfo(account_id).IsEmpty());
-  CheckInitializeAccountInfoStateHistogram(
-      PrimaryAccountManager::InitializeAccountInfoState::
-          kEmptyAccountInfo_RestoreFailedAsRestoreFeatureIsDisabled);
-}
-
 TEST_F(PrimaryAccountManagerTest, ExplicitSigninPref) {
   CreatePrimaryAccountManager();
   CoreAccountId account_id =
@@ -971,75 +941,6 @@ TEST_F(PrimaryAccountManagerTest, ExplicitSigninFollowedByWebSignin) {
   EXPECT_FALSE(prefs()->GetBoolean(
       kExplicitBrowserSigninWithoutFeatureEnabledForTesting));
 }
-
-#if BUILDFLAG(ENABLE_DICE_SUPPORT)
-TEST_F(PrimaryAccountManagerTest, SigninAllowedPrefChangesWithinSession) {
-  CreatePrimaryAccountManager();
-  CoreAccountId account_id =
-      AddToAccountTracker(GaiaId("account_id"), "user@gmail.com");
-
-  // Simulate an explicit signin through the Chrome Signin Intercept bubble.
-  manager_->SetPrimaryAccountInfo(
-      account_tracker()->GetAccountInfo(account_id),
-      signin::ConsentLevel::kSignin,
-      signin_metrics::AccessPoint::kChromeSigninInterceptBubble);
-
-  ASSERT_TRUE(manager_->HasPrimaryAccount(signin::ConsentLevel::kSignin));
-
-  // Disable SigninAllowed pref.
-  prefs()->SetBoolean(prefs::kSigninAllowed, false);
-
-  EXPECT_FALSE(manager_->HasPrimaryAccount(signin::ConsentLevel::kSignin));
-}
-
-TEST_F(PrimaryAccountManagerTest, SigninAllowedPrefChangesAfterRestart) {
-  CreatePrimaryAccountManager();
-  CoreAccountId account_id =
-      AddToAccountTracker(GaiaId("account_id"), "user@gmail.com");
-
-  // Simulate an explicit signin through the Chrome Signin Intercept bubble.
-  manager_->SetPrimaryAccountInfo(
-      account_tracker()->GetAccountInfo(account_id),
-      signin::ConsentLevel::kSignin,
-      signin_metrics::AccessPoint::kChromeSigninInterceptBubble);
-
-  ASSERT_TRUE(manager_->HasPrimaryAccount(signin::ConsentLevel::kSignin));
-
-  // Making sure that a simple restart keeps the primary account.
-  ShutDownManager();
-  CreatePrimaryAccountManager();
-  ASSERT_TRUE(manager_->HasPrimaryAccount(signin::ConsentLevel::kSignin));
-
-  // This simulates changing the pref only after a restart, from settings for
-  // example.
-  ShutDownManager();
-  prefs()->SetBoolean(prefs::kSigninAllowed, false);
-
-  CreatePrimaryAccountManager();
-  EXPECT_FALSE(manager_->HasPrimaryAccount(signin::ConsentLevel::kSignin));
-}
-
-TEST_F(PrimaryAccountManagerTest, SigninAllowedPrefChangesWithSync) {
-  CreatePrimaryAccountManager();
-  CoreAccountId account_id =
-      AddToAccountTracker(GaiaId("account_id"), "user@gmail.com");
-
-  // Simulate a user with sync consent.
-  manager_->SetPrimaryAccountInfo(
-      account_tracker()->GetAccountInfo(account_id),
-      signin::ConsentLevel::kSync,
-      signin_metrics::AccessPoint::kAvatarBubbleSignIn);
-
-  ASSERT_TRUE(manager_->HasPrimaryAccount(signin::ConsentLevel::kSync));
-
-  // Disable SigninAllowed pref.
-  prefs()->SetBoolean(prefs::kSigninAllowed, false);
-
-  // Sync status should be not be changed from the `PrimaryAccountManager`, it
-  // should be handled by the `PrimaryAccountPolicyManager`.
-  EXPECT_TRUE(manager_->HasPrimaryAccount(signin::ConsentLevel::kSync));
-}
-#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
 TEST_F(PrimaryAccountManagerTest, AccountStoragePrefFeatureDisabled) {
   base::test::ScopedFeatureList feature;

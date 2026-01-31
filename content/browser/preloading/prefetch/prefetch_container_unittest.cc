@@ -4,6 +4,8 @@
 
 #include "content/browser/preloading/prefetch/prefetch_container.h"
 
+#include <algorithm>
+
 #include "base/strings/strcat.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
@@ -44,31 +46,20 @@
 
 namespace content {
 
-class PrefetchContainerTestBase : public RenderViewHostTestHarness,
+class PrefetchContainerTestBase : public PrefetchingMetricsTestBase,
                                   public WithPrefetchRearchParam {
  public:
   explicit PrefetchContainerTestBase(PrefetchRearchParam param)
-      : RenderViewHostTestHarness(
-            base::test::TaskEnvironment::TimeSource::MOCK_TIME),
-        WithPrefetchRearchParam(param) {}
+      : WithPrefetchRearchParam(param) {}
 
   void SetUp() override {
-    RenderViewHostTestHarness::SetUp();
+    PrefetchingMetricsTestBase::SetUp();
     InitRearchFeatures();
-
-    browser_context()
-        ->GetDefaultStoragePartition()
-        ->GetNetworkContext()
-        ->GetCookieManager(cookie_manager_.BindNewPipeAndPassReceiver());
   }
 
   void TearDown() override {
     scoped_feature_list_.Reset();
-    RenderViewHostTestHarness::TearDown();
-  }
-
-  network::mojom::CookieManager* cookie_manager() {
-    return cookie_manager_.get();
+    PrefetchingMetricsTestBase::TearDown();
   }
 
   RenderFrameHostImpl* main_rfhi() {
@@ -149,7 +140,7 @@ class PrefetchContainerTestBase : public RenderViewHostTestHarness,
     options.set_same_site_cookie_context(
         net::CookieOptions::SameSiteCookieContext::MakeInclusive());
 
-    cookie_manager_->SetCanonicalCookie(
+    cookie_manager()->SetCanonicalCookie(
         *cookie.get(), url, options,
         base::BindOnce(
             [](bool* result, base::RunLoop* run_loop,
@@ -170,9 +161,6 @@ class PrefetchContainerTestBase : public RenderViewHostTestHarness,
 
  protected:
   base::test::ScopedFeatureList scoped_feature_list_;
-
- private:
-  mojo::Remote<network::mojom::CookieManager> cookie_manager_;
 };
 
 namespace {
@@ -186,6 +174,10 @@ void AddRedirectHop(PrefetchContainer* container, const GURL& url) {
   redirect_info.new_url = url;
   redirect_info.new_site_for_cookies = net::SiteForCookies::FromUrl(url);
   container->AddRedirectHop(redirect_info);
+  auto [updates_for_resource_request, updates_for_follow_redirect] =
+      container->PrepareUpdateHeaders(redirect_info.new_url);
+  container->UpdateResourceRequest(redirect_info,
+                                   std::move(updates_for_resource_request));
 }
 
 }  // namespace
@@ -424,13 +416,13 @@ TEST_P(PrefetchContainerTest, CookieListener) {
   auto prefetch_container = CreateSpeculationRulesPrefetchContainer(kTestUrl1);
 
   prefetch_container->MakeResourceRequest();
-  prefetch_container->RegisterCookieListener(cookie_manager());
+  prefetch_container->RegisterCookieListener();
 
   // Add redirect hops, and register its own cookie listener for each hop.
   AddRedirectHop(prefetch_container.get(), kTestUrl2);
-  prefetch_container->RegisterCookieListener(cookie_manager());
+  prefetch_container->RegisterCookieListener();
   AddRedirectHop(prefetch_container.get(), kTestUrl3);
-  prefetch_container->RegisterCookieListener(cookie_manager());
+  prefetch_container->RegisterCookieListener();
 
   // Check the cookies for `kTestUrl1`, `kTestUrl2` and `kTestUrl3`,
   // respectively. AdvanceCurrentURLToServe() is used to set the current hop to
@@ -493,7 +485,7 @@ TEST_P(PrefetchContainerTest, CookieCopy) {
   base::HistogramTester histogram_tester;
   auto prefetch_container = CreateSpeculationRulesPrefetchContainer(kTestUrl);
 
-  prefetch_container->RegisterCookieListener(cookie_manager());
+  prefetch_container->RegisterCookieListener();
 
   auto serving_handle = prefetch_container->CreateServingHandle();
 
@@ -549,13 +541,13 @@ TEST_P(PrefetchContainerTest, CookieCopyWithRedirects) {
   base::HistogramTester histogram_tester;
   auto prefetch_container = CreateSpeculationRulesPrefetchContainer(kTestUrl);
   prefetch_container->MakeResourceRequest();
-  prefetch_container->RegisterCookieListener(cookie_manager());
+  prefetch_container->RegisterCookieListener();
 
   AddRedirectHop(prefetch_container.get(), kRedirectUrl1);
-  prefetch_container->RegisterCookieListener(cookie_manager());
+  prefetch_container->RegisterCookieListener();
 
   AddRedirectHop(prefetch_container.get(), kRedirectUrl2);
-  prefetch_container->RegisterCookieListener(cookie_manager());
+  prefetch_container->RegisterCookieListener();
 
   auto serving_handle = prefetch_container->CreateServingHandle();
 
@@ -667,8 +659,6 @@ TEST_P(PrefetchContainerTest, CookieCopyWithRedirects) {
 }
 
 TEST_P(PrefetchContainerTest, PrefetchProxyPrefetchedResourceUkm) {
-  ukm::TestAutoSetUkmRecorder ukm_recorder;
-
   auto prefetch_container =
       CreateSpeculationRulesPrefetchContainer(GURL("https://test.com"));
 
@@ -705,7 +695,7 @@ TEST_P(PrefetchContainerTest, PrefetchProxyPrefetchedResourceUkm) {
   // PrefetchProxy_PrefetchedResource UKM event.
   prefetch_container.reset();
 
-  auto ukm_entries = ukm_recorder.GetEntries(
+  auto ukm_entries = test_ukm_recorder()->GetEntries(
       ukm::builders::PrefetchProxy_PrefetchedResource::kEntryName,
       {
           ukm::builders::PrefetchProxy_PrefetchedResource::kResourceTypeName,
@@ -784,12 +774,11 @@ TEST_P(PrefetchContainerTest, PrefetchProxyPrefetchedResourceUkm) {
 }
 
 TEST_P(PrefetchContainerTest, PrefetchProxyPrefetchedResourceUkm_NothingSet) {
-  ukm::TestAutoSetUkmRecorder ukm_recorder;
   auto prefetch_container =
       CreateSpeculationRulesPrefetchContainer(GURL("https://test.com"));
   prefetch_container.reset();
 
-  auto ukm_entries = ukm_recorder.GetEntries(
+  auto ukm_entries = test_ukm_recorder()->GetEntries(
       ukm::builders::PrefetchProxy_PrefetchedResource::kEntryName,
       {
           ukm::builders::PrefetchProxy_PrefetchedResource::kResourceTypeName,
@@ -1941,7 +1930,7 @@ std::vector<std::vector<Event>> ValidEventPermutations(bool has_second_client) {
 
   if (!has_second_client) {
     // - `PrefetchContainer` is destructed before prefetch is completed:
-    CHECK(base::Contains(
+    CHECK(std::ranges::contains(
         params,
         std::vector<Event>{Event::kCreateRequestHandler, Event::kRequestHandler,
                            Event::kDestructPrefetchContainer,
@@ -1950,7 +1939,7 @@ std::vector<std::vector<Event>> ValidEventPermutations(bool has_second_client) {
 
     // - `PrefetchContainer` is destructed before PrefetchRequestHandler is
     // invoked and prefetch is completed:
-    CHECK(base::Contains(
+    CHECK(std::ranges::contains(
         params,
         std::vector<Event>{
             Event::kCreateRequestHandler, Event::kDestructPrefetchContainer,
@@ -1959,7 +1948,7 @@ std::vector<std::vector<Event>> ValidEventPermutations(bool has_second_client) {
 
     // - `PrefetchContainer` is destructed before PrefetchRequestHandler is
     // invoked but after prefetch is completed:
-    CHECK(base::Contains(
+    CHECK(std::ranges::contains(
         params, std::vector<Event>{
                     Event::kPrefetchOnComplete, Event::kCreateRequestHandler,
                     Event::kDestructPrefetchContainer, Event::kRequestHandler,

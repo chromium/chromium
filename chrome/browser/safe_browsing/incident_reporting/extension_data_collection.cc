@@ -4,7 +4,6 @@
 
 #include "chrome/browser/safe_browsing/incident_reporting/extension_data_collection.h"
 
-#include "base/containers/contains.h"
 #include "base/json/json_string_value_serializer.h"
 #include "base/time/time.h"
 #include "base/version.h"
@@ -79,11 +78,10 @@ void PopulateExtensionInfo(
       extensions::InstallSignature::FromDict(
           extension_prefs.GetInstallSignature());
   if (signature_from_prefs) {
-    if (base::Contains(signature_from_prefs->ids, extension_id)) {
+    if (signature_from_prefs->ids.contains(extension_id)) {
       extension_info->set_has_signature_validation(true);
       extension_info->set_signature_is_valid(true);
-    } else if (base::Contains(signature_from_prefs->invalid_ids,
-                              extension_id)) {
+    } else if (signature_from_prefs->invalid_ids.contains(extension_id)) {
       extension_info->set_has_signature_validation(true);
       extension_info->set_signature_is_valid(false);
     }

@@ -6,7 +6,11 @@
 
 #include <errno.h>
 
+#include <type_traits>
+
 #include "base/files/file_util.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "net/base/address_family.h"
 #include "net/base/net_errors.h"
@@ -29,6 +33,12 @@ namespace content {
 
 namespace {
 
+// If CreateTcpSocketCallback and CreateUdpSocketCallback ever become different
+// types this code will have to be modified.
+using CreateSocketCallback = SocketBrokerImpl::CreateTcpSocketCallback;
+static_assert(std::same_as<CreateSocketCallback,
+                           SocketBrokerImpl::CreateUdpSocketCallback>);
+
 #if BUILDFLAG(IS_WIN)
 struct SocketDescriptorTraitsWin {
   static void Free(net::SocketDescriptor socket) { ::closesocket(socket); }
@@ -42,12 +52,51 @@ net::Error GetSystemError() {
   return net::MapSystemError(::WSAGetLastError());
 }
 
+// Transfers `socket` to `callback`, also passing `rv`. Uses
+// `network_service_process` if valid, otherwise looks up the current value.
+void TransferSocketToCallbackSync(CreateSocketCallback callback,
+                                  ScopedSocketDescriptor socket,
+                                  int rv,
+                                  base::Process network_service_process) {
+  if (!network_service_process.IsValid()) {
+    network_service_process = GetNetworkServiceProcess();
+  }
+  std::move(callback).Run(
+      network::TransferableSocket(socket.release(),
+                                  std::move(network_service_process)),
+      rv);
+}
+
+// Encapsulates the platform-specific code to transfer `socket` to `callback`,
+// also passing `rv`. On Windows this may need to wait until a handle to the
+// network service is available.
+void TransferSocketToCallback(CreateSocketCallback callback,
+                              ScopedSocketDescriptor socket,
+                              int rv) {
+  base::Process network_service_process = GetNetworkServiceProcess();
+  if (!network_service_process.IsValid()) {
+    WaitForNetworkServiceProcess(
+        base::BindOnce(TransferSocketToCallbackSync, std::move(callback),
+                       std::move(socket), rv, base::Process()));
+  } else {
+    TransferSocketToCallbackSync(std::move(callback), std::move(socket), rv,
+                                 std::move(network_service_process));
+  }
+}
+
 #else
 
 using ScopedSocketDescriptor = base::ScopedFD;
 
 net::Error GetSystemError() {
   return net::MapSystemError(errno);
+}
+
+// Transfers `socket` to `callback`, also passing `rv`.
+void TransferSocketToCallback(CreateSocketCallback callback,
+                              ScopedSocketDescriptor socket,
+                              int rv) {
+  std::move(callback).Run(network::TransferableSocket(socket.release()), rv);
 }
 
 #endif  // BUILDFLAG(IS_WIN)
@@ -69,13 +118,7 @@ void SocketBrokerImpl::CreateTcpSocket(net::AddressFamily address_family,
     rv = GetSystemError();
     socket.reset();
   }
-#if BUILDFLAG(IS_WIN)
-  std::move(callback).Run(
-      network::TransferableSocket(socket.release(), GetNetworkServiceProcess()),
-      rv);
-#else
-  std::move(callback).Run(network::TransferableSocket(socket.release()), rv);
-#endif
+  TransferSocketToCallback(std::move(callback), std::move(socket), rv);
 }
 
 void SocketBrokerImpl::CreateUdpSocket(net::AddressFamily address_family,
@@ -90,13 +133,7 @@ void SocketBrokerImpl::CreateUdpSocket(net::AddressFamily address_family,
     rv = GetSystemError();
     socket.reset();
   }
-#if BUILDFLAG(IS_WIN)
-  std::move(callback).Run(
-      network::TransferableSocket(socket.release(), GetNetworkServiceProcess()),
-      rv);
-#else
-  std::move(callback).Run(network::TransferableSocket(socket.release()), rv);
-#endif
+  TransferSocketToCallback(std::move(callback), std::move(socket), rv);
 }
 
 mojo::PendingRemote<network::mojom::SocketBroker>

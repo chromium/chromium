@@ -4,11 +4,11 @@
 
 #include "chrome/browser/policy/messaging_layer/upload/server_uploader.h"
 
+#include <algorithm>
 #include <memory>
 #include <utility>
 #include <vector>
 
-#include "base/containers/contains.h"
 #include "base/memory/ptr_util.h"
 #include "base/task/bind_post_task.h"
 #include "base/task/sequenced_task_runner.h"
@@ -149,7 +149,7 @@ void ServerUploader::Finalize(CompletionResponse upload_result) {
         error::OUT_OF_RANGE,
     };
     LOG_IF(WARNING,
-           !base::Contains(kIgnoredCodes, upload_result.error().code()))
+           !std::ranges::contains(kIgnoredCodes, upload_result.error().code()))
         << upload_result.error();
   }
   Response(upload_result);

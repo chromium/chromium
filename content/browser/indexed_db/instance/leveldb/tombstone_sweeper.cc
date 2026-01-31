@@ -142,22 +142,11 @@ Status LevelDbTombstoneSweeper::FlushDeletions() {
 }
 
 bool LevelDbTombstoneSweeper::ShouldContinueIteration(
-    const leveldb::Iterator& iterator,
     LevelDbTombstoneSweeper::SweepStatus* sweep_status,
-    Status* leveldb_status,
     int* round_iterations) {
   ++num_iterations_;
   ++(*round_iterations);
 
-  if (!iterator.Valid()) {
-    *leveldb_status = iterator.status();
-    if (!leveldb_status->ok()) {
-      *sweep_status = SweepStatus::DONE_ERROR;
-      return false;
-    }
-    *sweep_status = SweepStatus::SWEEPING;
-    return true;
-  }
   if (*round_iterations >= max_round_iterations_) {
     *sweep_status = SweepStatus::SWEEPING;
     return false;
@@ -250,26 +239,20 @@ bool LevelDbTombstoneSweeper::IterateIndex(
   // If the sweeper exited early from an index scan, continue where it left off.
   if (sweep_state_.index_it_key) {
     iterator->Seek(sweep_state_.index_it_key->Encode());
-    if (!ShouldContinueIteration(*iterator, sweep_status, leveldb_status,
-                                 round_iterations)) {
-      return false;
-    }
-    // Start at the first unvisited value.
-    iterator->Next();
-    if (!ShouldContinueIteration(*iterator, sweep_status, leveldb_status,
-                                 round_iterations)) {
-      return false;
+    if (iterator->Valid()) {
+      // Start at the first unvisited value.
+      iterator->Next();
     }
   } else {
     iterator->Seek(
         IndexDataKey::EncodeMinKey(database_id, object_store_id, index.id));
-    if (!ShouldContinueIteration(*iterator, sweep_status, leveldb_status,
-                                 round_iterations)) {
-      return false;
-    }
   }
 
   while (iterator->Valid()) {
+    if (!ShouldContinueIteration(sweep_status, round_iterations)) {
+      return false;
+    }
+
     leveldb::Slice key_slice = iterator->key();
     std::string_view index_key_str = leveldb_env::MakeStringView(key_slice);
     std::string_view index_value_str =
@@ -284,53 +267,33 @@ bool LevelDbTombstoneSweeper::IterateIndex(
 
     int64_t index_data_version;
     std::unique_ptr<IndexedDBKey> primary_key;
+    if (DecodeVarInt(&index_value_str, &index_data_version)) {
+      std::string encoded_primary_key(index_value_str);
+      std::string exists_key = ExistsEntryKey::Encode(
+          database_id, object_store_id, encoded_primary_key);
 
-    if (!DecodeVarInt(&index_value_str, &index_data_version)) {
-      iterator->Next();
-      if (!ShouldContinueIteration(*iterator, sweep_status, leveldb_status,
-                                   round_iterations)) {
-        return false;
+      std::string exists_value;
+      Status s(
+          database()->Get(leveldb::ReadOptions(), exists_key, &exists_value));
+      if (s.ok()) {
+        std::string_view exists_value_piece(exists_value);
+        int64_t decoded_exists_version;
+        if (DecodeInt(&exists_value_piece, &decoded_exists_version) &&
+            exists_value_piece.empty() &&
+            decoded_exists_version != index_data_version) {
+          has_writes_ = true;
+          round_deletion_batch_.Delete(key_slice);
+          ++tombstones_found_;
+        }
       }
-      continue;
-    }
-    std::string encoded_primary_key(index_value_str);
-    std::string exists_key = ExistsEntryKey::Encode(
-        database_id, object_store_id, encoded_primary_key);
-
-    std::string exists_value;
-    Status s(
-        database()->Get(leveldb::ReadOptions(), exists_key, &exists_value));
-    if (!s.ok()) {
-      iterator->Next();
-      if (!ShouldContinueIteration(*iterator, sweep_status, leveldb_status,
-                                   round_iterations)) {
-        return false;
-      }
-      continue;
-    }
-    std::string_view exists_value_piece(exists_value);
-    int64_t decoded_exists_version;
-    if (!DecodeInt(&exists_value_piece, &decoded_exists_version) ||
-        !exists_value_piece.empty()) {
-      iterator->Next();
-      if (!ShouldContinueIteration(*iterator, sweep_status, leveldb_status,
-                                   round_iterations)) {
-        return false;
-      }
-      continue;
-    }
-
-    if (decoded_exists_version != index_data_version) {
-      has_writes_ = true;
-      round_deletion_batch_.Delete(key_slice);
-      ++tombstones_found_;
     }
 
     iterator->Next();
-    if (!ShouldContinueIteration(*iterator, sweep_status, leveldb_status,
-                                 round_iterations)) {
-      return false;
-    }
+  }
+  *leveldb_status = iterator->status();
+  if (!leveldb_status->ok()) {
+    *sweep_status = SweepStatus::DONE_ERROR;
+    return false;
   }
   sweep_state_.index_it_key = std::nullopt;
   return true;

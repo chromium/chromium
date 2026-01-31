@@ -1,4 +1,6 @@
 include_rules = [
+  # keep-sorted start
   "+ios/chrome/browser/first_run/public/best_features_item.h",
   "+ios/chrome/browser/welcome_back/model/features.h",
+  # keep-sorted end
 ]

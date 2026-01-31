@@ -274,7 +274,8 @@ class Distribution(object):
                  package_as_dmg=True,
                  package_as_pkg=False,
                  package_as_zip=False,
-                 inflation_kilobytes=0):
+                 inflation_kilobytes=0,
+                 direct_launch_scheme=None):
         """Creates a new Distribution object. All arguments are optional.
 
         Args:
@@ -308,6 +309,9 @@ class Distribution(object):
                 the product.
             inflation_kilobytes: If non-zero, a blob of this size will be
                 inserted into the DMG. Incompatible with package_as_pkg = True.
+            direct_launch_scheme: The URL scheme that launches this specific
+                product (e.g. "google-chrome"). If None, the scheme will be
+                removed from the Info.plist if present.
         """
         if channel_customize:
             # Side-by-side channels must have a distinct names and creator
@@ -328,6 +332,7 @@ class Distribution(object):
         self.package_as_dmg = package_as_dmg
         self.package_as_pkg = package_as_pkg
         self.inflation_kilobytes = inflation_kilobytes
+        self.direct_launch_scheme = direct_launch_scheme
 
         # inflation_kilobytes are only inserted into DMGs
         assert not self.inflation_kilobytes or self.package_as_dmg
@@ -343,7 +348,8 @@ class Distribution(object):
                             self.packaging_name_fragment, self.product_dirname,
                             self.creator_code, self.channel_customize,
                             self.package_as_dmg, self.package_as_pkg,
-                            self.package_as_zip)
+                            self.package_as_zip, self.inflation_kilobytes,
+                            self.direct_launch_scheme)
 
     def to_config(self, base_config):
         """Produces a derived |config.CodeSignConfig| for the Distribution.

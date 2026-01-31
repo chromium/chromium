@@ -4,6 +4,7 @@
 
 #include "extensions/browser/api/runtime/runtime_api.h"
 
+#include <algorithm>
 #include <memory>
 #include <utility>
 #include <vector>
@@ -148,7 +149,7 @@ void DispatchOnStartupEventImpl(
 
   auto event = std::make_unique<Event>(events::RUNTIME_ON_STARTUP,
                                        runtime::OnStartup::kEventName,
-                                       base::Value::List());
+                                       base::ListValue());
   EventRouter::Get(browser_context)
       ->DispatchEventToExtension(extension_id, std::move(event));
 }
@@ -165,37 +166,39 @@ bool ExtensionContextMatchesFilter(
     const api::runtime::ExtensionContext& context,
     const api::runtime::ContextFilter& filter) {
   if (filter.context_types &&
-      !base::Contains(*filter.context_types, context.context_type)) {
+      !std::ranges::contains(*filter.context_types, context.context_type)) {
     return false;
   }
   if (filter.context_ids &&
-      !base::Contains(*filter.context_ids, context.context_id)) {
+      !std::ranges::contains(*filter.context_ids, context.context_id)) {
     return false;
   }
-  if (filter.tab_ids && !base::Contains(*filter.tab_ids, context.tab_id)) {
+  if (filter.tab_ids &&
+      !std::ranges::contains(*filter.tab_ids, context.tab_id)) {
     return false;
   }
   if (filter.window_ids &&
-      !base::Contains(*filter.window_ids, context.window_id)) {
+      !std::ranges::contains(*filter.window_ids, context.window_id)) {
     return false;
   }
   if (filter.document_ids &&
       (!context.document_id ||
-       !base::Contains(*filter.document_ids, *context.document_id))) {
+       !std::ranges::contains(*filter.document_ids, *context.document_id))) {
     return false;
   }
   if (filter.frame_ids &&
-      !base::Contains(*filter.frame_ids, context.frame_id)) {
+      !std::ranges::contains(*filter.frame_ids, context.frame_id)) {
     return false;
   }
   if (filter.document_urls &&
       (!context.document_url ||
-       !base::Contains(*filter.document_urls, *context.document_url))) {
+       !std::ranges::contains(*filter.document_urls, *context.document_url))) {
     return false;
   }
   if (filter.document_origins &&
       (!context.document_origin ||
-       !base::Contains(*filter.document_origins, *context.document_origin))) {
+       !std::ranges::contains(*filter.document_origins,
+                              *context.document_origin))) {
     return false;
   }
   if (filter.incognito && *filter.incognito != context.incognito) {
@@ -507,8 +510,8 @@ void RuntimeEventRouter::DispatchOnInstalledEvent(
     return;
   }
 
-  base::Value::List event_args;
-  base::Value::Dict info;
+  base::ListValue event_args;
+  base::DictValue info;
   if (old_version.IsValid()) {
     info.Set(kInstallReason, kInstallReasonUpdate);
     info.Set(kInstallPreviousVersion, old_version.GetString());
@@ -534,8 +537,8 @@ void RuntimeEventRouter::DispatchOnInstalledEvent(
           system->GetDependentExtensions(extension);
       for (ExtensionSet::const_iterator i = dependents->begin();
            i != dependents->end(); i++) {
-        base::Value::List sm_event_args;
-        base::Value::Dict sm_info;
+        base::ListValue sm_event_args;
+        base::DictValue sm_info;
         sm_info.Set(kInstallReason, kInstallReasonSharedModuleUpdate);
         sm_info.Set(kInstallPreviousVersion, old_version.GetString());
         sm_info.Set(kInstallId, extension_id);
@@ -554,13 +557,13 @@ void RuntimeEventRouter::DispatchOnInstalledEvent(
 void RuntimeEventRouter::DispatchOnUpdateAvailableEvent(
     content::BrowserContext* context,
     const ExtensionId& extension_id,
-    const base::Value::Dict* manifest) {
+    const base::DictValue* manifest) {
   ExtensionSystem* system = ExtensionSystem::Get(context);
   if (!system) {
     return;
   }
 
-  base::Value::List args;
+  base::ListValue args;
   args.Append(manifest->Clone());
   EventRouter* event_router = EventRouter::Get(context);
   DCHECK(event_router);
@@ -582,7 +585,7 @@ void RuntimeEventRouter::DispatchOnBrowserUpdateAvailableEvent(
   DCHECK(event_router);
   auto event = std::make_unique<Event>(
       events::RUNTIME_ON_BROWSER_UPDATE_AVAILABLE,
-      runtime::OnBrowserUpdateAvailable::kEventName, base::Value::List());
+      runtime::OnBrowserUpdateAvailable::kEventName, base::ListValue());
   event_router->BroadcastEvent(std::move(event));
 }
 
@@ -796,7 +799,7 @@ RuntimeGetPackageDirectoryEntryFunction::Run() {
   content::ChildProcessSecurityPolicy* policy =
       content::ChildProcessSecurityPolicy::GetInstance();
   policy->GrantReadFileSystem(source_process_id(), filesystem.id());
-  base::Value::Dict dict;
+  base::DictValue dict;
   dict.Set("fileSystemId", filesystem.id());
   dict.Set("baseName", relative_path);
   return RespondNow(WithArguments(std::move(dict)));
@@ -817,8 +820,8 @@ ExtensionFunction::ResponseAction RuntimeGetContextsFunction::Run() {
   // Minor optimization: only construct the context if there's a chance it will
   // match the filter.
   if (!filter.context_types ||
-      base::Contains(*filter.context_types,
-                     api::runtime::ContextType::kBackground)) {
+      std::ranges::contains(*filter.context_types,
+                            api::runtime::ContextType::kBackground)) {
     if (std::optional<api::runtime::ExtensionContext> worker =
             GetWorkerContext()) {
       result.push_back(std::move(*worker));

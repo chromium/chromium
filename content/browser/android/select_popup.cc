@@ -78,7 +78,8 @@ void SelectPopup::ShowMenu(
   // given |selected_item| as is.
   ScopedJavaLocalRef<jintArray> selected_array;
   if (multiple) {
-    auto native_selected_array = base::HeapArray<jint>::WithSize(items.size());
+    auto native_selected_array =
+        base::HeapArray<int32_t>::WithSize(items.size());
     size_t selected_count = 0;
     for (size_t i = 0; i < items.size(); ++i) {
       if (items[i]->checked)
@@ -92,7 +93,7 @@ void SelectPopup::ShowMenu(
   } else {
     selected_array =
         ScopedJavaLocalRef<jintArray>::Adopt(env, env->NewIntArray(1));
-    jint value = selected_item;
+    int32_t value = selected_item;
     env->SetIntArrayRegion(selected_array.obj(), 0, 1, &value);
   }
 
@@ -102,10 +103,10 @@ void SelectPopup::ShowMenu(
   labels.reserve(items.size());
   for (size_t i = 0; i < items.size(); ++i) {
     labels.push_back(items[i]->label.value_or(""));
-    jint enabled = (items[i]->type == blink::mojom::MenuItem::Type::kGroup
-                        ? POPUP_ITEM_TYPE_GROUP
-                        : (items[i]->enabled ? POPUP_ITEM_TYPE_ENABLED
-                                             : POPUP_ITEM_TYPE_DISABLED));
+    int32_t enabled = (items[i]->type == blink::mojom::MenuItem::Type::kGroup
+                           ? POPUP_ITEM_TYPE_GROUP
+                           : (items[i]->enabled ? POPUP_ITEM_TYPE_ENABLED
+                                                : POPUP_ITEM_TYPE_DISABLED));
     env->SetIntArrayRegion(enabled_array.obj(), i, 1, &enabled);
   }
   ScopedJavaLocalRef<jobjectArray> items_array(
@@ -125,7 +126,7 @@ void SelectPopup::ShowMenu(
   bounds_dip.Scale(1 / web_contents_->GetNativeView()->GetDipScale());
   view->SetAnchorRect(popup_view, bounds_dip);
   Java_SelectPopup_show(
-      env, j_obj, popup_view, reinterpret_cast<jlong>(popup_client_.get()),
+      env, j_obj, popup_view, reinterpret_cast<int64_t>(popup_client_.get()),
       items_array, enabled_array, multiple, selected_array, right_aligned);
 }
 
@@ -139,7 +140,7 @@ void SelectPopup::HideMenu() {
 }
 
 void SelectPopup::SelectMenuItems(JNIEnv* env,
-                                  jlong selectPopupDelegate,
+                                  int64_t selectPopupDelegate,
                                   const JavaRef<jintArray>& indices) {
   blink::mojom::PopupMenuClient* popup_client_raw_ptr =
       reinterpret_cast<blink::mojom::PopupMenuClient*>(selectPopupDelegate);

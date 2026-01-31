@@ -62,6 +62,18 @@ CHARACTERISTICS_RETRIEVED_BASE = \
     '    }})\n'\
     '    .then(characteristics => {{\n'
 
+DESCRIPTOR_RETRIEVED_BASE = \
+    '      TRANSFORM_PICK_A_CHARACTERISTIC;\n'\
+    '      return characteristic.getDescriptor({descriptor_uuid});\n'\
+    '    }})\n'\
+    '    .then(descriptors => {{\n'
+
+DESCRIPTORS_RETRIEVED_BASE = \
+    '      TRANSFORM_PICK_A_CHARACTERISTIC;\n'\
+    '      return characteristic.getDescriptors({optional_descriptor_uuid});\n'\
+    '    }})\n'\
+    '    .then(descriptors => {{\n'
+
 
 def _ToJsStr(s):
     return u'\'{}\''.format(s)
@@ -188,6 +200,11 @@ def get_valid_characteristic_alias():
     return _ToJsStr(random.choice(gatt_aliases.CHARACTERISTICS))
 
 
+def get_valid_descriptor_alias():
+    """Returns a valid descriptor alias from the list of descriptor aliases."""
+    return _ToJsStr(random.choice(gatt_aliases.DESCRIPTORS))
+
+
 def GetRandomUUID():
     """Returns a random UUID, a random number or a fuzzed uuid or alias."""
     choice = random.choice(['uuid', 'number', 'fuzzed string'])
@@ -203,6 +220,18 @@ def GetRandomUUID():
         elif choice2 == 'alias':
             alias = random.choice(gatt_aliases.SERVICES)
             return _GetFuzzedJsString(alias)
+
+
+def GetRandomDescriptorUUID():
+    """Returns a random UUID, number, or fuzzed descriptor alias."""
+    choice = random.choice(['uuid', 'number', 'fuzzed string'])
+    if choice == 'uuid':
+        return _ToJsStr(uuid.uuid4())
+    elif choice == 'number':
+        return _get_random_number()
+    elif choice == 'fuzzed string':
+        alias = random.choice(gatt_aliases.DESCRIPTORS)
+        return _GetFuzzedJsString(alias)
 
 
 def GetAdvertisedServiceUUID():
@@ -272,6 +301,18 @@ def get_characteristic_uuid():
         return get_valid_characteristic_alias()
     else:
         return GetRandomUUID()
+
+
+def get_descriptor_uuid():
+    """Generates a random Descriptor UUID from a set of functions.
+
+    Similar to get_characteristic_uuid() but uses descriptor aliases.
+    """
+    roll = random.random()
+    if roll < 0.9:
+        return get_valid_descriptor_alias()
+    else:
+        return GetRandomDescriptorUUID()
 
 
 def GetRequestDeviceOptions():
@@ -366,6 +407,43 @@ def get_characteristics_retrieved_base():
         optional_characteristic_uuid=optional_characteristic_uuid)
 
 
+def get_descriptors_retrieved_base():
+    """Returns a string that contains all steps to retrieve a descriptor."""
+    adapter, services = random.choice(wbt_fakes.ADAPTERS_WITH_CHARACTERISTICS)
+
+    service_uuid, characteristics = random.choice(services)
+    service_uuid = _ToJsStr(service_uuid)
+
+    characteristic_uuid = _ToJsStr(random.choice(characteristics))
+    descriptor_uuid = get_descriptor_uuid()
+
+    optional_service_uuid = random.choice(['', service_uuid])
+    optional_characteristic_uuid = random.choice(['', characteristic_uuid])
+    optional_descriptor_uuid = random.choice(['', descriptor_uuid])
+
+    services_base = random.choice(
+        [SERVICE_RETRIEVED_BASE, SERVICES_RETRIEVED_BASE])
+
+    characteristics_base = services_base + random.choice([
+        CHARACTERISTIC_RETRIEVED_BASE,
+        CHARACTERISTICS_RETRIEVED_BASE,
+    ])
+
+    descriptors_base = characteristics_base + random.choice([
+        DESCRIPTOR_RETRIEVED_BASE,
+        DESCRIPTORS_RETRIEVED_BASE,
+    ])
+
+    return descriptors_base.format(
+        fake_adapter_name=_ToJsStr(adapter),
+        service_uuid=service_uuid,
+        optional_service_uuid=optional_service_uuid,
+        characteristic_uuid=characteristic_uuid,
+        optional_characteristic_uuid=optional_characteristic_uuid,
+        descriptor_uuid=descriptor_uuid,
+        optional_descriptor_uuid=optional_descriptor_uuid)
+
+
 def get_get_primary_services_call():
     call = random.choice([
         u'getPrimaryService({service_uuid})',
@@ -389,6 +467,17 @@ def get_characteristics_call():
             ['', get_characteristic_uuid()]))
 
 
+def get_descriptors_call():
+    call = random.choice([
+        u'getDescriptor({descriptor_uuid})',
+        u'getDescriptors({optional_descriptor_uuid})',
+    ])
+
+    return call.format(descriptor_uuid=get_descriptor_uuid(),
+                       optional_descriptor_uuid=random.choice(
+                           ['', get_descriptor_uuid()]))
+
+
 def get_pick_a_service():
     """Returns a string that picks a service from 'services'."""
     # 'services' may be defined by the GetPrimaryService(s) tokens.
@@ -410,6 +499,18 @@ def get_pick_a_characteristic():
         ' characteristic = Array.isArray(characteristics)'\
         ' ? characteristics[{} % characteristics.length]'\
         ' : characteristics'
+    return string.format(random.randint(0, sys.maxsize))
+
+
+def get_pick_a_descriptor():
+    """Returns a string that picks a descriptor from 'descriptors'."""
+    # 'descriptors' may be defined by the GetDescriptor(s) tokens.
+    string = \
+        'var descriptor; '\
+        'if (typeof descriptors !== \'undefined\') '\
+        ' descriptor = Array.isArray(descriptors)'\
+        ' ? descriptors[{} % descriptors.length]'\
+        ' : descriptors'
     return string.format(random.randint(0, sys.maxsize))
 
 

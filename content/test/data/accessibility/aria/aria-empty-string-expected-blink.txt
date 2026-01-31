@@ -20,7 +20,7 @@ rootWebArea
 ++++++group name='Relevant undefined'
 ++++++textField name='Required undefined'
 ++++++tree multiselectable vertical
-++++++++treeItem name='Selected undefined' selected=false selectedFromFocus=false
+++++++++treeItem name='Selected undefined'
 ++++++grid
 ++++++++columnHeader name='Sort undefined'
 ++++++group name='Hidden undefined, display block'

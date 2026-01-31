@@ -17,6 +17,7 @@
 #include "ui/base/mojom/menu_source_type.mojom-forward.h"
 
 class Browser;
+class BrowserWindowInterface;
 class Tab;
 class TabGroup;
 class TabSlotView;
@@ -120,12 +121,6 @@ class TabSlotController {
   // Returns whether `tab` is selected.
   virtual bool IsTabSelected(const TabSlotView* tab) const = 0;
 
-  // Returns whether `tab` is pinned.
-  virtual bool IsTabPinned(const TabSlotView* tab) const = 0;
-
-  // Returns whether `tab` is the first in the model.
-  virtual bool IsTabFirst(const TabSlotView* tab) const = 0;
-
   // Returns true if any tab or one of its children has focus.
   virtual bool IsFocusInTabs() const = 0;
 
@@ -189,17 +184,8 @@ class TabSlotController {
   // in the same window will redraw on top of the the favicon area of any tab.
   virtual bool CanPaintThrobberToLayer() const = 0;
 
-  // Returns whether the shapes of background tabs are visible against the
-  // frame.
-  virtual bool HasVisibleBackgroundTabShapes() const = 0;
-
   // Returns the color of the separator between the tabs.
   virtual SkColor GetTabSeparatorColor() const = 0;
-
-  // Returns the background tab image resource ID if the image has been
-  // customized, directly or indirectly, by the theme.
-  virtual std::optional<int> GetCustomBackgroundId(
-      BrowserFrameActiveState active_state) const = 0;
 
   // Returns the accessible tab name for this tab.
   virtual std::u16string GetAccessibleTabName(const Tab* tab) const = 0;
@@ -247,8 +233,7 @@ class TabSlotController {
 
   virtual Browser* GetBrowser() = 0;
 
-  // See BrowserFrameView::IsFrameCondensed().
-  virtual bool IsFrameCondensed() const = 0;
+  virtual BrowserWindowInterface* GetBrowserWindowInterface() = 0;
 
 #if BUILDFLAG(IS_CHROMEOS)
   // Returns whether the current app instance is locked for OnTask. Only

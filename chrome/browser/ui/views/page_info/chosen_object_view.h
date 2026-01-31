@@ -38,9 +38,6 @@ class ChosenObjectView : public views::View {
   void AddObserver(ChosenObjectViewObserver* observer);
   void ResetPermission();
 
-  // views::View:
-  void OnThemeChanged() override;
-
   std::u16string_view GetObjectNameForTesting() const;
   views::ImageButton* GetDeleteButtonForTesting() const;
 

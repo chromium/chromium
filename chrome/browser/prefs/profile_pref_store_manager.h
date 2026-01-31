@@ -100,7 +100,7 @@ class ProfilePrefStoreManager {
       std::vector<prefs::mojom::TrackedPreferenceMetadataPtr>
           tracking_configuration,
       size_t reporting_ids_count,
-      base::Value::Dict master_prefs,
+      base::DictValue master_prefs,
       os_crypt_async::OSCryptAsync* os_crypt);
 
  private:

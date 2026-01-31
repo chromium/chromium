@@ -143,35 +143,6 @@ void AddGoogleGroupFilter(Study& study) {
   filter->add_platform(Study::PLATFORM_ANDROID_WEBVIEW);
 }
 
-class TestOverrideStringCallback {
- public:
-  typedef std::map<uint32_t, std::u16string> OverrideMap;
-
-  TestOverrideStringCallback()
-      : callback_(base::BindRepeating(&TestOverrideStringCallback::Override,
-                                      base::Unretained(this))) {}
-
-  TestOverrideStringCallback(const TestOverrideStringCallback&) = delete;
-  TestOverrideStringCallback& operator=(const TestOverrideStringCallback&) =
-      delete;
-
-  virtual ~TestOverrideStringCallback() = default;
-
-  const VariationsSeedProcessor::UIStringOverrideCallback& callback() const {
-    return callback_;
-  }
-
-  const OverrideMap& overrides() const { return overrides_; }
-
- private:
-  void Override(uint32_t hash, const std::u16string& string) {
-    overrides_[hash] = string;
-  }
-
-  VariationsSeedProcessor::UIStringOverrideCallback callback_;
-  OverrideMap overrides_;
-};
-
 }  // namespace
 
 // ChromeEnvironment calls CreateTrialsFromSeed with arguments similar to
@@ -183,10 +154,8 @@ class ChromeEnvironment {
   bool HasHighEntropy() { return true; }
   bool HasLimitedEntropy() { return true; }
 
-  void CreateTrialsFromSeed(
-      const VariationsSeed& seed,
-      base::FeatureList* feature_list,
-      const VariationsSeedProcessor::UIStringOverrideCallback& callback) {
+  void CreateTrialsFromSeed(const VariationsSeed& seed,
+                            base::FeatureList* feature_list) {
     auto client_state = CreateTestClientFilterableState();
     client_state->platform = Study::PLATFORM_ANDROID;
 
@@ -200,8 +169,8 @@ class ChromeEnvironment {
     // This should mimic the call through SetUpFieldTrials from
     // components/variations/service/variations_service.cc
     VariationsSeedProcessor(sticky_activation_manager_)
-        .CreateTrialsFromSeed(seed, *client_state, callback, entropy_providers,
-                              layers, feature_list);
+        .CreateTrialsFromSeed(seed, *client_state, entropy_providers, layers,
+                              feature_list);
   }
 
  private:
@@ -217,10 +186,8 @@ class WebViewEnvironment {
   bool HasHighEntropy() { return false; }
   bool HasLimitedEntropy() { return false; }
 
-  void CreateTrialsFromSeed(
-      const VariationsSeed& seed,
-      base::FeatureList* feature_list,
-      const VariationsSeedProcessor::UIStringOverrideCallback& callback) {
+  void CreateTrialsFromSeed(const VariationsSeed& seed,
+                            base::FeatureList* feature_list) {
     auto client_state = CreateTestClientFilterableState();
     client_state->platform = Study::PLATFORM_ANDROID_WEBVIEW;
 
@@ -232,8 +199,8 @@ class WebViewEnvironment {
     // This should mimic the call through SetUpFieldTrials from
     // android_webview/browser/aw_feature_list_creator.cc
     VariationsSeedProcessor(sticky_activation_manager_)
-        .CreateTrialsFromSeed(seed, *client_state, callback, entropy_providers,
-                              layers, feature_list);
+        .CreateTrialsFromSeed(seed, *client_state, entropy_providers, layers,
+                              feature_list);
   }
 
  private:
@@ -257,18 +224,16 @@ class VariationsSeedProcessorTest : public ::testing::Test {
 
   void CreateTrialsFromSeed(const VariationsSeed& seed) {
     base::FeatureList feature_list;
-    env.CreateTrialsFromSeed(seed, &feature_list,
-                             override_callback_.callback());
+    env.CreateTrialsFromSeed(seed, &feature_list);
   }
 
   void CreateTrialsFromSeed(const VariationsSeed& seed,
                             base::FeatureList* feature_list) {
-    env.CreateTrialsFromSeed(seed, feature_list, override_callback_.callback());
+    env.CreateTrialsFromSeed(seed, feature_list);
   }
 
  protected:
   Environment env;
-  TestOverrideStringCallback override_callback_;
 };
 
 using EnvironmentTypes =
@@ -510,62 +475,6 @@ TYPED_TEST(VariationsSeedProcessorTest, CreateTrialForRegisteredGroup) {
   // And the previous group should still be selected.
   EXPECT_EQ(kOtherGroupName,
             base::FieldTrialList::FindFullName(kFlagStudyName));
-}
-
-TYPED_TEST(VariationsSeedProcessorTest, OverrideUIStrings) {
-  VariationsSeed seed;
-  Study* study = seed.add_study();
-  study->set_name("Study1");
-  study->set_default_experiment_name("B");
-  study->set_activation_type(Study::ACTIVATE_ON_STARTUP);
-
-  Study::Experiment* experiment1 = AddExperiment("A", 0, study);
-  Study::Experiment::OverrideUIString* override =
-      experiment1->add_override_ui_string();
-
-  override->set_name_hash(1234);
-  override->set_value("test");
-
-  Study::Experiment* experiment2 = AddExperiment("B", 1, study);
-
-  this->CreateTrialsFromSeed(seed);
-
-  const TestOverrideStringCallback::OverrideMap& overrides =
-      this->override_callback_.overrides();
-
-  EXPECT_TRUE(overrides.empty());
-
-  study->set_name("Study2");
-  experiment1->set_probability_weight(1);
-  experiment2->set_probability_weight(0);
-
-  this->CreateTrialsFromSeed(seed);
-
-  EXPECT_EQ(1u, overrides.size());
-  auto it = overrides.find(1234);
-  EXPECT_EQ(u"test", it->second);
-}
-
-TYPED_TEST(VariationsSeedProcessorTest, OverrideUIStringsWithForcingFlag) {
-  VariationsSeed seed;
-  Study* study = CreateStudyWithFlagGroups(100, 0, 0, &seed);
-  ASSERT_EQ(kForcingFlag1, study->experiment(1).forcing_flag());
-
-  study->set_activation_type(Study::ACTIVATE_ON_STARTUP);
-  Study::Experiment::OverrideUIString* override =
-      study->mutable_experiment(1)->add_override_ui_string();
-  override->set_name_hash(1234);
-  override->set_value("test");
-
-  base::CommandLine::ForCurrentProcess()->AppendSwitch(kForcingFlag1);
-  this->CreateTrialsFromSeed(seed);
-  EXPECT_EQ(kFlagGroup1Name, base::FieldTrialList::FindFullName(study->name()));
-
-  const TestOverrideStringCallback::OverrideMap& overrides =
-      this->override_callback_.overrides();
-  EXPECT_EQ(1u, overrides.size());
-  auto it = overrides.find(1234);
-  EXPECT_EQ(u"test", it->second);
 }
 
 TYPED_TEST(VariationsSeedProcessorTest, VariationParams) {

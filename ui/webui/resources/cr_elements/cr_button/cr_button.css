@@ -24,6 +24,28 @@
       var(--cr-fallback-color-disabled-background));
   --cr-button-disabled-text-color: var(--color-button-foreground-disabled,
       var(--cr-fallback-color-disabled-foreground));
+
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  min-width: 5.14em;
+  height: var(--cr-button-height);
+  padding: 8px 16px;
+  outline-width: 0;
+  overflow: hidden;
+  position: relative;
+  cursor: pointer;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+  border: var(--cr-button-border, 1px solid var(--cr-button-border-color));
+  border-radius: 100px;
+  background: var(--cr-button-background-color);
+  color: var(--cr-button-text-color);
+  font-weight: 500;
+  line-height: 20px;
+  isolation: isolate;
 }
 
 :host(.action-button) {
@@ -56,30 +78,6 @@
   --cr-button-disabled-text-color: var(--color-button-foreground-disabled,
       var(--cr-fallback-color-disabled-foreground));
   --cr-button-disabled-border: none;
-}
-
-:host {
-  flex-shrink: 0;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  box-sizing: border-box;
-  min-width: 5.14em;
-  height: var(--cr-button-height);
-  padding: 8px 16px;
-  outline-width: 0;
-  overflow: hidden;
-  position: relative;
-  cursor: pointer;
-  user-select: none;
-  -webkit-tap-highlight-color: transparent;
-  border: var(--cr-button-border, 1px solid var(--cr-button-border-color));
-  border-radius: 100px;
-  background: var(--cr-button-background-color);
-  color: var(--cr-button-text-color);
-  font-weight: 500;
-  line-height: 20px;
-  isolation: isolate;
 }
 
 @media (forced-colors: active) {
@@ -133,6 +131,7 @@
   inset: 0;
   pointer-events: none;
   position: absolute;
+  z-index: 0;
 }
 
 #content {
@@ -182,7 +181,6 @@
 }
 
 /* Layering */
-#background { z-index: 0; }
 #hoverBackground,
 cr-ripple { z-index: 1; }
 #content,

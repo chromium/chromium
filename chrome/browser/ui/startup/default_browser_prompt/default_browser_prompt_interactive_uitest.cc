@@ -9,6 +9,7 @@
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/chrome_browser_main.h"
+#include "chrome/browser/default_browser/default_browser_controller.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/shell_integration.h"
@@ -254,6 +255,55 @@ IN_PROC_BROWSER_TEST_F(DefaultBrowserPromptInteractiveTest, HidesInFullscreen) {
                     ui_test_utils::ToggleFullscreenModeAndWait(browser());
                   }),
                   WaitForHide(ConfirmInfoBar::kInfoBarElementId));
+}
+
+IN_PROC_BROWSER_TEST_F(DefaultBrowserPromptInteractiveTest,
+                       FrameworkRecordsAccept) {
+  base::HistogramTester histogram_tester;
+
+  DefaultBrowserPromptManager::GetInstance()->MaybeShowPrompt();
+  RunTestSequence(WaitForShow(ConfirmInfoBar::kInfoBarElementId),
+                  PressButton(ConfirmInfoBar::kOkButtonElementId),
+                  WaitForHide(ConfirmInfoBar::kInfoBarElementId));
+
+  histogram_tester.ExpectTotalCount("DefaultBrowser.InfoBar.Shown", 1);
+  histogram_tester.ExpectUniqueSample(
+      "DefaultBrowser.InfoBar.Interaction",
+      default_browser::DefaultBrowserInteractionType::kAccepted, 1);
+}
+
+IN_PROC_BROWSER_TEST_F(DefaultBrowserPromptInteractiveTest,
+                       FrameworkRecordsDecline) {
+  base::HistogramTester histogram_tester;
+
+  DefaultBrowserPromptManager::GetInstance()->MaybeShowPrompt();
+  RunTestSequence(WaitForShow(ConfirmInfoBar::kInfoBarElementId),
+                  PressButton(ConfirmInfoBar::kDismissButtonElementId),
+                  WaitForHide(ConfirmInfoBar::kInfoBarElementId));
+
+  histogram_tester.ExpectTotalCount("DefaultBrowser.InfoBar.Shown", 1);
+  histogram_tester.ExpectUniqueSample(
+      "DefaultBrowser.InfoBar.Interaction",
+      default_browser::DefaultBrowserInteractionType::kDismissed, 1);
+}
+
+IN_PROC_BROWSER_TEST_F(DefaultBrowserPromptInteractiveTest,
+                       FrameworkRecordsIgnore) {
+  base::HistogramTester histogram_tester;
+
+  DefaultBrowserPromptManager::GetInstance()->MaybeShowPrompt();
+  RunTestSequence(
+      // Infobar should show on the standard browser window.
+      WaitForShow(ConfirmInfoBar::kInfoBarElementId),
+
+      // Close browser.
+      Do([this]() { browser()->GetWindow()->Close(); }),
+      WaitForHide(kBrowserViewElementId));
+
+  histogram_tester.ExpectTotalCount("DefaultBrowser.InfoBar.Shown", 1);
+  histogram_tester.ExpectUniqueSample(
+      "DefaultBrowser.InfoBar.Interaction",
+      default_browser::DefaultBrowserInteractionType::kIgnored, 1);
 }
 
 // Linux test environment doesn't allow setting default via the

@@ -9,7 +9,9 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/timer/timer.h"
-#include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/extensions/extensions_container.h"
+#include "chrome/browser/ui/extensions/extensions_toolbar_view_model.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_chip_button.h"
 #include "extensions/common/extension_id.h"
 #include "ui/base/metadata/metadata_header_macros.h"
@@ -19,27 +21,28 @@ namespace content {
 class WebContents;
 }  // namespace content
 
-class Browser;
 class ExtensionsContainerViews;
 class ExtensionsRequestAccessHoverCardCoordinator;
 
 // Button in the toolbar bar that displays the extensions that requests
 // access, and are allowed to do so, and grants them access.
-class ExtensionsRequestAccessButton : public ToolbarChipButton,
-                                      public TabStripModelObserver {
+class ExtensionsRequestAccessButton : public ToolbarChipButton {
   METADATA_HEADER(ExtensionsRequestAccessButton, ToolbarChipButton)
 
  public:
   explicit ExtensionsRequestAccessButton(
-      Browser* browser,
-      ExtensionsContainerViews* extensions_container);
+      BrowserWindowInterface* browser,
+      ExtensionsContainer* extensions_container,
+      ExtensionsContainerViews* extensions_container_views);
   ExtensionsRequestAccessButton(const ExtensionsRequestAccessButton&) = delete;
   const ExtensionsRequestAccessButton& operator=(
       const ExtensionsRequestAccessButton&) = delete;
   ~ExtensionsRequestAccessButton() override;
 
-  // Updates the button visibility and content given `extension_ids`.
-  void Update(std::vector<extensions::ExtensionId>& extension_ids);
+  // Updates the button visibility and content given
+  // `request_access_button_params`.
+  void Update(const ExtensionsToolbarViewModel::RequestAccessButtonParams&
+                  request_access_button_params);
 
   // Displays the button's hover card, if possible.
   void MaybeShowHoverCard();
@@ -59,15 +62,6 @@ class ExtensionsRequestAccessButton : public ToolbarChipButton,
   // ToolbarButton:
   bool ShouldShowInkdropAfterIphInteraction() override;
 
-  // TabStripModelObserver:
-  void OnTabStripModelChanged(
-      TabStripModel* tab_strip_model,
-      const TabStripModelChange& change,
-      const TabStripSelectionChange& selection) override;
-  void TabChangedAt(content::WebContents* contents,
-                    int index,
-                    TabChangeType change_type) override;
-
   // Accessors used by tests:
   std::vector<extensions::ExtensionId> GetExtensionIdsForTesting() {
     return extension_ids_;
@@ -81,16 +75,15 @@ class ExtensionsRequestAccessButton : public ToolbarChipButton,
   }
 
  private:
-  void UpdateTooltipText();
-
   // Grants one-time site access to `extension_ids` and shows a confirmation
   // message on the button.
   void OnButtonPressed();
 
   content::WebContents* GetActiveWebContents() const;
 
-  raw_ptr<Browser> browser_;
-  raw_ptr<ExtensionsContainerViews> extensions_container_;
+  raw_ptr<BrowserWindowInterface> browser_;
+  raw_ptr<ExtensionsContainer> extensions_container_;
+  raw_ptr<ExtensionsContainerViews> extensions_container_views_;
 
   std::unique_ptr<ExtensionsRequestAccessHoverCardCoordinator>
       hover_card_coordinator_;

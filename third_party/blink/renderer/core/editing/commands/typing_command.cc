@@ -56,7 +56,9 @@
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/html/html_br_element.h"
 #include "third_party/blink/renderer/core/html_names.h"
+#include "third_party/blink/renderer/core/layout/layout_box.h"
 #include "third_party/blink/renderer/core/layout/layout_object.h"
+#include "third_party/blink/renderer/core/layout/scroll_anchor.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 
 namespace blink {
@@ -333,13 +335,15 @@ void TypingCommand::UpdateSelectionIfDifferentFromCurrentSelection(
 void TypingCommand::InsertText(Document& document,
                                const String& text,
                                Options options,
+                               PasswordEchoBehavior password_echo_behavior,
                                TextCompositionType composition,
                                const bool is_incremental_insertion) {
   LocalFrame* frame = document.GetFrame();
   DCHECK(frame);
   EditingState editing_state;
   InsertText(document, text, frame->Selection().GetSelectionInDOMTree(),
-             options, &editing_state, composition, is_incremental_insertion);
+             options, &editing_state, password_echo_behavior, composition,
+             is_incremental_insertion);
 }
 
 void TypingCommand::AdjustSelectionAfterIncrementalInsertion(
@@ -381,6 +385,7 @@ void TypingCommand::InsertText(
     const SelectionInDOMTree& passed_selection_for_insertion,
     Options options,
     EditingState* editing_state,
+    PasswordEchoBehavior password_echo_behavior,
     TextCompositionType composition_type,
     const bool is_incremental_insertion,
     InputEvent::InputType input_type,
@@ -453,6 +458,7 @@ void TypingCommand::InsertText(
     last_typing_command->is_incremental_insertion_ = is_incremental_insertion;
     last_typing_command->selection_start_ = selection_start;
     last_typing_command->input_type_ = input_type;
+    last_typing_command->password_echo_behavior_ = password_echo_behavior;
 
     EventQueueScope event_queue_scope;
     last_typing_command->InsertTextInternal(
@@ -475,6 +481,7 @@ void TypingCommand::InsertText(
   command->is_incremental_insertion_ = is_incremental_insertion;
   command->selection_start_ = selection_start;
   command->input_type_ = input_type;
+  command->password_echo_behavior_ = password_echo_behavior;
   ABORT_EDITING_COMMAND_IF(!command->Apply());
 
   if (change_selection) {
@@ -573,6 +580,16 @@ void TypingCommand::DoApply(EditingState* editing_state) {
     if (commands_.empty())
       opened_by_backward_delete_ = true;
   }
+
+  ScrollableArea* scrollable_area = nullptr;
+  Node* anchor_node = EndingSelection().Anchor().ComputeContainerNode();
+  if (anchor_node && anchor_node->GetLayoutObject()) {
+    if (const LayoutBox* scroll_container =
+            anchor_node->GetLayoutObject()->ContainingScrollContainer()) {
+      scrollable_area = scroll_container->GetScrollableArea();
+    }
+  }
+  SuppressScrollAnchorScope suppress_scope(scrollable_area);
 
   switch (command_type_) {
     case kDeleteSelection:
@@ -719,14 +736,14 @@ void TypingCommand::InsertTextRunWithoutNewlines(const String& text,
   CompositeEditCommand* command;
   if (IsIncrementalInsertion()) {
     command = MakeGarbageCollected<InsertIncrementalTextCommand>(
-        GetDocument(), text,
+        GetDocument(), text, password_echo_behavior_,
         composition_type_ == kTextCompositionNone
             ? InsertIncrementalTextCommand::
                   kRebalanceLeadingAndTrailingWhitespaces
             : InsertIncrementalTextCommand::kRebalanceAllWhitespaces);
   } else {
     command = MakeGarbageCollected<InsertTextCommand>(
-        GetDocument(), text,
+        GetDocument(), text, password_echo_behavior_,
         composition_type_ == kTextCompositionNone
             ? InsertTextCommand::kRebalanceLeadingAndTrailingWhitespaces
             : InsertTextCommand::kRebalanceAllWhitespaces);

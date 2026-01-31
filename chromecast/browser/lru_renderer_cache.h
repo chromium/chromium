@@ -63,11 +63,16 @@ class LRURendererCache : public base::MemoryPressureListener {
   void OnMemoryPressure(
       base::MemoryPressureLevel memory_pressure_level) override;
 
+  // Returns the actual maximum amount of renderers allowed, which changes
+  // depending on memory pressure.
+  size_t GetCurrentMaxRenderers() const;
+
   // Evict pre-launched renderers so that the total number of in-use and cached
   // renderers doesn't exceed |max_renderers_|.
   void EvictCache();
 
   content::BrowserContext* const browser_context_;
+  // The maximum amount of renderers allowed, assuming no memory pressure.
   const size_t max_renderers_;
   size_t in_use_count_;
   std::list<std::unique_ptr<RendererPrelauncher>> cache_;

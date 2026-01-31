@@ -19,7 +19,6 @@
 #include "ash/system/diagnostics/routine_log.h"
 #include "ash/system/diagnostics/telemetry_log.h"
 #include "ash/test/ash_test_base.h"
-#include "ash/webui/diagnostics_ui/mojom/network_health_provider.mojom-forward.h"
 #include "ash/webui/diagnostics_ui/mojom/network_health_provider.mojom-shared.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"

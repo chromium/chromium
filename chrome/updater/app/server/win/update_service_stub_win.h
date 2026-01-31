@@ -5,6 +5,7 @@
 #ifndef CHROME_UPDATER_APP_SERVER_WIN_UPDATE_SERVICE_STUB_WIN_H_
 #define CHROME_UPDATER_APP_SERVER_WIN_UPDATE_SERVICE_STUB_WIN_H_
 
+#include "base/containers/flat_map.h"
 #include "base/functional/callback.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/sequence_checker.h"
@@ -71,6 +72,8 @@ class UpdateServiceStubWin : public UpdateService {
       const std::string& language,
       base::RepeatingCallback<void(const UpdateState&)> state_update,
       base::OnceCallback<void(Result)> callback) override;
+  void GetUpdaterState(base::OnceCallback<void(const UpdaterState&)>) override;
+  void GetPoliciesJson(base::OnceCallback<void(const std::string&)>) override;
 
  private:
   ~UpdateServiceStubWin() override;

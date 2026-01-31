@@ -11,6 +11,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
 #include "build/build_config.h"
+#include "device/fido/public/fido_constants.h"
 #include "mojo/public/mojom/base/values.mojom-blink.h"
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
 #include "third_party/blink/public/common/features.h"
@@ -971,10 +972,9 @@ bool IsPaymentExtensionValid(const CredentialCreationOptions* options,
 
 const char* validatePRFInputs(
     const blink::AuthenticationExtensionsPRFValues& values) {
-  constexpr size_t kMaxInputSize = 256;
-  if (DOMArrayPiece(values.first()).ByteLength() > kMaxInputSize ||
-      (values.hasSecond() &&
-       DOMArrayPiece(values.second()).ByteLength() > kMaxInputSize)) {
+  if (DOMArrayPiece(values.first()).ByteLength() > device::kMaxPRFInputSize ||
+      (values.hasSecond() && DOMArrayPiece(values.second()).ByteLength() >
+                                 device::kMaxPRFInputSize)) {
     return "'prf' extension contains excessively large input";
   }
   return nullptr;
@@ -1046,12 +1046,10 @@ const char* validateGetPublicKeyCredentialPRFExtension(
   return nullptr;
 }
 
-void EmitImmediateMediationUseCounters(
-    ExecutionContext* context,
-    const CredentialRequestOptions* options) {
-  CHECK(options->hasMediation() &&
-        options->mediation() ==
-            V8CredentialMediationRequirement::Enum::kImmediate);
+void EmitImmediateUiModeUseCounters(ExecutionContext* context,
+                                    const CredentialRequestOptions* options) {
+  CHECK(options->hasUiMode() &&
+        options->uiMode() == V8CredentialUiModeRequirement::Enum::kImmediate);
   if (options->hasPublicKey() && options->password()) {
     UseCounter::Count(
         context,
@@ -1068,11 +1066,7 @@ void EmitImmediateMediationUseCounters(
 
 bool IsImmediateGetRequest(const ExecutionContext& context,
                            const CredentialRequestOptions& options) {
-  if (options.mediation() ==
-      V8CredentialMediationRequirement::Enum::kImmediate) {
-    return true;
-  }
-  if (RuntimeEnabledFeatures::WebAuthenticationUiModeEnabled(&context) &&
+  if (RuntimeEnabledFeatures::WebAuthenticationImmediateGetEnabled(&context) &&
       options.hasUiMode() &&
       options.uiMode() == V8CredentialUiModeRequirement::Enum::kImmediate) {
     return true;
@@ -1451,26 +1445,6 @@ ScriptPromise<IDLNullable<Credential>> AuthenticationCredentialsContainer::get(
                       WebFeature::kCredentialManagerGetPasswordCredential);
   }
 
-  // TODO(crbug.com/358119268): For prototyping, any conditionally-mediated
-  // request that contains both password and publicKey credential types is
-  // assumed to be ambient, when the flag is on. This will change.
-  if (RuntimeEnabledFeatures::WebAuthenticationAmbientEnabled() &&
-      options->hasPublicKey() && options->hasPassword() &&
-      options->password() &&
-      options->mediation() ==
-          V8CredentialMediationRequirement::Enum::kConditional) {
-    // Unsupported ambient credential types:
-    if (options->hasOtp() || options->hasIdentity() ||
-        (options->publicKey()->hasExtensions() &&
-         options->publicKey()->extensions()->hasPayment()) ||
-        options->hasFederated()) {
-      resolver->Reject(MakeGarbageCollected<DOMException>(
-          DOMExceptionCode::kNotSupportedError,
-          "Unsupported combination of credential types requested."));
-      return promise;
-    }
-  }
-
   if (options->hasPublicKey()) {
     ForwardRequestToAuthenticator(script_state, resolver, options);
     return promise;
@@ -1525,27 +1499,21 @@ ScriptPromise<IDLNullable<Credential>> AuthenticationCredentialsContainer::get(
     return promise;
   }
   if (IsImmediateGetRequest(*context, *options)) {
-    if (RuntimeEnabledFeatures::WebAuthenticationImmediateGetEnabled(context)) {
-      if (options->password()) {
-        if (RuntimeEnabledFeatures::
-                AuthenticatorPasswordsOnlyImmediateRequestsEnabled(context)) {
-          ForwardRequestToAuthenticator(script_state, resolver, options);
-          return promise;
-        }
-        resolver->Reject(MakeGarbageCollected<DOMException>(
-            DOMExceptionCode::kNotSupportedError,
-            "Immediate mediation is not yet implemented for requests that do "
-            "not accept PublicKeyCredential. An Immediate request for "
-            "passwords must also include a request for passkeys."));
-      } else {
-        resolver->Reject(MakeGarbageCollected<DOMException>(
-            DOMExceptionCode::kNotSupportedError,
-            "Immediate mediation is not supported for this credential type"));
+    if (options->password()) {
+      if (RuntimeEnabledFeatures::
+              AuthenticatorPasswordsOnlyImmediateRequestsEnabled(context)) {
+        ForwardRequestToAuthenticator(script_state, resolver, options);
+        return promise;
       }
+      resolver->Reject(MakeGarbageCollected<DOMException>(
+          DOMExceptionCode::kNotSupportedError,
+          "Immediate mediation is not yet implemented for requests that do "
+          "not accept PublicKeyCredential. An Immediate request for "
+          "passwords must also include a request for passkeys."));
     } else {
       resolver->Reject(MakeGarbageCollected<DOMException>(
           DOMExceptionCode::kNotSupportedError,
-          "Immediate mediation not implemented"));
+          "Immediate mediation is not supported for this credential type"));
     }
     return promise;
   }
@@ -1566,7 +1534,6 @@ ScriptPromise<IDLNullable<Credential>> AuthenticationCredentialsContainer::get(
       requirement = CredentialMediationRequirement::kRequired;
       break;
     case V8CredentialMediationRequirement::Enum::kConditional:
-    case V8CredentialMediationRequirement::Enum::kImmediate:
       NOTREACHED();
   }
 
@@ -1695,21 +1662,29 @@ AuthenticationCredentialsContainer::create(
   if (options->hasPassword()) {
     UseCounter::Count(resolver->GetExecutionContext(),
                       WebFeature::kCredentialManagerCreatePasswordCredential);
-    resolver->Resolve(
+    auto* password_credentials =
         options->password()->IsPasswordCredentialData()
             ? PasswordCredential::Create(
                   options->password()->GetAsPasswordCredentialData(),
                   exception_state)
             : PasswordCredential::Create(
-                  options->password()->GetAsHTMLFormElement(),
-                  exception_state));
+                  options->password()->GetAsHTMLFormElement(), exception_state);
+    if (exception_state.HadException()) [[unlikely]] {
+      return {};
+    }
+    resolver->Resolve(password_credentials);
     return promise;
   }
   if (options->hasFederated()) {
     UseCounter::Count(resolver->GetExecutionContext(),
                       WebFeature::kCredentialManagerCreateFederatedCredential);
-    resolver->Resolve(
-        FederatedCredential::Create(options->federated(), exception_state));
+    auto* federated_credentials =
+        FederatedCredential::Create(options->federated(), exception_state);
+    if (exception_state.HadException()) [[unlikely]] {
+      return {};
+    }
+
+    resolver->Resolve(federated_credentials);
     return promise;
   }
   DCHECK(options->hasPublicKey());
@@ -1972,11 +1947,9 @@ AuthenticationCredentialsContainer::create(
                    std::move(user_id_for_payment_extension)));
     }
   } else {
-    if (RuntimeEnabledFeatures::WebAuthenticationConditionalCreateEnabled()) {
-      mojo_options->is_conditional =
-          options->mediation() ==
-          V8CredentialMediationRequirement::Enum::kConditional;
-    }
+    mojo_options->is_conditional =
+        options->mediation() ==
+        V8CredentialMediationRequirement::Enum::kConditional;
     authenticator->MakeCredential(
         std::move(mojo_options),
         BindOnce(&OnMakePublicKeyCredentialComplete,
@@ -2042,8 +2015,23 @@ void AuthenticationCredentialsContainer::ForwardRequestToAuthenticator(
   }
 
   Mediation mediation = Mediation::MODAL;
-  if (options->mediation() ==
-      V8CredentialMediationRequirement::Enum::kConditional) {
+  if (RuntimeEnabledFeatures::WebAuthenticationAmbientEnabled() &&
+      options->uiMode() == V8CredentialUiModeRequirement::Enum::kPassive &&
+      options->mediation() ==
+          V8CredentialMediationRequirement::Enum::kConditional) {
+    // Unsupported ambient credential types:
+    if (options->hasOtp() || options->hasIdentity() ||
+        (options->publicKey()->hasExtensions() &&
+         options->publicKey()->extensions()->hasPayment()) ||
+        options->hasFederated()) {
+      resolver->Reject(MakeGarbageCollected<DOMException>(
+          DOMExceptionCode::kNotSupportedError,
+          "Unsupported combination of credential types requested."));
+      return;
+    }
+    mediation = Mediation::AMBIENT;
+  } else if (options->mediation() ==
+             V8CredentialMediationRequirement::Enum::kConditional) {
     if (IsImmediateGetRequest(*context, *options)) {
       resolver->Reject(MakeGarbageCollected<DOMException>(
           DOMExceptionCode::kNotSupportedError,
@@ -2054,15 +2042,8 @@ void AuthenticationCredentialsContainer::ForwardRequestToAuthenticator(
     CredentialMetrics::From(script_state).RecordWebAuthnConditionalUiCall();
     mediation = Mediation::CONDITIONAL;
   } else if (IsImmediateGetRequest(*context, *options)) {
-    if (RuntimeEnabledFeatures::WebAuthenticationImmediateGetEnabled(context)) {
-      mediation = Mediation::IMMEDIATE;
-      EmitImmediateMediationUseCounters(context, options);
-    } else {
-      resolver->Reject(MakeGarbageCollected<DOMException>(
-          DOMExceptionCode::kNotSupportedError,
-          "Immediate mediation not implemented"));
-      return;
-    }
+    mediation = Mediation::IMMEDIATE;
+    EmitImmediateUiModeUseCounters(context, options);
   }
   if (mediation == Mediation::IMMEDIATE) {
     if (options->hasPublicKey() &&
@@ -2375,8 +2356,6 @@ void AuthenticationCredentialsContainer::GetForIdentity(
     case V8CredentialMediationRequirement::Enum::kOptional:
       mediation_requirement = CredentialMediationRequirement::kOptional;
       break;
-    case V8CredentialMediationRequirement::Enum::kImmediate:
-      NOTREACHED();
   }
 
   if (identity_options.hasMediation()) {

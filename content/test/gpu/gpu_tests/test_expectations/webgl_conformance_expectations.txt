@@ -66,6 +66,7 @@
 #         mesa_ge_23.2
 #         mesa_ge_24.2
 #         nvidia_ge_31.0.15.4601 nvidia_lt_31.0.15.4601
+#         nvidia_ge_32.0.15.8180 nvidia_lt_32.0.15.8180
 #         nvidia_ge_535.183.01 nvidia_lt_535.183.01 ]
 # ASan
 # tags: [ asan no-asan ]
@@ -429,7 +430,7 @@ crbug.com/1490427 [ fuchsia fuchsia-board-qemu-x64 ] conformance/textures/misc/t
 crbug.com/1490427 [ fuchsia fuchsia-board-qemu-x64 ] conformance/textures/misc/texture-video-transparent.html [ Failure ]
 crbug.com/1490427 [ fuchsia fuchsia-board-qemu-x64 ] conformance/textures/misc/tex-video-using-tex-unit-non-zero.html [ Failure ]
 crbug.com/443182226 [ angle-vulkan arm fuchsia ] conformance/misc/shader-precision-format.html [ Failure ]
-crbug.com/443182226 [ fuchsia ] conformance/uniforms/no-over-optimization-on-uniform-array-* [ Failure ]
+crbug.com/443182226 [ angle-vulkan arm fuchsia ] conformance/uniforms/no-over-optimization-on-uniform-array-* [ Failure ]
 
 
 
@@ -516,6 +517,32 @@ crbug.com/436522727 [ amd-0x7340 debug graphite-enabled no-clang-coverage sonoma
 crbug.com/444250724 [ angle-metal debug graphite-enabled intel-0x3e9b no-clang-coverage sonoma ] conformance/extensions/khr-parallel-shader-compile.html [ Failure ]
 crbug.com/444250724 [ angle-metal graphite-enabled intel-0x3e9b no-clang-coverage release sequoia ] conformance/extensions/khr-parallel-shader-compile.html [ Failure ]
 
+# Angel Metal on Intel Sequoia
+crbug.com/475181552 [ sequoia angle-metal graphite-enabled intel-0x3e9b ] conformance/extensions/oes-texture-float-with-video.html [ Failure ]
+crbug.com/475181552 [ sequoia angle-metal graphite-enabled intel-0x3e9b ] conformance/extensions/oes-texture-half-float-with-video.html [ Failure ]
+crbug.com/475181552 [ sequoia angle-metal graphite-enabled intel-0x3e9b ] conformance/textures/canvas/tex-2d-luminance-luminance-unsigned_byte.html [ Failure ]
+crbug.com/475181552 [ sequoia angle-metal graphite-enabled intel-0x3e9b ] conformance/textures/canvas/tex-2d-rgb-rgb-unsigned_short_5_6_5.html [ Failure ]
+crbug.com/475181552 [ sequoia angle-metal graphite-enabled intel-0x3e9b ] conformance/textures/canvas/tex-2d-rgba-rgba-unsigned_short_4_4_4_4.html [ Failure ]
+crbug.com/475181552 [ sequoia angle-metal graphite-enabled intel-0x3e9b ] conformance/textures/canvas/tex-2d-rgba-rgba-unsigned_short_5_5_5_1.html [ Failure ]
+crbug.com/475181552 [ sequoia angle-metal graphite-enabled intel-0x3e9b ] conformance/textures/canvas/tex-2d-rgb-rgb-unsigned_byte.html [ Failure ]
+crbug.com/475181552 [ sequoia angle-metal graphite-enabled intel-0x3e9b ] conformance/textures/image_bitmap_from_canvas/tex-2d-luminance-luminance-unsigned_byte.html [ Failure ]
+crbug.com/475181552 [ sequoia angle-metal graphite-enabled intel-0x3e9b ] conformance/textures/image_bitmap_from_canvas/tex-2d-rgb-rgb-unsigned_short_5_6_5.html [ Failure ]
+crbug.com/475181552 [ sequoia angle-metal graphite-enabled intel-0x3e9b ] conformance/textures/image_bitmap_from_canvas/tex-2d-rgba-rgba-unsigned_short_4_4_4_4.html [ Failure ]
+crbug.com/475181552 [ sequoia angle-metal graphite-enabled intel-0x3e9b ] conformance/textures/image_bitmap_from_canvas/tex-2d-rgba-rgba-unsigned_short_5_5_5_1.html [ Failure ]
+crbug.com/475181552 [ sequoia angle-metal graphite-enabled intel-0x3e9b ] conformance/textures/image_bitmap_from_canvas/tex-2d-rgb-rgb-unsigned_byte.html [ Failure ]
+crbug.com/475181552 [ sequoia angle-metal graphite-enabled intel-0x3e9b ] conformance/textures/image_bitmap_from_video/tex-2d-luminance-luminance-unsigned_byte.html [ Failure ]
+crbug.com/475181552 [ sequoia angle-metal graphite-enabled intel-0x3e9b ] conformance/textures/image_bitmap_from_video/tex-2d-rgb-rgb-unsigned_short_5_6_5.html [ Failure ]
+crbug.com/475181552 [ sequoia angle-metal graphite-enabled intel-0x3e9b ] conformance/textures/image_bitmap_from_video/tex-2d-rgba-rgba-unsigned_short_4_4_4_4.html [ Failure ]
+crbug.com/475181552 [ sequoia angle-metal graphite-enabled intel-0x3e9b ] conformance/textures/image_bitmap_from_video/tex-2d-rgba-rgba-unsigned_short_5_5_5_1.html [ Failure ]
+crbug.com/475181552 [ sequoia angle-metal graphite-enabled intel-0x3e9b ] conformance/textures/image_bitmap_from_video/tex-2d-rgb-rgb-unsigned_byte.html [ Failure ]
+crbug.com/475181552 [ sequoia angle-metal graphite-enabled intel-0x3e9b ] conformance/textures/video/tex-2d-luminance-luminance-unsigned_byte.html [ Failure ]
+crbug.com/475181552 [ sequoia angle-metal graphite-enabled intel-0x3e9b ] conformance/textures/video/tex-2d-rgb-rgb-unsigned_short_5_6_5.html [ Failure ]
+crbug.com/475181552 [ sequoia angle-metal graphite-enabled intel-0x3e9b ] conformance/textures/video/tex-2d-rgba-rgba-unsigned_short_4_4_4_4.html [ Failure ]
+crbug.com/475181552 [ sequoia angle-metal graphite-enabled intel-0x3e9b ] conformance/textures/video/tex-2d-rgba-rgba-unsigned_short_5_5_5_1.html [ Failure ]
+crbug.com/475181552 [ sequoia angle-metal graphite-enabled intel-0x3e9b ] conformance/textures/video/tex-2d-rgb-rgb-unsigned_byte.html [ Failure ]
+crbug.com/475181552 [ sequoia angle-metal graphite-enabled intel-0x3e9b ] conformance/textures/misc/texture-corner-case-videos.html [ Failure ]
+crbug.com/475181552 [ sequoia angle-metal graphite-enabled intel-0x3e9b ] conformance/textures/misc/video-rotation.html [ Failure ]
+
 ####################
 # Linux failures   #
 ####################
@@ -575,7 +602,7 @@ crbug.com/1287280 [ android android-pixel-6 no-passthrough ] WebglExtension_WEBG
 crbug.com/1288590 [ android android-pixel-6 ] conformance/misc/shader-precision-format.html [ Failure ]
 crbug.com/1288603 [ android android-pixel-6 passthrough angle-opengles ] conformance/extensions/angle-instanced-arrays-out-of-bounds.html [ Failure ]
 crbug.com/40236526 [ android android-pixel-6 no-passthrough ] conformance/rendering/blending.html [ Failure ]
-crbug.com/465162387 [ android android-pixel-6 angle-opengles graphite-enabled passthrough renderer-skia-gl ] conformance/extensions/oes-element-index-uint.html [ Failure ]
+crbug.com/465162387 [ android android-pixel-6 ] conformance/extensions/oes-element-index-uint.html [ Failure ]
 
 ## Pixel 10 ##
 

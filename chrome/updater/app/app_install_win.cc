@@ -634,7 +634,7 @@ void AppInstallControllerImpl::DoInstallAppOffline(
     return;
   }
 
-  base::Value::Dict install_settings_dict;
+  base::DictValue install_settings_dict;
   install_settings_dict.Set(kInstallerVersion, installer_version);
 
   const base::CommandLine cmd_line(*base::CommandLine::ForCurrentProcess());
@@ -642,6 +642,8 @@ void AppInstallControllerImpl::DoInstallAppOffline(
                             cmd_line.HasSwitch(kEnterpriseSwitch));
   install_settings_dict.Set(kSessionIdSwitch,
                             cmd_line.GetSwitchValueUTF8(kSessionIdSwitch));
+  install_settings_dict.Set(kInstallSourceSwitch,
+                            cmd_line.GetSwitchValueUTF8(kInstallSourceSwitch));
 
   std::string install_settings;
   if (!JSONStringValueSerializer(&install_settings)

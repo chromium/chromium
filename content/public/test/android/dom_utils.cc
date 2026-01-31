@@ -17,16 +17,18 @@ namespace content {
 
 // Returns the amount of the top controls height if controls are in the state
 // of shrinking Blink's view size, otherwise 0.
-static jint JNI_DOMUtils_GetTopControlsShrinkBlinkHeight(
+static int32_t JNI_DOMUtils_GetTopControlsShrinkBlinkHeight(
     JNIEnv* env,
     const JavaRef<jobject>& jweb_contents) {
   WebContents* web_contents = WebContents::FromJavaWebContents(jweb_contents);
 
   // Android obtains the top control size via WebContentsDelegate.
   WebContentsDelegate* delegate = web_contents->GetDelegate();
+  // LINT.IfChange(GetTopControlsShrinkBlinkHeight)
   return delegate && delegate->DoBrowserControlsShrinkRendererSize(web_contents)
              ? delegate->GetTopControlsHeight()
-             : 0;
+             : delegate->GetTopControlsMinHeight();
+  // LINT.ThenChange()
 }
 
 }  // namespace content

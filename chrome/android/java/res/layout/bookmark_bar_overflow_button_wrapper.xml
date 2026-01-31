@@ -15,6 +15,7 @@ found in the LICENSE file.
     android:focusable="true"
     android:clickable="true"
     android:descendantFocusability="blocksDescendants"
+    android:tooltipText="@string/bookmark_bar_overflow_button_content_description"
     android:contentDescription="@string/bookmark_bar_overflow_button_content_description">
 
   <ImageView

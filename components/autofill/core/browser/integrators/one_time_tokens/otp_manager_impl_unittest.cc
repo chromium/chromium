@@ -67,7 +67,7 @@ class MockOtpPhishGuardDelegate : public OtpPhishGuardDelegate {
 class OtpManagerImplTest : public testing::Test,
                            public WithTestAutofillClientDriverManager<> {
  public:
-  OtpManagerImplTest() = default;
+  OtpManagerImplTest() : one_time_token_service_(&sms_otp_backend_, nullptr) {}
   ~OtpManagerImplTest() override = default;
 
   void SetUp() override {
@@ -123,7 +123,7 @@ class OtpManagerImplTest : public testing::Test,
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   test::AutofillUnitTestEnvironment autofill_test_environment_;
   MockSmsOtpBackend sms_otp_backend_;
-  OneTimeTokenServiceImpl one_time_token_service_{&sms_otp_backend_};
+  OneTimeTokenServiceImpl one_time_token_service_;
   base::HistogramTester histogram_tester_;
 };
 

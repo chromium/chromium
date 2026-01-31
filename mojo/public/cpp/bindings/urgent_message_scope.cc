@@ -4,7 +4,6 @@
 
 #include "mojo/public/cpp/bindings/urgent_message_scope.h"
 
-
 namespace mojo {
 
 namespace {

@@ -68,15 +68,18 @@ ReadAnythingUntrustedUI::ReadAnythingUntrustedUI(content::WebUI* web_ui)
       {"sentenceHighlightTitle", IDS_READING_MODE_SENTENCE_HIGHLIGHT_LABEL},
       {"noHighlightTitle", IDS_READING_MODE_OFF_HIGHLIGHT_LABEL},
       {"lineFocusWindowHeading", IDS_READING_MODE_LINE_FOCUS_WINDOW_HEADING},
-      {"lineFocusOneLineTitle",
-       IDS_READING_MODE_LINE_FOCUS_HIGHLIGHT_1_LINE_LABEL},
+      {"lineFocusStyleHeading", IDS_READING_MODE_LINE_FOCUS_STYLE_HEADING},
+      {"lineFocusOneLineTitle", IDS_READING_MODE_LINE_FOCUS_SMALL_FOCUS_LABEL},
       {"lineFocusThreeLineTitle",
-       IDS_READING_MODE_LINE_FOCUS_HIGHLIGHT_3_LINE_LABEL},
-      {"lineFocusFiveLineTitle",
-       IDS_READING_MODE_LINE_FOCUS_HIGHLIGHT_5_LINE_LABEL},
+       IDS_READING_MODE_LINE_FOCUS_MEDIUM_FOCUS_LABEL},
+      {"lineFocusFiveLineTitle", IDS_READING_MODE_LINE_FOCUS_LARGE_FOCUS_LABEL},
+      {"lineFocusUnderlineTitle", IDS_READING_MODE_LINE_FOCUS_UNDERLINE_LABEL},
       {"lineFocusLineHeading", IDS_READING_MODE_LINE_FOCUS_LINE_HEADING},
+      {"lineFocusMovementHeading",
+       IDS_READING_MODE_LINE_FOCUS_MOVEMENT_HEADING},
       {"lineFocusStaticLineTitle",
        IDS_READING_MODE_LINE_FOCUS_STATIC_LINE_LABEL},
+      {"lineFocusStaticTitle", IDS_READING_MODE_LINE_FOCUS_STATIC_LABEL},
       {"lineFocusCursorLineTitle",
        IDS_READING_MODE_LINE_FOCUS_CURSOR_LINE_LABEL},
       {"lineFocusOffTitle", IDS_READING_MODE_LINE_FOCUS_OFF_LABEL},
@@ -169,6 +172,7 @@ ReadAnythingUntrustedUI::ReadAnythingUntrustedUI(content::WebUI* web_ui)
       {"fullScreenLabel", IDS_READING_MODE_FULL_SCREEN_LABEL},
       {"fullPageLabel", IDS_READING_MODE_VIEW_FULL_PAGE_LABEL},
       {"viewLabel", IDS_READING_MODE_VIEW_LABEL},
+      {"linksLabel", IDS_READING_MODE_LINKS_LABEL},
   };
   for (const auto& str : kLocalizedStrings) {
     webui::AddLocalizedString(source, str.name, str.id);
@@ -185,8 +189,8 @@ ReadAnythingUntrustedUI::ReadAnythingUntrustedUI(content::WebUI* web_ui)
   source->AddResourcePath("test_loader.html", IDR_WEBUI_TEST_LOADER_HTML);
   webui::EnableTrustedTypesCSP(source);
   source->AddResourcePaths(kSidePanelReadAnythingResources);
-  source->AddResourcePath("",
-                          IDR_SIDE_PANEL_READ_ANYTHING_APP_READ_ANYTHING_HTML);
+  source->SetDefaultResource(
+      IDR_SIDE_PANEL_READ_ANYTHING_APP_READ_ANYTHING_HTML);
   source->AddResourcePaths(kSidePanelSharedResources);
   source->OverrideContentSecurityPolicy(
       network::mojom::CSPDirectiveName::ScriptSrc,
@@ -202,7 +206,14 @@ ReadAnythingUntrustedUI::ReadAnythingUntrustedUI(content::WebUI* web_ui)
       "https://fonts.gstatic.com;");
   source->OverrideContentSecurityPolicy(
       network::mojom::CSPDirectiveName::ImgSrc,
-      "img-src 'self' data: chrome-untrusted://resources;");
+      "img-src 'self' data: chrome://resources https: "
+      "chrome-untrusted://resources;");
+  source->OverrideContentSecurityPolicy(
+      network::mojom::CSPDirectiveName::TrustedTypes,
+      "trusted-types reader-mode-policy lit-html-desktop "
+      "static-types "
+      "parse-html-subset polymer-html-literal "
+      "polymer-template-event-attribute-policy;");
   raw_ptr<Profile> profile = Profile::FromWebUI(web_ui);
 
   // If the ThemeSource isn't added here, since Read Anything is

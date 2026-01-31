@@ -47,9 +47,9 @@ class ErrorBuilder {
 // the manifest key for the internal key.
 bool ConvertManifestRule(DeclarativeManifestData::Rule& rule,
                          ErrorBuilder* error_builder) {
-  auto convert_list = [error_builder](base::Value::List& list) {
+  auto convert_list = [error_builder](base::ListValue& list) {
     for (base::Value& value : list) {
-      base::Value::Dict* dictionary = value.GetIfDict();
+      base::DictValue* dictionary = value.GetIfDict();
       if (!dictionary) {
         error_builder->Append("expected dictionary, got ",
                               base::Value::GetTypeName(value.type()));
@@ -139,7 +139,7 @@ std::unique_ptr<DeclarativeManifestData> DeclarativeManifestData::FromValue(
                            base::Value::GetTypeName(element.type()));
       return nullptr;
     }
-    const base::Value::Dict& dict = element.GetDict();
+    const base::DictValue& dict = element.GetDict();
     const std::string* event = dict.FindString("event");
     if (!event) {
       error_builder.Append("'event' is required");

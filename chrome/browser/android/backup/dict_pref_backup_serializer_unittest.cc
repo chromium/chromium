@@ -21,7 +21,7 @@ TEST(DictPrefBackupSerializerTest, ShouldDeserializeValidNonEmptyDict) {
   std::string pref_name = "dict";
   TestingPrefServiceSimple pref_service;
   pref_service.registry()->RegisterDictionaryPref(pref_name);
-  auto dict_value = base::Value::Dict().Set("key1", 1).Set("key2", "blah");
+  auto dict_value = base::DictValue().Set("key1", 1).Set("key2", "blah");
   pref_service.SetDict(pref_name, dict_value.Clone());
 
   // Serialize the dictionary, clear it from PrefService, then attempt to
@@ -39,16 +39,16 @@ TEST(DictPrefBackupSerializerTest, ShouldDeserializeValidEmptyDict) {
   std::string pref_name = "dict";
   TestingPrefServiceSimple pref_service;
   pref_service.registry()->RegisterDictionaryPref(pref_name);
-  ASSERT_EQ(pref_service.GetDict(pref_name), base::Value::Dict());
+  ASSERT_EQ(pref_service.GetDict(pref_name), base::DictValue());
 
   // Serialize the dictionary, change the pref, then attempt to deserialize and
   // recover.
   std::string serialized_dict = GetSerializedDict(&pref_service, pref_name);
-  pref_service.SetDict(pref_name, base::Value::Dict().Set("key1", 1));
+  pref_service.SetDict(pref_name, base::DictValue().Set("key1", 1));
   SetDict(&pref_service, pref_name, serialized_dict);
 
   // The dictionary value should be the original one.
-  EXPECT_EQ(pref_service.GetDict(pref_name), base::Value::Dict());
+  EXPECT_EQ(pref_service.GetDict(pref_name), base::DictValue());
 }
 
 TEST(DictPrefBackupSerializerTest, ShouldNotDeserializeCorruptDict) {
@@ -56,7 +56,7 @@ TEST(DictPrefBackupSerializerTest, ShouldNotDeserializeCorruptDict) {
   std::string pref_name = "dict";
   TestingPrefServiceSimple pref_service;
   pref_service.registry()->RegisterDictionaryPref(pref_name);
-  auto dict_value = base::Value::Dict().Set("key1", 1).Set("key2", "blah");
+  auto dict_value = base::DictValue().Set("key1", 1).Set("key2", "blah");
   pref_service.SetDict(pref_name, dict_value.Clone());
 
   SetDict(&pref_service, pref_name, "corrupted");

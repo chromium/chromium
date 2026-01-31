@@ -5,7 +5,7 @@
 #ifndef COMPONENTS_PERFORMANCE_MANAGER_PUBLIC_RENDER_PROCESS_HOST_ID_H_
 #define COMPONENTS_PERFORMANCE_MANAGER_PUBLIC_RENDER_PROCESS_HOST_ID_H_
 
-#include "content/public/browser/child_process_id.h"
+#include "content/public/common/child_process_id.h"
 
 namespace performance_manager {
 

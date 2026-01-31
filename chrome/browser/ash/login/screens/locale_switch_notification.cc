@@ -13,6 +13,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/no_destructor.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/global_features.h"
 #include "chrome/browser/notifications/notification_common.h"
 #include "chrome/browser/notifications/notification_display_service.h"
 #include "chrome/browser/notifications/notification_display_service_factory.h"
@@ -142,8 +143,13 @@ void LocaleSwitchNotificationDelegate::Click(
   if (*button_index == static_cast<int>(NotificationButton::kSwitchLocale)) {
     VLOG(1) << "Switching locale to " << new_locale_
             << " from the notification.";
+
+    // TODO(crbug.com/404133029): Avoid g_browser_process usage.
+    ApplicationLocaleStorage* application_locale_storage =
+        g_browser_process->GetFeatures()->application_locale_storage();
+
     locale_util::SwitchLanguage(
-        new_locale_,
+        application_locale_storage, new_locale_,
         /*enable_locale_keyboard_layouts=*/false,  // The layouts will be synced
                                                    // instead. Also new user
                                                    // could enable required

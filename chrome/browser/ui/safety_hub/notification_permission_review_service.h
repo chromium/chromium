@@ -65,7 +65,7 @@ class NotificationPermissionsReviewService : public SafetyHubService,
   // Returns a sorted list with the notification count for each domain to be
   // shown on the 'Review Notification Permissions' dialog. Those domains send a
   // lot of notifications, but have low site engagement.
-  base::Value::List PopulateNotificationPermissionReviewData();
+  base::ListValue PopulateNotificationPermissionReviewData();
 
   // Returns the list of all notification permissions that should be reviewed.
   std::unique_ptr<NotificationPermissionsReviewResult>

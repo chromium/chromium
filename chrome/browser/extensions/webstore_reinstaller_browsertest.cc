@@ -107,7 +107,7 @@ IN_PROC_BROWSER_TEST_F(WebstoreReinstallerBrowserTest, TestWebstoreReinstall) {
           .SetLocation(mojom::ManifestLocation::kInternal)
           .SetID(kTestExtensionId)
           .SetManifest(
-              base::Value::Dict()
+              base::DictValue()
                   .Set("name", kExtensionName)
                   .Set("description", "Foo")
                   .Set("manifest_version", 2)

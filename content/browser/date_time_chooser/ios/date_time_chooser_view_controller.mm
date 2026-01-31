@@ -59,7 +59,7 @@ const CGFloat kToolBarHeight = 44;
       break;
     case ui::TextInputType::TEXT_INPUT_TYPE_MONTH:
       initValue = GetDateFromNumberOfMonths(self.initTime);
-      mode = UIDatePickerModeDate;
+      mode = UIDatePickerModeYearAndMonth;
       style = UIDatePickerStyleWheels;
       break;
     case ui::TextInputType::TEXT_INPUT_TYPE_WEEK:

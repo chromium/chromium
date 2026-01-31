@@ -79,7 +79,7 @@ bool IOSSSLBlockingPage::ShouldCreateNewNavigation() const {
 IOSSSLBlockingPage::~IOSSSLBlockingPage() {}
 
 void IOSSSLBlockingPage::PopulateInterstitialStrings(
-    base::Value::Dict& load_time_data) const {
+    base::DictValue& load_time_data) const {
   ssl_error_ui_->PopulateStringsForHTML(load_time_data);
 }
 

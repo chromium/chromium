@@ -52,7 +52,7 @@ void ProtocolParser::ParseError(const char* details, ...) {
     errors_ += "\r\n";
   }
 
-  base::StringAppendV(&errors_, details, args);
+  UNSAFE_TODO(base::StringAppendV(&errors_, details, args));
   va_end(args);
 }
 

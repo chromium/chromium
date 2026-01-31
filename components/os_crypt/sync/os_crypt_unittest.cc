@@ -210,8 +210,8 @@ class OSCryptConcurrencyTest : public testing::Test {
   ~OSCryptConcurrencyTest() override { OSCryptMocker::TearDown(); }
 };
 
-// Flaky on Win 7 (dbg) and win-asan, see https://crbug.com/1066699
-#if BUILDFLAG(IS_WIN)
+// Flaky on win-asan, see https://crbug.com/1066699
+#if BUILDFLAG(IS_WIN) && defined(ADDRESS_SANITIZER)
 #define MAYBE_ConcurrentInitialization DISABLED_ConcurrentInitialization
 #else
 #define MAYBE_ConcurrentInitialization ConcurrentInitialization

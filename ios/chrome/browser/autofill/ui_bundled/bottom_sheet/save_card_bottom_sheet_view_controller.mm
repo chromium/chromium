@@ -31,9 +31,9 @@ CGFloat const kSpacingBeforeAboveTitleImage = 12;
 CGFloat const kSpacingAfterAboveTitleImage = 4;
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-//  Height of the Google Pay logo used as the image above the title of the
+//  Height of the Google Wallet logo used as the image above the title of the
 //  bottomsheet for upload save.
-CGFloat const kGooglePayLogoHeight = 32;
+CGFloat const kGoogleWalletLogoHeight = 32;
 
 // Height of the Chrome logo used as the image above the title of the
 // bottomsheet for local save.
@@ -210,7 +210,10 @@ CGFloat const kChromeLogoHeight = 22;
   cell = [self layoutCell:cell
         forTableViewWidth:[self tableViewWidth]
               atIndexPath:[NSIndexPath indexPathForRow:index inSection:0]];
-  return [cell systemLayoutSizeFittingSize:CGSizeMake(tableWidth, 1)].height;
+  return [cell systemLayoutSizeFittingSize:CGSizeMake(tableWidth, 1)
+             withHorizontalFittingPriority:UILayoutPriorityRequired
+                   verticalFittingPriority:UILayoutPriorityFittingSizeLevel]
+      .height;
 }
 
 #pragma mark - ConfirmationAlertActionHandler
@@ -249,9 +252,13 @@ CGFloat const kChromeLogoHeight = 22;
     case kChromeLogo:
       return MakeSymbolMulticolor(CustomSymbolWithPointSize(
           kMulticolorChromeballSymbol, kChromeLogoHeight));
-    case kGooglePayLogo:
-      return MakeSymbolMulticolor(
-          CustomSymbolWithPointSize(kGooglePaySymbol, kGooglePayLogoHeight));
+    case kGoogleWalletLogo:
+      return MakeSymbolMulticolor(CustomSymbolWithPointSize(
+          base::FeatureList::IsEnabled(
+              autofill::features::kAutofillEnableWalletBranding)
+              ? kGoogleWalletSymbol
+              : kGooglePaySymbol,
+          kGoogleWalletLogoHeight));
     case kNoLogo:
     default:
       NOTREACHED() << "Unsupported logo type for save card bottomsheet.";

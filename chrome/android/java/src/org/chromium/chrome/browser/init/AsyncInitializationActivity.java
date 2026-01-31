@@ -10,6 +10,7 @@ import android.content.Intent;
 import android.content.res.Configuration;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.PersistableBundle;
 import android.os.SystemClock;
 import android.view.Display;
 import android.view.View;
@@ -95,6 +96,8 @@ public abstract class AsyncInitializationActivity extends ChromeBaseAppCompatAct
     private @Nullable ActivityWindowAndroid mWindowAndroid;
     private @MonotonicNonNull OneshotSupplier<ProfileProvider> mProfileProviderSupplier;
     private @Nullable Bundle mSavedInstanceState;
+    private boolean mReceivedPersistentState;
+    private @Nullable PersistableBundle mPersistentInstanceState;
     private int mCurrentOrientation;
     private boolean mDestroyed;
     private boolean mIsTablet;
@@ -138,15 +141,21 @@ public abstract class AsyncInitializationActivity extends ChromeBaseAppCompatAct
     @Override
     protected void onDestroy() {
         mDestroyed = true;
-        mLifecycleDispatcher.onDestroyStarted();
 
+        // Dispatch onDestroy() for objects created for the activity.
+        mLifecycleDispatcher.dispatchOnDestroy();
+
+        // Destroy ActivityWindowAndroid if it exists. This must be after
+        // mLifecycleDispatcher.dispatchOnDestroy() because objects subscribing to
+        // mLifecycleDispatcher's onDestroy events may have references to ActivityWindowAndroid.
         if (mWindowAndroid != null) {
             mWindowAndroid.destroy();
             mWindowAndroid = null;
         }
 
+        // Finally, destroy the activity. This must be after destroying ActivityWindowAndroid
+        // because it has a reference to the Activity.
         super.onDestroy();
-        mLifecycleDispatcher.dispatchOnDestroy();
     }
 
     @Override
@@ -342,9 +351,19 @@ public abstract class AsyncInitializationActivity extends ChromeBaseAppCompatAct
         TraceEvent.end("AsyncInitializationActivity.onCreate()");
     }
 
+    @Override
+    public void onCreate(
+            @Nullable Bundle savedInstanceState, @Nullable PersistableBundle outPersistentState) {
+        if (shouldPersistAcrossReboots()) {
+            mReceivedPersistentState = outPersistentState != null;
+            mPersistentInstanceState = outPersistentState;
+        }
+        super.onCreate(savedInstanceState, outPersistentState);
+    }
+
     /**
-     * Override to perform operations in the first opportunity after the framework calls
-     * {@link #onCreate}. Note the activity may still be aborted by {@link #onCreateInternal}.
+     * Override to perform operations in the first opportunity after the framework calls {@link
+     * #onCreate}. Note the activity may still be aborted by {@link #onCreateInternal}.
      */
     protected void onPreCreate() {}
 
@@ -541,9 +560,36 @@ public abstract class AsyncInitializationActivity extends ChromeBaseAppCompatAct
         return mSavedInstanceState;
     }
 
+    /**
+     * @return The saved {@link PersistableBundle} for the last persisted state.
+     */
+    public @Nullable PersistableBundle getPersistentInstanceState() {
+        if (!shouldPersistAcrossReboots()) {
+            assert mPersistentInstanceState == null
+                    : "Persistent state should be null if the feature is not enabled.";
+            return null;
+        }
+        return mPersistentInstanceState;
+    }
+
+    /**
+     * @return Whether persistent state was restored during this session, i.e. whether a non-null
+     *     {@link PersistableBundle} was received from the OS in this Activity's #onCreate().
+     */
+    public boolean wasPersistentStateRestored() {
+        return mReceivedPersistentState;
+    }
+
     /** Resets the saved state and makes it unavailable for the rest of the activity lifecycle. */
     protected void resetSavedInstanceState() {
         mSavedInstanceState = null;
+    }
+
+    /**
+     * Resets the persistent state and makes it unavailable for the rest of the activity lifecycle.
+     */
+    protected void resetPersistentInstanceState() {
+        mPersistentInstanceState = null;
     }
 
     @CallSuper
@@ -768,6 +814,16 @@ public abstract class AsyncInitializationActivity extends ChromeBaseAppCompatAct
         mIntentRequestTracker.saveInstanceState(outState);
 
         mLifecycleDispatcher.dispatchOnSaveInstanceState(outState);
+    }
+
+    @CallSuper
+    @Override
+    public void onSaveInstanceState(Bundle outState, PersistableBundle outPersistentState) {
+        super.onSaveInstanceState(outState, outPersistentState);
+
+        if (shouldPersistAcrossReboots()) {
+            mLifecycleDispatcher.dispatchOnSaveInstanceState(outState, outPersistentState);
+        }
     }
 
     @CallSuper

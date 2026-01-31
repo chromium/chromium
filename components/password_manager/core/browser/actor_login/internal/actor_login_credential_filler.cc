@@ -14,6 +14,7 @@
 #include "base/strings/to_string.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/types/expected.h"
+#include "components/affiliations/core/browser/affiliation_service.h"
 #include "components/autofill/core/common/form_field_data.h"
 #include "components/autofill/core/common/save_password_progress_logger.h"
 #include "components/autofill/core/common/unique_ids.h"
@@ -47,6 +48,21 @@ using password_manager::PasswordManagerInterface;
 using Logger = autofill::SavePasswordProgressLogger;
 
 namespace {
+
+bool IsAffiliatedOrigin(const std::vector<affiliations::Facet>& facets,
+                        const url::Origin& current_origin) {
+  for (const auto& facet : facets) {
+    if (!facet.uri.IsValidWebFacetURI()) {
+      continue;
+    }
+    url::Origin affiliated_origin =
+        url::Origin::Create(GURL(facet.uri.canonical_spec()));
+    if (current_origin.IsSameOriginWith(affiliated_origin)) {
+      return true;
+    }
+  }
+  return false;
+}
 
 std::unique_ptr<BrowserSavePasswordProgressLogger> GetLogger(
     PasswordManagerClient* client) {
@@ -96,6 +112,7 @@ ActorLoginCredentialFiller::ActorLoginCredentialFiller(
     bool should_store_permission,
     PasswordManagerClient* client,
     base::WeakPtr<ActorLoginQualityLoggerInterface> mqls_logger,
+    base::TimeTicks attempt_login_start_time,
     IsTaskInFocus is_task_in_focus,
     LoginStatusResultOrErrorReply callback)
     : origin_(main_frame_origin),
@@ -104,6 +121,7 @@ ActorLoginCredentialFiller::ActorLoginCredentialFiller(
       client_(client),
       mqls_logger_(mqls_logger),
       start_time_(base::TimeTicks::Now()),
+      attempt_login_start_time_(attempt_login_start_time),
       login_form_finder_(std::make_unique<ActorLoginFormFinder>(client_)),
       is_task_in_focus_(std::move(is_task_in_focus)),
       callback_(std::move(callback)) {}
@@ -124,8 +142,6 @@ void ActorLoginCredentialFiller::AttemptLogin(
 
   LogStatus(logger.get(), Logger::STRING_ACTOR_LOGIN_FILLING_ATTEMPT_STARTED);
 
-  CHECK(network::IsOriginPotentiallyTrustworthy(origin_));
-
   // The check is added separately in order to differentiate between having
   // no signin form on the page and filling being disallowed.
   if (!client_->IsFillingEnabled(origin_.GetURL())) {
@@ -138,27 +154,62 @@ void ActorLoginCredentialFiller::AttemptLogin(
     return;
   }
 
-  // Disallow filling a credential requested for a different primary main frame
-  // origin than the one it was requested for.
-  if (!origin_.IsSameOriginWith(credential_.request_origin)) {
-    LogStatus(logger.get(),
-              Logger::STRING_ACTOR_LOGIN_PRIMARY_MAIN_FRAME_ORIGIN_CHANGED);
-    BuildAttemptLoginOutcome(AttemptLoginOutcomeMqls::kInvalidCredential);
-    std::move(callback_).Run(LoginStatusResult::kErrorInvalidCredential);
+  // If the origin matches exactly, proceed immediately.
+  if (origin_.IsSameOriginWith(credential_.request_origin)) {
+    FetchEligibleForms(
+        base::BindOnce(&ActorLoginCredentialFiller::ProcessRetrievedForms,
+                       weak_ptr_factory_.GetWeakPtr()));
     return;
   }
 
-  CHECK(network::IsOriginPotentiallyTrustworthy(origin_));
+  // Otherwise, check if `origin_` and `credential_.request_origin` are
+  // strongly affiliated.
+  affiliations::AffiliationService* affiliation_service =
+      client_->GetAffiliationService();
+  if (base::FeatureList::IsEnabled(
+          password_manager::features::
+              kActorLoginPermissionsUseStrongAffiliations) &&
+      affiliation_service) {
+    affiliation_service->GetAffiliationsAndBranding(
+        affiliations::FacetURI::FromPotentiallyInvalidSpec(
+            credential_.request_origin.GetURL().spec()),
+        base::BindOnce(&ActorLoginCredentialFiller::OnAffiliationsReceived,
+                       weak_ptr_factory_.GetWeakPtr()));
+    return;
+  }
 
-  FetchEligibleForms(
-      base::BindOnce(&ActorLoginCredentialFiller::ProcessRetrievedForms,
-                     weak_ptr_factory_.GetWeakPtr()));
+  LogStatus(logger.get(),
+            Logger::STRING_ACTOR_LOGIN_PRIMARY_MAIN_FRAME_ORIGIN_CHANGED);
+  BuildAttemptLoginOutcome(AttemptLoginOutcomeMqls::kInvalidCredential);
+  std::move(callback_).Run(LoginStatusResult::kErrorInvalidCredential);
+}
+
+void ActorLoginCredentialFiller::OnAffiliationsReceived(
+    const std::vector<affiliations::Facet>& results,
+    bool success) {
+  std::unique_ptr<BrowserSavePasswordProgressLogger> logger =
+      GetLogger(client_);
+
+  if (success && IsAffiliatedOrigin(results, origin_)) {
+    LogStatus(logger.get(),
+              Logger::STRING_ACTOR_LOGIN_ATTEMPT_LOGIN_ON_AFFILIATED_ORIGIN);
+    FetchEligibleForms(
+        base::BindOnce(&ActorLoginCredentialFiller::ProcessRetrievedForms,
+                       weak_ptr_factory_.GetWeakPtr()));
+    return;
+  }
+
+  LogStatus(logger.get(),
+            Logger::STRING_ACTOR_LOGIN_PRIMARY_MAIN_FRAME_ORIGIN_CHANGED);
+  BuildAttemptLoginOutcome(AttemptLoginOutcomeMqls::kInvalidCredential);
+  std::move(callback_).Run(LoginStatusResult::kErrorInvalidCredential);
 }
 
 void ActorLoginCredentialFiller::FetchEligibleForms(
     base::OnceCallback<
         void(std::vector<password_manager::PasswordFormManager*>)>
         on_forms_retrieved_cb) {
+  CHECK(network::IsOriginPotentiallyTrustworthy(origin_));
   auto log_parsed_forms_details =
       [](base::WeakPtr<ActorLoginCredentialFiller> filler,
          FormFinderResult form_finder_result) {
@@ -330,6 +381,13 @@ void ActorLoginCredentialFiller::FillAllEligibleFields(
   }
 
   for (PasswordFormManager* manager : eligible_managers) {
+    if (manager->GetMetricsRecorder()) {
+      // Sets the time in which the attempt login started to compute
+      // how long it took until a successful login submission.
+      manager->GetMetricsRecorder()->SetActorLoginStartTime(
+          attempt_login_start_time_);
+    }
+
     bool stored_credential_belongs_to_manager = std::ranges::any_of(
         manager->GetBestMatches().begin(), manager->GetBestMatches().end(),
         [&stored_credential](const PasswordForm& best_match) {
@@ -434,11 +492,36 @@ void ActorLoginCredentialFiller::BuildAttemptLoginOutcome(
 void ActorLoginCredentialFiller::OnFillingDone() {
   LoginStatusResult result =
       GetEndFillingResult(username_filled_, password_filled_);
-  if (result == LoginStatusResult::kErrorNoFillableFields) {
-    BuildAttemptLoginOutcome(AttemptLoginOutcomeMqls::kNoFillableFields);
-  } else {
-    BuildAttemptLoginOutcome(AttemptLoginOutcomeMqls::kSuccess);
+  base::TimeDelta time_to_fill =
+      base::TimeTicks::Now() - attempt_login_start_time_;
+
+  switch (result) {
+    case LoginStatusResult::kSuccessUsernameAndPasswordFilled:
+      base::UmaHistogramMediumTimes(
+          "PasswordManager.ActorLogin.TimeToUsernameAndPasswordFilled",
+          time_to_fill);
+      BuildAttemptLoginOutcome(AttemptLoginOutcomeMqls::kSuccess);
+      break;
+    case LoginStatusResult::kSuccessUsernameFilled:
+      base::UmaHistogramMediumTimes(
+          "PasswordManager.ActorLogin.TimeToUsernameFilled", time_to_fill);
+      BuildAttemptLoginOutcome(AttemptLoginOutcomeMqls::kSuccess);
+      break;
+    case LoginStatusResult::kSuccessPasswordFilled:
+      base::UmaHistogramMediumTimes(
+          "PasswordManager.ActorLogin.TimeToPasswordFilled", time_to_fill);
+      BuildAttemptLoginOutcome(AttemptLoginOutcomeMqls::kSuccess);
+      break;
+    case LoginStatusResult::kErrorNoFillableFields:
+      BuildAttemptLoginOutcome(AttemptLoginOutcomeMqls::kNoFillableFields);
+      break;
+    case LoginStatusResult::kErrorInvalidCredential:
+    case LoginStatusResult::kErrorNoSigninForm:
+    case LoginStatusResult::kErrorDeviceReauthRequired:
+    case LoginStatusResult::kErrorDeviceReauthFailed:
+      NOTREACHED();
   }
+
   std::move(callback_).Run(result);
 }
 

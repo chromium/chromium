@@ -24,7 +24,7 @@ struct AppLaunchInfo;
 // written to the FullRestoreData file.
 struct COMPONENT_EXPORT(APP_RESTORE) AppRestoreData {
   AppRestoreData();
-  explicit AppRestoreData(base::Value::Dict&& value);
+  explicit AppRestoreData(base::DictValue&& value);
   explicit AppRestoreData(std::unique_ptr<AppLaunchInfo> app_launch_info);
 
   AppRestoreData(const AppRestoreData&) = delete;

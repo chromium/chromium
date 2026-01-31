@@ -53,16 +53,16 @@ class NearbyInternalsHttpHandler : public content::WebUIMessageHandler,
 
  private:
   // Message handler callback that initializes JavaScript.
-  void InitializeContents(const base::Value::List& args);
+  void InitializeContents(const base::ListValue& args);
 
   // Message handler callback that calls Update Device RPC.
-  void UpdateDevice(const base::Value::List& args);
+  void UpdateDevice(const base::ListValue& args);
 
   // Message handler callback that calls List Public Certificates RPC.
-  void ListPublicCertificates(const base::Value::List& args);
+  void ListPublicCertificates(const base::ListValue& args);
 
   // Message handler callback that calls List Contacts RPC.
-  void ListContactPeople(const base::Value::List& args);
+  void ListContactPeople(const base::ListValue& args);
 
   const raw_ptr<content::BrowserContext> context_;
   base::ScopedObservation<NearbyShareHttpNotifier,

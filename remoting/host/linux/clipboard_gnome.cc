@@ -4,11 +4,11 @@
 
 #include "remoting/host/linux/clipboard_gnome.h"
 
+#include <algorithm>
 #include <array>
 #include <string_view>
 #include <utility>
 
-#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "remoting/base/constants.h"
 #include "remoting/base/logging.h"
@@ -115,7 +115,7 @@ void ClipboardGnome::OnSelectionOwnerChanged(
         maybe_boxed_mime_types->TryDestructure(std::tie(mime_types));
     if (destructure_result.has_value()) {
       for (auto mime_type : mime_types) {
-        if (base::Contains(kTextMimeTypes, mime_type)) {
+        if (std::ranges::contains(kTextMimeTypes, mime_type)) {
           SelectionRead(mime_type);
           return;
         }
@@ -129,7 +129,7 @@ void ClipboardGnome::OnSelectionTransfer(
   const auto& [mime_type, serial] = args;
   HOST_LOG << "Got SelectionTransfer signal with mime-type: " << mime_type;
 
-  if (!base::Contains(kTextMimeTypes, mime_type)) {
+  if (!std::ranges::contains(kTextMimeTypes, mime_type)) {
     // SelectionTransfer request should be for a mime-type claimed by
     // SetSelection.
     LOG(ERROR) << "Unexpected mime-type requested: " << mime_type;

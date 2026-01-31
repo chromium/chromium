@@ -34,7 +34,6 @@ class OverlayCandidatesFlatland : public OverlayCandidatesOzone {
 }  // namespace
 
 OverlayManagerFlatland::OverlayManagerFlatland() {
-  // Fuchsia overlays rely on ShouldUseRealBuffersForPageFlipTest.
   allow_sync_and_real_buffer_page_flip_testing_ = true;
 }
 

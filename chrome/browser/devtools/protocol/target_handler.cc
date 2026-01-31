@@ -12,6 +12,7 @@
 #include "chrome/browser/devtools/devtools_browser_context_manager.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/browser_window.h"
@@ -20,6 +21,7 @@
 #include "chrome/browser/ui/browser_window/public/desktop_browser_window_capabilities.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_manager.h"
 #include "chrome/browser/ui/exclusive_access/fullscreen_controller.h"
+#include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/common/webui_url_constants.h"
 #include "content/public/browser/devtools_agent_host.h"
 #include "content/public/browser/web_contents.h"
@@ -43,13 +45,14 @@ NavigateParams CreateNavigateParams(Profile* profile,
   NavigateParams params(profile, url, transition);
   if (new_window) {
     params.disposition = WindowOpenDisposition::NEW_WINDOW;
-    if (background)
-      params.window_action = NavigateParams::WindowAction::kShowWindowInactive;
   } else {
     params.disposition = (background)
                              ? WindowOpenDisposition::NEW_BACKGROUND_TAB
                              : WindowOpenDisposition::NEW_FOREGROUND_TAB;
     params.browser = browser;
+  }
+  if (background) {
+    params.window_action = NavigateParams::WindowAction::kShowWindowInactive;
   }
   return params;
 }
@@ -101,6 +104,7 @@ protocol::Response TargetHandler::CreateTarget(
     std::optional<bool> background,
     std::optional<bool> for_tab,
     std::optional<bool> hidden,
+    std::optional<bool> focus,
     std::string* out_target_id) {
   if (hidden.value_or(false)) {
     // Rely on web contents implementation.
@@ -121,7 +125,14 @@ protocol::Response TargetHandler::CreateTarget(
   }
 
   bool create_new_window = new_window.value_or(false);
-  bool create_in_background = background.value_or(false);
+  const bool should_focus = focus.value_or(!background.value_or(false));
+  const bool create_in_background =
+      background.value_or(false) || (focus.has_value() && !focus.value());
+  if (should_focus && create_in_background) {
+    return protocol::Response::InvalidParams(
+        "Can't focus a target in the background. Use background=false "
+        "instead.");
+  }
   BrowserWindowInterface* target_browser_interface = nullptr;
 
   // Must find target_browser_interface if new_window not explicitly true.
@@ -235,8 +246,7 @@ protocol::Response TargetHandler::CreateTarget(
       NOTREACHED();
     }
   }
-
-  if (!create_in_background) {
+  if (should_focus) {
     params.navigated_or_inserted_contents->Focus();
   }
 

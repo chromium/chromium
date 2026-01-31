@@ -45,8 +45,8 @@ void SignInFatalErrorScreenHandler::DeclareLocalizedValues(
 }
 
 void SignInFatalErrorScreenHandler::Show(SignInFatalErrorScreen::Error error,
-                                         const base::Value::Dict& params) {
-  base::Value::Dict screen_data = params.Clone();
+                                         const base::DictValue& params) {
+  base::DictValue screen_data = params.Clone();
   screen_data.Set("errorState", base::Value(static_cast<int>(error)));
 
   ShowInWebUI(std::move(screen_data));

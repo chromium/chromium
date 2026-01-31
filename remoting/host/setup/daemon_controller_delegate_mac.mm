@@ -169,7 +169,7 @@ bool RunHelperAsRoot(const std::string& command,
   return false;
 }
 
-void ElevateAndSetConfig(base::Value::Dict config,
+void ElevateAndSetConfig(base::DictValue config,
                          DaemonController::CompletionCallback done) {
   // Find out if the host service is running.
   pid_t job_pid = base::mac::PIDForJob(remoting::kServiceName);
@@ -238,14 +238,14 @@ DaemonController::State DaemonControllerDelegateMac::GetState() {
   }
 }
 
-std::optional<base::Value::Dict> DaemonControllerDelegateMac::GetConfig() {
+std::optional<base::DictValue> DaemonControllerDelegateMac::GetConfig() {
   base::FilePath config_path(kHostConfigFilePath);
   auto host_config = HostConfigFromJsonFile(config_path);
   if (!host_config.has_value()) {
     return std::nullopt;
   }
 
-  base::Value::Dict config;
+  base::DictValue config;
   std::string* value = host_config->FindString(kHostIdConfigPath);
   if (value) {
     config.Set(kHostIdConfigPath, *value);
@@ -273,7 +273,7 @@ void DaemonControllerDelegateMac::CheckPermission(
 }
 
 void DaemonControllerDelegateMac::SetConfigAndStart(
-    base::Value::Dict config,
+    base::DictValue config,
     bool consent,
     DaemonController::CompletionCallback done) {
   config.Set(kUsageStatsConsentConfigPath, consent);
@@ -281,10 +281,10 @@ void DaemonControllerDelegateMac::SetConfigAndStart(
 }
 
 void DaemonControllerDelegateMac::UpdateConfig(
-    base::Value::Dict config,
+    base::DictValue config,
     DaemonController::CompletionCallback done) {
   base::FilePath config_file_path(kHostConfigFilePath);
-  std::optional<base::Value::Dict> host_config(
+  std::optional<base::DictValue> host_config(
       HostConfigFromJsonFile(config_file_path));
   if (!host_config.has_value()) {
     std::move(done).Run(DaemonController::RESULT_FAILED);
@@ -309,7 +309,7 @@ DaemonControllerDelegateMac::GetUsageStatsConsent() {
   consent.set_by_policy = false;
 
   base::FilePath config_file_path(kHostConfigFilePath);
-  std::optional<base::Value::Dict> host_config(
+  std::optional<base::DictValue> host_config(
       HostConfigFromJsonFile(config_file_path));
   if (host_config.has_value()) {
     std::optional<bool> host_config_value =

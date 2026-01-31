@@ -40,7 +40,7 @@ class AppActivity : public CastActivity {
               mojo::Remote<mojom::Debugger>& debugger);
   ~AppActivity() override;
 
-  void SendMediaStatusToClients(const base::Value::Dict& media_status,
+  void SendMediaStatusToClients(const base::DictValue& media_status,
                                 std::optional<int> request_id) override;
   void OnAppMessage(
       const openscreen::cast::proto::CastMessage& message) override;

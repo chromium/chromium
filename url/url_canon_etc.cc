@@ -9,6 +9,7 @@
 
 #include <string.h>
 
+#include "base/strings/span_printf.h"
 #include "url/third_party/mozilla/url_parse.h"
 #include "url/url_canon.h"
 #include "url/url_canon_internal.h"
@@ -42,9 +43,11 @@ std::basic_string_view<CHAR> DoRemoveUrlWhitespace(
     // memchr is so fast, it's unlikely to be relevant.)
     const CHAR* data = input.data();
     size_t input_len = input.length();
-    found_whitespace = UNSAFE_TODO(memchr(data, '\n', input_len)) != nullptr ||
-                       UNSAFE_TODO(memchr(data, '\r', input_len)) != nullptr ||
-                       UNSAFE_TODO(memchr(data, '\t', input_len)) != nullptr;
+    // SAFETY: `data` and `input_len` are taken from a single string_view.
+    found_whitespace =
+        UNSAFE_BUFFERS(memchr(data, '\n', input_len) != nullptr ||
+                       memchr(data, '\r', input_len) != nullptr ||
+                       memchr(data, '\t', input_len) != nullptr);
   } else {
     for (const CHAR ch : input) {
       if (!IsRemovableURLWhitespace(ch)) {
@@ -213,11 +216,6 @@ bool DoUserInfo(std::optional<std::basic_string_view<CHAR>> username,
   return true;
 }
 
-// Helper functions for converting port integers to strings.
-inline void WritePortInt(char* output, int output_len, int port) {
-  _itoa_s(port, output, output_len, 10);
-}
-
 // This function will prepend the colon if there will be a port.
 template <typename CHAR, typename UCHAR>
 bool DoPort(std::optional<std::basic_string_view<CHAR>> port_view,
@@ -248,14 +246,12 @@ bool DoPort(std::optional<std::basic_string_view<CHAR>> port_view,
   // the Parsed::ExtractPort will have made sure the integer is in range.
   const int buf_size = 6;
   std::array<char, buf_size> buf;
-  WritePortInt(buf.data(), buf_size, port_num);
+  int port_len = base::SpanPrintf(buf, "%d", port_num);
 
   // Append the port number to the output, preceded by a colon.
   output->push_back(':');
   out_port->begin = output->length();
-  for (int i = 0; i < buf_size && buf[i]; i++)
-    output->push_back(buf[i]);
-
+  output->Append(std::string_view(buf.data(), port_len));
   out_port->len = output->length() - out_port->begin;
   return true;
 }

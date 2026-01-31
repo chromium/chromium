@@ -104,7 +104,7 @@ TEST_F(APIRequestHandlerTest, AddRequestAndCompleteRequestTest) {
   v8::Local<v8::Function> function = FunctionFromString(context, kEchoArgs);
   ASSERT_FALSE(function.IsEmpty());
 
-  request_handler->StartRequest(context, kMethod, base::Value::List(),
+  request_handler->StartRequest(context, kMethod, base::ListValue(),
                                 binding::AsyncResponseType::kCallback, function,
                                 v8::Local<v8::Function>(),
                                 binding::ResultModifierFunction());
@@ -123,12 +123,12 @@ TEST_F(APIRequestHandlerTest, AddRequestAndCompleteRequestTest) {
   EXPECT_TRUE(request_handler->GetPendingRequestIdsForTesting().empty());
 
   request_handler->StartRequest(
-      context, kMethod, base::Value::List(), binding::AsyncResponseType::kNone,
+      context, kMethod, base::ListValue(), binding::AsyncResponseType::kNone,
       v8::Local<v8::Function>(), v8::Local<v8::Function>(),
       binding::ResultModifierFunction());
   request_id = request_handler->last_sent_request_id();
   EXPECT_NE(-1, request_id);
-  request_handler->CompleteRequest(request_id, base::Value::List(),
+  request_handler->CompleteRequest(request_id, base::ListValue(),
                                    std::string());
 }
 
@@ -142,7 +142,7 @@ TEST_F(APIRequestHandlerTest, InvalidRequestsTest) {
   v8::Local<v8::Function> function = FunctionFromString(context, kEchoArgs);
   ASSERT_FALSE(function.IsEmpty());
 
-  request_handler->StartRequest(context, kMethod, base::Value::List(),
+  request_handler->StartRequest(context, kMethod, base::ListValue(),
                                 binding::AsyncResponseType::kCallback, function,
                                 v8::Local<v8::Function>(),
                                 binding::ResultModifierFunction());
@@ -178,12 +178,12 @@ TEST_F(APIRequestHandlerTest, MultipleRequestsAndContexts) {
   v8::Local<v8::Function> function_b = FunctionFromString(
       context_b, "(function(res) { this.result = res + 'beta'; })");
 
-  request_handler->StartRequest(context_a, kMethod, base::Value::List(),
+  request_handler->StartRequest(context_a, kMethod, base::ListValue(),
                                 binding::AsyncResponseType::kCallback,
                                 function_a, v8::Local<v8::Function>(),
                                 binding::ResultModifierFunction());
   int request_a = request_handler->last_sent_request_id();
-  request_handler->StartRequest(context_b, kMethod, base::Value::List(),
+  request_handler->StartRequest(context_b, kMethod, base::ListValue(),
                                 binding::AsyncResponseType::kCallback,
                                 function_b, v8::Local<v8::Function>(),
                                 binding::ResultModifierFunction());
@@ -224,7 +224,7 @@ TEST_F(APIRequestHandlerTest, CustomCallbackArguments) {
   ASSERT_FALSE(callback.IsEmpty());
   ASSERT_FALSE(custom_callback.IsEmpty());
 
-  request_handler->StartRequest(context, "method", base::Value::List(),
+  request_handler->StartRequest(context, "method", base::ListValue(),
                                 binding::AsyncResponseType::kCallback, callback,
                                 custom_callback,
                                 binding::ResultModifierFunction());
@@ -297,7 +297,7 @@ TEST_F(APIRequestHandlerTest, CustomCallbackWithErrorInExtensionCallback) {
   ASSERT_FALSE(callback_throwing_error.IsEmpty());
   ASSERT_FALSE(custom_callback.IsEmpty());
 
-  request_handler.StartRequest(context, "method", base::Value::List(),
+  request_handler.StartRequest(context, "method", base::ListValue(),
                                binding::AsyncResponseType::kCallback,
                                callback_throwing_error, custom_callback,
                                binding::ResultModifierFunction());
@@ -308,7 +308,7 @@ TEST_F(APIRequestHandlerTest, CustomCallbackWithErrorInExtensionCallback) {
   v8::TryCatch try_catch(isolate());
   {
     TestJSRunner::AllowErrors allow_errors;
-    request_handler.CompleteRequest(request_id, base::Value::List(),
+    request_handler.CompleteRequest(request_id, base::ListValue(),
                                     std::string());
   }
 
@@ -341,7 +341,7 @@ TEST_F(APIRequestHandlerTest, CustomCallbackPromiseBased) {
   ASSERT_FALSE(custom_callback.IsEmpty());
 
   v8::Local<v8::Promise> promise = request_handler->StartRequest(
-      context, "method", base::Value::List(),
+      context, "method", base::ListValue(),
       binding::AsyncResponseType::kPromise, v8::Local<v8::Function>(),
       custom_callback, binding::ResultModifierFunction());
   ASSERT_FALSE(promise.IsEmpty());
@@ -392,13 +392,13 @@ TEST_F(APIRequestHandlerTest, CustomCallbackArgumentsWithEmptyCallback) {
 
   v8::Local<v8::Function> empty_callback;
   request_handler->StartRequest(
-      context, "method", base::Value::List(), binding::AsyncResponseType::kNone,
+      context, "method", base::ListValue(), binding::AsyncResponseType::kNone,
       empty_callback, custom_callback, binding::ResultModifierFunction());
   int request_id = request_handler->last_sent_request_id();
   EXPECT_THAT(request_handler->GetPendingRequestIdsForTesting(),
               testing::UnorderedElementsAre(request_id));
 
-  request_handler->CompleteRequest(request_id, base::Value::List(),
+  request_handler->CompleteRequest(request_id, base::ListValue(),
                                    std::string());
 
   EXPECT_TRUE(did_run_js());
@@ -445,7 +445,7 @@ TEST_F(APIRequestHandlerTest, ResultModifier) {
       context, "(function(arg1, arg2) {this.arg1 = arg1; this.arg2 = arg2});");
   ASSERT_FALSE(callback.IsEmpty());
 
-  request_handler->StartRequest(context, "method", base::Value::List(),
+  request_handler->StartRequest(context, "method", base::ListValue(),
                                 binding::AsyncResponseType::kCallback, callback,
                                 v8::Local<v8::Function>(),
                                 std::move(result_modifier));
@@ -486,7 +486,7 @@ TEST_F(APIRequestHandlerTest, UserGestureTest) {
       function_template->GetFunction(context).ToLocalChecked();
 
   // Try first without a user gesture.
-  request_handler->StartRequest(context, kMethod, base::Value::List(),
+  request_handler->StartRequest(context, kMethod, base::ListValue(),
                                 binding::AsyncResponseType::kCallback,
                                 v8_callback, v8::Local<v8::Function>(),
                                 binding::ResultModifierFunction());
@@ -508,7 +508,7 @@ TEST_F(APIRequestHandlerTest, UserGestureTest) {
 
   EXPECT_TRUE(interaction_provider()->HasActiveInteraction(context));
 
-  request_handler->StartRequest(context, kMethod, base::Value::List(),
+  request_handler->StartRequest(context, kMethod, base::ListValue(),
                                 binding::AsyncResponseType::kCallback,
                                 v8_callback, v8::Local<v8::Function>(),
                                 binding::ResultModifierFunction());
@@ -557,12 +557,12 @@ TEST_F(APIRequestHandlerTest, SettingLastError) {
     // console or exposed to the callback.
     v8::Local<v8::Function> callback =
         FunctionFromString(context, kReportExposedLastError);
-    request_handler.StartRequest(context, kMethod, base::Value::List(),
+    request_handler.StartRequest(context, kMethod, base::ListValue(),
                                  binding::AsyncResponseType::kCallback,
                                  callback, v8::Local<v8::Function>(),
                                  binding::ResultModifierFunction());
     int request_id = request_handler.last_sent_request_id();
-    request_handler.CompleteRequest(request_id, base::Value::List(),
+    request_handler.CompleteRequest(request_id, base::ListValue(),
                                     std::string());
     EXPECT_FALSE(logged_error);
     EXPECT_EQ("undefined", get_exposed_error());
@@ -575,12 +575,12 @@ TEST_F(APIRequestHandlerTest, SettingLastError) {
     // exposed to the callback).
     v8::Local<v8::Function> callback =
         FunctionFromString(context, kReportExposedLastError);
-    request_handler.StartRequest(context, kMethod, base::Value::List(),
+    request_handler.StartRequest(context, kMethod, base::ListValue(),
                                  binding::AsyncResponseType::kCallback,
                                  callback, v8::Local<v8::Function>(),
                                  binding::ResultModifierFunction());
     int request_id = request_handler.last_sent_request_id();
-    request_handler.CompleteRequest(request_id, base::Value::List(),
+    request_handler.CompleteRequest(request_id, base::ListValue(),
                                     "some error");
     EXPECT_FALSE(logged_error);
     EXPECT_EQ("\"some error\"", get_exposed_error());
@@ -592,12 +592,12 @@ TEST_F(APIRequestHandlerTest, SettingLastError) {
     // callback. The error should be logged.
     v8::Local<v8::Function> callback =
         FunctionFromString(context, "(function() {})");
-    request_handler.StartRequest(context, kMethod, base::Value::List(),
+    request_handler.StartRequest(context, kMethod, base::ListValue(),
                                  binding::AsyncResponseType::kCallback,
                                  callback, v8::Local<v8::Function>(),
                                  binding::ResultModifierFunction());
     int request_id = request_handler.last_sent_request_id();
-    request_handler.CompleteRequest(request_id, base::Value::List(),
+    request_handler.CompleteRequest(request_id, base::ListValue(),
                                     "some error");
     ASSERT_TRUE(logged_error);
     EXPECT_EQ("Unchecked runtime.lastError: some error", *logged_error);
@@ -609,12 +609,12 @@ TEST_F(APIRequestHandlerTest, SettingLastError) {
     // and no author-script-provided callback. The error should be logged.
     v8::Local<v8::Function> custom_callback =
         FunctionFromString(context, "(function() {})");
-    request_handler.StartRequest(context, kMethod, base::Value::List(),
+    request_handler.StartRequest(context, kMethod, base::ListValue(),
                                  binding::AsyncResponseType::kNone,
                                  v8::Local<v8::Function>(), custom_callback,
                                  binding::ResultModifierFunction());
     int request_id = request_handler.last_sent_request_id();
-    request_handler.CompleteRequest(request_id, base::Value::List(),
+    request_handler.CompleteRequest(request_id, base::ListValue(),
                                     "some error");
     ASSERT_TRUE(logged_error);
     EXPECT_EQ("Unchecked runtime.lastError: some error", *logged_error);
@@ -625,11 +625,11 @@ TEST_F(APIRequestHandlerTest, SettingLastError) {
     // Test a function call resulting in an error that does not have an
     // associated callback callback. The error should be logged.
     request_handler.StartRequest(
-        context, kMethod, base::Value::List(),
-        binding::AsyncResponseType::kNone, v8::Local<v8::Function>(),
-        v8::Local<v8::Function>(), binding::ResultModifierFunction());
+        context, kMethod, base::ListValue(), binding::AsyncResponseType::kNone,
+        v8::Local<v8::Function>(), v8::Local<v8::Function>(),
+        binding::ResultModifierFunction());
     int request_id = request_handler.last_sent_request_id();
-    request_handler.CompleteRequest(request_id, base::Value::List(),
+    request_handler.CompleteRequest(request_id, base::ListValue(),
                                     "some error");
     ASSERT_TRUE(logged_error);
     EXPECT_EQ("Unchecked runtime.lastError: some error", *logged_error);
@@ -651,12 +651,12 @@ TEST_F(APIRequestHandlerTest, SettingLastError) {
     };
     v8::Local<v8::Function> callback =
         FunctionFromString(context, kReportExposedLastError);
-    request_handler.StartRequest(context, kMethod, base::Value::List(),
+    request_handler.StartRequest(context, kMethod, base::ListValue(),
                                  binding::AsyncResponseType::kCallback,
                                  callback, v8::Local<v8::Function>(),
                                  base::BindLambdaForTesting(result_modifier));
     int request_id = request_handler.last_sent_request_id();
-    request_handler.CompleteRequest(request_id, base::Value::List(),
+    request_handler.CompleteRequest(request_id, base::ListValue(),
                                     "some error");
     EXPECT_FALSE(logged_error);
     EXPECT_EQ("\"some error\"", get_exposed_error());
@@ -821,7 +821,7 @@ TEST_F(APIRequestHandlerTest, ThrowExceptionInCallback) {
 
   {
     TestJSRunner::AllowErrors allow_errors;
-    request_handler.CompleteRequest(request_id, base::Value::List(),
+    request_handler.CompleteRequest(request_id, base::ListValue(),
                                     std::string());
   }
   // |outer_try_catch| should not have caught an error. This is important to not
@@ -843,9 +843,9 @@ TEST_F(APIRequestHandlerTest, PromiseBasedRequests_Fulfilled) {
   EXPECT_TRUE(request_handler->GetPendingRequestIdsForTesting().empty());
 
   v8::Local<v8::Promise> promise = request_handler->StartRequest(
-      context, kMethod, base::Value::List(),
-      binding::AsyncResponseType::kPromise, v8::Local<v8::Function>(),
-      v8::Local<v8::Function>(), binding::ResultModifierFunction());
+      context, kMethod, base::ListValue(), binding::AsyncResponseType::kPromise,
+      v8::Local<v8::Function>(), v8::Local<v8::Function>(),
+      binding::ResultModifierFunction());
   ASSERT_FALSE(promise.IsEmpty());
 
   int request_id = request_handler->last_sent_request_id();
@@ -873,9 +873,9 @@ TEST_F(APIRequestHandlerTest, PromiseBasedRequests_Rejected) {
   EXPECT_TRUE(request_handler->GetPendingRequestIdsForTesting().empty());
 
   v8::Local<v8::Promise> promise = request_handler->StartRequest(
-      context, kMethod, base::Value::List(),
-      binding::AsyncResponseType::kPromise, v8::Local<v8::Function>(),
-      v8::Local<v8::Function>(), binding::ResultModifierFunction());
+      context, kMethod, base::ListValue(), binding::AsyncResponseType::kPromise,
+      v8::Local<v8::Function>(), v8::Local<v8::Function>(),
+      binding::ResultModifierFunction());
   ASSERT_FALSE(promise.IsEmpty());
 
   int request_id = request_handler->last_sent_request_id();
@@ -886,7 +886,7 @@ TEST_F(APIRequestHandlerTest, PromiseBasedRequests_Rejected) {
   EXPECT_EQ(v8::Promise::kPending, promise->State());
 
   constexpr char kError[] = "Something went wrong!";
-  request_handler->CompleteRequest(request_id, base::Value::List(), kError);
+  request_handler->CompleteRequest(request_id, base::ListValue(), kError);
 
   ASSERT_EQ(v8::Promise::kRejected, promise->State());
   v8::Local<v8::Value> result = promise->Result();

@@ -4,10 +4,9 @@
 
 import type {CrButtonElement} from '//resources/cr_elements/cr_button/cr_button.js';
 import type {CrCheckboxElement} from '//resources/cr_elements/cr_checkbox/cr_checkbox.js';
-import {expect} from '//webui-test/chai.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
-import type {FilterSettings} from 'chrome://updater/event_list/filter_bar.js';
 import {FilterBarElement} from 'chrome://updater/event_list/filter_bar.js';
+import {assertDeepEquals, assertEquals, assertNotEquals, assertStringContains, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 suite('FilterBarElement', () => {
@@ -41,19 +40,19 @@ suite('FilterBarElement', () => {
   });
 
   test('renders correctly', () => {
-    expect(filterBar instanceof HTMLElement).to.be.true;
-    expect(filterBar.tagName).to.equal('FILTER-BAR');
+    assertTrue(filterBar instanceof HTMLElement);
+    assertEquals('FILTER-BAR', filterBar.tagName);
   });
 
   test('initializes with default filters', () => {
     const chips = filterBar.shadowRoot.querySelectorAll('.chip');
-    expect(chips.length).to.equal(3);
-    expect(chips[0]!.textContent)
-        .to.contain('App: Google Chrome, Google Chrome Beta');
-    expect(chips[1]!.textContent)
-        .to.contain('Event Type: Install, Update, Uninstall');
-    expect(chips[2]!.textContent)
-        .to.contain('Update Outcome: Updated, Update Error');
+    assertEquals(3, chips.length);
+    assertStringContains(
+        chips[0]!.textContent, 'App: Google Chrome, Google Chrome Beta');
+    assertStringContains(
+        chips[1]!.textContent, 'Event Type: Install, Update, Uninstall');
+    assertStringContains(
+        chips[2]!.textContent, 'Update Outcome: Updated, Update Error');
   });
 
   test('opens filter menu when add filter button is clicked', async () => {
@@ -61,23 +60,11 @@ suite('FilterBarElement', () => {
         filterBar.shadowRoot.getElementById('add-filter-button')!;
     addFilterButton.click();
     await microtasksFinished();
-    const filterDialog = filterBar.shadowRoot.querySelector('filter-dialog');
-    expect(filterDialog).to.not.be.null;
-    expect(
-        filterDialog!.shadowRoot.querySelectorAll('.filter-menu-item').length)
-        .to.equal(4);
-  });
+    const filterType = filterBar.shadowRoot.querySelector('type-dialog');
+    assertNotEquals(null, filterType);
 
-  test('closes filter menu when Escape is pressed', async () => {
-    const addFilterButton =
-        filterBar.shadowRoot.getElementById('add-filter-button')!;
-    addFilterButton.click();
-    await microtasksFinished();
-    const filterDialog = filterBar.shadowRoot.querySelector('filter-dialog')!
-                             .shadowRoot.querySelector('div')!;
-    filterDialog.dispatchEvent(new KeyboardEvent('keydown', {key: 'Escape'}));
-    await microtasksFinished();
-    expect(filterBar.shadowRoot.querySelector('filter-dialog')).to.be.null;
+    assertEquals(
+        5, filterType!.shadowRoot.querySelectorAll('.filter-menu-item').length);
   });
 
   test('closes filter menu when clicking outside', async () => {
@@ -85,29 +72,43 @@ suite('FilterBarElement', () => {
         filterBar.shadowRoot.getElementById('add-filter-button')!;
     addFilterButton.click();
     await microtasksFinished();
-    expect(filterBar.shadowRoot.querySelector('filter-dialog')).to.not.be.null;
-    document.body.click();
+
+    const filterType = filterBar.shadowRoot.querySelector('type-dialog');
+    assertNotEquals(null, filterType);
+
+    // Click outside of the dialog.
+    filterBar.click();
+
     await microtasksFinished();
-    expect(filterBar.shadowRoot.querySelector('filter-dialog')).to.be.null;
+    assertEquals(null, filterBar.shadowRoot.querySelector('type-dialog'));
   });
 
   async function addFilter(
       filterTypeIndex: number,
-      itemSelection: () => Promise<void>,
+      itemSelection: (content: HTMLElement) => Promise<void>,
   ) {
     const addFilterButton =
         filterBar.shadowRoot.getElementById('add-filter-button')!;
     addFilterButton.click();
     await microtasksFinished();
-    const filterDialog = filterBar.shadowRoot.querySelector('filter-dialog')!;
-    const filterMenuItems =
-        filterDialog.shadowRoot.querySelectorAll<HTMLElement>(
-            '.filter-menu-item');
+    const filterType = filterBar.shadowRoot.querySelector('type-dialog')!;
+    const filterMenuItems = filterType.shadowRoot.querySelectorAll<HTMLElement>(
+        '.filter-menu-item');
     filterMenuItems[filterTypeIndex]!.click();
     await microtasksFinished();
-    await itemSelection();
-    const applyButton = filterDialog.shadowRoot.querySelector<CrButtonElement>(
-        '.filter-menu-footer .action-button');
+
+    const content = filterBar.shadowRoot.querySelector<HTMLElement>(
+        'app-dialog, event-dialog, outcome-dialog, scope-dialog, date-dialog')!;
+    assertNotEquals(null, content);
+
+    await itemSelection(content);
+    const footerElement =
+        content.shadowRoot?.querySelector('filter-dialog-footer');
+    assertNotEquals(undefined, footerElement);
+    assertNotEquals(null, footerElement);
+    const applyButton =
+        footerElement!.shadowRoot?.querySelector<CrButtonElement>(
+            '.action-button');
     applyButton!.click();
     await microtasksFinished();
   }
@@ -123,213 +124,196 @@ suite('FilterBarElement', () => {
 
   test('can add and remove app filter', async () => {
     await clearFilters();
-    expect(filterBar.shadowRoot.querySelectorAll('.chip').length).to.equal(0);
+    assertEquals(0, filterBar.shadowRoot.querySelectorAll('.chip').length);
 
-    let capturedEvent: CustomEvent<FilterSettings>|null = null;
+    let capturedEvent: Event|null = null;
     const onFiltersChanged = (e: Event) => {
-      capturedEvent = e as CustomEvent<FilterSettings>;
+      capturedEvent = e;
     };
     filterBar.addEventListener('filters-changed', onFiltersChanged);
 
-    await addFilter(0, async () => {
-      const filterDialog = filterBar.shadowRoot.querySelector('filter-dialog')!;
-      filterDialog.shadowRoot.querySelector('cr-checkbox')!.click();
-      await microtasksFinished();
+    await addFilter(0, async (content) => {
+      assertEquals('APP-DIALOG', content.tagName);
+      content.shadowRoot!.querySelector<HTMLElement>('cr-checkbox')!.click();
       await microtasksFinished();
     });
 
-    expect(filterBar.filterSettings.activeAppFilters.size).to.equal(1);
-
-    expect(capturedEvent).to.not.be.null;
-    expect(capturedEvent!.detail).to.deep.equal(filterBar.filterSettings);
-    expect(capturedEvent!.bubbles).to.be.true;
-    expect(capturedEvent!.composed).to.be.true;
+    assertNotEquals(null, capturedEvent);
+    assertEquals(1, filterBar.filterSettings.apps.size);
+    assertTrue(capturedEvent!.bubbles);
+    assertTrue(capturedEvent!.composed);
 
     const chip = filterBar.shadowRoot.querySelector('.chip')!;
-    const removeButton = chip.querySelector('cr-icon-button')!;
+    const removeButton = chip.querySelector<HTMLElement>('cr-icon-button')!;
     removeButton.click();
     await microtasksFinished();
-    expect(filterBar.filterSettings.activeAppFilters.size).to.equal(0);
+    assertEquals(0, filterBar.filterSettings.apps.size);
   });
 
   test('can add and remove event type filter', async () => {
     await clearFilters();
-    await addFilter(1, async () => {
-      const filterDialog = filterBar.shadowRoot.querySelector('filter-dialog')!;
-      const checkbox = filterDialog.shadowRoot.querySelector<CrCheckboxElement>(
-          'cr-checkbox');
+    await addFilter(1, async (content) => {
+      assertEquals('EVENT-DIALOG', content.tagName);
+      const checkbox =
+          content.shadowRoot!.querySelector<CrCheckboxElement>('cr-checkbox');
       checkbox!.click();
       await microtasksFinished();
-      await microtasksFinished();
     });
-    expect(filterBar.filterSettings.activeEventTypeFilters.size).to.equal(1);
-    expect(
-        filterBar.filterSettings.activeEventTypeFilters.has('UPDATE'),
-        )
-        .to.be.true;
+    assertEquals(1, filterBar.filterSettings.eventTypes.size);
+    assertTrue(filterBar.filterSettings.eventTypes.has('UPDATE'));
   });
 
   test('can add and remove update outcome filter', async () => {
     await clearFilters();
-    await addFilter(2, async () => {
-      const filterDialog = filterBar.shadowRoot.querySelector('filter-dialog')!;
-      const checkbox = filterDialog.shadowRoot.querySelector<CrCheckboxElement>(
-          'cr-checkbox');
+    await addFilter(2, async (content) => {
+      assertEquals('OUTCOME-DIALOG', content.tagName);
+      const checkbox =
+          content.shadowRoot!.querySelector<CrCheckboxElement>('cr-checkbox');
       checkbox!.click();
       await microtasksFinished();
+    });
+    assertEquals(1, filterBar.filterSettings.updateOutcomes.size);
+    assertTrue(filterBar.filterSettings.updateOutcomes.has('UPDATED'));
+  });
+
+  test('can add and remove scope filter', async () => {
+    await clearFilters();
+    await addFilter(3, async (content) => {
+      assertEquals('SCOPE-DIALOG', content.tagName);
+      const checkbox =
+          content.shadowRoot!.querySelector<CrCheckboxElement>('cr-checkbox');
+      checkbox!.click();
       await microtasksFinished();
     });
-    expect(filterBar.filterSettings.activeUpdateOutcomeFilters.size)
-        .to.equal(1);
-    expect(filterBar.filterSettings.activeUpdateOutcomeFilters.has('UPDATED'))
-        .to.be.true;
+    assertEquals(1, filterBar.filterSettings.scopes.size);
+    assertTrue(filterBar.filterSettings.scopes.has('USER'));
   });
 
   test('can add and remove date filter', async () => {
     await clearFilters();
-    await addFilter(3, async () => {
-      const filterDialog = filterBar.shadowRoot.querySelector('filter-dialog')!;
+    await addFilter(4, async (content) => {
+      assertEquals('DATE-DIALOG', content.tagName);
       const startDateInput =
-          filterDialog.shadowRoot.querySelector<HTMLInputElement>(
-              '#start-date');
+          content.shadowRoot!.querySelector<HTMLInputElement>('#start-date');
       startDateInput!.valueAsNumber = new Date('2025-01-01T00:00').getTime();
       startDateInput!.dispatchEvent(new Event('input'));
       await microtasksFinished();
-      await microtasksFinished();
     });
-    expect(filterBar.filterSettings.startDateFilter)
-        .to.deep.equal(
-            new Date('2025-01-01T00:00'),
-        );
+    assertDeepEquals(
+        new Date('2025-01-01T00:00'), filterBar.filterSettings.startDate);
   });
 
   test('clears all filters when clear button is clicked', async () => {
     filterBar.filterSettings = {
-      activeAppFilters: new Set(['Google Chrome']),
-      activeEventTypeFilters: new Set(['INSTALL']),
-      activeUpdateOutcomeFilters: new Set(['UPDATED']),
-      startDateFilter: new Date(),
-      endDateFilter: new Date(),
+      apps: new Set(['Google Chrome']),
+      eventTypes: new Set(['INSTALL']),
+      updateOutcomes: new Set(['UPDATED']),
+      scopes: new Set(['USER']),
+      startDate: new Date(),
+      endDate: new Date(),
     };
     await microtasksFinished();
     await clearFilters();
-    expect(filterBar.filterSettings.activeAppFilters.size).to.equal(0);
-    expect(filterBar.filterSettings.activeEventTypeFilters.size).to.equal(0);
-    expect(filterBar.filterSettings.activeUpdateOutcomeFilters.size)
-        .to.equal(0);
-    expect(filterBar.filterSettings.startDateFilter).to.be.null;
-    expect(filterBar.filterSettings.endDateFilter).to.be.null;
-    expect(filterBar.shadowRoot.getElementById('clear-filters-button'))
-        .to.be.null;
+    assertEquals(0, filterBar.filterSettings.apps.size);
+    assertEquals(0, filterBar.filterSettings.eventTypes.size);
+    assertEquals(0, filterBar.filterSettings.updateOutcomes.size);
+    assertEquals(0, filterBar.filterSettings.scopes.size);
+    assertEquals(null, filterBar.filterSettings.startDate);
+    assertEquals(null, filterBar.filterSettings.endDate);
+    assertEquals(
+        null, filterBar.shadowRoot.getElementById('clear-filters-button'));
   });
 
   test('renders filter chips correctly', async () => {
     filterBar.filterSettings = {
-      activeAppFilters: new Set(['App1', 'App2']),
-      activeEventTypeFilters: new Set(['INSTALL', 'UPDATE']),
-      activeUpdateOutcomeFilters: new Set(['UPDATED']),
-      startDateFilter: new Date('2025-01-01T00:00'),
-      endDateFilter: new Date('2025-01-02T00:00'),
+      apps: new Set(['App1', 'App2']),
+      eventTypes: new Set(['INSTALL', 'UPDATE']),
+      updateOutcomes: new Set(['UPDATED']),
+      scopes: new Set(['USER']),
+      startDate: new Date('2025-01-01T00:00'),
+      endDate: new Date('2025-01-02T00:00'),
     };
     await microtasksFinished();
     const chips = filterBar.shadowRoot.querySelectorAll('.chip');
-    expect(chips.length).to.equal(4);
-    expect(chips[0]!.textContent).to.contain('App: App1, App2');
-    expect(chips[1]!.textContent).to.contain('Event Type: Install, Update');
-    expect(chips[2]!.textContent).to.contain('Update Outcome: Updated');
-    expect(chips[3]!.textContent).to.contain('01/01/2025');
+    assertEquals(5, chips.length);
+    assertStringContains(chips[0]!.textContent, 'App: App1, App2');
+    assertStringContains(chips[1]!.textContent, 'Event Type: Install, Update');
+    assertStringContains(chips[2]!.textContent, 'Update Outcome: Updated');
+    assertStringContains(
+        chips[3]!.textContent, 'Updater Scope: Per-user updater');
+    assertStringContains(chips[4]!.textContent, '01/01/2025');
   });
 
   test('edits date filter when date chip is clicked', async () => {
     filterBar.filterSettings = {
-      activeAppFilters: new Set(),
-      activeEventTypeFilters: new Set(),
-      activeUpdateOutcomeFilters: new Set(),
-      startDateFilter: new Date('2025-01-01T00:00'),
-      endDateFilter: null,
+      apps: new Set(),
+      eventTypes: new Set(),
+      updateOutcomes: new Set(),
+      scopes: new Set(),
+      startDate: new Date('2025-01-01T00:00'),
+      endDate: null,
     };
     await microtasksFinished();
     const chip = filterBar.shadowRoot.querySelector<HTMLElement>('.chip')!;
     chip.click();
     await microtasksFinished();
-    const filterDialog = filterBar.shadowRoot.querySelector('filter-dialog')!;
-    expect(filterDialog).to.not.be.null;
-    expect(
-        filterDialog.shadowRoot.querySelector<HTMLInputElement>('#start-date'),
-        )
-        .to.not.be.null;
+    const filterDate = filterBar.shadowRoot.querySelector('date-dialog');
+    assertNotEquals(null, filterDate);
+    assertNotEquals(
+        null,
+        filterDate!.shadowRoot.querySelector<HTMLInputElement>('#start-date'));
   });
 
   test('removes date filter when remove button is clicked', async () => {
     filterBar.filterSettings = {
-      activeAppFilters: new Set(),
-      activeEventTypeFilters: new Set(),
-      activeUpdateOutcomeFilters: new Set(),
-      startDateFilter: new Date('2025-01-01T00:00'),
-      endDateFilter: null,
+      apps: new Set(),
+      eventTypes: new Set(),
+      updateOutcomes: new Set(),
+      scopes: new Set(),
+      startDate: new Date('2025-01-01T00:00'),
+      endDate: null,
     };
     await microtasksFinished();
     const chip = filterBar.shadowRoot.querySelector('.chip')!;
-    const removeButton = chip.querySelector('cr-icon-button')!;
+    const removeButton = chip.querySelector<HTMLElement>('cr-icon-button')!;
     removeButton.click();
     await microtasksFinished();
-    expect(filterBar.filterSettings.startDateFilter).to.be.null;
+    assertEquals(null, filterBar.filterSettings.startDate);
   });
 
   test('cancel button closes dialog and does not apply changes', async () => {
     await clearFilters();
-    expect(filterBar.filterSettings.activeAppFilters.size).to.equal(0);
+    assertEquals(0, filterBar.filterSettings.apps.size);
 
     const addFilterButton =
         filterBar.shadowRoot.getElementById('add-filter-button')!;
     addFilterButton.click();
     await microtasksFinished();
 
-    const filterDialog = filterBar.shadowRoot.querySelector('filter-dialog')!;
-    const filterMenuItems =
-        filterDialog.shadowRoot.querySelectorAll<HTMLElement>(
-            '.filter-menu-item');
+    const filterType = filterBar.shadowRoot.querySelector('type-dialog')!;
+    const filterMenuItems = filterType.shadowRoot.querySelectorAll<HTMLElement>(
+        '.filter-menu-item');
     filterMenuItems[0]!.click();  // Open app filter
     await microtasksFinished();
 
+    const filterApp = filterBar.shadowRoot.querySelector('app-dialog')!;
     // Select an app
-    filterDialog.shadowRoot.querySelector<CrCheckboxElement>(
-                               'cr-checkbox')!.click();
+    filterApp.shadowRoot.querySelector<HTMLElement>('cr-checkbox')!.click();
     await microtasksFinished();
 
     // Click cancel button
-    const cancelButton = filterDialog.shadowRoot.querySelector<CrButtonElement>(
-        '.filter-menu-footer .cancel-button');
+    const footerElement =
+        filterApp.shadowRoot?.querySelector('filter-dialog-footer');
+    assertNotEquals(undefined, footerElement);
+    assertNotEquals(null, footerElement);
+    const cancelButton =
+        footerElement!.shadowRoot?.querySelector<CrButtonElement>(
+            '.cancel-button');
     cancelButton!.click();
     await microtasksFinished();
 
     // Expect dialog to be closed and no changes applied to filterSettings
-    expect(filterBar.shadowRoot.querySelector('filter-dialog')).to.be.null;
-    expect(filterBar.filterSettings.activeAppFilters.size).to.equal(0);
+    assertEquals(null, filterBar.shadowRoot.querySelector('app-dialog'));
+    assertEquals(0, filterBar.filterSettings.apps.size);
   });
-
-  test(
-      'pressing Enter on App filter option opens app filter dialog',
-      async () => {
-        const addFilterButton =
-            filterBar.shadowRoot.getElementById('add-filter-button')!;
-        addFilterButton.click();
-        await microtasksFinished();
-
-        const filterDialog =
-            filterBar.shadowRoot.querySelector('filter-dialog')!;
-        const filterMenuItems =
-            filterDialog.shadowRoot.querySelectorAll<HTMLElement>(
-                '.filter-menu-item');
-
-        // The first item is 'App' based on filterMenuItems order
-        filterMenuItems[0]!.focus();
-        filterMenuItems[0]!.dispatchEvent(
-            new KeyboardEvent('keydown', {key: 'Enter'}));
-        await microtasksFinished();
-
-        expect(filterDialog).to.not.be.null;
-        // Assuming 'app' is the correct type value for the app filter dialog
-        expect(filterDialog.type).to.equal('app');
-      });
 });

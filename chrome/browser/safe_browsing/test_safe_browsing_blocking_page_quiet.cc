@@ -60,7 +60,7 @@ TestSafeBrowsingBlockingPageQuiet::CreateBlockingPage(
 }
 
 std::string TestSafeBrowsingBlockingPageQuiet::GetHTML() {
-  base::Value::Dict load_time_data;
+  base::DictValue load_time_data;
   sb_error_ui_.PopulateStringsForHtml(load_time_data);
   webui::SetLoadTimeDataDefaults(controller()->GetApplicationLocale(),
                                  &load_time_data);

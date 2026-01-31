@@ -149,6 +149,8 @@ class ThemeSyncableService final : public syncer::SyncableService,
 
   void NotifyOnSyncStarted(ThemeSyncState startup_state);
 
+  void DeduplicateLocalThemeIfSameAsAccountTheme();
+
   const raw_ptr<Profile> profile_;
   const raw_ptr<ThemeService> theme_service_;
 

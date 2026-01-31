@@ -69,8 +69,6 @@ class EphemeralHomeModuleBackendTest : public DefaultModelTestBase {
   EphemeralHomeModuleBackendTest()
       : DefaultModelTestBase(
             std::make_unique<EphemeralHomeModuleBackend>(nullptr)) {
-    feature_list_.InitWithFeatures(
-        {}, {features::kSegmentationPlatformTipsEphemeralCard});
     HomeModulesCardRegistry::RegisterProfilePrefs(
         profile_pref_service_.registry());
     HomeModulesCardRegistry::RegisterLocalStatePrefs(
@@ -86,7 +84,6 @@ class EphemeralHomeModuleBackendTest : public DefaultModelTestBase {
   TestingPrefServiceSimple profile_pref_service_;
   TestingPrefServiceSimple local_state_pref_service_;
   std::unique_ptr<HomeModulesCardRegistry> registry_;
-  base::test::ScopedFeatureList feature_list_;
 };
 
 TEST_F(EphemeralHomeModuleBackendTest, InitAndFetchModel) {
@@ -95,9 +92,12 @@ TEST_F(EphemeralHomeModuleBackendTest, InitAndFetchModel) {
 
 TEST_F(EphemeralHomeModuleBackendTest, ExecuteModelWithInput) {
 #if BUILDFLAG(IS_IOS)
-  ExpectExecutionWithInput({0, 0, 0}, /*expected_error=*/false,
-                           /*expected_result=*/
-                           {kNotShownResultValue, kNotShownResultValue});
+  size_t input_size = registry_->all_cards_input_size();
+  size_t output_size = registry_->all_output_labels().size();
+  ExpectExecutionWithInput(
+      std::vector<float>(input_size, 0), /*expected_error=*/false,
+      /*expected_result=*/
+      std::vector<float>(output_size, kNotShownResultValue));
 #elif BUILDFLAG(IS_ANDROID)
   ExpectExecutionWithInput(
       std::vector<float>(22, 0), /*expected_error=*/false,

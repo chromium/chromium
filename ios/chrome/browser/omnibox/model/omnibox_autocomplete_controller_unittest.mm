@@ -141,8 +141,8 @@ class OmniboxAutocompleteControllerTest : public PlatformTest {
     [controller_ disconnect];
     clipboard_ = nullptr;
     autocomplete_controller_ = nullptr;
-    omnibox_client_ = nullptr;
     omnibox_text_model_ = nullptr;
+    omnibox_client_ = nullptr;
     controller_delegate_ = nil;
     TestingApplicationContext::GetGlobal()->SetLocalState(nullptr);
     local_state_.reset();

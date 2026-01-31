@@ -32,9 +32,9 @@ import '//resources/cr_elements/icons.html.js';
 import '//resources/cr_elements/cr_page_selector/cr_page_selector.js';
 import '//resources/cr_elements/cr_menu_selector/cr_menu_selector.js';
 import '//resources/cr_elements/cr_nav_menu_item_style.css.js';
+import '//resources/cr_elements/cr_scrollable.css.js';
 import '//resources/cr_elements/cr_page_host_style.css.js';
 
-import {CrContainerShadowMixin} from '//resources/cr_elements/cr_container_shadow_mixin.js';
 import type {CrPageSelectorElement} from '//resources/cr_elements/cr_page_selector/cr_page_selector.js';
 import type {CrToastElement} from '//resources/cr_elements/cr_toast/cr_toast.js';
 import {assert, assertNotReached} from '//resources/js/assert.js';
@@ -65,8 +65,7 @@ interface ConfirmationResult {
   confirmed: boolean;
 }
 
-const CertificateManagerElementBase =
-    RouteObserverMixin(CrContainerShadowMixin(PolymerElement));
+const CertificateManagerElementBase = RouteObserverMixin(PolymerElement);
 
 export interface CertificateManagerElement {
   $: {
@@ -98,6 +97,7 @@ export interface CertificateManagerElement {
     platformCertsSection: CertificateSubpageElement,
     // </if>
     platformClientCertsSection: CertificateSubpageElement,
+    scrollableShadow: HTMLElement,
   };
 }
 
@@ -376,17 +376,7 @@ export class CertificateManagerElement extends CertificateManagerElementBase {
 
   override async currentRouteChanged(route: Route, oldRoute: Route) {
     this.selectedPage_ = route.page;
-
-    if (route.isSubpage()) {
-      // Sub-pages always show the top shadow, regardless of scroll position.
-      this.enableScrollObservation(false);
-      this.setForceDropShadows(true);
-    } else {
-      // Main page uses scroll position to determine whether a shadow should
-      // be shown.
-      this.enableScrollObservation(true);
-      this.setForceDropShadows(false);
-    }
+    this.$.scrollableShadow.classList.toggle('force-on', route.isSubpage());
 
     if (route.isSubpage()) {
       await this.$.main.updateComplete;

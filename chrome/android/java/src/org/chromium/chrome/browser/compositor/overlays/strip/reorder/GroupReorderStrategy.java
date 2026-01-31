@@ -13,7 +13,7 @@ import android.view.View;
 import org.chromium.base.MathUtils;
 import org.chromium.base.Token;
 import org.chromium.base.metrics.RecordUserAction;
-import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.supplier.SettableNullableObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.compositor.overlays.strip.AnimationHost;
@@ -43,6 +43,7 @@ public class GroupReorderStrategy extends ReorderStrategyBase {
     private @Nullable StripLayoutTab mSelectedTab;
     private @Nullable StripLayoutTab mFirstTabInGroup;
     private @Nullable StripLayoutTab mLastTabInGroup;
+    private int mOriginIndex = TabModel.INVALID_TAB_INDEX;
 
     GroupReorderStrategy(
             ReorderDelegate reorderDelegate,
@@ -52,7 +53,7 @@ public class GroupReorderStrategy extends ReorderStrategyBase {
             TabModel model,
             TabGroupModelFilter tabGroupModelFilter,
             View containerView,
-            ObservableSupplierImpl<@Nullable Token> groupIdToHideSupplier,
+            SettableNullableObservableSupplier<Token> groupIdToHideSupplier,
             Supplier<Float> tabWidthSupplier,
             Supplier<Long> lastReorderScrollTimeSupplier) {
         super(
@@ -90,6 +91,7 @@ public class GroupReorderStrategy extends ReorderStrategyBase {
         mLastTabInGroup.setForceHideEndDivider(/* forceHide= */ true);
         mInteractingViews.addAll(groupedTabs);
 
+        mOriginIndex = StripLayoutUtils.findIndexForTab(stripTabs, mFirstTabInGroup.getTabId());
         // Foreground the interacting views as they will be dragged over top other views.
         for (StripLayoutView view : mInteractingViews) {
             view.setIsForegrounded(/* isForegrounded= */ true);
@@ -171,8 +173,16 @@ public class GroupReorderStrategy extends ReorderStrategyBase {
     }
 
     @Override
-    public void stopReorderMode(StripLayoutView[] stripViews, StripLayoutGroupTitle[] groupTitles) {
+    public void stopReorderMode(
+            StripLayoutView[] stripViews,
+            StripLayoutGroupTitle[] groupTitles,
+            boolean isDragCancelled) {
         ArrayList<Animator> animationList = new ArrayList<>();
+        if (isDragCancelled) {
+            Token interactingTabGroupId = assumeNonNull(mInteractingGroupTitle).getTabGroupId();
+            @TabId int tabId = mTabGroupModelFilter.getGroupLastShownTabId(interactingTabGroupId);
+            mTabGroupModelFilter.moveRelatedTabs(tabId, mOriginIndex);
+        }
         Runnable onAnimationEnd =
                 () -> {
                     // Clear after the tabs have slid back to their ideal positions, so the

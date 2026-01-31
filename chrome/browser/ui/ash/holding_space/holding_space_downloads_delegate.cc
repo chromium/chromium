@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/ash/holding_space/holding_space_downloads_delegate.h"
 
+#include <algorithm>
 #include <optional>
 #include <set>
 
@@ -17,7 +18,6 @@
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/dark_light_mode_controller_impl.h"
 #include "base/byte_count.h"
-#include "base/containers/contains.h"
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ash/file_manager/path_util.h"
 #include "chrome/browser/profiles/profile.h"
@@ -331,18 +331,23 @@ class HoldingSpaceDownloadsDelegate::InProgressDownload
       // If `total_bytes` is known, `secondary_text` will be something of the
       // form "10/100 MB", where the first number is the number of received
       // bytes and the second number is the total number of bytes expected.
-      const ui::DataUnits units =
-          ui::GetByteDisplayUnits(base::ByteCount(total_bytes.value()));
+      const ui::DataUnits units = ui::GetByteDisplayUnits(
+          base::ByteSize(base::checked_cast<uint64_t>(total_bytes.value())));
       secondary_text = l10n_util::GetStringFUTF16(
           IDS_ASH_HOLDING_SPACE_IN_PROGRESS_DOWNLOAD_SIZE_INFO,
-          ui::FormatBytesWithUnits(base::ByteCount(received_bytes), units,
-                                   /*show_units=*/false),
-          ui::FormatBytesWithUnits(base::ByteCount(total_bytes.value()), units,
-                                   /*show_units=*/true));
+          ui::FormatBytesWithUnits(
+              base::ByteSize(base::checked_cast<uint64_t>(received_bytes)),
+              units,
+              /*show_units=*/false),
+          ui::FormatBytesWithUnits(
+              base::ByteSize(base::checked_cast<uint64_t>(total_bytes.value())),
+              units,
+              /*show_units=*/true));
     } else {
       // If `total_bytes` is not known, `secondary_text` will be something of
       // the form "10 MB", indicating only the number of received bytes.
-      secondary_text = ui::FormatBytes(base::ByteCount(received_bytes));
+      secondary_text = ui::FormatBytes(
+          base::ByteSize(base::checked_cast<uint64_t>(received_bytes)));
     }
 
     if (IsPaused()) {
@@ -509,7 +514,8 @@ void HoldingSpaceDownloadsDelegate::OnHoldingSpaceItemsRemoved(
   // download, that in-progress download can be destroyed. The download will
   // continue, but it will no longer be associated with a holding space item.
   std::erase_if(in_progress_downloads_, [&](const auto& in_progress_download) {
-    return base::Contains(items, in_progress_download->GetHoldingSpaceItem());
+    return std::ranges::contains(items,
+                                 in_progress_download->GetHoldingSpaceItem());
   });
 }
 
@@ -629,7 +635,7 @@ void HoldingSpaceDownloadsDelegate::OnDownloadFailed(
     // NOTE: Removing `item` from the `model()` will result in the
     // `in_progress_download` being erased.
     model()->RemoveItem(item->id());
-    DCHECK(!base::Contains(in_progress_downloads_, in_progress_download));
+    DCHECK(!in_progress_downloads_.contains(in_progress_download));
     return;
   }
   EraseDownload(in_progress_download);

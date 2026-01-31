@@ -10,6 +10,7 @@
 #include "base/callback_list.h"
 #include "chrome/browser/glic/public/glic_instance.h"
 #include "chrome/browser/glic/service/metrics/glic_instance_helper_metrics.h"
+#include "chrome/browser/glic/service/metrics/metrics_types.h"
 #include "components/tabs/public/tab_interface.h"
 #include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
 
@@ -23,27 +24,39 @@ class GlicInstanceHelper {
 
   static GlicInstanceHelper* From(tabs::TabInterface* tab);
 
+  // Interface for the GlicInstance that interacts with this helper.
+  class Instance {
+   public:
+    virtual const InstanceId& id() const = 0;
+    virtual std::optional<std::string> conversation_id() const = 0;
+  };
+
   explicit GlicInstanceHelper(tabs::TabInterface* tab);
   ~GlicInstanceHelper();
 
-  std::optional<InstanceId> GetInstanceId() const { return instance_id_; }
-  void SetInstanceId(const InstanceId& instance_id);
+  std::optional<InstanceId> GetInstanceId() const;
+  void SetBoundInstance(Instance* instance);
 
-  void OnPinnedByInstance(const InstanceId& instance_id);
+  std::optional<std::string> GetConversationId() const;
 
-  void SetIsDaisyChained();
+  void OnPinnedByInstance(Instance* instance);
+  void OnUnpinnedByInstance(Instance* instance);
+
+  std::vector<Instance*> GetPinnedInstances() const;
+
+  void SetIsDaisyChained(DaisyChainSource source);
   void OnDaisyChainAction(DaisyChainFirstAction action);
 
   base::CallbackListSubscription SubscribeToDestruction(
-      base::RepeatingCallback<void(tabs::TabInterface*, const InstanceId&)>
-          callback);
+      base::RepeatingCallback<void(tabs::TabInterface*)> callback);
 
  private:
-  std::optional<InstanceId> instance_id_;
+  raw_ptr<Instance> bound_instance_ = nullptr;
+  base::flat_set<raw_ptr<Instance>> pinned_instances_;
   GlicInstanceHelperMetrics metrics_;
   raw_ptr<tabs::TabInterface> tab_;
   ui::ScopedUnownedUserData<GlicInstanceHelper> scoped_unowned_user_data_;
-  base::RepeatingCallbackList<void(tabs::TabInterface*, const InstanceId&)>
+  base::RepeatingCallbackList<void(tabs::TabInterface*)>
       on_destroy_callback_list_;
 };
 

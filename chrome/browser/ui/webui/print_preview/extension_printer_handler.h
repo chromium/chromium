@@ -54,7 +54,7 @@ class ExtensionPrinterHandler : public PrinterHandler {
   void StartGetCapability(const std::string& destination_id,
                           GetCapabilityCallback callback) override;
   void StartPrint(const std::u16string& job_title,
-                  base::Value::Dict settings,
+                  base::DictValue settings,
                   scoped_refptr<base::RefCountedMemory> print_data,
                   PrintCallback callback) override;
   void StartGrantPrinterAccess(const std::string& printer_id,
@@ -86,13 +86,13 @@ class ExtensionPrinterHandler : public PrinterHandler {
   // methods, primarily so the callbacks can be bound to this class' weak ptr.
   // They just propagate results to callbacks passed to them.
   void WrapGetPrintersCallback(AddedPrintersCallback callback,
-                               base::Value::List printers,
+                               base::ListValue printers,
                                bool done);
   void WrapGetCapabilityCallback(GetCapabilityCallback callback,
-                                 base::Value::Dict capability);
+                                 base::DictValue capability);
   void WrapPrintCallback(PrintCallback callback, const base::Value& status);
   void WrapGetPrinterInfoCallback(GetPrinterInfoCallback callback,
-                                  base::Value::Dict printer_info);
+                                  base::DictValue printer_info);
 
   void OnUsbDevicesEnumerated(
       AddedPrintersCallback callback,

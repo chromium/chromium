@@ -1015,13 +1015,17 @@ void HWNDMessageHandler::SetWindowIcons(const gfx::ImageSkia& window_icon,
                                         const gfx::ImageSkia& app_icon) {
   if (!window_icon.isNull()) {
     base::win::ScopedGDIObject<HICON> previous_icon = std::move(window_icon_);
-    window_icon_ = IconUtil::CreateHICONFromSkBitmap(*window_icon.bitmap());
+    window_icon_ = IconUtil::CreateHICONFromSkBitmapSizedTo(
+        *window_icon.bitmap(), GetSystemMetrics(SM_CXSMICON),
+        GetSystemMetrics(SM_CYSMICON));
     SendMessage(hwnd(), WM_SETICON, ICON_SMALL,
                 reinterpret_cast<LPARAM>(window_icon_.get()));
   }
   if (!app_icon.isNull()) {
     base::win::ScopedGDIObject<HICON> previous_icon = std::move(app_icon_);
-    app_icon_ = IconUtil::CreateHICONFromSkBitmap(*app_icon.bitmap());
+    app_icon_ = IconUtil::CreateHICONFromSkBitmapSizedTo(
+        *app_icon.bitmap(), GetSystemMetrics(SM_CXICON),
+        GetSystemMetrics(SM_CYICON));
     SendMessage(hwnd(), WM_SETICON, ICON_BIG,
                 reinterpret_cast<LPARAM>(app_icon_.get()));
   }

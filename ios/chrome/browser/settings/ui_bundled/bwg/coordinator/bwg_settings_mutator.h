@@ -17,6 +17,9 @@ class GURL;
 // Sets the Precise Location pref value.
 - (void)setPreciseLocationPref:(BOOL)value;
 
+// Sets the Camera Permission pref value.
+- (void)setCameraPermissionPref:(BOOL)value;
+
 // Sets the Page Content Sharing pref value.
 - (void)setPageContentSharingPref:(BOOL)value;
 

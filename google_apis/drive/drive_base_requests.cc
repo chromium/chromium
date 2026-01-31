@@ -10,7 +10,6 @@
 #include <memory>
 #include <utility>
 
-#include "base/containers/contains.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/json/json_reader.h"
@@ -129,7 +128,7 @@ void GenerateMultipartBody(MultipartType multipart_type,
       boundary = net::GenerateMimeMultipartBoundary();
       bool conflict_with_content = false;
       for (const auto& part : parts) {
-        if (base::Contains(part.data, boundary)) {
+        if (part.data.contains(boundary)) {
           conflict_with_content = true;
           break;
         }

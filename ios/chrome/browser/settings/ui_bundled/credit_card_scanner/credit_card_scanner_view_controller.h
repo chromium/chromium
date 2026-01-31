@@ -13,7 +13,6 @@
 extern NSString* const kCreditCardScannerViewID;
 
 @protocol CreditCardScannedImageDelegate;
-@protocol LoadQueryCommands;
 
 // View controller for the Credit Card Scanner
 @interface CreditCardScannerViewController
@@ -21,16 +20,6 @@ extern NSString* const kCreditCardScannerViewID;
 
 // The delegate notified when there is a new image from the scanner.
 @property(nonatomic, weak) id<CreditCardScannedImageDelegate> delegate;
-
-- (instancetype)initWithPresentationProvider:
-                    (id<ScannerPresenting>)presentationProvider
-                                 queryLoader:(id<LoadQueryCommands>)queryLoader
-    NS_UNAVAILABLE;
-
-- (instancetype)initWithNibName:(NSString*)name
-                         bundle:(NSBundle*)bundle NS_UNAVAILABLE;
-
-- (instancetype)initWithCoder:(NSCoder*)coder NS_UNAVAILABLE;
 
 @end
 

@@ -80,7 +80,7 @@
   font: var(--cros-annotation-2-font);
 }
 
-:host-context(.jelly-enabled) textarea[aria-invalid="true"] {
+:host-context(.jelly-enabled) textarea[aria-invalid='true'] {
   color: var(--cros-sys-error);
   outline: 2px solid var(--cros-sys-error);
 }

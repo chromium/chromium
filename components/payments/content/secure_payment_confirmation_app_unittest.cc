@@ -160,7 +160,8 @@ TEST_F(SecurePaymentConfirmationAppTest, Smoke) {
       /*device_supports_browser_bound_keys_in_hardware=*/true,
       url::Origin::Create(GURL("https://merchant.example")), spec_->AsWeakPtr(),
       MakeRequest(), std::move(authenticator),
-      /*payment_entities_logos=*/{});
+      /*payment_entities_logos=*/{},
+      /*is_error_dialog=*/false);
 
   std::vector<uint8_t> expected_bytes =
       std::vector<uint8_t>(challenge_bytes_.begin(), challenge_bytes_.end());
@@ -368,7 +369,8 @@ TEST_P(SecurePaymentConfirmationAppBrowserBindingTest,
       GetParam().device_supports_browser_bound_keys_in_hardware,
       url::Origin::Create(GURL("https://merchant.example")), spec_->AsWeakPtr(),
       MakeRequest(GetParam().credential_parameters), std::move(authenticator),
-      /*payment_entities_logos=*/{});
+      /*payment_entities_logos=*/{},
+      /*is_error_dialog=*/false);
   app.SetWaitForGetBrowserBoundKeyForTesting(run_loop.QuitClosure());
   browser_bound_key_store_->PutFakeKey(FakeBrowserBoundKey(
       browser_bound_key_id, public_key_as_cose_key, signature,
@@ -486,7 +488,8 @@ TEST_F(SecurePaymentConfirmationAppWithUxRefreshFlagTest, NoCredentials) {
       /*device_supports_browser_bound_keys_in_hardware=*/false,
       url::Origin::Create(GURL("https://merchant.example")), spec_->AsWeakPtr(),
       MakeRequest(), /*authenticator=*/nullptr,
-      /*payment_entities_logos=*/{});
+      /*payment_entities_logos=*/{},
+      /*is_error_dialog=*/false);
 
   EXPECT_FALSE(app.HasEnrolledInstrument());
   EXPECT_EQ(app.GetId(), "spc");
@@ -507,7 +510,8 @@ TEST_F(SecurePaymentConfirmationAppWithUxRefreshFlagTest, WithCredentials) {
       url::Origin::Create(GURL("https://merchant.example")), spec_->AsWeakPtr(),
       MakeRequest(),
       std::make_unique<webauthn::MockInternalAuthenticator>(web_contents_),
-      /*payment_entities_logos=*/{});
+      /*payment_entities_logos=*/{},
+      /*is_error_dialog=*/false);
 
   EXPECT_TRUE(app.HasEnrolledInstrument());
   EXPECT_EQ(app.GetId(), base::Base64Encode(credential_id));
@@ -540,7 +544,8 @@ TEST_F(SecurePaymentConfirmationAppWithUxRefreshFlagTest,
       /*passkey_browser_binder=*/nullptr,
       /*device_supports_browser_bound_keys_in_hardware=*/false,
       url::Origin::Create(GURL("https://merchant.example")), spec_->AsWeakPtr(),
-      std::move(request), std::move(authenticator), std::move(logos));
+      std::move(request), std::move(authenticator), std::move(logos),
+      /*is_error_dialog=*/false);
 
   blink::mojom::PaymentOptionsPtr payment_options;
   EXPECT_CALL(*mock_authenticator, SetPaymentOptions)
@@ -588,7 +593,8 @@ TEST_F(SecurePaymentConfirmationAppWithUxRefreshFlagTest,
       /*passkey_browser_binder=*/nullptr,
       /*device_supports_browser_bound_keys_in_hardware=*/false,
       url::Origin::Create(GURL("https://merchant.example")), spec_->AsWeakPtr(),
-      MakeRequest(), std::move(authenticator), std::move(logos));
+      MakeRequest(), std::move(authenticator), std::move(logos),
+      /*is_error_dialog=*/false);
 
   blink::mojom::PaymentOptionsPtr payment_options;
   EXPECT_CALL(*mock_authenticator, SetPaymentOptions)
@@ -637,7 +643,8 @@ TEST_F(SecurePaymentConfirmationAppWithDisabledUxRefreshFlagTest,
       /*device_supports_browser_bound_keys_in_hardware=*/false,
       url::Origin::Create(GURL("https://merchant.example")), spec_->AsWeakPtr(),
       MakeRequest(), std::move(authenticator),
-      /*payment_entities_logos=*/{});
+      /*payment_entities_logos=*/{},
+      /*is_error_dialog=*/false);
 
   blink::mojom::PaymentOptionsPtr payment_options;
   EXPECT_CALL(*mock_authenticator, SetPaymentOptions)
@@ -676,7 +683,8 @@ TEST_F(SecurePaymentConfirmationAppTest, OnInstrumentDetailsError) {
       /*device_supports_browser_bound_keys_in_hardware=*/false,
       url::Origin::Create(GURL("https://merchant.example")), spec_->AsWeakPtr(),
       MakeRequest(), std::move(authenticator),
-      /*payment_entities_logos=*/{});
+      /*payment_entities_logos=*/{},
+      /*is_error_dialog=*/false);
 
   EXPECT_CALL(*mock_authenticator, GetAssertion(_, _))
       .WillOnce(RunOnceCallback<1>(
@@ -712,7 +720,8 @@ TEST_F(SecurePaymentConfirmationAppFallbackTest, NoCredentials) {
       /*device_supports_browser_bound_keys_in_hardware=*/false,
       url::Origin::Create(GURL("https://merchant.example")), spec_->AsWeakPtr(),
       MakeRequest(), /*authenticator=*/nullptr,
-      /*payment_entities_logos=*/{});
+      /*payment_entities_logos=*/{},
+      /*is_error_dialog=*/true);
 
   EXPECT_FALSE(app.HasEnrolledInstrument());
   EXPECT_EQ(app.GetId(), "spc");
@@ -733,7 +742,8 @@ TEST_F(SecurePaymentConfirmationAppFallbackTest, WithCredentials) {
       url::Origin::Create(GURL("https://merchant.example")), spec_->AsWeakPtr(),
       MakeRequest(),
       std::make_unique<webauthn::MockInternalAuthenticator>(web_contents_),
-      /*payment_entities_logos=*/{});
+      /*payment_entities_logos=*/{},
+      /*is_error_dialog=*/false);
 
   EXPECT_TRUE(app.HasEnrolledInstrument());
   EXPECT_EQ(app.GetId(), base::Base64Encode(credential_id));

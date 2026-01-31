@@ -12,5 +12,5 @@ found in the LICENSE file.
     android:layout_width="24dp"
     android:layout_height="24dp"
     app:tint="@color/default_icon_color_secondary_tint_list"
-    app:srcCompat="@drawable/home_logo"
+    app:srcCompat="@drawable/ic_home_24dp"
     android:contentDescription="@string/autofill_home_profile_icon_accessibility_label" />

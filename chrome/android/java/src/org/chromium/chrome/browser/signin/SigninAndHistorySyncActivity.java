@@ -7,7 +7,6 @@ package org.chromium.chrome.browser.signin;
 import static org.chromium.build.NullUtil.assertNonNull;
 import static org.chromium.build.NullUtil.assumeNonNull;
 
-import android.accounts.AccountManager;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
@@ -15,24 +14,25 @@ import android.content.res.Configuration;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.os.SystemClock;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
+import android.view.ViewGroup.LayoutParams;
 import android.view.Window;
+import android.widget.FrameLayout;
 
-import org.chromium.base.IntentUtils;
 import org.chromium.base.Promise;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.supplier.OneshotSupplier;
-import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.back_press.BackPressHelper;
 import org.chromium.chrome.browser.device_lock.DeviceLockActivityLauncherImpl;
 import org.chromium.chrome.browser.firstrun.FirstRunActivityBase;
 import org.chromium.chrome.browser.init.ActivityProfileProvider;
 import org.chromium.chrome.browser.init.ChromeBrowserInitializer;
 import org.chromium.chrome.browser.privacy.settings.PrivacyPreferencesManagerImpl;
-import org.chromium.chrome.browser.profiles.OtrProfileId;
-import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileProvider;
 import org.chromium.chrome.browser.signin.services.SigninMetricsUtils;
 import org.chromium.chrome.browser.signin.services.SigninMetricsUtils.State;
@@ -44,10 +44,16 @@ import org.chromium.chrome.browser.ui.signin.FullscreenSigninAndHistorySyncCoord
 import org.chromium.chrome.browser.ui.signin.SigninAndHistorySyncCoordinator;
 import org.chromium.chrome.browser.ui.signin.SigninUtils;
 import org.chromium.chrome.browser.ui.system.StatusBarColorController;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetControllerFactory;
 import org.chromium.components.browser_ui.modaldialog.AppModalPresenter;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
+import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
+import org.chromium.components.browser_ui.widget.scrim.ScrimManager;
+import org.chromium.components.browser_ui.widget.scrim.ScrimManager.ScrimClient;
 import org.chromium.components.signin.AccountManagerFacadeProvider;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
+import org.chromium.ui.KeyboardVisibilityDelegate;
 import org.chromium.ui.UiUtils;
 import org.chromium.ui.base.ActivityWindowAndroid;
 import org.chromium.ui.modaldialog.ModalDialogManager;
@@ -69,7 +75,8 @@ import java.util.function.Supplier;
  */
 @NullMarked
 public class SigninAndHistorySyncActivity extends FullscreenSigninAndHistorySyncActivityBase
-        implements BottomSheetSigninAndHistorySyncCoordinator.Delegate,
+        implements BottomSheetSigninAndHistorySyncCoordinator.ActivityDelegate,
+                BottomSheetSigninAndHistorySyncCoordinator.Delegate,
                 FullscreenSigninAndHistorySyncCoordinator.Delegate {
     private static final String ARGUMENT_ACCESS_POINT = "SigninAndHistorySyncActivity.AccessPoint";
     private static final String ARGUMENT_IS_FULLSCREEN_SIGNIN =
@@ -78,7 +85,6 @@ public class SigninAndHistorySyncActivity extends FullscreenSigninAndHistorySync
 
     private static final int ADD_ACCOUNT_REQUEST_CODE = 1;
 
-    private final OneshotSupplierImpl<Profile> mProfileSupplier = new OneshotSupplierImpl<>();
     // TODO(crbug.com/349787455): Move this to FirstRunActivityBase.
     private final Promise<@Nullable Void> mNativeInitializationPromise = new Promise<>();
 
@@ -138,7 +144,10 @@ public class SigninAndHistorySyncActivity extends FullscreenSigninAndHistorySync
                             getStartTime(),
                             DeviceLockActivityLauncherImpl.get());
 
-            setInitialContentView(mCoordinator.getView());
+            // TODO(https://crbug.com/469772349): Remove this cast when the migration will be
+            // complete.
+            setInitialContentView(
+                    ((FullscreenSigninAndHistorySyncCoordinator) mCoordinator).getView());
             onInitialLayoutInflationComplete();
 
             RecordHistogram.recordTimesHistogram(
@@ -148,22 +157,28 @@ public class SigninAndHistorySyncActivity extends FullscreenSigninAndHistorySync
         }
 
         setStatusBarColor(Color.TRANSPARENT);
+        ViewGroup containerView =
+                (ViewGroup)
+                        LayoutInflater.from(this)
+                                .inflate(R.layout.bottom_sheet_signin_history_sync_container, null);
 
         BottomSheetSigninAndHistorySyncConfig config =
                 SigninAndHistorySyncBundleHelper.getBottomSheetConfig(bundle);
         mCoordinator =
                 new BottomSheetSigninAndHistorySyncCoordinator(
                         windowAndroid,
-                        this,
-                        this,
+                        /* activity= */ this,
+                        /* activityResultTracker= */ getActivityResultTracker(),
+                        /* activityDelegate= */ this,
+                        /* delegate= */ this,
                         DeviceLockActivityLauncherImpl.get(),
-                        mProfileSupplier,
-                        (Supplier<@Nullable ModalDialogManager>) getModalDialogManagerSupplier(),
-                        /* snackbarManager= */ null,
+                        getProfileProviderSupplier(),
+                        getBottomSheetController(containerView),
+                        (Supplier<ModalDialogManager>) getModalDialogManagerSupplier(),
                         config,
                         signinAccessPoint);
 
-        setInitialContentView(mCoordinator.getView());
+        setInitialContentView(containerView);
         onInitialLayoutInflationComplete();
     }
 
@@ -184,22 +199,7 @@ public class SigninAndHistorySyncActivity extends FullscreenSigninAndHistorySync
 
     @Override
     protected OneshotSupplier<ProfileProvider> createProfileProvider() {
-        ActivityProfileProvider profileProvider =
-                new ActivityProfileProvider(getLifecycleDispatcher()) {
-
-                    @Override
-                    protected @Nullable OtrProfileId createOffTheRecordProfileId() {
-                        throw new IllegalArgumentException(
-                                "Attempting to access incognito in the sign-in & history sync"
-                                        + " opt-in flow");
-                    }
-                };
-
-        profileProvider.onAvailable(
-                (provider) -> {
-                    mProfileSupplier.set(assumeNonNull(profileProvider.get()).getOriginalProfile());
-                });
-        return profileProvider;
+        return new ActivityProfileProvider(getLifecycleDispatcher());
     }
 
     @Override
@@ -240,13 +240,19 @@ public class SigninAndHistorySyncActivity extends FullscreenSigninAndHistorySync
         overridePendingTransition(0, R.anim.fast_fade_out);
     }
 
-    /** Implements {@link BottomSheetSigninAndHistorySyncCoordinator.Delegate}. */
+    /** Implements {@link BottomSheetSigninAndHistorySyncCoordinator.Delegate} */
+    @Override
+    public void onSigninUndone() {
+        throw new IllegalStateException("Reversing sign-in is not supported in this flow.");
+    }
+
+    /** Implements {@link BottomSheetSigninAndHistorySyncCoordinator.ActivityDelegate}. */
     @Override
     public boolean isHistorySyncShownFullScreen() {
         return !isTablet();
     }
 
-    /** Implements {@link BottomSheetSigninAndHistorySyncCoordinator.Delegate}. */
+    /** Implements {@link BottomSheetSigninAndHistorySyncCoordinator.ActivityDelegate}. */
     @Override
     public void setStatusBarColor(int statusBarColor) {
         StatusBarColorController.setStatusBarColor(
@@ -285,7 +291,8 @@ public class SigninAndHistorySyncActivity extends FullscreenSigninAndHistorySync
         }
 
         mIsWaitingForAddAccountResult = false;
-        onAddAccountResult(resultCode, data);
+        assumeNonNull(mCoordinator);
+        mCoordinator.onAddAccountResult(resultCode, data);
         return true;
     }
 
@@ -328,7 +335,7 @@ public class SigninAndHistorySyncActivity extends FullscreenSigninAndHistorySync
 
     /**
      * Implements {@link FullscreenSigninAndHistorySyncCoordinator.Delegate} and {@link
-     * BottomSheetSigninAndHistorySyncCoordinator.Delegate}
+     * BottomSheetSigninAndHistorySyncCoordinator.ActivityDelegate}
      */
     @Override
     public void addAccount() {
@@ -391,28 +398,28 @@ public class SigninAndHistorySyncActivity extends FullscreenSigninAndHistorySync
         }
     }
 
-    private void onAddAccountResult(int resultCode, @Nullable Intent data) {
-        final String accountEmail =
-                data == null
-                        ? null
-                        : IntentUtils.safeGetStringExtra(data, AccountManager.KEY_ACCOUNT_NAME);
+    private BottomSheetController getBottomSheetController(ViewGroup containerView) {
+        ViewGroup sheetContainer = new FrameLayout(this);
+        sheetContainer.setLayoutParams(
+                new FrameLayout.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
+        containerView.addView(sheetContainer);
+        ScrimManager scrimManager =
+                new ScrimManager(
+                        this, containerView, ScrimClient.SIGNIN_ACCOUNT_PICKER_COORDINATOR);
+        scrimManager.getStatusBarColorSupplier().addObserver(this::setStatusBarColor);
 
-        assumeNonNull(mCoordinator);
-
-        if (resultCode != Activity.RESULT_OK || accountEmail == null) {
-            mCoordinator.onAddAccountCanceled();
-
-            // Record NULL_ACCOUNT_NAME if the add account activity successfully returns but
-            // contains a null account name.
-            if (resultCode == Activity.RESULT_OK && accountEmail == null) {
-                SigninMetricsUtils.logAddAccountStateHistogram(State.NULL_ACCOUNT_NAME);
-            } else {
-                SigninMetricsUtils.logAddAccountStateHistogram(State.CANCELLED);
-            }
-            return;
-        }
-
-        SigninMetricsUtils.logAddAccountStateHistogram(State.SUCCEEDED);
-        mCoordinator.onAccountAdded(accountEmail);
+        BottomSheetController bottomSheetController =
+                BottomSheetControllerFactory.createBottomSheetController(
+                        () -> scrimManager,
+                        (sheet) -> {},
+                        getWindow(),
+                        KeyboardVisibilityDelegate.getInstance(),
+                        () -> sheetContainer,
+                        () -> 0,
+                        /* desktopWindowStateManager= */ null);
+        BackPressHandler bottomSheetBackPressHandler =
+                bottomSheetController.getBottomSheetBackPressHandler();
+        BackPressHelper.create(this, getOnBackPressedDispatcher(), bottomSheetBackPressHandler);
+        return bottomSheetController;
     }
 }

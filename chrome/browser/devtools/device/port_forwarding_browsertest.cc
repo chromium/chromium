@@ -101,7 +101,7 @@ IN_PROC_BROWSER_TEST_F(PortForwardingTest, LoadPageWithStyleAnsScript) {
   PrefService* prefs = profile->GetPrefs();
   prefs->SetBoolean(prefs::kDevToolsPortForwardingEnabled, true);
 
-  base::Value::Dict config;
+  base::DictValue config;
   config.Set(forwarding_port,
              original_url.GetHost() + ":" + original_url.GetPort());
   prefs->SetDict(prefs::kDevToolsPortForwardingConfig, std::move(config));
@@ -163,7 +163,7 @@ IN_PROC_BROWSER_TEST_F(PortForwardingDisconnectTest, DisconnectOnRelease) {
   PrefService* prefs = profile->GetPrefs();
   prefs->SetBoolean(prefs::kDevToolsPortForwardingEnabled, true);
 
-  base::Value::Dict config;
+  base::DictValue config;
   config.Set(forwarding_port,
              original_url.GetHost() + ":" + original_url.GetPort());
   prefs->SetDict(prefs::kDevToolsPortForwardingConfig, std::move(config));

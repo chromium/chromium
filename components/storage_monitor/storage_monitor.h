@@ -106,20 +106,6 @@ class COMPONENT_EXPORT(STORAGE_MONITOR) StorageMonitor {
       const base::FilePath& path,
       StorageInfo* device_info) const = 0;
 
-// TODO(gbillock): make this either unnecessary (implementation-specific) or
-// platform-independent.
-#if BUILDFLAG(IS_WIN)
-  // Gets the MTP device storage information specified by |storage_device_id|.
-  // On success, returns true and fills in |device_location| with device
-  // interface details and |storage_object_id| with the string ID that
-  // uniquely identifies the object on the device. This ID need not be
-  // persistent across sessions.
-  virtual bool GetMTPStorageInfoFromDeviceId(
-      const std::string& storage_device_id,
-      std::wstring* device_location,
-      std::wstring* storage_object_id) const = 0;
-#endif
-
 #if BUILDFLAG(IS_CHROMEOS)
   virtual device::mojom::MtpManager* media_transfer_protocol_manager() = 0;
 #endif

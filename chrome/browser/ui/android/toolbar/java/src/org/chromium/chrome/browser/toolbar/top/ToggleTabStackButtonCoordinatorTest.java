@@ -32,8 +32,9 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.LooperMode;
 
-import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.OneshotSupplierImpl;
+import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -42,7 +43,6 @@ import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.tab_ui.TabModelDotInfo;
 import org.chromium.chrome.browser.tabmodel.IncognitoStateProvider;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
-import org.chromium.chrome.browser.tabmodel.TabGroupModelFilterProvider;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.theme.TopUiThemeColorProvider;
@@ -71,7 +71,6 @@ public class ToggleTabStackButtonCoordinatorTest {
     @Mock private OnClickListener mOnClickListener;
     @Mock private OnLongClickListener mOnLongClickListener;
     @Mock private TabModelSelector mTabModelSelector;
-    @Mock private TabGroupModelFilterProvider mTabGroupModelFilterProvider;
     @Mock private TabGroupModelFilter mTabGroupModelFilter;
     @Mock private TabModel mStandardTabModel;
     @Mock private TabModel mIncognitoTabModel;
@@ -82,19 +81,19 @@ public class ToggleTabStackButtonCoordinatorTest {
     @Captor private ArgumentCaptor<IphCommand> mIphCommandCaptor;
 
     private Activity mActivity;
-    private final ObservableSupplierImpl<TabModelDotInfo> mNotificationDotSupplier =
-            new ObservableSupplierImpl<>(TabModelDotInfo.HIDE);
+    private final SettableNonNullObservableSupplier<TabModelDotInfo> mNotificationDotSupplier =
+            ObservableSuppliers.createNonNull(TabModelDotInfo.HIDE);
     private final OneshotSupplierImpl<Boolean> mPromoShownOneshotSupplier =
             new OneshotSupplierImpl<>();
-    private final ObservableSupplierImpl<Integer> mTabCountSupplier =
-            new ObservableSupplierImpl<>(0);
+    private final SettableNonNullObservableSupplier<Integer> mTabCountSupplier =
+            ObservableSuppliers.createNonNull(0);
 
     private boolean mOverviewOpen;
     private Set<LayoutStateProvider.LayoutStateObserver> mLayoutStateObserverSet;
     private OneshotSupplierImpl<LayoutStateProvider> mLayoutSateProviderOneshotSupplier;
 
     private ToggleTabStackButtonCoordinator mCoordinator;
-    private ObservableSupplierImpl<TabModelSelector> mTabModelSelectorSupplier;
+    private SettableNonNullObservableSupplier<TabModelSelector> mTabModelSelectorSupplier;
 
     @Before
     public void setUp() {
@@ -121,15 +120,11 @@ public class ToggleTabStackButtonCoordinatorTest {
 
         mLayoutStateObserverSet = new HashSet<>();
         mLayoutSateProviderOneshotSupplier = new OneshotSupplierImpl<>();
-        mTabModelSelectorSupplier = new ObservableSupplierImpl<>();
-        mTabModelSelectorSupplier.set(mTabModelSelector);
+        mTabModelSelectorSupplier = ObservableSuppliers.createNonNull(mTabModelSelector);
         when(mTabModelSelector.getCurrentModel()).thenReturn(mStandardTabModel);
         when(mTabModelSelector.getModel(true)).thenReturn(mIncognitoTabModel);
-        when(mTabModelSelector.getTabGroupModelFilterProvider())
-                .thenReturn(mTabGroupModelFilterProvider);
         when(mTabGroupModelFilter.getTabModel()).thenReturn(mStandardTabModel);
-        when(mTabGroupModelFilterProvider.getCurrentTabGroupModelFilter())
-                .thenReturn(mTabGroupModelFilter);
+        when(mTabModelSelector.getCurrentTabGroupModelFilter()).thenReturn(mTabGroupModelFilter);
         when(mStandardTabModel.isIncognitoBranded()).thenReturn(false);
         when(mIncognitoTabModel.isIncognitoBranded()).thenReturn(true);
         when(mIncognitoTabModel.getCount()).thenReturn(0);
@@ -151,7 +146,7 @@ public class ToggleTabStackButtonCoordinatorTest {
                         mUserEducationHelper,
                         mPromoShownOneshotSupplier,
                         mLayoutSateProviderOneshotSupplier,
-                        new ObservableSupplierImpl<>(),
+                        ObservableSuppliers.alwaysNull(),
                         mTabModelSelectorSupplier,
                         mTopUIThemeProvider,
                         mIncognitoStateProvider);

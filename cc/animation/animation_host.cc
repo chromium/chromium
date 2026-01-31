@@ -9,7 +9,6 @@
 #include <utility>
 
 #include "base/auto_reset.h"
-#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/memory/ptr_util.h"
@@ -101,12 +100,18 @@ const AnimationTrigger* AnimationHost::GetTriggerById(int id) const {
                                                     : it->second.get();
 }
 
+AnimationTrigger* AnimationHost::GetTriggerById(int id) {
+  auto it = id_to_trigger_map_.Write(*this).find(id);
+  return it == id_to_trigger_map_.Write(*this).end() ? nullptr
+                                                     : it->second.get();
+}
+
 void AnimationHost::ClearMutators() {
   for (auto& kv : id_to_timeline_map_.Read(*this))
     EraseTimeline(kv.second);
   id_to_timeline_map_.Write(*this).clear();
   for (auto& it : id_to_trigger_map_.Write(*this)) {
-    it.second->SetAnimationHost(nullptr);
+    EraseTrigger(it.second);
   }
   id_to_trigger_map_.Write(*this).clear();
 }
@@ -128,6 +133,10 @@ base::TimeDelta AnimationHost::MinimumTickInterval() const {
 void AnimationHost::EraseTimeline(scoped_refptr<AnimationTimeline> timeline) {
   timeline->ClearAnimations();
   timeline->SetAnimationHost(nullptr);
+}
+
+void AnimationHost::EraseTrigger(scoped_refptr<AnimationTrigger> trigger) {
+  trigger->SetAnimationHost(nullptr);
 }
 
 void AnimationHost::AddAnimationTimeline(
@@ -519,6 +528,14 @@ void AnimationHost::PushPropertiesToImplThread(AnimationHost* host_impl) {
     }
   }
 
+  for (auto& kv : id_to_trigger_map_.Read(*this)) {
+    AnimationTrigger* trigger = kv.second.get();
+    if (AnimationTrigger* trigger_impl =
+            host_impl->GetTriggerById(trigger->id())) {
+      trigger->PushPropertiesTo(trigger_impl);
+    }
+  }
+
   // Update the impl-only scroll offset animations.
   scroll_offset_animations_.Write(*this)->PushPropertiesTo(
       host_impl->scroll_offset_animations_impl_.Write(*host_impl).get());
@@ -906,7 +923,7 @@ void AnimationHost::HandleRemovedScrollAnimatingElements(
 }
 
 void AnimationHost::AddToTicking(scoped_refptr<Animation> animation) {
-  DCHECK(!base::Contains(ticking_animations_.Read(*this), animation));
+  DCHECK(!std::ranges::contains(ticking_animations_.Read(*this), animation));
   ticking_animations_.Write(*this).push_back(animation);
 }
 

@@ -36,11 +36,9 @@ class ToolBase;
 class PaintStabilityMonitor
     : public blink::WebInteractionEffectsMonitorObserver {
  public:
-  // Returns a `PaintStabilityMonitor` for the given `frame` if `tool` supports
-  // paint stability monitoring and the paint stability monitoring feature is
-  // not disabled, otherwise nullptr.
+  // Returns a `PaintStabilityMonitor` for the given `frame`.
   static std::unique_ptr<PaintStabilityMonitor>
-  MaybeCreate(content::RenderFrame& frame, TaskId task_id, Journal& journal);
+  Create(content::RenderFrame& frame, TaskId task_id, Journal& journal);
 
   ~PaintStabilityMonitor() override;
 
@@ -69,8 +67,6 @@ class PaintStabilityMonitor
   void OnPaintStabilityDetected();
   void ScheduleContentfulPaintTimeoutTask(const base::Location& location,
                                           base::TimeDelta delay);
-
-  const features::ActorPaintStabilityMode mode_;
 
   bool is_started_ = false;
 

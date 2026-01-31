@@ -20,7 +20,7 @@ inline constexpr double kContextMenuMaxScreenshotSize = 1e7;
 // This constructor does not set fields relative to the touch event (view and
 // location).
 ContextMenuParams ContextMenuParamsFromElementDictionary(
-    const base::Value::Dict& element);
+    const base::DictValue& element);
 
 }  // namespace web
 

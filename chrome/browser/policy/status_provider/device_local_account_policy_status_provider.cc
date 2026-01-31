@@ -22,10 +22,10 @@ DeviceLocalAccountPolicyStatusProvider::
   service_->RemoveObserver(this);
 }
 
-base::Value::Dict DeviceLocalAccountPolicyStatusProvider::GetStatus() {
+base::DictValue DeviceLocalAccountPolicyStatusProvider::GetStatus() {
   const policy::DeviceLocalAccountPolicyBroker* broker =
       service_->GetBrokerForUser(user_id_);
-  base::Value::Dict dict;
+  base::DictValue dict;
   if (broker) {
     dict = policy::PolicyStatusProvider::GetStatusFromCore(broker->core());
   } else {

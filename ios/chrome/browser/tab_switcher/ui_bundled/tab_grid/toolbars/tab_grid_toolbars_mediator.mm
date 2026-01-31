@@ -111,6 +111,9 @@
 
   [self.topToolbarConsumer
       setSelectTabsActionEnabled:_configuration.selectTabsButton];
+
+  [self.topToolbarConsumer
+      setCloseOtherTabsEnabled:_configuration.closeOtherTabsButton];
 }
 
 - (void)setToolbarsButtonsDelegate:(id<TabGridToolbarsGridDelegate>)delegate {
@@ -281,6 +284,19 @@
         [@[ [actionFactory actionToCloseAllTabsWithBlock:^{
           [weakButtonDelegate closeAllButtonTapped:nil];
         }] ] mutableCopy];
+
+    if (_configuration.closeOtherTabsButton) {
+      UIAction* closeOtherTabsAction =
+          [actionFactory actionToCloseAllOtherTabsWithBlock:^{
+            [weakButtonDelegate closeOtherTabsButtonTapped:nil];
+          }];
+      UIMenu* closeOtherMenu = [UIMenu menuWithTitle:@""
+                                               image:nil
+                                          identifier:nil
+                                             options:UIMenuOptionsDisplayInline
+                                            children:@[ closeOtherTabsAction ]];
+      [menuElements addObject:closeOtherMenu];
+    }
     // Disable the "Select All" option from the edit button when there are no
     // tabs in the regular tab grid. "Close All" can still be called if there
     // are inactive tabs.

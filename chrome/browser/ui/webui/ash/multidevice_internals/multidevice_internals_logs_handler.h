@@ -33,10 +33,10 @@ class MultideviceLogsHandler : public content::WebUIMessageHandler,
 
  private:
   // Message handler callback that returns the Log Buffer in dictionary form.
-  void HandleGetLogMessages(const base::Value::List& args);
+  void HandleGetLogMessages(const base::ListValue& args);
 
   // Message handler callback that clears the Log Buffer.
-  void ClearLogBuffer(const base::Value::List& args);
+  void ClearLogBuffer(const base::ListValue& args);
 
   base::ScopedObservation<LogBuffer, LogBuffer::Observer> observation_{this};
 };

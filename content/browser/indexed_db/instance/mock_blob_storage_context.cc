@@ -141,11 +141,9 @@ BlobWriteCallback MockBlobStorageContext::CreateBlobWriteCallback(
     base::OnceClosure on_done) {
   *succeeded = false;
   return base::BindOnce(
-      [](bool* succeeded, base::OnceClosure on_done,
-         StatusOr<BlobWriteResult> result) {
-        *succeeded = result.has_value();
+      [](bool* succeeded, base::OnceClosure on_done, Status result) {
+        *succeeded = result.ok();
         std::move(on_done).Run();
-        return Status::OK();
       },
       succeeded, std::move(on_done));
 }

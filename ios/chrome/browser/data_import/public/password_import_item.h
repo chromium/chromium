@@ -7,10 +7,8 @@
 
 #import <UIKit/UIKit.h>
 
-#import "base/ios/block_types.h"
+#import "ios/chrome/browser/data_import/public/credential_import_item.h"
 
-@class FaviconAttributes;
-@protocol PasswordImportItemFaviconDataSource;
 @class URLWithTitle;
 
 namespace password_manager {
@@ -49,30 +47,13 @@ enum class PasswordImportStatus {
 };
 
 /// A password item to be imported.
-@interface PasswordImportItem : NSObject
-
-/// URL for the website, with `url.title` being the formatted URL string, scheme
-/// and path omitted.
-@property(nonatomic, readonly, strong) URLWithTitle* url;
-
-/// The username for the password.
-@property(nonatomic, readonly, strong) NSString* username;
+@interface PasswordImportItem : CredentialImportItem
 
 /// The password.
 @property(nonatomic, readonly, strong) NSString* password;
 
 /// Import status.
 @property(nonatomic, readonly, assign) PasswordImportStatus status;
-
-/// Data source for favicon loading. Should be set before
-/// `-loadFaviconWithUIUpdateHandler` is invoked.
-@property(nonatomic, weak) id<PasswordImportItemFaviconDataSource>
-    faviconDataSource;
-
-/// Favicon attributes for the URL. If current value is `nil`, call
-/// `-loadFaviconWithUIUpdateHandler` and retrieve the value in the completion
-/// handler.
-@property(nonatomic, strong) FaviconAttributes* faviconAttributes;
 
 /// Converts `ImportResults` to a list of `PasswordImportItem`s.
 + (NSArray<PasswordImportItem*>*)passwordImportItemsFromImportResults:
@@ -84,11 +65,8 @@ enum class PasswordImportStatus {
                    password:(NSString*)password
                      status:(PasswordImportStatus)status
     NS_DESIGNATED_INITIALIZER;
-- (instancetype)init NS_UNAVAILABLE;
-
-/// Loads the favicon with a block to update UI on the first call to this
-/// method. Does nothing on subsequent calls.
-- (void)loadFaviconWithUIUpdateHandler:(ProceduralBlock)handler;
+- (instancetype)initWithUrl:(URLWithTitle*)url
+                   username:(NSString*)username NS_UNAVAILABLE;
 
 @end
 

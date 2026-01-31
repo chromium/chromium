@@ -12,7 +12,7 @@
 #include <vector>
 
 #include "ash/ash_export.h"
-#include "chromeos/crosapi/mojom/clipboard_history.mojom.h"
+#include "chromeos/ui/clipboard_history/clipboard_history_types.h"
 #include "ui/base/models/image_model.h"
 
 namespace ui {
@@ -170,7 +170,7 @@ ASH_EXPORT ui::ImageModel GetIconForFileClipboardItem(
 ASH_EXPORT ui::ImageModel GetHtmlPreviewPlaceholder();
 
 // Returns an item descriptor based on `item`.
-crosapi::mojom::ClipboardHistoryItemDescriptor ItemToDescriptor(
+chromeos::clipboard_history::ItemDescriptor ItemToDescriptor(
     const ClipboardHistoryItem& item);
 
 // Calculates the preferred width for clipboard history menu item views.

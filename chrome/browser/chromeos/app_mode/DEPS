@@ -23,7 +23,7 @@ include_rules = [
   "+chrome/browser/extensions/extension_service_test_base.h",
   "+chrome/browser/extensions/external_loader.h",
   "+chrome/browser/extensions/external_provider_impl.h",
-  "+chrome/browser/extensions/forced_extensions/install_stage_tracker.h",
+  "+chrome/browser/extensions/forced_extensions/install_stage_tracker_factory.h",
   "+chrome/browser/extensions/install_tracker_factory.h",
   "+chrome/browser/extensions/updater",
   "+chrome/browser/lifetime",

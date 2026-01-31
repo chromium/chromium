@@ -11,7 +11,10 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/supervised_user/supervised_user_service_factory.h"
+#include "chrome/browser/supervised_user/supervised_user_url_filtering_service_factory.h"
 #include "components/supervised_user/core/browser/proto/families_common.pb.h"
+#include "components/supervised_user/core/browser/supervised_user_service.h"
+#include "components/supervised_user/core/browser/supervised_user_url_filtering_service.h"
 #include "components/supervised_user/core/browser/supervised_user_utils.h"
 #include "content/public/browser/storage_partition.h"
 #include "google_apis/gaia/gaia_id.h"
@@ -41,6 +44,9 @@ FamilyInfoFeedbackSource::FamilyInfoFeedbackSource(
     Profile* profile)
     : supervised_user_service_(
           SupervisedUserServiceFactory::GetForProfile(profile)),
+      url_filtering_service_(
+          *supervised_user::SupervisedUserUrlFilteringServiceFactory::
+              GetForProfile(profile)),
       identity_manager_(IdentityManagerFactory::GetForProfile(profile)),
       url_loader_factory_(profile->GetDefaultStoragePartition()
                               ->GetURLLoaderFactoryForBrowserProcess()),
@@ -80,11 +86,9 @@ void FamilyInfoFeedbackSource::OnSuccess(
       // If a child is signed-in, report the parental control web filter.
       ScopedJavaLocalRef<jstring> child_web_filter_type = nullptr;
       if (member.role() == kidsmanagement::CHILD) {
-        supervised_user::WebFilterType web_filter_type =
-            supervised_user_service_->GetURLFilter()->GetWebFilterType();
         child_web_filter_type = ConvertUTF8ToJavaString(
-            env,
-            supervised_user::WebFilterTypeToDisplayString(web_filter_type));
+            env, supervised_user::WebFilterTypeToDisplayString(
+                     url_filtering_service_->GetWebFilterType()));
       }
       Java_FamilyInfoFeedbackSource_processPrimaryAccountFamilyInfo(
           env, java_ref_, supervised_user::FamilyRoleToString(member.role()),

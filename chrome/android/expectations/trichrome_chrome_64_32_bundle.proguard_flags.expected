@@ -235,6 +235,15 @@
   <methods>;
 }
 
+# Allow R8 to optimize away proto lite functionality that is not used.
+-assumenosideeffects class com.google.protobuf.ManifestSchemaFactory {
+    com.google.protobuf.MessageInfoFactory getDescriptorMessageInfoFactory();
+}
+-assumenosideeffects class com.google.protobuf.SchemaUtil {
+    java.lang.Class getGeneratedMessageClass();
+    java.lang.Class getUnknownFieldSetSchemaClass();
+}
+
 # File: ../../build/android/dcheck_is_off.flags
 # Copyright 2019 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
@@ -298,6 +307,10 @@
 # TODO(crbug.com/430099860): Remove once OnDemandModuleEntryPointsImpl is not
 # removed due to being unused.
 -dontwarn org.chromium.chrome.modules.on_demand.OnDemandModuleEntryPointsImpl
+
+# Test APK targets do not include the XR bundle code, but do include XrModule.java,
+# which references XrModuleProvider via an @IdentifierNameString.
+-dontwarn org.chromium.chrome.browser.xr.scenecore.XrModuleProviderImpl
 
 # File: ../../third_party/android_deps/material_design.flags
 # Copyright 2021 The Chromium Authors
@@ -452,7 +465,7 @@
 
 # We supply these as stubs and will only use them in older Android versions which had a framework
 # implementation. We don't want R8 to complain about them not being there during optimization.
--dontwarn android.hardware.fingerprint.FingerprintManager.**
+-dontwarn android.hardware.fingerprint.FingerprintManager**
 
 # Never inline methods, but allow shrinking and obfuscation.
 -keepclassmembernames,allowobfuscation,allowshrinking

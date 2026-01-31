@@ -31,7 +31,7 @@ const char kSendAssistantRequestMethodName[] = "sendAssistantRequest";
 }  // namespace
 
 AssistantBindings::AssistantBindings(content::RenderFrame* frame,
-                                     const base::Value::Dict& feature_config)
+                                     const base::DictValue& feature_config)
     : CastBinding(frame),
       feature_config_(feature_config.Clone()),
       message_client_binding_(this),

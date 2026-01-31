@@ -10,11 +10,11 @@ import org.chromium.chrome.browser.profiles.Profile;
 class SupervisedUserSettingsTestUtils {
     /** Adds the given url to the the blocklist applied on the `profile` */
     static void addUrlToBlocklist(Profile profile, String url) {
-        SupervisedUserSettingsTestBridge.setManualFilterForHost(profile, url, false);
+        FamilyLinkSettingsTestBridge.setManualFilterForHost(profile, url, false);
     }
 
     /** Sets the kids management API response so that it blocks/allows the site */
     public static void setKidsManagementResponseForTesting(Profile profile, boolean isAllowed) {
-        SupervisedUserSettingsTestBridge.setKidsManagementResponseForTesting(profile, isAllowed);
+        FamilyLinkSettingsTestBridge.setKidsManagementResponseForTesting(profile, isAllowed);
     }
 }

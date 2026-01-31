@@ -53,7 +53,7 @@ export function createTestApp(id: string, optConfig?: AppConfig): App {
       isManaged: false,
       userVisibleTypes: 'TXT',
       userVisibleTypesLabel: 'Supported type: TXT',
-      learnMoreUrl: {url: 'https://google.com/'},
+      learnMoreUrl: 'https://google.com/',
     },
     installSource: InstallSource.kUnknown,
     appSize: null,

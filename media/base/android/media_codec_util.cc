@@ -12,7 +12,6 @@
 #include "base/android/jni_android.h"
 #include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
-#include "base/containers/contains.h"
 #include "base/logging.h"
 #include "base/strings/string_util.h"
 #include "base/system/sys_info.h"
@@ -80,7 +79,7 @@ static bool IsDecoderSupportedByDevice(std::string_view android_mime_type) {
   return true;
 }
 
-static jboolean JNI_MediaCodecUtil_IsDecoderSupportedForDevice(
+static bool JNI_MediaCodecUtil_IsDecoderSupportedForDevice(
     JNIEnv* env,
     std::string& mime_type) {
   return IsDecoderSupportedByDevice(mime_type);

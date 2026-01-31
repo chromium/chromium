@@ -51,8 +51,8 @@ MediaStreamTrackPlatform::AudioFrameStats::DeliveredFramesDuration() const {
 }
 
 uint64_t MediaStreamTrackPlatform::AudioFrameStats::TotalFrames() const {
-  return base::MakeClampedNum(accumulator_.observed_frames()) +
-         base::MakeClampedNum(accumulator_.glitch_frames());
+  return base::ClampedNumeric(accumulator_.observed_frames()) +
+         base::ClampedNumeric(accumulator_.glitch_frames());
 }
 
 base::TimeDelta MediaStreamTrackPlatform::AudioFrameStats::TotalFramesDuration()

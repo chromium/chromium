@@ -36,7 +36,7 @@
 #include <sched.h>
 #define PA_YIELD_THREAD sched_yield()
 #else  // Other OS
-#warning "Thread yield not supported on this OS."
+#error "Thread yield not supported on this OS."
 #define PA_YIELD_THREAD ((void)0)
 #endif
 

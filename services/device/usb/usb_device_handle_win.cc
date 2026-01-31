@@ -20,7 +20,6 @@
 #include <vector>
 
 #include "base/compiler_specific.h"
-#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/memory/ptr_util.h"
@@ -142,8 +141,8 @@ class UsbDeviceHandleWin::Request : public base::win::ObjectWatcher::Delegate {
   Request(WINUSB_INTERFACE_HANDLE handle, int interface_number)
       : handle_(handle),
         interface_number_(interface_number),
+        overlapped_{},
         event_(CreateEvent(nullptr, false, false, nullptr)) {
-    UNSAFE_TODO(memset(&overlapped_, 0, sizeof(overlapped_)));
     overlapped_.hEvent = event_.Get();
   }
 
@@ -626,7 +625,7 @@ UsbDeviceHandleWin::UsbDeviceHandleWin(scoped_refptr<UsbDeviceWin> device)
     // set up the device with a single function entry no matter how many
     // functions the device appears to have based on its descriptors.
     DCHECK_EQ(1u, device_->functions().size());
-    DCHECK(base::Contains(device_->functions(), 0));
+    DCHECK(device_->functions().contains(0));
     const UsbDeviceWin::FunctionInfo& function_info =
         device_->functions().find(0)->second;
     // This may create a fake interface 0 (for internal bookkeeping purposes) if
@@ -719,7 +718,7 @@ UsbDeviceHandleWin::Interface* UsbDeviceHandleWin::GetFirstInterfaceForFunction(
     case UsbDeviceWin::DriverType::kWinUSB:
       // If WinUSB has been loaded for a composite device then all of its
       // interfaces must be treated as a single function.
-      DCHECK(base::Contains(interfaces_, 0));
+      DCHECK(interfaces_.contains(0));
       return &interfaces_[0];
     case UsbDeviceWin::DriverType::kComposite: {
       if (interface->interface_number == interface->first_interface)

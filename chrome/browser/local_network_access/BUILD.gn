@@ -1,0 +1,19 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//chrome/common/features.gni")
+
+source_set("local_network_access") {
+  sources = [
+    "ip_address_space_overrides_prefs_observer.cc",
+    "ip_address_space_overrides_prefs_observer.h",
+  ]
+
+  deps = [
+    "//base/",
+    "//chrome/common:constants",
+    "//components/prefs",
+    "//services/network/public/cpp",
+  ]
+}

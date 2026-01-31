@@ -25,9 +25,11 @@ import org.chromium.chrome.browser.download.home.filter.Filters;
 import org.chromium.chrome.browser.download.home.list.view.CircularProgressView;
 import org.chromium.chrome.browser.download.home.list.view.CircularProgressView.UiState;
 import org.chromium.chrome.browser.download.internal.R;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.components.browser_ui.util.DownloadUtils;
 import org.chromium.components.browser_ui.util.date.CalendarFactory;
 import org.chromium.components.browser_ui.util.date.CalendarUtils;
+import org.chromium.components.download.DownloadDangerType;
 import org.chromium.components.offline_items_collection.LegacyHelpers;
 import org.chromium.components.offline_items_collection.OfflineItem;
 import org.chromium.components.offline_items_collection.OfflineItem.Progress;
@@ -175,7 +177,13 @@ public final class UiUtils {
      * @return The {@link CharSequence} representing the title.
      */
     public static CharSequence formatGenericItemTitle(OfflineItem item) {
-        return StringUtils.getAbbreviatedFileName(item.title, MAX_FILE_NAME_LENGTH_FOR_TITLE);
+        String fileName =
+                StringUtils.getAbbreviatedFileName(item.title, MAX_FILE_NAME_LENGTH_FOR_TITLE);
+        if (shouldShowScanningStateOnUI(item)) {
+            Context context = ContextUtils.getApplicationContext();
+            return context.getString(R.string.download_manager_async_scanning_title, fileName);
+        }
+        return fileName;
     }
 
     /**
@@ -283,7 +291,11 @@ public final class UiUtils {
         switch (item.state) {
             case OfflineItemState.PENDING: // Intentional fallthrough.
             case OfflineItemState.IN_PROGRESS:
-                shownState = CircularProgressView.UiState.RUNNING;
+                if (shouldShowScanningStateOnUI(item)) {
+                    shownState = CircularProgressView.UiState.SCANNING;
+                } else {
+                    shownState = CircularProgressView.UiState.RUNNING;
+                }
                 break;
             case OfflineItemState.FAILED: // Intentional fallthrough.
             case OfflineItemState.CANCELLED:
@@ -366,6 +378,9 @@ public final class UiUtils {
                 statusString = context.getString(R.string.download_manager_pending);
                 break;
             case OfflineItemState.IN_PROGRESS:
+                if (shouldShowScanningStateOnUI(item)) {
+                    return context.getString(R.string.download_manager_async_scanning_description);
+                }
                 if (item.timeRemainingMs > 0) {
                     statusString = StringUtils.timeLeftForUi(context, item.timeRemainingMs);
                 }
@@ -403,6 +418,9 @@ public final class UiUtils {
             case OfflineItemState.PENDING:
                 return context.getString(R.string.download_manager_pending);
             case OfflineItemState.IN_PROGRESS:
+                if (shouldShowScanningStateOnUI(item)) {
+                    return context.getString(R.string.download_manager_async_scanning_description);
+                }
                 if (item.timeRemainingMs > 0) {
                     return StringUtils.timeLeftForUi(context, item.timeRemainingMs);
                 } else {
@@ -444,5 +462,11 @@ public final class UiUtils {
                 UrlFormatter.formatUrlForSecurityDisplay(
                         offlineItem.url, SchemeDisplay.OMIT_HTTP_AND_HTTPS);
         return formattedUrl;
+    }
+
+    public static boolean shouldShowScanningStateOnUI(OfflineItem item) {
+        return item.state == OfflineItemState.IN_PROGRESS
+                && ChromeFeatureList.isEnabled(ChromeFeatureList.SHOW_DOWNLOAD_SCANNING_STATE)
+                && item.dangerType == DownloadDangerType.ASYNC_SCANNING;
     }
 }

@@ -232,7 +232,7 @@ class OzonePlatformX11 : public OzonePlatform,
     return properties;
   }
 
-  bool IsNativePixmapConfigSupported(gfx::BufferFormat format,
+  bool IsNativePixmapConfigSupported(viz::SharedImageFormat format,
                                      gfx::BufferUsage usage) const override {
     return false;
   }

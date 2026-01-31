@@ -80,7 +80,7 @@ bool PaintChunker::EnsureCurrentChunk(const PaintChunk::Id& id,
     MarkClientForValidation(next_chunk_id_->second);
     chunks_.emplace_back(begin, begin, next_chunk_id_->second,
                          next_chunk_id_->first, current_properties_,
-                         current_effectively_invisible_);
+                         current_effectively_invisible_, canvas_subtree_id_);
     next_chunk_id_ = std::nullopt;
     will_force_new_chunk_ = false;
     return true;
@@ -216,6 +216,23 @@ bool PaintChunker::AddRegionCaptureDataToCurrentChunk(
     chunk.region_capture_data = MakeGarbageCollected<RegionCaptureData>();
   }
   chunk.region_capture_data->map.insert_or_assign(crop_id, std::move(rect));
+  return created_new_chunk;
+}
+
+bool PaintChunker::AddTrackedElementDataToCurrentChunk(
+    const PaintChunk::Id& id,
+    const DisplayItemClient& client,
+    const TrackedElementId& tracked_element_id,
+    const gfx::Rect& rect) {
+  CheckNotFinished();
+  DCHECK(!tracked_element_id->is_zero());
+  bool created_new_chunk = EnsureCurrentChunk(id, client);
+  auto& chunk = chunks_.back();
+  if (!chunk.tracked_element_data) {
+    chunk.tracked_element_data = MakeGarbageCollected<TrackedElementData>();
+  }
+
+  chunk.tracked_element_data->map.insert_or_assign(tracked_element_id, rect);
   return created_new_chunk;
 }
 

@@ -127,7 +127,12 @@
       Show Gemini in Mac menu bar and turn on keyboard shortcut
     </message>
   </if>
-  <if expr="not is_macosx">
+  <if expr="is_chromeos">
+  <message name="IDS_SETTINGS_GLIC_OS_WIDGET_TOGGLE" desc="Name of the toggle that controls whether the keyboard shortcut is enabled (on ChromeOS only).">
+      Turn on Gemini keyboard shortcut
+    </message>
+  </if>
+  <if expr="is_win or is_linux">
     <message name="IDS_SETTINGS_GLIC_OS_WIDGET_TOGGLE" desc="Name of the toggle that controls whether the Gemini icon is shown in the system tray (on Windows and Linux).">
       Show Gemini in system tray and turn on keyboard shortcut
     </message>
@@ -138,14 +143,26 @@
   <message name="IDS_SETTINGS_GLIC_KEYBOARD_SHORTCUT" desc="Name of the keyboard shortcut setting.">
     Keyboard shortcut
   </message>
+  <message name="IDS_SETTINGS_GLIC_KEYBOARD_SHORTCUT_EDIT_LABEL" desc="Label of the edit keyboard shortcut setting button.">
+    Edit keyboard shortcut
+  </message>
   <message name="IDS_SETTINGS_GLIC_KEYBOARD_SHORTCUT_SUBLABEL" desc="Sublabel describing the keyboard shortcut that's used to globally invoke Gemini.">
     Open Gemini with a keyboard shortcut.
   </message>
   <message name="IDS_SETTINGS_GLIC_KEYBOARD_SHORTCUT_LEARN_MORE_LABEL" desc="Label for the 'Learn more' link in the sublabel for Gemini in Chrome settings.">
     Learn more
   </message>
+  <message name="IDS_SETTINGS_GLIC_KEYBOARD_SHORTCUT_LEARN_MORE_ARIA_LABEL" desc="Aria label for the 'Learn more' link for the keyboard shortcut setting in Gemini in Chrome settings.">
+    Learn more about the keyboard shortcut
+  </message>
+  <message name="IDS_SETTINGS_GLIC_NAVIGATION_SHORTCUT_LEARN_MORE_ARIA_LABEL" desc="Aria label for the 'Learn more' link for the navigation shortcut setting in Gemini in Chrome settings.">
+    Learn more about the navigation shortcut
+  </message>
   <message name="IDS_SETTINGS_GLIC_NAVIGATION_SHORTCUT" desc="Title for the navigation shortcut setting to leave and return to Gemini in Chrome.">
     Navigation shortcut
+  </message>
+  <message name="IDS_SETTINGS_GLIC_NAVIGATION_SHORTCUT_EDIT_LABEL" desc="Label of the edit navigation shortcut setting button.">
+    Edit navigation shortcut
   </message>
   <message name="IDS_SETTINGS_GLIC_NAVIGATION_SHORTCUT_SUBLABEL" desc="Sublabel describing the keyboard shortcut navigate between Chrome and Gemini.">
     To leave or return to Gemini, use keyboard shortcut.
@@ -195,12 +212,6 @@
   <message name="IDS_SETTINGS_GLIC_PERMISSIONS_DEFAULT_TAB_ACCESS_TOGGLE_SUBLABEL_DATA_PROTECTED" desc="Sublabel describing that this setting will enable sharing the current tab's content with Gemini by default, but the user's data is not used to improve the model.">
     The current tab is shared with Gemini when you start a new chat. Your data is not used to improve generative AI models. <ph name="LINK_BEGIN">&lt;a href="#"&gt;</ph>Learn more about AI and privacy<ph name="LINK_END">&lt;/a&gt;</ph>
   </message>
-  <message name="IDS_SETTINGS_GLIC_PERMISSIONS_WEB_ACTUATION_TOGGLE" desc="Title for the Gemini feature introduction screen">
-    Let Gemini browse for you
-  </message>
-  <message name="IDS_SETTINGS_GLIC_PERMISSIONS_WEB_ACTUATION_TOGGLE_SUBLABEL" desc="Subheader explaining what the Gemini feature does">
-    Gemini works in your tabs to complete tasks you give it. <ph name="LINK_BEGIN">&lt;a href="#"&gt;</ph>Learn more<ph name="LINK_END">&lt;/a&gt;</ph>
-  </message>
   <message name="IDS_SETTINGS_GLIC_PERMISSIONS_ACTIVITY_BUTTON" desc="Name of the Gemini Apps Activity link out.">
     Gemini Apps Activity
   </message>
@@ -231,6 +242,9 @@
   <message name="IDS_SETTINGS_GLIC_PERMISSIONS_DEFAULT_TAB_ACCESS_WHEN_ON_2" desc="Part of the description of the 'Share current tab by default' setting. It informs the user about what information is going to be shared with Gemini.">
     Tabs opened from a chat or a shared tab are also shared with Gemini. In Live mode, only the current tab is shared by default.
   </message>
+  <message name="IDS_SETTINGS_GLIC_PERMISSIONS_DEFAULT_TAB_ACCESS_WHEN_ON_2_NO_LIVE" desc="Part of the description of the 'Share current tab by default' setting. It informs the user about what information is going to be shared with Gemini. This version is used when Live mode is not available for the user.">
+    Tabs opened from a chat or a shared tab are also shared with Gemini.
+  </message>
   <message name="IDS_SETTINGS_GLIC_PERMISSIONS_DEFAULT_TAB_ACCESS_CONSIDER_1" desc="First point in 'things to consider' column of the 'default tab access' expands">
     When tabs are shared, their page contents, media and URLs are sent to Google.
   </message>
@@ -238,11 +252,18 @@
     Conversations about shared tabs may be seen by human reviewers to improve Gemini.
   </message>
   <message name="IDS_SETTINGS_GLIC_PERSONAL_CONTEXT_LABEL" desc="Description for the Gemini personal context linkout.">
-      View and manage your personal context
+      Manage the information Gemini can use to personalize your experience
   </message>
-  <message name="IDS_SETTINGS_GLIC_PERSONAL_CONTEXT" desc="Title for the Gemini personal context section in Other Data.">
+  <message name="IDS_SETTINGS_GLIC_PERSONAL_CONTEXT" desc="Title for the Gemini personal context linkout.">
       Personal context
   </message>
+  <message name="IDS_SETTINGS_GLIC_INSTRUCTIONS_BUTTON" desc="Title for the Gemini instructions linkout.">
+     Instructions for Gemini
+  </message>
+  <message name="IDS_SETTINGS_GLIC_INSTRUCTIONS_BUTTON_SUBLABEL" desc="Description for the Gemini instructions linkout.">
+    Customize how Gemini responds to you
+  </message>
+
   <message name="IDS_SETTINGS_GLIC_PERMISSIONS_WEB_ACTUATION_TOGGLE_WHEN_ON_1" desc="First point in 'when on' column of the 'let Gemini browse for you' expands">
     Gemini can help you book appointments, create shopping carts, or do other tasks you give it.
   </message>
@@ -314,6 +335,9 @@
       =1 {Sharing selected tab would exceed the sharing limit}
     other {Sharing # tabs would exceed the sharing limit}}
   </message>
+  <message name="IDS_TAB_CXMENU_GLIC_CREATE_NEW_CHAT" desc="The label of the 'Start new chat' item in the Glic submenu.">
+    Start new chat with Gemini
+  </message>
   </if>
   <if expr="use_titlecase">
   <message name="IDS_TAB_CXMENU_GLIC_START_SHARE" desc="The label of the tab context menu submenu for starting sharing the given tab or tabs with Gemini. [ICU syntax]">
@@ -331,7 +355,14 @@
       =1 {Sharing Selected Tab Would Exceed the Sharing Limit}
     other {Sharing # Tabs Would Exceed the Sharing Limit}}
   </message>
+  <message name="IDS_TAB_CXMENU_GLIC_CREATE_NEW_CHAT" desc="The label of the 'Start new chat' item in the Glic submenu.">
+    Start New Chat with Gemini
+  </message>
   </if>
+
+  <message name="IDS_TAB_CXMENU_GLIC_UNSHARE" desc="The label of the tab context menu item for stopping sharing the selected tab or tabs with Gemini.">
+    Unshare with Gemini
+  </message>
 
   <!-- Glic button context menu. -->
   <message name="IDS_GLIC_BUTTON_CXMENU_UNPIN" desc="Name of the Glic button context menu item for unpinning Glic.">
@@ -339,11 +370,11 @@
   </message>
 
   <!-- Gemini tab strip button label -->
-  <message name="IDS_GLIC_BUTTON_ENTRYPOINT_LABEL" desc="Label on the button used to open Gemini in Chrome.">
+  <message name="IDS_GLIC_BUTTON_ENTRYPOINT_LABEL" desc="Label on the button used to open Gemini in Chrome." formatter_data="android_java">
     Gemini
   </message>
 
-  <message name="IDS_GLIC_BUTTON_ENTRYPOINT_ASK_GEMINI_LABEL" desc="Label on the button used to open Gemini in Chrome.">
+  <message name="IDS_GLIC_BUTTON_ENTRYPOINT_ASK_GEMINI_LABEL" desc="Label on the button used to open Gemini in Chrome." formatter_data="android_java">
     Ask Gemini
   </message>
   <message name="IDS_GLIC_BUTTON_ENTRYPOINT_BROWSE_LABEL" desc="Label on the button used to open Gemini in Chrome.">
@@ -357,6 +388,7 @@
   <if expr="not use_titlecase">
     <message name="IDS_CONTENT_CONTEXT_GLICSHAREIMAGE" desc="Share image with Gemini and recreate based on user-selected prompt">Create image with Gemini</message>
   </if>
+
   <!-- IPH -->
   <if expr="use_titlecase">
     <message name="IDS_GLIC_PROMO_CONFIRM" desc="The button that a user clicks to open Gemini.">Try Now</message>
@@ -369,5 +401,16 @@
   </message>
   <message name="IDS_GLIC_TRYIT_BODY" desc="Text for a promo pointing to the Gemini icon in Chrome, that opens Gemini in Chrome if selected.">
     Chat with Gemini in Chrome to get answers, key takeaways, and more as you browse
+  </message>
+
+  <!-- Shortcut IPH -->
+  <message name="IDS_GLIC_SHORTCUT_IPH_TEXT_TEMPLATE" desc="Placeholder for string to be shown for IPH informing users about Glic keyboard shortcut." translateable="false">
+    <ph name="message">$1<ex>Easily open with Ctrl+⌘+G</ex></ph>
+  </message>
+  <message name="IDS_GLIC_SHORTCUT_IPH_TEXT" desc="Title for a promo pointing to the Gemini icon in Chrome. It informs the user about a keyboard shortcut for quicly opening Gemini in Chrome.">
+    Easily open with <ph name="FOCUS_TOGGLE_HOTKEY">$1<ex>Ctrl+⌘+G</ex></ph>
+  </message>
+  <message name="IDS_GLIC_SHORTCUT_IPH_SCREENREADER" is_accessibility_with_no_ui="true" desc="Title for a promo pointing to the Gemini icon in Chrome for screen readers. It informs the user about a keyboard shortcut for quicly opening Gemini in Chrome.">
+    Easily open Gemini in Chrome with <ph name="FOCUS_TOGGLE_HOTKEY">$1<ex>Ctrl+⌘+G</ex></ph>
   </message>
 </grit-part>

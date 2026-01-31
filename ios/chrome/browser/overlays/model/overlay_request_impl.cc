@@ -34,7 +34,7 @@ OverlayCallbackManager* OverlayRequestImpl::GetCallbackManager() {
 }
 
 web::WebState* OverlayRequestImpl::GetQueueWebState() {
-  return queue_web_state_;
+  return queue_web_state_.get();
 }
 
 OverlayRequestId OverlayRequestImpl::GetRequestId() const {

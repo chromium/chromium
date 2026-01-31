@@ -25,11 +25,11 @@ static const char kAddressSortingCode[] = "sortingCode";
 
 }  // namespace
 
-base::Value::Dict PaymentAddressToValueDict(
+base::DictValue PaymentAddressToValueDict(
     const mojom::PaymentAddress& address) {
-  base::Value::Dict result;
+  base::DictValue result;
   result.Set(kAddressCountry, address.country);
-  base::Value::List address_line_list;
+  base::ListValue address_line_list;
   for (const std::string& address_line_string : address.address_line) {
     if (!address_line_string.empty())
       address_line_list.Append(address_line_string);

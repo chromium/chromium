@@ -108,7 +108,7 @@ TEST(AttributionScopesSetTest, ParseSource) {
 
   for (const auto& test_case : kTestCases) {
     SCOPED_TRACE(test_case.desc);
-    base::Value::Dict value = base::test::ParseJsonDict(test_case.json);
+    base::DictValue value = base::test::ParseJsonDict(test_case.json);
     EXPECT_THAT(AttributionScopesSet::FromJSON(value, test_case.scope_limit),
                 test_case.matches);
   }
@@ -190,7 +190,7 @@ TEST(AttributionScopesSetTest, ParseTrigger) {
 
   for (const auto& test_case : kTestCases) {
     SCOPED_TRACE(test_case.desc);
-    base::Value::Dict value = base::test::ParseJsonDict(test_case.json);
+    base::DictValue value = base::test::ParseJsonDict(test_case.json);
     EXPECT_THAT(AttributionScopesSet::FromJSON(value), test_case.matches);
   }
 }
@@ -211,7 +211,7 @@ TEST(AttributionScopesSetTest, ToJsonSource) {
   };
 
   for (const auto& test_case : kTestCases) {
-    base::Value::Dict actual;
+    base::DictValue actual;
     test_case.input.SerializeForSource(actual);
     EXPECT_THAT(actual, base::test::IsJson(test_case.expected_json));
   }
@@ -233,7 +233,7 @@ TEST(AttributionScopesSetTest, ToJsonTrigger) {
   };
 
   for (const auto& test_case : kTestCases) {
-    base::Value::Dict actual;
+    base::DictValue actual;
     test_case.input.SerializeForTrigger(actual);
     EXPECT_THAT(actual, base::test::IsJson(test_case.expected_json));
   }

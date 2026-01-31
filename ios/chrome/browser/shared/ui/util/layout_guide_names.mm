@@ -37,8 +37,11 @@ GuideName* const kPageActionMenuEntrypointGuide =
 GuideName* const kReaderModeOptionsEntrypointGuide =
     @"kReaderModeOptionsEntrypointGuide";
 GuideName* const kNTPIdentityDiscButtonGuide = @"kNTPIdentityDiscButtonGuide";
+GuideName* const kNTPFirstMostVisitedTileGuide =
+    @"kNTPFirstMostVisitedTileGuide";
 GuideName* const kSelectedRegularCellGuide = @"kSelectedRegularCellGuide";
 GuideName* const kLocationBarBadgeLargeEntrypointGuide =
     @"kLocationBarBadgeLargeEntrypointGuide";
 GuideName* const kInputAccessoryViewLayoutGuide =
     @"kInputAccessoryViewLayoutGuide";
+GuideName* const kAppBarGuide = @"kAppBarGuide";

@@ -8,6 +8,7 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <variant>
 
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
@@ -16,6 +17,7 @@
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/permissions/permission_decision.h"
+#include "components/permissions/permission_prompt_decision.h"
 #include "components/permissions/permission_request_data.h"
 #include "components/permissions/permission_request_enums.h"
 #include "components/permissions/request_type.h"
@@ -48,10 +50,9 @@ class PermissionRequest {
   // be passed into this callback.
   // If `is_one_time` is true, the decision will last until all tabs of
   // `requesting_origin_` are closed or navigated away from.
-  using PermissionDecidedCallback = base::RepeatingCallback<void(
-      PermissionDecision /*decision*/,
-      bool /*is_final_decision*/,
-      const PermissionRequestData& /*request_data*/)>;
+  using PermissionDecidedCallback =
+      base::RepeatingCallback<void(const PermissionPromptDecision&,
+                                   const PermissionRequestData&)>;
 
   // `permission_decided_callback` is called when the permission request is
   // resolved by the user (see comment on PermissionDecidedCallback above).
@@ -181,7 +182,7 @@ class PermissionRequest {
   // If |is_one_time| is true the permission will last until all tabs of
   // |origin| are closed or navigated away from, and then the permission will
   // automatically expire after 1 day.
-  void PermissionGranted(bool is_one_time);
+  void PermissionGranted(const PromptOptions& prompt_options, bool is_one_time);
 
   // Called when the user has denied the requested permission.
   void PermissionDenied();
@@ -195,12 +196,6 @@ class PermissionRequest {
   // To keep things simple this metric is only recorded for the most popular
   // request types.
   PermissionRequestGestureType GetGestureType() const;
-
-  // Used to store the prompt options for the permission request.
-  void SetPromptOptions(PromptOptions prompt_options);
-
-  // Return stored prompt options.
-  const PromptOptions& prompt_options() const { return data_->prompt_options; }
 
   virtual const std::vector<std::string>& GetRequestedAudioCaptureDeviceIds()
       const;

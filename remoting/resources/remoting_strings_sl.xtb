@@ -27,7 +27,6 @@
 <translation id="2329392777730037872">Ni bilo mogoče odpreti <ph name="URL" /> v tem odjemalcu.</translation>
 <translation id="2359808026110333948">Naprej</translation>
 <translation id="2366718077645204424">Ni mogoče vzpostaviti povezave z gostiteljem; verjetno zaradi konfiguracije omrežja, ki ga uporabljate.</translation>
-<translation id="242591256144136845">Copyright 2025 Google LLC. Vse pravice pridržane.</translation>
 <translation id="2504109125669302160">Odobritev dovoljenja »Dostopnost« izdelku <ph name="PRODUCT_NAME" /></translation>
 <translation id="2540992418118313681">Ali želite ta računalnik deliti z drugimi, tako da bo imel drug uporabnik do njega dostop in ga bo lahko nadziral?</translation>
 <translation id="2579271889603567289">Gostitelj se je zrušil ali ga ni bilo mogoče zagnati.</translation>
@@ -45,6 +44,7 @@
 <translation id="3150823315463303127">Gostitelj ni mogel prebrati pravilnika.</translation>
 <translation id="3171922709365450819">Te naprave ne podpira odjemalec, ker zahteva preverjanje pristnosti tretje osebe.</translation>
 <translation id="3197730452537982411">Oddaljeno namizje</translation>
+<translation id="3236334139428307578">Copyright 2026 Ustvarjalci Chromiuma. Vse pravice pridržane.</translation>
 <translation id="324272851072175193">Pošlji ta navodila po e-pošti</translation>
 <translation id="3305934114213025800"><ph name="PRODUCT_NAME" /> želi narediti spremembe.</translation>
 <translation id="3339299787263251426">Varen dostop do računalnika prek interneta</translation>
@@ -102,6 +102,7 @@
 <translation id="5810269635982033450">Zaslon deluje kot sledilna ploščica</translation>
 <translation id="5823554426827907568">Oseba <ph name="CLIENT_USERNAME" /> je zahtevala dostop za ogled vašega zaslona in nadziranje tipkovnice ter miške. Pritisnite »<ph name="IDS_SHARE_CONFIRM_DIALOG_DECLINE" />«, če te zahteve ne pričakujete. Sicer izberite »<ph name="IDS_SHARE_CONFIRM_DIALOG_CONFIRM" />«, če želite dovoliti povezavo, ko bo pripravljena.</translation>
 <translation id="5823658491130719298">V računalniku, do katerega želite dostopati na daljavo, odprite Chrome in obiščite <ph name="INSTALLATION_LINK" /></translation>
+<translation id="5965133372831030509">Copyright 2026 Google LLC. Vse pravice pridržane.</translation>
 <translation id="6040143037577758943">Zapri</translation>
 <translation id="6062854958530969723">Inicializacija gostitelja ni uspela.</translation>
 <translation id="6099500228377758828">Storitev Oddaljeno namizje za Chrome</translation>
@@ -126,7 +127,6 @@
 <translation id="7067321367069083429">Zaslon deluje kot zaslon na dotik</translation>
 <translation id="7116737094673640201">Pozdravljeni v Oddaljenem namizju za Chrome</translation>
 <translation id="7144878232160441200">Poskusi ponovno</translation>
-<translation id="7298392173540380852">Copyright 2025 Ustvarjalci Chromiuma. Vse pravice pridržane.</translation>
 <translation id="7312846573060934304">Gostitelj ni dosegljiv.</translation>
 <translation id="7319983568955948908">Prekliči skupno rabo</translation>
 <translation id="7359298090707901886">Izbranega brskalnika ni mogoče uporabiti za odpiranje URL-jev v lokalnem računalniku.</translation>

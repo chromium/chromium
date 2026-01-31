@@ -111,16 +111,15 @@ void GraphicsTabletPrefHandlerImpl::UpdateGraphicsTabletSettings(
   const base::Time time_stamp = base::Time::Now();
   const auto time_stamp_path =
       base::StrCat({prefs::kLastUpdatedKey, ".", graphics_tablet.device_key});
-  base::Value::List tablet_button_remappings =
-      ConvertButtonRemappingArrayToList(
-          settings.tablet_button_remappings,
-          graphics_tablet.customization_restriction);
-  base::Value::List pen_button_remappings = ConvertButtonRemappingArrayToList(
+  base::ListValue tablet_button_remappings = ConvertButtonRemappingArrayToList(
+      settings.tablet_button_remappings,
+      graphics_tablet.customization_restriction);
+  base::ListValue pen_button_remappings = ConvertButtonRemappingArrayToList(
       settings.pen_button_remappings,
       graphics_tablet.customization_restriction);
 
   // Update tablet button remappings dict.
-  base::Value::Dict tablet_button_remappings_dict =
+  base::DictValue tablet_button_remappings_dict =
       pref_service
           ->GetDict(prefs::kGraphicsTabletTabletButtonRemappingsDictPref)
           .Clone();
@@ -133,7 +132,7 @@ void GraphicsTabletPrefHandlerImpl::UpdateGraphicsTabletSettings(
       std::move(tablet_button_remappings_dict));
 
   // Update pen button remappings dict.
-  base::Value::Dict pen_button_remappings_dict =
+  base::DictValue pen_button_remappings_dict =
       pref_service->GetDict(prefs::kGraphicsTabletPenButtonRemappingsDictPref)
           .Clone();
   pen_button_remappings_dict.Set(graphics_tablet.device_key,

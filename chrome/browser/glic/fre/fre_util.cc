@@ -8,11 +8,11 @@
 #include <cstddef>
 
 #include "base/command_line.h"
+#include "base/logging.h"
+#include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/glic/glic_hotkey.h"
 #include "chrome/browser/glic/host/guest_util.h"
-#include "chrome/browser/themes/theme_service.h"
-#include "chrome/browser/themes/theme_service_factory.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_switches.h"
 #include "components/language/core/common/language_util.h"
@@ -21,6 +21,11 @@
 #include "net/base/url_util.h"
 #include "ui/native_theme/native_theme.h"
 #include "url/gurl.h"
+
+#if !BUILDFLAG(IS_ANDROID)  // NEEDS_ANDROID_IMPL
+#include "chrome/browser/themes/theme_service.h"
+#include "chrome/browser/themes/theme_service_factory.h"
+#endif
 
 namespace glic {
 
@@ -37,6 +42,7 @@ GURL GetFreURL(Profile* profile) {
     return GURL();
   }
 
+#if !BUILDFLAG(IS_ANDROID)  // NEEDS_ANDROID_IMPL
   // Add the hotkey configuration to the URL as a query parameter.
   std::string hotkey_param_value;
 #if !BUILDFLAG(IS_MAC)
@@ -48,10 +54,15 @@ GURL GetFreURL(Profile* profile) {
   if (!hotkey_param_value.empty()) {
     url = net::AppendOrReplaceQueryParameter(url, "hotkey", hotkey_param_value);
   }
+#endif  // !BUILDFLAG(IS_ANDROID)
 
   // Add the current Chrome theme to the URL as a query parameter.
+#if !BUILDFLAG(IS_ANDROID)  // NEEDS_ANDROID_IMPL
   const bool use_dark_mode =
       ThemeServiceFactory::GetForProfile(profile)->BrowserUsesDarkColors();
+#else
+  const bool use_dark_mode = false;
+#endif
   std::string theme_value = use_dark_mode ? "dark" : "light";
   url = net::AppendOrReplaceQueryParameter(url, "theme", theme_value);
 

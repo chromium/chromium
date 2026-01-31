@@ -14,7 +14,6 @@
 #include <utility>
 
 #include "base/atomic_sequence_num.h"
-#include "base/containers/contains.h"
 #include "base/format_macros.h"
 #include "base/functional/bind.h"
 #include "base/notreached.h"
@@ -182,9 +181,6 @@ ResourcePool::ResourcePool(
       clock_(base::DefaultTickClock::GetInstance()) {
   base::trace_event::MemoryDumpManager::GetInstance()->RegisterDumpProvider(
       this, "cc::ResourcePool", task_runner_.get());
-  memory_pressure_listener_registration_ =
-      std::make_unique<base::AsyncMemoryPressureListenerRegistration>(
-          FROM_HERE, base::MemoryPressureListenerTag::kResourcePool, this);
 }
 
 ResourcePool::~ResourcePool() {
@@ -375,7 +371,7 @@ void ResourcePool::OnResourceReleased(size_t unique_id,
   // while it was still in use by the ResourcePool client. That would prevent
   // the client from being able to use the ResourceId on the InUsePoolResource,
   // which would be problematic!
-  DCHECK(!base::Contains(in_use_resources_, unique_id));
+  DCHECK(!in_use_resources_.contains(unique_id));
 
   // TODO(danakj): Should busy_resources be a map?
   auto busy_it =
@@ -462,12 +458,12 @@ void ResourcePool::ReleaseResource(InUsePoolResource in_use_resource) {
 
     // Maybe this is a double free - see if the resource exists in our busy
     // list.
-    CHECK(!base::Contains(busy_resources_, pool_resource->unique_id(),
-                          &PoolResource::unique_id));
+    CHECK(!std::ranges::contains(busy_resources_, pool_resource->unique_id(),
+                                 &PoolResource::unique_id));
 
     // Also check if the resource exists in our unused resources list.
-    CHECK(!base::Contains(unused_resources_, pool_resource->unique_id(),
-                          &PoolResource::unique_id));
+    CHECK(!std::ranges::contains(unused_resources_, pool_resource->unique_id(),
+                                 &PoolResource::unique_id));
 
     // Resource doesn't exist in any of our lists. NOTREACHED().
     NOTREACHED();
@@ -679,18 +675,6 @@ bool ResourcePool::OnMemoryDump(const base::trace_event::MemoryDumpArgs& args,
     }
   }
   return true;
-}
-
-void ResourcePool::OnMemoryPressure(base::MemoryPressureLevel level) {
-  switch (level) {
-    case base::MEMORY_PRESSURE_LEVEL_NONE:
-    case base::MEMORY_PRESSURE_LEVEL_MODERATE:
-      break;
-    case base::MEMORY_PRESSURE_LEVEL_CRITICAL:
-      EvictResourcesNotUsedSince(base::TimeTicks() + base::TimeDelta::Max());
-      FlushEvictedResources();
-      break;
-  }
 }
 
 ResourcePool::PoolResource::PoolResource(ResourcePool* resource_pool,

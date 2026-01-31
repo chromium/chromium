@@ -37,7 +37,8 @@ String BluetoothError::CreateNotConnectedExceptionMessage(
       operation_string = "perform GATT operations";
       break;
   }
-  return String::Format(kGATTServerNotConnectedBase, operation_string);
+  return UNSAFE_TODO(
+      String::Format(kGATTServerNotConnectedBase, operation_string));
 }
 
 // static

@@ -31,6 +31,7 @@ import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.RequiresRestart;
 import org.chromium.base.test.util.Restriction;
@@ -39,6 +40,7 @@ import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager.PersistedInstanceType;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
+import org.chromium.chrome.browser.tab.InterceptNavigationDelegateClientImpl;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabCreationState;
 import org.chromium.chrome.browser.tab.TabLaunchType;
@@ -50,6 +52,7 @@ import org.chromium.chrome.test.transit.page.WebPageStation;
 import org.chromium.chrome.test.util.ChromeTabUtils;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.net.test.EmbeddedTestServer;
+import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.url.GURL;
 
 import java.util.concurrent.TimeUnit;
@@ -120,6 +123,7 @@ public class ChromeTabCreatorTest {
     @Restriction(RESTRICTION_TYPE_NON_LOW_END_DEVICE)
     @MediumTest
     @Feature({"Browser"})
+    @DisableIf.Device(DeviceFormFactor.DESKTOP) // crbug.com/376371633
     public void testCreateNewTabInBackground() {
         final Tab fgTab = mPage.loadedTabElement.value();
         Tab bgTab =
@@ -512,6 +516,10 @@ public class ChromeTabCreatorTest {
     @Feature({"Browser"})
     @RequiresRestart // Avoid having multiple windows mess up the other tests
     public void testCreateNewTabInNewWindow() {
+        final boolean expectReparent = MultiWindowUtils.isMultiInstanceApi31Enabled();
+        if (expectReparent) {
+            InterceptNavigationDelegateClientImpl.setIsDesktopWindowingModeForTesting(true);
+        }
         Tab currentTab = mActivityTestRule.getActivityTab();
         String testPath = mTestServer.getURL(TEST_PATH);
         ThreadUtils.runOnUiThreadBlocking(
@@ -524,7 +532,7 @@ public class ChromeTabCreatorTest {
                                         TabLaunchType.FROM_LINK_CREATING_NEW_WINDOW,
                                         currentTab));
 
-        if (MultiWindowUtils.isMultiInstanceApi31Enabled()) {
+        if (expectReparent) {
             CriteriaHelper.pollUiThread(
                     () ->
                             MultiWindowUtils.getInstanceCountWithFallback(

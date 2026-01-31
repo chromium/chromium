@@ -7,6 +7,7 @@
 #include <optional>
 #include <string_view>
 
+#include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/uuid.h"
@@ -33,12 +34,15 @@ network::mojom::URLResponseHeadPtr CreateResourceResponse(
 
 std::string CreateHeaderString(
     const web_package::mojom::BundleResponsePtr& response) {
-  std::vector<std::string> header_strings;
+  std::vector<std::string_view> header_strings;
+  header_strings.reserve(6 + 4 * response->response_headers.size());
+
   header_strings.push_back("HTTP/1.1 ");
-  header_strings.push_back(base::NumberToString(response->response_code));
+  std::string response_code_as_string =
+      base::NumberToString(response->response_code);
+  header_strings.push_back(response_code_as_string);
   header_strings.push_back(" ");
-  header_strings.push_back(net::GetHttpReasonPhrase(
-      static_cast<net::HttpStatusCode>(response->response_code)));
+  header_strings.push_back(net::GetHttpReasonPhrase(response->response_code));
   header_strings.push_back(kCrLf);
   for (const auto& it : response->response_headers) {
     header_strings.push_back(it.first);
@@ -47,8 +51,7 @@ std::string CreateHeaderString(
     header_strings.push_back(kCrLf);
   }
   header_strings.push_back(kCrLf);
-  return net::HttpUtil::AssembleRawHeaders(
-      base::JoinString(header_strings, ""));
+  return net::HttpUtil::AssembleRawHeaders(base::StrCat(header_strings));
 }
 
 network::mojom::URLResponseHeadPtr CreateResourceResponseFromHeaderString(

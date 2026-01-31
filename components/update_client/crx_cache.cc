@@ -180,7 +180,7 @@ base::expected<base::FilePath, UnpackerError> CrxCacheImpl::Put(
   }
 
   // Update metadata.
-  base::Value::Dict data;
+  base::DictValue data;
   data.Set("appid", app_id);
   metadata_->SetValue(base::StrCat({"hashes.", hash}),
                       base::Value(std::move(data)), 0);

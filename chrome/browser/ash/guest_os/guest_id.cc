@@ -9,7 +9,6 @@
 #include <string_view>
 #include <vector>
 
-#include "base/containers/contains.h"
 #include "base/logging.h"
 #include "base/no_destructor.h"
 #include "base/strings/string_split.h"
@@ -51,7 +50,7 @@ GuestId::GuestId(std::string vm_name, std::string container_name) noexcept
       container_name(std::move(container_name)) {}
 
 GuestId::GuestId(const base::Value& value) noexcept {
-  const base::Value::Dict* dict = value.GetIfDict();
+  const base::DictValue* dict = value.GetIfDict();
   vm_type = VmTypeFromPref(value);
   const std::string* vm = nullptr;
   const std::string* container = nullptr;
@@ -70,8 +69,8 @@ base::flat_map<std::string, std::string> GuestId::ToMap() const {
   return extras;
 }
 
-base::Value::Dict GuestId::ToDictValue() const {
-  base::Value::Dict dict;
+base::DictValue GuestId::ToDictValue() const {
+  base::DictValue dict;
   dict.Set(prefs::kVmTypeKey, static_cast<int>(vm_type));
   dict.Set(prefs::kVmNameKey, vm_name);
   dict.Set(prefs::kContainerNameKey, container_name);
@@ -134,7 +133,7 @@ bool MatchContainerDict(const base::Value& dict, const GuestId& container_id) {
 
 std::vector<GuestId> GetContainers(Profile* profile, VmType vm_type) {
   std::vector<GuestId> result;
-  const base::Value::List& container_list =
+  const base::ListValue& container_list =
       profile->GetPrefs()->GetList(prefs::kGuestOsContainers);
   for (const auto& container : container_list) {
     guest_os::GuestId id(container);
@@ -147,7 +146,7 @@ std::vector<GuestId> GetContainers(Profile* profile, VmType vm_type) {
 
 void AddContainerToPrefs(Profile* profile,
                          const GuestId& container_id,
-                         base::Value::Dict properties) {
+                         base::DictValue properties) {
   ScopedListPrefUpdate updater(profile->GetPrefs(), prefs::kGuestOsContainers);
   if (std::ranges::any_of(*updater, [&container_id](const auto& dict) {
         return MatchContainerDict(dict, container_id);
@@ -155,9 +154,9 @@ void AddContainerToPrefs(Profile* profile,
     return;
   }
 
-  base::Value::Dict new_container = container_id.ToDictValue();
+  base::DictValue new_container = container_id.ToDictValue();
   for (auto [key, value] : properties) {
-    if (base::Contains(*kPropertiesAllowList, key)) {
+    if (std::ranges::contains(*kPropertiesAllowList, key)) {
       new_container.Set(key, std::move(value));
     }
   }
@@ -167,7 +166,7 @@ void AddContainerToPrefs(Profile* profile,
 void RemoveContainerFromPrefs(Profile* profile, const GuestId& container_id) {
   auto* pref_service = profile->GetPrefs();
   ScopedListPrefUpdate updater(pref_service, prefs::kGuestOsContainers);
-  base::Value::List& update_list = updater.Get();
+  base::ListValue& update_list = updater.Get();
   auto it = std::ranges::find_if(update_list, [&](const auto& dict) {
     return MatchContainerDict(dict, container_id);
   });
@@ -179,7 +178,7 @@ void RemoveContainerFromPrefs(Profile* profile, const GuestId& container_id) {
 void RemoveVmFromPrefs(Profile* profile, VmType vm_type) {
   auto* pref_service = profile->GetPrefs();
   ScopedListPrefUpdate updater(pref_service, prefs::kGuestOsContainers);
-  base::Value::List& update_list = updater.Get();
+  base::ListValue& update_list = updater.Get();
   auto it = std::ranges::find(update_list, vm_type, &VmTypeFromPref);
   if (it != update_list.end()) {
     update_list.erase(it);
@@ -189,7 +188,7 @@ void RemoveVmFromPrefs(Profile* profile, VmType vm_type) {
 const base::Value* GetContainerPrefValue(Profile* profile,
                                          const GuestId& container_id,
                                          const std::string& key) {
-  const base::Value::List& containers =
+  const base::ListValue& containers =
       profile->GetPrefs()->GetList(prefs::kGuestOsContainers);
   for (const auto& dict : containers) {
     if (MatchContainerDict(dict, container_id)) {
@@ -208,7 +207,7 @@ void UpdateContainerPref(Profile* profile,
     return MatchContainerDict(dict, container_id);
   });
   if (it != updater->end()) {
-    if (base::Contains(*kPropertiesAllowList, key)) {
+    if (std::ranges::contains(*kPropertiesAllowList, key)) {
       it->GetDict().Set(key, std::move(value));
     } else {
       LOG(ERROR) << "Ignoring disallowed property: " << key;
@@ -219,16 +218,16 @@ void UpdateContainerPref(Profile* profile,
 void MergeContainerPref(Profile* profile,
                         const GuestId& container_id,
                         const std::string& key,
-                        base::Value::Dict dict) {
+                        base::DictValue dict) {
   ScopedListPrefUpdate updater(profile->GetPrefs(), prefs::kGuestOsContainers);
   auto it = std::ranges::find_if(*updater, [&](const auto& dict) {
     return MatchContainerDict(dict, container_id);
   });
   if (it != updater->end()) {
-    if (base::Contains(*kPropertiesAllowList, key)) {
-      base::Value::Dict* old_container_dict = it->GetIfDict();
+    if (std::ranges::contains(*kPropertiesAllowList, key)) {
+      base::DictValue* old_container_dict = it->GetIfDict();
       if (old_container_dict) {
-        base::Value::Dict wrapped;
+        base::DictValue wrapped;
         wrapped.Set(key, std::move(dict));
         old_container_dict->Merge(std::move(wrapped));
       } else {

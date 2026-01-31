@@ -24,7 +24,8 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
-import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.supplier.ObservableSuppliers;
+import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.ui.modelutil.PropertyModel;
 
@@ -41,17 +42,17 @@ public class HubActionButtonMediatorUnitTest {
     @Mock private FullButtonData mIncognitoFullButtonData;
     @Mock private HubColorMixer mColorMixer;
 
-    private ObservableSupplierImpl<FullButtonData> mActionButtonSupplier;
-    private ObservableSupplierImpl<FullButtonData> mIncognitoActionButtonSupplier;
-    private ObservableSupplierImpl<Pane> mFocusedPaneSupplier;
+    private SettableMonotonicObservableSupplier<FullButtonData> mActionButtonSupplier;
+    private SettableMonotonicObservableSupplier<FullButtonData> mIncognitoActionButtonSupplier;
+    private SettableMonotonicObservableSupplier<Pane> mFocusedPaneSupplier;
     private PropertyModel mModel;
     private HubActionButtonMediator mMediator;
 
     @Before
     public void setUp() {
-        mActionButtonSupplier = new ObservableSupplierImpl<>();
-        mIncognitoActionButtonSupplier = new ObservableSupplierImpl<>();
-        mFocusedPaneSupplier = new ObservableSupplierImpl<>();
+        mActionButtonSupplier = ObservableSuppliers.createMonotonic();
+        mIncognitoActionButtonSupplier = ObservableSuppliers.createMonotonic();
+        mFocusedPaneSupplier = ObservableSuppliers.createMonotonic();
 
         mModel =
                 new PropertyModel.Builder(HubActionButtonProperties.ALL_ACTION_BUTTON_KEYS)

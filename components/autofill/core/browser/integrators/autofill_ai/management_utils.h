@@ -7,6 +7,7 @@
 
 #include <string>
 
+#include "components/autofill/core/browser/country_type.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_type.h"
 
 namespace autofill {
@@ -23,6 +24,9 @@ std::string GetEditEntityTypeStringForI18n(EntityType entity_type);
 // example, for a passport for "en-US", this function should return "Delete
 // passport".
 std::string GetDeleteEntityTypeStringForI18n(EntityType entity_type);
+
+// Returns all entities that users can add from the settings page.
+DenseSet<EntityType> GetWritableEntityTypes(const GeoIpCountryCode& country_code);
 
 }  // namespace autofill
 

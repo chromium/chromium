@@ -52,6 +52,10 @@ OmniboxController* TestBrowserWindow::TestLocationBar::GetOmniboxController() {
   return nullptr;
 }
 
+ChipController* TestBrowserWindow::TestLocationBar::GetChipController() {
+  return nullptr;
+}
+
 LocationBarTesting*
     TestBrowserWindow::TestLocationBar::GetLocationBarForTesting() {
   return nullptr;
@@ -68,6 +72,26 @@ content::WebContents* TestBrowserWindow::TestLocationBar::GetWebContents() {
 std::optional<bubble_anchor_util::AnchorConfiguration>
 TestBrowserWindow::TestLocationBar::GetChipAnchor() {
   return {};
+}
+
+bool TestBrowserWindow::TestLocationBar::IsVisible() const {
+  return true;
+}
+
+gfx::Rect TestBrowserWindow::TestLocationBar::Bounds() const {
+  return gfx::Rect();
+}
+
+gfx::Size TestBrowserWindow::TestLocationBar::MinimumSize() const {
+  return gfx::Size();
+}
+
+gfx::Size TestBrowserWindow::TestLocationBar::PreferredSize() const {
+  return gfx::Size();
+}
+
+bool TestBrowserWindow::TestLocationBar::HasSecurityStateChanged() {
+  return false;
 }
 
 // TestBrowserWindow ----------------------------------------------------------
@@ -218,10 +242,6 @@ autofill::AutofillBubbleHandler* TestBrowserWindow::GetAutofillBubbleHandler() {
   return &autofill_bubble_handler_;
 }
 
-ExtensionsContainer* TestBrowserWindow::GetExtensionsContainer() {
-  return nullptr;
-}
-
 content::KeyboardEventProcessingResult
 TestBrowserWindow::PreHandleKeyboardEvent(
     const input::NativeWebKeyboardEvent& event) {
@@ -245,7 +265,7 @@ bool TestBrowserWindow::IsTabStripEditable() const {
   return is_tab_strip_editable_;
 }
 
-void TestBrowserWindow::SetTabStripNotEditableForTesting() {
+void TestBrowserWindow::DisableTabStripEditingForTesting() {
   is_tab_strip_editable_ = false;
 }
 

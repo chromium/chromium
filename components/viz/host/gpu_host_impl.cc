@@ -30,6 +30,7 @@
 #include "gpu/ipc/host/gpu_disk_cache.h"
 #include "gpu/webgpu/dawn_commit_hash.h"
 #include "mojo/public/cpp/bindings/sync_call_restrictions.h"
+#include "services/webnn/host/weights_file_provider.h"
 #include "skia/buildflags.h"
 #include "skia/ext/skia_commit_hash.h"
 #include "ui/gfx/font_render_params.h"
@@ -377,7 +378,7 @@ void GpuHostImpl::CloseChannel(int client_id) {
 }
 
 #if BUILDFLAG(USE_VIZ_DEBUGGER)
-void GpuHostImpl::FilterVisualDebugStream(base::Value::Dict json) {
+void GpuHostImpl::FilterVisualDebugStream(base::DictValue json) {
   viz_main_->FilterDebugStream(std::move(json));
 }
 
@@ -793,6 +794,10 @@ void GpuHostImpl::EnsureWebNNExecutionProvidersReady(
   webnn::EnsureExecutionProvidersReady(std::move(cb));
 }
 #endif
+
+void GpuHostImpl::CreateWebNNWeightsFile(CreateWebNNWeightsFileCallback cb) {
+  webnn::CreateWeightsFile(std::move(cb));
+}
 
 void GpuHostImpl::RecordLogMessage(int32_t severity,
                                    const std::string& header,

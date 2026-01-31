@@ -50,9 +50,7 @@ namespace blink {
 namespace {
 
 bool IsTracingEnabled() {
-  bool enabled;
-  TRACE_EVENT_CATEGORY_GROUP_ENABLED("blink.user_timing", &enabled);
-  return enabled;
+  return TRACE_EVENT_CATEGORY_ENABLED("blink.user_timing");
 }
 
 }  // namespace

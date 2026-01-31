@@ -8,6 +8,7 @@
 
 #include "base/base64.h"
 #include "chrome/browser/web_applications/proto/web_app.pb.h"
+#include "chrome/browser/web_applications/test/web_app_test_utils.h"
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "components/sync/protocol/web_app_specifics.pb.h"
@@ -68,10 +69,8 @@ TEST(WebAppProtoUtilsTest, M85SpecificsProtoParse) {
             parsed_icon_infos.value()[0].purpose);
 
   // Check the proto can be stored on a web app struct.
-  WebApp web_app("app_id");
-  web_app.SetStartUrl(GURL(kStartUrl));
-  web_app.SetManifestId(webapps::ManifestId(kStartUrl));
-  web_app.SetSyncProto(sync_proto);
+  std::unique_ptr<WebApp> web_app = test::CreateWebApp(GURL(kStartUrl));
+  web_app->SetSyncProto(sync_proto);
 }
 
 // Test that a minimal M85 proto (ie. only fields that would always be set in
@@ -95,10 +94,8 @@ TEST(WebAppProtoUtilsTest, M85SpecificsProtoToWebApp_Minimal) {
   ASSERT_EQ(0u, parsed_icon_infos->size());
 
   // Check the proto can be stored on a web app struct.
-  WebApp web_app("app_id");
-  web_app.SetStartUrl(GURL(kStartUrl));
-  web_app.SetManifestId(webapps::ManifestId(kStartUrl));
-  web_app.SetSyncProto(sync_proto);
+  std::unique_ptr<WebApp> web_app = test::CreateWebApp(GURL(kStartUrl));
+  web_app->SetSyncProto(sync_proto);
 }
 
 // Test that a M85 proto with all fields populated is correctly parsed to a
@@ -162,13 +159,11 @@ TEST(WebAppProtoUtilsTest, SpecificsProtoWithNewFieldParses) {
   EXPECT_EQ(kStartUrl, sync_proto.start_url());
 
   // Check the proto can be stored on a web app struct.
-  WebApp web_app("app_id");
-  web_app.SetStartUrl(GURL(kStartUrl));
-  web_app.SetManifestId(webapps::ManifestId(kStartUrl));
-  web_app.SetSyncProto(sync_proto);
+  std::unique_ptr<WebApp> web_app = test::CreateWebApp(GURL(kStartUrl));
+  web_app->SetSyncProto(sync_proto);
 
   // Clear the extra field added due to normalizing the proto in `SetSyncProto`.
-  sync_pb::WebAppSpecifics result_proto = web_app.sync_proto();
+  sync_pb::WebAppSpecifics result_proto = web_app->sync_proto();
   result_proto.clear_relative_manifest_id();
 
   // Check that the sync proto retained its value, including the unknown field.
@@ -205,13 +200,11 @@ TEST(WebAppProtoUtilsTest, SpecificsProtoWithNewEnumValueParses) {
             sync_pb::WebAppSpecifics_UserDisplayMode_UNSPECIFIED);
 
   // Check the proto can be stored on a web app struct.
-  WebApp web_app("app_id");
-  web_app.SetStartUrl(GURL(kStartUrl));
-  web_app.SetManifestId(webapps::ManifestId(kStartUrl));
-  web_app.SetSyncProto(sync_proto);
+  std::unique_ptr<WebApp> web_app = test::CreateWebApp(GURL(kStartUrl));
+  web_app->SetSyncProto(sync_proto);
 
   // Clear the extra field added due to normalizing the proto in `SetSyncProto`.
-  sync_pb::WebAppSpecifics result_proto = web_app.sync_proto();
+  sync_pb::WebAppSpecifics result_proto = web_app->sync_proto();
   result_proto.clear_relative_manifest_id();
 
   // Check that the sync proto retained its value, including the unknown field.

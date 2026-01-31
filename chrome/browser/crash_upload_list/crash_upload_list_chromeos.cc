@@ -18,7 +18,7 @@ CrashUploadListChromeOS::CrashUploadListChromeOS(
 CrashUploadListChromeOS::~CrashUploadListChromeOS() = default;
 
 std::unique_ptr<UploadList::UploadInfo>
-CrashUploadListChromeOS::TryParseJsonLogEntry(const base::Value::Dict& dict) {
+CrashUploadListChromeOS::TryParseJsonLogEntry(const base::DictValue& dict) {
   auto upload_info = std::make_unique<CrashUploadInfo>(
       std::move(*TextLogUploadList::TryParseJsonLogEntry(dict)));
 

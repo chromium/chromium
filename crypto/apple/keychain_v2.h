@@ -11,6 +11,7 @@
 
 #include "base/apple/scoped_cftyperef.h"
 #include "base/no_destructor.h"
+#include "base/types/expected.h"
 #include "crypto/crypto_export.h"
 
 #if !BUILDFLAG(IS_IOS_TVOS)
@@ -65,6 +66,13 @@ class CRYPTO_EXPORT KeychainV2 {
   // ItemDelete wraps the |SecItemUpdate| function.
   virtual OSStatus ItemUpdate(CFDictionaryRef query,
                               CFDictionaryRef keychain_data);
+  // AddGenericPassword adds a generic password to the keychain.
+  virtual OSStatus AddGenericPassword(std::string_view service_name,
+                                      std::string_view account_name,
+                                      base::span<const uint8_t> password);
+  virtual base::expected<std::vector<uint8_t>, OSStatus> FindGenericPassword(
+      std::string_view service_name,
+      std::string_view account_name);
 
 #if !BUILDFLAG(IS_IOS)
   // TaskCopyValueForEntitlement wraps the |SecTaskCopyValueForEntitlement|

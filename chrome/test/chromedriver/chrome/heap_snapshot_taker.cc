@@ -23,7 +23,7 @@ HeapSnapshotTaker::~HeapSnapshotTaker() = default;
 
 Status HeapSnapshotTaker::TakeSnapshot(std::unique_ptr<base::Value>* snapshot) {
   Status status1 = TakeSnapshotInternal();
-  base::Value::Dict params;
+  base::DictValue params;
   Status status2 = client_->SendCommand("Debugger.disable", params);
 
   Status status3(kOk);
@@ -41,7 +41,7 @@ Status HeapSnapshotTaker::TakeSnapshot(std::unique_ptr<base::Value>* snapshot) {
 }
 
 Status HeapSnapshotTaker::TakeSnapshotInternal() {
-  base::Value::Dict params;
+  base::DictValue params;
   const auto kMethods = std::to_array<const char*>({
       "Debugger.enable",
       "HeapProfiler.collectGarbage",
@@ -62,7 +62,7 @@ bool HeapSnapshotTaker::ListensToConnections() const {
 
 Status HeapSnapshotTaker::OnEvent(DevToolsClient* client,
                                   const std::string& method,
-                                  const base::Value::Dict& params) {
+                                  const base::DictValue& params) {
   if (method == "HeapProfiler.addHeapSnapshotChunk") {
     const std::string* chunk = params.FindString("chunk");
     if (!chunk) {

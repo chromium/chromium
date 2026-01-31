@@ -18,8 +18,9 @@ import androidx.preference.PreferenceCategory;
 
 import org.chromium.base.ApkInfo;
 import org.chromium.base.Log;
-import org.chromium.base.supplier.ObservableSupplier;
-import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.supplier.MonotonicObservableSupplier;
+import org.chromium.base.supplier.ObservableSuppliers;
+import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -71,7 +72,8 @@ public class LanguageSettings extends ChromeBaseSettingsFragment
     private final AppLanguagePreferenceDelegate mAppLanguageDelegate =
             new AppLanguagePreferenceDelegate();
     private PrefChangeRegistrar mPrefChangeRegistrar;
-    private final ObservableSupplierImpl<String> mPageTitle = new ObservableSupplierImpl<>();
+    private final SettableMonotonicObservableSupplier<String> mPageTitle =
+            ObservableSuppliers.createMonotonic();
 
     @Override
     public void onCreatePreferences(@Nullable Bundle savedInstanceState, @Nullable String rootKey) {
@@ -89,7 +91,7 @@ public class LanguageSettings extends ChromeBaseSettingsFragment
     }
 
     @Override
-    public ObservableSupplier<String> getPageTitle() {
+    public MonotonicObservableSupplier<String> getPageTitle() {
         return mPageTitle;
     }
 
@@ -252,9 +254,10 @@ public class LanguageSettings extends ChromeBaseSettingsFragment
                     public boolean onPreferenceChange(Preference preference, Object newValue) {
                         boolean enabled = (boolean) newValue;
                         getPrefService().setBoolean(Pref.OFFER_TRANSLATE_ENABLED, enabled);
-                        updateTranslateAdvancedSectionIndex(enabled);
+                        updateTranslateAdvancedSectionIndex(enabled, /* refreshResult= */ true);
                         contentLanguagesPreference.notifyPrefChanged();
                         translationAdvancedSection.setVisible(enabled);
+                        notifyPreferencesUpdated();
                         LanguagesManager.recordAction(
                                 enabled
                                         ? LanguagesManager.LanguageSettingsActionType
@@ -476,13 +479,14 @@ public class LanguageSettings extends ChromeBaseSettingsFragment
                                 APP_LANGUAGE_PREFERENCE_KEY,
                                 R.string.default_lang_subtitle);
                         if (!UserPrefs.get(profile).getBoolean(Pref.OFFER_TRANSLATE_ENABLED)) {
-                            updateTranslateAdvancedSectionIndex(false);
+                            updateTranslateAdvancedSectionIndex(false, /* refreshResult= */ false);
                         }
                     }
                 }
             };
 
-    private static void updateTranslateAdvancedSectionIndex(boolean enabled) {
+    private static void updateTranslateAdvancedSectionIndex(
+            boolean enabled, boolean refreshResult) {
         var indexData = SettingsIndexData.getInstance();
         if (indexData == null) return;
 
@@ -494,10 +498,12 @@ public class LanguageSettings extends ChromeBaseSettingsFragment
                     prefFrag, ALWAYS_LANGUAGES_KEY, R.string.languages_settings_automatic);
             indexData.addEntryForKey(
                     prefFrag, NEVER_LANGUAGES_KEY, R.string.languages_settings_dont_offer_langs);
+            indexData.resolveIndex(); // Restores the header of the added entries.
         } else {
             indexData.removeEntryForKey(prefFrag, TARGET_LANGUAGE_KEY);
             indexData.removeEntryForKey(prefFrag, ALWAYS_LANGUAGES_KEY);
             indexData.removeEntryForKey(prefFrag, NEVER_LANGUAGES_KEY);
         }
+        if (refreshResult) indexData.setRefreshResult(true);
     }
 }

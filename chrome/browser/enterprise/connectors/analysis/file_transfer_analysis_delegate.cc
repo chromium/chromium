@@ -14,12 +14,13 @@
 #include "chrome/browser/ash/file_manager/volume_manager.h"
 #include "chrome/browser/enterprise/connectors/analysis/files_request_handler.h"
 #include "chrome/browser/enterprise/connectors/analysis/source_destination_matcher_ash.h"
+#include "chrome/browser/enterprise/connectors/common.h"
 #include "chrome/browser/enterprise/connectors/connectors_service.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/safe_browsing/cloud_content_scanning/binary_upload_service.h"
 #include "chrome/browser/safe_browsing/cloud_content_scanning/deep_scanning_utils.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "components/enterprise/connectors/core/analysis_settings.h"
+#include "components/enterprise/connectors/core/cloud_content_scanning/binary_upload_service.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "storage/browser/file_system/file_system_context.h"
@@ -27,8 +28,6 @@
 #include "storage/browser/file_system/file_system_operation_runner.h"
 #include "storage/browser/file_system/file_system_url.h"
 #include "storage/browser/file_system/recursive_operation_delegate.h"
-
-using safe_browsing::BinaryUploadService;
 
 namespace {
 
@@ -491,9 +490,8 @@ void FileTransferAnalysisDelegate::OnGotFileURLs(
   }
 
   request_handler_ = FilesRequestHandler::Create(
-      this,
-      safe_browsing::BinaryUploadService::GetForProfile(profile_, settings_),
-      profile_, GURL{},
+      this, GetBinaryUploadServiceForConnector(profile_, settings_), profile_,
+      GURL{},
       SourceDestinationMatcherAsh::GetVolumeDescriptionFromPath(
           profile_, source_url_.path()),
       SourceDestinationMatcherAsh::GetVolumeDescriptionFromPath(

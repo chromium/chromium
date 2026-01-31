@@ -4,6 +4,8 @@
 
 #include "ash/wm/workspace/multi_window_resize_controller.h"
 
+#include <algorithm>
+
 #include "ash/public/cpp/shelf_config.h"
 #include "ash/public/cpp/test/shell_test_api.h"
 #include "ash/shell.h"
@@ -18,7 +20,6 @@
 #include "ash/wm/wm_metrics.h"
 #include "ash/wm/workspace_controller.h"
 #include "ash/wm/workspace_controller_test_api.h"
-#include "base/containers/contains.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -69,7 +70,8 @@ class MultiWindowResizeControllerTest : public AshTestBase {
         resize_controller_->windows_.window2 == window) {
       return true;
     }
-    return base::Contains(resize_controller_->windows_.other_windows, window);
+    return std::ranges::contains(resize_controller_->windows_.other_windows,
+                                 window);
   }
 
   bool IsOverWindows(const gfx::Point& loc) {

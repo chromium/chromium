@@ -446,7 +446,7 @@ class PasswordFormManager : public PasswordFormManagerForUI,
   std::unique_ptr<FormFetcher> CreateFormFetcher();
 
   // The client which implements embedder-specific PasswordManager operations.
-  const raw_ptr<PasswordManagerClient, DanglingUntriaged> client_;
+  const raw_ptr<PasswordManagerClient> client_;
 
   base::WeakPtr<PasswordManagerDriver> driver_;
 
@@ -485,7 +485,7 @@ class PasswordFormManager : public PasswordFormManagerForUI,
   std::optional<VotesUploader> votes_uploader_;
 
   // |is_submitted_| = true means that |*this| is ready for saving.
-  // TODO(https://crubg.com/875768): Come up with a better name.
+  // TODO(https://crbug.com/875768): Come up with a better name.
   bool is_submitted_ = false;
   autofill::FormData submitted_form_;
   std::unique_ptr<PasswordForm> parsed_submitted_form_;

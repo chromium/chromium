@@ -142,10 +142,10 @@ impl PullParser {
                 Token::CDataEnd | Token::CDataStart => {
                     Some(self.error(SyntaxError::UnexpectedToken(t)))
                 }
-                Token::Character(c) if c == '[' => {
+                Token::Character('[') => {
                     self.into_state_continue(State::InsideDoctype(DoctypeSubstate::InternalSubset))
                 }
-                Token::Character(c) if c == 'S' || c == 'P' => {
+                Token::Character(c @ ('S' | 'P')) => {
                     self.buf.push(c);
                     self.into_state_continue(State::InsideDoctype(
                         DoctypeSubstate::ExternalIdKeyword,
@@ -155,7 +155,7 @@ impl PullParser {
                 _ => Some(self.error(SyntaxError::UnexpectedToken(t))),
             },
             DoctypeSubstate::InternalSubset => match t {
-                Token::Character(c) if c == ']' => {
+                Token::Character(']') => {
                     self.into_state_continue(State::InsideDoctype(DoctypeSubstate::Outside))
                 }
 

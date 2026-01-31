@@ -70,10 +70,16 @@ class GlicE2ETest : public InteractiveBrowserTestMixin<signin::test::LiveTest> {
   GlicWindowController& window_controller();
   GlicFreController& fre_controller();
   WebPageReplayServerWrapper* web_page_replay_server_wrapper();
+  tabs::TabInterface* active_tab();
 
   GlicE2ETestMode test_mode() const { return test_mode_; }
   bool run_low_bandwidth_tests() { return enable_low_bandwidth_tests_; }
   bool run_actor_tests() const { return running_actor_tests_; }
+
+  void set_test_account_label(const std::string& test_account_label) {
+    ASSERT_TRUE(GetTestAccounts()->GetAccount(test_account_label).has_value());
+    test_account_label_ = test_account_label;
+  }
 
  protected:
   // Opt-in flag for using WPR for some requests in real_backend mode.
@@ -81,6 +87,7 @@ class GlicE2ETest : public InteractiveBrowserTestMixin<signin::test::LiveTest> {
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
+  base::test::ScopedFeatureList exempt_actor_policy_control_feature_list_;
   bool enable_low_bandwidth_tests_ = false;
   bool running_actor_tests_ = false;
   GlicE2ETestMode test_mode_;
@@ -88,6 +95,7 @@ class GlicE2ETest : public InteractiveBrowserTestMixin<signin::test::LiveTest> {
   std::map<content::WebContents*,
            std::unique_ptr<content::TestDevToolsProtocolClient>>
       devtools_clients_;
+  std::string test_account_label_;
 };
 
 }  // namespace glic::test

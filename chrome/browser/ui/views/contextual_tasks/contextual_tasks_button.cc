@@ -4,12 +4,15 @@
 
 #include "chrome/browser/ui/views/contextual_tasks/contextual_tasks_button.h"
 
+#include <string>
+
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_side_panel_coordinator.h"
+#include "chrome/browser/contextual_tasks/entry_point_eligibility_manager.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/browser.h"
@@ -27,6 +30,7 @@
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/gfx/vector_icon_types.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/view.h"
 #include "ui/views/view_class_properties.h"
@@ -41,10 +45,17 @@ ContextualTasksButton::ContextualTasksButton(
                     nullptr,
                     nullptr),
       browser_window_interface_(browser_window_interface) {
-  SetVectorIcon(kDockToRightSparkIcon);
   SetProperty(views::kElementIdentifierKey, kContextualTasksToolbarButton);
-  GetViewAccessibility().SetName(
-      l10n_util::GetStringUTF16(IDS_CONTEXTUAL_TASKS_CONTEXTUAL_TASKS_TITLE));
+  const std::u16string button_tooltip =
+      l10n_util::GetStringUTF16(IDS_CONTEXTUAL_TASKS_ENTRY_POINT_TOOLTIP);
+  GetViewAccessibility().SetName(button_tooltip);
+  SetTooltipText(button_tooltip);
+
+  side_panel_alignment_.Init(
+      prefs::kSidePanelHorizontalAlignment,
+      browser_window_interface->GetProfile()->GetPrefs(),
+      base::BindRepeating(&ContextualTasksButton::OnSidePanelAlignmentChanged,
+                          base::Unretained(this)));
 
   if (contextual_tasks::kShowEntryPoint.Get() ==
       contextual_tasks::EntryPointOption::kToolbarPermanent) {
@@ -53,7 +64,6 @@ ContextualTasksButton::ContextualTasksButton(
         browser_window_interface->GetProfile()->GetPrefs(),
         base::BindRepeating(&ContextualTasksButton::OnPinStateChanged,
                             base::Unretained(this)));
-    OnPinStateChanged();
   } else {
     CHECK_EQ(contextual_tasks::kShowEntryPoint.Get(),
              contextual_tasks::EntryPointOption::kToolbarRevisit);
@@ -64,10 +74,16 @@ ContextualTasksButton::ContextualTasksButton(
         controller->RegisterShouldUpdateButtonVisibility(base::BindRepeating(
             &ContextualTasksButton::OnShouldUpdateVisibility,
             base::Unretained(this)));
-    // The button should not be visible until the active tab is associated with
-    // a task.
-    SetVisible(false);
   }
+
+  eligibility_change_subscription_ =
+      contextual_tasks::EntryPointEligibilityManager::From(
+          browser_window_interface_)
+          ->RegisterOnEntryPointEligibilityChanged(
+              base::BindRepeating(&ContextualTasksButton::OnEligibilityChange,
+                                  base::Unretained(this)));
+  OnSidePanelAlignmentChanged();
+  MaybeUpdateVisibility();
 }
 
 ContextualTasksButton::~ContextualTasksButton() = default;
@@ -96,11 +112,42 @@ void ContextualTasksButton::OnButtonPress() {
 }
 
 void ContextualTasksButton::OnPinStateChanged() {
-  SetVisible(pin_state_.GetValue());
+  MaybeUpdateVisibility();
+}
+
+void ContextualTasksButton::OnSidePanelAlignmentChanged() {
+  PrefService* const pref_service =
+      browser_window_interface_->GetProfile()->GetPrefs();
+  const gfx::VectorIcon& contextual_tasks_icon =
+      pref_service->GetBoolean(prefs::kSidePanelHorizontalAlignment)
+          ? kDockToRightSparkIcon
+          : kDockToLeftSparkIcon;
+  SetVectorIcon(contextual_tasks_icon);
 }
 
 void ContextualTasksButton::OnShouldUpdateVisibility(bool should_show) {
-  SetVisible(should_show);
+  MaybeUpdateVisibility();
+}
+
+void ContextualTasksButton::OnEligibilityChange(bool is_eligible) {
+  MaybeUpdateVisibility();
+}
+
+void ContextualTasksButton::MaybeUpdateVisibility() {
+  const bool is_button_eligible =
+      contextual_tasks::EntryPointEligibilityManager::From(
+          browser_window_interface_)
+          ->AreEntryPointsEligible();
+  if (contextual_tasks::kShowEntryPoint.Get() ==
+      contextual_tasks::EntryPointOption::kToolbarPermanent) {
+    SetVisible(is_button_eligible && pin_state_.GetValue());
+  } else if (contextual_tasks::kShowEntryPoint.Get() ==
+             contextual_tasks::EntryPointOption::kToolbarRevisit) {
+    ContextualTasksEphemeralButtonController* const controller =
+        ContextualTasksEphemeralButtonController::From(
+            browser_window_interface_);
+    SetVisible(is_button_eligible && controller->ShouldShowEphemeralButton());
+  }
 }
 
 BEGIN_METADATA(ContextualTasksButton)

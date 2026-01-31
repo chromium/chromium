@@ -7,6 +7,7 @@
 #import <set>
 
 #import "base/metrics/histogram_functions.h"
+#import "base/notreached.h"
 
 namespace {
 
@@ -29,6 +30,23 @@ std::string GetStringForAttachmentType(
     default:
       return "";
   }
+}
+
+/// Returns a string mapping to the drag and drop type.
+std::string GetStringForDragAndDropType(ComposeboxDragAndDropType type) {
+  switch (type) {
+    case ComposeboxDragAndDropType::kText:
+      return ".Text";
+    case ComposeboxDragAndDropType::kImage:
+      return ".Image";
+    case ComposeboxDragAndDropType::kTab:
+      return ".Tab";
+    case ComposeboxDragAndDropType::kPDF:
+      return ".PDF";
+    case ComposeboxDragAndDropType::kUnknown:
+      return ".Unknown";
+  }
+  NOTREACHED();
 }
 
 }  // namespace
@@ -63,6 +81,12 @@ std::string GetStringForAttachmentType(
   base::UmaHistogramEnumeration("Omnibox.MobileFusebox.AttachmentButtonUsed",
                                 buttonType);
   _usedAttachmentButtonTypes.insert(static_cast<int>(buttonType));
+}
+
+- (void)recordDragAndDropAttempt:(ComposeboxDragAndDropType)type {
+  std::string histogram_name = "Omnibox.MobileFusebox.DragAndDrop";
+  histogram_name += GetStringForDragAndDropType(type);
+  base::UmaHistogramEnumeration(histogram_name, type);
 }
 
 - (void)recordAttachmentsMenuShown:(BOOL)shown {

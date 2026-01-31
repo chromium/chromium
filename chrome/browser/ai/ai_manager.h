@@ -16,9 +16,9 @@
 #include "chrome/browser/ai/ai_model_download_progress_manager.h"
 #include "chrome/browser/ai/ai_proofreader.h"
 #include "chrome/browser/ai/ai_summarizer.h"
-#include "chrome/browser/ai/ai_utils.h"
 #include "components/component_updater/component_updater_service.h"
-#include "components/optimization_guide/public/mojom/model_broker.mojom-data-view.h"
+#include "components/on_device_ai/ai_utils.h"
+#include "components/optimization_guide/public/mojom/model_broker.mojom-forward.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/render_widget_host.h"
 #include "content/public/browser/render_widget_host_observer.h"
@@ -26,11 +26,11 @@
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "mojo/public/cpp/bindings/remote_set.h"
-#include "third_party/blink/public/mojom/ai/ai_common.mojom.h"
+#include "services/on_device_model/public/mojom/download_observer.mojom-forward.h"
+#include "third_party/blink/public/mojom/ai/ai_common.mojom-forward.h"
 #include "third_party/blink/public/mojom/ai/ai_language_model.mojom-forward.h"
 #include "third_party/blink/public/mojom/ai/ai_manager.mojom.h"
-#include "third_party/blink/public/mojom/ai/model_download_progress_observer.mojom-forward.h"
-#include "third_party/blink/public/mojom/devtools/console_message.mojom-data-view.h"
+#include "third_party/blink/public/mojom/devtools/console_message.mojom-forward.h"
 
 namespace base {
 class SupportsUserData;
@@ -103,7 +103,7 @@ class AIManager : public base::SupportsUserData::Data,
           client,
       blink::mojom::AIProofreaderCreateOptionsPtr options) override;
   void AddModelDownloadProgressObserver(
-      mojo::PendingRemote<blink::mojom::ModelDownloadProgressObserver>
+      mojo::PendingRemote<on_device_model::mojom::DownloadObserver>
           observer_remote) override;
 
   // Check whether optimization guide supports the feature matching `capability`
@@ -158,6 +158,10 @@ class AIManager : public base::SupportsUserData::Data,
 
   // Eagerly initializes a broad set of features.
   void MaybeTryEagerInit();
+  // Eagerly initialize a feature depending on its eligibility.
+  void MaybeTryEagerInitWithEligibility(
+      optimization_guide::mojom::OnDeviceFeature feature,
+      optimization_guide::OnDeviceModelEligibilityReason eligibility);
 
   void MaybeLogMissingOutputLanguageWarning(
       const std::string_view api_name,

@@ -12,6 +12,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "remoting/signaling/message_channel_strategy.h"
+#include "remoting/signaling/signaling_address.h"
 
 namespace remoting {
 
@@ -33,6 +34,8 @@ class CorpMessageChannelStrategy : public MessageChannelStrategy {
           ChannelClosedCallback on_channel_closed)>;
   using MessageCallback =
       base::RepeatingCallback<void(const internal::PeerMessageStruct& message)>;
+  using SignalingAddressChangedCallback =
+      base::RepeatingCallback<void(const SignalingAddress&)>;
 
   CorpMessageChannelStrategy();
 
@@ -42,8 +45,10 @@ class CorpMessageChannelStrategy : public MessageChannelStrategy {
 
   ~CorpMessageChannelStrategy() override;
 
-  void Initialize(const StreamOpener& stream_opener,
-                  const MessageCallback& on_incoming_msg);
+  void Initialize(
+      const StreamOpener& stream_opener,
+      const MessageCallback& on_incoming_msg,
+      const SignalingAddressChangedCallback& on_signaling_address_changed);
 
   // MessageChannelStrategy implementation.
   std::unique_ptr<ScopedProtobufHttpRequest> CreateChannel(
@@ -58,6 +63,8 @@ class CorpMessageChannelStrategy : public MessageChannelStrategy {
 
   StreamOpener stream_opener_;
   MessageCallback on_incoming_msg_;
+  SignalingAddress local_address_;
+  SignalingAddressChangedCallback on_signaling_address_changed_;
   base::RepeatingClosure on_channel_active_;
   std::optional<base::TimeDelta> inactivity_timeout_;
 

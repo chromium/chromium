@@ -1,0 +1,86 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//mojo/public/tools/bindings/mojom.gni")
+
+assert(is_mac)
+
+mojom("mojo_bindings") {
+  sources = [ "unexportable_keys_internals.mojom" ]
+
+  public_deps = [ "//mojo/public/mojom/base" ]
+
+  webui_module_path = "/"
+
+  cpp_typemaps = [
+    {
+      types = [
+        {
+          mojom = "unexportable_keys_internals.mojom.UnexportableKeyId"
+          cpp = "::unexportable_keys::UnexportableKeyId"
+        },
+      ]
+      traits_headers = [
+        "//chrome/browser/ui/webui/unexportable_keys_internals/unexportable_keys_internals_traits.h",
+        "//components/unexportable_keys/unexportable_key_id.h",
+      ]
+      traits_sources = [ "//chrome/browser/ui/webui/unexportable_keys_internals/unexportable_keys_internals_traits.cc" ]
+      traits_deps = [
+        "//base",
+        "//components/unexportable_keys",
+      ]
+    },
+  ]
+}
+
+source_set("unexportable_keys_internals") {
+  sources = [
+    "unexportable_keys_internals_handler.h",
+    "unexportable_keys_internals_ui.h",
+  ]
+
+  public_deps = [
+    ":mojo_bindings",
+    "//chrome/common",
+    "//content/public/browser",
+    "//mojo/public/cpp/bindings",
+    "//ui/webui",
+  ]
+}
+
+source_set("impl") {
+  sources = [
+    "unexportable_keys_internals_handler.cc",
+    "unexportable_keys_internals_ui.cc",
+  ]
+
+  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+
+  deps = [
+    ":unexportable_keys_internals",
+    "//base",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/resources/unexportable_keys_internals:resources",
+    "//chrome/common",
+    "//components/unexportable_keys",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [ "unexportable_keys_internals_handler_unittest.cc" ]
+
+  deps = [
+    ":impl",
+    ":mojo_bindings",
+    ":unexportable_keys_internals",
+    "//base/test:test_support",
+    "//components/unexportable_keys",
+    "//components/unexportable_keys:test_support",
+    "//crypto",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
+}

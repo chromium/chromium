@@ -94,7 +94,7 @@ class TestNetworkMetadataObserver : public NetworkMetadataObserver {
     connections_.insert(guid);
   }
   void OnNetworkUpdate(const std::string& guid,
-                       const base::Value::Dict* set_properties) override {
+                       const base::DictValue* set_properties) override {
     if (!updates_.contains(guid)) {
       updates_[guid] = 1;
     } else {
@@ -260,7 +260,7 @@ class NetworkMetadataStoreNoLoginTest : public ::testing::Test {
     EXPECT_EQ(nullptr, metadata_store()->GetCustomApnList(kCellularkGuid));
 
     auto custom_apn =
-        base::Value::Dict()
+        base::DictValue()
             .Set(::onc::cellular_apn::kAccessPointName, kApn)
             .Set(::onc::cellular_apn::kName, kApnName)
             .Set(::onc::cellular_apn::kUsername, kApnUsername)
@@ -270,7 +270,7 @@ class NetworkMetadataStoreNoLoginTest : public ::testing::Test {
             .Set(::onc::cellular_apn::kLanguage, kApnLanguage)
             .Set(::onc::cellular_apn::kAttach, kApnAttach);
     metadata_store()->SetCustomApnList(
-        kCellularkGuid, base::Value::List().Append(std::move(custom_apn)));
+        kCellularkGuid, base::ListValue().Append(std::move(custom_apn)));
 
     AssertCustomApnListFirstValue();
     ResetStore();
@@ -283,12 +283,12 @@ class NetworkMetadataStoreNoLoginTest : public ::testing::Test {
 
  private:
   void AssertCustomApnListFirstValue() {
-    const base::Value::List* custom_apn_list =
+    const base::ListValue* custom_apn_list =
         metadata_store()->GetCustomApnList(kCellularkGuid);
 
     EXPECT_TRUE(custom_apn_list);
     ASSERT_EQ(1u, custom_apn_list->size());
-    const base::Value::Dict& custom_apn = custom_apn_list->front().GetDict();
+    const base::DictValue& custom_apn = custom_apn_list->front().GetDict();
     EXPECT_EQ(
         kApn,
         custom_apn.Find(::onc::cellular_apn::kAccessPointName)->GetString());
@@ -421,7 +421,7 @@ TEST_F(NetworkMetadataStoreTest, ConfigurationUpdated) {
   ASSERT_EQ(1, metadata_observer()->GetNumberOfUpdates(kGuid));
 
   auto properties =
-      base::Value::Dict()
+      base::DictValue()
           .Set(shill::kSecurityClassProperty, shill::kSecurityClassPsk)
           .Set(shill::kPassphraseProperty, "secret");
 
@@ -446,7 +446,7 @@ TEST_F(NetworkMetadataStoreTest, SharedConfigurationUpdatedByOtherUser) {
   LoginUser(secondary_user_);
 
   auto other_properties =
-      base::Value::Dict()
+      base::DictValue()
           .Set(shill::kAutoConnectProperty, true)
           .Set(shill::kProxyConfigProperty, "proxy_details");
 
@@ -460,7 +460,7 @@ TEST_F(NetworkMetadataStoreTest, SharedConfigurationUpdatedByOtherUser) {
 
   LoginUser(primary_user_);
   auto owner_properties =
-      base::Value::Dict().Set(shill::kProxyConfigProperty, "new_proxy_details");
+      base::DictValue().Set(shill::kProxyConfigProperty, "new_proxy_details");
 
   network_configuration_handler()->SetShillProperties(
       service_path, std::move(owner_properties), base::DoNothing(),
@@ -484,7 +484,7 @@ TEST_F(NetworkMetadataStoreTest, SharedConfigurationUpdated_NewPassword) {
   ASSERT_FALSE(metadata_store()->GetIsCreatedByUser(kGuid));
 
   auto other_properties =
-      base::Value::Dict().Set(shill::kPassphraseProperty, "pass2");
+      base::DictValue().Set(shill::kPassphraseProperty, "pass2");
 
   network_configuration_handler()->SetShillProperties(
       service_path, std::move(other_properties), base::DoNothing(),
@@ -744,7 +744,7 @@ TEST_F(NetworkMetadataStoreTest, CustomApnListSetWrongApn) {
   EXPECT_EQ(nullptr, metadata_store()->GetCustomApnList(kCellularkGuid));
 
   // Checks the case where the apn list doesn't contain a dict.
-  base::Value::List wrong_list;
+  base::ListValue wrong_list;
   base::Value not_dict(base::Value::Type::INTEGER);
   wrong_list.Append(std::move(not_dict));
   metadata_store()->SetCustomApnList(kCellularkGuid, std::move(wrong_list));
@@ -753,10 +753,10 @@ TEST_F(NetworkMetadataStoreTest, CustomApnListSetWrongApn) {
   // Checks the case where the apn list contains a dict without kAccessPointName
   // key.
   auto custom_apn =
-      base::Value::Dict().Set(::onc::cellular_apn::kAccessPointName, kApn);
+      base::DictValue().Set(::onc::cellular_apn::kAccessPointName, kApn);
   auto wrong_custom_apn =
-      base::Value::Dict().Set(::onc::cellular_apn::kName, kApnName);
-  auto custom_apn_list = base::Value::List()
+      base::DictValue().Set(::onc::cellular_apn::kName, kApnName);
+  auto custom_apn_list = base::ListValue()
                              .Append(std::move(custom_apn))
                              .Append(std::move(wrong_custom_apn));
   metadata_store()->SetCustomApnList(kCellularkGuid,
@@ -764,8 +764,8 @@ TEST_F(NetworkMetadataStoreTest, CustomApnListSetWrongApn) {
   EXPECT_EQ(nullptr, metadata_store()->GetCustomApnList(kCellularkGuid));
 
   // Empty lists are valid.
-  metadata_store()->SetCustomApnList(kCellularkGuid, base::Value::List());
-  const base::Value::List* actual_list =
+  metadata_store()->SetCustomApnList(kCellularkGuid, base::ListValue());
+  const base::ListValue* actual_list =
       metadata_store()->GetCustomApnList(kCellularkGuid);
   ASSERT_TRUE(actual_list);
   EXPECT_TRUE(actual_list->empty());
@@ -776,15 +776,15 @@ TEST_F(NetworkMetadataStoreTest, CustomApnListFlagChangingValues) {
   EXPECT_EQ(nullptr, metadata_store()->GetCustomApnList(kCellularkGuid));
 
   auto expected_list_feature_disabled =
-      base::Value::List().Append(base::Value::Dict().Set(
+      base::ListValue().Append(base::DictValue().Set(
           ::onc::cellular_apn::kAccessPointName, "test_apn1"));
 
   auto expected_list_feature_enabled =
-      base::Value::List()
-          .Append(base::Value::Dict().Set(::onc::cellular_apn::kAccessPointName,
-                                          "test_apn2"))
-          .Append(base::Value::Dict().Set(::onc::cellular_apn::kAccessPointName,
-                                          "test_apn3"));
+      base::ListValue()
+          .Append(base::DictValue().Set(::onc::cellular_apn::kAccessPointName,
+                                        "test_apn2"))
+          .Append(base::DictValue().Set(::onc::cellular_apn::kAccessPointName,
+                                        "test_apn3"));
 
   {
     base::test::ScopedFeatureList disabled_feature_list;
@@ -834,15 +834,15 @@ TEST_F(NetworkMetadataStoreTest, GetPreRevampCustomApnList) {
   }
 
   auto expected_list_feature_disabled =
-      base::Value::List().Append(base::Value::Dict().Set(
+      base::ListValue().Append(base::DictValue().Set(
           ::onc::cellular_apn::kAccessPointName, "test_apn1"));
 
   auto expected_list_feature_enabled =
-      base::Value::List()
-          .Append(base::Value::Dict().Set(::onc::cellular_apn::kAccessPointName,
-                                          "test_apn2"))
-          .Append(base::Value::Dict().Set(::onc::cellular_apn::kAccessPointName,
-                                          "test_apn3"));
+      base::ListValue()
+          .Append(base::DictValue().Set(::onc::cellular_apn::kAccessPointName,
+                                        "test_apn2"))
+          .Append(base::DictValue().Set(::onc::cellular_apn::kAccessPointName,
+                                        "test_apn3"));
 
   // Set the custom APN lists
   {

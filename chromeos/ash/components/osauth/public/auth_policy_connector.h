@@ -52,10 +52,10 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_OSAUTH) AuthPolicyConnector {
   GetLocalAuthFactorsComplexity(const AccountId& account) = 0;
 
   // Returns the set of local auth factors allowed by policy.
-  // - For non-managed users, this will return a `std::nullopt`
-  // - For managed users, the set is empty when no auth factors are allowed,
-  // otherwise the set will contain all the `AshAuthFactors` that are allowed by
-  // policy.
+  // - For non-managed users, this will return the default value "ALL".
+  // - For managed users, the default is an empty set, indicating no local auth
+  // factors are available. Otherwise, when the policy is configured, the set
+  // contains the `AshAuthFactors` allowed by policy.
   virtual std::optional<AuthFactorsSet> AllowedLocalAuthFactors(
       const AccountId& account) = 0;
 

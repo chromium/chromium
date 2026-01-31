@@ -7,20 +7,31 @@
 #import "base/files/file_path.h"
 #import "base/run_loop.h"
 #import "base/strings/strcat.h"
+#import "base/strings/sys_string_conversions.h"
 #import "base/test/bind.h"
 #import "base/test/metrics/histogram_tester.h"
+#import "base/test/scoped_feature_list.h"
+#import "components/enterprise/browser/identifiers/profile_id_service.h"
 #import "components/enterprise/browser/reporting/report_request.h"
 #import "components/policy/core/common/cloud/cloud_policy_util.h"
 #import "components/policy/core/common/mock_policy_service.h"
 #import "components/policy/core/common/policy_map.h"
 #import "components/policy/core/common/schema_registry.h"
+#import "components/signin/public/identity_manager/identity_test_utils.h"
+#import "ios/chrome/browser/enterprise/identifiers/profile_id_service_factory_ios.h"
 #import "ios/chrome/browser/policy/model/profile_policy_connector_mock.h"
+#import "ios/chrome/browser/policy/model/reporting/features.h"
 #import "ios/chrome/browser/policy/model/reporting/reporting_delegate_factory_ios.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_manager_ios.h"
+#import "ios/chrome/browser/signin/model/authentication_service.h"
 #import "ios/chrome/browser/signin/model/authentication_service_factory.h"
 #import "ios/chrome/browser/signin/model/fake_authentication_service_delegate.h"
+#import "ios/chrome/browser/signin/model/fake_system_identity.h"
+#import "ios/chrome/browser/signin/model/fake_system_identity_manager.h"
+#import "ios/chrome/browser/signin/model/identity_manager_factory.h"
+#import "ios/chrome/browser/signin/model/identity_test_environment_browser_state_adaptor.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "testing/gtest/include/gtest/gtest.h"
@@ -30,9 +41,23 @@ namespace em = enterprise_management;
 
 namespace enterprise_reporting {
 
-class ReportGeneratorIOSTest : public PlatformTest {
+namespace {
+
+constexpr char kFakeEmail[] = "foo@example.com";
+constexpr char kFakeHostedDomain[] = "example.com";
+constexpr char kFakeFullName[] = "Full Name";
+constexpr char kFakeGivenName[] = "Full";
+constexpr char kFakeLocale[] = "en-US";
+
+}  // namespace
+
+class ReportGeneratorIOSTest : public PlatformTest,
+                               public testing::WithParamInterface<bool> {
  public:
   ReportGeneratorIOSTest() : generator_(&delegate_factory_) {
+    feature_list_.InitWithFeatureState(
+        enterprise_reporting::kUseEmailAsProfileName,
+        ShouldUseEmailAsProfileName());
     InitPolicyMap();
 
     TestProfileIOS::Builder builder;
@@ -40,9 +65,22 @@ class ReportGeneratorIOSTest : public PlatformTest {
         AuthenticationServiceFactory::GetInstance(),
         AuthenticationServiceFactory::GetFactoryWithDelegate(
             std::make_unique<FakeAuthenticationServiceDelegate>()));
+    builder.AddTestingFactory(
+        IdentityManagerFactory::GetInstance(),
+        base::BindRepeating(IdentityTestEnvironmentBrowserStateAdaptor::
+                                BuildIdentityManagerForTests));
     builder.SetPolicyConnector(std::make_unique<ProfilePolicyConnectorMock>(
         CreateMockPolicyService(), &schema_registry_));
     profile_ = profile_manager_.AddProfileWithBuilder(std::move(builder));
+
+    signin::IdentityManager* identity_manager =
+        IdentityManagerFactory::GetForProfile(profile_.get());
+    AccountInfo account_info = signin::MakePrimaryAccountAvailable(
+        identity_manager, kFakeEmail, signin::ConsentLevel::kSignin);
+    signin::SimulateSuccessfulFetchOfAccountInfo(
+        identity_manager, account_info.account_id, account_info.email,
+        account_info.gaia, kFakeHostedDomain, kFakeFullName, kFakeGivenName,
+        kFakeLocale, "");
   }
 
   ReportGeneratorIOSTest(const ReportGeneratorIOSTest&) = delete;
@@ -63,7 +101,7 @@ class ReportGeneratorIOSTest : public PlatformTest {
   void InitPolicyMap() {
     policy_map_.Set("kPolicyName1", policy::POLICY_LEVEL_MANDATORY,
                     policy::POLICY_SCOPE_USER, policy::POLICY_SOURCE_CLOUD,
-                    base::Value(base::Value::List()), nullptr);
+                    base::Value(base::ListValue()), nullptr);
     policy_map_.Set("kPolicyName2", policy::POLICY_LEVEL_RECOMMENDED,
                     policy::POLICY_SCOPE_MACHINE, policy::POLICY_SOURCE_MERGED,
                     base::Value(true), nullptr);
@@ -97,9 +135,16 @@ class ReportGeneratorIOSTest : public PlatformTest {
 
   base::FilePath GetProfilePath() { return profile_->GetStatePath(); }
 
-  const std::string& GetProfileName() { return profile_->GetProfileName(); }
+  const std::string& GetProfileName() const {
+    return profile_->GetProfileName();
+  }
+
+  ProfileIOS* profile() const { return profile_; }
+
+  bool ShouldUseEmailAsProfileName() const { return GetParam(); }
 
  private:
+  base::test::ScopedFeatureList feature_list_;
   web::WebTaskEnvironment task_environment_;
   IOSChromeScopedTestingLocalState scoped_testing_local_state_;
   TestProfileManagerIOS profile_manager_;
@@ -114,7 +159,7 @@ class ReportGeneratorIOSTest : public PlatformTest {
   policy::PolicyMap policy_map_;
 };
 
-TEST_F(ReportGeneratorIOSTest, GenerateBasicReport) {
+TEST_P(ReportGeneratorIOSTest, GenerateBasicReport) {
   auto requests = GenerateRequests();
   EXPECT_EQ(1u, requests.size());
 
@@ -153,10 +198,18 @@ TEST_F(ReportGeneratorIOSTest, GenerateBasicReport) {
   EXPECT_EQ(1, browser_report.chrome_user_profile_infos_size());
   auto profile_info = browser_report.chrome_user_profile_infos(0);
   EXPECT_EQ(base::StrCat({"/Profile/", GetProfileName()}), profile_info.id());
-  EXPECT_EQ(GetProfileName(), profile_info.name());
+  if (ShouldUseEmailAsProfileName()) {
+    EXPECT_EQ(kFakeFullName, profile_info.name());
+  } else {
+    EXPECT_EQ(GetProfileName(), profile_info.name());
+  }
   EXPECT_TRUE(profile_info.has_is_detail_available());
   EXPECT_TRUE(profile_info.is_detail_available());
   EXPECT_EQ(2, profile_info.chrome_policies_size());
 }
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         ReportGeneratorIOSTest,
+                         testing::Values(false, true));
 
 }  // namespace enterprise_reporting

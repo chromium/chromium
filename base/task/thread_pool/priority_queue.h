@@ -8,13 +8,13 @@
 #include <array>
 #include <functional>
 #include <memory>
+#include <utility>
 
 #include "base/base_export.h"
 #include "base/containers/intrusive_heap.h"
 #include "base/task/common/checked_lock.h"
 #include "base/task/thread_pool/task_source.h"
 #include "base/task/thread_pool/task_source_sort_key.h"
-#include "base/types/cxx23_to_underlying.h"
 
 namespace base {
 namespace internal {
@@ -68,7 +68,7 @@ class BASE_EXPORT PriorityQueue {
 
   // Returns the number of TaskSources with |priority|.
   size_t GetNumTaskSourcesWithPriority(TaskPriority priority) const {
-    return num_task_sources_per_priority_[base::to_underlying(priority)];
+    return num_task_sources_per_priority_[std::to_underlying(priority)];
   }
 
   // Set the PriorityQueue to empty all its TaskSources of Tasks when it is

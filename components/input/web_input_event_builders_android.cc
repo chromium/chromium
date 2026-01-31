@@ -73,6 +73,16 @@ ui::DomKey GetDomKeyFromEvent(
   return ui::DomKey::UNIDENTIFIED;
 }
 
+bool IsConfirmedPhysicalKeyboardEvent(
+    JNIEnv* env,
+    const base::android::JavaRef<jobject>& android_key_event) {
+  if (android_key_event.is_null()) {
+    // Synthetic key event, not enough information to detect source.
+    return false;
+  }
+  return !ui::events::android::IsVirtualKeyboardEvent(env, android_key_event);
+}
+
 }  // namespace
 
 WebKeyboardEvent WebKeyboardEventBuilder::Build(
@@ -108,6 +118,8 @@ WebKeyboardEvent WebKeyboardEventBuilder::Build(
   }
   result.text[0] = result.unmodified_text[0];
   result.is_system_key = is_system_key;
+  result.is_confirmed_physical_keyboard_input =
+      IsConfirmedPhysicalKeyboardEvent(env, android_key_event);
 
   return result;
 }
@@ -167,9 +179,33 @@ WebMouseWheelEvent WebMouseWheelEventBuilder::Build(
   result.delta_units = motion_event.GetSource() == AINPUT_SOURCE_TOUCHPAD
                            ? ui::ScrollGranularity::kScrollByPrecisePixel
                            : ui::ScrollGranularity::kScrollByPixel;
-  result.delta_x = motion_event.ticks_x() * motion_event.GetTickMultiplier();
+  // For vertical scrolling (delta_y, wheel_ticks_y), Android's MotionEvent
+  // provides values that align with "natural" scrolling (content moves in the
+  // direction of the scroll).
+  // For horizontal scrolling (delta_x, wheel_ticks_x), the MotionEvent
+  // historically provided values that matched traditional desktop behavior
+  // (content moves opposite to scroll direction). To align with Android's
+  // "natural" scrolling expectation for horizontal input, we negate the x-axis
+  // values.
+  // However, this negation should ONLY apply to Physical Mouse inputs.
+  // Other sources like Trackpads (Source Mouse + Tool Finger), Touchpads,
+  // and Joysticks already provide "natural" direction values (or standard
+  // Cartesian direction) and should not be negated.
+  // Note: AINPUT_SOURCE_TRACKBALL and AINPUT_SOURCE_MOUSE_RELATIVE are
+  // AINPUT_SOURCE_CLASS_NAVIGATION (similar to Joysticks), so they are also
+  // excluded from this negation.
+  bool is_physical_mouse_scroll =
+      (motion_event.GetSource() & AINPUT_SOURCE_MOUSE) == AINPUT_SOURCE_MOUSE &&
+      motion_event.GetToolType(0) == ui::MotionEvent::ToolType::MOUSE;
+  if (is_physical_mouse_scroll) {
+    result.delta_x = -motion_event.ticks_x() * motion_event.GetTickMultiplier();
+    result.wheel_ticks_x = -motion_event.ticks_x();
+  } else {
+    result.delta_x = motion_event.ticks_x() * motion_event.GetTickMultiplier();
+    result.wheel_ticks_x = motion_event.ticks_x();
+  }
   result.delta_y = motion_event.ticks_y() * motion_event.GetTickMultiplier();
-  result.wheel_ticks_x = motion_event.ticks_x();
+
   result.wheel_ticks_y = motion_event.ticks_y();
   result.SetModifiers(
       ui::EventFlagsToWebEventModifiers(motion_event.GetFlags()));

@@ -134,7 +134,7 @@ class ExtensionCleanupHandlerUnittest : public testing::Test {
   void SetupExemptList() {
     mock_prefs_->SetManagedPref(
         prefs::kRestrictedManagedGuestSessionExtensionCleanupExemptList,
-        base::Value::List().Append(kExemptExtensionId));
+        base::ListValue().Append(kExemptExtensionId));
   }
 
   content::BrowserTaskEnvironment task_environment_;

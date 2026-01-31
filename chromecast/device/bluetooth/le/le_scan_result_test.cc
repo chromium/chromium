@@ -4,8 +4,9 @@
 
 #include "chromecast/device/bluetooth/le/le_scan_result.h"
 
+#include <algorithm>
+
 #include "base/compiler_specific.h"
-#include "base/containers/contains.h"
 #include "chromecast/device/bluetooth/bluetooth_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -124,7 +125,7 @@ TEST(LeScanResultTest, AllUuids) {
   ASSERT_EQ(6ul, all_uuids->size());
 
   auto exists = [&all_uuids](const bluetooth_v2_shlib::Uuid& uuid) {
-    return base::Contains(*all_uuids, uuid);
+    return std::ranges::contains(*all_uuids, uuid);
   };
 
   EXPECT_TRUE(exists(util::UuidFromInt16(kIncompleteUuid16)));

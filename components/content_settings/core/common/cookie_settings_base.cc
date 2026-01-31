@@ -18,7 +18,6 @@
 #include "base/types/optional_util.h"
 #include "build/build_config.h"
 #include "components/content_settings/core/common/content_settings.h"
-#include "components/content_settings/core/common/content_settings_enums.mojom-shared.h"
 #include "components/content_settings/core/common/content_settings_enums.mojom.h"
 #include "components/content_settings/core/common/content_settings_metadata.h"
 #include "components/content_settings/core/common/content_settings_types.h"
@@ -190,7 +189,6 @@ CookieSettingsBase::GetContentSettingsTypes() {
           ContentSettingsType::TOP_LEVEL_STORAGE_ACCESS,
           ContentSettingsType::TPCD_HEURISTICS_GRANTS,
           ContentSettingsType::FEDERATED_IDENTITY_SHARING,
-          ContentSettingsType::TRACKING_PROTECTION,
           ContentSettingsType::LEGACY_COOKIE_SCOPE,
       });
   return kInstance;

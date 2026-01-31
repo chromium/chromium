@@ -8,7 +8,6 @@
 #include <optional>
 #include <utility>
 
-#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "chrome/browser/ash/remote_apps/remote_apps_manager.h"

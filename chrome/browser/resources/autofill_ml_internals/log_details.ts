@@ -29,7 +29,7 @@ export class LogDetailsElement extends CrLitElement {
 
   accessor log: MlPredictionLog = {
     formSignature: '0',
-    formUrl: {url: ''},
+    formUrl: '',
     modelOutputTypes: [],
     fieldPredictions: [],
     startTime: {internalValue: 0n},

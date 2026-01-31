@@ -10,9 +10,12 @@
 
 namespace content {
 
+class RenderFrameHost;
+
 // A simple API used by browser interface broker. The main motivation is to
 // expose an identical `Create()` interface over different platforms.
 void CreateHandwritingRecognitionService(
+    RenderFrameHost* host,
     mojo::PendingReceiver<handwriting::mojom::HandwritingRecognitionService>);
 
 }  // namespace content

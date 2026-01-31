@@ -245,7 +245,7 @@ export class ReadingListAppElement extends ReadingListAppElementBase {
   private createHeaderEntry_(title: string): ReadLaterEntry {
     return {
       title: title,
-      url: {url: ''},
+      url: '',
       displayUrl: '',
       updateTime: 0n,
       read: false,

@@ -4,7 +4,8 @@
 
 #include "chrome/browser/media/cast_mirroring_service_host.h"
 
-#include "base/containers/contains.h"
+#include <algorithm>
+
 #include "base/containers/flat_map.h"
 #include "base/json/json_reader.h"
 #include "base/memory/raw_ptr.h"
@@ -235,16 +236,16 @@ class CastMirroringServiceHostBrowserTest
               base::JSONReader::Read(message->json_format_data,
                                      base::JSON_PARSE_CHROMIUM_EXTENSIONS);
           ASSERT_TRUE(root_or_error);
-          const base::Value::Dict& root = root_or_error->GetDict();
+          const base::DictValue& root = root_or_error->GetDict();
           const std::string* type = root.FindString("type");
           ASSERT_TRUE(type);
           if (*type == "OFFER") {
-            const base::Value::Dict* offer = root.FindDict("offer");
+            const base::DictValue* offer = root.FindDict("offer");
             EXPECT_TRUE(offer);
-            const base::Value::List* streams =
+            const base::ListValue* streams =
                 offer->FindList("supportedStreams");
             for (auto& stream : *streams) {
-              const base::Value::Dict& stream_dict = stream.GetDict();
+              const base::DictValue& stream_dict = stream.GetDict();
               const int stream_target_delay =
                   stream_dict.FindInt("targetDelay").value();
               EXPECT_EQ(stream_target_delay, expected_delay_ms);
@@ -421,9 +422,9 @@ IN_PROC_BROWSER_TEST_F(CastMirroringServiceHostBrowserTest, TabIndicator) {
       browser_->tab_strip_model()->AddObserver(this);
     }
 
-    void TabChangedAt(content::WebContents* contents,
-                      int index,
-                      TabChangeType change_type) override {
+    void OnTabChangedAt(tabs::TabInterface* tab,
+                        int index,
+                        TabChangeType change_type) override {
       std::move(on_tab_changed_).Run();
     }
 
@@ -444,8 +445,8 @@ IN_PROC_BROWSER_TEST_F(CastMirroringServiceHostBrowserTest, TabIndicator) {
 
   // Run the browser until the indicator turns on.
   const base::TimeTicks start_time = base::TimeTicks::Now();
-  while (!base::Contains(GetTabAlertStatesForContents(contents),
-                         tabs::TabAlert::kTabCapturing)) {
+  while (!std::ranges::contains(GetTabAlertStatesForContents(contents),
+                                tabs::TabAlert::kTabCapturing)) {
     if (base::TimeTicks::Now() - start_time >
         TestTimeouts::action_max_timeout()) {
       EXPECT_THAT(GetTabAlertStatesForContents(contents),

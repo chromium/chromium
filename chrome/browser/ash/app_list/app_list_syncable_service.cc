@@ -16,7 +16,6 @@
 #include "base/auto_reset.h"
 #include "base/check.h"
 #include "base/command_line.h"
-#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
@@ -198,7 +197,7 @@ void UpdateSyncItemInLocalStorage(
 
   ScopedDictPrefUpdate pref_update(profile->GetPrefs(),
                                    prefs::kAppListLocalState);
-  base::Value::Dict* dict_item = pref_update->EnsureDict(sync_item->item_id);
+  base::DictValue* dict_item = pref_update->EnsureDict(sync_item->item_id);
   dict_item->Set(kNameKey, sync_item->item_name);
   dict_item->Set(kPromisePackageIdKey, !sync_item->promise_package_id.empty()
                                            ? sync_item->promise_package_id
@@ -481,7 +480,7 @@ void AppListSyncableService::InitFromLocalStorage() {
   DCHECK(!IsInitialized());
 
   // Restore initial state from local storage.
-  const base::Value::Dict& local_items =
+  const base::DictValue& local_items =
       profile_->GetPrefs()->GetDict(prefs::kAppListLocalState);
   local_state_initially_empty_ = local_items.empty();
 
@@ -1246,7 +1245,7 @@ void AppListSyncableService::PruneEmptySyncFolders() {
     if (sync_item->item_id == ash::kOemFolderId)
       continue;
 
-    if (!base::Contains(parent_ids, sync_item->item_id)) {
+    if (!parent_ids.contains(sync_item->item_id)) {
       DeleteSyncItem(sync_item->item_id);
     }
   }
@@ -1679,11 +1678,11 @@ AppListSyncableService::SyncItem* AppListSyncableService::CreateSyncItem(
     const std::string& item_id,
     sync_pb::AppListSpecifics::AppListItemType item_type,
     bool is_new) {
-  DCHECK(!base::Contains(sync_items_, item_id));
+  DCHECK(!sync_items_.contains(item_id));
   sync_items_[item_id] = std::make_unique<SyncItem>(item_id, item_type, is_new);
 
   // In case we have pending attributes to apply, process it asynchronously.
-  if (base::Contains(pending_transfer_map_, item_id)) {
+  if (pending_transfer_map_.contains(item_id)) {
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(&AppListSyncableService::ApplyAppAttributes,
                                   weak_ptr_factory_.GetWeakPtr(), item_id,

@@ -237,7 +237,7 @@ views::Widget* EnableAndGetAutoClickBubbleWidget() {
 
   views::Widget* autoclick_bubble_widget =
       autoclick_controller->GetMenuBubbleControllerForTesting()
-          ->GetBubbleWidgetForTesting();
+          ->bubble_widget();
   EXPECT_TRUE(autoclick_bubble_widget->IsVisible());
   return autoclick_bubble_widget;
 }

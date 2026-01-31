@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
-
 #include "base/files/dir_reader_posix.h"
 
 #include <fcntl.h>
@@ -17,6 +12,7 @@
 #include <unistd.h>
 
 #include "base/check.h"
+#include "base/compiler_specific.h"
 #include "base/files/scoped_temp_dir.h"
 #include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -64,11 +60,11 @@ TEST(DirReaderPosixUnittest, Read) {
   bool seen_dot = false, seen_dotdot = false;
 
   for (; reader.Next();) {
-    if (strcmp(reader.name(), ".") == 0) {
+    if (UNSAFE_TODO(strcmp(reader.name(), ".")) == 0) {
       seen_dot = true;
       continue;
     }
-    if (strcmp(reader.name(), "..") == 0) {
+    if (UNSAFE_TODO(strcmp(reader.name(), "..")) == 0) {
       seen_dotdot = true;
       continue;
     }
@@ -76,7 +72,8 @@ TEST(DirReaderPosixUnittest, Read) {
     SCOPED_TRACE(testing::Message() << "reader.name(): " << reader.name());
 
     char* endptr;
-    const unsigned long value = strtoul(reader.name(), &endptr, 10);
+    const unsigned long value =
+        UNSAFE_TODO(strtoul(reader.name(), &endptr, 10));
 
     EXPECT_FALSE(*endptr);
     EXPECT_LT(value, kNumFiles);

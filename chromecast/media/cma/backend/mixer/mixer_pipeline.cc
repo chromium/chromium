@@ -56,8 +56,7 @@ bool MixerPipeline::BuildPipeline(PostProcessingPipelineParser* config,
 
   // Create "stream" processor groups:
   for (auto& stream_pipeline : config->GetStreamPipelines()) {
-    const base::Value::List& device_ids =
-        stream_pipeline.stream_types->GetList();
+    const base::ListValue& device_ids = stream_pipeline.stream_types->GetList();
     int input_channels = (stream_pipeline.num_input_channels.has_value()
                               ? stream_pipeline.num_input_channels.value()
                               : expected_input_channels);

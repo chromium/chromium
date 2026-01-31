@@ -36,11 +36,11 @@ void CreateQuad(TracedValue* value, const char* name, const gfx::QuadF& quad) {
 }  // namespace
 
 PaintTimingVisualizer::PaintTimingVisualizer() {
-  trace_event::AddEnabledStateObserver(this);
+  trace_event::AddTraceSessionObserver(this);
 }
 
 PaintTimingVisualizer::~PaintTimingVisualizer() {
-  trace_event::RemoveEnabledStateObserver(this);
+  trace_event::RemoveTraceSessionObserver(this);
 }
 
 void PaintTimingVisualizer::RecordRects(const gfx::Rect& rect,
@@ -113,15 +113,12 @@ void PaintTimingVisualizer::RecordMainFrameViewport(
 
 // static
 bool PaintTimingVisualizer::IsTracingEnabled() {
-  bool enabled;
-  TRACE_EVENT_CATEGORY_GROUP_ENABLED("loading", &enabled);
-  return enabled;
+  return TRACE_EVENT_CATEGORY_ENABLED("loading");
 }
 
-void PaintTimingVisualizer::OnTraceLogEnabled() {
+void PaintTimingVisualizer::OnStart(
+    const perfetto::DataSourceBase::StartArgs&) {
   need_recording_viewport = true;
 }
-
-void PaintTimingVisualizer::OnTraceLogDisabled() {}
 
 }  // namespace blink

@@ -5,9 +5,12 @@
 #include "net/cert/internal/trust_store_chrome.h"
 
 #include "base/containers/span.h"
+#include "base/containers/to_vector.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
+#include "base/test/scoped_feature_list.h"
 #include "crypto/sha2.h"
+#include "net/base/features.h"
 #include "net/cert/root_store_proto_lite/root_store.pb.h"
 #include "net/cert/x509_certificate.h"
 #include "net/cert/x509_util.h"
@@ -18,6 +21,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/boringssl/src/pki/cert_errors.h"
 #include "third_party/boringssl/src/pki/parsed_certificate.h"
+#include "third_party/boringssl/src/pki/trust_store.h"
 
 namespace net {
 namespace {
@@ -25,14 +29,19 @@ namespace {
 #include "net/data/ssl/chrome_root_store/chrome-root-store-test-data-inc.cc"
 
 std::shared_ptr<const bssl::ParsedCertificate> ToParsedCertificate(
-    const X509Certificate& cert) {
+    bssl::UniquePtr<CRYPTO_BUFFER> cert_buffer) {
   bssl::CertErrors errors;
   std::shared_ptr<const bssl::ParsedCertificate> parsed =
       bssl::ParsedCertificate::Create(
-          bssl::UpRef(cert.cert_buffer()),
-          x509_util::DefaultParseCertificateOptions(), &errors);
+          std::move(cert_buffer), x509_util::DefaultParseCertificateOptions(),
+          &errors);
   EXPECT_TRUE(parsed) << errors.ToDebugString();
   return parsed;
+}
+
+std::shared_ptr<const bssl::ParsedCertificate> ToParsedCertificate(
+    const X509Certificate& cert) {
+  return ToParsedCertificate(bssl::UpRef(cert.cert_buffer()));
 }
 
 scoped_refptr<X509Certificate> MakeTestRoot() {
@@ -230,8 +239,8 @@ TEST(TrustStoreChromeTestNoFixture, Constraints) {
       trust_store_chrome->GetConstraintsForCert(other_parsed.get()).empty());
 }
 
-// TODO(crbug.com/452986179): test verifying MTCs from the root store data, MTC
-// anchor constraints, etc, once implemented.
+// TODO(crbug.com/452986179): test MTC anchor constraints, etc, once
+// implemented.
 
 TEST(TrustStoreChromeTestNoFixture, EnforceAnchorExpiryAndConstraints) {
   std::unique_ptr<TrustStoreChrome> trust_store_chrome =
@@ -517,6 +526,115 @@ TEST(TrustStoreChromeTestNoFixture, LoadCompiledInTrustAnchorIDs) {
                   std::vector<uint8_t>({0x01u, 0x01u, 0x01u, 0x01u}),
                   std::vector<uint8_t>({0x03u, 0x03u, 0x03u, 0x03u}),
                   std::vector<uint8_t>({0x02u, 0x02u, 0x02u, 0x02u})));
+}
+
+constexpr uint8_t kTestMtcLogId_1[] = {0x09u, 0x01u, 0x03u, 0x04u};
+// The second MTC log in the test_store.textproto is not marked as
+// tls_trust_anchor=true so isn't actually used.
+constexpr uint8_t kTestMtcLogId_3[] = {0x08u, 0x03u, 0x02u, 0x01u};
+constexpr uint8_t kTestMtcLogId_4[] = {0x08u, 0x04u, 0x05u, 0x06u};
+
+TEST(TrustStoreChromeTestNoFixture, LoadCompiledInMtcTrustAnchorLogIds) {
+  std::vector<std::vector<uint8_t>> log_ids =
+      TrustStoreChrome::GetTrustedMtcLogIDsFromCompiledInRootStore(
+          kChromeTrustedMtcAnchorList);
+  EXPECT_THAT(log_ids,
+              testing::UnorderedElementsAre(base::ToVector(kTestMtcLogId_1),
+                                            base::ToVector(kTestMtcLogId_3),
+                                            base::ToVector(kTestMtcLogId_4)));
+}
+
+std::tuple<std::shared_ptr<const bssl::MTCAnchor>,
+           std::shared_ptr<const bssl::ParsedCertificate>>
+MakeTestMtcAnchorAndLeaf(MtcLogBuilder& mtc_log_builder) {
+  std::unique_ptr<net::CertBuilder> mtc_leaf_builder =
+      std::move(net::CertBuilder::CreateSimpleChain(1u)[0]);
+
+  uint64_t leaf_index = mtc_log_builder.AddEntry(*mtc_leaf_builder);
+  mtc_log_builder.AdvanceLandmark();
+
+  auto leaf_buffer =
+      mtc_log_builder.CreateSignaturelessCertificateBuffer(leaf_index);
+  CHECK(leaf_buffer);
+  std::shared_ptr<const bssl::ParsedCertificate> mtc_leaf =
+      ToParsedCertificate(std::move(leaf_buffer));
+
+  return {
+      std::make_shared<bssl::MTCAnchor>(
+          mtc_log_builder.log_id(), mtc_log_builder.GetLandmarkSubtreeHashes()),
+      std::move(mtc_leaf)};
+}
+
+TEST(TrustStoreChromeTestNoFixture, LoadCompiledMtcTrustAnchors) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      {{features::kTLSTrustAnchorIDs, features::kVerifyMTCs}}, {});
+
+  ChromeRootStoreData root_store_data = ChromeRootStoreData::CreateForTesting(
+      kChromeRootCertList, kEutlRootCertList, kChromeTrustedMtcAnchorList,
+      /*version=*/1);
+
+  MtcLogBuilder mtc_log_builder(kTestMtcLogId_1);
+  auto [mtc_anchor, mtc_leaf] = MakeTestMtcAnchorAndLeaf(mtc_log_builder);
+
+  MtcLogBuilder mtc_log_builder_3(kTestMtcLogId_3);
+  auto [mtc_anchor_3, mtc_leaf_3] = MakeTestMtcAnchorAndLeaf(mtc_log_builder_3);
+
+  MtcLogBuilder mtc_log_builder_4(kTestMtcLogId_4);
+  auto [mtc_anchor_4, mtc_leaf_4] = MakeTestMtcAnchorAndLeaf(mtc_log_builder_4);
+
+  // If the data is loaded without MtcMetadata being present, the MTC anchors
+  // aren't actually loaded into the trust store.
+  {
+    TrustStoreChrome trust_store_chrome(&root_store_data, nullptr);
+
+    // Since no matching metadata was present, the MTC Anchors should not have
+    // actually been added to the trust store.
+    EXPECT_FALSE(trust_store_chrome.ContainsMTCAnchor(mtc_anchor.get()));
+    EXPECT_FALSE(trust_store_chrome.GetTrustedMTCIssuerOf(mtc_leaf.get()));
+
+    EXPECT_FALSE(trust_store_chrome.ContainsMTCAnchor(mtc_anchor_3.get()));
+    EXPECT_FALSE(trust_store_chrome.GetTrustedMTCIssuerOf(mtc_leaf_3.get()));
+
+    EXPECT_FALSE(trust_store_chrome.ContainsMTCAnchor(mtc_anchor_4.get()));
+    EXPECT_FALSE(trust_store_chrome.GetTrustedMTCIssuerOf(mtc_leaf_4.get()));
+  }
+
+  chrome_root_store::MtcMetadata mtc_metadata_proto;
+  mtc_metadata_proto.set_update_time_seconds(
+      base::Time::Now().InMillisecondsSinceUnixEpoch() / 1000);
+
+  // Only the first and fourth log are added to the MtcMetadata proto.
+  mtc_log_builder.FillMtcMetadataAnchorProto(
+      mtc_metadata_proto.add_mtc_anchor_data());
+  mtc_log_builder_4.FillMtcMetadataAnchorProto(
+      mtc_metadata_proto.add_mtc_anchor_data());
+
+  auto mtc_metadata = ChromeRootStoreMtcMetadata::CreateFromMtcMetadataProto(
+      mtc_metadata_proto);
+  ASSERT_TRUE(mtc_metadata);
+
+  // If TrustStoreChrome is created with MtcMetadata, the MTC anchors should be
+  // loaded for anchors that were present in both.
+  {
+    TrustStoreChrome trust_store_chrome(&root_store_data, &*mtc_metadata);
+
+    // The log_id that was in the MtcMetadata should be added to the trust store
+    // as an anchor.
+    EXPECT_TRUE(trust_store_chrome.ContainsMTCAnchor(mtc_anchor.get()));
+    EXPECT_TRUE(trust_store_chrome.GetTrustedMTCIssuerOf(mtc_leaf.get()));
+
+    // The log_id for anchor 3 wasn't present in the loaded MtcMetadata, so
+    // should still not be added to the trust store as an anchor.
+    EXPECT_FALSE(trust_store_chrome.ContainsMTCAnchor(mtc_anchor_3.get()));
+    EXPECT_FALSE(trust_store_chrome.GetTrustedMTCIssuerOf(mtc_leaf_3.get()));
+
+    // The fourth log should be present, except that constraints aren't
+    // implemented yet so it is dropped.
+    // TODO(crbug.com/452986180): support constraints.
+    EXPECT_FALSE(trust_store_chrome.ContainsMTCAnchor(mtc_anchor_4.get()));
+    EXPECT_FALSE(trust_store_chrome.GetTrustedMTCIssuerOf(mtc_leaf_4.get()));
+  }
 }
 
 TEST(TrustStoreChromeTestNoFixture, OverrideConstraints) {

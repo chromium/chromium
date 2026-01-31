@@ -37,7 +37,7 @@ bool ItemIsPinnedSuggestion(
   }
 
   for (const auto& [_, suggested_file_paths] : suggestions_by_type) {
-    if (base::Contains(suggested_file_paths, item->file().file_path)) {
+    if (std::ranges::contains(suggested_file_paths, item->file().file_path)) {
       return true;
     }
   }
@@ -127,7 +127,7 @@ void HoldingSpaceSuggestionsDelegate::MaybeFetchSuggestions(
     FileSuggestionType type) {
   // A data query on `type` has been sent so it is unnecessary to send a request
   // again. Return early.
-  if (base::Contains(pending_fetches_, type)) {
+  if (pending_fetches_.contains(type)) {
     return;
   }
 

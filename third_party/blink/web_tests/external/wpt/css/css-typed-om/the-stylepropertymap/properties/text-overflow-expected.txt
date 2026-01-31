@@ -2,8 +2,8 @@ This is a testharness.js-based test.
 [FAIL] Can set 'text-overflow' to the 'fade' keyword: fade
   Failed to execute 'set' on 'StylePropertyMap': Invalid type for property
 [FAIL] 'text-overflow' does not support 'clip ellipsis'
-  assert_not_equals: Unsupported value must not be null got disallowed value null
+  assert_class_string: Unsupported value must be a CSSStyleValue and not one of its subclasses expected "[object CSSStyleValue]" but got "[object Undefined]"
 [FAIL] 'text-overflow' does not support 'fade(1px, 50%)'
-  assert_not_equals: Unsupported value must not be null got disallowed value null
+  assert_class_string: Unsupported value must be a CSSStyleValue and not one of its subclasses expected "[object CSSStyleValue]" but got "[object Undefined]"
 Harness: the test ran to completion.
 

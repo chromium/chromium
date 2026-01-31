@@ -77,11 +77,6 @@ bool IsKAnonForReporting(
     const blink::InterestGroup::Ad& chosen_ad,
     base::optional_ref<const std::string>
         selected_buyer_and_seller_reporting_id) {
-  // K-anonymity enforcement is always disabled for the testing population.
-  if (base::FeatureList::IsEnabled(
-          features::kCookieDeprecationFacilitatedTesting)) {
-    return true;
-  }
   if (!base::FeatureList::IsEnabled(
           blink::features::kFledgeConsiderKAnonymity) ||
       !base::FeatureList::IsEnabled(

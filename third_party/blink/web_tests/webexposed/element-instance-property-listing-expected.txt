@@ -25,6 +25,7 @@ namespace http://www.w3.org/1999/xhtml
     property TEXT_NODE
     property accessKey
     property accessKeyLabel
+    property activeViewTransition
     property addEventListener
     property after
     property anchorElement
@@ -116,7 +117,6 @@ namespace http://www.w3.org/1999/xhtml
     property contains
     property contentEditable
     property currentCSSZoom
-    property currentPatch
     property dataset
     property dir
     property dispatchEvent
@@ -306,11 +306,6 @@ namespace http://www.w3.org/1999/xhtml
     property parentElement
     property parentNode
     property part
-    property patchAfter
-    property patchAll
-    property patchBefore
-    property patchBetween
-    property patchSelf
     property popover
     property prefix
     property prepend
@@ -856,9 +851,10 @@ html element ins
     property dateTime
 html element install
     property initialPermissionStatus
+    property installURL
     property invalidReason
     property isValid
-    property manifest
+    property manifestId
     property onpromptaction
     property onpromptdismiss
     property onvalidationstatuschange
@@ -927,6 +923,7 @@ html element menuitem
     property commandForElement
     property defaultChecked
     property disabled
+    property interestForElement
 html element menulist
 html element meta
     property content
@@ -1367,6 +1364,7 @@ namespace http://www.w3.org/2000/svg
     property NOTATION_NODE
     property PROCESSING_INSTRUCTION_NODE
     property TEXT_NODE
+    property activeViewTransition
     property addEventListener
     property after
     property anchorElement
@@ -1454,7 +1452,6 @@ namespace http://www.w3.org/2000/svg
     property containerTimingIgnore
     property contains
     property currentCSSZoom
-    property currentPatch
     property dataset
     property dispatchEvent
     property elementTiming
@@ -1628,11 +1625,6 @@ namespace http://www.w3.org/2000/svg
     property parentElement
     property parentNode
     property part
-    property patchAfter
-    property patchAll
-    property patchBefore
-    property patchBetween
-    property patchSelf
     property prefix
     property prepend
     property previousElementSibling

@@ -186,7 +186,7 @@ base::Value DomainReliabilityContext::CreateReport(base::TimeTicks upload_time,
 
   int max_upload_depth = 0;
 
-  base::Value::List beacons_value;
+  base::ListValue beacons_value;
   for (const auto& beacon : beacons_) {
     // Only include beacons with a matching NetworkIsolationKey in the report.
     if (beacon->isolation_info.network_isolation_key() !=
@@ -204,7 +204,7 @@ base::Value DomainReliabilityContext::CreateReport(base::TimeTicks upload_time,
 
   DCHECK_GT(uploading_beacons_size_, 0u);
 
-  base::Value::Dict report_value;
+  base::DictValue report_value;
   report_value.Set("reporter", *upload_reporter_string_);
   report_value.Set("entries", std::move(beacons_value));
 

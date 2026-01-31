@@ -1,7 +1,7 @@
-caption: Enable content sharing with <ph name="GOOGLE_AI_MODE_PRODUCT_NAME">Google AI Mode</ph> integrations
+caption: Enable content sharing with <ph name="GOOGLE_AI_MODE_PRODUCT_NAME">Google AI Mode</ph> and <ph name="GOOGLE_LENS_PRODUCT_NAME">Lens</ph> integrations
 
 desc: |-
-  This policy controls sharing of page and file content with <ph name="GOOGLE_AI_MODE_PRODUCT_NAME">Google AI Mode</ph> through <ph name="PRODUCT_NAME">Google Chrome</ph> side panel or tabs.
+  This policy controls sharing of page and file content with <ph name="GOOGLE_AI_MODE_PRODUCT_NAME">Google AI Mode</ph> and <ph name="GOOGLE_LENS_PRODUCT_NAME">Lens</ph> through <ph name="PRODUCT_NAME">Google Chrome</ph> side panel or tabs.
 
   Note that this policy doesn't affect <ph name="GOOGLE_AI_MODE_PRODUCT_NAME">Google AI Mode</ph> on the web. It only controls how users can share information with it when using <ph name="PRODUCT_NAME">Google Chrome</ph>.
 

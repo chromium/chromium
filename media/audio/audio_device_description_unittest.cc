@@ -114,6 +114,8 @@ TEST(AudioDeviceDescriptionTest, IsApplicationLoopbackDevice) {
       AudioDeviceDescription::kApplicationLoopbackDeviceId));
   EXPECT_TRUE(AudioDeviceDescription::IsApplicationLoopbackDevice(
       CreateApplicationLoopbackDeviceId(12345)));
+  EXPECT_TRUE(AudioDeviceDescription::IsApplicationLoopbackDevice(
+      CreateRestrictOwnAudioBrowserLoopbackDeviceId()));
   EXPECT_FALSE(AudioDeviceDescription::IsApplicationLoopbackDevice(
       AudioDeviceDescription::kLoopbackInputDeviceId));
   EXPECT_FALSE(AudioDeviceDescription::IsApplicationLoopbackDevice(

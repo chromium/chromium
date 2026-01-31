@@ -39,7 +39,7 @@ void NetworkAnnotationBlocklistHandler::ApplyPolicySettings(
     PrefValueMap* prefs) {
   const base::TimeTicks start_time = base::TimeTicks::Now();
 
-  base::Value::Dict blocklist_prefs = base::Value::Dict();
+  base::DictValue blocklist_prefs = base::DictValue();
 
   for (auto const& [hash_code, control] :
        annotation_control_provider_.GetControls()) {

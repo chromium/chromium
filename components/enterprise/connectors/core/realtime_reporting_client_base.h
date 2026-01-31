@@ -65,7 +65,7 @@ class RealtimeReportingClientBase : public KeyedService,
   // dictionary to proto is done.
   void ReportEventWithTimestampDeprecated(const std::string& name,
                                           const ReportingSettings& settings,
-                                          base::Value::Dict event,
+                                          base::DictValue event,
                                           const base::Time& time,
                                           bool include_profile_user_name);
 
@@ -103,7 +103,7 @@ class RealtimeReportingClientBase : public KeyedService,
   // end.
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
   virtual void MaybeCollectDeviceSignalsAndReportEventDeprecated(
-      base::Value::Dict event,
+      base::DictValue event,
       policy::CloudPolicyClient* client,
       std::string name,
       const ReportingSettings& settings,
@@ -117,7 +117,7 @@ class RealtimeReportingClientBase : public KeyedService,
   // Callback used with UploadSecurityEventReport() to upload events to the
   // reporting server.
   virtual void UploadCallbackDeprecated(
-      base::Value::Dict event_wrapper,
+      base::DictValue event_wrapper,
       bool per_profile,
       policy::CloudPolicyClient* client,
       EnterpriseReportingEventType event_type,
@@ -135,7 +135,7 @@ class RealtimeReportingClientBase : public KeyedService,
   // Returns a dictionary of information added to reporting events,
   // corresponding to the Device, Browser and Profile protos defined in
   // google3/google/internal/chrome/reporting/v1/chromereporting.proto.
-  virtual base::Value::Dict GetContext() = 0;
+  virtual base::DictValue GetContext() = 0;
 
   // Creates and returns an UploadEventsRequest proto with the Device, Browser
   // and Profile protos set.
@@ -163,25 +163,24 @@ class RealtimeReportingClientBase : public KeyedService,
                                  policy::CloudPolicyClient* client,
                                  const ReportingSettings& settings);
 
-  void OnIpAddressesFetchedDeprecated(
-      base::Value::Dict event,
-      policy::CloudPolicyClient* client,
-      std::string name,
-      const ReportingSettings& settings,
-      base::Time time,
-      std::vector<std::string> ip_addresses);
+  void OnIpAddressesFetchedDeprecated(base::DictValue event,
+                                      policy::CloudPolicyClient* client,
+                                      std::string name,
+                                      const ReportingSettings& settings,
+                                      base::Time time,
+                                      std::vector<std::string> ip_addresses);
 
   // Prepares information required by
   // CloudPolicyClient::UploadSecurityEventReportDeprecated() and calls it.
   // DEPRECATED: Use UploadSecurityEvent() instead.
-  void UploadSecurityEventReportDeprecated(base::Value::Dict event,
+  void UploadSecurityEventReportDeprecated(base::DictValue event,
                                            policy::CloudPolicyClient* client,
                                            std::string name,
                                            const ReportingSettings& settings,
                                            base::Time time);
 
   void FinishUploadSecurityEventReportDeprecated(
-      base::Value::Dict event,
+      base::DictValue event,
       policy::CloudPolicyClient* client,
       std::string name,
       const ReportingSettings& settings);

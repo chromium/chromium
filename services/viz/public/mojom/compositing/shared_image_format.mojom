@@ -23,7 +23,7 @@ struct MultiplanarFormat {
   Subsampling subsampling;
   ChannelFormat channel_format;
 
-  [EnableIf=use_ozone]
+  [EnableIf=supports_external_sampler]
   bool prefers_external_sampler;
 };
 

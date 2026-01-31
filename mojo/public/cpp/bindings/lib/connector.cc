@@ -90,13 +90,15 @@ class Connector::RunLoopNestingObserver
 
   // base::RunLoop::NestingObserver:
   void OnBeginNestedRunLoop() override {
-    if (top_tracker_)
+    if (top_tracker_) {
       top_tracker_->NotifyBeginNesting();
+    }
   }
 
   static RunLoopNestingObserver* GetForThread() {
-    if (!base::CurrentThread::Get())
+    if (!base::CurrentThread::Get()) {
       return nullptr;
+    }
     // The NestingObserver for each thread. Note that this is always a
     // Connector::RunLoopNestingObserver; we use the base type here because that
     // subclass is private to Connector.
@@ -123,19 +125,23 @@ Connector::ActiveDispatchTracker::ActiveDispatchTracker(
 }
 
 Connector::ActiveDispatchTracker::~ActiveDispatchTracker() {
-  if (nesting_observer_->top_tracker_ == this)
+  if (nesting_observer_->top_tracker_ == this) {
     nesting_observer_->top_tracker_ = outer_tracker_;
-  else if (inner_tracker_)
+  } else if (inner_tracker_) {
     inner_tracker_->outer_tracker_ = outer_tracker_;
-  if (outer_tracker_)
+  }
+  if (outer_tracker_) {
     outer_tracker_->inner_tracker_ = inner_tracker_;
+  }
 }
 
 void Connector::ActiveDispatchTracker::NotifyBeginNesting() {
-  if (connector_ && connector_->handle_watcher_)
+  if (connector_ && connector_->handle_watcher_) {
     connector_->handle_watcher_->ArmOrNotify();
-  if (outer_tracker_)
+  }
+  if (outer_tracker_) {
     outer_tracker_->NotifyBeginNesting();
+  }
 }
 
 Connector::Connector(ScopedMessagePipeHandle message_pipe,
@@ -150,12 +156,14 @@ Connector::Connector(ScopedMessagePipeHandle message_pipe,
           base::JoinString({interface_name ? interface_name : "Generic",
                             "MessageHeaderValidator"},
                            "")) {
-  if (config == MULTI_THREADED_SEND)
+  if (config == MULTI_THREADED_SEND) {
     lock_.emplace();
+  }
 
 #if defined(ENABLE_IPC_FUZZER)
-  if (!MessageDumper::GetMessageDumpDirectory().empty())
+  if (!MessageDumper::GetMessageDumpDirectory().empty()) {
     message_dumper_ = std::make_unique<MessageDumper>();
+  }
 #endif
 
   weak_self_ = weak_factory_.GetWeakPtr();
@@ -229,16 +237,18 @@ void Connector::RaiseError() {
 void Connector::SetConnectionGroup(ConnectionGroupRef ref) {
   // If this Connector already belonged to a group, parent the new group to that
   // one so that the reference is not lost.
-  if (connection_group_)
+  if (connection_group_) {
     ref.SetParentGroup(std::move(connection_group_));
+  }
   connection_group_ = std::move(ref);
 }
 
 bool Connector::WaitForIncomingMessage() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  if (error_)
+  if (error_) {
     return false;
+  }
 
   ResumeIncomingMethodCallProcessing();
 
@@ -264,8 +274,9 @@ bool Connector::WaitForIncomingMessage() {
 void Connector::PauseIncomingMethodCallProcessing() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  if (paused_)
+  if (paused_) {
     return;
+  }
 
   paused_ = true;
   CancelWait();
@@ -274,23 +285,26 @@ void Connector::PauseIncomingMethodCallProcessing() {
 void Connector::ResumeIncomingMethodCallProcessing() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  if (!paused_)
+  if (!paused_) {
     return;
+  }
 
   paused_ = false;
   WaitToReadMore();
 }
 
 bool Connector::PrefersSerializedMessages() {
-  if (outgoing_serialization_mode_ != OutgoingSerializationMode::kLazy)
+  if (outgoing_serialization_mode_ != OutgoingSerializationMode::kLazy) {
     return true;
+  }
 
   // In lazy serialization mode (the default) we prefer to send unserialized
   // messages. Note that most interfaces don't support lazy serialization
   // though, so they'll still only send serialized messages. As such, in most
   // cases this return value is ignored.
-  if (!peer_remoteness_tracker_)
+  if (!peer_remoteness_tracker_) {
     return false;
+  }
 
   // If we have set up a remoteness tracker however, that means we've actually
   // seen at least one unserialized message (see Accept()). In that case we
@@ -306,8 +320,9 @@ bool Connector::Accept(Message* message) {
 }
 
 MojoResult Connector::AcceptAndGetResult(Message* message) {
-  if (!lock_ && task_runner_)
+  if (!lock_ && task_runner_) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  }
 
   if (TS_UNCHECKED_READ(error_)) {
     return MOJO_RESULT_UNKNOWN;
@@ -315,8 +330,9 @@ MojoResult Connector::AcceptAndGetResult(Message* message) {
 
   internal::MayAutoLock locker(&lock_);
 
-  if (!message_pipe_.is_valid() || drop_writes_)
+  if (!message_pipe_.is_valid() || drop_writes_) {
     return MOJO_RESULT_OK;
+  }
 
 #if defined(ENABLE_IPC_FUZZER)
   if (message_dumper_ && message->is_serialized()) {
@@ -444,8 +460,9 @@ void Connector::WaitToReadMore() {
   CHECK(!paused_);
   DCHECK(!handle_watcher_);
 
-  if (!nesting_observer_)
+  if (!nesting_observer_) {
     nesting_observer_ = RunLoopNestingObserver::GetForThread();
+  }
 
   DCHECK(task_runner_->RunsTasksInCurrentSequence());
   handle_watcher_ = std::make_unique<SimpleWatcher>(
@@ -537,18 +554,21 @@ bool Connector::DispatchMessage(ScopedMessageHandle handle) {
         static const uint8_t* flow_enabled =
             TRACE_EVENT_API_GET_CATEGORY_GROUP_ENABLED(
                 "toplevel.flow,mojom.flow");
-        if (!*flow_enabled)
+        if (!*flow_enabled) {
           return;
+        }
 
         perfetto::Flow::Global(message.GetTraceId())(ctx);
       });
 
-  if (connection_group_)
+  if (connection_group_) {
     message.set_receiver_connection_group(&connection_group_);
+  }
   bool receiver_result =
       incoming_receiver_ && incoming_receiver_->Accept(&message);
-  if (!weak_self)
+  if (!weak_self) {
     return receiver_result;
+  }
 
   if (dispatch_tracker) {
     is_dispatching_ = false;
@@ -582,8 +602,9 @@ void Connector::ScheduleDispatchOfPendingMessagesOrWaitForMore(
   if (pending_message_count == 0) {
     // We're done only because there are no more messages to read, so go back to
     // watching the pipe for more.
-    if (handle_watcher_)
+    if (handle_watcher_) {
       handle_watcher_->ArmOrNotify();
+    }
     return;
   }
 
@@ -593,8 +614,9 @@ void Connector::ScheduleDispatchOfPendingMessagesOrWaitForMore(
 }
 
 void Connector::ReadAllAvailableMessages() {
-  if (paused_ || error_)
+  if (paused_ || error_) {
     return;
+  }
 
   base::WeakPtr<Connector> weak_self = weak_self_;
 
@@ -645,8 +667,9 @@ void Connector::CancelWait() {
 }
 
 void Connector::HandleError(bool force_pipe_reset, bool force_async_handler) {
-  if (error_ || !message_pipe_.is_valid())
+  if (error_ || !message_pipe_.is_valid()) {
     return;
+  }
 
   if (paused_) {
     // Enforce calling the error handler asynchronously if the user has paused
@@ -655,8 +678,9 @@ void Connector::HandleError(bool force_pipe_reset, bool force_async_handler) {
     force_async_handler = true;
   }
 
-  if (!force_pipe_reset && force_async_handler)
+  if (!force_pipe_reset && force_async_handler) {
     force_pipe_reset = true;
+  }
 
   if (force_pipe_reset) {
     CancelWait();
@@ -669,18 +693,21 @@ void Connector::HandleError(bool force_pipe_reset, bool force_async_handler) {
   }
 
   if (force_async_handler) {
-    if (!paused_)
+    if (!paused_) {
       WaitToReadMore();
+    }
   } else {
     error_ = true;
-    if (connection_error_handler_)
+    if (connection_error_handler_) {
       std::move(connection_error_handler_).Run();
+    }
   }
 }
 
 void Connector::EnsureSyncWatcherExists() {
-  if (sync_watcher_)
+  if (sync_watcher_) {
     return;
+  }
   sync_watcher_ = std::make_unique<SyncHandleWatcher>(
       message_pipe_.get(), MOJO_HANDLE_SIGNAL_READABLE,
       base::BindRepeating(&Connector::OnSyncHandleWatcherHandleReady,

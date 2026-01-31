@@ -59,7 +59,7 @@ class Foo : public BaseClass {
 };
 
 scoped_refptr<const BaseClass> CreateFoo(const std::string& /*instance_type*/,
-                                         const base::Value::Dict& value,
+                                         const base::DictValue& value,
                                          std::string* error,
                                          bool* bad_message) {
   std::optional<int> parameter = value.FindInt("parameter");
@@ -71,8 +71,8 @@ scoped_refptr<const BaseClass> CreateFoo(const std::string& /*instance_type*/,
   return scoped_refptr<const BaseClass>(new Foo(*parameter));
 }
 
-base::Value::Dict CreateDictWithParameter(int parameter) {
-  base::Value::Dict dict;
+base::DictValue CreateDictWithParameter(int parameter) {
+  base::DictValue dict;
   dict.Set("parameter", parameter);
   return dict;
 }
@@ -81,17 +81,17 @@ base::Value::Dict CreateDictWithParameter(int parameter) {
 
 namespace extensions {
 
-using FactoryT = DedupingFactory<BaseClass, const base::Value::Dict&>;
+using FactoryT = DedupingFactory<BaseClass, const base::DictValue&>;
 
 TEST(DedupingFactoryTest, InstantiationParameterized) {
   FactoryT factory(2);
   factory.RegisterFactoryMethod(kTypeName, FactoryT::IS_PARAMETERIZED,
                                 &CreateFoo);
 
-  base::Value::Dict d1 = CreateDictWithParameter(1);
-  base::Value::Dict d2 = CreateDictWithParameter(2);
-  base::Value::Dict d3 = CreateDictWithParameter(3);
-  base::Value::Dict d4 = CreateDictWithParameter(4);
+  base::DictValue d1 = CreateDictWithParameter(1);
+  base::DictValue d2 = CreateDictWithParameter(2);
+  base::DictValue d3 = CreateDictWithParameter(3);
+  base::DictValue d4 = CreateDictWithParameter(4);
 
   std::string error;
   bool bad_message = false;
@@ -135,8 +135,8 @@ TEST(DedupingFactoryTest, InstantiationNonParameterized) {
   factory.RegisterFactoryMethod(kTypeName, FactoryT::IS_NOT_PARAMETERIZED,
                                 &CreateFoo);
 
-  base::Value::Dict d1 = CreateDictWithParameter(1);
-  base::Value::Dict d2 = CreateDictWithParameter(2);
+  base::DictValue d1 = CreateDictWithParameter(1);
+  base::DictValue d2 = CreateDictWithParameter(2);
 
   std::string error;
   bool bad_message = false;
@@ -161,7 +161,7 @@ TEST(DedupingFactoryTest, TypeNames) {
   factory.RegisterFactoryMethod(kTypeName2, FactoryT::IS_PARAMETERIZED,
                                 &CreateFoo);
 
-  base::Value::Dict d1 = CreateDictWithParameter(1);
+  base::DictValue d1 = CreateDictWithParameter(1);
 
   std::string error;
   bool bad_message = false;
@@ -181,7 +181,7 @@ TEST(DedupingFactoryTest, Clear) {
   factory.RegisterFactoryMethod(kTypeName, FactoryT::IS_PARAMETERIZED,
                                 &CreateFoo);
 
-  base::Value::Dict d1 = CreateDictWithParameter(1);
+  base::DictValue d1 = CreateDictWithParameter(1);
 
   std::string error;
   bool bad_message = false;

@@ -37,11 +37,9 @@ LayoutTableCell* LayoutTableCell::CreateAnonymousWithParent(
 
 void LayoutTableCell::InvalidateLayoutResultCacheAfterMeasure() const {
   NOT_DESTROYED();
-  if (LayoutBox* row = ParentBox()) {
-    DCHECK(row->IsTableRow());
+  if (LayoutTableRow* row = Row()) {
     row->SetShouldSkipLayoutCache(true);
-    if (LayoutBox* section = row->ParentBox()) {
-      DCHECK(section->IsTableSection());
+    if (LayoutTableSection* section = row->Section()) {
       section->SetShouldSkipLayoutCache(true);
     }
   }

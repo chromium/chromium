@@ -113,8 +113,7 @@ class AndroidDriverFactory(DriverFactory):
 
     driver = None
     try:
-      yield (driver := webdriver.Chrome(service=self.get_driver_service(),
-                                        options=options))
+      yield (driver := self.get_driver(options))
     finally:
       if driver:
         driver.quit()

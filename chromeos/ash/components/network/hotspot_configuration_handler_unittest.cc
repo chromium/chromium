@@ -107,7 +107,7 @@ class HotspotConfigurationHandlerTest : public ::testing::Test {
 
   void SetHotspotStateInShill(const std::string& state) {
     auto status_dict =
-        base::Value::Dict().Set(shill::kTetheringStatusStateProperty, state);
+        base::DictValue().Set(shill::kTetheringStatusStateProperty, state);
     network_state_test_helper_.manager_test()->SetManagerProperty(
         shill::kTetheringStatusProperty, base::Value(std::move(status_dict)));
     base::RunLoop().RunUntilIdle();
@@ -144,7 +144,7 @@ TEST_F(HotspotConfigurationHandlerTest, UpdateHotspotConfigWhenProfileLoaded) {
   const char kLoadedPassphrase[] = "loaded_passphrase";
 
   auto config =
-      base::Value::Dict()
+      base::DictValue()
           .Set(shill::kTetheringConfSSIDProperty,
                base::HexEncode(kInitialSSID, std::strlen(kInitialSSID)))
           .Set(shill::kTetheringConfPassphraseProperty, kInitialPassphrase)

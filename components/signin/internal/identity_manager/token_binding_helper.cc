@@ -11,7 +11,7 @@
 #include <utility>
 #include <vector>
 
-#include "base/containers/contains.h"
+#include "base/barrier_callback.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/span.h"
 #include "base/feature_list.h"
@@ -20,6 +20,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
+#include "base/process/process.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "base/types/expected.h"
@@ -42,8 +43,6 @@ constexpr std::string_view kTokenBindingNamespace = "TokenBinding";
 
 constexpr unexportable_keys::BackgroundTaskPriority kTokenBindingPriority =
     unexportable_keys::BackgroundTaskPriority::kBestEffort;
-
-constexpr base::TimeDelta kGarbageCollectionDelay = base::Seconds(10);
 
 base::expected<std::string, TokenBindingHelper::Error> CreateAssertionToken(
     const std::string& header_and_payload,
@@ -99,7 +98,7 @@ void TokenBindingHelper::SetBindingKey(
 }
 
 bool TokenBindingHelper::HasBindingKey(const CoreAccountId& account_id) const {
-  return base::Contains(binding_keys_, account_id);
+  return binding_keys_.contains(account_id);
 }
 
 void TokenBindingHelper::ClearAllKeys() {
@@ -236,24 +235,17 @@ void TokenBindingHelper::OnGetAllKeysForGarbageCollection(
     return;
   }
 
-  // Delay the actual garbage collection to give a chance for pending key
-  // generation tasks to complete.
-  //
-  // TODO(crbug.com/455538313): Instead of adding an arbitrary delay, simply
-  // don't delete keys that were modified after the beginning of the current
-  // Chrome session once we expose that timestamp in the keys.
-  base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
-      FROM_HERE,
-      base::BindOnce(&TokenBindingHelper::DoGarbageCollection,
-                     weak_ptr_factory_.GetWeakPtr(),
-                     std::move(known_wrapped_keys_in_db),
-                     *std::move(all_key_ids_or_error)),
-      kGarbageCollectionDelay);
-}
+  std::vector<unexportable_keys::UnexportableKeyId>& all_key_ids =
+      *all_key_ids_or_error;
 
-void TokenBindingHelper::DoGarbageCollection(
-    absl::flat_hash_set<std::vector<uint8_t>> known_wrapped_keys_in_db,
-    std::vector<unexportable_keys::UnexportableKeyId> all_key_ids) {
+  static constexpr std::string_view kGarbageCollectionHistogramPrefix =
+      "Crypto.UnexportableKeys.GarbageCollection.RefreshTokenBinding.";
+
+  const size_t key_count = all_key_ids.size();
+  base::UmaHistogramCounts100(
+      base::StrCat({kGarbageCollectionHistogramPrefix, "TotalKeyCount"}),
+      key_count);
+
   // Construct a set of all wrapped keys that are still used.
   absl::flat_hash_set<std::vector<uint8_t>> known_wrapped_keys =
       std::move(known_wrapped_keys_in_db);
@@ -262,20 +254,31 @@ void TokenBindingHelper::DoGarbageCollection(
     known_wrapped_keys.insert(binding_key_data.wrapped_key);
   }
 
-  // Filter out keys from the response that are still used.
+  // Filter out keys from the response that are still used or were generated
+  // after the current Chrome session started.
   std::erase_if(all_key_ids, [&](unexportable_keys::UnexportableKeyId key_id) {
     unexportable_keys::ServiceErrorOr<std::vector<uint8_t>> wrapped_key =
         unexportable_key_service_->GetWrappedKey(key_id);
     return !wrapped_key.has_value() ||
-           known_wrapped_keys.contains(*wrapped_key);
+           known_wrapped_keys.contains(*wrapped_key) ||
+           unexportable_key_service_->GetCreationTime(key_id).value_or(
+               base::Time::Now()) >= base::Process::Current().CreationTime();
   });
 
-  // TODO(crbug.com/455538313): Add metrics for the number of keys
-  // deleted.
-  std::ranges::for_each(
-      all_key_ids, [&](unexportable_keys::UnexportableKeyId key_id) {
-        unexportable_key_service_->DeleteKeySlowlyAsync(
-            key_id, unexportable_keys::BackgroundTaskPriority::kBestEffort,
-            base::DoNothing());
-      });
+  base::UmaHistogramCounts100(
+      base::StrCat({kGarbageCollectionHistogramPrefix, "UsedKeyCount"}),
+      key_count - all_key_ids.size());
+
+  base::UmaHistogramCounts100(
+      base::StrCat({kGarbageCollectionHistogramPrefix, "ObsoleteKeyCount"}),
+      all_key_ids.size());
+
+  unexportable_key_service_->DeleteKeysSlowlyAsync(
+      all_key_ids, unexportable_keys::BackgroundTaskPriority::kBestEffort,
+      base::BindOnce([](unexportable_keys::ServiceErrorOr<size_t> result) {
+        base::UmaHistogramCounts100(
+            base::StrCat({kGarbageCollectionHistogramPrefix,
+                          "ObsoleteKeyDeletionCount"}),
+            result.value_or(0));
+      }));
 }

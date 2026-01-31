@@ -43,8 +43,7 @@ const char kSyncPollInterval[] = "sync.short_poll_interval";
 SyncTransportDataPrefs::SyncTransportDataPrefs(
     PrefService* pref_service,
     const signin::GaiaIdHash& gaia_id_hash)
-    : pref_service_(pref_service), gaia_id_hash_(gaia_id_hash) {
-}
+    : pref_service_(pref_service), gaia_id_hash_(gaia_id_hash) {}
 
 SyncTransportDataPrefs::~SyncTransportDataPrefs() = default;
 
@@ -153,6 +152,24 @@ bool SyncTransportDataPrefs::HasCurrentSyncingGaiaId(
 void SyncTransportDataPrefs::ClearCurrentSyncingGaiaId(
     PrefService* pref_service) {
   pref_service->ClearPref(kSyncGaiaId);
+}
+
+// static
+std::vector<std::string> SyncTransportDataPrefs::GetCacheGuidsForAllGaiaIds(
+    const PrefService* pref_service) {
+  std::vector<std::string> result;
+  const base::DictValue& data_per_account =
+      pref_service->GetDict(prefs::internal::kSyncTransportDataPerAccount);
+  for (const auto [gaia, data] : data_per_account) {
+    if (!data.is_dict()) {
+      continue;
+    }
+    const std::string* cache_guid = data.GetDict().FindString(kSyncCacheGuid);
+    if (cache_guid && !cache_guid->empty()) {
+      result.push_back(*cache_guid);
+    }
+  }
+  return result;
 }
 
 void SyncTransportDataPrefs::SetCacheGuid(const std::string& cache_guid) {

@@ -413,5 +413,67 @@ TEST_F(CandidateWindowViewTest, DoNotChangeRowHeightWithLabelSwitchTest) {
   }
 }
 
+TEST_F(CandidateWindowViewTest, CandidateWidthTest) {
+  const size_t kPageSize = 3;
+  ui::CandidateWindow vertical_window;
+  ui::CandidateWindow horizontal_window;
+
+  // Create candidate windows with different length candidates.
+  InitCandidateWindow(kPageSize, &vertical_window);
+  InitCandidateWindow(kPageSize, &horizontal_window);
+
+  vertical_window.set_orientation(ui::CandidateWindow::VERTICAL);
+  horizontal_window.set_orientation(ui::CandidateWindow::HORIZONTAL);
+
+  // Add candidates with varying lengths.
+  ui::CandidateWindow::Entry entry1;
+  entry1.value = u"A";  // Short candidate
+  entry1.label = u"1";
+  vertical_window.mutable_candidates()->push_back(entry1);
+  horizontal_window.mutable_candidates()->push_back(entry1);
+
+  ui::CandidateWindow::Entry entry2;
+  entry2.value = u"Very Long Candidate Text";  // Long candidate
+  entry2.label = u"2";
+  vertical_window.mutable_candidates()->push_back(entry2);
+  horizontal_window.mutable_candidates()->push_back(entry2);
+
+  ui::CandidateWindow::Entry entry3;
+  entry3.value = u"Medium";  // Medium candidate
+  entry3.label = u"3";
+  vertical_window.mutable_candidates()->push_back(entry3);
+  horizontal_window.mutable_candidates()->push_back(entry3);
+
+  // Test vertical orientation - all candidates should have the same width.
+  candidate_window_view()->UpdateCandidates(vertical_window);
+  ASSERT_EQ(kPageSize, GetCandidatesSize());
+
+  // Get the width of the first candidate.
+  int first_shortcut_width = GetCandidateAt(0)->shortcut_width();
+  int first_candidate_width = GetCandidateAt(0)->candidate_width();
+
+  // All candidates should have the same width in vertical mode.
+  for (size_t i = 1; i < GetCandidatesSize(); ++i) {
+    EXPECT_EQ(first_shortcut_width, GetCandidateAt(i)->shortcut_width())
+        << "Shortcut width mismatch at index " << i
+        << " in vertical orientation";
+    EXPECT_EQ(first_candidate_width, GetCandidateAt(i)->candidate_width())
+        << "Candidate width mismatch at index " << i
+        << " in vertical orientation";
+  }
+
+  // Test horizontal orientation - candidates can have different widths.
+  candidate_window_view()->UpdateCandidates(horizontal_window);
+  ASSERT_EQ(kPageSize, GetCandidatesSize());
+
+  // In horizontal mode, widths can vary, but we should still verify they are
+  // set to reasonable values (> 0 for candidates with content).
+  for (size_t i = 0; i < GetCandidatesSize(); ++i) {
+    EXPECT_GT(GetCandidateAt(i)->candidate_width(), 0)
+        << "Candidate width should be positive at index " << i
+        << " in horizontal orientation";
+  }
+}
+
 }  // namespace ime
 }  // namespace ui

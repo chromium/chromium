@@ -34,7 +34,7 @@ PrefService* GetPrefService(const base::android::JavaRef<jobject>& j_profile) {
 
 namespace safe_browsing {
 
-static jint JNI_SafeBrowsingBridge_UmaValueForFile(
+static int32_t JNI_SafeBrowsingBridge_UmaValueForFile(
     JNIEnv* env,
     const JavaRef<jstring>& path) {
   base::FilePath file_path(base::android::ConvertJavaStringToUTF8(env, path));
@@ -42,7 +42,7 @@ static jint JNI_SafeBrowsingBridge_UmaValueForFile(
       file_path);
 }
 
-static jboolean JNI_SafeBrowsingBridge_GetSafeBrowsingExtendedReportingEnabled(
+static bool JNI_SafeBrowsingBridge_GetSafeBrowsingExtendedReportingEnabled(
     JNIEnv* env,
     const JavaRef<jobject>& j_profile) {
   return safe_browsing::IsExtendedReportingEnabled(*GetPrefService(j_profile));
@@ -51,13 +51,13 @@ static jboolean JNI_SafeBrowsingBridge_GetSafeBrowsingExtendedReportingEnabled(
 static void JNI_SafeBrowsingBridge_SetSafeBrowsingExtendedReportingEnabled(
     JNIEnv* env,
     const JavaRef<jobject>& j_profile,
-    jboolean enabled) {
+    bool enabled) {
   safe_browsing::SetExtendedReportingPrefAndMetric(
       GetPrefService(j_profile), enabled,
       safe_browsing::SBER_OPTIN_SITE_ANDROID_SETTINGS);
 }
 
-static jboolean JNI_SafeBrowsingBridge_GetSafeBrowsingExtendedReportingManaged(
+static bool JNI_SafeBrowsingBridge_GetSafeBrowsingExtendedReportingManaged(
     JNIEnv* env,
     const JavaRef<jobject>& j_profile) {
   PrefService* pref_service = GetPrefService(j_profile);
@@ -65,17 +65,17 @@ static jboolean JNI_SafeBrowsingBridge_GetSafeBrowsingExtendedReportingManaged(
       prefs::kSafeBrowsingScoutReportingEnabled);
 }
 
-static jint JNI_SafeBrowsingBridge_GetSafeBrowsingState(
+static int32_t JNI_SafeBrowsingBridge_GetSafeBrowsingState(
     JNIEnv* env,
     const JavaRef<jobject>& j_profile) {
-  return static_cast<jint>(
+  return static_cast<int32_t>(
       safe_browsing::GetSafeBrowsingState(*GetPrefService(j_profile)));
 }
 
 static void JNI_SafeBrowsingBridge_SetSafeBrowsingState(
     JNIEnv* env,
     const JavaRef<jobject>& j_profile,
-    jint state) {
+    int32_t state) {
   return safe_browsing::SetSafeBrowsingState(
       GetPrefService(j_profile), static_cast<SafeBrowsingState>(state),
       /*is_esb_enabled_by_account_integration=*/false);
@@ -88,13 +88,13 @@ static void JNI_SafeBrowsingBridge_EnableSafeBrowsingSettingSetLocallyPref(
       GetPrefService(j_profile));
 }
 
-static jboolean JNI_SafeBrowsingBridge_IsSafeBrowsingManaged(
+static bool JNI_SafeBrowsingBridge_IsSafeBrowsingManaged(
     JNIEnv* env,
     const JavaRef<jobject>& j_profile) {
   return safe_browsing::IsSafeBrowsingPolicyManaged(*GetPrefService(j_profile));
 }
 
-static jboolean JNI_SafeBrowsingBridge_IsHashRealTimeLookupEligibleInSession(
+static bool JNI_SafeBrowsingBridge_IsHashRealTimeLookupEligibleInSession(
     JNIEnv* env) {
   return safe_browsing::hash_realtime_utils::
       IsHashRealTimeLookupEligibleInSession();

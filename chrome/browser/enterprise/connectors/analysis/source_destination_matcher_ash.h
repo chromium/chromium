@@ -77,7 +77,7 @@ class SourceDestinationMatcherAsh {
 
   ~SourceDestinationMatcherAsh();
 
-  void AddFilters(ID* id, const base::Value::List* settings_list);
+  void AddFilters(ID* id, const base::ListValue* settings_list);
 
   std::set<ID> Match(content::BrowserContext* context,
                      const storage::FileSystemURL& source_url,
@@ -141,7 +141,7 @@ class SourceDestinationMatcherAsh {
 
   static std::optional<FsType> StringToFsType(const std::string& s);
   std::set<FsType> ValueListToFsTypes(
-      const base::Value::List* source_or_destination_list);
+      const base::ListValue* source_or_destination_list);
 
   static std::string FsTypeToString(FsType fs_type);
 

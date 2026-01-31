@@ -11,10 +11,8 @@
 
 #include "base/cancelable_callback.h"
 #include "base/check_op.h"
-#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
-#include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
 #include "chrome/browser/printing/printing_service.h"
 #include "chrome/services/printing/public/mojom/pdf_to_pwg_raster_converter.mojom.h"
@@ -117,13 +115,8 @@ void PwgRasterConverterHelper::RunCallback(
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   if (callback_) {
     if (region.IsValid() && page_count > 0) {
-      size_t average_page_size_in_kb = region.GetSize() / 1024;
-      average_page_size_in_kb /= page_count;
-      UMA_HISTOGRAM_MEMORY_KB("Printing.ConversionSize.Pwg",
-                              average_page_size_in_kb);
       std::move(callback_).Run(std::move(region));
     } else {
-      // TODO(thestig): Consider adding UMA to track failure rates.
       std::move(callback_).Run(base::ReadOnlySharedMemoryRegion());
     }
   }
@@ -294,7 +287,7 @@ PwgRasterSettings PwgRasterConverter::GetBitmapSettings(
   const auto& types = raster_capability.value().document_types_supported;
   result.use_color =
       use_color ||
-      !base::Contains(
+      !std::ranges::contains(
           types, cloud_devices::printer::PwgDocumentTypeSupported::SGRAY_8);
 
   return result;

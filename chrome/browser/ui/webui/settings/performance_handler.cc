@@ -19,6 +19,7 @@
 #include "components/url_matcher/url_util.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
 #include "url/gurl.h"
 
 using content::WebContents;
@@ -63,7 +64,7 @@ void PerformanceHandler::OnDeviceHasBatteryChanged(bool device_has_battery) {
 }
 
 base::Value PerformanceHandler::GetCurrentOpenSites() {
-  base::Value::List hosts;
+  base::ListValue hosts;
   std::set<std::pair<base::TimeTicks, std::string>, std::greater<>>
       last_active_time_host_pairs;
   const Profile* const profile = Profile::FromWebUI(web_ui());
@@ -87,10 +88,9 @@ base::Value PerformanceHandler::GetCurrentOpenSites() {
         return true;
       });
 
-  std::unordered_set<std::string> added_hosts;
+  absl::flat_hash_set<std::string> added_hosts;
   for (auto& [last_active_time, host] : last_active_time_host_pairs) {
-    if (!base::Contains(added_hosts, host)) {
-      added_hosts.insert(host);
+    if (bool newly_inserted = added_hosts.insert(host).second; newly_inserted) {
       hosts.Append(host);
     }
   }
@@ -99,7 +99,7 @@ base::Value PerformanceHandler::GetCurrentOpenSites() {
 }
 
 void PerformanceHandler::HandleGetCurrentOpenSites(
-    const base::Value::List& args) {
+    const base::ListValue& args) {
   CHECK_EQ(1U, args.size());
   const base::Value& callback_id = args[0];
 
@@ -108,7 +108,7 @@ void PerformanceHandler::HandleGetCurrentOpenSites(
 }
 
 void PerformanceHandler::HandleGetDeviceHasBattery(
-    const base::Value::List& args) {
+    const base::ListValue& args) {
   CHECK_EQ(1U, args.size());
   const base::Value& callback_id = args[0];
   AllowJavascript();
@@ -118,8 +118,7 @@ void PerformanceHandler::HandleGetDeviceHasBattery(
                                        ->DeviceHasBattery()));
 }
 
-void PerformanceHandler::HandleOpenFeedbackDialog(
-    const base::Value::List& args) {
+void PerformanceHandler::HandleOpenFeedbackDialog(const base::ListValue& args) {
   CHECK_EQ(1U, args.size());
   const std::string category_tag = args[0].GetString();
 
@@ -132,7 +131,7 @@ void PerformanceHandler::HandleOpenFeedbackDialog(
 }
 
 void PerformanceHandler::HandleValidateTabDiscardExceptionRule(
-    const base::Value::List& args) {
+    const base::ListValue& args) {
   CHECK_EQ(2U, args.size());
   const base::Value& callback_id = args[0];
   const std::string rule = args[1].GetString();

@@ -291,9 +291,10 @@ void RoundedOmniboxResultsFrame::OnBeforeWidgetInit(
 
 // static
 int RoundedOmniboxResultsFrame::GetNonResultSectionHeight(bool include_cutout) {
-  return include_cutout ? GetLayoutConstant(LOCATION_BAR_HEIGHT) +
-                              GetLocationBarAlignmentInsets().height()
-                        : 0;
+  return include_cutout
+             ? GetLayoutConstant(LayoutConstant::kLocationBarHeight) +
+                   GetLocationBarAlignmentInsets().height()
+             : 0;
 }
 
 // static

@@ -12,8 +12,8 @@
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
-#import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
+#import "ios/chrome/browser/shared/public/commands/scene_commands.h"
 #import "ios/chrome/common/ui/reauthentication/mock_reauthentication_module.h"
 #import "ios/chrome/test/scoped_key_window.h"
 #import "ios/web/public/test/web_task_environment.h"
@@ -68,11 +68,10 @@ class ReauthenticationCoordinatorTest : public PlatformTest {
 
     profile_ = TestProfileIOS::Builder().Build();
     browser_ = std::make_unique<TestBrowser>(profile_.get(), scene_state_);
-    mocked_application_commands_handler_ =
-        OCMStrictProtocolMock(@protocol(ApplicationCommands));
+    mocked_scene_handler_ = OCMStrictProtocolMock(@protocol(SceneCommands));
     [browser_->GetCommandDispatcher()
-        startDispatchingToTarget:mocked_application_commands_handler_
-                     forProtocol:@protocol(ApplicationCommands)];
+        startDispatchingToTarget:mocked_scene_handler_
+                     forProtocol:@protocol(SceneCommands)];
 
     // Init navigation controller with a root vc.
     base_navigation_controller_ = [[UINavigationController alloc]
@@ -160,7 +159,7 @@ class ReauthenticationCoordinatorTest : public PlatformTest {
   UINavigationController* base_navigation_controller_ = nil;
   MockReauthenticationModule* mock_reauth_module_ = nil;
   FakeReauthenticationCoordinatorDelegate* delegate_ = nil;
-  id mocked_application_commands_handler_;
+  id mocked_scene_handler_;
   LocalReauthenticationCoordinator* coordinator_ = nil;
 };
 

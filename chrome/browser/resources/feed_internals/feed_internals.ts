@@ -31,10 +31,9 @@ function updatePageWithProperties() {
         String(properties.isPrefetchingEnabled);
     getRequiredElement('load-stream-status').textContent =
         properties.loadStreamStatus;
-    getRequiredElement('feed-fetch-url').textContent =
-        properties.feedFetchUrl.url;
+    getRequiredElement('feed-fetch-url').textContent = properties.feedFetchUrl;
     getRequiredElement('feed-actions-url').textContent =
-        properties.feedActionsUrl.url;
+        properties.feedActionsUrl;
     getRequiredElement<HTMLInputElement>('enable-webfeed-follow-intro-debug')
         .checked = properties.isWebFeedFollowIntroDebugEnabled;
     getRequiredElement<HTMLInputElement>('enable-webfeed-follow-intro-debug')
@@ -145,18 +144,17 @@ function setupEventListeners() {
   getRequiredElement('feed-host-override-apply')
       .addEventListener('click', function() {
         assert(pageHandler);
-        pageHandler.overrideFeedHost({
-          url: getRequiredElement<HTMLInputElement>('feed-host-override').value,
-        });
+        pageHandler.overrideFeedHost(
+            getRequiredElement<HTMLInputElement>('feed-host-override').value,
+        );
       });
 
   getRequiredElement('discover-api-override-apply')
       .addEventListener('click', function() {
         assert(pageHandler);
-        pageHandler.overrideDiscoverApiEndpoint({
-          url: getRequiredElement<HTMLInputElement>('discover-api-override')
-                   .value,
-        });
+        pageHandler.overrideDiscoverApiEndpoint(
+            getRequiredElement<HTMLInputElement>('discover-api-override').value,
+        );
       });
 
   getRequiredElement('feed-stream-data-override')

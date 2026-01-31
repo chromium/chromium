@@ -12,9 +12,9 @@
 #import "ios/chrome/browser/lens/ui_bundled/lens_entrypoint.h"
 #import "ios/chrome/browser/shared/coordinator/utils/credential_provider_settings_utils.h"
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
-#import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/lens_commands.h"
 #import "ios/chrome/browser/shared/public/commands/open_lens_input_selection_command.h"
+#import "ios/chrome/browser/shared/public/commands/scene_commands.h"
 #import "ios/chrome/browser/shared/public/commands/settings_commands.h"
 #import "ios/chrome/browser/shared/public/commands/whats_new_commands.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_browser_agent.h"
@@ -44,13 +44,12 @@
       break;
     case WhatsNewPrimaryAction::kPrivacySettings:
       // Handles actions that open privacy in Chrome settings.
-      [self.applicationHandler
+      [self.sceneHandler
           showPrivacySettingsFromViewController:baseViewController];
       break;
     case WhatsNewPrimaryAction::kChromeSettings:
       // Handles actions that open Chrome Settings.
-      [self.applicationHandler
-          showSettingsFromViewController:baseViewController];
+      [self.sceneHandler showSettingsFromViewController:baseViewController];
       break;
     case WhatsNewPrimaryAction::kIOSCredentialProviderSettings:
       // Handles actions that open the iOS credential provider settings.
@@ -64,7 +63,7 @@
       break;
     case WhatsNewPrimaryAction::kSafeBrowsingSettings:
       // Handles actions that open ESB in Chrome settings.
-      [self.applicationHandler
+      [self.sceneHandler
           showSafeBrowsingSettingsFromViewController:baseViewController];
       break;
     case WhatsNewPrimaryAction::kChromePasswordManager:

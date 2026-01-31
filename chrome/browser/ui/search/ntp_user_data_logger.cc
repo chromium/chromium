@@ -152,6 +152,11 @@ CustomizeShortcutAction LoggingEventToCustomizeShortcutAction(
     case NTP_CUSTOMIZE_ENTERPRISE_SHORTCUT_TOGGLE_VISIBILITY:
       return CustomizeShortcutAction::
           CUSTOMIZE_ENTERPRISE_SHORTCUT_ACTION_TOGGLE_VISIBILITY;
+    case NTP_SHORTCUTS_AUTO_REMOVE:
+      return CustomizeShortcutAction::CUSTOMIZE_SHORTCUT_ACTION_AUTO_REMOVE;
+    case NTP_SHORTCUTS_AUTO_REMOVE_UNDO:
+      return CustomizeShortcutAction::
+          CUSTOMIZE_SHORTCUT_ACTION_AUTO_REMOVE_UNDO;
     default:
       break;
   }
@@ -364,6 +369,8 @@ void NTPUserDataLogger::LogEvent(NTPLoggingEventType event,
     case NTP_CUSTOMIZE_ENTERPRISE_SHORTCUT_UNDO:
     case NTP_CUSTOMIZE_ENTERPRISE_SHORTCUT_RESTORE_ALL:
     case NTP_CUSTOMIZE_ENTERPRISE_SHORTCUT_TOGGLE_VISIBILITY:
+    case NTP_SHORTCUTS_AUTO_REMOVE:
+    case NTP_SHORTCUTS_AUTO_REMOVE_UNDO:
       UMA_HISTOGRAM_ENUMERATION("NewTabPage.CustomizeShortcutAction",
                                 LoggingEventToCustomizeShortcutAction(event));
       break;

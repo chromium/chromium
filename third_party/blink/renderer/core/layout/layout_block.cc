@@ -100,8 +100,6 @@ void LayoutBlock::RemoveFromGlobalMaps() {
 
 void LayoutBlock::WillBeDestroyed() {
   NOT_DESTROYED();
-  if (!DocumentBeingDestroyed() && Parent())
-    Parent()->DirtyLinesFromChangedChild(this);
 
   if (LocalFrame* frame = GetFrame()) {
     frame->Selection().LayoutBlockWillBeDestroyed(*this);
@@ -419,11 +417,16 @@ void LayoutBlock::RemoveSvgTextDescendant(LayoutBox& svg_text) {
 
 LayoutUnit LayoutBlock::TextIndentOffset() const {
   NOT_DESTROYED();
+  const ComputedStyle& style = StyleRef();
+  const Length& length = style.TextIndent();
+  if (length.IsZero() || style.IsTextIndentHanging()) {
+    return LayoutUnit();
+  }
   LayoutUnit cw;
-  if (StyleRef().TextIndent().HasPercent()) {
+  if (length.HasPercent()) {
     cw = ContentLogicalWidth();
   }
-  return MinimumValueForLength(StyleRef().TextIndent(), cw);
+  return MinimumValueForLength(length, cw);
 }
 
 bool LayoutBlock::NodeAtPoint(HitTestResult& result,
@@ -446,59 +449,6 @@ bool LayoutBlock::NodeAtPoint(HitTestResult& result,
     DCHECK(fragment);
     return BoxFragmentPainter(*fragment).NodeAtPoint(result, hit_test_location,
                                                      accumulated_offset, phase);
-  }
-
-  return false;
-}
-
-bool LayoutBlock::HitTestChildren(HitTestResult& result,
-                                  const HitTestLocation& hit_test_location,
-                                  const PhysicalOffset& accumulated_offset,
-                                  HitTestPhase phase) {
-  NOT_DESTROYED();
-  DCHECK(!ChildrenInline());
-
-  if (PhysicalFragmentCount() && CanTraversePhysicalFragments()) {
-    DCHECK(!Parent()->CanTraversePhysicalFragments());
-    DCHECK_LE(PhysicalFragmentCount(), 1u);
-    const PhysicalBoxFragment* fragment = GetPhysicalFragment(0);
-    DCHECK(fragment);
-    DCHECK(!fragment->HasItems());
-    return BoxFragmentPainter(*fragment).NodeAtPoint(result, hit_test_location,
-                                                     accumulated_offset, phase);
-  }
-
-  PhysicalOffset scrolled_offset = accumulated_offset;
-  if (IsScrollContainer())
-    scrolled_offset -= PhysicalOffset(PixelSnappedScrolledContentOffset());
-  HitTestPhase child_hit_test = phase;
-  if (phase == HitTestPhase::kDescendantBlockBackgrounds)
-    child_hit_test = HitTestPhase::kSelfBlockBackground;
-  for (LayoutBox* child = LastChildBox(); child;
-       child = child->PreviousSiblingBox()) {
-    if (child->HasSelfPaintingLayer() || child->IsColumnSpanAll())
-      continue;
-
-    PhysicalOffset child_accumulated_offset =
-        scrolled_offset + child->PhysicalLocation();
-    bool did_hit;
-    if (child->IsFloating()) {
-      if (phase != HitTestPhase::kFloat) {
-        continue;
-      }
-      // Hit-test the floats in regular tree order if this is LayoutNG. Only
-      // legacy layout uses the FloatingObjects list.
-      did_hit = child->HitTestAllPhases(result, hit_test_location,
-                                        child_accumulated_offset);
-    } else {
-      did_hit = child->NodeAtPoint(result, hit_test_location,
-                                   child_accumulated_offset, child_hit_test);
-    }
-    if (did_hit) {
-      UpdateHitTestResult(result,
-                          hit_test_location.Point() - accumulated_offset);
-      return true;
-    }
   }
 
   return false;
@@ -564,7 +514,7 @@ std::optional<LayoutUnit> LayoutBlock::BaselineForEmptyLine() const {
     return std::nullopt;
   const auto& font_metrics = font_data->GetFontMetrics();
   const auto baseline_type = style->GetFontBaseline();
-  const LayoutUnit line_height = FirstLineHeight();
+  const LayoutUnit line_height = style->ComputedLineHeightAsFixed();
   int ascent_or_descent = IsFlippedLinesWritingMode(style->GetWritingMode())
                               ? font_metrics.Descent(baseline_type)
                               : font_metrics.Ascent(baseline_type);
@@ -572,11 +522,6 @@ std::optional<LayoutUnit> LayoutBlock::BaselineForEmptyLine() const {
                      (line_height - font_metrics.Height()) / 2 +
                      BorderAndPaddingBlockStart())
                         .ToInt());
-}
-
-LayoutUnit LayoutBlock::FirstLineHeight() const {
-  NOT_DESTROYED();
-  return LayoutUnit(FirstLineStyle()->ComputedLineHeight());
 }
 
 const LayoutBlock* LayoutBlock::FirstLineStyleParentBlock() const {

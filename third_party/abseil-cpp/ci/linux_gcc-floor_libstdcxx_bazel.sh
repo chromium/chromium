@@ -81,6 +81,7 @@ for std in ${STD}; do
           --define=\"absl=1\" \
           --features=external_include_paths \
           --keep_going \
+          --per_file_copt=external/.*@-w \
           --show_timestamps \
           --test_env=\"GTEST_INSTALL_FAILURE_SIGNAL_HANDLER=1\" \
           --test_env=\"TZDIR=/abseil-cpp/absl/time/internal/cctz/testdata/zoneinfo\" \

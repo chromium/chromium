@@ -156,7 +156,7 @@ PlaybackQueuePrepareRequestPayload::~PlaybackQueuePrepareRequestPayload() =
     default;
 
 std::string PlaybackQueuePrepareRequestPayload::ToJson() const {
-  base::Value::Dict root;
+  base::DictValue root;
 
   CHECK(!playable_id.empty());
   root.Set(kPlayableIdKey, playable_id);
@@ -179,7 +179,7 @@ PlaybackQueueNextRequestPayload::~PlaybackQueueNextRequestPayload() = default;
 
 std::string PlaybackQueueNextRequestPayload::ToJson() const {
   // All fields are optional so this is currently an empty dictionary.
-  base::Value::Dict root;
+  base::DictValue root;
 
   const std::optional<std::string> json = base::WriteJson(root);
   CHECK(json);
@@ -226,7 +226,7 @@ ReportPlaybackRequestPayload::~ReportPlaybackRequestPayload() = default;
 std::string ReportPlaybackRequestPayload::ToJson() const {
   CHECK(!params.playback_reporting_token.empty());
 
-  base::Value::Dict root;
+  base::DictValue root;
   root.Set(kPlaybackReportingTokenKey, params.playback_reporting_token);
   root.Set(kClientCurrentTimeKey,
            base::TimeFormatAsIso8601(params.client_current_time));
@@ -236,18 +236,18 @@ std::string ReportPlaybackRequestPayload::ToJson() const {
   root.Set(kPlaybackStateKey, GetPlaybackStateValue(params.playback_state));
 
   if (params.initial_report) {
-    root.Set(kPlaybackStartDataKey,
-             base::Value::Dict().Set(
-                 kConnectionTypeKey,
-                 GetConnectionTypeValue(params.connection_type)));
+    root.Set(
+        kPlaybackStartDataKey,
+        base::DictValue().Set(kConnectionTypeKey,
+                              GetConnectionTypeValue(params.connection_type)));
   }
 
   if (!params.watch_time_segments.empty()) {
-    base::Value::List segment_list = base::Value::List();
+    base::ListValue segment_list = base::ListValue();
     for (const WatchTimeSegment& watch_time_segment :
          params.watch_time_segments) {
       segment_list.Append(
-          base::Value::Dict()
+          base::DictValue()
               .Set(kMediaTimeStartKey,
                    GetTimeDeltaString(watch_time_segment.media_time_start))
               .Set(kMediaTimeEndKey,
@@ -300,12 +300,12 @@ std::string ParseErrorJson(const std::string& response_body) {
     return std::string();
   }
 
-  const base::Value::Dict* error = value->GetDict().FindDict(kErrorKey);
+  const base::DictValue* error = value->GetDict().FindDict(kErrorKey);
   if (!error) {
     return std::string();
   }
 
-  const base::Value::List* details = error->FindList(kDetailsKey);
+  const base::ListValue* details = error->FindList(kDetailsKey);
   if (!details) {
     return std::string();
   }
@@ -315,7 +315,7 @@ std::string ParseErrorJson(const std::string& response_body) {
       continue;
     }
 
-    const base::Value::Dict& detail_dict = detail.GetDict();
+    const base::DictValue& detail_dict = detail.GetDict();
     const std::string* type = detail_dict.FindString(kTypeKey);
     if (!type || kLocalizedMessage != *type) {
       continue;

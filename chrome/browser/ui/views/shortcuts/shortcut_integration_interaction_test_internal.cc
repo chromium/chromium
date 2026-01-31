@@ -8,7 +8,6 @@
 #include <set>
 
 #include "base/base_paths.h"
-#include "base/containers/contains.h"
 #include "base/files/file_enumerator.h"
 #include "base/files/file_path_watcher.h"
 #include "base/files/file_util.h"
@@ -171,7 +170,7 @@ class ShortcutIntegrationInteractionTestPrivate::ShortcutTracker {
     // `TrackedShortcut` instance.
     std::vector<TrackedShortcut*> new_shortcuts;
     for (const base::FilePath& path : current_paths) {
-      if (base::Contains(shortcuts_, path)) {
+      if (shortcuts_.contains(path)) {
         continue;
       }
       std::unique_ptr<TrackedShortcut> shortcut;
@@ -193,7 +192,7 @@ class ShortcutIntegrationInteractionTestPrivate::ShortcutTracker {
     // Remove any paths from `shortcuts_` that no longer exist, notifying
     // `ElementTracker` of any that were tracked.
     std::erase_if(shortcuts_, [&](const auto& item) {
-      bool should_erase = !base::Contains(current_paths, item.first);
+      bool should_erase = !current_paths.contains(item.first);
       if (should_erase) {
         ui::ElementTracker::GetFrameworkDelegate()->NotifyElementHidden(
             item.second.get());

@@ -17,7 +17,6 @@
 #include "base/android/scoped_java_ref.h"
 #include "base/auto_reset.h"
 #include "base/command_line.h"
-#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
@@ -58,6 +57,7 @@
 #include "content/browser/gpu/gpu_process_host.h"
 #include "content/browser/renderer_host/compositor_dependencies_android.h"
 #include "content/browser/renderer_host/render_widget_host_impl.h"
+#include "content/common/features.h"
 #include "content/public/browser/android/compositor.h"
 #include "content/public/browser/android/compositor_client.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -704,12 +704,17 @@ void CompositorImpl::OnAdaptiveRefreshRateInfoChanged() {
   if (root_window_ && display_private_) {
     ui::WindowAndroid::AdaptiveRefreshRateInfo arr_info =
         root_window_->adaptive_refresh_rate_info();
-    display_private_->SetAdaptiveRefreshRateInfo(
-        arr_info.supports_adaptive_refresh_rate,
-        arr_info.suggested_frame_rate_high,
-        display::Screen::Get()
-            ->GetDisplayNearestWindow(root_window_)
-            .device_scale_factor());
+    auto info = viz::mojom::AdaptiveRefreshRateInfo::New();
+    info->has_support = arr_info.supports_adaptive_refresh_rate;
+    info->suggested_high = arr_info.suggested_frame_rate_high;
+    info->device_scale_factor = display::Screen::Get()
+                                    ->GetDisplayNearestWindow(root_window_)
+                                    .device_scale_factor();
+    for (const auto& point : arr_info.velocity_mapping) {
+      info->velocity_mapping.push_back(viz::mojom::FrameRateVelocityPoint::New(
+          point.frame_per_second, point.dp_per_second));
+    }
+    display_private_->SetAdaptiveRefreshRateInfo(std::move(info));
   }
 }
 
@@ -760,6 +765,9 @@ void CompositorImpl::InitializeVizLayerTreeFrameSink(
   renderer_settings.allow_antialiasing = false;
   renderer_settings.highp_threshold_min = 2048;
   renderer_settings.requires_alpha_channel = requires_alpha_channel_;
+  if (base::FeatureList::IsEnabled(features::kDisableAutoResizeOutputSurface)) {
+    renderer_settings.auto_resize_output_surface = false;
+  }
 
   root_params->frame_sink_id = frame_sink_id_;
   root_params->widget = surface_handle_;

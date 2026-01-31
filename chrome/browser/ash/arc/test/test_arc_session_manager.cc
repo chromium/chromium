@@ -7,6 +7,8 @@
 #include <utility>
 
 #include "chrome/browser/ash/arc/session/arc_session_manager.h"
+#include "chrome/browser/global_features.h"
+#include "chrome/test/base/testing_browser_process.h"
 #include "chromeos/ash/experiences/arc/dlc_installer/arc_dlc_installer.h"
 
 namespace arc {
@@ -14,6 +16,10 @@ std::unique_ptr<ArcSessionManager> CreateTestArcSessionManager(
     std::unique_ptr<ArcSessionRunner> arc_session_runner,
     ArcDlcInstaller* arc_dlc_installer) {
   auto manager = std::make_unique<ArcSessionManager>(
+      TestingBrowserProcess::GetGlobal()->local_state(),
+      TestingBrowserProcess::GetGlobal()
+          ->GetFeatures()
+          ->application_locale_storage(),
       std::move(arc_session_runner),
       std::make_unique<AdbSideloadingAvailabilityDelegateImpl>(),
       arc_dlc_installer);

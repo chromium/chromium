@@ -33,7 +33,7 @@ source_set("ui") {
     "//ios/chrome/app/profile",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/first_run/model",
-    "//ios/chrome/browser/first_run/ui_bundled:screen_delegate",
+    "//ios/chrome/browser/first_run/public:screen_delegate",
     "//ios/chrome/browser/regional_capabilities/model",
     "//ios/chrome/browser/search_engine_choice/model",
     "//ios/chrome/browser/search_engine_choice/search_engine_choice_learn_more/coordinator",

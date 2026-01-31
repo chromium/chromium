@@ -6,7 +6,6 @@
 
 #include <array>
 
-#include "ash/constants/ash_features.h"
 #include "base/command_line.h"
 #include "base/containers/span.h"
 #include "base/feature_list.h"
@@ -23,7 +22,6 @@
 #include "chrome/browser/enterprise/browser_management/management_service_factory.h"
 #include "chrome/browser/obsolete_system/obsolete_system.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
-#include "chrome/browser/ui/webui/ash/settings/pages/about/device_name_handler.h"
 #include "chrome/browser/ui/webui/ash/settings/search/search_tag_registry.h"
 #include "chrome/browser/ui/webui/management/management_ui.h"
 #include "chrome/browser/ui/webui/settings/about_handler.h"
@@ -142,19 +140,6 @@ base::span<const SearchConcept> GetFirmwareUpdatesAppSearchConcepts() {
   return tags;
 }
 
-base::span<const SearchConcept> GetDeviceNameSearchConcepts() {
-  static constexpr auto tags = std::to_array<SearchConcept>({
-      {IDS_OS_SETTINGS_TAG_ABOUT_DEVICE_NAME,
-       mojom::kDetailedBuildInfoSubpagePath,
-       mojom::SearchResultIcon::kChrome,
-       mojom::SearchResultDefaultRank::kMedium,
-       mojom::SearchResultType::kSetting,
-       {.setting = mojom::Setting::kChangeDeviceName},
-       {IDS_OS_SETTINGS_TAG_ABOUT_DEVICE_NAME_ALT1, SearchConcept::kAltTagEnd}},
-  });
-  return tags;
-}
-
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
 base::span<const SearchConcept> GetAboutTermsOfServiceSearchConcepts() {
   static constexpr auto tags = std::to_array<SearchConcept>({
@@ -220,10 +205,6 @@ AboutSection::AboutSection(Profile* profile,
 
   updater.AddSearchTags(GetFirmwareUpdatesAppSearchConcepts());
 
-  if (base::FeatureList::IsEnabled(features::kEnableHostnameSetting)) {
-    updater.AddSearchTags(GetDeviceNameSearchConcepts());
-  }
-
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   updater.AddSearchTags(GetAboutTermsOfServiceSearchConcepts());
 
@@ -271,7 +252,6 @@ void AboutSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
       {"aboutProductTitle", IDS_PRODUCT_NAME},
 
       {"aboutEndOfLifeTitle", IDS_SETTINGS_ABOUT_PAGE_END_OF_LIFE_TITLE},
-      {"aboutDeviceName", IDS_SETTINGS_ABOUT_PAGE_DEVICE_NAME},
       {"aboutRelaunchAndAutoUpdate",
        IDS_SETTINGS_ABOUT_PAGE_RELAUNCH_AND_AUTO_UPDATE},
       {"aboutRelaunchAndPowerwash",
@@ -311,24 +291,6 @@ void AboutSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
       {"aboutChannelDialogDev", IDS_SETTINGS_ABOUT_PAGE_DIALOG_CHANNEL_DEV},
       {"aboutChannelDialogStable",
        IDS_SETTINGS_ABOUT_PAGE_DIALOG_CHANNEL_STABLE},
-
-      // About page, edit device name dialog.
-      {"aboutEditDeviceName", IDS_SETTINGS_ABOUT_PAGE_EDIT_DEVICE_NAME},
-      {"aboutDeviceNameInfo", IDS_SETTINGS_ABOUT_PAGE_DEVICE_NAME_INFO},
-      {"aboutDeviceNameConstraints",
-       IDS_SETTINGS_ABOUT_PAGE_DEVICE_NAME_CONSTRAINTS},
-      {"aboutDeviceNameConstraintsA11yDescription",
-       IDS_SETTINGS_ABOUT_PAGE_DEVICE_NAME_CONSTRAINTS_A11Y_DESCRIPTION},
-      {"aboutDeviceNameInputCharacterCount",
-       IDS_SETTINGS_ABOUT_PAGE_DEVICE_NAME_INPUT_COUNT},
-      {"aboutDeviceNameInputA11yLabel",
-       IDS_SETTINGS_ABOUT_PAGE_DEVICE_NAME_INPUT_A11Y_LABEL},
-      {"aboutDeviceNameDoneBtnA11yLabel",
-       IDS_SETTINGS_ABOUT_PAGE_DEVICE_NAME_DONE_BTN_A11Y_LABEL},
-      {"aboutDeviceNameEditBtnA11yLabel",
-       IDS_SETTINGS_ABOUT_PAGE_DEVICE_NAME_EDIT_BTN_A11Y_LABEL},
-      {"aboutDeviceNameEditBtnA11yDescription",
-       IDS_SETTINGS_ABOUT_PAGE_DEVICE_NAME_EDIT_BTN_A11Y_DESCRIPTION},
 
       // About page, update warning dialog.
       {"aboutUpdateWarningMessage",
@@ -456,8 +418,6 @@ void AboutSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
   html_source->AddBoolean("aboutIsDeveloperMode",
                           base::CommandLine::ForCurrentProcess()->HasSwitch(
                               chromeos::switches::kSystemDevMode));
-  html_source->AddBoolean("isHostnameSettingEnabled",
-                          features::IsHostnameSettingEnabled());
 
   html_source->AddString(
       "endOfLifeMessage",
@@ -513,9 +473,6 @@ void AboutSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
 void AboutSection::AddHandlers(content::WebUI* web_ui) {
   web_ui->AddMessageHandler(
       std::make_unique<::settings::AboutHandler>(profile()));
-  if (features::IsHostnameSettingEnabled()) {
-    web_ui->AddMessageHandler(std::make_unique<DeviceNameHandler>());
-  }
 
   crostini_subsection_.AddHandlers(web_ui);
 }
@@ -557,11 +514,10 @@ void AboutSection::RegisterHierarchy(HierarchyGenerator* generator) const {
       mojom::Subpage::kDetailedBuildInfo, mojom::SearchResultIcon::kChrome,
       mojom::SearchResultDefaultRank::kMedium,
       mojom::kDetailedBuildInfoSubpagePath);
-  static constexpr mojom::Setting kDetailedBuildInfoSettings[] = {
-      mojom::Setting::kChangeChromeChannel, mojom::Setting::kChangeDeviceName,
-      mojom::Setting::kCopyDetailedBuildInfo};
-  RegisterNestedSettingBulk(mojom::Subpage::kDetailedBuildInfo,
-                            kDetailedBuildInfoSettings, generator);
+  generator->RegisterNestedSetting(mojom::Setting::kChangeChromeChannel,
+                                   mojom::Subpage::kDetailedBuildInfo);
+  generator->RegisterNestedSetting(mojom::Setting::kCopyDetailedBuildInfo,
+                                   mojom::Subpage::kDetailedBuildInfo);
 
   crostini_subsection_.RegisterHierarchy(generator);
 }

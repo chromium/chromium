@@ -77,7 +77,7 @@ void BuiltinProvider::DoBuiltinAutocompletion(const std::u16string& text) {
     }
   } else {
     // Match input about: or |embedderAbout| URL input against builtin URLs.
-    GURL url = url_formatter::FixupURL(base::UTF16ToUTF8(text), std::string());
+    GURL url = url_formatter::FixupURL(base::UTF16ToUTF8(text));
     const bool text_ends_with_slash =
         base::EndsWith(text, u"/", base::CompareCase::SENSITIVE);
     // BuiltinProvider doesn't know how to suggest valid ?query or #fragment

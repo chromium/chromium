@@ -28,7 +28,6 @@ Ikiwa '<ph name="SERVICE_SCRIPT_NAME" />' tayari imechaguliwa, batilisha uteuzi 
 <translation id="2329392777730037872">Imeshindwa kufungua <ph name="URL" /> kwenye kiteja.</translation>
 <translation id="2359808026110333948">Endelea</translation>
 <translation id="2366718077645204424">Haiwezi kufikia seva pangishi. Labda hii ni kwa sababu ya usanidi wa mtandao unaotumia.</translation>
-<translation id="242591256144136845">Hakimiliki 2025 Google LLC. Haki Zote Zimehifadhiwa.</translation>
 <translation id="2504109125669302160">Idhinisha 'Ufikivu' kwenye <ph name="PRODUCT_NAME" /></translation>
 <translation id="2509394361235492552">Imeunganisha kwenye <ph name="HOSTNAME" /></translation>
 <translation id="2540992418118313681">Ungependa kushiriki kompyuta hii kwa mtumiaji mwingine ili kuangalia na kudhibiti?</translation>
@@ -47,6 +46,7 @@ Ikiwa '<ph name="SERVICE_SCRIPT_NAME" />' tayari imechaguliwa, batilisha uteuzi 
 <translation id="3150823315463303127">Pangishi haijafaulu kusoma sera.</translation>
 <translation id="3171922709365450819">Kifaa hiki hakitumiki kwenye kiteja hiki kwa sababu kinahitaji uthibitishaji wa mtu au kampuni nyingine.</translation>
 <translation id="3197730452537982411">Kompyuta ya Mbali</translation>
+<translation id="3236334139428307578">Hakimiliki 2026 Waandishi wa Chromium. Haki Zote Zimehifadhiwa.</translation>
 <translation id="324272851072175193">Tuma maelezo haya kupitia barua pepe</translation>
 <translation id="3305934114213025800"><ph name="PRODUCT_NAME" /> ingependa kufanya mabadiliko.</translation>
 <translation id="3339299787263251426">Fikia kompyuta yako kwa njia salama kwenye Intaneti</translation>
@@ -111,6 +111,7 @@ Ikiwa '<ph name="SERVICE_SCRIPT_NAME" />' tayari imechaguliwa, batilisha uteuzi 
 <translation id="5823554426827907568"><ph name="CLIENT_USERNAME" /> ameomba idhini ya kuona skrini yako na kudhibiti kibodi na kipanya chako. Bonyeza ''<ph name="IDS_SHARE_CONFIRM_DIALOG_DECLINE" />'' ikiwa hukutarajia ombi hili. La sivyo, chagua ''<ph name="IDS_SHARE_CONFIRM_DIALOG_CONFIRM" />'' ili uruhusu muunganisho utakapokuwa tayari.</translation>
 <translation id="5823658491130719298">Kwenye kompyuta ambayo ungependa kufikia kutoka mbali, fungua Chrome kisha ufungue <ph name="INSTALLATION_LINK" /></translation>
 <translation id="5841343754884244200">Onyesha chaguo</translation>
+<translation id="5965133372831030509">Hakimiliki 2026 Google LLC. Haki Zote Zimehifadhiwa.</translation>
 <translation id="6033507038939587647">Chaguo za kibodi</translation>
 <translation id="6040143037577758943">Funga</translation>
 <translation id="6062854958530969723">Seva pangishi haikufaulu kuanzisha.</translation>
@@ -138,7 +139,6 @@ Ikiwa '<ph name="SERVICE_SCRIPT_NAME" />' tayari imechaguliwa, batilisha uteuzi 
 <translation id="7067321367069083429">Skrini inafanya kazi kama skrini ya kugusa</translation>
 <translation id="7116737094673640201">Karibu kwenye Programu ya Chrome ya Ufikiaji wa Kompyuta kutoka Mbali</translation>
 <translation id="7144878232160441200">Jaribu tena</translation>
-<translation id="7298392173540380852">Hakimiliki 2025 Waandishi wa Chromium. Haki Zote Zimehifadhiwa.</translation>
 <translation id="7312846573060934304">Seva pangishi iko nje ya mtandao.</translation>
 <translation id="7319983568955948908">Acha Kushiriki</translation>
 <translation id="7359298090707901886">Kivinjari ulichokichagua hakiwezi kutumiwa kufungua URL kwenye mashine hii.</translation>

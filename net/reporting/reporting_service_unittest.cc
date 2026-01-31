@@ -29,8 +29,6 @@
 #include "net/reporting/reporting_target_type.h"
 #include "net/reporting/reporting_test_util.h"
 #include "net/test/test_with_task_environment.h"
-#include "net/url_request/url_request_context_builder.h"
-#include "net/url_request/url_request_test_util.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
@@ -130,7 +128,7 @@ class ReportingServiceTest : public ::testing::TestWithParam<bool>,
 
 TEST_P(ReportingServiceTest, QueueReport) {
   service()->QueueReport(kUrl_, kReportingSource_, kNak_, kUserAgent_, kGroup_,
-                         kType_, base::Value::Dict(), 0,
+                         kType_, base::DictValue(), 0,
                          ReportingTargetType::kDeveloper);
   FinishLoading(true /* load_success */);
 
@@ -147,7 +145,7 @@ TEST_P(ReportingServiceTest, QueueReport) {
 
 TEST_P(ReportingServiceTest, QueueEnterpriseReport) {
   service()->QueueReport(kUrl_, kReportingSource_, kNak_, kUserAgent_, kGroup_,
-                         kType_, base::Value::Dict(), 0,
+                         kType_, base::DictValue(), 0,
                          ReportingTargetType::kEnterprise);
   FinishLoading(true /* load_success */);
 
@@ -166,7 +164,7 @@ TEST_P(ReportingServiceTest, QueueReportSanitizeUrl) {
   // Same as kUrl_ but with username, password, and fragment.
   GURL url = GURL("https://username:password@origin/path#fragment");
   service()->QueueReport(url, kReportingSource_, kNak_, kUserAgent_, kGroup_,
-                         kType_, base::Value::Dict(), 0,
+                         kType_, base::DictValue(), 0,
                          ReportingTargetType::kDeveloper);
   FinishLoading(true /* load_success */);
 
@@ -185,7 +183,7 @@ TEST_P(ReportingServiceTest, DontQueueReportInvalidUrl) {
   // This does not trigger an attempt to load from the store because the url
   // is immediately rejected as invalid.
   service()->QueueReport(url, kReportingSource_, kNak_, kUserAgent_, kGroup_,
-                         kType_, base::Value::Dict(), 0,
+                         kType_, base::DictValue(), 0,
                          ReportingTargetType::kDeveloper);
 
   std::vector<raw_ptr<const ReportingReport, VectorExperimental>> reports;
@@ -202,7 +200,7 @@ TEST_P(ReportingServiceTest, QueueReportNetworkIsolationKeyDisabled) {
   Init();
 
   service()->QueueReport(kUrl_, kReportingSource_, kNak_, kUserAgent_, kGroup_,
-                         kType_, base::Value::Dict(), 0,
+                         kType_, base::DictValue(), 0,
                          ReportingTargetType::kDeveloper);
   FinishLoading(true /* load_success */);
 
@@ -293,7 +291,7 @@ TEST_P(ReportingServiceTest, SendReportsAndRemoveSource) {
                                            kIsolationInfo_, *parsed_header);
   // This report should be sent immediately, starting the delivery agent timer.
   service()->QueueReport(kUrl_, kReportingSource_, kNak_, kUserAgent_, kGroup_,
-                         kType_, base::Value::Dict(), 0,
+                         kType_, base::DictValue(), 0,
                          ReportingTargetType::kDeveloper);
 
   FinishLoading(true /* load_success */);
@@ -333,7 +331,7 @@ TEST_P(ReportingServiceTest,
                                            kIsolationInfo_, *parsed_header);
   // Add a "create report" task to the backlog (service not initialized yet).
   service()->QueueReport(kUrl_, kReportingSource_, kNak_, kUserAgent_, kGroup_,
-                         kType_, base::Value::Dict(), 0,
+                         kType_, base::DictValue(), 0,
                          ReportingTargetType::kDeveloper);
 
   // Now simulate the source being destroyed, adding a "mark source as
@@ -376,7 +374,7 @@ TEST_P(ReportingServiceTest,
                                            kIsolationInfo_, *parsed_header);
   // This report should be sent immediately, starting the delivery agent timer.
   service()->QueueReport(kUrl_, kReportingSource_, kNak_, kUserAgent_, kGroup_,
-                         kType_, base::Value::Dict(), 0,
+                         kType_, base::DictValue(), 0,
                          ReportingTargetType::kDeveloper);
 
   FinishLoading(true /* load_success */);
@@ -391,7 +389,7 @@ TEST_P(ReportingServiceTest,
 
   // Queue another report, which should remain queued.
   service()->QueueReport(kUrl_, kReportingSource_, kNak_, kUserAgent_, kGroup_,
-                         kType_, base::Value::Dict(), 0,
+                         kType_, base::DictValue(), 0,
                          ReportingTargetType::kDeveloper);
   EXPECT_EQ(1u, context()->cache()->GetReportCountWithStatusForTesting(
                     ReportingReport::Status::QUEUED));
@@ -549,7 +547,7 @@ TEST_P(ReportingServiceTest, WriteToStore) {
               testing::UnorderedElementsAreArray(expected_commands));
 
   service()->QueueReport(kUrl_, kReportingSource_, kNak_, kUserAgent_, kGroup_,
-                         kType_, base::Value::Dict(), 0,
+                         kType_, base::DictValue(), 0,
                          ReportingTargetType::kDeveloper);
   expected_commands.emplace_back(
       CommandType::UPDATE_REPORTING_ENDPOINT_GROUP_ACCESS_TIME, kGroupKey_);
@@ -612,7 +610,7 @@ TEST_P(ReportingServiceTest, WaitUntilLoadFinishesBeforeWritingToStore) {
               testing::UnorderedElementsAreArray(expected_commands));
 
   service()->QueueReport(kUrl_, kReportingSource_, kNak_, kUserAgent_, kGroup_,
-                         kType_, base::Value::Dict(), 0,
+                         kType_, base::DictValue(), 0,
                          ReportingTargetType::kDeveloper);
   EXPECT_THAT(store()->GetAllCommands(),
               testing::UnorderedElementsAreArray(expected_commands));
@@ -654,124 +652,6 @@ TEST_P(ReportingServiceTest, WaitUntilLoadFinishesBeforeWritingToStore) {
   expected_commands.emplace_back(CommandType::FLUSH);
   EXPECT_THAT(store()->GetAllCommands(),
               testing::UnorderedElementsAreArray(expected_commands));
-}
-
-TEST_P(ReportingServiceTest,
-       SetEnterpriseReportingEndpointsWithFeatureEnabled) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(
-      net::features::kReportingApiEnableEnterpriseCookieIssues);
-  EXPECT_EQ(0u, context()->cache()->GetEnterpriseEndpointsForTesting().size());
-  base::flat_map<std::string, GURL> test_enterprise_endpoints{
-      {"endpoint-1", GURL("https://example.com/reports")},
-      {"endpoint-2", GURL("https://reporting.example/cookie-issues")},
-      {"endpoint-3", GURL("https://report-collector.example")},
-  };
-
-  std::vector<ReportingEndpoint> expected_enterprise_endpoints = {
-      {ReportingEndpointGroupKey(NetworkAnonymizationKey(),
-                                 /*reporting_source=*/std::nullopt,
-                                 /*origin=*/std::nullopt, "endpoint-1",
-                                 ReportingTargetType::kEnterprise),
-       {.url = GURL("https://example.com/reports")}},
-      {ReportingEndpointGroupKey(NetworkAnonymizationKey(),
-                                 /*reporting_source=*/std::nullopt,
-                                 /*origin=*/std::nullopt, "endpoint-2",
-                                 ReportingTargetType::kEnterprise),
-       {.url = GURL("https://reporting.example/cookie-issues")}},
-      {ReportingEndpointGroupKey(NetworkAnonymizationKey(),
-                                 /*reporting_source=*/std::nullopt,
-                                 /*origin=*/std::nullopt, "endpoint-3",
-                                 ReportingTargetType::kEnterprise),
-       {.url = GURL("https://report-collector.example")}}};
-
-  service()->SetEnterpriseReportingEndpoints(test_enterprise_endpoints);
-  EXPECT_EQ(expected_enterprise_endpoints,
-            context()->cache()->GetEnterpriseEndpointsForTesting());
-}
-
-TEST_P(ReportingServiceTest,
-       SetEnterpriseReportingEndpointsWithFeatureDisabled) {
-  EXPECT_EQ(0u, context()->cache()->GetEnterpriseEndpointsForTesting().size());
-  base::flat_map<std::string, GURL> test_enterprise_endpoints{
-      {"endpoint-1", GURL("https://example.com/reports")},
-      {"endpoint-2", GURL("https://reporting.example/cookie-issues")},
-      {"endpoint-3", GURL("https://report-collector.example")},
-  };
-
-  service()->SetEnterpriseReportingEndpoints(test_enterprise_endpoints);
-  EXPECT_EQ(0u, context()->cache()->GetEnterpriseEndpointsForTesting().size());
-}
-
-TEST_P(ReportingServiceTest, ReportingServiceConstructionWithFeatureEnabled) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(
-      net::features::kReportingApiEnableEnterpriseCookieIssues);
-  base::flat_map<std::string, GURL> test_enterprise_endpoints{
-      {"endpoint-1", GURL("https://example.com/reports")},
-      {"endpoint-2", GURL("https://reporting.example/cookie-issues")},
-      {"endpoint-3", GURL("https://report-collector.example")},
-  };
-
-  EXPECT_EQ(0u, service()
-                    ->GetContextForTesting()
-                    ->cache()
-                    ->GetEnterpriseEndpointsForTesting()
-                    .size());
-  std::unique_ptr<URLRequestContext> url_request_context =
-      CreateTestURLRequestContextBuilder()->Build();
-  std::unique_ptr<ReportingService> reporting_service_ptr =
-      ReportingService::Create(ReportingPolicy(), url_request_context.get(),
-                               store(), test_enterprise_endpoints);
-
-  std::vector<ReportingEndpoint> expected_enterprise_endpoints = {
-      {ReportingEndpointGroupKey(NetworkAnonymizationKey(),
-                                 /*reporting_source=*/std::nullopt,
-                                 /*origin=*/std::nullopt, "endpoint-1",
-                                 ReportingTargetType::kEnterprise),
-       {.url = GURL("https://example.com/reports")}},
-      {ReportingEndpointGroupKey(NetworkAnonymizationKey(),
-                                 /*reporting_source=*/std::nullopt,
-                                 /*origin=*/std::nullopt, "endpoint-2",
-                                 ReportingTargetType::kEnterprise),
-       {.url = GURL("https://reporting.example/cookie-issues")}},
-      {ReportingEndpointGroupKey(NetworkAnonymizationKey(),
-                                 /*reporting_source=*/std::nullopt,
-                                 /*origin=*/std::nullopt, "endpoint-3",
-                                 ReportingTargetType::kEnterprise),
-       {.url = GURL("https://report-collector.example")}}};
-
-  EXPECT_EQ(expected_enterprise_endpoints,
-            reporting_service_ptr->GetContextForTesting()
-                ->cache()
-                ->GetEnterpriseEndpointsForTesting());
-}
-
-TEST_P(ReportingServiceTest, ReportingServiceConstructionWithFeatureDisabled) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(
-      net::features::kReportingApiEnableEnterpriseCookieIssues);
-  base::flat_map<std::string, GURL> test_enterprise_endpoints{
-      {"endpoint-1", GURL("https://example.com/reports")},
-      {"endpoint-2", GURL("https://reporting.example/cookie-issues")},
-      {"endpoint-3", GURL("https://report-collector.example")},
-  };
-
-  EXPECT_EQ(0u, service()
-                    ->GetContextForTesting()
-                    ->cache()
-                    ->GetEnterpriseEndpointsForTesting()
-                    .size());
-  std::unique_ptr<URLRequestContext> url_request_context =
-      CreateTestURLRequestContextBuilder()->Build();
-  std::unique_ptr<ReportingService> reporting_service_ptr =
-      ReportingService::Create(ReportingPolicy(), url_request_context.get(),
-                               store(), test_enterprise_endpoints);
-
-  EXPECT_EQ(0u, reporting_service_ptr->GetContextForTesting()
-                    ->cache()
-                    ->GetEnterpriseEndpointsForTesting()
-                    .size());
 }
 
 INSTANTIATE_TEST_SUITE_P(ReportingServiceStoreTest,

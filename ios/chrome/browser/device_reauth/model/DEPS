@@ -1,4 +1,6 @@
 include_rules = [
+  # keep-sorted start
   "+components/device_reauth",
   "+components/keyed_service/core",
+  # keep-sorted end
 ]

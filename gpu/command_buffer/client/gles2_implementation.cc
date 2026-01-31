@@ -5754,18 +5754,20 @@ void* GLES2Implementation::MapBufferSubDataCHROMIUM(GLuint target,
 
   int32_t shm_id;
   unsigned int shm_offset;
-  void* mem = mapped_memory_->Alloc(size, &shm_id, &shm_offset);
-  if (!mem) {
+  base::span<uint8_t> buffer =
+      mapped_memory_->Alloc(size, &shm_id, &shm_offset);
+  if (buffer.empty()) {
     SetGLError(GL_OUT_OF_MEMORY, "glMapBufferSubDataCHROMIUM", "out of memory");
     return nullptr;
   }
 
-  std::pair<MappedBufferMap::iterator, bool> result = mapped_buffers_.insert(
-      std::make_pair(mem, MappedBuffer(access, shm_id, mem, shm_offset, target,
-                                       offset, size)));
+  std::pair<MappedBufferMap::iterator, bool> result =
+      mapped_buffers_.insert(std::make_pair(
+          buffer.data(), MappedBuffer(access, shm_id, buffer.data(), shm_offset,
+                                      target, offset, size)));
   DCHECK(result.second);
-  GPU_CLIENT_LOG("  returned " << mem);
-  return mem;
+  GPU_CLIENT_LOG("  returned " << buffer.data());
+  return buffer.data();
 }
 
 void GLES2Implementation::UnmapBufferSubDataCHROMIUM(const void* mem) {
@@ -5856,6 +5858,7 @@ void* GLES2Implementation::MapBufferRange(GLenum target,
 
   GLuint buffer = GetBoundBufferHelper(target);
 
+  // TODO(crbug.com/40285824): Use span instead.
   void* mem = nullptr;
 
   // Early return if we have a valid shadow copy for readback
@@ -5890,7 +5893,7 @@ void* GLES2Implementation::MapBufferRange(GLenum target,
   int32_t shm_id = 0;
   unsigned int shm_offset = 0;
   if (!mem) {
-    mem = mapped_memory_->Alloc(size, &shm_id, &shm_offset);
+    mem = mapped_memory_->Alloc(size, &shm_id, &shm_offset).data();
     auto result = GetResultAs<cmds::MapBufferRange::Result>();
     if (!mem || !result) {
       SetGLError(GL_OUT_OF_MEMORY, "glMapBufferRange", "out of memory");
@@ -6025,19 +6028,21 @@ void* GLES2Implementation::MapTexSubImage2DCHROMIUM(GLenum target,
   }
   int32_t shm_id;
   unsigned int shm_offset;
-  void* mem = mapped_memory_->Alloc(size, &shm_id, &shm_offset);
-  if (!mem) {
+  base::span<uint8_t> buffer =
+      mapped_memory_->Alloc(size, &shm_id, &shm_offset);
+  if (buffer.empty()) {
     SetGLError(GL_OUT_OF_MEMORY, "glMapTexSubImage2DCHROMIUM", "out of memory");
     return nullptr;
   }
 
   std::pair<MappedTextureMap::iterator, bool> result =
       mapped_textures_.insert(std::make_pair(
-          mem, MappedTexture(access, shm_id, mem, shm_offset, target, level,
-                             xoffset, yoffset, width, height, format, type)));
+          buffer.data(),
+          MappedTexture(access, shm_id, buffer.data(), shm_offset, target,
+                        level, xoffset, yoffset, width, height, format, type)));
   DCHECK(result.second);
-  GPU_CLIENT_LOG("  returned " << mem);
-  return mem;
+  GPU_CLIENT_LOG("  returned " << buffer.data());
+  return buffer.data();
 }
 
 void GLES2Implementation::UnmapTexSubImage2DCHROMIUM(const void* mem) {

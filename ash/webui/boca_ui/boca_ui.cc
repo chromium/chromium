@@ -36,7 +36,7 @@ content::WebUIDataSource* CreateAndAddHostDataSource(
   content::WebUIDataSource* source = content::WebUIDataSource::CreateAndAdd(
       browser_context, kChromeBocaAppUntrustedURL);
 
-  source->AddResourcePath("", IDR_ASH_BOCA_UI_INDEX_HTML);
+  source->SetDefaultResource(IDR_ASH_BOCA_UI_INDEX_HTML);
   source->AddResourcePaths(kAshBocaUiResources);
 
   // Resources obtained from CIPD.

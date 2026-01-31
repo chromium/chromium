@@ -244,11 +244,6 @@ export class CrDialogElement extends CrLitElement {
       return;
     }
 
-    if (this.noCancel) {
-      e.preventDefault();
-      return;
-    }
-
     // When the dialog is dismissed using the 'Esc' key, need to manually update
     // the |open| property (since close() is not called).
     this.open = false;

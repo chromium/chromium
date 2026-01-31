@@ -28,7 +28,6 @@
 #include "extensions/common/permissions/permissions_data.h"
 #include "services/data_decoder/public/cpp/data_decoder.h"
 #include "third_party/abseil-cpp/absl/functional/overload.h"
-#include "third_party/blink/public/mojom/webauthn/authenticator.mojom-shared.h"
 #include "third_party/blink/public/mojom/webauthn/authenticator.mojom.h"
 #include "url/gurl.h"
 
@@ -449,7 +448,7 @@ WebAuthenticationProxyService::NewRequestId() {
   // Technically, this could spin forever if there are 4 billion active
   // requests. However, there's no real risk to this happening (no security or
   // DOS concerns).
-  while (base::Contains(pending_callbacks_, request_id)) {
+  while (pending_callbacks_.contains(request_id)) {
     request_id = base::RandGenerator(std::numeric_limits<uint32_t>::max()) + 1;
   }
   return request_id;

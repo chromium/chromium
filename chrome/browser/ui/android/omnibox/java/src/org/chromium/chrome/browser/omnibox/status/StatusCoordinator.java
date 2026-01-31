@@ -19,7 +19,7 @@ import androidx.annotation.StringRes;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.ContextUtils;
-import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -33,6 +33,7 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.chrome.browser.user_education.UserEducationHelper;
+import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.components.permissions.PermissionDialogController;
 import org.chromium.components.search_engines.TemplateUrlService;
 import org.chromium.ui.base.WindowAndroid;
@@ -90,7 +91,7 @@ public class StatusCoordinator implements View.OnClickListener, LocationBarDataP
             UrlBarEditingTextStateProvider urlBarEditingTextStateProvider,
             LocationBarDataProvider locationBarDataProvider,
             OneshotSupplier<TemplateUrlService> templateUrlServiceSupplier,
-            ObservableSupplier<Profile> profileSupplier,
+            MonotonicObservableSupplier<Profile> profileSupplier,
             WindowAndroid windowAndroid,
             PageInfoAction pageInfoAction,
             @Nullable Supplier<MerchantTrustSignalsCoordinator>
@@ -324,6 +325,8 @@ public class StatusCoordinator implements View.OnClickListener, LocationBarDataP
             return;
         }
 
+        if (UrlUtilities.isNtpUrl(mLocationBarDataProvider.getCurrentGurl())) return;
+
         mPageInfoAction.show(mLocationBarDataProvider.getTab(), mMediator.getPageInfoHighlight());
         mMediator.onPageInfoOpened();
     }
@@ -365,6 +368,11 @@ public class StatusCoordinator implements View.OnClickListener, LocationBarDataP
      */
     public void onDefaultMatchClassified(boolean defaultMatchIsSearch) {
         mMediator.updateLocationBarIconForDefaultMatchCategory(defaultMatchIsSearch);
+    }
+
+    @SuppressWarnings("NullAway")
+    public StatusMediator getMediatorForTesting() {
+        return mMediator;
     }
 
     @SuppressWarnings("NullAway")

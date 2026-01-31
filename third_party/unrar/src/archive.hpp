@@ -23,6 +23,10 @@ enum ADDSUBDATA_FLAGS
 // RAR5 headers must not exceed 2 MB.
 #define MAX_HEADER_SIZE_RAR5 0x200000
 
+#if defined(CHROMIUM_UNRAR)
+#include "third_party/unrar/google/unrar_delegates.h"
+#endif
+
 class Archive:public File
 {
   private:
@@ -59,11 +63,6 @@ class Archive:public File
     bool ProhibitQOpen;
 #endif
 
-#if defined(CHROMIUM_UNRAR)
-    // A handle for a temporary file that should be used when extracting the
-    // archive. This is used to extract the contents while in a sandbox.
-    FileHandle hTempFile;
-#endif
 
   public:
     Archive(CommandData *InitCmd=nullptr);
@@ -94,6 +93,10 @@ class Archive:public File
     HEADER_TYPE GetHeaderType() {return CurHeaderType;}
     CommandData* GetCommandData() {return Cmd;}
     void SetSilentOpen(bool Mode) {SilentOpen=Mode;}
+#if defined(CHROMIUM_UNRAR)
+    void SetWriterDelegate(third_party_unrar::RarWriterDelegate *Delegate) {m_writer_delegate=Delegate;}
+    third_party_unrar::RarWriterDelegate *m_writer_delegate = nullptr;
+#endif
 #ifdef USE_QOPEN
     bool Open(const std::wstring &Name,uint Mode=FMF_READ) override;
     int Read(void *Data,size_t Size) override;
@@ -101,10 +104,6 @@ class Archive:public File
     int64 Tell() override;
     void QOpenUnload() {QOpen.Unload();}
     void SetProhibitQOpen(bool Mode) {ProhibitQOpen=Mode;}
-#endif
-#if defined(CHROMIUM_UNRAR)
-    void SetTempFileHandle(FileHandle hF);
-    FileHandle GetTempFileHandle();
 #endif
     static uint64 GetWinSize(uint64 Size,uint &Flags);
 

@@ -357,24 +357,4 @@ suite('<settings-keyboard-and-text-input-page>', () => {
       assertTrue(toggle.checked);
     });
   });
-
-  // With the feature flag disabled, verify the keyboard settings page still
-  // loads properly. This is tested separately from filter_keys_test.ts since
-  // some prefs wouldn't have been registered in this case.
-  test('Filter keys feature disabled shows no filter keys rows', async () => {
-    loadTimeData.overrideValues({
-      isAccessibilityBounceKeysEnabled: false,
-      isAccessibilitySlowKeysEnabled: false,
-    });
-    await initPage();
-
-    assertFalse(!!page.shadowRoot!.querySelector<SettingsToggleButtonElement>(
-        '#slowKeysToggle'));
-    assertFalse(!!page.shadowRoot!.querySelector<SettingsSliderElement>(
-        '#slowKeysDelaySlider'));
-    assertFalse(!!page.shadowRoot!.querySelector<SettingsToggleButtonElement>(
-        '#bounceKeysToggle'));
-    assertFalse(!!page.shadowRoot!.querySelector<SettingsSliderElement>(
-        '#bounceKeysDelaySlider'));
-  });
 });

@@ -78,15 +78,12 @@ class COMPONENT_EXPORT(GLOBAL_MEDIA_CONTROLS) MediaItemUIListView
   }
 
  private:
-  // If media::kGlobalMediaControlsUpdatedUI on non-CrOS is enabled,
-  // `updated_items_` is used, otherwise `items_` is used. `items_` is always
-  // used for CrOS.
+  // `updated_items_` is used for non-CrOS, otherwise `items_` is used. `items_`
+  // is always used for CrOS.
   // TODO(b/329160058): Use better naming.
   std::map<const std::string, raw_ptr<MediaItemUIView, CtnExperimental>> items_;
   std::map<const std::string, raw_ptr<MediaItemUIUpdatedView, CtnExperimental>>
       updated_items_;
-
-  std::optional<SeparatorStyle> separator_style_;
 
   base::WeakPtrFactory<MediaItemUIListView> weak_factory_{this};
 };

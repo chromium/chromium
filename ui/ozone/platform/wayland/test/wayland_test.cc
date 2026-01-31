@@ -89,6 +89,14 @@ void WaylandTestBase::SetUp() {
   // The surface must be activated before buffers are attached.
   ActivateSurface(window_->root_surface()->get_surface_id());
 
+  // Activating the surface creates a token request with a 500ms timeout. See
+  // XdgActivation::TokenRequest::InitiateRequest() / kMaxTokenRequestDelay.
+  // This callback can mess with test expectatins if it returns during the test
+  // (either by calling methods a test is expecting, or even simply by advancing
+  // the event timestamps), which sometimes happens. Mock a 2x timeout delay so
+  // we can be sure that the callback has completed by the time the test starts.
+  task_environment_.FastForwardBy(base::Milliseconds(1000));
+
   EXPECT_EQ(0u,
             DeviceDataManager::GetInstance()->GetTouchscreenDevices().size());
   EXPECT_EQ(0u, DeviceDataManager::GetInstance()->GetKeyboardDevices().size());

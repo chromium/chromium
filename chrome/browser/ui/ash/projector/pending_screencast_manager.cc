@@ -153,7 +153,7 @@ std::string GetIndexableText(const base::FilePath& metadata_file_local_path) {
     return indexable_text;
   }
 
-  const base::Value::Dict* dict_value = value.value().GetIfDict();
+  const base::DictValue* dict_value = value.value().GetIfDict();
   if (!dict_value) {
     return indexable_text;
   }
@@ -165,7 +165,7 @@ std::string GetIndexableText(const base::FilePath& metadata_file_local_path) {
   }
 
   for (const auto& caption : *captions) {
-    const base::Value::Dict* caption_dict = caption.GetIfDict();
+    const base::DictValue* caption_dict = caption.GetIfDict();
     if (!caption_dict) {
       continue;
     }
@@ -193,8 +193,8 @@ const std::string BuildRequestBody(
   }
 
   // Builds request body:
-  base::Value::Dict root;
-  base::Value::Dict contentHints;
+  base::DictValue root;
+  base::DictValue contentHints;
   contentHints.Set(kDriveRequestIndexableTextKey, indexable_text);
   root.Set(kDriveRequestContentHintsKey, std::move(contentHints));
 

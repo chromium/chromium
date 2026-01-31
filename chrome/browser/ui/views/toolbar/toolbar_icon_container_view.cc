@@ -6,7 +6,6 @@
 
 #include <memory>
 
-#include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
@@ -131,7 +130,8 @@ ToolbarIconContainerView::ToolbarIconContainerView(
         .SetIgnoreDefaultMainAxisMargins(true)
         .SetDefault(
             views::kMarginsKey,
-            gfx::Insets::VH(0, GetLayoutConstant(TOOLBAR_ELEMENT_PADDING)));
+            gfx::Insets::VH(
+                0, GetLayoutConstant(LayoutConstant::kToolbarElementPadding)));
   }
 }
 
@@ -200,7 +200,7 @@ bool ToolbarIconContainerView::GetHighlighted() const {
       return true;
     }
     // The container should also be highlighted if a dialog is anchored to.
-    if (base::Contains(highlighted_buttons_, button)) {
+    if (highlighted_buttons_.contains(button)) {
       return true;
     }
   }

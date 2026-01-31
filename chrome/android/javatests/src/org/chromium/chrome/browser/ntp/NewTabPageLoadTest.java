@@ -7,6 +7,8 @@ package org.chromium.chrome.browser.ntp;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertTrue;
 
+import static org.chromium.chrome.browser.url_constants.UrlConstantResolver.getOriginalNativeNtpUrl;
+
 import android.graphics.Bitmap;
 import android.os.Handler;
 
@@ -29,7 +31,6 @@ import org.chromium.chrome.test.transit.ntp.RegularNewTabPageStation;
 import org.chromium.chrome.test.transit.page.WebPageStation;
 import org.chromium.chrome.test.util.browser.suggestions.SuggestionsDependenciesRule;
 import org.chromium.chrome.test.util.browser.suggestions.mostvisited.FakeMostVisitedSites;
-import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.favicon.IconType;
 import org.chromium.components.favicon.LargeIconBridge;
 import org.chromium.url.GURL;
@@ -64,7 +65,7 @@ public class NewTabPageLoadTest {
         mActivityTestRule
                 .startOnBlankPage()
                 .loadPageProgrammatically(
-                        UrlConstants.NTP_URL, RegularNewTabPageStation.newBuilder());
+                        getOriginalNativeNtpUrl(), RegularNewTabPageStation.newBuilder());
         assertTrue(mMostVisitedSites.pageImpressionRecorded);
     }
 

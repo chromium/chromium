@@ -8,8 +8,8 @@
 #include <memory>
 #include <optional>
 
-#include "content/public/browser/child_process_id.h"
 #include "content/public/browser/global_routing_id.h"
+#include "content/public/common/child_process_id.h"
 #include "extensions/browser/extension_api_frame_id_map.h"
 
 namespace content {

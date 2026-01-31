@@ -102,11 +102,13 @@ class CONTENT_EXPORT RendererBlinkPlatformImpl : public BlinkPlatformImpl {
       blink::URLLoaderThrottleProviderType provider_type) override;
   void CreateWebGPUGraphicsContext3DProviderAsync(
       const blink::WebURL& document_url,
+      WebGPUReplyThread reply_thread,
       base::OnceCallback<
           void(std::unique_ptr<blink::WebGraphicsContext3DProvider>)> callback)
       override;
   void OnGpuChannelEstablished(
       const blink::WebURL& document_url,
+      WebGPUReplyThread reply_thread,
       base::OnceCallback<
           void(std::unique_ptr<blink::WebGraphicsContext3DProvider>)> callback,
       scoped_refptr<gpu::GpuChannelHost> gpu_channel_host);
@@ -127,7 +129,8 @@ class CONTENT_EXPORT RendererBlinkPlatformImpl : public BlinkPlatformImpl {
   SkCanvas* SynchronousCompositorGetSkCanvasForAndroidWebView() override;
 #endif
   bool IsLcdTextEnabled() override;
-  bool IsElasticOverscrollEnabled() override;
+  bool IsElasticOverscrollEnabledOnRoot() override;
+  bool IsElasticOverscrollSupported() override;
   bool IsScrollAnimatorEnabled() override;
   double AudioHardwareSampleRate() override;
   size_t AudioHardwareBufferSize() override;
@@ -190,7 +193,8 @@ class CONTENT_EXPORT RendererBlinkPlatformImpl : public BlinkPlatformImpl {
   CreateSharedOffscreenGraphicsContext3DProvider() override;
   std::unique_ptr<blink::WebGraphicsContext3DProvider>
   CreateWebGPUGraphicsContext3DProvider(
-      const blink::WebURL& document_url) override;
+      const blink::WebURL& document_url,
+      WebGPUReplyThread reply_thread) override;
   blink::WebString ConvertIDNToUnicode(const blink::WebString& host) override;
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   void SetThreadType(base::PlatformThreadId thread_id,

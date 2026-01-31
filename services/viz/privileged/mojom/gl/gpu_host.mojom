@@ -9,6 +9,7 @@ import "gpu/ipc/common/gpu_feature_info.mojom";
 import "gpu/ipc/common/gpu_info.mojom";
 import "gpu/ipc/common/surface_handle.mojom";
 import "mojo/public/mojom/base/byte_string.mojom";
+import "mojo/public/mojom/base/file.mojom";
 import "services/viz/privileged/mojom/gl/context_lost_reason.mojom";
 import "third_party/blink/public/mojom/tokens/tokens.mojom";
 import "ui/gfx/mojom/gpu_extra_info.mojom";
@@ -85,4 +86,10 @@ interface GpuHost {
   [EnableIf=is_win]
   EnsureWebNNExecutionProvidersReady()
       => (map<string, webnn.mojom.EpPackageInfo> ep_package_info);
+
+  // Tells the GPU host to create a temporary file that can be used to save all
+  // weights in the WebNN graph. Returns the open file handle if the file was
+  // successfully created, otherwise return invalid file handle that will be
+  // caught and prevent the graph from being built.
+  CreateWebNNWeightsFile() => (mojo_base.mojom.File? file);
 };

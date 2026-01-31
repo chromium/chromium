@@ -1429,6 +1429,13 @@ class VIEWS_EXPORT Widget : public internal::NativeWidgetDelegate,
   void SetColorModeOverride(
       std::optional<ui::ColorProviderKey::ColorMode> color_mode);
 
+  // Sets an override for `user_color` when `GetColorProvider()` is requested.
+  // e.g. if set to kDark, colors will always be for the dark theme.
+  void SetUserColorOverride(std::optional<SkColor> user_color);
+  std::optional<SkColor> user_color_override() const {
+    return user_color_override_;
+  }
+
   // Sets the background color for the widget. This color is used before the
   // view paints anything.
   void SetBackgroundColor(std::optional<ui::ColorId> background_color);
@@ -1658,6 +1665,10 @@ class VIEWS_EXPORT Widget : public internal::NativeWidgetDelegate,
   // If set, overrides this value is used instead of the one from NativeTheme
   // when constructing a ColorProvider.
   std::optional<ui::ColorProviderKey::ColorMode> color_mode_override_;
+
+  // If set, overrides the user color used in the construction of the
+  // ColorProvider.
+  std::optional<SkColor> user_color_override_;
 
   // The current frame type in use by this window. Defaults to
   // FrameType::kDefault.

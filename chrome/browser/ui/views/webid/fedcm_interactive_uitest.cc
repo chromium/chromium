@@ -49,6 +49,7 @@ class FedCmCUJTest : public InteractiveBrowserTest {
       accounts_ = {base::MakeRefCounted<Account>(
           "id", "display_identifier", "display_name", "email", "name",
           "given_name", GURL(), "phone", "username",
+          /*potentially_approved_origin_hashes=*/std::vector<std::string>(),
           /*login_hints=*/std::vector<std::string>(),
           /*domain_hints=*/std::vector<std::string>(),
           /*labels=*/std::vector<std::string>())};

@@ -162,9 +162,31 @@ FindBarHost::FindBarHost(FindBarOwner* find_bar_owner)
   params.name = "FindBarHost";
   params.parent = find_bar_owner_->GetWidgetForAnchoring()->GetNativeView();
   params.opacity = views::Widget::InitParams::WindowOpacity::kTranslucent;
-#if BUILDFLAG(IS_MAC)
-  params.activatable = views::Widget::InitParams::Activatable::kYes;
-#endif
+  // The FindBarHost is intentionally not activatable.
+  //
+  // Don't use Activatable::kYes. It caused a series of other issues on macOS:
+  // 1. Virtual Desktop Switching: When the find bar closes, macOS attempts to
+  //    restore focus to the previously active window. This heuristic can
+  //    incorrectly switch to a different space (Virtual Desktop) where another
+  //    chrome window resides (crbug.com/40205173, crbug.com/40147557).
+  // 2. Broken Browser Shortcuts: Since the find bar steals the "key window"
+  //    status, the browser window stops receiving shortcuts like Cmd+D
+  //    (crbug.com/40694525).
+  // 3. Focus Loss: Handing focus back and forth can fail, leading to lost
+  //    focus (crbug.com/422444253).
+  // 4. Mouse Interaction Issues: Clicking on web content requires two clicks
+  //    (one to re-activate the browser window) (crbug.com/442293378).
+  //
+  // Instead, we keep it as Activatable::kNo.
+  //
+  // With Activatable::kNo, the browser window remains the OS-level key window
+  // and receives keyboard events. The FocusManager tracks focus; if the find
+  // bar has focus, the FocusManager routes events from the browser window to
+  // the find bar view, even though they are in different widgets. We manually
+  // activate the browser window when clicking on the find bar textfield (see
+  // ActivateOwnerWidgetIfNecessary) to ensure the browser window receives
+  // these events.
+  params.activatable = views::Widget::InitParams::Activatable::kNo;
   host_->Init(std::move(params));
   host_->SetContentsView(std::move(clip_view));
 #if defined(IS_AURA)
@@ -224,15 +246,21 @@ bool FindBarHost::MaybeForwardKeyEventToWebpage(const ui::KeyEvent& key_event) {
   return true;
 }
 
+void FindBarHost::ActivateOwnerWidgetIfNecessary() {
+  // See crbug.com/40616214.
+  views::Widget* widget = find_bar_owner()->GetOwnerWidget();
+  if (widget && !widget->IsActive()) {
+    widget->Activate();
+  }
+}
+
 bool FindBarHost::IsVisible() const {
   return is_visible_;
 }
 
-#if BUILDFLAG(IS_MAC)
 views::Widget* FindBarHost::GetHostWidget() {
   return host_.get();
 }
-#endif
 
 FindBarController* FindBarHost::GetFindBarController() const {
   return find_bar_controller_;

@@ -80,7 +80,7 @@ class PasswordSaveUpdateViewTest : public PasswordBubbleViewTestBase {
 };
 
 PasswordSaveUpdateViewTest::PasswordSaveUpdateViewTest() {
-  ON_CALL(*feature_manager_mock(), IsAccountStorageEnabled)
+  ON_CALL(*feature_manager_mock(), IsAccountStorageActive)
       .WillByDefault(Return(true));
   ON_CALL(*model_delegate_mock(), GetOrigin)
       .WillByDefault(Return(url::Origin::Create(pending_password_.url)));
@@ -113,7 +113,7 @@ void PasswordSaveUpdateViewTest::SimulateSignIn() {
   signin::IdentityManager* identity_manager =
       IdentityManagerFactory::GetForProfile(profile());
   AccountInfo info = signin::MakePrimaryAccountAvailable(
-      identity_manager, "test@email.com", signin::ConsentLevel::kSync);
+      identity_manager, "test@email.com", signin::ConsentLevel::kSignin);
 }
 
 TEST_F(PasswordSaveUpdateViewTest, HasTitleAndTwoButtons) {
@@ -134,7 +134,7 @@ TEST_F(PasswordSaveUpdateViewTest, NeverButtonClicked) {
 }
 
 TEST_F(PasswordSaveUpdateViewTest, ShouldSelectAccountStoreByDefault) {
-  ON_CALL(*feature_manager_mock(), IsAccountStorageEnabled)
+  ON_CALL(*feature_manager_mock(), IsAccountStorageActive)
       .WillByDefault(Return(true));
 
   SimulateSignIn();
@@ -142,7 +142,7 @@ TEST_F(PasswordSaveUpdateViewTest, ShouldSelectAccountStoreByDefault) {
 }
 
 TEST_F(PasswordSaveUpdateViewTest, ShouldSelectProfileStoreByDefault) {
-  ON_CALL(*feature_manager_mock(), IsAccountStorageEnabled)
+  ON_CALL(*feature_manager_mock(), IsAccountStorageActive)
       .WillByDefault(Return(false));
 
   SimulateSignIn();

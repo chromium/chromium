@@ -28,6 +28,8 @@ import org.chromium.ui.modelutil.ListModel;
 import org.chromium.ui.modelutil.ListModelChangeProcessor;
 import org.chromium.ui.modelutil.PropertyModel;
 
+import java.util.function.Supplier;
+
 /**
  * Creates and owns all elements which are part of the accessory sheet component. It's part of the
  * controller but will mainly forward events (like showing the sheet) and handle communication with
@@ -108,6 +110,14 @@ public class AccessorySheetCoordinator implements AccessorySheetVisualStateProvi
         mMediator.setTabs(tabs);
     }
 
+    public void setStyle(boolean isDocked) {
+        mMediator.setStyle(isDocked);
+    }
+
+    public void setContentOffsetSupplier(Supplier<Integer> contentOffsetSupplier) {
+        mMediator.setContentOffsetSupplier(contentOffsetSupplier);
+    }
+
     public RecyclerView.OnScrollListener getScrollListener() {
         return mMediator.getScrollListener();
     }
@@ -124,9 +134,9 @@ public class AccessorySheetCoordinator implements AccessorySheetVisualStateProvi
     /**
      * Sets the height of the accessory sheet (i.e. adapts to keyboard heights).
      *
-     * @param height The height of the sheet in pixels.
+     * @param height The height of the sheet in pixels or WRAP_CONTENT (-2).
      */
-    public void setHeight(@Px int height) {
+    public void setHeight(int height) {
         mMediator.setHeight(height);
     }
 

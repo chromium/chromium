@@ -139,7 +139,7 @@ void WifiDirectManager::OnCreateOrConnectWifiDirectGroup(
       *group_metadata,
       base::BindOnce(&WifiDirectManager::OnClientRequestedDisconnection,
                      weak_ptr_factory_.GetWeakPtr(), shill_id));
-  if (base::Contains(shill_id_to_wifi_direct_connection_, shill_id)) {
+  if (shill_id_to_wifi_direct_connection_.contains(shill_id)) {
     NET_LOG(ERROR) << "Found an existing Wifi direct connection with Shill id: "
                    << shill_id;
   }

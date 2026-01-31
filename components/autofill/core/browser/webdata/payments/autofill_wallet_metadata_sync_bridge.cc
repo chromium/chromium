@@ -6,7 +6,6 @@
 
 #include <map>
 #include <optional>
-#include <unordered_set>
 #include <utility>
 #include <variant>
 #include <vector>
@@ -35,6 +34,7 @@
 #include "components/sync/model/sync_metadata_store_change_list.h"
 #include "components/sync/protocol/entity_data.h"
 #include "components/webdata/common/web_database.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
 
 namespace autofill {
 
@@ -380,8 +380,8 @@ std::unique_ptr<syncer::DataBatch>
 AutofillWalletMetadataSyncBridge::GetDataForCommit(
     StorageKeyList storage_keys) {
   // Build a set out of the list to allow quick lookup.
-  std::unordered_set<std::string> storage_keys_set(storage_keys.begin(),
-                                                   storage_keys.end());
+  absl::flat_hash_set<std::string> storage_keys_set(storage_keys.begin(),
+                                                    storage_keys.end());
   return GetDataImpl(std::move(storage_keys_set));
 }
 
@@ -530,7 +530,7 @@ void AutofillWalletMetadataSyncBridge::DeleteOldOrphanMetadata() {
   auto transaction = web_data_backend_->GetDatabase()->AcquireTransaction();
 
   // Load up (metadata) ids for which data exists; we do not delete those.
-  std::unordered_set<std::string> non_orphan_ids;
+  absl::flat_hash_set<std::string> non_orphan_ids;
   std::vector<std::unique_ptr<CreditCard>> cards;
   std::vector<std::unique_ptr<Iban>> ibans;
   if (!GetAutofillTable()->GetServerCreditCards(cards) ||
@@ -549,7 +549,7 @@ void AutofillWalletMetadataSyncBridge::DeleteOldOrphanMetadata() {
 
   // Identify storage keys of old orphans (we delete them below to avoid
   // modifying |cache_| while iterating).
-  std::unordered_set<std::string> old_orphan_keys;
+  absl::flat_hash_set<std::string> old_orphan_keys;
   for (const auto& [storage_key, metadata] : cache_) {
     if (metadata.IsDeletable() && !non_orphan_ids.contains(metadata.id)) {
       old_orphan_keys.insert(storage_key);
@@ -592,7 +592,7 @@ void AutofillWalletMetadataSyncBridge::DeleteOldOrphanMetadata() {
 
 std::unique_ptr<syncer::DataBatch>
 AutofillWalletMetadataSyncBridge::GetDataImpl(
-    std::optional<std::unordered_set<std::string>> storage_keys_set) {
+    std::optional<absl::flat_hash_set<std::string>> storage_keys_set) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   auto batch = std::make_unique<syncer::MutableDataBatch>();

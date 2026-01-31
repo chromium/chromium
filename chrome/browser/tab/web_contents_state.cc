@@ -33,6 +33,7 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/referrer.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
+#include "third_party/jni_zero/common_apis.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "chrome/browser/tab/jni_headers/WebContentsState_jni.h"
@@ -49,15 +50,7 @@ using content::WebContents;
 namespace {
 
 ScopedJavaLocalRef<jobject> CreateByteBufferDirect(JNIEnv* env, int size) {
-  ScopedJavaLocalRef<jclass> clazz =
-      base::android::GetClass(env, "java/nio/ByteBuffer");
-  jmethodID method = MethodID::Get<MethodID::TYPE_STATIC>(
-      env, clazz.obj(), "allocateDirect", "(I)Ljava/nio/ByteBuffer;");
-  jobject ret = env->CallStaticObjectMethod(clazz.obj(), method, size);
-  if (base::android::ClearException(env)) {
-    return {};
-  }
-  return base::android::ScopedJavaLocalRef<jobject>::Adopt(env, ret);
+  return jni_zero::ByteBufferAllocateDirect(env, size);
 }
 
 void WriteStateHeaderToPickle(bool off_the_record,
@@ -307,8 +300,8 @@ ScopedJavaLocalRef<jobject> WebContentsState::RestoreContentsFromByteBuffer(
     const base::android::JavaRef<jobject>& state,
     BrowserContext* browser_context,
     int saved_state_version,
-    jboolean initially_hidden,
-    jboolean no_renderer) {
+    bool initially_hidden,
+    bool no_renderer) {
   base::span<const uint8_t> span =
       base::android::JavaByteBufferToSpan(env, state);
 
@@ -517,8 +510,8 @@ JNI_WebContentsState_RestoreContentsFromByteBuffer(
     Profile* profile,
     const JavaRef<jobject>& state,
     int saved_state_version,
-    jboolean initially_hidden,
-    jboolean no_renderer) {
+    bool initially_hidden,
+    bool no_renderer) {
   return WebContentsState::RestoreContentsFromByteBuffer(
       env, state, profile, saved_state_version, initially_hidden, no_renderer);
 }
@@ -537,7 +530,7 @@ JNI_WebContentsState_DeleteNavigationEntries(
     JNIEnv* env,
     const base::android::JavaRef<jobject>& state,
     int saved_state_version,
-    jlong predicate_ptr) {
+    int64_t predicate_ptr) {
   base::span<const uint8_t> span =
       base::android::JavaByteBufferToSpan(env, state);
 
@@ -567,7 +560,7 @@ static ScopedJavaLocalRef<jobject> JNI_WebContentsState_AppendPendingNavigation(
     Profile* profile,
     const JavaRef<jobject>& state,
     int saved_state_version,
-    jboolean clobber_current_entry,
+    bool clobber_current_entry,
     std::optional<std::u16string>& title,
     std::string& url,
     std::optional<std::string>& referrer_url,
@@ -605,7 +598,7 @@ JNI_WebContentsState_GetVirtualUrlFromByteBuffer(JNIEnv* env,
 }
 
 static void JNI_WebContentsState_FreeStringPointer(JNIEnv* env,
-                                                   jlong string_pointer) {
+                                                   int64_t string_pointer) {
   delete reinterpret_cast<std::string*>(string_pointer);
 }
 

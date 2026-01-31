@@ -38,6 +38,7 @@
 #include "ui/views/view_model.h"
 #include "ui/views/widget/widget_observer.h"
 
+class BrowserWindowInterface;
 class Tab;
 class TabGroup;
 class TabHoverCardController;
@@ -84,6 +85,12 @@ class TabStrip : public views::View,
   TabStrip& operator=(const TabStrip&) = delete;
   ~TabStrip() override;
 
+  // Initializes the `tab_container_` so tabs can be added to it.
+  void Initialize();
+
+  // Resets the tab strip by removing the tabs in `tab_container_` .
+  void Reset();
+
   void SetAvailableWidthCallback(
       base::RepeatingCallback<int()> available_width_callback);
 
@@ -122,7 +129,12 @@ class TabStrip : public views::View,
   void UpdateLoadingAnimations(const base::TimeDelta& elapsed_time);
 
   // Adds tabs at the specified indices.
-  void AddTabsAt(std::vector<std::pair<int, TabRendererData>> tabs_datas);
+  struct AddTabData {
+    int index;
+    tabs::TabHandle handle;
+    TabRendererData data;
+  };
+  void AddTabsAt(const std::vector<AddTabData>& tabs_datas);
 
   // Moves a tab.
   void MoveTab(int from_model_index, int to_model_index, TabRendererData data);
@@ -174,7 +186,8 @@ class TabStrip : public views::View,
   void OnGroupClosed(const tab_groups::TabGroupId& group);
 
   void OnTabGroupFocusChanged(
-      std::optional<tab_groups::TabGroupId> new_focused_group);
+      std::optional<tab_groups::TabGroupId> new_focused_group,
+      std::optional<tab_groups::TabGroupId> old_focused_group);
 
   // Updates the tab slot view split state and animates to bounds.
   void OnSplitCreated(const std::vector<int>& split_indices,
@@ -186,19 +199,8 @@ class TabStrip : public views::View,
   // Updates the tab slot view split state and animates to bounds.
   void OnSplitContentsChanged(const std::vector<int>& split_indices);
 
-  // Returns whether or not strokes should be drawn around and under the tabs.
-  bool ShouldDrawStrokes() const;
-
   // Invoked when the selection is updated.
   void SetSelection(const ui::ListSelectionModel& new_selection);
-
-  // Invoked when a tab needs to show UI that it needs the user's attention.
-  void SetTabNeedsAttention(int model_index, bool attention);
-
-  // Invoked when a tab group needs to show UI that it needs the user's
-  // attention.
-  void SetTabGroupNeedsAttention(const tab_groups::TabGroupId& id,
-                                 bool attention);
 
   // Returns the TabGroupHeader with ID `id`.
   TabGroupHeader* group_header(const tab_groups::TabGroupId& id) const {
@@ -235,7 +237,7 @@ class TabStrip : public views::View,
   views::View* GetDefaultFocusableChild();
 
   // The browser window interface for the hosting browser.
-  BrowserWindowInterface* GetBrowserWindowInterface();
+  BrowserWindowInterface* GetBrowserWindowInterface() const;
 
   // TabContainerController:
   bool IsValidModelIndex(int index) const override;
@@ -282,8 +284,6 @@ class TabStrip : public views::View,
                              ui::mojom::MenuSourceType source_type) override;
   bool IsActiveTab(const TabSlotView* tab) const override;
   bool IsTabSelected(const TabSlotView* tab) const override;
-  bool IsTabPinned(const TabSlotView* tab) const override;
-  bool IsTabFirst(const TabSlotView* tab) const override;
   bool IsFocusInTabs() const override;
   bool ShouldCompactLeadingEdge() const override;
 
@@ -304,11 +304,8 @@ class TabStrip : public views::View,
   void HideHover(Tab* tab, TabStyle::HideHoverStyle style) override;
   int GetStrokeThickness() const override;
   bool CanPaintThrobberToLayer() const override;
-  bool HasVisibleBackgroundTabShapes() const override;
   SkColor GetTabSeparatorColor() const override;
   std::u16string GetAccessibleTabName(const Tab* tab) const override;
-  std::optional<int> GetCustomBackgroundId(
-      BrowserFrameActiveState active_state) const override;
   float GetHoverOpacityForTab(float range_parameter) const override;
   float GetHoverOpacityForRadialHighlight() const override;
   std::u16string GetGroupTitle(
@@ -322,7 +319,7 @@ class TabStrip : public views::View,
   void ShiftGroupLeft(const tab_groups::TabGroupId& group) override;
   void ShiftGroupRight(const tab_groups::TabGroupId& group) override;
   Browser* GetBrowser() override;
-  bool IsFrameCondensed() const override;
+  BrowserWindowInterface* GetBrowserWindowInterface() override;
 #if BUILDFLAG(IS_CHROMEOS)
   bool IsLockedForOnTask() override;
 #endif
@@ -345,7 +342,7 @@ class TabStrip : public views::View,
       gfx::Point loc_in_local_coords) override;
   views::View* GetViewForDrop() override;
 
-  void SetTabStripNotEditableForTesting();
+  void DisableTabStripEditingForTesting();
   TabHoverCardController* hover_card_controller_for_testing() {
     return hover_card_controller_.get();
   }
@@ -436,7 +433,7 @@ class TabStrip : public views::View,
   raw_ref<TabDragContextImpl, AcrossTasksDanglingUntriaged> drag_context_;
 
   // The View parent for the tabs and the various group views.
-  raw_ref<TabContainer, AcrossTasksDanglingUntriaged> tab_container_;
+  raw_ptr<TabContainer, AcrossTasksDanglingUntriaged> tab_container_;
 
   // Location of the mouse at the time of the last move.
   gfx::Point last_mouse_move_location_;
@@ -491,8 +488,8 @@ class TabStrip : public views::View,
 
   SkColor separator_color_ = gfx::kPlaceholderColor;
 
-  // If true simulates a non-editable tab strip for testing.
-  bool tab_strip_not_editable_for_testing_ = false;
+  // If false simulates a non-editable tab strip for testing.
+  bool tab_strip_editable_for_testing_ = true;
 
   base::CallbackListSubscription paint_as_active_subscription_;
 

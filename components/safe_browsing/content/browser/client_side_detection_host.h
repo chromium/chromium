@@ -22,14 +22,14 @@
 #include "components/autofill/core/browser/foundations/scoped_autofill_managers_observation.h"
 #include "components/history/core/browser/history_service.h"
 #include "components/history/core/browser/history_service_observer.h"
-#include "components/keyed_service/core/keyed_service.h"
 #include "components/permissions/permission_request_manager.h"
 #include "components/safe_browsing/content/browser/async_check_tracker.h"
 #include "components/safe_browsing/content/browser/base_ui_manager.h"
 #include "components/safe_browsing/content/browser/credit_card_form_event.h"
-#include "components/safe_browsing/content/common/safe_browsing.mojom-shared.h"
 #include "components/safe_browsing/content/common/safe_browsing.mojom.h"
+#include "components/safe_browsing/content/common/visual_utils.h"
 #include "components/safe_browsing/core/browser/db/database_manager.h"
+#include "components/safe_browsing/core/browser/intelligent_scan_delegate.h"
 #include "components/safe_browsing/core/browser/safe_browsing_token_fetcher.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "content/public/browser/global_routing_id.h"
@@ -115,49 +115,6 @@ class ClientSideDetectionHost
 #endif
   };
 
-  // Delegate for handling intelligent scanning.
-  class IntelligentScanDelegate : public KeyedService {
-   public:
-    // Represents the result of an intelligent scan.
-    struct IntelligentScanResult {
-      static constexpr int kModelVersionUnavailable = -1;
-      static IntelligentScanResult Failure(int model_version);
-
-      std::string brand;
-      std::string intent;
-      int model_version;
-      bool execution_success;
-    };
-    using IntelligentScanDoneCallback =
-        base::OnceCallback<void(IntelligentScanResult)>;
-
-    ~IntelligentScanDelegate() override = default;
-
-    // Determines if an intelligent scan should be requested based on the
-    // verdict.
-    virtual bool ShouldRequestIntelligentScan(
-        ClientPhishingRequest* verdict) = 0;
-    // Returns the availability of intelligent scan. Also logs failed
-    // eligibility reason histograms if |log_failed_eligibility_reason| is true.
-    virtual bool IsIntelligentScanAvailable(
-        bool log_failed_eligibility_reason) = 0;
-    // Gets the intelligent scan result. The callback
-    // will return an empty optional if intelligent scan is not available.
-    // Returns a token that can be used to cancel the request. The token will be
-    // std::nullopt in case the inquiry fails immediately without start.
-    virtual std::optional<base::UnguessableToken> StartIntelligentScan(
-        std::string rendered_texts,
-        IntelligentScanDoneCallback callback) = 0;
-    // Cancels a specific intelligent scan request. If the |scan_id| is
-    // ongoing, it will return true, and false otherwise.
-    virtual bool CancelIntelligentScan(
-        const base::UnguessableToken& scan_id) = 0;
-    // Determines if a scam warning should be shown based on the intelligent
-    // scan verdict.
-    virtual bool ShouldShowScamWarning(
-        std::optional<IntelligentScanVerdict> verdict) = 0;
-  };
-
   // The caller keeps ownership of the tab object and is responsible for
   // ensuring that it stays valid until WebContentsDestroyed is called.
   // The caller also keeps ownership of pref_service. The
@@ -183,16 +140,12 @@ class ClientSideDetectionHost
   // pending callbacks that could show an interstitial, and check to see whether
   // we should classify the new URL. If a request to lock the keyboard or
   // pointer or vibrate the page has arrived, we will re-trigger classification.
-  // If a request to fullscreen the tab happens, check in preclassification
-  // check for allowlist matches for metric collection.
   void DidFinishNavigation(
       content::NavigationHandle* navigation_handle) override;
   void PrimaryPageChanged(content::Page& page) override;
   void KeyboardLockRequested() override;
   void PointerLockRequested() override;
   void VibrationRequested() override;
-  void DidToggleFullscreenModeForTab(bool entered_fullscreen,
-                                     bool will_cause_resize) override;
   void OnTextCopiedToClipboard(content::RenderFrameHost* render_frame_host,
                                const std::u16string& copied_text) override;
 
@@ -244,6 +197,9 @@ class ClientSideDetectionHost
   friend class ShouldClassifyUrlRequest;
   FRIEND_TEST_ALL_PREFIXES(ClientSideDetectionHostPrerenderBrowserTest,
                            PrerenderShouldNotAffectClientSideDetection);
+  FRIEND_TEST_ALL_PREFIXES(
+      ClientSideDetectionHostPrerenderBrowserTest,
+      SamePageNavigationShouldNotAffectClientSideDetection);
   FRIEND_TEST_ALL_PREFIXES(ClientSideDetectionHostPrerenderBrowserTest,
                            ClassifyPrerenderedPageAfterActivation);
   FRIEND_TEST_ALL_PREFIXES(
@@ -264,14 +220,8 @@ class ClientSideDetectionHost
   FRIEND_TEST_ALL_PREFIXES(
       ClientSideDetectionHostPrerenderExclusiveAccessBrowserTest,
       KeyboardLockClassificationTriggersCSPPPing);
-  FRIEND_TEST_ALL_PREFIXES(
-      ClientSideDetectionHostTest,
-      FullscreenApiCallChecksAllowlistInPreClassificationAndDoesNotProceedWithClassification);
   FRIEND_TEST_ALL_PREFIXES(ClientSideDetectionHostTest,
                            SkipsImageEmbeddingIfAlreadyPresent);
-  FRIEND_TEST_ALL_PREFIXES(
-      ClientSideDetectionHostTest,
-      TwoFullscreenApiTriggersOnSamePageOnlyLogsOnePreclassificationCheck);
   FRIEND_TEST_ALL_PREFIXES(
       ClientSideDetectionHostTest,
       TwoKeyboardLockRequestsOnSamePageOnlyLogsOnePreclassificationCheck);
@@ -288,6 +238,15 @@ class ClientSideDetectionHost
   FRIEND_TEST_ALL_PREFIXES(
       ClientSideDetectionHostTest,
       TestPreClassificationCheckDoesNotMatchHighConfidenceAllowlistDueToDisabledFeature);
+  FRIEND_TEST_ALL_PREFIXES(
+      ClientSideDetectionHostSkipImageClassificationScoringTest,
+      NeverSkipWhenFeatureDisabled);
+  FRIEND_TEST_ALL_PREFIXES(
+      ClientSideDetectionHostSkipImageClassificationScoringTest,
+      TriggerModelsDoesNotSkipWhenFeatureIsEnabled);
+  FRIEND_TEST_ALL_PREFIXES(
+      ClientSideDetectionHostSkipImageClassificationScoringTest,
+      AllOtherTypesSkipWhenFeatureIsEnabled);
   FRIEND_TEST_ALL_PREFIXES(
       ClientSideDetectionRTLookupResponseForceRequestTest,
       AsyncCheckTrackerTriggersClassificationRequestOnAllowlistMatch);
@@ -325,6 +284,8 @@ class ClientSideDetectionHost
                            CreditCardFormTriggersPreclassificationCheck);
   FRIEND_TEST_ALL_PREFIXES(ClientSideDetectionHostCreditCardFormTest,
                            CreditCardFormClassificationTriggersCSDPing);
+  FRIEND_TEST_ALL_PREFIXES(ClientSideDetectionHostBrowserTest,
+                           NavigateTo404PageLogsErrorDocument);
 
   // Extracts suspicious tokens from a copied clipboard payload into a
   // structured object.
@@ -357,13 +318,30 @@ class ClientSideDetectionHost
       ClientSideDetectionType request_type,
       bool is_sample_ping,
       std::optional<bool> did_match_high_confidence_allowlist,
+      base::TimeTicks start_time,
       mojom::PhishingDetectorResult result,
       std::optional<mojo_base::ProtoWrapper> verdict);
+
+  // Calls the CSD service to classify phishing through thresholds presented in
+  // `verdict`.
+  void ClassifyPhishingThroughThresholds(ClientPhishingRequest* verdict);
+
+  // Determines visual features extraction capabilities.
+  // `can_extract_visual_features_result` will be used to handle visual features
+  // in ClientPhishingRequest after.
+  visual_utils::CanExtractVisualFeaturesResult
+  DetermineVisualFeaturesExtraction();
+
+  // Iterate through redirect chain of the current URL to see if any of the
+  // sites in the chain has a llama forced request.
+  void CheckRedirectChainForLlamaForcedTriggerInfo(
+      ClientPhishingRequest* verdict);
 
   // `verdict` is the ClientPhishingRequest passed into PhishingDetectionDone().
   void MaybeSendClientPhishingRequest(
       std::unique_ptr<ClientPhishingRequest> verdict,
-      std::optional<bool> did_match_high_confidence_allowlist);
+      std::optional<bool> did_match_high_confidence_allowlist,
+      mojom::PhishingDetectorResult result);
 
   // |verdict| is an encoded ClientPhishingRequest protocol message, |result| is
   // the outcome of the renderer image embedding. The verdict is passed into
@@ -372,7 +350,13 @@ class ClientSideDetectionHost
       std::unique_ptr<ClientPhishingRequest> verdict,
       std::optional<bool> did_match_high_confidence_allowlist,
       mojom::PhishingImageEmbeddingResult result,
-      std::optional<mojo_base::ProtoWrapper> image_feature_embedding);
+      std::optional<mojo_base::ProtoWrapper> image_feature_embedding,
+      std::optional<mojo_base::ProtoWrapper> visual_features);
+
+  // Add miscellaneous metadata to ClientPhishingRequest prior to sending the
+  // ping.
+  void AddMiscellaneousMetadataToClientPhishingRequest(
+      ClientPhishingRequest* verdict);
 
   // |verdict| is an encoded ClientPhishingRequest protocol message, which will
   // contain the intelligent scan result if the execution is successful.
@@ -545,8 +529,6 @@ class ClientSideDetectionHost
   // fullscreen.
   GURL last_fullscreen_url_;
 
-  // Records the start time of when phishing detection started.
-  base::TimeTicks phishing_detection_start_time_;
   // Records the start time of when image embedding started.
   base::TimeTicks image_embedding_start_time_;
   raw_ptr<const base::TickClock> tick_clock_;

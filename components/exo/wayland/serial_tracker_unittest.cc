@@ -7,7 +7,6 @@
 #include <linux/input-event-codes.h>
 #include <wayland-client-core.h>
 
-#include "base/containers/contains.h"
 #include "base/containers/flat_map.h"
 #include "components/exo/wayland/test/client_util.h"
 #include "components/exo/wayland/test/server_util.h"
@@ -62,18 +61,18 @@ TEST_F(SerialTrackerTest, CheckButtonsSeparately) {
 
   // process events on client side.
   PostToClientAndWait([&](test::TestClient* client) {});
-  EXPECT_TRUE(base::Contains(input_listener->serial_map, BTN_LEFT));
-  EXPECT_FALSE(base::Contains(input_listener->serial_map, BTN_MIDDLE));
-  EXPECT_FALSE(base::Contains(input_listener->serial_map, BTN_RIGHT));
+  EXPECT_TRUE(input_listener->serial_map.contains(BTN_LEFT));
+  EXPECT_FALSE(input_listener->serial_map.contains(BTN_MIDDLE));
+  EXPECT_FALSE(input_listener->serial_map.contains(BTN_RIGHT));
 
   generator->PressButton(ui::EF_MIDDLE_MOUSE_BUTTON);
   generator->PressRightButton();
 
   // process events on client side.
   PostToClientAndWait([&](test::TestClient* client) {});
-  EXPECT_TRUE(base::Contains(input_listener->serial_map, BTN_LEFT));
-  EXPECT_TRUE(base::Contains(input_listener->serial_map, BTN_MIDDLE));
-  EXPECT_TRUE(base::Contains(input_listener->serial_map, BTN_RIGHT));
+  EXPECT_TRUE(input_listener->serial_map.contains(BTN_LEFT));
+  EXPECT_TRUE(input_listener->serial_map.contains(BTN_MIDDLE));
+  EXPECT_TRUE(input_listener->serial_map.contains(BTN_RIGHT));
 
   auto* tracker = server_->serial_tracker_for_test();
   auto get_event_type_for_serial = [=](uint32_t button) -> uint32_t {

@@ -14,7 +14,6 @@
 #include "chrome/browser/ui/views/page_action/page_action_controller.h"
 #include "chrome/browser/ui/views/page_action/page_action_observer.h"
 #include "components/content_settings/browser/ui/cookie_controls_view.h"
-#include "components/content_settings/core/common/cookie_blocking_3pcd_status.h"
 #include "components/tabs/public/tab_interface.h"
 #include "components/user_education/common/feature_promo/feature_promo_result.h"
 #include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
@@ -75,7 +74,6 @@ class CookieControlsPageActionController
   void OnCookieControlsIconStatusChanged(
       bool icon_visible,
       CookieControlsState controls_state,
-      CookieBlocking3pcdStatus blocking_status,
       bool should_highlight) override;
   void OnFinishedPageReloadWithChangedSettings() override;
 
@@ -91,7 +89,6 @@ class CookieControlsPageActionController
   struct CookieControlsIconStatus {
     bool icon_visible;
     CookieControlsState controls_state;
-    CookieBlocking3pcdStatus blocking_status;
     bool should_highlight;
   };
 

@@ -226,6 +226,10 @@ bool EntrySorter(scoped_refptr<const ReadingListEntry> rhs,
   return self.model->size() != self.model->unread_size();
 }
 
+- (size_t)numberOfElements {
+  return self.model->size();
+}
+
 #pragma mark - ReadingListModelBridgeObserver
 
 - (void)readingListModelLoaded:(const ReadingListModel*)model {

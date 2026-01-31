@@ -66,6 +66,7 @@ source_set("impl") {
   deps = [
     ":icon_label_bubble",
     ":location_bar",
+    "//chrome/browser/ui/dialogs",
   ]
 
   if (toolkit_views) {
@@ -98,6 +99,7 @@ source_set("impl") {
       "//chrome/app:generated_resources",
       "//chrome/app/vector_icons",
       "//chrome/browser:primitives",
+      "//chrome/browser/actor/ui",
       "//chrome/browser/autocomplete",
       "//chrome/browser/autocomplete:aim_eligibility_service",
       "//chrome/browser/contextual_search",
@@ -131,6 +133,7 @@ source_set("impl") {
       "//chrome/browser/ui/views/zoom",
       "//chrome/browser/ui/web_applications",
       "//chrome/browser/ui/webui:webui_util",
+      "//chrome/browser/ui/webui/cr_components/composebox",
       "//chrome/browser/web_applications",
       "//chrome/browser/web_applications:features",
       "//components/autofill/core/common:features",

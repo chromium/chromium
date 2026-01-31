@@ -189,13 +189,13 @@ class MV2DeprecationImpactCheckerUnitTest
         testing_pref_service();
     const base::Value* existing_value =
         pref_service->GetManagedPref(pref_names::kExtensionManagement);
-    base::Value::Dict new_value;
+    base::DictValue new_value;
     if (existing_value) {
       new_value = existing_value->Clone().TakeDict();
     }
 
     new_value.Set(extension->id(),
-                  base::Value::Dict()
+                  base::DictValue()
                       .Set("installation_mode", installation_mode)
                       .Set("update_url", "http://example.com/"));
 

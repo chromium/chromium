@@ -2,14 +2,16 @@
 # To regenerate, use "update_android_aar_prebuilts = true" and run "gn gen".
 
 aidl = [
-  "aidl/androidx/pdf/annotation/models/AddEditResult.aidl",
-  "aidl/androidx/pdf/annotation/models/AnnotationResult.aidl",
-  "aidl/androidx/pdf/annotation/models/EditId.aidl",
+  "aidl/androidx/pdf/UpdateDraftEditOperation.aidl",
+  "aidl/androidx/pdf/InsertDraftEditOperation.aidl",
+  "aidl/androidx/pdf/RemoveDraftEditOperation.aidl",
+  "aidl/androidx/pdf/DraftEditOperation.aidl",
+  "aidl/androidx/pdf/DraftEditResult.aidl",
+  "aidl/androidx/pdf/annotation/KeyedPdfAnnotation.aidl",
+  "aidl/androidx/pdf/annotation/models/PdfObject.aidl",
   "aidl/androidx/pdf/annotation/models/PdfAnnotation.aidl",
-  "aidl/androidx/pdf/annotation/models/ModifyEditResult.aidl",
   "aidl/androidx/pdf/annotation/models/PaginatedAnnotations.aidl",
-  "aidl/androidx/pdf/annotation/models/PdfAnnotationData.aidl",
-  "aidl/androidx/pdf/annotation/models/PdfEdit.aidl"
+  "aidl/androidx/pdf/RenderParams.aidl"
 ]
 assets = []
 has_classes_jar = true

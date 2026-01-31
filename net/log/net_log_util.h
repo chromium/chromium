@@ -27,14 +27,14 @@ enum class NetConstantsRequestMode {
 // Utility methods for creating NetLog dumps.
 
 // Creates a dictionary containing a legend for net/ constants.
-NET_EXPORT base::Value::Dict GetNetConstants(
+NET_EXPORT base::DictValue GetNetConstants(
     NetConstantsRequestMode request_mode = NetConstantsRequestMode::kDefault);
 
 // Retrieves a dictionary containing information about the current state of
 // |context|.
 //
 // May only be called on |context|'s thread.
-NET_EXPORT base::Value::Dict GetNetInfo(URLRequestContext* context);
+NET_EXPORT base::DictValue GetNetInfo(URLRequestContext* context);
 
 // Takes in a set of contexts and a NetLog::Observer, and passes in
 // NetLog::Entries to the observer for certain NetLogSources with pending

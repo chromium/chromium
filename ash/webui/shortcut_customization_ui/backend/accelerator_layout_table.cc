@@ -8,7 +8,6 @@
 
 #include "ash/public/cpp/accelerator_actions.h"
 #include "ash/public/cpp/accelerators_util.h"
-#include "ash/public/mojom/accelerator_info.mojom-shared.h"
 #include "ash/public/mojom/accelerator_info.mojom.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "base/check_op.h"

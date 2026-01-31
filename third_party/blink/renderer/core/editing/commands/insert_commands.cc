@@ -68,6 +68,7 @@ bool InsertCommands::ExecuteInsertFragment(LocalFrame& frame,
   return MakeGarbageCollected<ReplaceSelectionCommand>(
              *frame.GetDocument(), fragment,
              ReplaceSelectionCommand::kPreventNesting,
+             EditCommand::PasswordEchoBehavior::kDoNotEcho,
              InputEvent::InputType::kNone)
       ->Apply();
 }
@@ -228,7 +229,8 @@ bool InsertCommands::ExecuteInsertText(LocalFrame& frame,
                                        EditorCommandSource,
                                        const String& value) {
   DCHECK(frame.GetDocument());
-  TypingCommand::InsertText(*frame.GetDocument(), value, 0);
+  TypingCommand::InsertText(*frame.GetDocument(), value, 0,
+                            EditCommand::PasswordEchoBehavior::kDoNotEcho);
   return true;
 }
 

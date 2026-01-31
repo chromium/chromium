@@ -609,6 +609,13 @@ class WallpaperControllerTestBase : public NoSessionAshTestBase {
     CreateDefaultWallpapers();
   }
 
+  void TearDown() override {
+    drivefs_delegate_ = nullptr;
+    controller_ = nullptr;
+    pref_manager_ = nullptr;
+    NoSessionAshTestBase::TearDown();
+  }
+
   WallpaperView* wallpaper_view() {
     return Shell::Get()
         ->GetPrimaryRootWindowController()
@@ -943,9 +950,8 @@ class WallpaperControllerTestBase : public NoSessionAshTestBase {
     return base::Time();
   }
 
-  raw_ptr<WallpaperControllerImpl, DanglingUntriaged> controller_;
-  raw_ptr<WallpaperPrefManager, DanglingUntriaged> pref_manager_ =
-      nullptr;  // owned by controller
+  raw_ptr<WallpaperControllerImpl> controller_;
+  raw_ptr<WallpaperPrefManager> pref_manager_ = nullptr;  // owned by controller
 
   base::FilePath GetUserDataDir() {
     return base::PathService::CheckedGet(ash::DIR_USER_DATA);
@@ -962,7 +968,7 @@ class WallpaperControllerTestBase : public NoSessionAshTestBase {
   base::HistogramTester histogram_tester_;
 
   TestWallpaperControllerClient client_;
-  raw_ptr<TestWallpaperDriveFsDelegate, DanglingUntriaged> drivefs_delegate_;
+  raw_ptr<TestWallpaperDriveFsDelegate> drivefs_delegate_;
 
   const AccountId kChildAccountId =
       AccountId::FromUserEmailGaiaId(kChildEmail, GaiaId("child_gaia_id"));
@@ -3421,13 +3427,13 @@ TEST_P(WallpaperControllerTest,
   controller_->SetPolicyWallpaper(
       kAccountId1, user_manager::UserType::kPublicAccount,
       CreateEncodedImageForTesting(gfx::Size(10, 10)));
+  ClearWallpaperCount();
   SimulateUserLogin({.user_type = user_manager::UserType::kPublicAccount},
                     kAccountId1);
   RunAllTasksUntilIdle();
   EXPECT_TRUE(controller_->IsWallpaperControlledByPolicy(kAccountId1));
 
   // Verify the wallpaper policy is applied after logging in.
-  ClearWallpaperCount();
   controller_->ShowUserWallpaper(kAccountId1);
   EXPECT_EQ(1, GetWallpaperCount());
   ASSERT_EQ(controller_->GetWallpaperType(), WallpaperType::kPolicy);
@@ -4553,7 +4559,7 @@ class WallpaperControllerPrefTest : public AshTestBase {
   WallpaperControllerPrefTest() {
     scoped_feature_list_.InitWithFeatures(
         personalization_app::GetTimeOfDayFeatures(), {});
-    base::Value::Dict property;
+    base::DictValue property;
     property.Set("rotation", static_cast<int>(display::Display::ROTATE_90));
     property.Set("width", 800);
     property.Set("height", 600);
@@ -4666,7 +4672,7 @@ TEST_P(WallpaperControllerTest, OldOnlineInfoSynced_Discarded) {
   SimulateUserLogin(kAccountId1);
   // Create a dictionary that looks like the preference from crrev.com/a040384.
   // DO NOT CHANGE as there are preferences like this in production.
-  base::Value::Dict wallpaper_info_dict;
+  base::DictValue wallpaper_info_dict;
   wallpaper_info_dict.Set(
       WallpaperInfo::kNewWallpaperDateNodeName,
       base::NumberToString(

@@ -3,24 +3,23 @@
 // found in the LICENSE file.
 
 #include "base/android/jni_android.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/supervised_user/supervised_user_service_factory.h"
-#include "components/supervised_user/core/browser/supervised_user_service.h"
+#include "components/supervised_user/core/browser/device_parental_controls.h"
+#include "components/supervised_user/core/browser/supervised_user_preferences.h"
 
 // Include last. Requires declarations from includes above.
 #include "chrome/browser/supervised_user/supervised_user_service_bridge_jni_headers/SupervisedUserServiceBridge_jni.h"
 
 namespace supervised_user {
-static jboolean JNI_SupervisedUserServiceBridge_IsSupervisedLocally(
+static bool JNI_SupervisedUserServiceBridge_IsSupervisedLocally(
     JNIEnv* env,
     Profile* profile) {
-  SupervisedUserService* supervised_user_service =
-      SupervisedUserServiceFactory::GetForProfile(profile);
-  if (!supervised_user_service) {
-    // Incognito profiles are not supervised.
+  if (profile->IsIncognitoProfile()) {
     return false;
   }
-  return supervised_user_service->IsSupervisedLocally();
+  return !IsSubjectToParentalControls(*profile->GetPrefs()) &&
+         g_browser_process->device_parental_controls().IsEnabled();
 }
 }  // namespace supervised_user
 

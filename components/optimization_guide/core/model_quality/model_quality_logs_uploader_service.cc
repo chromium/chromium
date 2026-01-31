@@ -4,10 +4,10 @@
 
 #include "components/optimization_guide/core/model_quality/model_quality_logs_uploader_service.h"
 
-#include <optional>
 #include <string>
 
 #include "base/command_line.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
 #include "base/trace_event/trace_event.h"
@@ -86,7 +86,7 @@ void RecordUserFeedbackHistogram(proto::LogAiDataRequest* log_ai_data_request) {
 void OnURLLoadComplete(
     std::unique_ptr<network::SimpleURLLoader> active_url_loader,
     proto::LogAiDataRequest::FeatureCase feature,
-    std::optional<std::string> response_body) {
+    scoped_refptr<net::HttpResponseHeaders> headers) {
   CHECK(active_url_loader) << "loader shouldn't be null\n";
   TRACE_EVENT("optimization_guide",
               "ModelQualityLogsUploaderService::OnURLLoadComplete", "feature",
@@ -94,9 +94,8 @@ void OnURLLoadComplete(
 
   auto net_error = active_url_loader->NetError();
   int response_code = -1;
-  if (active_url_loader->ResponseInfo() &&
-      active_url_loader->ResponseInfo()->headers) {
-    response_code = active_url_loader->ResponseInfo()->headers->response_code();
+  if (headers) {
+    response_code = headers->response_code();
 
     // Only record response code when there are headers.
     base::UmaHistogramSparse(
@@ -301,7 +300,9 @@ void ModelQualityLogsUploaderService::UploadFinalizedLog(
                                            "application/x-protobuf");
 
   auto* active_url_loader_ptr = active_url_loader.get();
-  active_url_loader_ptr->DownloadToStringOfUnboundedSizeUntilCrashAndDie(
+  // Use `DownloadHeadersOnly()` here since we only need the response code and
+  // not the response body in `OnURLLoadComplete()`.
+  active_url_loader_ptr->DownloadHeadersOnly(
       url_loader_factory_.get(),
       base::BindOnce(&OnURLLoadComplete, std::move(active_url_loader),
                      feature));

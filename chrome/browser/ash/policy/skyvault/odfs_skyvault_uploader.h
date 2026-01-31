@@ -11,7 +11,6 @@
 #include "base/files/file_path.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
-#include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/ash/file_manager/io_task_controller.h"
@@ -21,7 +20,6 @@
 
 namespace ash::cloud_upload {
 
-using policy::local_user_files::MigrationUploadError;
 using policy::local_user_files::UploadTrigger;
 
 // Uploads the file to Microsoft OneDrive and calls the `upload_callback_` with
@@ -32,9 +30,10 @@ class OdfsSkyvaultUploader
     : public base::RefCounted<OdfsSkyvaultUploader>,
       ::file_manager::io_task::IOTaskController::Observer {
  public:
+  using UploadError = policy::local_user_files::MigrationUploadError;
   using UploadDoneCallback =
       base::OnceCallback<void(storage::FileSystemURL,
-                              std::optional<MigrationUploadError>,
+                              std::optional<UploadError>,
                               base::FilePath upload_root_path)>;
 
   // Uploads the file at `path` to the OneDrive root directory.
@@ -78,7 +77,8 @@ class OdfsSkyvaultUploader
       const std::string& upload_root,
       UploadTrigger trigger,
       base::RepeatingCallback<void(int64_t)> progress_callback,
-      UploadDoneCallback upload_callback);
+      UploadDoneCallback upload_callback,
+      std::optional<const gfx::Image> thumbnail = std::nullopt);
 
   OdfsSkyvaultUploader(const OdfsSkyvaultUploader&) = delete;
   OdfsSkyvaultUploader& operator=(const OdfsSkyvaultUploader&) = delete;
@@ -93,13 +93,15 @@ class OdfsSkyvaultUploader
   OdfsSkyvaultUploader(Profile* profile,
                        int64_t id,
                        const storage::FileSystemURL& file_system_url,
+                       const base::FilePath& relative_source_path,
+                       const std::string& upload_root,
                        UploadTrigger trigger,
                        base::RepeatingCallback<void(int64_t)> progress_callback,
                        std::optional<const gfx::Image> thumbnail);
   ~OdfsSkyvaultUploader() override;
 
   // Returns the path to upload the file to.
-  virtual base::FilePath GetDestinationFolderPath(
+  base::FilePath GetDestinationFolderPath(
       file_system_provider::ProvidedFileSystemInterface* file_system);
 
   // Requests the sign in to OneDrive.
@@ -110,7 +112,7 @@ class OdfsSkyvaultUploader
   virtual void Run(UploadDoneCallback upload_callback);
 
   void OnEndUpload(storage::FileSystemURL url,
-                   std::optional<MigrationUploadError> error = std::nullopt);
+                   std::optional<UploadError> error = std::nullopt);
 
   raw_ptr<Profile> profile_;
 
@@ -130,7 +132,7 @@ class OdfsSkyvaultUploader
   void OnIOTaskStatus(
       const ::file_manager::io_task::ProgressStatus& status) override;
 
-  // Translates the status error into a MigrationUploadError.
+  // Translates the status error into an UploadError.
   void ProcessError(const ::file_manager::io_task::ProgressStatus& status);
 
   // Called when the mount response is received.
@@ -151,6 +153,12 @@ class OdfsSkyvaultUploader
 
   // The url of the file to be uploaded.
   storage::FileSystemURL file_system_url_;
+
+  // Part of the source path relative to MyFiles
+  const base::FilePath relative_source_path_;
+
+  // The name of the device-unique upload root folder on Drive
+  const std::string upload_root_;
 
   // The event or action that initiated the file upload.
   const UploadTrigger trigger_;
@@ -210,8 +218,6 @@ class OdfsMigrationUploader
  private:
   // OdfsSkyvaultUploader:
   void Run(UploadDoneCallback upload_callback) override;
-  base::FilePath GetDestinationFolderPath(
-      file_system_provider::ProvidedFileSystemInterface* file_system) override;
   void RequestSignIn(
       base::OnceCallback<void(base::File::Error)> on_sign_in_cb) override;
 
@@ -232,10 +238,6 @@ class OdfsMigrationUploader
   base::OneShotTimer reconnection_timer_;
 
   UploadDoneCallback upload_callback_;
-  // Part of the source path relative to MyFiles
-  const base::FilePath relative_source_path_;
-  // The name of the device-unique upload root folder on Drive
-  const std::string upload_root_;
 
   base::CallbackListSubscription subscription_;
 

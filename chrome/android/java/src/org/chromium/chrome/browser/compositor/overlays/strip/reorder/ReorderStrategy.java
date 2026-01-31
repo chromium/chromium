@@ -57,7 +57,22 @@ public interface ReorderStrategy {
      * @param stripViews The list of {@link StripLayoutView}.
      * @param groupTitles The list of {@link StripLayoutGroupTitle}.
      */
-    void stopReorderMode(StripLayoutView[] stripViews, StripLayoutGroupTitle[] groupTitles);
+    default void stopReorderMode(
+            StripLayoutView[] stripViews, StripLayoutGroupTitle[] groupTitles) {
+        stopReorderMode(stripViews, groupTitles, false);
+    }
+
+    /**
+     * Stop reorder mode and clear any relevant state. Don't call if not in reorder mode.
+     *
+     * @param stripViews The list of {@link StripLayoutView}.
+     * @param groupTitles The list of {@link StripLayoutGroupTitle}.
+     * @param isDragCancelled A boolean indicating whether the drag was cancelled.
+     */
+    void stopReorderMode(
+            StripLayoutView[] stripViews,
+            StripLayoutGroupTitle[] groupTitles,
+            boolean isDragCancelled);
 
     /** Returns the dragged {@link StripLayoutView} for the reorder. */
     @Nullable StripLayoutView getInteractingView();

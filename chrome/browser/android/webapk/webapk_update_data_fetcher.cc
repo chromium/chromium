@@ -52,7 +52,7 @@ bool IsInScope(const GURL& url, const GURL& scope) {
 
 }  // anonymous namespace
 
-static jlong JNI_WebApkUpdateDataFetcher_Initialize(
+static int64_t JNI_WebApkUpdateDataFetcher_Initialize(
     JNIEnv* env,
     const JavaRef<jobject>& obj,
     std::string& java_start_url,
@@ -214,9 +214,9 @@ void WebApkUpdateDataFetcher::OnGotIconMurmur2Hashes(
       icons[info_.best_primary_icon_url]->hash();
   ScopedJavaLocalRef<jobject> java_primary_icon =
       gfx::ConvertToJavaBitmap(primary_icon_);
-  jboolean java_is_primary_icon_maskable = info_.is_primary_icon_maskable;
+  bool java_is_primary_icon_maskable = info_.is_primary_icon_maskable;
 
-  jboolean java_is_splash_icon_maskable = info_.is_splash_image_maskable;
+  bool java_is_splash_icon_maskable = info_.is_splash_image_maskable;
   std::string splash_icon_hash = "";
   std::string splash_icon_data = "";
   {
@@ -235,8 +235,8 @@ void WebApkUpdateDataFetcher::OnGotIconMurmur2Hashes(
   std::string share_action;
   std::u16string share_params_title;
   std::u16string share_params_text;
-  jboolean java_share_params_is_method_post = false;
-  jboolean java_share_params_is_enctype_multipart = false;
+  bool java_share_params_is_method_post = false;
+  bool java_share_params_is_enctype_multipart = false;
   ScopedJavaLocalRef<jobjectArray> java_share_params_file_names;
   ScopedJavaLocalRef<jobjectArray> java_share_params_accepts;
   if (info_.share_target.has_value() && info_.share_target->action.is_valid()) {

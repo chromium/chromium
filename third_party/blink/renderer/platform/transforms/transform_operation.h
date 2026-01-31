@@ -27,6 +27,7 @@
 
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
+#include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "ui/gfx/geometry/size_f.h"
 #include "ui/gfx/geometry/transform.h"
 
@@ -123,6 +124,13 @@ class PLATFORM_EXPORT TransformOperation
   static inline BoxSizeDependency CombineDependencies(BoxSizeDependency a,
                                                       BoxSizeDependency b) {
     return static_cast<BoxSizeDependency>(a | b);
+  }
+
+  // For debugging/logging only.
+  virtual String DebugString() const { return "(unknown op)"; }
+  friend std::ostream& operator<<(std::ostream& stream,
+                                  const TransformOperation& op) {
+    return stream << op.DebugString();
   }
 
  protected:

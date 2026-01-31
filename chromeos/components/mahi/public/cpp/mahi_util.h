@@ -6,14 +6,11 @@
 #define CHROMEOS_COMPONENTS_MAHI_PUBLIC_CPP_MAHI_UTIL_H_
 
 #include "base/component_export.h"
-#include "chromeos/crosapi/mojom/mahi.mojom.h"
+#include "base/functional/callback.h"
+#include "chromeos/components/mahi/public/cpp/mahi_types.h"
 #include "ui/base/class_property.h"
 
 namespace chromeos::mahi {
-
-using ActionType = crosapi::mojom::MahiContextMenuActionType;
-using GetContentCallback =
-    base::OnceCallback<void(crosapi::mojom::MahiPageContentPtr)>;
 
 // Metrics:
 COMPONENT_EXPORT(MAHI_PUBLIC_CPP)
@@ -48,7 +45,7 @@ enum class COMPONENT_EXPORT(MAHI_PUBLIC_CPP) SelectedTextState {
 };
 
 COMPONENT_EXPORT(MAHI_PUBLIC_CPP)
-ActionType MatchButtonTypeToActionType(const ButtonType button_type);
+MahiActionType MatchButtonTypeToActionType(const ButtonType button_type);
 
 // Used by ash window manager to place the mahi menu bubble in the correct
 // container.

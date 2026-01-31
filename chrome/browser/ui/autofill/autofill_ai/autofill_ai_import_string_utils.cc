@@ -64,4 +64,11 @@ std::u16string GetPromptTitle(EntityTypeName type_name, bool is_save_prompt) {
   NOTREACHED();
 }
 
+std::u16string GetPrimaryButtonText(bool is_save_prompt) {
+  return l10n_util::GetStringUTF16(
+      is_save_prompt
+          ? IDS_AUTOFILL_PREDICTION_IMPROVEMENTS_SAVE_DIALOG_SAVE_BUTTON
+          : IDS_AUTOFILL_PREDICTION_IMPROVEMENTS_UPDATE_DIALOG_UPDATE_BUTTON);
+}
+
 }  // namespace autofill

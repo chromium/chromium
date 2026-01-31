@@ -48,10 +48,9 @@ class ShillProfileClientImpl : public ShillProfileClient {
     GetHelper(profile_path)->RemovePropertyChangedObserver(observer);
   }
 
-  void GetProperties(
-      const dbus::ObjectPath& profile_path,
-      base::OnceCallback<void(base::Value::Dict result)> callback,
-      ErrorCallback error_callback) override;
+  void GetProperties(const dbus::ObjectPath& profile_path,
+                     base::OnceCallback<void(base::DictValue result)> callback,
+                     ErrorCallback error_callback) override;
   void SetProperty(const dbus::ObjectPath& profile_path,
                    const std::string& name,
                    const base::Value& property,
@@ -64,7 +63,7 @@ class ShillProfileClientImpl : public ShillProfileClient {
                              ErrorCallback error_callback) override;
   void GetEntry(const dbus::ObjectPath& profile_path,
                 const std::string& entry_path,
-                base::OnceCallback<void(base::Value::Dict result)> callback,
+                base::OnceCallback<void(base::DictValue result)> callback,
                 ErrorCallback error_callback) override;
   void DeleteEntry(const dbus::ObjectPath& profile_path,
                    const std::string& entry_path,
@@ -102,7 +101,7 @@ ShillClientHelper* ShillProfileClientImpl::GetHelper(
 
 void ShillProfileClientImpl::GetProperties(
     const dbus::ObjectPath& profile_path,
-    base::OnceCallback<void(base::Value::Dict result)> callback,
+    base::OnceCallback<void(base::DictValue result)> callback,
     ErrorCallback error_callback) {
   dbus::MethodCall method_call(shill::kFlimflamProfileInterface,
                                shill::kGetPropertiesFunction);
@@ -146,7 +145,7 @@ void ShillProfileClientImpl::SetObjectPathProperty(
 void ShillProfileClientImpl::GetEntry(
     const dbus::ObjectPath& profile_path,
     const std::string& entry_path,
-    base::OnceCallback<void(base::Value::Dict result)> callback,
+    base::OnceCallback<void(base::DictValue result)> callback,
     ErrorCallback error_callback) {
   dbus::MethodCall method_call(shill::kFlimflamProfileInterface,
                                shill::kGetEntryFunction);

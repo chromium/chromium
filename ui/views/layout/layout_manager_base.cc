@@ -8,7 +8,6 @@
 
 #include "base/auto_reset.h"
 #include "base/check_op.h"
-#include "base/containers/contains.h"
 #include "base/dcheck_is_on.h"
 #include "base/memory/raw_ptr.h"
 #include "base/trace_event/trace_event.h"
@@ -315,7 +314,7 @@ void LayoutManagerBase::Installed(View* host_view) {
 
 void LayoutManagerBase::ViewAdded(View* host, View* view) {
   DCHECK_EQ(host_view_, host);
-  DCHECK(!base::Contains(child_infos_, view));
+  DCHECK(!child_infos_.contains(view));
   DCHECK_EQ(GetRootLayoutManager(), this);
 
   view_observations_.AddObservation(view);
@@ -329,7 +328,7 @@ void LayoutManagerBase::ViewAdded(View* host, View* view) {
 
 void LayoutManagerBase::ViewRemoved(View* host, View* view) {
   DCHECK_EQ(host_view_, host);
-  DCHECK(base::Contains(child_infos_, view));
+  DCHECK(child_infos_.contains(view));
   DCHECK_EQ(GetRootLayoutManager(), this);
 
   auto it = child_infos_.find(view);
@@ -541,7 +540,7 @@ void ManualLayoutUtil::EndTemporaryExclusion(View* child_view) {
   }
 
   // Restore inclusion of the view.
-  CHECK(base::Contains(layout_manager_->child_infos_, child_view));
+  CHECK(layout_manager_->child_infos_.contains(child_view));
   layout_manager_->PropagateChildViewIncludedInLayout(child_view, true);
 }
 

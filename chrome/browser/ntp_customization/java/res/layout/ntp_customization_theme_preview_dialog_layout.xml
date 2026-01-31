@@ -9,10 +9,15 @@ found in the LICENSE file.
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/upload_image_preview_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:ignore="UnusedResources">
 
+    <!--
+       CropImageView holds a background image. This is constrained to the parent
+       so it ignores the guidelines and fills the whole screen.
+    -->
     <org.chromium.chrome.browser.ntp_customization.theme.upload_image.CropImageView
         android:id="@+id/preview_image"
         android:layout_width="0dp"
@@ -23,6 +28,17 @@ found in the LICENSE file.
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
+    <!--
+       We use the Guideline instead of a nested container for performance.
+       We will apply the system bar insets to the Guideline.
+    -->
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guideline_top"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_begin="0dp" />
+
     <ImageView
         android:id="@+id/default_search_engine_logo"
         android:visibility="gone"
@@ -30,10 +46,43 @@ found in the LICENSE file.
         android:layout_height="@dimen/ntp_logo_height"
         android:importantForAccessibility="no"
         android:layout_marginHorizontal="@dimen/ntp_customization_edit_icon_margin"
-        android:layout_marginTop="@dimen/ntp_logo_margin_top"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent"/>
+        app:layout_constraintTop_toTopOf="@id/guideline_top"/>
+
+    <FrameLayout
+        android:id="@+id/search_box_container"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
+        android:paddingVertical="@dimen/composeplate_view_button_padding_for_shadow_bottom"
+        android:paddingHorizontal="@dimen/composeplate_view_button_padding_for_shadow_lateral"
+        android:clipToPadding="false"
+        app:layout_goneMarginTop="@dimen/mvt_container_top_margin"
+        app:layout_constraintTop_toBottomOf="@+id/default_search_engine_logo"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <View
+            android:id="@+id/search_box"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@drawable/home_surface_search_box_background"
+            android:elevation="@dimen/ntp_search_box_elevation"
+            android:clipToOutline="true"
+        />
+
+    </FrameLayout>
+
+    <View
+        android:id="@+id/bottom_gradient_overlay"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/ntp_customization_preview_dialog_bottom_gradient_height"
+        android:layout_gravity="bottom"
+        android:background="@drawable/ntp_customization_theme_preview_dialog_bottom_gradient_overlay"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
 
     <ImageView
         android:id="@+id/pinch_to_resize_icon"
@@ -53,7 +102,8 @@ found in the LICENSE file.
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/ntp_customization_theme_image_preview_pinch_to_resize"
-        android:textAppearance="@style/TextAppearance.TextMediumThick.Primary.OnAccent1"
+        android:contentDescription="@string/accessibility_ntp_customization_theme_image_preview_pinch_to_resize"
+        android:textAppearance="@style/TextAppearance.PreviewDialogText"
         android:layout_marginBottom="@dimen/ntp_customization_edit_icon_margin"
         android:layout_marginStart="@dimen/ntp_customization_back_button_margin_start"
         app:layout_constraintStart_toEndOf="@id/pinch_to_resize_icon"
@@ -64,12 +114,12 @@ found in the LICENSE file.
         android:id="@+id/cancel_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        style="@style/TextButton.OnAccent1"
+        style="@style/TextButton.PreviewDialogCancelButton"
         android:text="@android:string/cancel"
         android:contentDescription="@android:string/cancel"
         android:layout_marginStart="@dimen/ntp_customization_bottom_sheet_layout_padding_bottom"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintBottom_toBottomOf="@id/save_button" />
+        app:layout_constraintBottom_toBottomOf="parent" />
 
     <org.chromium.ui.widget.ButtonCompat
         android:id="@+id/save_button"
@@ -79,6 +129,7 @@ found in the LICENSE file.
         android:text="@string/mtrl_picker_save"
         android:contentDescription="@string/mtrl_picker_save"
         android:layout_marginEnd="@dimen/ntp_customization_bottom_sheet_layout_padding_bottom"
+        android:layout_marginBottom="@dimen/ntp_customization_back_button_margin_start"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
 

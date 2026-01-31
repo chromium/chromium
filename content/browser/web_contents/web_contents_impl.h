@@ -558,6 +558,7 @@ class CONTENT_EXPORT WebContentsImpl
   int GetMinimumZoomPercent() override;
   int GetMaximumZoomPercent() override;
   void SetPageScale(float page_scale_factor) override;
+  void SetIgnoreZoomGestures(bool ignore) override;
   gfx::Size GetPreferredSize() override;
   bool GotResponseToPointerLockRequest(
       blink::mojom::PointerLockResult result) override;
@@ -847,9 +848,6 @@ class CONTENT_EXPORT WebContentsImpl
                              bool blocked) override;
   void OnVibrate(RenderFrameHostImpl*) override;
 
-  std::optional<network::ParsedPermissionsPolicy>
-  GetPermissionsPolicyForIsolatedWebApp(RenderFrameHostImpl* source) override;
-
   // Called when WebAudio starts or stops playing audible audio in an
   // AudioContext.
   void AudioContextPlaybackStarted(RenderFrameHostImpl* host,
@@ -972,6 +970,8 @@ class CONTENT_EXPORT WebContentsImpl
       RenderViewHostImpl* render_view_host) override;
   void DidReceiveInputEvent(RenderWidgetHostImpl* render_widget_host,
                             const blink::WebInputEvent& event) override;
+  void SimulateUserInteraction(RenderWidgetHostImpl* render_widget_host,
+                               const blink::WebInputEvent& event) override;
   bool ShouldIgnoreWebInputEvents(const blink::WebInputEvent& event) override;
   bool ShouldIgnoreInputEvents() override;
   void OnIgnoredUIEvent() override;
@@ -1188,6 +1188,7 @@ class CONTENT_EXPORT WebContentsImpl
   bool OnRenderFrameProxyVisibilityChanged(
       RenderFrameProxyHost* render_frame_proxy_host,
       blink::mojom::FrameVisibility visibility) override;
+  PrerenderHostId GetPrerenderHostId() override;
   void SendScreenRects() override;
   void SendActiveState(bool active) override;
   TextInputManager* GetTextInputManager() override;
@@ -2137,6 +2138,13 @@ class CONTENT_EXPORT WebContentsImpl
   // have a distinct RenderFrameHostImpl in this result.
   std::vector<RenderFrameHostImpl*> GetOutermostMainFrames();
 
+  // Returns the main frames that should have their views updated when
+  // WebContents's view changes. This includes the primary main frame, its
+  // associated speculative render frame host, main frames of prerendering frame
+  // trees, and main frames of any bfcached pages. Used when attaching
+  // WebContents to an embedder or detaching from one.
+  std::vector<RenderFrameHostImpl*> GetOutermostMainFramesForViewChange();
+
   // Called when the base::ScopedClosureRunner returned by
   // IncrementCapturerCount() is destructed.
   void DecrementCapturerCount(bool stay_hidden,
@@ -2193,6 +2201,12 @@ class CONTENT_EXPORT WebContentsImpl
   // the given |node|.
   void RecursivelyConstructAXTree(ui::AXNode* node,
                                   std::vector<ui::AXNodeData>& nodes);
+
+  // Performs some checks before sending user interaction notification to
+  // observers for a given `WebInputEvent`.
+  void HandleUserInteractionForInputEvent(
+      RenderWidgetHostImpl* render_widget_host,
+      const blink::WebInputEvent& event);
 
 #if BUILDFLAG(IS_ANDROID)
   // Apply the cached primary subframe importance to the primary frame tree.
@@ -2468,6 +2482,9 @@ class CONTENT_EXPORT WebContentsImpl
 
   // Whether overscroll should be unconditionally disabled.
   bool force_disable_overscroll_content_;
+
+  // Whether zoom gestures (pinch, double-tap) should be ignored.
+  bool ignore_zoom_gestures_ = false;
 
   // Whether the last JavaScript dialog shown was suppressed. Used for testing.
   bool last_dialog_suppressed_;

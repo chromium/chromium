@@ -4,9 +4,9 @@
 
 #include "extensions/browser/blocklist_extension_prefs.h"
 
+#include <algorithm>
 #include <optional>
 
-#include "base/containers/contains.h"
 #include "extensions/browser/blocklist_state.h"
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/common/extension_id.h"
@@ -120,7 +120,7 @@ bool IsExtensionGreylisted(const ExtensionId& extension_id,
                            ExtensionPrefs* extension_prefs) {
   const BitMapBlocklistState state =
       GetExtensionBlocklistState(extension_id, extension_prefs);
-  return base::Contains(kGreylistStates, state);
+  return std::ranges::contains(kGreylistStates, state);
 }
 
 void AddOmahaBlocklistState(const ExtensionId& extension_id,

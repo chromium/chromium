@@ -69,28 +69,27 @@ class It2MeNativeMessagingHost : public It2MeHost::Observer,
   // These "Process.." methods handle specific request types. The |response|
   // dictionary is pre-filled by ProcessMessage() with the parts of the
   // response already known ("id" and "type" fields).
-  void ProcessHello(base::Value::Dict message,
-                    base::Value::Dict response) const;
-  void ProcessConnect(base::Value::Dict message, base::Value::Dict response);
-  void ProcessDisconnect(base::Value::Dict message, base::Value::Dict response);
-  void ProcessUpdateAccessTokens(base::Value::Dict message,
-                                 base::Value::Dict response);
-  void SendErrorAndExit(base::Value::Dict response,
+  void ProcessHello(base::DictValue message, base::DictValue response) const;
+  void ProcessConnect(base::DictValue message, base::DictValue response);
+  void ProcessDisconnect(base::DictValue message, base::DictValue response);
+  void ProcessUpdateAccessTokens(base::DictValue message,
+                                 base::DictValue response);
+  void SendErrorAndExit(base::DictValue response,
                         const protocol::ErrorCode error_code) const;
   void SendPolicyErrorAndExit() const;
-  void SendMessageToClient(base::Value::Dict message) const;
+  void SendMessageToClient(base::DictValue message) const;
 
   // Called when initial policies are read and when they change.
-  void OnPolicyUpdate(base::Value::Dict policies);
+  void OnPolicyUpdate(base::DictValue policies);
 
   // Called when malformed policies are detected.
   void OnPolicyError();
 
   // Returns whether the request was successfully sent to the elevated host.
-  bool DelegateToElevatedHost(base::Value::Dict message);
+  bool DelegateToElevatedHost(base::DictValue message);
 
   // Extracts OAuth access token from the message passed from the client.
-  std::string ExtractAccessToken(const base::Value::Dict& message);
+  std::string ExtractAccessToken(const base::DictValue& message);
 
   // Returns the value of the 'allow_elevated_host' platform policy or empty.
   std::optional<bool> GetAllowElevatedHostPolicyValue();

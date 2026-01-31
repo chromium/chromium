@@ -54,7 +54,7 @@ class OmniboxPopupViewViewsTest : public InProcessBrowserTest {
   }
   LocationBarView* location_bar() {
     auto* browser_view = BrowserView::GetBrowserViewForBrowser(browser());
-    return browser_view->toolbar()->location_bar();
+    return browser_view->toolbar()->location_bar_view();
   }
   OmniboxViewViews* omnibox_view() { return location_bar()->omnibox_view(); }
   OmniboxController* controller() {

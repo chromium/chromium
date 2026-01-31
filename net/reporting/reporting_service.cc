@@ -73,15 +73,6 @@ class ReportingServiceImpl : public ReportingService {
                        origin, std::move(endpoints)));
   }
 
-  void SetEnterpriseReportingEndpoints(
-      const base::flat_map<std::string, GURL>& endpoints) override {
-    if (!base::FeatureList::IsEnabled(
-            net::features::kReportingApiEnableEnterpriseCookieIssues)) {
-      return;
-    }
-    context_->cache()->SetEnterpriseReportingEndpoints(endpoints);
-  }
-
   void SendReportsAndRemoveSource(
       const base::UnguessableToken& reporting_source) override {
     DCHECK(!reporting_source.is_empty());
@@ -100,7 +91,7 @@ class ReportingServiceImpl : public ReportingService {
       const std::string& user_agent,
       const std::string& group,
       const std::string& type,
-      base::Value::Dict body,
+      base::DictValue body,
       int depth,
       ReportingTargetType target_type) override {
     DCHECK(context_);
@@ -172,7 +163,7 @@ class ReportingServiceImpl : public ReportingService {
   }
 
   base::Value StatusAsValue() const override {
-    base::Value::Dict dict;
+    base::DictValue dict;
     dict.Set("reportingEnabled", true);
     dict.Set("clients", context_->cache()->GetClientsAsValue());
     dict.Set("reports", context_->cache()->GetReportsAsValue());
@@ -232,7 +223,7 @@ class ReportingServiceImpl : public ReportingService {
       const std::string& user_agent,
       const std::string& group,
       const std::string& type,
-      base::Value::Dict body,
+      base::DictValue body,
       int depth,
       base::TimeTicks queued_ticks,
       ReportingTargetType target_type) {
@@ -352,10 +343,9 @@ ReportingService::~ReportingService() = default;
 std::unique_ptr<ReportingService> ReportingService::Create(
     const ReportingPolicy& policy,
     URLRequestContext* request_context,
-    ReportingCache::PersistentReportingStore* store,
-    const base::flat_map<std::string, GURL>& enterprise_reporting_endpoints) {
-  return std::make_unique<ReportingServiceImpl>(ReportingContext::Create(
-      policy, request_context, store, enterprise_reporting_endpoints));
+    ReportingCache::PersistentReportingStore* store) {
+  return std::make_unique<ReportingServiceImpl>(
+      ReportingContext::Create(policy, request_context, store));
 }
 
 // static

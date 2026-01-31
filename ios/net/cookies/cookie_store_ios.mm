@@ -11,7 +11,6 @@
 
 #import "base/apple/foundation_util.h"
 #import "base/check_op.h"
-#import "base/containers/contains.h"
 #import "base/dcheck_is_on.h"
 #import "base/files/file_path.h"
 #import "base/functional/bind.h"
@@ -573,7 +572,7 @@ std::unique_ptr<CookieChangeSubscription> CookieStoreIOS::AddCallbackForCookie(
     hook_map_[key] = std::make_unique<CookieChangeCallbackList>();
   }
 
-  DCHECK(base::Contains(hook_map_, key));
+  DCHECK(hook_map_.contains(key));
   auto subscription =
       std::make_unique<Subscription>(hook_map_[key]->Add(std::move(callback)));
   all_subscriptions_.Append(subscription.get());

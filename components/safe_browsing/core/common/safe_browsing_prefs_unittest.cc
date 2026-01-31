@@ -137,25 +137,25 @@ TEST_F(SafeBrowsingPrefsTest, VerifyMatchesPasswordProtectionLoginURL) {
 #if BUILDFLAG(IS_CHROMEOS)
   EXPECT_TRUE(MatchesPasswordProtectionLoginURL(chrome_url, prefs_));
 #endif
-  base::Value::List login_urls;
+  base::ListValue login_urls;
   login_urls.Append("https://otherdomain.com/login.html");
   prefs_.SetList(prefs::kPasswordProtectionLoginURLs, login_urls.Clone());
   EXPECT_TRUE(prefs_.HasPrefPath(prefs::kPasswordProtectionLoginURLs));
   EXPECT_FALSE(MatchesPasswordProtectionLoginURL(url, prefs_));
 
-  base::Value::List login_urls1;
+  base::ListValue login_urls1;
   login_urls1.Append("https://mydomain.com/login.html");
   prefs_.SetList(prefs::kPasswordProtectionLoginURLs, std::move(login_urls1));
   EXPECT_TRUE(prefs_.HasPrefPath(prefs::kPasswordProtectionLoginURLs));
   EXPECT_TRUE(MatchesPasswordProtectionLoginURL(url, prefs_));
 
-  base::Value::List login_urls2;
+  base::ListValue login_urls2;
   login_urls2.Append("chrome://os-settings");
   prefs_.SetList(prefs::kPasswordProtectionLoginURLs, std::move(login_urls2));
   EXPECT_TRUE(prefs_.HasPrefPath(prefs::kPasswordProtectionLoginURLs));
   EXPECT_TRUE(MatchesPasswordProtectionLoginURL(chrome_url, prefs_));
 
-  base::Value::List login_urls3;
+  base::ListValue login_urls3;
   login_urls3.Append("https://mylogin.com/login");
   GURL target_url("https://mylogin.com/login/");
   prefs_.SetList(prefs::kPasswordProtectionLoginURLs, std::move(login_urls3));
@@ -260,7 +260,7 @@ TEST_F(SafeBrowsingPrefsTest, VerifyIsURLAllowlistedByPolicy) {
   GURL target_url("https://www.foo.com");
 
   EXPECT_FALSE(prefs_.HasPrefPath(prefs::kSafeBrowsingAllowlistDomains));
-  base::Value::List allowlisted_domains;
+  base::ListValue allowlisted_domains;
   allowlisted_domains.Append("foo.com");
   prefs_.SetList(prefs::kSafeBrowsingAllowlistDomains,
                  std::move(allowlisted_domains));

@@ -29,7 +29,6 @@
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/ipc/gfx_param_traits.h"
-#include "ui/gfx/ipc/skia/gfx_skia_param_traits.h"
 
 // Tests std::pair serialization
 TEST(IPCMessageTest, Pair) {
@@ -48,16 +47,16 @@ TEST(IPCMessageTest, Pair) {
 
 // Tests bitmap serialization.
 TEST(IPCMessageTest, ValueDict) {
-  base::Value::Dict input;
+  base::DictValue input;
   input.Set("null", base::Value());
   input.Set("bool", true);
   input.Set("int", 42);
 
-  base::Value::Dict subdict;
+  base::DictValue subdict;
   subdict.Set("str", "forty two");
   subdict.Set("bool", false);
 
-  base::Value::List sublist;
+  base::ListValue sublist;
   sublist.Append(42.42);
   sublist.Append("forty");
   sublist.Append("two");
@@ -68,7 +67,7 @@ TEST(IPCMessageTest, ValueDict) {
   base::Pickle msg;
   IPC::WriteParam(&msg, input);
 
-  base::Value::Dict output;
+  base::DictValue output;
   base::PickleIterator iter(msg);
   EXPECT_TRUE(IPC::ReadParam(&msg, &iter, &output));
 

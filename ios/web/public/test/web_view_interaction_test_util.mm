@@ -62,7 +62,7 @@ std::unique_ptr<base::Value> ExecuteJavaScript(web::WebState* web_state,
 std::unique_ptr<base::Value> CallJavaScriptFunction(
     web::WebState* web_state,
     const std::string& function,
-    const base::Value::List& parameters) {
+    const base::ListValue& parameters) {
   return CallJavaScriptFunctionForFeature(web_state, function, parameters,
                                           /*feature=*/nullptr);
 }
@@ -70,7 +70,7 @@ std::unique_ptr<base::Value> CallJavaScriptFunction(
 std::unique_ptr<base::Value> CallJavaScriptFunctionForFeature(
     web::WebState* web_state,
     const std::string& function,
-    const base::Value::List& parameters,
+    const base::ListValue& parameters,
     JavaScriptFeature* feature) {
   if (!web_state) {
     DLOG(ERROR) << "JavaScript can not be called on a null WebState.";
@@ -189,16 +189,16 @@ CGRect GetBoundingRectOfElement(web::WebState* web_state,
       "    };"
       "})();";
 
-  __block std::unique_ptr<base::Value::Dict> rect;
+  __block std::unique_ptr<base::DictValue> rect;
 
   bool found = WaitUntilConditionOrTimeout(kWaitForUIElementTimeout, ^{
     std::unique_ptr<base::Value> value =
         ExecuteJavaScript(web_state, kGetBoundsScript);
-    if (base::Value::Dict* dictionary = value->GetIfDict()) {
+    if (base::DictValue* dictionary = value->GetIfDict()) {
       if (const std::string* error = dictionary->FindString("error")) {
         DLOG(ERROR) << "Error getting rect: " << error << ", retrying..";
       } else {
-        rect = std::make_unique<base::Value::Dict>(dictionary->Clone());
+        rect = std::make_unique<base::DictValue>(dictionary->Clone());
         return true;
       }
     }

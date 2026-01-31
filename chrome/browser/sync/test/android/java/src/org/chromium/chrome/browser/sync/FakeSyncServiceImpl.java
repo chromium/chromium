@@ -394,11 +394,17 @@ public class FakeSyncServiceImpl implements SyncService {
     }
 
     @Override
-    public void acknowledgeBookmarksLimitExceededError() {
+    public void acknowledgeBookmarksLimitExceededError(int source) {
         if (mBookmarksLimitExceeded) {
             mBookmarksLimitExceeded = false;
             notifySyncStateChanged();
         }
+    }
+
+    @Override
+    public int getBookmarksLimit() {
+        ThreadUtils.assertOnUiThread();
+        return mDelegate.getBookmarksLimit();
     }
 
     @Override

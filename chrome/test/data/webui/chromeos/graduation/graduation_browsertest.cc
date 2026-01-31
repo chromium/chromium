@@ -29,7 +29,7 @@ class GraduationMochaTest : public WebUIMochaBrowserTest,
   void SetUpOnMainThread() override {
     WebUIMochaBrowserTest::SetUpOnMainThread();
 
-    base::Value::Dict status;
+    base::DictValue status;
     status.Set("is_enabled", true);
     browser()->profile()->GetPrefs()->SetDict(
         ash::prefs::kGraduationEnablementStatus, status.Clone());

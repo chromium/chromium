@@ -106,7 +106,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_GROWTH) CampaignsManager {
   void PerformAction(int campaign_id,
                      std::optional<int> group_id,
                      const ActionType action_type,
-                     const base::Value::Dict* params);
+                     const base::DictValue* params);
 
   // Clear event stored in the Feature Engagement framework.
   void ClearEvent(CampaignEvent event, std::string_view id);
@@ -139,7 +139,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_GROWTH) CampaignsManager {
     return queued_events_record_and_trigger_;
   }
 
-  void SetCampaignsForTesting(const base::Value::Dict* campaigns) {
+  void SetCampaignsForTesting(const base::DictValue* campaigns) {
     campaigns_ = campaigns->Clone();
   }
 
@@ -157,7 +157,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_GROWTH) CampaignsManager {
   // Triggered when campaigns are loaded from the campaigns component mounted
   // path.
   void OnCampaignsLoaded(base::OnceClosure load_callback,
-                         std::optional<base::Value::Dict> campaigns);
+                         std::optional<base::DictValue> campaigns);
 
   // Triggered when loading OOBE timestamp completed.
   void OnOobeTimestampLoaded(base::OnceClosure load_callback,

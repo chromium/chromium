@@ -39,7 +39,7 @@ class FakeExtensionsBrowserClient : public TestExtensionsBrowserClient {
  public:
   struct Broadcast {
     Broadcast(events::HistogramValue histogram_value,
-              base::Value::List args,
+              base::ListValue args,
               bool dispatch_to_off_the_record_profiles)
         : histogram_value(histogram_value),
           args(std::move(args)),
@@ -49,7 +49,7 @@ class FakeExtensionsBrowserClient : public TestExtensionsBrowserClient {
     ~Broadcast() = default;
 
     events::HistogramValue histogram_value;
-    base::Value::List args;
+    base::ListValue args;
     bool dispatch_to_off_the_record_profiles;
   };
 
@@ -72,7 +72,7 @@ class FakeExtensionsBrowserClient : public TestExtensionsBrowserClient {
   void BroadcastEventToRenderers(
       events::HistogramValue histogram_value,
       const std::string& event_name,
-      base::Value::List args,
+      base::ListValue args,
       bool dispatch_to_off_the_record_profiles) override {
     event_name_to_broadcasts_map_[event_name].emplace_back(
         histogram_value, std::move(args), dispatch_to_off_the_record_profiles);
@@ -141,21 +141,21 @@ const storage_monitor::StorageInfo& GetFakeStorageInfo() {
   return *info;
 }
 
-base::Value::List GetStorageAttachedArgs() {
+base::ListValue GetStorageAttachedArgs() {
   // Because of the use of GetTransientIdForDeviceId() in
   // BuildStorageUnitInfo(), we cannot use a static variable and cache the
   // returned value.
   api::system_storage::StorageUnitInfo unit;
   systeminfo::BuildStorageUnitInfo(GetFakeStorageInfo(), &unit);
-  base::Value::List args;
+  base::ListValue args;
   args.Append(unit.ToValue());
   return args;
 }
 
-base::Value::List GetStorageDetachedArgs() {
+base::ListValue GetStorageDetachedArgs() {
   // Because of the use of GetTransientIdForDeviceId(), we cannot use a static
   // variable and cache the returned value.
-  base::Value::List args;
+  base::ListValue args;
   args.Append(
       storage_monitor::StorageMonitor::GetInstance()->GetTransientIdForDeviceId(
           GetFakeStorageDeviceId()));

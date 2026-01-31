@@ -14,10 +14,10 @@
 
 namespace {
 
-testing::AssertionResult HasArg(const base::Value::List& args,
+testing::AssertionResult HasArg(const base::ListValue& args,
                                 const char name[]) {
   for (size_t i = 0; i < args.size(); ++i) {
-    const base::Value::Dict* arg = args[i].GetIfDict();
+    const base::DictValue* arg = args[i].GetIfDict();
     if (!arg || arg->size() != 1) {
       return testing::AssertionFailure() << " malformed argument for index "
                                          << i;
@@ -60,13 +60,13 @@ TEST(SkiaBenchmarkingExtensionTest, BenchmarkingCanvas) {
   benchmarking_canvas.restore();
 
   // Verify the recorded commands.
-  const base::Value::List& ops = benchmarking_canvas.Commands();
+  const base::ListValue& ops = benchmarking_canvas.Commands();
   ASSERT_EQ(ops.size(), static_cast<size_t>(5));
 
   size_t index = 0;
   const base::Value* value;
-  const base::Value::Dict* op;
-  const base::Value::List* op_args;
+  const base::DictValue* op;
+  const base::ListValue* op_args;
   const std::string* op_name;
 
   value = &ops[index++];

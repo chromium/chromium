@@ -233,7 +233,6 @@ source_set("host_resolver") {
     # Tests and test support.
     "//chrome/browser:test_support",
     "//chrome/test/*",
-    "//components/grpc_support/test:unit_tests",
     "//content/shell:content_shell_lib",
     "//content/test:*",
 

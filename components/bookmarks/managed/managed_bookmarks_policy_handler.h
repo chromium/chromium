@@ -27,8 +27,8 @@ class ManagedBookmarksPolicyHandler
                            PrefValueMap* prefs) override;
 
  private:
-  std::string GetFolderName(const base::Value::List& list);
-  base::Value::List FilterBookmarks(base::Value::List bookmarks);
+  std::string GetFolderName(const base::ListValue& list);
+  base::ListValue FilterBookmarks(base::ListValue bookmarks);
 };
 
 }  // namespace bookmarks

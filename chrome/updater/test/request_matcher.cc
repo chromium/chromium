@@ -4,6 +4,7 @@
 
 #include "chrome/updater/test/request_matcher.h"
 
+#include <algorithm>
 #include <array>
 #include <optional>
 #include <string>
@@ -11,7 +12,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/containers/contains.h"
 #include "base/containers/flat_map.h"
 #include "base/json/json_reader.h"
 #include "base/logging.h"
@@ -128,12 +128,12 @@ Matcher GetContentMatcher(
 Matcher GetScopeMatcher(UpdaterScope scope) {
   return base::BindLambdaForTesting([scope](const HttpRequest& request) {
     const bool is_match = [&scope, &request] {
-      const std::optional<base::Value::Dict> doc = base::JSONReader::ReadDict(
+      const std::optional<base::DictValue> doc = base::JSONReader::ReadDict(
           request.decoded_content, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
       if (!doc) {
         return false;
       }
-      const base::Value::Dict* object_request = doc->FindDict("request");
+      const base::DictValue* object_request = doc->FindDict("request");
       if (!object_request) {
         return false;
       }
@@ -161,12 +161,12 @@ Matcher GetAppPriorityMatcher(const std::string& app_id,
   return base::BindLambdaForTesting([app_id,
                                      priority](const HttpRequest& request) {
     const bool is_match = [&app_id, priority, &request] {
-      const std::optional<base::Value::Dict> doc = base::JSONReader::ReadDict(
+      const std::optional<base::DictValue> doc = base::JSONReader::ReadDict(
           request.decoded_content, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
       if (!doc) {
         return false;
       }
-      const base::Value::List* app_list =
+      const base::ListValue* app_list =
           doc->FindListByDottedPath("request.apps");
       if (!app_list) {
         app_list = doc->FindListByDottedPath("request.app");  // V3 fallback.
@@ -181,7 +181,7 @@ Matcher GetAppPriorityMatcher(const std::string& app_id,
                     dict->FindString("installsource")) {
               static constexpr auto kInstallSources =
                   std::array{"ondemand", "taggedmi", "policy"};
-              return base::Contains(kInstallSources, *install_source) ==
+              return std::ranges::contains(kInstallSources, *install_source) ==
                      (priority == UpdateService::Priority::kForeground);
             }
           }
@@ -200,12 +200,12 @@ Matcher GetAppPriorityMatcher(const std::string& app_id,
 Matcher GetUpdaterEnableUpdatesMatcher() {
   return base::BindLambdaForTesting([](const HttpRequest& request) {
     const bool update_disabled = [&request] {
-      const std::optional<base::Value::Dict> doc = base::JSONReader::ReadDict(
+      const std::optional<base::DictValue> doc = base::JSONReader::ReadDict(
           request.decoded_content, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
       if (!doc) {
         return false;
       }
-      const base::Value::List* app_list =
+      const base::ListValue* app_list =
           doc->FindListByDottedPath("request.apps");
       if (!app_list) {
         return false;

@@ -1751,7 +1751,7 @@ TEST_F(BackupRefPtrTest, QuarantinedBytes) {
   EXPECT_EQ(allocator_.root()->total_size_of_brp_quarantined_bytes.load(
                 std::memory_order_relaxed),
             0U);
-  EXPECT_EQ(allocator_.root()->total_count_of_brp_quarantined_slots.load(
+  EXPECT_EQ(allocator_.root()->total_count_of_brp_quarantined_slots_.load(
                 std::memory_order_relaxed),
             0U);
 
@@ -1760,7 +1760,7 @@ TEST_F(BackupRefPtrTest, QuarantinedBytes) {
   EXPECT_GT(allocator_.root()->total_size_of_brp_quarantined_bytes.load(
                 std::memory_order_relaxed),
             0U);
-  EXPECT_EQ(allocator_.root()->total_count_of_brp_quarantined_slots.load(
+  EXPECT_EQ(allocator_.root()->total_count_of_brp_quarantined_slots_.load(
                 std::memory_order_relaxed),
             1U);
 
@@ -1773,7 +1773,7 @@ TEST_F(BackupRefPtrTest, QuarantinedBytes) {
   EXPECT_EQ(allocator_.root()->total_size_of_brp_quarantined_bytes.load(
                 std::memory_order_relaxed),
             0U);
-  EXPECT_EQ(allocator_.root()->total_count_of_brp_quarantined_slots.load(
+  EXPECT_EQ(allocator_.root()->total_count_of_brp_quarantined_slots_.load(
                 std::memory_order_relaxed),
             0U);
 }
@@ -1782,13 +1782,13 @@ TEST_F(BackupRefPtrTest, SameSlotAssignmentWhenDangling) {
   uint64_t* ptr = reinterpret_cast<uint64_t*>(
       allocator_.root()->Alloc(sizeof(uint64_t), ""));
   raw_ptr<uint64_t, DisableDanglingPtrDetection> wrapped_ptr = ptr;
-  ASSERT_EQ(allocator_.root()->total_count_of_brp_quarantined_slots.load(
+  ASSERT_EQ(allocator_.root()->total_count_of_brp_quarantined_slots_.load(
                 std::memory_order_relaxed),
             0U);
 
   // Make the pointer dangle. Memory will get quarantined.
   allocator_.root()->Free(ptr);
-  ASSERT_EQ(allocator_.root()->total_count_of_brp_quarantined_slots.load(
+  ASSERT_EQ(allocator_.root()->total_count_of_brp_quarantined_slots_.load(
                 std::memory_order_relaxed),
             1U);
 
@@ -1800,7 +1800,7 @@ TEST_F(BackupRefPtrTest, SameSlotAssignmentWhenDangling) {
   // Many things may go wrong after the above instruction (particularly on
   // DCHECK builds), but just in case check that memory continues to be
   // quarantined.
-  EXPECT_EQ(allocator_.root()->total_count_of_brp_quarantined_slots.load(
+  EXPECT_EQ(allocator_.root()->total_count_of_brp_quarantined_slots_.load(
                 std::memory_order_relaxed),
             1U);
 }

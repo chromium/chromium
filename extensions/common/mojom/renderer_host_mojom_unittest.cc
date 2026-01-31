@@ -29,17 +29,17 @@ class TestRendererHostImpl : public mojom::RendererHost {
   // mojom::RendererHost:
   void AddAPIActionToActivityLog(const std::optional<ExtensionId>& extension_id,
                                  const std::string& call_name,
-                                 base::Value::List args,
+                                 base::ListValue args,
                                  const std::string& extra) override {}
 
   void AddEventToActivityLog(const std::optional<ExtensionId>& extension_id,
                              const std::string& call_name,
-                             base::Value::List args,
+                             base::ListValue args,
                              const std::string& extra) override {}
 
   void AddDOMActionToActivityLog(const ExtensionId& extension_id,
                                  const std::string& call_name,
-                                 base::Value::List args,
+                                 base::ListValue args,
                                  const GURL& url,
                                  const std::u16string& url_title,
                                  int32_t call_type) override {}
@@ -62,19 +62,19 @@ class RendererHostMojomExtensionIdTest : public testing::Test {
 
   void AddAPIActionToActivityLog(std::optional<ExtensionId> extension_id) {
     renderer_host_remote_->AddAPIActionToActivityLog(
-        extension_id, "test_call_name", base::Value::List(), "test_extra");
+        extension_id, "test_call_name", base::ListValue(), "test_extra");
     renderer_host_remote_.FlushForTesting();
   }
 
   void AddEventToActivityLog(std::optional<ExtensionId> extension_id) {
     renderer_host_remote_->AddEventToActivityLog(
-        extension_id, "test_call_name", base::Value::List(), "test_extra");
+        extension_id, "test_call_name", base::ListValue(), "test_extra");
     renderer_host_remote_.FlushForTesting();
   }
 
   void AddDOMActionToActivityLog(const ExtensionId& extension_id) {
     renderer_host_remote_->AddDOMActionToActivityLog(
-        extension_id, "test_call_name", base::Value::List(), GURL(),
+        extension_id, "test_call_name", base::ListValue(), GURL(),
         u"test_url_title", 0);
     renderer_host_remote_.FlushForTesting();
   }

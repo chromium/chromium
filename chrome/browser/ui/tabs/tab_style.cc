@@ -35,7 +35,7 @@ constexpr int kTabWidth = 232;
 TabStyle::~TabStyle() = default;
 
 int TabStyle::GetStandardHeight() const {
-  return GetLayoutConstant(TAB_STRIP_HEIGHT);
+  return GetLayoutConstant(LayoutConstant::kTabStripHeight);
 }
 
 int TabStyle::GetStandardWidth(const bool is_split) const {
@@ -63,7 +63,8 @@ int TabStyle::GetPinnedWidth(const bool is_split) const {
 }
 
 int TabStyle::GetMinimumActiveWidth(const bool is_split) const {
-  const int close_button_size = GetLayoutConstant(TAB_CLOSE_BUTTON_SIZE);
+  const int close_button_size =
+      GetLayoutConstant(LayoutConstant::kTabCloseButtonSize);
   const gfx::Insets insets = GetContentsInsets();
   const int min_active_width =
       close_button_size + insets.left() + insets.right();
@@ -115,9 +116,9 @@ gfx::Size TabStyle::GetSeparatorSize() const {
 }
 
 gfx::Insets TabStyle::GetSeparatorMargins() const {
-  return gfx::Insets::TLBR(GetLayoutConstant(TAB_STRIP_PADDING),
+  return gfx::Insets::TLBR(GetLayoutConstant(LayoutConstant::kTabStripPadding),
                            kChromeRefreshSeparatorHorizontalMargin,
-                           GetLayoutConstant(TAB_STRIP_PADDING),
+                           GetLayoutConstant(LayoutConstant::kTabStripPadding),
                            kChromeRefreshSeparatorHorizontalMargin);
 }
 
@@ -265,9 +266,11 @@ SkColor TabStyle::GetCurrentTabBackgroundColor(
 
 gfx::Insets TabStyle::GetContentsInsets() const {
   return gfx::Insets::TLBR(
-      kChromeRefreshTabVerticalPadding + GetLayoutConstant(TAB_STRIP_PADDING),
+      kChromeRefreshTabVerticalPadding +
+          GetLayoutConstant(LayoutConstant::kTabStripPadding),
       GetBottomCornerRadius() + kChromeRefreshTabHorizontalPadding,
-      kChromeRefreshTabVerticalPadding + GetLayoutConstant(TAB_STRIP_PADDING),
+      kChromeRefreshTabVerticalPadding +
+          GetLayoutConstant(LayoutConstant::kTabStripPadding),
       GetBottomCornerRadius() + kChromeRefreshTabHorizontalPadding);
 }
 

@@ -4,7 +4,9 @@
 
 #import "ios/chrome/browser/composebox/ui/composebox_tab_picker_view_controller.h"
 
+#import "ios/chrome/browser/composebox/ui/composebox_tab_picker_empty_state_view.h"
 #import "ios/chrome/browser/composebox/ui/composebox_tab_picker_mutator.h"
+#import "ios/chrome/browser/composebox/ui/composebox_ui_constants.h"
 #import "ios/chrome/browser/shared/public/commands/composebox_tab_picker_commands.h"
 #import "ios/chrome/browser/tab_switcher/tab_grid/base_grid/ui/base_grid_view_controller.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
@@ -35,11 +37,15 @@
   [super viewDidLoad];
   self.view.backgroundColor = [UIColor colorNamed:kSecondaryBackgroundColor];
 
+  _gridViewController.emptyStateView =
+      [[ComposeboxTabPickerEmptyStateView alloc] init];
   UIView* gridView = _gridViewController.view;
   gridView.translatesAutoresizingMaskIntoConstraints = NO;
   [self addChildViewController:_gridViewController];
   [self.view addSubview:gridView];
   [_gridViewController didMoveToParentViewController:self];
+  _gridViewController.view.accessibilityIdentifier =
+      kComposeboxTabPickerCollectionViewAccessibilityIdentifier;
 
   [self configureNavigationBarIfNeeded];
 

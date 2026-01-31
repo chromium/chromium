@@ -8,7 +8,6 @@
 #include <utility>
 
 #include "base/check.h"
-#include "base/containers/contains.h"
 
 BrowserListEnumerator::BrowserListEnumerator(bool enumerate_new_browser)
     : enumerate_new_browser_(enumerate_new_browser),
@@ -30,7 +29,7 @@ BrowserListEnumerator::~BrowserListEnumerator() {
 }
 
 void BrowserListEnumerator::OnBrowserAdded(Browser* browser) {
-  DCHECK(!base::Contains(browsers_, browser));
+  DCHECK(!std::ranges::contains(browsers_, browser));
   if (enumerate_new_browser_) {
     browsers_.push_back(browser);
   }
@@ -43,6 +42,6 @@ void BrowserListEnumerator::OnBrowserRemoved(Browser* browser) {
 Browser* BrowserListEnumerator::Next() {
   Browser* browser = browsers_.front();
   browsers_.erase(browsers_.begin());
-  DCHECK(base::Contains(*BrowserList::GetInstance(), browser));
+  DCHECK(std::ranges::contains(*BrowserList::GetInstance(), browser));
   return browser;
 }

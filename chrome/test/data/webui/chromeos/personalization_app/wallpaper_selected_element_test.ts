@@ -20,9 +20,7 @@ const descriptionOptionsId = 'descriptionOptions';
 const descriptionDialogId = 'descriptionDialog';
 const dailyRefreshButtonId = 'dailyRefresh';
 const learnMoreContainerId = 'descriptionDialogLearnMore';
-const actionUrl = {
-  url: 'https://example.com/',
-};
+const actionUrl = 'https://example.com/';
 const photos: GooglePhotosPhoto[] = [
   // First row.
   {
@@ -30,7 +28,7 @@ const photos: GooglePhotosPhoto[] = [
     dedupKey: '1',
     name: '1',
     date: 'First row',
-    url: {url: createSvgDataUrl('1')},
+    url: createSvgDataUrl('1'),
     location: '1',
   },
   // Second row.
@@ -39,7 +37,7 @@ const photos: GooglePhotosPhoto[] = [
     dedupKey: '2',
     name: '2',
     date: 'Second row',
-    url: {url: createSvgDataUrl('2')},
+    url: createSvgDataUrl('2'),
     location: '2',
   },
   {
@@ -47,7 +45,7 @@ const photos: GooglePhotosPhoto[] = [
     dedupKey: '3',
     name: '3',
     date: 'Second row',
-    url: {url: createSvgDataUrl('3')},
+    url: createSvgDataUrl('3'),
     location: '3',
   },
   // Third row.
@@ -56,7 +54,7 @@ const photos: GooglePhotosPhoto[] = [
     dedupKey: '4',
     name: '4',
     date: 'Third row',
-    url: {url: createSvgDataUrl('4')},
+    url: createSvgDataUrl('4'),
     location: '4',
   },
 ];
@@ -968,7 +966,7 @@ suite('WallpaperSelectedElementTest', function() {
     assertTrue(!!learnMoreContainer, 'learn more container should exist');
 
     assertEquals(
-        learnMoreContainer.querySelector('a')?.href, actionUrl.url,
+        learnMoreContainer.querySelector('a')?.href, actionUrl,
         'url is displayed');
   });
 
@@ -1003,7 +1001,7 @@ suite('WallpaperSelectedElementTest', function() {
 
     personalizationStore.data.wallpaper.currentSelected = {
       ...personalizationStore.data.wallpaper.currentSelected,
-      actionUrl: {url: '<script>bad</script>'},
+      actionUrl: '<script>bad</script>',
     };
     personalizationStore.notifyObservers();
     await waitAfterNextRender(wallpaperSelectedElement);

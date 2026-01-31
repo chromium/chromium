@@ -13,7 +13,7 @@ namespace chrome_pdf {
 // If the "type" value of `message` is "foo", then the reply "type" will be
 // "fooReply". The `message` from the embedder must have a "messageId" value
 // that will be copied to the reply message.
-base::Value::Dict PrepareReplyMessage(const base::Value::Dict& message);
+base::DictValue PrepareReplyMessage(const base::DictValue& message);
 
 }  // namespace chrome_pdf
 

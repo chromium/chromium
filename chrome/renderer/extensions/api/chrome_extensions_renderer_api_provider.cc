@@ -18,6 +18,7 @@
 #include "extensions/renderer/module_system.h"
 #include "extensions/renderer/native_extension_bindings_system.h"
 #include "extensions/renderer/resource_bundle_source_map.h"
+#include "extensions/renderer/script_context.h"
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 #include "build/chromeos_buildflags.h"
@@ -26,7 +27,6 @@
 #include "chrome/renderer/extensions/api/sync_file_system_custom_bindings.h"
 #include "extensions/renderer/dispatcher.h"
 #include "extensions/renderer/native_handler.h"
-#include "extensions/renderer/script_context.h"
 #include "printing/buildflags/buildflags.h"
 
 #if BUILDFLAG(IS_CHROMEOS)

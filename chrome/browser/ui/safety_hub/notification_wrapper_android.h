@@ -12,8 +12,14 @@ class NotificationWrapperAndroid
           SafetyHubNotificationWrapper {
  public:
   ~NotificationWrapperAndroid() override;
-  void DisplayNotification(int num_revoked_permissions) override;
-  void UpdateNotification(int num_revoked_permissions) override;
+  void DisplayNotification(int num_revoked_permissions,
+                           std::string& first_affected_domain,
+                           bool any_suspicious_revocations,
+                           bool any_disruptive_revocations) override;
+  void UpdateNotification(int num_revoked_permissions,
+                          std::string& first_affected_domain,
+                          bool any_suspicious_revocations,
+                          bool any_disruptive_revocations) override;
 };
 
 #endif  // CHROME_BROWSER_UI_SAFETY_HUB_NOTIFICATION_WRAPPER_ANDROID_H_

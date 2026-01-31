@@ -31,7 +31,8 @@ class TouchSelectionControllerInputObserver
   // TODO(crbug.com/375388841): Make touch selection controller an input event
   // observer for Aura as well, currently it's just being used on Android.
   void OnInputEvent(const RenderWidgetHost& widget,
-                    const blink::WebInputEvent&) override;
+                    const blink::WebInputEvent& event,
+                    InputEventSource source) override;
   void OnInputEventAck(const RenderWidgetHost& widget,
                        blink::mojom::InputEventResultSource source,
                        blink::mojom::InputEventResultState state,

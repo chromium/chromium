@@ -8,5 +8,9 @@ include_rules = [
   "+components/strike_database",
   "+components/sync",
   "+components/sync_preferences",
+  "+components/version_info",
+  "+google_apis/gaia",
+  "+net",
+  "+services/network",
   # go/keep-sorted end
 ]

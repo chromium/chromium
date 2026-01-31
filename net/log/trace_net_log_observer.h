@@ -10,6 +10,7 @@
 #include "base/rand_util.h"
 #include "base/trace_event/trace_event.h"
 #include "base/trace_event/trace_log.h"
+#include "base/trace_event/trace_session_observer.h"
 #include "net/base/net_export.h"
 #include "net/log/net_log.h"
 #include "net/log/net_log_capture_mode.h"
@@ -20,7 +21,7 @@ namespace net {
 // events to TraceLog if it is enabled.
 class NET_EXPORT TraceNetLogObserver
     : public NetLog::ThreadSafeObserver,
-      public base::trace_event::TraceLog::AsyncEnabledStateObserver {
+      public base::trace_event::TraceSessionObserver {
  public:
   struct Options final {
     // Work around https://bugs.llvm.org/show_bug.cgi?id=36684
@@ -66,19 +67,19 @@ class NET_EXPORT TraceNetLogObserver
   // TraceNetLogObserver is destroyed.
   void StopWatchForTraceStart();
 
-  // base::trace_event::TraceLog::EnabledStateChangedObserver implementation:
-  void OnTraceLogEnabled() override;
-  void OnTraceLogDisabled() override;
+  // base::trace_event::TraceSessionObserver implementation:
+  void OnStart(const perfetto::DataSourceBase::StartArgs&) override;
+  void OnStop(const perfetto::DataSourceBase::StopArgs&) override;
 
  private:
   void AddEntry(const NetLogEntry& entry,
                 perfetto::StaticString entry_type_string,
                 perfetto::StaticString source_type_string,
-                base::Value::Dict params);
+                base::DictValue params);
   void AddEntryVerbose(const NetLogEntry& entry,
                        perfetto::StaticString entry_type_string,
                        perfetto::StaticString source_type_string,
-                       base::Value::Dict params);
+                       base::DictValue params);
 
   // The "root track" is used as the parent track of all NetLog event tracks.
   // Folding all NetLog tracks under a root track serves a number of purposes:

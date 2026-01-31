@@ -7,7 +7,6 @@
 #include <memory>
 
 #include "base/check_op.h"
-#include "base/containers/contains.h"
 #include "base/functional/callback.h"
 #include "build/build_config.h"
 #include "chrome/browser/extensions/api/messaging/incognito_connectability.h"
@@ -53,23 +52,20 @@ ChromeMessagingDelegate::IsNativeMessagingHostAllowed(
   // All native messaging hosts are allowed if there is no blocklist.
   if (!pref_service->IsManagedPreference(pref_names::kNativeMessagingBlocklist))
     return allow_result;
-  const base::Value::List& blocklist =
+  const base::ListValue& blocklist =
       pref_service->GetList(pref_names::kNativeMessagingBlocklist);
 
   // Check if the name or the wildcard is in the blocklist.
-  base::Value name_value(native_host_name);
-  base::Value wildcard_value("*");
-  if (!base::Contains(blocklist, name_value) &&
-      !base::Contains(blocklist, wildcard_value)) {
+  if (!blocklist.contains(native_host_name) && !blocklist.contains("*")) {
     return allow_result;
   }
 
   // The native messaging host is blocklisted. Check the allowlist.
   if (pref_service->IsManagedPreference(
           pref_names::kNativeMessagingAllowlist)) {
-    const base::Value::List& allowlist =
+    const base::ListValue& allowlist =
         pref_service->GetList(pref_names::kNativeMessagingAllowlist);
-    if (base::Contains(allowlist, name_value)) {
+    if (allowlist.contains(native_host_name)) {
       return allow_result;
     }
   }
@@ -77,7 +73,7 @@ ChromeMessagingDelegate::IsNativeMessagingHostAllowed(
   return PolicyPermission::DISALLOW;
 }
 
-std::optional<base::Value::Dict> ChromeMessagingDelegate::MaybeGetTabInfo(
+std::optional<base::DictValue> ChromeMessagingDelegate::MaybeGetTabInfo(
     content::WebContents* web_contents) {
   // Add info about the opener's tab (if it was a tab).
   if (web_contents && ExtensionTabUtil::GetTabId(web_contents) >= 0) {

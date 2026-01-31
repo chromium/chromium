@@ -48,13 +48,18 @@ ScopedBoostPriority::ScopedBoostPriority(ThreadType target_thread_type) {
                                 target_thread_type, original_thread_type);
   if (should_boost) {
     original_thread_type_.emplace(original_thread_type);
-    PlatformThread::SetCurrentThreadType(target_thread_type);
+    // Do not change the affinity, this is meant to make sure the thread runs,
+    // not that it changes which core can it can run on.
+    PlatformThread::SetCurrentThreadType(target_thread_type,
+                                         /* may_change_affinity = */ false);
   }
 }
 
 ScopedBoostPriority::~ScopedBoostPriority() {
   if (original_thread_type_.has_value()) {
-    PlatformThread::SetCurrentThreadType(original_thread_type_.value());
+    // See above, do not change the affinity.
+    PlatformThread::SetCurrentThreadType(original_thread_type_.value(),
+                                         /* may_change_affinity = */ false);
   }
 }
 
@@ -70,12 +75,7 @@ ScopedBoostablePriority::ScopedBoostablePriority()
 
 ScopedBoostablePriority::~ScopedBoostablePriority() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  if (thread_handle_.is_null()) {
-    return;
-  }
-  if (did_override_priority_) {
-    internal::RemoveThreadTypeOverride(priority_override_handle_);
-  }
+  Reset();
 }
 
 bool ScopedBoostablePriority::BoostPriority(ThreadType target_thread_type) {
@@ -98,6 +98,17 @@ bool ScopedBoostablePriority::BoostPriority(ThreadType target_thread_type) {
   priority_override_handle_ =
       internal::SetThreadTypeOverride(thread_handle_, target_thread_type);
   return priority_override_handle_;
+}
+
+void ScopedBoostablePriority::Reset() {
+  if (thread_handle_.is_null()) {
+    return;
+  }
+  if (did_override_priority_) {
+    internal::RemoveThreadTypeOverride(
+        thread_handle_, priority_override_handle_, initial_thread_type_);
+    did_override_priority_ = false;
+  }
 }
 
 TaskMonitoringScopedBoostPriority::TaskMonitoringScopedBoostPriority(

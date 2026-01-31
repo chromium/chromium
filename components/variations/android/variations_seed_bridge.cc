@@ -29,9 +29,9 @@ std::unique_ptr<variations::SeedResponse> GetVariationsFirstRunSeed() {
       Java_VariationsSeedBridge_getVariationsFirstRunSeedSignature(env);
   ScopedJavaLocalRef<jstring> j_seed_country =
       Java_VariationsSeedBridge_getVariationsFirstRunSeedCountry(env);
-  jlong j_response_date =
+  int64_t j_response_date =
       Java_VariationsSeedBridge_getVariationsFirstRunSeedDate(env);
-  jboolean j_is_gzip_compressed =
+  bool j_is_gzip_compressed =
       Java_VariationsSeedBridge_getVariationsFirstRunSeedIsGzipCompressed(env);
 
   auto seed = std::make_unique<variations::SeedResponse>();
@@ -66,8 +66,8 @@ void SetJavaFirstRunPrefsForTesting(const std::string& seed_data,
       env, base::android::ToJavaByteArray(env, seed_data),
       ConvertUTF8ToJavaString(env, seed_signature),
       ConvertUTF8ToJavaString(env, seed_country),
-      static_cast<jlong>(response_date),
-      static_cast<jboolean>(is_gzip_compressed));
+      static_cast<int64_t>(response_date),
+      static_cast<bool>(is_gzip_compressed));
 }
 
 bool HasMarkedPrefsForTesting() {

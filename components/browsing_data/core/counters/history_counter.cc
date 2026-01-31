@@ -168,7 +168,7 @@ void HistoryCounter::OnGetWebHistoryCount(
   if (!result.has_value()) {
     has_synced_visits_ = true;
   } else {
-    has_synced_visits_ = !result->events.empty();
+    has_synced_visits_ = !result->visits.empty();
   }
   web_counting_finished_ = true;
   MergeResults();

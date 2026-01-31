@@ -10,12 +10,14 @@
 
 #include <algorithm>
 #include <optional>
+#include <string_view>
 #include <utility>
 #include <vector>
 
 #include "base/win/access_control_list.h"
 #include "base/win/access_token.h"
 #include "base/win/scoped_handle.h"
+#include "base/win/scoped_process_information.h"
 #include "base/win/security_descriptor.h"
 #include "base/win/security_util.h"
 #include "base/win/sid.h"
@@ -28,7 +30,9 @@ namespace sandbox {
 
 namespace {
 
-void TestDefaultDacl(bool restricted_required, bool additional_sid_required) {
+void TestDefaultDacl(bool restricted_required,
+                     bool additional_sid_required,
+                     std::wstring_view security_attr = {}) {
   RestrictedToken token;
 
   if (!restricted_required)
@@ -43,6 +47,9 @@ void TestDefaultDacl(bool restricted_required, bool additional_sid_required) {
   }
 
   token.AddRestrictingSid(base::win::WellKnownSid::kWorld);
+  if (!security_attr.empty()) {
+    token.SetIsolationSecurityAttribute(security_attr);
+  }
   auto restricted_token = *token.GetRestrictedToken();
   auto dacl = *restricted_token.DefaultDacl();
 
@@ -57,6 +64,13 @@ void TestDefaultDacl(bool restricted_required, bool additional_sid_required) {
   if (logon_sid) {
     EXPECT_EQ(restricted_required,
               IsSidInDacl(dacl, true, std::nullopt, *logon_sid));
+  }
+  if (!security_attr.empty()) {
+    EXPECT_TRUE(IsSidInDacl(
+        dacl, /*allowed=*/true, READ_CONTROL,
+        base::win::Sid(base::win::WellKnownSid::kCreatorOwnerRights)));
+    EXPECT_TRUE(IsSidInDacl(dacl, /*allowed=*/true, GENERIC_ALL,
+                            restricted_token.User(), /*conditional=*/true));
   }
 }
 
@@ -212,6 +226,47 @@ void CompareDenyOnly(
     EXPECT_NE(std::ranges::find(exceptions, group_sid), exceptions.end());
   }
   EXPECT_EQ(user, token->UserGroup().IsDenyOnly());
+}
+
+constexpr wchar_t kProcUniqueAttribute[] = L"TSA://ProcUnique";
+
+class ScopedImpersonation {
+ public:
+  ScopedImpersonation(const base::win::AccessToken& token) {
+    CHECK(::ImpersonateLoggedOnUser(token.get()));
+  }
+  ~ScopedImpersonation() { ::RevertToSelf(); }
+};
+
+bool CanOpenProcess(DWORD pid, DWORD desired_access) {
+  base::win::ScopedHandle handle(::OpenProcess(desired_access, FALSE, pid));
+  return handle.is_valid();
+}
+
+bool CanOpenThread(DWORD tid, DWORD desired_access) {
+  base::win::ScopedHandle handle(::OpenThread(desired_access, FALSE, tid));
+  return handle.is_valid();
+}
+
+void CheckProcessAccess(const base::win::AccessToken& token,
+                        const base::win::ScopedProcessInformation& proc_info,
+                        bool access_granted) {
+  auto imp_token = token.DuplicateImpersonation(
+      base::win::SecurityImpersonationLevel::kImpersonation,
+      TOKEN_IMPERSONATE | TOKEN_ADJUST_PRIVILEGES);
+  ASSERT_TRUE(imp_token);
+  imp_token->SetPrivilege(SE_DEBUG_NAME, false);
+  ScopedImpersonation imp(*imp_token);
+  EXPECT_TRUE(CanOpenProcess(proc_info.process_id(), READ_CONTROL));
+  // Being the owner normally grants WRITE_DAC access, if the caller doesn't
+  // have the security attribute it should not be granted automatically.
+  EXPECT_EQ(CanOpenProcess(proc_info.process_id(), WRITE_DAC), access_granted);
+  EXPECT_EQ(CanOpenProcess(proc_info.process_id(), PROCESS_ALL_ACCESS),
+            access_granted);
+  EXPECT_TRUE(CanOpenThread(proc_info.thread_id(), READ_CONTROL));
+  EXPECT_EQ(CanOpenThread(proc_info.thread_id(), WRITE_DAC), access_granted);
+  EXPECT_EQ(CanOpenThread(proc_info.thread_id(), THREAD_ALL_ACCESS),
+            access_granted);
 }
 
 }  // namespace
@@ -559,6 +614,47 @@ TEST(RestrictedTokenTest, DenyOnly) {
        base::win::WellKnownSid::kInteractive},
       false, false);
   CompareDenyOnly(USER_LOCKDOWN, {}, false, true);
+}
+
+TEST(RestrictedTokenTest, SetIsolationSecurityAttribute) {
+  RestrictedToken token;
+  ASSERT_TRUE(token.GetRestrictedToken());
+  token.SetIsolationSecurityAttribute(L"Invalid");
+  EXPECT_FALSE(token.GetRestrictedToken());
+  TestDefaultDacl(/*restricted_required=*/false,
+                  /*additional_sid_required=*/false, kProcUniqueAttribute);
+  TestDefaultDacl(/*restricted_required=*/true,
+                  /*additional_sid_required=*/false, kProcUniqueAttribute);
+  TestDefaultDacl(/*restricted_required=*/false,
+                  /*additional_sid_required=*/true, kProcUniqueAttribute);
+  TestDefaultDacl(/*restricted_required=*/true,
+                  /*additional_sid_required=*/true, kProcUniqueAttribute);
+}
+
+TEST(RestrictedTokenTest, SetIsolationSecurityAttributeAccessCheck) {
+  RestrictedToken token;
+  token.SetIsolationSecurityAttribute(kProcUniqueAttribute);
+  token.SetLockdownDefaultDacl();
+  token.AddSidForDenyOnly(base::win::WellKnownSid::kBuiltinAdministrators);
+  auto restricted_token = token.GetRestrictedToken();
+  ASSERT_TRUE(restricted_token);
+  STARTUPINFO start_info = {};
+  PROCESS_INFORMATION proc_info = {};
+  WCHAR cmdline[MAX_PATH] = {};
+  ASSERT_GE(::GetModuleFileName(nullptr, cmdline, _countof(cmdline)), 0U);
+  ASSERT_TRUE(::CreateProcessAsUser(restricted_token->get(), nullptr, cmdline,
+                                    nullptr, nullptr, FALSE, CREATE_SUSPENDED,
+                                    nullptr, nullptr, &start_info, &proc_info));
+  base::win::ScopedProcessInformation scoped_info(proc_info);
+  EXPECT_TRUE(::TerminateProcess(scoped_info.process_handle(), 0));
+  CheckProcessAccess(*restricted_token, scoped_info,
+                     /*access_granted=*/true);
+  // Token of the new process should have a different security attribute.
+  auto new_token = base::win::AccessToken::FromProcess(
+      scoped_info.process_handle(), /*impersonation=*/false, TOKEN_DUPLICATE);
+  ASSERT_TRUE(new_token);
+  CheckProcessAccess(*new_token, scoped_info,
+                     /*access_granted=*/false);
 }
 
 }  // namespace sandbox

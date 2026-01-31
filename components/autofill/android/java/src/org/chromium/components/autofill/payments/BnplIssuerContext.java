@@ -4,8 +4,6 @@
 
 package org.chromium.components.autofill.payments;
 
-import androidx.annotation.DrawableRes;
-
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
 import org.jni_zero.JniType;
@@ -16,7 +14,6 @@ import org.chromium.build.annotations.NullMarked;
 @JNINamespace("autofill")
 @NullMarked
 public class BnplIssuerContext {
-    private final @DrawableRes int mIconId;
     private final String mIssuerId;
     private final String mDisplayName;
     private final String mSelectionText;
@@ -26,7 +23,6 @@ public class BnplIssuerContext {
     /**
      * Constructs a new BnplIssuerContext.
      *
-     * @param iconId The resource ID of the issuer's icon.
      * @param issuerId The ID of the BNPL issuer.
      * @param displayName The name of the issuer to be displayed.
      * @param selectionText The selection text of the issuer to be displayed.
@@ -35,23 +31,16 @@ public class BnplIssuerContext {
      */
     @CalledByNative
     public BnplIssuerContext(
-            @DrawableRes int iconId,
             @JniType("std::string") String issuerId,
             @JniType("std::u16string") String displayName,
             @JniType("std::u16string") String selectionText,
             boolean isLinked,
             boolean isEligible) {
-        mIconId = iconId;
         mIssuerId = issuerId;
         mDisplayName = displayName;
         mSelectionText = selectionText;
         mIsLinked = isLinked;
         mIsEligible = isEligible;
-    }
-
-    /** Returns the resource ID of the issuer's icon. */
-    public @DrawableRes int getIconId() {
-        return mIconId;
     }
 
     /** Returns the ID of the BNPL issuer. */

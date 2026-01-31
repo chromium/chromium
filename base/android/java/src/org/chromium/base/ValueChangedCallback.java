@@ -4,7 +4,7 @@
 
 package org.chromium.base;
 
-import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 
@@ -16,7 +16,7 @@ import java.util.Objects;
  *
  * <p>This is useful where cleanup needs to be done using the old value before switching to the new
  * value. For example, unregistering observers from the old value and registering them on a new
- * value. This is particularly useful {@link ObservableSupplier}.
+ * value. This is particularly useful {@link MonotonicObservableSupplier}.
  *
  * @param <T> The type to observe.
  */

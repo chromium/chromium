@@ -6,7 +6,6 @@
 
 #include <algorithm>
 
-#include "base/containers/contains.h"
 #include "base/no_destructor.h"
 #include "base/values.h"
 #include "chromeos/ash/components/multidevice/logging/logging.h"
@@ -76,7 +75,7 @@ CryptAuthKeyBundle::KeyBundleNameStringToEnum(const std::string& name) {
 
 // static
 std::optional<CryptAuthKeyBundle> CryptAuthKeyBundle::FromDictionary(
-    const base::Value::Dict& dict) {
+    const base::DictValue& dict) {
   const std::string* name_string = dict.FindString(kBundleNameDictKey);
   if (!name_string)
     return std::nullopt;
@@ -88,7 +87,7 @@ std::optional<CryptAuthKeyBundle> CryptAuthKeyBundle::FromDictionary(
 
   CryptAuthKeyBundle bundle(*name);
 
-  const base::Value::List* keys = dict.FindList(kKeyListDictKey);
+  const base::ListValue* keys = dict.FindList(kKeyListDictKey);
   if (!keys)
     return std::nullopt;
 
@@ -108,7 +107,7 @@ std::optional<CryptAuthKeyBundle> CryptAuthKeyBundle::FromDictionary(
     }
 
     // Return nullopt if duplicate handles exist.
-    if (base::Contains(bundle.handle_to_key_map(), key->handle()))
+    if (bundle.handle_to_key_map().contains(key->handle()))
       return std::nullopt;
 
     bundle.AddKey(*key);
@@ -166,7 +165,7 @@ void CryptAuthKeyBundle::SetActiveKey(const std::string& handle) {
 }
 
 void CryptAuthKeyBundle::DeleteKey(const std::string& handle) {
-  DCHECK(base::Contains(handle_to_key_map_, handle));
+  DCHECK(handle_to_key_map_.contains(handle));
   handle_to_key_map_.erase(handle);
 }
 
@@ -175,12 +174,12 @@ void CryptAuthKeyBundle::DeactivateKeys() {
     handle_key_pair.second.set_status(CryptAuthKey::Status::kInactive);
 }
 
-base::Value::Dict CryptAuthKeyBundle::AsDictionary() const {
-  base::Value::Dict dict;
+base::DictValue CryptAuthKeyBundle::AsDictionary() const {
+  base::DictValue dict;
 
   dict.Set(kBundleNameDictKey, KeyBundleNameEnumToString(name_));
 
-  base::Value::List keys;
+  base::ListValue keys;
   for (const auto& handle_key_pair : handle_to_key_map_) {
     if (handle_key_pair.second.IsSymmetricKey()) {
       keys.Append(handle_key_pair.second.AsSymmetricKeyDictionary());

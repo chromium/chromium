@@ -21,7 +21,7 @@ class GuestViewBase;
 // on attachment. GuestViewEvents are owned by GuestViewBase.
 class GuestViewEvent {
  public:
-  GuestViewEvent(const std::string& name, base::Value::Dict args);
+  GuestViewEvent(const std::string& name, base::DictValue args);
 
   GuestViewEvent(const GuestViewEvent&) = delete;
   GuestViewEvent& operator=(const GuestViewEvent&) = delete;
@@ -34,7 +34,7 @@ class GuestViewEvent {
 
 private:
   const std::string name_;
-  std::optional<base::Value::Dict> args_;
+  std::optional<base::DictValue> args_;
 };
 
 }  // namespace guest_view

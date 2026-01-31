@@ -11,17 +11,20 @@
 // `BWGConsentMediator`.
 @protocol BWGConsentMutator
 
-// Did consent to BWG.
-- (void)didConsentBWG;
+// Did consent to Gemini.
+- (void)didConsentGemini;
 
-// Did refuse BWG consent. Triggered by cancel.
-- (void)didRefuseBWGConsent;
+// Did refuse Gemini consent. Triggered by cancel.
+- (void)didRefuseGeminiConsent;
 
-// Did close BWG Promo UI.
-- (void)didCloseBWGPromo;
+// Did close Gemini Promo UI.
+- (void)didCloseGeminiPromo;
 
 // Handles tap on learn about your choices.
 - (void)openNewTabWithURL:(const GURL&)URL;
+
+// Promo was shown.
+- (void)didShowGeminiPromo;
 
 @end
 

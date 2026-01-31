@@ -80,7 +80,8 @@ OmniboxComposeboxHandler::OmniboxComposeboxHandler(
     mojo::PendingReceiver<searchbox::mojom::PageHandler>
         pending_searchbox_handler,
     Profile* profile,
-    content::WebContents* web_contents)
+    content::WebContents* web_contents,
+    GetSessionHandleCallback get_session_callback)
     : ComposeboxHandler(
           std::move(pending_handler),
           std::move(pending_page),
@@ -90,7 +91,15 @@ OmniboxComposeboxHandler::OmniboxComposeboxHandler(
           std::make_unique<OmniboxController>(
               std::make_unique<OmniboxPopupComposeboxClient>(profile,
                                                              web_contents,
-                                                             this))) {}
+                                                             this)),
+          std::move(get_session_callback)) {
+  // Set the callback for getting suggest inputs from the session.
+  // The session is owned by WebUI controller and accessed via callback.
+  // It is safe to use Unretained because omnibox client is owned by `this`.
+  static_cast<ContextualOmniboxClient*>(omnibox_controller()->client())
+      ->SetSuggestInputsCallback(base::BindRepeating(
+          &OmniboxComposeboxHandler::GetSuggestInputs, base::Unretained(this)));
+}
 
 OmniboxComposeboxHandler::~OmniboxComposeboxHandler() = default;
 

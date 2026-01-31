@@ -803,11 +803,11 @@ bool AllowedToUsePaymentRequest(ExecutionContext* execution_context) {
 void WarnIgnoringQueryQuotaForCanMakePayment(
     ExecutionContext& execution_context,
     const char* method_name) {
-  const String& error = String::Format(
+  const String& error = UNSAFE_TODO(String::Format(
       "Quota reached for PaymentRequest.%s(). This would normally "
       "reject the promise, but allowing continued usage on localhost and "
       "file:// scheme origins.",
-      method_name);
+      method_name));
   execution_context.AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
       mojom::ConsoleMessageSource::kJavaScript,
       mojom::ConsoleMessageLevel::kWarning, error));

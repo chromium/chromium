@@ -53,7 +53,7 @@ class PageAggregator : public FrameNodeObserver,
   void OnTakenFromGraph(Graph* graph) override;
 
   // NodeDataDescriber:
-  base::Value::Dict DescribePageNodeData(const PageNode* node) const override;
+  base::DictValue DescribePageNodeData(const PageNode* node) const override;
 };
 
 }  // namespace performance_manager

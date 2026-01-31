@@ -114,6 +114,7 @@ static_library("devtools") {
     "//chrome/browser/search_engines",
     "//chrome/browser/sync",
     "//chrome/browser/ui/autofill",
+    "//chrome/browser/ui/dialogs",
 
     # To prevent circular GN dependencies, this target does not depend on
     # //chrome/browser:browser, even though it has a real build dependency on
@@ -194,6 +195,7 @@ static_library("devtools") {
     ]
     deps += [
       "//chrome/browser:browser_process",
+      "//chrome/browser:flags",
       "//chrome/browser/profiles:profile",
       "//chrome/browser/profiles:profile_util",
       "//chrome/browser/signin",
@@ -205,7 +207,6 @@ static_library("devtools") {
       "//components/javascript_dialogs",
       "//components/language/core/browser",
       "//components/metrics/structured:structured_events",
-      "//components/privacy_sandbox:tracking_protection_settings",
       "//components/signin/public/base:signin_switches",
       "//components/viz/host",
       "//ui/shell_dialogs",
@@ -238,8 +239,6 @@ static_library("devtools") {
       "//chrome:resources",
       "//chrome:strings",
       "//chrome/app/theme:theme_resources",
-      "//chrome/browser:flags",
-      "//chrome/browser/apps/app_service:constants",
       "//chrome/browser/infobars",
       "//chrome/browser/media/router:media_router_feature",
       "//chrome/browser/themes",
@@ -258,6 +257,7 @@ static_library("devtools") {
       "//components/pref_registry",
       "//components/prefs",
       "//components/search_engines",
+      "//components/services/app_service",
       "//components/sessions",
       "//components/signin/public/identity_manager",
       "//components/sync/service",

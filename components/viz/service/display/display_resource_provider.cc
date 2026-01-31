@@ -122,7 +122,7 @@ bool DisplayResourceProvider::IsBackedBySurfaceView(ResourceId id) const {
 }
 #endif
 
-#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_WIN)
+#if BUILDFLAG(IS_ANDROID)
 bool DisplayResourceProvider::DoesResourceWantPromotionHint(
     ResourceId id) const {
   const ChildResource* resource = TryGetResource(id);
@@ -161,9 +161,10 @@ bool DisplayResourceProvider::IsLowLatencyRendering(ResourceId id) const {
 
 SurfaceId DisplayResourceProvider::GetSurfaceId(ResourceId id) const {
   const ChildResource* resource = GetResource(id);
-  return children_.contains(resource->child_id)
-             ? children_.at(resource->child_id).surface_id
-             : SurfaceId();
+  if (auto it = children_.find(resource->child_id); it != children_.end()) {
+    return it->second.surface_id;
+  }
+  return SurfaceId();
 }
 
 int DisplayResourceProvider::GetChildId(ResourceId id) const {
@@ -255,8 +256,8 @@ void DisplayResourceProvider::ReceiveFromChild(
         transferable_resource.is_empty()) {
       TRACE_EVENT0(
           "viz", "DisplayResourceProvider::ReceiveFromChild dropping invalid");
-      std::vector<ReturnedResource> returned;
-      returned.push_back(transferable_resource.ToReturnedResource());
+      std::vector<ReturnedResourceViz> returned;
+      returned.push_back(transferable_resource.ToReturnedResourceViz());
       child_info.return_callback.Run(std::move(returned));
       continue;
     }
@@ -413,7 +414,7 @@ void DisplayResourceProvider::DeleteAndReturnUnusedResourcesToChild(
     return;
   }
 
-  std::vector<ReturnedResource> to_return =
+  std::vector<ReturnedResourceViz> to_return =
       DeleteAndReturnUnusedResourcesToChildImpl(child_info, style, unused);
 
   if (!to_return.empty())

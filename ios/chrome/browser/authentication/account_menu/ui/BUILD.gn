@@ -23,6 +23,7 @@ source_set("ui") {
     "//ios/chrome/browser/policy/model",
     "//ios/chrome/browser/settings/model/sync/utils:identity_error_util",
     "//ios/chrome/browser/settings/ui_bundled/cells",
+    "//ios/chrome/browser/shared/model/profile:features",
     "//ios/chrome/browser/shared/ui/list_model",
     "//ios/chrome/browser/shared/ui/symbols",
     "//ios/chrome/browser/shared/ui/table_view",
@@ -30,6 +31,7 @@ source_set("ui") {
     "//ios/chrome/browser/shared/ui/table_view/content_configuration",
     "//ios/chrome/browser/signin/model:constants",
     "//ios/chrome/common/ui/colors",
+    "//ios/chrome/common/ui/table_view:cells_constants",
     "//ios/chrome/common/ui/util:image_util",
     "//ui/base",
   ]

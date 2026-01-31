@@ -6,7 +6,6 @@
 
 #include <algorithm>
 
-#include "base/containers/contains.h"
 #include "base/observer_list.h"
 #include "chrome/browser/extensions/api/tabs/windows_util.h"
 #include "chrome/browser/extensions/window_controller_list_observer.h"
@@ -48,7 +47,7 @@ void WindowControllerList::RemoveExtensionWindow(WindowController* window) {
 }
 
 void WindowControllerList::NotifyWindowBoundsChanged(WindowController* window) {
-  if (base::Contains(windows_, window)) {
+  if (std::ranges::contains(windows_, window)) {
     for (auto& observer : observers_)
       observer.OnWindowBoundsChanged(window);
   }
@@ -56,7 +55,7 @@ void WindowControllerList::NotifyWindowBoundsChanged(WindowController* window) {
 
 void WindowControllerList::NotifyWindowFocusChanged(WindowController* window,
                                                     bool has_focus) {
-  if (base::Contains(windows_, window)) {
+  if (std::ranges::contains(windows_, window)) {
     for (auto& observer : observers_) {
       observer.OnWindowFocusChanged(window, has_focus);
     }

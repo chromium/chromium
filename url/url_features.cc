@@ -32,4 +32,27 @@ bool IsUsingIDNAContextJRules() {
   return base::FeatureList::IsEnabled(kUseIDNAContextJRules);
 }
 
+BASE_FEATURE(kNonSpecialLeadingSlashHandling, base::FEATURE_ENABLED_BY_DEFAULT);
+
+bool IsNonSpecialLeadingSlashHandlingEnabled() {
+  if (!base::FeatureList::GetInstance()) {
+    return kNonSpecialLeadingSlashHandling.default_state ==
+           base::FEATURE_ENABLED_BY_DEFAULT;
+  }
+  return base::FeatureList::IsEnabled(kNonSpecialLeadingSlashHandling);
+}
+
+BASE_FEATURE(kPreservePercentEncodedDotInPath,
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
+bool IsPreservingPercentEncodedDotInPath() {
+  // If the FeatureList isn't available yet, fall back to the feature's default
+  // state. This may happen during early startup, see crbug.com/1441956.
+  if (!base::FeatureList::GetInstance()) {
+    return kPreservePercentEncodedDotInPath.default_state ==
+           base::FEATURE_ENABLED_BY_DEFAULT;
+  }
+  return base::FeatureList::IsEnabled(kPreservePercentEncodedDotInPath);
+}
+
 }  // namespace url

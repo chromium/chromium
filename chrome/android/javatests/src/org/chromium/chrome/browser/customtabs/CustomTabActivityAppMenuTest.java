@@ -55,6 +55,7 @@ import org.chromium.base.task.TaskTraits;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
@@ -80,6 +81,7 @@ import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.R;
 import org.chromium.chrome.test.util.ChromeTabUtils;
 import org.chromium.components.webapps.WebappsUtils;
+import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.modelutil.MVCListAdapter;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -220,6 +222,7 @@ public class CustomTabActivityAppMenuTest {
     /** Test the entries in the app menu. */
     @Test
     @SmallTest
+    @DisableIf.Device(DeviceFormFactor.DESKTOP) // https://crbug.com/394668480
     public void testAppMenu() throws Exception {
         Intent intent = createMinimalCustomTabIntent();
         int numMenuEntries = 1;
@@ -288,6 +291,7 @@ public class CustomTabActivityAppMenuTest {
 
     @Test
     @SmallTest
+    @DisableIf.Device(DeviceFormFactor.DESKTOP) // https://crbug.com/394668480
     public void testAppMenuNoCustomEntries() throws Exception {
         Intent intent = createMinimalCustomTabIntent();
         int numMenuEntries = 0;
@@ -367,6 +371,7 @@ public class CustomTabActivityAppMenuTest {
     /** Test the entries in app menu for media viewer. */
     @Test
     @SmallTest
+    @DisableIf.Device(DeviceFormFactor.DESKTOP) // https://crbug.com/394668480
     public void testAppMenuForOfflinePage() throws Exception {
         Intent intent = createMinimalCustomTabIntent();
         intent.putExtra(
@@ -417,6 +422,7 @@ public class CustomTabActivityAppMenuTest {
 
     @Test
     @SmallTest
+    @DisableIf.Device(DeviceFormFactor.DESKTOP) // https://crbug.com/394668480
     public void testAppMenuBeforeFirstRun() throws Exception {
         mCustomTabActivityTestRule.startCustomTabActivityWithIntent(createMinimalCustomTabIntent());
         // Mark the first run as not completed. This has to be done after we start the intent,
@@ -514,6 +520,7 @@ public class CustomTabActivityAppMenuTest {
     /** Test that only up to 7 entries are added to the custom menu. */
     @Test
     @SmallTest
+    @DisableIf.Device(DeviceFormFactor.DESKTOP) // https://crbug.com/394668480
     public void testMaxMenuItems() throws Exception {
         Intent intent = createMinimalCustomTabIntent();
         int numMenuEntries = 9;
@@ -784,6 +791,7 @@ public class CustomTabActivityAppMenuTest {
     @Test
     @SmallTest
     @DisableFeatures({ChromeFeatureList.APP_SPECIFIC_HISTORY})
+    @DisableIf.Device(DeviceFormFactor.DESKTOP) // https://crbug.com/394668480
     public void testNoHistoryItem_FeatureDisabled() throws Exception {
         Intent intent = createMinimalCustomTabIntent();
         mCustomTabActivityTestRule.startCustomTabActivityWithIntent(intent);
@@ -795,6 +803,7 @@ public class CustomTabActivityAppMenuTest {
     @Test
     @SmallTest
     @EnableFeatures({ChromeFeatureList.APP_SPECIFIC_HISTORY})
+    @DisableIf.Device(DeviceFormFactor.DESKTOP) // https://crbug.com/394668480
     public void testNoHistoryItem_NoClientPackage() throws Exception {
         Intent intent = createMinimalCustomTabIntent();
         mCustomTabActivityTestRule.startCustomTabActivityWithIntent(intent);

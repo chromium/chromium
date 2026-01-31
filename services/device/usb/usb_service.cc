@@ -6,7 +6,6 @@
 
 #include <utility>
 
-#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/memory/ptr_util.h"
@@ -100,7 +99,7 @@ void UsbService::RemoveObserver(Observer* observer) {
 
 void UsbService::AddDeviceForTesting(scoped_refptr<UsbDevice> device) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(!base::Contains(devices_, device->guid()));
+  DCHECK(!devices_.contains(device->guid()));
   devices_[device->guid()] = device;
   testing_devices_.insert(device->guid());
   NotifyDeviceAdded(device);

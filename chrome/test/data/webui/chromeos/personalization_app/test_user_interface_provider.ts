@@ -13,7 +13,7 @@ export class TestUserProvider extends TestBrowserProxy implements
     {
       index: 8,
       title: 'Test title',
-      url: {url: 'data://test_url'},
+      url: 'data://test_url',
       sourceInfo: null,
     },
   ];
@@ -25,9 +25,7 @@ export class TestUserProvider extends TestBrowserProxy implements
     email: 'test@email',
   };
 
-  profileImage: Url = {
-    url: 'data://test_profile_url',
-  };
+  profileImage: Url = 'data://test_profile_url';
 
   constructor() {
     super([
@@ -66,9 +64,7 @@ export class TestUserProvider extends TestBrowserProxy implements
 
   selectProfileImage() {
     this.methodCalled('selectProfileImage');
-    this.profileImage = {
-      url: 'data://updated_test_url',
-    };
+    this.profileImage = 'data://updated_test_url';
   }
 
   selectCameraImage(data: BigBuffer) {

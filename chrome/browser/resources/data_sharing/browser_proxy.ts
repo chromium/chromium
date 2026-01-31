@@ -58,12 +58,11 @@ export class BrowserProxyImpl implements BrowserProxy {
   makeTabGroupShared(tabGroupId: string, groupId: string, tokenSecret: string):
       Promise<string|undefined> {
     return this.handler.makeTabGroupShared(tabGroupId, groupId, tokenSecret)
-        .then(res => res.url ? res.url.url : undefined);
+        .then(res => res.url ? res.url : undefined);
   }
 
   getShareLink(groupId: string, tokenSecret: string): Promise<string> {
-    return this.handler.getShareLink(groupId, tokenSecret)
-        .then(res => res.url.url);
+    return this.handler.getShareLink(groupId, tokenSecret).then(res => res.url);
   }
 
   getTabGroupPreview(groupId: string, tokenSecret: string):
@@ -79,7 +78,7 @@ export class BrowserProxyImpl implements BrowserProxy {
           previews.push({
             url: sharedTab.displayUrl,
             faviconUrl:
-                this.getFaviconServiceUrl(sharedTab.faviconUrl.url).toString(),
+                this.getFaviconServiceUrl(sharedTab.faviconUrl).toString(),
           });
         });
         resolve(previews);

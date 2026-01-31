@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 147 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 149 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] [["stylewithcss","false"],["defaultparagraphseparator","div"],["justifyfull",""]] "<p>[foo]<p align=justify>bar<p>extra" queryCommandValue("justifyfull") before
   assert_equals: Wrong result returned expected "left" but got "false"
 [FAIL] [["stylewithcss","false"],["defaultparagraphseparator","div"],["justifyfull",""]] "<p>[foo]<p align=justify>bar<p>extra" queryCommandState("justifyfull") after
@@ -294,5 +294,9 @@ Found 147 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_equals: Wrong result returned expected "left" but got "false"
 [FAIL] [["defaultparagraphseparator","p"],["justifyfull",""]] "<div align=justify><p>foo</div> <p>[bar]</p> <div align=justify><p>baz</div>" queryCommandValue("justifyfull") after
   assert_equals: Wrong result returned expected "justify" but got "true"
+[FAIL] [["stylewithcss","true"],["defaultparagraphseparator","div"],["justifyfull",""]] "{ <span contenteditable=\\"false\\">A</span> ; <span contenteditable=\\"false\\">B</span> ; <span contenteditable=\\"false\\">C</span> }" checks for modifications to non-editable content
+  assert_equals: Wrapper div must have only one attribute (<div contenteditable="">), but has more (<div contenteditable="" style="text-align: justify;">) expected 1 but got 2
+[FAIL] [["stylewithcss","true"],["defaultparagraphseparator","div"],["justifyfull",""]] "{ <span contenteditable=\\"false\\">A</span> ; <span contenteditable=\\"false\\">B</span> ; <span contenteditable=\\"false\\">C</span> }" compare innerHTML
+  assert_in_array: Unexpected innerHTML (after normalizing inline style) value "<div style=\\"text-align:justify\\"></div> <span contenteditable=\\"false\\">A</span> ; <span contenteditable=\\"false\\">B</span> ; <span contenteditable=\\"false\\">C</span> " not in array ["<div style=\\"text-align:justify\\"> <span contenteditable=\\"false\\">A</span> ; <span contenteditable=\\"false\\">B</span> ; <span contenteditable=\\"false\\">C</span> </div>", " <div style=\\"text-align:justify\\"><span contenteditable=\\"false\\">A</span> ; <span contenteditable=\\"false\\">B</span> ; <span contenteditable=\\"false\\">C</span></div> ", "<div style=\\"text-align:justify\\"><span contenteditable=\\"false\\">A</span> ; <span contenteditable=\\"false\\">B</span> ; <span contenteditable=\\"false\\">C</span></div>"]
 Harness: the test ran to completion.
 

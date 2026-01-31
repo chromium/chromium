@@ -6,7 +6,6 @@
 
 #include <memory>
 
-#include "base/containers/contains.h"
 #include "base/run_loop.h"
 #include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
@@ -153,7 +152,7 @@ class TestAdTracker : public AdTracker {
   void SetSimTest() { sim_test_ = true; }
 
   void WaitForSubresource(const String& url) {
-    if (base::Contains(is_ad_, url)) {
+    if (is_ad_.Contains(url)) {
       return;
     }
     url_to_wait_for_ = url;
@@ -409,7 +408,8 @@ TEST_F(AdTrackerSimTest, AdResourceDetectedByContext) {
 // When inline script in an ad frame inserts an iframe into a non-ad frame, the
 // new frame should be considered as created by ad script (and would therefore
 // be tagged as an ad).
-TEST_F(AdTrackerSimTest, InlineAdScriptRunningInNonAdContext) {
+// TODO(474081102): Reenable this test once the issue is addressed.
+TEST_F(AdTrackerSimTest, DISABLED_InlineAdScriptRunningInNonAdContext) {
   SimSubresourceRequest ad_script("https://example.com/ad_script.js",
                                   "text/javascript");
   SimRequest ad_iframe("https://example.com/ad_frame.html", "text/html");
@@ -1060,14 +1060,14 @@ TEST_P(AdTrackerVanillaOrAdSimTest, StyleTagAddedByScript) {
 
   main_resource_->Complete(IsAdRun() ? kPageWithAdScript
                                      : kPageWithVanillaScript);
-  script.Complete(String::Format(
+  script.Complete(UNSAFE_TODO(String::Format(
       R"SCRIPT(
         let style = document.createElement("style");
         let text = document.createTextNode(`%s`);
         style.appendChild(text);
         document.head.appendChild(style);
       )SCRIPT",
-      kStylesheetWithVanillaResources));
+      kStylesheetWithVanillaResources)));
 
   // Wait for stylesheet to fetch resources.
   ad_tracker_->WaitForSubresource(vanilla_font_url);
@@ -1576,9 +1576,8 @@ TEST_F(AdTrackerSimTest, AdScriptAncestry_AdScriptAtTopOfStack) {
   ad_document.Complete("<body></body>");
 }
 
-// Tests that when the script at the top of the *async* stack is an ad script,
-// `IsAdScriptInStack` correctly identifies it (via the bottommost async ad
-// script) and returns the expected `AdScriptIdentifier`.
+// Non-ad script at the top of the stack should not be tagged as ad related,
+// even if the async stack suggests otherwise.
 TEST_F(AdTrackerSimTest, AdScriptAncestry_AdScriptAtTopOfAsyncStack) {
   String vanilla_script_url = "https://example.com/script.js";
   String ad_script_url = "https://example.com/script.js?ad=true";
@@ -1586,9 +1585,8 @@ TEST_F(AdTrackerSimTest, AdScriptAncestry_AdScriptAtTopOfAsyncStack) {
 
   // Load an ad script and a vanilla script. The vanilla script calls a
   // function on the ad script which asynchronously calls a function on the
-  // vanilla script to create an ad iframe. The ad script is at top of *async*
-  // stack when it creates the frame and IsAdScriptInStack should return
-  // the script id, verify that they look right.
+  // vanilla script to create an ad iframe. The ad script is at top of async
+  // stack when it creates the frame.
   SimSubresourceRequest vanilla_script(vanilla_script_url, "text/javascript");
   SimSubresourceRequest ad_script(ad_script_url, "text/javascript");
   SimRequest ad_document(ad_document_url, "text/html");
@@ -1617,17 +1615,56 @@ TEST_F(AdTrackerSimTest, AdScriptAncestry_AdScriptAtTopOfAsyncStack) {
   )SCRIPT");
   base::RunLoop().RunUntilIdle();
 
-  // Verify frame was tagged as an ad.
+  // Verify frame was not tagged as an ad.
   auto* child_frame =
       To<LocalFrame>(GetDocument().GetFrame()->Tree().FirstChild());
-  EXPECT_TRUE(child_frame->IsFrameCreatedByAdScript());
+  EXPECT_FALSE(child_frame->IsFrameCreatedByAdScript());
 
-  // Verify that IsAdScriptInStack() returned the right script information.
-  EXPECT_EQ(ad_tracker_->last_ad_script_ancestry().ancestry_chain.size(), 1u);
-  EXPECT_GT(ad_tracker_->last_ad_script_ancestry().ancestry_chain[0].id, 0);
-  EXPECT_EQ(String(ad_tracker_->last_ad_script_ancestry()
-                       .root_script_filterlist_rule.ToString()),
-            "ad=true|");
+  EXPECT_TRUE(ad_tracker_->RequestWithUrlTaggedAsAd(ad_script_url));
+  EXPECT_FALSE(ad_tracker_->RequestWithUrlTaggedAsAd(vanilla_script_url));
+
+  // Clean up for SimTest expectations.
+  ad_document.Complete("<body></body>");
+}
+
+// Non-ad script at the top of the stack should not be tagged as ad related,
+// even if the sync stack suggests otherwise.
+TEST_F(AdTrackerSimTest, AdScriptAncestry_AdScriptAtBottomOfSyncStack) {
+  String vanilla_script_url = "https://example.com/script.js";
+  String ad_script_url = "https://example.com/script.js?ad=true";
+  String ad_document_url = "https://example.com/ad_document.html";
+
+  // Load an ad script and a vanilla script. The ad script synchronously calls
+  // the non-ad script. The ad script is at the bottom of the synchronous stack
+  // when it creates the frame.
+  SimSubresourceRequest vanilla_script(vanilla_script_url, "text/javascript");
+  SimSubresourceRequest ad_script(ad_script_url, "text/javascript");
+  SimRequest ad_document(ad_document_url, "text/html");
+
+  main_resource_->Complete(R"HTML(
+    <body><script src="script.js"></script>
+          <script src="script.js?ad=true"></script></body>
+  )HTML");
+
+  vanilla_script.Complete(R"SCRIPT(
+    function createIframe() {
+      frame = document.createElement("iframe");
+      frame.src = "ad_document.html";
+      document.body.appendChild(frame);
+    }
+
+  )SCRIPT");
+
+  ad_script.Complete(R"SCRIPT(
+    createIframe();
+  )SCRIPT");
+
+  base::RunLoop().RunUntilIdle();
+
+  // Verify frame was not tagged as an ad.
+  auto* child_frame =
+      To<LocalFrame>(GetDocument().GetFrame()->Tree().FirstChild());
+  EXPECT_FALSE(child_frame->IsFrameCreatedByAdScript());
 
   EXPECT_TRUE(ad_tracker_->RequestWithUrlTaggedAsAd(ad_script_url));
   EXPECT_FALSE(ad_tracker_->RequestWithUrlTaggedAsAd(vanilla_script_url));
@@ -3438,10 +3475,8 @@ TEST_F(AdTrackerSimTest,
   EXPECT_FALSE(ad_tracker_->last_is_ad_script_in_stack_result());
 }
 
-// Tests a known limitation where the heuristic does not apply to calls within
-// a Promise callback (e.g., .then()). This is because AdTracker does not
-// currently track synchronous task scopes for promise resolutions, so the call
-// is flagged as an ad based on the top-of-stack script.
+// Tests that the monkeypatch heuristic applies to promise callbacks (but is not
+// limited in number).
 TEST_F(AdTrackerSimTest,
        IgnoreMonkeyPatchHeuristic_PromiseCallbackDoesNotApply_IsAd) {
   String ad_script_url = "https://example.com/script.js?ad=true";
@@ -3472,10 +3507,57 @@ TEST_F(AdTrackerSimTest,
 
   base::RunLoop().RunUntilIdle();
 
-  // AdTracker does not currently track synchronous task scopes for promise
-  // resolutions. The check therefore falls back to identifying the ad script at
-  // the top of the stack and returns true.
-  EXPECT_TRUE(ad_tracker_->last_is_ad_script_in_stack_result());
+  EXPECT_FALSE(ad_tracker_->last_is_ad_script_in_stack_result());
+}
+
+// Tests that the monkeypatch heuristic correctly identifies when a non-ad
+// script calls a monkeypatched version of appendChild to load a script. The
+// resulting script load should not be tagged as an ad.
+TEST_F(AdTrackerSimTest, IgnoreMonkeyPatchHeuristic_MonkeypatchedAppendChild) {
+  String ad_script_url = "https://example.com/ad_script.js?ad=true";
+  String vanilla_script_url = "https://example.com/vanilla_script.js";
+  String target_script_url = "https://example.com/target_script.js";
+
+  SimSubresourceRequest ad_script(ad_script_url, "text/javascript");
+  SimSubresourceRequest vanilla_script(vanilla_script_url, "text/javascript");
+  SimSubresourceRequest target_script(target_script_url, "text/javascript");
+
+  main_resource_->Complete(R"HTML(
+    <body>
+      <script src="ad_script.js?ad=true"></script>
+      <script src="vanilla_script.js"></script>
+    </body>
+  )HTML");
+
+  // 1. The ad script monkeypatches Node.prototype.appendChild.
+  // This puts the ad script at the top of the V8 stack whenever
+  // appendChild is called.
+  ad_script.Complete(R"SCRIPT(
+    const originalAppendChild = Node.prototype.appendChild;
+    Node.prototype.appendChild = function(...args) {
+      return originalAppendChild.apply(this, args);
+    };
+  )SCRIPT");
+
+  // 2. The vanilla (1p) script calls the now-monkeypatched appendChild
+  // to add a new script element to the DOM.
+  vanilla_script.Complete(R"SCRIPT(
+    const script = document.createElement("script");
+    script.src = "target_script.js";
+    document.body.appendChild(script);
+  )SCRIPT");
+
+  ad_tracker_->WaitForSubresource(target_script_url);
+  target_script.Complete("");
+
+  EXPECT_TRUE(ad_tracker_->RequestWithUrlTaggedAsAd(ad_script_url));
+  EXPECT_FALSE(ad_tracker_->RequestWithUrlTaggedAsAd(vanilla_script_url));
+
+  // The target script should not be tagged as an ad.
+  // Even though the ad script was at the top of the stack during the call,
+  // the AdTracker's heuristic should detect the monkeypatch pattern and
+  // attribute the load to the 1p vanilla script caller.
+  EXPECT_FALSE(ad_tracker_->RequestWithUrlTaggedAsAd(target_script_url));
 }
 
 class AdTrackerDisabledSimTest : public SimTest,

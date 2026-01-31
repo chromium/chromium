@@ -22,6 +22,11 @@ namespace {
 std::vector<FileSystemItem> GetAllItems(
     const FilePathMap<std::vector<FileSystemItem>>& map) {
   std::vector<FileSystemItem> items;
+  size_t total_items_count = 0;
+  for (const auto& pair : map) {
+    total_items_count += pair.second.size();
+  }
+  items.reserve(total_items_count);
   for (const auto& pair : map) {
     items.insert(items.end(), pair.second.begin(), pair.second.end());
   }
@@ -96,15 +101,8 @@ std::vector<FileSystemItem> FileSystemServiceImpl::GetSignals(
       }
 
       if (option.compute_executable_metadata) {
-        if (!executable_paths.contains(resolved_file_path)) {
-          executable_paths.insert(resolved_file_path);
-        }
+        executable_paths.insert(resolved_file_path);
       }
-    }
-
-    if (!resolved_paths_to_item_map.contains(resolved_file_path)) {
-      resolved_paths_to_item_map[resolved_file_path] =
-          std::vector<FileSystemItem>();
     }
 
     resolved_paths_to_item_map[resolved_file_path].push_back(
@@ -115,12 +113,12 @@ std::vector<FileSystemItem> FileSystemServiceImpl::GetSignals(
       executable_metadata_service_->GetAllExecutableMetadata(executable_paths);
 
   for (const auto& path_metadata_pair : collected_executable_metadata) {
-    if (!resolved_paths_to_item_map.contains(path_metadata_pair.first)) {
+    auto it = resolved_paths_to_item_map.find(path_metadata_pair.first);
+    if (it == resolved_paths_to_item_map.end()) {
       continue;
     }
 
-    for (auto& collected_item :
-         resolved_paths_to_item_map[path_metadata_pair.first]) {
+    for (auto& collected_item : it->second) {
       collected_item.executable_metadata = path_metadata_pair.second;
     }
   }

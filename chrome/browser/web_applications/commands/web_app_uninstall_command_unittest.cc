@@ -11,6 +11,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/test/bind.h"
 #include "base/test/gmock_callback_support.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "build/buildflag.h"
@@ -327,6 +328,7 @@ class WebAppUninstallCommandSourceTest
 // Verify an app can be uninstalled with non-external uninstall_sources and
 // Sync.
 TEST_P(WebAppUninstallCommandSourceTest, RunTestForUninstallSource) {
+  base::HistogramTester tester;
   auto web_app = test::CreateWebApp(GURL("https://www.example.com"),
                                     WebAppManagement::kSync);
   webapps::AppId app_id = web_app->app_id();
@@ -348,6 +350,8 @@ TEST_P(WebAppUninstallCommandSourceTest, RunTestForUninstallSource) {
   ASSERT_TRUE(result_future.Wait());
   EXPECT_EQ(webapps::UninstallResultCode::kAppRemoved, result_future.Get());
   EXPECT_EQ(provider()->registrar_unsafe().GetAppById(app_id), nullptr);
+  EXPECT_THAT(tester.GetAllSamples("Webapp.Install.UninstallEvent"),
+              base::BucketsAre(base::Bucket(GetParam().source, /*count=*/1)));
 }
 
 INSTANTIATE_TEST_SUITE_P(

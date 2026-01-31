@@ -1,0 +1,73 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module skia.mojom;
+
+import "skia/public/mojom/skcolorspace_primaries.mojom";
+
+// Serialization of the `skhdr::ContentLightLevelInformation` structure.
+struct SkHdrContentLightLevelInformation {
+  float max_cll;
+  float max_fall;
+};
+
+// Serialization of the `skhdr::MasteringDisplayColorVolume` structure.
+struct SkHdrMasteringDisplayColorVolume {
+  SkColorSpacePrimaries primaries;
+  float max_luminance;
+  float min_luminance;
+};
+
+// Serialization of the `skhdr::AdaptiveGlobalToneMap::GainCurve::ControlPoint`
+// structure.
+struct SkHdrAgtmGainCurveControlPoint {
+  float x;
+  float y;
+  float m;
+};
+
+// Serialization of the `skhdr::AdaptiveGlobalToneMap::GainCurve` structure.
+struct SkHdrAgtmGainCurve {
+  array<SkHdrAgtmGainCurveControlPoint> control_points;
+};
+
+// Serialization of the `skhdr::AdaptiveGlobalToneMap::ComponentMixingFunction`
+// structure.
+struct SkHdrAgtmComponentMixingFunction {
+  float red;
+  float green;
+  float blue;
+  float max;
+  float min;
+  float component;
+};
+
+// Serialization of the `skhdr::AdaptiveGlobalToneMap::ColorGainFunction`
+// structure.
+struct SkHdrAgtmColorGainFunction {
+  SkHdrAgtmComponentMixingFunction component_mixing;
+  SkHdrAgtmGainCurve gain_curve;
+};
+
+// Serialization of the `skhdr::AdaptiveGlobalToneMap::AlternateImage`
+// structure.
+struct SkHdrAgtmAlternateImage {
+  float hdr_headroom;
+  SkHdrAgtmColorGainFunction color_gain_function;
+};
+
+// Serialization of the `skhdr::AdaptiveGlobalToneMap::HeadroomAdaptiveToneMap`
+// structure.
+struct SkHdrAgtmHeadroomAdaptiveToneMap {
+  float baseline_hdr_headroom;
+  SkColorSpacePrimaries gain_application_space_primaries;
+  array<SkHdrAgtmAlternateImage> alternate_images;
+};
+
+// Serialization of the `skhdr::AdaptiveGlobalToneMap` structure.
+struct SkHdrAdaptiveGlobalToneMap {
+  float hdr_reference_white;
+  SkHdrAgtmHeadroomAdaptiveToneMap? headroom_adaptive_tone_map;
+};
+

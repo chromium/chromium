@@ -110,7 +110,7 @@ extern const char kPermissionPromptSurveyPromptDisplayDurationKey[];
 COMPONENT_EXPORT(PERMISSIONS_COMMON)
 extern const char kRevokedKey[];
 
-// The key for base::Value::Dict, holding the revoked chooser permission data.
+// The key for base::DictValue, holding the revoked chooser permission data.
 // The Dict has std::string_view of ContentSettingsType int as key,
 // and the corresponding revoked `base::Value` data as value.
 // For example, {"3": {"foo": "bar"}, "12": "baz", "24": ["item0", "item1"]}

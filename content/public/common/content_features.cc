@@ -25,12 +25,6 @@ namespace features {
 BASE_FEATURE(kAbortNavigationsFromTabClosures,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Kill switch to guard additional security checks performed by the browser
-// process on opaque origins, such as when verifying source origins for
-// postMessage. See https://crbug.com/40109437.
-BASE_FEATURE(kAdditionalOpaqueOriginEnforcements,
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Capture Android key event objects to send them to the web contents when the
 // IME sends composition texts.
 BASE_FEATURE(kAndroidCaptureKeyEvents, base::FEATURE_DISABLED_BY_DEFAULT);
@@ -55,6 +49,10 @@ BASE_FEATURE(kAndroidMediaInsertion, base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Enables the physical keyboard autocorrect underline feature.
 BASE_FEATURE(kAndroidPkAutocorrectUnderline, base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Enables the spelling underline in composition mode.
+BASE_FEATURE(kAndroidSpellingUnderlineInCompositionMode,
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Warm up a spare renderer after each navigation on Android.
 BASE_FEATURE(kAndroidWarmUpSpareRendererWithTimeout,
@@ -211,33 +209,6 @@ BASE_FEATURE(kClearCrossSiteCrossBrowsingContextGroupWindowName,
 
 BASE_FEATURE(kCompositeBGColorAnimation, base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Gate access to cookie deprecation API which allows developers to opt in
-// server side testing without cookies.
-// (See https://developer.chrome.com/en/docs/privacy-sandbox/chrome-testing)
-BASE_FEATURE(kCookieDeprecationFacilitatedTesting,
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-// Set whether to enable cookie deprecation API for off-the-record profiles.
-const base::FeatureParam<bool>
-    kCookieDeprecationFacilitatedTestingEnableOTRProfiles{
-        &kCookieDeprecationFacilitatedTesting, "enable_otr_profiles", false};
-
-// The experiment label for the cookie deprecation (Mode A/B) study.
-const base::FeatureParam<std::string> kCookieDeprecationLabel{
-    &kCookieDeprecationFacilitatedTesting, kCookieDeprecationLabelName, ""};
-// Set whether Ads APIs should be disabled for third-party cookie deprecation.
-const base::FeatureParam<bool> kCookieDeprecationTestingDisableAdsAPIs{
-    &features::kCookieDeprecationFacilitatedTesting,
-    /*name=*/kCookieDeprecationTestingDisableAdsAPIsName,
-    /*default_value=*/false};
-
-const char kCookieDeprecationLabelName[] = "label";
-
-const char kCookieDeprecationTestingDisableAdsAPIsName[] = "disable_ads_apis";
-
-// Adiitional FeatureParams for CookieDeprecationFacilitatedTesting are defined
-// in chrome/browser/tpcd/experiment/tpcd_experiment_features.cc.
-
 // Enables deferring the creation of the speculative RFH when the navigation
 // starts. The creation of a speculative RFH consumes about 2ms and is blocking
 // the network request. With this feature the creation will be deferred until
@@ -281,6 +252,10 @@ const base::FeatureParam<base::TimeDelta>
 // disabled, no such pages will be in the cache.
 BASE_FEATURE(kDeviceBoundSessionTerminationEvictBackForwardCache,
              base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Whether DevTools Live Edit (Debugger.setScriptSource usage in CDP) is
+// enabled.
+BASE_FEATURE(kDevToolsLiveEdit, base::FEATURE_DISABLED_BY_DEFAULT);
 
 // When enabled, the DevTools Privacy UI is displayed.
 BASE_FEATURE(kDevToolsPrivacyUI, base::FEATURE_ENABLED_BY_DEFAULT);
@@ -419,16 +394,15 @@ BASE_FEATURE(kFedCm, base::FEATURE_ENABLED_BY_DEFAULT);
 // re-authn flow.
 BASE_FEATURE(kFedCmEmbedderCheck, base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Support usernames and phone numbers to identify users, instead of
-// (or in addition to) names and emails.
-BASE_FEATURE(kFedCmAlternativeIdentifiers, base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Enables RPs to enhance autofill with federated accounts fetched by the FedCM
 // API.
 BASE_FEATURE(kFedCmAutofill, base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Enables usage of the FedCM Delegation API.
 BASE_FEATURE(kFedCmDelegation, base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Enables the FedCM email verification protocol.
+BASE_FEATURE(kEmailVerificationProtocol, base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Enables the spec-compliant 'error' attribute in IdentityCredentialError while
 // deprecating the legacy 'code' attribute.
@@ -437,19 +411,14 @@ BASE_FEATURE(kFedCmErrorAttribute, base::FEATURE_ENABLED_BY_DEFAULT);
 // Enables usage of the FedCM IdP Registration API.
 BASE_FEATURE(kFedCmIdPRegistration, base::FEATURE_DISABLED_BY_DEFAULT);
 
-// For cross-site iframes, sends the top-level origin to the IDP and parses
-// an optional returned boolean indicating whether it is part of the same
-// client to allow for UI decisions based on the boolean.
-BASE_FEATURE(kFedCmIframeOrigin, base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Enables Lightweight FedCM Mode
 BASE_FEATURE(kFedCmLightweightMode, base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Enables usage of the FedCM API with metrics endpoint at the same time.
 BASE_FEATURE(kFedCmMetricsEndpoint, base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Enables FedCM to intercept and potentially cancel certain navigations.
-BASE_FEATURE(kFedCmNavigationCancellation, base::FEATURE_DISABLED_BY_DEFAULT);
+// Enables FedCM to support login request initiated by the embedder.
+BASE_FEATURE(kFedCmEmbedderInitiatedLogin, base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Enables Nonce usage in Params
 BASE_FEATURE(kFedCmNonceInParams, base::FEATURE_DISABLED_BY_DEFAULT);
@@ -533,6 +502,25 @@ BASE_FEATURE_PARAM(std::string,
                    &kIgnoreDuplicateNavs,
                    "ignore_duplicate_navs_origins",
                    "");
+
+// Enables rendering the top chrome in WebUI. This is a central flag to enable
+// the WebUI implementation of top chrome. Individual features will be
+// additionally gated by this flag.
+BASE_FEATURE(kInitialWebUI, base::FEATURE_DISABLED_BY_DEFAULT);
+
+// If enabled, the initial WebUI will not share processes with other WebUIs,
+// including non-initial topchrome WebUIs. Process sharing will still happen
+// between initial WebUIs.
+BASE_FEATURE_PARAM(bool,
+                   kInitialWebUIUseSeparateProcess,
+                   &features::kInitialWebUI,
+                   "use_separate_process",
+                   false);
+
+// Whether initial WebUI navigations should synchronously go from navigation
+// start to commit, by doing e.g. in-renderer body loading.
+BASE_FEATURE(kInitialWebUISyncNavStartToCommit,
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Kill switch for the GetInstalledRelatedApps API.
 BASE_FEATURE(kInstalledApp, base::FEATURE_ENABLED_BY_DEFAULT);
@@ -663,6 +651,9 @@ BASE_FEATURE(kNetworkServiceInProcess,
 #endif
 );
 
+// Feature which disables caching a previous selection menu object.
+BASE_FEATURE(kNoSelectionMenuCaching, base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Feature which holdbacks NoStatePrefetch on all surfaces.
 BASE_FEATURE(kNoStatePrefetchHoldback, base::FEATURE_DISABLED_BY_DEFAULT);
 
@@ -676,13 +667,6 @@ BASE_FEATURE(kOriginIsolationHeader, base::FEATURE_ENABLED_BY_DEFAULT);
 
 // History navigation in response to horizontal overscroll (aka gesture-nav).
 BASE_FEATURE(kOverscrollHistoryNavigation, base::FEATURE_ENABLED_BY_DEFAULT);
-
-// Enables additional ChildProcessSecurityPolicy enforcements for PDF renderer
-// processes, including blocking storage and cookie access for them.
-//
-// TODO(https://crbug.com/40205612): Remove this kill switch once the PDF
-// enforcements are verified not to cause problems.
-BASE_FEATURE(kPdfEnforcements, base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Whether web apps can run periodic tasks upon network connectivity.
 BASE_FEATURE(kPeriodicBackgroundSync, base::FEATURE_DISABLED_BY_DEFAULT);
@@ -824,6 +808,18 @@ BASE_FEATURE(kRetryGetVideoCaptureDeviceInfos,
 #endif
 );
 
+// When enabled, the IPC channel will not be paused when launching non-guest
+// renderer processes. This makes it possible for all kinds of mojo calls
+// to be sent to the renderer process before OnProcessLaunched fires. When the
+// feature is disabled, those messages are instead queued because the IPC
+// channel is paused, and only flushed at OnProcessLaunched.
+BASE_FEATURE(kSkipIPCChannelPausingForNonGuests,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+const base::FeatureParam<bool>
+    kSkipIPCChannelPausingForNonGuestsInternalWebUiOnly{
+        &kSkipIPCChannelPausingForNonGuests, "internal_webui_only", false};
+
 // When enabled, skip pagehide-in-commit when navigating to DSE.
 // (See: https://crbug.com/375385416)
 BASE_FEATURE(kSkipPagehideInCommitForDSENavigation,
@@ -841,7 +837,7 @@ BASE_FEATURE_PARAM(base::TimeDelta,
 // sites, with an additional restriction that a process may only be reused while
 // the number of main frames in that process stays below a threshold.
 BASE_FEATURE(kProcessPerSiteUpToMainFrameThreshold,
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Specifies the threshold for `kProcessPerSiteUpToMainFrameThreshold` feature.
 constexpr base::FeatureParam<int> kProcessPerSiteMainFrameThreshold{
@@ -876,7 +872,7 @@ constexpr base::FeatureParam<double> kProcessPerSiteMainFrameTotalMemoryLimit{
 // it doesn't require a developer opt-in.
 //
 // crbug.com/1472634 for more details.
-BASE_FEATURE(kServiceWorkerAutoPreload, base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kServiceWorkerAutoPreload, base::FEATURE_DISABLED_BY_DEFAULT);
 
 // crbug.com/374606637: When this is enabled, race-network-and-fetch-hander will
 // prioritize the response processing for the network request over the
@@ -1012,10 +1008,6 @@ BASE_FEATURE(kSpareRendererForSitePerProcess, base::FEATURE_ENABLED_BY_DEFAULT);
 // eTLD+1.
 BASE_FEATURE(kStrictOriginIsolation, base::FEATURE_DISABLED_BY_DEFAULT);
 
-// When enabled, RenderWidgetHost in BFCache doesn't contribute to the priority
-// of the renderer process.
-BASE_FEATURE(kSubframePriorityContribution, base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Disallows window.{alert, prompt, confirm} if triggered inside a subframe that
 // is not same origin with the main frame.
 BASE_FEATURE(kSuppressDifferentOriginSubframeJSDialogs,
@@ -1055,7 +1047,7 @@ const base::FeatureParam<int> kTouchDragMovementThresholdDip{
 // when a new renderer process is needed. Currently, only background renderer
 // processes are considered for reuse.
 BASE_FEATURE(kTrackEmptyRendererProcessesForReuse,
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // This feature is for a reverse Origin Trial, enabling SharedArrayBuffer for
 // sites as they migrate towards requiring cross-origin isolation for these
@@ -1149,6 +1141,10 @@ BASE_FEATURE(kWebAssemblyTrapHandler,
              base::FEATURE_DISABLED_BY_DEFAULT
 #endif
 );
+
+// Enable WebAssembly Core stack switching.
+// https://github.com/WebAssembly/stack-switching
+BASE_FEATURE(kWebAssemblyStackSwitching, base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Controls whether the Web Bluetooth API is enabled:
 // https://webbluetoothcg.github.io/web-bluetooth/
@@ -1248,6 +1244,12 @@ BASE_FEATURE(kAccessibilityDeprecateTypeAnnounce,
 BASE_FEATURE(kAccessibilityExtendedSelection,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// When this feature is enabled, the InputConnection will request
+// formatted text from the TextInputState.
+BASE_FEATURE(kAccessibilityImeGetFormattedText,
+             "AccessibilityImeGetFormattedText",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // When enabled, WINDOW_CONTENT_CHANGED events will be sent for each
 // LIVE_REGION_NODE_CHANGED rather than TYPE_ANNOUNCEMENT.
 // kAccessibilityDeprecateTypeAnnounce also encompasses ariaNotify, whereas this
@@ -1262,6 +1264,12 @@ BASE_FEATURE(kAccessibilityImproveLiveRegionAnnounce,
 // or not.
 BASE_FEATURE(kAccessibilityRequestLayoutBasedActions,
              "AccessibilityRequestLayoutBasedActions",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// When enabled, supports atomic announcements, meaning that when
+// aria-atomic=true, the entire live region will be announced not just the node
+// that changed.
+BASE_FEATURE(kAccessibilityAtomicLiveRegions,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Enables the second iteration of AccessibilityPageZoom, which continues

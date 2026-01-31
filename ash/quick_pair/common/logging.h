@@ -11,8 +11,7 @@
 #include "base/component_export.h"
 #include "base/logging.h"
 
-namespace ash {
-namespace quick_pair {
+namespace ash::quick_pair {
 
 // Use the QP_LOG() macro for all logging related to Quick Pair implementations
 // (e.g. Fast Pair), so the system is aware of all logs related to this feature.
@@ -60,7 +59,6 @@ class COMPONENT_EXPORT(QUICK_PAIR_COMMON) ScopedLogMessage {
   std::ostringstream stream_;
 };
 
-}  // namespace quick_pair
-}  // namespace ash
+}  // namespace ash::quick_pair
 
 #endif  // ASH_QUICK_PAIR_COMMON_LOGGING_H_

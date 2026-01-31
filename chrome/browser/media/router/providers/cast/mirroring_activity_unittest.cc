@@ -426,7 +426,7 @@ TEST_F(MirroringActivityTest, OnInternalMessageNonlocal) {
   ASSERT_FALSE(channel_to_service_);
   activity_->OnInternalMessage(cast_channel::InternalMessage(
       cast_channel::CastMessageType::kPing, kMessageSourceId,
-      kMessageDestinationId, kNamespace, base::Value::Dict()));
+      kMessageDestinationId, kNamespace, base::DictValue()));
 }
 
 TEST_F(MirroringActivityTest, OnInternalMessage) {

@@ -74,18 +74,18 @@ bool IsLastTab(const Profile* profile) {
 //   "sitelist": ["example.com", ...],
 //   "greylist": ["example.net", ...]
 // }
-base::Value::Dict RuleSetToDict(const browser_switcher::RuleSet& ruleset) {
-  base::Value::List sitelist;
+base::DictValue RuleSetToDict(const browser_switcher::RuleSet& ruleset) {
+  base::ListValue sitelist;
   for (const auto& rule : ruleset.sitelist) {
     sitelist.Append(rule->ToString());
   }
 
-  base::Value::List greylist;
+  base::ListValue greylist;
   for (const auto& rule : ruleset.greylist) {
     greylist.Append(rule->ToString());
   }
 
-  return base::Value::Dict()
+  return base::DictValue()
       .Set("sitelist", std::move(sitelist))
       .Set("greylist", std::move(greylist));
 }
@@ -289,7 +289,7 @@ void BrowserSwitchHandler::SendDataChangedEvent() {
 }
 
 void BrowserSwitchHandler::HandleLaunchAlternativeBrowserAndCloseTab(
-    const base::Value::List& args) {
+    const base::ListValue& args) {
   AllowJavascript();
 
   std::string callback_id = args[0].GetString();
@@ -337,15 +337,15 @@ void BrowserSwitchHandler::OnLaunchFinished(base::TimeTicks start,
   }
 }
 
-void BrowserSwitchHandler::HandleGotoNewTabPage(const base::Value::List& args) {
+void BrowserSwitchHandler::HandleGotoNewTabPage(const base::ListValue& args) {
   GotoNewTabPage(web_ui()->GetWebContents());
 }
 
-void BrowserSwitchHandler::HandleGetAllRulesets(const base::Value::List& args) {
+void BrowserSwitchHandler::HandleGetAllRulesets(const base::ListValue& args) {
   AllowJavascript();
   auto* service = GetBrowserSwitcherService(web_ui());
   auto retval =
-      base::Value::Dict()
+      base::DictValue()
           .Set("gpo", RuleSetToDict(service->prefs().GetRules()))
           .Set("ieem", RuleSetToDict(*service->sitelist()->GetIeemSitelist()))
           .Set("external_sitelist",
@@ -355,7 +355,7 @@ void BrowserSwitchHandler::HandleGetAllRulesets(const base::Value::List& args) {
   ResolveJavascriptCallback(args[0], retval);
 }
 
-void BrowserSwitchHandler::HandleGetDecision(const base::Value::List& args) {
+void BrowserSwitchHandler::HandleGetDecision(const base::ListValue& args) {
   AllowJavascript();
 
   GURL url = GURL(args[1].GetString());
@@ -391,7 +391,7 @@ void BrowserSwitchHandler::HandleGetDecision(const base::Value::List& args) {
 
   // clang-format off
   auto retval =
-      base::Value::Dict()
+      base::DictValue()
           .Set("action", action_name)
           .Set("reason", reason_name);
   // clang-format on
@@ -403,7 +403,7 @@ void BrowserSwitchHandler::HandleGetDecision(const base::Value::List& args) {
   ResolveJavascriptCallback(args[0], retval);
 }
 
-void BrowserSwitchHandler::HandleGetTimestamps(const base::Value::List& args) {
+void BrowserSwitchHandler::HandleGetTimestamps(const base::ListValue& args) {
   AllowJavascript();
 
   auto* service = GetBrowserSwitcherService(web_ui());
@@ -415,7 +415,7 @@ void BrowserSwitchHandler::HandleGetTimestamps(const base::Value::List& args) {
   }
 
   auto retval =
-      base::Value::Dict()
+      base::DictValue()
           .Set("last_fetch",
                downloader->last_refresh_time().InMillisecondsFSinceUnixEpoch())
           .Set("next_fetch",
@@ -425,14 +425,14 @@ void BrowserSwitchHandler::HandleGetTimestamps(const base::Value::List& args) {
 }
 
 void BrowserSwitchHandler::HandleGetRulesetSources(
-    const base::Value::List& args) {
+    const base::ListValue& args) {
   AllowJavascript();
 
   auto* service = GetBrowserSwitcherService(web_ui());
   std::vector<browser_switcher::RulesetSource> sources =
       service->GetRulesetSources();
 
-  base::Value::Dict retval;
+  base::DictValue retval;
   for (const auto& source : sources) {
     base::Value val;
     if (source.url.is_valid()) {
@@ -446,13 +446,13 @@ void BrowserSwitchHandler::HandleGetRulesetSources(
   ResolveJavascriptCallback(args[0], retval);
 }
 
-void BrowserSwitchHandler::HandleRefreshXml(const base::Value::List& args) {
+void BrowserSwitchHandler::HandleRefreshXml(const base::ListValue& args) {
   auto* service = GetBrowserSwitcherService(web_ui());
   service->StartDownload(base::TimeDelta());
 }
 
 void BrowserSwitchHandler::HandleIsBrowserSwitchEnabled(
-    const base::Value::List& args) {
+    const base::ListValue& args) {
   AllowJavascript();
 
   auto* service = GetBrowserSwitcherService(web_ui());
@@ -460,7 +460,7 @@ void BrowserSwitchHandler::HandleIsBrowserSwitchEnabled(
 }
 
 void BrowserSwitchHandler::HandleGetBrowserSwitchInternalsJson(
-    const base::Value::List& args) {
+    const base::ListValue& args) {
   AllowJavascript();
   CHECK_EQ(1U, args.size());
   const base::Value& callback_id = args[0];
@@ -471,10 +471,10 @@ void BrowserSwitchHandler::HandleGetBrowserSwitchInternalsJson(
 std::string BrowserSwitchHandler::GetBrowserSwitchInternalsJson() {
   auto* service = GetBrowserSwitcherService(web_ui());
   auto& service_prefs = service->prefs();
-  base::Value::Dict dict;
+  base::DictValue dict;
 
   // Policies
-  base::Value::Dict policies;
+  base::DictValue policies;
 
   policies.Set(policy::key::kBrowserSwitcherEnabled,
                base::Value(service_prefs.IsEnabled()));
@@ -511,7 +511,7 @@ std::string BrowserSwitchHandler::GetBrowserSwitchInternalsJson() {
   dict.Set("alternativeBrowserPath", service_prefs.GetAlternativeBrowserPath());
 
   // Rulesets
-  base::Value::Dict rulesets;
+  base::DictValue rulesets;
   rulesets.Set("gpo", RuleSetToDict(service->prefs().GetRules()));
   rulesets.Set("ieem", RuleSetToDict(*service->sitelist()->GetIeemSitelist()));
   rulesets.Set("external_sitelist",
@@ -523,7 +523,7 @@ std::string BrowserSwitchHandler::GetBrowserSwitchInternalsJson() {
   // Ruleset Sources
   std::vector<browser_switcher::RulesetSource> sources =
       service->GetRulesetSources();
-  base::Value::Dict rulesetSources;
+  base::DictValue rulesetSources;
   for (const auto& source : sources) {
     rulesetSources.Set(source.pref_name, source.url.is_valid()
                                              ? base::Value(source.url.spec())
@@ -534,7 +534,7 @@ std::string BrowserSwitchHandler::GetBrowserSwitchInternalsJson() {
   // XML Timestamps
   auto* downloader = service->sitelist_downloader();
   if (downloader) {
-    base::Value::Dict timestamps;
+    base::DictValue timestamps;
     timestamps.Set("lastFetch",
                    base::TimeFormatHTTP(downloader->last_refresh_time()));
     timestamps.Set("nextFetch",

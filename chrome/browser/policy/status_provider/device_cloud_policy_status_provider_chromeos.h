@@ -26,7 +26,7 @@ class DeviceCloudPolicyStatusProviderChromeOS
   ~DeviceCloudPolicyStatusProviderChromeOS() override;
 
   // CloudPolicyCoreStatusProvider implementation.
-  base::Value::Dict GetStatus() override;
+  base::DictValue GetStatus() override;
 
  private:
   std::string enterprise_domain_manager_;

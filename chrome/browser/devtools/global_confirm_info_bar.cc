@@ -6,7 +6,6 @@
 
 #include <utility>
 
-#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/task/sequenced_task_runner.h"
 #include "chrome/browser/infobars/confirm_infobar_creator.h"
@@ -248,10 +247,10 @@ class GlobalConfirmInfoBar::TabHelper : public TabStripModelObserver {
     }
   }
 
-  void TabChangedAt(content::WebContents* web_contents,
-                    int index,
-                    TabChangeType change_type) override {
-    global_info_bar_->MaybeAddInfoBar(web_contents);
+  void OnTabChangedAt(tabs::TabInterface* tab,
+                      int index,
+                      TabChangeType change_type) override {
+    global_info_bar_->MaybeAddInfoBar(tab->GetContents());
   }
 
  private:
@@ -315,7 +314,7 @@ void GlobalConfirmInfoBar::MaybeAddInfoBar(content::WebContents* web_contents) {
       infobars::ContentInfoBarManager::FromWebContents(web_contents);
   // WebContents from the tab strip must have the infobar manager.
   DCHECK(infobar_manager);
-  if (base::Contains(proxies_, infobar_manager)) {
+  if (proxies_.contains(infobar_manager)) {
     return;
   }
 

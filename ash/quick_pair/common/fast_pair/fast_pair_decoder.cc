@@ -40,9 +40,7 @@ constexpr int kExtraFieldTypeModelId = 7;
 
 }  // namespace
 
-namespace ash {
-namespace quick_pair {
-namespace fast_pair_decoder {
+namespace ash::quick_pair::fast_pair_decoder {
 
 int GetVersion(const std::vector<uint8_t>* service_data) {
   if (!features::IsFastPairAdvertisingFormat2025Enabled()) {
@@ -206,6 +204,4 @@ std::optional<std::string> GetHexModelIdFromServiceData(
   return std::nullopt;
 }
 
-}  // namespace fast_pair_decoder
-}  // namespace quick_pair
-}  // namespace ash
+}  // namespace ash::quick_pair::fast_pair_decoder

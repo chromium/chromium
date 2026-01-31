@@ -24,21 +24,6 @@ import java.io.OutputStream;
 public class AwPicture extends Picture {
     private final long mNativeAwPicture;
 
-    // There is no explicit destroy method on Picture base-class, so cleanup is always
-    // handled via the CleanupReference.
-    private static final class DestroyRunnable implements Runnable {
-        private final long mNativeAwPicture;
-
-        private DestroyRunnable(long nativeAwPicture) {
-            mNativeAwPicture = nativeAwPicture;
-        }
-
-        @Override
-        public void run() {
-            AwPictureJni.get().destroy(mNativeAwPicture);
-        }
-    }
-
     /**
      * @param nativeAwPicture is an instance of the AwPicture native class. Ownership is taken by
      *     this java instance.
@@ -46,7 +31,7 @@ public class AwPicture extends Picture {
     public AwPicture(long nativeAwPicture) {
         mNativeAwPicture = nativeAwPicture;
         // Constructor has side-effects, so no need to store this in a field.
-        new CleanupReference(this, new DestroyRunnable(nativeAwPicture));
+        new CleanupReference(this, (e) -> AwPictureJni.get().destroy(nativeAwPicture));
     }
 
     @Override

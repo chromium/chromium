@@ -36,7 +36,8 @@ fn get_field_at_ordinal(field_values: &[MojomValue], ordinal: Ordinal) -> Result
 /// Note that:
 /// - If `None` is returned, it means the original value was _validly_ `None`.
 /// - If `Some(value)` is returned, then `value` should not be a
-/// `MojomValue::Nullable`, because Mojom does not permit nested nullable types.
+///   `MojomValue::Nullable`, because Mojom does not permit nested nullable
+///   types.
 fn flatten_possibly_nullable_value(
     maybe_nullable: &MojomValue,
     expect_nullable: bool,
@@ -101,6 +102,8 @@ fn deparse_leaf_value(
         (MojomValue::UInt32(value), PackedLeafType::UInt32) => data.extend(value.to_le_bytes()),
         (MojomValue::Int64(value), PackedLeafType::Int64) => data.extend(value.to_le_bytes()),
         (MojomValue::UInt64(value), PackedLeafType::UInt64) => data.extend(value.to_le_bytes()),
+        (MojomValue::Float32(value), PackedLeafType::Float32) => data.extend(value.to_le_bytes()),
+        (MojomValue::Float64(value), PackedLeafType::Float64) => data.extend(value.to_le_bytes()),
         (MojomValue::Enum(value), PackedLeafType::Enum { .. }) => data.extend(value.to_le_bytes()),
         _ => wrong_type!(leaf_type, value),
     }
@@ -123,7 +126,7 @@ enum NestedData<'a> {
     },
     Union {
         tag: u32,
-        value: &'a Box<MojomValue>,
+        value: &'a MojomValue,
         variants: &'a BTreeMap<u32, MojomWireType>,
     },
     Map {
@@ -143,7 +146,7 @@ struct NestedDataInfo<'a> {
 
 /// Overwrite data[start..start+len] with the contents of `value`.
 /// Panics if the range doesn't exist or the `value` is too short, probably.
-fn write_to_slice(data: &mut Vec<u8>, start: usize, len: usize, value: &[u8]) {
+fn write_to_slice(data: &mut [u8], start: usize, len: usize, value: &[u8]) {
     let struct_size_field: &mut [u8] = &mut data[start..start + len];
     struct_size_field.copy_from_slice(&value[0..len]);
 }
@@ -200,7 +203,7 @@ fn deparse_array(
 
     let array_body = crate::pack::pack_array_body(element_type, num_elements);
 
-    deparse_structured_body(data, None, true, &element_values, array_body.into_iter())
+    deparse_structured_body(data, None, true, element_values, array_body.into_iter())
 }
 
 /// Serialize a union to the wire.
@@ -211,7 +214,7 @@ fn deparse_union<'a>(
     data: &mut Vec<u8>,
     enclosing_nested_data_list: Option<&mut Vec<NestedDataInfo<'a>>>,
     tag: u32,
-    contained_value: &'a Box<MojomValue>,
+    contained_value: &'a MojomValue,
     variants: &'a BTreeMap<u32, MojomWireType>,
 ) -> Result<()> {
     // Write the union's header
@@ -229,7 +232,7 @@ fn deparse_union<'a>(
         data,
         enclosing_nested_data_list,
         false,
-        std::slice::from_ref(&*contained_value),
+        std::slice::from_ref(contained_value),
         std::iter::once(struct_ref_element),
     )
 }
@@ -277,8 +280,8 @@ fn deparse_map(
     deparse_struct(data, &field_values, &packed_fields)
 }
 
-fn deparse_string(data: &mut Vec<u8>, value: &MojomString) -> Result<()> {
-    let bytes = value.to_bytes();
+fn deparse_string(data: &mut Vec<u8>, value: &String) -> Result<()> {
+    let bytes = value.as_bytes();
     let num_bytes: u32 = bytes
         .len()
         .try_into()
@@ -327,7 +330,7 @@ where
     for packed_field in packed_fields {
         match packed_field {
             StructuredBodyElement::Bitfield(ref ordinals) => {
-                let mut iter = ordinals.borrow().into_iter().enumerate();
+                let mut iter = ordinals.borrow().iter().enumerate();
                 let mut bitfield: u8 = 0;
                 // Construct the bitfield bit-by-bit
                 while let Some((idx, Some((ordinal, is_tag_bit)))) = iter.next() {

@@ -1347,18 +1347,18 @@ TEST_F(PolicyServiceTest, IsFirstPolicyLoadComplete) {
 TEST_F(PolicyServiceTest, DictionaryPoliciesMerging) {
   const PolicyNamespace chrome_namespace(POLICY_DOMAIN_CHROME, std::string());
 
-  base::Value::Dict dict1;
+  base::DictValue dict1;
   dict1.Set(kUrl3, false);
   dict1.Set(kUrl2, true);
-  base::Value::Dict dict2;
+  base::DictValue dict2;
   dict2.Set(kUrl1, true);
   dict2.Set(kUrl2, false);
-  base::Value::Dict result;
+  base::DictValue result;
   result.Set(kUrl1, true);
   result.Set(kUrl2, true);
   result.Set(kUrl3, false);
 
-  base::Value::List policy;
+  base::ListValue policy;
   policy.Append(key::kExtensionSettings);
 
   std::vector<std::pair<std::string, base::Value>> policies_1;
@@ -1405,12 +1405,12 @@ TEST_F(PolicyServiceTest, DictionaryPoliciesMerging) {
 TEST_F(PolicyServiceTest, DictionaryPoliciesMerging_InvalidType) {
   const PolicyNamespace chrome_namespace(POLICY_DOMAIN_CHROME, std::string());
 
-  base::Value::Dict dict_value;
+  base::DictValue dict_value;
   dict_value.Set(kUrl1, true);
-  base::Value::Dict result;
+  base::DictValue result;
   result.Set(kUrl1, true);
 
-  base::Value::List policy;
+  base::ListValue policy;
   policy.Append(policy::key::kExtensionSettings);
 
   // policy_bundle_1 is treated as a machine platform bundle.
@@ -1468,22 +1468,22 @@ TEST_F(PolicyServiceTest, DictionaryPoliciesMerging_PrecedenceChange) {
   ids.insert(kAffiliationId1);
 
   // Initialize dictionaries of URLs used for ExtensionSettings policy values.
-  base::Value::Dict dict1;
+  base::DictValue dict1;
   dict1.Set(kUrl2, true);
   dict1.Set(kUrl3, false);
-  base::Value::Dict dict2;
+  base::DictValue dict2;
   dict2.Set(kUrl1, true);
   dict2.Set(kUrl2, false);
-  base::Value::Dict dict3;
+  base::DictValue dict3;
   dict3.Set(kUrl3, true);
   dict3.Set(kUrl4, false);
-  base::Value::Dict result;
+  base::DictValue result;
   result.Set(kUrl1, true);
   result.Set(kUrl2, false);
   result.Set(kUrl3, true);
   result.Set(kUrl4, false);
 
-  base::Value::List policy;
+  base::ListValue policy;
   policy.Append(key::kExtensionSettings);
 
   // policy_bundle_1 is treated as a machine platform bundle. The metapolicies
@@ -1565,18 +1565,18 @@ TEST_F(PolicyServiceTest, DictionaryPoliciesMerging_PrecedenceChange) {
 TEST_F(PolicyServiceTest, ListsPoliciesMerging) {
   const PolicyNamespace chrome_namespace(POLICY_DOMAIN_CHROME, std::string());
 
-  base::Value::List list1;
+  base::ListValue list1;
   list1.Append(kUrl3);
   list1.Append(kUrl2);
-  base::Value::List list2;
+  base::ListValue list2;
   list2.Append(kUrl1);
   list2.Append(kUrl2);
-  base::Value::List result;
+  base::ListValue result;
   result.Append(kUrl3);
   result.Append(kUrl2);
   result.Append(kUrl1);
 
-  base::Value::List policy;
+  base::ListValue policy;
   policy.Append(policy::key::kDefaultSearchProviderEncodings);
 
   std::vector<std::pair<std::string, base::Value>> policies_1;
@@ -1623,12 +1623,12 @@ TEST_F(PolicyServiceTest, ListsPoliciesMerging) {
 TEST_F(PolicyServiceTest, ListsPoliciesMerging_InvalidType) {
   const PolicyNamespace chrome_namespace(POLICY_DOMAIN_CHROME, std::string());
 
-  base::Value::List list_value;
+  base::ListValue list_value;
   list_value.Append(kUrl1);
-  base::Value::List result;
+  base::ListValue result;
   result.Append(kUrl1);
 
-  base::Value::List policy;
+  base::ListValue policy;
   policy.Append(policy::key::kDefaultSearchProviderEncodings);
 
   // policy_bundle_1 is treated as a machine platform bundle.
@@ -1687,22 +1687,22 @@ TEST_F(PolicyServiceTest, ListsPoliciesMerging_CloudMetapolicy) {
   base::flat_set<std::string> ids;
   ids.insert(kAffiliationId1);
 
-  base::Value::List list1;
+  base::ListValue list1;
   list1.Append(kUrl1);
   list1.Append(kUrl2);
-  base::Value::List list2;
+  base::ListValue list2;
   list2.Append(kUrl2);
   list2.Append(kUrl3);
-  base::Value::List list3;
+  base::ListValue list3;
   list2.Append(kUrl3);
   list2.Append(kUrl4);
-  base::Value::List result;
+  base::ListValue result;
   result.Append(kUrl1);
   result.Append(kUrl2);
   result.Append(kUrl3);
   result.Append(kUrl4);
 
-  base::Value::List policy;
+  base::ListValue policy;
   policy.Append(policy::key::kDefaultSearchProviderEncodings);
 
   // policy_bundle_1 is treated as a machine platform bundle.
@@ -1776,17 +1776,17 @@ TEST_F(PolicyServiceTest, ListsPoliciesMerging_CloudMetapolicy) {
 TEST_F(PolicyServiceTest, GroupPoliciesMergingDisabledForCloudUsers) {
   const PolicyNamespace chrome_namespace(POLICY_DOMAIN_CHROME, std::string());
 
-  base::Value::List list1;
+  base::ListValue list1;
   list1.Append(kUrl3);
-  base::Value::List list2;
+  base::ListValue list2;
   list2.Append(kUrl1);
-  base::Value::List list3;
+  base::ListValue list3;
   list3.Append(kUrl4);
-  base::Value::List result;
+  base::ListValue result;
   result.Append(kUrl3);
   result.Append(kUrl1);
 
-  base::Value::List policy;
+  base::ListValue policy;
   policy.Append(policy::key::kExtensionInstallForcelist);
   policy.Append(policy::key::kExtensionInstallBlocklist);
 
@@ -1853,17 +1853,17 @@ TEST_F(PolicyServiceTest, GroupPoliciesMergingDisabledForCloudUsers) {
 TEST_F(PolicyServiceTest, GroupPoliciesMergingEnabled) {
   const PolicyNamespace chrome_namespace(POLICY_DOMAIN_CHROME, std::string());
 
-  base::Value::List list1;
+  base::ListValue list1;
   list1.Append(kUrl3);
-  base::Value::List list2;
+  base::ListValue list2;
   list2.Append(kUrl1);
-  base::Value::List list3;
+  base::ListValue list3;
   list3.Append(kUrl4);
-  base::Value::List result;
+  base::ListValue result;
   result.Append(kUrl3);
   result.Append(kUrl1);
 
-  base::Value::List policy;
+  base::ListValue policy;
   policy.Append(policy::key::kDefaultSearchProviderEncodings);
   policy.Append(policy::key::kExtensionInstallBlocklist);
 
@@ -1939,23 +1939,23 @@ TEST_F(PolicyServiceTest, CloudUserListPolicyMerge_Successful) {
 
   // Initialize lists of URLs used for DefaultSearchProviderEncodings policy
   // values.
-  base::Value::List list1;
+  base::ListValue list1;
   list1.Append(kUrl1);
   list1.Append(kUrl2);
-  base::Value::List list2;
+  base::ListValue list2;
   list2.Append(kUrl2);
   list2.Append(kUrl3);
-  base::Value::List list3;
+  base::ListValue list3;
   list3.Append(kUrl3);
   list3.Append(kUrl4);
-  base::Value::List result;
+  base::ListValue result;
   result.Append(kUrl1);
   result.Append(kUrl2);
   result.Append(kUrl3);
   result.Append(kUrl4);
 
   // Populate separate policy bundles.
-  base::Value::List policy;
+  base::ListValue policy;
   policy.Append(policy::key::kDefaultSearchProviderEncodings);
 
   // policy_bundle_1 is treated as a machine platform bundle. The metadata
@@ -2037,20 +2037,20 @@ TEST_F(PolicyServiceTest, CloudUserListPolicyMerge_Unaffiliated) {
 
   // Initialize lists of URLs used for DefaultSearchProviderEncodings policy
   // values.
-  base::Value::List list1;
+  base::ListValue list1;
   list1.Append(kUrl1);
   list1.Append(kUrl2);
-  base::Value::List list2;
+  base::ListValue list2;
   list2.Append(kUrl3);
-  base::Value::List list3;
+  base::ListValue list3;
   list3.Append(kUrl4);
-  base::Value::List result;
+  base::ListValue result;
   result.Append(kUrl1);
   result.Append(kUrl2);
   result.Append(kUrl3);
 
   // Populate separate policy bundles.
-  base::Value::List policy;
+  base::ListValue policy;
   policy.Append(policy::key::kDefaultSearchProviderEncodings);
 
   // policy_bundle_1 is treated as a machine platform bundle. The metadata
@@ -2133,18 +2133,18 @@ TEST_F(PolicyServiceTest, CloudUserListPolicyMerge_FalsePolicy) {
 
   // Initialize lists of URLs used for DefaultSearchProviderEncodings policy
   // values.
-  base::Value::List list1;
+  base::ListValue list1;
   list1.Append(kUrl1);
-  base::Value::List list2;
+  base::ListValue list2;
   list2.Append(kUrl2);
-  base::Value::List list3;
+  base::ListValue list3;
   list3.Append(kUrl3);
-  base::Value::List result;
+  base::ListValue result;
   result.Append(kUrl1);
   result.Append(kUrl2);
 
   // Populate separate policy bundles.
-  base::Value::List policy;
+  base::ListValue policy;
   policy.Append(policy::key::kDefaultSearchProviderEncodings);
 
   // policy_bundle_1 is treated as a machine platform bundle. The metadata
@@ -2225,18 +2225,18 @@ TEST_F(PolicyServiceTest, PlatformUserListPolicyMerge_Affiliated) {
 
   // Initialize lists of URLs used for DefaultSearchProviderEncodings policy
   // values.
-  base::Value::List list1;
+  base::ListValue list1;
   list1.Append(kUrl1);
-  base::Value::List list2;
+  base::ListValue list2;
   list2.Append(kUrl2);
-  base::Value::List list3;
+  base::ListValue list3;
   list3.Append(kUrl3);
-  base::Value::List result;
+  base::ListValue result;
   result.Append(kUrl2);
   result.Append(kUrl3);
 
   // Populate separate policy bundles.
-  base::Value::List policy;
+  base::ListValue policy;
   policy.Append(policy::key::kDefaultSearchProviderEncodings);
 
   // policy_bundle_1 is treated as a user platform bundle. The metadata policies
@@ -2317,17 +2317,17 @@ TEST_F(PolicyServiceTest, PlatformUserListPolicyMerge_Unaffiliated) {
 
   // Initialize lists of URLs used for DefaultSearchProviderEncodings policy
   // values.
-  base::Value::List list1;
+  base::ListValue list1;
   list1.Append(kUrl1);
-  base::Value::List list2;
+  base::ListValue list2;
   list2.Append(kUrl2);
-  base::Value::List list3;
+  base::ListValue list3;
   list3.Append(kUrl3);
-  base::Value::List result;
+  base::ListValue result;
   result.Append(kUrl1);
 
   // Populate separate policy bundles.
-  base::Value::List policy;
+  base::ListValue policy;
   policy.Append(policy::key::kDefaultSearchProviderEncodings);
 
   // policy_bundle_1 is treated as a machine platform bundle. The metadata

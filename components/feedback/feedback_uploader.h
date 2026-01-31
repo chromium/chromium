@@ -6,7 +6,6 @@
 #define COMPONENTS_FEEDBACK_FEEDBACK_UPLOADER_H_
 
 #include <list>
-#include <optional>
 #include <queue>
 #include <string>
 #include <vector>
@@ -26,6 +25,10 @@ namespace network {
 struct ResourceRequest;
 class SimpleURLLoader;
 }  // namespace network
+
+namespace net {
+class HttpResponseHeaders;
+}
 
 namespace feedback {
 
@@ -139,7 +142,7 @@ class FeedbackUploader : public KeyedService {
   void DispatchReport();
 
   void OnDispatchComplete(UrlLoaderList::iterator it,
-                          std::optional<std::string> response_body);
+                          scoped_refptr<net::HttpResponseHeaders> headers);
 
   // Update our timer for uploading the next report.
   void UpdateUploadTimer();

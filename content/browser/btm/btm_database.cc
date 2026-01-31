@@ -148,9 +148,9 @@ void BtmDatabase::DatabaseErrorCallback(int extended_error,
     return;
   }
 
-  // The default handling is to assert on debug and to ignore on release.
+  // The default handling is to log on debug and to ignore on release.
   if (!sql::Database::IsExpectedSqliteError(extended_error)) {
-    DLOG(FATAL) << db_->GetErrorMessage();
+    DLOG(ERROR) << db_->GetErrorMessage();
   }
 }
 
@@ -536,37 +536,6 @@ std::optional<PopupsStateValue> BtmDatabase::ReadPopup(
 
   return PopupsStateValue{access_id, popup_time.value(), is_current_interaction,
                           is_authentication_interaction};
-}
-
-std::vector<PopupWithTime> BtmDatabase::ReadRecentPopupsWithInteraction(
-    const base::TimeDelta& lookback) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!CheckDBInit()) {
-    return std::vector<PopupWithTime>();
-  }
-
-  static constexpr char kReadSql[] =  // clang-format off
-      "SELECT opener_site,popup_site,last_popup_time "
-      "FROM popups "
-      "WHERE "
-        "is_current_interaction "
-        "AND last_popup_time>?";
-  // clang-format on
-  DCHECK(db_->IsSQLValid(kReadSql));
-
-  SCOPED_UMA_HISTOGRAM_TIMER(
-      "Privacy.DIPS.Database.Operation.ReadRecentPopupsWithInteractionTime");
-
-  sql::Statement statement(db_->GetCachedStatement(SQL_FROM_HERE, kReadSql));
-  statement.BindTime(0, clock_->Now() - lookback);
-
-  std::vector<PopupWithTime> popups;
-  while (statement.Step()) {
-    popups.push_back(PopupWithTime{.opener_site = statement.ColumnString(0),
-                                   .popup_site = statement.ColumnString(1),
-                                   .last_popup_time = statement.ColumnTime(2)});
-  }
-  return popups;
 }
 
 std::vector<std::string> BtmDatabase::GetAllSitesForTesting(

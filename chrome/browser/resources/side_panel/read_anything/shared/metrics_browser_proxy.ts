@@ -59,9 +59,12 @@ export enum ReadAnythingSettingsChange {
   LETTER_SPACING_CHANGE = 4,
   LINKS_ENABLED_CHANGE = 5,
   IMAGES_ENABLED_CHANGE = 6,
+  // LINE_FOCUS_CHANGE = 7, // no longer used, split into style and movement
+  LINE_FOCUS_STYLE_CHANGE = 8,
+  LINE_FOCUS_MOVEMENT_CHANGE = 9,
 
   // Must be last.
-  COUNT = 7,
+  COUNT = 10,
 }
 // LINT.ThenChange(/tools/metrics/histograms/metadata/accessibility/enums.xml:ReadAnythingSettingsChange)
 
@@ -125,6 +128,7 @@ export interface MetricsBrowserProxy {
   recordEmptyState(): void;
   recordHighlightGranularity(highlight: number): void;
   recordLanguage(lang: string): void;
+  recordLineFocusSession(): void;
   recordNewPage(): void;
   recordNewPageWithSpeech(): void;
   recordSpeechError(error: ReadAnythingSpeechError): void;
@@ -145,6 +149,10 @@ export class MetricsBrowserProxyImpl implements MetricsBrowserProxy {
 
   recordEmptyState() {
     chrome.readingMode.logEmptyState();
+  }
+
+  recordLineFocusSession() {
+    chrome.readingMode.logLineFocusSession();
   }
 
   recordSpeechStopSource(source: number) {

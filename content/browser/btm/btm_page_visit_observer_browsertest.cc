@@ -1526,7 +1526,7 @@ IN_PROC_BROWSER_TEST_P(BtmPageVisitObserverSiteDataAccessBrowserTest,
 
   // Navigate to url1, and prerender a page that accesses storage.
   ASSERT_TRUE(NavigateToURL(web_contents, url1));
-  const FrameTreeNodeId host_id =
+  const PrerenderHostId host_id =
       prerender_test_helper()->AddPrerender(prerendering_url);
   prerender_test_helper()->WaitForPrerenderLoadCompletion(prerendering_url);
   test::PrerenderHostObserver observer(*web_contents, host_id);

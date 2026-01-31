@@ -22,7 +22,6 @@ pub type off_t = c_long;
 pub type blkcnt_t = c_ulong;
 pub type blksize_t = c_ulong;
 pub type nlink_t = u32;
-pub type useconds_t = u32;
 pub type pthread_t = c_long;
 pub type pthread_mutexattr_t = c_long;
 pub type pthread_rwlockattr_t = c_long;
@@ -158,7 +157,7 @@ s! {
         pub f_flag: c_ulong,
         pub f_namemax: c_ulong,
         #[cfg(target_pointer_width = "64")]
-        __f_reserved: [u32; 6],
+        __f_reserved: Padding<[u32; 6]>,
     }
 
     pub struct signalfd_siginfo {
@@ -496,11 +495,6 @@ s! {
         pub ifr6_ifindex: c_int,
     }
 
-    pub struct if_nameindex {
-        pub if_index: c_uint,
-        pub if_name: *mut c_char,
-    }
-
     pub struct sockaddr_nl {
         pub nl_family: crate::sa_family_t,
         nl_pad: Padding<c_ushort>,
@@ -549,7 +543,7 @@ s! {
         pub ut_session: c_long,
         pub ut_tv: crate::timeval,
         pub ut_addr_v6: [i32; 4],
-        unused: [c_char; 20],
+        unused: Padding<[c_char; 20]>,
     }
 
     pub struct sockaddr_alg {
@@ -1459,6 +1453,7 @@ pub const TABDLY: crate::tcflag_t = 0o014000;
 pub const BSDLY: crate::tcflag_t = 0o020000;
 pub const FFDLY: crate::tcflag_t = 0o100000;
 pub const VTDLY: crate::tcflag_t = 0o040000;
+pub const XCASE: crate::tcflag_t = 0o000004;
 pub const XTABS: crate::tcflag_t = 0o014000;
 
 pub const B0: crate::speed_t = 0o000000;
@@ -3639,20 +3634,6 @@ extern "C" {
     pub fn getgrnam(name: *const c_char) -> *mut crate::group;
     pub fn sem_unlink(name: *const c_char) -> c_int;
     pub fn daemon(nochdir: c_int, noclose: c_int) -> c_int;
-    pub fn getpwnam_r(
-        name: *const c_char,
-        pwd: *mut passwd,
-        buf: *mut c_char,
-        buflen: size_t,
-        result: *mut *mut passwd,
-    ) -> c_int;
-    pub fn getpwuid_r(
-        uid: crate::uid_t,
-        pwd: *mut passwd,
-        buf: *mut c_char,
-        buflen: size_t,
-        result: *mut *mut passwd,
-    ) -> c_int;
     pub fn sigtimedwait(
         set: *const sigset_t,
         info: *mut siginfo_t,
@@ -3772,9 +3753,6 @@ extern "C" {
         newpath: *const c_char,
         flags: c_uint,
     ) -> c_int;
-
-    pub fn if_nameindex() -> *mut if_nameindex;
-    pub fn if_freenameindex(ptr: *mut if_nameindex);
 }
 
 cfg_if! {

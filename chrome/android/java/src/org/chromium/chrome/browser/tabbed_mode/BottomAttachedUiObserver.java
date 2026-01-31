@@ -11,8 +11,8 @@ import androidx.core.view.WindowInsetsCompat;
 
 import org.chromium.base.Callback;
 import org.chromium.base.ObserverList;
+import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.base.supplier.NullableObservableSupplier;
-import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.browser_controls.BottomControlsStacker;
@@ -30,8 +30,6 @@ import org.chromium.chrome.browser.keyboard_accessory.KeyboardAccessoryVisualSta
 import org.chromium.chrome.browser.keyboard_accessory.ManualFillingComponent;
 import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteCoordinator;
 import org.chromium.chrome.browser.omnibox.suggestions.OmniboxSuggestionsVisualState;
-import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
-import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarStateProvider;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.SheetState;
@@ -50,7 +48,6 @@ import java.util.Objects;
 @NullMarked
 public class BottomAttachedUiObserver
         implements BrowserControlsStateProvider.Observer,
-                SnackbarStateProvider.Observer,
                 OverlayPanelStateProvider.Observer,
                 BottomSheetObserver,
                 AutocompleteCoordinator.OmniboxSuggestionsVisualStateObserver,
@@ -95,10 +92,6 @@ public class BottomAttachedUiObserver
 
     private final BottomControlsStacker mBottomControlsStacker;
 
-    private final SnackbarStateProvider mSnackbarStateProvider;
-    private @Nullable @ColorInt Integer mSnackbarColor;
-    private boolean mSnackbarVisible;
-
     private @Nullable OverlayPanelStateProvider mOverlayPanelStateProvider;
     private @Nullable @ColorInt Integer mOverlayPanelColor;
     private boolean mOverlayPanelVisible;
@@ -110,7 +103,7 @@ public class BottomAttachedUiObserver
 
     private final InsetObserver mInsetObserver;
 
-    private @Nullable ObservableSupplier<KeyboardAccessoryVisualStateProvider>
+    private @Nullable MonotonicObservableSupplier<KeyboardAccessoryVisualStateProvider>
             mKeyboardAccessoryVisualStateProviderSupplier;
     private @Nullable Callback<KeyboardAccessoryVisualStateProvider>
             mKeyboardAccessoryProviderSupplierObserver;
@@ -118,7 +111,7 @@ public class BottomAttachedUiObserver
     private boolean mKeyboardAccessoryVisible;
     private @Nullable @ColorInt Integer mKeyboardAccessoryColor;
 
-    private @Nullable ObservableSupplier<AccessorySheetVisualStateProvider>
+    private @Nullable MonotonicObservableSupplier<AccessorySheetVisualStateProvider>
             mAccessorySheetVisualStateProviderSupplier;
     private @Nullable Callback<AccessorySheetVisualStateProvider>
             mAccessorySheetProviderSupplierObserver;
@@ -134,8 +127,6 @@ public class BottomAttachedUiObserver
      *     checking the state of the bottom browser controls.
      * @param browserControlsStateProvider Supplies a {@link BrowserControlsStateProvider} for the
      *     browser controls.
-     * @param snackbarStateProvider Supplies a {@link SnackbarStateProvider} to watch for snackbars
-     *     being shown.
      * @param contextualSearchManagerSupplier Supplies a {@link ContextualSearchManager} to watch
      *     for changes to contextual search and the overlay panel.
      * @param bottomSheetController A {@link BottomSheetController} to interact with and watch for
@@ -149,7 +140,6 @@ public class BottomAttachedUiObserver
     public BottomAttachedUiObserver(
             BottomControlsStacker bottomControlsStacker,
             BrowserControlsStateProvider browserControlsStateProvider,
-            SnackbarStateProvider snackbarStateProvider,
             NullableObservableSupplier<ContextualSearchManager> contextualSearchManagerSupplier,
             BottomSheetController bottomSheetController,
             @Nullable OmniboxSuggestionsVisualState omniboxSuggestionsVisualState,
@@ -160,14 +150,6 @@ public class BottomAttachedUiObserver
         mBrowserControlsStateProvider = browserControlsStateProvider;
         mBrowserControlsStateProvider.addObserver(this);
         mBottomControlsStacker = bottomControlsStacker;
-
-        mSnackbarStateProvider = snackbarStateProvider;
-        if (!SnackbarManager.isFloatingSnackbarEnabled()) {
-            // The floating snackbar appears to hover and isn't anchored to bottom UI, and thus
-            // should not impact the bottom attached color.
-            mSnackbarStateProvider.addObserver(this);
-        }
-
         mBottomSheetController = bottomSheetController;
         mBottomSheetController.addObserver(this);
 
@@ -269,9 +251,6 @@ public class BottomAttachedUiObserver
         if (mBrowserControlsStateProvider != null) {
             mBrowserControlsStateProvider.removeObserver(this);
         }
-        if (mSnackbarStateProvider != null) {
-            mSnackbarStateProvider.removeObserver(this);
-        }
         if (mInsetObserver != null) {
             mInsetObserver.removeObserver(this);
         }
@@ -338,9 +317,6 @@ public class BottomAttachedUiObserver
         if (mKeyboardAccessoryVisible) {
             return mKeyboardAccessoryColor;
         }
-        if (mSnackbarVisible) {
-            return mSnackbarColor;
-        }
         return null;
     }
 
@@ -348,9 +324,6 @@ public class BottomAttachedUiObserver
     private boolean shouldShowDivider() {
         if (shouldMatchBottomSheetColor()) {
             return !mBottomSheetController.isFullWidth();
-        }
-        if (mSnackbarVisible) {
-            return !mSnackbarStateProvider.isFullWidth();
         }
         return false;
     }
@@ -403,10 +376,6 @@ public class BottomAttachedUiObserver
             }
 
             if (mKeyboardAccessoryVisible) {
-                return true;
-            }
-
-            if (mSnackbarVisible) {
                 return true;
             }
         }
@@ -503,15 +472,6 @@ public class BottomAttachedUiObserver
             return;
         }
         mUseBottomControlsColor = useBottomControlsColor;
-        updateBottomAttachedColor();
-    }
-
-    // Snackbar
-
-    @Override
-    public void onSnackbarStateChanged(boolean isShowing, @Nullable Integer color) {
-        mSnackbarVisible = isShowing;
-        mSnackbarColor = color;
         updateBottomAttachedColor();
     }
 

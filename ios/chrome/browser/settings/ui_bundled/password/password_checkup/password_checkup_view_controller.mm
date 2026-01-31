@@ -4,9 +4,13 @@
 
 #import "ios/chrome/browser/settings/ui_bundled/password/password_checkup/password_checkup_view_controller.h"
 
+#import <optional>
+
 #import "base/apple/foundation_util.h"
 #import "base/metrics/user_metrics.h"
 #import "base/strings/string_number_conversions.h"
+#import "base/time/time.h"
+#import "base/timer/elapsed_timer.h"
 #import "components/application_locale_storage/application_locale_storage.h"
 #import "components/google/core/common/google_util.h"
 #import "components/strings/grit/components_strings.h"
@@ -34,6 +38,9 @@ namespace {
 
 // Height of the image used as a header for the table view.
 constexpr CGFloat kHeaderImageHeight = 99;
+
+// Duration of the cooldown period during which user interactions are ignored.
+constexpr base::TimeDelta kCooldownDuration = base::Milliseconds(500);
 
 // Sections of the Password Checkup Homepage UI.
 typedef NS_ENUM(NSInteger, SectionIdentifier) {
@@ -208,11 +215,21 @@ NSString* NotificationsOptInItemText(BOOL enabled) {
   // that it appears as if the `_headerImageView` extends all the way to the top
   // of the view controller.
   UIView* _headerBackgroundView;
+
+  // Timer used to track the cooldown period. If not set, there is no active
+  // cooldown.
+  std::optional<base::ElapsedTimer> _cooldownTimer;
 }
 
 @end
 
 @implementation PasswordCheckupViewController
+
+#pragma mark - Public
+
+- (void)startCooldown {
+  _cooldownTimer.emplace();
+}
 
 #pragma mark - UIViewController
 
@@ -295,24 +312,23 @@ NSString* NotificationsOptInItemText(BOOL enabled) {
       forSectionWithIdentifier:SectionIdentifierLastPasswordCheckup];
 
   // Notifications opt-in section.
-  if (IsSafetyCheckNotificationsEnabled()) {
-    [model addSectionWithIdentifier:SectionIdentifierNotificationsOptIn];
 
-    if (!_notificationsOptInItem) {
-      _notificationsOptInItem = [self notificationsOptInItem];
-    }
+  [model addSectionWithIdentifier:SectionIdentifierNotificationsOptIn];
 
-    [model addItem:_notificationsOptInItem
-        toSectionWithIdentifier:SectionIdentifierNotificationsOptIn];
-
-    if (!_notificationsDescriptionFooterItem) {
-      _notificationsDescriptionFooterItem =
-          [self notificationsDescriptionFooterItem];
-    }
-
-    [model setFooter:_notificationsDescriptionFooterItem
-        forSectionWithIdentifier:SectionIdentifierNotificationsOptIn];
+  if (!_notificationsOptInItem) {
+    _notificationsOptInItem = [self notificationsOptInItem];
   }
+
+  [model addItem:_notificationsOptInItem
+      toSectionWithIdentifier:SectionIdentifierNotificationsOptIn];
+
+  if (!_notificationsDescriptionFooterItem) {
+    _notificationsDescriptionFooterItem =
+        [self notificationsDescriptionFooterItem];
+  }
+
+  [model setFooter:_notificationsDescriptionFooterItem
+      forSectionWithIdentifier:SectionIdentifierNotificationsOptIn];
 
   if (_consumerHasBeenUpdated) {
     [self updateItemsDependingOnPasswordCheckupState];
@@ -375,8 +391,6 @@ NSString* NotificationsOptInItemText(BOOL enabled) {
 }
 
 - (TableViewTextItem*)notificationsOptInItem {
-  CHECK(IsSafetyCheckNotificationsEnabled());
-
   TableViewTextItem* notificationsOptInItem =
       [[TableViewTextItem alloc] initWithType:ItemTypeNotificationsOptIn];
   notificationsOptInItem.text =
@@ -388,8 +402,6 @@ NSString* NotificationsOptInItemText(BOOL enabled) {
 }
 
 - (TableViewLinkHeaderFooterItem*)notificationsDescriptionFooterItem {
-  CHECK(IsSafetyCheckNotificationsEnabled());
-
   TableViewLinkHeaderFooterItem* footerItem =
       [[TableViewLinkHeaderFooterItem alloc]
           initWithType:ItemTypeNotificationsDescriptionFooter];
@@ -470,8 +482,6 @@ NSString* NotificationsOptInItemText(BOOL enabled) {
 }
 
 - (void)setSafetyCheckNotificationsEnabled:(BOOL)enabled {
-  CHECK(IsSafetyCheckNotificationsEnabled());
-
   _safetyCheckNotificationsEnabled = enabled;
 
   [self updateNotificationsOptInItem];
@@ -511,6 +521,16 @@ NSString* NotificationsOptInItemText(BOOL enabled) {
 
 - (void)tableView:(UITableView*)tableView
     didSelectRowAtIndexPath:(NSIndexPath*)indexPath {
+  if ([self inCooldown]) {
+    // Ignore row selection if in the cooldown period.
+    base::RecordAction(base::UserMetricsAction(
+        "MobilePasswordCheckupInteractionIgnoredOnCooldown"));
+    return;
+  }
+
+  // Start the cooldown to debounce actions (e.g. double tap).
+  [self startCooldown];
+
   [super tableView:tableView didSelectRowAtIndexPath:indexPath];
 
   TableViewModel* model = self.tableViewModel;
@@ -553,7 +573,6 @@ NSString* NotificationsOptInItemText(BOOL enabled) {
       }
       break;
     case ItemTypeNotificationsOptIn:
-      CHECK(IsSafetyCheckNotificationsEnabled());
       [self.delegate toggleSafetyCheckNotifications];
   }
   [tableView deselectRowAtIndexPath:indexPath animated:YES];
@@ -603,6 +622,12 @@ NSString* NotificationsOptInItemText(BOOL enabled) {
 }
 
 #pragma mark - Private
+
+// Returns YES if the cooldown period is active.
+- (BOOL)inCooldown {
+  return _cooldownTimer.has_value() &&
+         _cooldownTimer->Elapsed() <= kCooldownDuration;
+}
 
 // Creates the header image view.
 - (UIImageView*)createHeaderImageView {
@@ -811,8 +836,6 @@ NSString* NotificationsOptInItemText(BOOL enabled) {
 
 // Updates the `_notificationsOptInItem`.
 - (void)updateNotificationsOptInItem {
-  CHECK(IsSafetyCheckNotificationsEnabled());
-
   _notificationsOptInItem.text =
       NotificationsOptInItemText(_safetyCheckNotificationsEnabled);
 

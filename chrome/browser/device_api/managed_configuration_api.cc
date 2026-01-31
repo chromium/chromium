@@ -8,7 +8,6 @@
 #include <optional>
 #include <string>
 
-#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/json/json_string_value_serializer.h"
@@ -147,13 +146,13 @@ void ManagedConfigurationAPI::RegisterProfilePrefs(
 void ManagedConfigurationAPI::GetOriginPolicyConfiguration(
     const url::Origin& origin,
     const std::vector<std::string>& keys,
-    base::OnceCallback<void(std::optional<base::Value::Dict>)> callback) {
+    base::OnceCallback<void(std::optional<base::DictValue>)> callback) {
   if (!CanHaveManagedStore(origin)) {
     std::move(callback).Run(std::nullopt);
     return;
   }
 
-  if (!base::Contains(store_map_, origin)) {
+  if (!store_map_.contains(origin)) {
     std::move(callback).Run(std::nullopt);
     return;
   }
@@ -185,7 +184,7 @@ void ManagedConfigurationAPI::RemoveObserver(Observer* observer) {
 }
 
 bool ManagedConfigurationAPI::CanHaveManagedStore(const url::Origin& origin) {
-  return base::Contains(managed_origins_, origin);
+  return managed_origins_.contains(origin);
 }
 
 const std::set<url::Origin>& ManagedConfigurationAPI::GetManagedOrigins()
@@ -194,7 +193,7 @@ const std::set<url::Origin>& ManagedConfigurationAPI::GetManagedOrigins()
 }
 
 void ManagedConfigurationAPI::OnConfigurationPolicyChanged() {
-  const base::Value::List& managed_configurations =
+  const base::ListValue& managed_configurations =
       profile_->GetPrefs()->GetList(prefs::kManagedConfigurationPerOrigin);
 
   std::set<url::Origin> current_origins;
@@ -224,7 +223,7 @@ void ManagedConfigurationAPI::OnConfigurationPolicyChanged() {
 
   // We need to clean configurations for origins that got their entry removed.
   for (const auto& store_entry : store_map_) {
-    if (!base::Contains(current_origins, store_entry.first)) {
+    if (!current_origins.contains(store_entry.first)) {
       UpdateStoredDataForOrigin(store_entry.first, std::string(),
                                 std::string());
     }
@@ -236,7 +235,7 @@ void ManagedConfigurationAPI::OnConfigurationPolicyChanged() {
 
 void ManagedConfigurationAPI::MaybeCreateStoreForOrigin(
     const url::Origin& origin) {
-  if (base::Contains(store_map_, origin)) {
+  if (store_map_.contains(origin)) {
     return;
   }
 
@@ -268,7 +267,7 @@ void ManagedConfigurationAPI::UpdateStoredDataForOrigin(
   }
 
   if (configuration_url.empty()) {
-    PostStoreConfiguration(origin, base::Value::Dict());
+    PostStoreConfiguration(origin, base::DictValue());
     return;
   }
 
@@ -313,7 +312,7 @@ void ManagedConfigurationAPI::ProcessDecodedConfiguration(
   if (!decoding_result.has_value() || !decoding_result->is_dict()) {
     VLOG(1) << "Could not fetch managed configuration for app with origin = "
             << origin.Serialize();
-    PostStoreConfiguration(origin, base::Value::Dict());
+    PostStoreConfiguration(origin, base::DictValue());
     return;
   }
   ScopedDictPrefUpdate update(profile_->GetPrefs(),
@@ -321,7 +320,7 @@ void ManagedConfigurationAPI::ProcessDecodedConfiguration(
   update->Set(GetOriginEncoded(origin), url_hash);
 
   // We need to transform each value into a string.
-  base::Value::Dict result_dict;
+  base::DictValue result_dict;
   for (auto item : decoding_result->GetDict()) {
     std::string result;
     JSONStringValueSerializer serializer(&result);
@@ -334,7 +333,7 @@ void ManagedConfigurationAPI::ProcessDecodedConfiguration(
 
 void ManagedConfigurationAPI::PostStoreConfiguration(
     const url::Origin& origin,
-    base::Value::Dict configuration) {
+    base::DictValue configuration) {
   MaybeCreateStoreForOrigin(origin);
   store_map_[origin]
       .AsyncCall(&ManagedConfigurationStore::SetCurrentPolicy)
@@ -347,7 +346,7 @@ void ManagedConfigurationAPI::PostStoreConfiguration(
 void ManagedConfigurationAPI::InformObserversIfConfigurationChanged(
     const url::Origin& origin,
     bool has_changed) {
-  if (!has_changed || !base::Contains(observers_, origin)) {
+  if (!has_changed || !observers_.contains(origin)) {
     return;
   }
 

@@ -151,7 +151,7 @@ TEST_F(StorageAreaTest, HasOnChanged) {
         FunctionFromString(context, kRegisterListener);
     RunFunctionOnGlobal(add_listener, context, 0, nullptr);
 
-    base::Value::List value = ListValueFromString("['foo']");
+    base::ListValue value = ListValueFromString("['foo']");
     bindings_system()->DispatchEventInContext(
         base::StringPrintf("storage.%s.onChanged", kStorage).c_str(), value,
         nullptr, script_context);
@@ -207,41 +207,6 @@ TEST_F(StorageAreaTest, PromiseBasedFunctions) {
 
   EXPECT_EQ(v8::Promise::kFulfilled, promise->State());
   EXPECT_EQ(R"({"foo":42})", V8ToString(promise->Result(), context));
-}
-
-TEST_F(StorageAreaTest, PromiseBasedFunctionsDisallowedForManifestV2) {
-  scoped_refptr<const Extension> extension = ExtensionBuilder("foo")
-                                                 .SetManifestVersion(2)
-                                                 .AddAPIPermission("storage")
-                                                 .Build();
-  RegisterExtension(extension);
-
-  v8::HandleScope handle_scope(isolate());
-  v8::Local<v8::Context> context = MainContext();
-
-  ScriptContext* script_context = CreateScriptContext(
-      context, extension.get(), mojom::ContextType::kPrivilegedExtension);
-  script_context->set_url(extension->url());
-
-  bindings_system()->UpdateBindingsForContext(script_context);
-
-  v8::Local<v8::Value> storage =
-      V8ValueFromScriptSource(context, "chrome.storage.local");
-  ASSERT_TRUE(storage->IsObject());
-
-  constexpr char kRunStorageGet[] =
-      "(function(storage) { this.returnValue = storage.get('foo'); });";
-  v8::Local<v8::Function> run_storage_get =
-      FunctionFromString(context, kRunStorageGet);
-  v8::Local<v8::Value> args[] = {storage};
-  auto expected_error =
-      "Uncaught TypeError: " +
-      api_errors::InvocationError(
-          "storage.get",
-          "optional [string|array|object] keys, function callback",
-          api_errors::NoMatchingSignature());
-  RunFunctionAndExpectError(run_storage_get, context, std::size(args), args,
-                            expected_error);
 }
 
 }  // namespace extensions

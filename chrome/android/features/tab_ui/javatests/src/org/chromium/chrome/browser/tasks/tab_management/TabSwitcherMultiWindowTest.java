@@ -171,7 +171,6 @@ public class TabSwitcherMultiWindowTest {
                 ThreadUtils.runOnUiThreadBlocking(
                         () ->
                                 mCta1.getTabModelSelector()
-                                        .getTabGroupModelFilterProvider()
                                         .getTabGroupModelFilter(true)
                                         .getIndividualTabAndGroupCount());
         assertThat(tabAndGroupCount1, is(0));
@@ -179,7 +178,6 @@ public class TabSwitcherMultiWindowTest {
                 ThreadUtils.runOnUiThreadBlocking(
                         () ->
                                 mCta2.getTabModelSelector()
-                                        .getTabGroupModelFilterProvider()
                                         .getTabGroupModelFilter(true)
                                         .getIndividualTabAndGroupCount());
         assertThat(tabAndGroupCount2, is(1));

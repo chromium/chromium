@@ -21,7 +21,7 @@ namespace mojom = ::chromeos::network_config::mojom;
 constexpr char kShillApnId[] = "id";
 constexpr char kShillApnAuthenticationType[] = "authentication_type";
 
-bool IsPropertyEquals(const base::Value::Dict& apn,
+bool IsPropertyEquals(const base::DictValue& apn,
                       const char* key,
                       const std::string& expected_value) {
   const std::string* actual_value = apn.FindString(key);
@@ -95,8 +95,8 @@ mojom::ApnPropertiesPtr TestApnData::AsMojoApn() const {
   return apn;
 }
 
-base::Value::Dict TestApnData::AsOncApn() const {
-  base::Value::Dict apn;
+base::DictValue TestApnData::AsOncApn() const {
+  base::DictValue apn;
   apn.Set(::onc::cellular_apn::kAccessPointName, access_point_name);
   apn.Set(::onc::cellular_apn::kName, name);
   apn.Set(::onc::cellular_apn::kUsername, username);
@@ -109,7 +109,7 @@ base::Value::Dict TestApnData::AsOncApn() const {
     apn.Set(::onc::cellular_apn::kIpType, onc_ip_type);
     apn.Set(::onc::cellular_apn::kSource, onc_source);
 
-    base::Value::List apn_types;
+    base::ListValue apn_types;
     for (const std::string& apn_type : onc_apn_types)
       apn_types.Append(apn_type);
     apn.Set(::onc::cellular_apn::kApnTypes, std::move(apn_types));
@@ -117,8 +117,8 @@ base::Value::Dict TestApnData::AsOncApn() const {
   return apn;
 }
 
-base::Value::Dict TestApnData::AsShillApn() const {
-  base::Value::Dict apn;
+base::DictValue TestApnData::AsShillApn() const {
+  base::DictValue apn;
   apn.Set(shill::kApnProperty, access_point_name);
   apn.Set(shill::kApnNameProperty, name);
   apn.Set(shill::kApnUsernameProperty, username);
@@ -186,7 +186,7 @@ bool TestApnData::MojoApnEquals(const mojom::ApnProperties& apn) const {
   return ret;
 }
 
-bool TestApnData::OncApnEquals(const base::Value::Dict& onc_apn,
+bool TestApnData::OncApnEquals(const base::DictValue& onc_apn,
                                bool has_state_field,
                                bool is_password_masked) const {
   bool ret = true;
@@ -223,7 +223,7 @@ bool TestApnData::OncApnEquals(const base::Value::Dict& onc_apn,
           IsPropertyEquals(onc_apn, ::onc::cellular_apn::kSource, onc_source);
     }
 
-    if (const base::Value::List* apn_types =
+    if (const base::ListValue* apn_types =
             onc_apn.FindList(::onc::cellular_apn::kApnTypes)) {
       if (onc_apn_types.size() != apn_types->size())
         return false;

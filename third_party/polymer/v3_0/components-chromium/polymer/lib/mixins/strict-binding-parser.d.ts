@@ -69,4 +69,4 @@ interface StrictBindingParser extends PropertyEffects, TemplateStamp, PropertyAc
 
 export {StrictBindingParser};
 
-import {BindingPart} from '../../interfaces';
+import {BindingPart} from '../../interfaces.js';

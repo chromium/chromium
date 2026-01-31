@@ -4,7 +4,8 @@
 
 #include "services/network/public/cpp/content_security_policy/content_security_policy.h"
 
-#include "base/containers/contains.h"
+#include <algorithm>
+
 #include "base/memory/raw_ref.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
@@ -107,7 +108,7 @@ class CSPContextTest : public CSPContext {
   }
 
   bool SchemeShouldBypassCSP(std::string_view scheme) override {
-    return base::Contains(scheme_to_bypass_, scheme);
+    return std::ranges::contains(scheme_to_bypass_, scheme);
   }
 
  private:
@@ -1638,6 +1639,28 @@ TEST(ContentSecurityPolicy, ParseSerializedSourceList) {
           base::BindOnce([] {
             auto csp = mojom::CSPSourceList::New();
             csp->allow_dynamic_url = true;
+            return csp;
+          }),
+          "The source list for the Content Security Policy directive "
+          "'script-src' contains an invalid source: ''wrong''. It will be "
+          "ignored.",
+      },
+      {
+          mojom::CSPDirectiveName::ScriptSrc,
+          "'trusted-types-eval'",
+          base::BindOnce([] {
+            auto csp = mojom::CSPSourceList::New();
+            csp->allow_trusted_types_eval = true;
+            return csp;
+          }),
+          "",
+      },
+      {
+          mojom::CSPDirectiveName::ScriptSrc,
+          "'wrong' 'trusted-types-eval'",
+          base::BindOnce([] {
+            auto csp = mojom::CSPSourceList::New();
+            csp->allow_trusted_types_eval = true;
             return csp;
           }),
           "The source list for the Content Security Policy directive "

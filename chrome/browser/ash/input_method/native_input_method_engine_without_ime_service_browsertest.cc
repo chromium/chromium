@@ -217,9 +217,9 @@ constexpr char kEngineIdUs[] = "xkb:us::eng";
 IN_PROC_BROWSER_TEST_F(NativeInputMethodEngineWithoutImeServiceTest,
                        FiresOnInputMethodOptionsChangedEvent) {
   {
-    base::Value::Dict settings;
+    base::DictValue settings;
     // Add key will trigger event.
-    base::Value::Dict pinyin1;
+    base::DictValue pinyin1;
     pinyin1.Set("foo", true);
     settings.SetByDottedPath("pinyin", std::move(pinyin1));
     prefs_->Set(::prefs::kLanguageInputMethodSpecificSettings,
@@ -228,9 +228,9 @@ IN_PROC_BROWSER_TEST_F(NativeInputMethodEngineWithoutImeServiceTest,
     observer_->ClearChangedEngineId();
   }
   {
-    base::Value::Dict settings;
+    base::DictValue settings;
     // Change key will trigger event.
-    base::Value::Dict pinyin2;
+    base::DictValue pinyin2;
     pinyin2.Set("foo", false);
     settings.SetByDottedPath("pinyin", std::move(pinyin2));
     prefs_->Set(::prefs::kLanguageInputMethodSpecificSettings,

@@ -8,7 +8,6 @@
 #include <string>
 
 #include "base/compiler_specific.h"
-#include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
@@ -41,6 +40,7 @@
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/mojom/blob/blob.mojom.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom.h"
+#include "third_party/perfetto/include/perfetto/tracing/track_event_args.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -220,12 +220,10 @@ class CacheStorageDispatcherHost::CacheImpl
              int64_t trace_id,
              MatchCallback callback) override {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-    TRACE_EVENT_WITH_FLOW2("CacheStorage",
-                           "CacheStorageDispatchHost::CacheImpl::Match",
-                           TRACE_ID_GLOBAL(trace_id),
-                           TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT,
-                           "request", CacheStorageTracedValue(request),
-                           "options", CacheStorageTracedValue(match_options));
+    TRACE_EVENT("CacheStorage", "CacheStorageDispatchHost::CacheImpl::Match",
+                perfetto::Flow::Global(trace_id), "request",
+                CacheStorageTracedValue(request), "options",
+                CacheStorageTracedValue(match_options));
 
     content::CacheStorageCache* cache = cache_handle_.value();
     bool cache_initialized =
@@ -263,12 +261,10 @@ class CacheStorageDispatcherHost::CacheImpl
                 "ServiceWorkerCache.Cache.Browser.Match.Miss", elapsed);
           }
           if (error != CacheStorageError::kSuccess) {
-            TRACE_EVENT_WITH_FLOW1(
-                "CacheStorage",
-                "CacheStorageDispatchHost::CacheImpl::Match::Callback",
-                TRACE_ID_GLOBAL(trace_id),
-                TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT, "status",
-                CacheStorageTracedValue(error));
+            TRACE_EVENT("CacheStorage",
+                        "CacheStorageDispatchHost::CacheImpl::Match::Callback",
+                        perfetto::Flow::Global(trace_id), "status",
+                        CacheStorageTracedValue(error));
             std::move(callback).Run(base::unexpected(error));
             return;
           }
@@ -287,12 +283,10 @@ class CacheStorageDispatcherHost::CacheImpl
 
           UMA_HISTOGRAM_LONG_TIMES("ServiceWorkerCache.Cache.Browser.Match.Hit",
                                    elapsed);
-          TRACE_EVENT_WITH_FLOW1(
-              "CacheStorage",
-              "CacheStorageDispatchHost::CacheImpl::Match::Callback",
-              TRACE_ID_GLOBAL(trace_id),
-              TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT, "response",
-              CacheStorageTracedValue(response));
+          TRACE_EVENT("CacheStorage",
+                      "CacheStorageDispatchHost::CacheImpl::Match::Callback",
+                      perfetto::Flow::Global(trace_id), "response",
+                      CacheStorageTracedValue(response));
 
           blink::mojom::MatchResponsePtr match_response;
           if (in_related_fetch_event && !in_range_fetch_event) {
@@ -326,12 +320,10 @@ class CacheStorageDispatcherHost::CacheImpl
                 int64_t trace_id,
                 MatchAllCallback callback) override {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-    TRACE_EVENT_WITH_FLOW2("CacheStorage",
-                           "CacheStorageDispatchHost::CacheImpl::MatchAll",
-                           TRACE_ID_GLOBAL(trace_id),
-                           TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT,
-                           "request", CacheStorageTracedValue(request),
-                           "options", CacheStorageTracedValue(match_options));
+    TRACE_EVENT("CacheStorage", "CacheStorageDispatchHost::CacheImpl::MatchAll",
+                perfetto::Flow::Global(trace_id), "request",
+                CacheStorageTracedValue(request), "options",
+                CacheStorageTracedValue(match_options));
 
     auto cb = base::BindOnce(
         [](base::WeakPtr<CacheImpl> self, base::TimeTicks start_time,
@@ -346,11 +338,10 @@ class CacheStorageDispatcherHost::CacheImpl
                                    elapsed);
           if (error != CacheStorageError::kSuccess &&
               error != CacheStorageError::kErrorNotFound) {
-            TRACE_EVENT_WITH_FLOW1(
+            TRACE_EVENT(
                 "CacheStorage",
                 "CacheStorageDispatchHost::CacheImpl::MatchAll::Callback",
-                TRACE_ID_GLOBAL(trace_id),
-                TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT, "status",
+                perfetto::Flow::Global(trace_id), "status",
                 CacheStorageTracedValue(error));
             std::move(callback).Run(base::unexpected(error));
             return;
@@ -370,12 +361,10 @@ class CacheStorageDispatcherHost::CacheImpl
             }
           }
 
-          TRACE_EVENT_WITH_FLOW1(
-              "CacheStorage",
-              "CacheStorageDispatchHost::CacheImpl::MatchAll::Callback",
-              TRACE_ID_GLOBAL(trace_id),
-              TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT,
-              "response_list", CacheStorageTracedValue(responses));
+          TRACE_EVENT("CacheStorage",
+                      "CacheStorageDispatchHost::CacheImpl::MatchAll::Callback",
+                      perfetto::Flow::Global(trace_id), "response_list",
+                      CacheStorageTracedValue(responses));
           std::move(callback).Run(base::ok(std::move(responses)));
         },
         weak_factory_.GetWeakPtr(), base::TimeTicks::Now(), trace_id,
@@ -403,13 +392,11 @@ class CacheStorageDispatcherHost::CacheImpl
       return;
     }
 
-    TRACE_EVENT_WITH_FLOW2(
-        "CacheStorage",
-        "CacheStorageDispatchHost::CacheImpl::GetAllMatchedEntries",
-        TRACE_ID_GLOBAL(trace_id),
-        TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT, "request",
-        CacheStorageTracedValue(request), "options",
-        CacheStorageTracedValue(match_options));
+    TRACE_EVENT("CacheStorage",
+                "CacheStorageDispatchHost::CacheImpl::GetAllMatchedEntries",
+                perfetto::Flow::Global(trace_id), "request",
+                CacheStorageTracedValue(request), "options",
+                CacheStorageTracedValue(match_options));
 
     auto cb = base::BindOnce(
         [](base::WeakPtr<CacheImpl> self, base::TimeTicks start_time,
@@ -424,12 +411,11 @@ class CacheStorageDispatcherHost::CacheImpl
               "ServiceWorkerCache.Cache.Browser.GetAllMatchedEntries", elapsed);
           if (error != CacheStorageError::kSuccess &&
               error != CacheStorageError::kErrorNotFound) {
-            TRACE_EVENT_WITH_FLOW1(
+            TRACE_EVENT(
                 "CacheStorage",
                 "CacheStorageDispatchHost::CacheImpl::GetAllMatchedEntries::"
                 "Callback",
-                TRACE_ID_GLOBAL(trace_id),
-                TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT, "status",
+                perfetto::Flow::Global(trace_id), "status",
                 CacheStorageTracedValue(error));
             std::move(callback).Run(base::unexpected(error));
             return;
@@ -449,12 +435,11 @@ class CacheStorageDispatcherHost::CacheImpl
             }
           }
 
-          TRACE_EVENT_WITH_FLOW1(
+          TRACE_EVENT(
               "CacheStorage",
               "CacheStorageDispatchHost::CacheImpl::GetAllMatchedEntries::"
               "Callback",
-              TRACE_ID_GLOBAL(trace_id),
-              TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT, "entries",
+              perfetto::Flow::Global(trace_id), "entries",
               CacheStorageTracedValue(entries));
           std::move(callback).Run(base::ok(std::move(entries)));
         },
@@ -477,12 +462,10 @@ class CacheStorageDispatcherHost::CacheImpl
             int64_t trace_id,
             KeysCallback callback) override {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-    TRACE_EVENT_WITH_FLOW2("CacheStorage",
-                           "CacheStorageDispatchHost::CacheImpl::Keys",
-                           TRACE_ID_GLOBAL(trace_id),
-                           TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT,
-                           "request", CacheStorageTracedValue(request),
-                           "options", CacheStorageTracedValue(match_options));
+    TRACE_EVENT("CacheStorage", "CacheStorageDispatchHost::CacheImpl::Keys",
+                perfetto::Flow::Global(trace_id), "request",
+                CacheStorageTracedValue(request), "options",
+                CacheStorageTracedValue(match_options));
 
     auto cb = base::BindOnce(
         [](base::TimeTicks start_time, int64_t trace_id,
@@ -492,12 +475,10 @@ class CacheStorageDispatcherHost::CacheImpl
           UMA_HISTOGRAM_LONG_TIMES("ServiceWorkerCache.Cache.Browser.Keys",
                                    base::TimeTicks::Now() - start_time);
           if (error != CacheStorageError::kSuccess) {
-            TRACE_EVENT_WITH_FLOW1(
-                "CacheStorage",
-                "CacheStorageDispatchHost::CacheImpl::Keys::Callback",
-                TRACE_ID_GLOBAL(trace_id),
-                TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT, "status",
-                CacheStorageTracedValue(error));
+            TRACE_EVENT("CacheStorage",
+                        "CacheStorageDispatchHost::CacheImpl::Keys::Callback",
+                        perfetto::Flow::Global(trace_id), "status",
+                        CacheStorageTracedValue(error));
             std::move(callback).Run(base::unexpected(error));
             return;
           }
@@ -507,12 +488,10 @@ class CacheStorageDispatcherHost::CacheImpl
                 BackgroundFetchSettledFetch::CloneRequest(request));
           }
 
-          TRACE_EVENT_WITH_FLOW1(
-              "CacheStorage",
-              "CacheStorageDispatchHost::CacheImpl::Keys::Callback",
-              TRACE_ID_GLOBAL(trace_id),
-              TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT,
-              "request_list", CacheStorageTracedValue(requests_));
+          TRACE_EVENT("CacheStorage",
+                      "CacheStorageDispatchHost::CacheImpl::Keys::Callback",
+                      perfetto::Flow::Global(trace_id), "request_list",
+                      CacheStorageTracedValue(requests_));
 
           std::move(callback).Run(base::ok(std::move(requests_)));
         },
@@ -532,11 +511,9 @@ class CacheStorageDispatcherHost::CacheImpl
              int64_t trace_id,
              BatchCallback callback) override {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-    TRACE_EVENT_WITH_FLOW1(
-        "CacheStorage", "CacheStorageDispatchHost::CacheImpl::Batch",
-        TRACE_ID_GLOBAL(trace_id),
-        TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT, "operation_list",
-        CacheStorageTracedValue(batch_operations));
+    TRACE_EVENT("CacheStorage", "CacheStorageDispatchHost::CacheImpl::Batch",
+                perfetto::Flow::Global(trace_id), "operation_list",
+                CacheStorageTracedValue(batch_operations));
 
     if (!ValidBatchOperations(batch_operations)) {
       host_->cache_receivers_.ReportBadMessage("CSDH_UNEXPECTED_OPERATION");
@@ -555,12 +532,10 @@ class CacheStorageDispatcherHost::CacheImpl
            blink::mojom::CacheStorageCache::BatchCallback callback,
            blink::mojom::CacheStorageVerboseErrorPtr error) {
           base::TimeDelta elapsed = base::TimeTicks::Now() - start_time;
-          TRACE_EVENT_WITH_FLOW1(
-              "CacheStorage",
-              "CacheStorageDispatchHost::CacheImpl::Batch::Callback",
-              TRACE_ID_GLOBAL(trace_id),
-              TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT, "status",
-              CacheStorageTracedValue(error->value));
+          TRACE_EVENT("CacheStorage",
+                      "CacheStorageDispatchHost::CacheImpl::Batch::Callback",
+                      perfetto::Flow::Global(trace_id), "status",
+                      CacheStorageTracedValue(error->value));
           if (operation_type == blink::mojom::OperationType::kDelete) {
             DCHECK_EQ(operation_count, 1);
             UMA_HISTOGRAM_LONG_TIMES(
@@ -601,11 +576,9 @@ class CacheStorageDispatcherHost::CacheImpl
                      int64_t trace_id,
                      WriteSideDataCallback callback) override {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-    TRACE_EVENT_WITH_FLOW1("CacheStorage",
-                           "CacheStorageDispatchHost::CacheImpl::WriteSideData",
-                           TRACE_ID_GLOBAL(trace_id),
-                           TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT,
-                           "url", url.spec());
+    TRACE_EVENT("CacheStorage",
+                "CacheStorageDispatchHost::CacheImpl::WriteSideData",
+                perfetto::Flow::Global(trace_id), "url", url.spec());
 
     content::CacheStorageCache* cache = cache_handle_.value();
     if (!cache) {
@@ -687,10 +660,9 @@ class CacheStorageDispatcherHost::CacheStorageImpl final
   void Keys(int64_t trace_id,
             blink::mojom::CacheStorage::KeysCallback callback) override {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-    TRACE_EVENT_WITH_FLOW0(
-        "CacheStorage", "CacheStorageDispatchHost::CacheStorageImpl::Keys",
-        TRACE_ID_GLOBAL(trace_id),
-        TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT);
+    TRACE_EVENT("CacheStorage",
+                "CacheStorageDispatchHost::CacheStorageImpl::Keys",
+                perfetto::Flow::Global(trace_id));
 
     auto cb = base::BindOnce(
         [](base::TimeTicks start_time, int64_t trace_id,
@@ -699,11 +671,10 @@ class CacheStorageDispatcherHost::CacheStorageImpl final
           UMA_HISTOGRAM_LONG_TIMES(
               "ServiceWorkerCache.CacheStorage.Browser.Keys",
               base::TimeTicks::Now() - start_time);
-          TRACE_EVENT_WITH_FLOW1(
+          TRACE_EVENT(
               "CacheStorage",
               "CacheStorageDispatchHost::CacheStorageImpl::Keys::Callback",
-              TRACE_ID_GLOBAL(trace_id),
-              TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT, "key_list",
+              perfetto::Flow::Global(trace_id), "key_list",
               CacheStorageTracedValue(cache_names));
           std::move(callback).Run(cache_names);
         },
@@ -733,11 +704,9 @@ class CacheStorageDispatcherHost::CacheStorageImpl final
               blink::mojom::CacheStorage::DeleteCallback callback) override {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     std::string utf8_cache_name = base::UTF16ToUTF8(cache_name);
-    TRACE_EVENT_WITH_FLOW1("CacheStorage",
-                           "CacheStorageDispatchHost::CacheStorageImpl::Delete",
-                           TRACE_ID_GLOBAL(trace_id),
-                           TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT,
-                           "cache_name", utf8_cache_name);
+    TRACE_EVENT(
+        "CacheStorage", "CacheStorageDispatchHost::CacheStorageImpl::Delete",
+        perfetto::Flow::Global(trace_id), "cache_name", utf8_cache_name);
 
     auto cb = base::BindOnce(
         [](base::TimeTicks start_time, int64_t trace_id,
@@ -746,11 +715,10 @@ class CacheStorageDispatcherHost::CacheStorageImpl final
           UMA_HISTOGRAM_LONG_TIMES(
               "ServiceWorkerCache.CacheStorage.Browser.Delete",
               base::TimeTicks::Now() - start_time);
-          TRACE_EVENT_WITH_FLOW1(
+          TRACE_EVENT(
               "CacheStorage",
               "CacheStorageDispatchHost::CacheStorageImpl::Delete::Callback",
-              TRACE_ID_GLOBAL(trace_id),
-              TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT, "status",
+              perfetto::Flow::Global(trace_id), "status",
               CacheStorageTracedValue(error));
           std::move(callback).Run(error);
         },
@@ -783,11 +751,9 @@ class CacheStorageDispatcherHost::CacheStorageImpl final
            blink::mojom::CacheStorage::HasCallback callback) override {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     std::string utf8_cache_name = base::UTF16ToUTF8(cache_name);
-    TRACE_EVENT_WITH_FLOW1("CacheStorage",
-                           "CacheStorageDispatchHost::CacheStorageImpl::Has",
-                           TRACE_ID_GLOBAL(trace_id),
-                           TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT,
-                           "cache_name", utf8_cache_name);
+    TRACE_EVENT(
+        "CacheStorage", "CacheStorageDispatchHost::CacheStorageImpl::Has",
+        perfetto::Flow::Global(trace_id), "cache_name", utf8_cache_name);
 
     auto cb = base::BindOnce(
         [](base::TimeTicks start_time, int64_t trace_id,
@@ -795,11 +761,10 @@ class CacheStorageDispatcherHost::CacheStorageImpl final
            CacheStorageError error) {
           if (!has_cache && error == CacheStorageError::kSuccess)
             error = CacheStorageError::kErrorNotFound;
-          TRACE_EVENT_WITH_FLOW1(
+          TRACE_EVENT(
               "CacheStorage",
               "CacheStorageDispatchHost::CacheStorageImpl::Has::Callback",
-              TRACE_ID_GLOBAL(trace_id),
-              TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT, "status",
+              perfetto::Flow::Global(trace_id), "status",
               CacheStorageTracedValue(error));
           UMA_HISTOGRAM_LONG_TIMES(
               "ServiceWorkerCache.CacheStorage.Browser.Has",
@@ -839,12 +804,11 @@ class CacheStorageDispatcherHost::CacheStorageImpl final
              int64_t trace_id,
              blink::mojom::CacheStorage::MatchCallback callback) override {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-    TRACE_EVENT_WITH_FLOW2("CacheStorage",
-                           "CacheStorageDispatchHost::CacheStorageImpl::Match",
-                           TRACE_ID_GLOBAL(trace_id),
-                           TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT,
-                           "request", CacheStorageTracedValue(request),
-                           "options", CacheStorageTracedValue(match_options));
+    TRACE_EVENT("CacheStorage",
+                "CacheStorageDispatchHost::CacheStorageImpl::Match",
+                perfetto::Flow::Global(trace_id), "request",
+                CacheStorageTracedValue(request), "options",
+                CacheStorageTracedValue(match_options));
 
     auto cb = BindOnce(
         [](base::WeakPtr<CacheStorageImpl> self, base::TimeTicks start_time,
@@ -867,22 +831,20 @@ class CacheStorageDispatcherHost::CacheStorageImpl final
                 elapsed);
           }
           if (error != CacheStorageError::kSuccess) {
-            TRACE_EVENT_WITH_FLOW1(
+            TRACE_EVENT(
                 "CacheStorage",
                 "CacheStorageDispatchHost::CacheStorageImpl::Match::Callback",
-                TRACE_ID_GLOBAL(trace_id),
-                TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT, "status",
+                perfetto::Flow::Global(trace_id), "status",
                 CacheStorageTracedValue(error));
             std::move(callback).Run(base::unexpected(error));
             return;
           }
           DCHECK(self->bucket_.has_value());
 
-          TRACE_EVENT_WITH_FLOW1(
+          TRACE_EVENT(
               "CacheStorage",
               "CacheStorageDispatchHost::CacheStorageImpl::Match::Callback",
-              TRACE_ID_GLOBAL(trace_id),
-              TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT, "response",
+              perfetto::Flow::Global(trace_id), "response",
               CacheStorageTracedValue(response));
 
           // Enforce the Cross-Origin-Resource-Policy (CORP) of the response
@@ -954,11 +916,9 @@ class CacheStorageDispatcherHost::CacheStorageImpl final
             blink::mojom::CacheStorage::OpenCallback callback) override {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     std::string utf8_cache_name = base::UTF16ToUTF8(cache_name);
-    TRACE_EVENT_WITH_FLOW1("CacheStorage",
-                           "CacheStorageDispatchHost::CacheStorageImpl::Open",
-                           TRACE_ID_GLOBAL(trace_id),
-                           TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT,
-                           "cache_name", utf8_cache_name);
+    TRACE_EVENT(
+        "CacheStorage", "CacheStorageDispatchHost::CacheStorageImpl::Open",
+        perfetto::Flow::Global(trace_id), "cache_name", utf8_cache_name);
     auto cb = base::BindOnce(
         [](base::WeakPtr<CacheStorageImpl> self, base::TimeTicks start_time,
            int64_t trace_id, blink::mojom::CacheStorage::OpenCallback callback,
@@ -970,11 +930,10 @@ class CacheStorageDispatcherHost::CacheStorageImpl final
               "ServiceWorkerCache.CacheStorage.Browser.Open",
               base::TimeTicks::Now() - start_time);
 
-          TRACE_EVENT_WITH_FLOW1(
+          TRACE_EVENT(
               "CacheStorage",
               "CacheStorageDispatchHost::CacheStorageImpl::Open::Callback",
-              TRACE_ID_GLOBAL(trace_id),
-              TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT, "status",
+              perfetto::Flow::Global(trace_id), "status",
               CacheStorageTracedValue(error));
 
           if (error != CacheStorageError::kSuccess) {
@@ -1191,7 +1150,7 @@ void CacheStorageDispatcherHost::UpdateOrCreateDefaultBucket(
 bool CacheStorageDispatcherHost::WasNotifiedOfBucketDataDeletion(
     const storage::BucketLocator& bucket_locator) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return base::Contains(deleted_buckets_, bucket_locator);
+  return deleted_buckets_.contains(bucket_locator);
 }
 
 void CacheStorageDispatcherHost::NotifyBucketDataDeleted(

@@ -62,11 +62,13 @@ PipeControlMessageHandler::IsPeerAssociatedEndpointClosedEvent(
 }
 
 bool PipeControlMessageHandler::Accept(Message* message) {
-  if (!Validate(message))
+  if (!Validate(message)) {
     return false;
+  }
 
-  if (message->name() == pipe_control::kRunOrClosePipeMessageId)
+  if (message->name() == pipe_control::kRunOrClosePipeMessageId) {
     return RunOrClosePipe(message);
+  }
 
   NOTREACHED();
 }

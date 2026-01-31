@@ -7,7 +7,6 @@
 #include <algorithm>
 
 #include "base/command_line.h"
-#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
@@ -27,7 +26,6 @@
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/test/test_browser_dialog.h"
-#include "chrome/browser/ui/views/sync/one_click_signin_dialog_view.h"
 #include "chrome/browser/ui/webui/signin/inline_login_handler_impl.h"
 #include "chrome/browser/ui/webui/signin/login_ui_service.h"
 #include "chrome/browser/ui/webui/signin/login_ui_service_factory.h"
@@ -35,6 +33,7 @@
 #include "chrome/browser/ui/webui/signin/signin_utils_desktop.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/url_constants.h"
+#include "chrome/credential_provider/common/gcp_strings.h"
 #include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/chrome_test_utils.h"
@@ -73,10 +72,6 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/l10n/l10n_util.h"
-
-#if BUILDFLAG(IS_WIN)
-#include "chrome/credential_provider/common/gcp_strings.h"
-#endif  // BUILDFLAG(IS_WIN)
 
 using ::testing::_;
 using ::testing::AtLeast;
@@ -123,9 +118,9 @@ ACTION(ReturnNewWebUI) {
 }
 
 GURL GetSigninPromoURL() {
-  return signin::GetEmbeddedPromoURL(
-      signin_metrics::AccessPoint::kStartPage,
-      signin_metrics::Reason::kForcedSigninPrimaryAccount, false);
+  return signin::GetEmbeddedPromoURL(signin_metrics::AccessPoint::kStartPage,
+                                     signin_metrics::Reason::kFetchLstOnly,
+                                     false);
 }
 
 // Mock the TestChromeWebUIControllerFactory::WebUIProvider to prove that we are
@@ -162,8 +157,7 @@ class MockInlineSigninHelper : public InlineSigninHelper {
       const GaiaId& gaia_id,
       const std::string& password,
       const std::string& auth_code,
-      const std::string& signin_scoped_device_id,
-      bool confirm_untrusted_signin);
+      const std::string& signin_scoped_device_id);
 
   MockInlineSigninHelper(const MockInlineSigninHelper&) = delete;
   MockInlineSigninHelper& operator=(const MockInlineSigninHelper&) = delete;
@@ -176,9 +170,6 @@ class MockInlineSigninHelper : public InlineSigninHelper {
               OnClientOAuthFailure,
               (const GoogleServiceAuthError& error),
               (override));
-  MOCK_METHOD(void, CreateSyncStarter, (const std::string&), (override));
-
-  GaiaAuthFetcher* GetGaiaAuthFetcher() { return GetGaiaAuthFetcherForTest(); }
 };
 
 MockInlineSigninHelper::MockInlineSigninHelper(
@@ -190,8 +181,7 @@ MockInlineSigninHelper::MockInlineSigninHelper(
     const GaiaId& gaia_id,
     const std::string& password,
     const std::string& auth_code,
-    const std::string& signin_scoped_device_id,
-    bool confirm_untrusted_signin)
+    const std::string& signin_scoped_device_id)
     : InlineSigninHelper(handler,
                          url_loader_factory,
                          profile,
@@ -200,70 +190,14 @@ MockInlineSigninHelper::MockInlineSigninHelper(
                          gaia_id,
                          password,
                          auth_code,
-                         signin_scoped_device_id,
-                         confirm_untrusted_signin,
-                         false) {}
-
-// This class is used to mock out virtual methods with side effects so that
-// tests below can ensure they are called without causing side effects.
-class MockSyncStarterInlineSigninHelper : public InlineSigninHelper {
- public:
-  MockSyncStarterInlineSigninHelper(
-      base::WeakPtr<InlineLoginHandlerImpl> handler,
-      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-      Profile* profile,
-      const GURL& current_url,
-      const std::string& email,
-      const GaiaId& gaia_id,
-      const std::string& password,
-      const std::string& auth_code,
-      const std::string& signin_scoped_device_id,
-      bool confirm_untrusted_signin,
-      bool is_force_sign_in_with_usermanager);
-
-  MockSyncStarterInlineSigninHelper(const MockSyncStarterInlineSigninHelper&) =
-      delete;
-  MockSyncStarterInlineSigninHelper& operator=(
-      const MockSyncStarterInlineSigninHelper&) = delete;
-
-  MOCK_METHOD(void, CreateSyncStarter, (const std::string&), (override));
-};
-
-MockSyncStarterInlineSigninHelper::MockSyncStarterInlineSigninHelper(
-    base::WeakPtr<InlineLoginHandlerImpl> handler,
-    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-    Profile* profile,
-    const GURL& current_url,
-    const std::string& email,
-    const GaiaId& gaia_id,
-    const std::string& password,
-    const std::string& auth_code,
-    const std::string& signin_scoped_device_id,
-    bool confirm_untrusted_signin,
-    bool is_force_sign_in_with_usermanager)
-    : InlineSigninHelper(handler,
-                         url_loader_factory,
-                         profile,
-                         current_url,
-                         email,
-                         gaia_id,
-                         password,
-                         auth_code,
-                         signin_scoped_device_id,
-                         confirm_untrusted_signin,
-                         is_force_sign_in_with_usermanager) {}
+                         signin_scoped_device_id) {}
 
 }  // namespace
 
 class InlineLoginUIBrowserTest : public InProcessBrowserTest {};
 
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_WIN)
 // crbug.com/422868
-#define MAYBE_DifferentStorageId DISABLED_DifferentStorageId
-#else
-#define MAYBE_DifferentStorageId DifferentStorageId
-#endif
-IN_PROC_BROWSER_TEST_F(InlineLoginUIBrowserTest, MAYBE_DifferentStorageId) {
+IN_PROC_BROWSER_TEST_F(InlineLoginUIBrowserTest, DSABLED_DifferentStorageId) {
   ContentInfo info = NavigateAndGetInfo(browser(), GetSigninPromoURL(),
                                         WindowOpenDisposition::CURRENT_TAB);
   WaitUntilUIReady(browser());
@@ -310,9 +244,9 @@ IN_PROC_BROWSER_TEST_F(InlineLoginUIBrowserTest, OneProcessLimit) {
   ASSERT_NE(info1.pid, info3.pid);
 }
 
-class InlineLoginHelperBrowserTest : public DialogBrowserTest {
+class InlineLoginHelperBrowserTest : public InProcessBrowserTest {
  public:
-  InlineLoginHelperBrowserTest() : forced_signin_setter_(true) {}
+  InlineLoginHelperBrowserTest() = default;
 
   InlineLoginHelperBrowserTest(const InlineLoginHelperBrowserTest&) = delete;
   InlineLoginHelperBrowserTest& operator=(const InlineLoginHelperBrowserTest&) =
@@ -401,25 +335,6 @@ class InlineLoginHelperBrowserTest : public DialogBrowserTest {
         ->GetURLLoaderFactoryForBrowserProcess();
   }
 
-  void ShowUi(const std::string& name) override {
-    InlineLoginHandlerImpl handler;
-    // See Source enum in components/signin/public/base/signin_metrics.h for
-    // possible values of access_point=, reason=.
-    GURL url("chrome://chrome-signin/?access_point=0&reason=5");
-    // MockSyncStarterInlineSigninHelper will delete itself when done using
-    // base::SingleThreadTaskRunner::DeleteSoon(), so need to delete here.  But
-    // do need the RunUntilIdle() at the end.
-    MockSyncStarterInlineSigninHelper* helper =
-        new MockSyncStarterInlineSigninHelper(
-            handler.GetWeakPtr(), test_shared_loader_factory(), profile(), url,
-            "foo@gmail.com", GaiaId("gaiaid-12345"), "password", "auth_code",
-            /*signin_scoped_device_id=*/std::string(),
-            /*confirm_untrusted_signin=*/true,
-            /*is_force_sign_in_with_usermanager=*/true);
-    SimulateOnClientOAuthSuccess(helper, "refresh_token");
-    EXPECT_TRUE(OneClickSigninDialogView::IsShowing());
-  }
-
  protected:
   signin::IdentityManager* identity_manager() {
     return identity_test_env_profile_adaptor_->identity_test_env()
@@ -434,7 +349,6 @@ class InlineLoginHelperBrowserTest : public DialogBrowserTest {
       identity_test_env_profile_adaptor_;
   base::CallbackListSubscription create_services_subscription_;
   raw_ptr<Profile, AcrossTasksDanglingUntriaged> profile_ = nullptr;
-  signin_util::ScopedForceSigninSetterForTesting forced_signin_setter_;
 };
 
 // Test signin helper calls correct fetcher methods when called with an
@@ -444,8 +358,7 @@ IN_PROC_BROWSER_TEST_F(InlineLoginHelperBrowserTest, WithAuthCode) {
   MockInlineSigninHelper helper(
       handler.GetWeakPtr(), test_shared_loader_factory(), profile(), GURL(),
       "foo@gmail.com", GaiaId("gaiaid-12345"), "password", "auth_code",
-      /*signin_scoped_device_id=*/std::string(),
-      /*confirm_untrusted_signin=*/false);
+      /*signin_scoped_device_id=*/std::string());
   base::RunLoop run_loop;
   EXPECT_CALL(helper, OnClientOAuthSuccess(_))
       .WillOnce(testing::InvokeWithoutArgs([&run_loop]() { run_loop.Quit(); }));
@@ -457,188 +370,6 @@ IN_PROC_BROWSER_TEST_F(InlineLoginHelperBrowserTest, WithAuthCode) {
            "refresh_token": "refresh_token"
          })");
   run_loop.Run();
-}
-
-// Test signin helper creates sync starter with correct confirmation when
-// signing in with default sync options.
-IN_PROC_BROWSER_TEST_F(InlineLoginHelperBrowserTest,
-                       SigninCreatesSyncStarter1) {
-  signin_util::ScopedForceSigninSetterForTesting force_signin_setter(true);
-  InlineLoginHandlerImpl handler;
-  // See Source enum in components/signin/public/base/signin_metrics.h for
-  // possible values of access_point=, reason=.
-  GURL url("chrome://chrome-signin/?access_point=0&reason=5");
-  // MockSyncStarterInlineSigninHelper will delete itself when done using
-  // base::SingleThreadTaskRunner::DeleteSoon(), so need to delete here.  But
-  // do need the RunUntilIdle() at the end.
-  MockSyncStarterInlineSigninHelper* helper =
-      new MockSyncStarterInlineSigninHelper(
-          handler.GetWeakPtr(),
-          profile()
-              ->GetDefaultStoragePartition()
-              ->GetURLLoaderFactoryForBrowserProcess(),
-          profile(), url, "foo@gmail.com", GaiaId("gaiaid-12345"), "password",
-          "auth_code", /*signin_scoped_device_id=*/std::string(),
-          /*confirm_untrusted_signin=*/false,
-          /*is_force_sign_in_with_usermanager=*/false);
-  EXPECT_CALL(*helper, CreateSyncStarter("refresh_token"));
-
-  ProfileAttributesEntry* entry =
-      g_browser_process->profile_manager()
-          ->GetProfileAttributesStorage()
-          .GetProfileAttributesWithPath(profile()->GetPath());
-  ASSERT_NE(entry, nullptr);
-  entry->LockForceSigninProfile(true);
-
-  ASSERT_EQ(0ul, chrome::GetTotalBrowserCount());
-  SimulateOnClientOAuthSuccess(helper, "refresh_token");
-  ASSERT_EQ(0ul, chrome::GetTotalBrowserCount());
-  // if |force_sign_in_with_user_manager| is false, the profile should be
-  // unlocked early and InlineLoginHelper won't try to do it again
-  ASSERT_TRUE(entry->IsSigninRequired());
-}
-
-// Test signin helper creates sync starter with correct confirmation when
-// signing in and choosing what to sync first.
-IN_PROC_BROWSER_TEST_F(InlineLoginHelperBrowserTest,
-                       SigninCreatesSyncStarter2) {
-  InlineLoginHandlerImpl handler;
-  // See Source enum in components/signin/public/base/signin_metrics.h for
-  // possible values of access_point=, reason=.
-  const GURL url("chrome://chrome-signin/?access_point=0&reason=5");
-  // MockSyncStarterInlineSigninHelper will delete itself when done using
-  // base::SingleThreadTaskRunner::DeleteSoon(), so need to delete here.  But
-  // do need the RunUntilIdle() at the end.
-  MockSyncStarterInlineSigninHelper* helper =
-      new MockSyncStarterInlineSigninHelper(
-          handler.GetWeakPtr(), test_shared_loader_factory(), profile(), url,
-          "foo@gmail.com", GaiaId("gaiaid-12345"), "password", "auth_code",
-          /*signin_scoped_device_id=*/std::string(),
-          /*confirm_untrusted_signin=*/false,
-          /*is_force_sign_in_with_usermanager=*/false);
-  EXPECT_CALL(*helper, CreateSyncStarter("refresh_token"));
-
-  SimulateOnClientOAuthSuccess(helper, "refresh_token");
-}
-
-// Test signin helper creates the untrusted signin dialog, and signin aborts
-// when the user cancels.
-IN_PROC_BROWSER_TEST_F(InlineLoginHelperBrowserTest,
-                       UntrustedSigninDialogCancel) {
-  InlineLoginHandlerImpl handler;
-  // See Source enum in components/signin/public/base/signin_metrics.h for
-  // possible values of access_point=, reason=.
-  GURL url("chrome://chrome-signin/?access_point=0&reason=5");
-  // MockSyncStarterInlineSigninHelper will delete itself when done using
-  // base::SingleThreadTaskRunner::DeleteSoon(), so need to delete here.  But
-  // do need the RunUntilIdle() at the end.
-  MockSyncStarterInlineSigninHelper* helper =
-      new MockSyncStarterInlineSigninHelper(
-          handler.GetWeakPtr(), test_shared_loader_factory(), profile(), url,
-          "foo@gmail.com", GaiaId("gaiaid-12345"), "password", "auth_code",
-          /*signin_scoped_device_id=*/std::string(),
-          /*confirm_untrusted_signin=*/true,
-          /*is_force_sign_in_with_usermanager=*/true);
-  SimulateOnClientOAuthSuccess(helper, "refresh_token");
-  EXPECT_TRUE(OneClickSigninDialogView::IsShowing());
-  OneClickSigninDialogView::Hide();
-
-  base::RunLoop().RunUntilIdle();
-}
-
-// Test signin helper creates the untrusted signin dialog, and signin continues
-// when the user confirms.
-IN_PROC_BROWSER_TEST_F(InlineLoginHelperBrowserTest,
-                       UntrustedSigninDialogConfirm) {
-  InlineLoginHandlerImpl handler;
-  // See Source enum in components/signin/public/base/signin_metrics.h for
-  // possible values of access_point=, reason=.
-  GURL url("chrome://chrome-signin/?access_point=0&reason=5");
-  // MockSyncStarterInlineSigninHelper will delete itself when done using
-  // base::SingleThreadTaskRunner::DeleteSoon(), so need to delete here.  But
-  // do need the RunUntilIdle() at the end.
-  MockSyncStarterInlineSigninHelper* helper =
-      new MockSyncStarterInlineSigninHelper(
-          handler.GetWeakPtr(), test_shared_loader_factory(), profile(), url,
-          "foo@gmail.com", GaiaId("gaiaid-12345"), "password", "auth_code",
-          /*signin_scoped_device_id=*/std::string(),
-          /*confirm_untrusted_signin=*/true,
-          /*is_force_sign_in_with_usermanager=*/true);
-  EXPECT_CALL(*helper, CreateSyncStarter("refresh_token"));
-  SimulateOnClientOAuthSuccess(helper, "refresh_token");
-  EXPECT_TRUE(OneClickSigninDialogView::IsShowing());
-  views::DialogDelegateView* dialog_delegate =
-      OneClickSigninDialogView::view_for_testing();
-  dialog_delegate->Accept();
-
-  base::RunLoop().RunUntilIdle();
-}
-
-// Test signin helper creates sync starter with correct confirmation during
-// re-auth.
-IN_PROC_BROWSER_TEST_F(InlineLoginHelperBrowserTest,
-                       SigninCreatesSyncStarter4) {
-  InlineLoginHandlerImpl handler;
-  // See Source enum in components/signin/public/base/signin_metrics.h for
-  // possible values of access_point=, reason=.
-  const GURL url("chrome://chrome-signin/?access_point=3&reason=5");
-  // MockSyncStarterInlineSigninHelper will delete itself when done using
-  // base::SingleThreadTaskRunner::DeleteSoon(), so need to delete here.  But
-  // do need the RunUntilIdle() at the end.
-  MockSyncStarterInlineSigninHelper* helper =
-      new MockSyncStarterInlineSigninHelper(
-          handler.GetWeakPtr(), test_shared_loader_factory(), profile(), url,
-          "foo@gmail.com", GaiaId("gaiaid-12345"), "password", "auth_code",
-          /*signin_scoped_device_id=*/std::string(),
-          /*confirm_untrusted_signin=*/false,
-          /*is_force_sign_in_with_usermanager=*/false);
-
-  // Even though "choose what to sync" is false, the source of the URL is
-  // settings, which means the user wants to CONFIGURE_SYNC_FIRST.
-  EXPECT_CALL(*helper, CreateSyncStarter("refresh_token"));
-
-  SimulateOnClientOAuthSuccess(helper, "refresh_token");
-}
-
-IN_PROC_BROWSER_TEST_F(InlineLoginHelperBrowserTest,
-                       ForceSigninWithUserManager) {
-  signin_util::ScopedForceSigninSetterForTesting force_signin_setter(true);
-  InlineLoginHandlerImpl handler;
-  GURL url("chrome://chrome-signin/?access_point=0&reason=5");
-  // MockSyncStarterInlineSigninHelper will delete itself when done using
-  // base::SingleThreadTaskRunner::DeleteSoon(), so need to delete here.  But
-  // do need the RunUntilIdle() at the end.
-  MockSyncStarterInlineSigninHelper* helper =
-      new MockSyncStarterInlineSigninHelper(
-          handler.GetWeakPtr(), test_shared_loader_factory(), profile(), url,
-          "foo@gmail.com", GaiaId("gaiaid-12345"), "password", "auth_code",
-          /*signin_scoped_device_id=*/std::string(),
-          /*confirm_untrusted_signin=*/false,
-          /*is_force_sign_in_with_usermanager=*/true);
-  EXPECT_CALL(*helper, CreateSyncStarter("refresh_token"));
-
-  ProfileAttributesEntry* entry =
-      g_browser_process->profile_manager()
-          ->GetProfileAttributesStorage()
-          .GetProfileAttributesWithPath(profile()->GetPath());
-  ASSERT_NE(entry, nullptr);
-  entry->LockForceSigninProfile(true);
-
-  ASSERT_EQ(0ul, chrome::GetTotalBrowserCount());
-  SimulateOnClientOAuthSuccess(helper, "refresh_token");
-  ASSERT_EQ(1ul, chrome::GetTotalBrowserCount());
-  ASSERT_FALSE(entry->IsSigninRequired());
-}
-
-// https://crbug.com/1271819: Added Mac and Win due to excessive flakiness
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC) || \
-    BUILDFLAG(IS_WIN)
-#define MAYBE_InvokeUi_default DISABLED_InvokeUi_default
-#else
-#define MAYBE_InvokeUi_default InvokeUi_default
-#endif
-IN_PROC_BROWSER_TEST_F(InlineLoginHelperBrowserTest, MAYBE_InvokeUi_default) {
-  ShowAndVerifyUi();
 }
 
 class InlineLoginUISafeIframeBrowserTest : public InProcessBrowserTest {
@@ -703,18 +434,11 @@ IN_PROC_BROWSER_TEST_F(InlineLoginUISafeIframeBrowserTest, Basic) {
       ui_test_utils::NavigateToURL(browser(), content::GetWebUIURL("foo/")));
 }
 
-// Flaky on MacOS - crbug.com/1021209
-#if BUILDFLAG(IS_MAC)
-#define MAYBE_NoWebUIInIframe DISABLED_NoWebUIInIframe
-#else
-#define MAYBE_NoWebUIInIframe NoWebUIInIframe
-#endif
 // Make sure that the foo webui handler does not get created when we try to
 // load it inside the iframe of the login ui.
-IN_PROC_BROWSER_TEST_F(InlineLoginUISafeIframeBrowserTest,
-                       MAYBE_NoWebUIInIframe) {
+IN_PROC_BROWSER_TEST_F(InlineLoginUISafeIframeBrowserTest, NoWebUIInIframe) {
   GURL url = GetSigninPromoURL().Resolve(
-      "?source=0&access_point=0&reason=5&frameUrl=chrome://foo");
+      "?source=0&access_point=0&reason=6&frameUrl=chrome://foo");
   EXPECT_CALL(foo_provider(), NewWebUI(_, _)).Times(0);
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 }
@@ -740,7 +464,6 @@ IN_PROC_BROWSER_TEST_F(InlineLoginUISafeIframeBrowserTest,
   base::RunLoop().RunUntilIdle();
 }
 
-#if BUILDFLAG(IS_WIN)
 // Tracks the URLs requested while running a browser test and returns a default
 // empty html page as a result. Each URL + path tracks all the query params
 // requested to this endpoint for validation later on.
@@ -874,4 +597,3 @@ IN_PROC_BROWSER_TEST_F(InlineLoginCorrectGaiaUrlBrowserTest,
   EXPECT_TRUE(tracker_.PageRequested(
       gaia_url, {{"flow", "reauth"}, {"Email", email}, {"show_tos", "1"}}));
 }
-#endif

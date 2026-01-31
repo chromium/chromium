@@ -7,7 +7,6 @@
 #include <iterator>
 
 #include "base/check.h"
-#include "base/containers/contains.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
@@ -344,14 +343,15 @@ void GroupDataModel::OnBatchOfGroupsFetchedFromSDK(
       continue;
     }
 
-    if (!requested_groups_and_versions.contains(group_id)) {
+    auto it = requested_groups_and_versions.find(group_id);
+    if (it == requested_groups_and_versions.end()) {
       // Guard against protocol violation (this group hasn't been requested).
       continue;
     }
 
     const auto old_group_data_opt = group_data_store_.GetGroupData(group_id);
-    group_data_store_.StoreGroupData(requested_groups_and_versions.at(group_id),
-                                     requested_at_timestamp, group_data_proto);
+    group_data_store_.StoreGroupData(it->second, requested_at_timestamp,
+                                     group_data_proto);
     for (auto& observer : observers_) {
       // TODO(crbug.com/377215683): pass the actual event time (at least derived
       // from CollaborationGroupSpecifics).
@@ -399,7 +399,7 @@ void GroupDataModel::NotifyObserversAboutChangedMembers(
 
   std::vector<std::pair<GaiaId, base::Time>> added_members;
   for (const auto& new_pair : new_members) {
-    if (!base::Contains(old_members_gaia_ids, new_pair.first)) {
+    if (!old_members_gaia_ids.contains(new_pair.first)) {
       added_members.push_back(new_pair);
     }
   }

@@ -20,15 +20,14 @@
 <translation id="20876857123010370">ट्रैकपैड मोड</translation>
 <translation id="2198363917176605566"><ph name="PRODUCT_NAME" /> इस्तेमाल करने के लिए आपको 'स्क्रीन रिकॉर्डिंग' की अनुमति देनी होगी, ताकि इस Mac की स्क्रीन पर मौजूद सामग्री को कहीं और मौजूद मशीन पर भेजा जा सके.
 
-यह अनुमति देने के लिए, नीचे दिए गए '<ph name="BUTTON_NAME" />' पर क्लिक करें, ताकि 'स्क्रीन रिकॉर्डिंग' की प्राथमिकताओं वाले पैनल को खोला जा सके. इसके बाद '<ph name="SERVICE_SCRIPT_NAME" />' के आगे बने बॉक्स को चुनें.
+यह अनुमति देने के लिए, नीचे दिए गए ‘<ph name="BUTTON_NAME" />' पर क्लिक करें, ताकि 'स्क्रीन रिकॉर्डिंग' की प्राथमिकताओं वाले पैनल को खोला जा सके. इसके बाद ‘<ph name="SERVICE_SCRIPT_NAME" />' के आगे बने बॉक्स को चुनें.
 
-अगर '<ph name="SERVICE_SCRIPT_NAME" />' पहले से चुना है, तो सही का निशान हटाकर दोबारा लगाएं.</translation>
+अगर ‘<ph name="SERVICE_SCRIPT_NAME" />' पहले से चुना है, तो सही का निशान हटाकर दोबारा लगाएं.</translation>
 <translation id="225614027745146050">आपका स्वागत है</translation>
 <translation id="2320166752086256636">कीबोर्ड छिपाएं</translation>
 <translation id="2329392777730037872">क्लाइंट के डिवाइस पर <ph name="URL" /> नहीं खोला जा सका.</translation>
 <translation id="2359808026110333948">जारी रखें</translation>
 <translation id="2366718077645204424">होस्‍ट तक पहुंचने में असमर्थ. यह संभवत:   उपयोग किए जाने वाले नेटवर्क के कॉन्फ़िगरेशन के कारण है.</translation>
-<translation id="242591256144136845">Copyright 2025 Google LLC. सभी अधिकार सुरक्षित हैं.</translation>
 <translation id="2504109125669302160"><ph name="PRODUCT_NAME" /> को 'सुलभता' अनुमति दें</translation>
 <translation id="2509394361235492552"><ph name="HOSTNAME" /> से कनेक्‍ट है</translation>
 <translation id="2540992418118313681">क्या आप इस कंप्यूटर को किसी दूसरे उपयोगकर्ता से शेयर करना चाहते हैं ताकि वह इसे देख और नियंत्रित कर सके?</translation>
@@ -47,6 +46,7 @@
 <translation id="3150823315463303127">होस्‍ट, नीति को पढ़ने में विफल रहा.</translation>
 <translation id="3171922709365450819">इस क्लाइंट के ज़रिए यह डिवाइस इसलिए काम नहीं करता है क्योंकि इसे तृतीय पक्ष प्रमाणीकरण चाहिए.</translation>
 <translation id="3197730452537982411">रिमोट डेस्कटॉप</translation>
+<translation id="3236334139428307578">Copyright 2026 The Chromium Authors. सभी अधिकार सुरक्षित हैं.</translation>
 <translation id="324272851072175193">ये निर्देश ईमेल करें</translation>
 <translation id="3305934114213025800"><ph name="PRODUCT_NAME" /> बदलाव करना चाहता है.</translation>
 <translation id="3339299787263251426">इंटरनेट की मदद से अपना कंप्‍यूटर सुरक्षित रूप से ऐक्‍सेस करें</translation>
@@ -111,6 +111,7 @@
 <translation id="5823554426827907568"><ph name="CLIENT_USERNAME" /> ने आपकी कंप्यूटर स्क्रीन के साथ-साथ कीबोर्ड और माउस का ऐक्सेस मांगा है. अगर आप ऐक्सेस नहीं देना चाहते हैं, तो ''<ph name="IDS_SHARE_CONFIRM_DIALOG_DECLINE" />'' को दबाएं. अगर आप ऐक्सेस देना चाहते हैं, तो कनेक्ट करने के लिए ''<ph name="IDS_SHARE_CONFIRM_DIALOG_CONFIRM" />'' को दबाएं.</translation>
 <translation id="5823658491130719298">आप जिस कंप्‍यूटर को रिमोट (दूर से) एक्‍सेस करना चाहते हैं, उस पर Chrome खोलें और <ph name="INSTALLATION_LINK" /> पर जाएं</translation>
 <translation id="5841343754884244200">डिसप्ले विकल्प</translation>
+<translation id="5965133372831030509">Copyright 2026 Google LLC. सभी अधिकार सुरक्षित हैं.</translation>
 <translation id="6033507038939587647">कीबोर्ड विकल्प</translation>
 <translation id="6040143037577758943">बंद करें</translation>
 <translation id="6062854958530969723">होस्‍ट आरंभ करना विफल रहा.</translation>
@@ -138,7 +139,6 @@
 <translation id="7067321367069083429">स्क्रीन किसी टच स्क्रीन की तरह काम करती है</translation>
 <translation id="7116737094673640201">Chrome दूरस्‍थ डेस्‍कटॉप में आपका स्वागत है</translation>
 <translation id="7144878232160441200">फिर से प्रयास करें</translation>
-<translation id="7298392173540380852">Copyright 2025 The Chromium Authors. सभी अधिकार सुरक्षित हैं.</translation>
 <translation id="7312846573060934304">होस्ट ऑफ़लाइन है.</translation>
 <translation id="7319983568955948908">शेयर करना बंद करें</translation>
 <translation id="7359298090707901886">कंप्यूटर पर यूआरएल खोलने के लिए, चुने गए ब्राउज़र का इस्तेमाल नहीं किया जा सकता.</translation>
@@ -168,9 +168,9 @@
 <translation id="8116630183974937060">नेटवर्क में गड़बड़ी हुई. कृपया जाँचें कि आपका डिवाइस ऑन-लाइन है और फिर से कोशिश करें.</translation>
 <translation id="8295077433896346116"><ph name="PRODUCT_NAME" /> इस्तेमाल करने के लिए 'सुलभता' की अनुमति दें, ताकि इस Mac की स्क्रीन पर कहीं और मौजूद मशीन से इनपुट भेजा जा सके.
 
-यह अनुमति देने के लिए, नीचे दिए गए '<ph name="BUTTON_NAME" />' पर क्लिक करें. 'सुलभता' की प्राथमिकताओं वाले पैनल में '<ph name="SERVICE_SCRIPT_NAME" />' के आगे बने बॉक्स को चुनें.
+यह अनुमति देने के लिए, नीचे दिए गए ‘<ph name="BUTTON_NAME" />' पर क्लिक करें. 'सुलभता' की प्राथमिकताओं वाले पैनल में ‘<ph name="SERVICE_SCRIPT_NAME" />' के आगे बने बॉक्स को चुनें.
 
-अगर '<ph name="SERVICE_SCRIPT_NAME" />' पहले से चुना है, तो सही का निशान हटाकर फिर से लगाएं.</translation>
+अगर ‘<ph name="SERVICE_SCRIPT_NAME" />' पहले से चुना है, तो सही का निशान हटाकर फिर से लगाएं.</translation>
 <translation id="8305209735512572429">वेब की पुष्टि करने की रिमोटिंग प्रोसेस</translation>
 <translation id="8383794970363966105">Chromoting का उपयोग करने के लिए, आपको अपने डिवाइस में Google खाता जोड़ना होगा.</translation>
 <translation id="8386846956409881180">होस्‍ट को अमान्‍य OAuth क्रेडेंशियल से कॉन्‍फ़िगर किया गया है.</translation>

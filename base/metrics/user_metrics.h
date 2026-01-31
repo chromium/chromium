@@ -10,10 +10,10 @@
 #include "base/base_export.h"
 #include "base/functional/callback.h"
 #include "base/metrics/user_metrics_action.h"
-#include "base/task/single_thread_task_runner.h"
 
 namespace base {
 
+class SingleThreadTaskRunner;
 class TimeTicks;
 
 // This module provides some helper functions for logging actions tracked by

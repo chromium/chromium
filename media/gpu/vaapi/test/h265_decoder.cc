@@ -2,16 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "media/gpu/vaapi/test/h265_decoder.h"
 
 #include <algorithm>
 #include <array>
 
+#include "base/compiler_specific.h"
 #include "base/logging.h"
 #include "base/notreached.h"
 #include "media/parsers/h265_parser.h"
@@ -91,7 +87,7 @@ H265Decoder::H265Decoder(const uint8_t* stream_data,
                          SharedVASurface::FetchPolicy fetch_policy)
     : VideoDecoder::VideoDecoder(va_device, fetch_policy), wrapper_(va_device) {
   Reset();
-  parser_.SetStream(base::span(stream_data, stream_len));
+  parser_.SetStream(UNSAFE_TODO(base::span(stream_data, stream_len)));
 }
 
 H265Decoder::~H265Decoder() {

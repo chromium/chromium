@@ -11,10 +11,11 @@
 #include "base/run_loop.h"
 #include "base/strings/strcat.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/on_device_translation/constants.h"
-#include "chrome/browser/on_device_translation/language_pack_util.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/component_updater/component_updater_paths.h"
+#include "components/on_device_translation/public/language_pack.h"
+#include "components/on_device_translation/public/paths.h"
+#include "components/on_device_translation/public/pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
@@ -122,7 +123,7 @@ IN_PROC_BROWSER_TEST_F(ComponentManagerBrowserTest,
   base::PathService::Get(component_updater::DIR_COMPONENT_USER,
                          &components_dir);
   EXPECT_EQ(ComponentManager::GetInstance().GetTranslateKitComponentPath(),
-            components_dir.Append(kTranslateKitBinaryInstallationRelativeDir));
+            components_dir.Append(GetBinaryRelativeInstallDir()));
 }
 
 class ComponentManagerCustomComponentPathBrowserTest

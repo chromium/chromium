@@ -20,11 +20,10 @@ include_rules = [
   "+chrome/browser/ash/policy/handlers",
   "+chrome/browser/ash/settings",
   "+chrome/browser/ash/system",
-  "+chrome/browser/browser_process.h",
   "+chrome/browser/global_features.h",
   "+chrome/browser/profiles",
   "+chrome/browser/ui/browser.h",
-  "+chrome/browser/ui/browser_list.h",
+  "+chrome/browser/ui/browser_window/public/global_browser_collection.h",
   "+chrome/browser/ui/browser_list_observer.h",
   "+chrome/browser/ui/browser_window.h",
   "+chrome/browser/ui/tabs",
@@ -33,3 +32,10 @@ include_rules = [
   "+chrome/common/pref_names.h",
   "+chrome/test/base",
 ]
+
+specific_include_rules = {
+  # Exceptionally allow g_browser_process usage in the ctor of ArcSettingsService.
+  "arc_settings_service\\.cc": [
+    "+chrome/browser/browser_process.h",
+  ]
+}

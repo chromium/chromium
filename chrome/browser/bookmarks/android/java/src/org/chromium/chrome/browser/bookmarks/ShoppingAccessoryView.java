@@ -84,13 +84,13 @@ public class ShoppingAccessoryView extends FrameLayout {
                 mContainer
                         .getBackground()
                         .setColorFilter(
-                                getContext().getColor(R.color.price_drop_annotation_bg_color),
+                                getContext().getColor(R.color.price_indicator_bg_color),
                                 PorterDuff.Mode.SRC_ATOP);
             }
             ImageViewCompat.setImageTintList(
                     mPriceTrackedIcon,
                     ColorStateList.valueOf(
-                            getContext().getColor(R.color.price_drop_annotation_text_green)));
+                            getContext().getColor(R.color.price_indicator_text_color)));
 
             // Primary text displays the current price.
             mPriceDropText.setText(info.getCurrentPriceText());

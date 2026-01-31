@@ -10,7 +10,6 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
-#include "base/memory/memory_pressure_listener.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
@@ -382,7 +381,7 @@ class MockSharedStorageManager : public SharedStorageManager {
     OverrideDatabaseForTesting(MockAsyncSharedStorageDatabase::Create());
   }
 
-  ~MockSharedStorageManager() override = default;
+  ~MockSharedStorageManager() = default;
 
   void SetResultsForTesting(std::queue<OperationResult> result_queue,
                             base::OnceClosure callback) {
@@ -501,20 +500,6 @@ class SharedStorageManagerTest : public testing::Test {
     EXPECT_TRUE(destroy_success_);
     EXPECT_TRUE(GetManager()->tried_to_recover_from_init_failure_for_testing());
     EXPECT_TRUE(GetManager()->database());
-  }
-
-  void OnMemoryPressure(base::MemoryPressureLevel memory_pressure_level) {
-    DCHECK(GetManager());
-    DCHECK(receiver_);
-
-    auto callback = receiver_->MakeOnceClosureFromClosure(
-        DBOperation(
-            Type::DB_ON_MEMORY_PRESSURE,
-            {TestDatabaseOperationReceiver::SerializeMemoryPressureLevel(
-                memory_pressure_level)}),
-        base::BindLambdaForTesting([&]() { memory_trimmed_ = true; }));
-    GetManager()->HandleMemoryPressure(std::move(callback),
-                                       memory_pressure_level);
   }
 
   void Get(url::Origin context_origin,
@@ -1992,10 +1977,7 @@ TEST_P(SharedStorageManagerParamTest, AsyncOperations) {
        {Type::DB_LENGTH, kOrigin1},
        {Type::DB_BATCH_UPDATE, kOrigin1,
         content::CloneSharedStorageMethods(batch_update_methods)},
-       {Type::DB_GET, kOrigin1, {u"key1"}},
-       {Type::DB_ON_MEMORY_PRESSURE,
-        {TestDatabaseOperationReceiver::SerializeMemoryPressureLevel(
-            base::MEMORY_PRESSURE_LEVEL_CRITICAL)}}});
+       {Type::DB_GET, kOrigin1, {u"key1"}}});
 
   SetExpectedOperationList(std::move(operation_list));
   ASSERT_TRUE(GetManager());
@@ -2053,9 +2035,6 @@ TEST_P(SharedStorageManagerParamTest, AsyncOperations) {
   GetResult value6;
   Get(kOrigin1, u"key1", &value6);
 
-  EXPECT_FALSE(memory_trimmed_);
-  OnMemoryPressure(base::MEMORY_PRESSURE_LEVEL_CRITICAL);
-
   WaitForOperations();
   EXPECT_TRUE(is_finished());
 
@@ -2100,8 +2079,6 @@ TEST_P(SharedStorageManagerParamTest, AsyncOperations) {
   EXPECT_THAT(batch_update_result.inner_method_results,
               ElementsAre(OperationResult::kSet, OperationResult::kSet));
   EXPECT_EQ(value6.data, u"value1value1");
-
-  EXPECT_TRUE(memory_trimmed_);
 }
 
 class SharedStorageManagerPurgeMatchingOriginsParamTest

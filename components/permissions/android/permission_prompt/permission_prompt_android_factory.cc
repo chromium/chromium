@@ -5,10 +5,13 @@
 #include <memory>
 
 #include "components/permissions/android/permission_prompt/embedded_permission_prompt_android.h"
+#include "components/permissions/android/permission_prompt/permission_clapper_quiet_icon.h"
 #include "components/permissions/android/permission_prompt/permission_dialog.h"
 #include "components/permissions/android/permission_prompt/permission_message.h"
+#include "components/permissions/android/permissions_android_feature_map.h"
 #include "components/permissions/permission_prompt.h"
 #include "components/permissions/permission_util.h"
+#include "components/permissions/request_type.h"
 #include "content/public/browser/web_contents.h"
 
 namespace permissions {
@@ -23,6 +26,16 @@ std::unique_ptr<PermissionPrompt> PermissionPrompt::Create(
       return embedded_prompt;
     }
   }
+
+  // For Quiet Clapper (e.g. abusive, embargoed), show the silent Omnibox
+  // icon.
+  if (delegate->ShouldCurrentRequestUseQuietUI() &&
+      delegate->Requests()[0]->request_type() == RequestType::kNotifications &&
+      base::FeatureList::IsEnabled(
+          permissions::kPermissionsAndroidClapperQuiet)) {
+    return std::make_unique<PermissionClapperQuietIcon>(web_contents, delegate);
+  }
+
   // Quiet UI (non-modal, less intrusive) is preferred over loud one, if
   // necessary conditions are met.
   auto message_ui = PermissionMessage::Create(web_contents, delegate);

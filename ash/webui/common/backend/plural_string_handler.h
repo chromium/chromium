@@ -32,7 +32,7 @@ class PluralStringHandler : public content::WebUIMessageHandler {
 
  private:
   // Returns a localized, pluralized string.
-  void HandleGetPluralString(const base::Value::List& args);
+  void HandleGetPluralString(const base::ListValue& args);
 
   std::map<std::string, int> string_id_map_;
 };

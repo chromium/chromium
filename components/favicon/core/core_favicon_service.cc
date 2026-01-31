@@ -4,7 +4,8 @@
 
 #include "components/favicon/core/core_favicon_service.h"
 
-#include "base/containers/contains.h"
+#include <algorithm>
+
 #include "components/favicon_base/favicon_util.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/gfx/image/image.h"
@@ -34,7 +35,7 @@ std::vector<SkBitmap> CoreFaviconService::ExtractSkBitmapsToStore(
   const std::vector<float> favicon_scales = favicon_base::GetFaviconScales();
   for (const gfx::ImageSkiaRep& rep : image_skia.image_reps()) {
     // Only save images with a supported sale.
-    if (base::Contains(favicon_scales, rep.scale())) {
+    if (std::ranges::contains(favicon_scales, rep.scale())) {
       bitmaps.push_back(rep.GetBitmap());
     }
   }

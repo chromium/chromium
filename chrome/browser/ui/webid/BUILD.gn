@@ -27,8 +27,10 @@ source_set("webid") {
     "//base:i18n",
     "//chrome/app/resources:platform_locale_settings",
     "//chrome/app/resources:platform_locale_settings_grit",
+    "//chrome/browser/actor",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/segmentation_platform",
+    "//chrome/browser/ui/browser_window",
     "//chrome/browser/webid",
     "//components/favicon/content",
     "//components/favicon/core",
@@ -36,10 +38,6 @@ source_set("webid") {
     "//skia",
     "//ui/base",
   ]
-
-  if (!is_android || is_desktop_android) {
-    deps += [ "//chrome/browser/ui/browser_window" ]
-  }
 }
 
 if (!is_android) {
@@ -53,6 +51,7 @@ if (!is_android) {
       ":webid",
       "//base",
       "//base/test:test_support",
+      "//chrome/browser/webid",
       "//chrome/test:test_support",
       "//components/optimization_guide/core:hints_test_support",
       "//components/permissions",

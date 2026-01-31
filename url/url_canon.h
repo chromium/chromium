@@ -63,11 +63,7 @@ class CanonOutputT {
 
   // Accessor for returning a character at a given position. The input offset
   // must be in the valid range.
-  inline T at(size_t offset) const { return UNSAFE_TODO(buffer_[offset]); }
-
-  // Sets the character at the given position. The given position MUST be less
-  // than the length().
-  inline void set(size_t offset, T ch) { UNSAFE_TODO(buffer_[offset]) = ch; }
+  inline T at(size_t offset) const { return view()[offset]; }
 
   // Returns the number of characters currently in the buffer.
   inline size_t length() const { return cur_len_; }
@@ -81,14 +77,14 @@ class CanonOutputT {
 
   // Returns the contents of the buffer as a string_view.
   std::basic_string_view<T> view() const {
-    return std::basic_string_view<T>(data(), length());
+    return std::basic_string_view<T>(buffer_, length());
   }
 
   // Called by the user of this class to get the output. The output will NOT
-  // be NULL-terminated. Call length() to get the
-  // length.
-  const T* data() const { return buffer_; }
-  T* data() { return buffer_; }
+  // be NULL-terminated. Call length() to get the length.
+  //
+  // This is unsafe, and we should use view() instead.
+  UNSAFE_BUFFER_USAGE const T* data() const { return buffer_; }
 
   // Shortens the URL to the new length. Used for "backing up" when processing
   // relative paths. This can also be used if an external function writes a lot
@@ -104,7 +100,8 @@ class CanonOutputT {
     // In VC2005, putting this common case first speeds up execution
     // dramatically because this branch is predicted as taken.
     if (cur_len_ < buffer_len_) {
-      UNSAFE_TODO(buffer_[cur_len_]) = ch;
+      // SAFETY: `cur_len_` was validated on the previous line.
+      UNSAFE_BUFFERS(buffer_[cur_len_]) = ch;
       cur_len_++;
       return;
     }
@@ -115,21 +112,21 @@ class CanonOutputT {
       return;
 
     // Actually do the insertion.
-    UNSAFE_TODO(buffer_[cur_len_]) = ch;
+    // SAFETY: Successful `Grow(1)` ensured `cur_len_` was valid.
+    UNSAFE_BUFFERS(buffer_[cur_len_]) = ch;
     cur_len_++;
   }
 
   // Appends the given string to the output.
-  void Append(const T* str, size_t str_len) {
+  void Append(std::basic_string_view<T> str) {
+    size_t str_len = str.length();
     if (str_len > buffer_len_ - cur_len_) {
       if (!Grow(str_len - (buffer_len_ - cur_len_)))
         return;
     }
-    UNSAFE_TODO(memcpy(buffer_ + cur_len_, str, str_len * sizeof(T)));
+    Span().subspan(cur_len_, str_len).copy_from(base::span(str));
     cur_len_ += str_len;
   }
-
-  void Append(std::basic_string_view<T> str) { Append(str.data(), str.size()); }
 
   void ReserveSizeIfNeeded(size_t estimated_size) {
     // Reserve a bit extra to account for escaped chars.
@@ -145,6 +142,12 @@ class CanonOutputT {
     set_length(pos);
     Append(str);
     Append(copy);
+  }
+
+  // Returns a span for the whole buffer.
+  base::span<T> Span() {
+    // SAFETY: Resize() must ensure `buffer_` has `buffer_len_` size.
+    return UNSAFE_BUFFERS(base::span(buffer_, buffer_len_));
   }
 
  protected:
@@ -188,9 +191,10 @@ class RawCanonOutputT : public CanonOutputT<T> {
 
   void Resize(size_t sz) override {
     T* new_buf = new T[sz];
-    UNSAFE_TODO(
-        memcpy(new_buf, this->buffer_,
-               sizeof(T) * (this->cur_len_ < sz ? this->cur_len_ : sz)));
+    // SAFETY: The previous line ensured `new_buf` had `sz` size.
+    UNSAFE_BUFFERS(base::span(new_buf, sz))
+        .copy_prefix_from(
+            CanonOutputT<T>::Span().first(std::min(sz, this->cur_len_)));
     if (this->buffer_ != fixed_buffer_)
       delete[] this->buffer_;
     this->buffer_ = new_buf;
@@ -471,11 +475,11 @@ bool CanonicalizeFileHost(std::u16string_view spec,
 // CanonicalizeNonSpecialHostVerbose.
 //
 // TODO(crbug.com/40063064): Check the callers of these functions.
-COMPONENT_EXPORT(URL)
-void CanonicalizeHostVerbose(const char* spec,
-                             const Component& host,
-                             CanonOutput* output,
-                             CanonHostInfo* host_info);
+UNSAFE_BUFFER_USAGE COMPONENT_EXPORT(URL) void CanonicalizeHostVerbose(
+    const char* spec,
+    const Component& host,
+    CanonOutput* output,
+    CanonHostInfo* host_info);
 COMPONENT_EXPORT(URL)
 void CanonicalizeHostVerbose(std::string_view spec,
                              const Component& host,
@@ -645,11 +649,11 @@ bool CanonicalizePath(std::optional<std::u16string_view> path,
 // functions requires several steps.
 // TODO(crbug.com/422740114): Remove this after `//net/third_party/quiche` is
 // not depending on it.
-COMPONENT_EXPORT(URL)
-bool CanonicalizePath(const char* spec,
-                      const Component& path,
-                      CanonOutput* output,
-                      Component* out_path);
+UNSAFE_BUFFER_USAGE COMPONENT_EXPORT(URL) bool CanonicalizePath(
+    const char* spec,
+    const Component& path,
+    CanonOutput* output,
+    Component* out_path);
 COMPONENT_EXPORT(URL)
 bool CanonicalizePath(std::optional<std::string_view> path,
                       CanonOutput* output,

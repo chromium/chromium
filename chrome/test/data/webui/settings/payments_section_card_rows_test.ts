@@ -36,6 +36,7 @@ suite('PaymentsSectionCardRows', function() {
       migrationEnabled: true,
       showIbansSettings: true,
       enableNewFopDisplay: true,
+      autofillEnableWalletBranding: true,
     });
     metricsBrowserProxy = new TestMetricsBrowserProxy();
     MetricsBrowserProxyImpl.setInstance(metricsBrowserProxy);
@@ -84,7 +85,8 @@ suite('PaymentsSectionCardRows', function() {
         [creditCard], /*ibans=*/[], /*payOverTimeIssuers=*/[],
         /*prefValues=*/ {});
     const rowShadowRoot = getCardRowShadowRoot(section.$.paymentsList);
-    const menuButton = rowShadowRoot.querySelector('#creditCardMenu');
+    const menuButton =
+        rowShadowRoot.querySelector<HTMLElement>('#creditCardMenu');
     assertTrue(!!menuButton);
     const updateCreditCardCallback =
         (creditCard: chrome.autofillPrivate.CreditCardEntry) => {
@@ -101,32 +103,27 @@ suite('PaymentsSectionCardRows', function() {
     creditCard = createCreditCardEntry();
     creditCard.nickname = 'My card name';
     updateCreditCardCallback(creditCard);
-    assertEquals(
-        'More actions for My card name', menuButton.getAttribute('title'));
+    assertEquals('More actions for My card name', menuButton.title);
 
     // Case 2: a card without nickname
     creditCard = createCreditCardEntry();
     creditCard.cardNumber = '0000000000001234';
     creditCard.network = 'Visa';
     updateCreditCardCallback(creditCard);
-    assertEquals(
-        'More actions for Visa ending in 1234',
-        menuButton.getAttribute('title'));
+    assertEquals('More actions for Visa ending in 1234', menuButton.title);
 
     // Case 3: a card without network
     creditCard = createCreditCardEntry();
     creditCard.cardNumber = '0000000000001234';
     creditCard.network = undefined;
     updateCreditCardCallback(creditCard);
-    assertEquals(
-        'More actions for Card ending in 1234',
-        menuButton.getAttribute('title'));
+    assertEquals('More actions for Card ending in 1234', menuButton.title);
 
     // Case 4: a card without number
     creditCard = createCreditCardEntry();
     creditCard.cardNumber = undefined;
     updateCreditCardCallback(creditCard);
-    assertEquals('More actions for Jane Doe', menuButton.getAttribute('title'));
+    assertEquals('More actions for Jane Doe', menuButton.title);
 
     // Case 5: a card with CVC
     creditCard = createCreditCardEntry();
@@ -135,8 +132,7 @@ suite('PaymentsSectionCardRows', function() {
     creditCard.cvc = '111';
     updateCreditCardCallback(creditCard);
     assertEquals(
-        'More actions for Visa ending in 1234, CVC saved',
-        menuButton.getAttribute('title'));
+        'More actions for Visa ending in 1234, CVC saved', menuButton.title);
   });
 
   test('verifyCreditCardRowButtonIsOutlinkWhenRemote', async function() {
@@ -170,6 +166,98 @@ suite('PaymentsSectionCardRows', function() {
             rowShadowRoot.querySelector('cr-icon-button.icon-external');
         assertFalse(!!outlinkButton);
       });
+
+  test(
+      'verifyCreditCardGooglePayLinkTextForDropdownRowButton',
+      async function() {
+        loadTimeData.overrideValues({
+          autofillEnableWalletBranding: false,
+        });
+
+        const creditCard = createCreditCardEntry();
+        creditCard.metadata!.isLocal = false;
+        creditCard.metadata!.isVirtualCardEnrollmentEligible = true;
+        creditCard.metadata!.isVirtualCardEnrolled = false;
+        const section = await createPaymentsSection(
+            [creditCard], /*ibans=*/[], /*payOverTimeIssuers=*/[],
+            /*prefValues=*/ {});
+        const rowShadowRoot = getCardRowShadowRoot(section.$.paymentsList);
+        const menuButton =
+            rowShadowRoot.querySelector<HTMLElement>('#creditCardMenu');
+        assertTrue(!!menuButton);
+
+        menuButton.click();
+        flush();
+        assertTrue(isVisible(section.$.menuEditCreditCard));
+
+        assertEquals(
+            'Edit in Google Pay',
+            section.$.menuEditCreditCard.textContent.trim());
+      });
+
+  test(
+      'verifyCreditCardGoogleWalletLinkTextForDropdownRowButton',
+      async function() {
+        loadTimeData.overrideValues({
+          autofillEnableWalletBranding: true,
+        });
+
+        const creditCard = createCreditCardEntry();
+        creditCard.metadata!.isLocal = false;
+        creditCard.metadata!.isVirtualCardEnrollmentEligible = true;
+        creditCard.metadata!.isVirtualCardEnrolled = false;
+        const section = await createPaymentsSection(
+            [creditCard], /*ibans=*/[], /*payOverTimeIssuers=*/[],
+            /*prefValues=*/ {});
+        const rowShadowRoot = getCardRowShadowRoot(section.$.paymentsList);
+        const menuButton =
+            rowShadowRoot.querySelector<HTMLElement>('#creditCardMenu');
+        assertTrue(!!menuButton);
+
+        menuButton.click();
+        flush();
+        assertTrue(isVisible(section.$.menuEditCreditCard));
+
+        assertEquals(
+            'Edit in Google Wallet',
+            section.$.menuEditCreditCard.textContent.trim());
+      });
+
+  test('verifyCreditCardGooglePayOutlinkText', async function() {
+    loadTimeData.overrideValues({
+      autofillEnableWalletBranding: false,
+    });
+
+    const creditCard = createCreditCardEntry();
+    creditCard.metadata!.isLocal = false;
+    const section = await createPaymentsSection(
+        [creditCard], /*ibans=*/[], /*payOverTimeIssuers=*/[],
+        /*prefValues=*/ {});
+    const rowShadowRoot = getCardRowShadowRoot(section.$.paymentsList);
+    const outlinkButton = rowShadowRoot.querySelector<HTMLElement>(
+        'cr-icon-button.icon-external');
+    assertTrue(!!outlinkButton);
+
+    assertEquals('Your payment methods in Google Pay', outlinkButton.title);
+  });
+
+  test('verifyCreditCardGoogleWalletOutlinkText', async function() {
+    loadTimeData.overrideValues({
+      autofillEnableWalletBranding: true,
+    });
+
+    const creditCard = createCreditCardEntry();
+    creditCard.metadata!.isLocal = false;
+    const section = await createPaymentsSection(
+        [creditCard], /*ibans=*/[], /*payOverTimeIssuers=*/[],
+        /*prefValues=*/ {});
+    const rowShadowRoot = getCardRowShadowRoot(section.$.paymentsList);
+    const outlinkButton = rowShadowRoot.querySelector<HTMLElement>(
+        'cr-icon-button.icon-external');
+    assertTrue(!!outlinkButton);
+
+    assertEquals('Your payment methods in Google Wallet', outlinkButton.title);
+  });
 
   test('verifyPaymentsIndicator', async function() {
     const creditCard = createCreditCardEntry();

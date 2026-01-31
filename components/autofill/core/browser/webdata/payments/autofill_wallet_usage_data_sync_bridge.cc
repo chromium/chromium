@@ -107,8 +107,6 @@ AutofillWalletUsageDataSyncBridge::ApplyIncrementalSyncChanges(
         break;
       case syncer::EntityChange::ACTION_ADD:
       case syncer::EntityChange::ACTION_UPDATE: {
-        // TODO(crbug.com/40255173): AddOrUpdate VirtualCardUsageData method for
-        // Autofill Table
         DCHECK(IsEntityDataValid(change->data()));
         bool valid_data = IsVirtualCardUsageDataSpecificsValid(
             change->data()

@@ -9,7 +9,6 @@
 
 #include "ash/constants/ash_features.h"
 #include "base/check.h"
-#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/stringprintf.h"
@@ -46,7 +45,7 @@ void AutomaticUsbPrinterConfigurer::UpdateListOfConnectedPrinters(
   base::flat_set<std::string> removed;
   for (PrinterDetector::DetectedPrinter& detected : new_list) {
     const std::string& id = detected.printer.id();
-    if (base::Contains(connected_printers_, id)) {
+    if (connected_printers_.contains(id)) {
       existing.insert(id);
     } else {
       added.insert(id);
@@ -54,7 +53,7 @@ void AutomaticUsbPrinterConfigurer::UpdateListOfConnectedPrinters(
     }
   }
   for (const auto& [id, detected] : connected_printers_) {
-    if (!base::Contains(added, id) && !base::Contains(existing, id)) {
+    if (!added.contains(id) && !existing.contains(id)) {
       removed.insert(id);
     }
   }

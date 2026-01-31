@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.ntp_customization.theme;
 
 import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils.NtpBackgroundImageType.CHROME_COLOR;
+import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils.NtpBackgroundImageType.COLOR_FROM_HEX;
 import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils.NtpBackgroundImageType.DEFAULT;
 import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils.NtpBackgroundImageType.IMAGE_FROM_DISK;
 import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils.NtpBackgroundImageType.THEME_COLLECTION;
@@ -109,7 +110,14 @@ public class NtpThemeMediator {
     void destroy() {
         mBottomSheetPropertyModel.set(BACK_PRESS_HANDLER, null);
         mThemePropertyModel.set(LEARN_MORE_BUTTON_CLICK_LISTENER, null);
-        mActivityResultLauncher = null;
+        mThemePropertyModel.set(SECTION_ON_CLICK_LISTENER, new Pair<>(DEFAULT, null));
+        mThemePropertyModel.set(SECTION_ON_CLICK_LISTENER, new Pair<>(IMAGE_FROM_DISK, null));
+        mThemePropertyModel.set(SECTION_ON_CLICK_LISTENER, new Pair<>(CHROME_COLOR, null));
+        mThemePropertyModel.set(SECTION_ON_CLICK_LISTENER, new Pair<>(THEME_COLLECTION, null));
+        if (mActivityResultLauncher != null) {
+            mActivityResultLauncher.unregister();
+            mActivityResultLauncher = null;
+        }
         mActivityResultRegistry = null;
     }
 
@@ -151,6 +159,13 @@ public class NtpThemeMediator {
                 continue;
             }
 
+            if (i == COLOR_FROM_HEX && sectionType == CHROME_COLOR) {
+                // Prevents overriding the visibility from visible to invisible if the user chooses
+                // a customized color theme. This is because both types share the same bottom sheet
+                // list item.
+                continue;
+            }
+
             if (i == sectionType) {
                 mThemePropertyModel.set(IS_SECTION_TRAILING_ICON_VISIBLE, new Pair<>(i, true));
             } else {
@@ -172,7 +187,6 @@ public class NtpThemeMediator {
             // When a new image is selected, store it and reset any existing crop settings from a
             // previous image.
             ShareImageFileUtils.getBitmapFromUriAsync(mContext, uri, mOnImageSelectedCallback);
-            updateTrailingIconVisibilityForSectionType(IMAGE_FROM_DISK);
             mNtpThemeCollectionManager.selectLocalBackgroundImage();
         }
 
@@ -199,8 +213,7 @@ public class NtpThemeMediator {
             // We need to update the app's theme when a customized background color is removed.
             mBottomSheetDelegate.onNewColorSelected(/* isDifferentColor= */ true);
         }
-        mNtpCustomizationConfigManager.onBackgroundColorChanged(
-                mContext, /* colorInfo= */ null, DEFAULT);
+        mNtpCustomizationConfigManager.onBackgroundReset();
     }
 
     @VisibleForTesting
@@ -258,13 +271,13 @@ public class NtpThemeMediator {
                     }
 
                     // TODO(crbug.com/423579377): Decide if these indices should be dynamic.
-                    int firstIndex = mThemeCollectionsList.size() > 3 ? 3 : 0;
+                    int firstIndex = 0;
                     GURL firstImageUrl =
                             mThemeCollectionsList.size() > firstIndex
                                     ? mThemeCollectionsList.get(firstIndex).previewImageUrl
                                     : null;
 
-                    int secondIndex = mThemeCollectionsList.size() > 5 ? 5 : 1;
+                    int secondIndex = 1;
                     GURL secondImageUrl =
                             mThemeCollectionsList.size() > secondIndex
                                     ? mThemeCollectionsList.get(secondIndex).previewImageUrl

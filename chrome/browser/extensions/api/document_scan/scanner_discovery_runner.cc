@@ -4,7 +4,6 @@
 //
 #include "chrome/browser/extensions/api/document_scan/scanner_discovery_runner.h"
 
-#include "base/containers/contains.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ash/scanning/lorgnette_scanner_manager.h"
 #include "chrome/browser/ash/scanning/lorgnette_scanner_manager_factory.h"
@@ -31,11 +30,11 @@ std::optional<bool> g_discovery_confirmation_result = std::nullopt;
 
 bool CanSkipConfirmation(content::BrowserContext* browser_context,
                          const ExtensionId& extension_id) {
-  const base::Value::List& list =
+  const base::ListValue& list =
       Profile::FromBrowserContext(browser_context)
           ->GetPrefs()
           ->GetList(prefs::kDocumentScanAPITrustedExtensions);
-  return base::Contains(list, base::Value(extension_id));
+  return list.contains(extension_id);
 }
 
 api::document_scan::OperationResult ToApiOperationResult(

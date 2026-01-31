@@ -105,7 +105,7 @@ IN_PROC_BROWSER_TEST_F(PreferenceServiceTest, Test) {
 
   ASSERT_TRUE(root.get());
   ASSERT_TRUE(root->is_dict());
-  base::Value::Dict& root_dict = root->GetDict();
+  base::DictValue& root_dict = root->GetDict();
 
   // Retrieve the screen rect for the launched window
   gfx::Rect bounds = browser()->window()->GetRestoredBounds();

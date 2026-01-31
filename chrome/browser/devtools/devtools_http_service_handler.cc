@@ -4,6 +4,7 @@
 
 #include "chrome/browser/devtools/devtools_http_service_handler.h"
 
+#include "base/task/sequenced_task_runner.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "components/signin/public/identity_manager/access_token_info.h"
@@ -16,11 +17,85 @@
 #include "services/network/public/cpp/simple_url_loader.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 
+class DevToolsHttpServiceHandler::DevToolsStreamConsumer
+    : public network::SimpleURLLoaderStreamConsumer {
+ public:
+  DevToolsStreamConsumer(DevToolsHttpServiceHandler::StreamWriter stream_writer,
+                         DevToolsHttpServiceHandler::Callback callback,
+                         network::SimpleURLLoader* loader,
+                         base::OnceClosure cleanup)
+      : stream_writer_(std::move(stream_writer)),
+        callback_(std::move(callback)),
+        loader_(loader),
+        cleanup_(std::move(cleanup)) {
+    CHECK(loader_);
+  }
+
+  ~DevToolsStreamConsumer() override = default;
+
+  void OnDataReceived(std::string_view chunk,
+                      base::OnceClosure resume) override {
+    stream_writer_.Run(chunk);
+    std::move(resume).Run();
+  }
+
+  void OnComplete(bool success) override {
+    CHECK(loader_);
+    auto result = std::make_unique<DevToolsHttpServiceHandler::Result>();
+    result->net_error = loader_->NetError();
+    if (loader_->ResponseInfo() && loader_->ResponseInfo()->headers) {
+      result->http_status = loader_->ResponseInfo()->headers->response_code();
+    }
+
+    if (result->net_error != net::OK) {
+      result->error = DevToolsHttpServiceHandler::Result::Error::kNetworkError;
+    } else if (result->http_status == -1) {
+      result->error = DevToolsHttpServiceHandler::Result::Error::kNetworkError;
+    } else if (result->http_status < 200 || result->http_status >= 300) {
+      result->error = DevToolsHttpServiceHandler::Result::Error::kHttpError;
+    } else if (!success) {
+      // There was an error and we don't know why, we default to network
+      // error for such cases.
+      result->error = DevToolsHttpServiceHandler::Result::Error::kNetworkError;
+    }
+
+    // Run completion callback
+    std::move(callback_).Run(std::move(result));
+
+    // The cleanup callback destroys the ActiveStreamRequest, which owns this
+    // Consumer. We must post the task to ensure destruction happens
+    // asynchronously after the current stack frame unwinds, avoiding
+    // a potential use-after-free of `this`.
+    if (cleanup_) {
+      base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+          FROM_HERE, std::move(cleanup_));
+    }
+  }
+
+  void OnRetry(base::OnceClosure start_retry) override { NOTREACHED(); }
+
+ private:
+  DevToolsHttpServiceHandler::StreamWriter stream_writer_;
+  DevToolsHttpServiceHandler::Callback callback_;
+  raw_ptr<network::SimpleURLLoader> loader_ = nullptr;
+  base::OnceClosure cleanup_;
+};
+
 DevToolsHttpServiceHandler::Result::Result() = default;
 DevToolsHttpServiceHandler::Result::~Result() = default;
 DevToolsHttpServiceHandler::Result::Result(Result&&) = default;
 DevToolsHttpServiceHandler::Result&
 DevToolsHttpServiceHandler::Result::operator=(Result&&) = default;
+
+DevToolsHttpServiceHandler::ActiveStreamRequest::ActiveStreamRequest() =
+    default;
+DevToolsHttpServiceHandler::ActiveStreamRequest::~ActiveStreamRequest() =
+    default;
+DevToolsHttpServiceHandler::ActiveStreamRequest::ActiveStreamRequest(
+    ActiveStreamRequest&&) = default;
+DevToolsHttpServiceHandler::ActiveStreamRequest&
+DevToolsHttpServiceHandler::ActiveStreamRequest::operator=(
+    ActiveStreamRequest&&) = default;
 
 DevToolsHttpServiceHandler::~DevToolsHttpServiceHandler() = default;
 DevToolsHttpServiceHandler::DevToolsHttpServiceHandler() = default;
@@ -28,11 +103,12 @@ DevToolsHttpServiceHandler::DevToolsHttpServiceHandler() = default;
 void DevToolsHttpServiceHandler::Request(
     Profile* profile,
     const DevToolsDispatchHttpRequestParams& params,
+    std::optional<StreamWriter> stream_writer,
     Callback callback) {
   CanMakeRequest(profile,
                  base::BindOnce(&DevToolsHttpServiceHandler::OnValidationDone,
                                 weak_factory_.GetWeakPtr(), std::move(callback),
-                                profile, params));
+                                profile, std::move(stream_writer), params));
 }
 
 void DevToolsHttpServiceHandler::CanMakeRequest(
@@ -44,6 +120,7 @@ void DevToolsHttpServiceHandler::CanMakeRequest(
 void DevToolsHttpServiceHandler::OnValidationDone(
     Callback callback,
     Profile* profile,
+    std::optional<StreamWriter> stream_writer,
     const DevToolsDispatchHttpRequestParams& params,
     bool validation_success) {
   if (!validation_success) {
@@ -62,7 +139,7 @@ void DevToolsHttpServiceHandler::OnValidationDone(
           OAuthConsumerId(),
           base::BindOnce(&DevToolsHttpServiceHandler::OnTokenFetched,
                          weak_factory_.GetWeakPtr(), std::move(callback),
-                         profile, params, fetcher_id),
+                         profile, std::move(stream_writer), params, fetcher_id),
           signin::AccessTokenFetcher::Mode::kImmediate);
   access_token_fetchers_.insert({
       fetcher_id,
@@ -73,6 +150,7 @@ void DevToolsHttpServiceHandler::OnValidationDone(
 void DevToolsHttpServiceHandler::OnTokenFetched(
     Callback callback,
     Profile* profile,
+    std::optional<StreamWriter> stream_writer,
     const DevToolsDispatchHttpRequestParams& params,
     base::UnguessableToken fetcher_id,
     GoogleServiceAuthError error,
@@ -106,6 +184,32 @@ void DevToolsHttpServiceHandler::OnTokenFetched(
   if (params.body.has_value()) {
     simple_url_loader->AttachStringForUpload(params.body.value(),
                                              "application/json");
+  }
+
+  if (stream_writer) {
+    auto token = base::UnguessableToken::Create();
+    auto& request = active_streams_[token];
+    request.loader = std::move(simple_url_loader);
+
+    auto cleanup_callback = base::BindOnce(
+        [](base::WeakPtr<DevToolsHttpServiceHandler> self,
+           base::UnguessableToken token) {
+          if (self) {
+            self->active_streams_.erase(token);
+          }
+        },
+        weak_factory_.GetWeakPtr(), token);
+    auto consumer = std::make_unique<DevToolsStreamConsumer>(
+        std::move(*stream_writer), std::move(callback), request.loader.get(),
+        std::move(cleanup_callback));
+    request.consumer = std::move(consumer);
+
+    request.loader->DownloadAsStream(
+        profile->GetDefaultStoragePartition()
+            ->GetURLLoaderFactoryForBrowserProcess()
+            .get(),
+        request.consumer.get());
+    return;
   }
 
   network::SimpleURLLoader* loader_ptr = simple_url_loader.get();

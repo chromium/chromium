@@ -10,60 +10,22 @@ or https://bughunters.google.com/report/vrp -> Chrome VRP.
 
 Please check here for any news and updates about the Chrome VRP.
 
-* 30 December 2024: Announcing the top 20 Chrome VRP reporters of 2024:
-  https://crbug.com/386306231 -- congratulations to all who made the list and
-  thank you to all Chrome VRP reporters for your contributions this year and
-  helping make Chrome Browser and Chromium more secure for all users!
-
-* 13 November 2024: Updates to the [V8 Sandbox
-  Bypass](#v8-sandbox-bypass-rewards) scope and reward amounts.[Past
-  submissions of V8 sandbox bypasses](https://issues.chromium.org/hotlists/4802478)
-  have been opened for disclosure; please ensure your bypass has not already
-  been reported and use these reports as a resource to learn about the V8
-  sandbox and known bypass techniques.
-
-* 28 August 2024: Major updates to Chrome VRP rewards structure and amounts to
-  incentize deeper research; please see our [blog
-  post](https://bughunters.google.com/blog/5302044291629056/chrome-vrp-reward-updates-to-incentivize-deeper-research)
-  announcing these changes or review our Chrome VRP [policies and rewards
-  page](https://g.co/chrome/vrp) for full details.
-
-* 20 June 2024: All Google VRPs, including **Chrome VRP, have a new payments
-  processing option through Bugcrowd**. To use the Bugcrowd option to receive
-  your Chrome VRP reward payments, you must:
-    * Set up your profile in bughunters.google.com and associate it with the
-      email address you use to report issues in chromium.issues.com.
-    * Be registered or [register with](https://bugcrowd.com/user/sign_up)
-      Bugcrowd.
-    * In your [Bughunters profile](https://bughunters.google.com/profile),
-      select `Bugcrowd` under `Payment Options` and enter the email address for
-      your Bugcrowd account.
-    * Hit `Save` on your profile and you're ready to roll!
-
-* 4 April 2024: We have launched the [V8 Sandbox Bypass
-  Rewards](#v8-sandbox-bypass-rewards).
-
-* 4 February 2024: The Chromium issue tracker migration is now complete. Please
-  submit all issues using the [new issue tracker](https://issues.chromium.org)
-  and use [this
-  form](https://issues.chromium.org/issues/new?noWizard=true&component=1363614&template=1922342)
-  for directly reporting security issue to the security team.
-
-* 25 January 2024: We have updated our VRP policy on duplicates and collisions
-  for actionable versus non-actionable reports. Please see the [Chrome VRP
-  qualifying vulnerabilities](https://g.co/chrome/vrp/#qualifying-vulnerabilities)
-  for details.
-
-* December 2023: We announced the [Chrome VRP Top Researchers of
-  2023](https://crbug.com/1509898). Congratulations to all who made the list!
-  Thank you to all of our researchers for your contributions in 2023 and helping
-  us make Chrome Browser more secure for all users.
+* 5 January 2026: Announcing the [top 20 Chrome VRP reporters of 2025](https://crbug.com/473635778)
+  -- another great year of actionable and sometimes surprising reports -- well done to every
+  researcher who made the list and thanks to all VRP reporters for helping keep people using
+  Chrome safe on the internet.
 
 ## About the Program
 
 The Chrome Vulnerability Rewards Program (VRP) is the "security bug bounty" for
 Google Chrome Browser. Please visit the [Chrome VRP Rewards and
 Policies](https://g.co/chrome/vrp) page for full details.
+
+### Top Reporters
+
+* [2025](https://crbug.com/473635778).
+* [2024](https://crbug.com/386306231).
+* [2023](https://crbug.com/1509898).
 
 ### Interesting Security Bug Write-Ups
 

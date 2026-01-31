@@ -114,7 +114,7 @@ base::Value RecipeJsonToValue(const std::string& recipe_json) {
   _startURL = GURL(startURLString);
 
   // Extract the actions.
-  base::Value::List* actions = recipeRoot.GetDict().FindList("actions");
+  base::ListValue* actions = recipeRoot.GetDict().FindList("actions");
   GREYAssert(actions, @"Test file is missing actions.");
   GREYAssert(!actions->empty(), @"Test file has empty actions.");
 

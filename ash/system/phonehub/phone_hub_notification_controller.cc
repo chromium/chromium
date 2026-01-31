@@ -16,7 +16,6 @@
 #include "ash/system/model/system_tray_model.h"
 #include "ash/system/phonehub/phone_hub_metrics.h"
 #include "ash/system/tray/tray_popup_utils.h"
-#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
@@ -634,8 +633,7 @@ void PhoneHubNotificationController::SetNotification(
   std::string cros_id = base::StrCat(
       {kNotifierId, kNotifierIdSeparator, base::NumberToString(phone_hub_id)});
 
-  bool notification_already_exists =
-      base::Contains(notification_map_, phone_hub_id);
+  bool notification_already_exists = notification_map_.contains(phone_hub_id);
   if (!notification_already_exists) {
     notification_map_[phone_hub_id] = std::make_unique<NotificationDelegate>(
         this, phone_hub_id, cros_id, notification->category());

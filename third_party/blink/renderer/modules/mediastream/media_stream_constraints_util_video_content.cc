@@ -205,15 +205,9 @@ media::VideoCaptureParams SelectVideoCaptureParamsFromCandidates(
       candidates.resolution_set().SelectClosestPointToIdeal(
           basic_constraint_set, default_height, default_width);
   media::VideoCaptureParams params;
-  // If zero-copy tab capture is enabled, we want the capturer to auto-select
-  // the pixel format:
-  const media::VideoPixelFormat pixel_format =
-      base::FeatureList::IsEnabled(blink::features::kZeroCopyTabCapture)
-          ? media::PIXEL_FORMAT_UNKNOWN
-          : media::PIXEL_FORMAT_I420;
   params.requested_format = media::VideoCaptureFormat(
       ToGfxSize(requested_resolution), static_cast<float>(requested_frame_rate),
-      pixel_format);
+      media::PIXEL_FORMAT_I420);
   params.resolution_change_policy = SelectResolutionPolicyFromCandidates(
       candidates.resolution_set(), default_resolution_policy);
   // Content capture always uses default power-line frequency.

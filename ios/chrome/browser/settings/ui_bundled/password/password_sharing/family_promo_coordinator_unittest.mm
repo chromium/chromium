@@ -9,9 +9,9 @@
 #import "ios/chrome/browser/settings/ui_bundled/password/password_sharing/password_sharing_metrics.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
-#import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/open_new_tab_command.h"
+#import "ios/chrome/browser/shared/public/commands/scene_commands.h"
 #import "ios/chrome/browser/shared/public/commands/settings_commands.h"
 #import "ios/chrome/test/fakes/fake_ui_view_controller.h"
 #import "ios/web/public/test/web_task_environment.h"
@@ -26,11 +26,10 @@ class FamilyPromoCoordinatorTest : public PlatformTest {
     browser_ =
         std::make_unique<TestBrowser>(TestProfileIOS::Builder().Build().get());
 
-    mock_application_commands_handler_ =
-        OCMStrictProtocolMock(@protocol(ApplicationCommands));
+    mock_scene_handler_ = OCMStrictProtocolMock(@protocol(SceneCommands));
     [browser_->GetCommandDispatcher()
-        startDispatchingToTarget:mock_application_commands_handler_
-                     forProtocol:@protocol(ApplicationCommands)];
+        startDispatchingToTarget:mock_scene_handler_
+                     forProtocol:@protocol(SceneCommands)];
     mock_settings_commands_handler_ =
         OCMStrictProtocolMock(@protocol(SettingsCommands));
     [browser_->GetCommandDispatcher()
@@ -48,7 +47,7 @@ class FamilyPromoCoordinatorTest : public PlatformTest {
   web::WebTaskEnvironment task_environment_;
   std::unique_ptr<TestBrowser> browser_;
 
-  id mock_application_commands_handler_;
+  id mock_scene_handler_;
   id mock_settings_commands_handler_;
 };
 
@@ -62,14 +61,14 @@ TEST_F(FamilyPromoCoordinatorTest,
   ASSERT_TRUE(
       [coordinator conformsToProtocol:@protocol(FamilyPromoActionHandler)]);
 
-  OCMExpect([mock_application_commands_handler_
+  OCMExpect([mock_scene_handler_
       closePresentedViewsAndOpenURL:[OCMArg checkWithBlock:^BOOL(
                                                 OpenNewTabCommand* command) {
         return command.URL == GURL("https://myaccount.google.com/family/"
                                    "create?utm_source=cpwd");
       }]]);
   [(id<FamilyPromoActionHandler>)coordinator createFamilyGroupLinkWasTapped];
-  EXPECT_OCMOCK_VERIFY(mock_application_commands_handler_);
+  EXPECT_OCMOCK_VERIFY(mock_scene_handler_);
 
   histogram_tester.ExpectUniqueSample(
       "PasswordManager.PasswordSharingIOS.UserAction",
@@ -86,14 +85,14 @@ TEST_F(FamilyPromoCoordinatorTest,
   ASSERT_TRUE(
       [coordinator conformsToProtocol:@protocol(FamilyPromoActionHandler)]);
 
-  OCMExpect([mock_application_commands_handler_
+  OCMExpect([mock_scene_handler_
       closePresentedViewsAndOpenURL:[OCMArg checkWithBlock:^BOOL(
                                                 OpenNewTabCommand* command) {
         return command.URL == GURL("https://myaccount.google.com/family/"
                                    "details?utm_source=cpwd");
       }]]);
   [(id<FamilyPromoActionHandler>)coordinator createFamilyGroupLinkWasTapped];
-  EXPECT_OCMOCK_VERIFY(mock_application_commands_handler_);
+  EXPECT_OCMOCK_VERIFY(mock_scene_handler_);
 
   histogram_tester.ExpectUniqueSample(
       "PasswordManager.PasswordSharingIOS.UserAction",

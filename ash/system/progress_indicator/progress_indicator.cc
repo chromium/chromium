@@ -47,10 +47,10 @@ SkPath CreatePathSegment(const SkPath& path, float start, float end) {
   start *= measure.getLength();
   end *= measure.getLength();
 
-  SkPath path_segment;
+  SkPathBuilder path_segment;
   measure.getSegment(start, end, &path_segment, /*start_with_move_to=*/true);
 
-  return path_segment;
+  return path_segment.detach();
 }
 
 // Returns a rounded rect path from the specified `rect` and `corner_radius`.

@@ -4,7 +4,8 @@
 
 #include "third_party/blink/renderer/modules/mediarecorder/media_recorder_encoder_wrapper.h"
 
-#include "base/containers/contains.h"
+#include <algorithm>
+
 #include "base/numerics/safe_conversions.h"
 #include "media/base/decoder_buffer.h"
 #include "media/base/video_encoder_metrics_provider.h"
@@ -60,7 +61,7 @@ MediaRecorderEncoderWrapper::MediaRecorderEncoderWrapper(
       media::VideoCodec::kHEVC,
 #endif
   };
-  CHECK(base::Contains(kSupportedCodecs, codec_));
+  CHECK(std::ranges::contains(kSupportedCodecs, codec_));
   options_.latency_mode = media::VideoEncoder::LatencyMode::Quality;
   options_.bitrate = media::Bitrate::VariableBitrate(
       bits_per_second, base::ClampMul(bits_per_second, 2u).RawValue());

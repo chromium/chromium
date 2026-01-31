@@ -582,7 +582,7 @@ void PowerButtonController::ParsePowerButtonPositionSwitch() {
     return;
   }
 
-  std::optional<base::Value::Dict> parsed_json = base::JSONReader::ReadDict(
+  std::optional<base::DictValue> parsed_json = base::JSONReader::ReadDict(
       cl->GetSwitchValueASCII(switches::kAshPowerButtonPosition),
       base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   if (!parsed_json) {

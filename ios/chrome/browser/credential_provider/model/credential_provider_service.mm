@@ -84,8 +84,8 @@ ErrorForReportingForASCredentialIdentityStoreErrorCode(
 // We can't sync store when the app is backgrounded, as it loses access to files
 // and stores provided by iOS.
 bool CanSyncStore() {
-  return UIApplication.sharedApplication.applicationState ==
-         UIApplicationStateActive;
+  return UIApplication.sharedApplication.applicationState !=
+         UIApplicationStateBackground;
 }
 
 // Writes ASCredentialIdentity objects corresponding to `credentials` into the

@@ -23,19 +23,19 @@ class HeadlessWebContents;
 // Send DevTools command and wait for response by running local
 // message loop. This is typically used as a quick and dirty way
 // to enable a domain.
-base::Value::Dict SendCommandSync(
+base::DictValue SendCommandSync(
     simple_devtools_protocol_client::SimpleDevToolsProtocolClient&
         devtools_client,
     const std::string& command);
-base::Value::Dict SendCommandSync(
+base::DictValue SendCommandSync(
     simple_devtools_protocol_client::SimpleDevToolsProtocolClient&
         devtools_client,
     const std::string& command,
-    base::Value::Dict params);
+    base::DictValue params);
 
 // Synchronously evaluates a script and returns the result.
-base::Value::Dict EvaluateScript(HeadlessWebContents* web_contents,
-                                 const std::string& script);
+base::DictValue EvaluateScript(HeadlessWebContents* web_contents,
+                               const std::string& script);
 
 // Synchronously waits for a tab to finish loading and optionally retrieves
 // an error.
@@ -47,34 +47,34 @@ void WaitForLoadAndGainFocus(HeadlessWebContents* web_contents);
 
 // Convenience function to create a single key/value Dict.
 template <typename T>
-base::Value::Dict Param(std::string_view key, T&& value) {
-  base::Value::Dict param;
+base::DictValue Param(std::string_view key, T&& value) {
+  base::DictValue param;
   param.Set(key, std::move(value));
   return param;
 }
 
-// Convenience functions to retrieve values from a base::Value::Dict and
+// Convenience functions to retrieve values from a base::DictValue and
 // CHECK fail if the specified path is not found.
-std::string DictString(const base::Value::Dict& dict, std::string_view path);
-int DictInt(const base::Value::Dict& dict, std::string_view path);
-bool DictBool(const base::Value::Dict& dict, std::string_view path);
-bool DictHas(const base::Value::Dict& dict, std::string_view path);
+std::string DictString(const base::DictValue& dict, std::string_view path);
+int DictInt(const base::DictValue& dict, std::string_view path);
+bool DictBool(const base::DictValue& dict, std::string_view path);
+bool DictHas(const base::DictValue& dict, std::string_view path);
 
-// A custom GMock matcher which matches if a base::Value::Dict has
+// A custom GMock matcher which matches if a base::DictValue has
 // a path |path| that is equal to |value|.
-testing::Matcher<const base::Value::Dict&> DictHasPathValue(
+testing::Matcher<const base::DictValue&> DictHasPathValue(
     const std::string& path,
     base::Value expected_value);
 
 template <typename T>
-testing::Matcher<const base::Value::Dict&> DictHasValue(const std::string& path,
-                                                        T expected_value) {
+testing::Matcher<const base::DictValue&> DictHasValue(const std::string& path,
+                                                      T expected_value) {
   return DictHasPathValue(path, base::Value(expected_value));
 }
 
-// A custom GMock matcher which matches if a base::Value::Dict has
+// A custom GMock matcher which matches if a base::DictValue has
 // the key |key|.
-testing::Matcher<const base::Value::Dict&> DictHasKey(const std::string& key);
+testing::Matcher<const base::DictValue&> DictHasKey(const std::string& key);
 
 }  // namespace headless
 

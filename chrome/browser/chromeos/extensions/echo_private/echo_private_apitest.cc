@@ -313,13 +313,13 @@ IN_PROC_BROWSER_TEST_F(ExtensionEchoPrivateApiTest,
 }
 
 IN_PROC_BROWSER_TEST_F(ExtensionEchoPrivateApiTest, RemoveEmptyValueDicts) {
-  auto dict = base::Value::Dict()
+  auto dict = base::DictValue()
                   .Set("a", "b")
-                  .Set("empty", base::Value::Dict())
-                  .Set("nested", base::Value::Dict().Set("c", "d").Set(
-                                     "empty_value", base::Value::Dict()))
-                  .Set("nested_empty", base::Value::Dict().Set(
-                                           "empty_value", base::Value::Dict()));
+                  .Set("empty", base::DictValue())
+                  .Set("nested", base::DictValue().Set("c", "d").Set(
+                                     "empty_value", base::DictValue()))
+                  .Set("nested_empty",
+                       base::DictValue().Set("empty_value", base::DictValue()));
 
   // Remove nested dictionaries.
   chromeos::echo_offer::RemoveEmptyValueDicts(dict);

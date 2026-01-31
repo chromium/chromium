@@ -77,7 +77,7 @@ class _SourceMapper:
     return self._dep_map.keys()
 
   def GetInputsForBinary(self, path):
-    return self._inputs_by_path.get(path)
+    return self._inputs_by_path.get(path) or []
 
 
 def _ParseNinjaPathList(path_list):
@@ -85,9 +85,17 @@ def _ParseNinjaPathList(path_list):
   return [s.replace('\b', ' ') for s in ret.split()]
 
 
-def _OutputsAreObject(outputs):
-  return (outputs.endswith('.a') or outputs.endswith('.o')
-          or outputs.endswith('.rlib'))
+def _HasObjectExtension(output):
+  return (output.endswith('.a') or output.endswith('.o')
+          or output.endswith('.rlib'))
+
+
+def _GetOutputObject(outputs):
+  outputs = list(filter(_HasObjectExtension, _ParseNinjaPathList(outputs)))
+
+  # Require exactly one object file. We've seen cases where more exist, but we
+  # consider these pathological and disregard them.
+  return outputs[0] if len(outputs) == 1 else None
 
 
 def _ParseOneFile(lines, dep_map, inputs_by_path):
@@ -100,8 +108,8 @@ def _ParseOneFile(lines, dep_map, inputs_by_path):
     m = _REGEX.match(line)
     if m:
       outputs, srcs = m.groups()
-      if _OutputsAreObject(outputs):
-        output = outputs.replace('\\ ', ' ')
+      output = _GetOutputObject(outputs)
+      if output:
         assert output not in dep_map, 'Duplicate output: ' + output
         if output[-1] == 'o':
           dep_map[output] = srcs.replace('\\ ', ' ')
@@ -177,11 +185,12 @@ def main():
   parser.add_argument('--elf-path')
   parser.add_argument('--show-inputs', action='store_true')
   parser.add_argument('--show-mappings', action='store_true')
+  parser.add_argument('--map-path', type=str)
   args = parser.parse_args()
   logging.basicConfig(level=logging.DEBUG,
                       format='%(levelname).1s %(relativeCreated)6d %(message)s')
 
-  elf_paths = [args.elf_path] if args.elf_path else None
+  elf_paths = [args.elf_path] if args.elf_path else []
   source_mapper = Parse(args.output_directory, elf_paths)
   elf_inputs = source_mapper.GetInputsForBinary(args.elf_path)
 
@@ -190,6 +199,10 @@ def main():
   if args.show_inputs:
     print('elf_inputs:')
     print('\n'.join(elf_inputs))
+  if args.map_path:
+    print('object_path -> source_path:')
+    print('{} -> {}'.format(args.map_path,
+                            source_mapper.FindSourceForPath(args.map_path)))
   if args.show_mappings:
     print('object_path -> source_path:')
     for path in source_mapper.IterAllPaths():

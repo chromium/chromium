@@ -14,12 +14,12 @@
 #import "ios/chrome/browser/lens_overlay/ui/lens_result_page_mutator.h"
 #import "ios/web/public/web_state.h"
 
-@protocol ApplicationCommands;
 @class ContextMenuConfigurationProvider;
 @protocol LensOverlayErrorHandler;
 @protocol LensOverlayTabChangeAudience;
 @protocol LensResultPageConsumer;
 @protocol LensResultPageMediatorDelegate;
+@protocol SceneCommands;
 @protocol SnackbarCommands;
 class WebStateList;
 
@@ -32,8 +32,8 @@ class WebStateList;
 
 @property(nonatomic, weak) id<LensResultPageConsumer> consumer;
 
-/// Application commands handler.
-@property(nonatomic, weak) id<ApplicationCommands> applicationHandler;
+/// Scene commands handler.
+@property(nonatomic, weak) id<SceneCommands> sceneHandler;
 /// Snackbar commands handler.
 @property(nonatomic, weak) id<SnackbarCommands> snackbarHandler;
 /// Handler for displaying errors.

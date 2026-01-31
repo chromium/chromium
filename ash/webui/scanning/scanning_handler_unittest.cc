@@ -179,7 +179,7 @@ class ScanningHandlerTest : public testing::Test {
     scanning_handler_->SetWebUIForTest(&web_ui_);
     scanning_handler_->RegisterMessages();
 
-    base::Value::List args;
+    base::ListValue args;
     web_ui_.HandleReceivedMessage("initialize", args);
 
     EXPECT_TRUE(temp_dir_.CreateUniqueTempDir());
@@ -224,14 +224,14 @@ TEST_F(ScanningHandlerTest, SelectDirectory) {
       std::make_unique<TestSelectFileDialogFactory>(base_file_path));
 
   const size_t call_data_count_before_call = web_ui_.call_data().size();
-  base::Value::List args;
+  base::ListValue args;
   args.Append(kHandlerFunctionName);
   web_ui_.HandleReceivedMessage("requestScanToLocation", args);
 
   const content::TestWebUI::CallData& call_data =
       GetCallData(call_data_count_before_call);
   ASSERT_TRUE(call_data.arg3()->is_dict());
-  const base::Value::Dict& selected_path_dict = call_data.arg3()->GetDict();
+  const base::DictValue& selected_path_dict = call_data.arg3()->GetDict();
   EXPECT_EQ(base_file_path.value(), *selected_path_dict.FindString("filePath"));
   EXPECT_EQ("Base Name", *selected_path_dict.FindString("baseName"));
 }
@@ -244,14 +244,14 @@ TEST_F(ScanningHandlerTest, CancelDialog) {
       std::make_unique<TestSelectFileDialogFactory>(base::FilePath()));
 
   const size_t call_data_count_before_call = web_ui_.call_data().size();
-  base::Value::List args;
+  base::ListValue args;
   args.Append(kHandlerFunctionName);
   web_ui_.HandleReceivedMessage("requestScanToLocation", args);
 
   const content::TestWebUI::CallData& call_data =
       GetCallData(call_data_count_before_call);
   ASSERT_TRUE(call_data.arg3()->is_dict());
-  const base::Value::Dict& selected_path_dict = call_data.arg3()->GetDict();
+  const base::DictValue& selected_path_dict = call_data.arg3()->GetDict();
   EXPECT_EQ("", *selected_path_dict.FindString("filePath"));
   EXPECT_EQ("", *selected_path_dict.FindString("baseName"));
 }
@@ -260,7 +260,7 @@ TEST_F(ScanningHandlerTest, CancelDialog) {
 // OpenFilesAppFunction function and returns the callback with the boolean.
 TEST_F(ScanningHandlerTest, ShowFileInLocation) {
   const size_t call_data_count_before_call = web_ui_.call_data().size();
-  base::Value::List args;
+  base::ListValue args;
   args.Append(kHandlerFunctionName);
   args.Append(kTestFilePath);
   web_ui_.HandleReceivedMessage("showFileInLocation", args);
@@ -275,7 +275,7 @@ TEST_F(ScanningHandlerTest, ShowFileInLocation) {
 // path.
 TEST_F(ScanningHandlerTest, GetMyFilesPath) {
   const size_t call_data_count_before_call = web_ui_.call_data().size();
-  base::Value::List args;
+  base::ListValue args;
   args.Append(kHandlerFunctionName);
   web_ui_.HandleReceivedMessage("getMyFilesPath", args);
 
@@ -290,11 +290,11 @@ TEST_F(ScanningHandlerTest, GetMyFilesPath) {
 TEST_F(ScanningHandlerTest, OpenFilesInMediaApp) {
   const std::string file1 = "path/to/file/file1.jpg";
   const std::string file2 = "path/to/file/file2.jpg";
-  base::Value::List file_paths_value;
+  base::ListValue file_paths_value;
   file_paths_value.Append(file1);
   file_paths_value.Append(file2);
 
-  base::Value::List args;
+  base::ListValue args;
   args.Append(std::move(file_paths_value));
   web_ui_.HandleReceivedMessage("openFilesInMediaApp", args);
 
@@ -324,13 +324,13 @@ TEST_F(ScanningHandlerTest, ScanSettingsPrefs) {
   })";
 
   // First, save the expected scan settings to the Pref service.
-  base::Value::List save_args;
+  base::ListValue save_args;
   save_args.Append(expected_sticky_settings);
   web_ui_.HandleReceivedMessage("saveScanSettings", save_args);
 
   // Then retrieve the expected scan settings from the Pref service.
   const size_t call_data_count_before_call = web_ui_.call_data().size();
-  base::Value::List get_args;
+  base::ListValue get_args;
   get_args.Append(kHandlerFunctionName);
   web_ui_.HandleReceivedMessage("getScanSettings", get_args);
   const content::TestWebUI::CallData& call_data =
@@ -345,7 +345,7 @@ TEST_F(ScanningHandlerTest, ValidFilePathExists) {
   base::File(myScanPath, base::File::FLAG_CREATE | base::File::FLAG_READ);
 
   const size_t call_data_count_before_call = web_ui_.call_data().size();
-  base::Value::List args;
+  base::ListValue args;
   args.Append(kHandlerFunctionName);
   args.Append(myScanPath.value());
   web_ui_.HandleReceivedMessage("ensureValidFilePath", args);
@@ -354,7 +354,7 @@ TEST_F(ScanningHandlerTest, ValidFilePathExists) {
   const content::TestWebUI::CallData& call_data =
       GetCallData(call_data_count_before_call);
   ASSERT_TRUE(call_data.arg3()->is_dict());
-  const base::Value::Dict& selected_path_dict = call_data.arg3()->GetDict();
+  const base::DictValue& selected_path_dict = call_data.arg3()->GetDict();
   EXPECT_EQ(myScanPath.value(), *selected_path_dict.FindString("filePath"));
   EXPECT_EQ("myScanPath", *selected_path_dict.FindString("baseName"));
 }
@@ -365,7 +365,7 @@ TEST_F(ScanningHandlerTest, InvalidFilePath) {
   const std::string invalidFilePath = "invalid/file/path";
 
   const size_t call_data_count_before_call = web_ui_.call_data().size();
-  base::Value::List args;
+  base::ListValue args;
   args.Append(kHandlerFunctionName);
   args.Append(invalidFilePath);
   web_ui_.HandleReceivedMessage("ensureValidFilePath", args);
@@ -374,7 +374,7 @@ TEST_F(ScanningHandlerTest, InvalidFilePath) {
   const content::TestWebUI::CallData& call_data =
       GetCallData(call_data_count_before_call);
   ASSERT_TRUE(call_data.arg3()->is_dict());
-  const base::Value::Dict& selected_path_dict = call_data.arg3()->GetDict();
+  const base::DictValue& selected_path_dict = call_data.arg3()->GetDict();
   EXPECT_EQ(std::string(), *selected_path_dict.FindString("filePath"));
   EXPECT_EQ(std::string(), *selected_path_dict.FindString("baseName"));
 }
@@ -382,7 +382,7 @@ TEST_F(ScanningHandlerTest, InvalidFilePath) {
 // Validates a request for a plural string with a key missing in the plural
 // string map does return a value.
 TEST_F(ScanningHandlerTest, GetPluralStringBadKey) {
-  base::Value::List args;
+  base::ListValue args;
   args.Append(kHandlerFunctionName);
   args.Append(/*name=*/"incorrectKey");
   args.Append(/*count=*/2);

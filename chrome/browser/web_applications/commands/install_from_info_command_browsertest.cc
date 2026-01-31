@@ -22,6 +22,7 @@
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_command_scheduler.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
+#include "chrome/browser/web_applications/web_app_filter.h"
 #include "chrome/browser/web_applications/web_app_icon_manager.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/browser/web_applications/web_app_install_params.h"
@@ -83,8 +84,8 @@ IN_PROC_BROWSER_TEST_F(InstallFromInfoCommandTest, SuccessInstall) {
       WebAppInstallParams());
   loop.Run();
 
-  EXPECT_EQ(proto::InstallState::INSTALLED_WITH_OS_INTEGRATION,
-            provider().registrar_unsafe().GetInstallState(result_app_id));
+  EXPECT_TRUE(provider().registrar_unsafe().AppMatches(
+      result_app_id, WebAppFilter::InstalledInOperatingSystemForTesting()));
 
   // Ensure histogram is only measured once.
 
@@ -123,8 +124,8 @@ IN_PROC_BROWSER_TEST_F(InstallFromInfoCommandTest, InstallWithParams) {
       base::BindLambdaForTesting(
           [&](const webapps::AppId& app_id, webapps::InstallResultCode code) {
             EXPECT_EQ(code, webapps::InstallResultCode::kSuccessNewInstall);
-            EXPECT_EQ(proto::InstallState::INSTALLED_WITH_OS_INTEGRATION,
-                      provider().registrar_unsafe().GetInstallState(app_id));
+            EXPECT_TRUE(provider().registrar_unsafe().AppMatches(
+                app_id, WebAppFilter::InstalledInOperatingSystemForTesting()));
             result_app_id = app_id;
             loop.Quit();
           }),

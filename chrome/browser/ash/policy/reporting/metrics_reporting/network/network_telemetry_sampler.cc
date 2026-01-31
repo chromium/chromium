@@ -9,7 +9,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/containers/contains.h"
 #include "base/containers/queue.h"
 #include "base/logging.h"
 #include "base/task/bind_post_task.h"
@@ -248,7 +247,7 @@ void NetworkTelemetrySampler::CollectNetworksStates(
 
     if (type.Equals(::ash::NetworkTypePattern::WiFi())) {
       network_telemetry->set_signal_strength(network->signal_strength());
-      if (base::Contains(service_path_rssi_map, network->path())) {
+      if (service_path_rssi_map.contains(network->path())) {
         network_telemetry->set_signal_strength_dbm(
             service_path_rssi_map.at(network->path()));
       } else {

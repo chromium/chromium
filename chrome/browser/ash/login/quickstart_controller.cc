@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/login/quickstart_controller.h"
 
+#include <algorithm>
 #include <memory>
 #include <variant>
 
@@ -330,7 +331,7 @@ void QuickStartController::AbortFlow(AbortFlowReason reason) {
   constexpr AbortFlowReason kUnsupportedUserTypes[] = {
       AbortFlowReason::ENTERPRISE_ENROLLMENT, AbortFlowReason::SIGNIN_SCHOOL,
       AbortFlowReason::ADD_CHILD};
-  if (base::Contains(kUnsupportedUserTypes, reason)) {
+  if (std::ranges::contains(kUnsupportedUserTypes, reason)) {
     QS_LOG(INFO) << "Aborting flow due to unsupported user type: " << reason;
     bootstrap_controller_->OnSetupComplete();
     return;

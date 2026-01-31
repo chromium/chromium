@@ -206,18 +206,98 @@ void MetricsRenderFrameObserver::DidObserveNewFeatureUsage(
 void MetricsRenderFrameObserver::DidObserveSoftNavigation(
     blink::SoftNavigationMetricsForReporting soft_nav_metrics) {
   if (page_timing_metrics_sender_) {
-    const blink::WebPerformanceMetricsForReporting& metrics =
-        render_frame()->GetWebFrame()->PerformanceMetricsForReporting();
-
     // Make soft navigation start time relative to navigation start.
     soft_nav_metrics.start_time = CreateTimeDeltaFromTimestampsInSeconds(
-        soft_nav_metrics.start_time.InSecondsF(), metrics.NavigationStart());
-
-    // (crbug.com/40074158): will non-fatally dump in official builds if the
-    // start_time is 0.
-    DUMP_WILL_BE_CHECK(!soft_nav_metrics.start_time.is_zero());
-
+        soft_nav_metrics.start_time.InSecondsF(), GetNavigationStart());
     page_timing_metrics_sender_->DidObserveSoftNavigation(soft_nav_metrics);
+  }
+}
+
+void MetricsRenderFrameObserver::DidObserveSoftLargestContentfulPaint(
+    const blink::LargestContentfulPaintDetailsForReporting& lcp) {
+  if (page_timing_metrics_sender_) {
+    base::TimeDelta softnav_relative_start =
+        page_timing_metrics_sender_->GetSoftNavigationStartTime();
+
+    double softnav_start =
+        GetNavigationStart() + softnav_relative_start.InSecondsF();
+
+    // The lcp object we pass to the sender is a mojom type that is relative
+    // to the soft navigation start time.
+    mojom::LargestContentfulPaintTimingPtr relative_lcp =
+        CreateLargestContentfulPaintTiming();
+
+    if (lcp.image_paint_size > 0) {
+      // Set largest image time.
+      // Note that size can be nonzero while the time is 0 since a time of 0 is
+      // sent when the image is painting. We assign the time even when it is 0
+      // so that it's not ignored, but need to be careful when doing operations
+      // on the value.
+      if (lcp.image_paint_time == 0.0) {
+        relative_lcp->largest_image_paint = base::TimeDelta();
+      } else {
+        relative_lcp->largest_image_paint =
+            CreateTimeDeltaFromTimestampsInSeconds(lcp.image_paint_time,
+                                                   softnav_start);
+      }
+      // Set largest image size.
+      relative_lcp->largest_image_paint_size = lcp.image_paint_size;
+
+      // Set largest image load type.
+      relative_lcp->type = LargestContentfulPaintTypeToUKMFlags(lcp.type);
+
+      // Set largest image bpp value.
+      relative_lcp->image_bpp = lcp.image_bpp;
+
+      // Set largest image request priority.
+      if (lcp.image_request_priority.has_value()) {
+        relative_lcp->image_request_priority_valid = true;
+        relative_lcp->image_request_priority_value =
+            blink::WebURLRequest::ConvertToNetPriority(
+                lcp.image_request_priority.value());
+      } else {
+        relative_lcp->image_request_priority_valid = false;
+      }
+
+      // Set largest image discovery time.
+      if (lcp.resource_load_timings.discovery_time.has_value()) {
+        relative_lcp->resource_load_timings->discovery_time =
+            CreateTimeDeltaFromTimestampsInSeconds(
+                lcp.resource_load_timings.discovery_time.value().InSecondsF(),
+                softnav_start);
+      }
+
+      // Set largest image load start.
+      if (lcp.resource_load_timings.load_start.has_value()) {
+        relative_lcp->resource_load_timings->load_start =
+            CreateTimeDeltaFromTimestampsInSeconds(
+                lcp.resource_load_timings.load_start.value().InSecondsF(),
+                softnav_start);
+      }
+
+      // Set largest image load end.
+      if (lcp.resource_load_timings.load_end.has_value()) {
+        relative_lcp->resource_load_timings->load_end =
+            CreateTimeDeltaFromTimestampsInSeconds(
+                lcp.resource_load_timings.load_end.value().InSecondsF(),
+                softnav_start);
+      }
+    }
+    if (lcp.text_paint_size > 0) {
+      // LargestTextPaint and LargestTextPaintSize should be available at the
+      // same time. This is a renderer side DCHECK to ensure this.
+      DCHECK(lcp.text_paint_time);
+
+      relative_lcp->largest_text_paint = CreateTimeDeltaFromTimestampsInSeconds(
+          lcp.text_paint_time, softnav_start);
+
+      relative_lcp->largest_text_paint_size = lcp.text_paint_size;
+
+      relative_lcp->type = LargestContentfulPaintTypeToUKMFlags(lcp.type);
+    }
+
+    page_timing_metrics_sender_->DidObserveSoftLargestContentfulPaint(
+        std::move(relative_lcp));
   }
 }
 
@@ -499,8 +579,6 @@ void MetricsRenderFrameObserver::SendMetrics() {
     return;
   }
   Timing timing = GetTiming();
-  page_timing_metrics_sender_->UpdateSoftNavigationMetrics(
-      GetSoftNavigationMetrics());
   page_timing_metrics_sender_->Update(std::move(timing.relative_timing),
                                       timing.monotonic_timing);
 
@@ -526,111 +604,11 @@ void MetricsRenderFrameObserver::OnMetricsSenderCreated() {
   }
 }
 
-mojom::SoftNavigationMetricsPtr
-MetricsRenderFrameObserver::GetSoftNavigationMetrics() const {
-  CHECK(render_frame());
-  CHECK(render_frame()->GetWebFrame());
-
-  CHECK(page_timing_metrics_sender_.get());
-  auto softnav = page_timing_metrics_sender_->GetSoftNavigationMetrics();
-
-  CHECK(!softnav.is_null());
-
-  // We won't add LCP details to an empty soft navs record.
-  if (!softnav->count) {
-    return softnav;
-  }
-
-  softnav->largest_contentful_paint = CreateLargestContentfulPaintTiming();
-
-  const blink::WebPerformanceMetricsForReporting& metrics =
-      render_frame()->GetWebFrame()->PerformanceMetricsForReporting();
-
-  auto soft_lcp_details =
-      metrics.SoftNavigationLargestContentfulDetailsForMetrics();
-
-  double softnav_start =
-      metrics.NavigationStart() + softnav->start_time.InSecondsF();
-
-  if (soft_lcp_details.image_paint_size > 0) {
-    // Set largest image time.
-    // Note that size can be nonzero while the time is 0 since a time of 0 is
-    // sent when the image is painting. We assign the time even when it is 0 so
-    // that it's not ignored, but need to be careful when doing operations on
-    // the value.
-    if (soft_lcp_details.image_paint_time == 0.0) {
-      softnav->largest_contentful_paint->largest_image_paint =
-          base::TimeDelta();
-    } else {
-      softnav->largest_contentful_paint->largest_image_paint =
-          CreateTimeDeltaFromTimestampsInSeconds(
-              soft_lcp_details.image_paint_time, softnav_start);
-    }
-    // Set largest image size.
-    softnav->largest_contentful_paint->largest_image_paint_size =
-        soft_lcp_details.image_paint_size;
-
-    // Set largest image load type.
-    softnav->largest_contentful_paint->type =
-        LargestContentfulPaintTypeToUKMFlags(soft_lcp_details.type);
-
-    // Set largest image bpp value.
-    softnav->largest_contentful_paint->image_bpp = soft_lcp_details.image_bpp;
-
-    // Set largest image request priority.
-    if (soft_lcp_details.image_request_priority.has_value()) {
-      softnav->largest_contentful_paint->image_request_priority_valid = true;
-      softnav->largest_contentful_paint->image_request_priority_value =
-          blink::WebURLRequest::ConvertToNetPriority(
-              soft_lcp_details.image_request_priority.value());
-    } else {
-      softnav->largest_contentful_paint->image_request_priority_valid = false;
-    }
-
-    // Set largest image discovery time.
-    if (soft_lcp_details.resource_load_timings.discovery_time.has_value()) {
-      softnav->largest_contentful_paint->resource_load_timings->discovery_time =
-          CreateTimeDeltaFromTimestampsInSeconds(
-              soft_lcp_details.resource_load_timings.discovery_time.value()
-                  .InSecondsF(),
-              softnav_start);
-    }
-
-    // Set largest image load start.
-    if (soft_lcp_details.resource_load_timings.load_start.has_value()) {
-      softnav->largest_contentful_paint->resource_load_timings->load_start =
-          CreateTimeDeltaFromTimestampsInSeconds(
-              soft_lcp_details.resource_load_timings.load_start.value()
-                  .InSecondsF(),
-              softnav_start);
-    }
-
-    // Set largest image load end.
-    if (soft_lcp_details.resource_load_timings.load_end.has_value()) {
-      softnav->largest_contentful_paint->resource_load_timings
-          ->load_end = CreateTimeDeltaFromTimestampsInSeconds(
-          soft_lcp_details.resource_load_timings.load_end.value().InSecondsF(),
-          softnav_start);
-    }
-  }
-
-  if (soft_lcp_details.text_paint_size > 0) {
-    // LargestTextPaint and LargestTextPaintSize should be available at the
-    // same time. This is a renderer side DCHECK to ensure this.
-    DCHECK(soft_lcp_details.text_paint_time);
-
-    softnav->largest_contentful_paint->largest_text_paint =
-        CreateTimeDeltaFromTimestampsInSeconds(soft_lcp_details.text_paint_time,
-                                               softnav_start);
-
-    softnav->largest_contentful_paint->largest_text_paint_size =
-        soft_lcp_details.text_paint_size;
-
-    softnav->largest_contentful_paint->type =
-        LargestContentfulPaintTypeToUKMFlags(soft_lcp_details.type);
-  }
-
-  return softnav;
+double MetricsRenderFrameObserver::GetNavigationStart() const {
+  return render_frame()
+      ->GetWebFrame()
+      ->PerformanceMetricsForReporting()
+      .NavigationStart();
 }
 
 MetricsRenderFrameObserver::Timing MetricsRenderFrameObserver::GetTiming()

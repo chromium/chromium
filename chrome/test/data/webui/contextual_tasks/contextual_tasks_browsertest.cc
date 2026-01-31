@@ -12,8 +12,10 @@
 class ContextualTasksBrowserTest : public WebUIMochaBrowserTest {
  protected:
   ContextualTasksBrowserTest() {
-    scoped_feature_list_.InitAndEnableFeature(
-        contextual_tasks::kContextualTasks);
+    scoped_feature_list_.InitWithFeatures(
+        {contextual_tasks::kContextualTasks,
+         contextual_tasks::kContextualTasksForceEntryPointEligibility},
+        {});
     set_test_loader_host(chrome::kChromeUIContextualTasksHost);
   }
 
@@ -22,7 +24,7 @@ class ContextualTasksBrowserTest : public WebUIMochaBrowserTest {
 };
 
 IN_PROC_BROWSER_TEST_F(ContextualTasksBrowserTest, App) {
-  RunTest("contextual_tasks/contextual_tasks_browsertest.js", "mocha.run();");
+  RunTest("contextual_tasks/app_test.js", "mocha.run();");
 }
 
 IN_PROC_BROWSER_TEST_F(ContextualTasksBrowserTest, Composebox) {

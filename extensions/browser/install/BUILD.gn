@@ -15,6 +15,6 @@ source_set("install") {
 
   deps = [
     "//base",
-    "//ui/gfx:native_widget_types",
+    "//ui/gfx:native_ui_types",
   ]
 }

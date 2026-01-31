@@ -223,9 +223,10 @@ bool JingleMessage::ParseXml(const jingle_xmpp::XmlElement* stanza,
     return false;
   }
 
-  from = SignalingAddress::Parse(stanza, SignalingAddress::FROM, error);
-  to = SignalingAddress::Parse(stanza, SignalingAddress::TO, error);
+  from = SignalingAddress::Parse(stanza, SignalingAddress::FROM);
+  to = SignalingAddress::Parse(stanza, SignalingAddress::TO);
   if (from.empty() || to.empty()) {
+    *error = "Missing signaling address";
     return false;
   }
 
@@ -477,9 +478,8 @@ std::unique_ptr<jingle_xmpp::XmlElement> JingleMessageReply::ToXml(
               request_stanza->Attr(QName(kEmptyNamespace, "id")));
 
   SignalingAddress original_from;
-  std::string error_message;
-  original_from = SignalingAddress::Parse(
-      request_stanza, SignalingAddress::FROM, &error_message);
+  original_from =
+      SignalingAddress::Parse(request_stanza, SignalingAddress::FROM);
   DCHECK(!original_from.empty());
 
   if (type == REPLY_RESULT) {

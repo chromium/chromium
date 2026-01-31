@@ -18,14 +18,11 @@
 #include "ui/gfx/geometry/rect_f.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/geometry/size_f.h"
+#include "ui/views/layout/layout_types.h"
 #include "ui/views/view_tracker.h"
 #include "ui/views/window/frame_view.h"
 
 class BrowserView;
-
-namespace views {
-class Label;
-}
 
 // This enum is used for functions who rely on the state of the browser to alter
 // the appearance of the window frame.
@@ -95,22 +92,8 @@ class BrowserFrameView : public views::FrameView {
   // Default implementation for getting browser layout parameters.
   virtual BrowserLayoutParams GetBrowserLayoutParams() const;
 
-  // Returns the bounds, in this view's coordinates, that the tab
-  // strip should occupy.
-  virtual gfx::Rect GetBoundsForTabStripRegion(
-      const gfx::Size& tabstrip_minimum_size) const = 0;
-
-  // Returns the maximum bounds, in this view's coordinates, for
-  // the WebAppFrameToolbarView, which contains controls for a web app.
-  virtual gfx::Rect GetBoundsForWebAppFrameToolbar(
-      const gfx::Size& toolbar_preferred_size) const = 0;
-
-  // Lays out the window title for a web app within the given available space.
-  // Unlike the above GetBounds methods this is not just a method to return the
-  // bounds the title should occupy, since different implementations might also
-  // want to change other attributes of the title, such as alignment.
-  virtual void LayoutWebAppWindowTitle(const gfx::Rect& available_space,
-                                       views::Label& window_title_label) const;
+  // Returns which alignment the title uses.
+  virtual views::LayoutAlignment GetWindowTitleAlignment() const;
 
   // Returns the inset from the top of the window to the top of the client
   // view. For a tabbed browser, this is the space occupied by the tab strip.
@@ -129,8 +112,7 @@ class BrowserFrameView : public views::FrameView {
   virtual bool ShouldHideTopUIInFullscreen() const;
 
   // Returns true if a toolbar should be shown in the current browser, false if
-  // not. If this returns false, there is no reason to call e.g.
-  // `GetBoundsForWebAppFrameToolbar()`.
+  // not.
   virtual bool ShouldShowWebAppFrameToolbar() const;
 
   // Determines whether the top of the frame is "condensed" (i.e., has less
@@ -205,6 +187,9 @@ class BrowserFrameView : public views::FrameView {
  protected:
   // Called when `frame_`'s "paint as active" state has changed.
   virtual void PaintAsActiveChanged();
+
+  // Returns the client frame element info; used by subclasses.
+  ClientFrameElementInfo GetClientFrameElementInfo() const;
 
   // Used by GetCaptionButtonBounds() below.
   struct BoundsAndMargins {

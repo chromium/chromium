@@ -10,6 +10,7 @@
 #include <array>
 
 #include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "gpu/command_buffer/tests/gl_manager.h"
 #include "gpu/command_buffer/tests/gl_test_utils.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -197,16 +198,17 @@ TEST_F(DepthTextureTest, RenderTo) {
     // made about the other channels green, blue and alpha since, according to
     // the GL_CHROMIUM_depth_texture spec, they have undefined values for
     // depth textures.
+    base::span<const uint8_t> pixels(actual_pixels);
     int bad_count = 0;  // used to not spam the log with too many messages.
     for (GLint yy = 0; bad_count < 16 && yy < kResolution; ++yy) {
       for (GLint xx = 0; bad_count < 16 && xx < kResolution; ++xx) {
-        const uint8_t* actual = &actual_pixels[(yy * kResolution + xx) * 4];
-        const uint8_t* left = UNSAFE_TODO(actual - 4);
-        const uint8_t* down = UNSAFE_TODO(actual - kResolution * 4);
+        size_t offset = (yy * kResolution + xx) * 4;
+        const uint8_t* actual = &pixels[offset];
 
         // NOTE: Qualcomm on Nexus 4 the right most column has the same
         // values as the next to right most column. (bad interpolator?)
         if (xx > 0 && xx < kResolution - 1) {
+          const uint8_t* left = &pixels[offset - 4];
           EXPECT_GT(actual[0], left[0])
               << "pixel at " << xx << ", " << yy
               << " actual[0] =" << static_cast<unsigned>(actual[0])
@@ -217,13 +219,14 @@ TEST_F(DepthTextureTest, RenderTo) {
         }
 
         if (yy > 0 && yy < kResolution - 1) {
+          const uint8_t* down = &pixels[offset - kResolution * 4];
           EXPECT_GT(actual[0], down[0]) << "pixel at " << xx << ", " << yy;
           bad_count += (actual[0] > down[0] ? 0 : 1);
         }
       }
     }
 
-    // Check that bottom left corner is vastly different thatn top right.
+    // Check that bottom left corner is vastly different than top right.
     EXPECT_GT(
         actual_pixels[(kResolution * kResolution - 1) * 4] - actual_pixels[0],
         0xC0);

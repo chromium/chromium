@@ -5,7 +5,7 @@
 // clang-format off
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import type {CrDrawerElement, CrToolbarElement, CrToolbarSearchFieldElement, SettingsUiElement} from 'chrome://settings/settings.js';
-import {CrSettingsPrefs, Router, routes} from 'chrome://settings/settings.js';
+import {CrSettingsPrefs, MAX_QUERY_LENGTH, Router, routes} from 'chrome://settings/settings.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {eventToPromise} from 'chrome://webui-test/test_util.js';
 // clang-format on
@@ -110,6 +110,13 @@ suite('SettingsUISearch', function() {
     searchField.setValue(value);
     assertEquals(
         value, Router.getInstance().getQueryParameters().get('search'));
+
+    // Test that overly long queries are truncated.
+    value = value.repeat(300);
+    searchField.setValue(value);
+    assertEquals(
+        value.substring(0, MAX_QUERY_LENGTH),
+        Router.getInstance().getQueryParameters().get('search'));
 
     // Test that search queries are properly URL encoded.
     value = '+++';

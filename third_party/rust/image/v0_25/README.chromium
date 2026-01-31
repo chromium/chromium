@@ -1,0 +1,11 @@
+Name: image
+URL: https://crates.io/crates/image
+Version: 0.25.9
+Revision: 5ceb6af6c2b6671931a02fda955ce1676321711d
+Update Mechanism: Manual (https://crbug.com/449898466)
+License: Apache-2.0
+License File: //third_party/rust/chromium_crates_io/vendor/image-v0_25/LICENSE-APACHE
+Shipped: yes
+Security Critical: yes
+
+Description: Imaging library. Provides basic image processing and encoders/decoders for common image formats.

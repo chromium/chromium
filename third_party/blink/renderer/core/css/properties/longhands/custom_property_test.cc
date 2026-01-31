@@ -45,7 +45,7 @@ class CustomPropertyTest : public PageTestBase {
 
   const CSSValue* ParseValue(const CustomProperty& property,
                              const String& value,
-                             const CSSParserLocalContext& local_context) {
+                             CSSParserLocalContext& local_context) {
     auto* context = MakeGarbageCollected<CSSParserContext>(GetDocument());
     return property.Parse(value, *context, local_context);
   }
@@ -167,38 +167,25 @@ TEST_F(CustomPropertyTest, ComputedCSSValueIntegerCalc) {
 
 TEST_F(CustomPropertyTest, ParseSingleValueUnregistered) {
   CustomProperty property(AtomicString("--x"), GetDocument());
-  const CSSValue* value =
-      ParseValue(property, "100px", CSSParserLocalContext());
+  CSSParserLocalContext local_context =
+      CSSParserLocalContext::CreateWithoutPropertyForTest();
+  const CSSValue* value = ParseValue(property, "100px", local_context);
   ASSERT_TRUE(value->IsUnparsedDeclaration());
   EXPECT_EQ("100px", value->CssText());
-}
-
-TEST_F(CustomPropertyTest, ParseSingleValueAnimationTainted) {
-  CustomProperty property(AtomicString("--x"), GetDocument());
-  const CSSValue* value1 = ParseValue(
-      property, "100px", CSSParserLocalContext().WithAnimationTainted(true));
-  const CSSValue* value2 = ParseValue(
-      property, "100px", CSSParserLocalContext().WithAnimationTainted(false));
-
-  EXPECT_TRUE(To<CSSUnparsedDeclarationValue>(value1)
-                  ->VariableDataValue()
-                  ->IsAnimationTainted());
-  EXPECT_FALSE(To<CSSUnparsedDeclarationValue>(value2)
-                   ->VariableDataValue()
-                   ->IsAnimationTainted());
 }
 
 TEST_F(CustomPropertyTest, ParseSingleValueTyped) {
   RegisterProperty(GetDocument(), "--x", "<length>", "0px", false);
   CustomProperty property(AtomicString("--x"), GetDocument());
-  const CSSValue* value1 =
-      ParseValue(property, "100px", CSSParserLocalContext());
+
+  CSSParserLocalContext local_context =
+      CSSParserLocalContext::CreateWithoutPropertyForTest();
+  const CSSValue* value1 = ParseValue(property, "100px", local_context);
   EXPECT_TRUE(value1->IsPrimitiveValue());
   EXPECT_EQ(100, To<CSSPrimitiveValue>(value1)->ComputeLength<double>(
                      CSSToLengthConversionData(/*element=*/nullptr)));
 
-  const CSSValue* value2 =
-      ParseValue(property, "maroon", CSSParserLocalContext());
+  const CSSValue* value2 = ParseValue(property, "maroon", local_context);
   EXPECT_FALSE(value2);
 }
 
@@ -243,28 +230,27 @@ TEST_F(CustomPropertyTest, HasInitialValue) {
 TEST_F(CustomPropertyTest, ParseAnchorQueriesAsLength) {
   RegisterProperty(GetDocument(), "--x", "<length>", "0px", false);
   CustomProperty property(AtomicString("--x"), GetDocument());
-
+  CSSParserLocalContext local_context =
+      CSSParserLocalContext::CreateWithoutPropertyForTest();
   // Anchor queries are not allowed in registered custom properties for
   // <length>.
-  EXPECT_FALSE(
-      ParseValue(property, "anchor(--foo top)", CSSParserLocalContext()));
-  EXPECT_FALSE(ParseValue(property, "anchor-size(--foo width)",
-                          CSSParserLocalContext()));
+  EXPECT_FALSE(ParseValue(property, "anchor(--foo top)", local_context));
+  EXPECT_FALSE(ParseValue(property, "anchor-size(--foo width)", local_context));
 }
 
 TEST_F(CustomPropertyTest, ParseAnchorQueriesAsLengthPercentage) {
   RegisterProperty(GetDocument(), "--x", "<length-percentage>", "0px", false);
   CustomProperty property(AtomicString("--x"), GetDocument());
+  CSSParserLocalContext local_context =
+      CSSParserLocalContext::CreateWithoutPropertyForTest();
 
   // Anchor queries are not allowed in registered custom properties for
   // <length-percentage>.
-  EXPECT_FALSE(
-      ParseValue(property, "anchor(--foo top)", CSSParserLocalContext()));
-  EXPECT_FALSE(ParseValue(property, "anchor-size(--foo width)",
-                          CSSParserLocalContext()));
+  EXPECT_FALSE(ParseValue(property, "anchor(--foo top)", local_context));
+  EXPECT_FALSE(ParseValue(property, "anchor-size(--foo width)", local_context));
   EXPECT_FALSE(ParseValue(property,
                           "calc(anchor(--foo top) + anchor-size(--foo width))",
-                          CSSParserLocalContext()));
+                          local_context));
 }
 
 TEST_F(CustomPropertyTest, ValueMode) {

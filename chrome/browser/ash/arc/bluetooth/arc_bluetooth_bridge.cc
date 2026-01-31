@@ -18,7 +18,6 @@
 #include <utility>
 
 #include "ash/constants/ash_pref_names.h"
-#include "base/containers/contains.h"
 #include "base/containers/queue.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -1701,7 +1700,7 @@ void ArcBluetoothBridge::SendBluetoothPoweredStateBroadcast(
   if (!intent_instance)
     return;
 
-  base::Value::Dict extras;
+  base::DictValue extras;
   extras.Set("enable", powered == AdapterPowerState::TURN_ON);
   std::string extras_json;
   bool write_success = base::JSONWriter::Write(extras, &extras_json);
@@ -1933,7 +1932,7 @@ void ArcBluetoothBridge::RegisterForGattNotification(
   // exist. Note that the notification session object may have been created as
   // a result of a previous call to WriteGattDescriptor, which can be left
   // as-is.
-  if (!base::Contains(notification_session_, char_id_str)) {
+  if (!notification_session_.contains(char_id_str)) {
     notification_session_.emplace(char_id_str, nullptr);
   }
 

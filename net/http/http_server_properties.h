@@ -94,9 +94,9 @@ class NET_EXPORT HttpServerProperties
     : public BrokenAlternativeServices::Delegate {
  public:
   // Store at most 500 MRU ServerInfos in memory and disk.
-  static const int kMaxServerInfoEntries = 500;
+  static constexpr int kMaxServerInfoEntries = 500;
   // Max number of servers that can be recorded as requiring HTTP/1.1.
-  static const int kMaxServersRequiringHttp11Entries = 100;
+  static constexpr int kMaxServersRequiringHttp11Entries = 100;
 
   // Provides an interface to interact with persistent preferences storage
   // implemented by the embedder. The prefs are assumed not to have been loaded
@@ -107,12 +107,12 @@ class NET_EXPORT HttpServerProperties
 
     // Returns the branch of the preferences system for the server properties.
     // Returns nullptr if the pref system has no data for the server properties.
-    virtual const base::Value::Dict& GetServerProperties() const = 0;
+    virtual const base::DictValue& GetServerProperties() const = 0;
 
     // Sets the server properties to the given value. If |callback| is
     // non-empty, flushes data to persistent storage and invokes |callback|
     // asynchronously when complete.
-    virtual void SetServerProperties(base::Value::Dict dict,
+    virtual void SetServerProperties(base::DictValue dict,
                                      base::OnceClosure callback) = 0;
 
     // Starts listening for prefs to be loaded. If prefs are already loaded,

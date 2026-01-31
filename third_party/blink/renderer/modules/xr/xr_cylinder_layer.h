@@ -20,6 +20,7 @@ class XRCylinderLayer : public XRShapedLayer {
 
  public:
   XRCylinderLayer(const XRCylinderLayerInit* init,
+                  V8XRLayerLayout::Enum final_layout,
                   XRGraphicsBinding* binding,
                   XRLayerDrawingContext* drawing_context);
   ~XRCylinderLayer() override = default;

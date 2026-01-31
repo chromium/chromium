@@ -639,6 +639,23 @@ export class PrintPreviewPreviewAreaElement extends
   }
 
   /**
+   * @return true if the scaling type has just changed between
+   * `ScalingType.CUSTOM` and another scaling type that is functionally
+   * equivalent. In other words, this detects switch back
+   * and forth between the `CUSTOM` scaling type and
+   * a different scaling type that behaves the same as `CUSTOM`.
+   */
+  private scalingTypeAlteredAroundCustom_(
+      otherScalingTypeSameToCustom: ScalingType,
+      currentScalingType: ScalingType, lastScalingType: ScalingType): boolean {
+    const otherToCustom = currentScalingType === ScalingType.CUSTOM &&
+        lastScalingType === otherScalingTypeSameToCustom;
+    const customToOther = currentScalingType === otherScalingTypeSameToCustom &&
+        lastScalingType === ScalingType.CUSTOM;
+    return customToOther || otherToCustom;
+  }
+
+  /**
    * @param lastTicket Last print ticket.
    * @return Whether new scaling settings update the previewed
    *     document.
@@ -661,22 +678,19 @@ export class PrintPreviewPreviewAreaElement extends
     // - OLD behavior: PDF default scaling = CUSTOM with a scale factor of 100
     // - NEW behavior: PDF default scaling = kCenterShrinkToFitPaper
     //
-    // This change means that switching the scaling type to PDF now indicates
-    // a scaling change.
+    // The behavior of the new option "actual size" is the same as custom
+    // scaling with a scale factor of 100.
     if (this.isScalingPdf_() &&
         loadTimeData.getBoolean('alignPdfDefaultPrintSettingsWithHTML')) {
-      return true;
+      return !this.scalingTypeAlteredAroundCustom_(
+          ScalingType.ACTUAL_SIZE, scalingType, lastTicket.scalingType);
     }
 
     // Scaling doesn't always change because of a scalingType change. Changing
     // between custom scaling with a scale factor of 100 and default scaling
     // makes no difference.
-    const defaultToCustom = scalingType === ScalingType.DEFAULT &&
-        lastTicket.scalingType === ScalingType.CUSTOM;
-    const customToDefault = scalingType === ScalingType.CUSTOM &&
-        lastTicket.scalingType === ScalingType.DEFAULT;
-
-    return !defaultToCustom && !customToDefault;
+    return !this.scalingTypeAlteredAroundCustom_(
+        ScalingType.DEFAULT, scalingType, lastTicket.scalingType);
   }
 
   /**

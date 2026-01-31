@@ -6,6 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_STYLE_STYLE_TRIGGER_ATTACHMENT_H_
 
 #include "third_party/blink/renderer/core/css/css_trigger_attachment_value.h"
+#include "third_party/blink/renderer/core/dom/trigger_scoped_name.h"
 #include "third_party/blink/renderer/core/style/computed_style_constants.h"
 #include "third_party/blink/renderer/core/style/scoped_css_name.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
@@ -32,7 +33,9 @@ class StyleTriggerAttachment : public GarbageCollected<StyleTriggerAttachment> {
     return exit_behavior_;
   }
 
-  void Attach(AnimationTrigger& trigger, CSSAnimation& animation) const;
+  void Attach(AnimationTrigger& trigger,
+              const TriggerScopedName& scope,
+              CSSAnimation& animation) const;
 
   void Trace(Visitor* visitor) const {
     visitor->Trace(trigger_name_);

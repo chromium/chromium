@@ -290,7 +290,7 @@ ScopedJavaLocalRef<jobject> DataSharingServiceAndroid::GetUiDelegate(
 
 void DataSharingServiceAndroid::Log(
     JNIEnv* env,
-    /*logger_common::mojom::LogSource*/ jint source,
+    /*logger_common::mojom::LogSource*/ int32_t source,
     const JavaRef<jstring>& message) {
   DATA_SHARING_LOG(static_cast<logger_common::mojom::LogSource>(source),
                    data_sharing_service_->GetLogger(),

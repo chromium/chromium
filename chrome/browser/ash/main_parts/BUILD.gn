@@ -47,7 +47,6 @@ static_library("main_parts") {
     "//chrome/browser/ash/crostini",
     "//chrome/browser/ash/dbus",
     "//chrome/browser/ash/dbus/vm",
-    "//chrome/browser/ash/device_name",
     "//chrome/browser/ash/diagnostics",
     "//chrome/browser/ash/events",
     "//chrome/browser/ash/extensions",

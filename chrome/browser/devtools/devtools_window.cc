@@ -44,7 +44,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/task_manager/web_contents_tags.h"
-#include "chrome/browser/ui/browser_dialogs.h"
+#include "chrome/browser/ui/dialogs/browser_dialogs.h"
 #include "chrome/browser/ui/prefs/prefs_tab_helper.h"
 #include "chrome/browser/ui/scoped_tabbed_browser_displayer.h"
 #include "chrome/browser/ui/tabs/tab_group_deletion_dialog_controller.h"
@@ -92,8 +92,6 @@
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
-#include "third_party/blink/public/common/input/web_gesture_event.h"
-#include "third_party/blink/public/common/input/web_input_event.h"
 #include "third_party/blink/public/common/renderer_preferences/renderer_preferences.h"
 #include "third_party/blink/public/public_buildflags.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -155,7 +153,7 @@ static const char kFallbackFrontendURL[] =
     "devtools://devtools/bundled/inspector.html";
 
 void SetPreferencesFromJson(Profile* profile, const std::string& json) {
-  std::optional<base::Value::Dict> parsed =
+  std::optional<base::DictValue> parsed =
       base::JSONReader::ReadDict(json, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   if (!parsed) {
     return;
@@ -368,7 +366,7 @@ bool DevToolsEventForwarder::ForwardEvent(
     return false;
   }
 
-  base::Value::Dict event_data;
+  base::DictValue event_data;
   event_data.Set("type", event_type);
   event_data.Set("key", ui::KeycodeConverter::DomKeyToKeyString(
                             static_cast<ui::DomKey>(event.dom_key)));
@@ -517,8 +515,20 @@ DevToolsWindow::~DevToolsWindow() {
   capture_handle_.RunAndReset();
   owned_toolbox_web_contents_.reset();
 #if !BUILDFLAG(IS_ANDROID)
-  browser_list_observation_.Reset();
+  browser_collection_observation_.Reset();
 #endif
+
+#if BUILDFLAG(IS_MAC)
+  // Activate the inspected browser when undocked DevTools closes, so focus
+  // returns to the window that opened DevTools (e.g., a PWA window).
+  if (!is_docked_ && inspected_browser_session_id_.is_valid()) {
+    BrowserWindowInterface* const browser =
+        chrome::FindBrowserWithID(inspected_browser_session_id_);
+    if (browser && browser->GetWindow()) {
+      browser->GetWindow()->Activate();
+    }
+  }
+#endif  // BUILDFLAG(IS_MAC)
 
   DevToolsWindows& instances = GetDevToolsWindowInstances();
   auto it = std::ranges::find(instances, this);
@@ -1033,11 +1043,12 @@ void DevToolsWindow::Show(const DevToolsToggleAction& action) {
     return;
   }
   // TODO(crbug.com/406406862): Show it in a web app window instead of a tab.
-  tab_model->CreateTab(
-      nullptr,
-      OwnedMainWebContents::TakeWebContents(std::move(owned_main_web_contents_))
-          .release(),
-      true);
+  tab_model->CreateTab(nullptr,
+                       OwnedMainWebContents::TakeWebContents(
+                           std::move(owned_main_web_contents_)),
+                       TabModel::kInvalidIndex,
+                       TabModel::TabLaunchType::FROM_RECENT_TABS_FOREGROUND,
+                       /*should_pin=*/false);
   OverrideAndSyncDevToolsRendererPrefs();
 #else
   if (is_docked_) {
@@ -1053,6 +1064,7 @@ void DevToolsWindow::Show(const DevToolsToggleAction& action) {
     // Tell inspected browser to update splitter and switch to inspected panel.
     BrowserWindow* inspected_window = inspected_browser->window();
     main_web_contents_->SetDelegate(this);
+    main_web_contents_->SetIgnoreZoomGestures(true);
 
     // Inspected tab needs to be activated, however, this cannot be done from
     // here because TabStripModel does not allow reentrancy for its public
@@ -1193,13 +1205,15 @@ void DevToolsWindow::OnPageCloseCanceled(WebContents* contents) {
   DevToolsWindow::OnPageCloseCanceled(window->main_web_contents_);
 }
 
-DevToolsWindow::DevToolsWindow(FrontendType frontend_type,
-                               Profile* profile,
-                               std::unique_ptr<WebContents> main_web_contents,
-                               DevToolsUIBindings* bindings,
-                               WebContents* inspected_web_contents,
-                               bool can_dock,
-                               DevToolsOpenedByAction opened_by)
+DevToolsWindow::DevToolsWindow(
+    FrontendType frontend_type,
+    Profile* profile,
+    std::unique_ptr<WebContents> main_web_contents,
+    DevToolsUIBindings* bindings,
+    WebContents* inspected_web_contents,
+    bool can_dock,
+    DevToolsOpenedByAction opened_by,
+    [[maybe_unused]] SessionID inspected_browser_session_id)
     : frontend_type_(frontend_type),
       profile_(profile),
       main_web_contents_(main_web_contents.get()),
@@ -1220,6 +1234,9 @@ DevToolsWindow::DevToolsWindow(FrontendType frontend_type,
       ready_for_test_(false),
       opened_by_(opened_by),
       closed_by_(DevToolsClosedByAction::kUnknown) {
+#if BUILDFLAG(IS_MAC)
+  inspected_browser_session_id_ = inspected_browser_session_id;
+#endif  // BUILDFLAG(IS_MAC)
   // Set up delegate, so we get fully-functional window immediately.
   // It will not appear in UI though until |life_stage_ == kLoadCompleted|.
   main_web_contents_->SetDelegate(this);
@@ -1333,6 +1350,7 @@ DevToolsWindow* DevToolsWindow::Create(
     return nullptr;
   }
 
+  SessionID inspected_browser_session_id = SessionID::InvalidValue();
 #if BUILDFLAG(IS_ANDROID)
   // Docking is not supported yet.
   can_dock = false;
@@ -1340,11 +1358,16 @@ DevToolsWindow* DevToolsWindow::Create(
   if (inspected_web_contents) {
     // Check for a place to dock.
     Browser* browser = chrome::FindBrowserWithTab(inspected_web_contents);
+#if BUILDFLAG(IS_MAC)
+    if (browser) {
+      inspected_browser_session_id = browser->session_id();
+    }
+#endif  // BUILDFLAG(IS_MAC)
     if (!browser || !browser->window()->CanDockDevTools()) {
       can_dock = false;
     }
   }
-#endif
+#endif  // !BUILDFLAG(IS_ANDROID)
 
   // Create WebContents with devtools.
   GURL url(GetDevToolsURL(profile, frontend_type, frontend_url, can_dock, panel,
@@ -1365,7 +1388,8 @@ DevToolsWindow* DevToolsWindow::Create(
   }
   return new DevToolsWindow(frontend_type, profile,
                             std::move(main_web_contents), bindings,
-                            inspected_web_contents, can_dock, opened_by);
+                            inspected_web_contents, can_dock, opened_by,
+                            inspected_browser_session_id);
 }
 
 // static
@@ -1636,13 +1660,6 @@ void DevToolsWindow::RunFileChooser(
                                    params);
 }
 
-bool DevToolsWindow::PreHandleGestureEvent(
-    WebContents* source,
-    const blink::WebGestureEvent& event) {
-  // Disable pinch zooming.
-  return blink::WebInputEvent::IsPinchGestureEventType(event.GetType());
-}
-
 void DevToolsWindow::ActivateWindow() {
   if (life_stage_ != kLoadCompleted) {
     return;
@@ -1846,7 +1863,7 @@ void DevToolsWindow::SetEyeDropperActive(bool active) {
 }
 
 void DevToolsWindow::ColorPickedInEyeDropper(int r, int g, int b, int a) {
-  base::Value::Dict color;
+  base::DictValue color;
   color.Set("r", r);
   color.Set("g", g);
   color.Set("b", b);
@@ -1978,7 +1995,7 @@ void DevToolsWindow::CreateDevToolsBrowser() {
     resetPrefs = true;
   } else {
     // Reset to default if stored window size is too small.
-    const base::Value::Dict& devtoolsPlacement =
+    const base::DictValue& devtoolsPlacement =
         prefs->GetDict(prefs::kAppWindowPlacement)
             .Find(kDevToolsApp)
             ->GetDict();
@@ -1991,8 +2008,8 @@ void DevToolsWindow::CreateDevToolsBrowser() {
   }
   if (resetPrefs) {
     ScopedDictPrefUpdate update(prefs, prefs::kAppWindowPlacement);
-    base::Value::Dict& wp_prefs = update.Get();
-    base::Value::Dict dev_tools_defaults;
+    base::DictValue& wp_prefs = update.Get();
+    base::DictValue dev_tools_defaults;
     dev_tools_defaults.Set("left", 100);
     dev_tools_defaults.Set("top", 100);
     dev_tools_defaults.Set("right", 740);
@@ -2157,13 +2174,14 @@ void DevToolsWindow::MaybeShowSharedProcessInfobar() {
 }
 
 #if !BUILDFLAG(IS_ANDROID)
-void DevToolsWindow::OnBrowserRemoved(Browser* browser) {
+void DevToolsWindow::OnBrowserClosed(BrowserWindowInterface* browser) {
   // If the modal dialog manager has this browser as its delegate, clear the
-  // reference.
+  // reference before it becomes dangling.
   web_modal::WebContentsModalDialogManager* dialog_manager =
       web_modal::WebContentsModalDialogManager::FromWebContents(
           main_web_contents_);
-  if (dialog_manager && dialog_manager->delegate() == browser) {
+  if (dialog_manager &&
+      dialog_manager->delegate() == browser->GetBrowserForMigrationOnly()) {
     dialog_manager->SetDelegate(nullptr);
   }
 }

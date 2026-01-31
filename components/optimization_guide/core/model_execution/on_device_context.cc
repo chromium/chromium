@@ -10,8 +10,9 @@
 #include "components/optimization_guide/core/model_execution/multimodal_message.h"
 #include "components/optimization_guide/core/model_execution/on_device_capability.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
-#include "components/optimization_guide/public/mojom/model_broker.mojom-data-view.h"
+#include "components/optimization_guide/public/mojom/model_broker.mojom.h"
 #include "services/on_device_model/ml/chrome_ml_audio_buffer.h"
+#include "services/on_device_model/public/mojom/on_device_model.mojom.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 
 namespace optimization_guide {

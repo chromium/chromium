@@ -178,6 +178,8 @@ class TabBasedIPHBrowserAgent : public bookmarks::BaseBookmarkModelObserver,
   // Whether the user has just tapped an adjacent tab through the tab grid; will
   // be reset to `false` once the active tab is changed.
   bool tapped_adjacent_tab_ = false;
+  // Whether the BVC is covered by another view.
+  bool is_bvc_covered_ = false;
 };
 
 #endif  // IOS_CHROME_BROWSER_BUBBLE_MODEL_TAB_BASED_IPH_BROWSER_AGENT_H_

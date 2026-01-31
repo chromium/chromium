@@ -1321,6 +1321,7 @@ void inspector_function_call_event::Data(
     ExecutionContext* context,
     const v8::Local<v8::Function>& function) {
   auto dict = std::move(trace_context).WriteDictionary();
+
   if (LocalFrame* frame = FrameForExecutionContext(context))
     dict.Add("frame", IdentifiersFactory::FrameId(frame));
 
@@ -1348,6 +1349,7 @@ void inspector_function_call_event::Data(
   dict.Add("columnNumber", location->ColumnNumber());
   uint64_t sample_trace_id = InspectorTraceEvents::GetNextSampleTraceId();
   dict.Add("sampleTraceId", sample_trace_id);
+  v8::CpuProfiler::CollectSample(context->GetIsolate(), sample_trace_id);
 }
 
 void inspector_paint_image_event::Data(perfetto::TracedValue context,
@@ -1465,11 +1467,8 @@ void inspector_event_dispatch_event::Data(perfetto::TracedValue context,
                                           v8::Isolate* isolate) {
   auto dict = std::move(context).WriteDictionary();
   dict.Add("type", event.type());
-  bool record_input_enabled;
-  TRACE_EVENT_CATEGORY_GROUP_ENABLED(
-      TRACE_DISABLED_BY_DEFAULT("devtools.timeline.inputs"),
-      &record_input_enabled);
-  if (record_input_enabled) {
+  if (TRACE_EVENT_CATEGORY_ENABLED(
+          TRACE_DISABLED_BY_DEFAULT("devtools.timeline.inputs"))) {
     const auto* keyboard_event = DynamicTo<KeyboardEvent>(event);
     if (keyboard_event) {
       dict.Add("modifier", GetModifierFromEvent(*keyboard_event));

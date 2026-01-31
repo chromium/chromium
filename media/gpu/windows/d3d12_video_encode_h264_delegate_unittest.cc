@@ -184,8 +184,10 @@ class D3D12VideoEncodeH264DelegateTest
           return S_OK;
         });
 
-    encoder_delegate_ =
-        std::make_unique<D3D12VideoEncodeH264Delegate>(video_device3_, true);
+    gpu::GpuDriverBugWorkarounds gpu_workarounds{};
+    gpu_workarounds.disable_d3d12_h264_encoder_non_reference_frames = true;
+    encoder_delegate_ = std::make_unique<D3D12VideoEncodeH264Delegate>(
+        video_device3_, gpu_workarounds);
     encoder_delegate_->SetFactoriesForTesting(
         base::BindRepeating(&CreateVideoEncoderWrapper),
         base::BindRepeating(&CreateVideoProcessorWrapper));

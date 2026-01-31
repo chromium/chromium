@@ -54,8 +54,8 @@ LoadState TcpStreamAttempt::GetLoadState() const {
   }
 }
 
-base::Value::Dict TcpStreamAttempt::GetInfoAsValue() const {
-  base::Value::Dict dict;
+base::DictValue TcpStreamAttempt::GetInfoAsValue() const {
+  base::DictValue dict;
   dict.Set("next_state", StateToString(next_state_));
   return dict;
 }
@@ -99,8 +99,8 @@ int TcpStreamAttempt::StartInternal() {
   return rv;
 }
 
-base::Value::Dict TcpStreamAttempt::GetNetLogStartParams() {
-  base::Value::Dict dict;
+base::DictValue TcpStreamAttempt::GetNetLogStartParams() {
+  base::DictValue dict;
   dict.Set("ip_endpoint", ip_endpoint().ToString());
   return dict;
 }

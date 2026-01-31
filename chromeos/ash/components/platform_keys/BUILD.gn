@@ -7,6 +7,7 @@ assert(is_chromeos, "Non-Chrome-OS builds must not depend on //chromeos/ash")
 component("platform_keys") {
   defines = [ "IS_CHROMEOS_ASH_COMPONENTS_PLATFORM_KEYS_IMPL" ]
   sources = [
+    "keystore_types.h",
     "platform_keys.cc",
     "platform_keys.h",
   ]

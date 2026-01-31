@@ -8,6 +8,7 @@
 #include <string>
 #include <vector>
 
+#include "base/containers/span.h"
 #include "components/history/core/browser/history_types.h"
 #include "url/origin.h"
 
@@ -111,7 +112,7 @@ class VisitDatabase {
   // detection is performed, so if `times` has duplicate times,
   // `visits` may have duplicate visits. Includes visits that result in 404
   // error response codes.
-  bool GetVisitsForTimes(const std::vector<base::Time>& times,
+  bool GetVisitsForTimes(base::span<const base::Time> times,
                          VisitVector* visits);
 
   // Fills all visits in the time range [begin, end) to the given vector. Either

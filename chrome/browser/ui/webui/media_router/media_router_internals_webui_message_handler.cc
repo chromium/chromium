@@ -11,11 +11,11 @@ namespace media_router {
 
 namespace {
 
-base::Value::List CastProviderStateToValue(
+base::ListValue CastProviderStateToValue(
     const mojom::CastProviderState& state) {
-  base::Value::List result;
+  base::ListValue result;
   for (const mojom::CastSessionStatePtr& session : state.session_state) {
-    base::Value::Dict session_value;
+    base::DictValue session_value;
     session_value.Set("sink_id", session->sink_id);
     session_value.Set("app_id", session->app_id);
     session_value.Set("session_id", session->session_id);
@@ -72,14 +72,14 @@ void MediaRouterInternalsWebUIMessageHandler::RegisterMessages() {
 }
 
 void MediaRouterInternalsWebUIMessageHandler::HandleGetState(
-    const base::Value::List& args) {
+    const base::ListValue& args) {
   AllowJavascript();
   const base::Value& callback_id = args[0];
   ResolveJavascriptCallback(callback_id, router_->GetState());
 }
 
 void MediaRouterInternalsWebUIMessageHandler::HandleGetProviderState(
-    const base::Value::List& args) {
+    const base::ListValue& args) {
   AllowJavascript();
   base::Value callback_id = args[0].Clone();
   if (args.size() != 2 || !args[1].is_string()) {
@@ -101,7 +101,7 @@ void MediaRouterInternalsWebUIMessageHandler::HandleGetProviderState(
 }
 
 void MediaRouterInternalsWebUIMessageHandler::HandleGetLogs(
-    const base::Value::List& args) {
+    const base::ListValue& args) {
   AllowJavascript();
   const base::Value& callback_id = args[0];
   ResolveJavascriptCallback(callback_id, router_->GetLogs());
@@ -121,14 +121,14 @@ void MediaRouterInternalsWebUIMessageHandler::OnProviderState(
 }
 
 void MediaRouterInternalsWebUIMessageHandler::HandleGetMirroringStats(
-    const base::Value::List& args) {
+    const base::ListValue& args) {
   AllowJavascript();
   const base::Value& callback_id = args[0];
   ResolveJavascriptCallback(callback_id, debugger_->GetMirroringStats());
 }
 
 void MediaRouterInternalsWebUIMessageHandler::HandleSetMirroringStatsEnabled(
-    const base::Value::List& args) {
+    const base::ListValue& args) {
   AllowJavascript();
   const base::Value& callback_id = args[0];
   const bool should_enable = args[1].GetBool();
@@ -149,7 +149,7 @@ void MediaRouterInternalsWebUIMessageHandler::HandleSetMirroringStatsEnabled(
 }
 
 void MediaRouterInternalsWebUIMessageHandler::HandleIsMirroringStatsEnabled(
-    const base::Value::List& args) {
+    const base::ListValue& args) {
   AllowJavascript();
   const base::Value& callback_id = args[0];
 
@@ -158,7 +158,7 @@ void MediaRouterInternalsWebUIMessageHandler::HandleIsMirroringStatsEnabled(
 }
 
 void MediaRouterInternalsWebUIMessageHandler::OnMirroringStatsUpdated(
-    const base::Value::Dict& json_logs) {
+    const base::DictValue& json_logs) {
   AllowJavascript();
   FireWebUIListener("on-mirroring-stats-update", std::move(json_logs));
 }

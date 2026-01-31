@@ -21,51 +21,51 @@ static const char* const kAugmentationKeys[] = {
     onc::kAugmentationUserEditable,   onc::kAugmentationDeviceEditable,
     onc::kAugmentationActiveExtension};
 
-const base::Value::Dict* OncGetWiFi(const base::Value::Dict& network) {
-  const base::Value::Dict* wifi = network.FindDict(onc::network_config::kWiFi);
+const base::DictValue* OncGetWiFi(const base::DictValue& network) {
+  const base::DictValue* wifi = network.FindDict(onc::network_config::kWiFi);
   DCHECK(wifi);
   return wifi;
 }
 
-base::Value::Dict* OncGetWiFi(base::Value::Dict* network) {
-  return const_cast<base::Value::Dict*>(OncGetWiFi(*network));
+base::DictValue* OncGetWiFi(base::DictValue* network) {
+  return const_cast<base::DictValue*>(OncGetWiFi(*network));
 }
 
-const base::Value::Dict* OncGetEthernet(const base::Value::Dict& network) {
-  const base::Value::Dict* ethernet =
+const base::DictValue* OncGetEthernet(const base::DictValue& network) {
+  const base::DictValue* ethernet =
       network.FindDict(onc::network_config::kEthernet);
   DCHECK(ethernet);
   return ethernet;
 }
 
-const base::Value::Dict* OncGetEap(const base::Value::Dict& network) {
+const base::DictValue* OncGetEap(const base::DictValue& network) {
   if (OncIsWiFi(network)) {
-    const base::Value::Dict* wifi = OncGetWiFi(network);
-    const base::Value::Dict* eap = wifi->FindDict(onc::wifi::kEAP);
+    const base::DictValue* wifi = OncGetWiFi(network);
+    const base::DictValue* eap = wifi->FindDict(onc::wifi::kEAP);
     DCHECK(eap);
     return eap;
   }
   if (OncIsEthernet(network)) {
-    const base::Value::Dict* ethernet = OncGetEthernet(network);
-    const base::Value::Dict* eap = ethernet->FindDict(onc::ethernet::kEAP);
+    const base::DictValue* ethernet = OncGetEthernet(network);
+    const base::DictValue* eap = ethernet->FindDict(onc::ethernet::kEAP);
     DCHECK(eap);
     return eap;
   }
   NOTREACHED();
 }
 
-base::Value::Dict* OncGetEap(base::Value::Dict* network) {
-  return const_cast<base::Value::Dict*>(OncGetEap(*network));
+base::DictValue* OncGetEap(base::DictValue* network) {
+  return const_cast<base::DictValue*>(OncGetEap(*network));
 }
 
-base::Value::Dict ManagedOncCreatePasswordDict(const base::Value::Dict& network,
-                                               const std::string& password) {
+base::DictValue ManagedOncCreatePasswordDict(const base::DictValue& network,
+                                             const std::string& password) {
   std::string source = onc::kAugmentationDevicePolicy;
   if (OncIsSourceDevice(network)) {
     source = onc::kAugmentationSharedSetting;
   }
 
-  return base::Value::Dict()
+  return base::DictValue()
       .Set(onc::kAugmentationActiveSetting, password)
       .Set(onc::kAugmentationEffectiveSetting, source)
       .Set(source, password);
@@ -73,14 +73,14 @@ base::Value::Dict ManagedOncCreatePasswordDict(const base::Value::Dict& network,
 
 }  // namespace
 
-std::string GetStringValue(const base::Value::Dict& network,
+std::string GetStringValue(const base::DictValue& network,
                            const std::string& key) {
   const std::string* value = network.FindString(key);
   DCHECK(value);
   return *value;
 }
 
-bool GetBoolValue(const base::Value::Dict& network, const std::string& key) {
+bool GetBoolValue(const base::DictValue& network, const std::string& key) {
   std::optional<bool> value = network.FindBool(key);
   DCHECK(value);
   return *value;
@@ -88,14 +88,14 @@ bool GetBoolValue(const base::Value::Dict& network, const std::string& key) {
 
 void ManagedOncCollapseToActive(base::Value* network) {
   DCHECK(network);
-  base::Value::Dict* network_dict = network->GetIfDict();
+  base::DictValue* network_dict = network->GetIfDict();
   if (!network_dict) {
     return;
   }
 
   // FYI: don't fail to notice the fact that this out value assigned to
   // `network` might not be a dictionary. That is why the argument to this
-  // function is not of `base::Value::Dict` type.
+  // function is not of `base::DictValue` type.
   base::Value* active = network_dict->Find(onc::kAugmentationActiveSetting);
   if (active) {
     *network = active->Clone();
@@ -119,11 +119,11 @@ void ManagedOncCollapseToActive(base::Value* network) {
 
 void ManagedOncCollapseToUiData(base::Value* network) {
   DCHECK(network);
-  base::Value::Dict& network_dict = network->GetDict();
+  base::DictValue& network_dict = network->GetDict();
 
   // FYI: don't fail to notice the fact that this out value assigned to
   // `network` might not be a dictionary. That is why the argument to this
-  // function is not of `base::Value::Dict` type.
+  // function is not of `base::DictValue` type.
   base::Value* shared = network_dict.Find(onc::kAugmentationSharedSetting);
   if (shared) {
     *network = shared->Clone();
@@ -138,7 +138,7 @@ void ManagedOncCollapseToUiData(base::Value* network) {
       // The call below may change the type of `property.second`, that's why we
       // need to check again (see above).
       ManagedOncCollapseToUiData(&property.second);
-      base::Value::Dict* property_value_dict = property.second.GetIfDict();
+      base::DictValue* property_value_dict = property.second.GetIfDict();
       if (property_value_dict && property_value_dict->empty()) {
         to_remove.push_back(property.first);
       }
@@ -149,41 +149,41 @@ void ManagedOncCollapseToUiData(base::Value* network) {
   }
 }
 
-void ManagedOncSetEapPassword(base::Value::Dict* network,
+void ManagedOncSetEapPassword(base::DictValue* network,
                               const std::string& password) {
-  base::Value::Dict* eap = OncGetEap(network);
+  base::DictValue* eap = OncGetEap(network);
   eap->Set(onc::eap::kPassword,
            ManagedOncCreatePasswordDict(*network, password));
 }
 
-void ManagedOncWiFiSetPskPassword(base::Value::Dict* network,
+void ManagedOncWiFiSetPskPassword(base::DictValue* network,
                                   const std::string& password) {
-  base::Value::Dict* wifi = OncGetWiFi(network);
+  base::DictValue* wifi = OncGetWiFi(network);
   wifi->Set(onc::wifi::kPassphrase,
             ManagedOncCreatePasswordDict(*network, password));
 }
 
-bool OncIsWiFi(const base::Value::Dict& network) {
+bool OncIsWiFi(const base::DictValue& network) {
   return GetStringValue(network, onc::network_config::kType) ==
          onc::network_type::kWiFi;
 }
 
-bool OncIsEthernet(const base::Value::Dict& network) {
+bool OncIsEthernet(const base::DictValue& network) {
   return GetStringValue(network, onc::network_config::kType) ==
          onc::network_type::kEthernet;
 }
 
-bool OncIsSourceDevicePolicy(const base::Value::Dict& network) {
+bool OncIsSourceDevicePolicy(const base::DictValue& network) {
   return GetStringValue(network, onc::network_config::kSource) ==
          onc::network_config::kSourceDevicePolicy;
 }
 
-bool OncIsSourceDevice(const base::Value::Dict& network) {
+bool OncIsSourceDevice(const base::DictValue& network) {
   return GetStringValue(network, onc::network_config::kSource) ==
          onc::network_config::kSourceDevice;
 }
 
-bool OncHasNoSecurity(const base::Value::Dict& network) {
+bool OncHasNoSecurity(const base::DictValue& network) {
   if (OncIsWiFi(network)) {
     return OncWiFiGetSecurity(network) == onc::wifi::kSecurityNone;
   }
@@ -194,7 +194,7 @@ bool OncHasNoSecurity(const base::Value::Dict& network) {
   return false;
 }
 
-bool OncIsEap(const base::Value::Dict& network) {
+bool OncIsEap(const base::DictValue& network) {
   if (OncIsWiFi(network)) {
     const std::string security_type = OncWiFiGetSecurity(network);
     return security_type == onc::wifi::kWEP_8021X ||
@@ -208,98 +208,97 @@ bool OncIsEap(const base::Value::Dict& network) {
   return false;
 }
 
-bool OncHasEapConfiguration(const base::Value::Dict& network) {
+bool OncHasEapConfiguration(const base::DictValue& network) {
   if (OncIsWiFi(network)) {
-    const base::Value::Dict* wifi = OncGetWiFi(network);
+    const base::DictValue* wifi = OncGetWiFi(network);
     return wifi->FindDict(onc::wifi::kEAP);
   }
   if (OncIsEthernet(network)) {
-    const base::Value::Dict* ethernet = OncGetEthernet(network);
+    const base::DictValue* ethernet = OncGetEthernet(network);
     return ethernet->FindDict(onc::ethernet::kEAP);
   }
   return false;
 }
 
-bool OncIsEapWithoutClientCertificate(const base::Value::Dict& network) {
+bool OncIsEapWithoutClientCertificate(const base::DictValue& network) {
   return OncIsEap(network) && !OncEapRequiresClientCertificate(network);
 }
 
-std::string OncGetEapIdentity(const base::Value::Dict& network) {
-  const base::Value::Dict* eap = OncGetEap(network);
+std::string OncGetEapIdentity(const base::DictValue& network) {
+  const base::DictValue* eap = OncGetEap(network);
   return GetStringValue(*eap, onc::eap::kIdentity);
 }
 
-std::string OncGetEapInner(const base::Value::Dict& network) {
-  const base::Value::Dict* eap = OncGetEap(network);
+std::string OncGetEapInner(const base::DictValue& network) {
+  const base::DictValue* eap = OncGetEap(network);
   return GetStringValue(*eap, onc::eap::kInner);
 }
 
-std::string OncGetEapOuter(const base::Value::Dict& network) {
-  const base::Value::Dict* eap = OncGetEap(network);
+std::string OncGetEapOuter(const base::DictValue& network) {
+  const base::DictValue* eap = OncGetEap(network);
   return GetStringValue(*eap, onc::eap::kOuter);
 }
 
-bool OncGetEapSaveCredentials(const base::Value::Dict& network) {
-  const base::Value::Dict* eap = OncGetEap(network);
+bool OncGetEapSaveCredentials(const base::DictValue& network) {
+  const base::DictValue* eap = OncGetEap(network);
   return GetBoolValue(*eap, onc::eap::kSaveCredentials);
 }
 
-std::string OncGetEapPassword(const base::Value::Dict& network) {
-  const base::Value::Dict* eap = OncGetEap(network);
+std::string OncGetEapPassword(const base::DictValue& network) {
+  const base::DictValue* eap = OncGetEap(network);
   return GetStringValue(*eap, onc::eap::kPassword);
 }
 
-std::string OncGetEapClientCertType(const base::Value::Dict& network) {
-  const base::Value::Dict* eap = OncGetEap(network);
+std::string OncGetEapClientCertType(const base::DictValue& network) {
+  const base::DictValue* eap = OncGetEap(network);
   return GetStringValue(*eap, onc::client_cert::kClientCertType);
 }
 
-std::string OncGetEapClientCertPKCS11Id(const base::Value::Dict& network) {
-  const base::Value::Dict* eap = OncGetEap(network);
+std::string OncGetEapClientCertPKCS11Id(const base::DictValue& network) {
+  const base::DictValue* eap = OncGetEap(network);
   return GetStringValue(*eap, onc::client_cert::kClientCertPKCS11Id);
 }
 
-bool OncEapRequiresClientCertificate(const base::Value::Dict& network) {
+bool OncEapRequiresClientCertificate(const base::DictValue& network) {
   // TODO(crbug/1225560) There may be unexpected client cert fields, so we
   // cannot rely on them. Simply check for EAP-TLS for now, which is the only
   // type for which a user may configure a client cert in the UI.
   return OncGetEapOuter(network) == onc::eap::kEAP_TLS;
 }
 
-void OncSetEapPassword(base::Value::Dict* network,
-                       const std::string& password) {
-  base::Value::Dict* eap = OncGetEap(network);
+void OncSetEapPassword(base::DictValue* network, const std::string& password) {
+  base::DictValue* eap = OncGetEap(network);
   eap->Set(onc::eap::kPassword, password);
 }
 
-std::string OncWiFiGetSecurity(const base::Value::Dict& network) {
-  const base::Value::Dict* wifi = OncGetWiFi(network);
+std::string OncWiFiGetSecurity(const base::DictValue& network) {
+  const base::DictValue* wifi = OncGetWiFi(network);
   const std::string* security_type = wifi->FindString(onc::wifi::kSecurity);
   DCHECK(security_type);
   return *security_type;
 }
 
-std::string OncWiFiGetPassword(const base::Value::Dict& network) {
-  const base::Value::Dict* wifi = OncGetWiFi(network);
+std::string OncWiFiGetPassword(const base::DictValue& network) {
+  const base::DictValue* wifi = OncGetWiFi(network);
   const std::string* password = wifi->FindString(onc::wifi::kPassphrase);
   DCHECK(password);
   return *password;
 }
 
-bool OncWiFiIsPsk(const base::Value::Dict& network) {
+bool OncWiFiIsPsk(const base::DictValue& network) {
   const std::string security_type = OncWiFiGetSecurity(network);
   return security_type == onc::wifi::kWEP_PSK ||
          security_type == onc::wifi::kWPA_PSK ||
          security_type == onc::wifi::kWPA2_PSK;
 }
 
-void OncWiFiSetPskPassword(base::Value::Dict* network,
+void OncWiFiSetPskPassword(base::DictValue* network,
                            const std::string& password) {
-  base::Value::Dict* wifi = OncGetWiFi(network);
+  base::DictValue* wifi = OncGetWiFi(network);
   wifi->Set(onc::wifi::kPassphrase, password);
 }
 
-std::string OncEthernetGetAuthentication(const base::Value::Dict& network) {
+std::string OncEthernetGetAuthentication(const base::DictValue& network) {
   const std::string* type = network.FindDict(onc::network_config::kEthernet)
                                 ->FindString(onc::ethernet::kAuthentication);
   DCHECK(type);

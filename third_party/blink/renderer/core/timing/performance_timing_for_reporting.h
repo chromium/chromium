@@ -25,7 +25,6 @@ class DocumentTiming;
 class InteractiveDetector;
 class PaintTiming;
 struct LargestContentfulPaintDetails;
-class SoftNavigationHeuristics;
 
 // This class is only used for non-web-exposed reporting purposes (e.g. UKM).
 class CORE_EXPORT PerformanceTimingForReporting final
@@ -99,9 +98,6 @@ class CORE_EXPORT PerformanceTimingForReporting final
 
   LargestContentfulPaintDetailsForReporting
   LargestContentfulPaintDetailsForMetrics() const;
-
-  LargestContentfulPaintDetailsForReporting
-  SoftNavigationLargestContentfulPaintDetailsForMetrics() const;
 
   // The time at which the frame is first eligible for painting due to not
   // being throttled. A zero value indicates throttling.
@@ -179,20 +175,20 @@ class CORE_EXPORT PerformanceTimingForReporting final
 
   std::unique_ptr<TracedValue> GetNavigationTracingData();
 
+  LargestContentfulPaintDetailsForReporting
+  PopulateLargestContentfulPaintDetailsForReporting(
+      const LargestContentfulPaintDetails& timing) const;
+
  private:
   const DocumentTiming* GetDocumentTiming() const;
   const DocumentParserTiming* GetDocumentParserTiming() const;
   const PaintTiming* GetPaintTiming() const;
   PaintTimingDetector* GetPaintTimingDetector() const;
-  SoftNavigationHeuristics* GetSoftNavigationHeuristics() const;
   DocumentLoader* GetDocumentLoader() const;
   DocumentLoadTiming* GetDocumentLoadTiming() const;
   InteractiveDetector* GetInteractiveDetector() const;
   std::optional<base::TimeDelta> MonotonicTimeToPseudoWallTime(
       const std::optional<base::TimeTicks>&) const;
-  LargestContentfulPaintDetailsForReporting
-  PopulateLargestContentfulPaintDetailsForReporting(
-      const LargestContentfulPaintDetails& timing) const;
 
   bool cross_origin_isolated_capability_;
 };

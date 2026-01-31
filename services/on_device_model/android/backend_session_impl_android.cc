@@ -186,8 +186,8 @@ void BackendSessionImplAndroid::OnCompleteOnSequence(
 }
 
 static void JNI_AiCoreSessionWrapper_OnComplete(JNIEnv* env,
-                                                jlong backend_session,
-                                                jint j_generate_result) {
+                                                int64_t backend_session,
+                                                int32_t j_generate_result) {
   reinterpret_cast<BackendSessionImplAndroid*>(backend_session)
       ->OnComplete(static_cast<BackendSessionImplAndroid::GenerateResult>(
           j_generate_result));
@@ -195,7 +195,7 @@ static void JNI_AiCoreSessionWrapper_OnComplete(JNIEnv* env,
 
 static void JNI_AiCoreSessionWrapper_OnResponse(
     JNIEnv* env,
-    jlong backend_session,
+    int64_t backend_session,
     const jni_zero::JavaRef<jstring>& j_response) {
   reinterpret_cast<BackendSessionImplAndroid*>(backend_session)
       ->OnResponse(base::android::ConvertJavaStringToUTF8(env, j_response));

@@ -43,11 +43,14 @@ class ActorOverlayWebView : public views::WebView {
   // Forwards the cursor coordinates to WebUI.
   void MoveCursorTo(const gfx::Point& point, base::OnceClosure callback);
 
+  // Notifies the WebUI to trigger a click animation at the current coordinate.
+  void TriggerClickAnimation(base::OnceClosure callback);
+
   // content::WebContentsObserver
   void PrimaryPageChanged(content::Page& page) override;
 
  private:
-  actor::ui::ActorOverlayUI* GetWebUi();
+  virtual actor::ui::ActorOverlayUI* GetWebUi();
   // Manages the lifetime of the WebContents input event ignoring state.
   std::optional<content::WebContents::ScopedIgnoreInputEvents>
       scoped_ignore_input_events_;

@@ -4,7 +4,6 @@
 
 #include "chrome/browser/metrics/usage_scenario/tab_usage_scenario_tracker.h"
 
-#include "base/containers/contains.h"
 #include "chrome/browser/metrics/usage_scenario/usage_scenario_data_store.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
@@ -83,12 +82,7 @@ extensions::ExtensionIdSet GetExtensionsThatRanContentScriptsInWebContents(
 
 TabUsageScenarioTracker::TabUsageScenarioTracker(
     UsageScenarioDataStoreImpl* usage_scenario_data_store)
-    : usage_scenario_data_store_(usage_scenario_data_store) {
-  // TODO(crbug.com/40158987): Owners of this class have to set the initial
-  // state. Constructing the object like this starts off the state as empty. If
-  // tabs/windows already exist when this object is created they need to be
-  // added using the normal functions after creation.
-}
+    : usage_scenario_data_store_(usage_scenario_data_store) {}
 
 TabUsageScenarioTracker::~TabUsageScenarioTracker() {
   // Make sure that this doesn't get destroyed after destroying the global
@@ -103,7 +97,7 @@ void TabUsageScenarioTracker::OnTabAdded(content::WebContents* web_contents) {
   // Tab is added already visible. It will not get a separate visibility update
   // so we handle the visibility here.
   if (web_contents->GetVisibility() == content::Visibility::VISIBLE) {
-    DCHECK(!base::Contains(visible_tabs_, web_contents));
+    DCHECK(!visible_tabs_.contains(web_contents));
     usage_scenario_data_store_->OnWindowVisible();
     InsertContentsInMapOfVisibleTabs(web_contents);
   }
@@ -120,9 +114,9 @@ void TabUsageScenarioTracker::OnTabReplaced(
     content::WebContents* new_contents) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   OnWebContentsRemoved(old_contents);
-  DCHECK(!base::Contains(visible_tabs_, old_contents));
-  DCHECK(!base::Contains(contents_playing_video_, old_contents));
-  DCHECK(!base::Contains(contents_playing_video_fullscreen_, old_contents));
+  DCHECK(!visible_tabs_.contains(old_contents));
+  DCHECK(!contents_playing_video_.contains(old_contents));
+  DCHECK(!contents_playing_video_fullscreen_.contains(old_contents));
 
   // Start tracking |new_contents| if needed.
   if (new_contents->GetVisibility() == content::Visibility::VISIBLE)
@@ -146,7 +140,7 @@ void TabUsageScenarioTracker::OnTabVisibilityChanged(
     usage_scenario_data_store_->OnWindowVisible();
 
     // If this tab is playing video then record that it became visible.
-    if (base::Contains(contents_playing_video_, web_contents)) {
+    if (contents_playing_video_.contains(web_contents)) {
       usage_scenario_data_store_->OnVideoStartsInVisibleTab();
     }
 
@@ -283,9 +277,9 @@ void TabUsageScenarioTracker::OnPrimaryMainFrameNavigationCommitted(
 void TabUsageScenarioTracker::OnVideoStartedPlaying(
     content::WebContents* web_contents) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(!base::Contains(contents_playing_video_, web_contents));
+  DCHECK(!contents_playing_video_.contains(web_contents));
   contents_playing_video_.insert(web_contents);
-  if (base::Contains(visible_tabs_, web_contents)) {
+  if (visible_tabs_.contains(web_contents)) {
     usage_scenario_data_store_->OnVideoStartsInVisibleTab();
   }
 }
@@ -293,9 +287,9 @@ void TabUsageScenarioTracker::OnVideoStartedPlaying(
 void TabUsageScenarioTracker::OnVideoStoppedPlaying(
     content::WebContents* web_contents) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(base::Contains(contents_playing_video_, web_contents));
+  DCHECK(contents_playing_video_.contains(web_contents));
   contents_playing_video_.erase(web_contents);
-  if (base::Contains(visible_tabs_, web_contents)) {
+  if (visible_tabs_.contains(web_contents)) {
     usage_scenario_data_store_->OnVideoStopsInVisibleTab();
   }
 }
@@ -322,7 +316,7 @@ void TabUsageScenarioTracker::OnTabBecameHidden(
 
   // If this tab is playing video then record that it became non visible.
   content::WebContents* const web_contents = (*visible_tab_iter)->first;
-  if (base::Contains(contents_playing_video_, web_contents)) {
+  if (contents_playing_video_.contains(web_contents)) {
     usage_scenario_data_store_->OnVideoStopsInVisibleTab();
   }
 
@@ -372,7 +366,7 @@ void TabUsageScenarioTracker::OnWebContentsRemoved(
 void TabUsageScenarioTracker::InsertContentsInMapOfVisibleTabs(
     content::WebContents* web_contents) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(!base::Contains(visible_tabs_, web_contents));
+  DCHECK(!visible_tabs_.contains(web_contents));
   auto iter = visible_tabs_.emplace(web_contents,
                                     GetNavigationInfoForContents(web_contents));
   if (iter.first->second.first != ukm::kInvalidSourceId) {

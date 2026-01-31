@@ -7,21 +7,16 @@ package org.chromium.chrome.test.transit.hub;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
 import android.util.Pair;
-import android.view.View;
-
-import org.hamcrest.Matcher;
 
 import org.chromium.base.test.transit.Condition;
 import org.chromium.base.test.transit.ScrollableFacility;
 import org.chromium.base.test.transit.Station;
-import org.chromium.base.test.transit.ViewSpec;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.test.R;
 import org.chromium.chrome.test.transit.CtaAppMenuFacility;
 import org.chromium.chrome.test.transit.SoftKeyboardFacility;
 import org.chromium.chrome.test.transit.tabmodel.TabCountChangedCondition;
 import org.chromium.chrome.test.transit.tabmodel.TabGroupUtil;
-import org.chromium.ui.modelutil.MVCListAdapter;
 
 import java.util.List;
 
@@ -52,31 +47,29 @@ public class TabListEditorAppMenu<HostStationT extends TabSwitcherStation>
         // "Select all" usually, or "Deselect all" if all tabs are selected.
         items.declarePossibleStubItem();
 
-        ViewSpec<? extends View> onScreenViewSpec2 = itemViewSpec(withText("Close " + tabOrTabs));
         mCloseMenuItem =
                 items.declareItem(
-                        onScreenViewSpec2, itemDataMatcher(R.id.tab_list_editor_close_menu_item));
+                        withText("Close " + tabOrTabs),
+                        withMenuItemId(R.id.tab_list_editor_close_menu_item));
 
         // "Group tab(s)" or "Add tab(s) to new group"
-        ViewSpec<View> groupTabsViewSpec;
-        Matcher<MVCListAdapter.ListItem> groupTabsDataMatcher;
-        groupTabsViewSpec = itemViewSpec(withText(String.format("Add %s to new group", tabOrTabs)));
-        groupTabsDataMatcher = itemDataMatcher(R.id.tab_list_editor_add_tab_to_group_menu_item);
+        mGroupOrAddTabsMenuItem =
+                items.declareItem(
+                        withText(String.format("Add %s to new group", tabOrTabs)),
+                        withMenuItemId(R.id.tab_list_editor_add_tab_to_group_menu_item));
 
-        mGroupOrAddTabsMenuItem = items.declareItem(groupTabsViewSpec, groupTabsDataMatcher);
-
-        ViewSpec<? extends View> onScreenViewSpec1 =
-                itemViewSpec(withText("Bookmark " + tabOrTabs));
         items.declareItem(
-                onScreenViewSpec1, itemDataMatcher(R.id.tab_list_editor_bookmark_menu_item));
+                withText("Bookmark " + tabOrTabs),
+                withMenuItemId(R.id.tab_list_editor_bookmark_menu_item));
 
-        ViewSpec<? extends View> onScreenViewSpec3 = itemViewSpec(withText("Pin " + tabOrTabs));
         mPinMenuItem =
                 items.declareItem(
-                        onScreenViewSpec3, itemDataMatcher(R.id.tab_list_editor_pin_menu_item));
+                        withText("Pin " + tabOrTabs),
+                        withMenuItemId(R.id.tab_list_editor_pin_menu_item));
 
-        ViewSpec<? extends View> onScreenViewSpec = itemViewSpec(withText("Share " + tabOrTabs));
-        items.declareItem(onScreenViewSpec, itemDataMatcher(R.id.tab_list_editor_share_menu_item));
+        items.declareItem(
+                withText("Share " + tabOrTabs),
+                withMenuItemId(R.id.tab_list_editor_share_menu_item));
     }
 
     /**

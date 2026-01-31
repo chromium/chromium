@@ -4,6 +4,7 @@
 
 #include "components/network_session_configurator/browser/network_session_configurator.h"
 
+#include <algorithm>
 #include <limits>
 #include <map>
 #include <string_view>
@@ -12,7 +13,6 @@
 #include <vector>
 
 #include "base/command_line.h"
-#include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/metrics/field_trial.h"
 #include "base/metrics/field_trial_params.h"
@@ -541,7 +541,7 @@ quic::ParsedQuicVersionVector GetQuicVersions(
   quic::ParsedQuicVersionVector obsolete_versions = net::ObsoleteQuicVersions();
   bool found_obsolete_version = false;
   for (const quic::ParsedQuicVersion& version : trial_versions) {
-    if (!base::Contains(obsolete_versions, version)) {
+    if (!std::ranges::contains(obsolete_versions, version)) {
       filtered_versions.push_back(version);
     } else {
       found_obsolete_version = true;

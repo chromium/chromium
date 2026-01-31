@@ -10,10 +10,12 @@ import android.os.Bundle;
 
 import androidx.preference.Preference;
 
+import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.DeviceInfo;
-import org.chromium.base.supplier.ObservableSupplier;
-import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.supplier.MonotonicObservableSupplier;
+import org.chromium.base.supplier.ObservableSuppliers;
+import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
@@ -25,6 +27,7 @@ import org.chromium.chrome.browser.night_mode.NightModeUtils;
 import org.chromium.chrome.browser.night_mode.settings.ThemeSettingsFragment;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.preferences.PrefServiceUtil;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.settings.ChromeBaseSettingsFragment;
 import org.chromium.chrome.browser.settings.ChromeManagedPreferenceDelegate;
 import org.chromium.chrome.browser.settings.search.ChromeBaseSearchIndexProvider;
@@ -32,6 +35,7 @@ import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarStatePredicto
 import org.chromium.components.browser_ui.settings.ChromeSwitchPreference;
 import org.chromium.components.browser_ui.settings.CustomDividerFragment;
 import org.chromium.components.browser_ui.settings.SettingsUtils;
+import org.chromium.components.browser_ui.settings.search.SettingsIndexData;
 import org.chromium.components.feature_engagement.EventConstants;
 import org.chromium.components.prefs.PrefChangeRegistrar;
 import org.chromium.components.prefs.PrefChangeRegistrar.PrefObserver;
@@ -45,7 +49,8 @@ public class AppearanceSettingsFragment extends ChromeBaseSettingsFragment
     public static final String PREF_TOOLBAR_SHORTCUT = "toolbar_shortcut";
     public static final String PREF_UI_THEME = "ui_theme";
 
-    private final ObservableSupplierImpl<String> mPageTitle = new ObservableSupplierImpl<>();
+    private final SettableMonotonicObservableSupplier<String> mPageTitle =
+            ObservableSuppliers.createMonotonic();
     private boolean mUseProfileUserPrefs;
 
     private @Nullable PrefChangeRegistrar mPrefChangeRegistrar;
@@ -92,7 +97,7 @@ public class AppearanceSettingsFragment extends ChromeBaseSettingsFragment
     }
 
     @Override
-    public ObservableSupplier<String> getPageTitle() {
+    public MonotonicObservableSupplier<String> getPageTitle() {
         return mPageTitle;
     }
 
@@ -110,8 +115,7 @@ public class AppearanceSettingsFragment extends ChromeBaseSettingsFragment
     // Private methods.
 
     private void initBookmarkBarPref() {
-        // isDeviceBookmarkBarCompatible already checks the flag sAndroidBookmarkBar.
-        if (!BookmarkBarUtils.isDeviceBookmarkBarCompatible(getContext())) {
+        if (!shouldShowBookmarkPref(getContext())) {
             removePreference(PREF_BOOKMARK_BAR);
             return;
         }
@@ -219,18 +223,12 @@ public class AppearanceSettingsFragment extends ChromeBaseSettingsFragment
     }
 
     private void initToolbarShortcutPref() {
-        // LINT.IfChange(InitPrefToolbarShortcut)
-        new AdaptiveToolbarStatePredictor(
-                        getContext(),
-                        getProfile(),
-                        /* androidPermissionDelegate= */ null,
-                        /* behavior= */ null)
-                .recomputeUiState(
-                        uiState -> {
-                            // Don't show toolbar shortcut settings if disabled from finch.
-                            if (!uiState.canShowUi) removePreference(PREF_TOOLBAR_SHORTCUT);
-                        });
-        // LINT.ThenChange(//chrome/android/java/src/org/chromium/chrome/browser/settings/MainSettings.java:InitPrefToolbarShortcut)
+        shouldShowToolbarShortcutPrefAsync(
+                getContext(),
+                getProfile(),
+                (shouldShow) -> {
+                    if (!shouldShow) removePreference(PREF_TOOLBAR_SHORTCUT);
+                });
     }
 
     private void initUiThemePref() {
@@ -248,8 +246,7 @@ public class AppearanceSettingsFragment extends ChromeBaseSettingsFragment
     }
 
     private void updateBookmarkBarPref() {
-        // isDeviceBookmarkBarCompatible already checks the flag sAndroidBookmarkBar.
-        if (!BookmarkBarUtils.isDeviceBookmarkBarCompatible(getContext())) {
+        if (!shouldShowBookmarkPref(getContext())) {
             return;
         }
 
@@ -283,9 +280,46 @@ public class AppearanceSettingsFragment extends ChromeBaseSettingsFragment
         return mPrefObserver;
     }
 
-    // TODO(crbug.com/444470792): Determine what pieces of logic are dynamic and need handling. Some
-    // changes here need to be reflected in MainSettings as well.
+    private static boolean shouldShowBookmarkPref(Context context) {
+        // isDeviceBookmarkBarCompatible already checks the flag sAndroidBookmarkBar.
+        return BookmarkBarUtils.isDeviceBookmarkBarCompatible(context);
+    }
+
+    public static void shouldShowToolbarShortcutPrefAsync(
+            Context context, Profile profile, Callback<Boolean> callback) {
+        // LINT.IfChange(InitPrefToolbarShortcut)
+        new AdaptiveToolbarStatePredictor(
+                        context,
+                        profile,
+                        /* androidPermissionDelegate= */ null,
+                        /* behavior= */ null)
+                .recomputeUiState(uiState -> callback.onResult(uiState.canShowUi));
+        // LINT.ThenChange(//chrome/android/java/src/org/chromium/chrome/browser/settings/MainSettings.java:InitPrefToolbarShortcut)
+    }
+
     public static final ChromeBaseSearchIndexProvider SEARCH_INDEX_DATA_PROVIDER =
             new ChromeBaseSearchIndexProvider(
-                    AppearanceSettingsFragment.class.getName(), R.xml.appearance_preferences);
+                    AppearanceSettingsFragment.class.getName(), R.xml.appearance_preferences) {
+
+                @Override
+                public void updateDynamicPreferences(
+                        Context context, SettingsIndexData indexData, Profile profile) {
+                    String prefFragment = AppearanceSettingsFragment.class.getName();
+                    if (!shouldShowBookmarkPref(context)) {
+                        indexData.removeEntryForKey(prefFragment, PREF_BOOKMARK_BAR);
+                    }
+                    shouldShowToolbarShortcutPrefAsync(
+                            context,
+                            profile,
+                            (shouldShow) -> {
+                                if (!shouldShow) {
+                                    indexData.removeEntryForKey(
+                                            prefFragment, PREF_TOOLBAR_SHORTCUT);
+
+                                    // Resolve the index again to reflect the removal above.
+                                    indexData.resolveIndex();
+                                }
+                            });
+                }
+            };
 }

@@ -89,13 +89,14 @@ class GroupSuggestionsServiceFactoryTest : public AndroidBrowserTest {
     std::unique_ptr<content::WebContents> contents =
         content::WebContents::Create(
             content::WebContents::CreateParams(profile()));
-    content::WebContents* new_web_contents = contents.release();
     content::NavigationController::LoadURLParams params(url);
     params.transition_type =
         ui::PageTransitionFromInt(ui::PAGE_TRANSITION_TYPED);
     params.has_user_gesture = true;
-    new_web_contents->GetController().LoadURLWithParams(params);
-    tab_model->CreateTab(new_tab, new_web_contents, /*select=*/true);
+    contents->GetController().LoadURLWithParams(params);
+    tab_model->CreateTab(new_tab, std::move(contents), TabModel::kInvalidIndex,
+                         TabModel::TabLaunchType::FROM_RECENT_TABS_FOREGROUND,
+                         /*should_pin=*/false);
 #endif
   }
 

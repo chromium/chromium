@@ -46,10 +46,14 @@ class AutofillClientIOS : public AutofillClient {
   // particular, transitively by members of subclasses).
   AutofillDriverIOSFactory& GetAutofillDriverFactory() final;
 
+  base::WeakPtr<AutofillClientIOS> AsWeakPtr();
+
  private:
   base::WeakPtr<web::WebState> web_state_;
 
   AutofillDriverIOSFactory autofill_driver_factory_;
+
+  base::WeakPtrFactory<AutofillClientIOS> weak_ptr_factory_{this};
 };
 
 }  // namespace autofill

@@ -25,7 +25,7 @@ using jni_zero::ScopedJavaLocalRef;
 namespace httpclient {
 
 // static
-static jlong JNI_SimpleHttpClient_Init(JNIEnv* env, Profile* profile) {
+static int64_t JNI_SimpleHttpClient_Init(JNIEnv* env, Profile* profile) {
   return reinterpret_cast<intptr_t>(new HttpClientBridge(profile));
 }
 
@@ -47,7 +47,7 @@ void HttpClientBridge::SendNetworkRequest(
     std::string& request_type,
     std::vector<uint8_t>& request_body,
     std::map<std::string, std::string> headers,
-    jint j_network_annotation_hashcode,
+    int32_t j_network_annotation_hashcode,
     const base::android::JavaRef<jobject>& j_callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   DCHECK(gurl.is_valid());

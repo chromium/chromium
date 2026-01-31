@@ -4,15 +4,17 @@
 
 #include "third_party/blink/renderer/core/css/parser/css_variable_parser.h"
 
+#include <algorithm>
 #include <optional>
 
-#include "base/containers/contains.h"
 #include "third_party/blink/renderer/core/css/css_attr_type.h"
 #include "third_party/blink/renderer/core/css/css_syntax_component.h"
 #include "third_party/blink/renderer/core/css/css_syntax_definition.h"
 #include "third_party/blink/renderer/core/css/css_unparsed_declaration_value.h"
 #include "third_party/blink/renderer/core/css/if_condition.h"
 #include "third_party/blink/renderer/core/css/parser/css_if_parser.h"
+#include "third_party/blink/renderer/core/css/parser/css_parser_context.h"
+#include "third_party/blink/renderer/core/css/parser/css_parser_local_context.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_token.h"
 #include "third_party/blink/renderer/core/css/parser/css_property_parser.h"
 #include "third_party/blink/renderer/core/css/properties/css_parsing_utils.h"
@@ -119,7 +121,12 @@ static bool ConsumeVariableReference(CSSParserTokenStream& stream,
     }
   } else if (stream.Peek().GetType() == kFunctionToken &&
              RuntimeEnabledFeatures::CSSIdentFunctionEnabled()) {
-    if (!css_parsing_utils::ConsumeIdentFunction(stream, context)) {
+    // Since we don't create calc() expression nodes at this time we don't need
+    // to store property info for random().
+    CSSParserLocalContext local_context =
+        CSSParserLocalContext::CreateWithoutPropertyForSubstitutions();
+    if (!css_parsing_utils::ConsumeIdentFunction(stream, context,
+                                                 local_context)) {
       // It's a bit wasteful to create a CSSCustomIdentValue just to discard it,
       // but with the new "argument grammar" parsing approach described in
       // Issue 11500 we will eventually end up accepting any
@@ -779,7 +786,7 @@ StringView CSSVariableParser::StripTrailingWhitespaceAndComments(
   // (i.e. not CSSOM, where we just get a string), we know we can't
   // have unfinished comments, so consider piping that knowledge all
   // the way through here.
-  if (text.Is8Bit() && !base::Contains(text.Span8(), '/')) {
+  if (text.Is8Bit() && !std::ranges::contains(text.Span8(), '/')) {
     // No comments, so we can strip whitespace only.
     while (!text.empty() && IsHTMLSpace(text[text.length() - 1])) {
       text = StringView(text, 0, text.length() - 1);

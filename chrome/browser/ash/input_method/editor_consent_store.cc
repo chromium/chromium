@@ -4,8 +4,9 @@
 
 #include "chrome/browser/ash/input_method/editor_consent_store.h"
 
+#include <utility>
+
 #include "ash/constants/ash_pref_names.h"
-#include "base/types/cxx23_to_underlying.h"
 #include "chrome/browser/ash/input_method/editor_metrics_enums.h"
 #include "chrome/browser/ash/input_method/editor_metrics_recorder.h"
 #include "chromeos/ash/components/editor_menu/public/cpp/editor_consent_status.h"
@@ -29,7 +30,7 @@ EditorConsentStore::GetConsentStatus() const {
 void EditorConsentStore::SetConsentStatus(
     chromeos::editor_menu::EditorConsentStatus consent_status) {
   pref_service_->SetInteger(prefs::kOrcaConsentStatus,
-                            base::to_underlying(consent_status));
+                            std::to_underlying(consent_status));
 }
 
 void EditorConsentStore::ProcessConsentAction(ConsentAction consent_action) {

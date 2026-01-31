@@ -16,49 +16,74 @@
   --mwb-secondary-text-font-size: 11px;
 
   align-items: center;
-  background-color: var(--cr-fallback-color-surface);
+  background-color: var(--toolbar-background-color);
+  color: var(--toolbar-text-color);
   display: flex;
-  height: 48px;
-  justify-content: space-between;
+  height: 20px;
+  padding: 7px 12px;
+  margin: 6px 4px 0px 4px;
 }
 
-.leftSide {
-  align-items: center;
-  display: flex;
-  font-size: 16px;
-  flex-grow: 1;
+.top-toolbar-title {
   overflow: hidden;
+  align-items: center;
+  font-size: 16px;
+  flex: 1;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 
-.toolbarLogo {
+.top-toolbar-logo {
+  flex:0;
   box-sizing: border-box;
   display: inline-block;
-  margin: 0 12px 0 8px;
-  min-width: 22px;
-  min-height: 22px;
+  margin-right: 8px;
+  --cr-icon-size: 20px;
+  width: 20px;
+  height: 20px;
 }
 
-.rightSide {
-  display: flex;
-  flex-shrink: 0;
-  justify-content: flex-end;
+.chrome-logo-dark {
+  display: none;
 }
 
-#rightButtonContainer {
-  align-items: center;
+:host([dark-mode]) .chrome-logo-light {
+  display: none;
+}
+
+:host([dark-mode]) .chrome-logo-dark {
+  display: inline-block;
+}
+
+.top-toolbar-action-buttons {
+  flex: 0;
   display: flex;
-  padding-right: 16px;
+  flex-direction: row;
+}
+
+.top-toolbar-action-buttons > :not(:first-child) {
+  /**
+  * cr-icon is 20px and cr-icon-button is 32px
+  * Add another 4px to visually make the margin 16px.
+  */
+  margin-inline-start: 4px;
+}
+
+.top-toolbar-action-buttons > contextual-tasks-favicon-group {
+  /* Add horizontal padding to match cr-icon-button. */
+  padding-left: 6px;
+  padding-right: 6px;
 }
 
 .dropdown-item {
   display: flex;
   align-items: center;
+  color: var(--toolbar-text-color);
 }
 
 cr-action-menu {
   --cr-menu-border-radius: 16px;
+  --cr-menu-background-color: var(--toolbar-menu-background-color);
 }
 
 cr-action-menu > button {
@@ -72,7 +97,8 @@ button > cr-icon {
 }
 
 cr-icon-button {
-  --cr-icon-button-margin-start: 12px;
+  --cr-icon-button-icon-size: 20px;
+  --cr-icon-button-fill-color: var(--toolbar-button-icon-color);
 }
 
 cr-icon-button[hidden] {
@@ -80,5 +106,23 @@ cr-icon-button[hidden] {
 }
 
 .dropdown-item cr-icon {
-  padding-inline-end: 10px;
+  margin-inline-end: 10px;
 }
+
+.dropdown-divider {
+  background-color: var(--toolbar-divider-color);
+  height: 1px;
+  width: 100%;
+}
+
+<if expr="_google_chrome">
+.google-g-icon {
+  --cr-icon-image: url(chrome://resources/cr_components/searchbox/icons/google_g_cr23.svg);
+  --cr-icon-color: var(--toolbar-text-color);
+
+  width: 20px;
+  height: 20px;
+  margin: 0;
+  margin-inline-end: 10px;
+}
+</if>

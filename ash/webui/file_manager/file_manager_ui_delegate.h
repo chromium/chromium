@@ -16,7 +16,7 @@ class FileManagerUIDelegate {
   virtual ~FileManagerUIDelegate() = default;
 
   // Populates (writes) load time data to the source.
-  virtual base::Value::Dict GetLoadTimeData() const = 0;
+  virtual base::DictValue GetLoadTimeData() const = 0;
 
   // Get a PluralStringHandler to populate plural strings to the source.
   virtual std::unique_ptr<content::WebUIMessageHandler> GetPluralStringHandler()

@@ -43,7 +43,7 @@ std::optional<std::string>& GetErrorLog() {
 }
 
 void wayland_log(const char* fmt, va_list argp) {
-  std::string error_log(base::StringPrintV(fmt, argp));
+  std::string error_log(UNSAFE_TODO(base::StringPrintV(fmt, argp)));
   LOG(ERROR) << "libwayland: " << error_log;
   // Format the error message only after it's printed. Otherwise, object id will
   // be lost and local development and debugging will be harder to do.

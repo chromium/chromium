@@ -45,30 +45,30 @@ class TrustedVaultClientAndroid : public trusted_vault::TrustedVaultClient {
   // previously initiated from C++ and identified by |request_id|. |gaia_id|
   // must match the user's ID.
   void FetchKeysCompleted(JNIEnv* env,
-                          jint request_id,
+                          int32_t request_id,
                           std::string& gaia_id,
                           const base::android::JavaRef<jobjectArray>& keys);
 
   // Called from Java to notify the completion of a MarkLocalKeysAsStale()
   // operation previously initiated from C++ and identified by |request_id|.
   void MarkLocalKeysAsStaleCompleted(JNIEnv* env,
-                                     jint request_id,
-                                     jboolean succeeded);
+                                     int32_t request_id,
+                                     bool succeeded);
 
   // Called from Java to notify the completion of a
   // GetIsRecoverabilityDegraded() operation previously initiated from C++ and
   // identified by |request_id|.
   void GetIsRecoverabilityDegradedCompleted(JNIEnv* env,
-                                            jint request_id,
-                                            jboolean is_degraded);
+                                            int32_t request_id,
+                                            bool is_degraded);
 
   // Called from Java to notify the completion of a
   // AddTrustedRecoveryMethod() operation previously initiated from C++ and
   // identified by |request_id|.
-  void AddTrustedRecoveryMethodCompleted(JNIEnv* env, jint request_id);
+  void AddTrustedRecoveryMethodCompleted(JNIEnv* env, int32_t request_id);
 
   // Called from Java to notify that the keys in the vault may have changed.
-  void NotifyKeysChanged(JNIEnv* env, std::optional<jint> trigger);
+  void NotifyKeysChanged(JNIEnv* env, std::optional<int32_t> trigger);
 
   // Called from Java to notify that the recoverability of the vault may have
   // changed.

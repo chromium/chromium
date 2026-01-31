@@ -9,7 +9,7 @@
 #include <utility>
 
 #include "ash/constants/ash_switches.h"
-#include "base/byte_count.h"
+#include "base/byte_size.h"
 #include "base/check.h"
 #include "base/command_line.h"
 #include "base/files/file_path.h"
@@ -409,8 +409,10 @@ void EncryptionMigrationScreen::OnGetAvailableStorage(
     if (GetRemote()->is_bound()) {
       (*GetRemote())
           ->SetSpaceInfoInString(
-              ui::FormatBytes(base::ByteCount(size.value_or(-1))),
-              ui::FormatBytes(arc::kMigrationMinimumAvailableStorage));
+              ui::FormatBytes(
+                  base::ByteSize(base::checked_cast<uint64_t>(size.value()))),
+              ui::FormatBytes(base::ByteSize::FromDeprecatedByteCount(
+                  arc::kMigrationMinimumAvailableStorage)));
       UpdateUIState(screens_login::mojom::EncryptionMigrationPage::UIState::
                         kNotEnoughStorage);
     }

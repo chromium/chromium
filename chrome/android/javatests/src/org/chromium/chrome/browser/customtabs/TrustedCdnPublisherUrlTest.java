@@ -402,7 +402,7 @@ public class TrustedCdnPublisherUrlTest {
         verifyUrl(
                 UrlFormatter.formatUrlForSecurityDisplay(
                         testUrl, SchemeDisplay.OMIT_HTTP_AND_HTTPS));
-        verifySecurityIcon(R.drawable.ic_offline_pin_24dp);
+        verifySecurityIcon(R.drawable.ic_offline_pin_fill_24dp);
     }
 
     private void runTrustedCdnPublisherUrlTest(

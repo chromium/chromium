@@ -62,15 +62,16 @@ constexpr base::FilePath::CharType kLoginSuccess[] = FPL("login-success");
 // The login times will be written immediately when the login animation ends,
 // and this is used to ensure the data is always written if this amount is
 // elapsed after login.
-constexpr int64_t kLoginTimeWriteDelayMs = 20000;
+constexpr base::TimeDelta kLoginTimeWriteDelay = base::Milliseconds(20000);
 
 void WriteTimes(const std::string base_name,
                 const std::string uma_name,
                 const std::string uma_prefix,
                 std::vector<LoginEventRecorder::TimeMarker> times) {
   DCHECK(times.size());
-  const int kMinTimeMillis = 1;
-  const int kMaxTimeMillis = 30000;
+  constexpr base::TimeDelta kMinTime = base::Milliseconds(1);
+  constexpr base::TimeDelta kMaxTime = base::Seconds(30);
+
   const int kNumBuckets = 100;
   const base::FilePath log_path(kLoginLogPath);
 
@@ -83,15 +84,16 @@ void WriteTimes(const std::string base_name,
   base::TimeTicks last = times.back().time();
   base::TimeDelta total = last - first;
   base::HistogramBase* total_hist = base::Histogram::FactoryTimeGet(
-      uma_name, base::Milliseconds(kMinTimeMillis),
-      base::Milliseconds(kMaxTimeMillis), kNumBuckets,
+      uma_name, kMinTime, kMaxTime, kNumBuckets,
       base::HistogramBase::kUmaTargetedHistogramFlag);
   total_hist->AddTime(total);
   std::string output =
       base::StringPrintf("%s: %.2f", uma_name.c_str(), total.InSecondsF());
   if (uma_name == "BootTime.Login2" || uma_name == "BootTime.LoginNewUser") {
-    UMA_HISTOGRAM_CUSTOM_TIMES("Ash.Tast.BootTime.Login2", total,
-                               base::Milliseconds(1), base::Seconds(300), 100);
+    // To survive a test with heavy load we need a higher limit
+    constexpr base::TimeDelta kLongerMaxTime{base::Seconds(300)};
+    UMA_HISTOGRAM_CUSTOM_TIMES("Ash.Tast.BootTime.Login2", total, kMinTime,
+                               kLongerMaxTime, 100);
   }
   const bool is_login = uma_prefix == kUmaLoginPrefix;
 
@@ -99,8 +101,8 @@ void WriteTimes(const std::string base_name,
   // Send first event to name the track:
   // "In Chrome, we usually don't bother setting explicit track names. If none
   // is provided, the track is named after the first event on the track."
-  TRACE_EVENT_NESTABLE_ASYNC_BEGIN_WITH_TIMESTAMP0(
-      "startup", kBootTimes, TRACE_ID_LOCAL(kBootTimes), prev);
+  TRACE_EVENT_BEGIN("startup", kBootTimes, perfetto::NamedTrack(kBootTimes),
+                    prev);
 
   base::TimeTicks ts_login_started;
   base::TimeTicks ts_on_auth_success;
@@ -120,17 +122,15 @@ void WriteTimes(const std::string base_name,
     const LoginEventRecorder::TimeMarker& tm = times[i];
 
     if (tm.url().has_value()) {
-      TRACE_EVENT_NESTABLE_ASYNC_BEGIN_WITH_TIMESTAMP1(
-          "startup", tm.name(), TRACE_ID_LOCAL(kBootTimes), prev, "url",
-          *tm.url());
-      TRACE_EVENT_NESTABLE_ASYNC_END_WITH_TIMESTAMP1(
-          "startup", tm.name(), TRACE_ID_LOCAL(kBootTimes), tm.time(), "url",
-          *tm.url());
+      TRACE_EVENT_BEGIN("startup", perfetto::StaticString(tm.name()),
+                        perfetto::NamedTrack(kBootTimes), prev, "url",
+                        *tm.url());
+      TRACE_EVENT_END("startup", perfetto::NamedTrack(kBootTimes), tm.time(),
+                      "url", *tm.url());
     } else {
-      TRACE_EVENT_NESTABLE_ASYNC_BEGIN_WITH_TIMESTAMP0(
-          "startup", tm.name(), TRACE_ID_LOCAL(kBootTimes), prev);
-      TRACE_EVENT_NESTABLE_ASYNC_END_WITH_TIMESTAMP0(
-          "startup", tm.name(), TRACE_ID_LOCAL(kBootTimes), tm.time());
+      TRACE_EVENT_BEGIN("startup", perfetto::StaticString(tm.name()),
+                        perfetto::NamedTrack(kBootTimes), prev);
+      TRACE_EVENT_END("startup", perfetto::NamedTrack(kBootTimes), tm.time());
     }
     if (is_login) {
       store_ts(tm, "LoginStarted", ts_login_started);
@@ -147,8 +147,7 @@ void WriteTimes(const std::string base_name,
     if (tm.send_to_uma()) {
       name = uma_prefix + tm.name();
       base::HistogramBase* prev_hist = base::Histogram::FactoryTimeGet(
-          name, base::Milliseconds(kMinTimeMillis),
-          base::Milliseconds(kMaxTimeMillis), kNumBuckets,
+          name, kMinTime, kMaxTime, kNumBuckets,
           base::HistogramBase::kUmaTargetedHistogramFlag);
       prev_hist->AddTime(since_prev);
     } else {
@@ -165,8 +164,8 @@ void WriteTimes(const std::string base_name,
     prev = tm.time();
   }
   output += '\n';
-  TRACE_EVENT_NESTABLE_ASYNC_END_WITH_TIMESTAMP0(
-      "startup", kBootTimes, TRACE_ID_LOCAL(kBootTimes), prev);
+  TRACE_EVENT_END("startup", /*kBootTimes*/ perfetto::NamedTrack(kBootTimes),
+                  prev);
 
   // Do not record login state times if any of the stage timestamp is missing.
   // This happens in tests and crash-n-restore case.
@@ -221,7 +220,7 @@ LoginEventRecorder::Stats LoginEventRecorder::Stats::GetCurrentStats() {
 std::string LoginEventRecorder::Stats::SerializeToString() const {
   if (uptime_.empty() && disk_.empty())
     return std::string();
-  base::Value::Dict dictionary;
+  base::DictValue dictionary;
   dictionary.Set(kUptime, uptime_);
   dictionary.Set(kDisk, disk_);
 
@@ -240,7 +239,7 @@ LoginEventRecorder::Stats LoginEventRecorder::Stats::DeserializeFromString(
   if (source.empty())
     return Stats();
 
-  std::optional<base::Value::Dict> maybe_value =
+  std::optional<base::DictValue> maybe_value =
       base::JSONReader::ReadDict(source, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   if (!maybe_value) {
     LOG(ERROR) << "LoginEventRecorder::Stats::DeserializeFromString(): not a "
@@ -408,7 +407,7 @@ void LoginEventRecorder::ScheduleWriteLoginTimes(const std::string base_name,
       FROM_HERE,
       base::BindOnce(&LoginEventRecorder::WriteLoginTimesDelayed,
                      weak_ptr_factory_.GetWeakPtr()),
-      base::Milliseconds(kLoginTimeWriteDelayMs));
+      kLoginTimeWriteDelay);
 }
 
 void LoginEventRecorder::RunScheduledWriteLoginTimes() {

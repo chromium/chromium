@@ -875,8 +875,6 @@ void PlatformNotificationContextImpl::
 
   std::vector<NotificationDatabaseData> notification_datas;
 
-  // TODO(crbug.com/40179016): Pass in via an argument whether we want to
-  // include notifications shown by the browser or not.
   NotificationDatabase::Status status =
       database_->ReadAllNotificationDataForServiceWorkerRegistration(
           origin, service_worker_registration_id,
@@ -1164,9 +1162,6 @@ void PlatformNotificationContextImpl::DoDeleteNotificationData(
                                     this, data));
     }
   }
-
-  // TODO(crbug.com/40179016): Should we verify that websites don't try to close
-  // notifications shown by the browser (is_shown_by_browser == true)?
 
   NotificationDatabase::Status status =
       database_->DeleteNotificationData(notification_id, origin);

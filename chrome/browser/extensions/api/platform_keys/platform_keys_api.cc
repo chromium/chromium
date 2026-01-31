@@ -19,6 +19,7 @@
 #include "chrome/browser/extensions/api/platform_keys/verify_trust_api_service.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/extensions/api/platform_keys_internal.h"
+#include "chromeos/ash/components/platform_keys/keystore_types.h"
 #include "chromeos/ash/components/platform_keys/platform_keys.h"
 #include "chromeos/crosapi/cpp/keystore_service_util.h"
 #include "chromeos/crosapi/mojom/keystore_error.mojom-shared.h"
@@ -37,10 +38,9 @@ namespace {
 
 namespace api_pk = api::platform_keys;
 namespace api_pki = api::platform_keys_internal;
+using chromeos::KeystoreAlgorithmName;
 using crosapi::keystore_service_util::kWebCryptoEcdsa;
 using crosapi::keystore_service_util::kWebCryptoRsassaPkcs1v15;
-using crosapi::mojom::KeystoreAlgorithmName;
-using crosapi::mojom::KeystoreService;
 
 const char kErrorInvalidSigningAlgorithm[] = "Invalid signing algorithm.";
 const char kErrorInteractiveCallFromBackground[] =
@@ -64,7 +64,7 @@ const struct NameValuePair {
 #undef CERT_STATUS_FLAG
 };
 
-crosapi::mojom::KeystoreService* GetKeystoreService(
+crosapi::KeystoreServiceAsh* GetKeystoreService(
     content::BrowserContext* browser_context) {
   return crosapi::KeystoreServiceFactoryAsh::GetForBrowserContext(
       browser_context);
@@ -198,7 +198,7 @@ void PlatformKeysInternalSelectClientCertificatesFunction::
     result_match.certificate.assign(der_encoded_cert.begin(),
                                     der_encoded_cert.end());
 
-    std::optional<base::Value::Dict> algorithm =
+    std::optional<base::DictValue> algorithm =
         BuildWebCryptoAlgorithmDictionary(key_info);
     if (!algorithm) {
       LOG(ERROR) << "Skipping unsupported certificate with key type "
@@ -248,7 +248,7 @@ void PlatformKeysInternalGetPublicKeyFunction::OnGetPublicKey(
   }
 
   api_pki::GetPublicKey::Results::Algorithm algorithm;
-  std::optional<base::Value::Dict> dict =
+  std::optional<base::DictValue> dict =
       crosapi::keystore_service_util::MakeDictionaryFromKeystoreAlgorithm(
           result->get_success_result()->algorithm_properties);
   if (!dict) {
@@ -293,7 +293,7 @@ PlatformKeysInternalGetPublicKeyBySpkiFunction::Run() {
   }
 
   api_pki::GetPublicKeyBySpki::Results::Algorithm algorithm;
-  std::optional<base::Value::Dict> algorithm_dictionary =
+  std::optional<base::DictValue> algorithm_dictionary =
       chromeos::platform_keys::BuildWebCryptoAlgorithmDictionary(key_info);
   DCHECK(algorithm_dictionary);
   algorithm.additional_properties = std::move(*algorithm_dictionary);

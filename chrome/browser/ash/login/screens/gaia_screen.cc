@@ -4,12 +4,13 @@
 
 #include "chrome/browser/ash/login/screens/gaia_screen.h"
 
+#include <algorithm>
+
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
 #include "ash/public/cpp/reauth_reason.h"
 #include "ash/shell.h"
 #include "base/check_is_test.h"
-#include "base/containers/contains.h"
 #include "base/memory/weak_ptr.h"
 #include "base/values.h"
 #include "chrome/browser/ash/login/demo_mode/demo_setup_controller.h"
@@ -60,7 +61,7 @@ bool ShouldPrepareForRecovery(const AccountId& account_id) {
   user_manager::KnownUser known_user(g_browser_process->local_state());
   std::optional<int> reauth_reason = known_user.FindReauthReason(account_id);
   return reauth_reason.has_value() &&
-         base::Contains(kPossibleReasons, reauth_reason.value());
+         std::ranges::contains(kPossibleReasons, reauth_reason.value());
 }
 
 bool ShouldUseReauthEndpoint(const AccountId& account_id) {
@@ -252,7 +253,7 @@ void GaiaScreen::HideImpl() {
   backlights_forced_off_observation_.Reset();
 }
 
-void GaiaScreen::OnUserAction(const base::Value::List& args) {
+void GaiaScreen::OnUserAction(const base::ListValue& args) {
   const std::string& action_id = args[0].GetString();
   if (action_id == kUserActionBack) {
     WizardContext::GaiaPath gaiaPath = context()->gaia_config.gaia_path;

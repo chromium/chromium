@@ -5,6 +5,7 @@
 #include "chrome/updater/app/server/win/update_service_stub_win.h"
 
 #include "base/check.h"
+#include "base/containers/flat_map.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/memory/ref_counted.h"
@@ -135,6 +136,20 @@ void UpdateServiceStubWin::RunInstaller(
   impl_->RunInstaller(app_id, installer_path, install_args, install_data,
                       install_settings, language, std::move(state_update),
                       std::move(callback).Then(task_end_listener_));
+}
+
+void UpdateServiceStubWin::GetUpdaterState(
+    base::OnceCallback<void(const UpdaterState&)> callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  task_start_listener_.Run();
+  impl_->GetUpdaterState(std::move(callback).Then(task_end_listener_));
+}
+
+void UpdateServiceStubWin::GetPoliciesJson(
+    base::OnceCallback<void(const std::string&)> callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  task_start_listener_.Run();
+  impl_->GetPoliciesJson(std::move(callback).Then(task_end_listener_));
 }
 
 }  // namespace updater

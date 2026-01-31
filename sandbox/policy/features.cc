@@ -88,7 +88,7 @@ BASE_FEATURE(kEnableCsrssLockdown, base::FEATURE_DISABLED_BY_DEFAULT);
 // feature is enabled then invalid handle references will cause an
 // EXCEPTION_INVALID_HANDLE exception to be raised. See
 // https://learn.microsoft.com/en-us/windows/win32/api/winnt/ns-winnt-process_mitigation_strict_handle_check_policy.
-BASE_FEATURE(kWinSboxStrictHandleChecks, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kWinSboxStrictHandleChecks, base::FEATURE_ENABLED_BY_DEFAULT);
 
 #endif  // BUILDFLAG(IS_WIN)
 

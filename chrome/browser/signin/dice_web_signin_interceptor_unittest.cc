@@ -880,7 +880,7 @@ TEST_P(DiceWebSigninInterceptorManagedAccountTest,
 
 TEST_P(DiceWebSigninInterceptorManagedAccountTest,
        EnforceManagedAccountSecondaryAccountNotAllowed) {
-  base::Value::List profile_separation_exception_list;
+  base::ListValue profile_separation_exception_list;
   profile_separation_exception_list.Append(base::Value("notexample.com"));
   profile()->GetPrefs()->SetList(prefs::kProfileSeparationDomainExceptionList,
                                  std::move(profile_separation_exception_list));
@@ -912,7 +912,7 @@ TEST_P(DiceWebSigninInterceptorManagedAccountTest,
 
 TEST_P(DiceWebSigninInterceptorManagedAccountTest,
        EnforceManagedAccountSecondaryAccountAllowedReauth) {
-  base::Value::List profile_separation_exception_list;
+  base::ListValue profile_separation_exception_list;
   profile_separation_exception_list.Append(base::Value("notexample.com"));
   profile()->GetPrefs()->SetList(prefs::kProfileSeparationDomainExceptionList,
                                  std::move(profile_separation_exception_list));
@@ -932,7 +932,7 @@ TEST_P(DiceWebSigninInterceptorManagedAccountTest,
 
 TEST_P(DiceWebSigninInterceptorManagedAccountTest,
        EnforceManagedAccountSecondaryAccountNotAllowedReauth) {
-  base::Value::List profile_separation_exception_list;
+  base::ListValue profile_separation_exception_list;
   profile_separation_exception_list.Append(base::Value("notexample.com"));
   profile()->GetPrefs()->SetList(prefs::kProfileSeparationDomainExceptionList,
                                  std::move(profile_separation_exception_list));
@@ -964,7 +964,7 @@ TEST_P(DiceWebSigninInterceptorManagedAccountTest,
 
 TEST_P(DiceWebSigninInterceptorManagedAccountTest,
        EnforceManagedAccountSecondaryConsumerAccountNotAllowed) {
-  base::Value::List profile_separation_exception_list;
+  base::ListValue profile_separation_exception_list;
   profile_separation_exception_list.Append(base::Value("example.com"));
   profile()->GetPrefs()->SetList(prefs::kProfileSeparationDomainExceptionList,
                                  std::move(profile_separation_exception_list));
@@ -996,7 +996,7 @@ TEST_P(DiceWebSigninInterceptorManagedAccountTest,
 
 TEST_P(DiceWebSigninInterceptorManagedAccountTest,
        EnforceManagedAccountSecondaryAccountAllowed) {
-  base::Value::List profile_separation_exception_list;
+  base::ListValue profile_separation_exception_list;
   profile_separation_exception_list.Append(base::Value("gmail.com"));
   profile()->GetPrefs()->SetList(prefs::kProfileSeparationDomainExceptionList,
                                  std::move(profile_separation_exception_list));
@@ -1774,7 +1774,7 @@ TEST_F(DiceWebSigninInterceptorTest, WaitForAccountCapabilitiesTimeout) {
 
 TEST_F(DiceWebSigninInterceptorTest,
        ConsumerAccountForcedEnterpriseInterceptionOnEmptyProfile) {
-  base::Value::List profile_separation_exception_list;
+  base::ListValue profile_separation_exception_list;
   profile_separation_exception_list.Append(base::Value("notexample.com"));
   profile()->GetPrefs()->SetList(prefs::kProfileSeparationDomainExceptionList,
                                  std::move(profile_separation_exception_list));
@@ -1801,7 +1801,7 @@ TEST_F(DiceWebSigninInterceptorTest,
 }
 
 TEST_F(DiceWebSigninInterceptorTest, ConsumerAccountAllowedOnEmptyProfile) {
-  base::Value::List profile_separation_exception_list;
+  base::ListValue profile_separation_exception_list;
   profile_separation_exception_list.Append(base::Value("gmail.com"));
   profile()->GetPrefs()->SetList(prefs::kProfileSeparationDomainExceptionList,
                                  std::move(profile_separation_exception_list));
@@ -1825,7 +1825,7 @@ TEST_F(DiceWebSigninInterceptorTest, ConsumerAccountAllowedOnEmptyProfile) {
 
 TEST_F(DiceWebSigninInterceptorTest,
        ConsumerAccountForcedEnterpriseInterceptionOnManagedProfile) {
-  base::Value::List profile_separation_exception_list;
+  base::ListValue profile_separation_exception_list;
   profile_separation_exception_list.Append(base::Value("notexample.com"));
   profile()->GetPrefs()->SetList(prefs::kProfileSeparationDomainExceptionList,
                                  std::move(profile_separation_exception_list));

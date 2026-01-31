@@ -31,7 +31,7 @@ const char* kDefaultInvalidationMode = "viewport";
 }  // namespace
 
 InvalidationBenchmark::InvalidationBenchmark(
-    base::Value::Dict settings,
+    base::DictValue settings,
     MicroBenchmark::DoneCallback callback)
     : MicroBenchmark(std::move(callback)) {
   std::string mode_string = kDefaultInvalidationMode;
@@ -110,11 +110,11 @@ void InvalidationBenchmark::RunOnLayer(PictureLayer* layer) {
   }
 }
 
-bool InvalidationBenchmark::ProcessMessage(base::Value::Dict message) {
+bool InvalidationBenchmark::ProcessMessage(base::DictValue message) {
   auto notify_done = message.FindBool("notify_done");
   if (notify_done.has_value()) {
     if (notify_done.value()) {
-      NotifyDone(base::Value::Dict());
+      NotifyDone(base::DictValue());
     }
     return true;
   }

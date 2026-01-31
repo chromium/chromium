@@ -40,9 +40,6 @@ MEDIA_EXPORT std::optional<VideoType> ParseAVCCodecId(
 MEDIA_EXPORT std::optional<VideoType> ParseHEVCCodecId(
     std::string_view codec_id);
 
-MEDIA_EXPORT std::optional<VideoType> ParseVVCCodecId(
-    std::string_view codec_id);
-
 MEDIA_EXPORT std::optional<VideoType> ParseDolbyVisionCodecId(
     std::string_view codec_id);
 

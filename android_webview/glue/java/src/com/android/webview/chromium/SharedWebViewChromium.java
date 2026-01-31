@@ -24,6 +24,7 @@ import org.chromium.content_public.browser.MessagePort;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Callable;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * This class contains the parts of WebViewChromium that should be shared between the webkit-glue
@@ -32,6 +33,10 @@ import java.util.concurrent.Callable;
 public class SharedWebViewChromium {
     private final WebViewChromiumRunQueue mRunQueue;
     private final WebViewChromiumAwInit mAwInit;
+    // If set to false, WebViewBuilder configuration may no longer be applied (or, more strictly,
+    // cannot begin applying). Non-View method WebView instance APIs (including methods that accept
+    // a WebView instance as an argument) will set this to false.
+    private final AtomicBoolean mBuilderConfigurationAllowed = new AtomicBoolean(true);
     // The WebView wrapper for WebContents and required browser components.
     private AwContents mAwContents;
 
@@ -84,6 +89,17 @@ public class SharedWebViewChromium {
                     "Cannot create multiple AwContents for the same SharedWebViewChromium");
         }
         mAwContents = awContents;
+    }
+
+    // Forbids later attempts to begin applying builder configuration on the WebView instance.
+    public void forbidBuilderConfiguration() {
+        mBuilderConfigurationAllowed.set(false);
+    }
+
+    // Returns true iff builder configuration is still permitted, and forbid any subsequent builder
+    // configuration.
+    public boolean commitToBuilderConfiguration() {
+        return mBuilderConfigurationAllowed.getAndSet(false);
     }
 
     public void insertVisualStateCallback(long requestId, AwContents.VisualStateCallback callback) {
@@ -207,7 +223,7 @@ public class SharedWebViewChromium {
             return mRunQueue.runOnUiThreadBlocking(this::getProfile);
         }
         String profileName = mAwContents.getBrowserContextForPublicApi().getName();
-        return ProfileStore.getInstance().getProfile(profileName);
+        return mAwInit.getProfileStore().getProfile(profileName);
     }
 
     protected boolean checkNeedsPost() {

@@ -181,12 +181,19 @@ fn impl_struct(input: Struct) -> TokenStream {
                 #from_function
             }
         };
+        let lint_allows = if input.generics.lifetimes().next().is_some() {
+            Some(quote! {
+                clippy::elidable_lifetime_names,
+                clippy::needless_lifetimes,
+            })
+        } else {
+            None
+        };
         Some(quote! {
             #[allow(
                 deprecated,
                 unused_qualifications,
-                clippy::elidable_lifetime_names,
-                clippy::needless_lifetimes,
+                #lint_allows
             )]
             #from_impl
         })
@@ -456,12 +463,19 @@ fn impl_enum(input: Enum) -> TokenStream {
                 #from_function
             }
         };
+        let lint_allows = if input.generics.lifetimes().next().is_some() {
+            Some(quote! {
+                clippy::elidable_lifetime_names,
+                clippy::needless_lifetimes,
+            })
+        } else {
+            None
+        };
         Some(quote! {
             #[allow(
                 deprecated,
                 unused_qualifications,
-                clippy::elidable_lifetime_names,
-                clippy::needless_lifetimes,
+                #lint_allows
             )]
             #from_impl
         })

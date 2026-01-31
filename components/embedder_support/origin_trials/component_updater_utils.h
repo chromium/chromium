@@ -17,7 +17,7 @@ class OriginTrialsSettingsStorage;
 // If an individual configuration value is missing, reset values in
 // `local_state`.
 void ReadOriginTrialsConfigAndPopulateLocalState(PrefService* local_state,
-                                                 base::Value::Dict manifest);
+                                                 base::DictValue manifest);
 
 // Append the stored Origin Trial configuration overrides to the current process
 // command line, if the command line does not already contain these values. This

@@ -14,7 +14,6 @@
 #include "base/memory/weak_ptr.h"
 #include "chromeos/ash/services/secure_channel/connection.h"
 #include "chromeos/ash/services/secure_channel/file_transfer_update_callback.h"
-#include "chromeos/ash/services/secure_channel/public/mojom/nearby_connector.mojom-shared.h"
 #include "chromeos/ash/services/secure_channel/public/mojom/nearby_connector.mojom.h"
 #include "chromeos/ash/services/secure_channel/public/mojom/secure_channel_types.mojom.h"
 #include "mojo/public/cpp/bindings/receiver.h"

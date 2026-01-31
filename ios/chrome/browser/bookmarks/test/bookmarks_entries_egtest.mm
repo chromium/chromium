@@ -14,7 +14,7 @@
 #import "ios/chrome/browser/bookmarks/public/bookmarks_ui_constants.h"
 #import "ios/chrome/browser/bookmarks/test/bookmark_earl_grey.h"
 #import "ios/chrome/browser/bookmarks/test/bookmark_earl_grey_ui.h"
-#import "ios/chrome/browser/popup_menu/ui_bundled/popup_menu_constants.h"
+#import "ios/chrome/browser/popup_menu/public/popup_menu_constants.h"
 #import "ios/chrome/browser/shared/public/snackbar/snackbar_constants.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/earl_grey/chrome_actions.h"
@@ -1150,15 +1150,10 @@ id<GREYMatcher> AddBookmarkButton() {
   [ChromeEarlGrey verifyOpenInNewWindowActionWithContent:"pony jokes"];
 }
 
-- (void)testBookmarksSyncInMultiwindow {
+// TODO(crbug.com/40210654).
+- (void)DISABLED_testBookmarksSyncInMultiwindow {
   if (![ChromeEarlGrey areMultipleWindowsSupported]) {
     EARL_GREY_TEST_DISABLED(@"Multiple windows can't be opened.");
-  }
-
-  // TODO(crbug.com/40210654).
-  if ([ChromeEarlGrey isNewOverflowMenuEnabled]) {
-    EARL_GREY_TEST_DISABLED(
-        @"Earl Grey doesn't work properly with SwiftUI and multiwindow");
   }
 
   GURL URL1 = web::test::HttpServer::MakeUrl(kURL1);

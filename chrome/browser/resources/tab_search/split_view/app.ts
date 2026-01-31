@@ -208,8 +208,7 @@ export class SplitNewTabPageAppElement extends CrLitElement {
 
   private getTabData_(tab: Tab, inActiveWindow: boolean, type: TabItemType):
       TabData {
-    const displayUrl =
-        getDisplayHostnameForUrl(new URL(normalizeURL(tab.url.url)));
+    const displayUrl = getDisplayHostnameForUrl(new URL(normalizeURL(tab.url)));
     const tabData = new TabData(tab, type, displayUrl);
 
     if (type === TabItemType.OPEN_TAB) {

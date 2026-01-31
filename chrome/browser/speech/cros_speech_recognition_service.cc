@@ -26,7 +26,6 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/storage_partition.h"
 #include "media/base/media_switches.h"
-#include "media/mojo/mojom/speech_recognition.mojom-shared.h"
 #include "media/mojo/mojom/speech_recognition.mojom.h"
 #include "media/mojo/mojom/speech_recognition_service.mojom.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
@@ -114,6 +113,8 @@ void CrosSpeechRecognitionService::BindRecognizer(
     language_name = prefs::GetLiveCaptionLanguageCode(profile_prefs);
   }
 
+  language_name = speech::MaybeMapToChineseLocale(language_name);
+
   PopulateFilePaths(binary_path, config_paths);
 
   // TODO(crbug.com/40924425): Implement offensive word mask on ChromeOS so that
@@ -158,6 +159,9 @@ void CrosSpeechRecognitionService::BindAudioSourceFetcher(
       PrefService* profile_prefs = user_prefs::UserPrefs::Get(context());
       language_name = prefs::GetLiveCaptionLanguageCode(profile_prefs);
     }
+
+    language_name = speech::MaybeMapToChineseLocale(language_name);
+
     // `mask_offensive_words` is always true for
     // `RecognizerClientType::kSchoolTools`.
     // TODO(crbug.com/40924425): Implement offensive word mask on ChromeOS for

@@ -40,7 +40,7 @@ class SecureDnsHandler : public SettingsPageUIHandler {
   // as a dictionary with the following keys: "name" (the text to display in the
   // UI), "value" (the DoH template for this provider), and "policy" (the URL of
   // the provider's privacy policy).
-  base::Value::List GetSecureDnsResolverList();
+  base::ListValue GetSecureDnsResolverList();
 
   void SetNetworkContextForTesting(
       network::mojom::NetworkContext* network_context);
@@ -51,16 +51,16 @@ class SecureDnsHandler : public SettingsPageUIHandler {
 
  protected:
   // Retrieves all pre-approved secure resolvers and returns them to WebUI.
-  void HandleGetSecureDnsResolverList(const base::Value::List& args);
+  void HandleGetSecureDnsResolverList(const base::ListValue& args);
 
   // Intended to be called once upon creation of the secure DNS setting.
-  void HandleGetSecureDnsSetting(const base::Value::List& args);
+  void HandleGetSecureDnsSetting(const base::ListValue& args);
 
   // Parses a custom entry and returns true if it is a fully valid config.
-  void HandleIsValidConfig(const base::Value::List& args);
+  void HandleIsValidConfig(const base::ListValue& args);
 
   // Returns whether or not a test query succeeds with the provided config.
-  void HandleProbeConfig(const base::Value::List& args);
+  void HandleProbeConfig(const base::ListValue& args);
 
   // Retrieves the current host resolver configuration, computes the
   // corresponding UI representation, and sends it to javascript.

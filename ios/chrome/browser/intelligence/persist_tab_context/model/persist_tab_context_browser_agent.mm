@@ -15,11 +15,12 @@
 #import "base/strings/string_number_conversions.h"
 #import "base/task/thread_pool.h"
 #import "base/time/time.h"
+#import "components/page_content_annotations/core/page_content_store.h"
 #import "components/prefs/pref_service.h"
 #import "ios/chrome/browser/intelligence/features/features.h"
 #import "ios/chrome/browser/intelligence/persist_tab_context/metrics/persist_tab_context_metrics.h"
-#import "ios/chrome/browser/intelligence/persist_tab_context/model/page_content_cache_bridge_service.h"
-#import "ios/chrome/browser/intelligence/persist_tab_context/model/page_content_cache_bridge_service_factory.h"
+#import "ios/chrome/browser/intelligence/persist_tab_context/model/page_content_cache_service.h"
+#import "ios/chrome/browser/intelligence/persist_tab_context/model/page_content_cache_service_factory.h"
 #import "ios/chrome/browser/intelligence/proto_wrappers/page_context_utils.h"
 #import "ios/chrome/browser/intelligence/proto_wrappers/page_context_wrapper.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
@@ -328,19 +329,17 @@ int GetPersistedWebStateCountForProfile(ProfileIOS* profile) {
 }
 
 // Helper function to adapt the GetPageContentCache callback to the one used in
-// this component, which uses unique_ptr.
+// this component.
 void OnGetPageContent(
-    base::OnceCallback<void(
-        std::optional<std::unique_ptr<optimization_guide::proto::PageContext>>)>
-        callback,
-    std::optional<optimization_guide::proto::PageContext> page_context) {
-  if (!page_context) {
+    base::OnceCallback<
+        void(std::optional<optimization_guide::proto::PageContext>)> callback,
+    std::optional<optimization_guide::PageContentResult> page_content) {
+  if (!page_content) {
     std::move(callback).Run(std::nullopt);
     return;
   }
 
-  std::move(callback).Run(
-      std::make_unique<optimization_guide::proto::PageContext>(*page_context));
+  std::move(callback).Run(std::move(page_content->page_context));
 }
 
 }  // namespace
@@ -380,15 +379,11 @@ PersistTabContextBrowserAgent::PersistTabContextBrowserAgent(Browser* browser)
 
     if (use_page_content_cache_) {
       page_content_cache_service_ =
-          PageContentCacheBridgeServiceFactory::GetForProfile(profile);
+          PageContentCacheServiceFactory::GetForProfile(profile);
 
       // Purge the direct storage system. Intended for clients migrating to the
       // SQLite storage system from the direct filesystem.
-      task_runner_->PostDelayedTask(
-          FROM_HERE,
-          base::BindOnce(&DeletePersistedContextsDirectory,
-                         storage_directory_path_),
-          kPurgeTaskDelay);
+      RemoveFilesystemStorage();
 
       // Log the difference between web states and persisted files/entries.
       if (page_content_cache_service_) {
@@ -412,17 +407,18 @@ PersistTabContextBrowserAgent::PersistTabContextBrowserAgent(Browser* browser)
                          ttl),
           kPurgeTaskDelay);
 
+      // Purge the SQLite storage system. Intended for clients migrating from
+      // SQLite to the direct filesystem.
+      RemoveSqliteStorage();
+
       // Log the difference between web states and persisted files/entries.
       task_runner_->PostTask(FROM_HERE, base::BindOnce(&LogStorageDifference,
                                                        storage_directory_path_,
                                                        total_web_state_count));
     }
   } else {
-    task_runner_->PostDelayedTask(
-        FROM_HERE,
-        base::BindOnce(&DeletePersistedContextsDirectory,
-                       storage_directory_path_),
-        kPurgeTaskDelay);
+    RemoveFilesystemStorage();
+    RemoveSqliteStorage();
   }
 }
 
@@ -687,8 +683,23 @@ void PersistTabContextBrowserAgent::ReadAndParseContextFromContentCache(
       },
       std::move(callback), start_time);
 
+  auto callback_adapter = base::BindOnce(
+      [](base::OnceCallback<void(std::optional<std::unique_ptr<
+                                     optimization_guide::proto::PageContext>>)>
+             original_callback,
+         std::optional<optimization_guide::proto::PageContext> result) {
+        if (!result) {
+          std::move(original_callback).Run(std::nullopt);
+          return;
+        }
+        std::move(original_callback)
+            .Run(std::make_unique<optimization_guide::proto::PageContext>(
+                std::move(*result)));
+      },
+      std::move(wrapped_callback));
+
   page_content_cache_service_->GetPageContentForTab(
-      tab_id, base::BindOnce(&OnGetPageContent, std::move(wrapped_callback)));
+      tab_id, base::BindOnce(&OnGetPageContent, std::move(callback_adapter)));
 }
 
 void PersistTabContextBrowserAgent::DeleteContextFromContentCache(
@@ -716,4 +727,23 @@ void PersistTabContextBrowserAgent::OnSingleContextRetrieved(
         result) {
   std::move(barrier_callback)
       .Run(std::make_pair(web_state_id, std::move(result)));
+}
+
+void PersistTabContextBrowserAgent::RemoveFilesystemStorage() {
+  task_runner_->PostDelayedTask(
+      FROM_HERE,
+      base::BindOnce(&DeletePersistedContextsDirectory,
+                     storage_directory_path_),
+      kPurgeTaskDelay);
+}
+
+void PersistTabContextBrowserAgent::RemoveSqliteStorage() {
+  base::FilePath storage_directory_path_db =
+      PageContentCacheServiceFactory::GetStoragePathForProfile(
+          browser_->GetProfile());
+  task_runner_->PostDelayedTask(
+      FROM_HERE,
+      base::BindOnce(&DeletePersistedContextsDirectory,
+                     storage_directory_path_db),
+      kPurgeTaskDelay);
 }

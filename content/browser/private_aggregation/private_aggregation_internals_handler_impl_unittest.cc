@@ -81,7 +81,7 @@ void VerifyWebUIAggregatableReport(
 
   base::Value report_body = base::test::ParseJson(web_report.report_body);
   ASSERT_TRUE(report_body.is_dict());
-  const base::Value::Dict& report_body_dict = report_body.GetDict();
+  const base::DictValue& report_body_dict = report_body.GetDict();
 
   if (report) {
     EXPECT_EQ(report_body_dict, report->GetAsJson());

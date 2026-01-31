@@ -19,7 +19,7 @@
 #include "chrome/browser/signin/signin_promo.h"
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_list.h"
+#include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
@@ -29,6 +29,7 @@
 #include "chrome/browser/ui/signin/signin_view_controller_delegate.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/ui_features.h"
+#include "chrome/browser/ui/views/color_provider_browser_helper.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/webui/signin/history_sync_optin_helper.h"
 #include "chrome/browser/ui/webui/signin/profile_customization_ui.h"
@@ -221,6 +222,11 @@ SigninViewControllerDelegateViews::CreateSignoutConfirmationWebView(
       views::kElementIdentifierKey,
       SigninViewController::kSignoutConfirmationDialogViewElementId);
 
+  auto* helper = ColorProviderBrowserHelper::From(browser);
+  if (helper && helper->color_provider_source()) {
+    web_view->GetWebContents()->SetColorProviderSource(
+        helper->color_provider_source());
+  }
   SignoutConfirmationUI* web_ui = web_view->GetWebContents()
                                       ->GetWebUI()
                                       ->GetController()
@@ -312,11 +318,11 @@ bool SigninViewControllerDelegateViews::HandleContextMenu(
 bool SigninViewControllerDelegateViews::HandleKeyboardEvent(
     content::WebContents* source,
     const input::NativeWebKeyboardEvent& event) {
-  // If this is a MODAL_TYPE_CHILD, then GetFocusManager() will return the focus
-  // manager of the parent window, which has registered accelerators, and the
-  // accelerators will fire. If this is a MODAL_TYPE_WINDOW, then this will have
-  // no effect, since no accelerators have been registered for this standalone
-  // window.
+  // If this is a ModalType::kChild, then GetFocusManager() will return the
+  // focus manager of the parent window, which has registered accelerators, and
+  // the accelerators will fire. If this is a ModalType::kWindow, then this will
+  // have no effect, since no accelerators have been registered for this
+  // standalone window.
   return unhandled_keyboard_event_handler_.HandleKeyboardEvent(
       event, GetFocusManager());
 }
@@ -513,10 +519,8 @@ void SigninViewControllerDelegateViews::DeleteProfileOnCancel() {
       ProfilePicker::EntryPoint::kOpenNewWindowAfterProfileDeletion));
   // Since the profile is ephemeral, closing all browser windows triggers the
   // deletion.
-  BrowserList::CloseAllBrowsersWithProfile(browser_->profile(),
-                                           BrowserList::CloseCallback(),
-                                           BrowserList::CloseCallback(),
-                                           /*skip_beforeunload=*/true);
+  chrome::CloseAllBrowsersWithProfile(browser_->profile(),
+                                      /*skip_beforeunload=*/true);
 }
 #endif
 

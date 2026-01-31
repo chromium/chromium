@@ -48,12 +48,12 @@ class AppWindowController : public WindowController {
   bool IsVisibleToTabsAPIForExtension(
       const Extension* extension,
       bool allow_dev_tools_windows) const override;
-  base::Value::Dict CreateWindowValueForExtension(
+  base::DictValue CreateWindowValueForExtension(
       const Extension* extension,
       PopulateTabBehavior populate_tab_behavior,
       mojom::ContextType context) const override;
-  base::Value::List CreateTabList(const Extension* extension,
-                                  mojom::ContextType context) const override;
+  base::ListValue CreateTabList(const Extension* extension,
+                                mojom::ContextType context) const override;
   bool OpenOptionsPage(const Extension* extension,
                        const GURL& url,
                        bool open_in_tab) override;

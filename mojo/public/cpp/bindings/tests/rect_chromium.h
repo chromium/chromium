@@ -22,8 +22,8 @@ class RectChromium {
         y_(other.y_),
         width_(other.width_),
         height_(other.height_) {}
-  RectChromium(int x, int y, int width, int height) :
-      x_(x), y_(y), width_(width), height_(height) {
+  RectChromium(int x, int y, int width, int height)
+      : x_(x), y_(y), width_(width), height_(height) {
     DCHECK_GE(width_, 0);
     DCHECK_GE(height_, 0);
   }

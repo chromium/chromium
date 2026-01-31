@@ -38,6 +38,7 @@ class ExtensionWebRequestHelpersTestWithThreadsTest
     : public extensions::ExtensionServiceTestBase {
  protected:
   void SetUp() override;
+  void TearDown() override;
 
   raw_ptr<extensions::PermissionHelper> permission_helper_ = nullptr;
   // This extension has Web Request permissions, but no host permission.
@@ -74,6 +75,14 @@ void ExtensionWebRequestHelpersTestWithThreadsTest::SetUp() {
       ->AddEnabled(permissionless_extension_);
   ExtensionRegistry::Get(browser_context())->AddEnabled(com_extension_);
   ExtensionRegistry::Get(browser_context())->AddEnabled(com_policy_extension_);
+}
+
+void ExtensionWebRequestHelpersTestWithThreadsTest::TearDown() {
+  com_policy_extension_.reset();
+  com_extension_.reset();
+  permissionless_extension_.reset();
+  permission_helper_ = nullptr;
+  ExtensionServiceTestBase::TearDown();
 }
 
 // Ensures that requests to extension blocklist urls can't be intercepted by

@@ -12,9 +12,7 @@
 #include "components/autofill/core/common/autofill_util.h"
 #include "components/sync/base/features.h"
 #include "components/sync/service/sync_service_impl.h"
-#include "components/sync/test/fake_server_http_post_provider.h"
 #include "content/public/test/browser_test.h"
-#include "net/base/network_change_notifier.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace {
@@ -137,7 +135,7 @@ IN_PROC_BROWSER_TEST_P(TwoClientWalletSyncTest,
   ASSERT_TRUE(SetupSyncAndInitialize());
 
   // Sumulate going offline on both clients.
-  fake_server::FakeServerHttpPostProvider::DisableNetwork();
+  DisableNetwork();
 
   // Grab the current card on the first client.
   std::vector<const CreditCard*> credit_cards = GetServerCreditCards(0);
@@ -151,9 +149,7 @@ IN_PROC_BROWSER_TEST_P(TwoClientWalletSyncTest,
   UpdateServerCardMetadata(0, card, GetStoreType());
 
   // Simulate going online again.
-  fake_server::FakeServerHttpPostProvider::EnableNetwork();
-  net::NetworkChangeNotifier::NotifyObserversOfNetworkChangeForTests(
-      net::NetworkChangeNotifier::CONNECTION_ETHERNET);
+  EnableNetwork();
 
   // Wait for the change to propagate.
   EXPECT_TRUE(AutofillWalletChecker(0, 1).Wait());
@@ -178,7 +174,7 @@ IN_PROC_BROWSER_TEST_P(TwoClientWalletSyncTest,
   ASSERT_TRUE(SetupSyncAndInitialize());
 
   // Sumulate going offline on both clients.
-  fake_server::FakeServerHttpPostProvider::DisableNetwork();
+  DisableNetwork();
 
   // Increase use stats on both clients, make use count higher on the first
   // client and use date higher on the second client.
@@ -199,9 +195,7 @@ IN_PROC_BROWSER_TEST_P(TwoClientWalletSyncTest,
   UpdateServerCardMetadata(1, card, GetStoreType());
 
   // Simulate going online again.
-  fake_server::FakeServerHttpPostProvider::EnableNetwork();
-  net::NetworkChangeNotifier::NotifyObserversOfNetworkChangeForTests(
-      net::NetworkChangeNotifier::CONNECTION_ETHERNET);
+  EnableNetwork();
 
   // Wait for the clients to coverge and both resolve the conflicts by taking
   // maxima in both components.
@@ -316,7 +310,7 @@ IN_PROC_BROWSER_TEST_P(
   ASSERT_TRUE(SetupSyncAndInitialize());
 
   // Sumulate going offline on both clients.
-  fake_server::FakeServerHttpPostProvider::DisableNetwork();
+  DisableNetwork();
 
   // Update the billing address id on both clients to different local ids.
   std::vector<const CreditCard*> credit_cards = GetServerCreditCards(0);
@@ -342,9 +336,7 @@ IN_PROC_BROWSER_TEST_P(
   UpdateServerCardMetadata(1, card, GetStoreType());
 
   // Simulate going online again.
-  fake_server::FakeServerHttpPostProvider::EnableNetwork();
-  net::NetworkChangeNotifier::NotifyObserversOfNetworkChangeForTests(
-      net::NetworkChangeNotifier::CONNECTION_ETHERNET);
+  EnableNetwork();
 
   // Wait for the clients to coverge and both resolve the conflicts by taking
   // maxima in both components.

@@ -10,13 +10,14 @@ import {WebUiListenerMixinLit} from '//resources/cr_elements/web_ui_listener_mix
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
 
-import type {SettingsPrefs} from '../content/read_anything_types.js';
+import type {SettingsPrefs, ShowAtConfigPrefs} from '../content/read_anything_types.js';
+import {DEFAULT_SETTINGS, ToolbarEvent} from '../content/read_anything_types.js';
 import {ReadAnythingSettingsChange} from '../shared/metrics_browser_proxy.js';
 import {ReadAnythingLogger} from '../shared/read_anything_logger.js';
 
 import {getHtml} from './font_menu.html.js';
 import {getIndexOrDefault} from './menu_util.js';
-import type {MenuStateItem} from './menu_util.js';
+import type {MenuStateItem, ToolbarMenu} from './menu_util.js';
 import type {SimpleActionMenuElement} from './simple_action_menu.js';
 
 export interface FontMenuElement {
@@ -29,7 +30,8 @@ const FontMenuElementBase = WebUiListenerMixinLit(I18nMixinLit(CrLitElement));
 
 // Stores and propagates the data for the font menu used when read aloud is
 // enabled.
-export class FontMenuElement extends FontMenuElementBase {
+export class FontMenuElement extends FontMenuElementBase implements
+    ToolbarMenu {
   static get is() {
     return 'font-menu';
   }
@@ -44,6 +46,7 @@ export class FontMenuElement extends FontMenuElementBase {
       pageLanguage: {type: String},
       areFontsLoaded: {type: Boolean},
       options_: {type: Array},
+      nonModal: {type: Boolean},
     };
   }
 
@@ -51,14 +54,8 @@ export class FontMenuElement extends FontMenuElementBase {
 
   accessor areFontsLoaded: boolean = false;
   accessor pageLanguage: string = '';
-  accessor settingsPrefs: SettingsPrefs = {
-    letterSpacing: 0,
-    lineSpacing: 0,
-    theme: 0,
-    speechRate: 0,
-    font: '',
-    highlightGranularity: 0,
-  };
+  accessor settingsPrefs: SettingsPrefs = DEFAULT_SETTINGS;
+  accessor nonModal: boolean = false;
 
   private logger_: ReadAnythingLogger = ReadAnythingLogger.getInstance();
 
@@ -71,8 +68,12 @@ export class FontMenuElement extends FontMenuElementBase {
     }
   }
 
-  open(anchor: HTMLElement) {
-    this.$.menu.open(anchor);
+  open(anchor: HTMLElement, showAtConfig?: ShowAtConfigPrefs) {
+    this.$.menu.open(anchor, showAtConfig);
+  }
+
+  close() {
+    this.$.menu.close();
   }
 
   protected currentFontIndex_(): number {
@@ -82,6 +83,7 @@ export class FontMenuElement extends FontMenuElementBase {
   protected onFontChange_(event: CustomEvent<{data: string}>) {
     chrome.readingMode.onFontChange(event.detail.data);
     this.logger_.logTextSettingsChange(ReadAnythingSettingsChange.FONT_CHANGE);
+    this.fire(ToolbarEvent.CLOSE_ALL_MENUS);
   }
 
   private setFontOptions_(fontList: string[]) {

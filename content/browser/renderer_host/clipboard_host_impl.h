@@ -35,19 +35,6 @@ namespace content {
 
 class ClipboardHostImplTest;
 
-// Returns a representation of the last source ClipboardEndpoint. This will
-// either match the last clipboard write if there is an RFH token in the
-// clipboard, or an endpoint built from `Clipboard::GetSource()` called with
-// `clipboard_buffer` otherwise.
-//
-// //content maintains additional metadata on top of what the //ui layer already
-// tracks about clipboard data's source, e.g. the WebContents that provided the
-// data. This function allows retrieving both the //ui metadata and the
-// //content metadata in a single call.
-CONTENT_EXPORT ClipboardEndpoint
-GetSourceClipboardEndpoint(const ui::DataTransferEndpoint* data_dst,
-                           ui::ClipboardBuffer clipboard_buffer);
-
 class CONTENT_EXPORT ClipboardHostImpl
     : public DocumentService<blink::mojom::ClipboardHost>,
       public ui::ClipboardObserver {
@@ -206,10 +193,6 @@ class CONTENT_EXPORT ClipboardHostImpl
   // Resets `clipboard_writer_` to write its data to the clipboard, and
   // reinitialize it in preparation for the next write.
   void ResetClipboardWriter();
-
-  // Adds source-tracking metadata to `clipboard_writer_` so it can be written
-  // to the clipboard on the next `CommitWrite()` call.
-  void AddSourceDataToClipboardWriter();
 
   // Creates a `ui::DataTransferEndpoint` representing the last committed URL.
   std::unique_ptr<ui::DataTransferEndpoint> CreateDataEndpoint();

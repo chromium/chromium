@@ -65,16 +65,17 @@ TEST_F(FrameAudibleVoterTest, AudibleChanged) {
   auto& frame_node = mock_graph.frame;
   EXPECT_FALSE(frame_node->IsAudible());
   EXPECT_EQ(observer().GetVoteCount(), 1u);
-  EXPECT_TRUE(observer().HasVote(
-      voter_id(), GetExecutionContext(frame_node.get()),
-      base::TaskPriority::LOWEST, FrameAudibleVoter::kFrameAudibleReason));
+  EXPECT_TRUE(observer().HasVote(voter_id(),
+                                 GetExecutionContext(frame_node.get()),
+                                 base::Process::Priority::kMinValue,
+                                 FrameAudibleVoter::kFrameAudibleReason));
 
   // Make the frame audible. This should increase the priority.
   mock_graph.frame->SetIsAudible(true);
   EXPECT_EQ(observer().GetVoteCount(), 1u);
   EXPECT_TRUE(observer().HasVote(voter_id(),
                                  GetExecutionContext(frame_node.get()),
-                                 base::TaskPriority::USER_BLOCKING,
+                                 base::Process::Priority::kUserBlocking,
                                  FrameAudibleVoter::kFrameAudibleReason));
 
   // Deleting the frame should invalidate the vote.

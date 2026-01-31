@@ -151,7 +151,7 @@ bool ChoobeFlowController::ShouldScreenBeSkipped(OobeScreenId screen_id) {
 }
 
 void ChoobeFlowController::OnScreensSelected(PrefService& prefs,
-                                             base::Value::List screens_ids) {
+                                             base::ListValue screens_ids) {
   if (screens_ids.empty()) {
     NOTREACHED() << "screen_ids list should not be empty";
   }
@@ -181,7 +181,7 @@ void ChoobeFlowController::OnScreenCompleted(PrefService& prefs,
   completed_screens_ids_.insert(completed_screen_id);
 
   // Update `kChoobeCompletedScreens` pref.
-  base::Value::List screens_ids;
+  base::ListValue screens_ids;
   for (const auto& screen_id : completed_screens_ids_) {
     screens_ids.Append(screen_id.name);
   }

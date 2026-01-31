@@ -44,7 +44,6 @@
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/keyed_service/core/service_access_type.h"
 #include "components/password_manager/content/browser/content_password_manager_driver.h"
-#include "components/password_manager/core/browser/features/password_features.h"
 #include "components/password_manager/core/browser/manage_passwords_referrer.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_manager_test_utils.h"
@@ -413,15 +412,13 @@ class PasswordManualFallbackTest : public PasswordsFallbackTestBase,
   PasswordManualFallbackTest() {
     if (GetParam()) {
       feature_list_.InitWithFeatures(
-          {password_manager::features::kPasswordManualFallbackAvailable,
-           password_manager::features::
+          {password_manager::features::
                kWebAuthnUsePasskeyFromAnotherDeviceInContextMenu},
           {});
     } else {
       feature_list_.InitWithFeatures(
-          {password_manager::features::kPasswordManualFallbackAvailable},
-          {password_manager::features::
-               kWebAuthnUsePasskeyFromAnotherDeviceInContextMenu});
+          {}, {password_manager::features::
+                   kWebAuthnUsePasskeyFromAnotherDeviceInContextMenu});
     }
   }
 
@@ -587,10 +584,6 @@ class PasswordsFallbackWithUIInteractionsTest
                                 form.fields()[0].renderer_id(),
                                 blink::mojom::FormControlType::kInputPassword));
   }
-
- private:
-  base::test::ScopedFeatureList feature_{
-      password_manager::features::kPasswordManualFallbackAvailable};
 };
 
 IN_PROC_BROWSER_TEST_F(
@@ -691,10 +684,6 @@ class PasswordsFallbackWithPasswordDatabaseEntriesTest
   bool has_autofillable_credentials() {
     return password_database_entry_type() == PasswordDatabaseEntryType::kNormal;
   }
-
- private:
-  base::test::ScopedFeatureList feature_{
-      password_manager::features::kPasswordManualFallbackAvailable};
 };
 
 IN_PROC_BROWSER_TEST_P(
@@ -796,8 +785,6 @@ class PasswordsFallbackWithGuestProfileTest : public PasswordsFallbackTestBase {
 #endif
 
  private:
-  base::test::ScopedFeatureList feature_{
-      password_manager::features::kPasswordManualFallbackAvailable};
   raw_ptr<Browser> guest_browser_ = nullptr;
 };
 
@@ -853,10 +840,6 @@ class SelectPasswordFallbackMetricsTest
                          classified_or_unclassified_field_metric_name_substr,
                          ".Password"});
   }
-
- private:
-  base::test::ScopedFeatureList feature_{
-      password_manager::features::kPasswordManualFallbackAvailable};
 };
 
 IN_PROC_BROWSER_TEST_P(SelectPasswordFallbackMetricsTest,

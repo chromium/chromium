@@ -126,8 +126,8 @@ template("_androidx_prebuilt") {
       ignore_proguard_configs = true
       proguard_configs = [ "androidx_xr.flags" ]
 
-      # We do not use the APIs that require the native code.
-      ignore_native_libraries = true
+      # ChromeXR uses APIs that require the native code.
+      extract_native_libraries = true
 
       # It adds:
       #   <uses-native-library android:name="libopenxr.google.so" android:required="false"/>

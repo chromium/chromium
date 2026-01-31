@@ -7,23 +7,32 @@
 #include "base/functional/bind.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
+#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks.mojom.h"
-#include "chrome/browser/contextual_tasks/contextual_tasks_context_controller.h"
-#include "chrome/browser/contextual_tasks/contextual_tasks_context_controller_factory.h"
-#include "chrome/browser/contextual_tasks/mock_contextual_tasks_context_controller.h"
+#include "chrome/browser/contextual_tasks/contextual_tasks_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_commands.h"
+#include "chrome/browser/ui/lens/lens_search_controller.h"
+#include "chrome/browser/ui/tabs/public/tab_features.h"
+#include "chrome/browser/ui/tabs/tab_list_interface.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/contextual_tasks/public/contextual_task_context.h"
 #include "components/contextual_tasks/public/contextual_tasks_service.h"
+#include "components/contextual_tasks/public/features.h"
+#include "components/contextual_tasks/public/mock_contextual_tasks_service.h"
+#include "components/omnibox/browser/searchbox.mojom.h"
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
+#include "components/tabs/public/tab_interface.h"
+#include "content/public/browser/navigation_controller.h"
+#include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_web_ui.h"
@@ -31,11 +40,11 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/lens_server_proto/aim_communication.pb.h"
+#include "ui/webui/resources/cr_components/composebox/composebox.mojom.h"
 
 namespace {
 
 const char kTestEmail[] = "test@example.com";
-const char kTestToken[] = "test_token";
 
 using testing::_;
 using testing::Invoke;
@@ -56,10 +65,21 @@ class MockContextualTasksPage : public contextual_tasks::mojom::Page {
   MOCK_METHOD(void, OnHandshakeComplete, (), (override));
   MOCK_METHOD(void,
               OnContextUpdated,
-              (std::vector<contextual_tasks::mojom::TabPtr>),
+              (std::vector<contextual_tasks::mojom::TabPtr>,
+               std::vector<contextual_tasks::mojom::UploadedFilePtr>,
+               std::vector<contextual_tasks::mojom::ImagePtr>),
               (override));
   MOCK_METHOD(void, HideInput, (), (override));
   MOCK_METHOD(void, RestoreInput, (), (override));
+  MOCK_METHOD(void, OnZeroStateChange, (bool is_zero_state), (override));
+  MOCK_METHOD(void, OnAiPageStatusChanged, (bool), (override));
+  MOCK_METHOD(void, OnLensOverlayStateChanged, (bool), (override));
+  MOCK_METHOD(void,
+              SetTaskDetails,
+              (const base::Uuid&, const std::string&, const std::string&),
+              (override));
+  MOCK_METHOD(void, ShowErrorPage, (), (override));
+  MOCK_METHOD(void, HideErrorPage, (), (override));
 
   mojo::PendingRemote<contextual_tasks::mojom::Page> BindAndGetRemote() {
     return receiver_.BindNewPipeAndPassRemote();
@@ -67,6 +87,19 @@ class MockContextualTasksPage : public contextual_tasks::mojom::Page {
 
  private:
   mojo::Receiver<contextual_tasks::mojom::Page> receiver_{this};
+};
+
+class MockLensSearchController : public LensSearchController {
+ public:
+  explicit MockLensSearchController(tabs::TabInterface* tab)
+      : LensSearchController(tab) {}
+  ~MockLensSearchController() override = default;
+
+  MOCK_METHOD(void,
+              OpenLensOverlay,
+              (lens::LensOverlayInvocationSource invocation_source,
+               bool should_show_csb),
+              (override));
 };
 
 }  // namespace
@@ -92,17 +125,19 @@ class ContextualTasksUIBrowserTest : public InProcessBrowserTest {
   void OnWillCreateBrowserContextServices(content::BrowserContext* context) {
     IdentityTestEnvironmentProfileAdaptor::
         SetIdentityTestEnvironmentFactoriesOnBrowserContext(context);
-    contextual_tasks::ContextualTasksContextControllerFactory::GetInstance()
+    contextual_tasks::ContextualTasksServiceFactory::GetInstance()
         ->SetTestingFactory(
-            context, base::BindRepeating([](content::BrowserContext*)
-                                             -> std::unique_ptr<KeyedService> {
-              return std::make_unique<testing::NiceMock<
-                  contextual_tasks::MockContextualTasksContextController>>();
-            }));
+            context,
+            base::BindRepeating(
+                [](content::BrowserContext*) -> std::unique_ptr<KeyedService> {
+                  return std::make_unique<testing::NiceMock<
+                      contextual_tasks::MockContextualTasksService>>();
+                }));
   }
 
   void SetUpOnMainThread() override {
     InProcessBrowserTest::SetUpOnMainThread();
+    ASSERT_TRUE(embedded_test_server()->Start());
 
     // Sign in the user so IdentityManager is ready.
     identity_test_environment_adaptor_ =
@@ -114,7 +149,8 @@ class ContextualTasksUIBrowserTest : public InProcessBrowserTest {
         kTestEmail, signin::ConsentLevel::kSignin);
 
     // Setup TestWebUI.
-    auto* web_contents = browser()->tab_strip_model()->GetActiveWebContents();
+    content::WebContents* web_contents =
+        TabListInterface::From(browser())->GetActiveTab()->GetContents();
     test_web_ui_ = std::make_unique<content::TestWebUI>();
     test_web_ui_->set_web_contents(web_contents);
 
@@ -130,6 +166,10 @@ class ContextualTasksUIBrowserTest : public InProcessBrowserTest {
     InProcessBrowserTest::TearDownOnMainThread();
   }
 
+  void TriggerOnInnerWebContentsCreated(content::WebContents* inner) {
+    controller_->OnInnerWebContentsCreated(inner);
+  }
+
  protected:
   std::unique_ptr<IdentityTestEnvironmentProfileAdaptor>
       identity_test_environment_adaptor_;
@@ -138,66 +178,6 @@ class ContextualTasksUIBrowserTest : public InProcessBrowserTest {
   std::unique_ptr<ContextualTasksUI> controller_;
   base::CallbackListSubscription create_services_subscription_;
 };
-
-// Verify that the OAuth token is requested and sent when the page handler is
-// created.
-IN_PROC_BROWSER_TEST_F(ContextualTasksUIBrowserTest, RequestOAuthTokenManual) {
-  testing::NiceMock<MockContextualTasksPage> mock_page;
-  base::RunLoop run_loop;
-
-  // Verify that the token is set in the mocked page.
-  EXPECT_CALL(mock_page, SetOAuthToken(_))
-      .WillOnce([&run_loop](const std::string& token) {
-        EXPECT_EQ(kTestToken, token);
-        run_loop.Quit();
-      });
-
-  // Create the PageHandler to mimic the Mojo call from the renderer, but allows
-  // the test to mock remote directly.
-  mojo::PendingReceiver<contextual_tasks::mojom::PageHandler> handler_receiver;
-  controller_->CreatePageHandler(mock_page.BindAndGetRemote(),
-                                 std::move(handler_receiver));
-
-  //  Wait for the token request to be made.
-  identity_test_env_->WaitForAccessTokenRequestIfNecessaryAndRespondWithToken(
-      kTestToken, base::Time::Now() + base::Days(10));
-
-  // Verify that the token is set in the mocked page.
-  run_loop.Run();
-}
-
-// Verify that the OAuth token is refreshed after it expires.
-IN_PROC_BROWSER_TEST_F(ContextualTasksUIBrowserTest,
-                       RequestOAuthTokenRefreshes) {
-  testing::NiceMock<MockContextualTasksPage> mock_page;
-  base::RunLoop run_loop;
-
-  // Expect SetOAuthToken to be called twice.
-  EXPECT_CALL(mock_page, SetOAuthToken(_))
-      .WillOnce([&](const std::string& token) {
-        EXPECT_EQ(kTestToken, token);
-        // Enable auto-issue for the next request. This will cause the token
-        // next token to be issued as "account_token".
-        identity_test_env_->SetAutomaticIssueOfAccessTokens(true);
-      })
-      .WillOnce([&](const std::string& token) {
-        // Verify that the token is refreshed. It should be different from the
-        // first token.
-        EXPECT_NE(kTestToken, token);
-        run_loop.Quit();
-      });
-
-  mojo::PendingReceiver<contextual_tasks::mojom::PageHandler> handler_receiver;
-  controller_->CreatePageHandler(mock_page.BindAndGetRemote(),
-                                 std::move(handler_receiver));
-
-  // Respond to the first request with a short expiration.
-  base::Time expiration = base::Time::Now() + base::Seconds(1);
-  identity_test_env_->WaitForAccessTokenRequestIfNecessaryAndRespondWithToken(
-      kTestToken, expiration);
-
-  run_loop.Run();
-}
 
 IN_PROC_BROWSER_TEST_F(ContextualTasksUIBrowserTest,
                        OnSidePanelStateChanged_InTab) {
@@ -263,4 +243,135 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksUIBrowserTest,
 
   side_panel_controller->OnSidePanelStateChanged();
   run_loop.Run();
+}
+
+class ContextualTasksLensBrowserTest : public ContextualTasksUIBrowserTest {
+ public:
+  ContextualTasksLensBrowserTest() {
+    feature_list_.InitAndEnableFeature(contextual_tasks::kContextualTasks);
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(ContextualTasksLensBrowserTest, HandleLensButtonClick) {
+  // Setup LensController
+  auto override =
+      tabs::TabFeatures::GetUserDataFactoryForTesting().AddOverrideForTesting(
+          base::BindLambdaForTesting([&](tabs::TabInterface& tab) {
+            auto mock = std::make_unique<MockLensSearchController>(&tab);
+            EXPECT_CALL(*mock,
+                        OpenLensOverlay(lens::LensOverlayInvocationSource::
+                                            kContextualTasksComposebox,
+                                        true))
+                .Times(1);
+            return std::unique_ptr<LensSearchController>(std::move(mock));
+          }));
+
+  chrome::NewTab(browser());
+
+  // Bind pipes
+  mojo::PendingReceiver<composebox::mojom::PageHandler> handler_receiver;
+  mojo::Remote<composebox::mojom::PageHandler> handler_remote(
+      handler_receiver.InitWithNewPipeAndPassRemote());
+
+  mojo::PendingRemote<composebox::mojom::Page> composebox_page;
+  std::ignore = composebox_page.InitWithNewPipeAndPassReceiver();
+
+  mojo::PendingReceiver<searchbox::mojom::PageHandler>
+      searchbox_handler_receiver;
+  mojo::PendingRemote<searchbox::mojom::Page> searchbox_page;
+  std::ignore = searchbox_page.InitWithNewPipeAndPassReceiver();
+
+  // Create PageHandler
+  controller_->CreatePageHandler(
+      std::move(composebox_page), std::move(handler_receiver),
+      std::move(searchbox_page), std::move(searchbox_handler_receiver));
+
+  // Invoke button click
+  handler_remote->HandleLensButtonClick();
+
+  // Flush to ensure message processing on UI thread
+  handler_remote.FlushForTesting();
+}
+
+IN_PROC_BROWSER_TEST_F(ContextualTasksUIBrowserTest,
+                       OnLensOverlayStateChanged) {
+  testing::NiceMock<MockContextualTasksPage> mock_page;
+
+  mojo::PendingReceiver<contextual_tasks::mojom::PageHandler> handler_receiver;
+  // The initial call to CreatePageHandler should call
+  // OnLensOverlayStateChanged.
+  EXPECT_CALL(mock_page, OnLensOverlayStateChanged(false));
+  controller_->CreatePageHandler(mock_page.BindAndGetRemote(),
+                                 std::move(handler_receiver));
+
+  {
+    base::RunLoop run_loop;
+    EXPECT_CALL(mock_page, OnLensOverlayStateChanged(true))
+        .WillOnce(testing::InvokeWithoutArgs(&run_loop, &base::RunLoop::Quit));
+    controller_->OnLensOverlayStateChanged(true);
+    run_loop.Run();
+  }
+
+  {
+    base::RunLoop run_loop;
+    EXPECT_CALL(mock_page, OnLensOverlayStateChanged(false))
+        .WillOnce(testing::InvokeWithoutArgs(&run_loop, &base::RunLoop::Quit));
+    controller_->OnLensOverlayStateChanged(false);
+    run_loop.Run();
+  }
+}
+
+IN_PROC_BROWSER_TEST_F(
+    ContextualTasksUIBrowserTest,
+    OnInnerWebContentsCreated_HandlesMultipleFramesAndReload) {
+  // Create first inner contents.
+  std::unique_ptr<content::WebContents> inner_contents1 =
+      content::WebContents::Create(
+          content::WebContents::CreateParams(browser()->profile()));
+  GURL url1 = embedded_test_server()->GetURL("/title1.html?1");
+  inner_contents1->GetController().LoadURL(
+      url1, content::Referrer(), ui::PAGE_TRANSITION_TYPED, std::string());
+  EXPECT_TRUE(content::WaitForLoadStop(inner_contents1.get()));
+  TriggerOnInnerWebContentsCreated(inner_contents1.get());
+
+  // Verify first inner contents is observed.
+  EXPECT_EQ(controller_->GetInnerFrameUrl(), url1);
+
+  // Create second inner contents (should be ignored).
+  std::unique_ptr<content::WebContents> inner_contents2 =
+      content::WebContents::Create(
+          content::WebContents::CreateParams(browser()->profile()));
+  GURL url2 = embedded_test_server()->GetURL("/title1.html?2");
+  inner_contents2->GetController().LoadURL(
+      url2, content::Referrer(), ui::PAGE_TRANSITION_TYPED, std::string());
+  EXPECT_TRUE(content::WaitForLoadStop(inner_contents2.get()));
+  TriggerOnInnerWebContentsCreated(inner_contents2.get());
+
+  // Verify first inner contents is still observed.
+  EXPECT_EQ(controller_->GetInnerFrameUrl(), url1);
+
+  // Navigate the main frame (simulating reload).
+  // We use the WebUI's WebContents which is the active tab's WebContents.
+  GURL main_url = embedded_test_server()->GetURL("/title1.html?main");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), main_url));
+
+  // The navigation observer should have reset the embedded page.
+  // Verify embedded page is reset (GetInnerFrameUrl returns empty).
+  EXPECT_EQ(controller_->GetInnerFrameUrl(), GURL::EmptyGURL());
+
+  // Create a third inner contents (should be accepted now).
+  std::unique_ptr<content::WebContents> inner_contents3 =
+      content::WebContents::Create(
+          content::WebContents::CreateParams(browser()->profile()));
+  GURL url3 = embedded_test_server()->GetURL("/title1.html?3");
+  inner_contents3->GetController().LoadURL(
+      url3, content::Referrer(), ui::PAGE_TRANSITION_TYPED, std::string());
+  EXPECT_TRUE(content::WaitForLoadStop(inner_contents3.get()));
+  TriggerOnInnerWebContentsCreated(inner_contents3.get());
+
+  // Verify third inner contents is observed.
+  EXPECT_EQ(controller_->GetInnerFrameUrl(), url3);
 }

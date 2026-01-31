@@ -9,3 +9,22 @@ buildflag_header("buildflags") {
   header = "buildflags.h"
   flags = [ "ENABLE_DISCOVERY=$enable_discovery" ]
 }
+
+source_set("sharing") {
+  sources = [
+    "sharing_message_bridge_factory.cc",
+    "sharing_message_bridge_factory.h",
+    "sharing_service_factory.h",
+  ]
+  public_deps = [
+    "//base",
+    "//chrome/browser/profiles:profile",
+    "//components/keyed_service/core",
+  ]
+  deps = [
+    "//chrome/common:channel_info",
+    "//components/sharing_message",
+    "//components/sync/base",
+    "//components/sync/model",
+  ]
+}

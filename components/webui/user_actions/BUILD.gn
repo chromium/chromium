@@ -1,0 +1,19 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+static_library("user_actions") {
+  sources = [
+    "user_actions_ui.cc",
+    "user_actions_ui.h",
+    "user_actions_ui_constants.h",
+    "user_actions_ui_handler.cc",
+    "user_actions_ui_handler.h",
+  ]
+
+  deps = [
+    "//base",
+    "//components/webui/user_actions/resources",
+    "//content/public/browser",
+  ]
+}

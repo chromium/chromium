@@ -10,15 +10,6 @@
 #include "chrome/browser/ui/views/side_panel/side_panel.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_ui.h"
 
-void ShowReadAnythingSidePanel(Browser* browser,
-                               SidePanelOpenTrigger open_trigger) {
-  SidePanelUI* side_panel_ui = browser->GetFeatures().side_panel_ui();
-  if (!side_panel_ui) {
-    return;
-  }
-  side_panel_ui->Show(SidePanelEntryId::kReadAnything, open_trigger);
-}
-
 bool IsReadAnythingEntryShowing(BrowserWindowInterface* browser) {
   // The side panel is not immediately hidden, and IsSidePanelEntryShowing
   // may return true for a few seconds after the panel is visually closed. This

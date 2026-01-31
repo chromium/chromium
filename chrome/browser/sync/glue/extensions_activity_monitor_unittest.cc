@@ -40,7 +40,7 @@ scoped_refptr<Extension> MakeExtension(const std::string& name) {
   EXPECT_TRUE(base::PathService::Get(chrome::DIR_TEST_DATA, &path));
   path = path.AppendASCII(name);
 
-  base::Value::Dict value;
+  base::DictValue value;
   value.Set(keys::kManifestVersion, 2);
   value.Set(keys::kVersion, "1.0.0.0");
   value.Set(keys::kName, name);

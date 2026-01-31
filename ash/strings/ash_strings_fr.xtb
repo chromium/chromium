@@ -342,6 +342,7 @@
 <translation id="2201071101391734388">Photo récente <ph name="INDEX" /> sur <ph name="TOTAL_COUNT" />.</translation>
 <translation id="2201687081523799384">Réduire Google Tasks</translation>
 <translation id="2208323208084708176">Mode bureau unifié</translation>
+<translation id="2210311543574621570">Le presse-papiers s'affiche lorsque vous appuyez de manière prolongée sur Ctrl+V. Vous pouvez désactiver ce raccourci en désactivant le flag #clipboard-history-longpress dans chrome://flags.</translation>
 <translation id="2215920961700443347">Aucun accès à Internet. Connectez-vous à Internet, puis réessayez.</translation>
 <translation id="2222841058024245321">Bureau 7</translation>
 <translation id="2223384056430485343">Sur un écran partagé</translation>

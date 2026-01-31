@@ -44,6 +44,7 @@ class BrowserWindowInterface;
 class GURL;
 class SessionID;
 class SkBitmap;
+class TabListInterface;
 class TabStripModel;
 
 namespace base {
@@ -162,16 +163,6 @@ ui::mojom::WindowShowState ConvertToWindowShowState(
 // displays.
 bool WindowBoundsIntersectDisplays(const gfx::Rect& bounds);
 
-// Moves the given tab to the `target_browser`. On success, returns the
-// new index of the tab in the target tabstrip. On failure, returns -1.
-// Assumes that the caller has already checked whether the target window is
-// different from the source.
-int MoveTabToWindow(ExtensionFunction* function,
-                    int tab_id,
-                    BrowserWindowInterface* target_browser,
-                    int new_index,
-                    std::string* error);
-
 }  // namespace tabs_internal
 
 // Converts a ZoomMode to its ZoomSettings representation.
@@ -226,14 +217,9 @@ class WindowsCreateFunction : public ExtensionFunction {
 #endif
 
   // Handles post-creation window initialization. `new_window` is the newly-
-  // created browser window. `source_window` and `tab_index` indicate an
-  // existing tab to move to the new window, if any.
+  // created browser window.
   // Returns the response to pass back to the extension.
-  // TODO(crbug.com/431004500): Remove `source_window` and `tab_index` here;
-  // they won't work to be passed in on desktop android.
-  ResponseValue OnBrowserWindowCreated(BrowserWindowInterface* new_window,
-                                       WindowController* source_window,
-                                       int tab_index);
+  ResponseValue OnBrowserWindowCreated(BrowserWindowInterface* new_window);
 
 #if BUILDFLAG(IS_CHROMEOS)
   void OnBocaWindowCreatedAsynchronously(const SessionID& session_id);
@@ -249,6 +235,10 @@ class WindowsCreateFunction : public ExtensionFunction {
 
   // The set of parsed URLs to open in the newly-created window.
   std::vector<GURL> urls_;
+
+  // Whether to set the calling extension context as the opener of the newly-
+  // created window. Not supported for service worker callers.
+  bool set_self_as_opener_ = false;
 };
 class WindowsUpdateFunction : public ExtensionFunction {
   ~WindowsUpdateFunction() override = default;
@@ -300,16 +290,12 @@ class TabsQueryFunction : public ExtensionFunction {
   ~TabsQueryFunction() override = default;
 
   // Builds the list of tab objects to return.
-  base::Value::List BuildTabList(BrowserWindowInterface* current_browser,
-                                 BrowserWindowInterface* last_active_browser,
-                                 const URLPatternSet& url_patterns,
-                                 const std::string& window_type,
-                                 int window_id,
-                                 int tab_index);
-
-  // Returns true if the given `candidate_profile` matches the calling
-  // extension's profile (taking into account incognito access).
-  bool MatchesProfile(Profile* candidate_profile);
+  base::ListValue BuildTabList(BrowserWindowInterface* current_browser,
+                               BrowserWindowInterface* last_active_browser,
+                               const URLPatternSet& url_patterns,
+                               const std::string& window_type,
+                               int window_id,
+                               int tab_index);
 
   bool MatchesWindow(BrowserWindowInterface* candidate_browser,
                      BrowserWindowInterface* current_browser,
@@ -324,9 +310,33 @@ class TabsQueryFunction : public ExtensionFunction {
   api::tabs::Query::Params::QueryInfo query_info_;
 };
 class TabsCreateFunction : public ExtensionFunction {
-  ~TabsCreateFunction() override = default;
+ public:
+  TabsCreateFunction();
+
+ private:
+  ~TabsCreateFunction() override;
+
   ResponseAction Run() override;
   DECLARE_EXTENSION_FUNCTION("tabs.create", TABS_CREATE)
+
+  // Called after a new browser window has been created.
+  void OnBrowserWindowCreated(BrowserWindowInterface* browser);
+
+  // Opens a new tab in the given `browser`. If non-null, sets its opener to
+  // `opener_tab`.
+  void OpenTabInBrowser(BrowserWindowInterface& browser,
+                        content::WebContents* opener_tab);
+
+  // Stashed properties, since the browser window to use may be created
+  // asynchronously.
+  std::optional<int> opener_tab_id_;
+  std::optional<std::string> original_url_;
+  std::optional<bool> active_;
+  std::optional<bool> pinned_;
+  std::optional<int> index_;
+
+  // The validated URL to open.
+  GURL validated_url_;
 };
 class TabsDuplicateFunction : public ExtensionFunction {
   ~TabsDuplicateFunction() override = default;
@@ -367,17 +377,19 @@ class TabsUpdateFunction : public ExtensionFunction {
   // Updates the active or selected tab. Returns true on success or if there was
   // nothing to do. Returns false on failure with an error message.
   bool UpdateActiveTab(const api::tabs::Update::Params& params,
-                       TabStripModel* tab_strip,
+                       TabListInterface& tab_list,
                        int tab_index,
-                       const content::WebContents* contents,
                        std::string& error);
 
+  // TODO(https://crbug.com/447211263): Support on desktop android.
+#if !BUILDFLAG(IS_ANDROID)
   // Updates the highlight state of the given tab. Returns true on success or if
   // there was nothing to do. Returns false on failure with an error.
   bool UpdateHighlightedTab(const api::tabs::Update::Params& params,
                             TabStripModel* tab_strip,
                             int tab_index,
                             std::string& error);
+#endif
 
   DECLARE_EXTENSION_FUNCTION("tabs.update", TABS_UPDATE)
 };
@@ -386,7 +398,7 @@ class TabsMoveFunction : public ExtensionFunction {
   ResponseAction Run() override;
   bool MoveTab(int tab_id,
                int* new_index,
-               base::Value::List& tab_values,
+               base::ListValue& tab_values,
                const std::optional<int>& window_id,
                std::string* error);
   DECLARE_EXTENSION_FUNCTION("tabs.move", TABS_MOVE)

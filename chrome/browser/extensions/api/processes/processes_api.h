@@ -52,7 +52,7 @@ class ProcessesEventRouter : public task_manager::TaskManagerObserver {
 
   void DispatchEvent(events::HistogramValue histogram_value,
                      const std::string& event_name,
-                     base::Value::List event_args) const;
+                     base::ListValue event_args) const;
 
   // Determines whether there is a registered listener for the specified event.
   // It helps to avoid collecting data if no one is interested in it.

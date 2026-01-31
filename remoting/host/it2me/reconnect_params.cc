@@ -17,9 +17,9 @@ ReconnectParams::ReconnectParams(ReconnectParams&& other) = default;
 ReconnectParams& ReconnectParams::operator=(ReconnectParams&& other) = default;
 ReconnectParams::~ReconnectParams() = default;
 
-base::Value::Dict ReconnectParams::ToDict(const ReconnectParams& params) {
+base::DictValue ReconnectParams::ToDict(const ReconnectParams& params) {
   DCHECK(params.IsValid());
-  return base::Value::Dict()
+  return base::DictValue()
       .Set(kReconnectSupportId, params.support_id)
       .Set(kReconnectHostSecret, params.host_secret)
       .Set(kReconnectPrivateKey, params.private_key)
@@ -27,7 +27,7 @@ base::Value::Dict ReconnectParams::ToDict(const ReconnectParams& params) {
       .Set(kReconnectClientFtlAddress, params.client_ftl_address);
 }
 
-ReconnectParams ReconnectParams::FromDict(const base::Value::Dict& dict) {
+ReconnectParams ReconnectParams::FromDict(const base::DictValue& dict) {
   ReconnectParams params;
   const std::string* support_id = dict.FindString(kReconnectSupportId);
   if (support_id) {

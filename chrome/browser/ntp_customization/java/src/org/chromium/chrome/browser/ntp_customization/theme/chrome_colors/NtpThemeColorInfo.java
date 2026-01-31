@@ -10,6 +10,7 @@ import android.graphics.drawable.Drawable;
 import androidx.annotation.ColorInt;
 import androidx.annotation.ColorRes;
 import androidx.annotation.IntDef;
+import androidx.annotation.StringRes;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.build.annotations.NullMarked;
@@ -65,6 +66,8 @@ public class NtpThemeColorInfo {
 
     public Drawable iconDrawable;
 
+    public @StringRes int colorStringResId;
+
     private static final float HIGHLIGHT_COLOR_ALPHA = 0.3f;
     private static final float BACKGROUND_COLOR_ALPHA = 0.15f;
 
@@ -77,6 +80,7 @@ public class NtpThemeColorInfo {
     public NtpThemeColorInfo(Context context, @NtpThemeColorId int id) {
         this.id = id;
         this.primaryColorResId = NtpThemeColorUtils.getNtpThemePrimaryColorResId(id);
+        this.colorStringResId = NtpThemeColorUtils.getNtpColorThemeStringResId(id);
 
         @ColorInt int primaryColor = context.getColor(primaryColorResId);
         highlightColor = calculateHighlightColorForColorPalette(primaryColor);

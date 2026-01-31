@@ -128,15 +128,15 @@ class SafeBrowsingApiHandlerBridge {
 
   // Used as a key to identify unique requests sent to Java to get Safe Browsing
   // reputation from GmsCore SafeBrowsing API.
-  jlong next_safe_browsing_callback_id_ = 0;
+  int64_t next_safe_browsing_callback_id_ = 0;
 
   // Used as a key to identify unique requests sent to Java related to
   // SafetyNet app verification.
-  jlong next_verify_apps_callback_id_ = 0;
+  int64_t next_verify_apps_callback_id_ = 0;
 
   // Used as a key to identify unique requests sent to Java related to
   // SafetyNet harmful app detection.
-  jlong next_harmful_apps_callback_id_ = 0;
+  int64_t next_harmful_apps_callback_id_ = 0;
 
   // Whether SafeBrowsing API is available. Set to false if previous call to
   // SafeBrowsing API has encountered a non-recoverable failure. If set to

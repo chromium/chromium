@@ -7,7 +7,6 @@ package org.chromium.chrome.browser.tabbed_mode;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -28,7 +27,8 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.Shadows;
 
-import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.supplier.ObservableSuppliers;
+import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
@@ -44,7 +44,6 @@ import org.chromium.chrome.browser.keyboard_accessory.AccessorySheetVisualStateP
 import org.chromium.chrome.browser.keyboard_accessory.KeyboardAccessoryVisualStateProvider;
 import org.chromium.chrome.browser.keyboard_accessory.ManualFillingComponent;
 import org.chromium.chrome.browser.omnibox.suggestions.OmniboxSuggestionsVisualState;
-import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.SheetState;
@@ -59,7 +58,6 @@ public class BottomAttachedUiObserverTest {
     private static final int BOTTOM_CONTROLS_MIN_HEIGHT_MULTIPLE_LAYER = 80;
     private static final int BOTTOM_CHIN_HEIGHT = 60;
     private static final int BROWSER_CONTROLS_COLOR = Color.RED;
-    private static final int SNACKBAR_COLOR = Color.GREEN;
     private static final int OVERLAY_PANEL_COLOR = Color.BLUE;
     private static final int BOTTOM_SHEET_YELLOW = Color.YELLOW;
     private static final int BOTTOM_SHEET_CYAN = Color.CYAN;
@@ -85,14 +83,13 @@ public class BottomAttachedUiObserverTest {
 
     @Mock private BottomControlsStacker mBottomControlsStacker;
     @Mock private BrowserControlsStateProvider mBrowserControlsStateProvider;
-    @Mock private SnackbarManager mSnackbarManager;
 
-    private final ObservableSupplierImpl<ContextualSearchManager> mContextualSearchManagerSupplier =
-            new ObservableSupplierImpl<>();
+    private final SettableMonotonicObservableSupplier<ContextualSearchManager>
+            mContextualSearchManagerSupplier = ObservableSuppliers.createMonotonic();
     @Mock private ContextualSearchManager mContextualSearchManager;
 
-    private final ObservableSupplierImpl<OverlayPanelStateProvider>
-            mOverlayPanelStateProviderSupplier = new ObservableSupplierImpl<>();
+    private final SettableMonotonicObservableSupplier<OverlayPanelStateProvider>
+            mOverlayPanelStateProviderSupplier = ObservableSuppliers.createMonotonic();
     @Mock private OverlayPanelStateProvider mOverlayPanelStateProvider;
 
     @Mock private BottomSheetController mBottomSheetController;
@@ -103,11 +100,11 @@ public class BottomAttachedUiObserverTest {
     @Mock private ManualFillingComponent mManualFillingComponent;
 
     @Mock private KeyboardAccessoryVisualStateProvider mKeyboardAccessoryVisualStateProvider;
-    private final ObservableSupplierImpl<KeyboardAccessoryVisualStateProvider>
-            mKeyboardAccessoryVisualStateSupplier = new ObservableSupplierImpl<>();
+    private final SettableMonotonicObservableSupplier<KeyboardAccessoryVisualStateProvider>
+            mKeyboardAccessoryVisualStateSupplier = ObservableSuppliers.createMonotonic();
     @Mock private AccessorySheetVisualStateProvider mAccessorySheetVisualStateProvider;
-    private final ObservableSupplierImpl<AccessorySheetVisualStateProvider>
-            mAccessorySheetVisualStateSupplier = new ObservableSupplierImpl<>();
+    private final SettableMonotonicObservableSupplier<AccessorySheetVisualStateProvider>
+            mAccessorySheetVisualStateSupplier = ObservableSuppliers.createMonotonic();
 
     @Mock private InsetObserver mInsetObserver;
 
@@ -120,7 +117,6 @@ public class BottomAttachedUiObserverTest {
 
         doReturn(null).when(mBottomSheetController).getSheetBackgroundColor();
         when(mBottomSheetController.isFullWidth()).thenReturn(true);
-        when(mSnackbarManager.isFullWidth()).thenReturn(true);
 
         mContextualSearchManagerSupplier.set(mContextualSearchManager);
         mOverlayPanelStateProviderSupplier.set(mOverlayPanelStateProvider);
@@ -136,7 +132,6 @@ public class BottomAttachedUiObserverTest {
                 new BottomAttachedUiObserver(
                         mBottomControlsStacker,
                         mBrowserControlsStateProvider,
-                        mSnackbarManager,
                         mContextualSearchManagerSupplier,
                         mBottomSheetController,
                         mOmniboxSuggestionsVisualState,
@@ -308,53 +303,11 @@ public class BottomAttachedUiObserverTest {
     }
 
     @Test
-    public void testAdaptsColorToSnackbars() {
-        mColorChangeObserver.assertState(null, false, false);
-
-        // Set only the snackbar color.
-        mBottomAttachedUiObserver.onSnackbarStateChanged(/* isShowing= */ false, SNACKBAR_COLOR);
-        mColorChangeObserver.assertState(null, false, false);
-
-        // Show the snackbar.
-        mBottomAttachedUiObserver.onSnackbarStateChanged(/* isShowing= */ true, SNACKBAR_COLOR);
-        mColorChangeObserver.assertState(SNACKBAR_COLOR, false, false);
-
-        // Hide the snackbar.
-        mBottomAttachedUiObserver.onSnackbarStateChanged(/* isShowing= */ false, /* color= */ null);
-        mColorChangeObserver.assertState(null, false, false);
-    }
-
-    @Test
-    public void testAdaptsColorToSnackbars_doesNotCoverFullWidth() {
-        when(mSnackbarManager.isFullWidth()).thenReturn(false);
-        mColorChangeObserver.assertState(null, false, false);
-
-        // Set only the snackbar color.
-        mBottomAttachedUiObserver.onSnackbarStateChanged(/* isShowing= */ false, SNACKBAR_COLOR);
-        mColorChangeObserver.assertState(null, false, false);
-
-        // Show the snackbar.
-        mBottomAttachedUiObserver.onSnackbarStateChanged(/* isShowing= */ true, SNACKBAR_COLOR);
-        mColorChangeObserver.assertState(SNACKBAR_COLOR, true, false);
-
-        // Hide the snackbar.
-        mBottomAttachedUiObserver.onSnackbarStateChanged(/* isShowing= */ false, /* color= */ null);
-        mColorChangeObserver.assertState(null, false, false);
-    }
-
-    /*
-    Tests that when floating snackbar is enabled, we do not add BottomAttachedUiObserver.
-    */
-    @Test
-    public void testDoesNotAddBottomAttachedUiObserver() {
-        verify(mSnackbarManager, never()).addObserver(eq(mBottomAttachedUiObserver));
-    }
-
-    @Test
     public void testSetOverlayPanelObserver() {
         verify(mOverlayPanelStateProvider).addObserver(eq(mBottomAttachedUiObserver));
 
-        mOverlayPanelStateProviderSupplier.set(null);
+        mOverlayPanelStateProviderSupplier.set(
+                org.mockito.Mockito.mock(OverlayPanelStateProvider.class));
         verify(mOverlayPanelStateProvider).removeObserver(eq(mBottomAttachedUiObserver));
     }
 
@@ -588,9 +541,10 @@ public class BottomAttachedUiObserverTest {
         mBottomAttachedUiObserver.onInsetChanged();
         mColorChangeObserver.assertState(null, false, false);
 
-        // Show a snackbar to set a color.
-        mBottomAttachedUiObserver.onSnackbarStateChanged(/* isShowing= */ true, SNACKBAR_COLOR);
-        mColorChangeObserver.assertState(SNACKBAR_COLOR, false, false);
+        // Show the keyboard accessory to set a color.
+        mBottomAttachedUiObserver.onKeyboardAccessoryVisualStateChanged(
+                /* visible= */ true, KEYBOARD_ACCESSORY_COLOR);
+        mColorChangeObserver.assertState(KEYBOARD_ACCESSORY_COLOR, false, false);
 
         // Shift navbar to the side.
         when(mInsetObserver.getLastRawWindowInsets()).thenReturn(SIDE_NAV_BAR_INSETS);
@@ -600,10 +554,11 @@ public class BottomAttachedUiObserverTest {
         // Return navbar to the bottom.
         when(mInsetObserver.getLastRawWindowInsets()).thenReturn(BOTTOM_NAV_BAR_INSETS);
         mBottomAttachedUiObserver.onInsetChanged();
-        mColorChangeObserver.assertState(SNACKBAR_COLOR, false, false);
+        mColorChangeObserver.assertState(KEYBOARD_ACCESSORY_COLOR, false, false);
 
-        // Hide the snackbar.
-        mBottomAttachedUiObserver.onSnackbarStateChanged(/* isShowing= */ false, SNACKBAR_COLOR);
+        // Hide the keyboard accessory.
+        mBottomAttachedUiObserver.onKeyboardAccessoryVisualStateChanged(
+                /* visible= */ false, KEYBOARD_ACCESSORY_COLOR);
         mColorChangeObserver.assertState(null, false, false);
     }
 
@@ -632,7 +587,8 @@ public class BottomAttachedUiObserverTest {
     public void testSetAccessorySheetVisualStateObserver() {
         verify(mAccessorySheetVisualStateProvider).addObserver(eq(mBottomAttachedUiObserver));
 
-        mAccessorySheetVisualStateSupplier.set(null);
+        mAccessorySheetVisualStateSupplier.set(
+                org.mockito.Mockito.mock(AccessorySheetVisualStateProvider.class));
         verify(mAccessorySheetVisualStateProvider).removeObserver(eq(mBottomAttachedUiObserver));
     }
 
@@ -651,7 +607,8 @@ public class BottomAttachedUiObserverTest {
     public void testSetKeyboardAccessoryVisualStateObserver() {
         verify(mKeyboardAccessoryVisualStateProvider).addObserver(eq(mBottomAttachedUiObserver));
 
-        mKeyboardAccessoryVisualStateSupplier.set(null);
+        mKeyboardAccessoryVisualStateSupplier.set(
+                org.mockito.Mockito.mock(KeyboardAccessoryVisualStateProvider.class));
         verify(mKeyboardAccessoryVisualStateProvider).removeObserver(eq(mBottomAttachedUiObserver));
     }
 
@@ -671,10 +628,6 @@ public class BottomAttachedUiObserverTest {
     @Test
     public void testColorPrioritization() {
         mColorChangeObserver.assertState(null, false, false);
-
-        // Show the snackbar.
-        mBottomAttachedUiObserver.onSnackbarStateChanged(/* isShowing= */ true, SNACKBAR_COLOR);
-        mColorChangeObserver.assertState(SNACKBAR_COLOR, false, false);
 
         // Show the keyboard accessory.
         mBottomAttachedUiObserver.onKeyboardAccessoryVisualStateChanged(
@@ -730,11 +683,6 @@ public class BottomAttachedUiObserverTest {
         // Hide bottom controls.
         mBottomAttachedUiObserver.onBottomControlsHeightChanged(0, 0);
         mColorChangeObserver.assertState(KEYBOARD_ACCESSORY_COLOR, false, false);
-
-        // Hide keyboard accessory - should fall back to the snackbar color.
-        mBottomAttachedUiObserver.onKeyboardAccessoryVisualStateChanged(
-                /* visible= */ false, KEYBOARD_ACCESSORY_COLOR);
-        mColorChangeObserver.assertState(SNACKBAR_COLOR, false, false);
     }
 
     @Test
@@ -784,10 +732,7 @@ public class BottomAttachedUiObserverTest {
     }
 
     @Test
-    @EnableFeatures({
-        ChromeFeatureList.NAV_BAR_COLOR_ANIMATION,
-        ChromeFeatureList.EDGE_TO_EDGE_EVERYWHERE
-    })
+    @EnableFeatures({ChromeFeatureList.NAV_BAR_COLOR_ANIMATION})
     @DisableFeatures({ChromeFeatureList.EDGE_TO_EDGE_BOTTOM_CHIN})
     public void testNavBarColorAnimationsOverlayPanel() {
         mBottomAttachedUiObserver.onOverlayPanelStateChanged(
@@ -818,10 +763,7 @@ public class BottomAttachedUiObserverTest {
     }
 
     @Test
-    @EnableFeatures({
-        ChromeFeatureList.NAV_BAR_COLOR_ANIMATION,
-        ChromeFeatureList.EDGE_TO_EDGE_EVERYWHERE
-    })
+    @EnableFeatures({ChromeFeatureList.NAV_BAR_COLOR_ANIMATION})
     @DisableFeatures({ChromeFeatureList.EDGE_TO_EDGE_BOTTOM_CHIN})
     public void testNavBarColorAnimationsBottomSheet() {
         mBottomAttachedUiObserver.onSheetContentChanged(mSheetContent);
@@ -844,32 +786,7 @@ public class BottomAttachedUiObserverTest {
     }
 
     @Test
-    @EnableFeatures({
-        ChromeFeatureList.NAV_BAR_COLOR_ANIMATION,
-        ChromeFeatureList.EDGE_TO_EDGE_EVERYWHERE
-    })
-    @DisableFeatures({ChromeFeatureList.EDGE_TO_EDGE_BOTTOM_CHIN})
-    public void testNavBarColorAnimationsSnackbar() {
-        mColorChangeObserver.assertState(null, false, false);
-
-        // Set only the snackbar color.
-        mBottomAttachedUiObserver.onSnackbarStateChanged(/* isShowing= */ false, SNACKBAR_COLOR);
-        mColorChangeObserver.assertState(null, false, false);
-
-        // Show the snackbar. Nav bar color animations disabled on appearance.
-        mBottomAttachedUiObserver.onSnackbarStateChanged(/* isShowing= */ true, SNACKBAR_COLOR);
-        mColorChangeObserver.assertState(SNACKBAR_COLOR, false, true);
-
-        // Hide the snackbar. Nav bar color animations enabled on disappearance.
-        mBottomAttachedUiObserver.onSnackbarStateChanged(/* isShowing= */ false, /* color= */ null);
-        mColorChangeObserver.assertState(null, false, false);
-    }
-
-    @Test
-    @EnableFeatures({
-        ChromeFeatureList.NAV_BAR_COLOR_ANIMATION,
-        ChromeFeatureList.EDGE_TO_EDGE_EVERYWHERE
-    })
+    @EnableFeatures({ChromeFeatureList.NAV_BAR_COLOR_ANIMATION})
     @DisableFeatures({ChromeFeatureList.EDGE_TO_EDGE_BOTTOM_CHIN})
     public void testNavBarColorAnimationsBrowserControls() {
         mColorChangeObserver.assertState(null, false, false);
@@ -906,10 +823,7 @@ public class BottomAttachedUiObserverTest {
     }
 
     @Test
-    @EnableFeatures({
-        ChromeFeatureList.NAV_BAR_COLOR_ANIMATION,
-        ChromeFeatureList.EDGE_TO_EDGE_EVERYWHERE
-    })
+    @EnableFeatures({ChromeFeatureList.NAV_BAR_COLOR_ANIMATION})
     public void testNavBarColorAnimationsBottomToolbar() {
         doReturn(ControlsPosition.BOTTOM).when(mBrowserControlsStateProvider).getControlsPosition();
         doReturn(0.0f).when(mBrowserControlsStateProvider).getBrowserControlHiddenRatio();
@@ -932,7 +846,6 @@ public class BottomAttachedUiObserverTest {
         verify(mBottomSheetController).removeObserver(eq(mBottomAttachedUiObserver));
         verify(mOverlayPanelStateProvider).removeObserver(eq(mBottomAttachedUiObserver));
         verify(mBrowserControlsStateProvider).removeObserver(eq(mBottomAttachedUiObserver));
-        verify(mSnackbarManager).removeObserver(eq(mBottomAttachedUiObserver));
         verify(mInsetObserver).removeObserver(eq(mBottomAttachedUiObserver));
     }
 

@@ -198,7 +198,7 @@ public class FakeAccountManagerFacade implements AccountManagerFacade {
                         () ->
                                 callback.onGetTokenFailure(
                                         new GoogleServiceAuthError(
-                                                GoogleServiceAuthErrorState.USER_NOT_SIGNED_UP)));
+                                                GoogleServiceAuthErrorState.ACCOUNT_NOT_FOUND)));
                 return;
             }
 
@@ -221,7 +221,7 @@ public class FakeAccountManagerFacade implements AccountManagerFacade {
                     () ->
                             callback.onGetTokenFailure(
                                     new GoogleServiceAuthError(
-                                            GoogleServiceAuthErrorState.USER_NOT_SIGNED_UP)));
+                                            GoogleServiceAuthErrorState.ACCOUNT_NOT_FOUND)));
             return;
         }
         GoogleServiceAuthError authError = mGetAccessTokenError.get(coreAccountInfo.getId());

@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/stringprintf.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/test/bind.h"
 #include "base/test/gtest_util.h"
@@ -520,7 +521,7 @@ TEST_F(QuicSocketDataProviderTest, PrintHTTPHeadersPacket) {
                 socket->Write(buffer.get(), packet->length(), base::DoNothing(),
                               TRAFFIC_ANNOTATION_FOR_TESTS)),
       // Path should be decoded by the server session and appear in the output.
-      std::format(":path={0}", path));
+      base::StringPrintf(":path=%s", path));
 }
 
 // Test an HTTP's initial settings packet is decoded by the server session.

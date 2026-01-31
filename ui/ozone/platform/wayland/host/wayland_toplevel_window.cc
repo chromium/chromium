@@ -501,6 +501,8 @@ void WaylandToplevelWindow::HandleToplevelConfigureWithOrigin(
   bool prev_suspended = is_suspended_;
   is_suspended_ = window_states.is_suspended;
 
+  UpdatePreviouslyMaximized(window_state);
+
   // The tiled state affects the window geometry, so apply it here.
   // TODO(crbug.com/414831391): Remove this and notify in
   // WindowTreeHostPlatform::OnStateUpdate instead like all other state changes.
@@ -844,16 +846,7 @@ void WaylandToplevelWindow::SetWindowState(PlatformWindowState window_state,
   CHECK_NE(window_state, PlatformWindowState::kMinimized);
 
   if (ShouldTriggerStateChange(window_state, target_display_id)) {
-    // TODO(crbug.com/40276379): Use `GetLatestRequestedState().window_state`
-    // instead once the window state becomes async.
-    auto previous_state = applied_state().window_state;
-
-    // We want to remember whether it was previously maximized, for cases like
-    // fullscreening to a different output while already in fullscreen, so we
-    // can still restore back to the previous non-fullscreen state.
-    if (previous_state != window_state) {
-      previously_maximized_ = previous_state == PlatformWindowState::kMaximized;
-    }
+    UpdatePreviouslyMaximized(window_state);
 
     // Remember the display id if we are going to fullscreen - otherwise reset.
     fullscreen_display_id_ = (window_state == PlatformWindowState::kFullScreen)
@@ -889,6 +882,17 @@ bool WaylandToplevelWindow::ShouldTriggerStateChange(
   return false;
 }
 
+void WaylandToplevelWindow::UpdatePreviouslyMaximized(
+    PlatformWindowState new_state) {
+  // TODO(crbug.com/40276379): Use `GetLatestRequestedState().window_state`
+  // instead once the window state becomes async.
+  auto current_state = applied_state().window_state;
+
+  if (current_state != new_state) {
+    previously_maximized_ = current_state == PlatformWindowState::kMaximized;
+  }
+}
+
 WaylandOutput* WaylandToplevelWindow::GetWaylandOutputForDisplayId(
     int64_t display_id) {
   auto* output_manager = connection()->wayland_output_manager();
@@ -907,12 +911,31 @@ void WaylandToplevelWindow::SetSizeConstraints() {
 
   auto min_size_dip = delegate()->GetMinimumSizeForWindow();
   auto max_size_dip = delegate()->GetMaximumSizeForWindow();
+  const gfx::Insets insets_dip =
+      delegate()->CalculateInsetsInDIP(applied_state().window_state);
 
-  if (min_size_dip.has_value())
-    xdg_toplevel_->SetMinSize(min_size_dip->width(), min_size_dip->height());
+  if (min_size_dip.has_value()) {
+    gfx::Size adjusted_min_size = *min_size_dip;
+    adjusted_min_size.Enlarge(-insets_dip.width(), -insets_dip.height());
+    adjusted_min_size.SetToMax(gfx::Size(1, 1));
+    xdg_toplevel_->SetMinSize(adjusted_min_size.width(),
+                              adjusted_min_size.height());
+  }
 
-  if (max_size_dip.has_value())
-    xdg_toplevel_->SetMaxSize(max_size_dip->width(), max_size_dip->height());
+  if (max_size_dip.has_value()) {
+    gfx::Size adjusted_max_size = *max_size_dip;
+    // Zero means "no maximum" and should be preserved.
+    if (adjusted_max_size.width() > 0) {
+      adjusted_max_size.set_width(
+          std::max(1, adjusted_max_size.width() - insets_dip.width()));
+    }
+    if (adjusted_max_size.height() > 0) {
+      adjusted_max_size.set_height(
+          std::max(1, adjusted_max_size.height() - insets_dip.height()));
+    }
+    xdg_toplevel_->SetMaxSize(adjusted_max_size.width(),
+                              adjusted_max_size.height());
+  }
 
   connection()->Flush();
 }

@@ -144,7 +144,7 @@ std::string ConvertToPatternString(const blink::SafeUrlPattern& url_pattern,
 
 base::Value RequestToValue(
     const blink::ServiceWorkerRouterRequestCondition& request) {
-  base::Value::Dict ret;
+  base::DictValue ret;
   if (request.method) {
     ret.Set("method", *request.method);
   }
@@ -172,7 +172,7 @@ std::string RunningStatusToString(
 
 base::Value OrConditionToValue(
     const blink::ServiceWorkerRouterOrCondition& or_condition) {
-  base::Value::List ret;
+  base::ListValue ret;
   ret.reserve(or_condition.conditions.size());
   for (const auto& c : or_condition.conditions) {
     ret.Append(ConditionToValue(c));
@@ -188,11 +188,11 @@ base::Value NotConditionToValue(
 
 base::Value ConditionToValue(
     const blink::ServiceWorkerRouterCondition& condition) {
-  base::Value::Dict out_c;
+  base::DictValue out_c;
   const auto& [url_pattern, request, running_status, or_condition,
                not_condition] = condition.get();
   if (url_pattern) {
-    base::Value::Dict url_pattern_value;
+    base::DictValue url_pattern_value;
 #define TO_VALUE(type, type_name)                            \
   do {                                                       \
     auto value = ConvertToPatternString(*url_pattern, type); \
@@ -790,13 +790,13 @@ ServiceWorkerRouterEvaluator::EvaluateWithoutRunningStatus(
 }
 
 base::Value ServiceWorkerRouterEvaluator::ToValue() const {
-  base::Value::List out;
+  base::ListValue out;
   CHECK_EQ(rules_.rules.size(), compiled_rules_.size());
   for (size_t idx = 0; idx < rules_.rules.size(); ++idx) {
     const auto& r = rules_.rules[idx];
-    base::Value::Dict rule;
+    base::DictValue rule;
     base::Value condition = ConditionToValue(r.condition);
-    base::Value::List source;
+    base::ListValue source;
     for (const auto& s : r.sources) {
       switch (s.type) {
         case network::mojom::ServiceWorkerRouterSourceType::kNetwork:
@@ -811,7 +811,7 @@ base::Value ServiceWorkerRouterEvaluator::ToValue() const {
           break;
         case network::mojom::ServiceWorkerRouterSourceType::kCache:
           if (s.cache_source->cache_name) {
-            base::Value::Dict out_s;
+            base::DictValue out_s;
             out_s.Set("cache_name", *s.cache_source->cache_name);
             source.Append(std::move(out_s));
           } else {
@@ -821,7 +821,7 @@ base::Value ServiceWorkerRouterEvaluator::ToValue() const {
         case network::mojom::ServiceWorkerRouterSourceType::
             kRaceNetworkAndCache:
           if (s.race_network_and_cache_source->cache_source.cache_name) {
-            base::Value::Dict out_s;
+            base::DictValue out_s;
             out_s.Set(
                 "race_network_and_cache_cache_name",
                 *s.race_network_and_cache_source->cache_source.cache_name);

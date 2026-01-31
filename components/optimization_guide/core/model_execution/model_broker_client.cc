@@ -18,7 +18,6 @@
 #include "components/optimization_guide/core/model_execution/session_impl.h"
 #include "components/optimization_guide/proto/on_device_model_execution_config.pb.h"
 #include "components/optimization_guide/proto/text_safety_model_metadata.pb.h"
-#include "components/optimization_guide/public/mojom/model_broker.mojom-shared.h"
 #include "components/optimization_guide/public/mojom/model_broker.mojom.h"
 #include "mojo/public/cpp/base/proto_wrapper.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"

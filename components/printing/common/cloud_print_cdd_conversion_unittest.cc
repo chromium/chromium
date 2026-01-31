@@ -381,8 +381,8 @@ constexpr char kExpectedPageOutputQualityNullDefault[] = R"json([
 ])json";
 #endif  // BUILDFLAG(IS_WIN)
 
-const base::Value::Dict* GetPrinterDict(const base::Value& caps_value) {
-  const base::Value::Dict* caps_dict = caps_value.GetIfDict();
+const base::DictValue* GetPrinterDict(const base::Value& caps_value) {
+  const base::DictValue* caps_dict = caps_value.GetIfDict();
   if (!caps_dict || !caps_dict->contains(kKeyVersion) ||
       caps_dict->size() != 2u) {
     return nullptr;
@@ -414,7 +414,7 @@ TEST(CloudPrintCddConversionTest, ValidCloudPrintCddConversion) {
   const printing::PrinterSemanticCapsAndDefaults input =
       printing::GenerateSamplePrinterSemanticCapsAndDefaults({});
   const base::Value output = PrinterSemanticCapsAndDefaultsToCdd(input);
-  const base::Value::Dict* printer_dict = GetPrinterDict(output);
+  const base::DictValue* printer_dict = GetPrinterDict(output);
   ASSERT_TRUE(printer_dict);
   size_t expected_dict_size = 9;
 #if BUILDFLAG(IS_CHROMEOS)
@@ -425,7 +425,7 @@ TEST(CloudPrintCddConversionTest, ValidCloudPrintCddConversion) {
   EXPECT_THAT(
       *printer_dict,
       base::test::IsSupersetOfValue(
-          base::Value::Dict()
+          base::DictValue()
               .Set("collate",
                    base::test::ParseJson(kExpectedCollateDefaultTrue))
               .Set("color", base::test::ParseJson(kExpectedColor))
@@ -458,16 +458,15 @@ TEST(CloudPrintCddConversionTest, MissingEntry) {
   input.collate_capable = false;
   input.collate_default = false;
   const base::Value output = PrinterSemanticCapsAndDefaultsToCdd(input);
-  const base::Value::Dict* printer_dict = GetPrinterDict(output);
+  const base::DictValue* printer_dict = GetPrinterDict(output);
 
   ASSERT_TRUE(printer_dict);
   size_t expected_dict_size = 8;
 #if BUILDFLAG(IS_CHROMEOS)
-  ++expected_dict_size;
+  expected_dict_size += 2;
 #endif  // BUILDFLAG(IS_CHROMEOS)
   ASSERT_EQ(expected_dict_size, printer_dict->size());
   ASSERT_FALSE(printer_dict->contains("collate"));
-  ASSERT_FALSE(printer_dict->contains("margins"));
 }
 
 TEST(CloudPrintCddConversionTest, CollateDefaultIsFalse) {
@@ -476,12 +475,12 @@ TEST(CloudPrintCddConversionTest, CollateDefaultIsFalse) {
   input.collate_capable = true;
   input.collate_default = false;
   const base::Value output = PrinterSemanticCapsAndDefaultsToCdd(input);
-  const base::Value::Dict* printer_dict = GetPrinterDict(output);
+  const base::DictValue* printer_dict = GetPrinterDict(output);
 
   ASSERT_TRUE(printer_dict);
   size_t expected_dict_size = 9;
 #if BUILDFLAG(IS_CHROMEOS)
-  ++expected_dict_size;
+  expected_dict_size += 2;
 #endif  // BUILDFLAG(IS_CHROMEOS)
   ASSERT_EQ(expected_dict_size, printer_dict->size());
   EXPECT_THAT(printer_dict->Find("collate"),
@@ -516,7 +515,7 @@ TEST(CloudPrintCddConversionTest, WiderPaper) {
                             kMaxHeight, kHasBorderlessVariant);
 #endif  // BUILDFLAG(IS_CHROMEOS)
   const base::Value output = PrinterSemanticCapsAndDefaultsToCdd(input);
-  const base::Value::Dict* printer_dict = GetPrinterDict(output);
+  const base::DictValue* printer_dict = GetPrinterDict(output);
 
   ASSERT_TRUE(printer_dict);
   size_t expected_dict_size = 9;
@@ -538,7 +537,7 @@ TEST(CloudPrintCddConversionTest, MediaTypeOnlyOne) {
       printing::GenerateSamplePrinterSemanticCapsAndDefaults({});
   input.media_types = {input.media_types[0]};
   const base::Value output = PrinterSemanticCapsAndDefaultsToCdd(input);
-  const base::Value::Dict* printer_dict = GetPrinterDict(output);
+  const base::DictValue* printer_dict = GetPrinterDict(output);
 
   // The media type list should only be included when more than one media type
   // is supported.
@@ -551,26 +550,30 @@ TEST(CloudPrintCddConversionTest, PinAndAdvancedCapabilities) {
       printing::GenerateSamplePrinterSemanticCapsAndDefaults(
           printing::SampleWithScaleAndPinAndAdvancedCapabilities());
   base::Value output = PrinterSemanticCapsAndDefaultsToCdd(input);
-  const base::Value::Dict* printer_dict = GetPrinterDict(output);
+  const base::DictValue* printer_dict = GetPrinterDict(output);
 
   ASSERT_TRUE(printer_dict);
-  size_t expected_dict_size = 11;
+  size_t expected_dict_size = 13;
   ASSERT_EQ(expected_dict_size, printer_dict->size());
   EXPECT_THAT(
       *printer_dict,
       base::test::IsSupersetOfValue(
-          base::Value::Dict()
+          base::DictValue()
               .Set("pin", base::test::ParseJson(kExpectedPinSupportedTrue))
               .Set("vendor_capability",
                    base::test::ParseJson(kExpectedAdvancedCapabilities))));
 }
 
 TEST(CloudPrintCddConversionTest, MarginsAndFitToPageCapabilities) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(
+      printing::features::kApiPrintingMarginsAndScale);
+
   printing::PrinterSemanticCapsAndDefaults input =
       printing::GenerateSamplePrinterSemanticCapsAndDefaults(
           printing::SampleWithScaleAndPinAndAdvancedCapabilities());
   base::Value output = PrinterSemanticCapsAndDefaultsToCdd(input);
-  const base::Value::Dict* printer_dict = GetPrinterDict(output);
+  const base::DictValue* printer_dict = GetPrinterDict(output);
 
   ASSERT_TRUE(printer_dict);
   size_t expected_dict_size = 11;
@@ -578,7 +581,8 @@ TEST(CloudPrintCddConversionTest, MarginsAndFitToPageCapabilities) {
   EXPECT_FALSE(printer_dict->contains("fit_to_page"));
   EXPECT_FALSE(printer_dict->contains("margins"));
 
-  base::test::ScopedFeatureList feature_list(
+  feature_list.Reset();
+  feature_list.InitAndEnableFeature(
       printing::features::kApiPrintingMarginsAndScale);
 
   output = PrinterSemanticCapsAndDefaultsToCdd(input);
@@ -590,7 +594,7 @@ TEST(CloudPrintCddConversionTest, MarginsAndFitToPageCapabilities) {
   EXPECT_THAT(
       *printer_dict,
       base::test::IsSupersetOfValue(
-          base::Value::Dict()
+          base::DictValue()
               .Set("fit_to_page",
                    base::test::ParseJson(kExpectedFitToPageValues))
               .Set("margins", base::test::ParseJson(kExpectedMargins))));
@@ -604,7 +608,7 @@ TEST(CloudPrintCddConversionTest, FitToPageNoCapability) {
 
   base::Value output =
       cloud_print::PrinterSemanticCapsAndDefaultsToCdd(printer_info);
-  const base::Value::Dict* printer_dict = GetPrinterDict(output);
+  const base::DictValue* printer_dict = GetPrinterDict(output);
 
   ASSERT_TRUE(printer_dict);
   ASSERT_EQ(5u, printer_dict->size());
@@ -621,13 +625,13 @@ TEST(CloudPrintCddConversionTest, FitToPageSingleValue) {
 
   base::Value output =
       cloud_print::PrinterSemanticCapsAndDefaultsToCdd(printer_info);
-  const base::Value::Dict* printer_dict = GetPrinterDict(output);
+  const base::DictValue* printer_dict = GetPrinterDict(output);
 
   ASSERT_TRUE(printer_dict);
   ASSERT_EQ(6u, printer_dict->size());
   EXPECT_TRUE(printer_dict->contains("fit_to_page"));
   EXPECT_THAT(*printer_dict,
-              base::test::IsSupersetOfValue(base::Value::Dict().Set(
+              base::test::IsSupersetOfValue(base::DictValue().Set(
                   "fit_to_page",
                   base::test::ParseJson(kExpectedFitToPageSingleValue))));
 }
@@ -642,7 +646,7 @@ TEST(CloudPrintCddConversionTest, FitToPageDefaultValueOnly) {
 
   base::Value output =
       cloud_print::PrinterSemanticCapsAndDefaultsToCdd(printer_info);
-  const base::Value::Dict* printer_dict = GetPrinterDict(output);
+  const base::DictValue* printer_dict = GetPrinterDict(output);
 
   ASSERT_TRUE(printer_dict);
   ASSERT_EQ(5u, printer_dict->size());
@@ -661,7 +665,7 @@ TEST(CloudPrintCddConversionTest, FitToPageNoDefaultInSupported) {
 
   base::Value output =
       cloud_print::PrinterSemanticCapsAndDefaultsToCdd(printer_info);
-  const base::Value::Dict* printer_dict = GetPrinterDict(output);
+  const base::DictValue* printer_dict = GetPrinterDict(output);
 
   ASSERT_TRUE(printer_dict);
   ASSERT_EQ(5u, printer_dict->size());
@@ -685,13 +689,13 @@ TEST(CloudPrintCddConversionTest, FitToPageUnknownDefault) {
 
   base::Value output =
       cloud_print::PrinterSemanticCapsAndDefaultsToCdd(printer_info);
-  const base::Value::Dict* printer_dict = GetPrinterDict(output);
+  const base::DictValue* printer_dict = GetPrinterDict(output);
 
   ASSERT_TRUE(printer_dict);
   ASSERT_EQ(6u, printer_dict->size());
   EXPECT_THAT(
       *printer_dict,
-      base::test::IsSupersetOfValue(base::Value::Dict().Set(
+      base::test::IsSupersetOfValue(base::DictValue().Set(
           "fit_to_page", base::test::ParseJson(kExpectedFitToPageValues2))));
 }
 
@@ -707,7 +711,7 @@ TEST(CloudPrintCddConversionTest, FitToPageUnknownsOnly) {
 
   base::Value output =
       cloud_print::PrinterSemanticCapsAndDefaultsToCdd(printer_info);
-  const base::Value::Dict* printer_dict = GetPrinterDict(output);
+  const base::DictValue* printer_dict = GetPrinterDict(output);
 
   ASSERT_TRUE(printer_dict);
   ASSERT_EQ(5u, printer_dict->size());
@@ -738,7 +742,7 @@ TEST(CloudPrintCddConversionTest, FitToPageCorrectMapping) {
 
     base::Value output =
         cloud_print::PrinterSemanticCapsAndDefaultsToCdd(printer_info);
-    const base::Value::Dict* printer_dict = GetPrinterDict(output);
+    const base::DictValue* printer_dict = GetPrinterDict(output);
 
     ASSERT_TRUE(printer_dict);
     if (value.type ==
@@ -758,7 +762,7 @@ TEST(CloudPrintCddConversionTest, FitToPageCorrectMapping) {
           value.str.c_str(), value.str.c_str());
       ASSERT_EQ(6u, printer_dict->size());
       EXPECT_THAT(*printer_dict,
-                  base::test::IsSupersetOfValue(base::Value::Dict().Set(
+                  base::test::IsSupersetOfValue(base::DictValue().Set(
                       "fit_to_page", base::test::ParseJson(formatted_json))));
     }
   }
@@ -772,7 +776,7 @@ TEST(CloudPrintCddConversionTest, PageOutputQualityWithDefaultQuality) {
           printing::SampleWithPageOutputQuality());
   input.page_output_quality->default_quality = printing::kDefaultQuality;
   const base::Value output = PrinterSemanticCapsAndDefaultsToCdd(input);
-  const base::Value::Dict* printer_dict = GetPrinterDict(output);
+  const base::DictValue* printer_dict = GetPrinterDict(output);
 
   ASSERT_TRUE(printer_dict);
   ASSERT_EQ(10u, printer_dict->size());
@@ -785,7 +789,7 @@ TEST(CloudPrintCddConversionTest, PageOutputQualityNullDefaultQuality) {
       printing::GenerateSamplePrinterSemanticCapsAndDefaults(
           printing::SampleWithPageOutputQuality());
   const base::Value output = PrinterSemanticCapsAndDefaultsToCdd(input);
-  const base::Value::Dict* printer_dict = GetPrinterDict(output);
+  const base::DictValue* printer_dict = GetPrinterDict(output);
 
   ASSERT_TRUE(printer_dict);
   ASSERT_EQ(10u, printer_dict->size());

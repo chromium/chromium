@@ -4,6 +4,7 @@
 
 #include <stddef.h>
 
+#include <algorithm>
 #include <array>
 #include <memory>
 #include <set>
@@ -12,7 +13,6 @@
 #include <vector>
 
 #include "base/command_line.h"
-#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
@@ -417,7 +417,7 @@ TEST_F(TranslateManagerRenderViewHostTest, FetchLanguagesFromTranslateServer) {
     } else if (lang == "hz") {
       continue;
     }
-    EXPECT_TRUE(base::Contains(current_supported_languages, lang))
+    EXPECT_TRUE(std::ranges::contains(current_supported_languages, lang))
         << "lang=" << lang;
   }
 }

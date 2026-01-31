@@ -180,16 +180,6 @@ gn_args.config(
 )
 
 gn_args.config(
-    name = "arm_no_neon",
-    args = {
-        "arm_use_neon": False,
-    },
-    configs = [
-        "arm",
-    ],
-)
-
-gn_args.config(
     name = "asan",
     args = {
         "is_asan": True,
@@ -848,6 +838,13 @@ gn_args.config(
 )
 
 gn_args.config(
+    name = "disable_be_deferred_context_menu",
+    args = {
+        "use_be_deferred_context_menu": False,
+    },
+)
+
+gn_args.config(
     name = "ios_simulator",
     args = {"target_environment": "simulator"},
     configs = ["ios"],
@@ -1225,6 +1222,13 @@ gn_args.config(
 )
 
 gn_args.config(
+    name = "sanitizer_coverage_skip_stdlib_and_absl",
+    args = {
+        "sanitizer_coverage_skip_stdlib_and_absl": True,
+    },
+)
+
+gn_args.config(
     name = "shared",
     args = {
         "is_component_build": True,
@@ -1556,8 +1560,20 @@ gn_args.config(
 )
 
 gn_args.config(
+    name = "ios_chrome_enable_profile_altering_tests",
+    args = {
+        "ios_chrome_enable_profile_altering_tests": True,
+    },
+)
+
+gn_args.config(
     name = "high_end_fuzzer_targets",
     args = {
         "high_end_fuzzer_targets": True,
     },
+)
+
+gn_args.config(
+    name = "enable_swift_cxx_interop",
+    args = {"enable_swift_cxx_interop": True},
 )

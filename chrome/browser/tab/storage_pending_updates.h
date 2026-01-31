@@ -36,7 +36,7 @@ class StoragePendingUpdate {
   explicit StoragePendingUpdate(StorageId id);
   virtual ~StoragePendingUpdate();
 
-  // This must only be called on the UI Thread.
+  // This must only be called on the UI Thread. Called only once per-instance.
   virtual std::unique_ptr<StorageUpdateUnit> CreateUnit() = 0;
   virtual UnitType type() const = 0;
 
@@ -72,6 +72,8 @@ class SaveNodePendingUpdate : public StoragePendingUpdate {
 class SavePayloadPendingUpdate : public StoragePendingUpdate {
  public:
   SavePayloadPendingUpdate(StorageId id,
+                           std::string window_tag,
+                           bool is_off_the_record,
                            TabStoragePackager* packager,
                            StorageIdMapping& mapping,
                            TabCollectionNodeHandle handle);
@@ -81,6 +83,8 @@ class SavePayloadPendingUpdate : public StoragePendingUpdate {
   UnitType type() const override;
 
  private:
+  std::string window_tag_;
+  const bool is_off_the_record_;
   raw_ref<StorageIdMapping> mapping_;
   raw_ptr<TabStoragePackager> packager_;
   const TabCollectionNodeHandle handle_;

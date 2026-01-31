@@ -19,6 +19,8 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <string_view>
+#include <vector>
 
 #include "base/component_export.h"
 #include "base/logging.h"
@@ -158,7 +160,7 @@ class COMPONENT_EXPORT(PRINT_BACKEND) XPSPrintModule {
 // Sets the function that gets friendly names for network printers.
 COMPONENT_EXPORT(PRINT_BACKEND)
 void SetGetDisplayNameFunction(
-    std::string (*get_display_name_func)(const std::string& printer_name));
+    std::string (*get_display_name_func)(std::string_view printer_name));
 
 COMPONENT_EXPORT(PRINT_BACKEND)
 std::optional<PrinterBasicInfo> GetBasicPrinterInfo(HANDLE printer);

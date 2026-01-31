@@ -11,6 +11,6 @@
 
 using PasteboardCallback = base::OnceCallback<void(UIPasteboard*)>;
 
-void GetGeneralPasteboard(bool asynchronous, PasteboardCallback callback);
+void GetGeneralPasteboard(PasteboardCallback callback);
 
 #endif  // COMPONENTS_OPEN_FROM_CLIPBOARD_CLIPBOARD_ASYNC_WRAPPER_IOS_H_

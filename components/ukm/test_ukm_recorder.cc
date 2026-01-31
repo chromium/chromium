@@ -38,7 +38,6 @@ void MergeEntry(const mojom::UkmEntry* in, mojom::UkmEntry* out) {
 
 TestUkmRecorder::TestUkmRecorder() {
   UpdateRecording(UkmConsentState::All());
-  InitDecodeMap();
   SetSamplingForTesting(1);  // 1-in-1 == unsampled
 }
 

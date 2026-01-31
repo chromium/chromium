@@ -25,6 +25,9 @@ import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaym
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.BnplSuggestionProperties.ON_BNPL_CLICK_ACTION;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.BnplSuggestionProperties.PRIMARY_TEXT;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.BnplSuggestionProperties.SECONDARY_TEXT;
+import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.BnplTosHeaderProperties.ICON_CONTENT_DESCRIPTION_ID;
+import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.BnplTosHeaderProperties.ISSUER_IMAGE_DRAWABLE_ID;
+import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.BnplTosHeaderProperties.ISSUER_TITLE_STRING;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.ButtonProperties.ON_CLICK_ACTION;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.ButtonProperties.TEXT_ID;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.CURRENT_SCREEN;
@@ -66,6 +69,7 @@ import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaym
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.TosFooterProperties.LINK_OPENER;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.VISIBLE;
 
+import android.content.res.Resources;
 import android.text.SpannableString;
 import android.text.TextPaint;
 import android.text.TextUtils;
@@ -88,6 +92,7 @@ import org.chromium.chrome.browser.autofill.AutofillUiUtils;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.touch_to_fill.common.FillableItemCollectionInfo;
 import org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.AllLoyaltyCardsItemProperties;
+import org.chromium.components.autofill.AutofillFeatures;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.text.ChromeClickableSpan;
@@ -383,6 +388,55 @@ class TouchToFillPaymentMethodViewBinder {
             sheetHeaderSubtitle.setText(view.getContext().getString(model.get(SUBTITLE_ID)));
         } else if (propertyKey == TITLE_STRING) {
             sheetHeaderTitle.setText(model.get(TITLE_STRING));
+        } else {
+            assert false : "Unhandled update to property:" + propertyKey;
+        }
+    }
+
+    /**
+     * Factory used to create a new BNPL ToS header inside the ListView inside the {@link
+     * TouchToFillPaymentMethodView}.
+     *
+     * @param parent The parent {@link ViewGroup} of the new item.
+     */
+    static View createBnplTosHeaderView(ViewGroup parent) {
+        return LayoutInflater.from(parent.getContext())
+                .inflate(R.layout.touch_to_fill_bnpl_tos_header_item, parent, false);
+    }
+
+    /**
+     * Called whenever a property in the given model changes. It updates the given view accordingly.
+     *
+     * @param model The observed {@link PropertyModel}. Its data need to be reflected in the view.
+     * @param view The {@link View} of the header to update.
+     * @param key The {@link PropertyKey} which changed.
+     */
+    static void bindBnplTosHeaderView(PropertyModel model, View view, PropertyKey propertyKey) {
+        ImageView sheetHeaderImage = view.findViewById(R.id.bnpl_tos_branding_icon);
+        TextView sheetHeaderTitle = view.findViewById(R.id.bnpl_tos_title);
+
+        if (propertyKey == ISSUER_IMAGE_DRAWABLE_ID) {
+            // When AUTOFILL_ENABLE_WALLET_BRANDING is enabled, GPay gets removed from the BNPL
+            // issuer icon and the resulting icon appears larger. Because of this, when
+            // AUTOFILL_ENABLE_WALLET_BRANDING is enabled the icon height is reduced.
+            if (ChromeFeatureList.isEnabled(AutofillFeatures.AUTOFILL_ENABLE_WALLET_BRANDING)) {
+                Resources res = view.getContext().getResources();
+                int new_height =
+                        res.getDimensionPixelSize(
+                                R.dimen.bnpl_tos_header_item_icon_wallet_branding_height);
+                ViewGroup.LayoutParams params = sheetHeaderImage.getLayoutParams();
+                params.height = new_height;
+                sheetHeaderImage.setLayoutParams(params);
+            }
+            sheetHeaderImage.setImageDrawable(
+                    AppCompatResources.getDrawable(
+                            view.getContext(), model.get(ISSUER_IMAGE_DRAWABLE_ID)));
+        } else if (propertyKey == ISSUER_TITLE_STRING) {
+            sheetHeaderTitle.setText(model.get(ISSUER_TITLE_STRING));
+        } else if (propertyKey == ICON_CONTENT_DESCRIPTION_ID) {
+            sheetHeaderImage.setImportantForAccessibility(View.IMPORTANT_FOR_ACCESSIBILITY_YES);
+            sheetHeaderImage.setContentDescription(
+                    view.getContext().getString(model.get(ICON_CONTENT_DESCRIPTION_ID)));
         } else {
             assert false : "Unhandled update to property:" + propertyKey;
         }

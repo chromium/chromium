@@ -66,7 +66,7 @@ class TestReportingCache : public ReportingCache {
                  const std::string& user_agent,
                  const std::string& group_name,
                  const std::string& type,
-                 base::Value::Dict body,
+                 base::DictValue body,
                  int depth,
                  base::TimeTicks queued,
                  ReportingTargetType target_type) override {
@@ -150,10 +150,6 @@ class TestReportingCache : public ReportingCache {
       std::vector<ReportingEndpoint> endpoints) override {
     NOTREACHED();
   }
-  void SetEnterpriseReportingEndpoints(
-      const base::flat_map<std::string, GURL>& endpoints) override {
-    NOTREACHED();
-  }
   std::set<url::Origin> GetAllOrigins() const override { NOTREACHED(); }
   void RemoveClient(const NetworkAnonymizationKey& network_anonymization_key,
                     const url::Origin& origin) override {
@@ -189,10 +185,6 @@ class TestReportingCache : public ReportingCache {
   ReportingEndpoint GetEndpointForTesting(
       const ReportingEndpointGroupKey& group_key,
       const GURL& url) const override {
-    NOTREACHED();
-  }
-  std::vector<ReportingEndpoint> GetEnterpriseEndpointsForTesting()
-      const override {
     NOTREACHED();
   }
   bool EndpointGroupExistsForTesting(const ReportingEndpointGroupKey& group_key,

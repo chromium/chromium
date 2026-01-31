@@ -71,8 +71,7 @@
           "group": "tryserver.chromium.dawn"
         }
       ],
-      "targets_spec_directory": "infra/config/generated/builders/ci/Dawn Linux x64 DEPS Release (Intel UHD 630)/targets",
-      "targets_spec_directory_relative_to_source_dir": true
+      "targets_spec_directory": "infra/config/generated/builders/ci/Dawn Linux x64 DEPS Release (Intel UHD 630)/targets"
     }
   },
   "$recipe_engine/resultdb/test_presentation": {

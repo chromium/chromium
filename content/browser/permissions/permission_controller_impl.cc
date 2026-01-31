@@ -66,7 +66,7 @@ PermissionToSchedulingFeature(PermissionType permission_name) {
       return blink::scheduler::WebSchedulerTrackedFeature::
           kRequestedStorageAccessGrant;
     case PermissionType::PROTECTED_MEDIA_IDENTIFIER:
-    case PermissionType::DURABLE_STORAGE:
+    case PermissionType::PERSISTENT_STORAGE:
     case PermissionType::CLIPBOARD_READ_WRITE:
     case PermissionType::CLIPBOARD_SANITIZED_WRITE:
     case PermissionType::PAYMENT_HANDLER:
@@ -84,6 +84,7 @@ PermissionToSchedulingFeature(PermissionType permission_name) {
     case PermissionType::LOCAL_FONTS:
     case PermissionType::DISPLAY_CAPTURE:
     case PermissionType::GEOLOCATION:
+    case PermissionType::GEOLOCATION_APPROXIMATE:
     case PermissionType::NOTIFICATIONS:
     case PermissionType::CAPTURED_SURFACE_CONTROL:
     case PermissionType::SMART_CARD:

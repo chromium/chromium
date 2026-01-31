@@ -17,8 +17,8 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_span.h"
 #include "crypto/crypto_export.h"
-
-struct evp_aead_st;
+#include "third_party/boringssl/src/include/openssl/aead.h"
+#include "third_party/boringssl/src/include/openssl/aes.h"
 
 namespace crypto {
 
@@ -35,17 +35,28 @@ class CRYPTO_EXPORT Aead {
     CHACHA20_POLY1305
   };
 
+  // If you use the one-arg form here, you must call Init() to configure a key.
+  // TODO(https://crbug.com/475891208): remove this; there are no callers (nor
+  // is there any reason) to construct an Aead instance before the key is
+  // available.
   explicit Aead(AeadAlgorithm algorithm);
+
+  // This CHECKs that the passed-in key is of the right length for the passed-in
+  // algorithm.
+  Aead(AeadAlgorithm algorithm, base::span<const uint8_t> key);
+
   Aead(const Aead&) = delete;
   Aead& operator=(const Aead&) = delete;
   ~Aead();
 
-  // Note that Init keeps a reference to the data pointed to by |key| thus that
-  // data must outlive this object.
+  // These are only legal to call if the key was not supplied at construction
+  // time. The key is copied locally and stored inside |this|.
+  //
+  // These CHECK that the passed-in key is of the right length for the given
+  // algorithm.
+  //
+  // TODO(https://crbug.com/475891208): remove this.
   void Init(base::span<const uint8_t> key);
-
-  // Note that Init keeps a reference to the data pointed to by |key| thus that
-  // data must outlive this object.
   void Init(const std::string* key);
 
   std::vector<uint8_t> Seal(base::span<const uint8_t> plaintext,
@@ -82,8 +93,12 @@ class CRYPTO_EXPORT Aead {
                              base::span<const uint8_t> additional_data,
                              base::span<uint8_t> out) const;
 
-  std::optional<base::raw_span<const uint8_t, DanglingUntriaged>> key_;
-  raw_ptr<const evp_aead_st> aead_;
+  bssl::ScopedEVP_AEAD_CTX ctx_;
+
+  // It should not be necessary to store this; we only need it to support
+  // two-phase construct-init which is itself deprecated.
+  // TODO(https://crbug.com/475891208): remove this
+  AeadAlgorithm algorithm_;
 };
 
 }  // namespace crypto

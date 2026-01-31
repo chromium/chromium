@@ -86,8 +86,6 @@ public abstract class RequestFinishedInfo {
      * href="https://cs.chromium.org/chromium/src/net/base/load_timing_info.h">LoadTimingInfo</a>,
      * which holds the information for <a href="http://w3c.github.io/navigation-timing/"></a> and <a
      * href="https://www.w3.org/TR/resource-timing/"></a>.
-     *
-     * <p>{@hide} as it's a prototype.
      */
     public abstract static class Metrics {
         /**
@@ -236,7 +234,6 @@ public abstract class RequestFinishedInfo {
          * Returns milliseconds between request initiation and first byte of response headers, or
          * {@code null} if not collected. TODO(mgersh): Remove once new API works
          * http://crbug.com/629194
-         * {@hide}
          */
         @Nullable
         public abstract Long getTtfbMs();
@@ -244,7 +241,7 @@ public abstract class RequestFinishedInfo {
         /**
          * Returns milliseconds between request initiation and finish, including a failure or
          * cancellation, or {@code null} if not collected. TODO(mgersh): Remove once new API works
-         * http://crbug.com/629194 {@hide}
+         * http://crbug.com/629194
          */
         @Nullable
         public abstract Long getTotalTimeMs();
@@ -301,15 +298,13 @@ public abstract class RequestFinishedInfo {
     /**
      * Returns metrics collected for this request.
      *
-     * <p>The reported times and bytes account for all redirects, i.e.
-     * the TTFB is from the start of the original request to the ultimate response headers, the TTLB
-     * is from the start of the original request to the end of the ultimate response, the received
-     * byte count is for all redirects and the ultimate response combined. These cumulative metric
-     * definitions are debatable, but are chosen to make sense for user-facing latency analysis.
+     * <p>The reported times and bytes account for all redirects, i.e. the TTFB is from the start of
+     * the original request to the ultimate response headers, the TTLB is from the start of the
+     * original request to the end of the ultimate response, the received byte count is for all
+     * redirects and the ultimate response combined. These cumulative metric definitions are
+     * debatable, but are chosen to make sense for user-facing latency analysis.
      *
      * @return metrics collected for this request.
-     *
-     * <p>{@hide} as the Metrics class is hidden
      */
     public abstract Metrics getMetrics();
 

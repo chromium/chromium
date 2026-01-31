@@ -20,7 +20,7 @@ class TestStatsDictionary;
 class TestStatsReportDictionary
     : public base::RefCounted<TestStatsReportDictionary> {
  public:
-  explicit TestStatsReportDictionary(base::Value::Dict report);
+  explicit TestStatsReportDictionary(base::DictValue report);
 
   void ForEach(std::function<void(const TestStatsDictionary&)> iteration);
   std::vector<TestStatsDictionary> Filter(
@@ -34,13 +34,13 @@ class TestStatsReportDictionary
   friend class base::RefCounted<TestStatsReportDictionary>;
   ~TestStatsReportDictionary();
 
-  base::Value::Dict report_;
+  base::DictValue report_;
 };
 
 class TestStatsDictionary {
  public:
   TestStatsDictionary(TestStatsReportDictionary* report,
-                      const base::Value::Dict* stats);
+                      const base::DictValue* stats);
   TestStatsDictionary(const TestStatsDictionary& other);
   ~TestStatsDictionary();
 
@@ -76,7 +76,7 @@ class TestStatsDictionary {
 
   // The reference keeps the report alive which indirectly owns |stats_|.
   scoped_refptr<TestStatsReportDictionary> report_;
-  raw_ptr<const base::Value::Dict> stats_;
+  raw_ptr<const base::DictValue> stats_;
 };
 
 }  // namespace content

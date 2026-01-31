@@ -107,7 +107,7 @@ cr-button {
   background-color: var(--password-manager-chip-color);
 }
 
-.chip input[type="checkbox"] {
+.chip input[type='checkbox'] {
   display: none;
 }
 

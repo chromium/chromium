@@ -42,6 +42,18 @@ namespace blink {
 
 namespace {
 
+inline bool ShouldApplyTextIndent(const ComputedStyle& style,
+                                  bool is_first_formatted_line,
+                                  bool is_after_forced_break) {
+  if (style.TextIndent().IsZero()) {
+    return false;
+  }
+  const bool is_first_line =
+      is_first_formatted_line ||
+      (is_after_forced_break && style.IsTextIndentEachLine());
+  return !style.IsTextIndentHanging() ? is_first_line : !is_first_line;
+}
+
 inline LineBreakStrictness StrictnessFromLineBreak(LineBreak line_break) {
   switch (line_break) {
     case LineBreak::kAuto:
@@ -795,8 +807,11 @@ void LineBreaker::PrepareNextLine(LineInfo* line_info) {
   line_info->SetLineStyle(node_, *items_data_, use_first_line_style_);
 
   DCHECK(!line_info->TextIndent());
-  if (is_first_formatted_line_ && end_item_index_ == Items().size()) {
-    const Length& length = line_info->LineStyle().TextIndent();
+  const ComputedStyle& style = line_info->LineStyle();
+  if (ShouldApplyTextIndent(style, is_first_formatted_line_,
+                            previous_line_had_forced_break_) &&
+      !IsSubLineBreaker()) [[unlikely]] {
+    const Length& length = style.TextIndent();
     LayoutUnit maximum_value;
     // Ignore percentages (resolve to 0) when calculating min/max intrinsic
     // sizes.

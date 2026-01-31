@@ -1,0 +1,23 @@
+include_rules = [
+  "-ios/chrome/browser/autofill/model",
+
+  # TODO(crbug.com/468036457): Remove this once a public subdirectory is
+  # extracted from autofill/model
+  "+ios/chrome/browser/autofill/model/features.h",
+  "+ios/chrome/browser/toolbar/legacy/ui_bundled/public",
+]
+
+# TODO(crbug.com/468036457): Remove these once a public subdirectory is
+# extracted from autofill/model
+specific_include_rules = {
+  "form_input_accessory_view_controller.mm": [
+    "+ios/chrome/browser/autofill/model/form_suggestion_client.h",
+  ],
+  "form_suggestion_label.mm": [
+    "+ios/chrome/browser/autofill/model/form_suggestion_constants.h",
+  ],
+  "form_suggestion_view.mm": [
+    "+ios/chrome/browser/autofill/model/form_suggestion_client.h",
+    "+ios/chrome/browser/autofill/model/form_suggestion_constants.h",
+  ],
+}

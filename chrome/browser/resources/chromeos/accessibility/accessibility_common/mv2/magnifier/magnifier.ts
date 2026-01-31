@@ -266,9 +266,6 @@ export class Magnifier {
   /**
    * Returns whether magnifier viewport should follow focus. Exposed for
    * testing.
-   *
-   * TODO(crbug.com/40730171): Add Chrome OS preference to allow disabling focus
-   * following for docked magnifier.
    */
   shouldFollowFocus(): boolean {
     return Boolean(

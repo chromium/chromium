@@ -11,7 +11,7 @@
 #include <set>
 #include <utility>
 
-#include "base/byte_count.h"
+#include "base/byte_size.h"
 #include "base/functional/bind.h"
 #include "base/lazy_instance.h"
 #include "base/metrics/histogram.h"
@@ -142,22 +142,23 @@ void FillProcessData(
   if (!std::isnan(cpu_usage))
     out_process->cpu = cpu_usage;
 
-  const base::ByteCount network_usage =
+  const std::optional<base::ByteSize> network_usage =
       task_manager->GetProcessTotalNetworkUsage(id);
-  if (!network_usage.is_negative()) {
-    out_process->network = network_usage.InBytes();
+  if (network_usage.has_value()) {
+    out_process->network = network_usage->InBytes();
   }
 
-  base::ByteCount v8_allocated;
-  base::ByteCount v8_used;
+  base::ByteSize v8_allocated;
+  base::ByteSize v8_used;
   if (task_manager->GetV8Memory(id, &v8_allocated, &v8_used)) {
     out_process->js_memory_allocated = v8_allocated.InBytes();
     out_process->js_memory_used = v8_used.InBytes();
   }
 
-  const base::ByteCount sqlite_bytes = task_manager->GetSqliteMemoryUsed(id);
-  if (!sqlite_bytes.is_negative()) {
-    out_process->sqlite_memory = sqlite_bytes.InBytes();
+  const std::optional<base::ByteSize> sqlite_bytes =
+      task_manager->GetSqliteMemoryUsed(id);
+  if (sqlite_bytes.has_value()) {
+    out_process->sqlite_memory = sqlite_bytes.value().InBytesF();
   }
 
   blink::WebCacheResourceTypeStats cache_stats;
@@ -250,7 +251,7 @@ void ProcessesEventRouter::OnTasksRefreshedWithBackgroundCalculations(
 
   // Get the data of tasks sharing the same process only once.
   std::set<base::ProcessId> seen_processes;
-  base::Value::Dict processes_dictionary;
+  base::DictValue processes_dictionary;
   for (const auto& task_id : task_ids) {
     // We are not interested in tasks, but rather the processes on which they
     // run.
@@ -275,8 +276,9 @@ void ProcessesEventRouter::OnTasksRefreshedWithBackgroundCalculations(
 
     if (has_on_updated_with_memory_listeners) {
       // Append the memory footprint to the process data.
-      const int64_t memory_footprint =
-          observed_task_manager()->GetMemoryFootprintUsage(task_id).InBytes();
+      std::optional<base::ByteSize> usage =
+          observed_task_manager()->GetMemoryFootprintUsage(task_id);
+      const int64_t memory_footprint = usage ? usage->InBytes() : -1;
       process.private_memory = static_cast<double>(memory_footprint);
     }
 
@@ -325,7 +327,7 @@ void ProcessesEventRouter::OnTaskUnresponsive(task_manager::TaskId id) {
 
 void ProcessesEventRouter::DispatchEvent(events::HistogramValue histogram_value,
                                          const std::string& event_name,
-                                         base::Value::List event_args) const {
+                                         base::ListValue event_args) const {
   EventRouter* event_router = EventRouter::Get(browser_context_);
   if (event_router) {
     std::unique_ptr<Event> event(
@@ -645,9 +647,9 @@ void ProcessesGetProcessInfoFunction::GatherDataAndRespond(
                     &process);
 
     if (include_memory_) {
-      // Append the memory footprint to the process data.
-      const int64_t memory_footprint =
-          observed_task_manager()->GetMemoryFootprintUsage(task_id).InBytes();
+      std::optional<base::ByteSize> usage =
+          observed_task_manager()->GetMemoryFootprintUsage(task_id);
+      const int64_t memory_footprint = usage ? usage->InBytes() : -1;
       process.private_memory = static_cast<double>(memory_footprint);
     }
 

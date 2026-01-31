@@ -51,17 +51,19 @@ ProjectorSodaInstallationController::~ProjectorSodaInstallationController() =
 void ProjectorSodaInstallationController::InstallSoda(
     PrefService& local_state,
     const std::string& language) {
-  auto languageCode = speech::GetLanguageCode(language);
+  std::string language_name = speech::MaybeMapToChineseLocale(language);
+  auto languageCode = speech::GetLanguageCode(language_name);
   auto* soda_installer = speech::SodaInstaller::GetInstance();
 
   // Initialization will trigger the installation of SODA and the language.
   PrefService* pref_service =
       ProfileManager::GetPrimaryUserProfile()->GetPrefs();
-  pref_service->SetString(ash::prefs::kProjectorCreationFlowLanguage, language);
+  pref_service->SetString(ash::prefs::kProjectorCreationFlowLanguage,
+                          language_name);
   soda_installer->Init(pref_service, &local_state);
 
   if (!soda_installer->IsSodaDownloading(languageCode)) {
-    soda_installer->InstallLanguage(language, &local_state);
+    soda_installer->InstallLanguage(language_name, &local_state);
   }
 }
 

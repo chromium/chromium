@@ -2,3 +2,5 @@ file://chrome/android/java/src/org/chromium/chrome/browser/ntp/OWNERS
 
 # For Recent Tabs Page changes.
 per-file *Recent*=ckitagawa@chromium.org
+# For Signin changes.
+per-file NewTabPageSigninPromoTest.java=file://components/signin/ANDROID_OWNERS

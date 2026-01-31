@@ -10,7 +10,6 @@
 
 #include "base/auto_reset.h"
 #include "base/check_op.h"
-#include "base/containers/contains.h"
 #include "base/containers/queue.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
@@ -455,9 +454,9 @@ void RulesMonitorService::GetDisabledRuleIds(
       std::move(callback));
 }
 
-const base::Value::List& RulesMonitorService::GetSessionRulesValue(
+const base::ListValue& RulesMonitorService::GetSessionRulesValue(
     const ExtensionId& extension_id) const {
-  static const base::NoDestructor<base::Value::List> empty_rules;
+  static const base::NoDestructor<base::ListValue> empty_rules;
   auto it = session_rules_.find(extension_id);
   return it == session_rules_.end() ? *empty_rules : it->second;
 }
@@ -587,7 +586,7 @@ void RulesMonitorService::OnExtensionLoaded(
     bool ruleset_failed_to_load = false;
     for (auto& source : sources) {
       bool enabled = prefs_enabled_rulesets
-                         ? base::Contains(*prefs_enabled_rulesets, source.id())
+                         ? prefs_enabled_rulesets->contains(source.id())
                          : source.enabled_by_default();
 
       bool ignored = helper.ShouldIgnoreRuleset(extension->id(), source.id());
@@ -774,7 +773,7 @@ void RulesMonitorService::UpdateSessionRulesInternal(
   std::set<int> ids_to_remove(rule_ids_to_remove.begin(),
                               rule_ids_to_remove.end());
   std::erase_if(new_rules, [&ids_to_remove](const dnr_api::Rule& rule) {
-    return base::Contains(ids_to_remove, rule.id);
+    return ids_to_remove.contains(rule.id);
   });
 
   new_rules.insert(new_rules.end(),
@@ -815,7 +814,7 @@ void RulesMonitorService::UpdateSessionRulesInternal(
     }
   }
 
-  base::Value::List new_rules_value =
+  base::ListValue new_rules_value =
       json_schema_compiler::util::CreateValueFromArray(new_rules);
 
   std::string error;
@@ -1096,13 +1095,13 @@ void RulesMonitorService::OnNewStaticRulesetsLoaded(
       }
 
       // Exclude since we'll be removing this |matcher|.
-      if (base::Contains(ids_to_disable, ruleset_matcher->id())) {
+      if (ids_to_disable.contains(ruleset_matcher->id())) {
         continue;
       }
 
       // Exclude to prevent double counting. This will be a part of
       // |new_matchers| below.
-      if (base::Contains(ids_to_enable, ruleset_matcher->id())) {
+      if (ids_to_enable.contains(ruleset_matcher->id())) {
         continue;
       }
 

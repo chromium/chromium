@@ -80,7 +80,7 @@
               $i18n{glicKeyboardShortcutSublabel}
               <a id="shortcutsLearnMoreLabel" class="learn-more-label"
                   href="$i18n{glicKeyboardShortcutLearnMoreUrl}"
-                  aria-label="$i18n{glicKeyboardShortcutLearnMoreLabel}"
+                  aria-label="$i18n{glicKeyboardShortcutLearnMoreAriaLabel}"
                   aria-description="$i18n{opensInNewTab}"
                   on-click="onShortcutsLearnMoreClick_" target="_blank">
                 $i18n{glicKeyboardShortcutLearnMoreLabel}
@@ -89,6 +89,7 @@
           </div>
           <cr-shortcut-input class="cr-padded-text shortcut-input"
               input-aria-label="$i18n{glicKeyboardShortcut}"
+              edit-button-aria-label="$i18n{glicKeyboardShortcutEditLabel}"
               shortcut="[[registeredShortcut_]]"
               allow-ctrl-alt-shortcuts
               on-input-capture-change="onInputCaptureChange_"
@@ -106,7 +107,7 @@
               <a id="shortcutsNavigationLearnMoreLabel"
                   class="learn-more-label"
                   href="$i18n{glicKeyboardShortcutLearnMoreUrl}"
-                  aria-label="$i18n{glicKeyboardShortcutLearnMoreLabel}"
+                  aria-label="$i18n{glicNavigationShortcutLearnMoreAriaLabel}"
                   aria-description="$i18n{opensInNewTab}"
                   on-click="onShortcutsLearnMoreClick_" target="_blank">
                 $i18n{glicKeyboardShortcutLearnMoreLabel}
@@ -115,6 +116,7 @@
         </div>
         <cr-shortcut-input class="cr-padded-text shortcut-input"
             input-aria-label="$i18n{glicNavigationShortcut}"
+              edit-button-aria-label="$i18n{glicNavigationShortcutEditLabel}"
             shortcut="[[registeredFocusToggleShortcut_]]"
             allow-ctrl-alt-shortcuts
             on-shortcut-updated="onFocusToggleShortcutUpdated_">
@@ -122,7 +124,7 @@
       </div>
       <settings-toggle-button class="hr"
           id="closedCaptionsToggle"
-          hidden="[[!closedCaptionsFeatureEnabled_]]"
+          hidden="[[!closedCaptionsToggleEnabled_]]"
           pref="{{prefs.glic.closed_captioning_enabled}}"
           label="$i18n{glicClosedCaptionsToggle}"
           sub-label="$i18n{glicClosedCaptionsToggleSublabel}"
@@ -193,6 +195,7 @@
           id="microphoneToggle" pref="{{prefs.glic.microphone_enabled}}"
           label="$i18n{glicMicrophoneToggle}"
           sub-label="[[microphoneSubLabel_]]"
+          hidden="[[!microphoneToggleEnabled_]]"
           on-settings-boolean-control-change="onMicrophoneToggleChange_">
       </settings-toggle-button>
       <div hidden="[[showGlicDefaultTabContextSetting_]]">
@@ -207,7 +210,8 @@
         <div id="tabAccessToggleActions" class="toggle-actions-container"
             slot="more-actions">
           <cr-expand-button id="tabAccessExpandButton" no-hover
-              expanded="{{tabAccessToggleExpanded_}}">
+              expanded="{{tabAccessToggleExpanded_}}"
+              aria-label="$i18n{glicTabAccessToggle}">
           </cr-expand-button>
           <div class="separator"></div>
         </div>
@@ -275,7 +279,8 @@
               class="toggle-actions-container"
               slot="more-actions">
             <cr-expand-button id="defaultTabAccessExpandButton" no-hover
-                expanded="{{defaultTabAccessToggleExpanded_}}">
+                expanded="{{defaultTabAccessToggleExpanded_}}"
+                aria-label="$i18n{glicDefaultTabAccessToggle}">
             </cr-expand-button>
             <div class="separator"></div>
           </div>
@@ -362,7 +367,8 @@
                 class="toggle-actions-container"
                 slot="more-actions">
               <cr-expand-button id="webActuationExpandButton" no-hover
-                  expanded="{{webActuationEnabledExpanded_}}">
+                  expanded="{{webActuationEnabledExpanded_}}"
+                  aria-label="$i18n{glicWebActuationToggle}">
               </cr-expand-button>
               <div class="separator"></div>
             </div>
@@ -381,7 +387,8 @@
                 class="toggle-actions-container"
                 slot="more-actions">
               <cr-expand-button id="webActuationExpandButton" no-hover
-                  expanded="{{webActuationEnabledExpanded_}}">
+                  expanded="{{webActuationEnabledExpanded_}}"
+                  aria-label="$i18n{glicWebActuationToggle}">
               </cr-expand-button>
               <div class="separator"></div>
             </div>
@@ -455,11 +462,17 @@
           label="$i18n{glicExtensionsButton}"
           sub-label="$i18n{glicExtensionsButtonSublabel}" external>
       </cr-link-row>
-      <cr-link-row id="geminiPersonalContextLink" class="hr"
+      <cr-link-row id="geminiPersonalContextLink"
           hidden="[[!showGlicPersonalContextLink_]]"
           on-click="onGeminiPersonalContextClick_"
-          label="$i18n{glicPersonalContextSettingLabel}"
+          label="$i18n{glicPersonalContextSettingButton}"
           sub-label="$i18n{glicPersonalContextSettingSublabel}" external>
+      </cr-link-row>
+      <cr-link-row id="InstructionLink"
+          hidden="[[!showGlicInstructionLink_]]"
+          on-click="onGeminiPersonalContextClick_"
+          label="$i18n{glicInstructionsSettingButton}"
+          sub-label="$i18n{glicInstructionsSettingSublabel}" external>
       </cr-link-row>
     </template>
   </div>

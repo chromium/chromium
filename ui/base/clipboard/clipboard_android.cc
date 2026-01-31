@@ -15,7 +15,6 @@
 #include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
 #include "base/android/scoped_java_ref.h"
-#include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -247,14 +246,14 @@ bool ClipboardMap::HasFormat(const ClipboardFormatType& format) {
     // Images can be read if either bitmap or PNG types are available.
     if (format == ClipboardFormatType::PngType() ||
         format == ClipboardFormatType::BitmapType()) {
-      return base::Contains(map_, ClipboardFormatType::PngType()) ||
-             base::Contains(map_, ClipboardFormatType::BitmapType());
+      return map_.contains(ClipboardFormatType::PngType()) ||
+             map_.contains(ClipboardFormatType::BitmapType());
     }
     // Files are stored outside of `map_` in `filenames_`.
     if (format == ClipboardFormatType::FilenamesType()) {
       return !filenames_.empty();
     }
-    return base::Contains(map_, format);
+    return map_.contains(format);
   }
 
   // If the 'map_' is not up to date, we need to check with the system if the
@@ -279,7 +278,7 @@ bool ClipboardMap::HasFormat(const ClipboardFormatType& format) {
   }
 
   // Android unsupported format types, check local only.
-  return base::Contains(map_, format);
+  return map_.contains(format);
 }
 
 void ClipboardMap::OnPrimaryClipboardChanged() {
@@ -316,16 +315,16 @@ void ClipboardMap::CommitToAndroidClipboard(GURL data_source) {
   base::AutoLock lock(lock_);
   bool add_data_source = data_source.is_valid();
   if (mark_password_data_ &&
-      base::Contains(map_, ClipboardFormatType::PlainTextType())) {
+      map_.contains(ClipboardFormatType::PlainTextType())) {
     ScopedJavaLocalRef<jstring> str = ConvertUTF8ToJavaString(
         env, map_[ClipboardFormatType::PlainTextType()]);
     DCHECK(str.obj());
     Java_Clipboard_setPassword(env, clipboard_manager_, str);
     mark_password_data_ = false;
-  } else if (base::Contains(map_, ClipboardFormatType::HtmlType())) {
+  } else if (map_.contains(ClipboardFormatType::HtmlType())) {
     // Android's API for storing HTML content on the clipboard requires a plain-
     // text representation to be available as well.
-    if (!base::Contains(map_, ClipboardFormatType::PlainTextType()))
+    if (!map_.contains(ClipboardFormatType::PlainTextType()))
       return;
 
     ScopedJavaLocalRef<jstring> html =
@@ -335,12 +334,12 @@ void ClipboardMap::CommitToAndroidClipboard(GURL data_source) {
 
     DCHECK(html.obj() && text.obj());
     Java_Clipboard_setHTMLText(env, clipboard_manager_, html, text);
-  } else if (base::Contains(map_, ClipboardFormatType::PlainTextType())) {
+  } else if (map_.contains(ClipboardFormatType::PlainTextType())) {
     ScopedJavaLocalRef<jstring> str = ConvertUTF8ToJavaString(
         env, map_[ClipboardFormatType::PlainTextType()]);
     DCHECK(str.obj());
     Java_Clipboard_setText(env, clipboard_manager_, str);
-  } else if (base::Contains(map_, ClipboardFormatType::PngType())) {
+  } else if (map_.contains(ClipboardFormatType::PngType())) {
     // Committing the PNG data to the Android clipboard will create an image
     // with a corresponding URI. Once this has been created, update the local
     // clipboard with this URI.
@@ -478,7 +477,7 @@ void ClipboardAndroid::OnPrimaryClipChanged(JNIEnv* env) {
 
 void ClipboardAndroid::OnPrimaryClipTimestampInvalidated(
     JNIEnv* env,
-    const jlong j_timestamp_ms) {
+    const int64_t j_timestamp_ms) {
   base::Time timestamp =
       base::Time::FromMillisecondsSinceUnixEpoch(j_timestamp_ms);
   if (GetLastModifiedTime() < timestamp) {

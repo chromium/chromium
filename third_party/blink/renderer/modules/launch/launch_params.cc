@@ -11,13 +11,12 @@ namespace blink {
 
 LaunchParams::LaunchParams(KURL target_url,
                            base::TimeTicks time_navigation_started_in_browser,
-                           bool navigation_started)
+                           bool navigation_started,
+                           HeapVector<Member<FileSystemHandle>> optional_files)
     : target_url_(std::move(target_url)),
+      files_(std::move(optional_files)),
       time_navigation_started_in_browser_(time_navigation_started_in_browser),
       navigation_started_(navigation_started) {}
-
-LaunchParams::LaunchParams(HeapVector<Member<FileSystemHandle>> files)
-    : files_(std::move(files)) {}
 
 LaunchParams::~LaunchParams() = default;
 

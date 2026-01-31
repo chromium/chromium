@@ -5,7 +5,6 @@
 #include "chrome/services/sharing/nearby/platform/ble_medium.h"
 
 #include "base/compiler_specific.h"
-#include "base/containers/contains.h"
 #include "base/metrics/histogram_functions.h"
 #include "chrome/services/sharing/nearby/platform/bluetooth_device.h"
 
@@ -122,13 +121,13 @@ bool BleMedium::StartScanning(
 
   // The ID-to-UUID map should always be in sync with the callbacks map, and we
   // assume that the ID-UUID mapping is one-to-one.
-  DCHECK_EQ(base::Contains(discovered_peripheral_callbacks_map_, service_uuid),
-            base::Contains(
-                discovery_service_id_to_fast_advertisement_service_uuid_map_,
-                service_id));
+  DCHECK_EQ(
+      discovered_peripheral_callbacks_map_.contains(service_uuid),
+      discovery_service_id_to_fast_advertisement_service_uuid_map_.contains(
+          service_id));
 
   if (IsScanning() &&
-      base::Contains(discovered_peripheral_callbacks_map_, service_uuid)) {
+      discovered_peripheral_callbacks_map_.contains(service_uuid)) {
     LogStartScanningResult(true);
     return true;
   }
@@ -188,7 +187,7 @@ bool BleMedium::StopScanning(const std::string& service_id) {
           service_id);
   if (it !=
       discovery_service_id_to_fast_advertisement_service_uuid_map_.end()) {
-    DCHECK(base::Contains(discovered_peripheral_callbacks_map_, it->second));
+    DCHECK(discovered_peripheral_callbacks_map_.contains(it->second));
     discovered_peripheral_callbacks_map_.erase(it->second);
     discovery_service_id_to_fast_advertisement_service_uuid_map_.erase(it);
     for (auto& uuid_peripheral_pair : discovered_ble_peripherals_map_) {

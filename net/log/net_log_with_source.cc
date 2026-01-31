@@ -23,10 +23,10 @@ namespace {
 // Returns parameters for logging data transferred events. At a minimum includes
 // the number of bytes transferred. If the capture mode allows logging byte
 // contents and |byte_count| > 0, then will include the actual bytes.
-base::Value::Dict BytesTransferredParams(int byte_count,
-                                         const char* bytes,
-                                         NetLogCaptureMode capture_mode) {
-  base::Value::Dict dict;
+base::DictValue BytesTransferredParams(int byte_count,
+                                       const char* bytes,
+                                       NetLogCaptureMode capture_mode) {
+  base::DictValue dict;
   dict.Set("byte_count", byte_count);
   if (NetLogCaptureIncludesSocketBytes(capture_mode) && byte_count > 0) {
     dict.Set("bytes", NetLogBinaryValue(bytes, byte_count));

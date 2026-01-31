@@ -22,6 +22,7 @@
 
 class BrowserView;
 class ContentsWebView;
+class CustomFloatingCorner;
 class MultiContentsDropTargetView;
 class MultiContentsResizeArea;
 class MultiContentsViewDelegate;
@@ -169,7 +170,10 @@ class MultiContentsView : public views::View,
 
  private:
   FRIEND_TEST_ALL_PREFIXES(MultiContentsViewBrowserTest, DropTargetLayout);
-  FRIEND_TEST_ALL_PREFIXES(MultiContentsViewBrowserTest, SeparatorLayout);
+  FRIEND_TEST_ALL_PREFIXES(MultiContentsViewBrowserTest,
+                           LeadingSeparatorLayout);
+  FRIEND_TEST_ALL_PREFIXES(MultiContentsViewBrowserTest,
+                           TrailingSeparatorLayout);
 
   // Encapsulates the views required to draw a separator around contents.
   struct ContentsSeparators {
@@ -178,8 +182,7 @@ class MultiContentsView : public views::View,
     raw_ptr<views::View> top_separator = nullptr;
     raw_ptr<views::View> leading_separator = nullptr;
     raw_ptr<views::View> trailing_separator = nullptr;
-    raw_ptr<views::View> top_leading_rounded_corner = nullptr;
-    raw_ptr<views::View> top_trailing_rounded_corner = nullptr;
+    raw_ptr<CustomFloatingCorner> corner_separator = nullptr;
 
     bool should_show_top = false;
     bool should_show_leading = false;

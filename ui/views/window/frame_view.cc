@@ -7,7 +7,7 @@
 #include <memory>
 
 #include "build/build_config.h"
-#include "ui/accessibility/ax_enums.mojom-data-view.h"
+#include "ui/accessibility/ax_enums.mojom-shared.h"
 #include "ui/base/hit_test.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/views/accessibility/view_accessibility.h"

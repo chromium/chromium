@@ -8,7 +8,7 @@ import static org.chromium.chrome.browser.hub.HubColorMixer.COLOR_MIXER;
 
 import android.view.ViewGroup;
 
-import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
@@ -28,7 +28,7 @@ public class HubPaneHostCoordinator {
      */
     public HubPaneHostCoordinator(
             HubPaneHostView hubPaneHostView,
-            ObservableSupplier<Pane> paneSupplier,
+            MonotonicObservableSupplier<Pane> paneSupplier,
             HubColorMixer hubColorMixer,
             @PaneId int defaultPaneId) {
         PropertyModel model =

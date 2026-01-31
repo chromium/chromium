@@ -17,8 +17,8 @@
 
 namespace remoting {
 
-InstanceIdentityToken::InstanceIdentityToken(base::Value::Dict header,
-                                             base::Value::Dict payload)
+InstanceIdentityToken::InstanceIdentityToken(base::DictValue header,
+                                             base::DictValue payload)
     : header_(std::move(header)), payload_(std::move(payload)) {}
 
 InstanceIdentityToken::~InstanceIdentityToken() = default;

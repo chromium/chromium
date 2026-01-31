@@ -167,9 +167,9 @@ void MediaStreamComponentImpl::AddSink(
 }
 
 String MediaStreamComponentImpl::ToString() const {
-  return String::Format("[id: %s, unique_id: %d, enabled: %s]",
-                        Id().Utf8().c_str(), UniqueId(),
-                        Enabled() ? "true" : "false");
+  return UNSAFE_TODO(String::Format("[id: %s, unique_id: %d, enabled: %s]",
+                                    Id().Utf8().c_str(), UniqueId(),
+                                    Enabled() ? "true" : "false"));
 }
 
 void MediaStreamComponentImpl::Trace(Visitor* visitor) const {

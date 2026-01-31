@@ -24,7 +24,7 @@ ClipboardRequestHandler::TestFactory* TestFactoryStorage() {
 // static
 std::unique_ptr<ClipboardRequestHandler> ClipboardRequestHandler::Create(
     ContentAnalysisInfo* content_analysis_info,
-    safe_browsing::BinaryUploadService* upload_service,
+    BinaryUploadService* upload_service,
     Profile* profile,
     GURL url,
     Type type,
@@ -63,7 +63,7 @@ ClipboardRequestHandler::~ClipboardRequestHandler() = default;
 
 ClipboardRequestHandler::ClipboardRequestHandler(
     ContentAnalysisInfo* content_analysis_info,
-    safe_browsing::BinaryUploadService* upload_service,
+    BinaryUploadService* upload_service,
     Profile* profile,
     GURL url,
     Type type,

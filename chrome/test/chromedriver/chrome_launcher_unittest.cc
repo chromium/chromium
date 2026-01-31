@@ -115,7 +115,7 @@ TEST(ProcessExtensions, SingleExtensionWithBgPage) {
   std::optional<base::Value> manifest = base::JSONReader::Read(
       manifest_txt, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   ASSERT_TRUE(manifest);
-  base::Value::Dict* manifest_dict = manifest->GetIfDict();
+  base::DictValue* manifest_dict = manifest->GetIfDict();
   ASSERT_TRUE(manifest_dict);
   std::string* key = manifest_dict->FindString("key");
   ASSERT_TRUE(key);
@@ -186,10 +186,10 @@ TEST(PrepareUserDataDir, CustomPrefs) {
   base::ScopedTempDir temp_dir;
   ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
 
-  base::Value::Dict prefs;
+  base::DictValue prefs;
   prefs.Set("myPrefsKey", "ok");
   prefs.Set("pref.sub", base::Value("1"));
-  base::Value::Dict local_state;
+  base::DictValue local_state;
   local_state.Set("myLocalKey", "ok");
   local_state.Set("local.state.sub", base::Value("2"));
   Status status =
@@ -203,7 +203,7 @@ TEST(PrepareUserDataDir, CustomPrefs) {
   ASSERT_TRUE(base::ReadFileToString(prefs_file, &prefs_str));
   std::optional<base::Value> prefs_value =
       base::JSONReader::Read(prefs_str, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
-  const base::Value::Dict* prefs_dict = prefs_value->GetIfDict();
+  const base::DictValue* prefs_dict = prefs_value->GetIfDict();
   ASSERT_TRUE(prefs_dict);
   EXPECT_EQ("ok", *prefs_dict->FindString("myPrefsKey"));
   EXPECT_EQ("1", *prefs_dict->FindStringByDottedPath("pref.sub"));
@@ -214,7 +214,7 @@ TEST(PrepareUserDataDir, CustomPrefs) {
   ASSERT_TRUE(base::ReadFileToString(local_state_file, &local_state_str));
   std::optional<base::Value> local_state_value = base::JSONReader::Read(
       local_state_str, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
-  const base::Value::Dict* local_state_dict = local_state_value->GetIfDict();
+  const base::DictValue* local_state_dict = local_state_value->GetIfDict();
   ASSERT_TRUE(local_state_dict);
   EXPECT_EQ("ok", *local_state_dict->FindString("myLocalKey"));
   EXPECT_EQ("2", *local_state_dict->FindStringByDottedPath("local.state.sub"));

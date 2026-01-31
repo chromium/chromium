@@ -27,9 +27,13 @@ enum class BindingsPolicyValue {
   // These bindings must not be exposed to normal web content.
   kMojoWebUi,
 
+  // HTML-based UI bindings that allow access to the chrome.histograms API.
+  // These bindings must not be exposed to normal web content.
+  kWebUiHistograms,
+
   // Other types of bindings in the future can go here.
 
-  kLastValue = kMojoWebUi,
+  kLastValue = kWebUiHistograms,
 };
 
 using BindingsPolicySet = base::EnumSet<BindingsPolicyValue,
@@ -39,7 +43,7 @@ using BindingsPolicySet = base::EnumSet<BindingsPolicyValue,
 // The set of WebUI bindings.
 inline constexpr BindingsPolicySet kWebUIBindingsPolicySet =
     BindingsPolicySet::FromRange(BindingsPolicyValue::kWebUi,
-                                 BindingsPolicyValue::kMojoWebUi);
+                                 BindingsPolicyValue::kWebUiHistograms);
 
 }  // namespace content
 

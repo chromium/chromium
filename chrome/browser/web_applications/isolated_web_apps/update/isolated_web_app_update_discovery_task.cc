@@ -10,7 +10,6 @@
 #include <string>
 #include <vector>
 
-#include "base/containers/contains.h"
 #include "base/containers/span.h"
 #include "base/containers/to_value_list.h"
 #include "base/containers/to_vector.h"
@@ -191,7 +190,7 @@ IsolatedWebAppUpdateDiscoveryTask::IsolatedWebAppUpdateDiscoveryTask(
       profile_(profile) {
   CHECK(url_loader_factory_);
   debug_log_ =
-      base::Value::Dict()
+      base::DictValue()
           .Set("bundle_id", task_params_.url_info().web_bundle_id().id())
           .Set("update_channel", task_params_.update_channel().ToString())
           .Set("allow_downgrades", task_params_.allow_downgrades())
@@ -273,7 +272,7 @@ void IsolatedWebAppUpdateDiscoveryTask::OnUpdateManifestFetched(
   debug_log_.Set(
       "available_versions",
       base::ToValueList(update_manifest.versions(), [](const auto& entry) {
-        return base::Value::Dict()
+        return base::DictValue()
             .Set("version", entry.version().GetString())
             .Set("update_channels",
                  base::ToValueList(entry.channels(), [](const auto& channel) {
@@ -283,16 +282,18 @@ void IsolatedWebAppUpdateDiscoveryTask::OnUpdateManifestFetched(
 
   debug_log_.Set(
       "version_entry",
-      base::Value::Dict()
+      base::DictValue()
           .Set("version", version_entry->version().GetString())
           .Set("src", version_entry->src().spec())
           .Set("update_channel", task_params_.update_channel().ToString()));
 
-  ASSIGN_OR_RETURN(
-      const WebApp& iwa,
-      GetIsolatedWebAppById(*registrar_, task_params_.url_info().app_id()),
-      [&](const std::string&) { FailWith(Error::kIwaNotInstalled); });
-  const auto& isolation_data = *iwa.isolation_data();
+  const WebApp* iwa = registrar_->GetAppById(task_params_.url_info().app_id(),
+                                             WebAppFilter::IsIsolatedApp());
+  if (!iwa) {
+    FailWith(Error::kIwaNotInstalled);
+    return;
+  }
+  const auto& isolation_data = *iwa->isolation_data();
   currently_installed_version_ = isolation_data.version();
   debug_log_.Set("currently_installed_version",
                  currently_installed_version_->GetString());
@@ -379,8 +380,7 @@ void IsolatedWebAppUpdateDiscoveryTask::CheckIntegrityBundleForRotatedKey(
   // potentially big, bundle if it is not signed by the appropriate rotated key.
   if (initial_bytes &&
       initial_bytes->rfind("📦") != initial_bytes->find("📦") &&
-      !base::Contains(initial_bytes.value(),
-                      base::as_string_view(rotated_key))) {
+      !initial_bytes.value().contains(base::as_string_view(rotated_key))) {
     FailWith(Error::kUpdateManifestNoApplicableVersion);
     return;
   }

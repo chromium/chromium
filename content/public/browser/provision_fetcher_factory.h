@@ -6,6 +6,7 @@
 #define CONTENT_PUBLIC_BROWSER_PROVISION_FETCHER_FACTORY_H_
 
 #include <memory>
+#include <string_view>
 
 #include "content/common/content_export.h"
 
@@ -24,6 +25,11 @@ namespace content {
 CONTENT_EXPORT
 std::unique_ptr<media::ProvisionFetcher> CreateProvisionFetcher(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory);
+
+CONTENT_EXPORT
+std::unique_ptr<media::ProvisionFetcher> CreateProvisionFetcherWithUserAgent(
+    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
+    std::string_view user_agent);
 
 }  // namespace content
 

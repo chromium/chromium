@@ -41,11 +41,7 @@ SharedStorageManager::SharedStorageManager(
           db_path_,
           sql_task_runner_,
           special_storage_policy_,
-          options_->GetDatabaseOptions())),
-      memory_pressure_listener_registration_(
-          FROM_HERE,
-          base::MemoryPressureListenerTag::kSharedStorageManager,
-          this) {
+          options_->GetDatabaseOptions())) {
   timer_.Start(FROM_HERE, options_->stale_purge_initial_interval,
                base::BindOnce(&SharedStorageManager::PurgeStale,
                               weak_ptr_factory_.GetWeakPtr()));
@@ -53,26 +49,6 @@ SharedStorageManager::SharedStorageManager(
 
 SharedStorageManager::~SharedStorageManager() {
   RecordShutdownMetrics();
-}
-
-void SharedStorageManager::HandleMemoryPressure(
-    base::OnceCallback<void()> callback,
-    base::MemoryPressureLevel memory_pressure_level) {
-  DCHECK(callback);
-  DCHECK(database_);
-
-  // TODO(cammie): Check if MEMORY_PRESSURE_LEVEL_MODERATE should also be
-  // ignored.
-  if (memory_pressure_level == base::MEMORY_PRESSURE_LEVEL_NONE) {
-    return;
-  }
-
-  database_->TrimMemory(std::move(callback));
-}
-
-void SharedStorageManager::OnMemoryPressure(
-    base::MemoryPressureLevel memory_pressure_level) {
-  HandleMemoryPressure(base::DoNothing(), memory_pressure_level);
 }
 
 void SharedStorageManager::OnOperationResult(OperationResult result) {

@@ -115,8 +115,10 @@ bool CanAccessWindow(const LocalDOMWindow* accessing_window,
       // being explicitly origin keyed.
       SECURITY_CHECK(
           !IsSameWindowAgentFactory(accessing_window, local_target_window) ||
-          (accessing_window->GetAgent()->IsOriginKeyedForInheritance() !=
-           local_target_window->GetAgent()->IsOriginKeyedForInheritance()) ||
+          (accessing_window->GetAgent()->GetAgentClusterKey().IsOriginKeyed() !=
+           local_target_window->GetAgent()
+               ->GetAgentClusterKey()
+               .IsOriginKeyed()) ||
           (WebTestSupport::IsRunningWebTest() &&
            local_target_window->GetFrame()->PagePopupOwner()));
     }

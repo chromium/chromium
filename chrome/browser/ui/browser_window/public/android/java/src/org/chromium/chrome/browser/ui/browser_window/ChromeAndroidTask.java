@@ -11,11 +11,13 @@ import org.chromium.base.JniOnceCallback;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager;
-import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.tabmodel.TabModel;
+import org.chromium.chrome.browser.tabmodel.SupportedProfileType;
+import org.chromium.chrome.browser.tabmodel.TabModelSelector;
+import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateManager;
 import org.chromium.ui.base.ActivityWindowAndroid;
 
 import java.util.List;
+import java.util.function.Supplier;
 
 /**
  * Represents an Android window containing Chrome.
@@ -54,20 +56,22 @@ public interface ChromeAndroidTask {
     /** Contains objects whose lifecycle is in sync with an {@code Activity}. */
     final class ActivityScopedObjects {
         final ActivityWindowAndroid mActivityWindowAndroid;
-        final TabModel mTabModel;
+        final TabModelSelector mTabModelSelector;
+        final @SupportedProfileType int mSupportedProfileType;
+        final @Nullable DesktopWindowStateManager mDesktopWindowStateManager;
         final @Nullable MultiInstanceManager mMultiInstanceManager;
 
         public ActivityScopedObjects(
-                ActivityWindowAndroid activityWindowAndroid, TabModel tabModel) {
-            this(activityWindowAndroid, tabModel, /* multiInstanceManager= */ null);
-        }
-
-        public ActivityScopedObjects(
                 ActivityWindowAndroid activityWindowAndroid,
-                TabModel tabModel,
+                TabModelSelector tabModelSelector,
+                @SupportedProfileType int supportedProfileType,
+                @Nullable DesktopWindowStateManager desktopWindowStateManager,
                 @Nullable MultiInstanceManager multiInstanceManager) {
             mActivityWindowAndroid = activityWindowAndroid;
-            mTabModel = tabModel;
+            mTabModelSelector = tabModelSelector;
+            assert supportedProfileType != SupportedProfileType.UNSET;
+            mSupportedProfileType = supportedProfileType;
+            mDesktopWindowStateManager = desktopWindowStateManager;
             mMultiInstanceManager = multiInstanceManager;
         }
     }
@@ -148,21 +152,43 @@ public interface ChromeAndroidTask {
     int getBrowserWindowType();
 
     /**
-     * Sets the current {@link ActivityScopedObjects}.
+     * Adds an instance of {@link ActivityScopedObjects}.
      *
      * <p>As a {@link ChromeAndroidTask} is meant to track an Android Task, but {@link
      * ActivityScopedObjects} is associated with a {@code ChromeActivity}, this method is needed to
-     * support the difference in their lifecycles.
+     * support the difference in their lifecycles and the fact that a Task can contain multiple
+     * {@code Activities}.
      *
-     * <p>We assume there is at most one {@link ActivityScopedObjects} associated with a {@link
-     * ChromeAndroidTask} at any time. If this method is called when this {@link ChromeAndroidTask}
-     * already has an {@link ActivityScopedObjects}, an {@link AssertionError} will occur.
+     * <p>The most recent {@link ActivityScopedObjects} added to a Task is considered as objects for
+     * the "top" {@code Activity} in the Task.
      *
      * @param activityScopedObjects The {@link ActivityScopedObjects} to be associated with this
      *     {@link ChromeAndroidTask}.
-     * @see #clearActivityScopedObjects()
+     * @see #removeActivityScopedObjects
      */
-    void setActivityScopedObjects(ActivityScopedObjects activityScopedObjects);
+    void addActivityScopedObjects(ActivityScopedObjects activityScopedObjects);
+
+    /**
+     * Removes the {@link ActivityScopedObjects} matching the given {@link ActivityWindowAndroid}.
+     *
+     * <p>This method should be called when the {@link ActivityWindowAndroid} is about to be
+     * destroyed.
+     *
+     * <p>Note that this method may not remove {@link ActivityScopedObjects} for the top {@code
+     * Activity}, as an Android Task isn't an FIFO stack. For example, the system can destroy an
+     * {@code Activity} in the background and keep the foreground {@code Activity}.
+     *
+     * @see #addActivityScopedObjects
+     */
+    void removeActivityScopedObjects(ActivityWindowAndroid activityWindowAndroid);
+
+    /**
+     * Returns the top {@link ActivityWindowAndroid} in this Task, or {@code null} if there is none.
+     *
+     * @see #addActivityScopedObjects
+     * @see #removeActivityScopedObjects
+     */
+    @Nullable ActivityWindowAndroid getTopActivityWindowAndroid();
 
     /**
      * Called when native initialization has finished.
@@ -172,28 +198,27 @@ public interface ChromeAndroidTask {
     void onNativeInitializationFinished();
 
     /**
-     * Convenience API to return the {@link ActivityWindowAndroid} in {@link ActivityScopedObjects},
-     * or {@code null} if there is none.
-     */
-    @Nullable ActivityWindowAndroid getActivityWindowAndroid();
-
-    /**
-     * Clears the current {@link ActivityScopedObjects}.
-     *
-     * <p>This method should be called when the {@code Activity} for the current {@link
-     * ActivityScopedObjects} is about to be destroyed.
-     *
-     * @see #setActivityScopedObjects
-     */
-    void clearActivityScopedObjects();
-
-    /**
      * Adds a {@link ChromeAndroidTaskFeature} to this {@link ChromeAndroidTask}.
      *
-     * <p>This method is the start of the {@link ChromeAndroidTaskFeature}'s lifecycle, and {@link
+     * <p>If an instance of the given {@code featureKey} hasn't been added to this Task, this method
+     * will be the start of the feature's lifecycle, and {@link
      * ChromeAndroidTaskFeature#onAddedToTask} will be invoked.
+     *
+     * <p>If the {@code featureKey} is profile-scoped and the profile doesn't have an associated
+     * browser window this method will throw an exception.
+     *
+     * <p>If an instance of the given {@code featureKey} is already added, this method will be a
+     * no-op and {@link ChromeAndroidTaskFeature#onAddedToTask} won't be invoked.
+     *
+     * <p>Production code should initialize a feature inside {@code featureSupplier}'s {@link
+     * Supplier#get()} implementation to avoid unnecessarily initializing the feature if it
+     * shouldn't be added.
+     *
+     * @param featureKey The key of the feature to add.
+     * @param featureSupplier {@link Supplier} that should instantiate the feature.
      */
-    void addFeature(ChromeAndroidTaskFeature feature);
+    <T extends ChromeAndroidTaskFeature> void addFeature(
+            ChromeAndroidTaskFeatureKey featureKey, Supplier<@Nullable T> featureSupplier);
 
     /**
      * Creates the {@link Intent} to open a new window of type {@link BrowserWindowType#NORMAL}.
@@ -216,7 +241,7 @@ public interface ChromeAndroidTask {
      * Destroys all objects owned by this {@link ChromeAndroidTask}, including all {@link
      * ChromeAndroidTaskFeature}s.
      *
-     * @see #addFeature(ChromeAndroidTaskFeature)
+     * @see #addFeature
      */
     void destroy();
 
@@ -248,9 +273,6 @@ public interface ChromeAndroidTask {
      * <p>The timestamp is in milliseconds since boot.
      */
     long getLastActivatedTimeMillis();
-
-    /** Returns the {@link Profile} associated with this task. */
-    Profile getProfile();
 
     /** Returns current bounds of the window. */
     Rect getBoundsInDp();
@@ -300,6 +322,9 @@ public interface ChromeAndroidTask {
 
     /** Returns all {@link ChromeAndroidTaskFeature}s for testing. */
     List<ChromeAndroidTaskFeature> getAllFeaturesForTesting();
+
+    /** Returns the {@link ChromeAndroidTaskFeature} instance for the given class. */
+    @Nullable ChromeAndroidTaskFeature getFeatureForTesting(ChromeAndroidTaskFeatureKey featureKey);
 
     /**
      * Returns the {@code SessionID} as returned by {@code BrowserWindowInterface::GetSessionID()}.

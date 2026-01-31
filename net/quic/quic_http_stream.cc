@@ -55,15 +55,15 @@ HttpConnectionInfo QuicHttpStream::ConnectionInfoFromQuicVersion(
     case quic::QUIC_VERSION_46:
       return HttpConnectionInfo::kQUIC_46;
     case quic::QUIC_VERSION_IETF_DRAFT_29:
-      DCHECK(quic_version.UsesTls());
+      DCHECK(quic_version.IsIetfQuic());
       return HttpConnectionInfo::kQUIC_DRAFT_29;
     case quic::QUIC_VERSION_IETF_RFC_V1:
-      DCHECK(quic_version.UsesTls());
+      DCHECK(quic_version.IsIetfQuic());
       return HttpConnectionInfo::kQUIC_RFC_V1;
     case quic::QUIC_VERSION_RESERVED_FOR_NEGOTIATION:
       return HttpConnectionInfo::kQUIC_999;
     case quic::QUIC_VERSION_IETF_RFC_V2:
-      DCHECK(quic_version.UsesTls());
+      DCHECK(quic_version.IsIetfQuic());
       return HttpConnectionInfo::kQUIC_2_DRAFT_8;
   }
   NOTREACHED();
@@ -127,6 +127,8 @@ int QuicHttpStream::SendRequest(const HttpRequestHeaders& request_headers,
   if (!stream_ || !quic_session()->IsConnected()) {
     return GetResponseStatus();
   }
+
+  quic_session()->AssertIsValidFor(request_info_->url);
 
   // Store the serialized request headers.
   CreateSpdyHeadersFromHttpRequest(*request_info_, priority_, request_headers,

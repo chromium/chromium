@@ -128,7 +128,7 @@ class COMPONENT_EXPORT(OZONE_BASE) PlatformScreen {
 
   // Returns human readable description of the window manager, desktop, and
   // other system properties related to the compositing.
-  virtual base::Value::List GetGpuExtraInfo(
+  virtual base::ListValue GetGpuExtraInfo(
       const gfx::GpuExtraInfo& gpu_extra_info);
 
   // Returns the preferred scale factor for a |widget|, if any. Used, for
@@ -141,7 +141,7 @@ class COMPONENT_EXPORT(OZONE_BASE) PlatformScreen {
   virtual bool IsHeadless() const;
 
  protected:
-  void StorePlatformNameIntoListOfValues(base::Value::List& values,
+  void StorePlatformNameIntoListOfValues(base::ListValue& values,
                                          const std::string& platform_name);
 };
 

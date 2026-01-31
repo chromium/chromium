@@ -28,10 +28,10 @@ using testing::Property;
 double kTimestamp = static_cast<double>(
     base::Time::Now().ToDeltaSinceWindowsEpoch().InMicroseconds());
 
-base::Value::Dict GenerateSearchPrefEntry(const std::string& keyword,
-                                          bool featured,
-                                          bool enforced_by_policy) {
-  base::Value::Dict entry;
+base::DictValue GenerateSearchPrefEntry(const std::string& keyword,
+                                        bool featured,
+                                        bool enforced_by_policy) {
+  base::DictValue entry;
   entry.Set(DefaultSearchManager::kShortName, keyword + "name");
   entry.Set(DefaultSearchManager::kKeyword, featured ? "@" + keyword : keyword);
   entry.Set(DefaultSearchManager::kURL,
@@ -46,18 +46,18 @@ base::Value::Dict GenerateSearchPrefEntry(const std::string& keyword,
   return entry;
 }
 
-base::Value::Dict GenerateSiteSearchPrefEntry(const std::string& keyword,
-                                              bool enforced_by_policy = true) {
-  base::Value::Dict entry =
+base::DictValue GenerateSiteSearchPrefEntry(const std::string& keyword,
+                                            bool enforced_by_policy = true) {
+  base::DictValue entry =
       GenerateSearchPrefEntry(keyword, /*featured=*/false, enforced_by_policy);
   entry.Set(DefaultSearchManager::kPolicyOrigin,
             static_cast<int>(TemplateURLData::PolicyOrigin::kSiteSearch));
   return entry;
 }
 
-base::Value::Dict GenerateSearchAggregatorPrefEntry(const std::string& keyword,
-                                                    bool featured) {
-  base::Value::Dict entry =
+base::DictValue GenerateSearchAggregatorPrefEntry(const std::string& keyword,
+                                                  bool featured) {
+  base::DictValue entry =
       GenerateSearchPrefEntry(keyword, featured, /*enforced_by_policy=*/true);
   entry.Set(DefaultSearchManager::kPolicyOrigin,
             static_cast<int>(TemplateURLData::PolicyOrigin::kSearchAggregator));
@@ -103,8 +103,7 @@ TEST_F(EnterpriseSearchManagerTest, EmptyList) {
 
   EnterpriseSearchManager manager(pref_service(), callback.Get());
   pref_service()->SetManagedPref(
-      EnterpriseSearchManager::kSiteSearchSettingsPrefName,
-      base::Value::List());
+      EnterpriseSearchManager::kSiteSearchSettingsPrefName, base::ListValue());
 }
 
 TEST_F(EnterpriseSearchManagerTest,
@@ -113,7 +112,7 @@ TEST_F(EnterpriseSearchManagerTest,
   scoped_feature_list.InitAndDisableFeature(
       omnibox::kEnableSiteSearchAllowUserOverridePolicy);
 
-  base::Value::List pref_value;
+  base::ListValue pref_value;
   pref_value.Append(GenerateSiteSearchPrefEntry("work"));
   pref_value.Append(GenerateSiteSearchPrefEntry("docs"));
   pref_value.Append(
@@ -137,7 +136,7 @@ TEST_F(EnterpriseSearchManagerTest,
       EnterpriseSearchManager::kSiteSearchSettingsPrefName,
       std::move(pref_value));
 
-  const base::Value::List& final_overridden_keywords = pref_service()->GetList(
+  const base::ListValue& final_overridden_keywords = pref_service()->GetList(
       EnterpriseSearchManager::kSiteSearchSettingsOverriddenKeywordsPrefName);
   EXPECT_THAT(final_overridden_keywords, IsEmpty());
 }
@@ -147,7 +146,7 @@ TEST_F(EnterpriseSearchManagerTest, SiteSearchOnly_AllowUserOverrideFeatureOn) {
   scoped_feature_list.InitAndEnableFeature(
       omnibox::kEnableSiteSearchAllowUserOverridePolicy);
 
-  base::Value::List pref_value;
+  base::ListValue pref_value;
   pref_value.Append(GenerateSiteSearchPrefEntry("work"));
   pref_value.Append(GenerateSiteSearchPrefEntry("docs"));
   pref_value.Append(
@@ -171,7 +170,7 @@ TEST_F(EnterpriseSearchManagerTest, SiteSearchOnly_AllowUserOverrideFeatureOn) {
       EnterpriseSearchManager::kSiteSearchSettingsPrefName,
       std::move(pref_value));
 
-  const base::Value::List& final_overridden_keywords = pref_service()->GetList(
+  const base::ListValue& final_overridden_keywords = pref_service()->GetList(
       EnterpriseSearchManager::kSiteSearchSettingsOverriddenKeywordsPrefName);
   EXPECT_THAT(final_overridden_keywords, IsEmpty());
 }
@@ -182,7 +181,7 @@ TEST_F(EnterpriseSearchManagerTest,
   scoped_feature_list.InitAndEnableFeature(
       omnibox::kEnableSiteSearchAllowUserOverridePolicy);
 
-  base::Value::List pref_value;
+  base::ListValue pref_value;
   pref_value.Append(GenerateSiteSearchPrefEntry("work"));
   pref_value.Append(GenerateSiteSearchPrefEntry("docs"));
   pref_value.Append(
@@ -209,7 +208,7 @@ TEST_F(EnterpriseSearchManagerTest,
   // Mark "mail" as overridden by user.
   manager.AddOverriddenKeyword("mail");
 
-  const base::Value::List& overridden_keywords_pref = pref_service()->GetList(
+  const base::ListValue& overridden_keywords_pref = pref_service()->GetList(
       EnterpriseSearchManager::kSiteSearchSettingsOverriddenKeywordsPrefName);
   EXPECT_THAT(overridden_keywords_pref.size(), 1);
   EXPECT_TRUE(overridden_keywords_pref.contains("mail"));
@@ -222,7 +221,7 @@ TEST_F(
   scoped_feature_list.InitAndEnableFeature(
       omnibox::kEnableSiteSearchAllowUserOverridePolicy);
 
-  base::Value::List initial_pref_value;
+  base::ListValue initial_pref_value;
   initial_pref_value.Append(GenerateSiteSearchPrefEntry("work"));
   initial_pref_value.Append(GenerateSiteSearchPrefEntry("docs"));
   initial_pref_value.Append(
@@ -252,12 +251,12 @@ TEST_F(
 
   // Mark "mail" as overridden by user.
   manager.AddOverriddenKeyword("mail");
-  const base::Value::List& overridden_keywords_pref = pref_service()->GetList(
+  const base::ListValue& overridden_keywords_pref = pref_service()->GetList(
       EnterpriseSearchManager::kSiteSearchSettingsOverriddenKeywordsPrefName);
   EXPECT_TRUE(overridden_keywords_pref.contains("mail"));
 
   // Update policy to make "mail" enforced and add "calendar" as enforced.
-  base::Value::List updated_pref_value;
+  base::ListValue updated_pref_value;
   updated_pref_value.Append(GenerateSiteSearchPrefEntry("work"));
   updated_pref_value.Append(GenerateSiteSearchPrefEntry("docs"));
   updated_pref_value.Append(
@@ -277,7 +276,7 @@ TEST_F(EnterpriseSearchManagerTest,
   scoped_feature_list.InitAndEnableFeature(
       omnibox::kEnableSiteSearchAllowUserOverridePolicy);
 
-  base::Value::List initial_pref_value;
+  base::ListValue initial_pref_value;
   initial_pref_value.Append(GenerateSiteSearchPrefEntry("work"));
   initial_pref_value.Append(GenerateSiteSearchPrefEntry("docs"));
   initial_pref_value.Append(
@@ -306,12 +305,12 @@ TEST_F(EnterpriseSearchManagerTest,
       EnterpriseSearchManager::kSiteSearchSettingsPrefName,
       std::move(initial_pref_value));
 
-  const base::Value::List& overridden_keywords_pref = pref_service()->GetList(
+  const base::ListValue& overridden_keywords_pref = pref_service()->GetList(
       EnterpriseSearchManager::kSiteSearchSettingsOverriddenKeywordsPrefName);
   EXPECT_THAT(overridden_keywords_pref, IsEmpty());
 
   // Update policy to remove "mail" and "calendar".
-  base::Value::List updated_pref_value;
+  base::ListValue updated_pref_value;
   updated_pref_value.Append(GenerateSiteSearchPrefEntry("work"));
   updated_pref_value.Append(GenerateSiteSearchPrefEntry("docs"));
   pref_service()->SetManagedPref(
@@ -323,7 +322,7 @@ TEST_F(EnterpriseSearchManagerTest,
 
 TEST_F(EnterpriseSearchManagerTest,
        SearchAggregatorsOnly_AllowUserOverrideFeatureOff) {
-  base::Value::List pref_value;
+  base::ListValue pref_value;
   pref_value.Append(
       GenerateSearchAggregatorPrefEntry("aggregator", /*featured=*/true));
   pref_value.Append(
@@ -343,7 +342,7 @@ TEST_F(EnterpriseSearchManagerTest,
       EnterpriseSearchManager::kEnterpriseSearchAggregatorSettingsPrefName,
       std::move(pref_value));
 
-  const base::Value::List& final_overridden_keywords = pref_service()->GetList(
+  const base::ListValue& final_overridden_keywords = pref_service()->GetList(
       EnterpriseSearchManager::kSiteSearchSettingsOverriddenKeywordsPrefName);
   EXPECT_THAT(final_overridden_keywords, IsEmpty());
 }
@@ -354,7 +353,7 @@ TEST_F(EnterpriseSearchManagerTest,
   scoped_feature_list.InitAndEnableFeature(
       omnibox::kEnableSiteSearchAllowUserOverridePolicy);
 
-  base::Value::List pref_value;
+  base::ListValue pref_value;
   pref_value.Append(
       GenerateSearchAggregatorPrefEntry("aggregator", /*featured=*/true));
   pref_value.Append(
@@ -374,14 +373,14 @@ TEST_F(EnterpriseSearchManagerTest,
       EnterpriseSearchManager::kEnterpriseSearchAggregatorSettingsPrefName,
       std::move(pref_value));
 
-  const base::Value::List& final_overridden_keywords = pref_service()->GetList(
+  const base::ListValue& final_overridden_keywords = pref_service()->GetList(
       EnterpriseSearchManager::kSiteSearchSettingsOverriddenKeywordsPrefName);
   EXPECT_THAT(final_overridden_keywords, IsEmpty());
 }
 
 TEST_F(EnterpriseSearchManagerTest,
        SearchAggregatorsOnlyWithRequireShortcutTrue) {
-  base::Value::List pref_value;
+  base::ListValue pref_value;
   pref_value.Append(
       GenerateSearchAggregatorPrefEntry("aggregator", /*featured=*/true));
   pref_value.Append(
@@ -407,10 +406,10 @@ TEST_F(EnterpriseSearchManagerTest,
 }
 
 TEST_F(EnterpriseSearchManagerTest, SiteSearchAndSearchAggregators) {
-  base::Value::List site_search_pref_value;
+  base::ListValue site_search_pref_value;
   site_search_pref_value.Append(GenerateSiteSearchPrefEntry("work"));
 
-  base::Value::List aggregator_pref_value;
+  base::ListValue aggregator_pref_value;
   aggregator_pref_value.Append(
       GenerateSearchAggregatorPrefEntry("aggregator", /*featured=*/true));
   aggregator_pref_value.Append(
@@ -440,7 +439,7 @@ TEST_F(EnterpriseSearchManagerTest, SiteSearchAndSearchAggregators) {
 }
 
 TEST_F(EnterpriseSearchManagerTest, SiteSearch_NotCreatedByPolicy) {
-  base::Value::List pref_value;
+  base::ListValue pref_value;
   pref_value.Append(GenerateSiteSearchPrefEntry("work"));
   pref_value.Append(GenerateSiteSearchPrefEntry("docs"));
 
@@ -577,7 +576,7 @@ TEST_P(EnterpriseSearchManagerProviderInjectionTest, Verify) {
   } else {
     scoped_feature_list.InitAndEnableFeature(
         omnibox::kEnableSearchAggregatorPolicy);
-    base::Value::List pref_value;
+    base::ListValue pref_value;
     if (test_case.policy_loading_status ==
         PolicyLoadingStatus::kPolicyEnabledWithEngines) {
       pref_value.Append(
@@ -747,7 +746,7 @@ TEST_P(EnterpriseSearchManagerRequireShortcutTest,
 
   // Configure policy for test case.
   if (test_case.policy_require_shortcut.has_value()) {
-    base::Value::List pref_value;
+    base::ListValue pref_value;
     pref_value.Append(
         GenerateSearchAggregatorPrefEntry("from_policy", /*featured=*/true));
     pref_value.Append(

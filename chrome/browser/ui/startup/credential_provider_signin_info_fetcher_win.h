@@ -36,7 +36,7 @@ class CredentialProviderSigninInfoFetcher
   // is finished successfully or with an error.
   // The single argument should always be a dictionary value and will be empty
   // if there was an error during the fetch.
-  using FetchCompletionCallback = base::OnceCallback<void(base::Value::Dict)>;
+  using FetchCompletionCallback = base::OnceCallback<void(base::DictValue)>;
 
   CredentialProviderSigninInfoFetcher(
       const std::string& refresh_token,
@@ -54,8 +54,8 @@ class CredentialProviderSigninInfoFetcher
       FetchCompletionCallback completion_callback);
 
   // gaia::GaiaOAuthClient::Delegate:
-  void OnGetTokenInfoResponse(const base::Value::Dict& token_info) override;
-  void OnGetUserInfoResponse(const base::Value::Dict& user_info) override;
+  void OnGetTokenInfoResponse(const base::DictValue& token_info) override;
+  void OnGetUserInfoResponse(const base::DictValue& user_info) override;
   void OnOAuthError() override;
   void OnNetworkError(int response_code) override;
 

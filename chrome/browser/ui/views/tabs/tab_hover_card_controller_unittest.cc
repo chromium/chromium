@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ui/views/tabs/tab_hover_card_controller.h"
 
+#include "base/byte_size.h"
+#include "base/memory/memory_pressure_listener_registry.h"
 #include "base/memory/scoped_refptr.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/ui/performance_controls/memory_saver_chip_tab_helper.h"
@@ -15,7 +17,6 @@
 #include "chrome/browser/ui/views/tabs/tab_hover_card_thumbnail_observer.h"
 #include "chrome/browser/ui/views/tabs/tab_strip.h"
 #include "chrome/common/pref_names.h"
-#include "components/memory_pressure/fake_memory_pressure_monitor.h"
 
 // These are regression tests for possible crashes.
 
@@ -25,18 +26,14 @@ class TabHoverCardControllerTest : public TestWithBrowserView {
     feature_list_.InitAndEnableFeature(features::kTabHoverCardImages);
   }
 
-  void SimulateMemoryPressure(base::MemoryPressureLevel level) {
-    fake_memory_monitor_.SetAndNotifyMemoryPressure(level);
-  }
-
  private:
   base::test::ScopedFeatureList feature_list_;
-  memory_pressure::test::FakeMemoryPressureMonitor fake_memory_monitor_;
 };
 
-TEST_F(TabHoverCardControllerTest, ShowWrongTabDoesntCrash) {
-  auto controller =
-      std::make_unique<TabHoverCardController>(browser_view()->tabstrip());
+// TODO(crbug.com/478172976): Fails UBSan because of misaliged pointers
+TEST_F(TabHoverCardControllerTest, DISABLED_ShowWrongTabDoesntCrash) {
+  auto controller = std::make_unique<TabHoverCardController>(
+      browser_view()->horizontal_tab_strip_for_testing());
   // Create some completely invalid pointer values (these should never be
   // dereferenced).
   Tab* const tab1 = reinterpret_cast<Tab*>(3);
@@ -48,8 +45,8 @@ TEST_F(TabHoverCardControllerTest, ShowWrongTabDoesntCrash) {
 }
 
 TEST_F(TabHoverCardControllerTest, SetPreviewWithNoHoverCardDoesntCrash) {
-  auto controller =
-      std::make_unique<TabHoverCardController>(browser_view()->tabstrip());
+  auto controller = std::make_unique<TabHoverCardController>(
+      browser_view()->horizontal_tab_strip_for_testing());
   // If the safeguard is not in place, this could crash in either metrics
   // collection *or* in trying to set the actual thumbnail image on the card.
   controller->OnPreviewImageAvailable(controller->thumbnail_observer_.get(),
@@ -64,10 +61,11 @@ TEST_F(TabHoverCardControllerTest, ShowPreviewsForTab) {
   AddTab(browser_view()->browser(), GURL("http://foo2.com"));
   browser_view()->browser()->tab_strip_model()->ActivateTabAt(0);
 
-  auto controller =
-      std::make_unique<TabHoverCardController>(browser_view()->tabstrip());
+  auto controller = std::make_unique<TabHoverCardController>(
+      browser_view()->horizontal_tab_strip_for_testing());
 
-  Tab* const target_tab = browser_view()->tabstrip()->tab_at(1);
+  Tab* const target_tab =
+      browser_view()->horizontal_tab_strip_for_testing()->tab_at(1);
   controller->target_tab_ = target_tab;
 
   controller->CreateHoverCard(target_tab);
@@ -82,10 +80,11 @@ TEST_F(TabHoverCardControllerTest, DisablePreviewsForTab) {
   AddTab(browser_view()->browser(), GURL("http://foo2.com"));
   browser_view()->browser()->tab_strip_model()->ActivateTabAt(0);
 
-  auto controller =
-      std::make_unique<TabHoverCardController>(browser_view()->tabstrip());
+  auto controller = std::make_unique<TabHoverCardController>(
+      browser_view()->horizontal_tab_strip_for_testing());
 
-  Tab* const target_tab = browser_view()->tabstrip()->tab_at(1);
+  Tab* const target_tab =
+      browser_view()->horizontal_tab_strip_for_testing()->tab_at(1);
   controller->target_tab_ = target_tab;
 
   controller->CreateHoverCard(target_tab);
@@ -100,10 +99,11 @@ TEST_F(TabHoverCardControllerTest, HidePreviewsForDiscardedTab) {
   AddTab(browser_view()->browser(), GURL("http://foo2.com"));
   browser_view()->browser()->tab_strip_model()->ActivateTabAt(0);
 
-  auto controller =
-      std::make_unique<TabHoverCardController>(browser_view()->tabstrip());
+  auto controller = std::make_unique<TabHoverCardController>(
+      browser_view()->horizontal_tab_strip_for_testing());
 
-  Tab* const target_tab = browser_view()->tabstrip()->tab_at(1);
+  Tab* const target_tab =
+      browser_view()->horizontal_tab_strip_for_testing()->tab_at(1);
   TabRendererData data;
   data.is_tab_discarded = true;
   target_tab->SetData(std::move(data));
@@ -125,13 +125,14 @@ TEST_F(TabHoverCardControllerTest, DisableMemoryUsageForTab) {
   AddTab(browser_view()->browser(), GURL("http://foo2.com"));
   browser_view()->browser()->tab_strip_model()->ActivateTabAt(0);
 
-  auto controller =
-      std::make_unique<TabHoverCardController>(browser_view()->tabstrip());
+  auto controller = std::make_unique<TabHoverCardController>(
+      browser_view()->horizontal_tab_strip_for_testing());
 
-  Tab* const target_tab = browser_view()->tabstrip()->tab_at(1);
+  Tab* const target_tab =
+      browser_view()->horizontal_tab_strip_for_testing()->tab_at(1);
   TabRendererData data;
   auto tab_resource_usage = base::MakeRefCounted<TabResourceUsage>();
-  tab_resource_usage->SetMemoryUsage(base::ByteCount(100));
+  tab_resource_usage->SetMemoryUsage(base::ByteSize(100));
   data.tab_resource_usage = std::move(tab_resource_usage);
   target_tab->SetData(std::move(data));
   controller->target_tab_ = target_tab;
@@ -163,10 +164,11 @@ TEST_F(TabHoverCardControllerTest, ShowPreviewsForDiscardedTabWithThumbnail) {
   AddTab(browser_view()->browser(), GURL("http://foo2.com"));
   browser_view()->browser()->tab_strip_model()->ActivateTabAt(0);
 
-  auto controller =
-      std::make_unique<TabHoverCardController>(browser_view()->tabstrip());
+  auto controller = std::make_unique<TabHoverCardController>(
+      browser_view()->horizontal_tab_strip_for_testing());
 
-  Tab* const target_tab = browser_view()->tabstrip()->tab_at(1);
+  Tab* const target_tab =
+      browser_view()->horizontal_tab_strip_for_testing()->tab_at(1);
   TabRendererData data;
   data.is_tab_discarded = true;
   target_tab->SetData(std::move(data));
@@ -182,7 +184,7 @@ TEST_F(TabHoverCardControllerTest, ShowPreviewsForDiscardedTabWithThumbnail) {
             TabHoverCardController::kNotWaiting);
 }
 
-TEST_F(TabHoverCardControllerTest, DontCaptureUnderCriticalMemoryPressure) {
+TEST_F(TabHoverCardControllerTest, ShowPreviewsForCrashedTab) {
   g_browser_process->local_state()->SetBoolean(prefs::kHoverCardImagesEnabled,
                                                true);
 
@@ -190,22 +192,27 @@ TEST_F(TabHoverCardControllerTest, DontCaptureUnderCriticalMemoryPressure) {
   AddTab(browser_view()->browser(), GURL("http://foo2.com"));
   browser_view()->browser()->tab_strip_model()->ActivateTabAt(0);
 
-  auto controller =
-      std::make_unique<TabHoverCardController>(browser_view()->tabstrip());
+  auto controller = std::make_unique<TabHoverCardController>(
+      browser_view()->horizontal_tab_strip_for_testing());
 
-  Tab* const target_tab = browser_view()->tabstrip()->tab_at(1);
+  Tab* const target_tab =
+      browser_view()->horizontal_tab_strip_for_testing()->tab_at(1);
   TabRendererData data;
+  data.is_crashed = true;
   TestThumbnailImageDelegate delegate;
-  data.thumbnail = base::MakeRefCounted<ThumbnailImage>(&delegate);
+  auto image = base::MakeRefCounted<ThumbnailImage>(&delegate);
+  data.thumbnail = image;
   target_tab->SetData(std::move(data));
   controller->target_tab_ = target_tab;
 
-  SimulateMemoryPressure(base::MEMORY_PRESSURE_LEVEL_CRITICAL);
-  controller->ShowHoverCard(true, target_tab);
+  controller->CreateHoverCard(target_tab);
+  controller->UpdateCardContent(target_tab);
 
+  // When crashed, we should not observe any thumbnail, even if one exists.
   EXPECT_EQ(controller->thumbnail_observer_.get()->current_image(), nullptr);
+  // And we should not be waiting for one.
   EXPECT_EQ(controller->thumbnail_wait_state_,
-            TabHoverCardController::kWaitingWithPlaceholder);
+            TabHoverCardController::kNotWaiting);
 }
 
 class TabHoverCardPreviewsEnabledPrefTest : public TestWithBrowserView {

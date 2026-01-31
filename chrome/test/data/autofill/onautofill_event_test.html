@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<!-- Autofill event handler test form. -->
+<html>
+  <head>
+    <title>Autofill Event Handler Test</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  </head>
+  <body>
+    <h3>Autofill Event Handler Test</h3>
+    <form id="testform" method="post">
+      <p>
+        <label for="NAME_FIRST">First Name:</label>
+        <input type="text" id="NAME_FIRST" name="firstname" autocomplete="given-name"><br/>
+
+        <label for="NAME_LAST">Last Name:</label>
+        <input type="text" id="NAME_LAST" name="lastname" autocomplete="family-name"><br/>
+
+        <label for="EMAIL_ADDRESS">Email:</label>
+        <input type="email" id="EMAIL_ADDRESS" name="email" autocomplete="email"><br/>
+
+        <label for="ADDRESS_HOME_LINE1">Address:</label>
+        <input type="text" id="ADDRESS_HOME_LINE1" name="address" autocomplete="address-line1"><br/>
+
+        <label for="ADDRESS_HOME_CITY">City:</label>
+        <input type="text" id="ADDRESS_HOME_CITY" name="city" autocomplete="address-level2"><br/>
+
+        <label for="ADDRESS_HOME_STATE">State:</label>
+        <input type="text" id="ADDRESS_HOME_STATE" name="state" autocomplete="address-level1"><br/>
+
+        <label for="ADDRESS_HOME_ZIP">Zip:</label>
+        <input type="text" id="ADDRESS_HOME_ZIP" name="zipcode" autocomplete="postal-code"><br/>
+
+        <label for="ADDRESS_HOME_COUNTRY">Country:</label>
+        <select id="ADDRESS_HOME_COUNTRY" name="country" autocomplete="country">
+          <option value="">Select Country</option>
+          <option value="US">United States</option>
+          <option value="CA">Canada</option>
+          <option value="UK">United Kingdom</option>
+        </select><br/>
+
+        <input type="submit" value="Submit">
+        <input type="reset" value="Reset">
+      </p>
+    </form>
+
+    <script>
+      // Global state for testing
+      window.testState = {
+        eventFired: false,
+        eventData: [],
+        refillCalled: false,
+        refillPromiseResolved: false,
+        autofillEventFired: false,
+        addEventListenerFired: false,
+        formModified: false,
+        fieldsFilledBeforeEvent: false,
+        eventFiredSynchronously: false,
+        eventFireCount: 0,
+        refillIsNullOnSecondEvent: false,
+        errors: [],
+        pendingRefill: null,
+      };
+
+      async function handleAutofillEvent(event) {
+        window.testState.eventFired = true;
+        window.testState.eventFireCount++;
+
+        // Event fires synchronously before autofill fills fields.
+        // The name and address values should only be checked the first time the event fires.
+        if (window.testState.eventFireCount === 1) {
+          const firstNameField = document.getElementById('NAME_FIRST');
+          const emailField = document.getElementById('EMAIL_ADDRESS');
+
+          // Fields should not be filled yet, as the event fires before autofill.
+          if (!firstNameField.value && !emailField.value) {
+            window.testState.fieldsFilledBeforeEvent = false;
+            window.testState.eventFiredSynchronously = true;
+          } else {
+            window.testState.fieldsFilledBeforeEvent = true;
+            window.testState.errors.push(
+              'Fields were already filled when first event fired (should fire before fill). ' +
+              'First name: ' + (firstNameField ? firstNameField.value : 'null') +
+              ', Email: ' + (emailField ? emailField.value : 'null')
+            );
+          }
+        }
+
+        const fieldData = event.autofillValues;
+        window.testState.eventData.push({
+          fireCount: window.testState.eventFireCount,
+          fieldData: fieldData.map(f => ({
+            field: f.field ? (f.field.name || f.field.id) : null,
+            value: f.value
+          }))
+        });
+
+        // On the second event (refill), verify that refill is null
+        // (refill() is not yet supported for refill autofills)
+        if (window.testState.eventFireCount > 1) {
+          window.testState.refillIsNullOnSecondEvent = (event.refill === null);
+          return;
+        }
+
+        // Add new fields to the form after a timeout, simulating a dynamic form
+        // that fetches additional fields from a server.
+        setTimeout(() => {
+          const form = document.getElementById('testform');
+          const submitButton = form.querySelector('input[type="submit"]');
+
+          if (submitButton && submitButton.parentElement) {
+            // Add neighborhood field
+            const neighborhoodLabel = document.createElement('label');
+            neighborhoodLabel.setAttribute('for', 'ADDRESS_HOME_DEPENDENT_LOCALITY');
+            neighborhoodLabel.textContent = 'Neighborhood:';
+
+            const neighborhoodInput = document.createElement('input');
+            neighborhoodInput.type = 'text';
+            neighborhoodInput.id = 'ADDRESS_HOME_DEPENDENT_LOCALITY';
+            neighborhoodInput.name = 'neighborhood';
+            neighborhoodInput.setAttribute('autocomplete', 'address-level3');
+
+            // Add region field
+            const regionLabel = document.createElement('label');
+            regionLabel.setAttribute('for', 'ADDRESS_HOME_ADMIN_LEVEL2');
+            regionLabel.textContent = 'Region:';
+
+            const regionInput = document.createElement('input');
+            regionInput.type = 'text';
+            regionInput.id = 'ADDRESS_HOME_ADMIN_LEVEL2';
+            regionInput.name = 'region';
+            regionInput.setAttribute('autocomplete', 'address-level2');
+
+            // Add prefecture field
+            const prefectureLabel = document.createElement('label');
+            prefectureLabel.setAttribute('for', 'ADDRESS_HOME_STATE_PREFECTURE');
+            prefectureLabel.textContent = 'Prefecture:';
+
+            const prefectureInput = document.createElement('input');
+            prefectureInput.type = 'text';
+            prefectureInput.id = 'ADDRESS_HOME_STATE_PREFECTURE';
+            prefectureInput.name = 'prefecture';
+            prefectureInput.setAttribute('autocomplete', 'address-level1');
+
+            const p = submitButton.parentElement;
+            p.insertBefore(neighborhoodLabel, submitButton);
+            p.insertBefore(neighborhoodInput, submitButton);
+            p.insertBefore(document.createElement('br'), submitButton);
+
+            p.insertBefore(regionLabel, submitButton);
+            p.insertBefore(regionInput, submitButton);
+            p.insertBefore(document.createElement('br'), submitButton);
+
+            p.insertBefore(prefectureLabel, submitButton);
+            p.insertBefore(prefectureInput, submitButton);
+            p.insertBefore(document.createElement('br'), submitButton);
+
+            window.testState.formModified = true;
+          }
+        }, 100);
+
+        // Check if refill is available (null if not supported).
+        window.testState.refillIsNull = (event.refill === null);
+        // Store refill function to be called by C++ test after form rescan.
+        // This ensures the form has been reparsed before requesting refill.
+        window.testState.pendingRefill = event.refill;
+        window.testState.refillPromiseResolved = true;
+      }
+
+      // Called by C++ test after waiting for form rescan to complete.
+      window.triggerPendingRefill = async function() {
+        if (window.testState.pendingRefill) {
+          try {
+            await window.testState.pendingRefill();
+            window.testState.refillCalled = true;
+          } catch (e) {
+            window.testState.errors.push('refill rejected: ' + e);
+          }
+        }
+      };
+
+      // Track when fields are filled (input events fire when autofill fills fields)
+      document.getElementById('testform').addEventListener('input', function(e) {
+        window.testState.autofillEventFired = true;
+      }, { capture: true });
+
+      // Set up document onautofill handler
+      document.onautofill = handleAutofillEvent;
+
+      // Also listen via addEventListener to verify both work
+      document.addEventListener('autofill', function(e) {
+        window.testState.addEventListenerFired = true;
+      });
+    </script>
+  </body>
+</html>

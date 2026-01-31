@@ -47,11 +47,11 @@ class HotspotPolicyInteractiveUITest : public InteractiveAshTest {
   }
 
   void RestrictHotspotFromPolicy() {
-    base::Value::Dict global_config;
+    base::DictValue global_config;
     global_config.Set(::onc::global_network_config::kAllowCellularHotspot,
                       false);
     NetworkHandler::Get()->managed_network_configuration_handler()->SetPolicy(
-        ::onc::ONC_SOURCE_DEVICE_POLICY, std::string(), base::Value::List(),
+        ::onc::ONC_SOURCE_DEVICE_POLICY, std::string(), base::ListValue(),
         global_config);
   }
 

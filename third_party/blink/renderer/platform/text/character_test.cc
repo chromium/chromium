@@ -8,7 +8,8 @@
 #include <unicode/uscript.h>
 #include <unicode/utypes.h>
 
-#include "base/containers/contains.h"
+#include <algorithm>
+
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/platform/text/emoji_segmentation_category.h"
 #include "third_party/blink/renderer/platform/text/emoji_segmentation_category_inline_header.h"
@@ -608,7 +609,7 @@ static std::vector<UScriptCode> east_asian_script_codes{
 
 // returns true if the script code is in the above list.
 bool IsEastAsianScript(const UScriptCode& script_code) {
-  return base::Contains(east_asian_script_codes, script_code);
+  return std::ranges::contains(east_asian_script_codes, script_code);
 }
 
 // returns true if any of script_extension is in the above list.
@@ -616,7 +617,8 @@ bool HasEastAsianScriptExtention(
     const std::vector<UScriptCode>& script_extension) {
   for (const UScriptCode& east_asian_script_extension_code :
        east_asian_script_codes) {
-    if (base::Contains(script_extension, east_asian_script_extension_code)) {
+    if (std::ranges::contains(script_extension,
+                              east_asian_script_extension_code)) {
       return true;
     }
   }
@@ -665,7 +667,7 @@ bool ShouldBeConditional(UChar32 test_char, UEastAsianWidth east_asian_width) {
   // DOUBLE DAGGER U+2026 HORIZONTAL ELLIPSIS
   static std::vector<UChar32> not_conditional{0x0022, 0x0027, 0x002A, 0x002F,
                                               0x00B7, 0x2020, 0x2021, 0x2026};
-  if (base::Contains(not_conditional, test_char)) {
+  if (std::ranges::contains(not_conditional, test_char)) {
     return false;
   }
   // Exclude if the East_Asian_Width property is “East Asian Fullwidth (F)”,

@@ -13,7 +13,6 @@
 
 #include "base/check.h"
 #include "base/check_op.h"
-#include "base/containers/contains.h"
 #include "base/notreached.h"
 #include "base/numerics/checked_math.h"
 #include "base/numerics/safe_conversions.h"
@@ -57,50 +56,6 @@ static constexpr char kUpdatesParam[] = "updates";
 static constexpr char kVarianceParam[] = "variance";
 static constexpr char kWeightParam[] = "weight";
 static constexpr char kZeroPointParam[] = "zeroPoint";
-
-// Validate and calculate the output spatial dimensions of conv2d given
-// input sizes, filter sizes, padding, strides and dilations.
-// Return the calculated output sizes in double precision floating point number
-// if no errors.
-base::expected<Size2d<double>, std::string>
-ValidateAndCalculateConv2dOutputSizes(const uint32_t input_height,
-                                      const uint32_t input_width,
-                                      const uint32_t filter_height,
-                                      const uint32_t filter_width,
-                                      const Padding2d& padding,
-                                      const Size2d<uint32_t>& strides,
-                                      const Size2d<uint32_t>& dilations,
-                                      std::string_view label) {
-  if (strides.height == 0 || strides.width == 0) {
-    return base::unexpected(
-        ErrorWithLabel(label, "All strides should be greater than 0."));
-  }
-  if (dilations.height == 0 || dilations.width == 0) {
-    return base::unexpected(
-        ErrorWithLabel(label, "All dilations should be greater than 0."));
-  }
-
-  const auto float_output_height = CalculateConv2dOutputSize(
-      input_height, filter_height, padding.beginning.height,
-      padding.ending.height, strides.height, dilations.height, label);
-  if (!float_output_height.has_value()) {
-    return base::unexpected(
-        ErrorWithLabel(label, "Failed to calculate the output height: " +
-                                  float_output_height.error()));
-  }
-
-  const auto float_output_width = CalculateConv2dOutputSize(
-      input_width, filter_width, padding.beginning.width, padding.ending.width,
-      strides.width, dilations.width, label);
-  if (!float_output_width.has_value()) {
-    return base::unexpected(ErrorWithLabel(
-        label,
-        "Failed to calculate the output width: " + float_output_width.error()));
-  }
-
-  return Size2d<double>{.height = float_output_height.value(),
-                        .width = float_output_width.value()};
-}
 
 // Validate and calculate the output spatial dimensions of convTranspose2d given
 // input sizes, filter sizes, padding, strides, dilations and output padding.
@@ -251,7 +206,7 @@ ValidateReduceAxesAndInferOutput(base::span<const uint32_t> input_dimensions,
     }
   } else {
     for (size_t i = 0; i < input_rank; i++) {
-      if (!base::Contains(axes, i)) {
+      if (!std::ranges::contains(axes, i)) {
         output_shape.push_back(input_dimensions[i]);
       }
     }
@@ -322,7 +277,7 @@ base::expected<double, std::string> CalculateConv2dOutputSize(
     std::string_view label) {
   // Calculate the dilated filter sizes.
   auto checked_effective_filter_size =
-      (base::MakeCheckedNum<uint32_t>(filter_size) - 1) * dilation + 1;
+      (base::CheckedNumeric<uint32_t>(filter_size) - 1) * dilation + 1;
   if (!checked_effective_filter_size.IsValid()) {
     return base::unexpected(
         ErrorWithLabel(label, "The effective filter size is too large."));
@@ -334,7 +289,7 @@ base::expected<double, std::string> CalculateConv2dOutputSize(
   // The max value of checked_output_size should be 3 * UINT_MAX + 1,
   // which is smaller than the max safe integer value for double type.
   auto checked_output_size =
-      (base::MakeCheckedNum<double>(input_size) -
+      (base::CheckedNumeric<double>(input_size) -
        checked_effective_filter_size + beginning_padding + ending_padding) /
           stride +
       1;
@@ -640,7 +595,7 @@ base::expected<OperandDescriptor, std::string> ValidateConcatAndInferOutput(
   // has the same shape except on the dimension that all the inputs concatenated
   // along. The size of that dimension is computed as the sum of all the input
   // sizes of the same dimension.
-  auto axis_size = base::MakeCheckedNum<uint32_t>(0);
+  auto axis_size = base::CheckedNumeric<uint32_t>(0);
   for (auto& input : inputs) {
     axis_size += input.shape()[axis];
   }
@@ -652,6 +607,46 @@ base::expected<OperandDescriptor, std::string> ValidateConcatAndInferOutput(
 
   return OperandDescriptor::Create(context_properties, output_type,
                                    output_shape, label);
+}
+
+base::expected<Size2d<double>, std::string>
+ValidateAndCalculateConv2dOutputSizes(uint32_t input_height,
+                                      uint32_t input_width,
+                                      uint32_t filter_height,
+                                      uint32_t filter_width,
+                                      const Padding2d& padding,
+                                      const Size2d<uint32_t>& strides,
+                                      const Size2d<uint32_t>& dilations,
+                                      std::string_view label) {
+  if (strides.height == 0 || strides.width == 0) {
+    return base::unexpected(
+        ErrorWithLabel(label, "All strides should be greater than 0."));
+  }
+  if (dilations.height == 0 || dilations.width == 0) {
+    return base::unexpected(
+        ErrorWithLabel(label, "All dilations should be greater than 0."));
+  }
+
+  const auto float_output_height = CalculateConv2dOutputSize(
+      input_height, filter_height, padding.beginning.height,
+      padding.ending.height, strides.height, dilations.height, label);
+  if (!float_output_height.has_value()) {
+    return base::unexpected(
+        ErrorWithLabel(label, "Failed to calculate the output height: " +
+                                  float_output_height.error()));
+  }
+
+  const auto float_output_width = CalculateConv2dOutputSize(
+      input_width, filter_width, padding.beginning.width, padding.ending.width,
+      strides.width, dilations.width, label);
+  if (!float_output_width.has_value()) {
+    return base::unexpected(ErrorWithLabel(
+        label,
+        "Failed to calculate the output width: " + float_output_width.error()));
+  }
+
+  return Size2d<double>{.height = float_output_height.value(),
+                        .width = float_output_width.value()};
 }
 
 base::expected<OperandDescriptor, std::string> ValidateConv2dAndInferOutput(
@@ -837,7 +832,7 @@ ValidateConvTranspose2dAndInferOutput(
         label, "The input channels should equal to filter input channels."));
   }
   const auto checked_output_channels =
-      base::MakeCheckedNum<uint32_t>(filter_output_channels) *
+      base::CheckedNumeric<uint32_t>(filter_output_channels) *
       attributes.groups;
   if (!checked_output_channels.IsValid()) {
     return base::unexpected(
@@ -868,7 +863,7 @@ ValidateConvTranspose2dAndInferOutput(
             {0, 0}, label));
     const auto calculated_output_height = calculated_output_sizes.height;
     const auto max_output_height =
-        base::MakeCheckedNum<uint32_t>(calculated_output_height) +
+        base::CheckedNumeric<uint32_t>(calculated_output_height) +
         strides.height;
     if (!max_output_height.IsValid()) {
       return base::unexpected(ErrorWithLabel(
@@ -881,7 +876,7 @@ ValidateConvTranspose2dAndInferOutput(
     }
     const auto calculated_output_width = calculated_output_sizes.width;
     const auto max_output_width =
-        base::MakeCheckedNum<uint32_t>(calculated_output_width) + strides.width;
+        base::CheckedNumeric<uint32_t>(calculated_output_width) + strides.width;
     if (!max_output_width.IsValid()) {
       return base::unexpected(ErrorWithLabel(
           label, "The checked maximum output width is too large"));
@@ -1126,7 +1121,7 @@ base::expected<OperandDescriptor, std::string> ValidateGatherAndInferOutput(
   }
 
   auto checked_output_rank =
-      base::MakeCheckedNum<uint32_t>(input.Rank()) - 1 + indices.Rank();
+      base::CheckedNumeric<uint32_t>(input.Rank()) - 1 + indices.Rank();
   if (!checked_output_rank.IsValid()) {
     return base::unexpected(
         ErrorWithLabel(label, "The output rank is too large."));
@@ -1235,7 +1230,7 @@ base::expected<OperandDescriptor, std::string> ValidateGatherNDAndInferOutput(
                    indices_last_dimension_size, input.Rank())));
   }
 
-  auto checked_output_rank = base::MakeCheckedNum(indices.Rank()) - 1 +
+  auto checked_output_rank = base::CheckedNumeric(indices.Rank()) - 1 +
                              input.Rank() - indices_last_dimension_size;
   if (!checked_output_rank.IsValid()) {
     return base::unexpected(
@@ -1364,7 +1359,7 @@ ValidateGruAndInferOutput(const ContextProperties& context_properties,
   }
   const auto batch_size = input_dimensions[1];
   const auto input_size = input_dimensions[2];
-  auto checked_three_times_hidden_size = base::MakeCheckedNum(hidden_size) * 3;
+  auto checked_three_times_hidden_size = base::CheckedNumeric(hidden_size) * 3;
   uint32_t three_times_hidden_size;
   if (!checked_three_times_hidden_size.AssignIfValid(
           &three_times_hidden_size)) {
@@ -1496,7 +1491,7 @@ base::expected<OperandDescriptor, std::string> ValidateGruCellAndInferOutput(
 
   const uint32_t batch_size = input.shape()[0];
   const uint32_t input_size = input.shape()[1];
-  auto checked_three_times_hidden_size = base::MakeCheckedNum(hidden_size) * 3;
+  auto checked_three_times_hidden_size = base::CheckedNumeric(hidden_size) * 3;
   uint32_t three_times_hidden_size;
   if (!checked_three_times_hidden_size.AssignIfValid(
           &three_times_hidden_size)) {
@@ -1727,7 +1722,7 @@ ValidateLstmAndInferOutput(const ContextProperties& context_properties,
   }
 
   uint32_t four_times_hidden_size;
-  auto checked_four_times_hidden_size = base::MakeCheckedNum(hidden_size) * 4;
+  auto checked_four_times_hidden_size = base::CheckedNumeric(hidden_size) * 4;
   if (!checked_four_times_hidden_size.AssignIfValid(&four_times_hidden_size)) {
     return base::unexpected(
         ErrorWithLabel(label, "The hidden size is too large."));
@@ -1902,7 +1897,7 @@ ValidateLstmCellAndInferOutput(const ContextProperties& context_properties,
   }
 
   uint32_t four_times_hidden_size;
-  auto checked_four_times_hidden_size = base::MakeCheckedNum(hidden_size) * 4;
+  auto checked_four_times_hidden_size = base::CheckedNumeric(hidden_size) * 4;
   if (!checked_four_times_hidden_size.AssignIfValid(&four_times_hidden_size)) {
     return base::unexpected(
         ErrorWithLabel(label, "The hidden size is too large."));
@@ -2174,7 +2169,7 @@ base::expected<OperandDescriptor, std::string> ValidatePadAndInferOutput(
   std::vector<uint32_t> output_shape(input.Rank());
   for (size_t i = 0; i < input.Rank(); ++i) {
     auto checked_output_size =
-        base::MakeCheckedNum<uint32_t>(input.shape()[i]) +
+        base::CheckedNumeric<uint32_t>(input.shape()[i]) +
         beginning_padding[i] + ending_padding[i];
     if (!checked_output_size.AssignIfValid(&output_shape[i])) {
       return base::unexpected(ErrorWithLabel(
@@ -2414,7 +2409,7 @@ base::expected<uint32_t, std::string> CalculateResample2dOutputSize(
   // Calculate the output size in double precision floating point number that
   // ensures values of type uint32_t can be exactly represented.
   // https://en.wikipedia.org/wiki/Double-precision_floating-point_format#Precision_limitations_on_integer_values
-  auto checked_output_size = base::MakeCheckedNum<double>(input_size) * scale;
+  auto checked_output_size = base::CheckedNumeric<double>(input_size) * scale;
 
   // Check if the value is valid for rounding to uint32_t type.
   if (!checked_output_size.IsValid<uint32_t>()) {
@@ -2631,7 +2626,7 @@ base::expected<OperandDescriptor, std::string> ValidateScatterNDAndInferOutput(
   // Validate `updates.shape` =
   // `indices.shape[:-1]` + `input.shape[indices.shape[-1]:]`, where `+` denotes
   // the concatenation of shapes.
-  auto checked_updates_rank = base::MakeCheckedNum<uint32_t>(indices.Rank()) -
+  auto checked_updates_rank = base::CheckedNumeric<uint32_t>(indices.Rank()) -
                               1 + input.Rank() - indices_last_dim_size;
   if (!checked_updates_rank.IsValid()) {
     return base::unexpected(
@@ -2718,7 +2713,7 @@ base::expected<OperandDescriptor, std::string> ValidateSliceAndInferOutput(
     }
 
     auto checked_ending_index =
-        base::MakeCheckedNum<uint32_t>(attributes.starts[i]) +
+        base::CheckedNumeric<uint32_t>(attributes.starts[i]) +
         attributes.sizes[i];
     if (!checked_ending_index.IsValid<uint32_t>()) {
       return base::unexpected(ErrorWithLabel(
@@ -2823,7 +2818,7 @@ ValidateSplitAndInferOutput(const ContextProperties& context_properties,
     }
 
     base::CheckedNumeric<uint32_t> sum = std::accumulate(
-        splits.begin(), splits.end(), base::MakeCheckedNum<uint32_t>(0));
+        splits.begin(), splits.end(), base::CheckedNumeric<uint32_t>(0));
     if (!sum.IsValid() || sum.ValueOrDie() != input.shape()[attributes.axis]) {
       return base::unexpected(ErrorWithLabel(
           label,
@@ -2874,7 +2869,7 @@ base::expected<OperandDescriptor, std::string> ValidateTileAndInferOutput(
           ErrorWithLabel(label, "Any value in repetitions must not be 0."));
     }
     auto tiled_dim =
-        base::MakeCheckedNum<uint32_t>(repetitions[i]) * input.shape()[i];
+        base::CheckedNumeric<uint32_t>(repetitions[i]) * input.shape()[i];
     if (!tiled_dim.AssignIfValid(&output_shape[i])) {
       return base::unexpected(
           ErrorWithLabel(label, "The tiled dimension size is too large."));
@@ -3074,12 +3069,12 @@ base::expected<uint32_t, std::string> CalculateConvTranspose2dOutputSize(
     const uint32_t output_padding) {
   // Calculate the dilated filter sizes.
   auto checked_effective_filter_size =
-      (base::MakeCheckedNum<uint32_t>(filter_size) - 1) * dilation + 1;
+      (base::CheckedNumeric<uint32_t>(filter_size) - 1) * dilation + 1;
   if (!checked_effective_filter_size.IsValid()) {
     return base::unexpected("The effective filter size is too large.");
   }
   auto checked_output_size =
-      (base::MakeCheckedNum<uint32_t>(input_size) - 1) * stride +
+      (base::CheckedNumeric<uint32_t>(input_size) - 1) * stride +
       checked_effective_filter_size - beginning_padding - ending_padding +
       output_padding;
   if (!checked_output_size.IsValid()) {

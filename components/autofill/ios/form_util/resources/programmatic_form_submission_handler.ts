@@ -10,7 +10,9 @@
 
 // Requires functions from fill.ts, form.ts, and autofill_form_features.ts.
 
-import {gCrWebLegacy} from '//ios/web/public/js_messaging/resources/gcrweb.js';
+import {formSubmitted} from '//components/autofill/ios/form_util/resources/fill_web_form.js';
+import {reportDetectedFormSubmission} from '//components/autofill/ios/form_util/resources/form_utils.js';
+
 //
 ///**
 // * The name of the message handler in the browser layer which will process
@@ -29,14 +31,14 @@ const formSubmitOriginalFunction = HTMLFormElement.prototype.submit;
 // Per specification, SubmitEvent is not triggered when calling form.submit().
 // Hook the method to call the handler in that case.
 HTMLFormElement.prototype.submit = function() {
-  gCrWebLegacy.form.reportDetectedFormSubmission(
+  reportDetectedFormSubmission(
       /*isProgrammatic=*/ true, /*handler=*/ NATIVE_MESSAGE_HANDLER);
   // If an error happens in formSubmitted, this will cancel the form
   // submission which can lead to usability issue for the user.
   // Put the formSubmitted in a try catch to ensure the original function
   // is always called.
   try {
-    gCrWebLegacy.form.formSubmitted(
+    formSubmitted(
         this, /* messageHandler= */ NATIVE_MESSAGE_HANDLER,
         /* programmaticSubmission= */ true,
         /* includeRemoteFrameToken= */ true);

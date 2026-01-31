@@ -49,7 +49,7 @@ class NET_EXPORT ReportingHeaderParser {
       ReportingContext* context,
       const NetworkAnonymizationKey& network_anonymization_key,
       const url::Origin& origin,
-      const base::Value::List& list);
+      const base::ListValue& list);
 
   // `isolation_info` here will be stored in the cache, associated with the
   // `reporting_source`. `network_anonymization_key` is the NAK which will be

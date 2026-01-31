@@ -14,7 +14,6 @@
 
 #include "base/base64url.h"
 #include "base/command_line.h"
-#include "base/containers/contains.h"
 #include "base/containers/span.h"
 #include "base/containers/to_vector.h"
 #include "base/json/values_util.h"
@@ -317,10 +316,10 @@ NearbySharePrivateCertificate::ToPublicCertificate() const {
   return public_certificate;
 }
 
-base::Value::Dict NearbySharePrivateCertificate::ToDictionary() const {
+base::DictValue NearbySharePrivateCertificate::ToDictionary() const {
   std::vector<uint8_t> private_key = private_key_.ToPrivateKeyInfo();
 
-  return base::Value::Dict()
+  return base::DictValue()
       .Set(kVisibility, static_cast<int>(visibility_))
       .Set(kNotBefore, base::TimeToValue(not_before_))
       .Set(kNotAfter, base::TimeToValue(not_after_))
@@ -335,7 +334,7 @@ base::Value::Dict NearbySharePrivateCertificate::ToDictionary() const {
 }
 
 std::optional<NearbySharePrivateCertificate>
-NearbySharePrivateCertificate::FromDictionary(const base::Value::Dict& dict) {
+NearbySharePrivateCertificate::FromDictionary(const base::DictValue& dict) {
   std::optional<int> int_opt;
   const std::string* str_ptr;
   std::optional<std::string> str_opt;
@@ -435,7 +434,7 @@ NearbySharePrivateCertificate::GenerateUnusedSalt() {
       next_salts_for_testing_.pop();
     }
 
-    if (!base::Contains(consumed_salts_, salt)) {
+    if (!consumed_salts_.contains(salt)) {
       consumed_salts_.insert(salt);
       return salt;
     }

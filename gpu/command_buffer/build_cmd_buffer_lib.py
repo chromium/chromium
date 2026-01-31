@@ -5825,8 +5825,8 @@ class Function():
     if self.GetInfo("trace_queueing_flow", False):
       trace = 'TRACE_DISABLED_BY_DEFAULT("gpu_cmd_queue")'
       f.write("""if (c.trace_id) {
-          TRACE_EVENT_WITH_FLOW0(%s, "CommandBufferQueue",
-          c.trace_id, TRACE_EVENT_FLAG_FLOW_IN);\n}""" % trace)
+          TRACE_EVENT(%s, "CommandBufferQueue",
+          perfetto::TerminatingFlow::Global(c.trace_id));\n}""" % trace)
 
   def WritePassthroughHandlerValidation(self, f):
     """Writes validation code for the function."""
@@ -5883,8 +5883,8 @@ class Function():
       f.write('TRACE_EVENT_CATEGORY_GROUP_ENABLED(%s, &is_tracing);' % trace)
       f.write('if (is_tracing) {')
       f.write('  trace_id = base::RandUint64();')
-      f.write('TRACE_EVENT_WITH_FLOW1(%s, "CommandBufferQueue",' % trace)
-      f.write('trace_id, TRACE_EVENT_FLAG_FLOW_OUT,')
+      f.write('TRACE_EVENT(%s, "CommandBufferQueue",' % trace)
+      f.write('perfetto::Flow::Global(trace_id),')
       f.write('"command", "%s");' % self.name)
       f.write('} else {\n  trace_id = 0;\n}\n');
     f.write("}\n")

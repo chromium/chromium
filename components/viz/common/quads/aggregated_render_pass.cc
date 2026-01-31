@@ -5,12 +5,12 @@
 #include "components/viz/common/quads/aggregated_render_pass.h"
 
 #include <unordered_map>
+#include <utility>
 
 #include "base/memory/ptr_util.h"
 #include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/trace_event/traced_value.h"
-#include "base/types/cxx23_to_underlying.h"
 #include "base/values.h"
 #include "cc/base/math_util.h"
 #include "components/viz/common/frame_sinks/copy_output_request.h"
@@ -225,7 +225,7 @@ void AggregatedRenderPass::AsValueInto(
   RenderPassInternal::AsValueInto(value, resource_id_to_index_map);
 
   value->SetInteger("content_color_usage",
-                    base::to_underlying(content_color_usage));
+                    std::to_underlying(content_color_usage));
   value->SetBoolean("is_from_surface_root_pass", is_from_surface_root_pass);
 #if BUILDFLAG(IS_WIN)
   value->SetBoolean("will_backing_be_read_by_viz", will_backing_be_read_by_viz);

@@ -4,13 +4,17 @@
 
 #include "chrome/browser/web_applications/preinstalled_web_apps/vids.h"
 
+#include <memory>
+
 #include "ash/constants/web_app_id_constants.h"
 #include "base/functional/bind.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
+#include "chrome/browser/web_applications/model/display_override.h"
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
 #include "chrome/browser/web_applications/preinstalled_app_install_features.h"
 #include "chrome/browser/web_applications/preinstalled_web_apps/preinstalled_web_app_definition_utils.h"
+#include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/grit/preinstalled_web_apps_resources.h"
@@ -68,7 +72,8 @@ ExternalInstallOptions GetConfigForVids(bool is_standalone_tabbed) {
     info->title = u"Vids";
     info->scope = GURL("https://docs.google.com/videos/");
     info->display_mode = DisplayMode::kBrowser;
-    info->display_override = {DisplayMode::kTabbed};
+    info->display_override = {
+        web_app::DisplayOverride::Create(DisplayMode::kTabbed)};
     info->tab_strip.emplace();
     info->tab_strip->new_tab_button.url =
         GURL("https://docs.google.com/videos/u/0/create?usp=webapp_tab_strip");

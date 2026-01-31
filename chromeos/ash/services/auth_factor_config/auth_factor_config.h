@@ -78,6 +78,9 @@ class AuthFactorConfig : public mojom::AuthFactorConfig {
   void IsEditable(const std::string& auth_token,
                   mojom::AuthFactor factor,
                   base::OnceCallback<void(bool)>) override;
+  void GetLocalAuthFactorsComplexity(
+      const std::string& auth_token,
+      GetLocalAuthFactorsComplexityCallback callback) override;
 
   // Reload auth factor data from cryptohome and notify factor change observers
   // of the change. This method must be called after successful mutating
@@ -151,6 +154,10 @@ class AuthFactorConfig : public mojom::AuthFactorConfig {
                              mojom::AuthFactor factor,
                              FactorStatusCheckResultCallback,
                              std::unique_ptr<UserContext> context);
+  void GetLocalAuthFactorsComplexityWithContext(
+      const std::string& auth_token,
+      GetLocalAuthFactorsComplexityCallback callback,
+      std::unique_ptr<UserContext> context);
   void OnGetAuthFactorsConfiguration(
       AuthFactorSet changed_factors,
       base::OnceCallback<void(mojom::ConfigureResult)> callback,

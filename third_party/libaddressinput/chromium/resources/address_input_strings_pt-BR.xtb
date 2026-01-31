@@ -2,7 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="pt-BR">
 <translation id="1340068511406764697">É preciso que você forneça um CEP, por exemplo <ph name="EXAMPLE" />. Não sabe seu CEP? Encontre-o <ph name="BEGIN_LINK" />aqui<ph name="END_LINK" />.</translation>
-<translation id="2053553514270667976">CEP</translation>
+<translation id="2053553514270667976">Código postal</translation>
 <translation id="2096368010154057602">Departamento</translation>
 <translation id="2577522251608256362">Bairro</translation>
 <translation id="3050787670591910834">É preciso que você forneça um CEP, por exemplo <ph name="EXAMPLE" />.</translation>
@@ -32,7 +32,7 @@
 <translation id="6970216967273061347">Distrito</translation>
 <translation id="7087282848513945231">Condado</translation>
 <translation id="7139724024395191329">Emirado</translation>
-<translation id="7393381084163773901">Endereço de correspondência</translation>
+<translation id="7393381084163773901">Endereço</translation>
 <translation id="7602447984296396718">Este CEP parece não corresponder ao restante do endereço.</translation>
 <translation id="7738983109397305830">Este CEP parece não corresponder ao resto do endereço. Não sabe seu CEP? Encontre-o <ph name="BEGIN_LINK" />aqui<ph name="END_LINK" />.</translation>
 <translation id="777702478322588152">Município</translation>

@@ -4,11 +4,11 @@
 
 #include "chrome/browser/spellchecker/spellcheck_service.h"
 
+#include <algorithm>
 #include <optional>
 #include <ostream>
 
 #include "base/command_line.h"
-#include "base/containers/contains.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
@@ -40,8 +40,8 @@ struct TestCase {
     for (const auto& language : expected_languages) {
       if (!language.empty()) {
         dictionary.language = language;
-        dictionary.used_for_spellcheck =
-            base::Contains(expected_languages_used_for_spellcheck, language);
+        dictionary.used_for_spellcheck = std::ranges::contains(
+            expected_languages_used_for_spellcheck, language);
         expected_dictionaries.push_back(dictionary);
       }
     }
@@ -160,7 +160,7 @@ INSTANTIATE_TEST_SUITE_P(
 TEST_P(SpellcheckServiceUnitTest, GetDictionaries) {
   prefs()->SetString(language::prefs::kAcceptLanguages,
                      GetParam().accept_languages);
-  base::Value::List spellcheck_dictionaries;
+  base::ListValue spellcheck_dictionaries;
   for (const std::string& dictionary : GetParam().spellcheck_dictionaries) {
     spellcheck_dictionaries.Append(dictionary);
   }
@@ -223,7 +223,7 @@ void SpellcheckServiceHybridUnitTestBase::RunGetDictionariesTest(
     const std::vector<std::string> spellcheck_dictionaries,
     const std::vector<SpellcheckService::Dictionary> expected_dictionaries) {
   prefs()->SetString(language::prefs::kAcceptLanguages, accept_languages);
-  base::Value::List spellcheck_dictionaries_list;
+  base::ListValue spellcheck_dictionaries_list;
   for (std::string dict : spellcheck_dictionaries) {
     spellcheck_dictionaries_list.Append(dict);
   }

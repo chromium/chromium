@@ -117,7 +117,7 @@ class EmbeddedA11yExtensionLoader : public ProfileObserver,
   void InstallExtension(extensions::ComponentLoader* component_loader,
                         const base::FilePath& path,
                         const std::string& extension_id,
-                        std::optional<base::Value::Dict> manifest);
+                        std::optional<base::DictValue> manifest);
 
   bool initialized_ = false;
   // A map to store all accessibility helper extensions installed.

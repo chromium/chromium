@@ -183,13 +183,8 @@ class ClampedNumeric {
   };
 };
 
-// Convenience wrapper to return a new ClampedNumeric from the provided
-// arithmetic or ClampedNumericType.
 template <typename T>
-constexpr ClampedNumeric<typename UnderlyingType<T>::type> MakeClampedNum(
-    const T value) {
-  return value;
-}
+ClampedNumeric(T) -> ClampedNumeric<T>;
 
 // These implement the variadic wrapper for the math operations.
 template <template <typename, typename, typename> class M,
@@ -246,7 +241,6 @@ using internal::ClampOr;
 using internal::ClampRsh;
 using internal::ClampSub;
 using internal::ClampXor;
-using internal::MakeClampedNum;
 
 }  // namespace partition_alloc::internal::base
 

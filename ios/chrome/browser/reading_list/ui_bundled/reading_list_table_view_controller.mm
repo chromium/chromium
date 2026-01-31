@@ -84,6 +84,13 @@ ReadingListSelectionState GetSelectionStateForSelectedCounts(
   return ReadingListSelectionState::NONE;
 }
 
+// Returns YES if all items are selected
+BOOL IsAllSelected(NSUInteger selected_unread_count,
+                   NSUInteger selected_read_count,
+                   NSUInteger all_items_count) {
+  return all_items_count == selected_read_count + selected_unread_count;
+}
+
 }  // namespace
 
 @interface ReadingListTableViewController () <ReadingListDataSink,
@@ -127,6 +134,9 @@ ReadingListSelectionState GetSelectionStateForSelectedCounts(
     _toolbarManager = [[ReadingListToolbarButtonManager alloc] init];
     _toolbarManager.commandHandler = self;
   }
+  [self.navigationItem
+      setRightBarButtonItem:[self.toolbarManager buttonTopRight]
+                   animated:YES];
   return self;
 }
 
@@ -164,7 +174,7 @@ ReadingListSelectionState GetSelectionStateForSelectedCounts(
     self.editingWithToolbarButtons = NO;
     [self removeEmptySections];
   }
-  [self updateToolbarItems];
+  [self updateBarItems];
 
   // Force update a11y actions based on edit mode.
   if (self.editingWithToolbarButtons || !editing) {
@@ -187,9 +197,14 @@ ReadingListSelectionState GetSelectionStateForSelectedCounts(
     return;
   }
   BOOL hadSelectedUnreadItems = _selectedUnreadItemCount > 0;
+  BOOL wasAllSelected =
+      IsAllSelected(_selectedUnreadItemCount, _selectedReadItemCount,
+                    self.dataSource.numberOfElements);
   _selectedUnreadItemCount = selectedUnreadItemCount;
-  if ((_selectedUnreadItemCount > 0) != hadSelectedUnreadItems) {
-    [self updateToolbarItems];
+  if ((_selectedUnreadItemCount > 0) != hadSelectedUnreadItems ||
+      IsAllSelected(_selectedUnreadItemCount, _selectedReadItemCount,
+                    self.dataSource.numberOfElements) != wasAllSelected) {
+    [self updateBarItems];
   }
 }
 
@@ -198,9 +213,14 @@ ReadingListSelectionState GetSelectionStateForSelectedCounts(
     return;
   }
   BOOL hadSelectedReadItems = _selectedReadItemCount > 0;
+  BOOL wasAllSelected =
+      IsAllSelected(_selectedUnreadItemCount, _selectedReadItemCount,
+                    self.dataSource.numberOfElements);
   _selectedReadItemCount = selectedReadItemCount;
-  if ((_selectedReadItemCount > 0) != hadSelectedReadItems) {
-    [self updateToolbarItems];
+  if ((_selectedReadItemCount > 0) != hadSelectedReadItems ||
+      IsAllSelected(_selectedUnreadItemCount, _selectedReadItemCount,
+                    self.dataSource.numberOfElements) != wasAllSelected) {
+    [self updateBarItems];
   }
 }
 
@@ -590,6 +610,11 @@ ReadingListSelectionState GetSelectionStateForSelectedCounts(
 
 #pragma mark - ReadingListToolbarButtonCommands
 
+- (void)dismissButtonTapped {
+  base::RecordAction(base::UserMetricsAction("MobileReadingListClose"));
+  [self.delegate dismissReadingListListViewController:self];
+}
+
 - (void)enterReadingListEditMode {
   if (self.editing && !self.editingWithToolbarButtons) {
     // Reset swipe editing to trigger button editing
@@ -607,6 +632,54 @@ ReadingListSelectionState GetSelectionStateForSelectedCounts(
     return;
   }
   [self exitEditingModeAnimated:YES];
+}
+
+- (void)selectAllReadingListItems {
+  for (NSInteger section = 0; section < self.tableViewModel.numberOfSections;
+       ++section) {
+    ReadingListSectionIdentifier sectionID =
+        static_cast<ReadingListSectionIdentifier>(
+            [self.tableViewModel sectionIdentifierForSectionIndex:section]);
+    if (sectionID != kSectionIdentifierRead &&
+        sectionID != kSectionIdentifierUnread) {
+      continue;
+    }
+    for (NSInteger row = 0;
+         row < [self.tableViewModel numberOfItemsInSection:section]; ++row) {
+      NSIndexPath* indexPath = [NSIndexPath indexPathForRow:row
+                                                  inSection:section];
+      [self.tableView selectRowAtIndexPath:indexPath
+                                  animated:NO
+                            scrollPosition:UITableViewScrollPositionNone];
+    }
+  }
+
+  self.selectedUnreadItemCount =
+      [self itemsForSection:kSectionIdentifierUnread].count;
+  self.selectedReadItemCount =
+      [self itemsForSection:kSectionIdentifierRead].count;
+}
+
+- (void)deselectAllReadingListItems {
+  for (NSInteger section = 0; section < self.tableViewModel.numberOfSections;
+       ++section) {
+    ReadingListSectionIdentifier sectionID =
+        static_cast<ReadingListSectionIdentifier>(
+            [self.tableViewModel sectionIdentifierForSectionIndex:section]);
+    if (sectionID != kSectionIdentifierRead &&
+        sectionID != kSectionIdentifierUnread) {
+      continue;
+    }
+    for (NSInteger row = 0;
+         row < [self.tableViewModel numberOfItemsInSection:section]; ++row) {
+      NSIndexPath* indexPath = [NSIndexPath indexPathForRow:row
+                                                  inSection:section];
+      [self.tableView deselectRowAtIndexPath:indexPath animated:NO];
+    }
+  }
+
+  self.selectedUnreadItemCount = 0;
+  self.selectedReadItemCount = 0;
 }
 
 - (void)deleteAllReadReadingListItems {
@@ -808,7 +881,7 @@ ReadingListSelectionState GetSelectionStateForSelectedCounts(
   [self loadItemsFromArray:unreadArray toSection:kSectionIdentifierUnread];
   [self loadItemsFromArray:readArray toSection:kSectionIdentifierRead];
 
-  [self updateToolbarItems];
+  [self updateBarItems];
 }
 
 // Adds `items` to self.tableViewModel for the section designated by
@@ -868,16 +941,25 @@ ReadingListSelectionState GetSelectionStateForSelectedCounts(
 
 #pragma mark - Toolbar Helpers
 
-// Updates buttons displayed in the bottom toolbar.
-- (void)updateToolbarItems {
+// Updates buttons displayed in the bottom toolbar and the top navigation bar.
+- (void)updateBarItems {
   self.toolbarManager.editing = self.editingWithToolbarButtons;
+  self.toolbarManager.hasItems = self.dataSource.hasElements;
   self.toolbarManager.hasReadItems =
       self.dataSource.hasElements && self.dataSource.hasReadElements;
   self.toolbarManager.selectionState = GetSelectionStateForSelectedCounts(
       self.selectedUnreadItemCount, self.selectedReadItemCount);
+  self.toolbarManager.allSelected =
+      IsAllSelected(self.selectedUnreadItemCount, self.selectedReadItemCount,
+                    self.dataSource.numberOfElements);
   if (self.toolbarManager.buttonItemsUpdated) {
     [self setToolbarItems:[self.toolbarManager buttonItems] animated:YES];
   }
+  [self.navigationItem
+      setRightBarButtonItem:[self.toolbarManager buttonTopRight]
+                   animated:YES];
+  [self.navigationItem setLeftBarButtonItem:[self.toolbarManager buttonTopLeft]
+                                   animated:YES];
   [self.toolbarManager updateMarkButtonTitle];
 }
 
@@ -1189,7 +1271,7 @@ ReadingListSelectionState GetSelectionStateForSelectedCounts(
   if (!self.dataSource.hasElements) {
     [self tableIsEmpty];
   } else {
-    [self updateToolbarItems];
+    [self updateBarItems];
   }
   return removedSectionCount;
 }

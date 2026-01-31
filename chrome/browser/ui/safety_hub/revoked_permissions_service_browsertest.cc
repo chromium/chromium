@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ui/safety_hub/revoked_permissions_service.h"
 
+#include <algorithm>
+
 #include "base/json/values_util.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
@@ -244,7 +246,7 @@ IN_PROC_BROWSER_TEST_F(RevokedPermissionsServiceBrowserTest,
     }
 
     // Skip if the setting in the skip list.
-    if (base::Contains(skip_list, type)) {
+    if (std::ranges::contains(skip_list, type)) {
       continue;
     }
 
@@ -264,9 +266,9 @@ IN_PROC_BROWSER_TEST_F(RevokedPermissionsServiceBrowserTest,
   EXPECT_EQ(revoked_permissions.size(), 1u);
 
   // Get the revoked permission types for the origin.
-  const base::Value::Dict& permission_types_by_values =
+  const base::DictValue& permission_types_by_values =
       revoked_permissions[0].setting_value.GetDict();
-  const base::Value::List revoked_permission_types =
+  const base::ListValue revoked_permission_types =
       permission_types_by_values.FindList(permissions::kRevokedKey)->Clone();
 
   // Assert all the allowed permissions are revoked.

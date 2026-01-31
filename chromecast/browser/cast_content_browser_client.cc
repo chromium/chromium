@@ -116,8 +116,6 @@
 #include "components/crash/core/app/crashpad.h"
 #include "media/audio/android/audio_manager_android.h"
 #include "media/audio/audio_features.h"
-#else
-#include "chromecast/browser/memory_pressure_controller_impl.h"
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if defined(USE_ALSA)
@@ -857,14 +855,14 @@ bool CastContentBrowserClient::IsWebUIAllowedToMakeNetworkRequests(
   return false;
 }
 
-content::ContentBrowserClient::PrivateNetworkRequestPolicyOverride
-CastContentBrowserClient::ShouldOverridePrivateNetworkRequestPolicy(
+content::ContentBrowserClient::LocalNetworkAccessRequestPolicyOverride
+CastContentBrowserClient::ShouldOverrideLocalNetworkAccessRequestPolicy(
     content::BrowserContext* browser_context,
     const url::Origin& origin) {
-  // Some Cast apps hosted over HTTP needs to access the private network so that
+  // Some Cast apps hosted over HTTP needs to access the local network so that
   // media can be streamed from a local media server.
-  return content::ContentBrowserClient::PrivateNetworkRequestPolicyOverride::
-      kForceAllow;
+  return content::ContentBrowserClient::
+      LocalNetworkAccessRequestPolicyOverride::kForceAllow;
 }
 
 std::string CastContentBrowserClient::GetUserAgent() {

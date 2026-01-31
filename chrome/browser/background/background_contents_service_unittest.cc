@@ -84,14 +84,14 @@ class BackgroundContentsServiceTest : public testing::Test {
     BackgroundContentsService::DisableCloseBalloonForTesting(false);
   }
 
-  const base::Value::Dict& GetPrefs(Profile* profile) {
+  const base::DictValue& GetPrefs(Profile* profile) {
     return profile->GetPrefs()->GetDict(prefs::kRegisteredBackgroundContents);
   }
 
   // Returns the stored pref URL for the passed app id.
   std::string GetPrefURLForApp(Profile* profile, const std::string& appid) {
-    const base::Value::Dict& pref = GetPrefs(profile);
-    const base::Value::Dict* value = pref.FindDict(appid);
+    const base::DictValue& pref = GetPrefs(profile);
+    const base::DictValue* value = pref.FindDict(appid);
     EXPECT_TRUE(value);
     const std::string* url = value->FindString("url");
     return url ? *url : std::string();

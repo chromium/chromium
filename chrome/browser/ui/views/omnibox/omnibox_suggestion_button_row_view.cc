@@ -302,7 +302,7 @@ class OmniboxSuggestionRowButton : public views::MdTextButton {
     SetImageLabelSpacing(8);
     SetCustomPadding(ChromeLayoutProvider::Get()->GetInsetsMetric(
         INSETS_OMNIBOX_PILL_BUTTON));
-    SetCornerRadius(GetLayoutConstant(TOOLBAR_CORNER_RADIUS));
+    SetCornerRadius(GetLayoutConstant(LayoutConstant::kToolbarCornerRadius));
 
     auto* const ink_drop = views::InkDrop::Get(this);
     SetAnimationDuration(base::TimeDelta());
@@ -355,12 +355,13 @@ class OmniboxSuggestionRowButton : public views::MdTextButton {
       SetImageModel(views::Button::STATE_NORMAL,
                     ui::ImageModel::FromImage(image_));
     } else {
-      SetImageModel(views::Button::STATE_NORMAL,
-                    ui::ImageModel::FromVectorIcon(
-                        *icon_,
-                        selected ? kColorOmniboxResultsButtonIconSelected
-                                 : kColorOmniboxResultsButtonIcon,
-                        GetLayoutConstant(LOCATION_BAR_ICON_SIZE)));
+      SetImageModel(
+          views::Button::STATE_NORMAL,
+          ui::ImageModel::FromVectorIcon(
+              *icon_,
+              selected ? kColorOmniboxResultsButtonIconSelected
+                       : kColorOmniboxResultsButtonIcon,
+              GetLayoutConstant(LayoutConstant::kLocationBarIconSize)));
     }
     SetEnabledTextColors(color_provider->GetColor(
         selected ? kColorOmniboxResultsTextSelected : kColorOmniboxText));

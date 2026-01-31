@@ -27,18 +27,16 @@ import org.chromium.components.signin.AccountManagerFacadeProvider;
 import org.chromium.components.signin.Tribool;
 import org.chromium.components.signin.base.AccountInfo;
 import org.chromium.components.signin.base.CoreAccountInfo;
-import org.chromium.components.signin.identitymanager.AccountInfoServiceProvider;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.identitymanager.IdentityManagerImpl;
 import org.chromium.components.signin.test.util.AccountCapabilitiesBuilder;
-import org.chromium.components.signin.test.util.FakeAccountInfoService;
 import org.chromium.components.signin.test.util.FakeAccountManagerFacade;
 import org.chromium.components.signin.test.util.TestAccounts;
 import org.chromium.google_apis.gaia.CoreAccountId;
 import org.chromium.google_apis.gaia.GoogleServiceAuthError;
 
 /**
- * This test rule mocks AccountManagerFacade & AccountInfoService, and manages sign-in/sign-out.
+ * This test rule mocks AccountManagerFacade and manages sign-in/sign-out.
  *
  * <p>Calling the sign-in functions will invoke native code, therefore this should only be used in
  * on-device tests. In Robolectric tests, use the {@link AccountManagerTestRule} instead.
@@ -56,9 +54,6 @@ public class SigninTestRule implements TestRule {
             new SigninTestUtil.CustomDeviceLockActivityLauncher();
 
     private final FakeAccountManagerFacade mFakeAccountManagerFacade;
-    // TODO(crbug.com/341948846): Remove AccountInfoService.
-    private final @Nullable FakeAccountInfoService mFakeAccountInfoService =
-            new FakeAccountInfoService();
 
     private final boolean mSerializeToPrefs;
 
@@ -87,32 +82,20 @@ public class SigninTestRule implements TestRule {
     }
 
     public void setUpRule() {
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    if (mFakeAccountInfoService != null) {
-                        AccountInfoServiceProvider.setInstanceForTests(mFakeAccountInfoService);
-                    }
-                });
         AccountManagerFacadeProvider.setInstanceForTests(mFakeAccountManagerFacade);
         DeviceLockActivityLauncherImpl.setInstanceForTesting(mDeviceLockActivityLauncher);
     }
 
     public void tearDownRule() {
         DeviceLockActivityLauncherImpl.setInstanceForTesting(null);
-        if (mFakeAccountInfoService != null) AccountInfoServiceProvider.resetForTests();
     }
 
-    /**
-     * Adds an account to the fake AccountManagerFacade and {@link AccountInfo} to {@link
-     * FakeAccountInfoService}.
-     */
+    /** Adds an account to the fake AccountManagerFacade */
     public void addAccount(AccountInfo accountInfo) {
         mFakeAccountManagerFacade.addAccount(accountInfo);
-        // TODO(crbug.com/40234741): Revise this test rule and remove the condition here.
-        if (mFakeAccountInfoService != null) mFakeAccountInfoService.addAccountInfo(accountInfo);
     }
 
-    /** Updates an account in the fake AccountManagerFacade and {@link FakeAccountInfoService}. */
+    /** Updates an account in the fake AccountManagerFacade */
     public void updateAccount(AccountInfo accountInfo) {
         mFakeAccountManagerFacade.updateAccount(accountInfo);
     }
@@ -304,7 +287,7 @@ public class SigninTestRule implements TestRule {
                     Criteria.checkThat(
                             IdentityServicesProvider.get()
                                     .getIdentityManager(ProfileManager.getLastUsedRegularProfile())
-                                    .findExtendedAccountInfoByEmailAddress(accountInfo.getEmail())
+                                    .findExtendedAccountInfoByAccountId(accountInfo.getId())
                                     .getAccountCapabilities()
                                     .isSubjectToParentalControls(),
                             is(Tribool.TRUE));

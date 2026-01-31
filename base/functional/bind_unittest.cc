@@ -49,14 +49,14 @@ class NoRef {
   // Particularly important in this test to ensure no copies are made.
   NoRef& operator=(const NoRef&) = delete;
 
-  MOCK_METHOD0(VoidMethod0, void());
-  MOCK_CONST_METHOD0(VoidConstMethod0, void());
+  MOCK_METHOD(void, VoidMethod0, ());
+  MOCK_METHOD(void, VoidConstMethod0, (), (const));
 
-  MOCK_METHOD0(IntMethod0, int());
-  MOCK_CONST_METHOD0(IntConstMethod0, int());
+  MOCK_METHOD(int, IntMethod0, ());
+  MOCK_METHOD(int, IntConstMethod0, (), (const));
 
-  MOCK_METHOD1(VoidMethodWithIntArg, void(int));
-  MOCK_METHOD0(UniquePtrMethod0, std::unique_ptr<int>());
+  MOCK_METHOD(void, VoidMethodWithIntArg, (int));
+  MOCK_METHOD(std::unique_ptr<int>, UniquePtrMethod0, ());
 };
 
 class HasRef : public NoRef {
@@ -66,9 +66,9 @@ class HasRef : public NoRef {
   // Particularly important in this test to ensure no copies are made.
   HasRef& operator=(const HasRef&) = delete;
 
-  MOCK_CONST_METHOD0(AddRef, void());
-  MOCK_CONST_METHOD0(Release, bool());
-  MOCK_CONST_METHOD0(HasAtLeastOneRef, bool());
+  MOCK_METHOD(void, AddRef, (), (const));
+  MOCK_METHOD(bool, Release, (), (const));
+  MOCK_METHOD(bool, HasAtLeastOneRef, (), (const));
 };
 
 class HasRefPrivateDtor : public HasRef {
@@ -329,6 +329,11 @@ class NoexceptFunctor {
 class ConstNoexceptFunctor {
  public:
   int operator()() noexcept { return 42; }
+};
+
+class StaticNoexceptFunctor {
+ public:
+  static int operator()() noexcept { return 42; }
 };
 
 class BindTest : public ::testing::Test {
@@ -1326,14 +1331,14 @@ TEST_F(BindTest, ArgumentCopies) {
   int assigns = 0;
 
   CopyCounter counter(&copies, &assigns);
-  BindRepeating(&VoidPolymorphic<CopyCounter>::Run, counter);
+  std::ignore = BindRepeating(&VoidPolymorphic<CopyCounter>::Run, counter);
   EXPECT_EQ(1, copies);
   EXPECT_EQ(0, assigns);
 
   copies = 0;
   assigns = 0;
-  BindRepeating(&VoidPolymorphic<CopyCounter>::Run,
-                CopyCounter(&copies, &assigns));
+  std::ignore = BindRepeating(&VoidPolymorphic<CopyCounter>::Run,
+                              CopyCounter(&copies, &assigns));
   EXPECT_EQ(1, copies);
   EXPECT_EQ(0, assigns);
 
@@ -1372,8 +1377,8 @@ TEST_F(BindTest, ArgumentMoves) {
   int move_constructs = 0;
   int move_assigns = 0;
 
-  BindRepeating(&VoidPolymorphic<const MoveCounter&>::Run,
-                MoveCounter(&move_constructs, &move_assigns));
+  std::ignore = BindRepeating(&VoidPolymorphic<const MoveCounter&>::Run,
+                              MoveCounter(&move_constructs, &move_assigns));
   EXPECT_EQ(1, move_constructs);
   EXPECT_EQ(0, move_assigns);
 
@@ -1408,7 +1413,7 @@ TEST_F(BindTest, ArgumentCopiesAndMoves) {
   int move_assigns = 0;
 
   CopyMoveCounter counter(&copies, &assigns, &move_constructs, &move_assigns);
-  BindRepeating(&VoidPolymorphic<CopyMoveCounter>::Run, counter);
+  std::ignore = BindRepeating(&VoidPolymorphic<CopyMoveCounter>::Run, counter);
   EXPECT_EQ(1, copies);
   EXPECT_EQ(0, assigns);
   EXPECT_EQ(0, move_constructs);
@@ -1418,7 +1423,7 @@ TEST_F(BindTest, ArgumentCopiesAndMoves) {
   assigns = 0;
   move_constructs = 0;
   move_assigns = 0;
-  BindRepeating(
+  std::ignore = BindRepeating(
       &VoidPolymorphic<CopyMoveCounter>::Run,
       CopyMoveCounter(&copies, &assigns, &move_constructs, &move_assigns));
   EXPECT_EQ(0, copies);
@@ -1481,12 +1486,13 @@ TEST_F(BindTest, RepeatingWithoutPassed) {
     S(S&&) = default;
     S& operator=(S&&) = default;
   } s;
-  BindRepeating([](const S&) {}, std::move(s));
+  std::ignore = BindRepeating([](const S&) {}, std::move(s));
 }
 
 TEST_F(BindTest, CapturelessLambda) {
   EXPECT_EQ(42, BindRepeating([] { return 42; }).Run());
   EXPECT_EQ(42, BindRepeating([](int i) { return i * 7; }, 6).Run());
+  EXPECT_EQ(42, BindRepeating([](int i) static { return i * 7; }, 6).Run());
 
   int x = 1;
   RepeatingCallback<void(int)> cb =
@@ -1511,10 +1517,15 @@ TEST_F(BindTest, EmptyFunctor) {
     int operator()() const { return 42; }
   };
 
+  struct EmptyFunctorStatic {
+    static int operator()() { return 42; }
+  };
+
   EXPECT_EQ(42, BindLambdaForTesting(NonEmptyFunctor()).Run());
   EXPECT_EQ(42, BindOnce(EmptyFunctor()).Run());
   EXPECT_EQ(42, BindOnce(EmptyFunctorConst()).Run());
   EXPECT_EQ(42, BindRepeating(EmptyFunctorConst()).Run());
+  EXPECT_EQ(42, BindRepeating(EmptyFunctorStatic()).Run());
 }
 
 TEST_F(BindTest, CapturingLambdaForTesting) {
@@ -1737,6 +1748,7 @@ TEST_F(BindTest, BindNoexcept) {
             BindOnce(&BindTest::ConstNoexceptMethod, Unretained(this)).Run());
   EXPECT_EQ(42, BindOnce(NoexceptFunctor()).Run());
   EXPECT_EQ(42, BindOnce(ConstNoexceptFunctor()).Run());
+  EXPECT_EQ(42, BindOnce(StaticNoexceptFunctor()).Run());
 }
 
 int PingPong(int* i_ptr) {
@@ -1867,31 +1879,31 @@ TEST_F(BindTest, BindRacyWeakPtrTest) {
 TEST(BindDeathTest, NullCallback) {
   RepeatingCallback<void(int)> null_cb;
   ASSERT_TRUE(null_cb.is_null());
-  EXPECT_CHECK_DEATH(BindRepeating(null_cb, 42));
+  EXPECT_CHECK_DEATH({ std::ignore = BindRepeating(null_cb, 42); });
 }
 
 TEST(BindDeathTest, NullFunctionPointer) {
   void (*null_function)(int) = nullptr;
-  EXPECT_DCHECK_DEATH(BindRepeating(null_function, 42));
+  EXPECT_DCHECK_DEATH({ std::ignore = BindRepeating(null_function, 42); });
 }
 
 TEST(BindDeathTest, NullCallbackWithoutBoundArgs) {
   OnceCallback<void(int)> null_cb;
   ASSERT_TRUE(null_cb.is_null());
-  EXPECT_CHECK_DEATH(BindOnce(std::move(null_cb)));
+  EXPECT_CHECK_DEATH({ std::ignore = BindOnce(std::move(null_cb)); });
 }
 
 TEST(BindDeathTest, BanFirstOwnerOfRefCountedType) {
   StrictMock<HasRef> has_ref;
   EXPECT_DCHECK_DEATH({
     EXPECT_CALL(has_ref, HasAtLeastOneRef()).WillOnce(Return(false));
-    BindOnce(&HasRef::VoidMethod0, &has_ref);
+    std::ignore = BindOnce(&HasRef::VoidMethod0, &has_ref);
   });
 
   EXPECT_DCHECK_DEATH({
     raw_ptr<HasRef> rawptr(&has_ref);
     EXPECT_CALL(has_ref, HasAtLeastOneRef()).WillOnce(Return(false));
-    BindOnce(&HasRef::VoidMethod0, rawptr);
+    std::ignore = BindOnce(&HasRef::VoidMethod0, rawptr);
   });
 }
 

@@ -63,7 +63,7 @@ bool AllFieldsClassifiedWithConfidence(
     const FieldClassificationModelEncoder::ModelOutput& output,
     size_t num_fields,
     float confidence_threshold) {
-  for (size_t i = 0; i < num_fields; i++) {
+  for (size_t i = 0; i < num_fields; ++i) {
     if (std::ranges::max(output[i]) < confidence_threshold) {
       return false;
     }
@@ -135,7 +135,8 @@ bool FieldClassificationModelHandler::ShouldApplySmallFormRules() const {
 void FieldClassificationModelHandler::ApplySmallFormRules(
     const FormData& form,
     const GeoIpCountryCode& client_country,
-    std::vector<FieldType>& predicted_types) const {
+    std::vector<FieldType>& predicted_types,
+    bool ignore_small_forms) const {
   FieldCandidatesMap field_candidates_map;
   for (size_t i = 0; i < predicted_types.size(); ++i) {
     FieldCandidates candidates;
@@ -148,7 +149,8 @@ void FieldClassificationModelHandler::ApplySmallFormRules(
   }
 
   FormFieldParser::ClearCandidatesIfHeuristicsDidNotFindEnoughFields(
-      form.fields(), field_candidates_map, client_country, nullptr);
+      form.fields(), field_candidates_map, client_country, nullptr,
+      ignore_small_forms);
 
   for (size_t i = 0; i < predicted_types.size(); ++i) {
     const auto& field_id = form.fields()[i].global_id();
@@ -255,6 +257,7 @@ void PopulateMlPredictionLogAfterInference(
 void FieldClassificationModelHandler::GetModelPredictionsForForm(
     FormData form,
     const GeoIpCountryCode& client_country,
+    bool ignore_small_forms,
     base::OnceCallback<void(ModelPredictions)> callback) {
   if (!ModelAvailable() || !state_) {
     // No model, no predictions.
@@ -310,6 +313,7 @@ void FieldClassificationModelHandler::GetModelPredictionsForForm(
                  prediction_log,
              FormData form, const GeoIpCountryCode& client_country,
              std::optional<ModelInputHash> model_input_hash,
+             bool ignore_small_forms,
              base::OnceCallback<void(ModelPredictions)> callback,
              const std::optional<FieldClassificationModelEncoder::ModelOutput>&
                  output) {
@@ -322,8 +326,8 @@ void FieldClassificationModelHandler::GetModelPredictionsForForm(
               std::vector<FieldType> predicted_types =
                   self->GetMostLikelyTypes(form, *output);
               if (self->ShouldApplySmallFormRules()) {
-                self->ApplySmallFormRules(form, client_country,
-                                          predicted_types);
+                self->ApplySmallFormRules(form, client_country, predicted_types,
+                                          ignore_small_forms);
               }
               predictions = self->BuildModelPredictions(form, predicted_types);
               if (model_input_hash.has_value()) {
@@ -340,13 +344,14 @@ void FieldClassificationModelHandler::GetModelPredictionsForForm(
           },
           weak_ptr_factory_.GetWeakPtr(), std::move(prediction_log),
           std::move(form), client_country, std::move(input_hash),
-          std::move(callback)),
+          ignore_small_forms, std::move(callback)),
       std::move(encoded_input));
 }
 
 void FieldClassificationModelHandler::GetModelPredictionsForForms(
     std::vector<FormData> forms,
     const GeoIpCountryCode& client_country,
+    bool ignore_small_forms,
     base::OnceCallback<void(std::vector<ModelPredictions>)> callback) {
   // `base::BarrierCallback` is not guaranteed to gather the results in order so
   // we have to sort them.
@@ -367,7 +372,7 @@ void FieldClassificationModelHandler::GetModelPredictionsForForms(
       forms.size(), std::move(sort_results).Then(std::move(callback)));
   for (size_t form_index = 0; form_index < forms.size(); ++form_index) {
     GetModelPredictionsForForm(
-        std::move(forms[form_index]), client_country,
+        std::move(forms[form_index]), client_country, ignore_small_forms,
         base::BindOnce(
             [](size_t form_index,
                ModelPredictions prediction) -> IndexAndOutput {
@@ -433,7 +438,7 @@ std::vector<FieldType> FieldClassificationModelHandler::GetMostLikelyTypes(
   std::map<FieldType, std::pair<size_t, float>> unique_types_assignment;
   std::vector<FieldType> predicted_types;
 
-  for (size_t i = 0; i < relevant_fields; i++) {
+  for (size_t i = 0; i < relevant_fields; ++i) {
     auto [most_likely_type, current_confidence] = GetMostLikelyType(output[i]);
 
     if (state_->metadata.postprocessing_parameters()

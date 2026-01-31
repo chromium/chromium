@@ -14,7 +14,6 @@
 #include <vector>
 
 #include "base/auto_reset.h"
-#include "base/containers/contains.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
@@ -29,7 +28,7 @@
 #include "chrome/browser/extensions/crx_installer.h"
 #include "chrome/browser/extensions/extension_management.h"
 #include "chrome/browser/extensions/external_install_manager.h"
-#include "chrome/browser/extensions/forced_extensions/install_stage_tracker.h"
+#include "chrome/browser/extensions/forced_extensions/install_stage_tracker_factory.h"
 #include "chrome/browser/extensions/updater/extension_updater_factory.h"
 #include "chrome/browser/lifetime/termination_notification.h"
 #include "chrome/browser/profiles/keep_alive/profile_keep_alive_types.h"
@@ -47,6 +46,7 @@
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/extension_registrar.h"
 #include "extensions/browser/extension_registry.h"
+#include "extensions/browser/forced_extensions/install_stage_tracker.h"
 #include "extensions/browser/install/crx_install_error.h"
 #include "extensions/browser/pending_extension_manager.h"
 #include "extensions/browser/pref_names.h"
@@ -386,7 +386,7 @@ void ExtensionUpdater::AddToDownloader(
     // An extension might be overwritten by policy, and have its update url
     // changed. Make sure existing extensions aren't fetched again, if a
     // pending fetch for an extension with the same id already exists.
-    if (base::Contains(pending_ids, extension_id)) {
+    if (pending_ids.contains(extension_id)) {
       continue;
     }
 
@@ -526,7 +526,7 @@ void ExtensionUpdater::CheckNow(CheckParams params) {
       // extensions or external component extensions) with foreground fetch
       // priority; otherwise their installation may be throttled by bandwidth
       // limits.
-      // See https://crbug.com/904600 and https://crbug.com/965686.
+      // See https://crbug.com/41425994 and https://crbug.com/41460304.
       const bool is_high_priority_extension_pending =
           pending_extension_manager->HasHighPriorityPendingExtension();
       if (CanUseUpdateService(pending_id)) {
@@ -546,16 +546,18 @@ void ExtensionUpdater::CheckNow(CheckParams params) {
                          ? DownloadFetchPriority::kForeground
                          : params.fetch_priority))) {
         request.in_progress_ids.insert(pending_id);
-        InstallStageTracker::Get(profile_)->ReportInstallationStage(
-            pending_id, InstallStageTracker::Stage::DOWNLOADING);
+        InstallStageTrackerFactory::GetForBrowserContext(profile_)
+            ->ReportInstallationStage(pending_id,
+                                      InstallStageTracker::Stage::DOWNLOADING);
         if (is_corrupt_reinstall) {
           LOG(WARNING) << "Corrupt extension with id " << pending_id
                        << " will be reinstalled with ExtensionDownloader.";
         }
       } else {
-        InstallStageTracker::Get(profile_)->ReportFailure(
-            pending_id,
-            InstallStageTracker::FailureReason::DOWNLOADER_ADD_FAILED);
+        InstallStageTrackerFactory::GetForBrowserContext(profile_)
+            ->ReportFailure(
+                pending_id,
+                InstallStageTracker::FailureReason::DOWNLOADER_ADD_FAILED);
       }
     }
 
@@ -619,7 +621,8 @@ void ExtensionUpdater::CheckNow(CheckParams params) {
 
 void ExtensionUpdater::OnExtensionDownloadStageChanged(const ExtensionId& id,
                                                        Stage stage) {
-  InstallStageTracker::Get(profile_)->ReportDownloadingStage(id, stage);
+  InstallStageTrackerFactory::GetForBrowserContext(profile_)
+      ->ReportDownloadingStage(id, stage);
 }
 
 void ExtensionUpdater::OnExtensionUpdateFound(const ExtensionId& id,
@@ -636,8 +639,8 @@ void ExtensionUpdater::OnExtensionUpdateFound(const ExtensionId& id,
 void ExtensionUpdater::OnExtensionDownloadCacheStatusRetrieved(
     const ExtensionId& id,
     CacheStatus cache_status) {
-  InstallStageTracker::Get(profile_)->ReportDownloadingCacheStatus(
-      id, cache_status);
+  InstallStageTrackerFactory::GetForBrowserContext(profile_)
+      ->ReportDownloadingCacheStatus(id, cache_status);
 }
 
 void ExtensionUpdater::OnExtensionDownloadFailed(
@@ -648,7 +651,7 @@ void ExtensionUpdater::OnExtensionDownloadFailed(
     const FailureData& data) {
   DCHECK(alive_);
   InstallStageTracker* install_stage_tracker =
-      InstallStageTracker::Get(profile_);
+      InstallStageTrackerFactory::GetForBrowserContext(profile_);
 
   switch (error) {
     case Error::CRX_FETCH_FAILED:
@@ -707,7 +710,8 @@ void ExtensionUpdater::OnExtensionDownloadFailed(
 
 void ExtensionUpdater::OnExtensionDownloadRetry(const ExtensionId& id,
                                                 const FailureData& data) {
-  InstallStageTracker::Get(profile_)->ReportFetchErrorCodes(id, data);
+  InstallStageTrackerFactory::GetForBrowserContext(profile_)
+      ->ReportFetchErrorCodes(id, data);
 }
 
 void ExtensionUpdater::OnExtensionDownloadFinished(
@@ -718,8 +722,9 @@ void ExtensionUpdater::OnExtensionDownloadFinished(
     const std::set<int>& request_ids,
     InstallCallback callback) {
   DCHECK(alive_);
-  InstallStageTracker::Get(profile_)->ReportInstallationStage(
-      file.extension_id, InstallStageTracker::Stage::INSTALLING);
+  InstallStageTrackerFactory::GetForBrowserContext(profile_)
+      ->ReportInstallationStage(file.extension_id,
+                                InstallStageTracker::Stage::INSTALLING);
   UpdatePingData(file.extension_id, ping);
 
   VLOG(2) << download_url << " written to " << file.path.value();
@@ -1048,7 +1053,7 @@ void ExtensionUpdater::NotifyStarted() {
 }
 
 void ExtensionUpdater::OnUpdateServiceFinished(int request_id) {
-  DCHECK(base::Contains(requests_in_progress_, request_id));
+  DCHECK(requests_in_progress_.contains(request_id));
   InProgressCheck& request = requests_in_progress_[request_id];
   DCHECK(request.awaiting_update_service);
   request.awaiting_update_service = false;
@@ -1056,7 +1061,7 @@ void ExtensionUpdater::OnUpdateServiceFinished(int request_id) {
 }
 
 void ExtensionUpdater::NotifyIfFinished(int request_id) {
-  DCHECK(base::Contains(requests_in_progress_, request_id));
+  DCHECK(requests_in_progress_.contains(request_id));
   InProgressCheck& request = requests_in_progress_[request_id];
   if (!request.in_progress_ids.empty() || request.awaiting_update_service) {
     return;  // This request is not done yet.

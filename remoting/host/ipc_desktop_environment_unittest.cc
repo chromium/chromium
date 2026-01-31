@@ -193,7 +193,7 @@ class IpcDesktopEnvironmentTest : public testing::Test {
 
   void CreateDesktopSession(int terminal_id,
                             const ScreenResolution& resolution,
-                            bool virtual_terminal);
+                            bool is_curtained);
   void CloseDesktopSession(int terminal_id);
 
   // Creates a DesktopEnvironment with a fake webrtc::DesktopCapturer, to mock
@@ -402,7 +402,7 @@ void IpcDesktopEnvironmentTest::TearDown() {
 void IpcDesktopEnvironmentTest::CreateDesktopSession(
     int terminal_id,
     const ScreenResolution& resolution,
-    bool virtual_terminal) {
+    bool is_curtained) {
   EXPECT_NE(terminal_id_, terminal_id);
 
   terminal_id_ = terminal_id;

@@ -75,10 +75,10 @@ class WebTestWithWebState : public WebTest {
   // calling `function` with `parameters` in the main frame of `web_state()`.
   std::unique_ptr<base::Value> CallJavaScriptFunction(
       const std::string& function,
-      const base::Value::List& parameters);
+      const base::ListValue& parameters);
   std::unique_ptr<base::Value> CallJavaScriptFunctionForFeature(
       const std::string& function,
-      const base::Value::List& parameters,
+      const base::ListValue& parameters,
       JavaScriptFeature* feature);
   // Synchronously executes JavaScript and returns result as id.
   virtual id ExecuteJavaScript(NSString* script);

@@ -121,7 +121,7 @@ void DeviceTrustService::OnSignalsCollected(
     const std::string& challenge,
     const std::set<DTCPolicyLevel>& levels,
     DeviceTrustCallback callback,
-    base::Value::Dict signals) {
+    base::DictValue signals) {
   LogAttestationFunnelStep(DTAttestationFunnelStep::kSignalsCollected);
 
   attestation_service_->BuildChallengeResponseForVAChallenge(

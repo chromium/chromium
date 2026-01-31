@@ -36,7 +36,6 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/component_updater/component_updater_service.h"
-#include "components/content_settings/core/common/features.h"
 #include "components/keep_alive_registry/keep_alive_types.h"
 #include "components/keep_alive_registry/scoped_keep_alive.h"
 #include "components/no_state_prefetch/browser/no_state_prefetch_handle.h"
@@ -129,8 +128,8 @@ class MediaEngagementBrowserTest : public InProcessBrowserTest {
     ASSERT_TRUE(http_server_.Start());
     ASSERT_TRUE(http_server_origin2_.Start());
 
-    scoped_feature_list_.InitWithFeatures({media::kRecordMediaEngagementScores},
-                                          disabled_features_);
+    scoped_feature_list_.InitAndEnableFeature(
+        media::kRecordMediaEngagementScores);
 
     InProcessBrowserTest::SetUp();
 
@@ -298,8 +297,6 @@ class MediaEngagementBrowserTest : public InProcessBrowserTest {
     for (auto observer : service->contents_observers_)
       observer.second->SetTaskRunnerForTest(task_runner_);
   }
-
-  std::vector<base::test::FeatureRef> disabled_features_;
 
  private:
   void InjectTimerTaskRunner() {
@@ -790,8 +787,6 @@ class MediaEngagementPreThirdPartyCookieDeprecationBrowserTest
     : public MediaEngagementBrowserTest {
  public:
   MediaEngagementPreThirdPartyCookieDeprecationBrowserTest() {
-    disabled_features_.push_back(
-        content_settings::features::kTrackingProtection3pcd);
   }
 };
 
@@ -815,18 +810,15 @@ IN_PROC_BROWSER_TEST_F(MediaEngagementPreThirdPartyCookieDeprecationBrowserTest,
   no_state_prefetch_manager->SetNoStatePrefetchContentsFactoryForTest(
       no_state_prefetch_contents_factory);
 
-  content::SessionStorageNamespace* storage_namespace =
-      GetWebContents()->GetController().GetDefaultSessionStorageNamespace();
-  ASSERT_TRUE(storage_namespace);
-
   std::unique_ptr<prerender::test_utils::TestPrerender> test_prerender =
       no_state_prefetch_contents_factory->ExpectNoStatePrefetchContents(
           prerender::FINAL_STATUS_NOSTATE_PREFETCH_FINISHED);
 
   std::unique_ptr<prerender::NoStatePrefetchHandle> no_state_prefetch_handle =
-      no_state_prefetch_manager->AddSameOriginSpeculation(
-          url, storage_namespace, gfx::Size(640, 480),
-          url::Origin::Create(url));
+      no_state_prefetch_manager->StartPrefetchingFromLinkRelPrerender(
+          /*process_id=*/-1, /*route_id=*/-1, url,
+          blink::mojom::PrerenderTriggerType::kLinkRelPrerender,
+          content::Referrer(), url::Origin::Create(url), gfx::Size(640, 480));
 
   ASSERT_EQ(no_state_prefetch_handle->contents(), test_prerender->contents());
 
@@ -1042,7 +1034,7 @@ IN_PROC_BROWSER_TEST_F(
 
   // Loads a page in a prerendered page.
   GURL prerender_url = embedded_test_server()->GetURL("/title1.html");
-  const content::FrameTreeNodeId host_id =
+  const content::PrerenderHostId host_id =
       prerender_helper().AddPrerender(prerender_url);
   content::RenderFrameHost* prerender_rfh =
       prerender_helper().GetPrerenderedMainFrameHost(host_id);

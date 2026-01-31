@@ -25,9 +25,9 @@ class AccessCodeCastPrefUpdaterImpl : public AccessCodeCastPrefUpdater {
   void UpdateDeviceAddedTimeDict(
       const MediaSink::Id sink_id,
       base::OnceClosure on_updated_callback) override;
-  void GetDevicesDict(base::OnceCallback<void(base::Value::Dict)>
-                          get_devices_callback) override;
-  void GetDeviceAddedTimeDict(base::OnceCallback<void(base::Value::Dict)>
+  void GetDevicesDict(
+      base::OnceCallback<void(base::DictValue)> get_devices_callback) override;
+  void GetDeviceAddedTimeDict(base::OnceCallback<void(base::DictValue)>
                                   get_device_added_time_callback) override;
   void RemoveSinkIdFromDevicesDict(
       const MediaSink::Id sink_id,

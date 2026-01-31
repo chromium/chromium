@@ -33,7 +33,7 @@ void PasswordManagerHandler::RegisterMessages() {
 }
 
 void PasswordManagerHandler::HandleShowPasswordManager(
-    const base::Value::List& args) {
+    const base::ListValue& args) {
   AllowJavascript();
   CHECK_EQ(1U, args.size());
   int page = args[0].GetInt();

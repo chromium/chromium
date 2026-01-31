@@ -12,6 +12,7 @@ NSString* const kAimComposeboxButtonBackgroundColor =
 NSString* const kBackgroundColor = @"background_color";
 NSString* const kCloseButtonColor = @"close_button_color";
 NSString* const kDisabledTintColor = @"disabled_tint_color";
+NSString* const kDestinationHighlightColor = @"destination_highlight_color";
 NSString* const kFaviconBackgroundColor = @"favicon_background_color";
 NSString* const kGroupedPrimaryBackgroundColor =
     @"grouped_primary_background_color";

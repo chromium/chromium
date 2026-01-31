@@ -49,7 +49,7 @@ void ReaderModeScrollAnchorJavaScriptFeature::ScriptMessageReceived(
   if (!tab_helper) {
     return;
   }
-  const base::Value::Dict* dict = message.body()->GetIfDict();
+  const base::DictValue* dict = message.body()->GetIfDict();
   if (!dict) {
     return;
   }

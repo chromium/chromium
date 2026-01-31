@@ -17,13 +17,13 @@ namespace ash::app_time {
 class PersistedAppInfo {
  public:
   static std::optional<PersistedAppInfo> PersistedAppInfoFromDict(
-      const base::Value::Dict* value,
+      const base::DictValue* value,
       bool include_app_activity_array);
   static std::vector<PersistedAppInfo> PersistedAppInfosFromList(
-      const base::Value::List& list,
+      const base::ListValue& list,
       bool include_app_activity_array);
   static std::optional<AppState> GetAppStateFromDict(
-      const base::Value::Dict* value);
+      const base::DictValue* value);
 
   PersistedAppInfo(const AppId& app_id,
                    AppState state,
@@ -40,7 +40,7 @@ class PersistedAppInfo {
   // If |replace_activity| is true, then completely replaces the list keyed by
   // |kActiveTimesKey| in the dicationary. Otherwise, appends the values in
   // |active_running_time_|.
-  void UpdateAppActivityPreference(base::Value::Dict& dict,
+  void UpdateAppActivityPreference(base::DictValue& dict,
                                    bool replace_activity) const;
 
   void RemoveActiveTimeEarlierThan(base::Time timestamp);

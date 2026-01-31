@@ -130,9 +130,9 @@ class SafetyHubHatsServiceTest : public testing::Test {
 
   void CreateMockUnusedSitePermissionForReview() {
     const GURL kUrl = GURL("https://www.example.com:443");
-    base::Value::Dict dict;
+    base::DictValue dict;
     dict.Set(permissions::kRevokedKey,
-             base::Value::List().Append(
+             base::ListValue().Append(
                  UnusedSitePermissionsManager::ConvertContentSettingsTypeToKey(
                      ContentSettingsType::GEOLOCATION)));
     content_settings::ContentSettingConstraints default_constraint(

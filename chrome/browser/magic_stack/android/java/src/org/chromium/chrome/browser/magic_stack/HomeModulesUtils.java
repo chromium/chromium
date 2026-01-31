@@ -5,12 +5,17 @@
 package org.chromium.chrome.browser.magic_stack;
 
 import static org.chromium.build.NullUtil.assumeNonNull;
+import static org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType.ADDRESS_BAR_PLACEMENT_PROMO;
 import static org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType.AUXILIARY_SEARCH;
 import static org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType.DEFAULT_BROWSER_PROMO;
+import static org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType.ENHANCED_SAFE_BROWSING_PROMO;
 import static org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType.HISTORY_SYNC_PROMO;
+import static org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType.PASSWORD_CHECKUP_PROMO;
 import static org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType.PRICE_CHANGE;
 import static org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType.QUICK_DELETE_PROMO;
 import static org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType.SAFETY_HUB;
+import static org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType.SAVE_PASSWORDS_PROMO;
+import static org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType.SIGN_IN_PROMO;
 import static org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType.SINGLE_TAB;
 import static org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType.TAB_GROUP_PROMO;
 import static org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType.TAB_GROUP_SYNC_PROMO;
@@ -33,8 +38,12 @@ import org.chromium.components.segmentation_platform.InputContext;
 import org.chromium.components.segmentation_platform.ProcessedValue;
 import org.chromium.components.user_prefs.UserPrefs;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 
 /** Utility class for the magic stack. */
 @NullMarked
@@ -61,7 +70,12 @@ public class HomeModulesUtils {
                             TAB_GROUP_SYNC_PROMO,
                             QUICK_DELETE_PROMO,
                             HISTORY_SYNC_PROMO,
-                            TIPS_NOTIFICATIONS_PROMO));
+                            TIPS_NOTIFICATIONS_PROMO,
+                            ENHANCED_SAFE_BROWSING_PROMO,
+                            ADDRESS_BAR_PLACEMENT_PROMO,
+                            SIGN_IN_PROMO,
+                            SAVE_PASSWORDS_PROMO,
+                            PASSWORD_CHECKUP_PROMO));
 
     static boolean belongsToEducationalTipModule(@ModuleType int moduleType) {
         return sEducationalTipCardList.contains(moduleType);
@@ -111,6 +125,11 @@ public class HomeModulesUtils {
             case QUICK_DELETE_PROMO:
             case HISTORY_SYNC_PROMO:
             case TIPS_NOTIFICATIONS_PROMO:
+            case ENHANCED_SAFE_BROWSING_PROMO:
+            case ADDRESS_BAR_PLACEMENT_PROMO:
+            case SIGN_IN_PROMO:
+            case SAVE_PASSWORDS_PROMO:
+            case PASSWORD_CHECKUP_PROMO:
                 // All tips use the same name.
                 return context.getString(R.string.educational_tip_module_name);
             case AUXILIARY_SEARCH:
@@ -311,5 +330,22 @@ public class HomeModulesUtils {
                     sharedPreferencesManager.readBoolean(javaKey, /* defaultValue= */ false);
             UserPrefs.get(profile).setBoolean(cKey, value);
         }
+    }
+
+    /**
+     * Sorts a list of module types based on a provided rank map.
+     *
+     * @param rankMap A map from ModuleType to its integer rank.
+     * @return List of sorted modules
+     */
+    public static List<Integer> sortModulesByRank(Map<Integer, Integer> rankMap) {
+        List<Integer> modules = new ArrayList<>(rankMap.keySet());
+        modules.sort(
+                (a, b) -> {
+                    int orderA = Objects.requireNonNull(rankMap.get(a));
+                    int orderB = Objects.requireNonNull(rankMap.get(b));
+                    return Integer.compare(orderA, orderB);
+                });
+        return modules;
     }
 }

@@ -421,7 +421,7 @@ class Report {
   constructor(mojo: WebUIReport) {
     this.id = mojo.id;
     this.reportBody = mojo.reportBody;
-    this.reportUrl = mojo.reportUrl.url;
+    this.reportUrl = mojo.reportUrl;
     this.triggerTime = new Date(mojo.triggerTime);
     this.reportTime = new Date(mojo.reportTime);
 
@@ -598,7 +598,7 @@ interface OsRegistration {
 function newOsRegistration(mojo: WebUIOsRegistration): OsRegistration {
   return {
     time: new Date(mojo.time),
-    registrationUrl: mojo.registrationUrl.url,
+    registrationUrl: mojo.registrationUrl,
     topLevelOrigin: originToText(mojo.topLevelOrigin),
     debugKeyAllowed: mojo.isDebugKeyAllowed,
     debugReporting: mojo.debugReporting,
@@ -633,7 +633,7 @@ interface DebugReport {
 function verboseDebugReport(mojo: WebUIDebugReport): DebugReport {
   const report: DebugReport = {
     body: mojo.body,
-    url: mojo.url.url,
+    url: mojo.url,
     time: new Date(mojo.time),
     status: '',
     sendFailed: false,
@@ -650,7 +650,7 @@ function attributionSuccessDebugReport(mojo: WebUIReport): DebugReport {
       Report.statusToString(mojo.status, /*sentPrefix=*/ '');
   return {
     body: mojo.reportBody,
-    url: mojo.reportUrl.url,
+    url: mojo.reportUrl,
     time: new Date(mojo.reportTime),
     status,
     sendFailed,
@@ -678,7 +678,7 @@ function aggregatableDebugReport(mojo: WebUIAggregatableDebugReport):
     DebugReport {
   const report: DebugReport = {
     body: mojo.body,
-    url: mojo.url.url,
+    url: mojo.url,
     time: new Date(mojo.time),
     status: '',
     sendFailed: false,
@@ -949,7 +949,7 @@ class AttributionInternals implements ObserverInterface {
   }
 
   private addSentOrDroppedReport(mojo: WebUIReport): void {
-    if (isAttributionSuccessDebugReport(mojo.reportUrl.url)) {
+    if (isAttributionSuccessDebugReport(mojo.reportUrl)) {
       this.debugReports.addRow(attributionSuccessDebugReport(mojo));
     } else if (mojo.data.eventLevelData !== undefined) {
       this.eventLevelReports.addRow(new EventLevelReport(mojo));

@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ui/web_applications/navigation_capturing_process.h"
 
+#include <utility>
+
 #include "base/debug/crash_logging.h"
 #include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
@@ -24,8 +26,8 @@
 #include "chrome/browser/ui/web_applications/web_app_launch_navigation_handle_user_data.h"
 #include "chrome/browser/ui/web_applications/web_app_launch_utils.h"
 #include "chrome/browser/ui/web_applications/web_app_tabbed_utils.h"
-#include "chrome/browser/web_applications/isolated_web_apps/window_management/isolated_web_apps_opened_tabs_counter_service.h"
-#include "chrome/browser/web_applications/isolated_web_apps/window_management/isolated_web_apps_opened_tabs_counter_service_factory.h"
+#include "chrome/browser/web_applications/isolated_web_apps/window_management/isolated_web_apps_window_open_permission_service.h"
+#include "chrome/browser/web_applications/isolated_web_apps/window_management/isolated_web_apps_window_open_permission_service_factory.h"
 #include "chrome/browser/web_applications/link_capturing_features.h"
 #include "chrome/browser/web_applications/navigation_capturing_log.h"
 #include "chrome/browser/web_applications/navigation_capturing_metrics.h"
@@ -92,7 +94,7 @@ bool IsPageTransitionValidForNavigationCapturing(
     default:
       NOTREACHED();
   }
-  if (base::to_underlying(ui::PageTransitionGetQualifier(transition)) != 0) {
+  if (std::to_underlying(ui::PageTransitionGetQualifier(transition)) != 0) {
     // Qualifiers indicate that this navigation was the result of a click on a
     // forward/back button, typing in the URL bar, or client-side redirections.
     // Don't handle any of those types of navigations.
@@ -869,7 +871,7 @@ void NavigationCapturingProcess::MaybeNotifyIwaTabCounterService(
   }
 
   auto* counter_service =
-      IsolatedWebAppsOpenedTabsCounterServiceFactory::GetForProfile(profile);
+      IsolatedWebAppsWindowOpenPermissionServiceFactory::GetForProfile(profile);
   if (!counter_service) {
     return;
   }
@@ -1791,7 +1793,7 @@ bool NavigationCapturingProcess::IsHandledByNavigationCapturing() const {
   }
 }
 
-base::Value::Dict& NavigationCapturingProcess::PopulateAndGetDebugData() {
+base::DictValue& NavigationCapturingProcess::PopulateAndGetDebugData() {
   debug_data_.Set("!navigation_params_url",
                   navigation_params_url_.possibly_invalid_spec());
   debug_data_.Set("navigation_params_browser",

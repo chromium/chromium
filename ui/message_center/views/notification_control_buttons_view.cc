@@ -5,6 +5,7 @@
 #include "ui/message_center/views/notification_control_buttons_view.h"
 
 #include <memory>
+#include <optional>
 
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -27,6 +28,10 @@
 
 namespace message_center {
 
+namespace {
+std::optional<bool> g_tooltip_enabled_for_testing;
+}  // namespace
+
 NotificationControlButtonsView::NotificationControlButtonsView(
     MessageView* message_view)
     : message_view_(message_view) {
@@ -42,6 +47,15 @@ NotificationControlButtonsView::NotificationControlButtonsView(
 }
 
 NotificationControlButtonsView::~NotificationControlButtonsView() = default;
+
+// static
+base::AutoReset<std::optional<bool>>
+NotificationControlButtonsView::SetTooltipEnabledForTesting(bool value) {
+  CHECK(!g_tooltip_enabled_for_testing.has_value());
+  base::AutoReset<std::optional<bool>> result(&g_tooltip_enabled_for_testing,
+                                              value);
+  return result;
+}
 
 void NotificationControlButtonsView::OnThemeChanged() {
   views::View::OnThemeChanged();
@@ -62,8 +76,10 @@ void NotificationControlButtonsView::ShowCloseButton(bool show) {
     }
     close_button_->GetViewAccessibility().SetName(l10n_util::GetStringUTF16(
         IDS_MESSAGE_CENTER_CLOSE_NOTIFICATION_BUTTON_ACCESSIBLE_NAME));
-    close_button_->SetTooltipText(l10n_util::GetStringUTF16(
-        IDS_MESSAGE_CENTER_CLOSE_NOTIFICATION_BUTTON_TOOLTIP));
+    if (g_tooltip_enabled_for_testing.value_or(true)) {
+      close_button_->SetTooltipText(l10n_util::GetStringUTF16(
+          IDS_MESSAGE_CENTER_CLOSE_NOTIFICATION_BUTTON_TOOLTIP));
+    }
     close_button_->SetBackground(
         views::CreateSolidBackground(SK_ColorTRANSPARENT));
     DeprecatedLayoutImmediately();
@@ -91,8 +107,10 @@ void NotificationControlButtonsView::ShowSettingsButton(bool show) {
     }
     settings_button_->GetViewAccessibility().SetName(l10n_util::GetStringUTF16(
         IDS_MESSAGE_NOTIFICATION_SETTINGS_BUTTON_ACCESSIBLE_NAME));
-    settings_button_->SetTooltipText(l10n_util::GetStringUTF16(
-        IDS_MESSAGE_NOTIFICATION_SETTINGS_BUTTON_ACCESSIBLE_NAME));
+    if (g_tooltip_enabled_for_testing.value_or(true)) {
+      settings_button_->SetTooltipText(l10n_util::GetStringUTF16(
+          IDS_MESSAGE_NOTIFICATION_SETTINGS_BUTTON_ACCESSIBLE_NAME));
+    }
     settings_button_->SetBackground(
         views::CreateSolidBackground(SK_ColorTRANSPARENT));
     DeprecatedLayoutImmediately();
@@ -119,8 +137,10 @@ void NotificationControlButtonsView::ShowSnoozeButton(bool show) {
     }
     snooze_button_->GetViewAccessibility().SetName(l10n_util::GetStringUTF16(
         IDS_MESSAGE_CENTER_NOTIFICATION_SNOOZE_BUTTON_TOOLTIP));
-    snooze_button_->SetTooltipText(l10n_util::GetStringUTF16(
-        IDS_MESSAGE_CENTER_NOTIFICATION_SNOOZE_BUTTON_TOOLTIP));
+    if (g_tooltip_enabled_for_testing.value_or(true)) {
+      snooze_button_->SetTooltipText(l10n_util::GetStringUTF16(
+          IDS_MESSAGE_CENTER_NOTIFICATION_SNOOZE_BUTTON_TOOLTIP));
+    }
     snooze_button_->SetBackground(
         views::CreateSolidBackground(SK_ColorTRANSPARENT));
     DeprecatedLayoutImmediately();

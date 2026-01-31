@@ -269,7 +269,7 @@ void ProfilePickerPostSignInAdapter::SwitchToProfileSwitch(
 }
 
 void ProfilePickerPostSignInAdapter::ResetHostAndShowErrorDialog(
-    const ForceSigninUIError& error) {
+    const std::variant<ForceSigninUIError, SigninUIError>& error) {
   CHECK(IsInitialized());
   if (!step_switch_callback_->is_null()) {
     std::move(step_switch_callback_.value()).Run(false);
@@ -277,7 +277,7 @@ void ProfilePickerPostSignInAdapter::ResetHostAndShowErrorDialog(
 
   Cancel();
   host_->Reset(StepSwitchFinishedCallback(
-      base::BindOnce(&ProfilePickerWebContentsHost::ShowForceSigninErrorDialog,
+      base::BindOnce(&ProfilePickerWebContentsHost::ShowSigninErrorDialog,
                      base::Unretained(host_), error)));
 }
 

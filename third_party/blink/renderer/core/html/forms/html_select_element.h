@@ -348,6 +348,10 @@ class CORE_EXPORT HTMLSelectElement final
   // and <datalist> elements.
   static bool ShouldIgnoreDescendantsForOptionTraversals(Element* element);
 
+  // Used for the (experimental) declarative WebMCP prototype.
+  bool SupportsWebMCP() const override { return true; }
+  void FillWebMCPData(JSONValue& data) override;
+
  private:
   mojom::blink::FormControlType FormControlType() const override;
   const AtomicString& FormControlTypeAsString() const override;
@@ -444,23 +448,31 @@ class CORE_EXPORT HTMLSelectElement final
 
   void DidChangeIsCanvasOrInCanvasSubtree() final;
 
+  // last_on_change_option_ is the currently selected option. It provides faster
+  // access to the currently selected option than iterating through each option
+  // element to see which one is selected. When this element has the multiple
+  // attribute, last_on_change_option_ is not used.
+  Member<HTMLOptionElement> last_on_change_option_;
+  Member<HTMLOptionElement> suggested_option_;
+  Member<SelectType> select_type_;
+  Member<SelectMutationObserver> descendants_observer_;
+  TreeOrderedList<HTMLSelectedContentElement> descendant_selectedcontents_;
+  TypeAhead type_ahead_;
   // list_items_ contains HTMLOptionElement, HTMLOptGroupElement, and
   // HTMLHRElement objects.
   mutable ListItems list_items_;
-  TypeAhead type_ahead_;
-  unsigned size_;
-  Member<HTMLOptionElement> last_on_change_option_;
-  Member<HTMLOptionElement> suggested_option_;
-  TreeOrderedList<HTMLSelectedContentElement> descendant_selectedcontents_;
-  bool uses_menu_list_ = true;
-  bool is_multiple_;
-  mutable bool should_recalc_list_items_;
-
-  Member<SelectType> select_type_;
-  int index_to_select_on_cancel_;
-
-  Member<SelectMutationObserver> descendants_observer_;
+  // size_ is the display size of the select element which is generated from the
+  // size attribute on this element.
+  unsigned size_ = 0;
+  // content_model_violations_count_ is incremented every time a descendant node
+  // is added which violates the content model, and decremented every time such
+  // a node is removed. It is only used when descendants_observer_ is
+  // initialized.
   unsigned content_model_violations_count_ = 0U;
+  int index_to_select_on_cancel_ = -1;
+  bool uses_menu_list_ = true;
+  bool is_multiple_ = false;
+  mutable bool should_recalc_list_items_ = false;
 
   friend class ListBoxSelectType;
   friend class MenuListSelectType;

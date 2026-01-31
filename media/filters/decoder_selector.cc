@@ -220,8 +220,10 @@ void DecoderSelector<StreamType>::GetAndInitializeNextDecoder() {
   // Initialize the first decoder on the list.
   decoder_ = std::move(decoders_.front());
   decoders_.erase(decoders_.begin());
-  TRACE_EVENT_ASYNC_STEP_INTO0("media", kSelectDecoderTrace, this,
-                               GetDecoderName(decoder_->GetDecoderType()));
+  TRACE_EVENT_BEGIN(
+      "media",
+      perfetto::StaticString(GetDecoderName(decoder_->GetDecoderType())),
+      perfetto::Track::FromPointer(this));
 
   DVLOG(2) << __func__ << ": initializing " << decoder_->GetDecoderType();
   const bool is_live = stream_->liveness() == StreamLiveness::kLive;
@@ -273,8 +275,8 @@ void DecoderSelector<StreamType>::InitializeDecryptingDemuxerStream() {
   DCHECK(decoders_.empty());
   DCHECK(config_.is_encrypted());
   DCHECK(cdm_context_);
-  TRACE_EVENT_ASYNC_STEP_INTO0("media", kSelectDecoderTrace, this,
-                               "DecryptingDemuxerStream");
+  TRACE_EVENT_BEGIN("media", "DecryptingDemuxerStream",
+                    perfetto::Track::FromPointer(this));
 
   decrypting_demuxer_stream_ = std::make_unique<DecryptingDemuxerStream>(
       task_runner_, media_log_, waiting_cb_);
@@ -323,9 +325,11 @@ void DecoderSelector<StreamType>::RunSelectDecoderCB(
       base::StringPrintf(
           "%s (%s)",
           decoder_or_error.has_value()
-              ? GetDecoderName(decoder_or_error->GetDecoderType()).c_str()
+              ? GetDecoderName(decoder_or_error->GetDecoderType())
               : "null",
           decrypting_demuxer_stream_ ? "encrypted" : "unencrypted"));
+  TRACE_EVENT_END("media",
+                  /* kSelectDecoderTrace */ perfetto::Track::FromPointer(this));
 
   task_runner_->PostTask(
       FROM_HERE,

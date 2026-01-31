@@ -50,9 +50,9 @@ class PrefHashStoreImpl : public PrefHashStore {
 
   std::string ComputeMac(const std::string& path,
                          const base::Value* new_value) override;
-  base::Value::Dict ComputeSplitMacs(
+  base::DictValue ComputeSplitMacs(
       const std::string& path,
-      const base::Value::Dict* split_values) override;
+      const base::DictValue* split_values) override;
 
   std::string ComputeEncryptedHash(
       const std::string& path,
@@ -61,12 +61,12 @@ class PrefHashStoreImpl : public PrefHashStore {
 
   std::string ComputeEncryptedHash(
       const std::string& path,
-      const base::Value::Dict* dict,
+      const base::DictValue* dict,
       const os_crypt_async::Encryptor* encryptor) override;
 
-  base::Value::Dict ComputeSplitEncryptedHashes(
+  base::DictValue ComputeSplitEncryptedHashes(
       const std::string& path,
-      const base::Value::Dict* split_values,
+      const base::DictValue* split_values,
       const os_crypt_async::Encryptor* encryptor) override;
 
  private:
@@ -74,7 +74,7 @@ class PrefHashStoreImpl : public PrefHashStore {
   class PrefHashStoreTransactionImpl;
 
   std::string ComputeMac(const std::string& path,
-                         const base::Value::Dict* new_dict);
+                         const base::DictValue* new_dict);
 
   const PrefHashCalculator pref_hash_calculator_;
   bool use_super_mac_;

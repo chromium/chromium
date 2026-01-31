@@ -44,7 +44,7 @@ void TpmErrorScreen::ShowImpl() {
 
 void TpmErrorScreen::HideImpl() {}
 
-void TpmErrorScreen::OnUserAction(const base::Value::List& args) {
+void TpmErrorScreen::OnUserAction(const base::ListValue& args) {
   const std::string& action_id = args[0].GetString();
   if (action_id == kUserActionReboot) {
     chromeos::PowerManagerClient::Get()->RequestRestart(

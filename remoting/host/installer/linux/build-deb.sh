@@ -16,6 +16,12 @@ REPOCONFIG="deb [arch=${ARCHITECTURE}] http://${BASEREPOCONFIG}"
 REPOCONFIGREGEX="deb (\\\\[arch=[^]]*\\\\b${ARCHITECTURE}\\\\b[^]]*\\\\]"
 REPOCONFIGREGEX+="[[:space:]]*) https?://${BASEREPOCONFIG}"
 
+# The template processor requires these variables to be lowercase for
+# some substitutions to work:
+architecture="$ARCHITECTURE"
+repoconfig="$REPOCONFIG"
+repoconfigregex="$REPOCONFIGREGEX"
+
 source ${SCRIPTDIR}/installer.include
 
 guess_filename() {
@@ -140,7 +146,7 @@ debchange --create \
 # NOTE: When debchange --date is properly supported in the build environment,
 # this sed command should be removed and --date "$DATE_RFC5322" added to the
 # debchange command above.
-DATE_RFC5322="$(date --rfc-email -d "@$BUILD_TIMESTAMP")"
+DATE_RFC5322="$(date -u --rfc-email -d "@$BUILD_TIMESTAMP")"
 sed -i "s/^ -- $DEBEMAIL .*/ -- $DEBEMAIL  $DATE_RFC5322/" debian/changelog
 
 CRON_SCRIPT_DIR="${OUTPUT_PATH}/remoting/installer/cron"

@@ -11,8 +11,6 @@ namespace metrics::structured {
 
 BASE_FEATURE(kPhoneHubStructuredMetrics, base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kEventStorageManager, base::FEATURE_ENABLED_BY_DEFAULT);
-
 constexpr base::FeatureParam<int> kLimitFilesPerScanParam{
     &features::kStructuredMetrics, "file_limit", 100};
 constexpr base::FeatureParam<int> kFileSizeByteLimitParam{
@@ -34,7 +32,7 @@ constexpr base::FeatureParam<int> kMaxProtoKiBSize{
     &features::kStructuredMetrics, "max_proto_size_kib", 25};
 
 constexpr base::FeatureParam<int> kEventBackupTimeSec{
-    &kEventStorageManager, "event_backup_time_s", 3 * 60  // 3 minutes
+    &features::kStructuredMetrics, "event_backup_time_s", 3 * 60  // 3 minutes
 };
 
 constexpr base::FeatureParam<double> kMaxBufferSizeQuota{

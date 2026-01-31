@@ -12,8 +12,6 @@
 #include "chrome/browser/extensions/extension_tab_util.h"
 #include "chrome/browser/prefs/incognito_mode_prefs.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_window.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/common/url_constants.h"
@@ -30,10 +28,17 @@
 #include "extensions/test/test_extension_dir.h"
 #include "net/dns/mock_host_resolver.h"
 
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window.h"
+#endif
+
 #if BUILDFLAG(IS_WIN)
 #include "ui/aura/window.h"
 #include "ui/aura/window_tree_host.h"
 #endif
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 using ContextType = extensions::browser_test_util::ContextType;
 
@@ -64,14 +69,17 @@ class ExtensionApiTabTestWithContextType
   ~ExtensionApiTabTestWithContextType() override = default;
 };
 
+#if !BUILDFLAG(IS_ANDROID)
 INSTANTIATE_TEST_SUITE_P(PersistentBackground,
                          ExtensionApiTabTestWithContextType,
                          ::testing::Values(ContextType::kPersistentBackground));
+#endif
 
 INSTANTIATE_TEST_SUITE_P(ServiceWorker,
                          ExtensionApiTabTestWithContextType,
                          ::testing::Values(ContextType::kServiceWorker));
 
+#if BUILDFLAG(ENABLE_EXTENSIONS)
 class ExtensionApiTabBackForwardCacheTest
     : public ExtensionApiTabTestWithContextType {
  public:
@@ -87,13 +95,16 @@ class ExtensionApiTabBackForwardCacheTest
   base::test::ScopedFeatureList feature_list_;
 };
 
+#if !BUILDFLAG(IS_ANDROID)
 INSTANTIATE_TEST_SUITE_P(PersistentBackground,
                          ExtensionApiTabBackForwardCacheTest,
                          ::testing::Values(ContextType::kPersistentBackground));
+#endif
 
 INSTANTIATE_TEST_SUITE_P(ServiceWorker,
                          ExtensionApiTabBackForwardCacheTest,
                          ::testing::Values(ContextType::kServiceWorker));
+#endif
 
 class ExtensionApiNewTabTest : public ExtensionApiTabTestWithContextType {
  public:
@@ -107,16 +118,19 @@ class ExtensionApiNewTabTest : public ExtensionApiTabTestWithContextType {
   }
 };
 
+#if !BUILDFLAG(IS_ANDROID)
 INSTANTIATE_TEST_SUITE_P(PersistentBackground,
                          ExtensionApiNewTabTest,
                          ::testing::Values(ContextType::kPersistentBackground));
+#endif
 
 INSTANTIATE_TEST_SUITE_P(ServiceWorker,
                          ExtensionApiNewTabTest,
                          ::testing::Values(ContextType::kServiceWorker));
 
 // TODO(crbug.com/451682394): Disabled on Linux dbg due to flakiness.
-#if BUILDFLAG(IS_LINUX) && !defined(NDEBUG)
+// TODO(crbug.com/471405507): Disabled on Android.
+#if (BUILDFLAG(IS_LINUX) && !defined(NDEBUG)) || BUILDFLAG(IS_ANDROID)
 #define MAYBE_Tabs DISABLED_Tabs
 #else
 #define MAYBE_Tabs Tabs
@@ -129,6 +143,9 @@ IN_PROC_BROWSER_TEST_P(ExtensionApiNewTabTest, MAYBE_Tabs) {
 
   ASSERT_TRUE(RunExtensionTest("tabs/basics/crud")) << message_;
 }
+
+// TODO(https://crbug.com/371432155): Enable these tests.
+#if BUILDFLAG(ENABLE_EXTENSIONS)
 
 IN_PROC_BROWSER_TEST_F(ExtensionApiTabTest, TabAudible) {
   ASSERT_TRUE(
@@ -154,7 +171,15 @@ IN_PROC_BROWSER_TEST_P(ExtensionApiTabTestWithContextType, MAYBE_Muted) {
   ASSERT_TRUE(RunExtensionTest("tabs/basics/muted")) << message_;
 }
 
-IN_PROC_BROWSER_TEST_F(ExtensionApiTabTest, Tabs2) {
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
+
+// TODO(crbug.com/471405507): Disabled on Android.
+#if BUILDFLAG(IS_ANDROID)
+#define MAYBE_Tabs2 DISABLED_Tabs2
+#else
+#define MAYBE_Tabs2 Tabs2
+#endif
+IN_PROC_BROWSER_TEST_F(ExtensionApiTabTest, MAYBE_Tabs2) {
   ASSERT_TRUE(RunExtensionTest("tabs/basics", {.extension_url = "crud2.html"}))
       << message_;
 }
@@ -166,6 +191,9 @@ IN_PROC_BROWSER_TEST_P(ExtensionApiTabTestWithContextType, Duplicate) {
 IN_PROC_BROWSER_TEST_P(ExtensionApiTabTestWithContextType, Size) {
   ASSERT_TRUE(RunExtensionTest("tabs/basics/tab_size")) << message_;
 }
+
+// TODO(https://crbug.com/371432155): Enable these tests.
+#if BUILDFLAG(ENABLE_EXTENSIONS)
 
 IN_PROC_BROWSER_TEST_P(ExtensionApiTabTestWithContextType, Update) {
   ASSERT_TRUE(RunExtensionTest("tabs/basics/update")) << message_;
@@ -189,13 +217,20 @@ IN_PROC_BROWSER_TEST_P(ExtensionApiTabTestWithContextType, Events) {
   ASSERT_TRUE(RunExtensionTest("tabs/basics/events")) << message_;
 }
 
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
+
 IN_PROC_BROWSER_TEST_P(ExtensionApiTabTestWithContextType, RelativeURLs) {
   ASSERT_TRUE(RunExtensionTest("tabs/basics/relative_urls")) << message_;
 }
 
+// TODO(https://crbug.com/371432155): Enable these tests.
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+
 IN_PROC_BROWSER_TEST_P(ExtensionApiTabTestWithContextType, Query) {
   ASSERT_TRUE(RunExtensionTest("tabs/basics/query")) << message_;
 }
+
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 // TODO(crbug.com/40254426): Move to tabs_interactive_test.cc
 // TODO(crbug.com/40890826): Re-enable once flakiness is fixed.
@@ -211,6 +246,9 @@ IN_PROC_BROWSER_TEST_P(ExtensionApiTabTestWithContextType, CrashBrowser) {
   ASSERT_TRUE(RunExtensionTest("tabs/basics/crash")) << message_;
 }
 
+// TODO(https://crbug.com/371432155): Enable these tests.
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+
 IN_PROC_BROWSER_TEST_P(ExtensionApiTabTestWithContextType, Opener) {
   ASSERT_TRUE(RunExtensionTest("tabs/basics/opener")) << message_;
 }
@@ -223,6 +261,8 @@ IN_PROC_BROWSER_TEST_P(ExtensionApiTabTestWithContextType, RemoveMultiple) {
   ASSERT_TRUE(RunExtensionTest("tabs/basics/remove_multiple")) << message_;
 }
 
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
+
 IN_PROC_BROWSER_TEST_P(ExtensionApiTabTestWithContextType, GetCurrent) {
   ASSERT_TRUE(RunExtensionTest("tabs/get_current")) << message_;
 }
@@ -232,20 +272,25 @@ IN_PROC_BROWSER_TEST_P(ExtensionApiTabTestWithContextType, DISABLED_Connect) {
   ASSERT_TRUE(RunExtensionTest("tabs/connect")) << message_;
 }
 
+// TODO(https://crbug.com/371432155): Enable these tests.
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+
 IN_PROC_BROWSER_TEST_P(ExtensionApiTabTestWithContextType, OnRemoved) {
   ASSERT_TRUE(RunExtensionTest("tabs/on_removed")) << message_;
 }
+
+#endif
 
 IN_PROC_BROWSER_TEST_P(ExtensionApiTabTestWithContextType, Reload) {
   ASSERT_TRUE(RunExtensionTest("tabs/reload")) << message_;
 }
 
-class ExtensionApiCaptureTest
-    : public ExtensionApiTabTest,
-      public testing::WithParamInterface<ContextType> {
+// TODO(https://crbug.com/371432155): Enable these tests.
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+
+class ExtensionApiCaptureTest : public ExtensionApiTabTest {
  public:
-  ExtensionApiCaptureTest() : ExtensionApiTabTest(GetParam()) {}
-  ~ExtensionApiCaptureTest() override = default;
+  ExtensionApiCaptureTest() = default;
   ExtensionApiCaptureTest(const ExtensionApiCaptureTest&) = delete;
   ExtensionApiCaptureTest& operator=(const ExtensionApiCaptureTest&) = delete;
 
@@ -257,21 +302,13 @@ class ExtensionApiCaptureTest
   }
 };
 
-INSTANTIATE_TEST_SUITE_P(PersistentBackground,
-                         ExtensionApiCaptureTest,
-                         ::testing::Values(ContextType::kPersistentBackground));
-INSTANTIATE_TEST_SUITE_P(ServiceWorker,
-                         ExtensionApiCaptureTest,
-                         ::testing::Values(ContextType::kServiceWorker));
-
 // https://crbug.com/1450747 Flaky on Mac.
-// TODO(crbug.com/381214152): Re-enable this test
-#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+#if BUILDFLAG(IS_MAC)
 #define MAYBE_CaptureVisibleTabJpeg DISABLED_CaptureVisibleTabJpeg
 #else
 #define MAYBE_CaptureVisibleTabJpeg CaptureVisibleTabJpeg
 #endif
-IN_PROC_BROWSER_TEST_P(ExtensionApiCaptureTest, MAYBE_CaptureVisibleTabJpeg) {
+IN_PROC_BROWSER_TEST_F(ExtensionApiCaptureTest, MAYBE_CaptureVisibleTabJpeg) {
   ExtensionTestMessageListener device_pixel_handler("get_device_pixel_ratio",
                                                     ReplyBehavior::kWillReply);
   auto get_device_pixel_ratio = [this, &device_pixel_handler](
@@ -291,15 +328,13 @@ IN_PROC_BROWSER_TEST_P(ExtensionApiCaptureTest, MAYBE_CaptureVisibleTabJpeg) {
 }
 
 // https://crbug.com/1450933 Flaky on Mac.
-// TODO(crbug.com/381277829): Flaky on ASAN and MSAN builds.
 // TODO(crbug.com/451698327): Disabled on Linux dbg due to flakiness.
-#if BUILDFLAG(IS_MAC) || defined(ADDRESS_SANITIZER) || \
-    defined(MEMORY_SANITIZER) || (BUILDFLAG(IS_LINUX) && !defined(NDEBUG))
+#if BUILDFLAG(IS_MAC) || (BUILDFLAG(IS_LINUX) && !defined(NDEBUG))
 #define MAYBE_CaptureVisibleTabPng DISABLED_CaptureVisibleTabPng
 #else
 #define MAYBE_CaptureVisibleTabPng CaptureVisibleTabPng
 #endif
-IN_PROC_BROWSER_TEST_P(ExtensionApiCaptureTest, MAYBE_CaptureVisibleTabPng) {
+IN_PROC_BROWSER_TEST_F(ExtensionApiCaptureTest, MAYBE_CaptureVisibleTabPng) {
   ExtensionTestMessageListener device_pixel_handler("get_device_pixel_ratio",
                                                     ReplyBehavior::kWillReply);
   auto get_device_pixel_ratio = [this, &device_pixel_handler](
@@ -319,7 +354,7 @@ IN_PROC_BROWSER_TEST_P(ExtensionApiCaptureTest, MAYBE_CaptureVisibleTabPng) {
 }
 
 // TODO(crbug.com/40168659) Re-enable test
-IN_PROC_BROWSER_TEST_P(ExtensionApiCaptureTest,
+IN_PROC_BROWSER_TEST_F(ExtensionApiCaptureTest,
                        DISABLED_CaptureVisibleTabRace) {
   ASSERT_TRUE(RunExtensionTest("tabs/capture_visible_tab/test_race"))
       << message_;
@@ -331,7 +366,7 @@ IN_PROC_BROWSER_TEST_P(ExtensionApiCaptureTest,
 #else
 #define MAYBE_CaptureVisibleFile CaptureVisibleFile
 #endif
-IN_PROC_BROWSER_TEST_P(ExtensionApiCaptureTest, MAYBE_CaptureVisibleFile) {
+IN_PROC_BROWSER_TEST_F(ExtensionApiCaptureTest, MAYBE_CaptureVisibleFile) {
   ASSERT_TRUE(RunExtensionTest("tabs/capture_visible_tab/test_file", {},
                                {.allow_file_access = true}))
       << message_;
@@ -343,13 +378,13 @@ IN_PROC_BROWSER_TEST_P(ExtensionApiCaptureTest, MAYBE_CaptureVisibleFile) {
 #else
 #define MAYBE_CaptureVisibleDisabled CaptureVisibleDisabled
 #endif
-IN_PROC_BROWSER_TEST_P(ExtensionApiCaptureTest, MAYBE_CaptureVisibleDisabled) {
+IN_PROC_BROWSER_TEST_F(ExtensionApiCaptureTest, MAYBE_CaptureVisibleDisabled) {
   profile()->GetPrefs()->SetBoolean(prefs::kDisableScreenshots, true);
   ASSERT_TRUE(RunExtensionTest("tabs/capture_visible_tab/test_disabled"))
       << message_;
 }
 
-IN_PROC_BROWSER_TEST_P(ExtensionApiCaptureTest, CaptureNullWindow) {
+IN_PROC_BROWSER_TEST_F(ExtensionApiCaptureTest, CaptureNullWindow) {
   ASSERT_TRUE(RunExtensionTest("tabs/capture_visible_tab_null_window"))
       << message_;
 }
@@ -367,13 +402,7 @@ IN_PROC_BROWSER_TEST_P(ExtensionApiTabTestWithContextType, OnUpdated) {
   ASSERT_TRUE(RunExtensionTest("tabs/on_updated")) << message_;
 }
 
-// TODO(crbug.com/378027647) Failing on ChromeOS and Linux
-#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
-#define MAYBE_OnUpdated DISABLED_OnUpdated
-#else
-#define MAYBE_OnUpdated OnUpdated
-#endif
-IN_PROC_BROWSER_TEST_P(ExtensionApiTabBackForwardCacheTest, MAYBE_OnUpdated) {
+IN_PROC_BROWSER_TEST_P(ExtensionApiTabBackForwardCacheTest, OnUpdated) {
   ASSERT_TRUE(RunExtensionTest("tabs/backForwardCache/on_updated")) << message_;
 }
 
@@ -608,6 +637,4 @@ IN_PROC_BROWSER_TEST_F(ExtensionApiTabPrerenderingTest,
   ASSERT_TRUE(RunExtensionTest("tabs/prerendering_into_new_tab")) << message_;
 }
 
-// Adding a new test? Awesome. But API tests are the old hotness. The new
-// hotness is api_test_utils. See tabs_test.cc for an example.
-// We are trying to phase out many uses of API tests as they tend to be flaky.
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)

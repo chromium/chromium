@@ -128,16 +128,18 @@ void ReportingPipeline::UpdateToken(std::string request_token) {
 
   dm_token_ = request_token;
 
-  auto config_result = reporting::ReportQueueConfiguration::Create(
-      dm_token_, kHandlerDestination,
-      base::BindRepeating(&ReportingPipeline::CheckPolicy,
-                          base::Unretained(this)));
+  auto config_result =
+      reporting::ReportQueueConfiguration::Create(
+          {.event_type = ::reporting::EventType::kDevice,
+           .destination = kHandlerDestination})
+          .SetPolicyCheckCallback(base::BindRepeating(
+              &ReportingPipeline::CheckPolicy, base::Unretained(this)))
+          .Build();
 
   if (!config_result.has_value()) {
     LOG(ERROR) << "Report Client Configuration failed with error message: "
                << config_result.error();
     // Reset DMToken to allow future attempts at configuring the report queue.
-    // TODO(b/175156039): Attempt to create a new configuration again.
     dm_token_.clear();
     return;
   }
@@ -183,7 +185,6 @@ void ReportingPipeline::OnReportQueueUpdated(
     LOG(ERROR) << "Report Queue creation failed with error message: "
                << report_queue_result.error();
     // Reset DMToken to allow future attempts at creating a report queue.
-    // TODO(b/175156039): Attempt to create a new queue again.
     dm_token_.clear();
     return;
   }

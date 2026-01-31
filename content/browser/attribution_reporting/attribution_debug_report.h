@@ -66,7 +66,7 @@ class CONTENT_EXPORT AttributionDebugReport {
   AttributionDebugReport(AttributionDebugReport&&);
   AttributionDebugReport& operator=(AttributionDebugReport&&);
 
-  const base::Value::List& ReportBody() const { return report_body_; }
+  const base::ListValue& ReportBody() const { return report_body_; }
 
   const attribution_reporting::SuitableOrigin& reporting_origin() const {
     return reporting_origin_;
@@ -76,10 +76,10 @@ class CONTENT_EXPORT AttributionDebugReport {
 
  private:
   AttributionDebugReport(
-      base::Value::List report_body,
+      base::ListValue report_body,
       attribution_reporting::SuitableOrigin reporting_origin);
 
-  base::Value::List report_body_;
+  base::ListValue report_body_;
   attribution_reporting::SuitableOrigin reporting_origin_;
 };
 

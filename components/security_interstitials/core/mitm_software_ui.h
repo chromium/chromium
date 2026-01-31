@@ -29,12 +29,12 @@ class MITMSoftwareUI {
 
   ~MITMSoftwareUI();
 
-  void PopulateStringsForHTML(base::Value::Dict& load_time_data);
+  void PopulateStringsForHTML(base::DictValue& load_time_data);
   void HandleCommand(SecurityInterstitialCommand command);
 
  protected:
-  void PopulateEnterpriseUserStringsForHTML(base::Value::Dict& load_time_data);
-  void PopulateAtHomeUserStringsForHTML(base::Value::Dict& load_time_data);
+  void PopulateEnterpriseUserStringsForHTML(base::DictValue& load_time_data);
+  void PopulateAtHomeUserStringsForHTML(base::DictValue& load_time_data);
 
  private:
   const GURL request_url_;

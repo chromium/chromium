@@ -170,7 +170,7 @@ component("gfx") {
     ":gfx_skia",
     ":gfx_switches",
     ":memory_buffer_sources",
-    ":native_widget_types_sources",
+    ":native_ui_types_sources",
     ":resize_image_dimensions",
     ":selection_bound_sources",
     "//base",
@@ -205,6 +205,7 @@ component("gfx") {
       "android/android_surface_control_compat.h",
       "android/java_bitmap.cc",
       "android/java_bitmap.h",
+      "android/rect_jni_conversion.h",
       "android/surface_control_frame_rate.h",
       "android/view_configuration.cc",
       "android/view_configuration.h",
@@ -260,6 +261,8 @@ component("gfx") {
       "image/image_util_mac.mm",
       "mac/coordinate_conversion.h",
       "mac/coordinate_conversion.mm",
+      "mac/menu_text_elider_mac.h",
+      "mac/menu_text_elider_mac.mm",
       "mac/nswindow_frame_controls.h",
       "mac/nswindow_frame_controls.mm",
       "mac/scoped_cocoa_disable_screen_updates.h",
@@ -493,19 +496,19 @@ source_set("resize_image_dimensions") {
   sources = [ "image/resize_image_dimensions.h" ]
 }
 
-# Depend on this to use native_widget_types.h without pulling in all of gfx.
-# The structure here allows native_widget_types to be part of the gfx component
+# Depend on this to use native_ui_types.h without pulling in all of gfx.
+# The structure here allows native_ui_types to be part of the gfx component
 # in the component build, but be a separate source set in a static build.
-group("native_widget_types") {
+group("native_ui_types") {
   if (is_component_build) {
     public_deps = [ ":gfx" ]
   } else {
-    public_deps = [ ":native_widget_types_sources" ]
+    public_deps = [ ":native_ui_types_sources" ]
   }
 }
 
-source_set("native_widget_types_sources") {
-  visibility = [ ":*" ]  # Depend on through ":native_widget_types".
+source_set("native_ui_types_sources") {
+  visibility = [ ":*" ]  # Depend on through ":native_ui_types".
 
   public = [ "native_ui_types.h" ]
 
@@ -577,8 +580,6 @@ source_set("memory_buffer_sources") {
   # TODO(brettw) refactor this so these sources are in a coherent directory
   # structure rather than random samplings of ui/gfx and ui/gfx/mac.
   sources = [
-    "buffer_format_util.cc",
-    "buffer_format_util.h",
     "buffer_usage_util.cc",
     "buffer_usage_util.h",
     "client_native_pixmap.h",
@@ -614,7 +615,7 @@ source_set("memory_buffer_sources") {
 
   deps = [
     ":gfx_switches",
-    ":native_widget_types_sources",
+    ":native_ui_types_sources",
     "//base",
     "//build:chromecast_buildflags",
     "//build:chromeos_buildflags",
@@ -774,6 +775,7 @@ test("gfx_unittests") {
       "image/image_mac_unittest.mm",
       "mac/coordinate_conversion_unittest.mm",
       "mac/io_surface_unittest.cc",
+      "mac/menu_text_elider_mac_unittest.mm",
       "platform_font_mac_unittest.mm",
       "range/range_mac_unittest.mm",
     ]
@@ -993,6 +995,7 @@ if (is_android) {
   generate_jni("gfx_jni_headers") {
     sources = [
       "../android/java/src/org/chromium/ui/gfx/BitmapHelper.java",
+      "../android/java/src/org/chromium/ui/gfx/RectJniConversion.java",
       "../android/java/src/org/chromium/ui/gfx/ViewConfigurationHelper.java",
     ]
   }

@@ -6,8 +6,8 @@
 
 #import <UIKit/UIKit.h>
 
+#import "ios/chrome/browser/first_run/best_features/ui/best_features_cell.h"
 #import "ios/chrome/browser/first_run/public/best_features_item.h"
-#import "ios/chrome/browser/first_run/ui_bundled/best_features/ui/best_features_cell.h"
 #import "ios/chrome/browser/shared/ui/list_model/list_model.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_utils.h"
@@ -135,11 +135,12 @@ constexpr CGFloat kTableViewHorizontalPadding = 6.0f;
 
 - (void)viewWillLayoutSubviews {
   [super viewWillLayoutSubviews];
-  [self updateTableViewHeightConstraint];
-  __weak __typeof(self) weakSelf = self;
-  [weakSelf.sheetPresentationController animateChanges:^{
-    [weakSelf.sheetPresentationController invalidateDetents];
-  }];
+  if ([self updateTableViewHeightConstraint]) {
+    __weak __typeof(self) weakSelf = self;
+    [weakSelf.sheetPresentationController animateChanges:^{
+      [weakSelf.sheetPresentationController invalidateDetents];
+    }];
+  }
 }
 
 #pragma mark - ConfirmationAlertViewController
@@ -288,12 +289,14 @@ constexpr CGFloat kTableViewHorizontalPadding = 6.0f;
 
 // Updates the tableView's height constraint based on its content size.
 // This is necessary because scrolling is disabled.
-- (void)updateTableViewHeightConstraint {
+- (BOOL)updateTableViewHeightConstraint {
   [_tableView layoutIfNeeded];
   CGFloat newHeight = _tableView.contentSize.height;
   if (_tableViewHeightConstraint.constant != newHeight) {
     _tableViewHeightConstraint.constant = newHeight;
+    return YES;
   }
+  return NO;
 }
 
 @end

@@ -971,6 +971,18 @@ targets.mixin(
 )
 
 targets.mixin(
+    name = "gpu_linux_gce_stable",
+    swarming = targets.swarming(
+        dimensions = {
+            "cpu": "x86-64",
+            "gpu": "none",
+            "os": "Ubuntu-22.04",
+            "pool": "chromium.tests.gpu",
+        },
+    ),
+)
+
+targets.mixin(
     name = "gpu_nvidia_shield_tv_stable",
     swarming = targets.swarming(
         dimensions = {
@@ -1776,7 +1788,7 @@ targets.mixin(
             "cpu": "arm64",
             "gpu": "apple:m1",
             "mac_model": "Macmini9,1",
-            "os": "Mac-14.5",
+            "os": "Mac-15.7",
             "pool": "chromium.tests",
             "display_attached": "1",
         },
@@ -2397,6 +2409,18 @@ targets.mixin(
 )
 
 targets.mixin(
+    name = "win11_amd_rx_5500_xt_experimental",
+    swarming = targets.swarming(
+        dimensions = {
+            "display_attached": "1",
+            "gpu": "1002:7340-32.0.21037.1004",
+            "os": "Windows-11-26100",
+            "pool": "chromium.tests.gpu",
+        },
+    ),
+)
+
+targets.mixin(
     name = "win11_amd_rx_7600_stable",
     swarming = targets.swarming(
         dimensions = {
@@ -2630,12 +2654,12 @@ targets.mixin(
     name = "xcode_26_beta",
     args = [
         "--xcode-build-version",
-        "17c48",
+        "17c52",
     ],
     swarming = targets.swarming(
         named_caches = [
             swarming.cache(
-                name = "xcode_ios_17c48",
+                name = "xcode_ios_17c52",
                 path = "Xcode.app",
             ),
         ],

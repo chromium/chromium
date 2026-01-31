@@ -159,6 +159,7 @@ source_set("authentication_service") {
     "//ios/chrome/browser/shared/model/application_context",
     "//ios/chrome/browser/shared/model/prefs:pref_names",
     "//ios/chrome/browser/shared/model/profile:features",
+    "//ios/chrome/browser/shared/model/profile:utils",
     "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/shared/public/features:system_flags",
     "//ios/chrome/browser/widget_kit/model:features",
@@ -274,6 +275,8 @@ source_set("system_identity_manager") {
     "system_identity_manager.h",
     "system_identity_manager.mm",
     "system_identity_manager_observer.h",
+    "system_identity_manager_observer_bridge.h",
+    "system_identity_manager_observer_bridge.mm",
   ]
   frameworks = [ "Foundation.framework" ]
   public_deps = [ "//base" ]
@@ -321,6 +324,7 @@ source_set("fake_system_identity_manager") {
     "//google_apis",
     "//ios/chrome/browser/signin/model:constants",
     "//ios/public/provider/chrome/browser/signin:signin_error_api",
+    "//ui/base:test_support",
   ]
   frameworks = [ "Foundation.framework" ]
 }
@@ -525,6 +529,7 @@ source_set("unit_tests") {
     "//testing/gmock",
     "//testing/gtest",
     "//third_party/ocmock",
+    "//ui/base:test_support",
   ]
 }
 

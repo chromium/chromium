@@ -30,7 +30,7 @@ class SessionStartupPrefTest : public testing::Test {
 };
 
 TEST_F(SessionStartupPrefTest, URLListIsFixedUp) {
-  base::Value::List url_pref_list;
+  base::ListValue url_pref_list;
   url_pref_list.Append("google.com");
   url_pref_list.Append("chromium.org");
   pref_service_->SetUserPref(prefs::kURLsToRestoreOnStartup,
@@ -44,12 +44,12 @@ TEST_F(SessionStartupPrefTest, URLListIsFixedUp) {
 }
 
 TEST_F(SessionStartupPrefTest, URLListManagedOverridesUser) {
-  base::Value::List url_pref_list1;
+  base::ListValue url_pref_list1;
   url_pref_list1.Append("chromium.org");
   pref_service_->SetUserPref(prefs::kURLsToRestoreOnStartup,
                              std::move(url_pref_list1));
 
-  base::Value::List url_pref_list2;
+  base::ListValue url_pref_list2;
   url_pref_list2.Append("chromium.org");
   url_pref_list2.Append("chromium.org");
   url_pref_list2.Append("chromium.org");

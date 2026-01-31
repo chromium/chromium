@@ -4,6 +4,7 @@
 
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "chrome/browser/web_applications/model/display_override.h"
 #include "chrome/browser/web_applications/proto/web_app.pb.h"
 #include "chrome/browser/web_applications/proto/web_app_database_metadata.pb.h"
 #include "chrome/browser/web_applications/test/fake_web_app_database_factory.h"
@@ -19,6 +20,7 @@
 #include "components/webapps/common/web_app_id.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/mojom/manifest/display_mode.mojom.h"
 
 namespace web_app {
 namespace {
@@ -720,7 +722,7 @@ TEST_F(WebAppDatabaseMigrationTest, MigrateScopeToRemoveRefAndQuery) {
   // App 4: Scope with query and ref
   proto::WebApp app_both =
       CreateWebAppProtoForTesting("App 4", GURL("https://app4.com/start"));
-  app_both.set_scope("https://app4.com/path/?query=1#ref");
+  app_both.set_scope("https://app4.com/?query=1#ref");
 
   // App 5: Invalid scope (should be skipped)
   proto::WebApp app_invalid =
@@ -769,7 +771,7 @@ TEST_F(WebAppDatabaseMigrationTest, MigrateScopeToRemoveRefAndQuery) {
   ASSERT_TRUE(migrated_app2);
   ASSERT_TRUE(migrated_app3);
   ASSERT_TRUE(migrated_app4);
-  EXPECT_FALSE(migrated_app5);
+  ASSERT_TRUE(migrated_app5);
   EXPECT_FALSE(migrated_app6);
 
   EXPECT_EQ(migrated_app1->scope(), GURL("https://app1.com/"));  // No change
@@ -777,7 +779,7 @@ TEST_F(WebAppDatabaseMigrationTest, MigrateScopeToRemoveRefAndQuery) {
             GURL("https://app2.com/"));  // Query removed
   EXPECT_EQ(migrated_app3->scope(), GURL("https://app3.com/"));  // Ref removed
   EXPECT_EQ(migrated_app4->scope(),
-            GURL("https://app4.com/path/"));  // Both removed
+            GURL("https://app4.com/"));  // Both removed
 
   // Check that the data was also updated in the database.
   VerifyDatabaseRegistryEqualToRegistrar(&fake_provider());
@@ -1711,6 +1713,153 @@ TEST_F(WebAppDatabaseIncorrectPendingInfoMigrationTest,
   ASSERT_TRUE(migrated_app3->pending_update_info()->has_was_ignored());
 
   // Check that the data was also updated in the database.
+  VerifyDatabaseRegistryEqualToRegistrar(&fake_provider());
+}
+
+TEST_F(WebAppDatabaseMigrationTest,
+       MigrateDisplayModeOverrideToDisplayOverrides) {
+  FakeWebAppDatabaseFactory* database_factory =
+      fake_provider().GetDatabaseFactory().AsFakeWebAppDatabaseFactory();
+  ASSERT_TRUE(database_factory);
+
+  // App 1: Only old field (should be migrated).
+  proto::WebApp app_old =
+      CreateWebAppProtoForTesting("App 1", GURL("https://app1.com/"));
+  app_old.add_display_mode_override_deprecated(
+      proto::WebApp::DISPLAY_MODE_MINIMAL_UI);
+  app_old.add_display_mode_override_deprecated(
+      proto::WebApp::DISPLAY_MODE_STANDALONE);
+
+  // App 2: Has both new and old fields (should reset the old field).
+  proto::WebApp app_new =
+      CreateWebAppProtoForTesting("App 2", GURL("https://app2.com/"));
+  auto* override_item = app_new.add_display_overrides();
+  override_item->set_display_mode(proto::WebApp::DISPLAY_MODE_FULLSCREEN);
+  app_new.add_display_mode_override_deprecated(
+      proto::WebApp::DISPLAY_MODE_BROWSER);
+
+  // App 3: No overrides (should remain unchanged).
+  proto::WebApp app_none =
+      CreateWebAppProtoForTesting("App 3", GURL("https://app3.com/"));
+
+  database_factory->WriteProtos({app_old, app_new, app_none});
+
+  // Trigger migration to version 6.
+  proto::DatabaseMetadata metadata;
+  metadata.set_version(5);
+  database_factory->WriteMetadata(metadata);
+
+  base::HistogramTester histograms;
+  test::AwaitStartWebAppProviderAndSubsystems(profile());
+
+  EXPECT_THAT(histograms.GetAllSamples(
+                  "WebApp.Migrations.DisplayModeOverrideToDisplayOverrides"),
+              base::BucketsAre(base::Bucket(/*min=*/2, /*count=*/1)));
+
+  WebAppRegistrar& registrar = fake_provider().registrar_unsafe();
+
+  const WebApp* migrated_app1 =
+      registrar.GetAppById(GetAppIdFromWebAppProto(app_old));
+  const WebApp* migrated_app2 =
+      registrar.GetAppById(GetAppIdFromWebAppProto(app_new));
+  const WebApp* migrated_app3 =
+      registrar.GetAppById(GetAppIdFromWebAppProto(app_none));
+
+  ASSERT_TRUE(migrated_app1);
+  ASSERT_TRUE(migrated_app2);
+  ASSERT_TRUE(migrated_app3);
+
+  // App 1: Migrated.
+  EXPECT_THAT(
+      migrated_app1->display_mode_override(),
+      testing::ElementsAre(
+          DisplayOverride::Create(blink::mojom::DisplayMode::kMinimalUi),
+          DisplayOverride::Create(blink::mojom::DisplayMode::kStandalone)));
+
+  // App 2: Unchanged (uses new field).
+  EXPECT_THAT(migrated_app2->display_mode_override(),
+              testing::ElementsAre(DisplayOverride::Create(
+                  blink::mojom::DisplayMode::kFullscreen)));
+
+  // App 3: Unchanged.
+  EXPECT_THAT(migrated_app3->display_mode_override(), testing::IsEmpty());
+
+  VerifyDatabaseRegistryEqualToRegistrar(&fake_provider());
+}
+
+TEST_F(WebAppDatabaseMigrationTest,
+       MigrateScopeToStartUrlGetWithoutFilenameIfInvalid) {
+  FakeWebAppDatabaseFactory* database_factory =
+      fake_provider().GetDatabaseFactory().AsFakeWebAppDatabaseFactory();
+  ASSERT_TRUE(database_factory);
+
+  // App 1: Correct scope.
+  proto::WebApp app_correct_scope = CreateWebAppProtoForTesting(
+      "App 1", GURL("https://example.com/app/start.html"));
+  app_correct_scope.set_scope("https://example.com/app/");
+
+  // App 2: Incorrect scope, start_url not in scope.
+  proto::WebApp app_incorrect_scope = CreateWebAppProtoForTesting(
+      "App 2", GURL("https://anotherexample.com/app/start.html"));
+  app_incorrect_scope.set_scope("https://anotherexample.com/different/scope/");
+
+  // App 3: Correct scope (scope is '/').
+  proto::WebApp app_correct_scope_root = CreateWebAppProtoForTesting(
+      "App 3", GURL("https://example.com/app/start.html"));
+  app_correct_scope_root.set_scope("https://example.com/");
+
+  // App 4: No scope (will be caught by deserialization, but migration should
+  // not crash).
+  proto::WebApp app_no_scope = CreateWebAppProtoForTesting(
+      "App 4", GURL("https://example.com/app4/start.html"));
+  app_no_scope.clear_scope();
+
+  // App 5: Invalid scope (scope will be set to start_url minus the filename
+  // during deserialization).
+  proto::WebApp app_invalid_scope = CreateWebAppProtoForTesting(
+      "App 5", GURL("https://example.com/app5/start.html"));
+  app_invalid_scope.set_scope("invalid");
+
+  database_factory->WriteProtos({app_correct_scope, app_incorrect_scope,
+                                 app_correct_scope_root, app_no_scope,
+                                 app_invalid_scope});
+
+  proto::DatabaseMetadata metadata;
+  metadata.set_version(6);
+  database_factory->WriteMetadata(metadata);
+
+  base::HistogramTester histograms;
+  test::AwaitStartWebAppProviderAndSubsystems(profile());
+
+  EXPECT_THAT(
+      histograms.GetAllSamples("WebApp.Migrations.ScopeMismatchedWithStartUrl"),
+      base::BucketsAre(base::Bucket(/*min=*/2, /*count=*/1)));
+
+  WebAppRegistrar& registrar = fake_provider().registrar_unsafe();
+
+  const WebApp* app1 =
+      registrar.GetAppById(GetAppIdFromWebAppProto(app_correct_scope));
+  ASSERT_TRUE(app1);
+  EXPECT_EQ(app1->scope(), GURL("https://example.com/"));
+
+  const WebApp* app2 =
+      registrar.GetAppById(GetAppIdFromWebAppProto(app_incorrect_scope));
+  ASSERT_TRUE(app2);
+  EXPECT_EQ(app2->scope(), GURL("https://anotherexample.com/app/"));
+
+  const WebApp* app3 =
+      registrar.GetAppById(GetAppIdFromWebAppProto(app_correct_scope_root));
+  ASSERT_TRUE(app3);
+  EXPECT_EQ(app3->scope(), GURL("https://example.com/"));
+
+  // App 4 should not be in the registrar as it will fail parsing.
+  EXPECT_FALSE(registrar.GetAppById(GetAppIdFromWebAppProto(app_no_scope)));
+
+  const WebApp* app5 =
+      registrar.GetAppById(GetAppIdFromWebAppProto(app_invalid_scope));
+  ASSERT_TRUE(app5);
+  EXPECT_EQ(app5->scope(), GURL("https://example.com/app5/"));
+
   VerifyDatabaseRegistryEqualToRegistrar(&fake_provider());
 }
 

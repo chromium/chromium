@@ -434,8 +434,7 @@ bool AwPacProcessor::SetProxyScript(std::string script) {
   return job.ExecSync();
 }
 
-jboolean AwPacProcessor::SetProxyScript(JNIEnv* env,
-                                        std::string& script) {
+bool AwPacProcessor::SetProxyScript(JNIEnv* env, std::string& script) {
   return SetProxyScript(script);
 }
 
@@ -485,7 +484,7 @@ void AwPacProcessor::SetNetworkAndLinkAddresses(
                                 net_handle, std::move(link_addresses)));
 }
 
-static jlong JNI_AwPacProcessor_CreateNativePacProcessor(JNIEnv* env) {
+static int64_t JNI_AwPacProcessor_CreateNativePacProcessor(JNIEnv* env) {
   AwPacProcessor* processor = new AwPacProcessor();
   return reinterpret_cast<intptr_t>(processor);
 }

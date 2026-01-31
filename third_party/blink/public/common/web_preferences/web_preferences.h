@@ -104,10 +104,6 @@ struct BLINK_COMMON_EXPORT WebPreferences {
   // mixed content, and disables embedder notifications that such content was
   // requested (thereby preventing user override).
   bool strict_mixed_content_checking = false;
-  // Strict powerful feature restrictions block insecure usage of powerful
-  // features (like device orientation) that we haven't yet disabled for the web
-  // at large.
-  bool strict_powerful_feature_restrictions = false;
   // TODO(jww): Remove when WebView no longer needs this exception.
   bool allow_geolocation_on_insecure_origins = false;
   // Disallow user opt-in for blockable mixed content.
@@ -290,6 +286,8 @@ struct BLINK_COMMON_EXPORT WebPreferences {
 
   // Long press on links selects text instead of triggering context menu.
   bool long_press_link_select_text = false;
+  // Support WebView font scaling behavior that differs from Chrome.
+  bool scale_all_fonts_if_no_meta_text_scale_tag = false;
 #endif  // BUILDFLAG(IS_ANDROID)
 
 // TODO(crbug.com/1284805): Remove IS_ANDROID once WebView supports WebAuthn.

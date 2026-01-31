@@ -14,7 +14,7 @@
 #import "ios/chrome/app/profile/profile_init_stage.h"
 #import "ios/chrome/app/profile/profile_state.h"
 #import "ios/chrome/browser/first_run/public/best_features_item.h"
-#import "ios/chrome/browser/first_run/ui_bundled/features.h"
+#import "ios/chrome/browser/first_run/public/features.h"
 #import "ios/chrome/browser/metrics/model/ios_profile_session_durations_service.h"
 #import "ios/chrome/browser/metrics/model/ios_profile_session_durations_service_factory.h"
 #import "ios/chrome/browser/promos_manager/model/constants.h"
@@ -73,10 +73,12 @@ constexpr size_t kMinEligibleFeatures = 2;
 // Welcome Back Promo if all criteria is met. If not, deregister the Welcome
 // Back promo.
 - (void)maybeRegisterPromo {
+  NSDate* lastSessionEndTime =
+      [PreviousSessionInfo sharedInstance].sessionEndTime;
   base::TimeDelta timeSinceActive =
-      base::Time::Now() -
-      base::Time::FromNSDate(
-          [PreviousSessionInfo sharedInstance].sessionEndTime);
+      lastSessionEndTime
+          ? base::Time::Now() - base::Time::FromNSDate(lastSessionEndTime)
+          : base::TimeDelta();
 
   // Mark Autofill feature as used if the Credential Provider Extension is
   // enabled on startup.

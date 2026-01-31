@@ -24,7 +24,7 @@ PaymentsWindowBridge::PaymentsWindowBridge(
     PaymentsWindowDelegate* payments_window_delegate)
     : payments_window_delegate_(CHECK_DEREF(payments_window_delegate)) {
   java_payments_window_bridge_ = Java_PaymentsWindowBridge_Constructor(
-      base::android::AttachCurrentThread(), reinterpret_cast<jlong>(this));
+      base::android::AttachCurrentThread(), reinterpret_cast<int64_t>(this));
 }
 
 PaymentsWindowBridge::~PaymentsWindowBridge() = default;

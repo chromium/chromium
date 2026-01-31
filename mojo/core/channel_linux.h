@@ -72,22 +72,20 @@ class MOJO_SYSTEM_IMPL_EXPORT ChannelLinux : public ChannelPosix {
   // We only offer once, we use an atomic flag to guarantee no races to offer.
   std::atomic_flag offered_{false};
 
+  base::Lock memfd_write_lock_;
   // True iff the outgoing communication over shared memory (and memfd) is
   // established. When |shared_mem_writer_| is false, sending messages falls
   // back to ChannelPosix (socket).
-  std::atomic_bool shared_mem_writer_{false};
-
-  base::Lock memfd_write_lock_;
+  bool shared_mem_writer_ GUARDED_BY(memfd_write_lock_) = false;
   std::unique_ptr<DataAvailableNotifier> write_notifier_
       GUARDED_BY(memfd_write_lock_);
   std::unique_ptr<SharedBuffer> write_buffer_ GUARDED_BY(memfd_write_lock_);
+  bool reject_writes_ GUARDED_BY(memfd_write_lock_) = false;
 
   std::unique_ptr<DataAvailableNotifier> read_notifier_;
   std::unique_ptr<SharedBuffer> shared_read_buffer_;
 
   uint32_t num_pages_ = 0;
-
-  std::atomic_bool reject_writes_{false};
 
   // This is a temporary buffer we use to remove messages from the shared buffer
   // for validation and dispatching.

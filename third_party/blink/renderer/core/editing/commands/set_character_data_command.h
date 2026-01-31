@@ -15,21 +15,25 @@ class CORE_EXPORT SetCharacterDataCommand final : public SimpleEditCommand {
   SetCharacterDataCommand(Text* node,
                           unsigned offset,
                           unsigned count,
-                          const String& text);
+                          const String& text,
+                          PasswordEchoBehavior);
 
   void Trace(Visitor*) const override;
 
  private:
+  FRIEND_TEST_ALL_PREFIXES(SetCharacterDataCommandTest, ShouldEchoPassword);
   // EditCommand implementation
   void DoApply(EditingState*) final;
   void DoUnapply() final;
   String ToString() const final;
+  bool ShouldEchoPassword() const;
 
   const Member<Text> node_;
   const unsigned offset_;
   const unsigned count_;
   String previous_text_for_undo_;
   const String new_text_;
+  PasswordEchoBehavior password_echo_behavior_;
 };
 
 }  // namespace blink

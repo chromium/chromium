@@ -7,8 +7,8 @@
 #include "base/android/callback_android.h"
 #include "base/android/jni_array.h"
 #include "base/functional/bind.h"
-#include "chrome/browser/page_content_annotations/page_content_extraction_service.h"
 #include "chrome/browser/page_content_annotations/service_jni_headers/PageContentExtractionService_jni.h"
+#include "components/page_content_annotations/content/page_content_extraction_service.h"
 #include "components/page_content_annotations/core/page_content_cache.h"
 
 using base::android::JavaRef;

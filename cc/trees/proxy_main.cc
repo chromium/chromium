@@ -15,6 +15,8 @@
 #include "base/notimplemented.h"
 #include "base/profiler/sample_metadata.h"
 #include "base/synchronization/waitable_event.h"
+#include "base/time/time.h"
+#include "base/timer/elapsed_timer.h"
 #include "base/trace_event/trace_event.h"
 #include "base/trace_event/trace_id_helper.h"
 #include "base/trace_event/traced_value.h"
@@ -87,14 +89,13 @@ void ProxyMain::DestroyProxyImplOnImplThread(
 void ProxyMain::BeginMainFrameNotExpectedSoon() {
   TRACE_EVENT0("cc", "ProxyMain::BeginMainFrameNotExpectedSoon");
   DCHECK(IsMainThread());
-  request_begin_main_frame_not_expected_ = false;
   layer_tree_host_->BeginMainFrameNotExpectedSoon();
 }
 
 void ProxyMain::BeginMainFrameNotExpectedUntil(base::TimeTicks time) {
   TRACE_EVENT0("cc", "ProxyMain::BeginMainFrameNotExpectedUntil");
   DCHECK(IsMainThread());
-  request_begin_main_frame_not_expected_ = false;
+  did_notify_begin_main_frame_not_expected_until_ = true;
   layer_tree_host_->BeginMainFrameNotExpectedUntil(time);
 }
 
@@ -105,14 +106,7 @@ void ProxyMain::DidCommitAndDrawFrame(int source_frame_number) {
   layer_tree_host_->DidCommitAndDrawFrame(source_frame_number);
 
   // After drawing the frame, the main thread might be able to go idle.
-  if (request_begin_main_frame_not_expected_) {
-    if (ShouldBeginMainFrameNotExpectedUntil()) {
-      BeginMainFrameNotExpectedUntil(last_begin_main_frame_args_.frame_time +
-                                     last_begin_main_frame_args_.interval);
-    } else if (ShouldBeginMainFrameNotExpectedSoon()) {
-      BeginMainFrameNotExpectedSoon();
-    }
-  }
+  MaybeIdleMainThread();
 }
 
 void ProxyMain::DidLoseLayerTreeFrameSink() {
@@ -149,22 +143,37 @@ void ProxyMain::BeginMainFrame(
   // Record the final status, subsampled. Use an RAII object as this function
   // has many early returns.
   CommitEarlyOutReason reason = CommitEarlyOutReason::kNoEarlyOut;
-  absl::Cleanup maybe_record_metric = [&] {
-    if (base::ShouldRecordSubsampledMetric(.01)) {
+  bool record_metrics = base::ShouldRecordSubsampledMetric(.01);
+  std::optional<base::ElapsedTimer> timer;
+  if (record_metrics) {
+    timer.emplace();
+  }
+  absl::Cleanup maybe_record_metrics_and_idle = [&] {
+    if (record_metrics) {
       UMA_HISTOGRAM_ENUMERATION("Compositing.BeginMainFrame.MainResult",
                                 reason);
+      UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES(
+          "Compositing.BeginMainFrame.TimeUs", timer->Elapsed(),
+          base::Microseconds(1), base::Seconds(10), 50);
+      if (reason == CommitEarlyOutReason::kFinishedNoUpdates) {
+        UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES(
+            "Compositing.BeginMainFrame.TimeUs.NoUpdate", timer->Elapsed(),
+            base::Microseconds(1), base::Seconds(10), 50);
+      }
     }
+    if (reason != CommitEarlyOutReason::kNoEarlyOut) {
+      main_frames_in_flight_--;
+    }
+    MaybeIdleMainThread();
   };
 
   base::TimeTicks begin_main_frame_start_time = base::TimeTicks::Now();
   main_frames_in_flight_++;
   needs_begin_main_frame_ = false;
 
-  last_begin_main_frame_args_ = begin_main_frame_state->begin_frame_args;
-  begin_impl_frame_idle_ = false;
-
   const viz::BeginFrameArgs& frame_args =
       begin_main_frame_state->begin_frame_args;
+  last_begin_main_frame_args_ = frame_args;
   TRACE_EVENT("cc,benchmark", "ProxyMain::BeginMainFrame",
               // "begin_frame_id" is used by the rendering benchmarks in
               // Telemetry.
@@ -485,6 +494,7 @@ void ProxyMain::BeginMainFrame(
   // begin the commit process, which is blocking from the main thread's
   // point of view, but asynchronously performed on the impl thread,
   // coordinated by the Scheduler.
+  begin_impl_frame_idle_ = false;
   int source_frame_number = commit_state->source_frame_number;
   CommitTimestamps commit_timestamps;
   {
@@ -541,6 +551,9 @@ void ProxyMain::DidChangeBeginFrameSourcePaused(bool paused) {
 
 void ProxyMain::DidCompleteCommit(int source_frame_number,
                                   CommitTimestamps commit_timestamps) {
+  needs_begin_main_frame_ = false;
+  begin_impl_frame_idle_ = true;
+
   if (layer_tree_host_)
     layer_tree_host_->CommitComplete(source_frame_number, commit_timestamps);
 }
@@ -555,6 +568,7 @@ void ProxyMain::DidPresentCompositorFrame(
   layer_tree_host_->DidPresentCompositorFrame(
       frame_token, std::move(presentation_callbacks),
       std::move(sucessful_presentation_callbacks), frame_timing_details);
+  MaybeIdleMainThread();
 }
 
 void ProxyMain::NotifyCompositorMetricsTrackerResults(
@@ -781,6 +795,12 @@ void ProxyMain::SetShouldThrottleFrameRate(bool flag) {
                                 base::Unretained(proxy_impl_.get()), flag));
 }
 
+void ProxyMain::SetRequestHighFramerate(bool flag) {
+  ImplThreadTaskRunner()->PostTask(
+      FROM_HERE, base::BindOnce(&ProxyImpl::SetRequestHighFramerate,
+                                base::Unretained(proxy_impl_.get()), flag));
+}
+
 bool ProxyMain::IsDeferringCommits() const {
   DCHECK(IsMainThread());
   return paint_holding_reason_.has_value();
@@ -788,10 +808,8 @@ bool ProxyMain::IsDeferringCommits() const {
 
 bool ProxyMain::CommitRequested() const {
   DCHECK(IsMainThread());
-  // TODO(skyostil): Split this into something like CommitRequested() and
-  // CommitInProgress().
   return current_pipeline_stage_ != NO_PIPELINE_STAGE ||
-         max_requested_pipeline_stage_ >= COMMIT_PIPELINE_STAGE;
+         max_requested_pipeline_stage_ == COMMIT_PIPELINE_STAGE;
 }
 
 void ProxyMain::Start() {
@@ -916,13 +934,42 @@ void ProxyMain::UpdateBrowserControlsState(
                      animate, offset_tag_modifications));
 }
 
+void ProxyMain::MaybeIdleMainThread() {
+  if (request_begin_main_frame_not_expected_ && !RequestedAnimatePending()) {
+    if (ShouldBeginMainFrameNotExpectedUntil()) {
+      base::TimeTicks deadline = base::TimeTicks::Now().SnappedToNextTick(
+          last_begin_main_frame_args_.frame_time,
+          last_begin_main_frame_args_.interval);
+      // TODO(crbug.com/467384421): Figure out if we can decrease
+      // the overhead by avoiding this call if the deadline is short.
+      BeginMainFrameNotExpectedUntil(deadline);
+    }
+    if (ShouldBeginMainFrameNotExpectedSoon()) {
+      BeginMainFrameNotExpectedSoon();
+    }
+  }
+}
+
+bool ProxyMain::ShouldSubscribeToBeginFrames() const {
+  if (layer_tree_host_->GetSettings()
+          .wait_for_all_pipeline_stages_before_draw) {
+    return true;
+  }
+
+  return (needs_begin_main_frame_ && !defer_main_frame_update_);
+}
+
 bool ProxyMain::BeginFrameNeeded() const {
+  if (!ShouldSubscribeToBeginFrames()) {
+    return false;
+  }
+
   // Rendering being paused implies we expect more BeginMainFrames.
   if (!pause_rendering_) {
     return true;
   }
-  // Drain any in-flight main frame updates before pausing impl frames.
-  if (main_frames_in_flight_ != 0) {
+  // Drain any in-flight main frame updates before pausing frames.
+  if (main_frames_in_flight_ > 0) {
     return true;
   }
   return false;
@@ -946,6 +993,11 @@ bool ProxyMain::ShouldBeginMainFrameNotExpectedUntil() const {
 
   // TODO(crbug.com/454038686): Figure out if did_commit_during_frame_
   // signal should cause us to return false here.
+
+  // Do not notify too many times in a single frame.
+  if (did_notify_begin_main_frame_not_expected_until_) {
+    return false;
+  }
 
   return true;
 }
@@ -979,17 +1031,9 @@ void ProxyMain::RequestBeginMainFrameNotExpected(bool new_state) {
     return;
   }
   request_begin_main_frame_not_expected_ = new_state;
+  did_notify_begin_main_frame_not_expected_until_ = false;
 
-  if (request_begin_main_frame_not_expected_) {
-    if (ShouldBeginMainFrameNotExpectedUntil()) {
-      // TODO(crbug.com/467384421): Figure out if we can decrease
-      // the overhead by avoiding this call if the deadline is short.
-      BeginMainFrameNotExpectedUntil(last_begin_main_frame_args_.frame_time +
-                                     last_begin_main_frame_args_.interval);
-    } else if (ShouldBeginMainFrameNotExpectedSoon()) {
-      BeginMainFrameNotExpectedSoon();
-    }
-  }
+  MaybeIdleMainThread();
 }
 
 bool ProxyMain::SendCommitRequestToImplThreadIfNeeded(

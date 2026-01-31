@@ -28,9 +28,20 @@ export class FjordTouchControllerScreen extends
     return {};
   }
 
+  private webview: chrome.webviewTag.WebView;
+
+  override onBeforeShow(): void {
+    super.onBeforeShow();
+    // Trigger a reload because at the time the dialog is created, the web
+    // server is not up yet and will show an error page.
+    this.webview.reload();
+  }
+
   override ready(): void {
     super.ready();
     this.initializeLoginScreen('FjordTouchControllerScreen');
+    this.webview =
+        this.shadowRoot!.querySelector<chrome.webviewTag.WebView>('webview')!;
   }
 
   /**

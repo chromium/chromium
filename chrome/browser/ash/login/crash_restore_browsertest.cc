@@ -174,21 +174,21 @@ class CrashRestoreComplexTest : public CrashRestoreSimpleTest {
   // Register test users so that UserManager knows them and make kUserId3 as the
   // last active user.
   void RegisterUsers() {
-    base::Value::Dict local_state;
+    base::DictValue local_state;
 
     static const char* const kTestUserIds[] = {kUserId1, kUserId2, kUserId3};
 
-    base::Value::List users_list;
+    base::ListValue users_list;
     for (const auto* user_id : kTestUserIds)
       users_list.Append(user_id);
 
     local_state.Set("LoggedInUsers", std::move(users_list));
     local_state.Set("LastActiveUser", kUserId3);
 
-    base::Value::List known_users_list;
+    base::ListValue known_users_list;
     int gaia_id = 10000;
     for (const auto* user_id : kTestUserIds) {
-      base::Value::Dict user_dict;
+      base::DictValue user_dict;
       user_dict.Set("account_type", "google");
       user_dict.Set("email", user_id);
       user_dict.Set("gaia_id", base::NumberToString(gaia_id++));
@@ -211,7 +211,7 @@ class CrashRestoreComplexTest : public CrashRestoreSimpleTest {
     // NOTE: This does not include IdentityManager prefs like
     // kGoogleServicesAccountId, so the IdentityManager will not initialize
     // itself with a primary account.
-    base::Value::Dict prefs;
+    base::DictValue prefs;
     prefs.Set(prefs::kSessionExitType, "Crashed");
     std::string prefs_json;
     ASSERT_TRUE(base::JSONWriter::Write(prefs, &prefs_json));

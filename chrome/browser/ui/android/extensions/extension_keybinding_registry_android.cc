@@ -4,7 +4,6 @@
 
 #include "chrome/browser/ui/android/extensions/extension_keybinding_registry_android.h"
 
-#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "chrome/browser/extensions/commands/command_service.h"
 #include "chrome/browser/extensions/extension_keybinding_registry.h"

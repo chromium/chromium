@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "base/mac/mac_util.h"
 
 #import <Cocoa/Cocoa.h>
@@ -71,9 +66,10 @@ TEST_F(MacUtilTest, TestGetAppBundlePath) {
       "foo/.app",
       "//foo",
   };
-  for (size_t i = 0; i < std::size(invalid_inputs); i++) {
-    out = apple::GetAppBundlePath(FilePath(invalid_inputs[i]));
-    EXPECT_TRUE(out.empty()) << "loop: " << i;
+  for (const auto* input : invalid_inputs) {
+    SCOPED_TRACE(std::string("input: ") + input);
+    out = apple::GetAppBundlePath(FilePath(input));
+    EXPECT_TRUE(out.empty());
   }
 
   // Some valid inputs; this and |expected_outputs| should be in sync.
@@ -95,11 +91,11 @@ TEST_F(MacUtilTest, TestGetAppBundlePath) {
       {"/Applications/Google Foo.app/bar/Foo Helper.app/quux/Foo Helper",
        "/Applications/Google Foo.app"},
   };
-  for (size_t i = 0; i < std::size(valid_inputs); i++) {
-    out = apple::GetAppBundlePath(FilePath(valid_inputs[i].in));
-    EXPECT_FALSE(out.empty()) << "loop: " << i;
-    EXPECT_STREQ(valid_inputs[i].expected_out, out.value().c_str())
-        << "loop: " << i;
+  for (const auto& input : valid_inputs) {
+    SCOPED_TRACE(std::string("input: ") + input.in);
+    out = apple::GetAppBundlePath(FilePath(input.in));
+    EXPECT_FALSE(out.empty());
+    EXPECT_STREQ(input.expected_out, out.value().c_str());
   }
 }
 
@@ -122,10 +118,9 @@ TEST_F(MacUtilTest, TestGetInnermostAppBundlePath) {
       "foo/.app",
       "//foo",
   };
-  for (size_t i = 0; i < std::size(invalid_inputs); i++) {
-    SCOPED_TRACE(testing::Message()
-                 << "case #" << i << ", input: " << invalid_inputs[i]);
-    out = apple::GetInnermostAppBundlePath(FilePath(invalid_inputs[i]));
+  for (const auto* input : invalid_inputs) {
+    SCOPED_TRACE(std::string("input: ") + input);
+    out = apple::GetInnermostAppBundlePath(FilePath(input));
     EXPECT_TRUE(out.empty());
   }
 
@@ -148,12 +143,11 @@ TEST_F(MacUtilTest, TestGetInnermostAppBundlePath) {
       {"/Applications/Google Foo.app/bar/Foo Helper.app/quux/Foo Helper",
        "/Applications/Google Foo.app/bar/Foo Helper.app"},
   };
-  for (size_t i = 0; i < std::size(valid_inputs); i++) {
-    SCOPED_TRACE(testing::Message()
-                 << "case #" << i << ", input " << valid_inputs[i].in);
-    out = apple::GetInnermostAppBundlePath(FilePath(valid_inputs[i].in));
+  for (const auto& input : valid_inputs) {
+    SCOPED_TRACE(std::string("input: ") + input.in);
+    out = apple::GetInnermostAppBundlePath(FilePath(input.in));
     EXPECT_FALSE(out.empty());
-    EXPECT_STREQ(valid_inputs[i].expected_out, out.value().c_str());
+    EXPECT_STREQ(input.expected_out, out.value().c_str());
   }
 }
 
@@ -199,11 +193,13 @@ TEST_F(MacUtilTest, TestRemoveQuarantineAttribute) {
   ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
   FilePath dummy_folder_path = temp_dir_.GetPath().Append("DummyFolder");
   ASSERT_TRUE(base::CreateDirectory(dummy_folder_path));
-  const char* quarantine_str = "0000;4b392bb2;Chromium;|org.chromium.Chromium";
+  constexpr char quarantine_str[] =
+      "0000;4b392bb2;Chromium;|org.chromium.Chromium";
+  constexpr size_t quarantine_str_len = std::size(quarantine_str) - 1;
   const char* file_path_str = dummy_folder_path.value().c_str();
   EXPECT_EQ(0, setxattr(file_path_str, "com.apple.quarantine", quarantine_str,
-                        strlen(quarantine_str), 0, 0));
-  EXPECT_EQ(static_cast<long>(strlen(quarantine_str)),
+                        quarantine_str_len, /*position=*/0, /*options=*/0));
+  EXPECT_EQ(static_cast<ssize_t>(quarantine_str_len),
             getxattr(file_path_str, "com.apple.quarantine", /*value=*/nullptr,
                      /*size=*/0, /*position=*/0, /*options=*/0));
   EXPECT_TRUE(RemoveQuarantineAttribute(dummy_folder_path));

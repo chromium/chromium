@@ -8,6 +8,7 @@
 #include <memory>
 #include <vector>
 
+#include "ash/constants/ash_pref_names.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
@@ -19,6 +20,7 @@
 #include "chrome/common/chrome_features.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chromeos/ash/components/file_manager/app_id.h"
+#include "components/prefs/pref_service.h"
 #include "content/public/common/content_features.h"
 #include "content/public/test/browser_task_environment.h"
 #include "extensions/browser/entry_info.h"
@@ -45,6 +47,7 @@ class InstallIsolatedWebAppVirtualTaskTest : public testing::Test {
   void SetUp() override {
     feature_list_.InitWithFeatures({features::kIsolatedWebAppUnmanagedInstall},
                                    {});
+    profile_.GetPrefs()->SetBoolean(ash::prefs::kIsolatedWebAppsEnabled, true);
 
     auto ui_manager = std::make_unique<MockWebAppUiManager>();
     ui_manager_ = ui_manager.get();

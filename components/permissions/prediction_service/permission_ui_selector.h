@@ -39,6 +39,7 @@ class PermissionUiSelector {
     kServicePredictedVeryUnlikelyGrant,
     kOnDevicePredictedVeryUnlikelyGrant,
     kTriggeredDueToDisruptiveBehavior,
+    kTriggeredDueToLackOfGesture,
   };
 
   enum class WarningReason {

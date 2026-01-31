@@ -210,7 +210,7 @@ void ArcAppPerformanceTracing::OnCustomTraceDone(
   // switch from commitDeviation to presentDeviation (and fps to perceivedFps)
   // once the it's fixed to not output 0 FPS on display-less Chromebox devices.
   custom_trace_result_.emplace(
-      base::Value::Dict()
+      base::DictValue()
           .Set("success", success)
           .Set("fps", success ? result->fps : 0)
           .Set("perceivedFps", success ? result->perceived_fps : 0)
@@ -252,7 +252,7 @@ bool ArcAppPerformanceTracing::StartCustomTracing() {
   return true;
 }
 
-base::Value::Dict ArcAppPerformanceTracing::StopCustomTracing() {
+base::DictValue ArcAppPerformanceTracing::StopCustomTracing() {
   custom_trace_result_.reset();
   if (session_ && session_->tracing_active()) {
     session_->Finish();

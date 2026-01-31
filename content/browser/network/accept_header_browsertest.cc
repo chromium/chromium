@@ -4,6 +4,7 @@
 
 #include <map>
 
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/run_loop.h"
@@ -21,6 +22,7 @@
 #include "media/media_buildflags.h"
 #include "net/test/embedded_test_server/http_request.h"
 #include "third_party/blink/public/common/buildflags.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/manifest/manifest.mojom.h"
 
 namespace content {
@@ -68,6 +70,11 @@ class AcceptHeaderTest : public ContentBrowserTest {
 
   std::string GetOptionalImageCodecs() const {
     std::string result;
+#if BUILDFLAG(ENABLE_JXL_DECODER)
+    if (base::FeatureList::IsEnabled(blink::features::kJXLImageFormat)) {
+      result.append("image/jxl,");
+    }
+#endif
 #if BUILDFLAG(ENABLE_AV1_DECODER)
     result.append("image/avif,");
 #endif

@@ -51,7 +51,7 @@ class MiniTree {
 
     base::Value ToValue() const {
       base::Value value(base::Value::Type::DICT);
-      base::Value::Dict& dict = value.GetDict();
+      base::DictValue& dict = value.GetDict();
       switch (type) {
         case Type::kCreate:
           dict.Set("_type", "Create");
@@ -200,7 +200,7 @@ class MiniTree {
 
   base::Value NodeToValueRecursive(node_type node) const {
     base::Value value(base::Value::Type::DICT);
-    base::Value::Dict& dict = value.GetDict();
+    base::DictValue& dict = value.GetDict();
     dict.Set("_id", node == root_node() ? "root" : node.ToString());
     if (!hierarchy_.at(node).empty()) {
       base::Value children(base::Value::Type::LIST);
@@ -289,7 +289,7 @@ struct TestOverlayParams {
 
   base::Value ToValue() const {
     base::Value value(base::Value::Type::DICT);
-    base::Value::Dict& dict = value.GetDict();
+    base::DictValue& dict = value.GetDict();
     dict.Set("z_order", z_order);
     dict.Set("layer_id", layer_id.ToString());
     dict.Set("parent_layer_id", parent_layer_id.ToString());

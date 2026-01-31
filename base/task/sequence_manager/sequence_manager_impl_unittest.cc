@@ -1945,9 +1945,11 @@ namespace {
 
 class MockTaskObserver : public TaskObserver {
  public:
-  MOCK_METHOD1(DidProcessTask, void(const PendingTask& task));
-  MOCK_METHOD2(WillProcessTask,
-               void(const PendingTask& task, bool was_blocked_or_low_priority));
+  MOCK_METHOD(void, DidProcessTask, (const PendingTask& task), (override));
+  MOCK_METHOD(void,
+              WillProcessTask,
+              (const PendingTask& task, bool was_blocked_or_low_priority),
+              (override));
 };
 
 }  // namespace
@@ -2532,9 +2534,9 @@ namespace {
 
 class MockObserver : public SequenceManager::Observer {
  public:
-  MOCK_METHOD0(OnTriedToExecuteBlockedTask, void());
-  MOCK_METHOD0(OnBeginNestedRunLoop, void());
-  MOCK_METHOD0(OnExitNestedRunLoop, void());
+  MOCK_METHOD(void, OnTriedToExecuteBlockedTask, ());
+  MOCK_METHOD(void, OnBeginNestedRunLoop, (), (override));
+  MOCK_METHOD(void, OnExitNestedRunLoop, (), (override));
 };
 
 }  // namespace
@@ -2645,9 +2647,9 @@ class MockTaskQueueThrottler : public TaskQueue::Throttler {
   MockTaskQueueThrottler() = default;
   ~MockTaskQueueThrottler() = default;
 
-  MOCK_METHOD1(OnWakeUp, void(LazyNow*));
-  MOCK_METHOD0(OnHasImmediateTask, void());
-  MOCK_METHOD1(GetNextAllowedWakeUp_DesiredWakeUpTime, void(TimeTicks));
+  MOCK_METHOD(void, OnWakeUp, (LazyNow*), (override));
+  MOCK_METHOD(void, OnHasImmediateTask, (), (override));
+  MOCK_METHOD(void, GetNextAllowedWakeUp_DesiredWakeUpTime, (TimeTicks));
 
   std::optional<WakeUp> GetNextAllowedWakeUp(
       LazyNow* lazy_now,
@@ -4886,7 +4888,7 @@ class MockTimeDomain : public TimeDomain {
     return MaybeFastForwardToWakeUp(quit_when_idle_requested);
   }
 
-  MOCK_METHOD1(MaybeFastForwardToWakeUp, bool(bool quit_when_idle_requested));
+  MOCK_METHOD(bool, MaybeFastForwardToWakeUp, (bool quit_when_idle_requested));
 
   const char* GetName() const override { return "Test"; }
 
@@ -5156,11 +5158,16 @@ namespace {
 
 class MockCrashKeyImplementation : public debug::CrashKeyImplementation {
  public:
-  MOCK_METHOD2(Allocate,
-               debug::CrashKeyString*(const char name[], debug::CrashKeySize));
-  MOCK_METHOD2(Set, void(debug::CrashKeyString*, std::string_view));
-  MOCK_METHOD1(Clear, void(debug::CrashKeyString*));
-  MOCK_METHOD1(OutputCrashKeysToStream, void(std::ostream&));
+  MOCK_METHOD(debug::CrashKeyString*,
+              Allocate,
+              (const char name[], debug::CrashKeySize),
+              (override));
+  MOCK_METHOD(void,
+              Set,
+              (debug::CrashKeyString*, std::string_view),
+              (override));
+  MOCK_METHOD(void, Clear, (debug::CrashKeyString*), (override));
+  MOCK_METHOD(void, OutputCrashKeysToStream, (std::ostream&), (override));
 };
 
 }  // namespace

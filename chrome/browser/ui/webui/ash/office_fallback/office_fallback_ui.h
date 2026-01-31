@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "ash/constants/ash_features.h"
-#include "chrome/browser/ui/webui/ash/office_fallback/office_fallback.mojom-shared.h"
 #include "chrome/browser/ui/webui/ash/office_fallback/office_fallback.mojom.h"
 #include "chrome/browser/ui/webui/ash/office_fallback/office_fallback_page_handler.h"
 #include "chrome/common/webui_url_constants.h"

@@ -44,6 +44,7 @@ enum class ColorId {
   kFiletypeGform,
   kFiletypeExcel,
   kFiletypeWord,
+  kFiletypeGproject,
 };
 
 struct IconParams {
@@ -81,6 +82,8 @@ SkColor ResolveColor(ColorId color_id, bool dark_background) {
       return color_provider->GetColor(cros_tokens::kCrosSysFileMsExcel);
     case ColorId::kFiletypeWord:
       return color_provider->GetColor(cros_tokens::kCrosSysFileMsWord);
+    case ColorId::kFiletypeGproject:
+      return color_provider->GetColor(cros_tokens::kCrosSysFileProject);
   }
 }
 
@@ -113,6 +116,8 @@ const std::map<IconType, IconParams>& GetIconTypeToIconParamsMap() {
             IconParams{raw_ref(kFiletypeGformIcon), ColorId::kFiletypeGform}},
            {IconType::kGmap,
             IconParams{raw_ref(kFiletypeGmapIcon), ColorId::kRed}},
+           {IconType::kGproject, IconParams{raw_ref(kFiletypeGprojectIcon),
+                                            ColorId::kFiletypeGproject}},
            {IconType::kGsheet,
             IconParams{raw_ref(kFiletypeGsheetIcon), ColorId::kGreen}},
            {IconType::kGsite,
@@ -259,6 +264,7 @@ IconType GetIconTypeForPath(const base::FilePath& filepath) {
           {".GLINK", IconType::kGeneric},
           {".GFORM", IconType::kGform},
           {".GMAPS", IconType::kGmap},
+          {".GPRJ", IconType::kGproject},
           {".GSITE", IconType::kGsite},
           {".GMAILLAYOUT", IconType::kGmaillayout},
 
@@ -306,6 +312,7 @@ IconType GetIconTypeFromString(const std::string& icon_type_string) {
            {"generic", IconType::kGeneric},
            {"gform", IconType::kGform},
            {"gmap", IconType::kGmap},
+           {"gprj", IconType::kGproject},
            {"gsheet", IconType::kGsheet},
            {"gsite", IconType::kGsite},
            {"gmaillayout", IconType::kGmaillayout},

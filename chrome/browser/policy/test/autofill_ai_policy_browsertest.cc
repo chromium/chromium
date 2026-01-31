@@ -4,9 +4,9 @@
 
 #include <string>
 #include <unordered_map>
+#include <utility>
 
 #include "base/strings/strcat.h"
-#include "base/types/cxx23_to_underlying.h"
 #include "base/values.h"
 #include "chrome/browser/policy/policy_test_utils.h"
 #include "chrome/browser/profiles/profile.h"
@@ -38,9 +38,9 @@ using enum ModelExecutionEnterprisePolicyValue;
 
 // The policy's value are 0, 1, 2 and Autofill expects that the enum
 // ModelExecutionEnterprisePolicyValue matches those values.
-static_assert(base::to_underlying(kAllow) == 0);
-static_assert(base::to_underlying(kAllowWithoutLogging) == 1);
-static_assert(base::to_underlying(kDisable) == 2);
+static_assert(std::to_underlying(kAllow) == 0);
+static_assert(std::to_underlying(kAllowWithoutLogging) == 1);
+static_assert(std::to_underlying(kDisable) == 2);
 
 // This test has two parameters:
 //  * Policy value.
@@ -86,7 +86,7 @@ class AutofillAiPolicyTest
 
     PolicyMap policies;
     SetPolicy(&policies, key::kAutofillPredictionSettings,
-              base::Value(base::to_underlying(policy_value())));
+              base::Value(std::to_underlying(policy_value())));
     UpdateProviderPolicy(policies);
 
     // The base test fixture creates a tab before we set the policy. We create a

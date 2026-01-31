@@ -13,6 +13,7 @@
 
 #include "base/memory/ref_counted_memory.h"
 #include "base/strings/escape.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
@@ -50,6 +51,7 @@
 #include "url/gurl.h"
 
 using ::testing::_;
+using ::testing::ElementsAre;
 using ::testing::NiceMock;
 using ::testing::Return;
 using LoginState = content::IdentityRequestAccount::LoginState;
@@ -119,12 +121,6 @@ std::string ReplaceFirstLineWithKeyFromJson(const std::string& key,
   return result;
 }
 
-// Removes all lines with the passed-in JSON key in `input`.
-std::string RemoveAllLinesWithKeyFromJson(const std::string& key,
-                                          const std::string& input) {
-  return ReplaceFirstLineWithKeyFromJson(key, "", input, /*replace_all=*/true);
-}
-
 url::Origin GetOriginHeader(const network::ResourceRequest& request) {
   return url::Origin::Create(
       GURL(request.headers.GetHeader(net::HttpRequestHeaders::kOrigin)
@@ -155,11 +151,10 @@ class IdpNetworkRequestManagerTest : public ::testing::Test {
                    const std::string& content,
                    bool cors_error = false) {
     auto head = network::mojom::URLResponseHead::New();
-    std::string raw_header = "HTTP/1.1 " + base::NumberToString(http_status) +
-                             " " + net::GetHttpReasonPhrase(http_status) +
-                             "\n"
-                             "Content-type: " +
-                             mime_type + "\n\n";
+    std::string raw_header =
+        base::StrCat({"HTTP/1.1 ", base::NumberToString(http_status), " ",
+                      net::GetHttpReasonPhrase(http_status), "\n",
+                      "Content-type: ", mime_type, "\n\n"});
     head->headers = net::HttpResponseHeaders::TryToCreate(raw_header);
     test_url_loader_factory().AddResponse(
         url, std::move(head), content,
@@ -216,27 +211,27 @@ class IdpNetworkRequestManagerTest : public ::testing::Test {
         });
 
     std::unique_ptr<IdpNetworkRequestManager> manager = CreateTestManager();
-    manager->FetchConfig(GURL(kTestConfigUrl), rp_mode, kTestBrandIconIdealSize,
+    manager->FetchConfig(GURL(kTestConfigUrl), kTestBrandIconIdealSize,
                          kTestBrandIconMinimumSize, std::move(callback));
     run_loop.Run();
 
     return {parsed_fetch_status, parsed_idp_metadata};
   }
 
-  std::tuple<FetchStatus, std::vector<IdentityRequestAccountPtr>>
-  SendAccountsRequestWithStoredAccounts(base::Value::List test_accounts,
+  std::tuple<FetchStatus, IdpNetworkRequestManager::AccountsResponse>
+  SendAccountsRequestWithStoredAccounts(base::ListValue test_accounts,
                                         const char* client_id = "") {
     GURL accounts_endpoint(kTestAccountsEndpoint);
     url::Origin idp_origin = url::Origin::Create(accounts_endpoint);
 
     base::RunLoop run_loop;
     FetchStatus parsed_accounts_response;
-    std::vector<IdentityRequestAccountPtr> parsed_accounts;
+    IdpNetworkRequestManager::AccountsResponse parsed_accounts;
     auto callback = base::BindLambdaForTesting(
         [&](FetchStatus response,
-            std::vector<IdentityRequestAccountPtr> accounts) {
+            IdpNetworkRequestManager::AccountsResponse accounts) {
           parsed_accounts_response = response;
-          parsed_accounts = accounts;
+          parsed_accounts = std::move(accounts);
           run_loop.Quit();
         });
 
@@ -251,7 +246,7 @@ class IdpNetworkRequestManagerTest : public ::testing::Test {
     return {parsed_accounts_response, parsed_accounts};
   }
 
-  std::tuple<FetchStatus, std::vector<IdentityRequestAccountPtr>>
+  std::tuple<FetchStatus, IdpNetworkRequestManager::AccountsResponse>
   SendAccountsRequestAndWaitForResponse(
       const std::string& test_accounts,
       const char* client_id = "",
@@ -262,12 +257,12 @@ class IdpNetworkRequestManagerTest : public ::testing::Test {
 
     base::RunLoop run_loop;
     FetchStatus parsed_accounts_response;
-    std::vector<IdentityRequestAccountPtr> parsed_accounts;
+    IdpNetworkRequestManager::AccountsResponse parsed_accounts;
     auto callback = base::BindLambdaForTesting(
         [&](FetchStatus response,
-            std::vector<IdentityRequestAccountPtr> accounts) {
+            IdpNetworkRequestManager::AccountsResponse accounts) {
           parsed_accounts_response = response;
-          parsed_accounts = accounts;
+          parsed_accounts = std::move(accounts);
           run_loop.Quit();
         });
 
@@ -318,6 +313,7 @@ class IdpNetworkRequestManagerTest : public ::testing::Test {
     std::unique_ptr<IdpNetworkRequestManager> manager = CreateTestManager();
     manager->SendTokenRequest(token_endpoint, account, request, idp_blindness,
                               std::move(callback), base::DoNothing(),
+                              base::DoNothing(),
                               CreateErrorMetricsCallback(run_loop));
     run_loop.Run();
     return {std::move(fetch_status), std::move(token_result)};
@@ -383,13 +379,13 @@ TEST_F(IdpNetworkRequestManagerTest, ParseAccountEmpty) {
   })";
 
   FetchStatus accounts_response;
-  std::vector<IdentityRequestAccountPtr> accounts;
+  IdpNetworkRequestManager::AccountsResponse accounts;
   std::tie(accounts_response, accounts) =
       SendAccountsRequestAndWaitForResponse(test_empty_account_json);
 
   EXPECT_EQ(ParseStatus::kEmptyListError, accounts_response.parse_status);
   EXPECT_EQ(net::HTTP_OK, accounts_response.response_code);
-  EXPECT_TRUE(accounts.empty());
+  EXPECT_TRUE(accounts.accounts.empty());
 
   histogram_tester()->ExpectUniqueSample(
       "Blink.FedCm.Status.AccountsResponseInvalidReason",
@@ -400,14 +396,14 @@ TEST_F(IdpNetworkRequestManagerTest, ParseAccountSingle) {
   const auto* test_single_account_json = kSingleAccountEndpointValidJson;
 
   FetchStatus accounts_response;
-  std::vector<IdentityRequestAccountPtr> accounts;
+  IdpNetworkRequestManager::AccountsResponse accounts;
   std::tie(accounts_response, accounts) =
       SendAccountsRequestAndWaitForResponse(test_single_account_json);
 
   EXPECT_EQ(ParseStatus::kSuccess, accounts_response.parse_status);
   EXPECT_EQ(net::HTTP_OK, accounts_response.response_code);
-  EXPECT_EQ(1UL, accounts.size());
-  EXPECT_EQ("1234", accounts[0]->id);
+  EXPECT_EQ(1UL, accounts.accounts.size());
+  EXPECT_EQ("1234", accounts.accounts[0]->id);
 }
 
 TEST_F(IdpNetworkRequestManagerTest, ParseAccountMultiple) {
@@ -430,15 +426,15 @@ TEST_F(IdpNetworkRequestManagerTest, ParseAccountMultiple) {
   ]
   })";
   FetchStatus accounts_response;
-  std::vector<IdentityRequestAccountPtr> accounts;
+  IdpNetworkRequestManager::AccountsResponse accounts;
   std::tie(accounts_response, accounts) =
       SendAccountsRequestAndWaitForResponse(test_accounts_json);
 
   EXPECT_EQ(ParseStatus::kSuccess, accounts_response.parse_status);
   EXPECT_EQ(net::HTTP_OK, accounts_response.response_code);
-  EXPECT_EQ(2UL, accounts.size());
-  EXPECT_EQ("1234", accounts[0]->id);
-  EXPECT_EQ("5678", accounts[1]->id);
+  EXPECT_EQ(2UL, accounts.accounts.size());
+  EXPECT_EQ("1234", accounts.accounts[0]->id);
+  EXPECT_EQ("5678", accounts.accounts[1]->id);
 }
 
 TEST_F(IdpNetworkRequestManagerTest, ParseAccountOptionalFields) {
@@ -454,127 +450,13 @@ TEST_F(IdpNetworkRequestManagerTest, ParseAccountOptionalFields) {
   })";
 
   FetchStatus accounts_response;
-  std::vector<IdentityRequestAccountPtr> accounts;
+  IdpNetworkRequestManager::AccountsResponse accounts;
   std::tie(accounts_response, accounts) =
       SendAccountsRequestAndWaitForResponse(test_accounts_json);
 
   EXPECT_EQ(ParseStatus::kSuccess, accounts_response.parse_status);
   EXPECT_EQ(net::HTTP_OK, accounts_response.response_code);
-  EXPECT_EQ("1234", accounts[0]->id);
-}
-
-TEST_F(IdpNetworkRequestManagerTest, ParseAccountRequiredFields) {
-  base::test::ScopedFeatureList list;
-  list.InitAndDisableFeature(features::kFedCmAlternativeIdentifiers);
-
-  {
-    base::HistogramTester histogram_tester;
-    std::string test_account_missing_account_id_json =
-        RemoveAllLinesWithKeyFromJson("id", kSingleAccountEndpointValidJson);
-    FetchStatus accounts_response;
-    std::vector<IdentityRequestAccountPtr> accounts;
-    std::tie(accounts_response, accounts) =
-        SendAccountsRequestAndWaitForResponse(
-            test_account_missing_account_id_json);
-
-    EXPECT_EQ(ParseStatus::kInvalidResponseError,
-              accounts_response.parse_status);
-    EXPECT_EQ(net::HTTP_OK, accounts_response.response_code);
-    EXPECT_TRUE(accounts.empty());
-    histogram_tester.ExpectUniqueSample(
-        "Blink.FedCm.Status.AccountsResponseInvalidReason",
-        AccountsResponseInvalidReason::kAccountMissesRequiredField, 1);
-  }
-  {
-    base::HistogramTester histogram_tester;
-    std::string test_account_missing_email_json =
-        RemoveAllLinesWithKeyFromJson("email", kSingleAccountEndpointValidJson);
-    FetchStatus accounts_response;
-    std::vector<IdentityRequestAccountPtr> accounts;
-    std::tie(accounts_response, accounts) =
-        SendAccountsRequestAndWaitForResponse(test_account_missing_email_json);
-
-    EXPECT_EQ(ParseStatus::kInvalidResponseError,
-              accounts_response.parse_status);
-    EXPECT_EQ(net::HTTP_OK, accounts_response.response_code);
-    EXPECT_TRUE(accounts.empty());
-    histogram_tester.ExpectUniqueSample(
-        "Blink.FedCm.Status.AccountsResponseInvalidReason",
-        AccountsResponseInvalidReason::kAccountMissesRequiredField, 1);
-  }
-  {
-    base::HistogramTester histogram_tester;
-    std::string test_account_missing_name_json =
-        RemoveAllLinesWithKeyFromJson("name", kSingleAccountEndpointValidJson);
-    FetchStatus accounts_response;
-    std::vector<IdentityRequestAccountPtr> accounts;
-    std::tie(accounts_response, accounts) =
-        SendAccountsRequestAndWaitForResponse(test_account_missing_name_json);
-
-    EXPECT_EQ(ParseStatus::kInvalidResponseError,
-              accounts_response.parse_status);
-    EXPECT_EQ(net::HTTP_OK, accounts_response.response_code);
-    EXPECT_TRUE(accounts.empty());
-    histogram_tester.ExpectUniqueSample(
-        "Blink.FedCm.Status.AccountsResponseInvalidReason",
-        AccountsResponseInvalidReason::kAccountMissesRequiredField, 1);
-  }
-}
-
-TEST_F(IdpNetworkRequestManagerTest, ParseAccountRequiredFieldNonEmpty) {
-  base::test::ScopedFeatureList list;
-  list.InitAndDisableFeature(features::kFedCmAlternativeIdentifiers);
-
-  {
-    base::HistogramTester histogram_tester;
-    const auto* test_accounts_json = R"({
-    "accounts" : [
-      {
-        "id" : "1234",
-        "email": "test@email.example",
-        "name": "    "
-      }
-    ]
-    })";
-
-    FetchStatus accounts_response;
-    std::vector<IdentityRequestAccountPtr> accounts;
-    std::tie(accounts_response, accounts) =
-        SendAccountsRequestAndWaitForResponse(test_accounts_json);
-
-    EXPECT_EQ(ParseStatus::kInvalidResponseError,
-              accounts_response.parse_status);
-    EXPECT_EQ(net::HTTP_OK, accounts_response.response_code);
-    EXPECT_TRUE(accounts.empty());
-    histogram_tester.ExpectUniqueSample(
-        "Blink.FedCm.Status.AccountsResponseInvalidReason",
-        AccountsResponseInvalidReason::kAccountMissesRequiredField, 1);
-  }
-  {
-    base::HistogramTester histogram_tester;
-    const auto* test_accounts_json = R"({
-    "accounts" : [
-      {
-        "id" : "1234",
-        "email": "",
-        "name": "Test User"
-      }
-    ]
-    })";
-
-    FetchStatus accounts_response;
-    std::vector<IdentityRequestAccountPtr> accounts;
-    std::tie(accounts_response, accounts) =
-        SendAccountsRequestAndWaitForResponse(test_accounts_json);
-
-    EXPECT_EQ(ParseStatus::kInvalidResponseError,
-              accounts_response.parse_status);
-    EXPECT_EQ(net::HTTP_OK, accounts_response.response_code);
-    EXPECT_TRUE(accounts.empty());
-    histogram_tester.ExpectUniqueSample(
-        "Blink.FedCm.Status.AccountsResponseInvalidReason",
-        AccountsResponseInvalidReason::kAccountMissesRequiredField, 1);
-  }
+  EXPECT_EQ("1234", accounts.accounts[0]->id);
 }
 
 // Test that parsing accounts fails if two accounts have the same account id.
@@ -595,13 +477,13 @@ TEST_F(IdpNetworkRequestManagerTest, ParseAccountDuplicateIds) {
   })";
 
   FetchStatus accounts_response;
-  std::vector<IdentityRequestAccountPtr> accounts;
+  IdpNetworkRequestManager::AccountsResponse accounts;
   std::tie(accounts_response, accounts) =
       SendAccountsRequestAndWaitForResponse(accounts_json);
 
   EXPECT_EQ(ParseStatus::kInvalidResponseError, accounts_response.parse_status);
   EXPECT_EQ(net::HTTP_OK, accounts_response.response_code);
-  EXPECT_TRUE(accounts.empty());
+  EXPECT_TRUE(accounts.accounts.empty());
   histogram_tester()->ExpectUniqueSample(
       "Blink.FedCm.Status.AccountsResponseInvalidReason",
       AccountsResponseInvalidReason::kAccountsShareSameId, 1);
@@ -636,15 +518,16 @@ TEST_F(IdpNetworkRequestManagerTest, ParseAccountPictureUrl) {
   })";
 
   FetchStatus accounts_response;
-  std::vector<IdentityRequestAccountPtr> accounts;
+  IdpNetworkRequestManager::AccountsResponse accounts;
   std::tie(accounts_response, accounts) =
       SendAccountsRequestAndWaitForResponse(test_accounts_json);
 
   EXPECT_EQ(ParseStatus::kSuccess, accounts_response.parse_status);
   EXPECT_EQ(net::HTTP_OK, accounts_response.response_code);
-  EXPECT_TRUE(accounts[0]->picture.is_valid());
-  EXPECT_EQ(GURL("https://idp.test/profile/1234"), accounts[0]->picture);
-  EXPECT_FALSE(accounts[1]->picture.is_valid());
+  EXPECT_TRUE(accounts.accounts[0]->picture.is_valid());
+  EXPECT_EQ(GURL("https://idp.test/profile/1234"),
+            accounts.accounts[0]->picture);
+  EXPECT_FALSE(accounts.accounts[1]->picture.is_valid());
 }
 
 TEST_F(IdpNetworkRequestManagerTest, ParseAccountUnicode) {
@@ -668,12 +551,12 @@ TEST_F(IdpNetworkRequestManagerTest, ParseAccountUnicode) {
     const auto& accounts_json = TestAccountWithKeyValue("name", test_value);
 
     FetchStatus accounts_response;
-    std::vector<IdentityRequestAccountPtr> accounts;
+    IdpNetworkRequestManager::AccountsResponse accounts;
     std::tie(accounts_response, accounts) =
         SendAccountsRequestAndWaitForResponse(accounts_json.c_str());
 
-    EXPECT_EQ(1UL, accounts.size());
-    EXPECT_EQ(test_value, accounts[0]->display_name);
+    EXPECT_EQ(1UL, accounts.accounts.size());
+    EXPECT_EQ(test_value, accounts.accounts[0]->display_name);
   }
 }
 
@@ -681,13 +564,13 @@ TEST_F(IdpNetworkRequestManagerTest, ParseAccountInvalid) {
   const auto* test_invalid_account_json = "{}";
 
   FetchStatus accounts_response;
-  std::vector<IdentityRequestAccountPtr> accounts;
+  IdpNetworkRequestManager::AccountsResponse accounts;
   std::tie(accounts_response, accounts) =
       SendAccountsRequestAndWaitForResponse(test_invalid_account_json);
 
   EXPECT_EQ(ParseStatus::kInvalidResponseError, accounts_response.parse_status);
   EXPECT_EQ(net::HTTP_OK, accounts_response.response_code);
-  EXPECT_TRUE(accounts.empty());
+  EXPECT_TRUE(accounts.accounts.empty());
   histogram_tester()->ExpectUniqueSample(
       "Blink.FedCm.Status.AccountsResponseInvalidReason",
       AccountsResponseInvalidReason::kNoAccountsKey, 1);
@@ -697,53 +580,19 @@ TEST_F(IdpNetworkRequestManagerTest, ParseAccountMalformed) {
   const auto* test_invalid_account_json = "malformed_json";
 
   FetchStatus accounts_response;
-  std::vector<IdentityRequestAccountPtr> accounts;
+  IdpNetworkRequestManager::AccountsResponse accounts;
   std::tie(accounts_response, accounts) =
       SendAccountsRequestAndWaitForResponse(test_invalid_account_json);
 
   EXPECT_EQ(ParseStatus::kInvalidResponseError, accounts_response.parse_status);
   EXPECT_EQ(net::HTTP_OK, accounts_response.response_code);
-  EXPECT_TRUE(accounts.empty());
+  EXPECT_TRUE(accounts.accounts.empty());
   histogram_tester()->ExpectUniqueSample(
       "Blink.FedCm.Status.AccountsResponseInvalidReason",
       AccountsResponseInvalidReason::kResponseIsNotJsonOrDict, 1);
 }
 
-TEST_F(IdpNetworkRequestManagerTest, ParseAccountLabelsOldSyntax) {
-  base::test::ScopedFeatureList list;
-  list.InitAndDisableFeature(features::kFedCmUseOtherAccountAndLabelsNewSyntax);
-
-  // New syntax should be ignored with the flag disabled.
-  const auto* test_accounts_json = R"({
-  "accounts" : [
-    {
-      "id": "1234",
-      "email": "ken@idp.test",
-      "name": "Ken R. Example",
-      "label_hints": ["x1", 42, "x2"],
-      "labels": ["l1", 42, "l2"]
-    }
-  ]
-  })";
-
-  FetchStatus accounts_response;
-  std::vector<IdentityRequestAccountPtr> accounts;
-  std::tie(accounts_response, accounts) =
-      SendAccountsRequestAndWaitForResponse(test_accounts_json);
-
-  EXPECT_EQ(ParseStatus::kSuccess, accounts_response.parse_status);
-  EXPECT_EQ(net::HTTP_OK, accounts_response.response_code);
-  EXPECT_EQ("1234", accounts[0]->id);
-  // The integer in the second position should be ignored.
-  ASSERT_EQ(2u, accounts[0]->labels.size());
-  EXPECT_EQ("l1", accounts[0]->labels[0]);
-  EXPECT_EQ("l2", accounts[0]->labels[1]);
-}
-
 TEST_F(IdpNetworkRequestManagerTest, ParseAccountLabelsOldAndNewSyntax) {
-  base::test::ScopedFeatureList list;
-  list.InitAndEnableFeature(features::kFedCmUseOtherAccountAndLabelsNewSyntax);
-
   // label_hints should take precedence.
   const auto* test_accounts_json = R"({
   "accounts" : [
@@ -758,52 +607,20 @@ TEST_F(IdpNetworkRequestManagerTest, ParseAccountLabelsOldAndNewSyntax) {
   })";
 
   FetchStatus accounts_response;
-  std::vector<IdentityRequestAccountPtr> accounts;
+  IdpNetworkRequestManager::AccountsResponse accounts;
   std::tie(accounts_response, accounts) =
       SendAccountsRequestAndWaitForResponse(test_accounts_json);
 
   ASSERT_EQ(ParseStatus::kSuccess, accounts_response.parse_status);
   EXPECT_EQ(net::HTTP_OK, accounts_response.response_code);
-  EXPECT_EQ("1234", accounts[0]->id);
+  EXPECT_EQ("1234", accounts.accounts[0]->id);
   // The integer in the second position should be ignored.
-  ASSERT_EQ(2u, accounts[0]->labels.size());
-  EXPECT_EQ("l1", accounts[0]->labels[0]);
-  EXPECT_EQ("l2", accounts[0]->labels[1]);
-}
-
-// TODO(crbug.com/404568028): Delete when
-// kFedCmUseOtherAccountAndLabelsNewSyntax is removed.
-TEST_F(IdpNetworkRequestManagerTest, DoNotParseAccountLabelsOldSyntaxWithFlag) {
-  base::test::ScopedFeatureList list;
-  list.InitAndEnableFeature(features::kFedCmUseOtherAccountAndLabelsNewSyntax);
-
-  // With new syntax enabled, old syntax should be ignored.
-  const auto* test_accounts_json = R"({
-  "accounts" : [
-    {
-      "id": "1234",
-      "email": "ken@idp.test",
-      "name": "Ken R. Example",
-      "labels": ["x1", 42, "x2"]
-    }
-  ]
-  })";
-
-  FetchStatus accounts_response;
-  std::vector<IdentityRequestAccountPtr> accounts;
-  std::tie(accounts_response, accounts) =
-      SendAccountsRequestAndWaitForResponse(test_accounts_json);
-
-  ASSERT_EQ(ParseStatus::kSuccess, accounts_response.parse_status);
-  EXPECT_EQ(net::HTTP_OK, accounts_response.response_code);
-  EXPECT_EQ("1234", accounts[0]->id);
-  ASSERT_EQ(0u, accounts[0]->labels.size());
+  ASSERT_EQ(2u, accounts.accounts[0]->labels.size());
+  EXPECT_EQ("l1", accounts.accounts[0]->labels[0]);
+  EXPECT_EQ("l2", accounts.accounts[0]->labels[1]);
 }
 
 TEST_F(IdpNetworkRequestManagerTest, ParseAccountLabelHints) {
-  base::test::ScopedFeatureList list;
-  list.InitAndEnableFeature(features::kFedCmUseOtherAccountAndLabelsNewSyntax);
-
   const auto* test_accounts_json = R"({
   "accounts" : [
     {
@@ -816,17 +633,17 @@ TEST_F(IdpNetworkRequestManagerTest, ParseAccountLabelHints) {
   })";
 
   FetchStatus accounts_response;
-  std::vector<IdentityRequestAccountPtr> accounts;
+  IdpNetworkRequestManager::AccountsResponse accounts;
   std::tie(accounts_response, accounts) =
       SendAccountsRequestAndWaitForResponse(test_accounts_json);
 
   EXPECT_EQ(ParseStatus::kSuccess, accounts_response.parse_status);
   EXPECT_EQ(net::HTTP_OK, accounts_response.response_code);
-  EXPECT_EQ("1234", accounts[0]->id);
+  EXPECT_EQ("1234", accounts.accounts[0]->id);
   // The integer in the second position should be ignored.
-  ASSERT_EQ(2u, accounts[0]->labels.size());
-  EXPECT_EQ("l1", accounts[0]->labels[0]);
-  EXPECT_EQ("l2", accounts[0]->labels[1]);
+  ASSERT_EQ(2u, accounts.accounts[0]->labels.size());
+  EXPECT_EQ("l1", accounts.accounts[0]->labels[0]);
+  EXPECT_EQ("l2", accounts.accounts[0]->labels[1]);
 }
 
 TEST_F(IdpNetworkRequestManagerTest, ComputeWellKnownUrl) {
@@ -843,9 +660,6 @@ TEST_F(IdpNetworkRequestManagerTest, ComputeWellKnownUrl) {
 }
 
 TEST_F(IdpNetworkRequestManagerTest, ParseUsername) {
-  base::test::ScopedFeatureList list;
-  list.InitAndEnableFeature(features::kFedCmAlternativeIdentifiers);
-
   const auto* test_accounts_json = R"({
   "accounts" : [
     {
@@ -857,22 +671,19 @@ TEST_F(IdpNetworkRequestManagerTest, ParseUsername) {
   })";
 
   FetchStatus accounts_response;
-  std::vector<IdentityRequestAccountPtr> accounts;
+  IdpNetworkRequestManager::AccountsResponse accounts;
   std::tie(accounts_response, accounts) =
       SendAccountsRequestAndWaitForResponse(test_accounts_json);
 
   ASSERT_EQ(ParseStatus::kSuccess, accounts_response.parse_status);
   EXPECT_EQ(net::HTTP_OK, accounts_response.response_code);
-  EXPECT_EQ("1234", accounts[0]->id);
-  EXPECT_EQ("ken@idp.test", accounts[0]->email);
-  EXPECT_EQ("ken@idp.test", accounts[0]->display_identifier);
-  EXPECT_EQ("ken", accounts[0]->display_name);
+  EXPECT_EQ("1234", accounts.accounts[0]->id);
+  EXPECT_EQ("ken@idp.test", accounts.accounts[0]->email);
+  EXPECT_EQ("ken@idp.test", accounts.accounts[0]->display_identifier);
+  EXPECT_EQ("ken", accounts.accounts[0]->display_name);
 }
 
 TEST_F(IdpNetworkRequestManagerTest, ParsePhoneNumber) {
-  base::test::ScopedFeatureList list;
-  list.InitAndEnableFeature(features::kFedCmAlternativeIdentifiers);
-
   const auto* test_accounts_json = R"({
   "accounts" : [
     {
@@ -883,16 +694,52 @@ TEST_F(IdpNetworkRequestManagerTest, ParsePhoneNumber) {
   })";
 
   FetchStatus accounts_response;
-  std::vector<IdentityRequestAccountPtr> accounts;
+  IdpNetworkRequestManager::AccountsResponse accounts;
   std::tie(accounts_response, accounts) =
       SendAccountsRequestAndWaitForResponse(test_accounts_json);
 
   ASSERT_EQ(ParseStatus::kSuccess, accounts_response.parse_status);
   EXPECT_EQ(net::HTTP_OK, accounts_response.response_code);
-  EXPECT_EQ("1234", accounts[0]->id);
-  EXPECT_EQ("", accounts[0]->email);
-  EXPECT_EQ("", accounts[0]->display_identifier);
-  EXPECT_EQ("111-111-1111", accounts[0]->display_name);
+  EXPECT_EQ("1234", accounts.accounts[0]->id);
+  EXPECT_EQ("", accounts.accounts[0]->email);
+  EXPECT_EQ("", accounts.accounts[0]->display_identifier);
+  EXPECT_EQ("111-111-1111", accounts.accounts[0]->display_name);
+}
+
+TEST_F(IdpNetworkRequestManagerTest, ParseAccountPotentiallyApprovedOrigins) {
+  base::test::ScopedFeatureList list;
+  list.InitAndEnableFeature(features::kFedCmEmbedderInitiatedLogin);
+  // given_name and picture fields are optional
+  const auto* test_accounts_json = R"({
+  "accounts": [
+    {
+      "id": "1234",
+      "email": "ken@idp.test",
+      "name": "Ken R. Example",
+      "potentially_approved_origin_hashes": [
+        "622df46ad930842236c692ab72b62ae312b3b0164141f29b7bfdeb8e219b1043"
+      ]
+    }
+  ],
+  "origin_salt": "fc432178f9155c4e24762de5b9505f2e"
+  })";
+
+  FetchStatus accounts_response;
+  IdpNetworkRequestManager::AccountsResponse accounts;
+  std::tie(accounts_response, accounts) =
+      SendAccountsRequestAndWaitForResponse(test_accounts_json);
+
+  EXPECT_EQ(ParseStatus::kSuccess, accounts_response.parse_status);
+  EXPECT_EQ(net::HTTP_OK, accounts_response.response_code);
+  EXPECT_EQ("fc432178f9155c4e24762de5b9505f2e", accounts.origin_salt);
+  ASSERT_THAT(
+      accounts.accounts[0]->potentially_approved_origin_hashes,
+      ElementsAre(
+          "622df46ad930842236c692ab72b62ae312b3b0164141f29b7bfdeb8e219b1043"));
+
+  const auto& filtered_accounts = accounts.PotentialAccountsForOrigin(
+      url::Origin::Create(GURL("https://www.example.com/")));
+  EXPECT_EQ(1ul, filtered_accounts.size());
 }
 
 TEST_F(IdpNetworkRequestManagerTest, ParseAccountSingleLightweightFedcm) {
@@ -900,20 +747,20 @@ TEST_F(IdpNetworkRequestManagerTest, ParseAccountSingleLightweightFedcm) {
   list.InitAndEnableFeature(features::kFedCmLightweightMode);
 
   FetchStatus accounts_response;
-  std::vector<IdentityRequestAccountPtr> accounts;
+  IdpNetworkRequestManager::AccountsResponse accounts;
   std::tie(accounts_response, accounts) = SendAccountsRequestWithStoredAccounts(
-      base::Value::List().Append(base::Value::Dict()
-                                     .Set("id", "1234")
-                                     .Set("email", "ken@idp.test")
-                                     .Set("name", "Ken R. Example")));
+      base::ListValue().Append(base::DictValue()
+                                   .Set("id", "1234")
+                                   .Set("email", "ken@idp.test")
+                                   .Set("name", "Ken R. Example")));
 
   EXPECT_EQ(ParseStatus::kSuccess, accounts_response.parse_status);
   EXPECT_EQ(net::HTTP_OK, accounts_response.response_code);
-  EXPECT_EQ(1UL, accounts.size());
+  EXPECT_EQ(1UL, accounts.accounts.size());
 
-  EXPECT_EQ("1234", accounts[0]->id);
-  EXPECT_EQ("ken@idp.test", accounts[0]->email);
-  EXPECT_EQ("Ken R. Example", accounts[0]->name);
+  EXPECT_EQ("1234", accounts.accounts[0]->id);
+  EXPECT_EQ("ken@idp.test", accounts.accounts[0]->email);
+  EXPECT_EQ("Ken R. Example", accounts.accounts[0]->name);
 }
 
 TEST_F(IdpNetworkRequestManagerTest, ParseAccountEmptyLightweightFedcm) {
@@ -921,13 +768,13 @@ TEST_F(IdpNetworkRequestManagerTest, ParseAccountEmptyLightweightFedcm) {
   list.InitAndEnableFeature(features::kFedCmLightweightMode);
 
   FetchStatus accounts_response;
-  std::vector<IdentityRequestAccountPtr> accounts;
+  IdpNetworkRequestManager::AccountsResponse accounts;
   std::tie(accounts_response, accounts) =
-      SendAccountsRequestWithStoredAccounts(base::Value::List());
+      SendAccountsRequestWithStoredAccounts(base::ListValue());
 
   EXPECT_EQ(ParseStatus::kEmptyListError, accounts_response.parse_status);
   EXPECT_EQ(net::HTTP_OK, accounts_response.response_code);
-  EXPECT_EQ(0UL, accounts.size());
+  EXPECT_EQ(0UL, accounts.accounts.size());
 }
 
 TEST_F(IdpNetworkRequestManagerTest, CacheProfilePictures) {
@@ -940,7 +787,7 @@ TEST_F(IdpNetworkRequestManagerTest, CacheProfilePictures) {
   network::TestURLLoaderFactory::PendingRequest* pending_request =
       test_url_loader_factory().GetPendingRequest(0);
   ASSERT_TRUE(pending_request);
-  network::ResourceRequest resource_request = pending_request->request;
+  const network::ResourceRequest& resource_request = pending_request->request;
   EXPECT_FALSE(resource_request.load_flags & net::LOAD_ONLY_FROM_CACHE);
   net::IsolationInfo expected_isolation_info = net::IsolationInfo::Create(
       net::IsolationInfo::RequestType::kOther,
@@ -965,7 +812,7 @@ TEST_F(IdpNetworkRequestManagerTest, DownloadAndDecodeCachedImage) {
   network::TestURLLoaderFactory::PendingRequest* pending_request =
       test_url_loader_factory().GetPendingRequest(0);
   ASSERT_TRUE(pending_request);
-  network::ResourceRequest resource_request = pending_request->request;
+  const network::ResourceRequest& resource_request = pending_request->request;
   EXPECT_TRUE(resource_request.load_flags & net::LOAD_ONLY_FROM_CACHE);
   net::IsolationInfo expected_isolation_info = net::IsolationInfo::Create(
       net::IsolationInfo::RequestType::kOther,
@@ -1480,113 +1327,7 @@ TEST_F(IdpNetworkRequestManagerTest, ParseConfigBrandingIconReltivePath) {
   }
 }
 
-TEST_F(IdpNetworkRequestManagerTest,
-       ParseConfigSupportsOtherAccountActiveMode) {
-  base::test::ScopedFeatureList list;
-  list.InitAndDisableFeature(features::kFedCmUseOtherAccountAndLabelsNewSyntax);
-
-  const char test_json[] = R"({
-  "modes": {
-    "active": {
-      "supports_use_other_account": true
-    }
-  }
-  })";
-
-  FetchStatus fetch_status;
-  IdentityProviderMetadata idp_metadata;
-  std::tie(fetch_status, idp_metadata) = SendConfigRequestAndWaitForResponse(
-      test_json, net::HTTP_OK, "application/json",
-      blink::mojom::RpMode::kActive);
-
-  EXPECT_EQ(ParseStatus::kSuccess, fetch_status.parse_status);
-  EXPECT_EQ(net::HTTP_OK, fetch_status.response_code);
-  EXPECT_EQ(true, idp_metadata.supports_add_account);
-}
-
-TEST_F(IdpNetworkRequestManagerTest,
-       ParseConfigSupportsOtherAccountPassiveMode) {
-  base::test::ScopedFeatureList list;
-  list.InitAndDisableFeature(features::kFedCmUseOtherAccountAndLabelsNewSyntax);
-
-  // The toplevel field should be ignored with the flag disabled.
-  const char test_json[] = R"({
-  "supports_use_other_account": false,
-  "modes": {
-    "passive": {
-      "supports_use_other_account": true
-    }
-  }
-  })";
-
-  FetchStatus fetch_status;
-  IdentityProviderMetadata idp_metadata;
-  std::tie(fetch_status, idp_metadata) = SendConfigRequestAndWaitForResponse(
-      test_json, net::HTTP_OK, "application/json",
-      blink::mojom::RpMode::kPassive);
-
-  EXPECT_EQ(ParseStatus::kSuccess, fetch_status.parse_status);
-  EXPECT_EQ(net::HTTP_OK, fetch_status.response_code);
-  EXPECT_EQ(true, idp_metadata.supports_add_account);
-}
-
-TEST_F(IdpNetworkRequestManagerTest,
-       ParseConfigSupportsOtherAccountOldAndNewSyntax) {
-  base::test::ScopedFeatureList list;
-  list.InitAndEnableFeature(features::kFedCmUseOtherAccountAndLabelsNewSyntax);
-
-  // The toplevel field should take precedence.
-  const char test_json[] = R"({
-  "supports_use_other_account": true,
-  "modes": {
-    "passive": {
-      "supports_use_other_account": false
-    }
-  }
-  })";
-
-  FetchStatus fetch_status;
-  IdentityProviderMetadata idp_metadata;
-  std::tie(fetch_status, idp_metadata) = SendConfigRequestAndWaitForResponse(
-      test_json, net::HTTP_OK, "application/json",
-      blink::mojom::RpMode::kPassive);
-
-  EXPECT_EQ(ParseStatus::kSuccess, fetch_status.parse_status);
-  EXPECT_EQ(net::HTTP_OK, fetch_status.response_code);
-  EXPECT_EQ(true, idp_metadata.supports_add_account);
-}
-
-// TODO(crbug.com/404568028): Delete when
-// kFedCmUseOtherAccountAndLabelsNewSyntax is removed.
-TEST_F(IdpNetworkRequestManagerTest,
-       DoNotParseConfigSupportsOtherAccountOldSyntaxWithFlag) {
-  base::test::ScopedFeatureList list;
-  list.InitAndEnableFeature(features::kFedCmUseOtherAccountAndLabelsNewSyntax);
-
-  // Old syntax should be ignored if new syntax is enabled.
-  const char test_json[] = R"({
-  "modes": {
-    "passive": {
-      "supports_use_other_account": true
-    }
-  }
-  })";
-
-  FetchStatus fetch_status;
-  IdentityProviderMetadata idp_metadata;
-  std::tie(fetch_status, idp_metadata) = SendConfigRequestAndWaitForResponse(
-      test_json, net::HTTP_OK, "application/json",
-      blink::mojom::RpMode::kPassive);
-
-  EXPECT_EQ(ParseStatus::kSuccess, fetch_status.parse_status);
-  EXPECT_EQ(net::HTTP_OK, fetch_status.response_code);
-  EXPECT_EQ(false, idp_metadata.supports_add_account);
-}
-
 TEST_F(IdpNetworkRequestManagerTest, ParseConfigSupportsOtherAccountNewSyntax) {
-  base::test::ScopedFeatureList list;
-  list.InitAndEnableFeature(features::kFedCmUseOtherAccountAndLabelsNewSyntax);
-
   const char test_json[] = R"({
   "supports_use_other_account": true
   })";
@@ -1661,78 +1402,7 @@ TEST_F(IdpNetworkRequestManagerTest,
   EXPECT_EQ(false, idp_metadata.supports_add_account);
 }
 
-TEST_F(IdpNetworkRequestManagerTest, ParseConfigRequestedLabelOldSyntax) {
-  base::test::ScopedFeatureList list;
-  list.InitAndDisableFeature(features::kFedCmUseOtherAccountAndLabelsNewSyntax);
-
-  // New syntax should be ignored with flag disabled.
-  const char test_json[] = R"({
-    "account_label": "l1",
-    "accounts": {
-      "include": "l1"
-    }
-  })";
-
-  FetchStatus fetch_status;
-  IdentityProviderMetadata idp_metadata;
-  std::tie(fetch_status, idp_metadata) =
-      SendConfigRequestAndWaitForResponse(test_json);
-
-  EXPECT_EQ(ParseStatus::kSuccess, fetch_status.parse_status);
-  EXPECT_EQ(net::HTTP_OK, fetch_status.response_code);
-  EXPECT_EQ("l1", idp_metadata.requested_label);
-}
-
-TEST_F(IdpNetworkRequestManagerTest, ParseConfigRequestedLabelOldAndNewSyntax) {
-  base::test::ScopedFeatureList list;
-  list.InitAndEnableFeature(features::kFedCmUseOtherAccountAndLabelsNewSyntax);
-
-  // New syntax should take precedence over old syntax.
-  const char test_json[] = R"({
-    "account_label": "l1",
-    "accounts": {
-      "include": "l5"
-    }
-  })";
-
-  FetchStatus fetch_status;
-  IdentityProviderMetadata idp_metadata;
-  std::tie(fetch_status, idp_metadata) =
-      SendConfigRequestAndWaitForResponse(test_json);
-
-  EXPECT_EQ(ParseStatus::kSuccess, fetch_status.parse_status);
-  EXPECT_EQ(net::HTTP_OK, fetch_status.response_code);
-  EXPECT_EQ("l1", idp_metadata.requested_label);
-}
-
-// TODO(crbug.com/404568028): Delete when
-// kFedCmUseOtherAccountAndLabelsNewSyntax is removed.
-TEST_F(IdpNetworkRequestManagerTest,
-       DoNotParseConfigRequestedLabelOldSyntaxWithFlag) {
-  base::test::ScopedFeatureList list;
-  list.InitAndEnableFeature(features::kFedCmUseOtherAccountAndLabelsNewSyntax);
-
-  // Old syntax should be ignored if new syntax is enabled.
-  const char test_json[] = R"({
-    "accounts": {
-      "include": "l5"
-    }
-  })";
-
-  FetchStatus fetch_status;
-  IdentityProviderMetadata idp_metadata;
-  std::tie(fetch_status, idp_metadata) =
-      SendConfigRequestAndWaitForResponse(test_json);
-
-  EXPECT_EQ(ParseStatus::kSuccess, fetch_status.parse_status);
-  EXPECT_EQ(net::HTTP_OK, fetch_status.response_code);
-  EXPECT_EQ("", idp_metadata.requested_label);
-}
-
 TEST_F(IdpNetworkRequestManagerTest, ParseConfigRequestedLabel) {
-  base::test::ScopedFeatureList list;
-  list.InitAndEnableFeature(features::kFedCmUseOtherAccountAndLabelsNewSyntax);
-
   const char test_json[] = R"({
     "account_label": "l1"
   })";
@@ -1772,7 +1442,7 @@ TEST_F(IdpNetworkRequestManagerTest, AccountRequestOrigin) {
   })";
 
   FetchStatus accounts_response;
-  std::vector<IdentityRequestAccountPtr> accounts;
+  IdpNetworkRequestManager::AccountsResponse accounts;
   std::tie(accounts_response, accounts) =
       SendAccountsRequestAndWaitForResponse(test_accounts_json);
 
@@ -1830,23 +1500,27 @@ TEST_F(IdpNetworkRequestManagerTest, AccountSignedInStatus) {
   })";
 
   FetchStatus accounts_response;
-  std::vector<IdentityRequestAccountPtr> accounts;
+  IdpNetworkRequestManager::AccountsResponse accounts;
   std::tie(accounts_response, accounts) =
       SendAccountsRequestAndWaitForResponse(test_accounts_json, "xxx");
 
   EXPECT_TRUE(called);
   EXPECT_EQ(ParseStatus::kSuccess, accounts_response.parse_status);
   EXPECT_EQ(net::HTTP_OK, accounts_response.response_code);
-  ASSERT_EQ(5ul, accounts.size());
-  ASSERT_TRUE(accounts[0]->idp_claimed_login_state.has_value());
-  EXPECT_EQ(LoginState::kSignIn, *accounts[0]->idp_claimed_login_state);
-  ASSERT_TRUE(accounts[1]->idp_claimed_login_state.has_value());
-  EXPECT_EQ(LoginState::kSignUp, *accounts[1]->idp_claimed_login_state);
-  ASSERT_TRUE(accounts[2]->idp_claimed_login_state.has_value());
-  EXPECT_EQ(LoginState::kSignUp, *accounts[2]->idp_claimed_login_state);
-  EXPECT_FALSE(accounts[3]->idp_claimed_login_state.has_value());
-  ASSERT_TRUE(accounts[4]->idp_claimed_login_state.has_value());
-  EXPECT_EQ(LoginState::kSignIn, *accounts[4]->idp_claimed_login_state);
+  ASSERT_EQ(5ul, accounts.accounts.size());
+  ASSERT_TRUE(accounts.accounts[0]->idp_claimed_login_state.has_value());
+  EXPECT_EQ(LoginState::kSignIn,
+            *accounts.accounts[0]->idp_claimed_login_state);
+  ASSERT_TRUE(accounts.accounts[1]->idp_claimed_login_state.has_value());
+  EXPECT_EQ(LoginState::kSignUp,
+            *accounts.accounts[1]->idp_claimed_login_state);
+  ASSERT_TRUE(accounts.accounts[2]->idp_claimed_login_state.has_value());
+  EXPECT_EQ(LoginState::kSignUp,
+            *accounts.accounts[2]->idp_claimed_login_state);
+  EXPECT_FALSE(accounts.accounts[3]->idp_claimed_login_state.has_value());
+  ASSERT_TRUE(accounts.accounts[4]->idp_claimed_login_state.has_value());
+  EXPECT_EQ(LoginState::kSignIn,
+            *accounts.accounts[4]->idp_claimed_login_state);
 }
 
 // Tests the token request implementation.
@@ -1959,7 +1633,7 @@ TEST_F(IdpNetworkRequestManagerTest, IdAssertionRequestJsonObjectToken) {
   EXPECT_EQ(net::HTTP_OK, fetch_status.response_code);
   EXPECT_TRUE(token_result.token.has_value() &&
               (token_result.token->is_dict()));
-  const base::Value::Dict& value = token_result.token->GetDict();
+  const base::DictValue& value = token_result.token->GetDict();
 
   const base::Value* access_token = value.Find("access_token");
   ASSERT_TRUE(access_token && access_token->is_string());
@@ -2053,9 +1727,6 @@ TEST_F(IdpNetworkRequestManagerTest, ClientMetadata) {
 
 // Tests client_is_third_party_to_top_frame_origin: true
 TEST_F(IdpNetworkRequestManagerTest, ClientIsThirdPartyToTopFrameOrigin) {
-  base::test::ScopedFeatureList list;
-  list.InitAndEnableFeature(features::kFedCmIframeOrigin);
-
   IdpClientMetadata data = SendClientMetadataRequestAndWaitForResponse(
       "clientid", R"({"client_is_third_party_to_top_frame_origin": true})",
       "https://toplevel.example");
@@ -2067,9 +1738,6 @@ TEST_F(IdpNetworkRequestManagerTest, ClientIsThirdPartyToTopFrameOrigin) {
 
 // Tests client_is_third_party_to_top_frame_origin: false
 TEST_F(IdpNetworkRequestManagerTest, ClientIsSamePartyToTopFrameOrigin) {
-  base::test::ScopedFeatureList list;
-  list.InitAndEnableFeature(features::kFedCmIframeOrigin);
-
   IdpClientMetadata data = SendClientMetadataRequestAndWaitForResponse(
       "clientid", R"({"client_is_third_party_to_top_frame_origin": false})",
       "https://toplevel.example");
@@ -2082,9 +1750,6 @@ TEST_F(IdpNetworkRequestManagerTest, ClientIsSamePartyToTopFrameOrigin) {
 // Tests client_is_third_party_to_top_frame_origin is not sent
 TEST_F(IdpNetworkRequestManagerTest,
        ClientIsThirdPartyToTopFrameOriginNotSent) {
-  base::test::ScopedFeatureList list;
-  list.InitAndEnableFeature(features::kFedCmIframeOrigin);
-
   IdpClientMetadata data = SendClientMetadataRequestAndWaitForResponse(
       "clientid", R"({})", "https://toplevel.example");
   EXPECT_FALSE(data.client_is_third_party_to_top_frame_origin);
@@ -2097,9 +1762,6 @@ TEST_F(IdpNetworkRequestManagerTest,
 // client_is_third_party_to_top_frame_origin if there is no cross-site iframe.
 TEST_F(IdpNetworkRequestManagerTest,
        ClientIsThirdPartyToTopFrameOriginNoIframe) {
-  base::test::ScopedFeatureList list;
-  list.InitAndEnableFeature(features::kFedCmIframeOrigin);
-
   // We pass no top_level_origin here.
   IdpClientMetadata data = SendClientMetadataRequestAndWaitForResponse(
       "clientid", R"({"client_is_third_party_to_top_frame_origin": true})");
@@ -2151,14 +1813,14 @@ TEST_F(IdpNetworkRequestManagerTest, RecordApprovedClientsMetrics) {
   })";
 
   FetchStatus accounts_response;
-  std::vector<IdentityRequestAccountPtr> accounts;
+  IdpNetworkRequestManager::AccountsResponse accounts;
   std::tie(accounts_response, accounts) =
       SendAccountsRequestAndWaitForResponse(test_accounts_json, "xxx");
 
   EXPECT_TRUE(called);
   EXPECT_EQ(ParseStatus::kSuccess, accounts_response.parse_status);
   EXPECT_EQ(net::HTTP_OK, accounts_response.response_code);
-  ASSERT_EQ(4ul, accounts.size());
+  ASSERT_EQ(4ul, accounts.accounts.size());
 
   histogram_tester.ExpectTotalCount("Blink.FedCm.ApprovedClientsExistence", 4);
   histogram_tester.ExpectBucketCount("Blink.FedCm.ApprovedClientsExistence", 1,
@@ -2193,7 +1855,7 @@ TEST_F(IdpNetworkRequestManagerTest, DontCallCallbackAfterManagerDeletion) {
   bool callback_called = false;
   auto callback = base::BindLambdaForTesting(
       [&callback_called](FetchStatus response,
-                         std::vector<IdentityRequestAccountPtr> accounts) {
+                         IdpNetworkRequestManager::AccountsResponse accounts) {
         callback_called = true;
       });
 
@@ -2238,7 +1900,7 @@ TEST_F(IdpNetworkRequestManagerTest, ErrorFetchingConfig) {
 
 TEST_F(IdpNetworkRequestManagerTest, ErrorFetchingAccounts) {
   FetchStatus fetch_status;
-  std::vector<IdentityRequestAccountPtr> accounts;
+  IdpNetworkRequestManager::AccountsResponse accounts;
   std::tie(fetch_status, accounts) =
       SendAccountsRequestAndWaitForResponse(R"({
   "accounts" : []
@@ -2253,7 +1915,7 @@ TEST_F(IdpNetworkRequestManagerTest, FetchClientMetadataValidUrls) {
   {
     const std::string privacy_policy_url = "https://privacy.policy";
     const std::string terms_of_service_url = "http://terms.of.service";
-    const std::string brand_icon_url = "http://rp.brand.icon";
+    const std::string brand_icon_url = "http://rp.brand/icon.ico";
 
     IdpClientMetadata data = SendClientMetadataRequestAndWaitForResponse(
         /*client_id=*/"123", R"({"privacy_policy_url": ")" +
@@ -2276,7 +1938,7 @@ TEST_F(IdpNetworkRequestManagerTest, FetchClientMetadataValidUrls) {
   {
     const std::string privacy_policy_url = "http://localhost";
     const std::string terms_of_service_url = "http://127.0.0.1";
-    const std::string brand_icon_url = "http://localhost";
+    const std::string brand_icon_url = "http://localhost/icon.ico";
 
     IdpClientMetadata data = SendClientMetadataRequestAndWaitForResponse(
         /*client_id=*/"123", R"({"privacy_policy_url": ")" +
@@ -2344,14 +2006,14 @@ TEST_F(IdpNetworkRequestManagerTest, AccountsWrongMimeType) {
   const auto* test_single_account_json = kSingleAccountEndpointValidJson;
 
   FetchStatus accounts_response;
-  std::vector<IdentityRequestAccountPtr> accounts;
+  IdpNetworkRequestManager::AccountsResponse accounts;
   std::tie(accounts_response, accounts) = SendAccountsRequestAndWaitForResponse(
       test_single_account_json, /*client_id=*/"", net::HTTP_OK, "text/html");
 
   EXPECT_EQ(ParseStatus::kInvalidContentTypeError,
             accounts_response.parse_status);
   EXPECT_EQ(net::HTTP_OK, accounts_response.response_code);
-  EXPECT_TRUE(accounts.empty());
+  EXPECT_TRUE(accounts.accounts.empty());
 }
 
 TEST_F(IdpNetworkRequestManagerTest, IdAssertionWrongMimeType) {
@@ -2387,6 +2049,7 @@ TEST_F(IdpNetworkRequestManagerTest, FetchingTokenLeadsToAContinuationUrl) {
   std::unique_ptr<IdpNetworkRequestManager> manager = CreateTestManager();
   manager->SendTokenRequest(token_endpoint, "account", "request", false,
                             std::move(callback), std::move(on_continue),
+                            base::DoNothing(),
                             CreateErrorMetricsCallback(run_loop));
   run_loop.Run();
   EXPECT_EQ(TokenResponseType::
@@ -2408,6 +2071,7 @@ TEST_F(IdpNetworkRequestManagerTest, ContinueOnWithToken) {
   std::unique_ptr<IdpNetworkRequestManager> manager = CreateTestManager();
   manager->SendTokenRequest(token_endpoint, "account", "request", false,
                             base::DoNothing(), base::DoNothing(),
+                            base::DoNothing(),
                             CreateErrorMetricsCallback(run_loop));
   run_loop.Run();
   EXPECT_EQ(
@@ -2428,6 +2092,7 @@ TEST_F(IdpNetworkRequestManagerTest, ContinueOnWithErrorAndToken) {
   std::unique_ptr<IdpNetworkRequestManager> manager = CreateTestManager();
   manager->SendTokenRequest(token_endpoint, "account", "request", false,
                             base::DoNothing(), base::DoNothing(),
+                            base::DoNothing(),
                             CreateErrorMetricsCallback(run_loop));
   run_loop.Run();
   EXPECT_EQ(
@@ -2447,6 +2112,7 @@ TEST_F(IdpNetworkRequestManagerTest, ContinueOnWithError) {
   std::unique_ptr<IdpNetworkRequestManager> manager = CreateTestManager();
   manager->SendTokenRequest(token_endpoint, "account", "request", false,
                             base::DoNothing(), base::DoNothing(),
+                            base::DoNothing(),
                             CreateErrorMetricsCallback(run_loop));
   run_loop.Run();
   EXPECT_EQ(
@@ -2477,7 +2143,7 @@ TEST_F(IdpNetworkRequestManagerTest, ContinueOnCanBeRelativeUrl) {
   std::unique_ptr<IdpNetworkRequestManager> manager = CreateTestManager();
   manager->SendTokenRequest(token_endpoint, "account", "request", false,
                             std::move(callback), std::move(on_continue),
-                            base::DoNothing());
+                            base::DoNothing(), base::DoNothing());
   run_loop.Run();
 }
 

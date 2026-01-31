@@ -31,7 +31,7 @@
 namespace {
 
 // Retrieves the anchor view for the zoom bubble.
-views::View* GetAnchorView(BrowserView* browser_view) {
+views::BubbleAnchor GetAnchor(BrowserView* browser_view) {
   CHECK(browser_view);
 
 #if BUILDFLAG(IS_MAC)
@@ -39,11 +39,15 @@ views::View* GetAnchorView(BrowserView* browser_view) {
     return nullptr;
   }
 #endif
+  auto* immersive_mode_controller =
+      ImmersiveModeController::From(browser_view->browser());
 
+  // We intentionally do not show the immersive frame for zoom bubble.
   if (!browser_view->GetWidget()->IsFullscreen() ||
-      browser_view->IsToolbarVisible() ||
-      ImmersiveModeController::From(browser_view->browser())->IsRevealed()) {
-    return browser_view->toolbar_button_provider()->GetAnchorView(
+      (browser_view->IsToolbarVisible() &&
+       (!immersive_mode_controller->IsEnabled() ||
+        immersive_mode_controller->IsRevealed()))) {
+    return browser_view->toolbar_button_provider()->GetBubbleAnchor(
         kActionZoomNormal);
   }
   return nullptr;
@@ -127,9 +131,9 @@ void ZoomBubbleCoordinator::Show(
     widget_observation_.Reset();
   }
 
-  auto* anchor_view = GetAnchorView(base::to_address(browser_view_));
-  auto bubble_view = std::make_unique<ZoomBubbleView>(
-      browser_view_->browser(), anchor_view, contents, reason);
+  auto anchor = GetAnchor(base::to_address(browser_view_));
+  auto bubble_view = std::make_unique<ZoomBubbleView>(browser_view_->browser(),
+                                                      anchor, contents, reason);
 
   if (const auto* client = GetExtensionZoomRequestClient(contents)) {
     bubble_view->SetExtensionInfo(client->extension());
@@ -154,7 +158,8 @@ void ZoomBubbleCoordinator::Show(
 
   widget_observation_.Observe(widget);
 
-  if (!anchor_view && browser_view_->browser()->window()->IsFullscreen()) {
+  if (std::holds_alternative<std::nullptr_t>(anchor) &&
+      browser_view_->browser()->window()->IsFullscreen()) {
     bubble_raw->AdjustForFullscreen(
         browser_view_->browser()->window()->GetBounds());
   }
@@ -207,8 +212,8 @@ bool ZoomBubbleCoordinator::CanRefresh(ZoomBubbleView* current_bubble,
   }
 
   // If the anchor view has changed, we must create a new bubble.
-  if (current_bubble->GetAnchorView() !=
-      GetAnchorView(base::to_address(browser_view_))) {
+  if (current_bubble->GetAnchor() !=
+      GetAnchor(base::to_address(browser_view_))) {
     return false;
   }
 

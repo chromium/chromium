@@ -22,9 +22,9 @@
 #include "base/uuid.h"
 #include "base/values.h"
 #include "components/sessions/core/base_session_service_commands.h"
+#include "components/split_tabs/split_tab_id.h"
+#include "components/split_tabs/split_tab_visual_data.h"
 #include "components/tab_groups/tab_group_color.h"
-#include "components/tabs/public/split_tab_id.h"
-#include "components/tabs/public/split_tab_visual_data.h"
 #include "ui/base/mojom/window_show_state.mojom.h"
 
 namespace {
@@ -1051,7 +1051,12 @@ std::unique_ptr<SessionCommand> CreateSessionCommandForPayload(
     SessionCommand::id_type id,
     const Payload& payload) {
   auto command = std::make_unique<SessionCommand>(id, sizeof(payload));
-  UNSAFE_TODO(memcpy(command->contents(), &payload, sizeof(payload)));
+  // TODO(crbug.com/435317390): Rewrite to use spans. The main obstruction is
+  // that some payloads have non-unique object representations due to having
+  // padding. Options include allowlisting the affected payloads via
+  // `base::kCanSafelyConvertToByteSpan` or adding (unused, but initialized)
+  // members that take up the padding.
+  UNSAFE_TODO(memcpy(command->contents().data(), &payload, sizeof(payload)));
   return command;
 }
 

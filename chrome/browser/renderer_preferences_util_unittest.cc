@@ -77,27 +77,25 @@ TEST_F(RendererPreferencesUtilTest, WebRTCIPHandlingPolicy) {
 }
 
 TEST_F(RendererPreferencesUtilTest, WebRTCIPHandlingURLValidEntries) {
-  base::Value::Dict valid_entry_1 =
-      base::Value::Dict()
+  base::DictValue valid_entry_1 =
+      base::DictValue()
           .Set("url", "[*.]example.com")
           .Set("handling", blink::kWebRTCIPHandlingDisableNonProxiedUdp);
-  base::Value::Dict no_url = base::Value::Dict().Set(
+  base::DictValue no_url = base::DictValue().Set(
       "handling", blink::kWebRTCIPHandlingDisableNonProxiedUdp);
-  base::Value::Dict invalid_url =
-      base::Value::Dict().Set("url", "*.example.com");
-  base::Value::Dict no_handling =
-      base::Value::Dict().Set("url", "[*.]example.com");
-  base::Value::Dict valid_entry_2 =
-      base::Value::Dict()
+  base::DictValue invalid_url = base::DictValue().Set("url", "*.example.com");
+  base::DictValue no_handling = base::DictValue().Set("url", "[*.]example.com");
+  base::DictValue valid_entry_2 =
+      base::DictValue()
           .Set("url", "*://google.com:*")
           .Set("handling", blink::kWebRTCIPHandlingDefault);
 
-  base::Value::List list = base::Value::List()
-                               .Append(std::move(valid_entry_1))
-                               .Append(std::move(no_url))
-                               .Append(std::move(invalid_url))
-                               .Append(std::move(no_handling))
-                               .Append(std::move(valid_entry_2));
+  base::ListValue list = base::ListValue()
+                             .Append(std::move(valid_entry_1))
+                             .Append(std::move(no_url))
+                             .Append(std::move(invalid_url))
+                             .Append(std::move(no_handling))
+                             .Append(std::move(valid_entry_2));
   pref_service_->SetList(prefs::kWebRTCIPHandlingUrl, std::move(list));
 
   blink::RendererPreferences renderer_preferences;

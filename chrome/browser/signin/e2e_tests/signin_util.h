@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_SIGNIN_E2E_TESTS_SIGNIN_UTIL_H_
 #define CHROME_BROWSER_SIGNIN_E2E_TESTS_SIGNIN_UTIL_H_
 
+#include <cstddef>
+
 #include "base/time/time.h"
 #include "chrome/browser/ui/browser.h"
 #include "components/signin/core/browser/account_reconcilor.h"
@@ -45,7 +47,8 @@ class SignInFunctions {
                      int previously_signed_in_accounts);
 
   void SignInFromSettings(const TestAccountSigninCredentials& test_account,
-                          int previously_signed_in_accounts);
+                          int previously_signed_in_accounts,
+                          bool complete_signin_operation = true);
 
   void SignInFromCurrentPage(content::WebContents* web_contents,
                              const TestAccountSigninCredentials& test_account,
@@ -57,8 +60,6 @@ class SignInFunctions {
   void SignOutFromWeb();
 
   void TurnOffSync();
-
-  void StartSignInFromSettings();
 
  private:
   const base::RepeatingCallback<Browser*()> browser_;

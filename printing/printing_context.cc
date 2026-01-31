@@ -121,7 +121,7 @@ void PrintingContext::SetDefaultPrintableAreaForVirtualPrinters() {
 }
 
 void PrintingContext::UsePdfSettings() {
-  base::Value::Dict pdf_settings;
+  base::DictValue pdf_settings;
   pdf_settings.Set(kSettingHeaderFooterEnabled, false);
   pdf_settings.Set(kSettingShouldPrintBackgrounds, false);
   pdf_settings.Set(kSettingShouldPrintSelectionOnly, false);
@@ -156,7 +156,7 @@ void PrintingContext::UsePdfSettings() {
 }
 
 mojom::ResultCode PrintingContext::UpdatePrintSettings(
-    base::Value::Dict job_settings) {
+    base::DictValue job_settings) {
   ResetSettings();
   {
     std::unique_ptr<PrintSettings> settings =

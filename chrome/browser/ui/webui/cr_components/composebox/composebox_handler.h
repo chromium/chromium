@@ -35,7 +35,8 @@ class ComposeboxHandler : public composebox::mojom::PageHandler,
       mojo::PendingReceiver<searchbox::mojom::PageHandler>
           pending_searchbox_handler,
       Profile* profile,
-      content::WebContents* web_contents);
+      content::WebContents* web_contents,
+      GetSessionHandleCallback get_session_callback);
   ~ComposeboxHandler() override;
 
   void SetEmbedder(base::WeakPtr<TopChromeWebUIController::Embedder> embedder) {
@@ -49,6 +50,7 @@ class ComposeboxHandler : public composebox::mojom::PageHandler,
 
   void HandleLensButtonClick() override;
   void HandleFileUpload(bool is_image) override;
+  void NavigateUrl(const GURL& url) override;
 
   // searchbox::mojom::PageHandler:
   void ExecuteAction(uint8_t line,
@@ -81,10 +83,17 @@ class ComposeboxHandler : public composebox::mojom::PageHandler,
                    omnibox::ChromeAimEntryPoint aim_entrypoint,
                    std::map<std::string, std::string> additional_params);
 
-  omnibox::ChromeAimToolsAndModels GetAimToolMode() override;
+  omnibox::ToolMode GetAimToolMode() const override;
 
   // Called to update the suggested tab context chip in the compose box.
   virtual void UpdateSuggestedTabContext(searchbox::mojom::TabInfoPtr tab_info);
+
+  // Returns true if there is a suggested tab context chip in the compose box.
+  bool has_suggested_tab_context() const { return has_suggested_tab_context_; }
+
+  // SearchboxHandler:
+  std::string AutocompleteIconToResourceName(
+      const gfx::VectorIcon& icon) const override;
 
  protected:
   ComposeboxHandler(
@@ -94,15 +103,16 @@ class ComposeboxHandler : public composebox::mojom::PageHandler,
           pending_searchbox_handler,
       Profile* profile,
       content::WebContents* web_contents,
-      std::unique_ptr<OmniboxController> omnibox_controller);
+      std::unique_ptr<OmniboxController> omnibox_controller,
+      GetSessionHandleCallback get_session_callback);
 
  private:
   // The tool mode for the composebox, if any. These tool modes are disjoint
   // and it's only possible for one mode to be set at one time.
-  omnibox::ChromeAimToolsAndModels aim_tool_mode_ =
-      omnibox::ChromeAimToolsAndModels::TOOL_MODE_UNSPECIFIED;
+  omnibox::ToolMode aim_tool_mode_ = omnibox::ToolMode::TOOL_MODE_UNSPECIFIED;
   raw_ptr<content::WebContents> web_contents_;
   base::WeakPtr<TopChromeWebUIController::Embedder> embedder_;
+  bool has_suggested_tab_context_ = false;
 
   // These are located at the end of the list of member variables to ensure the
   // WebUI page is disconnected before other members are destroyed.

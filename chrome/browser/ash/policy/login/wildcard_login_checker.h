@@ -46,7 +46,7 @@ class WildcardLoginChecker : public UserInfoFetcher::Delegate {
                             StatusCallback callback);
 
   // UserInfoFetcher::Delegate:
-  void OnGetUserInfoSuccess(const base::Value::Dict& response) override;
+  void OnGetUserInfoSuccess(const base::DictValue& response) override;
   void OnGetUserInfoFailure(const GoogleServiceAuthError& error) override;
 
  private:

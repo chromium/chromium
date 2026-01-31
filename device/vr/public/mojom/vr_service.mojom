@@ -11,7 +11,6 @@ import "mojo/public/mojom/base/big_buffer.mojom";
 import "mojo/public/mojom/base/time.mojom";
 import "gpu/ipc/common/exported_shared_image.mojom";
 import "gpu/ipc/common/shared_image_metadata.mojom";
-import "gpu/ipc/common/mailbox_holder.mojom";
 import "gpu/ipc/common/sync_token.mojom";
 import "ui/display/mojom/display.mojom";
 import "ui/gfx/geometry/mojom/geometry.mojom";
@@ -103,6 +102,10 @@ struct XRSessionDeviceConfig {
   // If the session supports depth-sensing API, the depth configuration must be
   // non-null.
   XRDepthConfig? depth_configuration;
+
+  // The max number of layers that can be enabled at same time. See
+  // SetEnabledCompositionLayers.
+  uint16 max_render_layers = 1;
 };
 
 // This structure contains all the mojo interfaces for different kinds of
@@ -412,11 +415,14 @@ struct VRStageParameters {
 enum XRPresentationTransportMethod {
   NONE = 0,
 
-  // Renderer should create a new texture handle (Windows) or
-  // texture mailbox (Android Surface path) containing the
+  // Renderer should create a new texture handle containing the
   // frame's image and supply that as a submitFrame argument.
   SUBMIT_AS_TEXTURE_HANDLE = 1,
-  SUBMIT_AS_MAILBOX_HOLDER = 2,
+
+  // Test-only path to create a new texture mailbox containing the
+  // frame's image and supply that as a submitFrame argument.
+  // TODO(crbug.com/476100354): Remove this path if possible.
+  SUBMIT_AS_TEST = 2,
 
   // Renderer should draw directly into a texture mailbox
   // provided for each frame in OnVSync.
@@ -775,11 +781,10 @@ union XRLayerSpecificData {
 };
 
 enum XRLayerLayout {
-  kDefault = 0,
-  kMono = 1,
-  kStereo = 2,
-  kStereoLeftRight = 3,
-  kStereoTopBottom = 4,
+  kMono = 0,
+  kStereo = 1,
+  kStereoLeftRight = 2,
+  kStereoTopBottom = 3,
 };
 
 // Read-only data is only used to create a layer,
@@ -1149,8 +1154,8 @@ interface XRPresentationProvider {
   // be called for the last animating frame when presentation ends.
   SubmitFrameMissing(int16 frame_id, gpu.mojom.SyncToken sync_token);
 
-  // XRPresentationTransportMethod SUBMIT_AS_MAILBOX_HOLDER
-  SubmitFrame(int16 frame_id, gpu.mojom.MailboxHolder mailbox_holder,
+  // XRPresentationTransportMethod SUBMIT_AS_TEST
+  SubmitFrame(int16 frame_id,
               mojo_base.mojom.TimeDelta time_waited);
 
   // XRPresentationTransportMethod SUBMIT_AS_TEXTURE_HANDLE

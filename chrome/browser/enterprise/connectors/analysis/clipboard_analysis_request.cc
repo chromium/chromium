@@ -4,6 +4,7 @@
 
 #include "chrome/browser/enterprise/connectors/analysis/clipboard_analysis_request.h"
 
+#include "chrome/browser/enterprise/connectors/common.h"
 #include "chrome/browser/safe_browsing/cloud_content_scanning/deep_scanning_utils.h"
 
 namespace enterprise_connectors {
@@ -11,13 +12,15 @@ namespace enterprise_connectors {
 ClipboardAnalysisRequest::ClipboardAnalysisRequest(
     CloudOrLocalAnalysisSettings settings,
     std::string text,
-    safe_browsing::BinaryUploadService::ContentAnalysisCallback callback)
-    : Request(std::move(callback), std::move(settings)) {
+    BinaryUploadRequest::ContentAnalysisCallback callback)
+    : BinaryUploadRequest(std::move(callback),
+                          std::move(settings),
+                          base::BindRepeating(&GetBrowserPolicyConnector)) {
   DCHECK_GT(text.size(), 0u);
   data_.size = text.size();
 
   // Only remember strings less than the maximum allowed.
-  if (text.size() < safe_browsing::BinaryUploadService::kMaxUploadSizeBytes) {
+  if (text.size() < BinaryUploadService::kMaxUploadSizeBytes) {
     data_.contents = std::move(text);
     result_ = ScanRequestUploadResult::kSuccess;
   }

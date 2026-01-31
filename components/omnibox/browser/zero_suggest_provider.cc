@@ -46,12 +46,14 @@
 #include "components/search/ntp_features.h"
 #include "components/search_engines/search_engine_type.h"
 #include "components/search_engines/template_url_service.h"
+#include "components/strings/grit/components_strings.h"
 #include "components/url_formatter/url_formatter.h"
 #include "services/network/public/cpp/simple_url_loader.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "third_party/metrics_proto/omnibox_event.pb.h"
 #include "third_party/metrics_proto/omnibox_focus_type.pb.h"
 #include "third_party/metrics_proto/omnibox_input_type.pb.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "url/gurl.h"
 #include "url/url_canon.h"
 #include "url/url_util.h"
@@ -246,7 +248,7 @@ bool ReadStoredResponse(const AutocompleteProviderClient* client,
     return false;
   }
 
-  std::optional<base::Value::List> response_data =
+  std::optional<base::ListValue> response_data =
       SearchSuggestionParser::DeserializeJsonData(response_json);
   if (!response_data) {
     return false;
@@ -315,7 +317,9 @@ ResultType ResultTypeForInput(const AutocompleteInput& input) {
                        omnibox::kFocusTriggersWebAndSRPZeroSuggest))) {
       return ResultType::kRemoteSendURL;
     }
-    if (input.type() == OIT::EMPTY && !is_ios) {
+    if (input.type() == OIT::EMPTY &&
+        (!is_ios ||
+         base::FeatureList::IsEnabled(omnibox::kOnClobberSuggestIOS))) {
       return ResultType::kRemoteSendURL;
     }
   }
@@ -387,6 +391,16 @@ void MaybeAddContextualSuggestParams(
       if (!input.context_tab_url().is_empty()) {
         search_terms_args.current_page_url = input.context_tab_url().spec();
       }
+    } else if (search_terms_args.page_classification ==
+                   metrics::OmniboxEventProto::NTP_COMPOSEBOX &&
+               !client->IsPersonalizedUrlDataCollectionActive() &&
+               !input.context_tab_title().empty()) {
+      // Set `lens_overlay_suggest_inputs` when history sync is disabled, but
+      // delayed context data is found in the input. This is done to switch over
+      // to the "chrome-contextual" client to only retrieve contextual
+      // suggestions.
+      search_terms_args.lens_overlay_suggest_inputs =
+          lens::proto::LensOverlaySuggestInputs();
     }
 
     search_terms_args.additional_query_params =
@@ -858,6 +872,10 @@ void ZeroSuggestProvider::ConvertSuggestResultsToAutocompleteMatches(
   for (const auto& entry : results.suggestion_groups_map) {
     suggestion_groups_map_[entry.first].MergeFrom(entry.second);
   }
+
+  // TODO(khalidpeer): Remove this code once we start receiving a group config
+  //     for contextual search suggestions from the server.
+  suggestion_groups_map_[omnibox::GROUP_CONTEXTUAL_SEARCH];
 
   // Update the list of experiment stats from the server response.
   for (const auto& experiment_stats_v2 : results.experiment_stats_v2s) {

@@ -5,6 +5,8 @@
 #ifndef CRYPTO_APPLE_SCOPED_FAKE_KEYCHAIN_V2_H_
 #define CRYPTO_APPLE_SCOPED_FAKE_KEYCHAIN_V2_H_
 
+#include <MacTypes.h>
+
 #include <memory>
 #include <string>
 
@@ -32,6 +34,12 @@ class CRYPTO_EXPORT ScopedFakeKeychainV2 {
   FakeKeychainV2* keychain() { return keychain_.get(); }
 
   void SetUVMethod(UVMethod uv_method);
+
+  void SetFindGenericResult(OSStatus result);
+
+  bool called_add_generic();
+
+  std::string GetEncryptionPassword();
 
  private:
   std::unique_ptr<FakeKeychainV2> keychain_;

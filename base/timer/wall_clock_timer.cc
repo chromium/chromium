@@ -57,6 +57,13 @@ bool WallClockTimer::IsRunning() const {
   return timer_.IsRunning();
 }
 
+void WallClockTimer::SetTaskRunner(
+    scoped_refptr<SequencedTaskRunner> task_runner) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  CHECK(!IsRunning());
+  timer_.SetTaskRunner(std::move(task_runner));
+}
+
 void WallClockTimer::OnResume() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   timer_.Start(posted_from_, desired_run_time_ - clock_->Now(), this,

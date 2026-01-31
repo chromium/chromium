@@ -86,7 +86,7 @@ GURL GetInlineLoginUrl(const std::string& email) {
 // chrome/browser/resources/inline_login/inline_login_app.js
 base::Value AccountAdditionOptionsToValue(
     const account_manager::AccountAdditionOptions& options) {
-  base::Value::Dict args;
+  base::DictValue args;
   args.Set("isAvailableInArc", base::Value(options.is_available_in_arc));
   args.Set("showArcAvailabilityPicker",
            base::Value(options.show_arc_availability_picker));

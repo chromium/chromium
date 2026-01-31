@@ -155,10 +155,10 @@ class GeolocationNetworkProviderTest : public testing::Test {
   static void CreateReferenceWifiScanDataJson(
       int ap_count,
       int start_index,
-      base::Value::List* wifi_access_point_list) {
+      base::ListValue* wifi_access_point_list) {
     std::vector<std::string> wifi_data;
     for (int i = 0; i < ap_count; ++i) {
-      base::Value::Dict ap;
+      base::DictValue ap;
       ap.Set("macAddress", base::StringPrintf("%02d-34-56-78-54-32", i));
       ap.Set("signalStrength", start_index + ap_count - i);
       ap.Set("age", 0);
@@ -190,14 +190,14 @@ class GeolocationNetworkProviderTest : public testing::Test {
     return pretty;
   }
 
-  static std::string PrettyJson(const base::Value::Dict& dict_value) {
+  static std::string PrettyJson(const base::DictValue& dict_value) {
     return PrettyJson(base::Value(dict_value.Clone()));
   }
 
   static testing::AssertionResult JsonGetList(const std::string& field,
-                                              const base::Value::Dict& dict,
-                                              base::Value::List* output_list) {
-    const base::Value::List* list = dict.FindList(field);
+                                              const base::DictValue& dict,
+                                              base::ListValue* output_list) {
+    const base::ListValue* list = dict.FindList(field);
     if (!list) {
       return testing::AssertionFailure() << "Dictionary " << PrettyJson(dict)
                                          << " is missing list field " << field;
@@ -208,8 +208,8 @@ class GeolocationNetworkProviderTest : public testing::Test {
 
   static testing::AssertionResult JsonFieldEquals(
       const std::string& field,
-      const base::Value::Dict& expected,
-      const base::Value::Dict& actual) {
+      const base::DictValue& expected,
+      const base::DictValue& actual) {
     const base::Value* expected_value = expected.Find(field);
     const base::Value* actual_value = actual.Find(field);
     if (!expected_value) {
@@ -248,25 +248,25 @@ class GeolocationNetworkProviderTest : public testing::Test {
     ASSERT_TRUE(parsed_json);
     ASSERT_TRUE(parsed_json->is_dict());
 
-    const base::Value::Dict& request_json = parsed_json->GetDict();
+    const base::DictValue& request_json = parsed_json->GetDict();
 
     if (expected_wifi_aps) {
-      base::Value::List expected_wifi_aps_json;
+      base::ListValue expected_wifi_aps_json;
       CreateReferenceWifiScanDataJson(expected_wifi_aps, wifi_start_index,
                                       &expected_wifi_aps_json);
       EXPECT_EQ(size_t(expected_wifi_aps), expected_wifi_aps_json.size());
 
-      base::Value::List wifi_aps_json;
+      base::ListValue wifi_aps_json;
       ASSERT_TRUE(
           JsonGetList("wifiAccessPoints", request_json, &wifi_aps_json));
       EXPECT_EQ(expected_wifi_aps_json.size(), wifi_aps_json.size());
       for (size_t i = 0; i < expected_wifi_aps_json.size(); ++i) {
         const base::Value& expected_json_value = expected_wifi_aps_json[i];
         ASSERT_TRUE(expected_json_value.is_dict());
-        const base::Value::Dict& expected_json = expected_json_value.GetDict();
+        const base::DictValue& expected_json = expected_json_value.GetDict();
         const base::Value& actual_json_value = wifi_aps_json[i];
         ASSERT_TRUE(actual_json_value.is_dict());
-        const base::Value::Dict& actual_json = actual_json_value.GetDict();
+        const base::DictValue& actual_json = actual_json_value.GetDict();
         ASSERT_TRUE(JsonFieldEquals("macAddress", expected_json, actual_json));
         ASSERT_TRUE(
             JsonFieldEquals("signalStrength", expected_json, actual_json));

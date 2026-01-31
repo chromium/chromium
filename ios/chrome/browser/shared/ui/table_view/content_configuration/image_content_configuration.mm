@@ -49,6 +49,7 @@
   copy.imageSize = self.imageSize;
   copy.imageContentMode = self.imageContentMode;
   copy.imageTintColor = self.imageTintColor;
+  copy.imageCornerRadius = self.imageCornerRadius;
   copy.accessibilityID = self.accessibilityID;
   // LINT.ThenChange(image_content_configuration.h:Copy)
   return copy;

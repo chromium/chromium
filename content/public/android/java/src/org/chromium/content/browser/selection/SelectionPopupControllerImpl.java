@@ -48,8 +48,9 @@ import org.chromium.base.SelectionActionMenuClientWrapper.MenuType;
 import org.chromium.base.UserData;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
-import org.chromium.base.supplier.ObservableSupplier;
-import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.supplier.NonNullObservableSupplier;
+import org.chromium.base.supplier.ObservableSuppliers;
+import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.build.annotations.EnsuresNonNullIf;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -64,6 +65,7 @@ import org.chromium.content.browser.selection.SelectActionMenuHelper.TextSelecti
 import org.chromium.content.browser.webcontents.WebContentsImpl;
 import org.chromium.content_public.browser.ActionModeCallback;
 import org.chromium.content_public.browser.ActionModeCallbackHelper;
+import org.chromium.content_public.browser.ContentFeatureMap;
 import org.chromium.content_public.browser.ImeEventObserver;
 import org.chromium.content_public.browser.PendingSelectionMenu;
 import org.chromium.content_public.browser.RenderFrameHost;
@@ -75,6 +77,7 @@ import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.WebContents.UserDataFactory;
 import org.chromium.content_public.browser.selection.SelectionActionMenuDelegate;
 import org.chromium.content_public.browser.selection.SelectionDropdownMenuDelegate;
+import org.chromium.content_public.common.ContentFeatures;
 import org.chromium.ui.base.Clipboard;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.base.ViewAndroidDelegate;
@@ -123,6 +126,8 @@ public class SelectionPopupControllerImpl extends ActionModeCallbackHelper
     // most such trailing, async delays.
     private static final int SHOW_DELAY_MS = 300;
 
+    private static final String USED_CACHED_MENU_HISTOGRAM = "Android.SelectionMenu.UsedCachedMenu";
+
     // A flag to determine if we should get readback view from WindowAndroid.
     // The readback view could be the ContainerView, which WindowAndroid has no control on that.
     // Embedders should set this properly to use the correct view for readback.
@@ -170,8 +175,8 @@ public class SelectionPopupControllerImpl extends ActionModeCallbackHelper
     private @Nullable ActionMode mActionMode;
 
     // Supplier of whether action bar is showing now.
-    private final ObservableSupplierImpl<Boolean> mIsActionBarShowingSupplier =
-            new ObservableSupplierImpl<>();
+    private final SettableNonNullObservableSupplier<Boolean> mIsActionBarShowingSupplier =
+            ObservableSuppliers.createNonNull(false);
 
     // Bit field for mappings from menu item to a flag indicating it is allowed.
     private int mAllowedMenuItems;
@@ -933,6 +938,12 @@ public class SelectionPopupControllerImpl extends ActionModeCallbackHelper
                     getSelectedText(),
                     isSelectActionModeAllowed(MENU_ITEM_PROCESS_TEXT),
                     mSelectionActionMenuDelegate);
+            if (ContentFeatureMap.isEnabled(ContentFeatures.NO_SELECTION_MENU_CACHING)) {
+                return pendingMenu;
+            }
+            // Record this after the feature flag check as otherwise clients in the enabled group
+            // will skew the data.
+            RecordHistogram.recordBooleanHistogram(USED_CACHED_MENU_HISTOGRAM, false);
             mSelectionMenuCachedResult =
                     new SelectionMenuCachedResult(
                             mClassificationResult,
@@ -941,6 +952,8 @@ public class SelectionPopupControllerImpl extends ActionModeCallbackHelper
                             getSelectedText(),
                             menuType,
                             pendingMenu);
+        } else {
+            RecordHistogram.recordBooleanHistogram(USED_CACHED_MENU_HISTOGRAM, true);
         }
 
         // Return the cached menu items for this selection.
@@ -1899,7 +1912,7 @@ public class SelectionPopupControllerImpl extends ActionModeCallbackHelper
     }
 
     @Override
-    public ObservableSupplier<Boolean> isSelectActionBarShowingSupplier() {
+    public NonNullObservableSupplier<Boolean> isSelectActionBarShowingSupplier() {
         return mIsActionBarShowingSupplier;
     }
 

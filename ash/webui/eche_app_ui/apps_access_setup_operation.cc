@@ -4,10 +4,10 @@
 
 #include "ash/webui/eche_app_ui/apps_access_setup_operation.h"
 
+#include <algorithm>
 #include <array>
 
 #include "base/check.h"
-#include "base/containers/contains.h"
 
 namespace ash {
 namespace eche_app {
@@ -28,7 +28,7 @@ constexpr std::array<AppsAccessSetupOperation::Status, 5>
 
 // static
 bool AppsAccessSetupOperation::IsFinalStatus(Status status) {
-  return base::Contains(kOperationFinishedStatus, status);
+  return std::ranges::contains(kOperationFinishedStatus, status);
 }
 
 AppsAccessSetupOperation::AppsAccessSetupOperation(

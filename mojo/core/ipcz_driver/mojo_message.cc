@@ -11,7 +11,9 @@
 
 #include "base/compiler_specific.h"
 #include "base/containers/span.h"
+#include "base/feature_list.h"
 #include "base/numerics/safe_conversions.h"
+#include "mojo/core/embedder/features.h"
 #include "mojo/core/ipcz_api.h"
 #include "mojo/core/ipcz_driver/data_pipe.h"
 #include "mojo/core/scoped_ipcz_handle.h"
@@ -24,6 +26,12 @@ namespace {
 
 // Growth factor for reallocations.
 constexpr int kGrowthFactor = 2;
+
+bool FixGeometricBufferGrowthIsEnabled() {
+  static const bool kIsEnabled =
+      base::FeatureList::IsEnabled(kMojoFixGeometricBufferGrowth);
+  return kIsEnabled;
+}
 
 // Data pipe attachments come in two parts within a message's handle list: the
 // DataPipe object wherever it was placed by the sender, and its control portal
@@ -188,8 +196,14 @@ MojoResult MojoMessage::AppendData(uint32_t additional_num_bytes,
   const size_t required_storage_size = std::max(new_data_size, kMinBufferSize);
   if (required_storage_size > data_storage_size_) {
     const size_t copy_size = std::min(new_data_size, data_storage_size_);
-    data_storage_size_ =
-        std::max(data_size * kGrowthFactor, required_storage_size);
+    size_t new_size;
+    if (FixGeometricBufferGrowthIsEnabled()) {
+      new_size =
+          std::max(data_storage_size_ * kGrowthFactor, required_storage_size);
+    } else {
+      new_size = std::max(data_size * kGrowthFactor, required_storage_size);
+    }
+    data_storage_size_ = new_size;
     DataPtr new_storage(new uint8_t[data_storage_size_]);
     std::ranges::copy(UNSAFE_TODO(base::span(data_storage_.get(), copy_size)),
                       new_storage.get());

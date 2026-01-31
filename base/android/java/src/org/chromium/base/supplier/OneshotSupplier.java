@@ -18,7 +18,7 @@ import java.util.function.Supplier;
  * <p>This allows classes dependent on {@code T} to be provided with a OneshotSupplier during
  * construction and register a {@code Callback<T>} to be notified when the needed dependency is
  * available, but without the need to un-register that Callback upon destruction. Contrast to {@link
- * ObservableSupplier}, which requires un-registration to prevent post-destruction callback
+ * MonotonicObservableSupplier}, which requires un-registration to prevent post-destruction callback
  * invocation because the object can change an arbitrary number of times.
  *
  * <p>This class must only be accessed from a single thread. Unless a particular thread designation

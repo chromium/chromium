@@ -71,6 +71,10 @@ POLICY_EXPORT void GetBrowserDeviceIdentifierAsync(
 // cloud policy type of the current platform.
 POLICY_EXPORT bool IsMachineLevelUserCloudPolicyType(const std::string& type);
 
+// Returns true if the extension install policy is supported on this version of
+// Chrome.
+POLICY_EXPORT bool IsExtensionInstallPolicySupportedOnThisVersion();
+
 }  // namespace policy
 
 #endif  // COMPONENTS_POLICY_CORE_COMMON_CLOUD_CLOUD_POLICY_UTIL_H_

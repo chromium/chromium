@@ -66,18 +66,16 @@ class WebsiteApprovalMediator {
         IdentityManager identityManager =
                 IdentityServicesProvider.get().getIdentityManager(mProfile);
         assumeNonNull(identityManager);
-        String childEmail =
-                CoreAccountInfo.getEmailFrom(
-                        identityManager.getPrimaryAccountInfo(ConsentLevel.SIGNIN));
-        if (childEmail == null) {
+        CoreAccountInfo accountInfo = identityManager.getPrimaryAccountInfo(ConsentLevel.SIGNIN);
+        if (accountInfo == null) {
             // This is an unexpected window condition: there is no signed in account.
             // TODO(crbug.com/40843544): dismiss the bottom sheet.
             return;
         }
         AccountInfo childAccountInfo =
-                identityManager.findExtendedAccountInfoByEmailAddress(childEmail);
+                identityManager.findExtendedAccountInfoByAccountId(accountInfo.getId());
 
-        String childNameProperty = childEmail;
+        String childNameProperty = accountInfo.getEmail();
         if (childAccountInfo != null && !childAccountInfo.getGivenName().isEmpty()) {
             childNameProperty = childAccountInfo.getGivenName();
         }

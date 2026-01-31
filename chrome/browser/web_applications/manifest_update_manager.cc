@@ -11,26 +11,28 @@
 
 #include "base/check_is_test.h"
 #include "base/command_line.h"
-#include "base/containers/contains.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
+#include "base/containers/map_util.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
 #include "base/run_loop.h"
+#include "base/types/optional_util.h"
 #include "build/build_config.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/profiles/keep_alive/profile_keep_alive_types.h"
 #include "chrome/browser/profiles/keep_alive/scoped_profile_keep_alive.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/web_applications/commands/manifest_silent_update_command.h"
 #include "chrome/browser/web_applications/manifest_update_utils.h"
 #include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
 #include "chrome/browser/web_applications/proto/web_app_install_state.pb.h"
+#include "chrome/browser/web_applications/scheduler/manifest_silent_update_result.h"
 #include "chrome/browser/web_applications/web_app_command_manager.h"
 #include "chrome/browser/web_applications/web_app_command_scheduler.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_filter.h"
+#include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_management_type.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
@@ -210,11 +212,58 @@ void ManifestUpdateManager::Shutdown() {
   started_ = false;
 }
 
+void ManifestUpdateManager::OnManifestSeenOnPrimaryPage(
+    content::WebContents& web_contents,
+    const blink::mojom::ManifestPtr& manifest,
+    base::PassKey<WebAppTabHelper>) {
+  // Developer-specified manifests should always have a valid manifest URL.
+  CHECK(manifest->manifest_url.is_valid());
+  if (!started_) {
+    return;
+  }
+  if (!base::FeatureList::IsEnabled(features::kWebAppPredictableAppUpdating) ||
+      !base::FeatureList::IsEnabled(features::kWebAppUsePrimaryIcon)) {
+    return;
+  }
+
+  // Run the `load_finished_callback_` after it is guaranteed that the command
+  // has been scheduled, to prevent flakiness in case the callback runs before
+  // the command is scheduled, and any subsequent
+  // `AwaitAllCommandsCompleteForTesting()` ends instantly.
+  base::ScopedClosureRunner load_finished_callback_runner;
+  if (load_finished_callback_) {
+    load_finished_callback_runner.ReplaceClosure(
+        std::move(load_finished_callback_));
+  }
+
+  if (provider_->registrar_unsafe().AppMatches(
+          GenerateAppIdFromManifest(*manifest),
+          WebAppFilter::IsIsolatedApp())) {
+    return;
+  }
+
+  webapps::AppId app_id = GenerateAppIdFromManifest(*manifest);
+
+  std::optional<base::Time> previous_time_for_silent_icon_update =
+      base::OptionalFromPtr(
+          base::FindOrNull(update_check_for_silent_updates_, app_id));
+
+  provider_->scheduler().ScheduleManifestSilentUpdate(
+      web_contents, previous_time_for_silent_icon_update,
+      base::BindOnce(&ManifestUpdateManager::OnManifestSilentUpdateComplete,
+                     weak_factory_.GetWeakPtr(), web_contents.GetWeakPtr(),
+                     app_id));
+}
+
 void ManifestUpdateManager::MaybeUpdate(
     const GURL& url,
     const std::optional<webapps::AppId>& app_id,
     content::WebContents* web_contents) {
   if (!started_) {
+    return;
+  }
+  if (base::FeatureList::IsEnabled(features::kWebAppPredictableAppUpdating) &&
+      base::FeatureList::IsEnabled(features::kWebAppUsePrimaryIcon)) {
     return;
   }
 
@@ -257,7 +306,7 @@ void ManifestUpdateManager::MaybeUpdate(
     return;
   }
 
-  if (base::Contains(update_stages_, *app_id)) {
+  if (update_stages_.contains(*app_id)) {
     return;
   }
 
@@ -316,28 +365,12 @@ void ManifestUpdateManager::StartCheckAfterPageAndManifestUrlLoad(
   update_stage.observer.reset();
   update_stage.stage = UpdateStage::Stage::kCheckingManifestDiff;
 
-  // TODO(crbug.com/442643377): Don't do this here, and instead use a per-page
-  // class to be notified when a valid manifest is attached to a page.
-  if (base::FeatureList::IsEnabled(features::kWebAppPredictableAppUpdating) &&
-      base::FeatureList::IsEnabled(features::kWebAppUsePrimaryIcon)) {
-    auto update_time_it = update_check_for_silent_updates_.find(app_id);
-    std::optional<base::Time> previous_time_for_silent_icon_update =
-        (update_time_it != update_check_for_silent_updates_.end())
-            ? std::make_optional(update_time_it->second)
-            : std::nullopt;
-
-    provider_->scheduler().ScheduleManifestSilentUpdate(
-        *web_contents, previous_time_for_silent_icon_update,
-        base::BindOnce(&ManifestUpdateManager::OnManifestSilentUpdateComplete,
-                       weak_factory_.GetWeakPtr(), web_contents, url, app_id));
-  } else {
-    auto app_window_close_await_callback = base::BindOnce(
-        &ManifestUpdateManager::OnManifestCheckAwaitAppWindowClose,
-        weak_factory_.GetWeakPtr(), web_contents, url, app_id);
-    provider_->scheduler().ScheduleManifestUpdateCheck(
-        url, app_id, check_time, web_contents,
-        std::move(app_window_close_await_callback));
-  }
+  auto app_window_close_await_callback =
+      base::BindOnce(&ManifestUpdateManager::OnManifestCheckAwaitAppWindowClose,
+                     weak_factory_.GetWeakPtr(), web_contents, url, app_id);
+  provider_->scheduler().ScheduleManifestUpdateCheck(
+      url, app_id, check_time, web_contents,
+      std::move(app_window_close_await_callback));
 
   // Run the `load_finished_callback_` after it is guaranteed that the command
   // has been scheduled, to prevent flakiness in case the callback runs before
@@ -350,42 +383,34 @@ void ManifestUpdateManager::StartCheckAfterPageAndManifestUrlLoad(
 
 void ManifestUpdateManager::OnManifestSilentUpdateComplete(
     base::WeakPtr<content::WebContents> contents,
-    const GURL& url,
     const webapps::AppId& app_id,
     ManifestSilentUpdateCompletionInfo completion_info) {
-  auto update_stage_it = update_stages_.find(app_id);
-  if (update_stage_it == update_stages_.end()) {
-    // If the web_app has already been uninstalled after the manifest update
-    // data fetch has happened, then we can early exit.
-    return;
-  }
-  update_stages_.erase(update_stage_it);
-  bool update_silent_or_pending;
+  bool any_update_occurred;
   switch (completion_info.result) {
     case ManifestSilentUpdateCheckResult::kAppUpdateFailedDuringInstall:
     case ManifestSilentUpdateCheckResult::kSystemShutdown:
     case ManifestSilentUpdateCheckResult::kAppUpToDate:
     case ManifestSilentUpdateCheckResult::kIconReadFromDiskFailed:
-    case ManifestSilentUpdateCheckResult::kWebContentsDestroyed:
+    case ManifestSilentUpdateCheckResult::kWebContentsWasDestroyed:
     case ManifestSilentUpdateCheckResult::kPendingIconWriteToDiskFailed:
     case ManifestSilentUpdateCheckResult::kInvalidManifest:
     case ManifestSilentUpdateCheckResult::kInvalidPendingUpdateInfo:
     case ManifestSilentUpdateCheckResult::kUserNavigated:
     case ManifestSilentUpdateCheckResult::kManifestToWebAppInstallInfoError:
     case ManifestSilentUpdateCheckResult::kAppNotAllowedToUpdate:
-      update_silent_or_pending = false;
+      any_update_occurred = false;
       break;
     case ManifestSilentUpdateCheckResult::kAppOnlyHasSecurityUpdate:
     case ManifestSilentUpdateCheckResult::kAppSilentlyUpdated:
     case ManifestSilentUpdateCheckResult::kAppHasNonSecurityAndSecurityChanges:
     case ManifestSilentUpdateCheckResult::kAppHasSecurityUpdateDueToThrottle:
-      update_silent_or_pending = true;
+      any_update_occurred = true;
       break;
   }
 
   // If a manifest update happened successfully, record feature usage of
   // applying a manifest.
-  if (update_silent_or_pending && contents) {
+  if (any_update_occurred && contents) {
     page_load_metrics::MetricsWebContentsObserver::RecordFeatureUsage(
         contents->GetPrimaryMainFrame(),
         blink::mojom::WebFeature::kWebAppManifestUpdate);
@@ -472,7 +497,7 @@ bool ManifestUpdateManager::IsUpdateConsumed(const webapps::AppId& app_id,
 
 bool ManifestUpdateManager::IsUpdateCommandPending(
     const webapps::AppId& app_id) {
-  return base::Contains(update_stages_, app_id);
+  return update_stages_.contains(app_id);
 }
 
 // WebAppInstallManager:
@@ -485,7 +510,7 @@ void ManifestUpdateManager::OnWebAppWillBeUninstalled(
                  ManifestUpdateResult::kAppUninstalling);
     update_stages_.erase(it);
   }
-  CHECK(!base::Contains(update_stages_, app_id));
+  CHECK(!update_stages_.contains(app_id));
 
   // Clear any data necessary for throttling updates for the current web app.
   last_update_check_.erase(app_id);

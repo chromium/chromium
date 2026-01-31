@@ -8,77 +8,8 @@
 
 #import "base/memory/raw_ptr.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_color_palette.h"
+#import "ios/chrome/browser/shared/ui/util/color_palette/color_palette_util.h"
 #import "skia/ext/skia_utils_ios.h"
-#import "third_party/material_color_utilities/src/cpp/cam/hct.h"
-#import "third_party/material_color_utilities/src/cpp/palettes/core.h"
-#import "third_party/material_color_utilities/src/cpp/utils/utils.h"
-#import "third_party/skia/include/core/SkColor.h"
-#import "ui/color/dynamic_color/palette_factory.h"
-
-// Define constants within the namespace
-namespace {
-
-// A block type that provides a dynamic color based on the current trait
-// collection.
-typedef UIColor* (^DynamicColorProviderBlock)(UITraitCollection* traits);
-
-// Represents a tone value tied to a specific TonalPalette.
-struct PaletteTone {
-  raw_ptr<const ui::TonalPalette> palette;
-  int tone;
-
-  PaletteTone(const ui::TonalPalette& associatedPalette, int toneValue)
-      : palette(&associatedPalette), tone(toneValue) {}
-
-  SkColor color() const { return palette->get(tone); }
-};
-
-// Represents a color input that can be either a palette-based tone or a fixed
-// UIColor. Only one of `tone` or `fixedColor` should be set. If neither is set,
-// `resolveColor()` returns opaque black (`SK_ColorBLACK`) as a fallback.
-struct DynamicColorInput {
-  std::optional<PaletteTone> tone;
-  std::optional<UIColor*> fixedColor;
-
-  explicit DynamicColorInput(const PaletteTone& t) : tone(t) {}
-  explicit DynamicColorInput(UIColor* color) : fixedColor(color) {}
-
-  SkColor resolveColor() const {
-    if (tone.has_value()) {
-      return tone->color();
-    }
-    if (fixedColor.has_value()) {
-      return skia::UIColorToSkColor(fixedColor.value());
-    }
-    return SK_ColorBLACK;
-  }
-};
-
-// Factory helper for creating DynamicColorInput from a tone.
-inline DynamicColorInput FromTone(const PaletteTone& tone) {
-  return DynamicColorInput(tone);
-}
-
-// Factory helper for creating DynamicColorInput from a fixed UIColor.
-inline DynamicColorInput FromColor(UIColor* color) {
-  return DynamicColorInput(color);
-}
-
-// Returns a dynamic `UIColor` that adapts to the system's light or dark
-// appearance using tones derived from the given `DynamicColorInput`.
-DynamicColorProviderBlock GetDynamicProvider(
-    const DynamicColorInput& lightInput,
-    const DynamicColorInput& darkInput) {
-  uint32_t lightARGB = lightInput.resolveColor();
-  uint32_t darkARGB = darkInput.resolveColor();
-
-  return ^UIColor*(UITraitCollection* traits) {
-    BOOL isDark = (traits.userInterfaceStyle == UIUserInterfaceStyleDark);
-    return skia::UIColorFromSkColor(isDark ? darkARGB : lightARGB);
-  };
-}
-
-}  // namespace
 
 // Creates and returns a color palette from a seed color.
 NewTabPageColorPalette* CreateColorPaletteFromSeedColor(

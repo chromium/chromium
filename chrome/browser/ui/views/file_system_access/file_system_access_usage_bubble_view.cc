@@ -6,7 +6,6 @@
 
 #include <vector>
 
-#include "base/containers/contains.h"
 #include "base/i18n/message_formatter.h"
 #include "base/i18n/unicodestring.h"
 #include "base/memory/raw_ptr.h"
@@ -186,6 +185,13 @@ class CollapsibleListView : public views::View {
     button->SetToggledTooltipText(
         l10n_util::GetStringUTF16(IDS_FILE_SYSTEM_ACCESS_USAGE_COLLAPSE));
     expand_collapse_button_ = label_container->AddChildView(std::move(button));
+    views::SetImageFromVectorIconWithColor(
+        expand_collapse_button_, vector_icons::kCaretDownIcon,
+        ui::TableModel::kIconSize, {ui::kColorIcon, ui::kColorIconDisabled});
+    views::SetToggledImageFromVectorIconWithColor(
+        expand_collapse_button_, vector_icons::kCaretUpIcon,
+        ui::TableModel::kIconSize, {ui::kColorIcon, ui::kColorIconDisabled});
+
     if (model->RowCount() < 3) {
       expand_collapse_button_->SetVisible(false);
     }
@@ -216,21 +222,6 @@ class CollapsibleListView : public views::View {
   void ClearModel() {
     static_cast<views::TableView*>(table_view_parent_->contents())
         ->SetModel(nullptr);
-  }
-
-  // views::View
-  void OnThemeChanged() override {
-    views::View::OnThemeChanged();
-    const auto* color_provider = GetColorProvider();
-    const SkColor icon_color = color_provider->GetColor(ui::kColorIcon);
-    const SkColor disabled_icon_color =
-        color_provider->GetColor(ui::kColorIconDisabled);
-    views::SetImageFromVectorIconWithColor(
-        expand_collapse_button_, vector_icons::kCaretDownIcon,
-        ui::TableModel::kIconSize, icon_color, disabled_icon_color);
-    views::SetToggledImageFromVectorIconWithColor(
-        expand_collapse_button_, vector_icons::kCaretUpIcon,
-        ui::TableModel::kIconSize, icon_color, disabled_icon_color);
   }
 
  private:
@@ -340,18 +331,18 @@ void FileSystemAccessUsageBubbleView::ShowBubble(
   std::set<base::FilePath> writable_directories(
       usage.writable_directories.begin(), usage.writable_directories.end());
   std::erase_if(usage.readable_directories, [&](const base::FilePath& path) {
-    return base::Contains(writable_directories, path);
+    return writable_directories.contains(path);
   });
   std::set<base::FilePath> writable_files(usage.writable_files.begin(),
                                           usage.writable_files.end());
   std::erase_if(usage.readable_files, [&](const base::FilePath& path) {
-    return base::Contains(writable_files, path);
+    return writable_files.contains(path);
   });
 
   // TODO(crbug.com/376282751): An action ID should be created and used here
   // when File System Access is migrated to the new page actions framework.
   bubble_ = new FileSystemAccessUsageBubbleView(
-      button_provider->GetAnchorView(std::nullopt), web_contents, origin,
+      button_provider->GetBubbleAnchor(std::nullopt), web_contents, origin,
       std::move(usage));
 
   bubble_->SetHighlightedButton(
@@ -377,11 +368,11 @@ FileSystemAccessUsageBubbleView* FileSystemAccessUsageBubbleView::GetBubble() {
 }
 
 FileSystemAccessUsageBubbleView::FileSystemAccessUsageBubbleView(
-    views::View* anchor_view,
+    views::BubbleAnchor anchor,
     content::WebContents* web_contents,
     const url::Origin& origin,
     Usage usage)
-    : LocationBarBubbleDelegateView(anchor_view,
+    : LocationBarBubbleDelegateView(anchor,
                                     web_contents,
                                     /*autosize=*/true),
       origin_(origin),

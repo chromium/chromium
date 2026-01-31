@@ -40,6 +40,10 @@ public class ListMenuItemProperties {
     public static final WritableObjectPropertyKey<@Nullable String> CONTENT_DESCRIPTION =
             new WritableObjectPropertyKey<>();
 
+    // Mouse hover tooltip text
+    public static final WritableObjectPropertyKey<@Nullable String> TOOLTIP =
+            new WritableObjectPropertyKey<>();
+
     /**
      * The {@link DrawableRes} ID of the start icon. Mutually exclusive from {@code
      * START_ICON_DRAWABLE} and {@code START_ICON_BITMAP}.
@@ -94,6 +98,7 @@ public class ListMenuItemProperties {
         SUBTITLE,
         IS_SUBTITLE_ELLIPSIZED_AT_END,
         CONTENT_DESCRIPTION,
+        TOOLTIP,
         START_ICON_ID,
         START_ICON_DRAWABLE,
         START_ICON_BITMAP,

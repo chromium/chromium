@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/check.h"
-#include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/no_destructor.h"
 #include "base/observer_list.h"
@@ -55,13 +54,13 @@ void AddSiteToPrefs(ExtensionPrefs* extension_prefs,
                     const url::Origin& origin) {
   std::unique_ptr<prefs::ScopedDictionaryPrefUpdate> update =
       extension_prefs->CreatePrefUpdate(kUserPermissions);
-  base::Value::List* list = nullptr;
+  base::ListValue* list = nullptr;
 
   bool pref_exists = (*update)->GetListWithoutPathExpansion(pref, &list);
   if (pref_exists) {
     list->Append(origin.Serialize());
   } else {
-    base::Value::List sites;
+    base::ListValue sites;
     sites.Append(origin.Serialize());
     (*update)->SetKey(pref, base::Value(std::move(sites)));
   }
@@ -73,7 +72,7 @@ void RemoveSiteFromPrefs(ExtensionPrefs* extension_prefs,
                          const url::Origin& origin) {
   std::unique_ptr<prefs::ScopedDictionaryPrefUpdate> update =
       extension_prefs->CreatePrefUpdate(kUserPermissions);
-  base::Value::List* list = nullptr;
+  base::ListValue* list = nullptr;
   (*update)->GetListWithoutPathExpansion(pref, &list);
   DCHECK(list);
   list->EraseValue(base::Value(origin.Serialize()));
@@ -82,7 +81,7 @@ void RemoveSiteFromPrefs(ExtensionPrefs* extension_prefs,
 // Returns sites from `pref` in `extension_prefs`.
 std::set<url::Origin> GetSitesFromPrefs(ExtensionPrefs* extension_prefs,
                                         const char* pref) {
-  const base::Value::Dict& user_permissions =
+  const base::DictValue& user_permissions =
       extension_prefs->GetPrefAsDictionary(kUserPermissions);
   std::set<url::Origin> sites;
 
@@ -354,7 +353,7 @@ void PermissionsManager::UpdateUserSiteSetting(const url::Origin& origin,
 }
 
 void PermissionsManager::AddUserRestrictedSite(const url::Origin& origin) {
-  if (base::Contains(user_permissions_.restricted_sites, origin)) {
+  if (user_permissions_.restricted_sites.contains(origin)) {
     return;
   }
 
@@ -376,7 +375,7 @@ void PermissionsManager::AddUserPermittedSite(const url::Origin& origin) {
   DCHECK(base::FeatureList::IsEnabled(
       extensions_features::kExtensionsMenuAccessControlWithPermittedSites));
 
-  if (base::Contains(user_permissions_.permitted_sites, origin)) {
+  if (user_permissions_.permitted_sites.contains(origin)) {
     return;
   }
 
@@ -434,10 +433,10 @@ PermissionsManager::GetUserPermissionsSettings() const {
 
 PermissionsManager::UserSiteSetting PermissionsManager::GetUserSiteSetting(
     const url::Origin& origin) const {
-  if (base::Contains(user_permissions_.permitted_sites, origin)) {
+  if (user_permissions_.permitted_sites.contains(origin)) {
     return UserSiteSetting::kGrantAllExtensions;
   }
-  if (base::Contains(user_permissions_.restricted_sites, origin)) {
+  if (user_permissions_.restricted_sites.contains(origin)) {
     return UserSiteSetting::kBlockAllExtensions;
   }
   return UserSiteSetting::kCustomizeByExtension;

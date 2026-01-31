@@ -12,7 +12,6 @@
 #include "ash/shell.h"
 #include "ash/wm/mru_window_tracker.h"
 #include "ash/wm/window_util.h"
-#include "base/containers/contains.h"
 #include "base/metrics/user_metrics.h"
 #include "ui/aura/window.h"
 #include "ui/display/display.h"
@@ -57,7 +56,7 @@ bool CanHandleMoveActiveWindowBetweenDisplays() {
   }
 
   // The movement target window must be in window cycle list.
-  return base::Contains(
+  return std::ranges::contains(
       Shell::Get()->mru_window_tracker()->BuildWindowForCycleList(kActiveDesk),
       GetTargetWindow());
 }

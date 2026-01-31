@@ -13,6 +13,7 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableBooleanPropertyKey;
+import org.chromium.ui.modelutil.PropertyModel.WritableFloatPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableIntPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
 
@@ -40,15 +41,6 @@ class HubToolbarProperties {
     public static final WritableObjectPropertyKey<Runnable> SEARCH_LISTENER =
             new WritableObjectPropertyKey<>();
 
-    public static final WritableBooleanPropertyKey BACK_BUTTON_VISIBLE =
-            new WritableBooleanPropertyKey();
-
-    public static final WritableBooleanPropertyKey BACK_BUTTON_ENABLED =
-            new WritableBooleanPropertyKey();
-
-    public static final WritableObjectPropertyKey<Runnable> BACK_BUTTON_LISTENER =
-            new WritableObjectPropertyKey<>();
-
     public static final WritableBooleanPropertyKey IS_INCOGNITO = new WritableBooleanPropertyKey();
 
     public static final WritableBooleanPropertyKey APPLY_DELAY_FOR_SEARCH_BOX_ANIMATION =
@@ -56,6 +48,22 @@ class HubToolbarProperties {
 
     public static final WritableBooleanPropertyKey HAIRLINE_VISIBILITY =
             new WritableBooleanPropertyKey();
+
+    /**
+     * Whether the search box animation is controlled manually. When this is true, the default
+     * animation is disabled and the visibility is controlled by {@link
+     * #SEARCH_BOX_VISIBILITY_FRACTION}. This is useful for panes that want to control the search
+     * box visibility with a scroll-based animation.
+     */
+    public static final WritableBooleanPropertyKey MANUAL_SEARCH_BOX_ANIMATION =
+            new WritableBooleanPropertyKey();
+
+    /**
+     * The visibility fraction of the search box. This is only used when {@link
+     * #MANUAL_SEARCH_BOX_ANIMATION} is true. 0.0f is hidden, 1.0f is fully visible.
+     */
+    public static final WritableFloatPropertyKey SEARCH_BOX_VISIBILITY_FRACTION =
+            new WritableFloatPropertyKey();
 
     @FunctionalInterface
     public interface PaneButtonLookup {
@@ -74,12 +82,11 @@ class HubToolbarProperties {
         SEARCH_BOX_VISIBLE,
         SEARCH_LOUPE_VISIBLE,
         SEARCH_LISTENER,
-        BACK_BUTTON_VISIBLE,
-        BACK_BUTTON_ENABLED,
-        BACK_BUTTON_LISTENER,
         IS_INCOGNITO,
         APPLY_DELAY_FOR_SEARCH_BOX_ANIMATION,
         HUB_SEARCH_ENABLED_STATE,
         HAIRLINE_VISIBILITY,
+        MANUAL_SEARCH_BOX_ANIMATION,
+        SEARCH_BOX_VISIBILITY_FRACTION,
     };
 }

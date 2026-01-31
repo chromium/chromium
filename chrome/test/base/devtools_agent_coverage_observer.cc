@@ -7,7 +7,6 @@
 #include <ostream>
 #include <utility>
 
-#include "base/containers/contains.h"
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
 #include "content/public/test/browser_test_utils.h"
@@ -80,7 +79,7 @@ bool DevToolsAgentCoverageObserver::ShouldForceDevToolsAgentHostCreation() {
 void DevToolsAgentCoverageObserver::DevToolsAgentHostCreated(
     DevToolsAgentHost* host) {
   VLOG(1) << host << ": Created";
-  CHECK(!base::Contains(devtools_agents_, host));
+  CHECK(!devtools_agents_.contains(host));
 
   if (should_inspect_callback_ && !should_inspect_callback_.Run(host)) {
     VLOG(1) << host << ": Not attaching";
@@ -119,7 +118,7 @@ void DevToolsAgentCoverageObserver::DevToolsAgentHostCrashed(
     DevToolsAgentHost* host,
     base::TerminationStatus status) {
   VLOG(1) << host << ": Crashed";
-  CHECK(!base::Contains(devtools_agents_, host));
+  CHECK(!devtools_agents_.contains(host));
 }
 
 void DevToolsAgentCoverageObserver::DevToolsAgentHostDestroyed(

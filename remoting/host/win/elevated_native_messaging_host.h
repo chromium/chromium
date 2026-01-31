@@ -46,7 +46,7 @@ class ElevatedNativeMessagingHost
   ProcessLaunchResult EnsureElevatedHostCreated();
 
   // Send |message| to the elevated host.
-  void SendMessage(const base::Value::Dict& message);
+  void SendMessage(const base::DictValue& message);
 
  private:
   // Disconnect and shut down the elevated host.

@@ -4,7 +4,7 @@
 
 import 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 
-import {ReadAnythingSettingsChange} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
+import {DEFAULT_SETTINGS, ReadAnythingSettingsChange} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import type {FontSelectElement} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
 import {microtasksFinished} from 'chrome-untrusted://webui-test/test_util.js';
@@ -68,12 +68,8 @@ suite('FontSelect', () => {
 
     chrome.readingMode.fontName = 'font 2';
     fontSelect.settingsPrefs = {
-      letterSpacing: 0,
-      lineSpacing: 0,
-      theme: 0,
-      speechRate: 0,
+      ...DEFAULT_SETTINGS,
       font: chrome.readingMode.fontName,
-      highlightGranularity: 0,
     };
     await microtasksFinished();
 

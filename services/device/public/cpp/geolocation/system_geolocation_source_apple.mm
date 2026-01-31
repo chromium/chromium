@@ -9,6 +9,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/mac/mac_util.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/task/single_thread_task_runner.h"
 #include "build/build_config.h"
 #include "components/device_event_log/device_event_log.h"
 #include "services/device/public/cpp/geolocation/location_manager_delegate.h"

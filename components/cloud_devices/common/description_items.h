@@ -10,12 +10,12 @@
 
 #include <stddef.h>
 
+#include <algorithm>
 #include <optional>
 #include <utility>
 #include <vector>
 
 #include "base/check_op.h"
-#include "base/containers/contains.h"
 #include "components/cloud_devices/common/cloud_device_description.h"
 
 namespace cloud_devices {
@@ -30,10 +30,10 @@ namespace cloud_devices {
 //   static std::string GetItemPath();
 //
 //   // Loads ticket item. Returns false if failed.
-//   static bool Load(const base::Value::Dict& dict, ContentType* option);
+//   static bool Load(const base::DictValue& dict, ContentType* option);
 //
 //   // Saves ticket item.
-//   static void Save(ContentType option, base::Value::Dict* dict);
+//   static void Save(ContentType option, base::DictValue* dict);
 
 // Represents a CDD capability that is stored as a JSON list
 // Ex: "<CAPABILITY_NAME>": [ {<VALUE>}, {<VALUE>}, {<VALUE>} ]
@@ -66,7 +66,7 @@ class ListCapability {
   const Option& operator[](size_t i) const { return options_[i]; }
 
   bool Contains(const Option& option) const {
-    return base::Contains(options_, option);
+    return std::ranges::contains(options_, option);
   }
 
   void AddOption(Option&& option) { options_.emplace_back(std::move(option)); }
@@ -118,8 +118,8 @@ class SelectionCapability {
   bool LoadFrom(const CloudDeviceDescription& description);
   void SaveTo(CloudDeviceDescription* description) const;
 
-  bool LoadFrom(const base::Value::Dict& dict);
-  void SaveTo(base::Value::Dict* dict) const;
+  bool LoadFrom(const base::DictValue& dict);
+  void SaveTo(base::DictValue* dict) const;
 
   void Reset() {
     options_.clear();
@@ -135,7 +135,7 @@ class SelectionCapability {
   const Option& operator[](size_t i) const { return options_[i]; }
 
   bool Contains(const Option& option) const {
-    return base::Contains(options_, option);
+    return std::ranges::contains(options_, option);
   }
 
   const Option& GetDefault() const {

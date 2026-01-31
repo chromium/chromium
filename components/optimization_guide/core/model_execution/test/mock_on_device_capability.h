@@ -9,7 +9,8 @@
 #include "base/functional/callback.h"
 #include "components/optimization_guide/core/model_execution/on_device_capability.h"
 #include "components/optimization_guide/proto/common_types.pb.h"
-#include "components/optimization_guide/public/mojom/model_broker.mojom-data-view.h"
+#include "components/optimization_guide/public/mojom/model_broker.mojom-forward.h"
+#include "services/on_device_model/public/mojom/on_device_model.mojom-forward.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
 namespace optimization_guide {

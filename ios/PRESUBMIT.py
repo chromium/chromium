@@ -20,6 +20,8 @@ PIPE_IN_COMMENT_PATTERN = r'//.*[^|]\|(?!\|)'
 IOS_PACKAGE_PATTERN = r'^ios'
 BOXED_BOOL_PATTERN = r'@\((YES|NO)\)'
 USER_DEFAULTS_PATTERN = r'\[NSUserDefaults standardUserDefaults]'
+UMBRELLA_HEADER_PATTERN = r'#import\s+<([\w]+)\/(?!\1\.h)[^>]+>'
+UNITTEST_FILE_PATTERN = r'_unittests?\.(mm|cc)$'
 
 # Color management constants
 COLOR_SHARED_DIR = 'ios/chrome/common/ui/colors/'
@@ -51,7 +53,8 @@ def _CheckNullabilityAnnotations(input_api, output_api):
 
     errors = []
     for f in input_api.AffectedFiles():
-        if f.LocalPath().startswith('ios/web_view/public/'):
+        if (f.LocalPath().startswith('ios/web_view/public/') or
+            f.LocalPath().startswith('ios/third_party/')):
             # ios/web_view/public tries to mimic an existing API that
             # might have nullability in it and that is acceptable.
             continue
@@ -504,6 +507,59 @@ def _CheckOmniboxTextInEgtest(input_api, output_api):
 
     return [output_api.PresubmitPromptWarning(warning_message)]
 
+def _CheckUmbrellaHeaderUsage(input_api, output_api):
+    """Checks for individual system header imports instead of umbrella headers.
+    """
+    umbrella_regex = input_api.re.compile(UMBRELLA_HEADER_PATTERN)
+
+    errors = []
+    file_filter = lambda f: f.LocalPath().endswith(('.mm', '.h'))
+
+    for f in input_api.AffectedSourceFiles(file_filter):
+        for line_num, line in f.ChangedContents():
+            match = umbrella_regex.search(line)
+            if match:
+                framework_name = match.group(1)
+                errors.append('%s:%s (Found: %s. Use <%s/%s.h> instead)' %
+                              (f.LocalPath(), line_num, line.strip(),
+                               framework_name, framework_name))
+    if not errors:
+        return []
+
+    warning_message = (
+        'Always use Umbrella Headers for system frameworks. Importing '
+        'individual headers increases compilation time and breaks module '
+        'optimization.'
+    )
+
+    return [
+        output_api.PresubmitPromptWarning(warning_message, items=errors)
+    ]
+
+def _CheckNoFlakyUnitTest(input_api, output_api):
+    """ Checks that there are no tests with FLAKY_ prefix."""
+    flaky_specifier_pattern = input_api.re.compile(r'\bFLAKY_')
+
+    unittest_regex = input_api.re.compile(UNITTEST_FILE_PATTERN)
+    errors = []
+    for f in input_api.AffectedFiles():
+        if not unittest_regex.search(f.LocalPath()):
+            continue
+        for line_num, line in f.ChangedContents():
+            if line.lstrip().startswith('//'):
+                continue
+            if flaky_specifier_pattern.search(line):
+                errors.append('%s:%s' % (f.LocalPath(), line_num))
+
+    if not errors:
+        return []
+    error_message = '\n'.join([
+        'Unit tests must not be marked as FLAKY_. If a test is flaky, use '
+        'DISABLED_ instead.'
+    ] + errors) + '\n'
+
+    return [output_api.PresubmitError(error_message)]
+
 
 def CheckChange(input_api, output_api):
     results = []
@@ -522,6 +578,8 @@ def CheckChange(input_api, output_api):
     results.extend(
         _CheckUIGraphicsBeginImageContextWithOptions(input_api, output_api))
     results.extend(_CheckOmniboxTextInEgtest(input_api, output_api))
+    results.extend(_CheckUmbrellaHeaderUsage(input_api, output_api))
+    results.extend(_CheckNoFlakyUnitTest(input_api, output_api))
     return results
 
 def CheckChangeOnUpload(input_api, output_api):

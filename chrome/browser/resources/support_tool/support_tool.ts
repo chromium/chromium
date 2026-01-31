@@ -10,11 +10,13 @@ import './issue_details.js';
 import './spinner_page.js';
 import './pii_selection.js';
 import './data_export_done.js';
-import './support_tool_shared.css.js';
 
+import type {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import type {CrToastElement} from 'chrome://resources/cr_elements/cr_toast/cr_toast.js';
-import {WebUiListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
-import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {I18nMixinLit} from 'chrome://resources/cr_elements/i18n_mixin_lit.js';
+import {WebUiListenerMixinLit} from 'chrome://resources/cr_elements/web_ui_listener_mixin_lit.js';
+import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
+import type {PropertyValues} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
 import type {BrowserProxy, PiiDataItem, StartDataCollectionResult} from './browser_proxy.js';
 import {BrowserProxyImpl} from './browser_proxy.js';
@@ -23,7 +25,8 @@ import type {DataExportDoneElement} from './data_export_done.js';
 import type {IssueDetailsElement} from './issue_details.js';
 import type {PiiSelectionElement} from './pii_selection.js';
 import type {SpinnerPageElement} from './spinner_page.js';
-import {getTemplate} from './support_tool.html.js';
+import {getCss} from './support_tool.css.js';
+import {getHtml} from './support_tool.html.js';
 
 export enum SupportToolPageIndex {
   ISSUE_DETAILS,
@@ -42,6 +45,8 @@ export interface DataExportResult {
 
 export interface SupportToolElement {
   $: {
+    continueButton: CrButtonElement,
+    continueButtonContainer: HTMLElement,
     issueDetails: IssueDetailsElement,
     dataCollectors: DataCollectorsElement,
     spinnerPage: SpinnerPageElement,
@@ -52,40 +57,44 @@ export interface SupportToolElement {
   };
 }
 
-const SupportToolElementBase = WebUiListenerMixin(PolymerElement);
+const SupportToolElementBase =
+    WebUiListenerMixinLit(I18nMixinLit(CrLitElement));
 
 export class SupportToolElement extends SupportToolElementBase {
   static get is() {
     return 'support-tool';
   }
 
-  static get template() {
-    return getTemplate();
+  static override get styles() {
+    return getCss();
   }
 
-  static get properties() {
+  override render() {
+    return getHtml.bind(this)();
+  }
+
+  static override get properties() {
     return {
-      selectedPage_: {
-        type: SupportToolPageIndex,
-        value: SupportToolPageIndex.ISSUE_DETAILS,
-        observer: 'onSelectedPageChange_',
-      },
-      supportToolPageIndexEnum_: {
-        readonly: true,
-        type: Object,
-        value: SupportToolPageIndex,
-      },
-      // The error message shown in errorMessageToast element when it's shown.
-      errorMessage_: {
-        type: String,
-        value: '',
-      },
+      selectedPage_: {type: Number},
+      errorMessage_: {type: String},
     };
   }
 
-  declare private errorMessage_: string;
-  declare private selectedPage_: SupportToolPageIndex;
+  protected accessor errorMessage_: string = '';
+  protected accessor selectedPage_: SupportToolPageIndex =
+      SupportToolPageIndex.ISSUE_DETAILS;
   private browserProxy_: BrowserProxy = BrowserProxyImpl.getInstance();
+
+  override updated(changedProperties: PropertyValues<this>) {
+    super.updated(changedProperties);
+
+    const changedPrivateProperties =
+        changedProperties as Map<PropertyKey, unknown>;
+
+    if (changedPrivateProperties.has('selectedPage_')) {
+      this.onSelectedPageChange_();
+    }
+  }
 
   override connectedCallback() {
     super.connectedCallback();
@@ -101,27 +110,27 @@ export class SupportToolElement extends SupportToolElementBase {
         'data-export-completed', this.onDataExportCompleted_.bind(this));
   }
 
-  private onDataExportStarted_() {
+  protected onDataExportStarted_() {
     this.selectedPage_ = SupportToolPageIndex.EXPORT_SPINNER;
   }
 
-  private onDataCollectionCompleted_(piiItems: PiiDataItem[]) {
+  protected onDataCollectionCompleted_(piiItems: PiiDataItem[]) {
     this.$.piiSelection.updateDetectedPiiItems(piiItems);
     this.selectedPage_ = SupportToolPageIndex.PII_SELECTION;
   }
 
-  private onDataCollectionCancelled_() {
+  protected onDataCollectionCancelled_() {
     // Change the selected page into issue details page so they user can restart
     // data collection if they want.
     this.selectedPage_ = SupportToolPageIndex.ISSUE_DETAILS;
   }
 
-  private displayError_(errorMessage: string) {
+  protected displayError_(errorMessage: string) {
     this.errorMessage_ = errorMessage;
     this.$.errorMessageToast.show();
   }
 
-  private onDataExportCompleted_(result: DataExportResult) {
+  protected onDataExportCompleted_(result: DataExportResult) {
     if (result.success) {
       // Show the exported data path to user in data export page if the data
       // export is successful.
@@ -135,7 +144,7 @@ export class SupportToolElement extends SupportToolElementBase {
     }
   }
 
-  private onDataCollectionStart_(result: StartDataCollectionResult) {
+  protected onDataCollectionStart_(result: StartDataCollectionResult) {
     if (result.success) {
       this.selectedPage_ = SupportToolPageIndex.SPINNER;
     } else {
@@ -143,11 +152,11 @@ export class SupportToolElement extends SupportToolElementBase {
     }
   }
 
-  private onErrorMessageToastCloseClicked_() {
+  protected onErrorMessageToastCloseClicked_() {
     this.$.errorMessageToast.hide();
   }
 
-  private onContinueClick_() {
+  protected onContinueClick_() {
     // If we are currently on data collectors selection page, send signal to
     // start data collection.
     if (this.selectedPage_ === SupportToolPageIndex.DATA_COLLECTOR_SELECTION) {
@@ -161,16 +170,16 @@ export class SupportToolElement extends SupportToolElementBase {
     }
   }
 
-  private onBackClick_() {
+  protected onBackClick_() {
     this.selectedPage_ = this.selectedPage_ - 1;
   }
 
-  private shouldHideBackButton_(): boolean {
+  protected shouldHideBackButton_(): boolean {
     // Back button will only be shown on data collectors selection page.
     return this.selectedPage_ !== SupportToolPageIndex.DATA_COLLECTOR_SELECTION;
   }
 
-  private shouldHideContinueButtonContainer_(): boolean {
+  protected shouldHideContinueButtonContainer_(): boolean {
     // Continue button container will only be shown in issue details page and
     // data collectors selection page.
     return this.selectedPage_ >= SupportToolPageIndex.SPINNER;

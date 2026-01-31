@@ -19,7 +19,7 @@ class MockDevToolsClient : public StubDevToolsClient {
  public:
   MOCK_METHOD2(SendCommand,
                Status(const std::string& method,
-                      const base::Value::Dict& params));
+                      const base::DictValue& params));
   MOCK_METHOD1(AddListener, void(DevToolsEventListener* listener));
 };
 
@@ -43,13 +43,13 @@ class FedCmTrackerTest : public testing::Test {
 };
 
 TEST_F(FedCmTrackerTest, OnDialogShown) {
-  base::Value::Dict account;
+  base::DictValue account;
   account.Set("accountId", "1");
   account.Set("email", "foo@bar.com");
   account.Set("name", "Foo Bar");
-  base::Value::List account_list;
+  base::ListValue account_list;
   account_list.Append(std::move(account));
-  base::Value::Dict event_params;
+  base::DictValue event_params;
   event_params.Set("dialogId", "5");
   event_params.Set("title", "a title");
   event_params.Set("dialogType", "AccountChooser");

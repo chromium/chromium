@@ -61,7 +61,7 @@ class UserCloudSigninRestrictionPolicyFetcherTest : public ::testing::Test {
 
 TEST_F(UserCloudSigninRestrictionPolicyFetcherTest,
        ReturnsLegacyValueFromBody) {
-  base::Value::Dict expected_response;
+  base::DictValue expected_response;
   expected_response.Set("policyValue", "primary_account");
   std::string response;
   JSONStringValueSerializer serializer(&response);
@@ -93,7 +93,7 @@ TEST_F(UserCloudSigninRestrictionPolicyFetcherTest,
 }
 
 TEST_F(UserCloudSigninRestrictionPolicyFetcherTest, ReturnsNewValueFromBody) {
-  base::Value::Dict expected_response;
+  base::DictValue expected_response;
   expected_response.Set("profileSeparationSettings", 1);
   expected_response.Set("profileSeparationDataMigrationSettings", 2);
   std::string response;
@@ -127,7 +127,7 @@ TEST_F(UserCloudSigninRestrictionPolicyFetcherTest, ReturnsNewValueFromBody) {
 
 TEST_F(UserCloudSigninRestrictionPolicyFetcherTest,
        ReturnsProfileSeparationSettingsFromBody) {
-  base::Value::Dict expected_response;
+  base::DictValue expected_response;
   expected_response.Set("profileSeparationSettings", 3);
   std::string response;
   JSONStringValueSerializer serializer(&response);
@@ -160,7 +160,7 @@ TEST_F(UserCloudSigninRestrictionPolicyFetcherTest,
 
 TEST_F(UserCloudSigninRestrictionPolicyFetcherTest,
        ReturnsDataMigrationSettingsFromBody) {
-  base::Value::Dict expected_response;
+  base::DictValue expected_response;
   expected_response.Set("profileSeparationDataMigrationSettings", 2);
   std::string response;
   JSONStringValueSerializer serializer(&response);
@@ -193,7 +193,7 @@ TEST_F(UserCloudSigninRestrictionPolicyFetcherTest,
 
 TEST_F(UserCloudSigninRestrictionPolicyFetcherTest,
        ReturnsNewValueWhenLegacyAvailableFromBody) {
-  base::Value::Dict expected_response;
+  base::DictValue expected_response;
   expected_response.Set("policyValue", "primary_account");
   expected_response.Set("profileSeparationSettings", 1);
   expected_response.Set("profileSeparationDataMigrationSettings", 2);
@@ -338,7 +338,7 @@ TEST_F(UserCloudSigninRestrictionPolicyFetcherTest, ReturnsValueForTesting) {
 
 TEST_F(UserCloudSigninRestrictionPolicyFetcherTest,
        ReturnsNewValueWhenLegacyAvailableFromBodyWithEmptyValueForTesting) {
-  base::Value::Dict expected_response;
+  base::DictValue expected_response;
   expected_response.Set("policyValue", "primary_account");
   expected_response.Set("profileSeparationSettings", 1);
   expected_response.Set("profileSeparationDataMigrationSettings", 2);

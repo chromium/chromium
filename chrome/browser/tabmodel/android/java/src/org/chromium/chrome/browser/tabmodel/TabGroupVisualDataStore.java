@@ -156,6 +156,22 @@ public class TabGroupVisualDataStore {
     }
 
     /**
+     * This method checks if visual data for the specified tab group is currently present in the
+     * in-memory cache, populated during tab restore.
+     *
+     * <p>This is used to determine if a storage update is required to flush potentially dirty
+     * cached data to SharedPreferences, even if the incoming value matches the cached value.
+     *
+     * <p>Package protected as all access should route through the {@link TabGroupModelFilter}.
+     *
+     * @param tabGroupId The token identifier for the tab group.
+     * @return True if the tab group data is currently cached, false otherwise.
+     */
+    /* package */ static boolean isTabGroupCachedForRestore(Token tabGroupId) {
+        return sGroupsCache.containsKey(tabGroupId);
+    }
+
+    /**
      * This method deletes a specific stored tab group color with reference to {@code tabRootId}.
      * While currently public, the intent is to make this package protected and force all access to
      * go through the {@Link TabGroupModelFilter}.
@@ -239,6 +255,7 @@ public class TabGroupVisualDataStore {
      * @param title The tab group title to store.
      */
     /* package */ static void storeTabGroupTitle(Token tabGroupId, @Nullable String title) {
+        flushCachedData(tabGroupId);
         if (TextUtils.isEmpty(title)) {
             deleteTabGroupTitle(tabGroupId);
         } else {
@@ -252,6 +269,7 @@ public class TabGroupVisualDataStore {
      * @param tabGroupId The tab group ID whose related tab group title will be deleted.
      */
     /* package */ static void deleteTabGroupTitle(Token tabGroupId) {
+        flushCachedData(tabGroupId);
         getTokenTitleSharedPreferences().edit().remove(tabGroupId.toString()).apply();
     }
 
@@ -282,6 +300,7 @@ public class TabGroupVisualDataStore {
      * @param color The tab group color {@link TabGroupColorId} to store.
      */
     /* package */ static void storeTabGroupColor(Token tabGroupId, int color) {
+        flushCachedData(tabGroupId);
         getTokenColorSharedPreferences().edit().putInt(tabGroupId.toString(), color).apply();
     }
 
@@ -291,6 +310,7 @@ public class TabGroupVisualDataStore {
      * @param tabGroupId The tab group ID whose related tab group color will be deleted.
      */
     /* package */ static void deleteTabGroupColor(Token tabGroupId) {
+        flushCachedData(tabGroupId);
         getTokenColorSharedPreferences().edit().remove(tabGroupId.toString()).apply();
     }
 
@@ -321,6 +341,7 @@ public class TabGroupVisualDataStore {
      * @param isCollapsed If the tab group is collapsed or expanded.
      */
     /* package */ static void storeTabGroupCollapsed(Token tabGroupId, boolean isCollapsed) {
+        flushCachedData(tabGroupId);
         if (isCollapsed) {
             getTokenCollapsedSharedPreferences()
                     .edit()
@@ -337,6 +358,7 @@ public class TabGroupVisualDataStore {
      * @param tabGroupId The tab group ID whose related tab group collapsed state will be deleted.
      */
     /* package */ static void deleteTabGroupCollapsed(Token tabGroupId) {
+        flushCachedData(tabGroupId);
         getTokenCollapsedSharedPreferences().edit().remove(tabGroupId.toString()).apply();
     }
 
@@ -449,5 +471,46 @@ public class TabGroupVisualDataStore {
             storeTabGroupCollapsed(rootId, true);
             deleteTabGroupCollapsed(tabGroupId);
         }
+    }
+
+    /**
+     * Removes the group data from the memory cache and ensures all its properties are persisted to
+     * SharedPreferences. This prevents data loss for properties not currently being updated when
+     * the cache entry is invalidated.
+     *
+     * @param tabGroupId The token identifier for the tab group.
+     */
+    private static void flushCachedData(Token tabGroupId) {
+        TabGroupCollectionData data = sGroupsCache.remove(tabGroupId);
+        if (data == null) return;
+
+        String tabGroupIdString = tabGroupId.toString();
+
+        SharedPreferences.Editor titleEditor = getTokenTitleSharedPreferences().edit();
+        String title = data.getTitle();
+        if (TextUtils.isEmpty(title)) {
+            titleEditor.remove(tabGroupIdString);
+        } else {
+            titleEditor.putString(tabGroupIdString, title);
+        }
+        titleEditor.apply();
+
+        SharedPreferences.Editor colorEditor = getTokenColorSharedPreferences().edit();
+        @TabGroupColorId int color = data.getColor();
+        if (color == TabGroupColorUtils.INVALID_COLOR_ID) {
+            colorEditor.remove(tabGroupIdString);
+        } else {
+            colorEditor.putInt(tabGroupIdString, color);
+        }
+        colorEditor.apply();
+
+        SharedPreferences.Editor collapsedEditor = getTokenCollapsedSharedPreferences().edit();
+        boolean isCollapsed = data.isCollapsed();
+        if (isCollapsed) {
+            collapsedEditor.putBoolean(tabGroupIdString, true);
+        } else {
+            collapsedEditor.remove(tabGroupIdString);
+        }
+        collapsedEditor.apply();
     }
 }

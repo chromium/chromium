@@ -14,6 +14,8 @@ import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
+import static org.chromium.chrome.browser.url_constants.UrlConstantResolver.getOriginalNativeNtpUrl;
+
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -28,7 +30,6 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
-import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.tab_group_sync.LocalTabGroupId;
 import org.chromium.components.tab_group_sync.SavedTabGroup;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
@@ -245,7 +246,7 @@ public class NavigationObserverUnitTest {
                 TAB_ID_1,
                 TOKEN_1,
                 mTestTitle,
-                new GURL(UrlConstants.NTP_URL),
+                new GURL(getOriginalNativeNtpUrl()),
                 /* isIncognito= */ false,
                 /* isGrouped= */ true);
         simulateNavigation(PageTransition.LINK);

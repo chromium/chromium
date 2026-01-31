@@ -12,6 +12,7 @@
 #include "base/auto_reset.h"
 #include "base/containers/flat_set.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ref.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 #include "chrome/browser/ui/toolbar/toolbar_action_view_model.h"
@@ -40,7 +41,8 @@ class ExtensionsMenuView : public views::BubbleDialogDelegateView,
  public:
   ExtensionsMenuView(views::View* anchor_view,
                      Browser* browser,
-                     ExtensionsContainerViews* extensions_container);
+                     ExtensionsContainer* extensions_container,
+                     ExtensionsContainerViews* extensions_container_views);
   ExtensionsMenuView(const ExtensionsMenuView&) = delete;
   ExtensionsMenuView& operator=(const ExtensionsMenuView&) = delete;
   ~ExtensionsMenuView() override;
@@ -51,7 +53,8 @@ class ExtensionsMenuView : public views::BubbleDialogDelegateView,
   static views::Widget* ShowBubble(
       views::View* anchor_view,
       Browser* browser,
-      ExtensionsContainerViews* extensions_container);
+      ExtensionsContainer* extensions_container,
+      ExtensionsContainerViews* extensions_container_views);
 
   // Returns true if there is currently an ExtensionsMenuView showing (across
   // all browsers and profiles).
@@ -71,9 +74,9 @@ class ExtensionsMenuView : public views::BubbleDialogDelegateView,
   std::u16string GetAccessibleWindowTitle() const override;
 
   // TabStripModelObserver:
-  void TabChangedAt(content::WebContents* contents,
-                    int index,
-                    TabChangeType change_type) override;
+  void OnTabChangedAt(tabs::TabInterface* tab,
+                      int index,
+                      TabChangeType change_type) override;
   void OnTabStripModelChanged(
       TabStripModel* tab_strip_model,
       const TabStripModelChange& change,
@@ -156,7 +159,8 @@ class ExtensionsMenuView : public views::BubbleDialogDelegateView,
   void SanityCheck();
 
   const raw_ptr<Browser> browser_;
-  const raw_ptr<ExtensionsContainerViews> extensions_container_;
+  const raw_ref<ExtensionsContainer> extensions_container_;
+  const raw_ptr<ExtensionsContainerViews> extensions_container_views_;
   const raw_ptr<ToolbarActionsModel> toolbar_model_;
   base::ScopedObservation<ToolbarActionsModel, ToolbarActionsModel::Observer>
       toolbar_model_observation_{this};

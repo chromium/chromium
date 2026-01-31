@@ -12,7 +12,7 @@
 #import "build/branding_buildflags.h"
 #import "components/autofill/core/common/autofill_payments_features.h"
 #import "components/strings/grit/components_strings.h"
-#import "ios/chrome/browser/autofill/ui_bundled/authentication/authentication_egtest_util.h"
+#import "ios/chrome/browser/autofill/authentication/test/authentication_egtest_util.h"
 #import "ios/chrome/browser/autofill/ui_bundled/autofill_app_interface.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/earl_grey/chrome_actions.h"
@@ -111,13 +111,6 @@ id<GREYMatcher> ActivityIndicatorMatcher() {
 @end
 
 @implementation VirtualCardEnrollmentBottomSheetEgTest
-
-- (AppLaunchConfiguration)appConfigurationForTestCase {
-  AppLaunchConfiguration config;
-  config.features_enabled.push_back(
-      autofill::features::kAutofillSaveCardBottomSheet);
-  return config;
-}
 
 - (void)setUp {
   [super setUp];

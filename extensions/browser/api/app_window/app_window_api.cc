@@ -4,6 +4,7 @@
 
 #include "extensions/browser/api/app_window/app_window_api.h"
 
+#include <algorithm>
 #include <memory>
 #include <utility>
 
@@ -209,7 +210,7 @@ ExtensionFunction::ResponseAction AppWindowCreateFunction::Run() {
           // initialized. Hence, adding a callback for window first navigation
           // completion.
           if (existing_window->DidFinishFirstNavigation()) {
-            base::Value::Dict result;
+            base::DictValue result;
             result.Set("frameToken", frame_token);
             existing_window->GetSerializedState(&result);
             result.Set("existingWindow", true);
@@ -286,7 +287,8 @@ ExtensionFunction::ResponseAction AppWindowCreateFunction::Run() {
           "F16F23C83C5F6DAD9B65A120448B34056DD80691",
           "0F585FB1D0FDFBEBCE1FEB5E9DFFB6DA476B8C9B"};
       if (AppWindowClient::Get()->IsCurrentChannelOlderThanDev() &&
-          !base::Contains(kAllowlist, extension()->hashed_id().value())) {
+          !std::ranges::contains(kAllowlist,
+                                 extension()->hashed_id().value())) {
         return RespondNow(
             Error(app_window_constants::kAlphaEnabledWrongChannel));
       }
@@ -426,7 +428,7 @@ void AppWindowCreateFunction::OnAppWindowFinishedFirstNavigationOrClosed(
   if (source_process_id() == app_frame->GetProcess()->GetDeprecatedID()) {
     frame_token = app_frame->GetFrameToken().ToString();
   }
-  base::Value::Dict result;
+  base::DictValue result;
   result.Set("frameToken", frame_token);
   if (is_existing_window) {
     result.Set("existingWindow", true);

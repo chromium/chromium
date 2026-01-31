@@ -7,7 +7,6 @@
 #include <memory>
 
 #include "base/command_line.h"
-#include "base/containers/contains.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
@@ -260,22 +259,22 @@ TEST_F(GalleryWatchManagerTest, AddAndRemoveTwoWatches) {
   MediaGalleryPrefIdSet set1 =
       manager()->GetWatchSet(profile(), extension()->id());
   EXPECT_EQ(1u, set1.size());
-  EXPECT_TRUE(base::Contains(set1, id1));
+  EXPECT_TRUE(set1.contains(id1));
 
   // Test that the second watch was added correctly too.
   AddAndConfirmWatch(id2);
   MediaGalleryPrefIdSet set2 =
       manager()->GetWatchSet(profile(), extension()->id());
   EXPECT_EQ(2u, set2.size());
-  EXPECT_TRUE(base::Contains(set2, id1));
-  EXPECT_TRUE(base::Contains(set2, id2));
+  EXPECT_TRUE(set2.contains(id1));
+  EXPECT_TRUE(set2.contains(id2));
 
   // Remove first watch and test that the second is still in there.
   manager()->RemoveWatch(profile(), extension()->id(), id1);
   MediaGalleryPrefIdSet set3 =
       manager()->GetWatchSet(profile(), extension()->id());
   EXPECT_EQ(1u, set3.size());
-  EXPECT_TRUE(base::Contains(set3, id2));
+  EXPECT_TRUE(set3.contains(id2));
 
   // Try removing the first watch again and test that it has no effect.
   manager()->RemoveWatch(profile(), extension()->id(), id1);

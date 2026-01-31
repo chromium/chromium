@@ -13,6 +13,8 @@ namespace web_app {
 
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
+//
+// LINT.IfChange(FetchManifestAndUpdateResult)
 enum class FetchManifestAndUpdateResult {
   kSuccess = 0,
   kSuccessNoUpdateDetected = 1,
@@ -27,6 +29,8 @@ enum class FetchManifestAndUpdateResult {
   kManifestToWebAppInstallInfoFailed = 10,
   kMaxValue = kManifestToWebAppInstallInfoFailed
 };
+// LINT.ThenChange(//tools/metrics/histograms/metadata/webapps/enums.xml:FetchManifestAndUpdateResult)
+
 using FetchManifestAndUpdateCallback =
     base::OnceCallback<void(FetchManifestAndUpdateResult)>;
 

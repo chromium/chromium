@@ -30,6 +30,7 @@
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/global_request_id.h"
+#include "content/public/common/child_process_id.h"
 #include "content/public/common/content_features.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -44,6 +45,7 @@
 #include "third_party/blink/public/common/service_worker/embedded_worker_status.h"
 #include "third_party/blink/public/common/service_worker/service_worker_status_code.h"
 #include "third_party/blink/public/mojom/loader/resource_load_info.mojom.h"
+#include "third_party/perfetto/include/perfetto/tracing/track_event_args.h"
 
 namespace content {
 
@@ -299,8 +301,11 @@ void GrantFileAccessToProcess(int process_id,
       ChildProcessSecurityPolicyImpl::GetInstance();
 
   for (const auto& file : file_paths) {
-    if (!policy->CanReadFile(process_id, file))
-      policy->GrantReadFile(process_id, file);
+    // TODO(crbug.com/379869738) Remove FromUnsafeValue.
+    ChildProcessId child_id = ChildProcessId::FromUnsafeValue(process_id);
+    if (!policy->CanReadFile(child_id, file)) {
+      policy->GrantReadFile(child_id, file);
+    }
   }
 }
 
@@ -469,19 +474,17 @@ ServiceWorkerFetchDispatcher::ServiceWorkerFetchDispatcher(
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(!request_->blob);
-  TRACE_EVENT_WITH_FLOW1(
-      "ServiceWorker",
-      "ServiceWorkerFetchDispatcher::ServiceWorkerFetchDispatcher",
-      TRACE_ID_LOCAL(this), TRACE_EVENT_FLAG_FLOW_OUT, "event_type",
-      ServiceWorkerMetrics::EventTypeToString(GetEventType()));
+  TRACE_EVENT("ServiceWorker",
+              "ServiceWorkerFetchDispatcher::ServiceWorkerFetchDispatcher",
+              perfetto::Flow::FromPointer(this), "event_type",
+              ServiceWorkerMetrics::EventTypeToString(GetEventType()));
 }
 
 ServiceWorkerFetchDispatcher::~ServiceWorkerFetchDispatcher() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  TRACE_EVENT_WITH_FLOW0(
-      "ServiceWorker",
-      "ServiceWorkerFetchDispatcher::~ServiceWorkerFetchDispatcher",
-      TRACE_ID_LOCAL(this), TRACE_EVENT_FLAG_FLOW_IN);
+  TRACE_EVENT("ServiceWorker",
+              "ServiceWorkerFetchDispatcher::~ServiceWorkerFetchDispatcher",
+              perfetto::TerminatingFlow::FromPointer(this));
 }
 
 void ServiceWorkerFetchDispatcher::Run() {
@@ -489,9 +492,8 @@ void ServiceWorkerFetchDispatcher::Run() {
   DCHECK(version_->status() == ServiceWorkerVersion::ACTIVATING ||
          version_->status() == ServiceWorkerVersion::ACTIVATED)
       << version_->status();
-  TRACE_EVENT_WITH_FLOW0("ServiceWorker", "ServiceWorkerFetchDispatcher::Run",
-                         TRACE_ID_LOCAL(this),
-                         TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT);
+  TRACE_EVENT("ServiceWorker", "ServiceWorkerFetchDispatcher::Run",
+              perfetto::Flow::FromPointer(this));
 
   if (version_->status() == ServiceWorkerVersion::ACTIVATING) {
     version_->RegisterStatusChangeCallback(
@@ -504,19 +506,16 @@ void ServiceWorkerFetchDispatcher::Run() {
 
 void ServiceWorkerFetchDispatcher::DidWaitForActivation() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  TRACE_EVENT_WITH_FLOW0("ServiceWorker",
-                         "ServiceWorkerFetchDispatcher::DidWaitForActivation",
-                         TRACE_ID_LOCAL(this),
-                         TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT);
+  TRACE_EVENT("ServiceWorker",
+              "ServiceWorkerFetchDispatcher::DidWaitForActivation",
+              perfetto::Flow::FromPointer(this));
   StartWorker();
 }
 
 void ServiceWorkerFetchDispatcher::StartWorker() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  TRACE_EVENT_WITH_FLOW0("ServiceWorker",
-                         "ServiceWorkerFetchDispatcher::StartWorker",
-                         TRACE_ID_LOCAL(this),
-                         TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT);
+  TRACE_EVENT("ServiceWorker", "ServiceWorkerFetchDispatcher::StartWorker",
+              perfetto::Flow::FromPointer(this));
 
   // We might be REDUNDANT if a new worker started activating and kicked us out
   // before we could finish activation.
@@ -546,10 +545,8 @@ void ServiceWorkerFetchDispatcher::StartWorker() {
 void ServiceWorkerFetchDispatcher::DidStartWorker(
     blink::ServiceWorkerStatusCode status) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  TRACE_EVENT_WITH_FLOW0("ServiceWorker",
-                         "ServiceWorkerFetchDispatcher::DidStartWorker",
-                         TRACE_ID_LOCAL(this),
-                         TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT);
+  TRACE_EVENT("ServiceWorker", "ServiceWorkerFetchDispatcher::DidStartWorker",
+              perfetto::Flow::FromPointer(this));
 
   if (status != blink::ServiceWorkerStatusCode::kOk) {
     DidFail(status);
@@ -566,10 +563,9 @@ void ServiceWorkerFetchDispatcher::DispatchFetchEvent() {
   DCHECK(blink::EmbeddedWorkerStatus::kStarting == version_->running_status() ||
          blink::EmbeddedWorkerStatus::kRunning == version_->running_status())
       << "Worker stopped too soon after it was started.";
-  TRACE_EVENT_WITH_FLOW0("ServiceWorker",
-                         "ServiceWorkerFetchDispatcher::DispatchFetchEvent",
-                         TRACE_ID_LOCAL(this),
-                         TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT);
+  TRACE_EVENT("ServiceWorker",
+              "ServiceWorkerFetchDispatcher::DispatchFetchEvent",
+              perfetto::Flow::FromPointer(this));
   // Grant the service worker's process access to files in the request body.
   if (request_->body) {
     GrantFileAccessToProcess(version_->embedded_worker()->process_id(),
@@ -645,10 +641,8 @@ void ServiceWorkerFetchDispatcher::DidFail(
     blink::ServiceWorkerStatusCode status) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK_NE(blink::ServiceWorkerStatusCode::kOk, status);
-  TRACE_EVENT_WITH_FLOW1(
-      "ServiceWorker", "ServiceWorkerFetchDispatcher::DidFail",
-      TRACE_ID_LOCAL(this),
-      TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT, "status", status);
+  TRACE_EVENT("ServiceWorker", "ServiceWorkerFetchDispatcher::DidFail",
+              perfetto::Flow::FromPointer(this), "status", status);
   RunCallback(status, FetchEventResult::kShouldFallback,
               blink::mojom::FetchAPIResponse::New(),
               nullptr /* body_as_stream */, nullptr /* timing */);
@@ -661,10 +655,8 @@ void ServiceWorkerFetchDispatcher::DidFinish(
     blink::mojom::ServiceWorkerStreamHandlePtr body_as_stream,
     blink::mojom::ServiceWorkerFetchEventTimingPtr timing) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  TRACE_EVENT_WITH_FLOW0("ServiceWorker",
-                         "ServiceWorkerFetchDispatcher::DidFinish",
-                         TRACE_ID_LOCAL(this),
-                         TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT);
+  TRACE_EVENT("ServiceWorker", "ServiceWorkerFetchDispatcher::DidFinish",
+              perfetto::Flow::FromPointer(this));
   RunCallback(blink::ServiceWorkerStatusCode::kOk, fetch_result,
               std::move(response), std::move(body_as_stream),
               std::move(timing));

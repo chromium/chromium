@@ -5,6 +5,10 @@
 #include "chrome/browser/page_load_metrics/observers/initial_webui_page_load_metrics_observer.h"
 
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_finder.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_features.h"
+#include "chrome/browser/ui/waap/initial_webui_window_metrics_manager.h"
 #include "chrome/browser/ui/waap/waap_ui_metrics_service.h"
 #include "chrome/browser/ui/waap/waap_utils.h"
 #include "chrome/browser/ui/webui/metrics_reporter/metrics_reporter.h"
@@ -39,7 +43,10 @@ void InitialWebUIPageLoadMetricsObserver::OnMonotonicFirstPaintInPage(
     return;
   }
 
-  service()->OnFirstPaint(timing.monotonic_paint_timing->first_paint.value());
+  if (auto* manager = GetMetricsManager()) {
+    manager->OnReloadButtonFirstPaint(
+        timing.monotonic_paint_timing->first_paint.value());
+  }
 }
 
 void InitialWebUIPageLoadMetricsObserver::OnMonotonicFirstContentfulPaintInPage(
@@ -49,8 +56,10 @@ void InitialWebUIPageLoadMetricsObserver::OnMonotonicFirstContentfulPaintInPage(
     return;
   }
 
-  service()->OnFirstContentfulPaint(
-      timing.monotonic_paint_timing->first_contentful_paint.value());
+  if (auto* manager = GetMetricsManager()) {
+    manager->OnReloadButtonFirstContentfulPaint(
+        timing.monotonic_paint_timing->first_contentful_paint.value());
+  }
 }
 
 void InitialWebUIPageLoadMetricsObserver::OnUserInput(
@@ -102,6 +111,16 @@ MetricsReporter& InitialWebUIPageLoadMetricsObserver::GetMetricsReporter() {
   CHECK(service);
   CHECK(service->metrics_reporter());
   return *service->metrics_reporter();
+}
+
+InitialWebUIWindowMetricsManager*
+InitialWebUIPageLoadMetricsObserver::GetMetricsManager() const {
+  content::WebContents* web_contents = GetDelegate().GetWebContents();
+  gfx::NativeWindow window = web_contents
+                                 ? web_contents->GetTopLevelNativeWindow()
+                                 : gfx::NativeWindow();
+  Browser* browser = chrome::FindBrowserWithWindow(window);
+  return browser ? InitialWebUIWindowMetricsManager::From(browser) : nullptr;
 }
 
 page_load_metrics::PageLoadMetricsObserver::ObservePolicy

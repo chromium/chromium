@@ -7,7 +7,6 @@
 #import "base/metrics/histogram_functions.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/metrics/histogram_tester.h"
-#import "base/types/cxx23_to_underlying.h"
 #import "components/signin/public/base/signin_metrics.h"
 #import "google_apis/gaia/gaia_id.h"
 #import "ios/chrome/browser/metrics/model/constants.h"

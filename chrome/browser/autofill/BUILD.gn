@@ -29,6 +29,8 @@ static_library("autofill") {
     "autofill_offer_manager_factory.h",
     "autofill_optimization_guide_decider_factory.cc",
     "autofill_optimization_guide_decider_factory.h",
+    "gmail_otp_backend_factory.cc",
+    "gmail_otp_backend_factory.h",
     "iban_manager_factory.cc",
     "iban_manager_factory.h",
     "merchant_promo_code_manager_factory.cc",
@@ -37,8 +39,6 @@ static_library("autofill") {
     "one_time_token_service_factory.h",
     "personal_data_manager_factory.cc",
     "personal_data_manager_factory.h",
-    "strike_database_factory.cc",
-    "strike_database_factory.h",
     "subkey_requester_factory.cc",
     "subkey_requester_factory.h",
     "ui/ui_util.cc",
@@ -71,6 +71,7 @@ static_library("autofill") {
     "//chrome/browser/optimization_guide",
     "//chrome/browser/profiles",
     "//chrome/browser/signin",
+    "//chrome/browser/strike_database",
     "//chrome/browser/sync:factories",
     "//chrome/browser/webdata_services",
     "//chrome/common:constants",
@@ -92,19 +93,27 @@ static_library("autofill") {
       "android/attribute_instance_android.h",
       "android/attribute_type_android.cc",
       "android/attribute_type_android.h",
+      "android/autofill_ai_save_update_entity_prompt_controller.cc",
+      "android/autofill_ai_save_update_entity_prompt_controller.h",
+      "android/autofill_ai_save_update_entity_prompt_view.h",
+      "android/autofill_fallback_surface_launcher.cc",
+      "android/autofill_fallback_surface_launcher.h",
       "android/autofill_image_fetcher_impl.cc",
       "android/autofill_image_fetcher_impl.h",
       "android/autofill_profile_bridge.cc",
       "android/autofill_profile_bridge.h",
+      "android/entity_attribute_update_details_android.h",
       "android/entity_data_manager_android.cc",
       "android/entity_data_manager_android.h",
+      "android/entity_instance_android.cc",
+      "android/entity_instance_android.h",
+      "android/entity_metadata_android.cc",
+      "android/entity_metadata_android.h",
       "android/entity_type_android.cc",
       "android/entity_type_android.h",
       "android/personal_data_manager_android.cc",
       "android/personal_data_manager_android.h",
       "android/phone_number_util_android.cc",
-      "android/save_update_address_profile_message_controller.cc",
-      "android/save_update_address_profile_message_controller.h",
       "android/save_update_address_profile_prompt_controller.cc",
       "android/save_update_address_profile_prompt_controller.h",
       "android/save_update_address_profile_prompt_mode.h",
@@ -117,6 +126,8 @@ static_library("autofill") {
       "//chrome/app:generated_resources",
       "//chrome/browser/autofill/android:jni_headers",
       "//chrome/browser/keyboard_accessory/android:public",
+      "//chrome/browser/ui/autofill:autofill_ai_ui_utils",
+      "//chrome/browser/ui/autofill:autofill_ai_ui_utils_impl",
       "//components/autofill/android:autofill_core_browser_java_enums",
       "//components/autofill/android:main_autofill_jni_headers",
       "//components/autofill/android:payments_jni_headers",
@@ -125,8 +136,10 @@ static_library("autofill") {
       "//components/messages/android:feature_flags",
       "//components/one_time_tokens/android/backend/sms:backend",
       "//components/password_manager/core/browser",
+      "//components/plus_addresses/core/common:features",
       "//third_party/jni_zero",
       "//third_party/libaddressinput",
+      "//ui/android",
 
       # TODO(crbug.com/352191610): Use //chrome/browser instead after fixing cyclic
       # dependency.
@@ -203,7 +216,10 @@ static_library("test_support") {
 source_set("browser_tests") {
   testonly = true
 
-  sources = [ "otp_manager_browsertest.cc" ]
+  sources = [
+    "autofill_event_handler_browsertest.cc",
+    "otp_manager_browsertest.cc",
+  ]
 
   # TODO(crbug.com/449649023) Migrate these tests to PlatformBrowserTests.
   if (!is_android) {

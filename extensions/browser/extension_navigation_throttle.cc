@@ -4,10 +4,10 @@
 
 #include "extensions/browser/extension_navigation_throttle.h"
 
+#include <algorithm>
 #include <string>
 #include <string_view>
 
-#include "base/containers/contains.h"
 #include "base/metrics/histogram_functions.h"
 #include "components/guest_view/buildflags/buildflags.h"
 #include "content/public/browser/browser_thread.h"
@@ -42,9 +42,12 @@
 
 #if BUILDFLAG(ENABLE_GUEST_VIEW)
 #include "components/guest_view/browser/guest_view_base.h"
-#include "extensions/browser/guest_view/app_view/app_view_guest.h"
 #include "extensions/browser/guest_view/mime_handler_view/mime_handler_view_embedder.h"
 #include "extensions/browser/guest_view/web_view/web_view_guest.h"
+
+#if BUILDFLAG(ENABLE_PLATFORM_APPS)
+#include "extensions/browser/guest_view/app_view/app_view_guest.h"
+#endif
 #endif
 
 #if BUILDFLAG(ENABLE_PLATFORM_APPS)
@@ -76,12 +79,14 @@ bool ShouldBlockNavigationToPlatformAppResource(
       return false;
     }
 
+#if BUILDFLAG(ENABLE_PLATFORM_APPS)
     // Platform apps can be embedded by other platform apps using an <appview>
     // tag.
     auto* app_view = AppViewGuest::FromGuestViewBase(guest);
     if (app_view) {
       return false;
     }
+#endif
 
     // Webviews owned by the platform app can embed platform app resources via
     // "accessible_resources".
@@ -356,8 +361,8 @@ ExtensionNavigationThrottle::WillStartOrRedirectRequest() {
   const url::Origin& initiator_origin =
       navigation_handle()->GetInitiatorOrigin().value();
   if (initiator_origin.scheme() == kExtensionScheme &&
-      base::Contains(MimeTypesHandler::GetMIMETypeAllowlist(),
-                     initiator_origin.host())) {
+      std::ranges::contains(MimeTypesHandler::GetMIMETypeAllowlist(),
+                            initiator_origin.host())) {
     return content::NavigationThrottle::PROCEED;
   }
 
@@ -433,7 +438,7 @@ ExtensionNavigationThrottle::WillProcessResponse() {
     return PROCEED;
   }
 
-#if BUILDFLAG(ENABLE_GUEST_VIEW)
+#if BUILDFLAG(ENABLE_EXTENSIONS)
   auto* mime_handler_view_embedder =
       MimeHandlerViewEmbedder::Get(navigation_handle()->GetFrameTreeNodeId());
   if (!mime_handler_view_embedder) {

@@ -13,9 +13,9 @@
 namespace value_store {
 
 base::Value ValueStoreChange::ToValue(ValueStoreChangeList changes) {
-  base::Value::Dict changes_dict;
+  base::DictValue changes_dict;
   for (auto& change : changes) {
-    base::Value::Dict change_dict;
+    base::DictValue change_dict;
     if (change.old_value) {
       change_dict.Set("oldValue", std::move(*change.old_value));
     }

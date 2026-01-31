@@ -26,7 +26,7 @@
 <translation id="1710340000377843106">sad</translation>
 <translation id="1752946267035950200">{MINUTES,plural, =1{1 minuta}one{# minuta}few{# minute}other{# minuta}}</translation>
 <translation id="1761785978543082658"><ph name="QUANTITY" /> B</translation>
-<translation id="1801827354178857021">Razdoblje</translation>
+<translation id="1801827354178857021">Točka</translation>
 <translation id="1803208670097017349">{MONTHS,plural, =1{1 mjesec}one{# mjesec}few{# mjeseca}other{# mjeseci}}</translation>
 <translation id="1809410197924942083"><ph name="QUANTITY" /> MB/s</translation>
 <translation id="1830179671306812954">{HOURS,plural, =1{1 sat i }one{# sat i }few{# sata i }other{# sati i }}</translation>

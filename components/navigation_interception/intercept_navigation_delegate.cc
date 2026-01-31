@@ -374,7 +374,7 @@ void InterceptNavigationDelegate::OnSubframeAsyncActionTaken(
 static void JNI_InterceptNavigationDelegate_OnShouldIgnoreNavigationResult(
     JNIEnv* env,
     const base::android::JavaRef<jobject>& jweb_contents,
-    jboolean should_ignore) {
+    bool should_ignore) {
   content::WebContents* web_contents =
       content::WebContents::FromJavaWebContents(jweb_contents);
   if (!web_contents) {

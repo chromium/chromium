@@ -4,7 +4,8 @@
 
 #include "third_party/blink/renderer/core/layout/fragment_builder.h"
 
-#include "base/containers/contains.h"
+#include <algorithm>
+
 #include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom-shared.h"
 #include "third_party/blink/renderer/core/animation/animation_trigger.h"
 #include "third_party/blink/renderer/core/display_lock/display_lock_utilities.h"
@@ -94,12 +95,10 @@ PhysicalFragment::BoxType FragmentBuilder::GetBoxType() const {
   if (layout_object_->StyleRef().IsPageMarginBox()) {
     return PhysicalFragment::BoxType::kPageMargin;
   }
+  if (layout_object_->IsAtomicInline()) {
+    return PhysicalFragment::BoxType::kAtomicInline;
+  }
   if (layout_object_->IsInline()) {
-    // Check |IsAtomicInlineLevel()| after |IsInline()| because |LayoutReplaced|
-    // sets |IsAtomicInlineLevel()| even when it's block-level. crbug.com/567964
-    if (layout_object_->IsAtomicInlineLevel()) {
-      return PhysicalFragment::BoxType::kAtomicInline;
-    }
     return PhysicalFragment::BoxType::kInlineBox;
   }
   DCHECK(node_) << "Must call SetBoxType if there is no node";
@@ -791,8 +790,8 @@ void FragmentBuilder::PropagateOOFPositionedInfo(
     static_position.offset += adjusted_offset;
 
     // |oof_positioned_candidates_| should not have duplicated entries.
-    DCHECK(!base::Contains(oof_positioned_candidates_, node,
-                           &LogicalOofPositionedNode::Node));
+    DCHECK(!std::ranges::contains(oof_positioned_candidates_, node,
+                                  &LogicalOofPositionedNode::Node));
     oof_candidates_may_have_anchors_ |= node.MayContainAnchor();
     oof_positioned_candidates_.emplace_back(
         node, descendant.break_token, static_position,
@@ -1118,8 +1117,6 @@ void FragmentBuilder::Finalize() {
   is_finalized_ = true;
 #endif
 
-  CreateNamedTriggersForSelf();
-
   has_final_size_ = true;
   PropagateSizeDependentData();
 }
@@ -1156,69 +1153,59 @@ void FragmentBuilder::PropagateSizeDependentData() {
 
 void FragmentBuilder::SetNamedTrigger(
     const TriggerScopedName& trigger_scoped_name,
-    AnimationTrigger* trigger) {
+    const Element* trigger_owner) {
   TriggerScopedNameMap& named_triggers = EnsureNamedTriggers();
 
   auto it = named_triggers.find(&trigger_scoped_name);
   if (it == named_triggers.end()) {
-    named_triggers.Set(&trigger_scoped_name, trigger);
+    named_triggers.Set(&trigger_scoped_name, trigger_owner);
     return;
   }
 
-  if (it->value == trigger) {
+  if (it->value == trigger_owner) {
     // If we have the same name, scope and trigger, there is nothing to update.
     // We can get here with elements that generate multiple fragments.
     // IsBeforeInPreOrder below doesn't like looking at the same LayoutObjects.
     return;
   }
 
-  DCHECK(trigger->OwningElement());
-  DCHECK(trigger->OwningElement()->GetLayoutObject());
-  DCHECK(it->value->OwningElement());
-  DCHECK(it->value->OwningElement()->GetLayoutObject());
-  const LayoutObject* existing_layout_object =
-      it->value->OwningElement()->GetLayoutObject();
+  DCHECK(trigger_owner);
+  DCHECK(trigger_owner->GetLayoutObject());
+  DCHECK(it->value);
+  DCHECK(it->value->GetLayoutObject());
+  const LayoutObject* existing_layout_object = it->value->GetLayoutObject();
 
   if (existing_layout_object->IsBeforeInPreOrder(
-          *trigger->OwningElement()->GetLayoutObject())) {
-    named_triggers.Set(&trigger_scoped_name, trigger);
+          *trigger_owner->GetLayoutObject())) {
+    named_triggers.Set(&trigger_scoped_name, trigger_owner);
     it = named_triggers.find(&trigger_scoped_name);
-    DCHECK_EQ(it->value->OwningElement()->GetLayoutObject(),
-              trigger->OwningElement()->GetLayoutObject());
+    DCHECK_EQ(it->value->GetLayoutObject(), trigger_owner->GetLayoutObject());
   }
 }
 
 void FragmentBuilder::PropagateNamedTriggers(const PhysicalFragment& child) {
-  if (!child.NamedTriggers()) {
+  const Element* child_element = DynamicTo<Element>(child.GetNode());
+  if (!child_element && !child.NamedTriggers()) {
     return;
   }
 
-  const TriggerScopedNameMap* trigger_scoped_name_map = child.NamedTriggers();
-  for (const auto& entry : *trigger_scoped_name_map) {
-    SetNamedTrigger(*entry.key, entry.value);
-  }
-}
-
-void FragmentBuilder::CreateNamedTriggersForSelf() {
-  if (!node_) {
-    return;
-  }
-
-  const Element* element = DynamicTo<Element>(node_.GetDOMNode());
-  if (!element || !element->NamedTriggers()) {
-    return;
-  }
-
-  if (const CSSAnimationData* data = Style().Animations()) {
+  // Add triggers declared on |child|'s element first. Triggers in the element's
+  // are later in tree order, so they should override if there is a name clash.
+  if (const CSSAnimationData* data = child.Style().Animations()) {
     for (const auto& name : data->TimelineTriggerNameList()) {
       if (name) {
-        AnimationTrigger* trigger = element->NamedTrigger(name);
-        DCHECK(trigger);
-
         TriggerScopedName* trigger_scoped_name =
-            ToTriggerScopedName(*name, *element);
-        SetNamedTrigger(*trigger_scoped_name, trigger);
+            ToTriggerScopedName(*name, *child_element);
+        SetNamedTrigger(*trigger_scoped_name, child_element);
       }
+    }
+  }
+
+  // Add triggers declared by descendants of the |child|'s element.
+  if (child.NamedTriggers()) {
+    const TriggerScopedNameMap* trigger_scoped_name_map = child.NamedTriggers();
+    for (const auto& entry : *trigger_scoped_name_map) {
+      SetNamedTrigger(*entry.key, entry.value);
     }
   }
 }

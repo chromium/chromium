@@ -166,4 +166,4 @@ export {DomIf};
 declare class DomIf extends DomIfBase {
 }
 
-import {TemplateInfo} from '../../interfaces';
+import {TemplateInfo} from '../../interfaces.js';

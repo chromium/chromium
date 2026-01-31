@@ -7,7 +7,6 @@
 #include <memory>
 #include <optional>
 
-#include "base/containers/contains.h"
 #include "base/functional/callback_helpers.h"
 #include "base/time/time.h"
 #include "net/cookies/cookie_options.h"
@@ -27,7 +26,7 @@ void MockCookieHelper::StartFetching(FetchCallback callback) {
 }
 
 void MockCookieHelper::DeleteCookie(const net::CanonicalCookie& cookie) {
-  ASSERT_TRUE(base::Contains(cookies_, cookie));
+  ASSERT_TRUE(cookies_.contains(cookie));
   cookies_[cookie] = false;
 }
 

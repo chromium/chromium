@@ -31,7 +31,7 @@
 #import "ios/chrome/browser/share_kit/model/sharing_state.h"
 #import "ios/chrome/browser/shared/model/web_state_list/tab_group.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
-#import "ios/chrome/browser/shared/public/commands/application_commands.h"
+#import "ios/chrome/browser/shared/public/commands/scene_commands.h"
 #import "ios/chrome/browser/shared/public/commands/tab_grid_commands.h"
 #import "ios/chrome/browser/shared/public/commands/tab_groups_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
@@ -312,12 +312,17 @@ NSString* CreationText(base::Time creation_date) {
   NOTREACHED() << "Should not be called in Tab Groups.";
 }
 
+- (void)closeOtherTabsButtonTapped:(id)sender {
+  NOTREACHED() << "Should not be called in Tab Groups.";
+}
+
 - (void)doneButtonTapped:(id)sender {
   base::RecordAction(base::UserMetricsAction("MobileTabGridDone"));
   [self.tabGridHandler exitTabGrid];
 }
 
 - (void)newTabButtonTapped:(id)sender {
+  CHECK(!IsChromeNextIaEnabled());
   if (base::FeatureList::IsEnabled(kTabRecallNewTabGroupButton)) {
     // Start the tab group creation.
     [self.tabGroupsCommands showTabGroupCreationWithoutTabs];
@@ -458,7 +463,7 @@ NSString* CreationText(base::Time creation_date) {
 }
 
 - (void)updateAppWithOutOfDateMessageItem:(TabGroupsPanelItem*)item {
-  [_applicationHandler showAppStorePage];
+  [_sceneHandler showAppStorePage];
 }
 
 - (void)deleteOutOfDateMessageItem:(TabGroupsPanelItem*)item {

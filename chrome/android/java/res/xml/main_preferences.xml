@@ -54,8 +54,12 @@ found in the LICENSE file.
     <Preference
         android:fragment="org.chromium.chrome.browser.safety_hub.SafetyHubFragment"
         android:key="safety_hub"
-        android:order="10"
+        android:order="9"
         android:title="@string/prefs_safety_check"/>
+    <Preference
+        android:key="default_browser"
+        android:order="10"
+        android:title="@string/default_browser_title" />
 
     <PreferenceCategory
         android:key="autofill_section"
@@ -101,11 +105,6 @@ found in the LICENSE file.
         android:key="homepage"
         android:order="19"
         android:title="@string/options_homepage_title"/>
-    <Preference
-        android:fragment="org.chromium.chrome.browser.magic_stack.HomeModulesConfigSettings"
-        android:key="home_modules_config"
-        android:order="20"
-        android:title="@string/home_modules_configuration"/>
     <Preference
         android:fragment="org.chromium.chrome.browser.toolbar.adaptive.settings.AdaptiveToolbarSettingsFragment"
         android:key="toolbar_shortcut"

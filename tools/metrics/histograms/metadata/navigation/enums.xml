@@ -306,11 +306,6 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="reserved.top_navigation_commit"/>
 </enum>
 
-<enum name="FencedFrameNavigationState">
-  <int value="0" label="Begin"/>
-  <int value="1" label="Commit"/>
-</enum>
-
 <!-- LINT.IfChange(HistoryNavigationDirection) -->
 
 <enum name="HistoryNavigationDirection">
@@ -1725,6 +1720,7 @@ chromium-metrics-reviews@google.com.
   <int value="22" label="kIsHistoryNavigationInNewChildFrame"/>
   <int value="23" label="kReferrerPolicy (Obsolete)"/>
   <int value="24" label="kRequestDestination"/>
+  <int value="25" label="kIsOverridingUserAgent"/>
 </enum>
 
 <!-- LINT.ThenChange(//content/browser/preloading/prerender/prerender_host.h:ActivationNavigationParamsMatch) -->
@@ -1899,6 +1895,7 @@ chromium-metrics-reviews@google.com.
   <int value="9" label="Running in Picture-in-Picture window"/>
   <int value="10" label="Running in Isolated Web App"/>
   <int value="11" label="Running in Kiosk Session"/>
+  <int value="12" label="Low memory device"/>
 </enum>
 
 <!-- LINT.ThenChange(//chrome/browser/preloading/prerender/prerender_manager.h:PrewarmDecision) -->
@@ -1968,23 +1965,6 @@ chromium-metrics-reviews@google.com.
   <int value="0" label="Cookies allowed"/>
   <int value="1" label="Third-party cookies blocked"/>
   <int value="2" label="Third-party cookie blocking disabled for site"/>
-</enum>
-
-<enum name="TpcdMetadataCohort">
-  <int value="0" label="DEFAULT"/>
-  <int value="1" label="GRACE_PERIOD_FORCED_OFF"/>
-  <int value="2" label="GRACE_PERIOD_FORCED_ON"/>
-</enum>
-
-<enum name="TpcdMetadataInstallationResult">
-  <int value="0" label="kSuccessful"/>
-  <int value="1" label="kMissingMetadataFile"/>
-  <int value="2" label="kReadingMetadataFileFailed"/>
-  <int value="3" label="kParsingToProtoFailed"/>
-  <int value="4" label="kErroneousSpec"/>
-  <int value="5" label="kErroneousSource"/>
-  <int value="6" label="kErroneousDtrp"/>
-  <int value="7" label="kIllicitDtrp"/>
 </enum>
 
 <enum name="UserAgentStringType">

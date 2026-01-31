@@ -68,15 +68,15 @@ bool SetUpUserDataDirectoryForDriveFsTest() {
 bool SetUpUserDataDirectoryForDriveFsTest(const AccountId& account_id) {
   // Account type must be GOOGLE to use Drive.
   CHECK(account_id.GetAccountType() == AccountType::GOOGLE);
-  base::Value::List known_users_list;
-  base::Value::Dict user_dict;
+  base::ListValue known_users_list;
+  base::DictValue user_dict;
   user_dict.Set("account_type",
                 AccountId::AccountTypeToString(account_id.GetAccountType()));
   user_dict.Set("email", account_id.GetUserEmail());
   user_dict.Set("gaia_id", account_id.GetGaiaId().ToString());
   known_users_list.Append(std::move(user_dict));
 
-  base::Value::Dict local_state;
+  base::DictValue local_state;
   local_state.Set("KnownUsers", std::move(known_users_list));
 
   std::string local_state_json;

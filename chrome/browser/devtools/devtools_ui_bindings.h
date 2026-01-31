@@ -67,6 +67,7 @@ class DevToolsUIBindings : public DevToolsEmbedderMessageDispatcher::Delegate,
 #endif
                            public DevToolsFileHelper::Delegate {
   friend class DevToolsUIBindingsDispatchHttpRequestTest;
+  friend class DevToolsUIBindingsDispatchHttpRequestStreamingTest;
 
  public:
   class Delegate {
@@ -104,6 +105,11 @@ class DevToolsUIBindings : public DevToolsEmbedderMessageDispatcher::Delegate,
   static GURL SanitizeFrontendURL(const GURL& url);
   static bool IsValidFrontendURL(const GURL& url);
   static bool IsValidRemoteFrontendURL(const GURL& url);
+
+  static base::DictValue GetHostConfigDictionary(Profile* profile);
+  static void SetChromeFlagInternal(Profile* profile,
+                                    const std::string& flag_name,
+                                    bool value);
 
   explicit DevToolsUIBindings(content::WebContents* web_contents);
 
@@ -143,12 +149,21 @@ class DevToolsUIBindings : public DevToolsEmbedderMessageDispatcher::Delegate,
   void SetHttpServiceRegistryForTesting(
       std::unique_ptr<DevToolsHttpServiceRegistry> service_registry);
 
-  static base::Value::Dict GetSyncInformationForProfile(Profile* profile);
+  static base::DictValue GetSyncInformationForProfile(Profile* profile);
+
+ protected:
+  virtual void CallClientMethodImpl(
+      const std::string& object_name,
+      const std::string& method_name,
+      base::Value arg1,
+      base::Value arg2,
+      base::Value arg3,
+      base::OnceCallback<void(base::Value)> completion_callback);
 
  private:
   using DevToolsUIBindingsList = std::vector<DevToolsUIBindings*>;
 
-  void HandleMessageFromDevToolsFrontend(base::Value::Dict message);
+  void HandleMessageFromDevToolsFrontend(base::DictValue message);
 
   // content::DevToolsAgentHostClient implementation.
   void DispatchProtocolMessage(content::DevToolsAgentHost* agent_host,
@@ -265,6 +280,7 @@ class DevToolsUIBindings : public DevToolsEmbedderMessageDispatcher::Delegate,
                         const std::string& request) override;
   void RegisterAidaClientEvent(DispatchCallback callback,
                                const std::string& request) override;
+  void SetChromeFlag(const std::string& flag_name, bool value) override;
 
   // Dispatches a generic HTTP request to a backend service.
   // This is a centralized entry point for DevTools frontend to make network
@@ -402,6 +418,10 @@ class DevToolsUIBindings : public DevToolsEmbedderMessageDispatcher::Delegate,
 
   // Extensions support.
   void AddDevToolsExtensionsToClient();
+
+  static bool GetFeatureStateForDevTools(const base::Feature& feature,
+                                         std::string enabled_by_flags,
+                                         std::string disabled_by_flags);
 
   static DevToolsUIBindingsList& GetDevToolsUIBindings();
 

@@ -52,7 +52,7 @@ api::cookies::Cookie CreateCookie(const net::CanonicalCookie& cookie,
 
 // Constructs a new CookieStore object as defined by the cookies API.
 api::cookies::CookieStore CreateCookieStore(Profile* profile,
-                                            base::Value::List tab_ids);
+                                            base::ListValue tab_ids);
 
 // Dispatch a request to the CookieManager for cookies associated with
 // `url` and `partition_key_collection`.
@@ -94,7 +94,7 @@ void AppendMatchingCookiesFromCookieAccessResultListToVector(
 
 // Appends the IDs of all tabs belonging to the given browser to the
 // given list.
-void AppendToTabIdList(WindowController* window, base::Value::List& tab_ids);
+void AppendToTabIdList(WindowController* window, base::ListValue& tab_ids);
 
 // The extensions API allows the caller to provide an incomplete
 // partitionKey that does not contain a hasCrossSiteAncestor value. If the key

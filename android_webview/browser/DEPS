@@ -24,6 +24,7 @@ include_rules = [
   "+components/grit",
   "+components/heap_profiling",
   "+components/history/core/browser",
+  "+components/input",
   "+components/keyed_service/core",
   "+components/leveldb_proto/public",
   "+components/minidump_uploader",

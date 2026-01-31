@@ -50,6 +50,8 @@ std::string_view DownloadCheckResultToString(DownloadCheckResult result) {
       return "IMMEDIATE_DEEP_SCAN";
     case DownloadCheckResult::FORCE_SAVE_TO_GDRIVE:
       return "FORCE_SAVE_TO_GDRIVE";
+    case DownloadCheckResult::FORCE_SAVE_TO_ONEDRIVE:
+      return "FORCE_SAVE_TO_ONEDRIVE";
   }
 }
 

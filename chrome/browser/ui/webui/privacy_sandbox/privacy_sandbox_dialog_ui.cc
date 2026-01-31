@@ -74,14 +74,8 @@ PrivacySandboxDialogUI::PrivacySandboxDialogUI(content::WebUI* web_ui)
   web_ui->AddRequestableScheme(content::kChromeUIUntrustedScheme);
 
   source->AddResourcePath(
-      chrome::kChromeUIPrivacySandboxDialogCombinedPath,
-      IDR_PRIVACY_SANDBOX_PRIVACY_SANDBOX_COMBINED_DIALOG_HTML);
-  source->AddResourcePath(
       chrome::kChromeUIPrivacySandboxDialogNoticePath,
       IDR_PRIVACY_SANDBOX_PRIVACY_SANDBOX_NOTICE_DIALOG_HTML);
-  source->AddResourcePath(
-      chrome::kChromeUIPrivacySandboxDialogNoticeRestrictedPath,
-      IDR_PRIVACY_SANDBOX_PRIVACY_SANDBOX_NOTICE_RESTRICTED_DIALOG_HTML);
 
   static constexpr webui::LocalizedString kStrings[] = {
       {"adPrivacyPageTitle", IDS_SETTINGS_AD_PRIVACY_PAGE_TITLE},
@@ -307,7 +301,7 @@ void PrivacySandboxDialogUI::Initialize(
         PrivacySandboxService::AdsDialogCallbackNoArgsEvents)> dialog_callback,
     base::OnceCallback<void(int)> resize_callback,
     PrivacySandboxService::PromptType prompt_type) {
-  base::Value::Dict update;
+  base::DictValue update;
   content::WebUIDataSource::Update(
       profile, chrome::kChromeUIPrivacySandboxDialogHost, std::move(update));
   auto handler = std::make_unique<PrivacySandboxDialogHandler>(

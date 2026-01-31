@@ -27,8 +27,6 @@
 #include "chrome/browser/component_updater/translate_kit_component_installer.h"
 #include "chrome/browser/on_device_translation/component_manager.h"
 #include "chrome/browser/on_device_translation/constants.h"
-#include "chrome/browser/on_device_translation/language_pack_util.h"
-#include "chrome/browser/on_device_translation/pref_names.h"
 #include "chrome/browser/on_device_translation/service_controller.h"
 #include "chrome/browser/on_device_translation/service_controller_manager.h"
 #include "chrome/browser/on_device_translation/test/test_util.h"
@@ -44,8 +42,10 @@
 #include "components/crx_file/id_util.h"
 #include "components/language/core/browser/pref_names.h"
 #include "components/on_device_translation/features.h"
+#include "components/on_device_translation/public/language_pack.h"
+#include "components/on_device_translation/public/pref_names.h"
+#include "components/on_device_translation/service/test/test_util.h"
 #include "components/prefs/pref_service.h"
-#include "components/services/on_device_translation/test/test_util.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/test/browser_test.h"
@@ -272,6 +272,7 @@ class OnDeviceTranslationBrowserTest : public InProcessBrowserTest {
     TestSupportsUserData fake_user_data;
     TranslationManagerImpl::Bind(render_process_host, GetBrowserContext(),
                                  &fake_user_data, GetLastCommittedOrigin(),
+                                 g_browser_process->component_updater(),
                                  remote.BindNewPipeAndPassReceiver());
     base::RunLoop run_loop;
     remote->TranslationAvailable(
@@ -976,11 +977,8 @@ class OnDeviceTranslationProgressMonitorBrowserTest
     OnDeviceTranslationBrowserTest::SetUpOnMainThread();
     NavigateToEmptyPage();
     translation_manager_ = std::make_unique<MockTranslationManagerImpl>(
-        GetRenderProcessHost(), GetBrowserContext(), GetLastCommittedOrigin());
-
-    // Setup a ComponentUpdateService to be used by the TranslationManager.
-    EXPECT_CALL(*translation_manager_, GetComponentUpdateService())
-        .WillOnce([&]() { return &component_update_service_; });
+        GetRenderProcessHost(), GetBrowserContext(), GetLastCommittedOrigin(),
+        &component_update_service_);
 
     // `GetComponentDetails` should be called by the
     // `AIModelDownloadProgressManager` to filter out existing downloads.
@@ -1085,12 +1083,12 @@ class OnDeviceTranslationProgressMonitorBrowserTest
   }
 
   void ExpectUpdatesAre(const std::vector<double>& expected_updates) {
-    base::Value::List actual_updates = EvalJs(R"((async () => {
+    base::ListValue actual_updates = EvalJs(R"((async () => {
                             await self.createTranslatorPromise;
                             return self.progressEvents;
                           })())")
-                                           .TakeValue()
-                                           .TakeList();
+                                         .TakeValue()
+                                         .TakeList();
 
     ASSERT_EQ(actual_updates.size(), expected_updates.size());
     for (size_t i = 0; i < actual_updates.size(); i++) {
@@ -1298,7 +1296,8 @@ IN_PROC_BROWSER_TEST_F(OnDeviceTranslationCrashingLangBrowserTest,
   NavigateToEmptyPage();
 
   MockTranslationManagerImpl manager(
-      GetRenderProcessHost(), GetBrowserContext(), GetLastCommittedOrigin());
+      GetRenderProcessHost(), GetBrowserContext(), GetLastCommittedOrigin(),
+      g_browser_process->component_updater());
   manager.SetCrashesAllowed(true);
 
   auto console_observer =
@@ -1330,7 +1329,8 @@ IN_PROC_BROWSER_TEST_F(OnDeviceTranslationCrashingLangBrowserTest,
   NavigateToEmptyPage();
 
   MockTranslationManagerImpl manager(
-      GetRenderProcessHost(), GetBrowserContext(), GetLastCommittedOrigin());
+      GetRenderProcessHost(), GetBrowserContext(), GetLastCommittedOrigin(),
+      g_browser_process->component_updater());
   manager.SetCrashesAllowed(true);
 
   // Tries to call availability() for the fake language code `crash`. This
@@ -1630,6 +1630,7 @@ IN_PROC_BROWSER_TEST_F(OnDeviceTranslationBrowserTest,
 
   TranslationManagerImpl::Bind(process_host, GetBrowserContext(),
                                &fake_user_data, last_committed_origin,
+                               g_browser_process->component_updater(),
                                remote.BindNewPipeAndPassReceiver());
 
   // Check the availability result.

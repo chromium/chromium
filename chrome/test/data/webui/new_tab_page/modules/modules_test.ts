@@ -9,7 +9,7 @@ import type {PageRemote} from 'chrome://new-tab-page/new_tab_page.mojom-webui.js
 import {PageCallbackRouter, PageHandlerRemote} from 'chrome://new-tab-page/new_tab_page.mojom-webui.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
-import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {assertDeepEquals, assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import type {MetricsTracker} from 'chrome://webui-test/metrics_test_support.js';
 import {fakeMetricsPrivate} from 'chrome://webui-test/metrics_test_support.js';
 import type {TestMock} from 'chrome://webui-test/test_mock.js';
@@ -42,6 +42,7 @@ suite('NewTabPageModulesModulesV2Test', () => {
     moduleRegistry = installMock(ModuleRegistry);
     callbackRouterRemote = NewTabPageProxy.getInstance()
                                .callbackRouter.$.bindNewPipeAndPassRemote();
+    handler.setResultFor('getModulesEligibleForRemoval', {moduleIds: []});
   });
 
   async function createModulesElement(
@@ -332,7 +333,8 @@ suite('NewTabPageModulesModulesV2Test', () => {
 
               // Assert.
               assertDeepEquals(
-                  ['foo', true], handler.getArgs('setModuleDisabled')[0]);
+                  [['foo'], /*disabled=*/ true, /*is_user_action=*/ true],
+                  handler.getArgs('setModulesDisabled')[0]);
 
               // Act.
               callbackRouterRemote.setDisabledModules(false, [moduleId]);
@@ -368,7 +370,8 @@ suite('NewTabPageModulesModulesV2Test', () => {
 
               // Assert.
               assertDeepEquals(
-                  ['foo', false], handler.getArgs('setModuleDisabled')[1]);
+                  [['foo'], /*disabled=*/ false, /*is_user_action=*/ true],
+                  handler.getArgs('setModulesDisabled')[1]);
 
               // Act.
               callbackRouterRemote.setDisabledModules(false, []);
@@ -586,7 +589,8 @@ suite('NewTabPageModulesModulesV2Test', () => {
                 },
               }));
           assertDeepEquals(
-              ['foo', true], handler.getArgs('setModuleDisabled')[0]);
+              [['foo'], /*disabled=*/ true, /*is_user_action=*/ true],
+              handler.getArgs('setModulesDisabled')[0]);
           callbackRouterRemote.setDisabledModules(false, ['foo']);
           await callbackRouterRemote.$.flushForTesting();
           await microtasksFinished();
@@ -694,6 +698,253 @@ suite('NewTabPageModulesModulesV2Test', () => {
         });
   });
 
+  suite('ModuleAutoRemoval', () => {
+    function setupModuleAutoRemovalTest() {
+      loadTimeData.overrideValues({
+        moduleInactivityRemovalMsg: 'Single module has been removed',
+        modulesInactivityRemovalMsg: 'Multiple modules have been removed',
+      });
+    }
+
+    function setupAutoRemovalListener() {
+      let event: CustomEvent<{message: string, undo: () => void}>|null = null;
+      document.body.addEventListener('modules-auto-removed', (e: any) => {
+        event = e;
+      }, {once: true});
+      return {
+        get event() {
+          return event;
+        },
+      };
+    }
+
+    function assertAutoRemovalMetrics(
+        moduleIds: string[], disabled: boolean, expectedCount: number) {
+      const histogramBase = disabled ? 'NewTabPage.Modules.AutoRemoval' :
+                                       'NewTabPage.Modules.AutoRemovalUndone';
+
+      assertEquals(expectedCount, metrics.count(histogramBase, 1));
+      for (const moduleId of moduleIds) {
+        assertEquals(
+            expectedCount, metrics.count(`${histogramBase}ModuleId`, moduleId));
+      }
+    }
+
+    test('ModulesAutoRemoval: Single module auto removed', async () => {
+      // Arrange.
+      setupModuleAutoRemovalTest();
+      const removedModuleIds = ['calendarModuleId'];
+      const existingModuleId = 'existingModuleId';
+      const existingModuleDescriptor =
+          new ModuleDescriptor(existingModuleId, initNullModule);
+
+      // GetModulesIdNames returns all modules, including the removed ones.
+      handler.setResultFor('getModulesIdNames', {
+        data: [
+          {id: existingModuleId, name: existingModuleId},
+          {id: removedModuleIds[0], name: removedModuleIds[0]},
+        ],
+      });
+
+      handler.setResultFor('getModulesEligibleForRemoval', {
+        moduleIds: removedModuleIds,
+      });
+
+      const autoRemovalListener = setupAutoRemovalListener();
+
+      // Act - Creates and loads the modules element.
+      const modulesElement = await createModulesElement(
+          [
+            {
+              descriptor: existingModuleDescriptor,
+              elements: [createElement()],
+            },
+            {
+              descriptor:
+                  new ModuleDescriptor(removedModuleIds[0]!, initNullModule),
+              elements: [createElement()],
+            },
+          ],
+          true, SAMPLE_SCREEN_WIDTH);
+
+      // Assert.
+      assertEquals(1, handler.getCallCount('setModulesDisabled'));
+      assertDeepEquals(
+          [removedModuleIds, /*disabled=*/ true, /*is_user_action=*/ false],
+          handler.getArgs('setModulesDisabled')[0]);
+      assertNotEquals(null, autoRemovalListener.event);
+      assertEquals(
+          'Single module has been removed',
+          autoRemovalListener.event!.detail.message);
+      assertFalse(modulesElement.$.undoToast.open);
+      assertAutoRemovalMetrics(
+          removedModuleIds, /*disabled=*/ true, /*expectedCount=*/ 1);
+
+      // Act - Execute the undo callback.
+      autoRemovalListener.event!.detail.undo();
+
+      // Assert.
+      assertEquals(2, handler.getCallCount('setModulesDisabled'));
+      assertDeepEquals(
+          [removedModuleIds, /*disabled=*/ false, /*is_user_action=*/ true],
+          handler.getArgs('setModulesDisabled')[1]);
+      assertAutoRemovalMetrics(
+          removedModuleIds, /*disabled=*/ false, /*expectedCount=*/ 1);
+    });
+
+    test('ModulesAutoRemoval: Multiple modules auto removed', async () => {
+      // Arrange.
+      setupModuleAutoRemovalTest();
+      const removedModuleIds = ['calendarModuleId', 'driveModuleId'];
+      const existingModuleId = 'existingModuleId';
+      const existingModuleDescriptor =
+          new ModuleDescriptor(existingModuleId, initNullModule);
+
+      // GetModulesIdNames returns all modules, including the removed ones.
+      handler.setResultFor('getModulesIdNames', {
+        data: [
+          {id: existingModuleId, name: existingModuleId},
+          {id: removedModuleIds[0], name: removedModuleIds[0]},
+          {id: removedModuleIds[1], name: removedModuleIds[1]},
+        ],
+      });
+
+      handler.setResultFor('getModulesEligibleForRemoval', {
+        moduleIds: removedModuleIds,
+      });
+
+      const autoRemovalListener = setupAutoRemovalListener();
+
+      // Act - Creates and loads the modules element.
+      const modulesElement = await createModulesElement(
+          [
+            {
+              descriptor: existingModuleDescriptor,
+              elements: [createElement()],
+            },
+            {
+              descriptor:
+                  new ModuleDescriptor(removedModuleIds[0]!, initNullModule),
+              elements: [createElement()],
+            },
+            {
+              descriptor:
+                  new ModuleDescriptor(removedModuleIds[1]!, initNullModule),
+              elements: [createElement()],
+            },
+          ],
+          true, SAMPLE_SCREEN_WIDTH);
+
+      // Assert.
+      assertEquals(1, handler.getCallCount('setModulesDisabled'));
+      assertDeepEquals(
+          [removedModuleIds, /*disabled=*/ true, /*is_user_action=*/ false],
+          handler.getArgs('setModulesDisabled')[0]);
+      assertNotEquals(null, autoRemovalListener.event);
+      assertEquals(
+          'Multiple modules have been removed',
+          autoRemovalListener.event!.detail.message);
+      assertFalse(modulesElement.$.undoToast.open);
+      assertAutoRemovalMetrics(
+          removedModuleIds, /*disabled=*/ true, /*expectedCount=*/ 1);
+
+      // Act - Execute the undo callback.
+      autoRemovalListener.event!.detail.undo();
+
+      // Assert.
+      assertEquals(2, handler.getCallCount('setModulesDisabled'));
+      assertDeepEquals(
+          [removedModuleIds, /*disabled=*/ false, /*is_user_action=*/ true],
+          handler.getArgs('setModulesDisabled')[1]);
+      assertAutoRemovalMetrics(
+          removedModuleIds, /*disabled=*/ false, /*expectedCount=*/ 1);
+    });
+
+    test(
+        'ModulesAutoRemoval: No auto removal if module is not loaded',
+        async () => {
+          // Arrange.
+          const removedModuleIds = ['calendarModuleId'];
+          const existingModuleId = 'existingModuleId';
+          const existingModuleDescriptor =
+              new ModuleDescriptor(existingModuleId, initNullModule);
+
+          // GetModulesIdNames returns all modules, including the removed ones.
+          handler.setResultFor('getModulesIdNames', {
+            data: [
+              {id: existingModuleId, name: existingModuleId},
+              {id: removedModuleIds[0], name: removedModuleIds[0]},
+            ],
+          });
+
+          handler.setResultFor('getModulesEligibleForRemoval', {
+            moduleIds: removedModuleIds,
+          });
+
+          const autoRemovalListener = setupAutoRemovalListener();
+
+          // Act - Creates and loads the modules element. In this case, the
+          // removed module is not loaded, so no auto removal should occur.
+          const modulesElement = await createModulesElement(
+              [
+                {
+                  descriptor: existingModuleDescriptor,
+                  elements: [createElement()],
+                },
+              ],
+              true, SAMPLE_SCREEN_WIDTH);
+
+          // Assert.
+          assertEquals(0, handler.getCallCount('setModulesDisabled'));
+          assertEquals(null, autoRemovalListener.event);
+          assertFalse(modulesElement.$.undoToast.open);
+          assertAutoRemovalMetrics(
+              removedModuleIds, /*disabled=*/ true, /*expectedCount=*/ 0);
+        });
+
+    test(
+        'ModulesAutoRemoval: Module disabled if pending auto removal',
+        async () => {
+          // Arrange.
+          const removedModuleId = 'removedModuleId';
+          const removedModuleDescriptor =
+              new ModuleDescriptor(removedModuleId, initNullModule);
+
+          handler.setResultFor('getModulesIdNames', {
+            data: [
+              {id: removedModuleId, name: removedModuleId},
+            ],
+          });
+
+          handler.setResultFor('getModulesEligibleForRemoval', {
+            moduleIds: [removedModuleId],
+          });
+
+          // Act - Creates and loads the modules element, but puts it in the
+          // pending auto removed state.
+          const modulesElement = await createModulesElement(
+              [
+                {
+                  descriptor: removedModuleDescriptor,
+                  elements: [createElement()],
+                },
+              ],
+              true, SAMPLE_SCREEN_WIDTH);
+
+          // Assert.
+          const instance = modulesElement.moduleInstances_[0];
+          assertTrue(!!instance);
+          assertTrue((modulesElement as any).moduleDisabled_(instance));
+
+          // Act - Trigger the callback with the module ID as disabled.
+          callbackRouterRemote.setDisabledModules(false, [removedModuleId]);
+          await callbackRouterRemote.$.flushForTesting();
+
+          // Assert.
+          assertTrue((modulesElement as any).moduleDisabled_(instance));
+        });
+  });
+
   suite('DynamicLoading', () => {
     function getModulePromise(descriptor: ModuleDescriptor): Promise<Module> {
       const module: Module = {
@@ -717,8 +968,7 @@ suite('NewTabPageModulesModulesV2Test', () => {
           waitToLoadModules: false,
         });
 
-        handler.setResultFor(
-            'getModulesOrder', Promise.resolve({moduleIds: []}));
+        handler.setPromiseResolveFor('getModulesOrder', {moduleIds: []});
       });
 
       test('loads module container with newly enabled module', async () => {
@@ -826,9 +1076,9 @@ suite('NewTabPageModulesModulesV2Test', () => {
         const barModulePromise = getModulePromise(barDescriptor);
         moduleRegistry.setResultFor('initializeModuleById', barModulePromise);
         // Set the modules order, without the foo module, to be verified later.
-        handler.setResultFor('getModulesOrder', Promise.resolve({
+        handler.setPromiseResolveFor('getModulesOrder', {
           moduleIds: [barDescriptor.id, bazDescriptor.id],
-        }));
+        });
 
         // Act - Enable the bar module by removing it from the disabled modules
         // list and trigger a reload operation.
@@ -925,9 +1175,9 @@ suite('NewTabPageModulesModulesV2Test', () => {
         const barModulePromise = getModulePromise(barDescriptor);
         moduleRegistry.setResultFor('initializeModuleById', barModulePromise);
         // Set the module order, to be verified later.
-        handler.setResultFor(
+        handler.setPromiseResolveFor(
             'getModulesOrder',
-            Promise.resolve({moduleIds: [fooDescriptor.id, barDescriptor.id]}));
+            {moduleIds: [fooDescriptor.id, barDescriptor.id]});
 
         // Act - Clear the disabled modules list multiple times.
         callbackRouterRemote.setDisabledModules(false, []);

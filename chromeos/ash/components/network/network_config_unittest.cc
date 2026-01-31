@@ -18,24 +18,22 @@ namespace ash {
 namespace {
 
 TEST(NetworkConfigTest, ParseValue) {
-  base::Value::Dict properties;
+  base::DictValue properties;
   properties.Set(shill::kNetworkConfigIPv4AddressProperty, "1.2.3.4/24");
   properties.Set(shill::kNetworkConfigIPv4GatewayProperty, "1.2.3.5");
   properties.Set(shill::kNetworkConfigIPv6AddressesProperty,
-                 base::Value::List().Append("fd00::1/64").Append("fd00::2/64"));
+                 base::ListValue().Append("fd00::1/64").Append("fd00::2/64"));
   properties.Set(shill::kNetworkConfigIPv6GatewayProperty, "fd01::2");
-  properties.Set(shill::kNetworkConfigNameServersProperty,
-                 base::Value::List().Append("4.3.2.1").Append("fdfd::1").Append(
-                     "0.0.0.0"));
+  properties.Set(
+      shill::kNetworkConfigNameServersProperty,
+      base::ListValue().Append("4.3.2.1").Append("fdfd::1").Append("0.0.0.0"));
   properties.Set(shill::kNetworkConfigSearchDomainsProperty,
-                 base::Value::List().Append("domain1").Append("domain2"));
+                 base::ListValue().Append("domain1").Append("domain2"));
   properties.Set(shill::kNetworkConfigMTUProperty, 1400);
-  properties.Set(
-      shill::kNetworkConfigIncludedRoutesProperty,
-      base::Value::List().Append("10.10.10.0/24").Append("fd01::/64"));
-  properties.Set(
-      shill::kNetworkConfigExcludedRoutesProperty,
-      base::Value::List().Append("10.20.30.0/24").Append("fd02::/64"));
+  properties.Set(shill::kNetworkConfigIncludedRoutesProperty,
+                 base::ListValue().Append("10.10.10.0/24").Append("fd01::/64"));
+  properties.Set(shill::kNetworkConfigExcludedRoutesProperty,
+                 base::ListValue().Append("10.20.30.0/24").Append("fd02::/64"));
 
   std::unique_ptr<NetworkConfig> config =
       NetworkConfig::ParseFromServicePropertyValue(
@@ -73,7 +71,7 @@ TEST(NetworkConfigTest, ParseValue) {
 TEST(NetworkConfigTest, ParseEmptyValue) {
   std::unique_ptr<NetworkConfig> config =
       NetworkConfig::ParseFromServicePropertyValue(
-          base::Value(base::Value::Dict()));
+          base::Value(base::DictValue()));
   EXPECT_FALSE(config);
 }
 

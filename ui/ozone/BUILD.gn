@@ -145,9 +145,7 @@ component("ozone_base") {
     "//ui/gfx",
     "//ui/gfx/geometry",
     "//ui/gfx/ipc",
-    "//ui/gfx/ipc/buffer_types",
     "//ui/gfx/ipc/geometry",
-    "//ui/gfx/ipc/skia",
     "//ui/gl",
     "//ui/ozone/public/mojom:gesture_properties_service",
   ]
@@ -289,10 +287,7 @@ component("ozone") {
 source_set("drm_modifiers_filter") {
   sources = [ "public/drm_modifiers_filter.h" ]
 
-  deps = [
-    "//base",
-    "//ui/gfx/ipc/buffer_types",
-  ]
+  deps = [ "//base" ]
 
   visibility += [ "//gpu/vulkan" ]
 }

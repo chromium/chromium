@@ -37,7 +37,7 @@ class RestrictCoreSharingPolicyTest : public PolicyTest,
 };
 
 IN_PROC_BROWSER_TEST_P(RestrictCoreSharingPolicyTest, RunTest) {
-  base::Value::List renderer_processes;
+  base::ListValue renderer_processes;
 
   for (RenderProcessHost::iterator it(RenderProcessHost::AllHostsIterator());
        !it.IsAtEnd(); it.Advance()) {

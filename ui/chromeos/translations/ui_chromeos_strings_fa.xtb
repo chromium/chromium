@@ -110,7 +110,6 @@
 <translation id="1813278315230285598">سرویس‌ها</translation>
 <translation id="181434555916624618">فعلاً نتایج حاوی افراد نمایش داده نخواهد شد. پیام‌واره دیگری را امتحان کنید.</translation>
 <translation id="1829129547161959350">پنگوئن</translation>
-<translation id="183183971458492120">درحال بارگیری اطلاعات...</translation>
 <translation id="1832073788765803750">کاتاکانای نیم‌پهنا</translation>
 <translation id="1834290891154666894">ورودی مربوط به «مطابقت نام جایگزین موضوع» نامعتبر است</translation>
 <translation id="1838709767668011582">‏سایت Google</translation>
@@ -147,13 +146,13 @@
 <translation id="2142680004883808240">‏روسی با صفحه‌کلید آوایی YaZHert</translation>
 <translation id="2143778271340628265">پیکربندی پراکسی دستی</translation>
 <translation id="2148716181193084225">امروز</translation>
+<translation id="2161573825856688200">‏پروژه Google</translation>
 <translation id="2163152940313951844">نویسه نامعتبر: <ph name="CHARACTER_NAME" /></translation>
 <translation id="2178056538281447670">Microsoft 365</translation>
 <translation id="2184934335987813305">پرتغالی با صفحه‌کلید بین‌المللی آمریکایی رایانه</translation>
 <translation id="2193661397560634290"><ph name="SPACE_USED" /> مصرف‌شده</translation>
 <translation id="2198315389084035571">چینی ساده</translation>
 <translation id="22085916256174561">کره‌ای</translation>
-<translation id="2208919847696382164">‏نصب با Linux</translation>
 <translation id="2215692307449050019">باتری ضعیف است. وقتی دستگاه به برق وصل شود، همگام‌سازی ازسرگرفته می‌شود.</translation>
 <translation id="2225536596944493418">مطمئنید می‌خواهید <ph name="NUMBER_OF_ITEMS" /> مورد را حذف کنید؟</translation>
 <translation id="2230062665678605299">پوشه «<ph name="FOLDER_NAME" />» را نمی‌توان ایجاد کرد.<ph name="ERROR_MESSAGE" /></translation>
@@ -203,7 +202,7 @@
 <translation id="255937426064304553">بین‌المللی آمریکایی</translation>
 <translation id="2563185590376525700">قورباغه</translation>
 <translation id="2578394532502990878">تامیل (آوایی)</translation>
-<translation id="2579959351793446050">اوریه</translation>
+<translation id="2579959351793446050">اودیا</translation>
 <translation id="2587195714949534472">درحال آماده شدن برای همگام‌سازی <ph name="FILE_NAME" />…</translation>
 <translation id="2602810353103180630">شبکه <ph name="NETWORK_INDEX" /> از <ph name="NETWORK_COUNT" />، <ph name="NETWORK_NAME" />، <ph name="CONNECTION_STATUS" />، قدرت سیگنال <ph name="SIGNAL_STRENGTH" />٪، سرپرستتان آن را مسدود کرده است، جزئیات</translation>
 <translation id="2614589611416690597">ویدیو  <ph name="VIDEO_TYPE" /></translation>
@@ -214,7 +213,6 @@
 <translation id="2653059201992392941"><ph name="RETRIES" /> تلاش دیگر دارید.</translation>
 <translation id="2663066752008346276">میانماری/برمه‌ای با صفحه‌کلید میانسان</translation>
 <translation id="2664412712123763093">محل فایل</translation>
-<translation id="2718540689505416944">‏نصب برنامه با Linux</translation>
 <translation id="2719020180254996569">شبکه <ph name="NETWORK_INDEX" /> از <ph name="NETWORK_COUNT" />، <ph name="NETWORK_NAME" />، <ph name="CONNECTION_STATUS" />، جزئیات</translation>
 <translation id="2724954091494693138">‏ترکی با صفحه‌کلید F</translation>
 <translation id="2732288874651063549">مدیریت هم‌رسانی با <ph name="VM_NAME" /></translation>
@@ -223,7 +221,6 @@
 <translation id="2764206540577097904">‏از کل فضای ذخیره‌سازی شخصی Google Workspace استفاده کرده‌اید.</translation>
 <translation id="2771816809568414714">پنیر</translation>
 <translation id="2781645665747935084">بلژیکی</translation>
-<translation id="2782104745158847185">‏خطا هنگام نصب برنامه Linux</translation>
 <translation id="2802583107108007218">درباره این محدودیت‌ها بیشتر بدانید</translation>
 <translation id="2803375539583399270">پین را وارد کنید</translation>
 <translation id="2819519502129272135">همگام‌سازی فایل خاموش است</translation>
@@ -237,7 +234,7 @@
 <translation id="2894654529758326923">اطلاعات</translation>
 <translation id="2902734494705624966">گسترده آمریکایی</translation>
 <translation id="2904378509913846215">پوشه‌ای با نام «<ph name="FILENAME" />» ازقبل وجود دارد. می‌خواهید آن را با پوشه‌ای که منتقل می‌کنید جایگزین کنید؟</translation>
-<translation id="290843123675549676">ماراتی</translation>
+<translation id="290843123675549676">مراتی</translation>
 <translation id="2923240520113693977">استونیایی</translation>
 <translation id="2938685643439809023">مغولی</translation>
 <translation id="2943503720238418293">از نام کوتاه‌تری استفاده کنید</translation>
@@ -278,7 +275,7 @@
 <translation id="3254434849914415189">برنامه پیش‌فرض را برای فایل‌های <ph name="FILE_TYPE" /> انتخاب کنید:</translation>
 <translation id="3255159654094949700">عربی</translation>
 <translation id="326396468955264502">‏<ph name="NUMBER_OF_FILES" /> فایل منتقل نشدند زیرا رمزگذاری شده‌اند.</translation>
-<translation id="3264582393905923483">زمینه</translation>
+<translation id="3264582393905923483">بافت</translation>
 <translation id="3272909651715601089">«<ph name="PATH" />» باز نشد</translation>
 <translation id="3280431534455935878"> آماده‌سازی</translation>
 <translation id="3280719573299097127">به شبکه با حجم محدود متصل هستید. همگام‌سازی فایل‌ها موقتاً متوقف شد.</translation>
@@ -295,7 +292,7 @@
 <translation id="3353984535370177728">انتخاب یک پوشه برای بارگذاری</translation>
 <translation id="3356580349448036450">کامل</translation>
 <translation id="3358452157379365236">گیتار</translation>
-<translation id="3368922792935385530">متصل</translation>
+<translation id="3368922792935385530">متصل‌شده</translation>
 <translation id="3382143449143186018">نپالی با صفحه‌کلید هندی</translation>
 <translation id="338691029516748599">شبکه <ph name="NETWORK_INDEX" /> از <ph name="NETWORK_COUNT" />، <ph name="NETWORK_NAME" />، <ph name="SECURITY_STATUS" />، قدرت سیگنال <ph name="SIGNAL_STRENGTH" />٪، تحت‌مدیریت سرپرست، اتصال</translation>
 <translation id="3408072735282270043">فعال کردن <ph name="NETWORK_NAME" /></translation>
@@ -346,7 +343,6 @@
 <translation id="3786301125658655746">شما آفلاین هستید</translation>
 <translation id="3789841737615482174">نصب</translation>
 <translation id="3793469551756281394">تقریباً <ph name="REMAINING_TIME_HOUR" /> و <ph name="REMAINING_TIME_MINUTE" /> باقی مانده است</translation>
-<translation id="3798449238516105146">نسخه</translation>
 <translation id="3801082500826908679">فاروئی</translation>
 <translation id="3809272675881623365">خرگوش</translation>
 <translation id="3810973564298564668">مدیریت</translation>
@@ -355,12 +351,11 @@
 <translation id="3817579325494460411">ارائه نشده است</translation>
 <translation id="3819448694985509187">پین اشتباه است. ۱ تلاش دیگر دارید.</translation>
 <translation id="3830674330436234648">بازپخش در دسترس نیست</translation>
-<translation id="383652340667548381">صربستانی</translation>
+<translation id="383652340667548381">صربی</translation>
 <translation id="3839045880592694915">مودم شما اجازه ندارد به شرکت مخابراتی‌تان متصل شود. برای کسب اطلاعات بیشتر، با شرکت مخابراتی‌تان تماس بگیرید.</translation>
 <translation id="385051799172605136">برگشتن</translation>
 <translation id="3855472144336161447">نئو آلمان ۲</translation>
 <translation id="3858860766373142691">نام</translation>
-<translation id="3866249974567520381">توضیح</translation>
 <translation id="3899991606604168269">فرانسوی (کانادایی) با صفحه‌کلید چندزبانه</translation>
 <translation id="3901991538546252627">در حال اتصال به <ph name="NAME" /></translation>
 <translation id="3906232975181435906">درحال نصب نمایه تلفن همراه، شبکه <ph name="NETWORK_INDEX" /> از <ph name="NETWORK_COUNT" />، <ph name="NETWORK_NAME" /></translation>
@@ -438,7 +433,6 @@
 <translation id="4477219268485577442">آوایی بلغاری</translation>
 <translation id="4508265954913339219">فعالسازی انجام نشد</translation>
 <translation id="4509667233588080747">‏انگلیسی (امریکایی) با صفحه‌کلید بین‌المللی Workman</translation>
-<translation id="4522570452068850558">جزئیات</translation>
 <translation id="4527800702232535228">‏این پوشه با Parallels Desktop هم‌رسانی می‌شود</translation>
 <translation id="4552678318981539154">خرید فضای ذخیره بیشتر</translation>
 <translation id="4552759165874948005">شبکه <ph name="NETWORK_TYPE" />، قدرت سیگنال <ph name="SIGNAL_STRENGTH" /> درصد</translation>
@@ -529,7 +523,7 @@
 <translation id="5123433949759960244">بسکتبال</translation>
 <translation id="5129662217315786329">لهستانی</translation>
 <translation id="5144820558584035333">مجموعه هانگول ۳ (۳۹۰‏)</translation>
-<translation id="5145331109270917438">تاریخ تغییر</translation>
+<translation id="5145331109270917438">تاریخ اصلاح شدن</translation>
 <translation id="515594325917491223">شطرنج</translation>
 <translation id="5158983316805876233">استفاده از پراکسی یکسان برای همه پروتکل ها</translation>
 <translation id="5159383109919732130">‏<ph name="BEGIN_BOLD" />هنوز دستگاه خود را جدا نکنید!<ph name="END_BOLD" />
@@ -603,7 +597,6 @@
 <translation id="5649768706273821470">گوش دادن</translation>
 <translation id="5650895901941743674">‏پیکربندی APN را بررسی کنید</translation>
 <translation id="5669691691057771421">پین جدید را وارد کنید</translation>
-<translation id="5678784840044122290">‏برنامه Linux در «ترمینال» دردسترس خواهد بود و ممکن است در «راه‌انداز» هم نمادی نشان داده شود.</translation>
 <translation id="5686799162999241776"><ph name="BEGIN_BOLD" />ارتباط با بایگانی یا دیسک مجازی نمی‌تواند قطع شود<ph name="END_BOLD" />
    <ph name="LINE_BREAKS" />
    همه فایل‌های روی بایگانی یا دیسک مجازی را ببندید و سپس دوباره امتحان کنید.</translation>
@@ -638,7 +631,6 @@
 <translation id="5861477046012235702">بازیکن</translation>
 <translation id="5864471791310927901">‏بررسی DHCP انجام نشد</translation>
 <translation id="5896749729057314184">شبکه <ph name="NETWORK_INDEX" /> از <ph name="NETWORK_COUNT" />،‏ <ph name="NETWORK_NAME" />،‏ غیرفعال، قدرت سیگنال: <ph name="SIGNAL_STRENGTH" />٪، جزئیات</translation>
-<translation id="5911887972742538906">‏هنگام نصب برنامه Linux خطایی روی داد.</translation>
 <translation id="5912396950572065471">قالب</translation>
 <translation id="5918480239180455431">ویژگی‌های جستجوی جدید دردسترس است</translation>
 <translation id="5926082595146149752">هلندی (هلند) با صفحه‌کلید بین‌المللی آمریکایی رایانه</translation>
@@ -807,7 +799,6 @@
 <translation id="7238097264433196391">نام درایو</translation>
 <translation id="7238643356913091553"><ph name="NETWORK_NAME" />، جزئیات</translation>
 <translation id="7246947237293279874">‏پروکسی FTP</translation>
-<translation id="7248671827512403053">برنامه کاربردی</translation>
 <translation id="7256405249507348194">خطای نامشخص: <ph name="DESC" /></translation>
 <translation id="7268659760406822741">خدمات موجود</translation>
 <translation id="7291818353625820805">می‌خواهید کلیدها تکرار شوند؟ نشانه‌های تکیه را در «تنظیمات صفحه‌کلید» خاموش کنید</translation>
@@ -934,7 +925,6 @@
 <translation id="8151638057146502721">پیکربندی</translation>
 <translation id="8154666764013920974">{NUM_ERROR,plural, =1{‫۱ خطا.}one{‫# خطا.}other{‫# خطا.}}</translation>
 <translation id="8154842056504218462">همه ورودی‌ها انتخاب شد.</translation>
-<translation id="8157684860301034423">اطلاعات برنامه بازیابی نشد.</translation>
 <translation id="8175731104491895765">فرانسوی (بلژیک)</translation>
 <translation id="8175799081768705361">‏درحال همگام‌سازی <ph name="NUMBER_OF_FILES_SYNCING" /> فایل Drive</translation>
 <translation id="8179976553408161302">ورود</translation>
@@ -986,7 +976,7 @@
 <translation id="8475647382427415476">‏Google Drive نتوانست در این لحظه «<ph name="FILENAME" />» را همگام‌سازی کند. Google Drive بعداً دوباره امتحان می‌کند.</translation>
 <translation id="8477649328507734757">اسپینینگ</translation>
 <translation id="8484284835977497781">از عکس‌های اخیرتان انتخاب کنید.</translation>
-<translation id="8487700953926739672">امکان دسترسی به صورت آفلاین</translation>
+<translation id="8487700953926739672">دردسترس در حالت آفلاین</translation>
 <translation id="8492972329130824181">شبکه خانه دردسترس نیست. برای اتصال، رومینگ داده تلفن همراه باید فعال باشد.</translation>
 <translation id="8499098729323186194">درحال استخراج <ph name="NUMBER_OF_ITEMS" /> مورد…</translation>
 <translation id="8502913769543567768">شبکه <ph name="NETWORK_INDEX" /> از <ph name="NETWORK_COUNT" /> شبکه، <ph name="NETWORK_NAME" />، <ph name="NETWORK_PROVIDER_NAME" />، بعداز راه‌اندازی دستگاه فعال کنید، تحت مدیریت سرپرست است</translation>
@@ -1078,7 +1068,6 @@
 <translation id="9183302530794969518">‏سندنگار Google</translation>
 <translation id="9189836632794948435">قزاقی</translation>
 <translation id="9200427192836333033"><ph name="NUMBER_OF_ITEMS" /> مورد استخراج شد.</translation>
-<translation id="9213073329713032541">نصب باموفقیت شروع شد.</translation>
 <translation id="9219103736887031265">تصاویر</translation>
 <translation id="9219908252191632183">منظره سطح ماه</translation>
 <translation id="931652069802536959">شبکه توسط خط‌مشی مسدود شده است</translation>

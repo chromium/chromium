@@ -172,7 +172,7 @@ IN_PROC_BROWSER_TEST_P(KioskRemoteCommandTest, SetVolumeWithRemoteCommand) {
       NewRemoteCommandBuilder()
           .SetType(em::RemoteCommand_Type_DEVICE_SET_VOLUME)
           .SetPayload(
-              base::WriteJson(base::Value::Dict()  //
+              base::WriteJson(base::DictValue()  //
                                   .Set("volume", kExpectedVolumePercent))
                   .value())
           .Build());

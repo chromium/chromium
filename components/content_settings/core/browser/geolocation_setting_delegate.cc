@@ -12,6 +12,7 @@
 #include "components/content_settings/core/browser/content_settings_utils.h"
 #include "components/content_settings/core/browser/permission_settings_info.h"
 #include "components/content_settings/core/common/content_settings.h"
+#include "components/content_settings/core/common/content_settings_utils.h"
 
 namespace content_settings {
 
@@ -64,7 +65,7 @@ PermissionSetting GeolocationSettingDelegate::InheritInIncognito(
 base::Value GeolocationSettingDelegate::ToValue(
     const PermissionSetting& setting) const {
   const GeolocationSetting& geo_setting = std::get<GeolocationSetting>(setting);
-  base::Value::Dict dict;
+  base::DictValue dict;
   dict.Set("approximate", static_cast<int>(geo_setting.approximate));
   dict.Set("precise", static_cast<int>(geo_setting.precise));
   return base::Value(std::move(dict));
@@ -152,6 +153,12 @@ PermissionSetting GeolocationSettingDelegate::ApplyPermissionEmbargo(
     geo_setting.precise = PermissionOption::kDenied;
   }
   return geo_setting;
+}
+
+PermissionSetting GeolocationSettingDelegate::ToPermissionSetting(
+    ContentSetting setting) const {
+  return GeolocationSetting{ToPermissionOption(setting),
+                            ToPermissionOption(setting)};
 }
 
 }  // namespace content_settings

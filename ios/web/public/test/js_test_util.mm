@@ -33,18 +33,33 @@ namespace {
 
 void ExecuteJavaScript(WKWebView* web_view,
                        NSString* script,
+                       bool wait_async,
                        NSError* __autoreleasing* error,
                        id __autoreleasing* result) {
   __block id block_result;
   __block bool completed = false;
   __block NSError* block_error = nil;
   SCOPED_TRACE(base::SysNSStringToUTF8(script));
-  [web_view evaluateJavaScript:script
-             completionHandler:^(id script_result, NSError* script_error) {
-               block_result = [script_result copy];
-               block_error = [script_error copy];
-               completed = true;
-             }];
+
+  if (wait_async) {
+    [web_view callAsyncJavaScript:script
+                        arguments:nil
+                          inFrame:nil
+                   inContentWorld:[WKContentWorld pageWorld]
+                completionHandler:^(id script_result, NSError* script_error) {
+                  block_result = [script_result copy];
+                  block_error = [script_error copy];
+                  completed = true;
+                }];
+  } else {
+    [web_view evaluateJavaScript:script
+               completionHandler:^(id script_result, NSError* script_error) {
+                 block_result = [script_result copy];
+                 block_error = [script_error copy];
+                 completed = true;
+               }];
+  }
+
   BOOL success = WaitUntilConditionOrTimeout(kWaitForJSCompletionTimeout, ^{
     return completed;
   });
@@ -93,7 +108,8 @@ void ExecuteJavaScriptInWebView(WKWebView* web_view, NSString* script) {
 void ExecuteJavaScriptInWebView(WKWebView* web_view,
                                 NSString* script,
                                 NSError* __autoreleasing* error) {
-  ExecuteJavaScript(web_view, script, error, /*result=*/nil);
+  ExecuteJavaScript(web_view, script, /*wait_async=*/false, error,
+                    /*result=*/nil);
 }
 
 void ExecuteJavaScriptForFeature(web::WebState* web_state,
@@ -119,7 +135,15 @@ id ExecuteJavaScript(WKWebView* web_view,
                      NSString* script,
                      NSError* __autoreleasing* error) {
   id result;
-  ExecuteJavaScript(web_view, script, error, &result);
+  ExecuteJavaScript(web_view, script, /*wait_async=*/false, error, &result);
+  return result;
+}
+
+id ExecuteAsyncJavaScript(WKWebView* web_view,
+                          NSString* script,
+                          NSError* __autoreleasing* error) {
+  id result;
+  ExecuteJavaScript(web_view, script, /*wait_async=*/true, error, &result);
   return result;
 }
 

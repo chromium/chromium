@@ -120,13 +120,6 @@ content::RenderWidgetHost* GetRenderWidgetHost(views::WebView* web_view) {
   return nullptr;
 }
 
-// Returns whether `browser` should draw its frame header.
-// The default is true.
-bool ShouldDrawFrameHeader(BrowserWindowInterface* browser) {
-  // Currently, frame headers are only disabled for custom tab browsers.
-  return browser->GetType() != BrowserWindowInterface::Type::TYPE_CUSTOM_TAB;
-}
-
 DEFINE_UI_CLASS_PROPERTY_KEY(BrowserFrameViewChromeOS*,
                              kBrowserFrameViewChromeOSKey,
                              nullptr)
@@ -258,9 +251,7 @@ void BrowserFrameViewChromeOS::Init() {
   }
 
   display_observer_.emplace(this);
-  if (ShouldDrawFrameHeader(browser)) {
-    frame_header_ = CreateFrameHeader();
-  }
+  frame_header_ = CreateFrameHeader();
 
   if (AppIsPwaWithBorderlessDisplayMode()) {
     UpdateBorderlessModeEnabled();
@@ -282,36 +273,16 @@ BrowserLayoutParams BrowserFrameViewChromeOS::GetBrowserLayoutParams() const {
   }
   if (GetShowCaptionButtonsWhenNotInOverview()) {
     const auto caption_bounds = caption_button_container_->bounds();
-    // When the tabstrip is present, the caption button container is cut down to
-    // the preferred height of the tabstrip.
-    const int tabstrip_height = GetBrowserView()->GetTabStripHeight();
-    const int height =
-        tabstrip_height ? tabstrip_height : caption_bounds.height();
+    // Cut the caption buttons down to the maximum height of the tabstrip if
+    // present.
+    const auto elements = GetClientFrameElementInfo();
+    const int height = elements.tabstrip_preferred_height
+                           ? elements.tabstrip_preferred_height
+                           : caption_bounds.height();
     params.trailing_exclusion.content =
         gfx::SizeF(width() - caption_bounds.x(), height);
   }
   return params;
-}
-
-gfx::Rect BrowserFrameViewChromeOS::GetBoundsForTabStripRegion(
-    const gfx::Size& tabstrip_minimum_size) const {
-  const int left_inset = GetTabStripLeftInset();
-  const bool restored =
-      !browser_widget()->IsMaximized() && !browser_widget()->IsFullscreen();
-  return gfx::Rect(left_inset, GetTopInset(restored),
-                   std::max(0, width() - left_inset - GetTabStripRightInset()),
-                   tabstrip_minimum_size.height());
-}
-
-gfx::Rect BrowserFrameViewChromeOS::GetBoundsForWebAppFrameToolbar(
-    const gfx::Size& toolbar_preferred_size) const {
-  const int x = GetToolbarLeftInset();
-  const int available_width = caption_button_container_->x() - x;
-  int painted_height = GetTopInset(false);
-  if (GetBrowserView()->GetTabStripVisible()) {
-    painted_height += GetBrowserView()->GetTabStripHeight();
-  }
-  return gfx::Rect(x, 0, std::max(0, available_width), painted_height);
 }
 
 bool BrowserFrameViewChromeOS::ShouldShowWebAppFrameToolbar() const {
@@ -338,7 +309,7 @@ int BrowserFrameViewChromeOS::GetTopInset(bool restored) const {
         ImmersiveModeController::From(GetBrowserView()->browser());
     if (immersive_controller->IsEnabled() &&
         !immersive_controller->IsRevealed()) {
-      return (-1) * GetBrowserView()->GetTabStripHeight();
+      return (-1) * GetClientFrameElementInfo().top_area_height();
     }
 
     // The header isn't painted for restored popup/app windows in overview mode,
@@ -453,19 +424,15 @@ int BrowserFrameViewChromeOS::NonClientHitTest(const gfx::Point& point) {
   // When the window is restored (and not in tablet split-view mode) we want a
   // large click target above the tabs to drag the window, so redirect clicks in
   // the tab's shadow to caption.
-  if (hit_test == HTCLIENT && !browser_widget()->IsMaximized() &&
-      !browser_widget()->IsFullscreen() &&
-      !display::Screen::Get()->InTabletMode()) {
+  if (hit_test == HTCLIENT &&
+      chromeos::ShouldShowResizeBorder(GetWidget()->GetNativeWindow())) {
     // TODO(crbug.com/40768579): Tab Strip hit calculation and bounds logic
     // should reside in the TabStrip class.
     gfx::Point client_point(point);
     View::ConvertPointToTarget(this, browser_widget()->client_view(),
                                &client_point);
     gfx::Rect tabstrip_shadow_bounds(
-        GetBrowserView()
-            ->tab_strip_view()
-            ->GetViewByElementId(kTabStripElementId)
-            ->bounds());
+        GetBrowserView()->tab_strip_view()->GetTabStripView()->bounds());
     constexpr int kTabShadowHeight = 4;
     tabstrip_shadow_bounds.set_height(kTabShadowHeight);
     if (tabstrip_shadow_bounds.Contains(client_point)) {
@@ -535,10 +502,9 @@ void BrowserFrameViewChromeOS::Layout(PassKey) {
     frame_header_->LayoutHeader();
   }
 
-  int painted_height = GetTopInset(false);
-  if (GetBrowserView()->GetTabStripVisible()) {
-    painted_height += GetBrowserView()->GetTabStripHeight();
-  }
+  const int painted_height =
+      GetTopInset(false) +
+      GetClientFrameElementInfo().tabstrip_preferred_height;
 
   if (frame_header_) {
     frame_header_->SetHeaderHeightForPainting(painted_height);
@@ -650,7 +616,7 @@ bool BrowserFrameViewChromeOS::DoesIntersectRect(const views::View* target,
 }
 
 views::View::Views BrowserFrameViewChromeOS::GetChildrenInZOrder() {
-  if (ShouldDrawFrameHeader(GetBrowserView()->browser()) && frame_header_) {
+  if (frame_header_) {
     return frame_header_->GetAdjustedChildrenInZOrder(this);
   }
 
@@ -1175,7 +1141,7 @@ void BrowserFrameViewChromeOS::UpdateWindowRoundedCorners() {
 void BrowserFrameViewChromeOS::LayoutProfileIndicator() {
   DCHECK(profile_indicator_icon_);
   const int frame_height =
-      GetTopInset(false) + GetBrowserView()->GetTabStripHeight();
+      GetTopInset(false) + GetClientFrameElementInfo().top_area_height();
   profile_indicator_icon_->SetPosition(
       gfx::Point(kProfileIndicatorPadding,
                  (frame_height - profile_indicator_icon_->height()) / 2));
@@ -1198,11 +1164,7 @@ bool BrowserFrameViewChromeOS::GetHideCaptionButtonsForFullscreen() const {
       ImmersiveModeController::From(GetBrowserView()->browser());
 
   // In fullscreen view, but not in immersive mode. Hide the caption buttons.
-  if (!immersive_controller || !immersive_controller->IsEnabled()) {
-    return true;
-  }
-
-  return immersive_controller->ShouldHideTopViews();
+  return !immersive_controller || !immersive_controller->IsEnabled();
 }
 
 void BrowserFrameViewChromeOS::OnUpdateFrameColor() {

@@ -460,7 +460,7 @@ IN_PROC_BROWSER_TEST_P(NtpPromoWithModuleUiTest, ModuleDisabled) {
   {
     ScopedListPrefUpdate update(browser()->profile()->GetPrefs(),
                                 prefs::kNtpDisabledModules);
-    base::Value::List& list = update.Get();
+    base::ListValue& list = update.Get();
     base::Value module_id_value(ntp_modules::kTabGroupsModuleId);
     list.Append(std::move(module_id_value));
   }

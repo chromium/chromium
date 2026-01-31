@@ -94,14 +94,10 @@ bool IsMicOrCameraAccessSubjectToParentalControls(
 
 }  // namespace
 
-WebStateDelegateBrowserAgent::WebStateDelegateBrowserAgent(
-    Browser* browser,
-    TabInsertionBrowserAgent* tab_insertion_agent)
+WebStateDelegateBrowserAgent::WebStateDelegateBrowserAgent(Browser* browser)
     : BrowserUserData(browser),
       web_state_list_(browser->GetWebStateList()),
-      tab_insertion_agent_(tab_insertion_agent) {
-  DCHECK(tab_insertion_agent_);
-
+      browser_(browser) {
   // All the BrowserAgent are attached to the Browser during the creation,
   // the WebStateList must be empty at this point.
   DCHECK(web_state_list_->empty())
@@ -191,7 +187,7 @@ web::WebState* WebStateDelegateBrowserAgent::CreateNewWebState(
   // Requested web state should not be blocked from opening.
   SnapshotTabHelper::FromWebState(source)->UpdateSnapshotWithCallback(nil);
 
-  return tab_insertion_agent_->InsertWebStateOpenedByDOM(source);
+  return tab_insertion_agent()->InsertWebStateOpenedByDOM(source);
 }
 
 void WebStateDelegateBrowserAgent::CloseWebState(web::WebState* source) {
@@ -219,8 +215,8 @@ web::WebState* WebStateDelegateBrowserAgent::OpenURLFromWebState(
     case WindowOpenDisposition::NEW_BACKGROUND_TAB: {
       insertion_params.in_background =
           params.disposition == WindowOpenDisposition::NEW_BACKGROUND_TAB;
-      return tab_insertion_agent_->InsertWebState(load_params,
-                                                  insertion_params);
+      return tab_insertion_agent()->InsertWebState(load_params,
+                                                   insertion_params);
     }
     case WindowOpenDisposition::CURRENT_TAB: {
       source->GetNavigationManager()->LoadURLWithParams(load_params);
@@ -228,8 +224,8 @@ web::WebState* WebStateDelegateBrowserAgent::OpenURLFromWebState(
     }
     case WindowOpenDisposition::NEW_POPUP: {
       insertion_params.opened_by_dom = true;
-      return tab_insertion_agent_->InsertWebState(load_params,
-                                                  insertion_params);
+      return tab_insertion_agent()->InsertWebState(load_params,
+                                                   insertion_params);
     }
     default:
       NOTIMPLEMENTED();
@@ -379,4 +375,8 @@ void WebStateDelegateBrowserAgent::DidFinishClipboardRead(
     web::WebState* source) {
   data_controls::DataControlsTabHelper::GetOrCreateForWebState(source)
       ->DidFinishClipboardRead();
+}
+
+TabInsertionBrowserAgent* WebStateDelegateBrowserAgent::tab_insertion_agent() {
+  return TabInsertionBrowserAgent::FromBrowser(browser_);
 }

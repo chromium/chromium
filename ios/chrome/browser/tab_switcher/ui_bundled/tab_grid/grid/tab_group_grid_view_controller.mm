@@ -6,6 +6,8 @@
 
 #import "base/apple/foundation_util.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
+#import "ios/chrome/browser/shared/ui/util/color_palette/tab_group_color_palette.h"
+#import "ios/chrome/browser/tab_switcher/ui_bundled/tab_collection_drag_drop_handler.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/grid/grid_constants.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/grid/grid_item_identifier.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/grid/grid_view_delegate.h"
@@ -31,6 +33,14 @@
     return;
   }
   _groupColor = groupColor;
+  [self updateTabGroupHeader];
+}
+
+- (void)setTabGroupColorPalette:(TabGroupColorPalette*)tabGroupColorPalette {
+  if (_tabGroupColorPalette == tabGroupColorPalette) {
+    return;
+  }
+  _tabGroupColorPalette = tabGroupColorPalette;
   [self updateTabGroupHeader];
 }
 
@@ -73,6 +83,22 @@
       headerHeight < scrollView.contentOffset.y + scrollView.contentInset.top;
   [self.viewDelegate gridViewHeaderHidden:headerHidden];
   [super scrollViewDidScroll:scrollView];
+}
+
+#pragma mark - UICollectionViewDropDelegate
+
+- (UICollectionViewDropProposal*)
+              collectionView:(UICollectionView*)collectionView
+        dropSessionDidUpdate:(id<UIDropSession>)session
+    withDestinationIndexPath:(NSIndexPath*)destinationIndexPath {
+  // Can't create a group within a group.
+  UIDropOperation dropOperation = [self.dragDropHandler
+      dropOperationForDropSession:session
+                          toIndex:destinationIndexPath.item];
+  return [[UICollectionViewDropProposal alloc]
+      initWithDropOperation:dropOperation
+                     intent:
+                         UICollectionViewDropIntentInsertAtDestinationIndexPath];
 }
 
 #pragma mark - Parent's functions
@@ -162,6 +188,10 @@
 // Configures the tab group header according to the current state.
 - (void)configureTabGroupHeader:(TabGroupHeader*)header {
   header.title = self.groupTitle;
+  if (IsTabGroupColorOnSurfaceEnabled()) {
+    header.color = self.tabGroupColorPalette.commonColor;
+    return;
+  }
   header.color = self.groupColor;
 }
 
@@ -265,6 +295,16 @@
   [self.delegate didTapButtonInActivitySummary:self];
   [self removeActivitySummaryCell];
   [self.viewDelegate showRecentActivity];
+}
+
+- (void)configureCell:(GridCell*)cell
+             withItem:(TabSwitcherItem*)item
+              atIndex:(NSUInteger)index {
+  [super configureCell:cell withItem:item atIndex:index];
+  if (IsTabGroupColorOnSurfaceEnabled()) {
+    // Forward the palette to the cell.
+    cell.tabGroupColorPalette = self.tabGroupColorPalette;
+  }
 }
 
 @end

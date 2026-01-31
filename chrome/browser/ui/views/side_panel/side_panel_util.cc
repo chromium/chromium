@@ -309,7 +309,7 @@ void SidePanelUtil::RecordPanelClosedForOtherPanelTypeMetrics(
     if (opening_panel_id == SidePanelEntryId::kGlic) {
       base::RecordComputedAction(base::StrCat(
           {GetSidePanelNameFor(closing_panel_type), ".",
-           SidePanelEntryIdToHistogramName(closing_panel_id), ".ClosedToOpen.",
+           SidePanelEntryIdToHistogramName(closing_panel_id), ".EntryClosedToOpen.",
            SidePanelEntryIdToHistogramName(opening_panel_id)}));
     }
   }

@@ -120,7 +120,7 @@ bool JSONWriter::BuildJSONString(const Value::BlobStorage& node, size_t depth) {
   return omit_binary_values_;
 }
 
-bool JSONWriter::BuildJSONString(const Value::Dict& node, size_t depth) {
+bool JSONWriter::BuildJSONString(const DictValue& node, size_t depth) {
   internal::StackMarker depth_check(max_depth_, &stack_depth_);
 
   if (depth_check.IsTooDeep()) {
@@ -174,7 +174,7 @@ bool JSONWriter::BuildJSONString(const Value::Dict& node, size_t depth) {
   return result;
 }
 
-bool JSONWriter::BuildJSONString(const Value::List& node, size_t depth) {
+bool JSONWriter::BuildJSONString(const ListValue& node, size_t depth) {
   internal::StackMarker depth_check(max_depth_, &stack_depth_);
 
   if (depth_check.IsTooDeep()) {

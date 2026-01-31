@@ -31,7 +31,7 @@ struct NET_EXPORT_PRIVATE QuicEndpoint {
   IPEndPoint ip_endpoint;
   ConnectionEndpointMetadata metadata;
 
-  base::Value::Dict ToValue() const;
+  base::DictValue ToValue() const;
 };
 
 }  // namespace net

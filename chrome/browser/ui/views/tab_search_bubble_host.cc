@@ -128,24 +128,8 @@ void TabSearchBubbleHost::OnWidgetVisibilityChanged(views::Widget* widget,
     const PrefService* prefs = profile_->GetPrefs();
     const auto section = tab_search_prefs::GetTabSearchSectionFromInt(
         prefs->GetInteger(tab_search_prefs::kTabSearchTabIndex));
-    const auto organization_feature =
-        tab_search_prefs::GetTabOrganizationFeatureFromInt(
-            prefs->GetInteger(tab_search_prefs::kTabOrganizationFeature));
     if (section == tab_search::mojom::TabSearchSection::kSearch) {
       return;
-    }
-    if (organization_feature ==
-            tab_search::mojom::TabOrganizationFeature::kSelector ||
-        organization_feature ==
-            tab_search::mojom::TabOrganizationFeature::kNone) {
-      base::UmaHistogramEnumeration(
-          "Tab.Organization.SelectorCTR",
-          tab_search::mojom::SelectorCTREvent::kSelectorShown);
-    } else if (organization_feature ==
-               tab_search::mojom::TabOrganizationFeature::kDeclutter) {
-      base::UmaHistogramEnumeration(
-          "Tab.Organization.DeclutterCTR",
-          tab_search::mojom::DeclutterCTREvent::kDeclutterShown);
     }
   } else if (!visible && bubble_created_time_.has_value()) {
     const base::TimeDelta time_to_close =
@@ -262,10 +246,11 @@ bool TabSearchBubbleHost::ShowTabSearchBubble(
       },
       *bubble_created_time_));
 
+  const tabs::TabSearchPosition position = tabs::GetTabSearchPosition(profile_);
   webui_bubble_manager_->ShowBubble(
       std::nullopt,
-      tabs::GetTabSearchPosition(profile_) ==
-              tabs::TabSearchPosition::kLeadingTabstrip
+      (position == tabs::TabSearchPosition::kLeadingHorizontalTabstrip ||
+       position == tabs::TabSearchPosition::kVerticalTabstrip)
           ? views::BubbleBorder::TOP_LEFT
           : views::BubbleBorder::TOP_RIGHT,
       kTabSearchBubbleElementId);

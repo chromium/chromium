@@ -150,8 +150,9 @@ class COMPONENT_EXPORT(MOJO_CPP_BINDINGS) ServiceFactory {
     using Interface = typename internal::ServiceFactoryTraits<Func>::Interface;
     using Impl = typename internal::ServiceFactoryTraits<Func>::Impl;
     auto impl = fn(receiver.As<Interface>());
-    if (!impl)
+    if (!impl) {
       return nullptr;
+    }
 
     return std::make_unique<InstanceHolder<Impl>>(std::move(impl));
   }

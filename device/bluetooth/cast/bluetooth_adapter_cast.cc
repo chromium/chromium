@@ -6,7 +6,6 @@
 
 #include <utility>
 
-#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/location.h"
@@ -285,7 +284,7 @@ void BluetoothAdapterCast::OnConnectChanged(
 
   // This method could be called before this device is detected in a scan and
   // GetDevice() is called. Add it if needed.
-  if (!base::Contains(devices_, address)) {
+  if (!devices_.contains(address)) {
     AddDevice(std::move(device));
   }
 
@@ -330,8 +329,8 @@ void BluetoothAdapterCast::OnNewScanResult(
   // If we haven't created a BluetoothDeviceCast for this address yet, we need
   // to send an async request to |gatt_client_manager_| for a handle to the
   // device.
-  if (!base::Contains(devices_, address)) {
-    bool first_time_seen = !base::Contains(pending_scan_results_, address);
+  if (!devices_.contains(address)) {
+    bool first_time_seen = !pending_scan_results_.contains(address);
     // These results will be used to construct the BluetoothDeviceCast.
     pending_scan_results_[address].push_back(result);
 
@@ -377,7 +376,7 @@ void BluetoothAdapterCast::AddDevice(
   // This method should not be called if we already have a BluetoothDeviceCast
   // registered for this device.
   std::string address = GetCanonicalBluetoothAddress(remote_device->addr());
-  DCHECK(!base::Contains(devices_, address));
+  DCHECK(!devices_.contains(address));
 
   devices_[address] =
       std::make_unique<BluetoothDeviceCast>(this, remote_device);
@@ -441,14 +440,14 @@ void BluetoothAdapterCast::OnGetDevice(
   // OnConnectChanged() is called for a particular device. If that happened,
   // |remote_device| already has a handle. In this case, there should be no
   // |pending_scan_results_| and we should fast-return.
-  if (base::Contains(devices_, address)) {
-    DCHECK(!base::Contains(pending_scan_results_, address));
+  if (devices_.contains(address)) {
+    DCHECK(!pending_scan_results_.contains(address));
     return;
   }
 
   // If there is not a device already, there should be at least one ScanResult
   // which triggered the GetDevice() call.
-  DCHECK(!base::Contains(pending_scan_results_, address));
+  DCHECK(!pending_scan_results_.contains(address));
   AddDevice(std::move(remote_device));
 }
 

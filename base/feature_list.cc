@@ -3,10 +3,6 @@
 // found in the LICENSE file.
 
 #include "base/feature_list.h"
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
 
 #include <stddef.h>
 
@@ -19,7 +15,7 @@
 #include "base/base_switches.h"
 #include "base/check_is_test.h"
 #include "base/command_line.h"
-#include "base/containers/contains.h"
+#include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/debug/crash_logging.h"
 #include "base/debug/dump_without_crashing.h"
@@ -146,36 +142,39 @@ void DCheckOverridesAllowed() {}
 
 // An allocator entry for a feature in shared memory. The FeatureEntry is
 // followed by a base::Pickle object that contains the feature and trial name.
-struct FeatureEntry {
+class FeatureEntry {
+ public:
   // SHA1(FeatureEntry): Increment this if structure changes!
   static constexpr uint32_t kPersistentTypeId = 0x06567CA6 + 2;
 
   // Expected size for 32/64-bit check.
   static constexpr size_t kExpectedInstanceSize = 16;
 
-  // Specifies whether a feature override enables or disables the feature. Same
-  // values as the OverrideState enum in feature_list.h
-  uint32_t override_state;
+  static FeatureEntry* Create(PersistentMemoryAllocator* allocator,
+                              uint32_t override_state,
+                              const Pickle& pickle) {
+    size_t total_size = sizeof(FeatureEntry) + pickle.size();
+    FeatureEntry* entry = allocator->New<FeatureEntry>(total_size);
+    if (entry) {
+      entry->override_state_ = override_state;
+      entry->pickle_size_ = pickle.size();
+      entry->GetPickleData().copy_from(span(pickle));
+    }
+    return entry;
+  }
 
-  // On e.g. x86, alignof(uint64_t) is 4.  Ensure consistent size and alignment
-  // of `pickle_size` across platforms.
-  uint32_t padding;
+  FeatureEntry(const FeatureEntry&) = delete;
+  FeatureEntry& operator=(const FeatureEntry&) = delete;
 
-  // Size of the pickled structure, NOT the total size of this entry.
-  uint64_t pickle_size;
-
-  // Return a pointer to the pickled data area immediately following the entry.
-  uint8_t* GetPickledDataPtr() { return reinterpret_cast<uint8_t*>(this + 1); }
-  const uint8_t* GetPickledDataPtr() const {
-    return reinterpret_cast<const uint8_t*>(this + 1);
+  FeatureList::OverrideState override_state() const {
+    return static_cast<FeatureList::OverrideState>(override_state_);
   }
 
   // Reads the feature and trial name from the pickle. Calling this is only
   // valid on an initialized entry that's in shared memory.
   bool GetFeatureAndTrialName(std::string_view* feature_name,
                               std::string_view* trial_name) const {
-    Pickle pickle = Pickle::WithUnownedBuffer(
-        span(GetPickledDataPtr(), checked_cast<size_t>(pickle_size)));
+    Pickle pickle = Pickle::WithUnownedBuffer(GetPickleData());
     PickleIterator pickle_iter(pickle);
     if (!pickle_iter.ReadStringPiece(feature_name)) {
       return false;
@@ -184,6 +183,36 @@ struct FeatureEntry {
     std::ignore = pickle_iter.ReadStringPiece(trial_name);
     return true;
   }
+
+ private:
+  friend class ::base::PersistentMemoryAllocator;
+
+  FeatureEntry() = default;
+
+  // Return a span to the pickled data area immediately following the entry.
+  span<uint8_t> GetPickleData() {
+    // SAFETY: `Create()` guarantees that `pickle_size_` bytes are allocated for
+    // Pickle data immediately following FeatureEntry data.
+    return UNSAFE_BUFFERS(span(reinterpret_cast<uint8_t*>(this + 1),
+                               checked_cast<size_t>(pickle_size_)));
+  }
+  span<const uint8_t> GetPickleData() const {
+    // SAFETY: `Create()` guarantees that `pickle_size_` bytes are allocated for
+    // Pickle data immediately following FeatureEntry data.
+    return UNSAFE_BUFFERS(span(reinterpret_cast<const uint8_t*>(this + 1),
+                               checked_cast<size_t>(pickle_size_)));
+  }
+
+  // Specifies whether a feature override enables or disables the feature. Same
+  // values as the OverrideState enum in feature_list.h
+  uint32_t override_state_;
+
+  // On e.g. x86, alignof(uint64_t) is 4.  Ensure consistent size and alignment
+  // of `pickle_size` across platforms.
+  uint32_t padding_;
+
+  // Size of the pickled structure, NOT the total size of this entry.
+  uint64_t pickle_size_;
 };
 
 // Splits |text| into two parts by the |separator| where the first part will be
@@ -198,12 +227,18 @@ bool SplitIntoTwo(std::string_view text,
                   std::string* second) {
   std::vector<std::string_view> parts =
       SplitStringPiece(text, separator, TRIM_WHITESPACE, SPLIT_WANT_ALL);
-  if (parts.size() == 2) {
-    *second = std::string(parts[1]);
-  } else if (parts.size() > 2) {
+  if (parts.empty()) {
+    DLOG(ERROR) << "Using '" << separator << "' to split '" << text
+                << "' failed.";
+    return false;
+  }
+  if (parts.size() > 2) {
     DLOG(ERROR) << "Only one '" << separator
                 << "' is allowed but got: " << text;
     return false;
+  }
+  if (parts.size() == 2) {
+    *second = std::string(parts[1]);
   }
   *first = parts[0];
   return true;
@@ -347,8 +382,7 @@ void FeatureList::InitFromSharedMemory(PersistentMemoryAllocator* allocator) {
   PersistentMemoryAllocator::Iterator iter(allocator);
   const FeatureEntry* entry;
   while ((entry = iter.GetNextOfObject<FeatureEntry>()) != nullptr) {
-    OverrideState override_state =
-        static_cast<OverrideState>(entry->override_state);
+    OverrideState override_state = entry->override_state();
 
     std::string_view feature_name;
     std::string_view trial_name;
@@ -433,15 +467,11 @@ void FeatureList::AddFeaturesToAllocator(PersistentMemoryAllocator* allocator) {
       pickle.WriteString(override.second.field_trial->trial_name());
     }
 
-    size_t total_size = sizeof(FeatureEntry) + pickle.size();
-    FeatureEntry* entry = allocator->New<FeatureEntry>(total_size);
+    FeatureEntry* entry = FeatureEntry::Create(
+        allocator, override.second.overridden_state, pickle);
     if (!entry) {
       return;
     }
-
-    entry->override_state = override.second.overridden_state;
-    entry->pickle_size = pickle.size();
-    memcpy(entry->GetPickledDataPtr(), pickle.data(), pickle.size());
 
     allocator->MakeIterable(entry);
   }
@@ -1022,7 +1052,7 @@ bool FeatureList::AllowFeatureAccess(const Feature& feature) const {
   if (!IsEarlyAccessInstance()) {
     return true;
   }
-  return base::Contains(allowed_feature_names_, feature.name);
+  return allowed_feature_names_.contains(feature.name);
 }
 
 FeatureList::OverrideEntry::OverrideEntry(OverrideState overridden_state,

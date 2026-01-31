@@ -5318,11 +5318,11 @@ TEST_P(BidderWorkletMultiThreadingTest,
   EXPECT_EQ(0u, num_generate_bid_calls);
 
   // 3) The trusted bidding signals are loaded.
-  base::Value::Dict keys_dict;
+  base::DictValue keys_dict;
   for (size_t i = 0; i < kNumGenerateBidCalls; ++i) {
     keys_dict.Set(base::NumberToString(i), static_cast<int>(i + 1));
   }
-  base::Value::Dict signals_dict;
+  base::DictValue signals_dict;
   signals_dict.Set("keys", std::move(keys_dict));
   std::string signals_json = base::WriteJson(signals_dict).value_or("");
 
@@ -5435,11 +5435,11 @@ TEST_P(BidderWorkletMultiThreadingTest,
   EXPECT_EQ(0u, num_generate_bid_calls);
 
   // 2) The trusted bidding signals are loaded.
-  base::Value::Dict keys_dict;
+  base::DictValue keys_dict;
   for (size_t i = 0; i < kNumGenerateBidCalls; ++i) {
     keys_dict.Set(base::NumberToString(i), static_cast<int>(i + 1));
   }
-  base::Value::Dict signals_dict;
+  base::DictValue signals_dict;
   signals_dict.Set("keys", std::move(keys_dict));
   std::string signals_json = base::WriteJson(signals_dict).value_or("");
 
@@ -5572,11 +5572,11 @@ TEST_P(BidderWorkletMultiThreadingTest,
   EXPECT_EQ(0u, num_generate_bid_calls);
 
   // 3) The trusted bidding signals are loaded.
-  base::Value::Dict keys_dict;
+  base::DictValue keys_dict;
   for (size_t i = 0; i < kNumGenerateBidCalls; ++i) {
     keys_dict.Set(base::NumberToString(i), static_cast<int>(i + 1));
   }
-  base::Value::Dict signals_dict;
+  base::DictValue signals_dict;
   signals_dict.Set("keys", std::move(keys_dict));
   std::string signals_json = base::WriteJson(signals_dict).value_or("");
 
@@ -9956,7 +9956,7 @@ TEST_F(BidderWorkletTest, BasicDevToolsDebug) {
   TestDevToolsAgentClient::Event breakpoint_hit1 =
       debug1.WaitForMethodNotification("Debugger.paused");
 
-  base::Value::List* hit_breakpoints1 =
+  base::ListValue* hit_breakpoints1 =
       breakpoint_hit1.value.GetDict().FindListByDottedPath(
           "params.hitBreakpoints");
   ASSERT_TRUE(hit_breakpoints1);
@@ -10005,7 +10005,7 @@ TEST_F(BidderWorkletTest, BasicDevToolsDebug) {
   TestDevToolsAgentClient::Event breakpoint_hit2 =
       debug2.WaitForMethodNotification("Debugger.paused");
 
-  base::Value::List* hit_breakpoints2 =
+  base::ListValue* hit_breakpoints2 =
       breakpoint_hit2.value.GetDict().FindListByDottedPath(
           "params.hitBreakpoints");
   ASSERT_TRUE(hit_breakpoints2);
@@ -10112,7 +10112,7 @@ TEST_F(BidderWorkletTwoThreadsTest, BasicDevToolsDebug) {
   TestDevToolsAgentClient::Event breakpoint_hit1 =
       debug1.WaitForMethodNotification("Debugger.paused");
 
-  base::Value::List* hit_breakpoints0 =
+  base::ListValue* hit_breakpoints0 =
       breakpoint_hit0.value.GetDict().FindListByDottedPath(
           "params.hitBreakpoints");
   ASSERT_TRUE(hit_breakpoints0);
@@ -10127,7 +10127,7 @@ TEST_F(BidderWorkletTwoThreadsTest, BasicDevToolsDebug) {
                                    .GetDict()
                                    .FindString("callFrameId");
 
-  base::Value::List* hit_breakpoints1 =
+  base::ListValue* hit_breakpoints1 =
       breakpoint_hit1.value.GetDict().FindListByDottedPath(
           "params.hitBreakpoints");
   ASSERT_TRUE(hit_breakpoints1);

@@ -7,13 +7,17 @@
 #include "base/metrics/histogram_functions.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/safe_browsing/extension_telemetry/extension_telemetry_service.h"
-#include "chrome/browser/safe_browsing/extension_telemetry/extension_telemetry_service_factory.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
+#include "components/safe_browsing/buildflags.h"
 #include "components/search_engines/template_url_service.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents.h"
 #include "extensions/buildflags/buildflags.h"
+
+#if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
+#include "chrome/browser/safe_browsing/extension_telemetry/extension_telemetry_service.h"
+#include "chrome/browser/safe_browsing/extension_telemetry/extension_telemetry_service_factory.h"
+#endif
 
 SerpPageLoadMetricsObserver::SerpPageLoadMetricsObserver() = default;
 
@@ -80,11 +84,13 @@ void SerpPageLoadMetricsObserver::OnFirstContentfulPaintInPage(
     return;
   }
 
+#if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
   safe_browsing::ExtensionTelemetryService* telemetry_service =
       safe_browsing::ExtensionTelemetryServiceFactory::GetForProfile(profile);
   if (telemetry_service) {
     telemetry_service->OnDseSerpLoaded();
   }
+#endif  // BUILDFLAG(SAFE_BROWSING_AVAILABLE)
 }
 
 page_load_metrics::PageLoadMetricsObserver::ObservePolicy

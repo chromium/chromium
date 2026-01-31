@@ -45,7 +45,7 @@ class WebstoreInstallHelper : public base::RefCounted<WebstoreInstallHelper>,
     // in the utility process.
     virtual void OnWebstoreParseSuccess(const std::string& id,
                                         const SkBitmap& icon,
-                                        base::Value::Dict parsed_manifest) = 0;
+                                        base::DictValue parsed_manifest) = 0;
 
     // Called to indicate a parse failure. The `result_code` parameter should
     // indicate whether the problem was with the manifest or icon.
@@ -98,7 +98,7 @@ class WebstoreInstallHelper : public base::RefCounted<WebstoreInstallHelper>,
 
   // The results of successful decoding/parsing.
   SkBitmap icon_;
-  std::optional<base::Value::Dict> parsed_manifest_;
+  std::optional<base::DictValue> parsed_manifest_;
 
   // A details string for keeping track of any errors.
   std::string error_;

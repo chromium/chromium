@@ -4,10 +4,10 @@
 
 #include "components/background_fetch/background_fetch_delegate_base.h"
 
+#include <algorithm>
 #include <utility>
 
 #include "base/check_op.h"
-#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/notreached.h"
@@ -431,7 +431,7 @@ bool BackgroundFetchDelegateBase::IsGuidOutstanding(
     return false;
   }
 
-  return base::Contains(
+  return std::ranges::contains(
       job_details_iter->second.fetch_description->outstanding_guids, guid);
 }
 

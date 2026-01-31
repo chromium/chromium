@@ -96,7 +96,7 @@ void SplitModifierKeyboardInfoScreen::ShowImpl() {
 void SplitModifierKeyboardInfoScreen::HideImpl() {}
 
 void SplitModifierKeyboardInfoScreen::OnUserAction(
-    const base::Value::List& args) {
+    const base::ListValue& args) {
   const std::string& action_id = args[0].GetString();
   if (action_id == kUserActionNextButtonClicked) {
     exit_callback_.Run(Result::kNext);

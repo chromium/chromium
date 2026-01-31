@@ -117,8 +117,6 @@ function rand32() {
       (async function() {
         config = await navigator.runAdAuction({
             decisionLogicURL: "${base}fledge_decision_logic.js.php",
-            trustedScoringSignalsURL: "${base}fledge_scoring_signals.js.php",
-            trustedScoringSignalsCoordinator: "${coordinator}",
             seller: "${baseOrigin}",
             interestGroupBuyers: ["${baseOrigin}"],
             resolveToConfig: true});

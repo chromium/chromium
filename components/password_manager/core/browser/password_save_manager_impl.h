@@ -160,7 +160,7 @@ class PasswordSaveManagerImpl : public PasswordSaveManager {
   // Clones the current object into |clone|. |clone| must not be null.
   void CloneInto(PasswordSaveManagerImpl* clone);
 
-  bool IsAccountStorageEnabled() const;
+  bool IsAccountStorageActive() const;
   bool ShouldStoreGeneratedPasswordsInAccountStore() const;
   PasswordForm::Store GetPasswordStoreForSavingImpl(
       const PendingCredentialsStates& states) const;
@@ -172,7 +172,7 @@ class PasswordSaveManagerImpl : public PasswordSaveManager {
   const std::unique_ptr<FormSaver> account_store_form_saver_;
 
   // The client which implements embedder-specific PasswordManager operations.
-  raw_ptr<PasswordManagerClient, DanglingUntriaged> client_ = nullptr;
+  raw_ptr<PasswordManagerClient> client_ = nullptr;
 
   // Stores updated credentials when the form was submitted but success is still
   // unknown. This variable contains credentials that are ready to be written

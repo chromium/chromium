@@ -34,10 +34,12 @@ export function saveCameraImage(
       Mojo.createSharedBuffer(numBytes);
   assert(
       createSharedBufferResult === Mojo.RESULT_OK,
-      'Could not create shared buffer');
+      `Could not create shared buffer. error: ${createSharedBufferResult}`);
 
   const {buffer, result: mapBufferResult} = handle.mapBuffer(0, numBytes);
-  assert(mapBufferResult === Mojo.RESULT_OK, 'Could not map shared buffer');
+  assert(
+      mapBufferResult === Mojo.RESULT_OK,
+      `Could not map shared buffer. error: ${mapBufferResult}`);
 
   const uint8View = new Uint8Array(buffer);
   uint8View.set(pngBinary);

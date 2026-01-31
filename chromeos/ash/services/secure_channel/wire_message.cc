@@ -7,10 +7,10 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <algorithm>
 #include <limits>
 
 #include "base/base64url.h"
-#include "base/containers/contains.h"
 #include "base/containers/span.h"
 #include "base/containers/span_reader.h"
 #include "base/containers/span_writer.h"
@@ -64,7 +64,7 @@ const char* const kV3Features[] = {
 
 std::unique_ptr<WireMessage> DeserializeJsonMessageBody(
     const std::string& serialized_message_body) {
-  std::optional<base::Value::Dict> body_value = base::JSONReader::ReadDict(
+  std::optional<base::DictValue> body_value = base::JSONReader::ReadDict(
       serialized_message_body, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   if (!body_value) {
     PA_LOG(WARNING) << "Unable to parse message as JSON.";
@@ -192,7 +192,7 @@ std::string WireMessage::Serialize() const {
     }
 
     // Create JSON body containing feature and payload.
-    base::Value::Dict body;
+    base::DictValue body;
 
     std::string base64_payload;
     base::Base64UrlEncode(payload_,
@@ -210,7 +210,7 @@ std::string WireMessage::Serialize() const {
   }
 
   bool use_v3_encoding = body_.empty() || feature_.empty() ||
-                         base::Contains(kV3Features, feature_);
+                         std::ranges::contains(kV3Features, feature_);
 
   size_t body_size = json_body.size();
   if (use_v3_encoding && body_size > std::numeric_limits<uint16_t>::max()) {

@@ -125,12 +125,10 @@ id<GREYMatcher> LocalBannerLabelsMatcher() {
       grey_accessibilityLabel(bannerLabel), nil);
 }
 
-id<GREYMatcher> UploadBannerLabelsMatcher(bool is_bottomsheet_enabled = true) {
+id<GREYMatcher> UploadBannerLabelsMatcher() {
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   NSString* title = l10n_util::GetNSString(
-      is_bottomsheet_enabled
-          ? IDS_AUTOFILL_SAVE_CARD_PROMPT_TITLE_TO_CLOUD_SECURITY
-          : IDS_AUTOFILL_SAVE_CARD_PROMPT_TITLE_TO_CLOUD_V3);
+      IDS_AUTOFILL_SAVE_CARD_PROMPT_TITLE_TO_CLOUD_SECURITY);
 #else
   NSString* title =
       l10n_util::GetNSString(IDS_AUTOFILL_SAVE_CARD_PROMPT_TITLE_TO_CLOUD);
@@ -262,33 +260,14 @@ void FillAndSubmitXframeCreditCardForm() {
   if ([self isRunningTest:@selector(testStickySavePromptJourney)]) {
     config.features_enabled.push_back(kAutofillStickyInfobarIos);
   }
-  if ([self
-          isRunningTest:@selector
-          (testOfferUpstream_FullData_PaymentsAccepts_Xframe_WithBottomSheetDisabled)] ||
+  if ([self isRunningTest:@selector
+            (DISABLED_testOfferUpstream_FullData_PaymentsAccepts_Xframe)] ||
       [self isRunningTest:@selector
-            (testOfferUpstream_FullData_PaymentsAccepts_Xframe)] ||
-      [self
-          isRunningTest:@selector(testUserData_LocalSave_UserAccepts_Xframe)]) {
+            (DISABLED_testUserData_LocalSave_UserAccepts_Xframe)]) {
     config.features_enabled.push_back(
         autofill::features::kAutofillAcrossIframesIos);
   }
-  // testUserData_LocalSave_UserAccepts_Xframe
-
-  if ([self
-          isRunningTest:@selector
-          (testOfferUpstream_FullData_PaymentsAccepts_WithBottomSheetDisabled)] ||
-      [self
-          isRunningTest:@selector
-          (testOfferUpstream_FullData_PaymentsAccepts_Xframe_WithBottomSheetDisabled)]) {
-    config.features_disabled.push_back(
-        autofill::features::kAutofillSaveCardBottomSheet);
-  } else {
-    config.features_enabled.push_back(
-        autofill::features::kAutofillSaveCardBottomSheet);
-  }
-
-  config.features_enabled.push_back(
-      autofill::features::kAutofillLocalSaveCardBottomSheet);
+  // DISABLED_testUserData_LocalSave_UserAccepts_Xframe
 
   config.features_enabled.push_back(
       autofill::features::kAutofillEnableCvcStorageAndFilling);
@@ -550,24 +529,6 @@ void FillAndSubmitXframeCreditCardForm() {
       @"Local save card bottomsheet should not show.");
 }
 
-// Test upstream card upload is offered in infobar when submitting the credit
-// card form with full data and Google Payments server is queried to request
-// card upload.
-- (void)testOfferUpstream_FullData_PaymentsAccepts_WithBottomSheetDisabled {
-  [self fillAndSubmitFormWithID:kFillFullFormId
-               paymentsResponse:kResponseGetUploadDetailsSuccess
-                      errorCode:net::HTTP_OK
-                   forLocalSave:NO];
-
-  // Wait until the save card infobar becomes visible.
-  GREYAssert(
-      [self waitForUIElementToAppearWithMatcher:
-                UploadBannerLabelsMatcher(/*is_bottomsheet_enabled=*/false)],
-      @"Save card infobar failed to show.");
-
-  [self removeInfoBar];
-}
-
 // Test upstream card upload is offered when submitting the credit card form
 // with full data and Google Payments server is queried to request card upload.
 - (void)testOfferUpstream_FullData_PaymentsAccepts {
@@ -586,48 +547,9 @@ void FillAndSubmitXframeCreditCardForm() {
   [self dismissUploadSaveCardBottomSheetWithoutAccepting];
 }
 
-// Test upstream card upload is offered in infobar when submitting xframe credit
-// card form and Google Payments server is queried to request card upload.
-- (void)
-    testOfferUpstream_FullData_PaymentsAccepts_Xframe_WithBottomSheetDisabled {
-  // Serve ios http files.
-  net::test_server::RegisterDefaultHandlers(self.testServer);
-  GREYAssertTrue(self.testServer->Start(), @"Server did not start.");
-
-  // Load xframe credit card page.
-  [ChromeEarlGrey loadURL:self.testServer->GetURL("/xframe_credit_card.html")];
-
-  // Set up the Google Payments server response so upload is deemed successful.
-  // Return success.
-  [AutofillAppInterface setPaymentsResponse:kResponseGetUploadDetailsSuccess
-                                 forRequest:kURLGetUploadDetailsRequest
-                              withErrorCode:net::HTTP_OK];
-
-  [AutofillAppInterface resetEventWaiterForEvents:@[
-    @(CreditCardSaveManagerObserverEvent::kOnDecideToRequestUploadSaveCalled),
-    @(CreditCardSaveManagerObserverEvent::
-          kOnReceivedGetUploadDetailsResponseCalled)
-  ]
-                                          timeout:kWaitForDownloadTimeout];
-
-  // Fill and submit form.
-  FillAndSubmitXframeCreditCardForm();
-
-  GREYAssertTrue([AutofillAppInterface waitForEvents],
-                 @"Event was not triggered");
-
-  // Wait until the save card infobar becomes visible.
-  GREYAssert(
-      [self waitForUIElementToAppearWithMatcher:
-                UploadBannerLabelsMatcher(/*is_bottomsheet_enabled=*/false)],
-      @"Save card infobar failed to show.");
-
-  [self removeInfoBar];
-}
-
 // Test upstream card upload is offered when submitting xframe credit card form
 // and Google Payments server is queried to request card upload.
-- (void)testOfferUpstream_FullData_PaymentsAccepts_Xframe {
+- (void)DISABLED_testOfferUpstream_FullData_PaymentsAccepts_Xframe {
   // Serve ios http files.
   net::test_server::RegisterDefaultHandlers(self.testServer);
   GREYAssertTrue(self.testServer->Start(), @"Server did not start.");
@@ -1019,7 +941,7 @@ void FillAndSubmitXframeCreditCardForm() {
 }
 
 // Test saving credit card locally as fallback with a xframe credit card form.
-- (void)testUserData_LocalSave_UserAccepts_Xframe {
+- (void)DISABLED_testUserData_LocalSave_UserAccepts_Xframe {
   // Serve ios http files.
   net::test_server::RegisterDefaultHandlers(self.testServer);
   GREYAssertTrue(self.testServer->Start(), @"Server did not start.");

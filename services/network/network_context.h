@@ -47,7 +47,6 @@
 #include "net/storage_access_api/status.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/network/cors/preflight_controller.h"
-#include "services/network/devtools_durable_msg_collector.h"
 #include "services/network/first_party_sets/first_party_sets_access_delegate.h"
 #include "services/network/http_cache_data_counter.h"
 #include "services/network/http_cache_data_remover.h"
@@ -61,7 +60,6 @@
 #include "services/network/public/mojom/cookie_access_observer.mojom.h"
 #include "services/network/public/mojom/cookie_manager.mojom-shared.h"
 #include "services/network/public/mojom/host_resolver.mojom.h"
-#include "services/network/public/mojom/network_context.mojom-forward.h"
 #include "services/network/public/mojom/network_context.mojom.h"
 #include "services/network/public/mojom/network_context_client.mojom.h"
 #include "services/network/public/mojom/network_service.mojom-forward.h"
@@ -485,8 +483,6 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkContext
       const url::Origin& origin,
       const net::IsolationInfo& isolation_info,
       const base::flat_map<std::string, std::string>& endpoints) override;
-  void SetEnterpriseReportingEndpoints(
-      const base::flat_map<std::string, GURL>& endpoints) override;
   void SendReportsAndRemoveSource(
       const base::UnguessableToken& reporting_source) override;
   void QueueReport(
@@ -495,11 +491,11 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkContext
       const GURL& url,
       const std::optional<base::UnguessableToken>& reporting_source,
       const net::NetworkAnonymizationKey& network_anonymization_key,
-      base::Value::Dict body) override;
+      base::DictValue body) override;
   void QueueEnterpriseReport(const std::string& type,
                              const std::string& group,
                              const GURL& url,
-                             base::Value::Dict body) override;
+                             base::DictValue body) override;
   void QueueSignedExchangeReport(
       mojom::SignedExchangeReportPtr report,
       const net::NetworkAnonymizationKey& network_anonymization_key) override;
@@ -602,9 +598,9 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkContext
 
   // The following methods are used to track the number of requests per process
   // and ensure it doesn't go over a reasonable limit.
-  void LoaderCreated(uint32_t process_id);
-  void LoaderDestroyed(uint32_t process_id);
-  bool CanCreateLoader(uint32_t process_id);
+  void LoaderCreated(const OriginatingProcess& process_id);
+  void LoaderDestroyed(const OriginatingProcess& process_id);
+  bool CanCreateLoader(const OriginatingProcess& process_id);
 
   void set_max_loaders_per_process_for_testing(uint32_t count) {
     max_loaders_per_process_ = count;
@@ -687,12 +683,6 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkContext
   SharedResourceChecker* GetSharedResourceChecker() {
     return shared_resource_checker_.get();
   }
-
-  // Creates Durable Messages for the request and DevTools Profile ID,
-  // for each collector that is enabled for the profile.
-  std::vector<base::WeakPtr<DevtoolsDurableMessage>> MaybeCreateDurableMessages(
-      const std::optional<base::UnguessableToken>& throttling_profile_id,
-      const std::optional<std::string>& devtools_request_id);
 
   // Returns the current same-origin-policy exceptions.  For more details see
   // network::mojom::NetworkContextParams::cors_origin_access_list and
@@ -843,7 +833,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkContext
       const GURL& url,
       const std::optional<base::UnguessableToken>& reporting_source,
       const net::NetworkAnonymizationKey& network_anonymization_key,
-      base::Value::Dict body,
+      base::DictValue body,
       net::ReportingTargetType target_type);
 
   const raw_ptr<NetworkService> network_service_;
@@ -930,7 +920,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkContext
       web_transports_;
 
   // A count of outstanding requests per initiating process.
-  std::map<uint32_t, uint32_t> loader_count_per_process_;
+  std::map<OriginatingProcess, uint32_t> loader_count_per_process_;
 
   static constexpr uint32_t kMaxOutstandingRequestsPerProcess = 2700;
   uint32_t max_loaders_per_process_ = kMaxOutstandingRequestsPerProcess;

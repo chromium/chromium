@@ -60,7 +60,7 @@ class SessionContext {
   // secondary SharedSecret represented as base64-encoded strings. These values
   // are needed to resume the Quick Start connection after the target device
   // reboots.
-  base::Value::Dict GetPrepareForUpdateInfo();
+  base::DictValue GetPrepareForUpdateInfo();
 
   bool did_transfer_wifi() const { return did_transfer_wifi_; }
 

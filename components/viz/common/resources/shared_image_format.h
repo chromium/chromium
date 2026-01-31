@@ -97,7 +97,7 @@ class COMPONENT_EXPORT(VIZ_SHARED_IMAGE_FORMAT) SharedImageFormat final {
   // Returns whether this format needs to be externally sampled. Note that
   // external sampling is supported only on Ozone.
   bool PrefersExternalSampler() const {
-#if BUILDFLAG(IS_OZONE)
+#if BUILDFLAG(IS_OZONE) || BUILDFLAG(IS_ANDROID)
     return is_multi_plane()
                ? format_.multiplanar_format.prefers_external_sampler
                : false;
@@ -106,7 +106,7 @@ class COMPONENT_EXPORT(VIZ_SHARED_IMAGE_FORMAT) SharedImageFormat final {
 #endif
   }
 
-#if BUILDFLAG(IS_OZONE)
+#if BUILDFLAG(IS_OZONE) || BUILDFLAG(IS_ANDROID)
   // Sets this format (which must be multiplanar) as needing external sampling.
   void SetPrefersExternalSampler() {
     CHECK(is_multi_plane());
@@ -124,7 +124,7 @@ class COMPONENT_EXPORT(VIZ_SHARED_IMAGE_FORMAT) SharedImageFormat final {
   // using this method in case it is determined that the it's backed by shared
   // memory. https://issues.chromium.org/339546249.
   void ClearPrefersExternalSampler() {
-#if BUILDFLAG(IS_OZONE)
+#if BUILDFLAG(IS_OZONE) || BUILDFLAG(IS_ANDROID)
     CHECK(is_multi_plane() &&
           format_.multiplanar_format.prefers_external_sampler);
     format_.multiplanar_format.prefers_external_sampler = false;
@@ -208,7 +208,7 @@ class COMPONENT_EXPORT(VIZ_SHARED_IMAGE_FORMAT) SharedImageFormat final {
       PlaneConfig plane_config;
       Subsampling subsampling;
       ChannelFormat channel_format;
-#if BUILDFLAG(IS_OZONE)
+#if BUILDFLAG(IS_OZONE) || BUILDFLAG(IS_ANDROID)
       // NOTE: This field is intentionally not used as part of defining equality
       // between two MultiplanarFormat instances as clients should not generally
       // need to care. Clients who need to distinguish for a particular
@@ -332,8 +332,6 @@ inline constexpr SharedImageFormat kP010 =
     SharedImageFormat::MultiPlane(SharedImageFormat::PlaneConfig::kY_UV,
                                   SharedImageFormat::Subsampling::k420,
                                   SharedImageFormat::ChannelFormat::k10);
-// NOTE: These formats do not have an equivalent BufferFormat as they are not
-// used with GpuMemoryBuffers.
 inline constexpr SharedImageFormat kNV16 =
     SharedImageFormat::MultiPlane(SharedImageFormat::PlaneConfig::kY_UV,
                                   SharedImageFormat::Subsampling::k422,

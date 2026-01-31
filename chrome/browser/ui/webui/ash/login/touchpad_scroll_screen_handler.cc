@@ -41,7 +41,7 @@ void TouchpadScrollScreenHandler::SetReverseScrolling(bool value) {
   CallExternalAPI("setReverseScrolling", value);
 }
 
-void TouchpadScrollScreenHandler::Show(base::Value::Dict data) {
+void TouchpadScrollScreenHandler::Show(base::DictValue data) {
   ShowInWebUI(std::move(data));
 }
 

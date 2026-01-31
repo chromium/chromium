@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2026 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:aapt="http://schemas.android.com/aapt"
+    android:width="62dp"
+    android:height="62dp"
+    android:viewportWidth="62"
+    android:viewportHeight="62">
+  <path
+      android:pathData="M6.115,31C3.547,27.931 2,23.971 2,19.647C2,9.901 9.86,2 19.556,2C23.944,2 27.956,3.618 31.034,6.294C34.104,3.618 38.107,2 42.485,2C52.158,2 60,9.901 60,19.647C60,23.971 58.457,27.931 55.895,31C58.457,34.069 60,38.029 60,42.353C60,52.099 52.158,60 42.485,60C38.107,60 34.104,58.382 31.034,55.706C27.956,58.382 23.944,60 19.556,60C9.86,60 2,52.099 2,42.353C2,38.029 3.547,34.069 6.115,31Z"
+      android:fillColor="@color/educational_tip_card_logo_color_2"/>
+  <path
+      android:pathData="M37,12C38.657,12 40,13.343 40,15V47C40,48.657 38.657,50 37,50H25C23.343,50 22,48.657 22,47V15C22,13.343 23.343,12 25,12H37Z">
+    <aapt:attr name="android:fillColor">
+      <gradient
+          android:startX="37.5"
+          android:startY="26.886"
+          android:endX="25.003"
+          android:endY="46.629"
+          android:type="linear">
+        <item android:offset="0" android:color="@color/educational_tip_card_logo_color_1"/>
+        <item android:offset="1" android:color="@color/educational_tip_card_logo_color_2"/>
+      </gradient>
+    </aapt:attr>
+  </path>
+  <path
+      android:pathData="M37,12C38.657,12 40,13.343 40,15V47C40,48.657 38.657,50 37,50H25C23.343,50 22,48.657 22,47V15C22,13.343 23.343,12 25,12H37Z"
+      android:strokeWidth="2"
+      android:strokeColor="@color/educational_tip_card_logo_color_4"
+      android:fillColor="@android:color/transparent"/>
+  <path
+      android:pathData="M25,14L37,14A1,1 0,0 1,38 15L38,15A1,1 0,0 1,37 16L25,16A1,1 0,0 1,24 15L24,15A1,1 0,0 1,25 14z"
+      android:fillColor="@color/educational_tip_card_logo_color_6"/>
+  <path
+      android:pathData="M25,46L37,46A1,1 0,0 1,38 47L38,47A1,1 0,0 1,37 48L25,48A1,1 0,0 1,24 47L24,47A1,1 0,0 1,25 46z"
+      android:fillColor="@color/educational_tip_card_logo_color_6"/>
+  <path
+      android:pathData="M45,15H52"
+      android:strokeWidth="2"
+      android:fillColor="@android:color/transparent"
+      android:strokeColor="@color/educational_tip_card_logo_color_1"/>
+  <path
+      android:pathData="M17,47H10"
+      android:strokeWidth="2"
+      android:fillColor="@android:color/transparent"
+      android:strokeColor="@color/educational_tip_card_logo_color_1"/>
+  <path
+      android:pathData="M48,19L44,15L48,11"
+      android:strokeWidth="2"
+      android:fillColor="@android:color/transparent"
+      android:strokeColor="@color/educational_tip_card_logo_color_1"/>
+  <path
+      android:pathData="M14,43L18,47L14,51"
+      android:strokeWidth="2"
+      android:fillColor="@android:color/transparent"
+      android:strokeColor="@color/educational_tip_card_logo_color_1"/>
+</vector>

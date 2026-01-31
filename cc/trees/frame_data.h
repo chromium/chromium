@@ -66,6 +66,9 @@ struct CC_EXPORT FrameData {
   bool has_copy_requests = false;
   // Only set when LTHI is in TreesInViz mode
   std::optional<viz::TreesInVizTiming> trees_in_viz_timing_details;
+  // Indicates if this frame has any layers with tracked elements, is used
+  // to avoid unnecessary layer tree walk if there are none.
+  bool has_layers_with_tracked_element = false;
 };
 
 }  // namespace cc

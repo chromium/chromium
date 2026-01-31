@@ -45,7 +45,8 @@ class CORE_EXPORT PropertyRegistration final
   static std::optional<const CSSValue*> ConvertInitial(
       const CSSValue* value,
       const CSSSyntaxDefinition& syntax,
-      const CSSParserContext& parser_context);
+      const CSSParserContext& parser_context,
+      CSSParserLocalContext& local_context);
 
   PropertyRegistration(const AtomicString& name,
                        const CSSSyntaxDefinition&,

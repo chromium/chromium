@@ -23,8 +23,9 @@ SyncHandleWatcher::SyncHandleWatcher(
 
 SyncHandleWatcher::~SyncHandleWatcher() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (registered_)
+  if (registered_) {
     registry_->UnregisterHandle(handle_);
+  }
 
   destroyed_->data = true;
 }
@@ -49,8 +50,9 @@ bool SyncHandleWatcher::SyncWatch(const bool* should_stop) {
   bool result = registry_->Wait(should_stop_array);
 
   // This object has been destroyed.
-  if (destroyed->data)
+  if (destroyed->data) {
     return false;
+  }
 
   DecrementRegisterCount();
   return result;

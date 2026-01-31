@@ -4,6 +4,8 @@
 
 #include "components/autofill/core/browser/ui/payments/save_payment_method_and_virtual_card_enroll_confirmation_ui_params.h"
 
+#include "base/feature_list.h"
+#include "components/autofill/core/common/autofill_payments_features.h"
 #include "components/strings/grit/components_strings.h"
 #include "ui/base/l10n/l10n_util.h"
 
@@ -57,7 +59,9 @@ SavePaymentMethodAndVirtualCardEnrollConfirmationUiParams::
           IDS_AUTOFILL_SAVE_CARD_CONFIRMATION_SUCCESS_TITLE_TEXT),
       /*description_text=*/
       l10n_util::GetStringUTF16(
-          IDS_AUTOFILL_SAVE_CARD_CONFIRMATION_SUCCESS_DESCRIPTION_TEXT));
+          base::FeatureList::IsEnabled(features::kAutofillEnableWalletBranding)
+              ? IDS_AUTOFILL_SAVE_CARD_TO_WALLET_CONFIRMATION_SUCCESS_DESCRIPTION_TEXT
+              : IDS_AUTOFILL_SAVE_CARD_CONFIRMATION_SUCCESS_DESCRIPTION_TEXT));
 }
 
 // static
@@ -85,7 +89,9 @@ SavePaymentMethodAndVirtualCardEnrollConfirmationUiParams::
           IDS_AUTOFILL_SAVE_CARD_CONFIRMATION_FAILURE_TITLE_TEXT),
       /*description_text=*/
       l10n_util::GetStringUTF16(
-          IDS_AUTOFILL_SAVE_CARD_CONFIRMATION_FAILURE_DESCRIPTION_TEXT),
+          base::FeatureList::IsEnabled(features::kAutofillEnableWalletBranding)
+              ? IDS_AUTOFILL_SAVE_CARD_TO_WALLET_CONFIRMATION_FAILURE_DESCRIPTION_TEXT
+              : IDS_AUTOFILL_SAVE_CARD_CONFIRMATION_FAILURE_DESCRIPTION_TEXT),
       /*failure_ok_button_accessible_name=*/
       l10n_util::GetStringUTF16(
           IDS_AUTOFILL_SAVE_CARD_CONFIRMATION_FAILURE_OK_BUTTON_ACCESSIBLE_NAME));
@@ -120,7 +126,9 @@ SavePaymentMethodAndVirtualCardEnrollConfirmationUiParams::
           IDS_AUTOFILL_SAVE_IBAN_CONFIRMATION_SUCCESS_TITLE_TEXT),
       /*description_text=*/
       l10n_util::GetStringUTF16(
-          IDS_AUTOFILL_SAVE_IBAN_CONFIRMATION_SUCCESS_DESCRIPTION_TEXT));
+          base::FeatureList::IsEnabled(features::kAutofillEnableWalletBranding)
+              ? IDS_AUTOFILL_SAVE_IBAN_TO_WALLET_CONFIRMATION_SUCCESS_DESCRIPTION_TEXT
+              : IDS_AUTOFILL_SAVE_IBAN_CONFIRMATION_SUCCESS_DESCRIPTION_TEXT));
 }
 
 // static
@@ -135,9 +143,15 @@ SavePaymentMethodAndVirtualCardEnrollConfirmationUiParams::
       /*description_text=*/
       hit_max_strikes
           ? l10n_util::GetStringUTF16(
-                IDS_AUTOFILL_SAVE_IBAN_CONFIRMATION_FAILURE_HIT_MAX_STRIKE_DESCRIPTION_TEXT)
+                base::FeatureList::IsEnabled(
+                    features::kAutofillEnableWalletBranding)
+                    ? IDS_AUTOFILL_SAVE_IBAN_TO_WALLET_CONFIRMATION_FAILURE_HIT_MAX_STRIKE_DESCRIPTION_TEXT
+                    : IDS_AUTOFILL_SAVE_IBAN_CONFIRMATION_FAILURE_HIT_MAX_STRIKE_DESCRIPTION_TEXT)
           : l10n_util::GetStringUTF16(
-                IDS_AUTOFILL_SAVE_IBAN_CONFIRMATION_FAILURE_DESCRIPTION_TEXT),
+                base::FeatureList::IsEnabled(
+                    features::kAutofillEnableWalletBranding)
+                    ? IDS_AUTOFILL_SAVE_IBAN_TO_WALLET_CONFIRMATION_FAILURE_DESCRIPTION_TEXT
+                    : IDS_AUTOFILL_SAVE_IBAN_CONFIRMATION_FAILURE_DESCRIPTION_TEXT),
       /*failure_ok_button_accessible_name=*/
       l10n_util::GetStringUTF16(
           IDS_AUTOFILL_SAVE_CARD_CONFIRMATION_FAILURE_OK_BUTTON_ACCESSIBLE_NAME));

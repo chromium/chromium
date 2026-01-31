@@ -12,7 +12,7 @@ namespace chromeos {
 
 // static
 GURL ExternalCache::GetExtensionUpdateUrl(
-    const base::Value::Dict& extension_value,
+    const base::DictValue& extension_value,
     bool always_checking_for_updates) {
   const auto keep_if_present_opt = extension_value.FindBool(
       extensions::ExternalProviderImpl::kKeepIfPresent);
@@ -36,11 +36,11 @@ GURL ExternalCache::GetExtensionUpdateUrl(
 }
 
 // static
-base::Value::Dict ExternalCache::GetExtensionValueToCache(
-    const base::Value::Dict& extension,
+base::DictValue ExternalCache::GetExtensionValueToCache(
+    const base::DictValue& extension,
     const std::string& path,
     const std::string& version) {
-  base::Value::Dict result = extension.Clone();
+  base::DictValue result = extension.Clone();
 
   const std::string* external_update_url_value = extension.FindString(
       extensions::ExternalProviderImpl::kExternalUpdateUrl);
@@ -56,7 +56,7 @@ base::Value::Dict ExternalCache::GetExtensionValueToCache(
 }
 
 // static
-bool ExternalCache::ShouldCacheImmediately(const base::Value::Dict& extension) {
+bool ExternalCache::ShouldCacheImmediately(const base::DictValue& extension) {
   const auto keep_if_present_opt =
       extension.FindBool(extensions::ExternalProviderImpl::kKeepIfPresent);
 

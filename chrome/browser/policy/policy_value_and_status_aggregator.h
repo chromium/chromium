@@ -57,13 +57,13 @@ class PolicyValueAndStatusAggregator : public PolicyValueProvider::Observer,
 
   // Returns the dictionary containing the policy metadata available for the
   // platform.
-  base::Value::Dict GetAggregatedPolicyStatus();
+  base::DictValue GetAggregatedPolicyStatus();
 
   // Returns the dictionary containing policy names.
-  base::Value::Dict GetAggregatedPolicyNames();
+  base::DictValue GetAggregatedPolicyNames();
 
   // Returns the available policy values.
-  base::Value::Dict GetAggregatedPolicyValues();
+  base::DictValue GetAggregatedPolicyValues();
 
   // Refreshes the policy values by calling Refresh() on all
   // PolicyValueProviders and notifies the observers about policy value and

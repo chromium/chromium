@@ -90,9 +90,9 @@ void Vp8Decoder::FillVp8DataStructures(const Vp8FrameHeader& frame_hdr,
     if (sgmnt_hdr.segmentation_enabled) {
       if (sgmnt_hdr.segment_feature_mode ==
           Vp8SegmentationHeader::FEATURE_MODE_ABSOLUTE) {
-        q = UNSAFE_TODO(sgmnt_hdr.quantizer_update_value[i]);
+        q = sgmnt_hdr.quantizer_update_value[i];
       } else {
-        q += UNSAFE_TODO(sgmnt_hdr.quantizer_update_value[i]);
+        q += sgmnt_hdr.quantizer_update_value[i];
       }
     }
 
@@ -210,7 +210,7 @@ void Vp8Decoder::FillVp8DataStructures(const Vp8FrameHeader& frame_hdr,
 
   for (size_t i = 0; i < frame_hdr.num_of_dct_partitions; ++i)
     UNSAFE_TODO(slice_param.partition_size[i + 1]) =
-        UNSAFE_TODO(frame_hdr.dct_partition_sizes[i]);
+        frame_hdr.dct_partition_sizes[i];
 }
 
 // Based on update_reference_frames() in libvpx: vp8/encoder/onyx_if.c

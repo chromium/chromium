@@ -57,8 +57,8 @@ ReadAloudAppModel::~ReadAloudAppModel() = default;
 
 void ReadAloudAppModel::OnSettingsRestoredFromPrefs(
     double speech_rate,
-    base::Value::List* languages_enabled_in_pref,
-    base::Value::Dict* voices,
+    base::ListValue* languages_enabled_in_pref,
+    base::DictValue* voices,
     read_anything::mojom::HighlightGranularity granularity) {
   speech_rate_ = speech_rate;
   languages_enabled_in_pref_ = languages_enabled_in_pref->Clone();
@@ -638,11 +638,11 @@ int ReadAloudAppModel::GetCurrentTextEndIndex(const ui::AXNodeID& node_id) {
 bool ReadAloudAppModel::NodeBeenOrWillBeSpoken(
     const a11y::ReadAloudCurrentGranularity& current_granularity,
     const ui::AXNodeID& id) const {
-  if (base::Contains(current_granularity.segments, id)) {
+  if (current_granularity.segments.contains(id)) {
     return true;
   }
   for (const auto& granularity : processed_granularities_on_current_page_) {
-    if (base::Contains(granularity.segments, id)) {
+    if (granularity.segments.contains(id)) {
       return true;
     }
   }
@@ -679,7 +679,7 @@ bool ReadAloudAppModel::IsValidAXPosition(
   bool was_previously_spoken =
       NodeBeenOrWillBeSpoken(current_granularity, anchor_node->id());
   bool is_text_node = a11y::IsTextForReadAnything(anchor_node, is_pdf, is_docs);
-  bool contains_node = base::Contains(*current_nodes, anchor_node->id());
+  bool contains_node = current_nodes->contains(anchor_node->id());
   bool is_ignored = a11y::IsIgnored(anchor_node, is_pdf);
 
   return !is_ignored && !was_previously_spoken && is_text_node &&

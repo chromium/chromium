@@ -7,6 +7,7 @@
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/web_ui_mocha_browser_test.h"
 #include "content/public/test/browser_test.h"
+#include "printing/printing_features.h"
 
 static_assert(BUILDFLAG(IS_CHROMEOS));
 
@@ -329,7 +330,7 @@ IN_PROC_BROWSER_TEST_F(PrintPreviewRestoreStateTest, SaveValues) {
   RunTestCase("SaveValues");
 }
 
-class PrintPreviewModelTest : public PrintPreviewBrowserTest {
+class PrintPreviewModelTestBase : public PrintPreviewBrowserTest {
  protected:
   void RunTestCase(const std::string& testCase) {
     PrintPreviewBrowserTest::RunTest(
@@ -337,6 +338,19 @@ class PrintPreviewModelTest : public PrintPreviewBrowserTest {
         base::StringPrintf("runMochaTest('ModelTest', '%s');",
                            testCase.c_str()));
   }
+};
+
+class PrintPreviewModelTest : public PrintPreviewModelTestBase {
+ public:
+  PrintPreviewModelTest() {
+    scoped_feature_list_.InitWithFeatures(
+        /*enabled_features=*/{},
+        /*disabled_features=*/{
+            printing::features::kAlignPdfDefaultPrintSettingsWithHTML});
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_F(PrintPreviewModelTest, SetStickySettings) {
@@ -395,6 +409,30 @@ IN_PROC_BROWSER_TEST_F(PrintPreviewModelTest,
 IN_PROC_BROWSER_TEST_F(PrintPreviewModelTest,
                        UserSelectedOptionsOverridePolicyDefaults) {
   RunTestCase("UserSelectedOptionsOverridePolicyDefaults");
+}
+
+IN_PROC_BROWSER_TEST_F(PrintPreviewModelTest,
+                       ScalingTypeActualSizeOptionIsHidden) {
+  RunTestCase("ScalingTypeActualSizeOptionIsHidden");
+}
+
+class PrintPreviewDefaultSettingsAlignedModelTest
+    : public PrintPreviewModelTestBase {
+ public:
+  PrintPreviewDefaultSettingsAlignedModelTest() {
+    scoped_feature_list_.InitWithFeatures(
+        /*enabled_features=*/{printing::features::
+                                  kAlignPdfDefaultPrintSettingsWithHTML},
+        /*disabled_features=*/{});
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(PrintPreviewDefaultSettingsAlignedModelTest,
+                       ScalingTypeActualSizeOptionIsShown) {
+  RunTestCase("ScalingTypeActualSizeOptionIsShown");
 }
 
 class PrintPreviewPreviewGenerationTest : public PrintPreviewBrowserTest {
@@ -1281,7 +1319,7 @@ IN_PROC_BROWSER_TEST_F(PrintPreviewDestinationSettingsTest,
   RunTestCase("SaveToDriveDisabled");
 }
 
-class PrintPreviewScalingSettingsTest : public PrintPreviewBrowserTest {
+class PrintPreviewScalingSettingsTestBase : public PrintPreviewBrowserTest {
  protected:
   void RunTestCase(const std::string& testCase) {
     PrintPreviewBrowserTest::RunTest(
@@ -1291,18 +1329,52 @@ class PrintPreviewScalingSettingsTest : public PrintPreviewBrowserTest {
   }
 };
 
+class PrintPreviewScalingSettingsTest
+    : public PrintPreviewScalingSettingsTestBase {
+ public:
+  PrintPreviewScalingSettingsTest() {
+    scoped_feature_list_.InitWithFeatures(
+        /*enabled_features=*/{},
+        /*disabled_features=*/{
+            printing::features::kAlignPdfDefaultPrintSettingsWithHTML});
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
 IN_PROC_BROWSER_TEST_F(PrintPreviewScalingSettingsTest,
                        ShowCorrectDropdownOptions) {
   RunTestCase("ShowCorrectDropdownOptions");
 }
 
-IN_PROC_BROWSER_TEST_F(PrintPreviewScalingSettingsTest, SetScaling) {
-  RunTestCase("SetScaling");
-}
-
 IN_PROC_BROWSER_TEST_F(PrintPreviewScalingSettingsTest,
                        InputNotDisabledOnValidityChange) {
   RunTestCase("InputNotDisabledOnValidityChange");
+}
+
+class PrintPreviewDefaultSettingsAlignedScalingSettingsTest
+    : public PrintPreviewScalingSettingsTestBase {
+ public:
+  PrintPreviewDefaultSettingsAlignedScalingSettingsTest() {
+    scoped_feature_list_.InitWithFeatures(
+        /*enabled_features=*/{printing::features::
+                                  kAlignPdfDefaultPrintSettingsWithHTML},
+        /*disabled_features=*/{});
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(PrintPreviewDefaultSettingsAlignedScalingSettingsTest,
+                       ShowActualSizeOption) {
+  RunTestCase("ShowActualSizeOption");
+}
+
+IN_PROC_BROWSER_TEST_F(PrintPreviewDefaultSettingsAlignedScalingSettingsTest,
+                       SetScaling) {
+  RunTestCase("SetScaling");
 }
 
 class PrintPreviewManagedPrintOptionsTest : public PrintPreviewBrowserTest {

@@ -31,7 +31,7 @@
 namespace policy {
 namespace {
 
-std::string GetString(const base::Value::Dict& dict, std::string_view key) {
+std::string GetString(const base::DictValue& dict, std::string_view key) {
   const std::string* value = dict.FindString(key);
   return value ? *value : std::string();
 }
@@ -190,7 +190,7 @@ struct EnrollmentConfig::PrescribedConfig {
   static PrescribedConfig GetPrescribedConfig(
       PrefService* local_state,
       ash::system::StatisticsProvider* statistics_provider,
-      const base::Value::Dict& device_state,
+      const base::DictValue& device_state,
       const ash::OobeConfiguration* oobe_configuration);
 };
 
@@ -199,7 +199,7 @@ EnrollmentConfig::PrescribedConfig
 EnrollmentConfig::PrescribedConfig::GetPrescribedConfig(
     PrefService* local_state,
     ash::system::StatisticsProvider* statistics_provider,
-    const base::Value::Dict& device_state,
+    const base::DictValue& device_state,
     const ash::OobeConfiguration* oobe_configuration) {
   // Decide enrollment mode. Give precedence to forced variants.
   if (IsEnrollingAfterRollback()) {
@@ -317,13 +317,13 @@ struct EnrollmentConfig::PrescribedLicense {
   LicenseType license_type = LicenseType::kNone;
 
   static PrescribedLicense GetPrescribedLicense(
-      const base::Value::Dict& device_state);
+      const base::DictValue& device_state);
 };
 
 // static
 EnrollmentConfig::PrescribedLicense
 EnrollmentConfig::PrescribedLicense::GetPrescribedLicense(
-    const base::Value::Dict& device_state) {
+    const base::DictValue& device_state) {
   EnrollmentConfig::AssignedUpgradeType assigned_upgrade_type =
       EnrollmentConfig::AssignedUpgradeType::
           kAssignedUpgradeTypeChromeEnterprise;
@@ -395,7 +395,7 @@ EnrollmentConfig EnrollmentConfig::GetPrescribedEnrollmentConfig(
                                        statistics_provider);
   }
 
-  const base::Value::Dict& device_state =
+  const base::DictValue& device_state =
       local_state->GetDict(prefs::kServerBackedDeviceState);
 
   return EnrollmentConfig(

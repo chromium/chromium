@@ -12,6 +12,7 @@
 #include "base/logging.h"
 #include "base/run_loop.h"
 #include "base/strings/strcat.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
 #include "base/test/gmock_expected_support.h"
@@ -22,6 +23,7 @@
 #include "components/variations/scoped_variations_ids_provider.h"
 #include "components/variations/variations_ids_provider.h"
 #include "components/variations/variations_test_utils.h"
+#include "net/base/url_util.h"
 #include "net/http/http_status_code.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/simple_url_loader.h"
@@ -29,6 +31,8 @@
 #include "services/network/test/test_url_loader_factory.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/omnibox_proto/aim_tools.pb.h"
+#include "third_party/omnibox_proto/page_vertical.pb.h"
 #include "url/gurl.h"
 #include "url/url_util.h"
 
@@ -39,6 +43,7 @@ using ::base::test::ErrorIs;
 using ::base::test::ValueIs;
 using ::testing::_;
 using ::testing::AllOf;
+using ::testing::ElementsAre;
 using ::testing::ElementsAreArray;
 using ::testing::Field;
 using ::testing::FieldsAre;
@@ -61,7 +66,29 @@ constexpr char kSampleSuggestionsResponse[] = R"json([
         [437],
         [437]
       ],
-      "google:suggesttype": "QUERY"
+      "google:suggesttype": ["QUERY", "QUERY"]
+    }
+  ])json";
+
+constexpr char kSampleSuggestionsResponseWithEmptySuggestion[] = R"json([
+    "",
+    ["suggestion 1", "suggestion 2", ""],
+    ["", ""],
+    [],
+    {
+      "google:suggestsubtypes": [
+        [437],
+        [437],
+        [437]
+      ],
+      "google:suggesttype": ["QUERY", "QUERY", "QUERY"],
+      "google:suggestdetail": [
+        {},
+        {},
+        {
+          "google:suggesttemplate": "CAIaGAoWQXNrIGFib3V0IHByZXZpb3VzIHRhYiIaChgiU29sdmUgbGluZWFyIGVxdWF0aW9ucyI=",
+        }
+      ],
     }
   ])json";
 
@@ -70,25 +97,55 @@ constexpr char kEmptySuggestionsResponse[] =
     R"json([ "", [], [], [], {} ])json";
 
 struct GetSuggestURLOptions {
-  std::string page_url;
-  std::string title;
+  std::optional<std::string> page_url;
+  std::optional<std::string> title;
+  std::vector<omnibox::ToolMode> allowed_tools;
+  std::optional<omnibox::PageVertical> page_vertical;
 };
 
 GURL GetSuggestURL(const GetSuggestURLOptions& options,
                    AutocompleteProviderClient& ac_client) {
   TemplateURLRef::SearchTermsArgs search_terms_args;
-  search_terms_args.page_classification = metrics::OmniboxEventProto::OTHER;
-  search_terms_args.focus_type = metrics::OmniboxFocusType::INTERACTION_FOCUS;
-
-  search_terms_args.current_page_url = options.page_url;
+  if (options.page_url.has_value()) {
+    search_terms_args.current_page_url = *options.page_url;
+  }
 
   std::vector<std::string> additional_query_params;
-  if (!options.title.empty()) {
-    url::RawCanonOutputT<char> encoded_title;
-    url::EncodeURIComponent(options.title, &encoded_title);
+
+  if (options.allowed_tools.empty()) {
+    search_terms_args.focus_type = metrics::OmniboxFocusType::INTERACTION_FOCUS;
+    search_terms_args.page_classification = metrics::OmniboxEventProto::OTHER;
     additional_query_params.push_back("ctxus=1");
+    if (options.title.has_value()) {
+      url::RawCanonOutputT<char> encoded_title;
+      url::EncodeURIComponent(*options.title, &encoded_title);
+      additional_query_params.push_back(
+          base::StrCat({"pageTitle=", encoded_title.view()}));
+    }
+  } else {
+    search_terms_args.page_classification =
+        metrics::OmniboxEventProto::NTP_ZPS_PREFETCH;
+    search_terms_args.request_source =
+        SearchTermsData::RequestSource::NTP_ACTION_CHIPS;
+
+    std::vector<std::string> allowed_tools_strings;
+    allowed_tools_strings.reserve(options.allowed_tools.size());
+    for (const auto& tool : options.allowed_tools) {
+      allowed_tools_strings.push_back(base::NumberToString(tool));
+    }
     additional_query_params.push_back(
-        base::StrCat({"pageTitle=", encoded_title.view()}));
+        base::StrCat({"ats=", base::JoinString(allowed_tools_strings, ",")}));
+
+    if (options.title.has_value()) {
+      url::RawCanonOutputT<char> encoded_title;
+      url::EncodeURIComponent(*options.title, &encoded_title);
+      additional_query_params.push_back(
+          base::StrCat({"pageTitle=", encoded_title.view()}));
+    }
+    if (options.page_vertical.has_value()) {
+      additional_query_params.push_back(base::StrCat(
+          {"pageVertical=", base::NumberToString(*options.page_vertical)}));
+    }
   }
 
   search_terms_args.additional_query_params =
@@ -143,14 +200,26 @@ class EnvironmentFixture {
 class ServiceTestContext {
  public:
   FakeAutocompleteProviderClient& client() { return client_; }
-  void GetActionChipSuggestionsForTab(
+  void GetDeepdiveChipSuggestionsForTab(
       const std::u16string_view title,
       const GURL& url,
       base::OnceCallback<
           void(RemoteSuggestionsServiceSimple::ActionChipSuggestionsResult&&)>
           callback) {
-    loader_ = service_.GetActionChipSuggestionsForTab(title, url,
-                                                      std::move(callback));
+    loader_ = service_.GetDeepdiveChipSuggestionsForTab(title, url,
+                                                        std::move(callback));
+  }
+
+  void GetActionChipSuggestions(
+      base::optional_ref<const std::u16string> title,
+      base::optional_ref<const GURL> url,
+      base::span<const omnibox::ToolMode> allowed_tools,
+      base::optional_ref<const omnibox::PageVertical> page_vertical,
+      base::OnceCallback<
+          void(RemoteSuggestionsServiceSimple::ActionChipSuggestionsResult&&)>
+          callback) {
+    loader_ = service_.GetActionChipSuggestions(
+        title, url, allowed_tools, page_vertical, std::move(callback));
   }
 
   void CancelRequest() { loader_.reset(); }
@@ -174,10 +243,10 @@ struct HappyPathTestCase {
   const std::vector<ExpectedSuggestion> expected_suggestions;
 };
 
-using RemoteSuggestionsServiceSimpleHappyPathTest =
+using GetDeepdiveChipSuggestionsForTabHappyPathTest =
     testing::TestWithParam<HappyPathTestCase>;
 
-TEST_P(RemoteSuggestionsServiceSimpleHappyPathTest,
+TEST_P(GetDeepdiveChipSuggestionsForTabHappyPathTest,
        ReturnsParsedResultWhenValidResponseIsReturned) {
   EnvironmentFixture env;
   ServiceTestContext context;
@@ -185,7 +254,7 @@ TEST_P(RemoteSuggestionsServiceSimpleHappyPathTest,
   RemoteSuggestionsServiceSimple::ActionChipSuggestionsResult actual;
   const std::u16string title = u"title with spaces";
   const GURL current_url("https://example.com/");
-  context.GetActionChipSuggestionsForTab(
+  context.GetDeepdiveChipSuggestionsForTab(
       title, current_url,
       base::BindLambdaForTesting(
           [&actual,
@@ -217,7 +286,7 @@ TEST_P(RemoteSuggestionsServiceSimpleHappyPathTest,
 
 INSTANTIATE_TEST_SUITE_P(
     RemoteSuggestionsServiceSimpleTests,
-    RemoteSuggestionsServiceSimpleHappyPathTest,
+    GetDeepdiveChipSuggestionsForTabHappyPathTest,
     testing::Values(
         HappyPathTestCase{
             kSampleSuggestionsResponse,
@@ -227,12 +296,72 @@ INSTANTIATE_TEST_SUITE_P(
                                 AutocompleteMatchType::SEARCH_SUGGEST}}},
         HappyPathTestCase{kEmptySuggestionsResponse, {}}));
 
-TEST(RemoteSuggestionsServiceSimpleTest, ReturnsTimeoutErrorWhenTimeouts) {
+using GetActionChipSuggestionsHappyPathTest =
+    testing::TestWithParam<HappyPathTestCase>;
+
+TEST_P(GetActionChipSuggestionsHappyPathTest,
+       ReturnsParsedResultWhenValidResponseIsReturned) {
   EnvironmentFixture env;
   ServiceTestContext context;
 
   RemoteSuggestionsServiceSimple::ActionChipSuggestionsResult actual;
-  context.GetActionChipSuggestionsForTab(
+  const std::u16string title = u"title with spaces";
+  const GURL current_url("https://example.com/");
+  const std::vector<omnibox::ToolMode> allowed_tools = {
+      omnibox::ToolMode::TOOL_MODE_IMAGE_GEN};
+
+  context.GetActionChipSuggestions(
+      title, current_url, allowed_tools, /*page_vertical=*/std::nullopt,
+      base::BindLambdaForTesting(
+          [&actual,
+           &env](RemoteSuggestionsServiceSimple::ActionChipSuggestionsResult&&
+                     result) {
+            actual = std::move(result);
+            env.run_loop().Quit();
+          }));
+  const GURL suggest_url = GetSuggestURL({.page_url = current_url.spec(),
+                                          .title = base::UTF16ToUTF8(title),
+                                          .allowed_tools = allowed_tools,
+                                          .page_vertical = std::nullopt},
+                                         context.client());
+  ASSERT_TRUE(
+      context.client().test_url_loader_factory()->IsPending(suggest_url.spec()))
+      << GeneratePendingRequestsDebugMsg(
+             *context.client().test_url_loader_factory(), suggest_url.spec());
+  context.client().test_url_loader_factory()->AddResponse(suggest_url.spec(),
+                                                          GetParam().response);
+  env.run_loop().Run();
+
+  std::vector<Matcher<const SearchSuggestionParser::SuggestResult>> matchers;
+  for (const ExpectedSuggestion& s : GetParam().expected_suggestions) {
+    matchers.push_back(
+        AllOf(Property(&SearchSuggestionParser::SuggestResult::suggestion,
+                       s.suggestion),
+              Property(&SearchSuggestionParser::SuggestResult::type, s.type)));
+  }
+  EXPECT_THAT(actual, ValueIs(ElementsAreArray(matchers)));
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    RemoteSuggestionsServiceSimpleTests,
+    GetActionChipSuggestionsHappyPathTest,
+    testing::Values(
+        HappyPathTestCase{
+            kSampleSuggestionsResponseWithEmptySuggestion,
+            {ExpectedSuggestion{u"suggestion 1",
+                                AutocompleteMatchType::SEARCH_SUGGEST},
+             ExpectedSuggestion{u"suggestion 2",
+                                AutocompleteMatchType::SEARCH_SUGGEST},
+             ExpectedSuggestion{u"", AutocompleteMatchType::SEARCH_SUGGEST}}},
+        HappyPathTestCase{kEmptySuggestionsResponse, {}}));
+
+TEST(RemoteSuggestionsServiceSimpleTest,
+     GetDeepdiveChipSuggestionsForTabReturnsTimeoutError) {
+  EnvironmentFixture env;
+  ServiceTestContext context;
+
+  RemoteSuggestionsServiceSimple::ActionChipSuggestionsResult actual;
+  context.GetDeepdiveChipSuggestionsForTab(
       u"title", GURL("https://example.com/"),
       base::BindLambdaForTesting(
           [&actual,
@@ -249,12 +378,13 @@ TEST(RemoteSuggestionsServiceSimpleTest, ReturnsTimeoutErrorWhenTimeouts) {
                           FieldsAre(net::Error::ERR_TIMED_OUT, 0))));
 }
 
-TEST(RemoteSuggestionsServiceSimpleTest, FailsOnNetworkError) {
+TEST(RemoteSuggestionsServiceSimpleTest,
+     GetDeepdiveChipSuggestionsForTabFailsOnNetworkError) {
   EnvironmentFixture env;
   ServiceTestContext context;
 
   RemoteSuggestionsServiceSimple::ActionChipSuggestionsResult actual;
-  context.GetActionChipSuggestionsForTab(
+  context.GetDeepdiveChipSuggestionsForTab(
       u"title", GURL("https://example.com/"),
       base::BindLambdaForTesting(
           [&actual,
@@ -280,12 +410,13 @@ TEST(RemoteSuggestionsServiceSimpleTest, FailsOnNetworkError) {
       ErrorIs(VariantWith<NetworkError>(FieldsAre(net::Error::ERR_FAILED, 0))));
 }
 
-TEST(RemoteSuggestionsServiceSimpleTest, FailsOnHttpError) {
+TEST(RemoteSuggestionsServiceSimpleTest,
+     GetDeepdiveChipSuggestionsForTabFailsOnHttpError) {
   EnvironmentFixture env;
   ServiceTestContext context;
 
   RemoteSuggestionsServiceSimple::ActionChipSuggestionsResult actual;
-  context.GetActionChipSuggestionsForTab(
+  context.GetDeepdiveChipSuggestionsForTab(
       u"title", GURL("https://example.com/"),
       base::BindLambdaForTesting(
           [&actual,
@@ -310,12 +441,13 @@ TEST(RemoteSuggestionsServiceSimpleTest, FailsOnHttpError) {
                   net::ERR_HTTP_RESPONSE_CODE_FAILURE, net::HTTP_NOT_FOUND))));
 }
 
-TEST(RemoteSuggestionsServiceSimpleTest, FailsOnMalformedJson) {
+TEST(RemoteSuggestionsServiceSimpleTest,
+     GetDeepdiveChipSuggestionsForTabFailsOnMalformedJson) {
   EnvironmentFixture env;
   ServiceTestContext context;
 
   RemoteSuggestionsServiceSimple::ActionChipSuggestionsResult actual;
-  context.GetActionChipSuggestionsForTab(
+  context.GetDeepdiveChipSuggestionsForTab(
       u"title", GURL("https://example.com/"),
       base::BindLambdaForTesting(
           [&actual,
@@ -335,16 +467,18 @@ TEST(RemoteSuggestionsServiceSimpleTest, FailsOnMalformedJson) {
                                                           "invalid json");
   env.run_loop().Run();
 
-  EXPECT_THAT(actual, ErrorIs(VariantWith<ParseError>(FieldsAre(
-                          ParseError::ParseErrorType::kMalformedJson))));
+  EXPECT_THAT(actual, ErrorIs(VariantWith<ParseError>(
+                          FieldsAre(RemoteSuggestionsServiceSimple::
+                                        ParseFailureReason::kMalformedJson))));
 }
 
-TEST(RemoteSuggestionsServiceSimpleTest, FailsOnParseFailure) {
+TEST(RemoteSuggestionsServiceSimpleTest,
+     GetDeepdiveChipSuggestionsForTabFailsOnParseFailure) {
   EnvironmentFixture env;
   ServiceTestContext context;
 
   RemoteSuggestionsServiceSimple::ActionChipSuggestionsResult actual;
-  context.GetActionChipSuggestionsForTab(
+  context.GetDeepdiveChipSuggestionsForTab(
       u"title", GURL("https://example.com/"),
       base::BindLambdaForTesting(
           [&actual,
@@ -364,12 +498,346 @@ TEST(RemoteSuggestionsServiceSimpleTest, FailsOnParseFailure) {
                                                           "[]");
   env.run_loop().Run();
 
-  EXPECT_THAT(actual, ErrorIs(VariantWith<ParseError>(FieldsAre(
-                          ParseError::ParseErrorType::kParseFailure))));
+  EXPECT_THAT(actual, ErrorIs(VariantWith<ParseError>(
+                          FieldsAre(RemoteSuggestionsServiceSimple::
+                                        ParseFailureReason::kSchemaMismatch))));
 }
 
 TEST(RemoteSuggestionsServiceSimpleTest,
-     DoesNotCrashOnServiceDestructionDuringFetch) {
+     GetActionChipSuggestionsReturnsParsedResult) {
+  EnvironmentFixture env;
+  ServiceTestContext context;
+
+  RemoteSuggestionsServiceSimple::ActionChipSuggestionsResult actual;
+  const std::u16string title = u"page title";
+  const GURL current_url("https://example.com/");
+  const std::vector<omnibox::ToolMode> allowed_tools = {
+      omnibox::ToolMode::TOOL_MODE_IMAGE_GEN,
+      omnibox::ToolMode::TOOL_MODE_DEEP_SEARCH};
+  const omnibox::PageVertical page_vertical =
+      omnibox::PageVertical::PAGE_VERTICAL_EDU;
+
+  context.GetActionChipSuggestions(
+      title, current_url, allowed_tools, page_vertical,
+      base::BindLambdaForTesting(
+          [&actual,
+           &env](RemoteSuggestionsServiceSimple::ActionChipSuggestionsResult&&
+                     result) {
+            actual = std::move(result);
+            env.run_loop().Quit();
+          }));
+
+  const GURL suggest_url = GetSuggestURL({.page_url = current_url.spec(),
+                                          .title = base::UTF16ToUTF8(title),
+                                          .allowed_tools = allowed_tools,
+                                          .page_vertical = page_vertical},
+                                         context.client());
+
+  ASSERT_TRUE(
+      context.client().test_url_loader_factory()->IsPending(suggest_url.spec()))
+      << GeneratePendingRequestsDebugMsg(
+             *context.client().test_url_loader_factory(), suggest_url.spec());
+
+  std::string value;
+  EXPECT_TRUE(net::GetValueForKeyInQuery(suggest_url, "ats", &value));
+  EXPECT_EQ(value,
+            base::StrCat({base::NumberToString(static_cast<int>(
+                              omnibox::ToolMode::TOOL_MODE_IMAGE_GEN)),
+                          ",",
+                          base::NumberToString(static_cast<int>(
+                              omnibox::ToolMode::TOOL_MODE_DEEP_SEARCH))}));
+  EXPECT_TRUE(net::GetValueForKeyInQuery(suggest_url, "pageVertical", &value));
+  EXPECT_EQ(value, base::NumberToString(static_cast<int>(page_vertical)));
+  EXPECT_TRUE(net::GetValueForKeyInQuery(suggest_url, "client", &value));
+  EXPECT_EQ(value, "chrome-ntp-action");
+
+  context.client().test_url_loader_factory()->AddResponse(
+      suggest_url.spec(), kSampleSuggestionsResponse);
+  env.run_loop().Run();
+
+  EXPECT_THAT(actual,
+              ValueIs(ElementsAre(
+                  Property(&SearchSuggestionParser::SuggestResult::suggestion,
+                           u"suggestion 1"),
+                  Property(&SearchSuggestionParser::SuggestResult::suggestion,
+                           u"suggestion 2"))));
+}
+
+TEST(RemoteSuggestionsServiceSimpleTest,
+     GetActionChipSuggestionsWithoutPageVertical) {
+  EnvironmentFixture env;
+  ServiceTestContext context;
+
+  RemoteSuggestionsServiceSimple::ActionChipSuggestionsResult actual;
+  const std::u16string title = u"page title";
+  const GURL current_url("https://example.com/");
+  const std::vector<omnibox::ToolMode> allowed_tools = {
+      omnibox::ToolMode::TOOL_MODE_IMAGE_GEN};
+
+  context.GetActionChipSuggestions(
+      title, current_url, allowed_tools, std::nullopt,
+      base::BindLambdaForTesting(
+          [&actual,
+           &env](RemoteSuggestionsServiceSimple::ActionChipSuggestionsResult&&
+                     result) {
+            actual = std::move(result);
+            env.run_loop().Quit();
+          }));
+
+  const GURL suggest_url = GetSuggestURL({.page_url = current_url.spec(),
+                                          .title = base::UTF16ToUTF8(title),
+                                          .allowed_tools = allowed_tools,
+                                          .page_vertical = std::nullopt},
+                                         context.client());
+
+  ASSERT_TRUE(
+      context.client().test_url_loader_factory()->IsPending(suggest_url.spec()))
+      << GeneratePendingRequestsDebugMsg(
+             *context.client().test_url_loader_factory(), suggest_url.spec());
+
+  std::string value;
+  EXPECT_TRUE(net::GetValueForKeyInQuery(suggest_url, "ats", &value));
+  EXPECT_EQ(value, "4");
+  EXPECT_FALSE(net::GetValueForKeyInQuery(suggest_url, "pageVertical", &value));
+  EXPECT_TRUE(net::GetValueForKeyInQuery(suggest_url, "client", &value));
+  EXPECT_EQ(value, "chrome-ntp-action");
+
+  context.client().test_url_loader_factory()->AddResponse(
+      suggest_url.spec(), kSampleSuggestionsResponse);
+  env.run_loop().Run();
+
+  EXPECT_TRUE(actual.has_value());
+}
+
+TEST(RemoteSuggestionsServiceSimpleTest,
+     GetActionChipSuggestionsReturnsTimeoutError) {
+  EnvironmentFixture env;
+  ServiceTestContext context;
+
+  RemoteSuggestionsServiceSimple::ActionChipSuggestionsResult actual;
+  const std::u16string title = u"title";
+  const GURL url("https://example.com/");
+  const std::vector<omnibox::ToolMode> allowed_tools = {
+      omnibox::ToolMode::TOOL_MODE_IMAGE_GEN};
+  context.GetActionChipSuggestions(
+      title, url, allowed_tools, std::nullopt,
+      base::BindLambdaForTesting(
+          [&actual,
+           &env](RemoteSuggestionsServiceSimple::ActionChipSuggestionsResult&&
+                     result) {
+            actual = std::move(result);
+            env.run_loop().Quit();
+          }));
+
+  env.FastForwardBy(base::Seconds(100));
+  env.run_loop().Run();
+
+  EXPECT_THAT(actual, ErrorIs(VariantWith<NetworkError>(
+                          FieldsAre(net::Error::ERR_TIMED_OUT, 0))));
+}
+
+TEST(RemoteSuggestionsServiceSimpleTest,
+     GetActionChipSuggestionsFailsOnNetworkError) {
+  EnvironmentFixture env;
+  ServiceTestContext context;
+
+  RemoteSuggestionsServiceSimple::ActionChipSuggestionsResult actual;
+  const std::u16string title = u"title";
+  const GURL url("https://example.com/");
+  const std::vector<omnibox::ToolMode> allowed_tools = {
+      omnibox::ToolMode::TOOL_MODE_IMAGE_GEN};
+  context.GetActionChipSuggestions(
+      title, url, allowed_tools, std::nullopt,
+      base::BindLambdaForTesting(
+          [&actual,
+           &env](RemoteSuggestionsServiceSimple::ActionChipSuggestionsResult&&
+                     result) {
+            actual = std::move(result);
+            env.run_loop().Quit();
+          }));
+
+  const GURL suggest_url = GetSuggestURL({.page_url = url.spec(),
+                                          .title = "title",
+                                          .allowed_tools = allowed_tools,
+                                          .page_vertical = std::nullopt},
+                                         context.client());
+  ASSERT_TRUE(
+      context.client().test_url_loader_factory()->IsPending(suggest_url.spec()))
+      << GeneratePendingRequestsDebugMsg(
+             *context.client().test_url_loader_factory(), suggest_url.spec());
+  context.client().test_url_loader_factory()->AddResponse(
+      suggest_url, network::mojom::URLResponseHead::New(), "",
+      network::URLLoaderCompletionStatus(net::Error::ERR_FAILED));
+  env.run_loop().Run();
+
+  EXPECT_THAT(
+      actual,
+      ErrorIs(VariantWith<NetworkError>(FieldsAre(net::Error::ERR_FAILED, 0))));
+}
+
+TEST(RemoteSuggestionsServiceSimpleTest,
+     GetActionChipSuggestionsFailsOnHttpError) {
+  EnvironmentFixture env;
+  ServiceTestContext context;
+
+  RemoteSuggestionsServiceSimple::ActionChipSuggestionsResult actual;
+  const std::u16string title = u"title";
+  const GURL url("https://example.com/");
+  const std::vector<omnibox::ToolMode> allowed_tools = {
+      omnibox::ToolMode::TOOL_MODE_IMAGE_GEN};
+  context.GetActionChipSuggestions(
+      title, url, allowed_tools, std::nullopt,
+      base::BindLambdaForTesting(
+          [&actual,
+           &env](RemoteSuggestionsServiceSimple::ActionChipSuggestionsResult&&
+                     result) {
+            actual = std::move(result);
+            env.run_loop().Quit();
+          }));
+
+  const GURL suggest_url = GetSuggestURL({.page_url = url.spec(),
+                                          .title = "title",
+                                          .allowed_tools = allowed_tools,
+                                          .page_vertical = std::nullopt},
+                                         context.client());
+  ASSERT_TRUE(
+      context.client().test_url_loader_factory()->IsPending(suggest_url.spec()))
+      << GeneratePendingRequestsDebugMsg(
+             *context.client().test_url_loader_factory(), suggest_url.spec());
+  context.client().test_url_loader_factory()->AddResponse(
+      suggest_url.spec(), "", net::HTTP_NOT_FOUND);
+  env.run_loop().Run();
+
+  EXPECT_THAT(actual,
+              ErrorIs(VariantWith<NetworkError>(FieldsAre(
+                  net::ERR_HTTP_RESPONSE_CODE_FAILURE, net::HTTP_NOT_FOUND))));
+}
+
+TEST(RemoteSuggestionsServiceSimpleTest,
+     GetActionChipSuggestionsFailsOnMalformedJson) {
+  EnvironmentFixture env;
+  ServiceTestContext context;
+
+  RemoteSuggestionsServiceSimple::ActionChipSuggestionsResult actual;
+  const std::u16string title = u"title";
+  const GURL url("https://example.com/");
+  const std::vector<omnibox::ToolMode> allowed_tools = {
+      omnibox::ToolMode::TOOL_MODE_IMAGE_GEN};
+  context.GetActionChipSuggestions(
+      title, url, allowed_tools, std::nullopt,
+      base::BindLambdaForTesting(
+          [&actual,
+           &env](RemoteSuggestionsServiceSimple::ActionChipSuggestionsResult&&
+                     result) {
+            actual = std::move(result);
+            env.run_loop().Quit();
+          }));
+
+  const GURL suggest_url = GetSuggestURL({.page_url = url.spec(),
+                                          .title = "title",
+                                          .allowed_tools = allowed_tools,
+                                          .page_vertical = std::nullopt},
+                                         context.client());
+  ASSERT_TRUE(
+      context.client().test_url_loader_factory()->IsPending(suggest_url.spec()))
+      << GeneratePendingRequestsDebugMsg(
+             *context.client().test_url_loader_factory(), suggest_url.spec());
+  context.client().test_url_loader_factory()->AddResponse(suggest_url.spec(),
+                                                          "invalid json");
+  env.run_loop().Run();
+
+  EXPECT_THAT(actual, ErrorIs(VariantWith<ParseError>(
+                          FieldsAre(RemoteSuggestionsServiceSimple::
+                                        ParseFailureReason::kMalformedJson))));
+}
+
+TEST(RemoteSuggestionsServiceSimpleTest,
+     GetActionChipSuggestionsFailsOnParseFailure) {
+  EnvironmentFixture env;
+  ServiceTestContext context;
+
+  RemoteSuggestionsServiceSimple::ActionChipSuggestionsResult actual;
+  const std::u16string title = u"title";
+  const GURL url("https://example.com/");
+  const std::vector<omnibox::ToolMode> allowed_tools = {
+      omnibox::ToolMode::TOOL_MODE_IMAGE_GEN};
+  context.GetActionChipSuggestions(
+      title, url, allowed_tools, std::nullopt,
+      base::BindLambdaForTesting(
+          [&actual,
+           &env](RemoteSuggestionsServiceSimple::ActionChipSuggestionsResult&&
+                     result) {
+            actual = std::move(result);
+            env.run_loop().Quit();
+          }));
+
+  const GURL suggest_url = GetSuggestURL({.page_url = url.spec(),
+                                          .title = "title",
+                                          .allowed_tools = allowed_tools,
+                                          .page_vertical = std::nullopt},
+                                         context.client());
+  ASSERT_TRUE(
+      context.client().test_url_loader_factory()->IsPending(suggest_url.spec()))
+      << GeneratePendingRequestsDebugMsg(
+             *context.client().test_url_loader_factory(), suggest_url.spec());
+  context.client().test_url_loader_factory()->AddResponse(suggest_url.spec(),
+                                                          "[]");
+  env.run_loop().Run();
+
+  EXPECT_THAT(actual, ErrorIs(VariantWith<ParseError>(
+                          FieldsAre(RemoteSuggestionsServiceSimple::
+                                        ParseFailureReason::kSchemaMismatch))));
+}
+
+TEST(RemoteSuggestionsServiceSimpleTest,
+     GetActionChipSuggestionsWithEmptyTitleAndUrl) {
+  EnvironmentFixture env;
+  ServiceTestContext context;
+
+  RemoteSuggestionsServiceSimple::ActionChipSuggestionsResult actual;
+  const std::vector<omnibox::ToolMode> allowed_tools = {
+      omnibox::ToolMode::TOOL_MODE_IMAGE_GEN};
+
+  context.GetActionChipSuggestions(
+      std::nullopt, std::nullopt, allowed_tools, std::nullopt,
+      base::BindLambdaForTesting(
+          [&actual,
+           &env](RemoteSuggestionsServiceSimple::ActionChipSuggestionsResult&&
+                     result) {
+            actual = std::move(result);
+            env.run_loop().Quit();
+          }));
+
+  const GURL suggest_url = GetSuggestURL({.page_url = std::nullopt,
+                                          .title = std::nullopt,
+                                          .allowed_tools = allowed_tools,
+                                          .page_vertical = std::nullopt},
+                                         context.client());
+
+  ASSERT_TRUE(
+      context.client().test_url_loader_factory()->IsPending(suggest_url.spec()))
+      << GeneratePendingRequestsDebugMsg(
+             *context.client().test_url_loader_factory(), suggest_url.spec());
+
+  std::string value;
+  EXPECT_TRUE(net::GetValueForKeyInQuery(suggest_url, "ats", &value));
+  EXPECT_EQ(value, base::NumberToString(static_cast<int>(
+                       omnibox::ToolMode::TOOL_MODE_IMAGE_GEN)));
+  EXPECT_FALSE(net::GetValueForKeyInQuery(suggest_url, "pageTitle", &value));
+  EXPECT_FALSE(net::GetValueForKeyInQuery(suggest_url, "url", &value));
+  EXPECT_TRUE(net::GetValueForKeyInQuery(suggest_url, "client", &value));
+  EXPECT_EQ(value, "chrome-ntp-action");
+
+  context.client().test_url_loader_factory()->AddResponse(
+      suggest_url.spec(), kSampleSuggestionsResponse);
+  env.run_loop().Run();
+
+  EXPECT_TRUE(actual.has_value());
+}
+
+TEST(
+    RemoteSuggestionsServiceSimpleTest,
+    GetDeepdiveChipSuggestionsForTabDoesNotCrashOnServiceDestructionDuringFetch) {
   EnvironmentFixture env;
   FakeAutocompleteProviderClient client;
   base::MockCallback<base::OnceCallback<void(
@@ -381,7 +849,7 @@ TEST(RemoteSuggestionsServiceSimpleTest,
   EXPECT_CALL(callback, Run(_)).Times(0);
 
   std::unique_ptr<network::SimpleURLLoader> loader =
-      service->GetActionChipSuggestionsForTab(
+      service->GetDeepdiveChipSuggestionsForTab(
           u"title", GURL("https://example.com/"), callback.Get());
 
   // Destroy the service.
@@ -394,6 +862,47 @@ TEST(RemoteSuggestionsServiceSimpleTest,
   // dead object.
   const GURL suggest_url = GetSuggestURL(
       {.page_url = "https://example.com/", .title = "title"}, client);
+  if (client.test_url_loader_factory()->IsPending(suggest_url.spec())) {
+    client.test_url_loader_factory()->AddResponse(suggest_url.spec(),
+                                                  kSampleSuggestionsResponse);
+  }
+
+  // Verify callback was not called.
+}
+
+TEST(RemoteSuggestionsServiceSimpleTest,
+     GetActionChipSuggestionsDoesNotCrashOnServiceDestructionDuringFetch) {
+  EnvironmentFixture env;
+  FakeAutocompleteProviderClient client;
+  base::MockCallback<base::OnceCallback<void(
+      RemoteSuggestionsServiceSimple::ActionChipSuggestionsResult&&)>>
+      callback;
+
+  auto service = std::make_unique<RemoteSuggestionsServiceSimpleImpl>(&client);
+
+  EXPECT_CALL(callback, Run(_)).Times(0);
+
+  const std::u16string title = u"title";
+  const GURL url("https://example.com/");
+  const std::vector<omnibox::ToolMode> allowed_tools = {
+      omnibox::ToolMode::TOOL_MODE_IMAGE_GEN};
+  std::unique_ptr<network::SimpleURLLoader> loader =
+      service->GetActionChipSuggestions(title, url, allowed_tools, std::nullopt,
+                                        callback.Get());
+
+  // Destroy the service.
+  service.reset();
+
+  // Fast forward time to ensure any pending tasks would have run.
+  env.FastForwardBy(base::Seconds(100));
+
+  // Also complete the network request to ensure it doesn't trigger callback on
+  // dead object.
+  const GURL suggest_url = GetSuggestURL({.page_url = url.spec(),
+                                          .title = "title",
+                                          .allowed_tools = allowed_tools,
+                                          .page_vertical = std::nullopt},
+                                         client);
   if (client.test_url_loader_factory()->IsPending(suggest_url.spec())) {
     client.test_url_loader_factory()->AddResponse(suggest_url.spec(),
                                                   kSampleSuggestionsResponse);

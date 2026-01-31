@@ -2317,7 +2317,7 @@ Called by update_extension_histograms.py.-->
   <int value="1440" label="DELETED_AUTOFILLASSISTANTPRIVATE_GETSTATE"/>
   <int value="1441" label="DELETED_AUTOFILLASSISTANTPRIVATE_PERFORMACTION"/>
   <int value="1442" label="DELETED_AUTOFILLASSISTANTPRIVATE_PROVIDEUSERDATA"/>
-  <int value="1443" label="PASSWORDSPRIVATE_ISACCOUNTSTORAGEENABLED"/>
+  <int value="1443" label="PASSWORDSPRIVATE_ISACCOUNTSTORAGEACTIVE"/>
   <int value="1444" label="AUTOTESTPRIVATE_PINSHELFICON"/>
   <int value="1445" label="AUTOTESTPRIVATE_WAITFOROVERVIEWSTATE"/>
   <int value="1446" label="AUTOTESTPRIVATE_GETSCROLLABLESHELFINFOFORSTATE"/>
@@ -2871,6 +2871,11 @@ Called by update_extension_histograms.py.-->
       label="WEBSTOREPRIVATE_SHOULDSHOWENTERPRISEPROMOTIONBANNER"/>
   <int value="1955" label="WEBSTOREPRIVATE_LOGENTERPRISEPROMOSHOWN"/>
   <int value="1956" label="WEBSTOREPRIVATE_ONENTERPRISEPROMOCLICK"/>
+  <int value="1957"
+      label="AUTOFILLPRIVATE_AUTHENTICATEUSERBEFOREVIEWINGENTITYDATA"/>
+  <int value="1958" label="AUTOFILLPRIVATE_TOGGLEAUTOFILLAIREAUTHREQUIREMENT"/>
+  <int value="1959"
+      label="AUTOFILLPRIVATE_GETREQUIREDATTRIBUTETYPESFORENTITYTYPENAME"/>
 </enum>
 
 <!-- LINT.ThenChange(//extensions/browser/extension_function_histogram_value.h:HistogramValue) -->
@@ -3367,7 +3372,7 @@ Called by update_extension_permission.py.-->
   <int value="5" label="Extension Disabled"/>
 </enum>
 
-<!-- LINT.ThenChange(/extensions/common/extension_usage.h:ExtensionUsageAction) -->
+<!-- LINT.ThenChange(//extensions/common/extension_usage.h:ExtensionUsageAction,//extensions/common/api/metrics_private.json) -->
 
 <enum name="ExternalItemState">
   <int value="0" label="DEPRECATED_DISABLED"/>
@@ -3394,6 +3399,7 @@ Called by update_extension_permission.py.-->
   <int value="3" label="extension options"/>
   <int value="4" label="app view"/>
   <int value="5" label="controlled frame"/>
+  <int value="6" label="slim webview"/>
 </enum>
 
 <enum name="HostPermissionsAccess">
@@ -3471,7 +3477,7 @@ Called by update_extension_permission.py.-->
   <int value="3" label="SearchEngineAndNewTabPage"/>
 </enum>
 
-<!-- LINT.ThenChange(/chrome/browser/extensions/unpacked_installer.h:ManifestSettingsOverrideType) -->
+<!-- LINT.ThenChange(/chrome/browser/extensions/chrome_extensions_browser_client.h:ManifestSettingsOverrideType) -->
 
 <enum name="ManifestVersionPopulationSplit">
   <int value="0" label="No extensions"/>

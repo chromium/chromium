@@ -31,9 +31,11 @@ extern const char kUserSecurityAuthenticatedReporting[];
 
 extern const char kPoliciesEverFetchedWithProfileId[];
 
-extern const char kSaaSReportDomainUrlsForBrowser[];
+extern const char kSaasUsageDomainUrlsForBrowser[];
 
-extern const char kSaaSReportDomainUrlsForProfile[];
+extern const char kSaasUsageDomainUrlsForProfile[];
+
+extern const char kSaasUsageReport[];
 
 }  // namespace enterprise_reporting
 

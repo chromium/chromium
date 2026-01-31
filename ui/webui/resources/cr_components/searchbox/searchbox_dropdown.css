@@ -57,7 +57,7 @@ cr-searchbox-match:-webkit-any(:focus-within, [selected]) {
   outline: none;
   padding-bottom: 6px;
   padding-inline-end: 16px;
-  padding-inline-start: 12px;
+  padding-inline-start: var(--cr-searchbox-dropdown-header-padding-inline-start, 12px);
   padding-top: 6px;
 }
 
@@ -69,6 +69,7 @@ cr-searchbox-match:-webkit-any(:focus-within, [selected]) {
   padding-inline-end: 1px;
   text-overflow: ellipsis;
   white-space: nowrap;
+  z-index: 1;
 }
 
 @media (forced-colors: active) {

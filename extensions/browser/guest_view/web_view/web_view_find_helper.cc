@@ -51,7 +51,7 @@ void WebViewFindHelper::CancelAllFindSessions() {
 void WebViewFindHelper::DispatchFindUpdateEvent(bool canceled,
                                                 bool final_update) {
   CHECK(find_update_event_);
-  base::Value::Dict args;
+  base::DictValue args;
   find_update_event_->PrepareResults(args);
   args.Set(kFindCanceled, canceled);
   args.Set(webview::kFindFinalUpdate, final_update);
@@ -223,11 +223,10 @@ void WebViewFindHelper::FindResults::AggregateResults(
   }
 }
 
-void WebViewFindHelper::FindResults::PrepareResults(
-    base::Value::Dict& results) {
+void WebViewFindHelper::FindResults::PrepareResults(base::DictValue& results) {
   results.Set(kFindNumberOfMatches, number_of_matches_);
   results.Set(kFindActiveMatchOrdinal, active_match_ordinal_);
-  base::Value::Dict rect;
+  base::DictValue rect;
   rect.Set(kFindRectLeft, selection_rect_.x());
   rect.Set(kFindRectTop, selection_rect_.y());
   rect.Set(kFindRectWidth, selection_rect_.width());
@@ -252,7 +251,7 @@ void WebViewFindHelper::FindUpdateEvent::AggregateResults(
 }
 
 void WebViewFindHelper::FindUpdateEvent::PrepareResults(
-    base::Value::Dict& results) {
+    base::DictValue& results) {
   results.Set(webview::kFindSearchText, search_text_);
   find_results_.PrepareResults(results);
 }
@@ -284,7 +283,7 @@ WebViewFindHelper::FindInfo::AsWeakPtr() {
 
 void WebViewFindHelper::FindInfo::SendResponse(bool canceled) {
   // Prepare the find results to pass to the callback function.
-  base::Value::Dict results;
+  base::DictValue results;
   find_results_.PrepareResults(results);
   results.Set(kFindCanceled, canceled);
 

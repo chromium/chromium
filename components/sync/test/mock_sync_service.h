@@ -47,7 +47,10 @@ class MockSyncService : public SyncService {
               (),
               (override));
 #endif  // BUILDFLAG(IS_ANDROID)
-  MOCK_METHOD(void, AcknowledgeBookmarksLimitExceededError, (), (override));
+  MOCK_METHOD(void,
+              AcknowledgeBookmarksLimitExceededError,
+              (BookmarksLimitExceededHelpClickedSource source),
+              (override));
   MOCK_METHOD(DisableReasonSet, GetDisableReasons, (), (const override));
   MOCK_METHOD(TransportState, GetTransportState, (), (const override));
   MOCK_METHOD(UserActionableError,
@@ -141,7 +144,7 @@ class MockSyncService : public SyncService {
               (override));
   MOCK_METHOD(void,
               GetAllNodesForDebugging,
-              (base::OnceCallback<void(base::Value::List)> callback),
+              (base::OnceCallback<void(base::ListValue)> callback),
               (override));
   MOCK_METHOD(DataTypeDownloadStatus,
               GetDownloadStatusFor,

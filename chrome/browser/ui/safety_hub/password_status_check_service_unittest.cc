@@ -732,7 +732,7 @@ TEST_P(PasswordStatusCheckServiceParameterizedCardTest, PasswordCardState) {
   size_t compromised_count = service()->compromised_credential_count();
   size_t reused_count = service()->reused_credential_count();
 
-  base::Value::Dict card = service()->GetPasswordCardData(signed_in());
+  base::DictValue card = service()->GetPasswordCardData(signed_in());
 
   std::u16string header =
       base::UTF8ToUTF16(*card.FindString(safety_hub::kCardHeaderKey));

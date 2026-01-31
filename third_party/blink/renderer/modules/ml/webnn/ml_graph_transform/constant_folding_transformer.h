@@ -20,6 +20,10 @@ class MODULES_EXPORT ConstantFoldingTransformer : public MLGraphTransformer {
       : MLGraphTransformer(graph_builder) {}
   void Transform(MLNamedOperands& named_outputs) override;
 
+  const StringView Name() const override {
+    return "ConstantFoldingTransformer";
+  }
+
  private:
   void TryFoldConstant(MLOperator& op);
   void ApplyPermutation(MLConstantOperand* old_constant,

@@ -102,11 +102,11 @@ class PersistedDataImpl : public PersistedData {
 
  private:
   // Returns nullptr if the app key does not exist.
-  const base::Value::Dict* GetAppKey(const std::string& id) const;
+  const base::DictValue* GetAppKey(const std::string& id) const;
 
   // Returns an existing or newly created app key under a root pref.
-  base::Value::Dict* GetOrCreateAppKey(const std::string& id,
-                                       base::Value::Dict& root);
+  base::DictValue* GetOrCreateAppKey(const std::string& id,
+                                     base::DictValue& root);
 
   // Returns fallback if the key does not exist.
   int GetInt(const std::string& id, const std::string& key, int fallback) const;
@@ -141,7 +141,7 @@ PersistedDataImpl::~PersistedDataImpl() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 }
 
-const base::Value::Dict* PersistedDataImpl::GetAppKey(
+const base::DictValue* PersistedDataImpl::GetAppKey(
     const std::string& id) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   PrefService* pref_service = pref_service_provider_.Run();
@@ -152,7 +152,7 @@ const base::Value::Dict* PersistedDataImpl::GetAppKey(
   if (!dict.is_dict()) {
     return nullptr;
   }
-  const base::Value::Dict* apps = dict.GetDict().FindDict("apps");
+  const base::DictValue* apps = dict.GetDict().FindDict("apps");
   if (!apps) {
     return nullptr;
   }
@@ -163,7 +163,7 @@ int PersistedDataImpl::GetInt(const std::string& id,
                               const std::string& key,
                               int fallback) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  const base::Value::Dict* app_key = GetAppKey(id);
+  const base::DictValue* app_key = GetAppKey(id);
   if (!app_key) {
     return fallback;
   }
@@ -173,7 +173,7 @@ int PersistedDataImpl::GetInt(const std::string& id,
 std::string PersistedDataImpl::GetString(const std::string& id,
                                          const std::string& key) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  const base::Value::Dict* app_key = GetAppKey(id);
+  const base::DictValue* app_key = GetAppKey(id);
   if (!app_key) {
     return {};
   }
@@ -217,14 +217,13 @@ std::string PersistedDataImpl::GetInstallId(const std::string& id) const {
   return GetString(id, "iid");
 }
 
-base::Value::Dict* PersistedDataImpl::GetOrCreateAppKey(
-    const std::string& id,
-    base::Value::Dict& root) {
+base::DictValue* PersistedDataImpl::GetOrCreateAppKey(const std::string& id,
+                                                      base::DictValue& root) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  base::Value::Dict* apps = root.EnsureDict("apps");
-  base::Value::Dict* app = apps->FindDict(base::ToLowerASCII(id));
+  base::DictValue* apps = root.EnsureDict("apps");
+  base::DictValue* app = apps->FindDict(base::ToLowerASCII(id));
   if (!app) {
-    app = &apps->Set(base::ToLowerASCII(id), base::Value::Dict())->GetDict();
+    app = &apps->Set(base::ToLowerASCII(id), base::DictValue())->GetDict();
     app->Set("installdate", kDateFirstTime);
   }
   return app;
@@ -243,7 +242,7 @@ void PersistedDataImpl::SetDateLastDataHelper(
   }
   ScopedDictPrefUpdate update(pref_service, kPersistedDataPreference);
   for (const auto& id : ids) {
-    base::Value::Dict* app_key = GetOrCreateAppKey(id, update.Get());
+    base::DictValue* app_key = GetOrCreateAppKey(id, update.Get());
     app_key->Set("dlrc", datenum);
     app_key->Set("pf", base::Uuid::GenerateRandomV4().AsLowercaseString());
     if (GetInstallDate(id) == kDateFirstTime) {
@@ -284,7 +283,7 @@ void PersistedDataImpl::SetDateLastActive(const std::string& id, int dla) {
     return;
   }
   ScopedDictPrefUpdate update(pref_service, kPersistedDataPreference);
-  base::Value::Dict* app_key = GetOrCreateAppKey(id, update.Get());
+  base::DictValue* app_key = GetOrCreateAppKey(id, update.Get());
   app_key->Set("dla", dla);
 }
 
@@ -295,7 +294,7 @@ void PersistedDataImpl::SetDateLastRollCall(const std::string& id, int dlrc) {
     return;
   }
   ScopedDictPrefUpdate update(pref_service, kPersistedDataPreference);
-  base::Value::Dict* app_key = GetOrCreateAppKey(id, update.Get());
+  base::DictValue* app_key = GetOrCreateAppKey(id, update.Get());
   app_key->Set("dlrc", dlrc);
 }
 
@@ -307,7 +306,7 @@ void PersistedDataImpl::SetInstallDate(const std::string& id,
     return;
   }
   ScopedDictPrefUpdate update(pref_service, kPersistedDataPreference);
-  base::Value::Dict* app_key = GetOrCreateAppKey(id, update.Get());
+  base::DictValue* app_key = GetOrCreateAppKey(id, update.Get());
   app_key->Set("installdate", install_date);
 }
 

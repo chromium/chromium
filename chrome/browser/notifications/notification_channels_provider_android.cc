@@ -203,7 +203,7 @@ class ChannelsRuleIterator : public content_settings::RuleIterator {
 
 static void JNI_NotificationSettingsBridge_OnGetSiteChannelsDone(
     JNIEnv* env,
-    jlong callback_id,
+    int64_t callback_id,
     const JavaRef<jobjectArray>& j_channels) {
   std::vector<NotificationChannel> channels;
   for (auto jchannel : j_channels.ReadElements<jobject>()) {
@@ -227,7 +227,7 @@ static void JNI_NotificationSettingsBridge_OnChannelStateChanged(
     JNIEnv* env,
     const JavaRef<jstring>& j_channel_id,
     const JavaRef<jstring>& j_origin,
-    jboolean blocked) {
+    bool blocked) {
   if (GetChannelStateChangedCallback().is_null()) {
     return;
   }

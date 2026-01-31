@@ -9,7 +9,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/containers/contains.h"
 #include "base/format_macros.h"
 #include "base/i18n/number_formatting.h"
 #include "base/memory/ref_counted_memory.h"
@@ -93,10 +92,10 @@ void AboutUIHTMLSource::StartDataRequest(
     // chrome://histograms, this code could likely be moved to //ios/web.
     for (base::HistogramBase* histogram : base::StatisticsRecorder::Sort(
              base::StatisticsRecorder::GetHistograms())) {
-      if (!base::Contains(histogram->histogram_name(), path)) {
+      if (!histogram->histogram_name().contains(path)) {
         continue;
       }
-      base::Value::Dict histogram_dict = histogram->ToGraphDict();
+      base::DictValue histogram_dict = histogram->ToGraphDict();
       std::string* header = histogram_dict.FindString("header");
       std::string* body = histogram_dict.FindString("body");
 

@@ -33,12 +33,22 @@ class TestComponentState::DelegateImpl
         state_->installed_asset_->SetReadyIn(*state_manager);
       }
     }
-    state_manager->InstallerRegistered();
+    state_manager->InstallerRegistered(state_ && state_->installed_asset_);
   }
   void Uninstall(base::WeakPtr<OnDeviceModelComponentStateManager>
                      state_manager) override {
     if (state_) {
       state_->uninstall_called_ = true;
+    }
+    base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
+        FROM_HERE,
+        base::BindOnce(&OnDeviceModelComponentStateManager::UninstallComplete,
+                       state_manager),
+        base::Seconds(1));
+  }
+  void RequestUpdate() override {
+    if (state_) {
+      state_->request_update_called_ = true;
     }
   }
   base::FilePath GetInstallDirectory() override {

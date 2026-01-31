@@ -28,7 +28,7 @@ ShareAudioView::ShareAudioView(
   audio_icon_view->SetImage(ui::ImageModel::FromVectorIcon(
       vector_icons::kVolumeUpIcon,
       audio_offered ? ui::kColorIcon : ui::kColorIconDisabled,
-      GetLayoutConstant(PAGE_INFO_ICON_SIZE)));
+      GetLayoutConstant(LayoutConstant::kPageInfoIconSize)));
 
   audio_toggle_label_ = AddChildView(std::make_unique<views::Label>());
   audio_toggle_label_->SetHorizontalAlignment(

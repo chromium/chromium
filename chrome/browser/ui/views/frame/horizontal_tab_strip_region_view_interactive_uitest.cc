@@ -56,7 +56,7 @@ class HorizontalTabStripRegionViewBrowserBaseTest : public InProcessBrowserTest 
   }
 
   views::View* new_tab_button() {
-    return tab_strip_region_view()->GetNewTabButton();
+    return tab_strip_region_view()->new_tab_button_for_testing();
   }
 
  protected:
@@ -67,7 +67,8 @@ class HorizontalTabStripRegionViewBrowserTest : public HorizontalTabStripRegionV
  public:
   HorizontalTabStripRegionViewBrowserTest() {
     scoped_feature_list_.InitWithFeatures(
-        /*enabled_features=*/{},
+        /*enabled_features=*/{features::kTabstripComboButton,
+                              features::kLaunchedTabSearchToolbarButton},
         /*disabled_features=*/{});
   }
   HorizontalTabStripRegionViewBrowserTest(const HorizontalTabStripRegionViewBrowserTest&) = delete;
@@ -194,7 +195,7 @@ IN_PROC_BROWSER_TEST_F(HorizontalTabStripRegionViewBrowserTest, TestBeginEndFocu
   EXPECT_TRUE(tab_strip_region_view()->pane_has_focus());
 
   if (tabs::GetTabSearchPosition(browser()->profile()) ==
-      tabs::TabSearchPosition::kLeadingTabstrip) {
+      tabs::TabSearchPosition::kLeadingHorizontalTabstrip) {
     EXPECT_TRUE(tab_0->HasFocus());
 
 #if !BUILDFLAG(IS_WIN)
@@ -234,20 +235,20 @@ IN_PROC_BROWSER_TEST_F(HorizontalTabStripRegionViewBrowserTest, TestBeginEndFocu
 IN_PROC_BROWSER_TEST_F(HorizontalTabStripRegionViewBrowserTest,
                        DefaultTestSearchContainerIsEndAligned) {
   if (tabs::GetTabSearchPosition(browser()->profile()) ==
-      tabs::TabSearchPosition::kLeadingTabstrip) {
+      tabs::TabSearchPosition::kLeadingHorizontalTabstrip) {
     // The TabSearchContainer is calculated as controls padding away from the
     // first tab (not including bottom corner radius)
     const int tab_search_container_expected_end =
-        tab_strip_region_view()->GetTabStripContainerForTesting()->x() +
+        tab_strip_region_view()->tab_strip()->x() +
         TabStyle::Get()->GetBottomCornerRadius() -
-        GetLayoutConstant(TAB_STRIP_PADDING);
+        GetLayoutConstant(LayoutConstant::kTabStripPadding);
 
     EXPECT_EQ(tab_search_container()->bounds().right(),
               tab_search_container_expected_end);
   } else if (!features::HasTabSearchToolbarButton()) {
     const int tab_search_container_expected_end =
         tab_strip_region_view()->GetLocalBounds().right() -
-        GetLayoutConstant(TAB_STRIP_PADDING);
+        GetLayoutConstant(LayoutConstant::kTabStripPadding);
     EXPECT_EQ(tab_search_container()->bounds().right(),
               tab_search_container_expected_end);
   }

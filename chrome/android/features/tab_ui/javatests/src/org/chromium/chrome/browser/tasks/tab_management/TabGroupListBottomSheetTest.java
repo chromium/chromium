@@ -144,7 +144,11 @@ public class TabGroupListBottomSheetTest {
     @Test
     @MediumTest
     @ImportantFormFactors(DeviceFormFactor.TABLET_OR_DESKTOP)
-    @Restriction({DeviceFormFactor.TABLET_OR_DESKTOP, DeviceRestriction.RESTRICTION_TYPE_NON_AUTO})
+    @Restriction({
+        DeviceFormFactor.TABLET_OR_DESKTOP,
+        DeviceRestriction.RESTRICTION_TYPE_NON_AUTO,
+        DeviceRestriction.RESTRICTION_TYPE_NON_FOLDABLE
+    })
     @EnableFeatures(ChromeFeatureList.ANDROID_OPEN_INCOGNITO_AS_WINDOW)
     public void testNewGroup_IncognitoNewTabPageStation_Tablet() {
         WebPageStation firstPage = mCtaTestRule.startOnBlankPage();
@@ -208,7 +212,11 @@ public class TabGroupListBottomSheetTest {
     @Test
     @MediumTest
     @ImportantFormFactors(DeviceFormFactor.TABLET_OR_DESKTOP)
-    @Restriction({DeviceFormFactor.TABLET_OR_DESKTOP, DeviceRestriction.RESTRICTION_TYPE_NON_AUTO})
+    @Restriction({
+        DeviceFormFactor.TABLET_OR_DESKTOP,
+        DeviceRestriction.RESTRICTION_TYPE_NON_AUTO,
+        DeviceRestriction.RESTRICTION_TYPE_NON_FOLDABLE
+    })
     @EnableFeatures(ChromeFeatureList.ANDROID_OPEN_INCOGNITO_AS_WINDOW)
     public void testNewGroup_IncognitoWebPageStation_Tablet() {
         WebPageStation firstPage = mCtaTestRule.startOnBlankPage();

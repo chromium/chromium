@@ -195,9 +195,8 @@ class ProtoWriter final : public TracedValue::Writer {
     uint32_t full_size = Finalize();
 
     for (auto& slice : buffer_.slices()) {
-      appender->AddBuffer(
-          slice.start(),
-          UNSAFE_TODO(slice.start() + slice.size() - slice.unused_bytes()));
+      protozero::ContiguousMemoryRange used_range = slice.GetUsedRange();
+      appender->AddBuffer(used_range.begin, used_range.end);
     }
 
     size_t appended_size =

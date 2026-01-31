@@ -4,11 +4,11 @@
 
 #include "chrome/browser/payments/browser_binding/browser_bound_key_deleter_service_android.h"
 
+#include <algorithm>
 #include <memory>
 #include <utility>
 
 #include "base/barrier_callback.h"
-#include "base/containers/contains.h"
 #include "base/containers/to_vector.h"
 #include "components/payments/content/browser_binding/browser_bound_key_store.h"
 #include "components/payments/content/browser_binding/passkey_browser_binder.h"
@@ -54,8 +54,8 @@ std::vector<BrowserBoundKeyMetadata> RemoveMatchingCredentialIds(
     std::vector<BrowserBoundKeyMetadata> bbk_metas,
     std::vector<std::vector<uint8_t>> matching_credential_ids) {
   std::erase_if(bbk_metas, [&matching_credential_ids](auto& bbk_meta) {
-    return base::Contains(matching_credential_ids,
-                          bbk_meta.passkey.credential_id);
+    return std::ranges::contains(matching_credential_ids,
+                                 bbk_meta.passkey.credential_id);
   });
   return bbk_metas;
 }

@@ -553,6 +553,65 @@ TEST_F(ClipPathPaintDefinitionTest, FallbackForClipPathInital) {
           UpdatesNeededForNextFrame::kNeedsPaintPropertyUpdate));
 }
 
+// TODO(crbug.com/449152897): Backdrop-filter and clip path paint worklet
+// images are not rasterized correctly.
+TEST_F(ClipPathPaintDefinitionTest, FallbackForCoincidentBackdropFilter) {
+  SetBodyInnerHTML(R"HTML(
+    <style>
+        @keyframes clippath {
+            0% {
+                clip-path: circle(30% at 20% 20%);
+            }
+            100% {
+                clip-path: circle(30% at 30% 30%);
+            }
+        }
+        .animation {
+            backdrop-filter: invert(1);
+            animation: clippath 4s steps(4, jump-end);
+        }
+    </style>
+    <div id ="target" style="width: 100px; height: 100px">
+    </div>
+  )HTML");
+
+  Element* element = GetElementById("target");
+  element->setAttribute(html_names::kClassAttr, AtomicString("animation"));
+
+  // Init clock.
+  UpdateAndAdvanceTimeTo(0);
+
+  EnsureCCClipPathInvariantsHoldStyleAndLayout(
+      CompositedPaintStatus::kNotComposited, element,
+      UpdatesNeededForNextFrame::kAllUpdates);
+
+  Animation* animation = GetFirstAnimation(element);
+
+  EnsureCCClipPathInvariantsHoldThroughoutPainting(
+      CompositedPaintStatus::kNotComposited, element, animation,
+      UpdatesNeededForNextFrame::kAllUpdates);
+
+  // Advance the animation time.
+  UpdateAndAdvanceTimeTo(500);
+
+  // Animation should not be updating the composited paint status, but we do
+  // expect scheduled animation updates since the main thread is responsible for
+  // the animation.
+  EnsureCCClipPathInvariantsHoldThroughoutLifecycle(
+      CompositedPaintStatus::kNotComposited, element, animation,
+      UpdatesNeededForNextFrame::kScheduledAnimationUpdate);
+
+  // Advance the animation time to the next meaningful frame.
+  UpdateAndAdvanceTimeTo(2000 + 1);
+
+  // Main thread should still be producing frames.
+  EnsureCCClipPathInvariantsHoldThroughoutLifecycle(
+      CompositedPaintStatus::kNotComposited, element, animation,
+      static_cast<UpdatesNeededForNextFrame>(
+          UpdatesNeededForNextFrame::kScheduledAnimationUpdate |
+          UpdatesNeededForNextFrame::kNeedsPaintPropertyUpdate));
+}
+
 // Clip-path: none requires the cull rect, but perspective makes the cull rect
 // infinite, as a result, we must fall back in this case.
 TEST_F(ClipPathPaintDefinitionTest, FallbackForClipPathNoneWithPerspective) {

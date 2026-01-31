@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 package org.chromium.content_public.browser;
 
+import android.graphics.Rect;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewStructure;
@@ -121,4 +122,16 @@ public interface WebContentsAccessibility {
      * gets out WebContents, e.g. by focusing a native view node.
      */
     void restoreFocus();
+
+    /**
+     * Registers a rect that is currently occluding the web content.
+     *
+     * <p>Note: This feature is only available under the accessibility feature
+     * AccessibilityHandleOccludingViews.
+     *
+     * @param rect The bounds of the occluding view in screen coordinates. Clears the entry if null
+     *     or empty.
+     * @param viewId A unique ID for the view (e.g., View.getId()).
+     */
+    public void setOccludingRect(@Nullable Rect rect, int viewId);
 }

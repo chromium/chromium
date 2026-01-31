@@ -13,6 +13,7 @@
 #include "base/task/thread_pool.h"
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
+#include "third_party/perfetto/include/perfetto/tracing/track_event_args.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/gfx/codec/jpeg_codec.h"
 #include "ui/gfx/geometry/rect.h"
@@ -152,8 +153,8 @@ void ThumbnailImage::AssignJPEGData(base::Token thumbnail_id,
   };
 
   if (frame_id_for_trace) {
-    TRACE_EVENT_WITH_FLOW0("ui", "Tab.Preview.JPEGReceivedOnUIThreadWithFlow",
-                           *frame_id_for_trace, TRACE_EVENT_FLAG_FLOW_IN);
+    TRACE_EVENT("ui", "Tab.Preview.JPEGReceivedOnUIThreadWithFlow",
+                perfetto::TerminatingFlow::ProcessScoped(*frame_id_for_trace));
     notify();
   } else {
     TRACE_EVENT0("ui", "Tab.Preview.JPEGReceivedOnUIThread");
@@ -221,9 +222,8 @@ std::vector<uint8_t> ThumbnailImage::CompressBitmap(
   std::optional<std::vector<uint8_t>> data;
 
   if (frame_id) {
-    TRACE_EVENT_WITH_FLOW0(
-        "ui", "Tab.Preview.CompressJPEGWithFlow", *frame_id,
-        TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT);
+    TRACE_EVENT("ui", "Tab.Preview.CompressJPEGWithFlow",
+                perfetto::Flow::ProcessScoped(*frame_id));
     data = gfx::JPEGCodec::Encode(bitmap, kCompressionQuality);
   } else {
     TRACE_EVENT0("ui", "Tab.Preview.CompressJPEG");

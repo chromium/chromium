@@ -5,7 +5,6 @@
 #include "chrome/browser/extensions/api/identity/identity_mint_queue.h"
 
 #include "base/check_op.h"
-#include "base/containers/contains.h"
 #include "base/trace_event/trace_event.h"
 #include "extensions/buildflags/buildflags.h"
 #include "third_party/perfetto/include/perfetto/tracing/track.h"
@@ -70,7 +69,7 @@ void IdentityMintRequestQueue::RequestCancel(
 bool IdentityMintRequestQueue::empty(IdentityMintRequestQueue::MintType type,
                                      const ExtensionTokenKey& key) {
   RequestQueueMap& request_queue_map = GetRequestQueueMap(type);
-  return !base::Contains(request_queue_map, key) ||
+  return !request_queue_map.contains(key) ||
          (request_queue_map.find(key))->second.empty();
 }
 

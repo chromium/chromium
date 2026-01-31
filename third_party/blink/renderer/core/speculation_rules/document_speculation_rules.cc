@@ -6,7 +6,6 @@
 
 #include <algorithm>
 
-#include "base/containers/contains.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/state_transitions.h"
@@ -75,7 +74,6 @@ bool AcceptableReferrerPolicy(const Referrer& referrer,
 String SpeculationActionAsString(mojom::blink::SpeculationAction action) {
   switch (action) {
     case mojom::blink::SpeculationAction::kPrefetch:
-    case mojom::blink::SpeculationAction::kPrefetchWithSubresources:
       return "prefetch";
     case mojom::blink::SpeculationAction::kPrerenderUntilScript:
       return "prerender-until-script";
@@ -276,7 +274,7 @@ void DocumentSpeculationRules::AddRuleSet(SpeculationRuleSet* rule_set) {
 
   CountSpeculationRulesLoadOutcome(outcome);
 
-  DCHECK(!base::Contains(rule_sets_, rule_set));
+  DCHECK(!std::ranges::contains(rule_sets_, rule_set));
   rule_sets_.push_back(rule_set);
   if (rule_set->has_document_rule()) {
     UseCounter::Count(GetSupplementable(),
@@ -720,13 +718,6 @@ void DocumentSpeculationRules::UpdateSpeculationCandidates() {
     push_candidates(mojom::blink::SpeculationAction::kPrefetch, rule_set,
                     rule_set->prefetch_rules());
 
-    if (RuntimeEnabledFeatures::SpeculationRulesPrefetchWithSubresourcesEnabled(
-            execution_context)) {
-      push_candidates(
-          mojom::blink::SpeculationAction::kPrefetchWithSubresources, rule_set,
-          rule_set->prefetch_with_subresources_rules());
-    }
-
     push_candidates(mojom::blink::SpeculationAction::kPrerender, rule_set,
                     rule_set->prerender_rules());
 
@@ -905,14 +896,6 @@ void DocumentSpeculationRules::AddLinkBasedSpeculationCandidates(
       push_link_candidates(mojom::blink::SpeculationAction::kPrefetch, rule_set,
                            rule_set->prefetch_rules());
 
-      if (RuntimeEnabledFeatures::
-              SpeculationRulesPrefetchWithSubresourcesEnabled(
-                  execution_context)) {
-        push_link_candidates(
-            mojom::blink::SpeculationAction::kPrefetchWithSubresources,
-            rule_set, rule_set->prefetch_with_subresources_rules());
-      }
-
       push_link_candidates(mojom::blink::SpeculationAction::kPrerender,
                            rule_set, rule_set->prerender_rules());
 
@@ -973,10 +956,10 @@ void DocumentSpeculationRules::DocumentPropertyChanged() {
 void DocumentSpeculationRules::AddLink(HTMLAnchorElementBase* link) {
   DCHECK(initialized_);
   DCHECK(link->IsLink());
-  DCHECK(!base::Contains(unmatched_links_, link));
-  DCHECK(!base::Contains(matched_links_, link));
-  DCHECK(!base::Contains(pending_links_, link));
-  DCHECK(!base::Contains(stale_links_, link));
+  DCHECK(!unmatched_links_.Contains(link));
+  DCHECK(!matched_links_.Contains(link));
+  DCHECK(!pending_links_.Contains(link));
+  DCHECK(!stale_links_.Contains(link));
 
   pending_links_.insert(link);
   // We don't check LockedAncestorPreventingStyle here because this
@@ -992,8 +975,8 @@ void DocumentSpeculationRules::RemoveLink(HTMLAnchorElementBase* link) {
 
   if (auto it = matched_links_.find(link); it != matched_links_.end()) {
     matched_links_.erase(it);
-    DCHECK(!base::Contains(unmatched_links_, link));
-    DCHECK(!base::Contains(pending_links_, link));
+    DCHECK(!unmatched_links_.Contains(link));
+    DCHECK(!pending_links_.Contains(link));
     return;
   }
   // TODO(crbug.com/1371522): Removing a link that doesn't match anything isn't
@@ -1001,7 +984,7 @@ void DocumentSpeculationRules::RemoveLink(HTMLAnchorElementBase* link) {
   // QueueUpdateSpeculationCandidates in this scenario.
   if (auto it = unmatched_links_.find(link); it != unmatched_links_.end()) {
     unmatched_links_.erase(it);
-    DCHECK(!base::Contains(pending_links_, link));
+    DCHECK(!pending_links_.Contains(link));
     return;
   }
   auto it = pending_links_.find(link);
@@ -1015,7 +998,7 @@ void DocumentSpeculationRules::InvalidateLink(HTMLAnchorElementBase* link) {
   pending_links_.insert(link);
   if (auto it = matched_links_.find(link); it != matched_links_.end()) {
     matched_links_.erase(it);
-    DCHECK(!base::Contains(unmatched_links_, link));
+    DCHECK(!unmatched_links_.Contains(link));
     return;
   }
   if (auto it = unmatched_links_.find(link); it != unmatched_links_.end())

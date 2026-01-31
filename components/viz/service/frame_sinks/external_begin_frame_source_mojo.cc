@@ -52,6 +52,21 @@ void ExternalBeginFrameSourceMojo::IssueExternalBeginFrame(
   MaybeProduceFrameCallback();
 }
 
+#if BUILDFLAG(IS_MAC)
+void ExternalBeginFrameSourceMojo::IssueExternalVSync(
+    const CADisplayLinkParams& params) {
+  // For ExternalBeginFrameSourceMojoMac only.
+  NOTREACHED();
+}
+
+void ExternalBeginFrameSourceMojo::SetSupportedDisplayLinkId(
+    int64_t display_id,
+    bool is_supported) {
+  // For ExternalBeginFrameSourceMojoMac only.
+  NOTREACHED();
+}
+#endif
+
 void ExternalBeginFrameSourceMojo::OnDestroyedCompositorFrameSink(
     const FrameSinkId& sink_id) {
   pending_frame_sinks_.erase(sink_id);

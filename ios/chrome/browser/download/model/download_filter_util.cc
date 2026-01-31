@@ -6,6 +6,7 @@
 
 #include <map>
 
+#include "base/containers/fixed_flat_map.h"
 #include "base/strings/string_util.h"
 
 namespace {
@@ -13,17 +14,14 @@ namespace {
 // Alias for case-insensitive comparison.
 constexpr auto kIgnoreCase = base::CompareCase::INSENSITIVE_ASCII;
 
-// Returns a map to simplify the lookup of MIME type categories.
-// Using function-local static to avoid static initialization order issues.
-const std::map<std::string_view, DownloadFilterType>& GetMimeTypeMap() {
-  static const std::map<std::string_view, DownloadFilterType> kMimeTypeMap = {
-      {"video/", DownloadFilterType::kVideo},
-      {"audio/", DownloadFilterType::kAudio},
-      {"image/", DownloadFilterType::kImage},
-      {"text/", DownloadFilterType::kDocument},
-  };
-  return kMimeTypeMap;
-}
+// Map to simplify the lookup of MIME type categories.
+constexpr auto kMimeTypeMap =
+    base::MakeFixedFlatMap<std::string_view, DownloadFilterType>({
+        {"video/", DownloadFilterType::kVideo},
+        {"audio/", DownloadFilterType::kAudio},
+        {"image/", DownloadFilterType::kImage},
+        {"text/", DownloadFilterType::kDocument},
+    });
 
 // Helper function to determine the category of a MIME type.
 DownloadFilterType GetMimeTypeCategory(std::string_view mime_type) {
@@ -37,7 +35,7 @@ DownloadFilterType GetMimeTypeCategory(std::string_view mime_type) {
   }
 
   // Iterate through the map to check for matching prefixes.
-  for (const auto& pair : GetMimeTypeMap()) {
+  for (const auto& pair : kMimeTypeMap) {
     if (base::StartsWith(mime_type, pair.first, kIgnoreCase)) {
       return pair.second;
     }

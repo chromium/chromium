@@ -86,7 +86,7 @@ class IwaBundleCacheManager : public WebAppInstallManagerObserver {
 
   // Log all the operations results using `operations_results_` for the debug
   // purpose.
-  base::Value::List operations_results_;
+  base::ListValue operations_results_;
 
   base::WeakPtrFactory<IwaBundleCacheManager> weak_ptr_factory_{this};
 };

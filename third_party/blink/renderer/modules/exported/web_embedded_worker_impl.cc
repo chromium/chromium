@@ -225,7 +225,7 @@ void WebEmbeddedWorkerImpl::StartWorkerThread(
       nullptr /* parent_permissions_policy */,
       base::UnguessableToken() /* agent_cluster_id */,
       worker_start_data->ukm_source_id, std::nullopt, /* parent_context_token */
-      false, /* parent_cross_origin_isolated_capability */
+      worker_start_data->is_cross_origin_isolated,
       false, /* parent_is_isolated_context */
       interface_registry,
       nullptr /* agent_group_scheduler_compositor_task_runner */,

@@ -5,9 +5,9 @@
 #include "components/shared_highlighting/core/common/disabled_sites.h"
 
 #include <string_view>
-#include <unordered_set>
 
 #include "base/containers/fixed_flat_map.h"
+#include "base/containers/fixed_flat_set.h"
 #include "base/feature_list.h"
 #include "base/strings/string_util.h"
 #include "components/shared_highlighting/core/common/shared_highlighting_features.h"
@@ -68,12 +68,12 @@ bool ShouldOfferLinkToText(const GURL& url) {
 }
 
 bool SupportsLinkGenerationInIframe(GURL main_frame_url) {
-  const std::unordered_set<std::string> good_hosts = {
-      "www.google.com", "m.google.com", "mobile.google.com",
-      "www.bing.com",   "m.bing.com",   "mobile.bing.com"};
+  static constexpr auto kGoodHosts = base::MakeFixedFlatSet<std::string_view>(
+      {"www.google.com", "m.google.com", "mobile.google.com", "www.bing.com",
+       "m.bing.com", "mobile.bing.com"});
 
   return main_frame_url.SchemeIs(url::kHttpsScheme) &&
-         good_hosts.find(main_frame_url.GetHost()) != good_hosts.end() &&
+         kGoodHosts.contains(main_frame_url.GetHost()) &&
          base::StartsWith(main_frame_url.GetPath(), "/amp/");
 }
 

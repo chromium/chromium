@@ -492,7 +492,7 @@ base::Time SystemLogUploader::UpdateLocalStateForLogs() {
   const base::Time now = base::Time::NowFromSystemTime();
   PrefService* local_state = g_browser_process->local_state();
 
-  const base::Value::List& prev_log_uploads =
+  const base::ListValue& prev_log_uploads =
       local_state->GetList(prefs::kStoreLogStatesAcrossReboots);
 
   std::vector<base::Time> updated_log_uploads;
@@ -522,7 +522,7 @@ base::Time SystemLogUploader::UpdateLocalStateForLogs() {
     updated_log_uploads.erase(updated_log_uploads.begin());
 
   // Create a list to be updated for the pref.
-  base::Value::List updated_prev_log_uploads;
+  base::ListValue updated_prev_log_uploads;
   for (auto it : updated_log_uploads) {
     updated_prev_log_uploads.Append(it.InSecondsFSinceUnixEpoch());
   }

@@ -539,7 +539,7 @@ void InterestGroupManagerImpl::RecordDebugReportLockout(
 
 void InterestGroupManagerImpl::RecordRandomDebugReportLockout(
     base::Time starting_time) {
-  int random = base::RandInt(1, 90);
+  int random = base::RandIntInclusive(1, 90);
   caching_storage_.RecordDebugReportLockout(starting_time, base::Days(random));
 }
 

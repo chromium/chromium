@@ -6,7 +6,7 @@
 
 #include "chrome/browser/ash/input_method/editor_mediator_factory.h"
 #include "chrome/browser/ash/input_method/editor_transition_enums.h"
-#include "chrome/browser/ash/magic_boost/magic_boost_controller_ash.h"
+#include "chrome/browser/ash/magic_boost/magic_boost_controller.h"
 #include "chromeos/components/magic_boost/public/cpp/magic_boost_state.h"
 #include "ui/display/screen.h"
 
@@ -21,12 +21,11 @@ MagicBoostNoticeHandler::~MagicBoostNoticeHandler() = default;
 
 void MagicBoostNoticeHandler::ShowNotice() {
   if (chromeos::MagicBoostState::Get()->IsUserEligibleForGenAIFeatures() &&
-      ash::MagicBoostControllerAsh::Get()) {
-    ash::MagicBoostControllerAsh::Get()->ShowDisclaimerUi(
-        /*display_id=*/display::Screen::Get()->GetPrimaryDisplay().id(),
-        /*action=*/
-        crosapi::mojom::MagicBoostController::TransitionAction::kDoNothing,
-        /*opt_in_features=*/OptInFeatures::kOrcaAndHmr);
+      ash::MagicBoostController::Get()) {
+    ash::MagicBoostController::Get()->ShowDisclaimerUi(
+        display::Screen::Get()->GetPrimaryDisplay().id(),
+        magic_boost::TransitionAction::kDoNothing,
+        magic_boost::OptInFeatures::kOrcaAndHmr);
     return;
   }
 

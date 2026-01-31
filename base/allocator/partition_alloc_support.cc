@@ -125,9 +125,19 @@ BootloaderOverride GetBootloaderOverride() {
 // paste this minute.
 constexpr base::TimeDelta kFirstPAPurgeOrReclaimDelay = base::Minutes(1);
 
+#if PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+// Only tolerate up to |total_size_of_committed_pages >>
+// k***MaxEmptySlotSpansDirtyBytesShift| dirty bytes in empty slot
+// spans.
+constexpr int kForegroundMaxEmptySlotSpansDirtyBytesShift = 2;
+constexpr int kBackgroundMaxEmptySlotSpansDirtyBytesShift = 3;
+constexpr int kDefaultMaxEmptySlotSpansDirtyBytesShift = 3;
+#endif
+
 // This is defined in content/public/common/content_switches.h, which is not
 // accessible in ::base. They must be kept in sync.
 namespace switches {
+constexpr char kGpuProcess[] = "gpu-process";
 constexpr char kProcessType[] = "type";
 [[maybe_unused]] constexpr char kRendererProcess[] = "renderer";
 constexpr char kZygoteProcess[] = "zygote";
@@ -162,10 +172,6 @@ class LockMetricsRecorderSupport
  private:
   base::LockMetricsRecorder* recorder_;
 };
-
-}  // namespace
-
-namespace {
 
 void RunThreadCachePeriodicPurge() {
   // Micros, since periodic purge should typically take at most a few ms.
@@ -308,7 +314,8 @@ std::map<std::string, std::string> ProposeSyntheticFinchTrials() {
     partition_alloc::TagViolationReportingMode reporting_mode =
         partition_alloc::TagViolationReportingMode::kUndefined;
 #if PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
-    reporting_mode = allocator_shim::internal::PartitionAllocMalloc::Allocator()
+    reporting_mode = allocator_shim::internal::PartitionAllocMalloc::Allocator(
+                         kDefaultAllocToken)
                          ->memory_tagging_reporting_mode();
 #endif  // PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
     switch (bootloader_override) {
@@ -379,6 +386,10 @@ bool ShouldEnableFeatureOnProcess(
       return process_type.empty();
     case features::internal::PAFeatureEnabledProcesses::kNonRenderer:
       return process_type != switches::kRendererProcess;
+    case features::internal::PAFeatureEnabledProcesses::kGPUOnly:
+      return process_type == switches::kGpuProcess;
+    case features::internal::PAFeatureEnabledProcesses::kBrowserAndGPU:
+      return process_type.empty() || process_type == switches::kGpuProcess;
     case features::internal::PAFeatureEnabledProcesses::kBrowserAndRenderer:
       return process_type.empty() || process_type == switches::kRendererProcess;
     case features::internal::PAFeatureEnabledProcesses::kRendererOnly:
@@ -863,8 +874,12 @@ void ReconfigureSchedulerLoopQuarantineBranch(
   std::string process_type = GetProcessType();
   partition_alloc::internal::SchedulerLoopQuarantineConfig config =
       GetSchedulerLoopQuarantineConfiguration(process_type, branch_type);
-  allocator_shim::internal::PartitionAllocMalloc::Allocator()
-      ->ReconfigureSchedulerLoopQuarantineForCurrentThread(config);
+  for (size_t alloc_token = 0; alloc_token <= kMaxAllocToken.value();
+       alloc_token++) {
+    allocator_shim::internal::PartitionAllocMalloc::Allocator(
+        AllocToken(alloc_token))
+        ->ReconfigureSchedulerLoopQuarantineForCurrentThread(config);
+  }
 #endif  // PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
 }
 
@@ -1276,13 +1291,23 @@ void PartitionAllocSupport::ReconfigureAfterFeatureListInit(
   partition_alloc::internal::StackTopRegistry::Get().NotifyThreadCreated(
       partition_alloc::internal::GetStackTop());
 
-  allocator_shim::internal::PartitionAllocMalloc::Allocator()
-      ->EnableThreadCacheIfSupported();
+  for (size_t alloc_token = 0; alloc_token <= kMaxAllocToken.value();
+       alloc_token++) {
+    allocator_shim::internal::PartitionAllocMalloc::Allocator(
+        AllocToken(alloc_token))
+        ->EnableThreadCacheIfSupported();
+  }
 
   if (base::FeatureList::IsEnabled(
           base::features::kPartitionAllocLargeEmptySlotSpanRing)) {
-    allocator_shim::internal::PartitionAllocMalloc::Allocator()
-        ->EnableLargeEmptySlotSpanRing();
+    int16_t size = static_cast<int16_t>(
+        features::kPartitionAllocLargeEmptySlotSpanRingSize.Get());
+    for (size_t alloc_token = 0; alloc_token <= kMaxAllocToken.value();
+         alloc_token++) {
+      allocator_shim::internal::PartitionAllocMalloc::Allocator(
+          AllocToken(alloc_token))
+          ->AdjustSlotSpanRing(size, kDefaultMaxEmptySlotSpansDirtyBytesShift);
+    }
   }
 
   // `ReconfigureAfterTaskRunnerInit()` is called on the Main thread.
@@ -1358,7 +1383,7 @@ void PartitionAllocSupport::ReconfigureAfterTaskRunnerInit(
     // Devices almost always report less physical memory than what they actually
     // have, so use 3.2GB (a threshold commonly uses throughout code) to avoid
     // accidentally catching devices advertised as 4GB.
-    if (base::SysInfo::AmountOfPhysicalMemory().InGiBF() < 3.2) {
+    if (base::SysInfo::AmountOfTotalPhysicalMemory().InGiBF() < 3.2) {
       largest_cached_size_ = ::partition_alloc::kThreadCacheDefaultSizeThreshold;
     }
 #endif  // BUILDFLAG(IS_ANDROID)
@@ -1406,7 +1431,15 @@ void PartitionAllocSupport::OnForegrounded(bool has_main_frame) {
 #endif  // PA_CONFIG(THREAD_CACHE_SUPPORTED)
   if (base::FeatureList::IsEnabled(
           features::kPartitionAllocAdjustSizeWhenInForeground)) {
-    allocator_shim::AdjustDefaultAllocatorForForeground();
+    int16_t size = static_cast<int16_t>(
+        features::kPartitionAllocForegroundEmptySlotSpanRingSize.Get());
+    for (size_t alloc_token = 0; alloc_token <= kMaxAllocToken.value();
+         alloc_token++) {
+      allocator_shim::internal::PartitionAllocMalloc::Allocator(
+          AllocToken(alloc_token))
+          ->AdjustSlotSpanRing(size,
+                               kForegroundMaxEmptySlotSpansDirtyBytesShift);
+    }
   }
 #endif  // PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
 }
@@ -1445,7 +1478,15 @@ void PartitionAllocSupport::OnBackgrounded() {
 #endif  // PA_CONFIG(THREAD_CACHE_SUPPORTED)
   if (base::FeatureList::IsEnabled(
           features::kPartitionAllocAdjustSizeWhenInForeground)) {
-    allocator_shim::AdjustDefaultAllocatorForBackground();
+    int16_t size = static_cast<int16_t>(
+        features::kPartitionAllocBackgroundEmptySlotSpanRingSize.Get());
+    for (size_t alloc_token = 0; alloc_token <= kMaxAllocToken.value();
+         alloc_token++) {
+      allocator_shim::internal::PartitionAllocMalloc::Allocator(
+          AllocToken(alloc_token))
+          ->AdjustSlotSpanRing(size,
+                               kBackgroundMaxEmptySlotSpansDirtyBytesShift);
+    }
   }
 #endif  // PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
 }

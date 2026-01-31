@@ -109,7 +109,7 @@ TEST_F(BWGConsentViewControllerTest, ContentHeightReturnsValidValue) {
 // Tests that the primary button action calls the correct mutator method.
 TEST_F(BWGConsentViewControllerTest, TestPrimaryButtonAction) {
   BWGConsentViewController* view_controller = CreateViewController(NO);
-  OCMExpect([mock_mutator_ didConsentBWG]);
+  OCMExpect([mock_mutator_ didConsentGemini]);
 
   UIButton* primaryButton =
       static_cast<UIButton*>(GetViewWithAccessibilityIdentifier(
@@ -124,7 +124,7 @@ TEST_F(BWGConsentViewControllerTest, TestPrimaryButtonAction) {
 // Tests that the secondary button action calls the correct mutator method.
 TEST_F(BWGConsentViewControllerTest, TestSecondaryButtonAction) {
   BWGConsentViewController* view_controller = CreateViewController(NO);
-  OCMExpect([mock_mutator_ didRefuseBWGConsent]);
+  OCMExpect([mock_mutator_ didRefuseGeminiConsent]);
 
   UIButton* secondaryButton =
       static_cast<UIButton*>(GetViewWithAccessibilityIdentifier(

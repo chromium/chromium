@@ -66,14 +66,14 @@ BASE_FEATURE(kDismissMagnifierOnViewSwap, base::FEATURE_ENABLED_BY_DEFAULT);
 
 }  // namespace
 
-static jboolean
+static bool
 JNI_SelectionPopupControllerImpl_IsMagnifierWithSurfaceControlSupported(
     JNIEnv* env) {
   static bool enabled = gfx::SurfaceControl::SupportsSurfacelessControl();
   return enabled;
 }
 
-static jlong JNI_SelectionPopupControllerImpl_Init(
+static int64_t JNI_SelectionPopupControllerImpl_Init(
     JNIEnv* env,
     const JavaRef<jobject>& obj,
     const JavaRef<jobject>& jweb_contents) {
@@ -99,7 +99,7 @@ SelectionPopupController* SelectionPopupController::FromWebContents(
   // Then get the native pointer from the newly-created
   // SelectionPopupController. The Java SelectionPopupController owns the C++
   // SelectionPopupController.
-  jlong selection_popup_controller =
+  int64_t selection_popup_controller =
       Java_SelectionPopupControllerImpl_getNativePtr(
           env, jselection_popup_controller);
   return reinterpret_cast<SelectionPopupController*>(
@@ -134,15 +134,14 @@ ScopedJavaLocalRef<jobject> SelectionPopupController::GetContext() const {
 
 void SelectionPopupController::SetTextHandlesHiddenForDropdownMenu(
     JNIEnv* env,
-    jboolean hidden) {
+    bool hidden) {
   if (rwhva_) {
     rwhva_->SetTextHandlesHiddenForDropdownMenu(hidden);
   }
 }
 
-void SelectionPopupController::SetTextHandlesTemporarilyHidden(
-    JNIEnv* env,
-    jboolean hidden) {
+void SelectionPopupController::SetTextHandlesTemporarilyHidden(JNIEnv* env,
+                                                               bool hidden) {
   if (rwhva_)
     rwhva_->SetTextHandlesTemporarilyHidden(hidden);
 }

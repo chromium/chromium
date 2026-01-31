@@ -35,25 +35,25 @@ class FieldTrialsHandler : public content::WebUIMessageHandler {
 
   // Returns the state of all field trials. Returns a `FieldTrialState` from
   // components/metrics/debug/browser_proxy.ts.
-  base::Value::Dict GetFieldTrialStateValue();
+  base::DictValue GetFieldTrialStateValue();
 
   // Handlers for js calls.
 
   // fetchTrialState() grabs the state of studies and calls populateState() with
   // the result.
-  void HandleFetchState(const base::Value::List& args);
+  void HandleFetchState(const base::ListValue& args);
 
   // setTrialEnrollState(callback, trial, group, enabled) overrides the enroll
   // state of a field trial which will be realized after a restart.
-  void HandleSetEnrollState(const base::Value::List& args);
+  void HandleSetEnrollState(const base::ListValue& args);
 
   // restart() triggers a restart of Chrome.
-  void HandleRestart(const base::Value::List& args);
+  void HandleRestart(const base::ListValue& args);
 
   // lookupTrialOrGroupName(name) is called when the user types in a a study or
   // experiment name. If the name matches a known study or experiment, this
   // provides the page a mapping from hash to name for presentation.
-  void HandleLookupTrialOrGroupName(const base::Value::List& args);
+  void HandleLookupTrialOrGroupName(const base::ListValue& args);
 
   // One-time initialization for this class.
   void InitializeFieldTrials(

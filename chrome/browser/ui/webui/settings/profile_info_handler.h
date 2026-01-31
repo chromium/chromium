@@ -62,18 +62,18 @@ class ProfileInfoHandler : public SettingsPageUIHandler,
   FRIEND_TEST_ALL_PREFIXES(ProfileInfoHandlerTest, PushProfileInfo);
 
   // Callbacks from the page.
-  void HandleGetProfileInfo(const base::Value::List& args);
+  void HandleGetProfileInfo(const base::ListValue& args);
   void PushProfileInfo();
 
 #if !BUILDFLAG(IS_CHROMEOS)
-  void HandleGetProfileStats(const base::Value::List& args);
+  void HandleGetProfileStats(const base::ListValue& args);
 
   // Returns the sum of the counts of individual profile states. Returns 0 if
   // there exists a stat that was not successfully retrieved.
   void PushProfileStatsCount(profiles::ProfileCategoryStats stats);
 #endif
 
-  base::Value::Dict GetAccountNameAndIcon();
+  base::DictValue GetAccountNameAndIcon();
 
   // Weak pointer.
   raw_ptr<Profile> profile_;

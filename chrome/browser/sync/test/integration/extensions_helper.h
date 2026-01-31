@@ -72,6 +72,9 @@ bool IsIncognitoEnabled(Profile* profile, int index);
 // on timeout.
 bool AwaitAllProfilesHaveSameExtensions();
 
+// Returns the extension ID of the extension with the given `index`.
+extensions::ExtensionId GetExtensionId(int index);
+
 }  // namespace extensions_helper
 
 // A helper class to implement waiting for a set of profiles to have matching

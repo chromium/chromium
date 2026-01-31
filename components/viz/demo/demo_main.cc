@@ -232,6 +232,13 @@ int main(int argc, char** argv) {
   InitMojo mojo;
   InitUI ui;
 
+  base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
+  const bool use_gpu = command_line->HasSwitch(switches::kVizDemoUseGPU);
+  command_line->AppendSwitchASCII(switches::kUseGL,
+                                  use_gpu ? gl::kGLImplementationANGLEName
+                                          : gl::kGLImplementationDisabledName);
+  command_line->AppendSwitchASCII("type", "demo");
+
 #if BUILDFLAG(IS_OZONE)
   ui::OzonePlatform::InitParams params;
   params.single_process = true;
@@ -241,25 +248,17 @@ int main(int argc, char** argv) {
   base::Thread::Options options;
   options.message_pump_type = base::MessagePumpType::UI;
   CHECK(rendering_thread.StartWithOptions(std::move(options)));
-
-  base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
-  const bool use_gpu = command_line->HasSwitch(switches::kVizDemoUseGPU);
-  if (use_gpu) {
-    command_line->AppendSwitchASCII(switches::kUseGL,
-                                    gl::kGLImplementationANGLEName);
-    base::WaitableEvent done(base::WaitableEvent::ResetPolicy::AUTOMATIC,
-                             base::WaitableEvent::InitialState::NOT_SIGNALED);
-    rendering_thread.task_runner()->PostTask(
-        FROM_HERE, base::BindOnce(&SetupOzone, &done));
-    done.Wait();
-  }
+  base::WaitableEvent done(base::WaitableEvent::ResetPolicy::AUTOMATIC,
+                           base::WaitableEvent::InitialState::NOT_SIGNALED);
+  rendering_thread.task_runner()->PostTask(FROM_HERE,
+                                           base::BindOnce(&SetupOzone, &done));
+  done.Wait();
 
   // To create dmabuf through gbm, Ozone needs to be set up.
   gpu_helper = std::make_unique<ui::OzoneGpuTestHelper>();
   gpu_helper->Initialize();
-  if (use_gpu) {
-    gl::init::InitializeGLOneOff(gl::GpuPreference::kDefault);
-  }
 #endif
+
+  gl::init::InitializeGLOneOff(gl::GpuPreference::kDefault);
   return DemoMain();
 }

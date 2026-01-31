@@ -11,14 +11,12 @@
 #include "ash/bluetooth_devices_observer.h"
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/input_device_settings_controller.h"
-#include "ash/public/mojom/input_device_settings.mojom-forward.h"
 #include "ash/public/mojom/input_device_settings.mojom.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/system/input_device_settings/input_device_settings_metadata.h"
 #include "ash/system/input_device_settings/input_device_settings_pref_names.h"
 #include "ash/system/input_device_settings/input_device_settings_utils.h"
-#include "base/containers/contains.h"
 #include "base/containers/flat_map.h"
 #include "base/functional/bind.h"
 #include "base/values.h"
@@ -63,7 +61,7 @@ bool IsKeyboardAKnownImposterFalsePositive(const ui::InputDevice& device) {
   const auto& imposters =
       prefs->GetList(prefs::kKeyboardDeviceImpostersListPref);
   const std::string device_key = BuildDeviceKey(device);
-  return base::Contains(imposters, device_key);
+  return imposters.contains(device_key);
 }
 
 // Imposter here means a device that has a virtual keyboard device as well as a
@@ -85,7 +83,7 @@ bool IsMouseAKnownImposterFalsePositive(const ui::InputDevice& device) {
 
   const auto& imposters = prefs->GetList(prefs::kMouseDeviceImpostersListPref);
   const std::string device_key = BuildDeviceKey(device);
-  return base::Contains(imposters, device_key);
+  return imposters.contains(device_key);
 }
 
 // Saves `imposter_false_positives_to_add` to the known list of imposters in
@@ -105,7 +103,7 @@ void SaveKeyboardsToImposterPref(
   auto updated_imposters =
       prefs->GetList(prefs::kKeyboardDeviceImpostersListPref).Clone();
   for (const auto& device_key : imposter_false_positives_to_add) {
-    if (base::Contains(updated_imposters, device_key)) {
+    if (updated_imposters.contains(device_key)) {
       continue;
     }
 
@@ -134,7 +132,7 @@ void SaveMiceToImposterPref(
   auto updated_imposters =
       prefs->GetList(prefs::kMouseDeviceImpostersListPref).Clone();
   for (const auto& device_key : imposter_false_positives_to_add) {
-    if (base::Contains(updated_imposters, device_key)) {
+    if (updated_imposters.contains(device_key)) {
       continue;
     }
 

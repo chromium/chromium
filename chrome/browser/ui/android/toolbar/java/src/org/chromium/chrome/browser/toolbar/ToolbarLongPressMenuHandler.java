@@ -23,7 +23,7 @@ import android.widget.PopupWindow;
 import androidx.annotation.IntDef;
 import androidx.annotation.VisibleForTesting;
 
-import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
@@ -69,7 +69,7 @@ public class ToolbarLongPressMenuHandler implements ConfigurationChangedObserver
     private final int mMenuOmniboxOverlap;
     private int mScreenWidthDp;
     private final Context mContext;
-    private final ObservableSupplier<@Nullable Profile> mProfileSupplier;
+    private final MonotonicObservableSupplier<@Nullable Profile> mProfileSupplier;
     private final BooleanSupplier mSuppressLongPressSupplier;
     private final Supplier<@Nullable GURL> mUrlSupplier;
     private final Supplier<ViewRectProvider> mUrlBarViewRectProviderSupplier;
@@ -91,7 +91,7 @@ public class ToolbarLongPressMenuHandler implements ConfigurationChangedObserver
      */
     public ToolbarLongPressMenuHandler(
             Context context,
-            ObservableSupplier<@Nullable Profile> profileSupplier,
+            MonotonicObservableSupplier<@Nullable Profile> profileSupplier,
             boolean isCustomTab,
             BooleanSupplier suppressLongPressSupplier,
             ActivityLifecycleDispatcher lifecycleDispatcher,

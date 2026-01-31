@@ -17,8 +17,8 @@ import org.chromium.base.Callback;
 import org.chromium.base.CallbackController;
 import org.chromium.base.CallbackUtils;
 import org.chromium.base.metrics.RecordHistogram;
-import org.chromium.base.supplier.ObservableSupplier;
-import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.supplier.NullableObservableSupplier;
+import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -68,6 +68,8 @@ public class TabItemPickerCoordinator {
     private final Callback<Boolean> mBackPressEnabledObserver;
     private final ArrayList<Integer> mPreselectedTabIds;
     private final int mAllowedSelectionCount;
+    private final boolean mIsSingleContextMode;
+    private final Set<Integer> mCachedTabIdsSet = new HashSet<>();
     private @Nullable TabModelSelector mTabModelSelector;
     private @Nullable TabListEditorCoordinator mTabListEditorCoordinator;
     private @Nullable ItemPickerNavigationProvider mNavigationProvider;
@@ -80,7 +82,8 @@ public class TabItemPickerCoordinator {
             ViewGroup rootView,
             ViewGroup containerView,
             ArrayList<Integer> preselectedTabIds,
-            int allowedSelectionCount) {
+            int allowedSelectionCount,
+            boolean isSingleContextMode) {
 
         mProfileSupplier = profileSupplier;
         mWindowId = windowId;
@@ -90,6 +93,7 @@ public class TabItemPickerCoordinator {
         mContainerView = containerView;
         mPreselectedTabIds = preselectedTabIds;
         mAllowedSelectionCount = allowedSelectionCount;
+        mIsSingleContextMode = isSingleContextMode;
 
         mBackPressCallback =
                 new OnBackPressedCallback(/* enabled= */ false) {
@@ -175,7 +179,7 @@ public class TabItemPickerCoordinator {
         pageContentExtractionService.getAllCachedTabIds(this::onCachedTabIdsRetrieved);
     }
 
-    private void onCachedTabIdsRetrieved(long[] cachedTabIds) {
+    void onCachedTabIdsRetrieved(long[] cachedTabIds) {
         if (mTabModelSelector == null) return;
 
         Profile profile = mProfileSupplier.get();
@@ -189,20 +193,26 @@ public class TabItemPickerCoordinator {
                         mTabModelSelector.getModel(profile.isIncognitoBranded()));
 
         List<Tab> tabsToShow = new ArrayList<>();
-        Set<Integer> cachedTabIdsSet = new HashSet<>();
-        if (cachedTabIds != null) {
-            for (long id : cachedTabIds) {
-                cachedTabIdsSet.add((int) id);
-            }
+        for (long id : cachedTabIds) {
+            mCachedTabIdsSet.add((int) id);
         }
+
+        int activeTabCount = 0;
+        int cachedTabCount = 0;
         for (Tab tab : allTabs) {
             // TODO(crbug.com/458152854): Allow reloading of tabs.
-            boolean isActiveOrCachedTab =
-                    FuseboxTabUtils.isTabActive(tab) || cachedTabIdsSet.contains(tab.getId());
-            if (FuseboxTabUtils.isTabEligibleForAttachment(tab) && isActiveOrCachedTab) {
+            boolean isActive = FuseboxTabUtils.isTabActive(tab);
+            boolean isCached = mCachedTabIdsSet.contains(tab.getId());
+            if (FuseboxTabUtils.isTabEligibleForAttachment(tab) && (isActive || isCached)) {
                 tabsToShow.add(tab);
+                if (isActive) activeTabCount++;
+                if (isCached) cachedTabCount++;
             }
         }
+        RecordHistogram.recordCount100Histogram(
+                "Android.TabItemPicker.ActiveTabs.Count", activeTabCount);
+        RecordHistogram.recordCount100Histogram(
+                "Android.TabItemPicker.CachedTabs.Count", cachedTabCount);
         showEditorUi(tabsToShow);
     }
 
@@ -275,13 +285,19 @@ public class TabItemPickerCoordinator {
             implements TabListEditorCoordinator.NavigationProvider, ItemPickerSelectionHandler {
         private final Activity mActivity;
         private final TabListEditorController mController;
+        private final TabModelSelector mTabModelSelector;
+        private final Set<Integer> mCachedTabIds;
 
         public ItemPickerNavigationProvider(
                 Activity activity,
                 TabListEditorController controller,
-                SelectionDelegate<TabListEditorItemSelectionId> selectionDelegate) {
+                SelectionDelegate<TabListEditorItemSelectionId> selectionDelegate,
+                TabModelSelector tabModelSelector,
+                Set<Integer> cachedTabIds) {
             mActivity = activity;
             mController = controller;
+            mTabModelSelector = tabModelSelector;
+            mCachedTabIds = cachedTabIds;
         }
 
         @Override
@@ -300,8 +316,28 @@ public class TabItemPickerCoordinator {
 
         @Override
         public void finishSelection(List<TabListEditorItemSelectionId> selectedItems) {
+            int activePickedCount = 0;
+            int cachedPickedCount = 0;
+
+            for (TabListEditorItemSelectionId item : selectedItems) {
+                if (!item.isTabId()) continue;
+
+                int tabId = item.getTabId();
+                Tab tab = mTabModelSelector.getTabById(tabId);
+
+                if (tab != null && FuseboxTabUtils.isTabActive(tab)) {
+                    activePickedCount++;
+                }
+                if (mCachedTabIds.contains(tabId)) {
+                    cachedPickedCount++;
+                }
+            }
             RecordHistogram.recordCount100Histogram(
                     "Android.TabItemPicker.SelectedTabs.Count", selectedItems.size());
+            RecordHistogram.recordCount100Histogram(
+                    "Android.TabItemPicker.ActiveTabsPicked.Count", activePickedCount);
+            RecordHistogram.recordCount100Histogram(
+                    "Android.TabItemPicker.CachedTabsPicked.Count", cachedPickedCount);
             mController.hideByAction();
 
             // Route the result to the Activity's success handler.
@@ -314,13 +350,13 @@ public class TabItemPickerCoordinator {
     }
 
     /** Creates a TabGroupModelFilter instance required by the TabListEditorCoordinator. */
-    private ObservableSupplier<@Nullable TabGroupModelFilter> createTabGroupModelFilterSupplier(
+    private NullableObservableSupplier<TabGroupModelFilter> createTabGroupModelFilterSupplier(
             TabModelSelector tabModelSelector) {
         boolean isIncognito = assumeNonNull(mProfileSupplier.get()).isIncognitoBranded();
-        return new ObservableSupplierImpl<@Nullable TabGroupModelFilter>(
-                tabModelSelector
-                        .getTabGroupModelFilterProvider()
-                        .getTabGroupModelFilter(isIncognito));
+        TabGroupModelFilter curFilter = tabModelSelector.getTabGroupModelFilter(isIncognito);
+        return curFilter == null
+                ? ObservableSuppliers.alwaysNull()
+                : ObservableSuppliers.createNonNull(curFilter);
     }
 
     /** Creates a TabContentManager instance required by the TabListEditorCoordinator. */
@@ -350,7 +386,7 @@ public class TabItemPickerCoordinator {
     /** Creates a TabListEditorCoordinator with set configurations for the Tab Picker UI. */
     @VisibleForTesting
     TabListEditorCoordinator createTabListEditorCoordinator(TabModelSelector selector) {
-        ObservableSupplier<@Nullable TabGroupModelFilter> tabGroupModelFilterSupplier =
+        NullableObservableSupplier<TabGroupModelFilter> tabGroupModelFilterSupplier =
                 createTabGroupModelFilterSupplier(selector);
         BrowserControlsStateProvider browserControlStateProvider =
                 new HeadlessBrowserControlsStateProvider();
@@ -380,11 +416,16 @@ public class TabItemPickerCoordinator {
                         CreationMode.ITEM_PICKER,
                         /* undoBarExplicitTrigger= */ null,
                         /* componentName= */ "TabItemPickerCoordinator",
-                        mAllowedSelectionCount);
+                        mAllowedSelectionCount,
+                        mIsSingleContextMode);
 
         mNavigationProvider =
                 new ItemPickerNavigationProvider(
-                        mActivity, coordinator.getController(), coordinator.getSelectionDelegate());
+                        mActivity,
+                        coordinator.getController(),
+                        coordinator.getSelectionDelegate(),
+                        assumeNonNull(mTabModelSelector),
+                        mCachedTabIdsSet);
 
         coordinator.getController().setNavigationProvider(mNavigationProvider);
         coordinator.getController().setSelectionHandler(mNavigationProvider);

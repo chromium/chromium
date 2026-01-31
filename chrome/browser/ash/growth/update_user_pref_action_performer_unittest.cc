@@ -7,13 +7,11 @@
 #include <memory>
 #include <optional>
 
-#include "base/containers/contains.h"
 #include "base/json/json_reader.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
-#include "chrome/browser/browser_process.h"
 #include "chrome/browser/prefs/browser_prefs.h"
 #include "chrome/common/chrome_constants.h"
 #include "chrome/test/base/testing_browser_process.h"
@@ -126,7 +124,7 @@ class UpdateUserPrefActionPerformerTest : public testing::Test {
 
   bool VerifyListPrefsContainsValue(const std::string& value) {
     auto* prefs_ = ProfileManager::GetActiveUserProfile()->GetPrefs();
-    return base::Contains(prefs_->GetList(kListPref), value);
+    return prefs_->GetList(kListPref).contains(value);
   }
 
  private:
@@ -136,11 +134,11 @@ class UpdateUserPrefActionPerformerTest : public testing::Test {
         std::make_unique<sync_preferences::TestingPrefServiceSyncable>();
     RegisterUserProfilePrefs(prefs->registry());
     prefs->registry()->RegisterStringPref(kStringPref, std::string());
-    prefs->registry()->RegisterListPref(kListPref, base::Value::List());
+    prefs->registry()->RegisterListPref(kListPref, base::ListValue());
     prefs->SetString(kStringPref, kDefaultValue);
     prefs->SetList(
         kListPref,
-        base::Value::List().Append(kDefaultValue).Append(kRemoveValue));
+        base::ListValue().Append(kDefaultValue).Append(kRemoveValue));
     return prefs;
   }
 

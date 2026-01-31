@@ -36,7 +36,7 @@ std::string RandASCIIString(size_t length) {
   const int kMax = static_cast<int>('~');
   result.reserve(length);
   for (size_t i = 0; i < length; ++i) {
-    result.push_back(static_cast<char>(base::RandInt(kMin, kMax)));
+    result.push_back(static_cast<char>(base::RandIntInclusive(kMin, kMax)));
   }
   return result;
 }

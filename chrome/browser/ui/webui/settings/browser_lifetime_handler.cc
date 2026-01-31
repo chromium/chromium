@@ -96,21 +96,21 @@ void BrowserLifetimeHandler::RegisterMessages() {
 #endif
 }
 
-void BrowserLifetimeHandler::HandleRestart(const base::Value::List& args) {
+void BrowserLifetimeHandler::HandleRestart(const base::ListValue& args) {
   chrome::AttemptRestart();
 }
 
-void BrowserLifetimeHandler::HandleRelaunch(const base::Value::List& args) {
+void BrowserLifetimeHandler::HandleRelaunch(const base::ListValue& args) {
   chrome::AttemptRelaunch();
 }
 
 #if BUILDFLAG(IS_CHROMEOS)
 void BrowserLifetimeHandler::HandleSignOutAndRestart(
-    const base::Value::List& args) {
+    const base::ListValue& args) {
   chrome::AttemptUserExit();
 }
 
-void BrowserLifetimeHandler::HandleFactoryReset(const base::Value::List& args) {
+void BrowserLifetimeHandler::HandleFactoryReset(const base::ListValue& args) {
   CHECK_EQ(1U, args.size());
   bool tpm_firmware_update_requested = args[0].GetBool();
 
@@ -142,7 +142,7 @@ void BrowserLifetimeHandler::HandleFactoryReset(const base::Value::List& args) {
 
 #if !BUILDFLAG(IS_CHROMEOS)
 void BrowserLifetimeHandler::HandleGetRelaunchConfirmationDialogDescription(
-    const base::Value::List& args) {
+    const base::ListValue& args) {
   AllowJavascript();
   CHECK_EQ(2U, args.size());
   const base::Value& callback_id = args[0];
@@ -170,7 +170,7 @@ void BrowserLifetimeHandler::HandleGetRelaunchConfirmationDialogDescription(
 }
 
 void BrowserLifetimeHandler::HandleShouldShowRelaunchConfirmationDialog(
-    const base::Value::List& args) {
+    const base::ListValue& args) {
   AllowJavascript();
   CHECK_EQ(2U, args.size());
   const base::Value& callback_id = args[0];

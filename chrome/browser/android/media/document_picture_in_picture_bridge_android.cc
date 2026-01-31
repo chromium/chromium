@@ -25,4 +25,9 @@ static void JNI_DocumentPictureInPictureActivity_OnActivityStart(
       parent_web_contents, web_content);
 }
 
+static void JNI_DocumentPictureInPictureActivity_OnBackToTab(JNIEnv* env) {
+  PictureInPictureWindowManager::GetInstance()->ExitPictureInPictureViaWindowUi(
+      PictureInPictureWindowManager::UiBehavior::kCloseWindowAndFocusOpener);
+}
+
 DEFINE_JNI(DocumentPictureInPictureActivity)

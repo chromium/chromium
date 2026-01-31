@@ -28,8 +28,12 @@ class KioskExternalUpdateValidatorDelegate {
       const std::string& app_id,
       const std::string& version,
       const std::string& min_browser_version,
-      const base::FilePath& temp_dir) = 0;
+      const base::FilePath& temp_dir,
+      const base::FilePath& validated_crx_path) = 0;
   virtual void OnExternalUpdateUnpackFailure(const std::string& app_id) = 0;
+  virtual void OnExternalUpdateCopyFailure(
+      const std::string& app_id,
+      const base::FilePath& crx_file_path) = 0;
 
  protected:
   virtual ~KioskExternalUpdateValidatorDelegate() = default;
@@ -58,10 +62,12 @@ class KioskExternalUpdateValidator
   void OnUnpackFailure(const extensions::CrxInstallError& error) override;
   void OnUnpackSuccess(const base::FilePath& temp_dir,
                        const base::FilePath& extension_dir,
-                       std::unique_ptr<base::Value::Dict> original_manifest,
+                       std::unique_ptr<base::DictValue> original_manifest,
                        const extensions::Extension* extension,
                        const SkBitmap& install_icon,
-                       base::Value::Dict ruleset_install_prefs) override;
+                       base::DictValue ruleset_install_prefs) override;
+
+  void StartCopyAndValidationOnBackendThread();
 
   // Task runner for executing file I/O tasks.
   const scoped_refptr<base::SequencedTaskRunner> backend_task_runner_;
@@ -71,6 +77,9 @@ class KioskExternalUpdateValidator
 
   // The temporary directory used by SandBoxedUnpacker for unpacking extensions.
   const base::FilePath crx_unpack_dir_;
+
+  // The path to copy the crx file to before unpacking.
+  const base::FilePath crx_copy_path_;
 
   base::WeakPtr<KioskExternalUpdateValidatorDelegate> delegate_;
 };

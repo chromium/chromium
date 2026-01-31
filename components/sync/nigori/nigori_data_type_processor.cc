@@ -271,7 +271,7 @@ void NigoriDataTypeProcessor::GetAllNodesForDebugging(
 
   std::unique_ptr<EntityData> entity_data = bridge_->GetDataForDebugging();
   if (!entity_data) {
-    std::move(callback).Run(base::Value::List());
+    std::move(callback).Run(base::ListValue());
     return;
   }
 
@@ -283,7 +283,7 @@ void NigoriDataTypeProcessor::GetAllNodesForDebugging(
     entity_data->modification_time =
         ProtoTimeToTime(metadata.modification_time());
   }
-  base::Value::Dict root_node = entity_data->ToDictionaryValue();
+  base::DictValue root_node = entity_data->ToDictionaryValue();
   if (entity_) {
     root_node.Set("metadata", EntityMetadataToValue(entity_->metadata()));
   }
@@ -296,7 +296,7 @@ void NigoriDataTypeProcessor::GetAllNodesForDebugging(
   root_node.Set("UNIQUE_SERVER_TAG", "Nigori");
   root_node.Set("dataType", DataTypeToDebugString(NIGORI));
 
-  base::Value::List all_nodes;
+  base::ListValue all_nodes;
   all_nodes.Append(std::move(root_node));
   std::move(callback).Run(std::move(all_nodes));
 }

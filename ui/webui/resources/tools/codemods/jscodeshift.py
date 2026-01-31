@@ -18,17 +18,12 @@ sys.path.append(os.path.join(_SRC_PATH, 'third_party', 'node'))
 import node
 """
  Instructions to run this script locally.
- 1) Create a package.json file in the same folder with the following contents.
+ 1) From the root of the repository run the following command
 
-{
-  "dependencies": {
-    "jscodeshift": "17.3.0"
-  }
-}
+    npm install --prefix ui/webui/resources/tools/codemods/ --no-bin-links \
+        --no-fund --ignore-scripts --omit=dev --omit=optional
 
- 2) Run 'npm install' in the same folder.
-
- 3) Invoke the script from the root directory of the repository. For example
+ 2) Invoke the script from the root directory of the repository. For example
 
     python3 ui/webui/resources/tools/codemods/jscodeshift.py \
         --transform ui/webui/resources/tools/codemods/my_transform.js

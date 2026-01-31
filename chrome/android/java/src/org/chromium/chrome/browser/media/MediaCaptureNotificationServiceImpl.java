@@ -285,7 +285,8 @@ public class MediaCaptureNotificationServiceImpl extends SplitCompatService.Impl
 
         Intent tabIntent =
                 IntentHandler.createTrustedBringTabToFrontIntent(
-                        notificationId, IntentHandler.BringToFrontSource.NOTIFICATION);
+                        getTabIdFromNotificationId(notificationId),
+                        IntentHandler.BringToFrontSource.NOTIFICATION);
         PendingIntentProvider contentIntent =
                 tabIntent == null
                         ? null

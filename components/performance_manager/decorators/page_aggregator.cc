@@ -184,11 +184,11 @@ void PageAggregator::OnTakenFromGraph(Graph* graph) {
   graph->RemoveFrameNodeObserver(this);
 }
 
-base::Value::Dict PageAggregator::DescribePageNodeData(
+base::DictValue PageAggregator::DescribePageNodeData(
     const PageNode* node) const {
   auto* page_node_impl = PageNodeImpl::FromNode(node);
   if (!Data::Exists(page_node_impl)) {
-    return base::Value::Dict();
+    return base::DictValue();
   }
   Data& data = Data::Get(page_node_impl);
   return data.Describe();

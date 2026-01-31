@@ -9,8 +9,8 @@
 #include <vector>
 
 #include "base/values.h"
+#include "chrome/browser/ash/app_mode/kiosk_app_types.h"
 #include "chrome/browser/extensions/external_provider_impl.h"
-#include "chromeos/crosapi/mojom/chrome_app_kiosk_service.mojom.h"
 #include "extensions/common/extension_urls.h"
 
 namespace chromeos {
@@ -18,11 +18,11 @@ namespace chromeos {
 namespace {
 static ChromeKioskExternalLoaderBroker* g_broker_instance = nullptr;
 
-base::Value::Dict CreatePrimaryAppLoaderPrefs(
-    const crosapi::mojom::AppInstallParams& primary_app_data) {
-  return base::Value::Dict()  //
+base::DictValue CreatePrimaryAppLoaderPrefs(
+    const ash::KioskAppInstallParams& primary_app_data) {
+  return base::DictValue()  //
       .Set(primary_app_data.id,
-           base::Value::Dict()
+           base::DictValue()
                .Set(extensions::ExternalProviderImpl::kExternalVersion,
                     primary_app_data.version)
                .Set(extensions::ExternalProviderImpl::kExternalCrx,
@@ -31,12 +31,12 @@ base::Value::Dict CreatePrimaryAppLoaderPrefs(
                     primary_app_data.is_store_app));
 }
 
-base::Value::Dict CreateSecondaryAppLoaderPrefs(
+base::DictValue CreateSecondaryAppLoaderPrefs(
     const std::vector<std::string>& secondary_app_ids) {
-  base::Value::Dict prefs;
+  base::DictValue prefs;
   for (const std::string& id : secondary_app_ids) {
     prefs.Set(
-        id, base::Value::Dict()
+        id, base::DictValue()
                 .Set(extensions::ExternalProviderImpl::kExternalUpdateUrl,
                      extension_urls::GetWebstoreUpdateUrl().spec())
                 .Set(extensions::ExternalProviderImpl::kIsFromWebstore, true));
@@ -78,8 +78,8 @@ void ChromeKioskExternalLoaderBroker::RegisterSecondaryAppInstallDataObserver(
 }
 
 void ChromeKioskExternalLoaderBroker::TriggerPrimaryAppInstall(
-    const crosapi::mojom::AppInstallParams& install_data) {
-  primary_app_data_ = install_data;
+    ash::KioskAppInstallParams install_data) {
+  primary_app_data_ = std::move(install_data);
 
   CallPrimaryAppObserver();
 }

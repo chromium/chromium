@@ -13,9 +13,94 @@
 #include "third_party/blink/renderer/core/layout/grid/grid_item.h"
 #include "third_party/blink/renderer/core/layout/grid/grid_track_collection.h"
 #include "third_party/blink/renderer/core/layout/length_utils.h"
+#include "third_party/blink/renderer/core/layout/logical_box_fragment.h"
 #include "third_party/blink/renderer/core/style/grid_track_list.h"
 
 namespace blink {
+
+LayoutUnit GetTrackBaseline(const GridItemData& grid_item,
+                            const GridLayoutTrackCollection& track_collection) {
+  const auto track_direction = track_collection.Direction();
+
+  // "If a box spans multiple shared alignment contexts, then it participates
+  //  in first/last baseline alignment within its start-most/end-most shared
+  //  alignment context along that axis"
+  // https://www.w3.org/TR/css-align-3/#baseline-sharing-group
+  const auto& [begin_set_index, end_set_index] =
+      grid_item.SetIndices(track_direction);
+
+  return (grid_item.BaselineGroup(track_direction) == BaselineGroup::kMajor)
+             ? track_collection.MajorBaseline(begin_set_index)
+             : track_collection.MinorBaseline(end_set_index - 1);
+}
+
+LayoutUnit GetLogicalBaseline(const LogicalBoxFragment& baseline_fragment,
+                              FontBaseline font_baseline,
+                              bool is_last_baseline) {
+  return is_last_baseline
+             ? baseline_fragment.BlockSize() -
+                   baseline_fragment.LastBaselineOrSynthesize(font_baseline)
+             : baseline_fragment.FirstBaselineOrSynthesize(font_baseline);
+}
+
+void StoreItemBaseline(const LogicalBoxFragment& baseline_fragment,
+                       GridTrackSizingDirection track_direction,
+                       FontBaseline font_baseline,
+                       LayoutUnit extra_margin,
+                       GridSizingTrackCollection& track_collection,
+                       GridItemData& item) {
+  const bool has_synthesized_baseline =
+      !baseline_fragment.FirstBaseline().has_value();
+  item.SetAlignmentFallback(track_direction, has_synthesized_baseline);
+
+  const LayoutUnit item_baseline =
+      GetLogicalBaseline(baseline_fragment, font_baseline,
+                         item.IsLastBaselineSpecified(track_direction));
+  const LayoutUnit total_baseline = extra_margin + item_baseline;
+
+  // "If a box spans multiple shared alignment contexts, then it participates
+  //  in first/last baseline alignment within its start-most/end-most shared
+  //  alignment context along that axis"
+  // https://www.w3.org/TR/css-align-3/#baseline-sharing-group
+  const auto& [begin_set_index, end_set_index] =
+      item.SetIndices(track_direction);
+
+  if (item.BaselineGroup(track_direction) == BaselineGroup::kMajor) {
+    track_collection.SetMajorBaseline(begin_set_index, total_baseline);
+  } else {
+    track_collection.SetMinorBaseline(end_set_index - 1, total_baseline);
+  }
+}
+
+LayoutUnit ComputeBaselineOffset(
+    const GridItemData& grid_item,
+    const GridLayoutTrackCollection& track_collection,
+    const LogicalBoxFragment& baseline_fragment,
+    const LogicalBoxFragment& fragment,
+    FontBaseline font_baseline,
+    GridTrackSizingDirection track_direction,
+    LayoutUnit available_size) {
+  if (!grid_item.IsBaselineAligned(track_direction)) {
+    return LayoutUnit();
+  }
+
+  // The baseline offset is the difference between the grid item's baseline
+  // and its track baseline.
+  const LayoutUnit baseline_delta =
+      GetTrackBaseline(grid_item, track_collection) -
+      GetLogicalBaseline(baseline_fragment, font_baseline,
+                         grid_item.IsLastBaselineSpecified(track_direction));
+
+  if (grid_item.BaselineGroup(track_direction) == BaselineGroup::kMajor) {
+    return baseline_delta;
+  }
+
+  // BaselineGroup::kMinor
+  const LayoutUnit item_size = (track_direction == kForColumns)
+                                   ? fragment.InlineSize()
+                                   : fragment.BlockSize();
+  return available_size - baseline_delta - item_size;
+}
 
 void ComputeAvailableSizes(const BoxStrut& border_scrollbar_padding,
                            const BlockNode& node,

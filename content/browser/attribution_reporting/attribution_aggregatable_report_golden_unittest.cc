@@ -110,7 +110,7 @@ class AggregatableReportGoldenLatestVersionTest : public testing::Test {
   // assembled report.
   void AssembleAndVerifyReport(
       AggregatableReportRequest request,
-      base::FunctionRef<base::Value::Dict(AggregatableReport)> get_report_body,
+      base::FunctionRef<base::DictValue(AggregatableReport)> get_report_body,
       std::string_view report_file,
       std::string_view cleartext_payloads_file) {
     base::Value expected_report =
@@ -137,7 +137,7 @@ class AggregatableReportGoldenLatestVersionTest : public testing::Test {
               EXPECT_EQ(status, AggregationService::AssemblyStatus::kOk);
               ASSERT_TRUE(assembled_report);
 
-              base::Value::Dict report_body =
+              base::DictValue report_body =
                   get_report_body(*std::move(assembled_report));
 
               EXPECT_TRUE(VerifyReport(
@@ -164,8 +164,8 @@ class AggregatableReportGoldenLatestVersionTest : public testing::Test {
   }
 
   testing::AssertionResult VerifyReport(
-      base::Value::Dict actual_report,
-      base::Value::Dict expected_report,
+      base::DictValue actual_report,
+      base::DictValue expected_report,
       const std::string& base64_encoded_expected_cleartext_payload) {
     std::optional<base::Value> actual_payloads =
         actual_report.Extract(kKeyAggregationServicePayloads);
@@ -196,13 +196,13 @@ class AggregatableReportGoldenLatestVersionTest : public testing::Test {
              << kKeySharedInfo << " not present in the report";
     }
 
-    base::Value::List* actual_payloads_list = actual_payloads->GetIfList();
+    base::ListValue* actual_payloads_list = actual_payloads->GetIfList();
     if (!actual_payloads_list) {
       return testing::AssertionFailure() << kKeyAggregationServicePayloads
                                          << " not a list in the actual report";
     }
 
-    base::Value::List* expected_payloads_list = expected_payloads->GetIfList();
+    base::ListValue* expected_payloads_list = expected_payloads->GetIfList();
     if (!expected_payloads_list) {
       return testing::AssertionFailure()
              << kKeyAggregationServicePayloads
@@ -215,8 +215,8 @@ class AggregatableReportGoldenLatestVersionTest : public testing::Test {
   }
 
   testing::AssertionResult VerifyAggregationServicePayloads(
-      base::Value::List actual_payloads,
-      base::Value::List expected_payloads,
+      base::ListValue actual_payloads,
+      base::ListValue expected_payloads,
       const std::string& base64_encoded_expected_cleartext_payload,
       const std::string& shared_info) {
     if (actual_payloads.size() != 1u) {
@@ -225,7 +225,7 @@ class AggregatableReportGoldenLatestVersionTest : public testing::Test {
              << " not a list of size 1 in the actual report";
     }
 
-    base::Value::Dict* actual_payload = actual_payloads.front().GetIfDict();
+    base::DictValue* actual_payload = actual_payloads.front().GetIfDict();
     if (!actual_payload) {
       return testing::AssertionFailure()
              << kKeyAggregationServicePayloads
@@ -238,7 +238,7 @@ class AggregatableReportGoldenLatestVersionTest : public testing::Test {
              << " not a list of size 1 in the expected report";
     }
 
-    base::Value::Dict* expected_payload = expected_payloads.front().GetIfDict();
+    base::DictValue* expected_payload = expected_payloads.front().GetIfDict();
     if (!expected_payload) {
       return testing::AssertionFailure()
              << kKeyAggregationServicePayloads
@@ -845,7 +845,7 @@ TEST_P(AttributionAndDebugAggregatableReportGoldenLegacyVersionTest,
       continue;
     }
 
-    const base::Value::Dict& dict = value.GetDict();
+    const base::DictValue& dict = value.GetDict();
     if (const std::string* shared_info = dict.FindString("shared_info")) {
       base::Value shared_info_value = base::test::ParseJson(*shared_info);
       EXPECT_TRUE(shared_info_value.is_dict()) << name;

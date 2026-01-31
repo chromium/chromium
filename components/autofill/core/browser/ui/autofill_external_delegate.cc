@@ -6,6 +6,7 @@
 
 #include <stddef.h>
 
+#include <algorithm>
 #include <functional>
 #include <iterator>
 #include <optional>
@@ -15,8 +16,8 @@
 #include "base/check.h"
 #include "base/check_deref.h"
 #include "base/command_line.h"
-#include "base/containers/contains.h"
 #include "base/containers/fixed_flat_set.h"
+#include "base/containers/to_vector.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/i18n/case_conversion.h"
@@ -29,16 +30,20 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/types/zip.h"
 #include "build/build_config.h"
+#include "components/autofill/core/browser/autofill_ai_form_rationalization.h"
 #include "components/autofill/core/browser/autofill_trigger_source.h"
 #include "components/autofill/core/browser/autofill_type.h"
 #include "components/autofill/core/browser/data_manager/addresses/address_data_manager.h"
 #include "components/autofill/core/browser/data_manager/autofill_ai/entity_data_manager.h"
 #include "components/autofill/core/browser/data_manager/payments/payments_data_manager.h"
 #include "components/autofill/core/browser/data_manager/valuables/valuables_data_manager.h"
+#include "components/autofill/core/browser/data_model/autofill_ai/entity_instance.h"
 #include "components/autofill/core/browser/field_type_utils.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/filling/addresses/field_filling_address_util.h"
+#include "components/autofill/core/browser/filling/autofill_ai/field_filling_entity_util.h"
 #include "components/autofill/core/browser/filling/filling_product.h"
+#include "components/autofill/core/browser/form_processing/autofill_ai/determine_attribute_types.h"
 #include "components/autofill/core/browser/foundations/autofill_client.h"
 #include "components/autofill/core/browser/foundations/autofill_driver.h"
 #include "components/autofill/core/browser/foundations/browser_autofill_manager.h"
@@ -63,6 +68,7 @@
 #include "components/autofill/core/browser/suggestions/suggestion.h"
 #include "components/autofill/core/browser/suggestions/suggestion_hiding_reason.h"
 #include "components/autofill/core/browser/suggestions/suggestion_type.h"
+#include "components/autofill/core/browser/suggestions/suggestion_util.h"
 #include "components/autofill/core/browser/ui/popup_open_enums.h"
 #include "components/autofill/core/browser/ui/suggestion_button_action.h"
 #include "components/autofill/core/common/aliases.h"
@@ -74,6 +80,7 @@
 #include "components/autofill/core/common/signatures.h"
 #include "components/signin/public/base/signin_metrics.h"
 #include "components/strings/grit/components_strings.h"
+#include "third_party/abseil-cpp/absl/cleanup/cleanup.h"
 #include "ui/accessibility/platform/ax_platform.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/geometry/rect.h"
@@ -95,51 +102,6 @@ std::optional<AutofillProfile> GetTestAddressByGUID(
   return *it;
 }
 
-// The `AutofillTriggerSource` indicates what caused an Autofill fill or preview
-// to happen. This can happen by selecting a suggestion, but also through a
-// dynamic change (refills) or through a surface that doesn't use suggestions,
-// like TTF. This function is concerned with the first case: A suggestion that
-// was generated through the `suggestion_trigger_source` got selected. This
-// function returns the appropriate `AutofillTriggerSource`.
-// Note that an `AutofillSuggestionTriggerSource` is different from a
-// `AutofillTriggerSource`. The former describes what caused the suggestion
-// itself to appear. For example, depending on the completeness of the form,
-// clicking into a field (the suggestion trigger source) can cause
-// the keyboard accessory or TTF/fast checkout to appear (the trigger source).
-AutofillTriggerSource TriggerSourceFromSuggestionTriggerSource(
-    AutofillSuggestionTriggerSource suggestion_trigger_source) {
-  switch (suggestion_trigger_source) {
-    case AutofillSuggestionTriggerSource::kUnspecified:
-    case AutofillSuggestionTriggerSource::kFormControlElementClicked:
-    case AutofillSuggestionTriggerSource::kTextareaFocusedWithoutClick:
-    case AutofillSuggestionTriggerSource::kContentEditableClicked:
-    case AutofillSuggestionTriggerSource::kTextFieldValueChanged:
-    case AutofillSuggestionTriggerSource::kTextFieldDidReceiveKeyDown:
-    case AutofillSuggestionTriggerSource::kOpenTextDataListChooser:
-    case AutofillSuggestionTriggerSource::kPasswordManager:
-    case AutofillSuggestionTriggerSource::kiOS:
-    case AutofillSuggestionTriggerSource::kComposeDialogLostFocus:
-    case AutofillSuggestionTriggerSource::kComposeDelayedProactiveNudge:
-    case AutofillSuggestionTriggerSource::kPasswordManagerProcessedFocusedField:
-    case AutofillSuggestionTriggerSource::kPlusAddressUpdatedInBrowserProcess:
-      // On Android, no popup exists. Instead, the keyboard accessory is used.
-#if BUILDFLAG(IS_ANDROID)
-      return AutofillTriggerSource::kKeyboardAccessory;
-#else
-      return AutofillTriggerSource::kPopup;
-#endif  // BUILDFLAG(IS_ANDROID)
-    case AutofillSuggestionTriggerSource::kManualFallbackPasswords:
-    case AutofillSuggestionTriggerSource::kManualFallbackPlusAddresses:
-      // Manual fallbacks are both a suggestion trigger source (e.g. through the
-      // context menu) and a trigger source (by selecting a suggestion generated
-      // through the context menu).
-      return AutofillTriggerSource::kManualFallback;
-    case AutofillSuggestionTriggerSource::kProactivePasswordRecovery:
-      return AutofillTriggerSource::kProactivePasswordRecovery;
-  }
-  NOTREACHED();
-}
-
 // Returns a pointer to the first Suggestion whose GUID matches that of a
 // AutofillClient::GetTestAddresses() profile.
 const Suggestion* FindTestSuggestion(AutofillClient& client,
@@ -150,8 +112,8 @@ const Suggestion* FindTestSuggestion(AutofillClient& client,
     base::span<const AutofillProfile> test_addresses =
         client.GetTestAddresses();
 
-    return guid && base::Contains(test_addresses, guid->value(),
-                                  &AutofillProfile::guid);
+    return guid && std::ranges::contains(test_addresses, guid->value(),
+                                         &AutofillProfile::guid);
   };
   for (const Suggestion& suggestion : suggestions) {
     if (is_test_suggestion(suggestion) && index-- == 0) {
@@ -363,9 +325,12 @@ void AutofillExternalDelegate::AttemptToDisplayAutofillSuggestions(
     OnAutofillAvailabilityEvent(
         mojom::AutofillSuggestionAvailability::kNoSuggestions);
     // No suggestions, any popup currently showing is obsolete.
-    manager_->client().HideAutofillSuggestions(
-        SuggestionHidingReason::kNoSuggestions);
-    return;
+    if (!base::FeatureList::IsEnabled(
+            features::kAutofillAndroidKeyboardAccessoryDynamicPositioning)) {
+      manager_->client().HideAutofillSuggestions(
+          SuggestionHidingReason::kNoSuggestions);
+      return;
+    }
   }
 
   if (!query_field_.is_focusable() || !manager_->driver().CanShowAutofillUi()) {
@@ -608,14 +573,14 @@ void AutofillExternalDelegate::DidSelectSuggestion(
       break;
     case SuggestionType::kFillAutofillAi:
       if (EntityDataManager* edm = manager_->client().GetEntityDataManager()) {
+        const auto& payload =
+            suggestion.GetPayload<Suggestion::AutofillAiPayload>();
         if (base::optional_ref<const EntityInstance> entity =
-                edm->GetEntityInstance(
-                    suggestion.GetPayload<Suggestion::AutofillAiPayload>()
-                        .guid)) {
-          manager_->FillOrPreviewForm(mojom::ActionPersistence::kPreview,
-                                      query_form_, query_field_.global_id(),
-                                      &*entity,
-                                      AutofillTriggerSource::kAutofillAi);
+                edm->GetEntityInstance(payload.guid)) {
+          manager_->FillOrPreviewForm(
+              mojom::ActionPersistence::kPreview, query_form_,
+              query_field_.global_id(), entity.as_ptr(),
+              TriggerSourceFromSuggestionTriggerSource(trigger_source_));
         }
       }
       break;
@@ -797,18 +762,10 @@ void AutofillExternalDelegate::DidAcceptSuggestion(
       }
       break;
     case SuggestionType::kFillAutofillAi:
-      if (EntityDataManager* edm = manager_->client().GetEntityDataManager()) {
-        if (base::optional_ref<const EntityInstance> entity =
-                edm->GetEntityInstance(
-                    suggestion.GetPayload<Suggestion::AutofillAiPayload>()
-                        .guid)) {
-          manager_->FillOrPreviewForm(mojom::ActionPersistence::kFill,
-                                      query_form_, query_field_.global_id(),
-                                      &*entity,
-                                      AutofillTriggerSource::kAutofillAi);
-        }
-      }
-      break;
+      // Autofill AI is responsible for hiding the popup since it may keep it
+      // open longer during reauth and server fetching.
+      FillAutofillAiFormAndHidePopup(suggestion);
+      return;
     case SuggestionType::kInsecureContextPaymentDisabledMessage:
     case SuggestionType::kMixedFormMessage:
       // If the selected element is a warning we don't want to do anything.
@@ -866,6 +823,11 @@ void AutofillExternalDelegate::DidAcceptSuggestion(
       }
       break;
     }
+    case SuggestionType::kAllLoyaltyCardsEntry: {
+      manager_->touch_to_fill_delegate()->ShowTouchToFillForAllLoyaltyCards(
+          query_form_, query_field_);
+      break;
+    }
     case SuggestionType::kOneTimePasswordEntry: {
       const FormStructure* form_structure =
           manager_->FindCachedFormById(query_form_.global_id());
@@ -896,7 +858,6 @@ void AutofillExternalDelegate::DidAcceptSuggestion(
     case SuggestionType::kTroubleSigningInEntry:
     case SuggestionType::kFreeformFooter:
     case SuggestionType::kAccountStoragePasswordEntry:
-    case SuggestionType::kAllLoyaltyCardsEntry:
     case SuggestionType::kAllSavedPasswordsEntry:
     case SuggestionType::kGeneratePasswordEntry:
     case SuggestionType::kDevtoolsTestAddresses:
@@ -1204,8 +1165,8 @@ void AutofillExternalDelegate::DidAcceptAddressSuggestion(
           autofill_trigger_field &&
           autofill_trigger_field->Type().GetGroups().contains(
               FieldTypeGroup::kEmail) &&
-          base::Contains(shown_suggestion_types_,
-                         SuggestionType::kFillExistingPlusAddress);
+          std::ranges::contains(shown_suggestion_types_,
+                                SuggestionType::kFillExistingPlusAddress);
       if (const AutofillPlusAddressDelegate* plus_address_delegate =
               manager_->client().GetPlusAddressDelegate();
           plus_address_delegate && email_and_plus_address_shown) {
@@ -1375,13 +1336,124 @@ void AutofillExternalDelegate::DidAcceptPaymentsSuggestion(
     default:
       NOTREACHED();  // Should be handled elsewhere
   }
-  if (base::Contains(shown_suggestion_types_,
-                     SuggestionType::kScanCreditCard)) {
+  if (std::ranges::contains(shown_suggestion_types_,
+                            SuggestionType::kScanCreditCard)) {
     AutofillMetrics::LogScanCreditCardPromptMetric(
         suggestion.type == SuggestionType::kScanCreditCard
             ? AutofillMetrics::SCAN_CARD_ITEM_SELECTED
             : AutofillMetrics::SCAN_CARD_OTHER_ITEM_SELECTED);
   }
+}
+
+void AutofillExternalDelegate::MaybeAuthenticateBeforeFilling(
+    const std::u16string& reauth_message,
+    std::string histogram,
+    base::OnceCallback<void(bool)> callback) {
+  if (authenticator_) {
+    authenticator_->Cancel();
+    authenticator_.reset();
+  }
+  std::unique_ptr<device_reauth::DeviceAuthenticator> authenticator =
+      manager_->client().GetDeviceAuthenticator(std::move(histogram));
+
+  if (!authenticator ||
+      !authenticator->CanAuthenticateWithBiometricOrScreenLock()) {
+    std::move(callback).Run(/*auth_suceeded=*/true);
+    return;
+  }
+
+  authenticator_ = std::move(authenticator);
+  authenticator_->AuthenticateWithMessage(
+      reauth_message,
+      base::BindOnce(&AutofillExternalDelegate::OnReauthCompleted, GetWeakPtr(),
+                     std::move(callback)));
+}
+
+void AutofillExternalDelegate::FillAutofillAiFormAndHidePopup(
+    const Suggestion& suggestion) {
+  absl::Cleanup popup_closer = [this] {
+    manager_->client().HideAutofillSuggestions(
+        SuggestionHidingReason::kAcceptSuggestion);
+  };
+  const EntityDataManager* const edm =
+      manager_->client().GetEntityDataManager();
+  if (!edm) {
+    return;
+  }
+  const base::optional_ref<const EntityInstance> entity =
+      edm->GetEntityInstance(
+          suggestion.GetPayload<Suggestion::AutofillAiPayload>().guid);
+  if (!entity) {
+    return;
+  }
+
+  const FormStructure* form_structure =
+      manager_->FindCachedFormById(query_form_.global_id());
+  if (!form_structure) {
+    return;
+  }
+  const AutofillField* autofill_field =
+      form_structure->GetFieldById(query_field_.global_id());
+  const AutofillTriggerSource trigger_source =
+      TriggerSourceFromSuggestionTriggerSource(trigger_source_);
+
+  if (!autofill_field ||
+      !ShouldReauthBeforeFilling(*entity,
+                                 RationalizeAndDetermineAttributeTypes(
+                                     form_structure->fields(),
+                                     autofill_field->section(), entity->type()),
+                                 manager_->client().GetAppLocale(),
+                                 CHECK_DEREF(manager_->client().GetPrefs()))) {
+    manager_->FillOrPreviewForm(mojom::ActionPersistence::kFill, query_form_,
+                                query_field_.global_id(), entity.as_ptr(),
+                                trigger_source);
+    return;
+  }
+
+  // Show a loading state.
+  if (base::FeatureList::IsEnabled(features::kAutofillAiWalletPrivatePasses)) {
+    AttemptToDisplayAutofillSuggestions(
+        PrepareLoadingStateSuggestions(
+            base::ToVector(manager_->client().GetAutofillSuggestions()),
+            suggestion),
+        trigger_source_,
+        /*is_update=*/true);
+    std::move(popup_closer).Cancel();
+  }
+
+  // Authenticate and fill on success.
+  std::u16string message;
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS)
+  const std::u16string origin =
+      base::UTF8ToUTF16(autofill_field->origin().host());
+  message = l10n_util::GetStringFUTF16(IDS_AUTOFILL_AI_FILLING_REAUTH, origin);
+#endif  // BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS)
+  MaybeAuthenticateBeforeFilling(
+      message, "Autofill.Ai.ReauthToFill",
+      base::BindOnce(
+          [](base::WeakPtr<BrowserAutofillManager> manager,
+             const FormData& form, const FieldGlobalId& field_id,
+             const EntityInstance& entity, AutofillTriggerSource trigger_source,
+             bool auth_succeeded) {
+            if (!manager) {
+              return;
+            }
+            if (auth_succeeded) {
+              manager->FillOrPreviewForm(mojom::ActionPersistence::kFill, form,
+                                         field_id, &entity, trigger_source);
+            }
+            manager->client().HideAutofillSuggestions(
+                SuggestionHidingReason::kAcceptSuggestion);
+          },
+          manager_->GetBrowserAutofillManagerWeakPtr(), query_form_,
+          query_field_.global_id(), *entity, trigger_source));
+}
+
+void AutofillExternalDelegate::OnReauthCompleted(
+    base::OnceCallback<void(bool)> callback,
+    bool auth_succeeded) {
+  authenticator_.reset();
+  std::move(callback).Run(auth_succeeded);
 }
 
 }  // namespace autofill

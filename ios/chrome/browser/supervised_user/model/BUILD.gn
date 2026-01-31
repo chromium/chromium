@@ -27,6 +27,8 @@ source_set("model") {
     "supervised_user_service_platform_delegate.mm",
     "supervised_user_url_filter_tab_helper.h",
     "supervised_user_url_filter_tab_helper.mm",
+    "supervised_user_url_filtering_service_factory.h",
+    "supervised_user_url_filtering_service_factory.mm",
   ]
 
   deps = [
@@ -36,6 +38,7 @@ source_set("model") {
     "//components/security_interstitials/core",
     "//components/signin/public/identity_manager",
     "//components/supervised_user/core/browser",
+    "//components/supervised_user/core/browser:device_parental_controls",
     "//components/supervised_user/core/browser/proto",
     "//components/supervised_user/core/common",
     "//components/variations/service",
@@ -84,8 +87,8 @@ source_set("capabilities") {
 
 source_set("sync_settings_factory") {
   sources = [
-    "supervised_user_settings_service_factory.h",
-    "supervised_user_settings_service_factory.mm",
+    "family_link_settings_service_factory.h",
+    "family_link_settings_service_factory.mm",
   ]
   deps = [
     "//components/supervised_user/core/browser",
@@ -103,7 +106,7 @@ source_set("unit_tests") {
     "parent_access_tab_helper_unittest.mm",
     "supervised_user_metrics_service_factory_unittest.mm",
     "supervised_user_service_factory_unittest.mm",
-    "supervised_user_settings_service_factory_unittest.mm",
+    "family_link_settings_service_factory_unittest.mm",
     "supervised_user_url_filter_tab_helper_unittest.mm",
   ]
   deps = [
@@ -152,13 +155,13 @@ source_set("eg2_tests") {
     "//components/supervised_user/core/common",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/authentication/test:eg_test_support+eg2",
-    "//ios/chrome/browser/content_suggestions/ui_bundled:constants",
+    "//ios/chrome/browser/content_suggestions/public:constants",
     "//ios/chrome/browser/metrics/model:eg_test_support+eg2",
     "//ios/chrome/browser/ntp/ui_bundled:feature_flags",
     "//ios/chrome/browser/policy/model:eg_test_support+eg2",
     "//ios/chrome/browser/policy/model:policy_earl_grey_matchers",
     "//ios/chrome/browser/policy/model:policy_util",
-    "//ios/chrome/browser/popup_menu/ui_bundled:constants",
+    "//ios/chrome/browser/popup_menu/public",
     "//ios/chrome/browser/settings/ui_bundled:eg_test_support+eg2",
     "//ios/chrome/browser/settings/ui_bundled/google_services:constants",
     "//ios/chrome/browser/shared/public/features",
@@ -169,7 +172,7 @@ source_set("eg2_tests") {
     "//ios/chrome/browser/supervised_user/ui:constants",
     "//ios/chrome/browser/tab_switcher/ui_bundled/tab_grid:tab_grid_metrics",
     "//ios/chrome/browser/tab_switcher/ui_bundled/tab_grid:tab_grid_ui_constants",
-    "//ios/chrome/browser/toolbar/ui_bundled/public:constants",
+    "//ios/chrome/browser/toolbar/legacy/ui_bundled/public:constants",
     "//ios/chrome/test/earl_grey:eg_test_support+eg2",
     "//ios/chrome/test/earl_grey:switches",
     "//ios/testing/earl_grey:eg_test_support+eg2",

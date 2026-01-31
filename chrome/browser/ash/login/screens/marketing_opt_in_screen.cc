@@ -175,7 +175,7 @@ void MarketingOptInScreen::HideImpl() {
   active_user_pref_change_registrar_.reset();
 }
 
-void MarketingOptInScreen::OnUserAction(const base::Value::List& args) {
+void MarketingOptInScreen::OnUserAction(const base::ListValue& args) {
   const std::string& action_id = args[0].GetString();
 
   if (action_id == kUserActionGetStarted) {

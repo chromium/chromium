@@ -71,7 +71,7 @@ void LanguagePrefTester::SetLanguagePrefs(
 
 void LanguagePrefTester::SetForcedLanguagePrefs(
     std::vector<std::string>&& languages) {
-  base::Value::List languages_list;
+  base::ListValue languages_list;
 
   for (std::string language : languages) {
     languages_list.Append(std::move(language));

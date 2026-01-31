@@ -42,7 +42,7 @@ AssertionResult VerifySessionsHierarchyEquality(
                             << "; Expected contents: " << expected.ToString();
 }
 
-string ConvertFakeServerContentsToString(const base::Value::Dict& entities) {
+string ConvertFakeServerContentsToString(const base::DictValue& entities) {
   string entities_str;
   if (!JSONWriter::WriteWithOptions(entities, JSONWriter::OPTIONS_PRETTY_PRINT,
                                     &entities_str)) {
@@ -61,10 +61,10 @@ FakeServerVerifier::~FakeServerVerifier() = default;
 AssertionResult FakeServerVerifier::VerifyEntityCountByType(
     size_t expected_count,
     syncer::DataType data_type) const {
-  base::Value::Dict entities = fake_server_->GetEntitiesAsDictForTesting();
+  base::DictValue entities = fake_server_->GetEntitiesAsDictForTesting();
 
   string data_type_string = DataTypeToDebugString(data_type);
-  const base::Value::List* entity_list = entities.FindList(data_type_string);
+  const base::ListValue* entity_list = entities.FindList(data_type_string);
   DCHECK(entity_list);
   if (expected_count != entity_list->size()) {
     return VerificationCountAssertionFailure(entity_list->size(),
@@ -80,10 +80,10 @@ AssertionResult FakeServerVerifier::VerifyEntityCountByTypeAndName(
     size_t expected_count,
     syncer::DataType data_type,
     const string& name) const {
-  base::Value::Dict entities = fake_server_->GetEntitiesAsDictForTesting();
+  base::DictValue entities = fake_server_->GetEntitiesAsDictForTesting();
 
   string data_type_string = DataTypeToDebugString(data_type);
-  const base::Value::List* entity_list = entities.FindList(data_type_string);
+  const base::ListValue* entity_list = entities.FindList(data_type_string);
   DCHECK(entity_list);
 
   size_t actual_count = 0;

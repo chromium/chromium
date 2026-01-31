@@ -11,7 +11,10 @@
 
 namespace legion {
 class Client;
-}
+namespace phosphor {
+class TokenManager;
+}  // namespace phosphor
+}  // namespace legion
 
 namespace network::mojom {
 class NetworkContext;
@@ -21,7 +24,8 @@ class LegionInternalsPageHandler
     : public legion_internals::mojom::LegionInternalsPageHandler {
  public:
   explicit LegionInternalsPageHandler(
-      network::mojom::NetworkContext* network_context_,
+      legion::phosphor::TokenManager* token_manager,
+      network::mojom::NetworkContext* network_context,
       mojo::PendingReceiver<legion_internals::mojom::LegionInternalsPageHandler>
           receiver);
   ~LegionInternalsPageHandler() override;
@@ -40,6 +44,7 @@ class LegionInternalsPageHandler
                    SendRequestCallback callback) override;
 
  private:
+  raw_ptr<legion::phosphor::TokenManager> token_manager_;
   std::unique_ptr<legion::Client> client_;
   raw_ptr<network::mojom::NetworkContext> network_context_;
   mojo::Receiver<legion_internals::mojom::LegionInternalsPageHandler> receiver_;

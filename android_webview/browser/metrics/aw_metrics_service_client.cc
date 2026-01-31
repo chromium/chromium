@@ -806,10 +806,9 @@ base::FilePath AwMetricsServiceClient::GetNoBackupFilesDir() {
 }
 
 // static
-static void JNI_AwMetricsServiceClient_SetHaveMetricsConsent(
-    JNIEnv* env,
-    jboolean user_consent,
-    jboolean app_consent) {
+static void JNI_AwMetricsServiceClient_SetHaveMetricsConsent(JNIEnv* env,
+                                                             bool user_consent,
+                                                             bool app_consent) {
   AwMetricsServiceClient::GetInstance()->SetHaveMetricsConsent(user_consent,
                                                                app_consent);
 }
@@ -817,7 +816,7 @@ static void JNI_AwMetricsServiceClient_SetHaveMetricsConsent(
 // static
 static void JNI_AwMetricsServiceClient_SetFastStartupForTesting(
     JNIEnv* env,
-    jboolean fast_startup_for_testing) {
+    bool fast_startup_for_testing) {
   AwMetricsServiceClient::GetInstance()->SetFastStartupForTesting(
       fast_startup_for_testing);
 }
@@ -825,7 +824,7 @@ static void JNI_AwMetricsServiceClient_SetFastStartupForTesting(
 // static
 static void JNI_AwMetricsServiceClient_SetUploadIntervalForTesting(
     JNIEnv* env,
-    jlong upload_interval_ms) {
+    int64_t upload_interval_ms) {
   AwMetricsServiceClient::GetInstance()->SetUploadIntervalForTesting(
       base::Milliseconds(upload_interval_ms));
 }

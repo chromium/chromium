@@ -37,7 +37,7 @@ struct POLICY_EXPORT CaseInsensitiveStringCompare {
 };
 
 // In-memory representation of a registry subtree. Using a
-// base::Value::Dict directly seems tempting, but that doesn't handle the
+// base::DictValue directly seems tempting, but that doesn't handle the
 // registry's case-insensitive-but-case-preserving semantics properly.
 class POLICY_EXPORT RegistryDict {
  public:
@@ -85,8 +85,8 @@ class POLICY_EXPORT RegistryDict {
   // Converts the dictionary to base::Value representation. For key/value name
   // collisions, the key wins. |schema| is used to determine the expected type
   // for each policy.
-  // The underlying data of the returned object is either a base::Value::Dict or
-  // a base::Value::List.
+  // The underlying data of the returned object is either a base::DictValue or
+  // a base::ListValue.
   std::optional<base::Value> ConvertToJSON(const class Schema& schema) const;
 #endif
 

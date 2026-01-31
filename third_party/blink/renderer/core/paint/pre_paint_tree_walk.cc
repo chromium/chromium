@@ -568,6 +568,16 @@ void PrePaintTreeWalk::UpdateContextForOOFContainer(
     const LayoutObject& object,
     PrePaintTreeWalkContext& context,
     const PhysicalBoxFragment* fragment) {
+  // Skip fragmentainers since the LayoutObject passed is for the fragmentation
+  // context root itself (e.g. the multicol container), and we've therefore
+  // already been here and done what needs to be done for that object, and set
+  // up any containing fragments. Doing it again for the fragmentainers now
+  // would be wrong, since it might make the fragmentainers containing fragments
+  // for OOF descendants when they shouldn't.
+  if (fragment && fragment->IsFragmentainerBox()) {
+    return;
+  }
+
   // If we're in a fragmentation context, the parent fragment of OOFs is the
   // fragmentainer, unless the object is monolithic, in which case nothing
   // contained by the object participates in the current block fragmentation
@@ -586,8 +596,6 @@ void PrePaintTreeWalk::UpdateContextForOOFContainer(
   if (!object.CanContainAbsolutePositionObjects())
     return;
 
-  // The OOF containing block structure is special under block fragmentation: A
-  // fragmentable OOF is always a direct child of a fragmentainer.
   context.absolute_positioned_container = context.current_container;
   if (object.CanContainFixedPositionObjects())
     context.fixed_positioned_container = context.absolute_positioned_container;
@@ -1007,9 +1015,11 @@ void PrePaintTreeWalk::WalkFragmentainer(
   fragmentainer_context.is_parent_first_for_node =
       fragmentainer.IsFirstForNode();
 
-  // Always keep track of the current innermost fragmentainer we're handling, as
-  // they may serve as containing blocks for OOF descendants.
-  fragmentainer_context.current_container = &fragmentainer;
+  if (!RuntimeEnabledFeatures::FragmentedOofInCbEnabled()) {
+    // Always keep track of the current innermost fragmentainer we're handling,
+    // as they may serve as containing blocks for OOF descendants.
+    fragmentainer_context.current_container = &fragmentainer;
+  }
 
   PaintPropertyTreeBuilderFragmentContext::ContainingBlockContext*
       containing_block_context = nullptr;

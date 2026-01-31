@@ -26,6 +26,8 @@ source_set("test_support") {
   ]
   deps = [
     ":browser",
+    ":device_parental_controls",
+    ":synthetic_field_trial_delegate",
     "//base",
     "//base/test:test_support",
     "//components/content_settings/core/browser:test_support",
@@ -45,7 +47,7 @@ source_set("test_support") {
     "//testing/gtest",
   ]
   if (is_android) {
-    deps += [ "//components/supervised_user/core/browser/android:content_filters_observer_bridge" ]
+    deps += [ "//components/supervised_user/core/browser/android" ]
   }
 }
 
@@ -94,6 +96,12 @@ static_library("browser") {
   sources = [
     "child_account_service.cc",
     "child_account_service.h",
+    "family_link_settings_data_type_controller.cc",
+    "family_link_settings_data_type_controller.h",
+    "family_link_settings_service.cc",
+    "family_link_settings_service.h",
+    "family_link_url_filter.cc",
+    "family_link_url_filter.h",
     "family_link_user_capabilities.cc",
     "family_link_user_capabilities.h",
     "kids_chrome_management_url_checker_client.cc",
@@ -105,8 +113,6 @@ static_library("browser") {
     "permission_request_creator_impl.h",
     "remote_web_approvals_manager.cc",
     "remote_web_approvals_manager.h",
-    "supervised_user_content_filters_service.cc",
-    "supervised_user_content_filters_service.h",
     "supervised_user_content_settings_provider.cc",
     "supervised_user_content_settings_provider.h",
     "supervised_user_error_page.cc",
@@ -124,12 +130,8 @@ static_library("browser") {
     "supervised_user_service.cc",
     "supervised_user_service.h",
     "supervised_user_service_observer.h",
-    "supervised_user_settings_data_type_controller.cc",
-    "supervised_user_settings_data_type_controller.h",
-    "supervised_user_settings_service.cc",
-    "supervised_user_settings_service.h",
-    "supervised_user_url_filter.cc",
-    "supervised_user_url_filter.h",
+    "supervised_user_url_filtering_service.cc",
+    "supervised_user_url_filtering_service.h",
     "supervised_user_utils.cc",
     "supervised_user_utils.h",
     "web_content_handler.cc",
@@ -150,8 +152,10 @@ static_library("browser") {
   ]
 
   deps = [
+    ":device_parental_controls",
     ":fetcher",
     ":fetcher_config",
+    ":synthetic_field_trial_delegate",
     "//base",
     "//components/content_settings/core/browser",
     "//components/feed/core/shared_prefs:feed_shared_prefs",
@@ -174,13 +178,6 @@ static_library("browser") {
     "//ui/base",
     "//url",
   ]
-
-  if (is_android) {
-    deps += [
-      "//components/supervised_user/android:jni_headers",
-      "//components/supervised_user/core/browser/android:content_filters_observer_bridge",
-    ]
-  }
 }
 
 if (is_android) {
@@ -189,11 +186,28 @@ if (is_android) {
   }
 }
 
+static_library("device_parental_controls") {
+  sources = [
+    "device_parental_controls.cc",
+    "device_parental_controls.h",
+    "device_parental_controls_noop_impl.cc",
+    "device_parental_controls_noop_impl.h",
+  ]
+  deps = [
+    ":synthetic_field_trial_delegate",
+    "//base",
+  ]
+}
+
 source_set("unit_tests") {
   testonly = true
   sources = [
     "api_access_token_fetcher_unittest.cc",
     "child_account_service_unittest.cc",
+    "family_link_settings_data_type_controller_unittest.cc",
+    "family_link_settings_service_unittest.cc",
+    "family_link_url_filter_manual_behavior_unittest.cc",
+    "family_link_url_filter_unittest.cc",
     "family_link_user_capabilities_unittest.cc",
     "fetcher_config_unittest.cc",
     "kids_chrome_management_url_checker_client_unittest.cc",
@@ -210,13 +224,11 @@ source_set("unit_tests") {
     "supervised_user_pref_store_unittest.cc",
     "supervised_user_preferences_unittest.cc",
     "supervised_user_service_unittest.cc",
-    "supervised_user_settings_data_type_controller_unittest.cc",
-    "supervised_user_settings_service_unittest.cc",
-    "supervised_user_url_filter_unittest.cc",
     "supervised_user_utils_unittest.cc",
   ]
   deps = [
     ":browser",
+    ":device_parental_controls",
     ":fetcher",
     ":fetcher_config",
     ":test_support",
@@ -243,7 +255,16 @@ source_set("unit_tests") {
     "//ui/base",
   ]
 
+  if (is_android) {
+    deps += [ "//components/supervised_user/core/browser/android" ]
+  }
+
   # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
   # enable the diagnostic by removing this line.
   configs += [ "//build/config/compiler:no_exit_time_destructors" ]
+}
+
+# TODO(crbug.com/474015323): Consider merging with :device_parental_controls
+source_set("synthetic_field_trial_delegate") {
+  sources = [ "supervised_user_synthetic_field_trial_service_delegate.h" ]
 }

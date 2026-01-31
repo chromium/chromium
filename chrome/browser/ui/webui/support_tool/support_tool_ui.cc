@@ -136,23 +136,23 @@ class SupportToolMessageHandler : public content::WebUIMessageHandler,
   // WebUIMessageHandler implementation.
   void RegisterMessages() override;
 
-  void HandleGetEmailAddresses(const base::Value::List& args);
+  void HandleGetEmailAddresses(const base::ListValue& args);
 
-  void HandleGetDataCollectors(const base::Value::List& args);
+  void HandleGetDataCollectors(const base::ListValue& args);
 
-  void HandleGetAllDataCollectors(const base::Value::List& args);
+  void HandleGetAllDataCollectors(const base::ListValue& args);
 
-  void HandleStartDataCollection(const base::Value::List& args);
+  void HandleStartDataCollection(const base::ListValue& args);
 
-  void HandleCancelDataCollection(const base::Value::List& args);
+  void HandleCancelDataCollection(const base::ListValue& args);
 
-  void HandleStartDataExport(const base::Value::List& args);
+  void HandleStartDataExport(const base::ListValue& args);
 
-  void HandleShowExportedDataInFolder(const base::Value::List& args);
+  void HandleShowExportedDataInFolder(const base::ListValue& args);
 
-  void HandleGenerateCustomizedURL(const base::Value::List& args);
+  void HandleGenerateCustomizedURL(const base::ListValue& args);
 
-  void HandleGenerateSupportToken(const base::Value::List& args);
+  void HandleGenerateSupportToken(const base::ListValue& args);
 
   // SelectFileDialog::Listener implementation.
   void FileSelected(const ui::SelectedFileInfo& file, int index) override;
@@ -160,7 +160,7 @@ class SupportToolMessageHandler : public content::WebUIMessageHandler,
   void FileSelectionCanceled() override;
 
  private:
-  base::Value::List GetAccountsList();
+  base::ListValue GetAccountsList();
 
   void OnDataCollectionDone(const PIIMap& detected_pii,
                             std::set<SupportToolError> errors);
@@ -224,9 +224,9 @@ void SupportToolMessageHandler::RegisterMessages() {
           weak_ptr_factory_.GetWeakPtr()));
 }
 
-base::Value::List SupportToolMessageHandler::GetAccountsList() {
+base::ListValue SupportToolMessageHandler::GetAccountsList() {
   Profile* profile = Profile::FromWebUI(web_ui());
-  base::Value::List account_list;
+  base::ListValue account_list;
 
   // Guest session and incognito mode do not have a primary account (or an
   // IdentityManager).
@@ -247,7 +247,7 @@ base::Value::List SupportToolMessageHandler::GetAccountsList() {
 }
 
 void SupportToolMessageHandler::HandleGetEmailAddresses(
-    const base::Value::List& args) {
+    const base::ListValue& args) {
   AllowJavascript();
   CHECK_EQ(1U, args.size());
   const base::Value& callback_id = args[0];
@@ -256,7 +256,7 @@ void SupportToolMessageHandler::HandleGetEmailAddresses(
 }
 
 void SupportToolMessageHandler::HandleGetDataCollectors(
-    const base::Value::List& args) {
+    const base::ListValue& args) {
   AllowJavascript();
   CHECK_EQ(1U, args.size());
   const base::Value& callback_id = args[0];
@@ -270,7 +270,7 @@ void SupportToolMessageHandler::HandleGetDataCollectors(
 }
 
 void SupportToolMessageHandler::HandleGetAllDataCollectors(
-    const base::Value::List& args) {
+    const base::ListValue& args) {
   AllowJavascript();
   CHECK_EQ(1U, args.size());
   const base::Value& callback_id = args[0];
@@ -281,12 +281,12 @@ void SupportToolMessageHandler::HandleGetAllDataCollectors(
 // collectors that are sent from UI. Returns the result to UI in the format UI
 // accepts.
 void SupportToolMessageHandler::HandleStartDataCollection(
-    const base::Value::List& args) {
+    const base::ListValue& args) {
   CHECK_EQ(3U, args.size());
   const base::Value& callback_id = args[0];
-  const base::Value::Dict* issue_details = args[1].GetIfDict();
+  const base::DictValue* issue_details = args[1].GetIfDict();
   DCHECK(issue_details);
-  const base::Value::List* data_collectors = args[2].GetIfList();
+  const base::ListValue* data_collectors = args[2].GetIfList();
   DCHECK(data_collectors);
   std::set<support_tool::DataCollectorType> included_data_collectors =
       GetIncludedDataCollectorTypes(data_collectors);
@@ -322,7 +322,7 @@ void SupportToolMessageHandler::OnDataCollectionDone(
 }
 
 void SupportToolMessageHandler::HandleCancelDataCollection(
-    const base::Value::List& args) {
+    const base::ListValue& args) {
   base::UmaHistogramEnumeration(
       kSupportToolWebUIActionHistogram,
       SupportToolWebUIActionType::kCancelDataCollection);
@@ -333,9 +333,9 @@ void SupportToolMessageHandler::HandleCancelDataCollection(
 }
 
 void SupportToolMessageHandler::HandleStartDataExport(
-    const base::Value::List& args) {
+    const base::ListValue& args) {
   CHECK_EQ(1U, args.size());
-  const base::Value::List* pii_items = args[0].GetIfList();
+  const base::ListValue* pii_items = args[0].GetIfList();
   DCHECK(pii_items);
   // Early return if the select file dialog is already active.
   if (select_file_dialog_) {
@@ -400,7 +400,7 @@ void SupportToolMessageHandler::OnDataExportDone(
     base::FilePath path,
     std::set<SupportToolError> errors) {
   data_path_ = path;
-  base::Value::Dict data_export_result;
+  base::DictValue data_export_result;
   const auto& export_error =
       std::ranges::find(errors, SupportToolErrorCode::kDataExportError,
                         &SupportToolError::error_code);
@@ -420,30 +420,30 @@ void SupportToolMessageHandler::OnDataExportDone(
 }
 
 void SupportToolMessageHandler::HandleShowExportedDataInFolder(
-    const base::Value::List& args) {
+    const base::ListValue& args) {
   platform_util::ShowItemInFolder(Profile::FromWebUI(web_ui()), data_path_);
 }
 
 void SupportToolMessageHandler::HandleGenerateCustomizedURL(
-    const base::Value::List& args) {
+    const base::ListValue& args) {
   base::UmaHistogramEnumeration(kSupportToolWebUIActionHistogram,
                                 SupportToolWebUIActionType::kGenerateURL);
   CHECK_EQ(3U, args.size());
   const base::Value& callback_id = args[0];
   std::string case_id = args[1].GetString();
-  const base::Value::List* data_collectors = args[2].GetIfList();
+  const base::ListValue* data_collectors = args[2].GetIfList();
   CHECK(data_collectors);
   ResolveJavascriptCallback(callback_id,
                             GenerateCustomizedURL(case_id, data_collectors));
 }
 
 void SupportToolMessageHandler::HandleGenerateSupportToken(
-    const base::Value::List& args) {
+    const base::ListValue& args) {
   base::UmaHistogramEnumeration(kSupportToolWebUIActionHistogram,
                                 SupportToolWebUIActionType::kGenerateToken);
   CHECK_EQ(2U, args.size());
   const base::Value& callback_id = args[0];
-  const base::Value::List* data_collectors = args[1].GetIfList();
+  const base::ListValue* data_collectors = args[1].GetIfList();
   CHECK(data_collectors);
   ResolveJavascriptCallback(callback_id, GenerateSupportToken(data_collectors));
 }
@@ -467,8 +467,8 @@ SupportToolUI::SupportToolUI(content::WebUI* web_ui) : WebUIController(web_ui) {
 SupportToolUI::~SupportToolUI() = default;
 
 // static
-base::Value::Dict SupportToolUI::GetLocalizedStrings() {
-  base::Value::Dict localized_strings;
+base::DictValue SupportToolUI::GetLocalizedStrings() {
+  base::DictValue localized_strings;
   localized_strings.Set(
       "issueDetailsPageTitle",
       l10n_util::GetStringUTF16(IDS_SUPPORT_TOOL_ISSUE_DETAILS_PAGE_TITLE));

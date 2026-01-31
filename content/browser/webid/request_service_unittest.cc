@@ -21,6 +21,7 @@
 #include "components/ukm/test_ukm_recorder.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/browser/webid/disconnect_request.h"
+#include "content/browser/webid/idp_network_request_manager.h"
 #include "content/browser/webid/metrics.h"
 #include "content/browser/webid/test/delegated_idp_network_request_manager.h"
 #include "content/browser/webid/test/federated_auth_request_request_token_callback_helper.h"
@@ -355,7 +356,6 @@ class TestIdpNetworkRequestManager : public MockIdpNetworkRequestManager {
   }
 
   void FetchConfig(const GURL& provider,
-                   blink::mojom::RpMode rp_mode,
                    int idp_brand_icon_ideal_size,
                    int idp_brand_icon_minimum_size,
                    FetchConfigCallback callback) override {
@@ -428,10 +428,11 @@ class TestIdpNetworkRequestManager : public MockIdpNetworkRequestManager {
       }
     }
 
+    IdpNetworkRequestManager::AccountsResponse response;
+    response.accounts = accounts_list_.empty() ? info.accounts : accounts_list_;
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE, base::BindOnce(std::move(callback), info.accounts_response,
-                                  accounts_list_.empty() ? info.accounts
-                                                         : accounts_list_));
+        FROM_HERE,
+        base::BindOnce(std::move(callback), info.accounts_response, response));
     return true;
   }
 
@@ -442,6 +443,7 @@ class TestIdpNetworkRequestManager : public MockIdpNetworkRequestManager {
       bool idp_blidness,
       TokenRequestCallback callback,
       ContinueOnCallback on_continue,
+      RedirectToCallback redirect_to,
       RecordErrorMetricsCallback record_error_metrics_callback) override {
     ++num_fetched_[FetchedEndpoint::TOKEN];
 
@@ -563,6 +565,7 @@ class IdpNetworkRequestManagerParamChecker
       bool idp_blindness,
       TokenRequestCallback callback,
       ContinueOnCallback on_continue,
+      RedirectToCallback redirect_to,
       RecordErrorMetricsCallback record_error_metrics_callback) override {
     if (expected_selected_account_id_) {
       EXPECT_EQ(expected_selected_account_id_, account);
@@ -573,6 +576,7 @@ class IdpNetworkRequestManagerParamChecker
     TestIdpNetworkRequestManager::SendTokenRequest(
         token_url, account, url_encoded_post_data, idp_blindness,
         std::move(callback), std::move(on_continue),
+        IdpNetworkRequestManager::RedirectToCallback(),
         std::move(record_error_metrics_callback));
   }
 
@@ -965,6 +969,7 @@ class RequestServiceTest : public RenderViewHostImplTestHarness {
         GURL(),                      // picture
         "(650) 312-3223",            // phone number
         "kenr",                      // username
+        std::vector<std::string>(),  // potentially_approved_origin_hashes
         std::vector<std::string>(),  // login_hints
         std::vector<std::string>(),  // domain_hints
         std::vector<std::string>()   // labels
@@ -995,6 +1000,7 @@ class RequestServiceTest : public RenderViewHostImplTestHarness {
         GURL(),                      // picture
         "(650) 312-3223",            // phone number
         "kenr",                      // username
+        std::vector<std::string>(),  // potentially_approved_origin_hashes
         kLoginHints,                 // login_hints
         std::vector<std::string>(),  // domain_hints
         std::vector<std::string>()   // labels
@@ -1010,85 +1016,93 @@ class RequestServiceTest : public RenderViewHostImplTestHarness {
             GURL(),                      // picture
             "(650) 312-3223",            // phone number
             "kenr",                      // username
+            std::vector<std::string>(),  // potentially_approved_origin_hashes
             std::vector<std::string>(),  // login_hints
             kDomainHintVector,           // domain_hints
             std::vector<std::string>()   // labels
             )};
-    kTwoAccounts = {base::MakeRefCounted<IdentityRequestAccount>(
-                        kAccountIdNicolas,           // id
-                        kAccountEmailNicolas,        // display_identifier
-                        "Nicolas P",                 // display_name
-                        kAccountEmailNicolas,        // email
-                        "Nicolas P",                 // name
-                        "Nicolas",                   // given_name
-                        GURL(),                      // picture
-                        "(650) 312-3223",            // phone number
-                        "npm",                       // username
-                        std::vector<std::string>(),  // login_hints
-                        std::vector<std::string>(),  // domain_hints
-                        std::vector<std::string>(),  // labels
-                        LoginState::kSignUp          // login_state
-                        ),
-                    base::MakeRefCounted<IdentityRequestAccount>(
-                        kAccountIdZach,              // id
-                        "zach@email.com",            // display_identifier
-                        "Zachary T",                 // display_name
-                        "zach@email.com",            // email
-                        "Zachary T",                 // name
-                        "Zach",                      // given_name
-                        GURL(),                      // picture
-                        "(650) 312-3223",            // phone number
-                        "tanz",                      // username
-                        std::vector<std::string>(),  // login_hints
-                        std::vector<std::string>(),  // domain_hints
-                        std::vector<std::string>(),  // labels
-                        LoginState::kSignUp          // login_state
-                        )};
-    kMultipleAccounts = {base::MakeRefCounted<IdentityRequestAccount>(
-                             kAccountIdNicolas,           // id
-                             kAccountEmailNicolas,        // display_identifier
-                             "Nicolas P",                 // display_name
-                             kAccountEmailNicolas,        // email
-                             "Nicolas P",                 // name
-                             "Nicolas",                   // given_name
-                             GURL(),                      // picture
-                             "(650) 312-3223",            // phone number
-                             "npm",                       // username
-                             std::vector<std::string>(),  // login_hints
-                             std::vector<std::string>(),  // domain_hints
-                             std::vector<std::string>(),  // labels
-                             LoginState::kSignUp          // login_state
-                             ),
-                         base::MakeRefCounted<IdentityRequestAccount>(
-                             kAccountIdPeter,             // id
-                             kAccountEmailPeter,          // display_identifier
-                             "Peter K",                   // display_name
-                             kAccountEmailPeter,          // email
-                             "Peter K",                   // name
-                             "Peter",                     // given_name
-                             GURL(),                      // picture
-                             "(650) 312-3223",            // phone number
-                             "peter",                     // username
-                             std::vector<std::string>(),  // login_hints
-                             std::vector<std::string>(),  // domain_hints
-                             std::vector<std::string>(),  // labels
-                             LoginState::kSignIn          // login_state
-                             ),
-                         base::MakeRefCounted<IdentityRequestAccount>(
-                             kAccountIdZach,              // id
-                             "zach@email.com",            // display_identifier
-                             "Zachary T",                 // display_name
-                             "zach@email.com",            // email
-                             "Zachary T",                 // name
-                             "Zach",                      // given_name
-                             GURL(),                      // picture
-                             "(650) 312-3223",            // phone number
-                             "zacht",                     // username
-                             std::vector<std::string>(),  // login_hints
-                             std::vector<std::string>(),  // domain_hints
-                             std::vector<std::string>(),  // labels
-                             LoginState::kSignUp          // login_state
-                             )};
+    kTwoAccounts = {
+        base::MakeRefCounted<IdentityRequestAccount>(
+            kAccountIdNicolas,           // id
+            kAccountEmailNicolas,        // display_identifier
+            "Nicolas P",                 // display_name
+            kAccountEmailNicolas,        // email
+            "Nicolas P",                 // name
+            "Nicolas",                   // given_name
+            GURL(),                      // picture
+            "(650) 312-3223",            // phone number
+            "npm",                       // username
+            std::vector<std::string>(),  // potentially_approved_origin_hashes
+            std::vector<std::string>(),  // login_hints
+            std::vector<std::string>(),  // domain_hints
+            std::vector<std::string>(),  // labels
+            LoginState::kSignUp          // login_state
+            ),
+        base::MakeRefCounted<IdentityRequestAccount>(
+            kAccountIdZach,              // id
+            "zach@email.com",            // display_identifier
+            "Zachary T",                 // display_name
+            "zach@email.com",            // email
+            "Zachary T",                 // name
+            "Zach",                      // given_name
+            GURL(),                      // picture
+            "(650) 312-3223",            // phone number
+            "tanz",                      // username
+            std::vector<std::string>(),  // potentially_approved_origin_hashes
+            std::vector<std::string>(),  // login_hints
+            std::vector<std::string>(),  // domain_hints
+            std::vector<std::string>(),  // labels
+            LoginState::kSignUp          // login_state
+            )};
+    kMultipleAccounts = {
+        base::MakeRefCounted<IdentityRequestAccount>(
+            kAccountIdNicolas,           // id
+            kAccountEmailNicolas,        // display_identifier
+            "Nicolas P",                 // display_name
+            kAccountEmailNicolas,        // email
+            "Nicolas P",                 // name
+            "Nicolas",                   // given_name
+            GURL(),                      // picture
+            "(650) 312-3223",            // phone number
+            "npm",                       // username
+            std::vector<std::string>(),  // potentially_approved_origin_hashes
+            std::vector<std::string>(),  // login_hints
+            std::vector<std::string>(),  // domain_hints
+            std::vector<std::string>(),  // labels
+            LoginState::kSignUp          // login_state
+            ),
+        base::MakeRefCounted<IdentityRequestAccount>(
+            kAccountIdPeter,             // id
+            kAccountEmailPeter,          // display_identifier
+            "Peter K",                   // display_name
+            kAccountEmailPeter,          // email
+            "Peter K",                   // name
+            "Peter",                     // given_name
+            GURL(),                      // picture
+            "(650) 312-3223",            // phone number
+            "peter",                     // username
+            std::vector<std::string>(),  // potentially_approved_origin_hashes
+            std::vector<std::string>(),  // login_hints
+            std::vector<std::string>(),  // domain_hints
+            std::vector<std::string>(),  // labels
+            LoginState::kSignIn          // login_state
+            ),
+        base::MakeRefCounted<IdentityRequestAccount>(
+            kAccountIdZach,              // id
+            "zach@email.com",            // display_identifier
+            "Zachary T",                 // display_name
+            "zach@email.com",            // email
+            "Zachary T",                 // name
+            "Zach",                      // given_name
+            GURL(),                      // picture
+            "(650) 312-3223",            // phone number
+            "zacht",                     // username
+            std::vector<std::string>(),  // potentially_approved_origin_hashes
+            std::vector<std::string>(),  // login_hints
+            std::vector<std::string>(),  // domain_hints
+            std::vector<std::string>(),  // labels
+            LoginState::kSignUp          // login_state
+            )};
     kMultipleAccountsWithHintsAndDomains = {
         base::MakeRefCounted<IdentityRequestAccount>(
             kAccountIdNicolas,           // id
@@ -1100,6 +1114,7 @@ class RequestServiceTest : public RenderViewHostImplTestHarness {
             GURL(),                      // picture
             "(650) 312-3223",            // phone number
             "npm",                       // username
+            std::vector<std::string>(),  // potentially_approved_origin_hashes
             kNicolasHints,               // login_hints
             kDomainHintVector,           // domain_hints
             std::vector<std::string>(),  // labels
@@ -1115,6 +1130,7 @@ class RequestServiceTest : public RenderViewHostImplTestHarness {
             GURL(),                      // picture
             "(650) 312-3223",            // phone number
             "peterk",                    // username
+            std::vector<std::string>(),  // potentially_approved_origin_hashes
             kPeterHints,                 // login_hints
             std::vector<std::string>(),  // domain_hints
             kLabelVector,                // labels
@@ -1130,6 +1146,7 @@ class RequestServiceTest : public RenderViewHostImplTestHarness {
             GURL(),                      // picture
             "(650) 312-3223",            // phone number
             "zacht",                     // username
+            std::vector<std::string>(),  // potentially_approved_origin_hashes
             kZachHints,                  // login_hints
             kTwoDomainHints,             // domain_hints
             std::vector<std::string>(),  // labels
@@ -3748,6 +3765,8 @@ TEST_P(RequestServiceTestCancelConsistency, AccountNotSelected) {
                                    /*standalone_console_message=*/std::nullopt,
                                    /*selected_idp_config_url=*/std::nullopt};
   CheckAuthExpectations(configuration, expectations);
+  ExpectStatusMetrics(fedcm_disabled ? TokenStatus::kDisabledInFlags
+                                     : TokenStatus::kAborted);
 }
 
 namespace {
@@ -4256,7 +4275,6 @@ class ParseStatusOverrideIdpNetworkRequestManager
       const ParseStatusOverrideIdpNetworkRequestManager&) = delete;
 
   void FetchConfig(const GURL& provider,
-                   blink::mojom::RpMode rp_mode,
                    int idp_brand_icon_ideal_size,
                    int idp_brand_icon_minimum_size,
                    FetchConfigCallback callback) override {
@@ -4271,8 +4289,8 @@ class ParseStatusOverrideIdpNetworkRequestManager
       return;
     }
     TestIdpNetworkRequestManager::FetchConfig(
-        provider, rp_mode, idp_brand_icon_ideal_size,
-        idp_brand_icon_minimum_size, std::move(callback));
+        provider, idp_brand_icon_ideal_size, idp_brand_icon_minimum_size,
+        std::move(callback));
   }
 
   bool SendAccountsRequest(const url::Origin& idp_origin,
@@ -4284,8 +4302,9 @@ class ParseStatusOverrideIdpNetworkRequestManager
 
       FetchStatus fetch_status{accounts_parse_status_, net::HTTP_OK};
       base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-          FROM_HERE, base::BindOnce(std::move(callback), fetch_status,
-                                    std::vector<IdentityRequestAccountPtr>()));
+          FROM_HERE,
+          base::BindOnce(std::move(callback), fetch_status,
+                         IdpNetworkRequestManager::AccountsResponse()));
       return true;
     }
 
@@ -5865,7 +5884,7 @@ TEST_F(RequestServiceTest, DomainHintSingleAccountMatch) {
 TEST_F(RequestServiceTest, DomainHintSingleAccountStarMatch) {
   RequestParameters parameters = kDefaultRequestParameters;
   parameters.identity_providers[0].domain_hint =
-      RequestService::kWildcardDomainHint;
+      AccountsFetcher::kWildcardDomainHint;
 
   MockConfiguration configuration = kConfigurationValid;
   configuration.idp_info[kProviderUrlFull].accounts =
@@ -5887,7 +5906,7 @@ TEST_F(RequestServiceTest, DomainHintSingleAccountStarMatch) {
 TEST_F(RequestServiceTest, DomainHintSingleAccountStarNoMatch) {
   RequestParameters parameters = kDefaultRequestParameters;
   parameters.identity_providers[0].domain_hint =
-      RequestService::kWildcardDomainHint;
+      AccountsFetcher::kWildcardDomainHint;
 
   const RequestExpectations expectations = {
       RequestTokenStatus::kError,
@@ -6012,7 +6031,7 @@ TEST_F(RequestServiceTest, DomainHintMultipleAccountsMultipleMatches) {
 TEST_F(RequestServiceTest, DomainHintMultipleAccountsStar) {
   RequestParameters parameters = kDefaultRequestParameters;
   parameters.identity_providers[0].domain_hint =
-      RequestService::kWildcardDomainHint;
+      AccountsFetcher::kWildcardDomainHint;
 
   MockConfiguration configuration = kConfigurationValid;
   configuration.idp_info[kProviderUrlFull].accounts =
@@ -6810,6 +6829,7 @@ TEST_F(RequestServiceTest, AbortedAccountsDialogShownDurationMetric) {
 
   ExpectUKMPresence("Timing.AccountsDialogShownDuration");
   ExpectNoUKMPresence("Timing.MismatchDialogShownDuration");
+  ExpectStatusMetrics(TokenStatus::kAborted);
 }
 
 // Tests that when a mismatch dialog is aborted, the appropriate duration
@@ -6854,6 +6874,7 @@ TEST_F(RequestServiceTest, AbortedMismatchDialogShownDurationMetric) {
 
   ExpectNoUKMPresence("Timing.AccountsDialogShownDuration");
   ExpectUKMPresence("Timing.MismatchDialogShownDuration");
+  ExpectStatusMetrics(TokenStatus::kAborted);
 }
 
 // Tests that when requests are made to FedCM in succession, the appropriate

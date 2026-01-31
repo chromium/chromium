@@ -39,14 +39,14 @@ class FastPairSavedDevicesHandler : public ::settings::SettingsPageUIHandler {
   void OnJavascriptDisallowed() override;
 
  private:
-  void HandleLoadSavedDevicePage(const base::Value::List& args);
+  void HandleLoadSavedDevicePage(const base::ListValue& args);
   void OnGetSavedDevices(nearby::fastpair::OptInStatus status,
                          std::vector<nearby::fastpair::FastPairDevice> devices);
   void SaveImageAsBase64(const std::string& image_byte_string,
                          gfx::Image image);
   void DecodingUrlsFinished();
 
-  void HandleRemoveSavedDevice(const base::Value::List& args);
+  void HandleRemoveSavedDevice(const base::ListValue& args);
   void OnSavedDeviceDeleted(bool success);
 
   bool loading_saved_device_page_ = false;

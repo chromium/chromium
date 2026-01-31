@@ -30,15 +30,13 @@ SearchEngineJavaScriptFeature* SearchEngineJavaScriptFeature::GetInstance() {
 }
 
 SearchEngineJavaScriptFeature::SearchEngineJavaScriptFeature()
-    : JavaScriptFeature(
-          web::ContentWorld::kIsolatedWorld,
-          {FeatureScript::CreateWithFilename(
-              kScriptName,
-              FeatureScript::InjectionTime::kDocumentStart,
-              FeatureScript::TargetFrames::kMainFrame,
-              FeatureScript::ReinjectionBehavior::
-                  kReinjectOnDocumentRecreation)},
-          {web::java_script_features::GetCommonJavaScriptFeature()}) {}
+    : JavaScriptFeature(web::ContentWorld::kIsolatedWorld,
+                        {FeatureScript::CreateWithFilename(
+                            kScriptName,
+                            FeatureScript::InjectionTime::kDocumentStart,
+                            FeatureScript::TargetFrames::kMainFrame,
+                            FeatureScript::ReinjectionBehavior::
+                                kReinjectOnDocumentRecreation)}) {}
 
 SearchEngineJavaScriptFeature::~SearchEngineJavaScriptFeature() = default;
 

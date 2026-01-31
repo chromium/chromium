@@ -194,6 +194,7 @@ class MODULES_EXPORT CanvasRenderingContext2D final
   using BaseRenderingContext2D::GetPaintCanvas;  // Pull the non-const overload.
   const MemoryManagedPaintCanvas* GetPaintCanvas() const final;
   const MemoryManagedPaintRecorder* Recorder() const override;
+  MemoryManagedPaintRecorder* Recorder();
 
   void WillDraw(const SkIRect& dirty_rect,
                 CanvasPerformanceMonitor::DrawType) final;

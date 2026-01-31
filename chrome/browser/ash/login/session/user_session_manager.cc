@@ -6,6 +6,7 @@
 
 #include <stddef.h>
 
+#include <algorithm>
 #include <map>
 #include <memory>
 #include <set>
@@ -25,7 +26,6 @@
 #include "base/check_deref.h"
 #include "base/check_op.h"
 #include "base/command_line.h"
-#include "base/containers/contains.h"
 #include "base/debug/alias.h"
 #include "base/debug/dump_without_crashing.h"
 #include "base/feature_list.h"
@@ -111,6 +111,7 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part_ash.h"
 #include "chrome/browser/first_run/first_run.h"
+#include "chrome/browser/global_features.h"
 #include "chrome/browser/lifetime/application_lifetime.h"
 #include "chrome/browser/lifetime/application_lifetime_chromeos.h"
 #include "chrome/browser/lifetime/browser_shutdown.h"
@@ -370,7 +371,7 @@ void InitLocaleAndInputMethodsForNewUser(
   for (size_t i = 0; i < candidates.size(); ++i) {
     const std::string& candidate = candidates[i];
     // Add a candidate if it's not yet in language_codes and is allowed.
-    if (!base::Contains(language_codes, candidate) &&
+    if (!std::ranges::contains(language_codes, candidate) &&
         locale_util::IsAllowedLanguage(candidate, prefs)) {
       language_codes.push_back(candidate);
     }
@@ -610,12 +611,6 @@ void MaybeSaveSessionStartedTimeBeforeRestart(Profile* profile) {
 }
 
 }  // namespace
-
-UserSessionManagerDelegate::~UserSessionManagerDelegate() = default;
-
-void UserSessionStateObserver::PendingUserSessionsRestoreFinished() {}
-
-UserSessionStateObserver::~UserSessionStateObserver() = default;
 
 // static
 UserSessionManager* UserSessionManager::GetInstance() {
@@ -857,6 +852,35 @@ void UserSessionManager::RestoreAuthenticationSession(Profile* user_profile) {
   }
 }
 
+void UserSessionManager::EnsureTrackingOfOnlineSignInConditions(
+    Profile* profile,
+    UserContext::AuthFlow auth_flow) {
+  PasswordSyncTokenVerifier* password_sync_token_verifier =
+      PasswordSyncTokenVerifierFactory::GetForProfile(profile);
+  // PasswordSyncTokenVerifier can be created only for SAML users.
+  if (password_sync_token_verifier) {
+    CHECK(ProfileHelper::Get()->GetUserByProfile(profile)->using_saml());
+    if (auth_flow == UserContext::AUTH_FLOW_GAIA_WITH_SAML) {
+      // Update local sync token after online SAML login.
+      password_sync_token_verifier->FetchSyncTokenOnReauth();
+    } else if (auth_flow == UserContext::AUTH_FLOW_OFFLINE) {
+      // Verify local sync token to check whether the local password is out
+      // of sync.
+      password_sync_token_verifier->RecordTokenPollingStart();
+      password_sync_token_verifier->CheckForPasswordNotInSync();
+    } else {
+      // SAML user is not expected to go through other authentication flows.
+      NOTREACHED();
+    }
+  }
+
+  OfflineSigninLimiter* offline_signin_limiter =
+      OfflineSigninLimiterFactory::GetForProfile(profile);
+  if (offline_signin_limiter) {
+    offline_signin_limiter->SignedIn(auth_flow);
+  }
+}
+
 void UserSessionManager::RestoreActiveSessions() {
   SessionManagerClient::Get()->RetrieveActiveSessions(
       base::BindOnce(&UserSessionManager::OnRestoreActiveSessions,
@@ -980,6 +1004,10 @@ bool UserSessionManager::RespectLocalePreference(
 
   profile->ChangeAppLocale(pref_locale, app_locale_changed_via);
 
+  // TODO(crbug.com/404133029): Avoid g_browser_process usage.
+  ApplicationLocaleStorage* application_locale_storage =
+      g_browser_process->GetFeatures()->application_locale_storage();
+
   // Here we don't enable keyboard layouts for normal users. Input methods
   // are set up when the user first logs in. Then the user may customize the
   // input methods.  Hence changing input methods here, just because the user's
@@ -991,8 +1019,8 @@ bool UserSessionManager::RespectLocalePreference(
   // So input methods should be enabled somewhere.
   const bool enable_layouts =
       user_manager::UserManager::Get()->IsLoggedInAsGuest();
-  locale_util::SwitchLanguage(pref_locale, enable_layouts,
-                              false /* login_layouts_only */,
+  locale_util::SwitchLanguage(application_locale_storage, pref_locale,
+                              enable_layouts, false /* login_layouts_only */,
                               std::move(callback), profile);
 
   return true;
@@ -1753,29 +1781,7 @@ void UserSessionManager::FinalizePrepareProfile(Profile* profile) {
           /*using_saml=*/auth_flow == UserContext::AUTH_FLOW_GAIA_WITH_SAML,
           user_context_.IsUsingSamlPrincipalsApi());
     }
-    PasswordSyncTokenVerifier* password_sync_token_verifier =
-        PasswordSyncTokenVerifierFactory::GetForProfile(profile);
-    // PasswordSyncTokenVerifier can be created only for SAML users.
-    if (password_sync_token_verifier) {
-      CHECK(user->using_saml());
-      if (auth_flow == UserContext::AUTH_FLOW_GAIA_WITH_SAML) {
-        // Update local sync token after online SAML login.
-        password_sync_token_verifier->FetchSyncTokenOnReauth();
-      } else if (auth_flow == UserContext::AUTH_FLOW_OFFLINE) {
-        // Verify local sync token to check whether the local password is out
-        // of sync.
-        password_sync_token_verifier->RecordTokenPollingStart();
-        password_sync_token_verifier->CheckForPasswordNotInSync();
-      } else {
-        // SAML user is not expected to go through other authentication flows.
-        NOTREACHED();
-      }
-    }
-
-    OfflineSigninLimiter* offline_signin_limiter =
-        OfflineSigninLimiterFactory::GetForProfile(profile);
-    if (offline_signin_limiter)
-      offline_signin_limiter->SignedIn(auth_flow);
+    EnsureTrackingOfOnlineSignInConditions(profile, auth_flow);
   }
 
   profile->OnLogin();
@@ -2302,9 +2308,9 @@ void UserSessionManager::RestorePendingUserSessions() {
   // session restore to existing users only. Currently this breakes some tests
   // (namely CrashRestoreComplexTest.RestoreSessionForThreeUsers), but
   // it may be test-specific and could probably be changed.
-  const bool user_already_logged_in =
-      base::Contains(user_manager::UserManager::Get()->GetLoggedInUsers(),
-                     account_id, &user_manager::User::GetAccountId);
+  const bool user_already_logged_in = std::ranges::contains(
+      user_manager::UserManager::Get()->GetLoggedInUsers(), account_id,
+      &user_manager::User::GetAccountId);
   DCHECK(!user_already_logged_in);
 
   if (!user_already_logged_in) {

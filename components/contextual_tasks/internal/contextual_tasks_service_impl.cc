@@ -7,7 +7,6 @@
 #include <optional>
 #include <utility>
 
-#include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
@@ -152,6 +151,10 @@ MergeUrlResourcesResult MergeUrlResources(
   return result;
 }
 
+void RecordNumberOfActiveTasks(int count) {
+  base::UmaHistogramCounts100("ContextualTasks.ActiveTasksCount", count);
+}
+
 }  // namespace
 
 ContextualTasksServiceImpl::ContextualTasksServiceImpl(
@@ -161,8 +164,11 @@ ContextualTasksServiceImpl::ContextualTasksServiceImpl(
     AimEligibilityService* aim_eligibility_service,
     signin::IdentityManager* identity_manager,
     PrefService* pref_service,
-    bool supports_ephemeral_only)
+    bool supports_ephemeral_only,
+    base::RepeatingCallback<size_t()> get_active_task_count_callback)
     : composite_context_decorator_(std::move(composite_context_decorator)),
+      get_active_task_count_callback_(
+          std::move(get_active_task_count_callback)),
       aim_eligibility_service_(aim_eligibility_service),
       identity_manager_(identity_manager),
       pref_service_(pref_service),
@@ -205,12 +211,22 @@ bool ContextualTasksServiceImpl::IsInitialized() {
 }
 
 ContextualTask ContextualTasksServiceImpl::CreateTask() {
+  // Note that we are adding 1 to the number of active tasks because the
+  // histogram is recorded before the task is created, but it's not
+  // immediately reflected in the active tasks count.
+  RecordNumberOfActiveTasks(get_active_task_count_callback_.Run() + 1);
+
   base::Uuid task_id = base::Uuid::GenerateRandomV4();
   ContextualTask task(task_id, supports_ephemeral_only_);
   return AddTaskAndNotify(std::move(task));
 }
 
 ContextualTask ContextualTasksServiceImpl::CreateTaskFromUrl(const GURL& url) {
+  // Note that we are adding 1 to the number of active tasks because the
+  // histogram is recorded before the task is created, but it's not
+  // immediately reflected in the active tasks count.
+  RecordNumberOfActiveTasks(get_active_task_count_callback_.Run() + 1);
+
   base::Uuid task_id = base::Uuid::GenerateRandomV4();
   bool is_ephemeral = supports_ephemeral_only_ ||
                       !IsUrlForPrimaryAccount(identity_manager_, url);
@@ -396,7 +412,7 @@ void ContextualTasksServiceImpl::AssociateTabWithTask(const base::Uuid& task_id,
   }
 
   std::optional<ContextualTask> current_task = GetContextualTaskForTab(tab_id);
-  if (current_task) {
+  if (current_task && current_task->GetTaskId() != task_id) {
     DisassociateTabFromTask(current_task->GetTaskId(), tab_id);
   }
 
@@ -418,18 +434,28 @@ void ContextualTasksServiceImpl::DisassociateTabFromTask(
   auto it = tasks_.find(task_id);
   if (it != tasks_.end()) {
     it->second.RemoveTabId(tab_id);
-  }
 
-  // If the task doesn't have a thread and tabs associated with it,
-  // it can be safely removed here.
-  if (!it->second.GetThread() && it->second.GetTabIds().empty()) {
-    RemoveTaskInternal(task_id, TriggerSource::kLocal);
+    if (base::FeatureList::IsEnabled(
+            kContextualTasksRemoveTasksWithoutThreadsOrTabAssociations)) {
+      // If the task doesn't have a thread and tabs associated with it,
+      // it can be safely removed here.
+      if (!it->second.GetThread() && it->second.GetTabIds().empty()) {
+        RemoveTaskInternal(task_id, TriggerSource::kLocal);
+      }
+    }
   }
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(
           &ContextualTasksServiceImpl::NotifyTaskDisassociatedFromTab,
           weak_ptr_factory_.GetWeakPtr(), task_id, tab_id));
+}
+
+void ContextualTasksServiceImpl::DisassociateAllTabsFromTask(
+    const base::Uuid& task_id) {
+  for (const SessionID& tab_id : GetTabsAssociatedWithTask(task_id)) {
+    DisassociateTabFromTask(task_id, tab_id);
+  }
 }
 
 std::optional<ContextualTask>
@@ -453,25 +479,6 @@ std::vector<SessionID> ContextualTasksServiceImpl::GetTabsAssociatedWithTask(
     }
   }
   return associated_tabs;
-}
-
-void ContextualTasksServiceImpl::ClearAllTabAssociationsForTask(
-    const base::Uuid& task_id) {
-  auto task_it = tasks_.find(task_id);
-  if (task_it == tasks_.end()) {
-    return;
-  }
-
-  // Get a copy of the tab IDs before clearing them from the task.
-  const std::vector<SessionID> tab_ids_to_remove = task_it->second.GetTabIds();
-
-  // Clear the tab IDs from the task object itself.
-  task_it->second.ClearTabIds();
-
-  // Remove each of the tab IDs from the main lookup map.
-  for (const auto& tab_id : tab_ids_to_remove) {
-    tab_to_task_.erase(tab_id);
-  }
 }
 
 void ContextualTasksServiceImpl::GetContextForTask(

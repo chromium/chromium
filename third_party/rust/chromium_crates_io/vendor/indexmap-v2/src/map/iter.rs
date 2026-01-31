@@ -1,9 +1,11 @@
-use super::{Bucket, ExtractCore, IndexMap, IndexMapCore, Slice};
+use super::{Bucket, HashValue, IndexMap, Slice};
+use crate::inner::{Core, ExtractCore};
 
 use alloc::vec::{self, Vec};
 use core::fmt;
 use core::hash::{BuildHasher, Hash};
 use core::iter::FusedIterator;
+use core::mem::MaybeUninit;
 use core::ops::{Index, RangeBounds};
 use core::slice;
 
@@ -447,11 +449,42 @@ impl<K, V> Index<usize> for Keys<'_, K, V> {
 /// This `struct` is created by the [`IndexMap::into_keys`] method.
 /// See its documentation for more.
 pub struct IntoKeys<K, V> {
-    iter: vec::IntoIter<Bucket<K, V>>,
+    // We eagerly drop the values during construction so we can ignore them in
+    // `Clone`, but we keep uninit values so the bucket's size and alignment
+    // remain the same, and therefore the `Vec` conversion should be in-place.
+    iter: vec::IntoIter<Bucket<K, MaybeUninit<V>>>,
 }
 
 impl<K, V> IntoKeys<K, V> {
     pub(super) fn new(entries: Vec<Bucket<K, V>>) -> Self {
+        // The original values will be dropped here.
+        // The hash doesn't matter, but "copying" it in-place is free.
+        let entries = entries
+            .into_iter()
+            .map(|Bucket { hash, key, .. }| Bucket {
+                hash,
+                key,
+                value: MaybeUninit::uninit(),
+            })
+            .collect::<Vec<_>>();
+        Self {
+            iter: entries.into_iter(),
+        }
+    }
+}
+
+impl<K: Clone, V> Clone for IntoKeys<K, V> {
+    fn clone(&self) -> Self {
+        let entries = self
+            .iter
+            .as_slice()
+            .iter()
+            .map(|Bucket { key, .. }| Bucket {
+                hash: HashValue(0),
+                key: key.clone(),
+                value: MaybeUninit::uninit(),
+            })
+            .collect::<Vec<_>>();
         Self {
             iter: entries.into_iter(),
         }
@@ -600,11 +633,42 @@ impl<K, V> Default for ValuesMut<'_, K, V> {
 /// This `struct` is created by the [`IndexMap::into_values`] method.
 /// See its documentation for more.
 pub struct IntoValues<K, V> {
-    iter: vec::IntoIter<Bucket<K, V>>,
+    // We eagerly drop the keys during construction so we can ignore them in
+    // `Clone`, but we keep uninit keys so the bucket's size and alignment
+    // remain the same, and therefore the `Vec` conversion should be in-place.
+    iter: vec::IntoIter<Bucket<MaybeUninit<K>, V>>,
 }
 
 impl<K, V> IntoValues<K, V> {
     pub(super) fn new(entries: Vec<Bucket<K, V>>) -> Self {
+        // The original keys will be dropped here.
+        // The hash doesn't matter, but "copying" it in-place is free.
+        let entries = entries
+            .into_iter()
+            .map(|Bucket { hash, value, .. }| Bucket {
+                hash,
+                key: MaybeUninit::uninit(),
+                value,
+            })
+            .collect::<Vec<_>>();
+        Self {
+            iter: entries.into_iter(),
+        }
+    }
+}
+
+impl<K, V: Clone> Clone for IntoValues<K, V> {
+    fn clone(&self) -> Self {
+        let entries = self
+            .iter
+            .as_slice()
+            .iter()
+            .map(|Bucket { value, .. }| Bucket {
+                hash: HashValue(0),
+                key: MaybeUninit::uninit(),
+                value: value.clone(),
+            })
+            .collect::<Vec<_>>();
         Self {
             iter: entries.into_iter(),
         }
@@ -655,7 +719,7 @@ where
     S: BuildHasher,
 {
     map: &'a mut IndexMap<K, V, S>,
-    tail: IndexMapCore<K, V>,
+    tail: Core<K, V>,
     drain: vec::IntoIter<Bucket<K, V>>,
     replace_with: I,
 }
@@ -785,7 +849,7 @@ pub struct ExtractIf<'a, K, V, F> {
 
 impl<K, V, F> ExtractIf<'_, K, V, F> {
     #[track_caller]
-    pub(super) fn new<R>(core: &mut IndexMapCore<K, V>, range: R, pred: F) -> ExtractIf<'_, K, V, F>
+    pub(super) fn new<R>(core: &mut Core<K, V>, range: R, pred: F) -> ExtractIf<'_, K, V, F>
     where
         R: RangeBounds<usize>,
         F: FnMut(&K, &mut V) -> bool,

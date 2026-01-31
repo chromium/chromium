@@ -130,7 +130,6 @@ class AndroidAutofillClient : public autofill::ContentAutofillClient {
   bool IsAutocompleteEnabled() const final;
   bool IsPasswordManagerEnabled() const final;
   bool IsContextSecure() const final;
-  autofill::FormInteractionsFlowId GetCurrentFormInteractionsFlowId() final;
   autofill::autofill_metrics::FormInteractionsUkmLogger&
   GetFormInteractionsUkmLogger() final;
 

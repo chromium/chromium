@@ -117,7 +117,7 @@ void ChromeVariationsServiceClient::
       ProfileAttributesStorage::GetAllProfilesKeys(local_state);
 
   // Get the current value of the local state dict.
-  const base::Value::Dict& cached_profiles =
+  const base::DictValue& cached_profiles =
       local_state->GetDict(variations::prefs::kVariationsGoogleGroups);
   std::vector<std::string> variations_profiles_to_delete;
   for (std::pair<const std::string&, const base::Value&> profile :
@@ -129,7 +129,7 @@ void ChromeVariationsServiceClient::
 
   ScopedDictPrefUpdate variations_prefs_update(
       local_state, variations::prefs::kVariationsGoogleGroups);
-  base::Value::Dict& variations_prefs_dict = variations_prefs_update.Get();
+  base::DictValue& variations_prefs_dict = variations_prefs_update.Get();
   for (const auto& profile : variations_profiles_to_delete) {
     variations_prefs_dict.Remove(profile);
   }

@@ -19,7 +19,6 @@
 #import "ios/web/public/test/scoped_testing_web_client.h"
 #import "ios/web/public/test/web_state_test_util.h"
 #import "ios/web/public/test/web_task_environment.h"
-#import "ios/web/test/js_test_util_internal.h"
 #import "ios/web/web_state/ui/crw_web_controller.h"
 #import "net/http/http_util.h"
 #import "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"

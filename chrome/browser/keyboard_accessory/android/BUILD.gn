@@ -72,6 +72,7 @@ source_set("unit_test") {
     "//components/resources:android_resources",
     "//components/strings",
     "//components/webauthn/android",
+    "//components/webauthn/android:test_support",
     "//content/test:test_support",
     "//testing/gmock",
     "//testing/gtest",

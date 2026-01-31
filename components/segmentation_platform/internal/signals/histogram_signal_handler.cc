@@ -6,7 +6,6 @@
 
 #include <cstdint>
 
-#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/metrics/metrics_hashes.h"
@@ -32,14 +31,14 @@ void HistogramSignalHandler::SetRelevantHistograms(
     const RelevantHistograms& histograms) {
   auto it = histogram_observers_.begin();
   while (it != histogram_observers_.end()) {
-    if (!base::Contains(histograms, it->first)) {
+    if (!histograms.contains(it->first)) {
       it = histogram_observers_.erase(it);
     } else {
       ++it;
     }
   }
   for (const auto& pair : histograms) {
-    if (base::Contains(histogram_observers_, pair)) {
+    if (histogram_observers_.contains(pair)) {
       continue;
     }
     const auto& histogram_name = pair.first;

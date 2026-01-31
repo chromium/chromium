@@ -169,6 +169,8 @@ WebContents* IdentityRequestDialogController::ShowModalDialog(
 
 void IdentityRequestDialogController::CloseModalDialog() {}
 
+void IdentityRequestDialogController::OnFlowCompleted(bool success) {}
+
 WebContents* IdentityRequestDialogController::GetRpWebContents() {
   return nullptr;
 }

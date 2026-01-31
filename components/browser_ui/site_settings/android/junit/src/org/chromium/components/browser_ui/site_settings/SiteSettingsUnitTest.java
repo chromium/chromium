@@ -55,13 +55,4 @@ public class SiteSettingsUnitTest {
         var indexProvider = SiteSettings.SEARCH_INDEX_DATA_PROVIDER;
         verify(mSearchIndexData).removeEntry(indexProvider.getUniqueId(key));
     }
-
-    @Test
-    public void testSearchIndexProvider_remove3rdPartyCookies() {
-        doReturn(true).when(mDelegate).shouldShowTrackingProtectionUi();
-        SiteSettings.updateDynamicPreferences(mContext, mDelegate, mSearchIndexData);
-        String key = SiteSettingsCategory.preferenceKey(Type.THIRD_PARTY_COOKIES);
-        var indexProvider = SiteSettings.SEARCH_INDEX_DATA_PROVIDER;
-        verify(mSearchIndexData).removeEntry(indexProvider.getUniqueId(key));
-    }
 }

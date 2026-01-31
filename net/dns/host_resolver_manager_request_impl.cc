@@ -387,7 +387,7 @@ void HostResolverManager::RequestImpl::LogStartRequest() {
 
   source_net_log_.BeginEvent(
       NetLogEventType::HOST_RESOLVER_MANAGER_REQUEST, [this] {
-        base::Value::Dict dict;
+        base::DictValue dict;
         dict.Set("host", request_host_.ToString());
         dict.Set("dns_query_type",
                  kDnsQueryTypes.at(parameters_.dns_query_type));

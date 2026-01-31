@@ -84,16 +84,18 @@ PrefetchNetworkContext::GetURLLoaderFactory(PrefetchService* service) {
 network::mojom::CookieManager* PrefetchNetworkContext::GetCookieManager() {
   CHECK(use_isolated_network_context_);
   CHECK(network_context_);
-  if (!cookie_manager_)
+  if (!cookie_manager_) {
     network_context_->GetCookieManager(
         cookie_manager_.BindNewPipeAndPassReceiver());
+  }
 
   return cookie_manager_.get();
 }
 
 void PrefetchNetworkContext::CloseIdleConnections() {
-  if (network_context_)
+  if (network_context_) {
     network_context_->CloseIdleConnections(base::DoNothing());
+  }
 }
 
 void PrefetchNetworkContext::CreateIsolatedURLLoaderFactory(
@@ -222,7 +224,7 @@ PrefetchNetworkContext::CreateNewURLLoaderFactory(
 
   bool bypass_redirect_checks = false;
   auto factory_params = network::mojom::URLLoaderFactoryParams::New();
-  factory_params->process_id = network::mojom::kBrowserProcessId;
+  factory_params->process_id = network::OriginatingProcess::browser();
   factory_params->is_trusted = true;
   factory_params->is_orb_enabled = false;
   return url_loader_factory::Create(

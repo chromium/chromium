@@ -16,6 +16,7 @@
 #import "components/password_manager/core/browser/ui/credential_ui_entry.h"
 #import "components/prefs/pref_service.h"
 #import "components/strings/grit/components_strings.h"
+#import "ios/chrome/browser/passwords/coordinator/password_utils.h"
 #import "ios/chrome/browser/passwords/model/ios_chrome_password_check_manager.h"
 #import "ios/chrome/browser/passwords/model/ios_chrome_password_check_manager_factory.h"
 #import "ios/chrome/browser/passwords/model/metrics/ios_password_manager_metrics.h"
@@ -34,7 +35,6 @@
 #import "ios/chrome/browser/settings/ui_bundled/password/password_sharing/password_sharing_first_run_coordinator_delegate.h"
 #import "ios/chrome/browser/settings/ui_bundled/password/password_sharing/password_sharing_metrics.h"
 #import "ios/chrome/browser/settings/ui_bundled/password/reauthentication/local_reauthentication_coordinator.h"
-#import "ios/chrome/browser/settings/ui_bundled/utils/password_utils.h"
 #import "ios/chrome/browser/shared/coordinator/alert/action_sheet_coordinator.h"
 #import "ios/chrome/browser/shared/coordinator/alert/alert_coordinator.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
@@ -43,8 +43,8 @@
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
-#import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
+#import "ios/chrome/browser/shared/public/commands/scene_commands.h"
 #import "ios/chrome/browser/shared/public/commands/snackbar_commands.h"
 #import "ios/chrome/browser/sync/model/sync_service_factory.h"
 #import "ios/chrome/common/ui/reauthentication/reauthentication_protocol.h"
@@ -190,8 +190,8 @@ const CGFloat kShareSpinnerMinTimeInSeconds = 0.5;
   self.viewController.handler = self;
   self.viewController.delegate = self.mediator;
   CommandDispatcher* dispatcher = self.browser->GetCommandDispatcher();
-  self.viewController.applicationHandler =
-      HandlerForProtocol(dispatcher, ApplicationCommands);
+  self.viewController.sceneHandler =
+      HandlerForProtocol(dispatcher, SceneCommands);
   self.viewController.snackbarHandler =
       HandlerForProtocol(dispatcher, SnackbarCommands);
   if (self.openInEditMode) {

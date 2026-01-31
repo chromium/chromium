@@ -15,7 +15,6 @@
 #include "ash/wm/window_util.h"
 #include "base/auto_reset.h"
 #include "base/command_line.h"
-#include "base/containers/contains.h"
 #include "base/scoped_observation.h"
 #include "chromeos/ui/base/app_types.h"
 #include "chromeos/ui/base/display_util.h"
@@ -363,7 +362,7 @@ void ScreenOrientationController::OnWindowDestroying(aura::Window* window) {
 void ScreenOrientationController::OnWindowVisibilityChanged(
     aura::Window* window,
     bool visible) {
-  if (base::Contains(lock_info_map_, window))
+  if (lock_info_map_.contains(window))
     ApplyLockForTopMostWindowOnInternalDisplay();
 }
 

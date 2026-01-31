@@ -17,13 +17,13 @@ namespace update_client {
 
 // Convenience function to make a simple event for an operation
 // from the error contained by a base::expected, if one exists.
-base::Value::Dict MakeSimpleOperationEvent(
+base::DictValue MakeSimpleOperationEvent(
     base::expected<base::FilePath, CategorizedError> result,
     const int operation_type);
 
 // Make a simple event for an operation from a CategorizedError.
-base::Value::Dict MakeSimpleOperationEvent(const CategorizedError& error,
-                                           const int operation_type);
+base::DictValue MakeSimpleOperationEvent(const CategorizedError& error,
+                                         const int operation_type);
 
 }  // namespace update_client
 

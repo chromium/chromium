@@ -9,8 +9,9 @@
 namespace contextual_search {
 
 MockContextualSearchSessionHandle::MockContextualSearchSessionHandle()
-    : ContextualSearchSessionHandle(nullptr, base::UnguessableToken::Create()) {
-}
+    : ContextualSearchSessionHandle(/*service=*/nullptr,
+                                    base::UnguessableToken::Create(),
+                                    /*invocation_source=*/std::nullopt) {}
 MockContextualSearchSessionHandle::~MockContextualSearchSessionHandle() =
     default;
 

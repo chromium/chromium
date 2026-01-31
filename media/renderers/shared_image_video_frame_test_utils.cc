@@ -92,7 +92,7 @@ scoped_refptr<VideoFrame> CreateSharedImageRGBAFrame(
   // intermediate copies in copy to canvas and 2-copy upload to WebGL. It may
   // also be read by the GLES2 interface if the code creating the intermediate
   // SharedImage decides that the VideoFrame can be wrapped directly as a GL
-  // texture and/or if raster is going over GLES2 in the context of the test.
+  // texture.
   constexpr auto kUsages =
       gpu::SHARED_IMAGE_USAGE_RASTER_READ | gpu::SHARED_IMAGE_USAGE_GLES2_READ;
   auto* sii = context_provider->SharedImageInterface();

@@ -55,7 +55,7 @@ void FakeSoftwareVideoEncoder::Encode(
   encoded_frame->reference_time = reference_time;
 
   const auto values =
-      base::Value::Dict()
+      base::DictValue()
           .Set("key", encoded_frame->is_key_frame)
           .Set("ref", static_cast<int>(
                           encoded_frame->referenced_frame_id.lower_32_bits()))

@@ -55,7 +55,7 @@ bool UrlInfo::IsIsolated() const {
 
   if (cross_origin_isolation_key) {
     is_isolated |= cross_origin_isolation_key->cross_origin_isolation_mode ==
-                   CrossOriginIsolationMode::kConcrete;
+                   blink::mojom::CrossOriginIsolationMode::kConcrete;
   }
 
   return is_isolated;

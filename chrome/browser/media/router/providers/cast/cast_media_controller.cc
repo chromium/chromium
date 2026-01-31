@@ -6,7 +6,6 @@
 
 #include <utility>
 
-#include "base/containers/contains.h"
 #include "base/functional/callback_helpers.h"
 #include "base/rand_util.h"
 #include "base/strings/string_number_conversions.h"
@@ -64,7 +63,7 @@ void SetIfNonNegative(base::TimeDelta* out, const base::Value* value) {
 
 // If |value| has "width" and "height" fields with positive values, it gets
 // converted into gfx::Size. Otherwise std::nullopt is returned.
-std::optional<gfx::Size> GetValidSize(const base::Value::Dict& dict) {
+std::optional<gfx::Size> GetValidSize(const base::DictValue& dict) {
   int width = 0;
   int height = 0;
   SetIfNonNegative(&width, dict.Find("width"));
@@ -164,7 +163,7 @@ void CastMediaController::AddMediaController(
 
 void CastMediaController::SetSession(const CastSession& session) {
   session_id_ = session.session_id();
-  const base::Value::Dict* volume =
+  const base::DictValue* volume =
       session.value().FindDictByDottedPath("receiver.volume");
   if (!volume) {
     return;
@@ -181,18 +180,17 @@ void CastMediaController::SetSession(const CastSession& session) {
   }
 }
 
-void CastMediaController::SetMediaStatus(
-    const base::Value::Dict& status_value) {
+void CastMediaController::SetMediaStatus(const base::DictValue& status_value) {
   UpdateMediaStatus(status_value);
   for (const auto& observer : observers_) {
     observer->OnMediaStatusUpdated(media_status_.Clone());
   }
 }
 
-base::Value::Dict CastMediaController::CreateMediaRequest(V2MessageType type) {
-  return base::Value::Dict()
+base::DictValue CastMediaController::CreateMediaRequest(V2MessageType type) {
+  return base::DictValue()
       .Set("message",
-           base::Value::Dict()
+           base::DictValue()
                .Set("mediaSessionId", media_session_id_)
                .Set("sessionId", session_id_)
                .Set("type", cast_util::EnumToString(type).value().data()))
@@ -200,21 +198,21 @@ base::Value::Dict CastMediaController::CreateMediaRequest(V2MessageType type) {
       .Set("clientId", sender_id_);
 }
 
-base::Value::Dict CastMediaController::CreateVolumeRequest() {
-  return base::Value::Dict().Set(
+base::DictValue CastMediaController::CreateVolumeRequest() {
+  return base::DictValue().Set(
       "message",
-      base::Value::Dict()
+      base::DictValue()
           .Set("sessionId", session_id_)
           // Muting also uses the |kSetVolume| message type.
           .Set(
               "type",
               cast_util::EnumToString(V2MessageType::kSetVolume).value().data())
-          .Set("volume", base::Value::Dict()));
+          .Set("volume", base::DictValue()));
 }
 
 void CastMediaController::UpdateMediaStatus(
-    const base::Value::Dict& message_value) {
-  const base::Value::List* status_list = message_value.FindList("status");
+    const base::DictValue& message_value) {
+  const base::ListValue* status_list = message_value.FindList("status");
   if (!status_list) {
     return;
   }
@@ -237,7 +235,7 @@ void CastMediaController::UpdateMediaStatus(
   SetIfNonNegative(&media_status_.duration,
                    status_value.GetDict().FindByDottedPath("media.duration"));
 
-  const base::Value::List* images =
+  const base::ListValue* images =
       status_value.GetDict().FindListByDottedPath("media.metadata.images");
   if (images) {
     media_status_.images.clear();
@@ -245,7 +243,7 @@ void CastMediaController::UpdateMediaStatus(
       if (!image_value.is_dict()) {
         continue;
       }
-      const base::Value::Dict& image_dict = image_value.GetDict();
+      const base::DictValue& image_dict = image_value.GetDict();
       const std::string* url_string = image_dict.FindString("url");
       if (!url_string) {
         continue;
@@ -255,19 +253,17 @@ void CastMediaController::UpdateMediaStatus(
     }
   }
 
-  const base::Value::List* commands_list =
+  const base::ListValue* commands_list =
       status_value.GetDict().FindList("supportedMediaCommands");
   if (commands_list) {
     // |can_set_volume| and |can_mute| are not used, because the receiver volume
     // info obtained in SetSession() is used instead.
-    media_status_.can_play_pause =
-        base::Contains(*commands_list, base::Value(kMediaCommandPause));
-    media_status_.can_seek =
-        base::Contains(*commands_list, base::Value(kMediaCommandSeek));
+    media_status_.can_play_pause = commands_list->contains(kMediaCommandPause);
+    media_status_.can_seek = commands_list->contains(kMediaCommandSeek);
     media_status_.can_skip_to_next_track =
-        base::Contains(*commands_list, base::Value(kMediaCommandQueueNext));
+        commands_list->contains(kMediaCommandQueueNext);
     media_status_.can_skip_to_previous_track =
-        base::Contains(*commands_list, base::Value(kMediaCommandQueuePrev));
+        commands_list->contains(kMediaCommandQueuePrev);
   }
 
   const std::string* player_state =

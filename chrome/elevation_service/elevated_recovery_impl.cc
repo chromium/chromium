@@ -253,18 +253,6 @@ HRESULT ValidateCRXArgs(const std::wstring& browser_appid,
   return ::IIDFromString(session_id.c_str(), &session_guid);
 }
 
-// Deletes all the files and subdirectories within |directory_path|. Errors are
-// ignored.
-void DeleteDirectoryFiles(const base::FilePath& directory_path) {
-  base::FileEnumerator file_enum(
-      directory_path, false,
-      base::FileEnumerator::FILES | base::FileEnumerator::DIRECTORIES);
-  for (base::FilePath current = file_enum.Next(); !current.empty();
-       current = file_enum.Next()) {
-    base::DeletePathRecursively(current);
-  }
-}
-
 // Schedules deletion after reboot of |dir_name| as well as all the files and
 // subdirectories within |dir_name|. Errors are ignored.
 void ScheduleDirectoryForDeletion(const base::FilePath& dir_name) {
@@ -309,7 +297,7 @@ HRESULT CleanupChromeRecoveryDirectory() {
   if (FAILED(hr))
     return hr;
 
-  DeleteDirectoryFiles(recovery_dir);
+  base::DeletePathRecursively(recovery_dir);
 
   return S_OK;
 }

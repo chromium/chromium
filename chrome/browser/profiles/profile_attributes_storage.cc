@@ -10,7 +10,6 @@
 
 #include "base/check.h"
 #include "base/check_op.h"
-#include "base/containers/contains.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
@@ -239,7 +238,7 @@ void RecordProfileState(ProfileAttributesEntry* entry,
 
 // Rotating between `from_index` to `to_index` by 1 step. Rotation is done to
 // the left or the right based on the index comparison.
-void Rotate(base::Value::List& list, size_t from_index, size_t to_index) {
+void Rotate(base::ListValue& list, size_t from_index, size_t to_index) {
   CHECK_LT(from_index, list.size());
   CHECK_LT(to_index, list.size());
 
@@ -272,10 +271,10 @@ ProfileAttributesStorage::ProfileAttributesStorage(
       user_data_dir_(user_data_dir) {
   // Populate the attributes storage.
   ScopedDictPrefUpdate update(prefs_, prefs::kProfileAttributes);
-  base::Value::Dict& attributes = update.Get();
+  base::DictValue& attributes = update.Get();
   for (auto kv : attributes) {
     DCHECK(kv.second.is_dict());
-    base::Value::Dict& info = kv.second.GetDict();
+    base::DictValue& info = kv.second.GetDict();
     std::string* name = info.FindString(ProfileAttributesEntry::kNameKey);
 
     std::optional<bool> using_default_name =
@@ -354,7 +353,7 @@ base::flat_set<std::string> ProfileAttributesStorage::GetAllProfilesKeys(
     PrefService* local_prefs) {
   base::flat_set<std::string> profile_keys;
 
-  const base::Value::Dict& attribute_storage =
+  const base::DictValue& attribute_storage =
       local_prefs->GetDict(prefs::kProfileAttributes);
   for (std::pair<const std::string&, const base::Value&> attribute_entry :
        attribute_storage) {
@@ -367,13 +366,13 @@ base::flat_set<std::string> ProfileAttributesStorage::GetAllProfilesKeys(
 void ProfileAttributesStorage::AddProfile(ProfileAttributesInitParams params) {
   std::string key = StorageKeyFromProfilePath(params.profile_path);
   ScopedDictPrefUpdate update(prefs_, prefs::kProfileAttributes);
-  base::Value::Dict& attributes = update.Get();
+  base::DictValue& attributes = update.Get();
 
   DCHECK(!params.is_consented_primary_account || !params.gaia_id.empty() ||
          !params.user_name.empty());
 
-  base::Value::Dict info =
-      base::Value::Dict()
+  base::DictValue info =
+      base::DictValue()
           .Set(ProfileAttributesEntry::kNameKey, params.profile_name)
           .Set(ProfileAttributesEntry::kGAIAIdKey, params.gaia_id.ToString())
           .Set(ProfileAttributesEntry::kUserNameKey, params.user_name)
@@ -407,7 +406,7 @@ void ProfileAttributesStorage::AddProfile(ProfileAttributesInitParams params) {
   attributes.Set(key, std::move(info));
 
   ScopedListPrefUpdate ordered_list_update(prefs_, prefs::kProfilesOrder);
-  base::Value::List& ordered_list = ordered_list_update.Get();
+  base::ListValue& ordered_list = ordered_list_update.Get();
   ordered_list.Append(key);
 
   ProfileAttributesEntry* entry = InitEntryWithKey(key, params.is_omitted);
@@ -458,13 +457,13 @@ void ProfileAttributesStorage::RemoveProfile(
     observer.OnProfileWillBeRemoved(profile_path);
 
   ScopedDictPrefUpdate update(prefs_, prefs::kProfileAttributes);
-  base::Value::Dict& attributes = update.Get();
+  base::DictValue& attributes = update.Get();
   std::string key = StorageKeyFromProfilePath(profile_path);
   attributes.Remove(key);
   profile_attributes_entries_.erase(profile_path.value());
 
   ScopedListPrefUpdate ordered_list_update(prefs_, prefs::kProfilesOrder);
-  base::Value::List& ordered_list = ordered_list_update.Get();
+  base::ListValue& ordered_list = ordered_list_update.Get();
   ordered_list.EraseValue(base::Value(key));
 
   // `OnProfileWasRemoved()` must be the first observer method being called
@@ -509,7 +508,7 @@ ProfileAttributesStorage::GetAllProfilesAttributesSorted(
 }
 
 bool ProfileAttributesStorage::IsProfilesOrderPrefValid() const {
-  const base::Value::List& profile_keys_order =
+  const base::ListValue& profile_keys_order =
       prefs_->GetList(prefs::kProfilesOrder);
 
   // We use this map to validate the values in the prefs.
@@ -546,7 +545,7 @@ bool ProfileAttributesStorage::IsProfilesOrderPrefValid() const {
 
 void ProfileAttributesStorage::EnsureProfilesOrderPrefIsInitialized() {
   ScopedListPrefUpdate update(prefs_, prefs::kProfilesOrder);
-  base::Value::List& profile_keys_order = update.Get();
+  base::ListValue& profile_keys_order = update.Get();
 
   // If the saved order pref is not valid, we recover by reseting the whole list
   // and re-populate it with the profiles ordered by local profile name.
@@ -570,7 +569,7 @@ void ProfileAttributesStorage::UpdateProfilesOrderPref(size_t from_index,
   }
 
   ScopedListPrefUpdate update(prefs_, prefs::kProfilesOrder);
-  base::Value::List& profile_keys_order = update.Get();
+  base::ListValue& profile_keys_order = update.Get();
 
   // Apply the shift by rotating the element based on the indices.
   // Element at `from_index` will be placed at `to_index` and the rest will
@@ -594,8 +593,7 @@ std::vector<ProfileAttributesEntry*>
 ProfileAttributesStorage::GetAllProfilesAttributesSortedForDisplay() const {
   std::vector<ProfileAttributesEntry*> ret_ordered_entries;
 
-  const base::Value::List& ordered_keys =
-      prefs_->GetList(prefs::kProfilesOrder);
+  const base::ListValue& ordered_keys = prefs_->GetList(prefs::kProfilesOrder);
   DCHECK_EQ(ordered_keys.size(), GetNumberOfProfiles());
 
   base::flat_map<std::string, ProfileAttributesEntry*> key_entry_map =
@@ -733,10 +731,12 @@ const gfx::Image* ProfileAttributesStorage::LoadAvatarPictureFromPath(
     const std::string& key,
     const base::FilePath& image_path) const {
   // If the picture is already loaded then use it.
-  if (cached_avatar_images_.count(key)) {
-    if (cached_avatar_images_[key].IsEmpty())
+  if (auto it = cached_avatar_images_.find(key);
+      it != cached_avatar_images_.end()) {
+    if (it->second.IsEmpty()) {
       return nullptr;
-    return &cached_avatar_images_[key];
+    }
+    return &it->second;
   }
 
   // Don't download the image if downloading is disabled for tests.
@@ -744,9 +744,11 @@ const gfx::Image* ProfileAttributesStorage::LoadAvatarPictureFromPath(
     return nullptr;
 
   // If the picture is already being loaded then don't try loading it again.
-  if (cached_avatar_images_loading_[key])
+  bool& loading = cached_avatar_images_loading_[key];
+  if (loading) {
     return nullptr;
-  cached_avatar_images_loading_[key] = true;
+  }
+  loading = true;
 
   file_task_runner_->PostTaskAndReplyWithResult(
       FROM_HERE, base::BindOnce(&ReadBitmap, image_path),
@@ -756,7 +758,7 @@ const gfx::Image* ProfileAttributesStorage::LoadAvatarPictureFromPath(
 }
 bool ProfileAttributesStorage::IsGAIAPictureLoaded(
     const std::string& key) const {
-  return base::Contains(cached_avatar_images_, key);
+  return cached_avatar_images_.contains(key);
 }
 
 void ProfileAttributesStorage::SaveGAIAImageAtPath(
@@ -989,8 +991,9 @@ void ProfileAttributesStorage::DownloadHighResAvatar(
       profiles::GetDefaultAvatarIconFileNameAtIndex(icon_index);
   DCHECK(file_name);
   // If the file is already being downloaded, don't start another download.
-  if (avatar_images_downloads_in_progress_.count(file_name))
+  if (avatar_images_downloads_in_progress_.contains(file_name)) {
     return;
+  }
 
   // Start the download for this file. The profile attributes storage takes
   // ownership of the avatar downloader, which will be deleted when the download
@@ -1046,7 +1049,7 @@ ProfileAttributesEntry* ProfileAttributesStorage::InitEntryWithKey(
   base::FilePath path =
       user_data_dir_.Append(base::FilePath::FromUTF8Unsafe(key));
 
-  DCHECK(!base::Contains(profile_attributes_entries_, path.value()));
+  DCHECK(!profile_attributes_entries_.contains(path.value()));
   ProfileAttributesEntry* new_entry =
       &profile_attributes_entries_[path.value()];
   new_entry->Initialize(this, path, prefs_);
@@ -1122,19 +1125,21 @@ void ProfileAttributesStorage::OnAvatarPictureLoaded(
     gfx::Image image) const {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   cached_avatar_images_loading_[key] = false;
-  if (cached_avatar_images_.count(key)) {
-    if (!cached_avatar_images_[key].IsEmpty() || image.IsEmpty()) {
+  if (auto it = cached_avatar_images_.find(key);
+      it != cached_avatar_images_.end()) {
+    if (!it->second.IsEmpty() || image.IsEmpty()) {
       // If GAIA picture is not empty that means that it has been set with the
       // most up-to-date value while the picture was being loaded from disk.
       // If GAIA picture is empty and the image loaded from disk is also empty
       // then there is no need to update.
       return;
     }
+    it->second = std::move(image);
+  } else {
+    // Even if the image is empty (e.g. because decoding failed), place it in
+    // the cache to avoid reloading it again.
+    cached_avatar_images_.emplace(key, std::move(image));
   }
-
-  // Even if the image is empty (e.g. because decoding failed), place it in the
-  // cache to avoid reloading it again.
-  cached_avatar_images_[key] = std::move(image);
 
   NotifyOnProfileHighResAvatarLoaded(profile_path);
 }

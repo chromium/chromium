@@ -345,9 +345,9 @@ TEST_F(iCloudKeychainTest, MakeCredential) {
       EXPECT_FALSE(response.enterprise_attestation_returned);
       EXPECT_EQ(response.transports->size(), 2u);
       EXPECT_TRUE(
-          base::Contains(*response.transports, FidoTransportProtocol::kHybrid));
-      EXPECT_TRUE(base::Contains(*response.transports,
-                                 FidoTransportProtocol::kInternal));
+          response.transports->contains(FidoTransportProtocol::kHybrid));
+      EXPECT_TRUE(
+          response.transports->contains(FidoTransportProtocol::kInternal));
       EXPECT_EQ(response.transport_used, FidoTransportProtocol::kInternal);
     }
 

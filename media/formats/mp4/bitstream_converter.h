@@ -37,6 +37,7 @@ class MEDIA_EXPORT BitstreamConverter
 
     std::optional<bool> is_conformant;
     std::optional<bool> is_keyframe;
+    std::optional<bool> is_sei_recovery_point;
   };
 
   // Converts a single frame/buffer |frame_buf| into the output format.

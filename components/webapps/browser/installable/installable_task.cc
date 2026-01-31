@@ -4,7 +4,8 @@
 
 #include "components/webapps/browser/installable/installable_task.h"
 
-#include "base/containers/contains.h"
+#include <algorithm>
+
 #include "components/webapps/browser/installable/installable_manager.h"
 #include "content/public/browser/web_contents.h"
 #include "third_party/blink/public/common/manifest/manifest_util.h"
@@ -142,7 +143,7 @@ void InstallableTask::CheckInstallability() {
   std::vector<InstallableStatusCode> installable_errors =
       evaluator_->CheckInstallability();
   for (auto new_error : installable_errors) {
-    if (base::Contains(errors_, new_error)) {
+    if (std::ranges::contains(errors_, new_error)) {
       // Don't add duplicated errors.
       continue;
     }

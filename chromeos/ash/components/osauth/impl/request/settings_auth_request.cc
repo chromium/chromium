@@ -5,6 +5,7 @@
 #include "chromeos/ash/components/osauth/impl/request/settings_auth_request.h"
 
 #include "ash/strings/grit/ash_strings.h"
+#include "chromeos/ash/components/login/auth/public/user_context.h"
 #include "ui/base/l10n/l10n_util.h"
 
 namespace ash {

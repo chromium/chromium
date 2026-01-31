@@ -4,14 +4,15 @@
 
 #include "chrome/renderer/accessibility/read_anything/read_anything_app_model.h"
 
+#include <algorithm>
 #include <cstddef>
 #include <string>
 #include <utility>
 
 #include "base/check.h"
-#include "base/containers/contains.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/stringprintf.h"
+#include "base/time/time.h"
 #include "chrome/common/read_anything/read_anything_util.h"
 #include "chrome/renderer/accessibility/read_anything/read_aloud_traversal_utils.h"
 #include "chrome/renderer/accessibility/read_anything/read_anything_node_utils.h"
@@ -51,8 +52,7 @@ const ui::AXNode* GetUnignoredParentForSelection(const ui::AXNode* node) {
       // displayed as siblings, to avoid misnumbering.
       const std::string_view display =
           node->GetStringAttribute(ax::mojom::StringAttribute::kDisplay);
-      return base::Contains(display, "inline") ||
-             base::Contains(display, "list-item");
+      return display.contains("inline") || display.contains("list-item");
     };
     if (!should_skip(ancestor)) {
       return ancestor;
@@ -124,7 +124,8 @@ void ReadAnythingAppModel::OnSettingsRestoredFromPrefs(
     double font_size,
     bool links_enabled,
     bool images_enabled,
-    read_anything::mojom::Colors color) {
+    read_anything::mojom::Colors color,
+    read_anything::mojom::LineFocus line_focus) {
   line_spacing_ = line_spacing;
   letter_spacing_ = letter_spacing;
   font_name_ = std::move(font_name);
@@ -132,6 +133,7 @@ void ReadAnythingAppModel::OnSettingsRestoredFromPrefs(
   links_enabled_ = links_enabled;
   images_enabled_ = images_enabled;
   color_theme_ = color;
+  line_focus_ = line_focus;
 }
 
 void ReadAnythingAppModel::Reset(std::vector<ui::AXNodeID> content_node_ids) {
@@ -147,6 +149,14 @@ void ReadAnythingAppModel::ResetSelection() {
   selection_node_ids_.clear();
   start_ = SelectionEndpoint();
   end_ = SelectionEndpoint();
+}
+
+void ReadAnythingAppModel::ResetLineFocusSession() {
+  line_focus_session_start_time_ = std::optional<base::TimeTicks>();
+  line_focus_mouse_distance_ = 0;
+  line_focus_scroll_distance_ = 0;
+  line_focus_keyboard_lines_ = 0;
+  line_focus_speech_lines_ = 0;
 }
 
 bool ReadAnythingAppModel::PostProcessSelection() {
@@ -342,7 +352,7 @@ void ReadAnythingAppModel::ComputeDisplayNodeIdsForDistilledTree() {
         content_node->GetAncestorsCrossingTreeBoundaryAsQueue();
     while (!ancestors.empty()) {
       ui::AXNodeID ancestor_id = ancestors.front()->id();
-      if (base::Contains(display_node_ids_, ancestor_id)) {
+      if (display_node_ids_.contains(ancestor_id)) {
         break;
       }
       ancestors.pop();
@@ -388,7 +398,7 @@ ui::AXSerializableTree* ReadAnythingAppModel::GetTreeFromId(
 }
 
 bool ReadAnythingAppModel::ContainsTree(const ui::AXTreeID& tree_id) const {
-  return base::Contains(tree_infos_, tree_id);
+  return tree_infos_.contains(tree_id);
 }
 
 bool ReadAnythingAppModel::ContainsActiveTree() const {
@@ -490,7 +500,7 @@ void ReadAnythingAppModel::UnserializePendingUpdates(
   std::vector<Updates> updates = pending_updates_.extract(tree_id).mapped();
   for (const Updates& update : updates) {
     // Unserialize the updates in batches in the groupings in which they were
-    // received by AccessibilityEventReceived.
+    // received by QueueAccessibilityUpdates.
     DCHECK(update.empty() || tree_id == active_tree_id_);
     UnserializeUpdates(update, tree_id);
   }
@@ -544,90 +554,119 @@ void ReadAnythingAppModel::UnserializeUpdates(const Updates& updates,
   ProcessGeneratedEvents(event_generator, prev_tree_size, tree->size());
 }
 
-void ReadAnythingAppModel::AccessibilityEventReceived(
-    const ui::AXTreeID& tree_id,
-    Updates& updates,
-    std::vector<ui::AXEvent>& events,
-    bool speech_playing) {
-  DCHECK_NE(tree_id, ui::AXTreeIDUnknown());
-  VLOG(1) << "AccessibilityEventReceived for " << tree_id;
+void ReadAnythingAppModel::PrepareForAXTreeUpdates(
+    const ui::AXTreeID& tree_id) {
+  EnsureAXTreeExists(tree_id);
+  UpdateActiveTreeIfNeeded(tree_id);
+}
+
+void ReadAnythingAppModel::EnsureAXTreeExists(const ui::AXTreeID& tree_id) {
   // Create a new tree if an event is received for a tree that is not yet in
   // the tree list.
-  if (!ContainsTree(tree_id)) {
-    auto new_tree = std::make_unique<ui::AXSerializableTree>();
-    for (auto& observer : observers_) {
-      observer.OnTreeAdded(new_tree.get());
-    }
-    tree_infos_.emplace(
-        tree_id, std::make_unique<AXTreeInfo>(
-                     std::make_unique<ui::AXTreeManager>(std::move(new_tree))));
-    // If we previously received UKM source info for this tree_id, set the
-    // UKM source now that the tree information has been added to tree_infos_.
-    if (tree_id == active_tree_id_ && pending_ukm_sources_.count(tree_id) > 0) {
-      ukm::SourceId ukm_source_id = pending_ukm_sources_[tree_id];
-      pending_ukm_sources_.erase(tree_id);
-      SetUkmSourceId(ukm_source_id);
-    }
+  if (ContainsTree(tree_id)) {
+    return;
   }
+  auto new_tree = std::make_unique<ui::AXSerializableTree>();
 
-  if (may_use_child_for_active_tree_) {
-    // If this is the original root tree id, set it back to the active tree
-    // in case there has been a delay in receiving valid accessibility tree
-    // updates.
-    if (root_tree_id_ == tree_id) {
-      SetRootTreeId(root_tree_id_);
-    } else if (active_tree_id_ != ui::AXTreeIDUnknown() &&
-               active_tree_id_ != tree_id &&
-               child_tree_ids_.find(tree_id) != child_tree_ids_.end()) {
-      // If read aloud is searching for a child tree to distill and this tree id
-      // matches one of the possible child ids, set the active tree to this tree
-      // so that it can be distilled.
-      VLOG(1) << "Using child to set active tree id to " << tree_id;
-      SetActiveTreeId(tree_id);
-
-      // Ensure that requires_distillation_ is set to true whenever there's a
-      // match for a child id. Otherwise, depending on how accessibility events
-      // for the child tree are received, the content won't be distilled
-      // because ReadAnythingAppController doesn't receive a signal that
-      // distillation should be attempted again.
-      requires_distillation_ = true;
-    }
+  for (auto& observer : observers_) {
+    observer.OnTreeAdded(new_tree.get());
   }
+  tree_infos_.emplace(
+      tree_id, std::make_unique<AXTreeInfo>(
+                   std::make_unique<ui::AXTreeManager>(std::move(new_tree))));
+  // If we previously received UKM source info for this tree_id, set the
+  // UKM source now that the tree information has been added to tree_infos_.
+  if (tree_id == active_tree_id_ && pending_ukm_sources_.count(tree_id) > 0) {
+    ukm::SourceId ukm_source_id = pending_ukm_sources_[tree_id];
+    pending_ukm_sources_.erase(tree_id);
+    SetUkmSourceId(ukm_source_id);
+  }
+}
 
-  // If a tree update on the active tree is received while distillation is in
-  // progress, cache updates that are received but do not yet unserialize them.
-  // Drawing must be done on the same tree that was sent to the distiller,
-  // so it’s critical that updates are not unserialized until drawing is
-  // complete.
+void ReadAnythingAppModel::UpdateActiveTreeIfNeeded(
+    const ui::AXTreeID& tree_id) {
+  if (!may_use_child_for_active_tree_) {
+    return;
+  }
+  // If this is the original root tree id, set it back to the active tree
+  // in case there has been a delay in receiving valid accessibility tree
+  // updates.
+  if (root_tree_id_ == tree_id) {
+    SetRootTreeId(root_tree_id_);
+  } else if (active_tree_id_ != ui::AXTreeIDUnknown() &&
+             active_tree_id_ != tree_id &&
+             child_tree_ids_.find(tree_id) != child_tree_ids_.end()) {
+    // If read aloud is searching for a child tree to distill and this tree id
+    // matches one of the possible child ids, set the active tree to this tree
+    // so that it can be distilled.
+    VLOG(1) << "Using child to set active tree id to " << tree_id;
+    SetActiveTreeId(tree_id);
+
+    // Ensure that requires_distillation_ is set to true whenever there's a
+    // match for a child id. Otherwise, depending on how accessibility events
+    // for the child tree are received, the content won't be distilled
+    // because ReadAnythingAppController doesn't receive a signal that
+    // distillation should be attempted again.
+    requires_distillation_ = true;
+  }
+}
+
+void ReadAnythingAppModel::ApplyAccessibilityUpdates(
+    const ui::AXTreeID& tree_id,
+    Updates& updates,
+    std::vector<ui::AXEvent>& events) {
+  DCHECK_NE(tree_id, ui::AXTreeIDUnknown());
+  // PrepareForAXTreeUpdates is idempotent, so call it to make sure that the
+  // AXTree state is up-to-date.
+  PrepareForAXTreeUpdates(tree_id);
+  VLOG(1) << "ApplyAccessibilityUpdates for " << tree_id;
+
   if (tree_id == active_tree_id_) {
-    if (distillation_in_progress_ || speech_playing) {
-      AddPendingUpdates(tree_id, updates);
-      ProcessNonGeneratedEvents(events);
-      if (timer_since_tree_changed_for_data_collection_.IsRunning()) {
-        CHECK(features::IsDataCollectionModeForScreen2xEnabled());
-        timer_since_tree_changed_for_data_collection_.Reset();
-      }
-      VLOG(1) << "Returning early in AccessibilityEventReceived because "
-                 "distillation is in progress";
-      return;
-    }
     // We need to unserialize old updates before we can unserialize the new
     // ones.
-    VLOG(1) << "AccessibilityEventReceived- tree ID is the active tree";
+    VLOG(1) << "ApplyAccessibilityUpdates- tree ID is the active tree";
     UnserializePendingUpdates(tree_id);
     UnserializeUpdates(updates, tree_id);
     ProcessNonGeneratedEvents(events);
   } else {
-    VLOG(1) << "AccessibilityEventReceived- tree ID is not the active tree";
+    VLOG(1) << "ApplyAccessibilityUpdates- tree ID is not the active tree";
     UnserializeUpdates(updates, tree_id);
   }
 
+  HandleScreen2xDataCollection(updates);
+}
+
+void ReadAnythingAppModel::HandleScreen2xDataCollection(
+    const Updates& updates) {
   if (features::IsDataCollectionModeForScreen2xEnabled() && updates.size()) {
     waiting_for_tree_change_timer_trigger_ = true;
     timer_since_tree_changed_for_data_collection_.Start(
         FROM_HERE, kTimeElapsedSinceTreeChangedForDataCollection,
         base::BindRepeating(&ReadAnythingAppModel::OnTreeChangeTimerTriggered,
                             weak_ptr_factory_.GetWeakPtr()));
+  }
+}
+
+void ReadAnythingAppModel::QueueAccessibilityUpdates(
+    const ui::AXTreeID& tree_id,
+    Updates& updates,
+    std::vector<ui::AXEvent>& events) {
+  DCHECK_NE(tree_id, ui::AXTreeIDUnknown());
+  // PrepareForAXTreeUpdates is idempotent, so call it to make sure that the
+  // AXTree state is up-to-date.
+  PrepareForAXTreeUpdates(tree_id);
+  VLOG(1) << "QueueAccessibilityUpdates for " << tree_id;
+
+  // If a tree update on the active tree is received while distillation is in
+  // progress, cache updates that are received but do not yet unserialize them.
+  // Drawing must be done on the same tree that was sent to the distiller,
+  // so it’s critical that updates are not unserialized until drawing is
+  // complete.
+  AddPendingUpdates(tree_id, updates);
+  ProcessNonGeneratedEvents(events);
+  if (timer_since_tree_changed_for_data_collection_.IsRunning()) {
+    CHECK(features::IsDataCollectionModeForScreen2xEnabled());
+    timer_since_tree_changed_for_data_collection_.Reset();
   }
 }
 
@@ -660,7 +699,7 @@ void ReadAnythingAppModel::OnAXTreeDestroyed(const ui::AXTreeID& tree_id) {
 }
 
 ukm::SourceId ReadAnythingAppModel::GetUkmSourceId() const {
-  if (base::Contains(tree_infos_, active_tree_id_)) {
+  if (tree_infos_.contains(active_tree_id_)) {
     ReadAnythingAppModel::AXTreeInfo* tree_info =
         tree_infos_.at(active_tree_id_).get();
     if (tree_info) {
@@ -673,11 +712,11 @@ ukm::SourceId ReadAnythingAppModel::GetUkmSourceId() const {
 void ReadAnythingAppModel::SetUkmSourceIdForTree(const ui::AXTreeID& tree,
                                                  ukm::SourceId ukm_source_id) {
   // We may receive an OnActiveAXTreeIDChanged event on a tree before we've
-  // received an AccessibilityEventReceived event adding the tree to
+  // received an ApplyAccessibilityUpdates event adding the tree to
   // tree_infos_. When this happens, we should keep track of the ukm_source_id,
   // and later, if the tree is added to tree_infos_ while it's still active,
   // we can try again to set the ukm source.
-  if (!base::Contains(tree_infos_, active_tree_id_)) {
+  if (!tree_infos_.contains(active_tree_id_)) {
     pending_ukm_sources_[tree] = ukm_source_id;
     return;
   }
@@ -686,7 +725,7 @@ void ReadAnythingAppModel::SetUkmSourceIdForTree(const ui::AXTreeID& tree,
 }
 
 void ReadAnythingAppModel::SetUkmSourceId(ukm::SourceId ukm_source_id) {
-  if (!base::Contains(tree_infos_, active_tree_id_)) {
+  if (!tree_infos_.contains(active_tree_id_)) {
     return;
   }
   ReadAnythingAppModel::AXTreeInfo* tree_info =
@@ -702,7 +741,7 @@ void ReadAnythingAppModel::SetUkmSourceId(ukm::SourceId ukm_source_id) {
 }
 
 int ReadAnythingAppModel::GetNumSelections() const {
-  if (base::Contains(tree_infos_, active_tree_id_)) {
+  if (tree_infos_.contains(active_tree_id_)) {
     ReadAnythingAppModel::AXTreeInfo* tree_info =
         tree_infos_.at(active_tree_id_).get();
     if (tree_info) {
@@ -713,7 +752,7 @@ int ReadAnythingAppModel::GetNumSelections() const {
 }
 
 void ReadAnythingAppModel::SetNumSelections(int num_selections) {
-  if (!base::Contains(tree_infos_, active_tree_id_)) {
+  if (!tree_infos_.contains(active_tree_id_)) {
     return;
   }
   ReadAnythingAppModel::AXTreeInfo* tree_info =
@@ -734,7 +773,7 @@ ui::AXNode* ReadAnythingAppModel::GetAXNode(
 }
 
 bool ReadAnythingAppModel::NodeIsContentNode(ui::AXNodeID ax_node_id) const {
-  return base::Contains(content_node_ids_, ax_node_id);
+  return std::ranges::contains(content_node_ids_, ax_node_id);
 }
 
 void ReadAnythingAppModel::AdjustTextSize(int increment) {
@@ -1009,7 +1048,7 @@ void ReadAnythingAppModel::ProcessGeneratedEvents(
         break;
       case ui::AXEventGenerator::Event::EXPANDED:
         if (features::IsReadAnythingReadAloudEnabled()) {
-          if (base::Contains(content_node_ids_, event.node_id)) {
+          if (std::ranges::contains(content_node_ids_, event.node_id)) {
             redraw_required_ = true;
           } else {
             requires_distillation_ = true;

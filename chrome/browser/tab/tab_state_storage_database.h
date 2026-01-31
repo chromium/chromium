@@ -9,8 +9,10 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <string_view>
 #include <vector>
 
+#include "base/containers/span.h"
 #include "base/files/file_path.h"
 #include "base/functional/callback_forward.h"
 #include "base/types/pass_key.h"
@@ -54,7 +56,8 @@ class TabStateStorageDatabase {
     bool mark_failed_ = false;
   };
 
-  explicit TabStateStorageDatabase(const base::FilePath& profile_path);
+  TabStateStorageDatabase(const base::FilePath& profile_path,
+                          bool support_off_the_record_data);
   ~TabStateStorageDatabase();
   TabStateStorageDatabase(const TabStateStorageDatabase&) = delete;
   TabStateStorageDatabase& operator=(const TabStateStorageDatabase&) = delete;
@@ -65,7 +68,7 @@ class TabStateStorageDatabase {
   // Saves a node to the database.
   bool SaveNode(OpenTransaction* transaction,
                 StorageId id,
-                std::string window_tag,
+                std::string_view window_tag,
                 bool is_off_the_record,
                 TabStorageType type,
                 std::vector<uint8_t> payload,
@@ -75,6 +78,8 @@ class TabStateStorageDatabase {
   // This will silently fail if the node does not already exist.
   bool SaveNodePayload(OpenTransaction* transaction,
                        StorageId id,
+                       std::string_view window_tag,
+                       bool is_off_the_record,
                        std::vector<uint8_t> payload);
 
   // Saves the children of a node to the database.
@@ -95,7 +100,7 @@ class TabStateStorageDatabase {
 
   // Loads all nodes from the database.
   std::unique_ptr<StorageLoadedData> LoadAllNodes(
-      const std::string& window_tag,
+      std::string_view window_tag,
       bool is_off_the_record,
       std::unique_ptr<StorageLoadedData::Builder> builder);
 
@@ -103,13 +108,54 @@ class TabStateStorageDatabase {
   void ClearAllNodes();
 
   // Clears all nodes for a given window from the database.
-  void ClearWindow(const std::string& window_tag);
+  void ClearWindow(std::string_view window_tag);
+
+  // Clears all nodes for a given window from the database except for the
+  // provided storage IDs.
+  bool ClearNodesForWindowExcept(std::string_view window_tag,
+                                 bool is_off_the_record,
+                                 const std::vector<StorageId>& ids);
+
+  // Sets the key to seal OTR payloads with. The window tag is moved
+  // internally and this is always called in a posted callback hence
+  // the use of std::string.
+  void SetKey(std::string window_tag, std::vector<uint8_t> key);
+
+  // Remove key for OTR sealing from a given window.
+  void RemoveKey(std::string_view window_tag);
+
+#if defined(NDEBUG)
+  // Dumps the entire state of the database to the log for debugging. Do not use
+  // in production.
+  //
+  // Because `StorageId` tokens are randomly generated and difficult to visually
+  // parse, this method maps them to sequential, temporary integers
+  // (e.g., 1, 2, 3...) for the duration of the dump.
+  //
+  // The output consists of:
+  // 1. A list of all nodes, using the temporary integers for `id` and
+  // `children`.
+  // 2. A legend mapping each temporary integer back to its original `StorageId`
+  // token.
+  void PrintAll();
+#endif
 
  private:
-  base::FilePath profile_path_;
+  std::optional<std::vector<uint8_t>> Seal(StorageId id,
+                                           std::string_view window_tag,
+                                           base::span<const uint8_t> payload);
+  std::optional<std::vector<uint8_t>> Open(StorageId storage_id,
+                                           std::string_view window_tag,
+                                           base::span<const uint8_t> payload);
+
+  const base::FilePath profile_path_;
+  const bool support_off_the_record_data_;
   sql::Database db_;
   sql::MetaTable meta_table_;
   std::optional<OpenTransaction> open_transaction_;
+
+  // A map of window tags to their associated keys for OTR payloads.
+  absl::flat_hash_map<std::string, std::vector<uint8_t>> keys_;
 };
 
 }  // namespace tabs

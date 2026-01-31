@@ -42,7 +42,7 @@ class IdleAppNameNotificationViewTest : public BrowserWithTestWindowTest {
 
     BrowserWithTestWindowTest::SetUp();
 
-    base::Value::Dict manifest;
+    base::DictValue manifest;
     manifest.Set(extensions::manifest_keys::kName, "Test");
     manifest.Set(extensions::manifest_keys::kVersion, "1");
     manifest.Set(extensions::manifest_keys::kManifestVersion, 2);
@@ -53,7 +53,7 @@ class IdleAppNameNotificationViewTest : public BrowserWithTestWindowTest {
     correct_extension_ = extensions::Extension::Create(
         base::FilePath(), extensions::mojom::ManifestLocation::kUnpacked,
         manifest, extensions::Extension::NO_FLAGS, kTestAppName, &error);
-    base::Value::Dict manifest2;
+    base::DictValue manifest2;
     manifest2.Set(extensions::manifest_keys::kName, "Test");
     manifest2.Set(extensions::manifest_keys::kVersion, "1");
     manifest2.Set(extensions::manifest_keys::kDescription, "Test app");

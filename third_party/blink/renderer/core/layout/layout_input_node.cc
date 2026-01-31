@@ -225,7 +225,8 @@ void LayoutInputNode::ShowNodeTree(const LayoutInputNode* target) const {
 }
 
 void LayoutInputNode::ShowNodeTreeFromRoot() const {
-  BlockNode(box_->View()).ShowNodeTree(this);
+  LayoutView* view = box_ ? box_->View() : nullptr;
+  BlockNode(view).ShowNodeTree(this);
 }
 #endif
 

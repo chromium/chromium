@@ -354,7 +354,7 @@ ci.builder(
 
 ci.builder(
     name = "android-desktop-arm64-official",
-    # TODO(crbug.com/439887309): Enable on ANDROID_BRANCHES
+    branch_selector = branches.selector.ANDROID_BRANCHES,
     description_html = "Official builder for Android desktop arm64.",
     builder_spec = builder_config.builder_spec(
         gclient_config = builder_config.gclient_config(
@@ -406,7 +406,7 @@ ci.builder(
 
 ci.builder(
     name = "android-desktop-x64-official",
-    # TODO(crbug.com/439887309): Enable on ANDROID_BRANCHES
+    branch_selector = branches.selector.ANDROID_BRANCHES,
     description_html = "Official builder for Android desktop x64.",
     builder_spec = builder_config.builder_spec(
         gclient_config = builder_config.gclient_config(
@@ -489,6 +489,7 @@ ci.builder(
         additional_compile_targets = [
             "base_unittests",
             "browser_tests",
+            "chrome",
             "chromeos_unittests",
             "components_unittests",
             "compositor_unittests",

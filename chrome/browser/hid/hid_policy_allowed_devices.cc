@@ -8,7 +8,6 @@
 #include <string>
 #include <vector>
 
-#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/values.h"
 #include "chrome/common/pref_names.h"
@@ -75,33 +74,30 @@ void HidPolicyAllowedDevices::RegisterLocalStatePrefs(
 bool HidPolicyAllowedDevices::HasDevicePermission(
     const url::Origin& origin,
     const device::mojom::HidDeviceInfo& device) {
-  if (base::Contains(all_devices_policy_, origin)) {
+  if (all_devices_policy_.contains(origin)) {
     return true;
   }
 
   auto vendor_it = vendor_policy_.find(device.vendor_id);
-  if (vendor_it != vendor_policy_.end() &&
-      base::Contains(vendor_it->second, origin)) {
+  if (vendor_it != vendor_policy_.end() && vendor_it->second.contains(origin)) {
     return true;
   }
 
   auto device_it = device_policy_.find({device.vendor_id, device.product_id});
-  if (device_it != device_policy_.end() &&
-      base::Contains(device_it->second, origin)) {
+  if (device_it != device_policy_.end() && device_it->second.contains(origin)) {
     return true;
   }
 
   for (const auto& collection : device.collections) {
     auto usage_page_it = usage_page_policy_.find(collection->usage->usage_page);
     if (usage_page_it != usage_page_policy_.end() &&
-        base::Contains(usage_page_it->second, origin)) {
+        usage_page_it->second.contains(origin)) {
       return true;
     }
 
     auto usage_it = usage_policy_.find(
         {collection->usage->usage_page, collection->usage->usage});
-    if (usage_it != usage_policy_.end() &&
-        base::Contains(usage_it->second, origin)) {
+    if (usage_it != usage_policy_.end() && usage_it->second.contains(origin)) {
       return true;
     }
   }
@@ -112,7 +108,7 @@ bool HidPolicyAllowedDevices::HasDevicePermission(
 void HidPolicyAllowedDevices::LoadAllowAllDevicesForUrlsPolicy() {
   all_devices_policy_.clear();
 
-  const base::Value::List& pref_value = pref_change_registrar_.prefs()->GetList(
+  const base::ListValue& pref_value = pref_change_registrar_.prefs()->GetList(
       prefs::kManagedWebHidAllowAllDevicesForUrls);
 
   // The pref value has already been validated by the policy handler, so it is
@@ -134,7 +130,7 @@ void HidPolicyAllowedDevices::LoadAllowDevicesForUrlsPolicy() {
   // The pref value has already been validated by the policy handler, so it is
   // safe to assume that |pref_value| follows the policy template.
   for (const auto& item : pref_value) {
-    const base::Value::List* urls_value = item.GetDict().FindList(kPrefUrlsKey);
+    const base::ListValue* urls_value = item.GetDict().FindList(kPrefUrlsKey);
     DCHECK(urls_value);
 
     std::vector<url::Origin> urls;
@@ -147,7 +143,7 @@ void HidPolicyAllowedDevices::LoadAllowDevicesForUrlsPolicy() {
     if (urls.empty())
       continue;
 
-    const base::Value::List* devices_value =
+    const base::ListValue* devices_value =
         item.GetDict().FindList(kPrefDevicesKey);
     DCHECK(devices_value);
     for (const auto& device_value : *devices_value) {
@@ -173,13 +169,13 @@ void HidPolicyAllowedDevices::LoadAllowDevicesWithHidUsagesForUrlsPolicy() {
   usage_policy_.clear();
   usage_page_policy_.clear();
 
-  const base::Value::List& pref_value = pref_change_registrar_.prefs()->GetList(
+  const base::ListValue& pref_value = pref_change_registrar_.prefs()->GetList(
       prefs::kManagedWebHidAllowDevicesWithHidUsagesForUrls);
 
   // The pref value has already been validated by the policy handler, so it is
   // safe to assume that |pref_value| follows the policy template.
   for (const auto& item : pref_value) {
-    const base::Value::List* urls_value = item.GetDict().FindList(kPrefUrlsKey);
+    const base::ListValue* urls_value = item.GetDict().FindList(kPrefUrlsKey);
     DCHECK(urls_value);
 
     std::vector<url::Origin> urls;
@@ -194,7 +190,7 @@ void HidPolicyAllowedDevices::LoadAllowDevicesWithHidUsagesForUrlsPolicy() {
     if (urls.empty())
       continue;
 
-    const base::Value::List* usages_value =
+    const base::ListValue* usages_value =
         item.GetDict().FindList(kPrefUsagesKey);
     DCHECK(usages_value);
     for (const auto& usage_and_page_value : *usages_value) {

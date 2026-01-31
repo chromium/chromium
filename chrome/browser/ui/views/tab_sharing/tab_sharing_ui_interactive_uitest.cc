@@ -36,17 +36,6 @@ class TabSharingMultiContentsViewTest
     ASSERT_TRUE(embedded_test_server()->Start());
   }
 
-  void SetUpCommandLine(base::CommandLine* command_line) override {
-    InteractiveBrowserTest::SetUpCommandLine(command_line);
-    scoped_feature_list_.InitWithFeatures(
-        {
-#if BUILDFLAG(IS_CHROMEOS)
-            features::kTabCaptureBlueBorderCrOS,
-#endif
-        },
-        {});
-  }
-
  protected:
   TabStripModel* tab_strip_model() { return browser()->tab_strip_model(); }
 
@@ -98,6 +87,7 @@ class TabSharingMultiContentsViewTest
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
+#if !BUILDFLAG(IS_CHROMEOS)
 IN_PROC_BROWSER_TEST_F(TabSharingMultiContentsViewTest,
                        ContentsSharingBorderShows) {
   RunTestSequence(
@@ -144,26 +134,16 @@ IN_PROC_BROWSER_TEST_F(TabSharingMultiContentsViewTest,
       SelectTab(kTabStripElementId, 1), WaitForHide(kContentsCaptureBorder),
       CheckIsCaptureContentsBorderShowing(0, false));
 }
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_CHROMEOS)
 class ChromeOsTabSharingTest : public TabSharingMultiContentsViewTest {
  public:
-  void SetUpCommandLine(base::CommandLine* command_line) override {
-    InteractiveBrowserTest::SetUpCommandLine(command_line);
-    scoped_feature_list_.InitWithFeatures(
-        {}, {
-                features::kTabCaptureBlueBorderCrOS,
-            });
-  }
-
   TabCaptureContentsBorderHelper* GetTabCaptureContentsBorderHelper(int index) {
     TabStripModel* const tab_strip_model = browser()->tab_strip_model();
     return TabCaptureContentsBorderHelper::FromWebContents(
         tab_strip_model->GetWebContentsAt(index));
   }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_F(ChromeOsTabSharingTest, BorderStaysHidden) {

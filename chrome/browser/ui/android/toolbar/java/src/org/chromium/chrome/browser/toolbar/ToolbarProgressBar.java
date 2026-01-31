@@ -134,7 +134,9 @@ public class ToolbarProgressBar extends ClipDrawableProgressBar
                                         getDrawable().getBounds().right
                                                 - getDrawable().getBounds().left);
                         mAnimatingView.update(getProgress() * width);
-                        if (shouldAnimateCompositedLayer()) {
+
+                        if (shouldAnimateCompositedLayer()
+                                && getDesiredAndroidVisibility() == VISIBLE) {
                             mAnimatingView.setVisibility(VISIBLE);
                         }
                         mAnimatingView.startAnimation();
@@ -253,8 +255,7 @@ public class ToolbarProgressBar extends ClipDrawableProgressBar
         setAlpha(0.0f);
         mAnimationLogic = new ProgressAnimationSmooth();
 
-        if (!(ChromeFeatureList.sAndroidAnimatedProgressBarInViz.isEnabled()
-                || ChromeFeatureList.sAndroidAnimatedProgressBarInBrowser.isEnabled())) {
+        if (!ChromeFeatureList.sAndroidAnimatedProgressBarInBrowser.isEnabled()) {
             setVisibility(View.VISIBLE);
         }
 

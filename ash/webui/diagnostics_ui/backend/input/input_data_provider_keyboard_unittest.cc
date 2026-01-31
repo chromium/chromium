@@ -14,7 +14,6 @@
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/webui/diagnostics_ui/backend/input/input_data_provider.h"
-#include "ash/webui/diagnostics_ui/mojom/input_data_provider.mojom-forward.h"
 #include "ash/webui/diagnostics_ui/mojom/input_data_provider.mojom-shared.h"
 #include "base/command_line.h"
 #include "base/files/file_path.h"

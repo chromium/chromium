@@ -21,6 +21,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_attributes_storage.h"
 #include "chrome/browser/profiles/profile_observer.h"
+#include "chrome/browser/startup/startup_launch_manager.h"
 #include "chrome/browser/status_icons/status_icon.h"
 #include "chrome/browser/status_icons/status_icon_menu_model.h"
 #include "chrome/browser/ui/browser_list_observer.h"
@@ -262,6 +263,9 @@ class BackgroundModeManager : public BrowserListObserver,
   using BackgroundModeInfoMap =
       std::map<const Profile*, std::unique_ptr<BackgroundModeData>>;
 
+  // Returns whether startup launch should be enabled.
+  bool ShouldLaunchOnStartup() const;
+
   void OnAppTerminating();
 
   // Called when ExtensionSystem is ready.
@@ -296,10 +300,6 @@ class BackgroundModeManager : public BrowserListObserver,
   // Invoked when a background client is installed so we can ensure that
   // launch-on-startup is enabled if appropriate.
   void OnBackgroundClientInstalled(const std::u16string& name);
-
-  // Update whether Chrome should be launched on startup, depending on whether
-  // |this| has any persistent background clients.
-  void UpdateEnableLaunchOnStartup();
 
   // Invoked when a client is installed so we can display a platform-specific
   // notification.
@@ -398,6 +398,10 @@ class BackgroundModeManager : public BrowserListObserver,
   raw_ptr<ProfileAttributesStorage, AcrossTasksDanglingUntriaged>
       profile_storage_;
 
+  // Handles interaction with StartupLaunchManager.
+  StartupLaunchManager::Client startup_launch_client_{
+      StartupLaunchReason::kExtensions};
+
   // Registrars for managing our change observers.
   base::CallbackListSubscription on_app_terminating_subscription_;
   PrefChangeRegistrar pref_registrar_;
@@ -441,7 +445,6 @@ class BackgroundModeManager : public BrowserListObserver,
   // extensions are finished installing.
   std::unique_ptr<ScopedKeepAlive> keep_alive_for_force_installed_extensions_;
 
-
   // Set to true when Chrome is running with the --keep-alive-for-test flag
   // (used for testing background mode without having to install a background
   // app).
@@ -453,8 +456,6 @@ class BackgroundModeManager : public BrowserListObserver,
 
   // Set to true when background mode is suspended.
   bool background_mode_suspended_ = false;
-
-  std::optional<bool> launch_on_startup_enabled_;
 
   base::WeakPtrFactory<BackgroundModeManager> weak_factory_{this};
 };

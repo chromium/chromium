@@ -90,8 +90,7 @@ class MahiErrorStatusViewPixelTestBase : public AshTestBase {
 
   void SetUp() override {
     scoped_feature_list_.InitWithFeatures(
-        /*enabled_features=*/{chromeos::features::kMahi,
-                              chromeos::features::kFeatureManagementMahi},
+        /*enabled_features=*/{chromeos::features::kFeatureManagementMahi},
         /*disabled_features=*/{});
     AshTestBase::SetUp();
 

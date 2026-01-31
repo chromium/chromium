@@ -33,8 +33,8 @@ public class SupplierUtilsTest {
         Supplier<Integer> baseSupplier = () -> 4;
         OneshotSupplierImpl<String> oneshotSupplier = new OneshotSupplierImpl<>();
         oneshotSupplier.set("foo");
-        ObservableSupplierImpl<Object> observableSupplier = new ObservableSupplierImpl<>();
-        observableSupplier.set(new Object());
+        SettableNonNullObservableSupplier<Object> observableSupplier =
+                ObservableSuppliers.createNonNull(new Object());
         SyncOneshotSupplierImpl<List<?>> syncOneshotSupplier = new SyncOneshotSupplierImpl<>();
         syncOneshotSupplier.set(new ArrayList<>());
 
@@ -53,8 +53,8 @@ public class SupplierUtilsTest {
         Supplier<Integer> baseSupplier = () -> 4;
         OneshotSupplierImpl<String> oneshotSupplier = new OneshotSupplierImpl<>();
 
-        ObservableSupplierImpl<Object> observableSupplier = new ObservableSupplierImpl<>();
-        observableSupplier.set(new Object());
+        SettableNonNullObservableSupplier<Object> observableSupplier =
+                ObservableSuppliers.createNonNull(new Object());
 
         SyncOneshotSupplierImpl<List<?>> syncOneshotSupplier = new SyncOneshotSupplierImpl<>();
 
@@ -77,7 +77,8 @@ public class SupplierUtilsTest {
     @Test
     public void testWaitForAll_NoSuppliersAlreadyHaveValues() throws TimeoutException {
         OneshotSupplierImpl<String> oneshotSupplier = new OneshotSupplierImpl<>();
-        ObservableSupplierImpl<Object> observableSupplier = new ObservableSupplierImpl<>();
+        SettableMonotonicObservableSupplier<Object> observableSupplier =
+                ObservableSuppliers.createMonotonic();
         SyncOneshotSupplierImpl<List<?>> syncOneshotSupplier = new SyncOneshotSupplierImpl<>();
 
         CallbackHelper callbackHelper = new CallbackHelper();
@@ -112,7 +113,8 @@ public class SupplierUtilsTest {
 
     @Test
     public void testWaitForAll_WaitForObservableSupplier() throws TimeoutException {
-        ObservableSupplierImpl<Object> supplier = new ObservableSupplierImpl<>();
+        SettableMonotonicObservableSupplier<Object> supplier =
+                ObservableSuppliers.createMonotonic();
 
         CallbackHelper callbackHelper = new CallbackHelper();
         SupplierUtils.waitForAll(callbackHelper::notifyCalled, supplier);

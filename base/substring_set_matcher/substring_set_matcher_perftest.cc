@@ -8,7 +8,6 @@
 #include <string>
 #include <vector>
 
-#include "base/containers/contains.h"
 #include "base/rand_util.h"
 #include "base/time/time.h"
 #include "base/timer/elapsed_timer.h"
@@ -25,7 +24,7 @@ std::string GetRandomString(size_t len) {
   std::vector<char> random_chars;
   random_chars.reserve(len);
   for (size_t i = 0; i < len; i++) {
-    random_chars.push_back(base::RandInt('a', 'z'));
+    random_chars.push_back(base::RandIntInclusive('a', 'z'));
   }
 
   return std::string(random_chars.begin(), random_chars.end());
@@ -44,7 +43,7 @@ TEST(SubstringSetMatcherPerfTest, RandomKeys) {
     std::string str = GetRandomString(kPatternLen);
 
     // Ensure we don't have any duplicate pattern strings.
-    if (base::Contains(pattern_strings, str)) {
+    if (pattern_strings.contains(str)) {
       continue;
     }
 

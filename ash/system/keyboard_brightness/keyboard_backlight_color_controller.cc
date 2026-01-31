@@ -144,7 +144,7 @@ KeyboardBacklightColorController::GetBacklightZoneColors(
   auto* rgb_keyboard_manager = Shell::Get()->rgb_keyboard_manager();
   DCHECK(rgb_keyboard_manager);
 
-  const base::Value::Dict& color_dict =
+  const base::DictValue& color_dict =
       pref_service->GetDict(prefs::kPersonalizationKeyboardBacklightZoneColors);
   const int zone_count = rgb_keyboard_manager->GetZoneCount();
   std::vector<personalization_app::mojom::BacklightColor> colors;

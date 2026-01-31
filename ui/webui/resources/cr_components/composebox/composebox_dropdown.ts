@@ -52,6 +52,9 @@ export class ComposeboxDropdownElement extends CrLitElement {
       maxSuggestions: {
         type: Number,
       },
+      inDeepSearchMode: {
+        type: Boolean,
+      },
     };
   }
 
@@ -63,6 +66,7 @@ export class ComposeboxDropdownElement extends CrLitElement {
   // height. A value of 0 indicates that no suggestions should be shown.
   // A value of null or -1 indicates that all suggestions should be shown.
   accessor maxSuggestions: number|null = null;
+  accessor inDeepSearchMode: boolean = false;
 
   //============================================================================
   // Public methods

@@ -10,6 +10,7 @@
  * #css_wrapper_metadata_end */
 
 :host {
+  --cr-searchbox-dropdown-header-padding-inline-start: 16px;
   --cr-searchbox-results-search-icon-size: 16px;
   --cr-searchbox-icon-container-size: 28px;
   --cr-searchbox-match-icon-container-background-fallback: var(--color-omnibox-results-background-hovered);
@@ -23,10 +24,9 @@
   --cr-searchbox-match-font-weight: 700;
 
   --text-input-inline-start-spacing: 16px;
-  --contextual-entrypoint-and-carousel-context-menu-container-padding-inline-start: 12px;
+  --contextual-entrypoint-and-carousel-context-menu-container-padding-inline-start: 0;
   --contextual-entrypoint-and-carousel-carousel-divider-margin-top: 8px;
   --contextual-entrypoint-and-carousel-carousel-divider-margin-bottom: 8px;
-  --contextual-entrypoint-and-carousel-context-menu-container-inline-start: 0px;
 
   font-size: var(--omnibox-font-size);
 
@@ -38,12 +38,9 @@
   --color-searchbox-results-action-chip-icon: var(--color-omnibox-results-button-icon);
   --color-searchbox-results-action-chip-icon-selected: var(--color-omnibox-results-button-icon-selected);
   --color-searchbox-results-background: var(--color-omnibox-results-background);
-  --color-searchbox-results-background-selected: var(--color-omnibox-results-background-selected);
-  --color-searchbox-results-button-hover: var(--color-omnibox-results-button-ink-drop-row-hovered);
   --color-searchbox-results-button-selected-hover: var(--color-omnibox-results-button-ink-drop-row-selected);
   --color-searchbox-results-dim-selected: var(--color-omnibox-results-text-dimmed-selected);
   --color-searchbox-results-foreground-dimmed: var(--color-omnibox-results-text-dimmed);
-  --color-searchbox-results-foreground-selected: var(--color-omnibox-results-text-selected);
   --color-searchbox-results-icon: var(--color-omnibox-results-icon);
   --color-searchbox-results-icon-container-background: unset;
   --color-searchbox-results-starter-pack-icon: var(--color-omnibox-results-starter-pack-icon);
@@ -54,13 +51,32 @@
 }
 
 contextual-entrypoint-and-carousel {
+  --composebox-context-menu-entrypoint-button-color: var(--color-omnibox-context-entrypoint-text);
   --composebox-lens-search-icon-color: var(--color-omnibox-composebox-primary-action);
   --composebox-lens-search-button-text-color: var(--color-omnibox-text);
+  --color-composebox-context-entrypoint-hover-background: var(--color-omnibox-action-icon-hover);
+  --color-composebox-context-entrypoint-text: var(--color-omnibox-context-entrypoint-text);
   --color-composebox-lens-search-button-border-color: var(--color-omnibox-keyword-separator);
+  --color-composebox-recent-tab-chip-outline: var(--color-omnibox-keyword-separator);
 }
 
-contextual-entrypoint-and-carousel[searchbox-layout-mode="TallBottomContext"] {
+contextual-entrypoint-and-carousel[searchbox-layout-mode='TallBottomContext'] {
   --contextual-entrypoint-and-carousel-context-menu-container-margin-bottom: 9px;
+}
+
+contextual-entrypoint-and-carousel[searchbox-layout-mode='TallTopContext'] {
+  --contextual-entrypoint-and-carousel-contextual-chip-padding-bottom: 10px;
+
+  &:not([show-dropdown]) {
+    --contextual-entrypoint-and-carousel-contextual-chip-padding-bottom: 0px;
+    --contextual-entrypoint-and-carousel-context-menu-container-margin-bottom: 9px;
+  }
+}
+
+contextual-entrypoint-and-carousel[searchbox-layout-mode='Compact'] {
+  --contextual-entrypoint-and-carousel-context-entrypoint-padding-inline: 0px;
+  --contextual-entrypoint-and-carousel-context-menu-container-padding-inline-start: 12px;
+  --contextual-entrypoint-and-carousel-contextual-chip-padding-bottom: 16px;
 }
 
 /**
@@ -69,15 +85,6 @@ contextual-entrypoint-and-carousel[searchbox-layout-mode="TallBottomContext"] {
  */
 :host([can-show-secondary-side][has-secondary-side]) {
   --cr-searchbox-secondary-side-display: block;
-}
-
-#addContextButton {
-  --cr-button-text-color: var(--color-omnibox-context-entrypoint-text);
-  --cr-hover-background-color: var(--color-omnibox-action-icon-hover);
-  --cr-icon-button-fill-color: var(--cr-button-text-color);
-  margin-inline-start: 6px;
-  margin-bottom: 10px;
-  border: initial;
 }
 
 /**

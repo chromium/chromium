@@ -13,7 +13,7 @@
 #include <utility>
 #include <vector>
 
-#include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/dcheck_is_on.h"
 #include "base/files/file.h"
 #include "base/files/file_path.h"
@@ -91,9 +91,8 @@ class SqlRecoveryTest : public testing::Test,
   bool OverwriteDatabaseHeader() {
     base::File file(db_path_,
                     base::File::FLAG_CREATE_ALWAYS | base::File::FLAG_WRITE);
-    static constexpr char kText[] = "Now is the winter of our discontent.";
-    constexpr int kTextBytes = sizeof(kText) - 1;
-    return UNSAFE_TODO(file.Write(0, kText, kTextBytes)) == kTextBytes;
+    return file.WriteAndCheck(0, base::byte_span_with_nul_from_cstring(
+                                     "Now is the winter of our discontent."));
   }
 
  protected:

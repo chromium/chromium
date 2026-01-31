@@ -4,6 +4,7 @@ include_rules = [
   "+components/browser_ui/test/android",
   "+components/externalauth/android",
   "+components/browser_ui/device_lock/android",
+  "+components/browser_ui/modaldialog/android",
 ]
 
 specific_include_rules = {

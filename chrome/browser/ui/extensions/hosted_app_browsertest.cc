@@ -32,10 +32,10 @@
 #include "chrome/browser/sessions/tab_restore_service_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
-#include "chrome/browser/ui/browser_dialogs.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/dialogs/browser_dialogs.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/toolbar/app_menu_model.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
@@ -541,7 +541,7 @@ using HostedAppTest = HostedOrWebAppTest;
 // Tests that hosted apps are not web apps.
 IN_PROC_BROWSER_TEST_P(HostedAppTest, NotWebApp) {
   SetupApp("app");
-  EXPECT_FALSE(registrar().IsInRegistrar(app_id_));
+  EXPECT_FALSE(registrar().GetInstallState(app_id_).has_value());
   const Extension* app =
       ExtensionRegistry::Get(profile())->enabled_extensions().GetByID(app_id_);
   EXPECT_TRUE(app->is_hosted_app());
@@ -658,7 +658,7 @@ IN_PROC_BROWSER_TEST_P(HostedAppTestWithPrerendering,
           ui::PageTransitionFromInt(ui::PAGE_TRANSITION_TYPED |
                                     ui::PAGE_TRANSITION_FROM_ADDRESS_BAR));
   EXPECT_TRUE(prerender_handle);
-  content::FrameTreeNodeId host_id =
+  content::PrerenderHostId host_id =
       prerender_helper().GetHostForUrl(prerendering_url);
   content::test::PrerenderHostObserver host_observer(*GetNonAppWebContents(),
                                                      host_id);
@@ -1478,7 +1478,7 @@ IN_PROC_BROWSER_TEST_P(HostedAppProcessModelTest, MAYBE_FromOutsideHostedApp) {
 IN_PROC_BROWSER_TEST_P(HostedAppProcessModelTest,
                        AppRegistrarExcludesPackaged) {
   SetupApp("https_app");
-  EXPECT_FALSE(registrar().IsInRegistrar(app_id_));
+  EXPECT_FALSE(registrar().GetInstallState(app_id_).has_value());
 }
 
 // Check that we can successfully complete a navigation to an app URL with a

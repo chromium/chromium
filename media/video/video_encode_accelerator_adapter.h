@@ -18,6 +18,7 @@
 #include "base/sequence_checker.h"
 #include "base/synchronization/lock.h"
 #include "base/time/time.h"
+#include "build/build_config.h"
 #include "media/base/media_export.h"
 #include "media/base/video_encoder.h"
 #include "media/base/video_frame_converter.h"
@@ -91,7 +92,7 @@ class MEDIA_EXPORT VideoEncodeAcceleratorAdapter
   static void DestroyAsync(std::unique_ptr<VideoEncodeAcceleratorAdapter> self);
 
  private:
-  class GpuMemoryBufferVideoFramePool;
+  class MappableSharedImageVideoFramePool;
   class ReadOnlyRegionPool;
   enum class State {
     kNotInitialized,
@@ -135,7 +136,7 @@ class MEDIA_EXPORT VideoEncodeAcceleratorAdapter
   scoped_refptr<base::UnsafeSharedMemoryPool> output_pool_;
   std::vector<std::unique_ptr<base::UnsafeSharedMemoryPool::Handle>>
       output_buffer_handles_;
-  scoped_refptr<GpuMemoryBufferVideoFramePool> gmb_frame_pool_;
+  scoped_refptr<MappableSharedImageVideoFramePool> gmb_frame_pool_;
 
   std::unique_ptr<VideoEncodeAccelerator> accelerator_;
   raw_ptr<GpuVideoAcceleratorFactories> gpu_factories_;
@@ -198,6 +199,12 @@ class MEDIA_EXPORT VideoEncodeAcceleratorAdapter
 
   VideoEncodeAccelerator::Config::EncoderType required_encoder_type_ =
       VideoEncodeAccelerator::Config::EncoderType::kHardware;
+#if BUILDFLAG(IS_FUCHSIA)
+  // TODO(crbug.com/40241991): Fuchsia only supports I420 for now.
+  static constexpr VideoPixelFormat kDefaultPixelFormat = PIXEL_FORMAT_I420;
+#else
+  static constexpr VideoPixelFormat kDefaultPixelFormat = PIXEL_FORMAT_NV12;
+#endif
   bool supports_frame_size_change_ = false;
   bool supports_gpu_shared_images_ = false;
 };

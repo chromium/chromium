@@ -15,7 +15,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/containers/contains.h"
 #include "base/containers/span.h"
 #include "base/files/file.h"
 #include "base/files/file_path.h"
@@ -28,7 +27,6 @@
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/types/cxx23_to_underlying.h"
 #include "base/types/expected.h"
 #include "base/uuid.h"
 #include "build/build_config.h"
@@ -233,7 +231,7 @@ ErrorCode ParseBrowserType(std::string_view value, TagArgs& args) {
   }
 
   args.browser_type =
-      browser_type < base::to_underlying(TagArgs::BrowserType::kMax)
+      browser_type < std::to_underlying(TagArgs::BrowserType::kMax)
           ? TagArgs::BrowserType(browser_type)
           : TagArgs::BrowserType::kUnknown;
 
@@ -629,7 +627,7 @@ ErrorCode ParseAppInstallerDataArgs(std::string_view app_installer_data_args,
 
 // Checks that |args| does not contain |kDisallowedCharInTag|.
 bool IsValidArgs(std::string_view args) {
-  return !base::Contains(args, kDisallowedCharInTag);
+  return !args.contains(kDisallowedCharInTag);
 }
 
 // Returns a `uint16_t` value as big-endian bytes.

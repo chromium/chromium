@@ -33,9 +33,9 @@ namespace sync_preferences::synced_set_up {
  */
 static void JNI_SyncedSetUpUtilsBridge_GetCrossDevicePrefsFromRemoteDevice(
     JNIEnv* env,
-    jlong profile,
-    jlong cross_device_pref_tracker,
-    jlong map_bridge) {
+    int64_t profile,
+    int64_t cross_device_pref_tracker,
+    int64_t map_bridge) {
   syncer::DeviceInfoSyncService* device_info_sync_service =
       DeviceInfoSyncServiceFactory::GetForProfile(
           reinterpret_cast<Profile*>(profile));

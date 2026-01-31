@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-syntax = "proto2";
+edition = "2023";
 
 option optimize_for = LITE_RUNTIME;
 option java_package = "org.chromium.components.metrics";
@@ -10,6 +10,8 @@ option java_package = "org.chromium.components.metrics";
 option java_outer_classname = "ExecutionContextProtos";
 
 package metrics;
+
+option features.enum_type = CLOSED;
 
 // Enums corresponding to the Chrome execution context in which data was
 // collected.

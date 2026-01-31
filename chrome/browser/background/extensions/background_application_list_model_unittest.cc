@@ -60,8 +60,14 @@ class BackgroundApplicationListModelTest
  protected:
   // extensions::ExtensionServiceTestBase:
   void SetUp() override {
+    extensions::ExtensionServiceTestBase::SetUp();
     InitializeEmptyExtensionService();
     model_ = std::make_unique<BackgroundApplicationListModel>(profile());
+  }
+
+  void TearDown() override {
+    model_.reset();
+    extensions::ExtensionServiceTestBase::TearDown();
   }
 
   bool IsBackgroundApp(const Extension& app) {
@@ -85,11 +91,11 @@ enum PushMessagingOption {
 // |background_permission| is true.
 static scoped_refptr<Extension> CreateExtension(const std::string& name,
                                                 bool background_permission) {
-  base::Value::Dict manifest;
+  base::DictValue manifest;
   manifest.Set(extensions::manifest_keys::kVersion, "1.0.0.0");
   manifest.Set(extensions::manifest_keys::kManifestVersion, 3);
   manifest.Set(extensions::manifest_keys::kName, name);
-  base::Value::List permissions;
+  base::ListValue permissions;
   if (background_permission) {
     permissions.Append("background");
   }

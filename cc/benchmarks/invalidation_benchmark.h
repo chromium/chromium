@@ -19,14 +19,14 @@ class LayerTreeHost;
 // measurement.
 class CC_EXPORT InvalidationBenchmark : public MicroBenchmark {
  public:
-  explicit InvalidationBenchmark(base::Value::Dict settings,
+  explicit InvalidationBenchmark(base::DictValue settings,
                                  MicroBenchmark::DoneCallback callback);
   ~InvalidationBenchmark() override;
 
   // Implements MicroBenchmark interface.
   void DidUpdateLayers(LayerTreeHost* layer_tree_host) override;
   void RunOnLayer(PictureLayer* layer) override;
-  bool ProcessMessage(base::Value::Dict message) override;
+  bool ProcessMessage(base::DictValue message) override;
 
  private:
   enum Mode { FIXED_SIZE, LAYER, VIEWPORT, RANDOM };

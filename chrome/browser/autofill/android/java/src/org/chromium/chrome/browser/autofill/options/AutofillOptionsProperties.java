@@ -9,6 +9,7 @@ import android.text.SpannableString;
 import org.chromium.base.Callback;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.ui.modelutil.PropertyKey;
+import org.chromium.ui.modelutil.PropertyModel.ReadableBooleanPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.ReadableObjectPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableBooleanPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
@@ -24,6 +25,8 @@ class AutofillOptionsProperties {
             new ReadableObjectPropertyKey<>("on_third_party_toggle_changed");
     static final WritableObjectPropertyKey<SpannableString> THIRD_PARTY_TOGGLE_HINT =
             new WritableObjectPropertyKey<>("third_party_toggle_hint");
+    static final ReadableBooleanPropertyKey AUTOFILL_AI_SETTING_VISIBLE =
+            new ReadableBooleanPropertyKey("autofill_ai_setting_visible");
 
     static final PropertyKey[] ALL_KEYS =
             new PropertyKey[] {
@@ -31,6 +34,7 @@ class AutofillOptionsProperties {
                 THIRD_PARTY_TOGGLE_IS_READ_ONLY,
                 ON_THIRD_PARTY_TOGGLE_CHANGED,
                 THIRD_PARTY_TOGGLE_HINT,
+                AUTOFILL_AI_SETTING_VISIBLE,
             };
 
     /**

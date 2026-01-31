@@ -48,6 +48,7 @@
 <translation id="2761536921376153655">Math o sgan</translation>
 <translation id="28682968802727151">Rhagolwg adlewyrchu</translation>
 <translation id="2879583609344924966">Mae <ph name="CAMERA" /> wedi'i blygio i mewn.</translation>
+<translation id="3063987824612038785">Bydd yr holl ffeiliau Camera yn cael eu cadw i Google Drive</translation>
 <translation id="3067436040345934772">Panio i'r dde</translation>
 <translation id="3081586908890909590">Newid i recordio fideo</translation>
 <translation id="3091480460059548935">Canfod testun mewn rhagolwg</translation>
@@ -67,6 +68,7 @@
 <translation id="3642192109456033823">Yn prosesu fideo…</translation>
 <translation id="3789724198583203151">Cylchdroi 90 gradd yn wrthglocwedd</translation>
 <translation id="3810838688059735925">Fideo</translation>
+<translation id="386366972082231038">Bydd yr holl ffeiliau Camera yn cael eu cadw i OneDrive</translation>
 <translation id="4060608699153044055">Ni allwch recordio oherwydd lle storio dyfais isel. I ddechrau recordio, mae angen i chi ryddhau le storio ar eich dyfais.</translation>
 <translation id="4061162772429051350"><ph name="MAGAPIXELS_AMOUNT" /> MP</translation>
 <translation id="4118525110028899586">Seibio recordio</translation>
@@ -100,6 +102,7 @@
 <translation id="5634947914995388399">Ehangu'r deialog a stopio sganio</translation>
 <translation id="5662366948659129155">Wrthi'n sganio tudalen <ph name="COUNT" /></translation>
 <translation id="5671277269877808209">Sgwâr</translation>
+<translation id="5725797473946373607">Peidiwch â dangos y ddeialog hon y tro nesaf</translation>
 <translation id="574392208103952083">Canolig</translation>
 <translation id="5746169159649715125">Cadw fel PDF</translation>
 <translation id="5753488212459587150">Galluogi'r modd arbenigwr</translation>
@@ -156,6 +159,7 @@ Os yw'ch adborth yn ymwneud ag ansawdd lluniau neu fideos, atodwch lun neu fideo
 <translation id="7983668134180549431">Mae testun wedi'i ganfod.</translation>
 <translation id="8079255378695216066">Methu â dechrau recordio</translation>
 <translation id="8120146556401698679">Panio gogwyddo chwyddo</translation>
+<translation id="8127459436205030819">Mae'n bosib y bydd eich ffeiliau'n weladwy i'ch gweinyddwr</translation>
 <translation id="8131740175452115882">Cadarnhau</translation>
 <translation id="8145038249676204903">Newid i dynnu llun</translation>
 <translation id="8167081290930651932">Cadw fel Llun</translation>
@@ -165,6 +169,7 @@ Os yw'ch adborth yn ymwneud ag ansawdd lluniau neu fideos, atodwch lun neu fideo
 <translation id="8609951387004618906">Agor <ph name="URL" /></translation>
 <translation id="8629662593426079630">360p</translation>
 <translation id="8711011893539266636">Toglo distewi'r meicroffon. Mae distewi ymlaen</translation>
+<translation id="8712637175834984815">Iawn</translation>
 <translation id="8730621377337864115">Wedi gorffen</translation>
 <translation id="8732462232047530626">Rhagweld metaddata</translation>
 <translation id="874854738381978209">Rhwydwaith Wi-Fi wedi'i ganfod.</translation>

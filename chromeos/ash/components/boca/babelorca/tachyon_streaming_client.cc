@@ -22,7 +22,6 @@
 #include "chromeos/ash/components/boca/babelorca/tachyon_client.h"
 #include "chromeos/ash/components/boca/babelorca/tachyon_constants.h"
 #include "chromeos/ash/components/boca/babelorca/tachyon_response.h"
-#include "chromeos/ash/services/boca/babelorca/mojom/tachyon_parsing_service.mojom-shared.h"
 #include "chromeos/ash/services/boca/babelorca/mojom/tachyon_parsing_service.mojom.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "net/base/load_flags.h"

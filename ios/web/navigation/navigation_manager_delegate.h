@@ -15,6 +15,7 @@
 
 namespace web {
 
+enum class BackForwardNavigationType;
 enum class NavigationInitiationType;
 class NavigationItem;
 class NavigationItemImpl;
@@ -60,10 +61,12 @@ class NavigationManagerDelegate {
   // Instructs WKWebView to navigate to the given navigation item. `wk_item` and
   // `item` must point to the same navigation item. Calling this method may
   // result in an iframe navigation.
-  virtual void GoToBackForwardListItem(WKBackForwardListItem* wk_item,
-                                       NavigationItem* item,
-                                       NavigationInitiationType type,
-                                       bool has_user_gesture) = 0;
+  virtual void GoToBackForwardListItem(
+      WKBackForwardListItem* wk_item,
+      NavigationItem* item,
+      BackForwardNavigationType navigation_type,
+      NavigationInitiationType initiation_type,
+      bool has_user_gesture) = 0;
 
   // Instructs the delegate to remove the underlying web view. The only use case
   // currently is to clear back-forward history in web view before restoring

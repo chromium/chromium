@@ -110,14 +110,14 @@ int CalculateSerializedSizeAndTurnOnMaskBit(
   return static_cast<int>(total_size);
 }
 
-base::Value::Dict NetLogBufferSizeParam(int buffer_size) {
-  base::Value::Dict dict;
+base::DictValue NetLogBufferSizeParam(int buffer_size) {
+  base::DictValue dict;
   dict.Set("read_buffer_size_in_bytes", buffer_size);
   return dict;
 }
 
-base::Value::Dict NetLogFrameHeaderParam(const WebSocketFrameHeader* header) {
-  base::Value::Dict dict;
+base::DictValue NetLogFrameHeaderParam(const WebSocketFrameHeader* header) {
+  base::DictValue dict;
   dict.Set("final", header->final);
   dict.Set("reserved1", header->reserved1);
   dict.Set("reserved2", header->reserved2);

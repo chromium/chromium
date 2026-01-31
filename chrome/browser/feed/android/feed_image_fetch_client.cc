@@ -43,7 +43,7 @@ FeedApi* GetFeedStream() {
 
 }  // namespace
 
-static jint JNI_FeedImageFetchClient_SendRequest(
+static int32_t JNI_FeedImageFetchClient_SendRequest(
     JNIEnv* env,
     std::string& url,
     const JavaRef<jobject>& j_response_callback) {
@@ -63,7 +63,7 @@ static jint JNI_FeedImageFetchClient_SendRequest(
       .GetUnsafeValue();
 }
 
-static void JNI_FeedImageFetchClient_Cancel(JNIEnv* env, jint j_request_id) {
+static void JNI_FeedImageFetchClient_Cancel(JNIEnv* env, int32_t j_request_id) {
   FeedApi* stream = GetFeedStream();
   if (!stream)
     return;

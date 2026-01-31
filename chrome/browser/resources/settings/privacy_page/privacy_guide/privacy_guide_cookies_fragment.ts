@@ -20,7 +20,6 @@ import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bu
 
 import type {MetricsBrowserProxy} from '../../metrics_browser_proxy.js';
 import {MetricsBrowserProxyImpl, PrivacyGuideSettingsStates, PrivacyGuideStepsEligibleAndReached} from '../../metrics_browser_proxy.js';
-import {CookieControlsMode} from '../../site_settings/constants.js';
 import {ThirdPartyCookieBlockingSetting} from '../../site_settings/site_settings_browser_proxy.js';
 
 import {getTemplate} from './privacy_guide_cookies_fragment.html.js';
@@ -39,12 +38,6 @@ export class PrivacyGuideCookiesFragmentElement extends
 
   static get properties() {
     return {
-      /** Cookie control modes for use in bindings. */
-      cookieControlsModeEnum_: {
-        type: Object,
-        value: CookieControlsMode,
-      },
-
       /* Third party cookie blocking settings for use in bindings. */
       thirdPartyCookieBlockingSettingEnum_: {
         type: Object,

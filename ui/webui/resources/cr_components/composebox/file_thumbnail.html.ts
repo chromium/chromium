@@ -14,7 +14,7 @@ export function getHtml(this: ComposeboxFileThumbnailElement) {
   ${this.file.url ? html`
     <div id="tabChip" class="chip">
       <div id="tabThumbnail" class="thumbnail">
-        <cr-composebox-tab-favicon .url="${this.file.url.url}" .size="${24}">
+        <cr-composebox-tab-favicon .url="${this.file.url}" .size="${24}">
         </cr-composebox-tab-favicon>
       </div>
       <div class="tabInfo">
@@ -55,7 +55,7 @@ export function getHtml(this: ComposeboxFileThumbnailElement) {
       </cr-icon-button>`: ''}
     </div>` : html`
     <div id="pdfChip" class="chip">
-      <div id="pdfThumbnail" class="thumbnail">
+      <div id="pdfThumbnail" class="thumbnail" part="thumbnail">
         ${this.file.status === FileUploadStatus.kUploadSuccessful ? html`
           <cr-icon icon="thumbnail:pdf" class="pdf-icon">
           </cr-icon>

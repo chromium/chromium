@@ -38,7 +38,8 @@ class MEDIA_GPU_EXPORT D3D12VideoEncodeAV1Delegate
   GetSupportedProfiles(ID3D12VideoDevice3* video_device);
 
   explicit D3D12VideoEncodeAV1Delegate(
-      Microsoft::WRL::ComPtr<ID3D12VideoDevice3> video_device);
+      Microsoft::WRL::ComPtr<ID3D12VideoDevice3> video_device,
+      const gpu::GpuDriverBugWorkarounds& gpu_workarounds);
   ~D3D12VideoEncodeAV1Delegate() override;
 
   size_t GetMaxNumOfRefFrames() const override;
@@ -75,6 +76,10 @@ class MEDIA_GPU_EXPORT D3D12VideoEncodeAV1Delegate
       base::span<uint8_t> bitstream_buffer) override;
 
   void FillPictureControlParams(const VideoEncoder::EncodeOptions& options);
+
+  void HandleSVCReference(bool request_keyframe);
+  void HandleManualReferences(const VideoEncoder::EncodeOptions& options,
+                              bool request_keyframe);
 
   // Updates frame header to be packed into the encoder output bitstream,
   // according to the post-encode metadata from driver.

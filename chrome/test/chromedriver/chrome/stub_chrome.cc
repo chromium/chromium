@@ -65,7 +65,7 @@ Status StubChrome::GetWindowRect(const std::string& id, WindowRect* rect) {
 }
 
 Status StubChrome::SetWindowRect(const std::string& target_id,
-                                 const base::Value::Dict& params) {
+                                 const base::DictValue& params) {
   return Status(kOk);
 }
 
@@ -94,7 +94,7 @@ Status StubChrome::SetAcceptInsecureCerts() {
 }
 
 Status StubChrome::SetPermission(
-    std::unique_ptr<base::Value::Dict> permission_descriptor,
+    std::unique_ptr<base::DictValue> permission_descriptor,
     Chrome::PermissionState desired_state,
     WebView* current_view,
     const std::string& current_frame_id) {

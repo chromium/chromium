@@ -1,3 +1,5 @@
 include_rules = [
-  "+ios/chrome/browser/settings/ui_bundled/utils/password_utils.h"
+  # keep-sorted start
+  "+ios/chrome/browser/passwords/coordinator/password_utils.h"
+  # keep-sorted end
 ]

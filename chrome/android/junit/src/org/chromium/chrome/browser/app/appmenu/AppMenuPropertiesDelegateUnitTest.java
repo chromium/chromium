@@ -34,8 +34,10 @@ import org.robolectric.annotation.Config;
 import org.robolectric.annotation.LooperMode;
 
 import org.chromium.base.ContextUtils;
-import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.OneshotSupplierImpl;
+import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
+import org.chromium.base.supplier.SettableNullableObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.chrome.R;
@@ -58,7 +60,6 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.readaloud.ReadAloudController;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
-import org.chromium.chrome.browser.tabmodel.TabGroupModelFilterProvider;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.toolbar.ToolbarManager;
@@ -118,7 +119,6 @@ public class AppMenuPropertiesDelegateUnitTest {
     @Mock private UserPrefs.Natives mUserPrefsJniMock;
     @Mock private Profile mProfile;
     @Mock private PrefService mPrefService;
-    @Mock private TabGroupModelFilterProvider mTabGroupModelFilterProvider;
     @Mock private TabGroupModelFilter mTabGroupModelFilter;
     @Mock public WebsitePreferenceBridge.Natives mWebsitePreferenceBridgeJniMock;
     @Mock public BookmarkModel mBookmarkModel;
@@ -134,10 +134,10 @@ public class AppMenuPropertiesDelegateUnitTest {
     private final ActivityTabProvider mActivityTabProvider = new ActivityTabProvider();
     private final OneshotSupplierImpl<LayoutStateProvider> mLayoutStateProviderSupplier =
             new OneshotSupplierImpl<>();
-    private final ObservableSupplierImpl<BookmarkModel> mBookmarkModelSupplier =
-            new ObservableSupplierImpl<>();
-    private final ObservableSupplierImpl<ReadAloudController> mReadAloudControllerSupplier =
-            new ObservableSupplierImpl<>();
+    private final SettableNullableObservableSupplier<BookmarkModel> mBookmarkModelSupplier =
+            ObservableSuppliers.createNullable();
+    private final SettableMonotonicObservableSupplier<ReadAloudController>
+            mReadAloudControllerSupplier = ObservableSuppliers.createMonotonic();
 
     private AppMenuPropertiesDelegateImpl mAppMenuPropertiesDelegate;
     private MenuUiState mMenuUiState;
@@ -161,10 +161,7 @@ public class AppMenuPropertiesDelegateUnitTest {
         when(mTabModelSelector.getCurrentModel()).thenReturn(mTabModel);
         when(mTabModelSelector.getModel(false)).thenReturn(mTabModel);
         when(mTabModelSelector.getModel(true)).thenReturn(mIncognitoTabModel);
-        when(mTabModelSelector.getTabGroupModelFilterProvider())
-                .thenReturn(mTabGroupModelFilterProvider);
-        when(mTabGroupModelFilterProvider.getCurrentTabGroupModelFilter())
-                .thenReturn(mTabGroupModelFilter);
+        when(mTabModelSelector.getCurrentTabGroupModelFilter()).thenReturn(mTabGroupModelFilter);
         when(mTabGroupModelFilter.getTabModel()).thenReturn(mTabModel);
         when(mTabModel.isIncognito()).thenReturn(false);
         when(mIncognitoTabModel.isIncognito()).thenReturn(true);
@@ -208,7 +205,8 @@ public class AppMenuPropertiesDelegateUnitTest {
                                 mDecorView,
                                 mLayoutStateProviderSupplier,
                                 mBookmarkModelSupplier,
-                                mReadAloudControllerSupplier) {
+                                mReadAloudControllerSupplier,
+                                /* openInAppMenuItemProvider= */ null) {
                             @Override
                             public MVCListAdapter.ModelList buildMenuModelList() {
                                 return new MVCListAdapter.ModelList();

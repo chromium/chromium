@@ -42,7 +42,7 @@ static_library("ash") {
     "//chrome/browser/ui/webui/ash/edu_coexistence",
     "//chrome/browser/ui/webui/ash/login",
     "//chrome/browser/ui/webui/ash/system_web_dialog",
-    "//chrome/browser/ui/webui/signin:login",
+    "//chrome/browser/ui/webui/signin:inline_login",
     "//chrome/common",
     "//chromeos/ash/components/account_manager",
     "//chromeos/version",

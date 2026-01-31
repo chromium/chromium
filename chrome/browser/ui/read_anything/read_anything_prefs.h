@@ -58,6 +58,10 @@ inline constexpr char kAccessibilityReadAnythingHighlightGranularity[] =
 inline constexpr char kAccessibilityReadAnythingHighlightColor[] =
     "settings.a11y.read_anything.highlight_color";
 
+// Int value to represent the user's preferred line focus mode.
+inline constexpr char kAccessibilityReadAnythingLineFocus[] =
+    "settings.a11y.read_anything.line_focus";
+
 inline constexpr char kAccessibilityReadAnythingLinksEnabled[] =
     "settings.a11y.read_anything.links_enabled";
 

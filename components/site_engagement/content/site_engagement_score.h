@@ -199,7 +199,7 @@ class SiteEngagementScore {
   // This version of the constructor is used in unit tests.
   SiteEngagementScore(base::Clock* clock,
                       const GURL& origin,
-                      std::optional<base::Value::Dict> score_dict);
+                      std::optional<base::DictValue> score_dict);
 
   // Determine the score, accounting for any decay.
   double DecayedScore() const;
@@ -209,7 +209,7 @@ class SiteEngagementScore {
 
   // Updates the content settings dictionary |score_dict| with the current score
   // fields. Returns true if |score_dict| changed, otherwise return false.
-  bool UpdateScoreDict(base::Value::Dict& score_dict);
+  bool UpdateScoreDict(base::DictValue& score_dict);
 
   // The clock used to vend times. Enables time travelling in tests. Owned by
   // the SiteEngagementService.
@@ -234,7 +234,7 @@ class SiteEngagementScore {
   base::Time last_shortcut_launch_time_;
 
   // The dictionary that represents this engagement score.
-  std::optional<base::Value::Dict> score_dict_;
+  std::optional<base::DictValue> score_dict_;
 
   // The origin this score represents.
   GURL origin_;

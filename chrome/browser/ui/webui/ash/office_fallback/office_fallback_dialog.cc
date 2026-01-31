@@ -242,7 +242,7 @@ OfficeFallbackDialog::OfficeFallbackDialog(
 OfficeFallbackDialog::~OfficeFallbackDialog() = default;
 
 std::string OfficeFallbackDialog::GetDialogArgs() const {
-  base::Value::Dict args;
+  base::DictValue args;
   args.Set("titleText", title_text_);
   args.Set("reasonMessage", reason_message_);
   args.Set("instructionsMessage", instructions_message_);

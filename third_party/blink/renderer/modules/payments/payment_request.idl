@@ -36,5 +36,8 @@ enum SecurePaymentConfirmationAvailability {
     [RuntimeEnabled=PaymentMethodChangeEvent] attribute EventHandler onpaymentmethodchange;
 
     // https://w3c.github.io/secure-payment-confirmation/#sctn-secure-payment-confirmation-available-api
+    //
+    // Note: This API is enabled/exposed on all Blink platforms except WebView
+    // (which does not support Secure Payment Confirmation).
     [RuntimeEnabled=SecurePaymentConfirmationAvailabilityAPI, CallWith=ScriptState] static Promise<SecurePaymentConfirmationAvailability> securePaymentConfirmationAvailability();
 };

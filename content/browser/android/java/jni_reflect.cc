@@ -50,7 +50,7 @@ ScopedJavaLocalRef<jclass> GetMethodDeclaringClass(
 }
 
 bool IsMethodStatic(JNIEnv* env, const JavaRef<jobject>& method) {
-  jint modifiers = JNI_Method::Java_Method_getModifiers(env, method);
+  int32_t modifiers = JNI_Method::Java_Method_getModifiers(env, method);
   return JNI_Modifier::Java_Modifier_isStatic(env, modifiers);
 }
 

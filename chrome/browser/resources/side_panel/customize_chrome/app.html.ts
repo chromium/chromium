@@ -33,7 +33,8 @@ export function getHtml(this: AppElement) {
       </sp-heading>
       <cr-icon icon="cr:chevron-right" slot="suffix-icon"></cr-icon>
     </cr-button>
-    ${this.ntpNextFeaturesEnabled_ && this.aimPolicyEnabled_ ? html`
+    ${this.ntpNextFeaturesEnabled_ && this.aimPolicyEnabled_
+      && this.isSourceTabFirstPartyNtp_() ? html`
       <hr class="sp-cards-separator">
       <div id="tools" class="section sp-card">
         <sp-heading hide-back-button>

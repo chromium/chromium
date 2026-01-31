@@ -35,7 +35,7 @@ namespace tabs {
 enum class TabAlert;
 }
 
-class Tab;
+class HoverCardAnchorTarget;
 class TabStyle;
 class FadeLabelView;
 struct TabRendererData;
@@ -62,7 +62,8 @@ class TabHoverCardBubbleView : public views::BubbleDialogDelegateView {
     bool show_memory_usage = true;
   };
 
-  explicit TabHoverCardBubbleView(Tab* tab, const InitParams& params);
+  explicit TabHoverCardBubbleView(HoverCardAnchorTarget* anchor_target,
+                                  const InitParams& params);
   TabHoverCardBubbleView(const TabHoverCardBubbleView&) = delete;
   TabHoverCardBubbleView& operator=(const TabHoverCardBubbleView&) = delete;
   ~TabHoverCardBubbleView() override;
@@ -72,7 +73,7 @@ class TabHoverCardBubbleView : public views::BubbleDialogDelegateView {
       const TabRendererData& tab_data);
 
   // Updates and formats title, alert state, domain, and preview image.
-  void UpdateCardContent(const Tab* tab);
+  void UpdateCardContent(const HoverCardAnchorTarget* anchor_target);
 
   // Update the text fade to the given percent, which should be between 0 and 1.
   void SetTextFade(double percent);
@@ -83,6 +84,10 @@ class TabHoverCardBubbleView : public views::BubbleDialogDelegateView {
   // Specifies that the hover card should display a placeholder image
   // specifying that no preview for the tab is available (yet).
   void SetPlaceholderImage();
+
+  // Specifies that the hover card should display a crashed image
+  // specifying that the tab has crashed.
+  void SetCrashedImage();
 
   // Accessors used by tests.
   std::u16string_view GetTitleTextForTesting() const;

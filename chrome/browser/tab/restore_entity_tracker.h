@@ -10,6 +10,7 @@
 #include "chrome/browser/tab/protocol/children.pb.h"
 #include "chrome/browser/tab/protocol/tab_state.pb.h"
 #include "chrome/browser/tab/storage_id.h"
+#include "chrome/browser/tab/storage_loaded_data.h"
 #include "chrome/browser/tab/tab_storage_type.h"
 #include "components/tabs/public/tab_collection.h"
 #include "components/tabs/public/tab_interface.h"
@@ -32,7 +33,13 @@ using OnCollectionAssociation =
 // Associates in-memory nodes with their storage IDs in the storage layer.
 class RestoreEntityTracker {
  public:
+  using StorageLoadingContext = StorageLoadedData::StorageLoadingContext;
+
   virtual ~RestoreEntityTracker() = default;
+
+  // Sets the loading context for the tracker. This must be called before
+  // any calls to RegisterCollection or RegisterTab.
+  virtual void SetLoadingContext(StorageLoadingContext* context) = 0;
 
   // Registers the persisted state of a collection, including its children's
   // storage IDs. Builds the parent-child relationships between nodes.

@@ -44,9 +44,9 @@ public class AttributeInstance {
             } else {
                 this.mDate =
                         LocalDate.of(
-                                Integer.parseInt(day),
+                                Integer.parseInt(year),
                                 Integer.parseInt(month),
-                                Integer.parseInt(year));
+                                Integer.parseInt(day));
             }
         }
 
@@ -67,7 +67,7 @@ public class AttributeInstance {
     }
 
     public final AttributeType attributeType;
-    public final @Nullable AttributeValue attributeValue;
+    public final AttributeValue attributeValue;
 
     @CalledByNative
     public AttributeInstance(

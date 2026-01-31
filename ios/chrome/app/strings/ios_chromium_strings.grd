@@ -273,6 +273,9 @@
       <message name="IDS_IOS_CREDENTIAL_BOTTOM_SHEET_TITLE" desc="Title of the credential bottom sheet. [iOS only]">
           Password Manager
       </message>
+      <message name="IDS_IOS_CREDENTIAL_EXCHANGE_EXPORTER_DISPLAY_NAME" desc="Display name of Password Manager used in credential export feature. [iOS only]">
+        Password Manager
+      </message>
       <message name="IDS_IOS_CREDENTIAL_EXCHANGE_IMPORT_DISCLAIMER" desc="The bottom text displayed on Credential Exchange import screen to declare that the data will be saved to the user's password manager. [iOS only]">
         Your data will be saved to Password Manager for <ph name="USER_EMAIL">$1<ex>elisa.g.beckett@gmail.com</ex></ph>
       </message>
@@ -459,7 +462,7 @@ Things to consider:
         Get more done with a simple, secure, and faster-than-ever Chromium.
       </message>
       <message name="IDS_IOS_GEMINI_IMAGE_CONTEXT_MENU_ENTRY_POINT" desc="The entry point for Gemini when the user long-presses an image. Invites the user to create an image using Gemini in Chromium.">
-        Create image with Gemini in Chromium
+        Edit image with Gemini in Chromium
       </message>
       <message name="IDS_IOS_GOOGLE_SERVICES_SETTINGS_ALLOW_SIGNIN_DETAIL" desc="Feature detail text in the Google services Settings for the user to enable/disable Chrome express sign-in from the web [iOS only]">
         Shows prompts to sign in to Chromium.
@@ -505,6 +508,18 @@ Things to consider:
           {THRESHOLD, plural,
             =1 {This happens when Chromium isn't used for {THRESHOLD} minute. Data saved only to this device while you were signed in will be deleted. This could include history and passwords.}
             other {This happens when Chromium isn't used for {THRESHOLD} minutes. Data saved only to this device while you were signed in will be deleted. This could include history and passwords.}}
+      </message>
+      <message name="IDS_IOS_IMPORT_INVALID_PASSKEY_LIST_DESCRIPTION" desc="Descriptive text showing under the title on the view that lists all invalid passkeys. [iOS only]">
+        The following passkeys were not imported to Password Manager, because they don't match with the requirements.
+      </message>
+      <message name="IDS_IOS_IMPORT_INVALID_PASSWORD_LIST_DESCRIPTION" desc="Descriptive text showing under the title on the view that lists all invalid passwords. [iOS only]">
+        The following passwords were not imported to Password Manager, because they don't match with the requirements.
+      </message>
+      <message name="IDS_IOS_IMPORT_PASSWORD_CONFLICT_RESOLUTION_DISCLAIMER" desc="Disclaimer showing on the top of the modal that enables user to resolve conflict between existing passwords in Password Manager and those imported from Safari. [iOS only]">
+        You already have passwords for these accounts in your Password Manager. If you choose to import one of the passwords below, it will replace the existing one.
+      </message>
+      <message name="IDS_IOS_IMPORT_PASSWORD_PASSKEY_CONFLICT_RESOLUTION_DISCLAIMER" desc="Disclaimer showing on the top of the modal that enables user to resolve conflict between existing passwords and passkeys in Password Manager and those imported. [iOS only]">
+        You already have passwords or passkeys in Password Manager for the sites shown. Select an account to keep the shown sign-in info, overwriting what's in Password Manager.
       </message>
       <message name="IDS_IOS_INCOGNITO_INTERSTITIAL_OPEN_IN_CHROME" desc="Button to open a link from an external app in a regular tab rather than in Incognito mode. [iOS only]">
         Open in Chromium
@@ -1149,6 +1164,11 @@ For more settings that use data to improve your Chromium experience, go to <ph n
       <message name="IDS_IOS_SIGNIN_SHEET_LABEL_FOR_WEB_SIGNIN" desc="This string is on a sign-in page, after the user taps to sign in to a website with their Google Account. It offers to sign the user in to both the website and to Chromium with the account. It highlights the overarching user benefit of signing in to Chromium (access to data from other devices like bookmarks, passwords, history, settings, etc.). We want users to understand why signing in is beneficial, and click 'Continue as name' to sign in to their Google Account. The tone should be informative and lightweight. [iOS only]">
         Sign in to this site and Chromium to get your bookmarks and more on all your devices.
       </message>
+      <message name="IDS_IOS_SIGNOUT_DIALOG_MESSAGE_WITH_BOOKMARKS_LIMIT_EXCEEDED" desc="Body of a dialog shown to users when they sign out of Chrome but Chrome hasn't synced some data yet, which is permanently deleted if the user proceeds.  [iOS only].">
+        You reached Chromium's limit of <ph name="LIMIT">$1<ex>100,000</ex></ph> bookmarks, so some of your bookmarks haven’t been saved in your Google Account yet.
+
+New bookmarks can’t be saved in your account until you delete some. If you sign out now, unsaved bookmarks will be deleted.
+      </message>
       <message name="IDS_IOS_SIGNOUT_DIALOG_MESSAGE_WITH_NOT_SAVED_DATA" desc="Body of a dialog shown to users when they sign out of Chrome but Chrome hasn't synced some data yet, which is permanently deleted if the user proceeds.  [iOS only].">
         Some of your Chromium data hasn't been saved in your Google Account yet.
 Try waiting a few minutes before signing out. If you sign out now, this data will be deleted.
@@ -1156,7 +1176,7 @@ Try waiting a few minutes before signing out. If you sign out now, this data wil
       <message name="IDS_IOS_SIGNOUT_DIALOG_TITLE_WITH_SYNCING_MANAGED_ACCOUNT" desc="The signout dialog title. This dialog is used when the user have a managed account (other than gmail account) [iOS only].">
         Your account is managed by <ph name="HOSTED_DOMAIN">$1<ex>google.com</ex></ph>, so your Chromium data will be cleared from this device
       </message>
-      <message name="IDS_IOS_SIGN_IN_TO_CHROME_SETTING_TITLE" meaning= "Title" desc="The title for the setting item to Sign in to Chromium [iOS only]">
+      <message name="IDS_IOS_SIGN_IN_TO_CHROME_SETTING_TITLE" meaning="Title" desc="The title for the setting item to Sign in to Chromium [iOS only]">
         Sign in to Chromium
       </message>
       <message name="IDS_IOS_SPOTLIGHT_CHROME_ACTIONS_LABEL" desc="Tag label title displayed for chrome actions spotlight items. [iOS only]">

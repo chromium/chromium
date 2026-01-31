@@ -10,6 +10,7 @@
  */
 import 'chrome://resources/cr_elements/cr_collapse/cr_collapse.js';
 import 'chrome://resources/cr_elements/cr_expand_button/cr_expand_button.js';
+import 'chrome://resources/cr_elements/cr_icon/cr_icon.js';
 import '../../controls/settings_toggle_button.js';
 import '../../settings_shared.css.js';
 
@@ -39,6 +40,18 @@ export class SecurityPageFeatureRowElement extends PolymerElement {
         type: Boolean,
         notify: true,
         value: false,
+        observer: 'onExpandedChange_',
+      },
+
+      icon: {
+        type: String,
+        reflectToAttribute: true,
+      },
+
+      iconVisible: {
+        type: Boolean,
+        reflectToAttribute: true,
+        value: true,
       },
 
       label: String,
@@ -54,28 +67,75 @@ export class SecurityPageFeatureRowElement extends PolymerElement {
 
       stateTextMap: Object,
 
+      /**
+       * Optional key to override the lookup in stateTextMap.
+       * If provided, this is used instead of pref.value.
+       */
+      currentStateOverrideKey: {
+        type: String,
+        value: null,
+      },
+
       /* The computed string label for the current pref state. */
       currentStateLabel_: {
         type: String,
-        computed: 'computeCurrentStateLabel_(pref.value, stateTextMap)',
+        computed:
+            'computeCurrentStateLabel_(pref.value, stateTextMap, currentStateKey)',
       },
     };
   }
 
   declare expanded: boolean;
+  declare icon: string;
+  declare iconVisible: boolean;
   declare label: string;
   declare pref: chrome.settingsPrivate.PrefObject;
   declare subLabel: string;
   declare numericUncheckedValues: number[];
   declare numericCheckedValue: number;
   declare stateTextMap: Record<string, string>;
+  declare currentStateOverrideKey: string|null;
   declare private currentStateLabel_: string;
 
-  private computeCurrentStateLabel_(): string {
-    if (this.stateTextMap && this.stateTextMap[this.pref.value] !== undefined) {
-      return this.stateTextMap[this.pref.value];
+
+  private onExpandedChange_() {
+    this.dispatchEvent(new CustomEvent('expanded-change', {
+      bubbles: true,
+      composed: true,
+      detail: {value: this.expanded},
+    }));
+
+    if (!this.expanded) {
+      return;
     }
-    // Return an empty string if no mapping is found
+
+    // To prevent animation on page load, the transition styling is not applied
+    // to the icon until after the row has been expanded.
+    // TODO(crbug.com/441316657): Determine the underlying cause and remove
+    // this if possible.
+    const icon = this.shadowRoot!.querySelector('#icon');
+    if (icon) {
+      icon.classList.add('enable-transition');
+    }
+  }
+
+  private onToggleButtonChange_() {
+    this.dispatchEvent(new CustomEvent('toggle-button-change', {
+      bubbles: true,
+      composed: true,
+    }));
+  }
+
+  private computeCurrentStateLabel_(): string {
+    // Determine which key to use for lookup.
+    // If currentStateKey is set (not null/empty), use it. Otherwise, use
+    // pref.value.
+    const key = this.currentStateOverrideKey ? this.currentStateOverrideKey :
+                                               this.pref.value;
+    if (this.stateTextMap && this.stateTextMap[key] !== undefined) {
+      return this.stateTextMap[key];
+    }
+    // Return an empty string if no mapping is found.
     return '';
   }
 }

@@ -4,7 +4,8 @@
 
 #include "third_party/blink/renderer/modules/screen_details/screen_details.h"
 
-#include "base/containers/contains.h"
+#include <algorithm>
+
 #include "third_party/blink/renderer/core/dom/events/event.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
@@ -78,8 +79,8 @@ void ScreenDetails::UpdateScreenInfosImpl(LocalDOMWindow* window,
   // Check if any screens have been removed and remove them from `screens_`.
   for (wtf_size_t i = 0; i < screens_.size();
        /*conditionally incremented*/) {
-    if (base::Contains(new_infos.screen_infos, screens_[i]->DisplayId(),
-                       &display::ScreenInfo::display_id)) {
+    if (std::ranges::contains(new_infos.screen_infos, screens_[i]->DisplayId(),
+                              &display::ScreenInfo::display_id)) {
       ++i;
     } else {
       screens_.EraseAt(i);
@@ -90,8 +91,8 @@ void ScreenDetails::UpdateScreenInfosImpl(LocalDOMWindow* window,
 
   // Check if any screens have been added, and append them to `screens_`.
   for (const auto& info : new_infos.screen_infos) {
-    if (!base::Contains(screens_, info.display_id,
-                        &ScreenDetailed::DisplayId)) {
+    if (!std::ranges::contains(screens_, info.display_id,
+                               &ScreenDetailed::DisplayId)) {
       screens_.push_back(
           MakeGarbageCollected<ScreenDetailed>(window, info.display_id));
       added_or_removed = true;

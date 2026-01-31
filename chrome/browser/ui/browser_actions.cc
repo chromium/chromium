@@ -7,6 +7,7 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <utility>
 
 #include "base/check_deref.h"
 #include "base/check_op.h"
@@ -14,8 +15,6 @@
 #include "base/functional/callback_helpers.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/app/vector_icons/vector_icons.h"
-#include "chrome/browser/autocomplete/aim_eligibility_service_factory.h"
-#include "chrome/browser/contextual_tasks/contextual_tasks_context_controller_factory.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_side_panel_coordinator.h"
 #include "chrome/browser/devtools/devtools_window.h"
 #include "chrome/browser/prefs/incognito_mode_prefs.h"
@@ -55,6 +54,7 @@
 #include "chrome/browser/ui/send_tab_to_self/send_tab_to_self_bubble.h"
 #include "chrome/browser/ui/send_tab_to_self/send_tab_to_self_toolbar_icon_controller.h"
 #include "chrome/browser/ui/tabs/features.h"
+#include "chrome/browser/ui/tabs/projects/projects_panel_state_controller.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_utils.h"
 #include "chrome/browser/ui/tabs/vertical_tab_strip_state_controller.h"
@@ -405,25 +405,30 @@ void BrowserActions::InitializeBrowserActions() {
             base::BindRepeating(
                 [](BrowserWindowInterface* bwi, actions::ActionItem* item,
                    actions::ActionInvocationContext context) {
-                  views::View* anchor_view =
+                  auto anchor =
                       bwi->GetBrowserForMigrationOnly()
                           ->GetBrowserView()
                           .toolbar_button_provider()
-                          ->GetAnchorView(kActionShowJsOptimizationsIcon);
+                          ->GetBubbleAnchor(kActionShowJsOptimizationsIcon);
 
                   bwi->GetActiveTabInterface()
                       ->GetTabFeatures()
                       ->js_optimizations_page_action_controller()
-                      ->ShowBubble(anchor_view, item);
+                      ->ShowBubble(anchor, item);
                 },
                 bwi))
             .SetActionId(kActionShowJsOptimizationsIcon)
             .SetTooltipText(l10n_util::GetStringUTF16(
                 IDS_JS_OPTIMIZATIONS_DISABLED_ICON_TOOLTIP))
             .SetImage(ui::ImageModel::FromVectorIcon(
-                // TODO(crbug.com/457422266): Use v8 icon.
-                vector_icons::kCodeIcon, ui::kColorIcon,
-                ui::SimpleMenuModel::kDefaultIconSize))
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+                vector_icons::kV8OffIcon,
+#else
+                // TODO(crbug.com/457422266): Figure out which icon to use for
+                // non-branded builds.
+                vector_icons::kCodeIcon,
+#endif
+                ui::kColorIcon, ui::SimpleMenuModel::kDefaultIconSize))
             .SetEnabled(true)
             .Build());
   }
@@ -636,10 +641,21 @@ void BrowserActions::InitializeBrowserActions() {
                 },
                 bwi))
             .SetActionId(kActionToggleCollapseVertical)
-            .SetText(BrowserActions::GetCleanTitleAndTooltipText(
-                l10n_util::GetStringUTF16(IDS_COLLAPSE_VERTICAL_TABS)))
-            .SetTooltipText(BrowserActions::GetCleanTitleAndTooltipText(
-                l10n_util::GetStringUTF16(IDS_COLLAPSE_VERTICAL_TABS)))
+            .Build());
+  }
+
+  if (tabs::IsProjectsPanelFeatureEnabled()) {
+    root_action_item_->AddChild(
+        actions::ActionItem::Builder(
+            base::BindRepeating(
+                [](BrowserWindowInterface* bwi, actions::ActionItem* item,
+                   actions::ActionInvocationContext context) {
+                  auto* controller = ProjectsPanelStateController::From(bwi);
+                  controller->SetProjectsVisible(
+                      !controller->IsProjectsPanelVisible());
+                },
+                bwi))
+            .SetActionId(kActionToggleProjectsPanel)
             .Build());
   }
 
@@ -1119,52 +1135,46 @@ void BrowserActions::InitializeBrowserActions() {
               kPersonFilledPaddedSmallIcon, ui::kColorIcon))
           .Build());
 
-  const auto* aim_eligibility_service =
-      AimEligibilityServiceFactory::GetForProfile(bwi->GetProfile());
-  if (OmniboxFieldTrial::IsAimOmniboxEntrypointEnabled(
-          aim_eligibility_service)) {
-    root_action_item_->AddChild(
-        actions::ActionItem::Builder(
-            base::BindRepeating(
-                [](BrowserWindowInterface* bwi, actions::ActionItem* item,
-                   actions::ActionInvocationContext context) {
-                  bool via_keyboard = false;
+  root_action_item_->AddChild(
+      actions::ActionItem::Builder(
+          base::BindRepeating(
+              [](BrowserWindowInterface* bwi, actions::ActionItem* item,
+                 actions::ActionInvocationContext context) {
+                bool via_keyboard = false;
 
-                  std::underlying_type_t<page_actions::PageActionTrigger>
-                      page_action_trigger = context.GetProperty(
-                          page_actions::kPageActionTriggerKey);
+                std::underlying_type_t<page_actions::PageActionTrigger>
+                    page_action_trigger = context.GetProperty(
+                        page_actions::kPageActionTriggerKey);
 
-                  if ((page_action_trigger !=
-                       page_actions::kInvalidPageActionTrigger) &&
-                      page_action_trigger ==
-                          base::to_underlying(
-                              page_actions::PageActionTrigger::kKeyboard)) {
-                    via_keyboard = true;
-                  }
+                if ((page_action_trigger !=
+                     page_actions::kInvalidPageActionTrigger) &&
+                    page_action_trigger ==
+                        std::to_underlying(
+                            page_actions::PageActionTrigger::kKeyboard)) {
+                  via_keyboard = true;
+                }
 
-                  tabs::TabInterface* active_tab = bwi->GetActiveTabInterface();
-                  CHECK(active_tab);
+                tabs::TabInterface* active_tab = bwi->GetActiveTabInterface();
+                CHECK(active_tab);
 
-                  content::WebContents* web_contents =
-                      active_tab->GetContents();
-                  CHECK(web_contents);
+                content::WebContents* web_contents = active_tab->GetContents();
+                CHECK(web_contents);
 
-                  OmniboxController* omnibox_controller =
-                      search::GetOmniboxController(web_contents);
-                  CHECK(omnibox_controller);
+                OmniboxController* omnibox_controller =
+                    search::GetOmniboxController(web_contents);
+                CHECK(omnibox_controller);
 
-                  omnibox::AiModePageActionController::OpenAiMode(
-                      *omnibox_controller, via_keyboard);
-                },
-                bwi))
-            .SetActionId(kActionAiMode)
-            .SetText(l10n_util::GetStringUTF16(IDS_AI_MODE_ENTRYPOINT_LABEL))
-            .SetTooltipText(l10n_util::GetStringUTF16(
-                IDS_STARTER_PACK_AI_MODE_ACTION_SUGGESTION_CONTENTS))
-            .SetImage(ui::ImageModel::FromVectorIcon(omnibox::kSearchSparkIcon))
-            .SetProperty(actions::kActionItemPinnableKey, false)
-            .Build());
-  }
+                omnibox::AiModePageActionController::OpenAiMode(
+                    *omnibox_controller, via_keyboard);
+              },
+              bwi))
+          .SetActionId(kActionAiMode)
+          .SetText(l10n_util::GetStringUTF16(IDS_AI_MODE_ENTRYPOINT_LABEL))
+          .SetTooltipText(l10n_util::GetStringUTF16(
+              IDS_STARTER_PACK_AI_MODE_ACTION_SUGGESTION_CONTENTS))
+          .SetImage(ui::ImageModel::FromVectorIcon(omnibox::kSearchSparkIcon))
+          .SetProperty(actions::kActionItemPinnableKey, false)
+          .Build());
 
   root_action_item_->AddChild(
       actions::ActionItem::Builder(
@@ -1359,6 +1369,28 @@ void BrowserActions::InitializeBrowserActions() {
                     actions::ActionPinnableState::kNotPinnable))
             .Build());
   }
+
+  if (base::FeatureList::IsEnabled(features::kTabGroupsFocusing)) {
+    root_action_item_->AddChild(
+        actions::ActionItem::Builder(
+            base::BindRepeating(
+                [](BrowserWindowInterface* bwi, actions::ActionItem* item,
+                   actions::ActionInvocationContext context) {
+                  if (!bwi || !bwi->GetTabStripModel()) {
+                    return;
+                  }
+                  bwi->GetTabStripModel()->SetFocusedGroup(std::nullopt);
+                },
+                bwi))
+            .SetActionId(kActionUnfocusTabGroup)
+            .SetTooltipText(BrowserActions::GetCleanTitleAndTooltipText(
+                l10n_util::GetStringUTF16(
+                    IDS_TAB_GROUP_HEADER_CXMENU_UNFOCUS_GROUP)))
+            .SetImage(ui::ImageModel::FromVectorIcon(
+                vector_icons::kArrowBackIcon, ui::kColorIcon))
+            .Build());
+  }
+
 // TODO(crbug.com/454112198): Delete this after Multi Instance launches. This
 // is currently only used in the experimental single instance side panel.
 #if BUILDFLAG(ENABLE_GLIC)

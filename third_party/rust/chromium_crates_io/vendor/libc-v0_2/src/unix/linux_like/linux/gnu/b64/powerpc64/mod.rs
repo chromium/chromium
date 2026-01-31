@@ -245,9 +245,9 @@ s_no_extra_traits! {
     }
 
     pub struct mcontext_t {
-        __glibc_reserved: [c_ulong; 4],
+        __glibc_reserved: Padding<[c_ulong; 4]>,
         pub signal: c_int,
-        __pad0: c_int,
+        __pad0: Padding<c_int>,
         pub handler: c_ulong,
         pub oldmask: c_ulong,
         pub regs: *mut pt_regs,
@@ -262,20 +262,20 @@ s_no_extra_traits! {
         pub vrregs: [[c_uint; 4]; 32],
         pub vscr: vscr_t,
         pub vrsave: c_uint,
-        __pad: [c_uint; 3],
+        __pad: Padding<[c_uint; 3]>,
     }
 
     #[repr(align(4))]
     pub struct vscr_t {
         #[cfg(target_endian = "big")]
-        __pad: [c_uint; 3],
+        __pad: Padding<[c_uint; 3]>,
         #[cfg(target_endian = "big")]
         pub vscr_word: c_uint,
 
         #[cfg(target_endian = "little")]
         pub vscr_word: c_uint,
         #[cfg(target_endian = "little")]
-        __pad: [c_uint; 3],
+        __pad: Padding<[c_uint; 3]>,
     }
 }
 

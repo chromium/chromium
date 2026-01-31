@@ -6,7 +6,6 @@
 
 #include <utility>
 
-#include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/location.h"
 #include "base/logging.h"
@@ -122,7 +121,7 @@ void MultiBuffer::GlobalLRU::SchedulePrune() {
         *task_runner_, FROM_HERE,
         CrossThreadBindOnce(&MultiBuffer::GlobalLRU::PruneTask,
                             blink::RetainedRef(this)),
-        base::Seconds(kBlockPruneInterval));
+        base::Seconds(std::to_underlying(kBlockPruneInterval)));
     background_pruning_pending_ = true;
   }
 }
@@ -226,7 +225,7 @@ void MultiBuffer::AddReader(const BlockId& pos, Reader* reader) {
     }
   }
   if (!provider) {
-    DCHECK(!base::Contains(writer_index_, pos));
+    DCHECK(!writer_index_.contains(pos));
     writer_index_[pos] = CreateWriter(pos, is_client_audio_element_);
     provider = writer_index_[pos].get();
   }
@@ -256,7 +255,7 @@ void MultiBuffer::CleanupWriters(const BlockId& pos) {
 bool MultiBuffer::Contains(const BlockId& pos) const {
   DCHECK(present_[pos] == 0 || present_[pos] == 1)
       << " pos = " << pos << " present_[pos] " << present_[pos];
-  DCHECK_EQ(present_[pos], base::Contains(data_, pos) ? 1 : 0);
+  DCHECK_EQ(present_[pos], data_.Contains(pos) ? 1 : 0);
   return !!present_[pos];
 }
 
@@ -380,7 +379,7 @@ MultiBuffer::ProviderState MultiBuffer::SuggestProviderState(
 
 bool MultiBuffer::ProviderCollision(const BlockId& id) const {
   // If there is a writer at the same location, it is always a collision.
-  if (base::Contains(writer_index_, id)) {
+  if (writer_index_.contains(id)) {
     return true;
   }
 
@@ -544,7 +543,7 @@ void MultiBuffer::PinRange(const BlockId& from,
         for (BlockId block = present_transitioned_range.end - 1;
              block >= present_transitioned_range.begin; --block) {
           DCHECK_GE(block, 0);
-          DCHECK(base::Contains(data_, block));
+          DCHECK(data_.Contains(block));
           if (pin) {
             DCHECK(pinned_[block]);
             lru_->Remove(this, block);

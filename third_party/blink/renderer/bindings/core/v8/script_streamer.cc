@@ -68,6 +68,7 @@
 #include "third_party/blink/renderer/platform/wtf/shared_buffer.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 #include "third_party/blink/renderer/platform/wtf/text/text_encoding_registry.h"
+#include "third_party/perfetto/include/perfetto/tracing/track_event_args.h"
 
 namespace blink {
 namespace {
@@ -724,13 +725,13 @@ bool ResourceScriptStreamer::TryStartStreamingTask() {
     return false;
   }
 
-  TRACE_EVENT_WITH_FLOW1(
-      TRACE_DISABLED_BY_DEFAULT("v8.compile"), "v8.streamingCompile.start",
-      this, TRACE_EVENT_FLAG_FLOW_OUT, "data",
-      [&](perfetto::TracedValue context) {
-        inspector_parse_script_event::Data(
-            std::move(context), ScriptResourceIdentifier(), ScriptURLString());
-      });
+  TRACE_EVENT(TRACE_DISABLED_BY_DEFAULT("v8.compile"),
+              "v8.streamingCompile.start", perfetto::Flow::FromPointer(this),
+              "data", [&](perfetto::TracedValue context) {
+                inspector_parse_script_event::Data(std::move(context),
+                                                   ScriptResourceIdentifier(),
+                                                   ScriptURLString());
+              });
 
   stream_->TakeDataAndPipeOnMainThread(
       script_resource_, this, std::move(data_pipe_), script_decoder_.get());
@@ -885,9 +886,9 @@ void ResourceScriptStreamer::Trace(Visitor* visitor) const {
 }
 
 void ResourceScriptStreamer::StreamingComplete(LoadingState loading_state) {
-  TRACE_EVENT_WITH_FLOW2(
+  TRACE_EVENT(
       TRACE_DISABLED_BY_DEFAULT("v8.compile"), "v8.streamingCompile.complete",
-      this, TRACE_EVENT_FLAG_FLOW_IN, "streaming_suppressed",
+      perfetto::TerminatingFlow::FromPointer(this), "streaming_suppressed",
       IsStreamingSuppressed(), "data", [&](perfetto::TracedValue context) {
         inspector_parse_script_event::Data(
             std::move(context), ScriptResourceIdentifier(), ScriptURLString());
@@ -1015,7 +1016,9 @@ class InlineSourceStream final
 BackgroundInlineScriptStreamer::BackgroundInlineScriptStreamer(
     v8::Isolate* isolate,
     const String& text,
-    v8::ScriptCompiler::CompileOptions compile_options) {
+    v8::ScriptCompiler::CompileOptions compile_options,
+    base::TimeDelta wait_timeout)
+    : script_length_(text.length()), wait_timeout_(wait_timeout) {
   auto stream = std::make_unique<InlineSourceStream>(text);
   source_ = std::make_unique<v8::ScriptCompiler::StreamedSource>(
       std::move(stream), text.Is8Bit()
@@ -1059,16 +1062,12 @@ v8::ScriptCompiler::StreamedSource* BackgroundInlineScriptStreamer::Source(
   SCOPED_UMA_HISTOGRAM_TIMER_MICROS("WebCore.Scripts.InlineStreamerWaitTime");
   DCHECK(IsMainThread());
   DCHECK_EQ(expected_type, v8::ScriptType::kClassic);
-  static const base::FeatureParam<base::TimeDelta> kWaitTimeoutParam{
-      &features::kPrecompileInlineScripts, "inline-script-timeout",
-      base::Milliseconds(0)};
   // Make sure the script has finished compiling in the background. See comment
   // above in Run().
-  bool signaled = event_.TimedWait(kWaitTimeoutParam.Get());
-  base::UmaHistogramBoolean("WebCore.Scripts.InlineStreamerTimedOut",
-                            !signaled);
-  if (!signaled)
+  timed_out_ = !event_.TimedWait(wait_timeout_);
+  if (timed_out_) {
     return nullptr;
+  }
   return source_.get();
 }
 
@@ -1436,10 +1435,11 @@ bool BackgroundResourceScriptStreamer::BackgroundProcessor::
           MaybeCreateConsumeCodeCacheTask(has_code_cache)) {
     const uint64_t trace_id =
         static_cast<uint64_t>(reinterpret_cast<uintptr_t>(this));
-    TRACE_EVENT_WITH_FLOW1(
+    TRACE_EVENT(
         "v8," TRACE_DISABLED_BY_DEFAULT("v8.compile"),
-        "v8.deserializeOnBackground.start", TRACE_ID_LOCAL(trace_id),
-        TRACE_EVENT_FLAG_FLOW_OUT, "data", [&](perfetto::TracedValue context) {
+        "v8.deserializeOnBackground.start",
+        perfetto::Flow::ProcessScoped(trace_id), "data",
+        [&](perfetto::TracedValue context) {
           inspector_deserialize_script_event::Data(std::move(context),
                                                    script_resource_identifier_,
                                                    script_url_string_);
@@ -1781,11 +1781,10 @@ void BackgroundResourceScriptStreamer::BackgroundProcessor::
         mojo_base::BigBuffer cached_metadata,
         base::WeakPtr<BackgroundProcessor> background_processor_weak_ptr,
         const uint64_t trace_id) {
-  TRACE_EVENT_WITH_FLOW1(
+  TRACE_EVENT(
       "v8,devtools.timeline," TRACE_DISABLED_BY_DEFAULT("v8.compile"),
-      "v8.deserializeOnBackground", TRACE_ID_LOCAL(trace_id),
-      TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT, "data",
-      [&](perfetto::TracedValue context) {
+      "v8.deserializeOnBackground", perfetto::Flow::ProcessScoped(trace_id),
+      "data", [&](perfetto::TracedValue context) {
         inspector_deserialize_script_event::Data(
             std::move(context), script_resource_identifier, script_url_string);
       });

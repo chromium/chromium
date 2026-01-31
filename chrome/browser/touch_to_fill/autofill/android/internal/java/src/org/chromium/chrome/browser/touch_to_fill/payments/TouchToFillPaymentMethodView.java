@@ -83,6 +83,7 @@ class TouchToFillPaymentMethodView extends TouchToFillViewBase {
                 case ItemType.TOS_FOOTER:
                 case ItemType.TEXT_BUTTON:
                 case ItemType.BNPL_TOS_TEXT:
+                case ItemType.TOS_HEADER:
                     return true;
                 case ItemType.CREDIT_CARD:
                 case ItemType.IBAN:

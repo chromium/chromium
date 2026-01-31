@@ -11,12 +11,15 @@
 #include "base/time/time.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolation_data.h"
+#include "chrome/browser/web_applications/isolated_web_apps/runtime_data/chrome_iwa_runtime_data_provider.h"
+#include "chrome/browser/web_applications/isolated_web_apps/test/fake_chrome_iwa_runtime_data_provider.h"
 #include "chrome/browser/web_applications/isolated_web_apps/test/isolated_web_app_builder.h"
 #include "chrome/browser/web_applications/isolated_web_apps/test/isolated_web_app_test.h"
 #include "chrome/browser/web_applications/isolated_web_apps/test/iwa_test_server_configurator.h"
 #include "chrome/browser/web_applications/isolated_web_apps/test/policy_test_utils.h"
 #include "chrome/browser/web_applications/isolated_web_apps/update/isolated_web_app_update_discovery_task.h"
 #include "chrome/browser/web_applications/isolated_web_apps/update/isolated_web_app_update_manager.h"
+#include "chrome/browser/web_applications/model/display_override.h"
 #include "chrome/browser/web_applications/test/fake_web_app_provider.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/test/web_app_test_observers.h"
@@ -102,14 +105,15 @@ class ManifestUpdateTest : public IsolatedWebAppTest {
 
  protected:
   void SetUp() override {
+    resetter_ =
+        ChromeIwaRuntimeDataProvider::SetInstanceForTesting(&data_provider_);
     IsolatedWebAppTest::SetUp();
     provider().SetEnableAutomaticIwaUpdates(
         FakeWebAppProvider::AutomaticIwaUpdateStrategy::kForceEnabled);
-
     test::AwaitStartWebAppProviderAndSubsystems(profile());
   }
 
-  // The test IWA used in tests. Must be called after `InstallInitialApp`.
+  // The test IWA used in tests. Must be called after `InstallInitialTestIwa`.
   const WebApp& TestIwa() {
     return GetAppById(provider(), TestIwaWebBundleId());
   }
@@ -118,6 +122,10 @@ class ManifestUpdateTest : public IsolatedWebAppTest {
   // it in the test server, configures policy to force install it, and waits
   // until it is installed.
   void InstallInitialTestIwa(ManifestBuilder manifest = ManifestBuilder()) {
+    data_provider_.Update([&](auto& update) {
+      update.AddToManagedAllowlist(TestIwaWebBundleId());
+    });
+
     test_update_server().AddBundle(
         CreateBundle(CHECK_DEREF(profile()), manifest.SetVersion("1.0.0")),
         {{StableChannel()}});
@@ -137,7 +145,7 @@ class ManifestUpdateTest : public IsolatedWebAppTest {
   // Updates the fake test app in the test server to version 2.0.0 with the
   // given `manifest`, and waits until the update is installed.
   //
-  // Must be called after `InstallInitialApp`.
+  // Must be called after `InstallInitialTestIwa`.
   void UpdateTestIwa(ManifestBuilder manifest = ManifestBuilder()) {
     EXPECT_THAT(TestIwa(), HasVersion("1.0.0"));
 
@@ -146,21 +154,26 @@ class ManifestUpdateTest : public IsolatedWebAppTest {
         {{StableChannel()}});
 
     base::TimeTicks update_time = provider()
-                                      .iwa_update_manager()
+                                      .isolated_web_app_update_manager()
                                       .GetNextUpdateDiscoveryTimeForTesting()
                                       .value();
     task_environment().FastForwardBy(update_time - base::TimeTicks::Now());
 
     ASSERT_THAT(TestIwa(), HasVersion("2.0.0"));
   }
+
+  FakeIwaRuntimeDataProvider data_provider_;
+  std::optional<base::AutoReset<ChromeIwaRuntimeDataProvider*>> resetter_;
 };
 
-TEST_F(ManifestUpdateTest, BorderlessUrlPatterns) {
+TEST_F(ManifestUpdateTest, DisplayOverride) {
   InstallInitialTestIwa();
-  EXPECT_THAT(TestIwa().borderless_url_patterns(), IsEmpty());
+  EXPECT_THAT(TestIwa().display_mode_override(), IsEmpty());
 
-  UpdateTestIwa(ManifestBuilder().AddBorderlessUrlPattern(FooPattern()));
-  EXPECT_THAT(TestIwa().borderless_url_patterns(), ElementsAre(FooPattern()));
+  UpdateTestIwa(ManifestBuilder().SetDisplayModeOverride(
+      {DisplayOverride::CreateUnframed({FooPattern()})}));
+  EXPECT_THAT(TestIwa().display_mode_override(),
+              ElementsAre(DisplayOverride::CreateUnframed({FooPattern()})));
 }
 
 }  // namespace web_app

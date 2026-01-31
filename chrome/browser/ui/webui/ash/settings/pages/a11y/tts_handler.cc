@@ -33,11 +33,11 @@ TtsHandler::TtsHandler() = default;
 
 TtsHandler::~TtsHandler() = default;
 
-void TtsHandler::HandleGetTtsExtensions(const base::Value::List& args) {
+void TtsHandler::HandleGetTtsExtensions(const base::ListValue& args) {
   // Ensure the built in tts engine is loaded to be able to respond to messages.
-  WakeTtsEngine(base::Value::List());
+  WakeTtsEngine(base::ListValue());
 
-  base::Value::List responses;
+  base::ListValue responses;
   Profile* profile = Profile::FromWebUI(web_ui());
   extensions::ExtensionRegistry* registry =
       extensions::ExtensionRegistry::Get(profile);
@@ -56,7 +56,7 @@ void TtsHandler::HandleGetTtsExtensions(const base::Value::List& args) {
       // be updated again after extension load.
       continue;
     }
-    base::Value::Dict response;
+    base::DictValue response;
     response.Set("name", extension->name());
     response.Set("extensionId", extension_id);
     if (extensions::OptionsPageInfo::HasOptionsPage(extension)) {
@@ -70,7 +70,7 @@ void TtsHandler::HandleGetTtsExtensions(const base::Value::List& args) {
   FireWebUIListener("tts-extensions-updated", responses);
 }
 
-void TtsHandler::HandleGetDisplayNameForLocale(const base::Value::List& args) {
+void TtsHandler::HandleGetDisplayNameForLocale(const base::ListValue& args) {
   CHECK_EQ(2U, args.size());
   const std::string callback_id = args[0].GetString();
   const std::string locale = args[1].GetString();
@@ -82,7 +82,7 @@ void TtsHandler::HandleGetDisplayNameForLocale(const base::Value::List& args) {
   ResolveJavascriptCallback(callback_id, base::UTF16ToUTF8(display_name));
 }
 
-void TtsHandler::HandleGetApplicationLocale(const base::Value::List& args) {
+void TtsHandler::HandleGetApplicationLocale(const base::ListValue& args) {
   CHECK_EQ(1U, args.size());
   const std::string callback_id = args[0].GetString();
 
@@ -99,9 +99,9 @@ void TtsHandler::OnVoicesChanged() {
   std::vector<content::VoiceData> voices;
   tts_controller->GetVoices(Profile::FromWebUI(web_ui()), GURL(), &voices);
   const std::string& app_locale = g_browser_process->GetApplicationLocale();
-  base::Value::List responses;
+  base::ListValue responses;
   for (const auto& voice : voices) {
-    base::Value::Dict response;
+    base::DictValue response;
     int language_score = GetVoiceLangMatchScore(&voice, app_locale);
     std::string language_code;
     if (voice.lang.empty()) {
@@ -129,7 +129,7 @@ void TtsHandler::OnVoicesChanged() {
   FireWebUIListener("all-voice-data-updated", responses);
 
   // Also refresh the TTS extensions in case they have changed.
-  HandleGetTtsExtensions(base::Value::List());
+  HandleGetTtsExtensions(base::ListValue());
 }
 
 void TtsHandler::RegisterMessages() {
@@ -169,7 +169,7 @@ int TtsHandler::GetVoiceLangMatchScore(const content::VoiceData* voice,
              : 0;
 }
 
-void TtsHandler::WakeTtsEngine(const base::Value::List& args) {
+void TtsHandler::WakeTtsEngine(const base::ListValue& args) {
   Profile* profile = Profile::FromWebUI(web_ui());
   TtsExtensionEngine::GetInstance()->LoadBuiltInTtsEngine(profile);
   extensions::ProcessManager::Get(profile)->WakeEventPage(

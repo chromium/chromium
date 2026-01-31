@@ -8,7 +8,7 @@
 #import "ios/chrome/browser/settings/ui_bundled/settings_controller_protocol.h"
 #import "ios/chrome/browser/settings/ui_bundled/settings_root_table_view_controller.h"
 
-@protocol ApplicationCommands;
+@protocol SceneCommands;
 @protocol SnackbarCommands;
 
 // Controller for the About Google Chrome Table View, which allows users to

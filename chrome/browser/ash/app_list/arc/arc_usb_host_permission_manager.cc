@@ -41,7 +41,7 @@ std::string GetAppIdFromPackageName(const std::string& package_name,
   return app_ids.empty() ? std::string() : *app_ids.begin();
 }
 
-bool GetUint16FromDict(const base::Value::Dict& dict,
+bool GetUint16FromDict(const base::DictValue& dict,
                        const std::string& key,
                        uint16_t* result) {
   std::optional<int> value = dict.FindInt(key);
@@ -179,7 +179,7 @@ void ArcUsbHostPermissionManager::RestorePermissionFromChromePrefs() {
 
     for (const auto& access_permission_value :
          access_permission_list_value->GetList()) {
-      const base::Value::Dict& access_permission =
+      const base::DictValue& access_permission =
           access_permission_value.GetDict();
       const std::string* serial_number =
           access_permission.FindString(kUsbSerialNumber);
@@ -484,7 +484,7 @@ void ArcUsbHostPermissionManager::UpdateArcUsbAccessPermission(
   if (!usb_device_entry.IsPersistent())
     return;
 
-  base::Value::Dict new_permission;
+  base::DictValue new_permission;
   new_permission.Set(kUsbSerialNumber, usb_device_entry.serial_number);
   new_permission.Set(kUsbDeviceName, usb_device_entry.device_name);
   new_permission.Set(kUsbVendorId, usb_device_entry.vendor_id);

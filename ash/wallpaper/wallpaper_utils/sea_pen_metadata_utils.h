@@ -30,7 +30,7 @@ inline constexpr std::string_view kSeaPenUserVisibleQueryTemplateKey =
 
 /**
  * Serializes a sea pen query information `query` into
- * base::Value::Dict format based on the query type. Such as
+ * base::DictValue format based on the query type. Such as
  * {creation_time:<number>, freeform_query:<string>} or {creation_time:<number>,
  * user_visible_query_text:<string>, user_visible_query_template:<string>,
  * template_id:<number>, options:{<chip_number>:<option_number>, ...}}. For
@@ -41,9 +41,9 @@ inline constexpr std::string_view kSeaPenUserVisibleQueryTemplateKey =
  * "template_id":"2","options":{"4":"34","5":"40"}}
  *
  * @param query  pointer to the sea pen query
- * @return query information in base::Value::Dict format
+ * @return query information in base::DictValue format
  */
-ASH_EXPORT base::Value::Dict SeaPenQueryToDict(
+ASH_EXPORT base::DictValue SeaPenQueryToDict(
     const personalization_app::mojom::SeaPenQueryPtr& query);
 
 // Extracts the data between the first <dc:description> tag from `data`. Copies
@@ -54,8 +54,7 @@ ASH_EXPORT std::string ExtractDcDescriptionContents(std::string_view data);
 
 // Prepare SeaPen metadata for writing into a jpg file header by wrapping it in
 // XML.
-ASH_EXPORT std::string QueryDictToXmpString(
-    const base::Value::Dict& query_dict);
+ASH_EXPORT std::string QueryDictToXmpString(const base::DictValue& query_dict);
 
 // Converts the extracted SeaPen metadata string into
 // RecentSeaPenImageInfo. Calls `callback` with nullptr if `metadata` is invalid

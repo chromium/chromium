@@ -360,12 +360,3 @@ uint64 Archive::GetWinSize(uint64 Size,uint &Flags)
   return Pow2+Fraction*(Pow2/32);
 }
 
-#if defined(CHROMIUM_UNRAR)
-void Archive::SetTempFileHandle(FileHandle hF) {
-  hTempFile = hF;
-}
-
-FileHandle Archive::GetTempFileHandle() {
-  return hTempFile;
-}
-#endif

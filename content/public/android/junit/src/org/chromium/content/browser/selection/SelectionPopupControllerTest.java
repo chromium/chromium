@@ -54,7 +54,6 @@ import org.mockito.MockitoAnnotations;
 import org.robolectric.RuntimeEnvironment;
 import org.robolectric.annotation.Config;
 import org.robolectric.fakes.RoboMenu;
-import org.robolectric.shadows.ShadowLog;
 import org.robolectric.util.ReflectionHelpers;
 
 import org.chromium.base.ContextUtils;
@@ -62,6 +61,7 @@ import org.chromium.base.IntentUtils;
 import org.chromium.base.SelectionActionMenuClientWrapper.MenuType;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Feature;
+import org.chromium.base.test.util.Features;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.content.browser.GestureListenerManagerImpl;
 import org.chromium.content.browser.PopupController;
@@ -80,6 +80,7 @@ import org.chromium.content_public.browser.SelectionPopupController;
 import org.chromium.content_public.browser.selection.SelectionActionMenuDelegate;
 import org.chromium.content_public.browser.selection.SelectionDropdownMenuDelegate;
 import org.chromium.content_public.browser.test.util.TestSelectionDropdownMenuDelegate;
+import org.chromium.content_public.common.ContentFeatures;
 import org.chromium.ui.base.ViewAndroidDelegate;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.listmenu.ListMenuItemProperties;
@@ -101,6 +102,7 @@ import java.util.List;
 /** Unit tests for {@link SelectionPopupController}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
+@Features.EnableFeatures({ContentFeatures.NO_SELECTION_MENU_CACHING})
 public class SelectionPopupControllerTest {
     private MenuModelBridge mMenuModelBridge;
     private SelectionPopupControllerImpl mController;
@@ -179,7 +181,6 @@ public class SelectionPopupControllerTest {
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
-        ShadowLog.stream = System.out;
 
         mContext = Mockito.mock(Context.class);
         mWeakContext = new WeakReference<Context>(mContext);
@@ -831,6 +832,7 @@ public class SelectionPopupControllerTest {
     }
 
     @Test
+    @Features.DisableFeatures({ContentFeatures.NO_SELECTION_MENU_CACHING})
     public void testMenuIsCachedForSameSelectionStateIfDelegateIsNull() {
         Assert.assertNull(mController.getSelectionMenuCachedResultForTesting());
 
@@ -853,6 +855,7 @@ public class SelectionPopupControllerTest {
     }
 
     @Test
+    @Features.DisableFeatures({ContentFeatures.NO_SELECTION_MENU_CACHING})
     public void testMenuIsProcessedForSameSelectionStateIfCachingNotEnabledByDelegate() {
         Assert.assertNull(mController.getSelectionMenuCachedResultForTesting());
         SelectionActionMenuDelegate delegate = Mockito.mock(SelectionActionMenuDelegate.class);
@@ -880,6 +883,7 @@ public class SelectionPopupControllerTest {
     }
 
     @Test
+    @Features.DisableFeatures({ContentFeatures.NO_SELECTION_MENU_CACHING})
     public void testMenuIsCachedForSameSelectionStateIfCachingEnabledByDelegate() {
         Assert.assertNull(mController.getSelectionMenuCachedResultForTesting());
         SelectionActionMenuDelegate delegate = Mockito.mock(SelectionActionMenuDelegate.class);
@@ -908,6 +912,7 @@ public class SelectionPopupControllerTest {
 
     @Test
     @SuppressWarnings("AssertSameIncompatible")
+    @Features.DisableFeatures({ContentFeatures.NO_SELECTION_MENU_CACHING})
     public void testNewMenuIsProcessedForDifferentSelectionState() {
         Assert.assertNull(mController.getSelectionMenuCachedResultForTesting());
 

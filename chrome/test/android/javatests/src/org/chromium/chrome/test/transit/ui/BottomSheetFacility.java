@@ -41,8 +41,9 @@ public abstract class BottomSheetFacility<HostStationT extends Station<ChromeTab
         return declareView(bottomSheetElement.descendant(viewClass, viewMatchers));
     }
 
-    /** Press the system backpress to close the bottom sheet. */
-    public void close() {
+    /** Press the system backpress to dismiss the bottom sheet. */
+    public void dismiss() {
+        recheckActiveConditions();
         pressBackTo().exitFacility();
     }
 }

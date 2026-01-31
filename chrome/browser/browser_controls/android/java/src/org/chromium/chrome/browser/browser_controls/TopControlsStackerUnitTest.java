@@ -35,6 +35,7 @@ import org.chromium.chrome.browser.browser_controls.TopControlsStacker.ScrollBeh
 import org.chromium.chrome.browser.browser_controls.TopControlsStacker.TopControlType;
 import org.chromium.chrome.browser.browser_controls.TopControlsStacker.TopControlVisibility;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.components.browser_ui.util.BrowserControlsVisibilityDelegate;
 
 /** Unit tests for {@link TopControlsStacker}. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -220,7 +221,7 @@ public class TopControlsStackerUnitTest {
     }
 
     @Mock private BrowserControlsSizer mBrowserControlsSizer;
-    @Mock private BrowserStateBrowserControlsVisibilityDelegate mVisibilityDelegate;
+    @Mock private BrowserControlsVisibilityDelegate mVisibilityDelegate;
     @Captor private ArgumentCaptor<Callback<Integer>> mVisibilityCallbackCaptor;
 
     private TopControlsStacker mTopControlsStacker;
@@ -228,10 +229,9 @@ public class TopControlsStackerUnitTest {
     @Before
     public void setUp() {
         MockitoAnnotations.openMocks(this);
-        doReturn(mVisibilityDelegate).when(mBrowserControlsSizer).getBrowserVisibilityDelegate();
         doReturn(BrowserControlsState.BOTH).when(mVisibilityDelegate).get();
         doReturn(true).when(mBrowserControlsSizer).offsetOverridden();
-        mTopControlsStacker = new TopControlsStacker(mBrowserControlsSizer);
+        mTopControlsStacker = new TopControlsStacker(mBrowserControlsSizer, mVisibilityDelegate);
     }
 
     @Test
@@ -857,6 +857,41 @@ public class TopControlsStackerUnitTest {
     }
 
     @Test
+    public void repositionLayer_ChangeHeight_AddBottomLayer_ScrollDisabled() {
+        TestLayer tabStrip = TestLayer.tabStripLayer();
+        TestLayer toolbar = TestLayer.toolbarLayer();
+        TestLayer bookmark = TestLayer.bookmarkLayer();
+
+        mTopControlsStacker.setScrollingDisabled(true);
+        mTopControlsStacker.addControl(tabStrip);
+        mTopControlsStacker.addControl(toolbar);
+        mTopControlsStacker.requestLayerUpdateSync(false);
+
+        // All layers should be at resting.
+        assertControlsHeight(150, 150);
+        tabStrip.assertOffset(0).assertAtResting(true);
+        toolbar.assertOffset(50).assertAtResting(true);
+
+        var simulator = new TestBrowserControlsOffsetHelper(0, 150);
+        simulator.commitCurrentOffset();
+        tabStrip.assertOffset(0).assertAtResting(true);
+        toolbar.assertOffset(50).assertAtResting(true);
+
+        mTopControlsStacker.addControl(bookmark);
+        mTopControlsStacker.requestLayerUpdateSync(false);
+
+        assertControlsHeight(270, 270);
+        tabStrip.assertOffset(0).assertAtResting(true);
+        toolbar.assertOffset(50).assertAtResting(true);
+        bookmark.assertOffset(150).assertAtResting(true);
+
+        simulator.driveMinHeightOffsetBy(120);
+        tabStrip.assertOffset(0).assertAtResting(true);
+        toolbar.assertOffset(50).assertAtResting(true);
+        bookmark.assertOffset(150).assertAtResting(true);
+    }
+
+    @Test
     public void testPrepForAnimation() {
         doReturn(false).when(mBrowserControlsSizer).offsetOverridden();
 
@@ -1369,7 +1404,6 @@ public class TopControlsStackerUnitTest {
         }
 
         public void driveMinHeightOffsetBy(int delta) {
-            mCurrentTopOffset += delta;
             mCurrentTopControlsMinHeightOffset += delta;
             commitCurrentOffset();
         }
@@ -1405,7 +1439,7 @@ public class TopControlsStackerUnitTest {
             doReturn(mCurrentTopOffset).when(mBrowserControlsSizer).getTopControlOffset();
             doReturn(mCurrentTopControlsMinHeightOffset)
                     .when(mBrowserControlsSizer)
-                    .getTopControlOffset();
+                    .getTopControlsMinHeightOffset();
             mTopControlsStacker.onControlsOffsetChanged(
                     mCurrentTopOffset,
                     mCurrentTopControlsMinHeightOffset,

@@ -4,7 +4,8 @@
 
 #include "extensions/common/features/feature_provider.h"
 
-#include "base/containers/contains.h"
+#include <algorithm>
+
 #include "base/test/bind.h"
 #include "chrome/common/extensions/extension_test_util.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -32,7 +33,7 @@ IN_PROC_BROWSER_TEST_F(FeatureProviderBrowserTest,
   const FeatureMap& feature_map = api_provider->GetAllFeatures();
   for (const auto& it : feature_map) {
     bool is_delegated_feature =
-        base::Contains(expected_delegated_features, it.first);
+        std::ranges::contains(expected_delegated_features, it.first);
     const Feature* feature = it.second.get();
     ASSERT_TRUE(feature);
     EXPECT_EQ(is_delegated_feature,

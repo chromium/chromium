@@ -5,6 +5,7 @@
 #include "components/prefs/scoped_user_pref_update.h"
 
 #include <string_view>
+#include <utility>
 
 #include "base/check_deref.h"
 #include "base/check_op.h"
@@ -15,7 +16,6 @@
 // the problem.
 #include "base/debug/crash_logging.h"
 #include "base/debug/dump_without_crashing.h"
-#include "base/types/cxx23_to_underlying.h"
 
 namespace subtle {
 
@@ -45,11 +45,11 @@ base::Value* ScopedUserPrefUpdateBase::GetValueOfType(base::Value::Type type) {
     const PrefService::Preference* pref = service_->FindPreference(path_);
     SCOPED_CRASH_KEY_NUMBER(
         "ScopedUserPrefUpdate", "PrevServiceStatus",
-        base::to_underlying(service_->GetInitializationStatus()));
+        std::to_underlying(service_->GetInitializationStatus()));
     SCOPED_CRASH_KEY_STRING32("ScopedUserPrefUpdate", "FindPreference",
                               pref ? "Yes" : "No");
     SCOPED_CRASH_KEY_NUMBER("ScopedUserPrefUpdate", "Type",
-                            pref ? base::to_underlying(pref->GetType()) : -1);
+                            pref ? std::to_underlying(pref->GetType()) : -1);
     base::debug::DumpWithoutCrashing();
   }
   return value_;
@@ -64,10 +64,10 @@ void ScopedUserPrefUpdateBase::Notify() {
 
 }  // namespace subtle
 
-base::Value::Dict& ScopedDictPrefUpdate::Get() {
+base::DictValue& ScopedDictPrefUpdate::Get() {
   return GetValueOfType(base::Value::Type::DICT)->GetDict();
 }
 
-base::Value::List& ScopedListPrefUpdate::Get() {
+base::ListValue& ScopedListPrefUpdate::Get() {
   return GetValueOfType(base::Value::Type::LIST)->GetList();
 }

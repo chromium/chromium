@@ -57,7 +57,8 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
 
   // Fuzz the opening and parsing of the file.
   third_party_unrar::RarReader reader;
-  if (!reader.Open(std::move(rar_file), env.GetTempFile())) {
+  if (!reader.Open(std::make_unique<third_party_unrar::FileReader>(
+      std::move(rar_file)), env.GetTempFile())) {
     env.CleanUpRarFile();
     // Reject uninteresting inputs: do not add unopenable files to the corpus.
     return -1;

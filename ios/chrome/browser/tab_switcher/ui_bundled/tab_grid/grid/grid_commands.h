@@ -68,6 +68,10 @@ class WebStateID;
 // no item with that identifier, no item is closed.
 - (void)closeItemWithID:(web::WebStateID)itemID;
 
+// Tells the receiver to close all items except the one with identifier
+// `itemID`. Pinned items are also kept.
+- (void)closeTabsExceptID:(web::WebStateID)itemID;
+
 // Tells the receiver to delete the `group`. `sourceView` is the view that the
 // delete action originated from.
 - (void)deleteTabGroup:(base::WeakPtr<const TabGroup>)group

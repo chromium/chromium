@@ -993,7 +993,7 @@ impl<'de, R: Read<'de>> Deserializer<R> {
     fn scan_number(&mut self, buf: &mut String) -> Result<()> {
         match tri!(self.peek_or_null()) {
             b'.' => self.scan_decimal(buf),
-            e @ (b'e' | b'E') => self.scan_exponent(e as char, buf),
+            b'e' | b'E' => self.scan_exponent(buf),
             _ => Ok(()),
         }
     }
@@ -1018,15 +1018,15 @@ impl<'de, R: Read<'de>> Deserializer<R> {
         }
 
         match tri!(self.peek_or_null()) {
-            e @ (b'e' | b'E') => self.scan_exponent(e as char, buf),
+            b'e' | b'E' => self.scan_exponent(buf),
             _ => Ok(()),
         }
     }
 
     #[cfg(feature = "arbitrary_precision")]
-    fn scan_exponent(&mut self, e: char, buf: &mut String) -> Result<()> {
+    fn scan_exponent(&mut self, buf: &mut String) -> Result<()> {
         self.eat_char();
-        buf.push(e);
+        buf.push('e');
 
         match tri!(self.peek_or_null()) {
             b'+' => {
@@ -1037,7 +1037,9 @@ impl<'de, R: Read<'de>> Deserializer<R> {
                 self.eat_char();
                 buf.push('-');
             }
-            _ => {}
+            _ => {
+                buf.push('+');
+            }
         }
 
         // Make sure a digit follows the exponent place.

@@ -4,6 +4,9 @@
 
 /** @fileoverview Assertion helper functions wrapping the chaijs API. */
 
+// WebUI tests should depend on the assertion helper functions in this file instead of on Chai
+// directly. This file is the only allowed import of chai.js.
+// eslint-disable-next-line no-restricted-imports
 import {assert, expect} from '//webui-test/chai.js';
 
 /**
@@ -159,4 +162,13 @@ export function assertStringExcludes(expected: string, excludes: string): void {
  */
 export function assertNull(value: any, message?: string) {
   assert.isNull(value, message);
+}
+
+/*
+ * Asserts that set1 and set2 don’t have the same members in the same order.
+ * Uses a strict equality check.
+ */
+export function assertNotSameOrderedMembers<T>(
+    set1: T[], set2: T[], message?: string) {
+  assert.notSameOrderedMembers(set1, set2, message);
 }

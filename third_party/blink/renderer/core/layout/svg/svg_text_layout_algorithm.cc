@@ -6,7 +6,6 @@
 
 #include <algorithm>
 
-#include "base/containers/contains.h"
 #include "base/trace_event/trace_event.h"
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_inline_text.h"
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_text_path.h"
@@ -385,8 +384,9 @@ void SvgTextLayoutAlgorithm::ResolveTextLength(
       // 2.4.6.2. If the "middle" flag for result[k] is not true and k is not a
       // character in a resolved descendant node other than the first character
       // then shift = shift + small-delta.
-      if (!info.middle && (base::Contains(resolved_descendant_node_starts, k) ||
-                           !info.text_length_resolved)) {
+      if (!info.middle &&
+          (std::ranges::contains(resolved_descendant_node_starts, k) ||
+           !info.text_length_resolved)) {
         shift += character_delta;
       }
       info.text_length_resolved = true;
@@ -898,8 +898,8 @@ bool SvgTextLayoutAlgorithm::IsFirstCharacterInTextPath(
   // This implementation is O(N) where N is the number of <textPath>s in
   // a <text>. If this function is a performance bottleneck, we should add
   // |first_in_text_path| flag to SvgCharacterData.
-  return base::Contains(inline_node_.SvgTextPathRangeList(), index,
-                        &SvgTextContentRange::start_index);
+  return std::ranges::contains(inline_node_.SvgTextPathRangeList(), index,
+                               &SvgTextContentRange::start_index);
 }
 
 }  // namespace blink

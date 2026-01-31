@@ -9,9 +9,9 @@ import android.os.Bundle;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceFragmentCompat;
 
-import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.base.supplier.ObservableSuppliers;
-import org.chromium.base.supplier.SettableObservableSupplier;
+import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
 import org.chromium.build.annotations.Initializer;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -44,7 +44,7 @@ public class ImageDescriptionsSettings extends PreferenceFragmentCompat
     private boolean mIsEnabled;
     private boolean mOnlyOnWifi;
     private Profile mProfile;
-    private final SettableObservableSupplier<String> mPageTitle =
+    private final SettableMonotonicObservableSupplier<String> mPageTitle =
             ObservableSuppliers.createMonotonic();
 
     @Override
@@ -55,7 +55,7 @@ public class ImageDescriptionsSettings extends PreferenceFragmentCompat
     }
 
     @Override
-    public ObservableSupplier<String> getPageTitle() {
+    public MonotonicObservableSupplier<String> getPageTitle() {
         return mPageTitle;
     }
 
@@ -126,7 +126,7 @@ public class ImageDescriptionsSettings extends PreferenceFragmentCompat
         return AnimationType.PROPERTY;
     }
 
-    // TODO(crbug.com/444470792): Determine what pieces of logic are dynamic and need handling.
+    // The index logic is left empty as there is no dynamic logic to be handled.
     public static final ChromeBaseSearchIndexProvider SEARCH_INDEX_DATA_PROVIDER =
             new ChromeBaseSearchIndexProvider(
                     ImageDescriptionsSettings.class.getName(), R.xml.image_descriptions_preference);

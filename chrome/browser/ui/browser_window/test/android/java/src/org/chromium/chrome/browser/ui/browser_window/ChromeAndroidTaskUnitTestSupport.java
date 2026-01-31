@@ -38,6 +38,8 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.JniOnceCallback;
 import org.chromium.base.Promise;
 import org.chromium.base.ResettersForTesting;
+import org.chromium.base.supplier.ObservableSuppliers;
+import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.customtabs.PopupIntentCreator;
@@ -47,8 +49,12 @@ import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcherProvider
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileManager;
+import org.chromium.chrome.browser.tabmodel.SupportedProfileType;
 import org.chromium.chrome.browser.tabmodel.TabModel;
+import org.chromium.chrome.browser.tabmodel.TabModelSelector;
+import org.chromium.chrome.browser.ui.desktop_windowing.AppHeaderUtils;
 import org.chromium.chrome.browser.util.AndroidTaskUtils;
+import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateManager;
 import org.chromium.ui.base.ActivityWindowAndroid;
 import org.chromium.ui.display.DisplayAndroid;
 import org.chromium.ui.insets.InsetObserver;
@@ -198,7 +204,7 @@ public final class ChromeAndroidTaskUnitTestSupport {
      * @param isPendingTask If true, the returned {@link ChromeAndroidTask} will be in the pending
      *     state. The returned mock dependencies will not be connected with the pending {@link
      *     ChromeAndroidTask}. To connect the mocks with the pending {@link ChromeAndroidTask}, pass
-     *     them to {@link ChromeAndroidTask#setActivityScopedObjects}.
+     *     them to {@link ChromeAndroidTask#addActivityScopedObjects}.
      * @param isDesktopMode if true, mock the activity in a desktop mode with proper insets and
      *     screen bounds.
      * @return A new instance of {@link ChromeAndroidTaskWithMockDeps}.
@@ -234,7 +240,6 @@ public final class ChromeAndroidTaskUnitTestSupport {
 
         var mockApiDelegate = mock(AconfigFlaggedApiDelegate.class);
         AconfigFlaggedApiDelegate.setInstanceForTesting(mockApiDelegate);
-        when(mockApiDelegate.isTaskMoveAllowedOnDisplay(any(), anyInt())).thenReturn(true);
         when(mockApiDelegate.moveTaskToWithPromise(any(), anyInt(), any()))
                 .thenReturn(Promise.fulfilled(Pair.create(-1, new Rect())));
 
@@ -289,10 +294,24 @@ public final class ChromeAndroidTaskUnitTestSupport {
         var mockTabModel = mock(TabModel.class);
         when(mockTabModel.getProfile()).thenReturn(profile);
 
+        var mockTabModelSelector = mock(TabModelSelector.class);
+        SettableMonotonicObservableSupplier<TabModel> tabModelSupplier =
+                ObservableSuppliers.createMonotonic();
+        tabModelSupplier.set(mockTabModel);
+        when(mockTabModelSelector.getCurrentTabModelSupplier()).thenReturn(tabModelSupplier);
+        when(mockTabModelSelector.getCurrentModel()).thenReturn(mockTabModel);
+        when(mockTabModelSelector.getModels())
+                .thenReturn(java.util.Collections.singletonList(mockTabModel));
+
+        var mockDesktopWindowStateManager = mock(DesktopWindowStateManager.class);
         var mockMultiInstanceManager = createMockMultiInstanceManager();
 
         return new ChromeAndroidTask.ActivityScopedObjects(
-                activityWindowAndroid, mockTabModel, mockMultiInstanceManager);
+                activityWindowAndroid,
+                mockTabModelSelector,
+                SupportedProfileType.REGULAR,
+                mockDesktopWindowStateManager,
+                mockMultiInstanceManager);
     }
 
     /**
@@ -463,6 +482,7 @@ public final class ChromeAndroidTaskUnitTestSupport {
         // Activity should be in multi-window mode.
         // (Desktop windowing mode is a multi-window mode.)
         when(mockActivity.isInMultiWindowMode()).thenReturn(true);
+        AppHeaderUtils.setAppInDesktopWindowForTesting(true);
 
         // Config system bars behavior.
         var mockWindow = mock(Window.class);

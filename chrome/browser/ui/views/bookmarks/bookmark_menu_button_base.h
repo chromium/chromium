@@ -16,10 +16,15 @@ class BookmarkMenuButtonBase : public views::MenuButton {
   METADATA_HEADER(BookmarkMenuButtonBase, views::MenuButton)
 
  public:
+  // Return true when a bookmark is being dragged.
+  using IsDraggingCallback = base::RepeatingCallback<bool()>;
+
   explicit BookmarkMenuButtonBase(PressedCallback callback,
+                                  IsDraggingCallback is_dragging_callback,
                                   std::u16string_view title = {});
   BookmarkMenuButtonBase(const BookmarkMenuButtonBase&) = delete;
   BookmarkMenuButtonBase& operator=(const BookmarkMenuButtonBase&) = delete;
+  ~BookmarkMenuButtonBase() override;
 
   // MenuButton:
   std::unique_ptr<views::LabelButtonBorder> CreateDefaultBorder()

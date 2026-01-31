@@ -4,7 +4,7 @@
 
 #include "extensions/browser/path_util.h"
 
-#include "base/byte_count.h"
+#include "base/byte_size.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/path_service.h"
@@ -52,9 +52,10 @@ void OnDirectorySizeCalculated(
     int message_id,
     base::OnceCallback<void(const std::u16string&)> callback,
     int64_t size_in_bytes) {
-  base::ByteCount size = base::ByteCount(size_in_bytes);
+  base::ByteSize size =
+      base::ByteSize(base::checked_cast<uint64_t>(size_in_bytes));
   std::u16string response =
-      size < base::MiB(1)
+      size < base::MiBU(1)
           ? l10n_util::GetStringUTF16(message_id)
           : ui::FormatBytesWithUnits(size, ui::DataUnits::kMebibyte,
                                      /*show_units=*/true);

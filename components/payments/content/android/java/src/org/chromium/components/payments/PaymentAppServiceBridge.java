@@ -49,7 +49,8 @@ public class PaymentAppServiceBridge implements PaymentAppFactoryInterface {
                                 delegate.getParams().getRenderFrameHost().getLastCommittedURL(),
                                 SchemeDisplay.SHOW));
 
-        CSPCheckerBridge cspCheckerBridge = new CSPCheckerBridge(delegate.getCSPChecker());
+        CSPCheckerBridge cspCheckerBridge =
+                new CSPCheckerBridge(delegate.getParams().getCSPChecker());
 
         PaymentAppServiceCallback callback =
                 new PaymentAppServiceCallback(delegate, cspCheckerBridge);

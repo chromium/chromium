@@ -4,7 +4,6 @@
 
 #include "ash/webui/file_manager/resource_loader.h"
 
-#include "base/containers/contains.h"
 #include "base/strings/string_util.h"
 
 namespace ash {
@@ -16,7 +15,7 @@ void AddFilesAppResources(content::WebUIDataSource* source,
     std::string path(entry.path);
     // Only load resources for Files app.
     if (base::StartsWith(path, "file_manager/") &&
-        !base::Contains(path, "untrusted_resources/")) {
+        !path.contains("untrusted_resources/")) {
       // Files app UI has all paths relative to //ui/file_manager/file_manager/
       // so we remove the leading file_manager/ to match the existing paths.
       base::ReplaceFirstSubstringAfterOffset(&path, 0, "file_manager/", "");

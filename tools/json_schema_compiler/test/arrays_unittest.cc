@@ -18,21 +18,21 @@ namespace arrays = test::api::arrays;
 
 namespace {
 
-static base::Value::Dict CreateBasicArrayTypeDictionary() {
-  base::Value::Dict value;
-  base::Value::List strings_value;
+static base::DictValue CreateBasicArrayTypeDictionary() {
+  base::DictValue value;
+  base::ListValue strings_value;
   strings_value.Append("a");
   strings_value.Append("b");
   strings_value.Append("c");
   strings_value.Append("it's easy as");
-  base::Value::List integers_value;
+  base::ListValue integers_value;
   integers_value.Append(1);
   integers_value.Append(2);
   integers_value.Append(3);
-  base::Value::List booleans_value;
+  base::ListValue booleans_value;
   booleans_value.Append(false);
   booleans_value.Append(true);
-  base::Value::List numbers_value;
+  base::ListValue numbers_value;
   numbers_value.Append(6.1);
   value.Set("numbers", std::move(numbers_value));
   value.Set("booleans", std::move(booleans_value));
@@ -42,7 +42,7 @@ static base::Value::Dict CreateBasicArrayTypeDictionary() {
 }
 
 base::Value CreateItemValue(int val) {
-  base::Value::Dict value;
+  base::DictValue value;
   value.Set("val", val);
   return base::Value(std::move(value));
 }
@@ -51,7 +51,7 @@ base::Value CreateItemValue(int val) {
 
 TEST(JsonSchemaCompilerArrayTest, BasicArrayType) {
   {
-    base::Value::Dict value(CreateBasicArrayTypeDictionary());
+    base::DictValue value(CreateBasicArrayTypeDictionary());
     auto basic_array_type = arrays::BasicArrayType::FromValue(value);
     ASSERT_TRUE(basic_array_type);
     EXPECT_EQ(value, basic_array_type->ToValue());
@@ -62,11 +62,11 @@ TEST(JsonSchemaCompilerArrayTest, BasicArrayType) {
 
 TEST(JsonSchemaCompilerArrayTest, EnumArrayReference) {
   // { "types": ["one", "two", "three"] }
-  base::Value::List types;
+  base::ListValue types;
   types.Append("one");
   types.Append("two");
   types.Append("three");
-  base::Value::Dict value;
+  base::DictValue value;
   value.Set("types", std::move(types));
 
   // Test Populate.
@@ -81,7 +81,7 @@ TEST(JsonSchemaCompilerArrayTest, EnumArrayReference) {
             enum_array_reference->types);
 
   // Test ToValue.
-  base::Value::Dict as_value(enum_array_reference->ToValue());
+  base::DictValue as_value(enum_array_reference->ToValue());
   EXPECT_EQ(value, as_value);
 
   EXPECT_EQ(enum_array_reference->Clone().ToValue(),
@@ -90,17 +90,17 @@ TEST(JsonSchemaCompilerArrayTest, EnumArrayReference) {
 
 TEST(JsonSchemaCompilerArrayTest, EnumArrayMixed) {
   // { "types": ["one", "two", "three"] }
-  base::Value::List infile_enums;
+  base::ListValue infile_enums;
   infile_enums.Append("one");
   infile_enums.Append("two");
   infile_enums.Append("three");
 
-  base::Value::List external_enums;
+  base::ListValue external_enums;
   external_enums.Append("one");
   external_enums.Append("two");
   external_enums.Append("three");
 
-  base::Value::Dict value;
+  base::DictValue value;
   value.Set("infile_enums", std::move(infile_enums));
   value.Set("external_enums", std::move(external_enums));
 
@@ -125,7 +125,7 @@ TEST(JsonSchemaCompilerArrayTest, EnumArrayMixed) {
             enum_array_mixed->external_enums);
 
   // Test ToValue.
-  base::Value::Dict as_value(enum_array_mixed->ToValue());
+  base::DictValue as_value(enum_array_mixed->ToValue());
   EXPECT_EQ(value, as_value);
 
   EXPECT_EQ(enum_array_mixed->Clone().ToValue(), enum_array_mixed->ToValue());
@@ -138,11 +138,11 @@ TEST(JsonSchemaCompilerArrayTest, OptionalEnumArrayType) {
     enums.push_back(arrays::Enumeration::kTwo);
     enums.push_back(arrays::Enumeration::kThree);
 
-    base::Value::List types;
+    base::ListValue types;
     for (auto& enum_entry : enums)
       types.Append(ToString(enum_entry));
 
-    base::Value::Dict value;
+    base::DictValue value;
     value.Set("types", std::move(types));
 
     auto enum_array_type = arrays::OptionalEnumArrayType::FromValue(value);
@@ -152,8 +152,8 @@ TEST(JsonSchemaCompilerArrayTest, OptionalEnumArrayType) {
     EXPECT_EQ(enum_array_type->Clone().ToValue(), enum_array_type->ToValue());
   }
   {
-    base::Value::Dict value;
-    base::Value::List enum_array;
+    base::DictValue value;
+    base::ListValue enum_array;
     enum_array.Append("invalid");
 
     value.Set("types", std::move(enum_array));
@@ -164,8 +164,8 @@ TEST(JsonSchemaCompilerArrayTest, OptionalEnumArrayType) {
 
 TEST(JsonSchemaCompilerArrayTest, RefArrayType) {
   {
-    base::Value::Dict value;
-    base::Value::List ref_array;
+    base::DictValue value;
+    base::ListValue ref_array;
     ref_array.Append(CreateItemValue(1));
     ref_array.Append(CreateItemValue(2));
     ref_array.Append(CreateItemValue(3));
@@ -180,8 +180,8 @@ TEST(JsonSchemaCompilerArrayTest, RefArrayType) {
     EXPECT_EQ(ref_array_type->Clone().ToValue(), ref_array_type->ToValue());
   }
   {
-    base::Value::Dict value;
-    base::Value::List not_ref_array;
+    base::DictValue value;
+    base::ListValue not_ref_array;
     not_ref_array.Append(CreateItemValue(1));
     not_ref_array.Append(3);
     value.Set("refs", std::move(not_ref_array));
@@ -191,8 +191,8 @@ TEST(JsonSchemaCompilerArrayTest, RefArrayType) {
 }
 
 TEST(JsonSchemaCompilerArrayTest, IntegerArrayParamsCreate) {
-  base::Value::List params_value;
-  base::Value::List integer_array;
+  base::ListValue params_value;
+  base::ListValue integer_array;
   integer_array.Append(2);
   integer_array.Append(4);
   integer_array.Append(8);
@@ -207,8 +207,8 @@ TEST(JsonSchemaCompilerArrayTest, IntegerArrayParamsCreate) {
 }
 
 TEST(JsonSchemaCompilerArrayTest, AnyArrayParamsCreate) {
-  base::Value::List params_value;
-  base::Value::List any_array;
+  base::ListValue params_value;
+  base::ListValue any_array;
   any_array.Append(1);
   any_array.Append("test");
   any_array.Append(CreateItemValue(2));
@@ -222,8 +222,8 @@ TEST(JsonSchemaCompilerArrayTest, AnyArrayParamsCreate) {
 }
 
 TEST(JsonSchemaCompilerArrayTest, ObjectArrayParamsCreate) {
-  base::Value::List params_value;
-  base::Value::List item_array;
+  base::ListValue params_value;
+  base::ListValue item_array;
   item_array.Append(CreateItemValue(1));
   item_array.Append(CreateItemValue(2));
   params_value.Append(std::move(item_array));
@@ -236,8 +236,8 @@ TEST(JsonSchemaCompilerArrayTest, ObjectArrayParamsCreate) {
 }
 
 TEST(JsonSchemaCompilerArrayTest, RefArrayParamsCreate) {
-  base::Value::List params_value;
-  base::Value::List item_array;
+  base::ListValue params_value;
+  base::ListValue item_array;
   item_array.Append(CreateItemValue(1));
   item_array.Append(CreateItemValue(2));
   params_value.Append(std::move(item_array));
@@ -255,8 +255,8 @@ TEST(JsonSchemaCompilerArrayTest, ReturnIntegerArrayResultCreate) {
   integers.push_back(2);
   base::Value results(arrays::ReturnIntegerArray::Results::Create(integers));
 
-  base::Value::List expected;
-  base::Value::List expected_argument;
+  base::ListValue expected;
+  base::ListValue expected_argument;
   expected_argument.Append(1);
   expected_argument.Append(2);
   expected.Append(std::move(expected_argument));
@@ -271,12 +271,12 @@ TEST(JsonSchemaCompilerArrayTest, ReturnRefArrayResultCreate) {
   items[1].val = 2;
   base::Value results(arrays::ReturnRefArray::Results::Create(items));
 
-  base::Value::List expected;
-  base::Value::List expected_argument;
-  base::Value::Dict first;
+  base::ListValue expected;
+  base::ListValue expected_argument;
+  base::DictValue first;
   first.Set("val", 1);
   expected_argument.Append(std::move(first));
-  base::Value::Dict second;
+  base::DictValue second;
   second.Set("val", 2);
   expected_argument.Append(std::move(second));
   expected.Append(std::move(expected_argument));

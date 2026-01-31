@@ -34,7 +34,6 @@
 #include "chromeos/ash/components/dbus/cryptohome/UserDataAuth.pb.h"
 #include "chromeos/ash/components/dbus/userdataauth/fake_userdataauth_client.h"
 #include "chromeos/ash/components/dbus/userdataauth/userdataauth_client.h"
-#include "chromeos/crosapi/mojom/remoting.mojom.h"
 #include "components/crash/core/common/crash_key.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/session_manager/core/session_manager.h"
@@ -57,7 +56,7 @@ namespace {
 
 using SessionParameters = StartCrdSessionJobDelegate::SessionParameters;
 using StartSupportSessionCallback =
-    crosapi::mojom::Remoting::StartSupportSessionCallback;
+    CrdAdminSessionController::RemotingServiceProxy::StartSessionCallback;
 
 using base::test::TestFuture;
 using remoting::ErrorCode;

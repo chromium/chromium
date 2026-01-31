@@ -60,7 +60,7 @@ struct NET_EXPORT_PRIVATE ServiceEndpoint {
   friend bool operator==(const ServiceEndpoint&,
                          const ServiceEndpoint&) = default;
 
-  base::Value::Dict ToValue() const;
+  base::DictValue ToValue() const;
 
   // IPv4 endpoints at which to connect to the service.
   std::vector<IPEndPoint> ipv4_endpoints;

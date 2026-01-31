@@ -40,14 +40,14 @@ RobinHoodMap<Key, Value>::InsertInternal(
       swap(to_insert, *bucket);
       distance = other_distance;
     }
-    UNSAFE_TODO(++bucket);
+    UNSAFE_BUFFERS(++bucket);
     ++distance;
     if (static_cast<unsigned>(distance) >= kPossibleBucketsPerKey) {
       // Insertion failed. Stick it in the spare bucket at the very bottom,
       // so that we don't lose it, but the caller will need to rehash.
-      DCHECK(UNSAFE_TODO(buckets_[num_buckets_ + kPossibleBucketsPerKey - 1])
+      DCHECK(UNSAFE_BUFFERS(buckets_[num_buckets_ + kPossibleBucketsPerKey - 1])
                  .key.IsNull());
-      UNSAFE_TODO(buckets_[num_buckets_ + kPossibleBucketsPerKey - 1]) =
+      UNSAFE_BUFFERS(buckets_[num_buckets_ + kPossibleBucketsPerKey - 1]) =
           to_insert;
       return nullptr;
     }
@@ -112,7 +112,7 @@ RobinHoodMap<Key, Value>::InsertWithRehashing(const Key& key) {
     Bucket* bucket = FindBucket(key);
     bool rehashing_would_help = false;
     for (unsigned i = 0; i < kPossibleBucketsPerKey;
-         ++i, UNSAFE_TODO(++bucket)) {
+         ++i, UNSAFE_BUFFERS(++bucket)) {
       if (bucket->key.Hash() != key.Hash()) {
         rehashing_would_help = true;
         break;
@@ -125,7 +125,7 @@ RobinHoodMap<Key, Value>::InsertWithRehashing(const Key& key) {
       // the same distance).
       // This leaves the hash table back into a consistent state.
       Bucket* sentinel =
-          UNSAFE_TODO(&buckets_[num_buckets_ + kPossibleBucketsPerKey - 1]);
+          UNSAFE_BUFFERS(&buckets_[num_buckets_ + kPossibleBucketsPerKey - 1]);
       DCHECK_EQ(sentinel->key, key);
       sentinel->key = AtomicString();
       return nullptr;
@@ -141,7 +141,8 @@ RobinHoodMap<Key, Value>::InsertWithRehashing(const Key& key) {
   // Find out where the element ended up (it's hard to keep track of where
   // everything moved during the rehashing).
   Bucket* bucket = FindBucket(key);
-  for (unsigned i = 0; i < kPossibleBucketsPerKey; ++i, UNSAFE_TODO(++bucket)) {
+  for (unsigned i = 0; i < kPossibleBucketsPerKey;
+       ++i, UNSAFE_BUFFERS(++bucket)) {
     if (bucket->key == key) {
       return bucket;
     }

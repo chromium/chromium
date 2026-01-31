@@ -46,6 +46,9 @@ class CORE_EXPORT PromiseAll final
       : number_of_pending_promises_(promises.size()),
         values_(promises.size()),
         resolver_(resolver) {
+    // `promises` might be out of control and GCed without resolving. Therefore,
+    // resolver_ needs to suppress the detach check.
+    resolver_->SuppressDetachCheck();
     for (wtf_size_t i = 0; i < number_of_pending_promises_; ++i) {
       promises[i].Unwrap().Then(script_state,
                                 MakeGarbageCollected<Resolve>(i, this),

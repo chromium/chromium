@@ -1,0 +1,3 @@
+Test importing an xsl:stylesheet node as stylesheet for XSLTProcessor.
+
+SUCCESS ReferenceError: XSLTProcessor is not defined

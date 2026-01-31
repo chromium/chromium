@@ -6,22 +6,21 @@ import './passcode_input/passcode_input.js';
 import './error_message/error_message.js';
 import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
-import 'chrome://resources/cr_elements/cr_shared_style.css.js';
-import 'chrome://resources/cr_elements/cr_shared_vars.css.js';
 import 'chrome://resources/cr_elements/icons.html.js';
 import 'chrome://resources/cr_elements/cr_icon/cr_icon.js';
 
 import {ColorChangeUpdater} from 'chrome://resources/cr_components/color_change_listener/colors_css_updater.js';
 import type {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import type {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
-import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
-import {WebUiListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
+import {I18nMixinLit} from 'chrome://resources/cr_elements/i18n_mixin_lit.js';
+import {assert} from 'chrome://resources/js/assert.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
-import {isWindows} from 'chrome://resources/js/platform.js';
 import {PluralStringProxyImpl} from 'chrome://resources/js/plural_string_proxy.js';
-import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
+import type {PropertyValues} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
-import {getTemplate} from './access_code_cast.html.js';
+import {getCss} from './access_code_cast.css.js';
+import {getHtml} from './access_code_cast.html.js';
 import type {PageCallbackRouter} from './access_code_cast.mojom-webui.js';
 import {AddSinkResultCode, CastDiscoveryMethod} from './access_code_cast.mojom-webui.js';
 import {BrowserProxy, DialogCloseReason} from './browser_proxy.js';
@@ -46,8 +45,7 @@ export interface AccessCodeCastElement {
   };
 }
 
-const AccessCodeCastElementBase =
-    WebUiListenerMixin(I18nMixin(PolymerElement));
+const AccessCodeCastElementBase = I18nMixinLit(CrLitElement);
 
 const ECMASCRIPT_EPOCH_START_YEAR = 1970;
 const SECONDS_PER_DAY = 86400;
@@ -60,53 +58,48 @@ export class AccessCodeCastElement extends AccessCodeCastElementBase {
     return 'access-code-cast-app';
   }
 
-  static get template() {
-    return getTemplate();
+  static override get styles() {
+    return getCss();
   }
 
-  static get properties() {
+  override render() {
+    return getHtml.bind(this)();
+  }
+
+  static override get properties() {
     return {
-      accessCode: {
-        type: String,
-        value: '',
-        observer: 'castStateChange',
-      },
-      canCast: {
-        type: Boolean,
-        value: true,
-        observer: 'castStateChange',
-      },
-      inputLabel: String,
-      isWin: Boolean,
-      managedFootnote: String,
-      qrScannerEnabled: Boolean,
-      rememberDevices: Boolean,
-      submitDisabled: Boolean,
+      accessCode: {type: String},
+      canCast: {type: Boolean},
+      inputLabel: {type: String},
+      managedFootnote: {type: String},
+      qrScannerEnabled: {type: Boolean},
+      rememberDevices: {type: Boolean},
+      submitDisabled: {type: Boolean},
     };
   }
 
-  private listenerIds: number[];
+  private listenerIds: number[] = [];
   private router: PageCallbackRouter;
 
   private static readonly ACCESS_CODE_LENGTH = 6;
 
-  declare private accessCode: string;
-  declare private canCast: boolean;
-  private inputEnabledStartTime: number;
-  declare private inputLabel: string;
-  declare private isWin: boolean;
-  declare private managedFootnote: string;
-  declare private qrScannerEnabled: boolean;
-  declare private rememberDevices: boolean;
-  private state: PageState;
-  declare private submitDisabled: boolean;
+  protected accessor accessCode: string = '';
+  protected accessor canCast: boolean = true;
+  protected accessor inputLabel: string = this.i18n('inputLabel');
+  protected accessor managedFootnote: string|undefined;
+  protected accessor qrScannerEnabled: boolean = false;
+  protected accessor rememberDevices: boolean = false;
+  private state: PageState|undefined;
+  protected accessor submitDisabled: boolean = false;
+
+  private inputEnabledStartTime: number = Date.now();
 
   constructor() {
     super();
-    this.listenerIds = [];
-    this.router = BrowserProxy.getInstance().callbackRouter;
-    this.inputLabel = this.i18n('inputLabel');
-    this.isWin = isWindows;
+
+    const router = BrowserProxy.getInstance().callbackRouter;
+    assert(router);
+    this.router = router;
 
     // Enable dynamic colors for the dialog.
     ColorChangeUpdater.forDocument().start();
@@ -114,8 +107,6 @@ export class AccessCodeCastElement extends AccessCodeCastElementBase {
     this.createManagedFootnote(
         loadTimeData.getInteger('rememberedDeviceDuration'));
 
-    this.accessCode = '';
-    this.inputEnabledStartTime = Date.now();
     BrowserProxy.getInstance().isQrScanningAvailable().then((available) => {
       this.qrScannerEnabled = available;
     });
@@ -127,15 +118,34 @@ export class AccessCodeCastElement extends AccessCodeCastElementBase {
     });
   }
 
-  override ready() {
-    super.ready();
+  override firstUpdated(changedProperties: PropertyValues<this>) {
+    super.firstUpdated(changedProperties);
     this.setState(PageState.CODE_INPUT);
     this.$.errorMessage.setNoError();
     this.$.dialog.showModal();
   }
 
-  override connectedCallback() {
-    super.connectedCallback();
+  override updated(changedProperties: PropertyValues<this>) {
+    super.updated(changedProperties);
+
+    const changedPrivateProperties =
+        changedProperties as Map<PropertyKey, unknown>;
+
+    if (changedPrivateProperties.has('canCast') ||
+        changedPrivateProperties.has('accessCode')) {
+      this.submitDisabled = !this.canCast ||
+          this.accessCode.length !== AccessCodeCastElement.ACCESS_CODE_LENGTH;
+      if (this.$.errorMessage.getMessageCode() !== 0 &&
+          this.accessCode.length <=
+              AccessCodeCastElement.ACCESS_CODE_LENGTH - 1) {
+        // Hide error message once user starts editing the access code entered
+        // previously. Checking for access code's length
+        // <= (AccessCodeCastElement.ACCESS_CODE_LENGTH - 1 ) because it's
+        // possible to for the user to deletes more than one characters at a
+        // time.
+        this.$.errorMessage.setNoError();
+      }
+    }
   }
 
   override disconnectedCallback() {
@@ -170,7 +180,7 @@ export class AccessCodeCastElement extends AccessCodeCastElementBase {
       return;
     }
 
-    this.set('canCast', false);
+    this.canCast = false;
     this.$.errorMessage.setNoError();
     const castAttemptStartTime = Date.now();
 
@@ -255,25 +265,10 @@ export class AccessCodeCastElement extends AccessCodeCastElementBase {
   }
 
   private afterFailedAddAndCast(attemptStartDate: number) {
-    this.set('canCast', true);
+    this.canCast = true;
     this.$.codeInput.focusInput();
     this.inputEnabledStartTime = Date.now();
     BrowserProxy.recordCastAttemptLength(Date.now() - attemptStartDate);
-  }
-
-  private castStateChange() {
-    this.submitDisabled = !this.canCast ||
-        this.accessCode.length !== AccessCodeCastElement.ACCESS_CODE_LENGTH;
-    if (this.$.errorMessage.getMessageCode() !== 0 &&
-        this.accessCode.length <=
-            AccessCodeCastElement.ACCESS_CODE_LENGTH - 1) {
-      // Hide error message once user starts editing the access code entered
-      // previously. Checking for access code's length
-      // <= (AccessCodeCastElement.ACCESS_CODE_LENGTH - 1 ) because it's
-      // possible to for the user to deletes more than one characters at a
-      // time.
-      this.$.errorMessage.setNoError();
-    }
   }
 
   private setState(state: PageState) {
@@ -291,7 +286,7 @@ export class AccessCodeCastElement extends AccessCodeCastElementBase {
     }
   }
 
-  private handleCodeInput(e: any) {
+  protected onAccessCodeChanged(e: CustomEvent<{value: string}>) {
     this.accessCode = e.detail.value;
   }
 
@@ -311,13 +306,16 @@ export class AccessCodeCastElement extends AccessCodeCastElementBase {
 
   private async addSink(method: CastDiscoveryMethod):
       Promise<AddSinkResultCode> {
-    const addSinkResult = await BrowserProxy.getInstance().handler
-        .addSink(this.accessCode, method);
+    const handler = BrowserProxy.getInstance().handler;
+    assert(handler);
+    const addSinkResult = await handler.addSink(this.accessCode, method);
     return addSinkResult.resultCode;
   }
 
   private async cast(): Promise<RouteRequestResultCode> {
-    const castResult = await BrowserProxy.getInstance().handler.castToSink();
+    const handler = BrowserProxy.getInstance().handler;
+    assert(handler);
+    const castResult = await handler.castToSink();
     return castResult.resultCode;
   }
 

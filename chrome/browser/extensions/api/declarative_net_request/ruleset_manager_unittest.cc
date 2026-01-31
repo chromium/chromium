@@ -64,6 +64,12 @@ class RulesetManagerTest : public DNRTestBase {
     manager_ = std::make_unique<RulesetManager>(browser_context());
   }
 
+  void TearDown() override {
+    last_loaded_extension_.reset();
+    manager_.reset();
+    DNRTestBase::TearDown();
+  }
+
  protected:
   using RequestActionType = RequestAction::Type;
 

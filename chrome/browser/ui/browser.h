@@ -675,9 +675,7 @@ class Browser : public TabStripModelObserver,
       const TabStripModelChange& change,
       const TabStripSelectionChange& selection) override;
   void OnTabGroupChanged(const TabGroupChange& change) override;
-  void TabPinnedStateChanged(TabStripModel* tab_strip_model,
-                             content::WebContents* contents,
-                             int index) override;
+  void OnTabPinnedStateChanged(tabs::TabInterface* tab, int index) override;
   void TabGroupedStateChanged(TabStripModel* tab_strip_model,
                               std::optional<tab_groups::TabGroupId> old_group,
                               std::optional<tab_groups::TabGroupId> new_group,
@@ -708,8 +706,6 @@ class Browser : public TabStripModelObserver,
       const input::NativeWebKeyboardEvent& event) override;
   bool HandleKeyboardEvent(content::WebContents* source,
                            const input::NativeWebKeyboardEvent& event) override;
-  bool PreHandleGestureEvent(content::WebContents* source,
-                             const blink::WebGestureEvent& event) override;
   bool CanDragEnter(content::WebContents* source,
                     const content::DropData& data,
                     blink::DragOperationsMask operations_allowed) override;
@@ -747,15 +743,13 @@ class Browser : public TabStripModelObserver,
       content::WebContents* web_contents) override;
   content::WebContents* GetResponsibleWebContents(
       content::WebContents* web_contents) override;
+  std::optional<gfx::Rect> GetWindowBoundsInScreen() override;
 
   bool is_type_normal() const { return type_ == TYPE_NORMAL; }
   bool is_type_popup() const { return type_ == TYPE_POPUP; }
   bool is_type_app() const { return type_ == TYPE_APP; }
   bool is_type_app_popup() const { return type_ == TYPE_APP_POPUP; }
   bool is_type_devtools() const { return type_ == TYPE_DEVTOOLS; }
-#if BUILDFLAG(IS_CHROMEOS)
-  bool is_type_custom_tab() const { return type_ == TYPE_CUSTOM_TAB; }
-#endif
   bool is_type_picture_in_picture() const {
     return type_ == TYPE_PICTURE_IN_PICTURE;
   }
@@ -845,11 +839,6 @@ class Browser : public TabStripModelObserver,
   // requesting the browser close via BrowserWindow::Close(), which happens
   // async and allows graceful teardown of the tab strip and associated data.
   void SynchronouslyDestroyBrowser();
-
-#if BUILDFLAG(IS_CHROMEOS)
-  bool IsLockedForOnTask();
-  void SetLockedForOnTask(bool locked);
-#endif
 
 #if BUILDFLAG(IS_OZONE)
   const std::optional<ui::PlatformSessionWindowData>& platform_session_data()
@@ -1198,11 +1187,6 @@ class Browser : public TabStripModelObserver,
   bool AppBrowserSupportsWindowFeature(WindowFeature feature,
                                        bool check_can_support) const;
 
-#if BUILDFLAG(IS_CHROMEOS)
-  // See comment on SupportsWindowFeatureImpl for info on `check_can_support`.
-  bool CustomTabBrowserSupportsWindowFeature(WindowFeature feature) const;
-#endif
-
   // See comment on SupportsWindowFeatureImpl for info on `check_can_support`.
   bool PictureInPictureBrowserSupportsWindowFeature(
       WindowFeature feature,
@@ -1362,14 +1346,6 @@ class Browser : public TabStripModelObserver,
 
   // If true, immediately updates the UI when scheduled.
   bool update_ui_immediately_for_testing_ = false;
-
-#if BUILDFLAG(IS_CHROMEOS)
-  // OnTask is a ChromeOS feature that is not related to web browsers, but
-  // happens to be implemented using code in //chrome/browser. The feature,
-  // when enabled, disables certain functionality that a web browser would
-  // never typically disable.
-  bool on_task_locked_ = false;
-#endif
 
   const base::ElapsedTimer creation_timer_;
 

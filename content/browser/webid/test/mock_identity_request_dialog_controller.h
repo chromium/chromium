@@ -82,6 +82,7 @@ class MockIdentityRequestDialogController
               (const GURL&, blink::mojom::RpMode rp_mode, DismissCallback),
               (override));
   MOCK_METHOD(void, CloseModalDialog, (), (override));
+  MOCK_METHOD(void, OnFlowCompleted, (bool success), (override));
   MOCK_METHOD(void, NotifyAutofillSourceReadyForTesting, (), (override));
 
   // Request the IdP Registration permission.

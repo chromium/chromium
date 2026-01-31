@@ -4,7 +4,6 @@
 
 #include "components/safe_browsing/content/browser/triggers/trigger_manager.h"
 
-#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_functions.h"
@@ -250,7 +249,7 @@ TriggerManager::FinishCollectingThreatDetails(
   bool should_send_report =
       CanSendReport(data_collection_permissions, trigger_type);
   bool has_threat_details_in_map =
-      base::Contains(data_collectors_map_, web_contents_key);
+      data_collectors_map_.contains(web_contents_key);
 
   if (should_send_report &&
       trigger_type == TriggerType::SECURITY_INTERSTITIAL) {
@@ -261,9 +260,12 @@ TriggerManager::FinishCollectingThreatDetails(
   }
 
   if (trigger_type == TriggerType::GAIA_PASSWORD_REUSE) {
+    // The `num_visits` value here reflects the value returned by the history
+    // service after navigation. Since the first visit is not a repeat visit,
+    // log false when `num_visits` is 1.
     base::UmaHistogramBoolean(
-        "SafeBrowsing.ClientSafeBrowsingReport.PasswordReuse.RepeatVisit",
-        num_visits > 0);
+        "SafeBrowsing.ClientSafeBrowsingReport.PasswordReuse.RepeatVisit2",
+        num_visits > 1);
   }
 
   // Make sure there's a ThreatDetails collector running on this tab.
@@ -311,7 +313,7 @@ TriggerManager::FinishCollectingThreatDetails(
 void TriggerManager::ThreatDetailsDone(WebContentsKey web_contents_key) {
   DCHECK(content::BrowserThread::CurrentlyOn(content::BrowserThread::UI));
   // Clean up the ThreatDetailsdata collector on the specified tab.
-  if (!base::Contains(data_collectors_map_, web_contents_key)) {
+  if (!data_collectors_map_.contains(web_contents_key)) {
     return;
   }
 
@@ -322,7 +324,7 @@ void TriggerManager::ThreatDetailsDone(WebContentsKey web_contents_key) {
 void TriggerManager::WebContentsDestroyed(content::WebContents* web_contents) {
   DCHECK(content::BrowserThread::CurrentlyOn(content::BrowserThread::UI));
   WebContentsKey key = GetWebContentsKey(web_contents);
-  if (!base::Contains(data_collectors_map_, key)) {
+  if (!data_collectors_map_.contains(key)) {
     return;
   }
   data_collectors_map_.erase(key);

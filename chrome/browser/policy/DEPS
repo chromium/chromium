@@ -1,3 +1,6 @@
+include_rules = [
+  "+extensions/strings/grit/extensions_strings.h"
+]
 specific_include_rules = {
   "media_stream_policy_browsertest\.cc": [
     "+components/webrtc",

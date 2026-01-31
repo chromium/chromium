@@ -53,6 +53,19 @@ bool IsAccessibilityTextFormattingEnabled() {
   return base::FeatureList::IsEnabled(::features::kAccessibilityTextFormatting);
 }
 
+BASE_FEATURE(kAccessibilityHandleOccludingViews,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+bool IsAccessibilityHandleOccludingViewsEnabled() {
+  return base::FeatureList::IsEnabled(
+      ::features::kAccessibilityHandleOccludingViews);
+}
+
+BASE_FEATURE(kAccessibilityTextChangeTypes, base::FEATURE_DISABLED_BY_DEFAULT);
+bool IsAccessibilityTextChangeTypesEnabled() {
+  return base::FeatureList::IsEnabled(
+      ::features::kAccessibilityTextChangeTypes);
+}
+
 BASE_FEATURE(kAccessibilityLabeledBy, base::FEATURE_DISABLED_BY_DEFAULT);
 bool IsAccessibilityLabeledByEnabled() {
   return base::FeatureList::IsEnabled(::features::kAccessibilityLabeledBy);
@@ -281,26 +294,9 @@ bool IsAccessibilityFlashScreenFeatureEnabled() {
       ::features::kAccessibilityFlashScreenFeature);
 }
 
-BASE_FEATURE(kAccessibilityBounceKeys, base::FEATURE_ENABLED_BY_DEFAULT);
-bool IsAccessibilityBounceKeysEnabled() {
-  return base::FeatureList::IsEnabled(::features::kAccessibilityBounceKeys);
-}
-
-BASE_FEATURE(kAccessibilitySlowKeys, base::FEATURE_ENABLED_BY_DEFAULT);
-bool IsAccessibilitySlowKeysEnabled() {
-  return base::FeatureList::IsEnabled(::features::kAccessibilitySlowKeys);
-}
-
 BASE_FEATURE(kAccessibilityShakeToLocate, base::FEATURE_DISABLED_BY_DEFAULT);
 bool IsAccessibilityShakeToLocateEnabled() {
   return base::FeatureList::IsEnabled(::features::kAccessibilityShakeToLocate);
-}
-
-BASE_FEATURE(kAccessibilityManifestV3BrailleIme,
-             base::FEATURE_ENABLED_BY_DEFAULT);
-bool IsAccessibilityManifestV3EnabledForBrailleIme() {
-  return base::FeatureList::IsEnabled(
-      ::features::kAccessibilityManifestV3BrailleIme);
 }
 
 BASE_FEATURE(kAccessibilityManifestV3ChromeVox,
@@ -308,13 +304,6 @@ BASE_FEATURE(kAccessibilityManifestV3ChromeVox,
 bool IsAccessibilityManifestV3EnabledForChromeVox() {
   return base::FeatureList::IsEnabled(
       ::features::kAccessibilityManifestV3ChromeVox);
-}
-
-BASE_FEATURE(kAccessibilityManifestV3EnhancedNetworkTts,
-             base::FEATURE_ENABLED_BY_DEFAULT);
-bool IsAccessibilityManifestV3EnabledForEnhancedNetworkTts() {
-  return base::FeatureList::IsEnabled(
-      ::features::kAccessibilityManifestV3EnhancedNetworkTts);
 }
 
 BASE_FEATURE(kAccessibilityManifestV3EspeakNGTts,
@@ -336,13 +325,6 @@ BASE_FEATURE(kAccessibilityManifestV3AccessibilityCommon,
 bool IsAccessibilityManifestV3EnabledForAccessibilityCommon() {
   return base::FeatureList::IsEnabled(
       ::features::kAccessibilityManifestV3AccessibilityCommon);
-}
-
-BASE_FEATURE(kAccessibilityManifestV3SelectToSpeak,
-             base::FEATURE_ENABLED_BY_DEFAULT);
-bool IsAccessibilityManifestV3EnabledForSelectToSpeak() {
-  return base::FeatureList::IsEnabled(
-      ::features::kAccessibilityManifestV3SelectToSpeak);
 }
 
 BASE_FEATURE(kAccessibilityManifestV3SwitchAccess,

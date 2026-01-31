@@ -308,6 +308,20 @@ chromium_strings.grd. -->
           Welcome to Google Chrome
         </message>
       </if>
+      <if expr="is_linux">
+        <message name="IDS_TERMS_DIALOG_ACCEPT" desc="The button label to accept the terms of service">
+          Accept
+        </message>
+        <message name="IDS_TERMS_DIALOG_CANCEL" desc="The button label to decline the terms of service">
+          Cancel
+        </message>
+        <message name="IDS_TERMS_DIALOG_TITLE" desc="Window title for the Terms of Service dialog">
+          Google Chrome and ChromeOS Additional Terms of Service
+        </message>
+        <message name="IDS_TERMS_DIALOG_ACCESSIBILITY_LABEL" desc="Accessibility label for the Terms of Service in the dialog">
+          Google Chrome and ChromeOS Additional Terms of Service
+        </message>
+      </if>
       <if expr="is_chromeos">
         <if expr="reven">
           <message name="IDS_PRODUCT_OS_NAME" desc="The ChromeOS Flex application name">
@@ -383,6 +397,20 @@ chromium_strings.grd. -->
       <message name="IDS_SESSION_CRASHED_VIEW_UMA_OPTIN" desc="Text besides the checkbox to let users optin to UMA in the restore from previous crash bubble.">
         Help make Google Chrome better by sending crash reports and <ph name="UMA_LINK">$1<ex>usage statistics</ex></ph> to Google
       </message>
+      <if expr="not is_android">
+        <message name="IDS_CHROME_SIGNOUT_CONFIRMATION_PROMPT_TOO_MANY_BOOKMARKS_BODY" desc="Body of the signout confirmation dialog when the user has too many bookmarks.">
+        You reached Google Chrome’s limit of <ph name="BOOKMARK_LIMIT">$1<ex>100,000</ex></ph> bookmarks, so some of your bookmarks haven’t been saved in your Google Account yet.
+
+New bookmarks can’t be saved in your account until you delete some. If you sign out now, unsaved bookmarks will be deleted.
+        </message>
+      </if>
+      <if expr="is_android">
+        <message name="IDS_CHROME_SIGNOUT_CONFIRMATION_PROMPT_TOO_MANY_BOOKMARKS_BODY" desc="Body of the signout confirmation dialog when the user has too many bookmarks." formatter_data="android_java">
+        You reached Google Chrome’s limit of <ph name="BOOKMARK_LIMIT">%1$s<ex>100,000</ex></ph> bookmarks, so some of your bookmarks haven’t been saved in your Google Account yet.
+
+New bookmarks can’t be saved in your account until you delete some. If you sign out now, unsaved bookmarks will be deleted.
+        </message>
+      </if>
       <!-- Reset Profile Settings strings -->
       <message name="IDS_RESET_PROFILE_SETTINGS_EXPLANATION_IN_BULLET_POINTS" desc="A label formatted with bullet points describing the consequences of the 'reset profile settings' feature">
         This action will:
@@ -471,7 +499,7 @@ chromium_strings.grd. -->
       </message>
       <if expr="is_macosx">
         <message name="IDS_MACOS_OBSOLETE" desc="A message displayed on an at-launch infobar and About (Help) page warning the user that the OS version they are using will soon be or is already unsupported.">
-          To get future Google Chrome updates, you'll need macOS 12 or later. This computer is using macOS 11.
+          To get future Google Chrome updates, you'll need macOS 13 or later. This computer is using macOS 12.
         </message>
       </if>
       <if expr="is_win">
@@ -538,6 +566,9 @@ chromium_strings.grd. -->
       </if>
       <message name="IDS_FR_CUSTOMIZE_DEFAULT_BROWSER" desc="Default browser checkbox label">
         Make Google Chrome the default browser
+      </message>
+      <message name="IDS_DEFAULT_BROWSER_CHANGED_MESSAGE" desc="Body of the notification shown when Chrome is no longer the default browser.">
+        Chrome is no longer your default browser. Make Chrome the default browser?
       </message>
       <if expr="use_titlecase">
         <message name="IDS_STATUS_TRAY_KEEP_CHROME_RUNNING_IN_BACKGROUND" desc="In Title Case: The checkbox in the status tray context menu that controls whether chrome keeps running in the background after the last window is closed">
@@ -1092,13 +1123,6 @@ Google Chrome is unable to recover your settings.
         </message>
         <message name="IDS_ENTERPRISE_VALUE_PROPOSITION_PROFILE_SUGGESTED_TITLE" desc="Title of the screen in the profile creation flow where the user is asked whether they want to confirm signing in to Chrome with their enterprise account.">
           Sign in to Chrome?
-        </message>
-        <!-- New one-click sign-in dialog contents for SAML support -->
-        <message name="IDS_ONE_CLICK_SIGNIN_DIALOG_TITLE_NEW" desc="The title of the modal dialog window that opens when the user chooses to use one click sign-in.">
-          You're signed in to Chrome!
-        </message>
-        <message name="IDS_ONE_CLICK_SIGNIN_DIALOG_MESSAGE_NEW" desc="The message of the one click sign-in dialog.">
-          You're signed in as <ph name="USER_EMAIL_ADDRESS">$1<ex>foo@gmail.com</ex></ph>. Now you can access your bookmarks, history, and other settings on all your signed in devices.
         </message>
       </if>
 
@@ -2150,6 +2174,10 @@ Google Chrome is unable to recover your settings.
           desc="Text that is shown in the Lens permission bubble, giving examples of what Lens can do and informing users what information will be sent to Google. Includes placeholder for learn more link.">
           When you use Google Lens, the page title, URL, and content, including PDFs, are sent to Google. <ph name="LEARN_MORE">$1<ex>Learn more</ex></ph>
         </message>
+        <message name="IDS_LENS_PERMISSION_BUBBLE_DIALOG_NON_BLOCKING_DESCRIPTION"
+          desc="Text that is shown in the Lens non-blocking privacy notice, giving examples of what Lens can do and informing users what information will be sent to Google. Includes placeholder for learn more link.">
+          When you open Google Lens, the page title, URL, and content, including PDFs, will automatically be sent to Google. <ph name="LEARN_MORE">$1<ex>Learn more</ex></ph>
+        </message>
         <message name="IDS_LENS_PERMISSION_BUBBLE_DIALOG_DESCRIPTION"
           desc="Text that is shown in the Lens permission bubble, giving examples of what Lens can do and informing users that their screenshot will be sent to Google. Includes placeholder for learn more link.">
           Identify things or places and copy or translate text. When you use Google Lens, a screenshot of the page is sent to Google. <ph name="LEARN_MORE">$1<ex>Learn more</ex></ph>
@@ -2169,6 +2197,14 @@ Google Chrome is unable to recover your settings.
         <message name="IDS_LENS_PERMISSION_BUBBLE_DIALOG_TAB_TO_CONTINUE"
           desc="Instructs the user to press Tab to begin using the feature.">
           Tab to continue
+        </message>
+        <message name="IDS_LENS_PERMISSION_BUBBLE_DIALOG_GOT_IT"
+          desc="Text on button in privacy notice, indicating that user understands that information will be sent to Google.">
+          Got it
+        </message>
+        <message name="IDS_LENS_PERMISSION_BUBBLE_DIALOG_REMIND_ME_LATER"
+          desc="Text on button to dismiss privacy notice, indicating that the privacy notice will be shown again later.">
+          Remind me later
         </message>
 
         <!-- Title Case Dependent -->
@@ -2561,6 +2597,13 @@ Google Chrome is unable to recover your settings.
         Continue
       </message>
 
+      <!-- Launch On Startup -->
+      <if expr="is_win">
+        <message name="IDS_SETTINGS_FOREGROUND_LAUNCH_ON_STARTUP_LABEL" desc="Label for settings toggle button that enables or disables opening Chrome on system startup">
+          Open Chrome when my computer starts
+        </message>
+      </if>
+
       <!-- Advanced security settings -->
       <message name="IDS_SETTINGS_SECURITY_JAVASCRIPT_OPTIMIZATION_LINK_ROW_ENABLED" desc="Description for the link row of the Javascript-optimization page when javascript-optimization is enabled.">
         Speeds up sites with Chrome's V8 engine but makes Chrome slightly less resistant to attacks. This setting is on.
@@ -2842,16 +2885,9 @@ Google Chrome is unable to recover your settings.
 
       <!-- Memory Saver IPH strings -->
       <if expr="not is_android">
-        <if expr="use_titlecase">
-          <message name="IDS_MEMORY_SAVER_MODE_PROMO_TITLE" desc="In Title Case: The title for the Memory Saver mode in-product promo bubble">
-            Make Chrome Faster
-          </message>
-        </if>
-        <if expr="not use_titlecase">
-          <message name="IDS_MEMORY_SAVER_MODE_PROMO_TITLE" desc="The title for the Memory Saver mode in-product promo bubble">
-            Make Chrome faster
-          </message>
-        </if>
+        <message name="IDS_MEMORY_SAVER_MODE_PROMO_TITLE" desc="The title for the Memory Saver mode in-product promo bubble">
+          Make Chrome faster
+        </message>
       </if>
 
       <!-- Performance Intervention Dialog strings -->
@@ -2978,6 +3014,12 @@ Google Chrome is unable to recover your settings.
         <message name="IDS_SETTINGS_GLIC_ROW_LABEL" desc="Label of the Gemini row button on the AI settings page leading to the Gemini subpage.">
           Gemini in Chrome
         </message>
+        <message name="IDS_SETTINGS_GLIC_PERMISSIONS_WEB_ACTUATION_TOGGLE" desc="Title for the Gemini feature introduction screen">
+          Let Chrome browse for you
+        </message>
+        <message name="IDS_SETTINGS_GLIC_PERMISSIONS_WEB_ACTUATION_TOGGLE_SUBLABEL" desc="Subheader explaining what the Gemini feature does">
+          Gemini in Chrome uses auto browse to work in your tabs and complete tasks you give it. <ph name="LINK_BEGIN">&lt;a href="#"&gt;</ph>Learn more<ph name="LINK_END">&lt;/a&gt;</ph>
+        </message>
 
         <!-- Profile Picker Glic version-->
         <message name="IDS_PROFILE_PICKER_MAIN_VIEW_TITLE_GLIC" desc="Heading describing that the section below choosing a Chrome profile to use with Gemini. 'Gemini' has a special styling.">
@@ -3055,20 +3097,56 @@ Google Chrome is unable to recover your settings.
 
       <!--Desktop to iOS promo strings-->
       <if expr="not is_android">
-        <message name="IDS_IOS_DESKTOP_ESB_PROMO_BUBBLE_DESCRIPTION_QR" desc="The description for the iOS desktop ESB promo bubble with a QR code.">
-          Download Chrome on your phone to add an extra layer of protection when you're on the go
-        </message>
         <message name="IDS_IOS_DESKTOP_ESB_PROMO_BUBBLE_DESCRIPTION_REMINDER" desc="The description for the iOS desktop ESB promo bubble with a reminder button.">
           Stay safer on the go with Enhanced Safe Browsing on Chrome for iOS
         </message>
+        <message name="IDS_IOS_DESKTOP_ESB_PROMO_BUBBLE_TITLE_QR" desc="The title for the iOS desktop ESB promo bubble with a QR code.">
+          Extend Enhanced Safe Browsing with Chrome on your phone
+        </message>
         <message name="IDS_IOS_DESKTOP_PASSWORD_PROMO_BUBBLE_FOOTER_DESCRIPTION_REMINDER" desc="The description for the footer of the iOS desktop password promo bubble.">
           Sign in faster to sites using saved passwords for Chrome on iOS
+        </message>
+        <message name="IDS_IOS_DESKTOP_PASSWORD_PROMO_BUBBLE_FOOTER_TITLE" desc="The title for the footer of the iOS desktop password promo bubble suggesting to users that they can use their passwords on their iOS devices.">
+          Use your passwords with Chrome on your phone
+        </message>
+        <message name="IDS_IOS_DESKTOP_PROMO_BUBBLE_BUTTON_ACCEPT_QR" desc="The text inside the iOS promo bubble button allowing the user to accept by getting the app via QR code.">
+          Get the Chrome app
         </message>
         <message name="IDS_IOS_DESKTOP_PROMO_REMINDER_CONFIRMATION" desc="Body text of the promo bubble that appears after uses choose to be reminded of the feature on their iOS device. The placeholder will be replaced by the name of the feature.">
           You'll see a prompt to try <ph name="FEATURE_NAME">$1<ex>Google Lens</ex></ph> next time you open Chrome iOS.
         </message>
         <message name="IDS_IOS_DESKTOP_PASSWORD_PROMO_REMINDER_CONFIRMATION" desc="Body text of the promo bubble that appears after uses choose to be reminded of the Password Manager on their iOS device.">
           Next time you open Chrome on your <ph name="DEVICE_TYPE">$1<ex>iPhone</ex></ph>, you'll see a prompt to use Google Password Manager.
+        </message>
+        <message name="IDS_IOS_DESKTOP_LENS_PROMO_BUBBLE_DESCRIPTION_REMINDER" desc="The description for the iOS desktop Lens promo bubble.">
+          Shop, translate and identify what you see with your camera on the Chrome iOS app
+        </message>
+        <message name="IDS_IOS_DESKTOP_LENS_PROMO_BUBBLE_TITLE_QR" desc="The title for the iOS desktop Lens promo bubble with a QR code.">
+          Try Google Lens with Chrome on your phone
+        </message>
+        <message name="IDS_IOS_DESKTOP_PASSWORD_PROMO_BUBBLE_FOOTER_DESCRIPTION_QR" desc="The description for the iOS promo bubble footer which lets the user know how to use their saved passwords on their phone: follow the QR code, download Chrome for iOS and sign in to their account.">
+          To use your saved passwords, follow the QR code, download Chrome for iOS and sign in to your Google Account
+        </message>
+        <message name="IDS_IOS_DESKTOP_LENS_PROMO_NOTIFICATION_TITLE" desc="The title for the iOS desktop Lens promo notification.">
+          Chrome Tip: Search With Lens
+        </message>
+        <message name="IDS_IOS_DESKTOP_PASSWORD_PROMO_NOTIFICATION_TITLE" desc="The title for the iOS desktop Password promo notification.">
+          Chrome Tip: Save Passwords
+        </message>
+        <message name="IDS_IOS_DESKTOP_PRICE_TRACKING_DESCRIPTION_QR" desc="The description for the iOS desktop price tracking promo bubble with a QR code.">
+          Download Chrome on your phone to track prices and get alerts when the price drops on any site
+        </message>
+         <message name="IDS_IOS_DESKTOP_PRICE_TRACKING_REMINDER_CONFIRMATION" desc="Body text of the promo bubble that appears after the user chooses to be reminded of price tracking on their iOS device.">
+          Next time you open Chrome on your <ph name="DEVICE_TYPE">$1<ex>iPhone</ex></ph>, you’ll see a prompt to enable price tracking alerts.
+        </message>
+        <message name="IDS_IOS_DESKTOP_SAFE_BROWSING_PROMO_NOTIFICATION_TITLE" desc="The title for the iOS desktop Enhanced Safe Browsing promo notification.">
+          Chrome Tip: Enhanced Safe Browsing
+        </message>
+        <message name="IDS_IOS_DESKTOP_TAB_GROUPS_PROMO_BUBBLE_DESCRIPTION_QR" desc="The description for the iOS desktop Tab Groups promo bubble with a QR code.">
+          Download Chrome on your phone to open or create new tab groups on the go.
+        </message>
+        <message name="IDS_IOS_DESKTOP_TAB_GROUPS_REMINDER_CONFIRMATION" desc="Body text of the promo bubble that appears after the user chooses to be reminded of tab groups on their iOS device.">
+          Next time you open Chrome on your <ph name="DEVICE_TYPE">$1<ex>iPhone</ex></ph>, you'll see a prompt to use tab groups.
         </message>
       </if>
 

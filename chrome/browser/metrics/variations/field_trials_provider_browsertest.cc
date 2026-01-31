@@ -182,7 +182,7 @@ class FieldTrialsProviderBrowserTest
     // Write the seed for the seed file experiment's control-group clients.
     std::string compressed_seed;
     compression::GzipCompress(serialized_seed, &compressed_seed);
-    base::Value::Dict local_state;
+    base::DictValue local_state;
     local_state.SetByDottedPath(prefs::kVariationsCompressedSeed,
                                 base::Base64Encode(compressed_seed));
     CHECK(JSONFileValueSerializer(local_state_path).Serialize(local_state));

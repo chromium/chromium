@@ -325,7 +325,7 @@ void ClipboardImageModelRequest::CopySurface() {
   // There is no guarantee CopyFromSurface will call OnCopyComplete. If this
   // takes too long, this will be cleaned up by |timeout_timer_|.
   source_view->CopyFromSurface(
-      /*src_rect=*/gfx::Rect(), /*output_size=*/gfx::Size(),
+      /*src_rect=*/gfx::Rect(), /*output_size=*/gfx::Size(), base::TimeDelta(),
       base::BindOnce(&ClipboardImageModelRequest::OnCopyComplete,
                      weak_ptr_factory_.GetWeakPtr(),
                      source_view->GetDeviceScaleFactor()));
@@ -333,8 +333,8 @@ void ClipboardImageModelRequest::CopySurface() {
 
 void ClipboardImageModelRequest::OnCopyComplete(
     float device_scale_factor,
-    const viz::CopyOutputBitmapWithMetadata& result) {
-  const SkBitmap& bitmap = result.bitmap;
+    const content::CopyFromSurfaceResult& result) {
+  const SkBitmap& bitmap = result.has_value() ? result->bitmap : SkBitmap();
   if (!deliver_image_model_callback_) {
     Stop(RequestStopReason::kMultipleCopyCompletion);
     return;

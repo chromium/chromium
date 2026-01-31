@@ -33,11 +33,11 @@ class StaticTabSceneLayer : public SceneLayer {
 
   // Update StaticTabSceneLayer with the new parameters.
   void UpdateTabLayer(JNIEnv* env,
-                      jint id,
-                      jboolean can_use_live_layer,
-                      jint default_background_color,
-                      jfloat x,
-                      jfloat y,
+                      int32_t id,
+                      bool can_use_live_layer,
+                      int32_t default_background_color,
+                      float x,
+                      float y,
                       const base::android::JavaRef<jobject>& joffset_tag);
 
   void SetTabContentManager(

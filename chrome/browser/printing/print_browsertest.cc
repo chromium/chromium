@@ -13,7 +13,6 @@
 #include "base/auto_reset.h"
 #include "base/base64.h"
 #include "base/check_op.h"
-#include "base/containers/contains.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
@@ -2023,10 +2022,10 @@ IN_PROC_BROWSER_TEST_P(PrintPrerenderBrowserTest, QuietBlockWithWindowPrint) {
   GURL prerender_url =
       embedded_test_server()->GetURL("/printing/prerendering.html");
 
-  content::FrameTreeNodeId prerender_id = prerender_helper_.AddPrerender(
+  content::PrerenderHostId prerender_id = prerender_helper_.AddPrerender(
       prerender_url, /*eagerness=*/std::nullopt, GetTargetHint());
   auto* prerender_web_contents =
-      content::WebContents::FromFrameTreeNodeId(prerender_id);
+      prerender_helper_.GetPrerenderWebContents(prerender_id);
   content::RenderFrameHost* prerender_host =
       content::test::PrerenderTestHelper::GetPrerenderedMainFrameHost(
           *prerender_web_contents, prerender_id);
@@ -2056,10 +2055,10 @@ IN_PROC_BROWSER_TEST_P(PrintPrerenderBrowserTest,
   GURL prerender_url =
       embedded_test_server()->GetURL("/printing/prerendering.html");
 
-  content::FrameTreeNodeId prerender_id = prerender_helper_.AddPrerender(
+  content::PrerenderHostId prerender_id = prerender_helper_.AddPrerender(
       prerender_url, /*eagerness=*/std::nullopt, GetTargetHint());
   auto* prerender_web_contents =
-      content::WebContents::FromFrameTreeNodeId(prerender_id);
+      prerender_helper_.GetPrerenderWebContents(prerender_id);
   content::RenderFrameHost* prerender_host =
       content::test::PrerenderTestHelper::GetPrerenderedMainFrameHost(
           *prerender_web_contents, prerender_id);

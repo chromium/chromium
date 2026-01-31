@@ -6,7 +6,6 @@
 
 #include <map>
 
-#include "base/containers/contains.h"
 
 namespace remoting {
 
@@ -26,7 +25,7 @@ void MessageTracker::TrackId(const std::string& id) {
 }
 
 bool MessageTracker::IsIdTracked(const std::string& id) const {
-  return base::Contains(tracked_ids_, id);
+  return tracked_ids_.contains(id);
 }
 
 void MessageTracker::RemoveExpiredIds() {

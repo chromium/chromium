@@ -14,11 +14,9 @@
 // This class manages an image cache for resized avatar images.
 @interface ResizedAvatarCache : NSObject
 
-// Initializes a new object with width and height of resized avatar.
-- (instancetype)initWithSize:(CGSize)size NS_DESIGNATED_INITIALIZER;
-
 // Initializes a new object based on `IdentityAvatarSize`.
-- (instancetype)initWithIdentityAvatarSize:(IdentityAvatarSize)avatarSize;
+- (instancetype)initWithIdentityAvatarSize:(IdentityAvatarSize)avatarSize
+    NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)init NS_UNAVAILABLE;
 

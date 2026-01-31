@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_UI_NETWORK_PROFILE_BUBBLE_H_
 #define CHROME_BROWSER_UI_NETWORK_PROFILE_BUBBLE_H_
 
-class Browser;
+class BrowserWindowInterface;
 class Profile;
 
 namespace base {
@@ -58,7 +58,7 @@ class NetworkProfileBubble {
   static void CheckNetworkProfile(const base::FilePath& profile_folder);
 
   // Shows the notification bubble using the provided |browser|.
-  static void ShowNotification(Browser* browser);
+  static void ShowNotification(BrowserWindowInterface* browser);
 
   static void SetNotificationShown(bool shown);
 

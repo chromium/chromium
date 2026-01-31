@@ -73,8 +73,6 @@ pub const EAI_SERVICE: c_int = 9;
 pub const EAI_SYSTEM: c_int = 11;
 pub const EAI_OVERFLOW: c_int = 14;
 
-pub const _SC_PAGESIZE: c_int = 8;
-pub const _SC_GETPW_R_SIZE_MAX: c_int = 51;
 pub const PTHREAD_STACK_MIN: size_t = 0;
 
 // sys/wait.h

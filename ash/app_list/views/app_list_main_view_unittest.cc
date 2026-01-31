@@ -58,6 +58,11 @@ class AppListMainViewTest : public AshTestBase {
     app_list_view_ = helper->GetAppListView();
   }
 
+  void TearDown() override {
+    app_list_view_ = nullptr;
+    AshTestBase::TearDown();
+  }
+
   test::AppListTestModel* GetTestModel() {
     return GetAppListTestHelper()->model();
   }
@@ -187,8 +192,7 @@ class AppListMainViewTest : public AshTestBase {
   }
 
  protected:
-  raw_ptr<AppListView, DanglingUntriaged> app_list_view_ =
-      nullptr;  // Owned by native widget.
+  raw_ptr<AppListView> app_list_view_ = nullptr;  // Owned by native widget.
 };
 
 // Tests that the close button becomes invisible after close button is clicked.

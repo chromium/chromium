@@ -87,7 +87,7 @@ void HatsHandler::RegisterMessages() {
  * Fourth arg indicates the SecuritySettingsBundleSetting when the settings page
  * was opened.
  */
-void HatsHandler::HandleSecurityPageHatsRequest(const base::Value::List& args) {
+void HatsHandler::HandleSecurityPageHatsRequest(const base::ListValue& args) {
   AllowJavascript();
 
   CHECK_EQ(4U, args.size());
@@ -138,8 +138,8 @@ void HatsHandler::HandleSecurityPageHatsRequest(const base::Value::List& args) {
  */
 SurveyStringData HatsHandler::GetSecurityPageProductSpecificStringData(
     Profile* profile,
-    const base::Value::List& args) {
-  const base::Value::List& interactions = args[0].GetList();
+    const base::ListValue& args) {
+  const base::ListValue& interactions = args[0].GetList();
   auto safe_browsing_state = static_cast<SafeBrowsingState>(args[1].GetInt());
 
   auto security_settings_bundle_setting =
@@ -179,6 +179,55 @@ SurveyStringData HatsHandler::GetSecurityPageProductSpecificStringData(
           ENHANCED_SAFE_BROWSING_RADIO_BUTTON_CLICK: {
         interaction_strings.push_back(
             "enhanced_safe_browsing_radio_button_clicked");
+        break;
+      }
+      case SecurityPageV2Interaction::SAFE_BROWSING_TOGGLE_CLICK: {
+        interaction_strings.push_back("safe_browsing_toggle_clicked");
+        break;
+      }
+      case SecurityPageV2Interaction::SECURE_DNS_V2_ROW_EXPANDED: {
+        interaction_strings.push_back("secure_dns_v2_row_expanded");
+        break;
+      }
+      case SecurityPageV2Interaction::
+          SECURE_DNS_V2_AUTOMATIC_RADIO_BUTTON_CLICK: {
+        interaction_strings.push_back(
+            "secure_dns_v2_automatic_radio_button_clicked");
+        break;
+      }
+      case SecurityPageV2Interaction::
+          SECURE_DNS_V2_FALLBACK_RADIO_BUTTON_CLICK: {
+        interaction_strings.push_back(
+            "secure_dns_v2_fallback_radio_button_clicked");
+        break;
+      }
+      case SecurityPageV2Interaction::SECURE_DNS_V2_CUSTOM_RADIO_BUTTON_CLICK: {
+        interaction_strings.push_back(
+            "secure_dns_v2_custom_radio_button_clicked");
+        break;
+      }
+      case SecurityPageV2Interaction::SECURE_DNS_V2_TOGGLE_CLICK: {
+        interaction_strings.push_back("secure_dns_v2_toggle_clicked");
+        break;
+      }
+      case SecurityPageV2Interaction::HTTPS_FIRST_MODE_TOGGLE_CLICK: {
+        interaction_strings.push_back("https_first_mode_toggle_clicked");
+        break;
+      }
+      case SecurityPageV2Interaction::
+          BALANCED_HTTPS_FIRST_MODE_RADIO_BUTTON_CLICK: {
+        interaction_strings.push_back(
+            "balanced_https_first_mode_radio_button_clicked");
+        break;
+      }
+      case SecurityPageV2Interaction::
+          STRICT_HTTPS_FIRST_MODE_RADIO_BUTTON_CLICK: {
+        interaction_strings.push_back(
+            "strict_https_first_mode_radio_button_clicked");
+        break;
+      }
+      case SecurityPageV2Interaction::PASSWORD_LEAK_DETECTION_TOGGLE_CLICK: {
+        interaction_strings.push_back("password_leak_detection_toggle_clicked");
         break;
       }
     }
@@ -266,7 +315,7 @@ SurveyStringData HatsHandler::GetSecurityPageProductSpecificStringData(
 }
 
 void HatsHandler::HandleTrustSafetyInteractionOccurred(
-    const base::Value::List& args) {
+    const base::ListValue& args) {
   AllowJavascript();
 
   CHECK_EQ(1U, args.size());

@@ -27,8 +27,8 @@ std::string AlgorithmName(MeasurementAlgorithm algorithm) {
 
 }  // namespace
 
-base::Value::Dict DescribeResultMetadata(const ResultMetadata& metadata) {
-  base::Value::Dict dict;
+base::DictValue DescribeResultMetadata(const ResultMetadata& metadata) {
+  base::DictValue dict;
   dict.Set("algorithm", AlgorithmName(metadata.algorithm));
   dict.Set("measurement_time", performance_manager::TimeSinceEpochToValue(
                                    metadata.measurement_time));

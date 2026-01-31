@@ -67,7 +67,7 @@ TEST(StartKioskReceiverRequestTest, GetRequestBody) {
 
   std::optional<std::string> request_body = request.GetRequestBody();
   ASSERT_TRUE(request_body.has_value());
-  std::optional<base::Value::Dict> request_dict = base::JSONReader::ReadDict(
+  std::optional<base::DictValue> request_dict = base::JSONReader::ReadDict(
       request_body.value(), base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   ASSERT_TRUE(request_dict.has_value());
   EXPECT_EQ(*request_dict.value().FindString(boca::kSessionId), kSessionId);
@@ -120,7 +120,7 @@ TEST(StartKioskReceiverRequestTest, OnSuccess) {
           [&response_body](std::optional<std::string> response) {
             response_body = std::move(response);
           }));
-  base::Value::Dict response_dict;
+  base::DictValue response_dict;
   response_dict.Set(boca::kConnectionId, "connection_id");
   request.OnSuccess(std::make_unique<base::Value>(std::move(response_dict)));
 

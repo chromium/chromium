@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include <stddef.h>
 #include <stdint.h>
 
@@ -102,49 +97,49 @@ static_assert(!kIsFastIntegerArithmeticPromotionContained<uintmax_t, int8_t>);
 constexpr int32_t kIntOne = 1;
 static_assert(1 == checked_cast<uint8_t>(kIntOne));
 static_assert(1 == saturated_cast<uint8_t>(kIntOne));
-static_assert(2U == MakeClampedNum(kIntOne) + 1);
-static_assert(2U == (MakeCheckedNum(kIntOne) + 1).ValueOrDie());
-static_assert(0U == MakeClampedNum(kIntOne) - 1);
-static_assert(0U == (MakeCheckedNum(kIntOne) - 1).ValueOrDie());
-static_assert(-1 == -MakeClampedNum(kIntOne));
-static_assert(-1 == (-MakeCheckedNum(kIntOne)).ValueOrDie());
-static_assert(1U == MakeClampedNum(kIntOne) * 1);
-static_assert(1U == (MakeCheckedNum(kIntOne) * 1).ValueOrDie());
-static_assert(1U == MakeClampedNum(kIntOne) / 1);
-static_assert(1U == (MakeCheckedNum(kIntOne) / 1).ValueOrDie());
-static_assert(1 == MakeClampedNum(-kIntOne).Abs());
-static_assert(1 == MakeCheckedNum(-kIntOne).Abs().ValueOrDie());
-static_assert(1U == MakeClampedNum(kIntOne) % 2);
-static_assert(1U == (MakeCheckedNum(kIntOne) % 2).ValueOrDie());
-static_assert(0U == MakeClampedNum(kIntOne) >> 1U);
-static_assert(0U == (MakeCheckedNum(kIntOne) >> 1U).ValueOrDie());
-static_assert(2U == MakeClampedNum(kIntOne) << 1U);
-static_assert(2U == (MakeCheckedNum(kIntOne) << 1U).ValueOrDie());
-static_assert(1 == MakeClampedNum(kIntOne) & 1U);
-static_assert(1 == (MakeCheckedNum(kIntOne) & 1U).ValueOrDie());
-static_assert(1 == MakeClampedNum(kIntOne) | 1U);
-static_assert(1 == (MakeCheckedNum(kIntOne) | 1U).ValueOrDie());
-static_assert(0 == MakeClampedNum(kIntOne) ^ 1U);
-static_assert(0 == (MakeCheckedNum(kIntOne) ^ 1U).ValueOrDie());
+static_assert(2U == ClampedNumeric(kIntOne) + 1);
+static_assert(2U == (CheckedNumeric(kIntOne) + 1).ValueOrDie());
+static_assert(0U == ClampedNumeric(kIntOne) - 1);
+static_assert(0U == (CheckedNumeric(kIntOne) - 1).ValueOrDie());
+static_assert(-1 == -ClampedNumeric(kIntOne));
+static_assert(-1 == (-CheckedNumeric(kIntOne)).ValueOrDie());
+static_assert(1U == ClampedNumeric(kIntOne) * 1);
+static_assert(1U == (CheckedNumeric(kIntOne) * 1).ValueOrDie());
+static_assert(1U == ClampedNumeric(kIntOne) / 1);
+static_assert(1U == (CheckedNumeric(kIntOne) / 1).ValueOrDie());
+static_assert(1 == ClampedNumeric(-kIntOne).Abs());
+static_assert(1 == CheckedNumeric(-kIntOne).Abs().ValueOrDie());
+static_assert(1U == ClampedNumeric(kIntOne) % 2);
+static_assert(1U == (CheckedNumeric(kIntOne) % 2).ValueOrDie());
+static_assert(0U == ClampedNumeric(kIntOne) >> 1U);
+static_assert(0U == (CheckedNumeric(kIntOne) >> 1U).ValueOrDie());
+static_assert(2U == ClampedNumeric(kIntOne) << 1U);
+static_assert(2U == (CheckedNumeric(kIntOne) << 1U).ValueOrDie());
+static_assert(1 == ClampedNumeric(kIntOne) & 1U);
+static_assert(1 == (CheckedNumeric(kIntOne) & 1U).ValueOrDie());
+static_assert(1 == ClampedNumeric(kIntOne) | 1U);
+static_assert(1 == (CheckedNumeric(kIntOne) | 1U).ValueOrDie());
+static_assert(0 == ClampedNumeric(kIntOne) ^ 1U);
+static_assert(0 == (CheckedNumeric(kIntOne) ^ 1U).ValueOrDie());
 constexpr float kFloatOne = 1.0;
 static_assert(1 == int{checked_cast<int8_t>(kFloatOne)});
 static_assert(1 == int{saturated_cast<int8_t>(kFloatOne)});
-static_assert(2U == unsigned{MakeClampedNum(kFloatOne) + 1});
+static_assert(2U == unsigned{ClampedNumeric(kFloatOne) + 1});
 static_assert(2U ==
-              (MakeCheckedNum(kFloatOne) + 1).Cast<unsigned>().ValueOrDie());
-static_assert(0U == unsigned{MakeClampedNum(kFloatOne) - 1});
+              (CheckedNumeric(kFloatOne) + 1).Cast<unsigned>().ValueOrDie());
+static_assert(0U == unsigned{ClampedNumeric(kFloatOne) - 1});
 static_assert(0U ==
-              (MakeCheckedNum(kFloatOne) - 1).Cast<unsigned>().ValueOrDie());
-static_assert(-1 == int{-MakeClampedNum(kFloatOne)});
-static_assert(-1 == (-MakeCheckedNum(kFloatOne)).Cast<int>().ValueOrDie());
-static_assert(1U == unsigned{MakeClampedNum(kFloatOne) * 1});
+              (CheckedNumeric(kFloatOne) - 1).Cast<unsigned>().ValueOrDie());
+static_assert(-1 == int{-ClampedNumeric(kFloatOne)});
+static_assert(-1 == (-CheckedNumeric(kFloatOne)).Cast<int>().ValueOrDie());
+static_assert(1U == unsigned{ClampedNumeric(kFloatOne) * 1});
 static_assert(1U ==
-              (MakeCheckedNum(kFloatOne) * 1).Cast<unsigned>().ValueOrDie());
-static_assert(1U == unsigned{MakeClampedNum(kFloatOne) / 1});
+              (CheckedNumeric(kFloatOne) * 1).Cast<unsigned>().ValueOrDie());
+static_assert(1U == unsigned{ClampedNumeric(kFloatOne) / 1});
 static_assert(1U ==
-              (MakeCheckedNum(kFloatOne) / 1).Cast<unsigned>().ValueOrDie());
-static_assert(1 == int{MakeClampedNum(-kFloatOne).Abs()});
-static_assert(1 == MakeCheckedNum(-kFloatOne).Abs().Cast<int>().ValueOrDie());
+              (CheckedNumeric(kFloatOne) / 1).Cast<unsigned>().ValueOrDie());
+static_assert(1 == int{ClampedNumeric(-kFloatOne).Abs()});
+static_assert(1 == CheckedNumeric(-kFloatOne).Abs().Cast<int>().ValueOrDie());
 
 template <typename U>
 U GetNumericValueForTest(const CheckedNumeric<U>& src) {
@@ -221,10 +216,10 @@ void TestStrictPointerMath() {
   Dst dummy_value = 0;
   Dst* dummy_ptr = &dummy_value;
   static const Dst kDummyOffset = 2;  // Don't want to go too far.
-  EXPECT_EQ(dummy_ptr + kDummyOffset,
-            dummy_ptr + StrictNumeric<Dst>(kDummyOffset));
-  EXPECT_EQ(dummy_ptr - kDummyOffset,
-            dummy_ptr - StrictNumeric<Dst>(kDummyOffset));
+  EXPECT_EQ(UNSAFE_TODO(dummy_ptr + kDummyOffset),
+            UNSAFE_TODO(dummy_ptr + StrictNumeric<Dst>(kDummyOffset)));
+  EXPECT_EQ(UNSAFE_TODO(dummy_ptr - kDummyOffset),
+            UNSAFE_TODO(dummy_ptr - StrictNumeric<Dst>(kDummyOffset)));
   EXPECT_NE(dummy_ptr, dummy_ptr + StrictNumeric<Dst>(kDummyOffset));
   EXPECT_NE(dummy_ptr, dummy_ptr - StrictNumeric<Dst>(kDummyOffset));
   EXPECT_DEATH_IF_SUPPORTED(
@@ -241,7 +236,7 @@ static void TestSpecializedArithmetic(const char* dst, int line) {
   TEST_EXPECTED_FAILURE(CheckedNumeric<Dst>(DstLimits::lowest()).Abs());
   TEST_EXPECTED_VALUE(1, CheckedNumeric<Dst>(-1).Abs());
   TEST_EXPECTED_VALUE(DstLimits::max(),
-                      MakeCheckedNum(-DstLimits::max()).Abs());
+                      CheckedNumeric(-DstLimits::max()).Abs());
 
   TEST_EXPECTED_VALUE(DstLimits::Overflow(),
                       -ClampedNumeric<Dst>(DstLimits::lowest()));
@@ -249,7 +244,7 @@ static void TestSpecializedArithmetic(const char* dst, int line) {
                       ClampedNumeric<Dst>(DstLimits::lowest()).Abs());
   TEST_EXPECTED_VALUE(1, ClampedNumeric<Dst>(-1).Abs());
   TEST_EXPECTED_VALUE(DstLimits::max(),
-                      MakeClampedNum(-DstLimits::max()).Abs());
+                      ClampedNumeric(-DstLimits::max()).Abs());
 
   TEST_EXPECTED_SUCCESS(CheckedNumeric<Dst>(DstLimits::max()) + -1);
   TEST_EXPECTED_FAILURE(CheckedNumeric<Dst>(DstLimits::lowest()) + -1);
@@ -299,9 +294,9 @@ static void TestSpecializedArithmetic(const char* dst, int line) {
                       CheckedNumeric<Dst>(1) * Dst(DstLimits::lowest()));
   TEST_EXPECTED_VALUE(
       typename std::make_unsigned<Dst>::type(0) - DstLimits::lowest(),
-      MakeCheckedNum(DstLimits::lowest()).UnsignedAbs());
+      CheckedNumeric(DstLimits::lowest()).UnsignedAbs());
   TEST_EXPECTED_VALUE(DstLimits::max(),
-                      MakeCheckedNum(DstLimits::max()).UnsignedAbs());
+                      CheckedNumeric(DstLimits::max()).UnsignedAbs());
   TEST_EXPECTED_VALUE(0, CheckedNumeric<Dst>(0).UnsignedAbs());
   TEST_EXPECTED_VALUE(1, CheckedNumeric<Dst>(1).UnsignedAbs());
   TEST_EXPECTED_VALUE(1, CheckedNumeric<Dst>(-1).UnsignedAbs());
@@ -321,9 +316,9 @@ static void TestSpecializedArithmetic(const char* dst, int line) {
                       ClampedNumeric<Dst>(1) * Dst(DstLimits::lowest()));
   TEST_EXPECTED_VALUE(
       typename std::make_unsigned<Dst>::type(0) - DstLimits::lowest(),
-      MakeClampedNum(DstLimits::lowest()).UnsignedAbs());
+      ClampedNumeric(DstLimits::lowest()).UnsignedAbs());
   TEST_EXPECTED_VALUE(DstLimits::max(),
-                      MakeClampedNum(DstLimits::max()).UnsignedAbs());
+                      ClampedNumeric(DstLimits::max()).UnsignedAbs());
   TEST_EXPECTED_VALUE(0, ClampedNumeric<Dst>(0).UnsignedAbs());
   TEST_EXPECTED_VALUE(1, ClampedNumeric<Dst>(1).UnsignedAbs());
   TEST_EXPECTED_VALUE(1, ClampedNumeric<Dst>(-1).UnsignedAbs());
@@ -448,9 +443,9 @@ static void TestSpecializedArithmetic(const char* dst, int line) {
           std::numeric_limits<typename std::make_signed<Dst>::type>::lowest())
           .UnsignedAbs());
   TEST_EXPECTED_VALUE(DstLimits::lowest(),
-                      MakeCheckedNum(DstLimits::lowest()).UnsignedAbs());
+                      CheckedNumeric(DstLimits::lowest()).UnsignedAbs());
   TEST_EXPECTED_VALUE(DstLimits::max(),
-                      MakeCheckedNum(DstLimits::max()).UnsignedAbs());
+                      CheckedNumeric(DstLimits::max()).UnsignedAbs());
   TEST_EXPECTED_VALUE(0, CheckedNumeric<Dst>(0).UnsignedAbs());
   TEST_EXPECTED_VALUE(1, CheckedNumeric<Dst>(1).UnsignedAbs());
 
@@ -471,9 +466,9 @@ static void TestSpecializedArithmetic(const char* dst, int line) {
           std::numeric_limits<typename std::make_signed<Dst>::type>::lowest())
           .UnsignedAbs());
   TEST_EXPECTED_VALUE(DstLimits::lowest(),
-                      MakeClampedNum(DstLimits::lowest()).UnsignedAbs());
+                      ClampedNumeric(DstLimits::lowest()).UnsignedAbs());
   TEST_EXPECTED_VALUE(DstLimits::max(),
-                      MakeClampedNum(DstLimits::max()).UnsignedAbs());
+                      ClampedNumeric(DstLimits::max()).UnsignedAbs());
   TEST_EXPECTED_VALUE(0, ClampedNumeric<Dst>(0).UnsignedAbs());
   TEST_EXPECTED_VALUE(1, ClampedNumeric<Dst>(1).UnsignedAbs());
 
@@ -512,7 +507,7 @@ static void TestSpecializedArithmetic(const char* dst, int line) {
   TEST_EXPECTED_VALUE(0, CheckedNumeric<Dst>(0) & 1);
   TEST_EXPECTED_VALUE(0, CheckedNumeric<Dst>(1) & 0);
   TEST_EXPECTED_VALUE(std::numeric_limits<Dst>::max(),
-                      MakeCheckedNum(DstLimits::max()) & -1);
+                      CheckedNumeric(DstLimits::max()) & -1);
   TEST_EXPECTED_VALUE(1, CheckedNumeric<Dst>(1) | 1);
   TEST_EXPECTED_VALUE(1, CheckedNumeric<Dst>(1) | 0);
   TEST_EXPECTED_VALUE(1, CheckedNumeric<Dst>(0) | 1);
@@ -563,7 +558,7 @@ static void TestSpecializedArithmetic(const char* dst, int line) {
   TEST_EXPECTED_VALUE(0, ClampedNumeric<Dst>(0) & 1);
   TEST_EXPECTED_VALUE(0, ClampedNumeric<Dst>(1) & 0);
   TEST_EXPECTED_VALUE(std::numeric_limits<Dst>::max(),
-                      MakeClampedNum(DstLimits::max()) & -1);
+                      ClampedNumeric(DstLimits::max()) & -1);
   TEST_EXPECTED_VALUE(1, ClampedNumeric<Dst>(1) | 1);
   TEST_EXPECTED_VALUE(1, ClampedNumeric<Dst>(1) | 0);
   TEST_EXPECTED_VALUE(1, ClampedNumeric<Dst>(0) | 1);
@@ -718,21 +713,21 @@ static void TestArithmetic(const char* dst, int line) {
     // gets evaluated at compile-time. Making this test volatile forces the
     // compiler to generate code rather than fold constant expressions.
     volatile Dst value = Dst(0);
-    TEST_EXPECTED_VALUE(0, -MakeClampedNum(value));
+    TEST_EXPECTED_VALUE(0, -ClampedNumeric(value));
     value = Dst(1);
-    TEST_EXPECTED_VALUE(-1, -MakeClampedNum(value));
+    TEST_EXPECTED_VALUE(-1, -ClampedNumeric(value));
     value = Dst(2);
-    TEST_EXPECTED_VALUE(-2, -MakeClampedNum(value));
+    TEST_EXPECTED_VALUE(-2, -ClampedNumeric(value));
     value = Dst(-1);
-    TEST_EXPECTED_VALUE(1, -MakeClampedNum(value));
+    TEST_EXPECTED_VALUE(1, -ClampedNumeric(value));
     value = Dst(-2);
-    TEST_EXPECTED_VALUE(2, -MakeClampedNum(value));
+    TEST_EXPECTED_VALUE(2, -ClampedNumeric(value));
     value = DstLimits::max();
-    TEST_EXPECTED_VALUE(Dst(DstLimits::max() * -1), -MakeClampedNum(value));
+    TEST_EXPECTED_VALUE(Dst(DstLimits::max() * -1), -ClampedNumeric(value));
     value = Dst(-1 * DstLimits::max());
-    TEST_EXPECTED_VALUE(DstLimits::max(), -MakeClampedNum(value));
+    TEST_EXPECTED_VALUE(DstLimits::max(), -ClampedNumeric(value));
     value = DstLimits::lowest();
-    TEST_EXPECTED_VALUE(DstLimits::max(), -MakeClampedNum(value));
+    TEST_EXPECTED_VALUE(DstLimits::max(), -ClampedNumeric(value));
   }
 
   // Generic absolute value.
@@ -932,35 +927,35 @@ void TestStrictComparison(const char* dst, const char* src, int line) {
   // compile-time constants everywhere. So, we use run-time tests.
   EXPECT_EQ(
       SrcLimits::max(),
-      MakeCheckedNum(SrcLimits::max()).Max(DstLimits::lowest()).ValueOrDie());
+      CheckedNumeric(SrcLimits::max()).Max(DstLimits::lowest()).ValueOrDie());
   EXPECT_EQ(
       DstLimits::max(),
-      MakeCheckedNum(SrcLimits::lowest()).Max(DstLimits::max()).ValueOrDie());
+      CheckedNumeric(SrcLimits::lowest()).Max(DstLimits::max()).ValueOrDie());
   EXPECT_EQ(
       DstLimits::lowest(),
-      MakeCheckedNum(SrcLimits::max()).Min(DstLimits::lowest()).ValueOrDie());
+      CheckedNumeric(SrcLimits::max()).Min(DstLimits::lowest()).ValueOrDie());
   EXPECT_EQ(
       SrcLimits::lowest(),
-      MakeCheckedNum(SrcLimits::lowest()).Min(DstLimits::max()).ValueOrDie());
-  EXPECT_EQ(SrcLimits::lowest(), CheckMin(MakeStrictNum(1), MakeCheckedNum(0),
+      CheckedNumeric(SrcLimits::lowest()).Min(DstLimits::max()).ValueOrDie());
+  EXPECT_EQ(SrcLimits::lowest(), CheckMin(MakeStrictNum(1), CheckedNumeric(0),
                                           DstLimits::max(), SrcLimits::lowest())
                                      .ValueOrDie());
-  EXPECT_EQ(DstLimits::max(), CheckMax(MakeStrictNum(1), MakeCheckedNum(0),
+  EXPECT_EQ(DstLimits::max(), CheckMax(MakeStrictNum(1), CheckedNumeric(0),
                                        DstLimits::max(), SrcLimits::lowest())
                                   .ValueOrDie());
 
   EXPECT_EQ(SrcLimits::max(),
-            MakeClampedNum(SrcLimits::max()).Max(DstLimits::lowest()));
+            ClampedNumeric(SrcLimits::max()).Max(DstLimits::lowest()));
   EXPECT_EQ(DstLimits::max(),
-            MakeClampedNum(SrcLimits::lowest()).Max(DstLimits::max()));
+            ClampedNumeric(SrcLimits::lowest()).Max(DstLimits::max()));
   EXPECT_EQ(DstLimits::lowest(),
-            MakeClampedNum(SrcLimits::max()).Min(DstLimits::lowest()));
+            ClampedNumeric(SrcLimits::max()).Min(DstLimits::lowest()));
   EXPECT_EQ(SrcLimits::lowest(),
-            MakeClampedNum(SrcLimits::lowest()).Min(DstLimits::max()));
+            ClampedNumeric(SrcLimits::lowest()).Min(DstLimits::max()));
   EXPECT_EQ(SrcLimits::lowest(),
-            ClampMin(MakeStrictNum(1), MakeClampedNum(0), DstLimits::max(),
+            ClampMin(MakeStrictNum(1), ClampedNumeric(0), DstLimits::max(),
                      SrcLimits::lowest()));
-  EXPECT_EQ(DstLimits::max(), ClampMax(MakeStrictNum(1), MakeClampedNum(0),
+  EXPECT_EQ(DstLimits::max(), ClampMax(MakeStrictNum(1), ClampedNumeric(0),
                                        DstLimits::max(), SrcLimits::lowest()));
 
   if constexpr (IsValueInRangeForNumericType<Dst>(SrcLimits::max())) {
@@ -1499,9 +1494,9 @@ TEST(SafeNumerics, CastTests) {
   EXPECT_EQ(0, saturated_cast<int>(not_a_number));
 
   // Test the CheckedNumeric value extractions functions.
-  auto int8_min = MakeCheckedNum(numeric_limits<int8_t>::lowest());
-  auto int8_max = MakeCheckedNum(numeric_limits<int8_t>::max());
-  auto double_max = MakeCheckedNum(numeric_limits<double>::max());
+  auto int8_min = CheckedNumeric(numeric_limits<int8_t>::lowest());
+  auto int8_max = CheckedNumeric(numeric_limits<int8_t>::max());
+  auto double_max = CheckedNumeric(numeric_limits<double>::max());
   static_assert(
       std::same_as<int16_t, decltype(int8_min.ValueOrDie<int16_t>())::type>,
       "ValueOrDie returning incorrect type.");
@@ -2095,38 +2090,38 @@ TEST(SafeNumerics, TemplatedSafeMath) {
 
 TEST(SafeNumerics, VariadicNumericOperations) {
   {  // Synthetic scope to avoid variable naming collisions.
-    auto a = CheckAdd(1, 2UL, MakeCheckedNum(3LL), 4).ValueOrDie();
+    auto a = CheckAdd(1, 2UL, CheckedNumeric(3LL), 4).ValueOrDie();
     EXPECT_EQ(static_cast<decltype(a)::type>(10), a);
-    auto b = CheckSub(MakeCheckedNum(20.0), 2UL, 4).ValueOrDie();
+    auto b = CheckSub(CheckedNumeric(20.0), 2UL, 4).ValueOrDie();
     EXPECT_EQ(static_cast<decltype(b)::type>(14.0), b);
-    auto c = CheckMul(20.0, MakeCheckedNum(1), 5, 3UL).ValueOrDie();
+    auto c = CheckMul(20.0, CheckedNumeric(1), 5, 3UL).ValueOrDie();
     EXPECT_EQ(static_cast<decltype(c)::type>(300.0), c);
-    auto d = CheckDiv(20.0, 2.0, MakeCheckedNum(5LL), -4).ValueOrDie();
+    auto d = CheckDiv(20.0, 2.0, CheckedNumeric(5LL), -4).ValueOrDie();
     EXPECT_EQ(static_cast<decltype(d)::type>(-.5), d);
-    auto e = CheckMod(MakeCheckedNum(20), 3).ValueOrDie();
+    auto e = CheckMod(CheckedNumeric(20), 3).ValueOrDie();
     EXPECT_EQ(static_cast<decltype(e)::type>(2), e);
-    auto f = CheckLsh(1, MakeCheckedNum(2)).ValueOrDie();
+    auto f = CheckLsh(1, CheckedNumeric(2)).ValueOrDie();
     EXPECT_EQ(static_cast<decltype(f)::type>(4), f);
-    auto g = CheckRsh(4, MakeCheckedNum(2)).ValueOrDie();
+    auto g = CheckRsh(4, CheckedNumeric(2)).ValueOrDie();
     EXPECT_EQ(static_cast<decltype(g)::type>(1), g);
     auto h = CheckRsh(CheckAdd(1, 1, 1, 1), CheckSub(4, 2)).ValueOrDie();
     EXPECT_EQ(static_cast<decltype(h)::type>(1), h);
   }
 
   {
-    auto a = ClampAdd(1, 2UL, MakeClampedNum(3LL), 4);
+    auto a = ClampAdd(1, 2UL, ClampedNumeric(3LL), 4);
     EXPECT_EQ(static_cast<decltype(a)::type>(10), a);
-    auto b = ClampSub(MakeClampedNum(20.0), 2UL, 4);
+    auto b = ClampSub(ClampedNumeric(20.0), 2UL, 4);
     EXPECT_EQ(static_cast<decltype(b)::type>(14.0), b);
-    auto c = ClampMul(20.0, MakeClampedNum(1), 5, 3UL);
+    auto c = ClampMul(20.0, ClampedNumeric(1), 5, 3UL);
     EXPECT_EQ(static_cast<decltype(c)::type>(300.0), c);
-    auto d = ClampDiv(20.0, 2.0, MakeClampedNum(5LL), -4);
+    auto d = ClampDiv(20.0, 2.0, ClampedNumeric(5LL), -4);
     EXPECT_EQ(static_cast<decltype(d)::type>(-.5), d);
-    auto e = ClampMod(MakeClampedNum(20), 3);
+    auto e = ClampMod(ClampedNumeric(20), 3);
     EXPECT_EQ(static_cast<decltype(e)::type>(2), e);
-    auto f = ClampLsh(1, MakeClampedNum(2U));
+    auto f = ClampLsh(1, ClampedNumeric(2U));
     EXPECT_EQ(static_cast<decltype(f)::type>(4), f);
-    auto g = ClampRsh(4, MakeClampedNum(2U));
+    auto g = ClampRsh(4, ClampedNumeric(2U));
     EXPECT_EQ(static_cast<decltype(g)::type>(1), g);
     auto h = ClampRsh(ClampAdd(1, 1, 1, 1), ClampSub(4U, 2));
     EXPECT_EQ(static_cast<decltype(h)::type>(1), h);

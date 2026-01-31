@@ -13,7 +13,9 @@
 #include "base/path_service.h"
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/test/test_future.h"
 #include "base/threading/platform_thread.h"
+#include "base/types/expected.h"
 #include "net/base/io_buffer.h"
 #include "net/base/net_errors.h"
 #include "net/base/request_priority.h"
@@ -32,7 +34,6 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 #if BUILDFLAG(ENABLE_DISK_CACHE_SQL_BACKEND)
-#include "base/test/test_future.h"
 #include "net/disk_cache/sql/sql_backend_impl.h"
 #include "net/disk_cache/sql/sql_persistent_store.h"
 #endif  // ENABLE_DISK_CACHE_SQL_BACKEND
@@ -162,8 +163,14 @@ void DiskCacheTestWithCache::SetMaxSize(int64_t size) {
 }
 
 int32_t DiskCacheTestWithCache::GetEntryCount() {
-  net::TestInt32CompletionCallback cb;
-  return cb.GetResult(cache_->GetEntryCount(cb.callback()));
+  base::test::TestFuture<int32_t> future;
+  base::expected<int32_t, net::Error> result =
+      cache_->GetEntryCount(future.GetCallback());
+  if (result.has_value()) {
+    return result.value();
+  }
+  CHECK_EQ(result.error(), net::ERR_IO_PENDING);
+  return future.Get();
 }
 
 disk_cache::EntryResult DiskCacheTestWithCache::OpenOrCreateEntry(

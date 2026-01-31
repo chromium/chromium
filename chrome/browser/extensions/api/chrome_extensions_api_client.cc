@@ -63,15 +63,23 @@
 #include "url/gurl.h"
 
 #if BUILDFLAG(ENABLE_GUEST_VIEW)
+
+#if BUILDFLAG(ENABLE_PLATFORM_APPS)
 #include "chrome/browser/guest_view/app_view/chrome_app_view_guest_delegate.h"
+#endif
+
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+#include "chrome/browser/guest_view/mime_handler_view/chrome_mime_handler_view_guest_delegate.h"
+#endif
+
 #include "chrome/browser/guest_view/chrome_guest_view_manager_delegate.h"
 #include "chrome/browser/guest_view/extension_options/chrome_extension_options_guest_delegate.h"
-#include "chrome/browser/guest_view/mime_handler_view/chrome_mime_handler_view_guest_delegate.h"
 #include "chrome/browser/guest_view/web_view/chrome_web_view_guest_delegate.h"
 #include "chrome/browser/guest_view/web_view/chrome_web_view_permission_helper_delegate.h"
 #include "extensions/browser/guest_view/web_view/web_view_guest.h"
 #include "extensions/browser/guest_view/web_view/web_view_permission_helper.h"
-#endif
+
+#endif  // BUILDFLAG(ENABLE_GUEST_VIEW)
 
 #if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/extensions/api/feedback_private/chrome_feedback_private_delegate.h"
@@ -320,10 +328,13 @@ void ChromeExtensionsAPIClient::OpenFileUrlForTesting(
 }
 
 #if BUILDFLAG(ENABLE_GUEST_VIEW)
+
+#if BUILDFLAG(ENABLE_PLATFORM_APPS)
 std::unique_ptr<AppViewGuestDelegate>
 ChromeExtensionsAPIClient::CreateAppViewGuestDelegate() const {
   return std::make_unique<ChromeAppViewGuestDelegate>();
 }
+#endif
 
 std::unique_ptr<ExtensionOptionsGuestDelegate>
 ChromeExtensionsAPIClient::CreateExtensionOptionsGuestDelegate(
@@ -336,11 +347,13 @@ ChromeExtensionsAPIClient::CreateGuestViewManagerDelegate() const {
   return std::make_unique<ChromeGuestViewManagerDelegate>();
 }
 
+#if BUILDFLAG(ENABLE_EXTENSIONS)
 std::unique_ptr<MimeHandlerViewGuestDelegate>
 ChromeExtensionsAPIClient::CreateMimeHandlerViewGuestDelegate(
     MimeHandlerViewGuest* guest) const {
   return std::make_unique<ChromeMimeHandlerViewGuestDelegate>();
 }
+#endif
 
 std::unique_ptr<WebViewGuestDelegate>
 ChromeExtensionsAPIClient::CreateWebViewGuestDelegate(
@@ -381,11 +394,11 @@ ChromeExtensionsAPIClient::CreateContentRulesRegistry(
 #if BUILDFLAG(IS_CHROMEOS)
 bool ChromeExtensionsAPIClient::ShouldAllowDetachingUsb(int vid,
                                                         int pid) const {
-  const base::Value::List* policy_list;
+  const base::ListValue* policy_list;
   if (ash::CrosSettings::Get()->GetList(ash::kUsbDetachableAllowlist,
                                         &policy_list)) {
     for (const auto& entry : *policy_list) {
-      const base::Value::Dict* entry_dict = entry.GetIfDict();
+      const base::DictValue* entry_dict = entry.GetIfDict();
       if (entry_dict &&
           entry_dict->FindInt(ash::kUsbDetachableAllowlistKeyVid) == vid &&
           entry_dict->FindInt(ash::kUsbDetachableAllowlistKeyPid) == pid) {

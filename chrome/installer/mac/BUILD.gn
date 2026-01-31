@@ -158,3 +158,13 @@ script_test("mac_signing_tests") {
     data += [ "internal/internal_invoker_test.py" ]
   }
 }
+
+source_set("install_test_util") {
+  testonly = true
+  public = [ "install_test_util.h" ]
+  sources = [ "install_test_util.cc" ]
+  deps = [
+    "//base",
+    "//testing/gtest",
+  ]
+}

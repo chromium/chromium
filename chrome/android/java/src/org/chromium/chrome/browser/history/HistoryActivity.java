@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.history;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -24,7 +26,8 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetControllerFacto
 import org.chromium.components.browser_ui.bottomsheet.ManagedBottomSheetController;
 import org.chromium.components.browser_ui.widget.scrim.ScrimManager;
 import org.chromium.components.browser_ui.widget.scrim.ScrimManager.ScrimClient;
-import org.chromium.ui.KeyboardVisibilityDelegate;
+import org.chromium.ui.base.ActivityWindowAndroid;
+import org.chromium.ui.base.IntentRequestTracker;
 import org.chromium.ui.edge_to_edge.EdgeToEdgePadAdjuster;
 
 import java.util.function.Function;
@@ -34,6 +37,7 @@ import java.util.function.Function;
 public class HistoryActivity extends SnackbarActivity {
     private @Nullable HistoryManager mHistoryManager;
     private @Nullable ManagedBottomSheetController mBottomSheetController;
+    private @Nullable ActivityWindowAndroid mWindowAndroid;
 
     @Override
     protected void onProfileAvailable(Profile profile) {
@@ -55,13 +59,23 @@ public class HistoryActivity extends SnackbarActivity {
                             EdgeToEdgeControllerFactory.createForViewAndObserveSupplier(
                                     view, getEdgeToEdgeSupplier());
         }
+        mWindowAndroid =
+                new ActivityWindowAndroid(
+                        this,
+                        /* listenToActivityState= */ true,
+                        IntentRequestTracker.createFromActivity(this),
+                        getInsetObserver(),
+                        /* trackOcclusion= */ true);
         mHistoryManager =
                 new HistoryManager(
+                        profile,
+                        mWindowAndroid,
                         this,
                         true,
                         getSnackbarManager(),
-                        profile,
                         () -> mBottomSheetController,
+                        getModalDialogManagerSupplier(),
+                        getActivityResultTracker(),
                         /* Supplier<@Nullable Tab>= */ null,
                         new BrowsingHistoryBridge(profile.getOriginalProfile()),
                         historyUmaRecorder,
@@ -88,7 +102,7 @@ public class HistoryActivity extends SnackbarActivity {
                         () -> scrimManager,
                         CallbackUtils.emptyCallback(),
                         getWindow(),
-                        KeyboardVisibilityDelegate.getInstance(),
+                        assumeNonNull(mWindowAndroid).getKeyboardDelegate(),
                         () -> sheetContainer,
                         () -> 0,
                         /* desktopWindowStateManager= */ null);
@@ -104,6 +118,10 @@ public class HistoryActivity extends SnackbarActivity {
         if (mHistoryManager != null) {
             mHistoryManager.onDestroyed();
             mHistoryManager = null;
+        }
+        if (mWindowAndroid != null) {
+            mWindowAndroid.destroy();
+            mWindowAndroid = null;
         }
         super.onDestroy();
     }

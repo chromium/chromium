@@ -13,7 +13,6 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.annotation.Config;
-import org.robolectric.shadows.ShadowLog;
 import org.robolectric.util.TempDirectory;
 
 import org.chromium.base.PathUtils;
@@ -36,7 +35,6 @@ public class DownloadDirectoryProviderUnitTest {
 
     @Before
     public void setUp() {
-        ShadowLog.stream = System.out;
         mTempDir = new TempDirectory();
         mPrimaryDir = mTempDir.create(PRIVATE_DIR_PRIMARY);
         mSecondaryDir = mTempDir.create(PRIVATE_DIR_SECONDARY);

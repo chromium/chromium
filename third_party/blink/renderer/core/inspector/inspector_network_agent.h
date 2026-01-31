@@ -363,13 +363,15 @@ class CORE_EXPORT InspectorNetworkAgent final
  private:
   String RequestId(DocumentLoader*, uint64_t identifier);
   void Enable();
-  void WillSendRequestInternal(DocumentLoader*,
-                               const KURL& fetch_context_url,
-                               const ResourceRequest&,
-                               const ResourceResponse& redirect_response,
-                               const ResourceLoaderOptions&,
-                               InspectorPageAgent::ResourceType,
-                               base::TimeTicks timestamp);
+  void WillSendRequestInternal(
+      DocumentLoader*,
+      const KURL& fetch_context_url,
+      const ResourceRequest&,
+      const ResourceResponse& redirect_response,
+      const ResourceLoaderOptions&,
+      InspectorPageAgent::ResourceType,
+      base::TimeTicks timestamp,
+      std::optional<RenderBlockingBehavior> render_blocking_behavior);
 
   bool CanGetResponseBodyBlob(const String& request_id);
   void GetResponseBodyBlob(const String& request_id,

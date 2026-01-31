@@ -482,7 +482,7 @@ IN_PROC_BROWSER_TEST_F(VideoPictureInPictureContentBrowserTest,
   gfx::Size new_size(50, 50);
   overlay_window()->UpdateNaturalSize(new_size);
 
-  EXPECT_EQ(window_controller()->GetWindowBounds().value(),
+  EXPECT_EQ(window_controller()->GetWindowBoundsInScreen().value(),
             gfx::Rect(new_size));
 }
 
@@ -697,7 +697,7 @@ IN_PROC_BROWSER_TEST_F(VideoPictureInPictureContentBrowserTest,
   // The overlay window should have received the favicon image.
   ASSERT_EQ(overlay_window()->favicon_images().size(), 1u);
   const std::string icon_src = overlay_window()->favicon_images()[0].src.spec();
-  EXPECT_TRUE(base::Contains(icon_src, "test.ico"))
+  EXPECT_TRUE(icon_src.contains("test.ico"))
       << "The icon source: \"" << icon_src << "\" should contain \"test.ico\"";
 
   // The overlay window should be able to retrieve the favicon image.
@@ -717,7 +717,7 @@ IN_PROC_BROWSER_TEST_F(VideoPictureInPictureContentBrowserTest,
       .WillOnce([](const std::vector<media_session::MediaImage>& images) {
         ASSERT_EQ(images.size(), 1u);
         const std::string icon_src = images[0].src.spec();
-        EXPECT_TRUE(base::Contains(icon_src, "new.ico"))
+        EXPECT_TRUE(icon_src.contains("new.ico"))
             << "The icon source: \"" << icon_src
             << "\" should contain \"new.ico\"";
       });

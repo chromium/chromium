@@ -9,7 +9,6 @@
 
 #include "chrome/browser/ai/ai_manager.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
-#include "third_party/blink/public/mojom/ai/model_download_progress_observer.mojom.h"
 
 AITestUtils::TestStreamingResponder::TestStreamingResponder() = default;
 AITestUtils::TestStreamingResponder::~TestStreamingResponder() = default;
@@ -57,22 +56,12 @@ AITestUtils::MockModelDownloadProgressMonitor::
 AITestUtils::MockModelDownloadProgressMonitor::
     ~MockModelDownloadProgressMonitor() = default;
 
-mojo::PendingRemote<blink::mojom::ModelDownloadProgressObserver>
+mojo::PendingRemote<on_device_model::mojom::DownloadObserver>
 AITestUtils::MockModelDownloadProgressMonitor::BindNewPipeAndPassRemote() {
   return receiver_.BindNewPipeAndPassRemote();
 }
 
-AITestUtils::MockCreateLanguageModelClient::MockCreateLanguageModelClient() =
-    default;
-AITestUtils::MockCreateLanguageModelClient::~MockCreateLanguageModelClient() =
-    default;
-
-mojo::PendingRemote<blink::mojom::AIManagerCreateLanguageModelClient>
-AITestUtils::MockCreateLanguageModelClient::BindNewPipeAndPassRemote() {
-  return receiver_.BindNewPipeAndPassRemote();
-}
-
-mojo::PendingRemote<blink::mojom::ModelDownloadProgressObserver>
+mojo::PendingRemote<on_device_model::mojom::DownloadObserver>
 AITestUtils::FakeMonitor::BindNewPipeAndPassRemote() {
   return mock_monitor_.BindNewPipeAndPassRemote();
 }
@@ -157,13 +146,17 @@ void AITestUtils::MockComponentUpdateService::SendUpdate(
   }
 }
 
-AITestUtils::AITestBase::AITestBase() = default;
+AITestUtils::AITestBase::AITestBase()
+    : ChromeRenderViewHostTestHarness(
+          base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
 AITestUtils::AITestBase::~AITestBase() = default;
 
 void AITestUtils::AITestBase::SetUp() {
   ChromeRenderViewHostTestHarness::SetUp();
 
-  optimization_guide::FakeModelBroker::Options options{};
+  optimization_guide::FakeModelBroker::Options options{
+      .performance_class =
+          optimization_guide::OnDeviceModelPerformanceClass::kUnknown};
   fake_broker_ = std::make_unique<optimization_guide::FakeModelBroker>(options);
   optimization_guide::FakeAdaptationAsset::Content content{.config =
                                                                CreateConfig()};

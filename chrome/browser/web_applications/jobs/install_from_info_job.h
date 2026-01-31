@@ -44,7 +44,7 @@ class InstallFromInfoJob {
 
   // The `install_params` controls whether and how OS hooks get installed.
   InstallFromInfoJob(Profile* profile,
-                     base::Value::Dict& debug_value,
+                     base::DictValue& debug_value,
                      std::unique_ptr<WebAppInstallInfo> install_info,
                      bool overwrite_existing_manifest_fields,
                      webapps::WebappInstallSource install_surface,
@@ -64,7 +64,7 @@ class InstallFromInfoJob {
                           webapps::InstallResultCode code);
 
   const raw_ref<Profile> profile_;
-  const raw_ref<base::Value::Dict> debug_value_;
+  const raw_ref<base::DictValue> debug_value_;
   const webapps::ManifestId manifest_id_;
   const webapps::AppId app_id_;
   const bool overwrite_existing_manifest_fields_;

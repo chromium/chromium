@@ -53,7 +53,7 @@ class BackgroundSyncNetworkObserverAndroid
     // connection type changes. This updates the current connection type seen by
     // this class and calls the |network_changed_callback| provided to the
     // constructor with the new connection type.
-    void NotifyConnectionTypeChanged(JNIEnv* env, jint new_connection_type);
+    void NotifyConnectionTypeChanged(JNIEnv* env, int32_t new_connection_type);
 
    private:
     friend class base::RefCounted<

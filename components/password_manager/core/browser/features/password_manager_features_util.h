@@ -12,8 +12,6 @@ namespace syncer {
 class SyncService;
 }
 
-class PrefService;
-
 namespace password_manager::features_util {
 
 // Represents the state of the user wrt. sign-in and account-scoped storage.
@@ -45,15 +43,26 @@ enum class PasswordAccountStorageUsageLevel {
   kSyncing = 2,
 };
 
-// Whether the Google account storage for passwords is enabled for the current
+// Whether the Google account storage for passwords is active for the current
 // signed-in user. This always returns false for sync-the-feature users and
 // signed out users. Account storage can be enabled/disabled via
 // syncer::SyncUserSettings::SetSelectedType().
 //
+// Note that "active" here is largely in line with Sync's definition: account
+// storage is enabled and there are no sync errors preventing password sync from
+// working. Thus, passwords saved in this state are very likely to be synced to
+// the Google account (barring unexpected errors). Sync's definition of
+// "active", however, is slightly stricter: During startup, while it's not known
+// whether a data type will encounter errors, it's not considered active. This
+// method assumes no errors in that case.
+//
+// Also note that sync-the-feature users might still sync passwords to the
+// Google account using the profile store.
+//
 // |sync_service| may be null (commonly the case in incognito mode), in which
 // case this will simply return false.
-// See PasswordFeatureManager::IsAccountStorageEnabled.
-bool IsAccountStorageEnabled(const syncer::SyncService* sync_service);
+// See PasswordFeatureManager::IsAccountStorageActive.
+bool IsAccountStorageActive(const syncer::SyncService* sync_service);
 
 // See definition of PasswordAccountStorageUserState.
 PasswordAccountStorageUserState ComputePasswordAccountStorageUserState(
@@ -70,20 +79,6 @@ PasswordAccountStorageUsageLevel ComputePasswordAccountStorageUsageLevel(
 // Whether the user toggle for account storage is shown in settings.
 bool ShouldShowAccountStorageSettingToggle(
     const syncer::SyncService* sync_service);
-
-// Users with account storage enabled used to have the choice of saving new
-// passwords only locally, while keeping existing account passwords available
-// for autofill. That was achieved by setting a certain "default store pref" to
-// the "profile store". This logic was removed in crbug.com/369341336.
-// MigrateDefaultProfileStorePref() migrates users in the legacy state to have
-// account storage completely disabled instead, i.e. so they can't save nor
-// autofill account passwords. The migration affects both signed-in and
-// signed-out users (because account storage settings should survive sign-out).
-// kObsoleteAccountStorageDefaultStoreKey was part of the legacy pref's schema
-// and is exposed for testing.
-inline constexpr char kObsoleteAccountStorageDefaultStoreKey[] =
-    "default_store";
-void MigrateDefaultProfileStorePref(PrefService* pref_service);
 
 // Password change HaTS product-specific data fields.
 //

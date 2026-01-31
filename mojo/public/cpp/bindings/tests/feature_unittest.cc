@@ -30,8 +30,6 @@
 #include "mojo/public/cpp/bindings/shared_remote.h"
 #include "mojo/public/cpp/bindings/tests/bindings_test_base.h"
 #include "mojo/public/cpp/bindings/tests/feature_unittest.test-mojom-features.h"
-#include "mojo/public/cpp/bindings/tests/feature_unittest.test-mojom-forward.h"
-#include "mojo/public/cpp/bindings/tests/feature_unittest.test-mojom-shared.h"
 #include "mojo/public/cpp/bindings/tests/feature_unittest.test-mojom.h"
 #include "mojo/public/cpp/system/functions.h"
 #include "testing/gtest/include/gtest/gtest.h"

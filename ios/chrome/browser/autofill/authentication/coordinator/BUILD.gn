@@ -1,0 +1,99 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("otp_input_dialog") {
+  sources = [
+    "otp_input_dialog_coordinator.h",
+    "otp_input_dialog_coordinator.mm",
+    "otp_input_dialog_mediator.h",
+    "otp_input_dialog_mediator.mm",
+    "otp_input_dialog_mediator_delegate.h",
+  ]
+  deps = [
+    "//base",
+    "//components/autofill/core/browser",
+    "//ios/chrome/browser/autofill/authentication/ui:otp_input_dialog_ui",
+    "//ios/chrome/browser/autofill/model:model_internal",
+    "//ios/chrome/browser/autofill/ui_bundled:coordinator",
+    "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
+    "//ios/chrome/browser/shared/model/browser",
+    "//ios/chrome/browser/shared/model/web_state_list",
+    "//ios/chrome/browser/shared/public/commands",
+  ]
+}
+
+source_set("card_unmask_authentication_coordinator") {
+  sources = [
+    "card_unmask_authentication_coordinator.h",
+    "card_unmask_authentication_coordinator.mm",
+  ]
+  deps = [
+    ":card_unmask_authentication_selection_coordinator",
+    ":otp_input_dialog",
+    "//ios/chrome/browser/autofill/authentication/ui:otp_input_dialog_ui",
+    "//ios/chrome/browser/autofill/model:model_internal",
+    "//ios/chrome/browser/autofill/ui_bundled:bridges",
+    "//ios/chrome/browser/autofill/ui_bundled:coordinator",
+    "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
+    "//ios/chrome/browser/shared/model/browser",
+    "//ios/chrome/browser/shared/model/web_state_list",
+    "//ios/chrome/browser/shared/public/commands",
+    "//ios/web/public",
+  ]
+}
+
+source_set("card_unmask_authentication_selection_coordinator") {
+  sources = [
+    "card_unmask_authentication_selection_coordinator.h",
+    "card_unmask_authentication_selection_coordinator.mm",
+  ]
+  deps = [
+    ":card_unmask_authentication_selection_mediator",
+    "//components/autofill/core/browser",
+    "//ios/chrome/browser/autofill/authentication/ui:card_unmask_authentication_selection_view_controller",
+    "//ios/chrome/browser/autofill/model/bottom_sheet",
+    "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
+    "//ios/chrome/browser/shared/model/browser",
+    "//ios/chrome/browser/shared/model/web_state_list",
+    "//ios/chrome/browser/shared/public/commands",
+  ]
+}
+
+source_set("card_unmask_authentication_selection_mediator") {
+  sources = [
+    "card_unmask_authentication_selection_mediator.h",
+    "card_unmask_authentication_selection_mediator.mm",
+    "card_unmask_authentication_selection_mediator_delegate.h",
+  ]
+  deps = [
+    "//components/autofill/core/browser",
+    "//ios/chrome/browser/autofill/authentication/ui:card_unmask_authentication_selection_mutator",
+  ]
+  public_deps = [
+    "//ios/chrome/browser/autofill/authentication/ui:card_unmask_authentication_selection_consumer",
+    "//ios/chrome/browser/autofill/authentication/ui:card_unmask_authentication_selection_mutator",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [
+    "card_unmask_authentication_selection_mediator_unittest.mm",
+    "otp_input_dialog_mediator_unittest.mm",
+  ]
+  deps = [
+    ":card_unmask_authentication_selection_mediator",
+    ":otp_input_dialog",
+    "//base",
+    "//base/test:test_support",
+    "//components/autofill/core/browser",
+    "//components/strings:components_strings_grit",
+    "//ios/chrome/browser/autofill/authentication/ui:card_unmask_authentication_selection_mutator",
+    "//ios/chrome/browser/autofill/authentication/ui:otp_input_dialog_ui",
+    "//testing/gmock",
+    "//testing/gtest",
+    "//third_party/ocmock",
+    "//ui/base",
+  ]
+}

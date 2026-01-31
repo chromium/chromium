@@ -21,7 +21,6 @@
 #include "components/signin/public/identity_manager/access_token_info.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
-#include "components/signin/public/identity_manager/scope_set.h"
 #include "components/user_manager/user.h"
 #include "components/user_manager/user_manager.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -102,7 +101,7 @@ bool ResponseIndicatesValidLicense(int response_code,
 
   // Expected response body:
   // { "status": "ACTIVE", ...}
-  std::optional<base::Value::Dict> response = base::JSONReader::ReadDict(
+  std::optional<base::DictValue> response = base::JSONReader::ReadDict(
       response_body, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   if (!response) {
     LOG(ERROR) << "response_body was of unexpected format.";

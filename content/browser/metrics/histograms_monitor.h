@@ -37,12 +37,12 @@ class CONTENT_EXPORT HistogramsMonitor {
   // Gets the histogram diffs between the current histograms and the snapshot
   // recorded in StartMonitoring(). Only returns the histograms that match
   // the query string.
-  base::Value::List GetDiff(const std::string& query);
+  base::ListValue GetDiff(const std::string& query);
 
  private:
   // Gets the difference between the histograms argument and the stored snapshot
   // recorded in StartMonitoring().
-  base::Value::List GetDiffInternal(
+  base::ListValue GetDiffInternal(
       const base::StatisticsRecorder::Histograms& histograms);
 
   std::map<std::string, std::unique_ptr<base::HistogramSamples>, std::less<>>

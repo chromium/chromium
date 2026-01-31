@@ -12,10 +12,10 @@
 #import "base/strings/sys_string_conversions.h"
 #import "components/search_engines/template_url.h"
 #import "components/search_engines/template_url_service.h"
-#import "ios/chrome/browser/browser_container/ui_bundled/browser_edit_menu_utils.h"
+#import "ios/chrome/browser/browser_content/ui_bundled/browser_edit_menu_utils.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
-#import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/open_new_tab_command.h"
+#import "ios/chrome/browser/shared/public/commands/scene_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/web_selection/model/web_selection_response.h"
@@ -98,7 +98,7 @@ void LogSelectedNumberChar(NSUInteger textLength) {
   WebSelectionTabHelper* tabHelper =
       WebSelectionTabHelper::FromWebState(webState);
   if (!tabHelper || !tabHelper->CanRetrieveSelectedText() ||
-      !self.applicationCommandHandler || !_templateURLService ||
+      !self.sceneHandler || !_templateURLService ||
       !_templateURLService->GetDefaultSearchProvider()) {
     return NO;
   }
@@ -212,7 +212,7 @@ void LogSelectedNumberChar(NSUInteger textLength) {
                                  inIncognito:self.incognito
                                 inBackground:NO
                                     appendTo:OpenPosition::kCurrentTab];
-  [self.applicationCommandHandler openURLInNewTab:command];
+  [self.sceneHandler openURLInNewTab:command];
 }
 
 // Returns the action to trigger the search with feature. Calls `handler` on

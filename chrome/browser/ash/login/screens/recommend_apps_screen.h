@@ -16,7 +16,7 @@
 #include "components/prefs/pref_service.h"
 
 namespace base {
-class Value;
+class ListValue;
 }
 
 namespace ash {
@@ -49,7 +49,7 @@ class RecommendAppsScreen : public BaseScreen {
   void OnRetry();
 
   // Called when the user Install the selected apps.
-  void OnInstall(base::Value::List apps);
+  void OnInstall(base::ListValue apps);
 
   void SetSkipForTesting() { skip_for_testing_ = true; }
 
@@ -64,7 +64,7 @@ class RecommendAppsScreen : public BaseScreen {
   // BaseScreen:
   void ShowImpl() override;
   void HideImpl() override;
-  void OnUserAction(const base::Value::List& args) override;
+  void OnUserAction(const base::ListValue& args) override;
 
   void OnRecommendationsDownloaded(const std::vector<apps::Result>& result,
                                    apps::DiscoveryError error);

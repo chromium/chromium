@@ -12,7 +12,6 @@
 #include <vector>
 
 #include "base/check.h"
-#include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/json/json_writer.h"
@@ -52,7 +51,7 @@ void RecordReportingUploadHeaderType(ReportingUploadHeaderType header_type) {
 }
 
 std::string SerializeReports(const ReportList& reports, base::TimeTicks now) {
-  base::Value::List reports_value;
+  base::ListValue reports_value;
   const bool can_exclude_report_with_large_body =
       base::FeatureList::IsEnabled(features::kExcludeLargeBodyReports);
   const size_t max_body_size_bytes =
@@ -74,7 +73,7 @@ std::string SerializeReports(const ReportList& reports, base::TimeTicks now) {
       continue;
     }
 
-    base::Value::Dict report_value;
+    base::DictValue report_value;
 
     report_value.Set("age", base::saturated_cast<int>(
                                 (now - report->queued).InMilliseconds()));
@@ -369,14 +368,14 @@ class ReportingDeliveryAgentImpl : public ReportingDeliveryAgent,
       if (!report_group_key.origin.has_value()) {
         DCHECK_EQ(ReportingTargetType::kEnterprise,
                   report_group_key.target_type);
-      } else if (!base::Contains(allowed_report_origins,
-                                 report_group_key.origin.value())) {
+      } else if (!allowed_report_origins.contains(
+                     report_group_key.origin.value())) {
         continue;
       }
 
       // Skip this group if there is already a pending upload for it.
       // We don't allow multiple concurrent uploads for the same group.
-      if (base::Contains(pending_groups_, report_group_key))
+      if (pending_groups_.contains(report_group_key))
         continue;
 
       // Find an endpoint to deliver these reports to.

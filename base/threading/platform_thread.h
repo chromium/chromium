@@ -33,11 +33,15 @@
 #include <unistd.h>
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
 #include "base/feature_list.h"
 #endif
 
 namespace base {
+
+#if BUILDFLAG(IS_ANDROID)
+BASE_EXPORT BASE_DECLARE_FEATURE(kRestrictBigCoreThreadAffinity);
+#endif
 
 class TimeDelta;
 
@@ -175,9 +179,9 @@ enum class ThreadType : int {
   // Default type. The thread priority or quality of service will be set to
   // platform default.
   kDefault,
-  // Suitable for display critical threads, ie. threads critical to compositing
-  // and presenting the foreground content.
-  kDisplayCritical,
+  // Suitable for user visible  threads, ie. compositing and presenting
+  // the foreground content.
+  kPresentation,
   // Suitable for threads that handle user interactions, or on the critical
   // path of performance.
   kInteractive,
@@ -306,7 +310,13 @@ class BASE_EXPORT PlatformThreadBase {
   // Declares the type of work running on the current thread. This will affect
   // things like thread priority and thread QoS (Quality of Service) to the best
   // of the current platform's abilities.
-  static void SetCurrentThreadType(ThreadType thread_type);
+  //
+  // The `may_change_affinity` parameter determines whether this call can change
+  // the thread CPU affinity on platforms where it is available. It should only
+  // be used in cases where e.g. a temporary thread boost should not change
+  // placement.
+  static void SetCurrentThreadType(ThreadType thread_type,
+                                   bool may_change_affinity = true);
 
   // Get the last `thread_type` set by SetCurrentThreadType, no matter if the
   // underlying priority successfully changed or not.
@@ -448,6 +458,21 @@ using PlatformThread = PlatformThreadLinux;
 using PlatformThread = PlatformThreadBase;
 #endif
 
+#if BUILDFLAG(IS_ANDROID)
+BASE_EXPORT void SetMaxFrequencyPerProcessorOverrideForTesting(
+    std::vector<uint64_t>* value);
+
+// Returns whether `SetCanRunOnBigCore()` is a no-op. This is intended to help
+// with experiment targeting, by making sure that the base::Feature is only
+// queried for eligible devices. It is thus intended to be temporary, and to be
+// removed once the experiments conclude.
+BASE_EXPORT bool IsEligibleForBigCoreAffinityChange();
+// Sets whether a thread is allowed to run on the big core cluster, on
+// configurations where this is relevant, i.e. at least 3 distinct
+// clusters. Otherwise this is a no-op.
+BASE_EXPORT void SetCanRunOnBigCore(PlatformThreadId thread_id, bool can_run);
+#endif  // BUILDFLAG(IS_ANDROID)
+
 namespace internal {
 
 #if BUILDFLAG(IS_APPLE)
@@ -459,13 +484,13 @@ PlatformPriorityOverride SetThreadTypeOverride(
     PlatformThreadHandle thread_handle,
     ThreadType thread_type);
 void RemoveThreadTypeOverride(
-    const PlatformPriorityOverride& priority_override_handle);
-void RemoveThreadTypeOverrideImpl(
+    PlatformThreadHandle thread_handle,
     const PlatformPriorityOverride& priority_override_handle,
-    ThreadType thread_type);
+    ThreadType initial_thread_type);
 
 void SetCurrentThreadTypeImpl(ThreadType thread_type,
-                              MessagePumpType pump_type_hint);
+                              MessagePumpType pump_type_hint,
+                              bool may_change_affinity);
 
 }  // namespace internal
 

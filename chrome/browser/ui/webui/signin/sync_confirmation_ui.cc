@@ -84,7 +84,7 @@ bool SyncConfirmationUIConfig::IsWebUIEnabled(
 std::string SyncConfirmationUI::GetSyncBenefitsListJSON(
     const syncer::SyncService* sync_service) {
   using syncer::UserSelectableType;
-  base::Value::List sync_benefits_list;
+  base::ListValue sync_benefits_list;
 
   if (IsAnyTypeSyncable(sync_service, {UserSelectableType::kBookmarks,
                                        UserSelectableType::kReadingList})) {
@@ -95,7 +95,7 @@ std::string SyncConfirmationUI::GetSyncBenefitsListJSON(
       titleKey = kSyncBenefitReadingListStringName;
     }
 
-    base::Value::Dict bookmarks;
+    base::DictValue bookmarks;
     bookmarks.Set(kSyncBenefitTitleKey, titleKey);
     bookmarks.Set(kSyncBenefitIconNameKey, "signin:star-outline");
     sync_benefits_list.Append(std::move(bookmarks));
@@ -103,7 +103,7 @@ std::string SyncConfirmationUI::GetSyncBenefitsListJSON(
 
   if (IsAnyTypeSyncable(sync_service, {UserSelectableType::kAutofill,
                                        UserSelectableType::kPasswords})) {
-    base::Value::Dict autofill;
+    base::DictValue autofill;
     autofill.Set(kSyncBenefitTitleKey, kSyncBenefitAutofillStringName);
     autofill.Set(kSyncBenefitIconNameKey, "signin:assignment-outline");
     sync_benefits_list.Append(std::move(autofill));
@@ -111,7 +111,7 @@ std::string SyncConfirmationUI::GetSyncBenefitsListJSON(
 
   if (IsAnyTypeSyncable(sync_service, {UserSelectableType::kExtensions,
                                        UserSelectableType::kApps})) {
-    base::Value::Dict extensions;
+    base::DictValue extensions;
     extensions.Set(kSyncBenefitTitleKey, kSyncBenefitExtensionsStringName);
     extensions.Set(kSyncBenefitIconNameKey, "signin:extension-outline");
     sync_benefits_list.Append(std::move(extensions));
@@ -119,7 +119,7 @@ std::string SyncConfirmationUI::GetSyncBenefitsListJSON(
 
   // Even if no associated type is syncable, we still deliberately show "History
   // and more". So no need to check it.
-  base::Value::Dict history_and_more;
+  base::DictValue history_and_more;
   history_and_more.Set(kSyncBenefitTitleKey,
                        kSyncBenefitHistoryAndMoreStringName);
   history_and_more.Set(kSyncBenefitIconNameKey, "signin:devices");
@@ -168,7 +168,7 @@ SyncConfirmationUI::SyncConfirmationUI(content::WebUI* web_ui)
     InitializeForSyncDisabled(source);
   }
 
-  base::Value::Dict strings;
+  base::DictValue strings;
   webui::SetLoadTimeDataDefaults(g_browser_process->GetApplicationLocale(),
                                  &strings);
   source->AddLocalizedStrings(strings);

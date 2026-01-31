@@ -388,7 +388,8 @@ ImageData* BaseRenderingContext2D::getImageDataInternal(
   } else if (!sw || !sh) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kIndexSizeError,
-        String::Format("The source %s is 0.", sw ? "height" : "width"));
+        UNSAFE_TODO(
+            String::Format("The source %s is 0.", sw ? "height" : "width")));
   }
 
   if (exception_state.HadException())

@@ -21,6 +21,7 @@ namespace enterprise_auth {
 
 constexpr char kAllIdentityProviders[] = "all";
 constexpr char kMicrosoftIdentityProvider[] = "microsoft";
+constexpr char kOktaIdentityProvider[] = "okta";
 
 ExtensibleEnterpriseSSOPolicyHandler::ExtensibleEnterpriseSSOPolicyHandler(
     const policy::Schema& chrome_schema)

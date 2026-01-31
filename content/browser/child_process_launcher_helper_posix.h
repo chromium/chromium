@@ -12,7 +12,7 @@
 #include "base/files/file.h"
 #include "base/files/memory_mapped_file.h"
 #include "base/files/scoped_file.h"
-#include "content/public/browser/child_process_id.h"
+#include "content/public/common/child_process_id.h"
 
 namespace base {
 class CommandLine;

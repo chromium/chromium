@@ -23,7 +23,7 @@
 #include "base/threading/thread_checker.h"
 #include "build/build_config.h"
 #include "content/child/child_process.h"
-#include "content/common/process_visibility_tracker.h"
+#include "content/common/process_priority_tracker.h"
 #include "content/gpu/browser_exposed_gpu_interfaces.h"
 #include "content/gpu/gpu_service_factory.h"
 #include "content/public/common/content_client.h"
@@ -172,9 +172,6 @@ void GpuChildThread::Init(
   }
 #endif
 
-  memory_pressure_listener_registration_ =
-      std::make_unique<base::AsyncMemoryPressureListenerRegistration>(
-          FROM_HERE, base::MemoryPressureListenerTag::kGpuChildThread, this);
   if (sequence_manager &&
       base::FeatureList::IsEnabled(
           features::kBoostThreadsPriorityDuringInputScenario)) {
@@ -201,10 +198,10 @@ void GpuChildThread::OnGpuServiceConnection(viz::GpuServiceImpl* gpu_service) {
 #endif
 
   if (!IsInBrowserProcess()) {
-    gpu_service->SetVisibilityChangedCallback(
-        base::BindRepeating([](bool visible) {
-          ProcessVisibilityTracker::GetInstance()->OnProcessVisibilityChanged(
-              visible);
+    gpu_service->SetPriorityChangedCallback(
+        base::BindRepeating([](base::Process::Priority priority) {
+          ProcessPriorityTracker::GetInstance()->OnProcessPriorityChanged(
+              priority);
         }));
   }
 
@@ -260,16 +257,6 @@ void GpuChildThread::WillProcessTask(const base::PendingTask& pending_task,
     ChildProcess::current()->io_task_runner()->PostTask(FROM_HERE,
                                                         base::DoNothing());
   }
-}
-
-void GpuChildThread::OnMemoryPressure(base::MemoryPressureLevel level) {
-  if (level != base::MEMORY_PRESSURE_LEVEL_CRITICAL) {
-    return;
-  }
-
-  if (viz_main_.discardable_shared_memory_manager())
-    viz_main_.discardable_shared_memory_manager()->ReleaseFreeMemory();
-  SkGraphics::PurgeAllCaches();
 }
 
 void GpuChildThread::QuitSafelyHelper(

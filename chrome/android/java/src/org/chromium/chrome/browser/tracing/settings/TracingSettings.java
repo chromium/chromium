@@ -11,8 +11,9 @@ import androidx.annotation.VisibleForTesting;
 import androidx.preference.ListPreference;
 import androidx.preference.Preference;
 
-import org.chromium.base.supplier.ObservableSupplier;
-import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.supplier.MonotonicObservableSupplier;
+import org.chromium.base.supplier.NonNullObservableSupplier;
+import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
@@ -64,8 +65,8 @@ public class TracingSettings extends ChromeBaseSettingsFragment
     private static final String MSG_MODE_RECORD_CONTINUOUSLY = "Record continuously";
     private static final String MSG_SHARE_TRACE = "Share trace";
 
-    private final ObservableSupplier<String> mPageTitle =
-            new ObservableSupplierImpl<>(MSG_TRACING_TITLE);
+    private final NonNullObservableSupplier<String> mPageTitle =
+            ObservableSuppliers.createNonNull(MSG_TRACING_TITLE);
 
     @VisibleForTesting
     static final String MSG_NOTIFICATIONS_DISABLED =
@@ -231,7 +232,7 @@ public class TracingSettings extends ChromeBaseSettingsFragment
     }
 
     @Override
-    public ObservableSupplier<String> getPageTitle() {
+    public MonotonicObservableSupplier<String> getPageTitle() {
         return mPageTitle;
     }
 
@@ -317,7 +318,6 @@ public class TracingSettings extends ChromeBaseSettingsFragment
         return AnimationType.PROPERTY;
     }
 
-    // TODO(crbug.com/444470792): Determine what pieces of logic are dynamic and need handling.
     public static final ChromeBaseSearchIndexProvider SEARCH_INDEX_DATA_PROVIDER =
             new ChromeBaseSearchIndexProvider(
                     TracingSettings.class.getName(), R.xml.tracing_preferences);

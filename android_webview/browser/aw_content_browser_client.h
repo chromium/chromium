@@ -224,7 +224,6 @@ class AwContentBrowserClient : public content::ContentBrowserClient {
   bool ShouldDisableOriginIsolation() override;
   bool ShouldLockProcessToSite(content::BrowserContext* browser_context,
                                const GURL& effective_url) override;
-  bool ShouldEnforceNewCanCommitUrlChecks() override;
   size_t GetMaxRendererProcessCountOverride() override;
   void WillCreateURLLoaderFactory(
       content::BrowserContext* browser_context,
@@ -269,7 +268,8 @@ class AwContentBrowserClient : public content::ContentBrowserClient {
   void LogWebDXFeatureForCurrentPage(
       content::RenderFrameHost* render_frame_host,
       blink::mojom::WebDXFeature feature) override;
-  PrivateNetworkRequestPolicyOverride ShouldOverridePrivateNetworkRequestPolicy(
+  LocalNetworkAccessRequestPolicyOverride
+  ShouldOverrideLocalNetworkAccessRequestPolicy(
       content::BrowserContext* browser_context,
       const url::Origin& origin) override;
   content::SpeechRecognitionManagerDelegate*
@@ -329,6 +329,16 @@ class AwContentBrowserClient : public content::ContentBrowserClient {
   }
 
   void OnStartupComplete();
+  void set_startup_tasks_logic_enabled_for_testing(bool enabled) {
+    startup_tasks_logic_enabled_for_testing_ = enabled;
+  }
+  void set_startup_tasks_logic_p2_enabled_for_testing(bool enabled) {
+    startup_tasks_logic_p2_enabled_for_testing_ = enabled;
+  }
+  void set_startup_tasks_yield_to_native_experiment_enabled_for_testing(
+      bool enabled) {
+    startup_tasks_yield_to_native_experiment_enabled_for_testing_ = enabled;
+  }
 
  private:
   scoped_refptr<safe_browsing::UrlCheckerDelegate>
@@ -362,6 +372,11 @@ class AwContentBrowserClient : public content::ContentBrowserClient {
   };
 
   StartupInfo startup_info_;
+
+  bool IsAnyStartupTaskExperimentEnabled();
+  bool startup_tasks_logic_enabled_for_testing_ = false;
+  bool startup_tasks_logic_p2_enabled_for_testing_ = false;
+  bool startup_tasks_yield_to_native_experiment_enabled_for_testing_ = false;
 };
 
 }  // namespace android_webview

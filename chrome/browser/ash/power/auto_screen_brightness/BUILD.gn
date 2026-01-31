@@ -53,10 +53,8 @@ static_library("auto_screen_brightness") {
   deps = [
     "//ash/constants",
     "//base",
-    "//chrome/browser:browser_process",
     "//chrome/browser/profiles:profile",
     "//chrome/common",
-    "//chromeos/components/sensors",
     "//chromeos/components/sensors",
     "//chromeos/components/sensors/mojom",
     "//chromeos/crosapi/mojom",
@@ -90,7 +88,6 @@ source_set("unit_tests") {
     ":auto_screen_brightness",
     "//ash/constants",
     "//base/test:test_support",
-    "//chrome/browser:browser_process",
     "//chrome/browser/prefs",
     "//chrome/common",
     "//chrome/test:test_support",

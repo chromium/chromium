@@ -10,7 +10,7 @@
 
 WebRtcLogBuffer::WebRtcLogBuffer()
     : buffer_(),
-      circular_(&buffer_[0], sizeof(buffer_), sizeof(buffer_) / 2, false),
+      circular_(buffer_, sizeof(buffer_) / 2, false),
       read_only_(false) {}
 
 WebRtcLogBuffer::~WebRtcLogBuffer() {
@@ -22,15 +22,15 @@ WebRtcLogBuffer::~WebRtcLogBuffer() {
 void WebRtcLogBuffer::Log(const std::string& message) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(!read_only_);
-  circular_.Write(message.c_str(), message.length());
+  circular_.Write(base::as_bytes(base::span(message)));
   const char eol = '\n';
-  circular_.Write(&eol, 1);
+  circular_.Write(base::as_bytes(base::span_from_ref(eol)));
 }
 
 webrtc_logging::PartialCircularBuffer WebRtcLogBuffer::Read() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(read_only_);
-  return webrtc_logging::PartialCircularBuffer(&buffer_[0], sizeof(buffer_));
+  return webrtc_logging::PartialCircularBuffer(buffer_);
 }
 
 void WebRtcLogBuffer::SetComplete() {

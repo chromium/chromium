@@ -2,10 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <algorithm>
 #include <set>
 #include <string>
 
-#include "base/containers/contains.h"
 #include "base/stl_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/mock_callback.h"
@@ -24,10 +24,10 @@
 #include "components/ntp_tiles/tile_type.h"
 #include "components/prefs/pref_service.h"
 #include "components/search/ntp_features.h"
-#include "content/public/browser/child_process_id.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/spare_render_process_host_manager.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/common/child_process_id.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "net/dns/mock_host_resolver.h"
@@ -173,8 +173,8 @@ IN_PROC_BROWSER_TEST_F(WebUiNtpBrowserTest, SpareRenderer) {
 
   // Check spare was taken.
   EXPECT_TRUE(
-      base::Contains(spare_ids_before_navigation,
-                     ntp->GetPrimaryMainFrame()->GetProcess()->GetID()));
+      std::ranges::contains(spare_ids_before_navigation,
+                            ntp->GetPrimaryMainFrame()->GetProcess()->GetID()));
 
   // No processes should be unnecessarily terminated.
   const std::set<content::ChildProcessId> ending_rph_ids =

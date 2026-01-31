@@ -73,6 +73,7 @@ class Browser;
 class BrowserWindowInterface;
 class PrefService;
 class Profile;
+class TabListInterface;
 #if BUILDFLAG(IS_MAC)
 class ScopedBundleSwizzlerMac;
 #endif  // BUILDFLAG(IS_MAC)
@@ -202,6 +203,10 @@ class InProcessBrowserTest : public content::BrowserTestBase {
   // Returns the profile. Prefer this method to browser()->profile() for
   // cross-platform compatibility.
   Profile* GetProfile() const;
+
+  // Returns the TabListInterface for the test. On Desktop this calls
+  // TabListInterface::From(browser()).
+  TabListInterface* GetTabListInterface() const;
 
  protected:
   // Closes the given browser and waits for it to release all its resources.

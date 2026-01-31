@@ -4,10 +4,10 @@
 
 #include "chrome/browser/notifications/scheduler/internal/icon_store.h"
 
+#include <algorithm>
 #include <map>
 #include <utility>
 
-#include "base/containers/contains.h"
 #include "base/uuid.h"
 #include "chrome/browser/notifications/scheduler/internal/icon_entry.h"
 #include "chrome/browser/notifications/scheduler/internal/proto_conversion.h"
@@ -32,7 +32,7 @@ namespace notifications {
 namespace {
 bool HasKeyInDb(const std::vector<std::string>& key_dict,
                 const std::string& key) {
-  return base::Contains(key_dict, key);
+  return std::ranges::contains(key_dict, key);
 }
 }  // namespace
 

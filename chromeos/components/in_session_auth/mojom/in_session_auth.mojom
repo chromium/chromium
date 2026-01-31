@@ -29,6 +29,7 @@ enum Reason {
   [Default] kAccessPasswordManager = 0,
   kAccessAuthenticationSettings,
   kAccessMultideviceSettings,
+  [MinVersion=3] kAccessAutofillPayments,
 };
 
 // An interface implemented by Ash to expose Ash's authentication capabilities.

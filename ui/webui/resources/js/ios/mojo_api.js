@@ -228,7 +228,7 @@ Mojo.internal = Mojo.internal || {};
  * @return {Object=} Response from Mojo backend.
  */
 Mojo.internal.sendMessage = function(message) {
-  const response = window.prompt(__gCrWeb.common.JSONStringify(message));
+  const response = window.prompt(JSON.stringify(message));
   return response ? JSON.parse(response) : undefined;
 };
 

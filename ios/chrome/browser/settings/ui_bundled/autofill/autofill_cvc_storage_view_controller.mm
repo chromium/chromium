@@ -7,6 +7,7 @@
 #import "base/apple/foundation_util.h"
 #import "base/memory/raw_ptr.h"
 #import "base/metrics/user_metrics.h"
+#import "components/autofill/core/common/autofill_payments_features.h"
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/settings/ui_bundled/autofill/autofill_settings_constants.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_switch_item.h"
@@ -185,7 +186,11 @@ typedef NS_ENUM(NSInteger, ItemType) {
               IDS_AUTOFILL_SETTINGS_PAGE_BULK_REMOVE_CVC_TITLE)
                        message:
                            l10n_util::GetNSString(
-                               IDS_AUTOFILL_SETTINGS_PAGE_BULK_REMOVE_CVC_DESCRIPTION)
+                               base::FeatureList::IsEnabled(
+                                   autofill::features::
+                                       kAutofillEnableWalletBranding)
+                                   ? IDS_AUTOFILL_SETTINGS_PAGE_BULK_REMOVE_CVC_FROM_WALLET_DESCRIPTION
+                                   : IDS_AUTOFILL_SETTINGS_PAGE_BULK_REMOVE_CVC_DESCRIPTION)
                 preferredStyle:UIAlertControllerStyleActionSheet];
 
   __weak __typeof(self) weakSelf = self;

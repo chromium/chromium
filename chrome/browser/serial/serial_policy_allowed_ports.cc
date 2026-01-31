@@ -7,7 +7,6 @@
 #include <optional>
 #include <vector>
 
-#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/values.h"
 #include "chrome/common/pref_names.h"
@@ -56,13 +55,13 @@ void SerialPolicyAllowedPorts::RegisterPrefs(PrefRegistrySimple* registry) {
 bool SerialPolicyAllowedPorts::HasPortPermission(
     const url::Origin& origin,
     const device::mojom::SerialPortInfo& port_info) {
-  if (base::Contains(all_ports_policy_, origin)) {
+  if (all_ports_policy_.contains(origin)) {
     return true;
   }
 
   if (port_info.has_vendor_id) {
     auto it = usb_vendor_policy_.find(port_info.vendor_id);
-    if (it != usb_vendor_policy_.end() && base::Contains(it->second, origin)) {
+    if (it != usb_vendor_policy_.end() && it->second.contains(origin)) {
       return true;
     }
   }
@@ -70,7 +69,7 @@ bool SerialPolicyAllowedPorts::HasPortPermission(
   if (port_info.has_vendor_id && port_info.has_product_id) {
     auto it = usb_device_policy_.find(
         std::make_pair(port_info.vendor_id, port_info.product_id));
-    if (it != usb_device_policy_.end() && base::Contains(it->second, origin)) {
+    if (it != usb_device_policy_.end() && it->second.contains(origin)) {
       return true;
     }
   }
@@ -81,7 +80,7 @@ bool SerialPolicyAllowedPorts::HasPortPermission(
 void SerialPolicyAllowedPorts::LoadAllowAllPortsForUrlsPolicy() {
   all_ports_policy_.clear();
 
-  const base::Value::List& pref_list = pref_change_registrar_.prefs()->GetList(
+  const base::ListValue& pref_list = pref_change_registrar_.prefs()->GetList(
       prefs::kManagedSerialAllowAllPortsForUrls);
 
   // The pref value has already been validated by the policy handler, so it is
@@ -103,13 +102,13 @@ void SerialPolicyAllowedPorts::LoadAllowUsbDevicesForUrlsPolicy() {
   usb_device_policy_.clear();
   usb_vendor_policy_.clear();
 
-  const base::Value::List& pref_list = pref_change_registrar_.prefs()->GetList(
+  const base::ListValue& pref_list = pref_change_registrar_.prefs()->GetList(
       prefs::kManagedSerialAllowUsbDevicesForUrls);
 
   // The pref value has already been validated by the policy handler, so it is
   // safe to assume that |pref_value| follows the policy template.
   for (const auto& item : pref_list) {
-    const base::Value::List* urls_value = item.GetDict().FindList(kPrefUrlsKey);
+    const base::ListValue* urls_value = item.GetDict().FindList(kPrefUrlsKey);
     DCHECK(urls_value);
 
     std::vector<url::Origin> urls;
@@ -126,7 +125,7 @@ void SerialPolicyAllowedPorts::LoadAllowUsbDevicesForUrlsPolicy() {
       continue;
     }
 
-    const base::Value::List* devices_value =
+    const base::ListValue* devices_value =
         item.GetDict().FindList(kPrefDevicesKey);
     DCHECK(devices_value);
     for (const auto& port_value : *devices_value) {

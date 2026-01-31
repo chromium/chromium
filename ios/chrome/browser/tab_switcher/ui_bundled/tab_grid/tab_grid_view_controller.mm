@@ -21,11 +21,10 @@
 #import "ios/chrome/browser/keyboard/ui_bundled/UIKeyCommand+Chrome.h"
 #import "ios/chrome/browser/menu/ui_bundled/action_factory.h"
 #import "ios/chrome/browser/shared/model/web_state_list/tab_utils.h"
-#import "ios/chrome/browser/shared/public/commands/application_commands.h"
+#import "ios/chrome/browser/shared/public/commands/bwg_commands.h"
+#import "ios/chrome/browser/shared/public/commands/scene_commands.h"
 #import "ios/chrome/browser/shared/public/commands/tab_grid_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
-#import "ios/chrome/browser/shared/public/prototypes/diamond/chrome_app_bar_prototype.h"
-#import "ios/chrome/browser/shared/public/prototypes/diamond/utils.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/table_view/legacy_chrome_table_view_styler.h"
 #import "ios/chrome/browser/shared/ui/util/layout_guide_names.h"
@@ -178,8 +177,8 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
   BOOL _backgroundedSinceEntering;
   // Current mode of the TabGrid.
   TabGridMode _mode;
-  // The app bar, for diamond prototype.
-  ChromeAppBarPrototype* _appBar;
+  // The app bar.
+  UIViewController* _appBar;
   // Top and bottom toolbar edge effects.
   UIScrollEdgeElementContainerInteraction* _topToolbarEdgeEffect
       API_AVAILABLE(ios(26.0));
@@ -206,7 +205,7 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
 
   [self setupSearchUI];
   [self setupTopToolbar];
-  if (IsDiamondPrototypeEnabled()) {
+  if (IsChromeNextIaEnabled()) {
     [self setupAppBar];
   }
   [self setupBottomToolbar];
@@ -259,6 +258,18 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
 
 - (UIStatusBarStyle)preferredStatusBarStyle {
   return UIStatusBarStyleLightContent;
+}
+
+- (void)dismissViewControllerAnimated:(BOOL)flag
+                           completion:(void (^)())completion {
+  __weak TabGridViewController* weakSelf = self;
+  [super dismissViewControllerAnimated:flag
+                            completion:^() {
+                              if (completion) {
+                                completion();
+                              }
+                              [weakSelf showGeminiFloatyIfInvoked];
+                            }];
 }
 
 #pragma mark - UIScrollViewDelegate
@@ -447,8 +458,8 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
   self.activePage = newActivePage;
 }
 
-- (void)setAppBar:(ChromeAppBarPrototype*)appBar {
-  CHECK(IsDiamondPrototypeEnabled());
+- (void)setAppBar:(UIViewController*)appBar {
+  CHECK(IsChromeNextIaEnabled());
   _appBar = appBar;
 }
 
@@ -594,10 +605,6 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
 }
 
 - (void)setCurrentPage:(TabGridPage)currentPage {
-  if (IsDiamondPrototypeEnabled()) {
-    _appBar.currentPage =
-        (currentPage == TabGridPageTabGroups) ? self.activePage : currentPage;
-  }
   // Record the idle metric if the previous page was the tab groups page.
   if (_currentPage != currentPage) {
     [self tabGridDidPerformAction:TabGridActionType::kChangePage];
@@ -832,13 +839,15 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
 
 // Adds the app bar.
 - (void)setupAppBar {
-  CHECK(IsDiamondPrototypeEnabled());
-  _appBar.translatesAutoresizingMaskIntoConstraints = NO;
-  [self.view addSubview:_appBar];
+  CHECK(IsChromeNextIaEnabled());
+  UIView* appBarView = _appBar.view;
+  appBarView.translatesAutoresizingMaskIntoConstraints = NO;
+  [self.view addSubview:appBarView];
   [NSLayoutConstraint activateConstraints:@[
-    [self.view.leadingAnchor constraintEqualToAnchor:_appBar.leadingAnchor],
-    [self.view.trailingAnchor constraintEqualToAnchor:_appBar.trailingAnchor],
-    [self.view.bottomAnchor constraintEqualToAnchor:_appBar.bottomAnchor],
+    [self.view.leadingAnchor constraintEqualToAnchor:appBarView.leadingAnchor],
+    [self.view.trailingAnchor
+        constraintEqualToAnchor:appBarView.trailingAnchor],
+    [self.view.bottomAnchor constraintEqualToAnchor:appBarView.bottomAnchor],
   ]];
 }
 
@@ -847,15 +856,16 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
   UIView* bottomToolbar = self.bottomToolbar;
   CHECK(bottomToolbar);
 
-  if (IsDiamondPrototypeEnabled()) {
-    [self.view insertSubview:bottomToolbar belowSubview:_appBar];
+  if (IsChromeNextIaEnabled()) {
+    UIView* appBarView = _appBar.view;
+    [self.view insertSubview:bottomToolbar belowSubview:appBarView];
 
     [NSLayoutConstraint activateConstraints:@[
       [bottomToolbar.leadingAnchor
           constraintEqualToAnchor:self.view.leadingAnchor],
       [bottomToolbar.trailingAnchor
           constraintEqualToAnchor:self.view.trailingAnchor],
-      [bottomToolbar.topAnchor constraintEqualToAnchor:_appBar.topAnchor],
+      [bottomToolbar.bottomAnchor constraintEqualToAnchor:appBarView.topAnchor],
     ]];
   } else {
     [self.view addSubview:bottomToolbar];
@@ -1338,6 +1348,19 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
   }
 }
 
+// Helper method for dismissal block when attempting to show the Gemini floaty
+// if invoked.
+- (void)showGeminiFloatyIfInvoked {
+  // Sheet swipe gesture triggers [dismissViewControllerAnimated:completion:].
+  // Check if the presented view was truly dismissed which can be implied by
+  // `presentedViewController` == nil.
+  if (self.presentedViewController) {
+    return;
+  }
+
+  [self.geminiHandler showFloatyIfInvokedAnimated:YES];
+}
+
 #pragma mark - UIGestureRecognizerDelegate
 
 - (BOOL)gestureRecognizer:(UIGestureRecognizer*)gestureRecognizer
@@ -1430,9 +1453,6 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
   CGFloat bottomInset = self.configuration == TabGridConfigurationBottomToolbar
                             ? self.bottomToolbar.intrinsicContentSize.height
                             : 0;
-  if (IsDiamondPrototypeEnabled()) {
-    bottomInset = kChromeAppBarPrototypeHeight;
-  }
 
   CGFloat topInset = self.topToolbar.intrinsicContentSize.height;
   UIEdgeInsets inset = UIEdgeInsetsMake(topInset, 0, bottomInset, 0);

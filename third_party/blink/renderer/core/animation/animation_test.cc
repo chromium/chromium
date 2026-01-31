@@ -459,13 +459,15 @@ TEST_P(AnimationAnimationTestNoCompositing, SetCurrentTimePastContentEnd) {
 TEST_P(AnimationAnimationTestCompositing, SetCurrentTimeMax) {
   ResetWithCompositedAnimation();
   EXPECT_EQ(CompositorAnimations::kNoFailure,
-            animation->CheckCanStartAnimationOnCompositor(nullptr));
+            animation->CheckCanStartAnimationOnCompositor(
+                nullptr, StartOnCompositorReason::kGeneric));
   double limit = std::numeric_limits<double>::max();
   animation->setCurrentTime(MakeGarbageCollected<V8CSSNumberish>(limit),
                             ASSERT_NO_EXCEPTION);
   V8CSSNumberish* current_time = animation->currentTime();
   ExpectRelativeErrorWithinEpsilon(limit, current_time->GetAsDouble());
-  EXPECT_TRUE(animation->CheckCanStartAnimationOnCompositor(nullptr) &
+  EXPECT_TRUE(animation->CheckCanStartAnimationOnCompositor(
+                  nullptr, StartOnCompositorReason::kGeneric) &
               CompositorAnimations::kEffectHasUnsupportedTimingParameters);
   SimulateFrame(100000);
   current_time = animation->currentTime();
@@ -478,12 +480,14 @@ TEST_P(AnimationAnimationTestCompositing, SetCurrentTimeAboveMaxTimeDelta) {
   // compositor.
   ResetWithCompositedAnimation();
   EXPECT_EQ(CompositorAnimations::kNoFailure,
-            animation->CheckCanStartAnimationOnCompositor(nullptr));
+            animation->CheckCanStartAnimationOnCompositor(
+                nullptr, StartOnCompositorReason::kGeneric));
   double limit = 1e30;
   animation->setCurrentTime(MakeGarbageCollected<V8CSSNumberish>(limit),
                             ASSERT_NO_EXCEPTION);
   std::ignore = animation->currentTime();
-  EXPECT_TRUE(animation->CheckCanStartAnimationOnCompositor(nullptr) &
+  EXPECT_TRUE(animation->CheckCanStartAnimationOnCompositor(
+                  nullptr, StartOnCompositorReason::kGeneric) &
               CompositorAnimations::kEffectHasUnsupportedTimingParameters);
 }
 
@@ -1399,10 +1403,10 @@ TEST_P(AnimationAnimationTestCompositing,
       GetDocument().View()->GetPaintArtifactCompositor();
   ASSERT_TRUE(paint_artifact_compositor);
   EXPECT_EQ(animation_composited->CheckCanStartAnimationOnCompositor(
-                paint_artifact_compositor),
+                paint_artifact_compositor, StartOnCompositorReason::kGeneric),
             CompositorAnimations::kNoFailure);
   EXPECT_NE(animation_not_composited->CheckCanStartAnimationOnCompositor(
-                paint_artifact_compositor),
+                paint_artifact_compositor, StartOnCompositorReason::kGeneric),
             CompositorAnimations::kNoFailure);
 }
 
@@ -1638,7 +1642,8 @@ TEST_P(AnimationAnimationTestCompositing, SetKeyframesCausesCompositorPending) {
 TEST_P(AnimationAnimationTestCompositing, InfiniteDurationAnimation) {
   ResetWithCompositedAnimation();
   EXPECT_EQ(CompositorAnimations::kNoFailure,
-            animation->CheckCanStartAnimationOnCompositor(nullptr));
+            animation->CheckCanStartAnimationOnCompositor(
+                nullptr, StartOnCompositorReason::kGeneric));
 
   OptionalEffectTiming* effect_timing = OptionalEffectTiming::Create();
   effect_timing->setDuration(
@@ -1646,25 +1651,30 @@ TEST_P(AnimationAnimationTestCompositing, InfiniteDurationAnimation) {
           std::numeric_limits<double>::infinity()));
   animation->effect()->updateTiming(effect_timing);
   EXPECT_EQ(CompositorAnimations::kEffectHasUnsupportedTimingParameters,
-            animation->CheckCanStartAnimationOnCompositor(nullptr));
+            animation->CheckCanStartAnimationOnCompositor(
+                nullptr, StartOnCompositorReason::kGeneric));
 }
 
 TEST_P(AnimationAnimationTestCompositing, ZeroPlaybackSpeed) {
   ResetWithCompositedAnimation();
   EXPECT_EQ(CompositorAnimations::kNoFailure,
-            animation->CheckCanStartAnimationOnCompositor(nullptr));
+            animation->CheckCanStartAnimationOnCompositor(
+                nullptr, StartOnCompositorReason::kGeneric));
 
   animation->updatePlaybackRate(0.0);
   EXPECT_TRUE(CompositorAnimations::kInvalidAnimationOrEffect |
-              animation->CheckCanStartAnimationOnCompositor(nullptr));
+              animation->CheckCanStartAnimationOnCompositor(
+                  nullptr, StartOnCompositorReason::kGeneric));
 
   animation->updatePlaybackRate(1.0E-120);
   EXPECT_TRUE(CompositorAnimations::kInvalidAnimationOrEffect |
-              animation->CheckCanStartAnimationOnCompositor(nullptr));
+              animation->CheckCanStartAnimationOnCompositor(
+                  nullptr, StartOnCompositorReason::kGeneric));
 
   animation->updatePlaybackRate(0.0001);
   EXPECT_EQ(CompositorAnimations::kNoFailure,
-            animation->CheckCanStartAnimationOnCompositor(nullptr));
+            animation->CheckCanStartAnimationOnCompositor(
+                nullptr, StartOnCompositorReason::kGeneric));
 }
 
 // crbug.com/1149012
@@ -1689,7 +1699,8 @@ TEST_P(AnimationAnimationTestCompositing,
       DynamicTo<KeyframeEffect>(animation->effect());
   ASSERT_TRUE(keyframe_effect);
 
-  EXPECT_EQ(animation->CheckCanStartAnimationOnCompositor(nullptr),
+  EXPECT_EQ(animation->CheckCanStartAnimationOnCompositor(
+                nullptr, StartOnCompositorReason::kGeneric),
             CompositorAnimations::kNoFailure);
 
   GetDocument().GetPendingAnimations().Update(nullptr, true);
@@ -1886,7 +1897,8 @@ TEST_P(AnimationAnimationTestCompositing,
   EXPECT_FALSE(scroll_animation->StartTimeInternal());
 
   scroll_animation->SetDeferredStartTimeForTesting();
-  EXPECT_EQ(scroll_animation->CheckCanStartAnimationOnCompositor(nullptr),
+  EXPECT_EQ(scroll_animation->CheckCanStartAnimationOnCompositor(
+                nullptr, StartOnCompositorReason::kGeneric),
             CompositorAnimations::kNoFailure);
 }
 
@@ -1959,7 +1971,8 @@ TEST_P(AnimationAnimationTestCompositing,
       MakeGarbageCollected<V8CSSNumberish>(
           CSSUnitValues::percent(TEST_START_PERCENT)),
       ASSERT_NO_EXCEPTION);
-  EXPECT_EQ(scroll_animation->CheckCanStartAnimationOnCompositor(nullptr),
+  EXPECT_EQ(scroll_animation->CheckCanStartAnimationOnCompositor(
+                nullptr, StartOnCompositorReason::kGeneric),
             CompositorAnimations::kNoFailure);
   UpdateAllLifecyclePhasesForTest();
   // Start the animation on compositor. The time offset of the compositor
@@ -2456,7 +2469,8 @@ TEST_P(AnimationAnimationTestCompositing,
   UpdateAllLifecyclePhasesForTest();
   scroll_animation->play();
   scroll_animation->SetDeferredStartTimeForTesting();
-  EXPECT_EQ(scroll_animation->CheckCanStartAnimationOnCompositor(nullptr),
+  EXPECT_EQ(scroll_animation->CheckCanStartAnimationOnCompositor(
+                nullptr, StartOnCompositorReason::kGeneric),
             CompositorAnimations::kNoFailure);
 }
 
@@ -2559,9 +2573,9 @@ TEST_P(AnimationAnimationTestCompositing, HiddenAnimationsDoNotTick) {
   ASSERT_TRUE(paint_artifact_compositor);
 
   // The animation should be optimized out since no visible change.
-  EXPECT_EQ(
-      animation->CheckCanStartAnimationOnCompositor(paint_artifact_compositor),
-      CompositorAnimations::kAnimationHasNoVisibleChange);
+  EXPECT_EQ(animation->CheckCanStartAnimationOnCompositor(
+                paint_artifact_compositor, StartOnCompositorReason::kGeneric),
+            CompositorAnimations::kAnimationHasNoVisibleChange);
   EXPECT_TRUE(animation->CompositorPropertyAnimationsHaveNoEffectForTesting());
   EXPECT_TRUE(animation->AnimationHasNoEffect());
 
@@ -2602,9 +2616,9 @@ TEST_P(AnimationAnimationTestCompositing, HiddenAnimationsTickWhenVisible) {
   ASSERT_TRUE(paint_artifact_compositor);
 
   // The animation should be optimized out since no visible change.
-  EXPECT_EQ(
-      animation->CheckCanStartAnimationOnCompositor(paint_artifact_compositor),
-      CompositorAnimations::kAnimationHasNoVisibleChange);
+  EXPECT_EQ(animation->CheckCanStartAnimationOnCompositor(
+                paint_artifact_compositor, StartOnCompositorReason::kGeneric),
+            CompositorAnimations::kAnimationHasNoVisibleChange);
   EXPECT_TRUE(animation->CompositorPropertyAnimationsHaveNoEffectForTesting());
   EXPECT_TRUE(animation->AnimationHasNoEffect());
 
@@ -2624,9 +2638,9 @@ TEST_P(AnimationAnimationTestCompositing, HiddenAnimationsTickWhenVisible) {
 
   // The animation should run on the compositor after the properties are
   // created.
-  EXPECT_EQ(
-      animation->CheckCanStartAnimationOnCompositor(paint_artifact_compositor),
-      CompositorAnimations::kNoFailure);
+  EXPECT_EQ(animation->CheckCanStartAnimationOnCompositor(
+                paint_artifact_compositor, StartOnCompositorReason::kGeneric),
+            CompositorAnimations::kNoFailure);
   EXPECT_FALSE(animation->CompositorPropertyAnimationsHaveNoEffectForTesting());
   EXPECT_FALSE(animation->AnimationHasNoEffect());
   EXPECT_EQ(2u, animation->TimelineInternal()->AnimationsNeedingUpdateCount());
@@ -2687,14 +2701,22 @@ TEST_P(AnimationAnimationTestCompositing,
               V8AnimationPlayState::Enum::kIdle);
 
     // Create a trigger.
-    TimelineRangeOffset* dummy_offset =
+    TimelineRangeOffset* placeholder_offset =
         MakeGarbageCollected<TimelineRangeOffset>();
-    TimelineTrigger::RangeBoundary* dummy_range_boundary =
-        MakeGarbageCollected<TimelineTrigger::RangeBoundary>(dummy_offset);
-    trigger = MakeGarbageCollected<TimelineTrigger>(
-        timeline,
-        dummy_range_boundary, dummy_range_boundary, dummy_range_boundary,
-        dummy_range_boundary);
+    TimelineTrigger::RangeBoundary* placeholder_range_boundary =
+        MakeGarbageCollected<TimelineTrigger::RangeBoundary>(
+            placeholder_offset);
+    TimelineTriggerRange* placeholder_range =
+        MakeGarbageCollected<TimelineTriggerRange>(
+            timeline, placeholder_range_boundary, placeholder_range_boundary,
+            placeholder_range_boundary, placeholder_range_boundary);
+
+    HeapVector<Member<TimelineTriggerRange>> placeholder_ranges;
+    placeholder_ranges.push_back(placeholder_range);
+
+    TimelineTriggerRangeList* placeholder_range_list =
+        MakeGarbageCollected<TimelineTriggerRangeList>(placeholder_ranges);
+    trigger = MakeGarbageCollected<TimelineTrigger>(placeholder_range_list);
 
     // Attach the trigger to the animation.
     trigger->addAnimation(
@@ -2777,12 +2799,12 @@ class ScriptedTimelineTriggerTest : public PageTestBase {
             { duration: 300, fill: "none" }
           ));
 
-        let trigger = new TimelineTrigger({
+        let trigger = new TimelineTrigger([{
           timeline: new ViewTimeline({
             subject: document.getElementById('subject'), axis: "y"
           }),
-          rangeStart: "contain 0%",
-          rangeEnd: "contain 100%"});
+          entryRangeStart: "contain 0%",
+          entryRangeEnd: "contain 100%"}]);
 
         trigger.addAnimation(animation, "play-forwards", "play-backwards");
       }
@@ -2799,7 +2821,7 @@ class ScriptedTimelineTriggerTest : public PageTestBase {
     subject_ = document_->getElementById(AtomicString("subject"));
     animation_ = target_->GetElementAnimations()->Animations().begin()->key;
     trigger_ = *animation_->triggers_.begin();
-    timeline_ = DynamicTo<TimelineTrigger>(trigger_.Get())->timeline();
+    timeline_ = DynamicTo<TimelineTrigger>(trigger_.Get())->Timeline();
 
     ThreadState::Current()->CollectAllGarbageForTesting();
 

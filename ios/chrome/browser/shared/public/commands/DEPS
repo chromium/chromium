@@ -1,5 +1,7 @@
 include_rules = [
+  # keep-sorted start
   "+components/collaboration/public/collaboration_service.h",
   "+components/lens/lens_overlay_dismissal_source.h",
+  # keep-sorted end
 ]
 

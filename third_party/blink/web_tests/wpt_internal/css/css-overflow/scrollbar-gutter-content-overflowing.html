@@ -23,6 +23,9 @@
         border: 1px solid black;
         background-color: #00AA00;
     }
+    .composited > .container {
+        will-change: transform;
+    }
     .container.ltr {
         direction: ltr;
     }
@@ -57,6 +60,20 @@
 </style>
 <body>
     <div class="row">
+        <div class="container ltr">
+            <div class="overflowing"></div>
+            <div class="tall"></div>
+        </div>
+        <div class="container rtl">
+            <div class="overflowing"></div>
+            <div class="tall"></div>
+        </div>
+        <div class="container vertical">
+            <div class="overflowing"></div>
+            <div class="tall"></div>
+        </div>
+    </div>
+    <div class="row composited">
         <div class="container ltr">
             <div class="overflowing"></div>
             <div class="tall"></div>

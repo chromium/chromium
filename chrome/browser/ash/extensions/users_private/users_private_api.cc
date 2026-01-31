@@ -9,7 +9,6 @@
 #include <optional>
 #include <utility>
 
-#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
@@ -17,12 +16,10 @@
 #include "chrome/browser/ash/extensions/users_private/users_private_delegate_factory.h"
 #include "chrome/browser/ash/ownership/owner_settings_service_ash.h"
 #include "chrome/browser/ash/ownership/owner_settings_service_ash_factory.h"
-#include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
-#include "chrome/browser/browser_process.h"
-#include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/extensions/api/users_private.h"
+#include "chromeos/ash/components/install_attributes/install_attributes.h"
 #include "chromeos/ash/components/settings/cros_settings.h"
 #include "chromeos/ash/components/settings/cros_settings_names.h"
 #include "components/session_manager/core/session_manager.h"
@@ -37,9 +34,7 @@ namespace extensions {
 namespace {
 
 bool IsDeviceEnterpriseManaged() {
-  return g_browser_process->platform_part()
-      ->browser_policy_connector_ash()
-      ->IsDeviceEnterpriseManaged();
+  return ash::InstallAttributes::Get()->IsEnterpriseManaged();
 }
 
 bool IsChild(Profile* profile) {
@@ -92,8 +87,8 @@ api::users_private::User CreateUnknownApiUser(const std::string& email) {
   return api_user;
 }
 
-base::Value::List GetUsersList(content::BrowserContext* browser_context) {
-  base::Value::List user_list;
+base::ListValue GetUsersList(content::BrowserContext* browser_context) {
+  base::ListValue user_list;
 
   if (!CanModifyUserList(browser_context))
     return user_list;
@@ -102,7 +97,7 @@ base::Value::List GetUsersList(content::BrowserContext* browser_context) {
   // asynchronous and sequential. Before previous write comes back, cached
   // list is stale and should not be used for appending. See
   // http://crbug.com/127215
-  base::Value::List email_list;
+  base::ListValue email_list;
 
   UsersPrivateDelegate* delegate =
       UsersPrivateDelegateFactory::GetForBrowserContext(browser_context);
@@ -128,9 +123,9 @@ base::Value::List GetUsersList(content::BrowserContext* browser_context) {
 
   const user_manager::UserList& users = user_manager->GetPersistedUsers();
   for (const user_manager::User* user : users) {
-    base::Value email_value(user->GetAccountId().GetUserEmail());
-    if (!base::Contains(email_list, email_value)) {
-      email_list.Append(std::move(email_value));
+    std::string email_value(user->GetAccountId().GetUserEmail());
+    if (!email_list.contains(email_value)) {
+      email_list.Append(email_value);
     }
   }
 
@@ -294,7 +289,7 @@ ExtensionFunction::ResponseAction UsersPrivateGetLoginStatusFunction::Run() {
   const bool is_screen_locked =
       session_manager::SessionManager::Get()->IsScreenLocked();
 
-  base::Value::Dict result;
+  base::DictValue result;
   result.Set("isLoggedIn", base::Value(is_logged_in));
   result.Set("isScreenLocked", base::Value(is_screen_locked));
   return RespondNow(WithArguments(std::move(result)));

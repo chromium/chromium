@@ -8,8 +8,10 @@
 
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "components/autofill/core/browser/payments/autofill_error_dialog_context.h"
 #include "components/autofill/core/browser/ui/payments/autofill_error_dialog_view.h"
+#include "components/autofill/core/common/autofill_payments_features.h"
 #include "components/strings/grit/components_strings.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -59,7 +61,10 @@ class AutofillErrorDialogControllerImplTest : public testing::Test {
 };
 
 #if BUILDFLAG(IS_IOS)
-TEST_F(AutofillErrorDialogControllerImplTest, CreditCardUploadError) {
+TEST_F(AutofillErrorDialogControllerImplTest,
+       CreditCardUploadError_WalletBrandingDisabled) {
+  base::test::ScopedFeatureList features;
+  features.InitAndDisableFeature(features::kAutofillEnableWalletBranding);
   AutofillErrorDialogContext context;
   context.type = AutofillErrorDialogType::kCreditCardUploadError;
 
@@ -71,6 +76,24 @@ TEST_F(AutofillErrorDialogControllerImplTest, CreditCardUploadError) {
   EXPECT_EQ(controller()->GetDescription(),
             l10n_util::GetStringUTF16(
                 IDS_AUTOFILL_SAVE_CARD_CONFIRMATION_FAILURE_DESCRIPTION_TEXT));
+  EXPECT_EQ(controller()->GetButtonLabel(), l10n_util::GetStringUTF16(IDS_OK));
+}
+
+TEST_F(AutofillErrorDialogControllerImplTest, CreditCardUploadError) {
+  base::test::ScopedFeatureList features(
+      features::kAutofillEnableWalletBranding);
+  AutofillErrorDialogContext context;
+  context.type = AutofillErrorDialogType::kCreditCardUploadError;
+
+  ShowPrompt(context);
+
+  EXPECT_EQ(controller()->GetTitle(),
+            l10n_util::GetStringUTF16(
+                IDS_AUTOFILL_SAVE_CARD_CONFIRMATION_FAILURE_TITLE_TEXT));
+  EXPECT_EQ(
+      controller()->GetDescription(),
+      l10n_util::GetStringUTF16(
+          IDS_AUTOFILL_SAVE_CARD_TO_WALLET_CONFIRMATION_FAILURE_DESCRIPTION_TEXT));
   EXPECT_EQ(controller()->GetButtonLabel(), l10n_util::GetStringUTF16(IDS_OK));
 }
 
@@ -164,6 +187,25 @@ TEST_F(AutofillErrorDialogControllerImplTest, BnplPermanentError) {
   EXPECT_EQ(
       controller()->GetDescription(),
       l10n_util::GetStringUTF16(IDS_AUTOFILL_BNPL_PERMANENT_ERROR_DESCRIPTION));
+  EXPECT_EQ(controller()->GetButtonLabel(),
+            l10n_util::GetStringUTF16(
+                IDS_AUTOFILL_ERROR_DIALOG_NEGATIVE_BUTTON_LABEL));
+}
+
+// Test to verify the title, description and button label for autofill error
+// dialog for unsupported currency error in a BNPL flow.
+TEST_F(AutofillErrorDialogControllerImplTest, BnplUnsupportedCurrencyError) {
+  AutofillErrorDialogContext context =
+      AutofillErrorDialogContext::WithBnplUnsupportedCurrencyError();
+
+  ShowPrompt(context);
+
+  EXPECT_EQ(controller()->GetTitle(),
+            l10n_util::GetStringUTF16(
+                IDS_AUTOFILL_BNPL_UNSUPPORTED_CURRENCY_ERROR_DIALOG_TITLE));
+  EXPECT_EQ(controller()->GetDescription(),
+            l10n_util::GetStringUTF16(
+                IDS_AUTOFILL_BNPL_UNSUPPORTED_CURRENCY_ERROR_DESCRIPTION));
   EXPECT_EQ(controller()->GetButtonLabel(),
             l10n_util::GetStringUTF16(
                 IDS_AUTOFILL_ERROR_DIALOG_NEGATIVE_BUTTON_LABEL));

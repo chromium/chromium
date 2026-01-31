@@ -116,11 +116,14 @@ static_library("test_support") {
   sources = [
     "mock_webauthn_cred_man_delegate.cc",
     "mock_webauthn_cred_man_delegate.h",
+    "stub_webauthn_client_android.cc",
+    "stub_webauthn_client_android.h",
     "webauthn_cred_man_delegate_factory_test_api.h",
   ]
   deps = [
     ":android",
     "//base",
+    "//content/public/browser",
     "//testing/gmock",
   ]
 }
@@ -191,6 +194,7 @@ source_set("unit_tests") {
   ]
   deps = [
     ":android",
+    ":test_support",
     "//base/test:test_support",
     "//content/public/browser",
     "//content/test:test_support",
@@ -201,6 +205,7 @@ source_set("unit_tests") {
 
 robolectric_library("junit") {
   sources = [
+    "junit/src/org/chromium/components/webauthn/AuthenticatorImplPasswordOnlyTest.java",
     "junit/src/org/chromium/components/webauthn/AuthenticatorImplTest.java",
     "junit/src/org/chromium/components/webauthn/BarrierTest.java",
     "junit/src/org/chromium/components/webauthn/Fido2ApiRobolectricTest.java",

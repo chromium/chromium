@@ -38,7 +38,7 @@ function axElementById(id) {
 test(function(t) {
     listbox.focus();
     var axOption3 = axElementById("opt3");
-    assert_equals(axOption3.isSelectable, true);
+    assert_equals(axOption3.isSelectable, false);
     assert_equals(axOption3.isSelected, false);
     listbox.setAttribute('aria-multiselectable', 'false');
     assert_equals(axOption3.isSelectable, true);

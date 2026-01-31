@@ -166,6 +166,9 @@ class TestPaymentsAutofillClient : public PaymentsAutofillClient {
   TestCreditCardRiskBasedAuthenticator* GetRiskBasedAuthenticator() override;
   bool IsRiskBasedAuthEffectivelyAvailable() const override;
   bool IsMandatoryReauthEnabled() override;
+#if BUILDFLAG(IS_IOS)
+  bool IsUsingCustomCardIconEnabled() const override;
+#endif  // BUILDFLAG(IS_IOS)
   void ShowMandatoryReauthOptInPrompt(
       base::OnceClosure accept_mandatory_reauth_callback,
       base::OnceClosure cancel_mandatory_reauth_callback,
@@ -188,9 +191,12 @@ class TestPaymentsAutofillClient : public PaymentsAutofillClient {
   bool ShowTouchToFillIban(
       base::WeakPtr<TouchToFillDelegate> delegate,
       base::span<const autofill::Iban> ibans_to_suggest) override;
-  bool ShowTouchToFillLoyaltyCard(
+  bool ShowTouchToFillAffiliatedLoyaltyCard(
       base::WeakPtr<TouchToFillDelegate> delegate,
       std::vector<autofill::LoyaltyCard> loyalty_cards_to_suggest) override;
+  bool ShowTouchToFillForAllLoyaltyCards(
+      base::WeakPtr<TouchToFillDelegate> delegate,
+      std::vector<LoyaltyCard> loyalty_cards_to_suggest) override;
   bool OnPurchaseAmountExtracted(
       base::span<const payments::BnplIssuerContext> bnpl_issuer_contexts,
       std::optional<int64_t> extracted_amount,
@@ -223,7 +229,8 @@ class TestPaymentsAutofillClient : public PaymentsAutofillClient {
   void ShowCreditCardUploadSaveAndFillDialog(
       const LegalMessageLines& legal_message_lines,
       CardSaveAndFillDialogCallback callback) override;
-  void ShowCreditCardSaveAndFillPendingDialog() override;
+  void ShowCreditCardSaveAndFillPendingDialog(
+      CardSaveAndFillDialogCallback callback) override;
   void HideCreditCardSaveAndFillDialog() override;
   bool IsTabModalPopupDeprecated() const override;
   BnplStrategy* GetBnplStrategy() override;

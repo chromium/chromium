@@ -9,31 +9,31 @@
 #include "base/check.h"
 #include "base/functional/callback.h"
 #include "base/values.h"
-#include "components/supervised_user/core/browser/supervised_user_settings_service.h"
+#include "components/supervised_user/core/browser/family_link_settings_service.h"
 #include "components/supervised_user/core/common/supervised_user_constants.h"
 
 namespace supervised_user {
 
 namespace {
 
-base::Value::Dict GetManualBehaviorHostDict(
-    const supervised_user::SupervisedUserSettingsService& settings_service) {
-  const base::Value::Dict& local_settings =
-      settings_service.LocalSettingsForTest();
+base::DictValue GetManualBehaviorHostDict(
+    const FamilyLinkSettingsService& family_link_settings_service) {
+  const base::DictValue& local_settings =
+      family_link_settings_service.LocalSettingsForTest();
 
-  if (const base::Value::Dict* dict = local_settings.FindDict(
+  if (const base::DictValue* dict = local_settings.FindDict(
           supervised_user::kContentPackManualBehaviorHosts)) {
     return dict->Clone();
   }
 
-  return base::Value::Dict();
+  return base::DictValue();
 }
 
 }  // namespace
 
 PermissionRequestCreatorMock::PermissionRequestCreatorMock(
-    SupervisedUserSettingsService& settings_service)
-    : settings_service_(settings_service) {}
+    FamilyLinkSettingsService& family_link_settings_service)
+    : family_link_settings_service_(family_link_settings_service) {}
 
 PermissionRequestCreatorMock::~PermissionRequestCreatorMock() = default;
 
@@ -70,15 +70,15 @@ void PermissionRequestCreatorMock::DelayHandlingForNextRequests() {
 void PermissionRequestCreatorMock::HandleDelayedRequests() {
   DCHECK(delay_handling_);
 
-  base::Value::Dict dict_to_insert =
-      GetManualBehaviorHostDict(settings_service_.get());
+  base::DictValue dict_to_insert =
+      GetManualBehaviorHostDict(family_link_settings_service_.get());
 
   for (size_t i = last_url_request_handled_index_ + 1; i < url_requests_.size();
        i++) {
     dict_to_insert.Set(url_requests_[i].GetHost(), result_);
   }
 
-  settings_service_->SetLocalSetting(
+  family_link_settings_service_->SetLocalSetting(
       supervised_user::kContentPackManualBehaviorHosts,
       std::move(dict_to_insert));
 
@@ -87,11 +87,11 @@ void PermissionRequestCreatorMock::HandleDelayedRequests() {
 
 void PermissionRequestCreatorMock::CreateURLAccessRequestImpl(
     const GURL& url_requested) {
-  base::Value::Dict dict_to_insert =
-      GetManualBehaviorHostDict(settings_service_.get());
+  base::DictValue dict_to_insert =
+      GetManualBehaviorHostDict(family_link_settings_service_.get());
   dict_to_insert.Set(url_requested.GetHost(), result_);
 
-  settings_service_->SetLocalSetting(
+  family_link_settings_service_->SetLocalSetting(
       supervised_user::kContentPackManualBehaviorHosts,
       std::move(dict_to_insert));
 }

@@ -10,6 +10,7 @@
 #include "base/time/time.h"
 #include "chrome/browser/ui/tabs/tab_network_state.h"
 #include "components/performance_manager/public/features.h"
+#include "components/prefs/pref_change_registrar.h"
 #include "ui/base/interaction/element_tracker.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/models/image_model.h"
@@ -82,8 +83,12 @@ class TabIcon : public views::View, public views::AnimationDelegateViews {
   gfx::ImageSkia GetThemedIconForTesting() { return themed_favicon_; }
   bool GetActiveStateForTesting() { return is_active_tab_; }
 
-  void EnlargeDiscardIndicatorRadius(int radius);
-  void SetShouldShowDiscardIndicator(bool enabled);
+  // Called by the parent view when the width available to draw the tab icon
+  // changes, to determine whether to increase the discard indicator radius.
+  // Not used by vertical tabs since there always is enough width to draw the
+  // increased discard indicator radius.
+  void ResizeDiscardIndicatorRadiusForWidth(int width);
+  void OnDiscardRingTreatmentEnabledChanged();
 
  protected:
   class CrashAnimation;
@@ -195,7 +200,7 @@ class TabIcon : public views::View, public views::AnimationDelegateViews {
   // due to a change in the discard status or a change to the pref, because
   // we don't want to animate the discard ring in the latter case.
   bool is_discarded_ = false;
-  bool should_show_discard_indicator_ = true;
+  bool discard_ring_treatment_enabled_ = true;
   bool was_discard_indicator_shown_ = false;
 
   // Crash animation (in place of favicon). Lazily created since most of the
@@ -210,7 +215,14 @@ class TabIcon : public views::View, public views::AnimationDelegateViews {
 
   bool is_monochrome_favicon_ = false;
 
-  int increased_discard_indicator_radius_ = 0;
+  // If there is enough space, increased the size of the discard ring beyond the
+  // default favicon size, by this amount.
+  static constexpr int kIncreasedDiscardIndicatorRadiusDp = 2;
+
+  // The amount to increase the size of the discard ring by.
+  int increased_discard_indicator_radius_ = kIncreasedDiscardIndicatorRadiusDp;
+
+  PrefChangeRegistrar local_state_registrar_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_TABS_TAB_ICON_H_

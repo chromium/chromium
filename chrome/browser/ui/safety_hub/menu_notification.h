@@ -26,7 +26,7 @@ class SafetyHubMenuNotification {
  public:
   SafetyHubMenuNotification() = delete;
   explicit SafetyHubMenuNotification(safety_hub::SafetyHubModuleType type);
-  explicit SafetyHubMenuNotification(const base::Value::Dict& dict,
+  explicit SafetyHubMenuNotification(const base::DictValue& dict,
                                      safety_hub::SafetyHubModuleType type);
 
   SafetyHubMenuNotification(const SafetyHubMenuNotification&) = delete;
@@ -35,7 +35,7 @@ class SafetyHubMenuNotification {
 
   ~SafetyHubMenuNotification();
 
-  base::Value::Dict ToDictValue() const;
+  base::DictValue ToDictValue() const;
 
   // Called when the menu notification will be shown. This will make the
   // notification the currently active one.
@@ -114,7 +114,7 @@ class SafetyHubMenuNotification {
   // The previous result that was persisted on disk. This will only be set when
   // the menu notification is created from a Dict value (originating from
   // prefs).
-  base::Value::Dict prev_stored_result_;
+  base::DictValue prev_stored_result_;
   // Menu notifications should only be shown after this time.
   std::optional<base::Time> show_only_after_;
   // The total number of time in total that a notification has been shown.

@@ -119,6 +119,7 @@
 #include "third_party/blink/renderer/core/scroll/scroll_into_view_util.h"
 #include "third_party/blink/renderer/core/scroll/scrollable_area.h"
 #include "third_party/blink/renderer/core/scroll/scrollbar_theme.h"
+#include "third_party/blink/renderer/core/style/computed_style_constants.h"
 #include "third_party/blink/renderer/core/timing/dom_window_performance.h"
 #include "third_party/blink/renderer/core/timing/event_timing.h"
 #include "third_party/blink/renderer/core/view_transition/view_transition.h"
@@ -199,7 +200,6 @@ void PaintLayerScrollableArea::DisposeImpl() {
   for (ScrollMarkerGroupData* scroll_marker_group :
        scroll_marker_group_data_set_) {
     scroll_marker_group->SetNeedsScrollersMapUpdate();
-    GetLayoutBox()->GetDocument().SetNeedsScrollTargetGroupsMapUpdate();
   }
   if (InResizeMode() && !GetLayoutBox()->DocumentBeingDestroyed()) {
     if (LocalFrame* frame = GetLayoutBox()->GetFrame())
@@ -996,15 +996,18 @@ void PaintLayerScrollableArea::UpdateScrollbarEnabledState(
   if (Scrollbar* horizontal_scrollbar = HorizontalScrollbar()) {
     if (!horizontal_scrollbar->IsCustomScrollbar() ||
         !is_horizontal_scrollbar_frozen) {
-      horizontal_scrollbar->SetEnabled(HasHorizontalOverflow() &&
-                                       !force_disable);
+      horizontal_scrollbar->SetEnabled(
+          (HasHorizontalOverflow() && !force_disable) ||
+          ShouldSupplyScrollbarsForVisualViewport(kHorizontalScrollbar));
     }
   }
 
   if (Scrollbar* vertical_scrollbar = VerticalScrollbar()) {
     if (!vertical_scrollbar->IsCustomScrollbar() ||
         !is_vertical_scrollbar_frozen) {
-      vertical_scrollbar->SetEnabled(HasVerticalOverflow() && !force_disable);
+      vertical_scrollbar->SetEnabled(
+          (HasVerticalOverflow() && !force_disable) ||
+          ShouldSupplyScrollbarsForVisualViewport(kVerticalScrollbar));
     }
   }
 }
@@ -1259,11 +1262,9 @@ void PaintLayerScrollableArea::ClampScrollOffsetAfterOverflowChangeInternal() {
     // marker is currently pinned.
     ScrollMarkerGroupPseudoElement* group = GetScrollMarkerGroup();
     bool targeted_scroll = group && group->SelectedMarkerIsPinned();
-    ScrollableArea::SetScrollOffset(GetScrollOffset(),
-                                    mojom::blink::ScrollType::kClamping,
-                                    cc::ScrollSourceType::kStationaryScroll,
-                                    mojom::blink::ScrollBehavior::kInstant,
-                                    ScrollCallback(), targeted_scroll);
+    SetScrollOffset(GetScrollOffset(), mojom::blink::ScrollType::kClamping,
+                    cc::ScrollSourceType::kStationaryScroll,
+                    mojom::blink::ScrollBehavior::kInstant, targeted_scroll);
   }
 
   SetNeedsScrollOffsetClamp(false);
@@ -1818,10 +1819,24 @@ void PaintLayerScrollableArea::ComputeScrollbarExistence(
     bool will_be_overlay = GetPageScrollbarTheme().UsesOverlayScrollbars() &&
                            !has_custom_scrollbar_style;
     if (will_be_overlay) {
-      if (h_mode == mojom::blink::ScrollbarMode::kAlwaysOn)
-        h_mode = mojom::blink::ScrollbarMode::kAuto;
-      if (v_mode == mojom::blink::ScrollbarMode::kAlwaysOn)
-        v_mode = mojom::blink::ScrollbarMode::kAuto;
+      if (ShouldSupplyScrollbarsForVisualViewport(kHorizontalScrollbar)) {
+        if (h_mode != mojom::blink::ScrollbarMode::kAlwaysOff) {
+          h_mode = mojom::blink::ScrollbarMode::kAlwaysOn;
+        }
+      } else {
+        if (h_mode == mojom::blink::ScrollbarMode::kAlwaysOn) {
+          h_mode = mojom::blink::ScrollbarMode::kAuto;
+        }
+      }
+      if (ShouldSupplyScrollbarsForVisualViewport(kVerticalScrollbar)) {
+        if (v_mode != mojom::blink::ScrollbarMode::kAlwaysOff) {
+          v_mode = mojom::blink::ScrollbarMode::kAlwaysOn;
+        }
+      } else {
+        if (v_mode == mojom::blink::ScrollbarMode::kAlwaysOn) {
+          v_mode = mojom::blink::ScrollbarMode::kAuto;
+        }
+      }
     }
   }
 
@@ -1871,6 +1886,11 @@ bool PaintLayerScrollableArea::TryRemovingAutoScrollbars(
     const bool& needs_vertical_scrollbar) {
   if (!needs_horizontal_scrollbar && !needs_vertical_scrollbar)
     return false;
+
+  if (ShouldSupplyScrollbarsForVisualViewport(kHorizontalScrollbar) ||
+      ShouldSupplyScrollbarsForVisualViewport(kVerticalScrollbar)) {
+    return false;
+  }
 
   if (auto* layout_view = DynamicTo<LayoutView>(GetLayoutBox())) {
     mojom::blink::ScrollbarMode h_mode;
@@ -2275,12 +2295,6 @@ bool PaintLayerScrollableArea::HitTestOverflowControls(
   }
 
   if (scroll_corner_ && ScrollCornerRect().Contains(local_point)) {
-    if (GetLayoutBox() && GetLayoutBox()->GetFrame()) {
-      base::debug::CrashKeyString* crash_key =
-          GetLayoutBox()->GetFrame()->GetEventHandler().CrashKeyForBug1519197();
-      base::debug::SetCrashKeyString(crash_key,
-                                     GetLayoutBox()->DebugName().Utf8());
-    }
     result.SetIsOverScrollCorner(true);
     return true;
   }
@@ -2379,12 +2393,18 @@ void PaintLayerScrollableArea::EnqueueForSnapUpdateIfNeeded() {
     return;
   }
 
-  // Enqueue ourselves for a snap update if we have any snap-areas, or if we
-  // currently have snap-data (and it needs to be cleared).
-  for (const auto& fragment : box->PhysicalFragments()) {
-    if (fragment.SnapAreas() || GetSnapContainerData()) {
-      box->GetFrameView()->AddPendingSnapUpdate(this);
-      break;
+  if (box->IsPseudo(kPseudoIdOverscrollAreaParent)) {
+    // ::-internal-overscroll-area-parent has implicit snap areas and should
+    // always be enqueued for pending snap updates.
+    box->GetFrameView()->AddPendingSnapUpdate(this);
+  } else {
+    // Enqueue ourselves for a snap update if we have any snap-areas, or if we
+    // currently have snap-data (and it needs to be cleared).
+    for (const auto& fragment : box->PhysicalFragments()) {
+      if (fragment.SnapAreas() || GetSnapContainerData()) {
+        box->GetFrameView()->AddPendingSnapUpdate(this);
+        break;
+      }
     }
   }
 }
@@ -2561,13 +2581,13 @@ PhysicalRect PaintLayerScrollableArea::ScrollIntoView(
   if (params->is_for_scroll_sequence) {
     mojom::blink::ScrollBehavior behavior = DetermineScrollBehavior(
         params->behavior, GetLayoutBox()->StyleRef().GetScrollBehavior());
-    SetScrollOffset(new_scroll_offset, params->type,
-                    cc::ScrollSourceType::kAbsoluteScroll, behavior,
-                    ScrollCallback(), true);
+    SetScrollOffsetInternal(new_scroll_offset, params->type,
+                            cc::ScrollSourceType::kAbsoluteScroll, behavior,
+                            true);
   } else {
-    SetScrollOffset(
-        new_scroll_offset, params->type, cc::ScrollSourceType::kAbsoluteScroll,
-        mojom::blink::ScrollBehavior::kInstant, ScrollCallback(), true);
+    SetScrollOffsetInternal(new_scroll_offset, params->type,
+                            cc::ScrollSourceType::kAbsoluteScroll,
+                            mojom::blink::ScrollBehavior::kInstant, true);
   }
   ScrollOffset scroll_offset_difference = new_scroll_offset - old_scroll_offset;
   // The container hasn't performed the scroll yet if it's for scroll sequence.
@@ -2632,7 +2652,11 @@ void PaintLayerScrollableArea::UpdateScrollableAreaSet() {
       has_overflow = false;
   }
 
-  scrolls_overflow_ = has_overflow && is_visible;
+  scrolls_overflow_ =
+      (has_overflow ||
+       ShouldSupplyScrollbarsForVisualViewport(kHorizontalScrollbar) ||
+       ShouldSupplyScrollbarsForVisualViewport(kVerticalScrollbar)) &&
+      is_visible;
 
   if (GetLayoutBox()->IsScrollContainer() && !scrolls_overflow_ &&
       (GetLayoutBox()->StyleRef().OverscrollBehaviorX() !=
@@ -2781,6 +2805,64 @@ bool PaintLayerScrollableArea::VisualViewportSuppliesScrollbars() const {
   const TopDocumentRootScrollerController& controller =
       GetLayoutBox()->GetDocument().GetPage()->GlobalRootScrollerController();
   return controller.RootScrollerArea() == this;
+}
+
+bool PaintLayerScrollableArea::ShouldAvoidHidingOverlayScrollbars() const {
+  return ShouldSupplyScrollbarsForVisualViewport(kHorizontalScrollbar) ||
+         ShouldSupplyScrollbarsForVisualViewport(kVerticalScrollbar);
+}
+
+bool PaintLayerScrollableArea::ShouldSupplyScrollbarsForVisualViewport(
+    ScrollbarOrientation orientation) const {
+  // We're only interested in providing scrollbars for the browser window.
+  if (!IsRootFrameLayoutViewport()) {
+    return false;
+  }
+
+  // Shouldn't supply scrollbars if visual viewport is already doing that.
+  if (VisualViewportSuppliesScrollbars()) {
+    return false;
+  }
+
+  // Should only supply non-custom overlay scrollbars to avoid causing layout
+  // changes.
+  if (!GetPageScrollbarTheme().UsesOverlayScrollbars()) {
+    return false;
+  }
+  if (ScrollbarStyleSource(*GetLayoutBox())
+          .StyleRef()
+          .HasCustomScrollbarStyle(GetElementForScrollStart())) {
+    return false;
+  }
+
+  // Check if the visual viewport is scrollable.
+  VisualViewport& visual_viewport =
+      GetLayoutBox()->GetFrame()->GetPage()->GetVisualViewport();
+  return visual_viewport.IsActiveViewport() &&
+         visual_viewport.ScrollSize(orientation) > 0;
+}
+
+void PaintLayerScrollableArea::DidUpdateVisualViewport() {
+  if (ScrollAnchor* anchor = GetScrollAnchor()) {
+    anchor->Clear();
+  }
+
+  bool needs_horizontal_scrollbar;
+  bool needs_vertical_scrollbar;
+  ComputeScrollbarExistence(needs_horizontal_scrollbar,
+                            needs_vertical_scrollbar);
+  bool scrollbar_existence_changed =
+      needs_horizontal_scrollbar != HasHorizontalScrollbar() ||
+      needs_vertical_scrollbar != HasVerticalScrollbar();
+  SetHasHorizontalScrollbar(needs_horizontal_scrollbar);
+  SetHasVerticalScrollbar(needs_vertical_scrollbar);
+
+  UpdateScrollbarProportions();
+  if (scrollbar_existence_changed) {
+    UpdateScrollbarEnabledState();
+    UpdateScrollableAreaSet();
+    PositionOverflowControls();
+  }
 }
 
 bool PaintLayerScrollableArea::ScheduleAnimation() {
@@ -3046,7 +3128,8 @@ bool PaintLayerScrollableArea::MayCompositeScrollbar(
   // TODO(crbug.com/1020913): !ScrollsOverflow() should imply
   // !scrollbar.Maximum(), but currently that isn't always true due to
   // different or incorrect rounding methods for scroll geometries.
-  if (!ScrollsOverflow() || !scrollbar.Maximum()) {
+  if ((!ScrollsOverflow() || !scrollbar.Maximum()) &&
+      !ShouldSupplyScrollbarsForVisualViewport(scrollbar.Orientation())) {
     return false;
   }
   if (scrollbar.IsCustomScrollbar()) {

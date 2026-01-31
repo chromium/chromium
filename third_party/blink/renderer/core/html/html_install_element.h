@@ -23,7 +23,8 @@ class CORE_EXPORT HTMLInstallElement : public HTMLPermissionElement {
  public:
   explicit HTMLInstallElement(Document&);
 
-  const String& Manifest() const;
+  const String& InstallUrl() const;
+  const String& ManifestId() const;
   void Trace(Visitor*) const override;
 
  private:
@@ -32,6 +33,8 @@ class CORE_EXPORT HTMLInstallElement : public HTMLPermissionElement {
 
   // HTMLPermissionElement:
   void UpdateAppearance() override;
+  mojom::blink::EmbeddedPermissionRequestDescriptorPtr
+  CreateEmbeddedPermissionRequestDescriptor() override;
   void DefaultEventHandler(Event&) override;
 
   void UpdateAppearanceTask();

@@ -4,11 +4,15 @@
 
 source_set("phosphor") {
   sources = [
+    "blind_sign_auth_factory.h",
+    "blind_sign_auth_factory_impl.cc",
+    "blind_sign_auth_factory_impl.h",
     "config_http.cc",
     "config_http.h",
     "data_types.h",
     "feature_token_manager.cc",
     "feature_token_manager.h",
+    "oauth_token_provider.h",
     "token_fetcher.h",
     "token_fetcher_helper.cc",
     "token_fetcher_helper.h",
@@ -18,11 +22,11 @@ source_set("phosphor") {
     "token_manager_impl.cc",
     "token_manager_impl.h",
   ]
+  public_deps = [ "//net/third_party/quiche:blind_sign_auth" ]
   deps = [
     "//base",
     "//components/legion:features",
     "//components/legion:proto",
-    "//net/third_party/quiche:blind_sign_auth",
     "//services/network/public/cpp",
     "//url",
   ]

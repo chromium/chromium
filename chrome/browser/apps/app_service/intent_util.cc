@@ -50,7 +50,6 @@
 #include "chromeos/ash/experiences/arc/intent_helper/arc_intent_helper_bridge.h"
 #include "chromeos/ash/experiences/arc/intent_helper/intent_constants.h"
 #include "chromeos/ash/experiences/arc/intent_helper/intent_filter.h"
-#include "chromeos/ash/experiences/arc/mojom/intent_helper.mojom-shared.h"
 #include "chromeos/ash/experiences/arc/mojom/intent_helper.mojom.h"
 #include "storage/browser/file_system/file_system_url.h"
 #endif  // BUILDFLAG(IS_CHROMEOS)
@@ -246,7 +245,8 @@ bool IsFileExtensionFilter(const arc::IntentFilter& arc_intent_filter) {
   }
 
   // Check that the filter has a view action.
-  if (!base::Contains(arc_intent_filter.actions(), arc::kIntentActionView)) {
+  if (!std::ranges::contains(arc_intent_filter.actions(),
+                             arc::kIntentActionView)) {
     return false;
   }
 

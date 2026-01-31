@@ -16,7 +16,7 @@
 #include "chrome/browser/command_observer.h"
 #include "chrome/browser/profiles/avatar_menu.h"
 #include "chrome/browser/profiles/avatar_menu_observer.h"
-#include "chrome/browser/ui/browser_list_observer.h"
+#include "chrome/browser/ui/browser_window/public/browser_collection_observer.h"
 #include "components/dbus/menu/menu.h"
 #include "components/history/core/browser/history_types.h"
 #include "components/history/core/browser/top_sites.h"
@@ -30,12 +30,14 @@
 namespace ui {
 class Accelerator;
 class PlatformWindow;
-}
+}  // namespace ui
 
 class Browser;
+class GlobalBrowserCollection;
 class BrowserView;
 struct DbusAppmenuCommand;
 class Profile;
+class BrowserWindowInterface;
 
 // Controls the Mac style menu bar on Linux desktop environments.
 //
@@ -44,7 +46,7 @@ class Profile;
 // survived and is usually referred to as DBus AppMenu.  There is support for it
 // in KDE Plasma in form of a widget that can be inserted into a panel.
 class DbusAppmenu : public AvatarMenuObserver,
-                    public BrowserListObserver,
+                    public BrowserCollectionObserver,
                     public CommandObserver,
                     public history::TopSitesObserver,
                     public sessions::TabRestoreServiceObserver,
@@ -120,8 +122,8 @@ class DbusAppmenu : public AvatarMenuObserver,
   // AvatarMenuObserver:
   void OnAvatarMenuChanged(AvatarMenu* avatar_menu) override;
 
-  // BrowserListObserver:
-  void OnBrowserSetLastActive(Browser* browser) override;
+  // BrowserCollectionObserver:
+  void OnBrowserActivated(BrowserWindowInterface* browser) override;
 
   // CommandObserver:
   void EnabledStateChangedForCommand(int id, bool enabled) override;
@@ -198,6 +200,9 @@ class DbusAppmenu : public AvatarMenuObserver,
   base::flat_set<int> observed_commands_;
 
   int last_command_id_;
+
+  base::ScopedObservation<GlobalBrowserCollection, BrowserCollectionObserver>
+      browser_collection_observation_{this};
 
   // For callbacks may be run after destruction.
   base::WeakPtrFactory<DbusAppmenu> weak_ptr_factory_{this};

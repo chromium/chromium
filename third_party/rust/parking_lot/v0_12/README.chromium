@@ -1,0 +1,11 @@
+Name: parking_lot
+URL: https://crates.io/crates/parking_lot
+Version: 0.12.5
+Revision: d7828fff7b5d6327ae608e82db45f888b344449a
+Update Mechanism: Manual (https://crbug.com/449898466)
+License: Apache-2.0
+License File: //third_party/rust/chromium_crates_io/vendor/parking_lot-v0_12/LICENSE-APACHE
+Shipped: yes
+Security Critical: yes
+
+Description: More compact and efficient implementations of the standard synchronization primitives.

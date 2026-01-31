@@ -2,16 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "media/gpu/windows/d3d11_vp9_accelerator.h"
 
 #include <string>
 #include <utility>
 
+#include "base/compiler_specific.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_functions.h"
 #include "media/gpu/windows/d3d11_vp9_picture.h"
@@ -102,13 +98,16 @@ void D3D11VP9Accelerator::CopyReferenceFrames(
     if (ref_pic) {
       scoped_refptr<D3D11VP9Picture> our_ref_pic(
           static_cast<D3D11VP9Picture*>(ref_pic.get()));
-      pic_params->ref_frame_map[i].Index7Bits = our_ref_pic->picture_index();
-      pic_params->ref_frame_coded_width[i] = texture_descriptor.Width;
-      pic_params->ref_frame_coded_height[i] = texture_descriptor.Height;
+      UNSAFE_TODO(pic_params->ref_frame_map[i]).Index7Bits =
+          our_ref_pic->picture_index();
+      UNSAFE_TODO(pic_params->ref_frame_coded_width[i]) =
+          texture_descriptor.Width;
+      UNSAFE_TODO(pic_params->ref_frame_coded_height[i]) =
+          texture_descriptor.Height;
     } else {
-      pic_params->ref_frame_map[i].bPicEntry = 0xff;
-      pic_params->ref_frame_coded_width[i] = 0;
-      pic_params->ref_frame_coded_height[i] = 0;
+      UNSAFE_TODO(pic_params->ref_frame_map[i]).bPicEntry = 0xff;
+      UNSAFE_TODO(pic_params->ref_frame_coded_width[i]) = 0;
+      UNSAFE_TODO(pic_params->ref_frame_coded_height[i]) = 0;
     }
   }
 }
@@ -116,12 +115,13 @@ void D3D11VP9Accelerator::CopyReferenceFrames(
 void D3D11VP9Accelerator::CopyFrameRefs(DXVA_PicParams_VP9* pic_params,
                                         const D3D11VP9Picture& pic) {
   for (size_t i = 0; i < std::size(pic_params->frame_refs); i++) {
-    pic_params->frame_refs[i] =
-        pic_params->ref_frame_map[pic.frame_hdr->ref_frame_idx[i]];
+    UNSAFE_TODO(pic_params->frame_refs[i]) =
+        UNSAFE_TODO(pic_params->ref_frame_map[pic.frame_hdr->ref_frame_idx[i]]);
   }
 
   for (size_t i = 0; i < std::size(pic_params->ref_frame_sign_bias); i++) {
-    pic_params->ref_frame_sign_bias[i] = pic.frame_hdr->ref_frame_sign_bias[i];
+    UNSAFE_TODO(pic_params->ref_frame_sign_bias[i]) =
+        UNSAFE_TODO(pic.frame_hdr->ref_frame_sign_bias[i]);
   }
 }
 
@@ -141,12 +141,13 @@ void D3D11VP9Accelerator::CopyLoopFilterParams(
     // The update_ref_deltas[i] is _only_ for parsing! it allows omission of the
     // 6 bytes that would otherwise be needed for a new value to overwrite the
     // global one. It has nothing to do with setting the ref_deltas here.
-    pic_params->ref_deltas[i] = loop_filter_params.ref_deltas[i];
+    UNSAFE_TODO(pic_params->ref_deltas[i]) = loop_filter_params.ref_deltas[i];
   }
 
   DCHECK_EQ(2lu, std::size(pic_params->mode_deltas));
   for (size_t i = 0; i < std::size(pic_params->mode_deltas); i++) {
-    pic_params->mode_deltas[i] = loop_filter_params.mode_deltas[i];
+    UNSAFE_TODO(pic_params->mode_deltas[i]) =
+        UNSAFE_TODO(loop_filter_params.mode_deltas[i]);
   }
 }
 
@@ -171,18 +172,19 @@ void D3D11VP9Accelerator::CopySegmentationParams(
   SET_PARAM(abs_delta, abs_or_delta_update);
 
   for (size_t i = 0; i < std::size(segmentation_params.tree_probs); i++) {
-    COPY_PARAM(tree_probs[i]);
+    UNSAFE_TODO(COPY_PARAM(tree_probs[i]));
   }
 
   for (size_t i = 0; i < std::size(segmentation_params.pred_probs); i++) {
-    COPY_PARAM(pred_probs[i]);
+    UNSAFE_TODO(COPY_PARAM(pred_probs[i]));
   }
 
   for (size_t i = 0; i < 8; i++) {
     for (size_t j = 0; j < 4; j++) {
-      COPY_PARAM(feature_data[i][j]);
-      if (segmentation_params.feature_enabled[i][j])
-        pic_params->stVP9Segments.feature_mask[i] |= (1 << j);
+      UNSAFE_TODO(COPY_PARAM(feature_data[i][j]));
+      if (UNSAFE_TODO(segmentation_params.feature_enabled[i][j])) {
+        UNSAFE_TODO(pic_params->stVP9Segments.feature_mask[i]) |= (1 << j);
+      }
     }
   }
 #undef COPY_PARAM

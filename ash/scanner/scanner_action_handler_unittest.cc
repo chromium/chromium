@@ -84,9 +84,9 @@ constexpr std::string_view kGoogleCalendarHost = "calendar.google.com";
 constexpr std::string_view kGoogleCalendarRenderPath = "/calendar/render";
 
 // gMock matchers must match on const refs. Turning a `Contact` into a
-// `base::Value::Dict` requires a rvalue reference, so explicitly create a copy
+// `base::DictValue` requires a rvalue reference, so explicitly create a copy
 // to turn it into a dict.
-base::Value::Dict ContactToDict(const google_apis::people::Contact& contact) {
+base::DictValue ContactToDict(const google_apis::people::Contact& contact) {
   return google_apis::people::Contact(contact).ToDict();
 }
 
@@ -746,8 +746,7 @@ class ScannerCreateContactCommandHandlerTest : public testing::Test {
             task_environment_.GetMainThreadTaskRunner(),
             "test-user-agent",
             TRAFFIC_ANNOTATION_FOR_TESTS),
-        gaia_urls_overrider_(base::CommandLine::ForCurrentProcess(),
-                             "people_api_origin_url",
+        gaia_urls_overrider_("people_api_origin_url",
                              mock_server_.base_url().spec()) {
     CHECK_EQ(mock_server_.base_url(),
              GaiaUrls::GetInstance()->people_api_origin_url());

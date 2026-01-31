@@ -201,7 +201,7 @@ class Report extends Selectable {
 
     this.id = mojo.id;
     this.reportBody = mojo.reportBody;
-    this.reportUrl = mojo.reportUrl.url;
+    this.reportUrl = mojo.reportUrl;
     this.reportTime = new Date(mojo.reportTime);
     this.apiIdentifier = mojo.apiIdentifier;
     this.apiVersion = mojo.apiVersion;

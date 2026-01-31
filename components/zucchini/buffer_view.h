@@ -20,6 +20,8 @@ namespace zucchini {
 
 // Describes a region within a buffer, with starting offset and size.
 struct BufferRegion {
+  bool operator==(const BufferRegion& other) const = default;
+
   // The region data are stored as |offset| and |size|, but often it is useful
   // to represent it as an interval [lo(), hi()) = [offset, offset + size).
   size_t lo() const { return offset; }

@@ -55,7 +55,7 @@ id<GREYMatcher> SearchCopiedImageMenuButton() {
 
 @implementation OmniboxFakeSuggestionsInttestTestCase
 
-+ (BOOL)loadMinimalAppUI {
+- (BOOL)loadMinimalAppUI {
   return YES;
 }
 
@@ -131,7 +131,7 @@ id<GREYMatcher> SearchCopiedImageMenuButton() {
 
 @implementation OmniboxInttestTestCase
 
-+ (BOOL)loadMinimalAppUI {
+- (BOOL)loadMinimalAppUI {
   return YES;
 }
 

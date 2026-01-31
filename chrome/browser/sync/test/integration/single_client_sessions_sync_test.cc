@@ -290,7 +290,6 @@ class SingleClientSessionsSyncTest
  protected:
   void SetUpOnMainThread() override {
     host_resolver()->AddRule("*", "127.0.0.1");
-    ASSERT_TRUE(embedded_test_server()->Start());
     SyncTest::SetUpOnMainThread();
   }
 

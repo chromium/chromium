@@ -648,8 +648,6 @@ std::unique_ptr<SharedImageBacking> D3DImageBackingFactory::CreateSharedImage(
     std::string debug_label,
     bool is_thread_safe,
     base::span<const uint8_t> pixel_data) {
-  DCHECK(!is_thread_safe);
-
   if (usage.Has(SHARED_IMAGE_USAGE_WEBGPU_SHARED_BUFFER)) {
     gfx::Size buffer_size = size;
     // WebNN tensors have a valid height and format and must be converted to 1D
@@ -673,8 +671,11 @@ std::unique_ptr<SharedImageBacking> D3DImageBackingFactory::CreateSharedImage(
 
     return CreateSharedBufferD3D12(mailbox, buffer_size, color_space,
                                    surface_origin, alpha_type, usage,
-                                   debug_label);
+                                   debug_label, is_thread_safe);
   }
+
+  // D3D11/Texture-based paths below do not yet support thread-safe access.
+  DCHECK(!is_thread_safe);
 
   // Without D3D11, we cannot do shared images. This will happen if we're
   // running with Vulkan, D3D12, D3D9, GL or with the non-passthrough command
@@ -913,7 +914,8 @@ D3DImageBackingFactory::CreateSharedBufferD3D12(
     GrSurfaceOrigin surface_origin,
     SkAlphaType alpha_type,
     SharedImageUsageSet usage,
-    std::string debug_label) {
+    std::string debug_label,
+    bool is_thread_safe) {
   if (!d3d12_device_) {
     // Lazily create a D3D12 Device by acquiring the DXGI adapter of the
     // existing D3D11 device.
@@ -935,11 +937,6 @@ D3DImageBackingFactory::CreateSharedBufferD3D12(
     }
   }
 
-  if (size.height() != 1) {
-    LOG(ERROR) << "Height must be 1 when creating a shared buffer.";
-    return nullptr;
-  }
-
   if (color_space != gfx::ColorSpace()) {
     LOG(ERROR) << "Color spaces are not supported for buffer-backed shared "
                   "images. Only gfx::ColorSpace() is accepted.";
@@ -951,22 +948,9 @@ D3DImageBackingFactory::CreateSharedBufferD3D12(
                   "images. Only kkTopLeft_GrSurfaceOrigin is accepted.";
   }
 
-  if (alpha_type != kUnknown_SkAlphaType) {
+  if (alpha_type != kPremul_SkAlphaType) {
     LOG(ERROR) << "Alpha type is not supported for buffer-backed shared "
-                  "images. Only kUnknown_SkAlphaType is accepted.";
-  }
-
-  // The passed usages AND-ed with the compliment of the OR-d valid usages
-  // should be zero.
-  // TODO(crbug.com/345352987): replace with IsSupported().
-  constexpr auto kValidWebNNUsage = SHARED_IMAGE_USAGE_WEBGPU_READ |
-                                    SHARED_IMAGE_USAGE_WEBGPU_WRITE |
-                                    SHARED_IMAGE_USAGE_WEBGPU_SHARED_BUFFER;
-  if (!kValidWebNNUsage.HasAll(usage)) {
-    LOG(ERROR) << "Only shared image usages SHARED_IMAGE_USAGE_WEBGPU_READ, "
-                  "SHARED_IMAGE_USAGE_WEBGPU_WRITE, and "
-                  "SHARED_IMAGE_USAGE_WEBGPU_SHARED_BUFFER are allowed when "
-                  "creating a buffer-backed shared image.";
+                  "images. Only kPremul_SkAlphaType is accepted.";
   }
 
   uint64_t buffer_width = size.width();
@@ -1047,7 +1031,8 @@ D3DImageBackingFactory::CreateSharedBufferD3D12(
   }
 
   auto backing = D3DImageBacking::CreateFromD3D12Resource(
-      mailbox, size, usage, std::move(debug_label), std::move(resource));
+      mailbox, size, usage, std::move(debug_label), std::move(resource),
+      is_thread_safe);
 
   // CreateCommittedResource will zero the resource for us, which means we can
   // set it as cleared.
@@ -1082,14 +1067,18 @@ bool D3DImageBackingFactory::IsSupported(SharedImageUsageSet usage,
                                          gfx::GpuMemoryBufferType gmb_type,
                                          GrContextType gr_context_type,
                                          base::span<const uint8_t> pixel_data) {
-  // Only usages for WebNN is allowed if D3D shared images are disabled.
+  constexpr auto kAllowedWebNNUsages =
+      gpu::SHARED_IMAGE_USAGE_WEBNN_SHARED_TENSOR |
+      gpu::SHARED_IMAGE_USAGE_WEBGPU_SHARED_BUFFER |
+      gpu::SHARED_IMAGE_USAGE_WEBNN_SHARED_TENSOR_READ |
+      gpu::SHARED_IMAGE_USAGE_WEBNN_SHARED_TENSOR_WRITE |
+      gpu::SHARED_IMAGE_USAGE_WEBGPU_READ |
+      gpu::SHARED_IMAGE_USAGE_WEBGPU_WRITE;
+
+  // If this factory was created to support WebNN, reject any usage that isn't
+  // allowed by WebNN.
   if (enable_webnn_only_d3d_factory_) {
-    constexpr auto kAllowedUsages =
-        gpu::SHARED_IMAGE_USAGE_WEBNN_SHARED_TENSOR |
-        gpu::SHARED_IMAGE_USAGE_WEBGPU_SHARED_BUFFER |
-        gpu::SHARED_IMAGE_USAGE_WEBNN_SHARED_TENSOR_READ |
-        gpu::SHARED_IMAGE_USAGE_WEBNN_SHARED_TENSOR_WRITE;
-    return kAllowedUsages.HasAll(usage);
+    return kAllowedWebNNUsages.HasAll(usage);
   }
 
   if (!pixel_data.empty() && !IsFormatSupportedForInitialData(format)) {
@@ -1115,8 +1104,18 @@ bool D3DImageBackingFactory::IsSupported(SharedImageUsageSet usage,
     }
   }
 
-  // Allow WebNN as part of a buffer usage when D3D shared images are supported.
-  if (is_buffer && usage.Has(gpu::SHARED_IMAGE_USAGE_WEBNN_SHARED_TENSOR)) {
+  if (is_buffer) {
+    // If this buffer is for WebNN, only allow usages that WebNN supports.
+    // We allow height > 1 because the factory flattens it to a 1D D3D buffer.
+    if (usage.Has(gpu::SHARED_IMAGE_USAGE_WEBNN_SHARED_TENSOR)) {
+      return kAllowedWebNNUsages.HasAll(usage);
+    }
+
+    // Standard WebGPU buffers must be 1D (height of 1).
+    if (size.height() != 1) {
+      return false;
+    }
+
     return true;
   }
 

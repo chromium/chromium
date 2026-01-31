@@ -57,7 +57,7 @@ base::android::ScopedJavaLocalRef<jobject> TrustedCdn::GetPublisherUrl(
       embedder_support::GetPublisherURL(web_contents_->GetPrimaryMainFrame()));
 }
 
-static jlong JNI_TrustedCdn_Init(JNIEnv* env, const JavaRef<jobject>& obj) {
+static int64_t JNI_TrustedCdn_Init(JNIEnv* env, const JavaRef<jobject>& obj) {
   return reinterpret_cast<intptr_t>(new TrustedCdn(env, obj));
 }
 

@@ -27,8 +27,7 @@ class AwGrContextOptionsProvider {
         // Record whether we enabled smoothing so that we can check which devices are seeing
         // smoothing and refine isTv over time.
         recordBooleanHistogram(HISTOGRAM_NAME, isTv);
-        // Check isTV first so that only TVs will check the feature flag.
-        return isTv && AwFeatureMap.isEnabled(AwFeatures.WEBVIEW_USE_RENDERING_HEURISTIC);
+        return isTv;
     }
 
     private AwGrContextOptionsProvider() {}

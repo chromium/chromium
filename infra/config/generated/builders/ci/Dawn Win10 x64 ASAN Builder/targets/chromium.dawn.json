@@ -167,6 +167,7 @@
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "module_name": "//chrome/test:telemetry_gpu_integration_test",
+        "module_scheme": "webgpucts",
         "name": "webgpu_cts_fxc_tests",
         "resultdb": {
           "enable": true,
@@ -205,6 +206,7 @@
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "module_name": "//chrome/test:telemetry_gpu_integration_test",
+        "module_scheme": "webgpucts",
         "name": "webgpu_cts_tests",
         "resultdb": {
           "enable": true,
@@ -458,6 +460,7 @@
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "module_name": "//chrome/test:telemetry_gpu_integration_test",
+        "module_scheme": "webgpucts",
         "name": "webgpu_cts_dedicated_worker_tests",
         "resultdb": {
           "enable": true,
@@ -496,6 +499,7 @@
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "module_name": "//chrome/test:telemetry_gpu_integration_test",
+        "module_scheme": "webgpucts",
         "name": "webgpu_cts_fxc_tests",
         "resultdb": {
           "enable": true,
@@ -535,6 +539,7 @@
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "module_name": "//chrome/test:telemetry_gpu_integration_test",
+        "module_scheme": "webgpucts",
         "name": "webgpu_cts_service_worker_tests",
         "resultdb": {
           "enable": true,
@@ -573,6 +578,7 @@
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "module_name": "//chrome/test:telemetry_gpu_integration_test",
+        "module_scheme": "webgpucts",
         "name": "webgpu_cts_shared_worker_tests",
         "resultdb": {
           "enable": true,
@@ -610,6 +616,7 @@
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "module_name": "//chrome/test:telemetry_gpu_integration_test",
+        "module_scheme": "webgpucts",
         "name": "webgpu_cts_tests",
         "resultdb": {
           "enable": true,

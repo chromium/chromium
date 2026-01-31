@@ -58,7 +58,7 @@ class SessionContextTest : public testing::Test {
 
 TEST_F(SessionContextTest, GetPrepareForUpdateInfo) {
   session_context_->SetDidTransferWifi(true);
-  base::Value::Dict prepare_for_update_info =
+  base::DictValue prepare_for_update_info =
       session_context_->GetPrepareForUpdateInfo();
   EXPECT_FALSE(prepare_for_update_info.empty());
   EXPECT_EQ(base::NumberToString(session_context_->session_id()),

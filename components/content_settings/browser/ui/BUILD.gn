@@ -9,6 +9,7 @@ source_set("ui") {
     "cookie_controls_util.cc",
     "cookie_controls_util.h",
     "cookie_controls_view.h",
+    "javascript_optimizer_setting.h",
   ]
 
   deps = [
@@ -19,7 +20,6 @@ source_set("ui") {
     "//components/content_settings/core/browser:cookie_settings",
     "//components/prefs",
     "//components/privacy_sandbox:features",
-    "//components/privacy_sandbox:tracking_protection_settings",
     "//components/site_engagement/content",
     "//components/strings",
     "//components/vector_icons",

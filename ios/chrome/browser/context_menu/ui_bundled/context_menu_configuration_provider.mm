@@ -24,6 +24,7 @@
 #import "ios/chrome/browser/favicon/model/ios_chrome_favicon_loader_factory.h"
 #import "ios/chrome/browser/incognito_reauth/ui_bundled/incognito_reauth_commands.h"
 #import "ios/chrome/browser/incognito_reauth/ui_bundled/incognito_reauth_scene_agent.h"
+#import "ios/chrome/browser/intelligence/bwg/metrics/gemini_metrics.h"
 #import "ios/chrome/browser/intelligence/bwg/model/bwg_service.h"
 #import "ios/chrome/browser/intelligence/bwg/model/bwg_service_factory.h"
 #import "ios/chrome/browser/intelligence/bwg/utils/bwg_constants.h"
@@ -50,13 +51,13 @@
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/public/commands/activity_service_commands.h"
 #import "ios/chrome/browser/shared/public/commands/activity_service_share_url_command.h"
-#import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/bwg_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/enhanced_calendar_commands.h"
 #import "ios/chrome/browser/shared/public/commands/lens_commands.h"
 #import "ios/chrome/browser/shared/public/commands/mini_map_commands.h"
 #import "ios/chrome/browser/shared/public/commands/reading_list_add_command.h"
+#import "ios/chrome/browser/shared/public/commands/scene_commands.h"
 #import "ios/chrome/browser/shared/public/commands/search_image_with_lens_command.h"
 #import "ios/chrome/browser/shared/public/commands/unit_conversion_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
@@ -531,11 +532,13 @@ NSString* const kAlertAccessibilityIdentifier = @"AlertAccessibilityIdentifier";
   __weak __typeof(self) weakSelf = self;
 
   // Launch the Gemini experience with an image attached.
-  BOOL canShowGeminiElement =
-      IsImageContextMenuGeminiEntryPointEnabled() &&
-      BwgServiceFactory::GetForProfile(self.browser->GetProfile())
-          ->IsBwgAvailableForWebState(webState);
+  raw_ptr<BwgService> BWGService =
+      BwgServiceFactory::GetForProfile(self.browser->GetProfile());
+  BOOL canShowGeminiElement = IsGeminiImageRemixToolEnabled() && BWGService &&
+                              BWGService->IsBwgAvailableForWebState(webState);
   if (canShowGeminiElement) {
+    RecordImageRemixContextMenuEntryPointShown();
+
     ProceduralBlock geminiElementCallback = ^{
       [weakSelf openGeminiWithImageURL:imageURL referrer:referrer];
     };
@@ -1105,11 +1108,17 @@ NSString* const kAlertAccessibilityIdentifier = @"AlertAccessibilityIdentifier";
 // Opens the Gemini overlay with an image attached. The sanitized `image` is
 // passed to Gemini.
 - (void)openGeminiWithImage:(UIImage*)image {
+  double aspectRatio = 0.0;
+  if (image.size.width > 0 && image.size.height > 0) {
+    aspectRatio = image.size.width / image.size.height;
+  }
+  RecordImageRemixContextMenuEntryPointTapped(aspectRatio);
+
   id<BWGCommands> handler =
       HandlerForProtocol(_browser->GetCommandDispatcher(), BWGCommands);
   [handler
       startGeminiFlowWithImageAttachment:image
-                              entryPoint:bwg::EntryPoint::ImageContextMenu];
+                              entryPoint:gemini::EntryPoint::ImageContextMenu];
 }
 
 @end

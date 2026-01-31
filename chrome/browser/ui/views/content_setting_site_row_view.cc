@@ -37,7 +37,7 @@ ContentSettingSiteRowView::ContentSettingSiteRowView(
   const int favicon_margin = views::LayoutProvider::Get()->GetDistanceMetric(
       views::DISTANCE_RELATED_LABEL_HORIZONTAL);
 
-  const int icon_size = GetLayoutConstant(PAGE_INFO_ICON_SIZE);
+  const int icon_size = GetLayoutConstant(LayoutConstant::kPageInfoIconSize);
 
   if (favicon_service) {
     favicon_ = AddChildView(std::make_unique<NonAccessibleImageView>());
@@ -87,7 +87,8 @@ void ContentSettingSiteRowView::OnFaviconLoaded(
         gfx::Image::CreateFrom1xPNGBytes(favicon_result.bitmap_data)));
   } else {
     favicon_->SetImage(ui::ImageModel::FromVectorIcon(
-        kGlobeIcon, ui::kColorIcon, GetLayoutConstant(PAGE_INFO_ICON_SIZE)));
+        kGlobeIcon, ui::kColorIcon,
+        GetLayoutConstant(LayoutConstant::kPageInfoIconSize)));
   }
 }
 

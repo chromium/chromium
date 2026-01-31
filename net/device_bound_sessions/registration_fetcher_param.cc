@@ -4,6 +4,7 @@
 
 #include "net/device_bound_sessions/registration_fetcher_param.h"
 
+#include <algorithm>
 #include <vector>
 
 #include "base/base64url.h"
@@ -13,6 +14,7 @@
 #include "base/strings/string_util.h"
 #include "net/base/features.h"
 #include "net/base/schemeful_site.h"
+#include "net/base/url_util.h"
 #include "net/device_bound_sessions/session.h"
 #include "net/device_bound_sessions/session_binding_utils.h"
 #include "net/http/structured_headers.h"
@@ -58,7 +60,7 @@ RegistrationFetcherParam::~RegistrationFetcherParam() = default;
 RegistrationFetcherParam::RegistrationFetcherParam(
     GURL registration_endpoint,
     std::vector<crypto::SignatureVerifier::SignatureAlgorithm> supported_algos,
-    std::string challenge,
+    std::optional<std::string> challenge,
     std::optional<std::string> authorization,
     std::optional<std::string> provider_key,
     std::optional<GURL> provider_url,
@@ -89,7 +91,7 @@ std::optional<RegistrationFetcherParam> RegistrationFetcherParam::ParseItem(
   }
 
   GURL registration_endpoint;
-  std::string challenge;
+  std::optional<std::string> challenge;
   std::optional<std::string> authorization;
   std::optional<std::string> provider_key;
   std::optional<GURL> provider_url;
@@ -100,7 +102,7 @@ std::optional<RegistrationFetcherParam> RegistrationFetcherParam::ParseItem(
     // will currently pick the last if there is more than one.
     if (key == kPathParamKey) {
       if (!value.is_string()) {
-        continue;
+        return std::nullopt;
       }
       std::string unescaped_path = base::UnescapeURLComponent(
           value.GetString(),
@@ -118,22 +120,37 @@ std::optional<RegistrationFetcherParam> RegistrationFetcherParam::ParseItem(
                                          request_url)) {
         registration_endpoint = std::move(candidate_registration_endpoint);
       }
-    } else if (key == kChallengeParamKey && value.is_string()) {
+    } else if (key == kChallengeParamKey) {
+      if (!value.is_string()) {
+        return std::nullopt;
+      }
       challenge = value.GetString();
-    } else if (key == kAuthCodeParamKey && value.is_string()) {
+    } else if (key == kAuthCodeParamKey) {
+      if (!value.is_string()) {
+        return std::nullopt;
+      }
       authorization = value.GetString();
-    } else if (key == kProviderKeyParamKey && value.is_string()) {
+    } else if (key == kProviderKeyParamKey) {
+      if (!value.is_string()) {
+        return std::nullopt;
+      }
       provider_key = value.GetString();
-    } else if (key == kProviderUrlParamKey && value.is_string()) {
+    } else if (key == kProviderUrlParamKey) {
+      if (!value.is_string()) {
+        return std::nullopt;
+      }
       provider_url = GURL(value.GetString());
-    } else if (key == kProviderSessionIdParamKey && value.is_string()) {
+    } else if (key == kProviderSessionIdParamKey) {
+      if (!value.is_string()) {
+        return std::nullopt;
+      }
       provider_session_id = Session::Id(value.GetString());
     }
 
     // Other params are ignored
   }
 
-  if (!registration_endpoint.is_valid() || challenge.empty()) {
+  if (!registration_endpoint.is_valid()) {
     return std::nullopt;
   }
 
@@ -155,7 +172,8 @@ std::optional<RegistrationFetcherParam> RegistrationFetcherParam::ParseItem(
 
 std::vector<RegistrationFetcherParam> RegistrationFetcherParam::CreateIfValid(
     const GURL& request_url,
-    const net::HttpResponseHeaders* headers) {
+    const net::HttpResponseHeaders* headers,
+    const std::vector<SchemefulSite>& restricted_sites) {
   std::vector<RegistrationFetcherParam> params;
   if (!request_url.is_valid()) {
     return params;
@@ -170,6 +188,13 @@ std::vector<RegistrationFetcherParam> RegistrationFetcherParam::CreateIfValid(
     return params;
   }
 
+  SchemefulSite site(request_url);
+  if (std::ranges::contains(restricted_sites, site) &&
+      !base::FeatureList::IsEnabled(
+          features::kDeviceBoundSessionsForRestrictedSites)) {
+    return params;
+  }
+
   std::optional<structured_headers::List> list =
       structured_headers::ParseList(*header_value);
   if (!list || list->empty()) {
@@ -181,6 +206,17 @@ std::vector<RegistrationFetcherParam> RegistrationFetcherParam::CreateIfValid(
       std::optional<RegistrationFetcherParam> fetcher_param =
           ParseItem(request_url, item);
       if (fetcher_param) {
+        if (std::ranges::contains(restricted_sites, site) &&
+            !net::features::
+                 kDeviceBoundSessionsForRestrictedSitesExperimentIdParam.Get()
+                     .empty()) {
+          fetcher_param->registration_endpoint_ = net::AppendQueryParameter(
+              fetcher_param->registration_endpoint_, "experiment_id",
+              net::features::
+                  kDeviceBoundSessionsForRestrictedSitesExperimentIdParam
+                      .Get());
+        }
+
         params.push_back(std::move(*fetcher_param));
       }
     }
@@ -193,7 +229,7 @@ std::vector<RegistrationFetcherParam> RegistrationFetcherParam::CreateIfValid(
 RegistrationFetcherParam RegistrationFetcherParam::CreateInstanceForTesting(
     GURL registration_endpoint,
     std::vector<crypto::SignatureVerifier::SignatureAlgorithm> supported_algos,
-    std::string challenge,
+    std::optional<std::string> challenge,
     std::optional<std::string> authorization,
     std::optional<std::string> provider_key,
     std::optional<GURL> provider_url,

@@ -23,8 +23,8 @@ class FaceGazeSettingsHandler : public ::settings::SettingsPageUIHandler,
   FaceGazeSettingsHandler& operator=(const FaceGazeSettingsHandler&) = delete;
   ~FaceGazeSettingsHandler() override;
 
-  void HandleRequestEnableFaceGaze(const base::Value::List& args);
-  void HandleToggleGestureInfoForSettings(const base::Value::List& args);
+  void HandleRequestEnableFaceGaze(const base::ListValue& args);
+  void HandleToggleGestureInfoForSettings(const base::ListValue& args);
 
   // ash::FaceGazeSettingsEventHandler:
   void HandleDisableDialogResult(bool accepted) override;

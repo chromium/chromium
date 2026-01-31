@@ -87,12 +87,12 @@ scoped_refptr<Extension> LoadExtension(
 
 // Loads an extension manifest from the specified directory. Returns
 // `std::nullopt` on failure, with a description of the error in `error`.
-std::optional<base::Value::Dict> LoadManifest(
+std::optional<base::DictValue> LoadManifest(
     const base::FilePath& extension_root,
     std::string* error);
 
 // Convenience overload for specifying a manifest filename.
-std::optional<base::Value::Dict> LoadManifest(
+std::optional<base::DictValue> LoadManifest(
     const base::FilePath& extension_root,
     const base::FilePath::CharType* manifest_filename,
     std::string* error);
@@ -104,7 +104,7 @@ std::optional<base::Value::Dict> LoadManifest(
 // Otherwise, returns false, and a description of the error is
 // returned in `error`.
 bool ValidateExtension(const Extension* extension,
-                       std::string* error,
+                       std::u16string* error,
                        std::vector<InstallWarning>* warnings);
 
 // Returns a list of files that contain private keys inside `extension_dir`.

@@ -8,12 +8,8 @@ static_library("crostini") {
   sources = [
     "crostini_app_restart_dialog.cc",
     "crostini_app_restart_dialog.h",
-    "crostini_expired_container_warning_view.cc",
-    "crostini_expired_container_warning_view.h",
     "crostini_force_close_view.cc",
     "crostini_force_close_view.h",
-    "crostini_package_install_failure_view.cc",
-    "crostini_package_install_failure_view.h",
     "crostini_recovery_view.cc",
     "crostini_recovery_view.h",
     "crostini_uninstaller_view.cc",
@@ -27,7 +23,6 @@ static_library("crostini") {
     "//chrome/browser/ash/crostini",
     "//chrome/browser/ash/guest_os",
     "//chrome/browser/ash/guest_os/public",
-    "//chrome/browser/ui/webui/ash/crostini_upgrader",
     "//ui/chromeos",
     "//ui/strings:ui_strings_grit",
     "//ui/views",
@@ -85,7 +80,6 @@ source_set("browser_tests") {
 
   sources = [
     "crostini_force_close_view_browsertest.cc",
-    "crostini_package_install_failure_view_browsertest.cc",
     "crostini_recovery_view_browsertest.cc",
     "crostini_uninstaller_view_browsertest.cc",
     "crostini_update_filesystem_view_browsertest.cc",

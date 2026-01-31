@@ -4,6 +4,8 @@
 
 #include "partition_alloc/memory_reclaimer.h"
 
+#include <utility>
+
 #include "partition_alloc/buildflags.h"
 #include "partition_alloc/partition_alloc.h"
 #include "partition_alloc/partition_alloc_base/no_destructor.h"
@@ -21,7 +23,7 @@ MemoryReclaimer* MemoryReclaimer::Instance() {
 void MemoryReclaimer::RegisterPartition(PartitionRoot* partition) {
   internal::ScopedGuard lock(lock_);
   PA_DCHECK(partition);
-  auto it_and_whether_inserted = partitions_.insert(partition);
+  auto it_and_whether_inserted = partitions_.try_emplace(partition);
   PA_DCHECK(it_and_whether_inserted.second);
 }
 
@@ -68,8 +70,8 @@ void MemoryReclaimer::Reclaim(int flags) {
   }
 #endif  // PA_CONFIG(THREAD_CACHE_SUPPORTED)
 
-  for (auto* partition : partitions_) {
-    partition->PurgeMemory(flags);
+  for (auto& partition : partitions_) {
+    partition.first->PurgeMemory(flags, partition.second);
   }
 }
 

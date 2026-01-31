@@ -39,7 +39,7 @@ public class AutofillSaveCardUiInfoTest {
                 .withCancelText("")
                 .withDescriptionText("")
                 .withLoadingDescription("")
-                .withIsGooglePayBrandingEnabled(false);
+                .withIsChromeBrandingEnabled(false);
     }
 
     @Test
@@ -167,10 +167,9 @@ public class AutofillSaveCardUiInfoTest {
     }
 
     @Test
-    public void testBuilder_setsGooglePayBrandingEnabled() {
-        AutofillSaveCardUiInfo uiInfo =
-                defaultBuilder().withIsGooglePayBrandingEnabled(true).build();
+    public void testBuilder_setsChromeBrandingEnabled() {
+        AutofillSaveCardUiInfo uiInfo = defaultBuilder().withIsChromeBrandingEnabled(true).build();
 
-        assertThat(uiInfo.isGooglePayBrandingEnabled(), equalTo(true));
+        assertThat(uiInfo.isChromeBrandingEnabled(), equalTo(true));
     }
 }

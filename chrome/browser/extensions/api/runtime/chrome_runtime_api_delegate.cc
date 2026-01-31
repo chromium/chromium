@@ -301,13 +301,15 @@ void ChromeRuntimeAPIDelegate::OpenURL(const GURL& uninstall_url) {
 
   std::unique_ptr<content::WebContents> contents = content::WebContents::Create(
       content::WebContents::CreateParams(browser_context_));
-  content::WebContents* new_web_contents = contents.release();
-  tab_model->CreateTab(nullptr, new_web_contents, /*select=*/true);
+  content::WebContents* raw_web_contents = contents.get();
+  tab_model->CreateTab(nullptr, std::move(contents), TabModel::kInvalidIndex,
+                       TabModel::TabLaunchType::FROM_RECENT_TABS_FOREGROUND,
+                       /*should_pin=*/false);
 
   content::NavigationController::LoadURLParams load_params(uninstall_url);
   load_params.transition_type = ui::PAGE_TRANSITION_FROM_API;
   base::WeakPtr<content::NavigationHandle> navigation_handle =
-      new_web_contents->GetController().LoadURLWithParams(load_params);
+      raw_web_contents->GetController().LoadURLWithParams(load_params);
   // Navigation can fail for any number of reasons at the content layer.
   // Unfortunately, we can't provide a detailed error message here, because
   // there are too many possible triggers. At least add a log for diagnostics.

@@ -4,25 +4,13 @@
 
 #include "chrome/browser/sessions/session_restore_test_utils.h"
 
+#include <utility>
+
+#include "base/functional/bind.h"
+#include "base/functional/callback.h"
 #include "chrome/browser/sessions/session_restore.h"
-#include "chrome/browser/sessions/tab_loader_delegate.h"
 
 namespace testing {
-
-bool AlwayLoadSessionRestorePolicy::ShouldLoad(
-    content::WebContents* contents) const {
-  return true;
-}
-
-ScopedAlwaysLoadSessionRestoreTestPolicy::
-    ScopedAlwaysLoadSessionRestoreTestPolicy() {
-  TabLoaderDelegate::SetSessionRestorePolicyForTesting(&policy_);
-}
-
-ScopedAlwaysLoadSessionRestoreTestPolicy::
-    ~ScopedAlwaysLoadSessionRestoreTestPolicy() {
-  TabLoaderDelegate::SetSessionRestorePolicyForTesting(nullptr);
-}
 
 SessionsRestoredWaiter::SessionsRestoredWaiter(
     base::OnceClosure quit_closure,

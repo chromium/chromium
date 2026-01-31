@@ -180,7 +180,7 @@ void ExtensionKeybindingRegistry::CommandExecuted(
   if (!extension)
     return;
 
-  base::Value::List args;
+  base::ListValue args;
   args.Append(command);
 
 // TODO(crbug.com/406136564): Support tab parameter for commands.onCommand

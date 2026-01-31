@@ -198,8 +198,6 @@ class CaptionBubble : public views::BubbleDialogDelegateView,
   // For the provided line index, gets the corresponding rendered line in the
   // label and returns the text position of the first character of that line.
   // Returns the same value regardless of whether the label is visible or not.
-  // TODO(crbug.com/40119836): This feature is launching for English first.
-  // Make sure this is correct for all languages.
   size_t GetTextIndexOfLineInLabel(size_t line) const;
 
   // Returns the number of lines in the caption bubble label that are rendered.

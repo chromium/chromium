@@ -59,7 +59,6 @@
 #include "components/version_info/version_info.h"
 #include "ui/base/device_form_factor.h"
 #include "ui/base/l10n/l10n_util.h"
-#include "ui/base/resource/resource_bundle.h"
 
 namespace variations {
 namespace {
@@ -242,13 +241,11 @@ bool CreateTrialsResult::AppliedSeedHasActiveLimitedLayer() const {
 
 VariationsFieldTrialCreator::VariationsFieldTrialCreator(
     VariationsServiceClient* client,
-    std::unique_ptr<VariationsSeedStore> seed_store,
-    const UIStringOverrider& ui_string_overrider)
+    std::unique_ptr<VariationsSeedStore> seed_store)
     : client_(client),
       seed_store_(std::move(seed_store)),
       application_locale_(
           language::GetApplicationLocale(seed_store_->local_state())),
-      ui_string_overrider_(ui_string_overrider),
       sticky_activation_manager_(seed_store_->local_state()) {}
 
 VariationsFieldTrialCreator::~VariationsFieldTrialCreator() = default;
@@ -581,42 +578,6 @@ base::Time VariationsFieldTrialCreator::GetLatestSeedFetchTime() {
   return GetSeedStore()->GetLatestSeedFetchTime();
 }
 
-void VariationsFieldTrialCreator::OverrideCachedUIStrings() {
-  DCHECK(ui::ResourceBundle::HasSharedInstance());
-
-  ui::ResourceBundle* bundle = &ui::ResourceBundle::GetSharedInstance();
-  bundle->CheckCanOverrideStringResources();
-
-  for (auto const& it : overridden_strings_map_) {
-    bundle->OverrideLocaleStringResource(it.first, it.second);
-  }
-
-  overridden_strings_map_.clear();
-}
-
-bool VariationsFieldTrialCreator::IsOverrideResourceMapEmpty() {
-  return overridden_strings_map_.empty();
-}
-
-void VariationsFieldTrialCreator::OverrideUIString(
-    uint32_t resource_hash,
-    const std::u16string& str) {
-  int resource_id = ui_string_overrider_.GetResourceIndex(resource_hash);
-  if (resource_id == -1) {
-    return;
-  }
-
-  // This function may be called before the resource bundle is initialized. So
-  // we cache the UI strings and override them after the full browser starts.
-  if (!ui::ResourceBundle::HasSharedInstance()) {
-    overridden_strings_map_[resource_id] = str;
-    return;
-  }
-
-  ui::ResourceBundle::GetSharedInstance().OverrideLocaleStringResource(
-      resource_id, str);
-}
-
 Study::Platform VariationsFieldTrialCreator::GetPlatform() {
   if (platform_override_.has_value()) {
     return platform_override_.value();
@@ -632,11 +593,7 @@ Study::FormFactor VariationsFieldTrialCreator::GetCurrentFormFactor() {
 void VariationsFieldTrialCreator::ApplyFieldTrialTestingConfig(
     base::FeatureList* feature_list) {
   VLOG(1) << "Applying FieldTrialTestingConfig";
-  // Note that passing base::Unretained(this) below is safe because the callback
-  // is executed synchronously.
   AssociateDefaultFieldTrialConfig(
-      base::BindRepeating(&VariationsFieldTrialCreator::OverrideUIString,
-                          base::Unretained(this)),
       GetPlatform(), GetCurrentFormFactor(), feature_list);
 }
 #endif  // BUILDFLAG(FIELDTRIAL_TESTING_ENABLED)
@@ -697,10 +654,10 @@ VariationsFieldTrialCreator::GetGoogleGroupsFromPrefs() {
 
   base::flat_set<uint64_t> groups = base::flat_set<uint64_t>();
 
-  const base::Value::Dict& profiles_dict =
+  const base::DictValue& profiles_dict =
       local_state()->GetDict(prefs::kVariationsGoogleGroups);
   for (const auto profile : profiles_dict) {
-    const base::Value::List& profile_groups = profile.second.GetList();
+    const base::ListValue& profile_groups = profile.second.GetList();
     for (const auto& group_value : profile_groups) {
       const std::string* group = group_value.GetIfString();
       if (!group || group->empty()) {
@@ -799,17 +756,9 @@ CreateTrialsResult VariationsFieldTrialCreator::CreateTrialsFromSeed(
   RecordVariationsSeedUsage(run_in_safe_mode ? SeedUsage::kSafeSeedUsed
                                              : SeedUsage::kRegularSeedUsed);
 
-  // Note that passing base::Unretained(this) below is safe because the callback
-  // is executed synchronously. It is not possible to pass UIStringOverrider
-  // directly to VariationsSeedProcessor (which is in components/variations and
-  // not components/variations/service) as the variations component should not
-  // depend on //ui/base.
   VariationsSeedProcessor(sticky_activation_manager_)
-      .CreateTrialsFromSeed(
-          seed, *client_state,
-          base::BindRepeating(&VariationsFieldTrialCreator::OverrideUIString,
-                              base::Unretained(this)),
-          entropy_providers, layers, feature_list);
+      .CreateTrialsFromSeed(seed, *client_state, entropy_providers, layers,
+                            feature_list);
   sticky_activation_manager_.StartMonitoring();
 
   VLOG(1) << "CreateTrialsFromSeed complete with "

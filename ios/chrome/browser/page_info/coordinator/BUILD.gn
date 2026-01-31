@@ -1,0 +1,89 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("coordinator") {
+  sources = [
+    "page_info_about_this_site_mediator.h",
+    "page_info_about_this_site_mediator.mm",
+    "page_info_coordinator.h",
+    "page_info_coordinator.mm",
+    "page_info_history_mediator.h",
+    "page_info_history_mediator.mm",
+    "page_info_last_visited_coordinator.h",
+    "page_info_last_visited_coordinator.mm",
+    "page_info_permissions_mediator.h",
+    "page_info_permissions_mediator.mm",
+    "page_info_security_coordinator.h",
+    "page_info_security_coordinator.mm",
+    "page_info_site_security_mediator.h",
+    "page_info_site_security_mediator.mm",
+  ]
+  deps = [
+    "//base",
+    "//components/content_settings/core/browser",
+    "//components/feature_engagement/public",
+    "//components/history/core/browser",
+    "//components/page_info/core",
+    "//components/page_info/core:proto",
+    "//components/security_state/core",
+    "//components/ssl_errors",
+    "//components/strings",
+    "//components/ukm/ios:ukm_url_recorder",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/content_settings/model",
+    "//ios/chrome/browser/feature_engagement/model",
+    "//ios/chrome/browser/fullscreen/ui_bundled:coordinators",
+    "//ios/chrome/browser/history/model",
+    "//ios/chrome/browser/history/ui_bundled:coordinator",
+    "//ios/chrome/browser/main/model",
+    "//ios/chrome/browser/page_info/features",
+    "//ios/chrome/browser/page_info/last_visited",
+    "//ios/chrome/browser/page_info/model",
+    "//ios/chrome/browser/page_info/requirements",
+    "//ios/chrome/browser/page_info/ui",
+    "//ios/chrome/browser/permissions/ui_bundled",
+    "//ios/chrome/browser/permissions/ui_bundled:permission_info",
+    "//ios/chrome/browser/reading_list/model",
+    "//ios/chrome/browser/settings/ui_bundled/privacy",
+    "//ios/chrome/browser/settings/ui_bundled/utils",
+    "//ios/chrome/browser/shared/coordinator/alert",  # for
+                                                      # page_info_last_visited_coordinator
+    "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
+    "//ios/chrome/browser/shared/model/profile",
+    "//ios/chrome/browser/shared/model/url:constants",
+    "//ios/chrome/browser/shared/model/web_state_list",
+    "//ios/chrome/browser/shared/public/commands",
+    "//ios/chrome/browser/shared/public/features",
+    "//ios/chrome/browser/shared/ui/symbols",
+    "//ios/chrome/browser/shared/ui/table_view",
+    "//ios/chrome/browser/tabs/model",
+    "//ios/chrome/browser/url_loading/model",
+    "//ios/chrome/browser/url_loading/model:url_loading_params_header",
+    "//ios/chrome/browser/web/model",
+    "//ios/chrome/common/ui/colors",
+    "//ios/components/webui:url_constants",
+    "//ios/web",
+    "//ios/web/public",
+    "//ios/web/public/permissions",
+    "//ios/web/public/security",
+    "//ui/base",
+  ]
+  frameworks = [ "UIKit.framework" ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "page_info_permissions_mediator_unittest.mm" ]
+  deps = [
+    ":coordinator",
+    "//base/test:test_support",
+    "//ios/chrome/browser/permissions/ui_bundled",
+    "//ios/chrome/browser/permissions/ui_bundled:permission_info",
+    "//ios/chrome/test:test_support",
+    "//ios/web/public/permissions",
+    "//ios/web/public/test/fakes",
+    "//testing/gtest",
+    "//third_party/ocmock",
+  ]
+}

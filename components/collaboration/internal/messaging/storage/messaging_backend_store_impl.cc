@@ -6,7 +6,6 @@
 
 #include <algorithm>
 
-#include "base/containers/contains.h"
 #include "base/task/single_thread_task_runner.h"
 #include "components/collaboration/internal/messaging/storage/collaboration_message_util.h"
 #include "components/collaboration/internal/messaging/storage/messaging_backend_database_impl.h"
@@ -316,7 +315,7 @@ void MessagingBackendStoreImpl::AddMessage(
       data_sharing::GroupId(message.collaboration_id());
   CHECK(!collaboration_id->empty());
 
-  if (!base::Contains(messages_, collaboration_id)) {
+  if (!messages_.contains(collaboration_id)) {
     messages_.insert({collaboration_id, std::make_unique<MessagesPerGroup>()});
   }
 
@@ -377,7 +376,7 @@ void MessagingBackendStoreImpl::RemoveMessages(
     auto& tab_messages = messages_per_group->tab_messages;
     for (auto it = tab_messages.begin(); it != tab_messages.end();) {
       std::string message_uuid = it->second.uuid();
-      if (base::Contains(message_ids, message_uuid)) {
+      if (message_ids.contains(message_uuid)) {
         it = tab_messages.erase(it);
       } else {
         ++it;
@@ -388,7 +387,7 @@ void MessagingBackendStoreImpl::RemoveMessages(
     for (auto it = tab_group_messages.begin();
          it != tab_group_messages.end();) {
       std::string message_uuid = it->second.uuid();
-      if (base::Contains(message_ids, message_uuid)) {
+      if (message_ids.contains(message_uuid)) {
         it = tab_group_messages.erase(it);
       } else {
         ++it;
@@ -398,7 +397,7 @@ void MessagingBackendStoreImpl::RemoveMessages(
     auto& collab_messages = messages_per_group->collaboration_messages;
     for (auto it = collab_messages.begin(); it != collab_messages.end();) {
       std::string message_uuid = it->uuid();
-      if (base::Contains(message_ids, message_uuid)) {
+      if (message_ids.contains(message_uuid)) {
         it = collab_messages.erase(it);
       } else {
         ++it;
@@ -410,7 +409,7 @@ void MessagingBackendStoreImpl::RemoveMessages(
   for (auto it = ungrouped_messages_.begin();
        it != ungrouped_messages_.end();) {
     std::string message_uuid = it->uuid();
-    if (base::Contains(message_ids, message_uuid)) {
+    if (message_ids.contains(message_uuid)) {
       it = ungrouped_messages_.erase(it);
     } else {
       ++it;

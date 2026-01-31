@@ -32,8 +32,11 @@ import org.chromium.base.Callback;
 import org.chromium.base.Promise;
 import org.chromium.base.TraceEvent;
 import org.chromium.base.metrics.RecordUserAction;
-import org.chromium.base.supplier.ObservableSupplier;
-import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.supplier.MonotonicObservableSupplier;
+import org.chromium.base.supplier.NonNullObservableSupplier;
+import org.chromium.base.supplier.ObservableSuppliers;
+import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
+import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.base.supplier.SyncOneshotSupplierImpl;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
@@ -88,18 +91,19 @@ import java.util.function.Supplier;
 public class HubLayout extends Layout implements HubLayoutController, AppHeaderObserver {
     /**
      * Implementation of {@link HubLayoutAnimationListener} that updates an {@link
-     * ObservableSupplier<Boolean>} to reflect the animation state.
+     * MonotonicObservableSupplier <Boolean>} to reflect the animation state.
      */
     @VisibleForTesting
     static class HubLayoutAnimationListenerImpl implements HubLayoutAnimationListener {
-        private final ObservableSupplierImpl<Boolean> mIsAnimatingSupplier;
+        private final SettableNonNullObservableSupplier<Boolean> mIsAnimatingSupplier;
 
         /**
          * Constructs a listener that updates the given supplier.
          *
          * @param isAnimatingSupplier The supplier to update with the animation state.
          */
-        public HubLayoutAnimationListenerImpl(ObservableSupplierImpl<Boolean> isAnimatingSupplier) {
+        public HubLayoutAnimationListenerImpl(
+                SettableNonNullObservableSupplier<Boolean> isAnimatingSupplier) {
             mIsAnimatingSupplier = isAnimatingSupplier;
         }
 
@@ -134,11 +138,11 @@ public class HubLayout extends Layout implements HubLayoutController, AppHeaderO
      * The previous {@link LayoutType}, valid between {@link #show(long, boolean)} and {@link
      * #doneShowing()}.
      */
-    private final ObservableSupplierImpl<Integer> mPreviousLayoutTypeSupplier =
-            new ObservableSupplierImpl<>();
+    private final SettableMonotonicObservableSupplier<Integer> mPreviousLayoutTypeSupplier =
+            ObservableSuppliers.createMonotonic();
 
-    private final ObservableSupplierImpl<Boolean> mIsAnimatingSupplier =
-            new ObservableSupplierImpl<>(false);
+    private final SettableNonNullObservableSupplier<Boolean> mIsAnimatingSupplier =
+            ObservableSuppliers.createNonNull(false);
 
     private @Nullable SceneLayer mCurrentSceneLayer;
 
@@ -244,7 +248,7 @@ public class HubLayout extends Layout implements HubLayoutController, AppHeaderO
     }
 
     @Override
-    public ObservableSupplier<Integer> getPreviousLayoutTypeSupplier() {
+    public MonotonicObservableSupplier<Integer> getPreviousLayoutTypeSupplier() {
         return mPreviousLayoutTypeSupplier;
     }
 
@@ -705,7 +709,7 @@ public class HubLayout extends Layout implements HubLayoutController, AppHeaderO
     }
 
     @Override
-    public ObservableSupplier<Boolean> getIsAnimatingSupplier() {
+    public NonNullObservableSupplier<Boolean> getIsAnimatingSupplier() {
         return mIsAnimatingSupplier;
     }
 
@@ -713,7 +717,7 @@ public class HubLayout extends Layout implements HubLayoutController, AppHeaderO
 
     @VisibleForTesting
     HubLayoutAnimatorProvider createShowAnimatorProvider(HubContainerView containerView) {
-        @Nullable Pane pane = mPaneManager.getFocusedPaneSupplier().get();
+        Pane pane = mPaneManager.getFocusedPaneSupplier().get();
         final boolean isXrFullSpaceMode = mXrFullSpaceModeSupplier.get();
 
         if (DeviceFormFactor.isNonMultiDisplayContextOnTablet(getContext()) && !isXrFullSpaceMode) {
@@ -732,7 +736,7 @@ public class HubLayout extends Layout implements HubLayoutController, AppHeaderO
 
     @VisibleForTesting
     HubLayoutAnimatorProvider createHideAnimatorProvider(HubContainerView containerView) {
-        @Nullable Pane pane = mPaneManager.getFocusedPaneSupplier().get();
+        Pane pane = mPaneManager.getFocusedPaneSupplier().get();
         final boolean isXrFullSpaceMode = mXrFullSpaceModeSupplier.get();
 
         if (DeviceFormFactor.isNonMultiDisplayContextOnTablet(getContext()) && !isXrFullSpaceMode) {
@@ -789,7 +793,7 @@ public class HubLayout extends Layout implements HubLayoutController, AppHeaderO
     }
 
     private void maybeAddPaneAnimationListener(HubLayoutAnimationRunner animationRunner) {
-        @Nullable Pane pane = mPaneManager.getFocusedPaneSupplier().get();
+        Pane pane = mPaneManager.getFocusedPaneSupplier().get();
         if (pane == null) return;
 
         HubLayoutAnimationListener listener = pane.getHubLayoutAnimationListener();

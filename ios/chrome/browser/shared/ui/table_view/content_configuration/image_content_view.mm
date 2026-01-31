@@ -26,6 +26,8 @@
     _heightConstraint = [self.heightAnchor
         constraintEqualToConstant:configuration.imageSize.height];
 
+    self.layer.masksToBounds = YES;
+
     [self
         setContentCompressionResistancePriority:UILayoutPriorityDefaultHigh + 1
                                         forAxis:
@@ -70,6 +72,7 @@
   self.contentMode = _configuration.imageContentMode;
   self.tintColor = _configuration.imageTintColor;
   self.accessibilityIdentifier = _configuration.accessibilityID;
+  self.layer.cornerRadius = _configuration.imageCornerRadius;
   _widthConstraint.constant = _configuration.imageSize.width;
   _heightConstraint.constant = _configuration.imageSize.height;
 

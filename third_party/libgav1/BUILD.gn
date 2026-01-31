@@ -39,8 +39,7 @@ config("libgav1_config") {
   if (!is_debug) {
     configs += [ "//build/config/compiler:optimize_max" ]
   }
-  if (current_cpu == "arm64" ||
-      (current_cpu == "arm" && arm_version >= 7 && arm_use_neon)) {
+  if (current_cpu == "arm64" || current_cpu == "arm") {
     # The default thumb mode will impact performance of dsp intrinsics.
     configs += [ "//build/config/compiler:compiler_arm" ]
   }

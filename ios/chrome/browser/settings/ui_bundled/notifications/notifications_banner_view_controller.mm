@@ -251,16 +251,10 @@ bool TooNarrowForBanner(UIView* view) {
       ]];
     }
     [_snapshot appendItemsWithIdentifiers:@[
-      @(NotificationsItemIdentifier::ItemIdentifierTips)
+      @(NotificationsItemIdentifier::ItemIdentifierTips),
+      @(NotificationsItemIdentifier::ItemIdentifierPriceTracking),
+      @(NotificationsItemIdentifier::ItemIdentifierSafetyCheck)
     ]];
-    [_snapshot appendItemsWithIdentifiers:@[
-      @(NotificationsItemIdentifier::ItemIdentifierPriceTracking)
-    ]];
-    if (IsSafetyCheckNotificationsEnabled()) {
-      [_snapshot appendItemsWithIdentifiers:@[
-        @(NotificationsItemIdentifier::ItemIdentifierSafetyCheck)
-      ]];
-    }
   }
   return _snapshot;
 }

@@ -5,15 +5,16 @@
 #include "chrome/browser/metrics/browser_activity_watcher.h"
 
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_list.h"
-#include "chrome/browser/ui/browser_list_observer.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
+#include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 
 BrowserActivityWatcher::BrowserActivityWatcher(
     const base::RepeatingClosure& on_browser_activity)
     : on_browser_activity_(on_browser_activity) {
-  BrowserList::AddObserver(this);
+  browser_collection_observation_.Observe(
+      GlobalBrowserCollection::GetInstance());
 
   ForEachCurrentBrowserWindowInterfaceOrderedByActivation(
       [this](BrowserWindowInterface* browser) {
@@ -25,21 +26,15 @@ BrowserActivityWatcher::BrowserActivityWatcher(
       });
 }
 
-BrowserActivityWatcher::~BrowserActivityWatcher() {
-  BrowserList::RemoveObserver(this);
-}
+BrowserActivityWatcher::~BrowserActivityWatcher() = default;
 
-void BrowserActivityWatcher::OnBrowserAdded(Browser* browser) {
-  if (browser->tab_strip_model())
-    browser->tab_strip_model()->AddObserver(this);
-
+void BrowserActivityWatcher::OnBrowserCreated(BrowserWindowInterface* browser) {
+  // TODO(crbug.com/452120900): TabStripModel auto-unregistered by dtor
+  browser->GetTabStripModel()->AddObserver(this);
   on_browser_activity_.Run();
 }
 
-void BrowserActivityWatcher::OnBrowserRemoved(Browser* browser) {
-  if (browser->tab_strip_model())
-    browser->tab_strip_model()->RemoveObserver(this);
-
+void BrowserActivityWatcher::OnBrowserClosed(BrowserWindowInterface* browser) {
   on_browser_activity_.Run();
 }
 

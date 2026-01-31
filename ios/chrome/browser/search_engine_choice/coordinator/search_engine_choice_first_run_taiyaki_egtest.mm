@@ -8,7 +8,7 @@
 #import "components/search_engines/search_engine_choice/search_engine_choice_utils.h"
 #import "components/search_engines/search_engines_switches.h"
 #import "components/variations/variations_switches.h"
-#import "ios/chrome/browser/first_run/ui_bundled/first_run_test_case_base.h"
+#import "ios/chrome/browser/first_run/test/first_run_test_case_base.h"
 #import "ios/chrome/browser/metrics/model/metrics_app_interface.h"
 #import "ios/chrome/browser/search_engine_choice/test/search_engine_choice_earl_grey_ui_test_util.h"
 #import "ios/chrome/browser/search_engine_choice/ui/search_engine_choice_constants.h"

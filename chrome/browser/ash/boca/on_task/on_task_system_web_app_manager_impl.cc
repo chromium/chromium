@@ -13,6 +13,7 @@
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/apps/app_service/launch_result_type.h"
 #include "chrome/browser/ash/boca/on_task/locked_session_window_tracker_factory.h"
+#include "chrome/browser/ash/boca/on_task/on_task_locked_controller.h"
 #include "chrome/browser/ash/boca/on_task/on_task_locked_session_window_tracker.h"
 #include "chrome/browser/ash/browser_delegate/browser_controller.h"
 #include "chrome/browser/ash/browser_delegate/browser_delegate.h"
@@ -395,7 +396,7 @@ void OnTaskSystemWebAppManagerImpl::PrepareSystemWebAppWindowForOnTask(
   // Configure the browser window for OnTask. This is required to ensure
   // downstream components (especially UI controls) are setup for locked mode
   // transitions.
-  browser->SetLockedForOnTask(true);
+  OnTaskLockedController::From(browser)->set_locked_for_on_task(true);
   MakeWindowResizable(browser->window());
   browser->set_force_skip_warning_user_on_close(true);
 

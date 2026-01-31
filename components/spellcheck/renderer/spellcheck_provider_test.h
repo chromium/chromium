@@ -12,6 +12,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/test/task_environment.h"
 #include "build/build_config.h"
+#include "components/spellcheck/common/spelling_marker.h"
 #include "components/spellcheck/renderer/empty_local_interface_provider.h"
 #include "components/spellcheck/renderer/spellcheck.h"
 #include "components/spellcheck/renderer/spellcheck_provider.h"
@@ -85,6 +86,7 @@ class TestingSpellCheckProvider : public SpellCheckProvider,
 
   void RequestTextChecking(
       const std::u16string& text,
+      const std::vector<spellcheck::SpellingMarker>& spelling_markers,
       blink::WebTextCheckClient::ShouldForceRefreshTextCheckService
           should_force_refresh,
       std::unique_ptr<blink::WebTextCheckingCompletion> completion);
@@ -114,7 +116,9 @@ class TestingSpellCheckProvider : public SpellCheckProvider,
 
 #if BUILDFLAG(USE_BROWSER_SPELLCHECKER)
   using RequestTextCheckParams =
-      std::pair<std::u16string, RequestTextCheckCallback>;
+      std::tuple<std::u16string,
+                 std::vector<spellcheck::SpellingMarker>,
+                 RequestTextCheckCallback>;
 
   // Variables logging RequestTextCheck() mojo calls.
   std::vector<RequestTextCheckParams> text_check_requests_;
@@ -138,8 +142,10 @@ class TestingSpellCheckProvider : public SpellCheckProvider,
 #endif
 
 #if BUILDFLAG(USE_BROWSER_SPELLCHECKER)
-  void RequestTextCheck(const std::u16string&,
-                        RequestTextCheckCallback) override;
+  void RequestTextCheck(
+      const std::u16string&,
+      const std::vector<spellcheck::SpellingMarker>& spelling_markers,
+      RequestTextCheckCallback) override;
 #if BUILDFLAG(ENABLE_SPELLING_SERVICE)
   using SpellCheckProvider::CheckSpelling;
   void CheckSpelling(const std::u16string&,

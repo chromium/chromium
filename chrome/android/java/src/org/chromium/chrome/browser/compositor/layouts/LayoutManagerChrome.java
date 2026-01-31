@@ -16,7 +16,8 @@ import org.chromium.base.Callback;
 import org.chromium.base.DeviceInfo;
 import org.chromium.base.lifetime.DestroyChecker;
 import org.chromium.base.metrics.RecordUserAction;
-import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.MonotonicObservableSupplier;
+import org.chromium.base.supplier.NonNullObservableSupplier;
 import org.chromium.build.annotations.Initializer;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -69,7 +70,7 @@ public class LayoutManagerChrome extends LayoutManagerImpl implements Accessibil
     /** Whether or not animations are enabled. This can disable certain layouts or effects. */
     private boolean mEnableAnimations = true;
 
-    protected ObservableSupplier<TabContentManager> mTabContentManagerSupplier;
+    protected MonotonicObservableSupplier<TabContentManager> mTabContentManagerSupplier;
     private boolean mFinishNativeInitialization;
     private @Nullable TabContentManager mTabContentManager;
 
@@ -101,7 +102,7 @@ public class LayoutManagerChrome extends LayoutManagerImpl implements Accessibil
             ViewGroup contentContainer,
             Supplier<TabSwitcher> tabSwitcherSupplier,
             Supplier<TabModelSelector> tabModelSelectorSupplier,
-            ObservableSupplier<TabContentManager> tabContentManagerSupplier,
+            MonotonicObservableSupplier<TabContentManager> tabContentManagerSupplier,
             Supplier<TopUiThemeColorProvider> topUiThemeColorProvider,
             HubLayoutDependencyHolder hubLayoutDependencyHolder) {
         super(host, contentContainer, tabContentManagerSupplier, topUiThemeColorProvider);
@@ -172,7 +173,7 @@ public class LayoutManagerChrome extends LayoutManagerImpl implements Accessibil
             @Nullable ControlContainer controlContainer,
             DynamicResourceLoader dynamicResourceLoader,
             TopUiThemeColorProvider topUiColorProvider,
-            ObservableSupplier<Integer> bottomControlsOffsetSupplier) {
+            NonNullObservableSupplier<Integer> bottomControlsOffsetSupplier) {
         Context context = mHost.getContext();
         LayoutRenderHost renderHost = mHost.getLayoutRenderHost();
         BrowserControlsStateProvider browserControlsStateProvider =

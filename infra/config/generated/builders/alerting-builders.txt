@@ -253,6 +253,7 @@ ci/Win11 FYI arm64 Release (Qualcomm Adreno 690)
 ci/Win11 FYI arm64 Release (Qualcomm Snapdragon X Elite)
 ci/Win11 FYI x64 Experimental Release (AMD 780M)
 ci/Win11 FYI x64 Experimental Release (AMD 890M)
+ci/Win11 FYI x64 Experimental Release (AMD RX 5500XT)
 ci/Win11 FYI x64 Experimental Release (NVIDIA RTX 4070 Super)
 ci/Win11 FYI x64 Release (AMD RX 7600)
 ci/Win11 FYI x64 Release (NVIDIA RTX 4070 Super)
@@ -571,6 +572,7 @@ try/gpu-fyi-try-win10-nvidia-exp-64
 try/gpu-fyi-try-win10-nvidia-rel-32
 try/gpu-fyi-try-win10-nvidia-rel-64
 try/gpu-fyi-try-win11-amd-rel-64
+try/gpu-fyi-try-win11-amd-rx-5500xt-exp
 try/gpu-fyi-try-win11-nvidia-4070-exp-64
 try/gpu-fyi-try-win11-nvidia-4070-rel-64
 try/gpu-fyi-try-win11-qualcomm-rel-64
@@ -624,6 +626,7 @@ try/linux-gcc-rel
 try/linux-headless-shell-rel
 try/linux-js-coverage-rel
 try/linux-libfuzzer-asan-rel
+try/linux-metadata-validator
 try/linux-msan-chained-origins-rel
 try/linux-msan-no-origins-rel
 try/linux-oi-rel

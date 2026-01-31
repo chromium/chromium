@@ -53,7 +53,7 @@ class ArcSystemModel {
   void CloseRangeForValueEvents(uint64_t max_timestamp);
 
   void CopyFrom(const ArcSystemModel& other);
-  base::Value::Dict Serialize() const;
+  base::DictValue Serialize() const;
   bool Load(const base::Value* root);
 
   bool operator==(const ArcSystemModel& other) const;

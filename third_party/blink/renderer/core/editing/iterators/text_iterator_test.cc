@@ -387,9 +387,7 @@ TEST_F(TextIteratorTest, PlaceholderBRInTextArea) {
   // innerEditor is "<div>abc\n<br></div>"
   const auto& range =
       EphemeralRange::RangeOfContents(*target.InnerEditorElement());
-  EXPECT_EQ(RuntimeEnabledFeatures::TextareaLineEndingsAsBrEnabled()
-                ? "[abc][\n][\n]"
-                : "[abc\n][\n]",
+  EXPECT_EQ("[abc][\n][\n]",
             IteratePartial<DOMTree>(range.StartPosition(), range.EndPosition()))
       << "The placeholder <br> emits [\\n].";
 }

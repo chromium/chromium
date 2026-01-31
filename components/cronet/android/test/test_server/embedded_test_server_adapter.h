@@ -5,7 +5,10 @@
 #ifndef COMPONENTS_CRONET_ANDROID_TEST_TEST_SERVER_EMBEDDED_TEST_SERVER_ADAPTER_H_
 #define COMPONENTS_CRONET_ANDROID_TEST_TEST_SERVER_EMBEDDED_TEST_SERVER_ADAPTER_H_
 
+#include <jni.h>
+
 #include <string>
+#include <vector>
 
 #include "net/test/embedded_test_server/embedded_test_server.h"
 
@@ -15,14 +18,21 @@ class FilePath;
 
 namespace cronet {
 
+struct NativeTestServerServerCertificateConfig;
 class NativeTestServerHandleRequestCallback;
 
 class EmbeddedTestServerAdapter {
  public:
-  EmbeddedTestServerAdapter(
-      const base::FilePath& test_files_root,
-      net::EmbeddedTestServer::Type server_type,
+  EmbeddedTestServerAdapter(const base::FilePath& test_files_root,
+                            net::EmbeddedTestServer::Type server_type);
+
+  void SetSSLConfigWithServerCertificate(
+      JNIEnv* env,
       net::EmbeddedTestServer::ServerCertificate server_certificate);
+
+  void SetSSLConfigWithServerCertificateConfig(
+      JNIEnv* env,
+      const NativeTestServerServerCertificateConfig& server_certificate_config);
 
   ~EmbeddedTestServerAdapter();
 

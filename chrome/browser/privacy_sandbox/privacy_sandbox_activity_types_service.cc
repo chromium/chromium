@@ -32,7 +32,7 @@ void PrivacySandboxActivityTypesService::Shutdown() {
   pref_service_ = nullptr;
 }
 
-void RecordPercentageMetrics(const base::Value::List& activity_type_record) {
+void RecordPercentageMetrics(const base::ListValue& activity_type_record) {
   using ActivityType =
       PrivacySandboxActivityTypesService::PrivacySandboxStorageActivityType;
   std::unordered_map<ActivityType, int> activity_type_counts{
@@ -84,7 +84,7 @@ void RecordPercentageMetrics(const base::Value::List& activity_type_record) {
   }
 }
 
-void RecordUserSegmentMetrics(const base::Value::List& activity_type_record,
+void RecordUserSegmentMetrics(const base::ListValue& activity_type_record,
                               int records_in_a_row) {
   // If a different value for records_in_a_row is needed for these metrics,
   // tools/metrics/histograms/metadata/privacy/histograms.xml needs to be
@@ -139,7 +139,7 @@ void RecordUserSegmentMetrics(const base::Value::List& activity_type_record,
       segment_type);
 }
 
-void RecordDaysSinceMetrics(const base::Value::List& activity_type_record) {
+void RecordDaysSinceMetrics(const base::ListValue& activity_type_record) {
   auto* timestamp =
       activity_type_record[activity_type_record.size() - 1].GetDict().Find(
           "timestamp");
@@ -154,7 +154,7 @@ void RecordDaysSinceMetrics(const base::Value::List& activity_type_record) {
       days_since_oldest_record, 1, 61, 60);
 }
 
-void RecordActivityTypeMetrics(const base::Value::List& activity_type_record,
+void RecordActivityTypeMetrics(const base::ListValue& activity_type_record,
                                base::Time current_time) {
   int total_records = static_cast<int>(activity_type_record.size());
   auto* oldest_record_timestamp_ptr =
@@ -206,14 +206,14 @@ void PrivacySandboxActivityTypesService::RecordActivityType(
       base::Days(
           privacy_sandbox::kPrivacySandboxActivityTypeStorageWithinXDays.Get());
 
-  base::Value::Dict new_dict;
+  base::DictValue new_dict;
   new_dict.Set("timestamp", base::TimeToValue(current_time));
   new_dict.Set("activity_type", static_cast<int>(type));
 
-  const base::Value::List& old_activity_type_record =
+  const base::ListValue& old_activity_type_record =
       pref_service_->GetList(prefs::kPrivacySandboxActivityTypeRecord2);
 
-  base::Value::List new_activity_type_record;
+  base::ListValue new_activity_type_record;
   new_activity_type_record.Append(std::move(new_dict));
 
   int last_n_launches =

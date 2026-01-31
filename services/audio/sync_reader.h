@@ -109,7 +109,7 @@ class SyncReader : public OutputController::SyncReader {
   // Tracks the glitch info that we should send over IPC. This is only reset
   // once we have confirmation that the info has been received by the other
   // side.
-  media::AudioGlitchInfo pending_glitch_info_;
+  media::AudioGlitchInfo::Accumulator pending_glitch_info_;
 
   // The glitch information of a single read timeout glitch.
   const media::AudioGlitchInfo read_timeout_glitch_;

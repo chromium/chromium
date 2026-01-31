@@ -139,7 +139,7 @@ DiceTabHelper::GetShowSigninErrorCallbackForBrowser() {
       return;
     }
     LoginUIServiceFactory::GetForProfile(profile)->DisplayLoginResult(
-        browser, error, /*from_profile_picker=*/false);
+        browser->GetFeatures(), error);
   });
 }
 

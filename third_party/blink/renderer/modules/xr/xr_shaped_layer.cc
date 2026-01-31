@@ -11,6 +11,7 @@
 namespace blink {
 
 XRShapedLayer::XRShapedLayer(const XRLayerInit* init,
+                             V8XRLayerLayout::Enum final_layout,
                              XRGraphicsBinding* binding,
                              XRLayerDrawingContext* drawing_context)
     : XRCompositionLayer(binding, drawing_context),
@@ -19,7 +20,7 @@ XRShapedLayer::XRShapedLayer(const XRLayerInit* init,
       texture_height_(init->viewPixelHeight()),
       is_static_(init->isStatic()),
       clear_on_access_(init->clearOnAccess()) {
-  SetLayout(init->layout());
+  SetLayout(final_layout);
   SetMipLevels(init->mipLevels());
 }
 

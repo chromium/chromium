@@ -7,9 +7,7 @@ package org.chromium.chrome.browser.password_manager;
 import static org.chromium.build.NullUtil.assumeNonNull;
 
 import android.content.Context;
-import android.content.res.Resources;
 
-import org.chromium.base.CallbackUtils;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.components.browser_ui.modaldialog.AppModalPresenter;
@@ -23,7 +21,12 @@ import org.chromium.ui.modelutil.PropertyModel;
 import java.util.ArrayList;
 import java.util.List;
 
-/** Helps to show a confirmation. */
+/**
+ * Helps to show a confirmation.
+ *
+ * @deprecated use {@link ActionConfirmationDialog} instead - see crbug.com/440257087.
+ */
+@Deprecated
 @NullMarked
 public class ConfirmationDialogHelper {
     private final Context mContext;
@@ -44,33 +47,6 @@ public class ConfirmationDialogHelper {
             mModalDialogManager.dismissDialog(mDialogModel, DialogDismissalCause.UNKNOWN);
         }
         mDialogModel = null;
-    }
-
-    /** Returns the resources associated with the context used to launch the dialog. */
-    public Resources getResources() {
-        return mContext.getResources();
-    }
-
-    /**
-     * Shows an dialog to confirm the deletion.
-     *
-     * @param title A {@link String} used as title.
-     * @param message A {@link CharSequence} used message body.
-     * @param confirmButtonText A {@link String} for confirmation button label.
-     * @param confirmedCallback A callback to run when the dialog is accepted.
-     * @param declinedCallback A callback to run when the dialog is declined.
-     */
-    public void showConfirmation(
-            String title,
-            CharSequence message,
-            String confirmButtonText,
-            Runnable confirmedCallback) {
-        showConfirmation(
-                title,
-                message,
-                confirmButtonText,
-                confirmedCallback,
-                CallbackUtils.emptyRunnable());
     }
 
     /**

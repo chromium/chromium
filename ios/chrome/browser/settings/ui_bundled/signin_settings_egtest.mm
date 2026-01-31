@@ -239,6 +239,10 @@ using chrome_test_util::SettingsSignInRowMatcher;
 // + Sign-in
 // => Expect history sync opt-in dialog.
 - (void)testSigninSecondTimeAfterAddingAccountAgain {
+  if ([ChromeEarlGrey isIPadIdiom]) {
+    // TODO(crbug.com/477810761): Test is flaky on iPad.
+    EARL_GREY_TEST_SKIPPED(@"Test disabled on iPad.");
+  }
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
   [SigninEarlGrey addFakeIdentity:fakeIdentity];
   [ChromeEarlGreyUI openSettingsMenu];

@@ -27,6 +27,7 @@
 #include "components/autofill/core/common/aliases.h"
 #include "components/autofill/core/common/form_data.h"
 #include "components/autofill/core/common/form_field_data.h"
+#include "components/device_reauth/device_authenticator.h"
 
 namespace gfx {
 class Rect;
@@ -228,6 +229,21 @@ class AutofillExternalDelegate : public AutofillSuggestionDelegate {
   // Returns the text (i.e. |Suggestion| value) for Chrome autofill options.
   std::u16string GetSettingsSuggestionValue() const;
 
+  // Called when biometric authentication is completed.
+  // Triggers `callback` with an `auth_succeeded` parameter.
+  void OnReauthCompleted(base::OnceCallback<void(bool)> callback,
+                         bool auth_succeeded);
+
+  // Requires user authentication and runs `callback` with an `auth_suceeded`
+  // parameter on completion. `reauth_message` specifies the string displayed in
+  // the re-auth dialog.
+  void MaybeAuthenticateBeforeFilling(const std::u16string& reauth_message,
+                                      std::string histogram,
+                                      base::OnceCallback<void(bool)> callback);
+
+  // Attempts to fill an Autofill AI `suggestion` into for `query_field_`;
+  void FillAutofillAiFormAndHidePopup(const Suggestion& suggestion);
+
   base::WeakPtr<AutofillExternalDelegate> GetWeakPtr();
 
   // If non-negative, OnSuggestionsReturned() passes one of the suggestions
@@ -250,6 +266,9 @@ class AutofillExternalDelegate : public AutofillSuggestionDelegate {
 
   // The caret position of the focused field.
   gfx::Rect caret_bounds_;
+
+  // Used to re-authenticate the user before filling.
+  std::unique_ptr<device_reauth::DeviceAuthenticator> authenticator_;
 
   base::WeakPtrFactory<AutofillExternalDelegate> weak_ptr_factory_{this};
 };

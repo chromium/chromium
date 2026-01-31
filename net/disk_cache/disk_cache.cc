@@ -13,10 +13,12 @@
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/field_trial.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/task/bind_post_task.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
+#include "base/time/time.h"
 #include "build/build_config.h"
 #include "build/buildflag.h"
 #include "net/base/cache_type.h"
@@ -38,6 +40,12 @@
 #endif  // ENABLE_DISK_CACHE_SQL_BACKEND
 
 namespace {
+
+void RecordDiskCacheInitTime(base::TimeDelta time) {
+#if !BUILDFLAG(IS_FUCHSIA)
+  base::UmaHistogramTimes("HttpCache.TimeToInitDiskCache", time);
+#endif  // !BUILDFLAG(IS_FUCHSIA)
+}
 
 using FileEnumerator = disk_cache::BackendFileOperations::FileEnumerator;
 using ApplicationStatusListenerGetter =
@@ -108,6 +116,7 @@ class CacheCreator {
   raw_ptr<net::NetLog> net_log_;
   scoped_refptr<disk_cache::BackendCleanupTracker> cleanup_tracker_;
   raw_ptr<net::CacheEncryptionDelegate> cache_encryption_delegate_;
+  base::TimeTicks init_start_time_;
 };
 
 CacheCreator::CacheCreator(
@@ -136,7 +145,8 @@ CacheCreator::CacheCreator(
       post_cleanup_callback_(std::move(post_cleanup_callback)),
       callback_(std::move(callback)),
       net_log_(net_log),
-      cache_encryption_delegate_(cache_encryption_delegate) {
+      cache_encryption_delegate_(cache_encryption_delegate),
+      init_start_time_(base::TimeTicks::Now()) {
 }
 
 CacheCreator::~CacheCreator() = default;
@@ -254,6 +264,9 @@ void CacheCreator::DoCallback(int net_error) {
   DCHECK_NE(net::ERR_IO_PENDING, net_error);
   disk_cache::BackendResult result;
   if (net_error == net::OK) {
+    if (created_cache_->GetCacheType() == net::DISK_CACHE) {
+      RecordDiskCacheInitTime(base::TimeTicks::Now() - init_start_time_);
+    }
     result = disk_cache::BackendResult::Make(std::move(created_cache_));
   } else {
     LOG(ERROR) << "Unable to create cache";

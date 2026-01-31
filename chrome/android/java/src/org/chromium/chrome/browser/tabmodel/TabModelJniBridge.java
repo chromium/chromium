@@ -37,6 +37,7 @@ import org.chromium.components.browser_ui.site_settings.WebsitePreferenceBridge;
 import org.chromium.components.content_settings.ContentSetting;
 import org.chromium.components.content_settings.ContentSettingsType;
 import org.chromium.components.embedder_support.util.UrlConstants;
+import org.chromium.components.tab_groups.TabGroupColorId;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.common.ResourceRequestBody;
@@ -48,6 +49,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.CompletableFuture;
 
 /** Bridges between the C++ and Java {@link TabModel} interfaces. */
 @NullMarked
@@ -272,24 +274,28 @@ public abstract class TabModelJniBridge implements TabModelInternal {
      * @param parent The parent tab that creates the new tab.
      * @param profile The profile for which to create the new tab.
      * @param webContents A {@link WebContents} object.
-     * @param select Select the created tab.
+     * @param index The index to create the tab at.
+     * @param type The launch type of the tab.
+     * @param shouldPin Whether the tab should be pinned.
      * @return Whether or not the Tab was successfully created.
      */
     @CalledByNative
-    private boolean createTabWithWebContents(
-            Tab parent, Profile profile, WebContents webContents, boolean select) {
-        @TabLaunchType
-        int type =
-                select ? TabLaunchType.FROM_RECENT_TABS_FOREGROUND : TabLaunchType.FROM_RECENT_TABS;
+    private @JniType("TabAndroid*") @Nullable Tab createTabWithWebContents(
+            Tab parent,
+            Profile profile,
+            WebContents webContents,
+            int index,
+            @TabLaunchType int type,
+            boolean shouldPin) {
         return getTabCreator(profile.isOffTheRecord())
-                        .createTabWithWebContents(
-                                parent,
-                                /* shouldPin= */ false,
-                                webContents,
-                                type,
-                                webContents.getVisibleUrl(),
-                                /* addTabToModel= */ true)
-                != null;
+                .createTabWithWebContents(
+                        parent,
+                        shouldPin,
+                        webContents,
+                        type,
+                        webContents.getVisibleUrl(),
+                        index,
+                        /* addTabToModel= */ CompletableFuture.completedFuture(true));
     }
 
     @CalledByNative
@@ -302,7 +308,8 @@ public abstract class TabModelJniBridge implements TabModelInternal {
             ResourceRequestBody postData,
             int disposition,
             boolean persistParentage,
-            boolean isRendererInitiated) {
+            boolean isRendererInitiated,
+            boolean hasUserGesture) {
         if (parent.isClosing()) return;
 
         boolean incognito = parent.isIncognito();
@@ -337,6 +344,7 @@ public abstract class TabModelJniBridge implements TabModelInternal {
         loadUrlParams.setVerbatimHeaders(extraHeaders);
         loadUrlParams.setPostData(postData);
         loadUrlParams.setIsRendererInitiated(isRendererInitiated);
+        loadUrlParams.setHasUserGesture(hasUserGesture);
         getTabCreator(incognito)
                 .createNewTab(loadUrlParams, tabLaunchType, persistParentage ? parent : null);
     }
@@ -475,27 +483,16 @@ public abstract class TabModelJniBridge implements TabModelInternal {
                         index);
     }
 
-    /**
-     * Duplicates the tab to the next adjacent index.
-     *
-     * <p>This method is specifically for TabListInterface and it will calculate the next valid
-     * adjacent index based on the parent tab.
-     *
-     * @param parentTab The tab to duplicate.
-     * @param webContents The {@link WebContents} for the new tab.
-     * @return The new tab, if the duplication succeeded.
-     */
     @CalledByNative
-    protected @JniType("TabAndroid*") @Nullable Tab duplicateTab(
-            @JniType("TabAndroid*") Tab parentTab, WebContents webContents) {
-        return getTabCreator()
-                .createTabWithWebContents(
-                        parentTab,
-                        parentTab.getIsPinned(),
-                        webContents,
-                        TabLaunchType.FROM_TAB_LIST_INTERFACE,
-                        webContents.getVisibleUrl(),
-                        /* addTabToModel= */ true);
+    protected static void setOpenerForTab(
+            @JniType("TabAndroid*") Tab target, @JniType("TabAndroid*") Tab opener) {
+        target.setParentId(opener.getId());
+    }
+
+    @CalledByNative
+    private @Nullable @JniType("TabAndroid*") Tab getOpenerForTab(
+            @JniType("TabAndroid*") Tab target) {
+        return getTabById(target.getParentId());
     }
 
     /**
@@ -532,6 +529,45 @@ public abstract class TabModelJniBridge implements TabModelInternal {
 
     @CalledByNative
     protected abstract @JniType("std::vector<TabAndroid*>") List<Tab> getAllTabs();
+
+    @CalledByNative
+    protected abstract boolean containsTabGroup(@JniType("base::Token") Token tabGroupId);
+
+    /**
+     * @return A list of tab groups in this tab model. Order is not guaranteed.
+     */
+    @CalledByNative
+    protected abstract @JniType("std::vector<base::Token>") List<Token> listTabGroups();
+
+    @CalledByNative
+    protected abstract @JniType("std::optional<std::u16string>") @Nullable String getTabGroupTitle(
+            @JniType("base::Token") Token tabGroupId);
+
+    @CalledByNative
+    protected abstract int getTabGroupColor(@JniType("base::Token") Token tabGroupId);
+
+    @CalledByNative
+    protected abstract boolean getTabGroupCollapsed(@JniType("base::Token") Token tabGroupId);
+
+    /**
+     * Returns two integers representing a range of tab indices. The range is non-inclusive and
+     * spans (startIndex, endIndex + 1).
+     */
+    @CalledByNative
+    protected abstract @JniType("std::vector<int>") int[] getTabGroupTabIndices(
+            @JniType("base::Token") Token tabGroupId);
+
+    @CalledByNative
+    protected abstract @JniType("std::optional<base::Token>") @Nullable Token createTabGroup(
+            @JniType("std::vector<TabAndroid*>") List<Tab> tabs);
+
+    @CalledByNative
+    protected abstract void setTabGroupVisualData(
+            @JniType("base::Token") Token tabGroupId,
+            @JniType("std::optional<std::u16string>") @Nullable String title,
+            @TabGroupColorId int colorId,
+            boolean isCollapsed,
+            boolean animate);
 
     @CalledByNative
     protected abstract @JniType("std::optional<base::Token>") @Nullable Token addTabsToGroup(
@@ -626,6 +662,15 @@ public abstract class TabModelJniBridge implements TabModelInternal {
         return TabModelJniBridgeJni.get()
                 .getActivityTypeForTesting( // IN-TEST
                         mNativeTabModelJniBridge);
+    }
+
+    @CalledByNative
+    private static boolean isTabLaunchedInForeground(
+            @TabLaunchType int type,
+            boolean isNewTabIncognitoBranded,
+            boolean isCurrentModelIncognitoBranded) {
+        return TabModelOrderControllerImpl.willOpenInForeground(
+                type, isNewTabIncognitoBranded, isCurrentModelIncognitoBranded);
     }
 
     @NativeMethods

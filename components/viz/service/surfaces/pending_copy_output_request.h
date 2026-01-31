@@ -6,7 +6,10 @@
 #define COMPONENTS_VIZ_SERVICE_SURFACES_PENDING_COPY_OUTPUT_REQUEST_H_
 
 #include <memory>
+#include <optional>
 
+#include "base/time/time.h"
+#include "base/timer/timer.h"
 #include "components/viz/common/frame_sinks/copy_output_request.h"
 #include "components/viz/common/surfaces/local_surface_id.h"
 #include "components/viz/common/surfaces/subtree_capture_id.h"
@@ -20,10 +23,16 @@ struct VIZ_SERVICE_EXPORT PendingCopyOutputRequest {
   PendingCopyOutputRequest(LocalSurfaceId surface_id,
                            SubtreeCaptureId subtree_id,
                            std::unique_ptr<CopyOutputRequest> request,
-                           bool capture_exact_id = false);
-  PendingCopyOutputRequest(PendingCopyOutputRequest&&);
-  PendingCopyOutputRequest& operator=(PendingCopyOutputRequest&&);
+                           bool capture_exact_id = false,
+                           base::TimeDelta timeout = base::TimeDelta());
+  PendingCopyOutputRequest(const PendingCopyOutputRequest& ohter) = delete;
+  PendingCopyOutputRequest& operator=(const PendingCopyOutputRequest&) = delete;
+  PendingCopyOutputRequest(PendingCopyOutputRequest&&) = delete;
+  PendingCopyOutputRequest& operator=(PendingCopyOutputRequest&&) = delete;
   ~PendingCopyOutputRequest();
+
+  // Returns if this pending request has timed out.
+  bool IsTimedOut() const;
 
   // The ID of the local surface which |copy_output_request| will be placed on
   // its next composited frame. If this ID is default constructed, then the next
@@ -47,6 +56,12 @@ struct VIZ_SERVICE_EXPORT PendingCopyOutputRequest {
   // copy. The request issuer is also responsible for making sure the `Surface`s
   // are preserved in order to be captured.
   bool capture_exact_surface_id = false;
+
+  // The response deadline.
+  std::optional<base::OneShotTimer> response_deadline_timer;
+
+ private:
+  void TimeoutFired();
 };
 
 }  // namespace viz

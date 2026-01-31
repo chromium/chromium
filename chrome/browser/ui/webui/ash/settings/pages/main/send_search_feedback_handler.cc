@@ -41,7 +41,7 @@ void SendSearchFeedbackHandler::OpenFeedbackDialogWrapper(
 }
 
 void SendSearchFeedbackHandler::HandleOpenFeedbackDialog(
-    const base::Value::List& args) {
+    const base::ListValue& args) {
   DCHECK_EQ(args.size(), 1U);
   OpenFeedbackDialogWrapper(args.front().GetString());
 }

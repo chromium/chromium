@@ -175,7 +175,7 @@ WEB_UI_CONTROLLER_TYPE_IMPL(CastFeedbackUI)
 
 CastFeedbackUI::~CastFeedbackUI() = default;
 
-void CastFeedbackUI::OnCloseMessage(const base::Value::List&) {
+void CastFeedbackUI::OnCloseMessage(const base::ListValue&) {
   web_contents_->GetDelegate()->CloseContents(web_contents_);
 }
 

@@ -22,36 +22,34 @@ class COMPONENT_EXPORT(AX_PLATFORM) AXTreeFormatterAuraLinux
   ~AXTreeFormatterAuraLinux() override;
 
  private:
-  std::string ProcessTreeForOutput(
-      const base::Value::Dict& node) const override;
+  std::string ProcessTreeForOutput(const base::DictValue& node) const override;
 
-  base::Value::Dict BuildTree(AXPlatformNodeDelegate* root) const override;
-  base::Value::Dict BuildTreeForSelector(
+  base::DictValue BuildTree(AXPlatformNodeDelegate* root) const override;
+  base::DictValue BuildTreeForSelector(
       const AXTreeSelector& selector) const override;
 
-  base::Value::Dict BuildNode(AXPlatformNodeDelegate* node) const override;
+  base::DictValue BuildNode(AXPlatformNodeDelegate* node) const override;
 
   std::string EvaluateScript(const AXTreeSelector& selector,
                              const AXInspectScenario& scenario) const override;
 
-  void RecursiveBuildTree(AtspiAccessible* node, base::Value::Dict* dict) const;
-  void RecursiveBuildTree(AtkObject*, base::Value::Dict*) const;
+  void RecursiveBuildTree(AtspiAccessible* node, base::DictValue* dict) const;
+  void RecursiveBuildTree(AtkObject*, base::DictValue*) const;
 
-  void AddProperties(AtkObject*, base::Value::Dict*) const;
-  void AddProperties(AtspiAccessible*, base::Value::Dict*) const;
+  void AddProperties(AtkObject*, base::DictValue*) const;
+  void AddProperties(AtspiAccessible*, base::DictValue*) const;
 
-  void AddTextProperties(AtkObject* atk_object, base::Value::Dict* dict) const;
+  void AddTextProperties(AtkObject* atk_object, base::DictValue* dict) const;
   void AddHypertextProperties(AtkObject* atk_object,
-                              base::Value::Dict* dict) const;
-  void AddActionProperties(AtkObject* atk_object,
-                           base::Value::Dict* dict) const;
+                              base::DictValue* dict) const;
+  void AddActionProperties(AtkObject* atk_object, base::DictValue* dict) const;
   void AddRelationProperties(AtkObject* atk_object,
-                             base::Value::Dict* dict) const;
-  void AddValueProperties(AtkObject* atk_object, base::Value::Dict* dict) const;
-  void AddTableProperties(AtkObject* atk_object, base::Value::Dict* dict) const;
+                             base::DictValue* dict) const;
+  void AddValueProperties(AtkObject* atk_object, base::DictValue* dict) const;
+  void AddTableProperties(AtkObject* atk_object, base::DictValue* dict) const;
   void AddTableCellProperties(const AXPlatformNodeAuraLinux* node,
                               AtkObject* atk_object,
-                              base::Value::Dict* dict) const;
+                              base::DictValue* dict) const;
 
   // Returns a string with the relation's name and the roles of the targets it
   // points to.

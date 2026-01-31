@@ -98,9 +98,6 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration);
 // Returns whether the current layout is showing the bottom omnibox.
 - (BOOL)isCurrentLayoutBottomOmnibox;
 
-// Returns whether the Enhanced Safe Browsing Infobar Promo feature is enabled.
-- (BOOL)isEnhancedSafeBrowsingInfobarEnabled;
-
 // Returns whether the Ask Gemini Chip feature is enabled.
 - (BOOL)isAskGeminiChipEnabled;
 
@@ -234,9 +231,6 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration);
 // Waits for there to be `count` number of incognito tabs within a timeout, or a
 // GREYAssert is induced.
 - (void)waitForIncognitoTabCount:(NSUInteger)count;
-
-// Loads `URL` as if it was opened from an external application.
-- (void)openURLFromExternalApp:(const GURL&)URL;
 
 // Programmatically dismisses settings screen.
 - (void)dismissSettings;
@@ -770,9 +764,6 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration);
 // can, open multiple windows.
 - (BOOL)areMultipleWindowsSupported;
 
-// Returns whether the NewOverflowMenu feature is enabled.
-- (BOOL)isNewOverflowMenuEnabled;
-
 // Returns whether the UseLensToSearchForImage feature is enabled;
 - (BOOL)isUseLensToSearchForImageEnabled;
 
@@ -826,6 +817,14 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration);
 
 // Returns the object for `key` in NSUserDefault.
 - (id)userDefaultsObjectForKey:(NSString*)key;
+
+// Creates a `AppGroupCommand` based on the provided text and writes it the
+// shared NSUserDefaults.
+- (void)setAppGroupCommandToSearchText:(NSString*)text;
+
+// Creates an incognito `AppGroupCommand` based on the provided text and writes
+// it the shared NSUserDefaults.
+- (void)setAppGroupCommandToIncognitoSearchText:(NSString*)text;
 
 #pragma mark - Pref Utilities (EG2)
 
@@ -993,6 +992,11 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration);
 // Taps the element with `buttonText` within the activity sheet. A GREYAssert
 // is induced on failure.
 - (void)tapButtonInActivitySheetWithID:(NSString*)buttonText;
+
+// Taps the `more` button in the activity sheet that allows users to expand the
+// sheet to see all available actions on iOS 26+. Example:
+// https://screenshot.googleplex.com/8QGvXx4q2LNYoVJ
+- (void)tapMoreOptionButtonInActivitySheet;
 
 #pragma mark - First Run Utilities
 

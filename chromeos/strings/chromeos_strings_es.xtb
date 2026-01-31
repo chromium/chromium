@@ -554,7 +554,7 @@
 <translation id="345256797477978759">Anclar ventana en la parte <ph name="DIRECTION" /> más grande de la pantalla</translation>
 <translation id="3456078764689556234">Se ha impreso la página <ph name="PRINTED_PAGES" /> de <ph name="TOTAL_PAGES" />.</translation>
 <translation id="345898999683440380">Escaneando página <ph name="PAGE_NUM" />. <ph name="PERCENTAGE_VALUE" /> % completado.</translation>
-<translation id="3459509316159669723">Imprimir</translation>
+<translation id="3459509316159669723">Imprimiendo</translation>
 <translation id="3462187165860821523">Actualizando <ph name="DEVICE_NAME" /></translation>
 <translation id="346423161771747987">Corriente</translation>
 <translation id="346539236881580388">Repetir foto</translation>

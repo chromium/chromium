@@ -214,7 +214,7 @@ void PurgeImagesOlderThan(
     if (current_file.Extension() != ".jpg") {
       continue;
     }
-    if (base::Contains(files_to_keep, current_file)) {
+    if (files_to_keep.contains(current_file)) {
       continue;
     }
     base::FileEnumerator::FileInfo file_info = enumerator.GetInfo();

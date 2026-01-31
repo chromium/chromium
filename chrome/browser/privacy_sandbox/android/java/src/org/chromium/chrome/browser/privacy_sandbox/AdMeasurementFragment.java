@@ -12,8 +12,9 @@ import android.view.View;
 import androidx.preference.Preference;
 
 import org.chromium.base.metrics.RecordUserAction;
-import org.chromium.base.supplier.ObservableSupplier;
-import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.supplier.MonotonicObservableSupplier;
+import org.chromium.base.supplier.ObservableSuppliers;
+import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.preferences.Pref;
@@ -51,7 +52,8 @@ public class AdMeasurementFragment extends PrivacySandboxSettingsBaseFragment
     public static final String AD_MEASUREMENT_CONSIDER_BULLET_THREE_PREF =
             "ad_measurement_consider_bullet_three";
 
-    private final ObservableSupplierImpl<String> mPageTitle = new ObservableSupplierImpl<>();
+    private final SettableMonotonicObservableSupplier<String> mPageTitle =
+            ObservableSuppliers.createMonotonic();
 
     static boolean isAdMeasurementPrefEnabled(Profile profile) {
         PrefService prefService = UserPrefs.get(profile);
@@ -102,7 +104,7 @@ public class AdMeasurementFragment extends PrivacySandboxSettingsBaseFragment
     }
 
     @Override
-    public ObservableSupplier<String> getPageTitle() {
+    public MonotonicObservableSupplier<String> getPageTitle() {
         return mPageTitle;
     }
 

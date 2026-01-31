@@ -6,7 +6,6 @@
 #import <variant>
 #import <vector>
 
-#import "base/containers/contains.h"
 #import "base/containers/flat_set.h"
 #import "base/containers/to_vector.h"
 #import "base/strings/strcat.h"
@@ -38,7 +37,6 @@
 #import "components/autofill/ios/form_util/autofill_test_with_web_state.h"
 #import "components/autofill/ios/form_util/child_frame_registrar.h"
 #import "components/autofill/ios/form_util/form_handlers_java_script_feature.h"
-#import "components/autofill/ios/form_util/form_util_java_script_feature.h"
 #import "components/prefs/testing_pref_service.h"
 #import "ios/testing/embedded_test_server_handlers.h"
 #import "ios/web/public/js_messaging/web_frame.h"
@@ -218,8 +216,7 @@ struct TestCreditCardForm {
         return AssertionFailure()
                << "frame with id " << frame_id << " couldn't be found";
       }
-      const bool should_be_filled =
-          base::Contains(filled_field_ids, field.global_id);
+      const bool should_be_filled = filled_field_ids.contains(field.global_id);
 
       const std::u16string expected_filled_value =
           should_be_filled ? base::UTF8ToUTF16(field.fill_value) : u"";
@@ -423,7 +420,6 @@ class AutofillAcrossIframesTest : public AutofillTestWithWebState {
         static_cast<web::FakeWebClient*>(GetWebClient());
     web_client->SetJavaScriptFeatures(
         {AutofillJavaScriptFeature::GetInstance(),
-         FormUtilJavaScriptFeature::GetInstance(),
          FormHandlersJavaScriptFeature::GetInstance()});
 
     // We need an AutofillAgent to exist or else the form will never get parsed.
@@ -441,6 +437,11 @@ class AutofillAcrossIframesTest : public AutofillTestWithWebState {
     autofill_manager_injector_ =
         std::make_unique<TestAutofillManagerInjector<TestAutofillManager>>(
             web_state());
+  }
+
+  void TearDown() override {
+    autofill_manager_injector_.reset();
+    AutofillTestWithWebState::TearDown();
   }
 
   web::WebFrame* WaitForMainFrame() {
@@ -940,9 +941,6 @@ TEST_F(AutofillAcrossIframesTest, SetAndGetParent) {
 }
 
 TEST_F(AutofillAcrossIframesTest, TriggerExtractionInFrame) {
-  base::test::ScopedFeatureList feature_list{
-      features::kAutofillAcrossIframesIosTriggerFormExtraction};
-
   AddInput("text", "name");
   AddIframe("cf1", "<form><input id='address'></form>");
   StartTestServerAndLoad();
@@ -957,19 +955,22 @@ TEST_F(AutofillAcrossIframesTest, TriggerExtractionInFrame) {
         return frames_manager->GetAllWebFrames().size() == 2;
       }));
 
+  // Wait on the registration to complete by using FormsSeen events as a proxy.
+  // The second FormsSeen event corresponds to the moment where
+  // SetSelfAsParent() is called on the main frame upon completion of the child
+  // frame registration.
+  ASSERT_TRUE(main_frame_manager().WaitForFormsSeen(2));
+  main_frame_manager().ResetTestState();
+
   for (web::WebFrame* frame : frames_manager->GetAllWebFrames()) {
     auto* driver =
         AutofillDriverIOS::FromWebStateAndWebFrame(web_state(), frame);
-    auto& manager =
-        static_cast<TestAutofillManager&>(driver->GetAutofillManager());
 
-    // Extraction will have triggered on page load. Wait for this to complete.
-    EXPECT_TRUE(manager.WaitForFormsSeen(1));
-    manager.ResetTestState();
-
-    // Manually retrigger extraction, and wait for a fresh FormsSeen event.
+    // Manually retrigger extraction, and wait for a fresh FormsSeen event on
+    // the main frame manager, because the router aggregates xframe forms there.
     test_api(*driver).TriggerFormExtractionInDriverFrame();
-    EXPECT_TRUE(manager.WaitForFormsSeen(1));
+    EXPECT_TRUE(main_frame_manager().WaitForFormsSeen(1));
+    main_frame_manager().ResetTestState();
   }
 }
 
@@ -1818,8 +1819,6 @@ TEST_F(AutofillAcrossIframesTest, FrameDoubleRegistration_Unregister) {
 // Tests that forms aren't parsed when their host frame ID differs from the ID
 // of the frame on which forms extraction was requested.
 TEST_F(AutofillAcrossIframesTest, FrameAndFormIdsDontMatch) {
-  base::test::ScopedFeatureList feature_list{
-      features::kAutofillAcrossIframesIosTriggerFormExtraction};
   // Serve form on main frame.
   AddInput("text", "name");
   AddInput("text", "address");
@@ -1944,8 +1943,6 @@ TEST_F(AutofillAcrossIframesFillSecurityTest, XoriginTrigger) {
 //       Input: cvc [filled]
 // =======================================
 TEST_F(AutofillAcrossIframesFillSecurityTest, XoriginTrigger_NestedFrame) {
-  base::test::ScopedFeatureList feature_list{
-      features::kAutofillAcrossIframesIosTriggerFormExtraction};
   EmbeddedTestServer test_server1;
   EmbeddedTestServer test_server2;
 

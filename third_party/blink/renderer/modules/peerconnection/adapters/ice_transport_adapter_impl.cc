@@ -92,16 +92,16 @@ void IceTransportAdapterImpl::SetupIceTransportChannel() {
         }
       });
   ice_transport_channel()->SubscribeCandidateGathered(
-      [that = weak_factory_.GetWeakPtr()](
-          webrtc::IceTransportInternal* transport,
-          const webrtc::Candidate& candidate) {
+      this, [that = weak_factory_.GetWeakPtr()](
+                webrtc::IceTransportInternal* transport,
+                const webrtc::Candidate& candidate) {
         if (that) {
           that->OnCandidateGathered(transport, candidate);
         }
       });
   ice_transport_channel()->SubscribeIceTransportStateChanged(
-      [that = weak_factory_.GetWeakPtr()](
-          webrtc::IceTransportInternal* transport) {
+      this, [that = weak_factory_.GetWeakPtr()](
+                webrtc::IceTransportInternal* transport) {
         if (that) {
           that->OnStateChanged(transport);
         }
@@ -114,8 +114,8 @@ void IceTransportAdapterImpl::SetupIceTransportChannel() {
         }
       });
   ice_transport_channel()->SubscribeRoleConflict(
-      [that = weak_factory_.GetWeakPtr()](
-          webrtc::IceTransportInternal* transport) {
+      this, [that = weak_factory_.GetWeakPtr()](
+                webrtc::IceTransportInternal* transport) {
         if (that) {
           that->OnRoleConflict(transport);
         }

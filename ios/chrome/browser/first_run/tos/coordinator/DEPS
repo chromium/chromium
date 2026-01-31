@@ -1,0 +1,5 @@
+include_rules = [
+  # keep-sorted start
+  "+ios/web/web_state/crw_web_view.h",
+  # keep-sorted end
+]

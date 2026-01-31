@@ -1,0 +1,6 @@
+This is a testharness.js-based test.
+Found 1 FAIL, 0 TIMEOUT, 0 NOTRUN.
+[FAIL] e.style['animation-range'] = "entry calc(10% - 10%) entry calc(50% + 50%)" should set the property value
+  assert_equals: serialization should be canonical expected "entry calc(0%) entry calc(100%)" but got "entry"
+Harness: the test ran to completion.
+

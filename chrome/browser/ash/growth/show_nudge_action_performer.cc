@@ -25,9 +25,10 @@
 #include "chromeos/ash/components/growth/campaigns_manager.h"
 #include "chromeos/ash/components/growth/campaigns_model.h"
 #include "chromeos/ash/components/growth/growth_metrics.h"
-#include "chromeos/ui/base/chromeos_ui_constants.h"
+#include "chromeos/ui/frame/caption_buttons/frame_caption_button_container_view.h"
 #include "ui/aura/window.h"
 #include "ui/views/bubble/bubble_border.h"
+#include "ui/views/interaction/element_tracker_views.h"
 #include "ui/views/view.h"
 #include "ui/views/widget/widget.h"
 
@@ -139,7 +140,7 @@ const std::string* GetNudgeBody(const NudgePayload* nudge_payload) {
   return nudge_payload->FindString(kNudgeBodyPath);
 }
 
-void MaybeSetImageData(const base::Value::Dict* image_value,
+void MaybeSetImageData(const base::DictValue* image_value,
                        ash::AnchoredNudgeData& nudge_data) {
   if (!image_value) {
     return;
@@ -209,16 +210,10 @@ views::View* GetWindowCaptionButtonContainer() {
     return nullptr;
   }
 
-  auto* root_view = targeting_window_widget->GetRootView();
-  if (!root_view) {
-    growth::RecordCampaignsManagerError(
-        growth::CampaignsManagerError::kNoRootViewToGetAnchorView);
-    CAMPAIGNS_LOG(ERROR) << "Error: root view not found";
-    return nullptr;
-  }
-
-  return root_view->GetViewByID(
-      chromeos::ViewID::VIEW_ID_CAPTION_BUTTON_CONTAINER);
+  // Use FirstMatchingView as the container may not be visible yet.
+  return views::ElementTrackerViews::GetInstance()->GetFirstMatchingView(
+      chromeos::FrameCaptionButtonContainerView::kElementId,
+      views::ElementTrackerViews::GetContextForWidget(targeting_window_widget));
 }
 
 views::Widget* GetAnchorWidgetForWindowBoundAnchor(
@@ -287,7 +282,7 @@ ShowNudgeActionPerformer::~ShowNudgeActionPerformer() {
 
 void ShowNudgeActionPerformer::Run(int campaign_id,
                                    std::optional<int> group_id,
-                                   const base::Value::Dict* action_params,
+                                   const base::DictValue* action_params,
                                    growth::ActionPerformer::Callback callback) {
   if (!ShowNudge(campaign_id, group_id, action_params)) {
     // TODO: b/331953307 - callback with concrete failure result reason.
@@ -390,7 +385,7 @@ bool ShowNudgeActionPerformer::ShowNudge(int campaign_id,
   // TODO: b/331045558 - Add close button callback.
   NotifyReadyToLogImpression(campaign_id, group_id, should_log_cros_events);
 
-  const base::Value::List* clear_events =
+  const base::ListValue* clear_events =
       nudge_payload->FindList(kClearEventsPath);
   if (clear_events) {
     auto* campaigns_manager = growth::CampaignsManager::Get();
@@ -407,7 +402,7 @@ bool ShowNudgeActionPerformer::ShowNudge(int campaign_id,
 }
 
 bool ShowNudgeActionPerformer::MaybeSetAnchorView(
-    const base::Value::Dict* anchor_dict,
+    const base::DictValue* anchor_dict,
     ash::AnchoredNudgeData& nudge_data) {
   if (!anchor_dict) {
     // No anchor option provided. Set to default position.
@@ -465,7 +460,7 @@ bool ShowNudgeActionPerformer::MaybeSetAnchorView(
 void ShowNudgeActionPerformer::MaybeSetButtonData(
     int campaign_id,
     std::optional<int> group_id,
-    const base::Value::Dict* button_dict,
+    const base::DictValue* button_dict,
     ash::AnchoredNudgeData& nudge_data,
     bool is_primary,
     bool should_log_cros_events) {
@@ -503,7 +498,7 @@ void ShowNudgeActionPerformer::OnNudgeButtonClicked(
     int campaign_id,
     std::optional<int> group_id,
     CampaignButtonId button_id,
-    const base::Value::Dict* action_dict,
+    const base::DictValue* action_dict,
     bool should_mark_dismissed,
     bool should_log_cros_events) {
   NotifyButtonPressed(campaign_id, group_id, button_id, should_mark_dismissed,

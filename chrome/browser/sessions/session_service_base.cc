@@ -42,9 +42,9 @@
 #include "components/sessions/core/session_constants.h"
 #include "components/sessions/core/session_id.h"
 #include "components/sessions/core/session_types.h"
+#include "components/split_tabs/split_tab_id.h"
+#include "components/split_tabs/split_tab_visual_data.h"
 #include "components/tabs/public/split_tab_data.h"
-#include "components/tabs/public/split_tab_id.h"
-#include "components/tabs/public/split_tab_visual_data.h"
 #include "components/tabs/public/tab_group.h"
 #include "content/public/browser/navigation_details.h"
 #include "content/public/browser/navigation_entry.h"
@@ -513,14 +513,14 @@ void SessionServiceBase::TabNavigationPathEntriesDeleted(SessionID window_id,
 
 #if DCHECK_IS_ON()
 base::Value SessionServiceBase::ToDebugValue() const {
-  base::Value::Dict result;
+  base::DictValue result;
   result.Set("profile", base::ToString(profile_.get()));
   if (command_storage_manager_) {
     result.Set("command_storage_manager",
                command_storage_manager_->ToDebugValue());
   }
   for (const auto& [id, range] : tab_to_available_range_) {
-    base::Value::Dict* range_dict =
+    base::DictValue* range_dict =
         result.EnsureDict("tab_to_available_range")
             ->EnsureDict(base::NumberToString(id.id()));
     range_dict->Set("first", range.first);
@@ -736,25 +736,26 @@ void SessionServiceBase::BuildCommandsForBrowser(
     }
   }
 
-  if (features::IsRestoringSplitViewEnabled()) {
     for (split_tabs::SplitTabId split_id : tab_strip->ListSplits()) {
       command_storage_manager()->AppendRebuildCommand(
           sessions::CreateSplitTabDataUpdateCommand(
               split_id, tab_strip->GetSplitData(split_id)->visual_data()));
     }
-  }
 
-  for (int i = 0; i < tab_strip->count(); ++i) {
-    WebContents* tab = tab_strip->GetWebContentsAt(i);
-    DCHECK(tab);
-    const std::optional<tab_groups::TabGroupId> group_id =
-        tab_strip->GetTabGroupForTab(i);
-    const std::optional<split_tabs::SplitTabId> split_id =
-        tab_strip->GetSplitForTab(i);
+    int index = 0;
+    for (const tabs::TabInterface* tab_interface : *tab_strip) {
+      WebContents* tab = tab_interface->GetContents();
+      DCHECK(tab);
+      const std::optional<tab_groups::TabGroupId> group_id =
+          tab_strip->GetTabGroupForTab(index);
+      const std::optional<split_tabs::SplitTabId> split_id =
+          tab_strip->GetSplitForTab(index);
 
-    BuildCommandsForTab(browser->session_id(), tab, i, group_id, split_id,
-                        tab_strip->IsTabPinned(i), tab_to_available_range);
-  }
+      BuildCommandsForTab(browser->session_id(), tab, index, group_id, split_id,
+                          tab_interface->IsPinned(), tab_to_available_range);
+
+      index++;
+    }
 
   windows_to_track->insert(browser->session_id());
 }

@@ -9,7 +9,6 @@
 
 #include "ash/constants/web_app_id_constants.h"
 #include "ash/webui/system_apps/public/system_web_app_type.h"
-#include "base/containers/contains.h"
 #include "base/containers/fixed_flat_map.h"
 #include "chrome/browser/web_applications/policy/web_app_policy_manager.h"
 
@@ -79,12 +78,12 @@ std::optional<std::string_view> GetPolicyIdForSystemWebAppType(
 }
 
 bool IsArcAppPolicyId(std::string_view policy_id) {
-  return base::Contains(policy_id, '.') &&
+  return policy_id.contains('.') &&
          !WebAppPolicyManager::IsWebAppPolicyId(policy_id);
 }
 
 bool IsSystemWebAppPolicyId(std::string_view policy_id) {
-  return base::Contains(kSystemWebAppsMapping, policy_id);
+  return kSystemWebAppsMapping.contains(policy_id);
 }
 
 }  // namespace web_app

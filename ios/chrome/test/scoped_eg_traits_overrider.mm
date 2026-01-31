@@ -20,19 +20,15 @@ ScopedTraitOverrider::~ScopedTraitOverrider() {
   // For other trait overrides, don't forget to remove it here. The
   // `traitOverrides` is read only.
   if (top_view_controller_) {
-    if (@available(iOS 17.0, *)) {
       top_view_controller_.traitOverrides.preferredContentSizeCategory =
           original_content_size_category_;
-    }
   }
 }
 
 void ScopedTraitOverrider::SetContentSizeCategory(
     UIContentSizeCategory new_content_size_category) {
   if (top_view_controller_) {
-    if (@available(iOS 17.0, *)) {
       top_view_controller_.traitOverrides.preferredContentSizeCategory =
           new_content_size_category;
-    }
   }
 }

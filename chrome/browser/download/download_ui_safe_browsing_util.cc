@@ -30,6 +30,7 @@ using safe_browsing::ClientDownloadResponse;
 using safe_browsing::ClientSafeBrowsingReportRequest;
 #endif
 
+#if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
 std::string GetDangerPromptHistogramName(const std::string& suffix,
                                          const download::DownloadItem& item) {
   const char kPrefix[] = "Download.DownloadDangerPrompt";
@@ -39,6 +40,7 @@ std::string GetDangerPromptHistogramName(const std::string& suffix,
                             // "Proceed" or "Shown".
                             suffix.c_str());
 }
+#endif  // BUILDFLAG(SAFE_BROWSING_AVAILABLE)
 
 }  // namespace
 
@@ -97,8 +99,12 @@ void SendSafeBrowsingDownloadReport(
 
 #if BUILDFLAG(IS_ANDROID)
 bool ShouldShowSafeBrowsingAndroidDownloadWarnings() {
+#if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
   return base::FeatureList::IsEnabled(
              safe_browsing::kMaliciousApkDownloadCheck) &&
          !safe_browsing::kMaliciousApkDownloadCheckTelemetryOnly.Get();
+#else
+  return false;
+#endif  // BUILDFLAG(SAFE_BROWSING_AVAILABLE)
 }
 #endif

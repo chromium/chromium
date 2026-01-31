@@ -4,6 +4,7 @@
 
 module js_injection.mojom;
 
+import "components/js_injection/common/enum.mojom";
 import "components/origin_matcher/origin_matcher.mojom";
 import "mojo/public/mojom/base/big_buffer.mojom";
 import "mojo/public/mojom/base/string16.mojom";
@@ -17,21 +18,29 @@ import "third_party/blink/public/mojom/messaging/message_port_descriptor.mojom";
 // when the kLazyBindJsInjection feature is enabled to request a
 // BrowserToJsMessaging pipe from the renderer when needed. If this is not set,
 // SetBrowserToJsMessaging() must be called from the renderer to pass the pipe.
+// |js_world| is the enumerated world id for the JS script context. 0 is the
+// main page world. Values correspond to the underlying enumeration as defined
+// in DOMWrapperWorld::WorldId enum.
 struct JsObject {
   mojo_base.mojom.String16 js_object_name;
   pending_associated_remote<JsToBrowserMessaging> js_to_browser_messaging;
   pending_associated_receiver<BrowserToJsMessagingFactory>
       browser_to_js_factory;
   origin_matcher.mojom.OriginMatcher origin_matcher;
+  int32 js_world;
 };
 
-// DocumentStartJavaScript struct contains the JavaScript snippet |script| and
-// the corresponding |origin_matcher|. We will run the script if the frame's
-// origin matches any rules in the |origin_matcher|.
-struct DocumentStartJavaScript {
+// JavaScriptExecutable struct contains the JavaScript snippet |script| and the
+// corresponding |origin_matcher| and the |js_world| representation.
+// We will run the script in |js_world| if the frame's origin matches any rules
+// in the |origin_matcher|.
+struct JavaScriptExecutable {
   int32 script_id;
   mojo_base.mojom.String16 script;
   origin_matcher.mojom.OriginMatcher origin_matcher;
+  DocumentInjectionTime injection_time;
+  // Page world is denoted by 0.
+  int32 js_world;
 };
 
 // The ArrayBuffer arm of the JsWebMessage union below, which contains the
@@ -94,11 +103,13 @@ interface JsCommunication {
   SetJsObjects(array<js_injection.mojom.JsObject> js_objects,
                pending_associated_remote<JsObjectsClient> client);
 
-  // Called from browser, to add a script for a frame to run at document start
-  // stage. The script will run only if the frame's origin matches any of the
-  // allowed_origin_rules.
-  AddDocumentStartScript(js_injection.mojom.DocumentStartJavaScript script);
+  // Called from browser, to add a script for a frame to run at the specified
+  // stage in the specified world. The script will run only if the frame's
+  // origin matches any of the allowed_origin_rules.
+  AddPersistentJavaScript(js_injection.mojom.JavaScriptExecutable script);
 
-  // Called from browser, to remove the script by the given script_id.
-  RemoveDocumentStartScript(int32 script_id);
+  // Called from the browser, to remove the sticky script
+  // by the given script_id.
+  RemovePersistentJavaScript(int32 script_id);
+
 };

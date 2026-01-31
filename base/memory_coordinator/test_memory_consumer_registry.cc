@@ -4,9 +4,10 @@
 
 #include "base/memory_coordinator/test_memory_consumer_registry.h"
 
+#include <algorithm>
+
 #include "base/check.h"
 #include "base/check_op.h"
-#include "base/containers/contains.h"
 #include "base/memory_coordinator/memory_consumer.h"
 #include "base/task/single_thread_task_runner.h"
 
@@ -27,7 +28,7 @@ void TestMemoryConsumerRegistry::OnMemoryConsumerAdded(
     std::string_view consumer_id,
     MemoryConsumerTraits traits,
     RegisteredMemoryConsumer consumer) {
-  CHECK(!Contains(memory_consumers_, consumer));
+  CHECK(!std::ranges::contains(memory_consumers_, consumer));
   memory_consumers_.push_back(consumer);
 }
 

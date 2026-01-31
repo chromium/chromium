@@ -24,11 +24,7 @@ bool IsLensOverlayAllowedByPolicy(const PrefService* prefs) {
 // Returns whether the lens overlay is enabled.
 bool IsLensOverlayAvailable(const PrefService* prefs) {
   bool featureEnabled = base::FeatureList::IsEnabled(kEnableLensOverlay);
-  bool forceIPadEnabled =
-      base::FeatureList::IsEnabled(kLensOverlayEnableIPadCompatibility);
-  bool isIPhone = ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_PHONE;
-  return featureEnabled && (forceIPadEnabled || isIPhone) &&
-         IsLensOverlayAllowedByPolicy(prefs);
+  return featureEnabled && IsLensOverlayAllowedByPolicy(prefs);
 }
 
 bool IsLensOverlaySameTabNavigationEnabled(const PrefService* prefs) {
@@ -37,8 +33,7 @@ bool IsLensOverlaySameTabNavigationEnabled(const PrefService* prefs) {
 }
 
 bool IsLVFUnifiedExperienceEnabled(const PrefService* prefs) {
-  return IsLensOverlayAvailable(prefs) &&
-         base::FeatureList::IsEnabled(kEnableLensViewFinderUnifiedExperience);
+  return IsLensOverlayAvailable(prefs);
 }
 
 bool IsLensOverlayLandscapeOrientationEnabled(const PrefService* prefs) {

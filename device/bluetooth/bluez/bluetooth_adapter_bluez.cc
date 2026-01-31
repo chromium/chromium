@@ -12,7 +12,6 @@
 #include <string>
 #include <utility>
 
-#include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
@@ -541,7 +540,7 @@ BluetoothAdapterBlueZ::RetrieveGattConnectedDevicesWithDiscoveryFilter(
 
       UUIDSet intersection;
       for (const BluetoothUUID& uuid : filter_uuids) {
-        if (base::Contains(device_uuids, uuid)) {
+        if (device_uuids.contains(uuid)) {
           intersection.insert(uuid);
         }
       }
@@ -631,7 +630,7 @@ bool BluetoothAdapterBlueZ::IsExtendedAdvertisementsAvailable() const {
   // Based on the implementation of kernel bluez, if the controller supports Ext
   // Advertisement, it must support HardwareOffload.
   // (net/bluetooth/mgmt.c:get_supported_adv_flags)
-  return base::Contains(
+  return std::ranges::contains(
       properties->supported_features.value(),
       bluetooth_advertising_manager::kSupportedFeaturesHardwareOffload);
 }
@@ -1667,9 +1666,9 @@ BluetoothAdapterBlueZ::GetLowEnergyScanSessionHardwareOffloadingStatus() {
     return LowEnergyScanSessionHardwareOffloadingStatus::kUndetermined;
   }
 
-  return base::Contains(properties->supported_features.value(),
-                        bluetooth_advertisement_monitor_manager::
-                            kSupportedFeaturesControllerPatterns)
+  return std::ranges::contains(properties->supported_features.value(),
+                               bluetooth_advertisement_monitor_manager::
+                                   kSupportedFeaturesControllerPatterns)
              ? LowEnergyScanSessionHardwareOffloadingStatus::kSupported
              : LowEnergyScanSessionHardwareOffloadingStatus::kNotSupported;
 }

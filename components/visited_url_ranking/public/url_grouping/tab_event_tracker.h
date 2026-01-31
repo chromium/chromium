@@ -23,7 +23,7 @@ class TabEventTracker {
   // org.chromium.components.visited_url_ranking.url_grouping)
   // The reason for a tab to be selected. This value is platform specific. Extra
   // enums to be added for each platform.
-  enum class TabSelectionType {
+  enum class TabSelectionCause {
     // Selection of adjacent tab when the active tab is closed.
     kFromCloseActiveTab,
     // Selection of adjacent tab when the active tab is closed upon app exit.
@@ -47,7 +47,7 @@ class TabEventTracker {
   // the active tab at startup.
   virtual void DidSelectTab(int tab_id,
                             const GURL& url,
-                            TabSelectionType tab_selection_type,
+                            TabSelectionCause tab_selection_cause,
                             int last_tab_id) = 0;
 
   // Called when a tab will be closed.

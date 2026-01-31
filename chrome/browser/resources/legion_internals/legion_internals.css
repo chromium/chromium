@@ -10,7 +10,7 @@ label {
   display: block;
   margin-bottom: 5px;
 }
-input[type="text"] {
+input[type='text'] {
   width: 600px;
   padding: 8px;
   box-sizing: border-box;

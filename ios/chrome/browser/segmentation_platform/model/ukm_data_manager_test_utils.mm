@@ -123,6 +123,7 @@ void UkmDataManagerTestUtils::SetupForProfile(ProfileIOS* profile) {
 }
 
 void UkmDataManagerTestUtils::WillDestroyProfile(ProfileIOS* profile) {
+  history_service_ = nullptr;
   UkmDatabaseClientHolder::SetUkmClientForTesting(profile, nullptr);
 }
 

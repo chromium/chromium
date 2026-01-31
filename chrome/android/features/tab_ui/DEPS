@@ -22,6 +22,7 @@ include_rules = [
  "+components/saved_tab_groups/public",
  "+components/search_engines/android/java/src/org/chromium/components/search_engines",
  "+components/sync/android/java/src/org/chromium/components/sync",
+ "+components/thin_webview/java",
  "+components/module_installer",
  "+content/public/android/java/src/org/chromium/content_public/browser",
  "+content/public/android/java/src/org/chromium/content_public/common",

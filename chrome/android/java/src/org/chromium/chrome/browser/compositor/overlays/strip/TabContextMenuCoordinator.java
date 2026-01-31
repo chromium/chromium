@@ -373,7 +373,7 @@ public class TabContextMenuCoordinator extends TabStripReorderingHelper<AnchorIn
         if (TabGroupUtils.isAnyTabInGroup(tabs)) {
             itemList.add(createRemoveFromTabGroupItem(tabs, isIncognito));
         }
-        if (shouldShowMoveToWindowItem(tabs)) {
+        if (shouldShowMoveToWindowItem(tabs, anchorInfo)) {
             itemList.add(createMoveToWindowItem(anchorInfo, isIncognito));
         }
         List<ListItem> reorderItems = createReorderItems(anchorInfo);
@@ -402,7 +402,7 @@ public class TabContextMenuCoordinator extends TabStripReorderingHelper<AnchorIn
         if (TabGroupUtils.isAnyTabInGroup(tabs)) {
             itemList.add(createRemoveFromTabGroupItem(tabs, isIncognito));
         }
-        if (shouldShowMoveToWindowItem(tabs)) {
+        if (shouldShowMoveToWindowItem(tabs, anchorInfo)) {
             itemList.add(createMoveToWindowItem(anchorInfo, isIncognito));
         }
         List<ListItem> reorderItems = createReorderItems(anchorInfo);
@@ -470,7 +470,6 @@ public class TabContextMenuCoordinator extends TabStripReorderingHelper<AnchorIn
                         ? getIncognitoTabGroups(tabs, groupToNotBeIncluded)
                         : getRegularTabGroups(tabs, groupToNotBeIncluded);
         if (!potentialGroups.isEmpty()) {
-            submenuItems.add(buildMenuDivider(isIncognito));
             submenuItems.addAll(potentialGroups);
         }
 
@@ -483,8 +482,13 @@ public class TabContextMenuCoordinator extends TabStripReorderingHelper<AnchorIn
                         .build());
     }
 
-    private boolean shouldShowMoveToWindowItem(List<Tab> tabs) {
+    private boolean shouldShowMoveToWindowItem(List<Tab> tabs, AnchorInfo anchorInfo) {
         if (TabGroupUtils.isAnyTabInGroup(tabs)) return false;
+        if (MultiWindowUtils.getInstanceCountWithFallback(PersistedInstanceType.ACTIVE) == 1
+                && (mTabModelSupplier.get().getTabCountSupplier().get()
+                        == anchorInfo.getAllTabIds().size())) {
+            return false;
+        }
         return MultiWindowUtils.isMultiInstanceApi31Enabled() && mMultiInstanceManager != null;
     }
 

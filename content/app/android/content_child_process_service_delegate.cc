@@ -108,8 +108,8 @@ ChildProcessSurfaceManager* GetChildProcessSurfaceManager() {
 static void JNI_ContentChildProcessServiceDelegate_InternalInitChildProcess(
     JNIEnv* env,
     const JavaRef<jobject>& service_impl,
-    jint cpu_count,
-    jlong cpu_features) {
+    int32_t cpu_count,
+    int64_t cpu_features) {
   InitChildProcessCommon(cpu_count, cpu_features);
 
   GetChildProcessSurfaceManager()->SetServiceImpl(service_impl);
@@ -123,8 +123,8 @@ static void JNI_ContentChildProcessServiceDelegate_InternalInitChildProcess(
 static void JNI_ContentChildProcessServiceDelegate_InitChildProcess(
     JNIEnv* env,
     const JavaRef<jobject>& obj,
-    jint cpu_count,
-    jlong cpu_features) {
+    int32_t cpu_count,
+    int64_t cpu_features) {
   JNI_ContentChildProcessServiceDelegate_InternalInitChildProcess(
       env, obj, cpu_count, cpu_features);
 }

@@ -18,7 +18,7 @@
 #include "base/thread_annotations.h"
 #include "base/time/time.h"
 #include "base/types/expected.h"
-#include "components/legion/attestation_handler.h"
+#include "components/legion/attestation/handler.h"
 #include "components/legion/legion_common.h"
 #include "components/legion/secure_channel.h"
 #include "components/legion/secure_session.h"
@@ -54,6 +54,8 @@ class SecureChannelImpl : public SecureChannel {
     kClosed,
   };
 
+  void AddRequestToPendingEncryptionQueue(const Request& request);
+
   // Helper function to handle state transitions and errors.
   void FailAllRequestsAndClose(ErrorCode error_code);
   void StartSessionEstablishment();
@@ -69,12 +71,15 @@ class SecureChannelImpl : public SecureChannel {
 
   // Callbacks for the asynchronous session establishment steps and for sending
   // encrypted requests.
-  void OnAttestationResponse(const oak::session::v1::AttestResponse& response);
+  void OnAttestationResponse(
+      const oak::session::v1::SessionResponse& session_response);
   void OnHandshakeMessageReady(
       std::optional<oak::session::v1::HandshakeRequest> handshake_request);
-  void OnHandshakeResponse(const oak::session::v1::HandshakeResponse& response);
+  void OnHandshakeResponse(
+      const oak::session::v1::SessionResponse& session_response);
   void OnHandshakeVerification(bool handshake_verified);
-  void OnEncryptedResponse(const oak::session::v1::EncryptedMessage& response);
+  void OnEncryptedResponse(
+      const oak::session::v1::SessionResponse& session_response);
   void OnDecryptedResponse(const std::optional<Request>& decrypted_response);
 
   SEQUENCE_CHECKER(sequence_checker_);

@@ -89,6 +89,7 @@ chromium-metrics-reviews@google.com.
   <variant name="StartingToActOnTab" summary="StartingToActOnTab UiEvent"/>
   <variant name="StartTask" summary="StartTask UiEvent"/>
   <variant name="StoppedActingOnTab" summary="StoppedActingOnTab UiEvent"/>
+  <variant name="StopTask" summary="StopTask UiEvent"/>
   <variant name="TaskStateChanged" summary="TaskStateChanged UiEvent"/>
 </variants>
 
@@ -180,7 +181,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Actor.MayOriginGatePageTransition" enum="Boolean"
-    expires_after="2026-03-30">
+    expires_after="2026-07-26">
   <owner>dylancutler@google.com</owner>
   <owner>johannhof@google.com</owner>
   <summary>
@@ -228,7 +229,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Actor.NavigationGating.CrossOrigin" enum="Boolean"
+<histogram name="Actor.NavigationGating.CrossOrigin2" enum="Boolean"
     expires_after="2026-05-31">
   <owner>dylancutler@google.com</owner>
   <owner>johannhof@google.com</owner>
@@ -239,7 +240,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Actor.NavigationGating.CrossSite" enum="Boolean"
+<histogram name="Actor.NavigationGating.CrossSite2" enum="Boolean"
     expires_after="2026-05-31">
   <owner>dylancutler@google.com</owner>
   <owner>johannhof@google.com</owner>
@@ -250,7 +251,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Actor.NavigationGating.GatingDecision" enum="GatingDecision"
-    expires_after="2026-03-30">
+    expires_after="2026-06-21">
   <owner>tquintanilla@google.com</owner>
   <owner>dylancutler@google.com</owner>
   <summary>
@@ -354,6 +355,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Actor.PageContext.ObservationOutcome"
+    enum="ActorObservationOutcome" expires_after="2027-01-09">
+  <owner>bokan@google.com</owner>
+  <owner>chrome-synapse-team@google.com</owner>
+  <summary>
+    Records the outcome of an page context fetch obeservation. Recorded only for
+    context fetches in response to a performActions call.
+  </summary>
+</histogram>
+
 <histogram name="Actor.PageContext.Screenshot.Duration" units="ms"
     expires_after="2026-08-11">
   <owner>dtapuska@google.com</owner>
@@ -368,6 +379,20 @@ chromium-metrics-reviews@google.com.
   <owner>bokan@google.com</owner>
   <owner>chrome-synapse-team@google.com</owner>
   <summary>Number of tabs to observe in PerformActions response.</summary>
+</histogram>
+
+<histogram name="Actor.PageContext.TabObservationResult"
+    enum="ActorTabObservationResult" expires_after="2027-01-09">
+  <owner>bokan@google.com</owner>
+  <owner>chrome-synapse-team@google.com</owner>
+  <summary>
+    Records the result of a RequestTabObservation for each tab of an
+    observation. Recorded only for context fetches in response to a
+    performActions call. When a failure causes the page context fetch to be
+    retried this histogram records both the failed/successful tab observation
+    results in the initial fetch as well as the the result of the fetch in the
+    retry.
+  </summary>
 </histogram>
 
 <histogram name="Actor.RendererPageStability.Outcome"
@@ -673,12 +698,31 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Actor.Ui.GlobalTaskIndicator.Nudge.Shown"
+    enum="TaskNudgeState" expires_after="2026-08-11">
+  <owner>kenok@google.com</owner>
+  <owner>chrstne@google.com</owner>
+  <owner>koilos@google.com</owner>
+  <summary>Recorded when a global task indicator nudge is shown.</summary>
+</histogram>
+
 <histogram name="Actor.Ui.TabController.Error" enum="ActorUiTabControllerError"
     expires_after="2026-08-11">
   <owner>kenok@google.com</owner>
   <owner>chrstne@google.com</owner>
   <owner>koilos@google.com</owner>
   <summary>Recorded when an error happens in the ActorUiTabController.</summary>
+</histogram>
+
+<histogram name="Actor.Ui.TaskIcon.Error" enum="ActorUiTaskIconError"
+    expires_after="2026-08-11">
+  <owner>chrstne@google.com</owner>
+  <owner>aashnas@google.com</owner>
+  <owner>koilos@google.com</owner>
+  <summary>
+    Recorded when an invalid task is encountered within ActorUiTaskIcon or
+    related component creation.
+  </summary>
 </histogram>
 
 <histogram name="Actor.Ui.TaskListBubble.Rows" units="rows"

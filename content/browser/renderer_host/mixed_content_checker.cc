@@ -4,7 +4,8 @@
 
 #include "content/browser/renderer_host/mixed_content_checker.h"
 
-#include "base/containers/contains.h"
+#include <algorithm>
+
 #include "base/memory/ptr_util.h"
 #include "base/metrics/field_trial_params.h"
 #include "content/browser/preloading/prerender/prerender_final_status.h"
@@ -37,13 +38,13 @@ bool ShouldFetchKeepAliveCancelPrerenderingOnMixedContent() {
 }
 
 bool IsSecureScheme(const std::string& scheme) {
-  return base::Contains(url::GetSecureSchemes(), scheme);
+  return std::ranges::contains(url::GetSecureSchemes(), scheme);
 }
 
 // Should return the same value as `SecurityOrigin::IsLocal()` and
 // `blink::SchemeRegistry::ShouldTreatURLSchemeAsCorsEnabled()`.
 bool ShouldTreatURLSchemeAsCorsEnabled(const GURL& url) {
-  return base::Contains(url::GetCorsEnabledSchemes(), url.GetScheme());
+  return std::ranges::contains(url::GetCorsEnabledSchemes(), url.GetScheme());
 }
 
 // Should return the same value as the resource URL checks result from

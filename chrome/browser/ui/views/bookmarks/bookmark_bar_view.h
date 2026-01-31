@@ -25,6 +25,7 @@
 #include "chrome/browser/ui/views/bookmarks/saved_tab_groups/saved_tab_group_bar.h"
 #include "components/bookmarks/browser/bookmark_node_data.h"
 #include "components/prefs/pref_change_registrar.h"
+#include "ui/accessibility/ax_action_data.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/mojom/menu_source_type.mojom-forward.h"
 #include "ui/compositor/layer_tree_owner.h"
@@ -282,6 +283,8 @@ class BookmarkBarView : public views::AccessiblePaneView,
                        const ui::Event& event);
   void OnMenuButtonPressed(const BookmarkParentFolder& folder,
                            const ui::Event& event);
+  bool OnMenuButtonAccessibleAction(const BookmarkParentFolder& folder,
+                                    const ui::AXActionData& action_data);
 
   // NOTE: unless otherwise stated all methods that take an index are in terms
   // of the bookmark bar view. Typically the view index and model index are the
@@ -311,6 +314,11 @@ class BookmarkBarView : public views::AccessiblePaneView,
   std::unique_ptr<views::View> CreateBookmarkButton(
       const bookmarks::BookmarkNode* node,
       size_t index);
+
+  // Creates a MenuButton for a Bookmark Folder with an optional title.
+  std::unique_ptr<views::MenuButton> CreateMenuButtonForFolder(
+      const BookmarkParentFolder& folder,
+      std::u16string_view title = {});
 
   // Removes the bookmark button at the given index.
   void RemoveBookmarkButton(size_t index);
@@ -357,6 +365,12 @@ class BookmarkBarView : public views::AccessiblePaneView,
   // Marks the current drop as invalid and cancels the menu. Used when the
   // model is mutated and a drop is in progress.
   void InvalidateDrop();
+
+  // Shows a menu for the provided folder.
+  void ShowFolderMenuForFolder(const BookmarkParentFolder& folder);
+
+  // Hides the folder menu for the provided folder (idempotent).
+  void HideFolderMenuForFolder(const BookmarkParentFolder& folder);
 
   // Returns the node corresponding to |sender|, which is one of the
   // |bookmark_buttons_|.
@@ -417,6 +431,10 @@ class BookmarkBarView : public views::AccessiblePaneView,
   const views::View* GetSavedTabGroupsSeparatorViewForTesting() const;
 
   void MaybeShowSavedTabGroupsIntroPromo() const;
+
+  // Return true when `drop_info_` is not null, as it indicates that a drag
+  // action is being performed.
+  bool HasDropInfo() const;
 
   // True if BookmarkMergedSurfaceServiceLoaded() has been invoked,
   // either by manually checking `bookmark_service_->loaded()` or by

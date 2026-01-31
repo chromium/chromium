@@ -50,8 +50,7 @@ void AddEventListener(
     const std::string& service_type,
     content::RenderProcessHost* process,
     extensions::EventListenerMap::ListenerList* listener_list) {
-  auto filter =
-      base::Value::Dict().Set(kEventFilterServiceTypeKey, service_type);
+  auto filter = base::DictValue().Set(kEventFilterServiceTypeKey, service_type);
   listener_list->push_back(EventListener::ForExtension(
       kEventFilterServiceTypeKey, extension_id, process, std::move(filter)));
 }
@@ -129,9 +128,9 @@ class EventServiceListSizeMatcher
                 << e.event_args.size();
       return false;
     }
-    const base::Value::List* services = e.event_args[0].GetIfList();
+    const base::ListValue* services = e.event_args[0].GetIfList();
     if (!services) {
-      *listener << "event's service list argument is not a Value::List";
+      *listener << "event's service list argument is not a base::ListValue";
       return false;
     }
     *listener << "number of services is " << services->size();
@@ -211,7 +210,7 @@ class MDnsAPITest : public extensions::ExtensionServiceTestBase {
       std::string name,
       bool is_platform_app,
       const extensions::ExtensionId& extension_id) {
-    auto manifest = base::Value::Dict()
+    auto manifest = base::DictValue()
                         .Set(extensions::manifest_keys::kVersion, "1.0.0.0")
                         .Set(extensions::manifest_keys::kName, name)
                         .Set(extensions::manifest_keys::kManifestVersion, 2);
@@ -257,6 +256,11 @@ class MDnsAPIDiscoveryTest : public MDnsAPITest {
     MDnsAPITest::SetUp();
     mdns_api_ = static_cast<MockedMDnsAPI*>(MDnsAPI::Get(browser_context()));
     EXPECT_CALL(*mdns_api_, IsMDnsAllowed(_)).WillRepeatedly(Return(true));
+  }
+
+  void TearDown() override {
+    mdns_api_ = nullptr;
+    MDnsAPITest::TearDown();
   }
 
  protected:

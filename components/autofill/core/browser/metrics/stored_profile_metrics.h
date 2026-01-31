@@ -44,15 +44,6 @@ void LogStoredProfileDaysSinceLastUse(
 void LogStoredProfileMetrics(
     const std::vector<const AutofillProfile*>& profiles);
 
-// Logs the number of `kLocalOrSynable` profiles that are a strict superset of
-// some `kAccount` profile. This corresponds to the number of profiles that
-// cannot be automatically deduplicated, since no profiles should be silently
-// deleted from the account storage.
-// Comparisons are done by the `app_locale`-based `AutofillProfileComparator`.
-void LogLocalProfileSupersetMetrics(
-    std::vector<const AutofillProfile*> profiles,
-    std::string_view app_locale);
-
 // Logs the number of profiles that have an alternative name set.
 void LogStoredProfileCountWithAlternativeName(
     base::span<const AutofillProfile* const> profiles);

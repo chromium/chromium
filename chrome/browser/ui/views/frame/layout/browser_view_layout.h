@@ -18,6 +18,7 @@ class Browser;
 class BrowserViewLayoutDelegate;
 class InfoBarContainerView;
 class MultiContentsView;
+class ProjectsPanelView;
 class SidePanel;
 class TabStrip;
 class HorizontalTabStripRegionView;
@@ -54,8 +55,12 @@ struct BrowserViewLayoutViews {
   raw_ptr<views::View> top_container = nullptr;
   raw_ptr<WebAppFrameToolbarView> web_app_frame_toolbar = nullptr;
   raw_ptr<views::Label> web_app_window_title = nullptr;
-  raw_ptr<HorizontalTabStripRegionView> tab_strip_region_view = nullptr;
-  raw_ptr<VerticalTabStripRegionView> vertical_tab_strip_container = nullptr;
+  raw_ptr<HorizontalTabStripRegionView> horizontal_tab_strip_region_view =
+      nullptr;
+  raw_ptr<VerticalTabStripRegionView> vertical_tab_strip_region_view = nullptr;
+  raw_ptr<views::View> vertical_tab_strip_bottom_corner = nullptr;
+  raw_ptr<views::View> vertical_tab_strip_top_corner = nullptr;
+  raw_ptr<ProjectsPanelView> projects_panel_container = nullptr;
   raw_ptr<views::View> toolbar = nullptr;
   raw_ptr<InfoBarContainerView> infobar_container = nullptr;
   raw_ptr<views::View> contents_container = nullptr;
@@ -63,12 +68,6 @@ struct BrowserViewLayoutViews {
   raw_ptr<SidePanel> toolbar_height_side_panel = nullptr;
   raw_ptr<SidePanel> contents_height_side_panel = nullptr;
   raw_ptr<views::View> side_panel_animation_content = nullptr;
-
-  // TODO(crbug.com/424236535): These can be removed once `SideBySide` is
-  // launched.
-  raw_ptr<views::View> left_aligned_side_panel_separator = nullptr;
-  raw_ptr<views::View> right_aligned_side_panel_separator = nullptr;
-  raw_ptr<views::View> side_panel_rounded_corner = nullptr;
 
   // The contents separator used for when the top container is overlaid.
   // Note: when `SideBySide` feature is disabled, this separator is also
@@ -97,6 +96,10 @@ class BrowserViewLayout : public views::LayoutManager {
   // not specified). This value is used for the main browser window only, not
   // for popups.
   static constexpr int kMainBrowserContentsMinimumWidth = 500;
+
+  // The minimum width of the contents area itself. Applies even when side
+  // panels are open and prevents zero or negative contents sizes.
+  static constexpr int kContentsContainerMinimumWidth = 200;
 
   BrowserViewLayout(const BrowserViewLayout&) = delete;
   BrowserViewLayout& operator=(const BrowserViewLayout&) = delete;
@@ -141,16 +144,8 @@ class BrowserViewLayout : public views::LayoutManager {
   // Test-only methods.
 
   // Returns the minimum acceptable width for the browser web contents.
-  bool IsInfobarVisibleForTesting() const;
   void SetDelegateForTesting(
       std::unique_ptr<BrowserViewLayoutDelegate> delegate);
-
-  // DEPRECATED - do not call.
-  //
-  // TODO(https://crbug.com/454583671): Eliminate this in favor of something
-  // that actually returns the specific width needed by the test, or else find
-  // some other way to calculate this in the test itself.
-  virtual int GetMinWebContentsWidthForTesting() const = 0;
 
  protected:
   // |browser| may be null in tests.
@@ -171,9 +166,6 @@ class BrowserViewLayout : public views::LayoutManager {
   // Returns the current pref for vertical tabs by accessing the vertical
   // tab strip state controller
   bool ShouldDisplayVerticalTabs() const;
-
-  // Returns true if an infobar is showing.
-  bool IsInfobarVisible() const;
 
   // Updates bubbles, dialogs, and infobars.
   // Must be called *after* contents pane is laid out.

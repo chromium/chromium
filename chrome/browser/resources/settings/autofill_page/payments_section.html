@@ -230,7 +230,7 @@
 <template is="dom-if" if="[[showBulkRemoveCvcConfirmationDialog_]]" restamp>
   <settings-simple-confirmation-dialog id="bulkDeleteCvcConfirmDialog"
       title-text="$i18n{bulkRemoveCvcConfirmationTitle}"
-      body-text="$i18n{bulkRemoveCvcConfirmationDescription}"
+      body-text="[[getCvcDeletionDialogBodyText_(autofillEnableWalletBrandingEnabled_)]]"
       confirm-text="$i18n{delete}"
       on-close="onShowBulkRemoveCvcConfirmationDialogClose_">
   </settings-simple-confirmation-dialog>

@@ -6,7 +6,6 @@
 
 #include <utility>
 
-#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "components/media_router/browser/test/test_helper.h"
 #include "content/public/test/test_renderer_host.h"
@@ -49,7 +48,7 @@ class LocalPresentationManagerTest : public content::RenderViewHostTestHarness {
 
   void VerifyControllerSize(size_t expected,
                             const std::string& presentationId) {
-    EXPECT_TRUE(base::Contains(manager_.local_presentations_, presentationId));
+    EXPECT_TRUE(manager_.local_presentations_.contains(presentationId));
     EXPECT_EQ(expected, manager_.local_presentations_[presentationId]
                             ->pending_controllers_.size());
   }

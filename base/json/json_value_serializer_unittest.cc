@@ -80,7 +80,7 @@ void ValidateJsonList(const std::string& json) {
   std::optional<Value> value =
       JSONReader::Read(json, JSON_PARSE_CHROMIUM_EXTENSIONS);
   ASSERT_TRUE(value);
-  Value::List* list = value->GetIfList();
+  ListValue* list = value->GetIfList();
   ASSERT_TRUE(list);
   ASSERT_EQ(1U, list->size());
   const Value& elt = (*list)[0];
@@ -224,7 +224,7 @@ TEST(JSONValueSerializerTest, Roundtrip) {
   JSONStringValueDeserializer deserializer(kOriginalSerialization);
   std::unique_ptr<Value> root = deserializer.Deserialize(nullptr, nullptr);
   ASSERT_TRUE(root);
-  const Value::Dict* root_dict = root->GetIfDict();
+  const DictValue* root_dict = root->GetIfDict();
   ASSERT_TRUE(root_dict);
 
   const Value* null_value = root_dict->Find("null");
@@ -293,7 +293,7 @@ TEST(JSONValueSerializerTest, StringEscape) {
       "{\"all_chars\":\"" + all_chars_expected + "\"}";
   // Test JSONWriter interface
   std::string output_js;
-  Value::Dict valueRoot;
+  DictValue valueRoot;
   valueRoot.Set("all_chars", all_chars);
   JSONWriter::Write(valueRoot, &output_js);
   ASSERT_EQ(expected_output, output_js);
@@ -306,7 +306,7 @@ TEST(JSONValueSerializerTest, StringEscape) {
 
 TEST(JSONValueSerializerTest, UnicodeStrings) {
   // unicode string json -> escaped ascii text
-  Value::Dict root;
+  DictValue root;
   std::u16string test(u"\x7F51\x9875");
   root.Set("web", test);
 
@@ -322,7 +322,7 @@ TEST(JSONValueSerializerTest, UnicodeStrings) {
   std::unique_ptr<Value> deserial_root =
       deserializer.Deserialize(nullptr, nullptr);
   ASSERT_TRUE(deserial_root);
-  const Value::Dict* deserial_root_dict = deserial_root->GetIfDict();
+  const DictValue* deserial_root_dict = deserial_root->GetIfDict();
   const std::string* web_value = deserial_root_dict->FindString("web");
   ASSERT_TRUE(web_value);
   ASSERT_EQ("\xE7\xBD\x91\xE9\xA1\xB5", *web_value);
@@ -330,7 +330,7 @@ TEST(JSONValueSerializerTest, UnicodeStrings) {
 
 TEST(JSONValueSerializerTest, HexStrings) {
   // hex string json -> escaped ascii text
-  Value::Dict root;
+  DictValue root;
   std::u16string test(u"\x01\x02");
   root.Set("test", test);
 
@@ -346,7 +346,7 @@ TEST(JSONValueSerializerTest, HexStrings) {
   std::unique_ptr<Value> deserial_root =
       deserializer.Deserialize(nullptr, nullptr);
   ASSERT_TRUE(deserial_root);
-  Value::Dict* deserial_root_dict = deserial_root->GetIfDict();
+  DictValue* deserial_root_dict = deserial_root->GetIfDict();
   const std::string* test_value = deserial_root_dict->FindString("test");
   ASSERT_TRUE(test_value);
   ASSERT_EQ("\u0001\u0002", *test_value);
@@ -374,7 +374,7 @@ TEST(JSONValueSerializerTest, JSONReaderComments) {
   std::optional<Value> value = JSONReader::Read("[\"// ok\\n /* foo */ \"]",
                                                 JSON_PARSE_CHROMIUM_EXTENSIONS);
   ASSERT_TRUE(value);
-  Value::List* list = value->GetIfList();
+  ListValue* list = value->GetIfList();
   ASSERT_TRUE(list);
   ASSERT_EQ(1U, list->size());
   const Value& elt = (*list)[0];
@@ -406,7 +406,7 @@ TEST_F(JSONFileValueSerializerTest, Roundtrip) {
   JSONFileValueDeserializer deserializer(original_file_path);
   std::unique_ptr<Value> root = deserializer.Deserialize(nullptr, nullptr);
   ASSERT_TRUE(root);
-  const Value::Dict* root_dict = root->GetIfDict();
+  const DictValue* root_dict = root->GetIfDict();
   ASSERT_TRUE(root_dict);
 
   const Value* null_value = root_dict->Find("null");

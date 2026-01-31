@@ -4,11 +4,11 @@
 
 #include "device/fido/auth_token_requester.h"
 
+#include <algorithm>
 #include <list>
 #include <optional>
 #include <string>
 
-#include "base/containers/contains.h"
 #include "base/containers/span.h"
 #include "base/logging.h"
 #include "base/memory/scoped_refptr.h"
@@ -100,7 +100,7 @@ class TestAuthTokenRequesterDelegate : public AuthTokenRequester::Delegate {
       FidoAuthenticator* authenticator,
       AuthTokenRequester::Result result,
       std::optional<pin::TokenResponse> response) override {
-    if (!base::Contains(
+    if (!std::ranges::contains(
             std::vector<AuthTokenRequester::Result>{
                 AuthTokenRequester::Result::
                     kPreTouchAuthenticatorResponseInvalid,

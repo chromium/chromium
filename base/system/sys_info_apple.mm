@@ -50,12 +50,12 @@ int SysInfo::NumberOfEfficientProcessorsImpl() {
 }
 
 // static
-ByteCount SysInfo::AmountOfPhysicalMemoryImpl() {
+ByteSize SysInfo::AmountOfTotalPhysicalMemoryImpl() {
   uint64_t physical_memory;
   size_t size = sizeof(physical_memory);
   int rv = sysctlbyname("hw.memsize", &physical_memory, &size, nullptr, 0);
   PCHECK(rv == 0) << "sysctlbyname(\"hw.memsize\")";
-  return ByteCount::FromUnsigned(physical_memory);
+  return ByteSize(physical_memory);
 }
 
 }  // namespace base

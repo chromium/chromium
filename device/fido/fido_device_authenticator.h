@@ -160,6 +160,10 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoDeviceAuthenticator
       CtapGetAssertionCallback callback,
       size_t original_size,
       base::expected<mojo_base::BigBuffer, std::string> result);
+  void MaybeGetEphemeralKeyForMakeCredential(
+      CtapMakeCredentialRequest request,
+      MakeCredentialOptions options,
+      CtapMakeCredentialCallback callback);
   void MaybeGetEphemeralKeyForGetAssertion(CtapGetAssertionRequest request,
                                            CtapGetAssertionOptions options,
                                            CtapGetAssertionCallback callback);
@@ -174,6 +178,12 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoDeviceAuthenticator
       CtapGetAssertionOptions options,
       std::vector<AuthenticatorGetAssertionResponse> responses,
       CtapGetAssertionCallback callback);
+  void OnHaveEphemeralKeyForMakeCredential(
+      CtapMakeCredentialRequest request,
+      MakeCredentialOptions options,
+      CtapMakeCredentialCallback callback,
+      CtapDeviceResponseCode status,
+      std::optional<pin::KeyAgreementResponse> key);
   void OnHaveEphemeralKeyForGetAssertion(
       CtapGetAssertionRequest request,
       CtapGetAssertionOptions options,

@@ -91,7 +91,7 @@ bool StyleCrossfadeImage::ErrorOccurred() const {
 
 bool StyleCrossfadeImage::IsAccessAllowed(String& failing_url) const {
   return std::all_of(images_.begin(), images_.end(), [&](StyleImage* image) {
-    return !image || image->IsAccessAllowed(failing_url);
+    return !image || (image->IsLoaded() && image->IsAccessAllowed(failing_url));
   });
 }
 

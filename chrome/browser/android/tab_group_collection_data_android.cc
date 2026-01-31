@@ -57,8 +57,8 @@ bool TabGroupCollectionDataAndroid::IsCollapsed(JNIEnv* env) const {
 }
 
 jni_zero::ScopedJavaLocalRef<jobject>
-TabGroupCollectionDataAndroid::GetJavaObject() const {
-  return j_object_;
+TabGroupCollectionDataAndroid::GetJavaObject(JNIEnv* env) const {
+  return j_object_.AsLocalRef(env);
 }
 
 }  // namespace tabs

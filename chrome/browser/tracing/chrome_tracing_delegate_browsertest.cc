@@ -153,14 +153,14 @@ class ChromeTracingDelegateBrowserTest : public InProcessBrowserTest {
 std::string GetSessionStateJson() {
   PrefService* local_state = g_browser_process->local_state();
   DCHECK(local_state);
-  const base::Value::Dict& state =
+  const base::DictValue& state =
       local_state->GetDict(tracing::kBackgroundTracingSessionState);
   std::string json;
   EXPECT_TRUE(base::JSONWriter::Write(state, &json));
   return json;
 }
 
-void SetSessionState(base::Value::Dict dict) {
+void SetSessionState(base::DictValue dict) {
   PrefService* local_state = g_browser_process->local_state();
   local_state->Set(tracing::kBackgroundTracingSessionState,
                    base::Value(std::move(dict)));

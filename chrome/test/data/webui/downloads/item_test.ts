@@ -4,7 +4,6 @@
 
 import type {CrIconElement, CrToastManagerElement, DownloadsItemElement} from 'chrome://downloads/downloads.js';
 import {BrowserProxy, DangerType, IconLoaderImpl, loadTimeData, SafeBrowsingState, State, TailoredWarningType} from 'chrome://downloads/downloads.js';
-import {stringToMojoUrl} from 'chrome://resources/js/mojo_type_util.js';
 import {assertEquals, assertFalse, assertNotReached, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {eventToPromise, isVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
@@ -39,51 +38,15 @@ suite('ItemTest', function() {
       fileExternallyRemoved: false,
       hideDate: true,
       state: State.kDangerous,
-      url: stringToMojoUrl('http://evil.com'),
+      url: 'http://evil.com',
     });
     await microtasksFinished();
 
     assertFalse(isVisible(item.$['file-link']));
-    assertFalse(item.$.url.hasAttribute('href'));
     assertFalse(item.$['file-link'].hasAttribute('href'));
   });
-
-  test('downloads without original url in data aren\'t linkable', async () => {
-    const displayUrl = 'https://test.test';
-    item.data = createDownload({
-      hideDate: false,
-      state: State.kComplete,
-      url: undefined,
-      displayUrl: displayUrl,
-    });
-    await microtasksFinished();
-
-    assertFalse(item.$.url.hasAttribute('href'));
-    assertFalse(item.$['file-link'].hasAttribute('href'));
-    assertEquals(displayUrl, item.$.url.text);
-  });
-
-  test(
-      'initiator origin is hidden when showInitiatorOrigin disabled',
-      async () => {
-        loadTimeData.overrideValues({showInitiatorOrigin: false});
-        const item = document.createElement('downloads-item');
-        document.body.innerHTML = window.trustedTypes!.emptyHTML;
-        document.body.appendChild(item);
-        item.data = createDownload({
-          hideDate: false,
-          state: State.kComplete,
-          displayInitiatorOrigin: 'https://initiator.test',
-        });
-        await microtasksFinished();
-
-        assertTrue(isVisible(item.$.url));
-        assertFalse(isVisible(
-            item.shadowRoot.querySelector<HTMLElement>('#initiator-origin')));
-      });
 
   test('initiator origin empty string in data isn\'t displayed', async () => {
-    loadTimeData.overrideValues({showInitiatorOrigin: true});
     const item = document.createElement('downloads-item');
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     document.body.appendChild(item);
@@ -94,13 +57,11 @@ suite('ItemTest', function() {
     });
     await microtasksFinished();
 
-    assertFalse(isVisible(item.$.url));
     assertFalse(isVisible(
         item.shadowRoot.querySelector<HTMLElement>('#initiator-origin')));
   });
 
   test('initiator origin on dangerous downloads is displayed', async () => {
-    loadTimeData.overrideValues({showInitiatorOrigin: true});
     item.data = createDownload({
       dangerType: DangerType.kDangerousFile,
       fileExternallyRemoved: false,
@@ -110,45 +71,25 @@ suite('ItemTest', function() {
     });
     await microtasksFinished();
 
-    assertFalse(isVisible(item.$.url));
     assertTrue(isVisible(
         item.shadowRoot.querySelector<HTMLElement>('#initiator-origin')));
   });
 
   test('failed deep scans display initiator origin', async () => {
-    loadTimeData.overrideValues({showInitiatorOrigin: true});
     item.data = createDownload({
       dangerType: DangerType.kDeepScannedFailed,
       fileExternallyRemoved: false,
       hideDate: true,
       state: State.kComplete,
-      url: stringToMojoUrl('http://evil.com'),
+      url: 'http://evil.com',
       displayInitiatorOrigin: 'http://display.com',
     });
     await microtasksFinished();
 
-    assertFalse(isVisible(item.$.url));
     assertTrue(isVisible(
         item.shadowRoot.querySelector<HTMLElement>('#initiator-origin')));
   });
 
-  test('url display string is a link to the original url', async () => {
-    const url = 'https://' +
-        'a'.repeat(1000) + '.com/document.pdf';
-    const displayUrl = 'https://' +
-        '啊'.repeat(1000) + '.com/document.pdf';
-    item.data = createDownload({
-      hideDate: false,
-      state: State.kComplete,
-      url: stringToMojoUrl(url),
-      displayUrl: displayUrl,
-    });
-    await microtasksFinished();
-
-    assertEquals(url, item.$.url.href);
-    assertEquals(url, item.$['file-link'].href);
-    assertEquals(displayUrl, item.$.url.text);
-  });
 
   test('icon loads successfully', async () => {
     testIconLoader.setShouldIconsLoad(true);
@@ -678,7 +619,7 @@ suite('ItemTest', function() {
       hideDate: true,
       state: State.kDangerous,
       isDangerous: true,
-      url: stringToMojoUrl('http://evil.com'),
+      url: 'http://evil.com',
     });
     await microtasksFinished();
     const esbPromo =
@@ -700,7 +641,7 @@ suite('ItemTest', function() {
       hideDate: true,
       state: State.kDangerous,
       isDangerous: true,
-      url: stringToMojoUrl('http://evil.com'),
+      url: 'http://evil.com',
     });
     await microtasksFinished();
     const esbPromo = item.shadowRoot.querySelector('#esb-download-row-promo');
@@ -761,7 +702,7 @@ suite('ItemFocusTest', function() {
       'copy download link button copies download url and shows toast',
       async () => {
         const url = 'https://example.com';
-        item.data = createDownload({url: stringToMojoUrl(url)});
+        item.data = createDownload({url: url});
         await microtasksFinished();
         const copyDownloadLinkButton =
             item.shadowRoot.querySelector<HTMLElement>('#copy-download-link');

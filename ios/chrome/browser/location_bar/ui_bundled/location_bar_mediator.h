@@ -7,17 +7,23 @@
 
 #import <UIKit/UIKit.h>
 
+#import "ios/chrome/browser/location_bar/ui_bundled/location_bar_mutator.h"
+
 @protocol LocationBarConsumer;
 class PlaceholderService;
 class TemplateURLService;
+class UrlLoadingBrowserAgent;
 class WebStateList;
 
 // A mediator object that updates location bar state not relating to the
 // LocationBarSteadyView. In practice, this is any state not relating to the
 // WebState.
-@interface LocationBarMediator : NSObject
+@interface LocationBarMediator : NSObject <LocationBarMutator>
 
-- (instancetype)initWithIsIncognito:(BOOL)isIncognito NS_DESIGNATED_INITIALIZER;
+- (instancetype)initWithURLLoadingBrowsingAgent:
+                    (UrlLoadingBrowserAgent*)URLLoadingBrowserAgent
+                                    isIncognito:(BOOL)isIncognito
+    NS_DESIGNATED_INITIALIZER;
 - (instancetype)init NS_UNAVAILABLE;
 
 // The templateURLService used by this mediator to extract whether the default

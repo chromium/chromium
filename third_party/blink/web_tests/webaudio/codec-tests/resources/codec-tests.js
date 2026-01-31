@@ -60,14 +60,13 @@ function runCodecTest(options) {
   // analysis but then get a sample-level failure.
   const absTolerance = options.absTolerance ?? 5e-5;
   // Minimum acceptable signal-to-noise ratio (SNR) in decibels for each
-  // channel. The current value of 100dB is chosen as an absolute upper
-  // limit of what is audible by the human ear in professional audio
-  // applications. This value is permissive enough to allow for
-  // inconsequential changes in the actual waveform to occur due to
-  // things like the decoder implementation changing, but strict enough
-  // that it should not result in any meaningful changes to the output
-  // audio.
-  const minSnrDb = options.minSnrDb ?? 100.0;
+  // channel. The current value of 89dB is chosen as a reasonable upper limit of
+  // what is audible to the human ear, combined with the limitations found from
+  // real world testing of various codecs. For example, decoding FLAC audio with
+  // FFmpeg versus Symphonia can produce SNRs of 90-95 dB. In contrast, bigger
+  // changes like switching sample type from S16 to F32 can produce SNRs of
+  // as low as 30 dB.
+  const minSnrDb = options.minSnrDb ?? 89.0;
 
   const fileNames = getFileNames();
 

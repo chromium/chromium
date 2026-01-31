@@ -83,10 +83,11 @@ void FacilitatedPaymentsController::SetUiEventListener(
   ui_event_listener_ = std::move(ui_event_listener);
 }
 
-void FacilitatedPaymentsController::OnUiEvent(JNIEnv* env, jint event) {
-  CHECK(event >= static_cast<jint>(
+void FacilitatedPaymentsController::OnUiEvent(JNIEnv* env, int32_t event) {
+  CHECK(event >= static_cast<int32_t>(
                      payments::facilitated::UiEvent::kNewScreenShown) &&
-        event <= static_cast<jint>(payments::facilitated::UiEvent::kMaxValue))
+        event <=
+            static_cast<int32_t>(payments::facilitated::UiEvent::kMaxValue))
       << "Invalid payments::facilitated::UiEvent value: " << event;
 
   // `payments::facilitated::UiEvent` is synced to the Java side.
@@ -106,15 +107,16 @@ void FacilitatedPaymentsController::OnUiEvent(JNIEnv* env, jint event) {
   }
 }
 
-void FacilitatedPaymentsController::OnBankAccountSelected(JNIEnv* env,
-                                                          jlong instrument_id) {
+void FacilitatedPaymentsController::OnBankAccountSelected(
+    JNIEnv* env,
+    int64_t instrument_id) {
   if (on_payment_account_selected_) {
     std::move(on_payment_account_selected_).Run(instrument_id);
   }
 }
 
 void FacilitatedPaymentsController::OnEwalletSelected(JNIEnv* env,
-                                                      jlong instrument_id) {
+                                                      int64_t instrument_id) {
   if (on_fop_selected_) {
     std::move(on_fop_selected_)
         .Run(payments::facilitated::SelectedFopData(instrument_id));

@@ -10,7 +10,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation_traits.h"
 #include "chrome/browser/ui/browser_window/public/browser_collection.h"
-#include "chrome/browser/ui/browser_window/public/browser_collection_observer.h"
+#include "chrome/browser/ui/browser_window/public/global_browser_collection_platform_delegate.h"
 
 // GlobalBrowserCollection is a GlobalFeature instantiated on the browser
 // process at startup. It notifies its subscribed observers of all browser
@@ -21,8 +21,10 @@
 //
 // If you only need to observe a single browser, use the callback registrations
 // exposed on BrowserWindowInterface instead.
-class GlobalBrowserCollection final : public BrowserCollection,
-                                      public BrowserCollectionObserver {
+//
+// TODO(crbug.com/474120522): The Android implementation does not yet fire
+// OnBrowserActivated and OnBrowserDeactivated BrowserCollectionObserver events.
+class GlobalBrowserCollection final : public BrowserCollection {
  public:
   GlobalBrowserCollection();
   GlobalBrowserCollection(const GlobalBrowserCollection&) = delete;
@@ -35,6 +37,8 @@ class GlobalBrowserCollection final : public BrowserCollection,
   bool IsEmpty() const override;
   size_t GetSize() const override;
 
+  GlobalBrowserCollectionPlatformDelegate* GetPlatformDelegate();
+
  protected:
   // BrowserCollection:
   BrowserVector GetBrowsers(Order order) override;
@@ -42,12 +46,14 @@ class GlobalBrowserCollection final : public BrowserCollection,
  private:
   friend base::ScopedObservationTraits<GlobalBrowserCollection,
                                        BrowserCollectionObserver>;
+  friend GlobalBrowserCollectionPlatformDelegate;
 
-  // BrowserCollectionObserver:
-  void OnBrowserCreated(BrowserWindowInterface* browser) override;
-  void OnBrowserClosed(BrowserWindowInterface* browser) override;
-  void OnBrowserActivated(BrowserWindowInterface* browser) override;
-  void OnBrowserDeactivated(BrowserWindowInterface* browser) override;
+  void OnBrowserCreated(BrowserWindowInterface* browser);
+  void OnBrowserClosed(BrowserWindowInterface* browser);
+  void OnBrowserActivated(BrowserWindowInterface* browser);
+  void OnBrowserDeactivated(BrowserWindowInterface* browser);
+
+  GlobalBrowserCollectionPlatformDelegate platform_delegate_;
 
   // References to the global set of browsers in creation order, with the
   // least recently created browser appearing at the front of the vector.

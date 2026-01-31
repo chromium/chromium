@@ -270,7 +270,8 @@ void OhttpKeyService::NotifyLookupResponse(
         base::BindOnce(&OhttpKeyService::MaybeStartServerTriggeredFetch,
                        weak_factory_.GetWeakPtr(), key,
                        FetchTriggerReason::kKeyRelatedHttpErrorCode),
-        base::Seconds(base::RandInt(0, kServerTriggeredFetchMaxDelayTimeSec)));
+        base::Seconds(
+            base::RandIntInclusive(0, kServerTriggeredFetchMaxDelayTimeSec)));
     return;
   }
 
@@ -284,7 +285,8 @@ void OhttpKeyService::NotifyLookupResponse(
         base::BindOnce(&OhttpKeyService::MaybeStartServerTriggeredFetch,
                        weak_factory_.GetWeakPtr(), key,
                        FetchTriggerReason::kKeyRotatedHeader),
-        base::Seconds(base::RandInt(0, kServerTriggeredFetchMaxDelayTimeSec)));
+        base::Seconds(
+            base::RandIntInclusive(0, kServerTriggeredFetchMaxDelayTimeSec)));
     return;
   }
 }
@@ -312,6 +314,7 @@ void OhttpKeyService::StartFetch(Callback callback,
   resource_request->url = GetKeyFetchingUrl();
   resource_request->credentials_mode = network::mojom::CredentialsMode::kOmit;
   resource_request->headers.SetHeader("X-OhttpPublickey-Fst", "true");
+  resource_request->headers.SetHeader("Accept", "application/ohttp-keys");
   url_loader_ = network::SimpleURLLoader::Create(std::move(resource_request),
                                                  kOhttpKeyTrafficAnnotation);
   url_loader_->SetTimeoutDuration(kKeyFetchTimeout);

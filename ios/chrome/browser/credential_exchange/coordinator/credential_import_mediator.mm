@@ -8,22 +8,26 @@
 #import "base/task/bind_post_task.h"
 #import "components/password_manager/core/browser/import/import_results.h"
 #import "components/password_manager/core/browser/ui/saved_passwords_presenter.h"
+#import "components/sync/service/sync_service.h"
 #import "components/webauthn/core/browser/passkey_model.h"
 #import "ios/chrome/browser/credential_exchange/model/credential_importer.h"
 #import "ios/chrome/browser/credential_exchange/public/credential_import_stage.h"
 #import "ios/chrome/browser/credential_exchange/ui/credential_import_consumer.h"
+#import "ios/chrome/browser/data_import/public/credential_import_item.h"
+#import "ios/chrome/browser/data_import/public/credential_import_item_favicon_data_source.h"
 #import "ios/chrome/browser/data_import/public/import_data_item.h"
 #import "ios/chrome/browser/data_import/public/passkey_import_item.h"
 #import "ios/chrome/browser/data_import/public/password_import_item.h"
-#import "ios/chrome/browser/data_import/public/password_import_item_favicon_data_source.h"
 #import "ios/chrome/browser/favicon/model/favicon_loader.h"
+#import "ios/chrome/browser/passwords/model/password_manager_util_ios.h"
 #import "ios/chrome/browser/shared/ui/util/url_with_title.h"
 #import "ios/chrome/common/ui/favicon/favicon_attributes.h"
+#import "ios/chrome/common/ui/favicon/favicon_constants.h"
 #import "ui/gfx/favicon_size.h"
 #import "url/gurl.h"
 
 @interface CredentialImportMediator () <CredentialImporterDelegate,
-                                        PasswordImportItemFaviconDataSource>
+                                        CredentialImportItemFaviconDataSource>
 @end
 
 @implementation CredentialImportMediator {
@@ -42,6 +46,9 @@
 
   // Fetches favicons for credentials items.
   raw_ptr<FaviconLoader> _faviconLoader;
+
+  // Used to check whether the user is syncing passwords.
+  raw_ptr<syncer::SyncService> _syncService;
 }
 
 - (instancetype)initWithUUID:(NSUUID*)UUID
@@ -51,7 +58,8 @@
          (std::unique_ptr<password_manager::SavedPasswordsPresenter>)
              savedPasswordsPresenter
                 passkeyModel:(webauthn::PasskeyModel*)passkeyModel
-               faviconLoader:(FaviconLoader*)faviconLoader {
+               faviconLoader:(FaviconLoader*)faviconLoader
+                 syncService:(syncer::SyncService*)syncService {
   self = [super init];
   if (self) {
     _savedPasswordsPresenter = std::move(savedPasswordsPresenter);
@@ -64,6 +72,7 @@
     _delegate = delegate;
     _userEmail = std::move(userEmail);
     _faviconLoader = faviconLoader;
+    _syncService = syncService;
   }
   return self;
 }
@@ -90,8 +99,15 @@
 #pragma mark - CredentialImporterDelegate
 
 - (void)showImportScreenWithPasswordCount:(NSInteger)passwordCount
-                             passkeyCount:(NSInteger)passkeyCount {
+                             passkeyCount:(NSInteger)passkeyCount
+                      exporterDisplayName:(NSString*)exporterDisplayName {
+  if (passwordCount == 0 && passkeyCount == 0) {
+    [_delegate showNothingImportedScreen];
+    return;
+  }
+
   self.importingPasskeys = passkeyCount > 0;
+  [_consumer setExporterDisplayName:exporterDisplayName];
   [_consumer
       setImportDataItem:[[ImportDataItem alloc]
                             initWithType:ImportDataItemType::kPasswords
@@ -111,9 +127,13 @@
                                          passkeys:(NSArray<PasskeyImportItem*>*)
                                                       passkeys {
   CHECK(passwords.count > 0ul || passkeys.count > 0ul);
-  [_delegate showConflictResolutionScreenWithPasswords:
-                 [self passwordItemsWithFaviconDataSource:passwords]
-                                              passkeys:passkeys];
+  NSArray<PasswordImportItem*>* passwordsWithFaviconDataSource =
+      [self passwordItemsWithFaviconDataSource:passwords];
+  NSArray<PasskeyImportItem*>* passkeysWithFaviconDataSource =
+      [self passkeyItemsWithFaviconDataSource:passkeys];
+  [_delegate
+      showConflictResolutionScreenWithPasswords:passwordsWithFaviconDataSource
+                                       passkeys:passkeysWithFaviconDataSource];
 }
 
 - (void)onPasswordsImported:(const password_manager::ImportResults&)results {
@@ -128,13 +148,15 @@
   [_consumer setImportDataItem:item];
 }
 
-- (void)onPasskeysImported:(int)passkeysImported {
-  // TODO(crbug.com/450982128): Handle displaying errors.
-  [_consumer
-      setImportDataItem:[[ImportDataItem alloc]
-                            initWithType:ImportDataItemType::kPasskeys
-                                  status:ImportDataItemImportStatus::kImported
-                                   count:passkeysImported]];
+- (void)onPasskeysImported:(int)passkeysImported
+                   invalid:(NSArray<PasskeyImportItem*>*)invalid {
+  _invalidPasskeys = [self passkeyItemsWithFaviconDataSource:invalid];
+  ImportDataItem* item =
+      [[ImportDataItem alloc] initWithType:ImportDataItemType::kPasskeys
+                                    status:ImportDataItemImportStatus::kImported
+                                     count:passkeysImported];
+  item.invalidCount = self.invalidPasskeys.count;
+  [_consumer setImportDataItem:item];
 }
 
 - (void)onImportFinished {
@@ -158,9 +180,9 @@
                                         selectedPasskeyIds:selectedPasskeyIds];
 }
 
-#pragma mark - PasswordImportItemFaviconDataSource
+#pragma mark - CredentialImportItemFaviconDataSource
 
-- (BOOL)passwordImportItem:(PasswordImportItem*)item
+- (BOOL)credentialImportItem:(CredentialImportItem*)item
     loadFaviconAttributesWithUIHandler:(ProceduralBlock)handler {
   // Make sure `handler` is run on the original sequence.
   base::RepeatingClosure faviconLoadClosure =
@@ -173,8 +195,14 @@
     faviconLoadCompletion();
   };
   if (item.url) {
-    _faviconLoader->FaviconForPageUrlOrHost(item.url.URL, gfx::kFaviconSize,
-                                            faviconLoadedBlock);
+    // Only fallback to Google server if the user is syncing passwords, ensuring
+    // privacy for non-syncing users.
+    bool fallbackToGoogleServer =
+        password_manager_util::IsSavingPasswordsToAccountWithNormalEncryption(
+            _syncService);
+    _faviconLoader->FaviconForPageUrl(item.url.URL, kDesiredSmallFaviconSizePt,
+                                      kMinFaviconSizePt, fallbackToGoogleServer,
+                                      faviconLoadedBlock);
   } else {
     // If the URL does not exist, return the monogram for the username.
     CHECK_GT(item.username.length, 0u);
@@ -205,6 +233,16 @@
     password.faviconDataSource = self;
   }
   return newPasswords;
+}
+
+// Attach favicon loader to each element in `passkeys`.
+- (NSArray<PasskeyImportItem*>*)passkeyItemsWithFaviconDataSource:
+    (NSArray<PasskeyImportItem*>*)passkeys {
+  NSArray<PasskeyImportItem*>* newPasskeys = [NSArray arrayWithArray:passkeys];
+  for (PasskeyImportItem* passkey in newPasskeys) {
+    passkey.faviconDataSource = self;
+  }
+  return newPasskeys;
 }
 
 @end

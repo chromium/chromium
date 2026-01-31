@@ -10,11 +10,12 @@
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/extensions/extension_management_constants.h"
 #include "chrome/browser/extensions/external_provider_impl.h"
-#include "chrome/browser/extensions/forced_extensions/install_stage_tracker.h"
+#include "chrome/browser/extensions/forced_extensions/install_stage_tracker_factory.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_service.h"
+#include "extensions/browser/forced_extensions/install_stage_tracker.h"
 #include "extensions/browser/install/crx_install_error.h"
 #include "extensions/browser/install/sandboxed_unpacker_failure_reason.h"
 #include "extensions/browser/pref_names.h"
@@ -122,7 +123,7 @@ bool ForceInstalledTracker::ProceedIfForcedExtensionsPrefReady() {
   DCHECK(status_ == kWaitingForPolicyService ||
          status_ == kWaitingForInstallForcelistPref);
 
-  const base::Value::Dict& value =
+  const base::DictValue& value =
       pref_service_->GetDict(pref_names::kInstallForceList);
   if (!forced_extensions_pref_ready_ && !value.empty()) {
     forced_extensions_pref_ready_ = true;
@@ -144,9 +145,10 @@ void ForceInstalledTracker::OnForcedExtensionsPrefReady() {
   // Listen for extension loads and install failures.
   status_ = kWaitingForExtensionLoads;
   registry_observation_.Observe(registry_.get());
-  collector_observation_.Observe(InstallStageTracker::Get(profile_));
+  collector_observation_.Observe(
+      InstallStageTrackerFactory::GetForBrowserContext(profile_));
 
-  const base::Value::Dict& value =
+  const base::DictValue& value =
       pref_service_->GetDict(pref_names::kInstallForceList);
 
   // Add each extension to |extensions_|.
@@ -365,7 +367,7 @@ void ForceInstalledTracker::MaybeNotifyObservers() {
     status_ = kComplete;
     registry_observation_.Reset();
     collector_observation_.Reset();
-    InstallStageTracker::Get(profile_)->Clear();
+    InstallStageTrackerFactory::GetForBrowserContext(profile_)->Clear();
   }
 }
 

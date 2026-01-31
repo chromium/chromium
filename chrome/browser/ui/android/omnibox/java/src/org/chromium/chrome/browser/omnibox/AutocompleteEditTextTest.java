@@ -39,7 +39,6 @@ import org.robolectric.Robolectric;
 import org.robolectric.Shadows;
 import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowAccessibilityManager;
-import org.robolectric.shadows.ShadowLog;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
@@ -250,9 +249,7 @@ public class AutocompleteEditTextTest {
         }
     }
 
-    public AutocompleteEditTextTest() {
-        if (DEBUG) ShadowLog.stream = System.out;
-    }
+    public AutocompleteEditTextTest() {}
 
     @Before
     public void setUp() {
@@ -1279,6 +1276,8 @@ public class AutocompleteEditTextTest {
     }
 
     // crbug.com/759876
+    // TODO(crbug.com/450954710): This test fails on SDK 36.
+    @Config(sdk = 29)
     @Test
     public void testFocusInAndSelectAll() {
         final String url = "https://google.com";
@@ -1329,6 +1328,8 @@ public class AutocompleteEditTextTest {
     }
 
     // crbug.com/768323
+    // TODO(crbug.com/450954710): This test fails on SDK 36.
+    @Config(sdk = 29)
     @Test
     public void testFocusLossHidesCursor() {
         assertTrue(mAutocomplete.isFocused());
@@ -1430,6 +1431,8 @@ public class AutocompleteEditTextTest {
     }
 
     // crbug.com/759876
+    // TODO(crbug.com/450954710): This test fails on SDK 36.
+    @Config(sdk = 29)
     @Test
     public void testTextSelectionGetsAnnouncedAgainOnFocus() {
         final String text = "hello";

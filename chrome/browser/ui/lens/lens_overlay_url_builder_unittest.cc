@@ -105,6 +105,45 @@ class LensOverlayUrlBuilderTest : public testing::Test {
   base::test::ScopedFeatureList feature_list_;
 };
 
+TEST_F(LensOverlayUrlBuilderTest, AppendLensOverlaySidePanelParams) {
+  std::map<std::string, std::string> params;
+  uint64_t gen204_id = 0;
+
+  // Test multimodal
+  lens::AppendLensOverlaySidePanelParams(params, gen204_id, /*has_text=*/true,
+                                         /*has_image=*/true);
+  EXPECT_EQ(params["lns_fp"], "1");
+  EXPECT_EQ(params["lns_mode"], "mu");
+  EXPECT_EQ(params["plla"], "0");
+
+  params.clear();
+
+  // Test text only
+  lens::AppendLensOverlaySidePanelParams(params, gen204_id, /*has_text=*/true,
+                                         /*has_image=*/false);
+  EXPECT_EQ(params["lns_fp"], "1");
+  EXPECT_EQ(params["lns_mode"], "text");
+  EXPECT_EQ(params["plla"], "0");
+
+  params.clear();
+
+  // Test image only
+  lens::AppendLensOverlaySidePanelParams(params, gen204_id, /*has_text=*/false,
+                                         /*has_image=*/true);
+  EXPECT_EQ(params["lns_fp"], "1");
+  EXPECT_EQ(params["lns_mode"], "un");
+  EXPECT_EQ(params["plla"], "0");
+
+  params.clear();
+
+  // Test no input (should not crash, but also not set mode)
+  lens::AppendLensOverlaySidePanelParams(params, gen204_id, /*has_text=*/false,
+                                         /*has_image=*/false);
+  EXPECT_EQ(params["lns_fp"], "1");
+  EXPECT_FALSE(params.contains("lns_mode"));
+  EXPECT_EQ(params["plla"], "0");
+}
+
 TEST_F(LensOverlayUrlBuilderTest, AppendTranslateParamsToMap) {
   std::string query = "test";
   std::map<std::string, std::string> params;
@@ -458,7 +497,7 @@ TEST_F(LensOverlayUrlBuilderTest, BuildLensSearchURLWithAdditionalParams) {
       kResultsSearchBaseUrl, kLanguage, search_session_id.c_str(),
       encoded_request_id.c_str());
 
-  EXPECT_EQ(
+  EXPECT_TRUE(lens::AreSearchUrlsEquivalent(
       StripQuerySubmissionTimeAndClientUploadDurationParam(
           lens::BuildLensSearchURL(
               kTestTime,
@@ -466,7 +505,7 @@ TEST_F(LensOverlayUrlBuilderTest, BuildLensSearchURLWithAdditionalParams) {
               /*page_title=*/std::nullopt, std::move(request_id), cluster_info,
               additional_params, lens::LensOverlayInvocationSource::kAppMenu,
               /*use_dark_mode=*/false)),
-      expected_url);
+      GURL(expected_url)));
 }
 
 TEST_F(LensOverlayUrlBuilderTest, BuildMultimodalSearchURLWithVideoContext) {
@@ -631,58 +670,6 @@ TEST_F(LensOverlayUrlBuilderTest,
 
   const GURL failing_url3(base::StringPrintf("%s?cs=1", kResultsSearchBaseUrl));
   EXPECT_FALSE(lens::HasCommonSearchQueryParameters(failing_url3));
-}
-
-TEST_F(LensOverlayUrlBuilderTest,
-       AppendInvocationSourceParamToUrlAppendsEntryPoints) {
-  const GURL base_url(kResultsSearchBaseUrl);
-
-  std::string expected_app_menu_url =
-      base::StringPrintf("%s?source=chrome.cr.menu", kResultsSearchBaseUrl);
-  EXPECT_EQ(lens::AppendInvocationSourceParamToURL(
-                base_url, lens::LensOverlayInvocationSource::kAppMenu),
-            expected_app_menu_url);
-
-  std::string expected_context_menu_page_url =
-      base::StringPrintf("%s?source=chrome.cr.ctxp", kResultsSearchBaseUrl);
-  EXPECT_EQ(lens::AppendInvocationSourceParamToURL(
-                base_url,
-                lens::LensOverlayInvocationSource::kContentAreaContextMenuPage),
-            expected_context_menu_page_url);
-
-  std::string expected_context_menu_image_url =
-      base::StringPrintf("%s?source=chrome.cr.ctxi", kResultsSearchBaseUrl);
-  EXPECT_EQ(
-      lens::AppendInvocationSourceParamToURL(
-          base_url,
-          lens::LensOverlayInvocationSource::kContentAreaContextMenuImage),
-      expected_context_menu_image_url);
-
-  std::string expected_toolbar_url =
-      base::StringPrintf("%s?source=chrome.cr.tbic", kResultsSearchBaseUrl);
-  EXPECT_EQ(lens::AppendInvocationSourceParamToURL(
-                base_url, lens::LensOverlayInvocationSource::kToolbar),
-            expected_toolbar_url);
-
-  std::string expected_find_in_page_url =
-      base::StringPrintf("%s?source=chrome.cr.find", kResultsSearchBaseUrl);
-  EXPECT_EQ(lens::AppendInvocationSourceParamToURL(
-                base_url, lens::LensOverlayInvocationSource::kFindInPage),
-            expected_find_in_page_url);
-
-  std::string expected_omnibox_url =
-      base::StringPrintf("%s?source=chrome.cr.obic", kResultsSearchBaseUrl);
-  EXPECT_EQ(lens::AppendInvocationSourceParamToURL(
-                base_url, lens::LensOverlayInvocationSource::kOmnibox),
-            expected_omnibox_url);
-
-  std::string expected_context_menu_video_url =
-      base::StringPrintf("%s?source=chrome.cr.ctxv", kResultsSearchBaseUrl);
-  EXPECT_EQ(
-      lens::AppendInvocationSourceParamToURL(
-          base_url,
-          lens::LensOverlayInvocationSource::kContentAreaContextMenuVideo),
-      expected_context_menu_video_url);
 }
 
 TEST_F(LensOverlayUrlBuilderTest,

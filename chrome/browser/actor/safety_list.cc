@@ -48,10 +48,10 @@ SafetyList& SafetyList::operator=(const SafetyList&) = default;
 
 // static
 SafetyList SafetyList::ParsePatternListFromJson(
-    const base::Value::List& list_data) {
+    const base::ListValue& list_data) {
   Patterns patterns;
   for (const auto& navigation : list_data) {
-    const base::Value::Dict* navigation_dict = navigation.GetIfDict();
+    const base::DictValue* navigation_dict = navigation.GetIfDict();
     if (!navigation_dict) {
       return SafetyList();
     }

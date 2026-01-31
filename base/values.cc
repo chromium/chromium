@@ -162,10 +162,10 @@ Value::Value(Type type) {
       data_.emplace<BlobStorage>();
       return;
     case Type::DICT:
-      data_.emplace<Dict>();
+      data_.emplace<DictValue>();
       return;
     case Type::LIST:
-      data_.emplace<List>();
+      data_.emplace<ListValue>();
       return;
   }
 
@@ -203,9 +203,9 @@ Value::Value(base::span<const uint8_t> value)
 
 Value::Value(BlobStorage&& value) noexcept : data_(std::move(value)) {}
 
-Value::Value(Dict&& value) noexcept : data_(std::move(value)) {}
+Value::Value(DictValue&& value) noexcept : data_(std::move(value)) {}
 
-Value::Value(List&& value) noexcept : data_(std::move(value)) {}
+Value::Value(ListValue&& value) noexcept : data_(std::move(value)) {}
 
 Value::Value(std::monostate) {}
 
@@ -263,19 +263,19 @@ Value::BlobStorage* Value::GetIfBlob() {
 }
 
 const DictValue* Value::GetIfDict() const {
-  return std::get_if<Dict>(&data_);
+  return std::get_if<DictValue>(&data_);
 }
 
 DictValue* Value::GetIfDict() {
-  return std::get_if<Dict>(&data_);
+  return std::get_if<DictValue>(&data_);
 }
 
 const ListValue* Value::GetIfList() const {
-  return std::get_if<List>(&data_);
+  return std::get_if<ListValue>(&data_);
 }
 
 ListValue* Value::GetIfList() {
-  return std::get_if<List>(&data_);
+  return std::get_if<ListValue>(&data_);
 }
 
 bool Value::GetBool() const {
@@ -318,22 +318,22 @@ Value::BlobStorage& Value::GetBlob() {
 
 const DictValue& Value::GetDict() const {
   DCHECK(is_dict());
-  return std::get<Dict>(data_);
+  return std::get<DictValue>(data_);
 }
 
 DictValue& Value::GetDict() {
   DCHECK(is_dict());
-  return std::get<Dict>(data_);
+  return std::get<DictValue>(data_);
 }
 
 const ListValue& Value::GetList() const {
   DCHECK(is_list());
-  return std::get<List>(data_);
+  return std::get<ListValue>(data_);
 }
 
 ListValue& Value::GetList() {
   DCHECK(is_list());
-  return std::get<List>(data_);
+  return std::get<ListValue>(data_);
 }
 
 std::string Value::TakeString() && {
@@ -1378,9 +1378,9 @@ void Value::WriteIntoTrace(perfetto::TracedValue context) const {
       std::move(context).WriteString(member);
     } else if constexpr (std::is_same_v<T, BlobStorage>) {
       std::move(context).WriteString("<binary data not supported>");
-    } else if constexpr (std::is_same_v<T, Dict>) {
+    } else if constexpr (std::is_same_v<T, DictValue>) {
       member.WriteIntoTrace(std::move(context));
-    } else if constexpr (std::is_same_v<T, List>) {
+    } else if constexpr (std::is_same_v<T, ListValue>) {
       member.WriteIntoTrace(std::move(context));
     }
   });

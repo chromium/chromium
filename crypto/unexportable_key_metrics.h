@@ -25,6 +25,10 @@ enum class TPMOperation {
   // An operation to export a wrapped key (or a similar representation
   // identifying a TPM key) from an existing TPM key.
   kWrappedKeyExport,
+  // An operation to select a signature algorithm supported by the TPM.
+  kSelectAlgorithm,
+  // An operation to delete a TPM-protected key.
+  kKeyDeletion,
 };
 
 // Converts the given `operation` to a string representation.

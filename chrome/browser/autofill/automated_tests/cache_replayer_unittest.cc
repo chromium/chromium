@@ -33,7 +33,6 @@ namespace {
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 
 using base::JSONWriter;
-using base::Value;
 
 // Request Response Pair for the API server
 using RequestResponsePair =
@@ -185,7 +184,7 @@ bool WriteJSON(const base::FilePath& file_path,
                const std::vector<RequestResponsePair>& request_response_pairs,
                RequestType request_type = RequestType::kQueryProtoPOST) {
   // Make json list node that contains all query requests.
-  base::Value::Dict urls_dict;
+  base::DictValue urls_dict;
   for (const auto& request_response_pair : request_response_pairs) {
     std::string serialized_request;
     std::string url;
@@ -194,7 +193,7 @@ bool WriteJSON(const base::FilePath& file_path,
       return false;
     }
 
-    Value::Dict request_response_node;
+    base::DictValue request_response_node;
     request_response_node.Set("SerializedRequest",
                               std::move(serialized_request));
     request_response_node.Set(
@@ -203,20 +202,20 @@ bool WriteJSON(const base::FilePath& file_path,
     // Populate json dict node that contains Autofill Server requests per URL.
     // This will construct an empty list for `url` if it didn't exist already.
     if (!urls_dict.contains(url))
-      urls_dict.Set(url, base::Value::List());
+      urls_dict.Set(url, base::ListValue());
     urls_dict.FindList(url)->Append(std::move(request_response_node));
   }
 
   // Make json dict node that contains requests per domain.
-  base::Value::Dict domains_dict;
+  base::DictValue domains_dict;
   domains_dict.Set(kHostname, base::Value(std::move(urls_dict)));
 
   // Make json root dict.
-  base::Value::Dict root_dict;
+  base::DictValue root_dict;
   root_dict.Set("Requests", std::move(domains_dict));
 
   // Write content to JSON file.
-  return WriteJSONNode(file_path, Value(std::move(root_dict)));
+  return WriteJSONNode(file_path, base::Value(std::move(root_dict)));
 }
 
 // TODO(crbug.com/40768066): The test flakily times out.
@@ -292,7 +291,7 @@ TEST_P(
   // Make JSON content.
 
   // Make json list node that contains the problematic query request.
-  Value::Dict request_response_node;
+  base::DictValue request_response_node;
   // Put some textual content for HTTP request. Content does not matter because
   // the Query content will be parsed from the URL that corresponds to the
   // dictionary key.
@@ -302,23 +301,23 @@ TEST_P(
   request_response_node.Set("SerializedResponse",
                             MakeSerializedResponse(AutofillQueryResponse()));
 
-  base::Value::List url_list;
+  base::ListValue url_list;
   url_list.Append(std::move(request_response_node));
 
   // Populate json dict node that contains Autofill Server requests per URL.
-  base::Value::Dict urls_dict;
+  base::DictValue urls_dict;
   // The query parameter in the URL cannot be parsed to a proto because
   // parameter value is in invalid format.
   urls_dict.Set(CreateQueryUrl(GetParam()), std::move(url_list));
 
   // Make json dict node that contains requests per domain.
-  base::Value::Dict domains_dict;
+  base::DictValue domains_dict;
   domains_dict.Set(kHostname, std::move(urls_dict));
   // Make json root dict.
-  base::Value::Dict root_dict;
+  base::DictValue root_dict;
   root_dict.Set("Requests", std::move(domains_dict));
   // Write content to JSON file.
-  ASSERT_TRUE(WriteJSONNode(file_path, Value(std::move(root_dict))));
+  ASSERT_TRUE(WriteJSONNode(file_path, base::Value(std::move(root_dict))));
 
   // Make death assertion.
 

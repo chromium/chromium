@@ -6,6 +6,8 @@
 
 #include <stddef.h>
 
+#include <algorithm>
+
 #include "base/compiler_specific.h"
 #include "base/feature_list.h"
 #include "base/memory/raw_ptr.h"
@@ -46,6 +48,7 @@
 #include "chrome/test/base/interactive_test_utils.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/contextual_tasks/public/features.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/lens/lens_features.h"
 #include "components/omnibox/browser/autocomplete_match.h"
@@ -59,6 +62,7 @@
 #include "components/security_interstitials/core/omnibox_https_upgrade_metrics.h"
 #include "components/unified_consent/pref_names.h"
 #include "content/public/browser/browser_context.h"
+#include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/url_constants.h"
 #include "content/public/test/browser_test.h"
@@ -687,7 +691,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxViewViewsTest, BackgroundIsOpaque) {
   // can't use subpixel rendering.
   OmniboxViewViews* view = BrowserView::GetBrowserViewForBrowser(browser())
                                ->toolbar()
-                               ->location_bar()
+                               ->location_bar_view()
                                ->omnibox_view();
   ASSERT_TRUE(view);
   EXPECT_FALSE(view->GetRenderText()->subpixel_rendering_suppressed());
@@ -1383,7 +1387,7 @@ IN_PROC_BROWSER_TEST_F(
   histograms.ExpectTotalCount(
       security_interstitials::omnibox_https_upgrades::kEventHistogram, 0);
   ui_test_utils::HistoryEnumerator enumerator(browser()->profile());
-  EXPECT_TRUE(base::Contains(enumerator.urls(), url));
+  EXPECT_TRUE(std::ranges::contains(enumerator.urls(), url));
 
   // Now click the omnibox. This should trigger a zero suggest request with the
   // text "site-with-good-https.com" despite the omnibox URL being
@@ -1467,7 +1471,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxViewViewsOnFocusZpsTest, ShowHatsSurvey) {
 
   auto* location_bar = BrowserView::GetBrowserViewForBrowser(browser())
                            ->toolbar()
-                           ->location_bar();
+                           ->location_bar_view();
 
   // After 5 focuses of the omnibox, the HaTS survey should show if the omnibox
   // isn't still focused after the survey delay.
@@ -1486,7 +1490,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxViewViewsOnFocusZpsTest,
 
   auto* location_bar = BrowserView::GetBrowserViewForBrowser(browser())
                            ->toolbar()
-                           ->location_bar();
+                           ->location_bar_view();
 
   for (int i = 0; i < 4; i++) {
     location_bar->omnibox_view()->RequestFocus();
@@ -1764,4 +1768,158 @@ IN_PROC_BROWSER_TEST_F(OmniboxViewViewsAIMButtonPreferenceTest,
 
   chrome::ToggleShowAiModeOmniboxButton(browser());
   EXPECT_TRUE(ai_mode_icon->GetVisible());
+}
+
+// OmniboxViewViewsPlaceholderTest
+// -----------------------------------------------------------------------------
+
+class OmniboxViewViewsPlaceholderTest : public InProcessBrowserTest {
+ public:
+  OmniboxViewViewsPlaceholderTest() {
+    scoped_feature_list_.InitWithFeatures(
+        {contextual_tasks::kContextualTasks,
+         contextual_tasks::kContextualTasksForceEntryPointEligibility},
+        {});
+  }
+
+ protected:
+  OmniboxViewViews* omnibox_view() {
+    return static_cast<OmniboxViewViews*>(
+        browser()->window()->GetLocationBar()->GetOmniboxView());
+  }
+
+  content::WebContents* web_contents() {
+    return browser()->tab_strip_model()->GetActiveWebContents();
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(OmniboxViewViewsPlaceholderTest,
+                       ContextualTasksPlaceholderForContextualTasksPage) {
+  // Navigate to the Contextual Tasks page.
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), GURL(chrome::kChromeUIContextualTasksURL)));
+
+  // Verify the Contextual Tasks placeholder text should be applied.
+  EXPECT_TRUE(omnibox_view()->ShouldInstallContextualTasksPlaceholderText());
+
+  // Verify the placeholder text is set to the page title.
+  std::u16string page_title = web_contents()->GetTitle();
+  EXPECT_FALSE(page_title.empty());
+  EXPECT_EQ(page_title, omnibox_view()->GetPlaceholderText());
+  // Verify the display text is empty.
+  EXPECT_EQ(u"", omnibox_view()->GetText());
+}
+
+IN_PROC_BROWSER_TEST_F(OmniboxViewViewsPlaceholderTest,
+                       DefaultSearchEnginePlaceholderForNewTabPage) {
+  // Navigate to the New Tab Page.
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(),
+                                           GURL(chrome::kChromeUINewTabURL)));
+  // Take focus away from the omnibox.
+  ASSERT_NO_FATAL_FAILURE(
+      ui_test_utils::ClickOnView(browser(), VIEW_ID_TAB_CONTAINER));
+
+  // Verify the Contextual Tasks placeholder text should NOT be applied.
+  EXPECT_FALSE(omnibox_view()->ShouldInstallContextualTasksPlaceholderText());
+
+  // Verify the placeholder text is set to the default search engine.
+  EXPECT_EQ(u"Search Google or type a URL",
+            omnibox_view()->GetPlaceholderText());
+  // Verify the display text is empty.
+  EXPECT_EQ(u"", omnibox_view()->GetText());
+}
+
+// TODO(crbug.com/470861729): Crashes on linux blink web tests. Re-enable after
+// fixing.
+#if BUILDFLAG(IS_LINUX)
+#define MAYBE_NavigationToAndFromContextualTasks \
+  DISABLED_NavigationToAndFromContextualTasks
+#else
+#define MAYBE_NavigationToAndFromContextualTasks \
+  NavigationToAndFromContextualTasks
+#endif
+IN_PROC_BROWSER_TEST_F(OmniboxViewViewsPlaceholderTest,
+                       MAYBE_NavigationToAndFromContextualTasks) {
+  // Navigate to about:blank.
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL("about:blank")));
+  EXPECT_FALSE(omnibox_view()->ShouldInstallContextualTasksPlaceholderText());
+
+  // Verify the placeholder text is the default search engine.
+  EXPECT_EQ(u"Search Google or type a URL",
+            omnibox_view()->GetPlaceholderText());
+  // Verify the display text is set to the page URL.
+  EXPECT_EQ(u"about:blank", omnibox_view()->GetText());
+
+  // Navigate to the Contextual Tasks page.
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), GURL(chrome::kChromeUIContextualTasksURL)));
+  EXPECT_TRUE(omnibox_view()->ShouldInstallContextualTasksPlaceholderText());
+
+  // Verify the placeholder is set to the page title.
+  EXPECT_EQ(web_contents()->GetTitle(), omnibox_view()->GetPlaceholderText());
+  // Verify the display text is empty.
+  EXPECT_EQ(u"", omnibox_view()->GetText());
+
+  // Navigate to the New Tab Page.
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(),
+                                           GURL(chrome::kChromeUINewTabURL)));
+  ASSERT_NO_FATAL_FAILURE(
+      ui_test_utils::ClickOnView(browser(), VIEW_ID_TAB_CONTAINER));
+  EXPECT_FALSE(omnibox_view()->ShouldInstallContextualTasksPlaceholderText());
+
+  // Verify the placeholder text is set to the default search engine.
+  EXPECT_EQ(u"Search Google or type a URL",
+            omnibox_view()->GetPlaceholderText());
+  // Verify the display text is empty.
+  EXPECT_EQ(u"", omnibox_view()->GetText());
+
+  // Navigate back to the Contextual Tasks page.
+  web_contents()->GetController().GoBack();
+  EXPECT_TRUE(content::WaitForLoadStop(web_contents()));
+  EXPECT_TRUE(omnibox_view()->ShouldInstallContextualTasksPlaceholderText());
+
+  // Verify the placeholder is set to the page title.
+  EXPECT_EQ(web_contents()->GetTitle(), omnibox_view()->GetPlaceholderText());
+  // Verify the display text is empty.
+  EXPECT_EQ(u"", omnibox_view()->GetText());
+
+  // Navigate forward to the New Tab Page.
+  web_contents()->GetController().GoForward();
+  EXPECT_TRUE(content::WaitForLoadStop(web_contents()));
+  EXPECT_FALSE(omnibox_view()->ShouldInstallContextualTasksPlaceholderText());
+
+  // Verify the placeholder text is set to the default search engine.
+  EXPECT_EQ(u"Search Google or type a URL",
+            omnibox_view()->GetPlaceholderText());
+  // Verify the display text is empty.
+  EXPECT_EQ(u"", omnibox_view()->GetText());
+}
+
+IN_PROC_BROWSER_TEST_F(OmniboxViewViewsPlaceholderTest,
+                       TitleChangeUpdatesPlaceholder) {
+  // Navigate to the Contextual Tasks page.
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), GURL(chrome::kChromeUIContextualTasksURL)));
+
+  // Verify the placeholder text is set to the initial page title.
+  EXPECT_EQ(web_contents()->GetTitle(), omnibox_view()->GetPlaceholderText());
+  // Verify the display text is empty.
+  EXPECT_EQ(u"", omnibox_view()->GetText());
+
+  // Update the title through the navigation entry which notifies the observers
+  // immediately.
+  content::NavigationEntry* entry =
+      web_contents()->GetController().GetLastCommittedEntry();
+  const std::u16string kNewTitle = u"New Contextual Task Title";
+  web_contents()->UpdateTitleForEntry(entry, kNewTitle);
+
+  // Verify the placeholder text is updated to the new page title.
+  EXPECT_TRUE(omnibox_view()->ShouldInstallContextualTasksPlaceholderText());
+  EXPECT_EQ(kNewTitle, web_contents()->GetTitle());
+  EXPECT_EQ(kNewTitle, omnibox_view()->GetPlaceholderText());
+  // Verify the display text remains empty.
+  EXPECT_EQ(u"", omnibox_view()->GetText());
 }

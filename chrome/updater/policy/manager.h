@@ -32,6 +32,8 @@ class UpdatesSuppressedTimes {
   // within this suppression period.
   bool contains(int hour, int minute) const;
 
+  std::string ToString() const;
+
   int start_hour_ = kPolicyNotSet;
   int start_minute_ = kPolicyNotSet;
   int duration_minute_ = kPolicyNotSet;

@@ -28,12 +28,13 @@ import org.robolectric.annotation.LooperMode;
 import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.supplier.ObservableSuppliers;
-import org.chromium.base.supplier.SettableObservableSupplier;
+import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.browser_controls.BottomControlsStacker;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider.ControlsPosition;
 import org.chromium.chrome.browser.browser_controls.TopControlsStacker;
 import org.chromium.chrome.browser.browser_controls.TopControlsStacker.TopControlVisibility;
+import org.chromium.chrome.browser.toolbar.top.ToolbarControlContainer;
 import org.chromium.ui.base.TestActivity;
 
 /** Unit tests for {@link ToolbarProgressBarLayer}. */
@@ -47,7 +48,7 @@ public class ToolbarProgressBarLayerTest {
     public ActivityScenarioRule<TestActivity> mActivityScenarioRule =
             new ActivityScenarioRule<>(TestActivity.class);
 
-    @Mock private ControlContainer mControlContainer;
+    @Mock private ToolbarControlContainer mControlContainer;
     @Mock private ToolbarProgressBar mProgressBarView;
     @Mock private TopControlsStacker mTopControlsStacker;
     @Mock private BottomControlsStacker mBottomControlsStacker;
@@ -59,7 +60,7 @@ public class ToolbarProgressBarLayerTest {
 
     private ToolbarProgressBarLayer mLayer;
     private @ControlsPosition int mTestControlPosition = ControlsPosition.NONE;
-    private SettableObservableSupplier<Integer> mBookmarkBarIdSupplier;
+    private SettableMonotonicObservableSupplier<Integer> mBookmarkBarIdSupplier;
 
     @Before
     public void setUp() {

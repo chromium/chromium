@@ -23,21 +23,21 @@ class InterceptablePrefFilter : public PrefFilter {
   // indicates whether the |prefs| were actually altered by the
   // FilterOnLoadInterceptor before being handed back.
   using FinalizeFilterOnLoadCallback =
-      base::OnceCallback<void(base::Value::Dict prefs, bool prefs_altered)>;
+      base::OnceCallback<void(base::DictValue prefs, bool prefs_altered)>;
 
   // A callback to be invoked from FilterOnLoad. It takes ownership of prefs
   // and may modify them before handing them back to this
   // InterceptablePrefFilter via |finalize_filter_on_load|.
   using FilterOnLoadInterceptor = base::OnceCallback<void(
       FinalizeFilterOnLoadCallback finalize_filter_on_load,
-      base::Value::Dict prefs)>;
+      base::DictValue prefs)>;
 
   InterceptablePrefFilter();
   ~InterceptablePrefFilter() override;
 
   // PrefFilter partial implementation.
   void FilterOnLoad(PostFilterOnLoadCallback post_filter_on_load_callback,
-                    base::Value::Dict pref_store_contents) override;
+                    base::DictValue pref_store_contents) override;
 
   // Registers |filter_on_load_interceptor| to intercept the next FilterOnLoad
   // event. At most one FilterOnLoadInterceptor should be registered per
@@ -55,7 +55,7 @@ class InterceptablePrefFilter : public PrefFilter {
   // initial caller of FilterOnLoad.
   virtual void FinalizeFilterOnLoad(
       PostFilterOnLoadCallback post_filter_on_load_callback,
-      base::Value::Dict pref_store_contents,
+      base::DictValue pref_store_contents,
       bool prefs_altered) = 0;
 
   virtual base::WeakPtr<InterceptablePrefFilter> AsWeakPtr() = 0;

@@ -13,7 +13,6 @@
 #include "ash/webui/diagnostics_ui/backend/common/routine_properties.h"
 #include "ash/webui/diagnostics_ui/backend/system/cros_healthd_helpers.h"
 #include "base/compiler_specific.h"
-#include "base/containers/contains.h"
 #include "base/containers/flat_set.h"
 #include "base/containers/span.h"
 #include "base/files/file.h"
@@ -199,7 +198,7 @@ void SystemRoutineController::OnAvailableRoutinesFetched(
       available_routines);
   for (size_t i = 0; i < kRoutinePropertiesLength; i++) {
     const RoutineProperties& routine = UNSAFE_TODO(kRoutineProperties[i]);
-    if (base::Contains(healthd_routines, routine.healthd_type)) {
+    if (healthd_routines.contains(routine.healthd_type)) {
       supported_routines_.push_back(routine.type);
     }
   }
@@ -598,8 +597,8 @@ void SystemRoutineController::OnPowerRoutineResultFetched(
     return;
   }
 
-  const base::Value::Dict& parsed_json = result->GetDict();
-  const base::Value::Dict* result_details_dict =
+  const base::DictValue& parsed_json = result->GetDict();
+  const base::DictValue* result_details_dict =
       parsed_json.FindDict(kResultDetailsKey);
   if (!result_details_dict) {
     OnPowerRoutineResult(routine_type,

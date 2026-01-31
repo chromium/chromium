@@ -11,7 +11,6 @@
 #include <vector>
 
 #include "base/time/time.h"
-#include "base/types/cxx23_to_underlying.h"
 #include "extensions/browser/entry_info.h"
 #include "extensions/browser/event_router.h"
 #include "extensions/browser/extension_prefs.h"
@@ -33,9 +32,9 @@ namespace {
 
 void DispatchOnEmbedRequestedEventImpl(
     const ExtensionId& extension_id,
-    base::Value::Dict app_embedding_request_data,
+    base::DictValue app_embedding_request_data,
     content::BrowserContext* context) {
-  base::Value::List args;
+  base::ListValue args;
   args.Append(std::move(app_embedding_request_data));
   auto event = std::make_unique<Event>(
       events::APP_RUNTIME_ON_EMBED_REQUESTED,
@@ -49,7 +48,7 @@ void DispatchOnEmbedRequestedEventImpl(
 
 void DispatchOnLaunchedEventImpl(const ExtensionId& extension_id,
                                  app_runtime::LaunchSource source,
-                                 base::Value::Dict launch_data,
+                                 base::DictValue launch_data,
                                  BrowserContext* context) {
   launch_data.Set("isDemoSession",
                   ExtensionsBrowserClient::Get()->IsInDemoMode());
@@ -61,7 +60,7 @@ void DispatchOnLaunchedEventImpl(const ExtensionId& extension_id,
   launch_data.Set("isPublicSession",
                   ExtensionsBrowserClient::Get()->IsLoggedInAsPublicAccount());
 
-  base::Value::List args;
+  base::ListValue args;
   args.Append(std::move(launch_data));
   auto event = std::make_unique<Event>(events::APP_RUNTIME_ON_LAUNCHED,
                                        app_runtime::OnLaunched::kEventName,
@@ -72,10 +71,10 @@ void DispatchOnLaunchedEventImpl(const ExtensionId& extension_id,
                                                   base::Time::Now());
 }
 
-#define ASSERT_ENUM_EQUAL(Name, Name2)                                     \
-  static_assert(base::to_underlying(extensions::AppLaunchSource::Name) ==  \
-                    base::to_underlying(app_runtime::LaunchSource::Name2), \
-                "The value of extensions::" #Name                          \
+#define ASSERT_ENUM_EQUAL(Name, Name2)                                    \
+  static_assert(std::to_underlying(extensions::AppLaunchSource::Name) ==  \
+                    std::to_underlying(app_runtime::LaunchSource::Name2), \
+                "The value of extensions::" #Name                         \
                 " and app_runtime::LAUNCH_" #Name2 " should be the same");
 
 app_runtime::LaunchSource GetLaunchSourceEnum(AppLaunchSource source) {
@@ -108,8 +107,8 @@ app_runtime::LaunchSource GetLaunchSourceEnum(AppLaunchSource source) {
   // kSourceReparenting not having a corresponding entry in
   // app_runtime::LaunchSource.
   static_assert(
-      base::to_underlying(extensions::AppLaunchSource::kMaxValue) ==
-          base::to_underlying(app_runtime::LaunchSource::kMaxValue) + 3,
+      std::to_underlying(extensions::AppLaunchSource::kMaxValue) ==
+          std::to_underlying(app_runtime::LaunchSource::kMaxValue) + 3,
       "");
 
   switch (source) {
@@ -153,8 +152,8 @@ app_runtime::LaunchSource GetLaunchSourceEnum(AppLaunchSource source) {
     case AppLaunchSource::kSourceAppHomePage:
     case AppLaunchSource::kSourceFocusMode:
     case AppLaunchSource::kSourceSparky:
-      return static_cast<app_runtime::LaunchSource>(
-          base::to_underlying(source) - 3);
+      return static_cast<app_runtime::LaunchSource>(std::to_underlying(source) -
+                                                    3);
   }
 }
 
@@ -163,7 +162,7 @@ app_runtime::LaunchSource GetLaunchSourceEnum(AppLaunchSource source) {
 // static
 void AppRuntimeEventRouter::DispatchOnEmbedRequestedEvent(
     content::BrowserContext* context,
-    base::Value::Dict embed_app_data,
+    base::DictValue embed_app_data,
     const Extension* extension) {
   DispatchOnEmbedRequestedEventImpl(extension->id(), std::move(embed_app_data),
                                     context);
@@ -193,7 +192,7 @@ void AppRuntimeEventRouter::DispatchOnRestartedEvent(
     const Extension* extension) {
   auto event = std::make_unique<Event>(events::APP_RUNTIME_ON_RESTARTED,
                                        app_runtime::OnRestarted::kEventName,
-                                       base::Value::List(), context);
+                                       base::ListValue(), context);
   EventRouter::Get(context)->DispatchEventToExtension(extension->id(),
                                                       std::move(event));
 }
@@ -210,17 +209,17 @@ void AppRuntimeEventRouter::DispatchOnLaunchedEventWithFileEntries(
 
   // TODO(sergeygs): Use the same way of creating an event (using the generated
   // boilerplate) as below in DispatchOnLaunchedEventWithUrl.
-  base::Value::Dict launch_data;
+  base::DictValue launch_data;
   launch_data.Set("id", handler_id);
 
   if (extensions::FeatureSwitch::trace_app_source()->IsEnabled()) {
     launch_data.Set("source", app_runtime::ToString(source_enum));
   }
 
-  base::Value::List items;
+  base::ListValue items;
   DCHECK(file_entries.size() == entries.size());
   for (size_t i = 0; i < file_entries.size(); ++i) {
-    base::Value::Dict launch_item;
+    base::DictValue launch_item;
 
     // TODO: The launch item type should be documented in the idl so that this
     // entire function can be strongly typed and built using an

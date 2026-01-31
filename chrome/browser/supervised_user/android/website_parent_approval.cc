@@ -72,7 +72,7 @@ void WebsiteParentApproval::RequestLocalApproval(
 }
 
 static void JNI_WebsiteParentApproval_OnCompletion(JNIEnv* env,
-                                                   jint flow_outcome_value) {
+                                                   int32_t flow_outcome_value) {
   // Check that we have a callback stored from the local approval request and
   // call it.
   auto* cb = GetOnCompletionCallback();
@@ -87,8 +87,8 @@ static void JNI_WebsiteParentApproval_OnCompletion(JNIEnv* env,
 static void JNI_WebsiteParentApproval_FetchFavicon(
     JNIEnv* env,
     const JavaRef<jobject>& j_url,
-    jint min_source_size_in_pixel,
-    jint desired_size_in_pixel,
+    int32_t min_source_size_in_pixel,
+    int32_t desired_size_in_pixel,
     Profile* profile,
     const base::android::JavaRef<jobject>& on_favicon_fetched_callback) {
   GURL url = url::GURLAndroid::ToNativeGURL(env, j_url);

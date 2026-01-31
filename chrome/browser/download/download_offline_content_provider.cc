@@ -353,7 +353,6 @@ void DownloadOfflineContentProvider::GetVisualsForItem(
     const ContentId& id,
     GetVisualsOptions options,
     VisualsCallback callback) {
-  // TODO(crbug.com/40581903) Supply thumbnail if item is visible.
   DownloadItem* item = GetDownload(id.id);
   display::Screen* screen = display::Screen::Get();
   if (!item || !options.get_icon || !screen) {

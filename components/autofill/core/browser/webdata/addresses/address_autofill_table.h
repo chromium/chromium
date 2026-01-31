@@ -44,9 +44,6 @@ namespace autofill {
 //                      however never implemented and is currently unused.
 //   initial_creator_id The application that initially created the profile.
 //                      Represented as an integer. See AutofillProfile.
-//   last_modifier_id   The application that performed the last non-metadata
-//                      modification of the profile.
-//                      Represented as an integer. See AutofillProfile.
 // -----------------------------------------------------------------------------
 // address_type_tokens  Contains the values for all relevant FieldTypes of an
 //                      addresses entry. At most one entry per (guid, type)
@@ -128,6 +125,7 @@ class AddressAutofillTable : public WebDatabaseTable {
   bool MigrateToVersion132AddAdditionalLastUseDateColumns();
   bool MigrateToVersion134UnifyLocalAndAccountAddressStorage();
   bool MigrateToVersion145DropMultipleUseDates();
+  bool MigrateToVersion149DropLastModifierId();
 
  private:
   // Reads profiles from the deprecated autofill_profiles table.

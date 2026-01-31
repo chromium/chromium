@@ -19,6 +19,7 @@
 #include "components/autofill/core/browser/test_utils/autofill_test_utils.h"
 #include "components/autofill/core/browser/ui/test_autofill_external_delegate.h"
 #include "components/autofill/core/common/signatures.h"
+#include "components/one_time_tokens/core/browser/gmail_otp_backend.h"
 #include "components/one_time_tokens/core/browser/one_time_token.h"
 #include "components/one_time_tokens/core/browser/one_time_token_retrieval_error.h"
 #include "components/one_time_tokens/core/browser/one_time_token_service_impl.h"
@@ -70,6 +71,41 @@ void FakeSmsOtpBackend::NotifyCallbacks(
   callbacks_.clear();
 }
 
+// This implementation is for testing. It lets us manually control and simulate
+// the moment a Gmail OTP is received for one-time passwords (OTP).
+class FakeGmailOtpBackend : public one_time_tokens::GmailOtpBackend {
+ public:
+  using CallbackType = base::RepeatingCallback<void(
+      base::expected<one_time_tokens::OneTimeToken,
+                     one_time_tokens::OneTimeTokenRetrievalError>)>;
+
+  FakeGmailOtpBackend() = default;
+  ~FakeGmailOtpBackend() override = default;
+
+  // one_time_tokens::GmailOtpBackend:
+  one_time_tokens::ExpiringSubscription Subscribe(
+      base::Time expiration,
+      CallbackType callback) override {
+    callbacks_.push_back(callback);
+    return one_time_tokens::ExpiringSubscription();
+  }
+
+  // Simulates the reception of a Gmail OTP.
+  void ProcessCallbacks(
+      base::expected<one_time_tokens::OneTimeToken,
+                     one_time_tokens::OneTimeTokenRetrievalError> reply) {
+    for (auto& callback : callbacks_) {
+      callback.Run(reply);
+    }
+    callbacks_.clear();
+  }
+
+  size_t num_callbacks() const { return callbacks_.size(); }
+
+ private:
+  std::vector<CallbackType> callbacks_;
+};
+
 // AutofillCrowdsourcingManager that classifies every field as a ONE_TIME_CODE.
 class FakeAutofillCrowdsourcingManager : public AutofillCrowdsourcingManager {
  public:
@@ -78,8 +114,7 @@ class FakeAutofillCrowdsourcingManager : public AutofillCrowdsourcingManager {
   ~FakeAutofillCrowdsourcingManager() override = default;
 
   bool StartQueryRequest(
-      const std::vector<raw_ptr<const FormStructure, VectorExperimental>>&
-          forms,
+      const std::vector<FormData>& forms,
       std::optional<net::IsolationInfo> isolation_info,
       base::OnceCallback<void(std::optional<QueryResponse>)> callback) override;
 
@@ -94,19 +129,19 @@ FakeAutofillCrowdsourcingManager::FakeAutofillCrowdsourcingManager(
     : AutofillCrowdsourcingManager(autofill_client, channel) {}
 
 bool FakeAutofillCrowdsourcingManager::StartQueryRequest(
-    const std::vector<raw_ptr<const FormStructure, VectorExperimental>>& forms,
+    const std::vector<FormData>& forms,
     std::optional<net::IsolationInfo> isolation_info,
     base::OnceCallback<void(std::optional<QueryResponse>)> callback) {
   // Generate a response that classifies each field as a ONE_TIME_CODE field.
   std::vector<FormSignature> queried_form_signatures;
   AutofillQueryResponse response;
-  for (const FormStructure* form : forms) {
-    queried_form_signatures.push_back(form->form_signature());
+  for (const FormData& form : forms) {
+    queried_form_signatures.push_back(CalculateFormSignature(form));
     auto* form_suggestion = response.add_form_suggestions();
-    for (const auto& field : form->fields()) {
+    for (const FormFieldData& field : form.fields()) {
       auto* field_suggestion = form_suggestion->add_field_suggestions();
       field_suggestion->set_field_signature(
-          CalculateFieldSignatureForField(*field).value());
+          CalculateFieldSignatureForField(field).value());
       *field_suggestion->add_predictions() =
           test::CreateFieldPrediction(ONE_TIME_CODE, /*is_override=*/false);
     }
@@ -168,15 +203,30 @@ class OtpTestAutofillClient : public TestContentAutofillClient {
         std::make_unique<FakeAutofillCrowdsourcingManager>(
             this, version_info::Channel::STABLE));
     set_sms_otp_backend(std::make_unique<FakeSmsOtpBackend>());
-    set_one_time_token_service(
+    gmail_otp_backend_ = std::make_unique<FakeGmailOtpBackend>();
+    one_time_token_service_ =
         std::make_unique<one_time_tokens::OneTimeTokenServiceImpl>(
-            GetSmsOtpBackend()));
+            GetSmsOtpBackend(), gmail_otp_backend_.get());
   }
   ~OtpTestAutofillClient() override = default;
+
+  one_time_tokens::OneTimeTokenService* GetOneTimeTokenService()
+      const override {
+    return one_time_token_service_.get();
+  }
 
   FakeSmsOtpBackend& sms_otp_backend() {
     return *static_cast<FakeSmsOtpBackend*>(GetSmsOtpBackend());
   }
+
+  FakeGmailOtpBackend& gmail_otp_backend() {
+    return *static_cast<FakeGmailOtpBackend*>(gmail_otp_backend_.get());
+  }
+
+ private:
+  std::unique_ptr<one_time_tokens::GmailOtpBackend> gmail_otp_backend_;
+  std::unique_ptr<one_time_tokens::OneTimeTokenServiceImpl>
+      one_time_token_service_;
 };
 
 }  // namespace
@@ -264,13 +314,13 @@ IN_PROC_BROWSER_TEST_P(OtpManagerWithWebOtpApiBrowserTest,
                                     "123456", base::Time::Now()));
 
   // Simulate click on field.
-  const std::map<FormGlobalId, std::unique_ptr<FormStructure>>& forms =
-      autofill_manager().form_structures();
+  std::vector<const FormStructure*> forms =
+      test_api(autofill_manager()).form_structures();
   ASSERT_EQ(forms.size(), 1u);
-  const std::unique_ptr<FormStructure>& form = forms.begin()->second;
-  const std::unique_ptr<AutofillField>& first_field = *form->fields().begin();
+  const FormStructure& form = *forms.front();
+  const AutofillField& first_field = *form.fields().front();
   autofill_manager().OnAskForValuesToFill(
-      form->ToFormData(), first_field->global_id(), gfx::Rect(),
+      form.ToFormData(), first_field.global_id(), gfx::Rect(),
       AutofillSuggestionTriggerSource::kFormControlElementClicked,
       /*password_request=*/std::nullopt);
   ASSERT_TRUE(autofill_manager().WaitForSuggestionsShown(1));
@@ -286,6 +336,41 @@ IN_PROC_BROWSER_TEST_P(OtpManagerWithWebOtpApiBrowserTest,
     ASSERT_EQ(suggestions.size(), 1u);
     EXPECT_EQ(suggestions[0].main_text.value, u"123456");
   }
+}
+
+IN_PROC_BROWSER_TEST_F(OtpManagerBrowserTest, GmailOtpAutofillIntegrationTest) {
+  GURL url = embedded_test_server()->GetURL("/autofill/sms_otp_form.html");
+
+  // Navigate to page and wait for form to be classified
+  ASSERT_TRUE(chrome_test_utils::NavigateToURL(web_contents(), url));
+  ASSERT_TRUE(autofill_manager().WaitForFormsSeen(1));
+
+  // Immediately when a form field is classified as an OTP field, a subscription
+  // for OTPs should be started if a Gmail OTP backend exists.
+  ASSERT_EQ(autofill_client().gmail_otp_backend().num_callbacks(), 1u);
+
+  // Simulate an OTP arriving.
+  autofill_client().gmail_otp_backend().ProcessCallbacks(
+      one_time_tokens::OneTimeToken(one_time_tokens::OneTimeTokenType::kGmail,
+                                    "654321", base::Time::Now()));
+  // Simulate click on field.
+  std::vector<const FormStructure*> forms =
+      test_api(autofill_manager()).form_structures();
+  ASSERT_EQ(forms.size(), 1u);
+  const FormStructure& form = *forms.front();
+  const AutofillField& first_field = *form.fields().front();
+  autofill_manager().OnAskForValuesToFill(
+      form.ToFormData(), first_field.global_id(), gfx::Rect(),
+      AutofillSuggestionTriggerSource::kFormControlElementClicked,
+      /*password_request=*/std::nullopt);
+  ASSERT_TRUE(autofill_manager().WaitForSuggestionsShown(1));
+
+  // Verify expectations: The OTP should be suggested by autofill.
+  const TestAutofillExternalDelegate& external_delegate =
+      autofill_manager().external_delegate();
+  const std::vector<Suggestion>& suggestions = external_delegate.suggestions();
+  ASSERT_EQ(suggestions.size(), 1u);
+  EXPECT_EQ(suggestions[0].main_text.value, u"654321");
 }
 
 }  // namespace autofill

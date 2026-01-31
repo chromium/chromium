@@ -56,6 +56,47 @@ scoped_refptr<viz::RasterContextProvider> GetContextProvider() {
       ->SharedMainThreadRasterContextProvider();
 }
 
+// Converts from arc.mojom.BufferFormat to viz::SharedImageFormat. The
+// arc.mojom.BufferFormat should match that coming from ArcScreenCapture in
+// Android.
+viz::SharedImageFormat GetSharedImageFormat(mojom::BufferFormat buffer_format) {
+  switch (buffer_format) {
+    case mojom::BufferFormat::R_8:
+      return viz::SinglePlaneFormat::kR_8;
+    case mojom::BufferFormat::R_16:
+      return viz::SinglePlaneFormat::kR_16;
+    case mojom::BufferFormat::RG_88:
+      return viz::SinglePlaneFormat::kRG_88;
+    case mojom::BufferFormat::RG_1616:
+      return viz::SinglePlaneFormat::kRG_1616;
+    case mojom::BufferFormat::BGR_565:
+      return viz::SinglePlaneFormat::kBGR_565;
+    case mojom::BufferFormat::RGBA_4444:
+      return viz::SinglePlaneFormat::kRGBA_4444;
+    case mojom::BufferFormat::RGBX_8888:
+      return viz::SinglePlaneFormat::kRGBX_8888;
+    case mojom::BufferFormat::RGBA_8888:
+      return viz::SinglePlaneFormat::kRGBA_8888;
+    case mojom::BufferFormat::BGRX_8888:
+      return viz::SinglePlaneFormat::kBGRX_8888;
+    case mojom::BufferFormat::BGRA_1010102:
+      return viz::SinglePlaneFormat::kBGRA_1010102;
+    case mojom::BufferFormat::RGBA_1010102:
+      return viz::SinglePlaneFormat::kRGBA_1010102;
+    case mojom::BufferFormat::BGRA_8888:
+      return viz::SinglePlaneFormat::kBGRA_8888;
+    case mojom::BufferFormat::RGBA_F16:
+      return viz::SinglePlaneFormat::kRGBA_F16;
+    case mojom::BufferFormat::YVU_420:
+      return viz::MultiPlaneFormat::kYV12;
+    case mojom::BufferFormat::YUV_420_BIPLANAR:
+      return viz::MultiPlaneFormat::kNV12;
+    case mojom::BufferFormat::P010:
+      return viz::MultiPlaneFormat::kP010;
+  }
+  NOTREACHED();
+}
+
 }  // namespace
 
 // Holds ARC++ provided buffer to copy into.
@@ -181,7 +222,7 @@ void ArcScreenCaptureSession::SetOutputBufferDeprecated(
   // Defined locally to avoid having to add a dependency on drm_fourcc.h
   constexpr uint64_t DRM_FORMAT_MOD_LINEAR = 0;
 
-  SetOutputBuffer(std::move(graphics_buffer), gfx::BufferFormat::RGBX_8888,
+  SetOutputBuffer(std::move(graphics_buffer), mojom::BufferFormat::RGBX_8888,
                   DRM_FORMAT_MOD_LINEAR, stride,
                   base::BindOnce(
                       [](base::OnceCallback<void()> callback) {
@@ -192,7 +233,7 @@ void ArcScreenCaptureSession::SetOutputBufferDeprecated(
 
 void ArcScreenCaptureSession::SetOutputBuffer(
     mojo::ScopedHandle graphics_buffer,
-    gfx::BufferFormat buffer_format,
+    mojom::BufferFormat buffer_format,
     uint64_t buffer_format_modifier,
     uint32_t stride,
     SetOutputBufferCallback callback) {
@@ -223,8 +264,7 @@ void ArcScreenCaptureSession::SetOutputBuffer(
       stride * kBytesPerPixel, 0, stride * kBytesPerPixel * size_.height(),
       std::move(platform_file));
 
-  viz::SharedImageFormat si_format = viz::GetSharedImageFormat(buffer_format);
-
+  viz::SharedImageFormat si_format = GetSharedImageFormat(buffer_format);
   auto client_shared_image = sii->CreateSharedImage(
       {si_format, size_, gfx::ColorSpace(),
        // NOTE: This SI will be used as the destination of a copy of the desktop
@@ -255,7 +295,8 @@ void ArcScreenCaptureSession::SetOutputBuffer(
 void ArcScreenCaptureSession::QueryCompleted(
     uint32_t query_id,
     std::unique_ptr<DesktopTexture> desktop_texture,
-    std::unique_ptr<PendingBuffer> pending_buffer) {
+    std::unique_ptr<PendingBuffer> pending_buffer,
+    gpu::SyncToken sync_token) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   auto* ri = GetContextProvider()->RasterInterface();
@@ -266,8 +307,8 @@ void ArcScreenCaptureSession::QueryCompleted(
   }
 
   // Return CopyOutputResult resources after texture copy happens.
-  gpu::SyncToken sync_token;
-  ri->GenSyncTokenCHROMIUM(sync_token.GetData());
+  int8_t* sync_token_data = sync_token.GetData();
+  ri->VerifySyncTokensCHROMIUM(&sync_token_data, 1);
   std::move(desktop_texture->release_callback_).Run(sync_token, false);
 
   // Notify ARC++ that the buffer is ready.
@@ -276,8 +317,8 @@ void ArcScreenCaptureSession::QueryCompleted(
   ri->DeleteQueriesEXT(1, &query_id);
 
   // Return resources for ARC++ buffer.
-  sii->DestroySharedImage(gpu::SyncToken(),
-                          std::move(pending_buffer->shared_image_));
+  pending_buffer->shared_image_->UpdateDestructionSyncToken(gpu::SyncToken());
+  pending_buffer->shared_image_.reset();
 }
 
 void ArcScreenCaptureSession::OnDesktopCaptured(
@@ -352,16 +393,17 @@ void ArcScreenCaptureSession::CopyDesktopTextureToGpuBuffer(
   ri->CopySharedImage(desktop_texture->mailbox_,
                       pending_buffer->shared_image_->mailbox(), 0, 0, 0, 0,
                       size_.width(), size_.height());
-  gpu::RasterScopedAccess::EndAccess(std::move(ri_access));
+  gpu::SyncToken sync_token =
+      gpu::RasterScopedAccess::EndAccess(std::move(ri_access));
   ri->EndQueryEXT(GL_COMMANDS_COMPLETED_CHROMIUM);
 
   // The query will be signalled after the copy operation has finished on the
   // GPU and ARC++ can safely read from the buffer.
   context_provider->ContextSupport()->SignalQuery(
-      query_id,
-      base::BindOnce(&ArcScreenCaptureSession::QueryCompleted,
-                     weak_ptr_factory_.GetWeakPtr(), query_id,
-                     std::move(desktop_texture), std::move(pending_buffer)));
+      query_id, base::BindOnce(&ArcScreenCaptureSession::QueryCompleted,
+                               weak_ptr_factory_.GetWeakPtr(), query_id,
+                               std::move(desktop_texture),
+                               std::move(pending_buffer), sync_token));
 }
 
 void ArcScreenCaptureSession::OnAnimationStep(base::TimeTicks timestamp) {

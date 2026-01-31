@@ -173,7 +173,7 @@ void TabsCloser::UndoStorage::CloseTabs(int start, int count) {
   for (int index = 0; index < web_state_list->count(); ++index) {
     WebStateOpener opener = web_state_list->GetOpenerOfWebStateAt(index);
     if (opener.opener) {
-      DCHECK(base::Contains(web_state_map, opener.opener));
+      DCHECK(web_state_map.contains(opener.opener));
       openers_.push_back(Opener{
           .opener_index = web_state_map[opener.opener],
           .opener_navigation_index = opener.navigation_index,

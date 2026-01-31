@@ -13,6 +13,7 @@
 #include "base/memory/raw_ref.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
+#include "components/unexportable_keys/background_task_origin.h"
 #include "components/unexportable_keys/background_task_priority.h"
 #include "components/unexportable_keys/ref_counted_unexportable_signing_key.h"
 #include "components/unexportable_keys/service_error.h"
@@ -35,6 +36,7 @@ class COMPONENT_EXPORT(UNEXPORTABLE_KEYS) UnexportableKeyServiceImpl
   // `task_manager` must outlive `UnexportableKeyServiceImpl`.
   explicit UnexportableKeyServiceImpl(
       UnexportableKeyTaskManager& task_manager,
+      BackgroundTaskOrigin task_origin,
       crypto::UnexportableKeyProvider::Config config);
 
   ~UnexportableKeyServiceImpl() override;
@@ -43,6 +45,18 @@ class COMPONENT_EXPORT(UNEXPORTABLE_KEYS) UnexportableKeyServiceImpl
   // keys. If this returns false, all service methods will return
   // `ServiceError::kNoKeyProvider`.
   static bool IsUnexportableKeyProviderSupported(
+      crypto::UnexportableKeyProvider::Config config);
+
+  // Returns whether the current platform has a support for stateful
+  // unexportable signing keys. If this returns false, the service methods
+  // requiring stateful keys will be no-ops and will return one of the following
+  // results:
+  // - `ServiceError::kNoKeyProvider` if unexportable keys aren't supported
+  //    on the platform in general,
+  // - `ServiceError::kOperationNotSupported` if an operation cannot produce a
+  //   meaningful result without stateful key support
+  // - Empty result otherwise
+  static bool IsStatefulUnexportableKeyProviderSupported(
       crypto::UnexportableKeyProvider::Config config);
 
   // UnexportableKeyService:
@@ -61,22 +75,16 @@ class COMPONENT_EXPORT(UNEXPORTABLE_KEYS) UnexportableKeyServiceImpl
       BackgroundTaskPriority priority,
       base::OnceCallback<void(ServiceErrorOr<std::vector<UnexportableKeyId>>)>
           callback) override;
-  void CopyKeyFromOtherService(
-      const UnexportableKeyService& other_service,
-      UnexportableKeyId key_id_from_other_service,
-      BackgroundTaskPriority priority,
-      base::OnceCallback<void(ServiceErrorOr<UnexportableKeyId>)> callback)
-      override;
   void SignSlowlyAsync(
       UnexportableKeyId key_id,
       base::span<const uint8_t> data,
       BackgroundTaskPriority priority,
       base::OnceCallback<void(ServiceErrorOr<std::vector<uint8_t>>)> callback)
       override;
-  void DeleteKeySlowlyAsync(
-      UnexportableKeyId key_id,
+  void DeleteKeysSlowlyAsync(
+      base::span<const UnexportableKeyId> key_ids,
       BackgroundTaskPriority priority,
-      base::OnceCallback<void(ServiceErrorOr<void>)> callback) override;
+      base::OnceCallback<void(ServiceErrorOr<size_t>)> callback) override;
   void DeleteAllKeysSlowlyAsync(
       BackgroundTaskPriority priority,
       base::OnceCallback<void(ServiceErrorOr<size_t>)> callback) override;
@@ -86,22 +94,45 @@ class COMPONENT_EXPORT(UNEXPORTABLE_KEYS) UnexportableKeyServiceImpl
       UnexportableKeyId key_id) const override;
   ServiceErrorOr<crypto::SignatureVerifier::SignatureAlgorithm> GetAlgorithm(
       UnexportableKeyId key_id) const override;
+  ServiceErrorOr<std::string> GetKeyTag(
+      UnexportableKeyId key_id) const override;
+  ServiceErrorOr<base::Time> GetCreationTime(
+      UnexportableKeyId key_id) const override;
 
  private:
-  // Hasher object that allows comparing containers of different types that
-  // are convertible to base::span<const uint8_t>.
-  struct WrappedKeyHash
-      : absl::DefaultHashContainerHash<base::span<const uint8_t>> {
+  using WrappedKeyAndTag = std::pair<std::vector<uint8_t>, std::string>;
+  using WrappedKeyAndTagView =
+      std::pair<base::span<const uint8_t>, std::string_view>;
+
+  // Hasher object that allows lookups with `WrappedKeyAndTagView` using
+  // `WrappedKeyAndTag` as a key.
+  struct WrappedKeyAndTagViewHash
+      : absl::DefaultHashContainerHash<WrappedKeyAndTagView> {
     using is_transparent = void;
   };
 
-  using WrappedKeyMap = absl::flat_hash_map<std::vector<uint8_t>,
-                                            MaybePendingUnexportableKeyId,
-                                            WrappedKeyHash,
-                                            std::ranges::equal_to>;
+  using WrappedKeyAndTagMap = absl::flat_hash_map<WrappedKeyAndTag,
+                                                  MaybePendingUnexportableKeyId,
+                                                  WrappedKeyAndTagViewHash,
+                                                  std::ranges::equal_to>;
   using KeyIdMap =
       absl::flat_hash_map<UnexportableKeyId,
                           scoped_refptr<RefCountedUnexportableSigningKey>>;
+
+  // Convenience method to create a `WrappedKeyAndTag` from a
+  // `RefCountedUnexportableSigningKey`.
+  static WrappedKeyAndTag GetWrappedKeyAndTag(
+      const RefCountedUnexportableSigningKey& key);
+
+  // Convenience method to create a `WrappedKeyAndTag` from a
+  // `WrappedKeyAndTagView`.
+  static WrappedKeyAndTag Materialize(WrappedKeyAndTagView view);
+
+  // Removes the key with `key_id` from the in-memory maps.
+  // Returns the mapped signing key on success, or
+  // `ServiceError::kKeyNotFound` if the key was not found.
+  ServiceErrorOr<scoped_refptr<RefCountedUnexportableSigningKey>>
+  ExtractKeyFromMaps(UnexportableKeyId key_id);
 
   // Callback for `GetAllSigningKeysForGarbageCollectionSlowlyAsync()`.
   void OnGetAllSigningKeysForGarbageCollectionSlowly(
@@ -127,8 +158,8 @@ class COMPONENT_EXPORT(UNEXPORTABLE_KEYS) UnexportableKeyServiceImpl
           key_or_error);
 
   // Callback for `FromWrappedSigningKeySlowlyAsync()`.
-  void OnKeyCreatedFromWrappedKey(
-      std::vector<uint8_t> wrapped_key,
+  void OnKeyCreatedFromWrappedKeyAndTag(
+      WrappedKeyAndTag wrapped_key_and_tag,
       ServiceErrorOr<scoped_refptr<RefCountedUnexportableSigningKey>>
           key_or_error);
 
@@ -141,12 +172,13 @@ class COMPONENT_EXPORT(UNEXPORTABLE_KEYS) UnexportableKeyServiceImpl
   }
 
   const raw_ref<UnexportableKeyTaskManager, DanglingUntriaged> task_manager_;
+  const BackgroundTaskOrigin task_origin_;
 
   const crypto::UnexportableKeyProvider::Config config_;
 
   // Helps mapping multiple `FromWrappedSigningKeySlowlyAsync()` requests with
-  // the same wrapped key into the same key ID.
-  WrappedKeyMap key_id_by_wrapped_key_;
+  // the same (wrapped key, tag) pair into the same key ID.
+  WrappedKeyAndTagMap key_id_by_wrapped_key_and_tag_;
 
   // Stores unexportable signing keys that were created during the current
   // session.

@@ -228,8 +228,9 @@ PaginatedRootLayoutAlgorithm::LayoutPageContainer(
   BoxStrut margins;
   LogicalSize page_containing_block_size =
       DesiredPageContainingBlockSize(document, *page_container_style);
-  ResolvePageBoxGeometry(page_container_node, page_containing_block_size,
-                         &geometry, &margins);
+
+  ResolvePageContainerGeometry(page_container_node, page_containing_block_size,
+                               &geometry, &margins);
 
   // Check if the resulting page area size is usable.
   LogicalSize desired_page_area_size =
@@ -248,8 +249,8 @@ PaginatedRootLayoutAlgorithm::LayoutPageContainer(
                              LayoutObject::ApplyStyleChanges::kNo);
     page_containing_block_size =
         DesiredPageContainingBlockSize(document, *page_container_style);
-    ResolvePageBoxGeometry(page_container_node, page_containing_block_size,
-                           &geometry, &margins);
+    ResolvePageContainerGeometry(
+        page_container_node, page_containing_block_size, &geometry, &margins);
   }
 
   // Convert from border box size to margin box size, and use that to calculate

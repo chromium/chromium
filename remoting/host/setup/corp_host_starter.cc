@@ -44,7 +44,7 @@ class CorpHostStarter : public HostStarterBase {
   // HostStarterBase implementation.
   void RegisterNewHost(std::optional<std::string> access_token) override;
   void RemoveOldHostFromDirectory(base::OnceClosure on_host_removed) override;
-  void ApplyConfigValues(base::Value::Dict& config) override;
+  void ApplyConfigValues(base::DictValue& config) override;
   void ReportError(const std::string& error_message,
                    base::OnceClosure on_error_reported) override;
 
@@ -109,7 +109,7 @@ void CorpHostStarter::RemoveOldHostFromDirectory(
   std::move(on_host_removed).Run();
 }
 
-void CorpHostStarter::ApplyConfigValues(base::Value::Dict& config) {
+void CorpHostStarter::ApplyConfigValues(base::DictValue& config) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   config.Set(kRequireSessionAuthorizationPath, true);

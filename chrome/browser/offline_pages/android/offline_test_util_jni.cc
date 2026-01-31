@@ -195,7 +195,7 @@ static void JNI_OfflineTestUtil_GetAllPages(
 
 static void JNI_OfflineTestUtil_GetRawThumbnail(
     JNIEnv* env,
-    jlong j_offline_id,
+    int64_t j_offline_id,
     const JavaRef<jobject>& j_callback_obj) {
   DCHECK(j_offline_id);
 
@@ -244,7 +244,7 @@ static void JNI_OfflineTestUtil_DumpRequestCoordinatorState(
 
 static void JNI_OfflineTestUtil_WaitForConnectivityState(
     JNIEnv* env,
-    jboolean connected,
+    bool connected,
     const base::android::JavaRef<jobject>& callback) {
   network::mojom::ConnectionType type =
       connected ? network::mojom::ConnectionType::CONNECTION_UNKNOWN

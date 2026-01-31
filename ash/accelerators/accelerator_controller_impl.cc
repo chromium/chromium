@@ -35,7 +35,6 @@
 #include "ash/wm/screen_pinning_controller.h"
 #include "ash/wm/window_state.h"
 #include "base/check.h"
-#include "base/containers/contains.h"
 #include "base/containers/fixed_flat_set.h"
 #include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
@@ -703,7 +702,7 @@ bool AcceleratorControllerImpl::OnMenuAccelerator(
   // Menu shouldn't be closed for an invalid accelerator.
   const AcceleratorAction* action_ptr =
       accelerator_configuration_->FindAcceleratorAction(accelerator);
-  return action_ptr && !base::Contains(actions_keeping_menu_open_, *action_ptr);
+  return action_ptr && !actions_keeping_menu_open_.contains(*action_ptr);
 }
 
 bool AcceleratorControllerImpl::IsRegistered(
@@ -739,7 +738,7 @@ bool AcceleratorControllerImpl::IsPreferred(
     const ui::Accelerator& accelerator) const {
   const AcceleratorAction* action_ptr =
       accelerator_configuration_->FindAcceleratorAction(accelerator);
-  return action_ptr && base::Contains(preferred_actions_, *action_ptr);
+  return action_ptr && preferred_actions_.contains(*action_ptr);
 }
 
 bool AcceleratorControllerImpl::IsReserved(
@@ -747,7 +746,7 @@ bool AcceleratorControllerImpl::IsReserved(
   const AcceleratorAction* action_ptr =
       accelerator_configuration_->FindAcceleratorAction(accelerator);
 
-  return action_ptr && base::Contains(reserved_actions_, *action_ptr);
+  return action_ptr && reserved_actions_.contains(*action_ptr);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -876,7 +875,7 @@ bool AcceleratorControllerImpl::CanPerformAction(
     return false;
   }
 
-  if (accelerator.IsRepeat() && !base::Contains(repeatable_actions_, action))
+  if (accelerator.IsRepeat() && !repeatable_actions_.contains(action))
     return false;
 
   AcceleratorProcessingRestriction restriction =
@@ -1752,34 +1751,34 @@ AcceleratorControllerImpl::GetAcceleratorProcessingRestriction(
     return RESTRICTION_PREVENT_PROCESSING;
   }
   if (Shell::Get()->screen_pinning_controller()->IsPinned() &&
-      !base::Contains(actions_allowed_in_pinned_mode_, action)) {
+      !actions_allowed_in_pinned_mode_.contains(action)) {
     return RESTRICTION_PREVENT_PROCESSING_AND_PROPAGATION;
   }
   if (!Shell::Get()->session_controller()->IsActiveUserSessionStarted() &&
-      !base::Contains(actions_allowed_at_login_screen_, action)) {
+      !actions_allowed_at_login_screen_.contains(action)) {
     return RESTRICTION_PREVENT_PROCESSING;
   }
   if (Shell::Get()->session_controller()->IsScreenLocked() &&
-      !base::Contains(actions_allowed_at_lock_screen_, action)) {
+      !actions_allowed_at_lock_screen_.contains(action)) {
     return RESTRICTION_PREVENT_PROCESSING;
   }
   if (Shell::Get()->power_button_controller()->IsMenuOpened() &&
-      !base::Contains(actions_allowed_at_power_menu_, action)) {
+      !actions_allowed_at_power_menu_.contains(action)) {
     return RESTRICTION_PREVENT_PROCESSING;
   }
   if (Shell::Get()->session_controller()->IsRunningInAppMode() &&
-      !base::Contains(actions_allowed_in_app_mode_, action)) {
+      !actions_allowed_in_app_mode_.contains(action)) {
     return RESTRICTION_PREVENT_PROCESSING;
   }
   if (Shell::IsSystemModalWindowOpen() &&
-      !base::Contains(actions_allowed_at_modal_window_, action)) {
+      !actions_allowed_at_modal_window_.contains(action)) {
     // Note we prevent the shortcut from propagating so it will not
     // be passed to the modal window. This is important for things like
     // Alt+Tab that would cause an undesired effect in the modal window by
     // cycling through its window elements.
     return RESTRICTION_PREVENT_PROCESSING_AND_PROPAGATION;
   }
-  if (base::Contains(actions_needing_window_, action) &&
+  if (actions_needing_window_.contains(action) &&
       Shell::Get()
           ->mru_window_tracker()
           ->BuildMruWindowList(kActiveDesk)

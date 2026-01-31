@@ -13,6 +13,7 @@ import org.chromium.base.Token;
 import org.chromium.base.lifetime.Destroyable;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.url.GURL;
 
 import java.nio.ByteBuffer;
 
@@ -38,16 +39,22 @@ public class StorageLoadedData implements Destroyable {
     private final LoadedTabState[] mLoadedTabStates;
     private final TabGroupCollectionData[] mGroupsData;
     private final int mActiveTabIndex;
+    private final @StorageLoadingStatus int mLoadingStatus;
+    private final @Nullable String mErrorMessage;
 
     private StorageLoadedData(
             long nativePtr,
             LoadedTabState[] loadedTabStates,
             TabGroupCollectionData[] groupsData,
-            int activeTabIndex) {
+            int activeTabIndex,
+            @StorageLoadingStatus int loadingStatus,
+            @Nullable String errorMessage) {
         mNativePtr = nativePtr;
         mLoadedTabStates = loadedTabStates;
         mGroupsData = groupsData;
         mActiveTabIndex = activeTabIndex;
+        mLoadingStatus = loadingStatus;
+        mErrorMessage = errorMessage;
     }
 
     @Override
@@ -69,10 +76,14 @@ public class StorageLoadedData implements Destroyable {
     @CalledByNative
     public static StorageLoadedData createData(
             long nativePtr,
-            LoadedTabState[] loadedTabStates,
-            TabGroupCollectionData[] groups,
-            int activeTabIndex) {
-        return new StorageLoadedData(nativePtr, loadedTabStates, groups, activeTabIndex);
+            @JniType("std::vector<tabs_pb::TabState>") LoadedTabState[] loadedTabStates,
+            @JniType("std::vector<tabs::TabGroupCollectionDataAndroid*>")
+                    TabGroupCollectionData[] groups,
+            int activeTabIndex,
+            int loadingStatus,
+            @Nullable @JniType("std::optional<std::string>") String errorMessage) {
+        return new StorageLoadedData(
+                nativePtr, loadedTabStates, groups, activeTabIndex, loadingStatus, errorMessage);
     }
 
     @CalledByNative
@@ -95,7 +106,8 @@ public class StorageLoadedData implements Destroyable {
             long lastNavigationCommittedTimestampMillis,
             @Nullable Token tabGroupId,
             boolean tabHasSensitiveContent,
-            boolean isPinned) {
+            boolean isPinned,
+            @Nullable @JniType("std::string") String url) {
         TabState tabState = new TabState();
         tabState.parentId = parentTabId;
         tabState.rootId = rootId;
@@ -116,6 +128,12 @@ public class StorageLoadedData implements Destroyable {
         tabState.tabGroupId = tabGroupId;
         tabState.tabHasSensitiveContent = tabHasSensitiveContent;
         tabState.isPinned = isPinned;
+
+        if (url != null) {
+            GURL gurl = new GURL(url);
+            if (gurl.isValid()) tabState.url = gurl;
+        }
+
         return tabState;
     }
 
@@ -132,6 +150,16 @@ public class StorageLoadedData implements Destroyable {
     /** Returns the index of the active tab or -1 if one is not set. */
     public int getActiveTabIndex() {
         return mActiveTabIndex;
+    }
+
+    /** Returns the loading status. */
+    public @StorageLoadingStatus int getLoadingStatus() {
+        return mLoadingStatus;
+    }
+
+    /** Returns the error message if any. */
+    public @Nullable String getErrorMessage() {
+        return mErrorMessage;
     }
 
     @NativeMethods

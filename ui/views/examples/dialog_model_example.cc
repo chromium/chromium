@@ -9,6 +9,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/callback_list.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/strings/strcat.h"
@@ -72,7 +73,20 @@ class DialogModelExampleDelegate : public ui::DialogModelDelegate {
       delete;
   ~DialogModelExampleDelegate() override = default;
 
-  void set_custom_checkbox(Checkbox* checkbox) { custom_checkbox_ = checkbox; }
+  void SetCustomCheckbox(Checkbox* checkbox) {
+    if (!checkbox) {
+      custom_checkbox_checked_ = false;
+      custom_checkbox_checked_changed_subscription_ =
+          base::CallbackListSubscription();
+      return;
+    }
+
+    custom_checkbox_checked_ = checkbox->GetChecked();
+    custom_checkbox_checked_changed_subscription_ =
+        checkbox->AddCheckedChangedCallback(base::BindRepeating(
+            &DialogModelExampleDelegate::OnCustomCheckboxCheckedChanged,
+            base::Unretained(this)));
+  }
 
   // This is called when the "OK" button is pressed.
   // This is registered via `DialogModel::Builder::AddOkButton()`.
@@ -94,9 +108,7 @@ class DialogModelExampleDelegate : public ui::DialogModelDelegate {
              ->GetItemAt(dialog_model()
                              ->GetComboboxByUniqueId(kFruitCombobox)
                              ->selected_index()),
-         custom_checkbox_ && custom_checkbox_->GetChecked()
-             ? u". Custom checkbox is checked!"
-             : u"."});
+         custom_checkbox_checked_ ? u". Custom checkbox is checked!" : u"."});
 
     // Print the status to the bottom of the dialog.
     PrintStatus(base::UTF16ToUTF8(output));
@@ -114,7 +126,16 @@ class DialogModelExampleDelegate : public ui::DialogModelDelegate {
   }
 
  private:
-  raw_ptr<Checkbox> custom_checkbox_ = nullptr;
+  // This is called when the "Check me" checkbox is checked or unchecked.
+  // This is registered via `Checkbox::AddCheckedChangedCallback()`.
+  void OnCustomCheckboxCheckedChanged() {
+    custom_checkbox_checked_ = !custom_checkbox_checked_;
+  }
+
+  bool custom_checkbox_checked_ = false;
+  base::CallbackListSubscription custom_checkbox_checked_changed_subscription_;
+
+  base::WeakPtrFactory<DialogModelExampleDelegate> weak_ptr_factory_{this};
 };
 
 }  // namespace
@@ -159,7 +180,7 @@ void DialogModelExample::ShowDialog() {
                                        .SetText(u"Check me")
                                        .CopyAddressTo(&custom_checkbox))
                          .Build();
-  model_delegate_ptr->set_custom_checkbox(custom_checkbox);
+  model_delegate_ptr->SetCustomCheckbox(custom_checkbox);
 
   auto dialog_model =
       ui::DialogModel::Builder(std::move(model_delegate))

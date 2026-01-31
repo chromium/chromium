@@ -401,7 +401,7 @@ void ClearDictationOfflineNudgePref(const std::string& locale) {
 }
 
 std::optional<bool> GetDictationOfflineNudgePref(const std::string& locale) {
-  const base::Value::Dict& offline_nudges = GetActiveUserPrefs()->GetDict(
+  const base::DictValue& offline_nudges = GetActiveUserPrefs()->GetDict(
       prefs::kAccessibilityDictationLocaleOfflineNudge);
   return offline_nudges.FindBool(locale);
 }

@@ -24,20 +24,31 @@ namespace base::internal {
 
 class MockPooledTaskRunnerDelegate : public PooledTaskRunnerDelegate {
  public:
-  MOCK_METHOD2(PostTaskWithSequence,
-               bool(Task task, scoped_refptr<Sequence> sequence));
-  MOCK_METHOD1(ShouldYield, bool(const TaskSource* task_source));
-  MOCK_METHOD1(EnqueueJobTaskSource,
-               bool(scoped_refptr<JobTaskSource> task_source));
-  MOCK_METHOD1(RemoveJobTaskSource,
-               void(scoped_refptr<JobTaskSource> task_source));
-  MOCK_CONST_METHOD1(IsRunningPoolWithTraits, bool(const TaskTraits& traits));
-  MOCK_METHOD2(UpdatePriority,
-               void(scoped_refptr<TaskSource> task_source,
-                    TaskPriority priority));
-  MOCK_METHOD2(UpdateJobPriority,
-               void(scoped_refptr<TaskSource> task_source,
-                    TaskPriority priority));
+  MOCK_METHOD(bool,
+              PostTaskWithSequence,
+              (Task task, scoped_refptr<Sequence> sequence),
+              (override));
+  MOCK_METHOD(bool, ShouldYield, (const TaskSource* task_source), (override));
+  MOCK_METHOD(bool,
+              EnqueueJobTaskSource,
+              (scoped_refptr<JobTaskSource> task_source),
+              (override));
+  MOCK_METHOD(void,
+              RemoveJobTaskSource,
+              (scoped_refptr<JobTaskSource> task_source),
+              (override));
+  MOCK_METHOD(bool,
+              IsRunningPoolWithTraits,
+              (const TaskTraits& traits),
+              (const));
+  MOCK_METHOD(void,
+              UpdatePriority,
+              (scoped_refptr<TaskSource> task_source, TaskPriority priority),
+              (override));
+  MOCK_METHOD(void,
+              UpdateJobPriority,
+              (scoped_refptr<TaskSource> task_source, TaskPriority priority),
+              (override));
 };
 
 class ThreadPoolJobTaskSourceTest : public testing::Test {

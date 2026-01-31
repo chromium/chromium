@@ -51,7 +51,7 @@ MATCHER(MatchesBookmarkNode, "") {
                             result_listener);
 }
 
-// Matches a `base::Value::List` of `BookmarkTreeNode`s against the provided
+// Matches a `base::ListValue` of `BookmarkTreeNode`s against the provided
 // `BookmarkNode`s.
 MATCHER_P(ResultMatchesNodes, nodes, "") {
   std::vector<extensions::api::bookmarks::BookmarkTreeNode>

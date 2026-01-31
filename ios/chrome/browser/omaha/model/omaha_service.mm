@@ -605,7 +605,7 @@ void OmahaService::StartInternal(
 
 // static
 void OmahaService::GetDebugInformation(
-    base::OnceCallback<void(base::Value::Dict)> callback) {
+    base::OnceCallback<void(base::DictValue)> callback) {
   if (OmahaService::IsEnabled()) {
     OmahaService* service = GetInstance();
     web::GetIOThreadTaskRunner({})->PostTask(
@@ -616,7 +616,7 @@ void OmahaService::GetDebugInformation(
   } else {
     // Invoke the callback with an empty response.
     web::GetUIThreadTaskRunner({})->PostTask(
-        FROM_HERE, base::BindOnce(std::move(callback), base::Value::Dict()));
+        FROM_HERE, base::BindOnce(std::move(callback), base::DictValue()));
   }
 }
 
@@ -972,9 +972,9 @@ void OmahaService::OnURLLoadComplete(std::optional<std::string> response_body) {
 }
 
 void OmahaService::GetDebugInformationOnIOThread(
-    base::OnceCallback<void(base::Value::Dict)> callback) {
+    base::OnceCallback<void(base::DictValue)> callback) {
   DCHECK_CURRENTLY_ON(web::WebThread::IO);
-  base::Value::Dict result;
+  base::DictValue result;
 
   result.Set("message", GetCurrentPingContent());
   result.Set("last_sent_time",

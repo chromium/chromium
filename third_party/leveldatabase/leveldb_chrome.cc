@@ -9,7 +9,6 @@
 #include <set>
 #include <vector>
 
-#include "base/containers/contains.h"
 #include "base/containers/flat_set.h"
 #include "base/byte_size.h"
 #include "base/feature_list.h"
@@ -20,6 +19,7 @@
 #include "base/memory/memory_pressure_listener.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/no_destructor.h"
+#include "base/strings/cstring_view.h"
 #include "base/strings/stringprintf.h"
 #include "base/system/sys_info.h"
 #include "base/trace_event/memory_dump_manager.h"
@@ -187,7 +187,7 @@ class ChromeMemEnv : public leveldb::EnvWrapper {
     leveldb::Status s = leveldb::EnvWrapper::RemoveFile(fname);
     if (s.ok()) {
       base::AutoLock lock(files_lock_);
-      DCHECK(base::Contains(file_names_, fname));
+      DCHECK(file_names_.contains(fname));
       file_names_.erase(fname);
     }
     return s;
@@ -372,11 +372,8 @@ bool CorruptClosedDBForTesting(const base::FilePath& db_path) {
   if (!current.IsValid()) {
     return false;
   }
-  const char kString[] = "StringWithoutEOL";
-  if (current.Write(0, kString, sizeof(kString)) != sizeof(kString))
-    return false;
-  current.Close();
-  return true;
+  return current.WriteAndCheck(
+      0, base::byte_span_with_nul_from_cstring("StringWithoutEOL"));
 }
 
 bool PossiblyValidDB(const base::FilePath& db_path, leveldb::Env* env) {

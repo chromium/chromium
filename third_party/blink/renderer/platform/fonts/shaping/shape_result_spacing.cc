@@ -38,7 +38,8 @@ ShapeResultSpacing::ExpansionSetup::ExpansionSetup(
     bool allows_trailing_expansion)
     : spacing_(spacing),
       allows_trailing_expansion_(allows_trailing_expansion),
-      justification_context_(!allows_leading_expansion) {
+      justification_context_(JustificationContext::Type::kNormal,
+                             !allows_leading_expansion) {
   DCHECK_GT(expansion, InlineLayoutUnit());
   spacing_->expansion_ = expansion;
   spacing_->expansion_opportunity_count_ = 0;

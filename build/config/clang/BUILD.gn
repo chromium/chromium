@@ -77,6 +77,10 @@ clang_plugin("raw_ptr_check") {
     if (enable_check_raw_ref_fields) {
       plugin_arguments += [ "check-raw-ref-fields" ]
     }
+
+    # TODO(crbug.com/330759291): once this has landed and simmered for
+    # a while, bake in the resultant settings and remove all this.
+    plugin_arguments += [ "no-special-treatment-for-oilpanized-paths" ]
   }
 }
 

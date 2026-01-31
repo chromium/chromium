@@ -1022,8 +1022,9 @@ DownloadTargetDeterminer::Result
 
   std::string file_name =
       l10n_util::GetStringUTF8(IDS_DOWNLOAD_UNCONFIRMED_PREFIX) +
-      base::StringPrintf(kUnconfirmedFormatSuffix,
-                         base::RandInt(0, kUnconfirmedUniquifierRange));
+      base::StringPrintf(
+          kUnconfirmedFormatSuffix,
+          base::RandIntInclusive(0, kUnconfirmedUniquifierRange));
   intermediate_path_ =
       local_path_.DirName().Append(base::FilePath::FromUTF8Unsafe(file_name));
   return COMPLETE;

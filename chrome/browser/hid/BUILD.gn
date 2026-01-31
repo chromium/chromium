@@ -8,6 +8,7 @@ source_set("hid") {
   sources = [
     "hid_chooser_context.h",
     "hid_chooser_context_factory.h",
+    "hid_common.h",
     "web_hid_histograms.h",
     "web_view_chooser_context.h",
   ]

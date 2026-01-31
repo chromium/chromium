@@ -17,7 +17,6 @@
 #include "base/threading/sequence_bound.h"
 #include "base/threading/thread.h"
 #include "base/time/time.h"
-#include "base/types/cxx23_to_underlying.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
 #include "mojo/public/cpp/bindings/associated_receiver_set.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
@@ -535,31 +534,31 @@ TYPED_TEST(SyncMethodCommonTest, CallSyncMethodAsynchronously) {
 #define SEQUENCED_TASK_RUNNER_TYPED_TEST_NAME(fixture_name, name) \
   fixture_name##name##_SequencedTaskRunnerTestSuffix
 
-#define SEQUENCED_TASK_RUNNER_TYPED_TEST(fixture_name, name)        \
-  template <typename TypeParam>                                     \
-  class SEQUENCED_TASK_RUNNER_TYPED_TEST_NAME(fixture_name, name)   \
-      : public fixture_name<TypeParam> {                            \
-    void Run() override;                                            \
-  };                                                                \
-  TYPED_TEST(SequencedTaskRunnerTestLauncher, name) {               \
-    RunTestOnSequencedTaskRunner(                                   \
-        std::make_unique<SEQUENCED_TASK_RUNNER_TYPED_TEST_NAME(     \
-                             fixture_name, name) < TypeParam>> ()); \
-  }                                                                 \
-  template <typename TypeParam>                                     \
-  void SEQUENCED_TASK_RUNNER_TYPED_TEST_NAME(fixture_name,          \
+#define SEQUENCED_TASK_RUNNER_TYPED_TEST(fixture_name, name)                \
+  template <typename TypeParam>                                             \
+  class SEQUENCED_TASK_RUNNER_TYPED_TEST_NAME(fixture_name, name)           \
+      : public fixture_name<TypeParam> {                                    \
+    void Run() override;                                                    \
+  };                                                                        \
+  TYPED_TEST(SequencedTaskRunnerTestLauncher, name) {                       \
+    RunTestOnSequencedTaskRunner(std::make_unique <                         \
+                                 SEQUENCED_TASK_RUNNER_TYPED_TEST_NAME(     \
+                                     fixture_name, name) < TypeParam >>()); \
+  }                                                                         \
+  template <typename TypeParam>                                             \
+  void SEQUENCED_TASK_RUNNER_TYPED_TEST_NAME(fixture_name,                  \
                                              name)<TypeParam>::Run()
 
-#define SEQUENCED_TASK_RUNNER_TYPED_TEST_F(fixture_name, name)      \
-  template <typename TypeParam>                                     \
-  class SEQUENCED_TASK_RUNNER_TYPED_TEST_NAME(fixture_name, name);  \
-  TYPED_TEST(SequencedTaskRunnerTestLauncher, name) {               \
-    RunTestOnSequencedTaskRunner(                                   \
-        std::make_unique<SEQUENCED_TASK_RUNNER_TYPED_TEST_NAME(     \
-                             fixture_name, name) < TypeParam>> ()); \
-  }                                                                 \
-  template <typename TypeParam>                                     \
-  class SEQUENCED_TASK_RUNNER_TYPED_TEST_NAME(fixture_name, name)   \
+#define SEQUENCED_TASK_RUNNER_TYPED_TEST_F(fixture_name, name)              \
+  template <typename TypeParam>                                             \
+  class SEQUENCED_TASK_RUNNER_TYPED_TEST_NAME(fixture_name, name);          \
+  TYPED_TEST(SequencedTaskRunnerTestLauncher, name) {                       \
+    RunTestOnSequencedTaskRunner(std::make_unique <                         \
+                                 SEQUENCED_TASK_RUNNER_TYPED_TEST_NAME(     \
+                                     fixture_name, name) < TypeParam >>()); \
+  }                                                                         \
+  template <typename TypeParam>                                             \
+  class SEQUENCED_TASK_RUNNER_TYPED_TEST_NAME(fixture_name, name)           \
       : public fixture_name<TypeParam>
 
 SEQUENCED_TASK_RUNNER_TYPED_TEST(SyncMethodOnSequenceCommonTest,
@@ -978,8 +977,9 @@ TYPED_TEST(SyncMethodCommonTest,
 
   // SharedRemote doesn't guarantee that messages are delivered before the
   // disconnect handler, so skip it for this test.
-  if (TypeParam::kIsSharedRemoteTest)
+  if (TypeParam::kIsSharedRemoteTest) {
     return;
+  }
 
   using Interface = typename TypeParam::Interface;
   Remote<Interface> remote;
@@ -1335,14 +1335,16 @@ class PingerImpl : public mojom::Pinger, public mojom::SimplePinger {
   }
 
   void Ping(PingCallback callback) override {
-    if (pong_sender_ && same_pipe_pong_sender_)
+    if (pong_sender_ && same_pipe_pong_sender_) {
       DoPong();
+    }
     std::move(callback).Run();
   }
 
   void PingNoInterrupt(PingNoInterruptCallback callback) override {
-    if (pong_sender_ && same_pipe_pong_sender_)
+    if (pong_sender_ && same_pipe_pong_sender_) {
       DoPong();
+    }
     std::move(callback).Run();
   }
 
@@ -1829,8 +1831,8 @@ class SyncFlagValidationTest : public ::testing::TestWithParam<uint32_t> {
         // InterfaceEndpointClient requires this flag if sending a message with
         // a responder.
         Message::kFlagExpectsResponse | GetParam();
-    Message message(base::to_underlying(mojom::messages::NoSync::kMethod),
-                    flags, 0, 0, nullptr);
+    Message message(std::to_underlying(mojom::messages::NoSync::kMethod), flags,
+                    0, 0, nullptr);
     ::mojo::internal::MessageFragment<
         mojom::internal::NoSync_Method_Params_Data>
         params(message);
@@ -1845,7 +1847,7 @@ class SyncFlagValidationTest : public ::testing::TestWithParam<uint32_t> {
         // InterfaceEndpointClient requires this flag if sending a message with
         // a responder.
         Message::kFlagExpectsResponse | GetParam();
-    Message message(base::to_underlying(mojom::messages::OneSync::kMethod),
+    Message message(std::to_underlying(mojom::messages::OneSync::kMethod),
                     flags, 0, 0, nullptr);
     ::mojo::internal::MessageFragment<
         mojom::internal::NoSync_Method_Params_Data>

@@ -158,7 +158,7 @@ chromium-metrics-reviews@google.com.
 </variants>
 
 <histogram name="SegmentationPlatform.AdaptiveToolbar.SegmentSelected.Startup"
-    enum="AdaptiveToolbarButtonVariant" expires_after="2026-05-12">
+    enum="AdaptiveToolbarButtonVariant" expires_after="2026-07-12">
   <owner>shaktisahu@chromium.org</owner>
   <owner>chrome-segmentation-platform@google.com</owner>
   <summary>
@@ -191,7 +191,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="SegmentationPlatform.ClassificationRequest.TotalDuration.{SegmentationKey}"
-    units="ms" expires_after="2026-05-12">
+    units="ms" expires_after="2026-07-12">
   <owner>ritikagup@google.com</owner>
   <owner>chrome-segmentation-platform@google.com</owner>
   <summary>
@@ -219,7 +219,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="SegmentationPlatform.DefaultModelDelivery.Metadata.FeatureCount.{SegmentationModel}"
-    units="features" expires_after="2026-05-12">
+    units="features" expires_after="2026-07-12">
   <owner>ritikagup@google.com</owner>
   <owner>chrome-segmentation-platform@google.com</owner>
   <summary>
@@ -234,7 +234,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="SegmentationPlatform.DefaultModelDelivery.Metadata.Validation.{ValidationPhase}.{SegmentationModel}"
-    enum="SegmentationPlatformValidationResult" expires_after="2026-05-12">
+    enum="SegmentationPlatformValidationResult" expires_after="2026-07-12">
   <owner>ritikagup@google.com</owner>
   <owner>chrome-segmentation-platform@google.com</owner>
   <summary>
@@ -264,7 +264,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="SegmentationPlatform.DefaultModelDelivery.SaveResult.{SegmentationModel}"
-    enum="BooleanSuccess" expires_after="2026-05-12">
+    enum="BooleanSuccess" expires_after="2026-07-12">
   <owner>ritikagup@google.com</owner>
   <owner>chrome-segmentation-platform@google.com</owner>
   <summary>
@@ -345,7 +345,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="SegmentationPlatform.Init.ModelUpdatedTimeDifferenceInDays.{SegmentID}"
-    units="days" expires_after="2026-05-12">
+    units="days" expires_after="2026-07-12">
   <owner>haileywang@chromium.org</owner>
   <owner>chrome-segmentation-platform@google.com</owner>
   <summary>
@@ -410,7 +410,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SegmentationPlatform.ModelAvailability.{SegmentationModel}"
-    enum="SegmentationModelAvailability" expires_after="2026-05-12">
+    enum="SegmentationModelAvailability" expires_after="2026-07-12">
   <owner>ssid@chromium.org</owner>
   <owner>chrome-segmentation-platform@google.com</owner>
   <summary>
@@ -494,7 +494,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SegmentationPlatform.ModelDelivery.Received"
-    enum="SegmentationPlatformSegmentationModel" expires_after="2026-05-12">
+    enum="SegmentationPlatformSegmentationModel" expires_after="2026-07-12">
   <owner>nyquist@chromium.org</owner>
   <owner>shaktisahu@chromium.org</owner>
   <owner>chrome-segmentation-platform@google.com</owner>
@@ -606,12 +606,53 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="SegmentationPlatform.ModelExecution.Result.{Index}.{SegmentationModel}"
-    units="score" expires_after="2026-05-12">
+    units="score" expires_after="2026-07-12">
   <owner>shaktisahu@chromium.org</owner>
   <owner>chrome-segmentation-platform@google.com</owner>
   <summary>
     Records the value at index {Index} of the output tensor when executing the
     {SegmentationModel} segmentation model.
+
+    TODO(crbug.com/384798365): Remove this histogram after .Raw and .Scaled100
+    are established.
+
+    Recorded every time a {SegmentationModel} segmentation model is successfully
+    executed.
+  </summary>
+  <token key="SegmentationModel" variants="SegmentationModel"/>
+  <token key="Index" variants="Index"/>
+</histogram>
+
+<histogram
+    name="SegmentationPlatform.ModelExecution.Result.{Index}.{SegmentationModel}.Raw"
+    units="score" expires_after="2026-07-26">
+  <owner>shaktisahu@chromium.org</owner>
+  <owner>ssid@chromium.org</owner>
+  <owner>salg@google.com</owner>
+  <owner>chrome-segmentation-platform@google.com</owner>
+  <summary>
+    Records the raw value at index {Index} of the output tensor when executing
+    the {SegmentationModel} segmentation model. This records the integer part of
+    the result (static_cast&lt;int&gt;(result)).
+
+    Recorded every time a {SegmentationModel} segmentation model is successfully
+    executed.
+  </summary>
+  <token key="SegmentationModel" variants="SegmentationModel"/>
+  <token key="Index" variants="Index"/>
+</histogram>
+
+<histogram
+    name="SegmentationPlatform.ModelExecution.Result.{Index}.{SegmentationModel}.Scaled100"
+    units="score" expires_after="2026-07-26">
+  <owner>shaktisahu@chromium.org</owner>
+  <owner>ssid@chromium.org</owner>
+  <owner>salg@google.com</owner>
+  <owner>chrome-segmentation-platform@google.com</owner>
+  <summary>
+    Records the value at index {Index} of the output tensor multiplied by 100
+    when executing the {SegmentationModel} segmentation model. This is useful
+    for models returning a probability score between 0 and 1.
 
     Recorded every time a {SegmentationModel} segmentation model is successfully
     executed.
@@ -654,7 +695,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="SegmentationPlatform.ModelExecution.Status.{SegmentationModel}"
-    enum="SegmentationPlatformModelExecutionStatus" expires_after="2026-05-12">
+    enum="SegmentationPlatformModelExecutionStatus" expires_after="2026-07-12">
   <owner>nyquist@chromium.org</owner>
   <owner>shaktisahu@chromium.org</owner>
   <owner>chrome-segmentation-platform@google.com</owner>
@@ -681,7 +722,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="SegmentationPlatform.ModelExecution.ZeroValuePercent.{SegmentationModel}"
-    units="%" expires_after="2026-05-12">
+    units="%" expires_after="2026-07-12">
   <owner>nyquist@chromium.org</owner>
   <owner>shaktisahu@chromium.org</owner>
   <owner>chrome-segmentation-platform@google.com</owner>
@@ -696,7 +737,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="SegmentationPlatform.SegmentInfoDatabase.ProtoDBUpdateResult.{SegmentationKey}"
-    enum="BooleanSuccess" expires_after="2026-05-12">
+    enum="BooleanSuccess" expires_after="2026-07-12">
   <owner>salg@google.com</owner>
   <owner>chrome-segmentation-platform@google.com</owner>
   <summary>
@@ -746,7 +787,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SegmentationPlatform.SelectionFailedReason.{SegmentationKey}"
-    enum="SegmentationSelectionFailureReason" expires_after="2026-05-12">
+    enum="SegmentationSelectionFailureReason" expires_after="2026-07-12">
   <owner>ssid@chromium.org</owner>
   <owner>chrome-segmentation-platform@google.com</owner>
   <summary>
@@ -913,7 +954,7 @@ chromium-metrics-reviews@google.com.
 <histogram
     name="SegmentationPlatform.TrainingDataCollectionEvents.{SegmentationModel}"
     enum="SegmentationPlatformTrainingDataCollectionEvent"
-    expires_after="2026-05-12">
+    expires_after="2026-07-12">
   <owner>ssid@chromium.org</owner>
   <owner>qinmin@chromium.org</owner>
   <owner>chrome-segmentation-platform@google.com</owner>
@@ -939,7 +980,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="SegmentationPlatform.{SegmentationKey}.PostProcessing.TopLabel.Computed"
-    units="index" expires_after="2026-05-12">
+    units="index" expires_after="2026-07-12">
   <owner>shaktisahu@chromium.org</owner>
   <owner>chrome-segmentation-platform@google.com</owner>
   <summary>
@@ -953,7 +994,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="SegmentationPlatform.{SegmentationKey}.PostProcessing.TopLabel.Switched"
-    units="index" expires_after="2026-05-12">
+    units="index" expires_after="2026-07-12">
   <owner>shaktisahu@chromium.org</owner>
   <owner>chrome-segmentation-platform@google.com</owner>
   <summary>

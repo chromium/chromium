@@ -25,12 +25,12 @@ class ToolbarSwipeSceneLayer : public SceneLayer {
   ~ToolbarSwipeSceneLayer() override;
 
   void UpdateLayer(JNIEnv* env,
-                   jint id,
-                   jboolean left_tab,
-                   jboolean can_use_live_layer,
-                   jint default_background_color,
-                   jfloat x,
-                   jfloat y);
+                   int32_t id,
+                   bool left_tab,
+                   bool can_use_live_layer,
+                   int32_t default_background_color,
+                   float x,
+                   float y);
 
   void SetTabContentManager(
       JNIEnv* env,

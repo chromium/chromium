@@ -11,12 +11,10 @@
 
 namespace blink {
 
-class WorkerGlobalScope;
-
 class CORE_EXPORT InspectorInspectorAgent final
     : public InspectorBaseAgent<protocol::Inspector::Metainfo> {
  public:
-  explicit InspectorInspectorAgent(WorkerGlobalScope*);
+  InspectorInspectorAgent();
   InspectorInspectorAgent(const InspectorInspectorAgent&) = delete;
   InspectorInspectorAgent& operator=(const InspectorInspectorAgent&) = delete;
   ~InspectorInspectorAgent() override;
@@ -25,9 +23,6 @@ class CORE_EXPORT InspectorInspectorAgent final
   void WorkerScriptLoaded();
 
   void Trace(Visitor*) const override;
-
- private:
-  Member<WorkerGlobalScope> worker_global_scope_;
 };
 
 }  // namespace blink

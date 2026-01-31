@@ -10,7 +10,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/containers/contains.h"
 #include "base/path_service.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -71,11 +70,11 @@ void RoundTripAndVerifyLogMessages(
 
   for (size_t i = 0u; i < observer.messages().size(); ++i) {
     std::string message = observer.GetMessageAt(i);
-    if (base::Contains(messages_expected, message)) {
+    if (messages_expected.contains(message)) {
       messages_expected.erase(message);
       continue;
     }
-    if (base::Contains(messages_not_expected, message)) {
+    if (messages_not_expected.contains(message)) {
       ADD_FAILURE() << "Saw anti-expected message: " << message;
     }
   }
@@ -751,7 +750,7 @@ IN_PROC_BROWSER_TEST_F(SafeBrowsingTriggeredPopupBlockerPrerenderingBrowserTest,
   {
     ConfigureAsAbusiveWarn(prerendering_url);
     content::WebContentsConsoleObserver console_observer(web_contents());
-    content::FrameTreeNodeId host_id =
+    content::PrerenderHostId host_id =
         prerender_helper_.AddPrerender(prerendering_url);
     content::test::PrerenderHostObserver host_observer(*web_contents(),
                                                        host_id);
@@ -787,7 +786,7 @@ IN_PROC_BROWSER_TEST_F(SafeBrowsingTriggeredPopupBlockerPrerenderingBrowserTest,
   ConfigureAsAbusive(prerendering_url);
 
   // Loads a page in the prerender.
-  content::FrameTreeNodeId host_id =
+  content::PrerenderHostId host_id =
       prerender_helper_.AddPrerender(prerendering_url);
   auto* prerendered_frame_host =
       prerender_helper_.GetPrerenderedMainFrameHost(host_id);

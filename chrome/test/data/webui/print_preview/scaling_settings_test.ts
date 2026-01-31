@@ -40,10 +40,13 @@ suite('ScalingSettingsTest', function() {
         `[value="${ScalingType.DEFAULT}"]`)!;
     const customOption = select.querySelector<HTMLOptionElement>(
         `[value="${ScalingType.CUSTOM}"]`)!;
+    const actualSizeOption = select.querySelector<HTMLOptionElement>(
+        `[value="${ScalingType.ACTUAL_SIZE}"]`)!;
     assertTrue(fitToPageOption.hidden && fitToPageOption.disabled);
     assertTrue(fitToPaperOption.hidden && fitToPaperOption.disabled);
     assertFalse(defaultOption.hidden && !defaultOption.disabled);
     assertFalse(customOption.hidden && !customOption.disabled);
+    assertTrue(actualSizeOption.hidden && actualSizeOption.disabled);
 
     // Check selected option.
     assertEquals(ScalingType.DEFAULT, model.getSettingValue('scalingType'));
@@ -56,6 +59,35 @@ suite('ScalingSettingsTest', function() {
     assertFalse(fitToPaperOption.hidden && !fitToPaperOption.disabled);
     assertFalse(defaultOption.hidden && !defaultOption.disabled);
     assertFalse(customOption.hidden && !customOption.disabled);
+    assertTrue(actualSizeOption.hidden && actualSizeOption.disabled);
+
+    // Check selected option.
+    assertEquals(ScalingType.DEFAULT, model.getSettingValue('scalingTypePdf'));
+    assertEquals(ScalingType.DEFAULT.toString(), select.value);
+    assertTrue(defaultOption.selected);
+  });
+
+  test('ShowActualSizeOption', function() {
+    const select = scalingSection.shadowRoot.querySelector('select');
+    assertTrue(!!select);
+
+    // Not a PDF document -> No actual size option.
+    const actualSizeOption = select.querySelector<HTMLOptionElement>(
+        `[value="${ScalingType.ACTUAL_SIZE}"]`)!;
+    const defaultOption = select.querySelector<HTMLOptionElement>(
+        `[value="${ScalingType.DEFAULT}"]`)!;
+    assertTrue(actualSizeOption.hidden && actualSizeOption.disabled);
+    assertFalse(defaultOption.hidden && !defaultOption.disabled);
+
+    // Check selected option.
+    assertEquals(ScalingType.DEFAULT, model.getSettingValue('scalingType'));
+    assertEquals(ScalingType.DEFAULT.toString(), select.value);
+    assertTrue(defaultOption.selected);
+
+    // Actual size option is available.
+    setDocumentPdf(true);
+    assertFalse(actualSizeOption.hidden && !actualSizeOption.disabled);
+    assertFalse(defaultOption.hidden && !defaultOption.disabled);
 
     // Check selected option.
     assertEquals(ScalingType.DEFAULT, model.getSettingValue('scalingTypePdf'));
@@ -143,6 +175,11 @@ suite('ScalingSettingsTest', function() {
     await selectOption(scalingSection, ScalingType.FIT_TO_PAPER.toString());
     validateState(
         '105', true, ScalingType.CUSTOM, ScalingType.FIT_TO_PAPER, '105');
+
+    // Change to actual size.
+    await selectOption(scalingSection, ScalingType.ACTUAL_SIZE.toString());
+    validateState(
+        '105', true, ScalingType.CUSTOM, ScalingType.ACTUAL_SIZE, '105');
 
     // Go back to custom. Restores 105 value.
     await selectOption(scalingSection, ScalingType.CUSTOM.toString());

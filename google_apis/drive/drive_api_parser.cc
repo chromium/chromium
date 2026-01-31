@@ -54,7 +54,7 @@ bool GetParentsFromValue(const base::Value* value,
   if (!value->is_list())
     return false;
 
-  const base::Value::List& list = value->GetList();
+  const base::ListValue& list = value->GetList();
   base::JSONValueConverter<ParentReference> converter;
   result->resize(list.size());
   for (size_t i = 0; i < list.size(); ++i) {

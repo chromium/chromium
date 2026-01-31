@@ -128,11 +128,14 @@
                   "setAcceptedEncodings",
                   "clearAcceptedEncodingsOverride",
                   "enableReportingApi",
-                  "setCookieControls"
+                  "enableDeviceBoundSessions",
+                  "fetchSchemefulSite",
+                  "setCookieControls",
+                  "configureDurableMessages"
                 ],
-                "include_events": ["requestWillBeSent", "responseReceived", "loadingFinished", "loadingFailed", "requestIntercepted", "signedExchangeReceived", "requestWillBeSentExtraInfo", "responseReceivedExtraInfo", "responseReceivedEarlyHints", "trustTokenOperationDone", "policyUpdated", "reportingApiReportAdded", "reportingApiReportUpdated", "reportingApiEndpointsChangedForOrigin"],
+                "include_events": ["requestWillBeSent", "responseReceived", "loadingFinished", "loadingFailed", "requestIntercepted", "signedExchangeReceived", "requestWillBeSentExtraInfo", "responseReceivedExtraInfo", "responseReceivedEarlyHints", "trustTokenOperationDone", "policyUpdated", "reportingApiReportAdded", "reportingApiReportUpdated", "reportingApiEndpointsChangedForOrigin", "deviceBoundSessionsAdded", "deviceBoundSessionEventOccurred"],
                 "async": [
-                  "enable",
+                  "configureDurableMessages",
                   "clearBrowserCookies",
                   "clearBrowserCache",
                   "getCookies",

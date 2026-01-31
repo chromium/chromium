@@ -4,10 +4,10 @@
 
 #include "chrome/browser/banners/test_app_banner_manager_desktop.h"
 
+#include <algorithm>
 #include <memory>
 #include <utility>
 
-#include "base/containers/contains.h"
 #include "base/run_loop.h"
 #include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
@@ -94,8 +94,8 @@ void TestAppBannerManagerDesktop::OnDidGetManifest(
   // The manifest URL changing in the middle of a pipeline doesn't always mean
   // the page data will be reset. To ensure that installable_ isn't accidentally
   // set twice, reset it here.
-  if (base::Contains(result.errors,
-                     InstallableStatusCode::MANIFEST_URL_CHANGED)) {
+  if (std::ranges::contains(result.errors,
+                            InstallableStatusCode::MANIFEST_URL_CHANGED)) {
     installable_.reset();
   } else if (blink::IsEmptyManifest(*result.manifest)) {
     // AppBannerManagerDesktop does not call
@@ -108,7 +108,8 @@ void TestAppBannerManagerDesktop::OnDidPerformInstallableWebAppCheck(
     const InstallableData& result) {
   // If the renderer is existing, ensure installable isn't accidentally set
   // twice.
-  if (base::Contains(result.errors, InstallableStatusCode::RENDERER_EXITING)) {
+  if (std::ranges::contains(result.errors,
+                            InstallableStatusCode::RENDERER_EXITING)) {
     installable_.reset();
   }
   debug_log_.Append("OnDidPerformInstallableWebAppCheck");

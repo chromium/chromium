@@ -96,14 +96,14 @@ class DeviceWeeklyScheduledSuspendTestPolicyBuilder {
       DayOfWeek start_day_of_week,
       const base::TimeDelta& start_time_of_day);
 
-  base::Value::List GetAsPrefValue() const;
+  base::ListValue GetAsPrefValue() const;
 
   std::vector<std::unique_ptr<WeeklyTimeInterval>> GetAsWeeklyTimeIntervals()
       const;
 
  private:
   // Represents the device suspend policy in a list-based format.
-  base::Value::List policy_value_;
+  base::ListValue policy_value_;
 };
 
 }  // namespace ash

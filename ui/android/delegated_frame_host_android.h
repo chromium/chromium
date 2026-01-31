@@ -14,6 +14,7 @@
 #include "cc/layers/deadline_policy.h"
 #include "components/viz/client/frame_evictor.h"
 #include "components/viz/common/frame_sinks/begin_frame_args.h"
+#include "components/viz/common/frame_sinks/copy_output_result.h"
 #include "components/viz/common/frame_timing_details_map.h"
 #include "components/viz/common/resources/release_callback.h"
 #include "components/viz/common/resources/returned_resource.h"
@@ -120,8 +121,10 @@ class UI_ANDROID_EXPORT DelegatedFrameHostAndroid
   void CopyFromCompositingSurface(
       const gfx::Rect& src_subrect,
       const gfx::Size& output_size,
-      base::OnceCallback<void(const viz::CopyOutputBitmapWithMetadata&)>
-          callback,
+      base::TimeDelta timeout,
+      base::OnceCallback<
+          void(const base::expected<viz::CopyOutputBitmapWithMetadata,
+                                    viz::CopyOutputResult::Error>&)> callback,
       bool capture_exact_surface_id,
       base::TimeDelta ipc_delay);
   bool CanCopyFromCompositingSurface() const;

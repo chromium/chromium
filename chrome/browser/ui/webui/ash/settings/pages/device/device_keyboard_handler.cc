@@ -65,7 +65,7 @@ namespace ash::settings {
 const char KeyboardHandler::kShowKeysChangedName[] = "show-keys-changed";
 
 void KeyboardHandler::TestAPI::Initialize() {
-  handler_->HandleInitialize(base::Value::List());
+  handler_->HandleInitialize(base::ListValue());
 }
 
 KeyboardHandler::KeyboardHandler() = default;
@@ -103,19 +103,19 @@ void KeyboardHandler::OnInputDeviceConfigurationChanged(
   }
 }
 
-void KeyboardHandler::HandleInitialize(const base::Value::List& args) {
+void KeyboardHandler::HandleInitialize(const base::ListValue& args) {
   AllowJavascript();
   UpdateShowKeys();
   UpdateKeyboards();
 }
 
 void KeyboardHandler::HandleShowShortcutCustomizationApp(
-    const base::Value::List& args) const {
+    const base::ListValue& args) const {
   ash::LaunchSystemWebAppAsync(ProfileManager::GetActiveUserProfile(),
                                ash::SystemWebAppType::SHORTCUT_CUSTOMIZATION);
 }
 
-void KeyboardHandler::HandleKeyboardChange(const base::Value::List& args) {
+void KeyboardHandler::HandleKeyboardChange(const base::ListValue& args) {
   AllowJavascript();
   UpdateKeyboards();
 }
@@ -147,7 +147,7 @@ void KeyboardHandler::UpdateShowKeys() {
                              !base::CommandLine::ForCurrentProcess()->HasSwitch(
                                  switches::kHasChromeOSKeyboard);
 
-  base::Value::Dict keyboard_params;
+  base::DictValue keyboard_params;
   keyboard_params.Set("showCapsLock", has_caps_lock);
   keyboard_params.Set("showExternalMetaKey",
                       keyboards_state.has_external_generic_keyboard);

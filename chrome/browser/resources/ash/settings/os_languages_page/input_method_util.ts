@@ -2,10 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-/**
- * @fileoverview constants related to input method options.
- */
-
 import {assert, assertNotReached} from 'chrome://resources/js/assert.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 
@@ -13,9 +9,10 @@ import {assertExhaustive} from '../assert_extras.js';
 import type {Route} from '../router.js';
 import {routes} from '../router.js';
 
+import {JapaneseInputMode, JapaneseKeymapStyle, JapanesePunctuationStyle, JapaneseSelectionShortcut, JapaneseShiftKeyModeStyle, JapaneseSpaceInputStyle, JapaneseSymbolStyle, KoreanKeyboardLayout, OptionType, PinyinXkbLayout, ZhuyinKeyboardLayout, ZhuyinPageSize, ZhuyinSelectKeys} from './input_method_prefs_consts.js';
+import {OPTION_DEFAULT} from './input_method_prefs_defaults.js';
 import type {SettingsContext} from './input_method_settings.js';
 import {getInputMethodSettings, SettingsType} from './input_method_settings.js';
-import {JapaneseInputMode, JapaneseKeymapStyle, JapanesePunctuationStyle, JapaneseSelectionShortcut, JapaneseShiftKeyModeStyle, JapaneseSpaceInputStyle, JapaneseSymbolStyle} from './input_method_types.js';
 
 /**
  * The prefix string shared by all first party input method ID.
@@ -24,178 +21,14 @@ export const FIRST_PARTY_INPUT_METHOD_ID_PREFIX =
     '_comp_ime_jkghodnilhceideoidjikpgommlajknk';
 
 /**
- * The preference string used to indicate a user has autocorrect enabled by
- * default for a particular engine. See the following for more details
- * https://crsrc.org/chrome/browser/ash/input_method/autocorrect_prefs.cc
+ * UI-only items (not backed by CrOS-Prefs) on option pages. These typically
+ * correspond to action buttons or links in CrOS Settings UI.
  */
-export const PHYSICAL_KEYBOARD_AUTOCORRECT_ENABLED_BY_DEFAULT =
-    'physicalKeyboardAutoCorrectionEnabledByDefault';
-
-/**
- * All possible keyboard layouts. Should match Google3.
- */
-enum KeyboardLayout {
-  STANDARD = 'Default',
-  GINYIEH = 'Gin Yieh',
-  ETEN = 'Eten',
-  IBM = 'IBM',
-  HSU = 'Hsu',
-  ETEN26 = 'Eten 26',
-  SET2 = '2 Set / 두벌식',
-  SET2Y = '2 Set (Old Hangul) / 두벌식 (옛글)',
-  SET390 = '3 Set (390) / 세벌식 (390)',
-  SET3_FINAL = '3 Set (Final) / 세벌식 (최종)',
-  SET3_SUN = '3 Set (No Shift) / 세벌식 (순아래)',
-  SET3_YET = '3 Set (Old Hangul) / 세벌식 (옛글)',
-  XKB_US = 'US',
-  XKB_DVORAK = 'Dvorak',
-  XKB_COLEMAK = 'Colemak',
-}
-
-/**
- * All possible options on options pages. Should match Gooogle3.
- */
-export enum OptionType {
+export enum UiOptionType {
   EDIT_USER_DICT = 'editUserDict',
-  ENABLE_COMPLETION = 'enableCompletion',
-  ENABLE_DOUBLE_SPACE_PERIOD = 'enableDoubleSpacePeriod',
-  ENABLE_GESTURE_TYPING = 'enableGestureTyping',
-  ENABLE_PREDICTION = 'enablePrediction',
-  ENABLE_SOUND_ON_KEYPRESS = 'enableSoundOnKeypress',
-  PHYSICAL_KEYBOARD_AUTO_CORRECTION_LEVEL =
-      'physicalKeyboardAutoCorrectionLevel',
-  PHYSICAL_KEYBOARD_ENABLE_CAPITALIZATION =
-      'physicalKeyboardEnableCapitalization',
-  PHYSICAL_KEYBOARD_ENABLE_PREDICTIVE_WRITING =
-      'physicalKeyboardEnablePredictiveWriting',
-  VIRTUAL_KEYBOARD_AUTO_CORRECTION_LEVEL = 'virtualKeyboardAutoCorrectionLevel',
-  VIRTUAL_KEYBOARD_ENABLE_CAPITALIZATION =
-      'virtualKeyboardEnableCapitalization',
-  XKB_LAYOUT = 'xkbLayout',
-  // Options for Japanese input method.
-  // LINT.IfChange(JpOptionCategories)
-  JAPANESE_AUTOMATICALLY_SWITCH_TO_HALFWIDTH = 'AutomaticallySwitchToHalfwidth',
-  JAPANESE_SHIFT_KEY_MODE_STYLE = 'ShiftKeyModeStyle',
-  JAPANESE_USE_INPUT_HISTORY = 'UseInputHistory',
-  JAPANESE_USE_SYSTEM_DICTIONARY = 'UseSystemDictionary',
-  JAPANESE_NUMBER_OF_SUGGESTIONS = 'numberOfSuggestions',
-  JAPANESE_INPUT_MODE = 'JapaneseInputMode',
-  JAPANESE_PUNCTUATION_STYLE = 'JapanesePunctuationStyle',
-  JAPANESE_SYMBOL_STYLE = 'JapaneseSymbolStyle',
-  JAPANESE_SPACE_INPUT_STYLE = 'JapaneseSpaceInputStyle',
-  // "...Section..." in the string value below is a typo, but persisted in CrOS
-  // Prefs storage so must NOT be fixed unless user data are migrated first.
-  JAPANESE_SELECTION_SHORTCUT = 'JapaneseSectionShortcut',
-  JAPANESE_KEYMAP_STYLE = 'JapaneseKeymapStyle',
   JAPANESE_MANAGE_USER_DICTIONARY = 'JapaneseManageUserDictionary',
   JAPANESE_DELETE_PERSONALIZATION_DATA = 'JapaneseClearPersonalizationData',
-  JAPANESE_DISABLE_PERSONALIZED_SUGGESTIONS = 'JapaneseDisableSuggestions',
-  // LINT.ThenChange(/chrome/browser/ash/input_method/japanese/japanese_prefs_constants.h:JpOptionCategories)
-  // Options for Korean input method.
-  KOREAN_ENABLE_SYLLABLE_INPUT = 'koreanEnableSyllableInput',
-  KOREAN_KEYBOARD_LAYOUT = 'koreanKeyboardLayout',
-  // Options for pinyin input method.
-  PINYIN_CHINESE_PUNCTUATION = 'pinyinChinesePunctuation',
-  PINYIN_DEFAULT_CHINESE = 'pinyinDefaultChinese',
-  PINYIN_ENABLE_FUZZY = 'pinyinEnableFuzzy',
-  PINYIN_ENABLE_LOWER_PAGING = 'pinyinEnableLowerPaging',
-  PINYIN_ENABLE_UPPER_PAGING = 'pinyinEnableUpperPaging',
-  PINYIN_FULL_WIDTH_CHARACTER = 'pinyinFullWidthCharacter',
-  PINYIN_EN_ENG = 'en:eng',
-  PINYIN_AN_ANG = 'an:ang',
-  PINYIN_IAN_IANG = 'ian:iang',
-  PINYIN_K_G = 'k:g',
-  PINYIN_R_L = 'r:l',
-  PINYIN_UAN_UANG = 'uan:uang',
-  PINYIN_C_CH = 'c:ch',
-  PINYIN_F_H = 'f:h',
-  PINYIN_IN_ING = 'in:ing',
-  PINYIN_L_N = 'l:n',
-  PINYIN_S_SH = 's:sh',
-  PINYIN_Z_ZH = 'z:zh',
-  // Options for zhuyin input method.
-  ZHUYIN_KEYBOARD_LAYOUT = 'zhuyinKeyboardLayout',
-  ZHUYIN_PAGE_SIZE = 'zhuyinPageSize',
-  ZHUYIN_SELECT_KEYS = 'zhuyinSelectKeys',
-  // Options for Vietnamese VNI input method
-  VIETNAMESE_VNI_ALLOW_FLEXIBLE_DIACRITICS =
-      'vietnameseVniAllowFlexibleDiacritics',
-  VIETNAMESE_VNI_NEW_STYLE_TONE_MARK_PLACEMENT =
-      'vietnameseVniNewStyleToneMarkPlacement',
-  VIETNAMESE_VNI_INSERT_DOUBLE_HORN_ON_UO = 'vietnameseVniInsertDoubleHornOnUo',
-  VIETNAMESE_VNI_SHOW_UNDERLINE = 'vietnameseVniShowUnderline',
-  VIETNAMESE_TELEX_ALLOW_FLEXIBLE_DIACRITICS =
-      'vietnameseTelexAllowFlexibleDiacritics',
-  VIETNAMESE_TELEX_NEW_STYLE_TONE_MARK_PLACEMENT =
-      'vietnameseTelexNewStyleToneMarkPlacement',
-  VIETNAMESE_TELEX_INSERT_DOUBLE_HORN_ON_UO =
-      'vietnameseTelexInsertDoubleHornOnUo',
-  VIETNAMESE_TELEX_INSERT_U_HORN_ON_W = 'vietnameseTelexInsertUHornOnW',
-  VIETNAMESE_TELEX_SHOW_UNDERLINE = 'vietnameseTelexShowUnderline',
 }
-
-/**
- * Default values for each option type.
- *
- * WARNING: Keep this in sync with corresponding Google3 file for extension.
- */
-export const OPTION_DEFAULT = {
-  [OptionType.ENABLE_COMPLETION]: false,
-  [OptionType.ENABLE_DOUBLE_SPACE_PERIOD]: true,
-  [OptionType.ENABLE_GESTURE_TYPING]: true,
-  [OptionType.ENABLE_PREDICTION]: false,
-  [OptionType.ENABLE_SOUND_ON_KEYPRESS]: false,
-  [OptionType.PHYSICAL_KEYBOARD_AUTO_CORRECTION_LEVEL]: 0,
-  [OptionType.PHYSICAL_KEYBOARD_ENABLE_CAPITALIZATION]: true,
-  [OptionType.PHYSICAL_KEYBOARD_ENABLE_PREDICTIVE_WRITING]: true,
-  [OptionType.VIRTUAL_KEYBOARD_AUTO_CORRECTION_LEVEL]: 1,
-  [OptionType.VIRTUAL_KEYBOARD_ENABLE_CAPITALIZATION]: true,
-  [OptionType.XKB_LAYOUT]: 'US',
-  // Options for Japanese input methods.
-  // LINT.IfChange(JpPrefDefaults)
-  [OptionType.JAPANESE_AUTOMATICALLY_SWITCH_TO_HALFWIDTH]: true,
-  [OptionType.JAPANESE_SHIFT_KEY_MODE_STYLE]:
-      JapaneseShiftKeyModeStyle.ALPHANUMERIC,
-  [OptionType.JAPANESE_USE_INPUT_HISTORY]: true,
-  [OptionType.JAPANESE_USE_SYSTEM_DICTIONARY]: true,
-  [OptionType.JAPANESE_NUMBER_OF_SUGGESTIONS]: 3,
-  [OptionType.JAPANESE_INPUT_MODE]: JapaneseInputMode.ROMAJI,
-  [OptionType.JAPANESE_PUNCTUATION_STYLE]:
-      JapanesePunctuationStyle.KUTEN_TOUTEN,
-  [OptionType.JAPANESE_SYMBOL_STYLE]:
-      JapaneseSymbolStyle.CORNER_BRACKET_MIDDLE_DOT,
-  [OptionType.JAPANESE_SPACE_INPUT_STYLE]: JapaneseSpaceInputStyle.INPUT_MODE,
-  [OptionType.JAPANESE_SELECTION_SHORTCUT]:
-      JapaneseSelectionShortcut.DIGITS_123456789,
-  [OptionType.JAPANESE_KEYMAP_STYLE]: JapaneseKeymapStyle.CHROME_OS,
-  [OptionType.JAPANESE_DISABLE_PERSONALIZED_SUGGESTIONS]: false,
-  // LINT.ThenChange(/chrome/browser/ash/input_method/japanese/japanese_settings.cc:JpPrefDefaults)
-
-  // Options for Korean input method.
-  [OptionType.KOREAN_ENABLE_SYLLABLE_INPUT]: true,
-  [OptionType.KOREAN_KEYBOARD_LAYOUT]: KeyboardLayout.SET2,
-  // Options for pinyin input method.
-  [OptionType.PINYIN_CHINESE_PUNCTUATION]: true,
-  [OptionType.PINYIN_DEFAULT_CHINESE]: true,
-  [OptionType.PINYIN_ENABLE_FUZZY]: false,
-  [OptionType.PINYIN_ENABLE_LOWER_PAGING]: true,
-  [OptionType.PINYIN_ENABLE_UPPER_PAGING]: true,
-  [OptionType.PINYIN_FULL_WIDTH_CHARACTER]: false,
-  // Options for zhuyin input method.
-  [OptionType.ZHUYIN_KEYBOARD_LAYOUT]: KeyboardLayout.STANDARD,
-  [OptionType.ZHUYIN_PAGE_SIZE]: '10',
-  [OptionType.ZHUYIN_SELECT_KEYS]: '1234567890',
-  // Options for Vietnamese inputs.
-  [OptionType.VIETNAMESE_VNI_ALLOW_FLEXIBLE_DIACRITICS]: true,
-  [OptionType.VIETNAMESE_VNI_NEW_STYLE_TONE_MARK_PLACEMENT]: false,
-  [OptionType.VIETNAMESE_VNI_INSERT_DOUBLE_HORN_ON_UO]: false,
-  [OptionType.VIETNAMESE_VNI_SHOW_UNDERLINE]: true,
-  [OptionType.VIETNAMESE_TELEX_ALLOW_FLEXIBLE_DIACRITICS]: true,
-  [OptionType.VIETNAMESE_TELEX_NEW_STYLE_TONE_MARK_PLACEMENT]: false,
-  [OptionType.VIETNAMESE_TELEX_INSERT_DOUBLE_HORN_ON_UO]: false,
-  [OptionType.VIETNAMESE_TELEX_INSERT_U_HORN_ON_W]: true,
-  [OptionType.VIETNAMESE_TELEX_SHOW_UNDERLINE]: true,
-} satisfies Partial<Record<OptionType, unknown>>;
 
 /**
  * @param optionName The option we want the default value for.
@@ -283,7 +116,7 @@ const Settings = {
         },
         {name: OptionType.ENABLE_GESTURE_TYPING},
         {name: OptionType.ENABLE_DOUBLE_SPACE_PERIOD},
-        {name: OptionType.EDIT_USER_DICT},
+        {name: UiOptionType.EDIT_USER_DICT},
       ],
     },
   ],
@@ -317,13 +150,13 @@ const Settings = {
     {
       title: SettingsHeaders.USER_DICTIONARIES,
       optionNames: [{
-        name: OptionType.JAPANESE_MANAGE_USER_DICTIONARY,
+        name: UiOptionType.JAPANESE_MANAGE_USER_DICTIONARY,
       }],
     },
     {
       title: SettingsHeaders.PRIVACY,
       optionNames: [
-        {name: OptionType.JAPANESE_DELETE_PERSONALIZATION_DATA},
+        {name: UiOptionType.JAPANESE_DELETE_PERSONALIZATION_DATA},
         {name: OptionType.JAPANESE_DISABLE_PERSONALIZED_SUGGESTIONS},
       ],
     },
@@ -366,12 +199,12 @@ const Settings = {
   [SettingsType.PINYIN_SETTINGS]: [
     {
       title: SettingsHeaders.ADVANCED,
-      optionNames: [{name: OptionType.EDIT_USER_DICT}],
+      optionNames: [{name: UiOptionType.EDIT_USER_DICT}],
     },
     {
       title: SettingsHeaders.PHYSICAL_KEYBOARD,
       optionNames: [
-        {name: OptionType.XKB_LAYOUT},
+        {name: OptionType.PINYIN_XKB_LAYOUT},
         {name: OptionType.PINYIN_ENABLE_UPPER_PAGING},
         {name: OptionType.PINYIN_ENABLE_LOWER_PAGING},
         {name: OptionType.PINYIN_DEFAULT_CHINESE},
@@ -458,7 +291,7 @@ const Settings = {
 } satisfies Record<SettingsType, Array<{
                      title: SettingsHeaders,
                      optionNames: Array<{
-                       name: OptionType,
+                       name: OptionType | UiOptionType,
                        dependentOptions?: OptionType[],
                      }>,
                    }>>;
@@ -495,11 +328,13 @@ export function hasOptionsPageInSettings(
 export function generateOptions(
     engineId: string, context: SettingsContext): Array<{
   title: SettingsHeaders,
-  optionNames: Array<{name: OptionType, dependentOptions?: OptionType[]}>,
+  optionNames:
+      Array<{name: OptionType | UiOptionType, dependentOptions?: OptionType[]}>,
 }> {
   const options: Array<{
     title: SettingsHeaders,
-    optionNames: Array<{name: OptionType, dependentOptions?: OptionType[]}>,
+    optionNames: Array<
+        {name: OptionType | UiOptionType, dependentOptions?: OptionType[]}>,
   }> = [];
   const inputMethodSettings = getInputMethodSettings(context);
   const engineSettings = inputMethodSettings[engineId];
@@ -536,7 +371,7 @@ export function generateOptions(
  * @param option The option type.
  * @return The UI type of |option|.
  */
-export function getOptionUiType(option: OptionType): UiType {
+export function getOptionUiType(option: OptionType|UiOptionType): UiType {
   switch (option) {
     // TODO(b/191608723): Clean up switch statements.
     case OptionType.ENABLE_COMPLETION:
@@ -583,7 +418,7 @@ export function getOptionUiType(option: OptionType): UiType {
     case OptionType.PHYSICAL_KEYBOARD_AUTO_CORRECTION_LEVEL:
     case OptionType.VIRTUAL_KEYBOARD_AUTO_CORRECTION_LEVEL:
       return UiType.TOGGLE_BUTTON;
-    case OptionType.XKB_LAYOUT:
+    case OptionType.PINYIN_XKB_LAYOUT:
     case OptionType.JAPANESE_INPUT_MODE:
     case OptionType.JAPANESE_PUNCTUATION_STYLE:
     case OptionType.JAPANESE_SYMBOL_STYLE:
@@ -597,23 +432,25 @@ export function getOptionUiType(option: OptionType): UiType {
     case OptionType.ZHUYIN_SELECT_KEYS:
     case OptionType.ZHUYIN_PAGE_SIZE:
       return UiType.DROPDOWN;
-    case OptionType.EDIT_USER_DICT:
-    case OptionType.JAPANESE_MANAGE_USER_DICTIONARY:
+    case UiOptionType.EDIT_USER_DICT:
+    case UiOptionType.JAPANESE_MANAGE_USER_DICTIONARY:
       return UiType.LINK;
-    case OptionType.JAPANESE_DELETE_PERSONALIZATION_DATA:
+    case UiOptionType.JAPANESE_DELETE_PERSONALIZATION_DATA:
       return UiType.SUBMENU_BUTTON;
     default:
       assertExhaustive(option);
   }
 }
 
-export function isOptionLabelTranslated(option: OptionType): option is Exclude<
-    OptionType,
-    OptionType.PINYIN_AN_ANG|OptionType.PINYIN_EN_ENG|OptionType
-        .PINYIN_IAN_IANG|OptionType.PINYIN_K_G|OptionType.PINYIN_R_L|
-    OptionType.PINYIN_UAN_UANG|OptionType.PINYIN_C_CH|
-    OptionType.PINYIN_F_H|OptionType.PINYIN_IN_ING|
-    OptionType.PINYIN_L_N|OptionType.PINYIN_S_SH|OptionType.PINYIN_Z_ZH> {
+export function isOptionLabelTranslated(option: OptionType|UiOptionType):
+    option is Exclude<
+        OptionType|UiOptionType,
+        OptionType.PINYIN_AN_ANG|OptionType.PINYIN_EN_ENG|
+        OptionType.PINYIN_IAN_IANG|OptionType.PINYIN_K_G|
+        OptionType.PINYIN_R_L|OptionType.PINYIN_UAN_UANG|
+        OptionType.PINYIN_C_CH|OptionType.PINYIN_F_H|
+        OptionType.PINYIN_IN_ING|OptionType.PINYIN_L_N|
+        OptionType.PINYIN_S_SH|OptionType.PINYIN_Z_ZH> {
   switch (option) {
     // TODO(b/191608723): Clean up switch statements.
     case OptionType.PINYIN_AN_ANG:
@@ -639,7 +476,7 @@ export function isOptionLabelTranslated(option: OptionType): option is Exclude<
  * @param option The option type.
  * @return The name of the i18n string for the label of |option|.
  */
-export function getOptionLabelName(option: OptionType): string {
+export function getOptionLabelName(option: OptionType|UiOptionType): string {
   switch (option) {
     case OptionType.ENABLE_DOUBLE_SPACE_PERIOD:
       return 'inputMethodOptionsEnableDoubleSpacePeriod';
@@ -691,15 +528,15 @@ export function getOptionLabelName(option: OptionType): string {
       return 'inputMethodOptionsJapaneseUseSystemDictionary';
     case OptionType.JAPANESE_NUMBER_OF_SUGGESTIONS:
       return 'inputMethodOptionsJapaneseNumberOfSuggestions';
-    case OptionType.JAPANESE_MANAGE_USER_DICTIONARY:
+    case UiOptionType.JAPANESE_MANAGE_USER_DICTIONARY:
       return 'inputMethodOptionsJapaneseManageUserDictionary';
-    case OptionType.JAPANESE_DELETE_PERSONALIZATION_DATA:
+    case UiOptionType.JAPANESE_DELETE_PERSONALIZATION_DATA:
       return 'inputMethodOptionsJapaneseDeletePersonalizationData';
     case OptionType.JAPANESE_DISABLE_PERSONALIZED_SUGGESTIONS:
       return 'inputMethodOptionsJapaneseDisablePersonalizedSuggestions';
-    case OptionType.XKB_LAYOUT:
+    case OptionType.PINYIN_XKB_LAYOUT:
       return 'inputMethodOptionsXkbLayout';
-    case OptionType.EDIT_USER_DICT:
+    case UiOptionType.EDIT_USER_DICT:
       return 'inputMethodOptionsEditUserDict';
     case OptionType.ZHUYIN_KEYBOARD_LAYOUT:
       return 'inputMethodOptionsZhuyinKeyboardLayout';
@@ -743,7 +580,7 @@ export function getOptionLabelName(option: OptionType): string {
  * @return The name of the string for the subtitle of |option|. Returns empty
  *     string if no subtitle.
  */
-export function getOptionSubtitleName(option: OptionType): string {
+export function getOptionSubtitleName(option: OptionType|UiOptionType): string {
   switch (option) {
     // TODO(b/234790486): The subtitle is not forced to the next line if it is
     // too short. You end up with something like :
@@ -751,7 +588,7 @@ export function getOptionSubtitleName(option: OptionType): string {
     // affects the diacritics label. This is not currently an issue since both
     // string are long enough and force themself to the next line, but it may be
     // an issue in other languages or with future strings which may be shorter.
-    case OptionType.JAPANESE_MANAGE_USER_DICTIONARY:
+    case UiOptionType.JAPANESE_MANAGE_USER_DICTIONARY:
       return 'inputMethodOptionsJapaneseManageUserDictionarySubtitle';
     case OptionType.VIETNAMESE_TELEX_NEW_STYLE_TONE_MARK_PLACEMENT:
     case OptionType.VIETNAMESE_VNI_NEW_STYLE_TONE_MARK_PLACEMENT:
@@ -771,7 +608,8 @@ export function getOptionSubtitleName(option: OptionType): string {
 /**
  * `isOptionLabelTranslated(option)` must be false.
  */
-export function getUntranslatedOptionLabelName(option: OptionType): string {
+export function getUntranslatedOptionLabelName(option: OptionType|UiOptionType):
+    string {
   switch (option) {
     case OptionType.PINYIN_AN_ANG:
       return 'an_ang';
@@ -807,7 +645,7 @@ export function getUntranslatedOptionLabelName(option: OptionType): string {
  * @param option The option type.
  * @return The list of items to be displayed in the dropdown for |option|.
  */
-export function getOptionMenuItems(option: OptionType):
+export function getOptionMenuItems(option: OptionType|UiOptionType):
     Array<{name?: string, value: string | number}> {
   switch (option) {
     case OptionType.PHYSICAL_KEYBOARD_AUTO_CORRECTION_LEVEL:
@@ -817,34 +655,49 @@ export function getOptionMenuItems(option: OptionType):
         {value: 1, name: 'inputMethodOptionsAutoCorrectionModest'},
         {value: 2, name: 'inputMethodOptionsAutoCorrectionAggressive'},
       ];
-    case OptionType.XKB_LAYOUT:
+    case OptionType.PINYIN_XKB_LAYOUT:
       return [
-        {value: 'US', name: 'inputMethodOptionsUsKeyboard'},
-        {value: 'Dvorak', name: 'inputMethodOptionsDvorakKeyboard'},
-        {value: 'Colemak', name: 'inputMethodOptionsColemakKeyboard'},
+        {value: PinyinXkbLayout.XKB_US, name: 'inputMethodOptionsUsKeyboard'},
+        {
+          value: PinyinXkbLayout.XKB_DVORAK,
+          name: 'inputMethodOptionsDvorakKeyboard',
+        },
+        {
+          value: PinyinXkbLayout.XKB_COLEMAK,
+          name: 'inputMethodOptionsColemakKeyboard',
+        },
       ];
     case OptionType.ZHUYIN_KEYBOARD_LAYOUT:
       return [
-        {value: 'Default', name: 'inputMethodOptionsZhuyinLayoutDefault'},
-        {value: 'IBM', name: 'inputMethodOptionsZhuyinLayoutIBM'},
-        {value: 'Eten', name: 'inputMethodOptionsZhuyinLayoutEten'},
+        {
+          value: ZhuyinKeyboardLayout.STANDARD,
+          name: 'inputMethodOptionsZhuyinLayoutDefault',
+        },
+        {
+          value: ZhuyinKeyboardLayout.IBM,
+          name: 'inputMethodOptionsZhuyinLayoutIBM',
+        },
+        {
+          value: ZhuyinKeyboardLayout.ETEN,
+          name: 'inputMethodOptionsZhuyinLayoutEten',
+        },
       ];
     case OptionType.ZHUYIN_SELECT_KEYS:
       // Zhuyin select keys correspond to physical keys so are not
       // translated.
       return [
-        {value: '1234567890'},
-        {value: 'asdfghjkl;'},
-        {value: 'asdfzxcv89'},
-        {value: 'asdfjkl789'},
-        {value: '1234qweras'},
+        {value: ZhuyinSelectKeys.ZHUYIN_SELECT_KEYS_1234567890},
+        {value: ZhuyinSelectKeys.ZHUYIN_SELECT_KEYS_ASDFGHJKL},
+        {value: ZhuyinSelectKeys.ZHUYIN_SELECT_KEYS_ASDFZXCV89},
+        {value: ZhuyinSelectKeys.ZHUYIN_SELECT_KEYS_ASDFJKL789},
+        {value: ZhuyinSelectKeys.ZHUYIN_SELECT_KEYS_1234QWERAS},
       ];
     case OptionType.ZHUYIN_PAGE_SIZE:
       // Zhuyin page size is just a number, so is not translated.
       return [
-        {value: '10'},
-        {value: '9'},
-        {value: '8'},
+        {value: ZhuyinPageSize.ZHUYIN_PAGE_SIZE_10},
+        {value: ZhuyinPageSize.ZHUYIN_PAGE_SIZE_9},
+        {value: ZhuyinPageSize.ZHUYIN_PAGE_SIZE_8},
       ];
     case OptionType.JAPANESE_INPUT_MODE:
       return [
@@ -860,20 +713,20 @@ export function getOptionMenuItems(option: OptionType):
     case OptionType.JAPANESE_PUNCTUATION_STYLE:
       return [
         {
-          value: JapanesePunctuationStyle.KUTEN_TOUTEN,
-          name: 'inputMethodOptionsJapanesePunctuationStyleKutenTouten',
+          value: JapanesePunctuationStyle.TOUTEN_KUTEN,
+          name: 'inputMethodOptionsJapanesePunctuationStyleToutenKuten',
         },
         {
           value: JapanesePunctuationStyle.COMMA_PERIOD,
           name: 'inputMethodOptionsJapanesePunctuationStyleCommaPeriod',
         },
         {
-          value: JapanesePunctuationStyle.KUTEN_PERIOD,
-          name: 'inputMethodOptionsJapanesePunctuationStyleKutenPeriod',
+          value: JapanesePunctuationStyle.TOUTEN_PERIOD,
+          name: 'inputMethodOptionsJapanesePunctuationStyleToutenPeriod',
         },
         {
-          value: JapanesePunctuationStyle.COMMA_TOUTEN,
-          name: 'inputMethodOptionsJapanesePunctuationStyleCommaTouten',
+          value: JapanesePunctuationStyle.COMMA_KUTEN,
+          name: 'inputMethodOptionsJapanesePunctuationStyleCommaKuten',
         },
       ];
     case OptionType.JAPANESE_SYMBOL_STYLE:
@@ -991,14 +844,15 @@ export function getOptionMenuItems(option: OptionType):
       ];
     case OptionType.KOREAN_KEYBOARD_LAYOUT:
       // Korean layout strings are already Korean / English, so not
-      // translated. The literal values of these strings are critical.
+      // translated. The literal values of these strings are critical, as
+      // they're persisted in values of CrOS-Prefs entries.
       return [
-        {value: '2 Set / 두벌식'},
-        {value: '3 Set (390) / 세벌식 (390)'},
-        {value: '3 Set (Final) / 세벌식 (최종)'},
-        {value: '3 Set (No Shift) / 세벌식 (순아래)'},
-        {value: '2 Set (Old Hangul) / 두벌식 (옛글)'},
-        {value: '3 Set (Old Hangul) / 세벌식 (옛글)'},
+        {value: KoreanKeyboardLayout.SET2},
+        {value: KoreanKeyboardLayout.SET390},
+        {value: KoreanKeyboardLayout.SET3_FINAL},
+        {value: KoreanKeyboardLayout.SET3_SUN},
+        {value: KoreanKeyboardLayout.SET2Y},
+        {value: KoreanKeyboardLayout.SET3_YET},
       ];
     default:
       return [];
@@ -1014,7 +868,7 @@ export function getOptionMenuItems(option: OptionType):
  */
 // TODO(b/265557721): Remove this when we remove Polymer's two-way native
 // binding of value changes.
-export function shouldStoreAsNumber(option: OptionType):
+export function shouldStoreAsNumber(option: OptionType|UiOptionType):
     option is OptionType.PHYSICAL_KEYBOARD_AUTO_CORRECTION_LEVEL|
     OptionType.VIRTUAL_KEYBOARD_AUTO_CORRECTION_LEVEL|
     OptionType.JAPANESE_NUMBER_OF_SUGGESTIONS {
@@ -1027,11 +881,11 @@ export function shouldStoreAsNumber(option: OptionType):
  * @return The url to open for |option|, returns undefined if |option| does not
  *     have a url.
  */
-export function getOptionUrl(option: OptionType): Route|undefined {
-  if (option === OptionType.EDIT_USER_DICT) {
+export function getOptionUrl(option: OptionType|UiOptionType): Route|undefined {
+  if (option === UiOptionType.EDIT_USER_DICT) {
     return routes.OS_LANGUAGES_EDIT_DICTIONARY;
   }
-  if (option === OptionType.JAPANESE_MANAGE_USER_DICTIONARY) {
+  if (option === UiOptionType.JAPANESE_MANAGE_USER_DICTIONARY) {
     return routes.OS_LANGUAGES_JAPANESE_MANAGE_USER_DICTIONARY;
   }
   return undefined;
@@ -1042,9 +896,9 @@ export function getOptionUrl(option: OptionType): Route|undefined {
  * @return The submenu button type for |option|, returns undefined if |option|
  *     does not have a submenu button type.
  */
-export function getSubmenuButtonType(option: OptionType): SubmenuButton|
-    undefined {
-  if (option === OptionType.JAPANESE_DELETE_PERSONALIZATION_DATA) {
+export function getSubmenuButtonType(option: OptionType|UiOptionType):
+    SubmenuButton|undefined {
+  if (option === UiOptionType.JAPANESE_DELETE_PERSONALIZATION_DATA) {
     return SubmenuButton.JAPANESE_DELETE_PERSONALIZATION_DATA;
   }
   return undefined;

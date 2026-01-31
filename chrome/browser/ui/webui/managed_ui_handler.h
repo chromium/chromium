@@ -56,7 +56,7 @@ class ManagedUIHandler : public content::WebUIMessageHandler,
   void OnJavascriptDisallowed() override;
 
   // Handles the "observeManagedUI" message. No arguments.
-  void HandleObserveManagedUI(const base::Value::List& args);
+  void HandleObserveManagedUI(const base::ListValue& args);
 
   // Add/remove observers on the PolicyService.
   void AddObservers();
@@ -64,7 +64,7 @@ class ManagedUIHandler : public content::WebUIMessageHandler,
 
   // Generates a dictionary with "isManaged" and "managedByOrg" i18n keys based
   // on `managed_`. Called initialize and on each change for notifications.
-  base::Value::Dict GetDataSourceUpdate() const;
+  base::DictValue GetDataSourceUpdate() const;
 
   // Fire a webui listener notification if dark mode actually changed.
   void NotifyIfChanged();

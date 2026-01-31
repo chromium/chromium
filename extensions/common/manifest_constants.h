@@ -467,7 +467,7 @@ inline constexpr char16_t kInvalidLaunchContainer[] =
 inline constexpr char kInvalidLaunchValue[] = "Invalid value for '*'.";
 inline constexpr char kInvalidLaunchValueContainer[] =
     "Invalid container type for '*'.";
-inline constexpr char kInvalidManifest[] = "Manifest file is invalid";
+inline constexpr char16_t kInvalidManifest[] = u"Manifest file is invalid";
 inline constexpr char kInvalidManifestKey[] = "Invalid value for '*'.";
 inline constexpr char kInvalidManifestVersionMissingKey[] =
     "Missing 'manifest_version' key. Its value must be an integer *. "

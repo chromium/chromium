@@ -32,6 +32,7 @@
 
 namespace blink {
 
+class CSSParserContext;
 class Length;
 class QualifiedName;
 class SVGLengthContext;
@@ -93,6 +94,7 @@ class CORE_EXPORT SVGLength final : public SVGListablePropertyBase {
 
   String ValueAsString() const override;
   SVGParsingError SetValueAsString(const String&);
+  SVGParsingError SetValueAsString(const String&, const CSSParserContext*);
 
   void NewValueSpecifiedUnits(CSSPrimitiveValue::UnitType,
                               float value_in_specified_units);

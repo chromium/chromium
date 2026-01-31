@@ -88,29 +88,6 @@ const views::Button* OpaqueBrowserFrameViewLayout::GetFrameButton(
   }
 }
 
-gfx::Rect OpaqueBrowserFrameViewLayout::GetBoundsForTabStripRegion(
-    const gfx::Size& tabstrip_minimum_size,
-    int total_width) const {
-  const int x = available_space_leading_x_;
-  const int available_width = available_space_trailing_x_ - x;
-  return gfx::Rect(x, NonClientTopHeight(false), std::max(0, available_width),
-                   tabstrip_minimum_size.height());
-}
-
-gfx::Rect OpaqueBrowserFrameViewLayout::GetBoundsForWebAppFrameToolbar(
-    const gfx::Size& toolbar_preferred_size) const {
-  // Adding 2px of vertical padding puts at least 1 px of space on the top and
-  // bottom of the element.
-  constexpr int kVerticalPadding = 2;
-
-  const int x = available_space_leading_x_;
-  const int available_width = available_space_trailing_x_ - x;
-  return gfx::Rect(x, FrameEdgeInsets(false).top(),
-                   std::max(0, available_width),
-                   toolbar_preferred_size.height() + kVerticalPadding +
-                       kContentEdgeShadowThickness);
-}
-
 gfx::Size OpaqueBrowserFrameViewLayout::GetMinimumSize(
     const views::View* host) const {
   // Ensure that we can fit the main browser view.
@@ -120,13 +97,6 @@ gfx::Size OpaqueBrowserFrameViewLayout::GetMinimumSize(
     // strip.
     return min_size;
   }
-
-  // Ensure that we can, at minimum, hold our window controls and a tab strip.
-  int top_width = minimum_size_for_buttons_;
-  if (delegate_->IsTabStripVisible()) {
-    top_width += delegate_->GetTabstripMinimumSize().width();
-  }
-  min_size.set_width(std::max(min_size.width(), top_width));
 
   // Account for the frame.
   const auto border_insets = FrameBorderInsets(false);

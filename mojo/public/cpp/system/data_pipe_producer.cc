@@ -92,8 +92,9 @@ class DataPipeProducer::SequenceState
       // another thread. Note that we do not rely on this for any kind of thread
       // safety concerns.
       base::AutoLock lock(lock_);
-      if (is_cancelled_)
+      if (is_cancelled_) {
         return;
+      }
     }
 
     if (result != MOJO_RESULT_OK) {
@@ -126,8 +127,9 @@ class DataPipeProducer::SequenceState
       base::span<uint8_t> pipe_buffer;
       MojoResult mojo_result = producer_handle_->BeginWriteData(
           size_hint, MOJO_WRITE_DATA_FLAG_NONE, pipe_buffer);
-      if (mojo_result == MOJO_RESULT_SHOULD_WAIT)
+      if (mojo_result == MOJO_RESULT_SHOULD_WAIT) {
         return;
+      }
       if (mojo_result != MOJO_RESULT_OK) {
         data_source_->Abort();
         Finish(mojo_result);
@@ -157,8 +159,9 @@ class DataPipeProducer::SequenceState
   }
 
   void CancelOnSequence() {
-    if (!data_source_)
+    if (!data_source_) {
       return;
+    }
     data_source_->Abort();
     Finish(MOJO_RESULT_CANCELLED);
   }
@@ -180,8 +183,9 @@ DataPipeProducer::DataPipeProducer(ScopedDataPipeProducerHandle producer)
     : producer_(std::move(producer)) {}
 
 DataPipeProducer::~DataPipeProducer() {
-  if (sequence_state_)
+  if (sequence_state_) {
     sequence_state_->Cancel();
+  }
 }
 
 void DataPipeProducer::Write(std::unique_ptr<DataSource> data_source,

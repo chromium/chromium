@@ -120,7 +120,7 @@ TEST_F(UpdateFileHandlerCommandTest, ApprovalStateOverridenByPolicy) {
 
   profile()->GetTestingPrefService()->SetDict(
       prefs::kDefaultHandlersForFileExtensions,
-      base::Value::Dict().Set("pdf", kTestAppPolicyId));
+      base::DictValue().Set("pdf", kTestAppPolicyId));
 
   EXPECT_EQ(provider()->registrar_unsafe().GetAppFileHandlerApprovalState(
                 app_id, "pdf"),

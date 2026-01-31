@@ -50,7 +50,7 @@ class AuthenticationScreenExtensionsExternalLoader
   void StartLoading() override;
 
   // ExternalCacheDelegate:
-  void OnExtensionListsUpdated(const base::Value::Dict& prefs) override;
+  void OnExtensionListsUpdated(const base::DictValue& prefs) override;
   bool IsRollbackAllowed() const override;
 
   // session_manager::SessionManagerObserver:

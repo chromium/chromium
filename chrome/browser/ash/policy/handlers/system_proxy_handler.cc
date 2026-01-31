@@ -47,7 +47,7 @@ void SystemProxyHandler::OnSystemProxySettingsPolicyChanged() {
   if (!proxy_settings)
     return;
 
-  const base::Value::Dict& proxy_settings_dict = proxy_settings->GetDict();
+  const base::DictValue& proxy_settings_dict = proxy_settings->GetDict();
   bool system_proxy_enabled =
       proxy_settings_dict.FindBool(ash::kSystemProxySettingsKeyEnabled)
           .value_or(false);
@@ -57,7 +57,7 @@ void SystemProxyHandler::OnSystemProxySettingsPolicyChanged() {
   const std::string* password = proxy_settings_dict.FindString(
       ash::kSystemProxySettingsKeySystemServicesPassword);
 
-  const base::Value::List* auth_schemes =
+  const base::ListValue* auth_schemes =
       proxy_settings_dict.FindList(ash::kSystemProxySettingsKeyAuthSchemes);
 
   std::vector<std::string> system_services_auth_schemes;

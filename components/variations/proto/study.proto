@@ -204,20 +204,6 @@ message Study {
     }
 
     Type type = 7 [default = NORMAL];
-
-    // A UI string to override, and the new value to use.
-    message OverrideUIString {
-      // The first 32 bits of the MD5 hash digest of the resource name to
-      // override.
-      // e.g. Hash("IDS_BOOKMARK_BAR_UNDO")
-      fixed32 name_hash = 1;
-
-      // The new value of the string being overridden.
-      // e.g. "Undo"
-      string value = 2;
-    }
-
-    repeated OverrideUIString override_ui_string = 9;
   }
 
   // List of experiments in this study. This list should include the default /

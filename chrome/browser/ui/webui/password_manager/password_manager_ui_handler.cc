@@ -10,7 +10,6 @@
 #include "chrome/browser/extensions/api/passwords_private/passwords_private_delegate.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sync/sync_service_factory.h"
-#include "chrome/browser/ui/webui/password_manager/password_manager.mojom-forward.h"
 #include "chrome/browser/ui/webui/password_manager/password_manager.mojom.h"
 #include "components/password_manager/core/browser/password_ui_utils.h"
 #include "components/password_manager/core/browser/ui/actor_login_permission.h"
@@ -100,9 +99,9 @@ PasswordManagerUIHandler::GetSavedPasswordsPresenter() {
   return passwords_private_delegate_->GetSavedPasswordsPresenter();
 }
 
-void PasswordManagerUIHandler::IsAccountStorageEnabled(
-    IsAccountStorageEnabledCallback callback) {
-  bool result = passwords_private_delegate_->IsAccountStorageEnabled();
+void PasswordManagerUIHandler::IsAccountStorageActive(
+    IsAccountStorageActiveCallback callback) {
+  bool result = passwords_private_delegate_->IsAccountStorageActive();
   std::move(callback).Run(result);
 }
 

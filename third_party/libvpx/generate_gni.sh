@@ -412,13 +412,8 @@ gen_config_files linux/ia32 \
   "--target=x86-linux-gcc ${all_platforms} ${x86_platforms}"
 gen_config_files linux/x64 \
   "--target=x86_64-linux-gcc ${all_platforms} ${x86_platforms}"
-gen_config_files linux/arm \
-  "--target=armv7-linux-gcc --disable-neon --disable-runtime-cpu-detect \
-  ${all_platforms}"
 gen_config_files linux/arm-neon "--target=armv7-linux-gcc \
   --disable-runtime-cpu-detect ${all_platforms}"
-gen_config_files linux/arm-neon-cpu-detect \
-  "--target=armv7-linux-gcc --enable-runtime-cpu-detect ${all_platforms}"
 gen_config_files linux/arm64 "--target=armv8-linux-gcc ${all_platforms}"
 gen_config_files linux/arm-neon-highbd \
   "--target=armv7-linux-gcc --disable-runtime-cpu-detect \
@@ -452,9 +447,7 @@ rm -rf $TEMP_DIR
 echo "Lint libvpx configuration."
 lint_config linux/ia32
 lint_config linux/x64
-lint_config linux/arm
 lint_config linux/arm-neon
-lint_config linux/arm-neon-cpu-detect
 lint_config linux/arm64
 lint_config linux/arm-neon-highbd
 lint_config linux/arm64-highbd
@@ -484,9 +477,7 @@ require_neon="--require-neon"
 
 gen_rtcd_header linux/ia32 x86 "${require_sse3}"
 gen_rtcd_header linux/x64 x86_64
-gen_rtcd_header linux/arm armv7 "--disable-neon --disable-neon_asm"
 gen_rtcd_header linux/arm-neon armv7 "${require_neon}"
-gen_rtcd_header linux/arm-neon-cpu-detect armv7
 gen_rtcd_header linux/arm64 armv8 "${require_neon}"
 gen_rtcd_header linux/arm-neon-highbd armv7 "${require_neon}"
 gen_rtcd_header linux/arm64-highbd armv8 "${require_neon}"
@@ -533,23 +524,11 @@ if [[ -z $ONLY_CONFIGS ]]; then
   make libvpx_srcs.txt target=libs $config > /dev/null
   convert_srcs_to_project_files libvpx_srcs.txt libvpx_srcs_x86_64
 
-  echo "Generate ARM source list."
-  config=$(print_config linux/arm)
-  make_clean
-  make libvpx_srcs.txt target=libs $config > /dev/null
-  convert_srcs_to_project_files libvpx_srcs.txt libvpx_srcs_arm
-
   echo "Generate ARM NEON source list."
   config=$(print_config linux/arm-neon)
   make_clean
   make libvpx_srcs.txt target=libs $config > /dev/null
   convert_srcs_to_project_files libvpx_srcs.txt libvpx_srcs_arm_neon
-
-  echo "Generate ARM NEON CPU DETECT source list."
-  config=$(print_config linux/arm-neon-cpu-detect)
-  make_clean
-  make libvpx_srcs.txt target=libs $config > /dev/null
-  convert_srcs_to_project_files libvpx_srcs.txt libvpx_srcs_arm_neon_cpu_detect
 
   echo "Generate ARM64 source list."
   config=$(print_config linux/arm64)

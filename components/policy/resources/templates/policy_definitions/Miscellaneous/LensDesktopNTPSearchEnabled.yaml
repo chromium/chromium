@@ -6,6 +6,8 @@ desc: Leaving the policy unset or setting it to Enabled allows users to view and
   search box on the New Tab page. Setting the policy to Disabled means users
   will not see the <ph name="GOOGLE_LENS_PRODUCT_NAME">Google Lens</ph> button
   in the search box on the New Tab page.
+
+  Starting in <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> 147, this policy will be deprecated. IT Admins can use <ph name="SEARCH_CONTENT_SHARING_SETTINGS_POLICY_NAME">SearchContentSharingSettings</ph> to control this feature going forward.
 example_value: true
 features:
   dynamic_refresh: true

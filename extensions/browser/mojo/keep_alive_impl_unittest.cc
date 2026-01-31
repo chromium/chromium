@@ -31,14 +31,14 @@ class KeepAliveTest : public ExtensionsTest {
     extension_ =
         ExtensionBuilder()
             .SetManifest(
-                base::Value::Dict()
+                base::DictValue()
                     .Set("name", "app")
                     .Set("version", "1")
                     .Set("manifest_version", 2)
-                    .Set("app", base::Value::Dict().Set(
+                    .Set("app", base::DictValue().Set(
                                     "background",
-                                    base::Value::Dict().Set(
-                                        "scripts", base::Value::List().Append(
+                                    base::DictValue().Set(
+                                        "scripts", base::ListValue().Append(
                                                        "background.js")))))
             .SetID("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa")
             .Build();
@@ -119,14 +119,14 @@ TEST_F(KeepAliveTest, UnloadExtension) {
   scoped_refptr<const Extension> other_extension =
       ExtensionBuilder()
           .SetManifest(
-              base::Value::Dict()
+              base::DictValue()
                   .Set("name", "app")
                   .Set("version", "1")
                   .Set("manifest_version", 2)
-                  .Set("app", base::Value::Dict().Set(
+                  .Set("app", base::DictValue().Set(
                                   "background",
-                                  base::Value::Dict().Set(
-                                      "scripts", base::Value::List().Append(
+                                  base::DictValue().Set(
+                                      "scripts", base::ListValue().Append(
                                                      "background.js")))))
           .SetID("bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb")
           .Build();

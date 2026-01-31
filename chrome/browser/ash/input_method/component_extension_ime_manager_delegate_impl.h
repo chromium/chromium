@@ -54,12 +54,12 @@ class ComponentExtensionIMEManagerDelegateImpl
       std::vector<ComponentExtensionIME>* out_imes);
 
   // Parses manifest string into dictionary value.
-  static std::optional<base::Value::Dict> ParseManifest(
+  static std::optional<base::DictValue> ParseManifest(
       std::string_view manifest_string);
 
   // Reads extension information: description, option page. This function
   // returns true on success, otherwise returns false.
-  static bool ReadExtensionInfo(const base::Value::Dict& manifest,
+  static bool ReadExtensionInfo(const base::DictValue& manifest,
                                 const std::string& extension_id,
                                 ComponentExtensionIME* out);
 
@@ -68,7 +68,7 @@ class ComponentExtensionIMEManagerDelegateImpl
   // otherwise return false. This function must be called on FILE thread.
   static bool ReadEngineComponent(
       const ComponentExtensionIME& component_extension,
-      const base::Value::Dict& dict,
+      const base::DictValue& dict,
       ComponentExtensionEngine* out);
 
   // The list of component extension IME.

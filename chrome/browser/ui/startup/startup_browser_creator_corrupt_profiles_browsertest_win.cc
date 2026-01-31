@@ -22,7 +22,7 @@
 #include "chrome/browser/profiles/profile_window.h"
 #include "chrome/browser/signin/signin_util.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_list.h"
+#include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/browser/ui/profiles/profile_picker.h"
 #include "chrome/common/chrome_paths.h"
@@ -134,11 +134,11 @@ class StartupBrowserCreatorCorruptProfileTest : public InProcessBrowserTest {
     ASSERT_TRUE(profile);
 
     base::RunLoop run_loop;
-    BrowserList::GetInstance()->CloseAllBrowsersWithProfile(
+    chrome::CloseAllBrowsersWithProfile(
         profile,
+        /*skip_beforeunload=*/false,
         base::BindRepeating(&OnCloseAllBrowsersSucceeded,
-                            run_loop.QuitClosure()),
-        BrowserList::CloseCallback(), false);
+                            run_loop.QuitClosure()));
   }
 
   void SetUpCommandLine(base::CommandLine* command_line) override {

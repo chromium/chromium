@@ -177,7 +177,11 @@ export class StatsTable {
       item.querySelector('td').textContent = rowName;
       trElement.appendChild(item);
     }
-    trElement.cells[1].textContent = value;
+    if (typeof value === 'object') {
+      trElement.cells[1].textContent = JSON.stringify(value, null, ' ');
+    } else {
+      trElement.cells[1].textContent = value;
+    }
     if (rowName.endsWith('Id')) {
       // unicode link symbol
       trElement.cells[2].children[0].textContent = ' \u{1F517}';

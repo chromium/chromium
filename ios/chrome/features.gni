@@ -10,4 +10,7 @@ declare_args() {
 
   # Enable an experimental option to dump sandbox.
   ios_enable_sandbox_dump = false
+
+  # Enable profile altering tests e.g. adding media to the photo library.
+  ios_chrome_enable_profile_altering_tests = false
 }

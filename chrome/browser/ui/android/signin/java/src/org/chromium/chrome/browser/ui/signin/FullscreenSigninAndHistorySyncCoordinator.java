@@ -52,9 +52,8 @@ import java.lang.annotation.RetentionPolicy;
 
 /** Parent coordinator for the re-FRE promo */
 @NullMarked
-public final class FullscreenSigninAndHistorySyncCoordinator
-        implements SigninAndHistorySyncCoordinator,
-                HistorySyncCoordinator.HistorySyncDelegate,
+public final class FullscreenSigninAndHistorySyncCoordinator extends SigninAndHistorySyncCoordinator
+        implements HistorySyncCoordinator.HistorySyncDelegate,
                 FullscreenSigninCoordinator.Delegate {
     public interface Delegate {
         /** Notifies when the user clicked the "add account" button. */
@@ -160,6 +159,10 @@ public final class FullscreenSigninAndHistorySyncCoordinator
         }
     }
 
+    public View getView() {
+        return mViewHolder;
+    }
+
     /** Implements {@link SigninAndHistorySyncCoordinator}. */
     @Override
     public void destroy() {
@@ -184,12 +187,6 @@ public final class FullscreenSigninAndHistorySyncCoordinator
     public void onAccountAdded(String accountName) {
         assertNonNull(mSigninCoordinator);
         mSigninCoordinator.onAccountAdded(accountName);
-    }
-
-    /** Implements {@link SigninAndHistorySyncCoordinator}. */
-    @Override
-    public View getView() {
-        return mViewHolder;
     }
 
     /**

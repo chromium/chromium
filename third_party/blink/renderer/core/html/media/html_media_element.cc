@@ -389,10 +389,11 @@ bool HTMLMediaElement::IsHLSURL(const KURL& url) {
   if (url.IsNull() || url.IsEmpty())
     return false;
 
-  if (!url.IsLocalFile() && !url.ProtocolIs("http") && !url.ProtocolIs("https"))
+  if (!url.IsLocalFile() && !url.ProtocolIsInHTTPFamily()) {
     return false;
+  }
 
-  return url.GetPath().ToString().EndsWith(".m3u8");
+  return url.GetPath().ends_with(".m3u8");
 }
 
 // static
@@ -4718,9 +4719,9 @@ void HTMLMediaElement::RejectScheduledPlayPromises() {
   }
   RejectPlayPromisesInternal(
       DOMExceptionCode::kAbortError,
-      String::Format(
+      UNSAFE_TODO(String::Format(
           "The play() request was interrupted%s. https://goo.gl/LdLk22",
-          reason));
+          reason)));
 }
 
 void HTMLMediaElement::RejectPlayPromises(DOMExceptionCode code,

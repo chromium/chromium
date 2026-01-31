@@ -13,7 +13,6 @@
 #include "base/scoped_observation.h"
 #include "chrome/browser/command_observer.h"
 #include "chrome/browser/ui/page_action/page_action_icon_type.h"
-#include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 #include "chrome/browser/ui/toolbar/app_menu_icon_controller.h"
 #include "chrome/browser/ui/toolbar/back_forward_menu_model.h"
 #include "chrome/browser/ui/views/frame/browser_root_view.h"
@@ -47,13 +46,13 @@ class BatterySaverButton;
 class BrowserAppMenuButton;
 class Browser;
 class ExtensionsToolbarButton;
-class ExtensionsToolbarContainer;
+class ExtensionsToolbarDesktop;
 class HomeButton;
 class IntentChipButton;
 class ExtensionsToolbarCoordinator;
 class MediaToolbarButtonView;
 class ReloadButton;
-class ReloadButtonWebView;
+class WebUIToolbarWebView;
 class PinnedToolbarActionsContainer;
 class ToolbarButton;
 class AvatarToolbarButtonBrowserTest;
@@ -73,8 +72,7 @@ class ToolbarView : public views::AccessiblePaneView,
                     public CommandObserver,
                     public AppMenuIconController::Delegate,
                     public ToolbarButtonProvider,
-                    public BrowserRootView::DropTarget,
-                    public TabStripModelObserver {
+                    public BrowserRootView::DropTarget {
   METADATA_HEADER(ToolbarView, views::AccessiblePaneView)
 
  public:
@@ -85,10 +83,10 @@ class ToolbarView : public views::AccessiblePaneView,
                 // bar, used for popups.
     kCustomTab  // Custom tab bar, used in PWAs when a location
                 // needs to be displayed.
+                // TODO(crbug.com/474406675): Rename to WebApp or TabbedPWA.
   };
 
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kToolbarElementId);
-  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kToolbarContainerElementId);
 
   ToolbarView(Browser* browser, BrowserView* browser_view);
   ToolbarView(const ToolbarView&) = delete;
@@ -141,13 +139,14 @@ class ToolbarView : public views::AccessiblePaneView,
   // Accessors.
   Browser* browser() const { return browser_; }
   views::Button* GetChromeLabsButton() const;
-  ExtensionsToolbarContainer* extensions_container() const {
+  ExtensionsToolbarDesktop* extensions_container() const {
     return extensions_container_;
   }
   ToolbarButton* forward_button() const { return forward_; }
   ExtensionsToolbarButton* GetExtensionsButton() const;
   ReloadButton* reload_button() const { return reload_; }
-  LocationBarView* location_bar() const { return location_bar_; }
+  LocationBarView* location_bar_view() const { return location_bar_view_; }
+  LocationBar* location_bar() const { return location_bar_; }
   CustomTabBarView* custom_tab_bar() { return custom_tab_bar_; }
   BatterySaverButton* battery_saver_button() const {
     return battery_saver_button_;
@@ -197,12 +196,6 @@ class ToolbarView : public views::AccessiblePaneView,
   bool AcceleratorPressed(const ui::Accelerator& acc) override;
   void ChildPreferredSizeChanged(views::View* child) override;
 
-  // TabStripModelObserver:
-  void OnTabStripModelChanged(
-      TabStripModel* tab_strip_model,
-      const TabStripModelChange& change,
-      const TabStripSelectionChange& selection) override;
-
   friend class AvatarToolbarButtonBaseBrowserTest;
 
  protected:
@@ -233,7 +226,7 @@ class ToolbarView : public views::AccessiblePaneView,
       AppMenuIconController::TypeAndSeverity type_and_severity) override;
 
   // ToolbarButtonProvider:
-  ExtensionsToolbarContainer* GetExtensionsToolbarContainer() override;
+  ExtensionsToolbarDesktop* GetExtensionsToolbarDesktop() override;
   PinnedToolbarActionsContainer* GetPinnedToolbarActionsContainer() override;
   gfx::Size GetToolbarButtonSize() const override;
   views::View* GetDefaultExtensionDialogAnchorView() override;
@@ -253,6 +246,7 @@ class ToolbarView : public views::AccessiblePaneView,
   ReloadControl* GetReloadButton() override;
   IntentChipButton* GetIntentChipButton() override;
   ToolbarButton* GetDownloadButton() override;
+  WebUIToolbarWebView* GetWebUIToolbarViewForTesting() override;
 
   // BrowserRootView::DropTarget
   std::optional<BrowserRootView::DropIndex> GetDropIndex(
@@ -273,29 +267,7 @@ class ToolbarView : public views::AccessiblePaneView,
 
   void OnTouchUiChanged();
 
-  void UpdateClipPath(int leading_corner_radius, int trailing_corner_radius);
-
-  // Called when active state for the window changes.
-  void ActiveStateChanged();
-
   void NewTabButtonPressed(const ui::Event& event);
-
-  // Determines how corners are painted. Return value is how to paint leading
-  // and/or trailing corners, respectively. See comments on `leading_curve_` and
-  // `trailing_curve_` for more.
-  enum class CornerStyle {
-    // Hard corner. Used when tabstrip is next to other elements of the same
-    // color, or against a flat edge of the window.
-    kSquare,
-    // Curved corner. Used when tabstrip goes all the way to the upper corner of
-    // the browser window.
-    kRounded,
-    // Fake curved corner, with tabstrip color behind. Used when the toolbar is
-    // directly next to or below a background region of the tabstrip or the
-    // titlebar.
-    kTabstripCurve,
-  };
-  std::pair<CornerStyle, CornerStyle> GetCornerStyles() const;
 
   gfx::SlideAnimation size_animation_{this};
 
@@ -305,12 +277,13 @@ class ToolbarView : public views::AccessiblePaneView,
   raw_ptr<ToolbarButton> back_ = nullptr;
   raw_ptr<ToolbarButton> forward_ = nullptr;
   raw_ptr<ReloadButton> reload_ = nullptr;
-  raw_ptr<ReloadButtonWebView> reload_webview_ = nullptr;
+  raw_ptr<WebUIToolbarWebView> toolbar_webview_ = nullptr;
   raw_ptr<HomeButton> home_ = nullptr;
   raw_ptr<SplitTabsToolbarButton> split_tabs_ = nullptr;
   raw_ptr<CustomTabBarView> custom_tab_bar_ = nullptr;
-  raw_ptr<LocationBarView> location_bar_ = nullptr;
-  raw_ptr<ExtensionsToolbarContainer> extensions_container_ = nullptr;
+  raw_ptr<LocationBarView> location_bar_view_ = nullptr;
+  raw_ptr<LocationBar> location_bar_ = nullptr;
+  raw_ptr<ExtensionsToolbarDesktop> extensions_container_ = nullptr;
   raw_ptr<views::View> toolbar_divider_ = nullptr;
   raw_ptr<BatterySaverButton> battery_saver_button_ = nullptr;
   raw_ptr<PerformanceInterventionButton> performance_intervention_button_ =
@@ -352,35 +325,10 @@ class ToolbarView : public views::AccessiblePaneView,
   // Whether this toolbar has been initialized.
   bool initialized_ = false;
 
-  // container_view_ is transparent with the same dimensions as ToolbarView.
-  // All children are added to container_view_ and layout_manager_ applies to
-  // container_view_. The reason for this layer of indirection is because
-  // container_view_ has a clip path set in UpdateClipPath() which adds rounded
-  // corners. This leaves some unpainted pixels, which are painted by
-  // leading_curve_ and trailing_curve_.
-  raw_ptr<ContainerView> container_view_ = nullptr;
-
   // A chevron button that indicates some toolbar elements have overflowed
   // due to small toolbar view width. Visibility controlled by
   // `toolbar_controller_`.
   raw_ptr<OverflowButton> overflow_button_ = nullptr;
-
-  // The toolbar's top corners recede lower into the toolbar bounds, and need to
-  // have the frame's color painted into it. Similarly, in vertical tabstrip
-  // mode, the top of the tabstrip edge (when adjacent to the toolbar) curves
-  // int it.
-  //
-  // The `leading_curve_` and `trailing_curve_` are the area
-  // painted behind the toolbar which give the melding effect of the toolbar
-  // raising up into the tabstrip region or blending with the vertical tabstrip.
-  //
-  // These views will either be shown or hidden based on visual need.
-  raw_ptr<View> leading_curve_ = nullptr;
-  raw_ptr<View> trailing_curve_ = nullptr;
-
-  // Listens to changes to window active state to update trailing_curve_
-  // and leading_curve_, as their background depends on active state.
-  base::CallbackListSubscription active_state_subscription_;
 };
 
 extern const ui::ClassProperty<bool>* const kActionItemUnderlineIndicatorKey;

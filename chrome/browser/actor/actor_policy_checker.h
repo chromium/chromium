@@ -11,11 +11,18 @@
 #include "base/scoped_observation.h"
 #include "chrome/browser/actor/aggregated_journal.h"
 #include "chrome/browser/actor/site_policy.h"
+#include "chrome/browser/subscription_eligibility/subscription_eligibility_service.h"
 #include "chrome/common/actor/task_id.h"
+#include "chrome/common/buildflags.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
 #include "url/origin.h"
+
+#if BUILDFLAG(ENABLE_GLIC)
+#include "base/callback_list.h"
+#include "components/policy/core/browser/url_list/url_blocklist_manager.h"
+#endif
 
 class GURL;
 class Profile;
@@ -32,15 +39,20 @@ namespace actor {
 
 class ActorKeyedService;
 class AggregatedJournal;
+class OriginChecker;
 
 // The central hub for checking various policies that determine whether Actor is
 // enabled for the profile, or is Actor allowed to act on a given tab or URL.
-class ActorPolicyChecker : public signin::IdentityManager::Observer {
+class ActorPolicyChecker : public signin::IdentityManager::Observer,
+                           public subscription_eligibility::
+                               SubscriptionEligibilityService::Observer {
  public:
   explicit ActorPolicyChecker(ActorKeyedService& service);
   ActorPolicyChecker(const ActorPolicyChecker&) = delete;
   ActorPolicyChecker& operator=(const ActorPolicyChecker&) = delete;
   ~ActorPolicyChecker() override;
+
+  static const base::flat_set<int32_t>& GetActorEligibleTiers();
 
   // `signin::IdentityManager::Observer`:
   void OnPrimaryAccountChanged(
@@ -48,11 +60,14 @@ class ActorPolicyChecker : public signin::IdentityManager::Observer {
   void OnExtendedAccountInfoUpdated(const AccountInfo& info) override;
   void OnExtendedAccountInfoRemoved(const AccountInfo& info) override;
 
+  // `subscription_eligibility::SubscriptionEligibilityService::Observer`:
+  void OnAiSubscriptionTierUpdated(int32_t new_subscription_tier) override;
+
   // See site_policy.h.
   void MayActOnTab(const tabs::TabInterface& tab,
                    AggregatedJournal& journal,
                    TaskId task_id,
-                   const absl::flat_hash_set<url::Origin>& allowed_origins,
+                   const OriginChecker& origin_checker,
                    DecisionCallbackWithReason callback);
   void MayActOnUrl(const GURL& url,
                    bool allow_insecure_http,
@@ -61,34 +76,57 @@ class ActorPolicyChecker : public signin::IdentityManager::Observer {
                    TaskId task_id,
                    DecisionCallbackWithReason callback);
 
-  void SetActOnWebForTesting(bool enabled) {
-    can_act_on_web_for_testing_ = enabled;
-  }
+#if BUILDFLAG(ENABLE_GLIC)
+  // Allows tests to synchronize on allow/blocklist updates.
+  base::CallbackListSubscription AddUrlListsUpdateObserverForTesting(
+      base::RepeatingClosure callback);
+#endif  // BUILDFLAG(ENABLE_GLIC)
 
-  // Allows the test to by-pass the enterprise account checking completely.
-  void set_account_eligible_for_actuation_for_testing(bool enabled) {
-    account_eligible_for_actuation_for_testing_ = enabled;
-  }
+  bool CanActOnWeb() const;
 
-  bool can_act_on_web() const {
-    return can_act_on_web_for_testing_ || can_act_on_web_;
-  }
+  enum class CannotActReason {
+    kNone,
+    kManagedOrDataProtected,
+    kAccountCapabilityIneligible,
+    // The account is not subscribed to one of the required AI subscription
+    // tiers.
+    kAccountMissingChromeBenefits,
+  };
+
+  // The reason why `CanActOnWeb()` returns false (or `kNone` otherwise).
+  // The `CanActOnWeb()` method should be used for feature logic; this method
+  // is intended for presenting additional information (to the user,  or for
+  // debugging) where useful.
+  CannotActReason CannotActOnWebReason() const;
+
+  EnterprisePolicyBlockReason EvaluateEnterprisePolicyForUrl(
+      const GURL& url) const;
 
  private:
   void OnPrefOrAccountChanged();
 
-  bool ComputeActOnWebCapability();
+  enum class CanActOutcome {
+    kYes,
+    kNo,
+    kByAllowlistOnly,
+  };
+  friend std::ostream& operator<<(std::ostream& os, CanActOutcome value);
+
+  std::pair<CanActOutcome, CannotActReason> ComputeActOnWebCapability();
 
   // Owns `this`.
   base::raw_ref<ActorKeyedService> service_;
 
   PrefChangeRegistrar pref_change_registrar_;
 
-  bool can_act_on_web_ = true;
+  CanActOutcome can_act_on_web_ = CanActOutcome::kYes;
+  CannotActReason cannot_act_on_web_reason_;
 
-  bool can_act_on_web_for_testing_ = false;
-
-  bool account_eligible_for_actuation_for_testing_ = false;
+#if BUILDFLAG(ENABLE_GLIC)
+  // Stores enterprise allowlist/blocklist policies for specific URLs.
+  policy::URLBlocklistManager url_blocklist_manager_;
+  base::CallbackListSubscription url_blocklist_subscription_;
+#endif  // BUILDFLAG(ENABLE_GLIC)
 
   base::SafeRef<AggregatedJournal> journal_;
 
@@ -96,6 +134,12 @@ class ActorPolicyChecker : public signin::IdentityManager::Observer {
   base::ScopedObservation<signin::IdentityManager,
                           signin::IdentityManager::Observer>
       identity_manager_observation_{this};
+
+  // Gets notified when the subscription tier changes.
+  base::ScopedObservation<
+      subscription_eligibility::SubscriptionEligibilityService,
+      subscription_eligibility::SubscriptionEligibilityService::Observer>
+      subscription_eligibility_service_observation_{this};
 
   base::WeakPtrFactory<ActorPolicyChecker> weak_ptr_factory_{this};
 };

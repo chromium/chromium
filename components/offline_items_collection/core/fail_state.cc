@@ -40,6 +40,7 @@ bool ToFailState(int value, FailState* fail_state) {
     case FailState::USER_CANCELED:
     case FailState::USER_SHUTDOWN:
     case FailState::CRASH:
+    case FailState::LOCAL_DOWNLOAD_BLOCKED:
       *fail_state = static_cast<FailState>(value);
       return true;
   }

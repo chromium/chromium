@@ -36,13 +36,6 @@ namespace enterprise_connectors {
 
 namespace {
 
-constexpr char kStableChannelHostName[] = "m.google.com";
-
-bool ValidRotationCommand(const std::string& host_name) {
-  return chrome::GetChannel() != version_info::Channel::STABLE ||
-         host_name == kStableChannelHostName;
-}
-
 // Allows the key rotation manager to be released in the correct worker thread.
 void OnBackgroundTearDown(
     std::unique_ptr<KeyRotationManager> key_rotation_manager,
@@ -52,38 +45,9 @@ void OnBackgroundTearDown(
 }
 
 // Runs on the thread pool.
-void StartRotation(
-    const GURL& dm_server_url,
-    const std::string& dm_token,
-    const std::string& nonce,
-    std::unique_ptr<network::PendingSharedURLLoaderFactory>
-        pending_url_loader_factory,
-    base::OnceCallback<void(KeyRotationResult)> result_callback) {
-  // TODO(b/351201459): When DTCKeyRotationUploadedBySharedAPIEnabled is fully
-  // enabled, remove this function.
-
-  CHECK(pending_url_loader_factory);
-
-  std::unique_ptr<KeyRotationManager> key_rotation_manager =
-      KeyRotationManager::Create(std::make_unique<MojoKeyNetworkDelegate>(
-          network::SharedURLLoaderFactory::Create(
-              std::move(pending_url_loader_factory))));
-
-  CHECK(key_rotation_manager);
-
-  auto* key_rotation_manager_ptr = key_rotation_manager.get();
-  key_rotation_manager_ptr->Rotate(
-      dm_server_url, dm_token, nonce,
-      base::BindOnce(&OnBackgroundTearDown, std::move(key_rotation_manager),
-                     std::move(result_callback)));
-}
-
-// Runs on the thread pool.
 base::expected<const enterprise_management::DeviceManagementRequest,
                KeyRotationResult>
 StartCreatingKey() {
-  CHECK(IsDTCKeyRotationUploadedBySharedAPI());
-
   std::unique_ptr<KeyRotationManager> key_rotation_manager =
       KeyRotationManager::Create();
   CHECK(key_rotation_manager);
@@ -97,8 +61,6 @@ StartCreatingKey() {
 void FinishCreatingKey(
     base::OnceCallback<void(KeyRotationResult)> on_key_rotated,
     KeyNetworkDelegate::HttpResponseCode response_code) {
-  CHECK(IsDTCKeyRotationUploadedBySharedAPI());
-
   std::unique_ptr<KeyRotationManager> key_rotation_manager =
       KeyRotationManager::Create();
   CHECK(key_rotation_manager);
@@ -113,18 +75,6 @@ void FinishCreatingKey(
 }  // namespace
 
 MacKeyRotationCommand::MacKeyRotationCommand(
-    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory)
-    : url_loader_factory_(std::move(url_loader_factory)),
-      background_task_runner_(base::ThreadPool::CreateSequencedTaskRunner(
-          {base::MayBlock(), base::TaskPriority::USER_BLOCKING,
-           base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN})),
-      client_(SecureEnclaveClient::Create()) {
-  CHECK(!IsDTCKeyRotationUploadedBySharedAPI());
-  CHECK(url_loader_factory_);
-  CHECK(client_);
-}
-
-MacKeyRotationCommand::MacKeyRotationCommand(
     std::unique_ptr<enterprise_attestation::CloudManagementDelegate>
         cloud_management_delegate)
     : cloud_management_delegate_(std::move(cloud_management_delegate)),
@@ -132,7 +82,6 @@ MacKeyRotationCommand::MacKeyRotationCommand(
           {base::MayBlock(), base::TaskPriority::USER_BLOCKING,
            base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN})),
       client_(SecureEnclaveClient::Create()) {
-  CHECK(IsDTCKeyRotationUploadedBySharedAPI());
   CHECK(cloud_management_delegate_);
   CHECK(client_);
 }
@@ -140,7 +89,6 @@ MacKeyRotationCommand::MacKeyRotationCommand(
 MacKeyRotationCommand::~MacKeyRotationCommand() = default;
 
 bool MacKeyRotationCommand::IsDmTokenValid() {
-  CHECK(IsDTCKeyRotationUploadedBySharedAPI());
   CHECK(cloud_management_delegate_);
   if (!cloud_management_delegate_->GetDMToken().has_value() ||
       cloud_management_delegate_->GetDMToken().value().empty()) {
@@ -160,7 +108,6 @@ bool MacKeyRotationCommand::IsDmTokenValid() {
 void MacKeyRotationCommand::UploadPublicKeyToDmServer(
     base::expected<const enterprise_management::DeviceManagementRequest,
                    KeyRotationResult> request) {
-  CHECK(IsDTCKeyRotationUploadedBySharedAPI());
   CHECK(cloud_management_delegate_);
 
   if (request.has_value()) {
@@ -175,7 +122,6 @@ void MacKeyRotationCommand::UploadPublicKeyToDmServer(
 
 void MacKeyRotationCommand::OnUploadingPublicKeyCompleted(
     policy::DMServerJobResult result) {
-  CHECK(IsDTCKeyRotationUploadedBySharedAPI());
   auto on_key_rotated = base::BindPostTaskToCurrentDefault(base::BindOnce(
       &MacKeyRotationCommand::OnKeyRotated, weak_factory_.GetWeakPtr()));
 
@@ -200,18 +146,6 @@ void MacKeyRotationCommand::Trigger(const KeyRotationCommand::Params& params,
     return;
   }
 
-  GURL dm_server_url(params.dm_server_url);
-  // TODO(b/351201459): When IsDTCKeyRotationUploadedBySharedAPI is fully
-  // launched, ignore `dm_server_url` and `dm_token`.
-  if (!IsDTCKeyRotationUploadedBySharedAPI()) {
-    if (!ValidRotationCommand(dm_server_url.GetHost())) {
-      SYSLOG(ERROR)
-          << "Device trust key rotation failed. The server URL is invalid.";
-      std::move(callback).Run(KeyRotationCommand::Status::FAILED);
-      return;
-    }
-  }
-
   pending_callback_ = std::move(callback);
 
   timeout_timer_.Start(
@@ -223,30 +157,20 @@ void MacKeyRotationCommand::Trigger(const KeyRotationCommand::Params& params,
       base::BindPostTaskToCurrentDefault(base::BindOnce(
           &MacKeyRotationCommand::OnKeyRotated, weak_factory_.GetWeakPtr()));
 
-  if (IsDTCKeyRotationUploadedBySharedAPI()) {
-    if (!IsDmTokenValid()) {
-      RecordRotationStatus(/*is_rotation=*/false,
-                           RotationStatus::FAILURE_INVALID_DMTOKEN);
-      OnKeyRotated(KeyRotationResult::kFailed);
-      return;
-    }
-
-    // Kicks off the key creation process in a worker thread.
-    // The worker thread creates the key upload request and then on the main
-    // thread, we upload the returned request to the DM Server.
-    background_task_runner_->PostTaskAndReplyWithResult(
-        FROM_HERE, base::BindOnce(&StartCreatingKey),
-        base::BindOnce(&MacKeyRotationCommand::UploadPublicKeyToDmServer,
-                       weak_factory_.GetWeakPtr()));
-
+  if (!IsDmTokenValid()) {
+    RecordRotationStatus(/*is_rotation=*/false,
+                         RotationStatus::FAILURE_INVALID_DMTOKEN);
+    OnKeyRotated(KeyRotationResult::kFailed);
     return;
   }
 
-  // Kicks off the key rotation process in a worker thread.
-  background_task_runner_->PostTask(
-      FROM_HERE, base::BindOnce(&StartRotation, dm_server_url, params.dm_token,
-                                params.nonce, url_loader_factory_->Clone(),
-                                std::move(on_key_rotated_callback)));
+  // Kicks off the key creation process in a worker thread.
+  // The worker thread creates the key upload request and then on the main
+  // thread, we upload the returned request to the DM Server.
+  background_task_runner_->PostTaskAndReplyWithResult(
+      FROM_HERE, base::BindOnce(&StartCreatingKey),
+      base::BindOnce(&MacKeyRotationCommand::UploadPublicKeyToDmServer,
+                     weak_factory_.GetWeakPtr()));
 }
 
 void MacKeyRotationCommand::OnKeyRotated(KeyRotationResult result) {

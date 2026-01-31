@@ -48,6 +48,7 @@
 <translation id="2761536921376153655">Skannimise tüüp</translation>
 <translation id="28682968802727151">Peegeldamise eelvaade</translation>
 <translation id="2879583609344924966"><ph name="CAMERA" /> on ühendatud.</translation>
+<translation id="3063987824612038785">Kõik kaamera failid salvestatakse Google Drive'i</translation>
 <translation id="3067436040345934772">Panoraami paremale</translation>
 <translation id="3081586908890909590">Vaheta video salvestamise režiimile</translation>
 <translation id="3091480460059548935">Teksti tuvastamine eelvaates</translation>
@@ -67,6 +68,7 @@
 <translation id="3642192109456033823">Video töötlemine ...</translation>
 <translation id="3789724198583203151">Pööra 90 kraadi vastupäeva</translation>
 <translation id="3810838688059735925">Video</translation>
+<translation id="386366972082231038">Kõik kaamera failid salvestatakse OneDrive'i</translation>
 <translation id="4060608699153044055">Te ei saa salvestada, sest seadmes on liiga vähe salvestusruumi. Salvestamise alustamiseks peate oma seadmes ruumi vabastama.</translation>
 <translation id="4061162772429051350"><ph name="MAGAPIXELS_AMOUNT" /> MP</translation>
 <translation id="4118525110028899586">Peata salvestamine</translation>
@@ -100,6 +102,7 @@
 <translation id="5634947914995388399">Laienda dialoog ja peata skannimine</translation>
 <translation id="5662366948659129155">Lehe <ph name="COUNT" /> skannimine</translation>
 <translation id="5671277269877808209">Ruut</translation>
+<translation id="5725797473946373607">Ära seda dialoogi järgmine kord kuva</translation>
 <translation id="574392208103952083">Keskmine</translation>
 <translation id="5746169159649715125">Salvesta PDF-ina</translation>
 <translation id="5753488212459587150">Luba ekspertrežiim</translation>
@@ -156,6 +159,7 @@ Kui teie tagasiside on seotud pildi- või videokvaliteediga, lisage manusena nä
 <translation id="7983668134180549431">Tuvastati tekst.</translation>
 <translation id="8079255378695216066">Salvestamist ei saanud alustada</translation>
 <translation id="8120146556401698679">Panoraamimine, kallutamine, suumimine</translation>
+<translation id="8127459436205030819">Teie failid võivad olla administraatorile nähtavad.</translation>
 <translation id="8131740175452115882">Kinnita</translation>
 <translation id="8145038249676204903">Vaheta foto jäädvustamise režiimile</translation>
 <translation id="8167081290930651932">Salvesta fotona</translation>
@@ -165,6 +169,7 @@ Kui teie tagasiside on seotud pildi- või videokvaliteediga, lisage manusena nä
 <translation id="8609951387004618906">Ava <ph name="URL" /></translation>
 <translation id="8629662593426079630">360p</translation>
 <translation id="8711011893539266636">Mikrofoni vaigistuse sisse-/väljalülitamine. Vaigistus on sisse lülitatud</translation>
+<translation id="8712637175834984815">Selge</translation>
 <translation id="8730621377337864115">Valmis</translation>
 <translation id="8732462232047530626">Metaandmete eelvaade</translation>
 <translation id="874854738381978209">Tuvastati Wi-Fi-võrk.</translation>

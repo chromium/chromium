@@ -1,4 +1,6 @@
 include_rules = [
-  "+ios/chrome/browser/content_suggestions/ui_bundled/content_suggestions_metrics_constants.h",
-  "+ios/chrome/browser/content_suggestions/ui_bundled/content_suggestions_constants.h",
+  # keep-sorted start
+  "+ios/chrome/browser/content_suggestions/model",
+  "+ios/chrome/browser/content_suggestions/public",
+  # keep-sorted end
 ]

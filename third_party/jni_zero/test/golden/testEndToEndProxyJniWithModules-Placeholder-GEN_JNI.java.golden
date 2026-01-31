@@ -6,8 +6,10 @@
 
 package org.jni_zero;
 
+import javax.annotation.processing.Generated;
 import org.jni_zero.internal.NullUnmarked;
 
+@Generated("JNI Zero")
 @NullUnmarked
 public class module_GEN_JNI {
 

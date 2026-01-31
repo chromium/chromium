@@ -155,7 +155,7 @@ void DeviceNameManagerImpl::MigrateExistingNicknames() {
 
   const re2::RE2 kFlossIdRegex("^([0-9A-Fa-f]{2}:){5}[0-9A-Fa-f]{2}$");
 
-  const base::Value::Dict& existing_prefs =
+  const base::DictValue& existing_prefs =
       local_state_->GetDict(kDeviceIdToNicknameMapPrefNameLegacy);
 
   for (const auto [id, nickname] : existing_prefs) {

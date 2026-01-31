@@ -30,8 +30,9 @@ import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.supplier.LazyOneshotSupplier;
-import org.chromium.base.supplier.ObservableSupplier;
-import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.supplier.MonotonicObservableSupplier;
+import org.chromium.base.supplier.ObservableSuppliers;
+import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.ui.KeyboardVisibilityDelegate.KeyboardVisibilityListener;
 
@@ -52,9 +53,9 @@ public class ActivityKeyboardVisibilityDelegateUnitTest {
     @Captor private ArgumentCaptor<View.OnLayoutChangeListener> mOnLayoutChangeListener;
 
     private FrameLayout mRootView;
-    private final ObservableSupplierImpl<Integer> mKeyboardInsetSupplier =
-            new ObservableSupplierImpl<>();
-    private LazyOneshotSupplier<ObservableSupplier<Integer>> mLazyKeyboardInsetSupplier;
+    private final SettableMonotonicObservableSupplier<Integer> mKeyboardInsetSupplier =
+            ObservableSuppliers.createMonotonic();
+    private LazyOneshotSupplier<MonotonicObservableSupplier<Integer>> mLazyKeyboardInsetSupplier;
     private ActivityKeyboardVisibilityDelegate mKeyboardVisibilityDelegate;
 
     @Before

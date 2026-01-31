@@ -37,9 +37,7 @@ class COMPONENT_EXPORT(TAB_GROUPS) TabGroupVisualData {
   bool is_collapsed() const { return is_collapsed_; }
 
   // Checks whether two instances are visually equivalent.
-  bool operator==(const TabGroupVisualData& other) const {
-    return title_ == other.title_ && color_ == other.color_;
-  }
+  auto operator<=>(const TabGroupVisualData&) const = default;
 
   void SetTitle(const std::u16string& title) { title_ = title; }
 

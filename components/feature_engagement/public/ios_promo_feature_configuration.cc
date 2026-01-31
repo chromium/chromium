@@ -66,6 +66,39 @@ std::optional<FeatureConfig> GetStandardPromoConfig(
     return config;
   }
 
+  if (kIPHiOSPromoBackgroundCustomizationFeature.name == feature->name) {
+    FeatureConfig config;
+    config.valid = true;
+    config.availability = Comparator(ANY, 0);
+    config.session_rate = Comparator(ANY, 0);
+    config.storage_type = StorageType::PROFILE;
+    config.used =
+        EventConfig(events::kHomeBackgroundCustomizationMenuUsed,
+                    Comparator(EQUAL, 0), feature_engagement::kMaxStoragePeriod,
+                    feature_engagement::kMaxStoragePeriod);
+    config.trigger =
+        EventConfig("background_customization_promo_trigger",
+                    Comparator(EQUAL, 0), feature_engagement::kMaxStoragePeriod,
+                    feature_engagement::kMaxStoragePeriod);
+
+    // Also make sure that the user didn't see the older customization promos
+    // recently.
+    config.event_configs.insert(
+        EventConfig(events::kHomeCustomizationPromoTriggered,
+                    Comparator(EQUAL, 0), 30, 30));
+
+    // An alternate trigger event was provided via Finch to re-show the IPH to
+    // users when the background customization feature was being experimented
+    // with.
+    config.event_configs.insert(
+        EventConfig("home_customization_menu_iph_triggered_2",
+                    Comparator(EQUAL, 0), 30, 30));
+
+    // Make sure the First Run Experience occurred more than 3 days ago.
+    config.event_configs.insert(
+        EventConfig(events::kIOSFirstRunComplete, Comparator(EQUAL, 0), 3, 3));
+  }
+
   if (kIPHiOSPromoGenericDefaultBrowserFeature.name == feature->name) {
     FeatureConfig config;
     config.valid = true;
@@ -232,6 +265,22 @@ std::optional<FeatureConfig> GetStandardPromoConfig(
         feature_engagement::events::kIOSSigninFullscreenPromoTrigger,
         Comparator(ANY, 0), feature_engagement::kMaxStoragePeriod,
         feature_engagement::kMaxStoragePeriod);
+    return config;
+  }
+
+  if (kIPHiOSReaderModeLargeOmniboxEntrypointFeature.name == feature->name) {
+    FeatureConfig config;
+    config.valid = true;
+    // No availability requirement for this feature.
+    config.availability = Comparator(ANY, 0);
+    // No session rate limit for this feature.
+    config.session_rate = Comparator(ANY, 0);
+    config.used = EventConfig("reader_mode_chip_expanded_used",
+                              Comparator(ANY, 0), 360, 360);
+    // The expanded chip should not be triggered more than 3 times per day.
+    config.trigger =
+        EventConfig(feature_engagement::events::kIOSReaderModeChipExpanded,
+                    Comparator(LESS_THAN, 3), 1, 360);
     return config;
   }
 

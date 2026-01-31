@@ -1,8 +1,10 @@
 include_rules = [
+  # keep-sorted start
   "+components/signin/public/identity_manager",
   "+components/trusted_vault",
   "+ios/chrome/browser/shared/model/profile",
   "+ios/chrome/browser/signin/model",
   "+ios/chrome/browser/signin/model:trusted_vault",
   "+ios/chrome/browser/signin/model:trusted_vault_factory",
+  # keep-sorted end
 ]

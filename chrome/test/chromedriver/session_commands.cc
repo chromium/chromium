@@ -107,10 +107,10 @@ InitSessionParams::InitSessionParams(const InitSessionParams& other) = default;
 InitSessionParams::~InitSessionParams() = default;
 
 // Look for W3C mode setting in InitSession command parameters.
-bool GetW3CSetting(const base::Value::Dict& params) {
-  const base::Value::Dict* options_dict = nullptr;
+bool GetW3CSetting(const base::DictValue& params) {
+  const base::DictValue* options_dict = nullptr;
 
-  const base::Value::Dict* caps_dict =
+  const base::DictValue* caps_dict =
       params.FindDictByDottedPath("capabilities.alwaysMatch");
   if (caps_dict && GetChromeOptionsDictionary(*caps_dict, &options_dict)) {
     std::optional<bool> w3c = options_dict->FindBool("w3c");
@@ -118,7 +118,7 @@ bool GetW3CSetting(const base::Value::Dict& params) {
       return *w3c;
   }
 
-  const base::Value::List* list =
+  const base::ListValue* list =
       params.FindListByDottedPath("capabilities.firstMatch");
   if (list && list->size()) {
     const base::Value& caps_dict_ref = (*list)[0];
@@ -155,13 +155,13 @@ std::string PlatformNameToW3C(const std::string& platform_name) {
   return result;
 }
 
-// Creates a JSON object (represented by base::Value::Dict) that contains
+// Creates a JSON object (represented by base::DictValue) that contains
 // the capabilities, for returning to the client app as the result of New
 // Session command.
-base::Value::Dict CreateCapabilities(Session* session,
-                                     const Capabilities& capabilities,
-                                     const base::Value::Dict& desired_caps) {
-  base::Value::Dict caps;
+base::DictValue CreateCapabilities(Session* session,
+                                   const Capabilities& capabilities,
+                                   const base::DictValue& desired_caps) {
+  base::DictValue caps;
 
   // Capabilities defined by W3C. Some of these capabilities have different
   // names in legacy mode.
@@ -183,7 +183,7 @@ base::Value::Dict CreateCapabilities(Session* session,
 
   const base::Value* proxy = desired_caps.Find("proxy");
   if (proxy == nullptr || proxy->is_none())
-    caps.Set("proxy", base::Value::Dict());
+    caps.Set("proxy", base::DictValue());
   else
     caps.Set("proxy", proxy->Clone());
 
@@ -288,7 +288,7 @@ base::Value::Dict CreateCapabilities(Session* session,
 
 Status InitSessionHelper(const InitSessionParams& bound_params,
                          Session* session,
-                         const base::Value::Dict& params,
+                         const base::DictValue& params,
                          std::unique_ptr<base::Value>* value) {
   session->cmd_task_runner = bound_params.cmd_task_runner;
   session->terminate_on_cmd = base::BindPostTask(
@@ -298,8 +298,8 @@ Status InitSessionHelper(const InitSessionParams& bound_params,
     return Status{kSessionNotCreated, "device manager cannot be null"};
   }
 
-  const base::Value::Dict* desired_caps;
-  base::Value::Dict merged_caps;
+  const base::DictValue* desired_caps;
+  base::DictValue merged_caps;
 
   Capabilities capabilities;
   Status status = internal::ConfigureSession(session, params, desired_caps,
@@ -353,7 +353,7 @@ Status InitSessionHelper(const InitSessionParams& bound_params,
   if (status.IsError())
     return status;
   session->detach = capabilities.detach;
-  session->capabilities = std::make_unique<base::Value::Dict>(
+  session->capabilities = std::make_unique<base::DictValue>(
       CreateCapabilities(session, capabilities, *desired_caps));
 
   status = internal::ConfigureHeadlessSession(session, capabilities);
@@ -361,7 +361,7 @@ Status InitSessionHelper(const InitSessionParams& bound_params,
     return status;
 
   if (session->w3c_compliant) {
-    base::Value::Dict body;
+    base::DictValue body;
     body.Set("capabilities", session->capabilities->Clone());
     body.Set("sessionId", session->id);
     *value = std::make_unique<base::Value>(std::move(body));
@@ -444,12 +444,12 @@ Status InitSessionHelper(const InitSessionParams& bound_params,
     }
 
     // Execute session.new for the newly-created mapper instance.
-    base::Value::Dict bidi_cmd;
+    base::DictValue bidi_cmd;
     bidi_cmd.Set("goog:channel", "/init-bidi-session");
     bidi_cmd.Set("id", 1);
     bidi_cmd.Set("params", params.Clone());
     bidi_cmd.Set("method", "session.new");
-    base::Value::Dict bidi_response;
+    base::DictValue bidi_response;
     status = bidi_mapper_web_view->SendBidiCommand(
         std::move(bidi_cmd), Timeout(base::Seconds(20)), bidi_response);
     if (status.IsError()) {
@@ -465,9 +465,9 @@ Status InitSessionHelper(const InitSessionParams& bound_params,
 namespace internal {
 
 Status ConfigureSession(Session* session,
-                        const base::Value::Dict& params,
-                        const base::Value::Dict*& desired_caps,
-                        base::Value::Dict& merged_caps,
+                        const base::DictValue& params,
+                        const base::DictValue*& desired_caps,
+                        base::DictValue& merged_caps,
                         Capabilities* capabilities) {
   session->driver_log =
       std::make_unique<WebDriverLog>(WebDriverLog::kDriverType, Log::kAll);
@@ -479,7 +479,7 @@ Status ConfigureSession(Session* session,
       return status;
     desired_caps = &merged_caps;
   } else {
-    const base::Value::Dict* caps = params.FindDict("desiredCapabilities");
+    const base::DictValue* caps = params.FindDict("desiredCapabilities");
     if (!caps)
       return Status(kSessionNotCreated, "Missing or invalid capabilities");
     desired_caps = caps;
@@ -536,9 +536,9 @@ Status ConfigureHeadlessSession(Session* session,
 
 }  // namespace internal
 
-bool MergeCapabilities(const base::Value::Dict& always_match,
-                       const base::Value::Dict& first_match,
-                       base::Value::Dict& merged) {
+bool MergeCapabilities(const base::DictValue& always_match,
+                       const base::DictValue& first_match,
+                       base::DictValue& merged) {
   merged.clear();
 
   for (auto kv : first_match) {
@@ -559,7 +559,7 @@ bool MergeCapabilities(const base::Value::Dict& always_match,
 // It checks some requested capabilities and make sure they are supported.
 // Currently, we only check "browserName", "platformName", "fedcm:accounts"
 // and webauthn capabilities but more can be added as necessary.
-bool MatchCapabilities(const base::Value::Dict& capabilities) {
+bool MatchCapabilities(const base::DictValue& capabilities) {
   const base::Value* name = capabilities.Find("browserName");
   if (name && !name->is_none()) {
     if (!name->is_string()) {
@@ -571,7 +571,7 @@ bool MatchCapabilities(const base::Value::Dict& capabilities) {
     }
   }
 
-  const base::Value::Dict* chrome_options;
+  const base::DictValue* chrome_options;
   const bool has_chrome_options =
       GetChromeOptionsDictionary(capabilities, &chrome_options);
 
@@ -643,17 +643,16 @@ bool MatchCapabilities(const base::Value::Dict& capabilities) {
 // Implementation of "process capabilities", as defined in W3C spec at
 // https://www.w3.org/TR/webdriver/#processing-capabilities. Step numbers in
 // the comments correspond to the step numbers in the spec.
-Status ProcessCapabilities(const base::Value::Dict& params,
-                           base::Value::Dict& result_capabilities) {
+Status ProcessCapabilities(const base::DictValue& params,
+                           base::DictValue& result_capabilities) {
   // 1. Get the property "capabilities" from parameters.
-  const base::Value::Dict* capabilities_request =
-      params.FindDict("capabilities");
+  const base::DictValue* capabilities_request = params.FindDict("capabilities");
   if (!capabilities_request)
     return Status(kInvalidArgument, "'capabilities' must be a JSON object");
 
   // 2. Get the property "alwaysMatch" from capabilities request.
-  const base::Value::Dict empty_object;
-  const base::Value::Dict* required_capabilities;
+  const base::DictValue empty_object;
+  const base::DictValue* required_capabilities;
   const base::Value* required_capabilities_value =
       capabilities_request->Find("alwaysMatch");
   if (required_capabilities_value == nullptr) {
@@ -669,12 +668,12 @@ Status ProcessCapabilities(const base::Value::Dict& params,
   }
 
   // 3. Get the property "firstMatch" from capabilities request.
-  base::Value::List default_list;
-  const base::Value::List* all_first_match_capabilities;
+  base::ListValue default_list;
+  const base::ListValue* all_first_match_capabilities;
   const base::Value* all_first_match_capabilities_value =
       capabilities_request->Find("firstMatch");
   if (all_first_match_capabilities_value == nullptr) {
-    default_list.Append(base::Value::Dict());
+    default_list.Append(base::DictValue());
     all_first_match_capabilities = &default_list;
   } else if (all_first_match_capabilities_value->is_list()) {
     all_first_match_capabilities =
@@ -688,7 +687,7 @@ Status ProcessCapabilities(const base::Value::Dict& params,
   }
 
   // 4. Let validated first match capabilities be an empty JSON List.
-  std::vector<const base::Value::Dict*> validated_first_match_capabilities;
+  std::vector<const base::DictValue*> validated_first_match_capabilities;
 
   // 5. Validate all first match capabilities.
   for (size_t i = 0; i < all_first_match_capabilities->size(); ++i) {
@@ -709,13 +708,13 @@ Status ProcessCapabilities(const base::Value::Dict& params,
   }
 
   // 6. Let merged capabilities be an empty List.
-  std::vector<base::Value::Dict> merged_capabilities;
+  std::vector<base::DictValue> merged_capabilities;
 
   // 7. Merge capabilities.
   for (size_t i = 0; i < validated_first_match_capabilities.size(); ++i) {
-    const base::Value::Dict* first_match_capabilities =
+    const base::DictValue* first_match_capabilities =
         validated_first_match_capabilities[i];
-    base::Value::Dict merged;
+    base::DictValue merged;
     if (!MergeCapabilities(*required_capabilities, *first_match_capabilities,
                            merged)) {
       return Status(
@@ -744,7 +743,7 @@ Status ProcessCapabilities(const base::Value::Dict& params,
 
 Status ExecuteInitSession(const InitSessionParams& bound_params,
                           Session* session,
-                          const base::Value::Dict& params,
+                          const base::DictValue& params,
                           std::unique_ptr<base::Value>* value) {
   Status status = InitSessionHelper(bound_params, session, params, value);
   if (status.IsError()) {
@@ -759,7 +758,7 @@ Status ExecuteInitSession(const InitSessionParams& bound_params,
 
 Status ExecuteQuit(bool allow_detach,
                    Session* session,
-                   const base::Value::Dict& params,
+                   const base::DictValue& params,
                    std::unique_ptr<base::Value>* value) {
   session->quit = true;
   if (allow_detach && session->detach)
@@ -769,7 +768,7 @@ Status ExecuteQuit(bool allow_detach,
 
 // Quits a session.
 Status ExecuteBidiSessionEnd(Session* session,
-                             const base::Value::Dict& params,
+                             const base::DictValue& params,
                              std::unique_ptr<base::Value>* value) {
   Status status{kOk};
   WebView* web_view = nullptr;
@@ -794,14 +793,14 @@ Status ExecuteBidiSessionEnd(Session* session,
 }
 
 Status ExecuteGetSessionCapabilities(Session* session,
-                                     const base::Value::Dict& params,
+                                     const base::DictValue& params,
                                      std::unique_ptr<base::Value>* value) {
   *value = std::make_unique<base::Value>(session->capabilities->Clone());
   return Status(kOk);
 }
 
 Status ExecuteGetCurrentWindowHandle(Session* session,
-                                     const base::Value::Dict& params,
+                                     const base::DictValue& params,
                                      std::unique_ptr<base::Value>* value) {
   WebView* web_view = nullptr;
   Status status = session->GetTargetWindow(&web_view);
@@ -812,7 +811,7 @@ Status ExecuteGetCurrentWindowHandle(Session* session,
 }
 
 Status ExecuteClose(Session* session,
-                    const base::Value::Dict& params,
+                    const base::DictValue& params,
                     std::unique_ptr<base::Value>* value) {
   std::list<std::string> web_view_ids;
   Status status = session->chrome->GetTopLevelWebViewIds(
@@ -879,7 +878,7 @@ Status ExecuteClose(Session* session,
     if (status.IsOk())
       *value = std::make_unique<base::Value>(base::Value::Type::LIST);
   } else {
-    status = ExecuteGetWindowHandles(session, base::Value::Dict(), value);
+    status = ExecuteGetWindowHandles(session, base::DictValue(), value);
     if (status.IsError())
       return status;
   }
@@ -888,7 +887,7 @@ Status ExecuteClose(Session* session,
 }
 
 Status ExecuteGetWindowHandles(Session* session,
-                               const base::Value::Dict& params,
+                               const base::DictValue& params,
                                std::unique_ptr<base::Value>* value) {
   std::list<std::string> tab_view_ids;
   Status status = session->chrome->GetTopLevelWebViewIds(
@@ -897,7 +896,7 @@ Status ExecuteGetWindowHandles(Session* session,
     return status;
   }
 
-  base::Value::List window_ids;
+  base::ListValue window_ids;
   for (std::list<std::string>::const_iterator it = tab_view_ids.begin();
        it != tab_view_ids.end(); ++it) {
     WebView* page = nullptr;
@@ -928,7 +927,7 @@ Status ExecuteGetWindowHandles(Session* session,
 }
 
 Status ExecuteSwitchToWindow(Session* session,
-                             const base::Value::Dict& params,
+                             const base::DictValue& params,
                              std::unique_ptr<base::Value>* value) {
   const std::string* name;
   if (session->w3c_compliant) {
@@ -977,7 +976,7 @@ Status ExecuteSwitchToWindow(Session* session,
   if (!found) {
     // Check if any of the tab window names match |name|.
     const char* kGetWindowNameScript = "function() { return window.name; }";
-    base::Value::List args;
+    base::ListValue args;
     for (auto& it : tab_to_active_webview) {
       std::unique_ptr<base::Value> result;
       status = it.second->CallFunction(std::string(), kGetWindowNameScript,
@@ -1035,7 +1034,7 @@ Status ExecuteSwitchToWindow(Session* session,
 // TODO(crbug.com/chromedriver/2596): Remove when we stop supporting legacy
 // protocol.
 Status ExecuteSetTimeoutLegacy(Session* session,
-                               const base::Value::Dict& params,
+                               const base::DictValue& params,
                                std::unique_ptr<base::Value>* value) {
   std::optional<double> maybe_ms = params.FindDouble("ms");
   if (!maybe_ms.has_value())
@@ -1061,7 +1060,7 @@ Status ExecuteSetTimeoutLegacy(Session* session,
 }
 
 Status ExecuteSetTimeoutsW3C(Session* session,
-                             const base::Value::Dict& params,
+                             const base::DictValue& params,
                              std::unique_ptr<base::Value>* value) {
   for (auto setting : params) {
     int64_t timeout_ms_int64 = -1;
@@ -1090,7 +1089,7 @@ Status ExecuteSetTimeoutsW3C(Session* session,
 }
 
 Status ExecuteSetTimeouts(Session* session,
-                          const base::Value::Dict& params,
+                          const base::DictValue& params,
                           std::unique_ptr<base::Value>* value) {
   // TODO(crbug.com/chromedriver/2596): Remove legacy version support when we
   // stop supporting non-W3C protocol. At that time, we can delete the legacy
@@ -1101,9 +1100,9 @@ Status ExecuteSetTimeouts(Session* session,
 }
 
 Status ExecuteGetTimeouts(Session* session,
-                          const base::Value::Dict& params,
+                          const base::DictValue& params,
                           std::unique_ptr<base::Value>* value) {
-  base::Value::Dict timeouts;
+  base::DictValue timeouts;
   if (session->script_timeout == base::TimeDelta::Max())
     timeouts.Set("script", base::Value());
   else
@@ -1117,7 +1116,7 @@ Status ExecuteGetTimeouts(Session* session,
 }
 
 Status ExecuteSetScriptTimeout(Session* session,
-                               const base::Value::Dict& params,
+                               const base::DictValue& params,
                                std::unique_ptr<base::Value>* value) {
   std::optional<double> maybe_ms = params.FindDouble("ms");
   if (!maybe_ms.has_value() || maybe_ms.value() < 0)
@@ -1128,7 +1127,7 @@ Status ExecuteSetScriptTimeout(Session* session,
 }
 
 Status ExecuteImplicitlyWait(Session* session,
-                             const base::Value::Dict& params,
+                             const base::DictValue& params,
                              std::unique_ptr<base::Value>* value) {
   std::optional<double> maybe_ms = params.FindDouble("ms");
   if (!maybe_ms.has_value() || maybe_ms.value() < 0)
@@ -1139,7 +1138,7 @@ Status ExecuteImplicitlyWait(Session* session,
 }
 
 Status ExecuteIsLoading(Session* session,
-                        const base::Value::Dict& params,
+                        const base::DictValue& params,
                         std::unique_ptr<base::Value>* value) {
   WebView* web_view = nullptr;
   Status status = session->GetTargetWindow(&web_view);
@@ -1155,7 +1154,7 @@ Status ExecuteIsLoading(Session* session,
 }
 
 Status ExecuteCreateVirtualSensor(Session* session,
-                                  const base::Value::Dict& params,
+                                  const base::DictValue& params,
                                   std::unique_ptr<base::Value>* value) {
   WebView* web_view = nullptr;
   Status status = session->GetTargetWindow(&web_view);
@@ -1168,11 +1167,11 @@ Status ExecuteCreateVirtualSensor(Session* session,
     return Status(kInvalidArgument, "'type' must be a string");
   }
 
-  base::Value::Dict args;
+  base::DictValue args;
   args.Set("enabled", true);
   args.Set("type", *type);
 
-  base::Value::Dict metadata;
+  base::DictValue metadata;
   metadata.Set("available", params.FindBool("connected").value_or(true));
   if (auto minimum_sampling_frequency =
           params.FindDouble("minSamplingFrequency");
@@ -1192,8 +1191,8 @@ Status ExecuteCreateVirtualSensor(Session* session,
 namespace {
 
 bool ParseSingleValue(const std::string& key_name,
-                      const base::Value::Dict& params,
-                      base::Value::Dict* out_params) {
+                      const base::DictValue& params,
+                      base::DictValue* out_params) {
   std::optional<double> value = params.FindDouble(key_name);
   if (!value.has_value()) {
     return false;
@@ -1204,12 +1203,11 @@ bool ParseSingleValue(const std::string& key_name,
   //     value: VAL
   //   }
   // }
-  out_params->Set("single", base::Value::Dict().Set("value", *value));
+  out_params->Set("single", base::DictValue().Set("value", *value));
   return true;
 }
 
-bool ParseXYZValue(const base::Value::Dict& params,
-                   base::Value::Dict* out_params) {
+bool ParseXYZValue(const base::DictValue& params, base::DictValue* out_params) {
   std::optional<double> x = params.FindDouble("x");
   if (!x.has_value()) {
     return false;
@@ -1231,12 +1229,12 @@ bool ParseXYZValue(const base::Value::Dict& params,
   //   }
   // }
   out_params->Set("xyz",
-                  base::Value::Dict().Set("x", *x).Set("y", *y).Set("z", *z));
+                  base::DictValue().Set("x", *x).Set("y", *y).Set("z", *z));
   return true;
 }
 
-bool ParseOrientationEuler(const base::Value::Dict& params,
-                           base::Value::Dict* out_params) {
+bool ParseOrientationEuler(const base::DictValue& params,
+                           base::DictValue* out_params) {
   if (!params.contains("alpha") || !params.contains("beta") ||
       !params.contains("gamma")) {
     return false;
@@ -1275,13 +1273,13 @@ bool ParseOrientationEuler(const base::Value::Dict& params,
   const double w = quaternion_readings.orientation_quat.w;
   out_params->Set(
       "quaternion",
-      base::Value::Dict().Set("x", x).Set("y", y).Set("z", z).Set("w", w));
+      base::DictValue().Set("x", x).Set("y", y).Set("z", z).Set("w", w));
   return true;
 }
 
-base::expected<base::Value::Dict, Status> ParseSensorUpdateParams(
-    const base::Value::Dict& params) {
-  base::Value::Dict cdp_params;
+base::expected<base::DictValue, Status> ParseSensorUpdateParams(
+    const base::DictValue& params) {
+  base::DictValue cdp_params;
 
   const std::string* type = params.FindString("type");
   if (!type) {
@@ -1290,13 +1288,13 @@ base::expected<base::Value::Dict, Status> ParseSensorUpdateParams(
   }
   cdp_params.Set("type", *type);
 
-  const base::Value::Dict* reading_dict = params.FindDict("reading");
+  const base::DictValue* reading_dict = params.FindDict("reading");
   if (!reading_dict) {
     return base::unexpected(
         Status(kInvalidArgument, "Missing 'reading' field"));
   }
 
-  base::Value::Dict reading;
+  base::DictValue reading;
   if (*type == "ambient-light") {
     if (!ParseSingleValue("illuminance", *reading_dict, &reading)) {
       return base::unexpected(
@@ -1328,7 +1326,7 @@ base::expected<base::Value::Dict, Status> ParseSensorUpdateParams(
 }  // namespace
 
 Status ExecuteUpdateVirtualSensor(Session* session,
-                                  const base::Value::Dict& params,
+                                  const base::DictValue& params,
                                   std::unique_ptr<base::Value>*) {
   WebView* web_view = nullptr;
   Status status = session->GetTargetWindow(&web_view);
@@ -1346,7 +1344,7 @@ Status ExecuteUpdateVirtualSensor(Session* session,
 }
 
 Status ExecuteRemoveVirtualSensor(Session* session,
-                                  const base::Value::Dict& params,
+                                  const base::DictValue& params,
                                   std::unique_ptr<base::Value>* value) {
   WebView* web_view = nullptr;
   Status status = session->GetTargetWindow(&web_view);
@@ -1360,7 +1358,7 @@ Status ExecuteRemoveVirtualSensor(Session* session,
     return Status(kInvalidArgument, "'type' must be a string");
   }
 
-  base::Value::Dict args;
+  base::DictValue args;
   args.Set("enabled", false);
   args.Set("type", *type);
 
@@ -1368,7 +1366,7 @@ Status ExecuteRemoveVirtualSensor(Session* session,
 }
 
 Status ExecuteGetVirtualSensorInformation(Session* session,
-                                          const base::Value::Dict& params,
+                                          const base::DictValue& params,
                                           std::unique_ptr<base::Value>* value) {
   WebView* web_view = nullptr;
   Status status = session->GetTargetWindow(&web_view);
@@ -1381,7 +1379,7 @@ Status ExecuteGetVirtualSensorInformation(Session* session,
     return Status(kInvalidArgument, "'type' must be a string");
   }
 
-  base::Value::Dict args;
+  base::DictValue args;
   args.Set("type", *type);
 
   return web_view->SendCommandAndGetResult(
@@ -1389,13 +1387,13 @@ Status ExecuteGetVirtualSensorInformation(Session* session,
 }
 
 Status ExecuteGetLocation(Session* session,
-                          const base::Value::Dict& params,
+                          const base::DictValue& params,
                           std::unique_ptr<base::Value>* value) {
   if (!session->overridden_geoposition) {
     return Status(kUnknownError,
                   "Location must be set before it can be retrieved");
   }
-  base::Value::Dict location;
+  base::DictValue location;
   location.Set("latitude", session->overridden_geoposition->latitude);
   location.Set("longitude", session->overridden_geoposition->longitude);
   location.Set("accuracy", session->overridden_geoposition->accuracy);
@@ -1407,7 +1405,7 @@ Status ExecuteGetLocation(Session* session,
 }
 
 Status ExecuteGetNetworkConnection(Session* session,
-                                   const base::Value::Dict& params,
+                                   const base::DictValue& params,
                                    std::unique_ptr<base::Value>* value) {
   ChromeDesktopImpl* desktop = nullptr;
   Status status = session->chrome->GetAsDesktop(&desktop);
@@ -1424,14 +1422,14 @@ Status ExecuteGetNetworkConnection(Session* session,
 }
 
 Status ExecuteGetNetworkConditions(Session* session,
-                                   const base::Value::Dict& params,
+                                   const base::DictValue& params,
                                    std::unique_ptr<base::Value>* value) {
   if (!session->overridden_network_conditions) {
     return Status(kUnknownError,
                   "network conditions must be set before it can be retrieved");
   }
-  base::Value::Dict conditions =
-      base::Value::Dict()
+  base::DictValue conditions =
+      base::DictValue()
           .Set("offline", session->overridden_network_conditions->offline)
           .Set("latency", session->overridden_network_conditions->latency)
           .Set("download_throughput",
@@ -1443,7 +1441,7 @@ Status ExecuteGetNetworkConditions(Session* session,
 }
 
 Status ExecuteSetNetworkConnection(Session* session,
-                                   const base::Value::Dict& params,
+                                   const base::DictValue& params,
                                    std::unique_ptr<base::Value>* value) {
   ChromeDesktopImpl* desktop = nullptr;
   Status status = session->chrome->GetAsDesktop(&desktop);
@@ -1520,7 +1518,7 @@ Status ExecuteSetNetworkConnection(Session* session,
 }
 
 Status ExecuteGetWindowPosition(Session* session,
-                                const base::Value::Dict& params,
+                                const base::DictValue& params,
                                 std::unique_ptr<base::Value>* value) {
   Chrome::WindowRect window_rect;
   Status status = session->chrome->GetWindowRect(session->window, &window_rect);
@@ -1528,14 +1526,14 @@ Status ExecuteGetWindowPosition(Session* session,
   if (status.IsError())
     return status;
 
-  base::Value::Dict position =
-      base::Value::Dict().Set("x", window_rect.x).Set("y", window_rect.y);
+  base::DictValue position =
+      base::DictValue().Set("x", window_rect.x).Set("y", window_rect.y);
   *value = base::Value::ToUniquePtrValue(base::Value(std::move(position)));
   return Status(kOk);
 }
 
 Status ExecuteSetWindowPosition(Session* session,
-                                const base::Value::Dict& params,
+                                const base::DictValue& params,
                                 std::unique_ptr<base::Value>* value) {
   std::optional<double> maybe_x = params.FindDouble("x");
   std::optional<double> maybe_y = params.FindDouble("y");
@@ -1543,7 +1541,7 @@ Status ExecuteSetWindowPosition(Session* session,
   if (!maybe_x.has_value() || !maybe_y.has_value())
     return Status(kInvalidArgument, "missing or invalid 'x' or 'y'");
 
-  base::Value::Dict rect_params;
+  base::DictValue rect_params;
   rect_params.Set("x", static_cast<int>(maybe_x.value()));
   rect_params.Set("y", static_cast<int>(maybe_y.value()));
   return session->chrome->SetWindowRect(session->window,
@@ -1551,7 +1549,7 @@ Status ExecuteSetWindowPosition(Session* session,
 }
 
 Status ExecuteGetWindowSize(Session* session,
-                            const base::Value::Dict& params,
+                            const base::DictValue& params,
                             std::unique_ptr<base::Value>* value) {
   Chrome::WindowRect window_rect;
   Status status = session->chrome->GetWindowRect(session->window, &window_rect);
@@ -1559,15 +1557,15 @@ Status ExecuteGetWindowSize(Session* session,
   if (status.IsError())
     return status;
 
-  base::Value::Dict size = base::Value::Dict()
-                               .Set("width", window_rect.width)
-                               .Set("height", window_rect.height);
+  base::DictValue size = base::DictValue()
+                             .Set("width", window_rect.width)
+                             .Set("height", window_rect.height);
   *value = base::Value::ToUniquePtrValue(base::Value(std::move(size)));
   return Status(kOk);
 }
 
 Status ExecuteSetWindowSize(Session* session,
-                            const base::Value::Dict& params,
+                            const base::DictValue& params,
                             std::unique_ptr<base::Value>* value) {
   std::optional<double> maybe_width = params.FindDouble("width");
   std::optional<double> maybe_height = params.FindDouble("height");
@@ -1575,7 +1573,7 @@ Status ExecuteSetWindowSize(Session* session,
   if (!maybe_width.has_value() || !maybe_height.has_value())
     return Status(kInvalidArgument, "missing or invalid 'width' or 'height'");
 
-  base::Value::Dict rect_params;
+  base::DictValue rect_params;
   rect_params.Set("width", static_cast<int>(maybe_width.value()));
   rect_params.Set("height", static_cast<int>(maybe_height.value()));
   return session->chrome->SetWindowRect(session->window,
@@ -1583,9 +1581,9 @@ Status ExecuteSetWindowSize(Session* session,
 }
 
 Status ExecuteGetAvailableLogTypes(Session* session,
-                                   const base::Value::Dict& params,
+                                   const base::DictValue& params,
                                    std::unique_ptr<base::Value>* value) {
-  std::unique_ptr<base::Value::List> types(new base::Value::List());
+  std::unique_ptr<base::ListValue> types(new base::ListValue());
   std::vector<WebDriverLog*> logs = session->GetAllLogs();
   for (std::vector<WebDriverLog*>::const_iterator log = logs.begin();
        log != logs.end();
@@ -1597,7 +1595,7 @@ Status ExecuteGetAvailableLogTypes(Session* session,
 }
 
 Status ExecuteGetLog(Session* session,
-                     const base::Value::Dict& params,
+                     const base::DictValue& params,
                      std::unique_ptr<base::Value>* value) {
   const std::string* log_type = params.FindString("type");
   if (!log_type) {
@@ -1629,7 +1627,7 @@ Status ExecuteGetLog(Session* session,
 }
 
 Status ExecuteUploadFile(Session* session,
-                         const base::Value::Dict& params,
+                         const base::DictValue& params,
                          std::unique_ptr<base::Value>* value) {
   const std::string* base64_zip_data = params.FindString("file");
   if (!base64_zip_data)
@@ -1659,7 +1657,7 @@ Status ExecuteUploadFile(Session* session,
 }
 
 Status ExecuteSetSPCTransactionMode(Session* session,
-                                    const base::Value::Dict& params,
+                                    const base::DictValue& params,
                                     std::unique_ptr<base::Value>* value) {
   WebView* web_view = nullptr;
   Status status = session->GetTargetWindow(&web_view);
@@ -1670,7 +1668,7 @@ Status ExecuteSetSPCTransactionMode(Session* session,
   if (!mode)
     return Status(kInvalidArgument, "missing parameter 'mode'");
 
-  base::Value::Dict body;
+  base::DictValue body;
   body.Set("mode", *mode);
 
   return web_view->SendCommandAndGetResult("Page.setSPCTransactionMode", body,
@@ -1678,7 +1676,7 @@ Status ExecuteSetSPCTransactionMode(Session* session,
 }
 
 Status ExecuteGenerateTestReport(Session* session,
-                                 const base::Value::Dict& params,
+                                 const base::DictValue& params,
                                  std::unique_ptr<base::Value>* value) {
   WebView* web_view = nullptr;
   Status status = session->GetTargetWindow(&web_view);
@@ -1690,7 +1688,7 @@ Status ExecuteGenerateTestReport(Session* session,
     return Status(kInvalidArgument, "missing parameter 'message'");
   const std::string* group = params.FindString("group");
 
-  base::Value::Dict body;
+  base::DictValue body;
   body.Set("message", *message);
   body.Set("group", group ? *group : "default");
 
@@ -1699,7 +1697,7 @@ Status ExecuteGenerateTestReport(Session* session,
 }
 
 Status ExecuteSetTimeZone(Session* session,
-                          const base::Value::Dict& params,
+                          const base::DictValue& params,
                           std::unique_ptr<base::Value>* value) {
   WebView* web_view = nullptr;
   Status status = session->GetTargetWindow(&web_view);
@@ -1710,7 +1708,7 @@ Status ExecuteSetTimeZone(Session* session,
   if (!time_zone)
     return Status(kInvalidArgument, "missing parameter 'time_zone'");
 
-  base::Value::Dict body;
+  base::DictValue body;
   body.Set("timezoneId", *time_zone);
 
   web_view->SendCommandAndGetResult("Emulation.setTimezoneOverride", body,
@@ -1719,7 +1717,7 @@ Status ExecuteSetTimeZone(Session* session,
 }
 
 Status ExecuteCreateVirtualPressureSource(Session* session,
-                                          const base::Value::Dict& params,
+                                          const base::DictValue& params,
                                           std::unique_ptr<base::Value>* value) {
   WebView* web_view = nullptr;
   Status status = session->GetTargetWindow(&web_view);
@@ -1732,11 +1730,11 @@ Status ExecuteCreateVirtualPressureSource(Session* session,
     return Status(kInvalidArgument, "'type' must be a string");
   }
 
-  base::Value::Dict body;
+  base::DictValue body;
   body.Set("enabled", true);
   body.Set("source", *type);
 
-  base::Value::Dict metadata;
+  base::DictValue metadata;
   metadata.Set("available", true);
   if (params.contains("supported")) {
     auto supported = params.FindBool("supported");
@@ -1752,7 +1750,7 @@ Status ExecuteCreateVirtualPressureSource(Session* session,
 }
 
 Status ExecuteUpdateVirtualPressureSource(Session* session,
-                                          const base::Value::Dict& params,
+                                          const base::DictValue& params,
                                           std::unique_ptr<base::Value>* value) {
   WebView* web_view = nullptr;
   Status status = session->GetTargetWindow(&web_view);
@@ -1770,7 +1768,7 @@ Status ExecuteUpdateVirtualPressureSource(Session* session,
     return Status(kInvalidArgument, "'sample' must be a string");
   }
 
-  base::Value::Dict body;
+  base::DictValue body;
   body.Set("source", *type);
   body.Set("state", *state);
 
@@ -1786,7 +1784,7 @@ Status ExecuteUpdateVirtualPressureSource(Session* session,
 }
 
 Status ExecuteRemoveVirtualPressureSource(Session* session,
-                                          const base::Value::Dict& params,
+                                          const base::DictValue& params,
                                           std::unique_ptr<base::Value>* value) {
   WebView* web_view = nullptr;
   Status status = session->GetTargetWindow(&web_view);
@@ -1799,7 +1797,7 @@ Status ExecuteRemoveVirtualPressureSource(Session* session,
     return Status(kInvalidArgument, "'type' must be a string");
   }
 
-  base::Value::Dict body;
+  base::DictValue body;
   body.Set("enabled", false);
   body.Set("source", *type);
   return web_view->SendCommand("Emulation.setPressureSourceOverrideEnabled",
@@ -1808,7 +1806,7 @@ Status ExecuteRemoveVirtualPressureSource(Session* session,
 
 Status ExecuteSetProtectedAudienceKAnonymity(
     Session* session,
-    const base::Value::Dict& params,
+    const base::DictValue& params,
     std::unique_ptr<base::Value>* value) {
   WebView* web_view = nullptr;
   Status status = session->GetTargetWindow(&web_view);
@@ -1824,7 +1822,7 @@ Status ExecuteSetProtectedAudienceKAnonymity(
   if (!name) {
     return Status(kInvalidArgument, "missing parameter 'name'");
   }
-  const base::Value::List* hashes = params.FindList("hashes");
+  const base::ListValue* hashes = params.FindList("hashes");
   if (!hashes) {
     return Status(kInvalidArgument, "missing parameter 'hashes'");
   }
@@ -1834,7 +1832,7 @@ Status ExecuteSetProtectedAudienceKAnonymity(
     }
   }
 
-  base::Value::Dict body;
+  base::DictValue body;
   body.Set("owner", *owner);
   body.Set("name", *name);
   body.Set("hashes", base::Value(hashes->Clone()));
@@ -1844,7 +1842,7 @@ Status ExecuteSetProtectedAudienceKAnonymity(
 
 // Run a BiDi command
 Status ForwardBidiCommand(Session* session,
-                          const base::Value::Dict& params,
+                          const base::DictValue& params,
                           std::unique_ptr<base::Value>* value) {
   // session == nullptr is a valid case: ExecuteQuit has already been handled
   // in the session thread but the following
@@ -1854,7 +1852,7 @@ Status ForwardBidiCommand(Session* session,
   if (session == nullptr) {
     return Status{kInvalidArgument, "session not found"};
   }
-  const base::Value::Dict* data = params.FindDict("bidiCommand");
+  const base::DictValue* data = params.FindDict("bidiCommand");
   if (!data) {
     return Status{kUnknownError, "bidiCommand is missing in params"};
   }
@@ -1871,7 +1869,7 @@ Status ForwardBidiCommand(Session* session,
     return status;
   }
 
-  base::Value::Dict bidi_cmd = data->Clone();
+  base::DictValue bidi_cmd = data->Clone();
 
   std::string* user_channel = bidi_cmd.FindString("goog:channel");
   std::string channel = (user_channel ? *user_channel : "") + "/" +

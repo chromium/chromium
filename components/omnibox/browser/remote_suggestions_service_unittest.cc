@@ -542,8 +542,7 @@ TEST_F(RemoteSuggestionsServiceTest,
   TemplateURLRef::SearchTermsArgs search_terms_args(u"query");
   search_terms_args.page_classification =
       metrics::OmniboxEventProto::NTP_COMPOSEBOX;
-  search_terms_args.aim_tool_mode =
-      omnibox::ChromeAimToolsAndModels::TOOL_MODE_DEEP_SEARCH;
+  search_terms_args.aim_tool_mode = omnibox::ToolMode::TOOL_MODE_DEEP_SEARCH;
 
   GURL endpoint_url = RemoteSuggestionsService::EndpointUrl(
       google_template_url, search_terms_args, SearchTermsData());

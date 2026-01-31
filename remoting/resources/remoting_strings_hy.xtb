@@ -3,7 +3,7 @@
 <translationbundle lang="hy">
 <translation id="1002108253973310084">Պրոտոկոլի տարբերակը համատեղելի չէ: Համոզվեք, որ երկու համակարգիչների վրա ծրագրակազմը թարմացված է վերջին տարբերակով և նորից փորձեք:</translation>
 <translation id="1008557486741366299">Հիմա չէ</translation>
-<translation id="1201402288615127009">Հաջորդը</translation>
+<translation id="1201402288615127009">Հաջորդ</translation>
 <translation id="1297009705180977556">Չհաջողվեց միանալ <ph name="HOSTNAME" /> խնամորդին</translation>
 <translation id="1450760146488584666">Հարցված օբյեկտը գոյություն չունի:</translation>
 <translation id="1480046233931937785">Կրեդիտներ</translation>
@@ -28,7 +28,6 @@
 <translation id="2329392777730037872">Չհաջողվեց բացել <ph name="URL" /> հղումը սպասառու սարքում։</translation>
 <translation id="2359808026110333948">Շարունակել</translation>
 <translation id="2366718077645204424">Հնարավոր չէ կապ հաստատել խնամորդի հետ: Հավանաբար, սա ձեր ցանցի կազմաձևումների պատճառով է:</translation>
-<translation id="242591256144136845">© 2025 Google LLC։ Բոլոր իրավունքները պահպանված են։</translation>
 <translation id="2504109125669302160">Տրամադրեք հատուկ գործառույթների թույլտվություն <ph name="PRODUCT_NAME" />ին</translation>
 <translation id="2509394361235492552">Միացած է <ph name="HOSTNAME" /> խնամորդին</translation>
 <translation id="2540992418118313681">Ցանկանո՞ւմ եք համօգտագործել այս համակարգիչը մեկ այլ օգտատիրոջ հետ:</translation>
@@ -47,6 +46,7 @@
 <translation id="3150823315463303127">Հանգույցը չկարողացավ կարդալ քաղաքականությունը:</translation>
 <translation id="3171922709365450819">Սարքը չի աջակցվում այս սպասառուի կողմից: Պահանջվում է երրորդ կողմի նույնականացում:</translation>
 <translation id="3197730452537982411">Հեռակա աշխատասեղան</translation>
+<translation id="3236334139428307578">© 2026 The Chromium Authors։ Բոլոր իրավունքները պահպանված են։</translation>
 <translation id="324272851072175193">Ուղարկել այս ցուցումները</translation>
 <translation id="3305934114213025800"><ph name="PRODUCT_NAME" />ն ուզում է փոփոխություններ անել:</translation>
 <translation id="3339299787263251426">Ապահով օգտվեք ձեր համակարգչից համացանցի միջոցով</translation>
@@ -111,6 +111,7 @@
 <translation id="5823554426827907568"><ph name="CLIENT_USERNAME" /> օգտատերը ձեր էկրանը տեսնելու, ինչպես նաև ստեղնաշարն ու մկնիկը կառավարելու թույլտվություն է խնդրել։ Եթե չեք ուզում թույլտվություն տրամադրել, սեղմեք «<ph name="IDS_SHARE_CONFIRM_DIALOG_DECLINE" />»։ Թույլատրելու համար սեղմեք «<ph name="IDS_SHARE_CONFIRM_DIALOG_CONFIRM" />», երբ պատրաստ լինեք:</translation>
 <translation id="5823658491130719298">Chrome դիտարկիչով բացեք <ph name="INSTALLATION_LINK" /> հղումն այն համակարգչում, որն ուզում եք հեռակա օգտագործել:</translation>
 <translation id="5841343754884244200">Ցուցադրման ընտրանքներ</translation>
+<translation id="5965133372831030509">© 2026 Google LLC։ Բոլոր իրավունքները պահպանված են։</translation>
 <translation id="6033507038939587647">Ստեղնաշարի կարգավորումներ</translation>
 <translation id="6040143037577758943">Փակել</translation>
 <translation id="6062854958530969723">Հանգույցի սկզբնավորումը ձախողվեց:</translation>
@@ -138,7 +139,6 @@
 <translation id="7067321367069083429">Էկրանն աշխատում է որպես հպէկրան</translation>
 <translation id="7116737094673640201">Բարի գալուստ Chrome հեռակա աշխատասեղան</translation>
 <translation id="7144878232160441200">Նորից փորձել</translation>
-<translation id="7298392173540380852">© 2025 The Chromium Authors։ Բոլոր իրավունքները պահպանված են։</translation>
 <translation id="7312846573060934304">Խնամորդը կապակցված չէ ցանցին:</translation>
 <translation id="7319983568955948908">Դադարեցնել համօգտագործումը</translation>
 <translation id="7359298090707901886">Ընտրված դիտարկիչը չի կարող օգտագործվել լոկալ համակարգչում URL-ներ բացելու համար։</translation>

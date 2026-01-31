@@ -51,6 +51,7 @@
 #include "third_party/blink/public/mojom/autoplay/autoplay.mojom.h"
 #include "third_party/blink/public/mojom/favicon/favicon_url.mojom.h"
 #include "third_party/blink/public/mojom/loader/resource_load_info.mojom.h"
+#include "third_party/perfetto/include/perfetto/tracing/track.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "url/gurl.h"
 
@@ -231,7 +232,7 @@ const media_control::MediaBlocker* CastWebContentsImpl::media_blocker() const {
   return media_blocker_.get();
 }
 
-void CastWebContentsImpl::AddRendererFeatures(base::Value::Dict features) {
+void CastWebContentsImpl::AddRendererFeatures(base::DictValue features) {
   renderer_features_ = std::move(features);
 }
 
@@ -556,13 +557,13 @@ CastWebContentsImpl::GetRendererFeatures() {
   for (const auto pair : renderer_features_) {
     const std::string& name = pair.first;
     const base::Value& config_value = pair.second;
-    const base::Value::Dict* maybe_config_dict = config_value.GetIfDict();
+    const base::DictValue* maybe_config_dict = config_value.GetIfDict();
 
     // There are only 2 callers of `AddRendererFeatures` (both in
     // `runtime_application_service_impl.cc`) and they always provide
     // well-formed dictionaries as values.
     DCHECK(maybe_config_dict);
-    base::Value::Dict config_dict = maybe_config_dict->Clone();
+    base::DictValue config_dict = maybe_config_dict->Clone();
 
     features.push_back(
         chromecast::shell::mojom::Feature::New(name, std::move(config_dict)));
@@ -1040,16 +1041,16 @@ void CastWebContentsImpl::MediaStoppedPlaying(
 
 void CastWebContentsImpl::TracePageLoadBegin(const GURL& url) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  TRACE_EVENT_NESTABLE_ASYNC_BEGIN1(
-      "browser,navigation", "CastWebContentsImpl Launch", TRACE_ID_LOCAL(this),
-      "URL", url.possibly_invalid_spec());
+  TRACE_EVENT_BEGIN("browser,navigation", "CastWebContentsImpl Launch",
+                    perfetto::Track::FromPointer(this), "URL",
+                    url.possibly_invalid_spec());
 }
 
 void CastWebContentsImpl::TracePageLoadEnd(const GURL& url) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  TRACE_EVENT_NESTABLE_ASYNC_END1(
-      "browser,navigation", "CastWebContentsImpl Launch", TRACE_ID_LOCAL(this),
-      "URL", url.possibly_invalid_spec());
+  TRACE_EVENT_END("browser,navigation", /*"CastWebContentsImpl Launch"*/
+                  perfetto::Track::FromPointer(this), "URL",
+                  url.possibly_invalid_spec());
 }
 
 void CastWebContentsImpl::DisableDebugging() {

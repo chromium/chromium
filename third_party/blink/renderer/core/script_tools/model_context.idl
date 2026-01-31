@@ -4,12 +4,11 @@
 
 [
     Exposed=Window,
-    ImplementedAs=ModelContext,
     RuntimeEnabled=WebMCP
 ] interface ModelContext {
   [CallWith=ScriptState, RaisesException] undefined registerTool(ToolRegistrationParams params);
-  [CallWith=ScriptState, RaisesException] undefined unregisterTool(DOMString tool_name);
+  [RaisesException] undefined unregisterTool(DOMString tool_name);
 
   [CallWith=ScriptState, RaisesException] undefined provideContext(ProvideContextParams params);
-  [CallWith=ScriptState, RaisesException] undefined clearContext();
+  undefined clearContext();
 };

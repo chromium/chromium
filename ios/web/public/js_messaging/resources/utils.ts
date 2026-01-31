@@ -92,6 +92,32 @@ export function sendWebKitMessage(handlerName: string, message: object|string) {
 }
 
 /**
+ * Posts `message` to the webkit message handler specified by `handlerName`
+ * and waits for a reply.
+ *
+ * @param handlerName The name of the webkit message handler.
+ * @param message The message to post to the handler.
+ * @return A promise that resolves with the reply.
+ */
+export function sendWebKitMessageWithReply(
+    handlerName: string, message: object|string): Promise<any> {
+  try {
+    // A web page can override `window.webkit` with any value. Deleting the
+    // object ensures that original and working implementation of
+    // window.webkit is restored.
+    const oldWebkit = window.webkit;
+    delete window['webkit'];
+    const promise =
+        window.webkit.messageHandlers[handlerName].postMessage(message);
+    window.webkit = oldWebkit;
+    return promise;
+  } catch (err) {
+    // TODO(crbug.com/40269960): Report this fatal error
+    return Promise.reject(err);
+  }
+}
+
+/**
  * Trims any whitespace from the start and end of a string.
  * Used in preference to String.prototype.trim which can be overridden by
  * sites.

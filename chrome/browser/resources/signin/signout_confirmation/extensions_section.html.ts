@@ -42,7 +42,7 @@ export function getHtml(this: ExtensionsSectionElement) {
           <div class="item-icon-container">
             <img class="item-icon" alt="" src="${extension.iconUrl}">
           </div>
-          <span class="name">${extension.name}</span>
+          <span class="name text-elide">${extension.name}</span>
         </div>
       `)}
     </div>

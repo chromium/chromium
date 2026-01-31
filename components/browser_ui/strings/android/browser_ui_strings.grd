@@ -438,6 +438,9 @@
       <message name="IDS_DOWNLOAD_NOTIFICATION_RESUME_BUTTON" desc="Text on the button that resumes a paused download.">
         Resume
       </message>
+      <message name="IDS_DOWNLOAD_NOTIFICATION_SCANNING_BUTTON" desc="Text on the button that scans a in-progress download.">
+        Scanning
+      </message>
       <message name="IDS_DOWNLOAD_NOTIFICATION_DELETE_FROM_HISTORY_BUTTON" desc="Text on the button that deletes a download from history.">
         Delete from history
       </message>
@@ -572,19 +575,8 @@
           =1 {Chrome will block cookies again tomorrow}
           other {# days until cookies are blocked again}}
       </message>
-      <message name="IDS_PAGE_INFO_COOKIES_LIMITING_RESTART_TODAY_TITLE" desc="Subtitle shown on the Page Info UI when cookies are allowed temporarily, indicating how long until they are no longer allowed. Used for the Today's variation.">
-        Chrome will limit cookies again today
-      </message>
-      <message name="IDS_PAGE_INFO_COOKIES_LIMITING_RESTART_TITLE" desc="Subtitle shown on the Page Info UI when cookies are allowed temporarily, indicating how long until they are no longer allowed.">
-        {DAYS, plural,
-          =1 {Chrome will limit cookies again tomorrow}
-          other {# days until Chrome limits cookies again}}
-      </message>
       <message name="IDS_PAGE_INFO_COOKIES_SEND_FEEDBACK_DESCRIPTION" desc="Text asking the user for feedback on why they allowed third-party cookies for this particular site.">
         Help us improve Chrome by telling us why you allowed third-party cookies. <ph name="BEGIN_LINK">&lt;link&gt;</ph>Send feedback<ph name="END_LINK">&lt;/link&gt;</ph>
-      </message>
-      <message name="IDS_PAGE_INFO_COOKIES_TRACKING_PROTECTION_DESCRIPTION" desc="Text describing the consequences of allowing third-party cookies for a particular site.">
-        You temporarily allowed this site to use third-party cookies, which means less browsing protection but site features are more likely to work as expected. <ph name="BEGIN_LINK">&lt;link&gt;</ph>Send feedback<ph name="END_LINK">&lt;/link&gt;</ph>
       </message>
       <message name="IDS_PAGE_INFO_COOKIES_PERMANENT_ALLOWED_TITLE" desc="A subtitle in the Page Info UI if cookies were allowed by the user and they won't be automatically blocked again the future.">
         You allowed third-party cookies on this site
@@ -604,9 +596,6 @@
       <message name="IDS_PAGE_INFO_COOKIES_SUBTITLE_BLOCKED" desc="Description text in the Page Info dialog to indicate that third-party cookies are blocked on this site.">
         Third-party cookies blocked
       </message>
-      <message name="IDS_PAGE_INFO_TRACKING_PROTECTION_TOGGLE_LIMITED" desc="Summary text in the Page Info dialog to indicate that third-party cookies are limited on this site.">
-        Limited
-      </message>
       <message name="IDS_PAGE_INFO_TRACKING_PROTECTION_TOGGLE_BLOCKED" desc="Summary text in the Page Info dialog to indicate that third-party cookies are blocked on this site.">
         Blocked
       </message>
@@ -618,21 +607,6 @@
       </message>
       <message name="IDS_PAGE_INFO_COOKIES_THIRD_PARTY_COOKIES_LABEL" desc="The label used in the Page Info dialog to label a toggle button that when enabled allows third-party cookies and when disabled blocks third-party cookies.">
         Third-party cookies
-      </message>
-      <message name="IDS_PAGE_INFO_TRACKING_PROTECTION_DESCRIPTION" desc="Description text for the 'Cookies and site data' subpage in the page info view. Contains a link to the 'Third-party cookies' settings page.">
-        Chrome limits most sites from using third-party cookies to track you as you browse. Visit settings to <ph name="BEGIN_LINK">&lt;link&gt;</ph>manage access to third-party cookies<ph name="END_LINK">&lt;/link&gt;</ph>.
-      </message>
-      <message name="IDS_PAGE_INFO_TRACKING_PROTECTION_SITE_GRANT_DESCRIPTION" desc="Description text for the 'Cookies and site data' subpage in the page info view for when a site has a TPCD grant. Contains a link to the 'Third-party cookies' settings page.">
-        Chrome limits most sites from using third-party cookies. But third-party cookies are allowed on this site because it relies on them to provide basic services.\n\nVisit settings to <ph name="BEGIN_LINK">&lt;link&gt;</ph>manage access to third-party cookies<ph name="END_LINK">&lt;/link&gt;</ph>.
-      </message>
-      <message name="IDS_PAGE_INFO_TRACKING_PROTECTION_BLOCKED_COOKIES_DESCRIPTION" desc="Description text for the 'Cookies and site data' subpage in the page info view if all cookies are blocked. Contains a link to the 'Third-party cookies' settings page.">
-        You blocked sites from using third-party cookies to track you as you browse. Visit settings to <ph name="BEGIN_LINK">&lt;link&gt;</ph>manage access to third-party cookies<ph name="END_LINK">&lt;/link&gt;</ph>.
-      </message>
-      <message name="IDS_PAGE_INFO_TRACKING_PROTECTION_INCOGNITO_BLOCKED_COOKIES_DESCRIPTION" desc="Description text for the 'Cookies and site data' subpage in the page info view in incognito mode when cookies are blocked. Contains a link to the 'Third-party cookies' settings page.">
-        Chrome blocks sites from using third-party cookies to track you as you browse. Visit settings to <ph name="BEGIN_LINK">&lt;link&gt;</ph>manage access to third-party cookies<ph name="END_LINK">&lt;/link&gt;</ph>.
-      </message>
-      <message name="IDS_PAGE_INFO_TRACKING_PROTECTION_SUBTITLE_COOKIES_LIMITED" desc="Description text in the Page Info dialog to indicate that third-party cookies are limited on this site.">
-        Third-party cookies limited
       </message>
       <message name="IDS_PAGE_INFO_ANDROID_LOCATION_BLOCKED" desc="The label used in the Page Info dialog to indicate that location has been been disabled for the device in Android settings">
         Turned off for this device
@@ -1020,6 +994,9 @@
       <message name="IDS_FONT_SIZE_ACCESSIBILITY_LABEL" desc="Accessibility label for control to allow user to change font size.">
         Text scaling set to <ph name="TEXT_SCALING">%1$s<ex>100%</ex></ph>
       </message>
+      <message name="IDS_FONT_FAMILY_LEXEND_ACCESSIBILITY_LABEL" desc="Accessibility label for control to allow user to change font family to Lexend.">
+        Font Lexend
+      </message>
       <message name="IDS_FONT_FAMILY_SANS_SERIF_ACCESSIBILITY_LABEL" desc="Accessibility label for control to allow user to change font family to sans serif.">
         Font Sans Serif
       </message>
@@ -1260,6 +1237,9 @@
       <message name="IDS_EDUCATIONAL_TIP_MODULE_BUTTON" desc="Name of the clickable button in the educational tip module on NTP.">
         Show me how
       </message>
+      <message name="IDS_EDUCATIONAL_TIP_SEE_MORE" desc="Text for a link to view all Educational tip items in two cell mode.">
+        See more
+      </message>
       <message name="IDS_EDUCATIONAL_TIP_DEFAULT_BROWSER_TITLE" desc="Title of the default browser section in the educational tip module on NTP.">
         Use Chrome by default
       </message>
@@ -1323,23 +1303,72 @@
       <message name="IDS_EDUCATIONAL_TIP_HISTORY_SYNC_DESCRIPTION" desc="Description of the history sync promo that invites users to turn on history sync in the educational tip module on NTP.">
         Get your history on all your devices, so you can easily pick up where you left off
       </message>
-      <message name="IDS_EDUCATIONAL_TIP_HISTORY_SYNC_BUTTON_TURN_ON" desc="Text on the clickable button on the history sync promo that invites users to turn on history sync in the educational tip module on NTP.">
-        Turn on
-      </message>
       <message name="IDS_EDUCATIONAL_TIP_HISTORY_SYNC_BUTTON_LETS_GO" desc="Text on the clickable button on the history sync promo that invites users to turn on history sync in the educational tip module on NTP.">
         Let’s go
       </message>
-      <message name="IDS_EDUCATIONAL_TIP_HISTORY_SYNC_BUTTON_CONTINUE" desc="Text on the clickable button on the history sync promo that invites users to turn on history sync in the educational tip module on NTP.">
-        Continue
-      </message>
       <message name="IDS_EDUCATIONAL_TIP_TIPS_NOTIFICATIONS_TITLE" desc="Title of the tips notifications promo that invites users to turn on tips notifications in the educational tip module on NTP.">
-        Get Chrome Tips notifications
+        Get Chrome tips notifications
       </message>
       <message name="IDS_EDUCATIONAL_TIP_TIPS_NOTIFICATIONS_DESCRIPTION" desc="Description of the tips notifications promo that invites users to turn on tips notifications in the educational tip module on NTP.">
         Turn on notifications for useful tips to help you get the best of Chrome
       </message>
       <message name="IDS_EDUCATIONAL_TIP_TIPS_NOTIFICATIONS_BUTTON" desc="Text on the clickable button on the tips notifications promo that invites users to turn on tips notifications in the educational tip module on NTP.">
         Notify me
+      </message>
+
+      <!-- Setup List strings -->
+
+      <!-- Setup list Sign in promo strings -->
+      <message name="IDS_EDUCATIONAL_TIP_SIGN_IN_PROMO_TITLE" desc="Title of the sign in promo that invites users to sign in to Chrome in the educational tip module on NTP.">
+        Make Chrome your own
+      </message>
+      <message name="IDS_EDUCATIONAL_TIP_SIGN_IN_PROMO_DESCRIPTION" desc="Description of the sign in promo that invites users to sign in to Chrome in the educational tip module on NTP.">
+        Sign in to easily continue on all your devices
+      </message>
+      <message name="IDS_EDUCATIONAL_TIP_SIGN_IN_PROMO_BUTTON" desc="Text on the clickable button on the sign in promo that invites users to sign in to Chrome in the educational tip module on NTP.">
+        Sign in to start
+      </message>
+
+      <!-- Setup list Enhanced Safe Browsing promo strings -->
+      <message name="IDS_EDUCATIONAL_TIP_ENHANCED_SAFE_BROWSING_TITLE" desc="Title of the enhanced safe browsing promo that invites users to turn on enhanced safe browsing in the educational tip module on NTP.">
+        Enhance your security
+      </message>
+      <message name="IDS_EDUCATIONAL_TIP_ENHANCED_SAFE_BROWSING_DESCRIPTION" desc="Description of the enhanced safe browsing promo that invites users to turn on enhanced safe browsing in the educational tip module on NTP.">
+        Get Chrome’s strongest protection against online threats
+      </message>
+
+      <!-- Setup list Save Passwords promo strings -->
+      <message name="IDS_EDUCATIONAL_TIP_SAVE_PASSWORDS_TITLE" desc="Title of the Save Passwords promo that invites users to turn on the save passwords feature in the educational tip module on NTP.">
+        Save passwords in Chrome
+      </message>
+      <message name="IDS_EDUCATIONAL_TIP_SAVE_PASSWORDS_DESCRIPTION" desc="Description of the Save Passwords promo that invites users to turn on the save passwords feature in the educational tip module on NTP.">
+        Sign in quickly and easily into sites and apps
+      </message>
+      <message name="IDS_EDUCATIONAL_TIP_SAVE_PASSWORDS_BUTTON" desc="Text on the clickable button on the Save Passwords promo in the educational tip module on NTP.">
+        Show me how
+      </message>
+
+      <!-- Setup list Password Checkup promo strings -->
+      <message name="IDS_EDUCATIONAL_TIP_PASSWORD_CHECKUP_TITLE" desc="Title of the Password Checkup promo that invites users to check their saved passwords in the educational tip module on NTP.">
+        Check your saved passwords
+      </message>
+      <message name="IDS_EDUCATIONAL_TIP_PASSWORD_CHECKUP_DESCRIPTION" desc="Description of the Password Checkup promo that invites users to check their saved passwords in the educational tip module on NTP.">
+        Strengthen your security and keep your data safer by checking your passwords
+      </message>
+      <message name="IDS_EDUCATIONAL_TIP_PASSWORD_CHECKUP_BUTTON" desc="Text on the clickable button on the Password Checkup promo in the educational tip module on NTP.">
+        Check now
+      </message>
+
+      <!-- Setup list Address Bar Placement promo strings -->
+      <message name="IDS_EDUCATIONAL_TIP_ADDRESS_BAR_PLACEMENT_TITLE" desc="Title of the address bar placement promo that invites users to choose address bar position in the educational tip module on NTP.">
+        Choose address bar position
+      </message>
+      <message name="IDS_EDUCATIONAL_TIP_ADDRESS_BAR_PLACEMENT_DESCRIPTION" desc="Description of the address bar placement promo that invites users to choose address bar position in the educational tip module on NTP.">
+        Switch the position to customize your browsing experience
+      </message>
+
+      <message name="IDS_EDUCATIONAL_TIP_BUTTON_GO_TO_SETTINGS" desc="Text on the clickable button for promos that invites users to adjust settings in the educational tip module on NTP.">
+        Go to settings
       </message>
 
       <!-- Safety Hub Magic Stack strings -->
@@ -1482,7 +1511,7 @@
         Theme Collections
       </message>
       <message name="IDS_NTP_CUSTOMIZATION_THEME_COLLECTIONS_TITLE" desc="Open all available theme collections when click the theme collection section in the NTP appearance bottom sheet">
-        Theme
+        Theme collections
       </message>
       <message name="IDS_NTP_CUSTOMIZATION_THEME_COLLECTIONS_BOTTOM_SHEET" desc="Accessibility string to announce the currently displaying bottom sheet is the new tab page appearance theme collections bottom sheet.">
         New tab page appearance theme collections bottom sheet
@@ -1505,6 +1534,9 @@
       <message name="IDS_NTP_CUSTOMIZATION_THEME_IMAGE_PREVIEW_PINCH_TO_RESIZE" desc="Text explaining the image could be resized by pinching it.">
         Pinch to resize
       </message>
+      <message name="IDS_ACCESSIBILITY_NTP_CUSTOMIZATION_THEME_IMAGE_PREVIEW_PINCH_TO_RESIZE" desc="Accessibility string to announce the image could be resized by pinching it.">
+        Pinch screen to resize photo
+      </message>
       <message name="IDS_NTP_CUSTOMIZATION_TYPE_BACKGROUND_COLOR_HEX_TITLE" desc="Title of the edit text box to input a color hex for the background color.">
         Background Color Hex
       </message>
@@ -1513,6 +1545,33 @@
       </message>
       <message name="IDS_NTP_CUSTOMIZATION_HINT_TO_TYPE_COLOR_HEX" desc="Hint in the edit box to ask users to type a color hex.">
         Type hex here
+      </message>
+      <message name="IDS_ACCESSIBILITY_NTP_BLUE_COLOR_THEME" is_accessibility_with_no_ui="true" desc="Name of the color theme shown on the Chrome Colors bottom sheet.">
+        Blue theme
+      </message>
+      <message name="IDS_ACCESSIBILITY_NTP_AQUA_COLOR_THEME" is_accessibility_with_no_ui="true" desc="Name of the color theme shown on the Chrome Colors bottom sheet.">
+        Aqua theme
+      </message>
+      <message name="IDS_ACCESSIBILITY_NTP_GREEN_COLOR_THEME" is_accessibility_with_no_ui="true" desc="Name of the color theme shown on the Chrome Colors bottom sheet.">
+        Green theme
+      </message>
+      <message name="IDS_ACCESSIBILITY_NTP_VIRIDIAN_COLOR_THEME" is_accessibility_with_no_ui="true" desc="Name of the color theme shown on the Chrome Colors bottom sheet.">
+        Viridian theme
+      </message>
+      <message name="IDS_ACCESSIBILITY_NTP_CITRON_COLOR_THEME" is_accessibility_with_no_ui="true" desc="Name of the color theme shown on the Chrome Colors bottom sheet.">
+        Citron theme
+      </message>
+      <message name="IDS_ACCESSIBILITY_NTP_ORANGE_COLOR_THEME" is_accessibility_with_no_ui="true" desc="Name of the color theme shown on the Chrome Colors bottom sheet.">
+        Orange theme
+      </message>
+      <message name="IDS_ACCESSIBILITY_NTP_ROSE_COLOR_THEME" is_accessibility_with_no_ui="true" desc="Name of the color theme shown on the Chrome Colors bottom sheet.">
+        Rose theme
+      </message>
+      <message name="IDS_ACCESSIBILITY_NTP_FUCHSIA_COLOR_THEME" is_accessibility_with_no_ui="true" desc="Name of the color theme shown on the Chrome Colors bottom sheet.">
+        Fuchsia theme
+      </message>
+      <message name="IDS_ACCESSIBILITY_NTP_VIOLET_COLOR_THEME" is_accessibility_with_no_ui="true" desc="Name of the color theme shown on the Chrome Colors bottom sheet.">
+        Violet theme
       </message>
 
       <!-- Time Last Accessed strings -->

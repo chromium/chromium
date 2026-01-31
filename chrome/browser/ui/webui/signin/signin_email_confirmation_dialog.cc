@@ -89,7 +89,7 @@ SigninEmailConfirmationDialog::SigninEmailConfirmationDialog(
   set_dialog_content_url(GURL(chrome::kChromeUISigninEmailConfirmationURL));
   // This dialog chooses its height automatically based on its contents.
   set_dialog_size(gfx::Size(kSigninEmailConfirmationDialogWidth, 0));
-  set_dialog_args(*base::WriteJson(base::Value::Dict()
+  set_dialog_args(*base::WriteJson(base::DictValue()
                                        .Set("newEmail", new_email)
                                        .Set("lastEmail", last_email)));
   set_show_dialog_title(false);

@@ -36,7 +36,6 @@ using testing::ByMove;
 using testing::Mock;
 using testing::Return;
 
-constexpr char kFakeLocalUsername[] = "fake_local_user@domain.com";
 constexpr char kFakeLocalCorpId[] = "fake_local_user@domain.com";
 constexpr char kFakeRemoteCorpId[] = "fake_remote_user@domain.com";
 
@@ -110,7 +109,7 @@ class CorpSignalStrategyTest : public testing::Test,
 
     signal_strategy_ =
         std::unique_ptr<CorpSignalStrategy>(new CorpSignalStrategy(
-            std::move(messaging_client), kFakeLocalUsername));
+            std::move(messaging_client), SignalingAddress(kFakeLocalCorpId)));
     signal_strategy_->AddListener(this);
 
     ON_CALL(*this, OnSignalStrategyIncomingMessage(_, _))
@@ -239,6 +238,15 @@ TEST_F(CorpSignalStrategyTest, SendStanza_Success) {
       });
   signal_strategy_->Connect();
 
+  // Simulate an incoming message to set the remote address.
+  internal::IqStanzaStruct iq_stanza_struct;
+  iq_stanza_struct.xml = CreateXmlStanza(Direction::INCOMING, "id1")->Str();
+  iq_stanza_struct.messaging_authz_token = "faux_messaging_token";
+  internal::PeerMessageStruct peer_message;
+  peer_message.payload = std::move(iq_stanza_struct);
+  messaging_client_->OnMessage(SignalingAddress(kFakeRemoteCorpId),
+                               SignalingMessage(peer_message));
+
   auto stanza =
       CreateXmlStanza(Direction::OUTGOING, signal_strategy_->GetNextId());
   std::string stanza_string = stanza->Str();
@@ -247,7 +255,6 @@ TEST_F(CorpSignalStrategyTest, SendStanza_Success) {
       .WillOnce([stanza_string](const SignalingAddress& address,
                                 SignalingMessage&& message,
                                 MessagingClient::DoneCallback on_done) {
-        // TODO(joedow): Get the messaging auth token from the session.
         EXPECT_EQ("faux_messaging_token", address.id());
         auto* peer_message = std::get_if<internal::PeerMessageStruct>(&message);
         ASSERT_TRUE(peer_message);
@@ -282,6 +289,7 @@ TEST_F(CorpSignalStrategyTest, ReceiveStanza_Success) {
 
   internal::IqStanzaStruct iq_stanza_struct;
   iq_stanza_struct.xml = stanza_string;
+  iq_stanza_struct.messaging_authz_token = "fake_authz_token";
 
   internal::PeerMessageStruct peer_message;
   peer_message.payload = std::move(iq_stanza_struct);
@@ -312,6 +320,43 @@ TEST_F(CorpSignalStrategyTest, ReceiveStanza_MalformedXmpp) {
                                SignalingMessage(peer_message));
 
   ASSERT_EQ(0u, received_messages_.size());
+}
+
+TEST_F(CorpSignalStrategyTest, LocalAddressPreservedAfterDisconnect) {
+  EXPECT_CALL(*messaging_client_, StartReceivingMessages(_, _))
+      .WillOnce([](base::OnceClosure on_ready,
+                   MessagingClient::DoneCallback on_closed) {
+        std::move(on_ready).Run();
+        return testing::Return();
+      });
+  signal_strategy_->Connect();
+
+  ASSERT_EQ(signal_strategy_->GetLocalAddress().id(), kFakeLocalCorpId);
+
+  EXPECT_CALL(*messaging_client_, StopReceivingMessages());
+  signal_strategy_->Disconnect();
+
+  EXPECT_EQ(signal_strategy_->GetLocalAddress().id(), kFakeLocalCorpId);
+}
+
+TEST_F(CorpSignalStrategyTest, LocalAddressPreservedAfterChannelError) {
+  MessagingClient::DoneCallback on_closed_callback;
+  EXPECT_CALL(*messaging_client_, StartReceivingMessages(_, _))
+      .WillOnce([&](base::OnceClosure on_ready,
+                    MessagingClient::DoneCallback on_closed) {
+        std::move(on_ready).Run();
+        on_closed_callback = std::move(on_closed);
+      });
+  signal_strategy_->Connect();
+  ASSERT_EQ(signal_strategy_->GetState(), SignalStrategy::State::CONNECTED);
+  ASSERT_EQ(signal_strategy_->GetLocalAddress().id(), kFakeLocalCorpId);
+
+  EXPECT_CALL(*messaging_client_, StopReceivingMessages());
+  std::move(on_closed_callback)
+      .Run(HttpStatus(HttpStatus::Code::UNAVAILABLE, "error"));
+
+  ASSERT_EQ(signal_strategy_->GetState(), SignalStrategy::State::DISCONNECTED);
+  EXPECT_EQ(signal_strategy_->GetLocalAddress().id(), kFakeLocalCorpId);
 }
 
 }  // namespace remoting

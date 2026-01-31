@@ -1,5 +1,7 @@
 include_rules = [
+  # keep-sorted start
   "+ios/chrome/browser/search_engines/model",
+  # keep-sorted end
 ]
 
 specific_include_rules = {

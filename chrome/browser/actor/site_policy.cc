@@ -4,11 +4,11 @@
 
 #include "chrome/browser/actor/site_policy.h"
 
+#include <algorithm>
 #include <string>
 #include <string_view>
 #include <vector>
 
-#include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/functional/callback.h"
 #include "base/notimplemented.h"
@@ -17,6 +17,7 @@
 #include "chrome/browser/actor/actor_features.h"
 #include "chrome/browser/actor/actor_util.h"
 #include "chrome/browser/actor/aggregated_journal.h"
+#include "chrome/browser/actor/origin_checker.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/lookalikes/lookalike_url_service.h"
 #include "chrome/browser/lookalikes/lookalike_url_service_factory.h"
@@ -93,12 +94,12 @@ bool IsHostInAllowList(const std::vector<std::string_view>& allowlist,
                        const GURL& url,
                        bool include_subdomains) {
   if (!include_subdomains) {
-    return base::Contains(allowlist, url.host());
+    return std::ranges::contains(allowlist, url.host());
   }
 
   std::string host = url.GetHost();
   while (!host.empty()) {
-    if (base::Contains(allowlist, host)) {
+    if (std::ranges::contains(allowlist, host)) {
       return true;
     }
     host = net::GetSuperdomain(host);
@@ -130,20 +131,12 @@ void OnOptimizationGuideDecision(
   }
 }
 
-void OnOptimizationGuideDecisionForOriginGating(
-    DecisionCallback callback,
-    optimization_guide::OptimizationGuideDecision decision,
-    const optimization_guide::OptimizationMetadata& metadata) {
-  std::move(callback).Run(
-      ShouldContinueFromOptimizationGuideDecision(decision));
-}
-
-void MayActOnUrlInternal(
-    const GURL& url,
-    bool allow_insecure_http,
-    Profile* profile,
-    base::optional_ref<const absl::flat_hash_set<url::Origin>> allowed_origins,
-    std::unique_ptr<DecisionWrapper> decision_wrapper) {
+void MayActOnUrlInternal(const GURL& url,
+                         bool allow_insecure_http,
+                         Profile* profile,
+                         base::optional_ref<const OriginChecker> origin_checker,
+                         EnterprisePolicyCallback enterprise_policy_eval_url,
+                         std::unique_ptr<DecisionWrapper> decision_wrapper) {
   if ((net::IsLocalhost(url) && url.SchemeIsHTTPOrHTTPS()) ||
       url.IsAboutBlank()) {
     decision_wrapper->Accept();
@@ -225,6 +218,20 @@ void MayActOnUrlInternal(
     }
   }
 
+  const EnterprisePolicyBlockReason enterprise_reason =
+      enterprise_policy_eval_url(url);
+  switch (enterprise_reason) {
+    case EnterprisePolicyBlockReason::kNotBlocked:
+      break;
+    case EnterprisePolicyBlockReason::kExplicitlyAllowed:
+      decision_wrapper->Accept();
+      return;
+    case EnterprisePolicyBlockReason::kExplicitlyBlocked:
+      decision_wrapper->Reject("Enterprise policy block",
+                               MayActOnUrlBlockReason::kEnterprisePolicy);
+      return;
+  }
+
   auto* lookalike_service = LookalikeUrlServiceFactory::GetForProfile(profile);
   LookalikeUrlService::LookalikeUrlCheckResult lookalike_result =
       lookalike_service->CheckUrlForLookalikes(
@@ -247,11 +254,10 @@ void MayActOnUrlInternal(
 
   // Blocklist is checked by `ShouldBlockNavigationUrlForOriginGating` when this
   // feature is enabled, and origins the user allowed the actor to interact with
-  // will be included in the `allowed_origins` set. If `url` has an origin not
-  // in the set, we apply the optimization guide check.
+  // will be included in the `origin_checker`. If `url`'s origin has not been
+  // confirmed by the user, we apply the optimization guide check.
   if (IsNavigationGatingEnabled() &&
-      (!allowed_origins ||
-       base::Contains(*allowed_origins, url::Origin::Create(url)))) {
+      (!origin_checker || origin_checker->IsSensitiveUrlConfirmed(url))) {
     decision_wrapper->Accept();
     return;
   }
@@ -297,7 +303,8 @@ void InitActionBlocklist(Profile* profile) {
 void MayActOnTab(const tabs::TabInterface& tab,
                  AggregatedJournal& journal,
                  TaskId task_id,
-                 const absl::flat_hash_set<url::Origin>& allowed_origins,
+                 const OriginChecker& origin_checker,
+                 EnterprisePolicyCallback enterprise_policy_eval_url,
                  DecisionCallbackWithReason callback) {
   content::WebContents& web_contents = *tab.GetContents();
 
@@ -329,7 +336,7 @@ void MayActOnTab(const tabs::TabInterface& tab,
   MayActOnUrlInternal(
       url, /*allow_insecure_http=*/false,
       Profile::FromBrowserContext(web_contents.GetBrowserContext()),
-      allowed_origins, std::move(decision_wrapper));
+      origin_checker, enterprise_policy_eval_url, std::move(decision_wrapper));
 }
 
 void MayActOnUrl(const GURL& url,
@@ -337,38 +344,43 @@ void MayActOnUrl(const GURL& url,
                  Profile* profile,
                  AggregatedJournal& journal,
                  TaskId task_id,
+                 EnterprisePolicyCallback enterprise_policy_eval_url,
                  DecisionCallbackWithReason callback) {
   std::unique_ptr<DecisionWrapper> decision_wrapper =
       std::make_unique<DecisionWrapper>(journal, url, task_id, "MayActOnUrl",
                                         std::move(callback));
   MayActOnUrlInternal(url, allow_insecure_http, profile, std::nullopt,
-                      std::move(decision_wrapper));
+                      enterprise_policy_eval_url, std::move(decision_wrapper));
 }
 
-bool ShouldBlockNavigationUrlForOriginGating(const GURL& url,
-                                             Profile* profile,
-                                             DecisionCallback callback) {
+bool MaybeCheckOptimizationGuideForSensitiveUrl(const GURL& url,
+                                                Profile* profile,
+                                                DecisionCallback callback) {
   // Check that the optimization guide component has loaded. It could be
   // missing, for example, if the user has very recently installed chrome and
   // the component updater has not yet run. We don't want to reject every URL,
   // so we check for this and fail open.
-  const bool optimization_guide_component_loaded =
-      optimization_guide::OptimizationHintsComponentUpdateListener::
-          GetInstance()
-              ->hints_component_info()
-              .has_value();
-
-  if (auto* optimization_guide_decider =
-          OptimizationGuideKeyedServiceFactory::GetForProfile(profile);
-      optimization_guide_decider && optimization_guide_component_loaded &&
-      base::FeatureList::IsEnabled(kGlicActionUseOptimizationGuide)) {
-    optimization_guide_decider->CanApplyOptimization(
-        url, optimization_guide::proto::GLIC_ACTION_PAGE_BLOCK,
-        base::BindOnce(&OnOptimizationGuideDecisionForOriginGating,
-                       std::move(callback)));
-    return true;
+  if (!base::FeatureList::IsEnabled(kGlicActionUseOptimizationGuide) ||
+      !optimization_guide::OptimizationHintsComponentUpdateListener::
+           GetInstance()
+               ->hints_component_info()
+               .has_value()) {
+    return false;
   }
-  return false;
+
+  auto* optimization_guide_decider =
+      OptimizationGuideKeyedServiceFactory::GetForProfile(profile);
+  if (!optimization_guide_decider) {
+    return false;
+  }
+
+  optimization_guide_decider->CanApplyOptimization(
+      url, optimization_guide::proto::GLIC_ACTION_PAGE_BLOCK,
+      base::BindOnce([](optimization_guide::OptimizationGuideDecision decision,
+                        const optimization_guide::OptimizationMetadata&) {
+        return ShouldContinueFromOptimizationGuideDecision(decision);
+      }).Then(std::move(callback)));
+  return true;
 }
 
 }  // namespace actor

@@ -29,7 +29,7 @@ class IncognitoMenuItemViewBinder {
         } else if (key == AppMenuItemProperties.MANAGED) {
             ChromeImageView image = view.findViewById(R.id.trailing_icon);
             if (model.get(AppMenuItemProperties.MANAGED)) {
-                image.setImageResource(R.drawable.ic_business);
+                image.setImageResource(R.drawable.ic_domain);
                 image.setVisibility(View.VISIBLE);
             } else {
                 image.setVisibility(View.GONE);

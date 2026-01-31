@@ -9,7 +9,6 @@
 #include <utility>
 
 #include "base/check_op.h"
-#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/lazy_instance.h"
 #include "base/observer_list.h"
@@ -79,7 +78,7 @@ void RulesRegistryService::RegisterRulesRegistry(
     scoped_refptr<RulesRegistry> rule_registry) {
   const std::string event_name(rule_registry->event_name());
   RulesRegistryKey key(event_name, rule_registry->id());
-  DCHECK(!base::Contains(rule_registries_, key));
+  DCHECK(!rule_registries_.contains(key));
   rule_registries_[key] = rule_registry;
 }
 
@@ -104,7 +103,7 @@ scoped_refptr<RulesRegistry> RulesRegistryService::GetRulesRegistry(
 
   scoped_refptr<RulesRegistry> registry = RegisterWebRequestRulesRegistry(
       rules_registry_id, RulesCacheDelegate::Type::kEphemeral);
-  DCHECK(base::Contains(rule_registries_, key));
+  DCHECK(rule_registries_.contains(key));
   return registry;
 }
 
@@ -150,8 +149,8 @@ void RulesRegistryService::SimulateExtensionUninstalled(
 bool RulesRegistryService::HasRulesRegistryForTesting(
     int rules_registry_id,
     const std::string& event_name) {
-  return base::Contains(rule_registries_,
-                        RulesRegistryKey(event_name, rules_registry_id));
+  return rule_registries_.contains(
+      RulesRegistryKey(event_name, rules_registry_id));
 }
 
 void RulesRegistryService::OnUpdateRules() {
@@ -165,10 +164,8 @@ RulesRegistryService::RegisterWebRequestRulesRegistry(
     int rules_registry_id,
     RulesCacheDelegate::Type cache_delegate_type) {
   DCHECK(browser_context_);
-  DCHECK(!base::Contains(
-      rule_registries_,
-      RulesRegistryKey(declarative_webrequest_constants::kOnRequest,
-                       rules_registry_id)));
+  DCHECK(!rule_registries_.contains(RulesRegistryKey(
+      declarative_webrequest_constants::kOnRequest, rules_registry_id)));
 
   auto web_request_cache_delegate =
       std::make_unique<RulesCacheDelegate>(cache_delegate_type);
@@ -187,8 +184,7 @@ RulesRegistryService::RegisterWebRequestRulesRegistry(
 
 void RulesRegistryService::EnsureDefaultRulesRegistriesRegistered() {
   DCHECK(browser_context_);
-  DCHECK(!base::Contains(
-      rule_registries_,
+  DCHECK(!rule_registries_.contains(
       RulesRegistryKey(declarative_webrequest_constants::kOnRequest,
                        rules_registry_ids::kDefaultRulesRegistryID)));
 

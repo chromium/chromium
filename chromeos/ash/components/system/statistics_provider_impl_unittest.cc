@@ -5,6 +5,7 @@
 #include "chromeos/ash/components/system/statistics_provider_impl.h"
 
 #include <map>
+#include <optional>
 
 #include "ash/constants/ash_switches.h"
 #include "base/command_line.h"
@@ -16,6 +17,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/system/sys_info.h"
+#include "base/test/run_until.h"
 #include "base/test/scoped_chromeos_version_info.h"
 #include "base/test/scoped_command_line.h"
 #include "base/test/task_environment.h"
@@ -31,6 +33,8 @@ namespace {
 constexpr char kEchoCmd[] = "/bin/echo";
 // `false` is used to fake the vpd tool.
 constexpr char kFalseCmd[] = "/bin/false";
+// `cat` is used to fake the runtime_hwid_tool.
+constexpr char kCatCmd[] = "/bin/cat";
 constexpr char kLsbReleaseContent[] = "CHROMEOS_RELEASE_NAME=Chromium OS\n";
 constexpr char kInvalidLsbReleaseContent[] = "Just empty";
 
@@ -101,6 +105,11 @@ class SourcesBuilder {
     return *this;
   }
 
+  SourcesBuilder& set_runtime_hwid_tool(const base::CommandLine& tool_cmd) {
+    sources_.runtime_hwid_tool = tool_cmd;
+    return *this;
+  }
+
   SourcesBuilder& set_machine_info(const base::FilePath& filepath) {
     sources_.machine_info_filepath = filepath;
     return *this;
@@ -121,6 +130,12 @@ class SourcesBuilder {
     return *this;
   }
 
+  SourcesBuilder& set_updated_hw_class_filepath(
+      const base::FilePath& filepath) {
+    sources_.updated_hw_class_filepath = filepath;
+    return *this;
+  }
+
   StatisticsProviderImpl::StatisticsSources Build() {
     if (sources_.crossystem_tool.GetProgram().empty()) {
       sources_.crossystem_tool = base::CommandLine(base::FilePath(kEchoCmd));
@@ -128,6 +143,10 @@ class SourcesBuilder {
 
     if (sources_.vpd_tool.GetProgram().empty()) {
       sources_.vpd_tool = base::CommandLine(base::FilePath(kFalseCmd));
+    }
+
+    if (sources_.runtime_hwid_tool.GetProgram().empty()) {
+      sources_.runtime_hwid_tool = base::CommandLine(base::FilePath(kEchoCmd));
     }
 
     if (sources_.machine_info_filepath.empty()) {
@@ -144,6 +163,10 @@ class SourcesBuilder {
 
     if (sources_.vpd_cache_filepath.empty()) {
       sources_.vpd_cache_filepath = CreateFileInTempDir("", *temp_dir_);
+    }
+
+    if (sources_.updated_hw_class_filepath.empty()) {
+      sources_.updated_hw_class_filepath = CreateFileInTempDir("", *temp_dir_);
     }
 
     return std::move(sources_);
@@ -972,6 +995,63 @@ TEST_F(StatisticsProviderImplTest,
   EXPECT_FALSE(provider->GetMachineStatistic(kKeyboardLayoutKey));
   EXPECT_FALSE(provider->GetMachineStatistic(kKeyboardMechanicalLayoutKey));
   EXPECT_FALSE(provider->GetMachineStatistic(kInitialTimezoneKey));
+}
+
+TEST_F(StatisticsProviderImplTest,
+       LoadsUpdatedHardwareClassOnUpdatedHardwareClassChange) {
+  base::test::ScopedChromeOSVersionInfo scoped_version_info(kLsbReleaseContent,
+                                                            base::Time());
+  ASSERT_TRUE(base::SysInfo::IsRunningOnChromeOS());
+
+  base::FilePath updated_hw_class_filepath =
+      CreateFileInTempDir("", temp_dir());
+  base::FilePath updated_hw_class_content_path =
+      CreateFileInTempDir("RUNTIME HWID", temp_dir());
+
+  StatisticsProviderImpl::StatisticsSources testing_sources =
+      SourcesBuilder(temp_dir())
+          .set_runtime_hwid_tool(base::CommandLine(
+              {kCatCmd, updated_hw_class_content_path.value()}))
+          .set_updated_hw_class_filepath(updated_hw_class_filepath)
+          .Build();
+
+  auto provider = StatisticsProviderImpl::CreateProviderForTesting(
+      std::move(testing_sources));
+  LoadStatistics(provider.get(), /*load_oem_manifest=*/false);
+
+  EXPECT_EQ(provider->GetUpdatedHardwareClass(), "RUNTIME HWID");
+
+  EXPECT_TRUE(
+      base::WriteFile(updated_hw_class_content_path, "NEW RUNTIME HWID"));
+  EXPECT_TRUE(base::WriteFile(updated_hw_class_filepath, "New file content"));
+  EXPECT_TRUE(base::test::RunUntil([&]() {
+    return provider->GetUpdatedHardwareClass() == "NEW RUNTIME HWID";
+  }));
+}
+
+TEST_F(StatisticsProviderImplTest,
+       DoesNotLoadUpdatedHardwareClassIfNotRunningChromeOS) {
+  base::test::ScopedChromeOSVersionInfo scoped_version_info(
+      kInvalidLsbReleaseContent, base::Time());
+  ASSERT_FALSE(base::SysInfo::IsRunningOnChromeOS());
+
+  base::FilePath updated_hw_class_filepath =
+      CreateFileInTempDir("", temp_dir());
+  base::FilePath updated_hw_class_content_path =
+      CreateFileInTempDir("RUNTIME HWID", temp_dir());
+
+  StatisticsProviderImpl::StatisticsSources testing_sources =
+      SourcesBuilder(temp_dir())
+          .set_runtime_hwid_tool(base::CommandLine(
+              {kCatCmd, updated_hw_class_content_path.value()}))
+          .set_updated_hw_class_filepath(updated_hw_class_filepath)
+          .Build();
+
+  auto provider = StatisticsProviderImpl::CreateProviderForTesting(
+      std::move(testing_sources));
+  LoadStatistics(provider.get(), /*load_oem_manifest=*/false);
+
+  EXPECT_EQ(provider->GetUpdatedHardwareClass(), std::nullopt);
 }
 
 }  // namespace ash::system

@@ -8,7 +8,6 @@
 
 #include <string>
 
-#include "base/containers/contains.h"
 #include "base/i18n/case_conversion.h"
 #include "base/strings/utf_string_conversions.h"
 #include "ui/accessibility/ax_enums.mojom.h"
@@ -170,7 +169,22 @@ void OneShotAccessibilityTreeSearch::SearchByWalkingTree() {
       node = tree_->PreviousInTreeOrder(start_node_, can_wrap_to_last_element_);
   }
 
-  BrowserAccessibility* stop_node = scope_node_->PlatformGetParent();
+  BrowserAccessibility* stop_node = nullptr;
+  if (direction_ == FORWARDS) {
+    // Walk up the ancestor chain until we find an ancestor that has a next
+    // platform sibling. That sibling is the node that comes immediately after
+    // the scope_node's subtree.
+    for (BrowserAccessibility* current_node = scope_node_; current_node;
+         current_node = current_node->PlatformGetParent()) {
+      if (auto* next_sibling = current_node->PlatformGetNextSibling()) {
+        stop_node = next_sibling;
+        break;
+      }
+    }
+  } else {
+    stop_node = tree_->PreviousInTreeOrder(scope_node_, /* wrap */ false);
+  }
+
   while (node && node != stop_node &&
          (result_limit_ == UNLIMITED_RESULTS ||
           static_cast<int>(matches_.size()) < result_limit_)) {
@@ -218,7 +232,7 @@ bool OneShotAccessibilityTreeSearch::Matches(BrowserAccessibility* node) {
     bool found_text_match = false;
     for (auto node_string : node_strings) {
       std::u16string node_string_lower = base::i18n::ToLower(node_string);
-      if (base::Contains(node_string_lower, search_text_lower)) {
+      if (node_string_lower.contains(search_text_lower)) {
         found_text_match = true;
         break;
       }
@@ -269,6 +283,24 @@ bool AccessibilityComboboxPredicate(BrowserAccessibility* start,
           node->GetRole() == ax::mojom::Role::kComboBoxMenuButton ||
           node->GetRole() == ax::mojom::Role::kTextFieldWithComboBox ||
           node->GetRole() == ax::mojom::Role::kComboBoxSelect);
+}
+
+bool AccessibilityContainedInAtomicLiveRegionPredicate(
+    BrowserAccessibility* start,
+    BrowserAccessibility* node) {
+  // Nodes contained in an atomic live region must record the ID of their root
+  // node. If it is not present, we should not store the node as a match.
+  if (!node->HasIntAttribute(ax::mojom::IntAttribute::kMemberOfId)) {
+    return false;
+  }
+  bool is_contained =
+      node->GetBoolAttribute(ax::mojom::BoolAttribute::kContainerLiveAtomic);
+  int node_root_id =
+      node->GetIntAttribute(ax::mojom::IntAttribute::kMemberOfId);
+  int start_id = start->GetData().id;
+  // We are only interested in nodes that are contained in the live region
+  // rooted at `start`.
+  return is_contained && (node_root_id == start_id);
 }
 
 bool AccessibilityControlPredicate(BrowserAccessibility* start,

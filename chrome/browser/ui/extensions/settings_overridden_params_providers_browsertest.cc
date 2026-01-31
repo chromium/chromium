@@ -5,10 +5,13 @@
 #include "chrome/browser/ui/extensions/settings_overridden_params_providers.h"
 
 #include <algorithm>
+#include <cstddef>
 
-#include "base/containers/contains.h"
+#include "base/run_loop.h"
+#include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/bind.h"
 #include "build/build_config.h"
 #include "chrome/browser/extensions/extension_browsertest.h"
 #include "chrome/browser/extensions/extension_service.h"
@@ -24,7 +27,16 @@
 #include "content/public/test/browser_test.h"
 #include "extensions/browser/extension_system.h"
 #include "extensions/common/extension_builder.h"
+#include "extensions/common/extension_features.h"
 #include "extensions/test/test_extension_dir.h"
+
+namespace {
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+constexpr char16_t kSearchOverrideExtensionName[] =
+    u"Search Override Extension";
+constexpr char16_t kSearchOverrideExtensionSearchName[] = u"Example";
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+}  // namespace
 
 class SettingsOverriddenParamsProvidersBrowserTest
     : public extensions::ExtensionBrowserTest {
@@ -33,6 +45,30 @@ class SettingsOverriddenParamsProvidersBrowserTest
     extensions::ExtensionBrowserTest::SetUpOnMainThread();
     search_test_utils::WaitForTemplateURLServiceToLoad(
         TemplateURLServiceFactory::GetForProfile(browser()->profile()));
+  }
+
+  // Makes asynchronous parameter collection synchronous fortesting, by waiting
+  // in a run loop for icon resource fetching to complete.
+  std::optional<ExtensionSettingsOverriddenDialog::Params>
+  GetSearchOverriddenParamsSync(content::WebContents* web_contents) {
+    std::optional<ExtensionSettingsOverriddenDialog::Params> result;
+    base::RunLoop run_loop;
+    settings_overridden_params::GetSearchOverriddenParamsThenRun(
+        web_contents,
+        base::BindLambdaForTesting(
+            [&](std::unique_ptr<ExtensionSettingsOverriddenDialog::Params>
+                    params) {
+              if (params) {
+                result.emplace(std::move(*params));
+              }
+              run_loop.Quit();
+            }));
+    run_loop.Run();
+    return result;
+  }
+
+  content::WebContents* web_contents() {
+    return browser()->tab_strip_model()->GetActiveWebContents();
   }
 
   // Installs a new extension that controls the default search engine.
@@ -98,46 +134,43 @@ class SettingsOverriddenParamsProvidersBrowserTest
 IN_PROC_BROWSER_TEST_F(SettingsOverriddenParamsProvidersBrowserTest,
                        GetExtensionControllingSearch) {
   // With no extensions installed, there should be no controlling extension.
-  EXPECT_EQ(std::nullopt,
-            settings_overridden_params::GetSearchOverriddenParams(profile()));
+  EXPECT_EQ(std::nullopt, GetSearchOverriddenParamsSync(web_contents()));
 
   // Install an extension, but not one that overrides the default search engine.
   // There should still be no controlling extension.
   InstallExtensionWithPermissionsGranted(
       test_data_dir_.AppendASCII("simple_with_icon"), 1);
-  EXPECT_EQ(std::nullopt,
-            settings_overridden_params::GetSearchOverriddenParams(profile()));
+  EXPECT_EQ(std::nullopt, GetSearchOverriddenParamsSync(web_contents()));
 
   // Finally, install an extension that overrides the default search engine.
   // It should be the controlling extension.
   const extensions::Extension* search_extension =
       AddExtensionControllingSearch();
   std::optional<ExtensionSettingsOverriddenDialog::Params> params =
-      settings_overridden_params::GetSearchOverriddenParams(profile());
+      GetSearchOverriddenParamsSync(web_contents());
   ASSERT_TRUE(params);
   EXPECT_EQ(search_extension->id(), params->controlling_extension_id);
 
-  EXPECT_EQ(u"Change back to Google Search?", params->dialog_title);
+  EXPECT_EQ(u"Change back to Google Search?", params->content.dialog_title);
 
   // Validate the body message, since it has a bit of formatting applied.
   EXPECT_EQ(
       u"The \"Search Override Extension\" extension changed search to use "
       "example.com",
-      params->dialog_message);
+      params->content.message);
 }
 
 IN_PROC_BROWSER_TEST_F(SettingsOverriddenParamsProvidersBrowserTest,
                        LongNameExtensionControllingSearch) {
   // With no extensions installed, there should be no controlling extension.
-  ASSERT_EQ(std::nullopt,
-            settings_overridden_params::GetSearchOverriddenParams(profile()));
+  ASSERT_EQ(std::nullopt, GetSearchOverriddenParamsSync(web_contents()));
 
   // Install an extensions which overrides the default search engine and has a
   // long name.
   const extensions::Extension* search_extension =
       AddExtensionControllingSearch("search_provider_override_long_name");
   std::optional<const ExtensionSettingsOverriddenDialog::Params> params =
-      settings_overridden_params::GetSearchOverriddenParams(profile());
+      GetSearchOverriddenParamsSync(web_contents());
   ASSERT_TRUE(params);
   EXPECT_EQ(search_extension->id(), params->controlling_extension_id);
 
@@ -148,8 +181,8 @@ IN_PROC_BROWSER_TEST_F(SettingsOverriddenParamsProvidersBrowserTest,
   ASSERT_LT(truncated_name.size(), extension_name.size());
 
   // The dialog message should contain the truncated name.
-  EXPECT_TRUE(base::Contains(params->dialog_message, truncated_name));
-  EXPECT_FALSE(base::Contains(params->dialog_message, extension_name));
+  EXPECT_TRUE(params->content.message.contains(truncated_name));
+  EXPECT_FALSE(params->content.message.contains(extension_name));
 }
 
 IN_PROC_BROWSER_TEST_F(SettingsOverriddenParamsProvidersBrowserTest,
@@ -164,10 +197,10 @@ IN_PROC_BROWSER_TEST_F(SettingsOverriddenParamsProvidersBrowserTest,
   ASSERT_TRUE(extension);
 
   std::optional<ExtensionSettingsOverriddenDialog::Params> params =
-      settings_overridden_params::GetSearchOverriddenParams(profile());
+      GetSearchOverriddenParamsSync(web_contents());
   ASSERT_TRUE(params);
   EXPECT_EQ(base::StringPrintf("Change back to %s?", new_search_name.c_str()),
-            base::UTF16ToUTF8(params->dialog_title));
+            base::UTF16ToUTF8(params->content.dialog_title));
 }
 
 IN_PROC_BROWSER_TEST_F(SettingsOverriddenParamsProvidersBrowserTest,
@@ -185,10 +218,10 @@ IN_PROC_BROWSER_TEST_F(SettingsOverriddenParamsProvidersBrowserTest,
   ASSERT_TRUE(extension);
 
   std::optional<ExtensionSettingsOverriddenDialog::Params> params =
-      settings_overridden_params::GetSearchOverriddenParams(profile());
+      GetSearchOverriddenParamsSync(web_contents());
   ASSERT_TRUE(params);
   EXPECT_EQ("Did you mean to change your search provider?",
-            base::UTF16ToUTF8(params->dialog_title));
+            base::UTF16ToUTF8(params->content.dialog_title));
 }
 
 IN_PROC_BROWSER_TEST_F(
@@ -221,10 +254,10 @@ IN_PROC_BROWSER_TEST_F(
   ASSERT_TRUE(second_extension);
 
   std::optional<ExtensionSettingsOverriddenDialog::Params> params =
-      settings_overridden_params::GetSearchOverriddenParams(profile());
+      GetSearchOverriddenParamsSync(web_contents());
   ASSERT_TRUE(params);
   EXPECT_EQ(u"Did you mean to change your search provider?",
-            params->dialog_title);
+            params->content.dialog_title);
 }
 
 // Tests that null params are returned (indicating no dialog should be shown)
@@ -269,8 +302,8 @@ IN_PROC_BROWSER_TEST_F(SettingsOverriddenParamsProvidersBrowserTest,
             extensions::GetExtensionOverridingSearchEngine(profile()));
 
   std::optional<ExtensionSettingsOverriddenDialog::Params> params =
-      settings_overridden_params::GetSearchOverriddenParams(profile());
-  EXPECT_FALSE(params) << "Unexpected params: " << params->dialog_title;
+      GetSearchOverriddenParamsSync(web_contents());
+  EXPECT_FALSE(params) << "Unexpected params: " << params->content.dialog_title;
 }
 
 // Tests that null params are returned (indicating no dialog should be shown)
@@ -318,8 +351,8 @@ IN_PROC_BROWSER_TEST_F(SettingsOverriddenParamsProvidersBrowserTest,
             extensions::GetExtensionOverridingSearchEngine(profile()));
 
   std::optional<ExtensionSettingsOverriddenDialog::Params> params =
-      settings_overridden_params::GetSearchOverriddenParams(profile());
-  EXPECT_FALSE(params) << "Unexpected params: " << params->dialog_title;
+      GetSearchOverriddenParamsSync(web_contents());
+  EXPECT_FALSE(params) << "Unexpected params: " << params->content.dialog_title;
 }
 
 // Tests that the settings overridden dialog isn't shown for a simple override
@@ -391,7 +424,7 @@ IN_PROC_BROWSER_TEST_F(SettingsOverriddenParamsProvidersBrowserTest,
 
   {
     std::optional<ExtensionSettingsOverriddenDialog::Params> params =
-        settings_overridden_params::GetSearchOverriddenParams(profile());
+        GetSearchOverriddenParamsSync(web_contents());
     ASSERT_TRUE(params);
     ExtensionSettingsOverriddenDialog controller(std::move(*params), profile());
     EXPECT_FALSE(controller.ShouldShow());
@@ -404,7 +437,7 @@ IN_PROC_BROWSER_TEST_F(SettingsOverriddenParamsProvidersBrowserTest,
 
   {
     std::optional<ExtensionSettingsOverriddenDialog::Params> params =
-        settings_overridden_params::GetSearchOverriddenParams(profile());
+        GetSearchOverriddenParamsSync(web_contents());
     ASSERT_TRUE(params);
     ExtensionSettingsOverriddenDialog controller(std::move(*params), profile());
     EXPECT_TRUE(controller.ShouldShow());
@@ -418,8 +451,7 @@ IN_PROC_BROWSER_TEST_F(
     SettingsOverriddenParamsProvidersBrowserTest,
     SearchOverriddenToSameSearch_SameDomainExistingExtensionOverride) {
   // With no extensions installed, there should be no controlling extension.
-  EXPECT_EQ(std::nullopt,
-            settings_overridden_params::GetSearchOverriddenParams(profile()));
+  EXPECT_EQ(std::nullopt, GetSearchOverriddenParamsSync(web_contents()));
 
   // Install a simple search override extension, that shouldn't trigger the
   // prompt.
@@ -449,7 +481,7 @@ IN_PROC_BROWSER_TEST_F(
             extensions::GetExtensionOverridingSearchEngine(profile()));
   {
     std::optional<ExtensionSettingsOverriddenDialog::Params> params =
-        settings_overridden_params::GetSearchOverriddenParams(profile());
+        GetSearchOverriddenParamsSync(web_contents());
     ASSERT_TRUE(params);
     ExtensionSettingsOverriddenDialog controller(std::move(*params), profile());
     EXPECT_FALSE(controller.ShouldShow());
@@ -483,8 +515,9 @@ IN_PROC_BROWSER_TEST_F(
             extensions::GetExtensionOverridingSearchEngine(profile()));
   {
     std::optional<ExtensionSettingsOverriddenDialog::Params> params =
-        settings_overridden_params::GetSearchOverriddenParams(profile());
-    EXPECT_FALSE(params) << "Unexpected params: " << params->dialog_title;
+        GetSearchOverriddenParamsSync(web_contents());
+    EXPECT_FALSE(params) << "Unexpected params: "
+                         << params->content.dialog_title;
   }
 }
 
@@ -516,5 +549,55 @@ IN_PROC_BROWSER_TEST_F(SettingsOverriddenParamsProvidersBrowserTest,
       settings_overridden_params::GetNtpOverriddenParams(profile());
   ASSERT_TRUE(params);
   EXPECT_EQ(extension->id(), params->controlling_extension_id);
-  EXPECT_EQ(u"Did you mean to change this page?", params->dialog_title);
+  EXPECT_EQ(u"Did you mean to change this page?", params->content.dialog_title);
 }
+
+// Test class specific to the explicit-choice dialog variation.
+class ExtensionControllingSearchExplicitChoiceParamsBrowserTest
+    : public SettingsOverriddenParamsProvidersBrowserTest {
+ public:
+  ExtensionControllingSearchExplicitChoiceParamsBrowserTest() {
+    feature_list_.InitAndEnableFeature(
+        extensions_features::kSearchEngineExplicitChoiceDialog);
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+// The chrome_settings_overrides API that allows extensions to override the
+// default search provider is only available on Windows and Mac.
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+
+IN_PROC_BROWSER_TEST_F(
+    ExtensionControllingSearchExplicitChoiceParamsBrowserTest,
+    NewExtensionOrPreviousGoogleSearch) {
+  const extensions::Extension* extension = AddExtensionControllingSearch();
+  ASSERT_TRUE(extension);
+
+  std::optional<ExtensionSettingsOverriddenDialog::Params> params =
+      GetSearchOverriddenParamsSync(web_contents());
+  ASSERT_TRUE(params);
+
+  EXPECT_EQ(params->content.dialog_title,
+            u"Confirm your default search engine");
+  EXPECT_TRUE(params->content.message.contains(
+      base::StrCat({u"The extension \"", kSearchOverrideExtensionName,
+                    u"\" attempted to change your search engine"})));
+
+  auto previous_setting = params->content.previous_setting;
+  ASSERT_TRUE(previous_setting.has_value());
+  EXPECT_FALSE(previous_setting.value().image.IsEmpty());
+  EXPECT_EQ(previous_setting.value().text, u"Google");
+  EXPECT_EQ(previous_setting.value().description, u"Your previous choice");
+
+  auto new_setting = params->content.new_setting;
+  ASSERT_TRUE(new_setting.has_value());
+  EXPECT_TRUE(new_setting.value().image.IsImage());
+  EXPECT_EQ(new_setting.value().text, kSearchOverrideExtensionSearchName);
+  EXPECT_EQ(
+      new_setting.value().description,
+      base::StrCat({u"Recently changed to by ", kSearchOverrideExtensionName}));
+}
+
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)

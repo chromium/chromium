@@ -72,8 +72,6 @@ source_set("common_sources") {
     "gpu_command_buffer_common_export.h",
     "id_allocator.cc",
     "id_allocator.h",
-    "mailbox_holder.cc",
-    "mailbox_holder.h",
     "scheduling_priority.cc",
     "scheduling_priority.h",
     "shared_image_capabilities.cc",

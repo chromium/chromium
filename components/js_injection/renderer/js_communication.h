@@ -41,9 +41,9 @@ class JsCommunication
   void SetJsObjects(
       std::vector<mojom::JsObjectPtr> js_object_ptrs,
       mojo::PendingAssociatedRemote<mojom::JsObjectsClient> client) override;
-  void AddDocumentStartScript(
-      mojom::DocumentStartJavaScriptPtr script_ptr) override;
-  void RemoveDocumentStartScript(int32_t script_id) override;
+  void AddPersistentJavaScript(
+      mojom::JavaScriptExecutablePtr script_ptr) override;
+  void RemovePersistentJavaScript(int32_t script_id) override;
 
   // RenderFrameObserver implementation
   void DidClearWindowObject() override;
@@ -58,7 +58,7 @@ class JsCommunication
 
  private:
   class JsObjectInfo;
-  struct DocumentStartJavaScript;
+  struct JavaScriptExecutable;
 
   void BindPendingReceiver(
       mojo::PendingAssociatedReceiver<mojom::JsCommunication> pending_receiver);
@@ -70,7 +70,7 @@ class JsCommunication
   // to prevent doing multiple injection in that case.
   bool inside_did_clear_window_object_ = false;
 
-  std::vector<std::unique_ptr<DocumentStartJavaScript>> scripts_;
+  std::vector<std::unique_ptr<JavaScriptExecutable>> scripts_;
   std::vector<cppgc::WeakPersistent<JsBinding>> js_bindings_;
 
   // Associated with legacy IPC channel.

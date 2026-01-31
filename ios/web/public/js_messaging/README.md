@@ -95,7 +95,7 @@ A feature may:
     communication
     *   Ex: Perform an action based on an event listener
 *   add JavaScript functions to the world
-    *   Ex: `common.js` adds the `__gCrWeb.common.*` functions
+    *   Ex: `clipboard.ts` adds the `__gCrWeb` clipboard API functions
 *   expose native C++ functions which call injected JavaScript or executes other
     JavaScript
 *   add a script message handler and handle messages received from the
@@ -162,8 +162,9 @@ subclass and returning a handler name in `GetScriptMessageHandlerName`.
 
 Any responses will be routed to `ScriptMessageReceived`.
 
-From the JavaScript side, these messages are sent using `sendWebKitMessage`
-from `//ios/web/public/js_messaging/resources/utils.js`.
+From the JavaScript side, these messages are sent using `sendWebKitMessage` or
+`sendWebKitMessageWithReply` from
+`//ios/web/public/js_messaging/resources/utils.js`.
 
 Note that the handler name must be unique application-wide. WebKit will throw
 an exception while setting up the handler if a name is already registered.
@@ -310,7 +311,7 @@ void MyJavaScriptFeature::ScriptMessageReceived(
     return;
   }
 
-  const base::Value::Dict& dict = message.body()->GetDict();
+  const base::DictValue& dict = message.body()->GetDict();
 
   const std::string* event_type = dict.FindString("eventType");
   if (!event_type || event_type->empty()) {

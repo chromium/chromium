@@ -97,7 +97,7 @@ _ModuleArgs = collections.namedtuple('ModuleArgs', ['name', 'scheme'])
 _STRUCTURED_TEST_ID_SUITES = {
     'chrome_sizes':
     _ModuleArgs('//chrome/test:chrome_sizes', 'single'),
-    'resource_sizes_system_webview_google_bundle ':
+    'resource_sizes_system_webview_google_bundle':
     _ModuleArgs('//clank/java:resource_sizes_system_webview_google_bundle',
                 'single'),
     'resource_sizes_trichrome_google':
@@ -112,6 +112,10 @@ _STRUCTURED_TEST_ID_SUITES = {
         'flat'),
     'performance_test_suite':
     _ModuleArgs('//chrome/test:performance_test_suite', 'flat'),
+    'performance_web_engine_test_suite':
+    _ModuleArgs('//chrome/test:performance_web_engine_test_suite', 'flat'),
+    'performance_webview_test_suite':
+    _ModuleArgs('//chrome/test:performance_webview_test_suite', 'flat'),
 }
 
 
@@ -182,10 +186,16 @@ UPLOAD_SKIA_JSON_BUILDERS = frozenset([
 ])
 
 PUBLIC_PERF_BUILDERS = [
-    'linux-perf',  # ChromiumPerf
-    'linux-perf-fyi',  # ChromiumPerfFyi
-    'linux-r350-perf',  # ChromiumPerf
-    'win-10-perf',  # ChromiumPerf
+    # ChromiumPerf
+    'android-pixel9-perf',
+    'android-pixel9-pro-perf',
+    'android-pixel9-pro-xl-perf',
+    'linux-perf',
+    'linux-r350-perf',
+    'win-10-perf',
+
+    # ChromiumPerfFyi
+    'linux-perf-fyi',
 ]
 
 # This is an opt-in list for builders which uses dynamic sharding.

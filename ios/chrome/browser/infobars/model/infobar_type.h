@@ -39,6 +39,8 @@ enum class InfobarType {
   kInfobarTypeCollaborationOutOfDate = 15,
   // Message Infobar for Saving CVC for a Credit Card.
   kInfobarTypeSaveCvc = 16,
+  // Message Infobar for Reader Mode.
+  kInfobarTypeReaderMode = 17,
 };
 
 // Message "Confirm Infobars" types, these are the generic kInfobarTypeConfirm

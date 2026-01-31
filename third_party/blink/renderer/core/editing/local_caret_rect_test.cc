@@ -2907,13 +2907,8 @@ TEST_F(LocalCaretRectTest, AfterLineBreakTextArea) {
 
   // Test the second line.
   const Node* br_in_2nd_line = inner_text->nextSibling()->nextSibling();
-  Position position4 = RuntimeEnabledFeatures::TextareaLineEndingsAsBrEnabled()
-                           ? Position(br_in_2nd_line, 0)
-                           : Position(inner_text, 4);
-  PhysicalRect local_rect4 =
-      RuntimeEnabledFeatures::TextareaMultipleIfcsEnabled()
-          ? PhysicalRect(0, 0, 1, 10)
-          : PhysicalRect(0, 10, 1, 10);
+  Position position4(br_in_2nd_line, 0);
+  PhysicalRect local_rect4(0, 0, 1, 10);
   EXPECT_EQ(
       LocalCaretRect(position4.AnchorNode()->GetLayoutObject(), local_rect4),
       LocalCaretRectOfPosition(
@@ -2921,13 +2916,8 @@ TEST_F(LocalCaretRectTest, AfterLineBreakTextArea) {
 
   // Test the third line.
   const Node* placeholder_br = textarea->InnerEditorElement()->lastChild();
-  Position position5 = RuntimeEnabledFeatures::TextareaLineEndingsAsBrEnabled()
-                           ? Position(placeholder_br, 0)
-                           : Position(inner_text, 5);
-  PhysicalRect local_rect5 =
-      RuntimeEnabledFeatures::TextareaMultipleIfcsEnabled()
-          ? PhysicalRect(0, 0, 1, 10)
-          : PhysicalRect(0, 20, 1, 10);
+  Position position5(placeholder_br, 0);
+  PhysicalRect local_rect5(0, 0, 1, 10);
   EXPECT_EQ(LocalCaretRect(placeholder_br->GetLayoutObject(), local_rect5),
             LocalCaretRectOfPosition(
                 PositionWithAffinity(position5, TextAffinity::kDownstream)));

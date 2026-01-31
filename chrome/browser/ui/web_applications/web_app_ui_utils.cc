@@ -6,17 +6,21 @@
 
 #include <optional>
 
+#include "base/memory/weak_ptr.h"
+#include "build/buildflag.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/web_applications/web_app_browser_controller.h"
+#include "chrome/browser/ui/webui/ash/settings/app_management/app_management_uma.h"
 #include "chrome/browser/web_applications/proto/web_app_install_state.pb.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/browser/web_applications/web_app_tab_helper.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/webapps/common/web_app_id.h"
 
 namespace web_app {
 
@@ -84,13 +88,16 @@ bool HandleAppManagementLinkClickedInPageInfo(
 }
 
 void OpenAppSettingsForParentApp(const webapps::AppId& parent_app_id,
-                                 Profile* profile) {
+                                 base::WeakPtr<Profile> profile) {
+  if (!profile) {
+    return;
+  }
 #if BUILDFLAG(IS_CHROMEOS)
   chrome::ShowAppManagementPage(
-      profile, parent_app_id,
+      profile.get(), parent_app_id,
       ash::settings::AppManagementEntryPoint::kSubAppsInstallPrompt);
 #else
-  chrome::ShowWebAppSettings(profile, parent_app_id,
+  chrome::ShowWebAppSettings(profile.get(), parent_app_id,
                              AppSettingsPageEntryPoint::kSubAppsInstallPrompt);
 #endif
 }

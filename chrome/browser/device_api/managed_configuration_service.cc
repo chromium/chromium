@@ -55,7 +55,7 @@ void ManagedConfigurationServiceImpl::GetManagedConfiguration(
       origin(), keys,
       base::BindOnce(
           [](GetManagedConfigurationCallback callback,
-             std::optional<base::Value::Dict> result) {
+             std::optional<base::DictValue> result) {
             if (!result) {
               std::move(callback).Run(std::nullopt);
               return;

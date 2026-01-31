@@ -43,6 +43,16 @@ public class ObservableAndTest {
     }
 
     @Test
+    public void testBothState_activateSecondThenFirstTriggers() {
+        Controller<String> a = new Controller<>();
+        Controller<String> b = new Controller<>();
+        ReactiveRecorder recorder = ReactiveRecorder.record(a.and(b));
+        b.set("B");
+        a.set("A");
+        recorder.verify().opened(Both.of("A", "B")).end();
+    }
+
+    @Test
     public void testBothState_deactivateFirstAfterTrigger() {
         Controller<String> a = new Controller<>();
         Controller<String> b = new Controller<>();
@@ -152,5 +162,69 @@ public class ObservableAndTest {
                 .closed(Both.of(1, "b"))
                 .closed(Both.of(1, "a"))
                 .end();
+    }
+
+    @Test
+    public void testAndIgnore_activateBothTriggers() {
+        Controller<String> a = new Controller<>();
+        Controller<String> b = new Controller<>();
+        ReactiveRecorder recorder = ReactiveRecorder.record(a.andIgnore(b));
+        a.set("A");
+        b.set("B");
+        recorder.verify().opened("A").end();
+    }
+
+    @Test
+    public void testAndIgnore_deactivateFirstAfterTrigger() {
+        Controller<String> a = new Controller<>();
+        Controller<String> b = new Controller<>();
+        ReactiveRecorder recorder = ReactiveRecorder.record(a.andIgnore(b));
+        a.set("A");
+        b.set("B");
+        a.reset();
+        recorder.verify().opened("A").closed("A").end();
+    }
+
+    @Test
+    public void testAndIgnore_deactivateSecondAfterTrigger() {
+        Controller<String> a = new Controller<>();
+        Controller<String> b = new Controller<>();
+        ReactiveRecorder recorder = ReactiveRecorder.record(a.andIgnore(b));
+        a.set("A");
+        b.set("B");
+        b.reset();
+        recorder.verify().opened("A").closed("A").end();
+    }
+
+    @Test
+    public void testIgnoreAnd_activateBothTriggers() {
+        Controller<String> a = new Controller<>();
+        Controller<String> b = new Controller<>();
+        ReactiveRecorder recorder = ReactiveRecorder.record(a.ignoreAnd(b));
+        a.set("A");
+        b.set("B");
+        recorder.verify().opened("B").end();
+    }
+
+    @Test
+    public void testIgnoreAnd_deactivateFirstAfterTrigger() {
+        Controller<String> a = new Controller<>();
+        Controller<String> b = new Controller<>();
+        ReactiveRecorder recorder = ReactiveRecorder.record(a.ignoreAnd(b));
+        a.set("A");
+        b.set("B");
+        a.reset();
+        recorder.verify().opened("B").closed("B").end();
+    }
+
+    @Test
+    public void testIgnoreAnd_deactivateSecondAfterTrigger() {
+        Controller<String> a = new Controller<>();
+        Controller<String> b = new Controller<>();
+        ReactiveRecorder recorder = ReactiveRecorder.record(a.ignoreAnd(b));
+        a.set("A");
+        b.set("B");
+        b.reset();
+        recorder.verify().opened("B").closed("B").end();
     }
 }

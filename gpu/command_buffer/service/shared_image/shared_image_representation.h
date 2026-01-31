@@ -204,7 +204,7 @@ class SharedImageRepresentationFactoryRef : public SharedImageRepresentation {
   void GetGpuMemoryBufferHandleInfo(gfx::GpuMemoryBufferHandle& handle,
                                     gfx::BufferUsage& buffer_usage) {
     handle = backing()->GetGpuMemoryBufferHandle();
-    buffer_usage = backing()->buffer_usage();
+    buffer_usage = backing()->buffer_usage().value();
   }
   void SetSharedImagePoolId(SharedImagePoolId pool_id) {
     backing()->SetSharedImagePoolId(std::move(pool_id));
@@ -934,6 +934,8 @@ class GPU_GLES2_EXPORT WebNNTensorRepresentation
 #endif
   };
 
+  bool is_thread_safe() const;
+
   std::unique_ptr<ScopedAccess> BeginScopedAccess();
 
 #if BUILDFLAG(IS_WIN)
@@ -1103,6 +1105,8 @@ class GPU_GLES2_EXPORT MemoryImageRepresentation
   std::unique_ptr<ScopedReadAccess> BeginScopedReadAccess();
 
  protected:
+  friend class WrappedMemoryCompoundImageRepresentation;
+
   virtual SkPixmap BeginReadAccess() = 0;
 };
 
@@ -1249,6 +1253,8 @@ class GPU_GLES2_EXPORT VideoImageRepresentation
   virtual std::unique_ptr<ScopedReadAccess> BeginScopedReadAccess();
 
  protected:
+  friend class WrappedVideoCompoundImageRepresentation;
+
 #if BUILDFLAG(IS_WIN)
   virtual D3D11TextureAndArrayIndex GetD3D11Texture() const = 0;
 #endif  // BUILDFLAG(IS_WIN)
@@ -1294,14 +1300,21 @@ class GPU_GLES2_EXPORT VulkanImageRepresentation
     VkSemaphore end_semaphore_;
   };
 
-  virtual std::unique_ptr<ScopedAccess> BeginScopedAccess(
+  std::unique_ptr<ScopedAccess> BeginScopedAccess(
       AccessMode access_mode,
       std::vector<VkSemaphore>& begin_semaphores,
-      std::vector<VkSemaphore>& end_semaphores) = 0;
+      std::vector<VkSemaphore>& end_semaphores);
+
+  virtual bool BeginAccess(AccessMode access_mode,
+                           std::vector<VkSemaphore>& begin_semaphores,
+                           std::vector<VkSemaphore>& end_semaphores) = 0;
+
+  virtual void EndAccess(bool is_read_only, VkSemaphore end_semaphore) = 0;
+
+  virtual gpu::VulkanImage& GetVulkanImage();
 
  protected:
-  virtual void EndScopedAccess(bool is_read_only,
-                               VkSemaphore end_semaphore) = 0;
+  friend class WrappedVulkanCompoundImageRepresentation;
 
   std::unique_ptr<gpu::VulkanImage> vulkan_image_;
   raw_ptr<gpu::VulkanDeviceQueue> vulkan_device_queue_;

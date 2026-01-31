@@ -20,6 +20,7 @@
 <translation id="1499635324672558517">დაიხუროს ყველა ინკოგნიტო ჩანართი?</translation>
 <translation id="1501480321619201731">ჯგუფის წაშლა</translation>
 <translation id="1553638665176794706">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> არააქტიური ერთეული}other{<ph name="TABS_COUNT_MANY" /> არააქტიური ერთეული}}</translation>
+<translation id="1568067597247500137">საიტის დადუმება</translation>
 <translation id="1645759014353344461"><ph name="TABS_COUNT_MANY" /> ჩანართი დაჯგუფდა</translation>
 <translation id="1657719826150349398">ჩანართის ქვემოთ გადატანა</translation>
 <translation id="1670942869417022142">აუდიო დადუმებულია</translation>
@@ -82,13 +83,13 @@
 <translation id="3619255692378312441">წვდომის მართვა</translation>
 <translation id="3649471731638882002">{TAB_COUNT,plural, =1{ერთეულის დახურვა}other{ერთეულების დახურვა}}</translation>
 <translation id="3652027618765638838"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
+<translation id="3714430408451673233">ჩანართის ქვედა ფურცელი ნახევარ სიმაღლეზე.</translation>
 <translation id="374923079891132274">ესკიზი ფურცლის გაზიარების გადახედვისთვის.</translation>
 <translation id="3776329373944672717">ჩანართების ჯგუფის სათაური „<ph name="TITLE_OF_GROUP" />“</translation>
 <translation id="3810973564298564668">მართვა</translation>
 <translation id="3849789634341518784">{TAB_COUNT,plural, =1{ჩანართის ჩამაგრების მოხსნა}other{ჩანართების ჩამაგრების მოხსნა}}</translation>
 <translation id="3940195383040445971">ფასებისთვის თვალის მიდევნება ჩანართებზე</translation>
 <translation id="3940717704786481856">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> ახალი ჩანართი, <ph name="ANY_CLOSED" /> დაიხურა}other{<ph name="MANY_ADDED" /> ახალი ჩანართი, <ph name="ANY_CLOSED" /> დაიხურა}}</translation>
-<translation id="3954615705217314756">{TABS_COUNT,plural, =1{ჩანართის დაჯგუფება}other{ჩანართების დაჯგუფება}}</translation>
 <translation id="3962134438902735041">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> არჩეული ჩანართის ჩამაგრების მოხსნა}other{<ph name="TABS_COUNT_MANY" /> არჩეული ჩანართის ჩამაგრების მოხსნა}}</translation>
 <translation id="4009732926939031387">{NUM_DAYS,plural, =1{შეიქმნა <ph name="NUM_DAYS_ONE" /> დღის წინ}other{შეიქმნა <ph name="NUM_DAYS_MANY" /> დღის წინ}}</translation>
 <translation id="4076226664360336092">ჩანართების ჯგუფების სია, გახსნილია სრულ სიმაღლეზე</translation>
@@ -126,8 +127,10 @@
 <translation id="5339733443032484186">თქვენი ბოლო ჩანართი</translation>
 <translation id="5380159289133845234">დუბლირებული ჩანართების დაარქივება</translation>
 <translation id="5446043142172831860">ჩანართის ამოშლა და ჯგუფიდან გასვლა</translation>
+<translation id="5465437530117042974">ჩანართის ქვედა ფურცლის ცვლილებები დაიხურა.</translation>
 <translation id="5490235265819901748">ჩანართების ჯგუფი გაფართოვდა</translation>
 <translation id="5494920125229734069">აარჩიეთ ყველა</translation>
+<translation id="5505998972479309757">{LIMIT_COUNT,plural, =1{დაამატეთ მაქსიმუმ <ph name="LIMIT_COUNT_ONE" /> ფაილი, ჩანართი ან სურათი}other{დაამატეთ მაქსიმუმ <ph name="LIMIT_COUNT_MANY" /> ფაილი, ჩანართი ან სურათი}}</translation>
 <translation id="5551694449008560081">{NUMBER_OF_TABS,plural, =1{დახურეთ ჩანართების <ph name="TABS_COUNT_ONE" />-ჩანართიანი <ph name="COLOR_NAME" /> ფერის ჯგუფი.}other{დახურეთ ჩანართების <ph name="TABS_COUNT_MANY" />-ჩანართიანი <ph name="COLOR_NAME" /> ფერის ჯგუფი.}}</translation>
 <translation id="5556417849629758491">მაღაზიის ინფორმაციის ნახვა, ვარიანტი ხელმისაწვდომია ეკრანის ზედა ნაწილთან</translation>
 <translation id="5627941783489838464">ჩანართის შესახებ განახლებები არ არის</translation>
@@ -140,7 +143,9 @@
 <translation id="6040143037577758943">დახურვა</translation>
 <translation id="6051432659151380973">თქვენი ჩანართების ჯგუფი ავტომატურად ინახება</translation>
 <translation id="6054741997831917303">ამ ერთეულის ფასმა ახლახან დაიკლო <ph name="PREVIOUS_PRICE" />-დან <ph name="NEW_PRICE" />-მდე</translation>
+<translation id="606985262342505139">ჩანართის ქვედა ფურცელი სრულ სიმაღლეზე</translation>
 <translation id="6109251075362363230">ყველა დუბლირებული ჩანართი დაარქივდება, ყველაზე ხშირად გამოყენებული დუბლიკატის გარდა.</translation>
+<translation id="612596694132302162">საიტის დადუმების მოხსნა</translation>
 <translation id="6149218574440723463">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> არჩეული ერთეულის დახურვა}other{<ph name="TABS_COUNT_MANY" /> არჩეული ერთეულის დახურვა}}</translation>
 <translation id="61924696525243173">{WINDOW_COUNT,plural, =1{ჯგუფის გადატანა ახალ ფანჯარაში}other{ჯგუფის გადატანა სხვა ფანჯარაში}}</translation>
 <translation id="6212374449852603982">{TAB_COUNT,plural, =1{ჩანართის მარჯვნივ გადატანა}other{ჩანართების მარჯვნივ გადატანა}}</translation>
@@ -195,7 +200,6 @@
 <translation id="7792771145871471484">შემოთავაზებების გადახედვა.</translation>
 <translation id="7792860826279960128">საზიარო ჩანართების ჯგუფის ცვლილების შესახებ შეტყობინება ნახევარ სიმაღლეზე</translation>
 <translation id="7825973332242257878">ჩანართების ჯგუფები</translation>
-<translation id="7838146321400849846">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> არჩეული ჩანართის დაჯგუფება}other{<ph name="TABS_COUNT_MANY" /> არჩეული ჩანართის დაჯგუფება}}</translation>
 <translation id="7853202427316060426">აქტივობა</translation>
 <translation id="7854360405711302755">{REVIEWS,plural, =1{ შეფასება: <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" />, <ph name="REVIEWS_COUNT_ONE" /> მიმოხილვა}other{შეფასება: <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" />, <ph name="REVIEWS_COUNT_MANY" /> მიმოხილვა}}</translation>
 <translation id="7885132941432959125">ჩანართის მარჯვნივ გადატანა</translation>
@@ -223,7 +227,6 @@
 <translation id="8428213095426709021">პარამეტრები</translation>
 <translation id="855081842937141170">ჩანართის ჩამაგრება</translation>
 <translation id="8633025649649592204">ბოლოდროინდელი აქტივობა</translation>
-<translation id="8635822281281406185">დაამატეთ მაქსიმუმ 10 ფაილი, ჩანართი ან სურათი</translation>
 <translation id="8712637175834984815">კარგი</translation>
 <translation id="8714939927607906138">უფრო დაბალი ფასი</translation>
 <translation id="8730621377337864115">მზადაა</translation>

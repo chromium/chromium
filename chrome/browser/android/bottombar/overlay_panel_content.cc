@@ -48,8 +48,8 @@ void OverlayPanelContent::Destroy(JNIEnv* env) {
 void OverlayPanelContent::OnPhysicalBackingSizeChanged(
     JNIEnv* env,
     content::WebContents* web_contents,
-    jint width,
-    jint height) {
+    int32_t width,
+    int32_t height) {
   gfx::Size size(width, height);
   web_contents->GetNativeView()->OnPhysicalBackingSizeChanged(size);
   web_contents->GetNativeView()->OnSizeChanged(width, height);
@@ -98,9 +98,8 @@ void OverlayPanelContent::SetInterceptNavigationDelegate(
           env, delegate));
 }
 
-void OverlayPanelContent::UpdateBrowserControlsState(
-    JNIEnv* env,
-    jboolean are_controls_hidden) {
+void OverlayPanelContent::UpdateBrowserControlsState(JNIEnv* env,
+                                                     bool are_controls_hidden) {
   if (!web_contents_)
     return;
 
@@ -112,8 +111,8 @@ void OverlayPanelContent::UpdateBrowserControlsState(
       state, cc::BrowserControlsState::kBoth, false, std::nullopt);
 }
 
-static jlong JNI_OverlayPanelContent_Init(JNIEnv* env,
-                                          const JavaRef<jobject>& obj) {
+static int64_t JNI_OverlayPanelContent_Init(JNIEnv* env,
+                                            const JavaRef<jobject>& obj) {
   OverlayPanelContent* content = new OverlayPanelContent(env, obj);
   return reinterpret_cast<intptr_t>(content);
 }

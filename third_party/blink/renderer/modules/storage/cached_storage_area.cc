@@ -23,6 +23,7 @@
 #include "third_party/blink/renderer/platform/scheduler/public/main_thread.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
+#include "third_party/blink/renderer/platform/wtf/text/copy_lchars_from_uchar_source.h"
 #include "third_party/blink/renderer/platform/wtf/text/strcat.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_buffer.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_utf8_adaptor.h"
@@ -506,10 +507,10 @@ bool CachedStorageArea::OnMemoryDump(
     base::trace_event::ProcessMemoryDump* pmd) {
   using base::trace_event::MemoryAllocatorDump;
 
-  String dump_name =
+  String dump_name = UNSAFE_TODO(
       String::Format("site_storage/%s/0x%" PRIXPTR "/cache_size",
                      IsSessionStorage() ? "session_storage" : "local_storage",
-                     reinterpret_cast<uintptr_t>(this));
+                     reinterpret_cast<uintptr_t>(this)));
   MemoryAllocatorDump* dump = pmd->CreateAllocatorDump(dump_name.Utf8());
   dump->AddScalar(MemoryAllocatorDump::kNameSize,
                   MemoryAllocatorDump::kUnitsBytes, memory_used());
@@ -721,17 +722,16 @@ String CachedStorageArea::Uint8VectorToString(const Vector<uint8_t>& input,
                                               FormatOption format_option) {
   if (input.empty())
     return g_empty_string;
-  const wtf_size_t input_size = input.size();
   String result;
   bool corrupt = false;
   switch (format_option) {
     case FormatOption::kSessionStorageForceUTF16: {
-      if (input_size % sizeof(UChar) != 0) {
+      if (input.size() % sizeof(UChar) != 0) {
         corrupt = true;
         break;
       }
-      StringBuffer<UChar> buffer(input_size / sizeof(UChar));
-      UNSAFE_TODO(std::memcpy(buffer.Span().data(), input.data(), input_size));
+      StringBuffer<UChar> buffer(input.size() / sizeof(UChar));
+      base::as_writable_bytes(buffer.Span()).copy_from(input);
       result = String::Adopt(buffer);
       break;
     }
@@ -739,7 +739,7 @@ String CachedStorageArea::Uint8VectorToString(const Vector<uint8_t>& input,
       // TODO(mek): When this lived in content it used to do a "lenient"
       // conversion, while this is a strict conversion. Figure out if that
       // difference actually matters in practice.
-      result = String::FromUTF8(base::span(input));
+      result = String::FromUTF8(input);
       if (result.IsNull()) {
         corrupt = true;
         break;
@@ -747,22 +747,21 @@ String CachedStorageArea::Uint8VectorToString(const Vector<uint8_t>& input,
       break;
     }
     case FormatOption::kLocalStorageDetectFormat: {
-      StorageFormat format = static_cast<StorageFormat>(input[0]);
-      const wtf_size_t payload_size = input_size - 1;
+      auto [format_byte, payload] = base::span(input).split_at<1u>();
+      StorageFormat format = static_cast<StorageFormat>(format_byte[0]);
       switch (format) {
         case StorageFormat::UTF16: {
-          if (payload_size % sizeof(UChar) != 0) {
+          if (payload.size() % sizeof(UChar) != 0) {
             corrupt = true;
             break;
           }
-          StringBuffer<UChar> buffer(payload_size / sizeof(UChar));
-          UNSAFE_TODO(std::memcpy(buffer.Span().data(), input.data() + 1,
-                                  payload_size));
+          StringBuffer<UChar> buffer(payload.size() / sizeof(UChar));
+          base::as_writable_bytes(buffer.Span()).copy_from(payload);
           result = String::Adopt(buffer);
           break;
         }
         case StorageFormat::Latin1:
-          result = String(base::span(input).subspan<1>());
+          result = String(payload);
           break;
         default:
           corrupt = true;
@@ -797,7 +796,7 @@ Vector<uint8_t> CachedStorageArea::StringToUint8Vector(
       unsigned length = input.length();
       if (input.Is8Bit() && input.ContainsOnlyASCIIOrEmpty()) {
         Vector<uint8_t> result(length);
-        UNSAFE_TODO(std::memcpy(result.data(), input.Characters8(), length));
+        base::span(result).copy_from(input.Span8());
         return result;
       }
       // Handle 8 bit case where it's not only ascii.
@@ -822,28 +821,26 @@ Vector<uint8_t> CachedStorageArea::StringToUint8Vector(
       // TODO(dmurph): Handle invalid UTF16 better. https://crbug.com/873280.
       StringUtf8Adaptor utf8(input, Utf8ConversionMode::kStrictReplacingErrors);
       Vector<uint8_t> result(utf8.size());
-      UNSAFE_TODO(std::memcpy(result.data(), utf8.data(), utf8.size()));
+      base::span(result).copy_from(base::as_byte_span(utf8));
       return result;
     }
     case FormatOption::kLocalStorageDetectFormat: {
       if (input.ContainsOnlyLatin1OrEmpty()) {
         Vector<uint8_t> result(input.length() + 1);
-        result[0] = static_cast<uint8_t>(StorageFormat::Latin1);
+        auto [format, payload] = base::span(result).split_at<1u>();
+        format[0] = static_cast<uint8_t>(StorageFormat::Latin1);
         if (input.Is8Bit()) {
-          UNSAFE_TODO(std::memcpy(result.data() + 1, input.Characters8(),
-                                  input.length()));
+          payload.copy_from(input.Span8());
         } else {
-          for (unsigned i = 0; i < input.length(); ++i) {
-            result[i + 1] = input[i];
-          }
+          CopyLCharsFromUCharSource(payload, input.Span16());
         }
         return result;
       }
       DCHECK(!input.Is8Bit());
-      Vector<uint8_t> result(input.length() * sizeof(UChar) + 1);
-      result[0] = static_cast<uint8_t>(StorageFormat::UTF16);
-      UNSAFE_TODO(std::memcpy(result.data() + 1, input.Characters16(),
-                              input.length() * sizeof(UChar)));
+      Vector<uint8_t> result(input.CharactersSizeInBytes() + 1);
+      auto [format, payload] = base::span(result).split_at<1u>();
+      format[0] = static_cast<uint8_t>(StorageFormat::UTF16);
+      payload.copy_from(input.RawByteSpan());
       return result;
     }
   }

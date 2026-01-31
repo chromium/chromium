@@ -13,7 +13,6 @@
 #include "base/check.h"
 #include "base/command_line.h"
 #include "base/compiler_specific.h"
-#include "base/containers/contains.h"
 #include "base/containers/fixed_flat_map.h"
 #include "base/feature_list.h"
 #include "base/time/time.h"
@@ -81,7 +80,7 @@ constexpr int kDefaultMinimumPinLength = 6;
 bool HasPolicyValue(const PrefService* pref_service,
                     Purpose purpose,
                     const char* value) {
-  const base::Value::List* factors = nullptr;
+  const base::ListValue* factors = nullptr;
   switch (purpose) {
     case Purpose::kUnlock:
       factors = &pref_service->GetList(prefs::kQuickUnlockModeAllowlist);
@@ -92,7 +91,7 @@ bool HasPolicyValue(const PrefService* pref_service,
     default:
       return false;
   }
-  return base::Contains(*factors, base::Value(value));
+  return factors->contains(value);
 }
 
 // Check if fingerprint is disabled for a specific purpose (so not including
@@ -205,9 +204,9 @@ base::TimeDelta PasswordConfirmationFrequencyToTimeDelta(
 }
 
 void RegisterProfilePrefs(PrefRegistrySimple* registry) {
-  base::Value::List quick_unlock_modes_default;
+  base::ListValue quick_unlock_modes_default;
   quick_unlock_modes_default.Append(kFactorsOptionAll);
-  base::Value::List webauthn_factors_default;
+  base::ListValue webauthn_factors_default;
   webauthn_factors_default.Append(kFactorsOptionAll);
   registry->RegisterListPref(prefs::kQuickUnlockModeAllowlist,
                              std::move(quick_unlock_modes_default));

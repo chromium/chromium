@@ -10,13 +10,17 @@
 #import "components/feature_engagement/public/tracker.h"
 #import "ios/chrome/browser/intelligence/bwg/ui/bwg_consent_mutator.h"
 
-@protocol ApplicationCommands;
-class BwgService;
 class BwgBrowserAgent;
+class BwgService;
 class PrefService;
+@protocol SceneCommands;
 class WebStateList;
 
 @protocol BWGMediatorDelegate;
+
+namespace gemini {
+enum class EntryPoint;
+}  // namespace gemini
 
 // BWG Mediator.
 @interface BWGMediator : NSObject <BWGConsentMutator>
@@ -24,6 +28,7 @@ class WebStateList;
 - (instancetype)initWithPrefService:(PrefService*)prefService
                        webStateList:(WebStateList*)webStateList
                  baseViewController:(UIViewController*)baseViewController
+                         entryPoint:(gemini::EntryPoint)entryPoint
                          BWGService:(BwgService*)BWGService
                     BWGBrowserAgent:(BwgBrowserAgent*)BWGBrowserAgent
                             tracker:(feature_engagement::Tracker*)tracker;
@@ -31,8 +36,8 @@ class WebStateList;
 // The delegate for this mediator.
 @property(nonatomic, weak) id<BWGMediatorDelegate> delegate;
 
-// The handler for sending application commands.
-@property(nonatomic, weak) id<ApplicationCommands> applicationHandler;
+// The handler for sending scene commands.
+@property(nonatomic, weak) id<SceneCommands> sceneHandler;
 
 // Presents the BWG flow, which can either show the FRE or BWG directly.
 - (void)presentBWGFlow;

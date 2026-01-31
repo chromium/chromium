@@ -9,27 +9,16 @@ import "chromeos/components/payments/mojom/payment_app.mojom";
 import "chromeos/components/sensors/mojom/cros_sensor_service.mojom";
 import "chromeos/crosapi/mojom/account_manager.mojom";
 import "chromeos/crosapi/mojom/guest_os_sk_forwarder.mojom";
-import "chromeos/crosapi/mojom/chrome_app_kiosk_service.mojom";
-import "chromeos/crosapi/mojom/clipboard_history.mojom";
 import "chromeos/crosapi/mojom/cros_display_config.mojom";
-import "chromeos/crosapi/mojom/desk_profiles.mojom";
 import "chromeos/crosapi/mojom/diagnostics_service.mojom";
 import "chromeos/crosapi/mojom/document_scan.mojom";
-import "chromeos/crosapi/mojom/file_change_service_bridge.mojom";
-import "chromeos/crosapi/mojom/full_restore.mojom";
-import "chromeos/crosapi/mojom/identity_manager.mojom";
 import "chromeos/crosapi/mojom/keystore_service.mojom";
 import "chromeos/crosapi/mojom/local_printer.mojom";
-import "chromeos/crosapi/mojom/policy_service.mojom";
-import "chromeos/crosapi/mojom/network_change.mojom";
-import "chromeos/crosapi/mojom/networking_private.mojom";
 import "chromeos/crosapi/mojom/print_preview_cros.mojom";
 import "chromeos/crosapi/mojom/probe_service.mojom";
-import "chromeos/crosapi/mojom/remoting.mojom";
 import "chromeos/crosapi/mojom/telemetry_diagnostic_routine_service.mojom";
 import "chromeos/crosapi/mojom/telemetry_event_service.mojom";
 import "chromeos/crosapi/mojom/telemetry_management_service.mojom";
-import "chromeos/crosapi/mojom/vpn_service.mojom";
 import "chromeos/services/chromebox_for_meetings/public/mojom/cfm_service_manager.mojom";
 import "chromeos/services/machine_learning/public/mojom/machine_learning_service.mojom";
 import "chromeos/crosapi/mojom/video_capture.mojom";
@@ -147,13 +136,8 @@ interface Crosapi {
 
   // BindNetworkSettingsService@46 was removed.
   // BindKerberosInBrowser@111 was removed.
-
-  // Binds the KeystoreService interface for challenging keys.
-  // Added in M87.
-  BindKeystoreService@2(pending_receiver<KeystoreService> receiver);
-
+  // BindKeystoreService@2 was removed.
   // BindLacrosShelfItemTracker@128 was removed.
-
   // BindLacrosAppPublisher@119 was removed.
 
   // Binds the LocalPrinter interface for printing.
@@ -175,11 +159,7 @@ interface Crosapi {
   // BindNativeThemeService@38 was removed.
   // BindMetrics@106 was removed.
   // BindMultiCaptureService@104 was removed.
-
-  // Binds the NetworkChange interface for getting network change notification.
-  [MinVersion=88]
-  BindNetworkChange@92(pending_receiver<NetworkChange> receiver);
-
+  // BindNetworkChange@92 was removed.
   // BindNetworkingAttributes@44 was removed.
   // BindOneDriveNotificationService@132 was removed.
   // BindOneDriveIntegrationService@135 was removed.
@@ -284,13 +264,7 @@ interface Crosapi {
   // BindWebKioskService@114 was removed.
   // BindDeviceLocalAccountExtensionService@100 was removed.
   // BindVolumeManager@94 was removed.
-
-  // Binds the vpn service. This service is used to facilirate
-  // communication between chrome.vpnProvider extension in lacros and the
-  // network services in ash.
-  [MinVersion=79] BindVpnService@82(
-      pending_receiver<VpnService> receiver);
-
+  // BindVpnService@82 was removed.
   // BindWallpaper@87 was removed.
   // BindWebPageInfoFactory@39 was removed.
   // BindWebAppPublisher@27 was removed.

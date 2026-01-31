@@ -93,7 +93,7 @@ void ThemeColorPickerHandler::RegisterProfilePrefs(
 }
 
 void ThemeColorPickerHandler::SetDefaultColor() {
-  theme_service_->SetUserColor(SK_ColorTRANSPARENT);
+  theme_service_->SetUserColor(std::nullopt);
   theme_service_->UseDeviceTheme(false);
   MaybeIncrementSeedColorChangeCount();
 }

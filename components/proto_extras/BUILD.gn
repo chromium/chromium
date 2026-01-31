@@ -3,11 +3,13 @@
 # found in the LICENSE file.
 
 import("//testing/libfuzzer/fuzzer_test.gni")
+import("//third_party/protobuf/proto_library.gni")
 
 if (current_toolchain == host_toolchain) {
   executable("proto_extras_plugin") {
     sources = [ "proto_extras_plugin.cc" ]
     deps = [
+      ":proto_extras_options_proto",
       "//base",
       "//third_party/protobuf:protoc_cpp",
       "//third_party/protobuf:protoc_lib",
@@ -22,6 +24,35 @@ if (current_toolchain == host_toolchain) {
       "//third_party/protobuf:protoc_lib",
     ]
   }
+}
+
+proto_library("proto_extras_options_proto") {
+  sources = [ "proto_extras_options.proto" ]
+
+  # The use of full and lite runtime here is somewhat subtle. The plugin
+  # uses the full runtime through its dependency on both
+  # `//third_party/protobuf:protoc_cpp` and
+  # `//third_party/protobuf:protoc_lib`. This means that this target
+  # must not include the lite runtime, or certain component builds would
+  # fail due to the plugin including both the full and lite runtime (see
+  # https://crbug.com/40229487). The protos in this target are only
+  # intended for use in the plugin at compile time, so it's safe to use
+  # the full runtime here as long as this target does not get linked
+  # into the Chrome binary. In order to correctly track build
+  # dependencies without linking into Chrome, we restrict visibility and
+  # define the `:proto_extras_options` group. Users of these options
+  # should add `:proto_extras_options` to their `proto_deps` instead of
+  # adding this target to their `deps`.
+  use_protobuf_full = true
+  visibility = [ ":*" ]
+}
+
+config("proto_extras_options_config") {
+  inputs = [ "proto_extras_options.proto" ]
+}
+
+group("proto_extras_options") {
+  public_configs = [ ":proto_extras_options_config" ]
 }
 
 source_set("proto_extras_lib") {

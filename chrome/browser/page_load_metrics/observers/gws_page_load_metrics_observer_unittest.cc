@@ -135,6 +135,14 @@ TEST_F(GWSPageLoadMetricsObserverTest, Search) {
   tester()->histogram_tester().ExpectBucketCount(
       internal::kHistogramGWSNavigationStartToFirstResponseStart, 1, 1);
   tester()->histogram_tester().ExpectTotalCount(
+      internal::kHistogramGWSFirstRequestStartToFirstResponseStart, 1);
+  tester()->histogram_tester().ExpectBucketCount(
+      internal::kHistogramGWSFirstRequestStartToFirstResponseStart, 0, 1);
+  tester()->histogram_tester().ExpectTotalCount(
+      internal::kHistogramGWSFirstRequestStartToFinalResponseStart, 1);
+  tester()->histogram_tester().ExpectBucketCount(
+      internal::kHistogramGWSFirstRequestStartToFinalResponseStart, 0, 1);
+  tester()->histogram_tester().ExpectTotalCount(
       internal::kHistogramGWSNavigationStartToFirstLoaderCallback, 1);
   tester()->histogram_tester().ExpectBucketCount(
       internal::kHistogramGWSNavigationStartToFirstLoaderCallback, 1, 1);
@@ -146,6 +154,10 @@ TEST_F(GWSPageLoadMetricsObserverTest, Search) {
       internal::kHistogramGWSNavigationStartToFinalResponseStart, 1);
   tester()->histogram_tester().ExpectBucketCount(
       internal::kHistogramGWSNavigationStartToFinalResponseStart, 1, 1);
+  tester()->histogram_tester().ExpectTotalCount(
+      internal::kHistogramGWSFinalRequestStartToFinalResponseStart, 1);
+  tester()->histogram_tester().ExpectBucketCount(
+      internal::kHistogramGWSFinalRequestStartToFinalResponseStart, 0, 1);
   tester()->histogram_tester().ExpectTotalCount(
       internal::kHistogramGWSNavigationStartToFinalLoaderCallback, 1);
   tester()->histogram_tester().ExpectBucketCount(
@@ -315,6 +327,14 @@ TEST_F(GWSPageLoadMetricsObserverTest, SearchBackgroundLater) {
   tester()->histogram_tester().ExpectBucketCount(
       internal::kHistogramGWSNavigationStartToFirstResponseStart, 0, 1);
   tester()->histogram_tester().ExpectTotalCount(
+      internal::kHistogramGWSFirstRequestStartToFirstResponseStart, 1);
+  tester()->histogram_tester().ExpectBucketCount(
+      internal::kHistogramGWSFirstRequestStartToFirstResponseStart, 0, 1);
+  tester()->histogram_tester().ExpectTotalCount(
+      internal::kHistogramGWSFirstRequestStartToFinalResponseStart, 1);
+  tester()->histogram_tester().ExpectBucketCount(
+      internal::kHistogramGWSFirstRequestStartToFinalResponseStart, 0, 1);
+  tester()->histogram_tester().ExpectTotalCount(
       internal::kHistogramGWSNavigationStartToFirstLoaderCallback, 1);
   tester()->histogram_tester().ExpectBucketCount(
       internal::kHistogramGWSNavigationStartToFirstLoaderCallback, 0, 1);
@@ -326,6 +346,10 @@ TEST_F(GWSPageLoadMetricsObserverTest, SearchBackgroundLater) {
       internal::kHistogramGWSNavigationStartToFinalResponseStart, 1);
   tester()->histogram_tester().ExpectBucketCount(
       internal::kHistogramGWSNavigationStartToFinalResponseStart, 0, 1);
+  tester()->histogram_tester().ExpectTotalCount(
+      internal::kHistogramGWSFinalRequestStartToFinalResponseStart, 1);
+  tester()->histogram_tester().ExpectBucketCount(
+      internal::kHistogramGWSFinalRequestStartToFinalResponseStart, 0, 1);
   tester()->histogram_tester().ExpectTotalCount(
       internal::kHistogramGWSNavigationStartToFinalLoaderCallback, 1);
   tester()->histogram_tester().ExpectBucketCount(

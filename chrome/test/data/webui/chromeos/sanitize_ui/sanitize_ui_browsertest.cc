@@ -113,13 +113,13 @@ IN_PROC_BROWSER_TEST_F(SanitizeUIBrowserTest, PRE_SanitizeCheckPreferences) {
   prefs->SetString(prefs::kLanguagePreloadEngines, "xkb:ru::rus");
   EXPECT_NE("en-US", prefs->GetValue(prefs::kLanguagePreloadEngines));
 
-  base::Value::List malicous_values;
+  base::ListValue malicous_values;
   malicous_values.Append("fr");
   malicous_values.Append("es");
   malicous_values.Append("ru");
   prefs->SetList(spellcheck::prefs::kSpellCheckDictionaries,
                  std::move(malicous_values));
-  const base::Value::List& spellcheck_dictionaries =
+  const base::ListValue& spellcheck_dictionaries =
       prefs->GetList(spellcheck::prefs::kSpellCheckDictionaries);
   size_t expected_size = 3;
   EXPECT_EQ(spellcheck_dictionaries.size(), expected_size);
@@ -175,7 +175,7 @@ IN_PROC_BROWSER_TEST_F(SanitizeUIBrowserTest, SanitizeCheckPreferences) {
 
   std::string expected_language =
       prefs->GetString(language::prefs::kPreferredLanguages);
-  const base::Value::List& spellcheck_dictionaries =
+  const base::ListValue& spellcheck_dictionaries =
       prefs->GetList(spellcheck::prefs::kSpellCheckDictionaries);
   size_t expected_size = 1;
   EXPECT_EQ(spellcheck_dictionaries.size(), expected_size);

@@ -4,15 +4,32 @@
 
 #include "chrome/browser/ui/safety_hub/revoked_permissions_os_notification_display_manager.h"
 
+#include "base/strings/escape.h"
+#include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ui/safety_hub/abusive_notification_permissions_manager.h"
 #include "chrome/browser/ui/safety_hub/disruptive_notification_permissions_manager.h"
 #include "chrome/browser/ui/safety_hub/safety_hub_util.h"
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/safe_browsing/core/common/features.h"
+#include "components/url_formatter/url_formatter.h"
 
 #if BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/ui/safety_hub/notification_wrapper_android.h"
 #endif
+
+namespace {
+
+std::string GetFirstAffectedDomain(const std::set<GURL>& revoked_urls) {
+  return base::UTF16ToUTF8(url_formatter::FormatUrl(
+      revoked_urls.size() >= 1 ? *revoked_urls.begin() : GURL(),
+      url_formatter::kFormatUrlOmitDefaults |
+          url_formatter::kFormatUrlOmitHTTPS |
+          url_formatter::kFormatUrlOmitTrivialSubdomains |
+          url_formatter::kFormatUrlTrimAfterHost,
+      base::UnescapeRule::SPACES, nullptr, nullptr, nullptr));
+}
+
+}  // namespace
 
 RevokedPermissionsOSNotificationDisplayManager::
     RevokedPermissionsOSNotificationDisplayManager(
@@ -25,18 +42,29 @@ RevokedPermissionsOSNotificationDisplayManager::
     ~RevokedPermissionsOSNotificationDisplayManager() = default;
 
 void RevokedPermissionsOSNotificationDisplayManager::DisplayNotification() {
+  auto revoked_urls = GetRevocationUrls();
+  std::string first_affected_domain = GetFirstAffectedDomain(revoked_urls);
   if (notification_wrapper_) {
-    notification_wrapper_->DisplayNotification(GetTotalRevocationCount());
+    notification_wrapper_->DisplayNotification(
+        revoked_urls.size(), first_affected_domain,
+        IsAnyRevocationDueToSuspiciousContent(revoked_urls),
+        IsAnyRevocationDueToDisruptiveContent(revoked_urls));
   }
 }
 
 void RevokedPermissionsOSNotificationDisplayManager::UpdateNotification() {
+  auto revoked_urls = GetRevocationUrls();
+  std::string first_affected_domain = GetFirstAffectedDomain(revoked_urls);
   if (notification_wrapper_) {
-    notification_wrapper_->UpdateNotification(GetTotalRevocationCount());
+    notification_wrapper_->UpdateNotification(
+        revoked_urls.size(), first_affected_domain,
+        IsAnyRevocationDueToSuspiciousContent(revoked_urls),
+        IsAnyRevocationDueToDisruptiveContent(revoked_urls));
   }
 }
 
-int RevokedPermissionsOSNotificationDisplayManager::GetTotalRevocationCount() {
+std::set<GURL>
+RevokedPermissionsOSNotificationDisplayManager::GetRevocationUrls() {
   std::set<GURL> revoked_urls;
   if (base::FeatureList::IsEnabled(
           safe_browsing::kAutoRevokeSuspiciousNotification)) {
@@ -64,5 +92,25 @@ int RevokedPermissionsOSNotificationDisplayManager::GetTotalRevocationCount() {
         revoked_disruptive_notification_permission.primary_pattern.ToString());
     revoked_urls.insert(disruptive_url);
   }
-  return revoked_urls.size();
+  return revoked_urls;
+}
+
+bool RevokedPermissionsOSNotificationDisplayManager::
+    IsAnyRevocationDueToSuspiciousContent(const std::set<GURL>& revoked_urls) {
+  return std::any_of(revoked_urls.begin(), revoked_urls.end(),
+                     [this](const GURL& revoked_url) {
+                       return AbusiveNotificationPermissionsManager::
+                           IsUrlRevokedDueToSuspiciousContent(hcsm_.get(),
+                                                              revoked_url);
+                     });
+}
+
+bool RevokedPermissionsOSNotificationDisplayManager::
+    IsAnyRevocationDueToDisruptiveContent(const std::set<GURL>& revoked_urls) {
+  return std::any_of(revoked_urls.begin(), revoked_urls.end(),
+                     [this](const GURL& revoked_url) {
+                       return DisruptiveNotificationPermissionsManager::
+                           IsUrlRevokedDisruptiveNotification(hcsm_.get(),
+                                                              revoked_url);
+                     });
 }

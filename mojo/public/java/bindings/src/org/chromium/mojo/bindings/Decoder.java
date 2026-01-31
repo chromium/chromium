@@ -53,7 +53,7 @@ public class Decoder {
             mStackDepth = 0;
         }
 
-        public void claimHandle(int handle) {
+        public void claimHandle(int handle) throws DeserializationException {
             if (handle < mMinNextClaimedHandle) {
                 throw new DeserializationException("Trying to access handle out of order.");
             }
@@ -63,7 +63,7 @@ public class Decoder {
             mMinNextClaimedHandle = handle + 1;
         }
 
-        public void claimMemory(long start, long end) {
+        public void claimMemory(long start, long end) throws DeserializationException {
             if (start % BindingsHelper.ALIGNMENT != 0) {
                 throw new DeserializationException("Incorrect starting alignment: " + start + ".");
             }
@@ -79,7 +79,7 @@ public class Decoder {
             mMinNextMemory = BindingsHelper.align(end);
         }
 
-        public void increaseStackDepth() {
+        public void increaseStackDepth() throws DeserializationException {
             ++mStackDepth;
             if (mStackDepth >= MAX_RECURSION_DEPTH) {
                 throw new DeserializationException("Recursion depth limit exceeded.");
@@ -117,7 +117,7 @@ public class Decoder {
     }
 
     /** Deserializes a {@link DataHeader} at the current position. */
-    public DataHeader readDataHeader() {
+    public DataHeader readDataHeader() throws DeserializationException {
         // Claim the memory for the header.
         mValidator.claimMemory(mBaseOffset, mBaseOffset + DataHeader.HEADER_SIZE);
         DataHeader result = readDataHeaderAtOffset(0, false);
@@ -127,7 +127,7 @@ public class Decoder {
     }
 
     /** Deserializes a {@link DataHeader} for an union at the given offset. */
-    public DataHeader readDataHeaderForUnion(int offset) {
+    public DataHeader readDataHeaderForUnion(int offset) throws DeserializationException {
         DataHeader result = readDataHeaderAtOffset(offset, true);
         if (result.size == 0) {
             if (result.elementsOrVersion != 0) {
@@ -146,13 +146,14 @@ public class Decoder {
     /**
      * @return a decoder suitable to decode an union defined as the root object of a message.
      */
-    public Decoder decoderForSerializedUnion() {
+    public Decoder decoderForSerializedUnion() throws DeserializationException {
         mValidator.claimMemory(0, BindingsHelper.UNION_SIZE);
         return this;
     }
 
     /** Deserializes a {@link DataHeader} at the given offset. */
-    private DataHeader readDataHeaderAtOffset(int offset, boolean isUnion) {
+    private DataHeader readDataHeaderAtOffset(int offset, boolean isUnion)
+            throws DeserializationException {
         int size = readInt(offset + DataHeader.SIZE_OFFSET);
         int elementsOrVersion = readInt(offset + DataHeader.ELEMENTS_OR_VERSION_OFFSET);
         if (size < 0) {
@@ -167,7 +168,8 @@ public class Decoder {
         return new DataHeader(size, elementsOrVersion);
     }
 
-    public DataHeader readAndValidateDataHeader(DataHeader[] versionArray) {
+    public DataHeader readAndValidateDataHeader(DataHeader[] versionArray)
+            throws DeserializationException {
         DataHeader header = readDataHeader();
         int maxVersionIndex = versionArray.length - 1;
         if (header.elementsOrVersion <= versionArray[maxVersionIndex].elementsOrVersion) {
@@ -197,7 +199,8 @@ public class Decoder {
      * Deserializes a {@link DataHeader} at the given offset and checks if it is correct for an
      * array where elements are pointers.
      */
-    public DataHeader readDataHeaderForPointerArray(int expectedLength) {
+    public DataHeader readDataHeaderForPointerArray(int expectedLength)
+            throws DeserializationException {
         return readDataHeaderForArray(BindingsHelper.POINTER_SIZE, expectedLength, false);
     }
 
@@ -205,14 +208,15 @@ public class Decoder {
      * Deserializes a {@link DataHeader} at the given offset and checks if it is correct for an
      * array where elements are unions.
      */
-    public DataHeader readDataHeaderForUnionArray(int expectedLength) {
+    public DataHeader readDataHeaderForUnionArray(int expectedLength)
+            throws DeserializationException {
         return readDataHeaderForArray(BindingsHelper.UNION_SIZE, expectedLength, false);
     }
 
     /**
      * Deserializes a {@link DataHeader} at the given offset and checks if it is correct for a map.
      */
-    public void readDataHeaderForMap() {
+    public void readDataHeaderForMap() throws DeserializationException {
         DataHeader si = readDataHeader();
         if (si.size != BindingsHelper.MAP_STRUCT_HEADER.size) {
             throw new DeserializationException("Incorrect header for map. The size is incorrect.");
@@ -224,43 +228,43 @@ public class Decoder {
     }
 
     /** Deserializes a byte at the given offset. */
-    public byte readByte(int offset) {
+    public byte readByte(int offset) throws DeserializationException {
         validateBufferSize(offset, 1);
         return mMessage.getData().get(mBaseOffset + offset);
     }
 
     /** Deserializes a boolean at the given offset, re-using any partially read byte. */
-    public boolean readBoolean(int offset, int bit) {
+    public boolean readBoolean(int offset, int bit) throws DeserializationException {
         validateBufferSize(offset, 1);
         return (readByte(offset) & (1 << bit)) != 0;
     }
 
     /** Deserializes a short at the given offset. */
-    public short readShort(int offset) {
+    public short readShort(int offset) throws DeserializationException {
         validateBufferSize(offset, 2);
         return mMessage.getData().getShort(mBaseOffset + offset);
     }
 
     /** Deserializes an int at the given offset. */
-    public int readInt(int offset) {
+    public int readInt(int offset) throws DeserializationException {
         validateBufferSize(offset, 4);
         return mMessage.getData().getInt(mBaseOffset + offset);
     }
 
     /** Deserializes a float at the given offset. */
-    public float readFloat(int offset) {
+    public float readFloat(int offset) throws DeserializationException {
         validateBufferSize(offset, 4);
         return mMessage.getData().getFloat(mBaseOffset + offset);
     }
 
     /** Deserializes a long at the given offset. */
-    public long readLong(int offset) {
+    public long readLong(int offset) throws DeserializationException {
         validateBufferSize(offset, 8);
         return mMessage.getData().getLong(mBaseOffset + offset);
     }
 
     /** Deserializes a double at the given offset. */
-    public double readDouble(int offset) {
+    public double readDouble(int offset) throws DeserializationException {
         validateBufferSize(offset, 8);
         return mMessage.getData().getDouble(mBaseOffset + offset);
     }
@@ -269,7 +273,8 @@ public class Decoder {
      * Deserializes a pointer at the given offset. Returns a Decoder suitable to decode the content
      * of the pointer.
      */
-    public @Nullable Decoder readPointer(int offset, boolean nullable) {
+    public @Nullable Decoder readPointer(int offset, boolean nullable)
+            throws DeserializationException {
         int basePosition = mBaseOffset + offset;
         long pointerOffset = readLong(offset);
         if (pointerOffset == 0) {
@@ -285,7 +290,8 @@ public class Decoder {
     }
 
     /** Deserializes an array of boolean at the given offset. */
-    public boolean @Nullable [] readBooleans(int offset, int arrayNullability, int expectedLength) {
+    public boolean @Nullable [] readBooleans(int offset, int arrayNullability, int expectedLength)
+            throws DeserializationException {
         Decoder d = readPointer(offset, BindingsHelper.isArrayNullable(arrayNullability));
         if (d == null) {
             return null;
@@ -308,7 +314,7 @@ public class Decoder {
 
     /** Deserializes an array of Booleans at the given offset. */
     public @Nullable Boolean @Nullable [] readBooleanNullables(
-            int offset, int arrayNullability, int expectedLength) {
+            int offset, int arrayNullability, int expectedLength) throws DeserializationException {
         Decoder d = readPointer(offset, BindingsHelper.isArrayNullable(arrayNullability));
         if (d == null) {
             return null;
@@ -331,7 +337,8 @@ public class Decoder {
     }
 
     /** Deserializes an array of bytes at the given offset. */
-    public byte @Nullable [] readBytes(int offset, int arrayNullability, int expectedLength) {
+    public byte @Nullable [] readBytes(int offset, int arrayNullability, int expectedLength)
+            throws DeserializationException {
         Decoder d = readPointer(offset, BindingsHelper.isArrayNullable(arrayNullability));
         if (d == null) {
             return null;
@@ -345,7 +352,7 @@ public class Decoder {
 
     /** Deserializes an array of Bytes at the given offset. */
     public @Nullable Byte @Nullable [] readByteNullables(
-            int offset, int arrayNullability, int expectedLength) {
+            int offset, int arrayNullability, int expectedLength) throws DeserializationException {
         Decoder d = readPointer(offset, BindingsHelper.isArrayNullable(arrayNullability));
         if (d == null) {
             return null;
@@ -369,7 +376,8 @@ public class Decoder {
     }
 
     /** Deserializes an array of shorts at the given offset. */
-    public short @Nullable [] readShorts(int offset, int arrayNullability, int expectedLength) {
+    public short @Nullable [] readShorts(int offset, int arrayNullability, int expectedLength)
+            throws DeserializationException {
         Decoder d = readPointer(offset, BindingsHelper.isArrayNullable(arrayNullability));
         if (d == null) {
             return null;
@@ -383,7 +391,7 @@ public class Decoder {
 
     /** Deserializes an array of Shorts at the given offset. */
     public @Nullable Short @Nullable [] readShortNullables(
-            int offset, int arrayNullability, int expectedLength) {
+            int offset, int arrayNullability, int expectedLength) throws DeserializationException {
         Decoder d = readPointer(offset, BindingsHelper.isArrayNullable(arrayNullability));
         if (d == null) {
             return null;
@@ -407,7 +415,8 @@ public class Decoder {
     }
 
     /** Deserializes an array of ints at the given offset. */
-    public int @Nullable [] readInts(int offset, int arrayNullability, int expectedLength) {
+    public int @Nullable [] readInts(int offset, int arrayNullability, int expectedLength)
+            throws DeserializationException {
         Decoder d = readPointer(offset, BindingsHelper.isArrayNullable(arrayNullability));
         if (d == null) {
             return null;
@@ -421,7 +430,7 @@ public class Decoder {
 
     /** Deserializes an array of Integers at the given offset. */
     public @Nullable Integer @Nullable [] readIntNullables(
-            int offset, int arrayNullability, int expectedLength) {
+            int offset, int arrayNullability, int expectedLength) throws DeserializationException {
         Decoder d = readPointer(offset, BindingsHelper.isArrayNullable(arrayNullability));
         if (d == null) {
             return null;
@@ -445,7 +454,8 @@ public class Decoder {
     }
 
     /** Deserializes an array of floats at the given offset. */
-    public float @Nullable [] readFloats(int offset, int arrayNullability, int expectedLength) {
+    public float @Nullable [] readFloats(int offset, int arrayNullability, int expectedLength)
+            throws DeserializationException {
         Decoder d = readPointer(offset, BindingsHelper.isArrayNullable(arrayNullability));
         if (d == null) {
             return null;
@@ -459,7 +469,7 @@ public class Decoder {
 
     /** Deserializes an array of Integers at the given offset. */
     public @Nullable Float @Nullable [] readFloatNullables(
-            int offset, int arrayNullability, int expectedLength) {
+            int offset, int arrayNullability, int expectedLength) throws DeserializationException {
         Decoder d = readPointer(offset, BindingsHelper.isArrayNullable(arrayNullability));
         if (d == null) {
             return null;
@@ -483,7 +493,8 @@ public class Decoder {
     }
 
     /** Deserializes an array of longs at the given offset. */
-    public long @Nullable [] readLongs(int offset, int arrayNullability, int expectedLength) {
+    public long @Nullable [] readLongs(int offset, int arrayNullability, int expectedLength)
+            throws DeserializationException {
         Decoder d = readPointer(offset, BindingsHelper.isArrayNullable(arrayNullability));
         if (d == null) {
             return null;
@@ -497,7 +508,7 @@ public class Decoder {
 
     /** Deserializes an array of Longs at the given offset. */
     public @Nullable Long @Nullable [] readLongNullables(
-            int offset, int arrayNullability, int expectedLength) {
+            int offset, int arrayNullability, int expectedLength) throws DeserializationException {
         Decoder d = readPointer(offset, BindingsHelper.isArrayNullable(arrayNullability));
         if (d == null) {
             return null;
@@ -521,7 +532,8 @@ public class Decoder {
     }
 
     /** Deserializes an array of doubles at the given offset. */
-    public double @Nullable [] readDoubles(int offset, int arrayNullability, int expectedLength) {
+    public double @Nullable [] readDoubles(int offset, int arrayNullability, int expectedLength)
+            throws DeserializationException {
         Decoder d = readPointer(offset, BindingsHelper.isArrayNullable(arrayNullability));
         if (d == null) {
             return null;
@@ -535,7 +547,7 @@ public class Decoder {
 
     /** Deserializes an array of Doubles at the given offset. */
     public @Nullable Double @Nullable [] readDoubleNullables(
-            int offset, int arrayNullability, int expectedLength) {
+            int offset, int arrayNullability, int expectedLength) throws DeserializationException {
         Decoder d = readPointer(offset, BindingsHelper.isArrayNullable(arrayNullability));
         if (d == null) {
             return null;
@@ -558,7 +570,7 @@ public class Decoder {
     }
 
     /** Deserializes an |Handle| at the given offset. */
-    public Handle readHandle(int offset, boolean nullable) {
+    public Handle readHandle(int offset, boolean nullable) throws DeserializationException {
         int index = readInt(offset);
         if (index == -1) {
             if (!nullable) {
@@ -572,27 +584,32 @@ public class Decoder {
     }
 
     /** Deserializes an |UntypedHandle| at the given offset. */
-    public UntypedHandle readUntypedHandle(int offset, boolean nullable) {
+    public UntypedHandle readUntypedHandle(int offset, boolean nullable)
+            throws DeserializationException {
         return readHandle(offset, nullable).toUntypedHandle();
     }
 
     /** Deserializes a |ConsumerHandle| at the given offset. */
-    public DataPipe.ConsumerHandle readConsumerHandle(int offset, boolean nullable) {
+    public DataPipe.ConsumerHandle readConsumerHandle(int offset, boolean nullable)
+            throws DeserializationException {
         return readUntypedHandle(offset, nullable).toDataPipeConsumerHandle();
     }
 
     /** Deserializes a |ProducerHandle| at the given offset. */
-    public DataPipe.ProducerHandle readProducerHandle(int offset, boolean nullable) {
+    public DataPipe.ProducerHandle readProducerHandle(int offset, boolean nullable)
+            throws DeserializationException {
         return readUntypedHandle(offset, nullable).toDataPipeProducerHandle();
     }
 
     /** Deserializes a |MessagePipeHandle| at the given offset. */
-    public MessagePipeHandle readMessagePipeHandle(int offset, boolean nullable) {
+    public MessagePipeHandle readMessagePipeHandle(int offset, boolean nullable)
+            throws DeserializationException {
         return readUntypedHandle(offset, nullable).toMessagePipeHandle();
     }
 
     /** Deserializes a |SharedBufferHandle| at the given offset. */
-    public SharedBufferHandle readSharedBufferHandle(int offset, boolean nullable) {
+    public SharedBufferHandle readSharedBufferHandle(int offset, boolean nullable)
+            throws DeserializationException {
         return readUntypedHandle(offset, nullable).toSharedBufferHandle();
     }
 
@@ -602,7 +619,8 @@ public class Decoder {
      * @return a proxy to the service.
      */
     public <P extends Proxy> @Nullable P readServiceInterface(
-            int offset, boolean nullable, Interface.Manager<?, P> manager) {
+            int offset, boolean nullable, Interface.Manager<?, P> manager)
+            throws DeserializationException {
         MessagePipeHandle handle = readMessagePipeHandle(offset, nullable);
         if (!handle.isValid()) {
             return null;
@@ -613,7 +631,7 @@ public class Decoder {
 
     /** Deserializes a |InterfaceRequest| at the given offset. */
     public <I extends Interface> @Nullable InterfaceRequest<I> readInterfaceRequest(
-            int offset, boolean nullable) {
+            int offset, boolean nullable) throws DeserializationException {
         MessagePipeHandle handle = readMessagePipeHandle(offset, nullable);
         if (handle == null) {
             return null;
@@ -623,18 +641,20 @@ public class Decoder {
 
     /** Deserializes an associated interface at the given offset. Not yet supported. */
     public @Nullable AssociatedInterfaceNotSupported readAssociatedServiceInterfaceNotSupported(
-            int offset, boolean nullable) {
+            int offset, boolean nullable) throws DeserializationException {
         return null;
     }
 
     /** Deserializes an associated interface request at the given offset. Not yet supported. */
     public @Nullable AssociatedInterfaceRequestNotSupported
-            readAssociatedInterfaceRequestNotSupported(int offset, boolean nullable) {
+            readAssociatedInterfaceRequestNotSupported(int offset, boolean nullable)
+                    throws DeserializationException {
         return null;
     }
 
     /** Deserializes a string at the given offset. */
-    public @Nullable String readString(int offset, boolean nullable) {
+    public @Nullable String readString(int offset, boolean nullable)
+            throws DeserializationException {
         final int arrayNullability = nullable ? BindingsHelper.ARRAY_NULLABLE : 0;
         byte[] bytes = readBytes(offset, arrayNullability, BindingsHelper.UNSPECIFIED_ARRAY_LENGTH);
         if (bytes == null) {
@@ -644,7 +664,8 @@ public class Decoder {
     }
 
     /** Deserializes an array of |Handle| at the given offset. */
-    public Handle @Nullable [] readHandles(int offset, int arrayNullability, int expectedLength) {
+    public Handle @Nullable [] readHandles(int offset, int arrayNullability, int expectedLength)
+            throws DeserializationException {
         Decoder d = readPointer(offset, BindingsHelper.isArrayNullable(arrayNullability));
         if (d == null) {
             return null;
@@ -662,7 +683,7 @@ public class Decoder {
 
     /** Deserializes an array of |UntypedHandle| at the given offset. */
     public UntypedHandle @Nullable [] readUntypedHandles(
-            int offset, int arrayNullability, int expectedLength) {
+            int offset, int arrayNullability, int expectedLength) throws DeserializationException {
         Decoder d = readPointer(offset, BindingsHelper.isArrayNullable(arrayNullability));
         if (d == null) {
             return null;
@@ -680,7 +701,7 @@ public class Decoder {
 
     /** Deserializes an array of |ConsumerHandle| at the given offset. */
     public DataPipe.ConsumerHandle @Nullable [] readConsumerHandles(
-            int offset, int arrayNullability, int expectedLength) {
+            int offset, int arrayNullability, int expectedLength) throws DeserializationException {
         Decoder d = readPointer(offset, BindingsHelper.isArrayNullable(arrayNullability));
         if (d == null) {
             return null;
@@ -698,7 +719,7 @@ public class Decoder {
 
     /** Deserializes an array of |ProducerHandle| at the given offset. */
     public DataPipe.ProducerHandle @Nullable [] readProducerHandles(
-            int offset, int arrayNullability, int expectedLength) {
+            int offset, int arrayNullability, int expectedLength) throws DeserializationException {
         Decoder d = readPointer(offset, BindingsHelper.isArrayNullable(arrayNullability));
         if (d == null) {
             return null;
@@ -716,7 +737,7 @@ public class Decoder {
 
     /** Deserializes an array of |MessagePipeHandle| at the given offset. */
     public MessagePipeHandle @Nullable [] readMessagePipeHandles(
-            int offset, int arrayNullability, int expectedLength) {
+            int offset, int arrayNullability, int expectedLength) throws DeserializationException {
         Decoder d = readPointer(offset, BindingsHelper.isArrayNullable(arrayNullability));
         if (d == null) {
             return null;
@@ -734,7 +755,7 @@ public class Decoder {
 
     /** Deserializes an array of |SharedBufferHandle| at the given offset. */
     public SharedBufferHandle @Nullable [] readSharedBufferHandles(
-            int offset, int arrayNullability, int expectedLength) {
+            int offset, int arrayNullability, int expectedLength) throws DeserializationException {
         Decoder d = readPointer(offset, BindingsHelper.isArrayNullable(arrayNullability));
         if (d == null) {
             return null;
@@ -752,7 +773,8 @@ public class Decoder {
 
     /** Deserializes an array of |ServiceHandle| at the given offset. */
     public <S extends Interface, P extends Proxy> @Nullable S @Nullable [] readServiceInterfaces(
-            int offset, int arrayNullability, int expectedLength, Interface.Manager<S, P> manager) {
+            int offset, int arrayNullability, int expectedLength, Interface.Manager<S, P> manager)
+            throws DeserializationException {
         Decoder d = readPointer(offset, BindingsHelper.isArrayNullable(arrayNullability));
         if (d == null) {
             return null;
@@ -779,7 +801,7 @@ public class Decoder {
 
     /** Deserializes an array of |InterfaceRequest| at the given offset. */
     public <I extends Interface> @Nullable InterfaceRequest<I> @Nullable [] readInterfaceRequests(
-            int offset, int arrayNullability, int expectedLength) {
+            int offset, int arrayNullability, int expectedLength) throws DeserializationException {
         Decoder d = readPointer(offset, BindingsHelper.isArrayNullable(arrayNullability));
         if (d == null) {
             return null;
@@ -799,7 +821,7 @@ public class Decoder {
 
     /** Deserializes an array of associated interfaces at the given offset. Not yet supported. */
     public AssociatedInterfaceNotSupported @Nullable [] readAssociatedServiceInterfaceNotSupporteds(
-            int offset, int arrayNullability, int expectedLength) {
+            int offset, int arrayNullability, int expectedLength) throws DeserializationException {
         return null;
     }
 
@@ -809,7 +831,8 @@ public class Decoder {
      */
     public AssociatedInterfaceRequestNotSupported @Nullable []
             readAssociatedInterfaceRequestNotSupporteds(
-                    int offset, int arrayNullability, int expectedLength) {
+                    int offset, int arrayNullability, int expectedLength)
+                    throws DeserializationException {
         return null;
     }
 
@@ -823,7 +846,7 @@ public class Decoder {
      * array of booleans.
      */
     private DataHeader readDataHeaderForBooleanArray(
-            int expectedLength, boolean containsHasValueBitfield) {
+            int expectedLength, boolean containsHasValueBitfield) throws DeserializationException {
         DataHeader dataHeader = readDataHeader();
 
         int packedBoolSize = (dataHeader.elementsOrVersion + 7) / 8;
@@ -850,7 +873,8 @@ public class Decoder {
 
     /** Deserializes a {@link DataHeader} of an array at the given offset. */
     private DataHeader readDataHeaderForArray(
-            long elementSize, int expectedLength, boolean containsHasValueBitfield) {
+            long elementSize, int expectedLength, boolean containsHasValueBitfield)
+            throws DeserializationException {
         DataHeader dataHeader = readDataHeader();
 
         long totalElementsSize = elementSize * dataHeader.elementsOrVersion;
@@ -875,7 +899,8 @@ public class Decoder {
         return dataHeader;
     }
 
-    private static boolean[] readBitfield(int typeSize, int numElements, ByteBuffer buffer) {
+    private static boolean[] readBitfield(int typeSize, int numElements, ByteBuffer buffer)
+            throws DeserializationException {
         boolean[] bitfield = new boolean[numElements];
 
         byte[] b = new byte[BindingsHelper.computeBitfieldSize(typeSize, numElements)];
@@ -889,13 +914,13 @@ public class Decoder {
         return bitfield;
     }
 
-    private void validateBufferSize(int offset, int size) {
+    private void validateBufferSize(int offset, int size) throws DeserializationException {
         if (mMessage.getData().limit() < offset + size) {
             throw new DeserializationException("Buffer is smaller than expected.");
         }
     }
 
-    public void increaseStackDepth() {
+    public void increaseStackDepth() throws DeserializationException {
         mValidator.increaseStackDepth();
     }
 

@@ -1325,6 +1325,12 @@ void WaitForFakeJoinFlowView() {
 // Tests that the activity label on a group cell and a grid cell is updated when
 // a shared group is updated.
 - (void)testActivityLabel {
+#if !TARGET_IPHONE_SIMULATOR
+  if ([ChromeEarlGrey isIPadIdiom]) {
+    // TODO(crbug.com/470347303): Reenable this test.
+    EARL_GREY_TEST_DISABLED(@"Failing on iPad device.");
+  }
+#endif
   AddSharedGroup(/*owner=*/YES, self.testServer);
   [ChromeEarlGrey waitForMainTabCount:1];
 

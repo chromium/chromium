@@ -1,6 +1,5 @@
 include_rules = [
-  "+mojo/public",
-  "+ios/components/webui",
+  # keep-sorted start
   "+components/account_id",
   "+components/regional_capabilities",
   "+components/webui/chrome_urls",
@@ -8,7 +7,6 @@ include_rules = [
   "+ios/chrome/browser/autofill/model/autofill_log_router_factory.h",
   "+ios/chrome/browser/autofill/model/personal_data_manager_factory.h",
   "+ios/chrome/browser/commerce/model/shopping_service_factory.h",
-  "+ios/chrome/browser/regional_capabilities/model/regional_capabilities_factory.h",
   "+ios/chrome/browser/crash_report/model/crash_upload_list.h",
   "+ios/chrome/browser/download/model/background_service/background_download_service_factory.h",
   "+ios/chrome/browser/enterprise/connectors/ios_enterprise_interstitial.h",
@@ -25,6 +23,9 @@ include_rules = [
   "+ios/chrome/browser/optimization_guide/resources/on_device_llm_buildflags.h",
   "+ios/chrome/browser/passwords/model/password_manager_log_router_factory.h",
   "+ios/chrome/browser/policy/model",
+  "+ios/chrome/browser/policy/ui_bundled/management_util.h",
+  "+ios/chrome/browser/policy/ui_bundled/user_policy_util.h",
+  "+ios/chrome/browser/regional_capabilities/model/regional_capabilities_factory.h",
   "+ios/chrome/browser/safe_browsing/model/safe_browsing_blocking_page.h",
   "+ios/chrome/browser/signin/model",
   "+ios/chrome/browser/ssl/model/ios_captive_portal_blocking_page.h",
@@ -34,9 +35,10 @@ include_rules = [
   "+ios/chrome/browser/sync/model/sync_service_factory.h",
   "+ios/chrome/browser/translate/model/chrome_ios_translate_client.h",
   "+ios/chrome/browser/translate/model/translate_service_ios.h",
-  "+ios/chrome/browser/policy/ui_bundled/management_util.h",
-  "+ios/chrome/browser/policy/ui_bundled/user_policy_util.h",
   "+ios/chrome/browser/web/model/java_script_console",
+  "+ios/components/webui",
+  "+mojo/public",
+  # keep-sorted end
 ]
 
 specific_include_rules = {

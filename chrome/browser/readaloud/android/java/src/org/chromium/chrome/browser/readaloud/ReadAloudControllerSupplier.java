@@ -6,7 +6,7 @@ package org.chromium.chrome.browser.readaloud;
 
 import org.chromium.base.UnownedUserDataHost;
 import org.chromium.base.UnownedUserDataKey;
-import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.ui.base.WindowAndroid;
@@ -14,13 +14,13 @@ import org.chromium.ui.base.WindowAndroid;
 /** A class which manages the supplier and UnownedUserData for a {@link ReadAloudController}. */
 @NullMarked
 public class ReadAloudControllerSupplier {
-    private static final UnownedUserDataKey<ObservableSupplier<ReadAloudController>> KEY =
+    private static final UnownedUserDataKey<MonotonicObservableSupplier<ReadAloudController>> KEY =
             new UnownedUserDataKey<>();
 
     /**
      * Return {@link ReadAloudController} supplier associated with the given {@link WindowAndroid}.
      */
-    public static @Nullable ObservableSupplier<ReadAloudController> from(
+    public static @Nullable MonotonicObservableSupplier<ReadAloudController> from(
             WindowAndroid windowAndroid) {
         return KEY.retrieveDataFromHost(windowAndroid.getUnownedUserDataHost());
     }
@@ -31,11 +31,11 @@ public class ReadAloudControllerSupplier {
      * @param host The host to attach the supplier to.
      */
     public static void attach(
-            UnownedUserDataHost host, ObservableSupplier<ReadAloudController> supplier) {
+            UnownedUserDataHost host, MonotonicObservableSupplier<ReadAloudController> supplier) {
         KEY.attachToHost(host, supplier);
     }
 
-    public static void destroy(ObservableSupplier<ReadAloudController> supplier) {
+    public static void destroy(MonotonicObservableSupplier<ReadAloudController> supplier) {
         KEY.detachFromAllHosts(supplier);
     }
 

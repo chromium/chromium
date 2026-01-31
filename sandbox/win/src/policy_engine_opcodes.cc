@@ -87,12 +87,15 @@ EvalResult OpcodeEval<OP_ALWAYS_TRUE>(PolicyOpcode* opcode,
 // Opcode OpAction:
 // Does not require input parameter.
 // Argument 0 contains the actual action to return.
+// Argument 1 contains a pointer sized constant if the action is RETURN_CONST.
 
-PolicyOpcode* OpcodeFactory::MakeOpAction(EvalResult action, uint32_t options) {
-  PolicyOpcode* opcode = MakeBase(OP_ACTION, options, 0);
+PolicyOpcode* OpcodeFactory::MakeOpAction(EvalResult action,
+                                          uintptr_t constant) {
+  PolicyOpcode* opcode = MakeBase(OP_ACTION, kPolNone, 0);
   if (!opcode)
     return nullptr;
   opcode->SetArgument(0, action);
+  opcode->SetArgument(1, constant);
   return opcode;
 }
 

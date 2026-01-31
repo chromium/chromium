@@ -82,21 +82,21 @@
 }
 
 :host-context(body.jelly-enabled) cr-button:has(> iron-icon[
-    slot="prefix-icon"]) {
+    slot='prefix-icon']) {
   padding-inline: 12px 16px;
 }
 
 :host-context(body.jelly-enabled) cr-button > iron-icon[
-    slot="prefix-icon"] {
+    slot='prefix-icon'] {
   padding-inline: 0 8px;
 }
 
 :host-context(body.jelly-enabled) cr-button:has(> iron-icon[
-    slot="suffix-icon"]) {
+    slot='suffix-icon']) {
   padding-inline: 16px 12px;
 }
 
-:host-context(body.jelly-enabled) cr-button > iron-icon[slot="suffix-icon"] {
+:host-context(body.jelly-enabled) cr-button > iron-icon[slot='suffix-icon'] {
   padding-inline: 8px 0;
 }
 

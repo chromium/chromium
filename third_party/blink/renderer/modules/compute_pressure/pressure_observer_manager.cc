@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/modules/compute_pressure/pressure_observer_manager.h"
 
 #include "base/notreached.h"
+#include "base/task/single_thread_task_runner.h"
 #include "mojo/public/cpp/bindings/pending_flush.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "services/device/public/mojom/pressure_update.mojom-blink.h"

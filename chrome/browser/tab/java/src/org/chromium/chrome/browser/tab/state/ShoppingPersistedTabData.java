@@ -16,7 +16,8 @@ import org.chromium.base.Callback;
 import org.chromium.base.FeatureList;
 import org.chromium.base.Log;
 import org.chromium.base.metrics.RecordHistogram;
-import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.supplier.ObservableSuppliers;
+import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.build.annotations.DoNotClassMerge;
@@ -88,8 +89,8 @@ public class ShoppingPersistedTabData extends PersistedTabData {
 
     @VisibleForTesting
     @SuppressWarnings("HidingField")
-    protected ObservableSupplierImpl<Boolean> mIsTabSaveEnabledSupplier =
-            new ObservableSupplierImpl<>();
+    protected SettableMonotonicObservableSupplier<Boolean> mIsTabSaveEnabledSupplier =
+            ObservableSuppliers.createMonotonic();
 
     @VisibleForTesting protected EmptyTabObserver mUrlUpdatedObserver;
 

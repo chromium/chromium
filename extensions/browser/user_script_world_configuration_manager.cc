@@ -74,7 +74,7 @@ std::string_view GetUserScriptWorldKeyForWorldId(
 mojom::UserScriptWorldInfoPtr ParseUserScriptWorldInfo(
     const ExtensionId& extension_id,
     const std::optional<std::string>& world_id,
-    const base::Value::Dict* dict) {
+    const base::DictValue* dict) {
   bool enable_messaging = false;
   std::optional<std::string> csp;
   if (dict) {
@@ -113,7 +113,7 @@ void UserScriptWorldConfigurationManager::SetUserScriptWorldInfo(
     update_dict = update.Create();
   }
 
-  base::Value::Dict world_info_dict;
+  base::DictValue world_info_dict;
   world_info_dict.Set(kUserScriptWorldMessagingKey,
                       world_info->enable_messaging);
   if (world_info->csp.has_value()) {
@@ -153,10 +153,10 @@ UserScriptWorldConfigurationManager::GetUserScriptWorldInfo(
     const ExtensionId& extension_id,
     const std::optional<std::string>& world_id) {
   CHECK(!world_id || !world_id->empty());
-  const base::Value::Dict* worlds_configuration =
+  const base::DictValue* worlds_configuration =
       extension_prefs_->ReadPrefAsDictionary(extension_id,
                                              kUserScriptsWorldsConfiguration);
-  const base::Value::Dict* world_info =
+  const base::DictValue* world_info =
       worlds_configuration ? worlds_configuration->FindDict(
                                  GetUserScriptWorldKeyForWorldId(world_id))
                            : nullptr;
@@ -167,7 +167,7 @@ UserScriptWorldConfigurationManager::GetUserScriptWorldInfo(
 std::vector<mojom::UserScriptWorldInfoPtr>
 UserScriptWorldConfigurationManager::GetAllUserScriptWorlds(
     const ExtensionId& extension_id) {
-  const base::Value::Dict* worlds_configuration =
+  const base::DictValue* worlds_configuration =
       extension_prefs_->ReadPrefAsDictionary(extension_id,
                                              kUserScriptsWorldsConfiguration);
   if (!worlds_configuration) {

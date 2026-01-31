@@ -18,7 +18,6 @@ mojom("mojom") {
     "gesture.mojom",
     "js_channel.mojom",
     "media_caps.mojom",
-    "memory_pressure.mojom",
     "metrics_helper.mojom",
     "queryable_data_store.mojom",
     "service_connector.mojom",

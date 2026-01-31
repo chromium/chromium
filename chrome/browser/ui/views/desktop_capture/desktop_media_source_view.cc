@@ -56,7 +56,7 @@ DesktopMediaSourceView::DesktopMediaSourceView(
     DesktopMediaListView* parent,
     DesktopMediaID source_id,
     DesktopMediaSourceViewStyle style)
-    : parent_(parent), source_id_(source_id) {
+    : parent_(parent), source_id_(source_id), selected_(false) {
   icon_view_ = AddChildView(std::make_unique<views::ImageView>());
   image_view_ = AddChildView(std::make_unique<views::ImageView>());
   label_ = AddChildView(std::make_unique<views::Label>());

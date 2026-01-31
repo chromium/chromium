@@ -9,7 +9,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/lazy_instance.h"
@@ -258,7 +257,8 @@ bool MockRenderProcessHost::ShutdownRequested() {
 bool MockRenderProcessHost::FastShutdownIfPossible(size_t page_count,
                                                    bool skip_unload_handlers,
                                                    bool ignore_workers,
-                                                   bool ignore_keep_alive) {
+                                                   bool ignore_keep_alive,
+                                                   bool ignore_pending_reuse) {
   if (GetActiveViewCount() != page_count)
     return false;
   // We aren't actually going to do anything, but set |fast_shutdown_started_|
@@ -560,8 +560,8 @@ bool MockRenderProcessHost::HostHasNotBeenUsed() {
 }
 
 bool MockRenderProcessHost::IsSpare() const {
-  return base::Contains(SpareRenderProcessHostManagerImpl::Get().GetSpares(),
-                        this);
+  return std::ranges::contains(
+      SpareRenderProcessHostManagerImpl::Get().GetSpares(), this);
 }
 
 void MockRenderProcessHost::SetProcessLock(
@@ -700,5 +700,9 @@ base::ScopedClosureRunner MockRenderProcessHost::DelayProcessShutdown(
 }
 
 void MockRenderProcessHost::StopTrackingProcessForShutdownDelay() {}
+
+bool MockRenderProcessHost::IsOnlyHostingPrerenderedFramesOrEmpty() {
+  return false;
+}
 
 }  // namespace content

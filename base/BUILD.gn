@@ -236,7 +236,6 @@ component("base") {
     "check_op.h",
     "command_line.cc",
     "command_line.h",
-    "compiler_specific.h",
     "component_export.h",
     "containers/adapters.h",
     "containers/adapters_internal.h",
@@ -244,7 +243,6 @@ component("base") {
     "containers/buffer_iterator.h",
     "containers/checked_iterators.h",
     "containers/circular_deque.h",
-    "containers/contains.h",
     "containers/enum_set.h",
     "containers/extend.h",
     "containers/fixed_flat_map.h",
@@ -479,7 +477,6 @@ component("base") {
     "metrics/histogram_base.h",
     "metrics/histogram_delta_serialization.cc",
     "metrics/histogram_delta_serialization.h",
-    "metrics/histogram_flattener.h",
     "metrics/histogram_functions.cc",
     "metrics/histogram_functions.h",
     "metrics/histogram_functions_internal_overloads.h",
@@ -559,6 +556,7 @@ component("base") {
     "process/current_process_test.h",
     "process/environment_internal.cc",
     "process/environment_internal.h",
+    "process/process.cc",
     "process/process.h",
     "process/process_handle.cc",
     "process/process_handle.h",
@@ -634,8 +632,6 @@ component("base") {
     "strings/durable_string_view.h",
     "strings/escape.cc",
     "strings/escape.h",
-    "strings/latin1_string_conversions.cc",
-    "strings/latin1_string_conversions.h",
     "strings/lazy_string_builder.cc",
     "strings/lazy_string_builder.h",
     "strings/levenshtein_distance.cc",
@@ -932,11 +928,11 @@ component("base") {
     "trace_event/named_trigger.h",
     "trace_event/trace_id_helper.cc",
     "trace_event/trace_id_helper.h",
+    "trace_event/trace_session_observer.cc",
+    "trace_event/trace_session_observer.h",
     "traits_bag.h",
     "tuple.h",
-    "types/cxx23_from_range.h",
-    "types/cxx23_is_scoped_enum.h",
-    "types/cxx23_to_underlying.h",
+    "types/cxx26_projected_value_t.h",
     "types/expected.h",
     "types/expected_internal.h",
     "types/expected_macros.h",
@@ -1073,6 +1069,7 @@ component("base") {
 
   deps = [
     ":check_version_internal",
+    ":simdutf_shim",
     "//base/allocator:buildflags",
     "//base/third_party/cityhash",
     "//base/third_party/cityhash_v103",
@@ -2495,6 +2492,7 @@ component("base") {
   ]
 
   public_deps += [
+    ":compiler_specific",
     ":memory_dump_provider_name_variants",
     "//base/tracing/protos:chrome_track_event_zero",
     "//third_party/perfetto:libperfetto",
@@ -2542,6 +2540,29 @@ component("base") {
     configs -= [ "//build/config/compiler:default_optimization" ]
     configs += [ "//build/config/compiler:optimize_max" ]
   }
+}
+
+# A separate source_set for this header to avoid circular dependencies.
+source_set("compiler_specific") {
+  public = [ "compiler_specific.h" ]
+}
+
+# Separate simdutf from ":base", so simdutf cannot accidentally affect the
+# build config for ":base".
+source_set("simdutf_shim") {
+  visibility = [ ":base" ]
+  configs += [
+    "//build/config/compiler:wexit_time_destructors",
+    "//build/config/compiler:wglobal_constructors",
+  ]
+  if (!is_win) {
+    # Generates -Werror,-Wsign-conversion
+    configs += [ "//build/config/compiler:prevent_unsafe_narrowing" ]
+  }
+
+  public = [ "simdutf_shim.h" ]
+  sources = [ "simdutf_shim.cc" ]
+  deps = [ "//third_party/simdutf" ]
 }
 
 if (is_android) {
@@ -2626,6 +2647,7 @@ if (is_linux || is_chromeos) {
     ]
 
     deps = [
+      ":compiler_specific",
       "//base/allocator/partition_allocator:raw_ptr",
       "//base/numerics:base_numerics",
       "//base/third_party/symbolize",
@@ -2788,6 +2810,7 @@ buildflag_header("sanitizer_buildflags") {
   header_dir = "base"
 
   flags = [
+    "IS_ASAN=$is_asan",
     "IS_HWASAN=$is_hwasan",
     "IS_UBSAN=$is_ubsan",
     "IS_UBSAN_SECURITY=$is_ubsan_security",
@@ -3415,7 +3438,6 @@ test("base_unittests") {
     "containers/buffer_iterator_unittest.cc",
     "containers/checked_iterators_unittest.cc",
     "containers/circular_deque_unittest.cc",
-    "containers/contains_unittest.cc",
     "containers/enum_set_unittest.cc",
     "containers/extend_unittest.cc",
     "containers/fixed_flat_map_unittest.cc",
@@ -3752,8 +3774,6 @@ test("base_unittests") {
     "tools_sanity_unittest.cc",
     "traits_bag_unittest.cc",
     "tuple_unittest.cc",
-    "types/cxx23_is_scoped_enum_unittest.cc",
-    "types/cxx23_to_underlying_unittest.cc",
     "types/expected_macros_unittest.cc",
     "types/expected_unittest.cc",
     "types/fixed_array_unittest.cc",
@@ -4476,7 +4496,6 @@ if (enable_nocompile_tests) {
       "check_nocompile.nc",
       "containers/buffer_iterator_nocompile.nc",
       "containers/checked_iterators_nocompile.nc",
-      "containers/contains_nocompile.nc",
       "containers/enum_set_nocompile.nc",
       "containers/fixed_flat_map_nocompile.nc",
       "containers/fixed_flat_set_nocompile.nc",
@@ -4519,11 +4538,7 @@ if (enable_nocompile_tests) {
       "unsafe_buffers_nocompile.nc",
       "values_nocompile.nc",
     ]
-    if (use_cxx23) {
-      sources += [ "containers/adapters_nocompile_cpp23.nc" ]
-    } else {
-      sources += [ "containers/adapters_nocompile.nc" ]
-    }
+    sources += [ "containers/adapters_nocompile.nc" ]
     deps = [ ":base" ]
   }
 }
@@ -5038,17 +5053,17 @@ if (is_android) {
       "android/java/src/org/chromium/base/supplier/BaseObservableSupplierImpl.java",
       "android/java/src/org/chromium/base/supplier/LazyOneshotSupplier.java",
       "android/java/src/org/chromium/base/supplier/LazyOneshotSupplierImpl.java",
+      "android/java/src/org/chromium/base/supplier/MonotonicObservableSupplier.java",
       "android/java/src/org/chromium/base/supplier/NonNullObservableSupplier.java",
       "android/java/src/org/chromium/base/supplier/NullableObservableSupplier.java",
-      "android/java/src/org/chromium/base/supplier/ObservableSupplier.java",
       "android/java/src/org/chromium/base/supplier/ObservableSupplierImpl.java",
       "android/java/src/org/chromium/base/supplier/ObservableSuppliers.java",
       "android/java/src/org/chromium/base/supplier/OneShotCallback.java",
       "android/java/src/org/chromium/base/supplier/OneshotSupplier.java",
       "android/java/src/org/chromium/base/supplier/OneshotSupplierImpl.java",
+      "android/java/src/org/chromium/base/supplier/SettableMonotonicObservableSupplier.java",
       "android/java/src/org/chromium/base/supplier/SettableNonNullObservableSupplier.java",
       "android/java/src/org/chromium/base/supplier/SettableNullableObservableSupplier.java",
-      "android/java/src/org/chromium/base/supplier/SettableObservableSupplier.java",
       "android/java/src/org/chromium/base/supplier/SupplierUtils.java",
       "android/java/src/org/chromium/base/supplier/SyncOneshotSupplier.java",
       "android/java/src/org/chromium/base/supplier/SyncOneshotSupplierImpl.java",
@@ -5436,6 +5451,10 @@ if (is_android) {
       "android/java/src/org/chromium/base/AconfigFlaggedApiDelegate.java",
       "android/java/src/org/chromium/base/BindingRequestQueue.java",
       "android/java/src/org/chromium/base/SelectionActionMenuClientWrapper.java",
+      "android/java/src/org/chromium/base/serial/SerialManager.java",
+      "android/java/src/org/chromium/base/serial/SerialPort.java",
+      "android/java/src/org/chromium/base/serial/SerialPortListener.java",
+      "android/java/src/org/chromium/base/serial/SerialPortResponse.java",
     ]
   }
 
@@ -5611,10 +5630,7 @@ if (is_android) {
       ":tasks_java",
     ]
 
-    srcjar_deps = [ "//base/test:test_support_jni_headers" ]
-
     sources = [
-      "test/android/java/src/org/chromium/base/ScopedFeatureListTestUtils.java",
       "test/android/javatests/src/org/chromium/base/test/ActivityFinisher.java",
       "test/android/javatests/src/org/chromium/base/test/BaseChromiumAndroidJUnitRunner.java",
       "test/android/javatests/src/org/chromium/base/test/BaseJUnit4ClassRunner.java",
@@ -5681,7 +5697,6 @@ if (is_android) {
       "test/android/javatests/src/org/chromium/base/test/util/SkipCheck.java",
       "test/android/javatests/src/org/chromium/base/test/util/TestAnimations.java",
       "test/android/javatests/src/org/chromium/base/test/util/TestFileUtil.java",
-      "test/android/javatests/src/org/chromium/base/test/util/TestLocale.java",
       "test/android/javatests/src/org/chromium/base/test/util/TestThreadUtils.java",
       "test/android/javatests/src/org/chromium/base/test/util/TimeoutTimer.java",
       "test/android/javatests/src/org/chromium/base/test/util/UserActionTester.java",
@@ -5946,7 +5961,10 @@ fuzzer_test("base64_decode_fuzzer") {
 
 fuzzer_test("base64_encode_fuzzer") {
   sources = [ "base64_encode_fuzzer.cc" ]
-  deps = [ "//base" ]
+  deps = [
+    "//base",
+    "//base/test:test_support",
+  ]
 }
 
 fuzzer_test("base64url_fuzzer") {

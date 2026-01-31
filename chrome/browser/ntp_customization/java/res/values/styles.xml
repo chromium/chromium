@@ -9,4 +9,11 @@ found in the LICENSE file.
     <item name="cornerFamily">rounded</item>
     <item name="cornerSize">@dimen/ntp_customization_theme_collections_icon_outer_radius</item>
   </style>
+  <style name="TextAppearance.PreviewDialogText"
+    parent="TextAppearance.TextMediumThick">
+    <item name="android:textColor">@color/ntp_upload_image_preview_dialog_color_list</item>
+  </style>
+  <style name="TextButton.PreviewDialogCancelButton" parent="TextButton.OnAccent1">
+    <item name="buttonTextColor">@color/ntp_upload_image_preview_dialog_color_list</item>
+  </style>
 </resources>

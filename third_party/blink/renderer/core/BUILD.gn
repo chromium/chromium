@@ -60,7 +60,6 @@ import("//third_party/blink/renderer/core/origin_trials/build.gni")
 import("//third_party/blink/renderer/core/overscroll/build.gni")
 import("//third_party/blink/renderer/core/page/build.gni")
 import("//third_party/blink/renderer/core/paint/build.gni")
-import("//third_party/blink/renderer/core/patching/build.gni")
 import("//third_party/blink/renderer/core/permissions_policy/build.gni")
 import("//third_party/blink/renderer/core/preferences/build.gni")
 import("//third_party/blink/renderer/core/resize_observer/build.gni")
@@ -111,12 +110,7 @@ declare_args() {
   # Use vectorization for fast path HTML parser.
   enable_vectorized_html_scanning = false
 
-  if (current_cpu == "arm" || current_cpu == "arm64") {
-    if (arm_use_neon) {
-      enable_vectorized_html_scanning = true
-    }
-  }
-  if (current_cpu == "x64") {
+  if (current_cpu == "arm" || current_cpu == "arm64" || current_cpu == "x64") {
     enable_vectorized_html_scanning = true
   }
 }
@@ -250,6 +244,7 @@ rust_static_library("xml_ffi") {
   ]
   cxx_bindings = [ crate_root ]
   deps = [
+    "//third_party/blink/renderer/platform/wtf",
     "//third_party/rust/cxx/v1:lib",
     "//third_party/rust/xml/v1:lib",
   ]
@@ -290,7 +285,6 @@ component("core") {
   sources +=
       rebase_path(blink_core_sources_view_transition, "", "view_transition")
   sources += rebase_path(blink_core_sources_script_tools, "", "script_tools")
-  sources += rebase_path(blink_core_sources_patching, "", "patching")
   sources += rebase_path(blink_core_sources_dom, "", "dom")
   sources += rebase_path(blink_core_sources_editing, "", "editing")
   sources += rebase_path(blink_core_sources_events, "", "events")
@@ -1520,6 +1514,7 @@ source_set("unit_tests") {
                          "",
                          "scheduler_integration_tests")
   sources += rebase_path(blink_core_tests_script, "", "script")
+  sources += rebase_path(blink_core_tests_script_tools, "", "script_tools")
   sources += rebase_path(blink_core_tests_scroll, "", "scroll")
   sources +=
       rebase_path(blink_core_tests_speculation_rules, "", "speculation_rules")
@@ -1692,6 +1687,8 @@ source_set("unit_test_support") {
     "frame/frame_test_helpers.h",
     "html/canvas/recording_test_utils.cc",
     "html/canvas/recording_test_utils.h",
+    "html/html_permission_element_test_helper.cc",
+    "html/html_permission_element_test_helper.h",
     "html/media/html_media_test_helper.cc",
     "html/media/html_media_test_helper.h",
     "script/mock_script_element_base.h",
@@ -1867,6 +1864,25 @@ test("css_parser_fuzzer") {
     "//third_party/fuzztest:fuzztest_gtest_main",
   ]
   fuzztests = [ "CssParser.ParseSheetFuzzer" ]
+
+  # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
+  # enable the diagnostic by removing this line.
+  configs += [ "//build/config/compiler:no_exit_time_destructors" ]
+}
+
+test("html_permission_element_fuzzer") {
+  sources =
+      [ "html/fuzzers/permission_element/html_permission_element_fuzzer.cc" ]
+  deps = [
+    ":core",
+    ":fuzztest_utils",
+    ":unit_test_support",
+    "//skia",
+    "//testing/gtest",
+    "//third_party/blink/renderer/platform:blink_fuzzer_test_support",
+    "//third_party/fuzztest:fuzztest_gtest_main",
+  ]
+  fuzztests = [ "HTMLPermissionElementFuzzer.TestPermissionElementBounds" ]
 
   # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
   # enable the diagnostic by removing this line.

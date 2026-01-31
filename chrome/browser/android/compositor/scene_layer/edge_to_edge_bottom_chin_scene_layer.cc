@@ -55,12 +55,12 @@ EdgeToEdgeBottomChinSceneLayer::~EdgeToEdgeBottomChinSceneLayer() = default;
 
 void EdgeToEdgeBottomChinSceneLayer::UpdateEdgeToEdgeBottomChinLayer(
     JNIEnv* env,
-    jint container_width,
-    jint container_height,
-    jint color_argb,
-    jint divider_color,
-    jfloat y_offset,
-    jboolean has_constraint,
+    int32_t container_width,
+    int32_t container_height,
+    int32_t color_argb,
+    int32_t divider_color,
+    float y_offset,
+    bool has_constraint,
     const base::android::JavaRef<jobject>& joffset_tag) {
   view_container_->SetBounds(gfx::Size(container_width, container_height));
   view_container_->SetPosition(gfx::PointF(0, y_offset - container_height));
@@ -112,7 +112,7 @@ bool EdgeToEdgeBottomChinSceneLayer::ShouldShowBackground() {
   return should_show_background_;
 }
 
-static jlong JNI_EdgeToEdgeBottomChinSceneLayer_Init(
+static int64_t JNI_EdgeToEdgeBottomChinSceneLayer_Init(
     JNIEnv* env,
     const JavaRef<jobject>& jobj) {
   // This will automatically bind to the Java object and pass ownership there.

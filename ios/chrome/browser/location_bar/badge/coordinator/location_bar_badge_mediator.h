@@ -12,6 +12,7 @@
 
 @protocol BWGCommands;
 @protocol ContextualPanelEntrypointIPHCommands;
+@protocol ContextualSheetCommands;
 @protocol LocationBarBadgeConsumer;
 @protocol LocationBarBadgeMediatorDelegate;
 class PrefService;
@@ -44,9 +45,14 @@ class Tracker;
 // The command handler for entrypoint in-product help commands.
 @property(nonatomic, weak) id<ContextualPanelEntrypointIPHCommands>
     entrypointHelpHandler;
+// The command handler for contextual sheet commands.
+@property(nonatomic, weak) id<ContextualSheetCommands> contextualSheetHandler;
 
 // Cleans up mediator properties and variables.
 - (void)disconnect;
+
+// Cancels any ongoing or future loud moment for the current navigation.
+- (void)cancelContextualPanelEntrypointLoudMoment;
 
 @end
 

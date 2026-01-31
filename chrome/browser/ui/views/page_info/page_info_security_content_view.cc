@@ -54,7 +54,7 @@ void PageInfoSecurityContentView::SetIdentityInfo(
       GetSecurityDescription(identity_info);
   security_description_type_ = security_description->type;
 
-  const int icon_size = GetLayoutConstant(PAGE_INFO_ICON_SIZE);
+  const int icon_size = GetLayoutConstant(LayoutConstant::kPageInfoIconSize);
   if (security_description->summary_style == SecuritySummaryColor::RED) {
     if (identity_info.safe_browsing_status ==
             PageInfo::SAFE_BROWSING_STATUS_MALWARE ||

@@ -73,7 +73,7 @@ class LenientMockPageDiscarder
   MOCK_METHOD1(DiscardPageNodeImpl, bool(const PageNode* page_node));
 
  private:
-  std::optional<base::ByteCount> DiscardPageNode(
+  std::optional<base::ByteSize> DiscardPageNode(
       const PageNode* page_node,
       ::mojom::LifecycleUnitDiscardReason discard_reason) override;
 };

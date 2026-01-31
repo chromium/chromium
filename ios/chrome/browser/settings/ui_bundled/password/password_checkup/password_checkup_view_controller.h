@@ -23,6 +23,9 @@
 // Delegate.
 @property(nonatomic, weak) id<PasswordCheckupViewControllerDelegate> delegate;
 
+// Starts the cooldown period during which tap actions on rows will be ignored.
+- (void)startCooldown;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_SETTINGS_UI_BUNDLED_PASSWORD_PASSWORD_CHECKUP_PASSWORD_CHECKUP_VIEW_CONTROLLER_H_

@@ -156,8 +156,8 @@ class SafetyCheckNotificationClient
   // based on the presence of a timestamp in
   // `prefs::kIosSafetyCheckNotificationFirstPresentTimestamp`. If the
   // timestamp is set and the duration defined by
-  // `SuppressDelayForSafetyCheckNotificationsIfPresent()` has elapsed since
-  // it was set, this function clears the timestamp, effectively re-allowing
+  // `kSafetyCheckNotificationSuppressDelayIfPresent` has elapsed since it was
+  // set, this function clears the timestamp, effectively re-allowing
   // scheduling. Returns `true` if scheduling is allowed, `false` otherwise.
   bool CheckAndResetIfSchedulingIsAllowed();
 

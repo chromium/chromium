@@ -1,0 +1,23 @@
+/* Copyright 2026 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+/* #css_wrapper_metadata_start
+ * #type=style-lit
+ * #import=//resources/cr_elements/cr_shared_style_lit.css.js
+ * #include=cr-shared-style-lit
+ * #css_wrapper_metadata_end */
+
+:host {
+  display: block;
+  margin: 16px auto 8px;
+  max-width: var(--cluster-max-width);
+  width: 100%;
+  padding: 0 16px;
+  box-sizing: border-box;
+}
+
+.filter-chip-container {
+  display: flex;
+  gap: 8px;
+}

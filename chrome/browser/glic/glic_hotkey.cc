@@ -9,6 +9,7 @@
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "build/build_config.h"
 #include "chrome/browser/background/glic/glic_launcher_configuration.h"
 #include "ui/base/accelerators/command.h"
 

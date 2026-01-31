@@ -4,7 +4,6 @@
 
 #include "chromeos/ash/components/network/test_cellular_esim_profile_handler.h"
 
-#include "base/containers/contains.h"
 #include "chromeos/ash/components/network/cellular_utils.h"
 #include "chromeos/ash/components/network/network_state_handler.h"
 
@@ -46,12 +45,12 @@ TestCellularESimProfileHandler::GetESimProfiles() {
 
 bool TestCellularESimProfileHandler::HasRefreshedProfilesForEuicc(
     const std::string& eid) {
-  return base::Contains(refreshed_eids_, eid);
+  return refreshed_eids_.contains(eid);
 }
 
 bool TestCellularESimProfileHandler::HasRefreshedProfilesForEuicc(
     const dbus::ObjectPath& euicc_path) {
-  return base::Contains(refreshed_euicc_paths_, euicc_path);
+  return refreshed_euicc_paths_.contains(euicc_path);
 }
 
 void TestCellularESimProfileHandler::SetDevicePrefs(PrefService* device_prefs) {

@@ -787,9 +787,9 @@ config("compiler") {
     cflags_cc += [ "-Wno-trigraphs" ]
   }
 
-  if (use_relative_vtables_abi) {
+  # Fuchsia enables this by default.
+  if (use_relative_vtables_abi && !is_fuchsia) {
     cflags_cc += [ "-fexperimental-relative-c++-abi-vtables" ]
-    ldflags += [ "-fexperimental-relative-c++-abi-vtables" ]
   }
 
   if (is_wasm) {
@@ -1321,9 +1321,6 @@ config("compiler_cpu_abi") {
         "-march=$arm_arch",
         "-mfloat-abi=$arm_float_abi",
       ]
-      if (arm_tune != "") {
-        cflags += [ "-mtune=$arm_tune" ]
-      }
     } else if (current_cpu == "arm64") {
       if (is_clang && !is_android && !is_fuchsia && !is_chromeos_device) {
         cflags += [ "--target=aarch64-linux-gnu" ]
@@ -1873,7 +1870,7 @@ config("rustc_revision") {
 
 config("compiler_arm_fpu") {
   if (current_cpu == "arm" && !is_ios) {
-    cflags = [ "-mfpu=$arm_fpu" ]
+    cflags = [ "-mfpu=neon" ]
     if (!arm_use_thumb) {
       cflags += [ "-marm" ]
     }
@@ -2276,13 +2273,6 @@ config("default_warnings") {
   if (is_apple) {
     ldflags += [ "-Wl,-no_warn_duplicate_libraries" ]
   }
-
-  # Rust warnings
-
-  # Require `unsafe` blocks even in `unsafe` fns. This is intended to become
-  # an error by default eventually; see
-  # https://github.com/rust-lang/rust/issues/71668
-  rustflags = [ "-Dunsafe_op_in_unsafe_fn" ]
 }
 
 # prevent_unsafe_narrowing ----------------------------------------------------

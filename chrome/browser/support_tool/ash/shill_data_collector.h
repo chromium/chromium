@@ -73,29 +73,29 @@ class ShillDataCollector : public DataCollector {
                       bool success);
 
   // These are functions originated from `system_logs::ShillLogSource`.
-  void OnGetManagerProperties(std::optional<base::Value::Dict> result);
+  void OnGetManagerProperties(std::optional<base::DictValue> result);
 
   void OnGetDevice(const std::string& device_path,
-                   std::optional<base::Value::Dict> properties);
+                   std::optional<base::DictValue> properties);
 
   void AddDeviceAndRequestIPConfigs(const std::string& device_path,
-                                    const base::Value::Dict& properties);
+                                    const base::DictValue& properties);
 
   void OnGetIPConfig(const std::string& device_path,
                      const std::string& ip_config_path,
-                     std::optional<base::Value::Dict> properties);
+                     std::optional<base::DictValue> properties);
 
   void AddIPConfig(const std::string& device_path,
                    const std::string& ip_config_path,
-                   const base::Value::Dict& properties);
+                   const base::DictValue& properties);
 
   void OnGetService(const std::string& service_path,
-                    std::optional<base::Value::Dict> properties);
+                    std::optional<base::DictValue> properties);
 
   // Expands UIData from JSON into a dictionary if present. Also detects PII
   // such as the device and service names.
-  base::Value::Dict ExpandProperties(const std::string& object_path,
-                                     const base::Value::Dict& properties);
+  base::DictValue ExpandProperties(const std::string& object_path,
+                                   const base::DictValue& properties);
 
   // Check whether all property requests have been completed. If so, runs
   // redaction::RedactionTool on the collected log.
@@ -107,7 +107,7 @@ class ShillDataCollector : public DataCollector {
   scoped_refptr<base::SequencedTaskRunner> task_runner_for_redaction_tool_;
   scoped_refptr<redaction::RedactionToolContainer> redaction_tool_container_;
   // Contains the retrieved shill log.
-  base::Value::Dict shill_log_;
+  base::DictValue shill_log_;
   PIIMap pii_map_;
   // Records the number of pending entries to be processed.
   int num_entries_left_;

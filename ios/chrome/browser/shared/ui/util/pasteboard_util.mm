@@ -11,7 +11,6 @@
 #import "base/functional/callback_helpers.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/open_from_clipboard/clipboard_async_wrapper_ios.h"
-#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/util/image/image_util.h"
 #import "net/base/apple/url_conversions.h"
 #import "url/gurl.h"
@@ -60,8 +59,7 @@ void StoreURLsInPasteboard(const std::vector<GURL>& urls,
     return;
   }
 
-  GetGeneralPasteboard(base::FeatureList::IsEnabled(kOnlyAccessClipboardAsync),
-                       base::BindOnce(^(UIPasteboard* pasteboard) {
+  GetGeneralPasteboard(base::BindOnce(^(UIPasteboard* pasteboard) {
                          [pasteboard setItems:pasteboard_items];
                        }).Then(std::move(completion)));
 }
@@ -100,8 +98,7 @@ void StoreInPasteboard(NSString* text,
     identifier : [text dataUsingEncoding:NSUTF8StringEncoding],
   };
 
-  GetGeneralPasteboard(base::FeatureList::IsEnabled(kOnlyAccessClipboardAsync),
-                       base::BindOnce(^(UIPasteboard* pasteboard) {
+  GetGeneralPasteboard(base::BindOnce(^(UIPasteboard* pasteboard) {
                          pasteboard.items = @[ copiedURL, copiedText ];
                        }).Then(std::move(completion)));
 }
@@ -111,8 +108,7 @@ void StoreTextInPasteboard(NSString* text) {
 }
 
 void StoreTextInPasteboard(NSString* text, base::OnceClosure completion) {
-  GetGeneralPasteboard(base::FeatureList::IsEnabled(kOnlyAccessClipboardAsync),
-                       base::BindOnce(^(UIPasteboard* pasteboard) {
+  GetGeneralPasteboard(base::BindOnce(^(UIPasteboard* pasteboard) {
                          pasteboard.string = text;
                        }).Then(std::move(completion)));
 }
@@ -137,8 +133,7 @@ ImageCopyResult StoreImageInPasteboard(NSData* data,
 
     result = ImageCopyResult::kURL;
   }
-  GetGeneralPasteboard(base::FeatureList::IsEnabled(kOnlyAccessClipboardAsync),
-                       base::BindOnce(^(UIPasteboard* pasteboard) {
+  GetGeneralPasteboard(base::BindOnce(^(UIPasteboard* pasteboard) {
                          pasteboard.items =
                              [NSMutableArray arrayWithObject:item];
                        }).Then(std::move(completion)));
@@ -150,8 +145,7 @@ void StoreItemInPasteboard(NSDictionary* item) {
 }
 
 void StoreItemInPasteboard(NSDictionary* item, base::OnceClosure completion) {
-  GetGeneralPasteboard(base::FeatureList::IsEnabled(kOnlyAccessClipboardAsync),
-                       base::BindOnce(^(UIPasteboard* pasteboard) {
+  GetGeneralPasteboard(base::BindOnce(^(UIPasteboard* pasteboard) {
                          pasteboard.items = [NSArray arrayWithObject:item];
                        }).Then(std::move(completion)));
 }
@@ -161,8 +155,7 @@ void ClearPasteboard() {
 }
 
 void ClearPasteboard(base::OnceClosure completion) {
-  GetGeneralPasteboard(base::FeatureList::IsEnabled(kOnlyAccessClipboardAsync),
-                       base::BindOnce(^(UIPasteboard* pasteboard) {
+  GetGeneralPasteboard(base::BindOnce(^(UIPasteboard* pasteboard) {
                          pasteboard.items = @[];
                        }).Then(std::move(completion)));
 }

@@ -300,7 +300,7 @@ class SmartCardProviderPrivateAPI
       base::OnceCallback<void(ResultPtr)> callback,
       void (SmartCardProviderPrivateAPI::*OnTimeout)(const std::string&,
                                                      RequestId),
-      base::Value::List event_arguments = base::Value::List(),
+      base::ListValue event_arguments = base::ListValue(),
       std::optional<base::TimeDelta> timeout = std::nullopt);
 
   device::mojom::SmartCardConnectResultPtr CreateSmartCardConnection(

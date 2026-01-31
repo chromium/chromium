@@ -99,7 +99,7 @@ class ManifestUpdateCheckCommand
       OnDidGetWebAppOriginAssociations next_step_callback);
   void StashValidatedScopeExtensions(
       base::OnceClosure next_step_callback,
-      ScopeExtensions validated_scope_extensions);
+      OriginAssociations validated_origin_associations);
 
   // Stage: Loading existing manifest data from disk.
   // (ManifestUpdateCheckStage::kLoadingExistingManifestData)

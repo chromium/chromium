@@ -46,7 +46,7 @@ class IdleTimeoutPolicyUtilsTest : public PlatformTest {
   void TearDown() override { profile_.reset(); }
 
   void SetIdleTimeoutActions(std::vector<ActionType> action_types) {
-    base::Value::List actions;
+    base::ListValue actions;
     for (auto action_type : action_types) {
       actions.Append(static_cast<int>(action_type));
     }

@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "base/strings/string_util.h"
 
 #include <math.h>
@@ -22,6 +17,7 @@
 #include <type_traits>
 
 #include "base/bits.h"
+#include "base/compiler_specific.h"
 #include "base/strings/utf_ostream_operators.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
@@ -1494,11 +1490,12 @@ TEST(StringUtilTest, LcpyTest) {
     char16_t u16dst[10];
     wchar_t wdst[10];
     EXPECT_EQ(7U, strlcpy(dst, "abcdefg", std::size(dst)));
-    EXPECT_EQ(0, memcmp(dst, "abcdefg", sizeof(dst[0]) * 8));
+    EXPECT_EQ(0, UNSAFE_TODO(memcmp(dst, "abcdefg", sizeof(dst[0]) * 8)));
     EXPECT_EQ(7U, u16cstrlcpy(u16dst, u"abcdefg", std::size(u16dst)));
-    EXPECT_EQ(0, memcmp(u16dst, u"abcdefg", sizeof(u16dst[0]) * 8));
+    EXPECT_EQ(0,
+              UNSAFE_TODO(memcmp(u16dst, u"abcdefg", sizeof(u16dst[0]) * 8)));
     EXPECT_EQ(7U, wcslcpy(wdst, L"abcdefg", std::size(wdst)));
-    EXPECT_EQ(0, memcmp(wdst, L"abcdefg", sizeof(wdst[0]) * 8));
+    EXPECT_EQ(0, UNSAFE_TODO(memcmp(wdst, L"abcdefg", sizeof(wdst[0]) * 8)));
 
     EXPECT_EQ(7U, strlcpy(dst, "abcdefg"));
     EXPECT_EQ(base::span(dst).first(8u),
@@ -1544,11 +1541,11 @@ TEST(StringUtilTest, LcpyTest) {
     char16_t u16dst[8];
     wchar_t wdst[8];
     EXPECT_EQ(7U, strlcpy(dst, "abcdefg", std::size(dst)));
-    EXPECT_EQ(0, memcmp(dst, "abcdefg", 8));
+    EXPECT_EQ(0, UNSAFE_TODO(memcmp(dst, "abcdefg", 8)));
     EXPECT_EQ(7U, u16cstrlcpy(u16dst, u"abcdefg", std::size(u16dst)));
-    EXPECT_EQ(0, memcmp(u16dst, u"abcdefg", sizeof(u16dst)));
+    EXPECT_EQ(0, UNSAFE_TODO(memcmp(u16dst, u"abcdefg", sizeof(u16dst))));
     EXPECT_EQ(7U, wcslcpy(wdst, L"abcdefg", std::size(wdst)));
-    EXPECT_EQ(0, memcmp(wdst, L"abcdefg", sizeof(wdst)));
+    EXPECT_EQ(0, UNSAFE_TODO(memcmp(wdst, L"abcdefg", sizeof(wdst))));
 
     EXPECT_EQ(7U, strlcpy(dst, "abcdefg"));
     EXPECT_EQ(base::span(dst), base::span_with_nul_from_cstring("abcdefg"));
@@ -1564,11 +1561,11 @@ TEST(StringUtilTest, LcpyTest) {
     char16_t u16dst[7];
     wchar_t wdst[7];
     EXPECT_EQ(7U, strlcpy(dst, "abcdefg", std::size(dst)));
-    EXPECT_EQ(0, memcmp(dst, "abcdef", sizeof(dst[0]) * 7));
+    EXPECT_EQ(0, UNSAFE_TODO(memcmp(dst, "abcdef", sizeof(dst[0]) * 7)));
     EXPECT_EQ(7U, u16cstrlcpy(u16dst, u"abcdefg", std::size(u16dst)));
-    EXPECT_EQ(0, memcmp(u16dst, u"abcdef", sizeof(u16dst[0]) * 7));
+    EXPECT_EQ(0, UNSAFE_TODO(memcmp(u16dst, u"abcdef", sizeof(u16dst[0]) * 7)));
     EXPECT_EQ(7U, wcslcpy(wdst, L"abcdefg", std::size(wdst)));
-    EXPECT_EQ(0, memcmp(wdst, L"abcdef", sizeof(wdst[0]) * 7));
+    EXPECT_EQ(0, UNSAFE_TODO(memcmp(wdst, L"abcdef", sizeof(wdst[0]) * 7)));
 
     EXPECT_EQ(7U, strlcpy(dst, "abcdefg"));
     EXPECT_EQ(base::span(dst), base::span_with_nul_from_cstring("abcdef"));
@@ -1584,11 +1581,11 @@ TEST(StringUtilTest, LcpyTest) {
     char16_t u16dst[3];
     wchar_t wdst[3];
     EXPECT_EQ(7U, strlcpy(dst, "abcdefg", std::size(dst)));
-    EXPECT_EQ(0, memcmp(dst, "ab", sizeof(dst)));
+    EXPECT_EQ(0, UNSAFE_TODO(memcmp(dst, "ab", sizeof(dst))));
     EXPECT_EQ(7U, u16cstrlcpy(u16dst, u"abcdefg", std::size(u16dst)));
-    EXPECT_EQ(0, memcmp(u16dst, u"ab", sizeof(u16dst)));
+    EXPECT_EQ(0, UNSAFE_TODO(memcmp(u16dst, u"ab", sizeof(u16dst))));
     EXPECT_EQ(7U, wcslcpy(wdst, L"abcdefg", std::size(wdst)));
-    EXPECT_EQ(0, memcmp(wdst, L"ab", sizeof(wdst)));
+    EXPECT_EQ(0, UNSAFE_TODO(memcmp(wdst, L"ab", sizeof(wdst))));
 
     EXPECT_EQ(7U, strlcpy(dst, "abcdefg"));
     EXPECT_EQ(base::span(dst), base::span_with_nul_from_cstring("ab"));
@@ -1850,7 +1847,8 @@ class WriteIntoTest : public testing::Test {
   static void WritesCorrectly(size_t num_chars) {
     std::string buffer;
     char kOriginal[] = "supercali";
-    strncpy(WriteInto(&buffer, num_chars + 1), kOriginal, num_chars);
+    UNSAFE_TODO(
+        strncpy(WriteInto(&buffer, num_chars + 1), kOriginal, num_chars));
     // Using std::string(buffer.c_str()) instead of |buffer| truncates the
     // string at the first \0.
     EXPECT_EQ(
@@ -1870,7 +1868,7 @@ TEST_F(WriteIntoTest, WriteInto) {
   // Validate that WriteInto handles 0-length strings
   std::string empty;
   const char kOriginal[] = "original";
-  strncpy(WriteInto(&empty, 1), kOriginal, 0);
+  UNSAFE_TODO(strncpy(WriteInto(&empty, 1), kOriginal, 0));
   EXPECT_STREQ("", empty.c_str());
   EXPECT_EQ(0u, empty.size());
 
@@ -1880,7 +1878,7 @@ TEST_F(WriteIntoTest, WriteInto) {
   const char kDead[] = "dead";
   const std::string live = kLive;
   std::string dead = live;
-  strncpy(WriteInto(&dead, 5), kDead, 4);
+  UNSAFE_TODO(strncpy(WriteInto(&dead, 5), kDead, 4));
   EXPECT_EQ(kDead, dead);
   EXPECT_EQ(4u, dead.size());
   EXPECT_EQ(kLive, live);

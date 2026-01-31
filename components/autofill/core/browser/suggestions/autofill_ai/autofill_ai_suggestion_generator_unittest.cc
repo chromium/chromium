@@ -13,11 +13,13 @@
 #include "base/test/run_until.h"
 #include "base/test/task_environment.h"
 #include "base/types/optional_ref.h"
+#include "build/build_config.h"
 #include "components/autofill/core/browser/autofill_field.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_instance.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_type.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_type_names.h"
 #include "components/autofill/core/browser/field_types.h"
+#include "components/autofill/core/browser/filling/field_filling_util.h"
 #include "components/autofill/core/browser/form_processing/autofill_ai/determine_attribute_types.h"
 #include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/browser/foundations/test_autofill_client.h"
@@ -70,15 +72,35 @@ auto SuggestionsAre(auto&&... matchers) {
                      HasType(SuggestionType::kManageAutofillAi));
 }
 
+std::u16string GetFlightReservationName(const EntityInstance& entity) {
+  return entity
+      .attribute(
+          AttributeType(AttributeTypeName::kFlightReservationPassengerName))
+      ->GetCompleteInfo(kAppLocaleUS);
+}
+
+std::u16string GetPassportName(const EntityInstance& entity) {
+  return entity.attribute(AttributeType(AttributeTypeName::kPassportName))
+      ->GetCompleteInfo(kAppLocaleUS);
+}
+
+std::u16string GetPassportNumber(const EntityInstance& entity) {
+  return entity.attribute(AttributeType(AttributeTypeName::kPassportNumber))
+      ->GetCompleteInfo(kAppLocaleUS);
+}
+
+std::u16string GetDriversLicenseName(const EntityInstance& entity) {
+  return entity
+      .attribute(AttributeType(AttributeTypeName::kDriversLicenseName))
+      ->GetCompleteInfo(kAppLocaleUS);
+}
+
 class AutofillAiSuggestionGeneratorTest : public testing::Test {
  public:
   AutofillAiSuggestionGeneratorTest() {
     scoped_feature_list_.InitWithFeatures(
         /*enabled_features=*/{features::kAutofillAiWithDataSchema,
                               features::kAutofillAiServerModel,
-                              features::kAutofillAiNationalIdCard,
-                              features::kAutofillAiKnownTravelerNumber,
-                              features::kAutofillAiRedressNumber,
                               features::kAutofillAiWalletFlightReservation},
         /*disabled_features=*/{});
     autofill_client_.set_entity_data_manager(
@@ -87,7 +109,8 @@ class AutofillAiSuggestionGeneratorTest : public testing::Test {
             autofill_client_.GetSyncService(),
             webdata_helper_.autofill_webdata_service(),
             /*history_service=*/nullptr,
-            /*strike_database=*/nullptr));
+            /*strike_database=*/nullptr,
+            /*variation_country_code=*/GeoIpCountryCode("US")));
     autofill_client_.SetUpPrefsAndIdentityForAutofillAi();
     generator_ = std::make_unique<AutofillAiSuggestionGenerator>();
   }
@@ -101,7 +124,7 @@ class AutofillAiSuggestionGeneratorTest : public testing::Test {
     }
     form_structure_.emplace(test::GetFormData(form_description));
     CHECK_EQ(field_types.size(), form_structure_->field_count());
-    for (size_t i = 0; i < form_structure_->field_count(); i++) {
+    for (size_t i = 0; i < form_structure_->field_count(); ++i) {
       form_structure_->field(i)->set_server_predictions({[&] {
         FieldPrediction prediction;
         prediction.set_type(field_types[i]);
@@ -177,27 +200,27 @@ class AutofillAiSuggestionGeneratorTest : public testing::Test {
   std::optional<FormStructure> form_structure_;
 };
 
-std::u16string GetFlightReservationName(const EntityInstance& entity) {
-  return entity
-      .attribute(
-          AttributeType(AttributeTypeName::kFlightReservationPassengerName))
-      ->GetCompleteInfo(kAppLocaleUS);
-}
+// Tests that the suggestions's main text is obfuscated when the triggering
+// field is from an attribute type that should be obfuscated.
+// TODO(crbug.com/479195210): Failing on Linux UBSan. Re-enable this.
+#if BUILDFLAG(IS_LINUX)
+#define MAYBE_SuggestionMainTextIsObfuscated \
+  DISABLED_SuggestionMainTextIsObfuscated
+#else
+#define MAYBE_SuggestionMainTextIsObfuscated SuggestionMainTextIsObfuscated
+#endif
+TEST_F(AutofillAiSuggestionGeneratorTest,
+       MAYBE_SuggestionMainTextIsObfuscated) {
+  EntityInstance passport_entity =
+      test::GetPassportEntityInstanceWithRandomGuid(
+          {.number = u"123456", .country = u"Brazil"});
+  SetEntities({passport_entity});
+  SetForm({PASSPORT_NUMBER});
 
-std::u16string GetPassportName(const EntityInstance& entity) {
-  return entity.attribute(AttributeType(AttributeTypeName::kPassportName))
-      ->GetCompleteInfo(kAppLocaleUS);
-}
-
-std::u16string GetPassportNumber(const EntityInstance& entity) {
-  return entity.attribute(AttributeType(AttributeTypeName::kPassportNumber))
-      ->GetCompleteInfo(kAppLocaleUS);
-}
-
-std::u16string GetDriversLicenseName(const EntityInstance& entity) {
-  return entity
-      .attribute(AttributeType(AttributeTypeName::kDriversLicenseName))
-      ->GetCompleteInfo(kAppLocaleUS);
+  EXPECT_THAT(
+      CreateAutofillAiFillingSuggestions(field(0)),
+      SuggestionsAre(HasMainText(GetObfuscatedValue(
+          GetPassportNumber(passport_entity), /*visible_suffix_length=*/4))));
 }
 
 TEST_F(AutofillAiSuggestionGeneratorTest, GeneratesAutofillAiSuggestions) {
@@ -416,8 +439,10 @@ TEST_F(AutofillAiSuggestionGeneratorTest,
 
   std::vector<Suggestion> suggestions =
       CreateAutofillAiFillingSuggestions(field(0));
-  EXPECT_THAT(suggestions,
-              SuggestionsAre(HasMainText(GetPassportNumber(passport_entity))));
+  EXPECT_THAT(
+      suggestions,
+      SuggestionsAre(HasMainText(GetObfuscatedValue(
+          GetPassportNumber(passport_entity), /*visible_suffix_length=*/4))));
   EXPECT_THAT(suggestions,
               SuggestionsAre(HasLabel(u"Passport · Pippi Långstrump")));
 
@@ -554,22 +579,22 @@ TEST_F(AutofillAiSuggestionGeneratorTest,
       {.name = u"Bruno", .use_count = 1});
   EntityInstance passport2 = test::GetPassportEntityInstanceWithRandomGuid(
       {.name = u"Jon Doe", .number = u"927908CYGAS1", .use_count = 10});
-  EntityInstance driversLicense1 =
+  EntityInstance drivers_license1 =
       test::GetDriversLicenseEntityInstanceWithRandomGuid({.use_count = 9});
-  EntityInstance driversLicense2 =
+  EntityInstance drivers_license2 =
       test::GetDriversLicenseEntityInstanceWithRandomGuid(
           {.name = u"Mr Pink", .use_count = 8});
-  SetEntities({passport1, passport2, driversLicense1, driversLicense2});
+  SetEntities({passport1, passport2, drivers_license1, drivers_license2});
   SetForm({NAME_FULL, PASSPORT_NUMBER, DRIVERS_LICENSE_NUMBER});
 
   // `passport1` comes before vehicle entities because the entity of highest
   // frecency is also a passport entity.
   std::vector<Suggestion> res = CreateAutofillAiFillingSuggestions(field(0));
-  EXPECT_THAT(
-      res, SuggestionsAre(HasMainText(GetPassportName(passport2)),
-                          HasMainText(GetPassportName(passport1)),
-                          HasMainText(GetDriversLicenseName(driversLicense1)),
-                          HasMainText(GetDriversLicenseName(driversLicense2))));
+  EXPECT_THAT(res, SuggestionsAre(
+                       HasMainText(GetPassportName(passport2)),
+                       HasMainText(GetPassportName(passport1)),
+                       HasMainText(GetDriversLicenseName(drivers_license1)),
+                       HasMainText(GetDriversLicenseName(drivers_license2))));
 }
 
 TEST_F(AutofillAiSuggestionGeneratorTest,

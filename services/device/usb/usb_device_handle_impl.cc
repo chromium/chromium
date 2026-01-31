@@ -12,7 +12,6 @@
 #include <vector>
 
 #include "base/compiler_specific.h"
-#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/location.h"
@@ -585,7 +584,7 @@ void UsbDeviceHandleImpl::ClaimInterface(int interface_number,
     std::move(callback).Run(false);
     return;
   }
-  if (base::Contains(claimed_interfaces_, interface_number)) {
+  if (claimed_interfaces_.contains(interface_number)) {
     std::move(callback).Run(true);
     return;
   }
@@ -599,7 +598,7 @@ void UsbDeviceHandleImpl::ReleaseInterface(int interface_number,
                                            ResultCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  if (!device_ || !base::Contains(claimed_interfaces_, interface_number)) {
+  if (!device_ || !claimed_interfaces_.contains(interface_number)) {
     task_runner_->PostTask(FROM_HERE,
                            base::BindOnce(std::move(callback), false));
     return;
@@ -627,7 +626,7 @@ void UsbDeviceHandleImpl::SetInterfaceAlternateSetting(
     ResultCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  if (!device_ || !base::Contains(claimed_interfaces_, interface_number)) {
+  if (!device_ || !claimed_interfaces_.contains(interface_number)) {
     std::move(callback).Run(false);
     return;
   }
@@ -1066,7 +1065,7 @@ void UsbDeviceHandleImpl::SubmitTransfer(std::unique_ptr<Transfer> transfer) {
 void UsbDeviceHandleImpl::TransferComplete(Transfer* transfer,
                                            base::OnceClosure callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(base::Contains(transfers_, transfer)) << "Missing transfer completed";
+  DCHECK(transfers_.contains(transfer)) << "Missing transfer completed";
   transfers_.erase(transfer);
 
   std::move(callback).Run();

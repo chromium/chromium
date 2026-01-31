@@ -2,9 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <algorithm>
+
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/login_screen_test_api.h"
-#include "base/containers/contains.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ash/login/lock/screen_locker_tester.h"
 #include "chrome/browser/ash/login/login_manager_test.h"
@@ -176,10 +177,12 @@ IN_PROC_BROWSER_TEST_F(LockScreenFilterInputTest, Basic) {
   // Not valid method should be filtered out.
   EXPECT_EQ(lock_screen_ime_state->GetNumEnabledInputMethods(), 2u);
 
-  EXPECT_TRUE(base::Contains(lock_screen_ime_state->GetEnabledInputMethodIds(),
-                             valid_lock_screen_method_));
-  EXPECT_FALSE(base::Contains(lock_screen_ime_state->GetEnabledInputMethodIds(),
-                              not_valid_lock_screen_method_));
+  EXPECT_TRUE(
+      std::ranges::contains(lock_screen_ime_state->GetEnabledInputMethodIds(),
+                            valid_lock_screen_method_));
+  EXPECT_FALSE(
+      std::ranges::contains(lock_screen_ime_state->GetEnabledInputMethodIds(),
+                            not_valid_lock_screen_method_));
 
   // Check that input methods are restored in the session.
   locker_tester.UnlockWithPassword(test_account_id,
@@ -188,10 +191,10 @@ IN_PROC_BROWSER_TEST_F(LockScreenFilterInputTest, Basic) {
   EXPECT_EQ(input_manager->GetActiveIMEState(), user_ime_state);
 
   EXPECT_EQ(user_ime_state->GetNumEnabledInputMethods(), 3u);
-  EXPECT_TRUE(base::Contains(user_ime_state->GetEnabledInputMethodIds(),
-                             valid_lock_screen_method_));
-  EXPECT_TRUE(base::Contains(user_ime_state->GetEnabledInputMethodIds(),
-                             not_valid_lock_screen_method_));
+  EXPECT_TRUE(std::ranges::contains(user_ime_state->GetEnabledInputMethodIds(),
+                                    valid_lock_screen_method_));
+  EXPECT_TRUE(std::ranges::contains(user_ime_state->GetEnabledInputMethodIds(),
+                                    not_valid_lock_screen_method_));
 }
 
 // DeviceLoginScreenInputMethods policy should not affect lock screen.

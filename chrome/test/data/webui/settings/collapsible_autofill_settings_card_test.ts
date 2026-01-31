@@ -29,6 +29,11 @@ function setupDefaultPrefs(settingsPrefs: SettingsPrefsElement) {
 suite('CollapsibleAutofillSettingsCard', function() {
   let entityDataManager: TestEntityDataManagerProxy;
   let settingsPrefs: SettingsPrefsElement;
+  // Note that authentication is not available on linux.
+  // <if expr="is_win or is_macosx or is_chromeos">
+  const authenticationPref =
+      'prefs.autofill.autofill_ai.reauth_before_viewing_sensitive_data';
+  // </if>
 
   suiteSetup(function() {
     settingsPrefs = document.createElement('settings-prefs');
@@ -53,12 +58,15 @@ suite('CollapsibleAutofillSettingsCard', function() {
   async function createCollapsibleAutofillSettingsCard(
       eligibleUser: boolean = true,
       autofillAiIgnoresWhetherAddressFillingIsEnabled: boolean = false,
-      optInStatusResponse: boolean = true): Promise<CollapsibleCardElement> {
+      optInStatusResponse: boolean = true,
+      autofillAiAvailableByDefault: boolean =
+          false): Promise<CollapsibleCardElement> {
     entityDataManager.setGetOptInStatusResponse(optInStatusResponse);
     loadTimeData.overrideValues({
       userEligibleForAutofillAi: eligibleUser,
       AutofillAiIgnoresWhetherAddressFillingIsEnabled:
           autofillAiIgnoresWhetherAddressFillingIsEnabled,
+      autofillAiAvailableByDefault: autofillAiAvailableByDefault,
     });
 
     const card: CollapsibleCardElement =
@@ -118,6 +126,63 @@ suite('CollapsibleAutofillSettingsCard', function() {
           params.enhancedAutofillEligibleUser && params.enhancedAutofillOptedIn,
           toggle.checked);
     });
+  });
+
+  test('AutofillAiAvailableByDefaultFalseRendersExpectedUI', async function() {
+    const card = await createCollapsibleAutofillSettingsCard(
+        /*eligibleUser=*/ true,
+        /*autofillAiIgnoresWhetherAddressFillingIsEnabled=*/ false,
+        /*optInStatusResponse=*/ true,
+        /*autofillAiAvailableByDefault=*/ false);
+
+    const firstColumn = card.shadowRoot!.querySelector('.column');
+    assertTrue(!!firstColumn);
+    const bulletsInFirstColumn = firstColumn.querySelectorAll('li');
+    assertEquals(2, bulletsInFirstColumn.length);
+
+    const firstBullet = bulletsInFirstColumn.item(0);
+    assertTrue(firstBullet !== null);
+    const firstBulletIcon = firstBullet.querySelector('cr-icon');
+    assertTrue(!!firstBulletIcon);
+    assertEquals('settings20:sync-saved-locally', firstBulletIcon.icon);
+    const firstBulletText =
+        firstBullet.querySelector('.cr-secondary-text')!.textContent.trim();
+    assertEquals(
+        loadTimeData.getString('autofillAiWhenOnUseToFill'), firstBulletText);
+
+    const secondBullet = bulletsInFirstColumn.item(1);
+    assertTrue(secondBullet !== null);
+    const secondBulletIcon = secondBullet.querySelector('cr-icon');
+    assertTrue(!!secondBulletIcon);
+    assertEquals('settings20:text-analysis', secondBulletIcon.icon);
+    const secondBulletText =
+        secondBullet.querySelector('.cr-secondary-text')!.textContent.trim();
+    assertEquals(
+        loadTimeData.getString('autofillAiWhenOnUseToFill'), secondBulletText);
+  });
+
+  test('AutofillAiAvailableByDefaultTrueRendersExpectedUI', async function() {
+    const card = await createCollapsibleAutofillSettingsCard(
+        /*eligibleUser=*/ true,
+        /*autofillAiIgnoresWhetherAddressFillingIsEnabled=*/ false,
+        /*optInStatusResponse=*/ true,
+        /*autofillAiAvailableByDefault=*/ true);
+
+    const firstColumn = card.shadowRoot!.querySelector('.column');
+    assertTrue(!!firstColumn);
+    const bulletsInFirstColumn = firstColumn.querySelectorAll('li');
+    assertEquals(1, bulletsInFirstColumn.length);
+
+    const firstBullet = bulletsInFirstColumn.item(0);
+    assertTrue(firstBullet !== null);
+    const firstBulletIcon = firstBullet.querySelector('cr-icon');
+    assertTrue(!!firstBulletIcon);
+    assertEquals('settings20:text-analysis', firstBulletIcon.icon);
+    const firstBulletText =
+        firstBullet.querySelector('.cr-secondary-text')!.textContent.trim();
+    assertEquals(
+        loadTimeData.getString('autofillAiWhenOnCanFillDifficultFields'),
+        firstBulletText);
   });
 
   test('RendersHeader', async function() {
@@ -363,4 +428,85 @@ suite('CollapsibleAutofillSettingsCard', function() {
     assertEquals(undefined, card.get('enhancedAutofillOptedIn_.controlledBy'));
     assertFalse(!!getLoggingBullet());
   });
+
+  test('WalletablePassDetectionToggleVisibleWhenEligible', async function() {
+    loadTimeData.overrideValues(
+        {isUserEligibleForWalletablePassDetection: true});
+    const card = await createCollapsibleAutofillSettingsCard();
+    const component = card.shadowRoot!.querySelector<HTMLElement>(
+        '#walletablePassDetectionToggle');
+    assertTrue(!!component);
+  });
+
+  test('WalletablePassDetectionToggleHiddenWhenNotEligible', async function() {
+    loadTimeData.overrideValues(
+        {isUserEligibleForWalletablePassDetection: false});
+    const card = await createCollapsibleAutofillSettingsCard();
+    const component = card.shadowRoot!.querySelector<HTMLElement>(
+        '#walletablePassDetectionToggle');
+    assertFalse(!!component);
+  });
+
+  // <if expr="is_win or is_macosx or is_chromeos">
+  test('AutofillAiReauthToggleHiddenWhenFeatureDisabled', async function() {
+    loadTimeData.overrideValues(
+        {autofillAiReauthOnViewingSensitiveDataEnabled: false});
+    const card = await createCollapsibleAutofillSettingsCard();
+    const toggle = card.shadowRoot!.querySelector<SettingsToggleButtonElement>(
+        '#optInAuthenticationToggle');
+    assertFalse(isVisible(toggle));
+  });
+
+  test('AutofillAiReauthToggleVisibleWhenFeatureEnabled', async function() {
+    loadTimeData.overrideValues(
+        {autofillAiReauthOnViewingSensitiveDataEnabled: true});
+    const card = await createCollapsibleAutofillSettingsCard();
+    await flushTasks();
+
+    const expandButton = card.shadowRoot!.querySelector('cr-expand-button');
+    assertTrue(!!expandButton);
+    expandButton.click();
+    await flushTasks();
+
+    const toggle = card.shadowRoot!.querySelector<SettingsToggleButtonElement>(
+        '#optInAuthenticationToggle');
+    assertTrue(isVisible(toggle));
+  });
+
+  test('AutofillAiReauthToggleCallsUpdatePrefMethod', async function() {
+    loadTimeData.overrideValues(
+        {autofillAiReauthOnViewingSensitiveDataEnabled: true});
+    const card = await createCollapsibleAutofillSettingsCard();
+    const toggle = card.shadowRoot!.querySelector<SettingsToggleButtonElement>(
+        '#optInAuthenticationToggle');
+    assertTrue(!!toggle);
+
+    card.set(authenticationPref, {
+      type: chrome.settingsPrivate.PrefType.BOOLEAN,
+      value: false,
+    });
+    await flushTasks();
+    assertFalse(toggle.checked);
+
+    toggle.click();
+    await flushTasks();
+    await entityDataManager.whenCalled('toggleAutofillAiReauthRequirement');
+  });
+
+  test('AutofillAiReauthToggleDisabledWhenUserIneligible', async function() {
+    loadTimeData.overrideValues(
+        {autofillAiReauthOnViewingSensitiveDataEnabled: true});
+    const card = await createCollapsibleAutofillSettingsCard(
+        /*eligibleUser=*/ false);
+    const toggle = card.shadowRoot!.querySelector<SettingsToggleButtonElement>(
+        '#optInAuthenticationToggle');
+    assertTrue(!!toggle);
+    assertTrue(toggle.disabled);
+
+    toggle.click();
+    await flushTasks();
+    assertEquals(
+        0, entityDataManager.getCallCount('toggleAutofillAiReauthRequirement'));
+  });
+  // </if>
 });

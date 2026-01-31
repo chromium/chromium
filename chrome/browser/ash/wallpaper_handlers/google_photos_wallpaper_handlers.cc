@@ -179,7 +179,7 @@ constexpr net::NetworkTrafficAnnotationTag
 void AddGooglePhotosPhotoIfValid(
     ash::personalization_app::mojom::FetchGooglePhotosPhotosResponsePtr&
         parsed_response,
-    const base::Value::Dict* photo) {
+    const base::DictValue* photo) {
   if (!photo) {
     return;
   }
@@ -433,7 +433,7 @@ void GooglePhotosAlbumsFetcher::AddRequestAndStartIfNecessary(
 }
 
 GooglePhotosAlbumsCbkArgs GooglePhotosAlbumsFetcher::ParseResponse(
-    const base::Value::Dict* response) {
+    const base::DictValue* response) {
   auto parsed_response =
       ash::personalization_app::mojom::FetchGooglePhotosAlbumsResponse::New();
   if (!response) {
@@ -527,7 +527,7 @@ void GooglePhotosSharedAlbumsFetcher::AddRequestAndStartIfNecessary(
 }
 
 GooglePhotosAlbumsCbkArgs GooglePhotosSharedAlbumsFetcher::ParseResponse(
-    const base::Value::Dict* response) {
+    const base::DictValue* response) {
   auto parsed_response =
       ash::personalization_app::mojom::FetchGooglePhotosAlbumsResponse::New();
   if (!response) {
@@ -601,7 +601,7 @@ void GooglePhotosEnabledFetcher::AddRequestAndStartIfNecessary(
 }
 
 GooglePhotosEnablementState GooglePhotosEnabledFetcher::ParseResponse(
-    const base::Value::Dict* response) {
+    const base::DictValue* response) {
   if (!response) {
     return GooglePhotosEnablementState::kError;
   }
@@ -688,15 +688,14 @@ std::optional<base::Value> GooglePhotosPhotosFetcher::CreateErrorResponse(
   // photos with the given attributes exist. We return an empty list of photos
   // to communicate this back to the caller.
   if (error_code == net::HTTP_NOT_FOUND) {
-    auto empty_list_response =
-        base::Value::Dict().Set("item", base::Value::List());
+    auto empty_list_response = base::DictValue().Set("item", base::ListValue());
     return base::Value(std::move(empty_list_response));
   }
   return std::nullopt;
 }
 
 GooglePhotosPhotosCbkArgs GooglePhotosPhotosFetcher::ParseResponse(
-    const base::Value::Dict* response) {
+    const base::DictValue* response) {
   auto parsed_response =
       ash::personalization_app::mojom::FetchGooglePhotosPhotosResponse::New();
   if (!response) {

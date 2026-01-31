@@ -13,7 +13,8 @@
 #include "ash/system/notification_center/views/ash_notification_view.h"
 #include "ash/system/notification_center/views/notification_center_view.h"
 #include "ash/system/notification_center/views/notification_list_view.h"
-#include "base/containers/contains.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
 #include "ui/message_center/message_center_types.h"
@@ -39,23 +40,22 @@ class GroupedNotificationList {
 
   void AddGroupedNotification(const std::string& notification_id,
                               const std::string& parent_id) {
-    if (!base::Contains(notifications_in_parent_map_, parent_id)) {
-      notifications_in_parent_map_[parent_id] = {};
-    }
+    auto it = notifications_in_parent_map_.try_emplace(parent_id).first;
 
     child_parent_map_[notification_id] = parent_id;
 
     if (notification_id != parent_id) {
-      notifications_in_parent_map_[parent_id].insert(notification_id);
+      it->second.insert(notification_id);
     }
   }
 
   // Remove a single child notification from a grouped notification.
   void RemoveGroupedChildNotification(const std::string& notification_id) {
-    DCHECK(base::Contains(child_parent_map_, notification_id));
-    const std::string& parent_id = child_parent_map_[notification_id];
+    auto it = child_parent_map_.find(notification_id);
+    DCHECK(it != child_parent_map_.end());
+    const std::string& parent_id = it->second;
     notifications_in_parent_map_[parent_id].erase(notification_id);
-    child_parent_map_.erase(notification_id);
+    child_parent_map_.erase(it);
   }
 
   // Clear the entire grouped notification with `parent_id`
@@ -76,17 +76,17 @@ class GroupedNotificationList {
     return child_parent_map_[child_id];
   }
 
-  std::set<std::string>& GetGroupedNotificationsForParent(
+  absl::flat_hash_set<std::string>& GetGroupedNotificationsForParent(
       const std::string& parent_id) {
     return notifications_in_parent_map_[parent_id];
   }
 
   bool GroupedChildNotificationExists(const std::string& child_id) {
-    return base::Contains(child_parent_map_, child_id);
+    return child_parent_map_.contains(child_id);
   }
 
   bool ParentNotificationExists(const std::string& parent_id) {
-    return base::Contains(notifications_in_parent_map_, parent_id);
+    return notifications_in_parent_map_.contains(parent_id);
   }
 
   // Replaces all instances of `old_parent_id` with `new_parent_id` in
@@ -114,12 +114,13 @@ class GroupedNotificationList {
  private:
   // Map for looking up the parent `notification_id` for any given notification
   // id.
-  std::map<std::string, std::string> child_parent_map_;
+  absl::flat_hash_map<std::string, std::string> child_parent_map_;
 
   // Map containing a list of child notification ids per each group parent id.
   // Used to keep track of grouped notifications which already have a parent
   // notification view.
-  std::map<std::string, std::set<std::string>> notifications_in_parent_map_;
+  absl::flat_hash_map<std::string, absl::flat_hash_set<std::string>>
+      notifications_in_parent_map_;
 };
 
 // Needs to be a static instance because we need a single instance to be shared

@@ -34,7 +34,7 @@ TEST(AttributesConditionTest, InvalidSourceInputs) {
       base::Value(std::vector<char>({1, 2, 3, 4, 5}))));
 
   // Invalid dictionaries are rejected.
-  ASSERT_FALSE(SourceAttributesCondition::Create(base::Value::Dict()));
+  ASSERT_FALSE(SourceAttributesCondition::Create(base::DictValue()));
   ASSERT_FALSE(SourceAttributesCondition::Create(CreateDict(R"({"foo": 1})")));
 
   // Dictionaries with correct keys but wrong schema for values are rejected
@@ -102,7 +102,7 @@ TEST(AttributesConditionTest, InvalidDestinationInputs) {
       base::Value(std::vector<char>({1, 2, 3, 4, 5}))));
 
   // Invalid dictionaries are rejected.
-  ASSERT_FALSE(DestinationAttributesCondition::Create(base::Value::Dict()));
+  ASSERT_FALSE(DestinationAttributesCondition::Create(base::DictValue()));
   ASSERT_FALSE(
       DestinationAttributesCondition::Create(CreateDict(R"({"foo": 1})")));
 

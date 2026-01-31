@@ -8,10 +8,9 @@
 #include <utility>
 #include <variant>
 
-#include "base/byte_count.h"
+#include "base/byte_size.h"
 #include "base/check_op.h"
 #include "base/command_line.h"
-#include "base/containers/contains.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/read_only_shared_memory_region.h"
 #include "base/trace_event/named_trigger.h"
@@ -42,8 +41,9 @@ content::ProcessType ValidateBrowserChildProcessType(
   return process_type;
 }
 
-perfetto::StaticString PriorityToString(const base::TaskPriority& priority) {
-  return perfetto::StaticString(base::TaskPriorityToString(priority));
+perfetto::StaticString PriorityToString(
+    const base::Process::Priority& priority) {
+  return perfetto::StaticString(base::ProcessPriorityToString(priority));
 }
 
 }  // namespace
@@ -51,10 +51,10 @@ perfetto::StaticString PriorityToString(const base::TaskPriority& priority) {
 ProcessNodeImpl::ProcessNodeImpl(BrowserProcessNodeTag tag)
     : ProcessNodeImpl(content::PROCESS_TYPE_BROWSER,
                       AnyChildProcessHostProxy{},
-                      base::TaskPriority::HIGHEST) {}
+                      base::Process::Priority::kMaxValue) {}
 
 ProcessNodeImpl::ProcessNodeImpl(RenderProcessHostProxy proxy,
-                                 base::TaskPriority priority)
+                                 base::Process::Priority priority)
     : ProcessNodeImpl(content::PROCESS_TYPE_RENDERER,
                       AnyChildProcessHostProxy(std::move(proxy)),
                       priority) {}
@@ -63,11 +63,11 @@ ProcessNodeImpl::ProcessNodeImpl(content::ProcessType process_type,
                                  BrowserChildProcessHostProxy proxy)
     : ProcessNodeImpl(ValidateBrowserChildProcessType(process_type),
                       AnyChildProcessHostProxy(std::move(proxy)),
-                      base::TaskPriority::HIGHEST) {}
+                      base::Process::Priority::kMaxValue) {}
 
 ProcessNodeImpl::ProcessNodeImpl(content::ProcessType process_type,
                                  AnyChildProcessHostProxy proxy,
-                                 base::TaskPriority priority)
+                                 base::Process::Priority priority)
     : process_type_(process_type),
       child_process_host_proxy_(std::move(proxy)),
       tracing_track_(GetTracingTrack(process_type_, child_process_host_proxy_)),
@@ -274,17 +274,17 @@ bool ProcessNodeImpl::GetMainThreadTaskLoadIsLow() const {
   return main_thread_task_load_is_low_.value();
 }
 
-base::ByteCount ProcessNodeImpl::GetPrivateFootprint() const {
+base::ByteSize ProcessNodeImpl::GetPrivateFootprint() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return private_footprint_;
 }
 
-base::ByteCount ProcessNodeImpl::GetResidentSet() const {
+base::ByteSize ProcessNodeImpl::GetResidentSet() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return resident_set_;
 }
 
-base::ByteCount ProcessNodeImpl::GetPrivateSwap() const {
+base::ByteSize ProcessNodeImpl::GetPrivateSwap() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return private_swap_;
 }
@@ -307,7 +307,7 @@ ProcessNodeImpl::GetBrowserChildProcessHostProxy() const {
   return std::get<BrowserChildProcessHostProxy>(child_process_host_proxy_);
 }
 
-base::TaskPriority ProcessNodeImpl::GetPriority() const {
+base::Process::Priority ProcessNodeImpl::GetPriority() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return priority_.value();
 }
@@ -378,7 +378,7 @@ void ProcessNodeImpl::AddFrame(FrameNodeImpl* frame_node) {
 void ProcessNodeImpl::RemoveFrame(FrameNodeImpl* frame_node) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK_EQ(process_type_, content::PROCESS_TYPE_RENDERER);
-  DCHECK(base::Contains(frame_nodes_, frame_node));
+  DCHECK(frame_nodes_.contains(frame_node));
   frame_nodes_.erase(frame_node);
 }
 
@@ -392,11 +392,11 @@ void ProcessNodeImpl::AddWorker(WorkerNodeImpl* worker_node) {
 void ProcessNodeImpl::RemoveWorker(WorkerNodeImpl* worker_node) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK_EQ(process_type_, content::PROCESS_TYPE_RENDERER);
-  DCHECK(base::Contains(worker_nodes_, worker_node));
+  DCHECK(worker_nodes_.contains(worker_node));
   worker_nodes_.erase(worker_node);
 }
 
-void ProcessNodeImpl::set_priority(base::TaskPriority priority) {
+void ProcessNodeImpl::set_priority(base::Process::Priority priority) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   priority_.SetAndMaybeNotify(this, priority);
 }
@@ -425,9 +425,9 @@ void ProcessNodeImpl::SetProcessImpl(base::Process process,
 
   // Also clear the measurement data (if any), as it references the previous
   // process.
-  private_footprint_ = base::ByteCount(0);
-  resident_set_ = base::ByteCount(0);
-  private_swap_ = base::ByteCount(0);
+  private_footprint_ = base::ByteSize(0);
+  resident_set_ = base::ByteSize(0);
+  private_swap_ = base::ByteSize(0);
 
   process_id_ = new_pid;
   launch_time_ = launch_time;

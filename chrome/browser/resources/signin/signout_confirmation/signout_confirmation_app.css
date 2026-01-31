@@ -33,22 +33,33 @@
   line-height: 20px;
 }
 
+#subtitle p:first-child {
+  white-space: pre-wrap;
+}
+
 extensions-section {
   margin-bottom: 1em;
 }
 
 #action-row {
   display: flex;
+  flex-wrap: wrap;      /* Allow items to wrap to the next line */
   gap: 8px;
   justify-content: flex-end;
 }
 
-<if expr="is_macosx or is_linux">
-#action-row {
-  flex-flow: row-reverse;
-  justify-content: flex-start;
+#action-row cr-button {
+  display: block;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
-</if>
+
+/* 3-button case: push Cancel to the far left. */
+#action-row:not(:has(#verifyReauthButton[hidden])) #cancelButton {
+  margin-inline-end: auto;
+}
 
 .delete-button {
   --cr-button-background-color: var(--google-red-600);

@@ -16,11 +16,11 @@ class CONTENT_EXPORT AccessibilityTreeFormatterAndroid
   AccessibilityTreeFormatterAndroid();
   ~AccessibilityTreeFormatterAndroid() override;
 
-  base::Value::Dict BuildTree(ui::AXPlatformNodeDelegate* root) const override;
-  base::Value::Dict BuildTreeForSelector(
+  base::DictValue BuildTree(ui::AXPlatformNodeDelegate* root) const override;
+  base::DictValue BuildTreeForSelector(
       const AXTreeSelector& selector) const override;
 
-  base::Value::Dict BuildNode(ui::AXPlatformNodeDelegate* node) const override;
+  base::DictValue BuildNode(ui::AXPlatformNodeDelegate* node) const override;
 
  protected:
   void AddDefaultFilters(
@@ -28,13 +28,12 @@ class CONTENT_EXPORT AccessibilityTreeFormatterAndroid
 
  private:
   void RecursiveBuildTree(const ui::AXPlatformNodeDelegate& node,
-                          base::Value::Dict* dict) const;
+                          base::DictValue* dict) const;
 
   void AddProperties(const ui::AXPlatformNodeDelegate& node,
-                     base::Value::Dict* dict) const;
+                     base::DictValue* dict) const;
 
-  std::string ProcessTreeForOutput(
-      const base::Value::Dict& node) const override;
+  std::string ProcessTreeForOutput(const base::DictValue& node) const override;
 };
 
 }  // namespace content

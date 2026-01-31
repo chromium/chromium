@@ -7,8 +7,6 @@
 
 #include <stdint.h>
 
-#include <string>
-
 #include "base/component_export.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ref.h"
@@ -47,9 +45,6 @@ class VariationsLayers;
 // Helper class to instantiate field trials from a variations seed.
 class COMPONENT_EXPORT(VARIATIONS) VariationsSeedProcessor {
  public:
-  using UIStringOverrideCallback =
-      base::RepeatingCallback<void(uint32_t, const std::u16string&)>;
-
   // Note: The `sticky_activation_manager` must outlive this class.
   explicit VariationsSeedProcessor(
       StickyActivationManager& sticky_activation_manager);
@@ -67,7 +62,6 @@ class COMPONENT_EXPORT(VARIATIONS) VariationsSeedProcessor {
   // according to the client's |client_state|.
   void CreateTrialsFromSeed(const VariationsSeed& seed,
                             const ClientFilterableState& client_state,
-                            const UIStringOverrideCallback& override_callback,
                             const EntropyProviders& entropy_providers,
                             const VariationsLayers& layers,
                             base::FeatureList* feature_list);
@@ -82,7 +76,6 @@ class COMPONENT_EXPORT(VARIATIONS) VariationsSeedProcessor {
 
   // Creates and registers a field trial from the |processed_study| data.
   void CreateTrialFromStudy(const ProcessedStudy& processed_study,
-                            const UIStringOverrideCallback& override_callback,
                             const EntropyProviders& entropy_providers,
                             const VariationsLayers& layers,
                             base::FeatureList* feature_list);

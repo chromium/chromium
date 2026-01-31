@@ -39,6 +39,14 @@ TEST(SignalingIdUtilTest, NormalizeSignalingId) {
             NormalizeSignalingId("  Invalid.User@/chromoting_ftl_abc123"));
   EXPECT_EQ("@gmail.com/chromoting_ftl_abc123",
             NormalizeSignalingId("@googlemail.com/chromoting_ftl_abc123"));
+
+  // Corp ID normalization.
+  EXPECT_EQ("user@corp.google.com/some-uuid",
+            NormalizeSignalingId("USER@corp.google.com/some-uuid"));
+  EXPECT_EQ("uuid@type.corp.google.com",
+            NormalizeSignalingId("uuid@TYPE.corp.google.com"));
+  EXPECT_EQ("uuid@type.corp.google.com/resource",
+            NormalizeSignalingId("uuid@TYPE.corp.google.com/resource"));
 }
 
 TEST(SignalingIdUtilTest, SplitSignalingIdResource) {

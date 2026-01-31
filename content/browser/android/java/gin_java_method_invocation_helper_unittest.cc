@@ -112,7 +112,7 @@ class CountingDispatcherDelegate
 }  // namespace
 
 TEST_F(GinJavaMethodInvocationHelperTest, RetrievalOfObjectsNoObjects) {
-  base::Value::List no_objects;
+  base::ListValue no_objects;
   for (int i = 0; i < 10; ++i) {
     no_objects.Append(i);
   }
@@ -125,28 +125,28 @@ TEST_F(GinJavaMethodInvocationHelperTest, RetrievalOfObjectsNoObjects) {
 }
 
 TEST_F(GinJavaMethodInvocationHelperTest, RetrievalOfObjectsHaveObjects) {
-  base::Value::List objects;
+  base::ListValue objects;
   objects.Append(100);
   objects.Append(base::Value::FromUniquePtrValue(
       GinJavaBridgeValue::CreateObjectIDValue(1)));
-  base::Value::List sub_list;
+  base::ListValue sub_list;
   sub_list.Append(200);
   sub_list.Append(base::Value::FromUniquePtrValue(
       GinJavaBridgeValue::CreateObjectIDValue(2)));
   objects.Append(std::move(sub_list));
-  base::Value::Dict sub_dict;
+  base::DictValue sub_dict;
   sub_dict.Set("1", 300);
   sub_dict.Set("2", base::Value::FromUniquePtrValue(
                         GinJavaBridgeValue::CreateObjectIDValue(3)));
   objects.Append(std::move(sub_dict));
-  base::Value::List sub_list_with_dict;
-  base::Value::Dict sub_sub_dict;
+  base::ListValue sub_list_with_dict;
+  base::DictValue sub_sub_dict;
   sub_sub_dict.Set("1", base::Value::FromUniquePtrValue(
                             GinJavaBridgeValue::CreateObjectIDValue(4)));
   sub_list_with_dict.Append(std::move(sub_sub_dict));
   objects.Append(std::move(sub_list_with_dict));
-  base::Value::Dict sub_dict_with_list;
-  base::Value::List sub_sub_list;
+  base::DictValue sub_dict_with_list;
+  base::ListValue sub_sub_list;
   sub_sub_list.Append(base::Value::FromUniquePtrValue(
       GinJavaBridgeValue::CreateObjectIDValue(5)));
   sub_dict_with_list.Set("1", std::move(sub_sub_list));
@@ -207,7 +207,7 @@ class ObjectIsGoneObjectDelegate : public NullObjectDelegate {
 }  // namespace
 
 TEST_F(GinJavaMethodInvocationHelperTest, HandleObjectIsGone) {
-  base::Value::List no_objects;
+  base::ListValue no_objects;
   auto object_delegate_unique = std::make_unique<ObjectIsGoneObjectDelegate>();
   ObjectIsGoneObjectDelegate* object_delegate = object_delegate_unique.get();
   auto helper = base::MakeRefCounted<GinJavaMethodInvocationHelper>(
@@ -258,7 +258,7 @@ class MethodNotFoundObjectDelegate : public NullObjectDelegate {
 }  // namespace
 
 TEST_F(GinJavaMethodInvocationHelperTest, HandleMethodNotFound) {
-  base::Value::List no_objects;
+  base::ListValue no_objects;
   auto object_delegate_unique =
       std::make_unique<MethodNotFoundObjectDelegate>();
   MethodNotFoundObjectDelegate* object_delegate = object_delegate_unique.get();
@@ -315,7 +315,7 @@ const JavaMethod* GetClassObjectDelegate::kFakeGetClass =
 }  // namespace
 
 TEST_F(GinJavaMethodInvocationHelperTest, HandleGetClassInvocation) {
-  base::Value::List no_objects;
+  base::ListValue no_objects;
   auto object_delegate_unique = std::make_unique<GetClassObjectDelegate>();
   GetClassObjectDelegate* object_delegate = object_delegate_unique.get();
   auto helper = base::MakeRefCounted<GinJavaMethodInvocationHelper>(

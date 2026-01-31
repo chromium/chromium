@@ -20,7 +20,8 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.supplier.NonNullObservableSupplier;
-import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.supplier.ObservableSuppliers;
+import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.ui.modelutil.PropertyModel;
 
@@ -30,14 +31,13 @@ public class HubBottomToolbarMediatorUnitTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     private PropertyModel mModel;
-    private ObservableSupplierImpl<Boolean> mVisibilitySupplier;
+    private final SettableNonNullObservableSupplier<Boolean> mVisibilitySupplier =
+            ObservableSuppliers.createNonNull(false);
     private HubBottomToolbarDelegate mDelegate;
 
     @Before
     public void setUp() {
         mModel = new PropertyModel.Builder(HubBottomToolbarProperties.ALL_BOTTOM_KEYS).build();
-
-        mVisibilitySupplier = new ObservableSupplierImpl<>();
         mDelegate =
                 new EmptyHubBottomToolbarDelegate() {
                     @Override
@@ -67,7 +67,6 @@ public class HubBottomToolbarMediatorUnitTest {
         HubBottomToolbarMediator mediator = new HubBottomToolbarMediator(mModel, mDelegate);
 
         // Initially should be false (default from empty supplier)
-        mVisibilitySupplier.set(false);
         assertEquals(false, mModel.get(BOTTOM_TOOLBAR_VISIBLE));
 
         // Change to visible
@@ -76,10 +75,6 @@ public class HubBottomToolbarMediatorUnitTest {
 
         // Change back to hidden
         mVisibilitySupplier.set(false);
-        assertEquals(false, mModel.get(BOTTOM_TOOLBAR_VISIBLE));
-
-        // Test null value handling
-        mVisibilitySupplier.set(null);
         assertEquals(false, mModel.get(BOTTOM_TOOLBAR_VISIBLE));
 
         mediator.destroy();

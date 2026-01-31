@@ -45,13 +45,12 @@ media::mojom::AvailabilityStatus GetOnDeviceSpeechRecognitionAvailabilityStatus(
       return media::mojom::AvailabilityStatus::kUnavailable;
     }
 
-    // TODO(crbug.com/446260680): Use
-    // OnDeviceFeature::kOnDeviceSpeechRecognition.
     std::optional<optimization_guide::mojom::ModelUnavailableReason>
         unavailable_reason =
             optimization_guide::AvailabilityFromEligibilityReason(
                 service->GetOnDeviceModelEligibility(
-                    optimization_guide::mojom::OnDeviceFeature::kPromptApi));
+                    optimization_guide::mojom::OnDeviceFeature::
+                        kOnDeviceSpeechRecognition));
     if (!unavailable_reason.has_value()) {
       return media::mojom::AvailabilityStatus::kAvailable;
     } else {

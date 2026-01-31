@@ -10,6 +10,7 @@
 #import "components/feature_engagement/public/tracker.h"
 #import "components/feature_engagement/test/scoped_iph_feature_list.h"
 #import "components/feature_engagement/test/test_tracker.h"
+#import "ios/chrome/browser/contextual_panel/entrypoint/coordinator/contextual_panel_entrypoint_constants.h"
 #import "ios/chrome/browser/contextual_panel/entrypoint/coordinator/contextual_panel_entrypoint_mediator_delegate.h"
 #import "ios/chrome/browser/contextual_panel/entrypoint/ui/contextual_panel_entrypoint_consumer.h"
 #import "ios/chrome/browser/contextual_panel/model/contextual_panel_item_type.h"
@@ -396,13 +397,13 @@ TEST_F(ContextualPanelEntrypointMediatorTest, TestLargeEntrypointAppears) {
 
   // Advance time so that the large entrypoint is displayed.
   task_environment_.FastForwardBy(
-      base::Seconds(LargeContextualPanelEntrypointDelayInSeconds()));
+      kLargeContextualPanelEntrypointAppearanceDelay);
   EXPECT_TRUE(entrypoint_consumer_.entrypointIsShown);
   EXPECT_TRUE(entrypoint_consumer_.entrypointIsLarge);
 
   // Advance time until the large entrypoint transitions back to small.
   task_environment_.FastForwardBy(
-      base::Seconds(LargeContextualPanelEntrypointDisplayedInSeconds()));
+      kLargeContextualPanelEntrypointDisplayDuration);
   EXPECT_TRUE(entrypoint_consumer_.entrypointIsShown);
   EXPECT_FALSE(entrypoint_consumer_.entrypointIsLarge);
 
@@ -469,7 +470,7 @@ TEST_F(ContextualPanelEntrypointMediatorTest, TestIPHEntrypointAppears) {
 
   // Advance time so that the IPH entrypoint is displayed.
   task_environment_.FastForwardBy(
-      base::Seconds(LargeContextualPanelEntrypointDelayInSeconds()));
+      kLargeContextualPanelEntrypointAppearanceDelay);
   EXPECT_TRUE(entrypoint_consumer_.entrypointIsShown);
   EXPECT_FALSE(entrypoint_consumer_.entrypointIsLarge);
   EXPECT_TRUE(entrypoint_consumer_.entrypointIsColored);
@@ -479,7 +480,7 @@ TEST_F(ContextualPanelEntrypointMediatorTest, TestIPHEntrypointAppears) {
 
   // Advance time until the IPH is dismissed.
   task_environment_.FastForwardBy(
-      base::Seconds(LargeContextualPanelEntrypointDisplayedInSeconds()));
+      kLargeContextualPanelEntrypointDisplayDuration);
   EXPECT_TRUE(entrypoint_consumer_.entrypointIsShown);
   EXPECT_FALSE(entrypoint_consumer_.entrypointIsLarge);
   EXPECT_FALSE(entrypoint_consumer_.entrypointIsColored);

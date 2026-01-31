@@ -15,6 +15,56 @@ chromium::import! {
 
 use mojo_ffi::types;
 
+/// # Safety
+/// * `Self` is a `struct` that has `struct_size: u32` as the first field (at
+///   offset 0).
+/// * `Self` is a `#[repr(C)]` `struct`
+unsafe trait MojoStructWithStructSizeAsFirstField: Sized {
+    fn init_size(mojo_struct: &mut mem::MaybeUninit<Self>) {
+        // SAFETY:
+        // * Alignment: guaranteed by
+        //     - `impl` safety requirements which promise `#[repr(C]`
+        //     - https://doc.rust-lang.org/reference/type-layout.html#r-layout.repr.c.struct.align
+        // * Validity: `impl` safety requirements promises `u32` at offset 0
+        let mojo_size = unsafe {
+            std::mem::transmute::<&mut mem::MaybeUninit<Self>, &mut mem::MaybeUninit<u32>>(
+                mojo_struct,
+            )
+        };
+
+        // `unwrap` should be ok, because we expect sizes of all Mojo struct
+        // to fit into `u32`.
+        let self_size: u32 = std::mem::size_of::<Self>().try_into().unwrap();
+        mojo_size.write(self_size);
+    }
+}
+
+// # Safety requirements
+//
+// * Macro user has to verify that type `$t` is `#[repr(C)]` FOR_RELEASE: Maybe
+//   this safety requirement can be avoided somehow? (One idea is to provide a
+//   custom `#[derive(MojoStructWithStructSize)]` which checks `repr(C)` but of
+//   course `bindgen` wouldn't be able to do this...
+macro_rules! unsafe_impl_mojo_struct_with_size_as_first_field {
+    ($t:ty) => {
+        // Verify that `size` is a `u32` field at offset 0.
+        const _: () = {
+            assert!(0 == std::mem::offset_of!($t, struct_size));
+            fn _check_type_of_size_field_at_compile_time(mojo_struct: $t) {
+                let _: u32 = mojo_struct.struct_size;
+            }
+        };
+
+        // SAFETY:
+        // * `struct_size: u32` at offset 0: Verified in `const` above.
+        // * `#[repr(C)]: Guaranteed by macro user (see safety requirements)
+        unsafe impl MojoStructWithStructSizeAsFirstField for $t {}
+    };
+}
+
+// SAFETY: MojoTrapEvent is guaranteed to be #[repr(C)] by bindgen.
+unsafe_impl_mojo_struct_with_size_as_first_field! {mojo_ffi::MojoTrapEvent}
+
 /// FOR_RELEASE(https://crbug.com/458796903): Instead of hardcoding the
 /// constants (e.g. `0` and `1`), it'd be nicer to access
 /// MOJO_TRIGGER_CONDITION_SIGNALS_SATISFIED here, but the bindings we
@@ -60,8 +110,16 @@ impl RawTrapEvent {
     }
 }
 
-// Due to ABI compatibility, *const T and &T are identical; RawTrapEvent is
-// #[repr(transparent)] and thus has the same layout as MojoTrapEvent).
+/// The EventHandler that will be called when a trigger fires.
+///
+/// Due to ABI compatibility, *const T and &T are identical; RawTrapEvent is
+/// #[repr(transparent)] and thus has the same layout as MojoTrapEvent).
+///
+/// # Safety invariant
+///
+/// The Mojo C API guarantees that once `EventHandler` is called with
+/// `MOJO_RESULT_CANCELLED`, then it won't be called again with the same
+/// `context`.
 pub type EventHandler = extern "C" fn(&RawTrapEvent);
 
 /// The result of arming a `RawTrap`.
@@ -169,16 +227,13 @@ impl RawTrap {
     /// in reinterpreting `RawTrapEvent::trigger_context` as a reference:
     /// the dereference will be safe if the lifetime of the referent is
     /// guaranteed to be longer than the lifetime of RawTrap.
-    pub fn add_trigger<H: Handle>(
+    pub fn add_trigger(
         &self,
-        handle_to_trap: &H,
+        monitored_handle: &impl Trappable,
         signals: HandleSignals,
         condition: TriggerCondition,
         context: usize,
-    ) -> MojoResult
-    where
-        H: Trappable,
-    {
+    ) -> MojoResult {
         unsafe {
             // SAFETY: MojoAddTrigger requires two handles.
             // The first argument is a handle to the Trap object.
@@ -188,7 +243,7 @@ impl RawTrap {
             // constraints on `context` noted earlier.
             MojoResult::from_code(mojo_ffi::MojoAddTrigger(
                 self.handle.get_native_handle(),
-                handle_to_trap.get_native_handle(),
+                monitored_handle.get_native_handle(),
                 signals.bits(),
                 condition.to_raw(),
                 context,
@@ -243,6 +298,21 @@ impl RawTrap {
 
         let (blocking_events_ptr, num_events_ptr) = match blocking_events {
             Some(ref mut slice) => {
+                // For each blocking event, we must initialize `struct_size`.
+                // Otherwise, `MojoArmTrap` below will complain about receiving an invalid
+                // argument.
+                // SAFETY: `transmute` is ok here, because `RawTrapEvent` is
+                // `#[repr(transparent)]`.
+                let raw_slice = unsafe {
+                    mem::transmute::<
+                        &mut [mem::MaybeUninit<RawTrapEvent>],
+                        &mut [mem::MaybeUninit<mojo_ffi::MojoTrapEvent>],
+                    >(slice)
+                };
+
+                for event in raw_slice.iter_mut() {
+                    MojoStructWithStructSizeAsFirstField::init_size(event);
+                }
                 (slice.as_mut_ptr() as *mut mojo_ffi::MojoTrapEvent, &mut num_events as *mut u32)
             }
             None => (ptr::null_mut(), ptr::null_mut()),

@@ -76,10 +76,7 @@ public class WebViewCachedFlags {
      */
     public static void init(SharedPreferences prefs) {
         synchronized (sLock) {
-            if (sInstance != null) {
-                throw new IllegalStateException(
-                        "Cannot call WebViewCachedFlags.init more than once.");
-            }
+            assert sInstance == null : "Cannot call WebViewCachedFlags.init more than once.";
             sInstance =
                     new WebViewCachedFlags(
                             prefs,
@@ -122,6 +119,9 @@ public class WebViewCachedFlags {
                                     Map.entry(
                                             AwFeatures
                                                     .WEBVIEW_OPT_IN_TO_GMS_BIND_SERVICE_OPTIMIZATION,
+                                            DefaultState.DISABLED),
+                                    Map.entry(
+                                            AwFeatures.WEBVIEW_ENABLE_API_CALL_USER_ACTIONS,
                                             DefaultState.DISABLED)));
         }
     }

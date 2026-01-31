@@ -394,14 +394,16 @@ export class Service implements ServiceInterface {
           chrome.metricsPrivate.recordUserAction('Options_UpdateExtensions');
           return new Promise<void>((resolve, reject) => {
             const loadLocalExtensions = async () => {
-              for (const extension of extensions) {
-                if (extension.location === 'UNPACKED') {
-                  try {
-                    await this.reloadItem(extension.id);
-                  } catch (loadError) {
-                    reject(loadError);
-                    break;
-                  }
+              const unpackedExtensions = extensions.filter(
+                  (ext) => ext.location ===
+                      chrome.developerPrivate.Location.UNPACKED);
+
+              for (const extension of unpackedExtensions) {
+                try {
+                  await this.reloadItem(extension.id);
+                } catch (loadError) {
+                  reject(loadError);
+                  break;
                 }
               }
               resolve();

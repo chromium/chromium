@@ -175,7 +175,7 @@ void GetExpectedTestPolicy(PolicyMap* expected, const char* homepage) {
   expected->Set(key::kDefaultPopupsSetting, POLICY_LEVEL_MANDATORY,
                 POLICY_SCOPE_USER, POLICY_SOURCE_CLOUD, base::Value(4),
                 nullptr);
-  base::Value::List list;
+  base::ListValue list;
   list.Append("dev.chromium.org");
   list.Append("youtube.com");
   expected->Set(key::kURLBlocklist, POLICY_LEVEL_MANDATORY, POLICY_SCOPE_USER,

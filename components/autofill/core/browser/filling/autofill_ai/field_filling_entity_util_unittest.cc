@@ -31,7 +31,6 @@
 #include "components/autofill/core/browser/webdata/autofill_webdata_service_test_helper.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_test_utils.h"
-#include "components/autofill/core/common/mojom/autofill_types.mojom-data-view.h"
 #include "components/autofill/core/common/mojom/autofill_types.mojom-shared.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -136,7 +135,8 @@ class FieldFillingEntityUtilTest : public testing::Test {
         client().GetPrefs(), client().GetIdentityManager(),
         client().GetSyncService(), helper_.autofill_webdata_service(),
         /*history_service=*/nullptr,
-        /*strike_database=*/nullptr));
+        /*strike_database=*/nullptr,
+        /*variation_country_code=*/GeoIpCountryCode("US")));
     client().SetUpPrefsAndIdentityForAutofillAi();
 
     test_api(form_).PushField(

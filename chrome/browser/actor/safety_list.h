@@ -40,8 +40,7 @@ class SafetyList {
 
   bool ContainsUrlPair(const GURL& source, const GURL& destination) const;
 
-  static SafetyList ParsePatternListFromJson(
-      const base::Value::List& list_data);
+  static SafetyList ParsePatternListFromJson(const base::ListValue& list_data);
 
  private:
   Patterns patterns_;

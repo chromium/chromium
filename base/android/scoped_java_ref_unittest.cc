@@ -244,7 +244,7 @@ class JavaObjectArrayReaderTest : public testing::Test {
 
     // Make array_len_ different Integer objects, keep a reference to each,
     // and add them to the array.
-    for (jint i = 0; i < array_len_; ++i) {
+    for (int32_t i = 0; i < array_len_; ++i) {
       jobject member = env->NewObject(int_class_.obj(), int_constructor_, i);
       ASSERT_NE(member, nullptr);
       UNSAFE_TODO(array_members_[i]) =

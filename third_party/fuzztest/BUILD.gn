@@ -38,11 +38,6 @@ config("fuzztest_internal_config") {
     "-Wno-c++98-compat-extra-semi",
     "-Wno-deprecated-declarations",
   ]
-
-  # int_utils.h depends on an SSE 4.2 intrinsic.
-  if (current_cpu == "x64") {
-    cflags += [ "-msse4.2" ]
-  }
 }
 
 config("fuzztest_public_config") {

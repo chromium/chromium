@@ -40,9 +40,8 @@ TEST(TestWaitableEvent, WaitingInPoolDoesntRequireAllowance) {
   TestWaitableEvent test_waitable_event;
   // MayBlock()/WithBaseSyncPrimitives()/ScopedAllowBaseSyncPrimitivesForTesting
   // are required to Wait() on a TestWaitableEvent.
-  ThreadPool::PostTask(
-      FROM_HERE, {},
-      BindOnce(&WaitableEvent::Wait, Unretained(&test_waitable_event)));
+  ThreadPool::PostTask(FROM_HERE, {},
+                       test_waitable_event.GetWaitCallbackForTesting());
   test_waitable_event.Signal();
 
   task_environment.RunUntilIdle();

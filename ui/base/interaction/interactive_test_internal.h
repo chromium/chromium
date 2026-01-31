@@ -18,7 +18,6 @@
 #include <variant>
 
 #include "base/callback_list.h"
-#include "base/containers/contains.h"
 #include "base/logging.h"
 #include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
@@ -428,7 +427,7 @@ class StateObserverElementT : public StateObserverElement {
         current_value_(observer->GetStateObserverInitialState()),
         observer_(std::move(observer)) {
     auto& table = GetLookupTable();
-    CHECK(!base::Contains(table, std::make_pair(id, context)))
+    CHECK(!table.contains(std::make_pair(id, context)))
         << "Duplicate ID + context for StateObserver not allowed: " << id
         << ", " << context;
     table.emplace(std::make_pair(id, context), this);

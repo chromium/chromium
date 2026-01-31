@@ -18,6 +18,7 @@
 // however, the resulting problem is hard to diagnose. To avoid this, any
 // Chromium headers which want to #include <pdh.h> should instead include this
 // header.
+#include <PdhMsg.h>
 #include <lm.h>
 #include <pdh.h>
 

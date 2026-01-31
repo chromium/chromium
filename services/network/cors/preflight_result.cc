@@ -286,8 +286,8 @@ bool PreflightResult::HasAuthorizationCoveredByWildcard(
          !headers_.contains(kAuthorization);
 }
 
-base::Value::Dict PreflightResult::NetLogParams() const {
-  return base::Value::Dict()
+base::DictValue PreflightResult::NetLogParams() const {
+  return base::DictValue()
       .Set("access-control-allow-methods", JoinSet(methods_))
       .Set("access-control-allow-headers", JoinSet(headers_));
 }

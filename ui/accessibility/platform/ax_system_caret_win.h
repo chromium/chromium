@@ -54,8 +54,12 @@ class COMPONENT_EXPORT(AX_PLATFORM) AXSystemCaretWin
   AXPlatformNodeId GetUniqueId() const override;
 
   const AXUniqueId unique_id_{AXUniqueId::Create()};
-  gfx::AcceleratedWidget event_target_;
+  const gfx::AcceleratedWidget event_target_;
   AXPlatformNode::Pointer caret_;
+
+  // The IAccessible of the caret's parent HWND. Created lazily on first use.
+  mutable Microsoft::WRL::ComPtr<IAccessible> parent_;
+
   AXNodeData data_;
 
   friend class AXPlatformNodeWin;

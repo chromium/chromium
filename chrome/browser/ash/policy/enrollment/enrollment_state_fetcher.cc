@@ -534,7 +534,7 @@ class StateKeys {
 class EnrollmentState {
  public:
   struct Result {
-    base::Value::Dict dict;
+    base::DictValue dict;
     AutoEnrollmentState state;
   };
   using CompletionCallback = base::OnceCallback<void(Result)>;
@@ -696,7 +696,7 @@ class EnrollmentState {
     return std::move(completion_callback).Run(std::move(result));
   }
 
-  void StoreResponse(PrefService* local_state, const base::Value::Dict& dict) {
+  void StoreResponse(PrefService* local_state, const base::DictValue& dict) {
     LOG(WARNING) << "ServerBackedDeviceState pref: " << dict;
     local_state->SetDict(prefs::kServerBackedDeviceState, dict.Clone());
   }
@@ -878,8 +878,8 @@ class EnrollmentStateFetcherImpl::Sequence {
                                   status);
     if (status ==
         ash::DeviceSettingsService::OwnershipStatus::kOwnershipUnknown) {
-      LOG(ERROR) << "Device ownership is unknown. Skipping enrollment";
-      return ReportResult(AutoEnrollmentResult::kNoEnrollment);
+      // See crbug.com/470630590
+      LOG(ERROR) << "Device ownership is unknown. Powerwash might be required.";
     }
 
     if (status ==

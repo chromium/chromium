@@ -15,9 +15,9 @@
 #import "ios/chrome/browser/shared/model/profile/features.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_manager_ios.h"
-#import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/open_new_tab_command.h"
+#import "ios/chrome/browser/shared/public/commands/scene_commands.h"
 #import "ios/chrome/browser/sync/model/send_tab_to_self_sync_service_factory.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #import "ios/web/public/test/web_task_environment.h"
@@ -54,10 +54,10 @@ class SendTabPushNotificationClientTest : public PlatformTest {
     ScopedDictPrefUpdate update(GetApplicationContext()->GetLocalState(),
                                 prefs::kAppLevelPushNotificationPermissions);
     update->Set(kSendTabNotificationKey, true);
-    application_handler_ = OCMProtocolMock(@protocol(ApplicationCommands));
+    application_handler_ = OCMProtocolMock(@protocol(SceneCommands));
     [browser_->GetCommandDispatcher()
         startDispatchingToTarget:application_handler_
-                     forProtocol:@protocol(ApplicationCommands)];
+                     forProtocol:@protocol(SceneCommands)];
   }
 
   void TearDown() override {
@@ -110,7 +110,7 @@ class SendTabPushNotificationClientTest : public PlatformTest {
   id mock_scene_state_;
   std::unique_ptr<TestBrowser> browser_;
   std::unique_ptr<SendTabPushNotificationClient> client_;
-  id<ApplicationCommands> application_handler_;
+  id<SceneCommands> application_handler_;
   id mock_notification_center_;
   id mock_application_handler_;
   id mock_response_;

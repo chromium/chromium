@@ -21,6 +21,7 @@
 #include "third_party/blink/renderer/platform/language.h"
 #include "third_party/blink/renderer/platform/testing/font_test_helpers.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
+#include "third_party/blink/renderer/platform/text/text_run.h"
 
 using blink::test::CreateTestFont;
 
@@ -36,7 +37,9 @@ TSAN_TEST(FontObjectThreadedTest, GetFontDefinition) {
         MakeGarbageCollected<MutableCSSPropertyValueSet>(kHTMLStandardMode);
     CSSParser::ParseValue(style, CSSPropertyID::kFont, "15px Ahem", true);
 
-    FontDescription desc = FontStyleResolver::ComputeFont(*style, nullptr);
+    auto maybe = FontStyleResolver::ComputeFont(*style, nullptr);
+    ASSERT_TRUE(maybe.has_value());
+    FontDescription desc = maybe.value();
 
     EXPECT_EQ(desc.SpecifiedSize(), 15);
     EXPECT_EQ(desc.ComputedSize(), 15);

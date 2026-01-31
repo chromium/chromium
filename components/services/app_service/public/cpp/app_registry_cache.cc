@@ -8,7 +8,6 @@
 #include <string_view>
 #include <utility>
 
-#include "base/containers/contains.h"
 #include "base/observer_list.h"
 #include "base/sequence_checker.h"
 #include "components/services/app_service/public/cpp/app.h"
@@ -69,7 +68,7 @@ std::vector<AppPtr> AppRegistryCache::GetAllApps() {
     AppUpdate::Merge(apps[apps.size() - 1].get(), delta);
   }
   for (const auto& d_iter : deltas_in_progress_) {
-    if (!base::Contains(states_, d_iter.first)) {
+    if (!states_.contains(d_iter.first)) {
       // Call AppUpdate::Merge to set the init value for the icon key's
       // `update_version` to keep the consistency as AppRegistryCache's
       // `states_`.
@@ -91,11 +90,11 @@ const std::set<AppType>& AppRegistryCache::InitializedAppTypes() const {
 }
 
 bool AppRegistryCache::IsAppTypeInitialized(apps::AppType app_type) const {
-  return base::Contains(initialized_app_types_, app_type);
+  return initialized_app_types_.contains(app_type);
 }
 
 bool AppRegistryCache::IsAppTypePublished(apps::AppType app_type) const {
-  return base::Contains(published_app_types_, app_type);
+  return published_app_types_.contains(app_type);
 }
 
 bool AppRegistryCache::IsAppInstalled(std::string_view app_id) const {

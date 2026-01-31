@@ -11,9 +11,9 @@
 
 #include "base/auto_reset.h"
 #include "base/memory/raw_ptr.h"
-#include "base/memory/weak_ptr.h"
 #include "base/values.h"
 #include "build/build_config.h"
+#include "chrome/browser/extensions/api/webstore_private/extension_install_status.h"
 #include "chrome/browser/extensions/extension_install_prompt.h"
 #include "chrome/browser/extensions/webstore_install_helper.h"
 #include "chrome/browser/extensions/webstore_installer.h"
@@ -39,7 +39,7 @@ class Profile;
 namespace content {
 class GpuFeatureChecker;
 class WebContents;
-}
+}  // namespace content
 
 namespace extensions {
 
@@ -101,10 +101,14 @@ class WebstorePrivateBeginInstallWithManifest3Function
   // WebstoreInstallHelper::Delegate:
   void OnWebstoreParseSuccess(const std::string& id,
                               const SkBitmap& icon,
-                              base::Value::Dict parsed_manifest) override;
+                              base::DictValue parsed_manifest) override;
   void OnWebstoreParseFailure(const std::string& id,
                               InstallHelperResultCode result,
                               const std::string& error_message) override;
+
+  // Handles the result of GetWebstoreExtensionInstallStatus.
+  void OnInstallStatusCheckDone(
+      extensions::ExtensionInstallStatus install_status);
 
   void RequestExtensionApproval(content::WebContents* web_contents);
 
@@ -162,7 +166,7 @@ class WebstorePrivateBeginInstallWithManifest3Function
 
   std::unique_ptr<ScopedActiveInstall> scoped_active_install_;
 
-  std::optional<base::Value::Dict> parsed_manifest_;
+  std::optional<base::DictValue> parsed_manifest_;
   SkBitmap icon_;
 
   // A dummy Extension object we create for the purposes of using
@@ -202,8 +206,6 @@ class WebstorePrivateCompleteInstallFunction : public ExtensionFunction {
 
   std::unique_ptr<InstallApproval> approval_;
   std::unique_ptr<ScopedActiveInstall> scoped_active_install_;
-  base::WeakPtrFactory<WebstorePrivateCompleteInstallFunction>
-      weak_ptr_factory_{this};
 };
 
 class WebstorePrivateEnableAppLauncherFunction : public ExtensionFunction {
@@ -365,6 +367,7 @@ class WebstorePrivateGetExtensionStatusFunction : public ExtensionFunction {
       const ExtensionId& extension_id);
   void OnManifestParsed(const ExtensionId& extension_id,
                         data_decoder::DataDecoder::ValueOrError result);
+  void OnInstallStatusCheckDone(ExtensionInstallStatus status);
 
   // ExtensionFunction:
   ExtensionFunction::ResponseAction Run() override;

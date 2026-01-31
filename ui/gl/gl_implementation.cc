@@ -6,6 +6,7 @@
 
 #include <stddef.h>
 
+#include <algorithm>
 #include <cstdlib>
 #include <sstream>
 #include <string>
@@ -15,7 +16,6 @@
 #include "base/at_exit.h"
 #include "base/command_line.h"
 #include "base/compiler_specific.h"
-#include "base/containers/contains.h"
 #include "base/logging.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
@@ -473,7 +473,7 @@ std::string FilterGLExtensionList(
       extensions, " ", base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
 
   auto is_disabled = [&disabled_extensions](std::string_view ext) {
-    return base::Contains(disabled_extensions, ext);
+    return std::ranges::contains(disabled_extensions, ext);
   };
   std::erase_if(extension_vec, is_disabled);
 

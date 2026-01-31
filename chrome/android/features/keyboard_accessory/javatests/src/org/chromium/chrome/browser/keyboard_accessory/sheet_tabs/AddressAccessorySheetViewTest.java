@@ -82,7 +82,7 @@ public class AddressAccessorySheetViewTest {
                             new KeyboardAccessoryData.Tab[] {
                                 new KeyboardAccessoryData.Tab(
                                         "Addresses",
-                                        null,
+                                        0,
                                         null,
                                         R.layout.address_accessory_sheet,
                                         AccessoryTabType.ADDRESSES,

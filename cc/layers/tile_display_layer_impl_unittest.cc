@@ -897,7 +897,8 @@ TEST_F(TileDisplayLayerImplTest, LastAppendQuadsScalesUpdated) {
 
   // AppendQuads should use the ideal resolution tiling (1.0), so
   // last_append_quads_scales_ should contain 1.0.
-  const auto& last_append_scales = raw_layer->LastAppendQuadsScalesForTesting();
+  const auto& last_append_scales =
+      raw_layer->GetLastAppendQuadsScalesForTesting();
   ASSERT_EQ(last_append_scales.size(), 1u);
   EXPECT_EQ(last_append_scales[0], 1.0f);
 }
@@ -911,21 +912,21 @@ TEST_F(TileDisplayLayerImplTest, GetSafeToDeleteTilingsBasic) {
   host_impl()->active_tree()->AddLayer(std::move(layer));
 
   // Case 1: Basic scenario - some tilings used, some not.
-  raw_layer->LastAppendQuadsScalesForTesting() = {2.0f};
+  raw_layer->GetLastAppendQuadsScalesForTesting() = {2.0f};
   raw_layer->SetProposedTilingScalesForDeletion({1.0f, 2.0f, 3.0f});
 
   std::vector<float> safe_to_delete = raw_layer->GetSafeToDeleteTilings();
   EXPECT_THAT(safe_to_delete, ElementsAre(1.0f, 3.0f));
 
   // Case 2: No tilings were used in the last frame.
-  raw_layer->LastAppendQuadsScalesForTesting().clear();
+  raw_layer->GetLastAppendQuadsScalesForTesting().clear();
   raw_layer->SetProposedTilingScalesForDeletion({1.0f, 2.0f, 3.0f});
 
   safe_to_delete = raw_layer->GetSafeToDeleteTilings();
   EXPECT_THAT(safe_to_delete, ElementsAre(1.0f, 2.0f, 3.0f));
 
   // Case 3: All proposed tilings were used in the last frame.
-  raw_layer->LastAppendQuadsScalesForTesting() = {1.0f, 2.0f, 3.0f};
+  raw_layer->GetLastAppendQuadsScalesForTesting() = {1.0f, 2.0f, 3.0f};
   raw_layer->SetProposedTilingScalesForDeletion({1.0f, 2.0f, 3.0f});
 
   safe_to_delete = raw_layer->GetSafeToDeleteTilings();
@@ -933,7 +934,7 @@ TEST_F(TileDisplayLayerImplTest, GetSafeToDeleteTilingsBasic) {
 
   // Case 4: Proposed tilings include some that don't exist in
   // last_append_quads_scales_.
-  raw_layer->LastAppendQuadsScalesForTesting() = {2.0f};
+  raw_layer->GetLastAppendQuadsScalesForTesting() = {2.0f};
 
   // 4.0 is not in last_append_quads_scales_
   raw_layer->SetProposedTilingScalesForDeletion({1.0f, 4.0f});
@@ -945,7 +946,7 @@ TEST_F(TileDisplayLayerImplTest, GetSafeToDeleteTilingsBasic) {
 // Verifies that CleanUpTilings returns the correct set of scales for tilings
 // that are safe to delete. This is similar to above but more of an integration
 // style test since we are using ::AppendQuad() here and not directly using
-// LastAppendQuadsScalesForTesting().
+// GetLastAppendQuadsScalesForTesting().
 TEST_F(TileDisplayLayerImplTest, GetSafeToDeleteTilingsIntegration) {
   constexpr gfx::Size kLayerBounds(100, 100);
   constexpr gfx::Rect kLayerRect(kLayerBounds);

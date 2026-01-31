@@ -15,16 +15,18 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_key.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
+#include "chrome/browser/supervised_user/family_link_settings_service_factory.h"
 #include "chrome/browser/supervised_user/supervised_user_browser_utils.h"
 #include "chrome/browser/supervised_user/supervised_user_service_factory.h"
-#include "chrome/browser/supervised_user/supervised_user_settings_service_factory.h"
+#include "chrome/browser/supervised_user/supervised_user_url_filtering_service_factory.h"
 #include "chrome/common/channel_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/tribool.h"
 #include "components/supervised_user/core/browser/child_account_service.h"
+#include "components/supervised_user/core/browser/family_link_settings_service.h"
 #include "components/supervised_user/core/browser/supervised_user_error_page.h"
 #include "components/supervised_user/core/browser/supervised_user_preferences.h"
-#include "components/supervised_user/core/browser/supervised_user_settings_service.h"
+#include "components/supervised_user/core/browser/supervised_user_url_filtering_service.h"
 #include "components/supervised_user/core/browser/supervised_user_utils.h"
 #include "components/supervised_user/core/common/features.h"
 #include "components/url_formatter/url_fixer.h"
@@ -42,23 +44,23 @@ using content::BrowserThread;
 // consisting of a title and a list of fields. Returns a pointer to the new
 // section's contents, for use with |AddSectionEntry| below. Note that
 // |parent_list|, not the caller, owns the newly added section.
-base::Value::List* AddSection(base::Value::List* parent_list,
-                              std::string_view title) {
-  base::Value::Dict section;
-  base::Value::List section_contents;
+base::ListValue* AddSection(base::ListValue* parent_list,
+                            std::string_view title) {
+  base::DictValue section;
+  base::ListValue section_contents;
   section.Set("title", title);
   // Grab a raw pointer to the result before |Pass()|ing it on.
-  base::Value::List* result =
+  base::ListValue* result =
       section.Set("data", std::move(section_contents))->GetIfList();
   parent_list->Append(std::move(section));
   return result;
 }
 
 // Adds a bool entry to a section (created with |AddSection| above).
-void AddSectionEntry(base::Value::List* section_list,
+void AddSectionEntry(base::ListValue* section_list,
                      std::string_view name,
                      bool value) {
-  base::Value::Dict entry;
+  base::DictValue entry;
   entry.Set("stat_name", name);
   entry.Set("stat_value", value);
   entry.Set("is_valid", true);
@@ -66,10 +68,10 @@ void AddSectionEntry(base::Value::List* section_list,
 }
 
 // Adds a string entry to a section (created with |AddSection| above).
-void AddSectionEntry(base::Value::List* section_list,
+void AddSectionEntry(base::ListValue* section_list,
                      std::string_view name,
                      std::string_view value) {
-  base::Value::Dict entry;
+  base::DictValue entry;
   entry.Set("stat_name", name);
   entry.Set("stat_value", value);
   entry.Set("is_valid", true);
@@ -109,7 +111,7 @@ std::string WebFilterTypeToString(
 }
 
 std::string FilteringResultToString(
-    supervised_user::SupervisedUserURLFilter::Result result) {
+    supervised_user::WebFilteringResult result) {
   std::string return_value = FilteringBehaviorToString(result.behavior);
   if (!result.IsClassificationSuccessful()) {
     return_value += " (Uncertain)";
@@ -118,7 +120,7 @@ std::string FilteringResultToString(
 }
 
 std::string FilteringReasonToString(
-    supervised_user::SupervisedUserURLFilter::Result result) {
+    supervised_user::WebFilteringResult result) {
   switch (result.reason) {
     case supervised_user::FilteringBehaviorReason::DEFAULT:
       return "Default";
@@ -222,8 +224,15 @@ FamilyLinkUserInternalsMessageHandler::GetSupervisedUserService() {
       profile->GetOriginalProfile());
 }
 
+const supervised_user::SupervisedUserUrlFilteringService*
+FamilyLinkUserInternalsMessageHandler::GetSupervisedUserUrlFilteringService() {
+  Profile* profile = Profile::FromWebUI(web_ui());
+  return supervised_user::SupervisedUserUrlFilteringServiceFactory::
+      GetForProfile(profile->GetOriginalProfile());
+}
+
 void FamilyLinkUserInternalsMessageHandler::HandleRegisterForEvents(
-    const base::Value::List& args) {
+    const base::ListValue& args) {
   CHECK(args.empty()) << "Expected call is (void)";
 
   AllowJavascript();
@@ -240,25 +249,26 @@ void FamilyLinkUserInternalsMessageHandler::HandleRegisterForEvents(
 }
 
 void FamilyLinkUserInternalsMessageHandler::HandleGetBasicInfo(
-    const base::Value::List& args) {
+    const base::ListValue& args) {
   SendBasicInfo();
 }
 
 void FamilyLinkUserInternalsMessageHandler::HandleTryURL(
-    const base::Value::List& args) {
+    const base::ListValue& args) {
   CHECK(args.size() == 2u && args[0].is_string() && args[1].is_string())
       << "Expected call is (callback_id: string, url_str: string)";
 
   const std::string& callback_id = args[0].GetString();
   const std::string& url_str = args[1].GetString();
 
-  GURL url = url_formatter::FixupURL(url_str, std::string());
+  GURL url = url_formatter::FixupURL(url_str);
   if (!url.is_valid()) {
     return;
   }
 
-  supervised_user::SupervisedUserURLFilter* filter =
-      GetSupervisedUserService()->GetURLFilter();
+  supervised_user::SupervisedUserUrlFilteringService* url_filtering_service =
+      supervised_user::SupervisedUserUrlFilteringServiceFactory::GetForProfile(
+          Profile::FromWebUI(web_ui())->GetOriginalProfile());
   content::WebContents* web_contents =
       web_ui() ? web_ui()->GetWebContents() : nullptr;
   bool skip_manual_parent_filter = false;
@@ -269,36 +279,34 @@ void FamilyLinkUserInternalsMessageHandler::HandleTryURL(
             web_contents->GetOutermostWebContents());
   }
 
-  filter->GetFilteringBehaviorWithAsyncChecks(
-      url,
+  url_filtering_service->GetFilteringBehavior(
+      url, skip_manual_parent_filter,
       base::BindOnce(&FamilyLinkUserInternalsMessageHandler::OnTryURLResult,
                      weak_factory_.GetWeakPtr(), callback_id),
-      skip_manual_parent_filter);
+      /*options=*/{});
 }
 
 void FamilyLinkUserInternalsMessageHandler::SendBasicInfo() {
-  base::Value::List section_list;
+  base::ListValue section_list;
   Profile* profile = Profile::FromWebUI(web_ui());
 
-  base::Value::List* section_profile = AddSection(&section_list, "Profile");
+  base::ListValue* section_profile = AddSection(&section_list, "Profile");
   AddSectionEntry(section_profile, "Account", profile->GetProfileUserName());
 
-  supervised_user::SupervisedUserURLFilter* filter =
-      GetSupervisedUserService()->GetURLFilter();
-
-  base::Value::List* section_filter = AddSection(&section_list, "Filter");
+  base::ListValue* section_filter = AddSection(&section_list, "Filter");
   AddSectionEntry(section_filter, "SafeSites enabled",
                   supervised_user::IsSafeSitesEnabled(*profile->GetPrefs()));
-  AddSectionEntry(section_filter, "Web filter type",
-                  WebFilterTypeToString(filter->GetWebFilterType()));
+  AddSectionEntry(
+      section_filter, "Web filter type",
+      WebFilterTypeToString(
+          GetSupervisedUserUrlFilteringService()->GetWebFilterType()));
 
-  base::Value::List* section_search =
-      AddSection(&section_list, "Google search");
+  base::ListValue* section_search = AddSection(&section_list, "Google search");
   AddSectionEntry(
       section_search, "Safe search enforced",
       supervised_user::IsGoogleSafeSearchEnforced(*profile->GetPrefs()));
 
-  base::Value::List* section_browser =
+  base::ListValue* section_browser =
       AddSection(&section_list, "Browser and web");
   AddSectionEntry(section_browser, "Incognito mode allowed",
                   IncognitoModePrefs::IsIncognitoAllowed(profile));
@@ -310,7 +318,7 @@ void FamilyLinkUserInternalsMessageHandler::SendBasicInfo() {
     for (const auto& account :
          identity_manager
              ->GetExtendedAccountInfoForAccountsWithRefreshToken()) {
-      base::Value::List* section_user = AddSection(
+      base::ListValue* section_user = AddSection(
           &section_list, "User Information for " + account.full_name);
       AddSectionEntry(section_user, "Account id",
                       account.account_id.ToString());
@@ -332,13 +340,14 @@ void FamilyLinkUserInternalsMessageHandler::SendBasicInfo() {
     }
   }
 
-  base::Value::Dict result;
+  base::DictValue result;
   result.Set("sections", std::move(section_list));
   FireWebUIListener("basic-info-received", result);
 
   // Trigger retrieval of the user settings
-  supervised_user::SupervisedUserSettingsService* settings_service =
-      SupervisedUserSettingsServiceFactory::GetForKey(profile->GetProfileKey());
+  supervised_user::FamilyLinkSettingsService* settings_service =
+      supervised_user::FamilyLinkSettingsServiceFactory::GetForKey(
+          profile->GetProfileKey());
   user_settings_subscription_ =
       settings_service->SubscribeForSettingsChange(base::BindRepeating(
           &FamilyLinkUserInternalsMessageHandler::SendFamilyLinkUserSettings,
@@ -346,14 +355,14 @@ void FamilyLinkUserInternalsMessageHandler::SendBasicInfo() {
 }
 
 void FamilyLinkUserInternalsMessageHandler::SendFamilyLinkUserSettings(
-    const base::Value::Dict& settings) {
+    const base::DictValue& settings) {
   FireWebUIListener("user-settings-received", settings);
 }
 
 void FamilyLinkUserInternalsMessageHandler::OnTryURLResult(
     const std::string& callback_id,
-    supervised_user::SupervisedUserURLFilter::Result filtering_result) {
-  base::Value::Dict result;
+    supervised_user::WebFilteringResult filtering_result) {
+  base::DictValue result;
   result.Set("allowResult", FilteringResultToString(filtering_result));
   result.Set("manual", filtering_result.IsFromManualList() &&
                            filtering_result.IsAllowed());
@@ -361,9 +370,9 @@ void FamilyLinkUserInternalsMessageHandler::OnTryURLResult(
 }
 
 void FamilyLinkUserInternalsMessageHandler::OnURLChecked(
-    supervised_user::SupervisedUserURLFilter::Result filtering_result) {
+    supervised_user::WebFilteringResult filtering_result) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  base::Value::Dict result;
+  base::DictValue result;
   result.Set("url", filtering_result.url.possibly_invalid_spec());
   result.Set("result", FilteringResultToString(filtering_result));
   result.Set("reason", FilteringReasonToString(filtering_result));

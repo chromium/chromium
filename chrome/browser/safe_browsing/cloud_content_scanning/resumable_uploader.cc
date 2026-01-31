@@ -19,9 +19,6 @@ namespace safe_browsing {
 
 using ::enterprise_connectors::ConnectorUploadRequest;
 
-// TODO(crbug.com/456489971): Replace BrowserThreadGuardImpl with
-// content::GetUIThreadTaskRunner and call RunsTasksInCurrentSequence instead of
-// DCHECK
 ResumableUploadRequest::ResumableUploadRequest(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     const GURL& base_url,

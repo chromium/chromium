@@ -9,7 +9,6 @@
 
 #include "ash/constants/notifier_catalogs.h"
 #include "ash/public/cpp/notification_utils.h"
-#include "base/containers/contains.h"
 #include "base/files/file_enumerator.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
@@ -63,9 +62,9 @@ void U2FNotification::CheckStatus(std::optional<std::set<std::string>> flags) {
   // The legacy implementation is only enabled if either the U2F or G2F flags
   // are present and the user_keys flag is off (the latter enables the improved
   // implementation).
-  if (!(base::Contains(*flags, debugd::u2f_flags::kU2f) ||
-        base::Contains(*flags, debugd::u2f_flags::kG2f)) ||
-      base::Contains(*flags, debugd::u2f_flags::kUserKeys)) {
+  if (!(flags->contains(debugd::u2f_flags::kU2f) ||
+        flags->contains(debugd::u2f_flags::kG2f)) ||
+      flags->contains(debugd::u2f_flags::kUserKeys)) {
     return;
   }
 

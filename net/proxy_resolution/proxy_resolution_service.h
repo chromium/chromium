@@ -86,7 +86,7 @@ class NET_EXPORT ProxyResolutionService {
 
   // Returns proxy related debug information to be included in the NetLog. The
   // data should be appropriate for any capture mode (sensitivity level).
-  virtual base::Value::Dict GetProxyNetLogValues() = 0;
+  virtual base::DictValue GetProxyNetLogValues() = 0;
 
   // Returns true if |this| is an instance of ConfiguredProxyResolutionService
   // and assigns |this| to the out parameter. Otherwise returns false and sets
@@ -112,7 +112,7 @@ class NET_EXPORT ProxyResolutionService {
                                     ProxyDelegate* proxy_delegate);
 
   // Returns a list for bad proxies from the proxy retry info map.
-  static base::Value::List BuildBadProxiesList(
+  static base::ListValue BuildBadProxiesList(
       const ProxyRetryInfoMap& proxy_retry_info);
 
   // Helper method to deprioritize bad proxy chains and log the action.

@@ -381,7 +381,7 @@ void DictationTestUtils::WaitForPumpkinTaggerReady() {
   static constexpr auto kPumpkinLocales =
       base::MakeFixedFlatSet<std::string_view>(
           {"en-US", "fr-FR", "it-IT", "de-DE", "es-ES"});
-  if (!base::Contains(kPumpkinLocales, locale)) {
+  if (!kPumpkinLocales.contains(locale)) {
     // If Pumpkin doesn't support the dictation locale, then it will never
     // initialize.
     return;

@@ -483,12 +483,7 @@ TEST_F(MediaSessionNotificationItemTest, GetSessionMetadata) {
   EXPECT_EQ(u"source_title", item().GetSessionMetadata().source_title);
 
   base::test::ScopedFeatureList feature_list;
-#if BUILDFLAG(IS_CHROMEOS)
   feature_list.InitAndEnableFeature(media::kMediaRemotingWithoutFullscreen);
-#else
-  feature_list.InitWithFeatures({media::kMediaRemotingWithoutFullscreen},
-                                {media::kGlobalMediaControlsUpdatedUI});
-#endif
 
   auto session_info = media_session::mojom::MediaSessionInfo::New();
   auto remote_playback_metadata =
@@ -499,22 +494,13 @@ TEST_F(MediaSessionNotificationItemTest, GetSessionMetadata) {
   item().MediaSessionInfoChanged(std::move(session_info));
   item().UpdateDeviceName("device_friendly_name");
 
+#if BUILDFLAG(IS_CHROMEOS)
   EXPECT_EQ(u"source_title \xB7 device_friendly_name",
             item().GetSessionMetadata().source_title);
-}
-
-#if !BUILDFLAG(IS_CHROMEOS)
-TEST_F(MediaSessionNotificationItemTest, GetSessionMetadataForUpdatedUI) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(media::kGlobalMediaControlsUpdatedUI);
-
-  media_session::MediaMetadata metadata;
-  metadata.source_title = u"source_title";
-  item().MediaSessionMetadataChanged(metadata);
-  item().UpdateDeviceName("device_friendly_name");
+#else
   EXPECT_EQ(u"source_title", item().GetSessionMetadata().source_title);
+#endif  // BUILDFLAG(IS_CHROMEOS)
 }
-#endif
 
 TEST_F(MediaSessionNotificationItemTest, GetRemotePlaybackMetadata) {
   auto session_info = media_session::mojom::MediaSessionInfo::New();

@@ -33,7 +33,7 @@ ServiceWorkerLifetimeManager* ServiceWorkerLifetimeManager::Get(
 }
 
 void ServiceWorkerLifetimeManager::StartRequest(const RequestKey& key) {
-  DCHECK(!base::Contains(requests_, key));
+  DCHECK(!requests_.contains(key));
   requests_[key] = {};
 }
 

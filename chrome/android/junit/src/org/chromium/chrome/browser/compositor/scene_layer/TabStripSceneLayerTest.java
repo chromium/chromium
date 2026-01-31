@@ -50,6 +50,7 @@ import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutView.Str
 import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutView.StripLayoutViewOnKeyboardFocusHandler;
 import org.chromium.chrome.browser.compositor.overlays.strip.TabLoadTracker.TabLoadTrackerCallback;
 import org.chromium.chrome.browser.layouts.scene_layer.SceneLayer;
+import org.chromium.chrome.browser.tab.Tab.MediaState;
 import org.chromium.ui.resources.ResourceManager;
 
 /** Tests for {@link TabStripSceneLayer}. */
@@ -136,7 +137,8 @@ public class TabStripSceneLayerTest {
                                 mTabLoadTrackerCallback,
                                 mLayoutUpdateHost,
                                 false,
-                                false));
+                                false,
+                                MediaState.NONE));
         mTabStripSceneLayer.initializeNativeForTesting();
         mStripLayoutTabs = new StripLayoutTab[] {mStripLayoutTab};
         mStripGroupTitles = new StripLayoutGroupTitle[] {mStripGroupTitle};

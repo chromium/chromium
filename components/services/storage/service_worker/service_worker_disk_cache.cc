@@ -8,7 +8,6 @@
 #include <utility>
 
 #include "base/check.h"
-#include "base/containers/contains.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -170,7 +169,7 @@ void ServiceWorkerDiskCache::CreateEntry(int64_t key, EntryCallback callback) {
   }
 
   uint64_t call_id = GetNextCallId();
-  DCHECK(!base::Contains(active_entry_calls_, call_id));
+  DCHECK(!active_entry_calls_.contains(call_id));
   active_entry_calls_.emplace(call_id, std::move(callback));
 
   disk_cache::EntryResult result = disk_cache_->CreateEntry(
@@ -205,7 +204,7 @@ void ServiceWorkerDiskCache::OpenEntry(int64_t key, EntryCallback callback) {
   }
 
   uint64_t call_id = GetNextCallId();
-  DCHECK(!base::Contains(active_entry_calls_, call_id));
+  DCHECK(!active_entry_calls_.contains(call_id));
   active_entry_calls_.emplace(call_id, std::move(callback));
 
   disk_cache::EntryResult result = disk_cache_->OpenEntry(
@@ -241,7 +240,7 @@ void ServiceWorkerDiskCache::DoomEntry(int64_t key,
   }
 
   uint64_t call_id = GetNextCallId();
-  DCHECK(!base::Contains(active_doom_calls_, call_id));
+  DCHECK(!active_doom_calls_.contains(call_id));
   active_doom_calls_.emplace(call_id, std::move(callback));
 
   net::Error net_error = disk_cache_->DoomEntry(

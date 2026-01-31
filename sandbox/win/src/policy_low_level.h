@@ -131,7 +131,7 @@ class PolicyRule {
   friend class LowLevelPolicy;
 
  public:
-  explicit PolicyRule(EvalResult action);
+  explicit PolicyRule(EvalResult action, uintptr_t constant = 0);
   PolicyRule(const PolicyRule& other);
   ~PolicyRule();
 
@@ -183,6 +183,7 @@ class PolicyRule {
   raw_ptr<PolicyBuffer> buffer_;
   raw_ptr<OpcodeFactory> opcode_factory_;
   EvalResult action_;
+  uintptr_t constant_;
   bool done_;
 };
 

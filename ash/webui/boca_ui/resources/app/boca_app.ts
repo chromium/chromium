@@ -96,6 +96,7 @@ export enum CreateSessionResult {
   SUCCESS = 1,
   HTTP_ERROR = 2,
   NETWORK_RESTRICTION = 3,
+  MAX_STUDENTS_EXCEEDED = 4,
 }
 
 export enum StudentStatusDetail {

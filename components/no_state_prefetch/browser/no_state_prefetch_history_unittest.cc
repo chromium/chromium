@@ -15,7 +15,7 @@ namespace prerender {
 
 namespace {
 
-bool ListEntryMatches(const base::Value::List& list,
+bool ListEntryMatches(const base::ListValue& list,
                       size_t index,
                       const char* expected_url,
                       FinalStatus expected_final_status,
@@ -28,7 +28,7 @@ bool ListEntryMatches(const base::Value::List& list,
   if (!value.is_dict()) {
     return false;
   }
-  const base::Value::Dict& dict = value.GetDict();
+  const base::DictValue& dict = value.GetDict();
   if (dict.size() != 4u) {
     return false;
   }
@@ -68,7 +68,7 @@ TEST(NoStatePrefetchHistoryTest, GetAsValue) {
   NoStatePrefetchHistory history(2);
 
   // Make sure an empty list exists when retrieving as value.
-  base::Value::List entry_value = history.CopyEntriesAsValue();
+  base::ListValue entry_value = history.CopyEntriesAsValue();
   EXPECT_TRUE(entry_value.empty());
 
   // Base time used for all events.  Each event is given a time 1 millisecond
@@ -90,7 +90,7 @@ TEST(NoStatePrefetchHistoryTest, GetAsValue) {
   // Add a second entry and make sure both first and second appear.
   const char* const kSecondUrl = "http://www.beta.com/";
   const FinalStatus kSecondFinalStatus = FINAL_STATUS_DUPLICATE;
-  const Origin kSecondOrigin = ORIGIN_SAME_ORIGIN_SPECULATION;
+  const Origin kSecondOrigin = ORIGIN_LINK_REL_PRERENDER_SAMEDOMAIN;
   NoStatePrefetchHistory::Entry entry_second(
       GURL(kSecondUrl), kSecondFinalStatus, kSecondOrigin,
       epoch_start + base::Milliseconds(1));

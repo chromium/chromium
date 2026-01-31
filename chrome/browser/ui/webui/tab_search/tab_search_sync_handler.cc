@@ -56,7 +56,7 @@ bool TabSearchSyncHandler::GetSignInState() const {
   return !signed_out && !has_error;
 }
 
-void TabSearchSyncHandler::HandleGetSignInState(const base::Value::List& args) {
+void TabSearchSyncHandler::HandleGetSignInState(const base::ListValue& args) {
   AllowJavascript();
   CHECK_EQ(1U, args.size());
   const base::Value& callback_id = args[0];

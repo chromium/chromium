@@ -12,14 +12,14 @@
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/authentication/test/signin_earl_grey.h"
 #import "ios/chrome/browser/authentication/test/signin_earl_grey_ui_test_util.h"
+#import "ios/chrome/browser/autofill/form_input_accessory/test/form_input_accessory_app_interface.h"
 #import "ios/chrome/browser/autofill/ui_bundled/autofill_app_interface.h"
-#import "ios/chrome/browser/autofill/ui_bundled/form_input_accessory/form_input_accessory_app_interface.h"
 #import "ios/chrome/browser/autofill/ui_bundled/manual_fill/manual_fill_constants.h"
 #import "ios/chrome/browser/autofill/ui_bundled/manual_fill/manual_fill_matchers.h"
 #import "ios/chrome/browser/infobars/ui_bundled/banners/infobar_banner_constants.h"
 #import "ios/chrome/browser/metrics/model/metrics_app_interface.h"
-#import "ios/chrome/browser/passwords/ui_bundled/bottom_sheet/credential_suggestion_bottom_sheet_app_interface.h"
-#import "ios/chrome/browser/passwords/ui_bundled/password_constants.h"
+#import "ios/chrome/browser/passwords/bottom_sheet/test/credential_suggestion_bottom_sheet_app_interface.h"
+#import "ios/chrome/browser/passwords/password_suggestion/public/password_suggestion_constants.h"
 #import "ios/chrome/browser/settings/ui_bundled/google_services/manage_sync_settings_constants.h"
 #import "ios/chrome/browser/settings/ui_bundled/password/password_details/password_details_table_view_constants.h"
 #import "ios/chrome/browser/settings/ui_bundled/password/password_manager_egtest_utils.h"
@@ -690,8 +690,7 @@ void CheckKeyboardIsUpAndNotCovered() {
 
 // Tests that the Password View Controller is still present after tapping the
 // search bar.
-// TODO(crbug.com/362893177): Deflake and reenable the test.
-- (void)DISABLED_testPasswordControllerWhileSearching {
+- (void)testPasswordControllerWhileSearching {
   // Bring up the keyboard.
   [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
       performAction:TapWebElementWithId(kFormElementUsername)];
@@ -716,24 +715,22 @@ void CheckKeyboardIsUpAndNotCovered() {
   CheckPasswordFillingOptionIsVisible(/*site=*/@"example.com");
 
   // Tap the password search.
-  [[EarlGrey selectElementWithMatcher:manual_fill::PasswordSearchBarMatcher()]
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::SearchBar()]
       performAction:grey_tap()];
 
-  // Verify keyboard is shown and that the password controller is still present
-  // in the background.
-  [ChromeEarlGrey waitForKeyboardToAppear];
+  // Verify that the password controller is still present.
   [[EarlGrey selectElementWithMatcher:manual_fill::PasswordTableViewMatcher()]
       assertWithMatcher:grey_minimumVisiblePercent(0.5)];
   CheckPasswordFillingOptionIsVisible(/*site=*/@"example.com");
 
   // Search for a term that shouldn't give any results.
-  [[EarlGrey selectElementWithMatcher:manual_fill::PasswordSearchBarMatcher()]
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::SearchBar()]
       performAction:grey_replaceText(@"example1")];
   [[EarlGrey selectElementWithMatcher:grey_text(@"example.com")]
       assertWithMatcher:grey_notVisible()];
 
   // Search for a term that matches with the saved credential.
-  [[EarlGrey selectElementWithMatcher:manual_fill::PasswordSearchBarMatcher()]
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::SearchBar()]
       performAction:grey_replaceText(@"AMPL")];
   CheckPasswordFillingOptionIsVisible(/*site=*/@"example.com");
 }

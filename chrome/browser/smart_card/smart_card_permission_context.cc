@@ -45,8 +45,8 @@ namespace {
 constexpr char kReaderNameKey[] = "reader-name";
 
 template <typename StringType>
-static base::Value::Dict ReaderNameToValue(const StringType& reader_name) {
-  base::Value::Dict value;
+static base::DictValue ReaderNameToValue(const StringType& reader_name) {
+  base::DictValue value;
   value.Set(kReaderNameKey, reader_name);
   return value;
 }
@@ -184,7 +184,7 @@ SmartCardPermissionContext::SmartCardPermissionContext(Profile* profile)
 SmartCardPermissionContext::~SmartCardPermissionContext() = default;
 
 std::string SmartCardPermissionContext::GetKeyForObject(
-    const base::Value::Dict& object) {
+    const base::DictValue& object) {
   if (!IsValidObject(object)) {
     return std::string();
   }
@@ -305,8 +305,7 @@ void SmartCardPermissionContext::GrantPersistentReaderPermission(
   GrantObjectPermission(origin, ReaderNameToValue(reader_name));
 }
 
-bool SmartCardPermissionContext::IsValidObject(
-    const base::Value::Dict& object) {
+bool SmartCardPermissionContext::IsValidObject(const base::DictValue& object) {
   if (object.size() != 1) {
     return false;
   }
@@ -316,7 +315,7 @@ bool SmartCardPermissionContext::IsValidObject(
 }
 
 std::u16string SmartCardPermissionContext::GetObjectDisplayName(
-    const base::Value::Dict& object) {
+    const base::DictValue& object) {
   const std::string* reader_name = object.FindString(kReaderNameKey);
   CHECK(reader_name);
   return base::UTF8ToUTF16(*reader_name);
@@ -327,7 +326,7 @@ bool SmartCardPermissionContext::HasPersistentReaderPermission(
     const std::string& reader_name) {
   for (const auto& object :
        ObjectPermissionContextBase::GetGrantedObjects(origin)) {
-    const base::Value::Dict& reader_value = object->value;
+    const base::DictValue& reader_value = object->value;
 
     // Objects provided by the parent class can be assumed valid.
     CHECK(IsValidObject(reader_value));

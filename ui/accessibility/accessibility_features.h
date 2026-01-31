@@ -60,6 +60,15 @@ AX_BASE_EXPORT bool IsAccessibilityPruneRedundantInlineConnectivityEnabled();
 AX_BASE_EXPORT BASE_DECLARE_FEATURE(kAccessibilityTextFormatting);
 AX_BASE_EXPORT bool IsAccessibilityTextFormattingEnabled();
 
+// Enables handling of occluding views belonging to overlaid "
+// "browser's UI.
+AX_BASE_EXPORT BASE_DECLARE_FEATURE(kAccessibilityHandleOccludingViews);
+AX_BASE_EXPORT bool IsAccessibilityHandleOccludingViewsEnabled();
+
+// Enables text change types for text changed events.
+AX_BASE_EXPORT BASE_DECLARE_FEATURE(kAccessibilityTextChangeTypes);
+AX_BASE_EXPORT bool IsAccessibilityTextChangeTypesEnabled();
+
 // Enables the addition of `labeledby` relationships in the accessibility tree.
 AX_BASE_EXPORT BASE_DECLARE_FEATURE(kAccessibilityLabeledBy);
 AX_BASE_EXPORT bool IsAccessibilityLabeledByEnabled();
@@ -244,35 +253,18 @@ AX_BASE_EXPORT bool IsAccessibilityDisableTouchpadEnabled();
 AX_BASE_EXPORT BASE_DECLARE_FEATURE(kAccessibilityFlashScreenFeature);
 AX_BASE_EXPORT bool IsAccessibilityFlashScreenFeatureEnabled();
 
-// Controls whether the bounce keys feature is available.
-AX_BASE_EXPORT BASE_DECLARE_FEATURE(kAccessibilityBounceKeys);
-AX_BASE_EXPORT bool IsAccessibilityBounceKeysEnabled();
-
-// Controls whether the slow keys feature is available.
-AX_BASE_EXPORT BASE_DECLARE_FEATURE(kAccessibilitySlowKeys);
-AX_BASE_EXPORT bool IsAccessibilitySlowKeysEnabled();
-
 AX_BASE_EXPORT BASE_DECLARE_FEATURE(
     kAccessibilityManifestV3AccessibilityCommon);
 AX_BASE_EXPORT bool IsAccessibilityManifestV3EnabledForAccessibilityCommon();
 
-AX_BASE_EXPORT BASE_DECLARE_FEATURE(kAccessibilityManifestV3BrailleIme);
-AX_BASE_EXPORT bool IsAccessibilityManifestV3EnabledForBrailleIme();
-
 AX_BASE_EXPORT BASE_DECLARE_FEATURE(kAccessibilityManifestV3ChromeVox);
 AX_BASE_EXPORT bool IsAccessibilityManifestV3EnabledForChromeVox();
-
-AX_BASE_EXPORT BASE_DECLARE_FEATURE(kAccessibilityManifestV3EnhancedNetworkTts);
-AX_BASE_EXPORT bool IsAccessibilityManifestV3EnabledForEnhancedNetworkTts();
 
 AX_BASE_EXPORT BASE_DECLARE_FEATURE(kAccessibilityManifestV3EspeakNGTts);
 AX_BASE_EXPORT bool IsAccessibilityManifestV3EnabledForEspeakNGTts();
 
 AX_BASE_EXPORT BASE_DECLARE_FEATURE(kAccessibilityManifestV3GoogleTts);
 AX_BASE_EXPORT bool IsAccessibilityManifestV3EnabledForGoogleTts();
-
-AX_BASE_EXPORT BASE_DECLARE_FEATURE(kAccessibilityManifestV3SelectToSpeak);
-AX_BASE_EXPORT bool IsAccessibilityManifestV3EnabledForSelectToSpeak();
 
 AX_BASE_EXPORT BASE_DECLARE_FEATURE(kAccessibilityManifestV3SwitchAccess);
 AX_BASE_EXPORT bool IsAccessibilityManifestV3EnabledForSwitchAccess();

@@ -61,9 +61,9 @@ inline constexpr char kGrowthGroupName[] = "CampaignId";
 
 inline constexpr char kPayloadPath[] = "payload";
 
-std::optional<base::Value::Dict> ParseCampaignsFile(
+std::optional<base::DictValue> ParseCampaignsFile(
     const std::string& campaigns_data) {
-  std::optional<base::Value::Dict> value = base::JSONReader::ReadDict(
+  std::optional<base::DictValue> value = base::JSONReader::ReadDict(
       campaigns_data, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   if (!value) {
     CAMPAIGNS_LOG(ERROR) << "Failed to parse campaigns file.";
@@ -75,7 +75,7 @@ std::optional<base::Value::Dict> ParseCampaignsFile(
   return value;
 }
 
-std::optional<base::Value::Dict> ReadCampaignsFile(
+std::optional<base::DictValue> ReadCampaignsFile(
     const base::FilePath& campaigns_component_path) {
   const auto campaigns_load_start_time = base::TimeTicks::Now();
 
@@ -287,7 +287,7 @@ void CampaignsManager::PerformAction(int campaign_id,
 void CampaignsManager::PerformAction(int campaign_id,
                                      std::optional<int> group_id,
                                      const ActionType action_type,
-                                     const base::Value::Dict* params) {
+                                     const base::DictValue* params) {
   auto& action_performer = actions_map_.at(action_type);
   if (!action_performer) {
     // TODO(b/306023057): Record unrecognized action error.
@@ -444,7 +444,7 @@ void CampaignsManager::OnCampaignsComponentLoaded(
 
 void CampaignsManager::OnCampaignsLoaded(
     base::OnceClosure load_callback,
-    std::optional<base::Value::Dict> campaigns_dict) {
+    std::optional<base::DictValue> campaigns_dict) {
   // Load campaigns into campaigns store.
   if (campaigns_dict.has_value()) {
     // Update campaigns store.
@@ -665,7 +665,7 @@ void CampaignsManager::ClearEventsByTargeting(
   client_->ClearConfig(conditions_params);
 
   // Clear events used by the campaign targeting.
-  const base::Value::List* conditions = events_targeting.GetEventsConditions();
+  const base::ListValue* conditions = events_targeting.GetEventsConditions();
   if (!conditions) {
     return;
   }

@@ -110,7 +110,7 @@ class NetworkLocationRequest {
   // Keep a copy of the data sent in the request, so we can refer back to it
   // when the response arrives.
   WifiData wifi_data_;
-  base::Value::Dict request_data_;
+  base::DictValue request_data_;
   base::Time wifi_timestamp_;
 };
 

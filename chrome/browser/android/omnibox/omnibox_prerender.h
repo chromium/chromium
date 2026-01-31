@@ -48,7 +48,7 @@ class OmniboxPrerender {
   void PrerenderMaybe(JNIEnv* env,
                       const base::android::JavaRef<jstring>& j_url,
                       const base::android::JavaRef<jstring>& j_current_url,
-                      jlong jsource_match,
+                      int64_t jsource_match,
                       Profile* profile,
                       const base::android::JavaRef<jobject>& j_tab);
 

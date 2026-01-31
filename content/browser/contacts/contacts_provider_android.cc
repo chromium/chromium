@@ -149,8 +149,8 @@ void ContactsProviderAndroid::AddContact(
 }
 
 void ContactsProviderAndroid::EndContactsList(JNIEnv* env,
-                                              jint percentage_shared,
-                                              jint properties_requested) {
+                                              int32_t percentage_shared,
+                                              int32_t properties_requested) {
   DCHECK(callback_);
   ContactsPickerProperties properties =
       static_cast<ContactsPickerProperties>(properties_requested);

@@ -87,7 +87,7 @@ class TabRemoveObserver : public TabStripModelObserver {
   }
 
   // TabStripModelObserver:
-  void OnTabWillBeRemoved(content::WebContents* contents, int index) override {
+  void OnTabWillBeRemoved(tabs::TabInterface* tab, int index) override {
     // Tab detachment is asynchronous. Release the mouse button after the tab
     // move is done.
     event_generator_->ReleaseLeftButton();

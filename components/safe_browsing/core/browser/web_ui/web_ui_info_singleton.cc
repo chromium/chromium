@@ -143,23 +143,6 @@ void WebUIInfoSingleton::SetOnCSBRRLoggedCallbackForTesting(
   on_csbrr_logged_for_testing_ = std::move(on_done);
 }
 
-void WebUIInfoSingleton::AddToHitReportsSent(
-    std::unique_ptr<HitReport> hit_report) {
-  if (!HasListener()) {
-    return;
-  }
-
-  for (safe_browsing::WebUIInfoSingletonEventObserver* webui_listener :
-       webui_instances_) {
-    webui_listener->NotifyHitReportJsListener(hit_report.get());
-  }
-  hit_reports_sent_.emplace_back(std::move(hit_report));
-}
-
-void WebUIInfoSingleton::ClearHitReportsSent() {
-  std::vector<std::unique_ptr<HitReport>>().swap(hit_reports_sent_);
-}
-
 void WebUIInfoSingleton::AddToPGEvents(
     const sync_pb::UserEventSpecifics& event) {
   if (!HasListener()) {
@@ -319,7 +302,7 @@ void WebUIInfoSingleton::ClearLogMessages() {
 
 void WebUIInfoSingleton::AddToReportingEvents(
     const ::chrome::cros::reporting::proto::UploadEventsRequest& event,
-    const base::Value::Dict& result) {
+    const base::DictValue& result) {
   if (!HasListener()) {
     return;
   }
@@ -334,7 +317,7 @@ void WebUIInfoSingleton::AddToReportingEvents(
 
 // TODO(crbug.com/443997643): Delete when
 // UploadRealtimeReportingEventsUsingProto is cleaned up.
-void WebUIInfoSingleton::AddToReportingEvents(const base::Value::Dict& event) {
+void WebUIInfoSingleton::AddToReportingEvents(const base::DictValue& event) {
   if (!HasListener()) {
     return;
   }
@@ -348,9 +331,9 @@ void WebUIInfoSingleton::AddToReportingEvents(const base::Value::Dict& event) {
 }
 
 void WebUIInfoSingleton::ClearReportingEvents() {
-  std::vector<base::Value::Dict>().swap(reporting_events_);
+  std::vector<base::DictValue>().swap(reporting_events_);
   std::vector<std::pair<::chrome::cros::reporting::proto::UploadEventsRequest,
-                        base::Value::Dict>>()
+                        base::DictValue>>()
       .swap(upload_event_requests_);
 }
 
@@ -479,7 +462,6 @@ void WebUIInfoSingleton::ClearListenerForTesting() {
 void WebUIInfoSingleton::MaybeClearData() {
   if (!HasListener()) {
     ClearCSBRRsSent();
-    ClearHitReportsSent();
     ClearDownloadUrlsChecked();
     ClearClientDownloadRequestsSent();
     ClearClientDownloadResponsesReceived();

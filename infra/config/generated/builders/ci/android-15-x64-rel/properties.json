@@ -57,8 +57,7 @@
       ],
       "retry_failed_shards": true,
       "retry_invalid_shards": true,
-      "targets_spec_directory": "infra/config/generated/builders/ci/android-15-x64-rel/targets",
-      "targets_spec_directory_relative_to_source_dir": true
+      "targets_spec_directory": "infra/config/generated/builders/ci/android-15-x64-rel/targets"
     }
   },
   "$build/siso": {
@@ -66,10 +65,9 @@
       "builder"
     ],
     "enable_cloud_monitoring": true,
-    "enable_cloud_profiler": true,
     "enable_cloud_trace": true,
     "experiments": [],
-    "metrics_project": "chromium-reclient-metrics",
+    "profile_mode": "cloud",
     "project": "rbe-chromium-trusted",
     "remote_jobs": 500
   },

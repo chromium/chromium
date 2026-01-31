@@ -7,9 +7,9 @@
 
 #include "base/functional/bind.h"
 #include "base/run_loop.h"
+#include "chrome/browser/extensions/api/gcm/extension_gcm_app_handler.h"
 #include "chrome/browser/extensions/api/instance_id/instance_id_api.h"
 #include "chrome/browser/extensions/extension_apitest.h"
-#include "chrome/browser/extensions/extension_gcm_app_handler.h"
 #include "chrome/browser/gcm/gcm_profile_service_factory.h"
 #include "chrome/browser/gcm/instance_id/instance_id_profile_service_factory.h"
 #include "chrome/browser/profiles/profile.h"

@@ -23,6 +23,7 @@
 #import "ios/chrome/browser/favicon/model/favicon_loader.h"
 #import "ios/chrome/browser/favicon/model/ios_chrome_favicon_loader_factory.h"
 #import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
+#import "ios/chrome/browser/passwords/coordinator/password_utils.h"
 #import "ios/chrome/browser/passwords/model/ios_chrome_password_check_manager.h"
 #import "ios/chrome/browser/passwords/model/ios_chrome_password_check_manager_factory.h"
 #import "ios/chrome/browser/passwords/model/metrics/ios_password_manager_metrics.h"
@@ -43,12 +44,11 @@
 #import "ios/chrome/browser/settings/ui_bundled/password/passwords_settings_commands.h"
 #import "ios/chrome/browser/settings/ui_bundled/password/reauthentication/local_reauthentication_coordinator.h"
 #import "ios/chrome/browser/settings/ui_bundled/password/widget_promo_instructions/widget_promo_instructions_coordinator.h"
-#import "ios/chrome/browser/settings/ui_bundled/utils/password_utils.h"
 #import "ios/chrome/browser/shared/coordinator/alert/action_sheet_coordinator.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
-#import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/browser_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
+#import "ios/chrome/browser/shared/public/commands/scene_commands.h"
 #import "ios/chrome/browser/shared/public/commands/settings_commands.h"
 #import "ios/chrome/browser/shared/public/commands/snackbar_commands.h"
 #import "ios/chrome/browser/signin/model/identity_manager_factory.h"
@@ -178,8 +178,8 @@
   self.passwordsViewController = passwordsViewController;
 
   CommandDispatcher* dispatcher = self.browser->GetCommandDispatcher();
-  passwordsViewController.applicationHandler =
-      HandlerForProtocol(dispatcher, ApplicationCommands);
+  passwordsViewController.sceneHandler =
+      HandlerForProtocol(dispatcher, SceneCommands);
   passwordsViewController.browserHandler =
       HandlerForProtocol(dispatcher, BrowserCommands);
   passwordsViewController.settingsHandler =

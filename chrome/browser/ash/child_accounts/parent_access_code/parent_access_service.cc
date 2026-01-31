@@ -11,7 +11,6 @@
 #include "base/check.h"
 #include "base/check_deref.h"
 #include "base/check_op.h"
-#include "base/containers/contains.h"
 #include "base/logging.h"
 #include "base/no_destructor.h"
 #include "base/timer/timer.h"
@@ -103,7 +102,7 @@ ParentCodeValidationResult ParentAccessService::ValidateParentAccessCode(
 
   if (config_source_.config_map().empty() ||
       (account_id.is_valid() &&
-       !base::Contains(config_source_.config_map(), account_id))) {
+       !config_source_.config_map().contains(account_id))) {
     result = ParentCodeValidationResult::kNoConfig;
     NotifyObservers(result, account_id);
     return result;
@@ -127,7 +126,7 @@ ParentCodeValidationResult ParentAccessService::ValidateParentAccessCode(
 
 void ParentAccessService::UpdateConfigForUser(
     const AccountId& account_id,
-    std::optional<base::Value::Dict> config) {
+    std::optional<base::DictValue> config) {
   if (config) {
     config_source_.UpdateConfigForUser(account_id, std::move(config.value()));
   } else {

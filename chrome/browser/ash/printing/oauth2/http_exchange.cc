@@ -63,7 +63,7 @@ void HttpExchange::AddParamString(const std::string& name,
 void HttpExchange::AddParamArrayString(const std::string& name,
                                        const std::vector<std::string>& value) {
   DCHECK(!name.empty());
-  base::Value::List list_node;
+  base::ListValue list_node;
   for (const auto& value_element : value) {
     list_node.Append(value_element);
   }
@@ -294,7 +294,7 @@ bool HttpExchange::ParamArrayStringEquals(
     error_msg_ = base::StrCat({"Field ", name, " must be an array"});
     return false;
   }
-  const base::Value::List& node_as_list = node->GetList();
+  const base::ListValue& node_as_list = node->GetList();
   if (node_as_list.size() == value.size()) {
     // Compares the vectors, element by element.
     bool are_equal = true;

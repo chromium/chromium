@@ -18,6 +18,7 @@ import {MetricsReporterImpl} from '//resources/js/metrics_reporter/metrics_repor
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
 import type {AutocompleteResult, OmniboxPopupSelection, PageCallbackRouter, PageHandlerInterface, TabInfo} from '//resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
+import type {Url} from '//resources/mojo/url/mojom/url.mojom-webui.js';
 
 import {getCss} from './app.css.js';
 import {getHtml} from './app.html.js';
@@ -84,12 +85,15 @@ export class OmniboxPopupAppElement extends I18nMixinLit
       },
 
       isInKeywordMode_: {type: Boolean},
-
       result_: {type: Object},
       searchboxLayoutMode_: {type: String},
       showContextEntrypoint_: {type: Boolean},
+      showAiModePrefEnabled_: {type: Boolean},
+      isContentSharingEnabled_: {type: Boolean},
       isLensSearchEnabled_: {type: Boolean},
       isLensSearchEligible_: {type: Boolean},
+      isAimEligible_: {type: Boolean},
+      isRecentTabChipEnabled_: {type: Boolean},
       tabSuggestions_: {type: Array},
     };
   }
@@ -99,14 +103,19 @@ export class OmniboxPopupAppElement extends I18nMixinLit
   accessor hasSecondarySide: boolean = false;
   accessor isDebug: boolean = false;
   protected accessor isInKeywordMode_: boolean = false;
+  protected accessor showAiModePrefEnabled_: boolean = false;
   protected accessor hasVisibleMatches_: boolean = false;
   protected accessor result_: AutocompleteResult|null = null;
   protected accessor searchboxLayoutMode_: string =
       loadTimeData.getString('searchboxLayoutMode');
   protected accessor showContextEntrypoint_: boolean = false;
+  protected accessor isContentSharingEnabled_: boolean = false;
   protected accessor isLensSearchEnabled_: boolean =
       loadTimeData.getBoolean('composeboxShowLensSearchChip');
+  protected accessor isRecentTabChipEnabled_: boolean =
+      loadTimeData.getBoolean('composeboxShowRecentTabChip');
   protected accessor isLensSearchEligible_: boolean = false;
+  protected accessor isAimEligible_: boolean = false;
   protected accessor tabSuggestions_: TabInfo[] = [];
 
   private callbackRouter_: PageCallbackRouter;
@@ -124,6 +133,9 @@ export class OmniboxPopupAppElement extends I18nMixinLit
 
   override connectedCallback() {
     super.connectedCallback();
+    // TODO(b:468113419): the handlers and their definitions are not ordered the
+    // same as the
+    //   mojom file.
     this.listenerIds_ = [
       this.callbackRouter_.autocompleteResultChanged.addListener(
           this.onAutocompleteResultChanged_.bind(this)),
@@ -140,6 +152,18 @@ export class OmniboxPopupAppElement extends I18nMixinLit
           }),
       this.callbackRouter_.onTabStripChanged.addListener(
           this.refreshTabSuggestions_.bind(this)),
+      this.callbackRouter_.updateAimEligibility.addListener(
+          (eligible: boolean) => {
+            this.isAimEligible_ = eligible;
+          }),
+      this.callbackRouter_.onShowAiModePrefChanged.addListener(
+          (canShow: boolean) => {
+            this.showAiModePrefEnabled_ = canShow;
+          }),
+      this.callbackRouter_.updateContentSharingPolicy.addListener(
+          (enabled: boolean) => {
+            this.isContentSharingEnabled_ = enabled;
+          }),
     ];
     canShowSecondarySideMediaQueryList.addEventListener(
         'change', this.onCanShowSecondarySideChanged_.bind(this));
@@ -176,8 +200,14 @@ export class OmniboxPopupAppElement extends I18nMixinLit
           this.result_?.matches.some(match => !match.isHidden) ?? false;
     }
 
-    if (changedPrivateProperties.has('searchboxLayoutMode_') ||
-        changedPrivateProperties.has('isInKeywordMode_')) {
+    if (changedPrivateProperties.has('isAimEligible_') ||
+        changedPrivateProperties.has('searchboxLayoutMode_') ||
+        changedPrivateProperties.has('isInKeywordMode_') ||
+        changedPrivateProperties.has('showAiModePrefEnabled_') ||
+        changedPrivateProperties.has('tabSuggestions_') ||
+        changedPrivateProperties.has('result_') ||
+        changedPrivateProperties.has('isLensSearchEligible_') ||
+        changedPrivateProperties.has('isContentSharingEnabled_')) {
       this.showContextEntrypoint_ = this.computeShowContextEntrypoint_();
     }
   }
@@ -189,10 +219,19 @@ export class OmniboxPopupAppElement extends I18nMixinLit
     return this.shadowRoot.querySelector('cr-searchbox-dropdown')!;
   }
 
+  protected get shouldHideEntrypointButton_(): boolean {
+    return this.searchboxLayoutMode_ === 'Compact';
+  }
+
   private computeShowContextEntrypoint_(): boolean {
     const isTallSearchbox = this.searchboxLayoutMode_.startsWith('Tall');
-    return loadTimeData.getBoolean('showContextMenuEntrypoint') &&
-        isTallSearchbox && !this.isInKeywordMode_;
+    const showRecentTabChip = this.computeShowRecentTabChip_();
+    const showContextualChips = showRecentTabChip || this.isLensSearchEligible_;
+    const showContextualChipsInCompactMode =
+        showContextualChips && this.searchboxLayoutMode_ === 'Compact';
+    return this.isAimEligible_ && this.showAiModePrefEnabled_ &&
+        (isTallSearchbox || showContextualChipsInCompactMode) &&
+        !this.isInKeywordMode_ && this.isContentSharingEnabled_;
   }
 
   private onCanShowSecondarySideChanged_(e: MediaQueryListEvent) {
@@ -257,6 +296,41 @@ export class OmniboxPopupAppElement extends I18nMixinLit
   protected async refreshTabSuggestions_() {
     const {tabs} = await this.pageHandler_.getRecentTabs();
     this.tabSuggestions_ = [...tabs];
+  }
+
+  protected onLensSearchChipClicked_() {
+    this.pageHandler_.openLensSearch();
+  }
+
+  protected addTabContext_(e: CustomEvent<{
+    id: number,
+    title: string,
+    url: Url,
+    delayUpload: boolean,
+  }>) {
+    this.pageHandler_.addTabContext(e.detail.id, e.detail.delayUpload);
+  }
+
+  protected computeShowRecentTabChip_() {
+    const input = this.result_?.input;
+    let recentTabForChip =
+        this.tabSuggestions_.find(tab => tab.showInCurrentTabChip) || null;
+    if (!recentTabForChip) {
+      recentTabForChip =
+          this.tabSuggestions_.find(tab => tab.showInPreviousTabChip) || null;
+    }
+    // When "Always Show Full URL" is enabled the input has protocol etc.
+    // so strip both input and url from the recent tab chip.
+    return loadTimeData.getBoolean('composeboxShowRecentTabChip') &&
+        (input?.length === 0 ||
+         this.stripUrl_(input) === this.stripUrl_(recentTabForChip?.url));
+  }
+
+  private stripUrl_(url: string|undefined): string {
+    if (!url) {
+      return '';
+    }
+    return url.replace(/^https?:\/\/(?:www\.)?/, '').replace(/\/$/, '');
   }
 }
 

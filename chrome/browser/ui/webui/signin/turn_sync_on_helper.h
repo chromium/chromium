@@ -28,7 +28,6 @@
 class Browser;
 class SigninUIError;
 class TurnSyncOnHelperPolicyFetchTracker;
-class AccountSelectionInProgressHandle;
 
 class DiceSignedInProfileCreator;
 class SyncServiceStartupStateObserver;
@@ -277,10 +276,6 @@ class TurnSyncOnHelper {
   // Prevents Sync from running until configuration is complete.
   std::unique_ptr<syncer::SyncSetupInProgressHandle> sync_blocker_;
 
-  // Prevents `SigninManager` from changing the unconsented primary account
-  // until the flow is complete.
-  std::unique_ptr<AccountSelectionInProgressHandle> account_change_blocker_;
-
   // Called when this object is deleted.
   base::ScopedClosureRunner scoped_callback_runner_;
 
@@ -288,9 +283,7 @@ class TurnSyncOnHelper {
   std::unique_ptr<TurnSyncOnHelperPolicyFetchTracker> policy_fetch_tracker_;
   std::unique_ptr<DiceSignedInProfileCreator> dice_signed_in_profile_creator_;
 
-  // The initial primary account is restored if the flow aborts. This is only
-  // needed if UNO Desktop is enabled, because the `SigninManager` does it
-  // automatically on DICE platforms.
+  // The initial primary account is restored if the flow aborts.
   CoreAccountId initial_primary_account_;
   base::CallbackListSubscription shutdown_subscription_;
   bool enterprise_account_confirmed_ = false;

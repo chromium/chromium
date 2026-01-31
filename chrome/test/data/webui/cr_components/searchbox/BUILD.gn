@@ -9,6 +9,7 @@ assert(!is_android && !is_ios)
 build_webui_tests("build") {
   files = [
     "searchbox_dropdown_test.ts",
+    "searchbox_focus_test.ts",
     "searchbox_icon_test.ts",
     "searchbox_lens_test.ts",
     "searchbox_match_test.ts",

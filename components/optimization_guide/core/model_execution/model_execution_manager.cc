@@ -13,15 +13,9 @@
 #include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
 #include "base/types/expected.h"
-#include "components/optimization_guide/core/delivery/model_util.h"
-#include "components/optimization_guide/core/delivery/optimization_guide_model_provider.h"
 #include "components/optimization_guide/core/model_execution/feature_keys.h"
 #include "components/optimization_guide/core/model_execution/model_execution_features.h"
 #include "components/optimization_guide/core/model_execution/model_execution_fetcher_impl.h"
-#include "components/optimization_guide/core/model_execution/model_execution_util.h"
-#include "components/optimization_guide/core/model_execution/on_device_model_adaptation_loader.h"
-#include "components/optimization_guide/core/model_execution/on_device_model_metadata.h"
-#include "components/optimization_guide/core/model_execution/on_device_model_service_controller.h"
 #include "components/optimization_guide/core/model_execution/optimization_guide_model_execution_error.h"
 #include "components/optimization_guide/core/model_execution/remote_model_executor.h"
 #include "components/optimization_guide/core/model_quality/model_quality_log_entry.h"
@@ -81,6 +75,14 @@ void RecordModelExecutionResultHistogram(ModelBasedCapabilityKey feature,
       result);
 }
 
+void RecordModelExecutionLatency(ModelBasedCapabilityKey feature,
+                                 base::TimeDelta latency) {
+  base::UmaHistogramMediumTimes(
+      base::StrCat({"OptimizationGuide.ModelExecution.FetchLatency2.",
+                    GetStringNameForModelExecutionFeature(feature)}),
+      latency);
+}
+
 // The maximum number of parallel `ExecuteModel()` calls allowed for the
 // `feature`. Must be at least 1.
 // If a new model execution request exceeds this limited, the oldest pending
@@ -99,6 +101,7 @@ size_t GetMaxParallelFeatureExecutions(ModelBasedCapabilityKey feature) {
     case ModelBasedCapabilityKey::kWalletablePassExtraction:
     case ModelBasedCapabilityKey::kAmountExtraction:
     case ModelBasedCapabilityKey::kIosSmartTabGrouping:
+    case ModelBasedCapabilityKey::kSkills:
     case ModelBasedCapabilityKey::kScamDetection:
       return 1;
     case ModelBasedCapabilityKey::kFormsClassifications:
@@ -215,13 +218,15 @@ void ModelExecutionManager::ExecuteModel(
   CHECK(service_type != ModelExecutionServiceType::kLegion ||
         feature == ModelBasedCapabilityKey::kZeroStateSuggestions)
       << feature;
+  base::TimeTicks start_time = base::TimeTicks::Now();
   auto fetcher_it = fetchers_for_feature.emplace(
       fetcher_id, CreateModelExecutionFetcher(service_type));
   fetcher_it.first->second->ExecuteModel(
       feature, identity_manager_, request_metadata, timeout,
       base::BindOnce(&ModelExecutionManager::OnModelExecuteResponse,
                      weak_ptr_factory_.GetWeakPtr(), feature, fetcher_id,
-                     std::move(log_ai_data_request), std::move(callback)));
+                     std::move(log_ai_data_request), std::move(callback),
+                     start_time));
 }
 
 std::unique_ptr<ModelExecutionFetcher>
@@ -243,8 +248,10 @@ void ModelExecutionManager::OnModelExecuteResponse(
     FetcherId fetcher_id,
     std::unique_ptr<proto::LogAiDataRequest> log_ai_data_request,
     OptimizationGuideModelExecutionResultCallback callback,
+    base::TimeTicks start_time,
     base::expected<const proto::ExecuteResponse,
                    OptimizationGuideModelExecutionError> execute_response) {
+  RecordModelExecutionLatency(feature, base::TimeTicks::Now() - start_time);
   active_model_execution_fetchers_[feature].erase(fetcher_id);
   ScopedModelExecutionResponseLogger scoped_logger(feature,
                                                    optimization_guide_logger_);

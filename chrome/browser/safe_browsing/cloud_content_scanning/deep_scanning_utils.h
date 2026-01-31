@@ -11,8 +11,8 @@
 
 #include "base/time/time.h"
 #include "chrome/browser/enterprise/connectors/analysis/content_analysis_info.h"
-#include "chrome/browser/safe_browsing/cloud_content_scanning/binary_upload_service.h"
 #include "components/enterprise/common/proto/connectors.pb.h"
+#include "components/enterprise/connectors/core/cloud_content_scanning/binary_upload_service.h"
 #include "components/enterprise/connectors/core/cloud_content_scanning/common.h"
 #include "components/enterprise/connectors/core/common.h"
 #include "components/safe_browsing/core/browser/referrer_chain_provider.h"

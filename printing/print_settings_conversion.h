@@ -16,18 +16,17 @@ namespace printing {
 class PrintSettings;
 
 COMPONENT_EXPORT(PRINTING)
-PageRanges GetPageRangesFromJobSettings(const base::Value::Dict& job_settings);
+PageRanges GetPageRangesFromJobSettings(const base::DictValue& job_settings);
 
 // Returns nullptr on failure.
 COMPONENT_EXPORT(PRINTING)
 std::unique_ptr<PrintSettings> PrintSettingsFromJobSettings(
-    const base::Value::Dict& job_settings);
+    const base::DictValue& job_settings);
 
 // Use for debug/test only, because output is not completely consistent with
 // format of `PrintSettingsFromJobSettings` input.
 COMPONENT_EXPORT(PRINTING)
-base::Value::Dict PrintSettingsToJobSettingsDebug(
-    const PrintSettings& settings);
+base::DictValue PrintSettingsToJobSettingsDebug(const PrintSettings& settings);
 
 }  // namespace printing
 

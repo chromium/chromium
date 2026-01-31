@@ -104,7 +104,7 @@ class FamilyUserParentalControlMetricsTest : public testing::Test {
 TEST_F(FamilyUserParentalControlMetricsTest, BedAndScreenTimeLimitMetrics) {
   ASSERT_TRUE(ChildUserServiceFactory::GetForBrowserContext(profile_.get()));
 
-  base::Value::Dict policy_content =
+  base::DictValue policy_content =
       utils::CreateTimeLimitPolicy(utils::CreateTime(6, 0));
 
   // Adds bedtime policy:
@@ -159,7 +159,7 @@ TEST_F(FamilyUserParentalControlMetricsTest, OverrideTimeLimitMetrics) {
   ASSERT_TRUE(ChildUserServiceFactory::GetForBrowserContext(profile_.get()));
 
   // Adds override time policy created at 1 day ago.
-  base::Value::Dict policy_content =
+  base::DictValue policy_content =
       utils::CreateTimeLimitPolicy(utils::CreateTime(6, 0));
 
   utils::AddOverrideWithDuration(

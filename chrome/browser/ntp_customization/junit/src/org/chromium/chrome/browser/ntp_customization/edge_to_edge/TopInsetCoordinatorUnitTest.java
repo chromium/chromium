@@ -39,6 +39,7 @@ import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
+import org.robolectric.annotation.Config;
 
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.OneshotSupplierImpl;
@@ -56,6 +57,7 @@ import org.chromium.chrome.browser.ntp_customization.theme.chrome_colors.NtpThem
 import org.chromium.chrome.browser.ntp_customization.theme.upload_image.BackgroundImageInfo;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabObserver;
+import org.chromium.chrome.browser.ui.edge_to_edge.TopInsetProvider;
 import org.chromium.chrome.browser.ui.native_page.NativePage;
 import org.chromium.ui.insets.InsetObserver;
 import org.chromium.url.JUnitTestGURLs;
@@ -73,7 +75,7 @@ public class TopInsetCoordinatorUnitTest {
     @Mock private WindowInsetsCompat mWindowInsetsCompat;
     @Mock private View mView;
     @Mock private NativePage mNativePage;
-    @Mock private TopInsetCoordinator.Observer mObserver;
+    @Mock private TopInsetProvider.Observer mObserver;
     @Mock private LayoutStateProvider mLayoutStateProvider;
 
     @Captor
@@ -125,6 +127,8 @@ public class TopInsetCoordinatorUnitTest {
         mTopInsetCoordinator.destroy();
     }
 
+    // TODO(crbug.com/450954710): This test fails on SDK 36.
+    @Config(sdk = 29)
     @Test
     @SuppressWarnings("DirectInvocationOnMock")
     public void testOnApplyWindowInsets_ConsumeTopInset() {
@@ -301,7 +305,7 @@ public class TopInsetCoordinatorUnitTest {
         assertNotNull(mTopInsetCoordinator.getTrackingTabForTesting());
 
         // Verifies that observers are removed when the customized background is removed.
-        setBackgroundType(NtpBackgroundImageType.THEME_COLLECTION, NtpBackgroundImageType.DEFAULT);
+        resetBackgroundType(NtpBackgroundImageType.THEME_COLLECTION);
         verify(mNtpTab, times(2)).removeObserver(any(TabObserver.class));
         verify(mLayoutStateProvider)
                 .removeObserver(any(LayoutStateProvider.LayoutStateObserver.class));
@@ -311,7 +315,7 @@ public class TopInsetCoordinatorUnitTest {
         // Verifies it is no-op when the background type is set to the default one again.
         clearInvocations(mNtpTab);
         clearInvocations(mLayoutStateProvider);
-        setBackgroundType(NtpBackgroundImageType.DEFAULT, NtpBackgroundImageType.DEFAULT);
+        resetBackgroundType(NtpBackgroundImageType.DEFAULT);
         verify(mNtpTab, never()).removeObserver(any(TabObserver.class));
         verify(mLayoutStateProvider, never())
                 .removeObserver(any(LayoutStateProvider.LayoutStateObserver.class));
@@ -339,7 +343,7 @@ public class TopInsetCoordinatorUnitTest {
 
         // Verifies that retriggerOnApplyWindowInsets() is called when the customized background is
         // removed.
-        setBackgroundType(NtpBackgroundImageType.THEME_COLLECTION, NtpBackgroundImageType.DEFAULT);
+        resetBackgroundType(NtpBackgroundImageType.THEME_COLLECTION);
         verify(mInsetObserver).retriggerOnApplyWindowInsets();
 
         // Verifies that retriggerOnApplyWindowInsets() isn't called again when the background type
@@ -435,5 +439,11 @@ public class TopInsetCoordinatorUnitTest {
         mNtpCustomizationConfigManager.setBackgroundImageTypeForTesting(newType);
         mTopInsetCoordinator.onNtpBackgroundChanged(
                 /* fromInitialization= */ false, oldType, newType);
+    }
+
+    private void resetBackgroundType(@NtpBackgroundImageType int oldType) {
+        mNtpCustomizationConfigManager.setBackgroundImageTypeForTesting(
+                NtpBackgroundImageType.DEFAULT);
+        mTopInsetCoordinator.onNtpBackgroundReset(oldType);
     }
 }

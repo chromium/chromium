@@ -107,7 +107,7 @@ AudioSinkAndroidAudioTrackImpl::~AudioSinkAndroidAudioTrackImpl() {
 bool AudioSinkAndroidAudioTrackImpl::Initialize(int audio_track_session_id,
                                                 bool is_apk_audio) {
   j_audio_sink_audiotrack_impl_ = Java_AudioSinkAudioTrackImpl_create(
-      base::android::AttachCurrentThread(), reinterpret_cast<jlong>(this),
+      base::android::AttachCurrentThread(), reinterpret_cast<int64_t>(this),
       static_cast<int>(content_type_), num_channels_, input_samples_per_second_,
       kDirectBufferSize, audio_track_session_id, is_apk_audio, use_hw_av_sync_);
   if (!j_audio_sink_audiotrack_impl_) {

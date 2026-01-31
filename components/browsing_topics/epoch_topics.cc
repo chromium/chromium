@@ -4,7 +4,8 @@
 
 #include "components/browsing_topics/epoch_topics.h"
 
-#include "base/containers/contains.h"
+#include <algorithm>
+
 #include "base/hash/legacy_hash.h"
 #include "base/json/values_util.h"
 #include "base/logging.h"
@@ -78,7 +79,7 @@ EpochTopics& EpochTopics::operator=(EpochTopics&&) = default;
 EpochTopics::~EpochTopics() = default;
 
 // static
-EpochTopics EpochTopics::FromDictValue(const base::Value::Dict& dict_value) {
+EpochTopics EpochTopics::FromDictValue(const base::DictValue& dict_value) {
   const base::Value* calculation_time_value =
       dict_value.Find(kCalculationTimeNameKey);
   std::optional<base::Time> maybe_calculation_time =
@@ -90,14 +91,14 @@ EpochTopics EpochTopics::FromDictValue(const base::Value::Dict& dict_value) {
   base::Time calculation_time = maybe_calculation_time.value();
 
   std::vector<TopicAndDomains> top_topics_and_observing_domains;
-  const base::Value::List* top_topics_and_observing_domains_value =
+  const base::ListValue* top_topics_and_observing_domains_value =
       dict_value.FindList(kTopTopicsAndObservingDomainsNameKey);
   if (!top_topics_and_observing_domains_value)
     return EpochTopics(calculation_time);
 
   for (const base::Value& topic_and_observing_domains_value :
        *top_topics_and_observing_domains_value) {
-    const base::Value::Dict* topic_and_observing_domains_dict_value =
+    const base::DictValue* topic_and_observing_domains_dict_value =
         topic_and_observing_domains_value.GetIfDict();
     if (!topic_and_observing_domains_dict_value)
       return EpochTopics(calculation_time);
@@ -150,15 +151,15 @@ EpochTopics EpochTopics::FromDictValue(const base::Value::Dict& dict_value) {
                      /*from_manually_triggered_calculation=*/false);
 }
 
-base::Value::Dict EpochTopics::ToDictValue() const {
-  base::Value::List top_topics_and_observing_domains_list;
+base::DictValue EpochTopics::ToDictValue() const {
+  base::ListValue top_topics_and_observing_domains_list;
   for (const TopicAndDomains& topic_and_domains :
        top_topics_and_observing_domains_) {
     top_topics_and_observing_domains_list.Append(
         topic_and_domains.ToDictValue());
   }
 
-  base::Value::Dict result_dict;
+  base::DictValue result_dict;
   result_dict.Set(kTopTopicsAndObservingDomainsNameKey,
                   std::move(top_topics_and_observing_domains_list));
   result_dict.Set(kPaddedTopTopicsStartIndexNameKey,
@@ -236,7 +237,7 @@ void EpochTopics::ClearTopic(Topic topic) {
     SemanticTree semantic_tree;
     std::vector<Topic> top_topic_ancestors =
         semantic_tree.GetAncestorTopics(top_topic_and_domains.topic());
-    if (base::Contains(top_topic_ancestors, topic)) {
+    if (std::ranges::contains(top_topic_ancestors, topic)) {
       top_topic_and_domains = TopicAndDomains();
     }
   }

@@ -20,6 +20,7 @@
 #include "base/notreached.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/sequenced_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/sequence_bound.h"
@@ -49,8 +50,10 @@
 #endif
 
 #if BUILDFLAG(IS_LINUX)
+#include "base/command_line.h"
 #include "base/no_destructor.h"
 #include "components/printing/common/print_dialog_linux_factory.h"
+#include "content/public/common/content_switches.h"  // nogncheck
 #include "ui/linux/linux_ui.h"
 #include "ui/linux/linux_ui_delegate_stub.h"
 #include "ui/linux/linux_ui_factory.h"
@@ -474,7 +477,10 @@ void PrintBackendServiceImpl::Init(
   // are using `TestPrintingContext`.
   InstantiateLinuxUiDelegate();
   ui::LinuxUi::SetInstance(ui::GetDefaultLinuxUi());
-  print_dialog_factory_ = std::make_unique<PrintDialogLinuxFactory>();
+  if (!base::CommandLine::ForCurrentProcess()->HasSwitch(
+          switches::kSingleProcess)) {
+    print_dialog_factory_ = std::make_unique<PrintDialogLinuxFactory>();
+  }
 #endif  // BUILDFLAG(IS_LINUX)
 
 #if BUILDFLAG(IS_WIN)
@@ -668,7 +674,7 @@ void PrintBackendServiceImpl::AskUserForSettings(
 
 void PrintBackendServiceImpl::UpdatePrintSettings(
     uint32_t context_id,
-    base::Value::Dict job_settings,
+    base::DictValue job_settings,
     mojom::PrintBackendService::UpdatePrintSettingsCallback callback) {
   DCHECK(print_backend_);
 
@@ -683,7 +689,7 @@ void PrintBackendServiceImpl::UpdatePrintSettings(
   PrinterBasicInfo basic_info;
   if (print_backend_->GetPrinterBasicInfo(*printer_name, &basic_info) ==
       mojom::ResultCode::kSuccess) {
-    base::Value::Dict advanced_settings;
+    base::DictValue advanced_settings;
     for (const auto& pair : basic_info.options)
       advanced_settings.Set(pair.first, pair.second);
 

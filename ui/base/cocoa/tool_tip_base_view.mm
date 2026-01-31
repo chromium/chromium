@@ -2,14 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #import "ui/base/cocoa/tool_tip_base_view.h"
 
 #include "base/check.h"
+#include "base/compiler_specific.h"
 #include "base/memory/raw_ptr.h"
 #include "base/notreached.h"
 
@@ -132,7 +128,8 @@ const NSTrackingRectTag kTrackingRectTag = 0xBADFACE;
 // Override of (apparently) a private NSView method(!)
 - (void)_removeTrackingRects:(NSTrackingRectTag *)tags count:(int)count {
   for (int i = 0; i < count; ++i) {
-    NSTrackingRectTag tag = tags[i];
+    // SAFETY: count provided by caller.
+    NSTrackingRectTag tag = UNSAFE_BUFFERS(tags[i]);
     if (tag == 0)
       continue;
     DCHECK(tag == kTrackingRectTag);

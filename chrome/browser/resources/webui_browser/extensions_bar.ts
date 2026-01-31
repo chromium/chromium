@@ -86,7 +86,7 @@ export class ExtensionsBar extends CrLitElement {
 
       const extensionButton = this.buttons.get(update.id);
       assert(extensionButton);
-      extensionButton.iconUrl = update.dataUrlForIcon.url;
+      extensionButton.iconUrl = update.dataUrlForIcon;
       extensionButton.setAttribute('aria-label', update.accessibleName);
       extensionButton.setAttribute('title', update.tooltip);
       extensionButton.visible = update.isVisible;

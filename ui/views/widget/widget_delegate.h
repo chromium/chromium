@@ -233,10 +233,6 @@ class BorealisDisallowedDialog;
 class BorealisLaunchErrorDialog;
 }  // namespace borealis
 
-namespace examples {
-class ExamplesWindowContents;
-}
-
 namespace test {
 FORWARD_DECLARE_TEST(DesktopWidgetTest, LockPaintAsActiveAndCloseParent);
 }
@@ -340,7 +336,7 @@ class VIEWS_EXPORT WidgetDelegate {
     // contexts. Never displayed to the user, and not translated.
     std::string internal_name;
 
-    // The widget's modality type. Note that MODAL_TYPE_SYSTEM does not work at
+    // The widget's modality type. Note that ModalType::kSystem does not work at
     // all on Mac.
     ui::mojom::ModalType modal_type = ui::mojom::ModalType::kNone;
 
@@ -974,7 +970,6 @@ class VIEWS_EXPORT WidgetDelegateView : public WidgetDelegate, public View {
   friend class ShapedWidgetDelegate;
   FRIEND_TEST_ALL_PREFIXES(NativeViewHostAuraTest,
                            FocusManagerUpdatedDuringDestruction);
-  friend class examples::ExamplesWindowContents;
   friend class test::GetNativeThemeFromDestructorView;
   friend class test::TestingWidgetDelegateView;
   friend class webid::TestAccountSelectionView;

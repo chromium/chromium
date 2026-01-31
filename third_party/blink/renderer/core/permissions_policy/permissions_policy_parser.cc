@@ -3,10 +3,11 @@
 
 #include "third_party/blink/renderer/core/permissions_policy/permissions_policy_parser.h"
 
+#include <algorithm>
 #include <bitset>
 #include <utility>
 
-#include "base/containers/contains.h"
+#include "base/compiler_specific.h"
 #include "base/feature_list.h"
 #include "base/metrics/histogram_macros.h"
 #include "net/http/structured_headers.h"
@@ -14,6 +15,7 @@
 #include "services/network/public/cpp/permissions_policy/permissions_policy_declaration.h"
 #include "services/network/public/mojom/permissions_policy/permissions_policy_feature.mojom-blink.h"
 #include "third_party/blink/public/common/features.h"
+#include "third_party/blink/public/web/web_navigation_params.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/web_feature.h"
@@ -88,8 +90,8 @@ class ParsingContext {
 
  public:
   ParsingContext(PolicyParserMessageBuffer& logger,
-                 scoped_refptr<const SecurityOrigin> self_origin,
-                 scoped_refptr<const SecurityOrigin> src_origin,
+                 const SecurityOrigin& self_origin LIFETIME_CAPTURE_BY(this),
+                 const SecurityOrigin* src_origin LIFETIME_CAPTURE_BY(this),
                  const FeatureNameMap& feature_names,
                  ExecutionContext* execution_context)
       : logger_(logger),
@@ -145,8 +147,8 @@ class ParsingContext {
   void RecordAllowlistTypeUsage(size_t origin_count);
 
   PolicyParserMessageBuffer& logger_;
-  scoped_refptr<const SecurityOrigin> self_origin_;
-  scoped_refptr<const SecurityOrigin> src_origin_;
+  const SecurityOrigin& self_origin_;
+  const SecurityOrigin* const src_origin_;
   const FeatureNameMap& feature_names_;
   // `execution_context_` is used for reporting various WebFeatures
   // during the parsing process.
@@ -227,7 +229,7 @@ ParsingContext::ParsedAllowlist ParsingContext::ParseAllowlist(
     //       |src_origin| is not null), |src_origin| is not opaque; or
     //     c. the opaque origin of the frame, if |src_origin| is opaque.
     if (!src_origin_) {
-      allowlist.self_if_matches = self_origin_->ToUrlOrigin();
+      allowlist.self_if_matches = self_origin_.ToUrlOrigin();
     } else if (!src_origin_->IsOpaque()) {
       std::optional<network::OriginWithPossibleWildcards>
           maybe_origin_with_possible_wildcards =
@@ -269,7 +271,7 @@ ParsingContext::ParsedAllowlist ParsingContext::ParseAllowlist(
       // 'self' origin is used if the origin is exactly 'self'.
       if (EqualIgnoringASCIICase(origin_string, "'self'")) {
         target_is_self = true;
-        self = self_origin_->ToUrlOrigin();
+        self = self_origin_.ToUrlOrigin();
       }
       // 'src' origin is used if |src_origin| is available and the
       // origin is a match for 'src'. |src_origin| is only set
@@ -495,8 +497,8 @@ PermissionsPolicyParser::Node ParsingContext::ParsePermissionsPolicyToIR(
     Vector<String> allowlist;
     for (const auto& parameterized_item : value.member) {
       if (!parameterized_item.params.empty()) {
-        logger_.Warn(String::Format("Feature %s's parameters are ignored.",
-                                    feature_name));
+        logger_.Warn(UNSAFE_TODO(String::Format(
+            "Feature %s's parameters are ignored.", feature_name)));
       }
 
       String allowlist_item;
@@ -504,10 +506,10 @@ PermissionsPolicyParser::Node ParsingContext::ParsePermissionsPolicyToIR(
         // All special keyword appears as token, i.e. self, src and *.
         const std::string& token_value = parameterized_item.item.GetString();
         if (token_value != "*" && token_value != "self") {
-          logger_.Warn(String::Format(
+          logger_.Warn(UNSAFE_TODO(String::Format(
               "Invalid allowlist item(%s) for feature %s. Allowlist item "
               "must be *, self or quoted url.",
-              token_value.c_str(), feature_name));
+              token_value.c_str(), feature_name)));
           continue;
         }
 
@@ -519,10 +521,10 @@ PermissionsPolicyParser::Node ParsingContext::ParsePermissionsPolicyToIR(
       } else if (parameterized_item.item.is_string()) {
         allowlist_item = parameterized_item.item.GetString().c_str();
       } else {
-        logger_.Warn(
+        logger_.Warn(UNSAFE_TODO(
             String::Format("Invalid allowlist item for feature %s. Allowlist "
                            "item must be *, self, or quoted url.",
-                           feature_name));
+                           feature_name)));
         continue;
       }
       if (!allowlist_item.empty()) {
@@ -541,12 +543,132 @@ PermissionsPolicyParser::Node ParsingContext::ParsePermissionsPolicyToIR(
   return ir_root;
 }
 
+// This merges the permissions policies defined within the Isolated Web App
+// manifest with the ones received from headers of the particular page. The
+// general mechanism and rationale behind it is explained in more detail here:
+// https://github.com/WICG/isolated-web-apps/blob/main/Permissions.md#proposal
+//
+// In short, the mechanism is as follows:
+// If the feature:
+// - Doesn't have nonempty allowlist defined within the manifest, any potential
+//   mentions of it in headers are skipped (and its usage is not allowed).
+// - Has an allowlist within the manifest but does not appear at all in headers,
+//   unmodified allowlist from the manifest is used.
+// - Appears in both the manifest and headers, the intersection of both
+//   allowlists is used.
+//   For example, if the manifest specifies:
+//     direct-sockets: self origin1 origin2
+//   and headers specify:
+//     direct-sockets: self, origin2, origin3
+//   the merged allowlist will look:
+//     direct-sockets: self, origin2
+//
+// This means that:
+// - `base_policy` here comes from the manifest.
+// - `header_policy` here comes from the headers.
+// - Headers can only limit the allowlists extracted from the manifest, never
+//   extend them.
+network::ParsedPermissionsPolicy CombinePermissionsPolicies(
+    const network::ParsedPermissionsPolicy& base_policy,
+    const network::ParsedPermissionsPolicy& header_policy) {
+  auto result = base_policy;
+  for (const network::ParsedPermissionsPolicyDeclaration&
+           declaration_in_headers : header_policy) {
+    // If the header policy allows all origins, it doesn't restrict the base
+    // policy.
+    if (declaration_in_headers.matches_all_origins) {
+      continue;
+    }
+    auto base_declaration = std::ranges::find(
+        result, declaration_in_headers.feature,
+        &network::ParsedPermissionsPolicyDeclaration::feature);
+    if (base_declaration == result.end()) {
+      continue;
+    }
+
+    // If the base policy allows all origins, we simply replace it with the
+    // header policy (which is more restrictive).
+    if (base_declaration->matches_all_origins) {
+      base_declaration->matches_all_origins = false;
+      base_declaration->allowed_origins =
+          declaration_in_headers.allowed_origins;
+      base_declaration->self_if_matches =
+          declaration_in_headers.self_if_matches;
+      base_declaration->matches_opaque_src =
+          declaration_in_headers.matches_opaque_src;
+      continue;
+    }
+
+    auto allowed_origins_headers = declaration_in_headers.allowed_origins;
+    std::ranges::sort(allowed_origins_headers);
+
+    auto allowed_origins_manifest = base_declaration->allowed_origins;
+    std::ranges::sort(allowed_origins_manifest);
+
+    // Intersect the allowed origins from the manifest and the header.
+    std::vector<network::OriginWithPossibleWildcards> allowed_origins;
+    std::ranges::set_intersection(allowed_origins_headers,
+                                  allowed_origins_manifest,
+                                  std::back_inserter(allowed_origins));
+
+    base_declaration->allowed_origins = std::move(allowed_origins);
+
+    // If the base policy allows 'self', we must check if the header policy also
+    // allows 'self'. If not, 'self' is removed from the allowlist.
+    if (base_declaration->self_if_matches) {
+      // `self_if_matches` in both places is an optional that can be either
+      // `std::nullopt` or the origin of this IWA, nothing else.
+      base_declaration->self_if_matches =
+          declaration_in_headers.self_if_matches;
+    }
+
+    if (base_declaration->matches_opaque_src) {
+      base_declaration->matches_opaque_src =
+          declaration_in_headers.matches_opaque_src;
+    }
+
+    // Reporting endpoint cannot be specified within the manifest, the one from
+    // headers is used.
+    base_declaration->reporting_endpoint =
+        declaration_in_headers.reporting_endpoint;
+  }
+  return result;
+}
+
 }  // namespace
+
+network::ParsedPermissionsPolicy
+PermissionsPolicyParser::ParseIsolatedAppPermissionsPolicy(
+    const Vector<IsolatedAppPermissionPolicyEntry>& isolated_app_policy,
+    const network::ParsedPermissionsPolicy& permissions_policy_from_headers,
+    const SecurityOrigin& origin,
+    PolicyParserMessageBuffer& permissions_policy_logger,
+    ExecutionContext* execution_context) {
+  if (isolated_app_policy.empty()) {
+    return {};
+  }
+
+  Node node = {
+      .type = network::OriginWithPossibleWildcards::NodeType::kHeader,
+      .declarations{
+          isolated_app_policy, [](const auto& entry) -> Declaration {
+            return {
+                .feature_name = entry.feature,
+                // can't use = here because the constructor we need is explicit
+                .allowlist{entry.allowed_origins},
+            };
+          }}};
+
+  return CombinePermissionsPolicies(
+      ParsePolicyFromNode(node, origin, permissions_policy_logger,
+                          execution_context),
+      permissions_policy_from_headers);
+}
 
 network::ParsedPermissionsPolicy PermissionsPolicyParser::ParseHeader(
     const String& feature_policy_header,
     const String& permissions_policy_header,
-    scoped_refptr<const SecurityOrigin> origin,
+    const SecurityOrigin& origin,
     PolicyParserMessageBuffer& feature_policy_logger,
     PolicyParserMessageBuffer& permissions_policy_logger,
     ExecutionContext* execution_context) {
@@ -600,13 +722,13 @@ network::ParsedPermissionsPolicy PermissionsPolicyParser::ParseHeader(
 
 network::ParsedPermissionsPolicy PermissionsPolicyParser::ParseAttribute(
     const String& policy,
-    scoped_refptr<const SecurityOrigin> self_origin,
-    scoped_refptr<const SecurityOrigin> src_origin,
+    const SecurityOrigin& self_origin,
+    const SecurityOrigin& src_origin,
     PolicyParserMessageBuffer& logger,
     ExecutionContext* execution_context) {
   bool is_isolated_context =
       execution_context && execution_context->IsIsolatedContext();
-  return ParsingContext(logger, self_origin, src_origin,
+  return ParsingContext(logger, self_origin, &src_origin,
                         GetDefaultFeatureNameMap(is_isolated_context),
                         execution_context)
       .ParseFeaturePolicy(policy);
@@ -614,7 +736,7 @@ network::ParsedPermissionsPolicy PermissionsPolicyParser::ParseAttribute(
 
 network::ParsedPermissionsPolicy PermissionsPolicyParser::ParsePolicyFromNode(
     PermissionsPolicyParser::Node& policy,
-    scoped_refptr<const SecurityOrigin> origin,
+    const SecurityOrigin& origin,
     PolicyParserMessageBuffer& logger,
     ExecutionContext* execution_context) {
   bool is_isolated_context =
@@ -628,8 +750,8 @@ network::ParsedPermissionsPolicy PermissionsPolicyParser::ParsePolicyFromNode(
 network::ParsedPermissionsPolicy
 PermissionsPolicyParser::ParseFeaturePolicyForTest(
     const String& policy,
-    scoped_refptr<const SecurityOrigin> self_origin,
-    scoped_refptr<const SecurityOrigin> src_origin,
+    const SecurityOrigin& self_origin,
+    const SecurityOrigin* src_origin,
     PolicyParserMessageBuffer& logger,
     const FeatureNameMap& feature_names,
     ExecutionContext* execution_context) {
@@ -641,8 +763,8 @@ PermissionsPolicyParser::ParseFeaturePolicyForTest(
 network::ParsedPermissionsPolicy
 PermissionsPolicyParser::ParsePermissionsPolicyForTest(
     const String& policy,
-    scoped_refptr<const SecurityOrigin> self_origin,
-    scoped_refptr<const SecurityOrigin> src_origin,
+    const SecurityOrigin& self_origin,
+    const SecurityOrigin* src_origin,
     PolicyParserMessageBuffer& logger,
     const FeatureNameMap& feature_names,
     ExecutionContext* execution_context) {
@@ -653,8 +775,8 @@ PermissionsPolicyParser::ParsePermissionsPolicyForTest(
 
 bool IsFeatureDeclared(network::mojom::PermissionsPolicyFeature feature,
                        const network::ParsedPermissionsPolicy& policy) {
-  return base::Contains(policy, feature,
-                        &network::ParsedPermissionsPolicyDeclaration::feature);
+  return std::ranges::contains(
+      policy, feature, &network::ParsedPermissionsPolicyDeclaration::feature);
 }
 
 bool RemoveFeatureIfPresent(network::mojom::PermissionsPolicyFeature feature,

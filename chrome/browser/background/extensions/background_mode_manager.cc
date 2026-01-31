@@ -14,7 +14,6 @@
 
 #include "base/base_paths.h"
 #include "base/command_line.h"
-#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
@@ -24,6 +23,7 @@
 #include "base/notimplemented.h"
 #include "base/one_shot_event.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/task/single_thread_task_runner.h"
 #include "build/build_config.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/background/extensions/background_application_list_model.h"
@@ -44,10 +44,10 @@
 #include "chrome/browser/status_icons/status_tray.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
-#include "chrome/browser/ui/browser_dialogs.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/chrome_pages.h"
+#include "chrome/browser/ui/dialogs/browser_dialogs.h"
 #include "chrome/browser/ui/extensions/app_launch_params.h"
 #include "chrome/browser/ui/profiles/profile_picker.h"
 #include "chrome/browser/web_applications/extensions/launch.h"
@@ -352,7 +352,7 @@ void BackgroundModeManager::RegisterPrefs(PrefRegistrySimple* registry) {
 
 void BackgroundModeManager::RegisterProfile(Profile* profile) {
   // We don't want to register multiple times for one profile.
-  DCHECK(!base::Contains(background_mode_data_, profile));
+  DCHECK(!background_mode_data_.contains(profile));
   auto bmd = std::make_unique<BackgroundModeData>(this, profile,
                                                   &command_id_handler_vector_);
   BackgroundModeData* bmd_ptr = bmd.get();
@@ -395,7 +395,7 @@ bool BackgroundModeManager::UnregisterProfile(Profile* profile) {
   background_mode_data_.erase(it);
   // If there are no background mode profiles any longer, then turn off
   // background mode.
-  UpdateEnableLaunchOnStartup();
+  startup_launch_client_.SetLaunchOnStartup(ShouldLaunchOnStartup());
   if (!ShouldBeInBackgroundMode()) {
     EndBackgroundMode();
   }
@@ -472,7 +472,7 @@ void BackgroundModeManager::OnExtensionsReady(Profile* profile) {
 }
 
 void BackgroundModeManager::OnBackgroundModeEnabledPrefChanged() {
-  UpdateEnableLaunchOnStartup();
+  startup_launch_client_.SetLaunchOnStartup(ShouldLaunchOnStartup());
   if (IsBackgroundModePrefEnabled()) {
     EnableBackgroundMode();
   } else {
@@ -701,7 +701,7 @@ void BackgroundModeManager::EnableBackgroundMode() {
   if (!in_background_mode_ && ShouldBeInBackgroundMode()) {
     StartBackgroundMode();
 
-    UpdateEnableLaunchOnStartup();
+    startup_launch_client_.SetLaunchOnStartup(ShouldLaunchOnStartup());
   }
 }
 
@@ -760,7 +760,7 @@ void BackgroundModeManager::OnClientsChanged(
         HasPersistentBackgroundClientForProfile(profile));
   }
 
-  UpdateEnableLaunchOnStartup();
+  startup_launch_client_.SetLaunchOnStartup(ShouldLaunchOnStartup());
   if (!ShouldBeInBackgroundMode()) {
     // We've uninstalled our last background client, make sure we exit
     // background mode and no longer launch on startup.
@@ -833,22 +833,8 @@ void BackgroundModeManager::OnBackgroundClientInstalled(
   DisplayClientInstalledNotification(name);
 }
 
-void BackgroundModeManager::UpdateEnableLaunchOnStartup() {
-  const bool new_launch_on_startup =
-      ShouldBeInBackgroundMode() && HasPersistentBackgroundClient();
-  if (launch_on_startup_enabled_ &&
-      new_launch_on_startup == *launch_on_startup_enabled_) {
-    return;
-  }
-  launch_on_startup_enabled_.emplace(new_launch_on_startup);
-
-  StartupLaunchManager* const launch_manager =
-      StartupLaunchManager::From(g_browser_process);
-  if (launch_on_startup_enabled_.value()) {
-    launch_manager->RegisterLaunchOnStartup(StartupLaunchReason::kExtensions);
-  } else {
-    launch_manager->UnregisterLaunchOnStartup(StartupLaunchReason::kExtensions);
-  }
+bool BackgroundModeManager::ShouldLaunchOnStartup() const {
+  return ShouldBeInBackgroundMode() && HasPersistentBackgroundClient();
 }
 
 namespace {

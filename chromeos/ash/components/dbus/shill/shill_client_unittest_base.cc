@@ -39,7 +39,7 @@ base::Value PopStringToStringDictionary(dbus::MessageReader* reader) {
   dbus::MessageReader array_reader(nullptr);
   if (!reader->PopArray(&array_reader))
     return base::Value();
-  base::Value::Dict result;
+  base::DictValue result;
   while (array_reader.HasMoreData()) {
     dbus::MessageReader entry_reader(nullptr);
     std::string key;
@@ -264,7 +264,7 @@ void ShillClientUnittestBase::ExpectStringAndValueArguments(
 
 // static
 void ShillClientUnittestBase::ExpectValueDictionaryArgument(
-    const base::Value::Dict* expected_dictionary,
+    const base::DictValue* expected_dictionary,
     bool string_valued,
     dbus::MessageReader* reader) {
   dbus::MessageReader array_reader(nullptr);
@@ -307,8 +307,8 @@ void ShillClientUnittestBase::ExpectValueDictionaryArgument(
 }
 
 // static
-base::Value::Dict ShillClientUnittestBase::CreateExampleServiceProperties() {
-  base::Value::Dict properties;
+base::DictValue ShillClientUnittestBase::CreateExampleServiceProperties() {
+  base::DictValue properties;
   properties.Set(shill::kGuidProperty,
                  base::Value("00000000-0000-0000-0000-000000000000"));
   properties.Set(shill::kModeProperty, base::Value(shill::kModeManaged));

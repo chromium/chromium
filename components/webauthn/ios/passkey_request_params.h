@@ -8,25 +8,45 @@
 #import <set>
 #import <vector>
 
-#import "components/webauthn/core/browser/passkey_model.h"
+#import "components/webauthn/core/browser/passkey_model_utils.h"
+#import "components/webauthn/ios/ios_passkey_client.h"
 #import "device/fido/public/public_key_credential_descriptor.h"
 #import "device/fido/public/public_key_credential_rp_entity.h"
 #import "device/fido/public/public_key_credential_user_entity.h"
+#import "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 
 namespace webauthn {
+
+struct PasskeyExtensionData {
+  PasskeyExtensionData();
+  PasskeyExtensionData(const PasskeyExtensionData& other);
+  PasskeyExtensionData(PasskeyExtensionData&& other);
+  ~PasskeyExtensionData();
+
+  // Main PRF input data.
+  std::optional<passkey_model_utils::PRFInputData> prf_eval;
+  // Per credential input data.
+  // The map's keys (std::vector<uint8_t>) are credential IDs.
+  absl::flat_hash_map<std::vector<uint8_t>,
+                      std::optional<passkey_model_utils::PRFInputData>>
+      prf_eval_by_credential;
+};
 
 // Utility class containing common parameters used by passkey assertion and
 // registration requests.
 class PasskeyRequestParams {
  public:
-  PasskeyRequestParams();
-  PasskeyRequestParams(const std::string& frame_id,
-                       const std::string& request_id,
+  PasskeyRequestParams(IOSPasskeyClient::RequestInfo request_info,
                        device::PublicKeyCredentialRpEntity rp_entity,
                        std::vector<uint8_t> challenge,
-                       device::UserVerificationRequirement user_verification);
+                       device::UserVerificationRequirement user_verification,
+                       bool is_conditional,
+                       PasskeyExtensionData extension_data);
   PasskeyRequestParams(PasskeyRequestParams&& other);
   ~PasskeyRequestParams();
+
+  // Returns the request information.
+  const IOSPasskeyClient::RequestInfo& RequestInfo() const;
 
   // Returns the web::WebFrame's identifier.
   const std::string& FrameId() const;
@@ -44,17 +64,30 @@ class PasskeyRequestParams {
   bool ShouldPerformUserVerification(
       bool is_biometric_authentication_enabled) const;
 
+  // Returns whether the request is a conditional request (as opposed to modal).
+  bool IsConditional() const;
+
+  // Returns the extensions input data for passkey creation.
+  passkey_model_utils::ExtensionInputData ExtensionInputForCreation() const;
+
+  // Returns the extensions input data for the selected passkey's credential ID
+  // for passkey assertion.
+  passkey_model_utils::ExtensionInputData ExtensionInputForCredential(
+      std::vector<uint8_t> credential_id) const;
+
  private:
-  // ID associated with the web::WebFrame the request originally came from.
-  const std::string frame_id_;
-  // The request ID associated with a PublicKeyCredential promise.
-  const std::string request_id_;
+  // The request information (frame id, request id).
+  const IOSPasskeyClient::RequestInfo request_info_;
   // The relying party entity, including name and ID.
   const device::PublicKeyCredentialRpEntity rp_entity_;
   // The passkey request's cryptographic challenge.
   const std::vector<uint8_t> challenge_;
   // The passkey request's user verification preference.
   const device::UserVerificationRequirement user_verification_;
+  // Whether this is a conditional request (as opposed to a modal request).
+  const bool is_conditional_ = false;
+  // Extension data, including the PRF extension.
+  const PasskeyExtensionData extension_data_;
 };
 
 // Utility class containing parameters used by passkey assertion requests.
@@ -67,7 +100,7 @@ class AssertionRequestParams : public PasskeyRequestParams {
   ~AssertionRequestParams();
 
   // Returns the credential ids contained in `allow_credentials_`.
-  std::set<std::string> GetAllowCredentialIds() const;
+  std::set<std::vector<uint8_t>> GetAllowCredentialIds() const;
 
  private:
   // List of credentials allowed to fulfill the request. If empty, all
@@ -86,7 +119,7 @@ class RegistrationRequestParams : public PasskeyRequestParams {
   ~RegistrationRequestParams();
 
   // Returns the credential ids contained in `exclude_credentials_`.
-  std::set<std::string> GetExcludeCredentialIds() const;
+  std::set<std::vector<uint8_t>> GetExcludeCredentialIds() const;
 
   // Converts `user_entity_` to PasskeyModel::UserEntity.
   PasskeyModel::UserEntity UserEntity() const;

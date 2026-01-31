@@ -12,8 +12,8 @@
 #import "ios/chrome/browser/net/model/crurl.h"
 #import "ios/chrome/browser/settings/ui_bundled/privacy/safe_browsing/safe_browsing_constants.h"
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
-#import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/open_new_tab_command.h"
+#import "ios/chrome/browser/shared/public/commands/scene_commands.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/common/string_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
@@ -256,7 +256,7 @@ const CGFloat kImageCenterMargin = 14;
   return [UIAction actionWithHandler:^(UIAction* action) {
     OpenNewTabCommand* command =
         [OpenNewTabCommand commandWithURLFromChrome:gURL];
-    [weakSelf.applicationHandler closePresentedViewsAndOpenURL:command];
+    [weakSelf.sceneHandler closePresentedViewsAndOpenURL:command];
   }];
 }
 

@@ -11,8 +11,8 @@
 namespace resource_attribution {
 
 // Returns a description of `metadata` for chrome://discards/graph. The result
-// can be added to the description of a node with base::Value::Dict::Merge().
-base::Value::Dict DescribeResultMetadata(const ResultMetadata& metadata);
+// can be added to the description of a node with base::DictValue::Merge().
+base::DictValue DescribeResultMetadata(const ResultMetadata& metadata);
 
 }  // namespace resource_attribution
 

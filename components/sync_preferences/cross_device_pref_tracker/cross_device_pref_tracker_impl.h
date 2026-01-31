@@ -59,6 +59,7 @@ class CrossDevicePrefTrackerImpl : public CrossDevicePrefTracker,
   // `CrossDevicePrefTracker` overrides
   void AddObserver(CrossDevicePrefTracker::Observer* observer) override;
   void RemoveObserver(CrossDevicePrefTracker::Observer* observer) override;
+  ServiceStatus GetServiceStatus() const override;
   std::vector<TimestampedPrefValue> GetValues(
       std::string_view pref_name,
       const DeviceFilter& filter) const override;
@@ -85,13 +86,13 @@ class CrossDevicePrefTrackerImpl : public CrossDevicePrefTracker,
       const base::android::JavaRef<jstring>& pref_name,
       std::optional<int> os_type,
       std::optional<int> form_factor,
-      std::optional<jlong> max_sync_recency_microseconds) const override;
+      std::optional<int64_t> max_sync_recency_microseconds) const override;
   base::android::ScopedJavaLocalRef<jobject> GetMostRecentValue(
       JNIEnv* env,
       const base::android::JavaRef<jstring>& pref_name,
       std::optional<int> os_type,
       std::optional<int> form_factor,
-      std::optional<jlong> max_sync_recency_microseconds) const override;
+      std::optional<int64_t> max_sync_recency_microseconds) const override;
 #endif  // BUILDFLAG(IS_ANDROID)
 
   // Exposed for testing.
@@ -132,8 +133,8 @@ class CrossDevicePrefTrackerImpl : public CrossDevicePrefTracker,
   // Compares the old and new states of a dictionary to identify changes and
   // notifies observers only if the changes are remote.
   void ProcessRemoteUpdates(const std::string& cross_device_pref_name,
-                            const base::Value::Dict& old_dict,
-                            const base::Value::Dict& new_dict);
+                            const base::DictValue& old_dict,
+                            const base::DictValue& new_dict);
 
   // Attempts to parse the dictionary `entry` (if provided) associated with
   // `remote_device_info` and notifies observers if successful. If `entry` is
@@ -141,7 +142,7 @@ class CrossDevicePrefTrackerImpl : public CrossDevicePrefTracker,
   // `remote_device_info` is guaranteed to be valid for the duration of the
   // synchronous observer calls.
   void NotifyRemotePrefChanged(const std::string& cross_device_pref_name,
-                               const base::Value::Dict* entry,
+                               const base::DictValue* entry,
                                const syncer::DeviceInfo& remote_device_info);
 
   // Checks if local device info became ready and performs initial sync if so.
@@ -178,6 +179,10 @@ class CrossDevicePrefTrackerImpl : public CrossDevicePrefTracker,
   // it has not expired, based on its `DeviceInfo::last_updated_timestamp`.
   std::vector<const syncer::DeviceInfo*> GetActiveDevices() const;
 
+  // Compares the old and new service status of the tracker and notifies
+  // observers if changes have occurred.
+  void UpdateServiceStatus();
+
   // `PrefService` for profile-based preferences (including syncable prefs).
   // Must outlive this object until `Shutdown()`.
   raw_ptr<PrefService> profile_pref_service_;
@@ -209,7 +214,7 @@ class CrossDevicePrefTrackerImpl : public CrossDevicePrefTracker,
   // Cache of the last known state for each cross-device dictionary.
   // Used to identify changes when a pref is updated on a remote device.
   // Maps `cross_device_pref_name` -> dictionary value.
-  base::flat_map<std::string, base::Value::Dict> cross_device_storage_cache_;
+  base::flat_map<std::string, base::DictValue> cross_device_storage_cache_;
 
   // Set of Cache GUIDs for devices that have available `DeviceInfo` from the
   // tracker and are considered active (i.e., not expired). A device is active
@@ -237,6 +242,9 @@ class CrossDevicePrefTrackerImpl : public CrossDevicePrefTracker,
   // Tracks the last known state of Sync configuration for writes. Used to
   // detect transitions from unconfigured to configured and trigger refreshes.
   bool is_sync_configured_for_writes_ = false;
+
+  // The current service status.
+  ServiceStatus service_status_ = ServiceStatus::kSyncNotConfigured;
 
 #if BUILDFLAG(IS_ANDROID)
   base::android::ScopedJavaGlobalRef<jobject> java_object_;

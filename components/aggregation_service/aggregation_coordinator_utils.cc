@@ -10,7 +10,6 @@
 #include <vector>
 
 #include "base/check.h"
-#include "base/containers/contains.h"
 #include "base/no_destructor.h"
 #include "base/strings/string_split.h"
 #include "components/aggregation_service/features.h"
@@ -68,7 +67,7 @@ class CoordinatorOrigins {
 
   bool contains(const url::Origin& origin) const {
     CHECK(IsValid());
-    return base::Contains(origins_, origin);
+    return std::ranges::contains(origins_, origin);
   }
 
   const url::Origin& default_origin() const {

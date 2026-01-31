@@ -1,0 +1,49 @@
+[
+    {
+    "os": [
+      "win",
+      "linux",
+      "mac",
+      "chromeos"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {
+          "WebAppInstallByUserEnabled": true
+        },
+        "prefs": {
+          "profile.web_app.install_by_user_enabled": {
+            "value": true
+          },
+          "sync.apps": {
+            "default_value": false
+          }
+        }
+      },
+      {
+        "policies": {
+          "WebAppInstallByUserEnabled": false
+        },
+        "prefs": {
+          "profile.web_app.install_by_user_enabled": {
+            "value": false
+          },
+          "sync.apps": {
+            "value": false
+          }
+        }
+      },
+      {
+        "policies": {},
+        "prefs": {
+          "profile.web_app.install_by_user_enabled": {
+            "default_value": true
+          },
+          "sync.apps": {
+            "default_value": false
+          }
+        }
+      }
+    ]
+    }
+]

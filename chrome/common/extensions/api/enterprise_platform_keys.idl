@@ -115,7 +115,8 @@ namespace enterprise.platformKeys {
     // token. Can be used to check for the existence and expiration of client
     // certificates that are usable for a certain authentication.
     // |tokenId|: The id of a Token returned by <code>getTokens</code>.
-    // |callback|: Called back with the list of the available certificates.
+    // |callback|: Returns a Promise which resolves with the list of the
+    // available certificates.
     static void getCertificates(DOMString tokenId,
                                 GetCertificatesCallback callback);
 
@@ -126,7 +127,8 @@ namespace enterprise.platformKeys {
     // system and browser for authentication.
     // |tokenId|: The id of a Token returned by <code>getTokens</code>.
     // |certificate|: The DER encoding of a X.509 certificate.
-    // |callback|: Called back when this operation is finished.
+    // |callback|: Returns a Promise which resolves when this operation is
+    // finished.
     static void importCertificate(DOMString tokenId,
                                   ArrayBuffer certificate,
                                   optional DoneCallback callback);
@@ -137,7 +139,8 @@ namespace enterprise.platformKeys {
     // choice. Should be used to free storage in the certificate store.
     // |tokenId|: The id of a Token returned by <code>getTokens</code>.
     // |certificate|: The DER encoding of a X.509 certificate.
-    // |callback|: Called back when this operation is finished.
+    // |callback|: Returns a Promise which resolves when this operation is
+    // finished.
     static void removeCertificate(DOMString tokenId,
                                   ArrayBuffer certificate,
                                   optional DoneCallback callback);
@@ -167,7 +170,7 @@ namespace enterprise.platformKeys {
     // <code>"user"</code> token and is not accessible by any other API.
     // |options|: Object containing the fields defined in
     //            $(ref:ChallengeKeyOptions).
-    // |callback|: Called back with the challenge response.
+    // |callback|: Returns a Promise which resolves with the challenge response.
     static void challengeKey(ChallengeKeyOptions options,
                              ChallengeCallback callback);
 
@@ -199,7 +202,7 @@ namespace enterprise.platformKeys {
     //                signing key. This key is 2048-bit RSA. Subsequent calls
     //                to this function will then generate a new Enterprise
     //                Machine Key.
-    // |callback|: Called back with the challenge response.
+    // |callback|: Returns a Promise which resolves with the challenge response.
     [deprecated="Use $(ref:challengeKey) instead."]
     static void challengeMachineKey(ArrayBuffer challenge,
                                     optional boolean registerKey,
@@ -232,7 +235,7 @@ namespace enterprise.platformKeys {
     //                with a certificate and used like any other signing key.
     //                This key is 2048-bit RSA. Subsequent calls to this
     //                function will then generate a new Enterprise User Key.
-    // |callback|: Called back with the challenge response.
+    // |callback|: Returns a Promise which resolves with the challenge response.
     [deprecated="Use $(ref:challengeKey) instead."]
     static void challengeUserKey(ArrayBuffer challenge,
                                  boolean registerKey,

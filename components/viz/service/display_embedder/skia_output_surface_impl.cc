@@ -16,7 +16,6 @@
 #include "base/containers/heap_array.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
-#include "base/memory/memory_pressure_listener.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/no_destructor.h"
 #include "base/observer_list.h"
@@ -101,10 +100,9 @@ namespace viz {
 
 namespace {
 
-// Records memory dumps and responds to memory pressure signals for Graphite Viz
-// via a global object.
-class GraphiteVizMemoryAssistant : public base::trace_event::MemoryDumpProvider,
-                                   public base::MemoryPressureListener {
+// Records memory dumps for Graphite Viz via a global object.
+class GraphiteVizMemoryAssistant
+    : public base::trace_event::MemoryDumpProvider {
  public:
   static GraphiteVizMemoryAssistant& GetInstance() {
     static base::NoDestructor<GraphiteVizMemoryAssistant> instance;
@@ -121,10 +119,6 @@ class GraphiteVizMemoryAssistant : public base::trace_event::MemoryDumpProvider,
       cache_controller_ = cache_controller;
       base::trace_event::MemoryDumpManager::GetInstance()->RegisterDumpProvider(
           this, "GraphiteVizMemoryAssistant", std::move(task_runner));
-
-      memory_pressure_listener_registration_.emplace(
-          FROM_HERE, base::MemoryPressureListenerTag::kSkiaOutputSurfaceImpl,
-          this);
     }
     num_clients_++;
   }
@@ -132,7 +126,6 @@ class GraphiteVizMemoryAssistant : public base::trace_event::MemoryDumpProvider,
   void RemoveClient() {
     num_clients_--;
     if (num_clients_ == 0) {
-      memory_pressure_listener_registration_.reset();
       recorder_ = nullptr;
       cache_controller_ = nullptr;
       base::trace_event::MemoryDumpManager::GetInstance()
@@ -188,26 +181,6 @@ class GraphiteVizMemoryAssistant : public base::trace_event::MemoryDumpProvider,
 
     return true;
   }
-
-  void OnMemoryPressure(
-      base::MemoryPressureLevel memory_pressure_level) override {
-    switch (memory_pressure_level) {
-      case base::MEMORY_PRESSURE_LEVEL_NONE:
-        return;
-      case base::MEMORY_PRESSURE_LEVEL_MODERATE:
-        // With moderate pressure, clear any unlocked resources.
-        cache_controller_->CleanUpScratchResources();
-        break;
-      case base::MEMORY_PRESSURE_LEVEL_CRITICAL:
-        cache_controller_->CleanUpAllResources();
-        break;
-    }
-  }
-
-  // NOTE: The implementation guarantees that the callback will always be called
-  // on the thread that created the listener.
-  std::optional<base::AsyncMemoryPressureListenerRegistration>
-      memory_pressure_listener_registration_;
 
   raw_ptr<skgpu::graphite::Recorder> recorder_ = nullptr;
   raw_ptr<gpu::raster::GraphiteCacheController> cache_controller_ = nullptr;
@@ -1068,7 +1041,7 @@ void SkiaOutputSurfaceImpl::CopyOutput(
     request->set_blit_request(
         BlitRequest{gfx::Point{}, LetterboxingBehavior::kDoNotLetterbox,
                     std::move(shared_image), sync_token,
-                    /*populates_gpu_memory_buffer=*/false});
+                    /*populates_mappable_shared_image=*/false});
   }
 
   if (request->has_blit_request()) {

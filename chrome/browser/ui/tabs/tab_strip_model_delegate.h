@@ -12,8 +12,8 @@
 #include "base/functional/callback_forward.h"
 #include "chrome/common/chrome_features.h"
 #include "components/sessions/core/session_id.h"
+#include "components/split_tabs/split_tab_id.h"
 #include "components/tab_groups/tab_group_id.h"
-#include "components/tabs/public/split_tab_id.h"
 #include "components/tabs/public/tab_interface.h"
 
 class Browser;
@@ -229,6 +229,10 @@ class TabStripModelDelegate {
 
   // Opens the Glic window if not already open.
   virtual void OpenGlicWindowFromSharedTab() = 0;
+
+  // Unpins the specified tabs from all Glic conversations.
+  virtual void GlicUnpinTabsFromAllConversations(
+      base::span<const tabs::TabHandle> tab_handles);
 #endif
 };
 

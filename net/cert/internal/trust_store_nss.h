@@ -51,6 +51,8 @@ class NET_EXPORT TrustStoreNSS : public PlatformTrustStore {
 
   // bssl::TrustStore implementation:
   bssl::CertificateTrust GetTrust(const bssl::ParsedCertificate* cert) override;
+  std::shared_ptr<const bssl::MTCAnchor> GetTrustedMTCIssuerOf(
+      const bssl::ParsedCertificate* cert) override;
 
   // net::PlatformTrustStore implementation:
   std::vector<net::PlatformTrustStore::CertWithTrust> GetAllUserAddedCerts()

@@ -5,13 +5,13 @@
 #include "chrome/browser/ash/file_manager/file_browser_handlers.h"
 
 #include <stddef.h>
+
 #include <algorithm>
 #include <memory>
 #include <set>
 #include <utility>
 
 #include "base/command_line.h"
-#include "base/containers/contains.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/i18n/case_conversion.h"
@@ -31,6 +31,7 @@
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/site_instance.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/common/child_process_id.h"
 #include "extensions/browser/event_router.h"
 #include "extensions/browser/extension_host.h"
 #include "extensions/browser/extension_registry.h"
@@ -290,9 +291,9 @@ void FileBrowserHandlerExecutor::SetupPermissionsAndDispatchEvent(
   SetupHandlerHostFileAccessPermissions(file_definition_list.get(),
                                         extension_.get(), handler_pid);
 
-  base::Value::List event_args;
+  base::ListValue event_args;
   event_args.Append(action_id_);
-  base::Value::Dict details;
+  base::DictValue details;
   // Get file definitions. These will be replaced with Entry instances by
   // dispatchEvent() method from event_binding.js.
   auto file_entries = file_manager::util::ConvertEntryDefinitionListToListValue(
@@ -320,8 +321,10 @@ void FileBrowserHandlerExecutor::SetupHandlerHostFileAccessPermissions(
       continue;
     }
     if (action->CanRead()) {
+      // TODO(crbug.com/379869738) Remove FromUnsafeValue.
       content::ChildProcessSecurityPolicy::GetInstance()->GrantReadFile(
-          handler_pid, iter->absolute_path);
+          content::ChildProcessId::FromUnsafeValue(handler_pid),
+          iter->absolute_path);
     }
     if (action->CanWrite()) {
       content::ChildProcessSecurityPolicy::GetInstance()

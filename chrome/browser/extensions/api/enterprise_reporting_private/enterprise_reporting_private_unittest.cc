@@ -172,7 +172,7 @@ class EnterpriseReportingPrivateDeviceDataFunctionsTest
 TEST_F(EnterpriseReportingPrivateDeviceDataFunctionsTest, StoreDeviceData) {
   auto function =
       base::MakeRefCounted<EnterpriseReportingPrivateSetDeviceDataFunction>();
-  base::Value::List values;
+  base::ListValue values;
   values.Append("a");
   values.Append(base::Value::BlobStorage({1, 2, 3}));
   api_test_utils::RunFunction(function.get(), std::move(values), profile(),
@@ -185,7 +185,7 @@ TEST_F(EnterpriseReportingPrivateDeviceDataFunctionsTest, StoreDeviceData) {
 TEST_F(EnterpriseReportingPrivateDeviceDataFunctionsTest, DeviceDataMissing) {
   auto function =
       base::MakeRefCounted<EnterpriseReportingPrivateGetDeviceDataFunction>();
-  base::Value::List values;
+  base::ListValue values;
   values.Append("b");
   api_test_utils::RunFunction(function.get(), std::move(values), profile(),
                               extensions::api_test_utils::FunctionMode::kNone);
@@ -201,7 +201,7 @@ TEST_F(EnterpriseReportingPrivateDeviceDataFunctionsTest, DeviceDataMissing) {
 TEST_F(EnterpriseReportingPrivateDeviceDataFunctionsTest, DeviceBadId) {
   auto set_function =
       base::MakeRefCounted<EnterpriseReportingPrivateSetDeviceDataFunction>();
-  base::Value::List set_values;
+  base::ListValue set_values;
   set_values.Append("a/b");
   set_values.Append(base::Value::BlobStorage({1, 2, 3}));
   api_test_utils::RunFunction(set_function.get(), std::move(set_values),
@@ -212,7 +212,7 @@ TEST_F(EnterpriseReportingPrivateDeviceDataFunctionsTest, DeviceBadId) {
   // Try to read the directory as a file and should fail.
   auto function =
       base::MakeRefCounted<EnterpriseReportingPrivateGetDeviceDataFunction>();
-  base::Value::List values;
+  base::ListValue values;
   values.Append("a");
   api_test_utils::RunFunction(function.get(), std::move(values), profile(),
                               extensions::api_test_utils::FunctionMode::kNone);
@@ -224,7 +224,7 @@ TEST_F(EnterpriseReportingPrivateDeviceDataFunctionsTest, DeviceBadId) {
 TEST_F(EnterpriseReportingPrivateDeviceDataFunctionsTest, RetrieveDeviceData) {
   auto set_function =
       base::MakeRefCounted<EnterpriseReportingPrivateSetDeviceDataFunction>();
-  base::Value::List set_values;
+  base::ListValue set_values;
   set_values.Append("c");
   set_values.Append(base::Value::BlobStorage({1, 2, 3}));
   api_test_utils::RunFunction(set_function.get(), std::move(set_values),
@@ -234,7 +234,7 @@ TEST_F(EnterpriseReportingPrivateDeviceDataFunctionsTest, RetrieveDeviceData) {
 
   auto get_function =
       base::MakeRefCounted<EnterpriseReportingPrivateGetDeviceDataFunction>();
-  base::Value::List values;
+  base::ListValue values;
   values.Append("c");
   api_test_utils::RunFunction(get_function.get(), std::move(values), profile(),
                               extensions::api_test_utils::FunctionMode::kNone);
@@ -247,7 +247,7 @@ TEST_F(EnterpriseReportingPrivateDeviceDataFunctionsTest, RetrieveDeviceData) {
   // Clear the data and check that it is gone.
   auto set_function2 =
       base::MakeRefCounted<EnterpriseReportingPrivateSetDeviceDataFunction>();
-  base::Value::List reset_values;
+  base::ListValue reset_values;
   reset_values.Append("c");
   api_test_utils::RunFunction(set_function2.get(), std::move(reset_values),
                               profile(),
@@ -256,7 +256,7 @@ TEST_F(EnterpriseReportingPrivateDeviceDataFunctionsTest, RetrieveDeviceData) {
 
   auto get_function2 =
       base::MakeRefCounted<EnterpriseReportingPrivateGetDeviceDataFunction>();
-  base::Value::List values2;
+  base::ListValue values2;
   values2.Append("c");
   api_test_utils::RunFunction(get_function2.get(), std::move(values2),
                               profile(),
@@ -742,14 +742,14 @@ class EnterpriseReportingPrivateGetContextInfoChromeRemoteDesktopAppBlockedTest
       public testing::WithParamInterface<const char*> {
  public:
   void SetURLBlockedPolicy(const std::string& url) {
-    base::Value::List blocklist;
+    base::ListValue blocklist;
     blocklist.Append(url);
 
     profile()->GetPrefs()->SetList(policy::policy_prefs::kUrlBlocklist,
                                    std::move(blocklist));
   }
   void SetURLAllowedPolicy(const std::string& url) {
-    base::Value::List allowlist;
+    base::ListValue allowlist;
     allowlist.Append(url);
 
     profile()->GetPrefs()->SetList(policy::policy_prefs::kUrlAllowlist,
@@ -1007,7 +1007,7 @@ class EnterpriseReportingPrivateEnqueueRecordFunctionTest
   }
 
   ::reporting::Record GetTestRecord() const {
-    base::Value::Dict data;
+    base::DictValue data;
     data.Set("TEST_KEY", base::Value("TEST_VALUE"));
 
     ::reporting::Record record;
@@ -1047,7 +1047,7 @@ TEST_F(EnterpriseReportingPrivateEnqueueRecordFunctionTest,
   enqueue_record_request.event_type =
       api::enterprise_reporting_private::EventType::kUser;
 
-  base::Value::List params;
+  base::ListValue params;
   params.Append(enqueue_record_request.ToValue());
 
   // Set up DM token
@@ -1088,7 +1088,7 @@ TEST_F(EnterpriseReportingPrivateEnqueueRecordFunctionTest,
   enqueue_record_request.event_type =
       api::enterprise_reporting_private::EventType::kUser;
 
-  base::Value::List params;
+  base::ListValue params;
   params.Append(enqueue_record_request.ToValue());
 
   policy::SetDMTokenForTesting(
@@ -1117,7 +1117,7 @@ TEST_F(EnterpriseReportingPrivateEnqueueRecordFunctionTest,
   enqueue_record_request.event_type =
       api::enterprise_reporting_private::EventType::kUser;
 
-  base::Value::List params;
+  base::ListValue params;
   params.Append(enqueue_record_request.ToValue());
 
   policy::SetDMTokenForTesting(
@@ -1143,7 +1143,7 @@ TEST_F(EnterpriseReportingPrivateEnqueueRecordFunctionTest,
   enqueue_record_request.event_type =
       api::enterprise_reporting_private::EventType::kUser;
 
-  base::Value::List params;
+  base::ListValue params;
   params.Append(enqueue_record_request.ToValue());
 
   // Set up invalid DM token
@@ -1176,7 +1176,7 @@ TEST_F(EnterpriseReportingPrivateEnqueueRecordFunctionTest,
   enqueue_record_request.event_type =
       api::enterprise_reporting_private::EventType::kUser;
 
-  base::Value::List params;
+  base::ListValue params;
   params.Append(enqueue_record_request.ToValue());
 
   // Set up invalid DM token
@@ -1273,7 +1273,7 @@ class EnterpriseReportingPrivateGetFileSystemInfoTest
     enterprise_reporting_private::GetFileSystemInfoRequest request;
     request.user_context = GetFakeUserContext();
     request.options.push_back(GetFakeFileSystemOptionsParam());
-    base::Value::List params;
+    base::ListValue params;
     params.Append(request.ToValue());
     return base::WriteJson(params).value_or("");
   }
@@ -1303,7 +1303,7 @@ TEST_F(EnterpriseReportingPrivateGetFileSystemInfoTest, Success) {
 
   ASSERT_TRUE(response);
   ASSERT_TRUE(response->is_list());
-  const base::Value::List& list_value = response->GetList();
+  const base::ListValue& list_value = response->GetList();
   ASSERT_EQ(list_value.size(), signal_response.file_system_items.size());
 
   const base::Value& file_system_value = list_value.front();
@@ -1443,7 +1443,7 @@ class EnterpriseReportingPrivateGetSettingsTest : public UserContextGatedTest {
     enterprise_reporting_private::GetSettingsRequest request;
     request.user_context = GetFakeUserContext();
     request.options.push_back(GetFakeSettingsOptionsParam());
-    base::Value::List params;
+    base::ListValue params;
     params.Append(request.ToValue());
     return base::WriteJson(params).value_or("");
   }
@@ -1476,7 +1476,7 @@ TEST_F(EnterpriseReportingPrivateGetSettingsTest, Success) {
 
   ASSERT_TRUE(response);
   ASSERT_TRUE(response->is_list());
-  const base::Value::List& list_value = response->GetList();
+  const base::ListValue& list_value = response->GetList();
   ASSERT_EQ(list_value.size(), signal_response.settings_items.size());
 
   const base::Value& settings_value = list_value.front();
@@ -1592,7 +1592,7 @@ TEST_F(EnterpriseReportingPrivateGetSettingsTest, CollectionError) {
 
 std::string GetFakeUserContextJsonParams() {
   auto user_context = GetFakeUserContext();
-  base::Value::List params;
+  base::ListValue params;
   params.Append(user_context.ToValue());
   return base::WriteJson(params).value_or("");
 }
@@ -1635,7 +1635,7 @@ TEST_F(EnterpriseReportingPrivateGetAvInfoTest, Success) {
 
   ASSERT_TRUE(response);
   ASSERT_TRUE(response->is_list());
-  const base::Value::List& list_value = response->GetList();
+  const base::ListValue& list_value = response->GetList();
   ASSERT_EQ(list_value.size(), av_response.av_products.size());
 
   const base::Value& av_value = list_value.front();
@@ -1761,7 +1761,7 @@ TEST_F(EnterpriseReportingPrivateGetHotfixesTest, Success) {
 
   ASSERT_TRUE(response);
   ASSERT_TRUE(response->is_list());
-  const base::Value::List& list_value = response->GetList();
+  const base::ListValue& list_value = response->GetList();
   ASSERT_EQ(list_value.size(), hotfix_response.hotfixes.size());
 
   const base::Value& hotfix_value = list_value.front();

@@ -27,11 +27,11 @@ namespace signin {
 JniIdentityMutator::JniIdentityMutator(IdentityMutator* identity_mutator)
     : identity_mutator_(identity_mutator) {}
 
-jint JniIdentityMutator::SetPrimaryAccount(
+int32_t JniIdentityMutator::SetPrimaryAccount(
     JNIEnv* env,
     const CoreAccountId& primary_account_id,
-    jint j_consent_level,
-    jint j_access_point,
+    int32_t j_consent_level,
+    int32_t j_access_point,
     const base::android::JavaRef<jobject>& j_prefs_committed_callback) {
   PrimaryAccountMutator* primary_account_mutator =
       identity_mutator_->GetPrimaryAccountMutator();
@@ -44,26 +44,20 @@ jint JniIdentityMutator::SetPrimaryAccount(
           base::BindOnce(base::android::RunRunnableAndroid,
                          base::android::ScopedJavaGlobalRef<jobject>(
                              j_prefs_committed_callback)));
-  return static_cast<jint>(error);
+  return static_cast<int32_t>(error);
 }
 
-// TODO(crbug.com/373290337): Rename this method after feature launch.
-bool JniIdentityMutator::ClearPrimaryAccount(JNIEnv* env, jint source_metric) {
+bool JniIdentityMutator::RemovePrimaryAccountButKeepTokens(
+    JNIEnv* env,
+    int32_t source_metric) {
   PrimaryAccountMutator* primary_account_mutator =
       identity_mutator_->GetPrimaryAccountMutator();
   DCHECK(primary_account_mutator);
-  if (base::FeatureList::IsEnabled(
-          switches::kMakeAccountsAvailableInIdentityManager)) {
-    // If the feature is enabled we will not clear the accounts.
-    return primary_account_mutator->RemovePrimaryAccountButKeepTokens(
-        static_cast<signin_metrics::ProfileSignout>(source_metric));
-  } else {
-    return primary_account_mutator->ClearPrimaryAccount(
-        static_cast<signin_metrics::ProfileSignout>(source_metric));
-  }
+  return primary_account_mutator->RemovePrimaryAccountButKeepTokens(
+      static_cast<signin_metrics::ProfileSignout>(source_metric));
 }
 
-void JniIdentityMutator::RevokeSyncConsent(JNIEnv* env, jint source_metric) {
+void JniIdentityMutator::RevokeSyncConsent(JNIEnv* env, int32_t source_metric) {
   PrimaryAccountMutator* primary_account_mutator =
       identity_mutator_->GetPrimaryAccountMutator();
   DCHECK(primary_account_mutator);

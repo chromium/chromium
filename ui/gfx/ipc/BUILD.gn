@@ -23,8 +23,10 @@ component("ipc") {
     "//ui/gfx/range",
   ]
 
-  frameworks = [
-    "CoreFoundation.framework",
-    "IOSurface.framework",
-  ]
+  if (is_apple) {
+    frameworks = [
+      "CoreFoundation.framework",
+      "IOSurface.framework",
+    ]
+  }
 }

@@ -40,7 +40,7 @@ class TestFrameImpl : public mojom::LocalFrame, public mojom::LocalFrameHost {
   void MessageInvoke(const ExtensionId& extension_id,
                      const std::string& module_name,
                      const std::string& function_name,
-                     base::Value::List args) override {}
+                     base::ListValue args) override {}
   void ExecuteCode(mojom::ExecuteCodeParamsPtr param,
                    ExecuteCodeCallback callback) override {
     std::move(callback).Run(std::string(), GURL(), std::nullopt);
@@ -76,7 +76,7 @@ class TestFrameImpl : public mojom::LocalFrame, public mojom::LocalFrameHost {
   }
   void Request(mojom::RequestParamsPtr params,
                RequestCallback callback) override {
-    std::move(callback).Run(false, base::Value::List(), std::string(), nullptr);
+    std::move(callback).Run(false, base::ListValue(), std::string(), nullptr);
   }
   void ResponseAck(const base::Uuid& request_uuid) override {}
   void WatchedPageChange(
@@ -132,7 +132,7 @@ class FrameMojomExtensionIdTest : public testing::Test {
 
   void MessageInvoke(const ExtensionId& extension_id) {
     local_frame_remote_->MessageInvoke(extension_id, "test_module",
-                                       "test_function", base::Value::List());
+                                       "test_function", base::ListValue());
     local_frame_remote_.FlushForTesting();
   }
 

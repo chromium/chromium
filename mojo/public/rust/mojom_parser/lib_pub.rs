@@ -12,6 +12,6 @@ chromium::import! {
     "//mojo/public/rust/mojom_parser:parsing_attribute";
 }
 
-pub use mojom_parser_core::{deserialize, serialize, MojomString};
+pub use mojom_parser_core::{deserialize, deserialize_exact, serialize, ParsingResult};
 pub use mojom_parser_core::{MojomParse, PrimitiveEnum};
 pub use parsing_attribute::{MojomParse, PrimitiveEnum};

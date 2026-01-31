@@ -5,6 +5,7 @@
 #include "components/lens/lens_url_utils.h"
 
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/stringprintf.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/time/time.h"
 #include "components/lens/lens_entrypoints.h"
@@ -53,5 +54,62 @@ TEST(LensUrlUtilsTest, Base64EncodeRequestIdTest) {
   EXPECT_FALSE(encoded_id.empty());
   EXPECT_EQ(encoded_id, "CAEQAiIDQUJD");
 }
+
+struct InvocationSourceParamTestCase {
+  lens::LensOverlayInvocationSource invocation_source;
+  std::string expected_param_suffix;
+};
+
+class LensUrlUtilsTestWithParams
+    : public testing::TestWithParam<InvocationSourceParamTestCase> {};
+
+TEST_P(LensUrlUtilsTestWithParams, AppendInvocationSourceParamToUrl) {
+  const auto& test_case = GetParam();
+  constexpr char kResultsSearchBaseUrl[] = "https://www.google.com/search";
+  const GURL base_url(kResultsSearchBaseUrl);
+
+  std::string expected_url =
+      base::StringPrintf("%s?source=chrome.cr.%s", kResultsSearchBaseUrl,
+                         test_case.expected_param_suffix.c_str());
+  EXPECT_EQ(lens::AppendInvocationSourceParamToURL(
+                base_url, test_case.invocation_source,
+                /*is_contextual_tasks=*/false),
+            expected_url);
+
+  std::string expected_contextual_tasks_url =
+      base::StringPrintf("%s?source=chrome.crn.%s", kResultsSearchBaseUrl,
+                         test_case.expected_param_suffix.c_str());
+  EXPECT_EQ(lens::AppendInvocationSourceParamToURL(
+                base_url, test_case.invocation_source,
+                /*is_contextual_tasks=*/true),
+            expected_contextual_tasks_url);
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    InvocationSourceParams,
+    LensUrlUtilsTestWithParams,
+    testing::Values(
+        InvocationSourceParamTestCase{
+            lens::LensOverlayInvocationSource::kAppMenu, "menu"},
+        InvocationSourceParamTestCase{
+            lens::LensOverlayInvocationSource::kContentAreaContextMenuPage,
+            "ctxp"},
+        InvocationSourceParamTestCase{
+            lens::LensOverlayInvocationSource::kContentAreaContextMenuImage,
+            "ctxi"},
+        InvocationSourceParamTestCase{
+            lens::LensOverlayInvocationSource::kToolbar, "tbic"},
+        InvocationSourceParamTestCase{
+            lens::LensOverlayInvocationSource::kFindInPage, "find"},
+        InvocationSourceParamTestCase{
+            lens::LensOverlayInvocationSource::kOmnibox, "obic"},
+        InvocationSourceParamTestCase{
+            lens::LensOverlayInvocationSource::kContentAreaContextMenuVideo,
+            "ctxv"},
+        InvocationSourceParamTestCase{
+            lens::LensOverlayInvocationSource::kNtpContextualQuery, "rb"},
+        InvocationSourceParamTestCase{
+            lens::LensOverlayInvocationSource::kOmniboxContextualQuery,
+            "obic"}));
 
 }  // namespace lens

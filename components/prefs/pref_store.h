@@ -51,7 +51,7 @@ class COMPONENTS_PREFS_EXPORT PrefStore : public base::RefCounted<PrefStore> {
                         const base::Value** result) const = 0;
 
   // Get all the values.
-  virtual base::Value::Dict GetValues() const = 0;
+  virtual base::DictValue GetValues() const = 0;
 
  protected:
   friend class base::RefCounted<PrefStore>;

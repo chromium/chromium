@@ -11,6 +11,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "content/browser/webid/config_fetcher.h"
+#include "content/browser/webid/identity_provider_info.h"
 #include "content/browser/webid/idp_network_request_manager.h"
 #include "url/gurl.h"
 
@@ -22,13 +23,13 @@ class RenderFrameHost;
 
 namespace webid {
 
-class RequestService;
+class Metrics;
 
-// A class that fetches accounts from a set of IDPs. Currently only handles
-// config and well-known fetches.
-// TODO(crbug.com/417197032): handle accounts fetches in this class.
+// A class that fetches accounts from a set of IDPs.
 class AccountsFetcher {
  public:
+  static constexpr char kWildcardDomainHint[] = "any";
+
   struct IdentityProviderGetInfo {
     IdentityProviderGetInfo(blink::mojom::IdentityProviderRequestOptionsPtr,
                             blink::mojom::RpContext rp_context,
@@ -57,18 +58,53 @@ class AccountsFetcher {
     MediationRequirement mediation_requirement;
   };
 
+  struct Result {
+    Result();
+    ~Result();
+    Result(Result&&);
+    Result& operator=(Result&&);
+
+    GURL idp_config_url;
+    std::unique_ptr<IdentityProviderInfo> idp_info;
+    std::optional<IdpNetworkRequestManager::AccountsResponse> accounts;
+    std::optional<blink::mojom::FederatedAuthRequestResult> error;
+    std::optional<webid::RequestIdTokenStatus> token_status;
+    // Whether the callback should be delayed for this result.
+    // TODO(crbug.com/475277488): Remove this as callback delay should not be
+    // per-result. Also consider removing `show_active_mode_modal_dialog` as
+    // well.
+    bool should_delay_callback = false;
+    bool is_mismatch = false;
+    bool show_active_mode_modal_dialog = false;
+    base::TimeTicks accounts_fetched_time;
+    base::TimeTicks client_metadata_fetched_time;
+  };
+
+  using AccountsFetcherCallback =
+      base::OnceCallback<void(base::TimeTicks, std::vector<Result>)>;
+  using FilterAccountsCallback = base::RepeatingCallback<void(
+      const GURL&,
+      const GURL&,
+      std::vector<scoped_refptr<content::IdentityRequestAccount>>&)>;
+
   AccountsFetcher(
       RenderFrameHost& render_frame_host,
       IdpNetworkRequestManager* network_manager,
       FederatedIdentityApiPermissionContextDelegate* api_permission_delegate,
       FederatedIdentityPermissionContextDelegate* permission_delegate,
       FedCmFetchingParams fetching_params,
-      RequestService* federated_auth_request_impl);
+      AccountsFetcherCallback callback);
   ~AccountsFetcher();
 
   // Fetch well-known, config, accounts and client metadata endpoints for
-  // passed-in IdPs. Uses parameters from `token_request_get_infos_`.
-  void FetchEndpointsForIdps(const std::set<GURL>& idp_config_urls);
+  // passed-in IdPs. Uses parameters from `token_request_get_infos`.
+  void FetchEndpointsForIdps(
+      const std::vector<ConfigFetcher::FetchRequest>& idps,
+      const base::flat_map<GURL, IdentityProviderGetInfo>&
+          token_request_get_infos,
+      Metrics* fedcm_metrics,
+      const url::Origin& embedding_origin,
+      FilterAccountsCallback filter_accounts_callback);
 
   // Notifies metrics endpoint that either the user did not select the IDP in
   // the prompt or that there was an error in fetching data for the IDP.
@@ -90,22 +126,26 @@ class AccountsFetcher {
   void OnAccountsResponseReceived(
       std::unique_ptr<IdentityProviderInfo> idp_info,
       FetchStatus status,
-      std::vector<IdentityRequestAccountPtr> accounts);
+      IdpNetworkRequestManager::AccountsResponse accounts);
 
   void OnAccountsFetchSucceeded(
       std::unique_ptr<IdentityProviderInfo> idp_info,
       FetchStatus status,
-      std::vector<IdentityRequestAccountPtr> accounts);
+      IdpNetworkRequestManager::AccountsResponse accounts,
+      base::TimeTicks accounts_fetched_time);
 
   void OnClientMetadataResponseReceived(
       std::unique_ptr<IdentityProviderInfo> idp_info,
-      std::vector<IdentityRequestAccountPtr>&& accounts,
+      IdpNetworkRequestManager::AccountsResponse&& accounts,
+      base::TimeTicks accounts_fetched_time,
       FetchStatus status,
       IdpNetworkRequestManager::ClientMetadata client_metadata);
 
   void OnFetchDataForIdpSucceeded(
       const IdpNetworkRequestManager::ClientMetadata& client_metadata,
-      std::vector<IdentityRequestAccountPtr> accounts,
+      base::TimeTicks accounts_fetched_time,
+      base::TimeTicks client_metadata_fetched_time,
+      IdpNetworkRequestManager::AccountsResponse accounts,
       std::unique_ptr<IdentityProviderInfo> idp_info,
       const gfx::Image& rp_brand_icon);
 
@@ -132,14 +172,25 @@ class AccountsFetcher {
       std::optional<bool> old_idp_signin_status,
       blink::mojom::FederatedAuthRequestResult result,
       std::optional<webid::RequestIdTokenStatus> token_status,
-      const FetchStatus& status);
+      const FetchStatus& status,
+      base::TimeTicks accounts_fetched_time);
 
-  void OnIdpMismatch(std::unique_ptr<IdentityProviderInfo> idp_info);
+  void OnIdpMismatch(base::TimeTicks accounts_fetched_time,
+                     std::unique_ptr<IdentityProviderInfo> idp_info);
 
   void SendFailedTokenRequestMetrics(
       const GURL& metrics_endpoint,
       blink::mojom::FederatedAuthRequestResult result,
       bool did_show_ui);
+
+  // Adds a fetch result to the end of the results_ vector and decrements
+  // pending_requests_. If pending_requests_ reaches 0, runs the callback_.
+  void AddResult(Result&& result);
+
+  base::flat_map<GURL,
+                 std::pair<blink::mojom::FederatedAuthRequestResult,
+                           content::webid::RequestIdTokenStatus>>
+      idp_config_url_to_result_;
 
   std::unique_ptr<ConfigFetcher> config_fetcher_;
 
@@ -155,7 +206,16 @@ class AccountsFetcher {
 
   FedCmFetchingParams params_;
 
-  raw_ptr<RequestService> federated_auth_request_impl_;
+  AccountsFetcherCallback callback_;
+  FilterAccountsCallback filter_accounts_callback_;
+
+  base::flat_map<GURL, IdentityProviderGetInfo> request_get_infos_;
+  raw_ptr<Metrics> fedcm_metrics_;
+  url::Origin embedding_origin_;
+
+  int num_pending_requests_ = 0;
+  std::vector<Result> results_;
+  base::TimeTicks well_known_and_config_fetched_time_;
 
   base::WeakPtrFactory<AccountsFetcher> weak_ptr_factory_{this};
 };

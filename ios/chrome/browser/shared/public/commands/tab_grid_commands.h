@@ -28,6 +28,9 @@ class TabGroup;
 // Shows the tab grid according to `page`.
 - (void)showPage:(TabGridPage)page animated:(BOOL)animated;
 
+// Prepares the TabGrid to exit.
+- (void)prepareToExitTabGrid;
+
 // Exits the tab grid, opening the selected tab of the current page (if
 // relevant).
 - (void)exitTabGrid;

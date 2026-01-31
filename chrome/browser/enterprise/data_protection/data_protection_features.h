@@ -14,6 +14,8 @@ BASE_DECLARE_FEATURE(kEnableSinglePageAppDataProtection);
 
 BASE_DECLARE_FEATURE(kEnableForceDownloadToCloud);
 
+BASE_DECLARE_FEATURE(kEnableForceDownloadToOneDrive);
+
 BASE_DECLARE_FEATURE(kEnableVerdictCache);
 
 BASE_DECLARE_FEATURE_PARAM(size_t, kVerdictCacheMaxSize);

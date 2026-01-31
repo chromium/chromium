@@ -26,7 +26,7 @@ class InputContextAndroid {
 
   static void FromJavaParams(
       JNIEnv* env,
-      const jlong target,
+      const int64_t target,
       const base::android::JavaRef<jobjectArray>& jboolean_keys,
       const base::android::JavaRef<jbooleanArray>& jboolean_values,
       const base::android::JavaRef<jobjectArray>& jint_keys,

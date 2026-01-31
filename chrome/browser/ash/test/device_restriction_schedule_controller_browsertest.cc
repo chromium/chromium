@@ -72,7 +72,7 @@ class DeviceRestrictionScheduleControllerTest : public ash::LoginManagerTest {
 
   void SetRestrictionSchedule(base::TimeDelta from_now,
                               base::TimeDelta duration) {
-    base::Value::List policy_list =
+    base::ListValue policy_list =
         weekly_time::BuildList(clock_->Now(), from_now, duration);
     std::string policy_str;
     ASSERT_TRUE(JSONStringValueSerializer(&policy_str).Serialize(policy_list));

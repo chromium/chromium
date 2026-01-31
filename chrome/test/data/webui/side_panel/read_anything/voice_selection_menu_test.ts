@@ -6,7 +6,7 @@ import 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js'
 
 import type {CrIconButtonElement} from '//resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import type {LanguageMenuElement} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
-import {spinnerDebounceTimeout, ToolbarEvent, VoiceClientSideStatusCode, VoiceNotificationManager} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
+import {type SettingsOption, spinnerDebounceTimeout, ToolbarEvent, VoiceClientSideStatusCode, VoiceNotificationManager} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import type {VoiceSelectionMenuElement} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import {assertEquals, assertFalse, assertStringContains, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
 import {keyDownOn} from 'chrome-untrusted://webui-test/keyboard_mock_interactions.js';
@@ -189,6 +189,23 @@ suite('VoiceSelectionMenu', () => {
         selectedVoice,
       ];
       return setAvailableVoicesAndEnabledLangs(availableVoices);
+    });
+
+    test('close all menus event not fired after choosing a voice', async () => {
+      await openVoiceMenu();
+
+      let menuIdToClose = null;
+      document.addEventListener(
+          ToolbarEvent.CLOSE_ALL_MENUS,
+          ((event: CustomEvent<{previousId: SettingsOption | null}>) => {
+            menuIdToClose = event.detail.previousId;
+          }) as EventListener);
+
+      const voiceItemButton = getDropdownItemForVoice(voice1);
+      voiceItemButton.click();
+      await microtasksFinished();
+
+      assertEquals(null, menuIdToClose);
     });
 
     test('it shows a checkmark for the selected voice', async () => {
@@ -661,5 +678,13 @@ suite('VoiceSelectionMenu', () => {
         assertEquals(0, getErrorMessages().length);
       });
     });
+  });
+
+  test('can be closed programatically', () => {
+    stubAnimationFrame();
+    voiceSelectionMenu.open(document.body);
+    assertTrue(voiceSelectionMenu.$.voiceSelectionMenu.get().open);
+    voiceSelectionMenu.close();
+    assertFalse(voiceSelectionMenu.$.voiceSelectionMenu.get().open);
   });
 });

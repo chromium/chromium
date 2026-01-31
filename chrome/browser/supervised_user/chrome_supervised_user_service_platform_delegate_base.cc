@@ -11,11 +11,11 @@
 #include "chrome/browser/prefs/incognito_mode_prefs.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
-#include "chrome/browser/supervised_user/supervised_user_service_factory.h"
+#include "chrome/browser/supervised_user/supervised_user_url_filtering_service_factory.h"
 #include "chrome/common/channel_info.h"
 #include "components/policy/core/common/policy_pref_names.h"
+#include "components/supervised_user/core/browser/supervised_user_log_record.h"
 #include "components/supervised_user/core/browser/supervised_user_preferences.h"
-#include "components/supervised_user/core/browser/supervised_user_service.h"
 #include "components/variations/service/variations_service.h"
 #include "content/public/browser/storage_partition.h"
 
@@ -55,15 +55,15 @@ void ChromeSupervisedUserServicePlatformDelegateBase::
 
   // Add some detailed metrics to allow us to better spot any unexpected cases
   // where a supervised user can access incognito.
-  supervised_user::SupervisedUserService* supervised_user_service =
-      SupervisedUserServiceFactory::GetForProfileIfExists(&profile_.get());
   std::optional<supervised_user::SupervisedUserLogRecord::Segment>
       user_log_segment =
           supervised_user::SupervisedUserLogRecord::Create(
               IdentityManagerFactory::GetForProfile(&profile_.get()),
               *profile_->GetPrefs(),
               *HostContentSettingsMapFactory::GetForProfile(&profile_.get()),
-              supervised_user_service)
+              supervised_user::SupervisedUserUrlFilteringServiceFactory::
+                  GetForProfileIfExists(&profile_.get()),
+              g_browser_process->device_parental_controls())
               .GetSupervisionStatusForPrimaryAccount();
   if (!user_log_segment.has_value()) {
     return;

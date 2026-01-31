@@ -9,10 +9,12 @@
 #include <vector>
 
 #include "base/check_is_test.h"
+#include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/time/time.h"
+#include "components/webapps/browser/features.h"
 #include "components/webapps/browser/launch_queue/launch_queue_delegate.h"
 #include "content/public/browser/file_system_access_entry_factory.h"
 #include "content/public/browser/navigation_handle.h"
@@ -145,7 +147,9 @@ void LaunchQueue::DidFinishNavigation(content::NavigationHandle* handle) {
 
   // Reloads have the last sent launch params re-sent as they may contain live
   // file handles that should persist across reloads.
-  if (last_sent_queued_launch_params_ &&
+  if (!base::FeatureList::IsEnabled(
+          ::webapps::features::kLaunchQueueStopSendingOnReload) &&
+      last_sent_queued_launch_params_ &&
       handle->GetReloadType() != content::ReloadType::NONE) {
     if (!delegate_->IsInScope(*last_sent_queued_launch_params_,
                               handle->GetURL())) {
@@ -158,6 +162,7 @@ void LaunchQueue::DidFinishNavigation(content::NavigationHandle* handle) {
     // cleared.
     last_sent_queued_launch_params_->time_navigation_started_for_enqueue =
         base::TimeTicks();
+
     SendLaunchParams(*last_sent_queued_launch_params_, handle->GetURL());
     return;
   }
@@ -184,12 +189,15 @@ void LaunchQueue::SendLaunchParams(LaunchParams launch_params,
   // https://crbug.com/2546057
   DCHECK(delegate_->IsInScope(launch_params, current_url))
       << current_url.spec();
+  CHECK(launch_params.target_url.is_valid());
   mojo::AssociatedRemote<blink::mojom::WebLaunchService> launch_service;
   web_contents()
       ->GetPrimaryMainFrame()
       ->GetRemoteAssociatedInterfaces()
       ->GetInterface(&launch_service);
   DCHECK(launch_service);
+
+  std::vector<blink::mojom::FileSystemAccessEntryPtr> files;
 
   if (!launch_params.paths.empty() || !launch_params.dir.empty()) {
     EntriesBuilder entries_builder(web_contents(), launch_params.target_url,
@@ -203,13 +211,12 @@ void LaunchQueue::SendLaunchParams(LaunchParams launch_params,
       entries_builder.AddFileEntry(delegate_->GetPathInfo(path));
     }
 
-    launch_service->SetLaunchFiles(entries_builder.Build());
-  } else {
-    launch_service->EnqueueLaunchParams(
-        launch_params.target_url,
-        launch_params.time_navigation_started_for_enqueue,
-        launch_params.started_new_navigation);
+    files = entries_builder.Build();
   }
+  launch_service->EnqueueLaunchParams(
+      launch_params.target_url,
+      launch_params.time_navigation_started_for_enqueue,
+      launch_params.started_new_navigation, std::move(files));
 }
 
 }  // namespace webapps

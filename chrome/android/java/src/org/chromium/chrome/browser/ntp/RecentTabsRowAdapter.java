@@ -10,7 +10,6 @@ import static org.chromium.build.NullUtil.assumeNonNull;
 import android.app.Activity;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
@@ -44,9 +43,12 @@ import org.chromium.chrome.browser.ui.favicon.FaviconUtils;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.browser_ui.widget.HoverHighlightViewListener;
 import org.chromium.components.browser_ui.widget.RoundedIconGenerator;
+import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.components.tab_groups.TabGroupColorId;
 import org.chromium.components.tab_groups.TabGroupColorPickerUtils;
+import org.chromium.components.url_formatter.UrlFormatter;
+import org.chromium.content_public.common.ContentUrlConstants;
 import org.chromium.ui.UiUtils;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.mojom.WindowOpenDisposition;
@@ -317,7 +319,7 @@ public class RecentTabsRowAdapter extends BaseExpandableListAdapter {
             String url = sessionTab.url.getSpec();
             String text = TextUtils.isEmpty(sessionTab.title) ? url : sessionTab.title;
             viewHolder.textView.setText(text);
-            String domain = UrlUtilities.getDomainAndRegistry(url, false);
+            String domain = formatUrlForDisplay(sessionTab.url);
             if (!TextUtils.isEmpty(domain)) {
                 viewHolder.domainView.setText(domain);
                 viewHolder.domainView.setVisibility(View.VISIBLE);
@@ -628,7 +630,7 @@ public class RecentTabsRowAdapter extends BaseExpandableListAdapter {
                 List<RecentlyClosedTab> tabList) {
             List<String> domainList = new ArrayList<>();
             for (RecentlyClosedTab tab : tabList) {
-                String domain = UrlUtilities.getDomainAndRegistry(tab.getUrl().getSpec(), false);
+                String domain = formatUrlForDisplay(tab.getUrl());
                 domainList.add(domain);
             }
             String domainText =
@@ -662,12 +664,11 @@ public class RecentTabsRowAdapter extends BaseExpandableListAdapter {
             Resources res = mActivity.getResources();
             if (isHistoryLink(childPosition)) {
                 viewHolder.textView.setText(R.string.show_full_history);
-                Bitmap historyIcon =
-                        BitmapFactory.decodeResource(res, R.drawable.ic_watch_later_24dp);
-                int size = res.getDimensionPixelSize(R.dimen.tile_view_icon_size_modern);
                 Drawable drawable =
-                        FaviconUtils.createRoundedBitmapDrawable(
-                                res, Bitmap.createScaledBitmap(historyIcon, size, size, true));
+                        UiUtils.getTintedDrawable(
+                                mActivity,
+                                R.drawable.ic_schedule_fill_24dp,
+                                R.color.default_icon_color_tint_list);
                 drawable.setColorFilter(
                         SemanticColorUtils.getDefaultIconColor(mActivity), PorterDuff.Mode.SRC_IN);
                 viewHolder.imageView.setImageDrawable(drawable);
@@ -681,8 +682,11 @@ public class RecentTabsRowAdapter extends BaseExpandableListAdapter {
             RecentlyClosedEntry entry = assumeNonNull(getChild(childPosition));
             if (entry instanceof RecentlyClosedWindow recentlyClosedWindow) {
                 viewHolder.textView.setText(recentlyClosedWindow.getTitle());
-                String activeTabDomain =
-                        UrlUtilities.getDomainAndRegistry(recentlyClosedWindow.getUrl(), false);
+                String activeTabDomain = formatUrlForDisplay(recentlyClosedWindow.getUrl());
+                String activeTabInfo =
+                        TextUtils.isEmpty(activeTabDomain)
+                                ? recentlyClosedWindow.getActiveTabTitle()
+                                : activeTabDomain;
                 int inactiveTabCount = recentlyClosedWindow.getTabCount() - 1;
                 final String description;
                 if (inactiveTabCount > 0) {
@@ -690,10 +694,10 @@ public class RecentTabsRowAdapter extends BaseExpandableListAdapter {
                             res.getQuantityString(
                                     R.plurals.recent_tabs_window_closure_domain_text,
                                     inactiveTabCount,
-                                    activeTabDomain,
+                                    activeTabInfo,
                                     inactiveTabCount);
                 } else {
-                    description = activeTabDomain;
+                    description = activeTabInfo;
                 }
                 viewHolder.domainView.setText(description);
                 viewHolder.domainView.setVisibility(View.VISIBLE);
@@ -735,7 +739,7 @@ public class RecentTabsRowAdapter extends BaseExpandableListAdapter {
                 String title = TitleUtil.getTitleForDisplay(tab.getTitle(), tab.getUrl());
                 viewHolder.textView.setText(title);
 
-                String domain = UrlUtilities.getDomainAndRegistry(tab.getUrl().getSpec(), false);
+                String domain = formatUrlForDisplay(tab.getUrl());
                 if (!TextUtils.isEmpty(domain)) {
                     viewHolder.domainView.setText(domain);
                     viewHolder.domainView.setVisibility(View.VISIBLE);
@@ -904,6 +908,29 @@ public class RecentTabsRowAdapter extends BaseExpandableListAdapter {
                 "HistoryPage.OtherDevicesMenu",
                 OtherSessionsActions.MENU_INITIALIZED,
                 OtherSessionsActions.NUM_ENTRIES);
+    }
+
+    /**
+     * Formats a URL for display. For most URLs, this is just the domain and registry. For about and
+     * chrome scheme URLs, the entire URL is returned.
+     *
+     * @param gurl The URL to format.
+     * @return The formatted URL or null if the domain could not be extracted.
+     */
+    private @Nullable String formatUrlForDisplay(GURL gurl) {
+        String urlSpec = gurl.getSpec();
+        String scheme = gurl.getScheme();
+        if (ContentUrlConstants.ABOUT_SCHEME.equals(scheme)
+                || UrlConstants.CHROME_SCHEME.equals(scheme)
+                || UrlConstants.CHROME_NATIVE_SCHEME.equals(scheme)) {
+            return UrlFormatter.formatUrlForDisplayOmitHTTPScheme(urlSpec);
+        }
+        // This should perhaps use UrlFormatter as well, but it has used domain for a long time.
+        return UrlUtilities.getDomainAndRegistry(urlSpec, false);
+    }
+
+    private @Nullable String formatUrlForDisplay(String urlSpec) {
+        return formatUrlForDisplay(new GURL(urlSpec));
     }
 
     /**

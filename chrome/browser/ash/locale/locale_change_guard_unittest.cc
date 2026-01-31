@@ -7,7 +7,8 @@
 #include <stddef.h>
 #include <string.h>
 
-#include "base/containers/contains.h"
+#include <algorithm>
+
 #include "base/containers/fixed_flat_set.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -232,7 +233,7 @@ TEST(LocaleChangeGuardTest, ShowNotificationLocaleChangedList) {
     const bool notification_allowed =
         kShowNotificationLanguages.contains(language);
 
-    const bool notification_skipped = base::Contains(
+    const bool notification_skipped = std::ranges::contains(
         LocaleChangeGuard::GetSkipShowNotificationLanguagesForTesting(),
         language);
 

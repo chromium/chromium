@@ -183,4 +183,4 @@ declare function modelForElement(template: HTMLElement|null, node?: Node|null): 
 
 export {TemplateInstanceBase};
 
-import {StampedTemplate} from '../../interfaces';
+import {StampedTemplate} from '../../interfaces.js';

@@ -15,8 +15,11 @@
 class AuthenticationService;
 @class GeminiConfiguration;
 @class GeminiPageContext;
+@class GeminiSettingsAction;
 @class GeminiSettingsMetadata;
 @protocol BWGGatewayProtocol;
+
+typedef NS_ENUM(NSInteger, GeminiSettingsContext);
 
 using BWGEligibilityCallback = void (^)(BOOL eligible);
 
@@ -78,6 +81,31 @@ enum class BWGPageContextAttachmentState {
   kEnterpriseDisabled,
 };
 
+// Enum representing the Gemini view state.
+// This needs to stay in sync with GCRGeminiViewState (and its SDK counterpart).
+enum class GeminiViewState {
+  // The Gemini view state is unknown.
+  kUnknown,
+  // The Gemini view is hidden.
+  kHidden,
+  // The Gemini view is collapsed (minimized) into a circle.
+  kCollapsed,
+  // The Gemini view is expanded.
+  kExpanded,
+};
+
+// Enum representing the UI element type for which a change is requested.
+// This needs to stay in sync with GCRGeminiUIElementType (and its SDK
+// counterpart).
+enum class GeminiUIElementType {
+  // The element type is unknown.
+  kUnknown,
+  // The context attachment element.
+  kContextAttachment,
+  // The zero state element.
+  kZeroState,
+};
+
 // Starts the overlay experience with the given configuration.
 void StartBwgOverlay(GeminiConfiguration* gemini_configuration);
 
@@ -109,6 +137,30 @@ void UpdatePageContext(GeminiPageContext* gemini_page_context);
 // Returns the Gemini settings that the user is eligible for.
 NSArray<GeminiSettingsMetadata*>* GetEligibleSettings(
     AuthenticationService* auth_service);
+
+// Returns the settings action for a given settings context.
+GeminiSettingsAction* ActionForSettingsContext(GeminiSettingsContext context);
+
+// Updates Gemini overlay offset with a specific `opacity`. A positive `offset`
+// will move the overlay towards the top of the viewport while a negative
+// `offset` will move the overlay towards the bottom and even below the
+// viewport.
+void UpdateOverlayOffsetWithOpacity(CGFloat offset, CGFloat opacity);
+
+// TODO(crbug.com/475205334): Remove this method after function below is
+// implemented.
+// Updates Gemini floaty view state.
+void UpdateGeminiViewState(GeminiViewState view_state);
+
+// Updates Gemini floaty view state with an animation flag.
+void UpdateGeminiViewState(GeminiViewState view_state, bool animated);
+
+// Returns the current `GeminiViewState` of the floaty.
+GeminiViewState GetCurrentGeminiViewState();
+
+// Requests a UI change for a specific element type.
+void RequestUIChange(GeminiUIElementType ui_element_type);
+
 }  // namespace ios::provider
 
 #endif  // IOS_PUBLIC_PROVIDER_CHROME_BROWSER_BWG_BWG_API_H_

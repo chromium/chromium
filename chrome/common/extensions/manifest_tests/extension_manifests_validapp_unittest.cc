@@ -33,10 +33,10 @@ TEST_F(ValidAppManifestTest, ValidApp) {
 
 TEST_F(ValidAppManifestTest, AllowUnrecognizedPermissions) {
   std::string error;
-  std::optional<base::Value::Dict> manifest =
+  std::optional<base::DictValue> manifest =
       LoadManifest("valid_app.json", &error);
   ASSERT_TRUE(manifest);
-  base::Value::List* permissions = manifest->FindList("permissions");
+  base::ListValue* permissions = manifest->FindList("permissions");
   ASSERT_TRUE(permissions);
   permissions->Append("not-a-valid-permission");
   LoadAndExpectSuccess(ManifestData(std::move(*manifest), ""));

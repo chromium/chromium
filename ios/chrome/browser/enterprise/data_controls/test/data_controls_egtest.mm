@@ -82,7 +82,6 @@ void TapOnContextMenuButton(id<GREYMatcher> context_menu_item_button) {
   if ([self isRunningTest:@selector(testCopyBlockedOnReaderMode)] ||
       [self isRunningTest:@selector(testCopyLinkWarnProceedOnReaderMode)] ||
       [self isRunningTest:@selector(testCopyLinkWarnCancelOnReaderMode)]) {
-    config.features_enabled.push_back(kEnableReaderMode);
     config.features_enabled.push_back(kEnableReaderModeInUS);
   }
   config.features_enabled.push_back(

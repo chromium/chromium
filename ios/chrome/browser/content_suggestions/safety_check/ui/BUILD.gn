@@ -1,0 +1,60 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("ui") {
+  sources = [
+    "safety_check_audience.h",
+    "safety_check_consumer_source.h",
+    "safety_check_magic_stack_consumer.h",
+    "safety_check_state.h",
+    "safety_check_state.mm",
+    "safety_check_view.h",
+    "safety_check_view.mm",
+  ]
+  public_deps = [
+    "//base",
+    "//ios/chrome/browser/content_suggestions/magic_stack/ui:public",
+    "//ios/chrome/browser/ntp/ui_bundled:theme",
+  ]
+  deps = [
+    ":item_types",
+    "//components/version_info",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/content_suggestions/magic_stack/ui:magic_stack_module_content_view_delegate",
+    "//ios/chrome/browser/content_suggestions/public:constants",
+    "//ios/chrome/browser/content_suggestions/safety_check/model:utils",
+    "//ios/chrome/browser/content_suggestions/safety_check/public:constants",
+    "//ios/chrome/browser/content_suggestions/ui/cells",
+    "//ios/chrome/browser/content_suggestions/ui/cells:icon_detail_view",
+    "//ios/chrome/browser/safety_check/model:constants",
+    "//ios/chrome/browser/shared/public/features",
+    "//ios/chrome/browser/shared/ui/symbols",
+    "//ios/chrome/browser/shared/ui/util",
+    "//ios/chrome/common",
+    "//ios/chrome/common/ui/colors",
+    "//ios/chrome/common/ui/util",
+    "//ui/base",
+  ]
+  frameworks = [ "UIKit.framework" ]
+}
+
+source_set("item_types") {
+  sources = [ "safety_check_item_type.h" ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "safety_check_view_unittest.mm" ]
+  deps = [
+    ":item_types",
+    ":ui",
+    "//base/test:test_support",
+    "//ios/chrome/browser/content_suggestions/safety_check/model:utils",
+    "//ios/chrome/browser/content_suggestions/safety_check/public:constants",
+    "//ios/chrome/browser/content_suggestions/ui/cells:icon_detail_view",
+    "//ios/chrome/browser/safety_check/model:constants",
+    "//testing/gtest",
+  ]
+  frameworks = [ "Foundation.framework" ]
+}

@@ -17,9 +17,9 @@ class VariationsService;
 
 // `application_locale` should be the locale associated with
 // `g_browser_process`.
-base::Value::Dict GetFileManagerStrings(const std::string& application_locale);
+base::DictValue GetFileManagerStrings(const std::string& application_locale);
 
-base::Value::Dict GetFileManagerPluralStrings();
+base::DictValue GetFileManagerPluralStrings();
 
 // This function will return a number between 0 (Sunday) and 6 (Saturday)
 // to indicate which day is the start of week based on the current locale.
@@ -32,6 +32,6 @@ void AddFileManagerFeatureStrings(
     const std::string& application_locale,
     const variations::VariationsService& variations_service,
     Profile* profile,
-    base::Value::Dict* dict);
+    base::DictValue* dict);
 
 #endif  // CHROME_BROWSER_ASH_FILE_MANAGER_FILE_MANAGER_STRING_UTIL_H_

@@ -130,7 +130,7 @@ std::optional<CachedUserStatus> GlicUserStatusFetcher::GetCachedUserStatus(
     return std::nullopt;
   }
 
-  const base::Value::Dict& pref_dict =
+  const base::DictValue& pref_dict =
       profile->GetPrefs()->GetDict(glic::prefs::kGlicUserStatus);
 
   if (pref_dict.empty()) {
@@ -446,7 +446,7 @@ void GlicUserStatusFetcher::ProcessResponse(
   // We don't overwrite the previous GlicUserStatus when UserStatusCode is
   // SERVER_UNAVAILABLE.
   if (user_status.user_status_code != UserStatusCode::SERVER_UNAVAILABLE) {
-    base::Value::Dict data;
+    base::DictValue data;
     data.Set(kAccountId, account_id_hash);
     data.Set(kUserStatus, user_status.user_status_code);
     data.Set(kUpdatedAt, user_status.last_updated.InSecondsFSinceUnixEpoch());

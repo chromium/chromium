@@ -104,23 +104,6 @@ TEST_F(TabStripServiceImplTest, GetTab_NotFound) {
   ASSERT_EQ(result.error()->code, mojo_base::mojom::Code::kNotFound);
 }
 
-TEST_F(TabStripServiceImplTest, GetTab_MalformedId) {
-  tabs_api::NodeId tab_id(NodeId::Type::kContent, /* I know my */ "abc");
-
-  auto result = service_->GetTab(tab_id);
-
-  ASSERT_FALSE(result.has_value());
-  ASSERT_EQ(result.error()->code, mojo_base::mojom::Code::kInvalidArgument);
-}
-
-TEST_F(TabStripServiceImplTest, GetTab_InvalidType) {
-  tabs_api::NodeId tab_id;
-  auto result = service_->GetTab(tab_id);
-
-  ASSERT_FALSE(result.has_value());
-  ASSERT_EQ(result.error()->code, mojo_base::mojom::Code::kInvalidArgument);
-}
-
 TEST_F(TabStripServiceImplTest, CloseTabs) {
   tabs_api::NodeId tab_id1(NodeId::Type::kContent, "123");
   tabs_api::NodeId tab_id2(NodeId::Type::kContent, "321");
@@ -134,15 +117,6 @@ TEST_F(TabStripServiceImplTest, CloseTabs) {
   ASSERT_TRUE(result.has_value());
   // tab entries should be removed.
   ASSERT_EQ(0ul, tab_strip_->GetTabs().size());
-}
-
-TEST_F(TabStripServiceImplTest, CloseTabs_InvalidType) {
-  tabs_api::NodeId collection_id(NodeId::Type::kCollection, "321");
-
-  auto result = service_->CloseTabs({collection_id});
-
-  ASSERT_FALSE(result.has_value());
-  ASSERT_EQ(result.error()->code, mojo_base::mojom::Code::kUnimplemented);
 }
 
 TEST_F(TabStripServiceImplTest, ActivateTab) {
@@ -169,22 +143,6 @@ TEST_F(TabStripServiceImplTest, ActivateTab) {
   auto result = service_->ActivateTab(tab2_id);
 
   ASSERT_EQ(tab_strip_->FindActiveTab(), tab2.tab_handle);
-}
-
-TEST_F(TabStripServiceImplTest, ActivateTab_WrongType) {
-  tabs_api::NodeId tab2_id(NodeId::Type::kCollection, "111");
-
-  auto result = service_->ActivateTab(tab2_id);
-
-  ASSERT_EQ(result.error()->code, mojo_base::mojom::Code::kInvalidArgument);
-}
-
-TEST_F(TabStripServiceImplTest, ActivateTab_Malformed) {
-  tabs_api::NodeId tab2_id(NodeId::Type::kContent, "aaa");
-
-  auto result = service_->ActivateTab(tab2_id);
-
-  ASSERT_EQ(result.error()->code, mojo_base::mojom::Code::kInvalidArgument);
 }
 
 TEST_F(TabStripServiceImplTest, ActivateTab_NotFound) {

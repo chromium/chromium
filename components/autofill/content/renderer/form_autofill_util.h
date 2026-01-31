@@ -177,6 +177,16 @@ ApplyFieldsAction(const blink::WebDocument& document,
                   mojom::ActionPersistence action_persistence,
                   FieldDataManager& field_data_manager);
 
+// Dispatches an autofill event on the document before filling form fields.
+// This allows web pages to prepare forms before autofill fills them.
+// The `fill_id` is passed to the event so that refill requests can be
+// associated with the original fill operation.
+// If `supports_refill` is false, the event's refill() method will be null.
+void DispatchAutofillEvent(blink::WebDocument document,
+                           base::span<const FormFieldData::FillData> fields,
+                           const FillId& fill_id,
+                           bool supports_refill);
+
 // Clears the suggested values in `previewed_elements`.
 // `initiating_element` is the element that initiated the preview operation.
 // `old_autofill_state` is the previous state of the field that initiated the

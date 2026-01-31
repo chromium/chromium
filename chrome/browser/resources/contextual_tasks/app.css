@@ -9,20 +9,16 @@
  * #css_wrapper_metadata_end */
 
 :host {
-  display: flex;
-  flex-direction: column;
-  height: 100%;
-  background-color: var(--search-background-color);
   --color-composebox-cancel-button: rgba(10,10,10, 1);
   /* The top border of matches/tab suggestions dropdown in context menu. */
   --color-composebox-file-carousel-divider: rgba(210, 225, 252, 1);
   --color-composebox-file-carousel-remove-button: rgba(0, 0, 0, 0.6);
   --color-composebox-file-carousel-remove-gradient-end: rgba(0, 0, 0, 0.2);
   --color-composebox-file-carousel-remove-gradient-start: rgba(0, 0, 0, 0.2);
-  --color-composebox-file-carousel-url: rgba(91,91,91, 1);
+  --color-composebox-file-carousel-url: rgba(91, 91, 91, 1);
   --color-composebox-file-chip-background: rgb(225, 227, 232);
   --color-composebox-file-chip-background-hovered: rgba(225, 227, 232, 1);
-  --color-composebox-file-chip-favicon-background: rgba(225 224 238, 1);
+  --color-composebox-file-chip-favicon-background: rgba(255, 255, 255, 1);
   --color-composebox-file-chip-text: rgba(31, 31, 31, 1);
   --color-composebox-font: rgba(86, 89, 94, 1);
   --color-composebox-font-dark: rgba(10, 10, 10, 1);
@@ -30,10 +26,18 @@
    * for co-browsing to be color-composebox-font.
    */
   --color-composebox-font-light: rgba(31, 31, 31, 1);
+  --color-composebox-input-plate-outline: rgba(220, 223, 229, 1);
   --color-composebox-hover: rgba(233, 235, 240, 1);
+  --color-composebox-pdf-chip-icon-background: rgba(219, 69, 55, 1);
+  --color-composebox-pdf-chip-icon-border: rgba(255, 255, 255, 1);
+  --color-composebox-type-ahead: rgba(117, 117, 117, 1);
+  --color-composebox-type-ahead-chip: rgba(117, 117, 117, 1);
   --color-composebox-voice-lens-button: rgba(10, 10, 10, 1);
+  --color-search-animated-glow-dragging-opaque-frost:
+      rgba(240, 242, 245);
   --color-searchbox-results-background-hovered: rgba(31, 31, 31, 0.06);
-  --composebox-context-menu-entrypoint-button-color: rgba(31,31,31, 1);
+  --color-zero-state-greeting: rgba(10, 10, 10, 1);
+  --composebox-context-menu-entrypoint-button-color: rgba(31, 31, 31, 1);
   --cr-composebox-background-color: rgba(243, 245, 246, 1);
   --cr-composebox-file-thumbnail-remove-button-fill-color: rgba(255, 255, 255, 1);
   --cr-composebox-submit-button-hover-color: rgba(32, 33, 36, .2);
@@ -42,17 +46,72 @@
   --error-bottom-line-color: #70757A;
   --error-top-line-color: #202124;
   --gradient-protection-width: 100%;
+  --max-composebox-width: 692px;
+  --min-composebox-width: 150px;
+  --paper-tooltip-background:rgba(255, 255, 255, 1);
+  --paper-tooltip-text-color: rgba(0, 0, 0, 1);
   --protected-icon-background-color: #535353;
   --remove-button-border-radius: 10%;
   --remove-button-height: var(--remove-button-width);
   --remove-button-inset-inline-end: calc((var(--thumbnail-chip-width) - var(--thumbnail-chip-icon-size)) / 2);
   --remove-button-width: calc(var(--thumbnail-chip-icon-size) + var(--thumbnail-chip-padding) * 2);
-  --search-background-color: transparent;
+  --search-background-color: rgba(255, 255, 255, 1);
   --search-background-color-rgb: 255, 255, 255;
   --thumbnail-chip-icon-size: 16px;
   --thumbnail-chip-overlay-width: 100%;
   --thumbnail-chip-padding: 6px;
   --thumbnail-chip-width: 154px;
+  --ghost-loader-base: #F3F5F6;
+  --ghost-loader-highlight: #DEE1E3;
+
+  /* Toolbar colors */
+  --toolbar-background-color: var(--search-background-color);
+  --toolbar-button-icon-color: var(--cr-fallback-color-on-surface-subtle);
+  --toolbar-divider-color: rgb(211,227,253);
+  --toolbar-favicon-border-color: var(--cr-fallback-color-surface5);
+  --toolbar-menu-background-color: rgb(255, 255, 255);
+  --toolbar-text-color: rgb(31, 31, 31);
+
+  background-color: var(--search-background-color);
+  display: grid;
+  grid-template-columns: 100%;
+  grid-template-rows: auto 1fr;
+  height: 100%;
+  overflow: hidden;
+}
+
+
+:host([is-ai-page_]) {
+  /* Only set this transition for AIM results so it only applies when going
+    * from All tab to AIM results and not the reverse. */
+  transition-duration: 0.5s;
+  transition-timing-function: ease-in-out;
+  transition-property: --search-background-color,
+                       --cr-composebox-background-color;
+}
+
+/* Light mode not on AI page */
+:host(:not([is-ai-page_]):not([dark-mode_])) {
+  --cr-composebox-background-color: rgba(243, 245, 246, 1);
+  --search-background-color: white;
+}
+
+/* Light mode on AI page */
+:host([is-ai-page_]:not([dark-mode_])) {
+  --cr-composebox-background-color: rgba(243, 245, 246, 1);
+  --search-background-color: white;
+}
+
+/* Dark mode not on AI page */
+:host(:not([is-ai-page_])[dark-mode_]) {
+  --cr-composebox-background-color: rgba(40, 41, 42, 1);
+  --search-background-color: rgba(31, 31, 31, 1);
+}
+
+/* Dark mode on AI page */
+:host([is-ai-page_][dark-mode_]) {
+  --cr-composebox-background-color: rgba(29, 30, 38, 1);
+  --search-background-color: rgba(16, 18, 24, 1);
 }
 
 :host([dark-mode_]) {
@@ -72,22 +131,39 @@
   --color-composebox-font-light: rgba(230, 232, 240, 1);
   --color-composebox-hover: rgba(62, 63, 67, 1);
   --color-composebox-input-icon: var(--color-searchbox-results-icon);
+  --color-composebox-input-plate-outline: rgba(45, 47, 56, 1);
+  --color-composebox-type-ahead: rgba(199, 199, 199, 1);
+  --color-composebox-type-ahead-chip: rgba(199, 199, 199, 1);
   --color-composebox-voice-lens-button: rgba(191, 191, 191, 1);
   --color-searchbox-results-background-hovered: rgba(54, 54, 54, 1);
+  --color-zero-state-greeting: rgba(230, 232, 240, 1);
   --composebox-context-menu-entrypoint-button-color: rgba(63, 64, 74, 1);
   --cr-color-sys-divider: var(--color-composebox-file-chip-divider);
   --cr-composebox-background-color: rgba(29, 30, 38, 1);
+  --color-search-animated-glow-dragging-opaque-frost:
+      rgba(44, 45, 53, 1);
+  --color-menu-background: var(--cr-menu-background-color);
+  --color-composebox-context-entrypoint-text-disabled: rgba(105, 105, 105, 1);
   --cr-composebox-file-thumbnail-remove-button-fill-color: rgba(255, 255, 255, 1);
-  --cr-composebox-submit-button-hover-color: rgba(54, 54, 54, 1);
-  --cr-fallback-color-surface: var(--search-background-color-dark);
+  --color-composebox-submit-button-background: rgba(10, 80, 209, 1);
+  --cr-composebox-submit-button-hover-color: rgba(62, 63, 67, 0.1);
   --cr-icon-button-fill-color: rgba(0, 0, 0, 1);
   --cr-primary-text-color: var(--color-composebox-file-chip-text);
   --error-bottom-line-color: #9AA0A6;
   --error-top-line-color: #E8EAED;
+  --paper-tooltip-background:rgba(63, 64, 74, 1);
+  --paper-tooltip-text-color: rgba(255, 255, 255, 1);
   --protected-icon-background-color: #E8EAED;
   --remove-button-fill-color: rgba(255, 255, 255, 1);
-  --search-background-color: rgba(12, 20, 23, 1);
-  --search-background-color-rgb: 12, 20, 23;
+  --search-background-color: rgba(16, 18, 23, 1);
+  --search-background-color-rgb: 16, 18, 23;
+  --ghost-loader-base: #333438;
+  --ghost-loader-highlight: #3A3F50;
+
+  /* Toolbar colors - Dark mode */
+  --toolbar-divider-color: rgb(94,94,94);
+  --toolbar-menu-background-color: rgb(31, 31, 31);
+  --toolbar-text-color: rgb(227,227,227);
 }
 
 [hidden] {
@@ -96,8 +172,13 @@
 
 #threadFrame {
   border: none;
-  flex-grow: 1;
-  height: 100%;
+  grid-column: 1;
+  grid-row: 2;
+  overflow: hidden;
+}
+
+/* Disable scroll for zero state. */
+:host([is-zero-state_]) {
   overflow: hidden;
 }
 
@@ -112,6 +193,166 @@ error-page {
 }
 
 :host([is-error-page-visible_]) #threadFrame,
-:host([is-error-page-visible_]) contextual-tasks-composebox {
+:host([is-error-page-visible_]) #composebox,
+:host([is-error-page-visible_]) .flex-center,
+:host([is-ghost-loader-visible_]) #threadFrame,
+:host([is-shown-in-tab_]) #ghostLoader,
+:host(:not([is-ghost-loader-visible_])) #ghostLoader,
+:host([is-error-page-visible_]) #ghostLoader {
   visibility: hidden;
+}
+
+:host([is-zero-state_]:not([is-shown-in-tab])) #composebox {
+  /* Left/right flexbox padding implicitly added via centering is 20px. */
+  width: calc(100% - 40px);
+}
+
+:host([is-zero-state_]) #composebox {
+  bottom: 0;
+  height: auto;
+  max-width: var(--max-composebox-width);
+  min-width: var(--min-composebox-width);
+  pointer-events: auto;
+  position: relative;
+  top: auto;
+  width: 100%;
+  z-index: 2;
+}
+
+.flex-center {
+  align-self: end;
+  grid-column: 1;
+  grid-row: 2;
+}
+
+:host([is-zero-state_]) .flex-center {
+  align-self: start;
+  align-items: center;
+  display: flex;
+  flex-direction: column;
+  gap: 36px;
+  height: 51%;
+  inset-inline-start: 0;
+  justify-content: flex-end;
+  min-height: 300px;
+  overflow-anchor: none;
+  pointer-events: none;
+  position: absolute;
+  width: 100%;
+}
+
+#toolbarOverlay {
+  align-self: start;
+  background-color: var(--search-background-color);
+  grid-column: 1;
+  grid-row: 1;
+  /* Makes the toolbar the correct height. */
+  height: 48px;
+  position: relative;
+  z-index: 2;
+}
+
+/* Pseudo element to cover the AIM filter bar while in zero state. */
+:host([is-zero-state_]:not([is-in-basic-mode_])) #toolbarOverlay::after {
+  background-color: var(--search-background-color);
+  content: '';
+  display: block;
+  /* The explore bar is 48px, so this adds an 8px buffer margin. */
+  height: 56px;
+  position: absolute;
+  top: 100%;
+  width: 100%;
+}
+
+.thread-header {
+  color: var(--color-zero-state-greeting);
+  font-family: Google Sans, Roboto, Arial, sans-serif;
+  font-size: 32px;
+  font-weight: 500;
+  line-height: 100%;
+  margin: 0;
+  position: relative;
+  z-index: 2;
+}
+
+:host(:not([is-shown-in-tab_])) .thread-header {
+  font-size: 28px;
+  font-weight: 400;
+  line-height: 36px;
+  margin: 0 8px 0 0;
+}
+
+#composeboxHeaderWrapper {
+  background-color: var(--search-background-color);
+  display: none;
+  justify-content: flex-start;
+  /* Same width so stays at same centering as composebox with flexbox. */
+  max-width: var(--max-composebox-width);
+  position: relative;
+  width: calc(100% - 40px);
+}
+
+:host([is-zero-state_]) #composeboxHeaderWrapper {
+  display: flex;
+}
+
+:host([is-zero-state_][is-shown-in-tab_]) .flex-center {
+  inset-inline-start: 76px;
+  width: calc(100% - 76px);
+}
+
+:host([is-zero-state_]:not([is-shown-in-tab_])) .flex-center {
+  gap: 24px;
+}
+
+:host([is-zero-state_]:not([is-shown-in-tab_])) #composeboxHeaderWrapper {
+  inset-inline-start: 28px;
+  inset-inline-end: 20px;
+  width: calc(100% - 48px);  /* 20px space on right. */
+}
+
+@media (max-width: 480px) {
+  :host([is-zero-state_][is-shown-in-tab_]) .flex-center {
+    inset-inline-start: 0;
+    width: 100%;
+  }
+}
+
+/* Give thread header more space when it wraps. */
+@media (max-width: 440px) {
+  #composeboxHeaderWrapper {
+    padding-bottom: 10px;
+  }
+  :host(:not([is-shown-in-tab_])) #composeboxHeaderWrapper {
+    padding-bottom: 20px;
+  }
+  :host([is-zero-state_]) #toolbarOverlay::after {
+    height: 66px;
+  }
+}
+
+@media (max-height: 580px) {
+  :host([is-zero-state_]) #composeboxHeaderWrapper {
+    margin-top: 150px;
+  }
+}
+
+@media (max-width: 280px) {
+  :host([is-zero-state_]) .thread-header {
+    font-size: 11vw;
+    inset-inline-start: 10px;
+  }
+  :host([is-zero-state_]) #composeboxHeaderWrapper {
+    width: calc(100% - 58px);
+  }
+}
+
+#ghostLoader {
+  background-color: var(--search-background-color);
+  display: block;
+  grid-column: 1;
+  grid-row: 2;
+  height: 100%;
+  overflow: hidden;
+  width: 100%;
 }

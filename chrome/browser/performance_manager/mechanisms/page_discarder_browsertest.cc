@@ -55,7 +55,7 @@ IN_PROC_BROWSER_TEST_P(PageDiscarderBrowserTest, DiscardPageNodes) {
   ASSERT_TRUE(frame_host);
   auto* contents = content::WebContents::FromRenderFrameHost(frame_host);
 
-  base::ByteCount total;
+  base::ByteSize total;
   base::WeakPtr<PageNode> page_node =
       PerformanceManager::GetPrimaryPageNodeForWebContents(contents);
   ASSERT_TRUE(page_node);
@@ -64,7 +64,7 @@ IN_PROC_BROWSER_TEST_P(PageDiscarderBrowserTest, DiscardPageNodes) {
   // this page.
   GraphOperations::VisitFrameTreePreOrder(
       page_node.get(), [&total](const FrameNode* frame_node) {
-        constexpr base::ByteCount kUsage = base::KiB(1);
+        constexpr base::ByteSize kUsage = base::KiBU(1);
         total += kUsage;
         FrameNodeImpl::FromNode(frame_node)
             ->SetPrivateFootprintEstimate(kUsage);
@@ -72,10 +72,10 @@ IN_PROC_BROWSER_TEST_P(PageDiscarderBrowserTest, DiscardPageNodes) {
       });
 
   PageDiscarder discarder;
-  std::optional<base::ByteCount> estimated_memory_freed_kb =
+  std::optional<base::ByteSize> estimated_memory_freed =
       discarder.DiscardPageNode(page_node.get(), discard_reason);
 
-  EXPECT_TRUE(estimated_memory_freed_kb.has_value());
+  EXPECT_TRUE(estimated_memory_freed.has_value());
 
   auto* new_contents = browser()->tab_strip_model()->GetWebContentsAt(1);
   EXPECT_TRUE(new_contents->WasDiscarded());

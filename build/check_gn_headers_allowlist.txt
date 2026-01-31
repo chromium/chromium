@@ -187,7 +187,6 @@ third_party/libvpx/source/config/nacl/vpx_scale_rtcd.h
 third_party/libvpx/source/config/vpx_version.h
 third_party/opus/src/src/opus_private.h
 third_party/opus/src/tests/test_opus_common.h
-third_party/protobuf/src/google/protobuf/compiler/csharp/csharp_names.h
 third_party/snappy/linux/config.h
 third_party/speech-dispatcher/libspeechd.h
 third_party/sqlite/sqlite3.h

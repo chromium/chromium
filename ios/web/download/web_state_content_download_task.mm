@@ -61,7 +61,9 @@ WebStateContentDownloadTask::WebStateContentDownloadTask(
 
 WebStateContentDownloadTask::~WebStateContentDownloadTask() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  CancelInternal();
+  if (!IsDone()) {
+    Cancel();
+  }
 }
 
 void WebStateContentDownloadTask::StartInternal(const base::FilePath& path) {

@@ -6,6 +6,7 @@
 
 #include <fontconfig/fontconfig.h>
 
+#include <array>
 #include <memory>
 
 #include "base/compiler_specific.h"
@@ -80,15 +81,10 @@ FontConfigLocalMatching::FindFontBySpecifiedName(
   // very good way of detecting this so we'll filter based on the
   // filename.
   bool is_sfnt = false;
-  static const char kSFNTExtensions[][5] = {".ttf", ".otc", ".TTF", ".ttc",
-                                            ".otf", ".OTF", ""};
-  for (size_t j = 0;; j++) {
-    if (UNSAFE_TODO(kSFNTExtensions[j])[0] == 0) {
-      // None of the extensions matched.
-      break;
-    }
-    if (base::EndsWith(filename, UNSAFE_TODO(kSFNTExtensions[j]),
-                       base::CompareCase::SENSITIVE)) {
+  static constexpr std::array<std::string_view, 6> kSFNTExtensions = {
+      ".ttf", ".otc", ".TTF", ".ttc", ".otf", ".OTF"};
+  for (const auto& extension : kSFNTExtensions) {
+    if (base::EndsWith(filename, extension, base::CompareCase::SENSITIVE)) {
       is_sfnt = true;
       break;
     }

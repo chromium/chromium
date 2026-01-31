@@ -86,7 +86,7 @@ TEST(MaxEventLevelReportsTest, Parse) {
   for (const auto& test_case : kTestCases) {
     SCOPED_TRACE(test_case.desc);
 
-    base::Value::Dict input = base::test::ParseJsonDict(test_case.json);
+    base::DictValue input = base::test::ParseJsonDict(test_case.json);
 
     EXPECT_THAT(MaxEventLevelReports::Parse(input, test_case.source_type),
                 test_case.matches);
@@ -94,7 +94,7 @@ TEST(MaxEventLevelReportsTest, Parse) {
 }
 
 TEST(MaxEventLevelReportsTest, Serialize) {
-  base::Value::Dict dict;
+  base::DictValue dict;
   MaxEventLevelReports(5).Serialize(dict);
 
   EXPECT_THAT(dict,

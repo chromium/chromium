@@ -50,7 +50,7 @@ class ExtensionActionFunction : public ExtensionFunction {
 
   // All the extension action APIs take a single argument called details that
   // is a dictionary.
-  raw_ptr<const base::Value::Dict> details_;
+  raw_ptr<const base::DictValue> details_;
 
   // The tab id the extension action function should apply to, if any, or
   // kDefaultTabId if none was specified.

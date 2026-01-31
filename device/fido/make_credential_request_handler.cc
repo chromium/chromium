@@ -4,12 +4,12 @@
 
 #include "device/fido/make_credential_request_handler.h"
 
+#include <algorithm>
 #include <map>
 #include <set>
 #include <utility>
 
 #include "base/barrier_closure.h"
-#include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/json/json_writer.h"
@@ -155,7 +155,7 @@ MakeCredentialStatus IsCandidateAuthenticatorPostTouch(
         continue;
       }
 
-      if (base::Contains(*supported_algorithms, algo.algorithm)) {
+      if (std::ranges::contains(*supported_algorithms, algo.algorithm)) {
         at_least_one_common_algorithm = true;
         break;
       }
@@ -268,6 +268,10 @@ bool ValidateResponseExtensions(
       }
     } else if (ext_name == kExtensionHmacSecret) {
       if (!request.hmac_secret || !it.second.is_bool()) {
+        return false;
+      }
+    } else if (ext_name == kExtensionHmacSecretMc) {
+      if (!request.hmac_secret || !it.second.is_bytestring()) {
         return false;
       }
     } else if (ext_name == kExtensionCredBlob) {
@@ -1015,7 +1019,12 @@ void MakeCredentialRequestHandler::SpecializeRequestForAuthenticator(
   }
 
   if (request->hmac_secret) {
-    request->prf = auth_options.supports_prf;
+    bool supports_prf_or_hmac_secret_mc = auth_options.supports_prf;
+    if (base::FeatureList::IsEnabled(device::kWebAuthnHmacSecretMcExtension)) {
+      supports_prf_or_hmac_secret_mc |= auth_options.supports_hmac_secret &&
+                                        auth_options.supports_hmac_secret_mc;
+    }
+    request->prf = supports_prf_or_hmac_secret_mc;
     request->hmac_secret =
         !auth_options.supports_prf && auth_options.supports_hmac_secret;
     if (request->prf || request->hmac_secret) {
@@ -1029,7 +1038,7 @@ void MakeCredentialRequestHandler::SpecializeRequestForAuthenticator(
     }
     // Evaluating the PRF at creation time is only supported with the "prf"
     // extension.
-    if (request->prf_input && !auth_options.supports_prf) {
+    if (request->prf_input && !supports_prf_or_hmac_secret_mc) {
       request->prf_input.reset();
     }
   }

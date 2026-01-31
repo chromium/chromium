@@ -19,7 +19,7 @@ constexpr char kTestPolicyName[] = "TestPolicy";
 TEST(MetricReportingPrefsTest,
      DisallowWebsiteMetricsReportingForUnsupportedUrls) {
   static constexpr char kUnsupportedUrl[] = "chrome://policy";
-  base::Value::List policy_setting_value;
+  base::ListValue policy_setting_value;
   policy_setting_value.Append(kUnsupportedUrl);
 
   test::FakeReportingSettings reporting_settings;
@@ -38,7 +38,7 @@ TEST(MetricReportingPrefsTest, DisallowWebsiteMetricsReportingIfPolicyUnset) {
 
 TEST(MetricReportingPrefsTest, AllowWebsiteMetricsReportingWithWildcardValue) {
   static constexpr char kUrl[] = "https://a.example.org";
-  base::Value::List policy_setting_value;
+  base::ListValue policy_setting_value;
   policy_setting_value.Append(ContentSettingsPattern::Wildcard().ToString());
 
   test::FakeReportingSettings reporting_settings;
@@ -51,7 +51,7 @@ TEST(MetricReportingPrefsTest, AllowWebsiteMetricsReportingWithWildcardValue) {
 TEST(MetricReportingPrefsTest, AllowWebsiteMetricsReportingWithValidMatch) {
   static constexpr char kValidUrlPattern[] = "https://[*.]example.org";
   static constexpr char kUrl[] = "https://a.example.org/some/path";
-  base::Value::List policy_setting_value;
+  base::ListValue policy_setting_value;
   policy_setting_value.Append(kValidUrlPattern);
 
   test::FakeReportingSettings reporting_settings;
@@ -64,7 +64,7 @@ TEST(MetricReportingPrefsTest, AllowWebsiteMetricsReportingWithValidMatch) {
 TEST(MetricReportingPrefsTest, DisallowWebsiteMetricsReportingIfNoMatch) {
   static constexpr char kUrl[] = "https://a.example.org";
   static constexpr char kOtherUrl[] = "https://www.google.com";
-  base::Value::List policy_setting_value;
+  base::ListValue policy_setting_value;
   policy_setting_value.Append(kUrl);
 
   test::FakeReportingSettings reporting_settings;
@@ -78,7 +78,7 @@ TEST(MetricReportingPrefsTest, AllowWebsiteMetricsReporting_MultiplePatterns) {
   static constexpr char kUrl[] = "https://a.example.org/some/path";
   static constexpr char kMatchingUrlPattern[] = "https://[*.]example.org";
   static constexpr char kInvalidUrlPattern[] = "https://:";
-  base::Value::List policy_setting_value;
+  base::ListValue policy_setting_value;
   policy_setting_value.Append(kInvalidUrlPattern);
   policy_setting_value.Append(kMatchingUrlPattern);
 
@@ -94,7 +94,7 @@ TEST(MetricReportingPrefsTest,
   static constexpr char kUrl[] = "https://a.example.org";
   static constexpr char kUrlPattern[] = "https://www.google.com";
   static constexpr char kInvalidUrlPattern[] = "https://:";
-  base::Value::List policy_setting_value;
+  base::ListValue policy_setting_value;
   policy_setting_value.Append(kInvalidUrlPattern);
   policy_setting_value.Append(kUrlPattern);
 

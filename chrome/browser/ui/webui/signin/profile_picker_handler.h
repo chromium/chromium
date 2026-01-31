@@ -25,6 +25,7 @@
 class ScopedProfileKeepAlive;
 
 class ForceSigninUIError;
+class SigninUIError;
 
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
@@ -71,10 +72,13 @@ class ProfilePickerHandler : public content::WebUIMessageHandler,
 
   // Displays an error dialog on top of the profile picker based on the error
   // enum.
-  // Empty `profile_path` will not show an additional "Sign in" button that
-  // allows to reach reauth step.
-  void DisplayForceSigninErrorDialog(const base::FilePath& profile_path,
-                                     const ForceSigninUIError& error);
+  // `profile_path` is only used when the error is `ForceSigninUIError`.
+  // When `error` contains a `ForceSigninUIError`, using an empty `profile_path`
+  // will not show an additional "Sign in" button that allows to reach reauth
+  // step.
+  void DisplaySigninErrorDialog(
+      const base::FilePath& profile_path,
+      const std::variant<ForceSigninUIError, SigninUIError>& error);
 
   // content::WebUIMessageHandler:
   void RegisterMessages() override;
@@ -105,33 +109,39 @@ class ProfilePickerHandler : public content::WebUIMessageHandler,
       ProfilePickerEnterpriseCreationFlowBrowserTest,
       CreateSignedInProfileSigninAlreadyExists_CancelSwitch);
 
-  void HandleMainViewInitialize(const base::Value::List& args);
+  void HandleMainViewInitialize(const base::ListValue& args);
   void HandleLaunchSelectedProfile(bool open_settings,
-                                   const base::Value::List& args);
-  void HandleLaunchGuestProfile(const base::Value::List& args);
-  void HandleLaunchAllProfiles(const base::Value::List& args);
-  void HandleRecordOpenAllProfilesButtonShown(const base::Value::List& args);
-  void HandleAskOnStartupChanged(const base::Value::List& args);
-  void HandleRemoveProfile(const base::Value::List& args);
-  void HandleGetProfileStatistics(const base::Value::List& args);
-  void HandleCloseProfileStatistics(const base::Value::List& args);
-  void HandleSetProfileName(const base::Value::List& args);
-  void HandleUpdateProfileOrder(const base::Value::List& args);
-  void HandleOnLearnMoreClicked(const base::Value::List& args);
+                                   const base::ListValue& args);
+  void HandleLaunchGuestProfile(const base::ListValue& args);
+  void HandleLaunchAllProfiles(const base::ListValue& args);
+  void HandleRecordOpenAllProfilesButtonShown(const base::ListValue& args);
+  void HandleAskOnStartupChanged(const base::ListValue& args);
+  void HandleRemoveProfile(const base::ListValue& args);
+  void HandleGetProfileStatistics(const base::ListValue& args);
+  void HandleCloseProfileStatistics(const base::ListValue& args);
+  void HandleSetProfileName(const base::ListValue& args);
+  void HandleUpdateProfileOrder(const base::ListValue& args);
+  void HandleOnLearnMoreClicked(const base::ListValue& args);
 
-  void HandleSelectNewAccount(const base::Value::List& args);
-  void HandleGetNewProfileSuggestedThemeInfo(const base::Value::List& args);
-  void HandleGetProfileThemeInfo(const base::Value::List& args);
-  void HandleGetAvailableIcons(const base::Value::List& args);
-  void HandleContinueWithoutAccount(const base::Value::List& args);
-  void HandleGetProfileState(const base::Value::List& args);
+  void HandleSelectNewAccount(const base::ListValue& args);
+  void HandleGetNewProfileSuggestedThemeInfo(const base::ListValue& args);
+  void HandleGetProfileThemeInfo(const base::ListValue& args);
+  void HandleGetAvailableIcons(const base::ListValue& args);
+  void HandleContinueWithoutAccount(const base::ListValue& args);
+  void HandleGetProfileState(const base::ListValue& args);
+
+  void DisplayForceSigninErrorDialog(const base::FilePath& profile_path,
+                                     const ForceSigninUIError& error);
+  void FireDisplaySigninErrorDialog(const std::u16string& title,
+                                    const std::u16string& body,
+                                    const std::u16string& profile_path);
 
   // Profile switch screen:
-  void HandleConfirmProfileSwitch(const base::Value::List& args);
-  void HandleCancelProfileSwitch(const base::Value::List& args);
+  void HandleConfirmProfileSwitch(const base::ListValue& args);
+  void HandleCancelProfileSwitch(const base::ListValue& args);
 
   // |args| is unused.
-  void HandleRecordSignInPromoImpression(const base::Value::List& args);
+  void HandleRecordSignInPromoImpression(const base::ListValue& args);
 
   void OnLoadSigninFinished(bool success);
   void OnResetPickerButtons(bool success);
@@ -140,7 +150,7 @@ class ProfilePickerHandler : public content::WebUIMessageHandler,
                                    profiles::ProfileCategoryStats result);
 
   void PushProfilesList();
-  base::Value::List GetProfilesList();
+  base::ListValue GetProfilesList();
   // Adds a profile with `profile_path` to `profiles_order_` and notifies
   // the JS listeners on ui updates.
   void AddProfileToListAndPushUpdates(const base::FilePath& profile_path);

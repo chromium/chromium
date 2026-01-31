@@ -6,6 +6,7 @@
 
 #include "base/apple/foundation_util.h"
 #include "base/strings/sys_string_conversions.h"
+#include "components/input/native_web_keyboard_event.h"
 #include "components/input/web_input_event_builders_ios.h"
 #include "ui/accessibility/platform/browser_accessibility_manager.h"
 
@@ -309,7 +310,11 @@ static void* kObservingContext = &kObservingContext;
 }
 
 - (NSAttributedString*)attributedMarkedText {
-  return nil;
+  NSString* text = [self markedText];
+  if (!text) {
+    return nil;
+  }
+  return [[NSAttributedString alloc] initWithString:text];
 }
 
 - (CGRect)textFirstRect {
@@ -356,11 +361,14 @@ static void* kObservingContext = &kObservingContext;
 }
 
 - (BOOL)hasMarkedText {
-  return NO;
+  return _markedText.length() > 0;
 }
 
 - (NSString*)markedText {
-  return nil;
+  if (![self hasMarkedText]) {
+    return nil;
+  }
+  return base::SysUTF16ToNSString(_markedText);
 }
 
 - (NSString*)selectedText {
@@ -373,6 +381,13 @@ static void* kObservingContext = &kObservingContext;
 }
 
 - (void)unmarkText {
+  if (![self hasMarkedText]) {
+    return;
+  }
+
+  CHECK(_view);
+  _view->ImeFinishComposingText(false);
+  _markedText.clear();
 }
 
 - (CGRect)selectionClipRect {
@@ -387,6 +402,27 @@ static void* kObservingContext = &kObservingContext;
 
 - (id<BEExtendedTextInputTraits>)extendedTextInputTraits {
   return [[BlinkExtendedTextInputTraits alloc] init];
+}
+
+- (void)handleEditCommands:(const std::vector<std::string>&)commands {
+  CHECK(_view);
+  // If there's a pending key down event, forward it along with the edit
+  // commands to the renderer. This allows the renderer to associate the
+  // commands with the keyboard event that triggered them.
+  if (auto event = std::exchange(_currentKeyDownEvent, std::nullopt)) {
+    std::vector<blink::mojom::EditCommandPtr> editCommands;
+    editCommands.reserve(commands.size());
+    for (const auto& command : commands) {
+      editCommands.push_back(blink::mojom::EditCommand::New(command, ""));
+    }
+    _view->ForwardKeyboardEventWithCommands(*event, std::move(editCommands));
+    return;
+  }
+  // No pending key event - execute the edit commands directly. This handles
+  // cases where commands are triggered by non-keyboard input.
+  for (const auto& command : commands) {
+    _view->ExecuteEditCommand(command);
+  }
 }
 
 - (std::string)moveSelectionCommand:(UITextLayoutDirection)direction {
@@ -404,8 +440,7 @@ static void* kObservingContext = &kObservingContext;
 }
 
 - (void)moveInLayoutDirection:(UITextLayoutDirection)direction {
-  CHECK(_view);
-  _view->ExecuteEditCommand([self moveSelectionCommand:direction]);
+  [self handleEditCommands:{[self moveSelectionCommand:direction]}];
 }
 
 - (std::string)extendSelectionCommand:(UITextLayoutDirection)direction {
@@ -423,8 +458,7 @@ static void* kObservingContext = &kObservingContext;
 }
 
 - (void)extendInLayoutDirection:(UITextLayoutDirection)direction {
-  CHECK(_view);
-  _view->ExecuteEditCommand([self extendSelectionCommand:direction]);
+  [self handleEditCommands:{[self extendSelectionCommand:direction]}];
 }
 
 - (std::vector<std::string>)
@@ -463,11 +497,8 @@ static void* kObservingContext = &kObservingContext;
 
 - (void)moveInStorageDirection:(UITextStorageDirection)direction
                  byGranularity:(UITextGranularity)granularity {
-  CHECK(_view);
-  for (const auto& command : [self moveSelectionCommands:direction
-                                           byGranularity:granularity]) {
-    _view->ExecuteEditCommand(command);
-  }
+  [self handleEditCommands:[self moveSelectionCommands:direction
+                                         byGranularity:granularity]];
 }
 
 - (std::vector<std::string>)
@@ -513,11 +544,8 @@ static void* kObservingContext = &kObservingContext;
 
 - (void)extendInStorageDirection:(UITextStorageDirection)direction
                    byGranularity:(UITextGranularity)granularity {
-  CHECK(_view);
-  for (const auto& command : [self extendSelectionCommands:direction
-                                             byGranularity:granularity]) {
-    _view->ExecuteEditCommand(command);
-  }
+  [self handleEditCommands:[self extendSelectionCommands:direction
+                                           byGranularity:granularity]];
 }
 
 - (BOOL)canPerformAction:(SEL)action withSender:(nullable id)sender {
@@ -558,38 +586,39 @@ static void* kObservingContext = &kObservingContext;
 - (void)handleKeyEntry:(BEKeyEntry*)entry
     withCompletionHandler:
         (void (^)(BEKeyEntry* theEvent, BOOL wasHandled))completionHandler {
-  // Temporary implementation: To ensure the basic input functionality works
-  // properly it appears necessary to call
-  // shouldDeferEventHandlingToSystemForTextInput twice as shown below.
+  CHECK(_view);
 
-  BEKeyEntryContext* context =
-      [[BEKeyEntryContext alloc] initWithKeyEntry:entry];
-  [context setDocumentEditable:YES];
-  [context setShouldEvaluateForInputSystemHandling:YES];
-  [[self asyncInputDelegate]
-      shouldDeferEventHandlingToSystemForTextInput:self
-                                           context:context];
-
-  if (entry.state == BEKeyPressState::BEKeyPressStateDown) {
-    BEKeyEntryContext* contextForKeyDown =
-        [[BEKeyEntryContext alloc] initWithKeyEntry:entry];
-    [contextForKeyDown setDocumentEditable:[self isEditable]];
-    // To trigger key commands correctly, e.g. trigger
-    // `transposeCharactersAroundSelection` on Ctrl+T, we need to set
-    // `shouldInsertCharacter` to NO when users are not inputing characters.
-    // Otherwise, the key commands will not be triggered.
-    blink::WebKeyboardEvent webKeyboardEvent =
-        input::WebKeyboardEventBuilder::Build(
-            base::apple::OwnedBEKeyEntry(entry));
-    [contextForKeyDown
-        setShouldInsertCharacter:[self shouldInsertCharacter:webKeyboardEvent]];
-    BOOL handled = [[self asyncInputDelegate]
-        shouldDeferEventHandlingToSystemForTextInput:self
-                                             context:contextForKeyDown];
-    completionHandler(entry, handled);
-  } else {
-    completionHandler(entry, NO);
+  input::NativeWebKeyboardEvent nativeEvent(
+      (base::apple::OwnedBEKeyEntry(entry)));
+  if (entry.state != BEKeyPressState::BEKeyPressStateDown) {
+    _currentKeyDownEvent.reset();
+    _view->SendKeyEvent(nativeEvent);
+    completionHandler(entry, YES);
+    return;
   }
+
+  _currentKeyDownEvent = nativeEvent;
+  BEKeyEntryContext* contextForKeyDown =
+      [[BEKeyEntryContext alloc] initWithKeyEntry:entry];
+  [contextForKeyDown setDocumentEditable:[self isEditable]];
+  // To trigger key commands correctly, e.g. trigger
+  // `transposeCharactersAroundSelection` on Ctrl+T, we need to set
+  // `shouldInsertCharacter` to NO when users are not inputting characters.
+  // Otherwise, the key commands will not be triggered.
+  [contextForKeyDown
+      setShouldInsertCharacter:[self shouldInsertCharacter:nativeEvent]];
+
+  BOOL handled = [[self asyncInputDelegate]
+      shouldDeferEventHandlingToSystemForTextInput:self
+                                           context:contextForKeyDown];
+  if (!handled) {
+    // The system did not handle the event (e.g., the user pressed Enter).
+    auto event = std::exchange(_currentKeyDownEvent, std::nullopt);
+    // Reset to kKeyDown so Blink dispatches both keydown and keypress events.
+    event->SetType(blink::WebInputEvent::Type::kKeyDown);
+    _view->SendKeyEvent(*event);
+  }
+  completionHandler(entry, YES);
 }
 
 - (void)shiftKeyStateChangedFromState:(BEKeyModifierFlags)oldState
@@ -633,16 +662,12 @@ static void* kObservingContext = &kObservingContext;
 
 - (void)deleteInDirection:(UITextStorageDirection)direction
             toGranularity:(UITextGranularity)granularity {
-  CHECK(_view);
-  for (const auto& command : [self deleteSelectionCommands:direction
-                                             toGranularity:granularity]) {
-    _view->ExecuteEditCommand(command);
-  }
+  [self handleEditCommands:[self deleteSelectionCommands:direction
+                                           toGranularity:granularity]];
 }
 
 - (void)transposeCharactersAroundSelection {
-  CHECK(_view);
-  _view->ExecuteEditCommand("transpose");
+  [self handleEditCommands:{"transpose"}];
 }
 
 - (BOOL)replaceText:(NSString*)originalText
@@ -903,6 +928,7 @@ static void* kObservingContext = &kObservingContext;
 
 - (void)setAttributedMarkedText:(nullable NSAttributedString*)markedText
                   selectedRange:(NSRange)selectedRange {
+  [self setMarkedText:markedText.string selectedRange:selectedRange];
 }
 
 - (BOOL)isPointNearMarkedText:(CGPoint)point {
@@ -989,16 +1015,25 @@ static void* kObservingContext = &kObservingContext;
 
 - (void)insertText:(NSString*)text {
   CHECK(_view);
+  if (auto event = std::exchange(_currentKeyDownEvent, std::nullopt)) {
+    // If this insert was triggered by a key down event, forward it to the
+    // renderer as kKeyDown. This ensures both keydown and keypress events
+    // are dispatched to JavaScript with the correct text.
+    event->SetType(blink::WebInputEvent::Type::kKeyDown);
+    _view->SendKeyEvent(*event);
+    return;
+  }
   if (text.length == 0) {
     return;
   }
+
+  _markedText.clear();
   _view->ImeCommitText(base::SysNSStringToUTF16(text),
                        gfx::Range::InvalidRange(), 0);
 }
 
 - (void)deleteBackward {
-  CHECK(_view);
-  _view->ExecuteEditCommand("deleteBackward");
+  [self handleEditCommands:{"deleteBackward"}];
 }
 
 - (void)setSelectedTextRange:(UITextRange*)range {
@@ -1021,6 +1056,27 @@ static void* kObservingContext = &kObservingContext;
 
 - (void)setMarkedText:(nullable NSString*)markedText
         selectedRange:(NSRange)selectedRange {
+  _markedText = base::SysNSStringToUTF16(markedText);
+  std::vector<ui::ImeTextSpan> imeTextSpans;
+  if (_markedText.length() > 0) {
+    ui::ImeTextSpan span;
+    span.start_offset = 0;
+    span.end_offset = _markedText.length();
+    span.underline_style = ui::ImeTextSpan::UnderlineStyle::kSolid;
+    imeTextSpans.push_back(span);
+  }
+
+  CHECK(_view);
+  if (auto event = std::exchange(_currentKeyDownEvent, std::nullopt)) {
+    // If an Input Method Editor is processing key input and the event is
+    // keydown, keyCode should return 229, see:
+    // https://lists.w3.org/Archives/Public/www-dom/2010JulSep/att-0182/keyCode-spec.html
+    event->windows_key_code = 0xE5;  // VKEY_PROCESSKEY
+    _view->SendKeyEvent(*event);
+  }
+  _view->ImeSetComposition(_markedText, imeTextSpans,
+                           gfx::Range::InvalidRange(), selectedRange.location,
+                           selectedRange.location + selectedRange.length);
 }
 
 - (nullable UITextRange*)textRangeFromPosition:(UITextPosition*)fromPosition

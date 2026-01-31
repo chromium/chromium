@@ -8,6 +8,7 @@
 #include <xcb/xproto.h>
 
 #include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "ui/base/x/x11_util.h"
 #include "ui/gfx/x/event.h"
@@ -54,9 +55,17 @@ x11::Event ConvertGdkEventToKeyEvent(GdkEvent* gdk_event) {
   guint keyval = gdk_key_event_get_keyval(gdk_event);
   GdkKeymapKey keymap_key{0, 0, 0};
   if (keys) {
+    // SAFETY: `gdk_display_map_keycode` allocates memory for `keys` and
+    // `keyvals` and returns the size in `n_entries`. The returned pointers are
+    // valid for `n_entries` elements.
+    // https://docs.gtk.org/gdk4/method.Display.map_keycode.html
+    base::span<GdkKeymapKey> keys_span =
+        UNSAFE_BUFFERS(base::span(keys, base::checked_cast<size_t>(n_entries)));
+    base::span<guint> keyvals_span = UNSAFE_BUFFERS(
+        base::span(keyvals, base::checked_cast<size_t>(n_entries)));
     for (gint i = 0; i < n_entries; i++) {
-      if (UNSAFE_TODO(keyvals[i]) == keyval) {
-        keymap_key = UNSAFE_TODO(keys[i]);
+      if (keyvals_span[i] == keyval) {
+        keymap_key = keys_span[i];
         break;
       }
     }

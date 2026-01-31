@@ -361,6 +361,105 @@ class PartialGLES2ForObjects : public gpu::gles2::GLES2InterfaceStub {
 
 }  // anonymous namespace
 
+// We proxy all the WebGPU commands related to wgpu::Instance that ANGLE does
+// through this class. This is necessary because we wait to intercept WaitAny
+// calls with timeout > 0 and Flush the DawnControlClient in that case (to
+// support blocking WaitAnys).
+class ProxyDawnInstanceForANGLE {
+ public:
+  explicit ProxyDawnInstanceForANGLE(
+      wgpu::Instance instance,
+      scoped_refptr<DawnControlClientHolder> dawn_control_client)
+      : instance_(std::move(instance)),
+        dawn_control_client_(std::move(dawn_control_client)) {
+    // Prepare the proc table with overridden procs that use the proxy instance
+    // instead. This is the proc table that will be given to ANGLE.
+    procs_ = *GetDawnProcs();
+
+    // Proxy WaitAny with logic to Flush the WebGPU commands if needed. This is
+    // necessary for ANGLE to be able to block on WGPUFuture completion. If we
+    // didn't do a flush, the GPU process could never receive the commands that
+    // will eventually signal the future, and ANGLE would block forever.
+    procs_.instanceWaitAny =
+        [](WGPUInstance angle_instance, size_t future_count,
+           WGPUFutureWaitInfo* futures, uint64_t timeout_ns) -> WGPUWaitStatus {
+      if (timeout_ns > 0) {
+        FromWGPU(angle_instance)->dawn_control_client_->Flush();
+      }
+
+      WGPUInstance actual_instance = FromWGPU(angle_instance)->instance_.Get();
+      return GetDawnProcs()->instanceWaitAny(actual_instance, future_count,
+                                             futures, timeout_ns);
+    };
+
+    // ANGLE should use the instance we give it and not recreate one.
+    procs_.createInstance = [](const WGPUInstanceDescriptor*) -> WGPUInstance {
+      NOTREACHED();
+    };
+
+    // Ignore refcounts since we ensure the instance outlives ANGLE.
+    procs_.instanceAddRef = [](WGPUInstance) {};
+    procs_.instanceRelease = [](WGPUInstance) {};
+
+    // The rest are passthrough
+    procs_.instanceCreateSurface =
+        [](WGPUInstance angle_instance,
+           const WGPUSurfaceDescriptor* descriptor) -> WGPUSurface {
+      WGPUInstance actual_instance = FromWGPU(angle_instance)->instance_.Get();
+      return GetDawnProcs()->instanceCreateSurface(actual_instance, descriptor);
+    };
+    procs_.instanceGetWGSLLanguageFeatures =
+        [](WGPUInstance angle_instance,
+           WGPUSupportedWGSLLanguageFeatures* features) {
+          WGPUInstance actual_instance =
+              FromWGPU(angle_instance)->instance_.Get();
+          return GetDawnProcs()->instanceGetWGSLLanguageFeatures(
+              actual_instance, features);
+        };
+    procs_.instanceHasWGSLLanguageFeature =
+        [](WGPUInstance angle_instance,
+           WGPUWGSLLanguageFeatureName feature) -> WGPUBool {
+      WGPUInstance actual_instance = FromWGPU(angle_instance)->instance_.Get();
+      return GetDawnProcs()->instanceHasWGSLLanguageFeature(actual_instance,
+                                                            feature);
+    };
+    procs_.instanceProcessEvents = [](WGPUInstance angle_instance) {
+      WGPUInstance actual_instance = FromWGPU(angle_instance)->instance_.Get();
+      return GetDawnProcs()->instanceProcessEvents(actual_instance);
+    };
+    procs_.instanceRequestAdapter =
+        [](WGPUInstance angle_instance,
+           const WGPURequestAdapterOptions* options,
+           WGPURequestAdapterCallbackInfo callback) -> WGPUFuture {
+      WGPUInstance actual_instance = FromWGPU(angle_instance)->instance_.Get();
+      return GetDawnProcs()->instanceRequestAdapter(actual_instance, options,
+                                                    callback);
+    };
+  }
+
+  ProxyDawnInstanceForANGLE(const ProxyDawnInstanceForANGLE&) = delete;
+  ProxyDawnInstanceForANGLE& operator=(const ProxyDawnInstanceForANGLE&) =
+      delete;
+
+  EGLAttrib GetProcTableForANGLE() const {
+    return reinterpret_cast<EGLAttrib>(&procs_);
+  }
+
+  EGLAttrib GetInstanceForANGLE() const {
+    return reinterpret_cast<EGLAttrib>(this);
+  }
+
+ private:
+  WGPUInstance ToWGPU() { return reinterpret_cast<WGPUInstance>(this); }
+  static ProxyDawnInstanceForANGLE* FromWGPU(WGPUInstance instance) {
+    return reinterpret_cast<ProxyDawnInstanceForANGLE*>(instance);
+  }
+
+  wgpu::Instance instance_;
+  scoped_refptr<DawnControlClientHolder> dawn_control_client_;
+  DawnProcTable procs_;
+};
+
 #define RETURN_IF_GL_ERROR(code, ...)        \
   {                                          \
     CheckAndClearErrorCallbackState();       \
@@ -391,23 +490,17 @@ HTMLCanvasElement* WebGLRenderingContextWebGPUBase::canvas() const {
   return static_cast<HTMLCanvasElement*>(Host());
 }
 
-ScriptPromise<IDLUndefined> WebGLRenderingContextWebGPUBase::initAsync(
-    ScriptState* script_state) {
-  auto* resolver =
-      MakeGarbageCollected<ScriptPromiseResolver<IDLUndefined>>(script_state);
-  auto promise = resolver->Promise();
-
+bool WebGLRenderingContextWebGPUBase::Initialize(
+    ExecutionContext* execution_context,
+    String* error_msg) {
   // Synchronously connect to the GPU process to use WebGPU.
-  ExecutionContext* execution_context = ExecutionContext::From(script_state);
   std::unique_ptr<WebGraphicsContext3DProvider> context_provider =
       Platform::Current()->CreateWebGPUGraphicsContext3DProvider(
-          execution_context->Url());
+          execution_context->Url(), Platform::WebGPUReplyThread::kIOThread);
 
   if (context_provider == nullptr) {
-    resolver->RejectWithDOMException(
-        DOMExceptionCode::kOperationError,
-        "Failed to create a WebGPU context provider");
-    return promise;
+    *error_msg = "Failed to create a WebGPU context provider";
+    return false;
   }
 
   // The context provider requires being bound on a single thread because it was
@@ -422,68 +515,16 @@ ScriptPromise<IDLUndefined> WebGLRenderingContextWebGPUBase::initAsync(
   dawn_control_client_ = DawnControlClientHolder::Create(
       std::move(context_provider),
       execution_context->GetTaskRunner(TaskType::kWebGPU));
-
-  // Request the adapter, making it resolve the result promise when it is done.
-  auto* callback =
-      MakeWGPUOnceCallback(resolver->WrapCallbackInScriptScope(blink::BindOnce(
-          &WebGLRenderingContextWebGPUBase::InitRequestAdapterCallback,
-          WrapPersistent(this), WrapPersistent(script_state))));
-
-  dawn_control_client_->GetWGPUInstance().RequestAdapter(
-      nullptr, wgpu::CallbackMode::AllowSpontaneous,
-      callback->UnboundCallback(), callback->AsUserdata());
-  dawn_control_client_->EnsureFlush(ToEventLoop(script_state));
-
-  return promise;
-}
-
-void WebGLRenderingContextWebGPUBase::InitRequestAdapterCallback(
-    ScriptState* script_state,
-    ScriptPromiseResolver<IDLUndefined>* resolver,
-    wgpu::RequestAdapterStatus status,
-    wgpu::Adapter adapter,
-    wgpu::StringView error_message) {
-  if (status != wgpu::RequestAdapterStatus::Success) {
-    resolver->RejectWithDOMException(
-        DOMExceptionCode::kOperationError,
-        String::FromUTF8WithLatin1Fallback(error_message));
-    return;
-  }
-
-  adapter_ = std::move(adapter);
-
-  // Request the device.
-  auto* callback = MakeWGPUOnceCallback(blink::BindOnce(
-      &WebGLRenderingContextWebGPUBase::InitRequestDeviceCallback,
-      WrapPersistent(this), WrapPersistent(script_state),
-      WrapPersistent(resolver)));
-
-  adapter_.RequestDevice(nullptr, wgpu::CallbackMode::AllowSpontaneous,
-                         callback->UnboundCallback(), callback->AsUserdata());
-  dawn_control_client_->EnsureFlush(ToEventLoop(script_state));
-}
-
-void WebGLRenderingContextWebGPUBase::InitRequestDeviceCallback(
-    ScriptState* script_state,
-    ScriptPromiseResolver<IDLUndefined>* resolver,
-    wgpu::RequestDeviceStatus status,
-    wgpu::Device device,
-    wgpu::StringView error_message) {
-  if (status != wgpu::RequestDeviceStatus::Success) {
-    resolver->RejectWithDOMException(
-        DOMExceptionCode::kOperationError,
-        String::FromUTF8WithLatin1Fallback(error_message));
-    return;
-  }
-
-  device_ = std::move(device);
+  instance_ = dawn_control_client_->GetWGPUInstance();
+  proxy_instance_ = std::make_unique<ProxyDawnInstanceForANGLE>(
+      instance_, dawn_control_client_);
 
   InitializeContext();
 
   // We are required to present to the compositor on context creation.
   EnsureDefaultFramebuffer();
 
-  resolver->Resolve();
+  return true;
 }
 
 // ****************************************************************************
@@ -745,7 +786,7 @@ void WebGLRenderingContextWebGPUBase::clearColor(GLfloat red,
 }
 
 void WebGLRenderingContextWebGPUBase::clearDepth(GLfloat depth) {
-  driver_gl_.fn.glClearDepthFn(depth);
+  driver_gl_.fn.glClearDepthfFn(depth);
 }
 
 void WebGLRenderingContextWebGPUBase::clearStencil(GLint stencil) {
@@ -2256,6 +2297,38 @@ void WebGLRenderingContextWebGPUBase::texElementImage2D(
   NOTIMPLEMENTED();
 }
 
+void WebGLRenderingContextWebGPUBase::texElementImage2D(
+    GLenum target,
+    GLint level,
+    GLint internalformat,
+    GLfloat sx,
+    GLfloat sy,
+    GLfloat swidth,
+    GLfloat sheight,
+    GLenum format,
+    GLenum type,
+    Element* element,
+    ExceptionState& exception_state) {
+  NOTIMPLEMENTED();
+}
+
+void WebGLRenderingContextWebGPUBase::texElementImage2D(
+    GLenum target,
+    GLint level,
+    GLint internalformat,
+    GLfloat sx,
+    GLfloat sy,
+    GLfloat swidth,
+    GLfloat sheight,
+    GLsizei width,
+    GLsizei height,
+    GLenum format,
+    GLenum type,
+    Element* element,
+    ExceptionState& exception_state) {
+  NOTIMPLEMENTED();
+}
+
 void WebGLRenderingContextWebGPUBase::texElement2D(
     GLenum target,
     GLint level,
@@ -2271,6 +2344,38 @@ void WebGLRenderingContextWebGPUBase::texElement2D(
     GLenum target,
     GLint level,
     GLint internalformat,
+    GLsizei width,
+    GLsizei height,
+    GLenum format,
+    GLenum type,
+    Element* element,
+    ExceptionState& exception_state) {
+  NOTIMPLEMENTED();
+}
+
+void WebGLRenderingContextWebGPUBase::texElement2D(
+    GLenum target,
+    GLint level,
+    GLint internalformat,
+    GLfloat sx,
+    GLfloat sy,
+    GLfloat swidth,
+    GLfloat sheight,
+    GLenum format,
+    GLenum type,
+    Element* element,
+    ExceptionState& exception_state) {
+  NOTIMPLEMENTED();
+}
+
+void WebGLRenderingContextWebGPUBase::texElement2D(
+    GLenum target,
+    GLint level,
+    GLint internalformat,
+    GLfloat sx,
+    GLfloat sy,
+    GLfloat swidth,
+    GLfloat sheight,
     GLsizei width,
     GLsizei height,
     GLenum format,
@@ -3556,12 +3661,12 @@ gfx::ColorSpace WebGLRenderingContextWebGPUBase::GetColorSpace() const {
   return gfx::ColorSpace::CreateSRGB();
 }
 
-int WebGLRenderingContextWebGPUBase::AllocatedBufferCountPerPixel() const {
-  // Front and back buffers.
-  // TODO(413078308): Add support configuring MSAA and depth-stencil.
-  // Note: If/once this class creates a CanvasResourceProvider it should track
-  // the memory of the provider here as well.
-  return 2;
+base::ByteSize WebGLRenderingContextWebGPUBase::AllocatedBufferSize() const {
+  base::ByteSize result;
+  if (swap_buffers_) {
+    result += swap_buffers_->EstimatedSizeInBytes();
+  }
+  return result;
 }
 
 bool WebGLRenderingContextWebGPUBase::isContextLost() const {
@@ -3693,14 +3798,14 @@ void WebGLRenderingContextWebGPUBase::OnDebugMessage(GLenum source,
                                                      const GLchar* message) {
   if (type == GL_DEBUG_TYPE_ERROR && source == GL_DEBUG_SOURCE_API) {
     had_error_callback_ = true;
-    String formatted_message =
-        String::Format("WebGL: %s: %s", GetErrorString(id), message);
+    String formatted_message = UNSAFE_TODO(
+        String::Format("WebGL: %s: %s", GetErrorString(id), message));
     PrintGLErrorToConsole(formatted_message);
   } else {
-    String formatted_message = String::Format(
+    String formatted_message = UNSAFE_TODO(String::Format(
         "WebGL: (%s, %s, %s, %d): %s", gl::GetDebugSourceString(source),
         gl::GetDebugTypeString(type), gl::GetDebugSeverityString(severity), id,
-        message);
+        message));
     PrintWarningToConsole(formatted_message);
   }
 }
@@ -3721,6 +3826,7 @@ void WebGLRenderingContextWebGPUBase::EnsureDefaultFramebuffer() {
 
   scoped_refptr<WebGPUMailboxTexture> mailbox_texture =
       swap_buffers_->GetNewTexture(texDesc, GetAlphaType());
+  Host()->UpdateMemoryUsage();
   mailbox_texture->SetNeedsPresent(true);
 
   current_swap_buffer_ = mailbox_texture->GetTexture();
@@ -3798,21 +3904,13 @@ void WebGLRenderingContextWebGPUBase::InitializeContext() {
 
   // Initialize the EGL display using the device and the dawn wire client proc
   // table.
-  // Force-enable the avoidWaitAny feature because synchronous waiting is not
-  // possible yet in dawn wire client.
-  constexpr const char* display_enabled_features[] = {
-      "avoidWaitAny",
-      nullptr,
-  };
   const EGLAttrib display_attribs[] = {
       EGL_PLATFORM_ANGLE_TYPE_ANGLE,
       EGL_PLATFORM_ANGLE_TYPE_WEBGPU_ANGLE,
-      EGL_PLATFORM_ANGLE_WEBGPU_DEVICE_ANGLE,
-      reinterpret_cast<EGLAttrib>(device_.Get()),
       EGL_PLATFORM_ANGLE_DAWN_PROC_TABLE_ANGLE,
-      reinterpret_cast<EGLAttrib>(GetDawnProcs()),
-      EGL_FEATURE_OVERRIDES_ENABLED_ANGLE,
-      reinterpret_cast<EGLAttrib>(display_enabled_features),
+      proxy_instance_->GetProcTableForANGLE(),
+      EGL_PLATFORM_ANGLE_WEBGPU_INSTANCE_ANGLE,
+      proxy_instance_->GetInstanceForANGLE(),
       EGL_NONE,
   };
   display_ = driver_egl_.fn.eglGetPlatformDisplayFn(EGL_PLATFORM_ANGLE_ANGLE,
@@ -3825,6 +3923,19 @@ void WebGLRenderingContextWebGPUBase::InitializeContext() {
 
   // Setup the ANGLE platform for internal logging and trace events
   angle::InitializePlatform(display_, get_proc_address);
+
+  // Query the wgpu::Device that was created by ANGLE.
+  EGLAttrib eglDevice = 0;
+  driver_egl_.fn.eglQueryDisplayAttribEXTFn(display_, EGL_DEVICE_EXT,
+                                            &eglDevice);
+  CHECK_NE(0, eglDevice);
+
+  EGLAttrib wgpuDevice = 0;
+  driver_egl_.fn.eglQueryDeviceAttribEXTFn(
+      reinterpret_cast<EGLDeviceEXT>(eglDevice), EGL_WEBGPU_DEVICE_ANGLE,
+      &wgpuDevice);
+  CHECK_NE(0, wgpuDevice);
+  device_ = wgpu::Device::Acquire(reinterpret_cast<WGPUDevice>(wgpuDevice));
 
   // Create a GL Context.
   // TODO(413078308): Request version 2 vs 3 depending on WebGL version.
@@ -3839,6 +3950,12 @@ void WebGLRenderingContextWebGPUBase::InitializeContext() {
       EGL_FALSE,
       EGL_CONTEXT_OPENGL_BACKWARDS_COMPATIBLE_ANGLE,
       EGL_FALSE,
+      EGL_CONTEXT_CLIENT_ARRAYS_ENABLED_ANGLE,
+      EGL_FALSE,
+      EGL_CONTEXT_BIND_GENERATES_RESOURCE_CHROMIUM,
+      EGL_FALSE,
+      EGL_ROBUST_RESOURCE_INITIALIZATION_ANGLE,
+      EGL_TRUE,
       EGL_NONE,
   };
   context_ = driver_egl_.fn.eglCreateContextFn(display_, EGL_NO_CONFIG_KHR,
@@ -3935,6 +4052,7 @@ void WebGLRenderingContextWebGPUBase::Destroy() {
     display_ = EGL_NO_DISPLAY;
   }
   driver_egl_.ClearBindings();
+  proxy_instance_ = nullptr;
 }
 
 bool WebGLRenderingContextWebGPUBase::ValidateFitsNonNegInt32(

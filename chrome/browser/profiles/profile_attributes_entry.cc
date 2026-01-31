@@ -13,7 +13,6 @@
 #include "base/notreached.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/types/cxx23_to_underlying.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/app/vector_icons/vector_icons.h"
@@ -205,7 +204,7 @@ void ProfileAttributesEntry::Initialize(ProfileAttributesStorage* storage,
 
   MigrateObsoleteProfileAttributes();
 
-  const base::Value::Dict* entry_data = GetEntryData();
+  const base::DictValue* entry_data = GetEntryData();
   if (entry_data) {
     if (!entry_data->contains(kIsConsentedPrimaryAccountKey)) {
       SetBool(kIsConsentedPrimaryAccountKey,
@@ -598,9 +597,9 @@ std::string ProfileAttributesEntry::GetHostedDomain() const {
 
 signin::Tribool ProfileAttributesEntry::GetIsManaged() const {
   static_assert(kIntegerNotSet ==
-                base::to_underlying(signin::Tribool::kUnknown));
-  static_assert(base::to_underlying(signin::Tribool::kFalse) == 0);
-  static_assert(base::to_underlying(signin::Tribool::kTrue) == 1);
+                std::to_underlying(signin::Tribool::kUnknown));
+  static_assert(std::to_underlying(signin::Tribool::kFalse) == 0);
+  static_assert(std::to_underlying(signin::Tribool::kTrue) == 1);
 
   int value = GetInteger(kIsManaged);
 
@@ -616,7 +615,7 @@ signin::Tribool ProfileAttributesEntry::GetIsManaged() const {
 
   // If the value is invalid, or is not a valid Tribool value, return unknown.
   if (value < kIntegerNotSet ||
-      value > base::to_underlying(signin::Tribool::kTrue)) {
+      value > std::to_underlying(signin::Tribool::kTrue)) {
     return signin::Tribool::kUnknown;
   }
   return static_cast<signin::Tribool>(value);
@@ -666,11 +665,11 @@ base::flat_set<GaiaId> ProfileAttributesEntry::GetGaiaIds() const {
 
 void ProfileAttributesEntry::SetGaiaIds(
     const base::flat_set<GaiaId>& gaia_ids) {
-  base::Value::Dict accounts;
+  base::DictValue accounts;
   for (const auto& gaia_id : gaia_ids) {
     // The dictionary is empty for now, but can hold account-specific info in
     // the future.
-    accounts.Set(gaia_id.ToString(), base::Value::Dict());
+    accounts.Set(gaia_id.ToString(), base::DictValue());
   }
   SetValue(kAllAccountsKey, base::Value(std::move(accounts)));
 }
@@ -860,7 +859,7 @@ void ProfileAttributesEntry::SetHostedDomain(std::string hosted_domain) {
 }
 
 void ProfileAttributesEntry::SetIsManaged(signin::Tribool value) {
-  if (SetInteger(kIsManaged, base::to_underlying(value))) {
+  if (SetInteger(kIsManaged, std::to_underlying(value))) {
     profile_attributes_storage_->NotifyProfileIsManagedChanged(GetPath());
   }
 }
@@ -901,8 +900,8 @@ void ProfileAttributesEntry::SetAuthInfo(const GaiaId& gaia_id,
   {
     // Bundle the changes in a single update.
     ScopedDictPrefUpdate update(prefs_, prefs::kProfileAttributes);
-    base::Value::Dict& attributes_dict = update.Get();
-    base::Value::Dict* entry = attributes_dict.EnsureDict(storage_key_);
+    base::DictValue& attributes_dict = update.Get();
+    base::DictValue* entry = attributes_dict.EnsureDict(storage_key_);
     entry->Set(kGAIAIdKey, gaia_id.ToString());
     entry->Set(kUserNameKey, user_name);
     DCHECK(!is_consented_primary_account || !gaia_id.empty() ||
@@ -987,18 +986,18 @@ void ProfileAttributesEntry::RecordAccountNamesMetric() const {
   }
 }
 
-const base::Value::Dict* ProfileAttributesEntry::GetEntryData() const {
+const base::DictValue* ProfileAttributesEntry::GetEntryData() const {
   if (!prefs_) {
     return nullptr;
   }
 
-  const base::Value::Dict& attributes =
+  const base::DictValue& attributes =
       prefs_->GetDict(prefs::kProfileAttributes);
   return attributes.FindDict(storage_key_);
 }
 
 const base::Value* ProfileAttributesEntry::GetValue(const char* key) const {
-  const base::Value::Dict* entry_data = GetEntryData();
+  const base::DictValue* entry_data = GetEntryData();
   return entry_data ? entry_data->Find(key) : nullptr;
 }
 
@@ -1086,8 +1085,8 @@ bool ProfileAttributesEntry::SetValue(const char* key, base::Value value) {
     return false;
 
   ScopedDictPrefUpdate update(prefs_, prefs::kProfileAttributes);
-  base::Value::Dict& attributes_dict = update.Get();
-  base::Value::Dict* entry = attributes_dict.EnsureDict(storage_key_);
+  base::DictValue& attributes_dict = update.Get();
+  base::DictValue* entry = attributes_dict.EnsureDict(storage_key_);
   entry->Set(key, std::move(value));
   return true;
 }
@@ -1098,8 +1097,8 @@ bool ProfileAttributesEntry::ClearValue(const char* key) {
     return false;
 
   ScopedDictPrefUpdate update(prefs_, prefs::kProfileAttributes);
-  base::Value::Dict& attributes_dict = update.Get();
-  base::Value::Dict* entry = attributes_dict.FindDict(storage_key_);
+  base::DictValue& attributes_dict = update.Get();
+  base::DictValue* entry = attributes_dict.FindDict(storage_key_);
   DCHECK(entry);
   entry->Remove(key);
   return true;

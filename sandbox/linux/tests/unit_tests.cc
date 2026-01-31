@@ -25,7 +25,6 @@
 #include <tuple>
 
 #include "base/check.h"
-#include "base/containers/contains.h"
 #include "base/debug/leak_annotations.h"
 #include "base/posix/eintr_wrapper.h"
 #include "base/strings/pattern.h"
@@ -289,8 +288,7 @@ void UnitTests::DeathMessage(int status,
   int subprocess_exit_status = WEXITSTATUS(status);
   ASSERT_EQ(1, subprocess_exit_status) << details;
 
-  bool subprocess_exited_without_matching_message =
-      !base::Contains(msg, expected_msg);
+  bool subprocess_exited_without_matching_message = !msg.contains(expected_msg);
 
 // In official builds CHECK messages are dropped, look for SIGABRT or SIGTRAP.
 // See https://crbug.com/437312 and https://crbug.com/612507.
@@ -299,8 +297,7 @@ void UnitTests::DeathMessage(int status,
     static const char kSigTrapMessage[] = "Received signal 5";
     static const char kSigAbortMessage[] = "Received signal 6";
     subprocess_exited_without_matching_message =
-        !base::Contains(msg, kSigTrapMessage) &&
-        !base::Contains(msg, kSigAbortMessage);
+        !msg.contains(kSigTrapMessage) && !msg.contains(kSigAbortMessage);
   }
 #endif
   EXPECT_FALSE(subprocess_exited_without_matching_message) << details;
@@ -312,8 +309,7 @@ void UnitTests::DeathSEGVMessage(int status,
   std::string details(TestFailedMessage(msg));
   const char* expected_msg = static_cast<const char*>(aux);
   CheckDeathBySEGV(status, details);
-  bool subprocess_exited_without_matching_message =
-      !base::Contains(msg, expected_msg);
+  bool subprocess_exited_without_matching_message = !msg.contains(expected_msg);
   EXPECT_FALSE(subprocess_exited_without_matching_message) << details;
 }
 

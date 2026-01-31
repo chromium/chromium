@@ -4,7 +4,7 @@
 
 package org.chromium.chrome.browser.ntp;
 
-import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
+import static androidx.test.espresso.matcher.ViewMatchers.isDescendantOfA;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 
 import static com.google.common.truth.Truth.assertThat;
@@ -13,10 +13,11 @@ import static org.hamcrest.Matchers.allOf;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
+import static org.chromium.base.test.transit.ViewFinder.waitForView;
 import static org.chromium.chrome.browser.ntp.HomeSurfaceTestUtils.START_SURFACE_RETURN_TIME_IMMEDIATE;
 import static org.chromium.chrome.browser.tasks.ReturnToChromeUtil.HOME_SURFACE_SHOWN_AT_STARTUP_UMA;
 import static org.chromium.chrome.browser.tasks.ReturnToChromeUtil.HOME_SURFACE_SHOWN_UMA;
-import static org.chromium.ui.test.util.ViewUtils.onViewWaiting;
+import static org.chromium.chrome.browser.url_constants.UrlConstantResolver.getOriginalNativeNtpUrl;
 
 import android.content.pm.ActivityInfo;
 import android.content.res.Resources;
@@ -42,6 +43,7 @@ import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.CriteriaNotSatisfiedException;
+import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Feature;
@@ -65,7 +67,6 @@ import org.chromium.chrome.test.R;
 import org.chromium.chrome.test.transit.ChromeTransitTestRules;
 import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
 import org.chromium.chrome.test.util.NewTabPageTestUtils;
-import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.content_public.browser.test.util.JavaScriptUtils;
 import org.chromium.ui.base.DeviceFormFactor;
@@ -107,7 +108,7 @@ public class ShowNtpAtStartupTest {
         verifyTabCountAndActiveTabUrl(
                 mActivityTestRule.getActivity(),
                 2,
-                UrlConstants.NTP_URL,
+                getOriginalNativeNtpUrl(),
                 /* expectHomeSurfaceUiShown= */ true);
         waitForNtpLoaded(mActivityTestRule.getActivityTab());
 
@@ -120,7 +121,7 @@ public class ShowNtpAtStartupTest {
     @EnableFeatures(START_SURFACE_RETURN_TIME_IMMEDIATE)
     public void testShowNtpAtStartupWithNtpExist() throws IOException {
         // The existing NTP isn't the last active Tab.
-        String modifiedNtpUrl = UrlConstants.NTP_URL + "/1";
+        String modifiedNtpUrl = getOriginalNativeNtpUrl() + "/1";
         Assert.assertTrue(UrlUtilities.isNtpUrl(modifiedNtpUrl));
 
         HistogramWatcher histogram =
@@ -137,7 +138,7 @@ public class ShowNtpAtStartupTest {
         verifyTabCountAndActiveTabUrl(
                 mActivityTestRule.getActivity(),
                 3,
-                UrlConstants.NTP_URL,
+                getOriginalNativeNtpUrl(),
                 /* expectHomeSurfaceUiShown= */ true);
         histogram.assertExpected();
     }
@@ -148,7 +149,7 @@ public class ShowNtpAtStartupTest {
     @EnableFeatures(START_SURFACE_RETURN_TIME_IMMEDIATE)
     public void testShowNtpAtStartupWithActiveNtpExist() throws IOException {
         // The existing NTP is set as the last active Tab.
-        String modifiedNtpUrl = UrlConstants.NTP_URL + "/1";
+        String modifiedNtpUrl = getOriginalNativeNtpUrl() + "/1";
         Assert.assertTrue(UrlUtilities.isNtpUrl(modifiedNtpUrl));
         HistogramWatcher histogram =
                 HistogramWatcher.newBuilder()
@@ -184,7 +185,7 @@ public class ShowNtpAtStartupTest {
 
         // Verifies that a new NTP is created and set as the active Tab.
         verifyTabCountAndActiveTabUrl(
-                cta, 3, UrlConstants.NTP_URL, /* expectHomeSurfaceUiShown= */ true);
+                cta, 3, getOriginalNativeNtpUrl(), /* expectHomeSurfaceUiShown= */ true);
         waitForNtpLoaded(mActivityTestRule.getActivityTab());
 
         NewTabPage ntp = (NewTabPage) mActivityTestRule.getActivityTab().getNativePage();
@@ -244,15 +245,15 @@ public class ShowNtpAtStartupTest {
 
         // Verifies that a new NTP is created and set as the active Tab.
         verifyTabCountAndActiveTabUrl(
-                cta, 3, UrlConstants.NTP_URL, /* expectHomeSurfaceUiShown= */ true);
+                cta, 3, getOriginalNativeNtpUrl(), /* expectHomeSurfaceUiShown= */ true);
         waitForNtpLoaded(mActivityTestRule.getActivityTab());
 
         NewTabPage ntp = (NewTabPage) mActivityTestRule.getActivityTab().getNativePage();
         Assert.assertTrue(ntp.isMagicStackVisibleForTesting());
-        onViewWaiting(allOf(withId(R.id.single_tab_view), isDisplayed()));
-        View singleTabModule = cta.findViewById(R.id.single_tab_view);
-        Assert.assertEquals(
-                View.VISIBLE, singleTabModule.findViewById(R.id.tab_thumbnail).getVisibility());
+
+        waitForView(
+                cta,
+                allOf(withId(R.id.tab_thumbnail), isDescendantOfA(withId(R.id.single_tab_view))));
     }
 
     @Test
@@ -268,13 +269,13 @@ public class ShowNtpAtStartupTest {
 
         // Verifies that a new NTP is created and set as the active Tab.
         verifyTabCountAndActiveTabUrl(
-                cta, 3, UrlConstants.NTP_URL, /* expectHomeSurfaceUiShown= */ true);
+                cta, 3, getOriginalNativeNtpUrl(), /* expectHomeSurfaceUiShown= */ true);
         waitForNtpLoaded(mActivityTestRule.getActivityTab());
 
-        onViewWaiting(allOf(withId(R.id.home_modules_recycler_view), isDisplayed()));
-        View singleTabModule = cta.findViewById(R.id.single_tab_view);
-        Assert.assertEquals(
-                View.VISIBLE, singleTabModule.findViewById(R.id.tab_thumbnail).getVisibility());
+        waitForView(cta, withId(R.id.home_modules_recycler_view));
+        waitForView(
+                cta,
+                allOf(withId(R.id.tab_thumbnail), isDescendantOfA(withId(R.id.single_tab_view))));
     }
 
     @Test
@@ -350,7 +351,7 @@ public class ShowNtpAtStartupTest {
 
         // Verifies that a new NTP is created and set as the active Tab.
         verifyTabCountAndActiveTabUrl(
-                cta, 2, UrlConstants.NTP_URL, /* expectHomeSurfaceUiShown= */ true);
+                cta, 2, getOriginalNativeNtpUrl(), /* expectHomeSurfaceUiShown= */ true);
         waitForNtpLoaded(mActivityTestRule.getActivityTab());
 
         ThreadUtils.runOnUiThreadBlocking(
@@ -394,7 +395,7 @@ public class ShowNtpAtStartupTest {
 
         // Verifies that a new NTP is created and set as the active Tab.
         verifyTabCountAndActiveTabUrl(
-                cta, 2, UrlConstants.NTP_URL, /* expectHomeSurfaceUiShown= */ true);
+                cta, 2, getOriginalNativeNtpUrl(), /* expectHomeSurfaceUiShown= */ true);
         waitForNtpLoaded(mActivityTestRule.getActivityTab());
 
         Tab lastActiveTab = cta.getCurrentTabModel().getTabAt(0);
@@ -444,6 +445,7 @@ public class ShowNtpAtStartupTest {
     @MediumTest
     @Feature({"StartSurface"})
     @Restriction(DeviceFormFactor.TABLET_OR_DESKTOP)
+    @DisableIf.Device(DeviceFormFactor.DESKTOP) // https://crbug.com/442027285
     public void testFakeSearchBoxWidth() {
         mActivityTestRule.startOnNtp();
         ChromeTabbedActivity cta = mActivityTestRule.getActivity();
@@ -464,6 +466,7 @@ public class ShowNtpAtStartupTest {
     @MediumTest
     @Feature({"StartSurface"})
     @Restriction(DeviceFormFactor.TABLET_OR_DESKTOP)
+    @DisableIf.Device(DeviceFormFactor.DESKTOP) // https://crbug.com/442027285
     @EnableFeatures(START_SURFACE_RETURN_TIME_IMMEDIATE)
     public void testMvtLayoutHorizontalMargin() {
         mActivityTestRule.startOnNtp();

@@ -33,6 +33,7 @@ class ClientNativePixmapCast : public gfx::ClientNativePixmap {
   void Unmap() override { NOTREACHED(); }
   int GetStride(size_t plane) const override { NOTREACHED(); }
   gfx::NativePixmapHandle CloneHandleForIPC() const override { NOTREACHED(); }
+  uint64_t GetPlaneSize(size_t plane) const override { NOTREACHED(); }
 
  private:
   gfx::NativePixmapHandle pixmap_handle_;

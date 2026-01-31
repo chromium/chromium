@@ -25,7 +25,7 @@ const execution_context::ExecutionContext* GetExecutionContext(
 // Returns the priority that should be used to cast a vote for `frame_node`,
 // which is basically the parent's priority. Returns std::nullopt when no vote
 // should be cast.
-std::optional<base::TaskPriority> GetVotePriority(
+std::optional<base::Process::Priority> GetVotePriority(
     const FrameNode* frame_node,
     const FrameNode* parent_frame_node) {
   // Main frames have no parents to inherit their priority from.
@@ -38,23 +38,23 @@ std::optional<base::TaskPriority> GetVotePriority(
     return std::nullopt;
   }
 
-  const base::TaskPriority parent_priority =
+  const base::Process::Priority parent_priority =
       parent_frame_node->GetPriorityAndReason().priority();
 
   // Don't cast a vote with the default priority as it wouldn't have any effect
   // anyways, and this prevent unnecessary work in the aggregators.
-  if (parent_priority == base::TaskPriority::BEST_EFFORT) {
+  if (parent_priority == base::Process::Priority::kBestEffort) {
     return std::nullopt;
   }
 
   // Only inherit up to the USER_VISIBLE priority level.
-  CHECK_GE(parent_priority, base::TaskPriority::USER_VISIBLE);
-  return base::TaskPriority::USER_VISIBLE;
+  CHECK_GE(parent_priority, base::Process::Priority::kUserVisible);
+  return base::Process::Priority::kUserVisible;
 }
 
 std::optional<Vote> GetVote(const FrameNode* frame_node,
                             const FrameNode* parent_frame_node) {
-  std::optional<base::TaskPriority> vote_priority =
+  std::optional<base::Process::Priority> vote_priority =
       GetVotePriority(frame_node, parent_frame_node);
   if (!vote_priority) {
     return std::nullopt;

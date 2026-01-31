@@ -85,8 +85,8 @@ class COMPONENTS_PREFS_EXPORT PrefValueMap {
   void GetDifferingKeys(const PrefValueMap* other,
                         std::vector<std::string>* differing_keys) const;
 
-  // Copies the map into a Value::Dict.
-  base::Value::Dict AsDict() const;
+  // Copies the map into a base::DictValue.
+  base::DictValue AsDict() const;
 
  private:
   Map prefs_;

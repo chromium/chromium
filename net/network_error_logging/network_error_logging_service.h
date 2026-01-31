@@ -13,6 +13,7 @@
 
 #include "base/feature_list.h"
 #include "base/memory/raw_ptr.h"
+#include "base/rand_util.h"
 #include "base/time/clock.h"
 #include "base/time/time.h"
 #include "net/base/ip_address.h"
@@ -306,6 +307,10 @@ class NET_EXPORT NetworkErrorLoggingService {
   raw_ptr<const base::Clock> clock_;
   raw_ptr<ReportingService> reporting_service_ = nullptr;
   bool shut_down_ = false;
+
+  // Sampler for metrics.
+  // TODO(crbug.com/450428442): Remove this sampler after we investigate OOM.
+  const base::MetricsSubSampler sampler_;
 };
 
 // Persistent storage for NEL policies.

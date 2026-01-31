@@ -9,7 +9,6 @@
 #import <memory>
 
 #import "base/apple/foundation_util.h"
-#import "base/containers/contains.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/ios/wait_util.h"
 #import "components/content_settings/core/browser/host_content_settings_map.h"
@@ -216,7 +215,7 @@ TEST_F(BlockPopupsTableViewControllerTest, TestMultipleAllowedItemsDeleted) {
   std::vector<std::string> blocked_urls;
   std::vector<std::string> allowed_urls;
   for (const auto& [pattern, url] : patterns_to_url) {
-    if (base::Contains(deleted_patterns, pattern)) {
+    if (deleted_patterns.contains(pattern)) {
       blocked_urls.push_back(url);
     } else {
       allowed_urls.push_back(url);

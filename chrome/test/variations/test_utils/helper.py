@@ -3,6 +3,7 @@
 # found in the LICENSE file.
 
 import functools
+import logging
 import platform
 import subprocess
 import threading
@@ -91,5 +92,37 @@ def timeout(seconds: float):
             else:
                 # Function finished within timeout, returning the result
                 return result_container['result']
+        return wrapper
+    return decorator
+
+def retry(count: int):
+    """
+    A decorator that reties execution of the wrapped function.
+
+    Args:
+        count: How many times the function execution should be retried.
+
+    Returns:
+        The decorated function.
+    """
+    def decorator(func):
+        @functools.wraps(func)
+        def wrapper(*args, **kwargs):
+           trial = 1
+           while True:
+              try:
+                  return func(*args, **kwargs)
+              except Exception as e:
+                  if trial < count:
+                      logging.warning(
+                         f"#{trial} execution of {func.__name__} failed " +
+                         f"with error {e!r}, " +
+                         f"remaining {count - trial} / {count} reties.")
+                      trial += 1
+                  else:
+                      logging.warning(
+                         f"#{trial} execution of {func.__name__} failed."
+                      )
+                      raise
         return wrapper
     return decorator

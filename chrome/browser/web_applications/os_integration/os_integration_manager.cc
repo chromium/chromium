@@ -241,6 +241,13 @@ void OsIntegrationManager::Synchronize(
 
   CHECK(set_provider_called_);
 
+  // Do not allow apps that are suggested for migration to have OS integration.
+  if (provider_->registrar_unsafe().AppMatches(
+          app_id, WebAppFilter::IsAppSuggestedForMigration())) {
+    std::move(callback).Run();
+    return;
+  }
+
   if (sub_managers_.empty()) {
     std::move(callback).Run();
     return;

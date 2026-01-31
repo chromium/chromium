@@ -10,6 +10,8 @@ build_webui("build") {
 
   static_files = [
     "history.html",
+    "images/avatar_surrounding_illustration_dark.svg",
+    "images/avatar_surrounding_illustration_light.svg",
     "images/compare_sync_promo.svg",
     "images/compare_sync_promo_dark.svg",
     "images/history_embeddings_promo.svg",
@@ -19,8 +21,6 @@ build_webui("build") {
     "images/sign_in_promo_dark.svg",
     "images/sync_history_promo.svg",
     "images/sync_history_promo_dark.svg",
-    "images/avatar_surrounding_illustration_light.svg",
-    "images/avatar_surrounding_illustration_dark.svg",
   ]
 
   ts_files = [
@@ -29,6 +29,8 @@ build_webui("build") {
     "browser_service.ts",
     "constants.ts",
     "externs.ts",
+    "filter_chips.html.ts",
+    "filter_chips.ts",
     "history.ts",
     "history_embeddings_promo.html.ts",
     "history_embeddings_promo.ts",
@@ -58,6 +60,7 @@ build_webui("build") {
   # Files that are passed as input to css_to_wrapper().
   css_files = [
     "app.css",
+    "filter_chips.css",
     "history_embeddings_promo.css",
     "history_item.css",
     "history_list.css",
@@ -74,6 +77,10 @@ build_webui("build") {
 
   icons_html_files = [ "shared_icons.html" ]
 
+  if (is_chrome_branded) {
+    icons_html_files += [ "internal/icons.html" ]
+  }
+
   ts_composite = true
   ts_definitions = [
     "//tools/typescript/definitions/chrome_send.d.ts",
@@ -82,7 +89,6 @@ build_webui("build") {
 
   ts_deps = [
     "//third_party/lit/v3_0:build_ts",
-    "//third_party/polymer/v3_0:library",
     "//ui/webui/resources/cr_components/help_bubble:build_ts",
     "//ui/webui/resources/cr_components/history:build_ts",
     "//ui/webui/resources/cr_components/history_clusters:build_ts",

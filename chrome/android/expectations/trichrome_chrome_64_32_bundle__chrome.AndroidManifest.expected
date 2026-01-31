@@ -848,10 +848,6 @@
         <action android:name="com.android.chrome.safe_browsing.LOGIN"/>
       </intent-filter>  # DIFF-ANCHOR: 84a815d3
     </receiver>  # DIFF-ANCHOR: 8d506dab
-    <receiver  # DIFF-ANCHOR: 321c96f6
-        android:name="org.chromium.chrome.browser.safety_hub.UnsubscribedNotificationsNotificationManager$NotificationReceiver"
-        android:exported="false">
-    </receiver>  # DIFF-ANCHOR: 321c96f6
     <receiver  # DIFF-ANCHOR: a0d83ae5
         android:name="org.chromium.chrome.browser.searchwidget.SearchWidgetProvider"
         android:exported="true"
@@ -1037,6 +1033,5 @@
     <uses-library android:name="android.ext.adservices" android:required="false"/>
     <uses-library android:name="androidx.window.extensions" android:required="false"/>
     <uses-library android:name="androidx.window.sidecar" android:required="false"/>
-    <uses-library android:name="com.android.extensions.xr" android:required="false"/>
   </application>
 </manifest>

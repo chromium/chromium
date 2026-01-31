@@ -92,8 +92,8 @@ source_set("side_panel") {
     sources += [
       "glic/glic_legacy_side_panel_coordinator.cc",
       "glic/glic_legacy_side_panel_coordinator.h",
-      "glic/glic_side_panel_coordinator.cc",
-      "glic/glic_side_panel_coordinator.h",
+      "glic/glic_side_panel_coordinator_impl.cc",
+      "glic/glic_side_panel_coordinator_impl.h",
     ]
   }
   public_deps = [

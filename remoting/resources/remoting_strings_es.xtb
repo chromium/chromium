@@ -28,7 +28,6 @@ Si la casilla <ph name="SERVICE_SCRIPT_NAME" /> ya está marcada, desmárcala y 
 <translation id="2329392777730037872">No se ha podido abrir <ph name="URL" /> en el cliente.</translation>
 <translation id="2359808026110333948">Continuar</translation>
 <translation id="2366718077645204424">No se puede establecer conexión con el host. Es probable que el error se deba a la configuración de la red que se está utilizando.</translation>
-<translation id="242591256144136845">Copyright 2025 Google LLC. Todos los derechos reservados.</translation>
 <translation id="2504109125669302160">Conceder permiso de accesibilidad a <ph name="PRODUCT_NAME" /></translation>
 <translation id="2509394361235492552">Conectado a <ph name="HOSTNAME" /></translation>
 <translation id="2540992418118313681">¿Quieres compartir este ordenador para que otro usuario pueda acceder a él y controlarlo?</translation>
@@ -47,6 +46,7 @@ Si la casilla <ph name="SERVICE_SCRIPT_NAME" /> ya está marcada, desmárcala y 
 <translation id="3150823315463303127">El host no ha podido leer la política.</translation>
 <translation id="3171922709365450819">Este cliente no admite el dispositivo porque necesita autenticación de terceros.</translation>
 <translation id="3197730452537982411">Escritorio remoto</translation>
+<translation id="3236334139428307578">Copyright 2026 The Chromium Authors. Todos los derechos reservados.</translation>
 <translation id="324272851072175193">Enviar estas instrucciones por correo electrónico</translation>
 <translation id="3305934114213025800"><ph name="PRODUCT_NAME" /> quiere realizar cambios.</translation>
 <translation id="3339299787263251426">Accede a tu ordenador de forma segura a través de Internet</translation>
@@ -111,6 +111,7 @@ Si la casilla <ph name="SERVICE_SCRIPT_NAME" /> ya está marcada, desmárcala y 
 <translation id="5823554426827907568"><ph name="CLIENT_USERNAME" /> ha solicitado acceso para ver tu pantalla y controlar tu teclado y ratón. Si no esperabas esta solicitud, pulsa <ph name="IDS_SHARE_CONFIRM_DIALOG_DECLINE" />. De lo contrario, selecciona <ph name="IDS_SHARE_CONFIRM_DIALOG_CONFIRM" /> para permitir la conexión cuanto todo esté listo.</translation>
 <translation id="5823658491130719298">Abre Chrome en el ordenador al que quieres acceder de forma remota y visita <ph name="INSTALLATION_LINK" /></translation>
 <translation id="5841343754884244200">Opciones de visualización</translation>
+<translation id="5965133372831030509">Copyright 2026 Google LLC. Todos los derechos reservados.</translation>
 <translation id="6033507038939587647">Opciones del teclado</translation>
 <translation id="6040143037577758943">Cerrar</translation>
 <translation id="6062854958530969723">Error al iniciar el host.</translation>
@@ -138,7 +139,6 @@ Si la casilla <ph name="SERVICE_SCRIPT_NAME" /> ya está marcada, desmárcala y 
 <translation id="7067321367069083429">La pantalla hace de pantalla táctil</translation>
 <translation id="7116737094673640201">Te damos la bienvenida a Escritorio Remoto de Chrome</translation>
 <translation id="7144878232160441200">Reintentar</translation>
-<translation id="7298392173540380852">Copyright 2025 The Chromium Authors. Todos los derechos reservados.</translation>
 <translation id="7312846573060934304">El host no tiene conexión.</translation>
 <translation id="7319983568955948908">Dejar de compartir</translation>
 <translation id="7359298090707901886">El navegador elegido no se puede usar para abrir URLs en el equipo local.</translation>

@@ -225,7 +225,7 @@ class ScrollIntoViewBrowserTestBase : public ContentBrowserTest {
     CHECK(value.has_value());
     CHECK(value->is_dict());
 
-    const base::Value::Dict& dict = value->GetDict();
+    const base::DictValue& dict = value->GetDict();
     std::optional<double> x = dict.FindDouble("x");
     std::optional<double> y = dict.FindDouble("y");
     std::optional<double> width = dict.FindDouble("width");
@@ -276,7 +276,7 @@ class ScrollIntoViewBrowserTestBase : public ContentBrowserTest {
     CHECK(value.has_value());
     CHECK(value->is_dict());
 
-    const base::Value::Dict& dict = value->GetDict();
+    const base::DictValue& dict = value->GetDict();
     std::optional<double> offset_left = dict.FindDouble("offsetLeft");
     std::optional<double> offset_top = dict.FindDouble("offsetTop");
     std::optional<double> width = dict.FindDouble("width");

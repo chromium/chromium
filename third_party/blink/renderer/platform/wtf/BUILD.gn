@@ -112,6 +112,7 @@ component("wtf") {
     "text/ascii_ctype.h",
     "text/ascii_fast_path.cc",
     "text/ascii_fast_path.h",
+    "text/ascii_lower_hash_reader.h",
     "text/atomic_string.cc",
     "text/atomic_string.h",
     "text/atomic_string_encoding.h",
@@ -151,6 +152,7 @@ component("wtf") {
     "text/string_hasher.h",
     "text/string_impl.cc",
     "text/string_impl.h",
+    "text/string_internal.h",
     "text/string_operators.h",
     "text/string_operators_atomic.h",
     "text/string_statics.cc",
@@ -240,6 +242,7 @@ component("wtf") {
     "//base",
     "//base/third_party/double_conversion",
     "//components/crash/core/common:crash_key",
+    "//third_party/highway:libhwy",
     "//third_party/icu",
   ]
 
@@ -290,6 +293,26 @@ component("wtf") {
 
 test("wtf_unittests") {
   deps = [ ":wtf_unittests_sources" ]
+}
+
+test("wtf_perf_tests") {
+  sources = [
+    "testing/run_all_tests.cc",
+    "text/string_simd_perf_test.cc",
+  ]
+
+  configs += [
+    "//third_party/blink/renderer:config",
+    "//third_party/blink/renderer:blink_pch",
+  ]
+
+  deps = [
+    ":wtf",
+    "//base",
+    "//base/test:test_support",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
 }
 
 source_set("wtf_unittests_sources") {
@@ -347,6 +370,7 @@ source_set("wtf_unittests_sources") {
     "text/string_view_test.cc",
     "text/text_codec_cjk_test.cc",
     "text/text_codec_icu_test.cc",
+    "text/text_codec_latin1_test.cc",
     "text/text_codec_replacement_test.cc",
     "text/text_codec_test.cc",
     "text/text_codec_utf8_test.cc",

@@ -24,7 +24,7 @@ class TestToolbarActionViewModel : public ToolbarActionViewModel {
 
   // ToolbarActionViewModel:
   std::string GetId() const override;
-  base::CallbackListSubscription RegisterUpdateObserver(
+  base::CallbackListSubscription RegisterIconUpdateObserver(
       base::RepeatingClosure observer) override;
   ui::ImageModel GetIcon(content::WebContents* web_contents,
                          const gfx::Size& size) override;
@@ -51,7 +51,8 @@ class TestToolbarActionViewModel : public ToolbarActionViewModel {
   // Instruct the controller to fake showing a popup.
   void ShowPopup(bool by_user);
 
-  // Configure the test controller. These also call NotifyObserver().
+  // Configure the test controller. These also call `NotifyIconObserver()`,
+  // which updates the icon states.
   void SetActionName(const std::u16string& name);
   void SetActionTitle(const std::u16string& title);
   void SetAccessibleName(const std::u16string& name);
@@ -62,13 +63,13 @@ class TestToolbarActionViewModel : public ToolbarActionViewModel {
 
  private:
   // Notifies the observers.
-  void NotifyObservers();
+  void NotifyIconObservers();
 
   // The id of the controller.
   std::string id_;
 
   // The observers of the view model.
-  base::RepeatingClosureList observers_;
+  base::RepeatingClosureList icon_observers_;
 
   // Action name for the controller.
   std::u16string action_name_;

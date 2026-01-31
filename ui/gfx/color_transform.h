@@ -29,10 +29,6 @@ class COLOR_SPACE_EXPORT ColorTransform {
     // Used to adjust the transfer and range adjust matrices.
     uint32_t src_bit_depth = kDefaultBitDepth;
     uint32_t dst_bit_depth = kDefaultBitDepth;
-
-    // If set to true, then map PQ and HLG inputs such that their maximum
-    // luminance will be `dst_max_luminance_relative`.
-    bool tone_map_pq_and_hlg_to_dst = false;
   };
 
   // Parameters that may be specified when the transform is applied. Changing

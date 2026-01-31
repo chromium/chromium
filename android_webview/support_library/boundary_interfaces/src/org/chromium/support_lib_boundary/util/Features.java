@@ -361,6 +361,11 @@ public class Features {
     // WebViewNavigationListener.onFirstContentfulPaint()
     public static final String WEB_VIEW_NAVIGATION_LISTENER_V1 = "WEB_VIEW_NAVIGATION_LISTENER_V1";
 
+    // WebViewNavigationListener.onFirstContentfulPaintMillis
+    // WebViewNavigationListener.onLargestContentfulPaintMillis
+    // WebViewNavigationListener.onPerformanceMarkMillis
+    public static final String WEB_VIEW_NAVIGATION_LISTENER_V2 = "WEB_VIEW_NAVIGATION_LISTENER_V2";
+
     // WebViewNavigationListener.onNavigationCompleted() firing on non-committed
     // navigations
     public static final String ON_NAVIGATION_COMPLETED_NON_COMMITTED =
@@ -411,16 +416,14 @@ public class Features {
     // BackForwardCacheSettings.setMaxPagesInCache
     // BackForwardCacheSettings.getTimeoutInSec
     // BackForwardCacheSettings.getMaxPagesInCache
-    public static final String BACK_FORWARD_CACHE_SETTINGS_V2 = "BACK_FORWARD_CACHE_SETTINGS_V2";
+    // V2 was deleted as it didn't get released and we made a major type change in V3.
+    public static final String BACK_FORWARD_CACHE_SETTINGS_V3 = "BACK_FORWARD_CACHE_SETTINGS_V3";
 
     // Profile.preconnect
     public static final String PRECONNECT = "PRECONNECT";
 
     // WebSettingsCompat#setHyperlinkContextMenuItems
     public static final String HYPERLINK_CONTEXT_MENU_ITEMS = "HYPERLINK_CONTEXT_MENU_ITEMS";
-
-    // Page.isPrerendering
-    public static final String PAGE_IS_PRERENDERING = "PAGE_IS_PRERENDERING";
 
     // Profile.addCustomHeader
     // Profile.clearAllCustomHeaders
@@ -435,4 +438,10 @@ public class Features {
 
     // Profile.addQuicHints
     public static final String ADD_QUIC_HINTS_V1 = "ADD_QUIC_HINTS_V1";
+
+    // WebViewBuilder.applyTo
+    public static final String WEBVIEW_BUILDER_V2 = "WEBVIEW_BUILDER_V2";
+
+    // Page.getUrl
+    public static final String PAGE_GET_URL = "PAGE_GET_URL";
 }

@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2026 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+  <item>
+    <shape
+        android:shape="rectangle">
+      <solid android:color="@color/omnibox_suggestion_dropdown_bg"/>
+      <corners
+          android:topLeftRadius="@dimen/omnibox_suggestion_dropdown_round_corner_radius"
+          android:topRightRadius="@dimen/omnibox_suggestion_dropdown_round_corner_radius"
+          android:bottomLeftRadius="0dp"
+          android:bottomRightRadius="0dp" />
+    </shape>
+  </item>
+  <item
+      android:start="@dimen/location_bar_tablet_fusebox_popup_inset"
+      android:end="@dimen/location_bar_tablet_fusebox_popup_inset"
+      android:top="@dimen/location_bar_tablet_fusebox_popup_inset"
+      android:bottom="0dp">
+    <shape
+        android:shape="rectangle">
+      <solid android:color="@color/search_suggestion_bg_color"/>
+      <corners
+          android:topLeftRadius="@dimen/modern_toolbar_background_inner_corner_radius"
+          android:topRightRadius="@dimen/modern_toolbar_background_inner_corner_radius"
+          android:bottomLeftRadius="@dimen/modern_toolbar_background_inner_corner_radius"
+          android:bottomRightRadius="@dimen/modern_toolbar_background_inner_corner_radius" />
+    </shape>
+  </item>
+</layer-list>

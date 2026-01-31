@@ -8,6 +8,7 @@ mojom("common_mojom") {
   sources = [ "interfaces.mojom" ]
 
   public_deps = [
+    ":enum_mojom",
     "//components/origin_matcher:mojom",
     "//mojo/public/mojom/base",
     "//third_party/blink/public/mojom:mojom_core",
@@ -29,6 +30,12 @@ mojom("common_mojom") {
   ]
   overridden_deps = [ "//third_party/blink/public/mojom:mojom_core" ]
   component_deps = [ "//third_party/blink/public/common" ]
+}
+
+# Contains only the data (enum) types needed by Java.
+mojom("enum_mojom") {
+  generate_java = true
+  sources = [ "enum.mojom" ]
 }
 
 source_set("unit_tests") {

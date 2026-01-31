@@ -35,6 +35,7 @@ message ContextualTasksContextQuality {
   int64 embedding_model_version = 3 [features = { field_presence: EXPLICIT }];
 }
 
+// Next ID: 7
 message ContextualTasksTabContext {
   // The highest query-passage embedding score for the tab.
   float best_embedding_score = 1 [features = { field_presence: EXPLICIT }];
@@ -48,6 +49,14 @@ message ContextualTasksTabContext {
   // Aggregate score for the tab. Here for convenience even though it can be
   // calculated from the tab.
   float aggregate_tab_score = 4 [features = { field_presence: EXPLICIT }];
+
+  // The number of seconds spent on the tab while it was last being active (i.e
+  // while it was in the foreground).
+  int64 seconds_of_last_visit = 6 [features = { field_presence: EXPLICIT }];
+
+  // ////////////////////////////////////////////////////////////////////////////
+  // Fields below are some sort of label groundtruth.
+  // ////////////////////////////////////////////////////////////////////////////
 
   // Whether the tab was explicitly added to the query by the user.
   bool was_explicitly_chosen = 5 [features = { field_presence: EXPLICIT }];

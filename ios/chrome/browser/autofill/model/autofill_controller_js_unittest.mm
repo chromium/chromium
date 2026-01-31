@@ -16,7 +16,6 @@
 #import "components/autofill/ios/browser/autofill_util.h"
 #import "components/autofill/ios/common/features.h"
 #import "components/autofill/ios/form_util/autofill_form_features_java_script_feature.h"
-#import "components/autofill/ios/form_util/form_util_java_script_feature.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/web/model/chrome_web_client.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
@@ -574,93 +573,6 @@ NSArray* GetTestFormInputElementWithLabelFromDefinitionList() {
           nil]];
 }
 
-NSArray* GetTestInputRadio() {
-  return @[
-      @("<input type='radio' name='boolean'  id='boolean1' value='true'/> True"
-          "<input type='radio' name='boolean'  id='boolean2' value='false'/> "
-          "False"),
-      [NSDictionary dictionaryWithObjectsAndKeys:
-          @"'True'", @"label",
-          @"'boolean1'", @"identifier",
-          @"'boolean'", @"name",
-          @"'radio'", @"form_control_type",
-          @"undefined", @"autocomplete_attribute",
-          @"undefined", @"max_length",
-          @"true", @"should_autocomplete",
-          @"true", @"is_checkable",
-          @"'true'", @"value",
-          @"'true'", @"value_option_text",
-          @"undefined", @"option_values",
-          @"undefined", @"option_texts",
-          nil],
-      [NSDictionary dictionaryWithObjectsAndKeys:
-          @"'False'", @"label",
-          @"'boolean2'", @"identifier",
-          @"'boolean'", @"name",
-          @"'radio'", @"form_control_type",
-          @"undefined", @"autocomplete_attribute",
-          @"undefined", @"max_length",
-          @"true", @"should_autocomplete",
-          @"true", @"is_checkable",
-          @"'false'", @"value",
-          @"'false'", @"value_option_text",
-          @"undefined", @"option_values",
-          @"undefined", @"option_texts",
-          nil]];
-}
-
-NSArray* GetTestInputCheckbox() {
-  return @[
-      @("<input type='checkbox' name='vehicle' id='vehicle1' value='Bike'> "
-          "Bicycle"
-          "<input type='checkbox' name='vehicle' id='vehicle2' value='Car'> "
-          "Automobile"
-          "<input type='checkbox' name='vehicle' id='vehicle3' value='Rocket'> "
-          "Missile"),
-      [NSDictionary dictionaryWithObjectsAndKeys:
-          @"'Bicycle'", @"label",
-          @"'vehicle1'", @"identifier",
-          @"'vehicle'", @"name",
-          @"'checkbox'", @"form_control_type",
-          @"undefined", @"autocomplete_attribute",
-          @"undefined", @"max_length",
-          @"true", @"should_autocomplete",
-          @"true", @"is_checkable",
-          @"'Bike'", @"value",
-          @"'Bike'", @"value_option_text",
-          @"undefined", @"option_values",
-          @"undefined", @"option_texts",
-          nil],
-      [NSDictionary dictionaryWithObjectsAndKeys:
-          @"'Automobile'", @"label",
-          @"'vehicle2'", @"identifier",
-          @"'vehicle'", @"name",
-          @"'checkbox'", @"form_control_type",
-          @"undefined", @"autocomplete_attribute",
-          @"undefined", @"max_length",
-          @"true", @"should_autocomplete",
-          @"true", @"is_checkable",
-          @"'Car'", @"value",
-          @"'Car'", @"value_option_text",
-          @"undefined", @"option_values",
-          @"undefined", @"option_texts",
-          nil],
-      [NSDictionary dictionaryWithObjectsAndKeys:
-          @"'Missile'", @"label",
-          @"'vehicle3'", @"identifier",
-          @"'vehicle'", @"name",
-          @"'checkbox'", @"form_control_type",
-          @"undefined", @"autocomplete_attribute",
-          @"undefined", @"max_length",
-          @"true", @"should_autocomplete",
-          @"true", @"is_checkable",
-          @"'Rocket'", @"value",
-          @"'Rocket'", @"value_option_text",
-          @"undefined", @"option_values",
-          @"undefined", @"option_texts",
-          nil]];
-}
-
 NSArray* GetTestFormSelectElement() {
   return @[
       @("  <label>State:"
@@ -821,8 +733,6 @@ class AutofillControllerJsTest : public web::JavascriptTest {
     JavascriptTest::SetUp();
 
     AddGCrWebScript();
-    AddCommonScript();
-    AddUserScript(@"form");
     AddUserScript(@"autofill_form_features");
     AddUserScript(@"fill_util_test");
 
@@ -926,12 +836,6 @@ void AutofillControllerJsTest::TestExecutingBooleanJavaScriptOnElement(
       {"blog", 0, -1},
       {"expected number of clicks", 0, -1},
       {"pwd", 0, -1},
-      {"vehicle", 0, -1},
-      {"vehicle", 1, -1},
-      {"vehicle", 2, -1},
-      {"boolean", 0, -1},
-      {"boolean", 1, -1},
-      {"boolean", 2, -1},
       {"state", 0, -1},
       {"state", 0, 0},
       {"state", 0, 1},
@@ -1014,12 +918,6 @@ TEST_F(AutofillControllerJsTest, HasTagName) {
       {"blog", 0, -1},
       {"expected number of clicks", 0, -1},
       {"pwd", 0, -1},
-      {"vehicle", 0, -1},
-      {"vehicle", 1, -1},
-      {"vehicle", 2, -1},
-      {"boolean", 0, -1},
-      {"boolean", 1, -1},
-      {"boolean", 2, -1},
       {"submit", 0, -1},
   });
 
@@ -1224,8 +1122,7 @@ TEST_F(AutofillControllerJsTest, InferLabelForElement) {
     GetTestFormInputElementWithLabelFromTableNested(),
     GetTestFormInputElementWithLabelFromTableRow(),
     GetTestFormInputElementWithLabelFromDivTable(),
-    GetTestFormInputElementWithLabelFromDefinitionList(), GetTestInputRadio(),
-    GetTestInputCheckbox()
+    GetTestFormInputElementWithLabelFromDefinitionList(),
   ];
   for (NSArray* testingElement in testingElements) {
     TestInputElementDataEvaluation(@"__gCrWeb.getRegisteredApi('fill_test_api')."
@@ -1253,12 +1150,6 @@ TEST_F(AutofillControllerJsTest, IsAutofillableElement) {
       {"blog", 0, -1},
       {"expected number of clicks", 0, -1},
       {"pwd", 0, -1},
-      {"vehicle", 0, -1},
-      {"vehicle", 1, -1},
-      {"vehicle", 2, -1},
-      {"boolean", 0, -1},
-      {"boolean", 1, -1},
-      {"boolean", 2, -1},
       {"state", 0, -1},
       {"course", 0, -1},
   });
@@ -1275,8 +1166,10 @@ TEST_F(AutofillControllerJsTest, GetOptionStringsFromElement) {
 
   ExecuteJavaScriptOnElementsAndCheck(
       @"var field = {};"
-       "__gCrWeb.getRegisteredApi('fill_test_api').getFunction('getOptionStringsFromElement')(%@, field);"
-       "__gCrWeb.stringify(field);",
+       "__gCrWeb.getRegisteredApi('fill_test_api').getFunction('"
+       "getOptionStringsFromElement')(%@, field);"
+       "__gCrWeb.getRegisteredApi('fill_test_api').getFunction('stringify')("
+       "field);",
       GetElementsByNameJavaScripts(kTestingElements), @[
         @("{\"option_values\":[\"CA\",\"MA\"],"
           "\"option_texts\":[\"CA\",\"MA\"]}"),
@@ -1323,37 +1216,6 @@ TEST_F(AutofillControllerJsTest, FillFormField) {
                              get_element_javascript, new_value]));
   }
 
-  // Test clickable elements, of which 'checked' should be updated.
-  struct ElementByNameWithBool {
-    ElementByName element;
-    const bool is_checked;
-  };
-
-  constexpr auto kCheckableElements = std::to_array<ElementByNameWithBool>({
-      {{"vehicle", 0, -1}, true},
-      {{"vehicle", 1, -1}, false},
-      {{"vehicle", 2, -1}, true},
-      {{"boolean", 0, -1}, false},
-      {{"boolean", 1, -1}, true},
-      {{"boolean", 2, -1}, true},
-  });
-
-  for (const ElementByNameWithBool& item : kCheckableElements) {
-    NSString* get_element_javascript = GetElementByNameJavaScript(item.element);
-    bool is_checked = item.is_checked;
-
-    EXPECT_NSEQ(
-        @(is_checked),
-        ExecuteJavaScript([NSString
-            stringWithFormat:@"var element=%@; var value=element.value; "
-                             @"var data={'value':value,'is_checked':%@};"
-                             @"__gCrWeb.getRegisteredApi('autofill')."
-                             @"getFunction('fillFormField')(data, element); "
-                             @"element.checked",
-                             get_element_javascript,
-                             is_checked ? @"true" : @"false"]));
-  }
-
   // Test elements of which the value should not be changed.
   constexpr auto kUnchangedElements = std::to_array<ElementByName>({
       {"hl", 0, -1},    // hidden element
@@ -1387,22 +1249,6 @@ TEST_F(AutofillControllerJsTest, IsSelectElement) {
       kElementsExpectingTrue);
 }
 
-TEST_F(AutofillControllerJsTest, IsCheckableElement) {
-  constexpr auto kElementsExpectingTrue = std::to_array<ElementByName>({
-      {"vehicle", 0, -1},
-      {"vehicle", 1, -1},
-      {"vehicle", 2, -1},
-      {"boolean", 0, -1},
-      {"boolean", 1, -1},
-      {"boolean", 2, -1},
-  });
-
-  TestExecutingBooleanJavaScriptOnElement(
-      @"__gCrWeb.getRegisteredApi('fill_test_api')."
-      @"getFunction('isCheckableElement')(%@)",
-      kElementsExpectingTrue);
-}
-
 TEST_F(AutofillControllerJsTest, IsAutofillableInputElement) {
   constexpr auto kElementsExpectingTrue = std::to_array<ElementByName>({
       {"firstname", 0, -1},
@@ -1412,12 +1258,6 @@ TEST_F(AutofillControllerJsTest, IsAutofillableInputElement) {
       {"blog", 0, -1},
       {"expected number of clicks", 0, -1},
       {"pwd", 0, -1},
-      {"vehicle", 0, -1},
-      {"vehicle", 1, -1},
-      {"vehicle", 2, -1},
-      {"boolean", 0, -1},
-      {"boolean", 1, -1},
-      {"boolean", 2, -1},
   });
 
   TestExecutingBooleanJavaScriptOnElement(
@@ -1436,12 +1276,6 @@ TEST_F(AutofillControllerJsTest, ExtractAutofillableElements) {
       {"blog", 0, -1},
       {"expected number of clicks", 0, -1},
       {"pwd", 0, -1},
-      {"vehicle", 0, -1},
-      {"vehicle", 1, -1},
-      {"vehicle", 2, -1},
-      {"boolean", 0, -1},
-      {"boolean", 1, -1},
-      {"boolean", 2, -1},
       {"state", 0, -1},
   });
   NSArray* expected = GetElementsByNameJavaScripts(kExpectedElements);
@@ -1489,11 +1323,13 @@ void AutofillControllerJsTest::TestWebFormControlElementToFormField(
                : java_script;
     NSString* actual = ExecuteJavaScript(script);
     java_script = [NSString
-        stringWithFormat:@"%@; var field = {};"
-                          "__gCrWeb.getRegisteredApi('fill_test_api')."
-                          "getFunction('webFormControlElementToFormField')"
-                          "(element, field);__gCrWeb.stringify(field);",
-                         get_element_to_test];
+        stringWithFormat:
+            @"%@; var field = {};"
+             "__gCrWeb.getRegisteredApi('fill_test_api')."
+             "getFunction('webFormControlElementToFormField')(element, field);"
+             "__gCrWeb.getRegisteredApi('fill_test_api').getFunction('"
+             "stringify')(field);",
+            get_element_to_test];
     EXPECT_NSEQ(@YES, actual) << base::SysNSStringToUTF8(
         [NSString stringWithFormat:
                       @"webFormControlElementToFormField actual results are: "
@@ -1519,8 +1355,7 @@ TEST_F(AutofillControllerJsTest, WebFormControlElementToFormField) {
     GetTestFormInputElementWithLabelFromTableNested(),
     GetTestFormInputElementWithLabelFromTableRow(),
     GetTestFormInputElementWithLabelFromDivTable(),
-    GetTestFormInputElementWithLabelFromDefinitionList(), GetTestInputRadio(),
-    GetTestInputCheckbox()
+    GetTestFormInputElementWithLabelFromDefinitionList(),
   ];
   for (NSArray* test_element in test_input_elements) {
     TestWebFormControlElementToFormField(test_element, @"input");
@@ -1552,7 +1387,8 @@ void AutofillControllerJsTest::TestWebFormElementToFormDataForOneForm(
                                  @"__gCrWeb.getRegisteredApi('fill_test_api')."
                                  @"getFunction('webFormElementToFormData')"
                                  @"(window, %@, null, form, null);"
-                                  "__gCrWeb.stringify(form);",
+                                  "__gCrWeb.getRegisteredApi('fill_test_api')."
+                                  "getFunction('stringify')(form);",
                                  get_form_element_javascripts];
   script = RollupJavaScriptWithUserScript(java_script, @"fill_util_test");
   EXPECT_NSEQ(@YES, actual) << base::SysNSStringToUTF8([NSString
@@ -1603,9 +1439,8 @@ TEST_F(AutofillControllerJsTest, WebFormElementToFormData) {
     GetTestFormInputElementWithLabelFromTableNested(),
     GetTestFormInputElementWithLabelFromTableRow(),
     GetTestFormInputElementWithLabelFromDivTable(),
-    GetTestFormInputElementWithLabelFromDefinitionList(), GetTestInputRadio(),
-    GetTestInputCheckbox(), GetTestFormSelectElement(),
-    GetTestFormSelectElementWithOptgroup()
+    GetTestFormInputElementWithLabelFromDefinitionList(),
+    GetTestFormSelectElement(), GetTestFormSelectElementWithOptgroup()
   ];
   // Test a form that has a signle item in the array.
   for (NSArray* testElement in test_elements) {
@@ -1688,7 +1523,8 @@ void AutofillControllerJsTest::TestExtractNewForms(
                                      @"var forms = "
                                      @"__gCrWeb.getRegisteredApi('autofill')."
                                      @"getFunction('extractNewForms')(true);"
-                                     @"__gCrWeb.stringify(forms)"),
+                                     @"__gCrWeb.getRegisteredApi('fill_test_"
+                                     @"api').getFunction('stringify')(forms)"),
                                  verifying_javascripts]);
 }
 
@@ -1708,8 +1544,7 @@ TEST_F(AutofillControllerJsTest, ExtractFormsAndFormElements) {
     GetTestFormInputElementWithLabelFromTableNested(),
     GetTestFormInputElementWithLabelFromTableRow(),
     GetTestFormInputElementWithLabelFromDivTable(),
-    GetTestFormInputElementWithLabelFromDefinitionList(), GetTestInputRadio(),
-    GetTestInputCheckbox()
+    GetTestFormInputElementWithLabelFromDefinitionList(),
   ];
   NSArray* testSecondFormItems = @[
     GetTestFormInputElementWithLabelFromDivTable(), GetTestFormSelectElement(),
@@ -1765,8 +1600,6 @@ TEST_F(AutofillControllerJsTest, ExtractForms) {
   html = [html
       stringByAppendingString:[GetTestFormInputElementWithLabelFromPrevious()
                                   objectAtIndex:0U]];
-  html =
-      [html stringByAppendingString:[GetTestInputCheckbox() objectAtIndex:0U]];
   html = [html stringByAppendingString:
                    [GetTestFormInputElementWithLabelFromTableColumnTH()
                        objectAtIndex:0U]];
@@ -1808,65 +1641,11 @@ TEST_F(AutofillControllerJsTest, ExtractForms) {
       @{
         @"aria_description" : @"",
         @"aria_label" : @"",
-        @"name" : @"vehicle",
-        @"name_attribute" : @"vehicle",
-        @"id_attribute" : @"vehicle1",
-        @"identifier" : @"vehicle1",
-        @"renderer_id" : @"3",
-        @"form_control_type" : @"checkbox",
-        @"pattern_attribute" : @"",
-        @"placeholder_attribute" : @"",
-        @"should_autocomplete" : @true,
-        @"is_checkable" : @true,
-        @"is_focusable" : @true,
-        @"is_user_edited" : @true,
-        @"value" : @"Bike",
-        @"label" : @"Bicycle"
-      },
-      @{
-        @"aria_description" : @"",
-        @"aria_label" : @"",
-        @"name" : @"vehicle",
-        @"name_attribute" : @"vehicle",
-        @"id_attribute" : @"vehicle2",
-        @"identifier" : @"vehicle2",
-        @"renderer_id" : @"4",
-        @"form_control_type" : @"checkbox",
-        @"pattern_attribute" : @"",
-        @"placeholder_attribute" : @"",
-        @"should_autocomplete" : @true,
-        @"is_checkable" : @true,
-        @"is_focusable" : @true,
-        @"is_user_edited" : @true,
-        @"value" : @"Car",
-        @"label" : @"Automobile"
-      },
-      @{
-        @"aria_description" : @"",
-        @"aria_label" : @"",
-        @"name" : @"vehicle",
-        @"name_attribute" : @"vehicle",
-        @"id_attribute" : @"vehicle3",
-        @"identifier" : @"vehicle3",
-        @"renderer_id" : @"5",
-        @"form_control_type" : @"checkbox",
-        @"pattern_attribute" : @"",
-        @"placeholder_attribute" : @"",
-        @"should_autocomplete" : @true,
-        @"is_checkable" : @true,
-        @"is_focusable" : @true,
-        @"is_user_edited" : @true,
-        @"value" : @"Rocket",
-        @"label" : @"Missile"
-      },
-      @{
-        @"aria_description" : @"",
-        @"aria_label" : @"",
         @"name" : @"nameintableth",
         @"name_attribute" : @"nameintableth",
         @"id_attribute" : @"nameintableth",
         @"identifier" : @"nameintableth",
-        @"renderer_id" : @"6",
+        @"renderer_id" : @"3",
         @"form_control_type" : @"text",
         @"pattern_attribute" : @"",
         @"placeholder_attribute" : @"",
@@ -1885,7 +1664,7 @@ TEST_F(AutofillControllerJsTest, ExtractForms) {
         @"name_attribute" : @"",
         @"id_attribute" : @"emailtableth",
         @"identifier" : @"emailtableth",
-        @"renderer_id" : @"7",
+        @"renderer_id" : @"4",
         @"form_control_type" : @"email",
         @"pattern_attribute" : @"",
         @"placeholder_attribute" : @"",
@@ -1904,7 +1683,7 @@ TEST_F(AutofillControllerJsTest, ExtractForms) {
         @"name_attribute" : @"pwd",
         @"id_attribute" : @"pwd",
         @"identifier" : @"pwd",
-        @"renderer_id" : @"8",
+        @"renderer_id" : @"5",
         @"form_control_type" : @"password",
         @"pattern_attribute" : @"",
         @"placeholder_attribute" : @"",
@@ -1924,7 +1703,7 @@ TEST_F(AutofillControllerJsTest, ExtractForms) {
         @"name_attribute" : @"state",
         @"id_attribute" : @"state",
         @"identifier" : @"state",
-        @"renderer_id" : @"9",
+        @"renderer_id" : @"6",
         @"form_control_type" : @"select-one",
         @"pattern_attribute" : @"",
         @"placeholder_attribute" : @"",

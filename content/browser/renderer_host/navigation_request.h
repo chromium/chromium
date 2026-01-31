@@ -31,7 +31,6 @@
 #include "content/browser/loader/subresource_proxying_url_loader_service.h"
 #include "content/browser/navigation_subresource_loader_params.h"
 #include "content/browser/preloading/prerender/reserved_prerender_host_info.h"
-#include "content/browser/prerender_host_id.h"
 #include "content/browser/renderer_host/browsing_context_group_swap.h"
 #include "content/browser/renderer_host/commit_deferring_condition_runner.h"
 #include "content/browser/renderer_host/cookie_access_observers.h"
@@ -54,6 +53,7 @@
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/navigation_throttle.h"
 #include "content/public/browser/preloading_trigger_type.h"
+#include "content/public/browser/prerender_host_id.h"
 #include "content/public/browser/process_selection_user_data.h"
 #include "content/public/browser/render_process_host_observer.h"
 #include "content/public/browser/weak_document_ptr.h"
@@ -698,7 +698,7 @@ class CONTENT_EXPORT NavigationRequest
   }
 
   void set_has_user_gesture(bool has_user_gesture) {
-    common_params_->has_user_gesture = has_user_gesture;
+    common_params_->has_possibly_filtered_user_gesture = has_user_gesture;
   }
 
   // Ignores any interface disconnect that might happen to the
@@ -1134,10 +1134,10 @@ class CONTENT_EXPORT NavigationRequest
     return is_running_potential_prerender_activation_checks_;
   }
 
-  FrameTreeNodeId prerender_frame_tree_node_id() const {
-    DCHECK(prerender_frame_tree_node_id_.has_value())
+  PrerenderHostId activating_prerender_host_id() const {
+    DCHECK(activating_prerender_host_id_.has_value())
         << "Must be called after StartNavigation()";
-    return prerender_frame_tree_node_id_.value();
+    return *activating_prerender_host_id_;
   }
 
   const std::optional<FencedFrameProperties>& GetFencedFrameProperties() const {
@@ -1480,6 +1480,12 @@ class CONTENT_EXPORT NavigationRequest
   // run beforeunload handlers when necessary.
   void WillStartBeforeUnload();
 
+  void set_beforeunload_phase2_dialog_opened_time(
+      const base::TimeTicks& dialog_opened_time);
+
+  void set_beforeunload_phase2_dialog_closed_time(
+      const base::TimeTicks& dialog_closed_time);
+
   // This struct holds timestamps of various stages of one navigation. This is
   // useful for recording a trace of a navigation, as well as metrics for
   // durations of all intervals within a navigation once a navigation finishes
@@ -1517,6 +1523,14 @@ class CONTENT_EXPORT NavigationRequest
     // timestamps except for `start`, `finish`, and the DidCommit IPC
     // timestamps).
 
+    // The OS-level timestamp of the user input event leading to the navigation.
+    // This timestamp can be empty if the navigation is started without user
+    // input.
+    // Note that this might be null if the navigation started and synchronously
+    // committed in the navigation, such as for renderer-initiated same-document
+    // navigations or synchronous about:blank navigations.
+    base::TimeTicks user_interaction;
+
     // The time at which the navigation starts, as accurately as we can
     // determine. Note that for renderer-initiated navigations, this will be the
     // time when the navigation starts in the renderer.
@@ -1548,6 +1562,16 @@ class CONTENT_EXPORT NavigationRequest
     // is out of our control.
     base::TimeTicks beforeunload_phase1_end;
 
+    // The time when the user-visible dialog opens for "beforeunload phase 1",
+    // or null if that phase is not used or the user-visible dialog is not
+    // opened in this navigation.
+    base::TimeTicks beforeunload_phase1_dialog_opened;
+
+    // The time when the user-visible dialog closes for "beforeunload phase 1",
+    // or null if that phase is not used or the user-visible dialog is not
+    // opened in this navigation.
+    base::TimeTicks beforeunload_phase1_dialog_closed;
+
     // The time at which the NavigationRequest is created. The delta between
     // this and `start` covers the time between starting the navigation
     // (possibly in the renderer process) and the browser process starting
@@ -1575,6 +1599,16 @@ class CONTENT_EXPORT NavigationRequest
     // to be excluded from navigation metrics, since that may include
     // user-visible dialogs or JavaScript code that is out of our control.
     base::TimeTicks beforeunload_phase2_end;
+
+    // The time when the user-visible dialog opens for "beforeunload phase 2",
+    // or null if that phase is not used or the user-visible dialog is not
+    // opened in this navigation.
+    base::TimeTicks beforeunload_phase2_dialog_opened;
+
+    // The time when the user-visible dialog closes for "beforeunload phase 2",
+    // or null if that phase is not used or the user-visible dialog is not
+    // opened in this navigation.
+    base::TimeTicks beforeunload_phase2_dialog_closed;
 
     // The adjusted start time used by many navigation metrics, such as FCP.
     // This is currently set inconsistently, and can be after beforeunload phase
@@ -1713,6 +1747,14 @@ class CONTENT_EXPORT NavigationRequest
   // kInitialWebUISyncNavStartToCommit flag is disabled).
   bool IsInitialWebUINavigation();
 
+  void set_remove_extra_headers_on_cross_origin_redirect(bool value) {
+    remove_extra_headers_on_cross_origin_redirect_ = value;
+  }
+
+  bool remove_extra_headers_on_cross_origin_redirect() const {
+    return remove_extra_headers_on_cross_origin_redirect_;
+  }
+
  private:
   friend class NavigationRequestTest;
   FRIEND_TEST_ALL_PREFIXES(NavigationRequestTest, SanitizeRedirectsForCommit);
@@ -1757,7 +1799,7 @@ class CONTENT_EXPORT NavigationRequest
   // activating a prerendered page.
   void OnPrerenderingActivationChecksComplete(
       CommitDeferringCondition::NavigationType navigation_type,
-      std::optional<FrameTreeNodeId> candidate_prerender_frame_tree_node_id);
+      std::optional<PrerenderHostId> candidate_prerender_host_id);
 
   // Get the `FencedFrameURLMapping` associated with the current page.
   FencedFrameURLMapping& GetFencedFrameURLMap();
@@ -1797,10 +1839,13 @@ class CONTENT_EXPORT NavigationRequest
   // kOriginKeyedProcessesByDefault is enabled.
   bool IsIsolationImplied();
 
+  // This function computes the AgentClusterKey that must be passed to the
+  // renderer process for commit.
+  void DetermineAgentClusterKeyForCommit();
+
   // The Origin-Agent-Cluster end result is determined early in the lifecycle of
   // a NavigationRequest, but used late. In particular, we want to trigger use
   // counters and console warnings once navigation has committed.
-  void DetermineOriginAgentClusterEndResult();
   void ProcessOriginAgentClusterEndResult();
 
   void PopulateDocumentTokenForCrossDocumentNavigation();
@@ -1908,6 +1953,10 @@ class CONTENT_EXPORT NavigationRequest
   // or prerender activation). NavigationRequest will be destroyed after this
   // call.
   void CommitPageActivation();
+
+  // Checks whether this navigation is allowed based on the connection
+  // allowlist header, if present.
+  bool IsAllowedByConnectionAllowlist();
 
   // Checks if the specified CSP context's relevant CSP directive
   // allows the navigation. This is called to perform the frame-src check.
@@ -2346,12 +2395,12 @@ class CONTENT_EXPORT NavigationRequest
   // a network response yet, or when going to an "about:blank" page.
   std::optional<WebExposedIsolationInfo> ComputeWebExposedIsolationInfo();
 
-  // Assign an invalid frame tree node id to `prerender_frame_tree_node_id_`.
+  // Assign an invalid frame tree node id to `activating_prerender_host_id_`.
   // Called as soon as when we are certain that this navigation won't activate a
   // prerendered page. This is needed because `IsPrerenderedPageActivation()`,
   // which may be called at any point after BeginNavigation(), will assume that
-  // 'prerender_frame_tree_node_id_' has an value assigned.
-  void MaybeAssignInvalidPrerenderFrameTreeNodeId();
+  // 'activating_prerender_host_id_' has an value assigned.
+  void MaybeAssignInvalidActivatingPrerenderHostId();
 
   // The NavigationDownloadPolicy is currently fully computed by the renderer
   // process. It is left empty for browser side initiated navigation. This is a
@@ -2761,6 +2810,14 @@ class CONTENT_EXPORT NavigationRequest
   // The time that beforeunload phase 2 ended, if it ran.
   base::TimeTicks beforeunload_phase2_end_time_;
 
+  // The time when the user-visible dialog opens for "beforeunload phase 2",
+  // or null if that phase is not used in this navigation.
+  base::TimeTicks beforeunload_phase2_dialog_opened_time_;
+
+  // The time when the user-visible dialog closes for "beforeunload phase 2",
+  // or null if that phase is not used in this navigation.
+  base::TimeTicks beforeunload_phase2_dialog_closed_time_;
+
   // The time BeginNavigation() was called.
   base::TimeTicks begin_navigation_time_;
 
@@ -3012,15 +3069,15 @@ class CONTENT_EXPORT NavigationRequest
   // The start time of fenced frame url mapping.
   base::TimeTicks fenced_frame_url_mapping_start_time_;
 
-  // The root frame tree node id of the prerendered page. This will be a valid
-  // FrameTreeNodeId value when this navigation will activate a prerendered
-  // page. For all other navigations this will be an invalid FrameTreeNodeId. We
-  // only know whether this is the case when BeginNavigation is called so the
-  // optional will be empty until then and callers must not query its value
-  // before it's been computed.
+  // The id of the prerendered page. This will be a valid PrerenderHostId value
+  // when this navigation will activate a prerendered page. For all other
+  // navigations this will be an invalid FrameTreeNodeId. We only know whether
+  // this is the case when BeginNavigation is called so the optional will be
+  // empty until then and callers must not query its value before it's been
+  // computed.
   // TODO(crbug.com/427054641): Remove this field once the migration to use
   // `reserved_prerender_host_info_` is complete.
-  std::optional<FrameTreeNodeId> prerender_frame_tree_node_id_;
+  std::optional<PrerenderHostId> activating_prerender_host_id_;
 
   // Contains state pertaining to a prerender activation. This is only used if
   // this navigation is a prerender activation.
@@ -3414,6 +3471,10 @@ class CONTENT_EXPORT NavigationRequest
   // stored in the DocumentAssociatedData at commit. Only used for
   // cross-document navigations.
   std::optional<base::UnguessableToken> network_restrictions_id_;
+
+  // If true, any extra headers provided will be removed on a cross-origin
+  // redirect.
+  bool remove_extra_headers_on_cross_origin_redirect_ = false;
 
   base::WeakPtrFactory<NavigationRequest> weak_factory_{this};
 };

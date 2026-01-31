@@ -31,8 +31,9 @@ MojoResult WriteMessageRaw(MessagePipeHandle message_pipe,
                              base::checked_cast<uint32_t>(num_bytes), handles,
                              base::checked_cast<uint32_t>(num_handles),
                              &append_options, &buffer, &buffer_size);
-  if (rv != MOJO_RESULT_OK)
+  if (rv != MOJO_RESULT_OK) {
     return MOJO_RESULT_ABORTED;
+  }
 
   DCHECK(buffer);
   DCHECK_GE(buffer_size, base::checked_cast<uint32_t>(num_bytes));
@@ -53,12 +54,14 @@ MojoResult ReadMessageRaw(MessagePipeHandle message_pipe,
                           MojoReadMessageFlags flags) {
   ScopedMessageHandle message_handle;
   MojoResult rv = ReadMessageNew(message_pipe, &message_handle, flags);
-  if (rv != MOJO_RESULT_OK)
+  if (rv != MOJO_RESULT_OK) {
     return rv;
+  }
 
   rv = MojoSerializeMessage(message_handle->value(), nullptr);
-  if (rv != MOJO_RESULT_OK && rv != MOJO_RESULT_FAILED_PRECONDITION)
+  if (rv != MOJO_RESULT_OK && rv != MOJO_RESULT_FAILED_PRECONDITION) {
     return MOJO_RESULT_ABORTED;
+  }
 
   void* buffer = nullptr;
   uint32_t num_bytes = 0;
@@ -83,11 +86,13 @@ MojoResult ReadMessageRaw(MessagePipeHandle message_pipe,
     payload->clear();
   }
 
-  if (handles && !num_handles)
+  if (handles && !num_handles) {
     handles->clear();
+  }
 
-  if (rv != MOJO_RESULT_OK)
+  if (rv != MOJO_RESULT_OK) {
     return MOJO_RESULT_ABORTED;
+  }
 
   return MOJO_RESULT_OK;
 }

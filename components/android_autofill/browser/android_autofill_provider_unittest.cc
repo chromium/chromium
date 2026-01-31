@@ -12,7 +12,6 @@
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
-#include "base/types/cxx23_to_underlying.h"
 #include "components/android_autofill/browser/android_autofill_bridge_factory.h"
 #include "components/android_autofill/browser/android_autofill_features.h"
 #include "components/android_autofill/browser/android_autofill_manager.h"
@@ -37,6 +36,7 @@
 #include "components/autofill/core/common/signatures.h"
 #include "components/autofill/core/common/unique_ids.h"
 #include "components/webauthn/android/mock_webauthn_cred_man_delegate.h"
+#include "components/webauthn/android/stub_webauthn_client_android.h"
 #include "components/webauthn/android/webauthn_cred_man_delegate_factory.h"
 #include "components/webauthn/android/webauthn_cred_man_delegate_factory_test_api.h"
 #include "content/public/test/navigation_simulator.h"
@@ -814,7 +814,14 @@ class AndroidAutofillProviderWithCredManTest
     InitializeWebAuthnFactoryWithMock();
   }
 
+  void TearDown() override {
+    webauthn::WebAuthnClientAndroid::ClearClientForTesting();
+    AndroidAutofillProviderTestBase::TearDown();
+  }
+
   void InitializeWebAuthnFactoryWithMock() {
+    webauthn::WebAuthnClientAndroid::SetClient(
+        std::make_unique<webauthn::StubWebAuthnClientAndroid>());
     auto mock_cred_man_delegate =
         std::make_unique<NiceMock<webauthn::MockWebAuthnCredManDelegate>>();
     webauthn::test_api(web_authn_delegate_factory())

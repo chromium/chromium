@@ -91,11 +91,13 @@ void HitTestAggregator::AppendRoot(const SurfaceId& surface_id) {
 
   std::optional<int64_t> trace_id =
       GetTraceIdIfUpdated(surface_id, active_frame_index);
-  TRACE_EVENT_WITH_FLOW1(
-      TRACE_DISABLED_BY_DEFAULT("viz.hit_testing_flow"), "Event.Pipeline",
-      TRACE_ID_GLOBAL(trace_id.value_or(-1)),
-      trace_id ? TRACE_EVENT_FLAG_FLOW_IN : TRACE_EVENT_FLAG_NONE, "step",
-      "AggregateHitTestData(Root)");
+  TRACE_EVENT(TRACE_DISABLED_BY_DEFAULT("viz.hit_testing_flow"),
+              "Event.Pipeline", "step", "AggregateHitTestData(Root)",
+              [&](perfetto::EventContext& ctx) {
+                if (trace_id) {
+                  perfetto::TerminatingFlow::Global (*trace_id)(ctx);
+                }
+              });
 
   DCHECK(referenced_child_regions_.empty());
   referenced_child_regions_.insert(surface_id.frame_sink_id());
@@ -175,11 +177,13 @@ size_t HitTestAggregator::AppendRegion(size_t region_index,
 
         std::optional<int64_t> trace_id =
             GetTraceIdIfUpdated(surface_id, active_frame_index);
-        TRACE_EVENT_WITH_FLOW1(
-            TRACE_DISABLED_BY_DEFAULT("viz.hit_testing_flow"), "Event.Pipeline",
-            TRACE_ID_GLOBAL(trace_id.value_or(-1)),
-            trace_id ? TRACE_EVENT_FLAG_FLOW_IN : TRACE_EVENT_FLAG_NONE, "step",
-            "AggregateHitTestData");
+        TRACE_EVENT(TRACE_DISABLED_BY_DEFAULT("viz.hit_testing_flow"),
+                    "Event.Pipeline", "step", "AggregateHitTestData",
+                    [&](perfetto::EventContext& ctx) {
+                      if (trace_id) {
+                        perfetto::TerminatingFlow::Global (*trace_id)(ctx);
+                      }
+                    });
       }
 
       for (const auto& child_region : hit_test_region_list->regions) {

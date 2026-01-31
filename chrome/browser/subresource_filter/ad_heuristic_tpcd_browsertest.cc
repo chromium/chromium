@@ -8,7 +8,6 @@
 
 #include "base/check.h"
 #include "base/command_line.h"
-#include "base/containers/contains.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/test/bind.h"
@@ -31,8 +30,6 @@
 #include "components/content_settings/core/common/pref_names.h"
 #include "components/metrics/content/subprocess_metrics_provider.h"
 #include "components/prefs/pref_service.h"
-#include "components/privacy_sandbox/tpcd_pref_names.h"
-#include "components/privacy_sandbox/tpcd_utils.h"
 #include "components/subresource_filter/core/common/test_ruleset_utils.h"
 #include "components/tpcd/metadata/browser/parser.h"
 #include "components/user_prefs/user_prefs.h"
@@ -194,8 +191,7 @@ class AdHeuristicTPCDBrowserTestBase
     register_response->WaitForRequest();
 
     // COOKIE SHOULD BE ALLOWED.
-    EXPECT_TRUE(
-        base::Contains(register_response->http_request()->headers, "Cookie"));
+    EXPECT_TRUE(register_response->http_request()->headers.contains("Cookie"));
 
     // Check JS access.
     NavigateFrameTo("b.test", "/empty.html?isad=1");
@@ -221,15 +217,13 @@ class AdHeuristicTPCDBrowserTestBase
     FetchCookies("b.test", "/empty.html");
     register_response2->WaitForRequest();
     // COOKIE SHOULD NOT BE BLOCKED.
-    EXPECT_TRUE(
-        base::Contains(register_response2->http_request()->headers, "Cookie"));
+    EXPECT_TRUE(register_response2->http_request()->headers.contains("Cookie"));
 
     FetchCookies("b.test", "/empty.html?isad=1");
     register_response->WaitForRequest();
     // COOKIE SHOULD BE BLOCKED.
-    EXPECT_EQ(
-        base::Contains(register_response->http_request()->headers, "Cookie"),
-        false);
+    EXPECT_EQ(register_response->http_request()->headers.contains("Cookie"),
+              false);
 
     metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
     histogram_tester.ExpectBucketCount(kAdHeuristicOverrideHistogramName,

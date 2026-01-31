@@ -18,7 +18,6 @@
 
 namespace mojo {
 
-// TODO(crbug.com/40870601): Test is failing.
 TEST(NetworkAnonymizationKeyMojomTraitsTest,
      SerializeAndDeserializeDoubleKeyWithCrossSiteFlag) {
   base::UnguessableToken token = base::UnguessableToken::Create();

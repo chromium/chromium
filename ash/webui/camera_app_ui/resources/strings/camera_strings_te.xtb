@@ -48,6 +48,7 @@
 <translation id="2761536921376153655">స్కాన్ రకం</translation>
 <translation id="28682968802727151">మిర్రర్ ప్రివ్యూ</translation>
 <translation id="2879583609344924966"><ph name="CAMERA" /> ప్లగ్-ఇన్ చేశారు.</translation>
+<translation id="3063987824612038785">కెమెరా ఫైల్స్ అన్నీ Google Driveలో సేవ్ అవుతాయి</translation>
 <translation id="3067436040345934772">కుడి వైపునకు ప్యాన్ చేయి</translation>
 <translation id="3081586908890909590">వీడియో రికార్డింగ్ మోడ్‌కు మార్చు</translation>
 <translation id="3091480460059548935">ప్రివ్యూలో టెక్స్ట్‌ను గుర్తించడం</translation>
@@ -67,6 +68,7 @@
 <translation id="3642192109456033823">వీడియోను ప్రాసెస్ చేస్తోంది...</translation>
 <translation id="3789724198583203151">90 డిగ్రీలు అపసవ్య దిశలో తిప్పండి</translation>
 <translation id="3810838688059735925">వీడియో</translation>
+<translation id="386366972082231038">కెమెరా ఫైల్స్ అన్నీ OneDriveలో సేవ్ అవుతాయి</translation>
 <translation id="4060608699153044055">పరికరంలో స్టోరేజ్ స్పేస్ తక్కువగా ఉన్న కారణంగా మీరు రికార్డ్ చేయలేరు. రికార్డ్ చేయడం ప్రారంభించడం కోసం, మీరు మీ పరికరంలో స్పేస్‌ను ఖాళీ చేయవలసి ఉంటుంది.</translation>
 <translation id="4061162772429051350"><ph name="MAGAPIXELS_AMOUNT" /> MP</translation>
 <translation id="4118525110028899586">రికార్డింగ్‌ను పాజ్ చేయి</translation>
@@ -100,6 +102,7 @@
 <translation id="5634947914995388399">డైలాగ్‌ను విస్తరించండి, స్కానింగ్‌ను ఆపివేయండి</translation>
 <translation id="5662366948659129155"><ph name="COUNT" />వ పేజీని స్కాన్ చేస్తోంది</translation>
 <translation id="5671277269877808209">చతురస్రం</translation>
+<translation id="5725797473946373607">తర్వాతిసారి ఈ డైలాగ్‌ను చూపవద్దు</translation>
 <translation id="574392208103952083">మధ్యస్థం</translation>
 <translation id="5746169159649715125">PDF లాగా సేవ్ చేయండి</translation>
 <translation id="5753488212459587150">నిపుణుల మోడ్‌ను ఎనేబుల్ చేయండి</translation>
@@ -156,6 +159,7 @@
 <translation id="7983668134180549431">టెక్స్ట్ గుర్తించబడింది.</translation>
 <translation id="8079255378695216066">రికార్డింగ్‌ను ప్రారంభించడం సాధ్యం కాలేదు</translation>
 <translation id="8120146556401698679">ప్యాన్ చేయి టిల్ట్ చేయి జూమ్ చేయి</translation>
+<translation id="8127459436205030819">మీ ఫైల్స్ మీ అడ్మినిస్ట్రేటర్‌కు కనిపించవచ్చు</translation>
 <translation id="8131740175452115882">నిర్ధారించు</translation>
 <translation id="8145038249676204903">ఫోటోను తీయడానికి మార్చు</translation>
 <translation id="8167081290930651932">ఫోటో ఫార్మాట్‌లో సేవ్ చేయండి</translation>
@@ -165,6 +169,7 @@
 <translation id="8609951387004618906"><ph name="URL" />‌ను తెరవండి</translation>
 <translation id="8629662593426079630">360p</translation>
 <translation id="8711011893539266636">మైక్రోఫోన్‌ను మ్యూట్‌కు టోగుల్ చేయండి. మ్యూట్ ఆన్‌లో ఉంది</translation>
+<translation id="8712637175834984815">అర్థమైంది</translation>
 <translation id="8730621377337864115">పూర్తయింది</translation>
 <translation id="8732462232047530626">మెటాడేటాను ప్రివ్యూ చేయి</translation>
 <translation id="874854738381978209">Wi-Fi నెట్‌వర్క్ గుర్తించబడింది.</translation>

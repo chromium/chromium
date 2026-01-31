@@ -96,9 +96,7 @@
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_WIN)
-#include "components/viz/common/overlay_state/win/overlay_state_service.h"
 #include "gpu/command_buffer/service/shared_image/d3d_image_backing_factory.h"
-#include "media/base/win/mf_feature_checks.h"
 #include "mojo/public/cpp/system/platform_handle.h"
 #include "ui/gl/dcomp_surface_registry.h"
 #include "ui/gl/direct_composition_support.h"
@@ -161,8 +159,14 @@ void RunGetPeakGpuMemoryUsageCallbackOnMainThread(
 gpu::GpuPersistentCache::AsyncDiskWriteOpts
 GetPersistentCacheAsyncDiskWriteOpts() {
   gpu::GpuPersistentCache::AsyncDiskWriteOpts async_opts;
+  // The GpuPersistentCache uses a task runner for doing disk writes in the
+  // background. These are low priority tasks but once the task starts running,
+  // we do not want it to be interrupted because it holds locks on the database.
+  // This behaviour is achieved with the BEST_EFFORT priority and
+  // MUST_USE_FOREGROUND policy.
   async_opts.task_runner = base::ThreadPool::CreateSequencedTaskRunner(
       {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
+       base::ThreadPolicy::MUST_USE_FOREGROUND,
        base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN});
   async_opts.max_pending_bytes_to_write = gpu::GetDefaultGpuDiskCacheSize();
   return async_opts;
@@ -267,16 +271,6 @@ GpuServiceImpl::GpuServiceImpl(
     }
 #endif  // BUILDFLAG(SKIA_USE_METAL)
   }
-
-#if BUILDFLAG(IS_WIN)
-  if (media::SupportMediaFoundationClearPlayback()) {
-    // Initialize the OverlayStateService using the GPUServiceImpl task
-    // sequence.
-    auto* overlay_state_service = OverlayStateService::GetInstance();
-    overlay_state_service->Initialize(
-        base::SequencedTaskRunner::GetCurrentDefault());
-  }
-#endif
 
   weak_ptr_ = weak_ptr_factory_.GetWeakPtr();
 }
@@ -565,10 +559,10 @@ scoped_refptr<gpu::SharedContextState> GpuServiceImpl::GetContextState() {
   return gpu_channel_manager_->GetSharedContextState(&result);
 }
 
-void GpuServiceImpl::SetVisibilityChangedCallback(
-    VisibilityChangedCallback callback) {
+void GpuServiceImpl::SetPriorityChangedCallback(
+    PriorityChangedCallback callback) {
   DCHECK(main_runner_->BelongsToCurrentThread());
-  visibility_changed_callback_ = std::move(callback);
+  priority_changed_callback_ = std::move(callback);
 }
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -1121,8 +1115,8 @@ void GpuServiceImpl::OnBackgrounded() {
 void GpuServiceImpl::OnBackgroundedOnMainThread() {
   gpu_channel_manager_->OnApplicationBackgrounded();
 
-  if (visibility_changed_callback_) {
-    visibility_changed_callback_.Run(false);
+  if (priority_changed_callback_) {
+    priority_changed_callback_.Run(base::Process::Priority::kBestEffort);
     if (gpu_preferences_.enable_gpu_benchmarking_extension) {
       ++gpu_info_.visibility_callback_call_count;
       UpdateGPUInfoGL();
@@ -1145,8 +1139,8 @@ void GpuServiceImpl::OnForegrounded() {
 }
 
 void GpuServiceImpl::OnForegroundedOnMainThread() {
-  if (visibility_changed_callback_) {
-    visibility_changed_callback_.Run(true);
+  if (priority_changed_callback_) {
+    priority_changed_callback_.Run(base::Process::Priority::kUserBlocking);
     if (gpu_preferences_.enable_gpu_benchmarking_extension) {
       ++gpu_info_.visibility_callback_call_count;
       UpdateGPUInfoGL();
@@ -1155,16 +1149,6 @@ void GpuServiceImpl::OnForegroundedOnMainThread() {
   gpu_channel_manager_->OnApplicationForegounded();
   base::allocator::PartitionAllocSupport::Get()->OnForegrounded();
 }
-
-#if !BUILDFLAG(IS_ANDROID)
-void GpuServiceImpl::OnMemoryPressure(base::MemoryPressureLevel level) {
-  // Forward the notification to the registry of MemoryPressureListeners.
-  base::SingleThreadTaskRunner::GetMainThreadDefault()->PostTask(
-      FROM_HERE,
-      base::BindOnce(
-          &base::MemoryPressureListenerRegistry::NotifyMemoryPressure, level));
-}
-#endif
 
 #if BUILDFLAG(IS_APPLE)
 void GpuServiceImpl::BeginCATransaction() {

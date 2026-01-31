@@ -13,7 +13,7 @@
 #include "chrome/browser/extensions/extension_browsertest.h"
 #include "chrome/browser/ui/chooser_bubble_testapi.h"
 #include "chrome/browser/ui/toolbar/toolbar_action_view_model.h"
-#include "chrome/browser/ui/views/extensions/extensions_toolbar_container.h"
+#include "chrome/browser/ui/views/extensions/extensions_toolbar_desktop.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_action_view.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
@@ -76,7 +76,7 @@ class DeviceChooserExtensionBrowserTest
     return browser()->tab_strip_model()->GetActiveWebContents();
   }
 
-  ExtensionsToolbarContainer* extensions_container() {
+  ExtensionsToolbarDesktop* extensions_container() {
     return browser()->GetBrowserView().toolbar()->extensions_container();
   }
 

@@ -201,6 +201,16 @@ void FromGWSAbandonedPageLoadMetricsObserver::LogTimingInformationMetrics() {
     builder.SetCategory(category_parameter_id_.value());
   }
 
+  // Log the connection timing information.
+  auto timing = latest_navigation_handle_timing();
+  builder
+      .SetFirstRequestConnectDelayMs(
+          timing.first_request_connect_delay.InMilliseconds())
+      .SetFirstRequestDomainLookupDelayMs(
+          timing.first_request_domain_lookup_delay.InMilliseconds())
+      .SetFirstRequestSslDelayMs(
+          timing.first_request_ssl_delay.InMilliseconds());
+
   builder.Record(ukm::UkmRecorder::Get());
   last_logged_ukm_milestones_ = logged_milestones;
 }

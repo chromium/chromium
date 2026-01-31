@@ -338,4 +338,8 @@ bool GuestPageHolderImpl::OnRenderFrameProxyVisibilityChanged(
   return false;
 }
 
+PrerenderHostId GuestPageHolderImpl::GetPrerenderHostId() {
+  return PrerenderHostId();
+}
+
 }  // namespace content

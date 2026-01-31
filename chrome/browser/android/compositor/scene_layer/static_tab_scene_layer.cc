@@ -62,11 +62,11 @@ SkColor StaticTabSceneLayer::GetBackgroundColor() {
 }
 
 void StaticTabSceneLayer::UpdateTabLayer(JNIEnv* env,
-                                         jint id,
-                                         jboolean can_use_live_layer,
-                                         jint default_background_color,
-                                         jfloat x,
-                                         jfloat y,
+                                         int32_t id,
+                                         bool can_use_live_layer,
+                                         int32_t default_background_color,
+                                         float x,
+                                         float y,
                                          const JavaRef<jobject>& joffset_tag) {
   DCHECK(tab_content_manager_)
       << "TabContentManager must be set before updating the layer";
@@ -112,8 +112,8 @@ void StaticTabSceneLayer::SetTabContentManager(
   }
 }
 
-static jlong JNI_StaticTabSceneLayer_Init(JNIEnv* env,
-                                          const JavaRef<jobject>& jobj) {
+static int64_t JNI_StaticTabSceneLayer_Init(JNIEnv* env,
+                                            const JavaRef<jobject>& jobj) {
   // This will automatically bind to the Java object and pass ownership there.
   StaticTabSceneLayer* scene_layer = new StaticTabSceneLayer(env, jobj);
   return reinterpret_cast<intptr_t>(scene_layer);

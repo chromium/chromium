@@ -4,6 +4,12 @@
 
 package org.chromium.chrome.browser.search_engines.settings;
 
+import static androidx.test.espresso.Espresso.onView;
+import static androidx.test.espresso.assertion.ViewAssertions.doesNotExist;
+import static androidx.test.espresso.assertion.ViewAssertions.matches;
+import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
+import static androidx.test.espresso.matcher.ViewMatchers.withText;
+
 import androidx.preference.Preference;
 import androidx.preference.PreferenceFragmentCompat;
 import androidx.test.filters.SmallTest;
@@ -22,14 +28,18 @@ import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
+import org.chromium.base.test.util.Features.DisableFeatures;
+import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.init.ChromeBrowserInitializer;
 import org.chromium.chrome.browser.profiles.ProfileManager;
+import org.chromium.chrome.browser.search_engines.R;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.chrome.browser.settings.MainSettings;
 import org.chromium.chrome.browser.settings.SettingsActivityTestRule;
 import org.chromium.chrome.test.ChromeBrowserTestRule;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.components.browser_ui.settings.ManagedPreferenceDelegate;
+import org.chromium.components.omnibox.OmniboxFeatureList;
 import org.chromium.components.policy.test.annotations.Policies;
 import org.chromium.components.search_engines.TemplateUrl;
 import org.chromium.components.search_engines.TemplateUrlService;
@@ -164,6 +174,31 @@ public class SearchEngineSettingsTest {
                             keyword,
                             mTemplateUrlService.getDefaultSearchEngineTemplateUrl().getKeyword());
                 });
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"Preferences"})
+    @EnableFeatures(OmniboxFeatureList.OMNIBOX_SITE_SEARCH)
+    public void testSiteSearchEntry_Enabled() throws Exception {
+        ensureTemplateUrlServiceLoaded();
+
+        mSearchEngineSettingsTestRule.startSettingsActivity();
+
+        onView(withText(R.string.manage_search_engines_and_site_search))
+                .check(matches(isDisplayed()));
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"Preferences"})
+    @DisableFeatures(OmniboxFeatureList.OMNIBOX_SITE_SEARCH)
+    public void testSiteSearchEntry_Disabled() throws Exception {
+        ensureTemplateUrlServiceLoaded();
+
+        mSearchEngineSettingsTestRule.startSettingsActivity();
+
+        onView(withText(R.string.manage_search_engines_and_site_search)).check(doesNotExist());
     }
 
     private int indexOfFirstHttpSearchEngine(SearchEngineSettings pref) {

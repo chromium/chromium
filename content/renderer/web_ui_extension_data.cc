@@ -40,7 +40,7 @@ std::string WebUIExtensionData::GetValue(const std::string& key) const {
 }
 
 void WebUIExtensionData::SendMessage(const std::string& message,
-                                     base::Value::List args) {
+                                     base::ListValue args) {
   remote_->Send(message, std::move(args));
 }
 

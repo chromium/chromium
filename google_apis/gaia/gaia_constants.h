@@ -83,6 +83,7 @@ COMPONENT_EXPORT(GOOGLE_APIS) extern const char kSupportContentOAuth2Scope[];
 COMPONENT_EXPORT(GOOGLE_APIS) extern const char kPhotosModuleOAuth2Scope[];
 COMPONENT_EXPORT(GOOGLE_APIS) extern const char kPhotosModuleImageOAuth2Scope[];
 COMPONENT_EXPORT(GOOGLE_APIS) extern const char kSecureConnectOAuth2Scope[];
+COMPONENT_EXPORT(GOOGLE_APIS) extern const char kSearchResultsOAuth2Scope[];
 COMPONENT_EXPORT(GOOGLE_APIS) extern const char kFeedOAuth2Scope[];
 COMPONENT_EXPORT(GOOGLE_APIS) extern const char kKAnonymityServiceOAuth2Scope[];
 COMPONENT_EXPORT(GOOGLE_APIS) extern const char kCalendarReadOnlyOAuth2Scope[];
@@ -165,6 +166,9 @@ COMPONENT_EXPORT(GOOGLE_APIS) extern const char kMantaOAuth2Scope[];
 
 // OAuth2 scope for web history.
 COMPONENT_EXPORT(GOOGLE_APIS) extern const char kWebHistoryOAuth2Scope[];
+
+// OAuth2 scope for Legion.
+COMPONENT_EXPORT(GOOGLE_APIS) extern const char kLegionAuthScope[];
 
 // Constants for the Chrome Refresh Token Binding.
 inline constexpr std::string_view kTokenBindingAssertionSentinel =

@@ -53,7 +53,7 @@ class ApiAccessTokenFetcher {
                                   GoogleServiceAuthError error,
                                   signin::AccessTokenInfo access_token_info);
 
-  raw_ref<signin::IdentityManager, DanglingUntriaged> identity_manager_;
+  raw_ref<signin::IdentityManager> identity_manager_;
   const AccessTokenConfig access_token_config_;
   std::unique_ptr<signin::PrimaryAccountAccessTokenFetcher>
       primary_account_access_token_fetcher_;

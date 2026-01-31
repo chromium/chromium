@@ -34,6 +34,7 @@ VirtualAuthenticator::VirtualAuthenticator(const Options& options)
       has_cred_blob_(options.has_cred_blob),
       has_min_pin_length_(options.has_min_pin_length),
       has_prf_(options.has_prf),
+      has_hmac_secret_mc_(options.has_hmac_secret_mc),
       unique_id_(base::Uuid::GenerateRandomV4().AsLowercaseString()),
       state_(base::MakeRefCounted<device::VirtualFidoDevice::State>()) {
   state_->transport = options.transport;
@@ -154,6 +155,10 @@ VirtualAuthenticator::ConstructDevice() {
           config.ctap2_versions = {std::begin(device::kCtap2Versions2_1),
                                    std::end(device::kCtap2Versions2_1)};
           break;
+        case device::Ctap2Version::kCtap2_2:
+          config.ctap2_versions = {std::begin(device::kCtap2Versions2_2),
+                                   std::end(device::kCtap2Versions2_2)};
+          break;
       }
       config.resident_key_support = has_resident_key_;
       config.large_blob_support = has_large_blob_;
@@ -164,14 +169,18 @@ VirtualAuthenticator::ConstructDevice() {
         // This is required when `prf_support` is set.
         config.internal_account_chooser = true;
       }
+      if (has_hmac_secret_mc_) {
+        config.hmac_secret_support = true;
+        config.hmac_secret_mc_support = true;
+      }
 
       if (
           // Writing a large blob requires obtaining a PinUvAuthToken with
           // permissions if the authenticator is protected by user verification.
           (has_large_blob_ && has_user_verification_) ||
-          // PRF support always requires PIN support because the exchange is
-          // encrypted.
-          has_prf_) {
+          // prf support and hmac-secret-mc support always requires PIN support
+          // because the exchange is encrypted.
+          has_prf_ || has_hmac_secret_mc_) {
         config.pin_uv_auth_token_support = true;
       }
       config.internal_uv_support = has_user_verification_;

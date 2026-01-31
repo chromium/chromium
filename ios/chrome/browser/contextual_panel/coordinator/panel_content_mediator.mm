@@ -10,9 +10,9 @@
 #import "ios/chrome/browser/broadcaster/ui_bundled/chrome_broadcaster.h"
 #import "ios/chrome/browser/contextual_panel/ui/panel_content_consumer.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
-#import "ios/chrome/browser/toolbar/ui_bundled/fullscreen/toolbars_size.h"
-#import "ios/chrome/browser/toolbar/ui_bundled/fullscreen/toolbars_size_observer.h"
-#import "ios/chrome/browser/toolbar/ui_bundled/fullscreen/toolbars_size_observer_bridge.h"
+#import "ios/chrome/browser/toolbar/legacy/ui_bundled/fullscreen/toolbars_size.h"
+#import "ios/chrome/browser/toolbar/legacy/ui_bundled/fullscreen/toolbars_size_observer.h"
+#import "ios/chrome/browser/toolbar/legacy/ui_bundled/fullscreen/toolbars_size_observer_bridge.h"
 
 @interface PanelContentMediator () <ChromeBroadcastObserver,
                                     ToolbarsSizeObserving>
@@ -32,7 +32,7 @@
   if (self) {
     if (IsRefactorToolbarsSize()) {
       _toolbarsUIObserverBridge =
-          std::make_unique<ToolbarsSizeObserverBridge>(self);
+          std::make_unique<ToolbarsSizeObserverBridge>(self, toolbarsSize);
       _toolbarsSize = toolbarsSize;
       [_toolbarsSize addObserver:_toolbarsUIObserverBridge.get()];
     } else {
@@ -73,16 +73,13 @@
   [self.consumer updateBottomToolbarHeight:height];
 }
 
-#pragma mark - ToolbarUIObserving
+#pragma mark - ToolbarsSizeObserving
 
-- (void)OnBottomToolbarHeightChanged {
+- (void)toolbarsSizeDidChangeBottomToolbarHeight:(ToolbarsSize*)toolbarsSize {
   if (IsRefactorToolbarsSize()) {
     [self.consumer
-        updateBottomToolbarHeight:_toolbarsSize.expandedBottomToolbarHeight];
+        updateBottomToolbarHeight:toolbarsSize.expandedBottomToolbarHeight];
   }
-}
-
-- (void)OnTopToolbarHeightChanged {
 }
 
 @end

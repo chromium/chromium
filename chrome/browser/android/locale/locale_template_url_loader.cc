@@ -26,9 +26,9 @@ using base::android::JavaRef;
 using base::android::ScopedJavaGlobalRef;
 using base::android::ScopedJavaLocalRef;
 
-static jlong JNI_LocaleTemplateUrlLoader_Init(JNIEnv* env,
-                                              std::string& locale,
-                                              Profile* profile) {
+static int64_t JNI_LocaleTemplateUrlLoader_Init(JNIEnv* env,
+                                                std::string& locale,
+                                                Profile* profile) {
   return reinterpret_cast<intptr_t>(new LocaleTemplateUrlLoader(
       locale, TemplateURLServiceFactory::GetForProfile(profile), profile));
 }
@@ -53,7 +53,7 @@ void LocaleTemplateUrlLoader::OnProfileWillBeDestroyed(Profile* profile) {
   template_url_service_ = nullptr;
 }
 
-jboolean LocaleTemplateUrlLoader::LoadTemplateUrls(JNIEnv* env) {
+bool LocaleTemplateUrlLoader::LoadTemplateUrls(JNIEnv* env) {
   DCHECK(locale_.length() == 2);
 
   if (!template_url_service_) {

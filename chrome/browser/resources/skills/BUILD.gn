@@ -1,0 +1,61 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//ui/webui/resources/tools/build_webui.gni")
+
+assert(is_win || is_mac || is_linux || is_chromeos,
+       "This target is only supported on Windows, Mac, Linux, or ChromeOS.")
+
+build_webui("build") {
+  grd_prefix = "skills"
+
+  static_files = [
+    "images/skills_empty.svg",
+    "images/skills_empty_dark.svg",
+    "skills.html",
+    "skills_dialog.html",
+  ]
+
+  ts_composite = true
+  ts_files = [
+    "app.html.ts",
+    "app.ts",
+    "discover_skills_page.html.ts",
+    "discover_skills_page.ts",
+    "icons.html.ts",
+    "sidebar.html.ts",
+    "sidebar.ts",
+    "skills_dialog_app.html.ts",
+    "skills_dialog_app.ts",
+    "skills_dialog_browser_proxy.ts",
+    "user_skills_page.html.ts",
+    "user_skills_page.ts",
+  ]
+
+  css_files = [
+    "app.css",
+    "sidebar.css",
+    "skills_dialog.css",
+    "user_skills_page.css",
+  ]
+
+  webui_context_type = "trusted"
+
+  mojo_files_deps = [
+    "//chrome/browser/ui/webui/skills:mojo_bindings_ts__generator",
+    "//components/skills/public:mojo_bindings_ts__generator",
+  ]
+  mojo_files = [
+    "$root_gen_dir/chrome/browser/ui/webui/skills/skills.mojom-webui.ts",
+    "$root_gen_dir/components/skills/public/skill.mojom-webui.ts",
+  ]
+
+  ts_deps = [
+    "//third_party/lit/v3_0:build_ts",
+    "//ui/webui/resources/cr_components/color_change_listener:build_ts",
+    "//ui/webui/resources/cr_elements:build_ts",
+    "//ui/webui/resources/js:build_ts",
+    "//ui/webui/resources/mojo:build_ts",
+  ]
+}

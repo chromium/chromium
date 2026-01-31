@@ -20,24 +20,50 @@ GlicInstanceHelper::GlicInstanceHelper(tabs::TabInterface* tab)
       scoped_unowned_user_data_(tab->GetUnownedUserDataHost(), *this) {}
 
 GlicInstanceHelper::~GlicInstanceHelper() {
-  if (!instance_id_.has_value()) {
-    return;
-  }
   CHECK(tab_);
-  on_destroy_callback_list_.Notify(tab_, instance_id_.value());
+  on_destroy_callback_list_.Notify(tab_);
 }
 
-void GlicInstanceHelper::SetInstanceId(const InstanceId& instance_id) {
-  instance_id_ = instance_id;
-  metrics_.OnBoundToInstance(instance_id);
+std::optional<InstanceId> GlicInstanceHelper::GetInstanceId() const {
+  if (bound_instance_) {
+    return bound_instance_->id();
+  }
+  return std::nullopt;
 }
 
-void GlicInstanceHelper::OnPinnedByInstance(const InstanceId& instance_id) {
-  metrics_.OnPinnedByInstance(instance_id);
+void GlicInstanceHelper::SetBoundInstance(Instance* instance) {
+  bound_instance_ = instance;
+  if (bound_instance_) {
+    metrics_.OnBoundToInstance(bound_instance_->id());
+  }
 }
 
-void GlicInstanceHelper::SetIsDaisyChained() {
-  metrics_.SetIsDaisyChained();
+std::optional<std::string> GlicInstanceHelper::GetConversationId() const {
+  if (bound_instance_) {
+    return bound_instance_->conversation_id();
+  }
+  return std::nullopt;
+}
+
+void GlicInstanceHelper::OnPinnedByInstance(Instance* instance) {
+  CHECK(instance);
+  pinned_instances_.insert(instance);
+  metrics_.OnPinnedByInstance(instance->id());
+}
+
+void GlicInstanceHelper::OnUnpinnedByInstance(Instance* instance) {
+  CHECK(instance);
+  pinned_instances_.erase(instance);
+}
+
+std::vector<GlicInstanceHelper::Instance*>
+GlicInstanceHelper::GetPinnedInstances() const {
+  return std::vector<Instance*>(pinned_instances_.begin(),
+                                pinned_instances_.end());
+}
+
+void GlicInstanceHelper::SetIsDaisyChained(DaisyChainSource source) {
+  metrics_.SetIsDaisyChained(source);
 }
 
 void GlicInstanceHelper::OnDaisyChainAction(DaisyChainFirstAction action) {
@@ -45,8 +71,7 @@ void GlicInstanceHelper::OnDaisyChainAction(DaisyChainFirstAction action) {
 }
 
 base::CallbackListSubscription GlicInstanceHelper::SubscribeToDestruction(
-    base::RepeatingCallback<void(tabs::TabInterface*, const InstanceId&)>
-        callback) {
+    base::RepeatingCallback<void(tabs::TabInterface*)> callback) {
   return on_destroy_callback_list_.Add(std::move(callback));
 }
 

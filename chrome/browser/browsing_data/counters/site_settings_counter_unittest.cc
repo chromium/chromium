@@ -322,7 +322,7 @@ TEST_F(SiteSettingsCounterTest, TranslatedSitesCounting) {
 }
 
 TEST_F(SiteSettingsCounterTest, DiscardingExceptionsCounting) {
-  base::Value::Dict exclusion_map;
+  base::DictValue exclusion_map;
   exclusion_map.Set("a.com", base::TimeToValue(base::Time::Now()));
   exclusion_map.Set("a.com", base::TimeToValue(base::Time::Now()));
   exclusion_map.Set("b.com",

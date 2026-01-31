@@ -8,7 +8,6 @@
 #include "base/memory/raw_ptr.h"
 #include "components/signin/core/browser/account_reconcilor_delegate.h"
 #include "components/signin/public/base/consent_level.h"
-#include "components/signin/public/base/signin_client.h"
 
 namespace signin {
 
@@ -17,8 +16,7 @@ class IdentityManager;
 // AccountReconcilorDelegate specialized for Dice.
 class DiceAccountReconcilorDelegate : public AccountReconcilorDelegate {
  public:
-  DiceAccountReconcilorDelegate(IdentityManager* identity_manager,
-                                SigninClient* signin_client);
+  explicit DiceAccountReconcilorDelegate(IdentityManager* identity_manager);
 
   DiceAccountReconcilorDelegate(const DiceAccountReconcilorDelegate&) = delete;
   DiceAccountReconcilorDelegate& operator=(
@@ -134,7 +132,6 @@ class DiceAccountReconcilorDelegate : public AccountReconcilorDelegate {
       bool first_execution) const;
 
   const raw_ptr<IdentityManager> identity_manager_;
-  const raw_ptr<SigninClient> signin_client_;
 
   // Last known "first account". Used when cookies are lost as a best guess.
   CoreAccountId last_known_first_account_;

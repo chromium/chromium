@@ -76,16 +76,11 @@ HttpStreamPool::Group::IdleStreamSocket::IdleStreamSocket(
 
 HttpStreamPool::Group::IdleStreamSocket::~IdleStreamSocket() = default;
 
-HttpStreamPool::Group::Group(
-    HttpStreamPool* pool,
-    HttpStreamKey stream_key,
-    std::optional<QuicSessionAliasKey> quic_session_alias_key)
+HttpStreamPool::Group::Group(HttpStreamPool* pool, HttpStreamKey stream_key)
     : pool_(pool),
       stream_key_(std::move(stream_key)),
       spdy_session_key_(stream_key_.CalculateSpdySessionKey()),
-      quic_session_alias_key_(quic_session_alias_key.has_value()
-                                  ? std::move(*quic_session_alias_key)
-                                  : stream_key_.CalculateQuicSessionAliasKey()),
+      quic_session_alias_key_(stream_key_.CalculateQuicSessionAliasKey()),
       net_log_(
           NetLogWithSource::Make(http_network_session()->net_log(),
                                  NetLogSourceType::HTTP_STREAM_POOL_GROUP)),
@@ -99,7 +94,7 @@ HttpStreamPool::Group::Group(
   TRACE_EVENT_INSTANT("net.stream", "Group::Group", track_, flow_,
                       "destination", stream_key_.destination().Serialize());
   net_log_.BeginEvent(NetLogEventType::HTTP_STREAM_POOL_GROUP_ALIVE, [&] {
-    base::Value::Dict dict;
+    base::DictValue dict;
     dict.Set("stream_key", stream_key_.ToValue());
     dict.Set("force_quic", force_quic_);
     return dict;
@@ -134,7 +129,7 @@ std::unique_ptr<HttpStreamPoolHandle> HttpStreamPool::Group::CreateHandle(
                       "handed_out_stream_count", handed_out_stream_count_);
   net_log_.AddEvent(NetLogEventType::HTTP_STREAM_POOL_GROUP_HANDLE_CREATED,
                     [&] {
-                      base::Value::Dict dict;
+                      base::DictValue dict;
                       socket->NetLog().source().AddToEventParameters(dict);
                       dict.Set("reuse_type", static_cast<int>(reuse_type));
                       return dict;
@@ -382,8 +377,8 @@ void HttpStreamPool::Group::OnAttemptManagerComplete(
   MaybeComplete();
 }
 
-base::Value::Dict HttpStreamPool::Group::GetInfoAsValue() const {
-  base::Value::Dict dict;
+base::DictValue HttpStreamPool::Group::GetInfoAsValue() const {
+  base::DictValue dict;
   dict.Set("active_socket_count", static_cast<int>(ActiveStreamSocketCount()));
   dict.Set("idle_socket_count", static_cast<int>(IdleStreamSocketCount()));
   dict.Set("handed_out_socket_count",

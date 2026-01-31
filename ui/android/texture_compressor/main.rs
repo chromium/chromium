@@ -51,6 +51,7 @@ fn main() {
     let args: Vec<String> = env::args().collect();
     if args.len() < 3 || args.len() > 4 {
         eprintln!("Usage: {} <input.png> <output.png> [etc1_output.etc1]", args[0]);
+        eprintln!("\n[etc1_output]: If specified, write intermediate encoder output to this path.");
         std::process::exit(1);
     }
 

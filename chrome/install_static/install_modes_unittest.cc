@@ -122,6 +122,9 @@ TEST(InstallModes, VerifyModes) {
     // Assert that pdf_doc_icon_resource_index is set.
     ASSERT_THAT(mode.pdf_doc_icon_resource_index, Ne(0));
 
+    // Every mode must specify a direct launch URL scheme; empty string is okay.
+    ASSERT_THAT(mode.direct_launch_url_scheme, Ne(nullptr));
+
     // UNSUPPORTED and USE_GOOGLE_UPDATE_INTEGRATION are mutually exclusive.
 #if !BUILDFLAG(USE_GOOGLE_UPDATE_INTEGRATION)
     ASSERT_THAT(mode.channel_strategy, Eq(ChannelStrategy::UNSUPPORTED));

@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
-
 #include "base/metrics/field_trial.h"
 
 #include <algorithm>
@@ -15,6 +10,7 @@
 
 #include "base/base_switches.h"
 #include "base/command_line.h"
+#include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/debug/crash_logging.h"
 #include "base/logging.h"
@@ -936,9 +932,7 @@ void FieldTrialList::ClearParamsFromSharedMemoryForTesting() {
     pickle.WriteString(group_name);
     pickle.WriteBool(is_overridden);
 
-    if (prev_entry->pickle_size == pickle.size() &&
-        memcmp(prev_entry->GetPickledDataPtr(), pickle.data(), pickle.size()) ==
-            0) {
+    if (prev_entry->GetPickledDataAsSpan() == base::span(pickle)) {
       // If the new entry is going to be the exact same as the existing one,
       // then simply keep the existing one to avoid taking extra space in the
       // allocator. This should mean that this trial has no params.
@@ -960,8 +954,8 @@ void FieldTrialList::ClearParamsFromSharedMemoryForTesting() {
     new_entry->pickle_size = pickle.size();
 
     // TODO(lawrencewu): Modify base::Pickle to be able to write over a section
-    // in memory, so we can avoid this memcpy.
-    memcpy(new_entry->GetPickledDataPtr(), pickle.data(), pickle.size());
+    // in memory, so we can avoid this copy.
+    new_entry->GetPickledDataAsSpan().copy_from(pickle);
 
     // Update the ref on the field trial and add it to the list to be made
     // iterable.
@@ -1158,8 +1152,8 @@ void FieldTrialList::AddToAllocatorWhileLocked(
   entry->pickle_size = pickle.size();
 
   // TODO(lawrencewu): Modify base::Pickle to be able to write over a section in
-  // memory, so we can avoid this memcpy.
-  memcpy(entry->GetPickledDataPtr(), pickle.data(), pickle.size());
+  // memory, so we can avoid this copy.
+  entry->GetPickledDataAsSpan().copy_from(pickle);
 
   allocator->MakeIterable(ref);
   field_trial->ref_ = ref;

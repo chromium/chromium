@@ -34,7 +34,7 @@ void GuestTosScreenHandler::DeclareLocalizedValues(
 
 void GuestTosScreenHandler::Show(const std::string& google_eula_url,
                                  const std::string& cros_eula_url) {
-  base::Value::Dict data;
+  base::DictValue data;
   data.Set("googleEulaUrl", google_eula_url);
   data.Set("crosEulaUrl", cros_eula_url);
   ShowInWebUI(std::move(data));

@@ -33,8 +33,8 @@ void JsSandboxIsolateCallback::ReportResult(const std::string& result) {
     base::ScopedFD read_fd, write_fd;
     CHECK(base::CreatePipe(&read_fd, &write_fd));
     Java_JsSandboxIsolateFdCallback_onResult(
-        env, UseCallback(), static_cast<jint>(read_fd.release()),
-        static_cast<jint>(result.length()));
+        env, UseCallback(), static_cast<int32_t>(read_fd.release()),
+        static_cast<int32_t>(result.length()));
     // This might return false due to EPIPE if the client closes the fd without
     // reading from it. That is not an error for our use case.
     base::WriteFileDescriptor(write_fd.get(), std::move(result));
@@ -79,17 +79,18 @@ void JsSandboxIsolateCallback::ReportError(const ErrorType error_type,
     base::ScopedFD read_fd, write_fd;
     CHECK(base::CreatePipe(&read_fd, &write_fd));
     Java_JsSandboxIsolateFdCallback_onError(
-        env, UseCallback(), static_cast<jint>(error_type),
-        static_cast<jint>(read_fd.release()),
-        static_cast<jint>(error.length()));
+        env, UseCallback(), static_cast<int32_t>(error_type),
+        static_cast<int32_t>(read_fd.release()),
+        static_cast<int32_t>(error.length()));
     // This might return false due to EPIPE if the client closes the fd without
     // reading from it. That is not an error for our use case.
     base::WriteFileDescriptor(write_fd.get(), std::move(error));
   } else {
     base::android::ScopedJavaLocalRef<jstring> java_string_error =
         base::android::ConvertUTF8ToJavaString(env, error);
-    Java_JsSandboxIsolateCallback_onError(
-        env, UseCallback(), static_cast<jint>(error_type), java_string_error);
+    Java_JsSandboxIsolateCallback_onError(env, UseCallback(),
+                                          static_cast<int32_t>(error_type),
+                                          java_string_error);
   }
 }
 

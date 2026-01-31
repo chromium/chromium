@@ -429,13 +429,13 @@ ExtensionInstallPrompt::GetReEnablePromptTypeForExtension(
 // static
 scoped_refptr<Extension>
 ExtensionInstallPrompt::GetLocalizedExtensionForDisplay(
-    const base::Value::Dict& manifest,
+    const base::DictValue& manifest,
     int flags,
     const std::string& id,
     const std::string& localized_name,
     const std::string& localized_description,
     std::u16string* error) {
-  std::optional<base::Value::Dict> localized_manifest;
+  std::optional<base::DictValue> localized_manifest;
   if (!localized_name.empty() || !localized_description.empty()) {
     localized_manifest = manifest.Clone();
     if (!localized_name.empty()) {

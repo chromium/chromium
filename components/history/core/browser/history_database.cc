@@ -7,7 +7,6 @@
 #include <stdint.h>
 
 #include <algorithm>
-#include <set>
 #include <string>
 #include <tuple>
 #include <utility>
@@ -26,6 +25,7 @@
 #include "sql/meta_table.h"
 #include "sql/statement.h"
 #include "sql/transaction.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
 
 #if BUILDFLAG(IS_APPLE)
 #include "base/apple/backup_util.h"
@@ -278,7 +278,7 @@ void HistoryDatabase::ComputeDatabaseMetrics(
 
   // Compute the advanced metrics even less often, pending timing data showing
   // that's not necessary.
-  if (base::RandInt(1, 3) == 3) {
+  if (base::RandIntInclusive(1, 3) == 3) {
     // Collect all URLs visited within the last month.
     base::Time one_month_ago = base::Time::Now() - base::Days(30);
     sql::Statement url_sql(db_.GetUniqueStatement(
@@ -289,8 +289,8 @@ void HistoryDatabase::ComputeDatabaseMetrics(
     // week and last month.
     int week_url_count = 0;
     int month_url_count = 0;
-    std::set<std::string> week_hosts;
-    std::set<std::string> month_hosts;
+    absl::flat_hash_set<std::string> week_hosts;
+    absl::flat_hash_set<std::string> month_hosts;
     base::Time one_week_ago = base::Time::Now() - base::Days(7);
     while (url_sql.Step()) {
       GURL url(url_sql.ColumnStringView(0));
@@ -358,8 +358,8 @@ DomainsVisitedResult HistoryDatabase::GetUniqueDomainsVisited(
 
   DomainsVisitedResult result;
 
-  std::set<std::string> all_visited_domains_set;
-  std::set<std::string> locally_visited_domains_set;
+  absl::flat_hash_set<std::string> all_visited_domains_set;
+  absl::flat_hash_set<std::string> locally_visited_domains_set;
 
   while (url_sql.Step()) {
     GURL url(url_sql.ColumnStringView(0));
@@ -372,16 +372,14 @@ DomainsVisitedResult HistoryDatabase::GetUniqueDomainsVisited(
       continue;
     }
 
-    if (!all_visited_domains_set.contains(domain)) {
-      all_visited_domains_set.insert(domain);
+    if (all_visited_domains_set.insert(domain).second) {
       result.all_visited_domains.push_back(domain);
     }
 
     bool is_local = url_sql.ColumnStringView(1).empty() &&
                     url_sql.ColumnInt(2) == VisitSource::SOURCE_BROWSED;
 
-    if (is_local && !locally_visited_domains_set.contains(domain)) {
-      locally_visited_domains_set.insert(domain);
+    if (is_local && locally_visited_domains_set.insert(domain).second) {
       result.locally_visited_domains.push_back(domain);
     }
   }

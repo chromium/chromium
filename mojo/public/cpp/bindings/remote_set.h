@@ -10,7 +10,6 @@
 #include <set>
 #include <utility>
 
-#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/memory/scoped_refptr.h"
@@ -37,10 +36,8 @@ using RemoteSetElementId = base::IdTypeU32<internal::RemoteSetElementIdTypeTag>;
 // endpoints whose lifetime is conveniently managed by the set, i.e., remotes
 // are removed from the set automatically when losing a connection).
 template <typename Interface,
-          template <typename>
-          class RemoteType,
-          template <typename>
-          class PendingRemoteType>
+          template <typename> class RemoteType,
+          template <typename> class PendingRemoteType>
 class RemoteSetImpl {
  public:
   using Storage = std::map<RemoteSetElementId, RemoteType<Interface>>;
@@ -153,14 +150,15 @@ class RemoteSetImpl {
   }
 
   // Indicates whether a remote with the given ID is present in the set.
-  bool Contains(RemoteSetElementId id) { return base::Contains(storage_, id); }
+  bool Contains(RemoteSetElementId id) { return storage_.contains(id); }
 
   // Returns an `Interface*` for the given ID, that can be used to issue
   // interface calls.
   Interface* Get(RemoteSetElementId id) {
     auto it = storage_.find(id);
-    if (it == storage_.end())
+    if (it == storage_.end()) {
       return nullptr;
+    }
     return it->second.get();
   }
 
@@ -251,9 +249,9 @@ class RemoteSetImpl {
                     uint32_t custom_reason_code,
                     const std::string& description) {
     Remove(id);
-    if (disconnect_handler_)
+    if (disconnect_handler_) {
       disconnect_handler_.Run(id);
-    else if (disconnect_with_reason_handler_) {
+    } else if (disconnect_with_reason_handler_) {
       disconnect_with_reason_handler_.Run(id, custom_reason_code, description);
     }
   }

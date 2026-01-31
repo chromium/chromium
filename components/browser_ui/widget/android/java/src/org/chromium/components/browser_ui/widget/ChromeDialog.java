@@ -30,6 +30,8 @@ import org.chromium.ui.base.ImmutableWeakReference;
 import org.chromium.ui.edge_to_edge.WindowSystemBarColorHelper;
 import org.chromium.ui.edge_to_edge.layout.EdgeToEdgeLayoutCoordinator;
 import org.chromium.ui.insets.InsetObserver;
+import org.chromium.ui.insets.InsetObserver.WindowInsetsConsumer;
+import org.chromium.ui.insets.InsetObserver.WindowInsetsConsumer.InsetConsumerSource;
 import org.chromium.ui.util.AttrUtils;
 
 /**
@@ -45,6 +47,7 @@ public class ChromeDialog extends ComponentDialog {
     private final Activity mActivity;
     @Nullable private InsetObserver mInsetObserver;
     @Nullable private EdgeToEdgeLayoutCoordinator mEdgeToEdgeLayoutCoordinator;
+    @Nullable private WindowInsetsConsumer mWindowInsetsConsumer;
     private final boolean mShouldPadForWindowInsets;
     private final WindowSystemBarColorHelper mWindowColorHelper;
 
@@ -66,7 +69,7 @@ public class ChromeDialog extends ComponentDialog {
         a.recycle();
 
         mShouldPadForWindowInsets = shouldPadForWindowInsets;
-        if (mShouldPadForWindowInsets && getWindow() != null) {
+        if (getWindow() != null) {
             mInsetObserver =
                     new InsetObserver(
                             new ImmutableWeakReference<>(getWindow().getDecorView().getRootView()),
@@ -83,6 +86,24 @@ public class ChromeDialog extends ComponentDialog {
         mWindowColorHelper = new WindowSystemBarColorHelper(getWindow());
     }
 
+    /**
+     * Registers a window insets consumer with a specified priority.
+     *
+     * <p>Consumers are notified in the order of their pre-defined priority value as defined in
+     * {@link InsetConsumerSource}. A lower-indexed source allows this consumer to process insets
+     * <b>before</b> components with higher-indexed sources.
+     *
+     * @param insetConsumer The consumer to receive window insets.
+     * @param source The priority source from {@link InsetConsumerSource}.
+     */
+    public void addInsetsConsumer(
+            WindowInsetsConsumer insetConsumer, @InsetConsumerSource int source) {
+        if (mInsetObserver == null) return;
+
+        mWindowInsetsConsumer = insetConsumer;
+        mInsetObserver.addInsetsConsumer(insetConsumer, source);
+    }
+
     @Override
     public void setContentView(@LayoutRes int layoutResID) {
         if (DeviceInfo.isAutomotive() && mIsFullScreen) {
@@ -92,7 +113,6 @@ public class ChromeDialog extends ComponentDialog {
             ViewStub stub = findViewById(R.id.original_layout);
             stub.setLayoutResource(layoutResID);
             stub.inflate();
-            // TODO(crbug.com/402226908): Add margins when for dialog when not in fullscreen
         } else if (mShouldPadForWindowInsets && mIsFullScreen) {
             super.setContentView(
                     ensureEdgeToEdgeLayoutCoordinator()
@@ -200,5 +220,15 @@ public class ChromeDialog extends ComponentDialog {
 
     @Nullable EdgeToEdgeLayoutCoordinator getEdgeToEdgeLayoutCoordinatorForTesting() {
         return mEdgeToEdgeLayoutCoordinator;
+    }
+
+    public void destroy() {
+        if (isShowing()) {
+            dismiss();
+        }
+        if (mInsetObserver != null && mWindowInsetsConsumer != null) {
+            mInsetObserver.removeInsetsConsumer(mWindowInsetsConsumer);
+            mWindowInsetsConsumer = null;
+        }
     }
 }

@@ -87,7 +87,7 @@ TEST(PrintingOAuth2TestAuthorizationServerTest, ReceiveGETAndResponse) {
 
   // Process and check the request and send the response.
   ASSERT_EQ(server.ReceiveGET("https://abc/def"), "");
-  base::Value::Dict content;
+  base::DictValue content;
   server.ResponseWithJSON(net::HttpStatusCode::HTTP_CREATED, content);
 
   // Check the response.
@@ -114,7 +114,7 @@ TEST(PrintingOAuth2TestAuthorizationServerTest,
                                1024);
 
   // Process and check the request and send the response.
-  base::Value::Dict content;
+  base::DictValue content;
   ASSERT_EQ(server.ReceivePOSTWithJSON("https://abc/def", content), "");
   EXPECT_EQ(content.size(), 2u);
   EXPECT_EQ(*content.FindString("field1"), "val1");

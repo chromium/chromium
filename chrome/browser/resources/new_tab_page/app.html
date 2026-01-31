@@ -1,7 +1,8 @@
 <!-- #html_wrapper_imports_start
 import {nothing} from '//resources/lit/v3_0/lit.rollup.js';
 #html_wrapper_imports_end -->
-<div id="content">
+<div id="content"
+  ?ntp-threads-rail-open="${this.showComposebox_ && this.enableThreadsRail_}">
   ${this.lazyRender_ && this.microsoftModuleEnabled_ ? html`
     <iframe id="microsoftAuth" src="${this.microsoftAuthIframePath_}"></iframe>
   ` : ''}
@@ -36,7 +37,7 @@ import {nothing} from '//resources/lit/v3_0/lit.rollup.js';
   </ntp-logo>
   ${this.ntpRealboxNextEnabled_ ? html`
     <div id="scrim"
-        @click="${this.showComposebox_ && this.composeboxCloseByClickOutside_ ? this.onComposeboxClickOutside_ : nothing}"
+        @click="${this.onScrimClick_}"
         ?hidden="${!this.showScrim_}"></div>
   ` : ''}
   <div id="searchboxContainer">
@@ -48,6 +49,7 @@ import {nothing} from '//resources/lit/v3_0/lit.rollup.js';
         @open-voice-search="${this.onOpenVoiceSearch_}" ?shown="${this.realboxShown_}"
         ?had-secondary-side="${this.realboxHadSecondarySide}"
         @had-secondary-side-changed="${this.onRealboxHadSecondarySideChanged_}"
+        @context-menu-entrypoint-click="${this.onContextMenuEntrypointClick_}"
         ?can-show-secondary-side="${this.realboxCanShowSecondarySide}"
         ?compose-button-enabled="${this.composeButtonEnabled}"
         ?composebox-enabled="${this.composeboxEnabled}"
@@ -55,31 +57,28 @@ import {nothing} from '//resources/lit/v3_0/lit.rollup.js';
         ?ntp-realbox-next-enabled="${this.ntpRealboxNextEnabled_}"
         ?cycling-placeholders="${this.searchboxCyclingPlaceholders_}"
         @searchbox-input-focus-changed="${this.onInputFocusChanged_}"
-        context-menu-glif-animation-state="${this.contextMenuGlifAnimationState_}">
+        context-menu-glif-animation-state="${this.contextMenuGlifAnimationState_}"
+        ?multi-line-enabled="${this.multiLineEnabled_}">
     </cr-searchbox>
     ${this.showComposebox_ ? html`
-      ${this.enableModalComposebox_ ? html`
-        <div id="dialogAnchor"></div>
-        <dialog id="composeboxDialog">
-          <cr-composebox id="composebox"
-              ?ntp-realbox-next-enabled="${this.ntpRealboxNextEnabled_}"
-              @composebox-initialized="${this.onComposeboxInitialized_}"
-              @close-composebox="${this.closeComposebox_}"
-              @composebox-input-focus-changed="${this.onInputFocusChanged_}"
-              @voice-search-action="${this.onComposeVoiceSearchAction_}"
-              searchbox-layout-mode="${this.realboxLayoutMode_}">
-          </cr-composebox>
-        </dialog>
-      ` : html`
+      <div id="dialogAnchor"></div>
+      <dialog id="composeboxDialog">
         <cr-composebox id="composebox"
             ?ntp-realbox-next-enabled="${this.ntpRealboxNextEnabled_}"
+            ?searchbox-next-enabled="${this.ntpRealboxNextEnabled_}"
+            ?disable-caret-color-animation="${true}"
             @composebox-initialized="${this.onComposeboxInitialized_}"
             @close-composebox="${this.closeComposebox_}"
             @composebox-input-focus-changed="${this.onInputFocusChanged_}"
-            @voice-search-query="${this.onComposeVoiceSearchAction_}"
+            @context-menu-entrypoint-click="${this.onContextMenuEntrypointClick_}"
+            @voice-search-action="${this.onComposeVoiceSearchAction_}"
             searchbox-layout-mode="${this.realboxLayoutMode_}">
         </cr-composebox>
-      `}
+        ${this.enableThreadsRail_ ? html`
+          <cr-threads-rail id="threadsRail">
+          </cr-threads-rail>
+        ` : ''}
+      </dialog>
     ` : ''}
     ${this.showLensUploadDialog_ ? html`
       <ntp-lens-upload-dialog id="lensUploadDialog"
@@ -90,6 +89,7 @@ import {nothing} from '//resources/lit/v3_0/lit.rollup.js';
   ${this.lazyRender_
     && this.ntpNextFeaturesEnabled_ && this.isActionChipsVisible_ ? html`
     <ntp-action-chips
+        ?show-background="${this.showActionChipsBackground_()}"
         @action-chip-click="${this.openComposebox_}"
         @action-chips-retrieval-state-changed="${this.onActionChipsRetrievalStateChanged_}">
     </ntp-action-chips>
@@ -107,7 +107,8 @@ import {nothing} from '//resources/lit/v3_0/lit.rollup.js';
       <cr-most-visited id="mostVisited" .theme="${this.theme_?.mostVisited || null}"
           single-row reflow-on-overflow
           ?expandable-tiles-enabled="${this.ntpNextFeaturesEnabled_}"
-          max-tiles-before-show-more="${this.maxTilesBeforeShowMore_}">
+          max-tiles-before-show-more="${this.maxTilesBeforeShowMore_}"
+          @most-visited-auto-removed="${this.showAutoRemovedToast_}">
       </cr-most-visited>
     ` : ''}
     ${this.middleSlotPromoEnabled_ ? html`
@@ -123,9 +124,20 @@ import {nothing} from '//resources/lit/v3_0/lit.rollup.js';
             @modules-shown-to-user-changed="${this.onModulesShownToUserChanged_}"
             @customize-module="${this.onCustomizeModule_}"
             @modules-loaded="${this.onModulesLoaded_}"
+            @modules-auto-removed="${this.showAutoRemovedToast_}"
             ?hidden="${!this.promoAndModulesLoaded_}">
         </ntp-modules>
       `}
+    ` : ''}
+    ${this.shortcutsEnabled_ || this.modulesEnabled_ ? html`
+      <cr-toast id="undoToast" duration="10000">
+        <div id="undoToastMessage">${this.undoAutoRemovalMessage_ || ''}</div>
+        <cr-button id="undoButton"
+            aria-label="$i18n{undoDescription}"
+            @click="${this.onAutoRemovalUndoClick_}">
+          $i18n{undo}
+        </cr-button>
+      </cr-toast>
     ` : ''}
     ${ this.showBrowserPromo_ ? (() => { switch (this.browserPromoType_) {
      case "simple":
@@ -173,7 +185,7 @@ import {nothing} from '//resources/lit/v3_0/lit.rollup.js';
     ${this.showThemeAttribution_() ? html`
       <div id="themeAttribution">
         <div>$i18n{themeCreatedBy}</div>
-        <img src="${this.theme_!.backgroundImage!.attributionUrl!.url}">
+        <img src="${this.theme_!.backgroundImage!.attributionUrl!}">
       </div>
     ` : ''}
   ` : ''}

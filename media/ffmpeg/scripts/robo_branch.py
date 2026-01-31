@@ -12,13 +12,26 @@ a sanity check that we're being used correctly.
 
 import check_merge
 from datetime import datetime
-import find_patches
 import config_flag_changes
 import os
 import re
 from robo_lib.errors import UserInstructions
 from robo_lib import shell
 import robo_setup
+
+
+def AreGnConfigsDone(cfg):
+    # Try to get everything to build if we haven't committed the configs yet.
+    # Note that the only time we need to do this again is if some change makes
+    # different files added / deleted to the build, or if ffmpeg configure
+    # changes.  We don't need to do this if you just edit ffmpeg sources;
+    # those will be built with the tests if they've changed since last time.
+    #
+    # So, if you're just editing ffmpeg sources to get tests to pass, then you
+    # probably don't need to do this step again.
+    if cfg.force_gn_rebuild():
+        return False
+    return robo_branch.IsCommitOnThisBranch(cfg, cfg.gn_commit_title())
 
 
 def IsWorkingDirectoryClean():
@@ -220,14 +233,6 @@ def CheckMerge(cfg):
     check_merge.main([])
 
 
-def WritePatchesReadme(cfg):
-    """Write the chromium patches file."""
-    shell.log("Generating CHROMIUM.patches file")
-    cfg.chdir_to_ffmpeg_home()
-    with open(os.path.join(cfg.patches_dir_location(), "README"), "w+") as f:
-        find_patches.write_patches_file("HEAD", f)
-
-
 def WriteConfigChangesFile(cfg):
     """Write a file that summarizes the config changes, for easier reviewing."""
     cfg.chdir_to_ffmpeg_home()
@@ -239,8 +244,9 @@ def WriteConfigChangesFile(cfg):
             f.write(f'{delta}\n')
 
 
-def AddAndCommit(cfg, commit_title):
+def AddAndCommit(cfg, commit_title=None):
     """Add everything, and commit locally with |commit_title|"""
+    commit_title = commit_title or cfg.gn_commit_title()
     shell.log("Creating local commit %s" % commit_title)
     cfg.chdir_to_ffmpeg_src()
     if IsWorkingDirectoryClean():
@@ -307,22 +313,6 @@ def IsCommitOnThisBranch(robo_configuration, commit_title):
         "origin/master..%s" % robo_configuration.branch_name()  # nocheck
     ])
     return commit_title in titles
-
-
-def IsPatchesFileDone(robo_configuration):
-    """Return False if and only if the patches file isn't checked in."""
-    if IsCommitOnThisBranch(robo_configuration,
-                            robo_configuration.patches_commit_title()):
-        shell.log("Skipping patches file since already committed")
-        return True
-    return False
-
-
-@RequiresCleanWorkingDirectory
-def UpdatePatchesFileUnconditionally(robo_configuration):
-    """Update the patches file."""
-    WritePatchesReadme(robo_configuration)
-    AddAndCommit(robo_configuration, robo_configuration.patches_commit_title())
 
 
 def IsChromiumReadmeDone(robo_configuration):

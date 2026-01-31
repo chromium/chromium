@@ -50,28 +50,25 @@ class RemoteWebAuthnNativeMessagingHost final
       std::unique_ptr<ChromotingHostServicesProvider> host_service_api_client,
       scoped_refptr<base::SingleThreadTaskRunner> task_runner);
 
-  void ProcessHello(base::Value::Dict response);
-  void ProcessGetRemoteState(base::Value::Dict response);
+  void ProcessHello(base::DictValue response);
+  void ProcessGetRemoteState(base::DictValue response);
 
   // The following methods need to be called with
   // EnsureIpcConnectionThenProcess().
-  void ProcessIsUvpaa(const base::Value::Dict& request,
-                      base::Value::Dict response);
-  void ProcessCreate(const base::Value::Dict& request,
-                     base::Value::Dict response);
-  void ProcessGet(const base::Value::Dict& request, base::Value::Dict response);
-  void ProcessCancel(const base::Value::Dict& request,
-                     base::Value::Dict response);
+  void ProcessIsUvpaa(const base::DictValue& request, base::DictValue response);
+  void ProcessCreate(const base::DictValue& request, base::DictValue response);
+  void ProcessGet(const base::DictValue& request, base::DictValue response);
+  void ProcessCancel(const base::DictValue& request, base::DictValue response);
 
   void OnQueryVersionResult(uint32_t version);
   void OnQueryNextRemoteStateTimeout();
   void OnIpcDisconnected();
-  void OnIsUvpaaResponse(base::Value::Dict response, bool is_available);
-  void OnCreateResponse(base::Value::Dict response,
+  void OnIsUvpaaResponse(base::DictValue response, bool is_available);
+  void OnCreateResponse(base::DictValue response,
                         mojom::WebAuthnCreateResponsePtr remote_response);
-  void OnGetResponse(base::Value::Dict response,
+  void OnGetResponse(base::DictValue response,
                      mojom::WebAuthnGetResponsePtr remote_response);
-  void OnCancelResponse(base::Value::Dict response, bool was_canceled);
+  void OnCancelResponse(base::DictValue response, bool was_canceled);
 
   // Query the next remote state. There are three possible outcomes:
   // 1. Remote state is connected (receiver responds with the version):
@@ -110,20 +107,20 @@ class RemoteWebAuthnNativeMessagingHost final
   // is valid. Please check `is_connection_valid_` explicitly.
   bool EnsureRemoteBound();
 
-  void SendMessageToClient(base::Value::Dict message);
+  void SendMessageToClient(base::DictValue message);
 
   // Finds and returns the message ID from |response|. If message ID is not
   // found, |response| will be attached with a WebAuthn error dict and sent to
   // the NMH client, and `nullptr` will be returned.
-  const base::Value* FindMessageIdOrSendError(base::Value::Dict& response);
+  const base::Value* FindMessageIdOrSendError(base::DictValue& response);
 
   // Finds and returns request[request_data_key]. If request_data_key is not
   // found, |response| will be attached with a WebAuthn error dict and sent to
   // the NMH client, and `nullptr` will be returned.
   const std::string* FindRequestDataOrSendError(
-      const base::Value::Dict& request,
+      const base::DictValue& request,
       const std::string& request_data_key,
-      base::Value::Dict& response);
+      base::DictValue& response);
 
   mojo::PendingReceiver<mojom::WebAuthnRequestCanceller> AddRequestCanceller(
       base::Value message_id);
@@ -161,7 +158,7 @@ class RemoteWebAuthnNativeMessagingHost final
 
   // The elements are actually the partial response objects for getRemoteState,
   // i.e. {id: string}.
-  base::queue<base::Value::Dict> pending_get_remote_state_requests_;
+  base::queue<base::DictValue> pending_get_remote_state_requests_;
 };
 
 }  // namespace remoting

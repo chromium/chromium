@@ -59,11 +59,11 @@ namespace idl_basics {
 
   dictionary ManifestKeys {
     // String manifest key.
-    DOMString key_str;
-    MyType2 key_ref;
-    (DOMString or long) inline_choice;
-    ChoiceWithArraysType choice_with_arrays;
-    ChoiceWithOptionalType choice_with_optional;
+    DOMString? key_str;
+    MyType2? key_ref;
+    (DOMString or long)? inline_choice;
+    ChoiceWithArraysType? choice_with_arrays;
+    ChoiceWithOptionalType? choice_with_optional;
   };
 
   callback Callback1 = void();

@@ -104,14 +104,14 @@ const url_pattern_index::flat::UrlRule* FindMatchingUrlRule(
 }
 
 const std::string& ExtractStringFromDictionary(
-    const base::Value::Dict& dictionary,
+    const base::DictValue& dictionary,
     const std::string& key) {
   const std::string* found = dictionary.FindString(key);
   CHECK(found);
   return *found;
 }
 
-int ExtractIntFromDictionary(const base::Value::Dict& dictionary,
+int ExtractIntFromDictionary(const base::DictValue& dictionary,
                              const std::string& key) {
   const std::string& int_string = ExtractStringFromDictionary(dictionary, key);
   int result;

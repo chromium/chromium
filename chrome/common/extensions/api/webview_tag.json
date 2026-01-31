@@ -859,7 +859,7 @@
           {
             "type": "function",
             "name": "callback",
-            "description": "Called after the navigation has either failed or completed successfully.",
+            "description": "Resolves after the navigation has either failed or completed successfully.",
             "optional": true,
             "parameters": [
               {
@@ -974,7 +974,7 @@
           {
             "type": "function",
             "name": "callback",
-            "description": "Called after the navigation has either failed or completed successfully.",
+            "description": "Resolves after the navigation has either failed or completed successfully.",
             "optional": true,
             "parameters": [
               {
@@ -1051,7 +1051,7 @@
           {
             "type": "function",
             "name": "callback",
-            "description": "Called after the navigation has either failed or completed successfully.",
+            "description": "Resolves after the navigation has either failed or completed successfully.",
             "optional": true,
             "parameters": [
               {

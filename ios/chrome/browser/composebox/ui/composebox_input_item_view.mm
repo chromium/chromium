@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/composebox/ui/composebox_input_item_view.h"
 
+#import "ios/chrome/browser/composebox/public/composebox_constants.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
@@ -76,10 +77,11 @@ const CGFloat kTrailingMargin = 8.0;
 
   [self updateGradient];
 
-  if (isImageItem) {
-    _previewImageView.image = item.previewImage;
-  } else {
-    if (item.type == ComposeboxInputItemType::kComposeboxInputItemTypeFile) {
+  switch (item.type) {
+    case ComposeboxInputItemType::kComposeboxInputItemTypeImage:
+      _previewImageView.image = item.previewImage;
+      break;
+    case ComposeboxInputItemType::kComposeboxInputItemTypeFile: {
       UIImageSymbolConfiguration* configuration = [UIImageSymbolConfiguration
           configurationWithPointSize:kLeadingIconSize
                               weight:UIImageSymbolWeightMedium
@@ -95,16 +97,15 @@ const CGFloat kTrailingMargin = 8.0;
           kLeadingIconSize / (kLeadingIconSize - kPDFIconIntrinsicPadding);
       _leadingIconImageView.transform = CGAffineTransformScale(
           CGAffineTransformIdentity, compensationScale, compensationScale);
-    } else if (item.type ==
-               ComposeboxInputItemType::kComposeboxInputItemTypeTab) {
+      _titleLabel.text = item.title;
+    } break;
+    case ComposeboxInputItemType::kComposeboxInputItemTypeTab:
       _leadingIconImageView.image =
           item.leadingIconImage
               ?: DefaultSymbolWithPointSize(kGlobeAmericasSymbol,
                                             kLeadingIconSize);
-    } else {
-      _leadingIconImageView.image = item.leadingIconImage;
-    }
-    _titleLabel.text = item.title;
+      _titleLabel.text = item.title;
+      break;
   }
   [self updateFadeViewVisibility];
 }
@@ -135,6 +136,7 @@ const CGFloat kTrailingMargin = 8.0;
 
   // Title Label
   _titleLabel = [[UILabel alloc] init];
+  _titleLabel.isAccessibilityElement = NO;
   _titleLabel.translatesAutoresizingMaskIntoConstraints = NO;
   _titleLabel.font = PreferredFontForTextStyle(
       UIFontTextStyleFootnote, UIFontWeightRegular, kLabelFontSize);

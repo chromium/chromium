@@ -47,7 +47,7 @@ IN_PROC_BROWSER_TEST_F(VerticalTabStripBottomContainerInteractiveUiTest,
                   ui::test::InteractionTestUtil::InputType::kDontCare),
       EnsurePresent(tab_groups::STGEverythingMenu::kCreateNewTabGroup),
       SelectMenuItem(tab_groups::STGEverythingMenu::kCreateNewTabGroup),
-      WaitForShow(kTabGroupEditorBubbleId),
+      WaitForShow(kTabGroupHeaderElementId),
       CheckResult([this]() { return browser()->tab_strip_model()->count(); },
                   2));
 }

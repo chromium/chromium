@@ -8,7 +8,6 @@
 #include <vector>
 
 #include "base/command_line.h"
-#include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/files/file_enumerator.h"
 #include "base/files/file_path.h"
@@ -20,6 +19,8 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
+#include "base/time/time.h"
+#include "base/time/time_override.h"
 #include "build/build_config.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -29,6 +30,7 @@
 #include "components/autofill/content/browser/content_autofill_driver.h"
 #include "components/autofill/content/browser/content_autofill_driver_factory.h"
 #include "components/autofill/content/browser/test_autofill_manager_injector.h"
+#include "components/autofill/core/browser/foundations/autofill_manager_test_api.h"
 #include "components/autofill/core/browser/foundations/browser_autofill_manager.h"
 #include "components/autofill/core/browser/foundations/test_autofill_manager_waiter.h"
 #include "components/autofill/core/browser/heuristic_source.h"
@@ -108,12 +110,12 @@ std::vector<base::FilePath> GetTestFiles() {
 }
 
 std::string FormStructuresToString(
-    const std::map<FormGlobalId, std::unique_ptr<FormStructure>>& forms) {
+    base::span<const FormStructure* const> forms) {
   std::vector<std::string> string_forms;
   string_forms.reserve(forms.size());
   // The forms are sorted by their global ID, which should make the order
   // deterministic.
-  for (const auto& [form_id, form_structure] : forms) {
+  for (const FormStructure* form_structure : forms) {
     std::string string_form;
     std::map<std::string, int> section_to_index;
     for (const auto& field : *form_structure) {
@@ -192,12 +194,16 @@ class FormStructureBrowserTest
 
   std::unique_ptr<HttpResponse> HandleRequest(const HttpRequest& request);
 
+  static base::Time GetTestTime() { return test_time_; }
+
   // The response content to be returned by the embedded test server. Note that
   // this is populated in the main thread as a part of the setup in the
   // GenerateResults method but it is consumed later in the IO thread by the
   // embedded test server to generate the response.
   std::string html_content_;
 
+  static inline base::Time test_time_;
+  std::unique_ptr<base::subtle::ScopedTimeClockOverrides> time_override_;
   test::AutofillBrowserTestEnvironment autofill_test_environment_;
   TestAutofillManagerInjector<TestAutofillManager> autofill_manager_injector_;
   base::test::ScopedFeatureList feature_list_;
@@ -205,6 +211,10 @@ class FormStructureBrowserTest
 
 FormStructureBrowserTest::FormStructureBrowserTest()
     : ::testing::DataDrivenTest(GetTestDataDir(), kFeatureName, kTestName) {
+  std::ignore = base::Time::FromString("Sat, 01 Feb 2025 09:00:00 +0000",
+                                       &FormStructureBrowserTest::test_time_);
+  time_override_ = std::make_unique<base::subtle::ScopedTimeClockOverrides>(
+      &FormStructureBrowserTest::GetTestTime, nullptr, nullptr);
   feature_list_.InitWithFeatures(
       // Enabled
       {
@@ -267,11 +277,11 @@ void FormStructureBrowserTest::GenerateResults(const std::string& input,
   for (const char c : input) {
     // Strip `\n`, `\t`, `\r` from `html` to match old `data:` URL behavior.
     // TODO(crbug.com/40317270): the tests expect weird concatenation behavior
-    // based
-    //   legacy data URL behavior. Fix this so the the tests better represent
-    //   the parsing being done in the wild.
-    if (c != '\r' && c != '\n' && c != '\t')
+    // based on legacy data URL behavior. Fix this so the the tests better
+    // represent the parsing being done in the wild.
+    if (c != '\r' && c != '\n' && c != '\t') {
       html_content_.push_back(c);
+    }
   }
 
   ASSERT_NO_FATAL_FAILURE(ASSERT_TRUE(ui_test_utils::NavigateToURL(
@@ -281,7 +291,8 @@ void FormStructureBrowserTest::GenerateResults(const std::string& input,
   TestAutofillManager* autofill_manager =
       autofill_manager_injector_[web_contents()];
   ASSERT_TRUE(autofill_manager->waiter().Wait(1));
-  *output = FormStructuresToString(autofill_manager->form_structures());
+  *output =
+      FormStructuresToString(test_api(*autofill_manager).form_structures());
 }
 
 std::unique_ptr<HttpResponse> FormStructureBrowserTest::HandleRequest(
@@ -301,7 +312,7 @@ IN_PROC_BROWSER_TEST_P(FormStructureBrowserTest, DataDrivenHeuristics) {
   // Prints the path of the test to be executed.
   LOG(INFO) << GetParam().MaybeAsASCII();
   bool is_expected_to_pass =
-      !base::Contains(GetFailingTestNames(), GetParam().BaseName().value());
+      !GetFailingTestNames().contains(GetParam().BaseName().value());
   RunOneDataDrivenTest(GetParam(), GetOutputDirectory(), is_expected_to_pass);
 #endif
 }

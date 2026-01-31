@@ -8,6 +8,7 @@
 #include "chromeos/ui/base/window_pin_type.h"
 #include "chromeos/ui/base/window_state_type.h"
 #include "ui/base/class_property.h"
+#include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/rect.h"
 
 DEFINE_EXPORTED_UI_CLASS_PROPERTY_TYPE(COMPONENT_EXPORT(CHROMEOS_UI_BASE),
@@ -16,6 +17,7 @@ DEFINE_EXPORTED_UI_CLASS_PROPERTY_TYPE(COMPONENT_EXPORT(CHROMEOS_UI_BASE),
                                        chromeos::AppType)
 DEFINE_EXPORTED_UI_CLASS_PROPERTY_TYPE(COMPONENT_EXPORT(CHROMEOS_UI_BASE),
                                        chromeos::WindowStateType)
+DEFINE_UI_CLASS_PROPERTY_TYPE(chromeos::ResizeBorderInsets*)
 
 namespace chromeos {
 
@@ -28,6 +30,7 @@ DEFINE_UI_CLASS_PROPERTY_KEY(bool, kBlockedForAssistantSnapshotKey, false)
 DEFINE_UI_CLASS_PROPERTY_KEY(bool, kEscHoldToExitFullscreen, false)
 DEFINE_UI_CLASS_PROPERTY_KEY(bool, kUseOverviewToExitFullscreen, false)
 DEFINE_UI_CLASS_PROPERTY_KEY(bool, kUseOverviewToExitPointerLock, false)
+DEFINE_OWNED_UI_CLASS_PROPERTY_KEY(ResizeBorderInsets, kResizeBorderInsets)
 DEFINE_UI_CLASS_PROPERTY_KEY(bool, kNoExitFullscreenOnLock, false)
 
 DEFINE_UI_CLASS_PROPERTY_KEY(bool, kTrackDefaultFrameColors, true)

@@ -81,13 +81,13 @@ class BruschettaLauncherTest : public testing::Test,
     BruschettaServiceFactory::GetForProfile(&profile_)->RegisterInPrefs(
         MakeBruschettaId(kTestVmName), kTestVmConfig);
 
-    base::Value::Dict pref;
-    base::Value::Dict config;
+    base::DictValue pref;
+    base::DictValue config;
     config.Set(prefs::kPolicyEnabledKey,
                static_cast<int>(prefs::PolicyEnabledState::RUN_ALLOWED));
     config.Set(prefs::kPolicyNameKey, "Display Name");
 
-    base::Value::Dict vtpm;
+    base::DictValue vtpm;
     vtpm.Set(prefs::kPolicyVTPMEnabledKey, true);
     vtpm.Set(prefs::kPolicyVTPMUpdateActionKey,
              static_cast<int>(

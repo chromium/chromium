@@ -70,11 +70,11 @@ struct HelpBubbleParams {
     friend bool operator==(const ExtendedProperties&,
                            const ExtendedProperties&) = default;
 
-    base::Value::Dict& values() { return dict_; }
-    const base::Value::Dict& values() const { return dict_; }
+    base::DictValue& values() { return dict_; }
+    const base::DictValue& values() const { return dict_; }
 
    private:
-    base::Value::Dict dict_;
+    base::DictValue dict_;
   };
 
   HelpBubbleParams();

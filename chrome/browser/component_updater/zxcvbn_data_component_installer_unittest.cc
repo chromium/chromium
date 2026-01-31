@@ -74,7 +74,7 @@ class ZxcvbnDataComponentInstallerPolicyTest : public ::testing::Test {
 
   const base::Version& version() const { return version_; }
 
-  const base::Value::Dict& manifest() const { return manifest_; }
+  const base::DictValue& manifest() const { return manifest_; }
 
   const base::FilePath& GetPath() const {
     return component_install_dir_.GetPath();
@@ -165,7 +165,7 @@ class ZxcvbnDataComponentInstallerPolicyTest : public ::testing::Test {
  private:
   base::test::TaskEnvironment task_env_;
   base::Version version_;
-  base::Value::Dict manifest_;
+  base::DictValue manifest_;
   ZxcvbnDataComponentInstallerPolicy policy_;
   base::ScopedTempDir component_install_dir_;
 };
@@ -205,7 +205,7 @@ TEST_F(ZxcvbnDataComponentInstallerPolicyTest,
 TEST_F(ZxcvbnDataComponentInstallerPolicyTest,
        VerifyInstallationExpectsValidVersion) {
   // Verification fails for a missing version.
-  EXPECT_FALSE(policy().VerifyInstallation(base::Value::Dict(), GetPath()));
+  EXPECT_FALSE(policy().VerifyInstallation(base::DictValue(), GetPath()));
 
   // Verification fails for an invalid version.
   SetVersion("1.x2");

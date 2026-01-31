@@ -45,36 +45,43 @@ public class UnsubscribedNotificationsNotificationManagerTest {
     @Test
     @DisableFeatures(ChromeFeatureList.AUTO_REVOKE_SUSPICIOUS_NOTIFICATION)
     public void testDisplayNotificationOneSite() {
-        UnsubscribedNotificationsNotificationManager.displayNotification(1);
+        UnsubscribedNotificationsNotificationManager.displayNotification(
+                /* numRevokedPermissions= */ 1,
+                "example.com",
+                /* anySuspiciousRevocations= */ false,
+                /* anyDisruptiveRevocations= */ true);
         List<MockNotificationManagerProxy.NotificationEntry> notifications =
                 mMockNotificationManager.getNotifications();
         assertEquals(1, notifications.size());
         Notification notification = notifications.get(0).notification;
         assertEquals(
-                "Unsubscribed from one unused site",
+                "Unsubscribed from example.com",
                 notification.extras.getString(Notification.EXTRA_TITLE));
         assertEquals(
-                "Chrome stopped notifications from this site. You can review and manage.",
+                "Chrome stopped a site you haven’t visited recently from sending you notifications",
                 notification.extras.getString(Notification.EXTRA_TEXT));
+        assertEquals(1, notification.actions.length);
         assertEquals("Review", notification.actions[0].title);
         assertNotNull(notification.actions[0].actionIntent);
-        assertEquals("Got it", notification.actions[1].title);
-        assertNotNull(notification.actions[1].actionIntent);
     }
 
     @Test
     @DisableFeatures(ChromeFeatureList.AUTO_REVOKE_SUSPICIOUS_NOTIFICATION)
     public void testDisplayNotificationMultipleSites() {
-        UnsubscribedNotificationsNotificationManager.displayNotification(2);
+        UnsubscribedNotificationsNotificationManager.displayNotification(
+                /* numRevokedPermissions= */ 2,
+                "example.com",
+                /* anySuspiciousRevocations= */ false,
+                /* anyDisruptiveRevocations= */ true);
         List<MockNotificationManagerProxy.NotificationEntry> notifications =
                 mMockNotificationManager.getNotifications();
         assertEquals(1, notifications.size());
         Notification notification = notifications.get(0).notification;
         assertEquals(
-                "Unsubscribed from 2 unused sites",
+                "Unsubscribed from 2 sites",
                 notification.extras.getString(Notification.EXTRA_TITLE));
         assertEquals(
-                "Chrome stopped notifications from these sites. You can review and manage.",
+                "Chrome stopped sites you haven’t visited recently from sending you notifications",
                 notification.extras.getString(Notification.EXTRA_TEXT));
     }
 
@@ -83,41 +90,61 @@ public class UnsubscribedNotificationsNotificationManagerTest {
     public void testDisplayNotificationUpdates() {
         assertEquals(0, mMockNotificationManager.getNotifications().size());
 
-        UnsubscribedNotificationsNotificationManager.displayNotification(0);
+        UnsubscribedNotificationsNotificationManager.displayNotification(
+                /* numRevokedPermissions= */ 0,
+                "example.com",
+                /* anySuspiciousRevocations= */ false,
+                /* anyDisruptiveRevocations= */ true);
         assertEquals(0, mMockNotificationManager.getNotifications().size());
 
-        UnsubscribedNotificationsNotificationManager.displayNotification(1);
+        UnsubscribedNotificationsNotificationManager.displayNotification(
+                /* numRevokedPermissions= */ 1,
+                "example.com",
+                /* anySuspiciousRevocations= */ false,
+                /* anyDisruptiveRevocations= */ true);
         List<MockNotificationManagerProxy.NotificationEntry> notifications =
                 mMockNotificationManager.getNotifications();
         assertEquals(1, notifications.size());
         assertEquals(
-                "Unsubscribed from one unused site",
+                "Unsubscribed from example.com",
                 notifications.get(0).notification.extras.getString(Notification.EXTRA_TITLE));
         assertEquals(
-                "Chrome stopped notifications from this site. You can review and manage.",
+                "Chrome stopped a site you haven’t visited recently from sending you notifications",
                 notifications.get(0).notification.extras.getString(Notification.EXTRA_TEXT));
 
-        UnsubscribedNotificationsNotificationManager.displayNotification(3);
+        UnsubscribedNotificationsNotificationManager.displayNotification(
+                /* numRevokedPermissions= */ 3,
+                "example.com",
+                /* anySuspiciousRevocations= */ false,
+                /* anyDisruptiveRevocations= */ true);
         List<MockNotificationManagerProxy.NotificationEntry> notificationsAfter =
                 mMockNotificationManager.getNotifications();
         assertEquals(1, notificationsAfter.size());
         assertEquals(
-                "Unsubscribed from 3 unused sites",
+                "Unsubscribed from 3 sites",
                 notificationsAfter.get(0).notification.extras.getString(Notification.EXTRA_TITLE));
         assertEquals(
-                "Chrome stopped notifications from these sites. You can review and manage.",
+                "Chrome stopped sites you haven’t visited recently from sending you notifications",
                 notificationsAfter.get(0).notification.extras.getString(Notification.EXTRA_TEXT));
 
         assertThat(notificationsAfter.get(0).notification.when)
                 .isGreaterThan(notifications.get(0).notification.when);
 
-        UnsubscribedNotificationsNotificationManager.displayNotification(0);
+        UnsubscribedNotificationsNotificationManager.displayNotification(
+                /* numRevokedPermissions= */ 0,
+                "example.com",
+                /* anySuspiciousRevocations= */ false,
+                /* anyDisruptiveRevocations= */ false);
         assertEquals(0, mMockNotificationManager.getNotifications().size());
     }
 
     @Test
     public void testUpdateNotificationWithNoPreexistentNotification() {
-        UnsubscribedNotificationsNotificationManager.updateNotification(1);
+        UnsubscribedNotificationsNotificationManager.updateNotification(
+                /* numRevokedPermissions= */ 1,
+                "example.com",
+                /* anySuspiciousRevocations= */ true,
+                /* anyDisruptiveRevocations= */ false);
         List<MockNotificationManagerProxy.NotificationEntry> notifications =
                 mMockNotificationManager.getNotifications();
         assertEquals(0, notifications.size());
@@ -126,26 +153,34 @@ public class UnsubscribedNotificationsNotificationManagerTest {
     @Test
     @DisableFeatures(ChromeFeatureList.AUTO_REVOKE_SUSPICIOUS_NOTIFICATION)
     public void testUpdateNotificationNewNumber() {
-        UnsubscribedNotificationsNotificationManager.displayNotification(1);
+        UnsubscribedNotificationsNotificationManager.displayNotification(
+                /* numRevokedPermissions= */ 1,
+                "example.com",
+                /* anySuspiciousRevocations= */ false,
+                /* anyDisruptiveRevocations= */ true);
         List<MockNotificationManagerProxy.NotificationEntry> notifications =
                 mMockNotificationManager.getNotifications();
         assertEquals(1, notifications.size());
         assertEquals(
-                "Unsubscribed from one unused site",
+                "Unsubscribed from example.com",
                 notifications.get(0).notification.extras.getString(Notification.EXTRA_TITLE));
         assertEquals(
-                "Chrome stopped notifications from this site. You can review and manage.",
+                "Chrome stopped a site you haven’t visited recently from sending you notifications",
                 notifications.get(0).notification.extras.getString(Notification.EXTRA_TEXT));
 
-        UnsubscribedNotificationsNotificationManager.updateNotification(2);
+        UnsubscribedNotificationsNotificationManager.updateNotification(
+                /* numRevokedPermissions= */ 2,
+                "example.com",
+                /* anySuspiciousRevocations= */ false,
+                /* anyDisruptiveRevocations= */ true);
         List<MockNotificationManagerProxy.NotificationEntry> notificationsAfter =
                 mMockNotificationManager.getNotifications();
         assertEquals(1, notificationsAfter.size());
         assertEquals(
-                "Unsubscribed from 2 unused sites",
+                "Unsubscribed from 2 sites",
                 notificationsAfter.get(0).notification.extras.getString(Notification.EXTRA_TITLE));
         assertEquals(
-                "Chrome stopped notifications from these sites. You can review and manage.",
+                "Chrome stopped sites you haven’t visited recently from sending you notifications",
                 notificationsAfter.get(0).notification.extras.getString(Notification.EXTRA_TEXT));
 
         assertEquals(
@@ -156,9 +191,17 @@ public class UnsubscribedNotificationsNotificationManagerTest {
     @Test
     @DisableFeatures(ChromeFeatureList.AUTO_REVOKE_SUSPICIOUS_NOTIFICATION)
     public void testUpdateNotificationDismisses() {
-        UnsubscribedNotificationsNotificationManager.displayNotification(1);
+        UnsubscribedNotificationsNotificationManager.displayNotification(
+                /* numRevokedPermissions= */ 1,
+                "example.com",
+                /* anySuspiciousRevocations= */ false,
+                /* anyDisruptiveRevocations= */ true);
         assertEquals(1, mMockNotificationManager.getNotifications().size());
-        UnsubscribedNotificationsNotificationManager.updateNotification(0);
+        UnsubscribedNotificationsNotificationManager.updateNotification(
+                /* numRevokedPermissions= */ 0,
+                "example.com",
+                /* anySuspiciousRevocations= */ false,
+                /* anyDisruptiveRevocations= */ false);
         assertEquals(0, mMockNotificationManager.getNotifications().size());
     }
 
@@ -167,18 +210,27 @@ public class UnsubscribedNotificationsNotificationManagerTest {
     public void testDisplayUpdateNotification_AutoRevokeSuspiciousNotificationEnabled() {
         assertEquals(0, mMockNotificationManager.getNotifications().size());
 
-        UnsubscribedNotificationsNotificationManager.displayNotification(1);
+        UnsubscribedNotificationsNotificationManager.displayNotification(
+                /* numRevokedPermissions= */ 1,
+                "example.com",
+                /* anySuspiciousRevocations= */ true,
+                /* anyDisruptiveRevocations= */ false);
         List<MockNotificationManagerProxy.NotificationEntry> notifications =
                 mMockNotificationManager.getNotifications();
         assertEquals(1, notifications.size());
         assertEquals(
-                "Unsubscribed from one site",
+                "Unsubscribed from example.com",
                 notifications.get(0).notification.extras.getString(Notification.EXTRA_TITLE));
         assertEquals(
-                "Chrome stopped notifications from this site. You can review and manage.",
+                "Chrome stopped this site from sending notifications because of spam or deceptive"
+                        + " content",
                 notifications.get(0).notification.extras.getString(Notification.EXTRA_TEXT));
 
-        UnsubscribedNotificationsNotificationManager.displayNotification(3);
+        UnsubscribedNotificationsNotificationManager.displayNotification(
+                /* numRevokedPermissions= */ 3,
+                "example.com",
+                /* anySuspiciousRevocations= */ true,
+                /* anyDisruptiveRevocations= */ false);
         List<MockNotificationManagerProxy.NotificationEntry> notificationsSecondDisplay =
                 mMockNotificationManager.getNotifications();
         assertEquals(1, notificationsSecondDisplay.size());
@@ -190,14 +242,19 @@ public class UnsubscribedNotificationsNotificationManagerTest {
                         .extras
                         .getString(Notification.EXTRA_TITLE));
         assertEquals(
-                "Chrome stopped notifications from these sites. You can review and manage.",
+                "Chrome stopped these sites from sending notifications because of spam or deceptive"
+                        + " content",
                 notificationsSecondDisplay
                         .get(0)
                         .notification
                         .extras
                         .getString(Notification.EXTRA_TEXT));
 
-        UnsubscribedNotificationsNotificationManager.updateNotification(2);
+        UnsubscribedNotificationsNotificationManager.updateNotification(
+                /* numRevokedPermissions= */ 2,
+                "example.com",
+                /* anySuspiciousRevocations= */ true,
+                /* anyDisruptiveRevocations= */ true);
         List<MockNotificationManagerProxy.NotificationEntry> notificationsUpdate =
                 mMockNotificationManager.getNotifications();
         assertEquals(1, notificationsUpdate.size());
@@ -205,7 +262,7 @@ public class UnsubscribedNotificationsNotificationManagerTest {
                 "Unsubscribed from 2 sites",
                 notificationsUpdate.get(0).notification.extras.getString(Notification.EXTRA_TITLE));
         assertEquals(
-                "Chrome stopped notifications from these sites. You can review and manage.",
+                "Chrome stopped abusive and unused sites from sending notifications",
                 notificationsUpdate.get(0).notification.extras.getString(Notification.EXTRA_TEXT));
     }
 }

@@ -81,9 +81,9 @@ class ExtensionTelemetryConfigManager {
 
  private:
   // Holds string values that map to the configurable Extension Telemetry
-  // Service variables. Packed into a base::Value::Dict so it can be
+  // Service variables. Packed into a base::DictValue so it can be
   // stored in Chrome prefs.
-  base::Value::Dict configuration_;
+  base::DictValue configuration_;
 
   // ExtensionTelemetryConfigManager uses the pref service to store
   // the telemetry config.

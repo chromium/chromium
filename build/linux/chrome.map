@@ -51,6 +51,43 @@ global:
   __realloc_hook;
   valloc;
 
+  # Symbols for malloc and operator new introduced by the AllocToken feature.
+  # These symbols provide distinct entry points for alloc_token values 0 and 1.
+  # go/keep-sorted start
+  __alloc_token_0__Znam;
+  __alloc_token_0__ZnamRKSt9nothrow_t;
+  __alloc_token_0__ZnamSt11align_val_t;
+  __alloc_token_0__ZnamSt11align_val_tRKSt9nothrow_t;
+  __alloc_token_0__Znwm;
+  __alloc_token_0__ZnwmRKSt9nothrow_t;
+  __alloc_token_0__ZnwmSt11align_val_t;
+  __alloc_token_0__ZnwmSt11align_val_tRKSt9nothrow_t;
+  __alloc_token_0_aligned_alloc;
+  __alloc_token_0_calloc;
+  __alloc_token_0_malloc;
+  __alloc_token_0_memalign;
+  __alloc_token_0_posix_memalign;
+  __alloc_token_0_pvalloc;
+  __alloc_token_0_realloc;
+  __alloc_token_0_valloc;
+  __alloc_token_1__Znam;
+  __alloc_token_1__ZnamRKSt9nothrow_t;
+  __alloc_token_1__ZnamSt11align_val_t;
+  __alloc_token_1__ZnamSt11align_val_tRKSt9nothrow_t;
+  __alloc_token_1__Znwm;
+  __alloc_token_1__ZnwmRKSt9nothrow_t;
+  __alloc_token_1__ZnwmSt11align_val_t;
+  __alloc_token_1__ZnwmSt11align_val_tRKSt9nothrow_t;
+  __alloc_token_1_aligned_alloc;
+  __alloc_token_1_calloc;
+  __alloc_token_1_malloc;
+  __alloc_token_1_memalign;
+  __alloc_token_1_posix_memalign;
+  __alloc_token_1_pvalloc;
+  __alloc_token_1_realloc;
+  __alloc_token_1_valloc;
+  # go/keep-sorted end
+
   # Various flavors of operator new and operator delete.
   _ZdaPv;
   _ZdaPvm;

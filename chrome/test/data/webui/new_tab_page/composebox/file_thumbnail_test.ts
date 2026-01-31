@@ -79,7 +79,7 @@ suite('NewTabPageComposeboxFileThumbnailTest', () => {
   test('display tab file', async () => {
     // Arrange.
     fileThumbnailElement.file = createComposeboxFile(2, {
-      url: {url: 'https://example.com/some/path'},
+      url: 'https://example.com/some/path',
       name: 'some tab',
     });
     await microtasksFinished();
@@ -161,7 +161,7 @@ suite('NewTabPageComposeboxFileThumbnailTest', () => {
   test('clicking tab delete button sends event', async () => {
     // Arrange.
     fileThumbnailElement.file = createComposeboxFile(2, {
-      url: {url: 'https://example.com/some/path'},
+      url: 'https://example.com/some/path',
       name: 'some tab',
     });
     await microtasksFinished();
@@ -181,7 +181,7 @@ suite('NewTabPageComposeboxFileThumbnailTest', () => {
   test('hides tab delete button when not deletable', async () => {
     // Arrange.
     fileThumbnailElement.file = createComposeboxFile(2, {
-      url: {url: 'https://example.com/some/path'},
+      url: 'https://example.com/some/path',
       name: 'some tab',
       isDeletable: false,
     });

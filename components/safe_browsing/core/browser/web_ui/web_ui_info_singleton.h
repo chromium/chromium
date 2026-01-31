@@ -79,17 +79,11 @@ class WebUIInfoSingleton : public RealTimeUrlLookupServiceBase::WebUIDelegate,
   // chrome://safe-browsing tabs.
   void AddToCSBRRsSent(
       std::unique_ptr<ClientSafeBrowsingReportRequest> csbrr) override;
-  // Add the new message in |hit_reports_sent_| and send it to all the open
-  // chrome://safe-browsing tabs.
-  void AddToHitReportsSent(std::unique_ptr<HitReport> hit_report) override;
 
   // Clear the list of the sent ClientSafeBrowsingReportRequest messages.
   void ClearCSBRRsSent();
 
   void SetOnCSBRRLoggedCallbackForTesting(base::OnceClosure on_done);
-
-  // Clear the list of the sent HitReport messages.
-  void ClearHitReportsSent();
 
   // Add the new message in |pg_event_log_| and send it to all the open
   // chrome://safe-browsing tabs.
@@ -149,11 +143,11 @@ class WebUIInfoSingleton : public RealTimeUrlLookupServiceBase::WebUIDelegate,
   // open chrome://safe-browsing tabs.
   void AddToReportingEvents(
       const ::chrome::cros::reporting::proto::UploadEventsRequest& event,
-      const base::Value::Dict& result);
+      const base::DictValue& result);
 
   // Add the reporting event to |reporting_events_| and send it to all the open
   // chrome://safe-browsing tabs.
-  void AddToReportingEvents(const base::Value::Dict& event);
+  void AddToReportingEvents(const base::DictValue& event);
 
   // Clear |reporting_events_| & |upload_event_requests_|.
   void ClearReportingEvents();
@@ -240,12 +234,6 @@ class WebUIInfoSingleton : public RealTimeUrlLookupServiceBase::WebUIDelegate,
     return csbrrs_sent_;
   }
 
-  // Get the list of the sent HitReports that have been collected since the
-  // oldest currently open chrome://safe-browsing tab was opened.
-  const std::vector<std::unique_ptr<HitReport>>& hit_reports_sent() const {
-    return hit_reports_sent_;
-  }
-
   // Get the list of WebUI listener objects.
   const std::vector<
       raw_ptr<WebUIInfoSingletonEventObserver, VectorExperimental>>&
@@ -322,13 +310,13 @@ class WebUIInfoSingleton : public RealTimeUrlLookupServiceBase::WebUIDelegate,
     return log_messages_;
   }
 
-  const std::vector<base::Value::Dict>& reporting_events() {
+  const std::vector<base::DictValue>& reporting_events() {
     return reporting_events_;
   }
 
   const std::vector<
       std::pair<::chrome::cros::reporting::proto::UploadEventsRequest,
-                base::Value::Dict>>&
+                base::DictValue>>&
   upload_event_requests() {
     return upload_event_requests_;
   }
@@ -387,12 +375,6 @@ class WebUIInfoSingleton : public RealTimeUrlLookupServiceBase::WebUIDelegate,
   // Gets fired at the end of the AddToCSBRRsSent function. Only used for tests.
   base::OnceClosure on_csbrr_logged_for_testing_;
 
-  // List of HitReports sent since since the oldest currently open
-  // chrome://safe-browsing tab was opened.
-  // "HitReport" cannot be const, due to being used by
-  // functions that call AllowJavascript(), which is not marked const.
-  std::vector<std::unique_ptr<HitReport>> hit_reports_sent_;
-
   // List of PhishGuard events sent since the oldest currently open
   // chrome://safe-browsing tab was opened.
   std::vector<sync_pb::UserEventSpecifics> pg_event_log_;
@@ -436,9 +418,9 @@ class WebUIInfoSingleton : public RealTimeUrlLookupServiceBase::WebUIDelegate,
 
   // List of reporting events logged since the oldest currently open
   // chrome://safe-browsing tab was opened.
-  std::vector<base::Value::Dict> reporting_events_;
+  std::vector<base::DictValue> reporting_events_;
   std::vector<std::pair<::chrome::cros::reporting::proto::UploadEventsRequest,
-                        base::Value::Dict>>
+                        base::DictValue>>
       upload_event_requests_;
 
 #if BUILDFLAG(SAFE_BROWSING_DOWNLOAD_PROTECTION) && !BUILDFLAG(IS_ANDROID)

@@ -6,7 +6,6 @@
 
 #include <tuple>
 
-#include "base/containers/contains.h"
 #include "content/browser/browser_context_impl.h"
 #include "content/browser/preloading/prefetch/no_vary_search_helper.h"
 #include "content/browser/preloading/prefetch/prefetch_container.h"
@@ -73,8 +72,9 @@ PrefetchDocumentManager::PrefetchDocumentManager(RenderFrameHost* rfh)
 
 PrefetchDocumentManager::~PrefetchDocumentManager() {
   PrefetchService* prefetch_service = GetPrefetchService();
-  if (!prefetch_service)
+  if (!prefetch_service) {
     return;
+  }
 
   // Invalidate weak pointers to `this` a little earlier to avoid callbacks to
   // `this` (especially `PrefetchWillBeDestroyed()`) during
@@ -135,7 +135,7 @@ void PrefetchDocumentManager::ProcessCandidates(
       continue;
     }
 
-    if (!base::Contains(url_set, url)) {
+    if (!url_set.contains(url)) {
       static_cast<PrefetchHandleImpl*>(prefetch.get())
           ->SetPrefetchStatusOnReleaseStartedPrefetch(
               PrefetchStatus::kPrefetchEvictedAfterCandidateRemoved);
@@ -148,13 +148,9 @@ void PrefetchDocumentManager::ProcessCandidates(
 
   auto should_process_entry =
       [&](const blink::mojom::SpeculationCandidatePtr& candidate) {
-        // This code doesn't not support speculation candidates with the action
-        // of |blink::mojom::SpeculationAction::kPrefetchWithSubresources|. See
-        // https://crbug.com/1296309.
         if (candidate->action != blink::mojom::SpeculationAction::kPrefetch) {
           return false;
         }
-
         prefetches.emplace_back(candidate);
         return true;
       };
@@ -318,8 +314,9 @@ PrefetchService* PrefetchDocumentManager::GetPrefetchService() const {
 }
 
 void PrefetchDocumentManager::OnEligibilityCheckComplete(bool is_eligible) {
-  if (is_eligible)
+  if (is_eligible) {
     referring_page_metrics_.prefetch_eligible_count++;
+  }
 }
 
 void PrefetchDocumentManager::OnPrefetchSuccessful(

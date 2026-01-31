@@ -4,9 +4,10 @@
 
 #include "third_party/blink/renderer/modules/ml/ml_context.h"
 
+#include <utility>
+
 #include "base/feature_list.h"
 #include "base/numerics/checked_math.h"
-#include "base/types/cxx23_to_underlying.h"
 #include "base/types/expected.h"
 #include "base/types/expected_macros.h"
 #include "base/types/pass_key.h"
@@ -157,8 +158,8 @@ OperandDataTypeToSharedImageFormat(webnn::OperandDataType data_type) {
 // TODO(crbug.com/427252761): Support other data types in CoreML backend.
 #if BUILDFLAG(IS_MAC)
   if (data_type != webnn::OperandDataType::kFloat16) {
-    return base::unexpected(String::Format(
-        "Invalid operand data type: %s", ToBlinkDataType(data_type).AsCStr()));
+    return base::unexpected(UNSAFE_TODO(String::Format(
+        "Invalid operand data type: %s", ToBlinkDataType(data_type).AsCStr())));
   }
   // The only format supported by CoreML `MLMultiArray::initWithPixelBuffer`.
   return viz::SinglePlaneFormat::kR_F16;
@@ -183,8 +184,8 @@ OperandDataTypeToSharedImageFormat(webnn::OperandDataType data_type) {
     // Default case is for new format types added to MLTensor.
     default:
       return base::unexpected(
-          String::Format("Invalid operand data type: %s",
-                         ToBlinkDataType(data_type).AsCStr()));
+          UNSAFE_TODO(String::Format("Invalid operand data type: %s",
+                                     ToBlinkDataType(data_type).AsCStr())));
   }
 #endif  // BUILDFLAG(IS_MAC)
 }
@@ -1190,7 +1191,7 @@ ScriptPromise<MLTensor> MLContext::createTensor(
   //
   // This assertion protects against the usage flags changing without updating
   // this mapping.
-  static_assert(base::to_underlying(webnn::MLTensorUsageFlags::kMaxValue) == 3);
+  static_assert(std::to_underlying(webnn::MLTensorUsageFlags::kMaxValue) == 3);
   webnn::MLTensorUsage usage;
   if (descriptor->readable()) {
     usage.Put(webnn::MLTensorUsageFlags::kRead);
@@ -1277,7 +1278,7 @@ ScriptPromise<MLTensor> MLContext::createExportableTensor(
   //
   // This assertion protects against the usage flags changing without updating
   // this mapping.
-  static_assert(base::to_underlying(webnn::MLTensorUsageFlags::kMaxValue) == 3);
+  static_assert(std::to_underlying(webnn::MLTensorUsageFlags::kMaxValue) == 3);
   webnn::MLTensorUsage usage;
   usage.Put(webnn::MLTensorUsageFlags::kWebGpuInterop);
   if (descriptor->readable()) {

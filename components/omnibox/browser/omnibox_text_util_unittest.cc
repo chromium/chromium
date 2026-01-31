@@ -268,7 +268,7 @@ TEST_F(OmniboxTextUtilTest, AdjustTextForCopy) {
     // Set the location bar model's URL to be a valid GURL that would generate
     // the test case's url_for_editing.
     location_bar_model()->set_url(
-        url_formatter::FixupURL(input[i].url_for_editing, ""));
+        url_formatter::FixupURL(input[i].url_for_editing));
 
     bool is_popup_open = input[i].is_match_selected_in_popup;
     bool has_user_modified_text =

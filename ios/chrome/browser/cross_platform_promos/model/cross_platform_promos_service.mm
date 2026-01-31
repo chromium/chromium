@@ -9,7 +9,9 @@
 #import "base/functional/callback_helpers.h"
 #import "base/ios/block_types.h"
 #import "base/json/values_util.h"
+#import "base/metrics/histogram_functions.h"
 #import "base/time/time.h"
+#import "components/desktop_to_mobile_promos/features.h"
 #import "components/desktop_to_mobile_promos/pref_names.h"
 #import "components/desktop_to_mobile_promos/promos_types.h"
 #import "components/pref_registry/pref_registry_syncable.h"
@@ -60,8 +62,12 @@ CrossPlatformPromosService::CrossPlatformPromosService(ProfileIOS* profile)
 
 CrossPlatformPromosService::~CrossPlatformPromosService() = default;
 void CrossPlatformPromosService::OnApplicationWillEnterForeground() {
-  Update16thActiveDay();
-  MaybeShowPromo();
+  if (IsMobilePromoOnDesktopRecordActiveDaysEnabled()) {
+    Update16thActiveDay();
+  }
+  if (MobilePromoOnDesktopEnabled()) {
+    MaybeShowPromo();
+  }
 }
 
 void CrossPlatformPromosService::ShowLensPromo(Browser* browser) {
@@ -85,7 +91,7 @@ void CrossPlatformPromosService::MaybeShowPromo() {
     return;
   }
 
-  const base::Value::Dict& promo_reminder =
+  const base::DictValue& promo_reminder =
       profile_->GetPrefs()->GetDict(prefs::kIOSPromoReminder);
   std::optional<int> promo_type =
       promo_reminder.FindInt(prefs::kIOSPromoReminderPromoType);
@@ -110,7 +116,9 @@ void CrossPlatformPromosService::MaybeShowPromo() {
     return;
   }
 
-  switch (static_cast<desktop_to_mobile_promos::PromoType>(*promo_type)) {
+  desktop_to_mobile_promos::PromoType type =
+      static_cast<desktop_to_mobile_promos::PromoType>(*promo_type);
+  switch (type) {
     case desktop_to_mobile_promos::PromoType::kLens:
       ShowLensPromo(browser);
       break;
@@ -125,6 +133,9 @@ void CrossPlatformPromosService::MaybeShowPromo() {
       profile_->GetPrefs()->ClearPref(prefs::kIOSPromoReminder);
       return;
   }
+
+  base::UmaHistogramEnumeration(
+      "IOS.CrossPlatformPromos.Promo.Shown.FromAppForeground", type);
 
   // Clear the promo reminder pref after showing the promo.
   profile_->GetPrefs()->ClearPref(prefs::kIOSPromoReminder);
@@ -154,7 +165,7 @@ bool CrossPlatformPromosService::RecordActiveDay(base::Time day) {
   day = day.LocalMidnight();
   ScopedListPrefUpdate update(profile_->GetPrefs(),
                               prefs::kCrossPlatformPromosActiveDays);
-  base::Value::List& active_days = update.Get();
+  base::ListValue& active_days = update.Get();
 
   // Return early if the given day is the most recent day in the list.
   int size = active_days.size();
@@ -182,7 +193,7 @@ base::Time CrossPlatformPromosService::FindActiveDay(size_t count) {
     return base::Time();
   }
 
-  const base::Value::List& active_days =
+  const base::ListValue& active_days =
       profile_->GetPrefs()->GetList(prefs::kCrossPlatformPromosActiveDays);
 
   if (active_days.size() < count) {

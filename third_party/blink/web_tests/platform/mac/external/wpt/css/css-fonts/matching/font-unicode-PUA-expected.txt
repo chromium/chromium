@@ -1,0 +1,5 @@
+This is a testharness.js-based test.
+[FAIL] PUA character U+F000 is rendered with a non-generic font.
+  assert_equals: expected 22 but got 15.890625
+Harness: the test ran to completion.
+

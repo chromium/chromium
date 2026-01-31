@@ -38,13 +38,13 @@ class PrefHashStoreTransaction {
   // changed).
   virtual prefs::mojom::TrackedPreferenceValidationDelegate::ValueState
   CheckSplitValue(const std::string& path,
-                  const base::Value::Dict* initial_split_value,
+                  const base::DictValue* initial_split_value,
                   std::vector<std::string>* invalid_keys) const = 0;
 
   // Stores hashes for the |value| of the split preference at |path|.
   // |split_value| being an empty dictionary or NULL is equivalent.
   virtual void StoreSplitHash(const std::string& path,
-                              const base::Value::Dict* split_value) = 0;
+                              const base::DictValue* split_value) = 0;
 
   // Indicates whether the store contains a hash for the preference at |path|.
   virtual bool HasHash(const std::string& path) const = 0;
@@ -85,7 +85,7 @@ class PrefHashStoreTransaction {
   // |path|. |value| being an empty dictionary or NULL is equivalent. Requires
   // the encryptor to have been provided at transaction start.
   virtual void StoreSplitEncryptedHash(const std::string& path,
-                                       const base::Value::Dict* value) = 0;
+                                       const base::DictValue* value) = 0;
 
   // Retrieves the stored OS-encrypted hash (Base64 encoded) for the
   // preference at |path|. Returns nullopt if no encrypted hash is stored.

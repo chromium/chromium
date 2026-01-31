@@ -1,0 +1,7 @@
+This is a testharness.js-based test.
+[FAIL] Transient top-level about:blank gets base url from creator = opener
+  assert_equals: about:blank has creator's base URI expected "http://web-platform.test:8001/html/infrastructure/urls/base-url/initial-about-blank-baseURI.window.html" but got "about:blank"
+[FAIL] Transient top-level about:blank gets base url from creator != opener
+  assert_equals: about:blank has creator's base URI expected "http://www1.web-platform.test:8001/" but got "about:blank"
+Harness: the test ran to completion.
+

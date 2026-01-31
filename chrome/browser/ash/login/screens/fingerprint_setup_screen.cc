@@ -160,7 +160,7 @@ void FingerprintSetupScreen::HideImpl() {
   }
 }
 
-void FingerprintSetupScreen::OnUserAction(const base::Value::List& args) {
+void FingerprintSetupScreen::OnUserAction(const base::ListValue& args) {
   const std::string& action_id = args[0].GetString();
   if (!IsFingerprintUserAction(action_id)) {
     BaseScreen::OnUserAction(args);

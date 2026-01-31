@@ -499,11 +499,17 @@ void WebDevToolsAgentImpl::InspectElement(
   if (!node && web_local_frame_impl_->GetFrame()->GetDocument())
     node = web_local_frame_impl_->GetFrame()->GetDocument()->documentElement();
 
+  // There could be multiple sessions and the current ones are not
+  // necessarily interested in inspecting an element. Therefore, we
+  // set the node to inspect for the next created session as well.
+  // With this we cover scenarios like inspecting an element while
+  // running a ChromeDriver or Puppeteer session in the background. The drawback
+  // is that the next session might not be a DevTools frontend one, so it will
+  // get the event when/if the overlay domain is enabled.
+  node_to_inspect_ = node;
   if (!overlay_agents_.empty()) {
     for (auto& it : overlay_agents_)
       it.value->Inspect(node);
-  } else {
-    node_to_inspect_ = node;
   }
 }
 

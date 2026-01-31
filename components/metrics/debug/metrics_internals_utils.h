@@ -12,9 +12,9 @@
 
 namespace metrics {
 
-base::Value::List GetUmaSummary(MetricsService* metrics_service);
+base::ListValue GetUmaSummary(MetricsService* metrics_service);
 
-base::Value::List GetVariationsSummary(
+base::ListValue GetVariationsSummary(
     metrics_services_manager::MetricsServicesManager* metrics_service_manager);
 
 void GetStoredSeedInfo(

@@ -4,6 +4,13 @@
 
 package org.chromium.chrome.browser.feedback;
 
+import static org.chromium.chrome.browser.url_constants.UrlConstantResolver.getOriginalNativeBookmarksUrl;
+import static org.chromium.chrome.browser.url_constants.UrlConstantResolver.getOriginalNativeHistoryUrl;
+import static org.chromium.chrome.browser.url_constants.UrlConstantResolver.getOriginalNativeNtpUrl;
+import static org.chromium.chrome.browser.url_constants.UrlConstantResolver.getOriginalNonNativeBookmarksUrl;
+import static org.chromium.chrome.browser.url_constants.UrlConstantResolver.getOriginalNonNativeHistoryUrl;
+import static org.chromium.chrome.browser.url_constants.UrlConstantResolver.getOriginalNonNativeNtpUrl;
+
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
@@ -21,7 +28,6 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileKeyedMap;
-import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.embedder_support.util.UrlUtilitiesJni;
 
 import java.util.Map;
@@ -165,11 +171,11 @@ public class HelpAndFeedbackLauncherImpl implements HelpAndFeedbackLauncher {
     public static String getHelpContextIdFromUrl(Context context, String url, boolean isIncognito) {
         if (TextUtils.isEmpty(url)) {
             return context.getString(R.string.help_context_general);
-        } else if (url.startsWith(UrlConstants.BOOKMARKS_NATIVE_URL)
-                || url.startsWith(UrlConstants.BOOKMARKS_URL)) {
+        } else if (url.startsWith(getOriginalNativeBookmarksUrl())
+                || url.startsWith(getOriginalNonNativeBookmarksUrl())) {
             return context.getString(R.string.help_context_bookmarks);
-        } else if (url.equals(UrlConstants.NATIVE_HISTORY_URL)
-                || url.equals(UrlConstants.HISTORY_URL)) {
+        } else if (url.equals(getOriginalNativeHistoryUrl())
+                || url.equals(getOriginalNonNativeHistoryUrl())) {
             return context.getString(R.string.help_context_history);
         }
         // Note: For www.google.com the following function returns false.
@@ -179,8 +185,8 @@ public class HelpAndFeedbackLauncherImpl implements HelpAndFeedbackLauncher {
         // For incognito NTP, we want to show incognito help.
         else if (isIncognito) {
             return context.getString(R.string.help_context_incognito);
-        } else if (url.equals(UrlConstants.NTP_URL)
-                || url.equals(UrlConstants.NTP_NON_NATIVE_URL)) {
+        } else if (url.equals(getOriginalNativeNtpUrl())
+                || url.equals(getOriginalNonNativeNtpUrl())) {
             return context.getString(R.string.help_context_new_tab);
         }
         return context.getString(R.string.help_context_webpage);

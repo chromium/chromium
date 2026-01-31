@@ -98,7 +98,7 @@ so we can avoid duplication by storing cross gaps once and share them across all
   - In yellow circles are the gap intersections that would be generated when ***Calculating Intersections during Paint***.
 
 <!--
-TODO(samomekarajr && javiercon): Complete this for masonry.
+TODO(samomekarajr && javiercon): Complete this for grid-lanes.
 -->
 ---
 
@@ -153,5 +153,5 @@ reduced:
 
 <!--
 TODO(javiercon): Complete this for multicol.
-TODO(samomekarajr && javiercon): Complete this for masonry.
+TODO(samomekarajr && javiercon): Complete this for grid-lanes.
 -->

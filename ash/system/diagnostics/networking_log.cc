@@ -4,12 +4,12 @@
 
 #include "ash/system/diagnostics/networking_log.h"
 
+#include <algorithm>
 #include <sstream>
 #include <utility>
 
 #include "base/check.h"
 #include "base/check_is_test.h"
-#include "base/containers/contains.h"
 #include "base/i18n/time_formatting.h"
 #include "base/notreached.h"
 #include "base/strings/string_number_conversions.h"
@@ -314,7 +314,7 @@ void NetworkingLog::UpdateNetworkList(
   // If a network is no longer valid, remove it from the map.
   for (auto iter = latest_network_states_.begin();
        iter != latest_network_states_.end();) {
-    if (!base::Contains(observer_guids, iter->first)) {
+    if (!std::ranges::contains(observer_guids, iter->first)) {
       LogNetworkRemoved(iter->second);
       iter = latest_network_states_.erase(iter);
       continue;
@@ -333,7 +333,7 @@ void NetworkingLog::UpdateNetworkState(mojom::NetworkPtr network) {
     return;
   }
 
-  if (!base::Contains(latest_network_states_, network->observer_guid)) {
+  if (!latest_network_states_.contains(network->observer_guid)) {
     LogNetworkAdded(network);
     latest_network_states_.emplace(network->observer_guid, std::move(network));
     return;
@@ -370,7 +370,7 @@ void NetworkingLog::LogNetworkRemoved(const mojom::NetworkPtr& network) {
 }
 
 void NetworkingLog::LogNetworkChanges(const mojom::NetworkPtr& new_state) {
-  DCHECK(base::Contains(latest_network_states_, new_state->observer_guid));
+  DCHECK(latest_network_states_.contains(new_state->observer_guid));
   const mojom::NetworkPtr& old_state =
       latest_network_states_.at(new_state->observer_guid);
 

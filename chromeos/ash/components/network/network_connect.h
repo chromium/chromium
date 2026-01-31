@@ -107,19 +107,19 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkConnect {
   // TODO(stevenjb): Use ONC properties instead of shill.
   virtual void ConfigureNetworkIdAndConnect(
       const std::string& network_id,
-      const base::Value::Dict& shill_properties,
+      const base::DictValue& shill_properties,
       bool shared) = 0;
 
   // Requests a new network configuration to be created from a dictionary of
   // Shill properties and sends a connect request if the configuration succeeds.
   // The profile used is determined by |shared|.
   // TODO(stevenjb): Use ONC properties instead of shill.
-  virtual void CreateConfigurationAndConnect(base::Value::Dict shill_properties,
+  virtual void CreateConfigurationAndConnect(base::DictValue shill_properties,
                                              bool shared) = 0;
 
   // Requests a new network configuration to be created from a dictionary of
   // Shill properties. The profile used is determined by |shared|.
-  virtual void CreateConfiguration(base::Value::Dict shill_properties,
+  virtual void CreateConfiguration(base::DictValue shill_properties,
                                    bool shared) = 0;
 
  protected:

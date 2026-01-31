@@ -69,13 +69,11 @@ class PermissionPrompt {
     // associated with the requests.
     virtual GURL GetEmbeddingOrigin() const = 0;
 
-    virtual void Accept() = 0;
-    virtual void AcceptThisTime() = 0;
-    virtual void Deny() = 0;
-    virtual void Dismiss() = 0;
-    virtual void Ignore() = 0;
-
-    virtual void SetPromptOptions(PromptOptions prompt_options) = 0;
+    virtual void Accept(const PromptOptions& prompt_options) = 0;
+    virtual void AcceptThisTime(const PromptOptions& prompt_options) = 0;
+    virtual void Deny(const PromptOptions& prompt_options) = 0;
+    virtual void Dismiss(const PromptOptions& prompt_options) = 0;
+    virtual void Ignore(const PromptOptions& prompt_options) = 0;
 
     virtual GeolocationAccuracy GetInitialGeolocationAccuracySelection()
         const = 0;

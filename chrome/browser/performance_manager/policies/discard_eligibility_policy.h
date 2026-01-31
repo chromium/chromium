@@ -7,6 +7,7 @@
 
 #include <map>
 
+#include "base/containers/span.h"
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
@@ -43,16 +44,21 @@ inline constexpr base::TimeDelta kTabAudioProtectionTime = base::TimeDelta();
 inline constexpr base::TimeDelta kTabAudioProtectionTime = base::Minutes(1);
 #endif
 
-// Whether a page can be discarded.
+// LINT.IfChange(CanDiscardResult)
+// Whether a page can be discarded. These values are persisted to logs. Entries
+// should not be renumbered and numeric values should never be reused.
 enum class CanDiscardResult {
   // The page can be discarded. The user should experience minimal disruption
   // from discarding.
-  kEligible,
+  kEligible = 0,
   // The page can be discarded. The user will likely find discarding disruptive.
-  kProtected,
+  kProtected = 1,
   // The page cannot be discarded.
-  kDisallowed,
+  kDisallowed = 2,
+
+  kMaxValue = kDisallowed,
 };
+// LINT.ThenChange(//tools/metrics/histograms/enums.xml:CanDiscardResult)
 
 // Caches page node properties to facilitate sorting.
 class PageNodeSortProxy {
@@ -130,6 +136,17 @@ class DiscardEligibilityPolicy
                                       const std::vector<std::string>& patterns);
   void ClearNoDiscardPatternsForProfile(const std::string& browser_context_id);
 
+  // Indicates if the page will be immediately perceptible to the users after
+  // discard.
+  //
+  // This is a subset of CanDiscard() and is used by
+  // DiscardPageWithCrashedSubframePolicy.
+  bool WillDiscardBePerceptible(const PageNode* page_node) const;
+
+  // Indicates if `page_node` can be discarded. This mostly focuses on whether
+  // the page is in the discard blocklist.
+  bool IsDiscardAllowed(const PageNode* page_node) const;
+
   // Indicates if `page_node` can be urgently discarded, using a list of
   // criteria depending on `discard_reason`. If `minimum_time_in_background` is
   // non-zero, the page will not be discarded if it has not spent at least
@@ -162,8 +179,16 @@ class DiscardEligibilityPolicy
   void OnPassedToGraph(Graph* graph) override;
   void OnTakenFromGraph(Graph* graph) override;
 
+  // Records UMA metrics about the discard decision and the state of the
+  // page node at the time of the decision.
+  void RecordDiscardDecisionMetrics(
+      const PageNode* page_node,
+      DiscardReason discard_reason,
+      CanDiscardResult result,
+      base::span<const CannotDiscardReason> protection_reasons) const;
+
   // NodeDataDescriber implementation:
-  base::Value::Dict DescribePageNodeData(const PageNode* node) const override;
+  base::DictValue DescribePageNodeData(const PageNode* node) const override;
 
   std::map<std::string, std::unique_ptr<url_matcher::URLMatcher>>
       profiles_no_discard_patterns_ GUARDED_BY_CONTEXT(sequence_checker_);

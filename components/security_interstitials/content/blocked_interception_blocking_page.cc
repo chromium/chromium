@@ -62,7 +62,7 @@ BlockedInterceptionBlockingPage::GetTypeForTesting() {
 }
 
 void BlockedInterceptionBlockingPage::PopulateInterstitialStrings(
-    base::Value::Dict& load_time_data) {
+    base::DictValue& load_time_data) {
   blocked_interception_ui_->PopulateStringsForHTML(load_time_data);
 
   PopulateEnhancedProtectionMessage(load_time_data);

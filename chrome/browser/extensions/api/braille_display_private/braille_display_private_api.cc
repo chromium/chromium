@@ -154,7 +154,7 @@ BrailleDisplayPrivateGetDisplayStateFunction::Run() {
 }
 
 void BrailleDisplayPrivateGetDisplayStateFunction::ReplyWithState(
-    base::Value::Dict state) {
+    base::DictValue state) {
   Respond(WithArguments(std::move(state)));
 }
 

@@ -99,10 +99,7 @@ syncer::DataTypeSyncBridge* ContactInfoSyncBridge::FromWebDataService(
 std::unique_ptr<syncer::MetadataChangeList>
 ContactInfoSyncBridge::CreateMetadataChangeList() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return std::make_unique<syncer::SyncMetadataStoreChangeList>(
-      GetSyncMetadataStore(), syncer::CONTACT_INFO,
-      base::BindRepeating(&syncer::DataTypeLocalChangeProcessor::ReportError,
-                          change_processor()->GetWeakPtr()));
+  return std::make_unique<syncer::InMemoryMetadataChangeList>();
 }
 
 std::optional<syncer::ModelError> ContactInfoSyncBridge::MergeFullSyncData(
@@ -172,6 +169,10 @@ ContactInfoSyncBridge::ApplyIncrementalSyncChanges(
         break;
       }
     }
+  }
+
+  if (auto error = ApplyMetadataChanges(std::move(metadata_change_list))) {
+    return error;
   }
 
   // Commits changes through CommitChanges(...) or through the scoped
@@ -251,8 +252,19 @@ void ContactInfoSyncBridge::AutofillProfileChanged(
     return;
   }
 
-  std::unique_ptr<syncer::MetadataChangeList> metadata_change_list =
-      CreateMetadataChangeList();
+  // AutofillProfileChanged() is called as part of a write operation
+  // triggered through AutofillWebDataService. Model changes were already
+  // applied, but not committed yet. They will be committed after all
+  // AutofillWebDataServiceObserverOnDBSequence were notified.
+  // As a result, since this code path executes in the same transaction
+  // that was used to update model data, metadata changes can be written to
+  // the database directly and don't need to be committed from within this
+  // function.
+  syncer::SyncMetadataStoreChangeList metadata_change_list(
+      GetSyncMetadataStore(), syncer::CONTACT_INFO,
+      base::BindRepeating(&syncer::DataTypeLocalChangeProcessor::ReportError,
+                          change_processor()->GetWeakPtr()));
+
   switch (change.type()) {
     case AutofillProfileChange::ADD:
     case AutofillProfileChange::UPDATE:
@@ -262,12 +274,12 @@ void ContactInfoSyncBridge::AutofillProfileChanged(
               change.data_model(),
               GetPossiblyTrimmedContactInfoSpecificsDataFromProcessor(
                   change.key())),
-          metadata_change_list.get());
+          &metadata_change_list);
       break;
     case AutofillProfileChange::REMOVE:
       change_processor()->Delete(change.key(),
                                  syncer::DeletionOrigin::Unspecified(),
-                                 metadata_change_list.get());
+                                 &metadata_change_list);
       break;
     case AutofillProfileChange::HIDE_IN_AUTOFILL:
       auto entity_data = CreateContactInfoEntityDataFromAutofillProfile(
@@ -276,15 +288,10 @@ void ContactInfoSyncBridge::AutofillProfileChanged(
                   change.key()));
       entity_data->specifics.mutable_contact_info()->set_invisible_in_autofill(
         true);
-      change_processor()->Put(
-          change.key(), std::move(entity_data), metadata_change_list.get());
+      change_processor()->Put(change.key(), std::move(entity_data),
+                              &metadata_change_list);
       break;
   }
-
-  // Local changes (written by the processor via the metadata change list) don't
-  // need to be committed, because the open WebDatabase transaction is committed
-  // by the AutofillWebDataService when the original local write operation (that
-  // triggered this notification to the bridge) finishes.
 }
 
 void ContactInfoSyncBridge::ApplyDisableSyncChanges(
@@ -296,6 +303,8 @@ void ContactInfoSyncBridge::ApplyDisableSyncChanges(
         {FROM_HERE, syncer::ModelError::Type::
                         kContactInfoFailedToDeleteProfilesOnDisableSync});
   }
+
+  ApplyMetadataChanges(std::move(delete_metadata_change_list));
 
   // Commits changes through CommitChanges(...) or through the scoped
   // sql::Transaction `transaction` depending on the
@@ -334,6 +343,16 @@ ContactInfoSyncBridge::GetPossiblyTrimmedContactInfoSpecificsDataFromProcessor(
   return change_processor()
       ->GetPossiblyTrimmedRemoteSpecifics(storage_key)
       .contact_info();
+}
+
+std::optional<syncer::ModelError> ContactInfoSyncBridge::ApplyMetadataChanges(
+    std::unique_ptr<syncer::MetadataChangeList> metadata_change_list) {
+  syncer::SyncMetadataStoreChangeList sync_metadata_store_change_list(
+      GetSyncMetadataStore(), syncer::CONTACT_INFO,
+      base::BindRepeating(&syncer::DataTypeLocalChangeProcessor::ReportError,
+                          change_processor()->GetWeakPtr()));
+  metadata_change_list->TransferChangesTo(&sync_metadata_store_change_list);
+  return change_processor()->GetError();
 }
 
 // TODO(crbug.com/40253286): Consider moving this logic to processor.

@@ -38,6 +38,7 @@ class TRACING_EXPORT BackgroundTracingMetricsProvider
       metrics::SystemProfileProto& system_profile_proto);
 
   // metrics::MetricsProvider:
+  void AsyncInit(base::OnceClosure done_callback) override;
   bool HasIndependentMetrics() override;
   void ProvideIndependentMetrics(
       base::OnceClosure serialize_log_callback,

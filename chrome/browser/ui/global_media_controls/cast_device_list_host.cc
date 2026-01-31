@@ -4,7 +4,6 @@
 
 #include "chrome/browser/ui/global_media_controls/cast_device_list_host.h"
 
-#include "base/containers/contains.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/media/router/media_router_feature.h"
 #include "chrome/browser/ui/global_media_controls/media_item_ui_metrics.h"
@@ -47,7 +46,7 @@ bool SupportsTabAudioMirroring(media_router::CastModeSet cast_mode,
                                media_router::SinkIconType icon_type) {
   return base::FeatureList::IsEnabled(
              media_router::kFallbackToAudioTabMirroring) &&
-         base::Contains(cast_mode, media_router::MediaCastMode::TAB_MIRROR) &&
+         cast_mode.contains(media_router::MediaCastMode::TAB_MIRROR) &&
          (icon_type == media_router::SinkIconType::CAST_AUDIO ||
           icon_type == media_router::SinkIconType::CAST_AUDIO_GROUP);
 }
@@ -55,10 +54,9 @@ bool SupportsTabAudioMirroring(media_router::CastModeSet cast_mode,
 std::optional<media_router::MediaCastMode> GetPreferredCastMode(
     media_router::CastModeSet cast_mode,
     media_router::SinkIconType icon_type) {
-  if (base::Contains(cast_mode, media_router::MediaCastMode::PRESENTATION)) {
+  if (cast_mode.contains(media_router::MediaCastMode::PRESENTATION)) {
     return media_router::MediaCastMode::PRESENTATION;
-  } else if (base::Contains(cast_mode,
-                            media_router::MediaCastMode::REMOTE_PLAYBACK)) {
+  } else if (cast_mode.contains(media_router::MediaCastMode::REMOTE_PLAYBACK)) {
     return media_router::MediaCastMode::REMOTE_PLAYBACK;
   } else if (SupportsTabAudioMirroring(cast_mode, icon_type)) {
     return media_router::MediaCastMode::TAB_MIRROR;

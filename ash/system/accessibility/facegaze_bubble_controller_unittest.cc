@@ -14,6 +14,7 @@
 #include "ui/accessibility/accessibility_features.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/color/color_provider.h"
+#include "ui/display/manager/display_manager.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/button/image_button.h"
 
@@ -193,6 +194,28 @@ TEST_F(FaceGazeBubbleControllerTest, HoverCloseButton) {
       GetCloseView()->GetBoundsInScreen().CenterPoint());
   EXPECT_TRUE(GetView());
   EXPECT_TRUE(IsVisible());
+}
+
+TEST_F(FaceGazeBubbleControllerTest, Rotation) {
+  UpdateDisplay("800x600");
+  Update(u"Testing", /*is_warning=*/false);
+  EXPECT_TRUE(GetView());
+
+  auto get_bounds = [this]() {
+    return GetView()->GetWidget()->GetWindowBoundsInScreen();
+  };
+
+  // With 800 width, the center should be around 400.
+  EXPECT_NEAR(400, get_bounds().CenterPoint().x(), 30);
+
+  // Rotate the display.
+  display::Display display = display::Screen::Get()->GetPrimaryDisplay();
+  display_manager()->SetDisplayRotation(display.id(),
+                                        display::Display::ROTATE_90,
+                                        display::Display::RotationSource::USER);
+
+  // After rotation, the width is 600, so the center should be around 300.
+  EXPECT_NEAR(300, get_bounds().CenterPoint().x(), 30);
 }
 
 }  // namespace ash

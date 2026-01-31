@@ -41,8 +41,10 @@ class CSSCounterValue final : public CSSValue {
 
   const CSSCustomIdentValue* Identifier() const { return identifier_; }
 
-  // Returns the explicit integer value associated with the counter, or nullptr
-  // if no value was specified (e.g., `counter-reset: reversed(foo)`).
+  // Returns the explicit integer or number value associated with the counter,
+  // or nullptr if no value was specified. e.g., `counter-reset: reversed(foo)`.
+  // The number type is only used by
+  // |HTMLOListElement::CollectStyleForPresentationAttribute| to avoid overflow.
   const CSSPrimitiveValue* Value() const { return value_; }
 
   bool IsReversed() const { return is_reversed_; }
@@ -59,6 +61,8 @@ class CSSCounterValue final : public CSSValue {
   }
 
   String CustomCSSText() const;
+
+  bool HasRandomFunctions() const;
 
  private:
   Member<const CSSCustomIdentValue> identifier_;

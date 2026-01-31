@@ -67,7 +67,7 @@ bool AutofillVCNEnrollBottomSheetBridge::RequestShowContent(
   }
 
   return Java_AutofillVcnEnrollBottomSheetBridge_requestShowContent(
-      env, java_bridge_, reinterpret_cast<jlong>(this), java_web_contents,
+      env, java_bridge_, reinterpret_cast<int64_t>(this), java_web_contents,
       delegate_->GetMessageText(), delegate_->GetDescriptionText(),
       delegate_->GetLearnMoreLinkText(), issuer_icon_bitmap,
       network_icon_resource_id, std::move(issuer_icon_url),

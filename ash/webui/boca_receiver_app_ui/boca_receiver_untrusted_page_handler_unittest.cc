@@ -12,7 +12,6 @@
 #include <string_view>
 #include <utility>
 
-#include "ash/webui/boca_receiver_app_ui/mojom/boca_receiver.mojom-data-view.h"
 #include "ash/webui/boca_receiver_app_ui/mojom/boca_receiver.mojom.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"

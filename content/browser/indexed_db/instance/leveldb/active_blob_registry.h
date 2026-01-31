@@ -39,11 +39,6 @@ class CONTENT_EXPORT ActiveBlobRegistry {
 
   ~ActiveBlobRegistry();
 
-  // Most methods of this class, and the closure returned by
-  // GetMarkBlobActiveCallback, should only be called on the backing_store's
-  // task runner.  The exception is the closure returned by
-  // GetFinalReleaseCallback, which just calls MarkBlobInactiveThreadSafe.
-
   // Called when the given database is deleted (and all blob infos inside of
   // it). Returns true if any of the deleted blobs are active (i.e. referenced
   // by a client).

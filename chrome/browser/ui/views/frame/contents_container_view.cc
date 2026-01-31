@@ -171,6 +171,11 @@ void ContentsContainerView::UpdateBorderAndOverlay(bool is_in_split,
     ClearBorderRoundedCorners();
     mini_toolbar_->SetVisible(false);
     container_outline_->SetVisible(false);
+    if (capture_contents_border_widget_) {
+      static_cast<ContentsCaptureBorderView*>(
+          capture_contents_border_widget_->GetContentsView())
+          ->SetIsInSplit(false);
+    }
     return;
   }
 
@@ -182,6 +187,11 @@ void ContentsContainerView::UpdateBorderAndOverlay(bool is_in_split,
   // Mini toolbar should only be visible for the inactive contents
   // container view or both depending on configuration.
   mini_toolbar_->UpdateState(is_active, is_highlighted);
+  if (capture_contents_border_widget_) {
+    static_cast<ContentsCaptureBorderView*>(
+        capture_contents_border_widget_->GetContentsView())
+        ->SetIsInSplit(true);
+  }
 }
 
 void ContentsContainerView::UpdateBorderRoundedCorners() {
@@ -404,7 +414,7 @@ void ContentsContainerView::CreateCaptureContentsBorder() {
 
   capture_contents_border_widget_->Init(std::move(params));
   auto contents_capture_border_view =
-      std::make_unique<ContentsCaptureBorderView>();
+      std::make_unique<ContentsCaptureBorderView>(mini_toolbar_);
   capture_contents_border_widget_->SetContentsView(
       std::move(contents_capture_border_view));
   capture_contents_border_widget_->SetVisibilityChangedAnimationsEnabled(false);

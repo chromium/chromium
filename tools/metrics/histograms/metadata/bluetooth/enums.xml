@@ -346,7 +346,7 @@ chromium-metrics-reviews@google.com.
       label="PocketLab 1; f000aa14-0451-4000-b000-000000000000"/>
   <int value="61502349"
       label="PocketLab; f000aa2c-0452-4000-b000-000000000000"/>
-  <int value="64893984" label="local_east_coordinate.xml"/>
+  <int value="64893984" label="local_east_coordinate"/>
   <int value="67768539" label="alert_category_id_bit_mask"/>
   <int value="79560451" label="sc_control_point"/>
   <int value="81699382"

@@ -41,7 +41,7 @@ class COMPONENT_EXPORT(SHILL_CLIENT) FakeShillThirdPartyVpnDriverClient
   void RemoveShillThirdPartyVpnObserver(
       const std::string& object_path_value) override;
   void SetParameters(const std::string& object_path_value,
-                     const base::Value::Dict& parameters,
+                     const base::DictValue& parameters,
                      StringCallback callback,
                      ErrorCallback error_callback) override;
   void UpdateConnectionState(const std::string& object_path_value,

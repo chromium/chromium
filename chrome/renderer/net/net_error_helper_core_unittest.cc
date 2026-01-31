@@ -478,6 +478,12 @@ TEST_F(NetErrorHelperCoreTest, GetErrorPageStateStringPlaceholders) {
           {{"summary.msg", failed_url_host}},
       },
       {
+          "case IDS_ERRORPAGES_SUMMARY_BLOCKED_IN_INCOGNITO_BY_ADMINISTRATOR",
+          net::ERR_BLOCKED_IN_INCOGNITO_BY_ADMINISTRATOR,
+          error_page::Error::kNetErrorDomain,
+          {{"summary.msg", failed_url_host}},
+      },
+      {
           "case IDS_ERRORPAGES_SUMMARY_CONNECTION_FAILED",
           net::ERR_CONNECTION_FAILED,
           error_page::Error::kNetErrorDomain,
@@ -1070,7 +1076,7 @@ TEST_F(NetErrorHelperCoreTest, AlternativeErrorPageNoUpdates) {
   // `chrome/browser/web_applications/web_app_offline.h`
   auto alternative_error_page_info =
       content::mojom::AlternativeErrorPageOverrideInfo::New();
-  base::Value::Dict dict;
+  base::DictValue dict;
   dict.Set("theme_color", skia::SkColorToHexString(SK_ColorBLUE));
   dict.Set("customized_background_color",
            skia::SkColorToHexString(SK_ColorYELLOW));

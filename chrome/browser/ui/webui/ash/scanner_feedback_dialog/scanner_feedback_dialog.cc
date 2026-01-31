@@ -42,7 +42,7 @@ ScannerFeedbackDialog::ScannerFeedbackDialog(
 ScannerFeedbackDialog::~ScannerFeedbackDialog() = default;
 
 void ScannerFeedbackDialog::OnDialogShown(content::WebUI* webui) {
-  // This is called from `ui::WebDialogUIBase::HandleRenderFrameCreated`, right
+  // This is called from `ui::WebDialogUI::HandleRenderFrameCreated`, right
   // after the `content::RenderFrameHost` is created - before any JavaScript is
   // run.
   SystemWebDialogDelegate::OnDialogShown(webui);

@@ -46,8 +46,10 @@ source_set("interactive_ui_tests") {
   ]
   deps = [
     ":contextual_tasks",
+    "//chrome/browser/autocomplete:aim_eligibility_service",
     "//chrome/browser/contextual_tasks",
     "//chrome/browser/contextual_tasks:ui",
+    "//chrome/browser/search_engines",
     "//chrome/browser/ui:ui_features",
     "//chrome/test:test_support",
     "//components/contextual_tasks/public",

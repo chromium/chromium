@@ -14,7 +14,7 @@ class Status;
 
 struct Command {
   Command() = default;
-  Command(const std::string& method, const base::Value::Dict& params)
+  Command(const std::string& method, const base::DictValue& params)
       : method(method) {
     this->params = params.Clone();
   }
@@ -29,7 +29,7 @@ struct Command {
   ~Command() = default;
 
   std::string method;
-  base::Value::Dict params;
+  base::DictValue params;
 };
 
 class RecorderDevToolsClient : public StubDevToolsClient {
@@ -39,8 +39,8 @@ class RecorderDevToolsClient : public StubDevToolsClient {
 
   // Overridden from StubDevToolsClient:
   Status SendCommandAndGetResult(const std::string& method,
-                                 const base::Value::Dict& params,
-                                 base::Value::Dict* result) override;
+                                 const base::DictValue& params,
+                                 base::DictValue* result) override;
 
   std::vector<Command> commands_;
 };

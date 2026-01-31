@@ -92,8 +92,6 @@ typedef NS_ENUM(NSInteger, SyncSettingsItemType) {
   // AdvancedSettingsSectionIdentifier section.
   // Encryption item.
   EncryptionItemType,
-  // Google activity controls item.
-  GoogleActivityControlsItemType,
   // Data from Chrome sync.
   DataFromChromeSync,
   // Personalize Google services item.
@@ -105,6 +103,7 @@ typedef NS_ENUM(NSInteger, SyncSettingsItemType) {
   SyncNeedsTrustedVaultKeyErrorItemType,
   SyncTrustedVaultRecoverabilityDegradedErrorItemType,
   SyncDisabledByAdministratorErrorItemType,
+  BookmarksLimitExceededErrorItemType,
   // Indicates the errors related to the signed in account.
   AccountErrorMessageItemType,
   // BatchUploadSectionIdentifier section.

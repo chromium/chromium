@@ -116,7 +116,7 @@ void UnscopedExtensionProviderDelegateImpl::OnOmniboxSuggestionsReady(
   //    it will only be done if the user closes the omnibox, arrows down in the
   //    omnibox, or if all extensions have returned suggestions.
   if (request_id != current_request_id_ ||
-      base::Contains(extension_id_to_group_id_map_, extension_id) ||
+      extension_id_to_group_id_map_.contains(extension_id) ||
       provider_->done() || suggestions.empty()) {
     return;
   }

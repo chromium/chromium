@@ -13,7 +13,8 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
-#include "components/legion/attestation_handler.h"
+#include "components/legion/attestation/server_evidence.h"
+#include "components/legion/attestation/handler.h"
 #include "components/legion/legion_common.h"
 #include "components/legion/secure_session.h"
 #include "components/legion/transport.h"
@@ -186,7 +187,7 @@ class MockAttestationHandler : public AttestationHandler {
               (override));
   MOCK_METHOD(bool,
               VerifyAttestationResponse,
-              (const oak::session::v1::AttestResponse& evidence),
+              (const AttestationEvidence& evidence),
               (override));
 };
 
@@ -363,6 +364,45 @@ TEST_F(SecureChannelImplTest, AttestationErrorFailsWrite) {
       "Legion.SecureChannel.SendHandshakeRequestLatency.Error", 0);
 }
 
+// Tests the case where attestation evidence conversion fails, leading to a
+// session failure.
+TEST_F(SecureChannelImplTest, AttestationEvidenceConversionFails) {
+  oak::session::v1::SessionRequest expected_attestation_request;
+  expected_attestation_request.mutable_attest_request();
+  oak::session::v1::SessionResponse attestation_session_response;
+  {
+    auto* attest_response =
+        attestation_session_response.mutable_attest_response();
+    // Add an endorsed evidence entry that is missing endorsements, which will
+    // cause the conversion to fail.
+    (*attest_response->mutable_endorsed_evidence())["key"];
+  }
+
+  EXPECT_CALL(*attestation_handler_, GetAttestationRequest())
+      .WillOnce(Return(expected_attestation_request.attest_request()));
+  EXPECT_CALL(*transport_,
+              Send(EqualsSessionRequest(expected_attestation_request)))
+      .WillOnce(
+          [&]() { response_callback_.Run(attestation_session_response); });
+
+  base::test::TestFuture<base::expected<Response, ErrorCode>> future;
+  secure_channel_->SetResponseCallback(future.GetRepeatingCallback());
+  EXPECT_TRUE(secure_channel_->Write(StringToBytes("secret request")));
+
+  const auto& result = future.Get();
+  ASSERT_FALSE(result.has_value());
+  EXPECT_EQ(result.error(), ErrorCode::kAttestationFailed);
+
+  histogram_tester_.ExpectTotalCount(
+      "Legion.SecureChannel.GetAttestationRequestLatency.Success", 1);
+  histogram_tester_.ExpectTotalCount(
+      "Legion.SecureChannel.SendAttestationRequestLatency.Error", 1);
+  histogram_tester_.ExpectTotalCount(
+      "Legion.SecureChannel.GetAttestationRequestLatency.Error", 0);
+  histogram_tester_.ExpectTotalCount(
+      "Legion.SecureChannel.SendAttestationRequestLatency.Success", 0);
+}
+
 // Tests a transport-level error during the attestation phase of session
 // establishment.
 TEST_F(SecureChannelImplTest, TransportErrorDuringAttestationFailsRequest) {
@@ -533,6 +573,30 @@ TEST_F(SecureChannelImplTest, GetAttestationRequestFails) {
       "Legion.SecureChannel.SendHandshakeRequestLatency.Error", 0);
 }
 
+// Tests that a response without an attestation response during attestation
+// fails.
+TEST_F(SecureChannelImplTest, AttestationResponseMissingFails) {
+  oak::session::v1::SessionRequest expected_attestation_request;
+  expected_attestation_request.mutable_attest_request();
+
+  EXPECT_CALL(*attestation_handler_, GetAttestationRequest())
+      .WillOnce(Return(expected_attestation_request.attest_request()));
+  EXPECT_CALL(*transport_,
+              Send(EqualsSessionRequest(expected_attestation_request)))
+      .WillOnce([&]() {
+        // Return an empty response.
+        response_callback_.Run(oak::session::v1::SessionResponse());
+      });
+
+  base::test::TestFuture<base::expected<Response, ErrorCode>> future;
+  secure_channel_->SetResponseCallback(future.GetRepeatingCallback());
+  EXPECT_TRUE(secure_channel_->Write(StringToBytes("secret request")));
+
+  const auto& result = future.Get();
+  ASSERT_FALSE(result.has_value());
+  EXPECT_EQ(result.error(), ErrorCode::kAttestationFailed);
+}
+
 // Tests a failure in processing the handshake response.
 TEST_F(SecureChannelImplTest, ProcessHandshakeResponseFails) {
   oak::session::v1::SessionRequest expected_attestation_request;
@@ -591,6 +655,28 @@ TEST_F(SecureChannelImplTest, ProcessHandshakeResponseFails) {
       "Legion.SecureChannel.GetHandshakeMessageLatency.Error", 0);
   histogram_tester_.ExpectTotalCount(
       "Legion.SecureChannel.SendHandshakeRequestLatency.Success", 0);
+}
+
+// Tests that a response without a handshake response during handshake fails.
+TEST_F(SecureChannelImplTest, HandshakeResponseMissingFails) {
+  SetUpAttestation();
+
+  oak::session::v1::SessionRequest expected_handshake_request;
+  expected_handshake_request.mutable_handshake_request();
+  EXPECT_CALL(*transport_,
+              Send(EqualsSessionRequest(expected_handshake_request)))
+      .WillOnce([&]() {
+        // Return an empty response.
+        response_callback_.Run(oak::session::v1::SessionResponse());
+      });
+
+  base::test::TestFuture<base::expected<Response, ErrorCode>> future;
+  secure_channel_->SetResponseCallback(future.GetRepeatingCallback());
+  EXPECT_TRUE(secure_channel_->Write(StringToBytes("secret request")));
+
+  const auto& result = future.Get();
+  ASSERT_FALSE(result.has_value());
+  EXPECT_EQ(result.error(), ErrorCode::kHandshakeFailed);
 }
 
 // Tests a failure to encrypt a request after the session is established.
@@ -664,7 +750,7 @@ TEST_F(SecureChannelImplTest, EmptyResponseFailsRequest) {
 
   const auto& result = future.Get();
   ASSERT_FALSE(result.has_value());
-  EXPECT_EQ(result.error(), ErrorCode::kNetworkError);
+  EXPECT_EQ(result.error(), ErrorCode::kDecryptionFailed);
 }
 
 // Tests that OnHandshakeMessageReady receiving std::nullopt results in

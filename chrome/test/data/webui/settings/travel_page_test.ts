@@ -108,6 +108,33 @@ suite('TravelPage', function() {
         });
   });
 
+  [{canEnableOrDisableAutofillAi: true},
+   {canEnableOrDisableAutofillAi: false},
+  ].forEach(({canEnableOrDisableAutofillAi}) => {
+    test(
+        'When Autofill AI is available by default ' +
+            '(autofillAiAvailableByDefault is true) the toggle ' +
+            'availability depends on ' +
+            'canEnableOrDisableAutofillAi, not on the opt-in status: ' +
+            `canEnableOrDisableAutofillAi(${canEnableOrDisableAutofillAi})`,
+        async function() {
+          loadTimeData.overrideValues({
+            userEligibleForAutofillAi: false,
+            autofillAiAvailableByDefault: true,
+            canEnableOrDisableAutofillAi: canEnableOrDisableAutofillAi,
+          });
+
+          entityDataManager = new TestEntityDataManagerProxy();
+          EntityDataManagerProxyImpl.setInstance(entityDataManager);
+          entityDataManager.setGetOptInStatusResponse(false);
+
+          const page = await setupPage();
+
+          assertEquals(
+              page.$.optInToggle.disabled, !canEnableOrDisableAutofillAi);
+        });
+  });
+
   [{travelOptIn: true},
    {travelOptIn: false},
   ].forEach(({travelOptIn}) => {
@@ -161,6 +188,7 @@ suite('TravelPage', function() {
           loadTimeData.overrideValues({
             userEligibleForAutofillAi: true,
             AutofillAiIgnoresWhetherAddressFillingIsEnabled: experimentEnabled,
+            autofillAiAvailableByDefault: false,
           });
 
           entityDataManager.setGetOptInStatusResponse(true);

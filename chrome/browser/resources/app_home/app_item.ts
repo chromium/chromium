@@ -45,16 +45,16 @@ export class AppItemElement extends CrLitElement {
   accessor appInfo: AppInfo = {
     appType: AppType.kWebApp,
     id: '',
-    startUrl: {url: ''},
+    startUrl: '',
     name: '',
-    iconUrl: {url: ''},
+    iconUrl: '',
     mayShowRunOnOsLoginMode: false,
     mayToggleRunOnOsLoginMode: false,
     runOnOsLoginMode: 0,
     isLocallyInstalled: false,
     openInWindow: false,
     mayUninstall: false,
-    storePageUrl: {url: ''},
+    storePageUrl: '',
   };
 
   override firstUpdated() {
@@ -233,7 +233,7 @@ export class AppItemElement extends CrLitElement {
     if (!this.appInfo.storePageUrl) {
       return;
     }
-    window.open(new URL(this.appInfo.storePageUrl.url), '_blank');
+    window.open(new URL(this.appInfo.storePageUrl), '_blank');
     this.closeContextMenu();
   }
 
@@ -300,7 +300,7 @@ export class AppItemElement extends CrLitElement {
   }
 
   protected getIconUrl_() {
-    const url = new URL(this.appInfo.iconUrl.url);
+    const url = new URL(this.appInfo.iconUrl);
     // For web app, the backend serves grayscale image when the app is not
     // locally installed automatically and doesn't recognize this query param,
     // but we add a query param here to force browser to refetch the image.

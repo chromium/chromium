@@ -13,7 +13,8 @@ export function getHtml(this: SidebarElement) {
     error="${this.error}" .state="${this.state}"
     ?managed="${this.controlsManaged}">
 </print-preview-header>
-<div id="container" show-bottom-shadow>
+<div id="container" class="cr-scrollable">
+  <div class="cr-scrollable-top-shadow"></div>
   <print-preview-destination-settings id="destinationSettings"
       ?dark="${this.inDarkMode}"
       @destination-changed="${this.onDestinationChanged_}"
@@ -97,6 +98,7 @@ export function getHtml(this: SidebarElement) {
         ?disabled="${this.controlsDisabled_}">
     </print-preview-link-container>
   </cr-collapse>
+  <div class="cr-scrollable-bottom-shadow"></div>
 </div>
 <print-preview-button-strip .destination="${this.destination}"
     .state="${this.state}" ?first-load="${this.firstLoad_}"

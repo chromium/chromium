@@ -11,7 +11,6 @@
 
 #include "base/base64.h"
 #include "base/command_line.h"
-#include "base/containers/contains.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
@@ -270,7 +269,6 @@ class VariationsHttpHeadersBrowserTest
   }
 
   GURL GetExampleUrl() const { return GetExampleUrlWithPath("/landing.html"); }
-
   void WaitForRequest(const GURL& url) {
     auto it = received_headers_.find(url);
     if (it != received_headers_.end())
@@ -583,7 +581,7 @@ class VariationsHttpHeadersBrowserTestWithLimitedLayerBase
     CHECK(base::WriteFile(seed_file_path, compressed_seed));
 
     // Write the seed for the seed file experiment's control-group clients.
-    base::Value::Dict local_state;
+    base::DictValue local_state;
     local_state.SetByDottedPath(prefs::kVariationsCompressedSeed,
                                 base::Base64Encode(compressed_seed));
     CHECK(JSONFileValueSerializer(local_state_path).Serialize(local_state));
@@ -770,7 +768,7 @@ IN_PROC_BROWSER_TEST_F(VariationsHttpHeadersBrowserTest, UserSignedIn) {
   std::set<VariationID> ids;
   std::set<VariationID> trigger_ids;
   ASSERT_TRUE(ExtractVariationIds(header.value(), &ids, &trigger_ids));
-  EXPECT_TRUE(base::Contains(ids, signed_in_id));
+  EXPECT_TRUE(ids.contains(signed_in_id));
 
   // Verify that both headers returned by GetClientDataHeaders() contain the ID.
   mojom::VariationsHeadersPtr headers =
@@ -787,14 +785,14 @@ IN_PROC_BROWSER_TEST_F(VariationsHttpHeadersBrowserTest, UserSignedIn) {
   std::set<VariationID> trigger_ids_first_party;
   ASSERT_TRUE(ExtractVariationIds(variations_header_first_party,
                                   &ids_first_party, &trigger_ids_first_party));
-  EXPECT_TRUE(base::Contains(ids_first_party, signed_in_id));
+  EXPECT_TRUE(ids_first_party.contains(signed_in_id));
 
   std::set<VariationID> ids_any_context;
   std::set<VariationID> trigger_ids_any_context;
   ASSERT_TRUE(ExtractVariationIds(variations_header_any_context,
                                   &ids_any_context, &trigger_ids_any_context));
 
-  EXPECT_TRUE(base::Contains(ids_any_context, signed_in_id));
+  EXPECT_TRUE(ids_any_context.contains(signed_in_id));
 }
 
 IN_PROC_BROWSER_TEST_F(VariationsHttpHeadersBrowserTest, UserNotSignedIn) {
@@ -814,7 +812,7 @@ IN_PROC_BROWSER_TEST_F(VariationsHttpHeadersBrowserTest, UserNotSignedIn) {
   std::set<VariationID> ids;
   std::set<VariationID> trigger_ids;
   ASSERT_TRUE(ExtractVariationIds(header.value(), &ids, &trigger_ids));
-  EXPECT_FALSE(base::Contains(ids, signed_in_id));
+  EXPECT_FALSE(ids.contains(signed_in_id));
 
   // Verify that both headers returned by GetClientDataHeaders() do not contain
   // the ID.
@@ -832,14 +830,14 @@ IN_PROC_BROWSER_TEST_F(VariationsHttpHeadersBrowserTest, UserNotSignedIn) {
   std::set<VariationID> trigger_ids_first_party;
   ASSERT_TRUE(ExtractVariationIds(variations_header_first_party,
                                   &ids_first_party, &trigger_ids_first_party));
-  EXPECT_FALSE(base::Contains(ids_first_party, signed_in_id));
+  EXPECT_FALSE(ids_first_party.contains(signed_in_id));
 
   std::set<VariationID> ids_any_context;
   std::set<VariationID> trigger_ids_any_context;
   ASSERT_TRUE(ExtractVariationIds(variations_header_any_context,
                                   &ids_any_context, &trigger_ids_any_context));
 
-  EXPECT_FALSE(base::Contains(ids_any_context, signed_in_id));
+  EXPECT_FALSE(ids_any_context.contains(signed_in_id));
 }
 
 IN_PROC_BROWSER_TEST_F(VariationsHttpHeadersBrowserTest,
@@ -873,12 +871,12 @@ IN_PROC_BROWSER_TEST_F(VariationsHttpHeadersBrowserTest,
       ExtractVariationIds(header.value(), &variation_ids, &trigger_ids));
 
   // 3320983 is the offset value of kLowEntropySourceVariationIdRangeMin + 5.
-  EXPECT_TRUE(base::Contains(variation_ids, 3320983));
+  EXPECT_TRUE(variation_ids.contains(3320983));
 
   // Check that the reported group in the header is consistent with the low
   // entropy source. 33 is the group that is derived from the low entropy source
   // value of 5.
-  EXPECT_TRUE(base::Contains(variation_ids, 33));
+  EXPECT_TRUE(variation_ids.contains(33));
 }
 
 INSTANTIATE_TEST_SUITE_P(
@@ -934,8 +932,8 @@ IN_PROC_BROWSER_TEST_P(VariationsHttpHeadersBrowserTestWithActiveLimitedLayer,
       local_state()->GetInteger(metrics::prefs::kMetricsLowEntropySource);
   const int offset_low_entropy_source =
       low_entropy_source + internal::kLowEntropySourceVariationIdRangeMin;
-  EXPECT_FALSE(base::Contains(ids, offset_low_entropy_source));
-  EXPECT_FALSE(base::Contains(trigger_ids, offset_low_entropy_source));
+  EXPECT_FALSE(ids.contains(offset_low_entropy_source));
+  EXPECT_FALSE(trigger_ids.contains(offset_low_entropy_source));
 
   std::set<VariationID> expected_ids{kGenericExperimentGroupId};
   std::set<VariationID> expected_trigger_ids{kGenericExperimentGroupTriggerId};
@@ -1028,7 +1026,7 @@ IN_PROC_BROWSER_TEST_F(VariationsHttpHeadersBrowserTest,
   EXPECT_EQ("56", base::FieldTrialList::FindFullName(kTrialName));
   // Check that the reported group in the header is consistent with the
   // limited entropy randomization source.
-  EXPECT_TRUE(base::Contains(variation_ids, 56));
+  EXPECT_TRUE(variation_ids.contains(56));
 }
 
 // The PRE_ prefix ensures this runs before
@@ -1065,7 +1063,7 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_EQ("56", base::FieldTrialList::FindFullName(kTrialName));
   // The experiment does not have a google_web_experiment_id and thus should
   // NOT appear in the header.
-  EXPECT_FALSE(base::Contains(variation_ids, 56));
+  EXPECT_FALSE(variation_ids.contains(56));
 }
 
 void VariationsHttpHeadersBrowserTest::GoogleWebVisibilityTopFrameTest(

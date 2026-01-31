@@ -240,10 +240,7 @@ class BLINK_MODULES_EXPORT MediaStreamVideoSource
   // The returned callback can be called on any thread.
   virtual VideoCaptureFeedbackCB GetFeedbackCallback() const;
 
-  size_t NumTracks() const override {
-    DCHECK(GetTaskRunner()->BelongsToCurrentThread());
-    return tracks_.size();
-  }
+  size_t NumTracks() const override;
 
   void SetStartCallback(SourceStartCallback callback);
 

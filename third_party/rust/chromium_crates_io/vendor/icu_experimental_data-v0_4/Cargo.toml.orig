@@ -6,7 +6,7 @@
 name = "icu_experimental_data"
 description = "Data for the icu_experimental crate"
 license = "Unicode-3.0"
-version = "0.4.0"
+version = "0.4.1"
 
 authors.workspace = true
 categories.workspace = true
@@ -17,7 +17,7 @@ repository.workspace = true
 rust-version.workspace = true
 
 [package.metadata.sources]
-cldr = { tagged = "48.0.0" }
+cldr = { tagged = "48.1.0" }
 icuexport = { tagged = "release-78.1rc" }
 segmenter_lstm = { tagged = "v0.1.0" }
 

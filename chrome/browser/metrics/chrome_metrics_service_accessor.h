@@ -12,10 +12,10 @@
 #include "base/gtest_prod_util.h"
 #include "build/build_config.h"
 #include "chrome/browser/metrics/metrics_reporting_state.h"
+#include "chrome/browser/supervised_user/metrics_service_accessor_delegate.h"
 #include "chrome/common/buildflags.h"
 #include "components/metrics/metrics_service_accessor.h"
 #include "components/variations/synthetic_trials.h"
-#include "chrome/browser/supervised_user/metrics_service_accessor_delegate.h"
 
 #if BUILDFLAG(ENABLE_GLIC)
 #include "chrome/browser/glic/host/glic_synthetic_trial_manager.h"
@@ -107,10 +107,6 @@ class PerSessionSettingsUserActionTracker;
 }  // namespace settings
 }  // namespace ash
 
-namespace tpcd::experiment {
-class ExperimentManagerImpl;
-}
-
 namespace readaloud {
 class SyntheticTrial;
 }
@@ -187,7 +183,6 @@ class ChromeMetricsServiceAccessor : public metrics::MetricsServiceAccessor {
   friend class DataSharingUI;
   // Used to register synthetic trials for ongoing growth experiments.
   friend class CampaignsManagerClientImpl;
-  friend class tpcd::experiment::ExperimentManagerImpl;
   friend class readaloud::SyntheticTrial;
   friend class tab_groups::TabGroupTrial;
 #if !BUILDFLAG(IS_ANDROID)

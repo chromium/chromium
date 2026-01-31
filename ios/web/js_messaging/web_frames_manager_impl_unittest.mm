@@ -16,8 +16,8 @@ namespace web {
 
 namespace {
 
-const std::string kLowercaseFrameId = "abba1234beef1234cafe1234deed1234";
-const std::string kUppercaseFrameId = "ABBA1234BEEF1234CAFE1234DEED1234";
+constexpr char kLowercaseFrameId[] = "abba1234beef1234cafe1234deed1234";
+constexpr char kUppercaseFrameId[] = "ABBA1234BEEF1234CAFE1234DEED1234";
 
 class FakeWebFramesManagerObserver : public WebFramesManagerImpl::Observer {
  public:

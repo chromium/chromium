@@ -1,4 +1,5 @@
 include_rules = [
+  # keep-sorted start
   "+components/plus_addresses/core/browser",
   "+ios/chrome/browser/bubble/ui_bundled",
   "+ios/chrome/browser/device_reauth/model",
@@ -7,13 +8,14 @@ include_rules = [
   "+ios/chrome/browser/net/model/crurl.h",
   "+ios/chrome/browser/passwords/model",
   "+ios/chrome/browser/plus_addresses/model/plus_address_service_factory.h",
-  "+ios/chrome/browser/signin/model",
-  "+ios/chrome/browser/sync/model/sync_service_factory.h",
-  "+ios/chrome/browser/translate/model/chrome_ios_translate_client.h",
   "+ios/chrome/browser/settings/ui_bundled/autofill/autofill_constants.h",
   "+ios/chrome/browser/settings/ui_bundled/autofill/autofill_settings_profile_edit_table_view_controller_delegate.h",
   "+ios/chrome/browser/settings/ui_bundled/password",
+  "+ios/chrome/browser/signin/model",
+  "+ios/chrome/browser/sync/model/sync_service_factory.h",
+  "+ios/chrome/browser/translate/model/chrome_ios_translate_client.h",
   "+ios/chrome/browser/webdata_services/model/web_data_service_factory.h",
+  # keep-sorted end
 ]
 
 specific_include_rules = {

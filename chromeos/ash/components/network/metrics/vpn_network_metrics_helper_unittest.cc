@@ -52,7 +52,7 @@ void ErrorCallback(const std::string& error_name) {
 // Helper function to create a VPN network using NetworkConfigurationHandler.
 void CreateTestShillConfiguration(const std::string& vpn_provider_type,
                                   bool is_managed) {
-  base::Value::Dict properties;
+  base::DictValue properties;
 
   properties.Set(shill::kGuidProperty, "vpn_guid");
   properties.Set(shill::kTypeProperty, shill::kTypeVPN);

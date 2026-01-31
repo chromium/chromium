@@ -62,7 +62,7 @@ std::string GetUploadParameters(
     const ash::reporting::TriggerEventType& trigger_event_type,
     const std::string& upload_id) {
   auto upload_parameters_dict =
-      base::Value::Dict()
+      base::DictValue()
           .Set(kFilenameKey, filename.BaseName().value())
           // Safe to cast enum value to int.
           .Set(kUploadedEventTypeKey, static_cast<int>(trigger_event_type))

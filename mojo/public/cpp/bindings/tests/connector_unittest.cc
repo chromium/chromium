@@ -36,8 +36,9 @@ class MessageAccumulator : public MessageReceiver {
 
   bool Accept(Message* message) override {
     queue_.Push(message);
-    if (closure_)
+    if (closure_) {
       std::move(closure_).Run();
+    }
     return true;
   }
 
@@ -75,8 +76,9 @@ class ReentrantMessageAccumulator : public MessageAccumulator {
       : connector_(connector), number_of_calls_(0) {}
 
   bool Accept(Message* message) override {
-    if (!MessageAccumulator::Accept(message))
+    if (!MessageAccumulator::Accept(message)) {
       return false;
+    }
     number_of_calls_++;
     if (number_of_calls_ == 1) {
       return connector_->WaitForIncomingMessage();

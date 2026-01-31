@@ -8,7 +8,6 @@
 #include <memory>
 #include <vector>
 
-#include "base/containers/contains.h"
 #include "base/memory/raw_ptr.h"
 #include "base/no_destructor.h"
 #include "base/scoped_multi_source_observation.h"
@@ -93,7 +92,7 @@ class AuraLinuxApplication : public ui::AXPlatformNodeDelegate,
 
     widget = GetToplevelWidgetIncludingTransientWindows(widget);
     if (!widget || !widget->native_widget() ||
-        base::Contains(widgets_, widget)) {
+        std::ranges::contains(widgets_, widget)) {
       return;
     }
 

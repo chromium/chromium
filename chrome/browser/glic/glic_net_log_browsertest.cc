@@ -34,7 +34,10 @@ const char kTestGlicFreURL[] = "about:blank?fre-page";
 
 class GlicNetLogBrowserTest : public InProcessBrowserTest {
  public:
-  GlicNetLogBrowserTest() = default;
+  GlicNetLogBrowserTest() {
+    feature_list_.InitWithFeatures(
+        {}, {features::kGlicTrustFirstOnboarding, features::kGlicWarming});
+  }
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
     // Load blank page in glic guest view
@@ -48,6 +51,7 @@ class GlicNetLogBrowserTest : public InProcessBrowserTest {
   GlicTestEnvironment glic_test_env_{
       {.fre_status = glic::prefs::FreStatus::kNotStarted}};
   net::RecordingNetLogObserver net_log_observer_;
+  base::test::ScopedFeatureList feature_list_;
 };
 
 // Tests that opening the UI logs a request to the Glic FRE.

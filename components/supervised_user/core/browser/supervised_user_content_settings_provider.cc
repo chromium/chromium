@@ -18,7 +18,7 @@
 #include "components/content_settings/core/common/content_settings_metadata.h"
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/content_settings/core/common/features.h"
-#include "components/supervised_user/core/browser/supervised_user_settings_service.h"
+#include "components/supervised_user/core/browser/family_link_settings_service.h"
 #include "components/supervised_user/core/common/supervised_user_constants.h"
 
 namespace {
@@ -63,14 +63,13 @@ const ContentSettingsFromSupervisedSettingsEntry
 namespace supervised_user {
 
 SupervisedUserContentSettingsProvider::SupervisedUserContentSettingsProvider(
-    supervised_user::SupervisedUserSettingsService*
-        supervised_user_settings_service) {
+    FamilyLinkSettingsService* family_link_settings_service) {
   // The SupervisedUserContentSettingsProvider is owned by the
-  // HostContentSettingsMap which DependsOn the SupervisedUserSettingsService
+  // HostContentSettingsMap which DependsOn the FamilyLinkSettingsService
   // (through their factories). This means this will get destroyed before the
   // SUSS and will be unsubscribed from it.
   user_settings_subscription_ =
-      supervised_user_settings_service->SubscribeForSettingsChange(
+      family_link_settings_service->SubscribeForSettingsChange(
           base::BindRepeating(&SupervisedUserContentSettingsProvider::
                                   OnSupervisedSettingsAvailable,
                               base::Unretained(this)));
@@ -106,7 +105,7 @@ SupervisedUserContentSettingsProvider::GetRule(const GURL& primary_url,
 }
 
 void SupervisedUserContentSettingsProvider::OnSupervisedSettingsAvailable(
-    const base::Value::Dict& settings) {
+    const base::DictValue& settings) {
   std::vector<ContentSettingsType> to_notify;
   // Entering locked scope to update content settings.
   {

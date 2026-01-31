@@ -102,7 +102,7 @@ class MultiCaptureDataService : public KeyedService,
 
   bool is_initialized_ = false;
 
-  base::Value::List multi_screen_capture_allowlist_on_login_;
+  base::ListValue multi_screen_capture_allowlist_on_login_;
   std::set<std::string> app_without_notification_bundle_ids_;
 
   std::map<webapps::AppId, std::string> capture_apps_with_notification_;

@@ -288,7 +288,7 @@ suite('shareDataPageTestSuite', () => {
   // Test that the pageUrl section is hidden when the url is empty string.
   test('pageUrlHidden', async () => {
     await initializePage();
-    fakeFeedbackContext.pageUrl!.url = '';
+    fakeFeedbackContext.pageUrl = '';
     page.feedbackContext = fakeFeedbackContext;
 
     // The pageUrl section should be hidden
@@ -297,7 +297,7 @@ suite('shareDataPageTestSuite', () => {
     assertFalse(isVisible(pageUrl));
 
     // Change it back otherwise it will effect other tests.
-    fakeFeedbackContext.pageUrl!.url = 'chrome://tab/';
+    fakeFeedbackContext.pageUrl = 'chrome://tab/';
   });
 
   // Test that the performanceTraceContainer section is hidden when the trace id
@@ -350,7 +350,7 @@ suite('shareDataPageTestSuite', () => {
 
     const report = (await clickSendAndWait(page)).detail.report;
 
-    assertEquals('chrome://tab/', report!.feedbackContext.pageUrl!.url);
+    assertEquals('chrome://tab/', report!.feedbackContext.pageUrl!);
     assertFalse(report!.includeSystemLogsAndHistograms);
   });
 

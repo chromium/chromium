@@ -6,9 +6,9 @@
 
 #include <stddef.h>
 
+#include <string_view>
 #include <utility>
 
-#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/metrics/histogram.h"
@@ -57,35 +57,35 @@ const char kInvalidTargetVersion[] = "INVALID_TARGET_VERSION";
 const char kFisAuthError[] = "FIS_AUTH_ERROR";
 
 // Gets correct status from the error message.
-RegistrationRequest::Status GetStatusFromError(const std::string& error) {
-  if (base::Contains(error, kDeviceRegistrationError)) {
+RegistrationRequest::Status GetStatusFromError(std::string_view error) {
+  if (error.contains(kDeviceRegistrationError)) {
     return RegistrationRequest::DEVICE_REGISTRATION_ERROR;
   }
-  if (base::Contains(error, kAuthenticationFailed)) {
+  if (error.contains(kAuthenticationFailed)) {
     return RegistrationRequest::AUTHENTICATION_FAILED;
   }
-  if (base::Contains(error, kInvalidSender)) {
+  if (error.contains(kInvalidSender)) {
     return RegistrationRequest::INVALID_SENDER;
   }
-  if (base::Contains(error, kInvalidParameters)) {
+  if (error.contains(kInvalidParameters)) {
     return RegistrationRequest::INVALID_PARAMETERS;
   }
-  if (base::Contains(error, kInternalServerError)) {
+  if (error.contains(kInternalServerError)) {
     return RegistrationRequest::INTERNAL_SERVER_ERROR;
   }
-  if (base::Contains(error, kQuotaExceeded)) {
+  if (error.contains(kQuotaExceeded)) {
     return RegistrationRequest::QUOTA_EXCEEDED;
   }
-  if (base::Contains(error, kTooManyRegistrations)) {
+  if (error.contains(kTooManyRegistrations)) {
     return RegistrationRequest::TOO_MANY_REGISTRATIONS;
   }
-  if (base::Contains(error, kTooManySubscribers)) {
+  if (error.contains(kTooManySubscribers)) {
     return RegistrationRequest::TOO_MANY_SUBSCRIBERS;
   }
-  if (base::Contains(error, kInvalidTargetVersion)) {
+  if (error.contains(kInvalidTargetVersion)) {
     return RegistrationRequest::INVALID_TARGET_VERSION;
   }
-  if (base::Contains(error, kFisAuthError)) {
+  if (error.contains(kFisAuthError)) {
     return RegistrationRequest::FIS_AUTH_ERROR;
   }
   // Should not be reached, unless the server adds new error types.
@@ -286,8 +286,8 @@ RegistrationRequest::Status RegistrationRequest::ParseResponse(
   // some errors will have HTTP_OK response code!
   size_t error_pos = response.find(kErrorPrefix);
   if (error_pos != std::string::npos) {
-    std::string error =
-        response.substr(error_pos + std::size(kErrorPrefix) - 1);
+    std::string_view error = std::string_view(response).substr(
+        error_pos + std::size(kErrorPrefix) - 1);
     LOG(ERROR) << "Registration response error message: " << error;
     RegistrationRequest::Status status = GetStatusFromError(error);
     return status;

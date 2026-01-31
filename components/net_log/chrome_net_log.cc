@@ -16,14 +16,14 @@
 
 namespace net_log {
 
-base::Value::Dict GetPlatformConstantsForNetLog(
+base::DictValue GetPlatformConstantsForNetLog(
     const base::CommandLine::StringType& command_line_string,
     const std::string& channel_string) {
-  base::Value::Dict constants_dict;
+  base::DictValue constants_dict;
 
   // Add a dictionary with the version of the client and its command line
   // arguments.
-  base::Value::Dict dict;
+  base::DictValue dict;
 
   // We have everything we need to send the right values.
   dict.Set("name", version_info::GetProductName());

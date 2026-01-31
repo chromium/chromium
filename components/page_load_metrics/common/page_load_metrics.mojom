@@ -574,7 +574,7 @@ struct UserInteractionLatency {
   // The one-based offset of the interaction in time-based order; 1 for the
   // first interaction, 2 for the second, etc.
   uint64 interaction_offset;
-  // The time the interaction occurred, relative to navigation start.
+  // The time the interaction occurred.
   mojo_base.mojom.TimeTicks interaction_time;
 };
 

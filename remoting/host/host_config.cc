@@ -33,8 +33,8 @@ const char kMe2MeHostTypeHint[] = "me2me";
 const char kDeprecatedHostOwnerEmailConfigPath[] = "host_owner_email";
 const char kDeprecatedXmppLoginConfigPath[] = "xmpp_login";
 
-std::optional<base::Value::Dict> HostConfigFromJson(const std::string& json) {
-  std::optional<base::Value::Dict> config =
+std::optional<base::DictValue> HostConfigFromJson(const std::string& json) {
+  std::optional<base::DictValue> config =
       base::JSONReader::ReadDict(json, base::JSON_ALLOW_TRAILING_COMMAS);
   if (!config) {
     LOG(ERROR) << "Failed to parse host config from JSON";
@@ -69,11 +69,11 @@ std::optional<base::Value::Dict> HostConfigFromJson(const std::string& json) {
   return config;
 }
 
-std::string HostConfigToJson(const base::Value::Dict& host_config) {
+std::string HostConfigToJson(const base::DictValue& host_config) {
   return base::WriteJson(host_config).value_or("");
 }
 
-std::optional<base::Value::Dict> HostConfigFromJsonFile(
+std::optional<base::DictValue> HostConfigFromJsonFile(
     const base::FilePath& config_file) {
   std::string serialized;
   if (!base::ReadFileToString(config_file, &serialized)) {
@@ -84,7 +84,7 @@ std::optional<base::Value::Dict> HostConfigFromJsonFile(
   return HostConfigFromJson(serialized);
 }
 
-bool HostConfigToJsonFile(const base::Value::Dict& host_config,
+bool HostConfigToJsonFile(const base::DictValue& host_config,
                           const base::FilePath& config_file) {
   std::string serialized = HostConfigToJson(host_config);
   return base::ImportantFileWriter::WriteFileAtomically(config_file,

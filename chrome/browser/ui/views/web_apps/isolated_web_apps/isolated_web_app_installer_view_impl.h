@@ -93,7 +93,6 @@ class IsolatedWebAppInstallerViewImpl : public IsolatedWebAppInstallerView {
   raw_ptr<InstallSuccessView> install_success_view_;
 
   bool dialog_visible_;
-  bool icon_masked_ = false;
 
   base::WeakPtrFactory<IsolatedWebAppInstallerViewImpl> weak_ptr_factory_{this};
 };

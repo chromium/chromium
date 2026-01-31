@@ -167,7 +167,7 @@ suite('CrComponentsPsimFlowUiTest', function() {
 
     assertTrue(!!cellularActivationDelegate);
     cellularActivationDelegate.onActivationStarted({
-      paymentUrl: {url: ''},
+      paymentUrl: '',
       paymentPostData: 'verison_post_data',
       carrier: 'Verizon wireless',
       meid: '012345678912345',

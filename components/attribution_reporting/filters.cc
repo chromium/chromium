@@ -14,7 +14,6 @@
 #include <vector>
 
 #include "base/check.h"
-#include "base/containers/contains.h"
 #include "base/containers/flat_set.h"
 #include "base/notreached.h"
 #include "base/strings/string_util.h"
@@ -68,7 +67,7 @@ base::expected<void, FilterValuesError> ValidateForSource(
 }
 
 base::expected<FilterValues, FilterValuesError> ParseFilterValuesFromJSON(
-    base::Value::Dict dict,
+    base::DictValue dict,
     const size_t max_filters,
     const size_t max_string_size,
     const size_t max_set_size) {
@@ -89,7 +88,7 @@ base::expected<FilterValues, FilterValuesError> ParseFilterValuesFromJSON(
       return base::unexpected(FilterValuesError::kKeyTooLong);
     }
 
-    base::Value::List* list = value.GetIfList();
+    base::ListValue* list = value.GetIfList();
     if (!list) {
       return base::unexpected(FilterValuesError::kListWrongType);
     }
@@ -117,10 +116,10 @@ base::expected<FilterValues, FilterValuesError> ParseFilterValuesFromJSON(
 
 }  // namespace
 
-base::Value::Dict FilterValuesToJson(const FilterValues& filter_values) {
-  base::Value::Dict dict;
+base::DictValue FilterValuesToJson(const FilterValues& filter_values) {
+  base::DictValue dict;
   for (const auto& [key, values] : filter_values) {
-    auto list = base::Value::List::with_capacity(values.size());
+    auto list = base::ListValue::with_capacity(values.size());
     for (const auto& value : values) {
       list.Append(value);
     }
@@ -152,7 +151,7 @@ base::expected<FilterData, SourceRegistrationError> FilterData::FromJSON(
     return FilterData();
   }
 
-  base::Value::Dict* dict = input_value->GetIfDict();
+  base::DictValue* dict = input_value->GetIfDict();
   if (!dict) {
     return base::unexpected(SourceRegistrationError::kFilterDataDictInvalid);
   }
@@ -204,7 +203,7 @@ FilterData& FilterData::operator=(const FilterData&) = default;
 
 FilterData& FilterData::operator=(FilterData&&) = default;
 
-base::Value::Dict FilterData::ToJson() const {
+base::DictValue FilterData::ToJson() const {
   return FilterValuesToJson(filter_values_);
 }
 
@@ -273,7 +272,7 @@ bool FilterData::Matches(mojom::SourceType source_type,
 
           bool has_intersection = std::ranges::any_of(
               trigger_filter.second, [&](const std::string& value) {
-                return base::Contains(source_filter->second, value);
+                return std::ranges::contains(source_filter->second, value);
               });
           // Negating filters are considered matched if the intersection of
           // the filter values is empty.
@@ -361,7 +360,7 @@ base::expected<FiltersDisjunction, TriggerRegistrationError> FiltersFromJSON(
       [&](base::Value& value, TriggerRegistrationError value_error,
           TriggerRegistrationError lookback_window_error,
           TriggerRegistrationError reserved_key_error) -> AppendIfValidResult {
-    base::Value::Dict* dict = value.GetIfDict();
+    base::DictValue* dict = value.GetIfDict();
     if (!dict) {
       return base::unexpected(TriggerRegistrationError::kFiltersWrongType);
     }
@@ -399,7 +398,7 @@ base::expected<FiltersDisjunction, TriggerRegistrationError> FiltersFromJSON(
     return base::ok();
   };
 
-  if (base::Value::List* list = input_value->GetIfList()) {
+  if (base::ListValue* list = input_value->GetIfList()) {
     disjunction.reserve(list->size());
     for (base::Value& item : *list) {
       RETURN_IF_ERROR(append_if_valid(
@@ -417,10 +416,10 @@ base::expected<FiltersDisjunction, TriggerRegistrationError> FiltersFromJSON(
   return disjunction;
 }
 
-base::Value::List ToJson(const FiltersDisjunction& filters) {
-  auto list = base::Value::List::with_capacity(filters.size());
+base::ListValue ToJson(const FiltersDisjunction& filters) {
+  auto list = base::ListValue::with_capacity(filters.size());
   for (const auto& filter_config : filters) {
-    base::Value::Dict dict = FilterValuesToJson(filter_config.filter_values());
+    base::DictValue dict = FilterValuesToJson(filter_config.filter_values());
     if (filter_config.lookback_window().has_value()) {
       dict.Set(FilterConfig::kLookbackWindowKey,
                static_cast<int>(
@@ -435,7 +434,7 @@ base::Value::List ToJson(const FiltersDisjunction& filters) {
 
 // static
 base::expected<FilterPair, TriggerRegistrationError> FilterPair::FromJSON(
-    base::Value::Dict& dict) {
+    base::DictValue& dict) {
   ASSIGN_OR_RETURN(auto positive, FiltersFromJSON(dict.Find(kFilters)));
   ASSIGN_OR_RETURN(auto negative, FiltersFromJSON(dict.Find(kNotFilters)));
   return FilterPair(std::move(positive), std::move(negative));
@@ -456,7 +455,7 @@ FilterPair& FilterPair::operator=(const FilterPair&) = default;
 
 FilterPair& FilterPair::operator=(FilterPair&&) = default;
 
-void FilterPair::SerializeIfNotEmpty(base::Value::Dict& dict) const {
+void FilterPair::SerializeIfNotEmpty(base::DictValue& dict) const {
   if (!positive.empty()) {
     dict.Set(kFilters, ToJson(positive));
   }
@@ -471,7 +470,7 @@ FiltersFromJSONForTesting(base::Value* input_value) {
   return FiltersFromJSON(input_value);
 }
 
-base::Value::List ToJsonForTesting(const FiltersDisjunction& filters) {
+base::ListValue ToJsonForTesting(const FiltersDisjunction& filters) {
   return ToJson(filters);
 }
 

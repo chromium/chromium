@@ -4,10 +4,11 @@
 
 #include "ash/wm/overview/birch/birch_bar_context_menu_model.h"
 
+#include <utility>
+
 #include "ash/constants/geolocation_access_level.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/wm/overview/birch/birch_bar_controller.h"
-#include "base/types/cxx23_to_underlying.h"
 #include "chromeos/ash/components/geolocation/system_location_provider.h"
 
 namespace ash {
@@ -23,7 +24,7 @@ TEST_F(BirchBarContextMenuModelTest, WeatherDisabledWhenGeolocationDisabled) {
       BirchBarContextMenuModel::Type::kExpandedBarMenu);
 
   // Find the weather item.
-  auto weather_index = model.GetIndexOfCommandId(base::to_underlying(
+  auto weather_index = model.GetIndexOfCommandId(std::to_underlying(
       BirchBarContextMenuModel::CommandId::kWeatherSuggestions));
   ASSERT_TRUE(weather_index.has_value());
 
@@ -43,7 +44,7 @@ TEST_F(BirchBarContextMenuModelTest, WeatherEnabledWhenGeolocationEnabled) {
       BirchBarContextMenuModel::Type::kExpandedBarMenu);
 
   // Find the weather item.
-  auto weather_index = model.GetIndexOfCommandId(base::to_underlying(
+  auto weather_index = model.GetIndexOfCommandId(std::to_underlying(
       BirchBarContextMenuModel::CommandId::kWeatherSuggestions));
   ASSERT_TRUE(weather_index.has_value());
 

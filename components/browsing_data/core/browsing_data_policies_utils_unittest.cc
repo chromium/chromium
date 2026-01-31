@@ -12,18 +12,18 @@
 // Checks that the sync types list is updated correctly given a
 // BrowsingDataLifetimePolicy value.
 TEST(BrowsingDataPoliciesUtils, UpdateSyncTypesForBrowsingDataLifetime) {
-  base::Value::Dict browsing_data_types_first_dict =
-      base::Value::Dict()
-          .Set("data_types", base::Value::List()
+  base::DictValue browsing_data_types_first_dict =
+      base::DictValue()
+          .Set("data_types", base::ListValue()
                                  .Append("browsing_history")
                                  .Append("site_settings")
                                  .Append("cached_images_and_files")
                                  .Append("cookies_and_other_site_data"))
           .Set("time_to_live_in_hours", 1);
 
-  base::Value::Dict browsing_data_types_second_dict =
-      base::Value::Dict()
-          .Set("data_types", base::Value::List()
+  base::DictValue browsing_data_types_second_dict =
+      base::DictValue()
+          .Set("data_types", base::ListValue()
                                  .Append("autofill")
                                  .Append("password_signin")
                                  .Append("hosted_app_data")
@@ -31,7 +31,7 @@ TEST(BrowsingDataPoliciesUtils, UpdateSyncTypesForBrowsingDataLifetime) {
           .Set("time_to_live_in_hours", 1);
 
   base::Value browsing_data_lifetime_value =
-      base::Value(base::Value::List()
+      base::Value(base::ListValue()
                       .Append(std::move(browsing_data_types_first_dict))
                       .Append(std::move(browsing_data_types_second_dict)));
 
@@ -57,8 +57,8 @@ TEST(BrowsingDataPoliciesUtils, UpdateSyncTypesForBrowsingDataLifetime) {
 // ClearBrowsingDataOnExit value.
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
 TEST(BrowsingDataPoliciesUtils, UpdateSyncTypesForClearBrowsingDataOnExit) {
-  base::Value::List clear_browsing_data_list =
-      base::Value::List()
+  base::ListValue clear_browsing_data_list =
+      base::ListValue()
           .Append("autofill")
           .Append("password_signin")
           .Append("browsing_history")
@@ -114,8 +114,8 @@ TEST(BrowsingDataPoliciesUtils, NameToPolicyDataType) {
 TEST(BrowsingDataPoliciesUtils, AllSyncTypesChecked) {
   // Set policy value to all browsing data types to disable all sync types that
   // might be disabled for the policy.
-  base::Value::List clear_browsing_data_list =
-      base::Value::List()
+  base::ListValue clear_browsing_data_list =
+      base::ListValue()
           .Append("autofill")
           .Append("password_signin")
           .Append("browsing_history")

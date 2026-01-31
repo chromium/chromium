@@ -18,7 +18,6 @@
 #endif
 
 #include "base/check_op.h"
-#include "base/containers/contains.h"
 #include "base/containers/queue.h"
 #include "base/numerics/checked_math.h"
 #include "base/trace_event/memory_usage_estimator.h"  // no-presubmit-check
@@ -60,8 +59,8 @@ bool SubstringSetMatcher::Build(
     std::set<MatcherStringPattern::ID> ids;
     std::set<std::string> pattern_strings;
     for (const MatcherStringPattern* pattern : patterns) {
-      CHECK(!base::Contains(ids, pattern->id()));
-      CHECK(!base::Contains(pattern_strings, pattern->pattern()));
+      CHECK(!ids.contains(pattern->id()));
+      CHECK(!pattern_strings.contains(pattern->pattern()));
       ids.insert(pattern->id());
       pattern_strings.insert(pattern->pattern());
     }

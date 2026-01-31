@@ -182,10 +182,9 @@ export class PowerBookmarksService {
       });
       this.addListener_(
           'onTabUpdated',
-          (_tabId: number, _changeInfo: object, tab: chrome.tabs.Tab) => {
-            if (tab.active) {
-              this.delegate_.setCurrentUrl(tab.url);
-            }
+          (_tabId: number, _changeInfo: object, _tab: chrome.tabs.Tab) => {
+            this.bookmarksApi_.getActiveUrl().then(
+                url => this.delegate_.setCurrentUrl(url));
           });
 
       this.bookmarksApi_.pageCallbackRouter.onBookmarkNodeAdded.addListener(
@@ -558,7 +557,7 @@ export class PowerBookmarksService {
       return;
     }
 
-    const url: Url = {url: bookmark.url};
+    const url: Url = bookmark.url;
 
     // Fetch the representative image for this page, if possible.
     this.activeImageServiceRequestCount_++;
@@ -576,7 +575,7 @@ export class PowerBookmarksService {
 
     // If there is no result, cache an empty URL because we are unlikely to get
     // a different result in the same session.
-    this.delegate_.setImageUrl(bookmark, result ? result.imageUrl.url : '');
+    this.delegate_.setImageUrl(bookmark, result ? result.imageUrl : '');
     this.bookmarksWithCachedImages_.add(bookmark.id.toString());
 
     if (this.inactiveImageServiceRequests_.size > 0) {

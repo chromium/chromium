@@ -11,11 +11,11 @@
 CrossDevicePrefTrackerObserverBridge::CrossDevicePrefTrackerObserverBridge(
     id<CrossDevicePrefTrackerObserver> delegate,
     sync_preferences::CrossDevicePrefTracker* tracker)
-    : delegate_(delegate) {
+    : delegate_(delegate), tracker_(tracker) {
   CHECK(delegate_);
-  CHECK(tracker);
+  CHECK(tracker_);
 
-  scoped_observation_.Observe(tracker);
+  scoped_observation_.Observe(tracker_);
 }
 
 CrossDevicePrefTrackerObserverBridge::~CrossDevicePrefTrackerObserverBridge() =
@@ -25,7 +25,20 @@ void CrossDevicePrefTrackerObserverBridge::OnRemotePrefChanged(
     std::string_view pref_name,
     const sync_preferences::TimestampedPrefValue& pref_value,
     const syncer::DeviceInfo& remote_device_info) {
-  [delegate_ onRemotePrefChanged:pref_name
-                       prefValue:pref_value
-                remoteDeviceInfo:remote_device_info];
+  if ([delegate_ respondsToSelector:@selector
+                 (crossDevicePrefTracker:
+                     didChangeRemotePref:toValue:fromDevice:)]) {
+    [delegate_ crossDevicePrefTracker:tracker_
+                  didChangeRemotePref:pref_name
+                              toValue:pref_value
+                           fromDevice:remote_device_info];
+  }
+}
+
+void CrossDevicePrefTrackerObserverBridge::OnServiceStatusChanged(
+    sync_preferences::CrossDevicePrefTracker::ServiceStatus status) {
+  if ([delegate_ respondsToSelector:@selector(crossDevicePrefTracker:
+                                              serviceStatusDidChange:)]) {
+    [delegate_ crossDevicePrefTracker:tracker_ serviceStatusDidChange:status];
+  }
 }

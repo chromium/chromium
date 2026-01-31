@@ -862,3 +862,23 @@ fn bubble_smallest_becomes_day() {
         "Expected rounding to fail, got {rounded:?}"
     );
 }
+
+#[test]
+fn round_zero_duration() {
+    // Tests that totalling the zero duration returns zero
+    let d0 = Duration::new(0, 0, 0, 0, 0, 0, 0, 0, 0, 0).unwrap();
+    let rounding_options = RoundingOptions {
+        largest_unit: Some(Unit::Day),
+        smallest_unit: Some(Unit::Hour),
+        ..Default::default()
+    };
+    let relative_to = ZonedDateTime::try_new(0, TimeZone::utc(), Calendar::default()).unwrap();
+    let rounded_duration = d0
+        .round(
+            rounding_options,
+            Some(RelativeTo::ZonedDateTime(relative_to)),
+        )
+        .unwrap();
+
+    assert_eq!(rounded_duration, d0);
+}

@@ -64,7 +64,7 @@ IsolatedWebAppInstallSource::~IsolatedWebAppInstallSource() = default;
 
 base::Value IsolatedWebAppInstallSource::ToDebugValue() const {
   return base::Value(
-      base::Value::Dict()
+      base::DictValue()
           .Set("source", source_.ToDebugValue())
           .Set("install_surface", base::ToString(install_surface_)));
 }

@@ -4,12 +4,12 @@
 
 #include "chrome/browser/media/android/cdm/media_drm_origin_id_manager.h"
 
+#include <algorithm>
 #include <memory>
 #include <optional>
 #include <string>
 #include <utility>
 
-#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/json/json_writer.h"
@@ -95,13 +95,13 @@ class MediaDrmOriginIdManagerTest : public testing::Test {
     origin_id_manager_->PreProvisionIfNecessary();
   }
 
-  std::string DisplayPref(const base::Value::Dict& value) {
+  std::string DisplayPref(const base::DictValue& value) {
     std::optional<std::string> output = base::WriteJson(value);
     EXPECT_TRUE(output);
     return output.value_or(std::string());
   }
 
-  const base::Value::Dict& GetDict(const std::string& path) const {
+  const base::DictValue& GetDict(const std::string& path) const {
     return profile_->GetTestingPrefService()->GetDict(path);
   }
 
@@ -293,8 +293,8 @@ TEST_F(MediaDrmOriginIdManagerTest, OriginIdNotInList) {
   DVLOG(1) << "Checking preference " << kMediaDrmOriginIds;
   auto& dict = GetDict(kMediaDrmOriginIds);
   auto* list = dict.FindList(kAvailableOriginIds);
-  EXPECT_FALSE(
-      base::Contains(*list, base::UnguessableTokenToValue(origin_id.value())));
+  EXPECT_FALSE(std::ranges::contains(
+      *list, base::UnguessableTokenToValue(origin_id.value())));
 }
 
 TEST_F(MediaDrmOriginIdManagerTest, ProvisioningFail) {
@@ -514,7 +514,7 @@ TEST_F(MediaDrmOriginIdManagerTest, InvalidEntry) {
   {
     ScopedDictPrefUpdate update(profile_->GetTestingPrefService(),
                                 kMediaDrmOriginIds);
-    base::Value::List* origin_ids = update->FindList(kAvailableOriginIds);
+    base::ListValue* origin_ids = update->FindList(kAvailableOriginIds);
     EXPECT_FALSE(origin_ids->empty());
     auto first_entry = origin_ids->begin();
     *first_entry = base::Value(true);

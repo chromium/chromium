@@ -68,8 +68,9 @@
 #include "third_party/blink/renderer/core/css/resolver/style_resolver_stats.h"
 #include "third_party/blink/renderer/core/css/resolver/style_rule_usage_tracker.h"
 #include "third_party/blink/renderer/core/css/resolver/viewport_style_resolver.h"
+#include "third_party/blink/renderer/core/css/scroll_target_group_scope.h"
 #include "third_party/blink/renderer/core/css/style_change_reason.h"
-#include "third_party/blink/renderer/core/css/style_containment_scope_tree.h"
+#include "third_party/blink/renderer/core/css/style_containment_scope.h"
 #include "third_party/blink/renderer/core/css/style_environment_variables.h"
 #include "third_party/blink/renderer/core/css/style_rule_font_feature_values.h"
 #include "third_party/blink/renderer/core/css/style_rule_font_palette_values.h"
@@ -83,6 +84,7 @@
 #include "third_party/blink/renderer/core/dom/element_traversal.h"
 #include "third_party/blink/renderer/core/dom/flat_tree_traversal.h"
 #include "third_party/blink/renderer/core/dom/layout_tree_builder_traversal.h"
+#include "third_party/blink/renderer/core/dom/node-inl.h"
 #include "third_party/blink/renderer/core/dom/nth_index_cache.h"
 #include "third_party/blink/renderer/core/dom/processing_instruction.h"
 #include "third_party/blink/renderer/core/dom/scriptable_document_parser.h"
@@ -94,6 +96,7 @@
 #include "third_party/blink/renderer/core/frame/visual_viewport.h"
 #include "third_party/blink/renderer/core/html/forms/html_field_set_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_select_element.h"
+#include "third_party/blink/renderer/core/html/html_anchor_element.h"
 #include "third_party/blink/renderer/core/html/html_body_element.h"
 #include "third_party/blink/renderer/core/html/html_html_element.h"
 #include "third_party/blink/renderer/core/html/html_slot_element.h"
@@ -906,13 +909,15 @@ void StyleEngine::UpdateCounters(const Element& element,
   if (layout_object) {
     context.EnterObject(*layout_object);
     if (auto* ng_list_item = DynamicTo<LayoutListItem>(layout_object)) {
-      if (!ng_list_item->Ordinal().UseExplicitValue()) {
+      if (RuntimeEnabledFeatures::CSSListCounterAccountingEnabled() ||
+          !ng_list_item->Ordinal().UseExplicitValue()) {
         ng_list_item->Ordinal().MarkDirty();
         ng_list_item->OrdinalValueChanged();
       }
     } else if (auto* inline_list_item =
                    DynamicTo<LayoutInlineListItem>(layout_object)) {
-      if (!inline_list_item->Ordinal().UseExplicitValue()) {
+      if (RuntimeEnabledFeatures::CSSListCounterAccountingEnabled() ||
+          !inline_list_item->Ordinal().UseExplicitValue()) {
         inline_list_item->Ordinal().MarkDirty();
         inline_list_item->OrdinalValueChanged();
       }
@@ -979,6 +984,14 @@ StyleContainmentScopeTree& StyleEngine::EnsureStyleContainmentScopeTree() {
         MakeGarbageCollected<StyleContainmentScopeTree>();
   }
   return *style_containment_scope_tree_;
+}
+
+ScrollTargetGroupScopeTree& StyleEngine::EnsureScrollTargetGroupScopeTree() {
+  if (!scroll_target_group_scope_tree_) {
+    scroll_target_group_scope_tree_ =
+        MakeGarbageCollected<ScrollTargetGroupScopeTree>();
+  }
+  return *scroll_target_group_scope_tree_;
 }
 
 void StyleEngine::SetRuleUsageTracker(StyleRuleUsageTracker* tracker) {
@@ -3343,7 +3356,10 @@ void StyleEngine::NodeWillBeRemoved(Node& node) {
         }
       }
       if (!style->ScrollTargetGroupNone()) {
-        GetDocument().SetNeedsScrollTargetGroupRelationsUpdate();
+        if (ScrollTargetGroupScopeTree* tree =
+                GetScrollTargetGroupScopeTree()) {
+          tree->RemoveScopeForElement(*element);
+        }
       }
     }
     pending_invalidations_.RescheduleSiblingInvalidationsAsDescendants(
@@ -3739,11 +3755,13 @@ void StyleEngine::PostInterleavedRecalcUpdate(
     const Element& interleaving_root) {
   // Update quotes only if there are any scopes marked dirty.
   if (StyleContainmentScopeTree* tree = GetStyleContainmentScopeTree()) {
-    tree->UpdateQuotes();
+    tree->UpdateItems();
+  }
+  // Update scroll-target-group scopes.
+  if (ScrollTargetGroupScopeTree* tree = GetScrollTargetGroupScopeTree()) {
+    tree->UpdateItems();
   }
   GetDocument().InvalidatePendingSVGResources();
-  GetDocument().UpdateScrollTargetGroupRelations();
-  GetDocument().UpdateScrollTargetGroupToScrollableAreasMap();
 }
 
 void StyleEngine::UpdateStyleAndLayoutTreeForSizeContainer(
@@ -3754,7 +3772,8 @@ void StyleEngine::UpdateStyleAndLayoutTreeForSizeContainer(
   DCHECK(!container.NeedsStyleRecalc());
   DCHECK(!in_container_query_style_recalc_);
 
-  base::AutoReset<bool> cq_recalc(&in_container_query_style_recalc_, true);
+  std::optional<base::AutoReset<bool>> cq_recalc(
+      std::in_place, &in_container_query_style_recalc_, true);
 
   DCHECK(container.GetLayoutObject()) << "Containers must have a LayoutObject";
   const ComputedStyle& style = container.GetLayoutObject()->StyleRef();
@@ -3841,6 +3860,7 @@ void StyleEngine::UpdateStyleAndLayoutTreeForSizeContainer(
     GetStyleResolver().PropagateStyleToViewport();
   }
 
+  cq_recalc.reset();
   PostInterleavedRecalcUpdate(container);
 }
 
@@ -3886,7 +3906,8 @@ bool StyleEngine::UpdateStyleAndLayoutTreeForOutOfFlow(
   const CSSPropertyValueSet* try_tactics_set = try_value_flips_.FlipSet(
       try_tactics, abs_container_writing_direction.GetWritingMode());
 
-  base::AutoReset<bool> pt_recalc(&in_position_try_style_recalc_, true);
+  std::optional<base::AutoReset<bool>> pt_recalc(
+      std::in_place, &in_position_try_style_recalc_, true);
 
   NthIndexCache nth_index_cache(GetDocument());
   UpdateViewportSize();
@@ -3926,6 +3947,7 @@ bool StyleEngine::UpdateStyleAndLayoutTreeForOutOfFlow(
     RebuildLayoutTree(&element);
   }
 
+  pt_recalc.reset();
   PostInterleavedRecalcUpdate(element);
   return true;
 }
@@ -3956,8 +3978,10 @@ void StyleEngine::RecalcStyle(StyleRecalcChange change,
 
   for (ContainerNode* ancestor = root_element.GetStyleRecalcParent(); ancestor;
        ancestor = ancestor->GetStyleRecalcParent()) {
-    if (auto* ancestor_element = DynamicTo<Element>(ancestor)) {
-      ancestor_element->RecalcStyleForTraversalRootAncestor();
+    if (!InInterleavedStyleRecalc()) {
+      if (auto* ancestor_element = DynamicTo<Element>(ancestor)) {
+        ancestor_element->RecalcStyleForTraversalRootAncestor();
+      }
     }
     ancestor->ClearChildNeedsStyleRecalc();
   }
@@ -4108,11 +4132,13 @@ void StyleEngine::UpdateStyleAndLayoutTree() {
     }
     // Update quotes only if there are any scopes marked dirty.
     if (StyleContainmentScopeTree* tree = GetStyleContainmentScopeTree()) {
-      tree->UpdateQuotes();
+      tree->UpdateItems();
+    }
+    // Update scroll-target-group scopes.
+    if (ScrollTargetGroupScopeTree* tree = GetScrollTargetGroupScopeTree()) {
+      tree->UpdateItems();
     }
     UpdateCounters();
-    GetDocument().UpdateScrollTargetGroupRelations();
-    GetDocument().UpdateScrollTargetGroupToScrollableAreasMap();
   } else {
     style_recalc_root_.Clear();
   }
@@ -4722,6 +4748,7 @@ void StyleEngine::Trace(Visitor* visitor) const {
   visitor->Trace(style_image_cache_);
   visitor->Trace(fill_or_clip_path_uri_value_cache_);
   visitor->Trace(style_containment_scope_tree_);
+  visitor->Trace(scroll_target_group_scope_tree_);
   visitor->Trace(try_value_flips_);
   visitor->Trace(anchored_element_dirty_set_);
   visitor->Trace(user_rule_set_groups_);
@@ -4925,16 +4952,46 @@ void StyleEngine::RevisitStyleSheetForInspector(
   }
 }
 
+void StyleEngine::NavigationsMayHaveChanged() {
+  DCHECK(RuntimeEnabledFeatures::RouteMatchingEnabled());
+  SetNeedsActiveStyleUpdate(GetDocument());
+
+  // Navigation changes may affect how navigation-param() expressions inside
+  // :link-to() pseudo selectors match. Do a PseudoStateChanged() on each link
+  // in the document, which will mark every element potentially affected by the
+  // navigation for style recalc.
+  //
+  // TODO(crbug.com/436805487): Should come up with something less brutal (spec
+  // changes should be considered, too - this is somewhat unusual).
+  //
+  // A plain lambda won't do because they cannot be invoked recursively. And I
+  // want the code to stay here in this function, at least for now, so here we
+  // go:
+  struct Marker {
+    static void MarkAllLinks(Node& root) {
+      for (Node& node : NodeTraversal::StartsAt(root)) {
+        if (node.IsLink()) {
+          // TODO(crbug.com/436805487): This is in order to implement
+          // :link-to(--route with navigation-param()), but it's a rather heavy
+          // hammer. Maybe there are better ways (spec changes should be
+          // considered, too).
+          To<Element>(node).PseudoStateChanged(CSSSelector::kPseudoLinkTo);
+        }
+        if (ShadowRoot* shadow_root = node.GetShadowRoot()) {
+          MarkAllLinks(*shadow_root);
+        }
+      }
+    }
+  };
+
+  Marker::MarkAllLinks(GetDocument());
+}
+
 double StyleEngine::GetCachedRandomBaseValue(
-    RandomValueSharing random_value_sharing,
-    const Element* element,
-    AtomicString property_name,
-    size_t property_value_index) {
-  if (random_value_sharing.IsFixed()) {
-    return random_value_sharing.GetFixed();
-  }
-  RandomCachingKey* random_caching_key = RandomCachingKey::Create(
-      random_value_sharing, element, property_name, property_value_index);
+    const RandomValueSharing& random_value_sharing,
+    const Element* element) {
+  RandomCachingKey* random_caching_key =
+      RandomCachingKey::Create(random_value_sharing, element);
   auto it = random_base_value_cache_.find(random_caching_key);
   if (it != random_base_value_cache_.end()) {
     return it->value;

@@ -113,6 +113,12 @@ interface AnimationTimeline
     getter currentTime
     getter duration
     method constructor
+interface AnimationTrigger
+    attribute @@toStringTag
+    method addAnimation
+    method constructor
+    method getAnimations
+    method removeAnimation
 interface AsyncDisposableStack
     attribute @@toStringTag
     getter disposed
@@ -1220,11 +1226,18 @@ interface CharacterData : Node
     setter data
 interface Clipboard : EventTarget
     attribute @@toStringTag
+    getter onclipboardchange
     method constructor
     method read
     method readText
     method write
     method writeText
+    setter onclipboardchange
+interface ClipboardChangeEvent : Event
+    attribute @@toStringTag
+    getter changeId
+    getter types
+    method constructor
 interface ClipboardEvent : Event
     attribute @@toStringTag
     getter clipboardData
@@ -4588,11 +4601,13 @@ interface HTMLScriptElement : HTMLElement
     getter event
     getter fetchPriority
     getter htmlFor
+    getter innerText
     getter integrity
     getter noModule
     getter referrerPolicy
     getter src
     getter text
+    getter textContent
     getter type
     method constructor
     setter async
@@ -4604,11 +4619,13 @@ interface HTMLScriptElement : HTMLElement
     setter event
     setter fetchPriority
     setter htmlFor
+    setter innerText
     setter integrity
     setter noModule
     setter referrerPolicy
     setter src
     setter text
+    setter textContent
     setter type
 interface HTMLSelectElement : HTMLElement
     attribute @@toStringTag
@@ -6207,6 +6224,7 @@ interface NavigationTransition
     getter finished
     getter from
     getter navigationType
+    getter to
     method constructor
 interface Navigator
     attribute @@toStringTag
@@ -6845,6 +6863,7 @@ interface PerformanceNavigation
 interface PerformanceNavigationTiming : PerformanceResourceTiming
     attribute @@toStringTag
     getter activationStart
+    getter confidence
     getter criticalCHRestart
     getter domComplete
     getter domContentLoadedEventEnd
@@ -6954,6 +6973,12 @@ interface PerformanceTiming
     getter secureConnectionStart
     getter unloadEventEnd
     getter unloadEventStart
+    method constructor
+    method toJSON
+interface PerformanceTimingConfidence
+    attribute @@toStringTag
+    getter randomizedTriggerRate
+    getter value
     method constructor
     method toJSON
 interface PeriodicSyncManager
@@ -9549,6 +9574,28 @@ interface TimeRanges
     method constructor
     method end
     method start
+interface TimelineTrigger : AnimationTrigger
+    attribute @@toStringTag
+    getter ranges
+    method constructor
+interface TimelineTriggerRange
+    attribute @@toStringTag
+    getter activeRangeEnd
+    getter activeRangeStart
+    getter entryRangeEnd
+    getter entryRangeStart
+    getter timeline
+    method constructor
+interface TimelineTriggerRangeList
+    attribute @@toStringTag
+    getter length
+    method @@iterator
+    method constructor
+    method entries
+    method forEach
+    method item
+    method keys
+    method values
 interface ToggleEvent : Event
     attribute @@toStringTag
     getter newState
@@ -12210,6 +12257,7 @@ namespace GPUTextureUsage
     attribute RENDER_ATTACHMENT
     attribute STORAGE_BINDING
     attribute TEXTURE_BINDING
+    attribute TRANSIENT_ATTACHMENT
 namespace Temporal
     attribute @@toStringTag
     attribute Now

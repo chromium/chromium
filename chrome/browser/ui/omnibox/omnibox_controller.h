@@ -109,7 +109,7 @@ class OmniboxController : public AutocompleteController::Observer {
   // `edit_model_->rich_suggestion_bitmaps_` otherwise.
   void SetRichSuggestionBitmap(int result_index,
                                const GURL& icon_url,
-                               const SkBitmap& bitmap);
+                               SkBitmap bitmap);
 
   const std::unique_ptr<OmniboxClient> client_;
 

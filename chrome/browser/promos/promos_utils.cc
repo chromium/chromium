@@ -4,10 +4,10 @@
 
 #include "chrome/browser/promos/promos_utils.h"
 
+#include <algorithm>
 #include <string>
 #include <vector>
 
-#include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/json/values_util.h"
 #include "base/metrics/histogram_functions.h"
@@ -65,9 +65,9 @@ std::string IOSDesktopPromoHistogramType(PromoType promo_type) {
 }
 
 base::Time GetMostRecentiOSDesktopNtpPromoTimestamp(PrefService* pref_service) {
-  const base::Value::List& timestamps = pref_service->GetList(
+  const base::ListValue& timestamps = pref_service->GetList(
       promos_prefs::kDesktopToiOSNtpPromoAppearanceTimestamps);
-  base::Value::List::const_iterator most_recent_timestamp_iter =
+  base::ListValue::const_iterator most_recent_timestamp_iter =
       std::max_element(timestamps.begin(), timestamps.end());
   if (most_recent_timestamp_iter == timestamps.end()) {
     return base::Time();
@@ -97,9 +97,8 @@ bool VerifyIOSDesktopPromoTotalImpressions(Profile* profile,
   if (!skip_ntp_promo) {
     // The Desktop NTP promo shows 10 times in quick succession, but that only
     // counts as 1 impression for Desktop to iOS promos in general.
-    const base::Value::List& ntp_promo_appearances =
-        profile->GetPrefs()->GetList(
-            promos_prefs::kDesktopToiOSNtpPromoAppearanceTimestamps);
+    const base::ListValue& ntp_promo_appearances = profile->GetPrefs()->GetList(
+        promos_prefs::kDesktopToiOSNtpPromoAppearanceTimestamps);
     total_desktop_promo_impressions += (ntp_promo_appearances.empty()) ? 0 : 1;
   }
 
@@ -399,51 +398,19 @@ bool ShouldShowIOSDesktopPromo(Profile* profile,
          !profile->GetPrefs()->GetBoolean(promo_prefs.promo_opt_out_pref_name);
 }
 
-bool ShouldShowIOSDesktopNtpPromo(Profile* profile,
-                                  const syncer::SyncService* sync_service) {
-  if (!CanShowPromos()) {
-    return false;
-  }
-
-  PrefService* pref_service = profile->GetPrefs();
-
-  // Sync must be active because prefs to track promo display are synced.
-  bool sync_ok = sync_service &&
-                 sync_service->GetActiveDataTypes().Has(syncer::PREFERENCES);
-
-  // This promo can appear 10 times itself.
-  int appearance_count =
-      pref_service
-          ->GetList(promos_prefs::kDesktopToiOSNtpPromoAppearanceTimestamps)
-          .size();
-  bool appearance_count_ok =
-      appearance_count < ntp_features::kNtpMobilePromoImpressionLimit.Get();
-
-  bool has_not_dismissed = !profile->GetPrefs()->GetBoolean(
-      promos_prefs::kDesktopToiOSNtpPromoDismissed);
-
-  bool other_promos_ok =
-      VerifyMostRecentPromoTimestamp(profile, /*skip_ntp_promo=*/true) &&
-      VerifyIOSDesktopPromoTotalImpressions(profile, /*skip_ntp_promo=*/true);
-
-  // Show the promo if the user hasn't opted out, is not in the cooldown
-  // period and is within the impression limit for this promo.
-  return sync_ok && appearance_count_ok && has_not_dismissed && other_promos_ok;
-}
-
 bool UserNotClassifiedAsMobileDeviceSwitcher(
     const segmentation_platform::ClassificationResult& result) {
   return result.status == segmentation_platform::PredictionStatus::kSucceeded &&
-         !base::Contains(
+         !std::ranges::contains(
              result.ordered_labels,
              segmentation_platform::DeviceSwitcherModel::kAndroidPhoneLabel) &&
-         !base::Contains(result.ordered_labels,
-                         segmentation_platform::DeviceSwitcherModel::
-                             kIosPhoneChromeLabel) &&
-         !base::Contains(
+         !std::ranges::contains(result.ordered_labels,
+                                segmentation_platform::DeviceSwitcherModel::
+                                    kIosPhoneChromeLabel) &&
+         !std::ranges::contains(
              result.ordered_labels,
              segmentation_platform::DeviceSwitcherModel::kAndroidTabletLabel) &&
-         !base::Contains(
+         !std::ranges::contains(
              result.ordered_labels,
              segmentation_platform::DeviceSwitcherModel::kIosTabletLabel);
 }

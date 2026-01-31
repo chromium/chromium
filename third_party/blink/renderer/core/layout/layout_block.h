@@ -129,9 +129,6 @@ class CORE_EXPORT LayoutBlock : public LayoutBox {
     return &children_;
   }
 
-  // These two functions are overridden for inline-block.
-  LayoutUnit FirstLineHeight() const override;
-
   const char* GetName() const override;
 
  private:
@@ -208,11 +205,6 @@ class CORE_EXPORT LayoutBlock : public LayoutBox {
                    HitTestPhase) override;
 
  protected:
-  bool HitTestChildren(HitTestResult&,
-                       const HitTestLocation&,
-                       const PhysicalOffset& accumulated_offset,
-                       HitTestPhase) override;
-
   void StyleWillChange(StyleDifference,
                        const ComputedStyle& new_style,
                        StyleChangeContext&) override;

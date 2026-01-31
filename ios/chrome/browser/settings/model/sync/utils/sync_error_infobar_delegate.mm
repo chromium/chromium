@@ -170,12 +170,11 @@ bool SyncErrorInfoBarDelegate::Accept() {
               TrustedVaultTriggerFromInfoBarTrigger(trigger_)];
       break;
     case syncer::SyncService::UserActionableError::kBookmarksLimitExceeded:
-      // TODO(crbug.com/452968646): Navigate to the concrete help center
-      // article.
+      [sync_presenter_handler_ showBookmarksLimitExceededHelp];
       break;
   }
 
-  return false;
+  return true;
 }
 
 void SyncErrorInfoBarDelegate::InfoBarDismissed() {

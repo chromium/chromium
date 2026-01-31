@@ -14,7 +14,7 @@
 #include "base/process/process_metrics.h"
 #include "build/build_config.h"
 #include "content/public/common/process_type.h"
-#include "services/resource_coordinator/public/mojom/memory_instrumentation/memory_instrumentation.mojom-data-view.h"
+#include "services/resource_coordinator/public/mojom/memory_instrumentation/memory_instrumentation.mojom-shared.h"
 
 namespace memory_instrumentation {
 class GlobalMemoryDump;

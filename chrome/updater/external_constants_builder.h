@@ -81,7 +81,7 @@ class ExternalConstantsBuilder {
   ExternalConstantsBuilder& ClearCrxPublicKeyHash();
 
   ExternalConstantsBuilder& SetDictPolicies(
-      const base::Value::Dict& dict_policies);
+      const base::DictValue& dict_policies);
   ExternalConstantsBuilder& ClearDictPolicies();
 
   ExternalConstantsBuilder& SetOverinstallTimeout(
@@ -113,7 +113,7 @@ class ExternalConstantsBuilder {
   bool Modify();
 
  private:
-  base::Value::Dict overrides_;
+  base::DictValue overrides_;
   bool written_ = false;
 };
 

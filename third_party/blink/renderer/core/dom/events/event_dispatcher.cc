@@ -224,7 +224,7 @@ DispatchEventResult EventDispatcher::Dispatch() {
     // A genuine mouse click cannot be triggered by script so we don't expect
     // there are any script in the stack.
     DCHECK(!frame->GetAdTracker() || !frame->GetAdTracker()->IsAdScriptInStack(
-                                         AdTracker::StackType::kBottomAndTop));
+                                         AdTracker::StackType::kTopOnly));
     if (frame->IsAdFrame()) {
       UseCounter::Count(document, WebFeature::kAdClick);
     }

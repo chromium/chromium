@@ -12,7 +12,6 @@ import org.jni_zero.NativeMethods;
 import org.chromium.base.lifetime.Destroyable;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
-import org.chromium.chrome.browser.ui.browser_window.ChromeAndroidTask;
 import org.chromium.content_public.browser.WebContents;
 
 /**
@@ -50,10 +49,8 @@ public class ExtensionActionPopupContents implements Destroyable {
     }
 
     /** Creates an {@link ExtensionActionPopupContents} instance. */
-    public static ExtensionActionPopupContents create(
-            ChromeAndroidTask task, String actionId, int tabId) {
-        return ExtensionActionPopupContentsJni.get()
-                .create(task.getOrCreateNativeBrowserWindowPtr(), actionId, tabId);
+    public static ExtensionActionPopupContents create(long extensionViewHostPtr) {
+        return ExtensionActionPopupContentsJni.get().create(extensionViewHostPtr);
     }
 
     /**
@@ -140,13 +137,10 @@ public class ExtensionActionPopupContents implements Destroyable {
         /**
          * Creates the native ExtensionActionPopupContents object and returns its Java peer.
          *
-         * @param androidBrowserWindowPtr The address of a native {@code BrowserWindowInterface}.
-         * @param actionId The ID of the extension action.
-         * @param tabId The ID of the tab context.
+         * @param extensionViewHostPtr The address of a native {@code ExtensionViewHost}.
          * @return The Java {@link ExtensionActionPopupContents} object, or {@code null} on failure.
          */
-        ExtensionActionPopupContents create(
-                long androidBrowserWindowPtr, @JniType("std::string") String actionId, int tabId);
+        ExtensionActionPopupContents create(long extensionViewHostPtr);
 
         /**
          * Destroys the native ExtensionActionPopupContents object.

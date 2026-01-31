@@ -259,8 +259,7 @@ AutofillProfile::AutofillProfile(const std::string& guid,
       phone_number_(this),
       address_(country_code),
       record_type_(record_type),
-      initial_creator_id_(kInitialCreatorOrModifierChrome),
-      last_modifier_id_(kInitialCreatorOrModifierChrome),
+      initial_creator_id_(kInitialCreatorChrome),
       token_quality_(this),
       usage_history_information_(/*usage_history_size=*/1) {}
 
@@ -302,7 +301,7 @@ AutofillProfile& AutofillProfile::operator=(const AutofillProfile& profile) {
   usage_history_information_.set_use_count(
       profile.usage_history_information_.use_count());
   for (size_t i = 1; i <= usage_history_information_.usage_history_size();
-       i++) {
+       ++i) {
     usage_history_information_.set_use_date(
         profile.usage_history_information_.use_date(i), i);
   }
@@ -324,7 +323,6 @@ AutofillProfile& AutofillProfile::operator=(const AutofillProfile& profile) {
 
   record_type_ = profile.record_type_;
   initial_creator_id_ = profile.initial_creator_id_;
-  last_modifier_id_ = profile.last_modifier_id_;
 
   token_quality_ = profile.token_quality_;
   token_quality_.set_profile(this);
@@ -340,17 +338,17 @@ base::android::ScopedJavaLocalRef<jobject> AutofillProfile::CreateJavaObject(
   JNIEnv* env = base::android::AttachCurrentThread();
   base::android::ScopedJavaLocalRef<jobject> jprofile =
       Java_AutofillProfile_Constructor(
-          env, guid(), static_cast<jint>(record_type()), language_code());
+          env, guid(), static_cast<int32_t>(record_type()), language_code());
 
   for (FieldType type : AutofillProfile::kDatabaseStoredTypes) {
-    auto status = static_cast<jint>(GetVerificationStatus(type));
+    auto status = static_cast<int32_t>(GetVerificationStatus(type));
     // TODO(crbug.com/40278253): Reconcile usage of GetInfo and GetRawInfo
     // below.
     if (type == NAME_FULL) {
-      Java_AutofillProfile_setInfo(env, jprofile, static_cast<jint>(type),
+      Java_AutofillProfile_setInfo(env, jprofile, static_cast<int32_t>(type),
                                    GetInfo(type, app_locale), status);
     } else {
-      Java_AutofillProfile_setInfo(env, jprofile, static_cast<jint>(type),
+      Java_AutofillProfile_setInfo(env, jprofile, static_cast<int32_t>(type),
                                    GetRawInfo(type), status);
     }
   }
@@ -891,7 +889,6 @@ std::vector<std::u16string> AutofillProfile::CreateDifferentiatingLabels(
     std::string_view app_locale) {
   const size_t kMinimalFieldsShown = 2;
   return CreateInferredLabels(profiles, /*suggested_fields=*/std::nullopt,
-                              /*triggering_field_type=*/std::nullopt,
                               /*excluded_fields=*/{}, kMinimalFieldsShown,
                               app_locale);
 }
@@ -900,17 +897,9 @@ std::vector<std::u16string> AutofillProfile::CreateDifferentiatingLabels(
 std::vector<std::u16string> AutofillProfile::CreateInferredLabels(
     base::span<const AutofillProfile* const> profiles,
     const std::optional<FieldTypeSet> suggested_fields,
-    std::optional<FieldType> triggering_field_type,
     FieldTypeSet excluded_fields,
     size_t minimal_fields_shown,
-    std::string_view app_locale,
-    bool use_improved_labels_order) {
-  // TODO(crbug.com/380273791): Clean up after launch.
-  CHECK(!triggering_field_type ||
-        base::FeatureList::IsEnabled(features::kAutofillImprovedLabels));
-  CHECK(!use_improved_labels_order ||
-        base::FeatureList::IsEnabled(features::kAutofillImprovedLabels));
-
+    std::string_view app_locale) {
   std::vector<FieldType> fields_to_use;
   std::vector<FieldType> suggested_fields_types =
       suggested_fields
@@ -918,25 +907,18 @@ std::vector<std::u16string> AutofillProfile::CreateInferredLabels(
           : std::vector<FieldType>();
   GetFieldsForDistinguishingProfiles(
       suggested_fields ? &suggested_fields_types : nullptr, excluded_fields,
-      &fields_to_use, use_improved_labels_order);
+      &fields_to_use, false);
 
   // Construct the default label for each profile. Also construct a map that
-  // associates each (main_text, label) pair with the profiles that have this
-  // info. This map is then used to detect which labels need further
-  // differentiating fields.
-  // Note that the actual displayed main text might slightly differ due to
-  // formatting, but it is not needed to format the text for differentiating the
-  // labels.
-  std::map<std::pair<std::u16string, std::u16string>, std::list<size_t>>
-      labels_to_profiles;
+  // associates each label with the profiles that have this info. This map is
+  // then used to detect which labels need further differentiating fields. Note
+  // that the actual displayed label might slightly differ due to formatting,
+  // but it is not needed to format the text for differentiating the labels.
+  std::map<std::u16string, std::list<size_t>> labels_to_profiles;
   for (size_t i = 0; i < profiles.size(); ++i) {
     std::u16string label = profiles[i]->ConstructInferredLabel(
         fields_to_use, minimal_fields_shown, app_locale);
-    std::u16string main_text =
-        triggering_field_type
-            ? profiles[i]->GetInfo(*triggering_field_type, app_locale)
-            : u"";
-    labels_to_profiles[{main_text, label}].push_back(i);
+    labels_to_profiles[label].push_back(i);
   }
 
   std::vector<std::u16string> labels;
@@ -944,18 +926,13 @@ std::vector<std::u16string> AutofillProfile::CreateInferredLabels(
   for (auto& it : labels_to_profiles) {
     if (it.second.size() == 1) {
       // This label is unique, so use it without any further ado.
-      std::u16string label = it.first.second;
       size_t profile_index = it.second.front();
-      labels[profile_index] = label;
+      labels[profile_index] = it.first;
     } else {
       // We have more than one profile with the same label, so add
       // differentiating fields.
       CreateInferredLabelsHelper(
           profiles, it.second, fields_to_use, minimal_fields_shown, app_locale,
-          use_improved_labels_order &&
-              features::
-                  kAutofillImprovedLabelsParamWithDifferentiatingLabelsInFrontParam
-                      .Get(),
           labels);
     }
   }
@@ -1125,7 +1102,6 @@ void AutofillProfile::CreateInferredLabelsHelper(
     const std::vector<FieldType>& field_types,
     size_t num_fields_to_include,
     std::string_view app_locale,
-    bool force_differentiating_label_in_front,
     std::vector<std::u16string>& labels) {
   // For efficiency, we first construct a map of fields to their text values and
   // each value's frequency.
@@ -1161,7 +1137,6 @@ void AutofillProfile::CreateInferredLabelsHelper(
 
     std::vector<FieldType> label_fields;
     bool found_differentiating_field = false;
-    std::u16string first_differentiating_field_text;
     for (FieldType field_type : field_types) {
       // Skip over empty fields.
       std::u16string field_text = profile->GetInfo(field_type, app_locale);
@@ -1179,25 +1154,12 @@ void AutofillProfile::CreateInferredLabelsHelper(
 
       // Once we've found enough non-empty fields, skip over any remaining
       // fields that are identical across all the profiles.
-      if (label_fields.size() + !first_differentiating_field_text.empty() >=
-              num_fields_to_include &&
+      if (label_fields.size() >= num_fields_to_include &&
           field_text_frequencies.size() == 1) {
         continue;
       }
 
-      // Only the first differentiating label is moved to the front. This is
-      // because `field_types` are ordered by relevance, so the first
-      // differentiating label found is the most relevant. There is no need to
-      // move more differentiating labels to the front, especially given that
-      // the order established later by `ConstructInferredLabel` shouldn't be
-      // broken more than necessary.
-      if (force_differentiating_label_in_front &&
-          current_field_is_differentiating &&
-          first_differentiating_field_text.empty()) {
-        first_differentiating_field_text = field_text;
-      } else {
-        label_fields.push_back(field_type);
-      }
+      label_fields.push_back(field_type);
 
       // If we've (1) found a differentiating field and (2) found at least
       // |num_fields_to_include| non-empty fields, we're done!
@@ -1213,14 +1175,6 @@ void AutofillProfile::CreateInferredLabelsHelper(
     // no control over the final order of the labels.
     labels[it] = profile->ConstructInferredLabel(
         label_fields, label_fields.size(), app_locale);
-    // Manually append the differentiating label in front.
-    if (!first_differentiating_field_text.empty()) {
-      std::u16string separator =
-          l10n_util::GetStringUTF16(IDS_AUTOFILL_ADDRESS_SUMMARY_SEPARATOR);
-      labels[it] = labels[it].empty() ? first_differentiating_field_text
-                                      : first_differentiating_field_text +
-                                            separator + labels[it];
-    }
   }
 }
 
@@ -1318,9 +1272,8 @@ AutofillProfile AutofillProfile::ConvertToAccountProfile() const {
   // GUID is assigned.
   account_profile.set_guid(base::Uuid::GenerateRandomV4().AsLowercaseString());
   account_profile.record_type_ = RecordType::kAccount;
-  // Initial creator and last modifier are unused for kLocalOrSyncable profiles.
-  account_profile.initial_creator_id_ = kInitialCreatorOrModifierChrome;
-  account_profile.last_modifier_id_ = kInitialCreatorOrModifierChrome;
+  // Initial creator is unused for kLocalOrSyncable profiles.
+  account_profile.initial_creator_id_ = kInitialCreatorChrome;
   return account_profile;
 }
 

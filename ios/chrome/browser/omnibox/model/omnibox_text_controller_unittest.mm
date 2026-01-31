@@ -97,6 +97,7 @@ class OmniboxTextControllerTest : public PlatformTest {
     [omnibox_autocomplete_controller_ disconnect];
     omnibox_autocomplete_controller_ = nil;
     autocomplete_controller_.reset();
+    omnibox_text_model_.reset();
     omnibox_client_.reset();
     TestingApplicationContext::GetGlobal()->SetLocalState(nullptr);
     local_state_.reset();

@@ -22,20 +22,20 @@ namespace headless {
 // Send DevTools command and wait for response by running a local
 // message loop. This is typically used as a quick and dirty way
 // to enable a domain.
-base::Value::Dict SendCommandSync(
+base::DictValue SendCommandSync(
     simple_devtools_protocol_client::SimpleDevToolsProtocolClient&
         devtools_client,
     const std::string& command);
-base::Value::Dict SendCommandSync(
+base::DictValue SendCommandSync(
     simple_devtools_protocol_client::SimpleDevToolsProtocolClient&
         devtools_client,
     const std::string& command,
-    base::Value::Dict params);
+    base::DictValue params);
 
 // Convenience function to create a single key/value Dict.
 template <typename T>
-base::Value::Dict Param(std::string_view key, T&& value) {
-  base::Value::Dict param;
+base::DictValue Param(std::string_view key, T&& value) {
+  base::DictValue param;
   param.Set(key, std::move(value));
   return param;
 }

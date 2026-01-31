@@ -41,7 +41,7 @@ CastMessage CreateNonKeepAliveMessage(const std::string& message_type) {
   output.set_payload_type(
       CastMessage::PayloadType::CastMessage_PayloadType_STRING);
 
-  base::Value::Dict type_dict;
+  base::DictValue type_dict;
   type_dict.Set("type", message_type);
   CHECK(base::JSONWriter::Write(type_dict, output.mutable_payload_utf8()));
   return output;

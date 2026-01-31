@@ -10,7 +10,6 @@
 #include "ash/system/video_conference/video_conference_common.h"
 #include "base/memory/raw_ptr.h"
 #include "base/unguessable_token.h"
-#include "chromeos/crosapi/mojom/video_conference.mojom-shared.h"
 #include "chromeos/crosapi/mojom/video_conference.mojom.h"
 
 namespace ash {

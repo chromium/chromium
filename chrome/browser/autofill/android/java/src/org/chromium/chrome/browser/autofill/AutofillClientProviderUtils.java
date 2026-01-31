@@ -9,6 +9,7 @@ import static org.chromium.chrome.browser.preferences.ChromePreferenceKeys.AUTOF
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.SharedPreferences.Editor;
+import android.text.TextUtils;
 import android.view.autofill.AutofillManager;
 
 import org.jni_zero.CalledByNative;
@@ -20,6 +21,7 @@ import org.chromium.base.ResettersForTesting;
 import org.chromium.base.shared_preferences.SharedPreferencesManager;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -40,9 +42,10 @@ public class AutofillClientProviderUtils {
     private static final String AWG_COMPONENT_NAME =
             "com.google.android.gms/com.google.android.gms.autofill.service.AutofillService";
     private static @Nullable Integer sAndroidAutofillFrameworkAvailabilityForTesting;
+    private static @Nullable String sAndroidAutofillServicePackageNameForTesting;
 
     /**
-     * Overrides the return value of {@link isAllowedToUseAndroidAutofillFramework} to the given
+     * Overrides the return value of {@link getAndroidAutofillFrameworkAvailability} to the given
      * {@code availability} value until the tearDown calls the resetter. No manual teardown
      * required.
      *
@@ -52,6 +55,17 @@ public class AutofillClientProviderUtils {
             @Nullable @AndroidAutofillAvailabilityStatus Integer availability) {
         sAndroidAutofillFrameworkAvailabilityForTesting = availability;
         ResettersForTesting.register(() -> sAndroidAutofillFrameworkAvailabilityForTesting = null);
+    }
+
+    /**
+     * Overrides the return value of {@link getAutofillServicePackage} to the given {@code
+     * packageName} value until the tearDown calls the resetter. No manual teardown required.
+     *
+     * @param packageName The return value for tests.
+     */
+    public static void setAutofillServicePackageToUseForTesting(@Nullable String packageName) {
+        sAndroidAutofillServicePackageNameForTesting = packageName;
+        ResettersForTesting.register(() -> sAndroidAutofillServicePackageNameForTesting = null);
     }
 
     /**
@@ -93,18 +107,23 @@ public class AutofillClientProviderUtils {
         if (!AutofillManagerWrapper.isAutofillSupported(manager)) {
             return AndroidAutofillAvailabilityStatus.ANDROID_AUTOFILL_NOT_SUPPORTED;
         }
-        ComponentName componentName =
-                AutofillManagerWrapper.getAutofillServiceComponentName(manager);
-        if (componentName == null) {
+        final @Nullable String autofillServicePackage = getAutofillServicePackage(manager);
+        if (autofillServicePackage == null) {
             return AndroidAutofillAvailabilityStatus.UNKNOWN_ANDROID_AUTOFILL_SERVICE;
         }
-        if (AWG_COMPONENT_NAME.equals(componentName.flattenToString())) {
+        if (AWG_COMPONENT_NAME.equals(autofillServicePackage)) {
             return AndroidAutofillAvailabilityStatus.ANDROID_AUTOFILL_SERVICE_IS_GOOGLE;
         }
-        if (!prefs.getBoolean(Pref.AUTOFILL_USING_VIRTUAL_VIEW_STRUCTURE)) {
-            return AndroidAutofillAvailabilityStatus.SETTING_TURNED_OFF;
+        // If the user explicitly chose the current Autofill Service before, use it again. The
+        // browser may default to built-in Autofill while the preferred provider is unavailable.
+        if (autofillServicePackage.equals(
+                prefs.getString(Pref.AUTOFILL_THIRD_PARTY_PACKAGE_USED_FOR_PLATFORM_AUTOFILL))) {
+            return AndroidAutofillAvailabilityStatus.AVAILABLE;
         }
-        return AndroidAutofillAvailabilityStatus.AVAILABLE;
+        // If the user used platform autofill before, keep using it — even with a new service.
+        return prefs.getBoolean(Pref.AUTOFILL_USING_PLATFORM_AUTOFILL)
+                ? AndroidAutofillAvailabilityStatus.AVAILABLE
+                : AndroidAutofillAvailabilityStatus.SETTING_TURNED_OFF;
     }
 
     @CalledByNative
@@ -128,6 +147,56 @@ public class AutofillClientProviderUtils {
                         .edit();
         editor.putBoolean(AUTOFILL_OPTIONS_DEEP_LINK_FEATURE_KEY, featureOn);
         editor.apply();
+    }
+
+    @CalledByNative
+    public static void updatePackageUsedForAutofill(
+            @JniType("PrefService*") PrefService prefs, boolean currentlyUsesPlatformAutofill) {
+        if (currentlyUsesPlatformAutofill
+                && ChromeFeatureList.isEnabled(
+                        ChromeFeatureList.AUTOFILL_THIRD_PARTY_MODE_RESTORED_ON_START)) {
+            saveThirdPartyPackageUsedForAutofill(prefs, currentlyUsesPlatformAutofill);
+        } else {
+            prefs.setString(Pref.AUTOFILL_THIRD_PARTY_PACKAGE_USED_FOR_PLATFORM_AUTOFILL, "");
+        }
+    }
+
+    private static void saveThirdPartyPackageUsedForAutofill(
+            PrefService prefs, boolean currentlyUsesPlatformAutofill) {
+        final boolean hasUsedPlatformAutofillBefore =
+                !TextUtils.isEmpty(
+                        prefs.getString(
+                                Pref.AUTOFILL_THIRD_PARTY_PACKAGE_USED_FOR_PLATFORM_AUTOFILL));
+        assert currentlyUsesPlatformAutofill || hasUsedPlatformAutofillBefore
+                : "With Chrome as Autofill provider, saving the Autofill service makes no sense!";
+        final @Nullable String autofillServicePackage =
+                getAutofillServicePackage(
+                        ContextUtils.getApplicationContext()
+                                .getSystemService(AutofillManager.class));
+        if (autofillServicePackage == null) {
+            return; // No update possible.
+        }
+        if (AWG_COMPONENT_NAME.equals(autofillServicePackage)) {
+            return; // AWG can never be the preferred Autofill service.
+        }
+        prefs.setString(
+                Pref.AUTOFILL_THIRD_PARTY_PACKAGE_USED_FOR_PLATFORM_AUTOFILL,
+                autofillServicePackage);
+    }
+
+    private static @Nullable String getAutofillServicePackage(@Nullable AutofillManager manager) {
+        if (sAndroidAutofillServicePackageNameForTesting != null) {
+            return sAndroidAutofillServicePackageNameForTesting;
+        }
+        if (manager == null) {
+            return null;
+        }
+        final @Nullable ComponentName componentName =
+                AutofillManagerWrapper.getAutofillServiceComponentName(manager);
+        if (componentName == null) {
+            return null; // No update possible. Should never happen.
+        }
+        return componentName.flattenToString();
     }
 
     private AutofillClientProviderUtils() {}

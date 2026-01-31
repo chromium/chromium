@@ -38,7 +38,7 @@ SSLBlockingPage::GetTypeForTesting() {
 SSLBlockingPage::~SSLBlockingPage() = default;
 
 void SSLBlockingPage::PopulateInterstitialStrings(
-    base::Value::Dict& load_time_data) {
+    base::DictValue& load_time_data) {
   ssl_error_ui_->PopulateStringsForHTML(load_time_data);
   PopulateEnhancedProtectionMessage(load_time_data);
 }

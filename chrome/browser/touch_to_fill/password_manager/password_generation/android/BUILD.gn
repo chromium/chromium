@@ -37,7 +37,7 @@ source_set("android") {
     "//components/prefs",
     "//content/public/browser",
     "//ui/android",
-    "//ui/gfx:native_widget_types",
+    "//ui/gfx:native_ui_types",
   ]
 }
 
@@ -49,7 +49,7 @@ source_set("test_support") {
     "//base",
     "//content/public/browser",
     "//testing/gmock",
-    "//ui/gfx:native_widget_types",
+    "//ui/gfx:native_ui_types",
   ]
 
   sources = [

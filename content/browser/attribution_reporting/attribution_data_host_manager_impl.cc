@@ -2233,7 +2233,7 @@ bool AttributionDataHostManagerImpl::AddNavigationSourceRegistrationToBatchMap(
   auto [it_inner, inserted_inner] = it->second.try_emplace(
       reporting_origin, ScopesAndCountForReportingOriginPerNavigation());
 
-  std::optional<base::Value::Dict> invalid_parameter;
+  std::optional<base::DictValue> invalid_parameter;
 
   if (const auto& scopes_data = reg.attribution_scopes_data) {
     if (inserted_inner ||

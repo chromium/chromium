@@ -9,9 +9,12 @@
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/strings/to_string.h"
+#include "base/task/task_runner.h"
 #include "base/time/time.h"
 #include "base/types/expected.h"
 #include "chrome/browser/actor/actor_keyed_service.h"
+#include "chrome/browser/actor/actor_keyed_service_factory.h"
+#include "chrome/browser/actor/actor_metrics.h"
 #include "chrome/browser/actor/actor_task.h"
 #include "chrome/browser/actor/actor_task_metadata.h"
 #include "chrome/browser/actor/browser_action_util.h"
@@ -21,9 +24,10 @@
 #include "chrome/browser/glic/host/context/glic_tab_data.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
-#include "chrome/common/actor.mojom-data-view.h"
+#include "chrome/common/actor.mojom.h"
 #include "chrome/common/actor/action_result.h"
 #include "chrome/common/actor/journal_details_builder.h"
+#include "chrome/common/actor_webui.mojom.h"
 #include "chrome/common/chrome_features.h"
 #include "components/optimization_guide/proto/features/actions_data.pb.h"
 #include "components/sessions/core/session_id.h"
@@ -36,12 +40,41 @@ namespace glic {
 namespace {
 BASE_FEATURE(kGlicReloadAfterPerformActionsCrash,
              base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kGlicRetryFailedObservations, base::FEATURE_ENABLED_BY_DEFAULT);
+
+// Observations can sometimes fail due to timeouts or issues stemming from
+// high-load scenarios. When we retry, give it a few seconds to increase the
+// probability that the system will now be in a state to return a successful
+// observation. This should only ever happen very rarely so waiting a few
+// seconds should be ok.
+const base::FeatureParam<base::TimeDelta> kObservationRetryDelay{
+    &kGlicRetryFailedObservations, "delay", base::Seconds(5)};
+
+tabs::TabInterface* GetCrashedTab(actor::ActorTask& task) {
+  // TODO(b/464019189): This code only deals with the first crashed tab per
+  // Task. If there are multiple tabs that crashed we might want to figure out
+  // how to deal with that.
+  for (tabs::TabHandle tab_handle : task.GetLastActedTabs()) {
+    tabs::TabInterface* tab = tab_handle.Get();
+    if (!tab) {
+      continue;
+    }
+
+    content::WebContents* contents = tab->GetContents();
+    CHECK(contents);
+    if (contents->IsCrashed()) {
+      return tab;
+    }
+  }
+
+  return nullptr;
+}
 }  // namespace
 
-GlicActorTaskManager::GlicActorTaskManager(
-    Profile* profile,
-    actor::ActorKeyedService* actor_keyed_service)
-    : profile_(profile), actor_keyed_service_(actor_keyed_service) {
+GlicActorTaskManager::GlicActorTaskManager(Profile* profile)
+    : profile_(profile),
+      actor_keyed_service_(
+          actor::ActorKeyedServiceFactory::GetActorKeyedService(profile)) {
   CHECK(profile_);
   CHECK(actor_keyed_service_);
 }
@@ -82,6 +115,8 @@ void GlicActorTaskManager::PerformActionsFinished(
           .Build());
 
   // Task has disappeared, clear the current task id.
+  // TODO(b/470985724): Reply at the time the task is stopped/canceled instead
+  // of here.
   if (!task) {
     ResetTaskState();
     optimization_guide::proto::ActionsResult response =
@@ -102,72 +137,111 @@ void GlicActorTaskManager::PerformActionsFinished(
     return;
   }
 
-  if (!attempted_reload_ &&
-      base::FeatureList::IsEnabled(kGlicReloadAfterPerformActionsCrash) &&
-      result_code == actor::mojom::ActionResultCode::kRendererCrashed) {
-    // We call back into PerformActionsFinished once we've reloaded the tab.
-    auto peform_actions_done = base::BindOnce(
-        &GlicActorTaskManager::PerformActionsFinished,
-        weak_ptr_factory_.GetWeakPtr(), std::move(callback), task_id,
-        start_time, skip_async_observation_information, result_code,
-        index_of_failed_action, std::move(action_results));
-    ReloadTab(*task, std::move(peform_actions_done));
-  } else {
-    // The callback doesn't need any weak semantics since all it does is wrap
-    // the result and pass it to the mojo callback. If `this` is destroyed the
-    // mojo connection is closed so this will be a no-op but the callback
-    // doesn't touch any freed memory.
-    auto result_callback = base::BindOnce(
-        [](mojom::WebClientHandler::PerformActionsCallback callback,
-           std::unique_ptr<optimization_guide::proto::ActionsResult> result,
-           std::unique_ptr<actor::AggregatedJournal::PendingAsyncEntry>
-               journal_entry) {
-          CHECK(result);
-          std::move(callback).Run(mojo_base::ProtoWrapper(*result));
-        },
-        std::move(callback));
+  // TODO(b/471210832): Consider merging tab observation code into the Actor API
+  // so that all clients can share logic related to retries, crashed, tabs, and
+  // observation fetching mechanics.
+  if (base::FeatureList::IsEnabled(kGlicReloadAfterPerformActionsCrash) &&
+      !attempted_reload_after_crash_) {
+    if (tabs::TabInterface* crashed_tab = GetCrashedTab(*task)) {
+      attempted_reload_after_crash_ = true;
 
-    actor::BuildActionsResultWithObservations(
-        *profile_, start_time, result_code, index_of_failed_action,
-        std::move(action_results), *task, skip_async_observation_information,
-        std::move(result_callback));
+      // We call back into PerformActionsFinished once we've reloaded the tab
+      // but ensure we respond with kRendererCrashed since the reload/crash is
+      // state-destructive.
+      auto retry_perform_actions_finished = base::BindOnce(
+          &GlicActorTaskManager::PerformActionsFinished,
+          weak_ptr_factory_.GetWeakPtr(), std::move(callback), task_id,
+          start_time, skip_async_observation_information,
+          actor::mojom::ActionResultCode::kRendererCrashed,
+          index_of_failed_action, std::move(action_results));
+      ReloadCrashedTab(*crashed_tab, task->id(),
+                       std::move(retry_perform_actions_finished));
+      return;
+    }
   }
+
+  actor::BuildActionsResultWithObservations(
+      *profile_, start_time, result_code, index_of_failed_action,
+      std::move(action_results), *task, skip_async_observation_information,
+      base::BindOnce(&GlicActorTaskManager::DidFinishBuildObservation,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }
 
-void GlicActorTaskManager::ReloadTab(actor::ActorTask& task,
-                                     base::OnceClosure callback) {
-  CHECK(!attempted_reload_);
-  attempted_reload_ = true;
+void GlicActorTaskManager::DidFinishBuildObservation(
+    mojom::WebClientHandler::PerformActionsCallback callback,
+    base::TimeTicks start_time,
+    actor::mojom::ActionResultCode result_code,
+    std::optional<size_t> index_of_failed_action,
+    std::vector<actor::ActionResultWithLatencyInfo> action_results,
+    actor::TaskId task_id,
+    bool skip_async_observation_information,
+    std::unique_ptr<optimization_guide::proto::ActionsResult> result,
+    std::unique_ptr<actor::AggregatedJournal::PendingAsyncEntry>
+        journal_entry) {
+  CHECK(result);
 
-  // TODO(b/464019189): This code only deals with the first crashed tab per
-  // Task. If they are multiple tabs that crashed we might want to figure out
-  // how to deal with that.
-  for (tabs::TabHandle tab_handle : task.GetLastActedTabs()) {
-    tabs::TabInterface* tab = tab_handle.Get();
-    if (!tab) {
-      continue;
-    }
+  actor::RecordTabObservationResultHistogram(*result);
 
-    if (content::WebContents* contents = tab->GetContents()) {
-      if (contents->IsCrashed()) {
+  if (base::FeatureList::IsEnabled(kGlicRetryFailedObservations) &&
+      !attempted_observation_retry_) {
+    using optimization_guide::proto::TabObservation;
+
+    // If any of the tab observations failed, retry observation.
+    for (const TabObservation& tab_observation : result->tabs()) {
+      CHECK(tab_observation.has_result());
+      if (tab_observation.result() != TabObservation::TAB_OBSERVATION_OK) {
+        attempted_observation_retry_ = true;
+
         actor_keyed_service_->GetJournal().Log(
-            contents->GetLastCommittedURL(), task.id(),
-            "GlicActorTaskManager::ReloadTab", /*details=*/{});
-        reload_observer_ = std::make_unique<actor::ObservationDelayController>(
-            task.id(), actor_keyed_service_->GetJournal());
-        contents->GetController().Reload(content::ReloadType::NORMAL, true);
-        reload_observer_->Wait(
-            *tab, base::BindOnce(&GlicActorTaskManager::ReloadObserverDone,
-                                 base::Unretained(this), tab_handle,
-                                 std::move(callback)));
+            GURL::EmptyGURL(), task_id, "Retrying failed observation",
+            actor::JournalDetailsBuilder()
+                .Add("tab_id", tab_observation.id())
+                .AddError(base::ToString(tab_observation.result()))
+                .Build());
+
+        auto retry_perform_actions_finished = base::BindOnce(
+            &GlicActorTaskManager::PerformActionsFinished,
+            weak_ptr_factory_.GetWeakPtr(), std::move(callback), task_id,
+            start_time, skip_async_observation_information, result_code,
+            index_of_failed_action, std::move(action_results));
+
+        base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
+            FROM_HERE, std::move(retry_perform_actions_finished),
+            kObservationRetryDelay.Get());
         return;
       }
     }
   }
 
-  if (callback) {
-    std::move(callback).Run();
-  }
+  actor::RecordObservationOutcomeHistogram(*result,
+                                           attempted_observation_retry_);
+
+  std::move(callback).Run(mojo_base::ProtoWrapper(*result));
+}
+
+void GlicActorTaskManager::ReloadCrashedTab(tabs::TabInterface& crashed_tab,
+                                            actor::TaskId task_id,
+                                            base::OnceClosure callback) {
+  // TODO(b/464019189): This code only deals with the first crashed tab per
+  // Task. If they are multiple tabs that crashed we might want to figure out
+  // how to deal with that.
+  content::WebContents* contents = crashed_tab.GetContents();
+  CHECK(contents);
+  CHECK(contents->IsCrashed());
+
+  actor_keyed_service_->GetJournal().Log(
+      contents->GetLastCommittedURL(), task_id,
+      "GlicActorTaskManager::ReloadCrashedTab", /*details=*/{});
+  reload_observer_ = std::make_unique<actor::ObservationDelayController>(
+      task_id, actor_keyed_service_->GetJournal());
+  // TODO(b/471205189): Should `check_for_repost` be true here since a user
+  // isn't in control?
+  contents->GetController().Reload(content::ReloadType::NORMAL, true);
+  reload_observer_->Wait(
+      crashed_tab,
+      base::BindOnce(&GlicActorTaskManager::ReloadObserverDone,
+                     base::Unretained(this), crashed_tab.GetHandle(),
+                     std::move(callback)));
 }
 
 void GlicActorTaskManager::PerformActions(
@@ -236,11 +310,29 @@ void GlicActorTaskManager::PerformActions(
   bool skip_async_observation_information =
       actions.has_skip_async_observation_collection() &&
       actions.skip_async_observation_collection();
+  attempted_observation_retry_ = false;
   actor_keyed_service_->PerformActions(
       task_id, std::move(requests.value()), actor::ActorTaskMetadata(actions),
       base::BindOnce(&GlicActorTaskManager::PerformActionsFinished,
                      GetWeakPtr(), std::move(callback), task_id, start_time,
                      skip_async_observation_information));
+}
+
+void GlicActorTaskManager::CancelActions(
+    actor::TaskId task_id,
+    mojom::WebClientHandler::CancelActionsCallback callback) {
+  actor::ActorTask* task = actor_keyed_service_->GetTask(task_id);
+  if (!task) {
+    std::move(callback).Run(mojom::CancelActionsResult::kTaskNotFound);
+    return;
+  }
+
+  bool success = task->CancelOngoingActions(
+      actor::mojom::ActionResultCode::kActionsCancelled);
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, base::BindOnce(std::move(callback),
+                                success ? mojom::CancelActionsResult::kSuccess
+                                        : mojom::CancelActionsResult::kFailed));
 }
 
 void GlicActorTaskManager::StopActorTask(
@@ -284,6 +376,12 @@ void GlicActorTaskManager::StopActorTask(
 }
 
 void GlicActorTaskManager::MaybeShowDeactivationToastUi() {
+  // If the ui is deactivated on a tab that is not actuating, don't show the
+  // toast.
+  if (!IsActuating()) {
+    return;
+  }
+
   BrowserWindowInterface* const last_active_bwi =
       GetLastActiveBrowserWindowInterfaceWithAnyProfile();
   actor_keyed_service_->GetActorUiStateManager()->MaybeShowToast(
@@ -421,7 +519,7 @@ void GlicActorTaskManager::ResumeActorTask(
                 std::move(tab_context_ptr),
                 static_cast<int32_t>(resume_response_code)));
       },
-      std::move(callback), CreateTabData(tab_of_resumed_task->GetContents()),
+      std::move(callback), CreateTabData(tab_of_resumed_task),
       resume_response_code);
 
   actor_keyed_service_->RequestTabObservation(*tab_of_resumed_task, task_id,
@@ -489,8 +587,7 @@ void GlicActorTaskManager::CreateActorTab(
 void GlicActorTaskManager::CreateActorTabFinished(
     glic::mojom::WebClientHandler::CreateActorTabCallback callback,
     tabs::TabInterface* new_tab) {
-  std::move(callback).Run(
-      CreateTabData(new_tab ? new_tab->GetContents() : nullptr));
+  std::move(callback).Run(CreateTabData(new_tab));
 }
 
 void GlicActorTaskManager::ReloadObserverDone(
@@ -525,7 +622,7 @@ void GlicActorTaskManager::CancelTask() {
 
 void GlicActorTaskManager::ResetTaskState() {
   current_task_id_ = actor::TaskId();
-  attempted_reload_ = false;
+  attempted_reload_after_crash_ = false;
   reload_observer_.reset();
 }
 

@@ -1,0 +1,13 @@
+Google Chrome ve ChromeOS Ek Hizmet Şartları
+
+Son değiştirilme tarihi: 30 Eylül 2025
+
+Chrome veya ChromeOS'u kullanarak https://policies.google.com/terms adresinde bulunan Google Hizmet Şartları'nı ve bu Google Chrome ile ChromeOS Ek Hizmet Şartları'nı kabul etmiş olursunuz.
+
+Bu Google Chrome ve ChromeOS Ek Hizmet Şartları, Chrome ve ChromeOS'un çalıştırılabilir kod sürümü için geçerlidir. Chrome'a ait kaynak kodun büyük bölümü açık kaynak yazılım lisans sözleşmeleri altında ücretsiz olarak http://www.chromium.org adresinde sunulmaktadır.
+
+Chrome ve ChromeOS'un belirli bileşenlerini kullanımınız aşağıdaki şartlara tabidir:
+
+AVC
+
+BU ÜRÜN, (i) AVC STANDARDINA UYGUN OLARAK VİDEO ("AVC VİDEO") KODLAMAK VE/VEYA (ii) KİŞİSEL FAALİYETTE BULUNAN BİR TÜKETİCİ TARAFINDAN KODLANMIŞ VE/VEYA AVC VİDEO SAĞLAMA LİSANSINA SAHİP BİR VİDEO SAĞLAYICIDAN EDİNİLMİŞ BİR AVC VİDEONUN KODUNU ÇÖZMEK ÜZERE TÜKETİCİNİN KİŞİSEL KULLANIMI VEYA KARŞILIĞINDA ÜCRET ALMADIĞI DİĞER KULLANIMLARI İÇİN AVC PATENT PORTFÖYÜ LİSANSI ALTINDA LİSANSLANMIŞTIR. BAŞKA HİÇBİR KULLANIM İÇİN HİÇBİR LİSANS VERİLMEMİŞTİR VEYA VERİLDİĞİ ANLAMI ÇIKARILAMAZ. EK BİLGİ, MPEG LA, L.L.C. FİRMASINDAN EDİNİLEBİLİR. BKZ. HTTPS://WWW.VIA-LA.COM.

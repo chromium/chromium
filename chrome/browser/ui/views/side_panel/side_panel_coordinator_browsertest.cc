@@ -40,7 +40,7 @@
 #include "chrome/browser/ui/toolbar/pinned_toolbar/pinned_toolbar_actions_model_factory.h"
 #include "chrome/browser/ui/toolbar/toolbar_actions_model.h"
 #include "chrome/browser/ui/ui_features.h"
-#include "chrome/browser/ui/views/extensions/extensions_toolbar_container.h"
+#include "chrome/browser/ui/views/extensions/extensions_toolbar_desktop.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/layout/browser_view_layout.h"
 #include "chrome/browser/ui/views/frame/multi_contents_view.h"
@@ -207,7 +207,7 @@ class SidePanelCoordinatorTest : public InProcessBrowserTest {
 
  protected:
   void WaitForExtensionsContainerAnimation() {
-    views::test::WaitForAnimatingLayoutManager(GetExtensionsToolbarContainer());
+    views::test::WaitForAnimatingLayoutManager(GetExtensionsToolbarDesktop());
   }
 
   void ClickButton(views::Button* button) {
@@ -220,7 +220,7 @@ class SidePanelCoordinatorTest : public InProcessBrowserTest {
     return SidePanelEntry::Key(SidePanelEntry::Id::kExtension, id);
   }
 
-  ExtensionsToolbarContainer* GetExtensionsToolbarContainer() const {
+  ExtensionsToolbarDesktop* GetExtensionsToolbarDesktop() const {
     return BrowserView::GetBrowserViewForBrowser(browser())
         ->toolbar()
         ->extensions_container();
@@ -231,15 +231,6 @@ class SidePanelCoordinatorTest : public InProcessBrowserTest {
         ->GetActiveTabInterface()
         ->GetTabFeatures()
         ->side_panel_registry();
-  }
-
-  // TODO(https://crbug.com/454583671): Eliminate this in favor of something
-  // that actually returns the specific width needed by the test, or else find
-  // some other way to calculate this in the test itself.
-  int GetMinWebContentsWidth() const {
-    return static_cast<BrowserViewLayout*>(
-               browser()->GetBrowserView().GetLayoutManager())
-        ->GetMinWebContentsWidthForTesting();
   }
 
   // Calls chrome.sidePanel.setOptions() for the given `extension`, `path` and
@@ -523,13 +514,11 @@ IN_PROC_BROWSER_TEST_F(SidePanelCoordinatorTest,
 }
 
 // TODO(crbug.com/384507412): Flaky on Linux and ChromeOS.
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+// Disabled due to new, better layout logic. New tests need to be written.
+// These have a tendency to fail on CI because they are highly dependent on e.g.
+// the size of the display on the bot.
 #define MAYBE_ChangeSidePanelWidthNarrowWindow \
   DISABLED_ChangeSidePanelWidthNarrowWindow
-#else
-#define MAYBE_ChangeSidePanelWidthNarrowWindow ChangeSidePanelWidthNarrowWindow
-#endif
-
 IN_PROC_BROWSER_TEST_F(SidePanelCoordinatorTest,
                        MAYBE_ChangeSidePanelWidthNarrowWindow) {
   Init();
@@ -639,8 +628,9 @@ IN_PROC_BROWSER_TEST_F(SidePanelCoordinatorTest, ChangeSidePanelWidthMaxMin) {
 
   // the web contents width will either be it's min width or 1/3 the browser
   // width minus the side panel separator width.
-  const int web_contents_width = std::max(
-      GetMinWebContentsWidth(), (browser_width - two_thirds_browser_width - 1));
+  const int web_contents_width =
+      std::max(BrowserViewLayout::kContentsContainerMinimumWidth,
+               (browser_width - two_thirds_browser_width - 1));
   EXPECT_EQ(browser()->GetBrowserView().contents_web_view()->width(),
             web_contents_width);
 }
@@ -679,16 +669,9 @@ IN_PROC_BROWSER_TEST_F(SidePanelCoordinatorTest,
 
   MultiContentsView* multi_contents_view =
       browser()->GetBrowserView().multi_contents_view();
-  if (base::FeatureList::IsEnabled(features::kTabbedBrowserUseNewLayout)) {
-    EXPECT_EQ(multi_contents_view->width(),
-              GetMinWebContentsWidth() + views::Separator::kThickness);
-  } else {
-    EXPECT_EQ(multi_contents_view->width(), GetMinWebContentsWidth());
-    EXPECT_GT(
-        multi_contents_view->width(),
-        multi_contents_view->GetActiveContentsContainerView()->width() +
-            multi_contents_view->GetInactiveContentsContainerView()->width());
-  }
+  EXPECT_EQ(multi_contents_view->width(),
+            BrowserViewLayout::kContentsContainerMinimumWidth +
+                views::Separator::kThickness);
 }
 
 IN_PROC_BROWSER_TEST_F(SidePanelCoordinatorTest, ChangeSidePanelWidthRTL) {
@@ -754,12 +737,11 @@ IN_PROC_BROWSER_TEST_F(SidePanelCoordinatorTest,
   browser()->GetBrowserView().Restore();
 #endif
   browser()->GetBrowserView().SetBounds(new_bounds);
-  const int min_web_contents_width = GetMinWebContentsWidth();
 
   ASSERT_TRUE(base::test::RunUntil([&]() {
     // Within a couple of pixels.
     return browser()->GetBrowserView().contents_web_view()->width() <
-           min_web_contents_width + 20;
+           BrowserViewLayout::kContentsContainerMinimumWidth + 20;
   }));
 
   // Return browser window to original size, side panel should also return to

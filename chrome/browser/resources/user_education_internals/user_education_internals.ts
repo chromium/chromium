@@ -17,7 +17,6 @@ import './user_education_whats_new_internals_card.js';
 
 import {ColorChangeUpdater} from 'chrome://resources/cr_components/color_change_listener/colors_css_updater.js';
 import {HelpBubbleMixinLit} from 'chrome://resources/cr_components/help_bubble/help_bubble_mixin_lit.js';
-import {CrContainerShadowMixinLit} from 'chrome://resources/cr_elements/cr_container_shadow_mixin_lit.js';
 import type {CrMenuSelector} from 'chrome://resources/cr_elements/cr_menu_selector/cr_menu_selector.js';
 import type {CrToastElement} from 'chrome://resources/cr_elements/cr_toast/cr_toast.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
@@ -36,8 +35,7 @@ export interface UserEducationInternalsElement {
   };
 }
 
-const UserEducationInternalsElementBase =
-    CrContainerShadowMixinLit(HelpBubbleMixinLit(CrLitElement));
+const UserEducationInternalsElementBase = HelpBubbleMixinLit(CrLitElement);
 
 export class UserEducationInternalsElement extends
     UserEducationInternalsElementBase {

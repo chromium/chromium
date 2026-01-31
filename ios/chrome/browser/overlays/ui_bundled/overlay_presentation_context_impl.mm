@@ -6,7 +6,6 @@
 
 #import <UIKit/UIKit.h>
 
-#import "base/containers/contains.h"
 #import "base/functional/bind.h"
 #import "base/functional/callback.h"
 #import "base/memory/ptr_util.h"
@@ -245,7 +244,7 @@ void OverlayPresentationContextImpl::ShowOverlayUI(
   // Create the UI state for `request` if necessary.
   const OverlayRequestId request_id = OverlayRequestIdForRequest(request);
   if (!GetRequestUIState(request_id)) {
-    states_[request_id] = std::make_unique<OverlayRequestUIState>(request);
+    states_[request_id] = std::make_unique<OverlayRequestUIState>();
   }
   // Present the overlay UI and update the UI state.
   GetRequestUIState(request_id)

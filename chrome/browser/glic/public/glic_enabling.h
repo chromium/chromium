@@ -5,6 +5,10 @@
 #ifndef CHROME_BROWSER_GLIC_PUBLIC_GLIC_ENABLING_H_
 #define CHROME_BROWSER_GLIC_PUBLIC_GLIC_ENABLING_H_
 
+#include <memory>
+#include <optional>
+#include <string>
+
 #include "base/callback_list.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
@@ -54,6 +58,27 @@ enum class ProfileReadyState : int32_t;
 inline constexpr char
     kGlicEligibilitySeparateAccountCapabilitySyntheticTrialName[] =
         "GlicEligibilitySeparateAccountCapabilityAffectedUsers";
+
+// Global state used by GlicEnabling.
+class GlicGlobalEnabling {
+ public:
+  class Delegate {
+   public:
+    Delegate() = default;
+    Delegate(const Delegate&) = delete;
+    Delegate& operator=(const Delegate&) = delete;
+
+    virtual std::string GetCountryCode();
+    virtual std::string GetLocale();
+  };
+  explicit GlicGlobalEnabling(Delegate& delegate);
+  ~GlicGlobalEnabling();
+  bool IsEnabledByFlags();
+
+ private:
+  std::optional<bool> locale_enablement_;
+  std::optional<bool> country_enablement_;
+};
 
 // This class provides a central location for checking if GLIC is enabled. It
 // allows for future expansion to include other ways the feature may be disabled
@@ -125,6 +150,9 @@ class GlicEnabling : public signin::IdentityManager::Observer {
   // Whether the FRE screen is displayed in the same window as the chat app.
   static bool IsUnifiedFreEnabled(Profile* profile);
 
+  // Whether the Trust-First Onboarding flow should be shown.
+  static bool IsTrustFirstOnboardingEnabled();
+
   // Whether the required feature flags for multi-instance - kGlicMultiInstance,
   // kGlicMultiTab, and kGlicMultitabUnderlines - are enabled. When calling, be
   // sure that IsMultiInstanceEnabled() should not be used instead.
@@ -155,6 +183,10 @@ class GlicEnabling : public signin::IdentityManager::Observer {
       Profile* additional_profile);
 
   struct ProfileEnablement {
+    ProfileEnablement();
+    ProfileEnablement(ProfileEnablement&&);
+    ~ProfileEnablement();
+
     // These conditions are checked first and may prevent following checks from
     // occurring.
     bool feature_disabled : 1 = false;
@@ -163,10 +195,14 @@ class GlicEnabling : public signin::IdentityManager::Observer {
     // These are checked separately, so may be present in various combinations.
     bool not_rolled_out : 1 = false;
     bool primary_account_not_capable : 1 = false;
+    bool primary_account_not_fully_signed_in : 1 = false;
     bool disallowed_by_chrome_policy : 1 = false;
     bool disallowed_by_remote_admin : 1 = false;
     bool disallowed_by_remote_other : 1 = false;
     bool not_consented : 1 = false;
+
+    // Whether live (audio) functionality is disallowed for this account type.
+    bool live_disallowed : 1 = false;
 
     bool IsProfileEligible() const {
       return !feature_disabled && !not_regular_profile;
@@ -196,15 +232,15 @@ class GlicEnabling : public signin::IdentityManager::Observer {
               !not_consented);
     }
 
+    bool EligibleForLive() const {
+      return IsProfileEligible() && !live_disallowed;
+    }
+
     bool DisallowedByAdmin() const {
       return disallowed_by_chrome_policy || disallowed_by_remote_admin;
     }
   };
   static ProfileEnablement EnablementForProfile(Profile* profile);
-
-  // Whether the user's country and locale are in a location that Glic is rolled
-  // out to.
-  static bool IsInRolloutLocation();
 
   explicit GlicEnabling(Profile* profile,
                         ProfileAttributesStorage* profile_attributes_storage);
@@ -247,6 +283,9 @@ class GlicEnabling : public signin::IdentityManager::Observer {
   void UpdateUserStatusWithThrottling() {
     glic_user_status_fetcher_->UpdateUserStatusWithThrottling();
   }
+
+  // Test-only method to bypass enablement checks.
+  static void SetBypassEnablementChecksForTesting(bool bypass);
 
   // This is called anytime IsAllowed() might return a different value.
   using EnableChangedCallback = base::RepeatingClosure;

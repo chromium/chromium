@@ -10,7 +10,7 @@
 #include "base/values.h"
 #include "chrome/test/chromedriver/chrome/status.h"
 
-Status SerializeAsJson(const base::Value::Dict& value, std::string* json);
+Status SerializeAsJson(const base::DictValue& value, std::string* json);
 
 Status SerializeAsJson(const base::Value& value, std::string* json);
 

@@ -4,6 +4,10 @@
 
 package org.chromium.chrome.browser.omnibox;
 
+import android.transition.Transition;
+import android.transition.TransitionManager;
+import android.view.ViewGroup;
+
 import org.chromium.build.annotations.NullMarked;
 
 /**
@@ -25,4 +29,15 @@ public interface LocationBarEmbedder {
      * visibility changes.
      */
     default void onWidthConsumerVisibilityChanged() {}
+
+    /**
+     * Begin a delayed transition for the embedded view. Allows the embedder to kick off with any of
+     * its own relevant transitions.
+     *
+     * @param sceneRoot The default scene root to use if the embedder does not need a different one.
+     * @param transition The delayed transition that the location bar is starting.
+     */
+    default void beginEmbeddedDelayedTransition(ViewGroup sceneRoot, Transition transition) {
+        TransitionManager.beginDelayedTransition(sceneRoot, transition);
+    }
 }

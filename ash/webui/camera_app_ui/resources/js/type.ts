@@ -102,6 +102,15 @@ export enum MimeType {
   JSON = 'application/json',
   MP4 = 'video/mp4',
   PDF = 'application/pdf',
+  PNG = 'image/png',
+}
+
+/**
+ * Image file formats.
+ */
+export enum ImageFormat {
+  JPEG = 'jpeg',
+  PNG = 'png',
 }
 
 /**
@@ -545,6 +554,8 @@ export enum LocalStorageKey {
   PREF_DEVICE_VIDEO_RESOLUTION_EXPERT = 'deviceVideoResolutionExpert',
   PREF_DEVICE_VIDEO_RESOLUTION_FPS = 'deviceVideoResolutionFps',
   PREF_DEVICE_VIDEO_RESOLUTION_LEVEL = 'deviceVideoResolutionLevel',
+  PREF_LAST_CLOUD_DESTINATION = 'lastCloudDestination',
+  PREF_SKIP_CLOUD_SAVE_WARNING = 'skipCloudSaveWarning',
   PREVIEW_OCR_TOAST_SHOWN = 'previewOcrToastShown',
   PRINT_PERFORMANCE_LOGS = 'printPerformanceLogs',
   SAVE_METADATA = 'saveMetadata',

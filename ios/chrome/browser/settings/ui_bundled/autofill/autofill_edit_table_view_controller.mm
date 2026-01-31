@@ -7,8 +7,8 @@
 #import "base/apple/foundation_util.h"
 #import "base/check.h"
 #import "base/notreached.h"
+#import "ios/chrome/browser/autofill/form_input_accessory/public/form_input_accessory_chromium_text_data.h"
 #import "ios/chrome/browser/autofill/ui_bundled/cells/autofill_credit_card_edit_item.h"
-#import "ios/chrome/browser/autofill/ui_bundled/form_input_accessory/form_input_accessory_chromium_text_data.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/common/ui/elements/form_input_accessory_view.h"
 

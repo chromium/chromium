@@ -136,7 +136,7 @@ found in the LICENSE file.
     <dimen name="omnibox_carousel_suggestion_minimum_item_spacing">12dp</dimen>
     <dimen name="omnibox_action_chips_container_height">48dp</dimen>
     <dimen name="omnibox_action_chip_spacing">8dp</dimen>
-    <dimen name="omnibox_simple_card_leadin">16dp</dimen>
+    <dimen name="omnibox_simple_card_lead_in">16dp</dimen>
     <dimen name="omnibox_simple_card_top_padding">12dp</dimen>
     <dimen name="omnibox_pedal_suggestion_icon_size">18dp</dimen>
     <dimen name="omnibox_pedal_suggestion_text_vertical_padding">6dp</dimen>
@@ -159,7 +159,6 @@ found in the LICENSE file.
     <dimen name="omnibox_suggestion_bg_round_corner_radius">16dp</dimen>
     <dimen name="omnibox_suggestion_side_spacing_smallest">8dp</dimen>
     <dimen name="omnibox_suggestion_dropdown_side_spacing">0dp</dimen>
-    <dimen name="omnibox_suggestion_dropdown_round_corner_radius">0dp</dimen>
     <dimen name="omnibox_min_space_above_window_bottom">0dp</dimen>
     <item name="omnibox_suggestion_bg_hover_overlay_fraction" type="fraction">
         8%
@@ -174,26 +173,28 @@ found in the LICENSE file.
     <dimen name="fusebox_button_padding">10dp</dimen>
     <dimen name="fusebox_button_corner_radius">8dp</dimen>
     <dimen name="fusebox_button_icon_size">18dp</dimen>
-    <dimen name="fusebox_attachment_bg_vertical_inset">8dp</dimen>
+    <dimen name="fusebox_attachment_bg_vertical_inset">4dp</dimen>
     <dimen name="fusebox_attachment_file_width">132dp</dimen>
     <dimen name="fusebox_attachment_image_width">64dp</dimen>
     <dimen name="fusebox_attachment_item_height">@dimen/min_touch_target_size</dimen>
-    <dimen name="fusebox_attachment_item_padding">8dp</dimen>
-    <!-- The remove view is 34x48dp, visible elements sbould be 18x18dp. -->
-    <!-- Horizontal: (34-18)/2=8 -->
-    <!-- Vertical: (48-18)/2=15 -->
-    <dimen name="fusebox_attachment_remove_horizontal_padding">8dp</dimen>
-    <dimen name="fusebox_attachment_remove_vertical_padding">15dp</dimen>
-    <dimen name="fusebox_attachment_remove_width">34dp</dimen>
+    <dimen name="fusebox_attachment_item_spacing">1dp</dimen>
+    <dimen name="fusebox_attachment_thumbnail_padding">8dp</dimen>
+    <!-- The remove view is 48x48dp, visible elements should be 18x18dp. (48-18)/2=15 -->
+    <dimen name="fusebox_attachment_close_padding">15dp</dimen>
+    <dimen name="fusebox_attachment_close_overhang">7dp</dimen>
+    <dimen name="fusebox_attachment_remove_horizontal_padding">@dimen/fusebox_attachment_close_padding</dimen>
+    <dimen name="fusebox_attachment_remove_vertical_padding">@dimen/fusebox_attachment_close_padding</dimen>
+    <dimen name="fusebox_attachment_remove_width">@dimen/min_touch_target_size</dimen>
     <dimen name="fusebox_attachment_spinner_size">20dp</dimen>
-    <dimen name="fusebox_attachment_visible_height">32dp</dimen>
+    <dimen name="fusebox_attachment_visible_height">40dp</dimen>
     <dimen name="fusebox_vertical_space_above_popup">32dp</dimen>
 
-  <!-- Search engine logo. -->
+    <!-- Search engine logo. -->
     <dimen name="omnibox_search_engine_logo_composed_size">24dp</dimen>
 
     <!-- Button highlight dimensions. -->
     <dimen name="status_view_verbose_highlight_width">94dp</dimen>
     <dimen name="status_view_verbose_highlight_height">40dp</dimen>
     <dimen name="location_bar_status_icon_margin">4dp</dimen>
+    <dimen name="omnibox_verbose_text_negative_start_margin">-4dp</dimen>
 </resources>

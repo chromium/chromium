@@ -62,7 +62,7 @@ void HostStarterBase::StartHost(Params params, CompletionCallback on_done) {
 }
 
 void HostStarterBase::OnExistingConfigLoaded(
-    std::optional<base::Value::Dict> config) {
+    std::optional<base::DictValue> config) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (config.has_value()) {
@@ -191,7 +191,7 @@ void HostStarterBase::OnOldHostStopped(DaemonController::AsyncResult result) {
 void HostStarterBase::GenerateConfigFile() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  base::Value::Dict config;
+  base::DictValue config;
   // These 5 values are required for the host to start up properly. Other values
   // are optional depending on the use case.
   config.Set(kHostOwnerConfigPath, start_host_params_.owner_email);

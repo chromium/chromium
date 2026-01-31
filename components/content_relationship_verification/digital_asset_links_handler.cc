@@ -99,9 +99,9 @@ GURL GetUrlForAssetLinks(const url::Origin& origin) {
 //    }
 //  }]
 
-bool StatementHasMatchingRelationship(const base::Value::Dict& statement,
+bool StatementHasMatchingRelationship(const base::DictValue& statement,
                                       const std::string& target_relation) {
-  const base::Value::List* relations = statement.FindList("relation");
+  const base::ListValue* relations = statement.FindList("relation");
   if (!relations) {
     return false;
   }
@@ -116,10 +116,10 @@ bool StatementHasMatchingRelationship(const base::Value::Dict& statement,
 }
 
 bool StatementHasMatchingTargetValue(
-    const base::Value::Dict& statement,
+    const base::DictValue& statement,
     const std::string& target_key,
     const std::set<std::string>& target_value) {
-  const base::Value::Dict* target = statement.FindDict("target");
+  const base::DictValue* target = statement.FindDict("target");
   if (!target) {
     return false;
   }
@@ -130,9 +130,9 @@ bool StatementHasMatchingTargetValue(
 }
 
 bool StatementHasMatchingFingerprint(
-    const base::Value::Dict& statement,
+    const base::DictValue& statement,
     const std::vector<std::string>& target_fingerprints) {
-  const base::Value::List* fingerprints =
+  const base::ListValue* fingerprints =
       statement.FindListByDottedPath("target.sha256_cert_fingerprints");
 
   if (!fingerprints) {
@@ -241,7 +241,7 @@ void DigitalAssetLinksHandler::OnJSONParseResult(
     return;
   }
 
-  base::Value::List* statement_list = result->GetIfList();
+  base::ListValue* statement_list = result->GetIfList();
   if (!statement_list) {
     AddMessageToConsole(web_contents_.get(), "Statement List is not a list.");
     std::move(callback).Run(RelationshipCheckResult::kFailure);
@@ -252,7 +252,7 @@ void DigitalAssetLinksHandler::OnJSONParseResult(
   std::vector<std::string> failures;
 
   for (const base::Value& statement : *statement_list) {
-    const base::Value::Dict* statement_dict = statement.GetIfDict();
+    const base::DictValue* statement_dict = statement.GetIfDict();
     if (!statement_dict) {
       failures.push_back("Statement is not a dictionary.");
       continue;

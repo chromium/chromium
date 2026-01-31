@@ -402,7 +402,7 @@ bool WebStateImpl::RealizedWebState::HasWebUI() const {
 void WebStateImpl::RealizedWebState::HandleWebUIMessage(
     const GURL& source_url,
     std::string_view message,
-    const base::Value::List& args) {
+    const base::ListValue& args) {
   if (!HasWebUI()) {
     return;
   }
@@ -1000,11 +1000,13 @@ WebStateImpl::RealizedWebState::GetWebViewNavigationProxy() const {
 void WebStateImpl::RealizedWebState::GoToBackForwardListItem(
     WKBackForwardListItem* wk_item,
     NavigationItem* item,
-    NavigationInitiationType type,
+    BackForwardNavigationType navigation_type,
+    NavigationInitiationType initiation_type,
     bool has_user_gesture) {
   return [web_controller_ goToBackForwardListItem:wk_item
                                    navigationItem:item
-                         navigationInitiationType:type
+                        backForwardNavigationType:navigation_type
+                         navigationInitiationType:initiation_type
                                    hasUserGesture:has_user_gesture];
 }
 

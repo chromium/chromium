@@ -10,6 +10,7 @@
 #include "base/thread_annotations.h"
 #include "base/time/time.h"
 #include "cc/paint/skia_paint_canvas.h"
+#include "components/viz/common/gpu/raster_context_provider.h"
 #include "media/base/video_frame.h"
 #include "media/base/video_types.h"
 #include "media/base/video_util.h"
@@ -171,22 +172,12 @@ void ImageCaptureFrameGrabber::OnVideoFrame(
     ScriptPromiseResolver<ImageBitmap>* resolver) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
-  const SkAlphaType alpha_type = media::IsOpaque(frame->format())
-                                     ? kOpaque_SkAlphaType
-                                     : kPremul_SkAlphaType;
-  const gfx::ColorSpace dest_color_space = frame->CompatRGBColorSpace();
+  auto required_provider_info = CreateSnapshotProviderInfoForVideoFrame(*frame);
+
   if (!snapshot_provider_ ||
-      snapshot_provider_->Size() != frame->natural_size() ||
-      snapshot_provider_->GetColorSpace() != dest_color_space ||
-      snapshot_provider_->GetAlphaType() != alpha_type) {
-    snapshot_provider_ = CreateSnapshotProviderForVideoFrame(
-        frame->natural_size(),
-        viz::SkColorTypeToSinglePlaneSharedImageFormat(kN32_SkColorType),
-        alpha_type, dest_color_space,
-        // TODO(crbug.com/468035607): The RasterContextProvider is nullptr since
-        // this API has historically provided software backed images, but maybe
-        // shouldn't be.
-        /*raster_context_provider=*/nullptr);
+      !required_provider_info.Matches(*snapshot_provider_)) {
+    snapshot_provider_ = CreateSnapshotProviderForVideo(
+        required_provider_info, GetRasterContextProvider().get());
   }
 
   scoped_refptr<StaticBitmapImage> image = CreateImageFromVideoFrame(

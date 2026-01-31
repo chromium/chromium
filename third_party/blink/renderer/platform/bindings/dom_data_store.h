@@ -31,7 +31,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_BINDINGS_DOM_DATA_STORE_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_BINDINGS_DOM_DATA_STORE_H_
 
-#include "base/containers/contains.h"
 #include "third_party/blink/renderer/platform/bindings/dom_wrapper_world.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
@@ -428,7 +427,7 @@ bool DOMDataStore::Contains(const ScriptWrappable* object) const {
   if (can_use_inline_storage_) {
     return !GetUncheckedInlineStorage(object).IsEmpty();
   }
-  return base::Contains(wrapper_map_, object);
+  return wrapper_map_.Contains(object);
 }
 
 // static

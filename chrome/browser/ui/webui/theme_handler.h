@@ -45,7 +45,7 @@ class ThemeHandler : public content::WebUIMessageHandler,
   void OnNativeThemeUpdated(ui::NativeTheme* observed_theme) override;
 
   // Handler for "observeThemeChanges" chrome.send() message. No arguments.
-  void HandleObserveThemeChanges(const base::Value::List& args);
+  void HandleObserveThemeChanges(const base::ListValue& args);
 
   // Notify the page (if allowed) that the theme has changed.
   void SendThemeChanged();

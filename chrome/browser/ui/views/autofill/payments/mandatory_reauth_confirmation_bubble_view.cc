@@ -31,11 +31,10 @@
 namespace autofill {
 
 MandatoryReauthConfirmationBubbleView::MandatoryReauthConfirmationBubbleView(
-    views::View* anchor_view,
+    views::BubbleAnchor anchor,
     content::WebContents* web_contents,
     MandatoryReauthBubbleController* controller)
-    : AutofillLocationBarBubble(anchor_view, web_contents),
-      controller_(controller) {
+    : AutofillLocationBarBubble(anchor, web_contents), controller_(controller) {
   SetButtons(static_cast<int>(ui::mojom::DialogButton::kNone));
   SetShowCloseButton(true);
   set_fixed_width(views::LayoutProvider::Get()->GetDistanceMetric(

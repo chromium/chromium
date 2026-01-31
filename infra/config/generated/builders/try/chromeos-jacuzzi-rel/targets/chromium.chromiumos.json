@@ -97,6 +97,7 @@
       },
       {
         "args": [
+          "-retries=0",
           "setup.FieldTrialConfig=enable",
           "-maybemissingvars=ui\\.(gaiaPoolDefault|signinProfileTestExtensionManifestKey)|uidetection\\.(key|key_type|server)"
         ],

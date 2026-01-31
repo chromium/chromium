@@ -69,13 +69,13 @@ data_decoder::DataDecoder::ValueOrError ParseJsonLikeDataDecoder(
   return ParseJson(json);
 }
 
-std::optional<base::Value::Dict> GetDictionaryFromCastMessage(
+std::optional<base::DictValue> GetDictionaryFromCastMessage(
     const CastMessage& message) {
   if (!message.has_payload_utf8()) {
     return std::nullopt;
   }
 
-  std::optional<base::Value::Dict> value = base::JSONReader::ReadDict(
+  std::optional<base::DictValue> value = base::JSONReader::ReadDict(
       message.payload_utf8(), base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   if (!value) {
     return std::nullopt;
@@ -84,7 +84,7 @@ std::optional<base::Value::Dict> GetDictionaryFromCastMessage(
 }
 
 CastMessageType GetMessageType(const CastMessage& message) {
-  std::optional<base::Value::Dict> dict = GetDictionaryFromCastMessage(message);
+  std::optional<base::DictValue> dict = GetDictionaryFromCastMessage(message);
   if (!dict) {
     return CastMessageType::kOther;
   }
@@ -192,16 +192,15 @@ class CastMessageHandlerTest : public testing::Test {
 
   void SendMessageAndExpectConnection(const std::string& destination_id,
                                       VirtualConnectionType connection_type) {
-    CastMessage message =
-        CreateCastMessage("namespace", base::Value(base::Value::Dict()),
-                          kSourceId, destination_id);
+    CastMessage message = CreateCastMessage(
+        "namespace", base::Value(base::DictValue()), kSourceId, destination_id);
     {
       InSequence dummy;
       // We should first send a CONNECT request to ensure a connection.
       EXPECT_CALL(*transport_,
                   SendMessage_(HasMessageType(CastMessageType::kConnect), _))
           .WillOnce(WithArg<0>([&](const CastMessage& message) {
-            std::optional<base::Value::Dict> dict =
+            std::optional<base::DictValue> dict =
                 GetDictionaryFromCastMessage(message);
             EXPECT_EQ(connection_type, dict->FindInt("connType").value());
           }));
@@ -326,7 +325,7 @@ TEST_F(CastMessageHandlerTest, RequestAppAvailability) {
       base::BindOnce(&CastMessageHandlerTest::OnAppAvailability,
                      base::Unretained(this)));
 
-  std::optional<base::Value::Dict> dict =
+  std::optional<base::DictValue> dict =
       GetDictionaryFromCastMessage(last_request_);
   ASSERT_TRUE(dict);
   const std::optional<int> request_id_value = dict->FindInt("requestId");
@@ -449,7 +448,7 @@ TEST_F(CastMessageHandlerTest, LaunchSession) {
       static_cast<CastChannelFlags>(CastChannelFlag::kCRLMissing));
   ExpectEnsureConnectionThen(CastMessageType::kLaunch);
 
-  const std::optional<base::Value::Dict> json = base::JSONReader::ReadDict(
+  const std::optional<base::DictValue> json = base::JSONReader::ReadDict(
       kAppParams, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
 
   handler_.LaunchSession(
@@ -459,7 +458,7 @@ TEST_F(CastMessageHandlerTest, LaunchSession) {
                      base::Unretained(this),
                      LaunchSessionResponse::Result::kOk));
 
-  std::optional<base::Value::Dict> dict =
+  std::optional<base::DictValue> dict =
       GetDictionaryFromCastMessage(last_request_);
   ASSERT_TRUE(dict);
   const std::optional<int> request_id_value = dict->FindInt("requestId");
@@ -512,7 +511,7 @@ TEST_F(CastMessageHandlerTest, LaunchSessionTimedOut) {
 
 TEST_F(CastMessageHandlerTest, LaunchSessionMessageExceedsSizeLimit) {
   std::string invalid_url(kMaxProtocolMessageSize, 'a');
-  base::Value::Dict json;
+  base::DictValue json;
   json.Set("key", invalid_url);
   handler_.LaunchSession(
       channel_id_, kAppId1, base::Seconds(30), {"WEB"},
@@ -524,7 +523,7 @@ TEST_F(CastMessageHandlerTest, LaunchSessionMessageExceedsSizeLimit) {
 }
 
 TEST_F(CastMessageHandlerTest, SendAppMessage) {
-  base::Value::Dict body;
+  base::DictValue body;
   body.Set("foo", "bar");
   CastMessage message = CreateCastMessage(
       "namespace", base::Value(std::move(body)), kSourceId, kDestinationId);
@@ -553,7 +552,7 @@ TEST_F(CastMessageHandlerTest, SendMessageToPlatformReceiver) {
 
 TEST_F(CastMessageHandlerTest, SendAppMessageExceedsSizeLimit) {
   std::string invalid_msg(kMaxProtocolMessageSize, 'a');
-  base::Value::Dict body;
+  base::DictValue body;
   body.Set("foo", invalid_msg);
   CastMessage message = CreateCastMessage(
       "namespace", base::Value(std::move(body)), kSourceId, kDestinationId);

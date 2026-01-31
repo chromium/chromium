@@ -98,7 +98,7 @@ class BruschettaService : public KeyedService,
 
   void StopVmIfRequiredByPolicy(std::string vm_name,
                                 std::string config_id,
-                                const base::Value::Dict* config);
+                                const base::DictValue* config);
 
   void OnRemoveVm(base::OnceCallback<void(bool)> callback,
                   guest_os::GuestId guest_id,

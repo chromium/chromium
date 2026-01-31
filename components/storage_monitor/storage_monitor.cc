@@ -7,7 +7,6 @@
 #include <memory>
 #include <utility>
 
-#include "base/containers/contains.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
 #include "components/storage_monitor/removable_storage_observer.h"
@@ -159,7 +158,7 @@ void StorageMonitor::MarkInitialized() {
 void StorageMonitor::ProcessAttach(const StorageInfo& info) {
   {
     base::AutoLock lock(storage_lock_);
-    if (base::Contains(storage_map_, info.device_id())) {
+    if (storage_map_.contains(info.device_id())) {
       // This can happen if our unique id scheme fails. Ignore the incoming
       // non-unique attachment.
       return;

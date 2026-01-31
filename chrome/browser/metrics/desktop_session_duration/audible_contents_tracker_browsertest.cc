@@ -50,8 +50,12 @@ class AudibleContentsTrackerTest : public InProcessBrowserTest {
 
   void SetUp() override {
     observer_ = std::make_unique<MockAudibleContentsObserver>();
-    tracker_ = std::make_unique<metrics::AudibleContentsTracker>(observer());
     InProcessBrowserTest::SetUp();
+  }
+
+  void SetUpOnMainThread() override {
+    InProcessBrowserTest::SetUpOnMainThread();
+    tracker_ = std::make_unique<metrics::AudibleContentsTracker>(observer());
   }
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
@@ -60,9 +64,13 @@ class AudibleContentsTrackerTest : public InProcessBrowserTest {
         switches::autoplay::kNoUserGestureRequiredPolicy);
   }
 
+  void TearDownOnMainThread() override {
+    tracker_.reset();
+    InProcessBrowserTest::TearDownOnMainThread();
+  }
+
   void TearDown() override {
     InProcessBrowserTest::TearDown();
-    tracker_.reset();
     observer_.reset();
   }
 

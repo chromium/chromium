@@ -115,10 +115,8 @@ public class TabArchiverTest {
                                                 .get()
                                                 .getOriginalProfile()));
         TabGroupModelFilter archivedTabGroupModelFilter =
-                archivedTabModelOrchestrator
-                        .getTabModelSelector()
-                        .getTabGroupModelFilterProvider()
-                        .getCurrentTabGroupModelFilter();
+                archivedTabModelOrchestrator.getTabModelSelector().getCurrentTabGroupModelFilter();
+
         mArchivedTabModel = archivedTabGroupModelFilter.getTabModel();
         mArchivedTabCreator = archivedTabModelOrchestrator.getArchivedTabCreatorForTesting();
 
@@ -180,9 +178,7 @@ public class TabArchiverTest {
         assertEquals(
                 new ArrayList<>(),
                 mTabArchiver.getTabsToArchive(
-                        mRegularTabModelSelector
-                                .getTabGroupModelFilterProvider()
-                                .getCurrentTabGroupModelFilter()));
+                        mRegularTabModelSelector.getCurrentTabGroupModelFilter()));
     }
 
     @Test
@@ -203,9 +199,7 @@ public class TabArchiverTest {
         runOnUiThreadBlocking(
                 () ->
                         mTabArchiver.archiveAndRemoveTabs(
-                                mRegularTabModelSelector
-                                        .getTabGroupModelFilterProvider()
-                                        .getTabGroupModelFilter(false),
+                                mRegularTabModelSelector.getTabGroupModelFilter(false),
                                 Arrays.asList(tab)));
         watcher.assertExpected();
 
@@ -266,9 +260,7 @@ public class TabArchiverTest {
         runOnUiThreadBlocking(
                 () ->
                         mTabArchiver.archiveAndRemoveTabs(
-                                mRegularTabModelSelector
-                                        .getTabGroupModelFilterProvider()
-                                        .getTabGroupModelFilter(false),
+                                mRegularTabModelSelector.getTabGroupModelFilter(false),
                                 Arrays.asList(tab)));
         watcher.assertExpected();
 
@@ -330,9 +322,7 @@ public class TabArchiverTest {
         runOnUiThreadBlocking(
                 () -> {
                     TabGroupModelFilter filter =
-                            mRegularTabModelSelector
-                                    .getTabGroupModelFilterProvider()
-                                    .getTabGroupModelFilter(false);
+                            mRegularTabModelSelector.getTabGroupModelFilter(false);
                     filter.createSingleTabGroup(tab);
                 });
 
@@ -348,9 +338,7 @@ public class TabArchiverTest {
         runOnUiThreadBlocking(
                 () ->
                         mTabArchiver.archiveAndRemoveTabs(
-                                mRegularTabModelSelector
-                                        .getTabGroupModelFilterProvider()
-                                        .getTabGroupModelFilter(false),
+                                mRegularTabModelSelector.getTabGroupModelFilter(false),
                                 Arrays.asList(tab)));
         watcher.assertExpected();
         verify(mTabGroupSyncService, times(1)).updateArchivalStatus(eq(syncId), eq(true));
@@ -394,9 +382,7 @@ public class TabArchiverTest {
                     tab1.setLastNavigationCommittedTimestampMillis(TimeUnit.HOURS.toMillis(1));
 
                     TabGroupModelFilter filter =
-                            mRegularTabModelSelector
-                                    .getTabGroupModelFilterProvider()
-                                    .getTabGroupModelFilter(false);
+                            mRegularTabModelSelector.getTabGroupModelFilter(false);
                     filter.createSingleTabGroup(tab1);
                 });
 
@@ -457,9 +443,7 @@ public class TabArchiverTest {
                     tab1.setLastNavigationCommittedTimestampMillis(TimeUnit.HOURS.toMillis(1));
 
                     TabGroupModelFilter filter =
-                            mRegularTabModelSelector
-                                    .getTabGroupModelFilterProvider()
-                                    .getTabGroupModelFilter(false);
+                            mRegularTabModelSelector.getTabGroupModelFilter(false);
                     filter.createSingleTabGroup(tab1);
                 });
 
@@ -515,9 +499,7 @@ public class TabArchiverTest {
                             .setLastNavigationCommittedTimestampMillis(0);
 
                     TabGroupModelFilter filter =
-                            mRegularTabModelSelector
-                                    .getTabGroupModelFilterProvider()
-                                    .getTabGroupModelFilter(false);
+                            mRegularTabModelSelector.getTabGroupModelFilter(false);
                     filter.createSingleTabGroup(tab1);
                 });
 
@@ -723,9 +705,7 @@ public class TabArchiverTest {
                     TabImpl tab2 = ((TabImpl) mRegularTabModel.getTabAt(1));
                     tab2.setTimestampMillisForTesting(0);
                     TabGroupModelFilter filter =
-                            mRegularTabModelSelector
-                                    .getTabGroupModelFilterProvider()
-                                    .getTabGroupModelFilter(false);
+                            mRegularTabModelSelector.getTabGroupModelFilter(false);
                     filter.mergeTabsToGroup(tab2.getId(), tab1.getId());
                 });
 
@@ -817,9 +797,7 @@ public class TabArchiverTest {
         runOnUiThreadBlocking(
                 () -> {
                     mTabArchiver.archiveAndRemoveTabs(
-                            mRegularTabModelSelector
-                                    .getTabGroupModelFilterProvider()
-                                    .getTabGroupModelFilter(false),
+                            mRegularTabModelSelector.getTabGroupModelFilter(false),
                             Arrays.asList(tab));
                     ArchivePersistedTabData.from(
                             mArchivedTabModel.getTabAt(0),
@@ -938,9 +916,7 @@ public class TabArchiverTest {
         runOnUiThreadBlocking(
                 () -> {
                     mTabArchiver.archiveAndRemoveTabs(
-                            mRegularTabModelSelector
-                                    .getTabGroupModelFilterProvider()
-                                    .getTabGroupModelFilter(false),
+                            mRegularTabModelSelector.getTabGroupModelFilter(false),
                             Arrays.asList(tab));
                     ArchivePersistedTabData.from(
                             mArchivedTabModel.getTabAt(0),
@@ -1033,9 +1009,7 @@ public class TabArchiverTest {
         runOnUiThreadBlocking(
                 () ->
                         mTabArchiver.archiveAndRemoveTabs(
-                                mRegularTabModelSelector
-                                        .getTabGroupModelFilterProvider()
-                                        .getTabGroupModelFilter(false),
+                                mRegularTabModelSelector.getTabGroupModelFilter(false),
                                 Arrays.asList(tab)));
 
         watcher.assertExpected();

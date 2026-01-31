@@ -5,6 +5,7 @@
 #import "ios/chrome/test/earl_grey/chrome_matchers_app_interface.h"
 
 #import "base/apple/foundation_util.h"
+#import "base/ios/ios_util.h"
 #import "base/strings/string_number_conversions.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/safe_browsing/core/common/features.h"
@@ -12,8 +13,8 @@
 #import "ios/chrome/browser/authentication/ui_bundled/cells/signin_promo_view_constants.h"
 #import "ios/chrome/browser/autofill/model/form_suggestion_constants.h"
 #import "ios/chrome/browser/bookmarks/public/bookmarks_ui_constants.h"
-#import "ios/chrome/browser/content_suggestions/ui_bundled/content_suggestions_constants.h"
-#import "ios/chrome/browser/content_suggestions/ui_bundled/ntp_home_constant.h"
+#import "ios/chrome/browser/content_suggestions/public/content_suggestions_constants.h"
+#import "ios/chrome/browser/content_suggestions/public/ntp_home_constants.h"
 #import "ios/chrome/browser/download/ui/download_manager_constants.h"
 #import "ios/chrome/browser/history/ui_bundled/history_ui_constants.h"
 #import "ios/chrome/browser/incognito_interstitial/ui_bundled/incognito_interstitial_constants.h"
@@ -26,13 +27,13 @@
 #import "ios/chrome/browser/omnibox/ui/keyboard_assist/omnibox_assistive_keyboard_views_utils.h"
 #import "ios/chrome/browser/omnibox/ui/omnibox_text_field_ios.h"
 #import "ios/chrome/browser/omnibox/ui/omnibox_text_view_ios.h"
-#import "ios/chrome/browser/popup_menu/ui_bundled/popup_menu_constants.h"
+#import "ios/chrome/browser/popup_menu/public/popup_menu_constants.h"
 #import "ios/chrome/browser/recent_tabs/public/recent_tabs_constants.h"
 #import "ios/chrome/browser/settings/ui_bundled/autofill/autofill_add_credit_card_view_controller.h"
 #import "ios/chrome/browser/settings/ui_bundled/autofill/autofill_credit_card_table_view_controller.h"
 #import "ios/chrome/browser/settings/ui_bundled/autofill/autofill_profile_table_view_controller.h"
 #import "ios/chrome/browser/settings/ui_bundled/autofill/autofill_settings_constants.h"
-#import "ios/chrome/browser/settings/ui_bundled/clear_browsing_data/quick_delete_constants.h"
+#import "ios/chrome/browser/settings/ui_bundled/clear_browsing_data/public/quick_delete_constants.h"
 #import "ios/chrome/browser/settings/ui_bundled/google_services/google_services_settings_constants.h"
 #import "ios/chrome/browser/settings/ui_bundled/google_services/manage_accounts/manage_accounts_table_view_controller_constants.h"
 #import "ios/chrome/browser/settings/ui_bundled/notifications/notifications_constants.h"
@@ -61,9 +62,9 @@
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/inactive_tabs/inactive_tabs_constants.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/tab_grid_constants.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/tab_groups/tab_groups_constants.h"
-#import "ios/chrome/browser/toolbar/ui_bundled/buttons/buttons_constants.h"
-#import "ios/chrome/browser/toolbar/ui_bundled/primary_toolbar_view.h"
-#import "ios/chrome/browser/toolbar/ui_bundled/public/toolbar_constants.h"
+#import "ios/chrome/browser/toolbar/legacy/ui_bundled/buttons/buttons_constants.h"
+#import "ios/chrome/browser/toolbar/legacy/ui_bundled/primary_toolbar_view.h"
+#import "ios/chrome/browser/toolbar/legacy/ui_bundled/public/toolbar_constants.h"
 #import "ios/chrome/common/ui/button_stack/button_stack_constants.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/confirmation_alert/constants.h"
@@ -299,7 +300,10 @@ UIWindow* WindowWithAccessibilityIdentifier(NSString* accessibility_id) {
       return NO;
     }
     UIButton* button = base::apple::ObjCCastStrict<UIButton>(element);
-    if (@available(iOS 26, *)) {
+
+    // tintColor is only used on iOS 26.0.
+    if (base::ios::IsRunningOnOrLater(26, 0, 0) &&
+        !base::ios::IsRunningOnOrLater(26, 1, 0)) {
       return CGColorEqualToColor(color.CGColor, button.tintColor.CGColor);
     }
     return CGColorEqualToColor(
@@ -643,9 +647,21 @@ UIWindow* WindowWithAccessibilityIdentifier(NSString* accessibility_id) {
   return matcher;
 }
 
++ (id<GREYMatcher>)locationViewEmpty {
+  GREYElementMatcherBlock* matcher = [GREYElementMatcherBlock
+      matcherWithMatchesBlock:^BOOL(LocationBarSteadyView* element) {
+        return element.locationLabel.text.length == 0;
+      }
+      descriptionBlock:^void(id<GREYDescription> description) {
+        [description appendText:@"LocationBarSteadyView is empty"];
+      }];
+  return matcher;
+}
+
 + (id<GREYMatcher>)toolsMenuButton {
-  return grey_allOf(grey_accessibilityID(kToolbarToolsMenuButtonIdentifier),
-                    grey_sufficientlyVisible(), nil);
+  return grey_allOf(
+      grey_accessibilityID(kLegacyToolbarToolsMenuButtonIdentifier),
+      grey_sufficientlyVisible(), nil);
 }
 
 + (id<GREYMatcher>)openNewTabButton {
@@ -679,7 +695,7 @@ UIWindow* WindowWithAccessibilityIdentifier(NSString* accessibility_id) {
 
 + (id<GREYMatcher>)tabShareButton {
   return grey_allOf(
-      grey_anyOf(grey_accessibilityID(kToolbarShareButtonIdentifier),
+      grey_anyOf(grey_accessibilityID(kLegacyToolbarShareButtonIdentifier),
                  grey_accessibilityID(kOmniboxShareButtonIdentifier), nil),
       grey_sufficientlyVisible(), nil);
 }
@@ -777,9 +793,10 @@ UIWindow* WindowWithAccessibilityIdentifier(NSString* accessibility_id) {
     UINavigationBar* navBar = base::apple::ObjCCastStrict<UINavigationBar>(
         SubviewWithAccessibilityIdentifier(kBookmarkNavigationBarIdentifier,
                                            GetAnyKeyWindow()));
-    return grey_allOf(grey_buttonTitle(navBar.backItem.title),
-                      grey_ancestor(grey_kindOfClass([UINavigationBar class])),
-                      nil);
+    return grey_allOf(
+        grey_buttonTitle(navBar.backItem.title),
+        grey_not([ChromeMatchersAppInterface navigationBarCloseButton]),
+        grey_ancestor(grey_kindOfClass([UINavigationBar class])), nil);
   }
 }
 

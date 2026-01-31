@@ -158,9 +158,8 @@ class MousePrefHandlerTest : public AshTestBase {
                                base::Value(kTestScrollAcceleration));
   }
 
-  void CheckMouseSettingsAndDictAreEqual(
-      const mojom::MouseSettings& settings,
-      const base::Value::Dict& settings_dict) {
+  void CheckMouseSettingsAndDictAreEqual(const mojom::MouseSettings& settings,
+                                         const base::DictValue& settings_dict) {
     const auto swap_right =
         settings_dict.FindBool(prefs::kMouseSettingSwapRight);
     if (swap_right.has_value()) {
@@ -287,7 +286,7 @@ class MousePrefHandlerTest : public AshTestBase {
     return std::move(mouse_ptr->settings);
   }
 
-  const base::Value::Dict* GetSettingsDict(const std::string& device_key) {
+  const base::DictValue* GetSettingsDict(const std::string& device_key) {
     const auto& devices_dict =
         pref_service_->GetDict(prefs::kMouseDeviceSettingsDictPref);
     EXPECT_EQ(1u, devices_dict.size());
@@ -319,7 +318,7 @@ class MousePrefHandlerTest : public AshTestBase {
     return button_remapping_list && button_remapping_list->is_list();
   }
 
-  base::Value::Dict GetInternalLoginScreenSettingsDict(AccountId account_id) {
+  base::DictValue GetInternalLoginScreenSettingsDict(AccountId account_id) {
     return known_user()
         .FindPath(account_id, prefs::kMouseLoginScreenInternalSettingsPref)
         ->GetDict()
@@ -341,7 +340,7 @@ TEST_F(MousePrefHandlerTest, UpdateButtonRemappingsWithCompleteList) {
   // button remapping in the future.
   std::vector<mojom::ButtonRemappingPtr> button_remappings;
   button_remappings.push_back(button_remapping1.Clone());
-  base::Value::Dict updated_button_remappings_dict;
+  base::DictValue updated_button_remappings_dict;
   updated_button_remappings_dict.Set(
       kMouseKey1, ConvertButtonRemappingArrayToList(
                       button_remappings,
@@ -927,7 +926,7 @@ TEST_F(MousePrefHandlerTest, InitializeButtonRemappings) {
   // button remapping in the future.
   std::vector<mojom::ButtonRemappingPtr> button_remappings;
   button_remappings.push_back(button_remapping2.Clone());
-  base::Value::Dict updated_button_remappings_dict;
+  base::DictValue updated_button_remappings_dict;
   updated_button_remappings_dict.Set(
       kMouseKey1, ConvertButtonRemappingArrayToList(
                       button_remappings,
@@ -1012,7 +1011,7 @@ TEST_F(MousePrefHandlerTest, SettingsUpdateMetricTest) {
   {
     auto devices_dict =
         pref_service_->GetDict(prefs::kMouseDeviceSettingsDictPref).Clone();
-    devices_dict.Set(kMouseKey3, base::Value::Dict());
+    devices_dict.Set(kMouseKey3, base::DictValue());
     pref_service_->SetDict(prefs::kMouseDeviceSettingsDictPref,
                            std::move(devices_dict));
 

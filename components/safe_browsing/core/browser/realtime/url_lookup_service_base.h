@@ -21,6 +21,7 @@
 #include "components/enterprise/common/proto/connectors.pb.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/safe_browsing/core/browser/db/v4_protocol_manager_util.h"
+#include "components/safe_browsing/core/browser/intelligent_scan_delegate.h"
 #include "components/safe_browsing/core/browser/referring_app_info.h"
 #include "components/safe_browsing/core/browser/safe_browsing_token_fetcher.h"
 #include "components/safe_browsing/core/browser/utils/backoff_operator.h"
@@ -84,7 +85,8 @@ class RealTimeUrlLookupServiceBase : public KeyedService {
       ReferrerChainProvider* referrer_chain_provider,
       std::unique_ptr<SafeBrowsingTokenFetcher> token_fetcher,
       PrefService* pref_service,
-      WebUIDelegate* webui_delegate);
+      WebUIDelegate* webui_delegate,
+      IntelligentScanDelegate* intelligent_scan_delegate);
 
   RealTimeUrlLookupServiceBase(const RealTimeUrlLookupServiceBase&) = delete;
   RealTimeUrlLookupServiceBase& operator=(const RealTimeUrlLookupServiceBase&) =
@@ -299,6 +301,11 @@ class RealTimeUrlLookupServiceBase : public KeyedService {
   virtual std::optional<base::Time> GetMinAllowedTimestampForReferrerChains()
       const = 0;
 
+  // Returns the Llama forced trigger capability that helps the server set Llama
+  // forced trigger info in the response.
+  RTLookupRequest::LlamaForcedTriggerCapability
+  MaybeGetLlamaForcedTriggerCapability() const;
+
   // Called to get cache from |cache_manager|. Returns the cached response if
   // there's a cache hit; nullptr otherwise.
   std::unique_ptr<RTLookupResponse> GetCachedRealTimeUrlVerdict(
@@ -427,6 +434,9 @@ class RealTimeUrlLookupServiceBase : public KeyedService {
   // and in unit tests. If non-null, guaranteed to outlive this object by
   // contract.
   raw_ptr<WebUIDelegate> webui_delegate_ = nullptr;
+
+  // Unowned object used for getting the supported intelligent scan model type.
+  raw_ptr<IntelligentScanDelegate> intelligent_scan_delegate_;
 
   // True if Shutdown() has already been called, or started running. This allows
   // us to skip unnecessary calls to SendRequest().

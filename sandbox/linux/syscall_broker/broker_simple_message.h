@@ -8,6 +8,8 @@
 #include <stdint.h>
 #include <sys/types.h>
 
+#include <array>
+
 #include "base/containers/span.h"
 #include "base/files/scoped_file.h"
 #include "base/memory/raw_ptr_exclusion.h"
@@ -74,7 +76,7 @@ class SANDBOX_EXPORT BrokerSimpleMessage {
   // string, be sure to have length explicitly include the '\0' terminating
   // character. Returns true if the internal message buffer has room for the
   // data, and the data is successfully appended.
-  bool AddDataToMessage(const char* buffer, size_t length);
+  bool AddDataToMessage(base::span<const uint8_t> data);
 
   // Adds an int to the message. Returns true if the internal message buffer
   // has room for the int and the int is successfully added.
@@ -102,9 +104,15 @@ class SANDBOX_EXPORT BrokerSimpleMessage {
 
   enum class EntryType : uint32_t { DATA = 0xBDBDBD80, INT = 0xBDBDBD81 };
 
+  // Reads the next |size| bytes from the message and stores them in |dest|.
+  void ReadBytes(base::span<uint8_t> dest);
+
   // Returns whether or not the next available entry matches the expected
   // entry type.
   bool ValidateType(EntryType expected_type);
+
+  // Writes the given bytes to the message.
+  void WriteBytes(base::span<const uint8_t> bytes);
 
   // Set to true once a message is read from, it may never be written to.
   bool read_only_ = false;
@@ -116,13 +124,11 @@ class SANDBOX_EXPORT BrokerSimpleMessage {
   // The current length of the contents in the |message_| buffer.
   size_t length_ = 0;
   // The statically allocated buffer of size |kMaxMessageLength|.
-  uint8_t message_[kMaxMessageLength];
+  std::array<uint8_t, kMaxMessageLength> message_;
 
-  // Next location in the `message_` buffer to read from/write to.
-  // RAW_PTR_EXCLUSION: Point into the `message_` buffer above, so they are
-  // valid whenever `this` is valid.
-  RAW_PTR_EXCLUSION uint8_t* read_next_ = message_;
-  RAW_PTR_EXCLUSION uint8_t* write_next_ = message_;
+  // Next index location in the `message_` buffer to read from/write to.
+  size_t read_next_offset_ = 0;
+  size_t write_next_offset_ = 0;
 };
 
 }  // namespace syscall_broker

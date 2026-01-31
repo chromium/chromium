@@ -17,6 +17,19 @@ class PaymentsDataManager;
 
 namespace payments {
 
+// Controls the visibility of payment actions in the Touch To Fill bottom sheet.
+struct TouchToFillDisplayOptions {
+  // When true, displays the 'Scan card' button to allow manual entry via
+  // camera.
+  bool show_scan_credit_card = false;
+
+  // When true, displays the Google Pay branding logo.
+  bool show_gpay_logo = false;
+
+  friend bool operator==(const TouchToFillDisplayOptions&,
+                         const TouchToFillDisplayOptions&) = default;
+};
+
 // Returns the billing customer ID (a.k.a. the customer number) for the Google
 // Payments account for this user. Obtains it from the synced data. Returns 0
 // if the customer ID was not found.

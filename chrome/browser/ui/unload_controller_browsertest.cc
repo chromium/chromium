@@ -8,6 +8,7 @@
 #include "base/json/json_reader.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/values.h"
+#include "chrome/browser/ash/boca/on_task/on_task_locked_controller.h"
 #include "chrome/browser/policy/policy_test_utils.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
@@ -129,7 +130,8 @@ IN_PROC_BROWSER_TEST_F(UnloadControllerWithOnTaskTest,
   webapps::AppId app_id = InstallMockApp();
   Browser* const app_browser =
       web_app::LaunchWebAppBrowser(browser()->profile(), app_id);
-  app_browser->SetLockedForOnTask(true);
+  ash::boca::OnTaskLockedController::From(app_browser)
+      ->set_locked_for_on_task(true);
 
   // Verify tab cannot be closed.
   content::WebContents* const active_web_contents =
@@ -144,7 +146,8 @@ IN_PROC_BROWSER_TEST_F(UnloadControllerWithOnTaskTest,
   webapps::AppId app_id = InstallMockApp();
   Browser* const app_browser =
       web_app::LaunchWebAppBrowser(browser()->profile(), app_id);
-  app_browser->SetLockedForOnTask(false);
+  ash::boca::OnTaskLockedController::From(app_browser)
+      ->set_locked_for_on_task(false);
 
   // Verify tab can be closed.
   content::WebContents* const active_web_contents =

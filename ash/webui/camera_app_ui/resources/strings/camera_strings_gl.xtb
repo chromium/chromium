@@ -48,6 +48,7 @@
 <translation id="2761536921376153655">Tipo de busca</translation>
 <translation id="28682968802727151">Vista previa do espello</translation>
 <translation id="2879583609344924966">Conectouse a cámara <ph name="CAMERA" />.</translation>
+<translation id="3063987824612038785">Todos os ficheiros da Cámara gardaranse en Google Drive</translation>
 <translation id="3067436040345934772">Desprazar cara á dereita</translation>
 <translation id="3081586908890909590">Cambiar a gravar vídeo</translation>
 <translation id="3091480460059548935">Detección de texto na vista previa</translation>
@@ -67,6 +68,7 @@
 <translation id="3642192109456033823">Procesando vídeo...</translation>
 <translation id="3789724198583203151">Xirar 90 graos cara á esquerda</translation>
 <translation id="3810838688059735925">Vídeo</translation>
+<translation id="386366972082231038">Todos os ficheiros da Cámara gardaranse en OneDrive</translation>
 <translation id="4060608699153044055">Non podes realizar gravacións porque tes pouco espazo de almacenamento no dispositivo. Para comezar a gravar, terás que liberar espazo.</translation>
 <translation id="4061162772429051350"><ph name="MAGAPIXELS_AMOUNT" /> Mpx</translation>
 <translation id="4118525110028899586">Pór gravación en pausa</translation>
@@ -100,6 +102,7 @@
 <translation id="5634947914995388399">Despregar cadro de diálogo e deter escaneamento</translation>
 <translation id="5662366948659129155">Escaneando páxina <ph name="COUNT" /></translation>
 <translation id="5671277269877808209">Cadrado</translation>
+<translation id="5725797473946373607">Non mostrar este cadro de diálogo a próxima vez</translation>
 <translation id="574392208103952083">Medio</translation>
 <translation id="5746169159649715125">Gardar como PDF</translation>
 <translation id="5753488212459587150">Activar modo experto</translation>
@@ -156,6 +159,7 @@ Se está relacionado coa calidade de imaxe ou de vídeo, anexa unha foto ou un v
 <translation id="7983668134180549431">Detectouse texto.</translation>
 <translation id="8079255378695216066">Non se puido iniciar a gravación</translation>
 <translation id="8120146556401698679">Panorámica, inclinación e zoom</translation>
+<translation id="8127459436205030819">Quen administra a túa conta pode ver os teus ficheiros</translation>
 <translation id="8131740175452115882">Confirmar</translation>
 <translation id="8145038249676204903">Cambiar a modo de cámara de fotos</translation>
 <translation id="8167081290930651932">Gardar como foto</translation>
@@ -165,6 +169,7 @@ Se está relacionado coa calidade de imaxe ou de vídeo, anexa unha foto ou un v
 <translation id="8609951387004618906">Abrir <ph name="URL" /></translation>
 <translation id="8629662593426079630">360 p</translation>
 <translation id="8711011893539266636">Activar son do micrófono. A función de silenciar está activada</translation>
+<translation id="8712637175834984815">De acordo</translation>
 <translation id="8730621377337864115">Feito</translation>
 <translation id="8732462232047530626">Mostrar vista previa dos metadatos</translation>
 <translation id="874854738381978209">Rede wifi detectada.</translation>

@@ -12,7 +12,7 @@
 #include <set>
 #include <string_view>
 
-#include "base/byte_count.h"
+#include "base/byte_size.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
 #include "base/gtest_prod_util.h"
@@ -137,7 +137,7 @@ class FreezingPolicy : public PageNodeObserver,
     // First per-origin Private Memory Footprint measurement taken after this
     // browsing instance became frozen. Empty if not all pages in this browsing
     // instance are frozen.
-    base::flat_map<url::Origin, base::ByteCount> per_origin_pmf_after_freezing;
+    base::flat_map<url::Origin, base::ByteSize> per_origin_pmf_after_freezing;
   };
 
   // Returns pages connected to `page`, including `page` itself. See
@@ -217,7 +217,7 @@ class FreezingPolicy : public PageNodeObserver,
   void OnIsCapturingDisplayChanged(const PageNode* page_node) override;
 
   // NodeDataDescriber:
-  base::Value::Dict DescribePageNodeData(const PageNode* node) const override;
+  base::DictValue DescribePageNodeData(const PageNode* node) const override;
 
   // resource_attribution::QueryResultObserver:
   void OnResourceUsageUpdated(

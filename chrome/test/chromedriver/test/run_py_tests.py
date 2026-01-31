@@ -533,6 +533,8 @@ class ChromeDriverBaseTest(unittest.TestCase):
 
   def CreateDriver(self, server_url=None, server_pid=None,
                    download_dir=None, browser_name=None, **kwargs):
+    kwargs.setdefault('chrome_switches', []).append(
+        '--force-device-scale-factor=1')
     if server_url is None:
       server_url = _CHROMEDRIVER_SERVER_URL
     if server_pid is None:
@@ -3352,6 +3354,25 @@ class ChromeDriverTest(ChromeDriverBaseTestWithWebServer):
      self.assertTrue(
          self._driver.ExecuteScript('return arguments[0].checked', checkbox))
 
+  def testSendKeysToSelectlist(self):
+    # Regression test for crbug.com/333423933. SendKeys to an interactable
+    # <selectlist> shouldn't fail.
+    self._driver.Load('about:blank')
+    self._driver.ExecuteScript(
+        "document.body.innerHTML = '<selectlist tabindex=0><option>1</option></selectlist>';")
+    selectlist = self._driver.FindElement('tag name', 'selectlist')
+    selectlist.SendKeys('\uE00C')  # ESC
+
+  def testSendKeysToSelectlistWithoutTabindexShouldFail(self):
+    # Regression test for crbug.com/333423933. SendKeys to a non-interactable
+    # <selectlist> should fail.
+    self._driver.Load('about:blank')
+    self._driver.ExecuteScript(
+        "document.body.innerHTML = '<selectlist><option>1</option></selectlist>';")
+    selectlist = self._driver.FindElement('tag name', 'selectlist')
+    with self.assertRaises(chromedriver.ElementNotInteractable):
+      selectlist.SendKeys('\uE00C')  # ESC
+
   def testElementReference(self):
     self._driver.Load(self.GetHttpUrlForFile('/chromedriver/element_ref.html'))
     element = self._driver.FindElement('css selector', '#link')
@@ -4221,6 +4242,78 @@ class ChromeDriverTest(ChromeDriverBaseTestWithWebServer):
       except chromedriver.NoSuchElement:
         pass
 
+  def testCloseWindowWhileExecutingCommands(self):
+    def spamWithRequests(driver, stop_event):
+      # Make repeated requests to the target window until stop_event is set
+      while not stop_event.is_set():
+        try:
+            driver.ExecuteScript("return !!window.test;")
+        except Exception:
+            # when window is closed this will eventually result in an error
+            break
+
+    def closeWindowWhileSpammingWithRequests(driver, childWindow, baseWindow):
+      # Close window after timeout while making repeated requests
+      stop_event = threading.Event()
+
+      driver.SwitchToWindow(childWindow)
+
+      # Start thread to make repeated requests to the child window
+      request_thread = threading.Thread(
+          target=spamWithRequests,
+          args=(driver, stop_event),
+          daemon=True
+      )
+
+      try:
+          # Navigate the window before closing
+          driver.Load(self.GetHttpUrlForFile("/chromedriver/empty.html"))
+          # Navigate the window
+          driver.ExecuteScript(
+            'setTimeout(function() { window.close(); }, 200);')
+          request_thread.start()
+          time.sleep(0.25)
+      finally:
+          # Ensure request thread stops
+          stop_event.set()
+          if request_thread.is_alive():
+              request_thread.join(timeout=1.0)
+          driver.SwitchToWindow(baseWindow)
+
+    self._driver.Load("data:text/html,"
+        "<!doctype html><meta charset='utf-8'><title>repro</title>"
+        "<button id='btn'>open and maybe close</button>"
+        "<script>"
+        "const btn=document.getElementById('btn');"
+        "btn.onclick=()=>{"
+        "const w=window.open("
+          "'about:blank',"
+          "'_blank',"
+          "'width=400,height=300,left=100,top=100,resizable=yes,"
+            "scrollbars=yes,status=yes,menubar=no,"
+            "toolbar=no,location=no');};"
+        "</script>")
+
+    # the crash doesn't consistently reproduce
+    # it generally happens within 10 iterations
+    for i in range(10):
+        print(f"Test iteration {i+1}/10")
+
+        self._driver.FindElement("css selector", "#btn").Click()
+
+        # Switch to the newest window
+        handles = self._driver.GetWindowHandles()
+        base = handles[0]
+        if len(handles) < 2:
+            raise RuntimeError("Second window did not open")
+        child = handles[-1]
+
+        # Close with timeout mechanism
+        closeWindowWhileSpammingWithRequests(self._driver, child, base)
+
+        time.sleep(0.3)
+    pass
+
   def testSerializeWindowProxy(self):
     self._driver.Load(self.GetHttpUrlForFile(
         '/chromedriver/outer.html'))
@@ -4343,6 +4436,7 @@ class ChromeDriverTest(ChromeDriverBaseTestWithWebServer):
             'glic-automation',
             'glic-always-open-fre',
             'enable-features=Glic,TabstripComboButton,ContextualCueing',
+            'disable-features=GlicCountryFiltering,GlicLocaleFiltering',
             'glic-fre-url=' + self.GetHttpUrlForFile('/fre.html'),
             ])
     driver.SendCommandAndGetResult('Browser.executeBrowserCommand', {
@@ -7404,15 +7498,15 @@ class MobileEmulationCapabilityTest(ChromeDriverBaseTestWithWebServer):
     driver = self.CreateDriver(
         mobile_emulation = {'deviceName': 'iPhone X'})
     driver.Load(self._http_server.GetUrl() + '/userAgent')
-    self.assertEqual('', driver.ExecuteScript(
+    self.assertEqual('iOS', driver.ExecuteScript(
         'return navigator.userAgentData.platform'))
     self.assertEqual(True, driver.ExecuteScript(
         'return navigator.userAgentData.mobile'))
     hints = self.getHighEntropyClientHints(driver)
     self.assertEqual('', hints['architecture'])
     self.assertEqual('', hints['bitness'])
-    self.assertEqual('', hints['model'])
-    self.assertEqual('', hints['platformVersion'])
+    self.assertEqual('iPhone', hints['model'])
+    self.assertEqual('13.2.3', hints['platformVersion'])
     self.assertEqual(False, hints['wow64'])
     expected_ua = ''.join(('Mozilla/5.0 ',
                            '(iPhone; CPU iPhone OS 13_2_3 like Mac OS X) ',
@@ -7426,15 +7520,15 @@ class MobileEmulationCapabilityTest(ChromeDriverBaseTestWithWebServer):
     driver = self.CreateDriver(
         mobile_emulation = {'deviceName': 'iPad'})
     driver.Load(self._http_server.GetUrl() + '/userAgent')
-    self.assertEqual('', driver.ExecuteScript(
+    self.assertEqual('iOS', driver.ExecuteScript(
         'return navigator.userAgentData.platform'))
-    self.assertEqual(False, driver.ExecuteScript(
+    self.assertEqual(True, driver.ExecuteScript(
         'return navigator.userAgentData.mobile'))
     hints = self.getHighEntropyClientHints(driver)
     self.assertEqual('', hints['architecture'])
     self.assertEqual('', hints['bitness'])
-    self.assertEqual('', hints['model'])
-    self.assertEqual('', hints['platformVersion'])
+    self.assertEqual('iPad', hints['model'])
+    self.assertEqual('11.0', hints['platformVersion'])
     self.assertEqual(False, hints['wow64'])
     expected_ua = ''.join(('Mozilla/5.0 (iPad; CPU OS 11_0 like Mac OS X) ',
                            'AppleWebKit/604.1.34 (KHTML, like Gecko) ',

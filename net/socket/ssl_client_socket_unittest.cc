@@ -4351,12 +4351,12 @@ TEST_F(SSLClientSocketTest, ClearMatchingCertDontClearEmptyClientCertCache) {
   const auto& log_entry = entries[0];
   ASSERT_FALSE(log_entry.params.empty());
 
-  const base::Value::List* hosts_values =
+  const base::ListValue* hosts_values =
       log_entry.params.FindListByDottedPath("hosts");
   ASSERT_TRUE(hosts_values);
   ASSERT_TRUE(hosts_values->empty());
 
-  const base::Value::List* certificates_values =
+  const base::ListValue* certificates_values =
       log_entry.params.FindListByDottedPath("certificates");
   ASSERT_TRUE(certificates_values);
   EXPECT_FALSE(certificates_values->empty());
@@ -4404,12 +4404,12 @@ TEST_F(SSLClientSocketTest, ClearMatchingCertSingleNotMatching) {
   const auto& log_entry = entries[0];
   ASSERT_FALSE(log_entry.params.empty());
 
-  const base::Value::List* hosts_values =
+  const base::ListValue* hosts_values =
       log_entry.params.FindListByDottedPath("hosts");
   ASSERT_TRUE(hosts_values);
   ASSERT_TRUE(hosts_values->empty());
 
-  const base::Value::List* certificates_values =
+  const base::ListValue* certificates_values =
       log_entry.params.FindListByDottedPath("certificates");
   ASSERT_TRUE(certificates_values);
   EXPECT_FALSE(certificates_values->empty());
@@ -4470,13 +4470,13 @@ TEST_F(SSLClientSocketTest, ClearMatchingCertSingleMatching) {
   const auto& log_entry = entries[0];
   ASSERT_FALSE(log_entry.params.empty());
 
-  const base::Value::List* hosts_values =
+  const base::ListValue* hosts_values =
       log_entry.params.FindListByDottedPath("hosts");
   ASSERT_TRUE(hosts_values);
   ASSERT_EQ(hosts_values->size(), 1U);
   EXPECT_EQ(hosts_values->front().GetString(), host_port_pair().ToString());
 
-  const base::Value::List* certificates_values =
+  const base::ListValue* certificates_values =
       log_entry.params.FindListByDottedPath("certificates");
   ASSERT_TRUE(certificates_values);
   EXPECT_FALSE(certificates_values->empty());

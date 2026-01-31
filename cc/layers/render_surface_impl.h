@@ -38,7 +38,6 @@ class FilterOperations;
 class Occlusion;
 class LayerImpl;
 class LayerTreeImpl;
-class PictureLayerImpl;
 
 struct RenderSurfacePropertyChangedFlags {
  public:
@@ -274,9 +273,6 @@ class CC_EXPORT RenderSurfaceImpl {
   CreateViewTransitionCaptureRenderPass(
       const base::flat_set<blink::ViewTransitionToken>&
           capture_view_transition_tokens = {});
-  viz::ResourceId GetMaskResourceFromLayer(PictureLayerImpl* mask_layer,
-                                           gfx::Size* mask_texture_size,
-                                           gfx::RectF* mask_uv_rect) const;
   void AppendQuads(const AppendQuadsContext& context,
                    viz::CompositorRenderPass* render_pass,
                    AppendQuadsData* append_quads_data);

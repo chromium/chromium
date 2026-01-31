@@ -59,9 +59,7 @@ ChromeKeepAliveRequestTracker::MaybeCreateKeepAliveRequestTracker(
     const network::ResourceRequest& request,
     std::optional<ukm::SourceId> ukm_source_id,
     IsContextDetachedCallback is_context_detached_callback) {
-  if (!request.keepalive || !request.keepalive_token.has_value()) {
-    return nullptr;
-  }
+  CHECK(request.keepalive && request.keepalive_token.has_value());
 
   if (!ukm_source_id.has_value()) {
     return nullptr;

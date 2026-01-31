@@ -64,7 +64,7 @@ class ConsentProviderImpl : public ConsentProvider {
     // Checks if the extension was launched in auto-launch kiosk mode.
     virtual bool IsAutoLaunched(const Extension& extension) = 0;
 
-    // Checks if the extension is a allowlisted component extension or app.
+    // Checks if the extension is an allowlisted component extension or app.
     virtual bool IsAllowlistedComponent(const Extension& extension) = 0;
   };
 

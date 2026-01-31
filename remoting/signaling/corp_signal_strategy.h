@@ -60,7 +60,7 @@ class CorpSignalStrategy : public SignalStrategy {
   // CorpSignalStrategyTest uses the private c'tor w/ a fake messaging client.
   friend class CorpSignalStrategyTest;
   CorpSignalStrategy(std::unique_ptr<MessagingClient> messaging_client,
-                     const std::string& username);
+                     const SignalingAddress& local_address);
 
   class Core;
   std::unique_ptr<Core> core_;

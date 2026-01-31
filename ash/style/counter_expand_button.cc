@@ -43,6 +43,8 @@ constexpr int kCornerRadius = 12;
 constexpr int kJellyChevronIconSize = 20;
 constexpr int kLabelFontSize = 12;
 
+std::optional<bool> g_tooltip_enabled_for_testing;
+
 }  // namespace
 
 CounterExpandButton::CounterExpandButton() {
@@ -83,6 +85,15 @@ CounterExpandButton::CounterExpandButton() {
 }
 
 CounterExpandButton::~CounterExpandButton() = default;
+
+// static
+base::AutoReset<std::optional<bool>>
+CounterExpandButton::SetTooltipEnabledForTesting(bool value) {
+  CHECK(!g_tooltip_enabled_for_testing.has_value());
+  base::AutoReset<std::optional<bool>> result(&g_tooltip_enabled_for_testing,
+                                              value);
+  return result;
+}
 
 void CounterExpandButton::SetExpanded(bool expanded) {
   if (expanded_ == expanded) {
@@ -130,7 +141,9 @@ void CounterExpandButton::UpdateIcons() {
 void CounterExpandButton::UpdateTooltip() {
   std::u16string tooltip_text = expanded_ ? GetExpandedStateTooltipText()
                                           : GetCollapsedStateTooltipText();
-  SetTooltipText(tooltip_text);
+  if (g_tooltip_enabled_for_testing.value_or(true)) {
+    SetTooltipText(tooltip_text);
+  }
   GetViewAccessibility().SetName(
       tooltip_text, tooltip_text.empty()
                         ? ax::mojom::NameFrom::kAttributeExplicitlyEmpty

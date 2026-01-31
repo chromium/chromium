@@ -168,6 +168,10 @@ struct EmbeddedWorkerStartParams {
   // Used by a DpcumentIsolationPolicyReporter to send reports to the
   // ReportingObservers.
   pending_receiver<ReportingObserver>? dip_reporting_observer;
+
+  // Used to check whether the ServiceWorker has access to cross-origin
+  // isolated APIs or not.
+  bool cross_origin_isolated;
 };
 
 // Holds timing information about the start worker sequence for UMA.

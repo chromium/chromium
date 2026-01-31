@@ -32,7 +32,7 @@ void SingleFieldFillRouter::OnWillSubmitForm(
   CHECK(!form_structure ||
         form.fields().size() == form_structure->field_count());
   std::vector<FormFieldData> autocomplete_fields;
-  for (size_t i = 0; i < form.fields().size(); i++) {
+  for (size_t i = 0; i < form.fields().size(); ++i) {
     // If |form_structure| is present, then the fields in |form_structure| and
     // the fields in |form| are 1:1. |form_structure| not being present
     // indicates we may have fields that were not able to be parsed, so we route

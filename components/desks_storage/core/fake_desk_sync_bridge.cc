@@ -5,7 +5,6 @@
 #include "components/desks_storage/core/fake_desk_sync_bridge.h"
 
 #include "ash/public/cpp/desk_template.h"
-#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/ptr_util.h"

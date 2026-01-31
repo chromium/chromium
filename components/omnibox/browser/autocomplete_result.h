@@ -98,8 +98,8 @@ class AutocompleteResult {
   // AutocompleteResult is correct.
   bool VerifyCoherency(JNIEnv* env,
                        const base::android::JavaRef<jlongArray>& matches,
-                       jint match_index,
-                       jint verification_point);
+                       int32_t match_index,
+                       int32_t verification_point);
 #endif
 
   // Moves matches from |old_matches| to provide a consistent result set.
@@ -188,13 +188,6 @@ class AutocompleteResult {
   void AttachPedalsToMatches(const AutocompleteInput& input,
                              const AutocompleteProviderClient& client);
 
-#if BUILDFLAG(IS_IOS) || BUILDFLAG(IS_ANDROID)
-  // Attaches AIM action to the highest-scoring eligible match in the result
-  // set, if no other actions are present.
-  void AttachAimAction(TemplateURLService* template_url_service,
-                       AutocompleteProviderClient* client);
-#endif
-
   // Sets a takeover action on all matches to issue a contextual search.
   void AttachContextualSearchFulfillmentActionToMatches();
 
@@ -205,6 +198,11 @@ class AutocompleteResult {
   void set_smart_compose_inline_hint(
       const std::string& smart_compose_inline_hint) {
     smart_compose_inline_hint_ = smart_compose_inline_hint;
+  }
+
+  // Sets if there are contextual chips available to show.
+  void set_has_contextual_chips(bool has_contextual_chips) {
+    has_contextual_chips_ = has_contextual_chips;
   }
 
   // Sets |has_tab_match| in matches whose URL matches an open tab's URL.
@@ -273,6 +271,8 @@ class AutocompleteResult {
   const std::string smart_compose_inline_hint() const {
     return smart_compose_inline_hint_;
   }
+
+  bool has_contextual_chips() const { return has_contextual_chips_; }
 
   const SessionData& session() const { return session_; }
 
@@ -525,6 +525,10 @@ class AutocompleteResult {
 
   // The smart compose completion, if any.
   std::string smart_compose_inline_hint_;
+
+  // Whether or not the result can show the contextual chips (e.g. "Ask about
+  // this page")
+  bool has_contextual_chips_ = false;
 
   // The map of suggestion group IDs to suggestion group information for the
   // current result set. Cleared along with `matches_` on `ClearMatches()` or

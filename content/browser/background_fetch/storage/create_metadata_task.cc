@@ -27,6 +27,7 @@
 #include "third_party/blink/public/common/service_worker/service_worker_status_code.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom.h"
+#include "third_party/perfetto/include/perfetto/tracing/track_event_args.h"
 
 namespace content {
 namespace background_fetch {
@@ -360,9 +361,8 @@ void CreateMetadataTask::StoreMetadata() {
 void CreateMetadataTask::DidStoreMetadata(
     blink::ServiceWorkerStatusCode status) {
   int64_t trace_id = blink::cache_storage::CreateTraceId();
-  TRACE_EVENT_WITH_FLOW0("CacheStorage",
-                         "CacheStorageMigrationTask::DidStoreMetadata",
-                         TRACE_ID_GLOBAL(trace_id), TRACE_EVENT_FLAG_FLOW_OUT);
+  TRACE_EVENT("CacheStorage", "CacheStorageMigrationTask::DidStoreMetadata",
+              perfetto::Flow::Global(trace_id));
 
   switch (ToDatabaseStatus(status)) {
     case DatabaseStatus::kOk:
@@ -382,10 +382,8 @@ void CreateMetadataTask::DidStoreMetadata(
 
 void CreateMetadataTask::DidOpenCache(int64_t trace_id,
                                       blink::mojom::CacheStorageError error) {
-  TRACE_EVENT_WITH_FLOW0("CacheStorage",
-                         "CacheStorageMigrationTask::DidReopenCache",
-                         TRACE_ID_GLOBAL(trace_id),
-                         TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT);
+  TRACE_EVENT("CacheStorage", "CacheStorageMigrationTask::DidReopenCache",
+              perfetto::Flow::Global(trace_id));
 
   if (error != blink::mojom::CacheStorageError::kSuccess) {
     SetStorageErrorAndFinish(BackgroundFetchStorageError::kCacheStorageError);

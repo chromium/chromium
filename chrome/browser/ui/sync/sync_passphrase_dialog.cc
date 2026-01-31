@@ -14,8 +14,8 @@
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_dialogs.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/dialogs/browser_dialogs.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
@@ -131,8 +131,7 @@ void ShowSyncPassphraseDialog(
               &OnPasswordFieldChanged, base::Unretained(model)));
   // Dummy callback to own the subscription.
   dialog_builder.SetDialogDestroyingCallback(
-      base::BindOnce([](base::CallbackListSubscription subscription) {},
-                     std::move(subscription)));
+      base::DoNothingWithBoundArgs(std::move(subscription)));
 
   chrome::ShowBrowserModal(&browser, dialog_builder.Build());
 }

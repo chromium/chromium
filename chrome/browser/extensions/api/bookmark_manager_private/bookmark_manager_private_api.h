@@ -53,7 +53,7 @@ class BookmarkManagerPrivateEventRouter
   // Helper to actually dispatch an event to extension listeners.
   void DispatchEvent(events::HistogramValue histogram_value,
                      const std::string& event_name,
-                     base::Value::List event_args);
+                     base::ListValue event_args);
 
   // Remembers the previous meta info of a node before it was changed.
   bookmarks::BookmarkNode::MetaInfoMap prev_meta_info_;
@@ -135,7 +135,7 @@ class BookmarkManagerPrivateDragEventRouter
   // Helper to actually dispatch an event to extension listeners.
   void DispatchEvent(events::HistogramValue histogram_value,
                      const std::string& event_name,
-                     base::Value::List args);
+                     base::ListValue args);
 
   raw_ptr<Profile> profile_;
   bookmarks::BookmarkNodeData bookmark_drag_data_;

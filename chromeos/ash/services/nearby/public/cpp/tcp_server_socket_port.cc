@@ -9,8 +9,7 @@
 #include "base/numerics/safe_conversions.h"
 #include "base/rand_util.h"
 
-namespace ash {
-namespace nearby {
+namespace ash::nearby {
 
 namespace {
 
@@ -63,5 +62,4 @@ TcpServerSocketPort::TcpServerSocketPort(uint16_t port) : port_(port) {
 
 TcpServerSocketPort::~TcpServerSocketPort() = default;
 
-}  // namespace nearby
-}  // namespace ash
+}  // namespace ash::nearby

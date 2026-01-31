@@ -43,13 +43,13 @@ class ASH_EXPORT SettingsUpdatedMetricsInfo {
   SettingsUpdatedMetricsInfo(const SettingsUpdatedMetricsInfo&);
 
   // Serializes a `SettingsUpdatedMetricsInfo` object from a
-  // `base::Value::Dict`.
+  // `base::DictValue`.
   // Returns `std::nullopt` if any necessary fields are missing.
   static std::optional<SettingsUpdatedMetricsInfo> FromDict(
-      const base::Value::Dict& dict);
+      const base::DictValue& dict);
 
-  // Converts the object to a `base::Value::Dict` to be stored in prefs.
-  base::Value::Dict ToDict() const;
+  // Converts the object to a `base::DictValue` to be stored in prefs.
+  base::DictValue ToDict() const;
 
   // Records that an update happened at the given time. Returns the `TimePeriod`
   // that corresponds to the time given. Returns `std::nullopt` if the

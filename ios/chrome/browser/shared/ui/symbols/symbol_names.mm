@@ -16,6 +16,7 @@ NSString* const kGoogleIconSymbol = @"google_icon";
 NSString* const kGoogleShieldSymbol = @"google_shield";
 NSString* const kGoogleMapsSymbol = @"google_maps";
 NSString* const kGooglePaySymbol = @"google_pay";
+NSString* const kGoogleWalletSymbol = @"google_wallet";
 NSString* const kGooglePhotosSymbol = @"google_photos";
 NSString* const kMulticolorChromeballSymbol = @"multicolor_chromeball";
 NSString* const kPageInsightsSymbol = @"page_insights";
@@ -73,6 +74,7 @@ NSString* const kTextSparkSymbol = @"text_spark";
 NSString* const kIncognitoCircleFillSymbol = @"incognito_circle_fill";
 NSString* const kPlusCircleFillSymbol = @"plus_circle_fill";
 NSString* const kPDFFillSymbol = @"pdf_fill";
+NSString* const kLineThreeSparkSymbol = @"line_three_spark";
 
 // Use custom symbol for camera because the default video icon in iOS should
 // always represent “Apple Facetime”.
@@ -82,6 +84,8 @@ NSString* const kCameraFillSymbol = @"custom_camera_fill";
 // ****************************************************************************
 // Default symbol names.
 // ****************************************************************************
+NSString* const kAppSymbol = @"app";
+NSString* const kAppFillSymbol = @"app.fill";
 NSString* const kChartBarXAxisSymbol = @"chart.bar.xaxis";
 NSString* const kChartLineDowntrendXYAxisSymbol =
     @"chart.line.downtrend.xyaxis";
@@ -263,6 +267,7 @@ NSString* const kSquareFilledOnSquareSymbol = @"square.filled.on.square";
 NSString* const kPauseButton = @"pause.circle";
 NSString* const kPlayButton = @"play.circle";
 NSString* const kFolderSymbol = @"folder";
+NSString* const kFolderBadgePlusSymbol = @"folder.badge.plus";
 NSString* const kCartSymbol = @"cart";
 NSString* const kArrowUTurnForwardSymbol = @"arrow.uturn.forward";
 NSString* const kArrowUTurnForwardCircleFillSymbol =
@@ -290,6 +295,7 @@ NSString* const kPhotoOnRectangleSymbol = @"photo.on.rectangle";
 NSString* const kSystemCameraSymbol = @"camera";
 NSString* const kRightArrowCircleFillSymbol = @"arrow.right.circle.fill";
 NSString* const kArrowDownToLineSymbol = @"arrow.down.to.line";
+NSString* const kPhotoOnRectangleAngled = @"photo.on.rectangle.angled";
 
 // Names of the default symbol being non-monochrome by default. When using them,
 // you probably want to set their color to monochrome.

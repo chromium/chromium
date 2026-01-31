@@ -58,7 +58,7 @@ bool SandboxedPageHandler::Parse(Extension* extension, std::u16string* error) {
     return false;
   }
 
-  const base::Value::List& list = list_value->GetList();
+  const base::ListValue& list = list_value->GetList();
   for (size_t i = 0; i < list.size(); ++i) {
     if (!list[i].is_string()) {
       *error = ErrorUtils::FormatErrorMessageUTF16(

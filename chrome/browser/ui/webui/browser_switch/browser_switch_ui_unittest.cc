@@ -74,7 +74,7 @@ class BrowserSwitchHandlerTest : public testing::Test {
 };
 
 TEST_F(BrowserSwitchHandlerTest, HandleIsBrowserSwitchEnabled) {
-  base::Value::List args;
+  base::ListValue args;
   args.Append("callbackId");
   web_ui()->HandleReceivedMessage("isBrowserSwitcherEnabled", args);
 
@@ -88,7 +88,7 @@ TEST_F(BrowserSwitchHandlerTest, HandleIsBrowserSwitchEnabled) {
 }
 
 TEST_F(BrowserSwitchHandlerTest, GetBrowserSwitchInternalsJson) {
-  base::Value::List args;
+  base::ListValue args;
   args.Append("callbackId");
   web_ui()->HandleReceivedMessage("getBrowserSwitchInternalsJson", args);
 
@@ -101,8 +101,8 @@ TEST_F(BrowserSwitchHandlerTest, GetBrowserSwitchInternalsJson) {
   const std::string& json_string = call_data.arg3()->GetString();
   auto parsed_json =
       base::JSONReader::Read(json_string, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
-  const base::Value::Dict& dict = parsed_json->GetDict();
-  const base::Value::Dict* policies = dict.FindDict("policies");
+  const base::DictValue& dict = parsed_json->GetDict();
+  const base::DictValue* policies = dict.FindDict("policies");
   EXPECT_TRUE(policies->FindBool("BrowserSwitcherEnabled").value());
 }
 

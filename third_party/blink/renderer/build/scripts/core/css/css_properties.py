@@ -57,6 +57,8 @@ def validate_property(prop, props_by_name):
         'Only longhands can be valid_for_highlight [%s]' % name
     assert not prop.is_internal or prop.computable is None, \
         'Internal properties are always non-computable [%s]' % name
+    assert not has_method('ParseSingleValue') or not prop.field_template == 'keyword', \
+        'When using the keyword template, implement parsing in css_parser_fast_paths.cc [%s]' % name
     if prop.supports_incremental_style:
         assert not prop.is_animation_property, \
             'Animation properties can not be applied incrementally [%s]' % name
@@ -85,6 +87,8 @@ def validate_property(prop, props_by_name):
         assert prop.reset_on_new_style, 'Derived flags must have reset_on_new_style [%s]' % name
     if prop.is_logical:
         assert not prop.field_group, 'Logical properties can not have fields [%s]' % name
+    if prop.is_animation_property:
+        assert prop.is_animation_affecting, 'Animation properties must always be animation-affecting [%s]' % name
 
 # Determines whether or not style builders (i.e. Apply functions)
 # should be generated for the given property.
@@ -159,6 +163,14 @@ class PropertyBase(object):
         return not self.is_internal \
             and not self.runtime_flag \
             and not self.alternative
+
+    @property
+    def effective_is_animation_affecting(self):
+        """True if this property may not be animated.
+
+        Internal properties are not animatable because they should not be exposed
+        to the page/author in the first place."""
+        return self.is_animation_affecting or self.is_internal
 
     @property
     def ultimate_property(self):
@@ -535,9 +547,9 @@ class CSSProperties(object):
             self._field_alias_expander.expand_field_alias(property_)
 
             type_name = property_.type_name
-            if (property_.field_template == 'keyword'
-                    or property_.field_template == 'multi_keyword'
-                    or property_.field_template == 'bitset_keyword'):
+            if (property_.field_template
+                    in ('keyword', 'keyword_custom', 'multi_keyword',
+                        'bitset_keyword')):
                 default_value = (type_name + '::' + NameStyleConverter(
                     property_.default_value).to_enum_value())
             elif (property_.field_template == 'external'

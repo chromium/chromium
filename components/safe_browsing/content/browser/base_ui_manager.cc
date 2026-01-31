@@ -33,7 +33,6 @@ using content::BrowserThread;
 using content::NavigationEntry;
 using content::WebContents;
 using safe_browsing::ClientSafeBrowsingReportRequest;
-using safe_browsing::HitReport;
 using safe_browsing::SBThreatType;
 
 namespace {
@@ -144,7 +143,7 @@ class AllowlistUrlSet : public content::WebContentsUserData<AllowlistUrlSet> {
       return;
     }
     if (navigation_id.has_value()) {
-      if (base::Contains(pending_navigation_ids_, navigation_id.value())) {
+      if (pending_navigation_ids_.contains(navigation_id.value())) {
         // Do not add URL entry for the same navigation id in
         // |pending_allowlisted_entries_| more than once. Otherwise, the
         // security indicator may not be cleared properly when navigating away.
@@ -381,9 +380,9 @@ void BaseUIManager::DisplayBlockingPage(const UnsafeResource& resource) {
   //    blocking page at the same time, or
   // 2. The async check finishes between WillProcessResponse and
   //    DidFinishNavigation.
-  bool already_reported = resource.navigation_id.has_value() &&
-                          base::Contains(report_sent_navigation_ids_,
-                                         resource.navigation_id.value());
+  bool already_reported =
+      resource.navigation_id.has_value() &&
+      report_sent_navigation_ids_.contains(resource.navigation_id.value());
   if (resource.threat_type != SB_THREAT_TYPE_SAFE &&
       resource.threat_type != SB_THREAT_TYPE_BILLING &&
       resource.threat_type != SB_THREAT_TYPE_MANAGED_POLICY_BLOCK &&
@@ -391,7 +390,6 @@ void BaseUIManager::DisplayBlockingPage(const UnsafeResource& resource) {
       !already_reported) {
     // TODO(vakh): crbug/883462: The reports for SB_THREAT_TYPE_BILLING should
     // be disabled for M70 but enabled for a later release (M71?).
-    CreateAndSendHitReport(resource);
     if (base::FeatureList::IsEnabled(
             safe_browsing::kCreateWarningShownClientSafeBrowsingReports)) {
       CreateAndSendClientSafeBrowsingWarningShownReport(resource);
@@ -481,7 +479,6 @@ void BaseUIManager::EnsureAllowlistCreated(WebContents* web_contents) {
   AllowlistUrlSet::CreateForWebContents(web_contents);
 }
 
-void BaseUIManager::CreateAndSendHitReport(const UnsafeResource& resource) {}
 void BaseUIManager::CreateAndSendClientSafeBrowsingWarningShownReport(
     const UnsafeResource& resource) {}
 
@@ -497,16 +494,6 @@ BaseUIManager::CreateBlockingPage(
   // non-committed implementations, and this code won't be called if committed
   // interstitials are disabled.
   NOTREACHED();
-}
-
-// A SafeBrowsing hit is sent after a blocking page for malware/phishing
-// or after the warning dialog for download urls, only for extended_reporting
-// users who are not in incognito mode.
-void BaseUIManager::MaybeReportSafeBrowsingHit(
-    std::unique_ptr<HitReport> hit_report,
-    content::WebContents* web_contents) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  return;
 }
 
 // A client safe browsing report is sent after a blocking page for

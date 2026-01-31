@@ -82,7 +82,6 @@ class CORE_EXPORT DedicatedWorkerGlobalScope final : public WorkerGlobalScope {
       std::unique_ptr<Vector<mojom::blink::OriginTrialFeature>>
           inherited_trial_features,
       const BeginFrameProviderParams& begin_frame_provider_params,
-      bool parent_cross_origin_isolated_capability,
       bool direct_socket_isolated_capability,
       mojo::PendingRemote<mojom::blink::DedicatedWorkerHost>
           dedicated_worker_host,
@@ -203,7 +202,6 @@ class CORE_EXPORT DedicatedWorkerGlobalScope final : public WorkerGlobalScope {
       std::unique_ptr<Vector<mojom::blink::OriginTrialFeature>>
           inherited_trial_features,
       const BeginFrameProviderParams& begin_frame_provider_params,
-      bool parent_cross_origin_isolated_capability,
       bool is_isolated_context,
       mojo::PendingRemote<mojom::blink::DedicatedWorkerHost>
           dedicated_worker_host,

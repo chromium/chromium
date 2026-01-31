@@ -35,7 +35,7 @@ namespace {
 // Extracts a TranslateErrors value from `value` for the given `key`. Returns
 // std::nullopt if the value is missing or not convertible to TranslateErrors.
 std::optional<TranslateErrors> FindTranslateErrorsKey(
-    const base::Value::Dict& value,
+    const base::DictValue& value,
     std::string_view key) {
   // Does `value` contains a double value for `key`?
   const std::optional<double> found_value = value.FindDouble(key);
@@ -65,11 +65,23 @@ std::optional<TranslateErrors> FindTranslateErrorsKey(
 }  // anonymous namespace
 
 TranslateController::TranslateController(web::WebState* web_state)
-    : web_state_(web_state), observer_(nullptr) {
+    : web_state_(web_state) {
   DCHECK(web_state_);
 }
 
-TranslateController::~TranslateController() {}
+TranslateController::~TranslateController() {
+  for (Observer& observer : observers_) {
+    observer.TranslateControllerWasDestroyed(this);
+  }
+}
+
+void TranslateController::AddObserver(Observer* observer) {
+  observers_.AddObserver(observer);
+}
+
+void TranslateController::RemoveObserver(Observer* observer) {
+  observers_.RemoveObserver(observer);
+}
 
 web::WebFrame* TranslateController::GetMainWebFrame() {
   return TranslateJavaScriptFeature::GetInstance()
@@ -104,7 +116,7 @@ void TranslateController::StartTranslation(const std::string& source_language,
 }
 
 void TranslateController::OnJavascriptCommandReceived(
-    const base::Value::Dict& payload) {
+    const base::DictValue& payload) {
   const std::string* command = payload.FindString("command");
   if (!command) {
     return;
@@ -117,7 +129,7 @@ void TranslateController::OnJavascriptCommandReceived(
   }
 }
 
-void TranslateController::OnTranslateReady(const base::Value::Dict& payload) {
+void TranslateController::OnTranslateReady(const base::DictValue& payload) {
   std::optional<TranslateErrors> error_type =
       FindTranslateErrorsKey(payload, "errorCode");
   if (!error_type.has_value())
@@ -132,14 +144,14 @@ void TranslateController::OnTranslateReady(const base::Value::Dict& payload) {
       return;
     }
   }
-  if (observer_) {
-    observer_->OnTranslateScriptReady(*error_type, load_time.value_or(0.),
-                                      ready_time.value_or(0.));
+
+  for (Observer& observer : observers_) {
+    observer.OnTranslateScriptReady(*error_type, load_time.value_or(0.),
+                                    ready_time.value_or(0.));
   }
 }
 
-void TranslateController::OnTranslateComplete(
-    const base::Value::Dict& payload) {
+void TranslateController::OnTranslateComplete(const base::DictValue& payload) {
   std::optional<TranslateErrors> error_type =
       FindTranslateErrorsKey(payload, "errorCode");
   if (!error_type.has_value())
@@ -155,8 +167,8 @@ void TranslateController::OnTranslateComplete(
     }
   }
 
-  if (observer_) {
-    observer_->OnTranslateComplete(
+  for (Observer& observer : observers_) {
+    observer.OnTranslateComplete(
         *error_type, source_language ? *source_language : std::string(),
         translation_time.value_or(0.));
   }

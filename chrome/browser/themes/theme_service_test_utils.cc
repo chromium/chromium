@@ -39,9 +39,9 @@ scoped_refptr<extensions::Extension> MakeThemeExtension(
     const std::string& name,
     extensions::mojom::ManifestLocation location,
     const std::string& update_url) {
-  base::Value::Dict source;
+  base::DictValue source;
   source.Set(extensions::manifest_keys::kName, name);
-  source.Set(extensions::manifest_keys::kTheme, base::Value::Dict());
+  source.Set(extensions::manifest_keys::kTheme, base::DictValue());
   source.Set(extensions::manifest_keys::kUpdateURL, update_url);
   source.Set(extensions::manifest_keys::kVersion, "0.0.0.0");
   std::u16string error;

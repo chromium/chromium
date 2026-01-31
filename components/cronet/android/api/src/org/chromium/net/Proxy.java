@@ -7,15 +7,12 @@ package org.chromium.net;
 import android.util.Pair;
 
 import androidx.annotation.IntDef;
+import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
-import java.util.AbstractMap;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.Executor;
 
@@ -37,28 +34,14 @@ public final class Proxy {
      * for destinations with an https URI scheme, regardless of the scheme used to identify proxies.
      */
     @Retention(RetentionPolicy.SOURCE)
-    @IntDef({HTTP, HTTPS, SCHEME_HTTP, SCHEME_HTTPS})
+    @IntDef({SCHEME_HTTP, SCHEME_HTTPS})
     public @interface Scheme {}
 
-    /**
-     * Establish a plaintext connection to the proxy itself.
-     *
-     * @deprecated Use {@link SCHEME_HTTP} instead.
-     */
-    @Deprecated public static final int HTTP = 0;
-
-    /**
-     * Establish a secure connection to the proxy itself.
-     *
-     * @deprecated Use {@link SCHEME_HTTP} instead.
-     */
-    @Deprecated public static final int HTTPS = 1;
-
     /** Establish a plaintext connection to the proxy itself. */
-    public static final int SCHEME_HTTP = HTTP;
+    public static final int SCHEME_HTTP = 0;
 
     /** Establish a secure connection to the proxy itself. */
-    public static final int SCHEME_HTTPS = HTTPS;
+    public static final int SCHEME_HTTPS = 1;
 
     /**
      * Controls tunnels established via HTTP CONNECT. All methods will be invoked onto the Executor
@@ -122,61 +105,7 @@ public final class Proxy {
          *
          * @param request Represents the HTTP CONNECT request that will be sent to the proxy.
          */
-        public void onBeforeRequest(@NonNull Request request) {
-            onBeforeTunnelRequest(request);
-        }
-
-        /**
-         * Called before sending a tunnel establishment request. Allows manipulating, or canceling,
-         * said request before Cronet sends it to the proxy. Refer to {@link Request} to learn how a
-         * request can be manipulated/canceled.
-         *
-         * @param request Represents the request that will be sent to the proxy.
-         * @deprecated Override onBeforeRequest(Request) instead.
-         */
-        @Deprecated
-        public void onBeforeTunnelRequest(@NonNull Request request) {
-            try (request) {
-                List<Map.Entry<String, String>> headers = onBeforeTunnelRequest();
-                if (headers == null) {
-                    return;
-                }
-                List<Pair<String, String>> convertedHeaders = new ArrayList<>();
-                for (Map.Entry<String, String> header : headers) {
-                    convertedHeaders.add(new Pair<>(header.getKey(), header.getValue()));
-                }
-                request.proceed(convertedHeaders);
-            }
-        }
-
-        /**
-         * Called before sending a tunnel establishment request. Allows adding headers that will be
-         * sent only to the proxy as part of the tunnel establishment request. They will not be
-         * added to the actual HTTP requests that will go through the proxy.
-         *
-         * <p>Warning: This will be called directly on Cronet's network thread, do not block. If
-         * computing the headers is going to take a non-negligible amount of time, cancel and retry
-         * the request once they are ready.
-         *
-         * <p>Returning headers which are not RFC 2616-compliant will cause a crash on the network
-         * thread. TODO(https://crbug.com/425666408): Find a better way to surface this. It's
-         * currently challenging since we're calling into the embedder code, not the other way
-         * around. Making this API async (https://crbug.com/421341906) could be a way of solving
-         * this, since we could throw IAE when the embedder calls back into Cronet.
-         *
-         * @return A list of headers to be added to the tunnel establishment request. This list can
-         *     be empty, in which case no headers will be added. If {@code null} is returned, the
-         *     tunnel connection will be canceled. When a tunnel connection is canceled, Cronet will
-         *     interpret it as a failure to connect to this Proxy and will try the next Proxy in the
-         *     list passed to {@link org.chromium.net.ProxyOptions} (refer to that class
-         *     documentation for more info).
-         * @deprecated Override onBeforeRequest(Request) instead.
-         */
-        @Deprecated
-        public @Nullable List<Map.Entry<String, String>> onBeforeTunnelRequest() {
-            throw new UnsupportedOperationException(
-                    "At least one overload of onBeforeTunnelRequest must be overridden");
-        }
+        public abstract void onBeforeRequest(@NonNull Request request);
 
         /**
          * Called after receiving a response to the HTTP CONNECT request sent to the proxy to
@@ -199,17 +128,8 @@ public final class Proxy {
          * @return A {@link OnResponseReceivedAction} value representing what should be done with
          *     this tunnel connection. Refer to {@link OnResponseReceivedAction} documentation.
          */
-        public @OnResponseReceivedAction int onResponseReceived(
-                @NonNull List<Pair<String, String>> responseHeaders, int statusCode) {
-            List<Map.Entry<String, String>> convertedResponseHeaders = new ArrayList<>();
-            for (Pair<String, String> header : responseHeaders) {
-                convertedResponseHeaders.add(
-                        new AbstractMap.SimpleImmutableEntry<>(header.first, header.second));
-            }
-            return onTunnelHeadersReceived(convertedResponseHeaders, statusCode)
-                    ? RESPONSE_ACTION_PROCEED
-                    : RESPONSE_ACTION_CLOSE;
-        }
+        public abstract @OnResponseReceivedAction int onResponseReceived(
+                @NonNull List<Pair<String, String>> responseHeaders, int statusCode);
 
         /**
          * Actions that can be performed in response to {@link #onResponseReceived} being called.
@@ -239,45 +159,7 @@ public final class Proxy {
          * more info)
          */
         public static final int RESPONSE_ACTION_PROCEED = 1;
-
-        /**
-         * Called after receiving a response to the tunnel establishment request. Allows reading
-         * headers and status code of the response to the tunnel establishment request. This will
-         * not be called for the actual HTTP requests that will go through the proxy.
-         *
-         * <p>Note: This is currently called for any response, whether it is a success or failure.
-         * TODO(https://crbug.com/422429606): Do we really want this?
-         *
-         * @param responseHeaders The list of headers contained in the response to the tunnel
-         *     establishment request.
-         * @param statusCode The HTTP status code contained in the response to the tunnel
-         *     establishment request.
-         * @return {@code true} to allow using the tunnel connection to proxy requests. Allowing
-         *     usage of a tunnel connection does not guarantee success, Cronet might still fail it
-         *     aftewards (e.g., if the status code returned by the proxy is 407). {@code false} to
-         *     cancel the tunnel connection. When a tunnel connection is canceled, Cronet will
-         *     interpret it as a failure to connect to this Proxy and will try the next Proxy in the
-         *     list passed to {@link org.chromium.net.ProxyOptions} (refer to that class
-         *     documentation for more info).
-         * @deprecated Override onResponseReceived instead.
-         */
-        @Deprecated
-        public boolean onTunnelHeadersReceived(
-                @NonNull List<Map.Entry<String, String>> responseHeaders, int statusCode) {
-            throw new UnsupportedOperationException(
-                    "At least one of onResponseReceived or onTunnelHeadersReceived must be"
-                            + " overriden");
-        }
     }
-
-    /**
-     * Controls tunnel establishment requests. All methods will be invoked onto the Executor
-     * specified in {@link Proxy}'s constructor.
-     *
-     * @deprecated Override HttpConnectCallback instead.
-     */
-    @Deprecated
-    public abstract static class Callback extends HttpConnectCallback {}
 
     /**
      * Constructs an HTTP proxy.
@@ -308,24 +190,37 @@ public final class Proxy {
     public static @NonNull Proxy createHttpProxy(
             @Scheme int scheme,
             @NonNull String host,
-            int port,
+            @IntRange(from = 0, to = 65535) int port,
             @NonNull Executor executor,
             @NonNull HttpConnectCallback callback) {
         return new Proxy(scheme, host, port, executor, callback);
     }
 
-    /**
-     * Constructs a new proxy.
-     *
-     * @param scheme Type of proxy, as defined in {@link Scheme}.
-     * @param host Hostname of the proxy.
-     * @param port Port of the proxy.
-     * @param executor Executor where {@link HttpConnectCallback} will be invoked.
-     * @param callback Callback, as defined in {@link HttpConnectCallback}.
-     * @deprecated Call {@link #createHttpProxy} instead.
-     */
-    @Deprecated
-    public Proxy(
+    @Scheme
+    int getScheme() {
+        return mScheme;
+    }
+
+    @NonNull
+    String getHost() {
+        return mHost;
+    }
+
+    int getPort() {
+        return mPort;
+    }
+
+    @NonNull
+    Executor getExecutor() {
+        return mExecutor;
+    }
+
+    @NonNull
+    HttpConnectCallback getCallback() {
+        return mCallback;
+    }
+
+    private Proxy(
             @Scheme int scheme,
             @NonNull String host,
             int port,
@@ -341,93 +236,11 @@ public final class Proxy {
             throw new IllegalArgumentException(
                     String.format("port must be within [0, 65535] but it was: %d", port));
         }
-        this.mScheme = scheme;
-        this.mHost = host;
-        this.mPort = port;
-        this.mExecutor = Objects.requireNonNull(executor);
-        this.mCallback = Objects.requireNonNull(callback);
-    }
-
-    /**
-     * Constructs a new proxy.
-     *
-     * @param scheme Type of proxy, as defined in {@link Scheme}.
-     * @param host Hostname of the proxy.
-     * @param port Port of the proxy.
-     * @param callback Callback, as defined in {@link HttpConnectCallback}.
-     * @deprecated Call {@link #createHttpProxy} instead.
-     */
-    @Deprecated
-    public Proxy(
-            @Scheme int scheme,
-            @NonNull String host,
-            int port,
-            @NonNull HttpConnectCallback callback) {
-        // Previously, we did not require an Executor and instead called Proxy.Callback directly
-        // onto the network thread. Maintain backward compatibility by using an inline executor.
-        this(
-                /* scheme= */ scheme,
-                /* host= */ host,
-                /* port= */ port,
-                /* executor= */ (Runnable r) -> {
-                    r.run();
-                },
-                /* callback= */ callback);
-    }
-
-    /**
-     * Returns the {@link Scheme} of this proxy.
-     *
-     * @deprecated This will be made package private before Cronet proxy APIs are made
-     *     non-experimental.
-     */
-    @Deprecated
-    public @Scheme int getScheme() {
-        return mScheme;
-    }
-
-    /**
-     * Returns the hostname of this proxy.
-     *
-     * @deprecated This will be made package private before Cronet proxy APIs are made
-     *     non-experimental.
-     */
-    @Deprecated
-    public @NonNull String getHost() {
-        return mHost;
-    }
-
-    /**
-     * Returns the port of this proxy.
-     *
-     * @deprecated This will be made package private before Cronet proxy APIs are made
-     *     non-experimental.
-     */
-    @Deprecated
-    public int getPort() {
-        return mPort;
-    }
-
-    /**
-     * Returns the {@link Executor} of this proxy.
-     *
-     * @deprecated This will be made package private before Cronet proxy APIs are made
-     *     non-experimental.
-     */
-    @Deprecated
-    public @NonNull Executor getExecutor() {
-        return mExecutor;
-    }
-
-    /**
-     * Returns the {@link HttpConnectCallback} of this proxy.
-     *
-     * @deprecated This will be made package private before Cronet proxy APIs are made
-     *     non-experimental.
-     */
-    @Deprecated
-    public @NonNull HttpConnectCallback getCallback() {
-        return mCallback;
+        mScheme = scheme;
+        mHost = host;
+        mPort = port;
+        mExecutor = Objects.requireNonNull(executor);
+        mCallback = Objects.requireNonNull(callback);
     }
 
     private final @Scheme int mScheme;

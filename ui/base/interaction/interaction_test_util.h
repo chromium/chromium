@@ -46,7 +46,9 @@ enum class [[nodiscard]] ActionResult {
   //
   // No further attempts at performing the action should be made. Should be
   // treated as failure by default.
-  kKnownIncompatible
+  kKnownIncompatible,
+
+  kMaxValue = kKnownIncompatible
 };
 
 // Platform- and framework-independent utility for delegating specific common
@@ -295,8 +297,10 @@ class InteractionTestUtil {
   std::vector<std::unique_ptr<Simulator>> simulators_;
 };
 
+void PrintTo(ActionResult action_result, std::ostream* os);
 void PrintTo(InteractionTestUtil::InputType input_type, std::ostream* os);
 
+std::ostream& operator<<(std::ostream& os, ActionResult action_result);
 std::ostream& operator<<(std::ostream& os,
                          InteractionTestUtil::InputType input_type);
 

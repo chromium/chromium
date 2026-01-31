@@ -42,6 +42,10 @@ namespace screen_ai {
 class OpticalCharacterRecognizer;
 }  // namespace screen_ai
 
+namespace net {
+class HttpResponseHeaders;
+}  // namespace net
+
 // Implements the interface needed for the delegate of the Capture Mode feature
 // in Chrome.
 class ChromeCaptureModeDelegate : public ash::CaptureModeDelegate {
@@ -204,7 +208,7 @@ class ChromeCaptureModeDelegate : public ash::CaptureModeDelegate {
       base::WeakPtr<const network::SimpleURLLoader> url_loader,
       const std::string& access_token,
       const int request_id,
-      std::optional<std::string> response_body);
+      scoped_refptr<net::HttpResponseHeaders> response_body);
   void OnDispatchCompleteForCopyText(
       base::WeakPtr<const network::SimpleURLLoader> url_loader,
       const std::string& access_token,

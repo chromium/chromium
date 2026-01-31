@@ -64,8 +64,7 @@ bool InsertLineBreakCommand::ShouldUseBreakElement(
   // parent's layoutObject.
   Position p(insertion_pos.ParentAnchoredEquivalent());
   if (auto* text_control = EnclosingTextControl(p)) {
-    return RuntimeEnabledFeatures::TextareaLineEndingsAsBrEnabled() &&
-           IsA<HTMLTextAreaElement>(text_control);
+    return IsA<HTMLTextAreaElement>(text_control);
   }
   return IsRichlyEditablePosition(p) && p.AnchorNode()->GetLayoutObject() &&
          p.AnchorNode()->GetLayoutObject()->Style()->ShouldCollapseBreaks();
@@ -188,7 +187,8 @@ void InsertLineBreakCommand::DoApply(EditingState* editing_state) {
       // Deleting insignificant whitespace will remove textNode if it contains
       // nothing but insignificant whitespace.
       if (text_node->isConnected()) {
-        InsertTextIntoNode(text_node, 0, NonBreakingSpaceString());
+        InsertTextIntoNode(text_node, 0, NonBreakingSpaceString(),
+                           PasswordEchoBehavior::kDoNotEcho);
       } else {
         Text* nbsp_node =
             GetDocument().createTextNode(NonBreakingSpaceString());

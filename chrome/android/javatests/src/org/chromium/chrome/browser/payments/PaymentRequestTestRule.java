@@ -159,6 +159,8 @@ import java.util.concurrent.atomic.AtomicReference;
 
     private CardUnmaskPrompt mCardUnmaskPrompt;
 
+    private int mFactoryCount;
+
     /**
      * Creates an instance of PaymentRequestTestRule.
      *
@@ -1186,7 +1188,8 @@ import java.util.concurrent.atomic.AtomicReference;
             @FactorySpeed int factorySpeed,
             @AppSpeed int appSpeed) {
         TestFactory factory = new TestFactory(appMethodName, appPresence, factorySpeed, appSpeed);
-        PaymentAppService.getInstance().addFactory(factory);
+        String factoryId = "testFactoryId_" + mFactoryCount++;
+        PaymentAppService.getInstance().addUniqueFactory(factory, factoryId);
         return factory;
     }
 

@@ -54,13 +54,11 @@ class CookieControlsBridge : public CookieControlsObserver {
   // CookieControlsObserver:
   void OnStatusChanged(CookieControlsState controls_state,
                        CookieControlsEnforcement enforcement,
-                       CookieBlocking3pcdStatus blocking_status,
                        base::Time expiration) override;
 
   void OnCookieControlsIconStatusChanged(
       bool icon_visible,
       CookieControlsState controls_state,
-      CookieBlocking3pcdStatus blocking_status,
       bool should_highlight) override;
 
   void OnReloadThresholdExceeded() override;

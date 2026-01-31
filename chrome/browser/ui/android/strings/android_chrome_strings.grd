@@ -231,6 +231,9 @@ CHAR_LIMIT guidelines:
       <message name="IDS_SEARCH_IN_SETTINGS_NO_MATCH" desc='Guide message when there is no match for search in settings. [CHAR_LIMIT=32]'>
         No results found
       </message>
+      <message name="IDS_SEARCH_IN_SETTINGS_CLEAR_QUERY" desc='Label for the icon clearing the query text of settings. [CHAR_LIMIT=32]'>
+        Clear search query
+      </message>
       <message name="IDS_SEARCH_IN_SETTINGS_HELP_CENTER" desc='Message suggesting user search help center when there is no match in search. [CHAR_LIMIT=32]'>
         Try searching the help center
       </message>
@@ -309,9 +312,6 @@ CHAR_LIMIT guidelines:
       </message>
       <message name="IDS_SIGN_IN_TO_CHROME" meaning="Button" desc="Title for the button to sign in to Chrome using one's Google account. [CHAR_LIMIT=27]">
         Sign in to Chrome
-      </message>
-      <message name="IDS_PREFS_MANAGE_SYNC_SETTINGS_CONTENT_DESCRIPTION" is_accessibility_with_no_ui="true" desc="The accessibility text to read when the 'Manage Sync Settings' page is opened from the sign-in page. This text is attached to the 'Navigate Up' button shown at the top of the screen. The first two sentences describe the screen that is currently shown to the user, while 'Navigate up' is a description for the button this text is attached to. 'Navigate up' should match TC ID 6794660482873516081.">
-        You are currently customizing your Sync settings. To finish turning on sync, tap the Confirm button near the bottom of the screen. Navigate up
       </message>
       <message name="IDS_SIGN_IN_PERSONALIZE_GOOGLE_SERVICES_TITLE" desc="This is the title of a setting that directs users to other settings where they can control how Chrome history can be used to personalize other Google services. It appears in Chrome’s Advanced Sync settings and is before the “Control how browsing history is used with your other data across Google services” string. [CHAR_LIMIT=30]">
         Personalization
@@ -481,6 +481,11 @@ For more settings that use data to improve your Chrome experience, go to <ph nam
         You can choose your search engine
       </message>
 
+      <!-- Manage search engines and site search -->
+      <message name="IDS_MANAGE_SEARCH_ENGINES_AND_SITE_SEARCH" desc="Title shown in the menu item that takes the user to 'Manage search engines and site search' in Settings.">
+        Manage search engines and site search
+      </message>
+
       <!-- Address bar settings -->
       <message name="IDS_ADDRESS_BAR_SETTINGS" desc="Title for Address Bar settings. [CHAR_LIMIT=32]">
         Address bar
@@ -625,14 +630,8 @@ For more settings that use data to improve your Chrome experience, go to <ph nam
       <message name="IDS_AUTOFILL_OPTIONS_CONFIRM_RESTART" desc="Description below switch toggling the use of third-party autofill in Chrome." formatter_data="android_java">
         Restart Chrome
       </message>
-      <message name="IDS_AUTOFILL_OPTIONS_RESTART_PROMPT_TITLE" desc="Title of the dialog prompting the user to restart to apply the new Autofill settings." formatter_data="android_java">
-        Restart Chrome?
-      </message>
       <message name="IDS_AUTOFILL_OPTIONS_CHANGE_AUTOFILL_SERVICE_TITLE" desc="Title of the dialog prompting the user to restart to apply the new Autofill settings." formatter_data="android_java">
         Change autofill service?
-      </message>
-      <message name="IDS_AUTOFILL_OPTIONS_RESTART_PROMPT_TEXT" desc="Title of the dialog prompting the user to restart to apply the new Autofill settings." formatter_data="android_java">
-        To finish setting up autofill, restart Chrome now. Your tabs will automatically reopen.
       </message>
       <message name="IDS_AUTOFILL_OPTIONS_RESTART_PROMPT_PARAGRAPH_1_TEXT" desc="Title of the dialog prompting the user to restart to apply the new Autofill settings." formatter_data="android_java">
         After Chrome restarts, your info saved from your new provider will be used to autofill passwords, passkeys, addresses, payment methods, and other info.
@@ -657,6 +656,9 @@ For more settings that use data to improve your Chrome experience, go to <ph nam
       </message>
       <message name="IDS_AUTOFILL_DELETE_SAVED_CVCS_CONFIRMATION_DIALOG_MESSAGE" desc="Message for the dialog where the user confirms their intention to delete their saved CVCs.">
         All security codes saved on your device and in your Google Account will be deleted
+      </message>
+      <message name="IDS_AUTOFILL_DELETE_SAVED_CVCS_IN_WALLET_CONFIRMATION_DIALOG_MESSAGE" desc="Message for the dialog where the user confirms their intention to delete their saved CVCs in Google Wallet.">
+        All security codes saved on your device and in Google Wallet will be deleted
       </message>
       <message name="IDS_AUTOFILL_DELETE_SAVED_CVCS_CONFIRMATION_DIALOG_DELETE_BUTTON_LABEL" desc="Label shown on the button that the user clicks on to delete their saved CVCs.">
         Delete
@@ -1686,23 +1688,24 @@ Your Google account may have other forms of browsing history like searches and a
         =1 {Chrome found a reused password that you could improve}
         other {Chrome found # reused passwords that you could improve}}
       </message>
-      <message name="IDS_SAFETY_HUB_UNSUBSCRIBED_NOTIFICATIONS_NOTIFICATION_TITLE" desc="Title for the notification sent from Safety Hub for telling the user that some notifications have been unsubscribed.">
-        {NUM_REVOKED_PERMISSIONS, plural,
-        =1 {Unsubscribed from one unused site}
-        other {Unsubscribed from # unused sites}}
+       <message name="IDS_SAFETY_HUB_UNSUBSCRIBED_DISRUPTIVE_AND_SUSPICIOUS_NOTIFICATIONS_NOTIFICATION_TITLE_SINGULAR" desc="Title for the notification sent from Safety Hub for telling the user that the site's notifications have been unsubscribed.">
+        Unsubscribed from <ph name="DOMAIN">%1$s<ex>example.com</ex></ph>
       </message>
-       <message name="IDS_SAFETY_HUB_UNSUBSCRIBED_DISRUPTIVE_AND_SUSPICIOUS_NOTIFICATIONS_NOTIFICATION_TITLE" desc="Title for the notification sent from Safety Hub for telling the user that some notifications have been unsubscribed.">
-        {NUM_REVOKED_PERMISSIONS, plural,
-        =1 {Unsubscribed from one site}
-        other {Unsubscribed from # sites}}
+      <message name="IDS_SAFETY_HUB_UNSUBSCRIBED_DISRUPTIVE_AND_SUSPICIOUS_NOTIFICATIONS_NOTIFICATION_TITLE_PLURAL" desc="Title for the notification sent from Safety Hub for telling the user that some notifications have been unsubscribed.">
+        Unsubscribed from <ph name="COUNT">%1$d<ex>2</ex></ph> sites
       </message>
-      <message name="IDS_SAFETY_HUB_UNSUBSCRIBED_NOTIFICATIONS_NOTIFICATION_MESSAGE" desc="Message for the notification sent from Safety Hub for telling the user that some notifications have been unsubscribed." meaning="This message informs about notification permissions having been revoked from one or more sites and explains that the user can review and manage [those notification permission revocations] by either clicking on this message or on the Review button below it.">
-        {NUM_REVOKED_PERMISSIONS, plural,
-        =1 {Chrome stopped notifications from this site. You can review and manage.}
-        other {Chrome stopped notifications from these sites. You can review and manage.}}
+      <message name="IDS_SAFETY_HUB_UNSUBSCRIBED_DISRUPTIVE_AND_SUSPICIOUS_NOTIFICATIONS_NOTIFICATION_MESSAGE" desc="Message for the notification sent from Safety Hub for telling the user that some notifications have been unsubscribed, due to disruptive and suspicious content." meaning="This message informs about notification permissions having been revoked from one or more sites and explains that the user can review and manage [those notification permission revocations] by either clicking on this message or on the Review button below it.">
+        Chrome stopped abusive and unused sites from sending notifications
       </message>
-      <message name="IDS_SAFETY_HUB_UNSUBSCRIBED_NOTIFICATIONS_NOTIFICATION_ACK" desc="Button to acknowledge the notification sent from Safety Hub for telling the user that some notifications have been unsubscribed.">
-        Got it
+      <message name="IDS_SAFETY_HUB_UNSUBSCRIBED_DISRUPTIVE_NOTIFICATIONS_NOTIFICATION_MESSAGE" desc="Message for the notification sent from Safety Hub for telling the user that some notifications have been unsubscribed, due to disruptive content." meaning="This message informs about notification permissions having been revoked from one or more sites and explains that the user can review and manage [those notification permission revocations] by either clicking on this message or on the Review button below it.">
+        {NUM_REVOKED_PERMISSIONS, plural,
+        =1 {Chrome stopped a site you haven’t visited recently from sending you notifications}
+        other {Chrome stopped sites you haven’t visited recently from sending you notifications}}
+      </message>
+      <message name="IDS_SAFETY_HUB_UNSUBSCRIBED_SUSPICIOUS_NOTIFICATIONS_NOTIFICATION_MESSAGE" desc="Message for the notification sent from Safety Hub for telling the user that some notifications have been unsubscribed, due to suspicious content." meaning="This message informs about notification permissions having been revoked from one or more sites and explains that the user can review and manage [those notification permission revocations] by either clicking on this message or on the Review button below it.">
+        {NUM_REVOKED_PERMISSIONS, plural,
+        =1 {Chrome stopped this site from sending notifications because of spam or deceptive content}
+        other {Chrome stopped these sites from sending notifications because of spam or deceptive content}}
       </message>
       <message name="IDS_SAFETY_HUB_UNSUBSCRIBED_NOTIFICATIONS_NOTIFICATION_REVIEW" desc="Button to review revoked notifications on the notification sent from Safety Hub for telling the user that some notifications have been unsubscribed.">
         Review
@@ -2317,12 +2320,6 @@ Your Google account may have other forms of browsing history like searches and a
       </message>
       <message name="IDS_RECENT_TABS_SIGN_IN_ON_OTHER_DEVICES" desc="Text appearing on an empty recent tab page that indicates user can see tabs from other devices here">
         To see your tabs from wherever you use Chrome, sign in on all your devices
-      </message>
-      <message name="IDS_SEARCH_AND_BROWSE_CATEGORY" desc="Category to show the search and browse improvement toggle. [CHAR_LIMIT=32]">
-        Search and browse
-      </message>
-      <message name="IDS_SYNCING_CATEGORY" desc="Category to separate search and browse section with sync related data types. [CHAR_LIMIT=32]">
-        Syncing
       </message>
       <message name="IDS_SYNC_EVERYTHING_PREF" desc="Title for preference which enables sync'ing of all data types. [CHAR_LIMIT=32]">
         Sync everything
@@ -3031,11 +3028,14 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
       <message name="IDS_SEPIA_MODE" desc="Title of button that will change theme of distilled pages to sepia mode.">
         Sepia
       </message>
-      <message name="IDS_SANS_SERIF" desc="Title of the selector button that will change the typeface of distilled pages to use a SansSerif font.">
+      <message name="IDS_SANS_SERIF" desc="Title of the selector button that will change the typeface of distilled pages to use a Sans Serif font.">
         Sans Serif
       </message>
       <message name="IDS_SANS_SERIF_LOWERCASE" desc="Title of the font style selection button in reader mode preferences. Differs in capitalization from IDS_SANS_SERIF. No translation needed since this is a proper noun.">
         Sans serif
+      </message>
+      <message name="IDS_LEXEND" desc="Title of the selector button that will change the typeface of distilled pages to use a Lexend font.">
+        Lexend
       </message>
       <message name="IDS_SERIF" desc="Title of the selector button that will change the typeface of distilled pages to use a Serif font.">
         Serif
@@ -3407,6 +3407,13 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
       <message name="IDS_DOWNLOAD_MANAGER_DANGEROUS_BLOCKED" desc="Caption shown below a file that was blocked for being dangerous.">
         Dangerous download blocked
       </message>
+      <message name="IDS_DOWNLOAD_MANAGER_ASYNC_SCANNING_TITLE" desc="Title shown for a download that is currently being scanned for its content.">
+        Scanning <ph name="FILE_NAME">%1$s<ex>test.pdf</ex></ph>
+      </message>
+      <message name="IDS_DOWNLOAD_MANAGER_ASYNC_SCANNING_DESCRIPTION" desc="Description on download home showing below the download about that the download is undergoing content check due to enterpise policies.">
+        Your download will complete if the file meets your organization’s policies
+      </message>
+
 
       <!-- Browsing History UI -->
       <message name="IDS_HISTORY_MANAGER_EMPTY_STATE" desc="Indicates that there are no browsing history items.">
@@ -3758,6 +3765,15 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
       </message>
       <message name="IDS_SIGNIN_PROMO_DESCRIPTION_BOOKMARKS_GROUP4" desc="This string is the description of a card that appears when the user opens Chrome's bookmarks; the user is signed out of Chrome. The headline above this string is 'Get all your bookmarks'." meaning="This message means that the user can get the bookmarks from their computer on their phone, and their phone's bookmarks on their computer. We want users to read this card and tap the 'Sign in as John' button and sign-in. The tone should be inviting.">
         To get your bookmarks and more on all your devices, sign in to Chrome
+      </message>
+      <message name="IDS_HISTORY_SYNC_RECENT_TABS_TITLE" desc="Title of a page that asks users to start syncing their tabs and browsing history, so they can get back to sites they visited more quickly without having to type them, for example by seeing these sites suggested in the Omnibox. This also allows users to access their recent tabs and browsing history across all their devices.">
+        Sync tabs and history
+      </message>
+      <message name="IDS_HISTORY_SYNC_RECENT_TABS_SUBTITLE" desc="Text of a page that asks users to start syncing their tabs and browsing history, so they can get back to sites they visited more quickly without having to type them, for example by seeing these sites suggested in the Omnibox. This also allows users to access their recent tabs and browsing history across all their devices.">
+        To see tabs from your other devices, sync your tabs and history
+      </message>
+      <message name="IDS_HISTORY_SYNC_RECENT_TABS_SECONDARY_ACTION" desc="Text for the decline button on the history sync screen that asks users to start syncing their tabs and browsing history. By clicking this button users dismiss the screen and is signed out. [CHAR_LIMIT=20]">
+        Cancel
       </message>
 
       <!-- Strings for signin promos when Unified Consent is enabled. -->
@@ -4394,6 +4410,15 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
       <message name="IDS_MENU_NAME_WINDOW" desc="Menu item for naming a window.">
         Name window
       </message>
+      <message name="IDS_MENU_REOPEN_CLOSED_TAB" desc="Menu item for reopening the last closed tab.">
+        Reopen closed tab
+      </message>
+      <message name="IDS_MENU_REOPEN_CLOSED_TABS" desc="Menu item for reopening the last closed tabs.">
+        Reopen closed tabs
+      </message>
+      <message name="IDS_MENU_REOPEN_CLOSED_GROUP" desc="Menu item for reopening the last closed tab group.">
+        Reopen closed group
+      </message>
 
       <!-- Bookmarks strings -->
       <message name="IDS_BOOKMARKS" desc="Title of the bookmarks page, which shows a list of the user's bookmarks. [CHAR_LIMIT=18]">
@@ -4439,6 +4464,9 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
       </message>
       <message name="IDS_BOOKMARK_ITEM_EDIT" desc="Menu item text for showing bookmark editing page [CHAR_LIMIT=24]">
         Edit
+      </message>
+      <message name="IDS_BOOKMARK_ITEM_COPY_LINK" desc="Menu item text for copying a bookmark link [CHAR_LIMIT=24]">
+        Copy link
       </message>
       <message name="IDS_BOOKMARK_ITEM_MOVE" desc="Menu item for moving a bookmark to a new folder [CHAR_LIMIT=24]">
         Move to…
@@ -5707,6 +5735,9 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
       <message name="IDS_KEYBOARD_SHORTCUT_NEW_INCOGNITO_TAB" desc="A text label that appears next to a keyboard shortcut to open a new tab in Incognito mode in Chrome. The shortcut description is shown in a system dialog along with all other supported shortcuts. [CHAR_LIMIT=55]">
         Open a new tab in Incognito mode
       </message>
+      <message name="IDS_KEYBOARD_SHORTCUT_NEW_INCOGNITO_WINDOW" desc="A text label that appears next to a keyboard shortcut to open a new window in Incognito mode in Chrome. The shortcut description is shown in a system dialog along with all other supported shortcuts. [CHAR_LIMIT=55]">
+        Open a new window in Incognito mode
+      </message>
        <message name="IDS_KEYBOARD_SHORTCUT_SPECIFIC_TAB" desc="A text label that appears next to the keyboard shortcut that will move the user to a specific tab in the Chrome app. The shortcut description is shown in a system dialog along with all other supported shortcuts. [CHAR_LIMIT=55]">
         Jump to a specific tab (1&#8211;8)
       </message>
@@ -5727,6 +5758,9 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
       </message>
       <message name="IDS_KEYBOARD_SHORTCUT_CLOSE_TAB" desc="A text label that appears next to the keyboard shortcut that will close the current tab in Chrome. The shortcut description is shown in a system dialog along with all other supported shortcuts. [CHAR_LIMIT=55]">
         Close current tab
+      </message>
+      <message name="IDS_KEYBOARD_SHORTCUT_CLOSE_PINNED_TAB" desc="A text label that appears when user tries to close a pinned tab via Ctrl+W shortcut. The warning informs the user that confirming the closure requires a second press of the keyboard shortcut. The shortcut description is shown in a system dialog along with all other supported shortcuts. [CHAR_LIMIT=55]">
+        Press ^W again to close the pinned tab
       </message>
       <message name="IDS_KEYBOARD_SHORTCUT_FIND_BAR" desc="A text label that appears next to the keyboard shortcut that will open the find bar that searches what is on the screen. The shortcut description is shown in a system dialog along with all other supported shortcuts. [CHAR_LIMIT=55]">
         Open Find Bar
@@ -5833,10 +5867,18 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
       <message name="IDS_MODULE_INSTALL_FAILURE_TEXT" desc="Text shown on an infobar when Chrome failed to install a dynamic feature module.">
         Unable to install <ph name="module">%1$s<ex>augmented reality</ex></ph> for Chrome
       </message>
+      <message name="IDS_XR_MODULE_TITLE" desc="Text shown when the XR module is referenced in install start, success, failure UI (e.g. in IDS_MODULE_INSTALL_START_TEXT, which will expand to 'Installing XR for Chrome…').">
+        XR
+      </message>
 
       <!-- Multi-instance Switcher Dialog strings -->
       <message name="IDS_INSTANCE_SWITCHER_HEADER" desc="The header of multi-instance switcher dialog.">
         Manage windows
+      </message>
+      <message name="IDS_INSTANCE_SWITCHER_WINDOWS_SELECTED_HEADER" desc="The header of multi-instance switcher dialog when at least one window is selected.">
+        {WINDOW_COUNT, plural,
+          =1 {<ph name="WINDOW_COUNT_ONE">%1$s</ph> Window Selected}
+          other {<ph name="WINDOW_COUNT_NORMAL">%1$s<ex>2</ex></ph> Windows Selected}}
       </message>
       <message name="IDS_INSTANCE_SWITCHER_TITLE_INCOGNITO_WINDOW" desc="Title of an instance entry that has incognito tabs in it.">
         Incognito window
@@ -5846,6 +5888,9 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
       </message>
       <message name="IDS_INSTANCE_SWITCHER_TABS_INACTIVE" desc="The title of the inactive instances tab header on the multi-instance switcher dialog.">
         Inactive (<ph name="ITEM_COUNT">%1$s<ex>2</ex></ph>)
+      </message>
+      <message name="IDS_INSTANCE_SWITCHER_NO_INACTIVE_WINDOWS" desc="Text shown in the instance switcher when there are no inactive windows.">
+        No inactive windows
       </message>
       <message name="IDS_INSTANCE_SWITCHER_ENTRY_EMPTY_WINDOW" desc="Title of an instance entry that has no tabs in it.">
         Empty window
@@ -5874,20 +5919,17 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
        <message name="IDS_INSTANCE_SWITCHER_NAME_WINDOW_CONFIRM_HEADER" desc="The header of multi-instance switcher dialog confirming to name the selected window.">
         Name this window
       </message>
+      <message name="IDS_INSTANCE_SWITCHER_SELECT_ALL" desc="The menu item for the 3-dot more button to select all instances.">
+        Select all
+      </message>
+      <message name="IDS_INSTANCE_SWITCHER_DESELECT_ALL" desc="The menu item for the 3-dot more button to deselect all instances.">
+        Deselect all
+      </message>
       <message name="IDS_INSTANCE_SWITCHER_CLOSE_WINDOW" desc="The menu item for the 3-dot more button to close the instance.">
         Close window
       </message>
-      <message name="IDS_INSTANCE_SWITCHER_CURRENT_WINDOW" desc="The description for an instance entry saying that it is the entry for the current window.">
-        Current
-      </message>
-      <message name="IDS_INSTANCE_SWITCHER_ADJACENT_WINDOW" desc="The description for an instance entry running in the foreground.">
-        Window is open
-      </message>
-      <message name="IDS_INSTANCE_SWITCHER_ALREADY_RUNNING_FOREGROUND" desc="Toast message to show when user tries to switch to a window that is already running in the foreground.">
-        Chrome is already running here.
-      </message>
-      <message name="IDS_TARGET_SELECTOR_MOVE" desc="The message in the button in target selector dialog that starts moving a tab.">
-        Move tab
+      <message name="IDS_INSTANCE_SWITCHER_CLOSE_WINDOWS" desc="The menu item for the 3-dot more button to close all selected instances.">
+        Close windows
       </message>
       <message name="IDS_INSTANCE_SWITCHER_CLOSE_CONFIRM_HEADER" desc="The header of multi-instance switcher dialog confirming close operation for a non-current window.">
         Close window?
@@ -5898,16 +5940,8 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
       <message name="IDS_INSTANCE_SWITCHER_CLOSE_CONFIRM_DELETED_TABS_ZERO" desc="The phrase used in the message when there is a single tab to delete.">
         The window will be closed
       </message>
-      <message name="IDS_INSTANCE_SWITCHER_CLOSE_CONFIRM_DELETED_TABS_ONE" desc="The phrase used in the message when there is a single tab to delete.">
-        The tab <ph name="TAB_TITLE">%1$s<ex>YouTube</ex></ph> will be closed
-      </message>
       <message name="IDS_INSTANCE_SWITCHER_CLOSE_CONFIRM_DELETED_TABS_ONE_V2" desc="The phrase used in the message when there is a single tab to delete.">
         <ph name="TAB_TITLE">%1$s<ex>YouTube</ex></ph> will be closed
-      </message>
-      <message name="IDS_INSTANCE_SWITCHER_CLOSE_CONFIRM_DELETED_TABS_MANY" desc="The phrase used in the message when there are multiple tabs to delete.">
-        {TAB_COUNT, plural,
-          =1 {<ph name="TAB_TITLE">%1$s<ex>YouTube</ex></ph> and <ph name="TAB_COUNT_ONE">%2$s</ph> more tab will be closed}
-          other {<ph name="TAB_TITLE">%1$s<ex>YouTube</ex></ph> and <ph name="TAB_COUNT_MANY">%2$s</ph> more tabs will be closed}}
       </message>
       <message name="IDS_INSTANCE_SWITCHER_CLOSE_CONFIRM_DELETED_TABS_MANY_V2" desc="The phrase used in the message when there are multiple tabs to delete.">
         {TAB_COUNT, plural,
@@ -5918,11 +5952,6 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
         {TAB_COUNT, plural,
           =1 {<ph name="TAB_COUNT_ONE">%1$s<ex>1</ex></ph> incognito tab will be closed}
           other {<ph name="TAB_COUNT_MANY">%1$s<ex>4</ex></ph> incognito tabs will be closed}}
-      </message>
-      <message name="IDS_INSTANCE_SWITCHER_CLOSE_CONFIRM_DELETED_INCOGNITO_MIXED" desc="The phrase used in the message for deleting incognito-selected instance.">
-        {TAB_COUNT, plural,
-          =1 {<ph name="INCOGNITO_TAB_COUNT">%1$s<ex>2</ex></ph> incognito and <ph name="TAB_COUNT_ONE">%2$s<ex>1</ex></ph> more tab will be closed}
-          other {<ph name="INCOGNITO_TAB_COUNT">%1$s<ex>4</ex></ph> incognito and <ph name="TAB_COUNT_MANY">%2$s<ex>4</ex></ph> more tabs will be closed}}
       </message>
       <message name="IDS_INSTANCE_LAST_ACCESSED_CURRENT" desc="The current window indicator text.">
         Current window
@@ -7300,6 +7329,12 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
       </message>
 
       <!-- Default browser promo -->
+      <message name="IDS_MAKE_CHROME_DEFAULT" desc="Menu item in the app menu to set Chrome as the default browser.">
+        Make Chrome default
+      </message>
+      <message name="IDS_DEFAULT_BROWSER_TITLE" desc="Menu item in settings to set Chrome as the default browser.">
+          Default browser
+      </message>
       <message name="IDS_DEFAULT_BROWSER_PROMO_CARD_TITLE" desc="Title of a promotion about setting Chrome the default browser.">
         Make Chrome your default browser
       </message>
@@ -7451,7 +7486,7 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
         Tips notifications opt in opened at full height
       </message>
       <message name="IDS_TIPS_OPT_IN_BOTTOM_SHEET_POSITIVE_BUTTON_TEXT" desc="Button text for the Tips Opt In bottom sheet to go to the notifications settings page.">
-        Turn on Tips notifications
+        Turn on tips notifications
       </message>
       <message name="IDS_TIPS_OPT_IN_BOTTOM_SHEET_NEGATIVE_BUTTON_TEXT" desc="Button text for the Tips Opt In bottom sheet to exit the promo.">
         Close
@@ -7474,6 +7509,11 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
        <!-- Automatic Picture-in-Picture Permission Prompt -->
       <message name="IDS_AUTO_PICTURE_IN_PICTURE_PROMPT_TITLE" desc="Title for the auto-picture-in-picture permission prompt. The placeholder is the website's origin.">
         <ph name="URL">%1$s<ex>example.com</ex></ph> wants to enter picture-in-picture automatically
+      </message>
+
+      <!-- Document Picture-in-Picture -->
+      <message name="IDS_DOCUMENT_PICTURE_IN_PICTURE_BACK_TO_TAB" desc="Content description for the back to tab button in the document picture-in-picture window header.">
+        Back to tab
       </message>
     </messages>
   </release>

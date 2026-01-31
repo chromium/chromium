@@ -54,7 +54,7 @@ UserPolicies::UserPolicies()
 }
 
 // static
-UserPolicies UserPolicies::FromValue(const base::Value::Dict& dict) {
+UserPolicies UserPolicies::FromValue(const base::DictValue& dict) {
   UserPolicies user_policies;
 
   std::optional<bool> dm_enrollment =
@@ -91,7 +91,7 @@ UserPolicies UserPolicies::FromValue(const base::Value::Dict& dict) {
 }
 
 base::Value UserPolicies::ToValue() const {
-  base::Value::Dict dict;
+  base::DictValue dict;
   dict.Set(kGcpwPolicyDmEnrollmentParameterName, enable_dm_enrollment);
   dict.Set(kGcpwPolicyAutoUpdateParameterName, enable_gcpw_auto_update);
   dict.Set(kGcpwPolicyPinnerVersionParameterName,

@@ -41,7 +41,7 @@ class ResetPasswordUI : public ui::MojoWebUIController {
       mojo::PendingReceiver<mojom::ResetPasswordHandler> receiver);
 
  private:
-  base::Value::Dict PopulateStrings() const;
+  base::DictValue PopulateStrings() const;
 
   std::unique_ptr<mojom::ResetPasswordHandler> ui_handler_;
   const PasswordType password_type_;

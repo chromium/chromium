@@ -32,7 +32,7 @@ const int kObjectGetClassInvocationAttemptLogTag = 70151;
 GinJavaMethodInvocationHelper::GinJavaMethodInvocationHelper(
     std::unique_ptr<ObjectDelegate> object,
     const std::string& method_name,
-    const base::Value::List& arguments)
+    const base::ListValue& arguments)
     : object_(std::move(object)),
       method_name_(method_name),
       arguments_(arguments.Clone()),
@@ -51,7 +51,7 @@ void GinJavaMethodInvocationHelper::Init(DispatcherDelegate* dispatcher) {
 // JavaScript values, we don't bother about having a recursion threshold here.
 void GinJavaMethodInvocationHelper::BuildObjectRefsFromListValue(
     DispatcherDelegate* dispatcher,
-    const base::Value::List& list_value) {
+    const base::ListValue& list_value) {
   for (const auto& entry : list_value) {
     if (AppendObjectRef(dispatcher, entry))
       continue;
@@ -65,7 +65,7 @@ void GinJavaMethodInvocationHelper::BuildObjectRefsFromListValue(
 
 void GinJavaMethodInvocationHelper::BuildObjectRefsFromDictionaryValue(
     DispatcherDelegate* dispatcher,
-    const base::Value::Dict& dict_value) {
+    const base::DictValue& dict_value) {
   for (const auto item : dict_value) {
     if (AppendObjectRef(dispatcher, item.second))
       continue;
@@ -161,15 +161,15 @@ void GinJavaMethodInvocationHelper::Invoke() {
 void GinJavaMethodInvocationHelper::SetInvocationError(
     mojom::GinJavaBridgeError error) {
   holds_primitive_result_ = true;
-  primitive_result_ = std::make_unique<base::Value::List>();
+  primitive_result_ = std::make_unique<base::ListValue>();
   invocation_error_ = error;
 }
 
 void GinJavaMethodInvocationHelper::SetPrimitiveResult(
-    base::Value::List result_wrapper) {
+    base::ListValue result_wrapper) {
   holds_primitive_result_ = true;
   primitive_result_ =
-      std::make_unique<base::Value::List>(std::move(result_wrapper));
+      std::make_unique<base::ListValue>(std::move(result_wrapper));
 }
 
 void GinJavaMethodInvocationHelper::SetObjectResult(
@@ -184,7 +184,7 @@ bool GinJavaMethodInvocationHelper::HoldsPrimitiveResult() {
   return holds_primitive_result_;
 }
 
-const base::Value::List& GinJavaMethodInvocationHelper::GetPrimitiveResult() {
+const base::ListValue& GinJavaMethodInvocationHelper::GetPrimitiveResult() {
   return *primitive_result_.get();
 }
 
@@ -209,7 +209,7 @@ void GinJavaMethodInvocationHelper::InvokeMethod(jobject object,
                                                  jvalue* parameters) {
   DCHECK(object || clazz);
   JNIEnv* env = AttachCurrentThread();
-  base::Value::List result_wrapper;
+  base::ListValue result_wrapper;
   switch (return_type.type) {
     case JavaType::TypeBoolean:
       result_wrapper.Append(static_cast<bool>(

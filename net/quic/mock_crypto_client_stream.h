@@ -98,6 +98,8 @@ class MockCryptoClientStream : public quic::QuicCryptoClientStream,
 
   static quic::CryptoHandshakeMessage GetDummyCHLOMessage();
 
+  quic::QuicConfig* negotiated_config() { return negotiated_config_.get(); }
+
  protected:
   using quic::QuicCryptoClientStream::session;
 
@@ -119,6 +121,8 @@ class MockCryptoClientStream : public quic::QuicCryptoClientStream,
   const quic::QuicServerId server_id_;
   raw_ptr<const net::ProofVerifyDetailsChromium> proof_verify_details_;
   const quic::QuicConfig config_;
+  std::unique_ptr<quic::QuicConfig> negotiated_config_;
+  bool config_negotiated_ = false;
   base::WeakPtrFactory<MockCryptoClientStream> weak_factory_{this};
 };
 

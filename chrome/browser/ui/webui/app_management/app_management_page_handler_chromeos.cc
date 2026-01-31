@@ -148,7 +148,7 @@ void AppManagementPageHandlerChromeOs::GetSubAppToParentMap(
         "AppManagementPageHandlerBase::GetSubAppToParentMap",
         web_app::AllAppsLockDescription(),
         base::BindOnce(
-            [](web_app::AllAppsLock& lock, base::Value::Dict& /*debug_value*/) {
+            [](web_app::AllAppsLock& lock, base::DictValue& /*debug_value*/) {
               return lock.registrar().GetSubAppToParentMap();
             }),
         /*on_complete=*/std::move(callback),

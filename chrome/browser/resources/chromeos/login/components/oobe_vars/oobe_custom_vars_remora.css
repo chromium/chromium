@@ -30,15 +30,15 @@
       --oobe-header-line-height: 40px;
       --oobe-header-font-weight: 500; /* medium */
 
-      --oobe-subheader-font-family: "Google Sans", Roboto, sans-serif;
+      --oobe-subheader-font-family: 'Google Sans', Roboto, sans-serif;
       --oobe-subheader-font-size: 22px;
       --oobe-subheader-line-height: 28px;
 
-      --oobe-default-font-family: "Google Sans", Roboto, sans-serif;
+      --oobe-default-font-family: 'Google Sans', Roboto, sans-serif;
       --oobe-default-font-size: 22px;
       --oobe-default-line-height: 28px;
 
-      --oobe-button-font-family: "Google Sans", Roboto, sans-serif;
+      --oobe-button-font-family: 'Google Sans', Roboto, sans-serif;
       --oobe-button-font-size: 22px;
       --oobe-button-font-weight: 500;
 
@@ -140,7 +140,7 @@
       --oobe-adaptive-dialog-icon-fill-color: var(--cros-color-preview-blue);
 
       /* Font */
-      --oobe-button-font-family: "Google Sans", Roboto, sans-serif;
+      --oobe-button-font-family: 'Google Sans', Roboto, sans-serif;
       --oobe-button-font-size: 22px;
       --oobe-button-font-weight: 500;
 

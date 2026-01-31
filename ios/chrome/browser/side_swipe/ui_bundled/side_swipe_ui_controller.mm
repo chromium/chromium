@@ -22,7 +22,7 @@
 #import "ios/chrome/browser/side_swipe/ui_bundled/side_swipe_tab_delegate.h"
 #import "ios/chrome/browser/side_swipe/ui_bundled/side_swipe_ui_controller_delegate.h"
 #import "ios/chrome/browser/side_swipe/ui_bundled/side_swipe_util.h"
-#import "ios/chrome/browser/toolbar/ui_bundled/public/side_swipe_toolbar_interacting.h"
+#import "ios/chrome/browser/toolbar/legacy/ui_bundled/public/side_swipe_toolbar_interacting.h"
 #import "ios/web/public/web_state.h"
 #import "ui/base/device_form_factor.h"
 
@@ -234,24 +234,22 @@ const CGFloat kIpadTabSwipeDistance = 100;
     return NO;
   }
 
-  if (IsContextualPanelEnabled()) {
-    // Don't handle gesture if it's meant for the Contextual Panel Entrypoint
-    // (gesture began in its frame) and that entrypoint is currently large.
-    // `contextualPanelEntrypointView` is nil if the entrypoint is not currently
-    // large, which means the gesture won't be blocked here.
-    UIView* contextualPanelEntrypointView = [self.layoutGuideCenter
-        referencedViewUnderName:kContextualPanelLargeEntrypointGuide];
-    CGPoint touchLocationInEntrypointViewCoordinates =
-        [contextualPanelEntrypointView convertPoint:[gesture locationInView:nil]
-                                           fromView:nil];
-    BOOL tapInsideContextualPanelEntrypointContainer =
-        [contextualPanelEntrypointView
-            pointInside:touchLocationInEntrypointViewCoordinates
-              withEvent:nil];
+  // Don't handle gesture if it's meant for the Contextual Panel Entrypoint
+  // (gesture began in its frame) and that entrypoint is currently large.
+  // `contextualPanelEntrypointView` is nil if the entrypoint is not currently
+  // large, which means the gesture won't be blocked here.
+  UIView* contextualPanelEntrypointView = [self.layoutGuideCenter
+      referencedViewUnderName:kContextualPanelLargeEntrypointGuide];
+  CGPoint touchLocationInEntrypointViewCoordinates =
+      [contextualPanelEntrypointView convertPoint:[gesture locationInView:nil]
+                                         fromView:nil];
+  BOOL tapInsideContextualPanelEntrypointContainer =
+      [contextualPanelEntrypointView
+          pointInside:touchLocationInEntrypointViewCoordinates
+            withEvent:nil];
 
-    if (tapInsideContextualPanelEntrypointContainer) {
-      return NO;
-    }
+  if (tapInsideContextualPanelEntrypointContainer) {
+    return NO;
   }
 
   CGPoint location = [gesture locationInView:gesture.view];

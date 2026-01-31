@@ -65,7 +65,7 @@ protocol_request::App MakeProtocolApp(
     std::optional<protocol_request::UpdateCheck> update_check,
     const std::vector<protocol_request::Data>& data,
     std::optional<protocol_request::Ping> ping,
-    std::optional<std::vector<base::Value::Dict>> events);
+    std::optional<std::vector<base::DictValue>> events);
 
 protocol_request::UpdateCheck MakeProtocolUpdateCheck(
     bool is_update_disabled,

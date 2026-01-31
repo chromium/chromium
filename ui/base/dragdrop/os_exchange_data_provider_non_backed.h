@@ -48,15 +48,13 @@ class COMPONENT_EXPORT(UI_BASE) OSExchangeDataProviderNonBacked
   void MarkAsFromPrivileged() override;
   bool IsFromPrivileged() const override;
   void SetString(std::u16string_view data) override;
-  void SetURL(const GURL& url, std::u16string_view title) override;
+  void SetURLs(base::span<const ClipboardUrlInfo> url_infos) override;
   void SetFilename(const base::FilePath& path) override;
   void SetFilenames(const std::vector<FileInfo>& filenames) override;
   void SetPickledData(const ClipboardFormatType& format,
                       const base::Pickle& data) override;
   std::optional<std::u16string> GetString() const override;
-  std::optional<UrlInfo> GetURLAndTitle(
-      FilenameToURLPolicy policy) const override;
-  std::optional<std::vector<GURL>> GetURLs(
+  std::vector<ClipboardUrlInfo> GetURLs(
       FilenameToURLPolicy policy) const override;
   std::optional<std::vector<FileInfo>> GetFilenames() const override;
   std::optional<base::Pickle> GetPickledData(

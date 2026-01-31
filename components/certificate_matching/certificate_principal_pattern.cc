@@ -4,10 +4,10 @@
 
 #include "components/certificate_matching/certificate_principal_pattern.h"
 
+#include <algorithm>
 #include <string>
 #include <string_view>
 
-#include "base/containers/contains.h"
 #include "base/values.h"
 #include "net/cert/x509_cert_types.h"
 #include "net/cert/x509_certificate.h"
@@ -15,7 +15,7 @@
 namespace certificate_matching {
 namespace {
 
-std::string GetOptionalStringKey(const base::Value::Dict& dictionary,
+std::string GetOptionalStringKey(const base::DictValue& dictionary,
                                  std::string_view key) {
   auto* value = dictionary.FindString(key);
   return value ? *value : std::string();
@@ -64,14 +64,14 @@ bool CertificatePrincipalPattern::Matches(
   }
 
   if (!organization_.empty()) {
-    if (!base::Contains(principal.organization_names, organization_)) {
+    if (!std::ranges::contains(principal.organization_names, organization_)) {
       return false;
     }
   }
 
   if (!organization_unit_.empty()) {
-    if (!base::Contains(principal.organization_unit_names,
-                        organization_unit_)) {
+    if (!std::ranges::contains(principal.organization_unit_names,
+                               organization_unit_)) {
       return false;
     }
   }
@@ -81,7 +81,7 @@ bool CertificatePrincipalPattern::Matches(
 
 // static
 CertificatePrincipalPattern CertificatePrincipalPattern::ParseFromOptionalDict(
-    const base::Value::Dict* dict,
+    const base::DictValue* dict,
     std::string_view key_common_name,
     std::string_view key_locality,
     std::string_view key_organization,

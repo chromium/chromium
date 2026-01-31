@@ -18,6 +18,10 @@ BASE_DECLARE_FEATURE(kSanitizeProfilePaths);
 // Enables Cloud Profile Reporting on iOS.
 BASE_DECLARE_FEATURE(kCloudProfileReporting);
 
+// Uses the signed-in email as the "profile name" in reports, since the real
+// profile name is an unreadable UUID.
+BASE_DECLARE_FEATURE(kUseEmailAsProfileName);
+
 // Reports all known profiles, not just loaded profiles, in the browser report.
 BASE_DECLARE_FEATURE(kBrowserReportIncludeAllProfiles);
 

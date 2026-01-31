@@ -3,10 +3,28 @@
 // found in the LICENSE file.
 
 var firstWindowId;
-var lastWindowId;
 
 const scriptUrl = '_test_resources/api_test/tabs/basics/tabs_util.js';
 let loadScript = chrome.test.loadScript(scriptUrl);
+
+let isAndroid;
+
+// Tests that the given `url` and `title` are appropriate values for the NTP.
+// This has subtly different behavior on different platforms.
+function smellsLikeNewTabPage(url, title) {
+  const ntpUrls = [
+      'chrome://newtab/',
+      'chrome-native://newtab/',
+  ];
+  chrome.test.assertTrue(ntpUrls.includes(url),
+                         `Unexpected URL: ${url}`);
+  if (!isAndroid) {
+    // For most create calls the title will be an empty string until the
+    // navigation commits, but the new tab page is an exception to this.
+    // However, this isn't true on Android.
+    chrome.test.assertEq('New Tab', title);
+  }
+}
 
 function getSelectedAdapter(winId, callback) {
   const manifest = chrome.runtime.getManifest();
@@ -25,8 +43,7 @@ function getSelectedAdapter(winId, callback) {
   });
 }
 
-loadScript.then(async function() {
-chrome.test.runTests([
+const tests = [
   function getSelected() {
     getSelectedAdapter(null, pass(function(tab) {
       assertEq('about:blank', tab.url);
@@ -41,16 +58,12 @@ chrome.test.runTests([
       assertEq(1, tab.index);
       assertEq(firstWindowId, tab.windowId);
       assertEq(false, tab.selected);
-      assertEq("chrome://newtab/", tab.pendingUrl);
+      smellsLikeNewTabPage(tab.pendingUrl, tab.title);
       assertEq("", tab.url);
-      // For most create calls the title will be an empty string until the
-      // navigation commits, but the new tab page is an exception to this.
-      assertEq("New Tab", tab.title);
       assertEq(false, tab.pinned);
       waitForAllTabs(pass(function() {
         chrome.tabs.get(tab.id, pass(function(tab) {
-          assertEq("chrome://newtab/", tab.url);
-          assertEq("New Tab", tab.title);
+          smellsLikeNewTabPage(tab.url, tab.title);
           assertEq(undefined, tab.pendingUrl);
         }));
       }));
@@ -103,7 +116,7 @@ chrome.test.runTests([
         assertEq(1, win.tabs.length);
         // In case the URL has or has not committed yet, check both.
         const url = win.tabs[0].pendingUrl || win.tabs[0].url;
-        assertEq("chrome://newtab/", url);
+        smellsLikeNewTabPage(url, win.tabs[0].title);
       });
     };
 
@@ -128,7 +141,6 @@ chrome.test.runTests([
         // In case the URL has or has not committed yet, check both.
         const url = win.tabs[0].pendingUrl || win.tabs[0].url;
         assertEq(pageUrl('a'), url);
-        lastWindowId = win.id;
       }));
     }));
   },
@@ -144,5 +156,29 @@ chrome.test.runTests([
       assertEq(null, window);
     }));
   },
+];
 
-])});
+// The following tests don't work on desktop android (yet).
+// TODO(https://crbug.com/371432155): Enable these on desktop android.
+const skipForAndroid = [
+    'createAtIndex',
+    'createWindowWithDefaultTab',
+    'createWindowWithExistingTab',
+    'windowCreate',
+];
+
+(async function() {
+  const os = await new Promise((resolve) => {
+    chrome.runtime.getPlatformInfo(info => resolve(info.os));
+  });
+  isAndroid = os === 'android';
+  let testsToRun = tests;
+  if (isAndroid) {
+    testsToRun =
+        tests.filter((t) => { return !skipForAndroid.includes(t.name); });
+  }
+
+  await loadScript;
+
+  chrome.test.runTests(testsToRun);
+})();

@@ -85,8 +85,9 @@ bool UnionTraits<mojo_base::mojom::BigBufferDataView, mojo_base::BigBuffer>::
 
     case mojo_base::mojom::BigBufferDataView::Tag::kSharedMemory: {
       mojo_base::internal::BigBufferSharedMemoryRegion shared_memory;
-      if (!data.ReadSharedMemory(&shared_memory))
+      if (!data.ReadSharedMemory(&shared_memory)) {
         return false;
+      }
       *out = mojo_base::BigBuffer(std::move(shared_memory));
       return true;
     }
@@ -151,8 +152,9 @@ bool UnionTraits<
 
     case mojo_base::mojom::BigBufferDataView::Tag::kSharedMemory: {
       mojo_base::internal::BigBufferSharedMemoryRegion shared_memory;
-      if (!data.ReadSharedMemory(&shared_memory))
+      if (!data.ReadSharedMemory(&shared_memory)) {
         return false;
+      }
       out->SetSharedMemory(std::move(shared_memory));
       return true;
     }

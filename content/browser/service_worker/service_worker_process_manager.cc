@@ -9,7 +9,6 @@
 #include <algorithm>
 #include <utility>
 
-#include "base/containers/contains.h"
 #include "content/browser/process_lock.h"
 #include "content/browser/service_worker/service_worker_context_wrapper.h"
 #include "content/browser/site_instance_impl.h"
@@ -105,7 +104,7 @@ ServiceWorkerProcessManager::AllocateWorkerProcess(
     return blink::ServiceWorkerStatusCode::kErrorAbort;
   }
 
-  DCHECK(!base::Contains(worker_process_map_, embedded_worker_id))
+  DCHECK(!worker_process_map_.contains(embedded_worker_id))
       << embedded_worker_id << " already has a process allocated";
 
   // Create a SiteInstance to get the renderer process from.

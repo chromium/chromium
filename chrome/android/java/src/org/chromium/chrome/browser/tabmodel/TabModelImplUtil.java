@@ -5,8 +5,8 @@
 package org.chromium.chrome.browser.tabmodel;
 
 import org.chromium.base.ObserverList;
+import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.base.supplier.NullableObservableSupplier;
-import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -27,7 +27,7 @@ class TabModelImplUtil {
      *
      * @param model The {@link TabModel} to act on.
      * @param modelDelegate The {@link TabModelDelegate} to get the current tab from.
-     * @param currentTabSupplier The {@link ObservableSupplier} that supplies the current tab.
+     * @param currentTabSupplier The {@link MonotonicObservableSupplier} that supplies the current tab.
      * @param nextTabPolicySupplier The {@link NextTabPolicySupplier} to get the next tab policy.
      * @param closingTabs The list of tabs that are closing.
      * @param uponExit Whether the app is closing as a result of this tab closure.

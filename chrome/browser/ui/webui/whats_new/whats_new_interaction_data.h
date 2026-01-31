@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_WHATS_NEW_WHATS_NEW_INTERACTION_DATA_H_
 #define CHROME_BROWSER_UI_WEBUI_WHATS_NEW_WHATS_NEW_INTERACTION_DATA_H_
 
-#include "chrome/browser/ui/webui/whats_new/whats_new.mojom-data-view.h"
+#include "chrome/browser/ui/webui/whats_new/whats_new.mojom-shared.h"
 #include "content/public/browser/web_contents_user_data.h"
 
 class WhatsNewInteractionData

@@ -12,7 +12,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/containers/contains.h"
 #include "base/format_macros.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
@@ -203,8 +202,8 @@ TEST_F(TreeSynchronizerTest, SyncSimpleTreeFromEmpty) {
                                      host_->pending_tree());
 
   LayerImpl* root = host_->pending_tree()->root_layer();
-  EXPECT_TRUE(base::Contains(
-      host_->pending_tree()->LayersThatShouldPushProperties(), root));
+  EXPECT_TRUE(
+      host_->pending_tree()->LayersThatShouldPushProperties().contains(root));
 
   ExpectTreesAreIdentical(layer_tree_root.get(),
                           host_->pending_tree()->root_layer(),
@@ -230,8 +229,8 @@ TEST_F(TreeSynchronizerTest, SyncSimpleTreeAndPushPropertiesFromEmpty) {
   // layers are created on pending tree and they all need to push properties to
   // active tree.
   LayerImpl* root = host_->pending_tree()->root_layer();
-  EXPECT_TRUE(base::Contains(
-      host_->pending_tree()->LayersThatShouldPushProperties(), root));
+  EXPECT_TRUE(
+      host_->pending_tree()->LayersThatShouldPushProperties().contains(root));
 
   ExpectTreesAreIdentical(layer_tree_root.get(),
                           host_->pending_tree()->root_layer(),
@@ -248,14 +247,15 @@ TEST_F(TreeSynchronizerTest, SyncSimpleTreeAndPushPropertiesFromEmpty) {
                                      host_->active_tree());
   TreeSynchronizer::PushLayerProperties(host_->pending_tree(),
                                         host_->active_tree());
-  EXPECT_FALSE(base::Contains(
-      host_->pending_tree()->LayersThatShouldPushProperties(), root));
+  EXPECT_FALSE(
+      host_->pending_tree()->LayersThatShouldPushProperties().contains(root));
 
   // Set the main thread root layer needs push properties.
   layer_tree_root->SetNeedsPushProperties();
-  EXPECT_TRUE(base::Contains(
-      const_host()->pending_commit_state()->layers_that_should_push_properties,
-      layer_tree_root.get()));
+  EXPECT_TRUE(
+      const_host()
+          ->pending_commit_state()
+          ->layers_that_should_push_properties.contains(layer_tree_root.get()));
 
   // When sync from main thread, the needs push properties status is carried
   // over to pending tree.
@@ -265,8 +265,8 @@ TEST_F(TreeSynchronizerTest, SyncSimpleTreeAndPushPropertiesFromEmpty) {
   TreeSynchronizer::PushLayerProperties(*host_->GetPendingCommitState(),
                                         host_->GetThreadUnsafeCommitState(),
                                         host_->pending_tree());
-  EXPECT_TRUE(base::Contains(
-      host_->pending_tree()->LayersThatShouldPushProperties(), root));
+  EXPECT_TRUE(
+      host_->pending_tree()->LayersThatShouldPushProperties().contains(root));
 }
 
 // Constructs a very simple tree and synchronizes it attempting to reuse some
@@ -287,9 +287,8 @@ TEST_F(TreeSynchronizerTest, SyncSimpleTreeReusingLayers) {
                                      host_->GetThreadUnsafeCommitState(),
                                      host_->pending_tree());
   LayerImpl* layer_impl_tree_root = host_->pending_tree()->root_layer();
-  EXPECT_TRUE(
-      base::Contains(host_->pending_tree()->LayersThatShouldPushProperties(),
-                     layer_impl_tree_root));
+  EXPECT_TRUE(host_->pending_tree()->LayersThatShouldPushProperties().contains(
+      layer_impl_tree_root));
 
   ExpectTreesAreIdentical(layer_tree_root.get(), layer_impl_tree_root,
                           host_->pending_tree());
@@ -541,12 +540,12 @@ TEST_F(TreeSynchronizerTest, SyncSimpleTreeThenDestroy) {
 
   ASSERT_EQ(3u, layer_impl_destruction_list.size());
 
-  EXPECT_TRUE(
-      base::Contains(layer_impl_destruction_list, old_tree_root_layer_id));
-  EXPECT_TRUE(base::Contains(layer_impl_destruction_list,
-                             old_tree_first_child_layer_id));
-  EXPECT_TRUE(base::Contains(layer_impl_destruction_list,
-                             old_tree_second_child_layer_id));
+  EXPECT_TRUE(std::ranges::contains(layer_impl_destruction_list,
+                                    old_tree_root_layer_id));
+  EXPECT_TRUE(std::ranges::contains(layer_impl_destruction_list,
+                                    old_tree_first_child_layer_id));
+  EXPECT_TRUE(std::ranges::contains(layer_impl_destruction_list,
+                                    old_tree_second_child_layer_id));
 }
 
 // Constructs+syncs a tree with mask layer.

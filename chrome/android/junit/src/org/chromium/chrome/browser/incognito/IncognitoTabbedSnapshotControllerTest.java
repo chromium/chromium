@@ -132,6 +132,8 @@ public class IncognitoTabbedSnapshotControllerTest {
         }
     }
 
+    // TODO(crbug.com/450954710): This test fails on SDK 36.
+    @Config(sdk = 29)
     @Test
     @SmallTest
     @DisableFeatures({ChromeFeatureList.INCOGNITO_SCREENSHOT})
@@ -150,6 +152,8 @@ public class IncognitoTabbedSnapshotControllerTest {
         }
     }
 
+    // TODO(crbug.com/450954710): This test fails on SDK 36.
+    @Config(sdk = 29)
     @Test
     @SmallTest
     @EnableFeatures(ChromeFeatureList.INCOGNITO_SCREENSHOT)

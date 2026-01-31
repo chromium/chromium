@@ -58,7 +58,10 @@ class PasswordManagerErrorMessageDelegate {
   void HandleActionButtonClicked(
       content::WebContents* web_contents,
       password_manager::PasswordStoreBackendErrorType error);
-  void HandleMessageDismissed(messages::DismissReason dismiss_reason);
+  void HandleMessageDismissed(
+      content::WebContents* web_contents,
+      password_manager::PasswordStoreBackendErrorType error_type,
+      messages::DismissReason dismiss_reason);
 
   std::unique_ptr<messages::MessageWrapper> message_;
   std::unique_ptr<PasswordManagerErrorMessageHelperBridge> helper_bridge_;

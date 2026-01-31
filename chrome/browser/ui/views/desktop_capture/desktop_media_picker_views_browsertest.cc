@@ -141,20 +141,8 @@ IN_PROC_BROWSER_TEST_F(DesktopMediaPickerViewsBrowserTest, InvokeUi_tabs) {
   ShowAndVerifyUi();
 }
 
-class DesktopMediaPickerViewsLongTitleBrowserTest
-    : public DesktopMediaPickerViewsBrowserTest {
- public:
-  DesktopMediaPickerViewsLongTitleBrowserTest() {
-    feature_list_.InitAndEnableFeature(kDesktopMediaPickerMultiLineTitle);
-  }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
-
 // Show the getDisplayMedia picker UI with a very long title that should wrap.
-IN_PROC_BROWSER_TEST_F(DesktopMediaPickerViewsLongTitleBrowserTest,
-                       InvokeUi_LongTitle) {
+IN_PROC_BROWSER_TEST_F(DesktopMediaPickerViewsBrowserTest, InvokeUi_LongTitle) {
   request_source_ = DesktopMediaPicker::Params::RequestSource::kGetDisplayMedia;
   app_name_ =
       u"a.site.with.a.super.long.name.that.needs.to.be.displayed.over.multiple."

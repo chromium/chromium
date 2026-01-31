@@ -120,7 +120,7 @@ IN_PROC_BROWSER_TEST_F(ChangePinControllerBrowserTest, ChangePin) {
       AuthenticatorRequestDialogModel::Step::kGPMReauthForPinReset);
   observer.WaitForStep();
 
-  controller->OnReauthComplete("rapt");
+  controller->OnGPMReauthComplete("rapt");
 
   observer.SetStepToObserve(
       AuthenticatorRequestDialogModel::Step::kGPMChangePin);
@@ -182,7 +182,7 @@ IN_PROC_BROWSER_TEST_F(ChangePinControllerBrowserTest,
       AuthenticatorRequestDialogModel::Step::kGPMReauthForPinReset);
   observer.WaitForStep();
 
-  controller->OnRecoverSecurityDomainClosed();
+  controller->OnGPMRecoverSecurityDomainClosed();
 
   // The flow should have failed because the reauth was cancelled.
   EXPECT_FALSE(change_pin_future.Get());
@@ -196,6 +196,69 @@ IN_PROC_BROWSER_TEST_F(ChangePinControllerBrowserTest,
   histogram_tester.ExpectBucketCount(
       "WebAuthentication.Enclave.ChangePinEvents",
       ChangePinControllerImpl::ChangePinEvent::kReauthCancelled, 1);
+}
+
+// Regression test for https://crbug.com/466163490.
+IN_PROC_BROWSER_TEST_F(ChangePinControllerBrowserTest,
+                       ChangePin_EnclaveManagerBecomesUnregistered) {
+  SimulateSuccessfulGpmPinCreation("123456");
+  ChangePinControllerImpl* controller = GetController();
+  ASSERT_TRUE(controller);
+
+  // Simulating the concurrent unregistration of Enclave Manager.
+  enclave_manager().ClearRegistrationForTesting();
+
+  base::test::TestFuture<bool> change_pin_future;
+  controller->StartChangePin(change_pin_future.GetCallback());
+  EXPECT_FALSE(change_pin_future.Get());
+}
+
+// Regression test for https://crbug.com/466163490.
+IN_PROC_BROWSER_TEST_F(
+    ChangePinControllerBrowserTest,
+    ChangePin_EnclaveManagerBecomesUnregistered_AfterReauth) {
+  SimulateSuccessfulGpmPinCreation("123456");
+  ChangePinControllerImpl* controller = GetController();
+  ASSERT_TRUE(controller);
+  ModelObserver observer(controller->model_for_testing());
+
+  controller->StartChangePin(base::DoNothing());
+  observer.SetStepToObserve(
+      AuthenticatorRequestDialogModel::Step::kGPMReauthForPinReset);
+  observer.WaitForStep();
+
+  // Simulating the concurrent unregistration of Enclave Manager.
+  enclave_manager().ClearRegistrationForTesting();
+
+  controller->OnGPMReauthComplete("rapt");
+  observer.SetStepToObserve(AuthenticatorRequestDialogModel::Step::kGPMError);
+  observer.WaitForStep();
+}
+
+// Regression test for https://crbug.com/466163490.
+IN_PROC_BROWSER_TEST_F(
+    ChangePinControllerBrowserTest,
+    ChangePin_EnclaveManagerBecomesUnregistered_AfterEnteringPin) {
+  SimulateSuccessfulGpmPinCreation("123456");
+  ChangePinControllerImpl* controller = GetController();
+  ASSERT_TRUE(controller);
+  ModelObserver observer(controller->model_for_testing());
+
+  controller->StartChangePin(base::DoNothing());
+  observer.SetStepToObserve(
+      AuthenticatorRequestDialogModel::Step::kGPMReauthForPinReset);
+  observer.WaitForStep();
+  controller->OnGPMReauthComplete("rapt");
+  observer.SetStepToObserve(
+      AuthenticatorRequestDialogModel::Step::kGPMChangePin);
+  observer.WaitForStep();
+
+  // Simulating the concurrent unregistration of Enclave Manager.
+  enclave_manager().ClearRegistrationForTesting();
+
+  observer.SetStepToObserve(AuthenticatorRequestDialogModel::Step::kGPMError);
+  controller->OnGPMPinEntered(u"123456");
+  observer.WaitForStep();
 }
 
 #endif  // !defined(MEMORY_SANITIZER)

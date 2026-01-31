@@ -403,8 +403,7 @@ class GLES2ImplementationTest : public testing::Test {
     ExpectedMemoryInfo mem;
 
     // Temporarily allocate memory and expect that memory block to be reused.
-    mem.ptr = static_cast<uint8_t*>(
-        gl_->mapped_memory_->Alloc(size, &mem.id, &mem.offset));
+    mem.ptr = gl_->mapped_memory_->Alloc(size, &mem.id, &mem.offset).data();
     gl_->mapped_memory_->Free(mem.ptr);
 
     return mem;

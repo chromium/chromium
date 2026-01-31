@@ -10,13 +10,11 @@ This crate provides a fast conversion of integer primitives to decimal strings.
 The implementation comes straight from [libcore] but avoids the performance
 penalty of going through [`core::fmt::Formatter`].
 
-See also [`ryu`] for printing floating point primitives.
+See also [`zmij`] for printing floating point primitives.
 
-*Version requirement: rustc 1.36+*
-
-[libcore]: https://github.com/rust-lang/rust/blob/b8214dc6c6fc20d0a660fb5700dca9ebf51ebe89/src/libcore/fmt/num.rs#L201-L254
+[libcore]: https://github.com/rust-lang/rust/blob/1.92.0/library/core/src/fmt/num.rs#L190-L253
 [`core::fmt::Formatter`]: https://doc.rust-lang.org/std/fmt/struct.Formatter.html
-[`ryu`]: https://github.com/dtolnay/ryu
+[`zmij`]: https://github.com/dtolnay/zmij
 
 ```toml
 [dependencies]
@@ -37,9 +35,17 @@ fn main() {
 
 <br>
 
-## Performance (lower is better)
+## Performance
 
-![performance](https://raw.githubusercontent.com/dtolnay/itoa/master/performance.png)
+The [itoa-benchmark] compares this library and other Rust integer formatting
+implementations across a range of integer sizes. The vertical axis in this chart
+shows nanoseconds taken by a single execution of
+`itoa::Buffer::new().format(value)` so a lower result indicates a faster
+library.
+
+[itoa-benchmark]: https://github.com/dtolnay/itoa-benchmark
+
+![performance](https://raw.githubusercontent.com/dtolnay/itoa/master/itoa-benchmark.png)
 
 <br>
 

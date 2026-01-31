@@ -68,6 +68,8 @@ bool LayoutFlexibleBox::HasLeftOverflow() const {
 namespace {
 
 void MergeAnonymousFlexItems(LayoutObject* remove_child) {
+  DCHECK(!RuntimeEnabledFeatures::LayoutMergeAnonymousFixEnabled());
+
   // When we remove a flex item, and the previous and next siblings of the item
   // are text nodes wrapped in anonymous flex items, the adjacent text nodes
   // need to be merged into the same flex item.
@@ -86,34 +88,23 @@ void MergeAnonymousFlexItems(LayoutObject* remove_child) {
 
 }  // namespace
 
+// TODO(crbug.com/364348901): We should be able to remove this method entirely
+// when the CustomizableSelect flag is removed or disabled, but it causes a
+// crash in the switch-picker-appearance WPT.
 bool LayoutFlexibleBox::IsChildAllowed(LayoutObject* object,
                                        const ComputedStyle& style) const {
   const auto* select = DynamicTo<HTMLSelectElement>(GetNode());
-  if (select && select->UsesMenuList()) [[unlikely]] {
-    if (select->IsAppearanceBase()) {
-      if (IsA<HTMLOptionElement>(object->GetNode()) ||
-          IsA<HTMLOptGroupElement>(object->GetNode()) ||
-          IsA<HTMLHRElement>(object->GetNode())) {
-        // TODO(crbug.com/1511354): Remove this when <option>s are slotted into
-        // the UA <datalist>, which will be hidden by default as a popover.
-        return false;
-      }
-      // For appearance:base-select <select>, we want to render all children.
-      // However, the InnerElement is only used for rendering in
-      // appearance:auto, so don't include that one.
-      Node* child = object->GetNode();
-      if (child == &select->InnerElement() && select->SlottedButton()) {
-        // If the author doesn't provide a button, then we still want to display
-        // the InnerElement.
-        return false;
-      }
-      return true;
-    } else {
-      // For a size=1 appearance:auto <select>, we only render the active option
-      // label through the InnerElement. We do not allow adding layout objects
-      // for options and optgroups.
-      return object->GetNode() == &select->InnerElement();
-    }
+  // `style` has the wrong appearance value. `select->GetComputedStyle()` is up
+  // to date.
+  if (select && select->UsesMenuList() &&
+      (!select->GetComputedStyle() ||
+       !select->SupportsBaseAppearance(
+           select->GetComputedStyle()->EffectiveAppearance()))) [[unlikely]] {
+    // For a size=1 appearance:auto <select>, we only render the active option
+    // label through the InnerElement. We do not allow adding layout objects
+    // for options, optgroups, or any other child nodes in order to hide them
+    // while still allowing them to have a ComputedStyle.
+    return object->GetNode() == &select->InnerElement();
   }
   return LayoutBlock::IsChildAllowed(object, style);
 }
@@ -131,7 +122,8 @@ const DevtoolsFlexInfo* LayoutFlexibleBox::FlexLayoutData() const {
 }
 
 void LayoutFlexibleBox::RemoveChild(LayoutObject* child) {
-  if (!DocumentBeingDestroyed()) {
+  if (!RuntimeEnabledFeatures::LayoutMergeAnonymousFixEnabled() &&
+      !DocumentBeingDestroyed()) {
     MergeAnonymousFlexItems(child);
   }
 

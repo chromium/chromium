@@ -23,6 +23,7 @@
 #include <functional>
 #include <list>
 #include <map>
+#include <optional>
 #include <type_traits>
 #include <unordered_map>
 #include <utility>
@@ -69,13 +70,14 @@ class LRUCacheBase {
   using reverse_iterator = typename ValueList::reverse_iterator;
   using const_reverse_iterator = typename ValueList::const_reverse_iterator;
 
-  enum { NO_AUTO_EVICT = 0 };
+  static constexpr std::optional<size_type> NO_AUTO_EVICT = std::nullopt;
 
   // The max_size is the size at which the cache will prune its members to when
   // a new item is inserted. If the caller wants to manage this itself (for
   // example, maybe it has special work to do when something is evicted), it
   // can pass NO_AUTO_EVICT to not restrict the cache size.
-  explicit LRUCacheBase(size_type max_size) : max_size_(max_size) {}
+  explicit LRUCacheBase(std::optional<size_type> max_size)
+      : max_size_(max_size) {}
 
   // In theory, LRUCacheBase could be copyable, but since copying `ValueList`
   // might be costly, it's currently move-only to ensure users don't
@@ -86,7 +88,14 @@ class LRUCacheBase {
 
   ~LRUCacheBase() = default;
 
-  size_type max_size() const { return max_size_; }
+  // Returns the maximum size of the cache. Valid to call only if there is a max
+  // size (NO_AUTO_EVICT was *not* used).
+  size_type max_size() const { return max_size_.value(); }
+
+  void UpdateMaxSize(size_type new_max_size) {
+    max_size_ = new_max_size;
+    ShrinkToSize(new_max_size);
+  }
 
   // Inserts an item into the list. If an existing item has the same key, it is
   // removed prior to insertion. An iterator indicating the inserted item will
@@ -101,10 +110,16 @@ class LRUCacheBase {
       // Erase the reference to it. The index reference will be replaced in the
       // code below.
       Erase(index_iter->second);
-    } else if (max_size_ != NO_AUTO_EVICT) {
+    } else if (max_size_.has_value()) {
+      // The only way an insertion can fail is if max size is zero. In other
+      // cases, another item will be evicted to make room for the new item.
+      if (max_size_.value() == 0u) {
+        return end();
+      }
+
       // New item is being inserted which might make it larger than the maximum
       // size: kick the oldest thing out if necessary.
-      ShrinkToSize(max_size_ - 1);
+      ShrinkToSize(max_size_.value() - 1);
     }
 
     ordering_.push_front(std::move(value));
@@ -254,7 +269,9 @@ class LRUCacheBase {
   ValueList ordering_;
   KeyIndex index_;
 
-  size_type max_size_;
+  // Indicates the maximum size of the cache. If nullopt, there is no maximum
+  // size and eviction is not done automatically.
+  std::optional<size_type> max_size_;
 };
 
 template <class KeyType, class KeyCompare>

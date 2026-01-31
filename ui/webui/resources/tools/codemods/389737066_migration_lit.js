@@ -4,7 +4,7 @@
 
 // Codemod for adding a "accessor" keyword before every Lit property
 // declaration in a class. To be used to update Lit UIs for the
-// purposes of fixing cbug.com/389737066.
+// purposes of fixing crbug.com/389737066.
 
 module.exports = function transformer(file, api) {
   const source = file.source;

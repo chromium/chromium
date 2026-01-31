@@ -52,10 +52,10 @@
 #include "third_party/blink/renderer/core/dom/xml_document.h"
 #include "third_party/blink/renderer/core/execution_context/agent.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
-#include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/core/html/custom/ce_reactions_scope.h"
+#include "third_party/blink/renderer/core/html/custom/custom_element_registry.h"
 #include "third_party/blink/renderer/core/html/html_html_element.h"
 #include "third_party/blink/renderer/core/html/html_template_element.h"
 #include "third_party/blink/renderer/core/html/parser/html_construction_site.h"
@@ -742,7 +742,7 @@ static void ErrorFunc(void*, const char*, ...) {
   // FIXME: It would be nice to display error messages somewhere.
 }
 
-static void InitializeLibXMLIfNecessary() {
+static void EnsureLibXMLInitialized() {
   static bool did_init = false;
   if (did_init)
     return;
@@ -756,7 +756,7 @@ static void InitializeLibXMLIfNecessary() {
 scoped_refptr<XMLParserContext> XMLParserContext::CreateStringParser(
     xmlSAXHandlerPtr handlers,
     void* user_data) {
-  InitializeLibXMLIfNecessary();
+  EnsureLibXMLInitialized();
   xmlParserCtxtPtr parser =
       xmlCreatePushParserCtxt(handlers, nullptr, nullptr, 0, nullptr);
 
@@ -780,7 +780,7 @@ scoped_refptr<XMLParserContext> XMLParserContext::CreateMemoryParser(
     xmlSAXHandlerPtr handlers,
     void* user_data,
     const std::string& chunk) {
-  InitializeLibXMLIfNecessary();
+  EnsureLibXMLInitialized();
 
   // appendFragmentSource() checks that the length doesn't overflow an int.
   xmlParserCtxtPtr parser = xmlCreateMemoryParserCtxt(
@@ -1133,7 +1133,7 @@ void XMLDocumentParser::StartElementNs(
       q_name,
       parsing_fragment_ ? CreateElementFlags::ByFragmentParser(document_)
                         : CreateElementFlags::ByParser(document_),
-      is, /*registry*/ nullptr);
+      is, CustomElementRegistry::DefaultRegistry(current_node_->GetDocument()));
   // Check IsStopped() because custom element constructors may synchronously
   // trigger removal of the document and cancellation of this parser.
   if (IsStopped()) {
@@ -1490,7 +1490,8 @@ PRINTF_FORMAT(2, 3)
 static void WarningHandler(void* closure, const char* message, ...) {
   va_list args;
   va_start(args, message);
-  GetParser(closure)->GetError(XMLErrors::kErrorTypeWarning, message, args);
+  UNSAFE_TODO(GetParser(closure))
+      ->GetError(XMLErrors::kErrorTypeWarning, message, args);
   va_end(args);
 }
 
@@ -1498,7 +1499,8 @@ PRINTF_FORMAT(2, 3)
 static void NormalErrorHandler(void* closure, const char* message, ...) {
   va_list args;
   va_start(args, message);
-  GetParser(closure)->GetError(XMLErrors::kErrorTypeNonFatal, message, args);
+  UNSAFE_TODO(GetParser(closure))
+      ->GetError(XMLErrors::kErrorTypeNonFatal, message, args);
   va_end(args);
 }
 
@@ -1592,11 +1594,6 @@ static xmlEntityPtr GetEntityHandler(void* closure, const xmlChar* name) {
   }
 
   ent = xmlGetDocEntity(ctxt->myDoc, name);
-
-  if (ent && ent->etype == XML_EXTERNAL_GENERAL_PARSED_ENTITY) {
-    GetParser(closure)->DidSeeExternalEntity();
-  }
-
   if (!ent && GetParser(closure)->IsXHTMLDocument()) {
     ent = GetXHTMLEntity(name);
     if (ent) {
@@ -1707,25 +1704,6 @@ void XMLDocumentParser::DoEnd() {
     }
   }
 
-  auto* window = GetDocument()->domWindow();
-
-  // Don't issue the warning when we have moved from deprecation to removal.
-  if (!RuntimeEnabledFeatures::XMLNoExternalEntitiesEnabled() && !saw_error_ &&
-      !saw_xsl_transform_ && saw_external_entity_ && window) {
-    GetDocument()->CountDeprecation(WebFeature::kXMLExternalResourceLoadEntitiesOnly);
-
-    // The previous line counts this as a deprecation, but add an
-    // explicit message here, due to crbug.com/40069336.
-    window->AddConsoleMessage(
-        MakeGarbageCollected<ConsoleMessage>(
-            ConsoleMessage::Source::kDeprecation,
-            ConsoleMessage::Level::kWarning,
-            "Externally loaded entities in XML parsing have been deprecated "
-            "and will be removed from this browser soon. See "
-            "https://chromestatus.com/feature/6734457763659776."),
-        /*discard_duplicates=*/true);
-  }
-
   bool xml_viewer_mode = !saw_error_ && !saw_css_ && !saw_xsl_transform_ &&
                          HasNoStyleInformation(GetDocument());
   if (xml_viewer_mode) {
@@ -1745,6 +1723,11 @@ xmlDocPtr XmlDocPtrForString(Document* document,
                              const String& url) {
   if (source.empty())
     return nullptr;
+
+  // In situations where the XMLDocumentParserRs is used as the primary parser,
+  // this might be the first call into libxml2.
+  EnsureLibXMLInitialized();
+
   // Parse in a single chunk into an xmlDocPtr
   // FIXME: Hook up error handlers so that a failure to parse the main
   // document results in good error messages.

@@ -30,6 +30,7 @@
 #include "components/permissions/permission_request_data.h"
 #include "components/permissions/permission_request_id.h"
 #include "components/permissions/permission_request_manager.h"
+#include "components/permissions/resolvers/permission_prompt_options.h"
 
 namespace content {
 class WebContents;
@@ -39,6 +40,7 @@ class GURL;
 class PrefRegistrySimple;
 
 namespace permissions {
+struct PermissionPromptDecision;
 
 class GeolocationPermissionContextAndroid
     : public GeolocationPermissionContext,
@@ -87,11 +89,11 @@ class GeolocationPermissionContextAndroid
                                   const GURL& requesting_origin,
                                   const GURL& embedding_origin,
                                   PermissionDecision decision) override;
-  void NotifyPermissionSet(const PermissionRequestData& request_data,
-                           BrowserPermissionCallback callback,
-                           bool persist,
-                           PermissionDecision decision,
-                           bool is_final_decision) override;
+  void NotifyPermissionSet(
+      const PermissionRequestData& request_data,
+      BrowserPermissionCallback callback,
+      bool persist,
+      const permissions::PermissionPromptDecision& decision) override;
   content::PermissionResult UpdatePermissionStatusWithDeviceStatus(
       content::WebContents* web_contents,
       content::PermissionResult result,
@@ -120,6 +122,7 @@ class GeolocationPermissionContextAndroid
   void HandleUpdateAndroidPermissions(const PermissionRequestID& id,
                                       const GURL& requesting_frame_origin,
                                       const GURL& embedding_origin,
+                                      const PromptOptions& prompt_options,
                                       BrowserPermissionCallback callback,
                                       bool permissions_updated);
 
@@ -135,8 +138,7 @@ class GeolocationPermissionContextAndroid
       const GURL& requesting_origin,
       const GURL& embedding_origin,
       bool persist,
-      PermissionDecision decision,
-      std::optional<PromptOptions> prompt_options,
+      const permissions::PermissionPromptDecision& decision,
       LocationSettingsDialogOutcome prompt_outcome);
 
   void FinishNotifyPermissionSet(
@@ -145,8 +147,7 @@ class GeolocationPermissionContextAndroid
       const GURL& embedding_origin,
       BrowserPermissionCallback callback,
       bool persist,
-      PermissionDecision decision,
-      std::optional<PromptOptions> prompt_options,
+      const permissions::PermissionPromptDecision& decision,
       blink::mojom::EmbeddedPermissionRequestDescriptorPtr
           embedded_permission_request_descriptor = nullptr);
 

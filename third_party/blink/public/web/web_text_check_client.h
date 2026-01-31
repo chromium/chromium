@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "third_party/blink/public/platform/web_string.h"
+#include "third_party/blink/public/web/web_spelling_marker.h"
 #include "third_party/blink/public/web/web_text_checking_completion.h"
 
 namespace blink {
@@ -16,6 +17,7 @@ namespace blink {
 class WebTextCheckClient {
  public:
   enum class ShouldForceRefreshTextCheckService { kNo, kYes };
+
   // Returns the Chromium setting of whether spell-checking is enabled.
   virtual bool IsSpellCheckingEnabled() const { return false; }
 
@@ -34,6 +36,7 @@ class WebTextCheckClient {
   // returned by passed completion object.
   virtual void RequestCheckingOfText(
       const WebString& text_to_check,
+      const std::vector<WebSpellingMarker>& spelling_markers,
       ShouldForceRefreshTextCheckService should_force_refresh,
       std::unique_ptr<WebTextCheckingCompletion> completion_callback) {}
 

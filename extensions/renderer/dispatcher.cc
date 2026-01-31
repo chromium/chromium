@@ -13,7 +13,6 @@
 #include <vector>
 
 #include "base/command_line.h"
-#include "base/containers/contains.h"
 #include "base/debug/alias.h"
 #include "base/debug/crash_logging.h"
 #include "base/debug/dump_without_crashing.h"
@@ -200,7 +199,7 @@ bool ExtensionAPIEnabledForServiceWorkerScript(const GURL& scope,
 // ScriptContextSet::ForEach.
 void CallModuleMethod(const std::string& module_name,
                       const std::string& method_name,
-                      const base::Value::List* args,
+                      const base::ListValue* args,
                       ScriptContext* context) {
   v8::HandleScope handle_scope(context->isolate());
   v8::Context::Scope context_scope(context->v8_context());
@@ -485,7 +484,7 @@ void Dispatcher::OnRenderFrameCreated(content::RenderFrame* render_frame) {
 }
 
 bool Dispatcher::IsExtensionActive(const ExtensionId& extension_id) const {
-  const bool is_active = base::Contains(active_extension_ids_, extension_id);
+  const bool is_active = active_extension_ids_.contains(extension_id);
   if (is_active)
     CHECK(RendererExtensionRegistry::Get()->Contains(extension_id));
   return is_active;
@@ -653,7 +652,7 @@ void Dispatcher::WillEvaluateServiceWorkerOnWorkerThread(
       ExtensionRendererLoadStatus::kUnknownExtension;
   if (extension) {
     load_status = ExtensionRendererLoadStatus::kExtensionLoaded;
-  } else if (base::Contains(unloaded_extensions_, script_url.GetHost())) {
+  } else if (unloaded_extensions_.contains(script_url.GetHost())) {
     // script_url.host() is the extension's ID.
     load_status = ExtensionRendererLoadStatus::kExtensionUnloaded;
   }
@@ -864,6 +863,8 @@ void Dispatcher::WillDestroyServiceWorkerContextOnWorkerThread(
         service_worker_data->bindings_system();
     if (worker_bindings_system) {
       worker_bindings_system->WillReleaseScriptContext(script_context);
+      worker_bindings_system->messaging_service()->InvalidatePorts(
+          script_context);
       service_worker_data->GetServiceWorkerHost()->DidStopServiceWorkerContext(
           extension_id, *service_worker_data->activation_sequence(),
           service_worker_scope, service_worker_version_id, thread_id);
@@ -972,7 +973,7 @@ void Dispatcher::RunScriptsAtDocumentIdle(content::RenderFrame* render_frame) {
 void Dispatcher::DispatchEventHelper(
     const mojom::HostID& host_id,
     const std::string& event_name,
-    const base::Value::List& event_args,
+    const base::ListValue& event_args,
     mojom::EventFilteringInfoPtr filtering_info) const {
   script_context_set_->ForEach(
       host_id, nullptr,
@@ -986,7 +987,7 @@ void Dispatcher::InvokeModuleSystemMethod(content::RenderFrame* render_frame,
                                           const ExtensionId& extension_id,
                                           const std::string& module_name,
                                           const std::string& function_name,
-                                          const base::Value::List& args) {
+                                          const base::ListValue& args) {
   script_context_set_->ForEach(
       GenerateHostIdFromExtensionId(extension_id), render_frame,
       base::BindRepeating(&CallModuleMethod, module_name, function_name,
@@ -1222,14 +1223,14 @@ void Dispatcher::SuspendExtension(
   // that it still considers the extension idle despite any activity the suspend
   // event creates.
   DispatchEventHelper(GenerateHostIdFromExtensionId(extension_id),
-                      kOnSuspendEvent, base::Value::List(), nullptr);
+                      kOnSuspendEvent, base::ListValue(), nullptr);
   std::move(callback).Run();
 }
 
 void Dispatcher::CancelSuspendExtension(const ExtensionId& extension_id) {
   CHECK(!extension_id.empty());
   DispatchEventHelper(GenerateHostIdFromExtensionId(extension_id),
-                      kOnSuspendCanceledEvent, base::Value::List(), nullptr);
+                      kOnSuspendCanceledEvent, base::ListValue(), nullptr);
 }
 
 void Dispatcher::SetSystemFont(const std::string& font_family,
@@ -1346,7 +1347,7 @@ void Dispatcher::WatchPages(const std::vector<std::string>& css_selectors) {
 }
 
 void Dispatcher::DispatchEvent(mojom::DispatchEventParamsPtr params,
-                               base::Value::List event_args,
+                               base::ListValue event_args,
                                DispatchEventCallback callback) {
   CHECK_EQ(params->worker_thread_id, kMainThreadId);
   CHECK(params->host_id);

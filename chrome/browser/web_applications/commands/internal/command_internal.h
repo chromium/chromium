@@ -61,7 +61,7 @@ class CommandBase {
 
   // Debug value used for chrome://web-app-internals. This should not be read
   // from or relied upon for any business logic under any circumstances.
-  const base::Value::Dict& GetDebugValue() const;
+  const base::DictValue& GetDebugValue() const;
 
   base::WeakPtr<CommandBase> GetBaseCommandWeakPtr();
 
@@ -102,7 +102,7 @@ class CommandBase {
   // of a command's run. This should not be read from or relied upon for any
   // business logic under any circumstances.
   // Note that
-  base::Value::Dict& GetMutableDebugValue();
+  base::DictValue& GetMutableDebugValue();
 
   void SetStarted();
 
@@ -115,7 +115,7 @@ class CommandBase {
   const Id id_;
   const std::string name_;
 
-  base::Value::Dict debug_value_;
+  base::DictValue debug_value_;
   bool started_ = false;
   raw_ptr<WebAppCommandManager> command_manager_ = nullptr;
 

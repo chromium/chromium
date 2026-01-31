@@ -160,7 +160,7 @@ TEST_F(KeywordEditorControllerTest, Modify) {
   EXPECT_EQ("http://c1", turl->url());
 
   // Verify preference was not updated.
-  const base::Value::List& overridden_keywords = profile().GetPrefs()->GetList(
+  const base::ListValue& overridden_keywords = profile().GetPrefs()->GetList(
       EnterpriseSearchManager::kSiteSearchSettingsOverriddenKeywordsPrefName);
   EXPECT_TRUE(overridden_keywords.empty());
 }
@@ -186,7 +186,7 @@ TEST_F(KeywordEditorControllerTest, Modify_SiteSearchPolicyEngine) {
   EXPECT_EQ("http://c1", turl->url());
 
   // Verify preference was updated to include keyword.
-  const base::Value::List& overridden_keywords = profile().GetPrefs()->GetList(
+  const base::ListValue& overridden_keywords = profile().GetPrefs()->GetList(
       EnterpriseSearchManager::kSiteSearchSettingsOverriddenKeywordsPrefName);
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
     BUILDFLAG(IS_CHROMEOS)
@@ -212,7 +212,7 @@ TEST_F(KeywordEditorControllerTest, Remove) {
   EXPECT_EQ(original_size - 1, util()->model()->GetTemplateURLs().size());
 
   // Verify preference was not updated.
-  const base::Value::List& overridden_keywords = profile().GetPrefs()->GetList(
+  const base::ListValue& overridden_keywords = profile().GetPrefs()->GetList(
       EnterpriseSearchManager::kSiteSearchSettingsOverriddenKeywordsPrefName);
   EXPECT_TRUE(overridden_keywords.empty());
 }
@@ -239,7 +239,7 @@ TEST_F(KeywordEditorControllerTest, Remove_SiteSearchPolicyEngine) {
   EXPECT_EQ(original_size - 1, util()->model()->GetTemplateURLs().size());
 
   // Verify preference was updated to include keyword.
-  const base::Value::List& overridden_keywords = profile().GetPrefs()->GetList(
+  const base::ListValue& overridden_keywords = profile().GetPrefs()->GetList(
       EnterpriseSearchManager::kSiteSearchSettingsOverriddenKeywordsPrefName);
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
     BUILDFLAG(IS_CHROMEOS)

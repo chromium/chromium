@@ -7,9 +7,10 @@ use crate::lifetime::Lifetime;
 use crate::punctuated::Punctuated;
 use crate::token;
 use crate::ty::{ReturnType, Type};
+use alloc::boxed::Box;
 
 ast_struct! {
-    /// A path at which a named item is exported (e.g. `std::collections::HashMap`).
+    /// A path at which a named item is exported (e.g. `alloc::collections::HashMap`).
     #[cfg_attr(docsrs, doc(cfg(any(feature = "full", feature = "derive"))))]
     pub struct Path {
         pub leading_colon: Option<Token![::]>,
@@ -130,7 +131,7 @@ ast_enum! {
     ///
     /// ## Angle bracketed
     ///
-    /// The `<'a, T>` in `std::slice::iter<'a, T>`.
+    /// The `<'a, T>` in `core::slice::iter<'a, T>`.
     ///
     /// ## Parenthesized
     ///
@@ -138,7 +139,7 @@ ast_enum! {
     #[cfg_attr(docsrs, doc(cfg(any(feature = "full", feature = "derive"))))]
     pub enum PathArguments {
         None,
-        /// The `<'a, T>` in `std::slice::iter<'a, T>`.
+        /// The `<'a, T>` in `core::slice::iter<'a, T>`.
         AngleBracketed(AngleBracketedGenericArguments),
         /// The `(A, B) -> C` in `Fn(A, B) -> C`.
         Parenthesized(ParenthesizedGenericArguments),
@@ -304,6 +305,8 @@ pub(crate) mod parsing {
     use crate::ty::{ReturnType, Type};
     #[cfg(not(feature = "full"))]
     use crate::verbatim;
+    use alloc::boxed::Box;
+    use alloc::vec::Vec;
 
     #[cfg_attr(docsrs, doc(cfg(feature = "parsing")))]
     impl Parse for Path {
@@ -555,7 +558,7 @@ pub(crate) mod parsing {
         ///
         /// // A simplified single `use` statement like:
         /// //
-        /// //     use std::collections::HashMap;
+        /// //     use alloc::collections::HashMap;
         /// //
         /// // Note that generic parameters are not allowed in a `use` statement
         /// // so the following must not be accepted.
@@ -706,11 +709,11 @@ pub(crate) mod printing {
     use crate::print::TokensOrDefault;
     #[cfg(feature = "parsing")]
     use crate::spanned::Spanned;
+    use core::cmp;
     #[cfg(feature = "parsing")]
     use proc_macro2::Span;
     use proc_macro2::TokenStream;
     use quote::ToTokens;
-    use std::cmp;
 
     pub(crate) enum PathStyle {
         Expr,

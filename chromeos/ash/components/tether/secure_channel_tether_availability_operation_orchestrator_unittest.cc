@@ -4,6 +4,8 @@
 
 #include "chromeos/ash/components/tether/secure_channel_tether_availability_operation_orchestrator.h"
 
+#include <algorithm>
+
 #include "base/test/task_environment.h"
 #include "chromeos/ash/components/multidevice/remote_device_test_util.h"
 #include "chromeos/ash/components/tether/fake_connection_preserver.h"
@@ -98,7 +100,8 @@ TEST_F(SecureChannelTetherAvailabilityOperationOrchestratorTest,
   fake_tether_availability_operation_initializer->send_result(
       test_device, scanned_device_info);
   EXPECT_EQ(1u, scanned_device_list_so_far_.size());
-  EXPECT_TRUE(base::Contains(scanned_device_list_so_far_, scanned_device_info));
+  EXPECT_TRUE(
+      std::ranges::contains(scanned_device_list_so_far_, scanned_device_info));
 }
 
 TEST_F(SecureChannelTetherAvailabilityOperationOrchestratorTest,

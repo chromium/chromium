@@ -4,6 +4,7 @@
 
 #include <string>
 
+#include "ash/public/cpp/bluetooth_config_service.h"
 #include "ash/system/bluetooth/bluetooth_detailed_view_impl.h"
 #include "ash/system/tray/fake_detailed_view_delegate.h"
 #include "ash/system/tray/tray_detailed_view.h"
@@ -16,10 +17,12 @@
 #include "ash/test/pixel/ash_pixel_differ.h"
 #include "ash/test/pixel/ash_pixel_test_helper.h"
 #include "ash/test/pixel/ash_pixel_test_init_params.h"
+#include "base/auto_reset.h"
+#include "base/memory/raw_ptr.h"
+#include "base/run_loop.h"
 #include "base/test/scoped_feature_list.h"
 #include "chromeos/ash/services/bluetooth_config/fake_adapter_state_controller.h"
 #include "chromeos/ash/services/bluetooth_config/fake_device_cache.h"
-#include "chromeos/ash/services/bluetooth_config/public/mojom/cros_bluetooth_config.mojom-shared.h"
 #include "chromeos/ash/services/bluetooth_config/public/mojom/cros_bluetooth_config.mojom.h"
 #include "chromeos/ash/services/bluetooth_config/scoped_bluetooth_config_test_helper.h"
 #include "chromeos/constants/chromeos_features.h"
@@ -45,6 +48,35 @@ PairedBluetoothDevicePropertiesPtr CreatePairedDevice(
   paired_properties->device_properties->public_name = public_name;
   return paired_properties;
 }
+
+class SystemPropertiesUpdateWaiter
+    : public bluetooth_config::mojom::SystemPropertiesObserver {
+ public:
+  SystemPropertiesUpdateWaiter() = default;
+  ~SystemPropertiesUpdateWaiter() override = default;
+
+  mojo::PendingRemote<bluetooth_config::mojom::SystemPropertiesObserver>
+  GeneratePendingRemote() {
+    return receiver_.BindNewPipeAndPassRemote();
+  }
+
+  void Wait() {
+    base::RunLoop run_loop;
+    base::AutoReset resetter{&run_loop_, &run_loop};
+    run_loop.Run();
+  }
+
+ private:
+  // mojom::SystemPropertiesObserver:
+  void OnPropertiesUpdated(bluetooth_config::mojom::BluetoothSystemPropertiesPtr
+                               properties) override {
+    run_loop_->Quit();
+  }
+
+  raw_ptr<base::RunLoop> run_loop_ = nullptr;
+  mojo::Receiver<bluetooth_config::mojom::SystemPropertiesObserver> receiver_{
+      this};
+};
 
 // Pixel tests for the quick settings Bluetooth detailed view.
 class BluetoothDetailedViewImplPixelTest
@@ -131,6 +163,16 @@ TEST_P(BluetoothDetailedViewImplPixelTest, Basics) {
           ->quick_settings_view()
           ->GetDetailedViewForTest<TrayDetailedView>();
   ASSERT_TRUE(detailed_view);
+
+  // Wait for the device updates.
+  SystemPropertiesUpdateWaiter waiter;
+  mojo::Remote<bluetooth_config::mojom::CrosBluetoothConfig>
+      remote_cros_bluetooth_config;
+  GetBluetoothConfigService(
+      remote_cros_bluetooth_config.BindNewPipeAndPassReceiver());
+  remote_cros_bluetooth_config->ObserveSystemProperties(
+      waiter.GeneratePendingRemote());
+  waiter.Wait();
 
   // Compare pixels.
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(

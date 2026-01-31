@@ -404,7 +404,7 @@ IN_PROC_BROWSER_TEST_F(DomDistillerTabUtilsPrerenderTest,
 
   // Add a prerender.
   const GURL prerender_url = https_server_->GetURL("/title1.html");
-  content::FrameTreeNodeId host_id =
+  content::PrerenderHostId host_id =
       prerender_test_helper().AddPrerender(prerender_url);
   content::test::PrerenderHostObserver prerender_observer(
       *source_web_contents(), host_id);

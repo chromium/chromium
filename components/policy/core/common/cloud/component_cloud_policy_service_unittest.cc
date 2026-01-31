@@ -12,7 +12,6 @@
 #include <string>
 #include <utility>
 
-#include "base/containers/contains.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
@@ -321,8 +320,8 @@ TEST_F(ComponentCloudPolicyServiceTest, InitializeWithCachedPolicy) {
   std::map<std::string, std::string> contents;
   cache_->LoadAllSubkeys("extension-policy", &contents);
   ASSERT_EQ(2u, contents.size());
-  EXPECT_TRUE(base::Contains(contents, kTestExtension));
-  EXPECT_TRUE(base::Contains(contents, kTestExtension2));
+  EXPECT_TRUE(contents.contains(kTestExtension));
+  EXPECT_TRUE(contents.contains(kTestExtension2));
 
   // Policy for extension 1 is now being served.
   PolicyBundle expected_bundle;
@@ -522,8 +521,8 @@ TEST_F(ComponentCloudPolicyServiceTest, LoadCacheAndDeleteExtensions) {
   std::map<std::string, std::string> contents;
   cache_->LoadAllSubkeys("extension-policy", &contents);
   EXPECT_EQ(2u, contents.size());
-  EXPECT_TRUE(base::Contains(contents, kTestExtension));
-  EXPECT_TRUE(base::Contains(contents, kTestExtension2));
+  EXPECT_TRUE(contents.contains(kTestExtension));
+  EXPECT_TRUE(contents.contains(kTestExtension2));
 }
 
 TEST_F(ComponentCloudPolicyServiceTest, SignInAfterStartup) {
@@ -663,8 +662,8 @@ TEST_F(ComponentCloudPolicyServiceTest, PurgeWhenServerRemovesPolicy) {
   std::map<std::string, std::string> contents;
   cache_->LoadAllSubkeys("extension-policy", &contents);
   ASSERT_EQ(2u, contents.size());
-  EXPECT_TRUE(base::Contains(contents, kTestExtension));
-  EXPECT_TRUE(base::Contains(contents, kTestExtension2));
+  EXPECT_TRUE(contents.contains(kTestExtension));
+  EXPECT_TRUE(contents.contains(kTestExtension2));
 
   PolicyBundle expected_bundle;
   expected_bundle.Get(kTestExtensionNS) = expected_policy_.Clone();
@@ -685,8 +684,8 @@ TEST_F(ComponentCloudPolicyServiceTest, PurgeWhenServerRemovesPolicy) {
   contents.clear();
   cache_->LoadAllSubkeys("extension-policy", &contents);
   ASSERT_EQ(1u, contents.size());
-  EXPECT_TRUE(base::Contains(contents, kTestExtension));
-  EXPECT_FALSE(base::Contains(contents, kTestExtension2));
+  EXPECT_TRUE(contents.contains(kTestExtension));
+  EXPECT_FALSE(contents.contains(kTestExtension2));
 
   // And the service isn't publishing policy for the second extension anymore.
   expected_bundle.Clear();

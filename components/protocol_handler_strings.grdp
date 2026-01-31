@@ -32,4 +32,16 @@
   <message name="IDS_REGISTER_PROTOCOL_HANDLER_IGNORE" desc="Text to show for an ignore prompt for a register protocol handler registration request.">
     Ignore
   </message>
+  <message name="IDS_CONFIRM_PROTOCOL_HANDLER_TITLE" desc="Confirm Protocol Handler Dialog Title for Extensions.">
+    Open <ph name="PROTOCOL">$1<ex>search</ex></ph> links
+  </message>
+  <message name="IDS_CONFIRM_PROTOCOL_HANDLER_MESSAGE" desc="Warn the user about the navigation request redirection.">
+    The extension "<ph name="EXTENSION_NAME">$1<ex>Google Translate</ex></ph>" wants to open <ph name="PROTOCOL">$2<ex>search</ex></ph> links through <ph name="HANDLER_HOSTNAME">$3<ex>google.com</ex></ph>
+  </message>
+  <message name="IDS_CONFIRM_PROTOCOL_HANDLER_MESSAGE_WITH_INITIATING_ORIGIN" desc="Warn the user about the navigation request redirection for a known initiator origin.">
+    The extension "<ph name="EXTENSION_NAME">$1<ex>Google Translate</ex></ph>" wants to open <ph name="PROTOCOL">$2<ex>search</ex></ph> links in <ph name="ORIGIN">$3<ex>https://google.com</ex></ph> through <ph name="HANDLER_HOSTNAME">$4<ex>google.com</ex></ph>
+  </message>
+  <message name="IDS_CONFIRM_PROTOCOL_HANDLER_REMEMBER" desc="The message to display when asking the user about remember and avoid asking it again in future navigation requests.">
+    Always allow <ph name="HANDLER_HOSTNAME">$1<ex>google.com</ex></ph> to open <ph name="PROTOCOL">$2<ex>search</ex></ph> links
+  </message>
 </grit-part>

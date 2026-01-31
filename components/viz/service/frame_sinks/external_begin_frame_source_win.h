@@ -31,7 +31,7 @@ class VIZ_SERVICE_EXPORT ExternalBeginFrameSourceWin
   // ExternalBeginFrameSource implementation.
   BeginFrameArgs GetMissedBeginFrameArgs(BeginFrameObserver* obs) override;
   void SetPreferredInterval(base::TimeDelta interval) override;
-  void SetVSyncDisplayID(int64_t display_id) override;
+  void SetVSyncDisplayID(int64_t display_id, bool force_update) override;
 
   // ExternalBeginFrameSourceClient implementation.
   void OnNeedsBeginFrames(bool needs_begin_frames) override;

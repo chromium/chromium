@@ -4,11 +4,9 @@
 
 #include <memory>
 #include <string>
-#include <tuple>
 #include <vector>
 
 #include "base/command_line.h"
-#include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/memory/raw_ptr.h"
@@ -21,9 +19,9 @@
 #include "build/build_config.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_key.h"
+#include "chrome/browser/supervised_user/family_link_settings_service_factory.h"
 #include "chrome/browser/supervised_user/supervised_user_navigation_observer.h"
 #include "chrome/browser/supervised_user/supervised_user_service_factory.h"
-#include "chrome/browser/supervised_user/supervised_user_settings_service_factory.h"
 #include "chrome/browser/supervised_user/supervised_user_test_util.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -31,11 +29,10 @@
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "chrome/test/supervised_user/supervision_mixin.h"
+#include "components/supervised_user/core/browser/family_link_settings_service.h"
 #include "components/supervised_user/core/browser/permission_request_creator_mock.h"
 #include "components/supervised_user/core/browser/supervised_user_interstitial.h"
 #include "components/supervised_user/core/browser/supervised_user_service.h"
-#include "components/supervised_user/core/browser/supervised_user_settings_service.h"
-#include "components/supervised_user/core/browser/supervised_user_url_filter.h"
 #include "components/supervised_user/core/browser/supervised_user_utils.h"
 #include "components/supervised_user/core/common/features.h"
 #include "components/supervised_user/core/common/supervised_user_constants.h"
@@ -93,7 +90,7 @@ class RenderFrameTracker : public content::WebContentsObserver {
   void FrameDeleted(content::FrameTreeNodeId frame_tree_node_id) override;
 
   content::RenderFrameHost* GetHost(content::FrameTreeNodeId frame_id) {
-    if (!base::Contains(render_frame_hosts_, frame_id)) {
+    if (!render_frame_hosts_.contains(frame_id)) {
       return nullptr;
     }
     return render_frame_hosts_[frame_id];
@@ -114,7 +111,7 @@ void RenderFrameTracker::RenderFrameHostChanged(
 
 void RenderFrameTracker::FrameDeleted(
     content::FrameTreeNodeId frame_tree_node_id) {
-  if (!base::Contains(render_frame_hosts_, frame_tree_node_id)) {
+  if (!render_frame_hosts_.contains(frame_tree_node_id)) {
     return;
   }
 
@@ -301,9 +298,9 @@ IN_PROC_BROWSER_TEST_P(SupervisedUserNavigationThrottleWithPrerenderingTest,
   content::test::PrerenderHostCreationWaiter host_creation_waiter;
   prerender_helper().AddPrerendersAsync(
       {allowed_url}, /*eagerness=*/std::nullopt, GetTargetHint());
-  content::FrameTreeNodeId host_id = host_creation_waiter.Wait();
+  content::PrerenderHostId host_id = host_creation_waiter.Wait();
   auto* prerender_web_contents =
-      content::WebContents::FromFrameTreeNodeId(host_id);
+      content::test::PrerenderTestHelper::GetPrerenderWebContents(host_id);
   content::test::PrerenderHostObserver host_observer(*prerender_web_contents,
                                                      host_id);
   host_observer.WaitForDestroyed();
@@ -408,8 +405,7 @@ class SupervisedUserIframeFilterTest
  protected:
   SupervisedUserIframeFilterTest()
       : SupervisedUserNavigationThrottleTestBase(
-            supervised_user::SupervisionMixin::SignInMode::kSupervised) {
-  }
+            supervised_user::SupervisionMixin::SignInMode::kSupervised) {}
 
   ~SupervisedUserIframeFilterTest() override = default;
 
@@ -417,7 +413,7 @@ class SupervisedUserIframeFilterTest
   void TearDownOnMainThread() override;
 
   std::vector<content::FrameTreeNodeId> GetBlockedFrames();
-  const GURL& GetBlockedFrameURL(content::FrameTreeNodeId frame_id);
+  GURL GetBlockedFrameURL(content::FrameTreeNodeId frame_id);
   bool IsInterstitialBeingShownInFrame(content::FrameTreeNodeId frame_id);
   bool IsRemoteApprovalsButtonBeingShown(content::FrameTreeNodeId frame_id);
   bool IsLocalApprovalsButtonBeingShown(content::FrameTreeNodeId frame_id);
@@ -452,13 +448,13 @@ void SupervisedUserIframeFilterTest::SetUpOnMainThread() {
 
   supervised_user::SupervisedUserService* service =
       SupervisedUserServiceFactory::GetForProfile(browser()->profile());
-  supervised_user::SupervisedUserSettingsService* settings_service =
-      SupervisedUserSettingsServiceFactory::GetForKey(
+  supervised_user::FamilyLinkSettingsService* family_link_settings_service =
+      supervised_user::FamilyLinkSettingsServiceFactory::GetForKey(
           browser()->profile()->GetProfileKey());
-  CHECK(settings_service);
+  CHECK(family_link_settings_service);
   std::unique_ptr<supervised_user::PermissionRequestCreator> creator =
       std::make_unique<supervised_user::PermissionRequestCreatorMock>(
-          *settings_service);
+          *family_link_settings_service);
   permission_creator_ =
       static_cast<supervised_user::PermissionRequestCreatorMock*>(
           creator.get());
@@ -493,14 +489,14 @@ SupervisedUserIframeFilterTest::GetBlockedFrames() {
   return blocked_frames;
 }
 
-const GURL& SupervisedUserIframeFilterTest::GetBlockedFrameURL(
+GURL SupervisedUserIframeFilterTest::GetBlockedFrameURL(
     content::FrameTreeNodeId frame_id) {
   WebContents* tab = browser()->tab_strip_model()->GetActiveWebContents();
   auto* navigation_observer =
       SupervisedUserNavigationObserver::FromWebContents(tab);
   const auto& interstitials = navigation_observer->interstitials_for_test();
-  DCHECK(base::Contains(interstitials, frame_id));
-  return interstitials.at(frame_id)->url();
+  DCHECK(interstitials.contains(frame_id));
+  return interstitials.at(frame_id)->filtering_result().url;
 }
 
 bool SupervisedUserIframeFilterTest::IsInterstitialBeingShownInFrame(
@@ -590,7 +586,7 @@ bool SupervisedUserIframeFilterTest::RunCommandAndGetBooleanFromFrame(
       SupervisedUserNavigationObserver::FromWebContents(tab);
   auto& interstitials = navigation_observer->interstitials_for_test();
 
-  if (!base::Contains(interstitials, frame_id)) {
+  if (!interstitials.contains(frame_id)) {
     return false;
   }
 
@@ -954,8 +950,8 @@ IN_PROC_BROWSER_TEST_F(SupervisedUserIframeFilterTest,
       SupervisedUserNavigationObserver::FromWebContents(active_contents);
   ASSERT_NE(navigation_observer, nullptr);
 
-  EXPECT_TRUE(base::Contains(navigation_observer->requested_hosts_for_test(),
-                             kExampleHost));
+  EXPECT_TRUE(
+      navigation_observer->requested_hosts_for_test().contains(kExampleHost));
 
   NavigationFinishedWaiter waiter(
       active_contents,
@@ -964,8 +960,8 @@ IN_PROC_BROWSER_TEST_F(SupervisedUserIframeFilterTest,
   permission_creator()->HandleDelayedRequests();
   waiter.Wait();
 
-  EXPECT_FALSE(base::Contains(navigation_observer->requested_hosts_for_test(),
-                              kExampleHost));
+  EXPECT_FALSE(
+      navigation_observer->requested_hosts_for_test().contains(kExampleHost));
 
   EXPECT_FALSE(IsInterstitialBeingShownInMainFrame(browser()));
 }
@@ -1070,8 +1066,8 @@ IN_PROC_BROWSER_TEST_F(SupervisedUserNarrowWidthIframeFilterTest,
       SupervisedUserNavigationObserver::FromWebContents(active_contents);
   ASSERT_NE(navigation_observer, nullptr);
 
-  EXPECT_TRUE(base::Contains(navigation_observer->requested_hosts_for_test(),
-                             kExampleHost));
+  EXPECT_TRUE(
+      navigation_observer->requested_hosts_for_test().contains(kExampleHost));
 
   NavigationFinishedWaiter waiter(
       active_contents,
@@ -1080,8 +1076,8 @@ IN_PROC_BROWSER_TEST_F(SupervisedUserNarrowWidthIframeFilterTest,
   permission_creator()->HandleDelayedRequests();
   waiter.Wait();
 
-  EXPECT_FALSE(base::Contains(navigation_observer->requested_hosts_for_test(),
-                              kExampleHost));
+  EXPECT_FALSE(
+      navigation_observer->requested_hosts_for_test().contains(kExampleHost));
 
   EXPECT_FALSE(IsInterstitialBeingShownInMainFrame(browser()));
 }

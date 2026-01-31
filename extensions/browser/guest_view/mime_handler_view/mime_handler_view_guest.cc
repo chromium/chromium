@@ -144,7 +144,7 @@ int MimeHandlerViewGuest::GetTaskPrefix() const {
 void MimeHandlerViewGuest::CreateInnerPage(
     std::unique_ptr<GuestViewBase> owned_this,
     scoped_refptr<content::SiteInstance> site_instance,
-    const base::Value::Dict& create_params,
+    const base::DictValue& create_params,
     GuestPageCreatedCallback callback) {
   const std::string* stream_id =
       create_params.FindString(mime_handler_view::kStreamId);
@@ -215,8 +215,7 @@ void MimeHandlerViewGuest::DidAttachToEmbedder() {
   }
 }
 
-void MimeHandlerViewGuest::DidInitialize(
-    const base::Value::Dict& create_params) {
+void MimeHandlerViewGuest::DidInitialize(const base::DictValue& create_params) {
   if (!base::FeatureList::IsEnabled(features::kGuestViewMPArch)) {
     ExtensionsAPIClient::Get()->AttachWebContentsHelpers(web_contents());
   }
@@ -350,7 +349,7 @@ bool MimeHandlerViewGuest::PluginDoSave() {
   if (!attached() || !plugin_can_save_)
     return false;
 
-  base::Value::List args;
+  base::ListValue args;
   args.Append(stream_->stream_url().spec());
 
   auto event =

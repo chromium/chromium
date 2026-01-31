@@ -8,12 +8,10 @@
 #include <utility>
 #include <variant>
 
-#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/enterprise/profile_management/profile_management_features.h"
 #include "chrome/browser/enterprise/remote_commands/user_remote_commands_service.h"
 #include "chrome/browser/enterprise/remote_commands/user_remote_commands_service_factory.h"
 #include "chrome/browser/enterprise/signin/enterprise_signin_prefs.h"
@@ -102,14 +100,11 @@ void ShutdownUserPolicySigninService(Profile* profile) {
 }
 
 void UserPolicyOidcSigninService::ShutdownCloudPolicyManager() {
-  if (base::FeatureList::IsEnabled(
-          profile_management::features::kEnableOidcProfileRemoteCommands)) {
-    auto* remote_command_service =
-        enterprise_commands::UserRemoteCommandsServiceFactory::GetForProfile(
-            profile_);
-    if (remote_command_service) {
-      remote_command_service->Shutdown();
-    }
+  auto* remote_command_service =
+      enterprise_commands::UserRemoteCommandsServiceFactory::GetForProfile(
+          profile_);
+  if (remote_command_service) {
+    remote_command_service->Shutdown();
   }
 
   UserPolicySigninServiceBase::ShutdownCloudPolicyManager();
@@ -175,6 +170,15 @@ void UserPolicyOidcSigninService::
 
 void UserPolicyOidcSigninService::OnPolicyFetched(CloudPolicyClient* client) {}
 
+void UserPolicyOidcSigninService::ResetGaiaPolicyManagement() {
+  // GAIA-related services are already unavailable for Dasherless profiles, no
+  // op.
+  if (!IsDasherlessProfile(profile_)) {
+    ShutdownUserPolicySigninService(profile_);
+    ShutdownCloudPolicyManager();
+  }
+}
+
 void UserPolicyOidcSigninService::FetchPolicyForOidcUser(
     const AccountId& account_id,
     const std::string& dm_token,
@@ -185,7 +189,6 @@ void UserPolicyOidcSigninService::FetchPolicyForOidcUser(
     bool switch_to_entry,
     scoped_refptr<network::SharedURLLoaderFactory> profile_url_loader_factory,
     PolicyFetchCallback callback) {
-  ShutdownUserPolicySigninService(profile_);
   FetchPolicyForSignedInUser(
       account_id, dm_token, client_id, user_affiliation_ids,
       std::move(profile_url_loader_factory),
@@ -197,7 +200,6 @@ void UserPolicyOidcSigninService::FetchPolicyForOidcUser(
 }
 
 void UserPolicyOidcSigninService::AttemptToRestorePolicy() {
-  ShutdownUserPolicySigninService(profile_);
   VLOG_POLICY(2, OIDC_ENROLLMENT)
       << "Attempting to restore OIDC profile policy via backup DM token";
   std::string dm_token = profile_->GetPrefs()->GetString(
@@ -208,20 +210,9 @@ void UserPolicyOidcSigninService::AttemptToRestorePolicy() {
     return;
   }
 
-  ProfileAttributesEntry* entry =
-      g_browser_process->profile_manager()
-          ->GetProfileAttributesStorage()
-          .GetProfileAttributesWithPath(profile_->GetPath());
-
-  if (!entry) {
-    LOG_POLICY(ERROR, OIDC_ENROLLMENT)
-        << "OIDC policy restoration failed due to missing profile attribute.";
-    return;
-  }
-
   // Policy restoration only applies to OIDC profiles and when there is no other
   // restoration/interception in progress.
-  if (entry->GetProfileManagementOidcTokens().auth_token.empty()) {
+  if (!IsOidcManagedProfile(profile_)) {
     LOG_POLICY(ERROR, OIDC_ENROLLMENT)
         << "Policy restoration is only available for OIDC-managed profiles.";
     return;
@@ -229,6 +220,14 @@ void UserPolicyOidcSigninService::AttemptToRestorePolicy() {
 
   std::string client_id = profile_->GetPrefs()->GetString(
       enterprise_signin::prefs::kPolicyRecoveryClientId);
+
+  // We need to clear the current GAIA policy management if it exists, this
+  // clears any stale policy client and services so OIDC policy service can
+  // properly set up new registration.
+  VLOG_POLICY(2, OIDC_ENROLLMENT)
+      << "Resetting GAIA policy management to start policy recovery from a "
+         "clean slate.";
+  ResetGaiaPolicyManagement();
 
   VLOG_POLICY(2, OIDC_ENROLLMENT)
       << "Starting OIDC policy recovery using client ID: " << client_id;
@@ -261,62 +260,87 @@ void UserPolicyOidcSigninService::OnPolicyFetchCompleteInNewProfile(
   bool dasher_based = !IsDasherlessProfile(profile_);
   RecordOidcEnrollmentPolicyFetchLatency(
       dasher_based, success, base::TimeTicks::Now() - policy_fetch_start_time);
-  if (success) {
-    VLOG_POLICY(2, OIDC_ENROLLMENT) << "Policy fetched for OIDC profile.";
-    profile_->GetPrefs()->SetBoolean(
-        enterprise_signin::prefs::kPolicyRecoveryRequired, false);
-  } else {
-    profile_->GetPrefs()->SetBoolean(
-        enterprise_signin::prefs::kPolicyRecoveryRequired, true);
+
+  auto* success_string = success ? "succeeded" : "failed";
+  VLOG_POLICY(2, OIDC_ENROLLMENT)
+      << "Policy fetched for OIDC profile " << success_string;
+
+  // Restart potentially broken remote command service (due to policy removal)
+  // for dasher-based profiles after policy fetch.
+  if (dasher_based && success) {
+    auto* remote_command_service =
+        enterprise_commands::UserRemoteCommandsServiceFactory::GetForProfile(
+            profile_);
+    if (remote_command_service) {
+      VLOG_POLICY(2, OIDC_ENROLLMENT)
+          << "Restarting remote command services after OIDC policy fetch.";
+      remote_command_service->Shutdown();
+      remote_command_service->Init();
+    } else {
+      VLOG_POLICY(2, OIDC_ENROLLMENT) << "Failed to start the remote commands "
+                                         "service after OIDC policy fetch.";
+    }
   }
 
   if (success && dasher_based && !switch_to_entry) {
     auto* identity_manager = IdentityManagerFactory::GetForProfile(profile_);
 
+    // Backfill fix for Dasher-based profile broken by a previous bug
+    if (user_email.empty() &&
+        identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSignin)) {
+      user_email =
+          identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin)
+              .email;
+
+      profile_->GetPrefs()->SetString(
+          enterprise_signin::prefs::kProfileUserEmail, user_email);
+    }
+
     // Account already exists, no need to add again.
     if (!identity_manager->FindExtendedAccountInfoByEmailAddress(user_email)
              .IsEmpty()) {
-      return;
+      VLOG_POLICY(2, OIDC_ENROLLMENT)
+          << "Account already exists, skipping primary account addition.";
+    } else {
+      VLOG_POLICY(2, OIDC_ENROLLMENT)
+          << "Policy fetched for Dasher-based OIDC profile, adding the user as "
+             "the primary account.";
+      RecordOidcProfileCreationFunnelStep(
+          OidcProfileCreationFunnelStep::kAddingPrimaryAccount, dasher_based);
+
+      // User account management would be included in unified consent dialog.
+      enterprise_util::SetUserAcceptedAccountManagement(profile_, true);
+      CHECK(profile_);
+      policy::CloudPolicyManager* user_policy_manager =
+          profile_->GetUserCloudPolicyManager();
+
+      GaiaId gaia_id =
+          GaiaId(user_policy_manager->core()->store()->policy()->gaia_id());
+
+      VLOG_POLICY(2, OIDC_ENROLLMENT)
+          << "GAIA ID retrieved from user policy for " << user_email << ": "
+          << gaia_id << ".";
+
+      auto set_primary_account_result =
+          signin_util::SetPrimaryAccountWithInvalidToken(
+              profile_, user_email, gaia_id,
+              /*is_under_advanced_protection=*/false,
+              signin_metrics::AccessPoint::kOidcRedirectionInterception,
+              signin_metrics::SourceForRefreshTokenOperation::
+                  kMachineLogon_CredentialProvider);
+
+      VLOG_POLICY(2, OIDC_ENROLLMENT)
+          << "Operation of setting account id " << gaia_id
+          << " received the following result: "
+          << static_cast<int>(set_primary_account_result);
+
+      RecordOidcProfileCreationResult(
+          (set_primary_account_result ==
+           signin::PrimaryAccountMutator::PrimaryAccountError::kNoError)
+              ? OidcProfileCreationResult::kEnrollmentSucceeded
+              : OidcProfileCreationResult::kFailedToAddPrimaryAccount,
+          dasher_based);
     }
-
-    VLOG_POLICY(2, OIDC_ENROLLMENT)
-        << "Policy fetched for Dasher-based OIDC profile, adding the user as "
-           "the primary account.";
-    RecordOidcProfileCreationFunnelStep(
-        OidcProfileCreationFunnelStep::kAddingPrimaryAccount, dasher_based);
-
-    // User account management would be included in unified consent dialog.
-    enterprise_util::SetUserAcceptedAccountManagement(profile_, true);
-    CHECK(profile_);
-    policy::CloudPolicyManager* user_policy_manager =
-        profile_->GetUserCloudPolicyManager();
-
-    GaiaId gaia_id =
-        GaiaId(user_policy_manager->core()->store()->policy()->gaia_id());
-
-    VLOG_POLICY(2, OIDC_ENROLLMENT) << "GAIA ID retrieved from user policy for "
-                                    << user_email << ": " << gaia_id << ".";
-
-    auto set_primary_account_result =
-        signin_util::SetPrimaryAccountWithInvalidToken(
-            profile_, user_email, gaia_id,
-            /*is_under_advanced_protection=*/false,
-            signin_metrics::AccessPoint::kOidcRedirectionInterception,
-            signin_metrics::SourceForRefreshTokenOperation::
-                kMachineLogon_CredentialProvider);
-
-    VLOG_POLICY(2, OIDC_ENROLLMENT)
-        << "Operation of setting account id " << gaia_id
-        << " received the following result: "
-        << static_cast<int>(set_primary_account_result);
-
-    RecordOidcProfileCreationResult(
-        (set_primary_account_result ==
-         signin::PrimaryAccountMutator::PrimaryAccountError::kNoError)
-            ? OidcProfileCreationResult::kEnrollmentSucceeded
-            : OidcProfileCreationResult::kFailedToAddPrimaryAccount,
-        dasher_based);
-
   } else {
     RecordOidcProfileCreationResult(
         (success) ? ((switch_to_entry)
@@ -343,8 +367,6 @@ void UserPolicyOidcSigninService::InitializeCloudPolicyManager(
   }
   UserPolicySigninServiceBase::InitializeCloudPolicyManager(account_id,
                                                             std::move(client));
-  if (base::FeatureList::IsEnabled(
-          profile_management::features::kEnableOidcProfileRemoteCommands)) {
     auto* remote_command_service =
         enterprise_commands::UserRemoteCommandsServiceFactory::GetForProfile(
             profile_);
@@ -354,7 +376,6 @@ void UserPolicyOidcSigninService::InitializeCloudPolicyManager(
       return;
     }
     remote_command_service->Init();
-  }
 }
 
 std::string UserPolicyOidcSigninService::GetProfileId() {
@@ -385,26 +406,31 @@ void UserPolicyOidcSigninService::InitializeOnProfileReady(Profile* profile) {
   auto* policy_store = policy_manager()->core()->store();
   if (!policy_store->is_initialized()) {
     store_observation_.Observe(policy_store);
-  } else if (policy_manager()->core()->store()->status() !=
-             CloudPolicyStore::Status::STATUS_OK) {
+    return;
+  }
+
+  if (policy_manager()->core()->store()->status() !=
+      CloudPolicyStore::Status::STATUS_OK) {
     VLOG_POLICY(2, OIDC_ENROLLMENT) << "Cached OIDC policies are not valid";
 
     AttemptToRestorePolicy();
+    return;
+  }
 
-    // If policy already exists and profile is dasher-based, initialization will
-    // be taken care of by `UserPolicySigninService`. If there's no policy yet,
-    // then the first policy fetch is still in progress, and initialization will
-    // be done via `FetchPolicyForSignedInUser`.
-  } else if (!policy_manager()->core()->store()->is_managed() &&
-             profile_->GetPrefs()->GetBoolean(
-                 enterprise_signin::prefs::kPolicyRecoveryRequired)) {
+  // At this point `UserPolicySigninService` has already run and fetched
+  // policies if it's able to. If the policies are still missing,
+  // `UserPolicyOidcSigninService` should try to re-fetch the policies using
+  // the backup DM token.
+  if (!policy_manager()->core()->store()->is_managed()) {
     VLOG_POLICY(2, OIDC_ENROLLMENT)
-        << "OIDC policy is missing due to a previous fetch failure. ";
+        << "OIDC policy store is not managed, will try "
+           "to fetch using backup token. ";
 
     AttemptToRestorePolicy();
+    return;
+  }
 
-  } else if (policy_manager()->core()->store()->is_managed() &&
-             IsDasherlessProfile(profile)) {
+  if (IsDasherlessProfile(profile)) {
     VLOG_POLICY(2, OIDC_ENROLLMENT)
         << "OIDC Signin Service Initializing for Dasherless Profile";
     InitializeForSignedInUser(AccountId(),

@@ -9,7 +9,6 @@
 #include "chromecast/chromecast_buildflags.h"
 #include "chromecast/common/mojom/application_media_capabilities.mojom.h"
 #include "chromecast/common/mojom/media_caps.mojom.h"
-#include "chromecast/common/mojom/memory_pressure.mojom.h"
 #include "services/service_manager/public/cpp/manifest_builder.h"
 
 #if BUILDFLAG(ENABLE_EXTERNAL_MOJO_SERVICES)
@@ -20,14 +19,12 @@ namespace chromecast {
 namespace shell {
 
 const service_manager::Manifest& GetCastContentBrowserOverlayManifest() {
-  static base::NoDestructor<service_manager::Manifest> manifest {
-    service_manager::ManifestBuilder()
-        .ExposeCapability("renderer",
-                          service_manager::Manifest::InterfaceList<
-                              chromecast::media::mojom::MediaCaps,
-                              chromecast::mojom::MemoryPressureController>())
-        .Build()
-  };
+  static base::NoDestructor<service_manager::Manifest> manifest{
+      service_manager::ManifestBuilder()
+          .ExposeCapability("renderer",
+                            service_manager::Manifest::InterfaceList<
+                                chromecast::media::mojom::MediaCaps>())
+          .Build()};
   return *manifest;
 }
 

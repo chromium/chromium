@@ -17,10 +17,10 @@ namespace chrome_browser_net {
 // thread. GetSessionNetworkStats() may return null if the info does not exist;
 // others will always return a Value (possibly empty).
 
-base::Value::Dict GetPrerenderInfo(Profile* profile);
-base::Value::List GetExtensionInfo(Profile* profile);
+base::DictValue GetPrerenderInfo(Profile* profile);
+base::ListValue GetExtensionInfo(Profile* profile);
 #if BUILDFLAG(IS_WIN)
-base::Value::Dict GetWindowsServiceProviders();
+base::DictValue GetWindowsServiceProviders();
 #endif
 
 }  // namespace chrome_browser_net

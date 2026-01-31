@@ -118,7 +118,7 @@ TEST_F(UrlKeyedDataCollectionConsentHelperTest,
       UrlKeyedDataCollectionConsentHelper::
           NewPersonalizedBookmarksDataCollectionConsentHelper(
               &sync_service_,
-              /*require_sync_feature_enabled=*/true);
+              /*require_sync_feature_enabled=*/false);
   helper->AddObserver(this);
   EXPECT_FALSE(helper->IsEnabled());
   EXPECT_TRUE(state_changed_notifications_.empty());
@@ -133,6 +133,9 @@ TEST_F(UrlKeyedDataCollectionConsentHelperTest,
   helper->RemoveObserver(this);
 }
 
+// TODO(crbug.com/40066949): Remove once kSync becomes unreachable or is
+// deleted from the codebase. See ConsentLevel::kSync documentation for
+// details.
 TEST_F(UrlKeyedDataCollectionConsentHelperTest,
        PersonalizedBookmarksDataCollection_IsSyncFeatureEnabled) {
   std::unique_ptr<UrlKeyedDataCollectionConsentHelper> helper =
@@ -140,6 +143,7 @@ TEST_F(UrlKeyedDataCollectionConsentHelperTest,
           NewPersonalizedBookmarksDataCollectionConsentHelper(
               &sync_service_,
               /*require_sync_feature_enabled=*/true);
+  sync_service_.SetSignedIn(signin::ConsentLevel::kSync);
   sync_service_.GetUserSettings()->SetSelectedTypes(
       /*sync_everything=*/false,
       /*types=*/{syncer::UserSelectableType::kBookmarks});
@@ -165,7 +169,7 @@ TEST_F(UrlKeyedDataCollectionConsentHelperTest,
       UrlKeyedDataCollectionConsentHelper::
           NewPersonalizedBookmarksDataCollectionConsentHelper(
               /*sync_service=*/nullptr,
-              /*require_sync_feature_enabled=*/true);
+              /*require_sync_feature_enabled=*/false);
   EXPECT_FALSE(helper->IsEnabled());
 }
 

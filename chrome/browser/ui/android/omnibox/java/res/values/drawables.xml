@@ -5,7 +5,8 @@ Use of this source code is governed by a BSD-style license that can be
 found in the LICENSE file.
 -->
 <resources>
-    <drawable name="tile_view_icon_background_modern_updated">@drawable/oval_surface_0</drawable>
     <drawable name="btn_suggestion_refine_up">@drawable/north_west_24dp</drawable>
     <drawable name="btn_suggestion_refine_down">@drawable/south_west_24dp</drawable>
+    <drawable name="ic_suggestion_magnifier">@drawable/ic_search_24dp</drawable>
+    <drawable name="tile_view_icon_background_modern_updated">@drawable/oval_surface_0</drawable>
 </resources>

@@ -196,7 +196,7 @@ bool SparseHistogram::AddSamplesFromPickle(PickleIterator* iter) {
   return unlogged_samples_->AddFromPickle(iter);
 }
 
-base::Value::Dict SparseHistogram::ToGraphDict() const {
+base::DictValue SparseHistogram::ToGraphDict() const {
   std::unique_ptr<HistogramSamples> snapshot = SnapshotSamples();
   return snapshot->ToGraphDict(histogram_name(), flags());
 }
@@ -253,10 +253,10 @@ HistogramBase* SparseHistogram::DeserializeInfoImpl(PickleIterator* iter) {
   return SparseHistogram::FactoryGet(histogram_name, flags);
 }
 
-Value::Dict SparseHistogram::GetParameters() const {
+DictValue SparseHistogram::GetParameters() const {
   // Unlike Histogram::GetParameters, only set the type here, and no other
   // params. The other params do not make sense for sparse histograms.
-  Value::Dict params;
+  DictValue params;
   params.Set("type", HistogramTypeToString(GetHistogramType()));
   return params;
 }

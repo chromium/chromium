@@ -90,7 +90,7 @@ TEST_F(FlagsUIHandlerTest, HandlesSetString) {
 
   web_ui_.HandleReceivedMessage(
       flags_ui::kSetStringFlag,
-      base::Value::List().Append(kTestFeature).Append("value"));
+      base::ListValue().Append(kTestFeature).Append("value"));
   EXPECT_EQ("value", storage_->GetStringFlag(kTestFeature));
 }
 
@@ -101,7 +101,7 @@ TEST_F(FlagsUIHandlerTest, HandlesSetOriginList) {
 
   web_ui_.HandleReceivedMessage(
       flags_ui::kSetOriginListFlag,
-      base::Value::List()
+      base::ListValue()
           .Append(kTestFeature)
           .Append("https://foo.com,invalid,http://bar.org"));
   EXPECT_EQ("https://foo.com,http://bar.org",
@@ -109,7 +109,7 @@ TEST_F(FlagsUIHandlerTest, HandlesSetOriginList) {
 }
 
 TEST_F(FlagsUIHandlerTest, HandleRequestExperimentalFeatures) {
-  base::Value::List args;
+  base::ListValue args;
   args.Append("callbackId");
   web_ui_.HandleReceivedMessage(flags_ui::kRequestExperimentalFeatures, args);
 
@@ -118,21 +118,21 @@ TEST_F(FlagsUIHandlerTest, HandleRequestExperimentalFeatures) {
   EXPECT_EQ("cr.webUIResponse", call_data.function_name());
   EXPECT_EQ("callbackId", call_data.arg1()->GetString());
   EXPECT_TRUE(call_data.arg2()->GetBool());
-  const base::Value::Dict& response = call_data.arg3()->GetDict();
+  const base::DictValue& response = call_data.arg3()->GetDict();
 
   // Check that entries for both "supported_features" and "unsupported_features"
   // exist.
-  const base::Value::List& supported =
+  const base::ListValue& supported =
       *response.FindList(flags_ui::kSupportedFeatures);
   EXPECT_GT(supported.size(), 0u);
-  const base::Value::List& unsupported =
+  const base::ListValue& unsupported =
       *response.FindList(flags_ui::kUnsupportedFeatures);
   EXPECT_GT(unsupported.size(), 0u);
 }
 
 // Tests for chrome://flags/deprecated
 TEST_F(FlagsUIHandlerTest, HandleRequestDeprecatedFeatures) {
-  base::Value::List args;
+  base::ListValue args;
   args.Append("callbackId");
   web_ui_.HandleReceivedMessage("requestDeprecatedFeatures", args);
 
@@ -141,18 +141,18 @@ TEST_F(FlagsUIHandlerTest, HandleRequestDeprecatedFeatures) {
   EXPECT_EQ("cr.webUIResponse", call_data.function_name());
   EXPECT_EQ("callbackId", call_data.arg1()->GetString());
   EXPECT_TRUE(call_data.arg2()->GetBool());
-  const base::Value::Dict& response = call_data.arg3()->GetDict();
+  const base::DictValue& response = call_data.arg3()->GetDict();
 
   // Check that exactly 1 entry is returned as part of "supported_features".
-  const base::Value::List& supported =
+  const base::ListValue& supported =
       *response.FindList(flags_ui::kSupportedFeatures);
   EXPECT_EQ(1u, supported.size());
-  const base::Value::Dict& feature = supported[0].GetDict();
+  const base::DictValue& feature = supported[0].GetDict();
   const std::string& internal_name = *feature.FindString("internal_name");
   EXPECT_EQ("deprecate-unload", internal_name);
 
   // Check that no entry is returned as part of "unsupported_features".
-  const base::Value::List& unsupported =
+  const base::ListValue& unsupported =
       *response.FindList(flags_ui::kUnsupportedFeatures);
   EXPECT_EQ(0u, unsupported.size());
 }

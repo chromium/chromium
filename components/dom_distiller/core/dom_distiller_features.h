@@ -37,15 +37,10 @@ BASE_DECLARE_FEATURE(kReaderModeSupportNewFonts);
 COMPONENT_EXPORT(DOM_DISTILLER_FEATURES)
 BASE_DECLARE_FEATURE(kReaderModeDistillInApp);
 COMPONENT_EXPORT(DOM_DISTILLER_FEATURES)
+BASE_DECLARE_FEATURE(kReaderModeDistillInAppFastFollows);
+COMPONENT_EXPORT(DOM_DISTILLER_FEATURES)
 BASE_DECLARE_FEATURE(kReaderModeImprovements);
 #endif
-
-
-#if BUILDFLAG(IS_IOS)
-// Feature to enable the new CSS for Reader mode.
-COMPONENT_EXPORT(DOM_DISTILLER_FEATURES)
-BASE_DECLARE_FEATURE(kEnableReaderModeNewCss);
-#endif  // BUILDFLAG(IS_IOS)
 
 }  // namespace dom_distiller
 

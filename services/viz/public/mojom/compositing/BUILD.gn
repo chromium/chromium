@@ -11,6 +11,9 @@ mojom("shared_image_format") {
   if (use_ozone) {
     enabled_features += [ "use_ozone" ]
   }
+  if (use_ozone || is_android) {
+    enabled_features += [ "supports_external_sampler" ]
+  }
   cpp_typemaps = [
     {
       types = [

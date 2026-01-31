@@ -2,9 +2,16 @@ features:
 - name: scroll-markers
   files:
   - scroll-markers*
-- name: scrollbar-buttons
+- name: scroll-buttons
   files:
   - scroll-button*
 - name: scrollbar-gutter
   files:
   - scrollbar-gutter-*
+- name: line-clamp
+  files:
+  - line-clamp-*
+  - webkit-line-clamp-*
+- name: text-overflow
+  files:
+  - text-overflow-*

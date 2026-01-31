@@ -12,6 +12,7 @@
 #include "base/test/gmock_expected_support.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
+#include "components/unexportable_keys/background_task_origin.h"
 #include "components/unexportable_keys/background_task_priority.h"
 #include "components/unexportable_keys/service_error.h"
 #include "components/unexportable_keys/unexportable_key_service_impl.h"
@@ -31,6 +32,8 @@ constexpr crypto::SignatureVerifier::SignatureAlgorithm
     kAcceptableAlgorithms[] = {crypto::SignatureVerifier::ECDSA_SHA256};
 constexpr BackgroundTaskPriority kTaskPriority =
     BackgroundTaskPriority::kUserVisible;
+constexpr BackgroundTaskOrigin kTaskOrigin =
+    BackgroundTaskOrigin::kDeviceBoundSessionCredentials;
 
 }  // namespace
 
@@ -42,7 +45,8 @@ class UnexportableKeyLoaderTest : public testing::Test {
 
   void ResetService() {
     task_manager_.emplace();
-    service_.emplace(*task_manager_, crypto::UnexportableKeyProvider::Config());
+    service_.emplace(*task_manager_, kTaskOrigin,
+                     crypto::UnexportableKeyProvider::Config());
   }
 
   void DisableKeyProvider() {
@@ -76,7 +80,8 @@ class UnexportableKeyLoaderTest : public testing::Test {
       scoped_key_provider_;
   std::optional<UnexportableKeyTaskManager> task_manager_{std::in_place};
   std::optional<UnexportableKeyServiceImpl> service_{
-      std::in_place, *task_manager_, crypto::UnexportableKeyProvider::Config()};
+      std::in_place, *task_manager_, kTaskOrigin,
+      crypto::UnexportableKeyProvider::Config()};
 };
 
 TEST_F(UnexportableKeyLoaderTest, CreateFromWrappedKeySync) {

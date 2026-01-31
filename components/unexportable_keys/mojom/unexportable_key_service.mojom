@@ -4,6 +4,7 @@
 
 module unexportable_keys.mojom;
 
+import "mojo/public/mojom/base/time.mojom";
 import "mojo/public/mojom/base/unguessable_token.mojom";
 
 // Unfortunately //net depends on the unexportable_keys components. This means
@@ -63,6 +64,8 @@ struct NewKeyData {
   array<uint8> subject_public_key_info;
   array<uint8> wrapped_key;
   SignatureAlgorithm algorithm;
+  string? key_tag;
+  mojo_base.mojom.Time? creation_time;
 };
 
 // Interface for proxying calls to UnexportableKeyService from less privileged
@@ -102,11 +105,12 @@ interface UnexportableKeyService {
   GetAllSigningKeysForGarbageCollection(BackgroundTaskPriority priority)
       => result<array<UnexportableKeyId>, ServiceError>;
 
-  // Deletes the key identified by key_id.
-  // On Success no value is returned. On error a ServiceError is
-  // returned instead.
-  DeleteKey(UnexportableKeyId key_id, BackgroundTaskPriority priority)
-      => (ServiceError? error);
+  // Deletes the keys identified by key_ids.
+  // On success the number of keys deleted is returned. On error a ServiceError
+  // is returned instead.
+  DeleteKeys(
+      array<UnexportableKeyId> key_ids, BackgroundTaskPriority priority)
+      => result<uint64, ServiceError>;
 
   // Delete all keys.
   // On success the number of keys deleted is returned. On error a ServiceError

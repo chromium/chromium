@@ -106,15 +106,11 @@ void CopyBundleToCacheCommand::StartWithLock(std::unique_ptr<AppLock> lock) {
   CHECK(lock);
   lock_ = std::move(lock);
 
-  const WebApp* app = lock_->registrar().GetAppById(url_info_.app_id());
+  const WebApp* app = lock_->registrar().GetAppById(
+      url_info_.app_id(), WebAppFilter::IsIsolatedApp());
   if (!app) {
     CommandComplete(base::unexpected(
         CopyBundleToCacheError{CopyBundleToCacheError::kAppNotInstalled}));
-    return;
-  }
-  if (!app->isolation_data()) {
-    CommandComplete(base::unexpected(
-        CopyBundleToCacheError{CopyBundleToCacheError::kNotIwa}));
     return;
   }
 
@@ -122,7 +118,7 @@ void CopyBundleToCacheCommand::StartWithLock(std::unique_ptr<AppLock> lock) {
   // bundles.
   std::optional<base::FilePath> bundle_path =
       GetOwnedBundlePath(app->isolation_data()->location(), *profile_);
-  if (bundle_path->empty()) {
+  if (!bundle_path) {
     CommandComplete(base::unexpected(CopyBundleToCacheError{
         CopyBundleToCacheError::kCannotExtractOwnedBundlePath}));
     return;

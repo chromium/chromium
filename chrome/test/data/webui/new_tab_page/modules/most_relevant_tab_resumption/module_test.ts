@@ -35,7 +35,7 @@ function createSampleURLVisit(
         formFactor: FormFactor.kDesktop,
         isKnownToSync: false,
         sessionName: 'Test Device',
-        url: {url: 'https://www.foo.com'},
+        url: 'https://www.foo.com',
         urlKey: '',
         title: 'Test Tab Title',
         timestamp: Date.now(),
@@ -56,6 +56,7 @@ suite('NewTabPageModulesMostRelevantTabResumptionModuleTest', () => {
   suiteSetup(() => {
     loadTimeData.overrideValues({
       modulesRedesignedEnabled: true,
+      hideDismissModules: false,
     });
   });
 
@@ -70,7 +71,7 @@ suite('NewTabPageModulesMostRelevantTabResumptionModuleTest', () => {
 
   async function initializeModule(urlVisits: URLVisit[]):
       Promise<MostRelevantTabResumptionModuleElement> {
-    handler.setResultFor('getURLVisits', Promise.resolve({urlVisits}));
+    handler.setPromiseResolveFor('getURLVisits', {urlVisits});
     const moduleElement = await mostRelevantTabResumptionDescriptor.initialize(
                               0) as MostRelevantTabResumptionModuleElement;
     document.body.append(moduleElement);

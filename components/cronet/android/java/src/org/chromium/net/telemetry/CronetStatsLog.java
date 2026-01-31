@@ -69,7 +69,8 @@ public final class CronetStatsLog {
      * time_to_establish_dns_millis, long time_to_establish_ssl_millis, long time_to_connect_millis,
      * long time_to_send_first_byte_millis, long time_to_establish_dns_micros, long
      * time_to_establish_ssl_micros, long time_to_connect_micros, long
-     * time_to_send_first_byte_micros);<br>
+     * time_to_send_first_byte_micros, long time_to_receive_header_last_byte_micros, int
+     * is_proxied);<br>
      */
     public static final int CRONET_TRAFFIC_REPORTED = 704;
 
@@ -388,6 +389,11 @@ public final class CronetStatsLog {
     public static final int CRONET_TRAFFIC_REPORTED__SOURCE__CRONET_SOURCE_EMBEDDED_JAVA = 3;
     public static final int CRONET_TRAFFIC_REPORTED__SOURCE__CRONET_SOURCE_HTTPENGINE_NATIVE = 4;
 
+    // Values for CronetTrafficReported.is_proxied
+    public static final int CRONET_TRAFFIC_REPORTED__IS_PROXIED__OPTIONAL_BOOLEAN_UNSET = 0;
+    public static final int CRONET_TRAFFIC_REPORTED__IS_PROXIED__OPTIONAL_BOOLEAN_TRUE = 1;
+    public static final int CRONET_TRAFFIC_REPORTED__IS_PROXIED__OPTIONAL_BOOLEAN_FALSE = 2;
+
     // Values for CronetEngineBuilderInitialized.author
     public static final int CRONET_ENGINE_BUILDER_INITIALIZED__AUTHOR__AUTHOR_UNSPECIFIED = 0;
     public static final int CRONET_ENGINE_BUILDER_INITIALIZED__AUTHOR__AUTHOR_API = 1;
@@ -617,7 +623,9 @@ public final class CronetStatsLog {
             long arg33,
             long arg34,
             long arg35,
-            long arg36) {
+            long arg36,
+            long arg37,
+            int arg38) {
         final StatsEvent.Builder builder = StatsEvent.newBuilder();
         builder.setAtomId(code);
         builder.writeLong(arg1);
@@ -659,6 +667,8 @@ public final class CronetStatsLog {
         builder.writeLong(arg34);
         builder.writeLong(arg35);
         builder.writeLong(arg36);
+        builder.writeLong(arg37);
+        builder.writeInt(arg38);
 
         builder.usePooledBuffer();
         StatsLog.write(builder.build());

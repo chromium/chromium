@@ -22,6 +22,7 @@
 #include "components/autofill/content/browser/test_autofill_manager_injector.h"
 #include "components/autofill/content/browser/test_content_autofill_client.h"
 #include "components/autofill/content/browser/test_content_autofill_driver.h"
+#include "components/autofill/core/browser/data_manager/payments/test_payments_data_manager.h"
 #include "components/autofill/core/browser/foundations/test_browser_autofill_manager.h"
 #include "components/autofill/core/browser/integrators/glic/actor_form_filling_types.h"
 #include "components/autofill/core/browser/payments/credit_card_access_manager.h"
@@ -37,6 +38,9 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
+#include "third_party/skia/include/core/SkBitmap.h"
+#include "ui/gfx/image/image.h"
+#include "ui/gfx/image/image_unittest_util.h"
 
 namespace autofill {
 
@@ -58,9 +62,12 @@ using ::testing::IsEmpty;
 using ::testing::IsSupersetOf;
 using ::testing::Matcher;
 using ::testing::Not;
+using ::testing::Optional;
 using ::testing::Pair;
+using ::testing::Property;
 using ::testing::Return;
 using ::testing::SizeIs;
+using ::testing::Truly;
 
 using FillRequest = ActorFormFillingService::FillRequest;
 using GetSuggestionsFuture =
@@ -69,9 +76,30 @@ using GetSuggestionsFuture =
 using FillSuggestionsFuture =
     base::test::TestFuture<base::expected<void, ActorFormFillingError>>;
 
+gfx::Image CreateTestImage(int width, int height) {
+  SkBitmap bitmap;
+  bitmap.allocN32Pixels(width, height);
+  bitmap.eraseColor(SK_ColorRED);
+  return gfx::Image::CreateFrom1xBitmap(bitmap);
+}
+
 [[nodiscard]] Matcher<ActorSuggestion> NonEmptyActorSuggestion() {
   return AnyOf(Field(&ActorSuggestion::title, Not(IsEmpty())),
                Field(&ActorSuggestion::details, Not(IsEmpty())));
+}
+
+[[nodiscard]] Matcher<ActorSuggestion> ActorSuggestionHasNonEmptyIcon() {
+  return Field(&ActorSuggestion::icon,
+               Optional(Property(&gfx::Image::IsEmpty, false)));
+}
+
+[[nodiscard]] Matcher<ActorSuggestion> ActorSuggestionIconEquals(
+    gfx::Image expected_image) {
+  return Field(&ActorSuggestion::icon,
+               Optional(Truly([expected_image](const gfx::Image& actual_image) {
+                 return gfx::test::AreBitmapsEqual(expected_image.AsBitmap(),
+                                                   actual_image.AsBitmap());
+               })));
 }
 
 [[nodiscard]] Matcher<ActorFormFillingRequest> IsActorFormFillingRequest(
@@ -241,6 +269,11 @@ class ActorFormFillingServiceTest : public ChromeRenderViewHostTestHarness {
   void SetUp() override {
     ChromeRenderViewHostTestHarness::SetUp();
     ON_CALL(mock_tab, GetContents()).WillByDefault(Return(web_contents()));
+    // Enable AutofillWalletImport so that custom credit card art is available.
+    client()
+        .GetPersonalDataManager()
+        .test_payments_data_manager()
+        .SetAutofillWalletImportEnabled(true);
     NavigateAndCommit(GURL("about:blank"));
     client().GetPersonalDataManager().address_data_manager().AddProfile(
         GetProfile1());
@@ -591,6 +624,54 @@ INSTANTIATE_TEST_SUITE_P(,
                          ActorFormFillingServiceWithOptimizationGuideTest,
                          ::testing::Bool());
 
+// Tests that a suggestion is returned when invoking on a credit card form and
+// that the suggestion has a non-empty network icon.
+TEST_F(ActorFormFillingServiceTest, CreditCardFormWithNetworkIcon) {
+  const CreditCard card = test::GetCreditCard();
+  payments_data_manager().AddCreditCard(card);
+  FormData form =
+      SeeForm({.fields = {{.server_type = CREDIT_CARD_NAME_FULL},
+                          {.server_type = CREDIT_CARD_NUMBER},
+                          {.server_type = CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR}}});
+
+  GetSuggestionsFuture future;
+  service().GetSuggestions(
+      tab(), {CreditCardFillRequest({form.fields()[0].global_id()})},
+      future.GetCallback());
+  // Verify that the suggestion has a non-empty icon.
+  EXPECT_THAT(
+      future.Get(),
+      ValueIs(ElementsAre(Field(&ActorFormFillingRequest::suggestions,
+                                Each(ActorSuggestionHasNonEmptyIcon())))));
+}
+
+// Tests that a suggestion is returned when invoking on a credit card form and
+// that the suggestion has a custom card art icon.
+TEST_F(ActorFormFillingServiceTest, CreditCardFormWithCardArtIcon) {
+  CreditCard card = test::GetCreditCard();
+  card.set_card_art_url(GURL("https://example.test/card_art.png"));
+  payments_data_manager().AddCreditCard(card);
+
+  gfx::Image test_image = CreateTestImage(100, 50);
+  client().GetPersonalDataManager().test_payments_data_manager().CacheImage(
+      card.card_art_url(), test_image);
+
+  FormData form =
+      SeeForm({.fields = {{.server_type = CREDIT_CARD_NAME_FULL},
+                          {.server_type = CREDIT_CARD_NUMBER},
+                          {.server_type = CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR}}});
+
+  GetSuggestionsFuture future;
+  service().GetSuggestions(
+      tab(), {CreditCardFillRequest({form.fields()[0].global_id()})},
+      future.GetCallback());
+
+  // Verify that the suggestion's icon matches the test image pixel by pixel.
+  EXPECT_THAT(future.Get(),
+              ValueIs(ElementsAre(Field(
+                  &ActorFormFillingRequest::suggestions,
+                  Each(ActorSuggestionIconEquals(std::move(test_image)))))));
+}
 // Tests that filling a credit card after fetching it from the server works.
 TEST_F(ActorFormFillingServiceTest, FillAfterFetchingServerCard) {
   const CreditCard card = test::GetMaskedServerCard();

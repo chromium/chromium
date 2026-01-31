@@ -7,7 +7,6 @@
 #include <memory>
 
 #include "base/compiler_specific.h"
-#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/logging.h"
@@ -172,7 +171,7 @@ void FakeBluetoothGattCharacteristicClient::ReadValue(
     return;
   }
 
-  if (base::Contains(action_extra_requests_, "ReadValue")) {
+  if (action_extra_requests_.contains("ReadValue")) {
     DelayedCallback* delayed = action_extra_requests_["ReadValue"];
     delayed->delay_--;
     std::move(error_callback)
@@ -245,7 +244,7 @@ void FakeBluetoothGattCharacteristicClient::WriteValue(
   }
 
   DCHECK(heart_rate_control_point_properties_.get());
-  if (base::Contains(action_extra_requests_, "WriteValue")) {
+  if (action_extra_requests_.contains("WriteValue")) {
     DelayedCallback* delayed = action_extra_requests_["WriteValue"];
     delayed->delay_--;
     std::move(error_callback)
@@ -601,7 +600,7 @@ FakeBluetoothGattCharacteristicClient::GetHeartRateMeasurementValue() {
   value.flags |= (0x01 << 4);
 
   // Pick a value between 117 bpm and 153 bpm for heart rate.
-  value.bpm = static_cast<uint8_t>(base::RandInt(117, 153));
+  value.bpm = static_cast<uint8_t>(base::RandIntInclusive(117, 153));
 
   // Total calories burned in kJoules since the last reset. Increment this by 1
   // every time. It's fine if it overflows: it becomes 0 when the user resets

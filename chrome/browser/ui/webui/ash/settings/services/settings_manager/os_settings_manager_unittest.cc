@@ -7,7 +7,6 @@
 #include "ash/constants/ash_features.h"
 #include "ash/webui/settings/public/constants/routes.mojom.h"
 #include "base/command_line.h"
-#include "base/containers/contains.h"
 #include "base/metrics/histogram_base.h"
 #include "base/test/metrics/histogram_enum_reader.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
@@ -144,7 +143,7 @@ TEST_F(OsSettingsManagerTest, Initialization) {
     manager_->hierarchy_->GetSectionMetadata(section);
 
     EXPECT_TRUE(
-        base::Contains(*sections_enum_entry_map, static_cast<int32_t>(section)))
+        sections_enum_entry_map->contains(static_cast<int32_t>(section)))
         << "Missing OsSettingsSection enums.xml entry for " << section;
   }
 
@@ -158,7 +157,7 @@ TEST_F(OsSettingsManagerTest, Initialization) {
     manager_->hierarchy_->GetSubpageMetadata(subpage);
 
     EXPECT_TRUE(
-        base::Contains(*subpages_enum_entry_map, static_cast<int32_t>(subpage)))
+        subpages_enum_entry_map->contains(static_cast<int32_t>(subpage)))
         << "Missing OsSettingsSubpage enums.xml entry for " << subpage;
   }
 
@@ -172,7 +171,7 @@ TEST_F(OsSettingsManagerTest, Initialization) {
     manager_->hierarchy_->GetSettingMetadata(setting);
 
     EXPECT_TRUE(
-        base::Contains(*settings_enum_entry_map, static_cast<int32_t>(setting)))
+        settings_enum_entry_map->contains(static_cast<int32_t>(setting)))
         << "Missing OsSetting enums.xml entry for " << setting;
   }
 }

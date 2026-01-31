@@ -73,6 +73,7 @@
 #include "third_party/blink/renderer/core/editing/visible_position.h"
 #include "third_party/blink/renderer/core/editing/visible_selection.h"
 #include "third_party/blink/renderer/core/editing/visible_units.h"
+#include "third_party/blink/renderer/core/events/input_event.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/html/forms/html_input_element.h"
 #include "third_party/blink/renderer/core/html/html_br_element.h"
@@ -597,14 +598,17 @@ void CompositeEditCommand::SplitTextNodeContainingElement(Text* text,
       ASSERT_NO_EDITING_ABORT);
 }
 
-void CompositeEditCommand::InsertTextIntoNode(Text* node,
-                                              unsigned offset,
-                                              const String& text) {
+void CompositeEditCommand::InsertTextIntoNode(
+    Text* node,
+    unsigned offset,
+    const String& text,
+    PasswordEchoBehavior password_echo_behavior) {
   // InsertIntoTextNodeCommand is never aborted.
-  if (!text.empty())
-    ApplyCommandToComposite(
-        MakeGarbageCollected<InsertIntoTextNodeCommand>(node, offset, text),
-        ASSERT_NO_EDITING_ABORT);
+  if (!text.empty()) {
+    ApplyCommandToComposite(MakeGarbageCollected<InsertIntoTextNodeCommand>(
+                                node, offset, text, password_echo_behavior),
+                            ASSERT_NO_EDITING_ABORT);
+  }
 }
 
 void CompositeEditCommand::DeleteTextFromNode(Text* node,
@@ -616,17 +620,22 @@ void CompositeEditCommand::DeleteTextFromNode(Text* node,
       ASSERT_NO_EDITING_ABORT);
 }
 
-void CompositeEditCommand::ReplaceTextInNode(Text* node,
-                                             unsigned offset,
-                                             unsigned count,
-                                             const String& replacement_text) {
+void CompositeEditCommand::ReplaceTextInNode(
+    Text* node,
+    unsigned offset,
+    unsigned count,
+    const String& replacement_text,
+    PasswordEchoBehavior password_echo_behavior) {
   // SetCharacterDataCommand is never aborted.
-  ApplyCommandToComposite(MakeGarbageCollected<SetCharacterDataCommand>(
-                              node, offset, count, replacement_text),
-                          ASSERT_NO_EDITING_ABORT);
+  ApplyCommandToComposite(
+      MakeGarbageCollected<SetCharacterDataCommand>(
+          node, offset, count, replacement_text, password_echo_behavior),
+      ASSERT_NO_EDITING_ABORT);
 }
 
-Position CompositeEditCommand::ReplaceSelectedTextInNode(const String& text) {
+Position CompositeEditCommand::ReplaceSelectedTextInNode(
+    const String& text,
+    PasswordEchoBehavior password_echo_behavior) {
   const Position& start = EndingSelection().Start();
   const Position& end = EndingSelection().End();
   auto* text_node = DynamicTo<Text>(start.ComputeContainerNode());
@@ -636,7 +645,7 @@ Position CompositeEditCommand::ReplaceSelectedTextInNode(const String& text) {
 
   ReplaceTextInNode(text_node, start.OffsetInContainerNode(),
                     end.OffsetInContainerNode() - start.OffsetInContainerNode(),
-                    text);
+                    text, password_echo_behavior);
 
   return Position(text_node, start.OffsetInContainerNode() + text.length());
 }
@@ -825,8 +834,10 @@ void CompositeEditCommand::RebalanceWhitespaceOnTextSubstring(Text* text_node,
       string, IsStartOfParagraph(visible_upstream_pos) || !upstream,
       should_emit_nbs_pbefore_end);
 
-  if (string != rebalanced_string)
-    ReplaceTextInNode(text_node, upstream, length, rebalanced_string);
+  if (string != rebalanced_string) {
+    ReplaceTextInNode(text_node, upstream, length, rebalanced_string,
+                      EditCommand::PasswordEchoBehavior::kDoNotEcho);
+  }
 }
 
 void CompositeEditCommand::PrepareWhitespaceAtPositionForSplit(
@@ -873,7 +884,8 @@ void CompositeEditCommand::
   if (!container_text_node)
     return;
   ReplaceTextInNode(container_text_node, pos.OffsetInContainerNode(), 1,
-                    NonBreakingSpaceString());
+                    NonBreakingSpaceString(),
+                    EditCommand::PasswordEchoBehavior::kDoNotEcho);
 }
 
 void CompositeEditCommand::RebalanceWhitespace() {
@@ -924,7 +936,8 @@ void CompositeEditCommand::DeleteInsignificantText(Text* text_node,
     return DeleteTextFromNode(text_node, start, end - start);
   }
   // Replace the text between start and end with collapsed version.
-  return ReplaceTextInNode(text_node, start, end - start, string);
+  return ReplaceTextInNode(text_node, start, end - start, string,
+                           EditCommand::PasswordEchoBehavior::kDoNotEcho);
 }
 
 void CompositeEditCommand::DeleteInsignificantText(const Position& start,
@@ -1683,7 +1696,8 @@ void CompositeEditCommand::MoveParagraphs(
   if (should_preserve_style == kDoNotPreserveStyle)
     options |= ReplaceSelectionCommand::kMatchStyle;
   ApplyCommandToComposite(MakeGarbageCollected<ReplaceSelectionCommand>(
-                              GetDocument(), fragment, options),
+                              GetDocument(), fragment, options,
+                              EditCommand::PasswordEchoBehavior::kDoNotEcho),
                           editing_state);
   if (editing_state->IsAborted())
     return;

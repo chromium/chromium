@@ -5,13 +5,59 @@
 #include "components/services/storage/dom_storage/dom_storage_database.h"
 
 #include "base/debug/leak_annotations.h"
+#include "base/feature_list.h"
+#include "base/strings/string_number_conversions.h"
+#include "base/strings/string_util.h"
+#include "base/strings/stringprintf.h"
 #include "base/task/bind_post_task.h"
+#include "base/task/thread_pool.h"
+#include "components/services/storage/dom_storage/features.h"
 #include "components/services/storage/dom_storage/leveldb/dom_storage_database_leveldb.h"
 #include "components/services/storage/dom_storage/leveldb/local_storage_leveldb.h"
 #include "components/services/storage/dom_storage/leveldb/session_storage_leveldb.h"
+#include "components/services/storage/dom_storage/sqlite/local_storage_sqlite.h"
+#include "components/services/storage/dom_storage/sqlite/session_storage_sqlite.h"
+#include "components/services/storage/dom_storage/sqlite/sqlite_database_utils.h"
+#include "components/services/storage/public/cpp/constants.h"
 
 namespace storage {
 namespace {
+
+// Constructs an absolute path to the session storage database using
+// `storage_partition_dir`.  For LevelDB, the path is a directory:
+//
+// `storage_partition_dir`/Session Storage
+//
+// When the `kDomStorageSqlite` feature flag is enabled, the path is a file:
+//
+// `storage_partition_dir`/SessionStorage
+base::FilePath GetSessionStorageDatabasePath(
+    const base::FilePath& storage_partition_dir) {
+  CHECK(!storage_partition_dir.empty());
+  CHECK(storage_partition_dir.IsAbsolute());
+
+  if (base::FeatureList::IsEnabled(kDomStorageSqlite)) {
+    return storage_partition_dir.AppendASCII("SessionStorage");
+  }
+  return storage_partition_dir.AppendASCII("Session Storage");
+}
+
+scoped_refptr<base::SequencedTaskRunner> GetTaskRunnerForDb(
+    const base::FilePath& database_path) {
+  if (database_path.empty()) {
+    // For the in-memory case, blocking shutdown is only important to avoid
+    // leaking the SequenceBound on shutdown (and triggering ASAN failures).
+    return base::ThreadPool::CreateSequencedTaskRunner(
+        {base::WithBaseSyncPrimitives(),
+         base::TaskShutdownBehavior::BLOCK_SHUTDOWN});
+  }
+
+  //  This will always return the same task runner for a given `database_path`.
+  return base::ThreadPool::CreateSequencedTaskRunnerForResource(
+      {base::MayBlock(), base::WithBaseSyncPrimitives(),
+       base::TaskShutdownBehavior::BLOCK_SHUTDOWN},
+      database_path);
+}
 
 // Runs `callback` after casting `TDatabase` to `DomStorageDatabase`.
 template <typename TDatabase>
@@ -52,14 +98,16 @@ bool DomStorageDatabase::KeyValuePair::operator==(
 
 DomStorageDatabase::MapLocator::MapLocator(std::string source_session_id,
                                            blink::StorageKey source_storage_key)
-    : session_id_(source_session_id), storage_key_(source_storage_key) {}
+    : storage_key_(source_storage_key) {
+  session_ids_.push_back(std::move(source_session_id));
+}
 
 DomStorageDatabase::MapLocator::MapLocator(std::string source_session_id,
                                            blink::StorageKey source_storage_key,
                                            int64_t source_map_id)
-    : session_id_(source_session_id),
-      storage_key_(source_storage_key),
-      map_id_(source_map_id) {}
+    : storage_key_(source_storage_key), map_id_(source_map_id) {
+  session_ids_.push_back(std::move(source_session_id));
+}
 
 DomStorageDatabase::MapLocator::~MapLocator() = default;
 
@@ -72,13 +120,46 @@ const blink::StorageKey& DomStorageDatabase::MapLocator::storage_key() const {
   return storage_key_;
 }
 
-const std::string& DomStorageDatabase::MapLocator::session_id() const {
-  return session_id_;
+const std::vector<std::string>& DomStorageDatabase::MapLocator::session_ids()
+    const {
+  return session_ids_;
 }
 
 std::optional<int64_t> DomStorageDatabase::MapLocator::map_id() const {
   return map_id_;
 }
+
+void DomStorageDatabase::MapLocator::AddSession(std::string session_id) {
+  session_ids_.push_back(std::move(session_id));
+}
+
+void DomStorageDatabase::MapLocator::RemoveSession(
+    const std::string& session_id) {
+  std::erase(session_ids_, session_id);
+}
+
+DomStorageDatabase::MapLocator DomStorageDatabase::MapLocator::Clone() const {
+  MapLocator clone;
+  clone.session_ids_ = session_ids_;
+  clone.storage_key_ = storage_key_;
+  clone.map_id_ = map_id_;
+  return clone;
+}
+
+std::string DomStorageDatabase::MapLocator::ToDebugString() const {
+  std::string sessions = base::JoinString(session_ids_, /*separator=*/":");
+  std::string map_id = map_id_ ? base::NumberToString(*map_id_) : "null";
+
+  return base::StringPrintf("sessions_ids:%s, storage_key:%s, map_id:%s",
+                            sessions, storage_key_.GetDebugString(), map_id);
+}
+
+DomStorageDatabase::MapLocator::MapLocator() = default;
+
+DomStorageDatabase::SharedMapLocator::SharedMapLocator(MapLocator source)
+    : MapLocator(std::move(source)) {}
+
+DomStorageDatabase::SharedMapLocator::~SharedMapLocator() = default;
 
 DomStorageDatabase::Metadata::Metadata() = default;
 
@@ -93,46 +174,92 @@ DomStorageDatabase::Metadata::Metadata(Metadata&&) = default;
 DomStorageDatabase::Metadata& DomStorageDatabase::Metadata::operator=(
     Metadata&&) = default;
 
-// static
-void DomStorageDatabaseFactory::Open(
+DomStorageDatabase::MapBatchUpdate::MapBatchUpdate(MapLocator map_to_update)
+    : map_locator{std::move(map_to_update)} {}
+
+DomStorageDatabase::MapBatchUpdate::~MapBatchUpdate() = default;
+
+DomStorageDatabase::MapBatchUpdate::MapBatchUpdate(MapBatchUpdate&&) = default;
+
+DomStorageDatabase::MapBatchUpdate&
+DomStorageDatabase::MapBatchUpdate::operator=(MapBatchUpdate&&) = default;
+
+base::FilePath DomStorageDatabase::GetPath(
     StorageType storage_type,
-    const base::FilePath& directory,
-    const std::string& name,
-    const std::optional<base::trace_event::MemoryAllocatorDumpGuid>&
-        memory_dump_id,
-    scoped_refptr<base::SequencedTaskRunner> blocking_task_runner,
-    OpenCallback callback) {
+    const base::FilePath& storage_partition_dir) {
   switch (storage_type) {
     case StorageType::kLocalStorage:
-      return CreateSequenceBoundDomStorageDatabase<LocalStorageLevelDB>(
-          std::move(blocking_task_runner), directory, name, memory_dump_id,
-          base::BindOnce(&OnDatabaseOpened<LocalStorageLevelDB>,
-                         std::move(callback)));
-
+      return GetLocalStorageDatabasePath(storage_partition_dir);
     case StorageType::kSessionStorage:
-      return CreateSequenceBoundDomStorageDatabase<SessionStorageLevelDB>(
-          std::move(blocking_task_runner), directory, name, memory_dump_id,
-          base::BindOnce(&OnDatabaseOpened<SessionStorageLevelDB>,
-                         std::move(callback)));
+      return GetSessionStorageDatabasePath(storage_partition_dir);
   }
   NOTREACHED();
 }
 
 // static
-void DomStorageDatabaseFactory::Destroy(
-    const base::FilePath& directory,
-    const std::string& name,
-    scoped_refptr<base::SequencedTaskRunner> blocking_task_runner,
-    base::OnceCallback<void(DbStatus)> callback) {
-  DomStorageDatabaseLevelDB::Destroy(
-      directory, name, std::move(blocking_task_runner), std::move(callback));
+void DomStorageDatabaseFactory::Open(
+    StorageType storage_type,
+    const base::FilePath& database_path,
+    const std::optional<base::trace_event::MemoryAllocatorDumpGuid>&
+        memory_dump_id,
+    OpenCallback callback) {
+  scoped_refptr<base::SequencedTaskRunner> blocking_task_runner =
+      GetTaskRunnerForDb(database_path);
+
+  switch (storage_type) {
+    case StorageType::kLocalStorage: {
+      if (base::FeatureList::IsEnabled(kDomStorageSqlite)) {
+        return CreateSequenceBoundDomStorageDatabase<LocalStorageSqlite>(
+            std::move(blocking_task_runner), database_path, memory_dump_id,
+            base::BindOnce(&OnDatabaseOpened<LocalStorageSqlite>,
+                           std::move(callback)));
+      }
+      return CreateSequenceBoundDomStorageDatabase<LocalStorageLevelDB>(
+          std::move(blocking_task_runner), database_path, memory_dump_id,
+          base::BindOnce(&OnDatabaseOpened<LocalStorageLevelDB>,
+                         std::move(callback)));
+    }
+    case StorageType::kSessionStorage: {
+      if (base::FeatureList::IsEnabled(kDomStorageSqlite)) {
+        return CreateSequenceBoundDomStorageDatabase<SessionStorageSqlite>(
+            std::move(blocking_task_runner), database_path, memory_dump_id,
+            base::BindOnce(&OnDatabaseOpened<SessionStorageSqlite>,
+                           std::move(callback)));
+      }
+      return CreateSequenceBoundDomStorageDatabase<SessionStorageLevelDB>(
+          std::move(blocking_task_runner), database_path, memory_dump_id,
+          base::BindOnce(&OnDatabaseOpened<SessionStorageLevelDB>,
+                         std::move(callback)));
+    }
+  }
+  NOTREACHED();
+}
+
+// static
+void DomStorageDatabaseFactory::Destroy(const base::FilePath& database_path,
+                                        StatusCallback callback) {
+  CHECK(!database_path.empty());
+  CHECK(database_path.IsAbsolute());
+
+  scoped_refptr<base::SequencedTaskRunner> blocking_task_runner =
+      GetTaskRunnerForDb(database_path);
+
+  base::OnceCallback<DbStatus()> destroy_database_callback;
+  if (base::FeatureList::IsEnabled(kDomStorageSqlite)) {
+    destroy_database_callback =
+        base::BindOnce(&sqlite::DestroyDatabase, database_path);
+  } else {
+    destroy_database_callback =
+        base::BindOnce(&DomStorageDatabaseLevelDB::Destroy, database_path);
+  }
+  blocking_task_runner->PostTaskAndReplyWithResult(
+      FROM_HERE, std::move(destroy_database_callback), std::move(callback));
 }
 
 template <typename TDatabase>
 void DomStorageDatabaseFactory::CreateSequenceBoundDomStorageDatabase(
     scoped_refptr<base::SequencedTaskRunner> blocking_task_runner,
-    const base::FilePath& directory,
-    const std::string& name,
+    const base::FilePath& database_path,
     const std::optional<base::trace_event::MemoryAllocatorDumpGuid>&
         memory_dump_id,
     base::OnceCallback<void(StatusOr<base::SequenceBound<TDatabase>> database)>
@@ -163,7 +290,7 @@ void DomStorageDatabaseFactory::CreateSequenceBoundDomStorageDatabase(
   ANNOTATE_LEAKING_OBJECT_PTR(database_ptr);
 
   database_ptr->AsyncCall(&TDatabase::Open)
-      .WithArgs(PassKey(), directory, name, memory_dump_id)
+      .WithArgs(PassKey(), database_path, memory_dump_id)
       .Then(base::BindOnce(
           [](base::SequenceBound<TDatabase>* database_ptr,
              base::OnceCallback<void(

@@ -45,7 +45,6 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/content_settings/core/browser/cookie_settings.h"
-#include "components/content_settings/core/common/features.h"
 #include "components/content_settings/core/common/pref_names.h"
 #include "components/custom_handlers/protocol_handler.h"
 #include "components/custom_handlers/protocol_handler_registry.h"
@@ -142,6 +141,7 @@
 #if BUILDFLAG(ENABLE_GLIC)
 #include "chrome/browser/glic/test_support/glic_test_environment.h"
 #include "chrome/browser/glic/test_support/glic_test_util.h"
+#include "chrome/browser/glic/test_support/non_interactive_glic_test.h"
 #endif
 
 namespace {
@@ -352,7 +352,7 @@ IN_PROC_BROWSER_TEST_P(ForcedColorsTest, ForcedColorsWithBlockList) {
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL(url)));
 
   // Add url to the page colors block list.
-  base::Value::List list;
+  base::ListValue list;
   list.Append(url);
   Profile* profile = browser()->profile();
   profile->GetPrefs()->SetList(prefs::kPageColorsBlockList, list.Clone());
@@ -434,40 +434,31 @@ IN_PROC_BROWSER_TEST_F(PageColorsBrowserClientTest,
                    "getPropertyValue('color').toString()"));
 }
 
+#if BUILDFLAG(ENABLE_GLIC)
+using PrefersColorSchemeTestBase = glic::NonInteractiveGlicTest;
+#else
+using PrefersColorSchemeTestBase = InProcessBrowserTest;
+#endif
+
 // Tests for the preferred color scheme for a given WebContents. The first param
 // controls whether the web NativeTheme is light or dark the second controls
 // whether the color mode on the associated color provider is light or dark.
 class PrefersColorSchemeTest
     : public testing::WithParamInterface<std::tuple<bool, bool>>,
-      public InProcessBrowserTest {
+      public PrefersColorSchemeTestBase {
  public:
   void SetUpOnMainThread() override {
-    InProcessBrowserTest::SetUpOnMainThread();
+    PrefersColorSchemeTestBase::SetUpOnMainThread();
 
     os_settings_provider_.SetPreferredColorScheme(
         DarkOs() ? ui::NativeTheme::PreferredColorScheme::kDark
                  : ui::NativeTheme::PreferredColorScheme::kLight);
 
-#if BUILDFLAG(ENABLE_GLIC)
-    embedded_test_server()->ServeFilesFromDirectory(
-        base::PathService::CheckedGet(base::DIR_ASSETS)
-            .AppendASCII("gen/chrome/test/data/webui/glic/"));
-    ASSERT_TRUE(embedded_test_server()->Start());
-    auto* command_line = base::CommandLine::ForCurrentProcess();
-    command_line->AppendSwitchASCII(
-        ::switches::kGlicGuestURL,
-        embedded_test_server()->GetURL("/glic/test_client/index.html").spec());
-#endif
-
     guest_view_manager_ =
         guest_view_manager_factory_.GetOrCreateTestGuestViewManager(
             browser()->profile(), extensions::ExtensionsAPIClient::Get()
                                       ->CreateGuestViewManagerDelegate());
-
-    auto* const web_contents =
-        browser()->tab_strip_model()->GetActiveWebContents();
-    web_contents->SetColorProviderSource(&color_provider_source_);
-    web_contents->OnWebPreferencesChanged();
+    ApplyColorProvider(*browser()->tab_strip_model()->GetActiveWebContents());
   }
 
   void TearDownOnMainThread() override {
@@ -476,7 +467,7 @@ class PrefersColorSchemeTest
   }
 
  protected:
-  std::string_view ExpectedColorScheme() const {
+  std::string_view ExpectedColorScheme() {
     // Most web content should follow the browser theme, with the exception of
     // non-WebUI incognito pages, which follow the device theme directly.
     const auto* const web_contents =
@@ -490,6 +481,11 @@ class PrefersColorSchemeTest
 
   guest_view::TestGuestViewManager* guest_view_manager() const {
     return guest_view_manager_;
+  }
+
+  void ApplyColorProvider(content::WebContents& web_contents) {
+    web_contents.SetColorProviderSource(&color_provider_source_);
+    web_contents.OnWebPreferencesChanged();
   }
 
  private:
@@ -530,9 +526,6 @@ class PrefersColorSchemeTest
 
   ui::MockOsSettingsProvider os_settings_provider_;
   MockColorProviderSource color_provider_source_{DarkColorProvider()};
-#if BUILDFLAG(ENABLE_GLIC)
-  glic::GlicTestEnvironment glic_test_environment_;
-#endif
   guest_view::TestGuestViewManagerFactory guest_view_manager_factory_;
   raw_ptr<guest_view::TestGuestViewManager> guest_view_manager_ = nullptr;
 };
@@ -562,18 +555,16 @@ IN_PROC_BROWSER_TEST_P(PrefersColorSchemeTest, FeatureOverridesChromeSchemes) {
 
 #if BUILDFLAG(ENABLE_GLIC)
 IN_PROC_BROWSER_TEST_P(PrefersColorSchemeTest, PrefersColorSchemeGlic) {
-  ASSERT_TRUE(
-      ui_test_utils::NavigateToURL(browser(), GURL(chrome::kChromeUIGlicURL)));
+  RunTestSequence(OpenGlic(GlicInstrumentMode::kHostAndContents));
+  content::RenderFrameHost* webui_frame =
+      GetWebFrame(TargetWebContents::kGlicWebUi).value();
+  ApplyColorProvider(*content::WebContents::FromRenderFrameHost(webui_frame));
 
-  guest_view::GuestViewBase* guest_view =
-      guest_view_manager()->WaitForSingleGuestViewCreated();
-  // Intentionally ignore the return value. It seems that on Windows and Linux
-  // the guest contents could have already been loaded by the time we get here.
-  std::ignore = guest_view_manager()->WaitUntilAttachedAndLoaded(guest_view);
+  auto* frame = GetWebFrame(TargetWebContents::kGlicClient).value();
 
   EXPECT_EQ(
       true,
-      EvalJs(guest_view->GetGuestMainFrame(),
+      EvalJs(frame,
              base::StringPrintf(
                  "window.matchMedia('(prefers-color-scheme: %s)').matches",
                  ExpectedColorScheme())));
@@ -967,7 +958,7 @@ IN_PROC_BROWSER_TEST_F(ProtocolHandlerTest,
 
   ScopedFakeExternalProtocolHandlerDelegate delegate;
 
-  base::Value::List allowlist;
+  base::ListValue allowlist;
   allowlist.Append("geo://*");
   browser()->profile()->GetPrefs()->SetList(policy::policy_prefs::kUrlAllowlist,
                                             std::move(allowlist));
@@ -997,7 +988,7 @@ IN_PROC_BROWSER_TEST_F(ProtocolHandlerTest,
 
   ScopedFakeExternalProtocolHandlerDelegate delegate;
 
-  base::Value::List allowlist;
+  base::ListValue allowlist;
   allowlist.Append("intent://*");
   browser()->profile()->GetPrefs()->SetList(policy::policy_prefs::kUrlAllowlist,
                                             std::move(allowlist));
@@ -1723,8 +1714,7 @@ IN_PROC_BROWSER_TEST_F(IsClipboardPasteAllowedTest,
           base::BindLambdaForTesting(
               [&contents]() { return contents->GetBrowserContext(); }),
           *contents->GetPrimaryMainFrame()),
-      /*metadata=*/{.size = 1234}, clipboard_paste_data,
-      future.GetCallback());
+      /*metadata=*/{.size = 1234}, clipboard_paste_data, future.GetCallback());
   auto replacement = future.Get<std::optional<std::u16string>>();
   EXPECT_TRUE(replacement.has_value());
 
@@ -1749,11 +1739,8 @@ class AutomaticBeaconCredentialsBrowserTest : public InProcessBrowserTest,
                                               public InstantTestBase {
  public:
   AutomaticBeaconCredentialsBrowserTest() {
-    scoped_feature_list_.InitWithFeatures(
-        /*enabled_features=*/{privacy_sandbox::
-                                  kOverridePrivacySandboxSettingsLocalTesting},
-        /*disabled_features=*/{
-            content_settings::features::kTrackingProtection3pcd});
+    scoped_feature_list_.InitAndEnableFeature(
+        privacy_sandbox::kOverridePrivacySandboxSettingsLocalTesting);
   }
 
   void SetUpOnMainThread() override {
@@ -2118,7 +2105,7 @@ IN_PROC_BROWSER_TEST_F(DevToolsOverridesThirdPartyCookiesBrowserTest,
   const std::string_view kHostA = "a.test";
   const std::string_view kHostB = "b.test";
   // Apply devtools overrides to enable 3pc restriction.
-  base::Value::Dict command_params;
+  base::DictValue command_params;
   command_params.Set("enableThirdPartyCookieRestriction", true);
   command_params.Set("disableThirdPartyCookieMetadata", false);
   command_params.Set("disableThirdPartyCookieHeuristics", false);

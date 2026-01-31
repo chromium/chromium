@@ -21,10 +21,10 @@
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_manager_ios.h"
-#import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/browser_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/popup_menu_commands.h"
+#import "ios/chrome/browser/shared/public/commands/scene_commands.h"
 #import "ios/chrome/browser/shared/public/commands/snackbar_commands.h"
 #import "ios/chrome/browser/signin/model/authentication_service.h"
 #import "ios/chrome/browser/signin/model/authentication_service_factory.h"
@@ -65,7 +65,7 @@ class SettingsNavigationControllerTest : public PlatformTest {
     DiscoverFeedVisibilityBrowserAgent::CreateForBrowser(browser_.get());
 
     NSArray<Protocol*>* command_protocols = @[
-      @protocol(ApplicationCommands), @protocol(BrowserCommands),
+      @protocol(SceneCommands), @protocol(BrowserCommands),
       @protocol(SettingsCommands), @protocol(SnackbarCommands),
       @protocol(PopupMenuCommands)
     ];

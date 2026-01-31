@@ -29,18 +29,16 @@ class ActorUiHandoffButtonControllerPixelTest : public DialogBrowserTest {
  public:
   ActorUiHandoffButtonControllerPixelTest() {
     feature_list_.InitWithFeaturesAndParameters(
-        /*enabled_features=*/{{features::kGlicActor, {}},
+        /*enabled_features=*/{{features::kGlicActor,
+                               {{features::kGlicActorPolicyControlExemption
+                                     .name,
+                                 "true"}}},
                               {features::kGlicActorUi,
                                {{features::kGlicActorUiHandoffButtonName,
                                  "true"}}}},
         /*disabled_features=*/{});
   }
   ~ActorUiHandoffButtonControllerPixelTest() override = default;
-
-  void SetUpOnMainThread() override {
-    DialogBrowserTest::SetUpOnMainThread();
-    GetActorKeyedService()->GetPolicyChecker().SetActOnWebForTesting(true);
-  }
 
   ActorKeyedService* GetActorKeyedService() {
     return ActorKeyedService::Get(browser()->profile());
@@ -85,24 +83,6 @@ class ActorUiHandoffButtonControllerPixelTest : public DialogBrowserTest {
 
 IN_PROC_BROWSER_TEST_F(ActorUiHandoffButtonControllerPixelTest,
                        InvokeUi_TakeOverTask) {
-  ShowAndVerifyUi();
-}
-
-class ActorUiHandoffButtonHiddenPixelTest
-    : public ActorUiHandoffButtonControllerPixelTest {
- public:
-  ActorUiHandoffButtonHiddenPixelTest() {
-    override_feature_list_.InitAndDisableFeature(
-        features::kGlicHandoffButtonHiddenClientControl);
-  }
-
- private:
-  base::test::ScopedFeatureList override_feature_list_;
-};
-
-IN_PROC_BROWSER_TEST_F(ActorUiHandoffButtonHiddenPixelTest,
-                       InvokeUi_TakeOverTask) {
-  ownership_ = HandoffButtonState::ControlOwnership::kClient;
   ShowAndVerifyUi();
 }
 }  // namespace

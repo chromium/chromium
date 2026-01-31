@@ -91,7 +91,8 @@ class InputObserver : public RenderWidgetHost::InputEventObserver {
   ~InputObserver() override { EXPECT_TRUE(expected_events_.empty()); }
 
   void OnInputEvent(const RenderWidgetHost& widget,
-                    const blink::WebInputEvent& event) override {
+                    const blink::WebInputEvent& event,
+                    InputEventSource source) override {
     if (event.GetType() != blink::WebInputEvent::Type::kMouseWheel) {
       return;
     }

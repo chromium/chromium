@@ -138,7 +138,7 @@ class PasswordGenerationManagerTest : public testing::Test {
 
   void ForwardByMinute();
 
-  void SetAccountStoreEnabled(bool is_enabled);
+  void SetAccountStoreActive(bool is_active);
 
  private:
   // For the MockPasswordStore.
@@ -186,9 +186,9 @@ void PasswordGenerationManagerTest::ForwardByMinute() {
   task_environment_.FastForwardBy(base::Minutes(1));
 }
 
-void PasswordGenerationManagerTest::SetAccountStoreEnabled(bool is_enabled) {
-  ON_CALL(*client().GetPasswordFeatureManager(), IsAccountStorageEnabled())
-      .WillByDefault(testing::Return(is_enabled));
+void PasswordGenerationManagerTest::SetAccountStoreActive(bool is_active) {
+  ON_CALL(*client().GetPasswordFeatureManager(), IsAccountStorageActive())
+      .WillByDefault(testing::Return(is_active));
 }
 
 // Check that accepting a generated password simply relays the message to the
@@ -721,7 +721,7 @@ TEST_F(PasswordGenerationManagerTest,
   // saved in both account and profile stores and it's been updated with a
   // generated password. Expected result: the password should be updated in both
   // stores.
-  SetAccountStoreEnabled(true);
+  SetAccountStoreActive(true);
   PasswordForm generated = CreateGenerated();
   generated.date_created = base::Time::Now();
   generated.date_password_modified = base::Time::Now();

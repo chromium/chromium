@@ -86,7 +86,11 @@ TabStateStorageServiceFactory::TabStateStorageServiceFactory()
     : ProfileKeyedServiceFactory(
           "TabStateStorageService",
           ProfileSelections::Builder()
-              .WithRegular(ProfileSelection::kOriginalOnly)
+              // The incognito model does not have a profile until after the
+              // first incognito tab is created. If no incognito tabs were
+              // restored then incognito operations need to be deferred until
+              // the incognito model is created.
+              .WithRegular(ProfileSelection::kRedirectedToOriginal)
               .Build()) {}
 
 TabStateStorageServiceFactory::~TabStateStorageServiceFactory() = default;
@@ -98,12 +102,15 @@ TabStateStorageServiceFactory::BuildServiceInstanceForBrowserContext(
 
   Profile* profile = static_cast<Profile*>(context);
   std::unique_ptr<TabStoragePackager> packager;
+  // TODO(crbug.com/451614469): Once OTR support is fully implemented, this
+  // should be set to `true` on Android.
+  bool support_off_the_record_data = false;
 #if BUILDFLAG(IS_ANDROID)
   packager = std::make_unique<TabStoragePackagerAndroid>(profile);
 #endif
   return std::make_unique<TabStateStorageService>(
-      profile->GetPath(), std::move(packager), GetTabCanonicalizer(),
-      GetRestoreEntityTrackerFactory());
+      profile->GetPath(), support_off_the_record_data, std::move(packager),
+      GetTabCanonicalizer(), GetRestoreEntityTrackerFactory());
 }
 
 }  // namespace tabs

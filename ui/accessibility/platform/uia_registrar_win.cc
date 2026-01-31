@@ -42,6 +42,15 @@ UiaRegistrarWin::UiaRegistrarWin() {
     registrar->RegisterProperty(&virtual_content_property_info,
                                 &virtual_content_property_id_);
   }
+
+  if (features::IsUiaMathMlSupportEnabled()) {
+    // Register the custom UIA property that provides MathML markup for
+    // math elements. This GUID matches Microsoft Word's implementation for
+    // compatibility with assistive technologies.
+    UIAutomationPropertyInfo mathml_property_info = {
+        kUiaPropertyMathMlGuid, L"MathML", UIAutomationType_String};
+    registrar->RegisterProperty(&mathml_property_info, &mathml_property_id_);
+  }
 }
 
 UiaRegistrarWin::~UiaRegistrarWin() = default;
@@ -60,6 +69,13 @@ PROPERTYID UiaRegistrarWin::GetVirtualContentPropertyId() const {
   if (!features::IsAccessibilityAriaVirtualContentEnabled())
     return 0;
   return virtual_content_property_id_;
+}
+
+PROPERTYID UiaRegistrarWin::GetMathMLPropertyId() const {
+  if (!features::IsUiaMathMlSupportEnabled()) {
+    return 0;
+  }
+  return mathml_property_id_;
 }
 
 const UiaRegistrarWin& UiaRegistrarWin::GetInstance() {

@@ -54,8 +54,7 @@ NSString* const kPassphrase = @"hello";
 }
 
 // Tests to open the sync passphrase view, and to close it.
-// TODO(crbug.com/330012240): The test is flaky.
-- (void)DISABLED_testShowSyncPassphraseAndDismiss {
+- (void)testShowSyncPassphraseAndDismiss {
   [ChromeEarlGrey addSyncPassphrase:kPassphrase];
   // Signin.
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
@@ -108,8 +107,7 @@ NSString* const kPassphrase = @"hello";
 
 // Tests Sync is on after opening settings from the Infobar and entering the
 // passphrase.
-// TODO(crbug.com/330012240): Reenable this test.
-- (void)DISABLED_testShowAddSyncPassphrase {
+- (void)testShowAddSyncPassphrase {
   [ChromeEarlGrey addSyncPassphrase:kPassphrase];
   // Signin.
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];

@@ -7,10 +7,10 @@
 #include <memory>
 #include <string>
 #include <string_view>
+#include <utility>
 #include <variant>
 #include <vector>
 
-#include "base/containers/contains.h"
 #include "base/files/file_path.h"
 #include "base/run_loop.h"
 #include "base/strings/strcat.h"
@@ -38,6 +38,7 @@
 #include "chrome/browser/web_applications/test/web_app_test_utils.h"
 #include "chrome/browser/web_applications/web_app_command_manager.h"
 #include "chrome/browser/web_applications/web_app_command_scheduler.h"
+#include "chrome/browser/web_applications/web_app_filter.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_icon_generator.h"
 #include "chrome/browser/web_applications/web_app_icon_manager.h"
@@ -59,10 +60,9 @@
 #include "net/http/http_status_code.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/manifest/manifest.h"
 #include "third_party/blink/public/common/manifest/manifest_util.h"
-#include "third_party/blink/public/mojom/manifest/display_mode.mojom-shared.h"
 #include "third_party/blink/public/mojom/manifest/display_mode.mojom.h"
-#include "third_party/blink/public/mojom/manifest/manifest.mojom-forward.h"
 #include "third_party/blink/public/mojom/manifest/manifest.mojom.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkColor.h"
@@ -278,9 +278,8 @@ TEST_F(FetchManifestAndInstallCommandTest, SuccessWithManifest) {
                            CreateDialogCallback(
                                true, mojom::UserDisplayMode::kStandalone)),
             webapps::InstallResultCode::kSuccessNewInstall);
-  auto& registrar = provider()->registrar_unsafe();
-  EXPECT_EQ(proto::INSTALLED_WITH_OS_INTEGRATION,
-            registrar.GetInstallState(kWebAppId));
+  EXPECT_TRUE(provider()->registrar_unsafe().AppMatches(
+      kWebAppId, WebAppFilter::InstalledInOperatingSystemForTesting()));
   EXPECT_EQ(1, fake_ui_manager().num_reparent_tab_calls());
 }
 
@@ -367,8 +366,8 @@ TEST_F(FetchManifestAndInstallCommandTest,
                 CreateDialogCallback(true, mojom::UserDisplayMode::kStandalone),
                 FallbackBehavior::kAllowFallbackDataAlways),
             webapps::InstallResultCode::kSuccessNewInstall);
-  EXPECT_EQ(proto::INSTALLED_WITH_OS_INTEGRATION,
-            provider()->registrar_unsafe().GetInstallState(kWebAppId));
+  EXPECT_TRUE(provider()->registrar_unsafe().AppMatches(
+      kWebAppId, WebAppFilter::InstalledInOperatingSystemForTesting()));
   EXPECT_EQ(provider()->registrar_unsafe().GetAppShortName(kWebAppId), "foo");
   EXPECT_EQ(1, fake_ui_manager().num_reparent_tab_calls());
 }
@@ -386,8 +385,8 @@ TEST_F(FetchManifestAndInstallCommandTest,
                 CreateDialogCallback(true, mojom::UserDisplayMode::kStandalone),
                 FallbackBehavior::kAllowFallbackDataAlways),
             webapps::InstallResultCode::kSuccessNewInstall);
-  EXPECT_EQ(proto::INSTALLED_WITH_OS_INTEGRATION,
-            provider()->registrar_unsafe().GetInstallState(kWebAppId));
+  EXPECT_TRUE(provider()->registrar_unsafe().AppMatches(
+      kWebAppId, WebAppFilter::InstalledInOperatingSystemForTesting()));
   EXPECT_EQ(provider()->registrar_unsafe().GetAppShortName(kWebAppId),
             "test app");
   EXPECT_EQ(1, fake_ui_manager().num_reparent_tab_calls());
@@ -402,7 +401,8 @@ TEST_F(FetchManifestAndInstallCommandTest,
                 CreateDialogCallback(true, mojom::UserDisplayMode::kStandalone),
                 FallbackBehavior::kAllowFallbackDataAlways),
             webapps::InstallResultCode::kGetWebAppInstallInfoFailed);
-  EXPECT_FALSE(provider()->registrar_unsafe().IsInRegistrar(kWebAppId));
+  EXPECT_FALSE(
+      provider()->registrar_unsafe().GetInstallState(kWebAppId).has_value());
   EXPECT_EQ(0, fake_ui_manager().num_reparent_tab_calls());
 }
 
@@ -421,7 +421,8 @@ TEST_F(FetchManifestAndInstallCommandTest, UserInstallDeclined) {
                            CreateDialogCallback(
                                false, mojom::UserDisplayMode::kStandalone)),
             webapps::InstallResultCode::kUserInstallDeclined);
-  EXPECT_FALSE(provider()->registrar_unsafe().IsInRegistrar(kWebAppId));
+  EXPECT_FALSE(
+      provider()->registrar_unsafe().GetInstallState(kWebAppId).has_value());
   EXPECT_EQ(0, fake_ui_manager().num_reparent_tab_calls());
 }
 
@@ -637,7 +638,7 @@ TEST_F(FetchManifestAndInstallCommandTest, WriteDataToDisk) {
 
     for (SquareSizePx size_px : purpose_info.sizes_px) {
       SCOPED_TRACE(size_px);
-      ASSERT_TRUE(base::Contains(pngs, size_px));
+      ASSERT_TRUE(pngs.contains(size_px));
 
       SkBitmap icon_bitmap = pngs[size_px];
       EXPECT_EQ(icon_bitmap.width(), icon_bitmap.height());
@@ -839,7 +840,8 @@ TEST_F(FetchManifestAndInstallCommandTest, WebContentsNavigates) {
   ASSERT_TRUE(install_future.Wait());
   EXPECT_EQ(install_future.Get<webapps::InstallResultCode>(),
             webapps::InstallResultCode::kCancelledDueToMainFrameNavigation);
-  EXPECT_FALSE(provider()->registrar_unsafe().IsInRegistrar(kWebAppId));
+  EXPECT_FALSE(
+      provider()->registrar_unsafe().GetInstallState(kWebAppId).has_value());
 }
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -936,7 +938,7 @@ class UniversalInstallComboTest
     std::string icons_name_part = "Absent";
     if (std::get<5>(config)) {
       std::string filename = std::get<5>(config)->src.ExtractFileName();
-      if (base::Contains(filename, ".")) {
+      if (filename.contains(".")) {
         icons_name_part = filename.substr(0, filename.find('.'));
       }
     }
@@ -991,7 +993,7 @@ class UniversalInstallComboTest
 
   bool IsInstallableOtherThanDisplay() {
     return GetAppName() && GetStartUrl() && GetIcon() &&
-           !base::Contains(GetIcon()->src.spec(), "not_found");
+           !GetIcon()->src.spec().contains("not_found");
   }
 
   bool IsCraftedApp() {
@@ -1012,7 +1014,7 @@ class UniversalInstallComboTest
   }
 
   SkBitmap GenerateExpected256Icon() {
-    if (GetIcon() && !base::Contains(GetIcon()->src.spec(), "not_found")) {
+    if (GetIcon() && !GetIcon()->src.spec().contains("not_found")) {
       return CreateSquareIcon(icon_size::k256, kIconColor);
     } else if (IsDiyApp()) {
       if (GetFaviconColor()) {
@@ -1067,7 +1069,8 @@ class UniversalInstallComboTest
 
     if (GetDisplayMode()) {
       manifest->display = blink::mojom::DisplayMode::kBrowser;
-      manifest->display_override = {GetDisplayMode().value()};
+      manifest->display_override = {
+          blink::Manifest::DisplayOverride::Create(GetDisplayMode().value())};
     } else {
       page_state.error_code =
           webapps::InstallableStatusCode::MANIFEST_DISPLAY_NOT_SUPPORTED;
@@ -1077,7 +1080,7 @@ class UniversalInstallComboTest
       manifest->icons = {GetIcon().value()};
       GURL url = GetIcon()->src;
       auto& icon_state = web_contents_manager().GetOrCreateIconState(url);
-      if (base::Contains(url.spec(), "not_found")) {
+      if (url.spec().contains("not_found")) {
         icon_state.bitmaps = {};
         icon_state.http_status_code = 404;
       } else {
@@ -1099,8 +1102,8 @@ class UniversalInstallComboTest
 #if BUILDFLAG(IS_MAC)
     if (IsDiyApp()) {
       if (GetIcon().has_value() &&
-          !base::Contains(GetIcon()->src.spec(), "not_found") &&
-          !base::Contains(GetIcon()->src.spec(), "Absent")) {
+          !GetIcon()->src.spec().contains("not_found") &&
+          !GetIcon()->src.spec().contains("Absent")) {
         gfx::Image test_icon = web_app::test::LoadTestImageFromDisk(
             base::FilePath(FILE_PATH_LITERAL(
                 "chrome/test/data/web_apps/diyapp_icon_image.png")));
@@ -1108,7 +1111,7 @@ class UniversalInstallComboTest
         return test_bitmap;
       }
       auto favicon_path = GetFaviconFilePath();
-      if (favicon_path && base::Contains(*favicon_path, "pattern3")) {
+      if (favicon_path && favicon_path->contains("pattern3")) {
         gfx::Image test_icon = web_app::test::LoadTestImageFromDisk(
             base::FilePath(FILE_PATH_LITERAL(
                 "chrome/test/data/web_apps/masked_pattern3-256.png")));
@@ -1138,8 +1141,7 @@ class UniversalInstallComboTest
 #endif
     // Note: These should be static test images instead of dynamically
     // generating these using the same production code.
-    if (GetIcon().has_value() &&
-        !base::Contains(GetIcon()->src.spec(), "not_found")) {
+    if (GetIcon().has_value() && !GetIcon()->src.spec().contains("not_found")) {
       return CreateSquareIcon(width, kIconColor);
     }
     if (GetFaviconColor()) {
@@ -1172,10 +1174,10 @@ TEST_P(UniversalInstallComboTest, InstallStateValid) {
 
   webapps::AppId app_id = install_future.Get<webapps::AppId>();
 
-  ASSERT_EQ(proto::InstallState::INSTALLED_WITH_OS_INTEGRATION,
-            provider()->registrar_unsafe().GetInstallState(app_id));
-
   auto& registrar = provider()->registrar_unsafe();
+
+  ASSERT_TRUE(registrar.AppMatches(
+      app_id, WebAppFilter::InstalledInOperatingSystemForTesting()));
 
   std::string name = base::UTF16ToUTF8(GetAppName().value_or(kPageTitle));
   EXPECT_EQ(registrar.GetAppShortName(app_id), name);
@@ -1200,7 +1202,8 @@ TEST_P(UniversalInstallComboTest, InstallStateValid) {
   EXPECT_THAT(bitmaps[icon_size::k256],
               gfx::test::EqualsBitmap(GenerateExpected256Icon()));
 
-  EXPECT_EQ(IsDiyApp(), provider()->registrar_unsafe().IsDiyApp(app_id));
+  EXPECT_NE(IsDiyApp(), provider()->registrar_unsafe().AppMatches(
+                            app_id, WebAppFilter::IsCraftedApp()));
 
   // TODO(https://crbug.com/385198125): Improve GetShortcutIcon to take a size
   // that is actually respected across all platforms.

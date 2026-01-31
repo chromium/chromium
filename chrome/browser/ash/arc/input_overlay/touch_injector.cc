@@ -75,7 +75,7 @@ void RemoveActionsWithSameID(std::vector<std::unique_ptr<Action>>& actions) {
 // Parse Json to different types of actions.
 std::vector<std::unique_ptr<Action>> ParseJsonToActions(
     TouchInjector* touch_injector,
-    const base::Value::Dict& root) {
+    const base::DictValue& root) {
   std::vector<std::unique_ptr<Action>> actions;
 
   // Parse tap actions if they exist.
@@ -254,7 +254,7 @@ TouchInjector::~TouchInjector() {
   UnRegisterEventRewriter();
 }
 
-void TouchInjector::ParseActions(const base::Value::Dict& root) {
+void TouchInjector::ParseActions(const base::DictValue& root) {
   DCHECK(actions_.empty());
   if (enable_mouse_lock_) {
     ParseMouseLock(root);
@@ -484,7 +484,7 @@ void TouchInjector::SendExtraEvent(
   }
 }
 
-void TouchInjector::ParseMouseLock(const base::Value::Dict& dict) {
+void TouchInjector::ParseMouseLock(const base::DictValue& dict) {
   auto* mouse_lock = dict.FindDict(kMouseLock);
   if (!mouse_lock) {
     mouse_lock_ = std::make_unique<KeyCommand>(

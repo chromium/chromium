@@ -15,7 +15,6 @@
 #include "ash/shell.h"
 #include "base/check_is_test.h"
 #include "base/command_line.h"
-#include "base/containers/contains.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
@@ -81,7 +80,7 @@ constexpr double kDefaultDisplayZoomValue = 1.0;
 // This kind of boilerplates should be done by base::JSONValueConverter but it
 // doesn't support classes like gfx::Insets for now.
 // TODO(mukai): fix base::JSONValueConverter and use it here.
-bool ValueToInsets(const base::Value::Dict& dict, gfx::Insets* insets) {
+bool ValueToInsets(const base::DictValue& dict, gfx::Insets* insets) {
   DCHECK(insets);
 
   std::optional<int> top = dict.FindInt(kInsetsTopKey);
@@ -95,7 +94,7 @@ bool ValueToInsets(const base::Value::Dict& dict, gfx::Insets* insets) {
   return false;
 }
 
-void InsetsToValue(const gfx::Insets& insets, base::Value::Dict& dict) {
+void InsetsToValue(const gfx::Insets& insets, base::DictValue& dict) {
   dict.Set(kInsetsTopKey, insets.top());
   dict.Set(kInsetsLeftKey, insets.left());
   dict.Set(kInsetsBottomKey, insets.bottom());
@@ -133,7 +132,7 @@ bool ParseTouchCalibrationStringValue(
 
 // Retrieves touch calibration associated data from the dictionary and stores
 // it in an instance of TouchCalibrationData struct.
-bool ValueToTouchData(const base::Value::Dict& dict,
+bool ValueToTouchData(const base::DictValue& dict,
                       display::TouchCalibrationData* touch_calibration_data) {
   display::TouchCalibrationData::CalibrationPointPairQuad* point_pair_quad =
       &(touch_calibration_data->point_pairs);
@@ -159,7 +158,7 @@ bool ValueToTouchData(const base::Value::Dict& dict,
 // Stores the touch calibration data into the dictionary.
 void TouchDataToValue(
     const display::TouchCalibrationData& touch_calibration_data,
-    base::Value::Dict& dict) {
+    base::DictValue& dict) {
   std::string str;
   for (std::size_t row = 0; row < touch_calibration_data.point_pairs.size();
        row++) {
@@ -215,7 +214,7 @@ void LoadDisplayLayouts(PrefService* local_state) {
       continue;
     }
 
-    if (base::Contains(it.first, ",")) {
+    if (it.first.contains(",")) {
       std::vector<std::string> ids_str = base::SplitString(
           it.first, ",", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
       std::vector<int64_t> ids;
@@ -234,7 +233,7 @@ void LoadDisplayLayouts(PrefService* local_state) {
 
 void LoadDisplayProperties(PrefService* local_state) {
   for (const auto it : local_state->GetDict(prefs::kDisplayProperties)) {
-    const base::Value::Dict* dict_value = it.second.GetIfDict();
+    const base::DictValue* dict_value = it.second.GetIfDict();
     if (!dict_value) {
       continue;
     }
@@ -321,7 +320,7 @@ void LoadDisplayProperties(PrefService* local_state) {
 }
 
 void LoadDisplayRotationState(PrefService* local_state) {
-  const base::Value::Dict& properties =
+  const base::DictValue& properties =
       local_state->GetDict(prefs::kDisplayRotationLock);
   const std::optional<bool> rotation_lock = properties.FindBool("lock");
   if (!rotation_lock) {
@@ -365,7 +364,7 @@ void LoadDisplayTouchAssociations(PrefService* local_state) {
       }
       info.timestamp = base::Time().FromSecondsSinceUnixEpoch(*value);
 
-      const base::Value::Dict* calibration_data_dict =
+      const base::DictValue* calibration_data_dict =
           association_info_item.second.GetDict().FindDict(
               kTouchAssociationCalibrationData);
       if (!calibration_data_dict) {
@@ -381,7 +380,7 @@ void LoadDisplayTouchAssociations(PrefService* local_state) {
   const display::TouchDeviceIdentifier& fallback_identifier =
       display::TouchDeviceIdentifier::GetFallbackTouchDeviceIdentifier();
   for (const auto it : local_state->GetDict(prefs::kDisplayProperties)) {
-    const base::Value::Dict* dict_value = it.second.GetIfDict();
+    const base::DictValue* dict_value = it.second.GetIfDict();
     if (!dict_value) {
       continue;
     }
@@ -397,7 +396,7 @@ void LoadDisplayTouchAssociations(PrefService* local_state) {
     }
 
     if (calibration_data_to_set) {
-      if (!base::Contains(touch_associations, fallback_identifier)) {
+      if (!touch_associations.contains(fallback_identifier)) {
         touch_associations.emplace(
             fallback_identifier,
             display::TouchDeviceManager::AssociationInfoMap());
@@ -457,7 +456,7 @@ void LoadDisplayTouchAssociations(PrefService* local_state) {
 // Loads mirror info for each external display, the info will later be used to
 // restore mirror mode.
 void LoadExternalDisplayMirrorInfo(PrefService* local_state) {
-  const base::Value::List& pref_data =
+  const base::ListValue& pref_data =
       local_state->GetList(prefs::kExternalDisplayMirrorInfo);
   std::set<int64_t> external_display_mirror_info;
   for (const auto& it : pref_data) {
@@ -480,7 +479,7 @@ void LoadExternalDisplayMirrorInfo(PrefService* local_state) {
 // Loads mixed mirror mode parameters which will later be used to restore mixed
 // mirror mode. Return false if the parameters fail to be loaded.
 void LoadDisplayMixedMirrorModeParams(PrefService* local_state) {
-  const base::Value::Dict& pref_data =
+  const base::DictValue& pref_data =
       local_state->GetDict(prefs::kDisplayMixedMirrorModeParams);
 
   // This function is called once for system (re)start, so the parameters should
@@ -524,7 +523,7 @@ void StoreDisplayLayoutPref(PrefService* pref_service,
   std::string name = display::DisplayIdListToString(list);
 
   ScopedDictPrefUpdate update(pref_service, prefs::kSecondaryDisplays);
-  base::Value::Dict* layout_dict = update->EnsureDict(name);
+  base::DictValue* layout_dict = update->EnsureDict(name);
   // This call modifies `layout_dict` in place.
   display::DisplayLayoutToJson(display_layout, *layout_dict);
 }
@@ -555,14 +554,13 @@ void StoreCurrentDisplayProperties(PrefService* pref_service) {
   display::DisplayManager* display_manager = GetDisplayManager();
 
   ScopedDictPrefUpdate update(pref_service, prefs::kDisplayProperties);
-  base::Value::Dict& pref_data = update.Get();
+  base::DictValue& pref_data = update.Get();
 
   // Pre-process data related to legacy touch calibration to opitmize lookup.
   const display::TouchDeviceIdentifier& fallback_identifier =
       display::TouchDeviceIdentifier::GetFallbackTouchDeviceIdentifier();
   display::TouchDeviceManager::AssociationInfoMap legacy_data_map;
-  if (base::Contains(
-          display_manager->touch_device_manager()->touch_associations(),
+  if (display_manager->touch_device_manager()->touch_associations().contains(
           fallback_identifier)) {
     legacy_data_map =
         display_manager->touch_device_manager()->touch_associations().at(
@@ -575,7 +573,7 @@ void StoreCurrentDisplayProperties(PrefService* pref_service) {
     int64_t id = display.id();
     display::ManagedDisplayInfo info = display_manager->GetDisplayInfo(id);
 
-    base::Value::Dict property_value;
+    base::DictValue property_value;
     // Don't save the display preference in unified mode because its
     // size and modes can change depending on the combination of displays.
     if (display_manager->IsInUnifiedMode()) {
@@ -587,7 +585,7 @@ void StoreCurrentDisplayProperties(PrefService* pref_service) {
     // But we should keep any original value so that it can be restored when
     // exiting tablet mode.
     if (display::Screen::Get()->InTabletMode()) {
-      const base::Value::Dict* original_property =
+      const base::DictValue* original_property =
           pref_data.FindDict(base::NumberToString(id));
       if (original_property) {
         std::optional<int> original_rotation =
@@ -620,13 +618,13 @@ void StoreCurrentDisplayProperties(PrefService* pref_service) {
 
     // Store the legacy format touch calibration data. This can be removed after
     // a couple of milestones when every device has migrated to the new format.
-    if (legacy_data_map.size() && base::Contains(legacy_data_map, id)) {
+    if (legacy_data_map.size() && legacy_data_map.contains(id)) {
       TouchDataToValue(legacy_data_map.at(id).calibration_data, property_value);
     }
 
     property_value.Set(kDisplayZoom, info.zoom_factor());
 
-    base::Value::Dict display_zoom_dict;
+    base::DictValue display_zoom_dict;
     for (const auto& it : info.zoom_factor_map()) {
       display_zoom_dict.Set(it.first, it.second);
     }
@@ -711,17 +709,17 @@ void StoreDisplayTouchAssociations(PrefService* pref_service) {
       GetDisplayManager()->touch_device_manager();
 
   ScopedDictPrefUpdate update(pref_service, prefs::kDisplayTouchAssociations);
-  base::Value::Dict& pref_data = update.Get();
+  base::DictValue& pref_data = update.Get();
   pref_data.clear();
 
   const display::TouchDeviceManager::TouchAssociationMap& touch_associations =
       touch_device_manager->touch_associations();
 
   for (const auto& association : touch_associations) {
-    base::Value::Dict association_info_map_value;
+    base::DictValue association_info_map_value;
     for (const auto& association_info : association.second) {
       // Iteration for each pair of <Display ID, TouchAssociationInfo>.
-      base::Value::Dict association_info_value;
+      base::DictValue association_info_value;
 
       // Parsing each member of TouchAssociationInfo and storing them in
       // |association_info_value|.
@@ -732,7 +730,7 @@ void StoreDisplayTouchAssociations(PrefService* pref_service) {
           association_info.second.timestamp.InSecondsFSinceUnixEpoch());
 
       // Serialize TouchCalibrationData.
-      base::Value::Dict calibration_data_value;
+      base::DictValue calibration_data_value;
       TouchDataToValue(association_info.second.calibration_data,
                        calibration_data_value);
       association_info_value.Set(kTouchAssociationCalibrationData,
@@ -762,7 +760,7 @@ void StoreDisplayTouchAssociations(PrefService* pref_service) {
   // particular port is associated with.
   ScopedDictPrefUpdate update_port(pref_service,
                                    prefs::kDisplayTouchPortAssociations);
-  base::Value::Dict& port_pref_data = update_port.Get();
+  base::DictValue& port_pref_data = update_port.Get();
   port_pref_data.clear();
 
   const display::TouchDeviceManager::PortAssociationMap& port_associations =
@@ -771,7 +769,7 @@ void StoreDisplayTouchAssociations(PrefService* pref_service) {
   // For each port identified by the secondary id of TouchDeviceIdentifier,
   // we store the touch device and the display associated with it.
   for (const auto& association : port_associations) {
-    base::Value::Dict association_info_value;
+    base::DictValue association_info_value;
     association_info_value.Set(kTouchDeviceIdentifier,
                                association.first.ToString());
     association_info_value.Set(kPortAssociationDisplayId,
@@ -795,7 +793,7 @@ void ReportToPopularityMetricsAndStore(PrefService* pref_service) {
                             kCurrentVersion);
   }
 
-  base::Value::List cached_list =
+  base::ListValue cached_list =
       pref_service->GetList(prefs::kDisplayPopularityUserReportedDisplays)
           .Clone();
   for (int64_t id : GetDisplayManager()->GetConnectedDisplayIdList()) {
@@ -809,7 +807,7 @@ void ReportToPopularityMetricsAndStore(PrefService* pref_service) {
 
     std::string display_id = base::NumberToString(display.edid_display_id());
     // If we've already reported that display, don't report it again.
-    if (base::Contains(cached_list, display_id)) {
+    if (cached_list.contains(display_id)) {
       continue;
     }
 
@@ -850,7 +848,7 @@ void ReportToPopularityMetricsAndStore(PrefService* pref_service) {
 // Stores mirror info for each external display.
 void StoreExternalDisplayMirrorInfo(PrefService* pref_service) {
   ScopedListPrefUpdate update(pref_service, prefs::kExternalDisplayMirrorInfo);
-  base::Value::List& pref_data = update.Get();
+  base::ListValue& pref_data = update.Get();
   pref_data.clear();
   const std::set<int64_t>& external_display_mirror_info =
       GetDisplayManager()->external_display_mirror_info();
@@ -866,7 +864,7 @@ void StoreDisplayMixedMirrorModeParams(
     const std::optional<display::MixedMirrorModeParams>& mixed_params) {
   ScopedDictPrefUpdate update(pref_service,
                               prefs::kDisplayMixedMirrorModeParams);
-  base::Value::Dict& pref_data = update.Get();
+  base::DictValue& pref_data = update.Get();
   pref_data.clear();
 
   if (!mixed_params) {
@@ -876,7 +874,7 @@ void StoreDisplayMixedMirrorModeParams(
   pref_data.Set(kMirroringSourceId,
                 base::NumberToString(mixed_params->source_id));
 
-  base::Value::List mirroring_destination_ids_list;
+  base::ListValue mirroring_destination_ids_list;
   for (const auto& id : mixed_params->destination_ids) {
     mirroring_destination_ids_list.Append(base::NumberToString(id));
   }
@@ -1034,7 +1032,7 @@ void DisplayPrefs::StoreLegacyTouchDataForTest(
     int64_t display_id,
     const display::TouchCalibrationData& data) {
   ScopedDictPrefUpdate update(local_state_, prefs::kDisplayProperties);
-  base::Value::Dict property_value;
+  base::DictValue property_value;
   TouchDataToValue(data, property_value);
   update->Set(base::NumberToString(display_id), std::move(property_value));
 }

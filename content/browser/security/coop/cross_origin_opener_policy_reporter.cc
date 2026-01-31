@@ -194,7 +194,7 @@ void CrossOriginOpenerPolicyReporter::QueueNavigationToCOOPReport(
   if (!endpoint)
     return;
 
-  base::Value::Dict body;
+  base::DictValue body;
   body.Set(kDisposition,
            is_report_only ? kDispositionReporting : kDispositionEnforce);
   body.Set(kPreviousURL,
@@ -218,7 +218,7 @@ void CrossOriginOpenerPolicyReporter::QueueNavigationAwayFromCOOPReport(
   std::string sanitized_next_url;
   if (is_current_source || same_origin_with_next)
     sanitized_next_url = SanitizedURL(next_url);
-  base::Value::Dict body;
+  base::DictValue body;
   body.Set(kNextURL, sanitized_next_url);
   body.Set(kType, kTypeFromResponse);
   QueueNavigationReport(std::move(body), *endpoint, is_report_only);
@@ -240,7 +240,7 @@ void CrossOriginOpenerPolicyReporter::QueueAccessReport(
   DCHECK(base::FeatureList::IsEnabled(
       network::features::kCrossOriginOpenerPolicy));
 
-  base::Value::Dict body;
+  base::DictValue body;
   body.Set(kType, network::CoopAccessReportTypeToString(report_type));
   body.Set(kDisposition, kDispositionReporting);
   body.Set(kEffectivePolicy, ToString(coop_.report_only_value));
@@ -280,7 +280,7 @@ void CrossOriginOpenerPolicyReporter::QueueAccessReport(
 }
 
 void CrossOriginOpenerPolicyReporter::QueueNavigationReport(
-    base::Value::Dict body,
+    base::DictValue body,
     const std::string& endpoint,
     bool is_report_only) {
   body.Set(kDisposition,

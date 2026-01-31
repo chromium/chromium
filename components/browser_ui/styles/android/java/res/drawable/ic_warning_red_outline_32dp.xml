@@ -8,11 +8,11 @@ found in the LICENSE file.
 <vector xmlns:android="http://schemas.android.com/apk/res/android"
     android:width="32dp"
     android:height="32dp"
-    android:viewportWidth="32"
-    android:viewportHeight="32">
-  <group>
-    <path
-        android:pathData="M5,25L16,6L27,25H5ZM8.45,23H23.55L16,10L8.45,23ZM16,22C16.283,22 16.517,21.908 16.7,21.725C16.9,21.525 17,21.283 17,21C17,20.717 16.9,20.483 16.7,20.3C16.517,20.1 16.283,20 16,20C15.717,20 15.475,20.1 15.275,20.3C15.092,20.483 15,20.717 15,21C15,21.283 15.092,21.525 15.275,21.725C15.475,21.908 15.717,22 16,22ZM15,19H17V14H15V19Z"
-        android:fillColor="?attr/colorError"/>
-  </group>
+    android:viewportWidth="960"
+    android:viewportHeight="960"
+    android:tint="?attr/colorError">
+    <!-- The size of the path has been manually scaled down to 24dp to match the previous drawable's
+         size. -->
+    <path android:fillColor="@android:color/white"
+        android:pathData="M150,750L480,180L810,750L150,750ZM236.5,700L723.5,700L480,280L236.5,700ZM482.08,661.5Q492.75,661.5 499.88,654.29Q507,647.08 507,636.41Q507,625.75 499.79,618.62Q492.58,611.5 481.91,611.5Q471.25,611.5 464.12,618.71Q457,625.93 457,636.59Q457,647.25 464.21,654.38Q471.43,661.5 482.08,661.5ZM457,576L507,576L507,414L457,414L457,576ZM480,490L480,490L480,490Z"/>
 </vector>

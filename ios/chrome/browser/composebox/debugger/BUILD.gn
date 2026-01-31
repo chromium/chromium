@@ -1,0 +1,25 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("debugger") {
+  sources = [
+    "composebox_debugger_breadcrumbs_view_controller.h",
+    "composebox_debugger_breadcrumbs_view_controller.mm",
+    "composebox_debugger_coordinator.h",
+    "composebox_debugger_coordinator.mm",
+    "composebox_debugger_event.h",
+    "composebox_debugger_event.mm",
+  ]
+  deps = [
+    "//base",
+    "//ios/chrome/browser/aim/debugger/coordinator",
+    "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
+    "//ios/chrome/browser/shared/public/features",
+    "//ios/chrome/browser/shared/public/features:system_flags",
+    "//ios/chrome/browser/shared/ui/symbols",
+    "//ios/chrome/common/ui/colors",
+    "//ios/chrome/common/ui/util",
+    "//ui/base",
+  ]
+}

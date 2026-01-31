@@ -47,6 +47,7 @@ CreateWebGPUGraphicsContext3DProvider(const KURL& url);
 // Asynchronously creates a WebGPUGraphicsContext3DProvider on any thread.
 PLATFORM_EXPORT void CreateWebGPUGraphicsContext3DProviderAsync(
     const KURL& url,
+    Platform::WebGPUReplyThread reply_thread,
     scoped_refptr<base::SingleThreadTaskRunner> current_thread_task_runner,
     CrossThreadOnceFunction<void(std::unique_ptr<WebGraphicsContext3DProvider>)>
         callback);

@@ -30,7 +30,7 @@ const char kErrorFailedToOpenDevice[] = "Failed to open HID device.";
 const char kErrorConnectionNotFound[] = "Connection not established.";
 const char kErrorTransfer[] = "Transfer failed.";
 
-base::Value::Dict PopulateHidConnection(int connection_id) {
+base::DictValue PopulateHidConnection(int connection_id) {
   hid::HidConnectInfo connection_value;
   connection_value.connection_id = connection_id;
   return connection_value.ToValue();
@@ -90,7 +90,7 @@ ExtensionFunction::ResponseAction HidGetDevicesFunction::Run() {
   return RespondLater();
 }
 
-void HidGetDevicesFunction::OnEnumerationComplete(base::Value::List devices) {
+void HidGetDevicesFunction::OnEnumerationComplete(base::ListValue devices) {
   Respond(WithArguments(std::move(devices)));
 }
 

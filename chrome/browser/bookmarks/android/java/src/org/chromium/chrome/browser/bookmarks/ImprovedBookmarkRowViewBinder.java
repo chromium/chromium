@@ -58,6 +58,20 @@ public class ImprovedBookmarkRowViewBinder {
             row.setSelectionEnabled(model.get(ImprovedBookmarkRowProperties.SELECTION_ACTIVE));
         } else if (key == ImprovedBookmarkRowProperties.EDITABLE) {
             row.setBookmarkIdEditable(model.get(ImprovedBookmarkRowProperties.EDITABLE));
+        } else if (key == ImprovedBookmarkRowProperties.IS_DRAG_ENABLED) {
+            row.setDragEnabled(model.get(ImprovedBookmarkRowProperties.IS_DRAG_ENABLED));
+        } else if (key == ImprovedBookmarkRowProperties.DRAG_HANDLE_TOUCH_LISTENER) {
+            row.setDragHandleTouchListener(
+                    model.get(ImprovedBookmarkRowProperties.DRAG_HANDLE_TOUCH_LISTENER));
+        } else if (key == ImprovedBookmarkRowProperties.ROW_BODY_TOUCH_LISTENER) {
+            row.setRowBodyTouchListener(
+                    model.get(ImprovedBookmarkRowProperties.ROW_BODY_TOUCH_LISTENER));
+        } else if (key == ImprovedBookmarkRowProperties.DRAG_HANDLE_HOVER_LISTENER) {
+            row.setDragHandleHoverListener(
+                    model.get(ImprovedBookmarkRowProperties.DRAG_HANDLE_HOVER_LISTENER));
+        } else if (key == ImprovedBookmarkRowProperties.ROW_BODY_HOVER_LISTENER) {
+            row.setRowBodyHoverListener(
+                    model.get(ImprovedBookmarkRowProperties.ROW_BODY_HOVER_LISTENER));
         } else if (key == ImprovedBookmarkRowProperties.ROW_CLICK_LISTENER) {
             row.setRowClickListener(
                     (ignored) -> model.get(ImprovedBookmarkRowProperties.ROW_CLICK_LISTENER).run());

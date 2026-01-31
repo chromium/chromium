@@ -72,29 +72,29 @@
 #tooltipOffsetFiller {
   position: absolute;
 
-  :host([position="top"]) & {
+  :host([position='top']) & {
     top: 100%;
   }
 
-  :host([position="bottom"]) & {
+  :host([position='bottom']) & {
     bottom: 100%;
   }
 
-  :host([position="left"]) & {
+  :host([position='left']) & {
     left: 100%;
   }
 
-  :host([position="right"]) & {
+  :host([position='right']) & {
     right: 100%;
   }
 
-  :host(:is([position="top"], [position="bottom"])) & {
+  :host(:is([position='top'], [position='bottom'])) & {
     left: 0;
     height: var(--cr-tooltip-offset);
     width: 100%;
   }
 
-  :host(:is([position="left"], [position="right"])) & {
+  :host(:is([position='left'], [position='right'])) & {
     top: 0;
     height: 100%;
     width: var(--cr-tooltip-offset);

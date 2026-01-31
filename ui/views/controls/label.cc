@@ -1422,8 +1422,9 @@ gfx::Size Label::GetBoundedTextSize(const SizeBounds& available_size) const {
     size = full_text_->GetStringSize();
 
     if (base_line_height > 0) {
-      size.set_height(base::checked_cast<int>(GetRequiredLines()) *
-                      base_line_height);
+      const int min_total_height =
+          base::checked_cast<int>(GetRequiredLines()) * base_line_height;
+      size.set_height(std::max(size.height(), min_total_height));
     }
   }
 

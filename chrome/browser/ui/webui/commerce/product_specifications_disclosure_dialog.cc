@@ -8,8 +8,8 @@
 #include <utility>
 
 #include "base/json/json_writer.h"
-#include "chrome/browser/ui/browser_dialogs.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/dialogs/browser_dialogs.h"
 #include "chrome/browser/ui/views/chrome_constrained_window_views_client.h"
 #include "chrome/browser/ui/views/chrome_web_dialog_view.h"
 #include "chrome/browser/ui/webui/constrained_web_dialog_ui.h"
@@ -105,9 +105,9 @@ DialogArgs::~DialogArgs() = default;
 DialogArgs::DialogArgs(const DialogArgs&) = default;
 DialogArgs& DialogArgs::operator=(const DialogArgs&) = default;
 
-base::Value::Dict DialogArgs::ToValue() {
-  base::Value::Dict dialog_args_value;
-  base::Value::List product_spec_urls;
+base::DictValue DialogArgs::ToValue() {
+  base::DictValue dialog_args_value;
+  base::ListValue product_spec_urls;
   for (const auto& url : urls) {
     product_spec_urls.Append(url.spec());
   }

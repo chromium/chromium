@@ -250,7 +250,7 @@ IN_PROC_BROWSER_TEST_F(SecurePaymentConfirmationAuthenticatorGetTest,
       base::JSONReader::Read(response, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   ASSERT_TRUE(value.has_value());
   ASSERT_TRUE(value->is_dict());
-  const base::Value::Dict& value_dict = value->GetDict();
+  const base::DictValue& value_dict = value->GetDict();
   const std::string* type = value_dict.FindString("type");
   ASSERT_NE(nullptr, type) << response;
   EXPECT_EQ("payment.get", *type);
@@ -320,7 +320,7 @@ IN_PROC_BROWSER_TEST_F(SecurePaymentConfirmationAuthenticatorGetTest,
   ASSERT_TRUE(value.has_value());
   ASSERT_TRUE(value->is_dict());
 
-  const base::Value::Dict& dict = value->GetDict();
+  const base::DictValue& dict = value->GetDict();
   const std::string* payee_name =
       dict.FindStringByDottedPath("payment.payeeName");
   ASSERT_NE(nullptr, payee_name) << response;
@@ -371,7 +371,7 @@ IN_PROC_BROWSER_TEST_F(
   ASSERT_TRUE(value.has_value());
   ASSERT_TRUE(value->is_dict());
 
-  const base::Value::Dict& dict = value->GetDict();
+  const base::DictValue& dict = value->GetDict();
   const std::string* payee_name =
       dict.FindStringByDottedPath("payment.payeeName");
   ASSERT_NE(nullptr, payee_name) << response;

@@ -78,7 +78,7 @@ int GetInterstitialMessageID(FilteringBehaviorReason reason) {
 #if BUILDFLAG(IS_ANDROID)
 std::string BuildErrorPageHtmlWithoutApprovals(const GURL& url,
                                                const std::string& app_locale) {
-  base::Value::Dict load_time_data;
+  base::DictValue load_time_data;
   load_time_data.Set("blockPageTitle",
                      l10n_util::GetStringUTF8(IDS_BLOCK_INTERSTITIAL_TITLE));
   load_time_data.Set("blockPageHeader",
@@ -112,7 +112,7 @@ std::string BuildErrorPageHtmlWithApprovals(
     bool already_sent_remote_request,
     bool is_main_frame,
     std::optional<float> ios_font_size_multiplier) {
-  base::Value::Dict load_time_data;
+  base::DictValue load_time_data;
   load_time_data.Set("blockPageTitle",
                      l10n_util::GetStringUTF8(IDS_BLOCK_INTERSTITIAL_TITLE));
   load_time_data.Set("allowAccessRequests", allow_access_requests);

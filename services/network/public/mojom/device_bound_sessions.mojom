@@ -5,6 +5,7 @@
 module network.mojom;
 
 import "mojo/public/mojom/base/time.mojom";
+import "mojo/public/mojom/base/unguessable_token.mojom";
 import "sandbox/policy/mojom/context.mojom";
 import "services/network/public/mojom/clear_data_filter.mojom";
 import "services/network/public/mojom/cookie_manager.mojom";
@@ -45,12 +46,23 @@ struct DeviceBoundSessionAccess {
 // LINT.IfChange
 enum DeviceBoundSessionUsage {
   kUnknown = 0,
-  kNoUsage = 1,
-  kInScopeNotDeferred = 2,
-  kDeferred = 3,
+  kNoSiteMatchNotInScope = 1,
+  kSiteMatchNotInScope = 2,
+  kInScopeRefreshNotYetNeeded = 3,
+  kInScopeRefreshNotAllowed = 4,
+  kInScopeProactiveRefreshNotPossible = 5,
+  kInScopeProactiveRefreshAttempted = 6,
+  kDeferred = 7,
 };
 
 // LINT.ThenChange(//net/device_bound_sessions/session_usage.h)
+
+struct DeviceBoundSessionWithUsage {
+  // Key of session that was used.
+  DeviceBoundSessionKey session_key;
+  // What kind of usage the session had.
+  DeviceBoundSessionUsage usage;
+};
 
 // LINT.IfChange(DeviceBoundSessionDeletionReason)
 enum DeviceBoundSessionDeletionReason {
@@ -189,9 +201,33 @@ enum DeviceBoundSessionError {
   kInvalidConfigJson = 78,
   kInvalidFederatedSessionProviderFailedToRestoreKey = 79,
   kFailedToUnwrapKey = 80,
+  kSessionDeletedDuringRefresh = 81,
 };
 
 // LINT.ThenChange(//net/device_bound_sessions/session_error.h:DeviceBoundSessionError)
+
+// LINT.IfChange(DeviceBoundSessionRefreshResult)
+enum DeviceBoundSessionRefreshResult {
+  kRefreshed = 0,
+  kInitializedService = 1,
+  kUnreachable = 2,
+  kServerError = 3,
+  kRefreshQuotaExceeded = 4,
+  kFatalError = 5,
+  kSigningQuotaExceeded = 6,
+};
+
+// LINT.ThenChange(//net/device_bound_sessions/refresh_result.h:DeviceBoundSessionRefreshResult)
+
+// LINT.IfChange(DeviceBoundSessionChallengeResult)
+enum DeviceBoundSessionChallengeResult {
+  kSuccess = 0,
+  kNoSessionId = 1,
+  kNoSessionMatch = 2,
+  kCantSetBoundCookie = 3,
+};
+
+// LINT.ThenChange(//net/device_bound_sessions/challenge_result.h:DeviceBoundSessionChallengeResult)
 
 // DeviceBoundSessionManager is a privileged interface that should only
 // be used in trusted processes.
@@ -218,6 +254,9 @@ interface DeviceBoundSessionManager {
   AddObserver(url.mojom.Url url,
               pending_remote<DeviceBoundSessionAccessObserver> observer);
 
+  // Adds an observer that will receive Device Bound Session events.
+  AddEventObserver(pending_remote<DeviceBoundSessionEventObserver> observer);
+
   // Creates a session for each param in `params`, and sets each cookie in
   // `cookies_to_set`. This combined functionality allows callers to
   // prevent sessions from applying to stale cookies and to ensure that
@@ -242,4 +281,151 @@ interface DeviceBoundSessionAccessObserver {
   // Called to create a copy of this observer. (e.g. when cloning observers
   // from ResourceRequest).
   Clone(pending_receiver<DeviceBoundSessionAccessObserver> observer);
+};
+
+// Mojo representation of a Cookie Craving. Used for DevTools.
+// See net/device_bound_sessions/cookie_craving.h and
+// net/cookies/cookie_base.h for more details on each of the properties.
+struct DeviceBoundSessionCookieCravingDisplay {
+  // The name of the craving.
+  string name;
+  // The domain of the craving.
+  string domain;
+  // The path of the craving.
+  string path;
+  // The `Secure` attribute of the craving attributes.
+  bool secure;
+  // The `HttpOnly` attribute of the craving attributes.
+  bool http_only;
+  // The `SameSite` attribute of the craving attributes.
+  CookieSameSite same_site;
+};
+
+// Whether a URL rule is included or excluded. Used for DevTools.
+enum DeviceBoundSessionInclusionResult {
+  kExclude = 0,
+  kInclude = 1,
+};
+
+// Mojo representation of a URL Rule.
+struct DeviceBoundSessionUrlRuleDisplay {
+  // See comments on
+  // `net::device_bound_sessions::SessionInclusionRules::UrlRule::rule_type`.
+  DeviceBoundSessionInclusionResult rule_type;
+  // See comments on
+  // `net::device_bound_sessions::SessionInclusionRules::UrlRule::host_pattern`.
+  string host_pattern;
+  // See comments on
+  // `net::device_bound_sessions::SessionInclusionRules::UrlRule::path_prefix`.
+  string path_prefix;
+};
+
+// Mojo representation of session inclusion rules.
+struct DeviceBoundSessionInclusionRulesDisplay {
+  // See comments on
+  // `net::device_bound_sessions::SessionInclusionRules::origin_`.
+  string origin;
+  // Whether the whole site is included. See comments on
+  // `net::device_bound_sessions::SessionInclusionRules::include_site_` for more
+  // details; this boolean is true if that value is populated.
+  bool include_site;
+  // See comments on
+  // `net::device_bound_sessions::SessionInclusionRules::url_rules_`.
+  array<DeviceBoundSessionUrlRuleDisplay> url_rules;
+};
+
+// Session details sent to DevTools.
+struct DeviceBoundSessionDisplay {
+  // The site and session ID of the session.
+  DeviceBoundSessionKey key;
+  // See comments on `net::device_bound_sessions::Session::refresh_url_`.
+  url.mojom.Url refresh_url;
+  // See comments on `net::device_bound_sessions::Session::inclusion_rules_`.
+  DeviceBoundSessionInclusionRulesDisplay inclusion_rules;
+  // See comments on `net::device_bound_sessions::Session::cookie_cravings_`.
+  array<DeviceBoundSessionCookieCravingDisplay> cookie_cravings;
+  // See comments on `net::device_bound_sessions::Session::expiry_date_`.
+  mojo_base.mojom.Time expiry_date;
+  // See comments on `net::device_bound_sessions::Session::cached_challenge__`.
+  string? cached_challenge;
+  // See comments on
+  // `net::device_bound_sessions::Session::allowed_refresh_initiators_`.
+  array<string> allowed_refresh_initiators;
+};
+
+// Session event details specific to creation.
+struct DeviceBoundSessionCreationDetails {
+  // The result of the fetch attempt.
+  DeviceBoundSessionError fetch_error;
+  // The session display if there was a newly created session. This is populated
+  // for all successful creation events.
+  DeviceBoundSessionDisplay? new_session_display;
+};
+
+// Session event details specific to refresh.
+struct DeviceBoundSessionRefreshDetails {
+  // The result of a refresh. Populated only for refresh events.
+  DeviceBoundSessionRefreshResult refresh_result;
+  // If there was a fetch attempt, the result of that.
+  DeviceBoundSessionError? fetch_error;
+  // The session display if there was a newly created session. This is populated
+  // for any refresh event that modifies the session config.
+  DeviceBoundSessionDisplay? new_session_display;
+  // See comments on
+  // `net::device_bound_sessions::RefreshEventResult::was_fully_proactive_refresh`.
+  bool was_fully_proactive_refresh;
+};
+
+// Session event details specific to termination.
+struct DeviceBoundSessionTerminationDetails {
+  // The reason for a session being deleted.
+  DeviceBoundSessionDeletionReason deletion_reason;
+};
+
+// Session event details specific to challenges.
+struct DeviceBoundSessionChallengeDetails {
+  // The result of a challenge.
+  DeviceBoundSessionChallengeResult challenge_result;
+  // The challenge set, if any.
+  string challenge;
+};
+
+// Any one of the different session event type details.
+union DeviceBoundSessionEventTypeDetails {
+  // Session event details specific to creation.
+  DeviceBoundSessionCreationDetails creation;
+  // Session event details specific to refresh.
+  DeviceBoundSessionRefreshDetails refresh;
+  // Session event details specific to termination.
+  DeviceBoundSessionTerminationDetails termination;
+  // Session event details specific to challenges.
+  DeviceBoundSessionChallengeDetails challenge;
+};
+
+// Session event details sent to DevTools.
+struct DeviceBoundSessionEvent {
+  // A unique identifier for this session event.
+  mojo_base.mojom.UnguessableToken event_id;
+  // The site this session event is associated with.
+  SchemefulSite site;
+  // The session ID this event is associated with. May not be populated for
+  // failed events.
+  string? session_id;
+  // Whether this event was considered successful.
+  bool succeeded;
+  // Results specific to the event type.
+  DeviceBoundSessionEventTypeDetails event_type_details;
+};
+
+// An observer that is notified about session events including displays. Used
+// for DevTools.
+interface DeviceBoundSessionEventObserver {
+  // Called when there is a new event. Some examples of this are if a session is
+  // created or refreshed.
+  OnDeviceBoundSessionEventReceived(DeviceBoundSessionEvent event);
+
+  // Called with the existing set of session displays once the observer has been
+  // added.
+  AddDeviceBoundSessionDisplays(
+      array<DeviceBoundSessionDisplay> session_displays);
 };

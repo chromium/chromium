@@ -53,6 +53,11 @@ OmniboxController* WebUILocationBar::GetOmniboxController() {
   return nullptr;
 }
 
+ChipController* WebUILocationBar::GetChipController() {
+  NOTIMPLEMENTED();
+  return nullptr;
+}
+
 content::WebContents* WebUILocationBar::GetWebContents() {
   NOTIMPLEMENTED();
   return nullptr;
@@ -78,6 +83,39 @@ void WebUILocationBar::OnChanged() {
 
 void WebUILocationBar::UpdateWithoutTabRestore() {
   NOTIMPLEMENTED();
+}
+
+bool WebUILocationBar::IsVisible() const {
+  NOTIMPLEMENTED();
+  return true;
+}
+
+gfx::Rect WebUILocationBar::Bounds() const {
+  NOTIMPLEMENTED();
+  return gfx::Rect();
+}
+
+gfx::Size WebUILocationBar::MinimumSize() const {
+  NOTIMPLEMENTED();
+  return gfx::Size();
+}
+
+gfx::Size WebUILocationBar::PreferredSize() const {
+  NOTIMPLEMENTED();
+  return gfx::Size();
+}
+
+void WebUILocationBar::Update(content::WebContents* contents) {
+  NOTIMPLEMENTED();
+}
+
+void WebUILocationBar::ResetTabState(content::WebContents* contents) {
+  NOTIMPLEMENTED();
+}
+
+bool WebUILocationBar::HasSecurityStateChanged() {
+  NOTIMPLEMENTED();
+  return false;
 }
 
 LocationBarTesting* WebUILocationBar::GetLocationBarForTesting() {

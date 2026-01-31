@@ -28,7 +28,6 @@ Bu izni vermek için aşağıdaki "<ph name="BUTTON_NAME" />" düğmesini tıkla
 <translation id="2329392777730037872"><ph name="URL" /> adresi istemcide açılamadı.</translation>
 <translation id="2359808026110333948">Devam</translation>
 <translation id="2366718077645204424">Ana bilgisayara erişilemiyor. Bu sorun, kullandığınız ağın yapılandırmasından kaynaklanıyor olabilir.</translation>
-<translation id="242591256144136845">Telif hakkı 2025 Google LLC. Tüm Hakları Saklıdır.</translation>
 <translation id="2504109125669302160"><ph name="PRODUCT_NAME" /> için "Erişilebilirlik" izni verin</translation>
 <translation id="2509394361235492552"><ph name="HOSTNAME" /> adlı ana makineye bağlandı</translation>
 <translation id="2540992418118313681">Bu bilgisayarı başka bir kullanıcının görmesi ve kontrol etmesi için paylaşmak istiyor musunuz?</translation>
@@ -47,6 +46,7 @@ Bu izni vermek için aşağıdaki "<ph name="BUTTON_NAME" />" düğmesini tıkla
 <translation id="3150823315463303127">Ana makine politikayı okuyamadı.</translation>
 <translation id="3171922709365450819">Bu cihaz, üçüncü taraf kimlik doğrulaması gerektirdiği için bu istemci tarafından desteklenmiyor.</translation>
 <translation id="3197730452537982411">Uzaktan Masaüstü</translation>
+<translation id="3236334139428307578">Telif hakkı 2026 The Chromium Authors. Tüm Hakları Saklıdır.</translation>
 <translation id="324272851072175193">Bu talimatları e-postayla gönder</translation>
 <translation id="3305934114213025800"><ph name="PRODUCT_NAME" /> değişiklik yapmak istiyor.</translation>
 <translation id="3339299787263251426">Bilgisayarınıza İnternet üzerinden güvenli bir şekilde erişin</translation>
@@ -111,6 +111,7 @@ Bu izni vermek için aşağıdaki "<ph name="BUTTON_NAME" />" düğmesini tıkla
 <translation id="5823554426827907568"><ph name="CLIENT_USERNAME" /> kullanıcısı, ekranınızı görüp klavye ve farenizi kontrol etmek için erişim istedi. Bu istekten haberiniz yoksa "<ph name="IDS_SHARE_CONFIRM_DIALOG_DECLINE" />" seçeneğine basın. Haberiniz varsa da hazır olduğunuzda bağlantıya izin vermek için "<ph name="IDS_SHARE_CONFIRM_DIALOG_CONFIRM" />" seçeneğini işaretleyin.</translation>
 <translation id="5823658491130719298">Uzaktan erişmek istediğiniz bilgisayarda Chrome'u açın ve <ph name="INSTALLATION_LINK" /> bağlantısını ziyaret edin</translation>
 <translation id="5841343754884244200">Görüntüleme seçenekleri</translation>
+<translation id="5965133372831030509">Telif hakkı 2026 Google LLC. Tüm Hakları Saklıdır.</translation>
 <translation id="6033507038939587647">Klavye seçenekleri</translation>
 <translation id="6040143037577758943">Kapat</translation>
 <translation id="6062854958530969723">Ana makinenin ilk kullanıma hazırlanması başarısız oldu.</translation>
@@ -138,7 +139,6 @@ Bu izni vermek için aşağıdaki "<ph name="BUTTON_NAME" />" düğmesini tıkla
 <translation id="7067321367069083429">Ekran dokunmatik ekran gibi çalışır</translation>
 <translation id="7116737094673640201">Chrome Chrome Uzaktan Masaüstü'ne hoş geldiniz</translation>
 <translation id="7144878232160441200">Yeniden dene</translation>
-<translation id="7298392173540380852">Telif hakkı 2025 The Chromium Authors. Tüm Hakları Saklıdır.</translation>
 <translation id="7312846573060934304">Ana makine çevrimdışı.</translation>
 <translation id="7319983568955948908">Paylaşmayı Durdur</translation>
 <translation id="7359298090707901886">Seçilen tarayıcı, yerel makinedeki URL'leri açmak için kullanılamaz.</translation>

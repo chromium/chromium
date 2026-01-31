@@ -17,11 +17,11 @@
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_utils.h"
 #import "ios/chrome/browser/device_orientation/ui_bundled/scoped_force_portrait_orientation.h"
 #import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
-#import "ios/chrome/browser/first_run/ui_bundled/first_run_coordinator.h"
-#import "ios/chrome/browser/first_run/ui_bundled/first_run_post_action_provider.h"
-#import "ios/chrome/browser/first_run/ui_bundled/first_run_screen_provider.h"
-#import "ios/chrome/browser/first_run/ui_bundled/guided_tour/guided_tour_coordinator.h"
-#import "ios/chrome/browser/first_run/ui_bundled/guided_tour/guided_tour_promo_coordinator.h"
+#import "ios/chrome/browser/first_run/coordinator/first_run_coordinator.h"
+#import "ios/chrome/browser/first_run/coordinator/first_run_post_action_provider.h"
+#import "ios/chrome/browser/first_run/coordinator/first_run_screen_provider.h"
+#import "ios/chrome/browser/first_run/guided_tour/coordinator/guided_tour_coordinator.h"
+#import "ios/chrome/browser/first_run/guided_tour/coordinator/guided_tour_promo_coordinator.h"
 #import "ios/chrome/browser/safari_data_import/public/safari_data_import_entry_point.h"
 #import "ios/chrome/browser/safari_data_import/public/safari_data_import_ui_handler.h"
 #import "ios/chrome/browser/scoped_ui_blocker/ui_bundled/scoped_ui_blocker.h"
@@ -32,9 +32,9 @@
 #import "ios/chrome/browser/shared/model/browser/browser_provider.h"
 #import "ios/chrome/browser/shared/model/browser/browser_provider_interface.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
-#import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/guided_tour_commands.h"
+#import "ios/chrome/browser/shared/public/commands/scene_commands.h"
 #import "ios/chrome/browser/shared/public/commands/synced_set_up_commands.h"
 #import "ios/chrome/browser/shared/public/commands/tab_grid_commands.h"
 #import "ios/chrome/browser/shared/public/commands/tab_grid_toolbar_commands.h"
@@ -114,6 +114,15 @@ const char kGuidedTourStepDidFinishHistogram[] = "IOS.GuidedTour.DidFinishStep";
   std::unique_ptr<feature_engagement::DisplayLockHandle> _displayLock;
 }
 
+- (void)dealloc {
+  CHECK(!_firstRunUIBlocker, base::NotFatalUntil::M155);
+  CHECK(!_firstRunCoordinator, base::NotFatalUntil::M155);
+  CHECK(!_guidedTourPromoCoordinator, base::NotFatalUntil::M155);
+  CHECK(!_guidedTourCoordinator, base::NotFatalUntil::M155);
+  CHECK(!_scopedForceOrientation, base::NotFatalUntil::M155);
+  CHECK(!_displayLock, base::NotFatalUntil::M155);
+}
+
 #pragma mark - Public
 
 - (void)tabGridWasPresented {
@@ -131,7 +140,13 @@ const char kGuidedTourStepDidFinishHistogram[] = "IOS.GuidedTour.DidFinishStep";
 #pragma mark - SceneStateObserver
 
 - (void)sceneStateDidDisableUI:(SceneState*)sceneState {
-  _firstRunUIBlocker.reset();
+  [self releaseUILocks];
+
+  [_guidedTourCoordinator stop];
+  _guidedTourCoordinator = nil;
+
+  [_guidedTourPromoCoordinator stopWithCompletion:nil];
+  _guidedTourPromoCoordinator = nil;
 
   [_firstRunCoordinator stop];
   _firstRunCoordinator = nil;
@@ -201,10 +216,13 @@ const char kGuidedTourStepDidFinishHistogram[] = "IOS.GuidedTour.DidFinishStep";
 - (void)stepCompleted:(GuidedTourStep)step {
   CHECK_EQ(step, _currentGuidedTourStep);
   if (step == GuidedTourStep::kNTP) {
+    [_guidedTourCoordinator stop];
+    _guidedTourCoordinator = nil;
+
     _currentGuidedTourStep = GuidedTourStep::kTabGridIncognito;
-    id<ApplicationCommands> applicationHandler =
-        HandlerForProtocol([self commandDispatcher], ApplicationCommands);
-    [applicationHandler displayTabGridInMode:TabGridOpeningMode::kRegular];
+    id<SceneCommands> sceneHandler =
+        HandlerForProtocol([self commandDispatcher], SceneCommands);
+    [sceneHandler displayTabGridInMode:TabGridOpeningMode::kRegular];
   }
 }
 
@@ -228,6 +246,7 @@ const char kGuidedTourStepDidFinishHistogram[] = "IOS.GuidedTour.DidFinishStep";
 
 - (void)dismissGuidedTourPromo {
   [_guidedTourPromoCoordinator stopWithCompletion:nil];
+  _guidedTourPromoCoordinator = nil;
   [self guidedTourCompleted];
   [self logGuidedTourPromoResult:NO];
 }
@@ -238,6 +257,7 @@ const char kGuidedTourStepDidFinishHistogram[] = "IOS.GuidedTour.DidFinishStep";
     [weakSelf showNTPStep];
   };
   [_guidedTourPromoCoordinator stopWithCompletion:completion];
+  _guidedTourPromoCoordinator = nil;
   [self logGuidedTourPromoResult:YES];
 }
 
@@ -435,11 +455,11 @@ const char kGuidedTourStepDidFinishHistogram[] = "IOS.GuidedTour.DidFinishStep";
 
 // Shows the entry point to import data from Safari.
 - (void)displaySafariDataImportEntryPoint {
-  id<ApplicationCommands> applicationHandler =
-      HandlerForProtocol([self commandDispatcher], ApplicationCommands);
-  [applicationHandler displaySafariDataImportFromEntryPoint:
-                          SafariDataImportEntryPoint::kFirstRun
-                                              withUIHandler:self];
+  id<SceneCommands> sceneHandler =
+      HandlerForProtocol([self commandDispatcher], SceneCommands);
+  [sceneHandler displaySafariDataImportFromEntryPoint:
+                    SafariDataImportEntryPoint::kFirstRun
+                                        withUIHandler:self];
 }
 
 // Logs the user decision for the Guided Tour promo.
@@ -459,6 +479,7 @@ const char kGuidedTourStepDidFinishHistogram[] = "IOS.GuidedTour.DidFinishStep";
   _displayLock.reset();
   _scopedForceOrientation.reset();
   _firstRunUIBlocker.reset();
+  _scopedForceOrientation.reset();
 }
 
 // Returns the profile pref service for the original (i.e., not off-the-record)
@@ -474,6 +495,19 @@ const char kGuidedTourStepDidFinishHistogram[] = "IOS.GuidedTour.DidFinishStep";
 
   if (!CanShowSyncedSetUp(profilePrefService)) {
     [self performNextPostFirstRunAction];
+    return;
+  }
+
+  if (!GetEligibleSceneForSyncedSetUp(self.profileState)) {
+    [self performNextPostFirstRunAction];
+    return;
+  }
+
+  if (!self.profileState.appState.startupInformation.isFirstRun) {
+    // Checking `isFirstRun` after verifying Synced Set Up eligibility ensures
+    // that Synced Set Up only triggers during the first run, but this profile
+    // agent does not get stuck if it is used outside of the first run (such as
+    // in IPH demo mode).
     return;
   }
 

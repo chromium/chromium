@@ -6,8 +6,7 @@ import("//build/config/android/rules.gni")
 import("//chrome/android/features/android_library_factory_tmpl.gni")
 
 # This file contains public Java interface and factory targets for all Android
-# builds. Different Android builds may get different implementations, such as
-# browser_window/internal or browser_window/stub.
+# builds.
 
 # Public Java interfaces
 android_library("java") {
@@ -15,6 +14,7 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/ui/browser_window/AndroidBrowserWindowCreateParams.java",
     "java/src/org/chromium/chrome/browser/ui/browser_window/ChromeAndroidTask.java",
     "java/src/org/chromium/chrome/browser/ui/browser_window/ChromeAndroidTaskFeature.java",
+    "java/src/org/chromium/chrome/browser/ui/browser_window/ChromeAndroidTaskFeatureKey.java",
     "java/src/org/chromium/chrome/browser/ui/browser_window/ChromeAndroidTaskTracker.java",
     "java/src/org/chromium/chrome/browser/ui/browser_window/ChromeAndroidTaskTrackerObserver.java",
   ]
@@ -24,6 +24,7 @@ android_library("java") {
     "//chrome/browser/profiles/android:java",
     "//chrome/browser/tabmodel:java",
     "//chrome/browser/ui/android/multiwindow:java",
+    "//components/browser_ui/desktop_windowing/android:java",
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//ui/android:ui_no_recycler_view_java",
     "//ui/base/mojom:ui_base_types_java",

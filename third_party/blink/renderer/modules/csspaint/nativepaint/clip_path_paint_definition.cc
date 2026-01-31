@@ -43,6 +43,30 @@ namespace blink {
 
 namespace {
 
+// TODO(crbug.com/474206417) This essentially replicated logic in
+// PaintPropertyTreeBuilder/PathToRRect, but direct between SkPaths and SkRRects
+// rather than through blink types. This isn't strictly necessary, and only done
+// because of implementation details in the clip path paint definition which
+// would make using blink::Path to calculate the SkRRects at paint time
+// difficult. See comment in ClipPathPaintDefinition::Paint.
+std::optional<SkRRect> ReduceToRRectIfPossible(SkPath path) {
+  if (path.isInverseFillType()) {
+    return std::nullopt;
+  }
+  SkRect rect;
+  if (path.isRect(&rect)) {
+    return SkRRect::MakeRect(rect);
+  }
+  SkRRect rrect;
+  if (path.isRRect(&rrect)) {
+    return rrect;
+  }
+  if (path.isOval(&rect)) {
+    return SkRRect::MakeOval(rect);
+  }
+  return std::nullopt;
+}
+
 // This struct contains the keyframe index and the intra-keyframe progress. It
 // is calculated by GetAdjustedProgress.
 struct AnimationProgress {
@@ -257,6 +281,9 @@ BasicShape* GetAnimatedShapeFromKeyframe(const PropertySpecificKeyframe* frame,
           PathInterpolationFunctions::IsPathNonInterpolableValue(
               *non_interpolable_value)
               ? BasicShape::kStylePathType
+          : CSSShapeInterpolationType::IsShapeNonInterpolableValue(
+                non_interpolable_value)
+              ? BasicShape::kStyleShapeType
               // This can be any shape but kStylePathType. This is needed to
               // distinguish between Path shape and other shapes in
               // CreateBasicShape function.
@@ -466,11 +493,30 @@ PaintRecord ClipPathPaintDefinition::Paint(
   flags.setAntiAlias(true);
   input->ApplyTranslation(canvas);
 
-  // TODO(crbug.com/451650621): Painting a full Skia path every time is
-  // expensive. Main-thread clip-path animations use RRects when possible, and
-  // this behavior should be replicated here. See:
-  // SynthesizedClip::PaintContentsToDisplayList.
-  canvas->drawPath(cur_path, flags);
+  // TODO(crbug.com/474206417): Rather than computing a reduction to SkRRect
+  // every time, we can make this path even simpler by just interpolating on the
+  // SkRRect itself when it is available, which would be slightly more
+  // efficient. Additionally, it would be best to maintain consistency with
+  // SynthesizedClip::PaintContentsToDisplayList (for which this method
+  // essentially duplicates + interpolation), which uses a non-reducible path to
+  // clip the RRect rather than drawing one or the other, which might be
+  // slightly more efficient. To do either of these choices in a sane manner,
+  // this somewhat bloated and hodgepodge compilation unit would need to be
+  // significantly refactored as multiple code paths (keyframe acquisition,
+  // underlying value acquisition, and bounding rect computation) assume that
+  // each keyframe can be cleanly represented as a single skia path. Instead, an
+  // approach like bgcolors's would probably be better, where the keyframe type
+  // handling is sequestered in its own struct. Doing this also would streamline
+  // how clip paths handle timing functions and underlying values, which are
+  // currently done in an ad-hoc fashion. See also crbug.com/40197332,
+  // crbug.com/381126162, crbug.com/459701868
+  const std::optional<SkRRect> path_as_rrect =
+      ReduceToRRectIfPossible(cur_path);
+  if (path_as_rrect.has_value()) {
+    canvas->drawRRect(*path_as_rrect, flags);
+  } else {
+    canvas->drawPath(cur_path, flags);
+  }
 
   return paint_recorder.finishRecordingAsPicture();
 }

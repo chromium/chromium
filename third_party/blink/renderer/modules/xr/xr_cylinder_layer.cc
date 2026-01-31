@@ -12,9 +12,10 @@
 
 namespace blink {
 XRCylinderLayer::XRCylinderLayer(const XRCylinderLayerInit* init,
+                                 V8XRLayerLayout::Enum final_layout,
                                  XRGraphicsBinding* binding,
                                  XRLayerDrawingContext* drawing_context)
-    : XRShapedLayer(init, binding, drawing_context),
+    : XRShapedLayer(init, final_layout, binding, drawing_context),
       radius_(ExcludeNegativeAndNoise(init->radius())),
       central_angle_(ExcludeNegativeAndNoise(init->centralAngle())),
       aspect_ratio_(init->aspectRatio()) {

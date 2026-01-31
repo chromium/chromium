@@ -49,7 +49,7 @@
             }
           ],
           "dimensions": {
-            "cpu": "x86|arm64",
+            "cpu": "arm64",
             "device": "iPhone16,1",
             "os": "iOS-18"
           },
@@ -94,7 +94,7 @@
             }
           ],
           "dimensions": {
-            "cpu": "x86|arm64",
+            "cpu": "arm64",
             "device": "iPhone16,1",
             "os": "iOS-18"
           },

@@ -835,8 +835,10 @@ class COMPONENT_EXPORT(SQL) Database {
   // Returns |true| if there is an error expecter (see SetErrorExpecter), and
   // that expecter returns |true| when passed |error|.  Clients which provide an
   // |error_callback| should use IsExpectedSqliteError() to check for unexpected
-  // errors; if one is detected, DLOG(FATAL) is generally appropriate (see
-  // OnSqliteError implementation).
+  // errors; however it is not appropriate to (D)CHECK or DLOG(FATAL) if an
+  // unexpected error is detected, as things like data corruption could be the
+  // cause of such an error, for which (D)CHECK and DLOG(FATAL) are not
+  // appropriate (see also https://crbug.com/40574650).
   static bool IsExpectedSqliteError(int sqlite_error_code);
 
   // Computes the path of a database's rollback journal.

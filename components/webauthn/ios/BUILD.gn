@@ -16,6 +16,8 @@ source_set("ios") {
     "passkey_java_script_feature.mm",
     "passkey_request_params.h",
     "passkey_request_params.mm",
+    "passkey_request_parser.h",
+    "passkey_request_parser.mm",
     "passkey_tab_helper.h",
     "passkey_tab_helper.mm",
   ]
@@ -30,10 +32,13 @@ source_set("ios") {
     "//components/password_manager/core/browser:passkey_credential",
     "//components/password_manager/ios",
     "//components/webauthn/core/browser:client_data",
+    "//components/webauthn/core/browser:common_utils",
     "//components/webauthn/core/browser:passkey_model",
     "//device/fido",
     "//ios/web/public",
     "//ios/web/public/js_messaging",
+    "//services/network/public/cpp",
+    "//services/network/public/mojom",
   ]
 }
 
@@ -64,21 +69,40 @@ source_set("features") {
   public_deps = [ "//base" ]
 }
 
+source_set("utils") {
+  sources = [
+    "passkey_suggestion_utils.h",
+    "passkey_suggestion_utils.mm",
+  ]
+  deps = [
+    "//base",
+    "//components/autofill/ios/browser",
+    "//components/password_manager/core/browser:passkey_credential",
+    "//components/strings",
+    "//ui/base",
+  ]
+}
+
 source_set("unit_tests") {
   testonly = true
   sources = [
     "ios_webauthn_credentials_delegate_factory_unittest.mm",
+    "passkey_request_parser_unittest.mm",
+    "passkey_suggestion_utils_unittest.mm",
     "passkey_tab_helper_unittest.mm",
   ]
   deps = [
     ":ios",
     ":js_tests",
+    ":utils",
     "//base/test:test_support",
     "//components/autofill/ios/browser",
     "//components/password_manager/core/browser:test_support",
     "//components/password_manager/ios",
+    "//components/strings",
     "//components/webauthn/core/browser:passkey_model",
     "//components/webauthn/core/browser:test_support",
+    "//device/fido/public",
     "//ios/web/public/test",
     "//testing/gtest",
     "//third_party/ocmock",

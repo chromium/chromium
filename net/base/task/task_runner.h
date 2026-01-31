@@ -8,9 +8,12 @@
 #include <array>
 
 #include "base/memory/scoped_refptr.h"
-#include "base/task/single_thread_task_runner.h"
 #include "net/base/net_export.h"
 #include "net/base/request_priority.h"
+
+namespace base {
+class SingleThreadTaskRunner;
+}
 
 namespace net {
 

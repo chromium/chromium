@@ -5,5 +5,5 @@
 ++++[static] name='Apple'
 ++[list box] controlled-by=[combo box]
 ++++[list item] name='Apple' selectable selected
-++++[list item] name='Banana' selectable
-++++[list item] name='Cherry' selectable
+++++[list item] name='Banana'
+++++[list item] name='Cherry'

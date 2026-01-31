@@ -5,7 +5,9 @@
 module gpu.mojom;
 
 import "gpu/ipc/common/capabilities.mojom";
+import "gpu/ipc/common/constants.mojom";
 import "gpu/ipc/common/context_result.mojom";
+import "gpu/ipc/common/context_type.mojom";
 import "gpu/ipc/common/mailbox.mojom";
 import "gpu/ipc/common/shared_image_metadata.mojom";
 import "gpu/ipc/common/shared_image_pool_id.mojom";
@@ -26,22 +28,6 @@ import "ui/gfx/mojom/native_handle_types.mojom";
 import "ui/gfx/mojom/presentation_feedback.mojom";
 import "ui/gl/mojom/gpu_preference.mojom";
 import "url/mojom/url.mojom";
-
-// Maps to its namesake in gpu/command_buffer/common/context_creation_attribs.h.
-enum ContextType {
-  kWebGL1,
-  kWebGL2,
-  kOpenGLES2,
-  kOpenGLES3,
-  kOpenGLES31ForTesting,
-};
-
-// Maps to its namesake in gpu/command_buffer/common/context_creation_attribs.h.
-enum ContextColorSpace {
-  kUnspecified,
-  kSRGB,
-  kDisplayP3,
-};
 
 // Maps to its namesake in gpu/command_buffer/common/scheduling_priority.h.
 enum SchedulingPriority {
@@ -79,14 +65,6 @@ struct CreateCommandBufferParams {
   url.mojom.Url active_url;
   string label;
 };
-
-// Corresponds to the definition in gpu/command_buffer/common/constants.h.
-[Native]
-enum Error;
-
-// Corresponds to the definition in gpu/command_buffer/common/constants.h.
-[Native]
-enum ContextLostReason;
 
 // Information used by the GPU service to convey the current state of a specific
 // CommandBuffer instance. Corresponds to gpu::CommandBuffer::State. See
@@ -178,15 +156,6 @@ interface GpuChannel {
   [Sync, EnableIf=is_win] CreateDCOMPTexture(
       int32 route_id,
       pending_associated_receiver<DCOMPTexture> receiver) => (bool success);
-
-  // This interface is used by MediaFoundationRendererClient to subscribe
-  // to overlay state information from the Viz layer (as provided by the
-  // DCOverlayProcessor). The MediaFoundationRendererClient uses the overlay
-  // state associated with a Video Frame texture (correlated via 'mailbox') as
-  // a heuristic to determine the best video presentation mode to use.
-  [Sync, EnableIf=is_win] RegisterOverlayStateObserver(
-    pending_remote<OverlayStateObserver> promotion_hint_observer,
-    gpu.mojom.Mailbox mailbox) => (bool success);
 
   // Instructs the command buffer to wait asynchronously until its State is
   // changed by the reader to have a current token value within the (inclusive)
@@ -335,17 +304,6 @@ interface DCOMPTextureClient {
 
   // Informs the client of a change in video composition parameter.
   OnOutputRectChange(gfx.mojom.Rect output_rect);
-};
-
-// Interface used by GPU to notify clients when the overlay promotion hint state
-// has changed.
-[EnableIf=is_win]
-interface OverlayStateObserver {
-  // Called when the texture associated with the specified mailbox has had a
-  // change in promotion state. If promoted is true then the texture is
-  // currently using a DC Layer Overlay. If promoted is false then the texture
-  // is not using a DC Layer Overlay.
-  OnStateChanged(bool promoted);
 };
 
 // DeferredRequests are batched locally by clients and sent to the service only

@@ -1,0 +1,43 @@
+import("//build/rust/rust_static_library.gni")
+
+rust_static_library("mojo_rust_bindings_api") {
+  crate_root = "lib.rs"
+  sources = [
+    "interface.rs",
+    "lib.rs",
+    "message.rs",
+    "message_header.rs",
+    "message_pipe_watcher.rs",
+  ]
+
+  deps = [
+    ":helper_functions_cxx",
+    "..:mojo_rust_system_api",
+    "../mojom_parser",
+    "../mojom_parser:mojom_parser_core",
+    "../sequences",
+    "//third_party/rust/anyhow/v1:lib",
+    "//third_party/rust/bitflags/v2:lib",
+  ]
+}
+
+source_set("cxx_shim") {
+  sources = [ "cxx_shim.h" ]
+  deps = [ "//base" ]
+
+  visibility = [ ":*" ]
+}
+
+rust_static_library("helper_functions_cxx") {
+  crate_root = "cxx.rs"
+  sources = [ "cxx.rs" ]
+  cxx_bindings = [ "cxx.rs" ]
+
+  deps = [
+    ":cxx_shim",
+    "//base",
+  ]
+
+  allow_unsafe = true
+  visibility = [ ":*" ]
+}

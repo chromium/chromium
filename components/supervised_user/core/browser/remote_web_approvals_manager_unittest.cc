@@ -105,14 +105,11 @@ class RemoteWebApprovalsManagerTest : public ::testing::Test {
     return remote_web_approvals_manager_;
   }
 
-  void RequestApproval(
-      const GURL& url,
-      AsyncResultHolder* result_holder,
-      FilteringBehaviorReason reason = FilteringBehaviorReason::DEFAULT) {
-    UrlFormatter url_formatter(*supervised_user_test_environment_.url_filter(),
-                               reason);
+  void RequestApproval(WebFilteringResult filtering_result,
+                       AsyncResultHolder* result_holder) {
     remote_web_approvals_manager_.RequestApproval(
-        url, url_formatter,
+        supervised_user_test_environment_.url_filter()
+            ->GetEffectiveUrlToUnblock(filtering_result),
         base::BindOnce(&AsyncResultHolder::SetResult,
                        base::Unretained(result_holder)));
   }
@@ -137,7 +134,10 @@ TEST_F(RemoteWebApprovalsManagerTest, CreatePermissionRequest) {
   EXPECT_FALSE(remote_web_approvals_manager().AreApprovalRequestsEnabled());
   {
     AsyncResultHolder result_holder;
-    RequestApproval(url, &result_holder);
+    RequestApproval({.url = url,
+                     .behavior = FilteringBehavior::kBlock,
+                     .reason = FilteringBehaviorReason::DEFAULT},
+                    &result_holder);
     EXPECT_FALSE(result_holder.GetResult());
   }
 
@@ -150,7 +150,10 @@ TEST_F(RemoteWebApprovalsManagerTest, CreatePermissionRequest) {
   EXPECT_FALSE(remote_web_approvals_manager().AreApprovalRequestsEnabled());
   {
     AsyncResultHolder result_holder;
-    RequestApproval(url, &result_holder);
+    RequestApproval({.url = url,
+                     .behavior = FilteringBehavior::kBlock,
+                     .reason = FilteringBehaviorReason::DEFAULT},
+                    &result_holder);
     EXPECT_FALSE(result_holder.GetResult());
   }
 
@@ -160,7 +163,10 @@ TEST_F(RemoteWebApprovalsManagerTest, CreatePermissionRequest) {
   EXPECT_TRUE(remote_web_approvals_manager().AreApprovalRequestsEnabled());
   {
     AsyncResultHolder result_holder;
-    RequestApproval(url, &result_holder);
+    RequestApproval({.url = url,
+                     .behavior = FilteringBehavior::kBlock,
+                     .reason = FilteringBehaviorReason::DEFAULT},
+                    &result_holder);
     ASSERT_EQ(1u, creator->requested_urls().size());
     EXPECT_EQ(stripped_url.spec(), creator->requested_urls()[0].spec());
 
@@ -170,7 +176,10 @@ TEST_F(RemoteWebApprovalsManagerTest, CreatePermissionRequest) {
 
   {
     AsyncResultHolder result_holder;
-    RequestApproval(url, &result_holder);
+    RequestApproval({.url = url,
+                     .behavior = FilteringBehavior::kBlock,
+                     .reason = FilteringBehaviorReason::DEFAULT},
+                    &result_holder);
     ASSERT_EQ(1u, creator->requested_urls().size());
     EXPECT_EQ(stripped_url.spec(), creator->requested_urls()[0].spec());
 
@@ -191,7 +200,10 @@ TEST_F(RemoteWebApprovalsManagerTest, CreatePermissionRequest) {
 
   {
     AsyncResultHolder result_holder;
-    RequestApproval(url, &result_holder, FilteringBehaviorReason::MANUAL);
+    RequestApproval({.url = url,
+                     .behavior = FilteringBehavior::kBlock,
+                     .reason = FilteringBehaviorReason::MANUAL},
+                    &result_holder);
     ASSERT_EQ(1u, creator->requested_urls().size());
     EXPECT_EQ(url.spec(), creator->requested_urls()[0].spec());
 
@@ -202,7 +214,10 @@ TEST_F(RemoteWebApprovalsManagerTest, CreatePermissionRequest) {
 
   {
     AsyncResultHolder result_holder;
-    RequestApproval(url, &result_holder, FilteringBehaviorReason::MANUAL);
+    RequestApproval({.url = url,
+                     .behavior = FilteringBehavior::kBlock,
+                     .reason = FilteringBehaviorReason::MANUAL},
+                    &result_holder);
     ASSERT_EQ(1u, creator->requested_urls().size());
     EXPECT_EQ(url.spec(), creator->requested_urls()[0].spec());
 

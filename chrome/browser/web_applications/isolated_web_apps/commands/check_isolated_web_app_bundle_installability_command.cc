@@ -46,7 +46,8 @@ void CheckIsolatedWebAppBundleInstallabilityCommand::StartWithLock(
     std::unique_ptr<AppLock> lock) {
   lock_ = std::move(lock);
 
-  const WebApp* app = lock_->registrar().GetAppById(bundle_metadata_.app_id());
+  const WebApp* app = lock_->registrar().GetAppById(
+      bundle_metadata_.app_id(), WebAppFilter::IsIsolatedApp());
 
   if (!app) {
     ReportResult(IsolatedInstallabilityCheckResult::kInstallable, std::nullopt);
@@ -54,7 +55,6 @@ void CheckIsolatedWebAppBundleInstallabilityCommand::StartWithLock(
   }
 
   const std::optional<IsolationData>& isolation_data = app->isolation_data();
-  // If there is an app with the same app ID, it must be an IWA.
   CHECK(isolation_data.has_value());
 
   auto iwa_version = IwaVersion::Create(isolation_data->version().GetString());

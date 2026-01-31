@@ -58,7 +58,7 @@ struct Manifest {
 
   DisplayMode display;
 
-  array<DisplayMode> display_override;
+  array<DisplayOverrideItem> display_override;
 
   array<SafeUrlPattern> borderless_url_patterns;
 
@@ -103,6 +103,13 @@ struct Manifest {
   // applications should be preferred over the web application. False if missing
   // or there is a parsing failure.
   bool prefer_related_applications;
+
+  // A list of web apps that this web app intends to replace, with optional
+  // install URLs.
+  array<ManifestMigrateFrom> migrate_from;
+
+  // The app that this PWA intends to migrate to.
+  ManifestMigrateTo? migrate_to;
 
   // TODO(https://crbug.com/657632): Numeric types are not nullable. =(
   bool has_theme_color;
@@ -155,10 +162,10 @@ struct Manifest {
 
   // Localized fields map locales with localized value.
   // See: https://www.w3.org/TR/appmanifest/#x_localized-members
-  map<mojo_base.mojom.String16, ManifestLocalizedTextObject> name_localized;
-  map<mojo_base.mojom.String16, ManifestLocalizedTextObject> short_name_localized;
-  map<mojo_base.mojom.String16, ManifestLocalizedTextObject> description_localized;
-  map<mojo_base.mojom.String16, array<ManifestImageResource>> icons_localized;
+  map<Locale, ManifestLocalizedTextObject>? name_localized;
+  map<Locale, ManifestLocalizedTextObject>? short_name_localized;
+  map<Locale, ManifestLocalizedTextObject>? description_localized;
+  map<Locale, array<ManifestImageResource>>? icons_localized;
 };
 
 struct ManifestLocalizedTextObject {
@@ -168,6 +175,13 @@ struct ManifestLocalizedTextObject {
   Manifest.TextDirection? dir;
 
   mojo_base.mojom.String16? lang;
+};
+
+// Wrapper struct for BCP 47 locale tags. This is used as a map key for
+// localized manifest fields and will be converted to icu::Locale on the C++
+// side via StructTraits.
+struct Locale {
+  string tag;
 };
 
 // Structure representing a Shortcut Item per the Manifest specification, see:
@@ -187,10 +201,10 @@ struct ManifestShortcutItem {
 
   array<ManifestImageResource> icons;
 
-  map<mojo_base.mojom.String16, ManifestLocalizedTextObject> name_localized;
-  map<mojo_base.mojom.String16, ManifestLocalizedTextObject> short_name_localized;
-  map<mojo_base.mojom.String16, ManifestLocalizedTextObject> description_localized;
-  map<mojo_base.mojom.String16, array<ManifestImageResource>> icons_localized;
+  map<Locale, ManifestLocalizedTextObject>? name_localized;
+  map<Locale, ManifestLocalizedTextObject>? short_name_localized;
+  map<Locale, ManifestLocalizedTextObject>? description_localized;
+  map<Locale, array<ManifestImageResource>>? icons_localized;
 };
 
 // Structure representing an icon as per the Manifest specification, see:
@@ -368,6 +382,35 @@ struct ManifestTranslationItem {
   mojo_base.mojom.String16? description;
 };
 
+// Enumeration of possible behaviors for the migration.
+enum ManifestMigrationBehavior {
+  // The migration is suggested (default).
+  kSuggest,
+  // The migration is forced.
+  kForce,
+};
+
+// Structure representing a migration source for a PWA (migrate_from).
+struct ManifestMigrateFrom {
+  // The manifest ID of the app from which to migrate.
+  url.mojom.Url id;
+
+  // A URL for a page that should link to a manifest with the given ID.
+  url.mojom.Url? install_url;
+
+  // The behavior of the migration.
+  ManifestMigrationBehavior behavior;
+};
+
+// Structure representing a migration target for a PWA (migrate_to).
+struct ManifestMigrateTo {
+  // The manifest ID of the app to which to migrate.
+  url.mojom.Url id;
+
+  // A URL for a page that should link to a manifest with the given ID.
+  url.mojom.Url install_url;
+};
+
 // Structure representing customizations to the tab strip.
 struct ManifestTabStrip {
   HomeTabUnion home_tab;
@@ -436,4 +479,18 @@ enum ManifestRequestResult {
   kManifestFailedToParse,
   // Success, the manifest was loaded from the URL specified by the page.
   kSuccess
+};
+
+// Represents an item in the `display_override` list.
+struct DisplayOverrideItem {
+  // The display mode of this item.
+  DisplayMode display;
+
+  // The URL patterns where this display mode applies. An empty list means the
+  // display mode applies to all URLs.
+  //
+  // Note the parser does not validate that URL patterns are same-origin or in
+  // scope. Consumers should verify the pattern is within the app scope before
+  // applying the display mode.
+  array<SafeUrlPattern> url_patterns;
 };

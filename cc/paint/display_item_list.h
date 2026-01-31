@@ -35,13 +35,12 @@ class TracedValue;
 namespace cc {
 
 // DisplayItemList is a container of paint operations. One can populate the list
-// using StartPaint, followed by push{,_with_data,_with_array} functions
-// specialized with ops coming from paint_op_buffer.h. Internally, the
-// DisplayItemList contains a PaintOpBuffer and defers op saving to it.
-// Additionally, it store some meta information about the paint operations.
-// Specifically, it creates an rtree to assist in rasterization: when
-// rasterizing a rect, it queries the rtree to extract only the byte offsets of
-// the ops required and replays those into a canvas.
+// using StartPaint, followed by push() functions specialized with ops coming
+// from paint_op.h. Internally, the DisplayItemList contains a PaintOpBuffer and
+// defers op saving to it. Additionally, it stores some meta information about
+// the paint operations. Specifically, it creates an rtree to assist in
+// rasterization: when rasterizing a rect, it queries the rtree to extract only
+// the byte offsets of the ops required and replays those into a canvas.
 class CC_PAINT_EXPORT DisplayItemList
     : public base::RefCountedThreadSafe<DisplayItemList> {
  public:

@@ -4,12 +4,17 @@
 
 package org.chromium.base.test.transit;
 
-import androidx.annotation.Nullable;
+import android.view.View;
+
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
+import androidx.fragment.app.FragmentManager;
 
+import org.chromium.base.test.util.ViewPrinter;
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -62,25 +67,80 @@ public class FragmentElement<FragmentT extends Fragment, ActivityT extends Fragm
         @Override
         protected ConditionStatusWithResult<FragmentT> resolveWithSuppliers() throws Exception {
             ActivityT activity = mActivityElement.value();
-            List<Fragment> fragments = activity.getSupportFragmentManager().getFragments();
-            FragmentT candidate = null;
-            for (Fragment fragment : fragments) {
-                if (mFragmentClass.equals(fragment.getClass())) {
-                    FragmentT matched = mFragmentClass.cast(fragment);
-                    if (candidate != null) {
-                        return error("%s matched two Fragments: %s, %s", this, candidate, matched)
-                                .withoutResult();
-                    }
-                    candidate = matched;
-                }
-            }
-            if (candidate == null) {
+            List<FragmentT> matches = new ArrayList<>();
+
+            // Start the recursive search from the Activity's FragmentManager
+            findFragmentsRecursive(activity.getSupportFragmentManager(), matches);
+
+            if (matches.isEmpty()) {
                 return awaiting("No fragment found").withoutResult();
             }
-            if (!candidate.isVisible()) {
-                return awaiting("Fragment is not visible").withoutResult();
+
+            // Check if we found more than one match across the entire tree
+            if (matches.size() > 1) {
+                List<String> allFragmentInfos = new ArrayList<>();
+                for (FragmentT fragment : matches) {
+                    View view = fragment.getView();
+                    String info =
+                            String.format(
+                                    "Match Found: %s in Parent [%s]. View: %s, ID: %d, Resumed: %b,"
+                                            + " Displ: %s",
+                                    fragment.getClass().getSimpleName(),
+                                    fragment.getParentFragment(),
+                                    view == null
+                                            ? null
+                                            : ViewPrinter.describeView(
+                                                    view, ViewPrinter.Options.PRINT_SHALLOW),
+                                    fragment.getId(),
+                                    fragment.isResumed(),
+                                    view == null ? null : DisplayedPortion.ofView(view));
+
+                    allFragmentInfos.add(info);
+                }
+
+                return notFulfilled(
+                                "Matched %d Fragments: %s",
+                                matches.size(), allFragmentInfos.toString())
+                        .withoutResult();
             }
+
+            FragmentT candidate = matches.get(0);
+
             return fulfilled("Matched fragment: %s", candidate).withResult(candidate);
+        }
+
+        /** Helper method to recursively find fragments of a specific class. */
+        private void findFragmentsRecursive(FragmentManager fm, List<FragmentT> matches) {
+            List<Fragment> fragments = fm.getFragments();
+            if (fragments == null) return;
+
+            for (Fragment fragment : fragments) {
+                // Filter out fragments that are not displayed and all their children.
+                if (fragment == null || !fragment.isResumed() || !fragment.isVisible()) {
+                    continue;
+                }
+
+                // Dive into children to see if there are more matches.
+                findFragmentsRecursive(fragment.getChildFragmentManager(), matches);
+
+                // Filter out fragments with views that are not displayed.
+                View view = fragment.getView();
+                if (view == null || !view.isAttachedToWindow() || !view.isShown()) {
+                    continue;
+                }
+                DisplayedPortion displayedPortion = DisplayedPortion.ofView(view);
+                if (displayedPortion.mPercentage < 1) {
+                    continue;
+                }
+
+                // Check if this fragment matches the class
+                if (!mFragmentClass.isInstance(fragment)) {
+                    continue;
+                }
+
+                FragmentT matched = mFragmentClass.cast(fragment);
+                matches.add(matched);
+            }
         }
     }
 

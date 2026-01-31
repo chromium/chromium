@@ -48,8 +48,9 @@ class TestInterface1Impl : public mojom::TestInterface1 {
 
   void Bind(scoped_refptr<base::SequencedTaskRunner> expected_task_runner,
             mojo::PendingReceiver<mojom::TestInterface1> receiver) {
-    if (expected_task_runner)
+    if (expected_task_runner) {
       EXPECT_TRUE(expected_task_runner->RunsTasksInCurrentSequence());
+    }
     receiver_.Bind(std::move(receiver));
   }
 
@@ -65,8 +66,9 @@ class TestInterface2Impl : public mojom::TestInterface2 {
 
   void Bind(scoped_refptr<base::SequencedTaskRunner> expected_task_runner,
             mojo::PendingReceiver<mojom::TestInterface2> receiver) {
-    if (expected_task_runner)
+    if (expected_task_runner) {
       EXPECT_TRUE(expected_task_runner->RunsTasksInCurrentSequence());
+    }
     receiver_.Bind(std::move(receiver));
   }
 

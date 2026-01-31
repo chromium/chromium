@@ -53,8 +53,7 @@ import {ConsoleTestRunner} from 'console_test_runner';
   ConsoleTestRunner.expandConsoleMessages(step1, expandTreeElementFilter);
 
   function expandTreeElementFilter(treeElement) {
-    var name = treeElement.nameElement && treeElement.nameElement.textContent;
-    return name === 'foo' || treeElement.title === '<function scope>';
+    return treeElement.property?.name === 'foo' || treeElement.title === '<function scope>';
   }
 
   function step1() {

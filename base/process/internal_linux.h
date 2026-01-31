@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
-
 // This file contains internal routines that are called by other files in
 // base/process/.
 
@@ -22,6 +17,7 @@
 #include <string_view>
 #include <vector>
 
+#include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/files/dir_reader_posix.h"
 #include "base/files/file_path.h"
@@ -156,7 +152,8 @@ void ForEachProcessTask(base::ProcessHandle process, Lambda&& lambda) {
 
   for (; dir_reader.Next();) {
     const char* tid_str = dir_reader.name();
-    if (strcmp(tid_str, ".") == 0 || strcmp(tid_str, "..") == 0) {
+    if (UNSAFE_TODO(strcmp(tid_str, ".")) == 0 ||
+        UNSAFE_TODO(strcmp(tid_str, "..")) == 0) {
       continue;
     }
 

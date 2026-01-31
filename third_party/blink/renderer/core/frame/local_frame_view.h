@@ -732,9 +732,13 @@ class CORE_EXPORT LocalFrameView final
 
   String MainThreadScrollingReasonsAsText();
 
+  // Maps |rect| from the local root into the remote root frame. The
+  // |apply_viewport_clip| flag controls whether we intersect with the remote
+  // viewport before applying transforms.
   bool MapToVisualRectInRemoteRootFrame(PhysicalRect& rect,
                                         bool apply_overflow_clip = true,
-                                        bool apply_viewport_transform = false);
+                                        bool apply_viewport_transform = false,
+                                        bool apply_viewport_clip = true);
 
   void MapLocalToRemoteMainFrame(TransformState&,
                                  bool apply_remote_main_frame_scroll_offset);
@@ -1056,6 +1060,11 @@ class CORE_EXPORT LocalFrameView final
   void ForAllNonThrottledLocalFrameViews(
       base::FunctionRef<void(LocalFrameView&)>,
       TraversalOrder = kPreOrder);
+  // Same as above, but the callback returns a boolean. If the callback returns
+  // false, the iteration will not continue into the subtree of the current
+  // frame. This only supports PreOrder traversal.
+  void ForAllNonThrottledLocalFrameViews(
+      base::FunctionRef<bool(LocalFrameView&)>);
   void ForAllThrottledLocalFrameViews(base::FunctionRef<void(LocalFrameView&)>);
 
   void ForAllRemoteFrameViews(base::FunctionRef<void(RemoteFrameView&)>);

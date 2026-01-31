@@ -8,7 +8,6 @@
 #include <utility>
 
 #include "base/check_op.h"
-#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/notimplemented.h"
@@ -208,7 +207,7 @@ void ImpressionHistoryTrackerImpl::SyncRegisteredClients() {
   // Remove deprecated clients.
   for (auto it = client_states_.begin(); it != client_states_.end();) {
     auto client_type = it->first;
-    if (!base::Contains(registered_clients_, client_type)) {
+    if (!std::ranges::contains(registered_clients_, client_type)) {
       store_->Delete(ToDatabaseKey(client_type),
                      /*callback=*/base::DoNothing());
       client_states_.erase(it++);

@@ -216,7 +216,7 @@ void FakeHermesProfileClient::UpdateCellularDevice(
 
   // Update the cellular device properties so that they match the carrier
   // profile that was just enabled.
-  base::Value::Dict home_provider;
+  base::DictValue home_provider;
   home_provider.Set(shill::kNameProperty,
                     properties->service_provider().value());
   home_provider.Set(shill::kCountryProperty, kDefaultCountry);
@@ -237,9 +237,9 @@ void FakeHermesProfileClient::UpdateCellularServices(const std::string& iccid,
   ShillServiceClient::TestInterface* service_test =
       ShillServiceClient::Get()->GetTestInterface();
 
-  base::Value::List service_list = manager_test->GetEnabledServiceList();
+  base::ListValue service_list = manager_test->GetEnabledServiceList();
   for (const base::Value& service_path : service_list) {
-    const base::Value::Dict* properties =
+    const base::DictValue* properties =
         service_test->GetServiceProperties(service_path.GetString());
     const std::string* type = properties->FindString(shill::kTypeProperty);
     const std::string* service_iccid =
@@ -276,7 +276,7 @@ void FakeHermesProfileClient::UpdateCellularServices(const std::string& iccid,
     service_test->SetServiceProperty(
         service_path.GetString(), shill::kServingOperatorProperty,
         base::Value(
-            base::Value::Dict()
+            base::DictValue()
                 .Set(shill::kOperatorNameKey, kDefaultOperatorName)
                 .Set(shill::kOperatorCodeKey, kDefaultOperatorCode)
                 .Set(shill::kOperatorCountryKey, kDefaultOperatorCountry)

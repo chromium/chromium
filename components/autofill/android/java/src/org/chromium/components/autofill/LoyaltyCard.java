@@ -23,6 +23,8 @@ public class LoyaltyCard {
     private final GURL mProgramLogo;
     private final String mLoyaltyCardNumber;
     private final List<GURL> mMerchantDomains;
+    private final long mUseDate;
+    private final long mUseCount;
 
     @CalledByNative
     public LoyaltyCard(
@@ -31,13 +33,17 @@ public class LoyaltyCard {
             @JniType("std::string") String programName,
             @JniType("GURL") GURL programLogo,
             @JniType("std::string") String loyaltyCardNumber,
-            @JniType("std::vector<GURL>") List<GURL> merchantDomains) {
+            @JniType("std::vector<GURL>") List<GURL> merchantDomains,
+            long useDate,
+            long useCount) {
         mLoyaltyCardId = loyaltyCardId;
         mMerchantName = merchantName;
         mProgramName = programName;
         mProgramLogo = programLogo;
         mLoyaltyCardNumber = loyaltyCardNumber;
         mMerchantDomains = merchantDomains;
+        mUseDate = useDate;
+        mUseCount = useCount;
     }
 
     @CalledByNative
@@ -68,5 +74,15 @@ public class LoyaltyCard {
     @CalledByNative
     public @JniType("std::vector<GURL>") List<GURL> getMerchantDomains() {
         return mMerchantDomains;
+    }
+
+    @CalledByNative
+    public long getUseDate() {
+        return mUseDate;
+    }
+
+    @CalledByNative
+    public long getUseCount() {
+        return mUseCount;
     }
 }

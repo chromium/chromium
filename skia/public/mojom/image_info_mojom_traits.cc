@@ -219,8 +219,8 @@ bool StructTraits<skia::mojom::ImageInfoDataView, SkImageInfo>::Read(
 
   // The ImageInfo wire types are uint32_t, but the Skia type uses int, and the
   // values can't be negative.
-  auto width = base::MakeCheckedNum(data.width()).Cast<int>();
-  auto height = base::MakeCheckedNum(data.height()).Cast<int>();
+  auto width = base::CheckedNumeric(data.width()).Cast<int>();
+  auto height = base::CheckedNumeric(data.height()).Cast<int>();
   if (!width.IsValid() || !height.IsValid()) {
     return false;
   }
@@ -251,8 +251,8 @@ bool StructTraits<skia::mojom::BitmapN32ImageInfoDataView, SkImageInfo>::Read(
 
   // The ImageInfo wire types are uint32_t, but the Skia type uses int, and the
   // values can't be negative.
-  auto width = base::MakeCheckedNum(data.width()).Cast<int>();
-  auto height = base::MakeCheckedNum(data.height()).Cast<int>();
+  auto width = base::CheckedNumeric(data.width()).Cast<int>();
+  auto height = base::CheckedNumeric(data.height()).Cast<int>();
   if (!width.IsValid() || !height.IsValid()) {
     return false;
   }

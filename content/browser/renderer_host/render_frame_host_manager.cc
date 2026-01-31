@@ -15,7 +15,6 @@
 #include "base/check_op.h"
 #include "base/command_line.h"
 #include "base/containers/adapters.h"
-#include "base/containers/contains.h"
 #include "base/debug/crash_logging.h"
 #include "base/debug/dump_without_crashing.h"
 #include "base/feature_list.h"
@@ -28,7 +27,6 @@
 #include "base/timer/elapsed_timer.h"
 #include "base/trace_event/named_trigger.h"
 #include "base/trace_event/typed_macros.h"
-#include "base/types/cxx23_to_underlying.h"
 #include "base/types/expected.h"
 #include "base/unguessable_token.h"
 #include "build/build_config.h"
@@ -1141,8 +1139,8 @@ void RenderFrameHostManager::PrepareForCollectingPage(
     // new cross-process, cross-BrowsingInstance navigation, as well as any
     // restored proxies which are also in a different BrowsingInstance.
     if (group->IsRelatedSiteInstanceGroup(it.second->site_instance_group())) {
-      DCHECK(base::Contains(*render_view_hosts,
-                            it.second->GetRenderViewHost()->GetSafeRef()));
+      DCHECK(render_view_hosts->contains(
+          it.second->GetRenderViewHost()->GetSafeRef()));
       auto pair = proxy_hosts->insert({it.first, std::move(it.second)});
       bool insertion_took_place = pair.second;
       // There should be only one proxy for any given SiteInstanceGroup, so this
@@ -5178,9 +5176,9 @@ void RenderFrameHostManager::CommitPending(
       for (auto& proxy : proxy_hosts_to_restore) {
         // We only cache pages when swapping BrowsingInstance, so we should
         // never be reusing SiteInstanceGroups.
-        CHECK(!base::Contains(
-            render_frame_host_->browsing_context_state()->proxy_hosts(),
-            proxy.second->site_instance_group()->GetId()));
+        CHECK(!render_frame_host_->browsing_context_state()
+                   ->proxy_hosts()
+                   .contains(proxy.second->site_instance_group()->GetId()));
         proxy.second->site_instance_group()->AddObserver(
             render_frame_host_->browsing_context_state().get());
         TRACE_EVENT_INSTANT(

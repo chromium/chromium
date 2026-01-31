@@ -280,7 +280,7 @@ TEST_F(AppNotificationHandlerTest, TestOpenBrowserNotificationSettings) {
               OpenUrl(GURL(chrome::kAppNotificationsBrowserSettingsURL),
                       ash::NewWindowDelegate::OpenUrlFrom::kUserInteraction,
                       ash::NewWindowDelegate::Disposition::kSwitchToTab));
-  base::Value::List empty_args;
+  base::ListValue empty_args;
   OpenBrowserNotificationSettings();
 }
 

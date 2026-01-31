@@ -57,7 +57,7 @@ class DataTypeController {
 
   using StopCallback = base::OnceClosure;
 
-  using AllNodesCallback = base::OnceCallback<void(base::Value::List)>;
+  using AllNodesCallback = base::OnceCallback<void(base::ListValue)>;
 
   using TypeMap = std::map<DataType, std::unique_ptr<DataTypeController>>;
   using TypeVector = std::vector<std::unique_ptr<DataTypeController>>;
@@ -137,7 +137,7 @@ class DataTypeController {
   // called in transport-only mode.
   void GetUnsyncedDataCount(base::OnceCallback<void(size_t)> callback);
 
-  // Returns a Value::List representing all nodes for this data type through
+  // Returns a base::ListValue representing all nodes for this data type through
   // `callback` on this thread. Can only be called if state() != NOT_RUNNING.
   // Used for populating nodes in Sync Node Browser of chrome://sync-internals.
   // Returns an empty result if state() is anything other than RUNNING.

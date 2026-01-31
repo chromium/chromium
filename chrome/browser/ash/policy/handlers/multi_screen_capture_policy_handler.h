@@ -23,7 +23,7 @@ class MultiScreenCapturePolicyHandler : public policy::ListPolicyHandler {
  protected:
   // policy::ListPolicyHandler:
   bool CheckListEntry(const base::Value& value) override;
-  void ApplyList(base::Value::List filtered_list, PrefValueMap* prefs) override;
+  void ApplyList(base::ListValue filtered_list, PrefValueMap* prefs) override;
 };
 
 }  // namespace policy

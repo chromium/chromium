@@ -5,6 +5,7 @@
 #include "ash/bubble/bubble_utils.h"
 
 #include <memory>
+#include <utility>
 
 #include "ash/capture_mode/capture_mode_util.h"
 #include "ash/public/cpp/shell_window_ids.h"
@@ -13,7 +14,6 @@
 #include "ash/shelf/shelf.h"
 #include "ash/style/typography.h"
 #include "base/check.h"
-#include "base/types/cxx23_to_underlying.h"
 #include "ui/aura/window.h"
 #include "ui/events/event.h"
 #include "ui/events/types/event_type.h"
@@ -29,7 +29,7 @@ bool ShouldCloseBubbleForEvent(const ui::LocatedEvent& event) {
          event.type() == ui::EventType::kGestureTap ||
          event.type() == ui::EventType::kGestureTwoFingerTap ||
          event.type() == ui::EventType::kGestureScrollBegin)
-      << base::to_underlying(event.type());
+      << std::to_underlying(event.type());
 
   // Users in a capture session may be trying to capture the bubble.
   if (capture_mode_util::IsCaptureModeActive())

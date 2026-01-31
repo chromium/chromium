@@ -48,7 +48,7 @@
 #import "ios/chrome/browser/tab_insertion/model/tab_insertion_browser_agent.h"
 #import "ios/chrome/browser/tabs/model/synced_window_delegate_browser_agent.h"
 #import "ios/chrome/browser/tabs/model/tabs_dependency_installer_manager.h"
-#import "ios/chrome/browser/toolbar/ui_bundled/fullscreen/toolbars_size_browser_agent.h"
+#import "ios/chrome/browser/toolbar/legacy/ui_bundled/fullscreen/toolbars_size_browser_agent.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_browser_agent.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_notifier_browser_agent.h"
 #import "ios/chrome/browser/view_source/model/view_source_browser_agent.h"
@@ -150,8 +150,7 @@ void AttachBrowserAgentsForActiveBrowser(Browser* browser) {
     SendTabToSelfBrowserAgent::CreateForBrowser(browser);
   }
 
-  WebStateDelegateBrowserAgent::CreateForBrowser(
-      browser, TabInsertionBrowserAgent::FromBrowser(browser));
+  WebStateDelegateBrowserAgent::CreateForBrowser(browser);
 
   // ViewSourceBrowserAgent requires TabInsertionBrowserAgent, and is only used
   // in debug builds.
@@ -196,7 +195,8 @@ void AttachBrowserAgentsForActiveBrowser(Browser* browser) {
   CredentialProviderBrowserAgent::CreateForBrowser(browser);
 #endif
 
-  if (!browser_is_off_record && IsPageActionMenuEnabled()) {
+  if (!browser_is_inactive && !browser_is_temporary && !browser_is_off_record &&
+      IsPageActionMenuEnabled()) {
     BwgBrowserAgent::CreateForBrowser(browser);
   }
 

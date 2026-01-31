@@ -31,7 +31,7 @@ class FakeNetLogProxySink : public network::mojom::NetLogProxySink {
                  const net::NetLogSource& net_log_source,
                  net::NetLogEventPhase phase,
                  base::TimeTicks time,
-                 base::Value::Dict params)
+                 base::DictValue params)
         : type(type),
           net_log_source(net_log_source),
           phase(phase),
@@ -49,7 +49,7 @@ class FakeNetLogProxySink : public network::mojom::NetLogProxySink {
     net::NetLogSource net_log_source;
     net::NetLogEventPhase phase;
     base::TimeTicks time;
-    base::Value::Dict params;
+    base::DictValue params;
   };
 
   std::vector<ProxiedEntry> entries() const {
@@ -64,7 +64,7 @@ class FakeNetLogProxySink : public network::mojom::NetLogProxySink {
                 const net::NetLogSource& net_log_source,
                 net::NetLogEventPhase phase,
                 base::TimeTicks time,
-                base::Value::Dict params) override {
+                base::DictValue params) override {
     base::AutoLock lock(lock_);
     entries_.emplace_back(type, net_log_source, phase, time, std::move(params));
     run_loop_quit_after_count_--;
@@ -112,9 +112,8 @@ class NetLogCaptureModeWaiter
   base::RunLoop run_loop_;
 };
 
-base::Value::Dict NetLogCaptureModeToParams(
-    net::NetLogCaptureMode capture_mode) {
-  base::Value::Dict dict;
+base::DictValue NetLogCaptureModeToParams(net::NetLogCaptureMode capture_mode) {
+  base::DictValue dict;
   switch (capture_mode) {
     case net::NetLogCaptureMode::kHeavilyRedacted:
       dict.Set("capture_mode", "kHeavilyRedacted");

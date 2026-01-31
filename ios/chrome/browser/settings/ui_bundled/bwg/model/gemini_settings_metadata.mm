@@ -4,6 +4,8 @@
 
 #import "ios/chrome/browser/settings/ui_bundled/bwg/model/gemini_settings_metadata.h"
 
+#import "ios/chrome/browser/settings/ui_bundled/bwg/model/gemini_settings_context.h"
+
 @implementation GeminiSettingsMetadata
 
 - (instancetype)initWithTitle:(NSString*)title

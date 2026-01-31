@@ -211,8 +211,9 @@ class D3D12VideoEncodeH265DelegateTest
           return S_OK;
         });
 
-    encoder_delegate_ =
-        std::make_unique<D3D12VideoEncodeH265Delegate>(video_device3_);
+    gpu::GpuDriverBugWorkarounds gpu_workarounds{};
+    encoder_delegate_ = std::make_unique<D3D12VideoEncodeH265Delegate>(
+        video_device3_, gpu_workarounds);
     encoder_delegate_->SetFactoriesForTesting(
         base::BindRepeating(&CreateVideoEncoderWrapper),
         base::BindRepeating(&CreateVideoProcessorWrapper));

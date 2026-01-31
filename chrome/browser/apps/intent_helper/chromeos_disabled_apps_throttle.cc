@@ -31,7 +31,7 @@ namespace {
 using ThrottleCheckResult = content::NavigationThrottle::ThrottleCheckResult;
 
 std::string GetAppDisabledErrorPage() {
-  base::Value::Dict strings;
+  base::DictValue strings;
 
   strings.Set("disabledPageHeader",
               l10n_util::GetStringUTF16(IDS_CHROME_URLS_DISABLED_PAGE_HEADER));

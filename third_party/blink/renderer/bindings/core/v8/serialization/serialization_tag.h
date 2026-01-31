@@ -134,6 +134,11 @@ enum SerializationTag : uint8_t {
   kFencedFrameConfigTag = 'C',
 
   kDOMExceptionTag = 'x',  // name:String,message:String,stack:String
+
+  kQuotaExceededErrorTag = 'q',  // message:String,stack:String,
+                                 // has_quota:uint32 (0 or 1), quota:double,
+                                 // has_requested:uint32 (0 or 1),
+                                 // requested:double
   kTrailerOffsetTag =
       0xFE,  // offset:uint64_t (fixed width, network order) from buffer start
              // size:uint32_t (fixed width, network order)

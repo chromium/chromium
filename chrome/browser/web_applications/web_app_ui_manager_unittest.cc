@@ -9,13 +9,13 @@
 #include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "build/build_config.h"
-#include "chrome/browser/apps/app_service/app_launch_params.h"
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
 #include "chrome/browser/web_applications/test/web_app_test_utils.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/browser/web_applications/web_app_ui_manager.h"
 #include "chrome/common/chrome_switches.h"
+#include "components/services/app_service/public/cpp/app_launch_params.h"
 #include "components/services/app_service/public/cpp/app_launch_util.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -31,7 +31,7 @@ const base::FilePath::CharType kCurrentDirectory[] =
 const base::FilePath::CharType kCurrentDirectory[] = FILE_PATH_LITERAL("/path");
 #endif  // BUILDFLAG(IS_WIN)
 
-const char kTestAppId[] = "test_app_id";
+const char kTestAppId[] = "https://example.com/";
 
 class WebAppUiManagerTest : public testing::Test {
  public:
@@ -40,7 +40,9 @@ class WebAppUiManagerTest : public testing::Test {
 
  protected:
   void InitAppWithDisplayMode(DisplayMode display_mode) {
-    auto web_app = std::make_unique<WebApp>(kTestAppId);
+    GURL test_app_url = GURL(kTestAppId);
+    auto web_app =
+        std::make_unique<WebApp>(test_app_url, test_app_url, test_app_url);
     web_app->SetDisplayMode(display_mode);
     if (display_mode == DisplayMode::kBrowser) {
       web_app->SetUserDisplayMode(mojom::UserDisplayMode::kBrowser);

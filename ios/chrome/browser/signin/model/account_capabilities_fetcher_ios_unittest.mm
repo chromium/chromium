@@ -28,13 +28,11 @@ namespace {
 
 const char kTestEmail[] = "janedoe@chromium.org";
 
-void CheckHaveEmailAddressDisplayed(
-    signin::Tribool capability_expected,
-    const CoreAccountId& account_id,
-    const std::optional<AccountCapabilities>& capabilities) {
+void CheckCapability(signin::Tribool capability_expected,
+                     const CoreAccountId& account_id,
+                     const std::optional<AccountCapabilities>& capabilities) {
   ASSERT_TRUE(capabilities.has_value());
-  ASSERT_EQ(capabilities->can_have_email_address_displayed(),
-            capability_expected);
+  ASSERT_EQ(capabilities->can_fetch_family_member_info(), capability_expected);
 }
 
 }  // anonymous namespace
@@ -76,7 +74,7 @@ class AccountCapabilitiesFetcherIOSTest : public PlatformTest {
           system_identity_manager->GetPendingCapabilitiesMutator(identity);
       bool has_capability =
           capability_fetched.value() == SystemIdentityCapabilityResult::kTrue;
-      mutator->set_can_have_email_address_displayed(has_capability);
+      mutator->set_can_fetch_family_member_info(has_capability);
     }
 
     // Check that the capabilities are correctly converted.
@@ -84,7 +82,7 @@ class AccountCapabilitiesFetcherIOSTest : public PlatformTest {
     ios::AccountCapabilitiesFetcherIOS fetcher(
         account_info, AccountCapabilitiesFetcher::FetchPriority::kForeground,
         account_manager_service_,
-        base::BindOnce(&CheckHaveEmailAddressDisplayed, capability_expected)
+        base::BindOnce(&CheckCapability, capability_expected)
             .Then(run_loop.QuitClosure()));
 
     fetcher.Start();

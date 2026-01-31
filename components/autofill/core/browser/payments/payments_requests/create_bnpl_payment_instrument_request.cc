@@ -35,8 +35,8 @@ std::string CreateBnplPaymentInstrumentRequest::GetRequestContentType() {
 }
 
 std::string CreateBnplPaymentInstrumentRequest::GetRequestContent() {
-  base::Value::Dict request_dict;
-  base::Value::Dict context;
+  base::DictValue request_dict;
+  base::DictValue context;
   context.Set("language_code", request_details_.app_locale);
   context.Set("billable_service",
               payments::kUploadPaymentMethodBillableServiceNumber);
@@ -47,11 +47,11 @@ std::string CreateBnplPaymentInstrumentRequest::GetRequestContent() {
   }
   request_dict.Set("context", std::move(context));
 
-  base::Value::Dict chrome_user_context;
+  base::DictValue chrome_user_context;
   chrome_user_context.Set("full_sync_enabled", full_sync_enabled_);
   request_dict.Set("chrome_user_context", std::move(chrome_user_context));
 
-  base::Value::Dict buy_now_pay_later_info;
+  base::DictValue buy_now_pay_later_info;
   buy_now_pay_later_info.Set("issuer_id", request_details_.issuer_id);
   request_dict.Set("buy_now_pay_later_info", std::move(buy_now_pay_later_info));
 
@@ -63,8 +63,8 @@ std::string CreateBnplPaymentInstrumentRequest::GetRequestContent() {
 }
 
 void CreateBnplPaymentInstrumentRequest::ParseResponse(
-    const base::Value::Dict& response) {
-  if (const base::Value::Dict* buy_now_pay_later_info =
+    const base::DictValue& response) {
+  if (const base::DictValue* buy_now_pay_later_info =
           response.FindDict("buy_now_pay_later_info")) {
     if (const std::string* instrument_id =
             buy_now_pay_later_info->FindString("instrument_id")) {

@@ -6,7 +6,6 @@
 
 #include <set>
 
-#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
@@ -35,7 +34,7 @@ void BlocklistStateFetcherMock::Request(const std::string& id,
   ++request_count_;
 
   BlocklistState result = NOT_BLOCKLISTED;
-  if (base::Contains(states_, id)) {
+  if (states_.contains(id)) {
     result = states_[id];
   }
 

@@ -43,16 +43,17 @@
 namespace {
 
 struct InitGlobals {
-  InitGlobals()
-      : scoped_feature_list_(
-            webnn::mojom::features::kWebMachineLearningNeuralNetwork) {
+  InitGlobals() {
     mojo::core::Init();
     bool success = base::CommandLine::Init(0, nullptr);
     CHECK(success);
     base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
-    scoped_feature_list_.InitFromCommandLine(
+    success = base::FeatureList::InitInstance(
         command_line->GetSwitchValueASCII(switches::kEnableFeatures),
         command_line->GetSwitchValueASCII(switches::kDisableFeatures));
+    CHECK(success);
+    scoped_feature_list_.InitAndEnableFeature(
+        webnn::mojom::features::kWebMachineLearningNeuralNetwork);
 
     TestTimeouts::Initialize();
 

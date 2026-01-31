@@ -1098,6 +1098,12 @@ ci.builder(
 
 fyi_ios_builder(
     name = "ios-wpt-fyi-rel",
+    description_html = "This builder runs upstream web platform tests for {}.".format(
+        linkify(
+            "https://chromium.googlesource.com/chromium/src/+/HEAD/docs/testing/web_platform_tests.md#wpt_fyi-integration",
+            "reporting results to wpt.fyi",
+        ),
+    ),
     schedule = "with 5h interval",
     triggered_by = [],
     builder_spec = builder_config.builder_spec(
@@ -1144,6 +1150,7 @@ fyi_ios_builder(
     console_view_entry = consoles.console_view_entry(
         category = "mac",
     ),
+    contact_team_email = "chrome-product-engprod@google.com",
 )
 
 ci.builder(
@@ -1403,11 +1410,6 @@ ci.builder(
                     shards = 6,
                 ),
             ),
-            "browser_tests": targets.mixin(
-                swarming = targets.swarming(
-                    shards = 15,
-                ),
-            ),
             "browser_tests_no_field_trial": targets.remove(
                 reason = "crbug.com/40630866",
             ),
@@ -1481,7 +1483,7 @@ ci.builder(
             "variations_smoke_tests",  # single module scheme
             "mojo_python_unittests",  # pyunit scheme
             "grit_python_unittests",  # pyunit scheme
-            "webgpu_cts_structured_test_id_dedicated_worker_tests",  # webgpucts scheme
+            "webgpu_cts_dedicated_worker_tests",  # webgpucts scheme
         ],
         mixins = [
             "isolate_profile_data",
@@ -1536,7 +1538,7 @@ ci.builder(
             "webdriver_wpt_tests": targets.mixin(
                 ci_only = True,
             ),
-            "webgpu_cts_structured_test_id_dedicated_worker_tests": [
+            "webgpu_cts_dedicated_worker_tests": [
                 "linux_nvidia_gtx_1660_stable",
             ],
         },
@@ -1941,6 +1943,7 @@ fyi_ios_builder(
             "ios_simulator",
             "arm64",
             "xctest",
+            "enable_swift_cxx_interop",
         ],
     ),
     targets = targets.bundle(
@@ -1998,6 +2001,7 @@ fyi_ios_builder(
             "ios_simulator",
             "arm64",
             "xctest",
+            "enable_swift_cxx_interop",
         ],
     ),
     # ios18-beta-sim compiles with xcode version n-1, but
@@ -2055,6 +2059,7 @@ fyi_ios_builder(
             "ios_simulator",
             "arm64",
             "xctest",
+            "enable_swift_cxx_interop",
         ],
     ),
     targets = targets.bundle(
@@ -2114,6 +2119,7 @@ fyi_ios_builder(
             "ios_simulator",
             "arm64",
             "xctest",
+            "enable_swift_cxx_interop",
         ],
     ),
     # ios18-sdk-sim compiles with xcode version n, and runs

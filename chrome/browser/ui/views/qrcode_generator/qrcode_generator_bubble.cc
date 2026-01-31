@@ -14,9 +14,9 @@
 #include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_actions.h"
-#include "chrome/browser/ui/browser_dialogs.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
+#include "chrome/browser/ui/dialogs/browser_dialogs.h"
 #include "chrome/browser/ui/qrcode_generator/qrcode_generator_bubble_controller.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/chrome_typography.h"
@@ -81,12 +81,12 @@ gfx::ImageSkia CreateBackgroundImageSkia(const gfx::Size& size, SkColor color) {
 namespace qrcode_generator {
 
 QRCodeGeneratorBubble::QRCodeGeneratorBubble(
-    views::View* anchor_view,
+    views::BubbleAnchor anchor,
     base::WeakPtr<content::WebContents> web_contents,
     base::OnceClosure on_closing,
     base::OnceClosure on_back_button_pressed,
     const GURL& url)
-    : LocationBarBubbleDelegateView(anchor_view, nullptr),
+    : LocationBarBubbleDelegateView(anchor, nullptr),
       url_(url),
       on_closing_(std::move(on_closing)),
       on_back_button_pressed_(std::move(on_back_button_pressed)),

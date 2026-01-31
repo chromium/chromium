@@ -189,6 +189,11 @@ void RegisterProfilePrefs(
                                 0);
   registry->RegisterIntegerPref(
       prefs::kHistoryPageHistorySyncPromoShownCountPerProfile, 0);
+  registry->RegisterTimePref(
+      prefs::kHistoryPageHistorySyncPromoLastDismissedTimestampPerProfile,
+      base::Time());
+  registry->RegisterBooleanPref(
+      prefs::kHistoryPageHistorySyncPromoShownAfterDismissalPerProfile, false);
 
   // Signin promo limits experiment prefs.
   registry->RegisterIntegerPref(

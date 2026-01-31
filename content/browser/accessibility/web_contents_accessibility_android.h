@@ -68,7 +68,7 @@ class CONTENT_EXPORT WebContentsAccessibilityAndroid
   WebContentsAccessibilityAndroid(
       JNIEnv* env,
       const base::android::JavaRef<jobject>& obj,
-      jlong ax_tree_update_ptr,
+      int64_t ax_tree_update_ptr,
       const base::android::JavaRef<jobject>& jaccessibility_node_info_builder);
   WebContentsAccessibilityAndroid(
       JNIEnv* env,
@@ -113,7 +113,7 @@ class CONTENT_EXPORT WebContentsAccessibilityAndroid
   // is connected to |this| (See #IsRootManagerConnected, below). This may
   // happen multiple times. See WebContentsAccessibilityImpl.java for more info.
   void ConnectInstanceToRootManager(JNIEnv* env);
-  jboolean IsRootManagerConnected(JNIEnv* env);
+  bool IsRootManagerConnected(JNIEnv* env);
 
   // This method should only be used by the Auto-Disable accessibility feature.
   //
@@ -138,61 +138,66 @@ class CONTENT_EXPORT WebContentsAccessibilityAndroid
   // This method turns on the renderer-side accessibility engine for this
   // web contents.
   void SetBrowserAXMode(JNIEnv* env,
-                        jboolean is_known_screen_reader_enabled,
-                        jboolean is_complex_accessibility_service_enabled,
-                        jboolean is_form_controls_candidate,
-                        jboolean is_on_screen_mode_candidate);
+                        bool is_known_screen_reader_enabled,
+                        bool is_complex_accessibility_service_enabled,
+                        bool is_form_controls_candidate,
+                        bool is_on_screen_mode_candidate);
 
   base::android::ScopedJavaLocalRef<jstring> GetSupportedHtmlElementTypes(
       JNIEnv* env);
 
-  void SetAllowImageDescriptions(JNIEnv* env,
-                                 jboolean allow_image_descriptions);
+  void SetAllowImageDescriptions(JNIEnv* env, bool allow_image_descriptions);
   void SetPasswordRules(JNIEnv* env,
-                        jboolean should_respect_displayed_password_text,
-                        jboolean should_expost_password_text);
+                        bool should_respect_displayed_password_text,
+                        bool should_expost_password_text);
 
   // Tree methods.
-  jint GetRootId(JNIEnv* env);
-  jboolean IsNodeValid(JNIEnv* env, jint id);
+  int32_t GetRootId(JNIEnv* env);
+  bool IsNodeValid(JNIEnv* env, int32_t id);
 
-  void HitTest(JNIEnv* env, jint x, jint y);
+  void HitTest(JNIEnv* env, int32_t x, int32_t y);
 
   // Methods to get information about a specific node.
-  jboolean IsEditableText(JNIEnv* env, jint id);
-  jboolean IsFocused(JNIEnv* env, jint id);
-  jint GetEditableTextSelectionStart(JNIEnv* env, jint id);
-  jint GetEditableTextSelectionEnd(JNIEnv* env, jint id);
+  bool IsEditableText(JNIEnv* env, int32_t id);
+  bool IsFocused(JNIEnv* env, int32_t id);
+  int32_t GetEditableTextSelectionStart(JNIEnv* env, int32_t id);
+  int32_t GetEditableTextSelectionEnd(JNIEnv* env, int32_t id);
   base::android::ScopedJavaLocalRef<jintArray> GetAbsolutePositionForNode(
       JNIEnv* env,
-      jint unique_id);
+      int32_t unique_id);
 
   // Populate Java accessibility data structures with info about a node.
-  jboolean UpdateCachedAccessibilityNodeInfo(
+  bool UpdateCachedAccessibilityNodeInfo(
       JNIEnv* env,
       const base::android::JavaRef<jobject>& info,
-      jint id);
-  jboolean PopulateAccessibilityNodeInfo(
+      int32_t id);
+  bool PopulateAccessibilityNodeInfo(
       JNIEnv* env,
       const base::android::JavaRef<jobject>& info,
-      jint id);
-  jboolean PopulateAccessibilityEvent(
-      JNIEnv* env,
-      const base::android::JavaRef<jobject>& event,
-      jint id,
-      jint event_type);
+      int32_t id);
+  bool PopulateAccessibilityEvent(JNIEnv* env,
+                                  const base::android::JavaRef<jobject>& event,
+                                  int32_t id,
+                                  int32_t event_type);
 
   // Perform actions.
-  void Click(JNIEnv* env, jint id);
-  void Focus(JNIEnv* env, jint id);
+  void Click(JNIEnv* env, int32_t id);
+  void Focus(JNIEnv* env, int32_t id);
   void Blur(JNIEnv* env);
-  void ScrollToMakeNodeVisible(JNIEnv* env, jint id);
+  void ScrollToMakeNodeVisible(JNIEnv* env, int32_t id);
   void SetTextFieldValue(JNIEnv* env,
-                         jint id,
+                         int32_t id,
                          const base::android::JavaRef<jstring>& value);
-  void SetSelection(JNIEnv* env, jint id, jint start, jint end);
-  jboolean AdjustSlider(JNIEnv* env, jint id, jboolean increment);
-  void ShowContextMenu(JNIEnv* env, jint id);
+  void SetSelection(JNIEnv* env, int32_t id, int32_t start, int32_t end);
+  void SetExtendedSelection(JNIEnv* env,
+                            int32_t id,
+                            int32_t start_node_id,
+                            int32_t start_node_offset,
+                            int32_t end_node_id,
+                            int32_t end_node_offset);
+  void ClearExtendedSelection(JNIEnv* env, int32_t id);
+  bool AdjustSlider(JNIEnv* env, int32_t id, bool increment);
+  void ShowContextMenu(JNIEnv* env, int32_t id);
 
   // Return the id of the next node in tree order in the direction given by
   // |forwards|, starting with |start_id|, that matches |element_type|,
@@ -202,14 +207,15 @@ class CONTENT_EXPORT WebContentsAccessibilityAndroid
   // Use |can_wrap_to_last_element| to specify if a backwards search can wrap
   // around to the last element. This is used to expose the last HTML element
   // upon swiping backwards into a WebView.
-  jint FindElementType(JNIEnv* env,
-                       jint start_id,
-                       const base::android::JavaRef<jstring>& element_type_str,
-                       jboolean forwards,
-                       jboolean can_wrap_to_last_element,
-                       jboolean use_default_predicate,
-                       jboolean is_known_screen_reader_enabled,
-                       jboolean is_only_one_accessibility_service_enabled);
+  int32_t FindElementType(
+      JNIEnv* env,
+      int32_t start_id,
+      const base::android::JavaRef<jstring>& element_type_str,
+      bool forwards,
+      bool can_wrap_to_last_element,
+      bool use_default_predicate,
+      bool is_known_screen_reader_enabled,
+      bool is_only_one_accessibility_service_enabled);
 
   // Respond to a ACTION_[NEXT/PREVIOUS]_AT_MOVEMENT_GRANULARITY action
   // and move the cursor/selection within the given node id. We keep track
@@ -218,16 +224,16 @@ class CONTENT_EXPORT WebContentsAccessibilityAndroid
   // in Blink, too, and either way calls
   // Java_BrowserAccessibilityManager_finishGranularityMove[NEXT/PREVIOUS]
   // with the result.
-  jboolean NextAtGranularity(JNIEnv* env,
-                             jint granularity,
-                             jboolean extend_selection,
-                             jint id,
-                             jint cursor_index);
-  jboolean PreviousAtGranularity(JNIEnv* env,
-                                 jint granularity,
-                                 jboolean extend_selection,
-                                 jint id,
-                                 jint cursor_index);
+  bool NextAtGranularity(JNIEnv* env,
+                         int32_t granularity,
+                         bool extend_selection,
+                         int32_t id,
+                         int32_t cursor_index);
+  bool PreviousAtGranularity(JNIEnv* env,
+                             int32_t granularity,
+                             bool extend_selection,
+                             int32_t id,
+                             int32_t cursor_index);
 
   // Move accessibility focus. This sends a message to the renderer to
   // clear accessibility focus on the previous node and set accessibility
@@ -238,48 +244,48 @@ class CONTENT_EXPORT WebContentsAccessibilityAndroid
   // load inline text boxes for this node only, enabling more accurate
   // movement by granularities on this node.
   void MoveAccessibilityFocus(JNIEnv* env,
-                              jint old_unique_id,
-                              jint new_unique_id);
+                              int32_t old_unique_id,
+                              int32_t new_unique_id);
 
   // Sets the sequential focus starting point. This sends a message to the
   // renderer. The sequential focus starting point sets the node on which
   // tab/shift tab should continue without actually changing input focus.
-  void SetSequentialFocusStartingPoint(JNIEnv* env, jint unique_id);
+  void SetSequentialFocusStartingPoint(JNIEnv* env, int32_t unique_id);
 
   // Returns true if the object is a slider.
-  bool IsSlider(JNIEnv* env, jint id);
+  bool IsSlider(JNIEnv* env, int32_t id);
 
   // Accessibility methods to support navigation for autofill popup.
   void OnAutofillPopupDisplayed(JNIEnv* env);
   void OnAutofillPopupDismissed(JNIEnv* env);
-  jint GetIdForElementAfterElementHostingAutofillPopup(JNIEnv* env);
-  jboolean IsAutofillPopupNode(JNIEnv* env, jint id);
+  int32_t GetIdForElementAfterElementHostingAutofillPopup(JNIEnv* env);
+  bool IsAutofillPopupNode(JNIEnv* env, int32_t id);
 
   // Scrolls any scrollable container by about 80% of one page in the
   // given direction, or 100% in the case of page scrolls.
-  bool Scroll(JNIEnv* env, jint id, int direction, bool is_page_scroll);
+  bool Scroll(JNIEnv* env, int32_t id, int direction, bool is_page_scroll);
 
   // Sets value for range type nodes.
-  bool SetRangeValue(JNIEnv* env, jint id, float value);
+  bool SetRangeValue(JNIEnv* env, int32_t id, float value);
 
   // Responds to a hover event without relying on the renderer for hit testing.
-  bool OnHoverEventNoRenderer(JNIEnv* env, jfloat x, jfloat y);
+  bool OnHoverEventNoRenderer(JNIEnv* env, float x, float y);
 
   // Returns true if the given subtree has inline text box data, or if there
   // aren't any to load.
-  jboolean AreInlineTextBoxesLoaded(JNIEnv* env, jint id);
+  bool AreInlineTextBoxesLoaded(JNIEnv* env, int32_t id);
 
   // Returns the length of the text node.
-  jint GetTextLength(JNIEnv* env, jint id);
+  int32_t GetTextLength(JNIEnv* env, int32_t id);
 
   // Add a fake spelling error for testing spelling spannables.
   void AddSpellingErrorForTesting(JNIEnv* env,
-                                  jint id,
-                                  jint start_offset,
-                                  jint end_offset);
+                                  int32_t id,
+                                  int32_t start_offset,
+                                  int32_t end_offset);
 
   // Request loading inline text boxes for a given node.
-  void LoadInlineTextBoxes(JNIEnv* env, jint id);
+  void LoadInlineTextBoxes(JNIEnv* env, int32_t id);
   void RecordInlineTextBoxMetrics(bool from_focus);
 
   // Get the bounds of each character for a given static text node,
@@ -287,29 +293,33 @@ class CONTENT_EXPORT WebContentsAccessibilityAndroid
   // of ints is 4 times the length |len|, with the bounds being returned
   // as (left, top, right, bottom) in that order corresponding to a
   // android.graphics.RectF.
-  base::android::ScopedJavaLocalRef<jintArray>
-  GetCharacterBoundingBoxes(JNIEnv* env, jint id, jint start, jint len);
+  base::android::ScopedJavaLocalRef<jintArray> GetCharacterBoundingBoxes(
+      JNIEnv* env,
+      int32_t id,
+      int32_t start,
+      int32_t len);
 
   // Get the image data for a given node. If no image data is available, this
   // will call through to |BrowserAccessibilityManager| to populate the data
   // asynchronously so the next time the method is called the data is ready.
-  jboolean GetImageData(JNIEnv* env,
-                        const base::android::JavaRef<jobject>& info,
-                        jint unique_id,
-                        jboolean has_sent_previous_request);
+  bool GetImageData(JNIEnv* env,
+                    const base::android::JavaRef<jobject>& info,
+                    int32_t unique_id,
+                    bool has_sent_previous_request);
 
   // Get the paint order for a given node.
-  jint GetPaintOrder(JNIEnv* env, jint unique_id);
+  int32_t GetPaintOrder(JNIEnv* env, int32_t unique_id);
 
   // Request layout based actions for a given node.
   void RequestLayoutBasedActions(JNIEnv* env,
-                                 jint unique_id,
+                                 int32_t unique_id,
                                  const base::android::JavaRef<jobject>& info);
 
   void UpdateFrameInfo(float page_scale);
 
   // Set a new max for TYPE_WINDOW_CONTENT_CHANGED events to fire.
-  void SetMaxContentChangedEventsToFireForTesting(JNIEnv* env, jint maxEvents) {
+  void SetMaxContentChangedEventsToFireForTesting(JNIEnv* env,
+                                                  int32_t maxEvents) {
     // Consider a new |maxEvents| value of -1 to mean to reset to the default.
     if (maxEvents == -1) {
       max_content_changed_events_to_fire_ = kMaxContentChangedEventsToFire;
@@ -319,7 +329,7 @@ class CONTENT_EXPORT WebContentsAccessibilityAndroid
   }
 
   // Get the current max for TYPE_WINDOW_CONTENT_CHANGED events to fire.
-  jint GetMaxContentChangedEventsToFireForTesting(JNIEnv* env) {
+  int32_t GetMaxContentChangedEventsToFireForTesting(JNIEnv* env) {
     return max_content_changed_events_to_fire_;
   }
 
@@ -403,13 +413,15 @@ class CONTENT_EXPORT WebContentsAccessibilityAndroid
   void HandleSortDirectionChanged(int32_t unique_id);
   void HandleScrolledToAnchor(int32_t unique_id);
   void HandlePaneOpened(int32_t unique_id);
+  // Dispatches events for atomic live region changes over the JNI Bridge.
+  void HandleAtomicLiveRegionChanged(int32_t unique_id);
   // Dispatches LIVE_REGION_NODE_CHANGED AxGeneratedEvents over the JNI Bridge.
   void HandleLiveRegionNodeChanged(int32_t unique_id);
   void HandleDefaultActionVerbChanged(int32_t unique_id);
   void AnnounceLiveRegionText(const std::u16string& text);
   void HandleActiveDescendantChanged(int32_t unique_id);
   void HandleTextSelectionChanged(int32_t unique_id);
-  void HandleEditableTextChanged(int32_t unique_id);
+  void HandleEditableTextChanged(int32_t unique_id, int32_t subType);
   void HandleSliderChanged(int32_t unique_id);
   void SendDelayedWindowContentChangedEvent();
   bool OnHoverEvent(const ui::MotionEventAndroid& event);
@@ -424,11 +436,11 @@ class CONTENT_EXPORT WebContentsAccessibilityAndroid
 
   base::android::ScopedJavaLocalRef<jintArray> GetChildIdsForTesting(
       JNIEnv* env,
-      jint unique_id);
+      int32_t unique_id);
 
   base::android::ScopedJavaLocalRef<jintArray> GetLabeledByNodeIdsForTesting(
       JNIEnv* env,
-      jint unique_id);
+      int32_t unique_id);
 
  private:
   friend class MockWebContentsAccessibilityAndroid;
@@ -525,7 +537,7 @@ class CONTENT_EXPORT WebContentsAccessibilityAndroid
       JNIEnv* env,
       const base::android::ScopedJavaLocalRef<jobject>& obj,
       const base::android::JavaRef<jobject>& info,
-      jint id,
+      int32_t id,
       BrowserAccessibilityAndroid* node);
 
   base::android::ScopedJavaLocalRef<jobject> ToJavaCanonicalStringRangesMap(

@@ -1,8 +1,7 @@
 #![cfg_attr(not(check_cfg), allow(unexpected_cfgs))]
-#![allow(clippy::cast_possible_truncation)]
 
 use std::str;
-use std::sync::atomic::{AtomicUsize, Ordering};
+use std::sync::atomic::{AtomicU32, Ordering};
 use std::sync::Arc;
 use std::thread;
 
@@ -10,22 +9,22 @@ use std::thread;
 #[cfg_attr(not(exhaustive), ignore = "requires cfg(exhaustive)")]
 fn test_exhaustive() {
     const BATCH_SIZE: u32 = 1_000_000;
-    let counter = Arc::new(AtomicUsize::new(0));
-    let finished = Arc::new(AtomicUsize::new(0));
+    let counter = Arc::new(AtomicU32::new(0));
+    let finished = Arc::new(AtomicU32::new(0));
 
     let mut workers = Vec::new();
     for _ in 0..num_cpus::get() {
         let counter = counter.clone();
         let finished = finished.clone();
         workers.push(thread::spawn(move || loop {
-            let batch = counter.fetch_add(1, Ordering::Relaxed) as u32;
-            if batch > u32::max_value() / BATCH_SIZE {
+            let batch = counter.fetch_add(1, Ordering::Relaxed);
+            if batch > u32::MAX / BATCH_SIZE {
                 return;
             }
 
             let min = batch * BATCH_SIZE;
-            let max = if batch == u32::max_value() / BATCH_SIZE {
-                u32::max_value()
+            let max = if batch == u32::MAX / BATCH_SIZE {
+                u32::MAX
             } else {
                 min + BATCH_SIZE - 1
             };
@@ -37,14 +36,14 @@ fn test_exhaustive() {
                 if !f.is_finite() {
                     continue;
                 }
-                let n = unsafe { ryu::raw::format32(f, &mut bytes[0]) };
+                let n = unsafe { ryu::raw::format32(f, bytes.as_mut_ptr()) };
                 assert_eq!(Ok(Ok(f)), str::from_utf8(&bytes[..n]).map(str::parse));
                 assert_eq!(Ok(f), buffer.format_finite(f).parse());
             }
 
-            let increment = (max - min + 1) as usize;
+            let increment = max - min + 1;
             let update = finished.fetch_add(increment, Ordering::Relaxed);
-            println!("{}", update + increment);
+            println!("{}", u64::from(update) + u64::from(increment));
         }));
     }
 

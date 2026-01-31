@@ -25,7 +25,7 @@ Material::Material() = default;
 Material::~Material() = default;
 
 bool Material::ConvertMaterial(const base::Value* input, Material* output) {
-  const base::Value::Dict* dict = input->GetIfDict();
+  const base::DictValue* dict = input->GetIfDict();
   if (!dict) {
     return false;
   }
@@ -37,7 +37,7 @@ bool Material::ConvertMaterial(const base::Value* input, Material* output) {
   const auto* const link = dict->FindDict(kApiResponseMaterialLinkKey);
   const auto* const form = dict->FindDict(kApiResponseMaterialFormKey);
 
-  const base::Value::Dict* content_dict = nullptr;
+  const base::DictValue* content_dict = nullptr;
   Material::Type content_type = Material::Type::kUnknown;
 
   if (sharedDriveFile) {

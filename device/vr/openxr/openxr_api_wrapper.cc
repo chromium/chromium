@@ -12,7 +12,6 @@
 #include <type_traits>
 
 #include "base/check.h"
-#include "base/containers/contains.h"
 #include "base/debug/dump_without_crashing.h"
 #include "base/feature_list.h"
 #include "base/functional/callback_helpers.h"
@@ -38,6 +37,7 @@
 #include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 #include "third_party/blink/public/common/features_generated.h"
 #include "third_party/openxr/src/include/openxr/openxr.h"
+#include "third_party/perfetto/include/perfetto/tracing/track.h"
 #include "ui/gfx/geometry/point3_f.h"
 #include "ui/gfx/geometry/quaternion.h"
 #include "ui/gfx/geometry/size.h"
@@ -308,7 +308,7 @@ bool OpenXrApiWrapper::HasFrameState() const {
 
 bool OpenXrApiWrapper::IsFeatureEnabled(
     device::mojom::XRSessionFeature feature) const {
-  return base::Contains(enabled_features_, feature);
+  return enabled_features_.contains(feature);
 }
 
 XrResult OpenXrApiWrapper::InitializeViewConfig(
@@ -361,7 +361,7 @@ XrResult OpenXrApiWrapper::InitializeSystem() {
       view_config_types.data()));
 
   for (const auto& view_config_type : kSecondaryViewConfigurations) {
-    if (base::Contains(view_config_types, view_config_type)) {
+    if (std::ranges::contains(view_config_types, view_config_type)) {
       OpenXrViewConfiguration view_config;
       RETURN_IF_XR_FAILED(InitializeViewConfig(view_config_type, view_config));
       secondary_view_configs_.emplace(view_config_type, std::move(view_config));
@@ -399,19 +399,19 @@ OpenXrApiWrapper::PickEnvironmentBlendModeForSession(
 
   switch (session_mode) {
     case device::mojom::XRSessionMode::kImmersiveVr:
-      if (base::Contains(supported_blend_modes,
-                         XR_ENVIRONMENT_BLEND_MODE_OPAQUE))
+      if (std::ranges::contains(supported_blend_modes,
+                                XR_ENVIRONMENT_BLEND_MODE_OPAQUE))
         blend_mode_ = XR_ENVIRONMENT_BLEND_MODE_OPAQUE;
       break;
     case device::mojom::XRSessionMode::kImmersiveAr:
       // Prefer Alpha Blend when both Alpha Blend and Additive modes are
       // supported. This only concerns video see through devices with an
       // Additive compatibility mode
-      if (base::Contains(supported_blend_modes,
-                         XR_ENVIRONMENT_BLEND_MODE_ALPHA_BLEND)) {
+      if (std::ranges::contains(supported_blend_modes,
+                                XR_ENVIRONMENT_BLEND_MODE_ALPHA_BLEND)) {
         blend_mode_ = XR_ENVIRONMENT_BLEND_MODE_ALPHA_BLEND;
-      } else if (base::Contains(supported_blend_modes,
-                                XR_ENVIRONMENT_BLEND_MODE_ADDITIVE)) {
+      } else if (std::ranges::contains(supported_blend_modes,
+                                       XR_ENVIRONMENT_BLEND_MODE_ADDITIVE)) {
         blend_mode_ = XR_ENVIRONMENT_BLEND_MODE_ADDITIVE;
       }
       break;
@@ -488,7 +488,7 @@ XrResult OpenXrApiWrapper::EnableSupportedFeatures(
   for (const auto& feature : requested_features) {
     bool is_enabled = false;
     bool is_required =
-        base::Contains(session_options_->required_features, feature);
+        std::ranges::contains(session_options_->required_features, feature);
 
     switch (feature) {
       case mojom::XRSessionFeature::REF_SPACE_LOCAL_FLOOR:
@@ -666,6 +666,8 @@ XrResult OpenXrApiWrapper::InitSession(
   DVLOG(1) << __func__ << " : Vendor Id: " << system_properties.vendorId
            << " : System Name: " << system_properties.systemName;
 
+  max_layer_count_ = system_properties.graphicsProperties.maxLayerCount;
+
   RETURN_IF_XR_FAILED(CreateSession());
   RETURN_IF_XR_FAILED(
       CreateSpace(XR_REFERENCE_SPACE_TYPE_LOCAL, &local_space_));
@@ -675,10 +677,10 @@ XrResult OpenXrApiWrapper::InitSession(
   // session prior to any swap chain images being activated because the
   // associated shared images need to be created with WebGPU-specific flags.
   const bool webgpu_session =
-      base::Contains(session_options_->required_features,
-                     device::mojom::XRSessionFeature::WEBGPU) ||
-      base::Contains(session_options_->optional_features,
-                     device::mojom::XRSessionFeature::WEBGPU);
+      std::ranges::contains(session_options_->required_features,
+                            device::mojom::XRSessionFeature::WEBGPU) ||
+      std::ranges::contains(session_options_->optional_features,
+                            device::mojom::XRSessionFeature::WEBGPU);
   graphics_binding_->OnSessionCreated(local_space_, webgpu_session);
 
   // Now the primary layer should be available.
@@ -689,10 +691,10 @@ XrResult OpenXrApiWrapper::InitSession(
   RETURN_IF_XR_FAILED(CreateSwapchain());
 
   bool enable_hand_tracking =
-      base::Contains(session_options_->required_features,
-                     device::mojom::XRSessionFeature::HAND_INPUT) ||
-      base::Contains(session_options_->optional_features,
-                     device::mojom::XRSessionFeature::HAND_INPUT);
+      std::ranges::contains(session_options_->required_features,
+                            device::mojom::XRSessionFeature::HAND_INPUT) ||
+      std::ranges::contains(session_options_->optional_features,
+                            device::mojom::XRSessionFeature::HAND_INPUT);
 
   RETURN_IF_XR_FAILED(OpenXRInputHelper::CreateOpenXRInputHelper(
       instance_, system_properties.systemName, extension_helper, session_,
@@ -916,7 +918,7 @@ void OpenXrApiWrapper::CreateSharedMailboxes() {
 
   gpu::SharedImageInterface* shared_image_interface =
       context_provider_->SharedImageInterface();
-  // Create the MailboxHolders for each texture in the swap chain
+  // Create the SharedImages for each texture in the swap chain
   graphics_binding_->CreateBaseLayerSharedImages(shared_image_interface);
 }
 
@@ -1115,8 +1117,7 @@ XrResult OpenXrApiWrapper::UpdateSecondaryViewConfigStates(
 
   bool state_changed = false;
   for (const XrSecondaryViewConfigurationStateMSFT& state : states) {
-    DCHECK(
-        base::Contains(secondary_view_configs_, state.viewConfigurationType));
+    DCHECK(secondary_view_configs_.contains(state.viewConfigurationType));
     OpenXrViewConfiguration& view_config =
         secondary_view_configs_.at(state.viewConfigurationType);
 
@@ -1176,11 +1177,15 @@ XrResult OpenXrApiWrapper::EndFrame() {
     }
   }
 
+  CHECK_LE(layers->PrimaryLayerCount(), max_layer_count_);
+
   XrFrameEndInfo end_frame_info = {XR_TYPE_FRAME_END_INFO};
   end_frame_info.layerCount = layers->PrimaryLayerCount();
   end_frame_info.layers = layers->PrimaryLayerData();
   end_frame_info.displayTime = frame_state_.predictedDisplayTime;
   end_frame_info.environmentBlendMode = blend_mode_;
+
+  TRACE_COUNTER1("xr", "ActiveLayers", end_frame_info.layerCount);
 
   XrSecondaryViewConfigurationFrameEndInfoMSFT secondary_view_end_frame_info = {
       XR_TYPE_SECONDARY_VIEW_CONFIGURATION_FRAME_END_INFO_MSFT};
@@ -1639,6 +1644,15 @@ uint32_t OpenXrApiWrapper::GetRecommendedSwapchainSampleCount() const {
       ->RecommendedSwapchainSampleCount();
 }
 
+uint16_t OpenXrApiWrapper::GetMaxRenderLayers() const {
+  if (max_layer_count_ == 0) {
+    return 0;
+  }
+  // Stereo layers, except for the projection layer, need 2 XrCompositionLayer
+  // objects (one per eye). We also reserve one layer for our own use.
+  return static_cast<uint16_t>((max_layer_count_ - 1) / 2);
+}
+
 bool OpenXrApiWrapper::CanEnableAntiAliasing() const {
   return primary_view_config_.CanEnableAntiAliasing();
 }
@@ -1773,13 +1787,15 @@ void OpenXrApiWrapper::SetXrSessionState(XrSessionState new_state) {
            << " to: " << new_state_name;
 
   if (session_state_ != XR_SESSION_STATE_UNKNOWN) {
-    TRACE_EVENT_NESTABLE_ASYNC_END1("xr", "XRSessionState", this, "state",
-                                    old_state_name);
+    TRACE_EVENT_END("xr", /*"XRSessionState"*/
+                    perfetto::Track::FromPointer(this), "state",
+                    old_state_name);
   }
 
   if (new_state != XR_SESSION_STATE_UNKNOWN) {
-    TRACE_EVENT_NESTABLE_ASYNC_BEGIN1("xr", "XRSessionState", this, "state",
-                                      new_state_name);
+    TRACE_EVENT_BEGIN("xr", "XRSessionState",
+                      perfetto::Track::FromPointer(this), "state",
+                      new_state_name);
   }
 
   session_state_ = new_state;

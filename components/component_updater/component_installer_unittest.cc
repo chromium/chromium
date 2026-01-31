@@ -123,7 +123,7 @@ class MockInstallerPolicy : public ComponentInstallerPolicy {
   using ComponentReadyCallback =
       base::OnceCallback<void(const base::Version& version,
                               const base::FilePath& install_dir,
-                              base::Value::Dict manifest)>;
+                              base::DictValue manifest)>;
   explicit MockInstallerPolicy(
       ComponentReadyCallback component_ready_cb = ComponentReadyCallback(),
       base::RepeatingClosure uninstall_cb = base::DoNothing())
@@ -131,7 +131,7 @@ class MockInstallerPolicy : public ComponentInstallerPolicy {
         uninstall_cb_(uninstall_cb) {}
   ~MockInstallerPolicy() override = default;
 
-  bool VerifyInstallation(const base::Value::Dict& manifest,
+  bool VerifyInstallation(const base::DictValue& manifest,
                           const base::FilePath& dir) const override {
     return true;
   }
@@ -143,7 +143,7 @@ class MockInstallerPolicy : public ComponentInstallerPolicy {
   bool RequiresNetworkEncryption() const override { return true; }
 
   update_client::CrxInstaller::Result OnCustomInstall(
-      const base::Value::Dict& manifest,
+      const base::DictValue& manifest,
       const base::FilePath& install_dir) override {
     return update_client::CrxInstaller::Result(0);
   }
@@ -152,7 +152,7 @@ class MockInstallerPolicy : public ComponentInstallerPolicy {
 
   void ComponentReady(const base::Version& version,
                       const base::FilePath& install_dir,
-                      base::Value::Dict manifest) override {
+                      base::DictValue manifest) override {
     if (component_ready_cb_) {
       std::move(component_ready_cb_)
           .Run(version, install_dir, std::move(manifest));
@@ -446,7 +446,7 @@ TEST_F(ComponentInstallerTest, InstallerRegister_CheckSequence) {
       std::make_unique<MockInstallerPolicy>(base::BindLambdaForTesting(
           [&mock_register_handler](const base::Version& version,
                                    const base::FilePath& install_dir,
-                                   base::Value::Dict manifest) {
+                                   base::DictValue manifest) {
             EXPECT_EQ(version.GetString(), "1.0");
             mock_register_handler.ComponentReady();
           }));

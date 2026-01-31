@@ -108,6 +108,9 @@ class WebState;
 // The following methods should be called to maintain the correct state along
 // with password forms.
 
+// Cleans up the state associated with the frame when it becomes unavailable.
+- (void)cleanupForFrameId:(const std::string&)frameId;
+
 // Resets fill data, callbacks and state flags for new page. This method should
 // be called in password controller's -webState:didFinishNavigation:.
 - (void)resetForNewPage;

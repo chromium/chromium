@@ -23,8 +23,8 @@
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
-#import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
+#import "ios/chrome/browser/shared/public/commands/scene_commands.h"
 #import "ios/chrome/browser/shared/public/commands/settings_commands.h"
 #import "ios/chrome/browser/sync/model/mock_sync_service_utils.h"
 #import "ios/chrome/browser/sync/model/sync_service_factory.h"
@@ -67,13 +67,12 @@ class PasswordIssuesCoordinatorTest : public PlatformTest {
     password_check_manager_ =
         IOSChromePasswordCheckManagerFactory::GetForProfile(profile_.get());
 
-    // Mock ApplicationCommands. Since ApplicationCommands conforms to
+    // Mock SceneCommands. Since SceneCommands conforms to
     // SettingsCommands, it must be mocked as well.
-    mocked_application_commands_handler_ =
-        OCMStrictProtocolMock(@protocol(ApplicationCommands));
+    mocked_scene_handler_ = OCMStrictProtocolMock(@protocol(SceneCommands));
     [browser_->GetCommandDispatcher()
-        startDispatchingToTarget:mocked_application_commands_handler_
-                     forProtocol:@protocol(ApplicationCommands)];
+        startDispatchingToTarget:mocked_scene_handler_
+                     forProtocol:@protocol(SceneCommands)];
     id mocked_application_settings_command_handler =
         OCMProtocolMock(@protocol(SettingsCommands));
     [browser_->GetCommandDispatcher()
@@ -150,14 +149,15 @@ class PasswordIssuesCoordinatorTest : public PlatformTest {
   ScopedKeyWindow scoped_window_;
   UINavigationController* base_navigation_controller_ = nil;
   MockReauthenticationModule* mock_reauth_module_ = nil;
-  id mocked_application_commands_handler_;
+  id mocked_scene_handler_;
   base::HistogramTester histogram_tester_;
   PasswordIssuesCoordinator* coordinator_ = nil;
 };
 
 // Tests that Password Issues is presented only after passing authentication.
 // TODO(crbug.com/409972100): Deflake test.
-TEST_F(PasswordIssuesCoordinatorTest, FLAKY_PasswordIssuesPresentedWithAuth) {
+TEST_F(PasswordIssuesCoordinatorTest,
+       DISABLED_PasswordIssuesPresentedWithAuth) {
   StartCoordinatorSkippingAuth(/*skip_auth_on_start=*/NO);
 
   // Password Issues should be covered until auth is passed.

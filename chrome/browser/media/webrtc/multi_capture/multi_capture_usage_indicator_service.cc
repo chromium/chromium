@@ -12,7 +12,6 @@
 #include "ash/constants/ash_constants.h"
 #include "ash/public/cpp/notification_utils.h"
 #include "base/check_deref.h"
-#include "base/containers/contains.h"
 #include "base/containers/extend.h"
 #include "base/functional/bind.h"
 #include "base/i18n/message_formatter.h"
@@ -159,8 +158,6 @@ void MultiCaptureUsageIndicatorService::MultiCaptureStarted(
   RefreshNotifications();
 }
 
-// TODO(crbug.com/428895438): Trigger this function when the capturing window is
-// closed.
 void MultiCaptureUsageIndicatorService::MultiCaptureStopped(
     const std::string& label) {
   if (!label_to_app_id_.contains(label)) {
@@ -284,7 +281,6 @@ MultiCaptureUsageIndicatorService::CreateActiveCaptureNotification(
           kNotifierType, notifier_id,
           ash::NotificationCatalogName::kPrivacyIndicators),
       optional_fields,
-      // TODO(crbug.com/424104858): Make the notification do nothing on click.
       /*delegate=*/
       base::MakeRefCounted<message_center::NotificationDelegate>());
   notification.set_system_notification_warning_level(
@@ -304,7 +300,7 @@ MultiCaptureUsageIndicatorService::GetInstalledAndAllowlistedAppNames() const {
   std::map<webapps::AppId, std::string> current_capture_notification_apps;
   for (const auto& [app_id, app_name] :
        data_service_->GetCaptureAppsWithNotification()) {
-    if (base::Contains(started_captures_, app_id)) {
+    if (started_captures_.contains(app_id)) {
       current_capture_notification_apps[app_id] = app_name;
     } else {
       future_capture_notification_apps[app_id] = app_name;

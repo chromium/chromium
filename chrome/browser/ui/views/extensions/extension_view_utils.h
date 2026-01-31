@@ -7,8 +7,7 @@
 
 #include "ui/gfx/native_ui_types.h"
 
-class Browser;
-class ExtensionsToolbarContainer;
+class ExtensionsToolbarDesktop;
 class ToolbarActionViewModel;
 
 namespace content {
@@ -19,11 +18,8 @@ namespace ui {
 class ImageModel;
 }
 
-// Returns the extensions toolbar container in `browser` or `parent`, if
-// existent.
-ExtensionsToolbarContainer* GetExtensionsToolbarContainer(Browser* browser);
-ExtensionsToolbarContainer* GetExtensionsToolbarContainer(
-    gfx::NativeWindow parent);
+// Returns the extensions toolbar container in `parent`, if existent.
+ExtensionsToolbarDesktop* GetExtensionsToolbarDesktop(gfx::NativeWindow parent);
 
 // Returns the icon corresponding to `action` for the given `web_contents`.
 ui::ImageModel GetIcon(ToolbarActionViewModel* action,

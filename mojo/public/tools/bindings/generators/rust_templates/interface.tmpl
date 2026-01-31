@@ -1,31 +1,173 @@
 {%- from "struct.tmpl" import declare_struct -%}
 
+{% macro field_names(field_list) %}
+  {{- field_list|map(attribute="name")|join(", ") -}}
+{% endmacro %}
+
+
+{% macro field_types(field_list) %}
+  {{- field_list|map(attribute="kind")|map("to_rust_type")|join(", ") -}}
+{% endmacro %}
+
+{% macro typed_fields(field_list) %}
+{%- for field in field_list -%}
+  {{-field.name}}: {{field.kind|to_rust_type}} {{- ", " if not loop.last}}
+{%- endfor-%}
+{% endmacro %}
+
+{% macro args_struct(method) %}
+  {{- method.param_struct|to_rust_type -}}
+{% endmacro %}
+
+{% macro response_struct(method) %}
+  {{- method.response_param_struct|to_rust_type -}}
+{% endmacro %}
+
 {% macro declare_interface(interface) -%}
-// FOR_RELEASE: This implementation only serves to demonstrate the interface
-// with Mojom (define _Args structs, stuff all the arguments into them, and then
-// called the derived parser code).
-// Figuring out the actual way we want to present this to users will be a
-// nontrivial task!
+{# ACTUAL CODE BEGINS HERE #}
+
 {%- for method in interface.methods %}
-{%- set request_name  = "%s_%s_Request" |format(interface.name, method.name) -%}
-{%- set response_name = "%s_%s_Response"|format(interface.name, method.name) -%}
 
-{{declare_struct("%s_Args"|format(request_name), method.param_struct)}}
-{%- if method.response_parameters %}
-{{declare_struct("%s_Args"|format(response_name), method.response_param_struct)}}
-{%- endif %}
+{{- declare_struct(args_struct(method), method.param_struct)}}
 
-pub fn {{"%s_Send"|format(request_name)}}(
-  {%- for field in method.param_struct.fields %}
-    {{field.name}}: {{field.kind|to_rust_type}},
-  {% endfor %}) {
-  let args = {{request_name}}_Args {
-    {%- for field in method.param_struct.fields %}
-      {{field.name}},
-    {% endfor -%}};
-  let _data = mojom_parser::serialize(args);
-  // FOR_RELEASE: Send the data somewhere!
+impl {{args_struct(method)}} {
+  fn serialize_from_parts({{typed_fields(method.param_struct.fields)}}) -> bindings::message::MojomMessage {
+    let payload = mojom_parser::serialize(Self { {{field_names(method.param_struct.fields)}} } );
+    {%- if method.response_parameters %}
+    let flags = bindings::message_header::MessageHeaderFlags::EXPECTS_RESPONSE;
+    {%- else %}
+    let flags = bindings::message_header::MessageHeaderFlags::empty();
+    {%- endif %}
+    bindings::message::MojomMessage {
+      header: bindings::message_header::MessageHeaderV3::new(
+        0, {{ method.ordinal }}, flags, 0),
+      payload
+    }
+  }
 }
+
+{%- if method.response_parameters %}
+{{declare_struct(response_struct(method), method.response_param_struct)}}
+
+impl {{response_struct(method)}} {
+  fn serialize_from_parts({{typed_fields(method.response_param_struct.fields)}}) -> bindings::message::MojomMessage {
+    let payload = mojom_parser::serialize(Self { {{field_names(method.response_param_struct.fields)}} } );
+    let flags = bindings::message_header::MessageHeaderFlags::IS_RESPONSE;
+    bindings::message::MojomMessage {
+      header: bindings::message_header::MessageHeaderV3::new(
+        0, {{ method.ordinal }}, flags, 0
+      ),
+      payload
+    }
+  }
+}
+{%- endif -%}
 {% endfor %}
+
+pub trait {{interface.name}} : bindings::interface::internal::ImplementThisViaMacro {
+{#- Define one function for each message type the interface declares #}
+{%- for method in interface.methods %}
+  fn {{method.name}}(&mut self{{", " if method.param_struct.fields}}
+  {{- typed_fields(method.param_struct.fields)}}
+  {%- if method.response_parameters -%}
+    ,
+    {#- Align the response callback with the first argument for readability #}
+    {{" " * (method.name|length + 1)}} response_callback: impl Send + 'static + FnOnce(
+      {{- field_types(method.response_param_struct.fields) -}}
+    )
+  {%- endif -%}
+  ) where Self: Sized;
+{%- endfor %}
+
+  // Note to users: Do not override this function when implementing the trait
+  fn handle_incoming_message(&mut self, message: bindings::message::MojomMessage, send_response: fn(bindings::message::MojomMessage))
+    where Self: Sized
+  {
+    let _ = send_response; // Mark as used in case no messages take a response
+    match message.header.name {
+      {%- for method in interface.methods %}
+      {{method.ordinal}} => {
+        let {{"_" if not method.parameters}}parsed: {{args_struct(method)}} =
+          mojom_parser::deserialize_exact(&message.payload)
+          .expect("FOR_RELEASE: figure out what to do here");
+        {%- if method.response_parameters %}
+        let callback = move |{{typed_fields(method.response_param_struct.fields)}}| {
+          send_response({{response_struct(method)}}::serialize_from_parts({{field_names(method.response_param_struct.fields)}}))
+        };
+        {%- endif %}
+        self.{{method.name}}(
+          {%- for field in method.param_struct.fields -%}
+            {#- #}parsed.{{field.name}} {{- ", " if not loop.last -}}
+          {% endfor -%}
+          {%- if method.response_parameters -%}, callback {%- endif -%}
+        );
+      }
+      {%- endfor %}
+      _ => todo!("Got a bad mojo message!")
+    }
+  }
+}
+
+{%- set callback_ty_name = "%sResponseCallback"|format(interface.name) %}
+
+pub enum {{callback_ty_name}} {
+{%- for method in interface.methods if method.response_parameters %}
+  {{method.name}}(Box<dyn Send + 'static + FnOnce({{field_types(method.response_param_struct.fields)}})>),
+{%- endfor %}
+}
+
+impl bindings::interface::MojomInterface for dyn {{interface.name}} {
+  type DynTy = dyn {{interface.name}};
+
+  type ResponseCallbackTy = {{callback_ty_name}};
+
+  fn handle_incoming_response(message: bindings::message::MojomMessage, send_response: Self::ResponseCallbackTy) {
+    match (message.header.name, send_response) {
+      {%- for method in interface.methods if method.response_parameters %}
+      ({{method.ordinal}}, {{callback_ty_name}}::{{method.name}}(callback)) => {
+        let parsed: {{response_struct(method)}} =
+          mojom_parser::deserialize_exact(&message.payload)
+          .expect("FOR_RELEASE: figure out what to do here");
+        callback(
+          {%- for field in method.response_param_struct.fields -%}
+            {#- #}parsed.{{field.name}} {{- ", " if not loop.last -}}
+          {% endfor -%}
+        );
+      }
+      {%- endfor %}
+      _ => todo!("Got a bad mojo message!")
+    }
+  }
+
+  fn handle_incoming_message(&mut self, _message: bindings::message::MojomMessage, _send_response: impl FnOnce(bindings::message::MojomMessage)) {
+    unimplemented!("Call the appropriate trait method directly on the Remote object instead")
+  }
+}
+
+impl bindings::interface::DynMojomInterface for dyn {{interface.name}} {}
+
+impl {{interface.name}} for bindings::interface::remote::Remote<dyn {{interface.name}}> {
+  {%- for method in interface.methods %}
+  fn {{method.name}}(&mut self{{", " if method.param_struct.fields}}
+  {{- typed_fields(method.param_struct.fields)}}
+  {%- if method.response_parameters -%}
+    ,
+    {#- Align the response callback with the first argument for readability #}
+    {{" " * (method.name|length + 1)}} response_callback: impl Send + 'static + FnOnce(
+      {{- field_types(method.response_param_struct.fields) -}}
+    )
+  {%- endif -%}
+  ) {
+    {#- Function body begins here #}
+    let message = {{args_struct(method)}}::serialize_from_parts({{field_names(method.param_struct.fields)}});
+    {%- if method.response_parameters %}
+    let callback = Some({{callback_ty_name}}::{{method.name}}(Box::new(response_callback)));
+    {%- else %}
+    let callback = None;
+    {%- endif %}
+    self.send_message_internal(message, callback);
+  }
+{% endfor -%}
+}
 
 {%- endmacro -%}

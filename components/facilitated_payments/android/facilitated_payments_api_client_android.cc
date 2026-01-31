@@ -90,9 +90,8 @@ void FacilitatedPaymentsApiClientAndroid::InvokePurchaseAction(
       ConvertSecurePayloadToJavaObject(secure_payload));
 }
 
-void FacilitatedPaymentsApiClientAndroid::OnIsAvailable(
-    JNIEnv* env,
-    jboolean is_api_available) {
+void FacilitatedPaymentsApiClientAndroid::OnIsAvailable(JNIEnv* env,
+                                                        bool is_api_available) {
   if (is_available_callback_) {
     std::move(is_available_callback_).Run(is_api_available);
   }
@@ -113,7 +112,7 @@ void FacilitatedPaymentsApiClientAndroid::OnGetClientToken(
 
 void FacilitatedPaymentsApiClientAndroid::OnPurchaseActionResultEnum(
     JNIEnv* env,
-    jint purchase_action_result) {
+    int32_t purchase_action_result) {
   if (!purchase_action_callback_ ||
       purchase_action_result <
           static_cast<int>(PurchaseActionResult::kCouldNotInvoke) ||

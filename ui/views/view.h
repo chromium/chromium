@@ -7,6 +7,7 @@
 
 #include <stddef.h>
 
+#include <algorithm>
 #include <concepts>
 #include <memory>
 #include <optional>
@@ -19,7 +20,6 @@
 #include "base/auto_reset.h"
 #include "base/callback_list.h"
 #include "base/check.h"
-#include "base/containers/contains.h"
 #include "base/functional/callback.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/advanced_memory_safety_checks.h"
@@ -531,7 +531,7 @@ class VIEWS_EXPORT View : public ui::LayerDelegate,
     CHECK(!view->owned_by_client())
         << "This should only be called if the client doesn't already have "
            "ownership of |view|.";
-    DCHECK(base::Contains(children_, view));
+    DCHECK(std::ranges::contains(children_, view));
     RemoveChildView(view);
     return base::WrapUnique(view);
   }
@@ -1066,6 +1066,11 @@ class VIEWS_EXPORT View : public ui::LayerDelegate,
   // Converts a rect from a View's coordinate system to that of the screen.
   static void ConvertRectToScreen(const View* src, gfx::Rect* rect);
 
+  // Converts a rect from the screen coordinate system to that View's
+  // coordinate system.
+  [[nodiscard]] static gfx::Rect ConvertRectFromScreen(const View* dst,
+                                                       const gfx::Rect& rect);
+
   // Applies transformation on the rectangle, which is in the view's coordinate
   // system, to convert it into the parent's coordinate system.
   [[nodiscard]] gfx::Rect ConvertRectToParent(const gfx::Rect& rect) const;
@@ -1189,6 +1194,11 @@ class VIEWS_EXPORT View : public ui::LayerDelegate,
   // lifetime may vary from platform to platform. On Windows and Aura,
   // the cursor is a shared resource.
   virtual ui::Cursor GetCursor(const ui::MouseEvent& event);
+
+  // A convenience function which checks if |point| falls within the bounds of
+  // |target|. |point| is in the local coordinate space of |this| and is
+  // converted to the coordinate space of |target| before hit testing.
+  bool IsHitInView(views::View* target, const gfx::Point& point) const;
 
   // A convenience function which calls HitTestRect() with a rect of size
   // 1x1 and an origin of |point|. |point| is in the local coordinate space
@@ -2438,11 +2448,9 @@ class VIEWS_EXPORT View : public ui::LayerDelegate,
   // This view's children.
   Views children_;
 
-#if DCHECK_IS_ON()
-  // True while iterating over |children_|. Used to detect and DCHECK when
+  // True while iterating over |children_|. Used to detect and CHECK when
   // |children_| is mutated during iteration.
   mutable bool iterating_ = false;
-#endif
 
   bool can_process_events_within_subtree_ = true;
 
@@ -2668,8 +2676,7 @@ class VIEWS_EXPORT View : public ui::LayerDelegate,
 namespace internal {
 
 // Helper to catch reentrant mutations while iterating over a view's children.
-#if DCHECK_IS_ON()
-class ScopedChildrenLock {
+class VIEWS_EXPORT ScopedChildrenLock {
  public:
   explicit ScopedChildrenLock(const View* view);
 
@@ -2681,13 +2688,6 @@ class ScopedChildrenLock {
  private:
   base::AutoReset<bool> reset_;
 };
-#else
-class ScopedChildrenLock {
- public:
-  explicit ScopedChildrenLock(const View* view) {}
-  ~ScopedChildrenLock() = default;
-};
-#endif
 
 }  // namespace internal
 

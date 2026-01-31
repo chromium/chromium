@@ -75,7 +75,7 @@ class MockCallback<RepeatingCallback<$run_type>> {
   MockCallback(const MockCallback&) = delete;
   MockCallback& operator=(const MockCallback&) = delete;
 
-  MOCK_METHOD$(i)_T(Run, $run_type);
+  MOCK_METHOD(R, Run, ($for j, [[A$j]]));
 
   RepeatingCallback<$run_type> Get() {
     return ::base::BindRepeating(&MockCallback::Run, ::base::Unretained(this));
@@ -90,7 +90,7 @@ class MockCallback<OnceCallback<$run_type>> {
   MockCallback(const MockCallback&) = delete;
   MockCallback& operator=(const MockCallback&) = delete;
 
-  MOCK_METHOD$(i)_T(Run, $run_type);
+  MOCK_METHOD(R, Run, ($for j, [[A$j]]));
 
   OnceCallback<$run_type> Get() {
     return ::base::BindOnce(&MockCallback::Run, ::base::Unretained(this));

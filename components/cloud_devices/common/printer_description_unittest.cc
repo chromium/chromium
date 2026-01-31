@@ -1042,7 +1042,7 @@ TEST(PrinterDescriptionTest, CddGetRangeVendorCapability) {
 
 TEST(PrinterDescriptionTest, CddSetRangeVendorCapability) {
   for (const auto& capacity : kTestRangeCapabilities) {
-    base::Value::Dict range_capability_value;
+    base::DictValue range_capability_value;
     capacity.range_capability.SaveTo(&range_capability_value);
     std::string range_capability_str;
     EXPECT_TRUE(base::JSONWriter::WriteWithOptions(
@@ -1102,7 +1102,7 @@ TEST(PrinterDescriptionTest, CddSetSelectVendorCapability) {
         SelectVendorCapabilityOption("value_1", "name_1"));
     select_capability.AddDefaultOption(
         SelectVendorCapabilityOption("value_2", "name_2"), true);
-    base::Value::Dict select_capability_value;
+    base::DictValue select_capability_value;
     select_capability.SaveTo(&select_capability_value);
     std::string select_capability_str;
     EXPECT_TRUE(base::JSONWriter::WriteWithOptions(
@@ -1117,7 +1117,7 @@ TEST(PrinterDescriptionTest, CddSetSelectVendorCapability) {
         SelectVendorCapabilityOption("value_1", "name_1"));
     select_capability.AddOption(
         SelectVendorCapabilityOption("value_2", "name_2"));
-    base::Value::Dict select_capability_value;
+    base::DictValue select_capability_value;
     select_capability.SaveTo(&select_capability_value);
     std::string select_capability_str;
     EXPECT_TRUE(base::JSONWriter::WriteWithOptions(
@@ -1152,7 +1152,7 @@ TEST(PrinterDescriptionTest, CddGetTypedValueVendorCapability) {
 
 TEST(PrinterDescriptionTest, CddSetTypedValueVendorCapability) {
   for (const auto& capacity : kTestTypedValueCapabilities) {
-    base::Value::Dict typed_value_capability_value;
+    base::DictValue typed_value_capability_value;
     capacity.typed_value_capability.SaveTo(&typed_value_capability_value);
     std::string typed_value_capability_str;
     EXPECT_TRUE(base::JSONWriter::WriteWithOptions(

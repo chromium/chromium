@@ -1,16 +1,16 @@
 Document
 ++Group IsControlElement=false
-++++Group
-++++++Group IsControlElement=false
-++++++++Group IsControlElement=false
-++++++++++Group IsControlElement=false
+++++Custom MathML='<math><newline>    <mrow><newline>      <msup><mi>%F0%9D%90%B4</mi><mn>2</mn></msup><newline>      <mo>+</mo><newline>      <msup><mi>%F0%9D%90%B5</mi><mn>2</mn></msup><newline>    </mrow><newline> </math>'
+++++++Custom IsControlElement=false
+++++++++Custom IsControlElement=false
+++++++++++Custom IsControlElement=false
 ++++++++++++Text Name='%F0%9D%90%B4'
-++++++++++Group IsControlElement=false
+++++++++++Custom IsControlElement=false
 ++++++++++++Text Name='2'
-++++++++Group IsControlElement=false
+++++++++Custom IsControlElement=false
 ++++++++++Text Name='+'
-++++++++Group IsControlElement=false
-++++++++++Group IsControlElement=false
+++++++++Custom IsControlElement=false
+++++++++++Custom IsControlElement=false
 ++++++++++++Text Name='%F0%9D%90%B5'
-++++++++++Group IsControlElement=false
+++++++++++Custom IsControlElement=false
 ++++++++++++Text Name='2'

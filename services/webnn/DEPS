@@ -1,5 +1,4 @@
 include_rules = [
-  "+absl/container/flat_hash_set.h",
   "+content/test/fuzzer/mojolpm_fuzzer_support.h",
   "+gpu/command_buffer/common/command_buffer_id.h",
   "+gpu/command_buffer/common/sync_token.h",
@@ -18,6 +17,7 @@ include_rules = [
   "+third_party/flatbuffers/src/include/flatbuffers",
   "+third_party/fp16/src/include/fp16.h",
   "+third_party/libprotobuf-mutator/src/src/libfuzzer/libfuzzer_macro.h",
+  "+third_party/litert",
   "+third_party/microsoft_dxheaders",
   "+third_party/windows_app_sdk_headers",
   "+third_party/tflite",

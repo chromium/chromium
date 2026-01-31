@@ -29,6 +29,7 @@
 #include "chrome/browser/extensions/updater/chrome_extension_downloader_factory.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/profiles/profile_manager_observer.h"
+#include "chrome/browser/profiles/profile_observer.h"
 #include "chromeos/ash/components/settings/cros_settings.h"
 #include "chromeos/ash/components/settings/cros_settings_names.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -214,7 +215,7 @@ ExternalCacheImpl::ExternalCacheImpl(
 
 ExternalCacheImpl::~ExternalCacheImpl() = default;
 
-const base::Value::Dict& ExternalCacheImpl::GetCachedExtensions() {
+const base::DictValue& ExternalCacheImpl::GetCachedExtensions() {
   return cached_extensions_;
 }
 
@@ -222,7 +223,7 @@ void ExternalCacheImpl::Shutdown(base::OnceClosure callback) {
   local_cache_.Shutdown(std::move(callback));
 }
 
-void ExternalCacheImpl::UpdateExtensionsList(base::Value::Dict prefs) {
+void ExternalCacheImpl::UpdateExtensionsList(base::DictValue prefs) {
   extensions_ = std::move(prefs);
 
   if (extensions_.empty()) {
@@ -365,7 +366,7 @@ bool ExternalCacheImpl::IsExtensionPending(const extensions::ExtensionId& id) {
 bool ExternalCacheImpl::GetExtensionExistingVersion(
     const extensions::ExtensionId& id,
     std::string* version) {
-  const base::Value::Dict* extension_dictionary =
+  const base::DictValue* extension_dictionary =
       cached_extensions_.FindDictByDottedPath(id);
   if (!extension_dictionary) {
     return false;
@@ -510,7 +511,7 @@ void ExternalCacheImpl::OnPutExtension(const extensions::ExtensionId& id,
 
   VLOG(1) << "ExternalCacheImpl installed a new extension in the cache " << id;
 
-  const base::Value::Dict* original_entry = extensions_.FindDict(id);
+  const base::DictValue* original_entry = extensions_.FindDict(id);
   if (!original_entry) {
     LOG(ERROR) << "ExternalCacheImpl cannot find entry for extension " << id;
     return;

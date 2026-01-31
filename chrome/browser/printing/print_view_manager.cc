@@ -10,7 +10,6 @@
 #include <utility>
 
 #include "base/check.h"
-#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/no_destructor.h"
 #include "base/observer_list.h"
@@ -339,7 +338,7 @@ void PrintViewManager::SetupScriptedPrintPreview(
   }
 
   auto& map = GetScriptedPrintPreviewClosureMap();
-  if (base::Contains(map, rph)) {
+  if (map.contains(rph)) {
     // Renderer already handling window.print(). Abort this attempt to prevent
     // the renderer from having multiple nested loops. If multiple nested loops
     // existed, then they have to exit in the right order and that is messy.

@@ -94,7 +94,7 @@ import * as Elements from 'devtools/panels/elements/elements.js';
     },
 
     async function testInitialBorderBoxMetrics(next) {
-      await section.doUpdate();
+      await section.performUpdate();
       var spanElements = section.contentElement.getElementsByClassName('content')[0].getElementsByTagName('span');
       contentWidthElement = spanElements[0];
       contentHeightElement = spanElements[1];
@@ -117,7 +117,7 @@ import * as Elements from 'devtools/panels/elements/elements.js';
     },
 
     async function testInitialContentBoxMetrics(next) {
-      await section.doUpdate();
+      await section.performUpdate();
       var spanElements = section.contentElement.getElementsByClassName('content')[0].getElementsByTagName('span');
       contentWidthElement = spanElements[0];
       contentHeightElement = spanElements[1];

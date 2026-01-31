@@ -6,6 +6,7 @@
 
 #include "base/memory/safe_ref.h"
 #include "base/rand_util.h"
+#include "base/types/pass_key.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/actor/actor_logging.h"
 #include "chrome/common/actor/journal_details_builder.h"
@@ -194,9 +195,9 @@ AggregatedJournal::CreatePendingAsyncEntry(
       mojom::JournalEntry::New(mojom::JournalEntryType::kBegin, task_id,
                                base::Time::Now(), std::string(event_name),
                                track_uuid, std::move(details))));
-  return base::WrapUnique(new PendingAsyncEntry(
-      base::PassKey<AggregatedJournal>(), weak_ptr_factory_.GetSafeRef(),
-      task_id, event_name, track_uuid));
+  return std::make_unique<PendingAsyncEntry>(base::PassKey<AggregatedJournal>(),
+                                             weak_ptr_factory_.GetSafeRef(),
+                                             task_id, event_name, track_uuid);
 }
 
 void AggregatedJournal::Log(const GURL& url,

@@ -7,6 +7,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "ui/base/metadata/metadata_header_macros.h"
+#include "ui/gfx/geometry/point.h"
 #include "ui/views/view.h"
 
 class BrowserView;
@@ -25,9 +26,12 @@ class TopContainerView : public views::View {
 
   void OnImmersiveRevealUpdated();
 
+  // When this is the top element in the browser, returns whether `test_point`
+  // is in the caption area.
+  bool IsPositionInWindowCaption(const gfx::Point& test_point) const;
+
   // views::View overrides:
   void PaintChildren(const views::PaintInfo& paint_info) override;
-  void OnPaintBackground(gfx::Canvas* canvas) override;
   void ChildPreferredSizeChanged(views::View* child) override;
 
  private:

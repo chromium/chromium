@@ -8,7 +8,6 @@
 #include <tuple>
 #include <utility>
 
-#include "base/containers/contains.h"
 #include "base/logging.h"
 #include "base/memory/discardable_memory.h"
 #include "base/task/single_thread_task_runner.h"
@@ -33,7 +32,7 @@
 #include "ui/accessibility/ax_tree_update.h"
 
 #if BUILDFLAG(IS_WIN)
-#include "content/public/child/dwrite_font_proxy_init_win.h"
+#include "content/public/child/font_integration_init.h"
 #include "printing/backend/win_helper.h"  // nogncheck
 #elif BUILDFLAG(IS_APPLE)
 #include "third_party/blink/public/platform/platform.h"
@@ -125,8 +124,8 @@ PrintCompositorImpl::PrintCompositorImpl(
     return;
 
 #if BUILDFLAG(IS_WIN)
-  // Initialize direct write font proxy so skia can use it.
-  content::InitializeDWriteFontProxy();
+  // Initialize child process font integration so skia can use it.
+  content::InitializeFontIntegration();
 #endif
 
   // Hook up blink's codecs so skia can call them.
@@ -152,13 +151,13 @@ PrintCompositorImpl::PrintCompositorImpl(
 
 PrintCompositorImpl::~PrintCompositorImpl() {
 #if BUILDFLAG(IS_WIN)
-  content::UninitializeDWriteFontProxy();
+  content::UninitializeFontIntegration();
 #endif
 }
 
 void PrintCompositorImpl::NotifyUnavailableSubframe(uint64_t frame_guid) {
   // Add this frame into the map.
-  DCHECK(!base::Contains(frame_info_map_, frame_guid));
+  DCHECK(!frame_info_map_.contains(frame_guid));
   auto& frame_info =
       frame_info_map_.emplace(frame_guid, std::make_unique<FrameInfo>())
           .first->second;
@@ -182,7 +181,7 @@ void PrintCompositorImpl::AddSubframeContent(
   }
 
   // Add this frame and its serialized content.
-  DCHECK(!base::Contains(frame_info_map_, frame_guid));
+  DCHECK(!frame_info_map_.contains(frame_guid));
   frame_info_map_.emplace(frame_guid, std::make_unique<FrameInfo>(
                                           mapping.GetMemoryAsSpan<uint8_t>(),
                                           subframe_content_map));
@@ -198,7 +197,7 @@ void PrintCompositorImpl::AddSubframeContent(
   std::vector<uint64_t> pending_subframes;
   for (auto& subframe_content : subframe_content_map) {
     auto subframe_guid = subframe_content.second;
-    if (!base::Contains(frame_info_map_, subframe_guid))
+    if (!frame_info_map_.contains(subframe_guid))
       pending_subframes.push_back(subframe_guid);
   }
 

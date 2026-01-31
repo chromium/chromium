@@ -44,7 +44,7 @@ PA_ALWAYS_INLINE void PartitionDirectUnmap(SlotSpanMetadata* slot_span) {
     PA_DCHECK(extent->prev_extent->next_extent == extent);
     extent->prev_extent->next_extent = extent->next_extent;
   } else {
-    root->direct_map_list = extent->next_extent;
+    root->direct_map_list_ = extent->next_extent;
   }
   if (extent->next_extent) {
     PA_DCHECK(extent->next_extent->prev_extent == extent);
@@ -56,8 +56,8 @@ PA_ALWAYS_INLINE void PartitionDirectUnmap(SlotSpanMetadata* slot_span) {
 
   size_t reservation_size = extent->reservation_size;
   PA_DCHECK(!(reservation_size & DirectMapAllocationGranularityOffsetMask()));
-  PA_DCHECK(root->total_size_of_direct_mapped_pages >= reservation_size);
-  root->total_size_of_direct_mapped_pages -= reservation_size;
+  PA_DCHECK(root->total_size_of_direct_mapped_pages_ >= reservation_size);
+  root->total_size_of_direct_mapped_pages_ -= reservation_size;
 
   uintptr_t reservation_start =
       SlotSpanMetadata::ToSlotSpanStart(slot_span, root).value();
@@ -87,7 +87,7 @@ PA_ALWAYS_INLINE void SlotSpanMetadata::RegisterEmpty() {
   auto* root = PartitionRoot::FromSlotSpanMetadata(this);
   PartitionRootLock(root).AssertAcquired();
 
-  root->empty_slot_spans_dirty_bytes +=
+  root->empty_slot_spans_dirty_bytes_ +=
       base::bits::AlignUp(GetProvisionedSize(), SystemPageSize());
 
   ToSuperPageExtent()->DecrementNumberOfNonemptySlotSpans();
@@ -99,11 +99,11 @@ PA_ALWAYS_INLINE void SlotSpanMetadata::RegisterEmpty() {
     return;
   }
 
-  PA_DCHECK(root->global_empty_slot_span_ring_index <
-            root->global_empty_slot_span_ring_size);
-  int16_t current_index = root->global_empty_slot_span_ring_index;
+  PA_DCHECK(root->global_empty_slot_span_ring_index_ <
+            root->global_empty_slot_span_ring_size_);
+  int16_t current_index = root->global_empty_slot_span_ring_index_;
   SlotSpanMetadata* slot_span_to_decommit =
-      PA_UNSAFE_TODO(root->global_empty_slot_span_ring[current_index]);
+      PA_UNSAFE_TODO(root->global_empty_slot_span_ring_[current_index]);
   // The slot span might well have been re-activated, filled up, etc. before we
   // get around to looking at it here.
   if (slot_span_to_decommit) {
@@ -112,22 +112,22 @@ PA_ALWAYS_INLINE void SlotSpanMetadata::RegisterEmpty() {
 
   // There should not be a slot span in the buffer at the position this is
   // going into.
-  PA_UNSAFE_TODO(PA_DCHECK(!root->global_empty_slot_span_ring[current_index]));
+  PA_UNSAFE_TODO(PA_DCHECK(!root->global_empty_slot_span_ring_[current_index]));
 
   // We put the empty slot span on our global list of "slot spans that were once
   // empty", thus providing it a bit of breathing room to get re-used before we
   // really free it. This reduces the number of system calls. Otherwise any
   // free() from a single-slot slot span would lead to a syscall, for instance.
-  PA_UNSAFE_TODO(root->global_empty_slot_span_ring[current_index]) = this;
+  PA_UNSAFE_TODO(root->global_empty_slot_span_ring_[current_index]) = this;
   empty_cache_index_ = current_index;
   in_empty_cache_ = 1;
   ++current_index;
-  if (current_index == root->global_empty_slot_span_ring_size) {
+  if (current_index == root->global_empty_slot_span_ring_size_) {
     current_index = 0;
   }
   PA_DCHECK(current_index <
             base::checked_cast<int16_t>(internal::kMaxEmptySlotSpanRingSize));
-  root->global_empty_slot_span_ring_index = current_index;
+  root->global_empty_slot_span_ring_index_ = current_index;
 
   // Avoid wasting too much memory on empty slot spans. Note that we only divide
   // by powers of two, since division can be very slow, and this path is taken
@@ -136,11 +136,11 @@ PA_ALWAYS_INLINE void SlotSpanMetadata::RegisterEmpty() {
   // Empty slot spans are also all decommitted with MemoryReclaimer, but it may
   // never run, be delayed arbitrarily, and/or miss large memory spikes.
   size_t max_empty_dirty_bytes =
-      root->total_size_of_committed_pages.load(std::memory_order_relaxed) >>
-      root->max_empty_slot_spans_dirty_bytes_shift;
-  if (root->empty_slot_spans_dirty_bytes > max_empty_dirty_bytes) {
+      root->total_size_of_committed_pages_.load(std::memory_order_relaxed) >>
+      root->max_empty_slot_spans_dirty_bytes_shift_;
+  if (root->empty_slot_spans_dirty_bytes_ > max_empty_dirty_bytes) {
     root->ShrinkEmptySlotSpansRing(std::min(
-        root->empty_slot_spans_dirty_bytes / 2, max_empty_dirty_bytes));
+        root->empty_slot_spans_dirty_bytes_ / 2, max_empty_dirty_bytes));
   }
 }
 // static
@@ -234,8 +234,8 @@ void SlotSpanMetadata::Decommit(PartitionRoot* root) {
   size_t size_to_decommit =
       kUseLazyCommit ? dirty_size : bucket->SlotSpanCommittedSize(root);
 
-  PA_DCHECK(root->empty_slot_spans_dirty_bytes >= dirty_size);
-  root->empty_slot_spans_dirty_bytes -= dirty_size;
+  PA_DCHECK(root->empty_slot_spans_dirty_bytes_ >= dirty_size);
+  root->empty_slot_spans_dirty_bytes_ -= dirty_size;
 
   // Not decommitted slot span must've had at least 1 allocation.
   PA_DCHECK(size_to_decommit > 0);
@@ -258,13 +258,13 @@ void SlotSpanMetadata::DecommitIfPossible(PartitionRoot* root) {
   PartitionRootLock(root).AssertAcquired();
   PA_DCHECK(in_empty_cache_);
   PA_DCHECK(empty_cache_index_ < kMaxEmptySlotSpanRingSize);
-  PA_UNSAFE_TODO(
-      PA_DCHECK(this == root->global_empty_slot_span_ring[empty_cache_index_]));
+  PA_UNSAFE_TODO(PA_DCHECK(
+      this == root->global_empty_slot_span_ring_[empty_cache_index_]));
   in_empty_cache_ = 0;
   if (is_empty()) {
     Decommit(root);
   }
-  PA_UNSAFE_TODO(root->global_empty_slot_span_ring[empty_cache_index_]) =
+  PA_UNSAFE_TODO(root->global_empty_slot_span_ring_[empty_cache_index_]) =
       nullptr;
 }
 

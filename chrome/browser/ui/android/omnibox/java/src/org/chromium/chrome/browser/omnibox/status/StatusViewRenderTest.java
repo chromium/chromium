@@ -29,7 +29,7 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
-import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.Feature;
@@ -123,7 +123,7 @@ public class StatusViewRenderTest {
                                     NewTabPageDelegate.EMPTY,
                                     url -> url.getSpec(),
                                     ToolbarUnitTestUtils.OFFLINE_STATUS,
-                                    new ObservableSupplierImpl(ControlsPosition.TOP));
+                                    ObservableSuppliers.createNonNull(ControlsPosition.TOP));
                     mLocationBarModel.setTab(null, mProfile);
                     mStatusModel = new PropertyModel.Builder(StatusProperties.ALL_KEYS).build();
                     PropertyModelChangeProcessor.create(
@@ -159,7 +159,7 @@ public class StatusViewRenderTest {
                     mStatusView.setIncognitoBadgeVisibility(true);
                     mStatusModel.set(
                             StatusProperties.STATUS_ICON_RESOURCE,
-                            new StatusIconResource(R.drawable.ic_search, 0));
+                            new StatusIconResource(R.drawable.ic_search_24dp, 0));
                 });
         mRenderTestRule.render(mStatusView, "status_view_incognito_with_icon");
     }
@@ -191,7 +191,7 @@ public class StatusViewRenderTest {
                     mStatusModel.set(StatusProperties.SHOW_STATUS_ICON, true);
                     mStatusModel.set(
                             StatusProperties.STATUS_ICON_RESOURCE,
-                            new StatusIconResource(R.drawable.ic_search, 0));
+                            new StatusIconResource(R.drawable.ic_search_24dp, 0));
                 });
         mRenderTestRule.render(mStatusView, "status_view_with_icon");
     }

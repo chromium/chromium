@@ -13,7 +13,7 @@
 #include "components/history/core/browser/history_types.h"
 #include "components/history_embeddings/proto/history_embeddings.pb.h"
 #include "components/keyed_service/core/keyed_service.h"
-#include "components/passage_embeddings/passage_embeddings_types.h"
+#include "components/passage_embeddings/core/passage_embeddings_types.h"
 
 namespace history_embeddings {
 

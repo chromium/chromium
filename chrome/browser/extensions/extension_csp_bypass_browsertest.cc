@@ -51,14 +51,14 @@ class ExtensionCSPBypassTest : public ExtensionBrowserTest {
     std::string unique_name = base::StringPrintf(
         "component=%d, all_urls=%d", is_component, all_urls_permission);
     auto manifest =
-        base::Value::Dict()
+        base::DictValue()
             .Set("name", unique_name)
             .Set("version", "1")
             .Set("manifest_version", 2)
-            .Set("web_accessible_resources", base::Value::List().Append("*"));
+            .Set("web_accessible_resources", base::ListValue().Append("*"));
 
     if (all_urls_permission) {
-      manifest.Set("permissions", base::Value::List().Append("<all_urls>"));
+      manifest.Set("permissions", base::ListValue().Append("<all_urls>"));
     }
     if (is_component) {
       // LoadExtensionAsComponent requires the manifest to contain a key.

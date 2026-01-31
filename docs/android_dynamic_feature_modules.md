@@ -388,7 +388,7 @@ logcat. Yay!
 
 You can add a third-party native library (or any standalone library that doesn't
 depend on Chrome code) by adding it as a loadable module to the module descriptor in
-`//chrome/android/moduiles/foo/foo_module.gni`:
+`//chrome/android/modules/foo/foo_module.gni`:
 
 ```gn
 foo_module_desc = {

@@ -31,6 +31,7 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/scoped_browser_locale.h"
 #include "chrome/test/base/search_test_utils.h"
+#include "components/contextual_tasks/public/features.h"
 #include "components/omnibox/browser/aim_eligibility_service.h"
 #include "components/omnibox/browser/omnibox_prefs.h"
 #include "components/prefs/pref_service.h"
@@ -159,12 +160,12 @@ class AimEligibilityServiceFriend {
       AimEligibilityService* service,
       RequestSource request_source,
       int response_code,
-      bool was_fetched_via_cache,
+      EligibilityRequestStatus request_status,
       int num_retries,
       std::optional<std::string> response_string) {
-    service->ProcessServerEligibilityResponse(
-        request_source, response_code, was_fetched_via_cache, num_retries,
-        std::move(response_string));
+    service->ProcessServerEligibilityResponse(request_source, response_code,
+                                              request_status, num_retries,
+                                              std::move(response_string));
   }
 };
 
@@ -195,8 +196,6 @@ class ChromeAimEligibilityServiceBrowserTest
 
     // Needed for bots with field trial testing configs explicitly disabled.
     enabled_features.push_back(
-        {omnibox::kAimServerEligibilityChangedNotification, {}});
-    enabled_features.push_back(
         {omnibox::kAimServerEligibilityForPrimaryAccountEnabled, {}});
     enabled_features.push_back(
         {omnibox::kAimServerRequestOnStartupEnabled, {}});
@@ -206,6 +205,7 @@ class ChromeAimEligibilityServiceBrowserTest
           {"request_on_primary_account_changes", "false"}}});
     disabled_features.push_back(
         omnibox::kAimStartupRequestDelayedUntilNetworkAvailableEnabled);
+    disabled_features.push_back(contextual_tasks::kContextualTasks);
 
     if (!server_eligibility_enabled) {
       disabled_features.push_back(omnibox::kAimServerEligibilityEnabled);
@@ -625,32 +625,33 @@ class ChromeAimEligibilityServiceStartupRequestBrowserTest
     feature_list_.InitWithFeatures(
         // Enabled features.
         {omnibox::kAimEnabled,
-         omnibox::kAimServerEligibilityChangedNotification,
          omnibox::kAimServerEligibilityEnabled,
          omnibox::kAimServerRequestOnStartupEnabled,
          omnibox::kAimStartupRequestDelayedUntilNetworkAvailableEnabled},
         // Disabled features.
-        {});
+        {contextual_tasks::kContextualTasks});
 
     InProcessBrowserTest::SetUp();
   }
 
   void SetUpOnMainThread() override {
+    InProcessBrowserTest::SetUpOnMainThread();
+
     SetUpDefaultSearchEngine(browser()->profile(), /*is_google_dse=*/true);
 
     AimEligibilityServiceFactory::GetInstance()->SetTestingFactory(
         browser()->profile(),
         base::BindOnce(AimEligibilityServiceFactory::GetDefaultFactory()));
-
-    InProcessBrowserTest::SetUpOnMainThread();
   }
 
  private:
   base::test::ScopedFeatureList feature_list_;
 };
 
+// TODO(crbug.com/473787329): Flaky on multiple platforms. Re-enable once
+// flakiness has been resolved.
 IN_PROC_BROWSER_TEST_F(ChromeAimEligibilityServiceStartupRequestBrowserTest,
-                       RequestWhenOfflineAtStartup) {
+                       DISABLED_RequestWhenOfflineAtStartup) {
   base::HistogramTester histogram_tester;
 
   omnibox::AimEligibilityResponse response;
@@ -731,8 +732,10 @@ IN_PROC_BROWSER_TEST_F(ChromeAimEligibilityServiceStartupRequestBrowserTest,
       AimEligibilityServiceFriend::EligibilityRequestStatus::kSuccess, 1);
 }
 
+// TODO(crbug.com/473787329): Flaky on multiple platforms. Re-enable once
+// flakiness has been resolved.
 IN_PROC_BROWSER_TEST_F(ChromeAimEligibilityServiceStartupRequestBrowserTest,
-                       NoRequestOnSubsequentNetworkChanges) {
+                       DISABLED_NoRequestOnSubsequentNetworkChanges) {
   base::HistogramTester histogram_tester;
 
   omnibox::AimEligibilityResponse response;
@@ -793,6 +796,167 @@ IN_PROC_BROWSER_TEST_F(ChromeAimEligibilityServiceStartupRequestBrowserTest,
       "Omnibox.AimEligibility.EligibilityRequestStatus.NetworkChange", 2);
 }
 
+// Test that `GetSearchboxConfig` correctly retrieves and parses the config when
+// provided by the server.
+IN_PROC_BROWSER_TEST_F(ChromeAimEligibilityServiceStartupRequestBrowserTest,
+                       GetSearchboxConfig_ReturnsConfigWhenPresent) {
+  // Prepare a response containing a `SearchboxConfig`.
+  omnibox::AimEligibilityResponse response;
+  response.set_is_eligible(true);
+
+  auto* config = response.mutable_searchbox_config();
+  // Set a specific value to verify that we retrieved the correct object later.
+  config->set_initial_tool_mode(omnibox::ToolMode::TOOL_MODE_DEEP_SEARCH);
+
+  base::test::TestFuture<bool> request_handled_future;
+  auto url_loader_interceptor = std::make_unique<content::URLLoaderInterceptor>(
+      base::BindLambdaForTesting(
+          [&](content::URLLoaderInterceptor::RequestParams* params) {
+            return OnRequest(params, std::make_optional(response),
+                             request_handled_future.GetRepeatingCallback());
+          }));
+
+  auto* service =
+      AimEligibilityServiceFactory::GetForProfile(browser()->profile());
+
+  base::test::TestFuture<void> eligibility_changed_future;
+  auto eligibility_subscription = service->RegisterEligibilityChangedCallback(
+      eligibility_changed_future.GetRepeatingCallback());
+
+  // Wait for the service to update its internal state.
+  EXPECT_TRUE(eligibility_changed_future.Wait());
+
+  // Verify the config was correctly parsed and matches the input.
+  const auto* actual_config = service->GetSearchboxConfig();
+  ASSERT_NE(actual_config, nullptr);
+  EXPECT_EQ(actual_config->initial_tool_mode(),
+            omnibox::ToolMode::TOOL_MODE_DEEP_SEARCH);
+}
+
+// Test that when the server sends legacy boolean fields but NO
+// `SearchboxConfig`, the service correctly backfills (generates) a
+// `SearchboxConfig` locally.
+IN_PROC_BROWSER_TEST_F(ChromeAimEligibilityServiceStartupRequestBrowserTest,
+                       GetSearchboxConfig_BackfillsFromLegacyFields) {
+  omnibox::AimEligibilityResponse response;
+  response.set_is_eligible(true);
+
+  // Set legacy boolean fields and clear `SearchboxConfig`.
+  // This forces the service to generate the config locally using the backfill
+  // logic.
+  response.set_is_deep_search_eligible(true);
+  response.set_is_canvas_eligible(true);
+  response.clear_searchbox_config();
+
+  base::test::TestFuture<bool> request_handled_future;
+  auto url_loader_interceptor = std::make_unique<content::URLLoaderInterceptor>(
+      base::BindLambdaForTesting(
+          [&](content::URLLoaderInterceptor::RequestParams* params) {
+            return OnRequest(params, std::make_optional(response),
+                             request_handled_future.GetRepeatingCallback());
+          }));
+
+  auto* service =
+      AimEligibilityServiceFactory::GetForProfile(browser()->profile());
+
+  base::test::TestFuture<void> eligibility_changed_future;
+  auto eligibility_subscription = service->RegisterEligibilityChangedCallback(
+      eligibility_changed_future.GetRepeatingCallback());
+
+  EXPECT_TRUE(eligibility_changed_future.Wait());
+
+  // Verify that `GetSearchboxConfig` returns a non-null, backfilled config.
+  const auto* actual_config = service->GetSearchboxConfig();
+
+  ASSERT_NE(actual_config, nullptr);
+  ASSERT_TRUE(actual_config->has_rule_set());
+
+  // Verify Deep Search was mapped to allowed_tools.
+  bool has_deep_search = false;
+  for (const auto& tool : actual_config->rule_set().allowed_tools()) {
+    if (tool == omnibox::ToolMode::TOOL_MODE_DEEP_SEARCH) {
+      has_deep_search = true;
+      break;
+    }
+  }
+  EXPECT_TRUE(has_deep_search);
+
+  // Verify Canvas was mapped to allowed_tools.
+  bool has_canvas = false;
+  for (const auto& tool : actual_config->rule_set().allowed_tools()) {
+    if (tool == omnibox::ToolMode::TOOL_MODE_CANVAS) {
+      has_canvas = true;
+      break;
+    }
+  }
+  EXPECT_TRUE(has_canvas);
+}
+
+IN_PROC_BROWSER_TEST_F(ChromeAimEligibilityServiceStartupRequestBrowserTest,
+                       RespectsAllowedToolsConfig) {
+  omnibox::AimEligibilityResponse response;
+  response.set_is_eligible(true);
+
+  // Configure the response to explicitly allow DEEP_SEARCH but not IMAGE_GEN.
+  // This helps verify that the service respects the specific allowlist.
+  auto* rule_set = response.mutable_searchbox_config()->mutable_rule_set();
+  rule_set->add_allowed_tools(omnibox::ToolMode::TOOL_MODE_DEEP_SEARCH);
+
+  base::test::TestFuture<bool> request_handled_future;
+  auto url_loader_interceptor = std::make_unique<content::URLLoaderInterceptor>(
+      base::BindLambdaForTesting(
+          [&](content::URLLoaderInterceptor::RequestParams* params) {
+            return OnRequest(params, std::make_optional(response),
+                             request_handled_future.GetRepeatingCallback());
+          }));
+
+  auto* service =
+      AimEligibilityServiceFactory::GetForProfile(browser()->profile());
+  base::test::TestFuture<void> eligibility_changed_future;
+  auto eligibility_subscription = service->RegisterEligibilityChangedCallback(
+      eligibility_changed_future.GetRepeatingCallback());
+
+  // Wait for the service to process the network response.
+  EXPECT_TRUE(eligibility_changed_future.Wait());
+
+  // DEEP_SEARCH should be eligible as it is in the allowed_tools list.
+  EXPECT_TRUE(service->IsDeepSearchEligible());
+
+  // IMAGE_GEN should not be eligible as it is missing from the list.
+  EXPECT_FALSE(service->IsCreateImagesEligible());
+}
+
+IN_PROC_BROWSER_TEST_F(ChromeAimEligibilityServiceStartupRequestBrowserTest,
+                       RespectsPdfUploadConfig) {
+  // Prepare a response that explicitly allows PDF uploads via
+  // `SearchboxConfig`. This verifies that the service checks the
+  // `allowed_input_types` list.
+  omnibox::AimEligibilityResponse response;
+  response.set_is_eligible(true);
+
+  auto* rule_set = response.mutable_searchbox_config()->mutable_rule_set();
+  rule_set->add_allowed_input_types(omnibox::InputType::INPUT_TYPE_LENS_FILE);
+
+  base::test::TestFuture<bool> request_handled_future;
+  auto url_loader_interceptor = std::make_unique<content::URLLoaderInterceptor>(
+      base::BindLambdaForTesting(
+          [&](content::URLLoaderInterceptor::RequestParams* params) {
+            return OnRequest(params, std::make_optional(response),
+                             request_handled_future.GetRepeatingCallback());
+          }));
+
+  auto* service =
+      AimEligibilityServiceFactory::GetForProfile(browser()->profile());
+
+  base::test::TestFuture<void> eligibility_changed_future;
+  auto eligibility_subscription = service->RegisterEligibilityChangedCallback(
+      eligibility_changed_future.GetRepeatingCallback());
+
+  EXPECT_TRUE(eligibility_changed_future.Wait());
+
+  EXPECT_TRUE(service->IsPdfUploadEligible());
+}
+
 class ChromeAimEligibilityServiceRetryRequestBrowserTest
     : public InProcessBrowserTest {
  public:
@@ -804,12 +968,11 @@ class ChromeAimEligibilityServiceRetryRequestBrowserTest
     feature_list_.InitWithFeatures(
         // Enabled features.
         {omnibox::kAimEnabled,
-         omnibox::kAimServerEligibilityChangedNotification,
          omnibox::kAimServerEligibilityEnabled,
          omnibox::kAimServerRequestOnStartupEnabled,
          omnibox::kAimServerEligibilityCustomRetryPolicyEnabled},
         // Disabled features.
-        {});
+        {contextual_tasks::kContextualTasks});
 
     InProcessBrowserTest::SetUp();
   }
@@ -934,11 +1097,10 @@ class ChromeAimEligibilityServiceCacheBrowserTest
     feature_list_.InitWithFeatures(
         // Enabled features.
         {omnibox::kAimEnabled,
-         omnibox::kAimServerEligibilityChangedNotification,
          omnibox::kAimServerEligibilityEnabled,
          omnibox::kAimServerRequestOnStartupEnabled},
         // Disabled features.
-        {});
+        {contextual_tasks::kContextualTasks});
 
     InProcessBrowserTest::SetUp();
   }
@@ -972,7 +1134,8 @@ IN_PROC_BROWSER_TEST_F(ChromeAimEligibilityServiceCacheBrowserTest,
   AimEligibilityServiceFriend aim_eligibility_service_friend;
   aim_eligibility_service_friend.ProcessServerEligibilityResponse(
       service, AimEligibilityServiceFriend::RequestSource::kStartup, 200,
-      /*was_fetched_via_cache=*/true,
+      AimEligibilityServiceFriend::EligibilityRequestStatus::
+          kSuccessBrowserCache,
       /*num_retries=*/0, std::move(response_string));
   service->IsAimEligible();
 
@@ -998,7 +1161,8 @@ class ChromeAimEligibilityServiceOffTheRecordBrowserTest
         // Enabled features.
         {omnibox::kAimEnabled},
         // Disabled features.
-        {omnibox::kAimServerEligibilityEnabled});
+        {contextual_tasks::kContextualTasks,
+         omnibox::kAimServerEligibilityEnabled});
     InProcessBrowserTest::SetUp();
   }
 

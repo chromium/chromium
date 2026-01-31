@@ -239,7 +239,7 @@ void KerberosAccountsHandler::RegisterMessages() {
 }
 
 void KerberosAccountsHandler::HandleGetKerberosAccounts(
-    const base::Value::List& args) {
+    const base::ListValue& args) {
   AllowJavascript();
 
   CHECK_EQ(1U, args.size());
@@ -258,7 +258,7 @@ void KerberosAccountsHandler::HandleGetKerberosAccounts(
 void KerberosAccountsHandler::OnListAccounts(
     const std::string& callback_id,
     const kerberos::ListAccountsResponse& response) {
-  base::Value::List accounts;
+  base::ListValue accounts;
 
   // Ticket icon is a key.
   gfx::ImageSkia skia_ticket_icon =
@@ -281,7 +281,7 @@ void KerberosAccountsHandler::OnListAccounts(
         ui::TimeFormat::FORMAT_DURATION, ui::TimeFormat::LENGTH_LONG,
         tgt_validity < base::Days(1) ? -1 : 0, tgt_validity);
 
-    base::Value::Dict account_dict;
+    base::DictValue account_dict;
     account_dict.Set("principalName", account.principal_name());
     account_dict.Set("config", account.krb5conf());
     account_dict.Set("isSignedIn", account.tgt_validity_seconds() > 0);
@@ -298,7 +298,7 @@ void KerberosAccountsHandler::OnListAccounts(
 }
 
 void KerberosAccountsHandler::HandleAddKerberosAccount(
-    const base::Value::List& args) {
+    const base::ListValue& args) {
   AllowJavascript();
 
   CHECK_EQ(6U, args.size());
@@ -330,7 +330,7 @@ void KerberosAccountsHandler::OnAddAccountAndAuthenticate(
 }
 
 void KerberosAccountsHandler::HandleRemoveKerberosAccount(
-    const base::Value::List& args) {
+    const base::ListValue& args) {
   AllowJavascript();
 
   CHECK_EQ(2U, args.size());
@@ -355,7 +355,7 @@ void KerberosAccountsHandler::OnRemoveAccount(const std::string& callback_id,
 }
 
 void KerberosAccountsHandler::HandleValidateKerberosConfig(
-    const base::Value::List& args) {
+    const base::ListValue& args) {
   AllowJavascript();
 
   CHECK_EQ(2U, args.size());
@@ -376,20 +376,20 @@ void KerberosAccountsHandler::HandleValidateKerberosConfig(
 void KerberosAccountsHandler::OnValidateConfig(
     const std::string& callback_id,
     const kerberos::ValidateConfigResponse& response) {
-  base::Value::Dict error_info;
+  base::DictValue error_info;
   error_info.Set("code", response.error_info().code());
   if (response.error_info().has_line_index()) {
     error_info.Set("lineIndex", response.error_info().line_index());
   }
 
-  base::Value::Dict value;
+  base::DictValue value;
   value.Set("error", static_cast<int>(response.error()));
   value.Set("errorInfo", std::move(error_info));
   ResolveJavascriptCallback(base::Value(callback_id), value);
 }
 
 void KerberosAccountsHandler::HandleSetAsActiveKerberosAccount(
-    const base::Value::List& args) {
+    const base::ListValue& args) {
   AllowJavascript();
 
   CHECK_EQ(1U, args.size());

@@ -42,8 +42,8 @@ void AutofillSaveCardInfoBarDelegateMobile::OnLegalMessageLinkClicked(
   infobar()->owner()->OpenURL(url, WindowOpenDisposition::NEW_FOREGROUND_TAB);
 }
 
-bool AutofillSaveCardInfoBarDelegateMobile::IsGooglePayBrandingEnabled() const {
-  return ui_info_.is_google_pay_branding_enabled;
+bool AutofillSaveCardInfoBarDelegateMobile::IsChromeBrandingEnabled() const {
+  return ui_info_.is_chrome_branding_enabled;
 }
 
 std::u16string AutofillSaveCardInfoBarDelegateMobile::GetDescriptionText()

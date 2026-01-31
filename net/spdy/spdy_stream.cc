@@ -35,29 +35,28 @@ namespace net {
 
 namespace {
 
-base::Value::Dict NetLogSpdyStreamErrorParams(spdy::SpdyStreamId stream_id,
-                                              int net_error,
-                                              std::string_view description) {
-  return base::Value::Dict()
+base::DictValue NetLogSpdyStreamErrorParams(spdy::SpdyStreamId stream_id,
+                                            int net_error,
+                                            std::string_view description) {
+  return base::DictValue()
       .Set("stream_id", static_cast<int>(stream_id))
       .Set("net_error", ErrorToShortString(net_error))
       .Set("description", description);
 }
 
-base::Value::Dict NetLogSpdyStreamWindowUpdateParams(
-    spdy::SpdyStreamId stream_id,
-    int32_t delta,
-    int32_t window_size) {
-  return base::Value::Dict()
+base::DictValue NetLogSpdyStreamWindowUpdateParams(spdy::SpdyStreamId stream_id,
+                                                   int32_t delta,
+                                                   int32_t window_size) {
+  return base::DictValue()
       .Set("stream_id", static_cast<int>(stream_id))
       .Set("delta", delta)
       .Set("window_size", window_size);
 }
 
-base::Value::Dict NetLogSpdyDataParams(spdy::SpdyStreamId stream_id,
-                                       int size,
-                                       bool fin) {
-  return base::Value::Dict()
+base::DictValue NetLogSpdyDataParams(spdy::SpdyStreamId stream_id,
+                                     int size,
+                                     bool fin) {
+  return base::DictValue()
       .Set("stream_id", static_cast<int>(stream_id))
       .Set("size", size)
       .Set("fin", fin);
@@ -715,8 +714,8 @@ bool SpdyStream::GetLoadTimingInfo(LoadTimingInfo* load_timing_info) const {
   return result;
 }
 
-base::Value::Dict SpdyStream::GetInfoAsValue() const {
-  base::Value::Dict dict;
+base::DictValue SpdyStream::GetInfoAsValue() const {
+  base::DictValue dict;
   dict.Set("stream_id", static_cast<int>(stream_id_));
   dict.Set("io_state", DescribeState(io_state_));
   dict.Set("send_stalled_by_flow_control", send_stalled_by_flow_control_);

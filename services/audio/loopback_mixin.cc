@@ -4,9 +4,11 @@
 
 #include "services/audio/loopback_mixin.h"
 
+#include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/types/zip.h"
 #include "base/unguessable_token.h"
+#include "media/audio/application_loopback_device_helper.h"
 #include "media/audio/audio_device_description.h"
 #include "media/base/audio_bus.h"
 #include "media/base/audio_glitch_info.h"
@@ -29,12 +31,20 @@ LoopbackMixin::MaybeCreateRestrictOwnAudioLoopbackMixin(
     std::string_view device_id,
     const media::AudioParameters& params,
     OnDataCallback on_data_callback) {
-  if (device_id != media::AudioDeviceDescription::kLoopbackWithoutChromeId) {
+  if (!(media::IsRestrictOwnAudioSupported() &&
+        base::FeatureList::IsEnabled(kRestrictOwnAudioAddChromiumBack))) {
     return nullptr;
   }
 
-  if (!(media::IsRestrictOwnAudioSupported() &&
-        base::FeatureList::IsEnabled(kRestrictOwnAudioAddChromiumBack))) {
+  bool include_primary_source = true;
+  if (media::IsRestrictOwnAudioBrowserLoopbackDeviceId(device_id)) {
+    // This device id means that all audio from the browser should be captured,
+    // except the audio originating from the current tab. We achieve this by
+    // configuring LoopbackMixin to not include the primary source, which leaves
+    // only the audio from the other tabs.
+    include_primary_source = false;
+  } else if (device_id !=
+             media::AudioDeviceDescription::kLoopbackWithoutChromeId) {
     return nullptr;
   }
 
@@ -43,7 +53,7 @@ LoopbackMixin::MaybeCreateRestrictOwnAudioLoopbackMixin(
       std::make_unique<LoopbackSignalProvider>(
           params, LoopbackGroupObserver::CreateExcludingGroupObserver(
                       coordinator, group_id)),
-      params, std::move(on_data_callback)));
+      params, include_primary_source, std::move(on_data_callback)));
 }
 
 LoopbackMixin::~LoopbackMixin() = default;
@@ -59,9 +69,11 @@ void LoopbackMixin::OnData(const media::AudioBus* source,
   signal_provider_->PullLoopbackData(mix_bus_.get(), capture_time,
                                      /*volume=*/1);
 
-  for (auto [source_ch, mixed_ch] :
-       base::zip(source->AllChannels(), mix_bus_->AllChannels())) {
-    media::vector_math::FMAC(source_ch, 1.0f, mixed_ch);  // mixed += source
+  if (include_primary_source_) {
+    for (auto [source_ch, mixed_ch] :
+         base::zip(source->AllChannels(), mix_bus_->AllChannels())) {
+      media::vector_math::FMAC(source_ch, 1.0f, mixed_ch);  // mixed += source
+    }
   }
 
   // Pass the mixed audio data to the callback.
@@ -72,9 +84,11 @@ void LoopbackMixin::OnData(const media::AudioBus* source,
 LoopbackMixin::LoopbackMixin(
     std::unique_ptr<LoopbackSignalProviderInterface> signal_provider,
     const media::AudioParameters& params,
+    bool include_primary_source,
     OnDataCallback on_data_callback)
     : signal_provider_(std::move(signal_provider)),
       mix_bus_(media::AudioBus::Create(params)),
+      include_primary_source_(include_primary_source),
       on_data_callback_(std::move(on_data_callback)) {}
 
 }  // namespace audio

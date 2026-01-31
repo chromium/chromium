@@ -14,7 +14,8 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.ThreadUtils;
-import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.supplier.ObservableSuppliers;
+import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.DisableIf;
@@ -26,6 +27,7 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
+import org.chromium.ui.base.DeviceFormFactor;
 
 import java.util.concurrent.TimeoutException;
 
@@ -39,6 +41,7 @@ import java.util.concurrent.TimeoutException;
     ChromeFeatureList.DRAW_CUTOUT_EDGE_TO_EDGE,
     ChromeFeatureList.EDGE_TO_EDGE_BOTTOM_CHIN
 })
+@DisableIf.Device(DeviceFormFactor.DESKTOP) // https://crbug.com/376095153
 public class DisplayCutoutTest {
     @Rule
     public DisplayCutoutTestRule mTestRule = new DisplayCutoutTestRule<>(ChromeActivity.class);
@@ -198,10 +201,10 @@ public class DisplayCutoutTest {
     @LargeTest
     @DisableIf.Build(sdk_is_greater_than = VERSION_CODES.TIRAMISU, message = "crbug.com/365516493")
     public void testBrowserDisplayCutoutTakesPrecedence() throws Exception {
-        final ObservableSupplierImpl<Integer> browserCutoutModeSupplier =
+        final SettableMonotonicObservableSupplier<Integer> browserCutoutModeSupplier =
                 ThreadUtils.runOnUiThreadBlocking(
                         () -> {
-                            return new ObservableSupplierImpl<>();
+                            return ObservableSuppliers.createMonotonic();
                         });
 
         ThreadUtils.runOnUiThreadBlocking(

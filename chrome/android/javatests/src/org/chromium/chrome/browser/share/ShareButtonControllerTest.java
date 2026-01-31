@@ -9,6 +9,8 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
+import static org.chromium.chrome.browser.url_constants.UrlConstantResolver.getOriginalNativeNtpUrl;
+
 import android.view.View;
 
 import androidx.test.filters.MediumTest;
@@ -34,7 +36,6 @@ import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
 import org.chromium.chrome.test.transit.page.WebPageStation;
 import org.chromium.chrome.test.util.ChromeTabUtils;
 import org.chromium.chrome.test.util.browser.signin.SigninTestRule;
-import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
 import org.chromium.ui.modaldialog.ModalDialogManager.ModalDialogType;
 import org.chromium.ui.modaldialog.ModalDialogProperties;
@@ -74,9 +75,9 @@ public final class ShareButtonControllerTest {
     @Test
     @MediumTest
     public void testShareButtonInToolbarIsDisabledOnStartNTP() {
-        mActivityTestRule.loadUrl(UrlConstants.NTP_URL);
+        mActivityTestRule.loadUrl(getOriginalNativeNtpUrl());
         ChromeTabUtils.waitForTabPageLoaded(
-                mActivityTestRule.getActivityTab(), UrlConstants.NTP_URL);
+                mActivityTestRule.getActivityTab(), getOriginalNativeNtpUrl());
 
         View experimentalButton =
                 mActivityTestRule

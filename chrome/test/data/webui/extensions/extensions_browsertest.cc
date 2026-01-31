@@ -254,10 +254,6 @@ IN_PROC_BROWSER_TEST_F(CrExtensionsItemsTest, InspectableViewSortOrder) {
   RunTestCase("InspectableViewSortOrder");
 }
 
-IN_PROC_BROWSER_TEST_F(CrExtensionsItemsTest, EnableExtensionToggleTooltips) {
-  RunTestCase("EnableExtensionToggleTooltips");
-}
-
 IN_PROC_BROWSER_TEST_F(CrExtensionsItemsTest, CanUploadAsAccountExtension) {
   RunTestCase("CanUploadAsAccountExtension");
 }
@@ -278,6 +274,10 @@ class CrExtensionsDetailViewTest : public ExtensionsBrowserTest {
 
 IN_PROC_BROWSER_TEST_F(CrExtensionsDetailViewTest, Layout) {
   RunTestCase("Layout");
+}
+
+IN_PROC_BROWSER_TEST_F(CrExtensionsDetailViewTest, BackButton) {
+  RunTestCase("BackButton");
 }
 
 IN_PROC_BROWSER_TEST_F(CrExtensionsDetailViewTest, LayoutSource) {

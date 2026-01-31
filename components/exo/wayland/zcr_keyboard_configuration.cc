@@ -14,7 +14,6 @@
 #include "ash/ime/ime_controller_impl.h"
 #include "ash/shell.h"
 #include "base/compiler_specific.h"
-#include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/memory/free_deleter.h"
 #include "base/memory/raw_ptr.h"
@@ -132,7 +131,7 @@ class WaylandKeyboardDeviceConfigurationDelegate
 
     for (const auto& descriptor : enabled_ime_descriptors) {
       const std::string& keyboard_layout = descriptor.keyboard_layout();
-      if (!base::Contains(installed_keyboard_layouts_, keyboard_layout)) {
+      if (!installed_keyboard_layouts_.contains(keyboard_layout)) {
         sequenced_task_runner_->PostTaskAndReplyWithResult(
             FROM_HERE,
             base::BindOnce(

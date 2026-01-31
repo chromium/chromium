@@ -20,10 +20,10 @@ namespace base {
 namespace internal {
 template <typename T>
 concept AppendableToValueList =
-    requires(T&& value) { Value::List().Append(std::forward<T>(value)); };
+    requires(T&& value) { ListValue().Append(std::forward<T>(value)); };
 }  // namespace internal
 
-// Maps a container to a Value::List with respect to the provided projection.
+// Maps a container to a ListValue with respect to the provided projection.
 //
 // Complexity: Exactly `size(range)` applications of `proj`.
 template <typename Range, typename Proj = std::identity>
@@ -32,8 +32,8 @@ template <typename Range, typename Proj = std::identity>
                                            std::ranges::iterator_t<Range>> &&
            internal::AppendableToValueList<
                std::indirect_result_t<Proj, std::ranges::iterator_t<Range>>>
-Value::List ToValueList(Range&& range, Proj proj = {}) {
-  auto container = Value::List::with_capacity(std::ranges::size(range));
+ListValue ToValueList(Range&& range, Proj proj = {}) {
+  auto container = ListValue::with_capacity(std::ranges::size(range));
   std::ranges::for_each(
       std::forward<Range>(range),
       [&]<typename T>(T&& value) { container.Append(std::forward<T>(value)); },

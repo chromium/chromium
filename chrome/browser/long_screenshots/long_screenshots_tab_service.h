@@ -90,16 +90,16 @@ class LongScreenshotsTabService
 
   // JNI wrapped versions of the above methods
   void CaptureTabAndroid(JNIEnv* env,
-                         jint j_tab_id,
+                         int32_t j_tab_id,
                          const base::android::JavaRef<jobject>& j_gurl,
                          const base::android::JavaRef<jobject>& j_web_contents,
-                         jint clip_x,
-                         jint clip_y,
-                         jint clip_width,
-                         jint clip_height,
-                         jboolean in_memory,
-                         jint override_x_coordinate,
-                         jint override_y_coordinate);
+                         int32_t clip_x,
+                         int32_t clip_y,
+                         int32_t clip_width,
+                         int32_t clip_height,
+                         bool in_memory,
+                         int32_t override_x_coordinate,
+                         int32_t override_y_coordinate);
   void LongScreenshotsClosedAndroid(JNIEnv* env);
 
   base::android::ScopedJavaGlobalRef<jobject> GetJavaRef() { return java_ref_; }

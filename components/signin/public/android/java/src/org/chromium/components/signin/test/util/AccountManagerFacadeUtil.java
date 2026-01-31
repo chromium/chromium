@@ -5,10 +5,12 @@
 package org.chromium.components.signin.test.util;
 
 import org.jni_zero.CalledByNative;
+import org.jni_zero.JNINamespace;
 
 import org.chromium.components.signin.AccountManagerFacadeProvider;
 
 /** Util class to set java AccountManagerFacade for native tests. */
+@JNINamespace("signin")
 final class AccountManagerFacadeUtil {
     /** Stubs AccountManagerFacade for native tests. */
     @CalledByNative

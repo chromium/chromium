@@ -29,14 +29,16 @@ using google_drive::mojom::StatusPtr;
 
 StatusPtr CreateStatusPtr(const Progress& progress) {
   StatusPtr status = Status::New();
-  status->required_space = (progress.required_space >= 0)
-                               ? base::UTF16ToUTF8(ui::FormatBytes(
-                                     base::ByteCount(progress.required_space)))
-                               : "";
-  status->free_space = (progress.free_space >= 0)
-                           ? base::UTF16ToUTF8(ui::FormatBytes(
-                                 base::ByteCount(progress.free_space)))
-                           : "";
+  status->required_space =
+      (progress.required_space >= 0)
+          ? base::UTF16ToUTF8(ui::FormatBytes(base::ByteSize(
+                base::checked_cast<uint64_t>(progress.required_space))))
+          : "";
+  status->free_space =
+      (progress.free_space >= 0)
+          ? base::UTF16ToUTF8(ui::FormatBytes(base::ByteSize(
+                base::checked_cast<uint64_t>(progress.free_space))))
+          : "";
   status->stage = progress.stage;
   status->listed_files = progress.listed_files;
   status->is_error = progress.IsError();
@@ -123,8 +125,8 @@ void GoogleDrivePageHandler::OnGetContentCacheSize(
     std::move(callback).Run(std::nullopt);
     return;
   }
-  std::move(callback).Run(
-      base::UTF16ToUTF8(ui::FormatBytes(base::ByteCount(size))));
+  std::move(callback).Run(base::UTF16ToUTF8(
+      ui::FormatBytes(base::ByteSize(base::checked_cast<uint64_t>(size)))));
 }
 
 void GoogleDrivePageHandler::ClearPinnedFiles(

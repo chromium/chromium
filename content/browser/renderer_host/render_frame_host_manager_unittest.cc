@@ -599,14 +599,7 @@ class RenderFrameHostManagerTest
 // then do that same thing in another tab, that the two resulting pages have
 // different SiteInstances, BrowsingInstances, and RenderProcessHosts. This is
 // a regression test for bug 9364.
-// Disabled on linux due to flakiness.
-// TODO(crbug.com/448610762): Fix and re-enable the test.
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
-#define MAYBE_ChromeSchemeProcesses DISABLED_ChromeSchemeProcesses
-#else
-#define MAYBE_ChromeSchemeProcesses ChromeSchemeProcesses
-#endif
-TEST_P(RenderFrameHostManagerTest, MAYBE_ChromeSchemeProcesses) {
+TEST_P(RenderFrameHostManagerTest, ChromeSchemeProcesses) {
   const GURL kChromeUrl(GetWebUIURL("foo"));
   const GURL kDestUrl("http://www.google.com/");
 
@@ -2054,6 +2047,11 @@ TEST_P(RenderFrameHostManagerTest, CancelPendingProperlyDeletesOrSwaps) {
 
   rfh1->SuddenTerminationDisablerChanged(
       true, blink::mojom::SuddenTerminationDisablerType::kBeforeUnloadHandler);
+  // Put a user gesture on the frame to wait for the beforeunload event to
+  // complete.
+  rfh1->ActivateUserActivation(
+      blink::mojom::UserActivationNotificationType::kTest,
+      /*sticky_only=*/true);
 
   // Navigate to a new site, starting a cross-site navigation.
   controller().LoadURL(kUrl2, Referrer(), ui::PAGE_TRANSITION_LINK,

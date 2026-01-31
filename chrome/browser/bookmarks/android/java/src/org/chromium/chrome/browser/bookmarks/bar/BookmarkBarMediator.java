@@ -32,8 +32,8 @@ import androidx.recyclerview.widget.RecyclerView;
 import org.chromium.base.Callback;
 import org.chromium.base.supplier.LazyOneshotSupplier;
 import org.chromium.base.supplier.LazyOneshotSupplierImpl;
+import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.base.supplier.NonNullObservableSupplier;
-import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.bookmarks.BookmarkImageFetcher;
@@ -91,11 +91,11 @@ class BookmarkBarMediator implements BookmarkBarItemsProvider.Observer {
     private final BookmarkBarItemsLayoutManager mBookmarkBarItemsLayoutManager;
     private final Callback<Boolean> mItemsOverflowSupplierObserver;
     private final PropertyModel mModel;
-    private final ObservableSupplier<Profile> mProfileSupplier;
+    private final MonotonicObservableSupplier<Profile> mProfileSupplier;
     private final Callback<Profile> mProfileSupplierObserver;
     private @Nullable final Tab mCurrentTab;
     private final BookmarkOpener mBookmarkOpener;
-    private final ObservableSupplier<BookmarkManagerOpener> mBookmarkManagerOpenerSupplier;
+    private final MonotonicObservableSupplier<BookmarkManagerOpener> mBookmarkManagerOpenerSupplier;
     private final RecyclerView mItemsRecyclerView;
     private final BookmarkBar mBookmarkBarView;
     @StyleRes private int mCurrentTextStyleRes = R.style.TextAppearance_TextMedium_Primary_Baseline;
@@ -135,10 +135,10 @@ class BookmarkBarMediator implements BookmarkBarItemsProvider.Observer {
             ModelList itemsModel,
             BookmarkBarItemsLayoutManager bookmarkBarItemsLayoutManager,
             PropertyModel model,
-            ObservableSupplier<Profile> profileSupplier,
+            MonotonicObservableSupplier<Profile> profileSupplier,
             @Nullable Tab currentTab,
             BookmarkOpener bookmarkOpener,
-            ObservableSupplier<BookmarkManagerOpener> bookmarkManagerOpenerSupplier,
+            MonotonicObservableSupplier<BookmarkManagerOpener> bookmarkManagerOpenerSupplier,
             RecyclerView itemsRecyclerView,
             BookmarkBar bookmarkBarView) {
         mActivity = activity;
@@ -157,6 +157,9 @@ class BookmarkBarMediator implements BookmarkBarItemsProvider.Observer {
                 R.style.TextAppearance_TextMedium_Primary_Baseline);
         mAllBookmarksButtonModel.set(
                 BookmarkBarButtonProperties.TITLE,
+                mActivity.getString(R.string.bookmark_bar_all_bookmarks_button_title));
+        mAllBookmarksButtonModel.set(
+                BookmarkBarButtonProperties.TOOLTIP,
                 mActivity.getString(R.string.bookmark_bar_all_bookmarks_button_title));
 
         mItemsModel = itemsModel;
@@ -712,6 +715,7 @@ class BookmarkBarMediator implements BookmarkBarItemsProvider.Observer {
                                 mActivity.getString(
                                         R.string.bookmark_bar_folder_content_description,
                                         bookmarkItem.getTitle()))
+                        .with(ListMenuItemProperties.TOOLTIP, bookmarkItem.getTitle())
                         .with(ListMenuItemProperties.IS_TEXT_ELLIPSIZED_AT_END, true)
                         .with(ListMenuSubmenuItemProperties.SUBMENU_ITEMS, childrenList)
                         .with(ListMenuItemProperties.START_ICON_BITMAP, sFolderIconBitmap)
@@ -774,6 +778,9 @@ class BookmarkBarMediator implements BookmarkBarItemsProvider.Observer {
                 new PropertyModel.Builder(ListMenuItemProperties.ALL_KEYS)
                         .with(ListMenuItemProperties.TITLE, bookmarkItem.getTitle())
                         .with(ListMenuItemProperties.SUBTITLE, bookmarkItem.getUrl().getSpec())
+                        .with(
+                                ListMenuItemProperties.TOOLTIP,
+                                bookmarkItem.getTitle() + "\n" + bookmarkItem.getUrl().getSpec())
                         .with(ListMenuItemProperties.IS_SUBTITLE_ELLIPSIZED_AT_END, true)
                         .with(ListMenuItemProperties.IS_TEXT_ELLIPSIZED_AT_END, true)
                         .with(ListMenuItemProperties.ENABLED, true)
@@ -1044,6 +1051,11 @@ class BookmarkBarMediator implements BookmarkBarItemsProvider.Observer {
                                                 item.getTitle())
                                         : null)
                         .with(BookmarkBarButtonProperties.TITLE, item.getTitle())
+                        .with(
+                                BookmarkBarButtonProperties.TOOLTIP,
+                                item.isFolder()
+                                        ? item.getTitle()
+                                        : item.getTitle() + "\n" + item.getUrl().getSpec())
                         .with(BookmarkBarButtonProperties.BOOKMARK_ITEM, item)
                         .with(BookmarkBarButtonProperties.TEXT_APPEARANCE_ID, textStyleRes)
                         .with(BookmarkBarButtonProperties.BACKGROUND_DRAWABLE_ID, backgroundResId);

@@ -10,44 +10,38 @@
 namespace blink {
 
 String FitText::ToString() const {
+  StringView type;
+  switch (Type()) {
+    case FitTextType::kNone:
+      type = "none";
+      break;
+    case FitTextType::kGrow:
+      type = "grow";
+      break;
+    case FitTextType::kShrink:
+      type = "shrink";
+      break;
+  }
+
   StringView target;
   switch (Target()) {
-    case FitTextTarget::kNone:
-      target = "none";
+    case FitTextTarget::kConsistent:
+      target = "consistent";
       break;
     case FitTextTarget::kPerLine:
       target = "per-line";
       break;
-    case FitTextTarget::kConsistent:
-      target = "consistent";
+    case FitTextTarget::kPerLineAll:
+      target = "per-line-all";
       break;
   }
 
-  StringView method;
-  if (method_) {
-    switch (*method_) {
-      case FitTextMethod::kScale:
-        method = "scale";
-        break;
-      case FitTextMethod::kFontSize:
-        method = "font-size";
-        break;
-      case FitTextMethod::kScaleInline:
-        method = "scale-inline";
-        break;
-      case FitTextMethod::kLetterSpacing:
-        method = "letter-spacing";
-        break;
-    }
+  String limit;
+  if (ScaleFactorLimit()) {
+    limit = String::Number(*ScaleFactorLimit());
   }
-
-  String size_limit;
-  if (SizeLimit()) {
-    size_limit = String::Number(*SizeLimit());
-  }
-  return StrCat({"FitText {target:", target,
-                 method.empty() ? "" : ", method:", method,
-                 size_limit.empty() ? "" : ", size-limit:", size_limit, "}"});
+  return StrCat({"FitText {type:", type, ", target:", target,
+                 limit.empty() ? "" : ", scale-factor-limit:", limit, "}"});
 }
 
 }  // namespace blink

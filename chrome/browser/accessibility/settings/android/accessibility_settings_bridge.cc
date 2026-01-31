@@ -12,7 +12,7 @@
 using base::android::JavaRef;
 
 // static
-static jboolean JNI_AccessibilitySettingsBridge_IsCaretBrowsingEnabled(
+static bool JNI_AccessibilitySettingsBridge_IsCaretBrowsingEnabled(
     JNIEnv* env,
     const JavaRef<jobject>& j_profile) {
   Profile* profile = Profile::FromJavaObject(j_profile);
@@ -23,7 +23,7 @@ static jboolean JNI_AccessibilitySettingsBridge_IsCaretBrowsingEnabled(
 static void JNI_AccessibilitySettingsBridge_SetCaretBrowsingEnabled(
     JNIEnv* env,
     const JavaRef<jobject>& j_profile,
-    jboolean enabled) {
+    bool enabled) {
   Profile* profile = Profile::FromJavaObject(j_profile);
   profile->GetPrefs()->SetBoolean(prefs::kCaretBrowsingEnabled, enabled);
 }
@@ -33,14 +33,13 @@ static void
 JNI_AccessibilitySettingsBridge_SetShowCaretBrowsingDialogPreference(
     JNIEnv* env,
     const JavaRef<jobject>& j_profile,
-    jboolean enabled) {
+    bool enabled) {
   Profile* profile = Profile::FromJavaObject(j_profile);
   profile->GetPrefs()->SetBoolean(prefs::kShowCaretBrowsingDialog, enabled);
 }
 
 // static
-static jboolean
-JNI_AccessibilitySettingsBridge_IsShowCaretBrowsingDialogPreference(
+static bool JNI_AccessibilitySettingsBridge_IsShowCaretBrowsingDialogPreference(
     JNIEnv* env,
     const JavaRef<jobject>& j_profile) {
   Profile* profile = Profile::FromJavaObject(j_profile);

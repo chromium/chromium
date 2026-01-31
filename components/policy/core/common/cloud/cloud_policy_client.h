@@ -71,8 +71,9 @@ class POLICY_EXPORT CloudPolicyClient {
  public:
   // Maps a (policy type, settings entity ID) pair to its corresponding
   // PolicyFetchResponse.
-  using ResponseMap = base::flat_map<CloudPolicyClientTypeParams,
-                               enterprise_management::PolicyFetchResponse>;
+  using ResponseMap =
+      base::flat_map<PolicyTypeToFetch,
+                     enterprise_management::PolicyFetchResponse>;
 
   // A callback which receives boolean status of an operation. If the
   // operation succeeded, |status| is true.
@@ -134,7 +135,7 @@ class POLICY_EXPORT CloudPolicyClient {
    public:
     explicit Result(DeviceManagementStatus);
     explicit Result(DeviceManagementStatus, int);
-    explicit Result(DeviceManagementStatus, int, base::Value::Dict);
+    explicit Result(DeviceManagementStatus, int, base::DictValue);
     explicit Result(NotRegistered);
 
     Result(const Result& other);
@@ -151,12 +152,12 @@ class POLICY_EXPORT CloudPolicyClient {
              response_ == other.response_;
     }
 
-    const base::Value::Dict& GetResponse() const;
+    const base::DictValue& GetResponse() const;
 
    private:
     std::variant<NotRegistered, DeviceManagementStatus> result_;
     int net_error_ = 0;
-    base::Value::Dict response_;
+    base::DictValue response_;
   };
 
   // A callback which receives the operations result.
@@ -361,6 +362,15 @@ class POLICY_EXPORT CloudPolicyClient {
   // will allow for more targeted monitoring and alerting.
   virtual void FetchPolicy(PolicyFetchReason reason);
 
+  // Same as above, but allows to specify the policy type to fetch. The
+  // |callback| will be called when the operation completes.
+  // The policy fetched will not be persisted in the store.
+  virtual void FetchExtensionInstallPolicy(
+      const std::string& policy_type,
+      PolicyFetchReason reason,
+      const ExtensionIdAndVersion& extension_id_and_version,
+      base::OnceCallback<void(DMServerJobResult)> callback);
+
   // Upload a policy validation report to the server. Like FetchPolicy, this
   // method requires that the client is in a registered state. This method
   // should only be called if the policy was rejected (e.g. validation or
@@ -464,7 +474,7 @@ class POLICY_EXPORT CloudPolicyClient {
 
   // DEPRECATED: Use |UploadSecurityEvent| instead.
   virtual void UploadSecurityEventReport(bool include_device_info,
-                                         base::Value::Dict report,
+                                         base::DictValue report,
                                          ResultCallback callback);
 
   // Uploads a report on the status of app push-installs. The client must be in
@@ -473,7 +483,7 @@ class POLICY_EXPORT CloudPolicyClient {
   // Only one outstanding app push-install report upload is allowed.
   // In case the new push-installs report upload is started, the previous one
   // will be canceled.
-  virtual void UploadAppInstallReport(base::Value::Dict report,
+  virtual void UploadAppInstallReport(base::DictValue report,
                                       ResultCallback callback);
 
   // Cancels the pending app push-install status report upload, if exists.
@@ -634,14 +644,14 @@ class POLICY_EXPORT CloudPolicyClient {
   void AddPolicyTypeToFetch(const std::string& policy_type,
                             const std::string& settings_entity_id);
 
-  void AddPolicyTypeToFetch(const CloudPolicyClientTypeParams& params);
+  void AddPolicyTypeToFetch(const PolicyTypeToFetch& params);
 
   // FetchPolicy() calls won't request the given policy type and optional
   // |settings_entity_id| anymore.
   void RemovePolicyTypeToFetch(const std::string& policy_type,
                                const std::string& settings_entity_id);
 
-  void RemovePolicyTypeToFetch(const CloudPolicyClientTypeParams& params);
+  void RemovePolicyTypeToFetch(const PolicyTypeToFetch& params);
 
   // Configures a set of device state keys to transfer to the server in the next
   // policy fetch. If the fetch is successful, the keys will be cleared so they
@@ -673,7 +683,7 @@ class POLICY_EXPORT CloudPolicyClient {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     return client_id_;
   }
-  const base::Value::Dict* configuration_seed() const {
+  const base::DictValue* configuration_seed() const {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     return configuration_seed_.get();
   }
@@ -718,6 +728,10 @@ class POLICY_EXPORT CloudPolicyClient {
     return fetched_invalidation_version_;
   }
 
+  const base::flat_set<PolicyTypeToFetch>& types_to_fetch() const {
+    return types_to_fetch_;
+  }
+
   scoped_refptr<network::SharedURLLoaderFactory> GetURLLoaderFactory();
 
   // Returns the number of active requests.
@@ -730,7 +744,16 @@ class POLICY_EXPORT CloudPolicyClient {
   // A map of (policy type, settings entity ID) pairs to fetch to the set of
   // settings entity IDs that should be fetched for the given policy type and
   // settings entity ID.
-  typedef base::flat_set<CloudPolicyClientTypeParams> CloudPolicyClientTypeParamsSet;
+  typedef base::flat_set<PolicyTypeToFetch> PolicyTypeToFetchSet;
+
+  void FetchPolicyInternal(
+      PolicyFetchReason reason,
+      const PolicyTypeToFetchSet& types_to_fetch,
+      base::OnceCallback<void(DMServerJobResult)> callback);
+
+  enterprise_management::PolicyFetchRequest* AddPolicyFetchRequest(
+      enterprise_management::DevicePolicyRequest* policy_request,
+      const PolicyTypeToFetch& type_to_fetch);
 
   // Upload a certificate to the server.  Like FetchPolicy, this method
   // requires that the client is in a registered state.  |certificate_data| must
@@ -771,12 +794,11 @@ class POLICY_EXPORT CloudPolicyClient {
                                DMServerJobResult result);
 
   // Callback for realtime report upload requests.
-  void OnRealtimeReportUploadCompleted(
-      ResultCallback callback,
-      DeviceManagementService::Job* job,
-      DeviceManagementStatus status,
-      int net_error,
-      std::optional<base::Value::Dict> response);
+  void OnRealtimeReportUploadCompleted(ResultCallback callback,
+                                       DeviceManagementService::Job* job,
+                                       DeviceManagementStatus status,
+                                       int net_error,
+                                       std::optional<base::DictValue> response);
 
   // Callback for remote command fetch requests.
   void OnRemoteCommandsFetched(RemoteCommandCallback callback,
@@ -837,7 +859,7 @@ class POLICY_EXPORT CloudPolicyClient {
   std::string oidc_user_email_;
   bool is_dasherless_ = false;
 
-  CloudPolicyClientTypeParamsSet types_to_fetch_;
+  PolicyTypeToFetchSet types_to_fetch_;
   std::vector<std::string> state_keys_to_upload_;
 
   // OAuth token that if set is used as an additional form of authentication
@@ -845,7 +867,7 @@ class POLICY_EXPORT CloudPolicyClient {
   std::string oauth_token_;
 
   std::string dm_token_;
-  std::unique_ptr<base::Value::Dict> configuration_seed_;
+  std::unique_ptr<base::DictValue> configuration_seed_;
   DeviceMode device_mode_ = DEVICE_MODE_NOT_SET;
   ThirdPartyIdentityType third_party_identity_type_ = NO_THIRD_PARTY_MANAGEMENT;
   std::string client_id_;
@@ -916,7 +938,7 @@ class POLICY_EXPORT CloudPolicyClient {
 
   // DEPRECATED: Use CreateNewRealtimeReportingJob instead.
   DeviceManagementService::Job* CreateNewRealtimeReportingJobDeprecated(
-      base::Value::Dict report,
+      base::DictValue report,
       const std::string& server_url,
       bool include_device_info,
       ResultCallback callback);

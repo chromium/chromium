@@ -40,11 +40,11 @@ class SwitchAccessHandler : public ::settings::SettingsPageUIHandler,
   friend class SwitchAccessHandlerTest;
 
   void AddPreTargetHandler();
-  void HandleRefreshAssignmentsFromPrefs(const base::Value::List& args);
+  void HandleRefreshAssignmentsFromPrefs(const base::ListValue& args);
   void HandleNotifySwitchAccessActionAssignmentPaneActive(
-      const base::Value::List& args);
+      const base::ListValue& args);
   void HandleNotifySwitchAccessActionAssignmentPaneInactive(
-      const base::Value::List& args);
+      const base::ListValue& args);
   void OnSwitchAccessAssignmentsUpdated();
 
   std::unique_ptr<PrefChangeRegistrar> pref_change_registrar_;

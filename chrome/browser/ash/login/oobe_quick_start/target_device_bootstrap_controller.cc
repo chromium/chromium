@@ -4,12 +4,12 @@
 
 #include "chrome/browser/ash/login/oobe_quick_start/target_device_bootstrap_controller.h"
 
+#include <algorithm>
 #include <optional>
 #include <variant>
 
 #include "base/check_is_test.h"
 #include "base/check_op.h"
-#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/no_destructor.h"
@@ -109,7 +109,7 @@ void TargetDeviceBootstrapController::StartAdvertisingAndMaybeGetQRCode() {
   // selecting an unsupported account type (edu, enterprise, or unicorn), but
   // then goes back and attempts to setup with Quick Start again.
   constexpr Step kPossibleSteps[] = {Step::NONE, Step::SETUP_COMPLETE};
-  CHECK(base::Contains(kPossibleSteps, status_.step))
+  CHECK(std::ranges::contains(kPossibleSteps, status_.step))
       << "Unexpected status step: " << status_.step;
   session_context_.FillOrResetSession();
 
@@ -153,7 +153,7 @@ void TargetDeviceBootstrapController::CloseOpenConnections(
 void TargetDeviceBootstrapController::PrepareForUpdate() {
   constexpr Step kPossibleSteps[] = {Step::EMPTY_WIFI_CREDENTIALS_RECEIVED,
                                      Step::WIFI_CREDENTIALS_RECEIVED};
-  if (!base::Contains(kPossibleSteps, status_.step) ||
+  if (!std::ranges::contains(kPossibleSteps, status_.step) ||
       !authenticated_connection_) {
     return;
   }
@@ -167,7 +167,7 @@ void TargetDeviceBootstrapController::OnPinVerificationRequested(
     const std::string& pin) {
   constexpr Step kPossibleSteps[] = {Step::ADVERTISING_WITHOUT_QR_CODE,
                                      Step::ADVERTISING_WITH_QR_CODE};
-  CHECK(base::Contains(kPossibleSteps, status_.step))
+  CHECK(std::ranges::contains(kPossibleSteps, status_.step))
       << "Unexpected status step: " << status_.step;
 
   UpdateStatus(/*step=*/Step::PIN_VERIFICATION, /*payload=*/PinString(pin));
@@ -179,7 +179,7 @@ void TargetDeviceBootstrapController::OnConnectionAuthenticated(
   constexpr Step kPossibleSteps[] = {Step::ADVERTISING_WITH_QR_CODE,
                                      Step::ADVERTISING_WITHOUT_QR_CODE,
                                      Step::PIN_VERIFICATION};
-  CHECK(base::Contains(kPossibleSteps, status_.step))
+  CHECK(std::ranges::contains(kPossibleSteps, status_.step))
       << "Unexpected status step: " << status_.step;
   authenticated_connection_ = authenticated_connection;
 
@@ -235,8 +235,8 @@ void TargetDeviceBootstrapController::UpdateStatus(Step step, Payload payload) {
         /*success=*/true,
         /*is_automatic_resume=*/session_context_.is_resume_after_update());
   } else if (step == Step::ERROR &&
-             base::Contains(kPossibleBootstrappingConnectionSteps,
-                            status_.step)) {
+             std::ranges::contains(kPossibleBootstrappingConnectionSteps,
+                                   status_.step)) {
     QuickStartMetrics::RecordEstablishConnection(
         /*success=*/false,
         /*is_automatic_resume=*/session_context_.is_resume_after_update());
@@ -259,7 +259,7 @@ void TargetDeviceBootstrapController::NotifyObservers() {
 void TargetDeviceBootstrapController::OnStartAdvertisingResult(bool success) {
   constexpr Step kPossibleSteps[] = {Step::ADVERTISING_WITH_QR_CODE,
                                      Step::ADVERTISING_WITHOUT_QR_CODE};
-  CHECK(base::Contains(kPossibleSteps, status_.step))
+  CHECK(std::ranges::contains(kPossibleSteps, status_.step))
       << "Unexpected status step: " << status_.step;
   if (success) {
     return;
@@ -291,8 +291,7 @@ void TargetDeviceBootstrapController::OnNotifySourceOfUpdateResponse(
                     "Quick Start after the update.";
     PrefService* prefs = g_browser_process->local_state();
     prefs->SetBoolean(prefs::kShouldResumeQuickStartAfterReboot, true);
-    base::Value::Dict info =
-        authenticated_connection_->GetPrepareForUpdateInfo();
+    base::DictValue info = authenticated_connection_->GetPrepareForUpdateInfo();
     prefs->SetDict(prefs::kResumeQuickStartAfterRebootInfo, std::move(info));
     prefs->CommitPendingWrite();
   }
@@ -455,7 +454,7 @@ void TargetDeviceBootstrapController::OnFidoAssertionReceived(
 
 void TargetDeviceBootstrapController::CleanupIfNeeded() {
   constexpr Step kPossibleSteps[] = {Step::NONE, Step::ERROR};
-  if (base::Contains(kPossibleSteps, status_.step)) {
+  if (std::ranges::contains(kPossibleSteps, status_.step)) {
     quick_start_connectivity_service_->Cleanup();
   }
 }

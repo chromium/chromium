@@ -5,6 +5,9 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_SCHEDULER_MAIN_THREAD_MEMORY_PURGE_MANAGER_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_SCHEDULER_MAIN_THREAD_MEMORY_PURGE_MANAGER_H_
 
+#include <optional>
+
+#include "base/memory/memory_pressure_listener_registry.h"
 #include "base/memory/post_delayed_memory_reduction_task.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
@@ -63,14 +66,6 @@ class PLATFORM_EXPORT MemoryPurgeManager {
     purge_disabled_for_testing_ = disabled;
   }
 
-#if BUILDFLAG(IS_ANDROID)
-  // Sets a callback that is run when the state of all pages being frozen
-  // changes. It's called with `true` when transitioning to "all pages frozen"
-  // and `false` otherwise.
-  void SetOnAllPagesFrozenCallback(
-      base::RepeatingCallback<void(bool)> callback);
-#endif
-
   // Purge on renderer backgrounding is disabled on Android. On mobile Android,
   // it's redundant with the purge that occurs on page freezing (unlike on
   // desktop, freezing is applied to most background pages on mobile Android). A
@@ -114,11 +109,6 @@ class PLATFORM_EXPORT MemoryPurgeManager {
   // backgrounded.
   bool CanPurge() const;
 
-  // If the "all pages frozen" state has changed since the last call, runs
-  // `all_pages_frozen_callback_`. `were_all_frozen` is the state before the
-  // potential change.
-  void MaybeRunAllPagesFrozenCallback(bool were_all_frozen);
-
   // Returns true if all pages are frozen, or if there are no pages.
   bool AreAllPagesFrozen() const;
 
@@ -144,9 +134,9 @@ class PLATFORM_EXPORT MemoryPurgeManager {
 
   base::OneShotTimer purge_timer_;
 
-#if BUILDFLAG(IS_ANDROID)
-  base::RepeatingCallback<void(bool)> all_pages_frozen_callback_;
-#endif
+  // Suppresses memory pressure notifications when engaged.
+  std::optional<base::MemoryPressureSuppressionToken>
+      memory_pressure_suppression_token_;
 };
 
 }  // namespace blink

@@ -51,8 +51,9 @@ struct InitData {
 template <typename T>
 inline bool GetBrokerMessageData(Channel::Message* message, T** out_data) {
   const size_t required_size = sizeof(BrokerMessageHeader) + sizeof(T);
-  if (message->payload_size() < required_size)
+  if (message->payload_size() < required_size) {
     return false;
+  }
 
   auto* header = static_cast<BrokerMessageHeader*>(message->mutable_payload());
   *out_data = reinterpret_cast<T*>(UNSAFE_TODO(header + 1));
@@ -75,8 +76,9 @@ inline Channel::MessagePtr CreateBrokerMessage(
   header->type = type;
   header->padding = 0;
   *out_message_data = reinterpret_cast<T*>(UNSAFE_TODO(header + 1));
-  if (out_extra_data)
+  if (out_extra_data) {
     *out_extra_data = UNSAFE_TODO(*out_message_data + 1);
+  }
   return message;
 }
 

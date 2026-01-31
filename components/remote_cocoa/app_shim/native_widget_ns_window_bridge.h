@@ -19,7 +19,6 @@
 #include "components/remote_cocoa/app_shim/native_widget_ns_window_fullscreen_controller.h"
 #include "components/remote_cocoa/app_shim/ns_view_ids.h"
 #include "components/remote_cocoa/app_shim/remote_cocoa_app_shim_export.h"
-#include "components/remote_cocoa/common/native_widget_ns_window.mojom-shared.h"
 #include "components/remote_cocoa/common/native_widget_ns_window.mojom.h"
 #include "components/remote_cocoa/common/text_input_host.mojom.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"

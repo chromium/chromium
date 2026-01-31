@@ -13,7 +13,6 @@
 #include "ash/public/cpp/login_types.h"
 #include "ash/public/cpp/peripherals_app_delegate.h"
 #include "ash/public/cpp/session/session_observer.h"
-#include "ash/public/mojom/input_device_settings.mojom-forward.h"
 #include "ash/public/mojom/input_device_settings.mojom.h"
 #include "ash/system/input_device_settings/device_image.h"
 #include "ash/system/input_device_settings/input_device_duplicate_id_finder.h"

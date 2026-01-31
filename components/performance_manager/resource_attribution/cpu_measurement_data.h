@@ -67,7 +67,7 @@ class SharedCPUTimeResultData
 
   // Returns a description of the result held in `result_ptr` for
   // NodeDataDescriber, or an empty dict if it's null.
-  base::Value::Dict Describe() const;
+  base::DictValue Describe() const;
 
   scoped_refptr<ScopedCPUTimeResult> result_ptr;
 };

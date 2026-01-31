@@ -45,14 +45,14 @@ class InternalsUIHandler : public web::WebUIIOSMessageHandler,
   void RegisterMessages() override;
 
   // LogReceiver implementation.
-  void LogEntry(const base::Value::Dict& entry) override;
+  void LogEntry(const base::DictValue& entry) override;
 
   void StartSubscription();
   void EndSubscription();
 
   // JavaScript call handler.
-  void OnLoaded(const base::Value::List& args);
-  void OnDumpAddresses(const base::Value::List& args);
+  void OnLoaded(const base::ListValue& args);
+  void OnDumpAddresses(const base::ListValue& args);
 
  private:
   // JavaScript function to be called on load.

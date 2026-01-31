@@ -11,13 +11,13 @@
 #include <limits>
 #include <memory>
 #include <type_traits>
+#include <utility>
 
 #include "base/dcheck_is_on.h"
 #include "base/metrics/histogram.h"
 #include "base/metrics/sparse_histogram.h"
 #include "base/no_destructor.h"
 #include "base/time/time.h"
-#include "base/types/cxx23_to_underlying.h"
 
 // This is for macros and helpers internal to base/metrics. They should not be
 // used outside of this directory. For writing to UMA histograms, see
@@ -33,7 +33,7 @@ struct EnumSizeTraits {
     if constexpr (requires { Enum::kMaxValue; }) {
       // Since the UMA histogram macros expect a value one larger than the max
       // defined enumerator value, add one.
-      return static_cast<uintmax_t>(base::to_underlying(Enum::kMaxValue) + 1);
+      return static_cast<uintmax_t>(std::to_underlying(Enum::kMaxValue) + 1);
     } else {
       static_assert(
           sizeof(Enum) == 0,

@@ -18,11 +18,9 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.DisabledTest;
-import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.chrome.browser.browsing_data.BrowsingDataBridge;
 import org.chromium.chrome.browser.browsing_data.BrowsingDataType;
 import org.chromium.chrome.browser.browsing_data.TimePeriod;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileManager;
@@ -34,7 +32,6 @@ import org.chromium.chrome.test.transit.page.WebPageStation;
 import org.chromium.components.browser_ui.site_settings.WebsitePreferenceBridge;
 import org.chromium.components.content_settings.ContentSetting;
 import org.chromium.components.content_settings.ContentSettingsType;
-import org.chromium.components.content_settings.CookieBlocking3pcdStatus;
 import org.chromium.components.content_settings.CookieControlsBridge;
 import org.chromium.components.content_settings.CookieControlsEnforcement;
 import org.chromium.components.content_settings.CookieControlsMode;
@@ -66,7 +63,6 @@ public class CookieControlsBridgeTest {
         public void onStatusChanged(
                 @CookieControlsState int controlsState,
                 @CookieControlsEnforcement int enforcement,
-                @CookieBlocking3pcdStatus int blockingStatus,
                 long expiration) {
             mCookieControlsVisible = controlsState != CookieControlsState.HIDDEN;
             mThirdPartyCookiesBlocked = controlsState == CookieControlsState.BLOCKED3PC;
@@ -130,8 +126,6 @@ public class CookieControlsBridgeTest {
 
     @Test
     @SmallTest
-    // This test will become obsolete when 3PCD is rolled out.
-    @DisableFeatures(ChromeFeatureList.TRACKING_PROTECTION_3PCD)
     public void testCookieBridgeWithTPCookiesDisabledUserBypass() throws Exception {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
@@ -275,8 +269,6 @@ public class CookieControlsBridgeTest {
 
     @Test
     @SmallTest
-    // This test will become obsolete when 3PCD is rolled out.
-    @DisableFeatures(ChromeFeatureList.TRACKING_PROTECTION_3PCD)
     public void testCookieBridgeWithIncognitoSettingUserBypass() throws Exception {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {

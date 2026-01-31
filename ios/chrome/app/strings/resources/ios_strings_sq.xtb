@@ -25,7 +25,6 @@
 <translation id="1072679792409426431">Çaktivizuar nga administratori yt</translation>
 <translation id="1074827084851510304">Je gati të fshish {password_count} fjalëkalime dhe listën e sajteve dhe aplikacioneve për të cilat ke zgjedhur që të mos i ruash asnjëherë informacionet e identifikimit. Nuk do të fshihet asnjë llogari që ke krijuar për sajtet dhe aplikacionet.</translation>
 <translation id="1076421457278169141">Kodi u skanua</translation>
-<translation id="1081114897601629648">Fjalëkalimet e mëposhtme nuk u importuan te "Menaxheri i fjalëkalimeve i Google" pasi nuk përputhen me kërkesat.</translation>
 <translation id="1081932398873105675">{count,plural, =1{{count} skedë}other{{count} skeda}}</translation>
 <translation id="1082554859195167538">Komentet për produktet për ty</translation>
 <translation id="1084365883616172403">Postimi në Facebook u krye.</translation>
@@ -34,7 +33,6 @@
 <translation id="1096992026380844478">Cilësimet e tua të sinkronizimit do të restaurohen bazuar në rezervimin tënd të fundit. <ph name="BEGIN_LINK" />Shiko se çfarë mund të sinkronizosh<ph name="END_LINK" /></translation>
 <translation id="1103523840287552314">Përkthe gjithmonë nga <ph name="LANGUAGE" /></translation>
 <translation id="110491332089958282">Ndaj përmbajtjen e faqes me Gemini për të marrë përgjigje më të përshtatshme. Kur ndan një faqe me Gemini, përmbajtja e plotë dhe URL-ja e faqes i dërgohen Google. <ph name="BEGIN_LINK" />Mëso më shumë<ph name="END_LINK" /></translation>
-<translation id="1108938384783527433">Sinkronizimi i historikut</translation>
 <translation id="1110772719190051587">Shkyç me Face ID</translation>
 <translation id="1112015203684611006">Printimi dështoi.</translation>
 <translation id="1118569444314402022">Mirë se u ktheve, <ph name="USER_NAME" /></translation>
@@ -49,6 +47,7 @@
 <translation id="1149401351239820326">Muaji i skadimit</translation>
 <translation id="1150989369772528668">Kalendari</translation>
 <translation id="1161663161838091892">Sinkronizo skedat dhe historikun për të vazhduar</translation>
+<translation id="1162834932051545794">{count,plural, =1{{count} kartë krediti}other{{count} karta krediti}}</translation>
 <translation id="1164891049599601209">Ka hyrë në një sajt mashtrues</translation>
 <translation id="1165039591588034296">Gabim</translation>
 <translation id="1172898394251786223">Fusha tjetër</translation>
@@ -76,6 +75,7 @@
 <translation id="1272079795634619415">Ndalo</translation>
 <translation id="1273416271143914096">{count,plural, =1{{count} fjalëkalim}other{{count} fjalëkalime}}</translation>
 <translation id="1275718070701477396">Përzgjedhur</translation>
+<translation id="1279024913354609713">Mos lejo</translation>
 <translation id="1285320974508926690">Asnjëherë mos e përkthe këtë sajt</translation>
 <translation id="1287229685519872919">Të dhënat e Google Workspace</translation>
 <translation id="1291506870746876680">Lejet e <ph name="BEGIN_BOLD" />"<ph name="SITE_NAME" />"<ph name="END_BOLD" /> do të rivendosen në joaktive kur të largohesh nga ky sajt.</translation>
@@ -104,6 +104,7 @@
 <translation id="1366297852155605523">Ndarë me mua</translation>
 <translation id="1369286077209859800">Shfaq të gjitha skedat në grupin e skedave</translation>
 <translation id="136942498637440594">Mund të kërkosh imazhe dhe gjërat që shikon.</translation>
+<translation id="1373120905936431262">Ngarko një imazh për ta remiksuar me Nano Banana</translation>
 <translation id="1377508275003315939">Fjalëkalimet</translation>
 <translation id="1381022135873211423">{count,plural, =1{{position} nga {count} adresë}other{{position} nga {count} adresa}}</translation>
 <translation id="1383876407941801731">Kërko</translation>
@@ -127,6 +128,7 @@
 <translation id="1455660774629812862">Mos i fshih</translation>
 <translation id="1456545332132818232">Komentet e produktit për <ph name="PRODUCT_NAME" />, <ph name="STARS" /> nga <ph name="MAX_STARS" />, <ph name="DOMAIN" /></translation>
 <translation id="1460751212339734034">Kurse kohë, shkruaj më pak</translation>
+<translation id="1466035273550360103">Nuk ka skeda të hapura</translation>
 <translation id="1469381646033328562">Llogaria jote menaxhohet nga prindi yt.
 <ph name="BEGIN_LINK" />Mëso më shumë<ph name="END_LINK" /></translation>
 <translation id="147982357559798527">Ndryshuar</translation>
@@ -156,9 +158,11 @@
 <translation id="1545749641540134597">Skano kodin QR</translation>
 <translation id="1545757265410828525">Historiku i çmimeve</translation>
 <translation id="1547610699249301703">Ndaj fjalëkalimet</translation>
+<translation id="1554043146674176775">Çaktivizo "Modalitetin e IA-së"</translation>
 <translation id="1554477036522844996">Dritare e re</translation>
 <translation id="1558391695376153246">Mbyll skedat "e fshehta"</translation>
 <translation id="1565371473877914088">Skedë e re "e fshehtë"</translation>
+<translation id="1567960978791353852">Shfaq "Modalitetin e leximit"</translation>
 <translation id="1571780780926010134">Skedat "e fshehta"</translation>
 <translation id="1580715474678097352">Qëndro i mbrojtur nga sajtet e rrezikshme të uebit</translation>
 <translation id="1580783302095112590">Mail-i u dërgua.</translation>
@@ -209,6 +213,7 @@
 <translation id="17513872634828108">Hap skedat</translation>
 <translation id="1752547299766512813">Ruaj fjalëkalimet</translation>
 <translation id="1764070164487214210">Udhëzimet</translation>
+<translation id="1764511703783285459">Menaxheri tjetër i fjalëkalimeve nuk ndau asnjë fjalëkalim apo çelës kalimi</translation>
 <translation id="1767766085187034454">Përkthe me Google</translation>
 <translation id="1771016937398045251">Menyja e veglave</translation>
 <translation id="1772468122139624049">Skedat nuk mund të ringarkohen</translation>
@@ -232,6 +237,7 @@
 <translation id="1836891464494477513">{count,plural, =1{Faqeshënuesi u ruajt në "Llogarinë tënde të Google", {email}}other{Faqeshënuesit u ruajtën në "Llogarinë tënde të Google", {email}}}</translation>
 <translation id="1838089197478136166">Të hapet te "Portofoli"?</translation>
 <translation id="183878838231635348">Kjo kartë shfaq çdo problem me privatësinë ose sigurinë që "Kontrolli i sigurisë" zbulon automatikisht për ty.</translation>
+<translation id="1840320537320704887">Preferencat e tua për faqen e "Skedës së re" u hoqën</translation>
 <translation id="1845230888742614096">Mbaje grupin</translation>
 <translation id="1853692000353488670">Skedë e re e fshehtë</translation>
 <translation id="1854463785401910334">Kërko skedat e hapura</translation>
@@ -250,7 +256,7 @@
 <translation id="1901366738768303267">Si ta përdor këtë veçori?</translation>
 <translation id="1901600657316773839">Mbaje zgjedhjen</translation>
 <translation id="1902277226107477495">Zbulimi i adresës është joaktiv. Riaktivizoje atë te "Cilësimet".</translation>
-<translation id="1904580727789512086">URL-të që viziton ruhen në "Llogarinë tënde të Google"</translation>
+<translation id="1909201414196501151">Sajti u shtua dhe u gozhdua</translation>
 <translation id="1911619930368729126">Ngarko në "Diskun e Google"</translation>
 <translation id="1925706052394657380">Hap cilësimet për <ph name="BEGIN_BOLD" />Default Apps<ph name="END_BOLD" /> në iOS</translation>
 <translation id="1941314575388338491">Trokit dy herë për të kopjuar.</translation>
@@ -266,7 +272,6 @@
 <translation id="1965633132497641148">Kod i pavlefshëm sigurie</translation>
 <translation id="1966313166384086081">të dhënat e sajtit</translation>
 <translation id="1967461193809857427">{count,plural, =1{Të vazhdohet me skedën ku e ke lënë në Android?}other{Të vazhdohet me skedat ku e ke lënë në Android?}}</translation>
-<translation id="1972325230031091483">Do të shfletosh më shpejt sepse përmbajtja ngarkohet në mënyrë proaktive bazuar në vizitën aktuale në faqen e uebit</translation>
 <translation id="1974060860693918893">Të përparuara</translation>
 <translation id="1977621687170192347">Aktivizo "Kërko që t'i hapësh lidhjet nga aplikacionet e tjera në modalitetin 'I fshehtë'".</translation>
 <translation id="1979055159547313322">Llogaria <ph name="USER_EMAIL" /> menaxhohet nga <ph name="HOSTED_DOMAIN" />, që mund të jetë në gjendje të shikojë disa informacione, duke përfshirë</translation>
@@ -287,6 +292,7 @@
 <translation id="2015722694326466240">Për të parë fjalëkalimet, duhet të vendosësh në fillim një kod në pajisjen tënde.</translation>
 <translation id="201759455285471444">Zgjero grupin e skedave.</translation>
 <translation id="202070562065520783">Ma shpjego këtë</translation>
+<translation id="2023713324775943812">Qasu te "Modaliteti i leximit" nga shiriti i adresave kur ofrohet</translation>
 <translation id="2044394949148788042">Hap rrjetën e skedave</translation>
 <translation id="2044681667265133332">Llogaria <ph name="USER_EMAIL" /> menaxhohet nga <ph name="HOSTED_DOMAIN" />, që mund të jetë në gjendje të shikojë disa informacione. <ph name="BEGIN_LINK" />Mëso më shumë<ph name="END_LINK" /></translation>
 <translation id="20485545164632846">artikull i ri</translation>
@@ -309,6 +315,7 @@
 <translation id="21133533946938348">Gozhdimi i skedës</translation>
 <translation id="2117650889962717098">Mbaje shfletimin privat duke kaluar në modalitetin "I fshehtë"</translation>
 <translation id="2119636449201577317">Hape në…</translation>
+<translation id="2119962645034852864">Disa shërbime nuk ofrohen për llogarinë tënde</translation>
 <translation id="2120553909046681540">Organizata jote ka çaktivizuar shfletimin privat.</translation>
 <translation id="2122754583996902531">Shfletuesi yt është i menaxhuar. <ph name="BEGIN_LINK" />Mëso më shumë<ph name="END_LINK" /></translation>
 <translation id="21243612977487926">Bisedat e organizatës sate nuk përdoren për të përmirësuar modelet tona. Gemini mund të shfaqë informacione të pasakta, duke përfshirë edhe për njerëzit, prandaj kontrolloji përsëri. <ph name="YOUR_PRIVACY_GEMINI" /></translation>
@@ -326,6 +333,7 @@
 <translation id="2184272387334793084">Identifikohu për të marrë fjalëkalimet etj. në të gjitha pajisjet e tua</translation>
 <translation id="2186206192313702726">Lentja e Google</translation>
 <translation id="2188993354115194873">Trokit te <ph name="BEGIN_BOLD" />Ruaj te shkarkimet<ph name="END_BOLD" /></translation>
+<translation id="2191406283620379491">Ndodhi një gabim i madh. Përditëso versionin tënd të iOS.</translation>
 <translation id="219283042927675668">Skedat te grupi</translation>
 <translation id="2194856509914051091">Gjëra për t'u pasur parasysh</translation>
 <translation id="2196428379625389579">Kërko në ueb</translation>
@@ -356,6 +364,7 @@
 <translation id="2271452184061378400">Grupet e skedave ruhen këtu</translation>
 <translation id="2273327106802955778">Menyja "Më shumë"</translation>
 <translation id="2287614783861766820">{count,plural, =1{Kjo adresë do të fshihet nga kjo pajisje.}other{Këto adresa do të fshihen nga kjo pajisje.}}</translation>
+<translation id="2295236662082735391">Mbaj shtypur gjatë një imazh në ueb për ta modifikuar me Gemini</translation>
 <translation id="2297989278479054870">Pasi të dalësh, faqeshënuesit, fjalëkalimet etj. në "Llogarinë tënde të Google" do të hiqen nga kjo pajisje.</translation>
 <translation id="2299218006564889602">Fjalëkalimet enkriptohen në pajisjen tënde para se të ruhen në "Menaxherin e fjalëkalimeve të Google".</translation>
 <translation id="2306265833370324042">Shfaq detajet për <ph name="SEARCH_ENGINE_NAME" /></translation>
@@ -406,6 +415,7 @@
 <translation id="2479148705183875116">Shko te "Cilësimet"</translation>
 <translation id="2482878487686419369">Njoftimet</translation>
 <translation id="2484459871750294497">Si ta aktivizoj këtë veçori?</translation>
+<translation id="2485534095078940149">Skedari i bashkëngjitur "{title}"</translation>
 <translation id="2493269659028026145">Kyç menjëherë me <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /></translation>
 <translation id="2496180316473517155">Historiku i shfletimit</translation>
 <translation id="2496626742194544812">Shko te skeda e parë</translation>
@@ -429,6 +439,7 @@
 <translation id="2573117291489209663">U krye</translation>
 <translation id="2577522251608256362">Lagjja</translation>
 <translation id="2579713773888829241">Disqet e ndara</translation>
+<translation id="2580306219079937316">Hap cilësimet e "Përkthe"</translation>
 <translation id="2583688836549072561">Grupi i skedave, "<ph name="GROUP_TITLE" />", <ph name="TABS_NUMBER" /> skeda, aktivitet i ri.</translation>
 <translation id="2593272815202181319">Me hapësirë fikse</translation>
 <translation id="2601778637777010194">Monitoro rëniet e çmimeve të produkteve</translation>
@@ -454,15 +465,18 @@
 <translation id="2669454659051515572">Çdo person që e përdor këtë pajisje mund t'i shikojë skedarët e shkarkuar</translation>
 <translation id="2671423594960767771">Ndaj grupin</translation>
 <translation id="2673508731173059946">Vizito lidhjen e kopjuar</translation>
+<translation id="2679659833697380">Informacionet e tua ruhen në pajisjen tënde</translation>
 <translation id="2688535388040882469">Banderolat</translation>
 <translation id="2690858294534178585">Kamera është në përdorim</translation>
 <translation id="2691653761409724435">Nuk mundësohet offline</translation>
+<translation id="2697530870203420261">Pseudonim i pavlefshëm</translation>
 <translation id="269819437389494246">Mund të shikosh faqet që ke vizituar ose t'i fshish ato nga historiku yt</translation>
 <translation id="2704606927547763573">Kopjuar</translation>
 <translation id="2708051474374549906">Mbrojtje proaktive dhe në kohë reale nga sajtet, shkarkimet dhe shtesat e rrezikshme që bazohet në të dhënat e tua të shfletimit që dërgohen te Google</translation>
 <translation id="2709516037105925701">Plotëso automatikisht</translation>
 <translation id="271033894570825754">E re</translation>
 <translation id="2712929214961145009">Sans serif</translation>
+<translation id="2713106313042589954">Çaktivizo kamerën</translation>
 <translation id="2718352093833049315">Vetëm me Wi-Fi</translation>
 <translation id="2721190673959776287">Shembulli i ndihmës së pasur brenda produktit për "Panelin kontekstual", i cili duhet të shfaqet disa herë në ditë.</translation>
 <translation id="2739887572830526131">Mbaje këtë grup për të shtuar skeda më vonë ose fshije atë nëse nuk të nevojitet më.</translation>
@@ -472,6 +486,7 @@
 <translation id="2761788987260570878">Nxirr një fotografi të kërkimit tënd</translation>
 <translation id="2761898608071930085">Përdor një llogari tjetër</translation>
 <translation id="2762000892062317888">pikërisht tani</translation>
+<translation id="2766178952536179189">{COUNT,plural, =1{Shto deri në 1 imazh}other{Shto deri në {COUNT} imazhe}}</translation>
 <translation id="2772667768515195373">Adresat e ruajtura mund t'i përdorësh nëpër produktet e Google. Kjo adresë ruhet në "Llogarinë tënde të Google", <ph name="USER_EMAIL" />.</translation>
 <translation id="2773344962924806829">Njoftimet me email</translation>
 <translation id="2781331604911854368">Aktiv</translation>
@@ -526,7 +541,6 @@
 <translation id="2989805286512600854">Hape në skedë të re</translation>
 <translation id="2996291259634659425">Krijo një frazë kalimi</translation>
 <translation id="3010025794097054078">Qëndro i sigurt nga nxjerrjet e paautorizuara të të dhënave, uebsajtet e pasigurta etj.</translation>
-<translation id="301080557829842765">Udhëzuesi i privatësisë</translation>
 <translation id="3012310354105716927">Disa të dhëna nuk janë ruajtur ende</translation>
 <translation id="3013922155552460252">Shiko dhe menaxho aktivitetin e Gemini të tilla si bisedat, komentet dhe kërkesat e tua</translation>
 <translation id="3016518775797983090">Faqja nuk mund të ndahet</translation>
@@ -590,10 +604,10 @@
 <translation id="323863549127671026">Skedat dhe grupet e skedave që janë hapur aktualisht</translation>
 <translation id="3240426699337459095">Lidhja u kopjua</translation>
 <translation id="3244271242291266297">MM</translation>
-<translation id="3245429137663807393">Nëse ndan edhe raportet e përdorimit të Chrome, ato raporte përfshijnë URL-të që viziton</translation>
 <translation id="3245744387817103524">Ndryshimi yt nuk mund të ruhej.</translation>
 <translation id="3254806613790954367">Skeda e fundit e hapur nëpër të gjitha pajisjet e tua</translation>
 <translation id="325717987950204592">Trokit te "Privatësia dhe siguria"</translation>
+<translation id="3265736395246760288">Identifikohu më shpejt nga çdo pajisje e sinkronizuar.</translation>
 <translation id="3272527697863656322">Anulo</translation>
 <translation id="3273510436356991673">Personalizo ekranin tënd bazë</translation>
 <translation id="3277021493514034324">Adresa e sajtit u kopjua</translation>
@@ -611,10 +625,12 @@
 <translation id="3344485292736684439">{count,plural, =1{Faqeshënuesi u ruajt te "{title}" në llogarinë tënde, {email}}other{Faqeshënuesit u ruajtën te "{title}" në llogarinë tënde, {email}}}</translation>
 <translation id="334690320928261823">Skedat e fundit</translation>
 <translation id="3349031117032695619">Blloko dritaret kërcyese</translation>
+<translation id="3350976670663926380">Modifikimet u ruajtën</translation>
 <translation id="3353037916374303415"><ph name="EMAIL" />. Kjo llogari është e menaxhuar.</translation>
 <translation id="3365529507898144230">Ruaj te "Fotografitë"</translation>
 <translation id="3371831930909698441">Ofrohet "Përkthe". Opsionet ofrohen pranë fundit të ekranit</translation>
 <translation id="3377063233124932127">Tani faqeshënuesit, fjalëkalimet e ruajtura etj. janë në krye.</translation>
+<translation id="3378214228000661758">Krijo një çelës kalimi për</translation>
 <translation id="3380352560400387991">Ky sajt po përpiqet të hapë një aplikacion. Kjo do të të largojë nga modaliteti "i fshehtë".</translation>
 <translation id="3385742921291399323">Merr fjalëkalimet, skedat, faqeshënuesit e ruajtur etj.</translation>
 <translation id="3392923070107623576">Qëndro i organizuar duke krijuar grupe skedash</translation>
@@ -655,7 +671,6 @@
 <translation id="3530024057633834563">Nuk ke asnjë çelës kalimi apo fjalëkalim të ruajtur, por mund të fshish listën e sajteve dhe aplikacioneve për të cilat ke zgjedhur që të mos i ruash asnjëherë informacionet e identifikimit. Nuk do të fshihet asnjë llogari që ke krijuar për sajtet dhe aplikacionet.</translation>
 <translation id="3530206579861815432">Gjej me shpejtësi skedat e hapura dhe skedat e mbyllura së fundi nëpër pajisjet e tua të sinkronizuara.</translation>
 <translation id="3530767473765895035">Menaxho llogaritë në këtë pajisje…</translation>
-<translation id="353340646084395154">Preferencat për faqen e skedës së re u hoqën</translation>
 <translation id="3533436815740441613">Skedë e re</translation>
 <translation id="3540141921715814660">Shto te faqeshënuesit</translation>
 <translation id="3546122170015471515">"Variantet paraprake të Maps" në Google.com</translation>
@@ -665,6 +680,7 @@
 <translation id="355765753469272474">Zhbëj</translation>
 <translation id="3565012355885596568">Imazhet nuk mund të ngarkoheshin</translation>
 <translation id="3565930036634619844">Skeda. <ph name="TAB_INDEX" /> nga <ph name="NUMBER_OF_TABS" />.</translation>
+<translation id="3567168891086460374">Ruaje në një mënyrë tjetër</translation>
 <translation id="3572607909481582402">Në "Llogarinë tënde të Google"</translation>
 <translation id="3575234738189584619">Kërko me "Lenten"</translation>
 <translation id="3575426792457739946">Kjo listë përfshin të gjitha profilet e ngarkuara.</translation>
@@ -677,6 +693,7 @@
 <translation id="3602260545951981695">Zgjidh "Mbrojtjen e përmirësuar"</translation>
 <translation id="3610041351087301930">Fshih lexuesin</translation>
 <translation id="3610866916973186448">Po, fshije</translation>
+<translation id="3616161326314492065">Nxirr fotografi dhe ndaji me Gemini për të krijuar dhe remiksuar imazhe.</translation>
 <translation id="3622175633937495219">Historiku i kërkimeve (u gjetën <ph name="COUNT" />)</translation>
 <translation id="3625008969091706597">Mund të rrëshqasësh shpejt anash për të kaluar pas.</translation>
 <translation id="362709345066740529">Personalizo kartat, furnizimin dhe më shumë këtu</translation>
@@ -688,10 +705,12 @@
 <translation id="3662966164093827811">{count,plural, =1{1 e zgjedhur}other{# të zgjedhura}}</translation>
 <translation id="3668816008081204991">"Lista e leximit" është e fshehur</translation>
 <translation id="3670030362669914947">Numri</translation>
+<translation id="3672283986707092811">Zgjidhi të gjithë</translation>
 <translation id="3679163990085797665">Fshi të lexuarat</translation>
 <translation id="368329460027487650">Ke dalë. Hap opsionet për t'u identifikuar.</translation>
 <translation id="3695446226812920698">Mëso se si</translation>
 <translation id="3700134753671613714">Identifikohu për të marrë faqeshënuesit në të gjitha pajisjet e tua.</translation>
+<translation id="3701167022068948696">Rregullo tani</translation>
 <translation id="3708944822379815019">{COUNT,plural, =1{{COUNT} fjalëkalim është ruajtur vetëm në këtë pajisje. Për ta përdorur atë në pajisje të tjera, ruaje atë në "Llogarinë tënde të Google", {EMAIL}.}other{{COUNT} fjalëkalime janë ruajtur vetëm në këtë pajisje. Për t'i përdorur në pajisjet e tua të tjera, ruaji në "Llogarinë tënde të Google", {EMAIL}.}}</translation>
 <translation id="3709621342136814217">Zgjidh fontin, madhësinë e tekstit etj. këtu</translation>
 <translation id="371230970611282515">Parashikon dhe të paralajmëron rreth ngjarjeve të rrezikshme përpara se ato të ndodhin.</translation>
@@ -738,6 +757,7 @@
 <translation id="3888863481921783344">Kjo do të përdoret për të të shfaqur të ftuarit e mundshëm në ngjarjen tënde.</translation>
 <translation id="3891414008432200754">Çmimi</translation>
 <translation id="3892144330757387737">Këtu do të gjesh historikun tënd</translation>
+<translation id="3893858854379998374">Për të ruajtur faqeshënuesit në llogarinë tënde, fshi faqeshënuesit që nuk përdoren</translation>
 <translation id="3897092660631435901">Menyja</translation>
 <translation id="3904270275864974753">Modifiko karuselin</translation>
 <translation id="3909222758573607742">Ruaj fjalëkalimet dhe artikujt e tjerë në llogari</translation>
@@ -855,6 +875,7 @@
 <translation id="4302061870579014542">Cakto pozicionin</translation>
 <translation id="4304713468139749426">Menaxheri i fjalëkalimeve</translation>
 <translation id="4309403553630140242">Trokit dy herë për më shumë informacion</translation>
+<translation id="4310738531374808763">Personalizo faqen tënde kryesore</translation>
 <translation id="4320848494125124980">Të fundit</translation>
 <translation id="4322394346347055525">Mbyll skedat e tjera</translation>
 <translation id="4324735664183300693">Aktivizo njoftimet</translation>
@@ -867,9 +888,11 @@
 <translation id="4338650699862464074">Dërgon te Google URL-të e faqeve që ti viziton.</translation>
 <translation id="4342946437867096381">Ke ruajtur tashmë një fjalëkalim për këtë sajt në "Llogarinë tënde të Google". Google mund të zgjedhë fjalëkalimin më të fundit për ty.</translation>
 <translation id="4365121137632832185">Grupi i skedave. Zgjeruar.</translation>
+<translation id="4365685757967464989">Lejo që Gemini të përdorë kamerën tënde për të nxjerrë fotografi</translation>
 <translation id="4367971618859387374">Emri prezantues</translation>
 <translation id="4375772272517383391">Mbyll të gjitha skedat</translation>
 <translation id="4378154925671717803">Telefoni</translation>
+<translation id="4380677808580146413">Zgjidh</translation>
 <translation id="4389019817280890563">Trokit për ta ndryshuar gjuhën.</translation>
 <translation id="4393294364304621138">{COUNT,plural, =1{Pas 1 dite}other{Pas {COUNT} ditësh}}</translation>
 <translation id="4402672425188312225">{COUNT,plural, =1{1 skedë}other{# skeda}}</translation>
@@ -914,7 +937,9 @@
 <translation id="4565377596337484307">Fshih fjalëkalimin</translation>
 <translation id="4568230126482344545">Fshih "Skedat e fundit"</translation>
 <translation id="4578835633387306383">Aktivizo…</translation>
+<translation id="4580621046861724270">Disa faqeshënues nuk janë ruajtur</translation>
 <translation id="4580716718466706433">Shko te "Menaxheri i fjalëkalimeve"</translation>
+<translation id="4585751637295612750">Hap një skedë të re për ta shtuar te pyetja jote</translation>
 <translation id="4587589328781138893">Sajtet</translation>
 <translation id="4592672037257622855">{count,plural, =1{Faqja u shtua në listën tënde të leximit}other{{count} faqe u shtuan në listën tënde të leximit}}</translation>
 <translation id="459644946100970322">Të aktivizohen njoftimet për çmimet?</translation>
@@ -922,7 +947,6 @@
 <translation id="4601095002996233687">Skanime të thella për shkarkime të dyshimta.</translation>
 <translation id="4606247758155004938">Shfletuesi yt menaxhohet nga organizata jote.</translation>
 <translation id="4607887340472970274">Monitorimi i çmimeve</translation>
-<translation id="461440297010471931">Po kërkon me Google</translation>
 <translation id="4619564267100705184">Verifiko që je ti</translation>
 <translation id="4621768135601674446">Hap opsionet e "Modalitetit të leximit"</translation>
 <translation id="4627107755957573804">Lejo që sajtet dhe aplikacionet të përmirësojnë llogaritë ekzistuese për të përdorur çelësat e kalimit</translation>
@@ -948,6 +972,8 @@
 <translation id="4673565891421389203">Identifikimi me llogarinë tënde të menaxhuar të ndihmon ta mbash shfletimin në lidhje me organizatën tënde, (duke përfshirë skedat, historikun dhe fjalëkalimet) veçmas nga shfletime të tjera.
 
        Zgjidh se çfarë do të bësh me të dhënat ekzistuese të shfletimit në këtë pajisje.</translation>
+<translation id="4675298276894277358">Ky sajt nuk do të shfaqet më</translation>
+<translation id="4676647168422678078">Të zbatohen preferencat e tua për faqen e "Skedës së re"?</translation>
 <translation id="4682496302933121474">Të përkthehet faqja?</translation>
 <translation id="4682686630151240767">1. Hap "Cilësimet e iPhone"</translation>
 <translation id="4691892551491778176">Kur përdor këtë veçori, përmbajtjet e faqeve dhe URL-të e tyre dërgohen te Google, por nuk do të përdoren për të përmirësuar modelet e IA-së gjeneruese. Këtë mund ta çaktivizosh te cilësimet në çdo kohë.</translation>
@@ -961,6 +987,7 @@
 <translation id="472259426228234149">Çmimi 100 - 180 USD</translation>
 <translation id="4735849923335729414">Identifikohu si <ph name="EMAIL" />, menaxhohet nga organizata jote.</translation>
 <translation id="473775607612524610">Përditësoje</translation>
+<translation id="4738968082443868320">Disku i Google</translation>
 <translation id="474209246745757965">Bli dhe përkthe me kamerën tënde</translation>
 <translation id="4742407542027196863">Menaxho fjalëkalimet…</translation>
 <translation id="4744428388659507035">Për të marrë faqeshënuesit e tu në të gjitha pajisjet e tua, aktivizo "Faqeshënuesit" te cilësimet.</translation>
@@ -995,6 +1022,7 @@
 <translation id="4840495572919996524">Faqeshënuesit, historiku, fjalëkalimet etj. nuk do të sinkronizohen më në "Llogarinë tënde të Google".</translation>
 <translation id="484280513275854557">Ke dalë nga llogaria dhe të dhënat e shfletimit janë fshirë</translation>
 <translation id="4850886885716139402">Pamja</translation>
+<translation id="4854068532375923088">Lejo që "Gemini" të përdorë kamerën tënde</translation>
 <translation id="4860895144060829044">Telefono</translation>
 <translation id="4861953997778766866">Të gjithë mund të bëjnë ndryshime te grupet e skedave të ndara</translation>
 <translation id="4865063548323785458">Ruaj dhe plotëso automatikisht fjalëkalimet për t'u identifikuar me lehtësi në sajte dhe aplikacione</translation>
@@ -1034,6 +1062,7 @@
 <translation id="496392417432935267">Hapur diku tjetër</translation>
 <translation id="4970724460420203313">Përdorimi i Chrome me llogarinë tënde të menaxhuar të ndihmon ta mbash shfletimin në lidhje me organizatën tënde, (duke përfshirë skedat, historikun dhe fjalëkalimet) veçmas nga shfletime të tjera.</translation>
 <translation id="4971735654804503942">Mbrojtje më e shpejtë dhe proaktive kundër faqeve të internetit, shkarkimeve dhe shtesave të rrezikshme. Të paralajmëron rreth nxjerrjeve të paautorizuara të fjalëkalimeve. Kërkon që të dhënat e shfletimit t'i dërgohen Google.</translation>
+<translation id="4977176874984951085">Hap menynë e veprimeve të faqes</translation>
 <translation id="4979397965658815378">Identifikohu me llogarinë e Google për të marrë faqeshënuesit, fjalëkalimet, historikun dhe cilësime të tjera në të gjitha pajisjet e tua.</translation>
 <translation id="4985921635659180565">Pasi një skedar të planifikohet për t'u fshirë, kjo nuk mund të anulohet.</translation>
 <translation id="498624032394115435">Çdo person që ka lidhjen mund të modifikojë të gjitha skedat.</translation>
@@ -1047,9 +1076,9 @@
 <translation id="5017529052065664584">15 minutat e fundit</translation>
 <translation id="5020732097997376541">Trokit tek "Ikona e 'Lentes'"</translation>
 <translation id="5021500396464456616">Kontakto me personin që e dërgoi këtë lidhje</translation>
-<translation id="5024511550058813796">Do të kesh historikun në të gjitha pajisjet e sinkronizuara, në mënyrë që të vazhdosh atë që po bëje</translation>
 <translation id="5039804452771397117">Lejo</translation>
 <translation id="5050810143224996149">Ndaj fjalëkalimin</translation>
+<translation id="5052499409147950210">Modifiko sajtin</translation>
 <translation id="5055015094595227120">Vendndodhja e saktë</translation>
 <translation id="5055551113846164633">Kjo fshin adresat e ruajtura në këtë pajisje. Ajo fshin gjithashtu adresat e ruajtura në "Llogarinë tënde të Google", <ph name="USER_EMAIL" />.</translation>
 <translation id="5056446788882570708">U gjetën probleme: <ph name="TIME" />.</translation>
@@ -1068,6 +1097,8 @@
 <translation id="508645147179720015">Shënimi është më shumë se 1000 karaktere</translation>
 <translation id="5087098519049306025">Monitorimi i çmimeve</translation>
 <translation id="5090832849094901128">Fshirja e këtij fjalëkalimi nuk do ta fshijë llogarinë tënde në <ph name="WEBSITE" />.</translation>
+<translation id="5096619236864235">Çelësat e kalimit ruhen në "Menaxherin e fjalëkalimeve të Google" për</translation>
+<translation id="510580293474170715">Nuk u importua asgjë</translation>
 <translation id="5113960131843706315">Po merren gjërat e tua…</translation>
 <translation id="5118462200606189584">Shto një llogari…</translation>
 <translation id="5118764316110575523">Joaktiv</translation>
@@ -1106,6 +1137,7 @@
 <translation id="5220945116117011963">Krijo ngjarje kalendari nga datat</translation>
 <translation id="5222676887888702881">Dil</translation>
 <translation id="5225388483876575107">A</translation>
+<translation id="5225463052809312700">Aktivizo kamerën</translation>
 <translation id="5229315183665181733">Modifiko sajtin</translation>
 <translation id="5233638681132016545">Skedë e re</translation>
 <translation id="5234094073825090254">{count,plural, =1{Faqeshënuesi u ruajt në "Llogarinë tënde të Google", {email}.}other{Faqeshënuesit u ruajtën në "Llogarinë tënde të Google", {email}.}}</translation>
@@ -1119,28 +1151,32 @@
 <translation id="5271265092610673171">{count,plural, =1{Një fushë e detyrueshme është bosh. Plotësoje para se ta ruash.}other{Disa fusha të detyrueshme janë bosh. Plotësoji para se t'i ruash.}}</translation>
 <translation id="5271549068863921519">Ruaj fjalëkalimin</translation>
 <translation id="5275912569557792098"><ph name="USER_NAME" /> (<ph name="USER_EMAIL" />) dëshiron që të bashkohesh në një grup skedash. Çdo person që ka lidhjen mund të modifikojë të gjithë skedat, prandaj bashkohu me kujdes. Lidhja skadon pas 48 orësh.</translation>
+<translation id="5275953427913009986">Skeda e bashkëngjitur "{title}"</translation>
 <translation id="5282340693022193851">Për të marrë njoftime për monitorimin e çmimeve, aktivizo njoftimet te Settings të iOS.</translation>
 <translation id="528857768909044842">Grupet e skedave ruhen këtu</translation>
 <translation id="5294624619177114121">Njoftimet në celular</translation>
 <translation id="5295239312320826323">Do ta heqësh llogarinë <ph name="USER_EMAIL" />?</translation>
 <translation id="5300589172476337783">Shfaq</translation>
 <translation id="5311061401280561833">Lejohet qasja te kamera dhe mikrofoni</translation>
+<translation id="5313967007315987356">Shto një sajt</translation>
 <translation id="5315870524563628285">Nuk ka asgjë për të importuar</translation>
 <translation id="5316356981864168850"><ph name="INDEX" /> nga <ph name="NUM_SUGGESTIONS" /></translation>
 <translation id="5317780077021120954">Ruaj</translation>
 <translation id="5318298563956633672">Po e monitoron tashmë këtë produkt.</translation>
 <translation id="5327248766486351172">Emri</translation>
 <translation id="5329451663851195956">Mund ta tërheqësh poshtë për ta rifreskuar.</translation>
+<translation id="5336910966955551309">Trokit dhe mbaj shtypur për të gozhduar sajtet e tua të preferuara</translation>
 <translation id="5338512273860059533">Identifikimi është në vazhdim</translation>
 <translation id="5343472494710226394">Lajme, sporte dhe përmbajtje të bazuara në interesat e tu.</translation>
 <translation id="5352128922772839949">Ruaj skedarin</translation>
 <translation id="5355191726083956201">"Mbrojtja e përmirësuar" është aktive</translation>
 <translation id="536067926684072644">Shfaq faqeshënuesit</translation>
+<translation id="5364647308446127983">{count,plural, =1{{count} çelës kalimi nuk mund të importohej}other{{count} çelësa kalimi nuk mund të importoheshin}}</translation>
 <translation id="5371112366564891538">Rrit madhësinë e tekstit</translation>
+<translation id="5376135254804080693">Hiq përzgjedhjen për të gjitha</translation>
 <translation id="537853552771686272">Menaxho temat dhe sajtet që të interesojnë</translation>
 <translation id="5390458669633674385">{count,plural, =1{{count} u mbyll}other{{count} u mbyllën}}</translation>
 <translation id="5394975111793637642">Fshih kartën "Komentet e produktit për ty"</translation>
-<translation id="5407806496954700135">Dëshiron t'i zbatosh personalizimet e faqes së skedës së re nga një pajisje tjetër?</translation>
 <translation id="5414763847370083940">Do të marrësh një sinjalizim nëse ulet çmimi në ndonjë sajt.</translation>
 <translation id="5415289094036440596">Çelësat e kalimit nuk mund të ndahen</translation>
 <translation id="5416455648658732408">Zhvendose te grupi i skedave</translation>
@@ -1188,11 +1224,11 @@ Handoff duhet gjithashtu të jetë i aktivizuar në seksionin "Të përgjithshme
 <translation id="556042886152191864">Buton</translation>
 <translation id="5565871407246142825">Karta e kreditit</translation>
 <translation id="5567439033041178034">MËSO MË SHUMË</translation>
-<translation id="5572648434713976849">Do të marrësh sugjerime të përmirësuara në shiritin e adresave</translation>
 <translation id="5578795271662203820">Kërko në <ph name="SEARCH_ENGINE" /> për këtë imazh</translation>
 <translation id="5579012242779565775">Fshih "Listën e leximit"</translation>
 <translation id="5581786858144165447">Pyet "Modalitetin e IA-së"</translation>
 <translation id="5585019845078534178">Kartat</translation>
+<translation id="5591526871732898147">Imazhi i bashkëngjitur {index}</translation>
 <translation id="5595485650161345191">Redakto adresën</translation>
 <translation id="559567008082979829">Cakto që shkarkimet e tua të fshihen pas një muaji</translation>
 <translation id="5596627076506792578">Më shumë opsione</translation>
@@ -1228,7 +1264,6 @@ Handoff duhet gjithashtu të jetë i aktivizuar në seksionin "Të përgjithshme
 <translation id="5680012489335339762">Të ndërrohen llogaritë? Të dhënat e paruajtura të llogarisë do të fshihen.</translation>
 <translation id="5683499062697987550">Për të përdorur dhe ruajtur fjalëkalimet në "Llogarinë tënde të Google", verifiko që je ti.</translation>
 <translation id="5684761169742812828">Ky fjalëkalim është ekspozuar në një nxjerrje të paautorizuar të të dhënave në internet. Nëse nuk ke kohë që ta ndryshosh tani, Google rekomandon që ta mbash këtë paralajmërim për t'u kujtuar më vonë.</translation>
-<translation id="5688739340234490129">{count,plural, =1{{count} kartë}other{{count} karta}}</translation>
 <translation id="5694848685995373177">U ruajt te "Disku" për <ph name="USER_EMAIL" />.</translation>
 <translation id="570209299585559496">Mund të ndryshosh pamjen e parazgjedhur të sajtit në desktop te cilësimet dhe më pas te cilësimet e përmbajtjes</translation>
 <translation id="5702108177581350218">Kur ndan një kopje të emrit të përdoruesit dhe fjalëkalimit tënd, anëtari i familjes mund t'i plotësojë ato duke përdorur "Menaxherin e fjalëkalimeve të Google".</translation>
@@ -1314,7 +1349,6 @@ Handoff duhet gjithashtu të jetë i aktivizuar në seksionin "Të përgjithshme
 <translation id="598634819525651074">Zona</translation>
 <translation id="5988097621740394599">Shiko uljet e çmimeve në skeda.</translation>
 <translation id="5988851877894965432">Hap URL-të në Chrome</translation>
-<translation id="6001839398155993679">Fillojmë</translation>
 <translation id="6006672969046233841">Skedë e re</translation>
 <translation id="6011308810877101166">Përmirëso sugjerimet për kërkimin</translation>
 <translation id="6012140227487808125">Po shifron…</translation>
@@ -1330,6 +1364,7 @@ Handoff duhet gjithashtu të jetë i aktivizuar në seksionin "Të përgjithshme
 <translation id="605721222689873409">VV</translation>
 <translation id="6058415747854995776">Nxirr një video</translation>
 <translation id="6059830886158432458">Kontrollo historitë dhe aktivitetin tënd këtu</translation>
+<translation id="6063802271331271857">Remikso një imazh</translation>
 <translation id="6066301408025741299">Prek lehtë për të anuluar.</translation>
 <translation id="6074656473835429958">Merr njoftime</translation>
 <translation id="607620096698446287"><ph name="FILENAME" /> (<ph name="FILESIZE" />) nuk mund të ngarkohej</translation>
@@ -1352,7 +1387,6 @@ Handoff duhet gjithashtu të jetë i aktivizuar në seksionin "Të përgjithshme
 <translation id="6122191549521593678">Online</translation>
 <translation id="6122831415929794347">Të çaktivizohet "Shfletimi i sigurt"?</translation>
 <translation id="6123514585040403489">Skedat e tua do të mbyllen</translation>
-<translation id="6127379762771434464">Artikulli u hoq</translation>
 <translation id="6136914049981179737">Sekonda më parë</translation>
 <translation id="6138324221869147340">Disa veçori nuk ofrohen më</translation>
 <translation id="6140600850356225166">Kërko që t'i hapësh lidhjet nga aplikacionet e tjera në modalitetin "i fshehtë"</translation>
@@ -1445,6 +1479,7 @@ Handoff duhet gjithashtu të jetë i aktivizuar në seksionin "Të përgjithshme
 <translation id="6410390304316730527">"Shfletimi i sigurt" të mbron kundër sulmuesve që mund të të mashtrojnë që të bësh diçka të rrezikshme si instalimi i softuerëve keqdashës ose të zbulosh informacion personal si fjalëkalime, numra telefoni ose karta krediti. Nëse e çaktivizon, ki kujdes kur shfleton sajte të panjohura ose pa reputacion.</translation>
 <translation id="6410883413783534063">Hap skedat për të vizituar faqe të ndryshme njëkohësisht</translation>
 <translation id="6418346271604475326">Po përgatit PDF</translation>
+<translation id="6420292512900923139">Problem me importimin e të dhënave të tua</translation>
 <translation id="6421038304268477484">Teksti i përkthyer</translation>
 <translation id="6429213933892582367">Hap "Opsionet e fjalëkalimeve"</translation>
 <translation id="6435236283694032571">Shto te lista e leximit</translation>
@@ -1457,6 +1492,7 @@ Handoff duhet gjithashtu të jetë i aktivizuar në seksionin "Të përgjithshme
 <translation id="6445981559479772097">Mesazhi u dërgua.</translation>
 <translation id="6449554712554071184">Kjo do të fshijë përgjithmonë grupin nga pajisja jote.</translation>
 <translation id="6452534462676960500">Aktivitet i ri</translation>
+<translation id="6454311990702999318">Të dhëna të pavlefshme</translation>
 <translation id="6459411599807878608">Detajet u fshehën</translation>
 <translation id="646394917185284261">Skedarët</translation>
 <translation id="6472069383518492189">Shkarkimet e tua do t'i gjesh këtu</translation>
@@ -1482,6 +1518,7 @@ Handoff duhet gjithashtu të jetë i aktivizuar në seksionin "Të përgjithshme
 <translation id="6537746030088321027">example.com</translation>
 <translation id="6550675742724504774">Opsionet</translation>
 <translation id="6550891580932862748">Nuk të mbron nga uebsajtet, shkarkimet dhe shtesat e rrezikshme. Cilësimet e tua të "Shfletimit të sigurt" në produktet e tjera të Google nuk do të preken.</translation>
+<translation id="6556501700899673703">Lexend</translation>
 <translation id="6556866813142980365">Ribëje</translation>
 <translation id="6559301491397835130">{count,plural, =1{Faqeshënuesi u ruajt te "{title}". Ai është ruajtur vetëm në këtë pajisje.}other{Faqeshënuesit u ruajtën te "{title}". Ata janë ruajtur vetëm në këtë pajisje.}}</translation>
 <translation id="656065428026159829">Shiko më shumë</translation>
@@ -1490,6 +1527,7 @@ Handoff duhet gjithashtu të jetë i aktivizuar në seksionin "Të përgjithshme
 <translation id="6579867704846662339">Mund të zgjedhësh që t'i hapësh URL-të hyrëse nga aplikacionet e tjera në modalitetin "E fshehtë".</translation>
 <translation id="6583087784430677195">Për ta fikur, hap <ph name="BEGIN_LINK" />Cilësimet<ph name="END_LINK" /> dhe shko te "Plotësimi automatik i fjalëkalimeve".</translation>
 <translation id="6585618849026997638">Mund të kthehesh te një faqe që është e rëndësishme për ty duke shtuar një faqeshënues</translation>
+<translation id="6589001036857939353">Shkri dublikatat</translation>
 <translation id="659407965921887085">Kjo kartë shfaq rëniet e çmimeve në ueb për produktet që ti monitoron aktualisht</translation>
 <translation id="6596481460663245319">Kërko në imazh me Google</translation>
 <translation id="6598432073497341323">{COUNT,plural, =1{1 fjalëkalim}other{# fjalëkalime}}</translation>
@@ -1514,7 +1552,6 @@ Handoff duhet gjithashtu të jetë i aktivizuar në seksionin "Të përgjithshme
 <translation id="6641465290890659327">Ndaj një kopje të fjalëkalimit tënd</translation>
 <translation id="6642362222295953972">Kalo te skeda ekzistuese</translation>
 <translation id="6645899968535965230">Kodi QR: <ph name="PAGE_TITLE" /></translation>
-<translation id="6647441008198474441">URL-të që viziton dërgohen te Google për të parashikuar sajtet që mund të vizitosh në vijim</translation>
 <translation id="6657585470893396449">Fjalëkalimi</translation>
 <translation id="6659660757330712663">Mund të rrëshqasësh shpejt te shiriti i veglave për të ndërruar skedat.</translation>
 <translation id="6663529247339810546">Imazhi nuk mund të ruhet</translation>
@@ -1558,9 +1595,11 @@ Handoff duhet gjithashtu të jetë i aktivizuar në seksionin "Të përgjithshme
 <translation id="6807287147325542056">Fjalëkalimet në aplikacionet e tjera</translation>
 <translation id="681368974849482173">Elementi u krijua</translation>
 <translation id="6825078212112407882">{count,plural, =1{Faqeshënuesi u ruajt në "Llogarinë tënde të Google", {email}}other{{count} faqeshënues u ruajtën në "Llogarinë tënde të Google", {email}}}</translation>
+<translation id="6826004672264649705">Po e monitoron aktualisht këtë produkt. Hape për të parë historikun e çmimeve</translation>
 <translation id="6830728435402077660">Jo e sigurt</translation>
 <translation id="6831043979455480757">Përkthe</translation>
 <translation id="6842136130964845393">Për t'u siguruar që mund të qasesh gjithmonë në fjalëkalimet e tua të ruajtura, verifiko që je ti</translation>
+<translation id="6844773122575789617">Aktivizo "Modalitetin e IA-së"</translation>
 <translation id="6851516051005285358">Kërko sajtin për desktop</translation>
 <translation id="6857446173140146664">Fshi sfondin</translation>
 <translation id="6858718102216837409">Shto gjuhën…</translation>
@@ -1599,7 +1638,6 @@ Handoff duhet gjithashtu të jetë i aktivizuar në seksionin "Të përgjithshme
 <translation id="6964760285928603117">Largo nga grupi</translation>
 <translation id="6965382102122355670">Në rregull</translation>
 <translation id="6973630695168034713">Dosjet</translation>
-<translation id="69739764870135975">Nëse Google është gjithashtu motori yt i parazgjedhur i kërkimit, do të shohësh sugjerime më të mira dhe të përshtatshme me kontekstin</translation>
 <translation id="6979158407327259162">Disku i Google</translation>
 <translation id="6979737339423435258">Gjatë të gjithë kohës</translation>
 <translation id="6980507581230208647">Tema ngjyrë trëndafili</translation>
@@ -1676,11 +1714,10 @@ Handoff duhet gjithashtu të jetë i aktivizuar në seksionin "Të përgjithshme
 <translation id="7311244614769792472">Nuk u gjet asnjë rezultat</translation>
 <translation id="7313347584264171202">Këtu do të gjesh skedat e tua "të fshehta"</translation>
 <translation id="7328162502911382168">(<ph name="COUNT" />)</translation>
-<translation id="7334364820047587268">Ke tashmë fjalëkalime për këto llogari te "Menaxheri i fjalëkalimeve i Google". Nëse zgjedh që të importosh një nga fjalëkalimet më poshtë, ai do të zëvendësojë fjalëkalimin ekzistues.</translation>
 <translation id="7336264872878993241"><ph name="PERCENT" /> përqind të shkarkuara</translation>
 <translation id="7345061034321640811">Importimi nuk lejohet</translation>
+<translation id="7347998088283246662">Importo fjalëkalimet, historikun, faqeshënuesit etj.</translation>
 <translation id="7352651011704765696">Diçka shkoi keq</translation>
-<translation id="7363349185727752629">Udhëzues për zgjedhjet e tua të privatësisë</translation>
 <translation id="7364796246159120393">Zgjidh skedarin</translation>
 <translation id="736564850024123010">Ndërroje pozicionin e shiritit të adresave për një përvojë të personalizuar.</translation>
 <translation id="7366909168761621528">Të dhënat e shfletimit</translation>
@@ -1739,6 +1776,7 @@ Handoff duhet gjithashtu të jetë i aktivizuar në seksionin "Të përgjithshme
 <translation id="7522587739845660862">Informacionet rreth vendndodhjes sate</translation>
 <translation id="7522948500476882302">Kur shkarkon një skedar, zgjidh që ai të fshihet automatikisht pas 1 muaji</translation>
 <translation id="7524055474074101597">Qasu te fjalëkalimet e tua etj. nëpër aplikacione.</translation>
+<translation id="7525067979554623046">Krijo</translation>
 <translation id="75362970626182391">Grupi i ri i skedave</translation>
 <translation id="7537586195939242955">Na vjen keq, "Pass" nuk mund të instalohet te "Passbook" në këtë moment.</translation>
 <translation id="754655535278952384">Kontrolluar <ph name="TIME" /></translation>
@@ -1786,7 +1824,6 @@ Handoff duhet gjithashtu të jetë i aktivizuar në seksionin "Të përgjithshme
 <translation id="7696316012653762532">Opsionet për përkthimin e faqes</translation>
 <translation id="7700527812567437847">Kërko në ekran me "Lenten e Google"</translation>
 <translation id="7701040980221191251">Asnjë</translation>
-<translation id="7708668404222666001">U zbatuan preferencat e tua për faqen e skedës së re</translation>
 <translation id="7708994397325774423">Merr të gjitha fjalëkalimet e tua</translation>
 <translation id="7711440461521638739">Nuk je duke ripërdorur asnjë fjalëkalim</translation>
 <translation id="7712361583414030698">Po shikon versionin offline</translation>
@@ -1831,6 +1868,7 @@ Handoff duhet gjithashtu të jetë i aktivizuar në seksionin "Të përgjithshme
 <translation id="7853202427316060426">Aktiviteti</translation>
 <translation id="7854006015462979438">Hap "Të përgjithshme"</translation>
 <translation id="7855678267851972597">Audiot</translation>
+<translation id="7857520352710212030">Sajti u gozhdua</translation>
 <translation id="7859988229622350291">Mos përkthe asnjëherë</translation>
 <translation id="7863211248337747225">Merr aplikacionin</translation>
 <translation id="7865127013871431856">Opsionet e "Përkthe"</translation>
@@ -1839,7 +1877,6 @@ Handoff duhet gjithashtu të jetë i aktivizuar në seksionin "Të përgjithshme
 <translation id="7879275349003161544">Shfaq shkarkimet</translation>
 <translation id="7882689957034389473">Nxirr një fotografi</translation>
 <translation id="7883882164760409935">Ke fjalëkalime të ripërdorura.</translation>
-<translation id="7887174313503389866">Bëj një turne udhëzues për kontrollet kryesore të privatësisë dhe sigurisë. Për më shumë opsione, shko te cilësimet individuale.</translation>
 <translation id="7887198238286927132">Për të mbrojtur privatësinë tënde, Chrome nuk do ta plotësojë automatikisht këtë fushë.</translation>
 <translation id="7887552845761062935">Trokit dy herë dhe mbaj shtypur për të hapur më shumë opsione</translation>
 <translation id="7888562068293422208">Të mbyllen të gjitha?</translation>
@@ -1847,6 +1884,7 @@ Handoff duhet gjithashtu të jetë i aktivizuar në seksionin "Të përgjithshme
 <translation id="7899199123054742721">Shëno të gjitha si të palexuara</translation>
 <translation id="7911190106180361398">Organizata jote nuk të lejon të sinkronizosh gjithçka.</translation>
 <translation id="7918999344502274923">Fshih detajet për <ph name="SEARCH_ENGINE_NAME" /></translation>
+<translation id="7921559948846049514">Zgjidh një temë, ngjyrë ose më shumë për sfondin</translation>
 <translation id="792357691529995513">Nuk u gjet asnjë problem</translation>
 <translation id="7925108652071887026">Plotëso automatikisht të dhënat</translation>
 <translation id="7926975587469166629">Pseudonimi i kartës</translation>
@@ -1862,6 +1900,7 @@ Handoff duhet gjithashtu të jetë i aktivizuar në seksionin "Të përgjithshme
 <translation id="7958575506592576831">Informacionet e sigurisë së faqes</translation>
 <translation id="7961015016161918242">Asnjëherë</translation>
 <translation id="7971136598759319605">Aktiv 1 ditë më parë</translation>
+<translation id="7972837668077967426">Kanavaca</translation>
 <translation id="7975036700432177008">Provo</translation>
 <translation id="797588153137233716">Menyja → Historiku → Fshi të dhënat e shfletimit</translation>
 <translation id="7977451675950311423">Të paralajmëron nëse ti përdor një fjalëkalim që është komprometuar në një nxjerrje të paautorizuar të të dhënave.</translation>
@@ -1878,6 +1917,7 @@ Handoff duhet gjithashtu të jetë i aktivizuar në seksionin "Të përgjithshme
 <translation id="8005666035647241369">Te "Menaxheri i fjalëkalimeve të Google" në këtë pajisje</translation>
 <translation id="8010488806779226127">Eksploro veçoritë që mund të të ndihmojnë të bësh më shumë gjëra ndërsa shfleton</translation>
 <translation id="8011489434346330032">Web Inspector</translation>
+<translation id="8015826420689927262">Fshi bashkëngjitjen</translation>
 <translation id="8017015647846870183">Nga "Menaxheri i fjalëkalimeve i Google", duke përfshirë fjalëkalimet dhe çelësat e kalimit</translation>
 <translation id="802154636333426148">Shkarkimi dështoi</translation>
 <translation id="8023170444051056234">Do të humbasësh menjëherë qasjen te grupi i skedave "<ph name="GROUP_NAME" />" dhe ai do të fshihet nga të gjitha pajisjet e tua</translation>
@@ -1894,6 +1934,7 @@ Handoff duhet gjithashtu të jetë i aktivizuar në seksionin "Të përgjithshme
 <translation id="8059312861912872211">{count,plural, =1{{count} faqeshënues}other{{count} faqeshënues}}</translation>
 <translation id="8059533439631660104">Mbyll seksionin.</translation>
 <translation id="8061584726507121204">Historiku</translation>
+<translation id="8064946459644399612">U zbatuan preferencat e tua për faqen e "Skedës së re"</translation>
 <translation id="8069168488983557089">Merr pikat kryesore dhe statistikat që të ndihmojnë të kuptosh çdo temë</translation>
 <translation id="8069394452933076548">Zgjidh se kur zhvendosen te seksioni i skedave joaktive skedat që nuk janë përdorur së fundi.</translation>
 <translation id="8073670137947914548">Shkarkimi përfundoi</translation>
@@ -1924,6 +1965,7 @@ Handoff duhet gjithashtu të jetë i aktivizuar në seksionin "Të përgjithshme
 <translation id="8161614462829037225">Shkyç me <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /></translation>
 <translation id="8173034266693057059">Kohëzgjatja</translation>
 <translation id="8182037667962849780">{count,plural, =1{Për {website_1}}=2{Për {website_1}, {website_2}}=3{Për {website_1}, {website_2} dhe 1 tjetër}other{Për {website_1}, {website_2} dhe {more_count} të tjerë}}</translation>
+<translation id="8184895727539791845">Për të lejuar që Gemini të përdorë kamerën tënde, aktivizo "Kamerën" te cilësimet e iOS</translation>
 <translation id="8185076488803799132">Importo</translation>
 <translation id="8189615296021678665">Trokit te "Ruaj" për t'u qasur me lehtësi te ky fjalëkalim herën tjetër kur të identifikohesh.</translation>
 <translation id="8193953846147532858"><ph name="BEGIN_LINK" />Pajisjet e tua<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
@@ -1939,6 +1981,7 @@ Handoff duhet gjithashtu të jetë i aktivizuar në seksionin "Të përgjithshme
 <translation id="8221665793629393739">Alarmi yt rikujtues për t'u vizituar përsëri</translation>
 <translation id="8232956427053453090">Mbaj të dhënat</translation>
 <translation id="8233237502828137700">Mbyll promovimin në banderolë</translation>
+<translation id="823339794112333264">Aktivizo mikrofonin</translation>
 <translation id="8250920743982581267">Dokumentet</translation>
 <translation id="8258734532103758067">I kam eksportuar të dhënat e mia</translation>
 <translation id="8258999165172757081">U shtua</translation>
@@ -1965,6 +2008,7 @@ Handoff duhet gjithashtu të jetë i aktivizuar në seksionin "Të përgjithshme
 <translation id="8319282042900445670">Alarmi rikujtues u caktua për në <ph name="TIME" /> më <ph name="DATE" /></translation>
 <translation id="8320212361750431956">Aktiviteti i fundit</translation>
 <translation id="8325455175867928593">Fshih "Komentet bazohen në interesat e tu"</translation>
+<translation id="8328777765163860529">Mbylli të gjitha</translation>
 <translation id="833647236762414178">Krijo, ruaj dhe menaxho fjalëkalimet dhe çelësat e kalimit për t'u identifikuar me lehtësi në sajte dhe aplikacione. <ph name="BEGIN_LINK" />Mëso më shumë<ph name="END_LINK" /></translation>
 <translation id="8343993175958086504">Rezervo gjërat e tua dhe përdori në çdo pajisje.</translation>
 <translation id="8348530355586151720">Trokit te menyja me tri pika</translation>
@@ -1991,6 +2035,7 @@ Handoff duhet gjithashtu të jetë i aktivizuar në seksionin "Të përgjithshme
 <translation id="8428045167754449968">Qyteti / Qyteza</translation>
 <translation id="8428213095426709021">Cilësimet</translation>
 <translation id="8428634594422941299">E kuptova</translation>
+<translation id="8429455911440977338">Aktivizo kamerën</translation>
 <translation id="8434837876193928924">Detajet e grupit të skedave</translation>
 <translation id="8438566539970814960">Përmirëson kërkimet dhe shfletimin</translation>
 <translation id="8439758443371991593">Fshih "Shto te 'Lista e leximit'"</translation>
@@ -2043,7 +2088,7 @@ Handoff duhet gjithashtu të jetë i aktivizuar në seksionin "Të përgjithshme
 <translation id="8609743333007776886">Shto ${url} te faqeshënuesit</translation>
 <translation id="8611922158252451755">Çdo person që ka lidhjen mund të modifikojë të gjitha skedat, kështu që ndaje me kujdes. Lidhja skadon pas 48 orësh.</translation>
 <translation id="8614671330774943747">Shko te "Ndërruesi i skedave"</translation>
-<translation id="8620640915598389714">Redakto</translation>
+<translation id="862367213447108001">Shfaq gjithmonë dritaret kërcyese në këtë sajt</translation>
 <translation id="8625706492572042370">Modifiko ekranin bazë</translation>
 <translation id="8631370184731241854">Skedat "e fshehta" të kyçura</translation>
 <translation id="8633025649649592204">Aktiviteti i fundit</translation>
@@ -2117,6 +2162,7 @@ Handoff duhet gjithashtu të jetë i aktivizuar në seksionin "Të përgjithshme
 <translation id="8856643812068084733">Arkivat</translation>
 <translation id="8863067612494559785">Po dërgohet te pajisja <ph name="DEVICE_NAME" />…</translation>
 <translation id="8863431381414769983">Merr udhëzime dhe informacione lokale nga Google Maps</translation>
+<translation id="8867879594900082274">Modifikimet e tua do të zbatohen vetëm për sajtet e gozhduara në këtë pajisje.</translation>
 <translation id="8871974300055371298">Cilësimet e përmbajtjes</translation>
 <translation id="8877788021141246043">Cakto një alarm rikujtues</translation>
 <translation id="8879604564928138696">Trokit dy herë për të provuar</translation>
@@ -2140,6 +2186,7 @@ Handoff duhet gjithashtu të jetë i aktivizuar në seksionin "Të përgjithshme
 <translation id="8928426232677696166"><ph name="EMAIL" />, menaxhohet nga organizata jote, zgjedhur aktualisht. Zgjidh një llogari.</translation>
 <translation id="894191600409472540">Krijo fjalëkalime të forta</translation>
 <translation id="8943780400130412484">Të niset shkarkim i ri?</translation>
+<translation id="8947838125864566256">Çaktivizo mikrofonin</translation>
 <translation id="8953046091948372197">Këtu do të gjesh fjalëkalimet e tua</translation>
 <translation id="8953602327115378731">{count,plural, =1{{count} opsion për plotësimin automatik është i disponueshëm mbi tastierën tënde.}other{{count} opsione për plotësimin automatik janë të disponueshme mbi tastierën tënde.}}</translation>
 <translation id="895541991026785598">Raporto një problem</translation>
@@ -2197,6 +2244,7 @@ Handoff duhet gjithashtu të jetë i aktivizuar në seksionin "Të përgjithshme
 <translation id="914781932147356857">Shëno të gjitha…</translation>
 <translation id="9148126808321036104">Identifikohu sërish</translation>
 <translation id="9149866541089851383">Redakto...</translation>
+<translation id="9152637745605628097">Zgjidh nga temat, ngjyrat ose ngarko një imazh</translation>
 <translation id="9159628751968616911">Dërgo faqen e uebit</translation>
 <translation id="9162432979321511934">Aktivizo "Plotëso automatikisht fjalëkalimet"</translation>
 <translation id="9165320910061267720">Për të marrë njoftime me sinjalizime për ulje çmimi, do të duhet të aktivizosh njoftimet në cilësimet e iOS.</translation>
@@ -2230,6 +2278,8 @@ Handoff duhet gjithashtu të jetë i aktivizuar në seksionin "Të përgjithshme
 <translation id="956218893102219091">Përdor vendndodhjen e saktë për rezultatet më të sakta të Gemini, në vend të një vendndodhjeje të përafërt bazuar në adresën tënde IP. <ph name="BEGIN_LINK" />Mëso më shumë<ph name="END_LINK" /></translation>
 <translation id="961856697154696964">Fshi të dhënat e shfletimit</translation>
 <translation id="963102227019621224">Aktiviteti i uebit dhe i aplikacioneve</translation>
+<translation id="965259330007686240">Krijo një imazh me Gemini</translation>
+<translation id="965879457362663186">Shto bashkëngjitje</translation>
 <translation id="966593914872420832">Kërkimi me zë</translation>
 <translation id="972084300091883657">{COUNT,plural, =0{Bashkohu në grupin e skedave me <ph name="OWNER_NAME" />}=1{Bashkohu në grupin e skedave me <ph name="OWNER_NAME" /> dhe {COUNT} tjetër}other{Bashkohu në grupin e skedave me <ph name="OWNER_NAME" /> dhe {COUNT} të tjerë}}</translation>
 <translation id="973493300226275298">Monitoro çmimin e një produkti nëpër dyqanet online. Do të marrësh sinjalizime kur të ulet çmimi.</translation>

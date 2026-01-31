@@ -56,7 +56,7 @@ void TestMimeHandlerViewGuest::WaitForGuestAttached() {
 void TestMimeHandlerViewGuest::CreateInnerPage(
     std::unique_ptr<GuestViewBase> owned_this,
     scoped_refptr<content::SiteInstance> site_instance,
-    const base::Value::Dict& create_params,
+    const base::DictValue& create_params,
     GuestPageCreatedCallback callback) {
   // Delay the creation of the guest's WebContents if |delay_| is set.
   if (delay_) {
@@ -108,7 +108,7 @@ void TestMimeHandlerViewGuest::WaitForGuestLoadStartThenStop(
 void TestMimeHandlerViewGuest::CallBaseCreateInnerPage(
     std::unique_ptr<GuestViewBase> owned_this,
     scoped_refptr<content::SiteInstance> site_instance,
-    base::Value::Dict create_params,
+    base::DictValue create_params,
     GuestPageCreatedCallback callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   MimeHandlerViewGuest::CreateInnerPage(std::move(owned_this),

@@ -68,12 +68,15 @@
       ],
       "mirroring_builder_group_and_names": [
         {
+          "builder": "gpu-fyi-cq-mac-arm64",
+          "group": "tryserver.chromium.mac"
+        },
+        {
           "builder": "gpu-fyi-try-mac-arm64-apple-m2-retina-rel",
           "group": "tryserver.chromium.mac"
         }
       ],
-      "targets_spec_directory": "infra/config/generated/builders/ci/Mac FYI Retina Release (Apple M2)/targets",
-      "targets_spec_directory_relative_to_source_dir": true
+      "targets_spec_directory": "infra/config/generated/builders/ci/Mac FYI Retina Release (Apple M2)/targets"
     }
   },
   "$recipe_engine/resultdb/test_presentation": {

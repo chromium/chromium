@@ -6,7 +6,6 @@
 #include <string>
 
 #include "base/barrier_closure.h"
-#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -253,7 +252,7 @@ IN_PROC_BROWSER_TEST_F(DataSaverBrowserTest,
   prerender_helper()->AddPrerenderAsync(prerendering_url);
   observer.WaitForTrigger(prerendering_url);
 
-  content::FrameTreeNodeId host_id =
+  content::PrerenderHostId host_id =
       prerender_helper()->GetHostForUrl(prerendering_url);
   EXPECT_TRUE(host_id.is_null());
 
@@ -378,10 +377,10 @@ IN_PROC_BROWSER_TEST_P(DataSaverForWorkerBrowserTest,
       kWorkerScript, &header_map);
 
   if (IsEnabledDataSaver()) {
-    EXPECT_TRUE(base::Contains(header_map, "Save-Data"));
+    EXPECT_TRUE(header_map.contains("Save-Data"));
     EXPECT_EQ("on", header_map["Save-Data"]);
   } else {
-    EXPECT_FALSE(base::Contains(header_map, "Save-Data"));
+    EXPECT_FALSE(header_map.contains("Save-Data"));
   }
 
   // Wait until the worker script is loaded to stop the test from crashing
@@ -409,10 +408,10 @@ IN_PROC_BROWSER_TEST_P(DataSaverForWorkerBrowserTest, MAYBE_SharedWorker) {
                        kWorkerScript, &header_map);
 
   if (IsEnabledDataSaver()) {
-    EXPECT_TRUE(base::Contains(header_map, "Save-Data"));
+    EXPECT_TRUE(header_map.contains("Save-Data"));
     EXPECT_EQ("on", header_map["Save-Data"]);
   } else {
-    EXPECT_FALSE(base::Contains(header_map, "Save-Data"));
+    EXPECT_FALSE(header_map.contains("Save-Data"));
   }
 
   // Wait until the worker script is loaded to stop the test from crashing
@@ -441,10 +440,10 @@ IN_PROC_BROWSER_TEST_P(DataSaverForWorkerBrowserTest, ServiceWorker_Register) {
   loop.Run();
 
   if (IsEnabledDataSaver()) {
-    EXPECT_TRUE(base::Contains(header_map, "Save-Data"));
+    EXPECT_TRUE(header_map.contains("Save-Data"));
     EXPECT_EQ("on", header_map["Save-Data"]);
   } else {
-    EXPECT_FALSE(base::Contains(header_map, "Save-Data"));
+    EXPECT_FALSE(header_map.contains("Save-Data"));
   }
 
   // Service worker doesn't have to wait for onmessage event because
@@ -474,10 +473,10 @@ IN_PROC_BROWSER_TEST_P(DataSaverForWorkerBrowserTest, ServiceWorker_Update) {
   loop.Run();
 
   if (IsEnabledDataSaver()) {
-    EXPECT_TRUE(base::Contains(header_map, "Save-Data"));
+    EXPECT_TRUE(header_map.contains("Save-Data"));
     EXPECT_EQ("on", header_map["Save-Data"]);
   } else {
-    EXPECT_FALSE(base::Contains(header_map, "Save-Data"));
+    EXPECT_FALSE(header_map.contains("Save-Data"));
   }
 
   // Service worker doesn't have to wait for onmessage event because

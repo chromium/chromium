@@ -4,7 +4,8 @@
       "win",
       "linux",
       "mac",
-      "chromeos"
+      "chromeos",
+      "desktop_android"
     ],
     "policy_pref_mapping_tests": [
       {

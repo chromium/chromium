@@ -38,7 +38,8 @@ class VIZ_COMMON_EXPORT ExternalBeginFrameSourceMac
   ~ExternalBeginFrameSourceMac() override;
 
   // BeginFrameSource implementation.
-  void SetVSyncDisplayID(int64_t display_id) override;
+  void SetVSyncDisplayID(int64_t display_id, bool force_update) override;
+  void UpdateVSyncDisplay() override;
 
   // ExternalBeginFrameSourceClient implementation.
   void OnNeedsBeginFrames(bool needs_begin_frames) override;
@@ -87,8 +88,6 @@ class VIZ_COMMON_EXPORT ExternalBeginFrameSourceMac
   std::unique_ptr<ui::VSyncCallbackMac> vsync_callback_mac_;
 
   // The default interval is 60Hz.
-  base::TimeDelta nominal_refresh_period_ = BeginFrameArgs::DefaultInterval();
-
   base::TimeDelta preferred_interval_ = BeginFrameArgs::DefaultInterval();
 
   // Timer used to drive callbacks.
@@ -111,7 +110,7 @@ class VIZ_COMMON_EXPORT ExternalBeginFrameSourceMac
   bool hw_takes_any_refresh_rate_ = false;
 
   // Screen refresh interval caps.
-  base::TimeDelta min_refresh_interval_;
+  base::TimeDelta min_refresh_interval_ = BeginFrameArgs::DefaultInterval();
   base::TimeDelta max_refresh_interval_;
   base::TimeDelta granularity_;
 

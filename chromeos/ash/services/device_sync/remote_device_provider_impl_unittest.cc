@@ -8,7 +8,6 @@
 #include <vector>
 
 #include "ash/constants/ash_features.h"
-#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
@@ -316,8 +315,7 @@ class DeviceSyncRemoteDeviceProviderImplTest : public ::testing::Test {
     multidevice::RemoteDeviceList loaded_remote_devices;
     for (const multidevice::RemoteDevice& remote_device :
          GetV2RemoteDevices()) {
-      if (base::Contains(*loader->id_to_device_map(),
-                         remote_device.instance_id)) {
+      if (loader->id_to_device_map()->contains(remote_device.instance_id)) {
         loaded_remote_devices.push_back(remote_device);
       }
     }

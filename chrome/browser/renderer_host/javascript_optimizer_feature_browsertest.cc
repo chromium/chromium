@@ -75,9 +75,13 @@ class JavascriptOptimizerBrowserTest : public PlatformBrowserTest {
     return rfh->GetProcess()->AreV8OptimizationsDisabled();
   }
 
-  bool AreV8OptimizationsDisabledOnActiveWebContents() {
+  bool AreV8OptimizationsDisabled(content::WebContents* web_contents) {
     return AreV8OptimizationsDisabledForRenderFrame(
-        web_contents()->GetPrimaryMainFrame());
+        web_contents->GetPrimaryMainFrame());
+  }
+
+  bool AreV8OptimizationsDisabledOnActiveWebContents() {
+    return AreV8OptimizationsDisabled(web_contents());
   }
 };
 
@@ -864,13 +868,20 @@ class JavascriptOptimizerBrowserTest_UseSiteFamiliarityBase
     EXPECT_EQ(expected_verdict, verdict);
   }
 
-  void CheckUnfamiliarSite(bool expect_v8_optimizations_enabled) {
+  void NavigateToUnfamiliarSite(bool expect_v8_optimizations_enabled) {
     const GURL kTestUrl =
         embedded_https_test_server().GetURL("a.com", "/simple.html");
-    ASSERT_TRUE(content::NavigateToURL(web_contents(), kTestUrl));
+    NavigateToUnfamiliarUrl(web_contents(), kTestUrl,
+                            expect_v8_optimizations_enabled);
+  }
+
+  void NavigateToUnfamiliarUrl(content::WebContents* web_contents,
+                               const GURL& url,
+                               bool expect_v8_optimizations_enabled) {
+    ASSERT_TRUE(content::NavigateToURL(web_contents, url));
     EXPECT_EQ(!expect_v8_optimizations_enabled,
-              AreV8OptimizationsDisabledOnActiveWebContents());
-    CheckSiteFamiliarity(kTestUrl, FamiliarityVerdict::kUnfamiliar);
+              AreV8OptimizationsDisabled(web_contents));
+    CheckSiteFamiliarity(url, FamiliarityVerdict::kUnfamiliar);
   }
 
   void MarkAsFamiliar(const GURL& url) {
@@ -905,6 +916,27 @@ class JavascriptOptimizerBrowserTest_UseSiteFamiliarity
   bool ShouldEnableSiteFamiliarityFeature() override { return true; }
 };
 
+class JavascriptOptimizerParamBrowserTest
+    : public JavascriptOptimizerBrowserTest_UseSiteFamiliarity,
+      public testing::WithParamInterface<bool> {
+ public:
+  JavascriptOptimizerParamBrowserTest() = default;
+  ~JavascriptOptimizerParamBrowserTest() override = default;
+
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    JavascriptOptimizerBrowserTest_UseSiteFamiliarity::SetUpCommandLine(
+        command_line);
+    if (GetParam()) {
+      feature_list_.InitAndEnableFeature(features::kStrictOriginIsolation);
+    } else {
+      feature_list_.InitAndDisableFeature(features::kStrictOriginIsolation);
+    }
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
 IN_PROC_BROWSER_TEST_F(JavascriptOptimizerBrowserTest_UseSiteFamiliarity,
                        ExpectOptimizationEnabledFamiliarSite) {
   const GURL kTestUrl =
@@ -916,11 +948,33 @@ IN_PROC_BROWSER_TEST_F(JavascriptOptimizerBrowserTest_UseSiteFamiliarity,
 
 IN_PROC_BROWSER_TEST_F(JavascriptOptimizerBrowserTest_UseSiteFamiliarity,
                        ExpectOptimizationDisabledForUnfamiliarSite) {
-  const GURL kTestUrl =
-      embedded_https_test_server().GetURL("a.com", "/simple.html");
-  ASSERT_TRUE(content::NavigateToURL(web_contents(), kTestUrl));
-  CheckUnfamiliarSite(/*expect_v8_optimizations_enabled=*/false);
+  NavigateToUnfamiliarSite(/*expect_v8_optimizations_enabled=*/false);
 }
+
+IN_PROC_BROWSER_TEST_P(JavascriptOptimizerParamBrowserTest,
+                       ExpectOptimizationCanBeEnabledForUnfamiliarOrigin) {
+  const GURL kTestUrl =
+      embedded_https_test_server().GetURL("www.a.com", "/simple.html");
+
+  NavigateToUnfamiliarUrl(web_contents(), kTestUrl,
+                          /*expect_v8_optimizations_enabled=*/false);
+  site_protection::EnableV8Optimizations(web_contents());
+
+  // The content-setting-exception takes effect in a new browsing instance.
+  std::unique_ptr<content::WebContents> new_web_contents =
+      content::WebContents::Create(
+          content::WebContents::CreateParams(profile()));
+  NavigateToUnfamiliarUrl(new_web_contents.get(), kTestUrl,
+                          /*expect_v8_optimizations_enabled=*/true);
+}
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         JavascriptOptimizerParamBrowserTest,
+                         ::testing::Bool(),
+                         [](const testing::TestParamInfo<bool>& info) {
+                           return info.param ? "WithStrictOriginIsolation"
+                                             : "WithoutStrictOriginIsolation";
+                         });
 
 // Test that if there is a content-setting-exception to enable v8-optimizers
 // for a specific site but the site is unfamiliar due to the heuristic that
@@ -1082,10 +1136,7 @@ class JavascriptOptimizerBrowserTest_UseSiteFamiliarity_DisableSiteIsolation
 IN_PROC_BROWSER_TEST_F(
     JavascriptOptimizerBrowserTest_UseSiteFamiliarity_DisableSiteIsolation,
     ExpectIgnoreFamiliarityWhenSiteIsolationDisabled) {
-  const GURL kTestUrl =
-      embedded_https_test_server().GetURL("a.com", "/simple.html");
-  ASSERT_TRUE(content::NavigateToURL(web_contents(), kTestUrl));
-  CheckUnfamiliarSite(/*expect_v8_optimizations_enabled=*/true);
+  NavigateToUnfamiliarSite(/*expect_v8_optimizations_enabled=*/true);
   EXPECT_FALSE(AreV8OptimizationsDisabledOnActiveWebContents());
 }
 
@@ -1106,7 +1157,7 @@ IN_PROC_BROWSER_TEST_F(JavascriptOptimizerBrowserTest_DoNotUseSiteFamiliarity,
   auto* map = HostContentSettingsMapFactory::GetForProfile(profile());
   map->SetDefaultContentSetting(ContentSettingsType::JAVASCRIPT_OPTIMIZER,
                                 ContentSetting::CONTENT_SETTING_ALLOW);
-  CheckUnfamiliarSite(/*expect_v8_optimizations_enabled=*/true);
+  NavigateToUnfamiliarSite(/*expect_v8_optimizations_enabled=*/true);
 }
 
 IN_PROC_BROWSER_TEST_F(JavascriptOptimizerBrowserTest_DoNotUseSiteFamiliarity,
@@ -1114,7 +1165,7 @@ IN_PROC_BROWSER_TEST_F(JavascriptOptimizerBrowserTest_DoNotUseSiteFamiliarity,
   auto* map = HostContentSettingsMapFactory::GetForProfile(profile());
   map->SetDefaultContentSetting(ContentSettingsType::JAVASCRIPT_OPTIMIZER,
                                 ContentSetting::CONTENT_SETTING_BLOCK);
-  CheckUnfamiliarSite(/*expect_v8_optimizations_enabled=*/false);
+  NavigateToUnfamiliarSite(/*expect_v8_optimizations_enabled=*/false);
 }
 
 #if !BUILDFLAG(IS_ANDROID)
@@ -1261,7 +1312,16 @@ IN_PROC_BROWSER_TEST_F(
 }
 
 class JavascriptOptimizerOmnibarIconBrowserTest_WithoutFlag
-    : public JavascriptOptimizerOmnibarIconBrowserTest {};
+    : public JavascriptOptimizerOmnibarIconBrowserTest {
+ public:
+  JavascriptOptimizerOmnibarIconBrowserTest_WithoutFlag() {
+    feature_list_.InitAndDisableFeature(
+        content_settings::features::kBlockV8OptimizerOnUnfamiliarSitesSetting);
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
 
 IN_PROC_BROWSER_TEST_F(JavascriptOptimizerOmnibarIconBrowserTest_WithoutFlag,
                        IconDoesNotShowWhenFlagNotEnabled) {

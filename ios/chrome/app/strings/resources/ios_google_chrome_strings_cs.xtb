@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="cs">
 <translation id="1076643793026027628">Odkazy z YouTube v anonymním režimu otevírá Chrome automaticky v anonymních oknech.</translation>
+<translation id="1081114897601629648">Následující hesla se do Správce hesel Google neimportovala, protože neodpovídají požadavkům.</translation>
 <translation id="1086486568852410168">Vyhledat pomocí Google Lens</translation>
 <translation id="1088490543924960890">Začněte si ukládat přístupové klíče pomocí Správce hesel Google</translation>
 <translation id="1143896152279775643">Heslo bude uloženo do Správce hesel Google pro účet <ph name="EMAIL" />.</translation>
@@ -85,6 +86,9 @@ Zkuste s odhlášením několik minut počkat. Pokud se teď odhlásíte, tato 
 <translation id="2767464022270041271">Nemáte žádná uložená hesla. Správce hesel Google může hesla zkontrolovat, pouze když si je uložíte.</translation>
 <translation id="2788811701191021538">Otevře stránku nastavení platebních metod v prohlížeči Chrome.</translation>
 <translation id="2876628302275096482"><ph name="BEGIN_LINK" />Další informace o tom, jak Chrome uchovává vaše data v soukromí<ph name="END_LINK" /></translation>
+<translation id="288992067439702510">V Google Chrome jste dosáhli limitu <ph name="LIMIT" /> záložek. Některé záložky se vám proto zatím neuložily do účtu Google.
+
+Nové záložky nebude možné do účtu uložit, dokud některé nesmažete. Pokud se teď odhlásíte, neuložené záložky se smažou.</translation>
 <translation id="2922914028977213693">Pokud chcete Chrome na iPadu využít na maximum, klepněte sem.</translation>
 <translation id="292371311537977079">Nastavení Chromu</translation>
 <translation id="2923827943290349720">Při zavření Chromu zamknout anonymní karty</translation>
@@ -115,6 +119,7 @@ Zkuste s odhlášením několik minut počkat. Pokud se teď odhlásíte, tato 
 <translation id="3460369101684070455">Pokud chcete mít uložená hesla snadno k dispozici v jiných aplikacích, vyberte Chrome pro automatické vyplňování</translation>
 <translation id="3472587960215700950">Chrome používá Mapy Google k poskytování tras a místních informací o zjištěných adresách.</translation>
 <translation id="3482807551645716768">Otevírejte Chrome rychleji z plochy iPadu</translation>
+<translation id="3491067552520121605">Pro zobrazené weby už ve Správci hesel Google hesla nebo přístupové klíče máte. Pokud chcete zobrazené přihlašovací údaje zachovat a přepsat jimi údaje ve Správci hesel Google, vyberte účet.</translation>
 <translation id="3503014945441706099">Zapněte pro tento profil prohlížeče Chrome také Vylepšené Bezpečné prohlížení</translation>
 <translation id="3522659714780527202">Chcete-li mít své karty k dispozici všude, kde používáte Chrome, zapněte synchronizaci</translation>
 <translation id="364480321352456989">Váš Chrome je zastaralý.</translation>
@@ -134,6 +139,7 @@ Zkuste s odhlášením několik minut počkat. Pokud se teď odhlásíte, tato 
 <translation id="4167555379306984168">Podívejte se, co je v Chromu nového</translation>
 <translation id="417201473131094001">V Chrome Canary není podporováno</translation>
 <translation id="424864128008805179">Odhlásit se z Chromu?</translation>
+<translation id="4409545895715116037">Následující přístupové klíče se do Správce hesel Google neimportovaly, protože neodpovídají požadavkům.</translation>
 <translation id="4430797724889237570">Otevírejte odkazy z Gmailu, Map, YouTube a dalších aplikací v Chromu</translation>
 <translation id="447252321002412580">Pomoci s vylepšováním funkcí a výkonu prohlížeče Chrome</translation>
 <translation id="4523886039239821078">Některé doplňky způsobují selhání prohlížeče Chrome. Prosím odinstalujte:</translation>
@@ -272,6 +278,7 @@ Další nastavení využití dat ke zlepšení prostředí v prohlížeči Chro
 <translation id="7284245284340063465">Pokud heslovou frázi zapomenete nebo toto nastavení budete chtít změnit, <ph name="BEGIN_LINK" />vymažte data prohlížeče Chrome ve svém účtu<ph name="END_LINK" />.</translation>
 <translation id="7296102444587051536">Chrome pro iOS</translation>
 <translation id="7299681342915173313">Teď můžete Chrome použít pokaždé, když klepnete na odkazy v e‑mailech, dokumentech a jiných aplikacích.</translation>
+<translation id="7334364820047587268">Hesla pro tyto účty už ve Správci hesel Google máte. Pokud importujete některá z níže uvedených hesel, nahradí ta stávající.</translation>
 <translation id="7344094882820374540">Získejte nejsilnější zabezpečení Chromu před nebezpečnými weby</translation>
 <translation id="7349129508108954623">Povolte Chromu používat Mapy Google k poskytování tras a místních informací o zjištěných adresách.</translation>
 <translation id="7371674917547846460">Sledujte užitečné tipy pro Chrome a další informace.</translation>
@@ -300,11 +307,11 @@ Další nastavení využití dat ke zlepšení prostředí v prohlížeči Chro
 <translation id="7787205077729386167">V systému iOS otevřete Nastavení Chromu, klepněte na Výchozí prohlížeč a vyberte Chrome.</translation>
 <translation id="778855399387580014">Spustit vyhledávání na nové kartě Chromu.</translation>
 <translation id="7792140019572081272">Chrome chrání vaše citlivá data pomocí Face ID.</translation>
+<translation id="7825648984449922731">Úprava obrázku pomocí Gemini v Chromu</translation>
 <translation id="7855730255114109580">Google Chrome je aktuální</translation>
 <translation id="787226752901403048">Přihlaste se do Chromu, abyste mohli sdílet skupiny karet, připojovat se k nim a spolupracovat na různých nápadech</translation>
 <translation id="7897703007638178753">Zobrazit nedávno použité karty prohlížeče Chrome</translation>
 <translation id="7948283758957877064">Novinky v Chromu</translation>
-<translation id="7996707498590516621">Vytvoření obrázku pomocí Gemini v Chromu</translation>
 <translation id="8000174216052461231">Tip pro Chrome: Získejte nejsilnější zabezpečení Chromu</translation>
 <translation id="8006014511203279255">Používejte Chrome, kdykoli klepnete na odkazy ve zprávách a jiných aplikacích.</translation>
 <translation id="8014670471808569312">Chrome vám nabídne uložení hesla.</translation>

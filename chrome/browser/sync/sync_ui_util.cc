@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "base/feature_list.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "chrome/browser/profiles/profile.h"
@@ -69,6 +70,9 @@ void OpenTabForSyncTrustedVaultUserAction(
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 }  // namespace
+
+const char kBookmarksLimitExceededHelpCenter[] =
+    "https://support.google.com/chrome?p=manage_bookmarks_desktop";
 
 #if !BUILDFLAG(IS_ANDROID)
 SyncStatusLabels GetSyncStatusLabelsForSettings(
@@ -347,5 +351,18 @@ void OpenTabForSyncKeyRecoverabilityDegraded(
     url = net::AppendQueryParameter(url, "continue", continue_url.spec());
   }
   OpenTabForSyncTrustedVaultUserAction(browser, url, std::nullopt);
+}
+
+void ShowBookmarksLimitExceededHelp(
+    Browser* browser,
+    syncer::SyncService* sync_service,
+    syncer::SyncService::BookmarksLimitExceededHelpClickedSource source) {
+  CHECK(browser);
+  CHECK(sync_service);
+  sync_service->AcknowledgeBookmarksLimitExceededError(source);
+  NavigateParams params(browser, GURL(kBookmarksLimitExceededHelpCenter),
+                        ui::PAGE_TRANSITION_AUTO_BOOKMARK);
+  params.disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
+  Navigate(&params);
 }
 #endif  // !BUILDFLAG(IS_ANDROID)

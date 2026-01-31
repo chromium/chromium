@@ -21,11 +21,6 @@ bool IsJavaDrivenFeatureEnabled(const base::Feature& feature) {
   return Java_ChromeCachedFlags_isEnabled(env, feature.name);
 }
 
-bool IsInitFeatureListEarlyFeatureParamEnabled() {
-  JNIEnv* env = jni_zero::AttachCurrentThread();
-  return Java_ChromeCachedFlags_isInitFeatureListEarlyFeatureParamEnabled(env);
-}
-
 }  // namespace chrome::android
 
 DEFINE_JNI(ChromeCachedFlags)

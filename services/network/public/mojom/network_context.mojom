@@ -25,6 +25,7 @@ import "services/network/public/mojom/cookie_setting_overrides.mojom";
 import "services/network/public/mojom/cors_origin_pattern.mojom";
 import "services/network/public/mojom/cross_origin_embedder_policy.mojom";
 import "services/network/public/mojom/ct_policy.mojom";
+import "services/network/public/mojom/originating_process.mojom";
 import "services/network/public/mojom/default_credentials.mojom";
 import "services/network/public/mojom/device_bound_sessions.mojom";
 import "services/network/public/mojom/devtools_observer.mojom";
@@ -55,6 +56,7 @@ import "services/network/public/mojom/proxy_resolving_socket.mojom";
 import "services/network/public/mojom/reporting_service.mojom";
 import "services/network/public/mojom/restricted_cookie_manager.mojom";
 import "services/network/public/mojom/restricted_udp_socket.mojom";
+import "services/network/public/mojom/schemeful_site.mojom";
 import "services/network/public/mojom/shared_dictionary_access_observer.mojom";
 import "services/network/public/mojom/shared_dictionary_isolation_key.mojom";
 import "services/network/public/mojom/shared_dictionary_usage_info.mojom";
@@ -170,7 +172,8 @@ interface TrustedHeaderClient {
   // used. If |preserve_fragment_on_redirect_url| is populated, and the
   // request is redirected to exactly that URL, then the fragment of the
   // original URL will not be copied to the redirect target URL.
-  OnHeadersReceived(string headers, IPEndPoint remote_endpoint, SSLInfo? ssl_info)
+  OnHeadersReceived(
+      string headers, IPEndPoint remote_endpoint, SSLInfo? ssl_info)
       => (int32 result,
           string? headers,
           url.mojom.Url? preserve_fragment_on_redirect_url);
@@ -388,9 +391,6 @@ struct NetworkContextParams {
   [EnableIf=is_android]
   bool check_clear_text_permitted = false;
 
-  // If true, idle sockets won't be closed when memory pressure happens.
-  bool disable_idle_sockets_close_on_memory_pressure = false;
-
   // SSL configuration. |initial_proxy_config| is the initial SSL configuration
   // to use. If nullptr, uses the default configuration. Updated SSL
   // configurations can be passed in via |ssl_config_client_receiver|.
@@ -573,6 +573,12 @@ struct NetworkContextParams {
   // Enables Device Bound Session Credential for this network context.
   bool device_bound_sessions_enabled = false;
 
+  // List of sites that are restricted from starting Device Bound
+  // Session Credential sessions unless
+  // `kDeviceBoundSessionsForRestrictedSites` is enabled. This is temporary
+  // while DBSC is still being rolled out.
+  array<SchemefulSite> device_bound_sessions_restricted_sites;
+
   // Represents a net::handles::NetworkHandle.
   // If != net::handles::kInvalidNetworkHandle (== -1), then the NetworkContext
   // built out of this will own a URLRequestContext bound to that network (refer
@@ -581,10 +587,6 @@ struct NetworkContextParams {
   // created out of this, will perform all network request using only
   // |bound_network|.
   int64 bound_network = -1;
-
-  // Stores mapping of endpoint name to endpoint url from initial reporting
-  // endpoints set by the ReportingEndpoints enterprise policy.
-  map<string, url.mojom.Url>? enterprise_reporting_endpoints;
 
   // Enables usage of net::dns::StaleHostResolver. This is only available
   // as opt-in in Android. This will be used during constructing
@@ -764,16 +766,16 @@ struct URLLoaderFactoryParams {
   // since only the Browser process should be able to call
   // NetworkContext::CreateURLLoaderFactory.)
   //
-  // Set to kBrowserProcessId to indicate the browser process.
-  // SECURITY NOTE: Factories with kBrowserProcessId should not be sent
-  // to untrustworthy processes.
+  // Set to `network.mojom.BrowserProcess` to indicate the browser process.
+  // SECURITY NOTE: Factories with `network.mojom.BrowserProcess` should not be
+  // sent to untrustworthy processes.
   //
-  // Set to RenderProcessHost::GetDeprecatedID() to indicate a renderer
-  // process.
+  // Set to `network.mojom.RendererProcess` with `process_id` set to
+  // RenderProcessHost::GetID() to indicate a renderer process.
   // SECURITY NOTE: Factories should not be shared among multiple renderer
   // processes (e.g. |request_initiator_origin_lock| is specific to a single
   // renderer process).
-  int32 process_id = kInvalidProcessId;
+  network.mojom.OriginatingProcess process_id;
 
   // If specified, then |request_initiator_origin_lock| locks
   // |ResourceRequest::request_initiator| to the specified origin.
@@ -1198,12 +1200,6 @@ interface NetworkContext {
       url.mojom.Origin origin,
       IsolationInfo isolation_info,
       map<string, string> endpoints);
-
-  // Configures reporting endpoints set by the ReportingEndpoints enterprise
-  // policy.
-  // `endpoints` is a mapping of endpoint name to URL (URLs will be rejected if
-  // they fail to parse or are not secure).
-  SetEnterpriseReportingEndpoints(map<string, url.mojom.Url> endpoints);
 
   // Queues any outstanding reports for a single |reporting_source| (which
   // must not be empty), and removes the reporting endpoint configuration for

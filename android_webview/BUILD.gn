@@ -649,6 +649,7 @@ if (_is_default_toolchain) {
       "//components/embedder_support/android:util_java",
       "//components/embedder_support/android:web_contents_delegate_java",
       "//components/embedder_support/android:web_contents_delegate_java_resources",
+      "//components/js_injection/common:enum_mojom_java",
       "//components/minidump_uploader:minidump_uploader_java",
       "//components/navigation_interception/android:navigation_interception_java",
       "//components/origin_matcher/android:java",
@@ -1371,13 +1372,12 @@ if (_is_default_toolchain && enable_resource_allowlist_generation) {
 }
 
 # These are the definitions for the WebView's alternate-ABI libraries, which are
-# used by Monochrome and Trichrome on 64-bit devices which support both 32 and
-# 64-bit ABIs. WebView's browser process must use the same ABI as the embedding
-# app (renderer processes used the ABI defined in the WebView APK manifest),
-# which requires us to have two copies of the library available, one for each
-# ABI.  The primary library is the one shared with Chrome, and the alternate is
-# a WebView-specific library defined here for whichever ABI isn't used by
-# Chrome.
+# used by Trichrome on 64-bit devices which support both 32 and 64-bit ABIs.
+# WebView's browser process must use the same ABI as the embedding app (renderer
+# processes used the ABI defined in the WebView APK manifest), which requires us
+# to have two copies of the library available, one for each ABI.  The primary
+# library is the one shared with Chrome, and the alternate is a WebView-specific
+# library defined here for whichever ABI isn't used by Chrome.
 #
 # Note that this library does also include code needed for the embedded usecase,
 # because even though it's not used in normal circumstances, it is required on

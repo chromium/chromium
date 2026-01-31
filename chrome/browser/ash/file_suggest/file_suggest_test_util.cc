@@ -31,22 +31,22 @@ std::string CreateItemSuggestUpdateJsonString(
   //     }
   //   }
 
-  base::Value::List list_value;
+  base::ListValue list_value;
   for (const auto& data : item_data_array) {
-    base::Value::Dict dict_value;
+    base::DictValue dict_value;
     dict_value.Set("itemId", data.item_id);
     dict_value.Set("displayText", data.display_text);
 
-    base::Value::Dict text;
+    base::DictValue text;
     text.Set("text", data.prediction_reason);
 
-    base::Value::List text_segment;
+    base::ListValue text_segment;
     text_segment.Append(std::move(text));
 
-    base::Value::Dict unstructured_description;
+    base::DictValue unstructured_description;
     unstructured_description.Set("textSegment", std::move(text_segment));
 
-    base::Value::Dict justification;
+    base::DictValue justification;
     justification.Set("unstructuredJustificationDescription",
                       std::move(unstructured_description));
 
@@ -55,7 +55,7 @@ std::string CreateItemSuggestUpdateJsonString(
     list_value.Append(std::move(dict_value));
   }
 
-  base::Value::Dict suggest_item_update;
+  base::DictValue suggest_item_update;
   suggest_item_update.Set("item", std::move(list_value));
   suggest_item_update.Set("suggestionSessionId", session_id);
 

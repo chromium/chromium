@@ -30,7 +30,7 @@ constexpr size_t kMaxCacheSize = 20u;
 
 // Parses |value| into a map of NetworkIDs and CachedNetworkQualities,
 // and returns the map.
-ParsedPrefs ConvertDictionaryValueToMap(const base::Value::Dict& value) {
+ParsedPrefs ConvertDictionaryValueToMap(const base::DictValue& value) {
   DCHECK_GE(kMaxCacheSize, value.size());
 
   ParsedPrefs read_prefs;
@@ -128,7 +128,7 @@ void NetworkQualitiesPrefsManager::OnChangeInCachedNetworkQuality(
     // Generate a random number in the range [0, |kMaxCacheSize| - 1] since the
     // number of network IDs in |prefs_| other than |network_id| is
     // |kMaxCacheSize|.
-    int index_to_delete = base::RandInt(0, kMaxCacheSize - 1);
+    int index_to_delete = base::RandIntInclusive(0, kMaxCacheSize - 1);
 
     for (auto it : prefs_) {
       // Delete the kth element in the dictionary, not including the element
@@ -151,7 +151,7 @@ void NetworkQualitiesPrefsManager::OnChangeInCachedNetworkQuality(
 
 ParsedPrefs NetworkQualitiesPrefsManager::ForceReadPrefsForTesting() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  base::Value::Dict value = pref_delegate_->GetDictionaryValue();
+  base::DictValue value = pref_delegate_->GetDictionaryValue();
   return ConvertDictionaryValueToMap(value);
 }
 

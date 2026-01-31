@@ -8,7 +8,6 @@
 #include <cstring>
 #include <memory>
 
-#include "base/containers/contains.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/time/clock.h"
@@ -113,8 +112,8 @@ std::string BackgroundEidGenerator::IdentifyRemoteDeviceByAdvertisement(
       [this, &service_data_without_flags](const auto& remote_device) {
         std::vector<DataWithTimestamp> eids = GenerateNearestEids(
             multidevice::ToCryptAuthSeedList(remote_device.beacon_seeds()));
-        bool success = base::Contains(eids, service_data_without_flags,
-                                      &DataWithTimestamp::data);
+        bool success = std::ranges::contains(eids, service_data_without_flags,
+                                             &DataWithTimestamp::data);
         std::stringstream ss;
         ss << "BackgroundEidGenerator::IdentifyRemoteDeviceByAdvertisement: "
            << (success ? "Identified " : "Failed to identify ")

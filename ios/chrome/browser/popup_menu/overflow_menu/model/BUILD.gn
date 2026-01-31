@@ -1,0 +1,30 @@
+source_set("model") {
+  sources = [
+    "destination_usage_history.h",
+    "destination_usage_history.mm",
+  ]
+  frameworks = [ "Foundation.framework" ]
+  deps = [
+    "//base",
+    "//components/prefs",
+    "//ios/chrome/browser/popup_menu/overflow_menu/public",
+    "//ios/chrome/browser/popup_menu/overflow_menu/public:overflow_menu_constants",
+    "//ios/chrome/browser/shared/model/prefs:pref_names",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "destination_usage_history_unittest.mm" ]
+  deps = [
+    ":model",
+    "//base",
+    "//components/prefs",
+    "//components/prefs:test_support",
+    "//ios/chrome/browser/popup_menu/overflow_menu/public",
+    "//ios/chrome/browser/popup_menu/overflow_menu/public:overflow_menu_constants",
+    "//ios/chrome/browser/shared/model/prefs:pref_names",
+    "//ios/chrome/browser/shared/ui/symbols",
+    "//testing/gtest",
+  ]
+}

@@ -500,7 +500,7 @@ TEST_F(GcpReauthCredentialGlsRunnerTest, UserGaiaIdMismatch) {
   const GaiaId unexpected_gaia_id("unexpected-gaia-id");
 
   // Create an signin result with the unexpected gaia id.
-  base::Value::Dict unexpected_full_result =
+  base::DictValue unexpected_full_result =
       test_data_storage.expected_full_result().Clone();
   unexpected_full_result.Set(kKeyId,
                              base::Value(unexpected_gaia_id.ToString()));

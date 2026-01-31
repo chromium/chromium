@@ -158,7 +158,6 @@ void OffscreenCanvas::SetSize(gfx::Size size) {
   }
 
   size_ = size;
-  UpdateMemoryUsage();
   current_frame_damage_rect_ = SkIRect::MakeWH(Size().width(), Size().height());
 
   if (context_ && context_->isContextLost()) {
@@ -224,9 +223,6 @@ ImageBitmap* OffscreenCanvas::transferToImageBitmap(
                                       "ImageBitmap construction failed");
   }
 
-  if (!RuntimeEnabledFeatures::CanvasTextSwitchFrameOnFinalizeEnabled()) {
-    NotifyCachesOfSwitchingFrame();
-  }
   return image;
 }
 
@@ -263,10 +259,6 @@ scoped_refptr<Image> OffscreenCanvas::GetSourceImageForCanvas(
   }
   *status = image ? kNormalSourceImageStatus : kInvalidSourceImageStatus;
 
-  if (RuntimeEnabledFeatures::CanvasTextTexImage2DFixEnabled() &&
-      !RuntimeEnabledFeatures::CanvasTextSwitchFrameOnFinalizeEnabled()) {
-    NotifyCachesOfSwitchingFrame();
-  }
   return image;
 }
 
@@ -519,9 +511,6 @@ bool OffscreenCanvas::PushFrame(scoped_refptr<CanvasResource>&& canvas_resource,
       std::move(canvas_resource), current_frame_damage_rect_, IsOpaque());
   current_frame_damage_rect_ = SkIRect::MakeEmpty();
 
-  if (!RuntimeEnabledFeatures::CanvasTextSwitchFrameOnFinalizeEnabled()) {
-    NotifyCachesOfSwitchingFrame();
-  }
   return true;
 }
 

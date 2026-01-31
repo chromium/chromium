@@ -15,7 +15,6 @@
 #include "android_webview/nonembedded/component_updater/aw_component_updater_configurator.h"
 #include "base/android/path_utils.h"
 #include "base/command_line.h"
-#include "base/containers/contains.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/functional/callback.h"
@@ -189,10 +188,10 @@ class FakeCrxNetworkFetcher : public update_client::NetworkFetcher {
         .Run(/* responseCode= */ 200, /* content_size= */ 0);
     std::string response_body;
     int network_error = 0;
-    if (base::Contains(post_data, "updatecheck")) {
+    if (post_data.contains("updatecheck")) {
       ASSERT_TRUE(base::ReadFileToString(
           GetTestFile("fake_component_update_response.json"), &response_body));
-    } else if (base::Contains(post_data, "eventtype")) {
+    } else if (post_data.contains("eventtype")) {
       ASSERT_TRUE(base::ReadFileToString(
           GetTestFile("fake_component_ping_response.json"), &response_body));
     } else {  // error post request not a ping nor update.
@@ -280,7 +279,7 @@ class MockInstallerPolicy : public component_updater::ComponentInstallerPolicy {
   bool RequiresNetworkEncryption() const override { return false; }
 
   update_client::CrxInstaller::Result OnCustomInstall(
-      const base::Value::Dict& manifest,
+      const base::DictValue& manifest,
       const base::FilePath& install_dir) override {
     return update_client::CrxInstaller::Result(0);
   }
@@ -289,13 +288,13 @@ class MockInstallerPolicy : public component_updater::ComponentInstallerPolicy {
 
   void ComponentReady(const base::Version& version,
                       const base::FilePath& install_dir,
-                      base::Value::Dict manifest) override {
+                      base::DictValue manifest) override {
     version_ = version;
     install_dir_ = install_dir;
     manifest_ = std::move(manifest);
   }
 
-  bool VerifyInstallation(const base::Value::Dict& manifest,
+  bool VerifyInstallation(const base::DictValue& manifest,
                           const base::FilePath& install_dir) const override {
     return true;
   }
@@ -315,12 +314,12 @@ class MockInstallerPolicy : public component_updater::ComponentInstallerPolicy {
   }
 
   bool IsComponentReadyInvoked() { return !!manifest_; }
-  base::Value::Dict& GetManifest() { return *manifest_; }
+  base::DictValue& GetManifest() { return *manifest_; }
   base::FilePath GetInstallDir() const { return install_dir_; }
   base::Version GetVersion() const { return version_; }
 
  private:
-  std::optional<base::Value::Dict> manifest_;
+  std::optional<base::DictValue> manifest_;
   base::FilePath install_dir_;
   base::Version version_;
 };

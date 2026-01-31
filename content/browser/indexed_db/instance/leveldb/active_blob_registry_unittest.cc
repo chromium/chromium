@@ -9,7 +9,6 @@
 #include <memory>
 #include <set>
 
-#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/test/task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -147,7 +146,7 @@ TEST_F(ActiveBlobRegistryTest, DeleteWhileInUse) {
   EXPECT_EQ(1, report_outstanding_state_.false_calls);
   UnusedBlob unused_blob = {kDatabaseId0, kBlobNumber0};
   EXPECT_EQ(1u, unused_blobs_.size());
-  EXPECT_TRUE(base::Contains(unused_blobs_, unused_blob));
+  EXPECT_TRUE(unused_blobs_.contains(unused_blob));
 }
 
 TEST_F(ActiveBlobRegistryTest, MultipleBlobs) {
@@ -203,7 +202,7 @@ TEST_F(ActiveBlobRegistryTest, MultipleBlobs) {
   EXPECT_EQ(1, report_outstanding_state_.true_calls);
   EXPECT_EQ(0, report_outstanding_state_.false_calls);
   UnusedBlob unused_blob = {kDatabaseId0, kBlobNumber1};
-  EXPECT_TRUE(base::Contains(unused_blobs_, unused_blob));
+  EXPECT_TRUE(unused_blobs_.contains(unused_blob));
   EXPECT_EQ(1u, unused_blobs_.size());
 
   std::move(release_10).Run();
@@ -212,7 +211,7 @@ TEST_F(ActiveBlobRegistryTest, MultipleBlobs) {
   EXPECT_EQ(1, report_outstanding_state_.true_calls);
   EXPECT_EQ(1, report_outstanding_state_.false_calls);
   unused_blob = {kDatabaseId0, kBlobNumber1};
-  EXPECT_TRUE(base::Contains(unused_blobs_, unused_blob));
+  EXPECT_TRUE(unused_blobs_.contains(unused_blob));
   EXPECT_EQ(1u, unused_blobs_.size());
 }
 

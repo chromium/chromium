@@ -178,7 +178,7 @@ std::string ShortcutIdFromContainerId(Profile* profile,
 
 // Parse Intent extras from shortcut ID.
 base::flat_map<std::string, std::string> ExtrasFromShortcutId(
-    const base::Value::Dict& shortcut);
+    const base::DictValue& shortcut);
 
 // Returns list of SSH connections {<profile-id>, <description>}.
 std::vector<std::pair<std::string, std::string>> GetSSHConnections(

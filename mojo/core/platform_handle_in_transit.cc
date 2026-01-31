@@ -155,8 +155,9 @@ bool PlatformHandleInTransit::TransferToProcess(
   remote_handle_ =
       TransferHandle(handle_.ReleaseHandle(), base::GetCurrentProcessHandle(),
                      target_process.Handle(), trust);
-  if (remote_handle_ == INVALID_HANDLE_VALUE)
+  if (remote_handle_ == INVALID_HANDLE_VALUE) {
     return false;
+  }
 #endif
   owning_process_ = std::move(target_process);
   return true;

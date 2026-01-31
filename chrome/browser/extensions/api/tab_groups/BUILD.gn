@@ -4,7 +4,7 @@
 
 import("//extensions/buildflags/buildflags.gni")
 
-assert(enable_extensions)
+assert(enable_extensions_core)
 
 source_set("tab_groups") {
   sources = [
@@ -19,33 +19,40 @@ source_set("tab_groups") {
   configs += [ "//build/config/compiler:wexit_time_destructors" ]
 
   public_deps = [
-    "//base",
-    "//chrome/browser/profiles:profile",
-    "//chrome/browser/ui:browser_tab_strip",
-    "//chrome/browser/ui/tabs:tab_strip_model_observer",
-    "//chrome/common/extensions/api",
-    "//components/tab_groups",
     "//extensions/browser",
-
-    # TODO(crbug.com/364501603) Remove this dependency when tab_groups_api.cc
-    # stop including browser_list.h and browser_window.h.
-    "//chrome/browser/ui",
+    "//extensions/buildflags",
   ]
 
   deps = [
+    "//base",
     "//chrome/browser/extensions",
+    "//chrome/browser/profiles:profile",
     "//chrome/browser/tab_group_sync:factories",
+    "//chrome/browser/ui",
     "//chrome/browser/ui:ui_features",
     "//chrome/browser/ui/browser_window",
-    "//chrome/browser/ui/tabs:tab_group",
-    "//chrome/browser/ui/tabs:tab_model",
-    "//chrome/browser/ui/tabs:tab_strip",
-    "//chrome/browser/ui/tabs/saved_tab_groups",
+    "//chrome/browser/ui/tabs:tab_list_interface",
     "//chrome/common/extensions",
+    "//chrome/common/extensions/api",
+    "//components/tab_groups",
+    "//components/tabs:public",
     "//content/public/browser",
     "//extensions/common",
     "//ui/gfx/range",
   ]
+
+  if (is_android) {
+    deps += [ "//chrome/browser/ui/android/tab_model" ]
+  } else {
+    deps += [
+      "//chrome/browser/ui:browser_tab_strip",
+      "//chrome/browser/ui/tabs:tab_group",
+      "//chrome/browser/ui/tabs:tab_model",
+      "//chrome/browser/ui/tabs:tab_strip",
+      "//chrome/browser/ui/tabs:tab_strip_model_observer",
+      "//chrome/browser/ui/tabs/saved_tab_groups",
+    ]
+  }
 
   if (is_mac || is_win || is_linux || is_chromeos) {
     deps += [ "//components/webapps/isolated_web_apps:scheme" ]

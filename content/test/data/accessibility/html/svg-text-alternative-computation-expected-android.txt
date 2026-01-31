@@ -3,11 +3,11 @@ android.webkit.WebView focusable focused
 ++++android.widget.Image
 ++++++android.view.View role_description='link' clickable focusable link interesting name='Link (from aria-labelledby)' tooltip_text='Link (from title)'
 ++++android.widget.Image
-++++++android.view.View role_description='link' clickable focusable link interesting name='foo' tooltip_text='Link (from title)' content_description='Link (from aria-label)'
+++++++android.view.View role_description='link' clickable focusable link interesting tooltip_text='Link (from title)' content_description='Link (from aria-label)'
 ++++android.widget.Image
 ++++++android.view.View role_description='link' clickable focusable link interesting name='Link (from title)' hint='Link (from xlink:title)' tooltip_text='Link (from title)'
 ++++android.widget.Image
-++++++android.view.View role_description='link' clickable focusable link interesting name='foo' content_description='Link (from xlink:title)'
+++++++android.view.View role_description='link' clickable focusable link interesting content_description='Link (from xlink:title)'
 ++++android.widget.Image
 ++++++android.view.View role_description='graphics symbol' interesting name='Circle (from aria-labelledby)'
 ++++android.widget.Image
@@ -27,7 +27,7 @@ android.webkit.WebView focusable focused
 ++++android.widget.Image
 ++++++android.view.View role_description='link' clickable focusable link interesting name='Link (from title)' hint='Link (from desc)' tooltip_text='Link (from title)'
 ++++android.widget.Image
-++++++android.view.View role_description='link' clickable focusable link interesting name='foo' tooltip_text='Link (from title)' content_description='Link (from aria-label)'
+++++++android.view.View role_description='link' clickable focusable link interesting tooltip_text='Link (from title)' content_description='Link (from aria-label)'
 ++++android.widget.Image
 ++++++android.view.View role_description='link' clickable focusable link interesting name='Link (from title)' hint='Link (from xlink:title)' tooltip_text='Link (from title)'
 ++++android.widget.Image

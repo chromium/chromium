@@ -46,8 +46,6 @@ std::unique_ptr<KeyRotationManager> KeyRotationManager::Create() {
     return std::move(rotation_manager_instance);
   }
 
-  CHECK(IsDTCKeyRotationUploadedBySharedAPI());
-
   return std::make_unique<KeyRotationManagerImpl>(
       KeyPersistenceDelegateFactory::GetInstance()
           ->CreateKeyPersistenceDelegate());

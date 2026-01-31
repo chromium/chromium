@@ -5,6 +5,7 @@
 #ifndef UI_VIEWS_CONTROLS_BUTTON_MENU_BUTTON_H_
 #define UI_VIEWS_CONTROLS_BUTTON_MENU_BUTTON_H_
 
+#include <memory>
 #include <string_view>
 
 #include "base/memory/raw_ptr.h"
@@ -39,6 +40,20 @@ class VIEWS_EXPORT MenuButton : public LabelButton {
   }
 
   bool Activate(const ui::Event* event);
+
+  // We should use MenuButton::SetMenuButtonController() instead of
+  // Button::SetButtonController() whenever we need to set a
+  // ButtonController for a menu button.
+  // Button::SetButtonController takes a std::unique_ptr<ButtonController>
+  // button_controller as a parameter here, but MenuButton requires a
+  // MenuButtonController here – it caches a pointer to the MenuButtonController
+  // as a member raw_ptr and invokes its PressedCallback during activation.
+  // Since Button::SetButtonController() cannot guarantee that the parameter is
+  // a MenuButtonController, nor can it cache the pointer we need, directly
+  // using this method will cause certain issues.
+  // See https://crbug.com/477645289
+  void SetMenuButtonController(
+      std::unique_ptr<MenuButtonController> menu_button_controller);
 
   // Button:
   void SetCallback(PressedCallback callback) override;

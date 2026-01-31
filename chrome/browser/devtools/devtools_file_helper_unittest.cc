@@ -389,7 +389,7 @@ TEST_F(DevToolsFileHelperTest, ConnectAutomaticFileSystemAlreadyKnown) {
                                             connect_cb.Get());
   run_loop.Run();
 
-  const base::Value::Dict& file_system_paths_value =
+  const base::DictValue& file_system_paths_value =
       profile()->GetPrefs()->GetDict(prefs::kDevToolsFileSystemPaths);
   EXPECT_THAT(file_system_paths_value, SizeIs(1));
   EXPECT_THAT(file_system_paths_value.FindString(path.AsUTF8Unsafe()),
@@ -422,7 +422,7 @@ TEST_F(DevToolsFileHelperTest, ConnectAutomaticFileSystemNewlyAdded) {
                                             connect_cb.Get());
   run_loop.Run();
 
-  const base::Value::Dict& file_system_paths_value =
+  const base::DictValue& file_system_paths_value =
       profile()->GetPrefs()->GetDict(prefs::kDevToolsFileSystemPaths);
   EXPECT_THAT(file_system_paths_value, SizeIs(1));
   EXPECT_THAT(file_system_paths_value.FindString(path.AsUTF8Unsafe()),

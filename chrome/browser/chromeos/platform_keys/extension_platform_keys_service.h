@@ -26,6 +26,10 @@ class BrowserContext;
 class WebContents;
 }  // namespace content
 
+namespace crosapi {
+class KeystoreServiceAsh;
+}  // namespace crosapi
+
 namespace net {
 class X509Certificate;
 typedef std::vector<scoped_refptr<X509Certificate>> CertificateList;
@@ -227,7 +231,7 @@ class ExtensionPlatformKeysService : public KeyedService {
   void TaskFinished(Task* task);
 
   const raw_ptr<content::BrowserContext> browser_context_ = nullptr;
-  const raw_ptr<crosapi::mojom::KeystoreService> keystore_service_ = nullptr;
+  const raw_ptr<crosapi::KeystoreServiceAsh> keystore_service_ = nullptr;
   std::unique_ptr<SelectDelegate> select_delegate_;
   base::queue<std::unique_ptr<Task>> tasks_;
   base::WeakPtrFactory<ExtensionPlatformKeysService> weak_factory_{this};

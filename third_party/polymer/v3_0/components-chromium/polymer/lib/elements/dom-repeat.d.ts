@@ -321,4 +321,4 @@ declare global {
   }
 }
 
-import {TemplateInfo} from '../../interfaces';
+import {TemplateInfo} from '../../interfaces.js';

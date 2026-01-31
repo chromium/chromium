@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "base/task/sequence_manager/sequence_manager_impl.h"
 
 #include <algorithm>
@@ -137,10 +132,10 @@ char* PrependHexAddress(char* output, const void* address) {
   uintptr_t value = reinterpret_cast<uintptr_t>(address);
   static const std::string_view kHexChars = "0123456789ABCDEF";
   do {
-    *output-- = kHexChars[value % 16];
+    *UNSAFE_TODO(output--) = kHexChars[value % 16];
     value /= 16;
   } while (value);
-  *output-- = 'x';
+  *UNSAFE_TODO(output--) = 'x';
   *output = '0';
   return output;
 }
@@ -1007,20 +1002,20 @@ SequenceManagerImpl::AsValueWithSelectorResultForTracing(
       Value(AsValueWithSelectorResult(selected_work_queue, force_verbose)));
 }
 
-Value::Dict SequenceManagerImpl::AsValueWithSelectorResult(
+DictValue SequenceManagerImpl::AsValueWithSelectorResult(
     internal::WorkQueue* selected_work_queue,
     bool force_verbose) const {
   DCHECK_CALLED_ON_VALID_THREAD(associated_thread_->thread_checker);
   TimeTicks now = NowTicks();
-  Value::Dict state;
-  Value::List active_queues;
+  DictValue state;
+  ListValue active_queues;
   for (internal::TaskQueueImpl* const queue :
        main_thread_only().active_queues) {
     active_queues.Append(queue->AsValue(now, force_verbose));
   }
   state.Set("active_queues", std::move(active_queues));
-  Value::List shutdown_queues;
-  Value::List queues_to_delete;
+  ListValue shutdown_queues;
+  ListValue queues_to_delete;
   for (const auto& pair : main_thread_only().queues_to_delete) {
     queues_to_delete.Append(pair.first->AsValue(now, force_verbose));
   }
@@ -1032,7 +1027,7 @@ Value::Dict SequenceManagerImpl::AsValueWithSelectorResult(
   }
   state.Set("time_domain", main_thread_only().time_domain
                                ? main_thread_only().time_domain->AsValue()
-                               : Value::Dict());
+                               : DictValue());
   state.Set("wake_up_queue", main_thread_only().wake_up_queue->AsValue(now));
   state.Set("non_waking_wake_up_queue",
             main_thread_only().non_waking_wake_up_queue->AsValue(now));
@@ -1166,7 +1161,7 @@ TaskQueue::Handle SequenceManagerImpl::CreateTaskQueue(
 }
 
 std::string SequenceManagerImpl::DescribeAllPendingTasks() const {
-  Value::Dict value =
+  DictValue value =
       AsValueWithSelectorResult(nullptr, /* force_verbose */ true);
   return WriteJson(value).value_or("");
 }
@@ -1242,12 +1237,13 @@ void SequenceManagerImpl::RecordCrashKeys(const PendingTask& pending_task) {
   // from the task.
   size_t max_size = main_thread_only().async_stack_buffer.size();
   char* const buffer = &main_thread_only().async_stack_buffer[0];
-  char* const buffer_end = &buffer[max_size - 1];
+  char* const buffer_end = &UNSAFE_TODO(buffer[max_size - 1]);
   char* pos = buffer_end;
   // Leave space for the NUL terminator.
-  pos = PrependHexAddress(pos - 1, pending_task.task_backtrace[0]);
-  *(--pos) = ' ';
-  pos = PrependHexAddress(pos - 1, pending_task.posted_from.program_counter());
+  pos = PrependHexAddress(UNSAFE_TODO(pos - 1), pending_task.task_backtrace[0]);
+  *(UNSAFE_TODO(--pos)) = ' ';
+  pos = PrependHexAddress(UNSAFE_TODO(pos - 1),
+                          pending_task.posted_from.program_counter());
   DCHECK_GE(pos, buffer);
   debug::SetCrashKeyString(
       main_thread_only().async_stack_crash_key,

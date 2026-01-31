@@ -41,7 +41,7 @@ class MockWelcomeView final : public WelcomeView {
   ~MockWelcomeView() override;
 
   MOCK_METHOD(void, Show, ());
-  MOCK_METHOD(void, SetLanguageList, (base::Value::List));
+  MOCK_METHOD(void, SetLanguageList, (base::ListValue));
   MOCK_METHOD(void, SetInputMethodId, (const std::string& input_method_id));
   MOCK_METHOD(void, SetTimezoneId, (const std::string& timezone_id));
   MOCK_METHOD(void, ShowDemoModeConfirmationDialog, ());

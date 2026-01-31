@@ -217,43 +217,6 @@ TypePtr unsafe_reinterpret_cast_ptr(const void* ptr) {
   return reinterpret_cast<TypePtr>(ptr);
 }
 
-// Use the following macros to prevent errors caused by accidental
-// implicit casting of function arguments.  For example, this can
-// be used to prevent overflows from non-promoting conversions.
-//
-// Example:
-//
-// HAS_STRICTLY_TYPED_ARG
-// void sendData(void* data, STRICTLY_TYPED_ARG(size))
-// {
-//    ALLOW_NUMERIC_ARG_TYPES_PROMOTABLE_TO(size_t);
-//    ...
-// }
-//
-// The previous example will prevent callers from passing, for example, an
-// 'int'. On a 32-bit build, it will prevent use of an 'unsigned long long'.
-#define HAS_STRICTLY_TYPED_ARG template <typename ActualArgType>
-#define STRICTLY_TYPED_ARG(argName) ActualArgType argName
-#define STRICT_ARG_TYPE(ExpectedArgType)                                     \
-  static_assert(std::is_same<ActualArgType, ExpectedArgType>::value,         \
-                "Strictly typed argument must be of type '" #ExpectedArgType \
-                "'.")
-#define ALLOW_NUMERIC_ARG_TYPES_PROMOTABLE_TO(ExpectedArgType)              \
-  static_assert(                                                            \
-      std::numeric_limits<ExpectedArgType>::is_integer ==                   \
-          std::numeric_limits<ActualArgType>::is_integer,                   \
-      "Conversion between integer and non-integer types not allowed.");     \
-  static_assert(sizeof(ExpectedArgType) >= sizeof(ActualArgType),           \
-                "Truncating conversions not allowed.");                     \
-  static_assert(!std::numeric_limits<ActualArgType>::is_signed ||           \
-                    std::numeric_limits<ExpectedArgType>::is_signed,        \
-                "Signed to unsigned conversion not allowed.");              \
-  static_assert((sizeof(ExpectedArgType) != sizeof(ActualArgType)) ||       \
-                    (std::numeric_limits<ActualArgType>::is_signed ==       \
-                     std::numeric_limits<ExpectedArgType>::is_signed),      \
-                "Unsigned to signed conversion not allowed for types with " \
-                "identical size (could overflow).");
-
 }  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_STD_LIB_EXTRAS_H_

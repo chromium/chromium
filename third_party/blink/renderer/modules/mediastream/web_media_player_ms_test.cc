@@ -28,8 +28,8 @@
 #include "media/base/media_util.h"
 #include "media/base/test_helpers.h"
 #include "media/base/video_frame.h"
-#include "media/video/mock_gpu_memory_buffer_video_frame_pool.h"
 #include "media/video/mock_gpu_video_accelerator_factories.h"
+#include "media/video/mock_mappable_shared_image_video_frame_pool.h"
 #include "third_party/blink/public/platform/scheduler/test/renderer_scheduler_test_support.h"
 #include "third_party/blink/public/platform/web_fullscreen_video_status.h"
 #include "third_party/blink/public/platform/web_media_player.h"
@@ -615,14 +615,14 @@ class WebMediaPlayerMSTest
     background_rendering_ = background_rendering;
   }
 
-  void SetGpuMemoryBufferVideoForTesting() {
+  void SetMappableSharedImagePoolForTesting() {
 #if BUILDFLAG(IS_WIN)
     render_factory_->provider()->set_standard_size(
-        WebMediaPlayerMS::kUseGpuMemoryBufferVideoFramesMinResolution);
+        WebMediaPlayerMS::kUseMappableSIVideoFramesMinResolution);
 #endif  // BUILDFLAG(IS_WIN)
 
-    player_->SetGpuMemoryBufferVideoForTesting(
-        new media::MockGpuMemoryBufferVideoFramePool(&frame_ready_cbs_));
+    player_->SetMappableSharedImagePoolForTesting(
+        new media::MockMappableSharedImageVideoFramePool(&frame_ready_cbs_));
   }
 
   // Sets the value of the rendering_ flag. Called from expectations in the
@@ -1461,11 +1461,12 @@ TEST_P(WebMediaPlayerMSTest, FrameSizeChange) {
     EXPECT_CALL(*this, DoStopRendering());
 }
 
-// Tests that GpuMemoryBufferVideoFramePool is called in the expected sequence.
+// Tests that MappableSharedImageVideoFramePool is called in the expected
+// sequence.
 TEST_P(WebMediaPlayerMSTest, CreateHardwareFrames) {
   InitializeWebMediaPlayerMS();
   MockMediaStreamVideoRenderer* provider = LoadAndGetFrameProvider(false);
-  SetGpuMemoryBufferVideoForTesting();
+  SetMappableSharedImagePoolForTesting();
 
   const int kTestBrake = static_cast<int>(FrameType::TEST_BRAKE);
   Vector<int> timestamps({0, kTestBrake});

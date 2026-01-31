@@ -67,30 +67,4 @@ if (is_android) {
   android_resources("java_resources") {
     sources = [ "java/res/drawable/lens_icon.xml" ]
   }
-} else {
-  import("//pdf/features.gni")
-  source_set("lens_tab_contextualization_test") {
-    testonly = true
-    defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
-    sources = [ "tab_contextualization_controller_browsertest.cc" ]
-    deps = [
-      "//chrome/browser/ui",
-      "//chrome/test:test_support",
-      "//chrome/test:test_support_ui",
-      "//components/lens",
-      "//components/optimization_guide/content/browser",
-      "//content/test:test_support",
-      "//net:test_support",
-      "//pdf:buildflags",
-      "//testing/gmock",
-      "//testing/gtest",
-      "//url",
-    ]
-    if (enable_pdf) {
-      deps += [
-        "//chrome/browser/pdf:pdf_extension_test_utils",
-        "//pdf:features",
-      ]
-    }
-  }
 }

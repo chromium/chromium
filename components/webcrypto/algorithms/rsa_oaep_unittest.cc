@@ -41,9 +41,9 @@ std::string Base64EncodeUrlSafe(const std::vector<uint8_t>& input) {
   return base64url_encoded;
 }
 
-base::Value::Dict CreatePublicKeyJwkDict(
+base::DictValue CreatePublicKeyJwkDict(
     base::flat_map<std::string, std::string> extra_properties) {
-  base::Value::Dict jwk;
+  base::DictValue jwk;
   jwk.Set("kty", "RSA");
   jwk.Set("n", Base64EncodeUrlSafe(HexStringToBytes(kPublicKeyModulusHex)));
   jwk.Set("e", Base64EncodeUrlSafe(HexStringToBytes(kPublicKeyExponentHex)));

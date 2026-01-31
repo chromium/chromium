@@ -39,6 +39,7 @@ const char* const kWebViewCrashKeyAllowList[] = {
     "base-OpenApkAssetError",
 
     // gpu
+    "gl_method_no_context_key",
     "gpu-driver",
     "gpu-psver",
     "gpu-vsver",

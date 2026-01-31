@@ -87,7 +87,7 @@ public class LogoCoordinator {
 
     private void maybeInitHomepageStateListener(Context context) {
         if (!ChromeFeatureList.sAndroidLogoViewRefactor.isEnabled()
-                || !ChromeFeatureList.sNewTabPageCustomizationV2.isEnabled()) {
+                || !NtpCustomizationUtils.isNtpThemeCustomizationEnabled()) {
             return;
         }
 
@@ -118,6 +118,14 @@ public class LogoCoordinator {
                                         : NtpThemeColorUtils.getPrimaryColorFromColorInfo(
                                                 context, ntpThemeColorInfo);
                         maybeUpdateTintForDefaultGoogleLogo(context, newType, primaryColor);
+                    }
+
+                    @Override
+                    public void onBackgroundReset(@NtpBackgroundImageType int oldType) {
+                        if (oldType == NtpBackgroundImageType.DEFAULT) return;
+
+                        maybeUpdateTintForDefaultGoogleLogo(
+                                context, NtpBackgroundImageType.DEFAULT, /* primaryColor= */ null);
                     }
                 };
         // Skips being notified from NtpCustomizationConfigManager since the drawable has been

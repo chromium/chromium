@@ -24,7 +24,7 @@ class DomDistillerServiceAndroid {
   virtual ~DomDistillerServiceAndroid();
   // Returns native pointer to native DistilledPagePrefs registered with
   // DomDistillerService.
-  jlong GetDistilledPagePrefsPtr(JNIEnv* env);
+  int64_t GetDistilledPagePrefsPtr(JNIEnv* env);
 
  private:
   // Friend class so that DomDistillerServiceFactoryAndroid has access to

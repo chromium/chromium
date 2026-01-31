@@ -9,7 +9,7 @@
 <translation id="1559726735555610004">Google 會要求這些公司公開聲明，不會跨網站使用此資料追蹤你。部分網站可能會根據你的活動，為你提供廣告以外的個人化體驗，亦可能會將活動與網站中有關你的其他資料整合在一起。公司有責任向使用者告知資料的使用方式。請查看《<ph name="BEGIN_LINK" />私隱權政策<ph name="END_LINK" />》，進一步瞭解 Google 如何保護你的資料。</translation>
 <translation id="1569440020357229235">網站在無痕模式下無法使用第三方 Cookie。如果需使用這類 Cookie 的網站無法正常運作，你可以<ph name="BEGIN_LINK" />嘗試暫時允許網站存取第三方 Cookie<ph name="END_LINK" />。</translation>
 <translation id="1716616582630291702"><ph name="BEGIN_BOLD" />網站會如何使用這些資料？<ph name="END_BOLD" />Chrome 會在你瀏覽時記下你感興趣的主題。系統已預先定義主題標籤，包括「藝術與娛樂」、「購物」和「運動」等。你日後瀏覽的網站可向 Chrome 索取你感興趣的主題，以便向你顯示個人化廣告。</translation>
-<translation id="1732764153129912782">你可前往「廣告私隱權設定」作出變更</translation>
+<translation id="1732764153129912782">你可前往「廣告私隱設定」作出變更</translation>
 <translation id="1780659583673667574">例如，如果你瀏覽某網站為晚餐尋找食譜，該網站可能會判斷你對烹飪感興趣。之後，另一個網站可能會根據第一個網站的建議，向你顯示雜貨送貨服務的相關廣告。</translation>
 <translation id="1887631853265748225">廣告私隱功能有助限制網站和廣告合作夥伴向你放送個人化廣告時可以取得的資料。</translation>
 <translation id="19426210786412737">已更新目前的 Chrome 設定，允許網站存取第三方 Cookie。你可隨時變更此設定。</translation>
@@ -25,7 +25,6 @@
 <translation id="2669351694216016687">Google 會要求公司公開聲明，不會跨網站使用此資料追蹤你。部分應用程式可能會根據你的活動，為你提供廣告以外的個人化體驗，亦可能會將活動與應用程式中有關你的其他資料整合在一起。公司有責任向使用者告知資料的使用方式。<ph name="BEGIN_LINK1" />參閱《私隱權政策》瞭解詳情<ph name="LINK_END1" /></translation>
 <translation id="2842751064192268730">廣告主題可限制網站和廣告合作夥伴能取得哪些資料用作顯示個人化廣告。Chrome 可根據你最近的瀏覽記錄，記下你感興趣的主題。你日後瀏覽的網站可向 Chrome 索取相關主題資料，以便向你顯示個人化廣告。</translation>
 <translation id="2937236926373704734">你可封鎖不想要的網站。Chromium 亦會從清單自動刪除超過 30 日的網站。</translation>
-<translation id="2979365474350987274">限制使用第三方 Cookie</translation>
 <translation id="3045333309254072201">網站在無痕模式下無法使用第三方 Cookie。如果需使用這類 Cookie 的網站無法正常運作，你可以<ph name="START_LINK" />嘗試暫時允許網站存取第三方 Cookie<ph name="END_LINK" />。</translation>
 <translation id="3046081401397887494">上網時是否看到個人化廣告取決於多項因素，包括此設定、<ph name="BEGIN_LINK1" />網站建議廣告<ph name="LINK_END1" />、<ph name="BEGIN_LINK2" />Cookie 設定<ph name="LINK_END2" />，以及網站是否顯示個人化廣告。</translation>
 <translation id="3187472288455401631">廣告成效評估</translation>
@@ -66,7 +65,6 @@
 <translation id="5759648952769618186">系統會根據你最近的瀏覽記錄推測主題，限制網站和廣告合作夥伴能取得哪些資料用作顯示個人化廣告</translation>
 <translation id="5812448946879247580"><ph name="BEGIN_BOLD" />網站會如何使用這些資料？<ph name="END_BOLD" />你瀏覽的網站可向 Chrome 索取相關資料，協助網站評估廣告成效。為保護你的私隱，Chrome 會限制網站之間可分享的資料。</translation>
 <translation id="6053735090575989697">請查看《私隱權政策》，進一步瞭解 Google 如何保護你的資料。</translation>
-<translation id="6195163219142236913">限制使用第三方 Cookie</translation>
 <translation id="6196640612572343990">封鎖第三方 Cookie</translation>
 <translation id="6282129116202535093">網站建議廣告有助保護瀏覽記錄和身分，同時可讓網站向你顯示相關廣告。隨著你持續瀏覽，其他網站可根據你的活動建議相關廣告。你可查看這些網站的清單，在設定中封鎖不想要的網站。</translation>
 <translation id="6308169245546905162">網站可以使用第三方 Cookie 瞭解你在其他網站執行的操作</translation>
@@ -94,7 +92,6 @@
 <translation id="8712637175834984815">知道了</translation>
 <translation id="877699835489047794"><ph name="BEGIN_BOLD" />有關資料如何管理？<ph name="END_BOLD" />Chrome 會自動刪除超過 4 星期的主題。隨著你持續瀏覽，清單中可能會再次出現特定主題。你亦可隨時在 Chrome 設定封鎖不希望 Chrome 與網站分享的主題，以及關閉廣告主題。</translation>
 <translation id="8908886019881851657"><ph name="BEGIN_BOLD" />網站會如何使用這些資料？<ph name="END_BOLD" />網站及其廣告合作夥伴可以根據你的活動，在其他網站顯示個人化廣告。例如，如果你瀏覽某網站為晚餐尋找食譜，該網站可能會判斷你對烹飪感興趣。之後，另一個網站可能會根據第一個網站的建議，向你顯示雜貨送貨服務的相關廣告。</translation>
-<translation id="8944485226638699751">有限制</translation>
 <translation id="8984005569201994395">Google 會要求公司公開聲明，不會跨網站使用此資料追蹤你。部分應用程式可能會根據你的活動，為你提供廣告以外的個人化體驗，亦可能會將活動與應用程式中有關你的其他資料整合在一起。公司有責任向使用者告知資料的使用方式。<ph name="BEGIN_LINK" />參閱《私隱權政策》瞭解詳情<ph name="END_LINK" /></translation>
 <translation id="9039924186462989565">Chromium 在無痕模式下會禁止網站使用第三方 Cookie</translation>
 <translation id="9162335340010958530">網站無法使用第三方 Cookie 提供個人化內容和廣告以及瞭解你在其他網站執行的操作，除非你允許相關網站存取這類 Cookie</translation>

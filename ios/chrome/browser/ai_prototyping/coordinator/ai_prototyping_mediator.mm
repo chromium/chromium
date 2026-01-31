@@ -20,6 +20,7 @@
 #import "components/optimization_guide/proto/features/ios_smart_tab_grouping.pb.h"
 #import "components/optimization_guide/proto/features/tab_organization.pb.h"
 #import "components/optimization_guide/proto/string_value.pb.h"  // nogncheck
+#import "ios/chrome/browser/ai_prototyping/features.h"
 #import "ios/chrome/browser/ai_prototyping/model/ai_prototyping_service_impl.h"
 #import "ios/chrome/browser/ai_prototyping/model/tab_organization_service_impl.h"
 #import "ios/chrome/browser/ai_prototyping/ui/ai_prototyping_consumer.h"
@@ -359,6 +360,7 @@
   [self.consumer updateQueryResult:base::SysUTF8ToNSString(response_string)
                         forFeature:AIPrototypingFeature::kFreeform];
   if (_enableMQLSUpload) {
+    CHECK(IsUploadBlingAIPrototypingDataEnabled());
     [self uploadLoggingDataToMQLS:std::move(logging_data)];
   }
 }
@@ -498,6 +500,17 @@
   optimization_guide::proto::BlingPrototypingLoggingData proto_logging_data =
       logging_data.As<optimization_guide::proto::BlingPrototypingLoggingData>()
           .value();
+  if (!kUploadBlingAIPrototypingDataLoggingTag.Get().empty() ||
+      !kUploadBlingAIPrototypingDataLoggingDescription.Get().empty()) {
+    auto metadata =
+        std::make_unique<optimization_guide::proto::BlingPrototypingMetadata>();
+    metadata->set_logging_tag(kUploadBlingAIPrototypingDataLoggingTag.Get());
+    metadata->set_logging_description(
+        kUploadBlingAIPrototypingDataLoggingDescription.Get());
+    *proto_logging_data.mutable_metadata() = *metadata;
+    NSLog(@"[AIPrototypingMediator] Logging MQLS with logging_tag: %@",
+          base::SysUTF8ToNSString(proto_logging_data.metadata().logging_tag()));
+  }
   std::unique_ptr<optimization_guide::ModelQualityLogEntry> log_entry =
       std::make_unique<optimization_guide::ModelQualityLogEntry>(
           mqls_service->GetWeakPtr());

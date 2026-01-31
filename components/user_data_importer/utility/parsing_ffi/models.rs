@@ -128,10 +128,10 @@ impl From<SafariHistoryJSONEntry> for ffi::SafariHistoryEntry {
     fn from(entry: SafariHistoryJSONEntry) -> Self {
         Self {
             url: entry.url,
-            title: entry.title.unwrap_or(String::new()),
+            title: entry.title.unwrap_or_default(),
             time_usec: entry.time_usec,
-            destination_url: entry.destination_url.unwrap_or(String::new()),
-            source_url: entry.source_url.unwrap_or(String::new()),
+            destination_url: entry.destination_url.unwrap_or_default(),
+            source_url: entry.source_url.unwrap_or_default(),
             visit_count: entry.visit_count,
         }
     }
@@ -154,8 +154,8 @@ impl From<PaymentCardJSONEntry> for ffi::PaymentCardEntry {
     fn from(entry: PaymentCardJSONEntry) -> Self {
         Self {
             card_number: entry.card_number,
-            card_name: entry.card_name.unwrap_or(String::new()),
-            cardholder_name: entry.cardholder_name.unwrap_or(String::new()),
+            card_name: entry.card_name.unwrap_or_default(),
+            cardholder_name: entry.cardholder_name.unwrap_or_default(),
             card_expiration_month: entry.card_expiration_month.unwrap_or(0),
             card_expiration_year: entry.card_expiration_year.unwrap_or(0),
         }

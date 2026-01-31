@@ -4,7 +4,6 @@
 
 #include "components/cast_receiver/browser/streaming_receiver_session_client.h"
 
-#include "base/containers/contains.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/task_environment.h"
 #include "components/cast_receiver/browser/streaming_controller.h"

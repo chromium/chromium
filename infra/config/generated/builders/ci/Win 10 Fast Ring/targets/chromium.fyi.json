@@ -196,20 +196,6 @@
         "test_id_prefix": "ninja://third_party/crashpad/crashpad:crashpad_tests/"
       },
       {
-        "module_name": "//components/cronet:cronet_tests",
-        "module_scheme": "gtest",
-        "name": "cronet_tests",
-        "test": "cronet_tests",
-        "test_id_prefix": "ninja://components/cronet:cronet_tests/"
-      },
-      {
-        "module_name": "//components/cronet:cronet_unittests",
-        "module_scheme": "gtest",
-        "name": "cronet_unittests",
-        "test": "cronet_unittests",
-        "test_id_prefix": "ninja://components/cronet:cronet_unittests/"
-      },
-      {
         "module_name": "//crypto:crypto_unittests",
         "module_scheme": "gtest",
         "name": "crypto_unittests",

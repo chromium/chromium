@@ -102,7 +102,7 @@ void StreamAttempt::NotifyOfCompletion(int rv) {
 void StreamAttempt::LogCompletion(int rv) {
   connect_timing_.connect_end = base::TimeTicks::Now();
   net_log().EndEvent(net_log_attempt_event_type_, [&] {
-    base::Value::Dict dict;
+    base::DictValue dict;
     dict.Set("net_error", rv);
     if (cancel_reason_.has_value()) {
       dict.Set("cancel_reason",

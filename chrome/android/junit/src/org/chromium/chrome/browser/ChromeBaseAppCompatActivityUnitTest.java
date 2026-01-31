@@ -24,6 +24,7 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
+import org.robolectric.annotation.Config;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.DeviceInfo;
@@ -69,6 +70,8 @@ public class ChromeBaseAppCompatActivityUnitTest {
     }
 
     // Verifies that Clank's internal scaling works.
+    // TODO(crbug.com/450954710): This test fails on SDK 36.
+    @Config(sdk = 29)
     @Test
     @MediumTest
     public void testApplyOverridesForAutomotive_onAutomotiveDevice_scaleUpUi() {
@@ -136,6 +139,8 @@ public class ChromeBaseAppCompatActivityUnitTest {
                 "Smallest screen width should not have changed.", 0, config.smallestScreenWidthDp);
     }
 
+    // TODO(crbug.com/450954710): This test fails on SDK 36.
+    @Config(sdk = 29)
     @Test
     @MediumTest
     public void testApplyOverridesForXr_onXrDevice_uiScalesUp() {

@@ -4,6 +4,8 @@
 
 #include "ash/wm/window_util.h"
 
+#include <algorithm>
+
 #include "ash/public/cpp/presentation_time_recorder.h"
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
@@ -13,13 +15,14 @@
 #include "ash/wm/window_state.h"
 #include "ash/wm/window_state_delegate.h"
 #include "ash/wm/wm_event.h"
-#include "base/containers/contains.h"
 #include "base/memory/raw_ptr.h"
 #include "ui/aura/test/test_windows.h"
 #include "ui/aura/window.h"
 #include "ui/compositor/layer.h"
 #include "ui/display/screen.h"
 #include "ui/events/base_event_utils.h"
+#include "ui/events/event.h"
+#include "ui/gfx/geometry/point.h"
 #include "ui/wm/core/window_util.h"
 
 namespace ash {
@@ -181,8 +184,8 @@ TEST_F(WindowUtilTest, EnsureTransientRoots) {
   window_list.push_back(descendant2.get());
   EnsureTransientRoots(&window_list);
   ASSERT_EQ(2u, window_list.size());
-  ASSERT_TRUE(base::Contains(window_list, window1.get()));
-  ASSERT_TRUE(base::Contains(window_list, window2.get()));
+  ASSERT_TRUE(std::ranges::contains(window_list, window1.get()));
+  ASSERT_TRUE(std::ranges::contains(window_list, window2.get()));
 
   // Create a window which has a transient parent that is not in |window_list|.
   // Test that the window is replaced with its transient root when calling
@@ -193,8 +196,8 @@ TEST_F(WindowUtilTest, EnsureTransientRoots) {
   window_list.push_back(descendant3.get());
   EnsureTransientRoots(&window_list);
   EXPECT_EQ(3u, window_list.size());
-  EXPECT_TRUE(base::Contains(window_list, window3.get()));
-  EXPECT_FALSE(base::Contains(window_list, descendant3.get()));
+  EXPECT_TRUE(std::ranges::contains(window_list, window3.get()));
+  EXPECT_FALSE(std::ranges::contains(window_list, descendant3.get()));
 
   // Create two windows which have the same transient parent that is not in
   // |window_list|. Test that one of the windows is replaced with its transient
@@ -209,9 +212,9 @@ TEST_F(WindowUtilTest, EnsureTransientRoots) {
   window_list.push_back(descendant5.get());
   EnsureTransientRoots(&window_list);
   EXPECT_EQ(4u, window_list.size());
-  EXPECT_TRUE(base::Contains(window_list, window4.get()));
-  EXPECT_FALSE(base::Contains(window_list, descendant4.get()));
-  EXPECT_FALSE(base::Contains(window_list, descendant5.get()));
+  EXPECT_TRUE(std::ranges::contains(window_list, window4.get()));
+  EXPECT_FALSE(std::ranges::contains(window_list, descendant4.get()));
+  EXPECT_FALSE(std::ranges::contains(window_list, descendant5.get()));
 }
 
 TEST_F(WindowUtilTest,
@@ -299,6 +302,52 @@ TEST_F(WindowUtilTest, InteriorTargeter) {
                          gfx::Point(0, 0), ui::EventTimeForNow(), ui::EF_NONE,
                          ui::EF_NONE);
     EXPECT_EQ(window.get(), targeter->FindTargetForEvent(root_target, &mouse));
+  }
+}
+
+TEST_F(WindowUtilTest, InteriorTargeterWithCustomInsets) {
+  auto window = CreateTestWindow();
+  window->SetBounds({0, 0, 100, 100});
+
+  WindowState::Get(window.get())->Maximize();
+  InstallResizeHandleWindowTargeterForWindow(
+      window.get(), chromeos::ResizeBorderInsets{.for_mouse = gfx::Insets(5),
+                                                 .for_touch = gfx::Insets(10)});
+
+  auto* child =
+      aura::test::CreateTestWindow(
+          {.delegate =
+               aura::test::TestWindowDelegate::CreateSelfDestroyingDelegate(),
+           .parent = window.get(),
+           .bounds = gfx::Rect(window->bounds().size())})
+          .release();
+
+  ui::EventTarget* root_target = window->GetRootWindow();
+  auto* targeter = root_target->GetEventTargeter();
+  {
+    gfx::Point location{2, 2};
+    ui::MouseEvent mouse(ui::EventType::kMouseMoved, location, location,
+                         ui::EventTimeForNow(), ui::EF_NONE, ui::EF_NONE);
+    EXPECT_EQ(child, targeter->FindTargetForEvent(root_target, &mouse));
+  }
+
+  // InteriorEventTargeter is now active and should pass an event at the edge to
+  // its parent.
+  WindowState::Get(window.get())->Restore();
+
+  {
+    gfx::Point location{2, 2};
+    ui::MouseEvent mouse(ui::EventType::kMouseMoved, location, location,
+                         ui::EventTimeForNow(), ui::EF_NONE, ui::EF_NONE);
+    EXPECT_EQ(window.get(), targeter->FindTargetForEvent(root_target, &mouse));
+  }
+
+  {
+    gfx::PointF location{9, 9};
+    ui::TouchEvent touch(ui::EventType::kTouchPressed, location, location,
+                         ui::EventTimeForNow(),
+                         ui::PointerDetails(ui::EventPointerType::kTouch));
+    EXPECT_EQ(window.get(), targeter->FindTargetForEvent(root_target, &touch));
   }
 }
 

@@ -215,11 +215,11 @@ void ShellDesktopControllerAura::AddAppWindow(AppWindow* app_window,
       display::Screen::Get()->GetDisplayMatching(window->GetBoundsInScreen());
 
   // Create a RootWindowController for the display if necessary.
-  if (root_window_controllers_.count(display.id()) == 0) {
-    root_window_controllers_[display.id()] =
-        CreateRootWindowControllerForDisplay(display);
+  auto [it, inserted] = root_window_controllers_.try_emplace(display.id());
+  if (inserted) {
+    it->second = CreateRootWindowControllerForDisplay(display);
   }
-  root_window_controllers_[display.id()]->AddAppWindow(app_window, window);
+  it->second->AddAppWindow(app_window, window);
 }
 
 void ShellDesktopControllerAura::CloseAppWindows() {
@@ -295,8 +295,10 @@ aura::WindowTreeHost* ShellDesktopControllerAura::GetPrimaryHost() {
     return nullptr;
 
   const display::Display& display = display::Screen::Get()->GetPrimaryDisplay();
-  if (root_window_controllers_.count(display.id()) == 1)
-    return root_window_controllers_[display.id()]->host();
+  if (auto it = root_window_controllers_.find(display.id());
+      it != root_window_controllers_.end()) {
+    return it->second->host();
+  }
 
   // Fall back to an existing host.
   return root_window_controllers_.begin()->second->host();
@@ -315,14 +317,16 @@ void ShellDesktopControllerAura::SetWindowBoundsInScreen(
   display::Display display = display::Screen::Get()->GetDisplayMatching(bounds);
 
   // Create a RootWindowController for the display if necessary.
-  if (root_window_controllers_.count(display.id()) == 0) {
-    root_window_controllers_[display.id()] =
+  auto [root_window_controllers_it, inserted] =
+      root_window_controllers_.try_emplace(display.id());
+  if (inserted) {
+    root_window_controllers_it->second =
         CreateRootWindowControllerForDisplay(display);
   }
 
   // Check if the window is parented to a different RootWindowController.
   if (app_window->GetNativeWindow()->GetRootWindow() !=
-      root_window_controllers_[display.id()]->host()->window()) {
+      root_window_controllers_it->second->host()->window()) {
     // Move the window to the appropriate RootWindowController for the display.
     for (const auto& it : root_window_controllers_) {
       if (it.second->host()->window() ==
@@ -331,7 +335,7 @@ void ShellDesktopControllerAura::SetWindowBoundsInScreen(
         break;
       }
     }
-    root_window_controllers_[display.id()]->AddAppWindow(
+    root_window_controllers_it->second->AddAppWindow(
         app_window, app_window->GetNativeWindow());
   }
 

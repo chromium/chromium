@@ -16,7 +16,7 @@ import org.chromium.base.BinderCallsListener;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.TimeUtils;
 import org.chromium.base.metrics.RecordHistogram;
-import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.build.annotations.NullMarked;
@@ -36,6 +36,8 @@ import org.chromium.components.safe_browsing.SafeBrowsingApiBridge;
 import org.chromium.content_public.browser.NavigationHandle;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.url.GURL;
+
+import java.util.function.Supplier;
 
 /**
  * Records UMA page load metrics for the first navigation on a cold start.
@@ -137,6 +139,7 @@ public class StartupMetricsTracker {
     // The time of the activity onCreate(). All metrics (such as time to first visible content) are
     // reported in uptimeMillis relative to this value.
     private final long mActivityStartTimeMs;
+    private Supplier<Boolean> mIsRestoringPersistentStateSupplier;
     private boolean mFirstVisibleContentRecorded;
     private boolean mTimeToStartupFcpOrPaintPreviewRecorded;
     private @Nullable TabModelSelectorTabObserver mTabObserver;
@@ -154,8 +157,11 @@ public class StartupMetricsTracker {
     private volatile long mFirstSafeBrowsingResponseTimeMicros;
     private boolean mFirstSafeBrowsingResponseTimeRecorded;
 
-    public StartupMetricsTracker(ObservableSupplier<TabModelSelector> tabModelSelectorSupplier) {
+    public StartupMetricsTracker(
+            MonotonicObservableSupplier<TabModelSelector> tabModelSelectorSupplier,
+            Supplier<Boolean> isRestoringPersistentStateSupplier) {
         mActivityStartTimeMs = SystemClock.uptimeMillis();
+        mIsRestoringPersistentStateSupplier = isRestoringPersistentStateSupplier;
         tabModelSelectorSupplier.addObserver(this::registerObservers);
         SafeBrowsingApiBridge.setOneTimeSafeBrowsingApiUrlCheckObserver(
                 this::updateSafeBrowsingCheckTime);
@@ -264,6 +270,7 @@ public class StartupMetricsTracker {
                 });
     }
 
+    @SuppressWarnings("NullAway")
     public void destroy() {
         mShouldTrack = false;
         mShouldTrackTimeToFirstDraw = false;
@@ -275,17 +282,15 @@ public class StartupMetricsTracker {
             PageLoadMetrics.removeObserver(mPageObserver);
             mPageObserver = null;
         }
+        if (mIsRestoringPersistentStateSupplier != null) {
+            mIsRestoringPersistentStateSupplier = null;
+        }
     }
 
     private String activityTypeToSuffix(@ActivityType int type) {
         if (type == ActivityType.TABBED) return ".Tabbed";
         assert type == ActivityType.WEB_APK;
         return ".WebApk";
-    }
-
-    private void recordExperimentalHistogram(String name, long ms) {
-        RecordHistogram.deprecatedRecordMediumTimesHistogram(
-                "Startup.Android.Experimental." + name + ".Tabbed.ColdStartTracker", ms);
     }
 
     private void recordBinderMetricsCold(String variant) {
@@ -309,7 +314,6 @@ public class StartupMetricsTracker {
                             + activityTypeToSuffix(mHistogramSuffix),
                     firstCommitMs);
             if (mHistogramSuffix == ActivityType.TABBED) {
-                recordExperimentalHistogram("FirstNavigationCommit", firstCommitMs);
                 recordFirstSafeBrowsingResponseTime();
                 recordTimeToFirstVisibleContent(firstCommitMs);
             }
@@ -319,18 +323,33 @@ public class StartupMetricsTracker {
     private void recordFcpMetrics(long firstFcpMs) {
         if (!SimpleStartupForegroundSessionDetector.runningCleanForegroundSession()) return;
         if (ColdStartTracker.wasColdOnFirstActivityCreationOrNow()) {
-            recordExperimentalHistogram("FirstContentfulPaint", firstFcpMs);
-            RecordHistogram.deprecatedRecordMediumTimesHistogram(
-                    "Startup.Android.Cold.TimeToFirstContentfulPaint3.Tabbed", firstFcpMs);
+            if (mIsRestoringPersistentStateSupplier != null
+                    && mIsRestoringPersistentStateSupplier.get()) {
+                RecordHistogram.deprecatedRecordMediumTimesHistogram(
+                        "Startup.Android.Cold.WithPersistentState."
+                                + "TimeToFirstContentfulPaint3.Tabbed",
+                        firstFcpMs);
+            } else {
+                RecordHistogram.deprecatedRecordMediumTimesHistogram(
+                        "Startup.Android.Cold.TimeToFirstContentfulPaint3.Tabbed", firstFcpMs);
+            }
             recordTimeToStartupFcpOrPaintPreview(firstFcpMs);
         }
     }
 
     private void recordTimeToFirstVisibleContent(long durationMs) {
         if (mFirstVisibleContentRecorded) return;
+
         mFirstVisibleContentRecorded = true;
-        RecordHistogram.deprecatedRecordMediumTimesHistogram(
-                "Startup.Android.Cold.TimeToFirstVisibleContent4", durationMs);
+        if (mIsRestoringPersistentStateSupplier != null
+                && mIsRestoringPersistentStateSupplier.get()) {
+            RecordHistogram.deprecatedRecordMediumTimesHistogram(
+                    "Startup.Android.Cold.WithPersistentState.TimeToFirstVisibleContent4",
+                    durationMs);
+        } else {
+            RecordHistogram.deprecatedRecordMediumTimesHistogram(
+                    "Startup.Android.Cold.TimeToFirstVisibleContent4", durationMs);
+        }
     }
 
     private void recordFirstSafeBrowsingResponseTime() {

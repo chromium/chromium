@@ -4,10 +4,12 @@
 
 #include "chrome/browser/background/glic/glic_launcher_configuration.h"
 
+#include "base/no_destructor.h"
 #include "base/values.h"
 #include "base/version_info/channel.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/glic/glic_pref_names.h"
+#include "chrome/browser/shell_integration.h"
 #include "chrome/common/channel_info.h"
 #include "chrome/common/chrome_features.h"
 #include "components/prefs/pref_service.h"
@@ -17,6 +19,15 @@
 #include "ui/events/keycodes/keyboard_codes.h"
 
 namespace glic {
+
+namespace {
+
+base::RepeatingClosure& GetCheckDefaultBrowserTestOverride() {
+  static base::NoDestructor<base::RepeatingClosure> callback;
+  return *callback;
+}
+
+}  // namespace
 
 GlicLauncherConfiguration::GlicLauncherConfiguration(Observer* manager)
     : manager_(manager) {
@@ -81,6 +92,51 @@ ui::Accelerator GlicLauncherConfiguration::GetDefaultHotkey() {
 #endif
 
   return ui::Accelerator(ui::KeyboardCode::VKEY_G, modifiers);
+}
+
+// static
+void GlicLauncherConfiguration::OnCheckIsDefaultBrowserFinished(
+    version_info::Channel channel,
+    shell_integration::DefaultWebClientState state) {
+  // Don't do anything because a different channel is the default browser
+  if (state ==
+      shell_integration::DefaultWebClientState::OTHER_MODE_IS_DEFAULT) {
+    return;
+  }
+
+  // Enables the launcher if the current browser is the default or
+  // is on the stable channel.
+  if (g_browser_process &&
+      (state == shell_integration::DefaultWebClientState::IS_DEFAULT ||
+       channel == version_info::Channel::STABLE)) {
+    g_browser_process->local_state()->SetBoolean(prefs::kGlicLauncherEnabled,
+                                                 true);
+  }
+}
+
+// static
+void GlicLauncherConfiguration::CheckDefaultBrowserToEnableLauncher() {
+  bool is_enabled_default = false;
+  const bool is_launcher_enabled = IsEnabled(&is_enabled_default);
+  if (is_enabled_default && !is_launcher_enabled) {
+    auto& callback = GetCheckDefaultBrowserTestOverride();
+    if (callback) {
+      callback.Run();
+      return;
+    }
+
+    base::MakeRefCounted<shell_integration::DefaultBrowserWorker>()
+        ->StartCheckIsDefault(base::BindOnce(
+            &GlicLauncherConfiguration::OnCheckIsDefaultBrowserFinished,
+            chrome::GetChannel()));
+  }
+}
+
+// static
+void GlicLauncherConfiguration::
+    SetCheckDefaultBrowserCallbackForTesting(  // IN-TEST
+        base::RepeatingClosure callback) {
+  GetCheckDefaultBrowserTestOverride() = std::move(callback);
 }
 
 void GlicLauncherConfiguration::OnEnabledPrefChanged() {

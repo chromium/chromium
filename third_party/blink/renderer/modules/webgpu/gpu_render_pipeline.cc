@@ -304,12 +304,12 @@ void GPUFragmentStateAsWGPUFragmentState(GPUDevice* device,
     if (color_target->hasBlend()) {
       const GPUBlendState* blend_state = color_target->blend();
       if (IsGPUBlendComponentPartiallySpecified(blend_state->color())) {
-        device->AddConsoleWarning(String::Format(
-            kGPUBlendComponentPartiallySpecifiedMessage, i, "color"));
+        device->AddConsoleWarning(UNSAFE_TODO(String::Format(
+            kGPUBlendComponentPartiallySpecifiedMessage, i, "color")));
       }
       if (IsGPUBlendComponentPartiallySpecified(blend_state->alpha())) {
-        device->AddConsoleWarning(String::Format(
-            kGPUBlendComponentPartiallySpecifiedMessage, i, "alpha"));
+        device->AddConsoleWarning(UNSAFE_TODO(String::Format(
+            kGPUBlendComponentPartiallySpecifiedMessage, i, "alpha")));
       }
 
       if (!ValidateBlendComponent(device, blend_state->color(),

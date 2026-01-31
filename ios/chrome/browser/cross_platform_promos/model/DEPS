@@ -1,6 +1,8 @@
 include_rules = [
+  # keep-sorted start
   "+components/desktop_to_mobile_promos",
   "+ios/chrome/browser/sync/model",
   "+ios/chrome/browser/tips_notifications/model",
+  # keep-sorted end
 ]
 

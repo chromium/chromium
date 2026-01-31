@@ -24,17 +24,8 @@ using testing::_;
 
 namespace enterprise_connectors {
 
-class KeyRotationCommandFactoryTest : public testing::Test,
-                                      public testing::WithParamInterface<bool> {
+class KeyRotationCommandFactoryTest : public testing::Test {
  protected:
-  KeyRotationCommandFactoryTest() {
-    feature_list_.InitWithFeatureState(
-        enterprise_connectors::kDTCKeyRotationUploadedBySharedAPIEnabled,
-        is_key_uploaded_by_shared_api());
-  }
-
-  base::test::ScopedFeatureList feature_list_;
-  bool is_key_uploaded_by_shared_api() { return GetParam(); }
   base::test::TaskEnvironment task_environment_;
   network::TestURLLoaderFactory test_url_loader_factory_;
   testing::StrictMock<policy::MockJobCreationHandler> job_creation_handler_;
@@ -45,12 +36,10 @@ class KeyRotationCommandFactoryTest : public testing::Test,
           &test_url_loader_factory_);
 };
 
-TEST_P(KeyRotationCommandFactoryTest, CreateCommand) {
+TEST_F(KeyRotationCommandFactoryTest, CreateCommand) {
   // This test will run on different platforms.
   ASSERT_TRUE(KeyRotationCommandFactory::GetInstance()->CreateCommand(
       test_shared_loader_factory_, &fake_device_management_service_));
 }
-
-INSTANTIATE_TEST_SUITE_P(, KeyRotationCommandFactoryTest, testing::Bool());
 
 }  // namespace enterprise_connectors

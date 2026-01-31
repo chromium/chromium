@@ -23,7 +23,7 @@ class GetDetailsForCreateCardTestApi {
 
   std::u16string context_token() const { return request_->context_token_; }
 
-  base::Value::Dict* legal_message() const {
+  base::DictValue* legal_message() const {
     return request_->legal_message_.get();
   }
 

@@ -270,8 +270,7 @@ bool IsValidTurnURL(const KURL& url) {
     return false;
   }
   if (!url.Query().empty()) {
-    Vector<String> query_parts;
-    url.Query().ToString().Split("=", query_parts);
+    Vector<StringView> query_parts = url.Query().SplitSkippingEmpty('=');
     if (query_parts.size() < 2 || query_parts[0] != "transport") {
       return false;
     }

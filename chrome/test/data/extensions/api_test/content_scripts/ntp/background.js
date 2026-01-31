@@ -2,10 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// The NTP may take different forms, depending on the OS.
 var newTabUrls = [
   'chrome://newtab/',
-  // The tab URL for the Local New Tab Page.
-  'chrome-search://local-ntp/local-ntp.html',
+  'chrome-native://newtab/',
 ];
 
 function testExecuteScriptInNewTab() {

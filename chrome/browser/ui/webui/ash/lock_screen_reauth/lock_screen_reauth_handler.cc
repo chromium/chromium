@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/webui/ash/lock_screen_reauth/lock_screen_reauth_handler.h"
 
+#include <algorithm>
 #include <memory>
 
 #include "ash/constants/ash_features.h"
@@ -24,7 +25,6 @@
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/ui/ash/login/login_display_host_webui.h"
 #include "chrome/browser/ui/webui/ash/lock_screen_reauth/lock_screen_reauth_dialogs.h"
-#include "chrome/browser/ui/webui/ash/login/check_passwords_against_cryptohome_helper.h"
 #include "chrome/browser/ui/webui/ash/login/online_login_utils.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
@@ -115,7 +115,7 @@ LockScreenReauthHandler::LockScreenReauthHandler(const std::string& email)
 LockScreenReauthHandler::~LockScreenReauthHandler() = default;
 
 void LockScreenReauthHandler::HandleStartOnlineAuth(
-    const base::Value::List& value) {
+    const base::ListValue& value) {
   AllowJavascript();
   OnReauthDialogReadyForTesting();
 
@@ -125,7 +125,7 @@ void LockScreenReauthHandler::HandleStartOnlineAuth(
 }
 
 void LockScreenReauthHandler::HandleAuthenticatorLoaded(
-    const base::Value::List& value) {
+    const base::ListValue& value) {
   VLOG(1) << "Authenticator finished loading";
   authenticator_state_ = AuthenticatorState::LOADED;
 
@@ -224,7 +224,7 @@ void LockScreenReauthHandler::OnSetCookieForLoadGaiaWithPartition(
     const bool force_reauth_gaia_page,
     const std::string& partition_name,
     net::CookieAccessResult result) {
-  base::Value::Dict params;
+  base::DictValue params;
 
   params.Set("webviewPartitionName", partition_name);
   signin_partition_name_ = partition_name;
@@ -302,7 +302,7 @@ void LockScreenReauthHandler::CallJavascript(const std::string& function,
 }
 
 void LockScreenReauthHandler::HandleCompleteAuthentication(
-    const base::Value::List& params) {
+    const base::ListValue& params) {
   absl::Cleanup run_callback_on_return = [this] {
     auth_flow_auto_reload_manager_.Terminate();
   };
@@ -412,7 +412,7 @@ void LockScreenReauthHandler::CheckCredentials(
 }
 
 void LockScreenReauthHandler::HandleUpdateUserPassword(
-    const base::Value::List& value) {
+    const base::ListValue& value) {
   DCHECK(!value.empty());
   const std::string& old_password = value[0].GetString();
   lock_screen_reauth_manager_->UpdateUserPassword(old_password);
@@ -428,13 +428,13 @@ void LockScreenReauthHandler::ShowSamlConfirmPasswordScreen() {
 }
 
 void LockScreenReauthHandler::HandleOnPasswordTyped(
-    const base::Value::List& value) {
+    const base::ListValue& value) {
   OnPasswordTyped(value[0].GetString());
 }
 
 void LockScreenReauthHandler::OnPasswordTyped(const std::string& password) {
   if (scraped_saml_passwords_.empty() ||
-      base::Contains(scraped_saml_passwords_, password)) {
+      std::ranges::contains(scraped_saml_passwords_, password)) {
     OnPasswordConfirmed(password);
     return;
   }
@@ -457,22 +457,7 @@ void LockScreenReauthHandler::SamlConfirmPassword(
     std::unique_ptr<UserContext> user_context) {
   scraped_saml_passwords_ = scraped_saml_passwords;
   user_context_ = std::move(user_context);
-
-  if (!features::IsCheckPasswordsAgainstCryptohomeHelperEnabled() ||
-      scraped_saml_passwords_.empty()) {
-    ShowSamlConfirmPasswordScreen();
-    return;
-  }
-
-  // TODO(crbug.com/40214270) Eliminate redundant cryptohome check.
-  check_passwords_against_cryptohome_helper_ =
-      std::make_unique<CheckPasswordsAgainstCryptohomeHelper>(
-          *user_context_.get(), scraped_saml_passwords_,
-          base::BindOnce(
-              &LockScreenReauthHandler::ShowSamlConfirmPasswordScreen,
-              weak_factory_.GetWeakPtr()),
-          base::BindOnce(&LockScreenReauthHandler::OnPasswordConfirmed,
-                         weak_factory_.GetWeakPtr()));
+  ShowSamlConfirmPasswordScreen();
 }
 
 void LockScreenReauthHandler::HandleWebviewLoadAborted(int error_code) {

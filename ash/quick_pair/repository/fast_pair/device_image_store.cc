@@ -148,7 +148,7 @@ void DeviceImageStore::LoadPersistedImagesFromPrefs() {
         << __func__ << ": No shell local state available.";
     return;
   }
-  const base::Value::Dict& device_image_store =
+  const base::DictValue& device_image_store =
       local_state->GetDict(kDeviceImageStorePref);
   for (auto [model_id, image_dict] : device_image_store) {
     std::optional<DeviceImageInfo> images;

@@ -40,7 +40,6 @@ static_library("crostini") {
     "//chrome/browser/profiles:profile",
     "//chrome/browser/ui/views/bruschetta",
     "//chrome/browser/ui/views/crostini",
-    "//chrome/browser/ui/webui/ash/crostini_upgrader",
     "//chrome/browser/ui/webui/ash/settings/search",
     "//chrome/common",
     "//chrome/common:constants",

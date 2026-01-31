@@ -93,8 +93,7 @@ bool ShouldUseNewFopDisplay() {
 #if BUILDFLAG(IS_IOS) || BUILDFLAG(IS_ANDROID)
   return false;
 #else
-  return base::FeatureList::IsEnabled(
-      features::kAutofillEnableNewFopDisplayDesktop);
+  return true;
 #endif
 }
 
@@ -1213,71 +1212,9 @@ TEST(CreditCardTest, CompareCardCreationSource) {
   EXPECT_EQ(0, a.Compare(b));
 }
 
-// Test we get the correct icon for each card type.
-TEST(CreditCardTest, IconResourceId_NewFopDisplayOff) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatureStates(
-      {{features::kAutofillEnableNewFopDisplayDesktop, false}});
-  EXPECT_EQ(IDR_AUTOFILL_METADATA_CC_AMEX_OLD,
-            CreditCard::IconResourceId(Suggestion::Icon::kCardAmericanExpress));
-  EXPECT_EQ(IDR_AUTOFILL_METADATA_CC_DINERS_OLD,
-            CreditCard::IconResourceId(Suggestion::Icon::kCardDiners));
-  EXPECT_EQ(IDR_AUTOFILL_METADATA_CC_DISCOVER_OLD,
-            CreditCard::IconResourceId(Suggestion::Icon::kCardDiscover));
-  EXPECT_EQ(IDR_AUTOFILL_METADATA_CC_ELO_OLD,
-            CreditCard::IconResourceId(Suggestion::Icon::kCardElo));
-  EXPECT_EQ(IDR_AUTOFILL_METADATA_CC_JCB_OLD,
-            CreditCard::IconResourceId(Suggestion::Icon::kCardJCB));
-  EXPECT_EQ(IDR_AUTOFILL_METADATA_CC_MASTERCARD_OLD,
-            CreditCard::IconResourceId(Suggestion::Icon::kCardMasterCard));
-  EXPECT_EQ(IDR_AUTOFILL_METADATA_CC_MIR_OLD,
-            CreditCard::IconResourceId(Suggestion::Icon::kCardMir));
-  EXPECT_EQ(IDR_AUTOFILL_METADATA_CC_TROY_OLD,
-            CreditCard::IconResourceId(Suggestion::Icon::kCardTroy));
-  EXPECT_EQ(IDR_AUTOFILL_METADATA_CC_UNIONPAY_OLD,
-            CreditCard::IconResourceId(Suggestion::Icon::kCardUnionPay));
-  EXPECT_EQ(IDR_AUTOFILL_METADATA_CC_VERVE_OLD,
-            CreditCard::IconResourceId(Suggestion::Icon::kCardVerve));
-  EXPECT_EQ(IDR_AUTOFILL_METADATA_CC_VISA_OLD,
-            CreditCard::IconResourceId(Suggestion::Icon::kCardVisa));
-}
-
-// Test we get the correct icon for each card type.
-TEST(CreditCardTest, IconResourceIdFromString_NewFopDisplayOff) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatureStates(
-      {{features::kAutofillEnableNewFopDisplayDesktop, false}});
-  EXPECT_EQ(IDR_AUTOFILL_METADATA_CC_AMEX_OLD,
-            CreditCard::IconResourceId(kAmericanExpressCard));
-  EXPECT_EQ(IDR_AUTOFILL_METADATA_CC_DINERS_OLD,
-            CreditCard::IconResourceId(kDinersCard));
-  EXPECT_EQ(IDR_AUTOFILL_METADATA_CC_DISCOVER_OLD,
-            CreditCard::IconResourceId(kDiscoverCard));
-  EXPECT_EQ(IDR_AUTOFILL_METADATA_CC_ELO_OLD,
-            CreditCard::IconResourceId(kEloCard));
-  EXPECT_EQ(IDR_AUTOFILL_METADATA_CC_JCB_OLD,
-            CreditCard::IconResourceId(kJCBCard));
-  EXPECT_EQ(IDR_AUTOFILL_METADATA_CC_MASTERCARD_OLD,
-            CreditCard::IconResourceId(kMasterCard));
-  EXPECT_EQ(IDR_AUTOFILL_METADATA_CC_MIR_OLD,
-            CreditCard::IconResourceId(kMirCard));
-  EXPECT_EQ(IDR_AUTOFILL_METADATA_CC_TROY_OLD,
-            CreditCard::IconResourceId(kTroyCard));
-  EXPECT_EQ(IDR_AUTOFILL_METADATA_CC_UNIONPAY_OLD,
-            CreditCard::IconResourceId(kUnionPay));
-  EXPECT_EQ(IDR_AUTOFILL_METADATA_CC_VERVE_OLD,
-            CreditCard::IconResourceId(kVerveCard));
-  EXPECT_EQ(IDR_AUTOFILL_METADATA_CC_VISA_OLD,
-            CreditCard::IconResourceId(kVisaCard));
-}
-
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 // Test we get the correct icon for each card type.
 TEST(CreditCardTest, IconResourceId) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatureStates(
-      {{features::kAutofillEnableNewFopDisplayDesktop, true}});
-
   EXPECT_EQ(IDR_AUTOFILL_METADATA_CC_AMEX,
             CreditCard::IconResourceId(Suggestion::Icon::kCardAmericanExpress));
   EXPECT_EQ(IDR_AUTOFILL_METADATA_CC_DINERS,
@@ -1304,10 +1241,6 @@ TEST(CreditCardTest, IconResourceId) {
 
 // Test we get the correct icon for each card type.
 TEST(CreditCardTest, IconResourceIdFromString) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatureStates(
-      {{features::kAutofillEnableNewFopDisplayDesktop, true}});
-
   EXPECT_EQ(IDR_AUTOFILL_METADATA_CC_AMEX,
             CreditCard::IconResourceId(kAmericanExpressCard));
   EXPECT_EQ(IDR_AUTOFILL_METADATA_CC_DINERS,

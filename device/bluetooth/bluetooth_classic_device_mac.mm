@@ -67,11 +67,25 @@
 
 - (void)deviceDisconnected:(IOBluetoothUserNotification*)notification
                     device:(IOBluetoothDevice*)device {
+  // |_device| may have been cleared by the C++ owner during destruction.
+  // This can happen if the OS delivers a late disconnect notification after
+  // the adapter has decided to remove the device and the C++ object is being
+  // torn down. In that case we simply ignore the notification.
+  if (!_device) {
+    return;
+  }
+
   _device->OnDeviceDisconnected();
 }
 
 - (void)stopListening {
   [_disconnectNotification unregister];
+
+  // Proactively clear the back-pointer so that any late notifications that
+  // do arrive after the C++ BluetoothClassicDeviceMac has started
+  // destruction will see a null |_device| and become a no-op instead of
+  // dereferencing a freed object.
+  _device = nullptr;
 }
 
 @end

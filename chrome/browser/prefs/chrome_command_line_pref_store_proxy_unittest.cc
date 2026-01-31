@@ -5,6 +5,8 @@
 #include <gtest/gtest.h>
 #include <stddef.h>
 
+#include <array>
+
 #include "base/command_line.h"
 #include "base/compiler_specific.h"
 #include "base/memory/ref_counted.h"
@@ -29,7 +31,8 @@ struct CommandLineTestParams {
   struct SwitchValue {
     const char* name;
     const char* value;
-  } switches[2];
+  };
+  std::array<CommandLineTestParams::SwitchValue, 2> switches;
 
   // Expected outputs (fields of the ProxyConfig).
   bool is_null;
@@ -42,113 +45,101 @@ void PrintTo(const CommandLineTestParams& params, std::ostream* os) {
   *os << params.description;
 }
 
-static const CommandLineTestParams kCommandLineTestParams[] = {
-    {
-        "Empty command line",
-        // Input
-        {},
-        // Expected result
-        true,   // is_null
-        false,  // auto_detect
-        "",     // pac_url
-        net::ProxyRulesExpectation::Empty(),
-    },
-    {
-        "No proxy",
-        // Input
-        {
-            {switches::kNoProxyServer, nullptr},
+static const auto kCommandLineTestParams =
+    std::to_array<CommandLineTestParams>({
+        CommandLineTestParams{
+            "Empty command line",
+            // Input
+            {},
+            // Expected result
+            true,   // is_null
+            false,  // auto_detect
+            "",     // pac_url
+            net::ProxyRulesExpectation::Empty(),
         },
-        // Expected result
-        false,  // is_null
-        false,  // auto_detect
-        "",     // pac_url
-        net::ProxyRulesExpectation::Empty(),
-    },
-    {
-        "No proxy with extra parameters.",
-        // Input
-        {
-            {switches::kNoProxyServer, nullptr},
-            {switches::kProxyServer, "http://proxy:8888"},
+        CommandLineTestParams{
+            "No proxy",
+            // Input
+            {{{switches::kNoProxyServer, nullptr}}},
+            // Expected result
+            false,  // is_null
+            false,  // auto_detect
+            "",     // pac_url
+            net::ProxyRulesExpectation::Empty(),
         },
-        // Expected result
-        false,  // is_null
-        false,  // auto_detect
-        "",     // pac_url
-        net::ProxyRulesExpectation::Empty(),
-    },
-    {
-        "Single proxy.",
-        // Input
-        {
-            {switches::kProxyServer, "http://proxy:8888"},
+        CommandLineTestParams{
+            "No proxy with extra parameters.",
+            // Input
+            {{{switches::kNoProxyServer, nullptr},
+              {switches::kProxyServer, "http://proxy:8888"}}},
+            // Expected result
+            false,  // is_null
+            false,  // auto_detect
+            "",     // pac_url
+            net::ProxyRulesExpectation::Empty(),
         },
-        // Expected result
-        false,                                            // is_null
-        false,                                            // auto_detect
-        "",                                               // pac_url
-        net::ProxyRulesExpectation::Single("proxy:8888",  // single proxy
-                                           ""),           // bypass rules
-    },
-    {
-        "Per scheme proxy.",
-        // Input
-        {
-            {switches::kProxyServer, "http=httpproxy:8888;ftp=ftpproxy:8889"},
+        CommandLineTestParams{
+            "Single proxy.",
+            // Input
+            {{{switches::kProxyServer, "http://proxy:8888"}}},
+            // Expected result
+            false,                                            // is_null
+            false,                                            // auto_detect
+            "",                                               // pac_url
+            net::ProxyRulesExpectation::Single("proxy:8888",  // single proxy
+                                               ""),           // bypass rules
         },
-        // Expected result
-        false,                                                   // is_null
-        false,                                                   // auto_detect
-        "",                                                      // pac_url
-        net::ProxyRulesExpectation::PerScheme("httpproxy:8888",  // http
-                                              "",                // https
-                                              "ftpproxy:8889",   // ftp
-                                              ""),               // bypass rules
-    },
-    {
-        "Per scheme proxy with bypass URLs.",
-        // Input
-        {
-            {switches::kProxyServer, "http=httpproxy:8888;ftp=ftpproxy:8889"},
-            {switches::kProxyBypassList,
-             ".google.com, foo.com:99, 1.2.3.4:22, 127.0.0.1/8"},
+        CommandLineTestParams{
+            "Per scheme proxy.",
+            // Input
+            {{{switches::kProxyServer,
+               "http=httpproxy:8888;ftp=ftpproxy:8889"}}},
+            // Expected result
+            false,  // is_null
+            false,  // auto_detect
+            "",     // pac_url
+            net::ProxyRulesExpectation::PerScheme("httpproxy:8888",  // http
+                                                  "",                // https
+                                                  "ftpproxy:8889",   // ftp
+                                                  ""),  // bypass rules
         },
-        // Expected result
-        false,  // is_null
-        false,  // auto_detect
-        "",     // pac_url
-        net::ProxyRulesExpectation::PerScheme(
-            "httpproxy:8888",  // http
-            "",                // https
-            "ftpproxy:8889",   // ftp
-            "*.google.com,foo.com:99,1.2.3.4:22,127.0.0.1/8"),
-    },
-    {
-        "Pac URL",
-        // Input
-        {
-            {switches::kProxyPacUrl, "http://wpad/wpad.dat"},
+        CommandLineTestParams{
+            "Per scheme proxy with bypass URLs.",
+            // Input
+            {{{switches::kProxyServer, "http=httpproxy:8888;ftp=ftpproxy:8889"},
+              {switches::kProxyBypassList,
+               ".google.com, foo.com:99, 1.2.3.4:22, 127.0.0.1/8"}}},
+            // Expected result
+            false,  // is_null
+            false,  // auto_detect
+            "",     // pac_url
+            net::ProxyRulesExpectation::PerScheme(
+                "httpproxy:8888",  // http
+                "",                // https
+                "ftpproxy:8889",   // ftp
+                "*.google.com,foo.com:99,1.2.3.4:22,127.0.0.1/8"),
         },
-        // Expected result
-        false,                   // is_null
-        false,                   // auto_detect
-        "http://wpad/wpad.dat",  // pac_url
-        net::ProxyRulesExpectation::Empty(),
-    },
-    {
-        "Autodetect",
-        // Input
-        {
-            {switches::kProxyAutoDetect, nullptr},
+        CommandLineTestParams{
+            "Pac URL",
+            // Input
+            {{{switches::kProxyPacUrl, "http://wpad/wpad.dat"}}},
+            // Expected result
+            false,                   // is_null
+            false,                   // auto_detect
+            "http://wpad/wpad.dat",  // pac_url
+            net::ProxyRulesExpectation::Empty(),
         },
-        // Expected result
-        false,  // is_null
-        true,   // auto_detect
-        "",     // pac_url
-        net::ProxyRulesExpectation::Empty(),
-    },
-};
+        CommandLineTestParams{
+            "Autodetect",
+            // Input
+            {{{switches::kProxyAutoDetect, nullptr}}},
+            // Expected result
+            false,  // is_null
+            true,   // auto_detect
+            "",     // pac_url
+            net::ProxyRulesExpectation::Empty(),
+        },
+    });
 
 }  // namespace
 
@@ -161,13 +152,12 @@ class ChromeCommandLinePrefStoreProxyTest
   net::ProxyConfigWithAnnotation* proxy_config() { return &proxy_config_; }
 
   void SetUp() override {
-    for (size_t i = 0; i < std::size(GetParam().switches); i++) {
-      const char* name = UNSAFE_TODO(GetParam().switches[i]).name;
-      const char* value = UNSAFE_TODO(GetParam().switches[i]).value;
-      if (name && value)
-        command_line_.AppendSwitchASCII(name, value);
-      else if (name)
-        command_line_.AppendSwitch(name);
+    for (const auto& switch_value : GetParam().switches) {
+      if (switch_value.name && switch_value.value) {
+        command_line_.AppendSwitchASCII(switch_value.name, switch_value.value);
+      } else if (switch_value.name) {
+        command_line_.AppendSwitch(switch_value.name);
+      }
     }
     scoped_refptr<PrefRegistrySimple> registry = new PrefRegistrySimple;
     PrefProxyConfigTrackerImpl::RegisterPrefs(registry.get());

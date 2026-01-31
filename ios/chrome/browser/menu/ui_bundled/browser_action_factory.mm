@@ -8,21 +8,22 @@
 #import "components/open_from_clipboard/clipboard_recent_content.h"
 #import "components/prefs/pref_service.h"
 #import "components/search_engines/template_url_service.h"
+#import "ios/chrome/browser/intelligence/features/features.h"
 #import "ios/chrome/browser/menu/ui_bundled/action_factory+protected.h"
 #import "ios/chrome/browser/policy/model/policy_util.h"
 #import "ios/chrome/browser/search_engines/model/template_url_service_factory.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
-#import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/browser_coordinator_commands.h"
+#import "ios/chrome/browser/shared/public/commands/bwg_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/lens_commands.h"
-#import "ios/chrome/browser/shared/public/commands/load_query_commands.h"
 #import "ios/chrome/browser/shared/public/commands/open_lens_input_selection_command.h"
 #import "ios/chrome/browser/shared/public/commands/open_new_tab_command.h"
 #import "ios/chrome/browser/shared/public/commands/qr_scanner_commands.h"
 #import "ios/chrome/browser/shared/public/commands/save_image_to_photos_command.h"
 #import "ios/chrome/browser/shared/public/commands/save_to_photos_commands.h"
+#import "ios/chrome/browser/shared/public/commands/scene_commands.h"
 #import "ios/chrome/browser/shared/public/commands/search_image_with_lens_command.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
@@ -99,8 +100,8 @@
 - (UIAction*)actionToOpenInNewWindowWithURL:(const GURL)URL
                              activityOrigin:
                                  (WindowActivityOrigin)activityOrigin {
-  id<ApplicationCommands> windowOpener = HandlerForProtocol(
-      self.browser->GetCommandDispatcher(), ApplicationCommands);
+  id<SceneCommands> windowOpener =
+      HandlerForProtocol(self.browser->GetCommandDispatcher(), SceneCommands);
 
   UIImage* image = DefaultSymbolWithPointSize(kNewWindowActionSymbol,
                                               kSymbolActionPointSize);
@@ -115,8 +116,8 @@
 }
 
 - (UIAction*)actionToOpenInNewWindowWithActivity:(NSUserActivity*)activity {
-  id<ApplicationCommands> windowOpener = HandlerForProtocol(
-      self.browser->GetCommandDispatcher(), ApplicationCommands);
+  id<SceneCommands> windowOpener =
+      HandlerForProtocol(self.browser->GetCommandDispatcher(), SceneCommands);
 
   UIImage* image = DefaultSymbolWithPointSize(kNewWindowActionSymbol,
                                               kSymbolActionPointSize);
@@ -170,8 +171,8 @@
 }
 
 - (UIAction*)actionToOpenNewTab {
-  id<ApplicationCommands> handler = HandlerForProtocol(
-      self.browser->GetCommandDispatcher(), ApplicationCommands);
+  id<SceneCommands> handler =
+      HandlerForProtocol(self.browser->GetCommandDispatcher(), SceneCommands);
   UIAction* action =
       [self actionWithTitle:l10n_util::GetNSString(IDS_IOS_TOOLS_MENU_NEW_TAB)
                       image:DefaultSymbolWithPointSize(kNewTabActionSymbol,
@@ -188,8 +189,8 @@
 }
 
 - (UIAction*)actionToOpenNewIncognitoTab {
-  id<ApplicationCommands> handler = HandlerForProtocol(
-      self.browser->GetCommandDispatcher(), ApplicationCommands);
+  id<SceneCommands> handler =
+      HandlerForProtocol(self.browser->GetCommandDispatcher(), SceneCommands);
   UIAction* action =
       [self actionWithTitle:l10n_util::GetNSString(
                                 IDS_IOS_TOOLS_MENU_NEW_INCOGNITO_TAB)
@@ -287,8 +288,8 @@
 }
 
 - (UIAction*)actionToStartVoiceSearch {
-  id<ApplicationCommands> handler = HandlerForProtocol(
-      self.browser->GetCommandDispatcher(), ApplicationCommands);
+  id<SceneCommands> handler =
+      HandlerForProtocol(self.browser->GetCommandDispatcher(), SceneCommands);
   return [self
       actionWithTitle:l10n_util::GetNSString(IDS_IOS_TOOLS_MENU_VOICE_SEARCH)
                 image:DefaultSymbolWithPointSize(kMicrophoneSymbol,
@@ -300,8 +301,8 @@
 }
 
 - (UIAction*)actionToStartNewSearch {
-  id<ApplicationCommands> handler = HandlerForProtocol(
-      self.browser->GetCommandDispatcher(), ApplicationCommands);
+  id<SceneCommands> handler =
+      HandlerForProtocol(self.browser->GetCommandDispatcher(), SceneCommands);
   UIAction* action = [self
       actionWithTitle:l10n_util::GetNSString(IDS_IOS_TOOLS_MENU_NEW_SEARCH)
                 image:DefaultSymbolWithPointSize(kSearchSymbol,
@@ -324,8 +325,8 @@
 }
 
 - (UIAction*)actionToStartNewIncognitoSearch {
-  id<ApplicationCommands> handler = HandlerForProtocol(
-      self.browser->GetCommandDispatcher(), ApplicationCommands);
+  id<SceneCommands> handler =
+      HandlerForProtocol(self.browser->GetCommandDispatcher(), SceneCommands);
   UIAction* action =
       [self actionWithTitle:l10n_util::GetNSString(
                                 IDS_IOS_TOOLS_MENU_NEW_INCOGNITO_SEARCH)
@@ -380,17 +381,18 @@
 
 - (UIAction*)actionToSearchCopiedImage {
   __weak __typeof(self) weakSelf = self;
+  base::WeakPtr<Browser> weakBrowser = self.browser->AsWeakPtr();
 
   void (^clipboardAction)(std::optional<gfx::Image>) =
       ^(std::optional<gfx::Image> optionalImage) {
-        if (!optionalImage || !weakSelf) {
+        __typeof(weakSelf) strongSelf = weakSelf;
+        if (!optionalImage || !strongSelf || !weakBrowser) {
           return;
         }
-        __typeof(weakSelf) strongSelf = weakSelf;
 
         TemplateURLService* templateURLService =
             ios::TemplateURLServiceFactory::GetForProfile(
-                strongSelf.browser->GetProfile());
+                weakBrowser->GetProfile());
 
         UIImage* image = [optionalImage.value().ToUIImage() copy];
 
@@ -399,7 +401,7 @@
                                                           templateURLService);
         UrlLoadParams params = UrlLoadParams::InCurrentTab(webParams);
 
-        UrlLoadingBrowserAgent::FromBrowser(strongSelf.browser)->Load(params);
+        UrlLoadingBrowserAgent::FromBrowser(weakBrowser.get())->Load(params);
       };
 
   return
@@ -416,8 +418,7 @@
 }
 
 - (UIAction*)actionToSearchCopiedURL {
-  id<LoadQueryCommands> handler = HandlerForProtocol(
-      self.browser->GetCommandDispatcher(), LoadQueryCommands);
+  base::WeakPtr<Browser> weakBrowser = self.browser->AsWeakPtr();
 
   void (^clipboardAction)(std::optional<GURL>) =
       ^(std::optional<GURL> optionalURL) {
@@ -426,7 +427,14 @@
         }
         NSString* URL = base::SysUTF8ToNSString(optionalURL.value().spec());
         dispatch_async(dispatch_get_main_queue(), ^{
-          [handler loadQuery:URL immediately:YES];
+          if (!weakBrowser) {
+            return;
+          }
+          UrlLoadingBrowserAgent* loadingAgent =
+              UrlLoadingBrowserAgent::FromBrowser(weakBrowser.get());
+          if (loadingAgent) {
+            loadingAgent->LoadURLForQuery(URL);
+          }
         });
       };
 
@@ -444,8 +452,7 @@
 }
 
 - (UIAction*)actionToSearchCopiedText {
-  id<LoadQueryCommands> handler = HandlerForProtocol(
-      self.browser->GetCommandDispatcher(), LoadQueryCommands);
+  base::WeakPtr<Browser> weakBrowser = self.browser->AsWeakPtr();
 
   void (^clipboardAction)(std::optional<std::u16string>) =
       ^(std::optional<std::u16string> optionalText) {
@@ -454,7 +461,14 @@
         }
         NSString* query = base::SysUTF16ToNSString(optionalText.value());
         dispatch_async(dispatch_get_main_queue(), ^{
-          [handler loadQuery:query immediately:YES];
+          if (!weakBrowser) {
+            return;
+          }
+          UrlLoadingBrowserAgent* loadingAgent =
+              UrlLoadingBrowserAgent::FromBrowser(weakBrowser.get());
+          if (loadingAgent) {
+            loadingAgent->LoadURLForQuery(query);
+          }
         });
       };
 
@@ -472,8 +486,8 @@
 }
 
 - (UIAction*)actionToOpenAIMenu {
-  id<ApplicationCommands> handler = HandlerForProtocol(
-      self.browser->GetCommandDispatcher(), ApplicationCommands);
+  id<SceneCommands> handler =
+      HandlerForProtocol(self.browser->GetCommandDispatcher(), SceneCommands);
   return [self actionWithTitle:@"Open AI menu"
                          image:DefaultSymbolWithPointSize(
                                    kMagicStackSymbol, kSymbolActionPointSize)
@@ -481,6 +495,38 @@
                          block:^{
                            [handler openAIMenu];
                          }];
+}
+
+#pragma mark - ActionFactory
+
+- (UIAction*)actionWithTitle:(NSString*)title
+                       image:(UIImage*)image
+                        type:(MenuActionType)type
+                       block:(ProceduralBlock)block {
+  __weak __typeof(self) weakSelf = self;
+  return [super actionWithTitle:title
+                          image:image
+                           type:type
+                          block:^{
+                            [weakSelf hideGeminiFloatyIfInvoked];
+                            if (block) {
+                              block();
+                            }
+                          }];
+}
+
+#pragma mark - Private
+
+// Helper method for completion block to hide Gemini Floaty. Ensures that the
+// floaty is hidden before the view invoked from an UIAction is presented.
+- (void)hideGeminiFloatyIfInvoked {
+  if (!IsGeminiCopresenceEnabled()) {
+    return;
+  }
+
+  id<BWGCommands> geminiHandler =
+      HandlerForProtocol(self.browser->GetCommandDispatcher(), BWGCommands);
+  [geminiHandler hideFloatyIfInvokedAnimated:YES];
 }
 
 @end

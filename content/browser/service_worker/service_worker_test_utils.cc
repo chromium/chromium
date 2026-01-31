@@ -788,14 +788,14 @@ ServiceWorkerUpdateCheckTestUtils::CreatePausedCacheWriter(
   worker_test_helper->context()
       ->registry()
       .GetRemoteStorageControl()
-      ->CreateResourceReader(old_resource_id,
+      ->CreateResourceReader(old_resource_id, /*sha256_checksum=*/std::nullopt,
                              compare_reader.BindNewPipeAndPassReceiver());
 
   mojo::Remote<storage::mojom::ServiceWorkerResourceReader> copy_reader;
   worker_test_helper->context()
       ->registry()
       .GetRemoteStorageControl()
-      ->CreateResourceReader(old_resource_id,
+      ->CreateResourceReader(old_resource_id, /*sha256_checksum=*/std::nullopt,
                              copy_reader.BindNewPipeAndPassReceiver());
 
   mojo::Remote<storage::mojom::ServiceWorkerResourceWriter> writer;
@@ -919,7 +919,7 @@ bool ServiceWorkerUpdateCheckTestUtils::VerifyStoredResponse(
     return false;
 
   mojo::Remote<storage::mojom::ServiceWorkerResourceReader> reader;
-  storage->CreateResourceReader(resource_id,
+  storage->CreateResourceReader(resource_id, /*sha256_checksum=*/std::nullopt,
                                 reader.BindNewPipeAndPassReceiver());
 
   // Verify the response status.

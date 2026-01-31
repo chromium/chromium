@@ -72,7 +72,7 @@ SafeBrowsingLoudErrorUI::~SafeBrowsingLoudErrorUI() {
 }
 
 void SafeBrowsingLoudErrorUI::PopulateStringsForHtml(
-    base::Value::Dict& load_time_data) {
+    base::DictValue& load_time_data) {
   load_time_data.Set("type", "SAFEBROWSING");
   load_time_data.Set("tabTitle",
                      l10n_util::GetStringUTF16(IDS_SAFEBROWSING_V3_TITLE));
@@ -246,7 +246,7 @@ void SafeBrowsingLoudErrorUI::HandleCommand(
 }
 
 void SafeBrowsingLoudErrorUI::PopulateMalwareLoadTimeData(
-    base::Value::Dict& load_time_data) {
+    base::DictValue& load_time_data) {
   load_time_data.Set("phishing", false);
   load_time_data.Set("heading",
                      l10n_util::GetStringUTF16(IDS_SAFEBROWSING_HEADING));
@@ -260,7 +260,7 @@ void SafeBrowsingLoudErrorUI::PopulateMalwareLoadTimeData(
 }
 
 void SafeBrowsingLoudErrorUI::PopulateHarmfulLoadTimeData(
-    base::Value::Dict& load_time_data) {
+    base::DictValue& load_time_data) {
   load_time_data.Set("phishing", false);
   load_time_data.Set("heading",
                      l10n_util::GetStringUTF16(IDS_SAFEBROWSING_HEADING));
@@ -274,7 +274,7 @@ void SafeBrowsingLoudErrorUI::PopulateHarmfulLoadTimeData(
 }
 
 void SafeBrowsingLoudErrorUI::PopulatePhishingLoadTimeData(
-    base::Value::Dict& load_time_data) {
+    base::DictValue& load_time_data) {
   load_time_data.Set("phishing", true);
   load_time_data.Set("heading",
                      l10n_util::GetStringUTF16(IDS_SAFEBROWSING_HEADING));
@@ -289,7 +289,7 @@ void SafeBrowsingLoudErrorUI::PopulatePhishingLoadTimeData(
 }
 
 void SafeBrowsingLoudErrorUI::PopulateExtendedReportingOption(
-    base::Value::Dict& load_time_data) {
+    base::DictValue& load_time_data) {
   bool can_show_extended_reporting_option = CanShowExtendedReportingOption();
   bool can_show_enhanced_protection_message =
       CanShowEnhancedProtectionMessage();
@@ -305,7 +305,7 @@ void SafeBrowsingLoudErrorUI::PopulateExtendedReportingOption(
 }
 
 void SafeBrowsingLoudErrorUI::PopulateEnhancedProtectionMessage(
-    base::Value::Dict& load_time_data) {
+    base::DictValue& load_time_data) {
   bool can_show_enhanced_protection_message =
       CanShowEnhancedProtectionMessage();
   if (can_show_enhanced_protection_message) {
@@ -317,7 +317,7 @@ void SafeBrowsingLoudErrorUI::PopulateEnhancedProtectionMessage(
 }
 
 void SafeBrowsingLoudErrorUI::PopulateBillingLoadTimeData(
-    base::Value::Dict& load_time_data) {
+    base::DictValue& load_time_data) {
   load_time_data.Set("phishing", false);
   load_time_data.Set("overridable", true);
 

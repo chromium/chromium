@@ -14,6 +14,7 @@
 #include "chrome/browser/ui/tabs/vertical_tab_strip_state_controller.h"
 #include "chrome/browser/ui/toolbar/app_menu_model.h"
 #include "chrome/browser/ui/ui_features.h"
+#include "chrome/browser/ui/views/frame/immersive_mode_controller.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_switches.h"
@@ -25,6 +26,7 @@
 #if BUILDFLAG(IS_CHROMEOS)
 #include "ash/multi_user/multi_user_window_manager.h"
 #include "ash/shell.h"
+#include "chrome/browser/ash/boca/on_task/on_task_locked_controller.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/ash/multi_user/multi_user_util.h"
 #include "chrome/browser/ui/browser_window.h"
@@ -110,10 +112,16 @@ void SystemMenuModelBuilder::BuildSystemMenuForBrowserWindow(
 #endif  // BUILDFLAG(IS_WIN)
 #endif  // BUILDFLAG(ENABLE_GLIC)
 
-  if (tabs::IsVerticalTabsFeatureEnabled()) {
+  if (auto* controller =
+          tabs::VerticalTabStripStateController::From(browser())) {
+    // TODO(crbug.com/475222200): When in immersive, swapping between tab
+    // strip types create duplicate tab strips. Until that is resolved, disable
+    // the ability to swap between tab strips while in immersive.
+    if (ImmersiveModeController::From(browser())->IsEnabled()) {
+      return;
+    }
     model->AddSeparator(ui::NORMAL_SEPARATOR);
-    if (tabs::VerticalTabStripStateController::From(browser())
-            ->ShouldDisplayVerticalTabs()) {
+    if (controller->ShouldDisplayVerticalTabs()) {
       model->AddItemWithStringId(IDC_TOGGLE_VERTICAL_TABS,
                                  IDS_SWITCH_TO_HORIZONTAL_TAB);
     } else {
@@ -194,7 +202,8 @@ void SystemMenuModelBuilder::BuildSystemMenuForAppOrPopupWindow(
 #if BUILDFLAG(IS_CHROMEOS)
   // Hide TaskManager option for the app if it is locked for OnTask. Only
   // relevant for non-web browser scenarios.
-  if (browser()->IsLockedForOnTask()) {
+  if (ash::boca::OnTaskLockedController::From(browser())
+          ->is_locked_for_on_task()) {
     should_show_task_manager = false;
   }
 #endif
@@ -217,7 +226,8 @@ void SystemMenuModelBuilder::AppendMoveToDesksMenu(ui::SimpleMenuModel* model) {
   auto* const browser = menu_delegate_.browser();
   // Do not show the move to desks menu if the app is locked for OnTask. Only
   // relevant for non-web browser scenarios.
-  if (browser->IsLockedForOnTask() ||
+  if (ash::boca::OnTaskLockedController::From(browser)
+          ->is_locked_for_on_task() ||
       !chromeos::MoveToDesksMenuDelegate::ShouldShowMoveToDesksMenu()) {
     return;
   }

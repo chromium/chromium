@@ -7,7 +7,7 @@
 
 #import <UIKit/UIKit.h>
 
-#import "ios/chrome/browser/browser_container/model/edit_menu_builder.h"
+#import "ios/chrome/browser/browser_content/model/edit_menu_builder.h"
 
 // A builder that modifies the edit menu based on Data Controls policies.
 @interface DataControlsEditMenuBuilder : NSObject <EditMenuBuilder>

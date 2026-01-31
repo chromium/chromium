@@ -52,7 +52,7 @@ void SetupWebUIDataSource(content::WebUIDataSource* source,
   SetJSModuleDefaults(source);
   EnableTrustedTypesCSP(source);
   source->AddResourcePaths(resources);
-  source->AddResourcePath("", default_resource);
+  source->SetDefaultResource(default_resource);
 }
 
 }  // namespace

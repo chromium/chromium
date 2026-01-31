@@ -26,7 +26,6 @@
 #include "ash/system/time/calendar_unittest_utils.h"
 #include "ash/system/time/calendar_utils.h"
 #include "ash/test/ash_test_base.h"
-#include "base/containers/contains.h"
 #include "base/run_loop.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
@@ -120,7 +119,7 @@ TEST_F(CalendarModelUtilsTest, SurroundingMonths) {
   // 0 months out.
   months = calendar_utils::GetSurroundingMonthsUTC(current_date, 0);
   EXPECT_EQ(1UL, months.size());
-  EXPECT_TRUE(base::Contains(months, start_of_month));
+  EXPECT_TRUE(months.contains(start_of_month));
 
   // 1 month out.
   base::Time start_of_previous_month =
@@ -129,9 +128,9 @@ TEST_F(CalendarModelUtilsTest, SurroundingMonths) {
       calendar_test_utils::GetTimeFromString("01 Nov 2009 00:00 GMT");
   months = calendar_utils::GetSurroundingMonthsUTC(current_date, 1);
   EXPECT_EQ(3UL, months.size());
-  EXPECT_TRUE(base::Contains(months, start_of_month));
-  EXPECT_TRUE(base::Contains(months, start_of_previous_month));
-  EXPECT_TRUE(base::Contains(months, start_of_next_month));
+  EXPECT_TRUE(months.contains(start_of_month));
+  EXPECT_TRUE(months.contains(start_of_previous_month));
+  EXPECT_TRUE(months.contains(start_of_next_month));
 
   // 2 months out.
   base::Time start_of_previous_month_2 =
@@ -140,11 +139,11 @@ TEST_F(CalendarModelUtilsTest, SurroundingMonths) {
       calendar_test_utils::GetTimeFromString("01 Dec 2009 00:00 GMT");
   months = calendar_utils::GetSurroundingMonthsUTC(current_date, 2);
   EXPECT_EQ(5UL, months.size());
-  EXPECT_TRUE(base::Contains(months, start_of_month));
-  EXPECT_TRUE(base::Contains(months, start_of_previous_month));
-  EXPECT_TRUE(base::Contains(months, start_of_next_month));
-  EXPECT_TRUE(base::Contains(months, start_of_previous_month_2));
-  EXPECT_TRUE(base::Contains(months, start_of_next_month_2));
+  EXPECT_TRUE(months.contains(start_of_month));
+  EXPECT_TRUE(months.contains(start_of_previous_month));
+  EXPECT_TRUE(months.contains(start_of_next_month));
+  EXPECT_TRUE(months.contains(start_of_previous_month_2));
+  EXPECT_TRUE(months.contains(start_of_next_month_2));
 
   // 3 months out, which takes us into the next year.
   base::Time start_of_previous_month_3 =
@@ -153,13 +152,13 @@ TEST_F(CalendarModelUtilsTest, SurroundingMonths) {
       calendar_test_utils::GetTimeFromString("01 Jan 2010 00:00 GMT");
   months = calendar_utils::GetSurroundingMonthsUTC(current_date, 3);
   EXPECT_EQ(7UL, months.size());
-  EXPECT_TRUE(base::Contains(months, start_of_month));
-  EXPECT_TRUE(base::Contains(months, start_of_previous_month));
-  EXPECT_TRUE(base::Contains(months, start_of_next_month));
-  EXPECT_TRUE(base::Contains(months, start_of_previous_month_2));
-  EXPECT_TRUE(base::Contains(months, start_of_next_month_2));
-  EXPECT_TRUE(base::Contains(months, start_of_previous_month_3));
-  EXPECT_TRUE(base::Contains(months, start_of_next_month_3));
+  EXPECT_TRUE(months.contains(start_of_month));
+  EXPECT_TRUE(months.contains(start_of_previous_month));
+  EXPECT_TRUE(months.contains(start_of_next_month));
+  EXPECT_TRUE(months.contains(start_of_previous_month_2));
+  EXPECT_TRUE(months.contains(start_of_next_month_2));
+  EXPECT_TRUE(months.contains(start_of_previous_month_3));
+  EXPECT_TRUE(months.contains(start_of_next_month_3));
 }
 
 class CalendarModelTest
@@ -257,7 +256,7 @@ class CalendarModelTest
   bool EventsPresentAtIndex(std::vector<base::Time>& months, int index) {
     DCHECK_GE(index, 0);
     DCHECK_LT(index, static_cast<int>(months.size()));
-    return base::Contains(calendar_model_->event_months_, months[index]);
+    return calendar_model_->event_months_.contains(months[index]);
   }
 
   bool EventsPresentInRange(std::vector<base::Time>& months,
@@ -284,7 +283,7 @@ class CalendarModelTest
     for (int i = start_index; i < end_index; ++i) {
       const base::Time& start_of_month =
           calendar_utils::GetFirstDayOfMonth(months[i]).UTCMidnight();
-      if (base::Contains(non_prunable_months(), start_of_month)) {
+      if (non_prunable_months().contains(start_of_month)) {
         continue;
       }
 
@@ -735,7 +734,7 @@ TEST_P(CalendarModelTest, PruneEvents) {
 
   std::vector<base::Time> init_prunable_months;
   for (auto& month : event_months()) {
-    if (!base::Contains(non_prunable_months(), month.first)) {
+    if (!non_prunable_months().contains(month.first)) {
       init_prunable_months.push_back(month.first);
     }
   }
@@ -771,7 +770,7 @@ TEST_P(CalendarModelTest, PruneEvents) {
 
   // No `non_prunable_months` is delected.
   for (auto month : non_prunable_months()) {
-    EXPECT_TRUE(base::Contains(event_months(), month));
+    EXPECT_TRUE(event_months().contains(month));
   }
 
   EXPECT_EQ((int)event_months().size(), kNumEvents + 1);
@@ -1489,7 +1488,7 @@ TEST_P(CalendarModelTest, FindUpcomingEvents_SameDay) {
   auto events = calendar_model_->FindUpcomingEvents(now_);
 
   auto event_list_contains = [](auto& event_list, auto& id) {
-    return base::Contains(event_list, id, &CalendarEvent::id);
+    return std::ranges::contains(event_list, id, &CalendarEvent::id);
   };
 
   // We should only get the 2 events back that start in 10 mins or were ongoing
@@ -1536,7 +1535,7 @@ TEST_P(CalendarModelTest, FindUpcomingEvents_NextDay) {
   auto events = calendar_model_->FindUpcomingEvents(now_);
 
   auto event_list_contains = [](auto& event_list, auto& id) {
-    return base::Contains(event_list, id, &CalendarEvent::id);
+    return std::ranges::contains(event_list, id, &CalendarEvent::id);
   };
 
   EXPECT_EQ(events.size(), size_t(0));
@@ -1571,7 +1570,7 @@ TEST_P(CalendarModelTest, FindUpcomingEvents_PreviousDay) {
   auto events = calendar_model_->FindUpcomingEvents(now_);
 
   auto event_list_contains = [](auto& event_list, auto& id) {
-    return base::Contains(event_list, id, &CalendarEvent::id);
+    return std::ranges::contains(event_list, id, &CalendarEvent::id);
   };
 
   EXPECT_EQ(events.size(), size_t(1));
@@ -1607,7 +1606,7 @@ TEST_P(CalendarModelTest, FindUpcomingEvents_ShowTheNextEvent) {
   auto events = calendar_model_->FindUpcomingEvents(now_);
 
   auto event_list_contains = [](auto& event_list, auto& id) {
-    return base::Contains(event_list, id, &CalendarEvent::id);
+    return std::ranges::contains(event_list, id, &CalendarEvent::id);
   };
 
   EXPECT_EQ(events.size(), size_t(1));
@@ -1689,7 +1688,7 @@ TEST_P(CalendarModelTest, ShowEventsStartIn10MinsAsUpNext) {
   auto events = calendar_model_->FindUpcomingEvents(now_);
 
   auto event_list_contains = [](auto& event_list, auto& id) {
-    return base::Contains(event_list, id, &CalendarEvent::id);
+    return std::ranges::contains(event_list, id, &CalendarEvent::id);
   };
 
   EXPECT_EQ(events.size(), size_t(2));
@@ -1728,7 +1727,7 @@ TEST_P(CalendarModelTest, ShowTheFirstEventAsUpNext) {
   auto events = calendar_model_->FindUpcomingEvents(now_);
 
   auto event_list_contains = [](auto& event_list, auto& id) {
-    return base::Contains(event_list, id, &CalendarEvent::id);
+    return std::ranges::contains(event_list, id, &CalendarEvent::id);
   };
 
   EXPECT_EQ(events.size(), size_t(1));

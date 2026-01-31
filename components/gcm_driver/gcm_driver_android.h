@@ -39,10 +39,10 @@ class GCMDriverAndroid : public GCMDriver,
       JNIEnv* env,
       const base::android::JavaRef<jstring>& app_id,
       const base::android::JavaRef<jstring>& registration_id,
-      jboolean success);
+      bool success);
   void OnUnregisterFinished(JNIEnv* env,
                             const base::android::JavaRef<jstring>& app_id,
-                            jboolean success);
+                            bool success);
   void OnMessageReceived(
       JNIEnv* env,
       const base::android::JavaRef<jstring>& app_id,

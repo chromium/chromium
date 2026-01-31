@@ -173,10 +173,6 @@ struct WebPreferences {
   // mixed content, and disables embedder notifications that such content was
   // requested (thereby preventing user override).
   bool strict_mixed_content_checking;
-  // Strict powerful feature restrictions block insecure usage of powerful
-  // features (like device orientation) that we haven't yet disabled for the web
-  // at large.
-  bool strict_powerful_feature_restrictions;
   // TODO(jww): Remove when WebView no longer needs this exception.
   bool allow_geolocation_on_insecure_origins;
   // Disallow user opt-in for blockable mixed content.
@@ -369,6 +365,10 @@ struct WebPreferences {
   // Long press on links selects text instead of triggering context menu.
   [EnableIf=is_android]
   bool long_press_link_select_text;
+
+  // Support WebView font scaling behavior that differs from Chrome.
+  [EnableIf=is_android]
+  bool scale_all_fonts_if_no_meta_text_scale_tag;
 
   // Disable the Web Authentication (WebAuthn) API.
   // TODO(crbug.com/1284805): Remove once WebView supports WebAuthn.

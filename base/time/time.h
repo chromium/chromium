@@ -126,8 +126,8 @@ constexpr TimeDelta Microseconds(T n);
 
 namespace {
 
-// TODO: Replace usage of this with std::isnan() once Chromium uses C++23,
-// where that is constexpr.
+// TODO: Replace usage of this with std::isnan() once the Windows toolchain
+// supports that being constexpr (other toolchains already do).
 constexpr bool isnan(double d) {
   return d != d;
 }
@@ -885,42 +885,42 @@ class BASE_EXPORT Time : public time_internal::TimeBase<Time> {
 
 template <typename T>
 constexpr TimeDelta Days(T n) {
-  return TimeDelta::FromInternalValue(MakeClampedNum(n) *
+  return TimeDelta::FromInternalValue(ClampedNumeric(n) *
                                       Time::kMicrosecondsPerDay);
 }
 template <typename T>
 constexpr TimeDelta Hours(T n) {
-  return TimeDelta::FromInternalValue(MakeClampedNum(n) *
+  return TimeDelta::FromInternalValue(ClampedNumeric(n) *
                                       Time::kMicrosecondsPerHour);
 }
 template <typename T>
 constexpr TimeDelta Minutes(T n) {
-  return TimeDelta::FromInternalValue(MakeClampedNum(n) *
+  return TimeDelta::FromInternalValue(ClampedNumeric(n) *
                                       Time::kMicrosecondsPerMinute);
 }
 template <typename T>
 constexpr TimeDelta Seconds(T n) {
-  return TimeDelta::FromInternalValue(MakeClampedNum(n) *
+  return TimeDelta::FromInternalValue(ClampedNumeric(n) *
                                       Time::kMicrosecondsPerSecond);
 }
 template <typename T>
 constexpr TimeDelta Milliseconds(T n) {
-  return TimeDelta::FromInternalValue(MakeClampedNum(n) *
+  return TimeDelta::FromInternalValue(ClampedNumeric(n) *
                                       Time::kMicrosecondsPerMillisecond);
 }
 template <typename T>
 constexpr TimeDelta Microseconds(T n) {
-  return TimeDelta::FromInternalValue(MakeClampedNum(n));
+  return TimeDelta::FromInternalValue(ClampedNumeric(n));
 }
 template <typename T>
 constexpr TimeDelta Nanoseconds(T n) {
-  return TimeDelta::FromInternalValue(MakeClampedNum(n) /
+  return TimeDelta::FromInternalValue(ClampedNumeric(n) /
                                       Time::kNanosecondsPerMicrosecond);
 }
 template <typename T>
 constexpr TimeDelta Hertz(T n) {
   return n ? TimeDelta::FromInternalValue(Time::kMicrosecondsPerSecond /
-                                          MakeClampedNum(n))
+                                          ClampedNumeric(n))
            : TimeDelta::Max();
 }
 
@@ -1267,7 +1267,7 @@ class BASE_EXPORT TimeTicks : public time_internal::TimeBase<TimeTicks> {
 
   // Truncates the TimeTicks value to the precision of SystemClock#uptimeMillis.
   // Note that the clocks already share the same monotonic clock source.
-  jlong ToUptimeMillis() const;
+  int64_t ToUptimeMillis() const;
 
   // Returns the TimeTicks value as microseconds in the timebase of
   // SystemClock#uptimeMillis.
@@ -1276,7 +1276,7 @@ class BASE_EXPORT TimeTicks : public time_internal::TimeBase<TimeTicks> {
   // System.nanoTime() may be used to get sub-millisecond precision in Java code
   // and may be compared against this value as the two share the same clock
   // source (though be sure to convert nanos to micros).
-  jlong ToUptimeMicros() const;
+  int64_t ToUptimeMicros() const;
 
 #endif  // BUILDFLAG(IS_ANDROID)
 

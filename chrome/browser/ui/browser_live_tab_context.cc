@@ -8,10 +8,8 @@
 #include <numeric>
 #include <optional>
 #include <utility>
-#include <vector>
 
 #include "base/check_deref.h"
-#include "base/feature_list.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/to_string.h"
 #include "base/token.h"
@@ -31,6 +29,7 @@
 #include "chrome/browser/ui/browser_tabrestore.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tabs/features.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_utils.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/tab_group_action_context_desktop.h"
@@ -39,8 +38,6 @@
 #include "chrome/browser/ui/tabs/vertical_tab_strip_state_controller.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
-#include "chrome/common/buildflags.h"
-#include "components/performance_manager/public/features.h"
 #include "components/saved_tab_groups/public/features.h"
 #include "components/saved_tab_groups/public/saved_tab_group.h"
 #include "components/saved_tab_groups/public/tab_group_sync_service.h"
@@ -58,10 +55,6 @@
 #include "content/public/browser/web_contents.h"
 #include "ui/base/mojom/window_show_state.mojom.h"
 #include "ui/base/window_open_disposition.h"
-
-#if BUILDFLAG(ENABLE_SESSION_SERVICE)
-#include "chrome/browser/sessions/tab_loader.h"
-#endif
 
 using content::NavigationController;
 using content::SessionStorageNamespace;
@@ -150,12 +143,12 @@ std::string BrowserLiveTabContext::GetUserTitle() const {
 }
 
 sessions::LiveTab* BrowserLiveTabContext::GetLiveTabAt(int index) const {
-  return sessions::ContentLiveTab::GetForWebContents(
+  return sessions::ContentLiveTab::GetOrCreateForWebContents(
       tab_strip_model_->GetWebContentsAt(index));
 }
 
 sessions::LiveTab* BrowserLiveTabContext::GetActiveLiveTab() const {
-  return sessions::ContentLiveTab::GetForWebContents(
+  return sessions::ContentLiveTab::GetOrCreateForWebContents(
       tab_strip_model_->GetActiveWebContents());
 }
 
@@ -168,15 +161,13 @@ std::map<std::string, std::string>
 BrowserLiveTabContext::GetExtraDataForWindow() const {
   std::map<std::string, std::string> data;
 
-  if (tabs::IsVerticalTabsFeatureEnabled()) {
-    auto* controller =
-        tabs::VerticalTabStripStateController::From(&browser_.get());
-    if (controller) {
-      data[tabs::VerticalTabStripStateController::kCollapsedKey] =
-          base::ToString(controller->IsCollapsed());
-      data[tabs::VerticalTabStripStateController::kUncollapsedWidthKey] =
-          base::NumberToString(controller->GetUncollapsedWidth());
-    }
+  auto* controller =
+      tabs::VerticalTabStripStateController::From(&browser_.get());
+  if (controller) {
+    data[tabs::VerticalTabStripStateController::kCollapsedKey] =
+        base::ToString(controller->IsCollapsed());
+    data[tabs::VerticalTabStripStateController::kUncollapsedWidthKey] =
+        base::NumberToString(controller->GetUncollapsedWidth());
   }
 
   return data;
@@ -209,6 +200,18 @@ BrowserLiveTabContext::GetSavedTabGroupIdForGroup(
 
   return saved_group ? std::make_optional(saved_group->saved_guid())
                      : std::nullopt;
+}
+
+const std::optional<tab_groups::TabGroupId>
+BrowserLiveTabContext::GetGroupIdForSavedGroup(const base::Uuid& saved) const {
+  tab_groups::TabGroupSyncService* tab_group_service =
+      tab_groups::TabGroupSyncServiceFactory::GetForProfile(&profile_.get());
+  CHECK(tab_group_service);
+
+  const std::optional<tab_groups::SavedTabGroup> saved_group =
+      tab_group_service->GetGroup(saved);
+
+  return saved_group ? saved_group->local_group_id() : std::nullopt;
 }
 
 bool BrowserLiveTabContext::IsTabPinned(int index) const {
@@ -297,8 +300,10 @@ sessions::LiveTab* BrowserLiveTabContext::AddRestoredTab(
       Browser* source_browser =
           tab_groups::SavedTabGroupUtils::GetBrowserWithTabGroupId(
               group_id.value());
-      tab_groups::SavedTabGroupUtils::FocusFirstTabOrWindowInOpenGroup(
-          group_id.value());
+      if (original_session_type == sessions::tab_restore::Type::GROUP) {
+        tab_groups::SavedTabGroupUtils::FocusFirstTabOrWindowInOpenGroup(
+            group_id.value());
+      }
 
       // Move the group into `browser` if it is open in a different browser.
       if (source_browser != browser) {
@@ -331,44 +336,13 @@ sessions::LiveTab* BrowserLiveTabContext::AddRestoredTab(
 
   CHECK(web_contents);
 
-  if (base::FeatureList::IsEnabled(
-          performance_manager::features::
-              kBackgroundTabLoadingFromPerformanceManager)) {
-    if (performance_manager::policies::CanScheduleLoadForRestoredTabs()) {
-      performance_manager::policies::ScheduleLoadForRestoredTabs(
-          {web_contents});
-    } else {
-      // Load the tab manually if there's no BackgroundTabLoadingPolicy.
-      web_contents->GetController().LoadIfNecessary();
-    }
-    return sessions::ContentLiveTab::GetForWebContents(web_contents);
+  if (performance_manager::policies::CanScheduleLoadForRestoredTabs()) {
+    performance_manager::policies::ScheduleLoadForRestoredTabs({web_contents});
+  } else {
+    // Load the tab manually if there's no BackgroundTabLoadingPolicy.
+    web_contents->GetController().LoadIfNecessary();
   }
-
-#if BUILDFLAG(ENABLE_SESSION_SERVICE)
-  // The tab may have been made active even if `select` is false if it is the
-  // only tab in `tab_strip_model_`.
-  const bool is_active =
-      tab_strip_model_->GetActiveWebContents() == web_contents;
-  // The active tab will be loaded by Browser, and TabLoader will load the rest.
-  if (!is_active) {
-    // Regression check: make sure that the tab hasn't started to load
-    // immediately.
-    DCHECK(web_contents->GetController().NeedsReload());
-    DCHECK(!web_contents->IsLoading());
-  }
-
-  std::vector<TabLoader::RestoredTab> restored_tabs;
-  restored_tabs.emplace_back(web_contents, is_active,
-                             !tab.extension_app_id.empty(), tab.pinned,
-                             group_id, std::nullopt);
-  TabLoader::DeprecatedRestoreTabs(restored_tabs, base::TimeTicks::Now());
-
-#else   // BUILDFLAG(ENABLE_SESSION_SERVICE)
-  // Load the tab manually if there is no TabLoader.
-  web_contents->GetController().LoadIfNecessary();
-#endif  // BUILDFLAG(ENABLE_SESSION_SERVICE)
-
-  return sessions::ContentLiveTab::GetForWebContents(web_contents);
+  return sessions::ContentLiveTab::GetOrCreateForWebContents(web_contents);
 }
 
 sessions::LiveTab* BrowserLiveTabContext::ReplaceRestoredTab(
@@ -387,7 +361,7 @@ sessions::LiveTab* BrowserLiveTabContext::ReplaceRestoredTab(
       tab.normalized_navigation_index(), tab.extension_app_id,
       storage_namespace, tab.user_agent_override, tab.extra_data,
       false /* from_session_restore */);
-  return sessions::ContentLiveTab::GetForWebContents(web_contents);
+  return sessions::ContentLiveTab::GetOrCreateForWebContents(web_contents);
 }
 
 void BrowserLiveTabContext::CloseTab() {

@@ -110,7 +110,6 @@
 <translation id="1813278315230285598">सेवाहरू</translation>
 <translation id="181434555916624618">अहिलेका लागि मान्छेहरूसहितका परिणामहरू देखाइने छैनन्। अर्कै प्रम्प्ट प्रयोग गरी हेर्नुहोस्।</translation>
 <translation id="1829129547161959350">पेन्गुइन</translation>
-<translation id="183183971458492120">जानकारी लोड गर्दै...</translation>
 <translation id="1832073788765803750">आधा चौडाइ भएको काताकाना</translation>
 <translation id="1834290891154666894">विषयको वैकल्पिक नामसँग मिल्दोजुल्दो प्रविष्टि अवैध छ</translation>
 <translation id="1838709767668011582">Google को साइट</translation>
@@ -147,13 +146,13 @@
 <translation id="2142680004883808240">रसियाली फोनेटिक YaZHert किबोर्ड</translation>
 <translation id="2143778271340628265">म्यानुअल प्रोक्सी कन्फिगरेसन</translation>
 <translation id="2148716181193084225">आज</translation>
+<translation id="2161573825856688200">Google प्रोजेक्ट</translation>
 <translation id="2163152940313951844">अमान्य वर्ण: <ph name="CHARACTER_NAME" /></translation>
 <translation id="2178056538281447670">Microsoft 365</translation>
 <translation id="2184934335987813305">सं. रा. अमेरिकी अन्तर्राष्ट्रिय PC ढाँचाको पोर्तुगाली किबोर्ड</translation>
 <translation id="2193661397560634290"><ph name="SPACE_USED" /> प्रयोग गरिएको छ</translation>
 <translation id="2198315389084035571">सरल गरिएको चिनीया</translation>
 <translation id="22085916256174561">कोरियाली</translation>
-<translation id="2208919847696382164">Linux प्रयोग गरी इन्स्टल गर्नुहोस्</translation>
 <translation id="2215692307449050019">ब्याट्री कम छ। तपाईंको डिभाइस बिजुलीको स्रोतमा जोडिएपछि फाइल सिंक गर्ने कार्य सुचारु गरिने छ।</translation>
 <translation id="2225536596944493418">तपाईंले <ph name="NUMBER_OF_ITEMS" /> वस्तुहरू मेटाउन खोज्नुभएकै हो?</translation>
 <translation id="2230062665678605299">"<ph name="FOLDER_NAME" />". <ph name="ERROR_MESSAGE" /> फोल्डर सिर्जना गर्न सकिएन</translation>
@@ -214,7 +213,6 @@
 <translation id="2653059201992392941">तपाईं अझै <ph name="RETRIES" /> पटक प्रयास गर्न सक्नुहुन्छ।</translation>
 <translation id="2663066752008346276">बर्मेली/म्यान्मार म्यान्सन किबोर्ड</translation>
 <translation id="2664412712123763093">फाइल रहेको स्थान</translation>
-<translation id="2718540689505416944">Linux प्रयोग गरी एप इन्स्टल गर्नुहोस्</translation>
 <translation id="2719020180254996569"><ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" /> मध्ये नेटवर्क <ph name="NETWORK_INDEX" />, विवरणहरू</translation>
 <translation id="2724954091494693138">तुर्किस F-किबोर्ड</translation>
 <translation id="2732288874651063549"><ph name="VM_NAME" /> सँग सेयर गरिने फाइल तथा फोल्डरहरू व्यवस्थापन गर्नुहोस्</translation>
@@ -223,7 +221,6 @@
 <translation id="2764206540577097904">तपाईंले आफ्नो Google Workspace को व्यक्तिगत भण्डारण पूरै प्रयोग गरिसक्नुभएको छ।</translation>
 <translation id="2771816809568414714">चिज</translation>
 <translation id="2781645665747935084">बेल्गियम</translation>
-<translation id="2782104745158847185">Linux एप स्थापना गर्ने क्रममा त्रुटि भयो</translation>
 <translation id="2802583107108007218">यी प्रतिबन्धहरूका बारेमा थप जान्नुहोस्</translation>
 <translation id="2803375539583399270">PIN हाल्नुहोस्</translation>
 <translation id="2819519502129272135">फाइल सिंक गर्ने सुविधा अफ गरिएको छ</translation>
@@ -250,7 +247,7 @@
 <translation id="3003189754374775221"><ph name="NETWORK_COUNT" /> मध्ये <ph name="NETWORK_INDEX" /> औँ नेटवर्क, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, सिग्नलको क्षमता <ph name="SIGNAL_STRENGTH" />%, कनेक्ट गर्नुहोस्</translation>
 <translation id="3003633581067744647">थम्बनेल दृश्यमा बदल्नुहोस्‌</translation>
 <translation id="3016566519832145558">चेतावनी: यी फाइलहरू अस्थायी हुन् र भण्डारणमा ठाउँ खाली गर्नका निम्ति यी फाइल स्वतः मेटाइन सक्छन्।</translation>
-<translation id="3029114385395636667">डकुमेन्ट, पाना तथा स्लाइडहरू अफलाइन हेर्न तथा प्रयोग गर्नका निम्ति 'Google कागजात अफलाइन' अन गर्नुहोस्।</translation>
+<translation id="3029114385395636667">डकुमेन्ट, पाना तथा स्लाइडहरू अफलाइन हेर्न तथा प्रयोग गर्नका निम्ति 'Google Docs अफलाइन' अन गर्नुहोस्।</translation>
 <translation id="303198083543495566">भूगोल</translation>
 <translation id="3044404008258011032">तपाईं यी फाइलहरू रिस्टोर गर्न चाहनुहुन्छ भने ती फाइलहरू ड्र्याग गरेर ट्र्यासबाहिर रहेको नयाँ फोल्डरमा लैजानुहोस्। यी फाइलहरूको मूल फोल्डर "<ph name="PARENT_FOLDER_NAME" />" मेटाइएको छ।</translation>
 <translation id="3047197340186497470">चिनियाँ दायी</translation>
@@ -346,7 +343,6 @@
 <translation id="3786301125658655746">तपाईं अफलाइन हुनुहुन्छ</translation>
 <translation id="3789841737615482174">इन्स्टल गर्नुहोस्</translation>
 <translation id="3793469551756281394">लगभग <ph name="REMAINING_TIME_HOUR" /> <ph name="REMAINING_TIME_MINUTE" /> बाँकी</translation>
-<translation id="3798449238516105146">संस्करण</translation>
 <translation id="3801082500826908679">फारोइज</translation>
 <translation id="3809272675881623365">खरायो</translation>
 <translation id="3810973564298564668">व्यवस्थित गर्नुहोस्</translation>
@@ -360,12 +356,11 @@
 <translation id="385051799172605136">पछाडि जानुहोस्</translation>
 <translation id="3855472144336161447">जर्मन नियो 2</translation>
 <translation id="3858860766373142691">नाम</translation>
-<translation id="3866249974567520381">विवरण</translation>
 <translation id="3899991606604168269">फ्रान्सेली (क्यानाडा) बहुभाषी किबोर्ड</translation>
 <translation id="3901991538546252627"><ph name="NAME" /> मा कनेक्ट गरिँदै छ</translation>
 <translation id="3906232975181435906">मोबाइल प्रोफाइल इन्स्टल गरिँदै छ। यो प्रोफाइल <ph name="NETWORK_NAME" /> नेटवर्कको <ph name="NETWORK_INDEX" /> मध्ये <ph name="NETWORK_COUNT" /> औँ नेटवर्क हो।</translation>
 <translation id="3924145049010392604">मेटा</translation>
-<translation id="3943857333388298514">टाँस्नुहोस्</translation>
+<translation id="3943857333388298514">पेस्ट गर्नुहोस्</translation>
 <translation id="3950820424414687140">साइन इन गर्नुहोस्</translation>
 <translation id="3952872973865944257">तेलगू फोनेटिक</translation>
 <translation id="3958548648197196644">कीवी</translation>
@@ -390,7 +385,7 @@
 <translation id="4176286497474237543">अहिले नै ट्र्यास खाली गर्नुहोस्</translation>
 <translation id="4179621117429069925">यो फाइल ट्र्यासमा छ</translation>
 <translation id="4186579485882418952">अफलाइन चलाउने सुविधा अन गर्नुहोस्</translation>
-<translation id="4193154014135846272">Google कागजात</translation>
+<translation id="4193154014135846272">Google Docs</translation>
 <translation id="4202378258276439759">स्पेनी (ल्याटिन अमेरिका)</translation>
 <translation id="4202977638116331303">जर्जियाली</translation>
 <translation id="421017592316736757">यो फाइलको पहुँच गर्न तपाईं अनलाइन हुनु पर्छ।</translation>
@@ -438,7 +433,6 @@
 <translation id="4477219268485577442">बुल्गेरियन फोनेटिक</translation>
 <translation id="4508265954913339219">सक्रिय बनाउने कार्य असफल भयो</translation>
 <translation id="4509667233588080747">अङ्ग्रेजी (सं. रा. अमेरिकी) वर्कमेन अन्तर्राष्ट्रिय किबोर्ड</translation>
-<translation id="4522570452068850558">विवरणहरू</translation>
 <translation id="4527800702232535228">यो फोल्डर Parallels Desktop सँग सेयर गरिएको छ</translation>
 <translation id="4552678318981539154">थप भण्डारण खरीद गर्नुहोस्</translation>
 <translation id="4552759165874948005"><ph name="NETWORK_TYPE" /> नेटवर्क, सिग्नलको क्षमता <ph name="SIGNAL_STRENGTH" />%</translation>
@@ -603,7 +597,6 @@
 <translation id="5649768706273821470">सुन्नुहोस्</translation>
 <translation id="5650895901941743674">आफ्नो APN कन्फिगुरेसन जाँच्नुहोस्</translation>
 <translation id="5669691691057771421">नयाँ PIN हाल्नुहोस्</translation>
-<translation id="5678784840044122290">Linux एप तपाईंको टर्मिनलअन्तर्गत उपलब्ध हुने छ तपाईंको लन्चरमा कुनै आइकन देखाउन पनि सक्छ।</translation>
 <translation id="5686799162999241776"><ph name="BEGIN_BOLD" />अभिलेख वा भर्चुअल डिस्कबाट विच्छेदन गर्न सकिँदैन<ph name="END_BOLD" />
    <ph name="LINE_BREAKS" />
   अभिलेख वा भर्चुअल डिस्कमा सबै फाइलहरू बन्द गर्नुहोस्‌, त्यसपछि फेरि प्रयास गर्नुहोस्।</translation>
@@ -638,7 +631,6 @@
 <translation id="5861477046012235702">गेमर</translation>
 <translation id="5864471791310927901">DHCP खोज्ने असफल भयो</translation>
 <translation id="5896749729057314184"><ph name="NETWORK_COUNT" /> मध्ये <ph name="NETWORK_INDEX" /> नेटवर्क, <ph name="NETWORK_NAME" />, अन नगरिएको, सिग्नलको क्षमता<ph name="SIGNAL_STRENGTH" />%, विवरणहरू</translation>
-<translation id="5911887972742538906">तपाईंको Linux एप स्थापना गर्ने क्रममा त्रुटि भयो।</translation>
 <translation id="5912396950572065471">ढाँचा</translation>
 <translation id="5918480239180455431">खोजसम्बन्धी नयाँ सुविधाहरू उपलब्ध छन्</translation>
 <translation id="5926082595146149752">सं. रा. अमेरिकी अन्तर्राष्ट्रिय PC ढाँचाको डच (नेदरल्यान्ड) किबोर्ड</translation>
@@ -807,7 +799,6 @@
 <translation id="7238097264433196391">डिभाइसको नाम</translation>
 <translation id="7238643356913091553"><ph name="NETWORK_NAME" />, विवरणहरू</translation>
 <translation id="7246947237293279874">FTP प्रोक्सी</translation>
-<translation id="7248671827512403053">एप</translation>
 <translation id="7256405249507348194">पहिचान नभएको त्रुटि: <ph name="DESC" /></translation>
 <translation id="7268659760406822741">उपलब्ध सेवाहरू</translation>
 <translation id="7291818353625820805">कीहरू दोहोर्‍याउन चाहनुहुन्छ? किबोर्डका सेटिङमा गई "एक्सेन्ट चिन्हहरू" अफ गर्नुहोस्</translation>
@@ -868,7 +859,7 @@
 <translation id="7707941139430559579">यो फाइल सार्न सकिएन। <ph name="ERROR_MESSAGE" /></translation>
 <translation id="7708271999969613024">तपाईं यो नेटवर्क प्रयोग गर्न चाहनुहुन्छ भने तपाईंले सेवा प्रदायकले उपलब्ध गराएको ८ अङ्कको पर्सनल अनब्लकिङ की (PUK) हाल्नु पर्ने हुन्छ।</translation>
 <translation id="7711920809702896782">छविको जानकारी</translation>
-<translation id="7724603315864178912">काट्नुहोस्</translation>
+<translation id="7724603315864178912">कट गर्नुहोस्</translation>
 <translation id="7732111077498238432">नेटवर्क नीतिद्वारा नियन्त्रित छ</translation>
 <translation id="7736003208887389532">यी फाइलहरू सदाका लागि मेटाउने हो?</translation>
 <translation id="7740287852186792672">खोजका परिणाम</translation>
@@ -934,7 +925,6 @@
 <translation id="8151638057146502721">विन्यास गर्नुहोस्</translation>
 <translation id="8154666764013920974">{NUM_ERROR,plural, =1{एउटा त्रुटि।}other{# वटा त्रुटि।}}</translation>
 <translation id="8154842056504218462">सबै प्रविष्टिहरू चयन गरिए।</translation>
-<translation id="8157684860301034423">एपसम्बन्धी जानकारी भेट्टाउन सकिएन।</translation>
 <translation id="8175731104491895765">फ्रान्सेली (बेल्जियम)</translation>
 <translation id="8175799081768705361">Drive मा रहेका <ph name="NUMBER_OF_FILES_SYNCING" /> वटा फाइल सिंक गरिँदै छन्</translation>
 <translation id="8179976553408161302">प्रविष्टि गर्नुहोस्</translation>
@@ -956,7 +946,7 @@
 <translation id="8297012244086013755">हंगुल 3 सेट (सिफ्ट छैन)</translation>
 <translation id="8299269255470343364">जापानिज</translation>
 <translation id="8300849813060516376">OTASP असफल</translation>
-<translation id="8312871300878166382">फोल्डरमा टाँस्नुहोस्</translation>
+<translation id="8312871300878166382">फोल्डर भित्र पेस्ट गर्नुहोस्</translation>
 <translation id="8329978297633540474">सादा पाठ</translation>
 <translation id="8332007959299458842">हालसालै खोलिएका Microsoft फाइलहरू सारेर Google Drive मा लगिएका छन्</translation>
 <translation id="8335587457941836791">शेल्फबाट अनपिन गर्नुहोस्</translation>
@@ -1075,10 +1065,9 @@
 <translation id="9171921933192916600">किताबी किरो</translation>
 <translation id="9172592259078059678">गुजराती लिपि रूपान्तरण</translation>
 <translation id="9173120999827300720">अन्तर्राष्ट्रिय ढाँचाको अङ्ग्रेजी (सं. रा. अमेरिकी) किबोर्ड</translation>
-<translation id="9183302530794969518">Google कागजात</translation>
+<translation id="9183302530794969518">Google Docs</translation>
 <translation id="9189836632794948435">काजाख</translation>
 <translation id="9200427192836333033"><ph name="NUMBER_OF_ITEMS" /> वटा वस्तु एक्स्ट्रयाक्ट गरिए।</translation>
-<translation id="9213073329713032541">स्थापना गर्ने कार्य सफलतापूर्वक सुरु भयो।</translation>
 <translation id="9219103736887031265">फोटो</translation>
 <translation id="9219908252191632183">लुनर</translation>
 <translation id="931652069802536959">नीतिका आधारमा नेटवर्क ब्लक गरिएको छ</translation>

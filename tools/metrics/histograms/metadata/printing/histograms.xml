@@ -22,66 +22,6 @@ chromium-metrics-reviews@google.com.
 
 <histograms>
 
-<histogram name="Printing.ConversionSize.Emf" units="KB"
-    expires_after="2025-07-14">
-  <owner>thestig@chromium.org</owner>
-  <owner>awscreen@chromium.org</owner>
-  <summary>
-    On Windows, the average size of a printed page after converting to EMF.
-    Recorded after conversion.
-  </summary>
-</histogram>
-
-<histogram name="Printing.ConversionSize.EmfWithReducedRasterization"
-    units="KB" expires_after="2025-07-14">
-  <owner>thestig@chromium.org</owner>
-  <owner>awscreen@chromium.org</owner>
-  <summary>
-    On Windows, the average size of a printed page after converting to EMF with
-    the reduced rasterization feature turned on. Recorded after conversion.
-  </summary>
-</histogram>
-
-<histogram name="Printing.ConversionSize.PostScript2" units="KB"
-    expires_after="2025-07-14">
-  <owner>thestig@chromium.org</owner>
-  <owner>awscreen@chromium.org</owner>
-  <summary>
-    On Windows, the average size of a printed page after converting to level 2
-    PostScript. Recorded after conversion.
-  </summary>
-</histogram>
-
-<histogram name="Printing.ConversionSize.PostScript3" units="KB"
-    expires_after="2026-01-18">
-  <owner>thestig@chromium.org</owner>
-  <owner>awscreen@chromium.org</owner>
-  <summary>
-    On Windows, the average size of a printed page after converting to level 3
-    PostScript. Recorded after conversion.
-  </summary>
-</histogram>
-
-<histogram name="Printing.ConversionSize.PostScript3WithType42Fonts" units="KB"
-    expires_after="2025-07-14">
-  <owner>thestig@chromium.org</owner>
-  <owner>awscreen@chromium.org</owner>
-  <summary>
-    On Windows, the average size of a printed page after converting to level 3
-    PostScript with Type 42 fonts. Recorded after conversion.
-  </summary>
-</histogram>
-
-<histogram name="Printing.ConversionSize.Pwg" units="KB"
-    expires_after="2025-07-14">
-  <owner>thestig@chromium.org</owner>
-  <owner>awscreen@chromium.org</owner>
-  <summary>
-    On desktop, the average size of a printed page after converting to PWG
-    Raster format. Recorded after conversion.
-  </summary>
-</histogram>
-
 <histogram name="Printing.CUPS.AddPrinterManuallyResult" enum="BooleanSuccess"
     expires_after="2026-09-14">
   <owner>gavinwill@google.com</owner>
@@ -161,7 +101,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Printing.CUPS.IppDeviceReachable" enum="BooleanSuccess"
-    expires_after="2026-01-25">
+    expires_after="2026-07-25">
   <owner>bmgordon@chromium.org</owner>
   <owner>cros-printing-dev@chromium.org</owner>
   <summary>
@@ -181,7 +121,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Printing.CUPS.JobDuration.JobDone" units="ms"
-    expires_after="2026-05-02">
+    expires_after="2026-07-05">
   <owner>bmgordon@chromium.org</owner>
   <owner>project-bolton@google.com</owner>
   <summary>
@@ -220,7 +160,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Printing.CUPS.NearbyNetworkAutomaticPrintersCount"
-    units="printers" expires_after="2026-05-03">
+    units="printers" expires_after="2026-07-05">
   <owner>bmgordon@chromium.org</owner>
   <owner>project-bolton@google.com</owner>
   <summary>
@@ -242,7 +182,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Printing.CUPS.NearbyNetworkPrintersCount" units="printers"
-    expires_after="2026-05-10">
+    expires_after="2026-07-12">
   <owner>bmgordon@chromium.org</owner>
   <owner>project-bolton@google.com</owner>
   <summary>
@@ -253,7 +193,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Printing.CUPS.PrintDocumentSize" units="KB"
-    expires_after="2026-01-18">
+    expires_after="2026-07-18">
   <owner>bmgordon@chromium.org</owner>
   <owner>project-bolton@google.com</owner>
   <summary>
@@ -323,7 +263,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Printing.CUPS.PrinterSetupResult.PrintPreview"
-    enum="PrinterSetupResult" expires_after="2026-05-03">
+    enum="PrinterSetupResult" expires_after="2026-07-05">
   <owner>bmgordon@chromium.org</owner>
   <owner>cros-printing-dev@chromium.org</owner>
   <summary>
@@ -454,7 +394,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Printing.CUPS.ZeroconfPrinterSetupResult.PrintPreview"
-    enum="PrinterSetupResult" expires_after="2026-05-03">
+    enum="PrinterSetupResult" expires_after="2026-07-05">
   <owner>bmgordon@chromium.org</owner>
   <owner>cros-printing-dev@chromium.org</owner>
   <summary>
@@ -466,7 +406,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Printing.Oop.PrintResult" enum="PrintOopResult"
-    expires_after="2026-05-03">
+    expires_after="2026-07-05">
   <owner>awscreen@chromium.org</owner>
   <owner>thestig@chromium.org</owner>
   <summary>
@@ -628,7 +568,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PrintPreview.NumberOfPrinters" units="units"
-    expires_after="2025-12-28">
+    expires_after="2026-06-28">
   <owner>thestig@chromium.org</owner>
   <owner>dhoss@chromium.org</owner>
   <summary>
@@ -637,7 +577,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PrintPreview.PrintAttemptOutcome" enum="PrintAttemptOutcome"
-    expires_after="2026-05-10">
+    expires_after="2026-07-12">
   <owner>gavinwill@google.com</owner>
   <owner>cros-device-enablement@google.com</owner>
   <summary>
@@ -649,7 +589,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PrintPreview.PrintDocumentType"
-    enum="PrintPreviewPrintDocumentTypeBuckets" expires_after="2026-05-03">
+    enum="PrintPreviewPrintDocumentTypeBuckets" expires_after="2026-07-05">
   <owner>rbpotter@chromium.org</owner>
   <owner>awscreen@chromium.org</owner>
   <summary>
@@ -705,7 +645,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PrintPreview.PrintSettings" enum="PrintSettings"
-    expires_after="2026-05-24">
+    expires_after="2026-07-26">
   <owner>thestig@chromium.org</owner>
   <owner>awscreen@chromium.org</owner>
   <summary>

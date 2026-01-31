@@ -23,7 +23,7 @@ _mojom_primitive_type_to_rust_type = {
     mojom.UINT64: "u64",
     mojom.FLOAT: "f32",
     mojom.DOUBLE: "f64",
-    mojom.STRING: "MojomString",
+    mojom.STRING: "String",
 }
 
 
@@ -46,6 +46,9 @@ def _MojomTypeToRustType(ty: mojom.Kind) -> str:
 
   if mojom.IsMapKind(ty):
     key_ty = _MojomTypeToRustType(ty.key_kind)
+    # Rust requires comparison operators to use floats as keys in a map
+    if ty.key_kind == mojom.FLOAT or ty.key_kind == mojom.DOUBLE:
+      key_ty = f"OrderedFloat<{key_ty}>"
     value_ty = _MojomTypeToRustType(ty.value_kind)
     return f"HashMap<{key_ty}, {value_ty}>"
 

@@ -7,6 +7,7 @@
 #include "base/test/repeating_test_future.h"
 #include "base/test/task_environment.h"
 #include "base/values.h"
+#include "chrome/browser/ash/app_mode/kiosk_app_types.h"
 #include "extensions/common/extension_urls.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -14,11 +15,11 @@ namespace chromeos {
 
 namespace {
 
-using Observer = base::test::RepeatingTestFuture<base::Value::Dict>;
-using crosapi::mojom::AppInstallParams;
+using Observer = base::test::RepeatingTestFuture<base::DictValue>;
+using AppInstallParams = ash::KioskAppInstallParams;
 
-base::Value::Dict SecondaryAppData() {
-  return base::Value::Dict()
+base::DictValue SecondaryAppData() {
+  return base::DictValue()
       .Set("external_update_url", extension_urls::GetWebstoreUpdateUrl().spec())
       .Set("is_from_webstore", true);
 }
@@ -63,8 +64,8 @@ TEST_F(ChromeKioskExternalLoaderBrokerTest,
 
   EXPECT_EQ(
       primary_observer.Take(),
-      base::Value::Dict()  //
-          .Set("the-app-id", base::Value::Dict()
+      base::DictValue()  //
+          .Set("the-app-id", base::DictValue()
                                  .Set("external_crx", "the-app-location")
                                  .Set("external_version", "the-app-version")
                                  .Set("is_from_webstore", false)));
@@ -86,8 +87,8 @@ TEST_F(ChromeKioskExternalLoaderBrokerTest,
       /*is_store_app=*/kIsStoreApp));
 
   EXPECT_EQ(primary_observer.Take(),
-            base::Value::Dict()  //
-                .Set("app-id", base::Value::Dict()
+            base::DictValue()  //
+                .Set("app-id", base::DictValue()
                                    .Set("external_crx", "location")
                                    .Set("external_version", "version")
                                    .Set("is_from_webstore", true)));
@@ -108,9 +109,9 @@ TEST_F(ChromeKioskExternalLoaderBrokerTest,
   broker.RegisterPrimaryAppInstallDataObserver(primary_observer.GetCallback());
 
   EXPECT_EQ(primary_observer.Take(),
-            base::Value::Dict()  //
+            base::DictValue()  //
                 .Set("a-very-long-app-id-to-cause-crashes-if-used-after-delete",
-                     base::Value::Dict()
+                     base::DictValue()
                          .Set("external_crx", "the-app-location")
                          .Set("external_version", "the-app-version")
                          .Set("is_from_webstore", false)));
@@ -138,7 +139,7 @@ TEST_F(ChromeKioskExternalLoaderBrokerTest,
   broker.UpdateSecondaryAppList({"secondary-app", "other-secondary-app"});
 
   EXPECT_EQ(secondary_observer.Take(),
-            base::Value::Dict()  //
+            base::DictValue()  //
                 .Set("secondary-app", SecondaryAppData())
                 .Set("other-secondary-app", SecondaryAppData()));
 }
@@ -155,7 +156,7 @@ TEST_F(ChromeKioskExternalLoaderBrokerTest,
       secondary_observer.GetCallback());
 
   EXPECT_EQ(secondary_observer.Take(),
-            base::Value::Dict().Set("secondary-app", SecondaryAppData()));
+            base::DictValue().Set("secondary-app", SecondaryAppData()));
 }
 
 }  // namespace chromeos

@@ -9,9 +9,9 @@ import static org.chromium.build.NullUtil.assumeNonNull;
 import android.app.Activity;
 import android.view.ViewGroup;
 
-import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.base.supplier.ObservableSuppliers;
-import org.chromium.base.supplier.SettableObservableSupplier;
+import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
@@ -48,16 +48,16 @@ public class TabListEditorManager {
     private final @Nullable SnackbarManager mSnackbarManager;
     private final @Nullable BottomSheetController mBottomSheetController;
     private final BrowserControlsStateProvider mBrowserControlsStateProvider;
-    private final ObservableSupplier<@Nullable TabGroupModelFilter>
+    private final MonotonicObservableSupplier<TabGroupModelFilter>
             mCurrentTabGroupModelFilterSupplier;
     private final TabContentManager mTabContentManager;
     private final TabListCoordinator mTabListCoordinator;
     private final @TabListMode int mMode;
-    private final SettableObservableSupplier<TabListEditorController> mControllerSupplier =
+    private final SettableMonotonicObservableSupplier<TabListEditorController> mControllerSupplier =
             ObservableSuppliers.createMonotonic();
     private final TabGroupCreationDialogManager mTabGroupCreationDialogManager;
     private final @Nullable DesktopWindowStateManager mDesktopWindowStateManager;
-    private final ObservableSupplier<EdgeToEdgeController> mEdgeToEdgeSupplier;
+    private final MonotonicObservableSupplier<EdgeToEdgeController> mEdgeToEdgeSupplier;
 
     private @Nullable TabListEditorCoordinator mTabListEditorCoordinator;
     private @Nullable List<TabListEditorAction> mTabListEditorActions;
@@ -82,14 +82,14 @@ public class TabListEditorManager {
             ViewGroup coordinatorView,
             ViewGroup rootView,
             BrowserControlsStateProvider browserControlsStateProvider,
-            ObservableSupplier<@Nullable TabGroupModelFilter> currentTabGroupModelFilterSupplier,
+            MonotonicObservableSupplier<TabGroupModelFilter> currentTabGroupModelFilterSupplier,
             TabContentManager tabContentManager,
             TabListCoordinator tabListCoordinator,
             BottomSheetController bottomSheetController,
             @TabListMode int mode,
             @Nullable Runnable onTabGroupCreation,
             @Nullable DesktopWindowStateManager desktopWindowStateManager,
-            ObservableSupplier<EdgeToEdgeController> edgeToEdgeSupplier) {
+            MonotonicObservableSupplier<EdgeToEdgeController> edgeToEdgeSupplier) {
         mActivity = activity;
         mModalDialogManager = modalDialogManager;
         mCoordinatorView = coordinatorView;
@@ -150,7 +150,8 @@ public class TabListEditorManager {
                             CreationMode.FULL_SCREEN,
                             /* undoBarExplicitTrigger= */ null,
                             /* componentName= */ null,
-                            TabListEditorCoordinator.UNLIMITED_SELECTION);
+                            TabListEditorCoordinator.UNLIMITED_SELECTION,
+                            false);
             mControllerSupplier.set(mTabListEditorCoordinator.getController());
         }
     }
@@ -225,7 +226,7 @@ public class TabListEditorManager {
     }
 
     /** Returns a supplier for {@link TabListEditorController}. */
-    public ObservableSupplier<TabListEditorController> getControllerSupplier() {
+    public MonotonicObservableSupplier<TabListEditorController> getControllerSupplier() {
         return mControllerSupplier;
     }
 }

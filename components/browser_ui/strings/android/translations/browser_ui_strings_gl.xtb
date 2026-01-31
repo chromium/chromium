@@ -3,6 +3,7 @@
 <translationbundle lang="gl">
 <translation id="1006017844123154345">Abrir en liña</translation>
 <translation id="1036348656032585052">Desactivar</translation>
+<translation id="1046742265332833834">Tema azul</translation>
 <translation id="1070329623210597193">Ficheiros que pode ver ou editar este sitio</translation>
 <translation id="1073417869336441572">Para axudarnos a mellorar Chrome, cóntanos por que permitiches as cookies de terceiros. <ph name="BEGIN_LINK" />Enviar comentarios<ph name="END_LINK" /></translation>
 <translation id="1074758928858737435">Podes solicitar que se mostre a versión para ordenadores dos sitios</translation>
@@ -12,6 +13,7 @@
 <translation id="1178581264944972037">Pausar</translation>
 <translation id="1181037720776840403">Eliminar</translation>
 <translation id="1192844206376121885">Ao realizar esta acción, eliminaranse todos os datos e as cookies que almacenase <ph name="ORIGIN" />.</translation>
+<translation id="1199963004393929848">Tema verde</translation>
 <translation id="1201402288615127009">Seguinte</translation>
 <translation id="1240190568154816272">Consellos de Chrome</translation>
 <translation id="1242008676835033345">Cookie inserida en <ph name="WEBSITE_URL" /></translation>
@@ -64,6 +66,7 @@
 <translation id="1717996979683942279">Cando esta opción está activada, os sitios poden pedir permiso para xestionar as ventás en todas as pantallas. Cando está desactivada, non poden xestionalas.</translation>
 <translation id="1738912554587725807">Panel inferior de coleccións de temas de aparencia da páxina Nova pestana</translation>
 <translation id="1743802530341753419">Preguntar antes de permitir que os sitios se conecten a un dispositivo (recomendado)</translation>
+<translation id="1766455884659449403">Recibe notificacións de Consellos de Chrome</translation>
 <translation id="1777815584158991902">Panel inferior do feed de Discover</translation>
 <translation id="1779089405699405702">Descodificador de imaxes</translation>
 <translation id="1785415724048343560">Recoméndase para gozar da mellor experiencia</translation>
@@ -71,6 +74,7 @@
 <translation id="1799920918471566157">Consellos de Chrome</translation>
 <translation id="1816835383954230954">Cando esta opción está activada, Chrome execútase máis rápido e as funcións que usen JavaScript deberían funcionar tal como se deseñaron. Se está desactivada, redúcese o rendemento, pero o motor V8 é máis resistente os ataques.</translation>
 <translation id="1818308510395330587">Para permitir que <ph name="APP_NAME" /> utilice a realidade aumentada, tamén debes activar a cámara en <ph name="BEGIN_LINK" />Configuración de Android<ph name="END_LINK" />.</translation>
+<translation id="1822318649925991542">Cambia a posición para personalizar a túa experiencia de navegación</translation>
 <translation id="1848033246551405023">Tipo de letra sen serifas</translation>
 <translation id="1861262398884155592">Este cartafol está baleiro</translation>
 <translation id="1881806992065048905">Panel inferior do aspecto da páxina Nova pestana</translation>
@@ -87,6 +91,7 @@
 <translation id="1985716030964443178">Restablecerase o zoom predeterminado en todos os sitios da túa lista</translation>
 <translation id="1989112275319619282">Examinar</translation>
 <translation id="1994173015038366702">URL do sitio</translation>
+<translation id="1994558116414798016">Tipo de letra Lexend</translation>
 <translation id="2004697686368036666">As funcións dalgúns sitios poden deixar de funcionar</translation>
 <translation id="2025115093177348061">Realidade aumentada</translation>
 <translation id="2028449514182362831">As funcións que requiran sensores de movemento non estarán dispoñibles</translation>
@@ -97,6 +102,7 @@
 <translation id="2094208275686143364">Cor de tema claro</translation>
 <translation id="2096716221239095980">Eliminar todos os datos</translation>
 <translation id="2102396546234652240">Non permitir que os sitios utilicen o teu micrófono</translation>
+<translation id="2115808389282428160">Non permitir que os sitios accedan a outras aplicacións e servizos deste dispositivo</translation>
 <translation id="2117655453726830283">Seguinte diapositiva</translation>
 <translation id="2146263598007866206">Os sitios poderían descargar automaticamente conxuntos de ficheiros relacionados para aforrarche tempo</translation>
 <translation id="2148716181193084225">Hoxe</translation>
@@ -131,7 +137,6 @@
 <translation id="2411116727035790889">Activar os atallos</translation>
 <translation id="2433507940547922241">Aparencia</translation>
 <translation id="2434158240863470628">Completouse a descarga <ph name="SEPARATOR" /> <ph name="BYTES_DOWNLOADED" /></translation>
-<translation id="2438120137003069591">Permitiches de maneira temporal que este sitio use cookies de terceiros. Terás menos protección durante a navegación, pero é máis probable que as funcións do sitio marchen segundo o previsto. <ph name="BEGIN_LINK" />Enviar comentarios<ph name="END_LINK" /></translation>
 <translation id="2442870161001914531">Solicitar sempre o sitio para ordenadores</translation>
 <translation id="2445311670906052406">Agora Chrome comparte as pestanas recentes co teu dispositivo. Poderás velas na lista de aplicacións e nos resultados de busca do teu dispositivo. Desactiva esta opción cando queiras na configuración de Chrome.</translation>
 <translation id="245322989586167203">Os sitios adoitan conectarse aos portos en serie para ofrecerche determinadas funcións relacionadas coa transferencia de datos (por exemplo, configurar a túa rede)</translation>
@@ -145,6 +150,7 @@
 <translation id="2536779053640817375">Permitida esta vez • Precisa</translation>
 <translation id="2544997614631598250">Cor de tema escuro</translation>
 <translation id="2546283357679194313">Cookies e datos dos sitios</translation>
+<translation id="2553552004849639664">Obtén a máxima protección de Chrome contra as ameazas en liña</translation>
 <translation id="2570922361219980984">O acceso á localización tamén está desactivado neste dispositivo. Actívao na <ph name="BEGIN_LINK" />configuración de Android<ph name="END_LINK" />.</translation>
 <translation id="257931822824936280">Vista ampliada (fai clic para contraela).</translation>
 <translation id="2586657967955657006">Portapapeis</translation>
@@ -159,6 +165,7 @@ Protección avanzada controla estas opcións de configuración de Chrome:
 <translation id="2621115761605608342">Permite a execución de JavaScript para un sitio específico.</translation>
 <translation id="2626708220538466178">Panel inferior do navegador predeterminado pechado</translation>
 <translation id="2653659639078652383">Enviar</translation>
+<translation id="2665056444046933274">Os sitios poden usar esta función para acceder a outras aplicacións e servizos deste dispositivo</translation>
 <translation id="2670403088701171361">Non permitir que os sitios accedan ao texto nin ás imaxes do portapapeis</translation>
 <translation id="2677748264148917807">Saír</translation>
 <translation id="2682367912565197520">Eliminar o nivel de zoom gardado</translation>
@@ -184,11 +191,9 @@ Protección avanzada controla estas opcións de configuración de Chrome:
 <translation id="2903493209154104877">Enderezos</translation>
 <translation id="2910701580606108292">Preguntar antes de permitir que os sitios reproduzan contido protexido</translation>
 <translation id="2918484639460781603">Ir a Configuración</translation>
-<translation id="293060180538644702">Recibe notificacións de Consellos de Chrome</translation>
 <translation id="2932883381142163287">Informar de uso inadecuado</translation>
 <translation id="2939338015096024043">Cando esta opción está activada, os sitios poden pedirche permiso para facer un seguimento da posición da cámara e obter información do que te rodea. Cando esta opción está desactivada, os sitios non poden facer o seguimento da posición da cámara nin obter información do que te rodea.</translation>
 <translation id="2968755619301702150">Visor de certificados</translation>
-<translation id="2979365474350987274">As cookies de terceiros están limitadas</translation>
 <translation id="2990583317361835189">Non permitir que os sitios utilicen sensores de movemento</translation>
 <translation id="3004438526346162184">Os sitios poden usar esta función para xestionar as ventás en todas as pantallas</translation>
 <translation id="3008272652534848354">Restablecer permisos</translation>
@@ -202,14 +207,17 @@ Protección avanzada controla estas opcións de configuración de Chrome:
 <translation id="311394601889664316">Non permitir que os sitios editen ficheiros nin cartafoles do teu dispositivo</translation>
 <translation id="3114012059975132928">Reprodutor de vídeo</translation>
 <translation id="3115898365077584848">Mostrar información</translation>
+<translation id="3120204271988747891">Os sitios poden pedir permiso para acceder a outros dispositivos conectados á túa rede local</translation>
 <translation id="3123473560110926937">Anuncios bloqueados nalgúns sitios</translation>
 <translation id="3132996321662585180">Actualizar diariamente</translation>
+<translation id="3134859781443140237">Rede local</translation>
 <translation id="3143754809889689516">Reproducir desde o principio</translation>
 <translation id="3164169438034704658">Podes activar a localización precisa en <ph name="BEGIN_LINK" />Configuración de Android<ph name="END_LINK" />.</translation>
 <translation id="3165022941318558018">Permite que un sitio use cookies de terceiros</translation>
 <translation id="3167868116600277716">Feed de Discover</translation>
 <translation id="3198916472715691905"><ph name="STORAGE_AMOUNT" /> de datos almacenados</translation>
 <translation id="3199078925536734975">Permitida esta vez • Aproximada</translation>
+<translation id="3208584281581115441">Comprobar agora</translation>
 <translation id="321187648315454507">Para permitir que <ph name="APP_NAME" /> che envíe notificacións, actívaas tamén en <ph name="BEGIN_LINK" />Configuración de Android<ph name="END_LINK" />.</translation>
 <translation id="3223425961342298674">O acceso á localización non está permitido</translation>
 <translation id="3227137524299004712">Micrófono</translation>
@@ -217,7 +225,6 @@ Protección avanzada controla estas opcións de configuración de Chrome:
 <translation id="3242646949159196181">Cando esta opción está activada, os sitios poden reproducir son. Cando esta opción está desactivada, os sitios non poden reproducir son.</translation>
 <translation id="3273479183583863618">Baixadas de prezo nas pestanas</translation>
 <translation id="3277252321222022663">Permitir que os sitios accedan aos sensores (recomendado)</translation>
-<translation id="327891165872793509">Chrome evita que a maioría dos sitios usen cookies de terceiros para facer un seguimento da túa actividade mentres navegas. Vai á configuración para <ph name="BEGIN_LINK" />xestionar o acceso ás cookies de terceiros<ph name="END_LINK" />.</translation>
 <translation id="3285500645985761267">Permitir que os sitios relacionados vexan a túa actividade no grupo</translation>
 <translation id="3295019059349372795">Capítulo 11: A marabillosa Cidade Esmeralda de Oz</translation>
 <translation id="3295602654194328831">Ocultar información</translation>
@@ -260,6 +267,7 @@ Protección avanzada controla estas opcións de configuración de Chrome:
 <translation id="3721953990244350188">Pecha o cadro e mostra a seguinte acción dispoñible</translation>
 <translation id="3744111561329211289">Sincronización en segundo plano</translation>
 <translation id="3746834924069123416">Ver máis pestanas recentes</translation>
+<translation id="3753618528540214374">Tema verde esmeralda</translation>
 <translation id="3763247130972274048">Toca dúas veces cara á esquerda ou á dereita no vídeo para saltar 10 s</translation>
 <translation id="3776508619697147021">Os sitios poden pedirche permiso para descargar automaticamente varios ficheiros</translation>
 <translation id="3779154269823594982">Cambiar contrasinais</translation>
@@ -269,6 +277,7 @@ Protección avanzada controla estas opcións de configuración de Chrome:
 <translation id="381841723434055211">Números de teléfono</translation>
 <translation id="3823453485268218808">Tipo de letra monoespazado</translation>
 <translation id="3826050100957962900">Inicio de sesión de terceiros</translation>
+<translation id="3831065134033923230">Comproba os contrasinais gardados</translation>
 <translation id="3835233591525155343">Uso do dispositivo</translation>
 <translation id="3843916486309149084">Chrome volverá bloquear as cookies hoxe</translation>
 <translation id="385051799172605136">Atrás</translation>
@@ -315,14 +324,12 @@ Protección avanzada controla estas opcións de configuración de Chrome:
 <translation id="429312253194641664">Un sitio está reproducindo contido multimedia</translation>
 <translation id="42981349822642051">Ampliar</translation>
 <translation id="4336219115486912529">{COUNT,plural, =1{Caduca mañá}other{Caduca dentro de # días}}</translation>
-<translation id="4336566011000459927">Chrome volverá limitar as cookies hoxe</translation>
 <translation id="4338831206024587507">Todos os sitios do dominio <ph name="DOMAIN" /></translation>
 <translation id="4340799661701629185">Non permitir que os sitios envíen notificacións</translation>
 <translation id="4341577178275615435">Para activar ou desactivar a navegación por cursor de texto, usa o atallo F7</translation>
 <translation id="4402755511846832236">Impide que os sitios saiban se estás utilizando este dispositivo de maneira activa</translation>
 <translation id="4412683424767388419">Panel inferior de cores de Chrome aberto a altura media</translation>
 <translation id="4412992751769744546">Permitir cookies de terceiros</translation>
-<translation id="4419929467120297501">Chrome evita que os sitios usen cookies de terceiros para facer un seguimento da túa actividade mentres navegas. Vai á configuración para <ph name="BEGIN_LINK" />xestionar o acceso ás cookies de terceiros<ph name="END_LINK" />.</translation>
 <translation id="4425416282877905577">Tipo de letra con serifas</translation>
 <translation id="443121186588148776">Porto en serie</translation>
 <translation id="4434045419905280838">Ventás emerxentes e redireccións</translation>
@@ -399,7 +406,7 @@ Protección avanzada controla estas opcións de configuración de Chrome:
 <translation id="5246825184569358663">Eliminaranse todos os datos locais, incluídas as cookies, e restableceranse todos os permisos de <ph name="DOMAIN" /> e dos seus subsitios</translation>
 <translation id="5264323282659631142">Quitar <ph name="CHIP_LABEL" /></translation>
 <translation id="528192093759286357">Arrastra desde a parte superior e toca o botón Volver para saír da pantalla completa.</translation>
-<translation id="5292915569214461965">Non permites que os sitios usen cookies de terceiros para facer un seguimento da túa actividade mentres navegas. Vai á configuración para <ph name="BEGIN_LINK" />xestionar o acceso ás cookies de terceiros<ph name="END_LINK" />.</translation>
+<translation id="5286194356314741248">Buscando</translation>
 <translation id="5300589172476337783">Mostrar</translation>
 <translation id="5301954838959518834">Entendido</translation>
 <translation id="5317780077021120954">Gardar</translation>
@@ -409,6 +416,8 @@ Protección avanzada controla estas opcións de configuración de Chrome:
 <translation id="5373874281522292782">Os teus grupos de pestanas están gardados</translation>
 <translation id="5394307150471348411">{DETAIL_COUNT,plural, =1{(e 1 máis)}other{(e # máis)}}</translation>
 <translation id="5403592356182871684">Nomes</translation>
+<translation id="5407203562970638234">Mellora a túa seguranza</translation>
+<translation id="5436307623797390637">Aplicacións instaladas no dispositivo</translation>
 <translation id="5438097262470833822">Con esta opción restableceranse os permisos de <ph name="WEBSITE" /></translation>
 <translation id="5459413148890178711">Cando esta opción está activada, os sitios poden pedirche permiso para acceder á túa localización. Cando esta opción está desactivada, os sitios non poden acceder á túa localización.</translation>
 <translation id="5489227211564503167">Tempo transcorrido: <ph name="ELAPSED_TIME" /> de <ph name="TOTAL_TIME" />.</translation>
@@ -423,6 +432,7 @@ Protección avanzada controla estas opcións de configuración de Chrome:
 <translation id="5591840828808741583"><ph name="SITE_NAME" /> bloqueado</translation>
 <translation id="560980142378233747">Isto significa que as funcións do sitio deberían funcionar segundo o previsto, pero pode que teñas menos protección durante a navegación. <ph name="BEGIN_LINK" />Enviar comentarios<ph name="END_LINK" /></translation>
 <translation id="5617702678271228680">Panel inferior das tarxetas da páxina Nova pestana</translation>
+<translation id="5621413808884657932">Cando esta opción está activada, os sitios poden pedir permiso para acceder a outras aplicacións e servizos deste dispositivo. Cando está desactivada, non poden acceder.</translation>
 <translation id="5632485077360054581">Ver como facelo</translation>
 <translation id="5649053991847567735">Descargas automáticas</translation>
 <translation id="5668404140385795438">Anular a solicitude dun sitio web para evitar ampliar a imaxe</translation>
@@ -470,6 +480,7 @@ Protección avanzada controla estas opcións de configuración de Chrome:
 <translation id="5998071268779572583">Activar o feed de Discover</translation>
 <translation id="6012967556075291653">Atallo fixado</translation>
 <translation id="6015775454662021376">Controla o acceso deste sitio ao dispositivo</translation>
+<translation id="6022659036123304283">Personaliza Chrome</translation>
 <translation id="6040143037577758943">Pechar</translation>
 <translation id="6042308850641462728">Máis</translation>
 <translation id="6064125863973209585">Descargas completadas</translation>
@@ -484,17 +495,16 @@ Protección avanzada controla estas opcións de configuración de Chrome:
 <translation id="6181444274883918285">Engadir excepción do sitio</translation>
 <translation id="6192792657125177640">Excepcións</translation>
 <translation id="6194967801833346599">{DAYS,plural, =1{Chrome volverá bloquear as cookies mañá}other{Faltan # días para que se volvan bloquear as cookies}}</translation>
-<translation id="6195163219142236913">Cookies de terceiros limitadas</translation>
 <translation id="6196640612572343990">Bloquear cookies de terceiros</translation>
 <translation id="6205314730813004066">Privacidade nos anuncios</translation>
 <translation id="6207207788774442484">Eliminar datos e restablecer permisos</translation>
+<translation id="6218508144653756827">Tema fucsia</translation>
 <translation id="6231752747840485235">Queres desinstalar <ph name="APP_NAME" />?</translation>
 <translation id="6234351944623978659">Toca a opción de aplicación de navegación &gt; Chrome</translation>
 <translation id="6260830281887654268">Panel inferior de coleccións de temas de aparencia da páxina Nova pestana aberto a altura media</translation>
 <translation id="6262191102408817757">Segundo a túa última pestana</translation>
 <translation id="6262279340360821358"><ph name="PERMISSION_1" /> e <ph name="PERMISSION_2" /> (bloqueados)</translation>
 <translation id="6270391203985052864">Os sitios poden pedir permiso para enviar notificacións</translation>
-<translation id="6278428485366576908">Tema</translation>
 <translation id="6295158916970320988">Todos os sitios</translation>
 <translation id="6320088164292336938">Vibrar</translation>
 <translation id="6367753977865761591">Bloquea o inicio de sesión de terceiros para un sitio específico.</translation>
@@ -521,6 +531,7 @@ Protección avanzada controla estas opcións de configuración de Chrome:
 <translation id="659938948789980540">{COUNT,plural, =1{Cookies permitidas para <ph name="RWS_MEMBERS_COUNT" /> sitio de <ph name="RWS_OWNER" />}other{Cookies permitidas para <ph name="RWS_MEMBERS_COUNT" /> sitios de <ph name="RWS_OWNER" />}}</translation>
 <translation id="6608650720463149374"><ph name="GIGABYTES" /> GB</translation>
 <translation id="6612358246767739896">Contido protexido</translation>
+<translation id="6619015782482868078">Tema augamariña</translation>
 <translation id="662080504995468778">Quedar</translation>
 <translation id="6630443592285535486">Escribe o valor hexadecimal da cor aquí</translation>
 <translation id="6635327442719709864">Cando esta opción está activada, os sitios poden pedir permiso para utilizar portos de serie. Cando está desactivada, os sitios non poden usar eses portos.</translation>
@@ -543,11 +554,13 @@ Protección avanzada controla estas opcións de configuración de Chrome:
 <translation id="6842868554183332230">Os sitios adoitan detectar cando estás utilizando o dispositivo de maneira activa para definir a túa dispoñibilidade nas aplicacións de chat</translation>
 <translation id="6864395892908308021">Este dispositivo non pode ler NFC</translation>
 <translation id="6870169401250095575">Ocultar tarxeta Comprobación de seguranza</translation>
+<translation id="6882736949427544336">Non permitir que os sitios accedan a outros dispositivos conectados á túa rede local</translation>
 <translation id="6900883974539674431">Crea grupos de pestanas que se gardarán e actualizarán automaticamente en todos os teus dispositivos</translation>
 <translation id="6912998170423641340">Impedir que os sitios lean texto e imaxes do portapapeis</translation>
 <translation id="6945221475159498467">Seleccionar</translation>
 <translation id="6950072572526089586">Os sitios que visitas poden gardar información sobre o que fas para poder funcionar segundo o esperado (por exemplo, para manter a túa sesión iniciada ou gardar artigos que teñas no carro da compra). Os sitios adoitan almacenar esta información no teu dispositivo de forma temporal.</translation>
 <translation id="6965382102122355670">Aceptar</translation>
+<translation id="6980507581230208647">Tema rosa</translation>
 <translation id="6980861169612950611">Queres eliminar datos do sitio? <ph name="SITE_NAME" /></translation>
 <translation id="6981982820502123353">Accesibilidade</translation>
 <translation id="6991142177939282156">Permitida • Usando localización aproximada</translation>
@@ -560,6 +573,7 @@ Protección avanzada controla estas opcións de configuración de Chrome:
 <translation id="7055552182600664515">Para reproducir contido protexido con copyright, é posible que algúns sitios necesiten usar un servizo de protección de contido. <ph name="BEGIN_LINK" />Máis información<ph name="END_LINK" /></translation>
 <translation id="7066151586745993502">{NUM_SELECTED,plural, =1{1 elemento seleccionado}other{# elementos seleccionados}}</translation>
 <translation id="708014373017851679">A aplicación <ph name="APP_NAME" /> está desactualizada. Actualízaa.</translation>
+<translation id="7084115944294706056">Escolle a posición da barra de enderezos</translation>
 <translation id="7087918508125750058">Elementos seleccionados: <ph name="ITEM_COUNT" />. Hai opcións dispoñibles na parte superior da pantalla</translation>
 <translation id="7141896414559753902">Non permite que os sitios mostren ventás emerxentes nin redireccións (recomendado)</translation>
 <translation id="7176368934862295254"><ph name="KILOBYTES" /> kB</translation>
@@ -575,6 +589,7 @@ Protección avanzada controla estas opcións de configuración de Chrome:
 <translation id="7250468141469952378">Elementos seleccionados: <ph name="ITEM_COUNT" /></translation>
 <translation id="7260727271532453612"><ph name="PERMISSION_1" /> e <ph name="PERMISSION_2" /> (permitidos)</translation>
 <translation id="7276071417425470385">Cando esta opción está activada, os sitios poden pedirche permiso para utilizar dispositivos de realidade virtual. Cando esta opción está desactivada, os sitios non poden utilizar dispositivos de realidade virtual.</translation>
+<translation id="7282197670900591579">Tema cidra</translation>
 <translation id="728412880473384942">Os sitios son máis rápidos, pero menos seguros</translation>
 <translation id="7366415735885268578">Engade un sitio</translation>
 <translation id="7368695150573390554">Eliminaranse todos os datos sen conexión</translation>
@@ -603,6 +618,8 @@ Protección avanzada controla estas opcións de configuración de Chrome:
 <translation id="7586676035079382730">O acceso ás notificacións non está permitido</translation>
 <translation id="7594634374516752650">Estableceuse conexión cun dispositivo Bluetooth</translation>
 <translation id="7617547684249261169">Podes eliminar, parcial ou totalmente, o teu historial, as cookies, os datos dos sitios e moito máis</translation>
+<translation id="762200934554267613">Os sitios poden pedir permiso para acceder a outras aplicacións e servizos deste dispositivo</translation>
+<translation id="7627749368210392160">Os sitios poden usar esta función para acceder a outros dispositivos da túa rede local</translation>
 <translation id="7649070708921625228">Axuda</translation>
 <translation id="7655411746932645568">Os sitios poden pedirche permiso para conectarse a portos en serie</translation>
 <translation id="7658239707568436148">Cancelar</translation>
@@ -611,6 +628,7 @@ Protección avanzada controla estas opcións de configuración de Chrome:
 <translation id="7688240020069572972">Ocultar tarxeta de consellos de Chrome</translation>
 <translation id="7719367874908701697">Zoom na páxina</translation>
 <translation id="775043444390799886">Revogar permiso</translation>
+<translation id="7758789811447313947">Tema violeta</translation>
 <translation id="7759147511335618829">Controlar/Reprogramar disp. MIDI</translation>
 <translation id="7781829728241885113">Onte</translation>
 <translation id="7791543448312431591">Engadir</translation>
@@ -623,13 +641,13 @@ Protección avanzada controla estas opcións de configuración de Chrome:
 <translation id="7835852323729233924">Reproducindo contido multimedia</translation>
 <translation id="783819812427904514">Activar o son do vídeo</translation>
 <translation id="7846076177841592234">Cancelar selección</translation>
-<translation id="7881140103901777395">Chrome evita que a maioría dos sitios usen cookies de terceiros. Así e todo, neste sitio permítese o seu uso porque son necesarias para fornecer servizos básicos.\n\nVai á configuración para <ph name="BEGIN_LINK" />xestionar o acceso ás cookies de terceiros<ph name="END_LINK" />.</translation>
 <translation id="7882806643839505685">Permite o son dun sitio específico.</translation>
 <translation id="7891547341794213004">Ocultar tarxeta Continuar con esta pestana</translation>
 <translation id="789722939441020330">Non permitir que os sitios descarguen varios ficheiros de forma automática</translation>
 <translation id="7940722705963108451">Lembrarmo</translation>
 <translation id="7948081750384205628">Máis información sobre <ph name="SETTING_TITLE" /></translation>
 <translation id="7952708427581814389">Os sitios poden pedirche permiso para acceder ao texto e ás imaxes do portapapeis</translation>
+<translation id="798299424881500862">Tema laranxa</translation>
 <translation id="7986741934819883144">Seleccionar contacto</translation>
 <translation id="7990211076305263060">Cando esta opción está activada, os sitios poden pedirche permiso para utilizar o micrófono. Cando esta opción está desactivada, os sitios non poden utilizar o micrófono.</translation>
 <translation id="8007176423574883786">Desactivada para este dispositivo</translation>
@@ -645,7 +663,6 @@ Protección avanzada controla estas opcións de configuración de Chrome:
 <translation id="8087000398470557479">Este contido procede de <ph name="DOMAIN_NAME" />, ofrecido por Google.</translation>
 <translation id="8088603949666785339">Máis opcións en <ph name="BANNER_TITLE" /></translation>
 <translation id="8112925981674547014">Ver pestanas na túa lista de aplicacións</translation>
-<translation id="8113501330600751161">{DAYS,plural, =1{Chrome volverá limitar as cookies mañá}other{Faltan # días para que Chrome volva limitar as cookies}}</translation>
 <translation id="8116925261070264013">Silenciados</translation>
 <translation id="8117244575099414087">Cando esta opción está activada, os sitios poden utilizar os sensores do dispositivo. Cando esta opción está desactivada, os sitios non poden utilizar os sensores do dispositivo.</translation>
 <translation id="813082847718468539">Consulta a información do sitio</translation>
@@ -658,6 +675,7 @@ Protección avanzada controla estas opcións de configuración de Chrome:
 <translation id="8200772114523450471">Retomar</translation>
 <translation id="8211406090763984747">A conexión é segura</translation>
 <translation id="822964464349305906"><ph name="TYPE_1" />, <ph name="TYPE_2" /></translation>
+<translation id="823874716226307142">Cando esta opción está activada, os sitios poden pedir permiso para acceder a outros dispositivos conectados á túa rede local. Cando está desactivada, non poden acceder.</translation>
 <translation id="8249310407154411074">Mover á parte superior</translation>
 <translation id="8261506727792406068">Eliminar</translation>
 <translation id="8284326494547611709">Subtítulos</translation>
@@ -711,6 +729,7 @@ Protección avanzada controla estas opcións de configuración de Chrome:
 <translation id="8725066075913043281">Tentar de novo</translation>
 <translation id="8730621377337864115">Feito</translation>
 <translation id="8737426583868847403">Os sitios para os que gardes un nivel de zoom personalizado mostraranse aquí</translation>
+<translation id="8748714929822124637">Non permitir que os sitios accedan a outros dispositivos da túa rede local</translation>
 <translation id="8751914237388039244">Selecciona unha imaxe</translation>
 <translation id="8775741625735357092">Podes activar a barra de marcadores en Configuración &gt; Aparencia</translation>
 <translation id="8800034312320686233">O sitio non funciona?</translation>
@@ -728,7 +747,6 @@ Protección avanzada controla estas opcións de configuración de Chrome:
 <translation id="8926389886865778422">Non preguntar de novo</translation>
 <translation id="8926666909099850184">A NFC está desactivada para este dispositivo. Actívaa en <ph name="BEGIN_LINK" />Configuración de Android<ph name="END_LINK" />.</translation>
 <translation id="8928445016601307354">Impide que os sitios consulten e cambien información en dispositivos con NFC</translation>
-<translation id="8944485226638699751">Limitadas</translation>
 <translation id="895054485242522631">Os sitios poden usar os sensores de movemento</translation>
 <translation id="8959122750345127698">A navegación é inaccesible: <ph name="URL" /></translation>
 <translation id="8990043154272859344">Pecharase a sesión en todos os sitios</translation>

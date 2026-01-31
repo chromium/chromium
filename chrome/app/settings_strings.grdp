@@ -495,6 +495,9 @@
   <message name="IDS_AUTOFILL_EDIT_SERVER_CREDIT_CARD" desc="The text shown in the secondary action menu button to direct users to pay.google.com to edit the information of credit cards stored in Google Payments.">
     Edit in Google Pay
   </message>
+  <message name="IDS_AUTOFILL_EDIT_SERVER_CREDIT_CARD_IN_WALLET" desc="The text shown in the secondary action menu button to direct users to wallet.google.com to edit the information of credit cards stored in Google Wallet.">
+    Edit in Google Wallet
+  </message>
   <message name="IDS_AUTOFILL_VIRTUAL_CARD_TURNED_ON_LABEL" desc="The text shown next to the card summary to indicate that a virtual card has been enabled for the credit card. Virtual cards are credit cards generated from the actual cards and provide extra security.">
     Virtual card turned on
   </message>
@@ -548,6 +551,9 @@
   </message>
   <message name="IDS_SETTINGS_REMOTE_PAYMENT_METHODS_LINK_LABEL" desc="The title and ARIA (accessibility) label for a link in chrome://settings/payments that opens the payment methods settings on https://pay.google.com. Note that the ARIA role and the link icon already convey that this is a link that will be opened when you click on it. Therefore, the message does not contain a verb.">
     Your payment methods in Google Pay
+  </message>
+  <message name="IDS_SETTINGS_REMOTE_PAYMENT_METHODS_WALLET_LINK_LABEL" desc="The title and ARIA (accessibility) label for a link in chrome://settings/payments that opens the payment methods settings on https://wallet.google.com. Note that the ARIA role and the link icon already convey that this is a link that will be opened when you click on it. Therefore, the message does not contain a verb.">
+    Your payment methods in Google Wallet
   </message>
   <message name="IDS_SETTINGS_NAME_ON_CREDIT_CARD" desc="The title for the input that lets users modify the name on the credit card.">
     Name on card
@@ -681,9 +687,11 @@
       =1 {1 reused password}
       other {{NUM_REUSED} reused passwords}}
   </message>
-  <message name="IDS_SETTINGS_AUTOFILL_AI_PAGE_TITLE" desc="The title of the page in Settings that allows managing the enhanced autofill settings.">
-    Enhanced autofill
+  <message name="IDS_SETTINGS_AUTOFILL_AI_AUTHENTICATION_TOGGLE_TITLE" desc="The title of the toggle shown in the settings page that allows managing the authentication requirement before seeings enhanced autofill settings sensitive fields, such as passport number and natinal id card number.">
+    Verify it’s you to autofill sensitive info
   </message>
+  <message name="IDS_SETTINGS_AUTOFILL_AI_AUTHENTICATION_TOGGLE_SUBTITLE" desc="The subtitle of the toggle shown in the settings page that allows managing the authentication requirement before seeings enhanced autofill settings sensitive fields, such as passport number and natinal id card number.">
+    For added protection, always use your fingerprint, face, or other screen lock when you use sensitive info like travel and identity docs  </message>
   <message name="IDS_SETTINGS_AUTOFILL_AI_WHEN_ON_SAVED_INFO" desc="Bullet 1 of 2 that appears beneath the 'When on' title. 'Autofill': the user is on the 'enhanced autofill' feature page, but we want to frame this new type of autofill as just 'Autofill'. 'Can offer to save info when you submit forms': we want to convey that the user has the choice, each time a form is submitted, whether they want their info saved to Chrome for the purposes of Autofill. 'Like your driver's license or passport number': Today, supported data types for 'enhanced autofill' include 1) driver's licenses, 2) passports, and 3) vehicles. Eventually we'll support more, but this example needs to mention these types of data and not others.">
     Autofill can offer to save info when you submit forms, like your driver's license or passport number
   </message>
@@ -728,6 +736,27 @@
   </message>
   <message name="IDS_SETTINGS_AUTOFILL_AI_ADD_OR_EDIT_DIALOG_VALIDATION_ERROR" desc="An error message if the user clicks Save without having filled at least one value in the form.">
     Fill at least one field before saving
+  </message>
+  <message name="IDS_AUTOFILL_AI_ADD_OR_EDIT_DIALOG_REQUIRED_FIELD_ERROR" desc="Error message displayed in the Autofill AI add/edit dialog when a required field is missing.">
+    <ph name="FIELD_LIST">$1<ex>Name, Address, or Phone Number</ex></ph> is required
+  </message>
+  <message name="IDS_SETTINGS_WALLETABLE_PASS_DETECTION_TOGGLE_LABEL" desc="Label for the toggle in Settings that allows managing the full page save settings for wallet.">
+    Save info to Google Wallet from pages you view
+  </message>
+  <message name="IDS_SETTINGS_WALLETABLE_PASS_DETECTION_TOGGLE_SUB_LABEL" desc="The sub-label of the page in Settings that allows managing the full page save settings for wallet.">
+    Access your passes, like event tickets and loyalty cards, from your device
+  </message>
+  <message name="IDS_SETTINGS_WALLETABLE_PASS_DETECTION_WHEN_ON_SAVED_INFO" desc="Bullet 1 of 2 that appears beneath the 'When on' title for wallet.">
+    Wallet can offer to save info from pages you're viewing, like tickets you purchase
+  </message>
+  <message name="IDS_SETTINGS_WALLETABLE_PASS_DETECTION_WHEN_ON_NOTIFICATIONS" desc="Bullet 2 of 2 that appears beneath the 'When on' title for wallet.">
+    Later, Wallet can send you notifications about your events
+  </message>
+  <message name="IDS_SETTINGS_WALLETABLE_PASS_DETECTION_TO_CONSIDER_DATA_USAGE" desc="Bullet 1 of 2 that appears beneath the 'Things to consider' title for wallet.">
+    To offer suggestions and improve this feature, the URL and full page content of the site you visit are shared with Google
+  </message>
+  <message name="IDS_SETTINGS_WALLETABLE_PASS_DETECTION_TO_CONSIDER_DATA_STORAGE" desc="Bullet 2 of 2 that appears beneath the 'Things to consider' title for wallet.">
+    Your info is available in Google Wallet on any signed-in device
   </message>
 
   <if expr="is_win or is_macosx">
@@ -864,9 +893,6 @@
   <message name="IDS_SETTINGS_CLEAR_GOOGLE_SEARCH_HISTORY_NON_GOOGLE_DSE" desc="A description explaining that other forms of activity can be cleared through the Google account.">
     <ph name="BEGIN_LINK_GOOGLE">&lt;a target="_blank" href="$1"&gt;</ph>Other forms of activity<ph name="END_LINK_GOOGLE">&lt;/a&gt;</ph> may be saved in your Google Account when you're signed in. You can delete them anytime.
   </message>
-  <message name="IDS_SETTINGS_CLEAR_NON_GOOGLE_SEARCH_HISTORY_PREPOPULATED_DSE" desc="A description informing the user about the way to clear their search history when their Default Search Engine is not Google.">
-    Your search engine is <ph name="DSE">$1<ex>Bing</ex></ph>. See their instructions for deleting your search history, if applicable.
-  </message>
   <message name="IDS_SETTINGS_CLEAR_NON_GOOGLE_SEARCH_HISTORY_NON_PREPOPULATED_DSE" desc="A description informing the user about the way to clear their search history when their Default Search Engine is not Google.">
     See your search engine's instructions for deleting your search history, if applicable
   </message>
@@ -918,33 +944,12 @@
   <message name="IDS_SETTINGS_CLEAR_BROWSING_DATA_MORE" desc="Label of the 'More' chip in the time picker in the 'Delete browsing data' dialog. Clicking on this chip will show a menu with more time period options for deleting browsing data.">
     More
   </message>
-  <message name="IDS_SETTINGS_MANAGE_IN_GOOGLE_PASSWORD_MANAGER" desc="Description for the 'Passwords and Passkeys' linkout in the 'Other Google Data' subpage inside the 'Delete browsing data' dialog. This lets users know that passwords and passkeys can be managed and deleted in Google password manager.">
-    Manage in Google Password Manager
-  </message>
-  <message name="IDS_SETTINGS_MANAGE_IN_YOUR_GOOGLE_ACCOUNT" desc="Description for the MyActivity and Search History linkouts in the 'Other Google Data' subpage inside the 'Delete browsing data' dialog. This lets users know that this data can be managed and deleted in their Google account.">
-    Manage in your Google Account
-  </message>
   <message name="IDS_SETTINGS_MANAGE_IN_YOUR_GEMINI_APPS_ACTIVITY" desc="Description for the Gemini Apps Activity linkout.">
     Manage your Gemini Apps activity
 </message>
 <message name="IDS_SETTINGS_GEMINI_APPS_ACTIVITY" desc="Title for the Gemini Apps Activity section in Other Data.">
     Gemini Apps activity
 </message>
-  <message name="IDS_SETTINGS_PASSWORDS_AND_PASSKEYS" desc="Label for the 'Passwords and Passkeys' linkout in the 'Other Google Data' subpage inside the 'Delete browsing data' dialog, where the user can see and manage data that is stored outside of Chrome. This linkout is specifically for passwords and passkeys stored in Google password manager.">
-    Passwords and passkeys
-  </message>
-  <message name="IDS_SETTINGS_SEARCH_HISTORY" desc="Label for the 'Search history' linkout in the 'Other Google Data' subpage inside the 'Delete browsing data' dialog, where the user can see and manage data that is stored outside of Chrome. This linkout is specifically for search history stored in the user's default search engine account.">
-    Search history
-  </message>
-  <message name="IDS_SETTINGS_MY_ACTIVITY" desc="Label for the 'My Activity' linkout in the 'Other Google Data' subpage inside the 'Delete browsing data' dialog, where the user can see and manage data that is stored outside of Chrome. This linkout is specifically for activity data stored in the user's Google account.">
-    My Activity
-  </message>
-  <message name="IDS_SETTINGS_OTHER_DATA_TITLE" desc="Title for the 'Other Data' subpage inside the 'Delete browsing data' dialog, where the user can see and manage data that is stored outside of Chrome. This is the title shown when the user did not set Google as their default search engine, indicating that they may have data stored outside of Google.">
-    Other data
-  </message>
-  <message name="IDS_SETTINGS_OTHER_GOOGLE_DATA_TITLE" desc="Title for the 'Other Google Data' subpage inside the 'Delete browsing data' dialog, where the user can see and manage data that is stored outside of Chrome. This is the title shown when the user set Google as their default search engine, indicating that all data linked in this subpage is stored within Google.">
-    Other Google data
-  </message>
   <message name="IDS_SETTINGS_DELETE_DATA_FROM_DEVICE" desc="This is the label for the primary button on the 'Delete browsing data' dialog. Clicking on this will trigger the deletion. This is the label shown when account data cannot be cleared, for example: the user is signed out. It indicates that the deletion will only affect data stored on this device and will not affect synced data.">
     Delete from this device
   </message>
@@ -954,23 +959,8 @@
   <message name="IDS_SETTINGS_DELETION_CONFIRMATION_ALL_TIME_TOAST_LABEL" desc="This is the label for the confirmation toast shown on the 'Privacy and security' page after the deletion is completed in the 'Delete browsing data' dialog and the dialog was closed. This is the label shown when the user selected the data to be deleted for all time.">
     Deleted
   </message>
-  <message name="IDS_SETTINGS_MANAGE_OTHER_GOOGLE_DATA_LABEL" desc="Label for the 'Manage other Google data' subpage entry-point in the 'Delete Browsing Data' dialog where the user can find link-outs to manage their data outside of Chrome. This is the label shown when the user has Google as their default search engine.">
-    Manage other Google data
-  </message>
-  <message name="IDS_SETTINGS_MANAGE_OTHER_DATA_LABEL" desc="Label for the 'Manage other data' subpage entry-point in the 'Delete Browsing Data' dialog where the user can find link-outs to manage their data outside of Chrome. This is the label shown when the user does not have Google as their default search engine.">
-    Manage other data
-  </message>
-  <message name="IDS_SETTINGS_MANAGE_OTHER_DATA_SUB_LABEL" desc="Sub-label for the 'Manage other Google Data' option in the 'Delete Browsing Data' dialog, explaining to the user that search history and passwords can be deleted outside of Chrome in their respective management settings.">
-    Search history and passwords can be deleted in their management settings
-  </message>
-   <message name="IDS_SETTINGS_MANAGE_PASSWORDS_SUB_LABEL" desc="Sub-label for the 'Manage other Data' subpage entrypoint in the 'Delete Browsing Data' dialog, explaining to the user that passwords can only be deleted in their management settings.">
-    Passwords can be deleted in their management settings
-  </message>
   <message name="IDS_SETTINGS_SEARCH_GEMINI_PASSWORDS_OTHER_DATA_SUB_LABEL" desc="Sub-label for the 'Manage Other Google Data' option in the 'Delete Browsing Data' dialog, explaining to the user that search history, Gemini history, and passwords can be deleted outside of Chrome in their respective management settings.">
     Search history, Gemini history, and passwords can be deleted in their management settings
-  </message>
-  <message name="IDS_SETTINGS_OTHER_DATA_DESCRIPTION" desc="Description text at the top of the 'Other Google data' subpage in the 'Delete browsing data' settings dialog. It informs users that data linked in this page are not managed or deleted in Chrome.">
-    To delete this data, go to its management settings
   </message>
 
   <!-- Downloads Page -->
@@ -1966,6 +1956,9 @@
   </message>
 
   <!-- Bundled Security Settings (chrome://settings/security) -->
+  <message name="IDS_SETTINGS_SECURITY_BUNDLE_TOAST_FOR_USER_OPTED_INTO_ENHANCED_BUNDLE" desc="Text on the toast shown when an Enhanced Safe Browsing user is enrolled in the enhanced bundle for bundled security settings.">
+    Your security settings were upgraded
+  </message>
   <message name="IDS_SETTINGS_SECURITY_BUNDLE_RESET_TO_DEFAULTS_BUTTON_LABEL" desc="Label of button which resets security-settings-bundle to default settings">
     Reset to defaults
   </message>
@@ -2026,6 +2019,9 @@
   <message name="IDS_SETTINGS_SECURITY_FEATURE_ROW_STATE_ENHANCED" desc="The state text denoting that a security feature is in the enhanced state.">
     Enhanced
   </message>
+  <message name="IDS_SETTINGS_SECURITY_FEATURE_ROW_STATE_ENHANCED_CUSTOM" desc="The state text denoting that a security feature is in the enhanced custom state. This text communitcates that the selected security setting is in its enhanced custom option.">
+    Enhanced: custom
+  </message>
   <message name="IDS_SETTINGS_SECURITY_FEATURE_ROW_STATE_STANDARD" desc="The state text denoting that a security feature is in the standard state.">
     Standard
   </message>
@@ -2035,8 +2031,26 @@
   <message name="IDS_SETTINGS_SECURITY_ACCOUNT_AND_NETWORK_SECTION_TITLE" desc="Name of the security page's 'account and network protection' section.">
     Account and network protection
   </message>
+  <message name="IDS_SETTINGS_SECURITY_ADVANCED_PROTECTION_PROGRAM_LABEL" desc="Description of the Google Advanced Protection Program. Includes a link which takes users to the Google Advanced Protection Program external webpage.">
+    If you are an activist, journalist, public figure, election worker, or someone else in a uniquely high risk role, you may be interested in Google's <ph name="BEGIN_LINK">&lt;a href="$1" target="_blank"&gt;</ph>Advanced Protection Program<ph name="END_LINK">&lt;/a&gt;</ph>.
+  </message>
   <message name="IDS_SETTINGS_SECURITY_PASSWORDS_LEAK_DETECTION_TITLE" desc="Label for a toggle that allows users to choose whether chrome should check if credentials have been part of a leak.">
     Compromised password detection
+  </message>
+  <message name="IDS_SETTINGS_SECURITY_SECURE_DNS_TITLE" desc="Name of Secure DNS security setting">
+    Secure DNS
+  </message>
+  <message name="IDS_SETTINGS_SECURITY_SECURE_DNS_DESCRIPTION" desc="Description of Secure DNS security setting">
+    Encrypts navigation requests so attackers on the same network can't see your traffic
+  </message>
+  <message name="IDS_SETTINGS_SECURITY_SECURE_DNS_DEFAULT" desc="Name of Secure DNS default option">
+    Use default if available
+  </message>
+  <message name="IDS_SETTINGS_SECURITY_SECURE_DNS_FALLBACK" desc="Name of Secure DNS fallback option">
+    Use default if available and Google DNS as backup
+  </message>
+  <message name="IDS_SETTINGS_SECURITY_SECURE_DNS_CUSTOM" desc="Name of Secure DNS custom option">
+    Use always with selected DNS over HTTPS provider
   </message>
 
   <!-- Secure Connections -->
@@ -3120,6 +3134,7 @@
   <message name="IDS_SETTINGS_SITE_SETTINGS_HAND_TRACKING_BLOCK" desc="The block label for the hand tracking feature in site settings.">
     Don't allow sites to track your hands
   </message>
+
   <message name="IDS_SETTINGS_SITE_SETTINGS_LOCAL_NETWORK_ACCESS_DESCRIPTION" desc="Description of the local network access content setting.">
     Sites can use this feature to look for and connect to any device on your local network
   </message>
@@ -3135,6 +3150,39 @@
   <message name="IDS_SETTINGS_SITE_SETTINGS_LOCAL_NETWORK_ACCESS_BLOCKED_EXCEPTIONS" desc="Label for the blocked exceptions site list of the local network access content setting.">
     Not allowed to connect to any device on your local network
   </message>
+
+  <message name="IDS_SETTINGS_SITE_SETTINGS_LOCAL_NETWORK_DESCRIPTION" desc="Description of the local network content setting.">
+    Sites can use this feature to access other devices on your local network
+  </message>
+  <message name="IDS_SETTINGS_SITE_SETTINGS_LOCAL_NETWORK_ASK" desc="Label for the enabled option of the local network content setting.">
+    Sites can ask to access other devices on your local network
+  </message>
+  <message name="IDS_SETTINGS_SITE_SETTINGS_LOCAL_NETWORK_BLOCK" desc="Label for the disabled option of the local network content setting.">
+    Don't allow sites to access other devices on your local network
+  </message>
+  <message name="IDS_SETTINGS_SITE_SETTINGS_LOCAL_NETWORK_ALLOWED_EXCEPTIONS" desc="Label for the allowed exceptions site list of the local network content setting.">
+    Allowed to access other devices on your local network
+  </message>
+  <message name="IDS_SETTINGS_SITE_SETTINGS_LOCAL_NETWORK_BLOCKED_EXCEPTIONS" desc="Label for the blocked exceptions site list of the local network content setting.">
+    Not allowed to access other devices on your local network
+  </message>
+
+  <message name="IDS_SETTINGS_SITE_SETTINGS_LOOPBACK_NETWORK_DESCRIPTION" desc="Description of the loopback network content setting.">
+    Sites can use this feature to access other apps and services on this device
+  </message>
+  <message name="IDS_SETTINGS_SITE_SETTINGS_LOOPBACK_NETWORK_ASK" desc="Label for the enabled option of the loopback network content setting.">
+    Sites can ask to access other apps and services on this device
+  </message>
+  <message name="IDS_SETTINGS_SITE_SETTINGS_LOOPBACK_NETWORK_BLOCK" desc="Label for the disabled option of the loopback network content setting.">
+    Don't allow sites to access other apps and services on this device
+  </message>
+  <message name="IDS_SETTINGS_SITE_SETTINGS_LOOPBACK_NETWORK_ALLOWED_EXCEPTIONS" desc="Label for the allowed exceptions site list of the loopback network content setting.">
+    Allowed to access other apps and services on this device
+  </message>
+  <message name="IDS_SETTINGS_SITE_SETTINGS_LOOPBACK_NETWORK_BLOCKED_EXCEPTIONS" desc="Label for the blocked exceptions site list of the loopback network content setting.">
+    Not allowed to access other apps and services on this device
+  </message>
+
   <message name="IDS_SETTINGS_THIRD_PARTY_COOKIES_PAGE_DESCRIPTION" desc="An explanation of what third-party cookies are that appear beneath the page title: 'Third-party cookies'. * 'embed': A site you visit uses HTML to construct the page. HTML tags include references to images, like img src='filename.jpg', that are used to show an image. 'filename.jpg' can be a local file owned by the site you visit or a site can embed an external file with something like img src='www.third-party-site.com/images/filename.jpg'. This image is embedded into the site you visit and www.third-party-site.com can set a third-party cookie onto your device.">
     A site you visit can embed content from other sites, for example, images, ads, and text. Cookies set by these other sites are called third-party cookies.
   </message>
@@ -3165,35 +3213,8 @@
   <message name="IDS_SETTINGS_COOKIES_ALL_SITES_LINK" desc="Label for the link row which takes the user to the page listing all sites with storage and permissions">
     See all site data and permissions
   </message>
-  <message name="IDS_SETTINGS_TRACKING_PROTECTION_PAGE_DESCRIPTION" desc="Explanatory text for the Tracking Protection settings page.">
-    Chrome limits the type of information sites can use to track you as you browse. You can change your settings to choose your own level of protection.
-  </message>
-  <message name="IDS_SETTINGS_TRACKING_PROTECTION_BULLET_ONE" desc="The first bullet for Tracking Protection settings. Informs users that Chrome will limit third-party cookies.">
-    Chrome automatically limits third-party cookies
-  </message>
-  <message name="IDS_SETTINGS_TRACKING_PROTECTION_BULLET_ONE_DESCRIPTION" desc="Description of the first bullet for tracking protection settings. Explains what limiting third-party cookies means.">
-    Most sites can’t use third-party cookies to track you as you browse and sites can’t use third-party cookies in Incognito mode.
-  </message>
-  <message name="IDS_SETTINGS_TRACKING_PROTECTION_BULLET_TWO" desc="The second bullet for Tracking Protection settings. Informs users that most sites should work as expected.">
-    Most sites should work as expected
-  </message>
-  <message name="IDS_SETTINGS_TRACKING_PROTECTION_BULLET_TWO_DESCRIPTION" desc="Description of the second bullet for Tracking Protection settings. Explains that you can temporarilty allow a site to use third-party cookies if it isn't working. Contains a learn more link to a help center article.">
-    If a site isn’t working, you can try giving it temporary permission to use third-party cookies. <ph name="BEGIN_LINK">&lt;a target="_blank" href="$1" aria-label="$2" aria-description="$3"&gt;</ph>Learn more<ph name="END_LINK">&lt;/a&gt;<ex>&lt;/a&gt;</ex></ph>
-  </message>
-  <message name="IDS_SETTINGS_TRACKING_PROTECTION_BULLET_TWO_LEARN_MORE_ARIA_LABEL" desc="Screenreader text for the 'Learn more' link in the second bullet of Tracking Protection settings.">
-    Learn more about giving a site temporary permission to use third-party cookies
-  </message>
   <message name="IDS_SETTINGS_TRACKING_PROTECTION_ADVANCED_LABEL" desc="Label for a section on the Tracking Protection settings page containing advanced options.">
     Advanced
-  </message>
-  <message name="IDS_SETTINGS_TRACKING_PROTECTION_THIRD_PARTY_COOKIES_TOGGLE_LABEL" desc="Label for a toggle that blocks all third-party cookies when on.">
-    Block all third-party cookies
-  </message>
-  <message name="IDS_SETTINGS_TRACKING_PROTECTION_THIRD_PARTY_COOKIES_TOGGLE_SUB_LABEL" desc="Sub-label for the third-party cookie blocking toggle. Explains that features on some sites may not work when the toggle is on and third-party cookies are blocked.">
-    Features on some sites may not work.
-  </message>
-  <message name="IDS_SETTINGS_TRACKING_PROTECTION_THIRD_PARTY_COOKIES_LEARN_MORE_ARIA_LABEL" desc="Screenreader text for the 'Learn more' link in the sub-label of the third-party cookie blocking toggle.">
-    Learn more about sites that may not work when blocking third-party cookies
   </message>
   <message name="IDS_SETTINGS_TRACKING_PROTECTION_DO_NOT_TRACK_TOGGLE_SUB_LABEL" desc="Sub-label for the Do Not Track toggle. Explains that sites may not respond to 'do not track' requests even when this toggle is on.">
     Sites use their discretion when responding to this request
@@ -4041,6 +4062,14 @@
     </message>
     <message name="IDS_SETTINGS_SYSTEM_PROXY_SETTINGS_MULTIPLE_SOURCES_LABEL" desc="Non-interactive label that describes when Chrome's proxy settings are overwritten by multiple sources. This is used in place of the above IDS_SETTINGS_SYSTEM_PROXY_SETTINGS_LABEL or IDS_SETTINGS_SYSTEM_PROXY_SETTINGS_LABEL labels in cases where both an enterprise policy or extension are applying settings at the same time.">
       Browser proxy settings are controlled by multiple sources
+    </message>
+  </if>
+  <if expr="not is_chromeos and _google_chrome">
+    <message name="IDS_SETTINGS_SYSTEM_FEATURE_ON_DEVICE_AI_ENABLED_LABEL" desc="Label for the toggle that allows or prevents chrome to download on device GenAI models to local disk.">
+      On-device GenAI Enabled
+    </message>
+    <message name="IDS_SETTINGS_SYSTEM_FEATURE_ON_DEVICE_AI_ENABLED_SUB_LABEL" desc="This string describes what turning off the toggle implies.">
+      Powers features like scam detection locally. Turning this off deletes GenAI models from your device and disables these features.
     </message>
   </if>
 

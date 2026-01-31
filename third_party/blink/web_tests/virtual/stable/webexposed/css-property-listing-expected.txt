@@ -62,6 +62,7 @@ All changes to this list should go through Blink's feature review process: http:
     animation-range-start
     animation-timeline
     animation-timing-function
+    animation-trigger
     app-region
     appearance
     aspect-ratio
@@ -406,6 +407,7 @@ All changes to this list should go through Blink's feature review process: http:
     text-emphasis-position
     text-emphasis-style
     text-indent
+    text-justify
     text-orientation
     text-overflow
     text-rendering
@@ -418,6 +420,12 @@ All changes to this list should go through Blink's feature review process: http:
     text-wrap-mode
     text-wrap-style
     timeline-scope
+    timeline-trigger-active-range-end
+    timeline-trigger-active-range-start
+    timeline-trigger-entry-range-end
+    timeline-trigger-entry-range-start
+    timeline-trigger-name
+    timeline-trigger-source
     top
     touch-action
     transform
@@ -430,6 +438,7 @@ All changes to this list should go through Blink's feature review process: http:
     transition-property
     transition-timing-function
     translate
+    trigger-scope
     unicode-bidi
     user-select
     vector-effect
@@ -846,6 +855,19 @@ All changes to this list should go through Blink's feature review process: http:
     text-wrap
         text-wrap-mode
         text-wrap-style
+    timeline-trigger
+        timeline-trigger-active-range-end
+        timeline-trigger-active-range-start
+        timeline-trigger-entry-range-end
+        timeline-trigger-entry-range-start
+        timeline-trigger-name
+        timeline-trigger-source
+    timeline-trigger-active-range
+        timeline-trigger-active-range-end
+        timeline-trigger-active-range-start
+    timeline-trigger-entry-range
+        timeline-trigger-entry-range-end
+        timeline-trigger-entry-range-start
     transition
         transition-behavior
         transition-delay

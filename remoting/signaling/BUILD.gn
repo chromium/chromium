@@ -8,6 +8,8 @@ static_library("signaling") {
     "corp_message_channel_strategy.h",
     "corp_messaging_client.cc",
     "corp_messaging_client.h",
+    "corp_messaging_constants.cc",
+    "corp_messaging_constants.h",
     "corp_signal_strategy.cc",
     "corp_signal_strategy.h",
     "ftl_client_uuid_device_id_provider.cc",

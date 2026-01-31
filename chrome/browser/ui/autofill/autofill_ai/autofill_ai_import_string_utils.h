@@ -13,6 +13,8 @@ namespace autofill {
 
 std::u16string GetPromptTitle(EntityTypeName type_name, bool is_save_prompt);
 
+std::u16string GetPrimaryButtonText(bool is_save_prompt);
+
 }  // namespace autofill
 
 #endif  // CHROME_BROWSER_UI_AUTOFILL_AUTOFILL_AI_AUTOFILL_AI_IMPORT_STRING_UTILS_H_

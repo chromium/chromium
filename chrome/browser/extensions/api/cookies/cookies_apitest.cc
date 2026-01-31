@@ -7,6 +7,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/test/bind.h"
 #include "build/build_config.h"
+#include "chrome/browser/extensions/api/cookies/cookies_api.h"
 #include "chrome/browser/extensions/extension_apitest.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_destroyer.h"
@@ -18,6 +19,7 @@
 #include "extensions/browser/extension_registry_observer.h"
 #include "extensions/buildflags/buildflags.h"
 #include "extensions/test/extension_test_message_listener.h"
+#include "extensions/test/test_extension_dir.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/default_handlers.h"
@@ -232,6 +234,70 @@ IN_PROC_BROWSER_TEST_P(CookiesApiMV3Test, TestGetPartitionKey) {
   EXPECT_TRUE(ExecJs(contents, script));
   EXPECT_TRUE(WaitForLoadStop(contents));
   ASSERT_TRUE(RunTest("cookies/get_partition_key")) << message_;
+}
+
+IN_PROC_BROWSER_TEST_F(ExtensionApiTest, OTRReceiverMojoConnectionError) {
+  // Test that simulates a mojo connection error with an existing OTR profile.
+  // This test verifies that the fix for crbug.com/472076020 works correctly:
+  // when MaybeStartListening() is called after a connection error, it should
+  // not try to add an observation for the OTR profile again because
+  // OnOffTheRecordProfileCreated() already added it.
+
+  // First, install an extension with cookie permissions to trigger
+  // CookiesEventRouter creation.
+  static constexpr char kManifest[] = R"({
+    "name": "Cookies API Test",
+    "version": "1.0",
+    "manifest_version": 3,
+    "permissions": ["cookies"],
+    "host_permissions": ["<all_urls>"],
+    "background": {"service_worker": "background.js"}
+  })";
+
+  static constexpr char kBackgroundJs[] = R"(
+    chrome.cookies.onChanged.addListener((changeInfo) => {
+      // Listener to trigger CookiesEventRouter creation
+    });
+    chrome.test.sendMessage('listener_registered');
+  )";
+
+  TestExtensionDir test_dir;
+  test_dir.WriteManifest(kManifest);
+  test_dir.WriteFile(FILE_PATH_LITERAL("background.js"), kBackgroundJs);
+
+  // Load the extension with a listener to ensure CookiesEventRouter is created.
+  ExtensionTestMessageListener listener_registered("listener_registered");
+  const Extension* extension = LoadExtension(
+      test_dir.UnpackedPath(),
+      {.allow_in_incognito = true, .wait_for_registration_stored = true});
+  ASSERT_TRUE(extension);
+  ASSERT_TRUE(listener_registered.WaitUntilSatisfied());
+
+  // Get the CookiesAPI instance which owns the CookiesEventRouter.
+  CookiesAPI* cookies_api = CookiesAPI::GetFactoryInstance()->Get(profile());
+  ASSERT_TRUE(cookies_api);
+
+  CookiesEventRouter* event_router =
+      cookies_api->GetCookiesEventRouterForTesting();
+  ASSERT_TRUE(event_router);
+
+  // Create an OTR profile. This should trigger OnOffTheRecordProfileCreated()
+  // which starts observing the OTR profile and binds the OTR mojo receiver.
+  Profile* otr_profile =
+      profile()->GetPrimaryOTRProfile(/*create_if_needed=*/true);
+  mojo::Receiver<network::mojom::CookieChangeListener>& otr_receiver =
+      event_router->otr_receiver_;
+  const base::ScopedObservation<Profile, ProfileObserver>&
+      otr_profile_observation = event_router->otr_profile_observation_;
+  ASSERT_TRUE(otr_profile);
+  EXPECT_TRUE(otr_profile_observation.IsObservingSource(otr_profile));
+  EXPECT_TRUE(otr_receiver.is_bound());
+
+  // Simulate a mojo connection error and verify that the OTR receiver is
+  // re-bound and the observation is still active.
+  event_router->OnConnectionError(&otr_receiver);
+  EXPECT_TRUE(otr_receiver.is_bound());
+  EXPECT_TRUE(otr_profile_observation.IsObservingSource(otr_profile));
 }
 
 }  // namespace extensions

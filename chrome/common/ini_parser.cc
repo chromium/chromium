@@ -59,7 +59,7 @@ void DictionaryValueINIParser::HandleTriplet(std::string_view section,
                                              std::string_view key,
                                              std::string_view value) {
   // Checks whether the section and key contain a '.' character.
-  // Those sections and keys break `base::Value::Dict`'s path format when not
+  // Those sections and keys break `base::DictValue`'s path format when not
   // using the *WithoutPathExpansion methods.
   if (section.find('.') == std::string::npos &&
       key.find('.') == std::string::npos &&

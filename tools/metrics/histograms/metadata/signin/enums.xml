@@ -797,6 +797,9 @@ chromium-metrics-reviews@google.com.
   <int value="82" label="Ash Drive Integration"/>
   <int value="83" label="Ash Boca Classroom Page Handler"/>
   <int value="84" label="Ash Scanner Keyed Service"/>
+  <int value="85" label="Autotest Private Api"/>
+  <int value="86" label="Sync Device Statistics Metrics"/>
+  <int value="87" label="Legion Service"/>
 </enum>
 
 <!-- LINT.ThenChange(//components/signin/public/base/oauth_consumer_id.h:OAuthConsumerId) -->
@@ -832,6 +835,8 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//google_apis/gaia/oauth_multilogin_result.h:OAuthMultiloginResponseStatus) -->
 
+<!-- LINT.IfChange(PAMInitializePrimaryAccountInfoState) -->
+
 <enum name="PAMInitializePrimaryAccountInfoState">
   <int value="0" label="OK: Account info available"/>
   <int value="1" label="Empty account info. Restore failed (no sync consent)."/>
@@ -841,9 +846,12 @@ chromium-metrics-reviews@google.com.
       label="Empty account info. Restore failed (no last sync email)"/>
   <int value="4"
       label="Empty account info. Restore failed (account id mismatch)"/>
-  <int value="5" label="Empty account info. Restore failed (feature disabled)"/>
+  <int value="5"
+      label="(Obsolete) Empty account info. Restore failed (feature disabled)"/>
   <int value="6" label="Empty account info. Restore success"/>
 </enum>
+
+<!-- LINT.ThenChange(//components/signin/internal/identity_manager/primary_account_manager.h:InitializeAccountInfoState) -->
 
 <enum name="PAMInitializePrimaryAccountPrefs">
   <int value="0" label="With primary account id, no sync consent"/>
@@ -873,6 +881,8 @@ chromium-metrics-reviews@google.com.
 
 <enum name="ReauthAccessPoint">
   <int value="0" label="Account menu"/>
+  <int value="1" label="Account settings"/>
+  <int value="2" label="Recent tabs"/>
 </enum>
 
 <!-- LINT.ThenChange(//components/signin/public/base/signin_metrics.h:ReauthAccessPoint) -->
@@ -903,50 +913,53 @@ chromium-metrics-reviews@google.com.
 </enum>
 
 <enum name="SigninAccessPoint">
-  <int value="0" label="Start page"/>
-  <int value="1" label="NTP Link"/>
-  <int value="2" label="Menu"/>
-  <int value="3" label="Settings"/>
-  <int value="4" label="Supervised user"/>
+  <int value="0" label="Start page (First Run Experience)"/>
+  <int value="1" label="(obsolete) NTP Link"/>
+  <int value="2" label="Three-dot menu"/>
+  <int value="3" label="Top-level settings"/>
+  <int value="4" label="(obsolete) Supervised user"/>
   <int value="5" label="Extension install bubble"/>
-  <int value="6" label="Extensions"/>
+  <int value="6" label="Extensions (via chrome.identity API)"/>
   <int value="7" label="(obsolete) Apps page link"/>
-  <int value="8" label="Bookmark bubble"/>
+  <int value="8" label="Bookmark save bubble"/>
   <int value="9" label="Bookmark manager"/>
-  <int value="10" label="Avatar bubble sign in"/>
+  <int value="10" label="Profile menu (aka avatar bubble)"/>
   <int value="11" label="Profile picker"/>
-  <int value="12" label="Devices page"/>
+  <int value="12" label="(obsolete) Devices page"/>
   <int value="13" label="(obsolete) Cloud print"/>
   <int value="14" label="(obsolete) Content area"/>
   <int value="15" label="Fullscreen Signin promo shown on start-up"/>
-  <int value="16" label="Recent tabs"/>
+  <int value="16" label="Tabs from other devices"/>
   <int value="17" label="Unknown"/>
-  <int value="18" label="Password bubble"/>
+  <int value="18" label="Password save bubble"/>
   <int value="19" label="Autofill dropdown"/>
-  <int value="20" label="NTP Content Suggestions"/>
+  <int value="20" label="(obsolete) NTP Content Suggestions"/>
   <int value="21" label="Re-signin infobar"/>
-  <int value="22" label="Tab switcher"/>
+  <int value="22" label="(obsolete) Tab switcher"/>
   <int value="23" label="(obsolete) Force signin warning"/>
   <int value="24" label="(obsolete) Save card bubble"/>
   <int value="25" label="(obsolete) Manage cards bubble"/>
   <int value="26" label="Machine logon"/>
-  <int value="27" label="Sync and Google services settings"/>
-  <int value="28" label="Re-signin from sync error card in settings"/>
+  <int value="27" label="(obsolete) Sync and Google services settings"/>
+  <int value="28"
+      label="(obsolete) Re-signin from sync error card in settings"/>
   <int value="29" label="Forced sign-in"/>
-  <int value="30" label="Re-signin after an account rename"/>
-  <int value="31" label="Web sign-in"/>
+  <int value="30" label="(obsolete) Re-signin after an account rename"/>
+  <int value="31"
+      label="Bottom sheet from web sign-in (Mobile). Implicit web sign-in
+             (Desktop, deprecated)"/>
   <int value="32" label="Safety check settings page"/>
-  <int value="33" label="Kaleidoscope"/>
-  <int value="34" label="Enterprise sign-out coordinator"/>
+  <int value="33" label="(obsolete) Kaleidoscope"/>
+  <int value="34" label="(obsolete) Enterprise sign-out coordinator"/>
   <int value="35" label="Signin intercept first run experience"/>
   <int value="36" label="Send-tab-to-self promo"/>
-  <int value="37" label="Sign-in promo on NTP feed top section."/>
+  <int value="37" label="Sign-in promo on NTP feed top section"/>
   <int value="38" label="Sync off settings row"/>
   <int value="39" label="Post device restore sign-in promo"/>
   <int value="40" label="Post device restore background sign-in"/>
   <int value="41" label="NTP Signed-out icon"/>
-  <int value="42" label="Sign-in promo on NTP feed card menu section."/>
-  <int value="43" label="Sign-in promo on NTP feed bottom section."/>
+  <int value="42" label="Sign-in promo on NTP feed card menu section"/>
+  <int value="43" label="Sign-in promo on NTP feed bottom section"/>
   <int value="44"
       label="Automatic reset to match account cookies (Desktop only).">
     Used by the SigninManager when no other access point is specified.
@@ -956,7 +969,7 @@ chromium-metrics-reviews@google.com.
   <int value="47" label="Reading list"/>
   <int value="48" label="Reauth info bar"/>
   <int value="49" label="Account consistency service"/>
-  <int value="50" label="(Obsolete) Search companion"/>
+  <int value="50" label="(obsolete) Search companion"/>
   <int value="51" label="Set Up List (iOS only)"/>
   <int value="52" label="(obsolete) Password migration warning (Android only)"/>
   <int value="53" label="Save to photos (iOS only)"/>
@@ -969,14 +982,14 @@ chromium-metrics-reviews@google.com.
   <int value="60" label="Sign-in choice remembered"/>
   <int value="61" label="Signout confirmation prompt in profile menu"/>
   <int value="62" label="Signout confirmation prompt in settings"/>
-  <int value="63" label="NTP Identity Disc"/>
+  <int value="63" label="(obsolete) NTP Identity Disc"/>
   <int value="64" label="OIDC auth redirect URI interception"/>
   <int value="65" label="WebAuthn modal dialog"/>
-  <int value="66" label="Avatar bubble sign in with sync promo"/>
+  <int value="66" label="Profile menu (aka avatar bubble) with sync promo"/>
   <int value="67" label="Account menu: Switch account"/>
   <int value="68" label="Product Specifications"/>
   <int value="69" label="Account menu: Switch account failed"/>
-  <int value="70" label="Address bubble"/>
+  <int value="70" label="Address save bubble"/>
   <int value="71" label="CCT account mismatch notification"/>
   <int value="72" label="Drive file picker (iOS only)"/>
   <int value="73" label="Share collaboration tab group authentication"/>
@@ -1280,7 +1293,7 @@ chromium-metrics-reviews@google.com.
   </int>
   <int value="26" label="User tapped on undo right after signin">
     User tapped on the 'Undo' button in a snackbar shown right after signin
-    through promo in bookmarks and reading list page.
+    through promo in bookmarks and reading list page. (iOS only).
   </int>
   <int value="27" label="User declined history sync after dedicated sign-in">
     User has signed-in previously for the sole purpose of enabling history sync
@@ -1356,6 +1369,21 @@ chromium-metrics-reviews@google.com.
     The user was signed out because they were a DICe user and they didn't accept
     or see the migration dialog.
   </int>
+  <int value="42"
+      label="User tapped on undo right after signin through bookmarks promo">
+    User tapped on the 'Undo' button in a snackbar shown right after signin
+    through bookmarks promo. (Android only).
+  </int>
+  <int value="43"
+      label="User tapped on undo right after signin through ntp promo">
+    User tapped on the 'Undo' button in a snackbar shown right after signin
+    through ntp promo. (Android only).
+  </int>
+  <int value="44"
+      label="User tapped on undo right after signin through recent tabs promo">
+    User tapped on the 'Undo' button in a snackbar shown right after signin
+    through recent tabs promo. (Android only).
+  </int>
 </enum>
 
 <enum name="SigninSSOIdentityListRequestCacheState">
@@ -1369,12 +1397,27 @@ chromium-metrics-reviews@google.com.
   <int value="2"
       label="SSO identity cache is not populated, the identity list is
              synchronously fetched and then returned."/>
+  <int value="3"
+      label="The ios_internal identity list cache is not populated."/>
+  <int value="4" label="The ios_internal identity list cache is valid."/>
 </enum>
 
 <enum name="SigninSSOWKWebViewGetAllCookiesRequest">
   <int value="0" label="Started"/>
   <int value="1" label="Finished"/>
 </enum>
+
+<!-- LINT.IfChange(SigninSurveyTrigger) -->
+
+<enum name="SigninSurveyTrigger">
+  <int value="0" label="First Run"/>
+  <int value="1" label="Web Sign-in"/>
+  <int value="2" label="Ntp Avatar Sign-in"/>
+  <int value="3" label="Ntp Promo Sign-in"/>
+  <int value="4" label="Bookmark Promo Sign-in"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/ui/android/signin/java/src/org/chromium/chrome/browser/ui/signin/SigninSurveyController.java:SigninSurveyTrigger) -->
 
 <!-- LINT.IfChange(SigninTokenTableGetAllWrappedBindingKeysResult) -->
 
@@ -1414,7 +1457,7 @@ chromium-metrics-reviews@google.com.
   <int value="0" label="Unknown"/>
   <int value="1" label="TokenService::LoadCredentials"/>
   <int value="2" label="SupervisedUser::InitSync (obsolete)"/>
-  <int value="3" label="InlineLoginHandler::Signin"/>
+  <int value="3" label="InlineLoginHandler::Signin (obsolete)"/>
   <int value="4" label="PrimaryAccountManager::ClearPrimaryAccount"/>
   <int value="5"
       label="PrimaryAccountManager::LegacyPreDiceSigninFlow (obsolete)"/>

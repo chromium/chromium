@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_ASH_MAGIC_BOOST_MAGIC_BOOST_METRICS_H_
 #define CHROME_BROWSER_ASH_MAGIC_BOOST_MAGIC_BOOST_METRICS_H_
 
-#include "chrome/browser/ash/magic_boost/magic_boost_controller_ash.h"
+#include "chrome/browser/ash/magic_boost/magic_boost_controller.h"
 
 namespace ash {
 
@@ -31,8 +31,9 @@ enum class DisclaimerViewAction {
 //    and the user clicked the decline button.
 //        Ash.MagicBoost.DisclaimerView.Total -> Show
 //    Records a overall showing times of the disclaimer view.
-void RecordDisclaimerViewActionMetrics(OptInFeatures opt_in_features,
-                                       DisclaimerViewAction action);
+void RecordDisclaimerViewActionMetrics(
+    magic_boost::OptInFeatures opt_in_features,
+    DisclaimerViewAction action);
 
 }  // namespace ash
 

@@ -29,7 +29,6 @@
 #include "ash/system/input_device_settings/input_device_settings_pref_names.h"
 #include "ash/system/model/system_tray_model.h"
 #include "base/check_op.h"
-#include "base/containers/contains.h"
 #include "base/containers/fixed_flat_map.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/notimplemented.h"
@@ -659,7 +658,7 @@ void InputDeviceSettingsNotificationController::NotifyMouseFirstTimeConnected(
   const char* pref_name = features::IsWelcomeExperienceEnabled()
                               ? prefs::kWelcomeExperienceNotificationSeen
                               : prefs::kPeripheralNotificationMiceSeen;
-  if (base::Contains(prefs->GetList(pref_name), mouse.device_key)) {
+  if (prefs->GetList(pref_name).contains(mouse.device_key)) {
     return;
   }
 
@@ -892,8 +891,8 @@ void InputDeviceSettingsNotificationController::
       Shell::Get()->session_controller()->GetActivePrefService();
   CHECK(prefs);
 
-  if (base::Contains(prefs->GetList(prefs::kWelcomeExperienceNotificationSeen),
-                     keyboard.device_key)) {
+  if (prefs->GetList(prefs::kWelcomeExperienceNotificationSeen)
+          .contains(keyboard.device_key)) {
     return;
   }
 
@@ -920,8 +919,8 @@ void InputDeviceSettingsNotificationController::
       Shell::Get()->session_controller()->GetActivePrefService();
   CHECK(prefs);
 
-  if (base::Contains(prefs->GetList(prefs::kWelcomeExperienceNotificationSeen),
-                     touchpad.device_key)) {
+  if (prefs->GetList(prefs::kWelcomeExperienceNotificationSeen)
+          .contains(touchpad.device_key)) {
     return;
   }
 
@@ -977,8 +976,8 @@ void InputDeviceSettingsNotificationController::
       Shell::Get()->session_controller()->GetActivePrefService();
   CHECK(prefs);
 
-  if (base::Contains(prefs->GetList(prefs::kWelcomeExperienceNotificationSeen),
-                     pointing_stick.device_key)) {
+  if (prefs->GetList(prefs::kWelcomeExperienceNotificationSeen)
+          .contains(pointing_stick.device_key)) {
     return;
   }
 

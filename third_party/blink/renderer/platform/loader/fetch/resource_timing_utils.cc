@@ -4,7 +4,8 @@
 
 #include "third_party/blink/renderer/platform/loader/fetch/resource_timing_utils.h"
 
-#include "base/containers/contains.h"
+#include <algorithm>
+
 #include "base/notreached.h"
 #include "base/time/time.h"
 #include "resource_response.h"
@@ -67,7 +68,7 @@ mojom::blink::ResourceTimingInfoPtr CreateResourceTimingInfo(
 
     info->did_reuse_connection = response->ConnectionReused();
     // Use SecurityOrigin::Create to handle cases like blob:https://.
-    info->is_secure_transport = base::Contains(
+    info->is_secure_transport = std::ranges::contains(
         url::GetSecureSchemes(),
         SecurityOrigin::Create(response->ResponseUrl())->Protocol().Ascii());
     info->timing = response->GetResourceLoadTiming()

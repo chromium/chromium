@@ -89,8 +89,15 @@ class BASE_EXPORT ScopedBoostablePriority {
   // Boosts the priority of the thread where this ScopedBoostablePriority was
   // created. Can be called from any thread, but requires proper external
   // synchronization with the constructor, destructor and any other call to
-  // BoostPriority. If called multiple times, only the first call takes effect.
+  // BoostPriority/Reset(). If called multiple times, only the first call takes
+  // effect.
   bool BoostPriority(ThreadType target_thread_type);
+
+  // Resets the priority of the thread where this ScopedBoostablePriority was
+  // created to its original priority. Can be called from any thread, but
+  // requires proper external synchronization with the constructor, destructor
+  // and any other call to BoostPriority/Reset().
+  void Reset();
 
  private:
   const ThreadType initial_thread_type_;

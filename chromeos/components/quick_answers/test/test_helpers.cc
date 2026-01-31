@@ -25,12 +25,12 @@ std::string GetQuickAnswerTextForTesting(
   return UnescapeStringForHTML(text);
 }
 
-base::Value::Dict CreateUnit(const std::string& name,
-                             double rate_a,
-                             double rate_b,
-                             const std::string& category,
-                             double rate_c) {
-  base::Value::Dict unit;
+base::DictValue CreateUnit(const std::string& name,
+                           double rate_a,
+                           double rate_b,
+                           const std::string& category,
+                           double rate_c) {
+  base::DictValue unit;
   unit.Set(kNamePath, name);
 
   // Since the vast majority of conversion rates involve a |rate_a| term, we

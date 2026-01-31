@@ -11,17 +11,20 @@
 #include "chrome/browser/extensions/sync/extension_sync_service.h"
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
 #include "chrome/browser/sync/sync_service_factory.h"
+#include "components/browser_sync/browser_sync_switches.h"
 #include "components/signin/public/base/signin_buildflags.h"
 #include "components/signin/public/base/signin_metrics.h"
 #include "components/signin/public/base/signin_pref_names.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
+#include "components/sync/base/pref_names.h"
 #include "components/sync/base/user_selectable_type.h"
 #include "components/sync/service/sync_service.h"
 #include "components/sync/service/sync_user_settings.h"
 #include "extensions/browser/extension_system.h"
 #include "extensions/browser/extension_util.h"
 #include "extensions/buildflags/buildflags.h"
+#include "extensions/common/extension_builder.h"
 
 static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
@@ -67,6 +70,9 @@ class AccountExtensionTrackerUnitTest : public ExtensionServiceTestWithInstall {
 
 // Test that an extension's AccountExtensionType is set to the right value based
 // on whether it was installed when there is a signed in user with sync enabled.
+// TODO(crbug.com/40066949): Remove once kSync becomes unreachable or is
+// deleted from the codebase. See ConsentLevel::kSync documentation for
+// details.
 TEST_F(AccountExtensionTrackerUnitTest, AccountExtensionTypeSignedIn) {
   base::FilePath good_crx_path = data_dir().AppendASCII("good.crx");
   InstallCRX(good_crx_path, INSTALL_NEW);
@@ -208,6 +214,150 @@ TEST_F(AccountExtensionTrackerUnitTest, ExtensionSyncDisabledWhileSignedIn) {
   InstallCRX(good_crx_path, INSTALL_NEW);
   EXPECT_EQ(AccountExtensionTracker::AccountExtensionType::kLocal,
             GetAccountExtensionType(kGoodCrx));
+}
+
+class AccountExtensionTrackerSyncToSigninMigrationTest
+    : public AccountExtensionTrackerUnitTest {
+  base::test::ScopedFeatureList feature_list_{
+      switches::kMigrateSyncingUserToSignedIn};
+};
+
+TEST_F(AccountExtensionTrackerSyncToSigninMigrationTest,
+       ShouldMigrateAccountExtensionInstalledLocally) {
+  base::FilePath good_crx_path = data_dir().AppendASCII("good.crx");
+  const Extension* extension = InstallCRX(good_crx_path, INSTALL_NEW);
+  ASSERT_TRUE(extension->is_extension());
+  ASSERT_EQ(AccountExtensionTracker::AccountExtensionType::kLocal,
+            GetAccountExtensionType(kGoodCrx));
+
+  signin_test_util::SimulateExplicitSignIn(profile(), identity_test_env());
+
+  // Simulate receiving the extension via sync.
+  AccountExtensionTracker::Get(profile())->OnExtensionSyncDataReceived(
+      kGoodCrx);
+  ASSERT_EQ(
+      AccountExtensionTracker::AccountExtensionType::kAccountInstalledLocally,
+      GetAccountExtensionType(kGoodCrx));
+
+  // Trigger the migration.
+  profile()->GetPrefs()->SetBoolean(
+      syncer::prefs::internal::kMigrateExtensionsFromLocalToAccount, true);
+  AccountExtensionTracker::Get(profile())
+      ->OnInitialExtensionsSyncDataReceived();
+
+  // The extension should be migrated to `kAccountInstalledSignedIn`.
+  EXPECT_EQ(
+      AccountExtensionTracker::AccountExtensionType::kAccountInstalledSignedIn,
+      GetAccountExtensionType(kGoodCrx));
+  EXPECT_FALSE(profile()->GetPrefs()->GetBoolean(
+      syncer::prefs::internal::kMigrateExtensionsFromLocalToAccount));
+}
+
+TEST_F(AccountExtensionTrackerSyncToSigninMigrationTest,
+       ShouldNotMigrateAccountExtensionInstalledSignedIn) {
+  signin_test_util::SimulateExplicitSignIn(profile(), identity_test_env());
+
+  base::FilePath good_crx_path = data_dir().AppendASCII("good.crx");
+  InstallCRX(good_crx_path, INSTALL_NEW);
+  ASSERT_EQ(
+      AccountExtensionTracker::AccountExtensionType::kAccountInstalledSignedIn,
+      GetAccountExtensionType(kGoodCrx));
+
+  // Trigger the migration.
+  profile()->GetPrefs()->SetBoolean(
+      syncer::prefs::internal::kMigrateExtensionsFromLocalToAccount, true);
+  AccountExtensionTracker::Get(profile())
+      ->OnInitialExtensionsSyncDataReceived();
+
+  // The extension should remain `kAccountInstalledSignedIn`.
+  EXPECT_EQ(
+      AccountExtensionTracker::AccountExtensionType::kAccountInstalledSignedIn,
+      GetAccountExtensionType(kGoodCrx));
+  EXPECT_FALSE(profile()->GetPrefs()->GetBoolean(
+      syncer::prefs::internal::kMigrateExtensionsFromLocalToAccount));
+}
+
+TEST_F(AccountExtensionTrackerSyncToSigninMigrationTest,
+       ShouldNotMigrateLocalExtension) {
+  base::FilePath good_crx_path = data_dir().AppendASCII("good.crx");
+  InstallCRX(good_crx_path, INSTALL_NEW);
+  ASSERT_EQ(AccountExtensionTracker::AccountExtensionType::kLocal,
+            GetAccountExtensionType(kGoodCrx));
+
+  signin_test_util::SimulateExplicitSignIn(profile(), identity_test_env());
+
+  // Trigger the migration.
+  profile()->GetPrefs()->SetBoolean(
+      syncer::prefs::internal::kMigrateExtensionsFromLocalToAccount, true);
+  AccountExtensionTracker::Get(profile())
+      ->OnInitialExtensionsSyncDataReceived();
+
+  // The extension should remain `kLocal`.
+  EXPECT_EQ(AccountExtensionTracker::AccountExtensionType::kLocal,
+            GetAccountExtensionType(kGoodCrx));
+  EXPECT_FALSE(profile()->GetPrefs()->GetBoolean(
+      syncer::prefs::internal::kMigrateExtensionsFromLocalToAccount));
+}
+
+TEST_F(AccountExtensionTrackerSyncToSigninMigrationTest,
+       ShouldNotMigrateAppExtension) {
+  base::FilePath good_crx_path = data_dir().AppendASCII("good.crx");
+  const Extension* app =
+      PackAndInstallCRX(data_dir().AppendASCII("app"), INSTALL_NEW);
+  ASSERT_TRUE(app->is_app());
+  ASSERT_EQ(AccountExtensionTracker::AccountExtensionType::kLocal,
+            GetAccountExtensionType(kGoodCrx));
+
+  signin_test_util::SimulateExplicitSignIn(profile(), identity_test_env());
+
+  // Simulate receiving the extension via sync.
+  AccountExtensionTracker::Get(profile())->OnExtensionSyncDataReceived(
+      kGoodCrx);
+  ASSERT_EQ(
+      AccountExtensionTracker::AccountExtensionType::kAccountInstalledLocally,
+      GetAccountExtensionType(kGoodCrx));
+
+  // Trigger the migration.
+  profile()->GetPrefs()->SetBoolean(
+      syncer::prefs::internal::kMigrateExtensionsFromLocalToAccount, true);
+  AccountExtensionTracker::Get(profile())
+      ->OnInitialExtensionsSyncDataReceived();
+
+  // The extension should remain `kAccountInstalledLocally`.
+  EXPECT_EQ(
+      AccountExtensionTracker::AccountExtensionType::kAccountInstalledLocally,
+      GetAccountExtensionType(kGoodCrx));
+  EXPECT_FALSE(profile()->GetPrefs()->GetBoolean(
+      syncer::prefs::internal::kMigrateExtensionsFromLocalToAccount));
+}
+
+TEST_F(AccountExtensionTrackerSyncToSigninMigrationTest,
+       ShouldNotMigrateAccountExtensionInstalledLocallyIfPrefNotSet) {
+  base::FilePath good_crx_path = data_dir().AppendASCII("good.crx");
+  const Extension* extension = InstallCRX(good_crx_path, INSTALL_NEW);
+  ASSERT_TRUE(extension->is_extension());
+  ASSERT_EQ(AccountExtensionTracker::AccountExtensionType::kLocal,
+            GetAccountExtensionType(kGoodCrx));
+
+  signin_test_util::SimulateExplicitSignIn(profile(), identity_test_env());
+
+  // Simulate receiving the extension via sync.
+  AccountExtensionTracker::Get(profile())->OnExtensionSyncDataReceived(
+      kGoodCrx);
+  ASSERT_EQ(
+      AccountExtensionTracker::AccountExtensionType::kAccountInstalledLocally,
+      GetAccountExtensionType(kGoodCrx));
+
+  // Trigger the migration without the migration pref flag being set.
+  ASSERT_FALSE(profile()->GetPrefs()->GetBoolean(
+      syncer::prefs::internal::kMigrateExtensionsFromLocalToAccount));
+  AccountExtensionTracker::Get(profile())
+      ->OnInitialExtensionsSyncDataReceived();
+
+  // The extension should remain `kAccountInstalledLocally`.
+  EXPECT_EQ(
+      AccountExtensionTracker::AccountExtensionType::kAccountInstalledLocally,
+      GetAccountExtensionType(kGoodCrx));
 }
 
 #endif  // !BUILDFLAG(IS_CHROMEOS)

@@ -11,6 +11,7 @@
 
 class Profile;
 class TabGroupDesktop;
+class TabGroupAttentionIndicator;
 
 // This class owns the core controllers for features that are scoped to a tab
 // group. It can be subclassed by tests to perform dependency injection.
@@ -33,6 +34,12 @@ class TabGroupFeatures {
 
   // Public accessors for features, e.g.
   // FooFeature* foo_feature() { return foo_feature_.get(); }
+  TabGroupAttentionIndicator* attention_indicator() {
+    return attention_indicator_.get();
+  }
+  TabGroupAttentionIndicator* attention_indicator() const {
+    return attention_indicator_.get();
+  }
 
  protected:
   TabGroupFeatures();
@@ -40,6 +47,7 @@ class TabGroupFeatures {
  private:
   // Features will each have a controller. e.g.
   // std::unique_ptr<FooFeature> foo_feature_;
+  std::unique_ptr<TabGroupAttentionIndicator> attention_indicator_;
 
   bool initialized_ = false;
 };

@@ -7,6 +7,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/webui_url_constants.h"
+#include "content/public/common/content_features.h"
 #include "content/public/common/url_constants.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
@@ -22,7 +23,7 @@ TEST(IsForInitialWebUITest, FeaturesDisabled) {
 
   EXPECT_FALSE(
       IsForInitialWebUI(GURL(std::string(content::kChromeUIScheme) + "://" +
-                             chrome::kChromeUIReloadButtonHost)));
+                             chrome::kChromeUIWebUIToolbarHost)));
 }
 
 TEST(IsForInitialWebUITest, FeaturesEnabled) {
@@ -34,7 +35,7 @@ TEST(IsForInitialWebUITest, FeaturesEnabled) {
 
   EXPECT_TRUE(
       IsForInitialWebUI(GURL(std::string(content::kChromeUIScheme) + "://" +
-                             chrome::kChromeUIReloadButtonHost)));
+                             chrome::kChromeUIWebUIToolbarHost)));
 }
 
 TEST(IsForInitialWebUITest, NonChromeScheme) {
@@ -45,7 +46,7 @@ TEST(IsForInitialWebUITest, NonChromeScheme) {
       {});
 
   EXPECT_FALSE(IsForInitialWebUI(
-      GURL(std::string("https") + "://" + chrome::kChromeUIReloadButtonHost)));
+      GURL(std::string("https") + "://" + chrome::kChromeUIWebUIToolbarHost)));
 }
 
 TEST(IsForInitialWebUITest, NonInitialWebUIHost) {

@@ -41,6 +41,16 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//services/network/public/mojom/load_timing_internal_info.mojom:AdvertisedAltSvcState) -->
 
+<!-- LINT.IfChange(CaptchaFrameAgentContext) -->
+
+<enum name="CaptchaFrameAgentContext">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="No known agent is active on tab"/>
+  <int value="2" label="Glic agent is active on tab"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/page_load_metrics/observers/captcha_metrics_observer.h:CaptchaFrameAgentContext) -->
+
 <!-- LINT.IfChange(ConnectionReuseStatus) -->
 
 <enum name="ConnectionReuseStatus">
@@ -146,12 +156,6 @@ chromium-metrics-reviews@google.com.
     Prediction failed. LCP is predicted but the actual LCP is one with another
     leaned locator.
   </int>
-</enum>
-
-<enum name="LinkPreviewUsage">
-  <int value="0" label="Not used"/>
-  <int value="1" label="Used but not promited"/>
-  <int value="2" label="Used and promoted"/>
 </enum>
 
 <enum name="MhtmlLoadResult">
@@ -392,11 +396,6 @@ chromium-metrics-reviews@google.com.
 </enum>
 
 <!-- LINT.ThenChange(//components/page_load_metrics/google/browser/prerender_prewarm_navigation_data.h:PrerenderPrewarmNavigationStatus) -->
-
-<enum name="PreviewFinalStatus">
-  <int value="0" label="just previewed"/>
-  <int value="1" label="previewed and promoted"/>
-</enum>
 
 <!-- LINT.IfChange(WebViewPageAttemptResult) -->
 

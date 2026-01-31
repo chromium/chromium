@@ -7,6 +7,7 @@
 
 #include "base/memory/weak_ptr.h"
 #include "base/values.h"
+#include "components/policy/core/common/cloud/cloud_policy_client_types.h"
 #include "components/policy/core/common/policy_types.h"
 #include "components/policy/policy_export.h"
 
@@ -28,6 +29,10 @@ enum class PolicyPerProfileFilter {
   // Any user policy.
   kAny
 };
+
+POLICY_EXPORT ExtensionInstallDecision ConvertToExtensionInstallDecision(
+    const enterprise_management::ExtensionInstallPolicies& policies,
+    const ExtensionIdAndVersion& extension_id_and_version);
 
 // Decode all the fields in `policy` and store them in the given `map`, with the
 // given `source` and `scope`.
@@ -53,9 +58,11 @@ enum class PolicyPerProfileFilter {
 // }
 POLICY_EXPORT void DecodeProtoFields(
     const enterprise_management::ExtensionInstallPolicies& policies,
+    base::WeakPtr<CloudExternalDataManager> external_data_manager,
     PolicySource source,
     PolicyScope scope,
-    PolicyMap* map);
+    PolicyMap* map,
+    PolicyPerProfileFilter per_profile);
 
 // Decode all the fields in `policy` that match the needed `per_profile` flag
 // which are recognized (see the metadata in policy_constants.cc) and store them
@@ -74,7 +81,7 @@ POLICY_EXPORT void DecodeProtoFields(
 // parse was successful. The `scope` and `source` are set as scope and source of
 // the policy in the result. In case of failure, the `error` is populated with
 // error message and false is returned.
-POLICY_EXPORT bool ParseComponentPolicy(base::Value::Dict json_dict,
+POLICY_EXPORT bool ParseComponentPolicy(base::DictValue json_dict,
                                         PolicyScope scope,
                                         PolicySource source,
                                         PolicyMap* policy,

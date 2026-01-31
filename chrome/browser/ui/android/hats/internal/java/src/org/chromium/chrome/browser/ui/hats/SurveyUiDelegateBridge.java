@@ -22,8 +22,6 @@ import org.chromium.components.messages.MessageWrapper;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modelutil.PropertyModel;
 
-import java.util.function.Supplier;
-
 /** Glue code between C++ and Java for passing SurveyUiDelegate. */
 @JNINamespace("hats")
 @NullMarked
@@ -52,9 +50,7 @@ class SurveyUiDelegateBridge implements SurveyUiDelegate {
                         messageWrapper.getMessageProperties(),
                         messageDispatcher,
                         tabModelSelector,
-                        (Supplier<@Nullable Boolean>)
-                                SurveyClientFactory.getInstance()
-                                        .getCrashUploadPermissionSupplier());
+                        SurveyClientFactory.getInstance().getCrashUploadPermissionSupplier());
 
         return new SurveyUiDelegateBridge(nativePointer, delegate);
     }

@@ -329,10 +329,11 @@ void WebRtcRemoteEventLogManager::DisableForBrowserContext(
   //    In that case, some peer connections associated with this BrowserContext
   //    might still be active, or become active at a later time, but all
   //    logs must have already been stopped.
-  DCHECK(!base::Contains(active_logs_, browser_context_id,
-                         [](const decltype(active_logs_)::value_type& log) {
-                           return log.first.browser_context_id;
-                         }));
+  DCHECK(
+      !std::ranges::contains(active_logs_, browser_context_id,
+                             [](const decltype(active_logs_)::value_type& log) {
+                               return log.first.browser_context_id;
+                             }));
 #endif
 
   // Pending logs for this BrowserContext are no longer eligible for upload.

@@ -15,7 +15,7 @@
 #include <vector>
 
 #include "base/compiler_specific.h"
-#include "base/containers/contains.h"
+#include "base/containers/span.h"
 #include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -1186,21 +1186,19 @@ class DownloadContentTest : public ContentBrowserTest {
     int64_t file_length = file.GetLength();
     ASSERT_EQ(expected_size, file_length);
 
-    const int64_t kBufferSize = 64 * 1024;
+    constexpr size_t kBufferSize = 64 * 1024;
     std::string pattern;
-    std::vector<char> data;
+    std::vector<uint8_t> data;
     pattern.resize(kBufferSize);
     data.resize(kBufferSize);
     for (int64_t offset = 0; offset < file_length;) {
-      int bytes_read =
-          UNSAFE_TODO(file.Read(offset, &data.front(), kBufferSize));
+      const size_t bytes_read = file.Read(offset, data).value_or(0);
       ASSERT_LT(0, bytes_read);
       ASSERT_GE(kBufferSize, bytes_read);
-
       pattern =
           TestDownloadHttpResponse::GetPatternBytes(seed, offset, bytes_read);
-      UNSAFE_TODO(
-          ASSERT_EQ(0, memcmp(pattern.data(), &data.front(), bytes_read)))
+      ASSERT_EQ(base::as_byte_span(pattern).first(bytes_read),
+                base::span(data).first(bytes_read))
           << "Comparing block at offset " << offset << " and length "
           << bytes_read;
       offset += bytes_read;
@@ -1292,19 +1290,19 @@ class DownloadContentTestWithoutStrongValidators : public DownloadContentTest {
 
     // The second request is a range request.
     std::string value;
-    ASSERT_FALSE(base::Contains(requests[1]->http_request.headers,
-                                net::HttpRequestHeaders::kIfRange));
+    ASSERT_FALSE(requests[1]->http_request.headers.contains(
+        net::HttpRequestHeaders::kIfRange));
 
-    ASSERT_TRUE(base::Contains(requests[1]->http_request.headers,
-                               net::HttpRequestHeaders::kRange));
+    ASSERT_TRUE(requests[1]->http_request.headers.contains(
+        net::HttpRequestHeaders::kRange));
     EXPECT_EQ(
         base::StringPrintf("bytes=%" PRId64 "-",
                            interruption_offset - kValidationLength),
         requests[1]->http_request.headers.at(net::HttpRequestHeaders::kRange));
     if (fail_content_validation) {
       // The third request is a restart request.
-      ASSERT_FALSE(base::Contains(requests[2]->http_request.headers,
-                                  net::HttpRequestHeaders::kRange));
+      ASSERT_FALSE(requests[2]->http_request.headers.contains(
+          net::HttpRequestHeaders::kRange));
       EXPECT_EQ(parameters.size, requests[2]->transferred_byte_count);
     }
   }
@@ -1354,9 +1352,7 @@ class ParallelDownloadTest : public DownloadContentTest {
               length - offset > kBufferSize ? kBufferSize : length - offset;
           output = TestDownloadHttpResponse::GetPatternBytes(
               parameters.pattern_generator_seed, offset, bytes_to_write);
-          EXPECT_EQ(
-              bytes_to_write,
-              UNSAFE_TODO(file.Write(offset, output.data(), bytes_to_write)));
+          EXPECT_TRUE(file.WriteAndCheck(offset, base::as_byte_span(output)));
           total_bytes += bytes_to_write;
           offset += bytes_to_write;
         }
@@ -2177,13 +2173,13 @@ IN_PROC_BROWSER_TEST_F(DownloadContentTest, ResumeWithStrongValidators) {
             requests[1]->transferred_byte_count);
 
   std::string value;
-  ASSERT_TRUE(base::Contains(requests[1]->http_request.headers,
-                             net::HttpRequestHeaders::kIfRange));
+  ASSERT_TRUE(requests[1]->http_request.headers.contains(
+      net::HttpRequestHeaders::kIfRange));
   EXPECT_EQ(parameters.etag, requests[1]->http_request.headers.at(
                                  net::HttpRequestHeaders::kIfRange));
 
-  ASSERT_TRUE(base::Contains(requests[1]->http_request.headers,
-                             net::HttpRequestHeaders::kRange));
+  ASSERT_TRUE(requests[1]->http_request.headers.contains(
+      net::HttpRequestHeaders::kRange));
   EXPECT_EQ(
       base::StringPrintf("bytes=%" PRId64 "-", interruption_offset),
       requests[1]->http_request.headers.at(net::HttpRequestHeaders::kRange));
@@ -2654,13 +2650,13 @@ IN_PROC_BROWSER_TEST_F(DownloadContentTest, RestartIfNotPartialResponse) {
   // The second request transfers the entire response.
   EXPECT_EQ(parameters.size, requests[1]->transferred_byte_count);
 
-  ASSERT_TRUE(base::Contains(requests[1]->http_request.headers,
-                             net::HttpRequestHeaders::kIfRange));
+  ASSERT_TRUE(requests[1]->http_request.headers.contains(
+      net::HttpRequestHeaders::kIfRange));
   EXPECT_EQ(parameters.etag, requests[1]->http_request.headers.at(
                                  net::HttpRequestHeaders::kIfRange));
 
-  ASSERT_TRUE(base::Contains(requests[1]->http_request.headers,
-                             net::HttpRequestHeaders::kRange));
+  ASSERT_TRUE(requests[1]->http_request.headers.contains(
+      net::HttpRequestHeaders::kRange));
   EXPECT_EQ(
       base::StringPrintf("bytes=%" PRId64 "-", interruption_offset),
       requests[1]->http_request.headers.at(net::HttpRequestHeaders::kRange));
@@ -2705,10 +2701,10 @@ IN_PROC_BROWSER_TEST_F(DownloadContentTest, RestartIfNoETag) {
 
   // Neither If-Range nor Range headers should be present in the second request.
   ASSERT_EQ(2u, requests.size());
-  EXPECT_FALSE(base::Contains(requests[1]->http_request.headers,
-                              net::HttpRequestHeaders::kIfRange));
-  EXPECT_FALSE(base::Contains(requests[1]->http_request.headers,
-                              net::HttpRequestHeaders::kRange));
+  EXPECT_FALSE(requests[1]->http_request.headers.contains(
+      net::HttpRequestHeaders::kIfRange));
+  EXPECT_FALSE(requests[1]->http_request.headers.contains(
+      net::HttpRequestHeaders::kRange));
 }
 
 // Partial file goes missing before the download is resumed. The download should
@@ -3713,8 +3709,7 @@ IN_PROC_BROWSER_TEST_F(DownloadContentTest, ReferrerForPartialResumption) {
 
   ASSERT_GE(2u, requests.size());
   net::test_server::HttpRequest last_request = requests.back()->http_request;
-  ASSERT_TRUE(
-      base::Contains(last_request.headers, net::HttpRequestHeaders::kReferer));
+  ASSERT_TRUE(last_request.headers.contains(net::HttpRequestHeaders::kReferer));
   EXPECT_EQ(last_request.headers.at(net::HttpRequestHeaders::kReferer),
             document_url.DeprecatedGetOriginAsURL().spec());
 }
@@ -5407,7 +5402,7 @@ IN_PROC_BROWSER_TEST_F(DownloadPrerenderTest, DiscardNonNavigationDownload) {
   EXPECT_TRUE(NavigateToURL(shell(), kInitialUrl));
 
   // Create a prerendered page.
-  FrameTreeNodeId host_id = prerender_helper()->AddPrerender(kPrerenderingUrl);
+  PrerenderHostId host_id = prerender_helper()->AddPrerender(kPrerenderingUrl);
   auto* render_frame_host =
       prerender_helper()->GetPrerenderedMainFrameHost(host_id);
   auto* web_contents = shell()->web_contents();

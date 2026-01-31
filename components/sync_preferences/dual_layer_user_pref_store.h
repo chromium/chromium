@@ -51,6 +51,7 @@ class DualLayerUserPrefStore : public PersistentPrefStore,
 
   // Marks `data_type` as enabled for account storage. This should be called
   // when a data type starts syncing.
+  // TODO(crbug.com/464008640): Rename this to `MarkTypeActive` or similar.
   void EnableType(syncer::DataType data_type);
   // Unmarks `data_type` as enabled for account storage and removes all
   // corresponding preference entries(belonging to this type) from account
@@ -81,7 +82,7 @@ class DualLayerUserPrefStore : public PersistentPrefStore,
   bool IsInitializationComplete() const override;
   bool GetValue(std::string_view key,
                 const base::Value** result) const override;
-  base::Value::Dict GetValues() const override;
+  base::DictValue GetValues() const override;
 
   // WriteablePrefStore implementation.
   void SetValue(std::string_view key,
@@ -120,6 +121,12 @@ class DualLayerUserPrefStore : public PersistentPrefStore,
   syncer::UserSelectableTypeSet GetUserSelectedTypesForTest() const;
   void SetUserSelectedTypesForTest(
       syncer::UserSelectableTypeSet user_selected_types);
+
+#if BUILDFLAG(IS_CHROMEOS)
+  syncer::UserSelectableOsTypeSet GetUserSelectedOsTypesForTest() const;
+  void SetUserSelectedOsTypesForTest(
+      syncer::UserSelectableOsTypeSet user_selected_types);
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
  protected:
   ~DualLayerUserPrefStore() override;
@@ -209,6 +216,18 @@ class DualLayerUserPrefStore : public PersistentPrefStore,
   // service is initialized and/or when sync service state changes.
   void SetInterestingUserSelectedTypes(
       syncer::UserSelectableTypeSet user_selected_types);
+
+#if BUILDFLAG(IS_CHROMEOS)
+  // Returns the subset of user selected OS types that are of relevance in
+  // determining whether an account pref should be exposed. This is stored in
+  // the local pref store for early availability.
+  syncer::UserSelectableOsTypeSet GetInterestingUserSelectedOsTypes() const;
+  // Sets the subset of user selected OS types that are of relevance in
+  // determining whether an account pref should be exposed. These are set when
+  // the sync service is initialized and/or when sync service state changes.
+  void SetInterestingUserSelectedOsTypes(
+      syncer::UserSelectableOsTypeSet user_selected_types);
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   // The two underlying pref stores, scoped to this device/profile and to the
   // user's signed-in account, respectively.

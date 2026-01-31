@@ -52,7 +52,7 @@ import {ConsoleTestRunner} from 'console_test_runner';
 
       console.log("Error message without stacks http://www.chromium.org/");
 
-      console.log("Error valid stack #2\\n    at http://www.chromium.org/boo.js:40:70\\n    at foo(http://www.chromium.org/foo.js:10:50)");
+      console.log("Error valid stack #2\\n    at http://www.chromium.org/boo.js:40:70\\n    at foo (http://www.chromium.org/foo.js:10:50)");
       console.log("Error valid stack #3\\n    at http://www.chromium.org/foo.js:40");
       console.log("Error: MyError\\n    at throwError (http://www.chromium.org/foo.js:40)\\n    at eval (eval at <anonymous> (http://www.chromium.org/foo.js:42:1), <anonymous>:1:1)\\n    at http://www.chromium.org/foo.js:239");
 

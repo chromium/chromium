@@ -1,5 +1,5 @@
-\b([a-z]+)(gade|vej|torv|plads|pladsen|alle|anlaeg|bakken|banen|bastion|boulevard|bro|buen|dammen|gaard|gangen|get|graensen|have|hojen|hoj|holmen|huset|kaer|kraenten|laengen|marken|parken|passagen|siden|stien|straede|svinget|toften|vangen|varden|vaenge)(\s[a-z0-9]+)?$\b	\1 \2 \3
-\b(\s|^|[a-z]+)(motor|hoved|motortrafik)\s(vej)(\s|$)\b	\1 \2\3\4
+\b([a-z]+)(gade|vej|torv|plads|pladsen|alle|anlaeg|bakken|banen|bastion|boulevard|bro|buen|dammen|gaard|gangen|get|graensen|have|hojen|hoj|holmen|huset|kaer|kraenten|laengen|marken|parken|passagen|siden|stien|straede|svinget|toften|vangen|varden|vaenge)(\s[a-z0-9]+)?$\b	$1 $2 $3
+\b(\s|^|[a-z]+)(motor|hoved|motortrafik)\s(vej)(\s|$)\b	$1 $2$3$4
 \bgrabrodrestraede\b	grabrodrestr
 \barnold\s+nielsens\b	arn nielsens
 \bhaveforeningen\b	f

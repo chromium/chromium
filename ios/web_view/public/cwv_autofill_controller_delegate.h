@@ -125,8 +125,9 @@ typedef void (^ProceduralBlock)(void);
                            value:(NSString*)value
                    userInitiated:(BOOL)userInitiated;
 
-// Called when a form was submitted.
-// |userInitiated| is YES if form was submitted as a result of user interaction.
+// TODO(crbug.com/477630132): Remove the `userInitiated` argument as it isn't
+// used by any implementation. Called when a form was submitted. |userInitiated|
+// is YES if form was submitted as a result of user interaction.
 // |perfectFilling| is true if the user submitted the form
 // without manually changing any of the autofilled data.
 - (void)autofillController:(CWVAutofillController*)autofillController

@@ -215,7 +215,7 @@ class CORE_EXPORT GapGeometry : public GarbageCollected<GapGeometry> {
   bool IsMultiColSpanner(wtf_size_t gap_index,
                          GridTrackSizingDirection direction = kForRows) const;
 
-  LayoutUnit ComputeEndInset(const ComputedStyle& style,
+  LayoutUnit ComputeInsetEnd(const ComputedStyle& style,
                              wtf_size_t gap_index,
                              wtf_size_t intersection_index,
                              const Vector<LayoutUnit>& intersections,
@@ -223,7 +223,7 @@ class CORE_EXPORT GapGeometry : public GarbageCollected<GapGeometry> {
                              bool is_main,
                              LayoutUnit cross_width) const;
 
-  LayoutUnit ComputeStartInset(const ComputedStyle& style,
+  LayoutUnit ComputeInsetStart(const ComputedStyle& style,
                                wtf_size_t gap_index,
                                wtf_size_t intersection_index,
                                const Vector<LayoutUnit>& intersections,

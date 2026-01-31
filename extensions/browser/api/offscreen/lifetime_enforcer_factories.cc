@@ -4,10 +4,11 @@
 
 #include "extensions/browser/api/offscreen/lifetime_enforcer_factories.h"
 
+#include <utility>
+
 #include "base/check.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
-#include "base/types/cxx23_to_underlying.h"
 #include "extensions/browser/api/offscreen/audio_lifetime_enforcer.h"
 #include "extensions/browser/api/offscreen/offscreen_document_lifetime_enforcer.h"
 #include "extensions/common/api/offscreen.h"
@@ -98,7 +99,7 @@ constexpr ReasonAndFactoryMethodPair kReasonAndFactoryMethodPairs[] = {
     {api::offscreen::Reason::kGeolocation, &CreateEmptyEnforcer}};
 
 static_assert(std::size(kReasonAndFactoryMethodPairs) ==
-                  base::to_underlying(api::offscreen::Reason::kMaxValue),
+                  std::to_underlying(api::offscreen::Reason::kMaxValue),
               "Factory method size does not equal reason size.");
 
 }  // namespace

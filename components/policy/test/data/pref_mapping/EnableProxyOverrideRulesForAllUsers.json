@@ -14,8 +14,7 @@
       },
       "default_value": 0,
       "values_to_test": [
-          1,
-          2
+          1
       ]
     }
   }

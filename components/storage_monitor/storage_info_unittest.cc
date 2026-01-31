@@ -2,16 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "components/storage_monitor/storage_info.h"
+
 #include <string>
 
-#include "components/storage_monitor/storage_info.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace storage_monitor {
 
+#if BUILDFLAG(IS_CHROMEOS)
 const char kMtpDeviceId[] = "mtp:VendorModelSerial:ABC:1233:1237912873";
 const char kUniqueId[] = "VendorModelSerial:ABC:1233:1237912873";
-const char kImageCaptureDeviceId[] = "ic:xyz";
 
 // Test to verify |MakeDeviceId| functionality using a sample
 // mtp device unique id.
@@ -30,13 +31,6 @@ TEST(StorageInfoTest, CrackMtpDeviceId) {
   EXPECT_EQ(kUniqueId, id);
   EXPECT_EQ(StorageInfo::MTP_OR_PTP, type);
 }
-
-TEST(StorageInfoTest, TestImageCaptureDeviceId) {
-  StorageInfo::Type type;
-  std::string id;
-  ASSERT_TRUE(StorageInfo::CrackDeviceId(kImageCaptureDeviceId, &type, &id));
-  EXPECT_EQ(StorageInfo::MAC_IMAGE_CAPTURE, type);
-  EXPECT_EQ("xyz", id);
-}
+#endif
 
 }  // namespace storage_monitor

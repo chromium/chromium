@@ -13,7 +13,6 @@
 
 #include "base/check.h"
 #include "base/check_op.h"
-#include "base/containers/contains.h"
 #include "base/debug/crash_logging.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
@@ -206,7 +205,7 @@ void RecordPermanentNodesLocalAndAccountStoragesMetrics(BookmarkModel* model) {
 
 BookmarkModel::BookmarkModel(std::unique_ptr<BookmarkClient> client)
     : owned_root_(std::make_unique<BookmarkNode>(
-          /*id=*/0,
+          /*id=*/kRootNodeId,
           base::Uuid::ParseLowercase(kRootNodeUuid),
           GURL())),
       root_(owned_root_.get()),

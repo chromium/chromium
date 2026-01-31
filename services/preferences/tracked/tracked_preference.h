@@ -42,7 +42,7 @@ class TrackedPreference {
   // |encryptor| is an optional OS-level encryptor used for an additional
   // encrypted hash if the kEncryptedPrefHashing feature is enabled.
   virtual bool EnforceAndReport(
-      base::Value::Dict& pref_store_contents,
+      base::DictValue& pref_store_contents,
       PrefHashStoreTransaction* transaction,
       PrefHashStoreTransaction* external_validation_transaction,
       const os_crypt_async::Encryptor* encryptor) const = 0;
@@ -58,7 +58,7 @@ class TrackedPreference {
   // This calls the primary virtual method EnforceAndReport above, passing
   // nullptr for encryptor.
   bool EnforceAndReport(
-      base::Value::Dict& pref_store_contents,
+      base::DictValue& pref_store_contents,
       PrefHashStoreTransaction* transaction,
       PrefHashStoreTransaction* external_validation_transaction) const {
     return EnforceAndReport(pref_store_contents, transaction,

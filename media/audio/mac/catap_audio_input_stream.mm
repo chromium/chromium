@@ -474,12 +474,9 @@ AudioInputStream::OpenOutcome CatapAudioInputStreamSource::Open(
     NSArray<NSNumber*>* process_audio_device_ids_to_include =
         GetProcessAudioDeviceIds(application_pid);
     if (![process_audio_device_ids_to_include count]) {
-      ReportOpenStatus(OpenStatus::kGetProcessAudioDeviceIdsReturnedEmpty,
-                       timer.Elapsed());
       SendLogMessage("%s => Could not determine audio objects that belong to "
                      "the application process.",
                      __func__);
-      return AudioInputStream::OpenOutcome::kFailed;
     }
     // Mix the given process to a stereo stream. We will not select default
     // device below when we capture application audio.
@@ -1061,7 +1058,7 @@ void CatapAudioInputStreamSource::SendLogMessage(const char* format, ...) {
   va_list args;
   va_start(args, format);
   log_callback_.Run("CatapAudioInputStreamSource::" +
-                    base::StringPrintV(format, args));
+                    UNSAFE_TODO(base::StringPrintV(format, args)));
   va_end(args);
 }
 
@@ -1273,7 +1270,7 @@ void CatapAudioInputStream::SendLogMessage(const char* format, ...) {
   va_list args;
   va_start(args, format);
   log_callback_.Run("CatapAudioInputStream::" +
-                    base::StringPrintV(format, args));
+                    UNSAFE_TODO(base::StringPrintV(format, args)));
   va_end(args);
 }
 

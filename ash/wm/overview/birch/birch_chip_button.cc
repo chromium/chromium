@@ -4,6 +4,8 @@
 
 #include "ash/wm/overview/birch/birch_chip_button.h"
 
+#include <utility>
+
 #include "ash/birch/birch_item.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/strings/grit/ash_strings.h"
@@ -15,7 +17,6 @@
 #include "ash/wm/overview/overview_controller.h"
 #include "base/notreached.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/types/cxx23_to_underlying.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
@@ -338,42 +339,42 @@ void BirchChipButton::ExecuteCommand(int command_id, int event_flags) {
   using CommandId = BirchChipContextMenuModel::CommandId;
 
   switch (command_id) {
-    case base::to_underlying(CommandId::kHideSuggestion):
+    case std::to_underlying(CommandId::kHideSuggestion):
       birch_bar_controller->OnItemHiddenByUser(item_);
       break;
-    case base::to_underlying(CommandId::kHideWeatherSuggestions):
+    case std::to_underlying(CommandId::kHideWeatherSuggestions):
       birch_bar_controller->SetShowSuggestionType(BirchSuggestionType::kWeather,
                                                   /*show=*/false);
       break;
-    case base::to_underlying(CommandId::kToggleTemperatureUnits):
+    case std::to_underlying(CommandId::kToggleTemperatureUnits):
       birch_bar_controller->ToggleTemperatureUnits();
       break;
-    case base::to_underlying(CommandId::kHideCalendarSuggestions):
+    case std::to_underlying(CommandId::kHideCalendarSuggestions):
       birch_bar_controller->SetShowSuggestionType(
           BirchSuggestionType::kCalendar,
           /*show=*/false);
       break;
-    case base::to_underlying(CommandId::kHideDriveSuggestions):
+    case std::to_underlying(CommandId::kHideDriveSuggestions):
       birch_bar_controller->SetShowSuggestionType(BirchSuggestionType::kDrive,
                                                   /*show=*/false);
       break;
-    case base::to_underlying(CommandId::kHideChromeTabSuggestions):
+    case std::to_underlying(CommandId::kHideChromeTabSuggestions):
       birch_bar_controller->SetShowSuggestionType(
           BirchSuggestionType::kChromeTab,
           /*show=*/false);
       break;
-    case base::to_underlying(CommandId::kHideMediaSuggestions):
+    case std::to_underlying(CommandId::kHideMediaSuggestions):
       birch_bar_controller->SetShowSuggestionType(BirchSuggestionType::kMedia,
                                                   /*show=*/false);
       break;
-    case base::to_underlying(CommandId::kHideCoralSuggestions):
+    case std::to_underlying(CommandId::kHideCoralSuggestions):
       birch_bar_controller->SetShowSuggestionType(BirchSuggestionType::kCoral,
                                                   /*show=*/false);
       break;
-    case base::to_underlying(CommandId::kCoralNewDesk):
-    case base::to_underlying(CommandId::kCoralSaveForLater):
+    case std::to_underlying(CommandId::kCoralNewDesk):
+    case std::to_underlying(CommandId::kCoralSaveForLater):
       break;
-    case base::to_underlying(CommandId::kProvideFeedback):
+    case std::to_underlying(CommandId::kProvideFeedback):
       birch_bar_controller->ProvideFeedbackForCoral();
       break;
     default:

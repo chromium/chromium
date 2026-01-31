@@ -3408,6 +3408,7 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     attribute RENDER_ATTACHMENT
 [Worker]     attribute STORAGE_BINDING
 [Worker]     attribute TEXTURE_BINDING
+[Worker]     attribute TRANSIENT_ATTACHMENT
 [Worker] namespace Temporal
 [Worker]     attribute @@toStringTag
 [Worker]     attribute Now

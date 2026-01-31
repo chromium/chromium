@@ -26,6 +26,12 @@ chromium-metrics-reviews@google.com.
 
 <enums>
 
+<enum name="ActivityRestoreState">
+  <int value="0" label="No Saved Or Persistent Instance State"/>
+  <int value="1" label="Has Saved Or Persistent Instance State (No Cipher)"/>
+  <int value="2" label="Has Saved Or Persistent Instance State (With Cipher)"/>
+</enum>
+
 <enum name="CanonicalURLResult">
   <int value="0" label="Canonical URL not retrieved: Visible URL not HTTPS"/>
   <int value="1"
@@ -332,6 +338,8 @@ chromium-metrics-reviews@google.com.
   <int value="16" label="Homescreen shortcut (Add To Homescreen)"/>
   <int value="17" label="Share Intent"/>
   <int value="18" label="NFC"/>
+  <int value="19" label="Auth Tab"/>
+  <int value="20" label="Re-creation (eg. configuration change)"/>
 </enum>
 
 <!-- LINT.IfChange(LoadPoint) -->
@@ -436,16 +444,6 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="Dismissed"/>
 </enum>
 
-<enum name="MobileMessagesInfobarType">
-  <int value="0" label="Confirm"/>
-  <int value="1" label="Save Password"/>
-  <int value="2" label="Update Password"/>
-  <int value="3" label="Save Card"/>
-  <int value="4" label="Translate"/>
-  <int value="5" label="Permissions"/>
-  <int value="6" label="Autofill Save Address Profile"/>
-</enum>
-
 <enum name="MobileMessagesModalEvent">
   <int value="0" label="Accepted"/>
   <int value="1" label="Canceled"/>
@@ -470,13 +468,6 @@ chromium-metrics-reviews@google.com.
 <enum name="MobileMessagesPasswordsModalPresent">
   <int value="0" label="PresentedAfterSaveBanner"/>
   <int value="1" label="PresentedAfterUpdateBanner"/>
-</enum>
-
-<enum name="MobileMessagesSaveCardModalEvent">
-  <int value="0" label="EditedCardHolderName"/>
-  <int value="1" label="EditedExpirationMonth"/>
-  <int value="2" label="EditedExpirationYear"/>
-  <int value="3" label="EditedCvc"/>
 </enum>
 
 <enum name="MobileMessagesTranslateBannerEvent">

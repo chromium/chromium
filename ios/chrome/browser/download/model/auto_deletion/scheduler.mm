@@ -25,7 +25,7 @@ std::optional<auto_deletion::ScheduledFile> ScheduledFileFromValue(
     return std::nullopt;
   }
 
-  const base::Value::Dict& dict = value.GetDict();
+  const base::DictValue& dict = value.GetDict();
   const base::Value* time_value = dict.Find("time");
   if (!time_value) {
     return std::nullopt;
@@ -62,7 +62,7 @@ Scheduler::~Scheduler() = default;
 
 std::vector<ScheduledFile> Scheduler::IdentifyExpiredFiles(base::Time instant) {
   std::vector<ScheduledFile> expired_files;
-  const base::Value::List& files =
+  const base::ListValue& files =
       local_state_->GetList(prefs::kDownloadAutoDeletionScheduledFiles);
 
   for (const auto& value : files) {
@@ -101,7 +101,7 @@ void Scheduler::RemoveExpiredFiles(base::Time instant) {
   }
 
   if (values_to_erase_count > 0) {
-    base::Value::List& value = update.Get();
+    base::ListValue& value = update.Get();
     value.erase(value.begin(), value.begin() + values_to_erase_count);
   }
 }
@@ -109,7 +109,7 @@ void Scheduler::RemoveExpiredFiles(base::Time instant) {
 void Scheduler::ScheduleFile(ScheduledFile file) {
   ScopedListPrefUpdate update(local_state_,
                               prefs::kDownloadAutoDeletionScheduledFiles);
-  update->Append(base::Value::Dict()
+  update->Append(base::DictValue()
                      .Set("path", file.filepath().AsUTF8Unsafe())
                      .Set("hash", file.hash())
                      .Set("time", base::TimeToValue(file.download_time())));

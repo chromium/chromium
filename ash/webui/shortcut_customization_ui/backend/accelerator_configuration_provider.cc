@@ -20,7 +20,6 @@
 #include "ash/public/cpp/accelerators_util.h"
 #include "ash/public/cpp/capture_mode/capture_mode_api.h"
 #include "ash/public/mojom/accelerator_configuration.mojom.h"
-#include "ash/public/mojom/accelerator_info.mojom-forward.h"
 #include "ash/public/mojom/accelerator_info.mojom-shared.h"
 #include "ash/public/mojom/accelerator_keys.mojom.h"
 #include "ash/quick_insert/quick_insert_controller.h"
@@ -29,7 +28,6 @@
 #include "ash/webui/shortcut_customization_ui/backend/accelerator_layout_table.h"
 #include "ash/webui/shortcut_customization_ui/mojom/shortcut_customization.mojom.h"
 #include "base/check.h"
-#include "base/containers/contains.h"
 #include "base/containers/fixed_flat_map.h"
 #include "base/containers/flat_map.h"
 #include "base/metrics/histogram_functions.h"
@@ -236,7 +234,7 @@ bool IsAcceleratorHidden(AcceleratorActionId action_id,
   const auto& iter = GetHiddenAcceleratorMap().find(action_id);
   if (iter != GetHiddenAcceleratorMap().end()) {
     const std::vector<ui::Accelerator>& hidden_accelerators = iter->second;
-    if (base::Contains(hidden_accelerators, accelerator)) {
+    if (std::ranges::contains(hidden_accelerators, accelerator)) {
       return true;
     }
   }
@@ -364,7 +362,7 @@ std::optional<AcceleratorConfigResult> ValidateAccelerator(
   }
 
   // Case: Reserved keys cannot be part of a custom accelerator.
-  if (base::Contains(kReservedKeys, accelerator.key_code())) {
+  if (std::ranges::contains(kReservedKeys, accelerator.key_code())) {
     VLOG(1) << "Failed to validate accelerator: "
             << accelerator.GetShortcutText() << " with error: "
             << static_cast<int>(AcceleratorConfigResult::kReservedKeyNotAllowed)
@@ -852,7 +850,8 @@ void AcceleratorConfigurationProvider::AddAccelerator(
   std::optional<AcceleratorConfigResult> error_result = ValidateSourceAndAction(
       source, action_id, ash_accelerator_configuration_);
   if (!error_result.has_value() &&
-      !base::Contains(GetDefaultAcceleratorsForId(action_id), accelerator)) {
+      !std::ranges::contains(GetDefaultAcceleratorsForId(action_id),
+                             accelerator)) {
     error_result = ValidateAccelerator(accelerator);
   }
 
@@ -982,8 +981,8 @@ void AcceleratorConfigurationProvider::ReplaceAccelerator(
   std::optional<AcceleratorConfigResult> error_result = ValidateSourceAndAction(
       source, action_id, ash_accelerator_configuration_);
   if (!error_result.has_value() &&
-      !base::Contains(GetDefaultAcceleratorsForId(action_id),
-                      new_accelerator)) {
+      !std::ranges::contains(GetDefaultAcceleratorsForId(action_id),
+                             new_accelerator)) {
     error_result = ValidateAccelerator(new_accelerator);
   }
 
@@ -1396,7 +1395,8 @@ AcceleratorConfigurationProvider::MaybeHandleNonSearchAccelerator(
     AcceleratorActionId action_id) {
   // Disable non-search accelerator warning when re-adding the default
   // accelerator.
-  if (base::Contains(GetDefaultAcceleratorsForId(action_id), accelerator)) {
+  if (std::ranges::contains(GetDefaultAcceleratorsForId(action_id),
+                            accelerator)) {
     return AcceleratorConflictErrorState::kStandby;
   }
 
@@ -1595,7 +1595,7 @@ void AcceleratorConfigurationProvider::PopulateAshAcceleratorConfig(
         ash_accelerator_configuration_->GetDefaultAcceleratorsForId(
             layout->action_id);
     for (const auto& default_accelerator : default_accelerators) {
-      if (base::Contains(accelerators, default_accelerator)) {
+      if (std::ranges::contains(accelerators, default_accelerator)) {
         continue;
       }
       const bool is_accelerator_locked =

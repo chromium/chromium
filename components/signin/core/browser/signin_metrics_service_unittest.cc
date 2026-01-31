@@ -157,7 +157,7 @@ class SigninMetricsServiceTest : public ::testing::Test {
   // Value is expected to be there.
   base::Time GetAccountWebSigninStartTime(CoreAccountId account_id) const {
     CHECK(pref_service_.HasPrefPath(kWebSigninAccountStartTimesPrefForTesting));
-    const base::Value::Dict& first_websignin_account_dict =
+    const base::DictValue& first_websignin_account_dict =
         pref_service_.GetDict(kWebSigninAccountStartTimesPrefForTesting);
     std::optional<base::Time> start_time = base::ValueToTime(
         first_websignin_account_dict.Find(account_id.ToString()));

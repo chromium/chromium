@@ -9,9 +9,9 @@ import static org.chromium.chrome.browser.keyboard_accessory.sheet_tabs.Accessor
 import android.content.Context;
 import android.view.ViewGroup;
 
-import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.RecyclerView;
 
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.autofill.helpers.FaviconHelper;
 import org.chromium.chrome.browser.keyboard_accessory.AccessoryAction;
 import org.chromium.chrome.browser.keyboard_accessory.AccessoryTabType;
@@ -39,10 +39,10 @@ public class AddressAccessorySheetCoordinator extends AccessorySheetTabCoordinat
     public AddressAccessorySheetCoordinator(
             Context context,
             Profile profile,
-            @Nullable RecyclerView.OnScrollListener scrollListener) {
+            RecyclerView.@Nullable OnScrollListener scrollListener) {
         super(
                 context.getString(R.string.address_accessory_sheet_title),
-                IconProvider.getIcon(context, R.drawable.ic_location_on_fill_24dp),
+                R.drawable.ic_location_on_fill_24dp,
                 context.getString(R.string.address_accessory_sheet_toggle),
                 R.layout.address_accessory_sheet,
                 AccessoryTabType.ADDRESSES,
@@ -50,7 +50,7 @@ public class AddressAccessorySheetCoordinator extends AccessorySheetTabCoordinat
         mProfile = profile;
         mMediator =
                 new AccessorySheetTabMediator(
-                        mModel, Type.ADDRESS_INFO, AccessoryAction.MANAGE_ADDRESSES, null);
+                        mModel, Type.ADDRESS_INFO, AccessoryAction.MANAGE_ADDRESSES);
     }
 
     @Override

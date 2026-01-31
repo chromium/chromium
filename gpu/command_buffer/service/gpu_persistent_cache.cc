@@ -27,6 +27,7 @@
 #include "base/trace_event/memory_dump_request_args.h"
 #include "base/trace_event/trace_event.h"
 #include "base/types/expected_macros.h"
+#include "components/persistent_cache/client.h"
 #include "components/persistent_cache/persistent_cache.h"
 #include "components/persistent_cache/transaction_error.h"
 #include "gpu/command_buffer/service/memory_cache.h"
@@ -406,8 +407,8 @@ void GpuPersistentCache::InitializeCache(
     persistent_cache::PendingBackend pending_backend,
     scoped_refptr<RefCountedGpuProcessShmCount> use_shader_cache_shm_count) {
   CHECK(!disk_cache_initialized_.IsSet());
-  auto cache =
-      persistent_cache::PersistentCache::Bind(std::move(pending_backend));
+  auto cache = persistent_cache::PersistentCache::Bind(
+      persistent_cache::Client::kShaderCache, std::move(pending_backend));
   if (!cache) {
     HandlePersistentCacheError(&use_shader_cache_shm_count->data,
                                persistent_cache::TransactionError::kPermanent);

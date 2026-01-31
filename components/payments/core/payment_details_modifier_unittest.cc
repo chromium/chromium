@@ -13,7 +13,7 @@ namespace payments {
 // Tests that serializing a default PaymentDetailsModifier yields the expected
 // result.
 TEST(PaymentRequestTest, EmptyPaymentDetailsModifierDictionary) {
-  base::Value::Dict expected_value;
+  base::DictValue expected_value;
 
   expected_value.Set("supportedMethods", "");
   expected_value.Set("data", "");
@@ -25,14 +25,14 @@ TEST(PaymentRequestTest, EmptyPaymentDetailsModifierDictionary) {
 // Tests that serializing a populated PaymentDetailsModifier yields the expected
 // result.
 TEST(PaymentRequestTest, PopulatedDetailsModifierDictionary) {
-  base::Value::Dict expected_value;
+  base::DictValue expected_value;
 
   expected_value.Set("supportedMethods", "basic-card");
   expected_value.Set("data",
                      "{\"supportedNetworks\":[\"visa\",\"mastercard\"]}");
-  base::Value::Dict item_dict;
+  base::DictValue item_dict;
   item_dict.Set("label", "Gratuity");
-  base::Value::Dict amount_dict;
+  base::DictValue amount_dict;
   amount_dict.Set("currency", "USD");
   amount_dict.Set("value", "139.99");
   item_dict.Set("amount", std::move(amount_dict));

@@ -47,7 +47,7 @@ SafeBrowsingQuietErrorUI::~SafeBrowsingQuietErrorUI() {
 }
 
 void SafeBrowsingQuietErrorUI::PopulateStringsForHtml(
-    base::Value::Dict& load_time_data) {
+    base::DictValue& load_time_data) {
   load_time_data.Set("type", "SAFEBROWSING");
   load_time_data.Set("tabTitle",
                      l10n_util::GetStringUTF16(IDS_SAFEBROWSING_V3_TITLE));
@@ -121,7 +121,7 @@ void SafeBrowsingQuietErrorUI::HandleCommand(
 }
 
 void SafeBrowsingQuietErrorUI::PopulateMalwareLoadTimeData(
-    base::Value::Dict& load_time_data) {
+    base::DictValue& load_time_data) {
   load_time_data.Set("phishing", false);
   load_time_data.Set("heading",
                      l10n_util::GetStringUTF16(IDS_MALWARE_WEBVIEW_HEADING));
@@ -131,7 +131,7 @@ void SafeBrowsingQuietErrorUI::PopulateMalwareLoadTimeData(
 }
 
 void SafeBrowsingQuietErrorUI::PopulateHarmfulLoadTimeData(
-    base::Value::Dict& load_time_data) {
+    base::DictValue& load_time_data) {
   load_time_data.Set("phishing", false);
   load_time_data.Set("heading",
                      l10n_util::GetStringUTF16(IDS_HARMFUL_WEBVIEW_HEADING));
@@ -141,7 +141,7 @@ void SafeBrowsingQuietErrorUI::PopulateHarmfulLoadTimeData(
 }
 
 void SafeBrowsingQuietErrorUI::PopulatePhishingLoadTimeData(
-    base::Value::Dict& load_time_data) {
+    base::DictValue& load_time_data) {
   load_time_data.Set("phishing", true);
   load_time_data.Set("heading",
                      l10n_util::GetStringUTF16(IDS_PHISHING_WEBVIEW_HEADING));
@@ -151,7 +151,7 @@ void SafeBrowsingQuietErrorUI::PopulatePhishingLoadTimeData(
 }
 
 void SafeBrowsingQuietErrorUI::PopulateBillingLoadTimeData(
-    base::Value::Dict& load_time_data) {
+    base::DictValue& load_time_data) {
   load_time_data.Set("phishing", false);
   load_time_data.Set("tabTitle", l10n_util::GetStringUTF16(IDS_BILLING_TITLE));
   load_time_data.Set("heading",

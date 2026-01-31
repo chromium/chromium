@@ -129,7 +129,7 @@ constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotation =
 // true if the check passes, and false otherwise.
 [[nodiscard]] bool ValidateNameAndOwnerIfPresent(
     const blink::InterestGroupKey& group_key,
-    const base::Value::Dict& dict) {
+    const base::DictValue& dict) {
   const std::string* maybe_owner = dict.FindString("owner");
   if (maybe_owner &&
       url::Origin::Create(GURL(*maybe_owner)) != group_key.owner) {
@@ -145,7 +145,7 @@ constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotation =
 // Copies the `priorityVector` JSON field into `priority_vector`. Returns
 // true if the JSON is valid and the copy completed.
 [[nodiscard]] bool TryToCopyPriorityVector(
-    const base::Value::Dict& dict,
+    const base::DictValue& dict,
     std::optional<base::flat_map<std::string, double>>& priority_vector) {
   const base::Value* maybe_dict = dict.Find("priorityVector");
   if (!maybe_dict) {
@@ -175,7 +175,7 @@ constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotation =
 // completed. Maps nulls to nullopt, which means a value should be deleted from
 // the stored interest group.
 [[nodiscard]] bool TryToCopyPrioritySignalsOverrides(
-    const base::Value::Dict& dict,
+    const base::DictValue& dict,
     std::optional<base::flat_map<std::string, std::optional<double>>>&
         priority_signals_overrides) {
   const base::Value* maybe_dict = dict.Find("prioritySignalsOverrides");
@@ -208,7 +208,7 @@ constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotation =
 // `seller_capabilities` and `all_sellers_capabilities`, returns true if the
 // JSON is valid and the copy completed.
 [[nodiscard]] bool TryToCopySellerCapabilities(
-    const base::Value::Dict& dict,
+    const base::DictValue& dict,
     InterestGroupUpdate& interest_group_update) {
   const base::Value* maybe_dict = dict.Find("sellerCapabilities");
   if (!maybe_dict) {
@@ -260,7 +260,7 @@ constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotation =
 // Copies the executionMode JSON field into `interest_group_update`, returns
 // true iff the JSON is valid and the copy completed.
 [[nodiscard]] bool TryToCopyExecutionMode(
-    const base::Value::Dict& dict,
+    const base::DictValue& dict,
     InterestGroupUpdate& interest_group_update) {
   const std::string* maybe_execution_mode = dict.FindString("executionMode");
   if (!maybe_execution_mode) {
@@ -292,9 +292,9 @@ constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotation =
 // `interest_group_update`, returns true iff the JSON is valid and the copy
 // completed.
 [[nodiscard]] bool TryToCopyTrustedBiddingSignalsKeys(
-    const base::Value::Dict& dict,
+    const base::DictValue& dict,
     InterestGroupUpdate& interest_group_update) {
-  const base::Value::List* maybe_update_trusted_bidding_signals_keys =
+  const base::ListValue* maybe_update_trusted_bidding_signals_keys =
       dict.FindList("trustedBiddingSignalsKeys");
   if (!maybe_update_trusted_bidding_signals_keys) {
     return true;
@@ -317,7 +317,7 @@ constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotation =
 // `interest_group_update` as a string, returns true iff re-serialization
 // succeeded and the copy completed.
 [[nodiscard]] bool TryToCopyUserBiddingSignals(
-    const base::Value::Dict& dict,
+    const base::DictValue& dict,
     InterestGroupUpdate& interest_group_update) {
   const base::Value* maybe_user_bidding_signals =
       dict.Find("userBiddingSignals");
@@ -336,7 +336,7 @@ constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotation =
 // Copies the trustedBiddingSignalsSlotSizeMode JSON field into
 // `trusted_bidding_signals_slot_size_mode`. Always succeeds.
 [[nodiscard]] bool TryToCopyTrustedBiddingSignalsSlotSizeMode(
-    const base::Value::Dict& dict,
+    const base::DictValue& dict,
     InterestGroupUpdate& interest_group_update) {
   const std::string* trusted_bidding_signals_slot_size_mode =
       dict.FindString("trustedBiddingSignalsSlotSizeMode");
@@ -352,7 +352,7 @@ constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotation =
 // Copies the maxTrustedBiddingSignalsURLLength JSON field into
 // `max_trusted_bidding_signals_url_length`.
 [[nodiscard]] bool TryToCopyMaxTrustedBiddingSignalsURLLength(
-    const base::Value::Dict& dict,
+    const base::DictValue& dict,
     InterestGroupUpdate& interest_group_update) {
   const base::Value* maybe_max_trusted_bidding_signals_url_length =
       dict.Find("maxTrustedBiddingSignalsURLLength");
@@ -381,7 +381,7 @@ constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotation =
 // Copies the trustedBiddingSignalsCoordinator JSON field into
 // `trusted_bidding_signals_coordinator`.
 [[nodiscard]] bool TryToCopyTrustedBiddingSignalsCoordinator(
-    const base::Value::Dict& dict,
+    const base::DictValue& dict,
     InterestGroupUpdate& interest_group_update) {
   const base::Value* maybe_trusted_bidding_signals_coordinator =
       dict.Find("trustedBiddingSignalsCoordinator");
@@ -427,7 +427,7 @@ constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotation =
 // Copies the viewAndClickCountsProviders JSON field into
 // `view_and_click_counts_providers`.
 [[nodiscard]] bool TryToCopyViewAndClickCountsProviders(
-    const base::Value::Dict& dict,
+    const base::DictValue& dict,
     InterestGroupUpdate& interest_group_update) {
   const base::Value* maybe_view_and_click_counts_providers =
       dict.Find("viewAndClickCountsProviders");
@@ -449,7 +449,7 @@ constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotation =
     return false;
   }
 
-  const base::Value::List& view_and_click_counts_providers =
+  const base::ListValue& view_and_click_counts_providers =
       maybe_view_and_click_counts_providers->GetList();
 
   interest_group_update.view_and_click_counts_providers.emplace();
@@ -468,11 +468,11 @@ constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotation =
 
 // Helper for TryToCopyAds() and TryToCopyAdComponents().
 [[nodiscard]] std::optional<std::vector<blink::InterestGroup::Ad>> ExtractAds(
-    const base::Value::List& ads_list,
+    const base::ListValue& ads_list,
     bool for_components) {
   std::vector<blink::InterestGroup::Ad> ads;
   for (const base::Value& ads_value : ads_list) {
-    const base::Value::Dict* ads_dict = ads_value.GetIfDict();
+    const base::DictValue* ads_dict = ads_value.GetIfDict();
     if (!ads_dict) {
       return std::nullopt;
     }
@@ -511,7 +511,7 @@ constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotation =
       if (maybe_buyer_and_seller_reporting_id) {
         ad.buyer_and_seller_reporting_id = *maybe_buyer_and_seller_reporting_id;
       }
-      const base::Value::List* maybe_selectable_buyer_and_seller_reporting_ids =
+      const base::ListValue* maybe_selectable_buyer_and_seller_reporting_ids =
           ads_dict->FindList("selectableBuyerAndSellerReportingIds");
       if (maybe_selectable_buyer_and_seller_reporting_ids &&
           base::FeatureList::IsEnabled(
@@ -524,7 +524,7 @@ constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotation =
         ad.selectable_buyer_and_seller_reporting_ids =
             std::move(selectable_buyer_and_seller_reporting_ids);
       }
-      const base::Value::List* maybe_allowed_reporting_origins =
+      const base::ListValue* maybe_allowed_reporting_origins =
           ads_dict->FindList("allowedReportingOrigins");
       if (maybe_allowed_reporting_origins) {
         ad.allowed_reporting_origins.emplace();
@@ -563,9 +563,9 @@ constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotation =
 
 // Copies the `ads` list JSON field into `interest_group_update`, returns true
 // iff the JSON is valid and the copy completed.
-[[nodiscard]] bool TryToCopyAds(const base::Value::Dict& dict,
+[[nodiscard]] bool TryToCopyAds(const base::DictValue& dict,
                                 InterestGroupUpdate& interest_group_update) {
-  const base::Value::List* maybe_ads = dict.FindList("ads");
+  const base::ListValue* maybe_ads = dict.FindList("ads");
   if (!maybe_ads) {
     return true;
   }
@@ -581,9 +581,9 @@ constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotation =
 // Copies the `adComponents` list JSON field into `interest_group_update`,
 // returns true iff the JSON is valid and the copy completed.
 [[nodiscard]] bool TryToCopyAdComponents(
-    const base::Value::Dict& dict,
+    const base::DictValue& dict,
     InterestGroupUpdate& interest_group_update) {
-  const base::Value::List* maybe_ads = dict.FindList("adComponents");
+  const base::ListValue* maybe_ads = dict.FindList("adComponents");
   if (!maybe_ads) {
     return true;
   }
@@ -597,15 +597,15 @@ constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotation =
 }
 
 [[nodiscard]] bool TryToCopyAdSizes(
-    const base::Value::Dict& dict,
+    const base::DictValue& dict,
     InterestGroupUpdate& interest_group_update) {
-  const base::Value::Dict* maybe_sizes = dict.FindDict("adSizes");
+  const base::DictValue* maybe_sizes = dict.FindDict("adSizes");
   if (!maybe_sizes) {
     return true;
   }
   base::flat_map<std::string, blink::AdSize> size_map;
   for (std::pair<const std::string&, const base::Value&> pair : *maybe_sizes) {
-    const base::Value::Dict* maybe_size = pair.second.GetIfDict();
+    const base::DictValue* maybe_size = pair.second.GetIfDict();
     if (!maybe_size) {
       return false;
     }
@@ -626,15 +626,15 @@ constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotation =
 }
 
 [[nodiscard]] bool TryToCopySizeGroups(
-    const base::Value::Dict& dict,
+    const base::DictValue& dict,
     InterestGroupUpdate& interest_group_update) {
-  const base::Value::Dict* maybe_groups = dict.FindDict("sizeGroups");
+  const base::DictValue* maybe_groups = dict.FindDict("sizeGroups");
   if (!maybe_groups) {
     return true;
   }
   base::flat_map<std::string, std::vector<std::string>> group_map;
   for (std::pair<const std::string&, const base::Value&> pair : *maybe_groups) {
-    const base::Value::List* maybe_sizes = pair.second.GetIfList();
+    const base::ListValue* maybe_sizes = pair.second.GetIfList();
     if (!maybe_sizes) {
       return false;
     }
@@ -653,9 +653,9 @@ constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotation =
 }
 
 [[nodiscard]] bool TryToCopyAuctionServerRequestFlags(
-    const base::Value::Dict& dict,
+    const base::DictValue& dict,
     InterestGroupUpdate& interest_group_update) {
-  const base::Value::List* maybe_flags =
+  const base::ListValue* maybe_flags =
       dict.FindList("auctionServerRequestFlags");
   if (!maybe_flags) {
     return true;
@@ -683,9 +683,9 @@ constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotation =
 }
 
 [[nodiscard]] bool TryToCopyPrivateAggregationConfig(
-    const base::Value::Dict& dict,
+    const base::DictValue& dict,
     InterestGroupUpdate& interest_group_update) {
-  const base::Value::Dict* maybe_config =
+  const base::DictValue* maybe_config =
       dict.FindDict("privateAggregationConfig");
   if (!maybe_config) {
     return true;
@@ -716,7 +716,7 @@ std::optional<InterestGroupUpdate> ParseUpdateJson(
   if (!result.has_value()) {
     return std::nullopt;
   }
-  const base::Value::Dict* dict = result->GetIfDict();
+  const base::DictValue* dict = result->GetIfDict();
   if (!dict) {
     return std::nullopt;
   }

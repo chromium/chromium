@@ -36,6 +36,8 @@ class GeolocationSettingDelegate
   base::Value ToValue(const PermissionSetting& setting) const override;
   std::optional<PermissionSetting> FromValue(
       const base::Value& value) const override;
+
+  PermissionSetting ToPermissionSetting(ContentSetting setting) const override;
 };
 
 }  // namespace content_settings

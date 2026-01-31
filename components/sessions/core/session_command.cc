@@ -23,7 +23,7 @@ SessionCommand::SessionCommand(id_type id, const base::Pickle& pickle)
     : id_(id),
       contents_(pickle.size(), 0) {
   DCHECK(pickle.size() < std::numeric_limits<size_type>::max());
-  UNSAFE_TODO(memcpy(contents(), pickle.data(), pickle.size()));
+  contents().copy_from(pickle);
 }
 
 SessionCommand::size_type SessionCommand::GetSerializedSize() const {

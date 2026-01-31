@@ -171,16 +171,6 @@ source_set("unit_tests") {
     ]
   }
 
-  if (is_win) {
-    sources += [ "win/media_foundation_renderer_client_unittest.cc" ]
-
-    deps += [
-      "//content/public/renderer",
-      "//content/renderer",
-      "//media",
-    ]
-  }
-
   # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
   # enable the diagnostic by removing this line.
   configs += [ "//build/config/compiler:no_exit_time_destructors" ]

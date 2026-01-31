@@ -53,7 +53,7 @@ struct RestrictedCapturePolicy {
 }  // namespace
 
 bool IsOriginInList(const GURL& request_origin,
-                    const base::Value::List& allowed_origins) {
+                    const base::ListValue& allowed_origins) {
   // Though we are not technically a Content Setting, ContentSettingsPattern
   // aligns better than URLMatcher with the rules from:
   // https://chromeenterprise.google/policies/url-patterns/.

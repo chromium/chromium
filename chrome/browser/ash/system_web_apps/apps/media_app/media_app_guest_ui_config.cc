@@ -129,8 +129,7 @@ void ChromeMediaAppGuestUIDelegate::PopulateLoadTimeData(
   // If true and the Mahi message pipe is connected (see
   // `CreateAndBindMahiUntrustedService` below), shows the entry point for Mahi
   // when the user triggers the right click context menu.
-  source->AddBoolean(
-      "pdfMahi", base::FeatureList::IsEnabled(ash::features::kMediaAppPdfMahi));
+  source->AddBoolean("pdfMahi", true);
 
   source->AddBoolean(
       "mantisInGallery",

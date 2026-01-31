@@ -112,6 +112,7 @@ PseudoElement: view-transition-image-pair shared
 PseudoElement: view-transition-old root
 ::view-transition-new(*), *::view-transition-old(*)* {    user-agent    readonly
     position: absolute; @[undefined-undefined]
+    display: block; @[undefined-undefined]
     inset-block-start: 0px; @[undefined-undefined]
     inline-size: 100%; @[undefined-undefined]
     block-size: auto; @[undefined-undefined]
@@ -143,6 +144,7 @@ PseudoElement: view-transition-old root
 PseudoElement: view-transition-old shared
 ::view-transition-new(*), *::view-transition-old(*)* {    user-agent    readonly
     position: absolute; @[undefined-undefined]
+    display: block; @[undefined-undefined]
     inset-block-start: 0px; @[undefined-undefined]
     inline-size: 100%; @[undefined-undefined]
     block-size: auto; @[undefined-undefined]
@@ -174,6 +176,7 @@ PseudoElement: view-transition-old shared
 PseudoElement: view-transition-new root
 *::view-transition-new(*)*, ::view-transition-old(*) {    user-agent    readonly
     position: absolute; @[undefined-undefined]
+    display: block; @[undefined-undefined]
     inset-block-start: 0px; @[undefined-undefined]
     inline-size: 100%; @[undefined-undefined]
     block-size: auto; @[undefined-undefined]
@@ -193,6 +196,7 @@ PseudoElement: view-transition-new root
 PseudoElement: view-transition-new shared
 *::view-transition-new(*)*, ::view-transition-old(*) {    user-agent    readonly
     position: absolute; @[undefined-undefined]
+    display: block; @[undefined-undefined]
     inset-block-start: 0px; @[undefined-undefined]
     inline-size: 100%; @[undefined-undefined]
     block-size: auto; @[undefined-undefined]
@@ -271,6 +275,7 @@ Dumping styles for : ::view-transition-image-pair with id root
 Dumping styles for : ::view-transition-old with id root
 ::view-transition-new(*), *::view-transition-old(*)* {    user-agent    readonly
     position: absolute; @[undefined-undefined]
+    display: block; @[undefined-undefined]
     inset-block-start: 0px; @[undefined-undefined]
     inline-size: 100%; @[undefined-undefined]
     block-size: auto; @[undefined-undefined]
@@ -302,6 +307,7 @@ Dumping styles for : ::view-transition-old with id root
 Dumping styles for : ::view-transition-new with id root
 *::view-transition-new(*)*, ::view-transition-old(*) {    user-agent    readonly
     position: absolute; @[undefined-undefined]
+    display: block; @[undefined-undefined]
     inset-block-start: 0px; @[undefined-undefined]
     inline-size: 100%; @[undefined-undefined]
     block-size: auto; @[undefined-undefined]
@@ -376,6 +382,7 @@ Dumping styles for : ::view-transition-image-pair with id shared
 Dumping styles for : ::view-transition-old with id shared
 ::view-transition-new(*), *::view-transition-old(*)* {    user-agent    readonly
     position: absolute; @[undefined-undefined]
+    display: block; @[undefined-undefined]
     inset-block-start: 0px; @[undefined-undefined]
     inline-size: 100%; @[undefined-undefined]
     block-size: auto; @[undefined-undefined]
@@ -407,6 +414,7 @@ Dumping styles for : ::view-transition-old with id shared
 Dumping styles for : ::view-transition-new with id shared
 *::view-transition-new(*)*, ::view-transition-old(*) {    user-agent    readonly
     position: absolute; @[undefined-undefined]
+    display: block; @[undefined-undefined]
     inset-block-start: 0px; @[undefined-undefined]
     inline-size: 100%; @[undefined-undefined]
     block-size: auto; @[undefined-undefined]

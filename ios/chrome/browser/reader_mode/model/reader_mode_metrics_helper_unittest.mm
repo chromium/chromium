@@ -375,6 +375,23 @@ TEST_F(ReaderModeMetricsHelperTest, ReaderModeShownAccessPointRecorded) {
       testing::ElementsAre(static_cast<int>(ReaderModeAccessPoint::kAIHub)));
 }
 
+// Tests that data load time is recorded when the data load completes.
+TEST_F(ReaderModeMetricsHelperTest, DataLoadTimeRecorded) {
+  metrics_helper()->RecordDataLoadTriggered();
+  task_environment_.AdvanceClock(base::Seconds(1));
+  metrics_helper()->RecordDataLoadCompleted();
+
+  histogram_tester_.ExpectUniqueTimeSample(kReaderModeDataLoadLatencyHistogram,
+                                           base::Seconds(1), 1);
+}
+
+// Tests that data load time is not recorded if the trigger is missing.
+TEST_F(ReaderModeMetricsHelperTest, DataLoadTimeNotRecordedWithoutTrigger) {
+  metrics_helper()->RecordDataLoadCompleted();
+
+  histogram_tester_.ExpectTotalCount(kReaderModeDataLoadLatencyHistogram, 0);
+}
+
 // Tests metrics functionality based on the heuristic result.
 class ReaderModeMetricsHelperWithEligibilityTest
     : public ReaderModeMetricsHelperTest,

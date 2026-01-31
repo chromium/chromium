@@ -30,21 +30,21 @@ SigninUIError CanOfferSignin(Profile* profile,
                              const std::string& email,
                              bool allow_account_from_other_profile) {
   if (!profile) {
-    return SigninUIError::Other(email);
+    return SigninUIError::NoProfile(email);
   }
 
   if (!profile->GetPrefs()->GetBoolean(prefs::kSigninAllowed)) {
-    return SigninUIError::Other(email);
+    return SigninUIError::SigninDisallowed(email);
   }
 
   if (!ChromeSigninClient::ProfileAllowsSigninCookies(profile)) {
-    return SigninUIError::Other(email);
+    return SigninUIError::SigninCookiesDisallowed(email);
   }
 
   if (!email.empty()) {
     auto* identity_manager = IdentityManagerFactory::GetForProfile(profile);
     if (!identity_manager) {
-      return SigninUIError::Other(email);
+      return SigninUIError::NoIdentityManager(email);
     }
 
     // Make sure this username is not prohibited by policy.

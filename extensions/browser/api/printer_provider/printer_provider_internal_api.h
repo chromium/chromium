@@ -71,7 +71,7 @@ class PrinterProviderInternalAPI : public BrowserContextKeyedAPI {
   // `PrinterProviderInternalReportPrinterCapabilityFunction`.
   void NotifyGetCapabilityResult(const Extension* extension,
                                  int request_id,
-                                 const base::Value::Dict& capability);
+                                 const base::DictValue& capability);
 
   // Notifies observers that a printerProvider.onPrintRequested callback has
   // been called. Called from

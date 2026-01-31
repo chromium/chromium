@@ -54,7 +54,7 @@ class ASH_EXPORT BirchCoralItem : public BirchItem {
   BirchAddonType GetAddonType() const override;
   std::u16string GetAddonAccessibleName() const override;
 
-  base::Value::Dict ToCoralItemDetails() const;
+  base::DictValue ToCoralItemDetails() const;
 
  private:
   // Helper method that calls `birch_client` to retrieve the image from

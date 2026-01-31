@@ -203,8 +203,7 @@ void ProcessRankPolicyAndroid::UpdateProcessRank(const PageNode* page_node) {
   if (web_contents) {
     content::ChildProcessImportance subframe_importance =
         content::ChildProcessImportance::NORMAL;
-    if (base::FeatureList::IsEnabled(features::kSubframePriorityContribution) &&
-        base::FeatureList::IsEnabled(features::kSubframeImportance) &&
+    if (base::FeatureList::IsEnabled(features::kSubframeImportance) &&
         importance >= content::ChildProcessImportance::PERCEPTIBLE) {
       if (is_perceptible_importance_supported_) {
         subframe_importance = content::ChildProcessImportance::PERCEPTIBLE;

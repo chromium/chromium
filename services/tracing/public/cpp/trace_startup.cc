@@ -12,6 +12,7 @@
 #include "base/task/thread_pool/thread_pool_instance.h"
 #include "base/trace_event/trace_event.h"
 #include "base/trace_event/trace_log.h"
+#include "base/trace_event/trace_session_observer.h"
 #include "build/build_config.h"
 #include "components/tracing/common/tracing_switches.h"
 #include "services/tracing/public/cpp/perfetto/perfetto_config.h"
@@ -146,6 +147,7 @@ void InitTracing(
   // https://crbug.com/764357
   TraceLog::GetInstance();
   StartupTrackEventConfigObserver::GetInstance();
+  base::trace_event::TraceSessionObserverList::Initialize();
 
 #if BUILDFLAG(IS_WIN)
   tracing::EnableETWExport();

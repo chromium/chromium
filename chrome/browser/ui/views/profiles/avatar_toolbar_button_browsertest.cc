@@ -16,6 +16,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/with_feature_override.h"
 #include "base/time/time.h"
@@ -102,6 +103,7 @@
 #include "ui/gfx/image/image.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/image/image_unittest_util.h"
+#include "ui/gfx/scoped_animation_duration_scale_mode.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "ash/constants/ash_switches.h"
@@ -559,6 +561,22 @@ class AvatarToolbarButtonBaseBrowserTest {
     GetTestSyncService()->FireStateChanged();
   }
 
+  void SimulateBookmarksLimitExceededError() {
+    GetTestSyncService()->SetBookmarksLimitExceeded(true);
+    GetTestSyncService()->FireStateChanged();
+    ASSERT_EQ(
+        GetTestSyncService()->GetUserActionableError(),
+        syncer::SyncService::UserActionableError::kBookmarksLimitExceeded);
+  }
+
+  void ClearBookmarksLimitExceededError() {
+    GetTestSyncService()->SetBookmarksLimitExceeded(false);
+    GetTestSyncService()->FireStateChanged();
+    ASSERT_NE(
+        GetTestSyncService()->GetUserActionableError(),
+        syncer::SyncService::UserActionableError::kBookmarksLimitExceeded);
+  }
+
   // Waits for `time`.
   void WaitForTime(base::TimeDelta time) {
     base::RunLoop waiting_run_loop;
@@ -645,6 +663,9 @@ class AvatarToolbarButtonBaseBrowserTest {
 
   base::CallbackListSubscription dependency_manager_subscription_;
   std::vector<base::AutoReset<std::optional<base::TimeDelta>>> delay_resets_;
+  gfx::ScopedAnimationDurationScaleMode zero_duration_mode_ =
+      gfx::ScopedAnimationDurationScaleMode(
+          gfx::ScopedAnimationDurationScaleMode::ZERO_DURATION);
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
   BatchUploadServiceTestHelper batch_upload_test_helper_;
@@ -990,6 +1011,57 @@ IN_PROC_BROWSER_TEST_F(AvatarToolbarButtonWithSyncBrowserTest, SyncError) {
 
   ClearSyncError();
   EXPECT_EQ(avatar_button->GetText(), std::u16string());
+}
+
+IN_PROC_BROWSER_TEST_F(AvatarToolbarButtonWithSyncBrowserTest,
+                       BookmarksLimitExceededErrorForSyncingUser) {
+  AvatarToolbarButton* avatar_button = GetAvatarToolbarButton(browser());
+  // Normal state.
+  ASSERT_TRUE(avatar_button->GetText().empty());
+
+  EnableSyncWithImageAndClearGreeting(avatar_button, u"test@gmail.com");
+  SimulateBookmarksLimitExceededError();
+  EXPECT_EQ(avatar_button->GetText(),
+            l10n_util::GetStringUTF16(
+                IDS_AVATAR_BUTTON_SYNC_ERROR_BOOKMARKS_LIMIT_EXCEEDED));
+
+  ClearBookmarksLimitExceededError();
+  EXPECT_TRUE(avatar_button->GetText().empty());
+}
+
+// Avatar button is not shown on Ash. No need to perform those tests as the info
+// checked might not be adapted.
+#if !BUILDFLAG(IS_CHROMEOS)
+IN_PROC_BROWSER_TEST_F(AvatarToolbarButtonWithSyncBrowserTest,
+                       BookmarksLimitExceededErrorOpensProfileMenu) {
+  AvatarToolbarButton* avatar_button = GetAvatarToolbarButton(browser());
+  EnableSyncWithImageAndClearGreeting(avatar_button, u"test@gmail.com");
+  SimulateBookmarksLimitExceededError();
+
+  EXPECT_FALSE(
+      browser()->GetFeatures().profile_menu_coordinator()->IsShowing());
+  avatar_button->ButtonPressed();
+  // TODO(crbug.com/478780706) Verifying the presence and functionality of error
+  // cards within the profile menu is not easily testable. Consider implementing
+  // a test harness for this purpose.
+  EXPECT_TRUE(browser()->GetFeatures().profile_menu_coordinator()->IsShowing());
+}
+#endif
+
+IN_PROC_BROWSER_TEST_F(AvatarToolbarButtonBrowserTest,
+                       BookmarksLimitExceededErrorForSignedInUser) {
+  AvatarToolbarButton* avatar_button = GetAvatarToolbarButton(browser());
+  // Normal state.
+  ASSERT_TRUE(avatar_button->GetText().empty());
+
+  SigninWithImageAndClearGreetingAndSyncPromo(avatar_button, u"test@gmail.com");
+  SimulateBookmarksLimitExceededError();
+  EXPECT_EQ(avatar_button->GetText(),
+            l10n_util::GetStringUTF16(
+                IDS_AVATAR_BUTTON_SYNC_ERROR_BOOKMARKS_LIMIT_EXCEEDED));
+
+  ClearBookmarksLimitExceededError();
+  EXPECT_TRUE(avatar_button->GetText().empty());
 }
 
 IN_PROC_BROWSER_TEST_F(AvatarToolbarButtonWithSyncBrowserTest,

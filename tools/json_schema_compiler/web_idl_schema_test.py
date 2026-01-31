@@ -186,6 +186,12 @@ class WebIdlSchemaTest(unittest.TestCase):
     }, getFunctionReturn(schema, 'returnsCustomType'))
     self.assertEqual(
         {
+            'name': 'returnsNullableCustomType',
+            'optional': True,
+            '$ref': 'ExampleType'
+        }, getFunctionReturn(schema, 'returnsNullableCustomType'))
+    self.assertEqual(
+        {
             'name': 'returnsDOMStringSequence',
             'type': 'array',
             'items': {
@@ -507,7 +513,7 @@ class WebIdlSchemaTest(unittest.TestCase):
             'description': 'Comment on sequence type.',
         }, custom_type['properties']['booleanSequence'])
 
-    enum_expected = {
+    expected_enum = {
         'enum': [{
             'name': 'name1',
             'description': 'Comment1.'
@@ -518,7 +524,20 @@ class WebIdlSchemaTest(unittest.TestCase):
         'type': 'string',
         'id': 'EnumType'
     }
-    self.assertEqual(enum_expected, getType(schema, 'EnumType'))
+    self.assertEqual(expected_enum, getType(schema, 'EnumType'))
+
+    expected_single_line_enum = {
+        'enum': [{
+            'name': 'value1'
+        }, {
+            'name': 'value2'
+        }],
+        'description': 'Single line enum.',
+        'type': 'string',
+        'id': 'SingleLineEnum',
+    }
+    self.assertEqual(expected_single_line_enum, getType(schema,
+                                                        'SingleLineEnum'))
 
     expected_type_with_function = {
         'name': 'callbackMember',
@@ -1026,7 +1045,6 @@ class WebIdlSchemaTest(unittest.TestCase):
 
     normal_function = getFunction(schema, 'normalFunction')
     self.assertFalse(hasattr(normal_function, 'platforms'))
-
 
   # Tests that the 'implemented_in' extended attribute on an interface
   # definition is copied into the resulting namespace after processing.

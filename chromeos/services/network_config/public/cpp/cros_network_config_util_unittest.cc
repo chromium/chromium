@@ -47,7 +47,7 @@ TEST_F(CrosNetworkConfigUtilTest, WifiConfigConversion) {
   eap_config->password = kTestPassphrase;
   wifi_config->eap = std::move(eap_config);
 
-  base::Value::Dict dict = WiFiConfigPropertiesToMojoJsValue(wifi_config);
+  base::DictValue dict = WiFiConfigPropertiesToMojoJsValue(wifi_config);
 
   auto* ssid = dict.FindStringByDottedPath("typeConfig.wifi.ssid");
   EXPECT_NE(ssid, nullptr);

@@ -132,6 +132,8 @@ class EmbeddedTestServerHandle {
 //
 class EmbeddedTestServer {
  public:
+  // Below line is for //net/android:net_java_test_support_enums_srcjar
+  // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.net.test
   enum Type {
     TYPE_HTTP,
     TYPE_HTTPS,
@@ -210,6 +212,9 @@ class EmbeddedTestServer {
 
   struct OCSPConfig {
     // Enumerates the types of OCSP response that the testserver can produce.
+    //
+    // Below line is for //net/android:net_java_test_support_enums_srcjar
+    // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.net.test
     enum class ResponseType {
       // OCSP will not be enabled for the corresponding config.
       kOff,
@@ -291,6 +296,26 @@ class EmbeddedTestServer {
     std::vector<SingleResponse> single_responses;
   };
 
+  struct CertAndKey {
+    CertAndKey(bssl::UniquePtr<CRYPTO_BUFFER> cert,
+               bssl::UniquePtr<EVP_PKEY> pkey);
+    CertAndKey(std::vector<bssl::UniquePtr<CRYPTO_BUFFER>> cert_chain,
+               bssl::UniquePtr<EVP_PKEY> pkey);
+    ~CertAndKey();
+
+    CertAndKey(const CertAndKey&);
+    CertAndKey(CertAndKey&&);
+    CertAndKey& operator=(const CertAndKey&);
+    CertAndKey& operator=(CertAndKey&&);
+
+    // Certificate chain for this credential. The first entry must be the leaf
+    // cert.
+    std::vector<bssl::UniquePtr<CRYPTO_BUFFER>> cert_chain;
+
+    // Private key used by this credential.
+    bssl::UniquePtr<EVP_PKEY> pkey;
+  };
+
   // Configuration for generated server certificate.
   struct ServerCertificateConfig {
     ServerCertificateConfig();
@@ -367,6 +392,16 @@ class EmbeddedTestServer {
     // if we need tests to set specific subjects for more normal cases, we
     // should consider adding a more ergonomic API for that.)
     std::vector<uint8_t> subject_tlv;
+
+    // Use a certificate and private key supplied by the caller instead of
+    // generating one. When this is specified, all of the above parameters are
+    // ignored.
+    // TODO(crbug.com/469624806): refactor so that when configuring with a cert
+    // and key directly, it uses a different config struct that only has the
+    // relevant members (possibly something involving std::variant so that you
+    // can configure the server with a mix of configs that some generate a cert
+    // and some specify the cert and key?)
+    std::optional<CertAndKey> cert_and_key;
 
     // If non-empty, the TLS Trust Anchor Identifier of this credential. If
     // specified, this credential will only be used if the client requested
@@ -733,7 +768,13 @@ class EmbeddedTestServer {
     SSLServerCredential ssl_credential;
   };
   std::optional<CredentialPair> GenerateCertAndKey(
-      const ServerCertificateConfig& cert_config);
+      const ServerCertificateConfig& cert_config) const;
+
+  // Returns a CredentialPair for the config, either using the `CertAndKey`
+  // supplied in the config or generating the credential based on the config
+  // options.
+  std::optional<CredentialPair> ConfigToCredentialPair(
+      const ServerCertificateConfig& cert_config) const;
 
   // Initializes the SSLServerContext so that SSLServerSocket connections may
   // share the same cache

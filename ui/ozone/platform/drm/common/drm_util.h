@@ -148,8 +148,6 @@ std::unique_ptr<display::DisplaySnapshot> CreateDisplaySnapshot(
     HardwareDisplayControllerInfo* info,
     uint8_t device_index);
 
-int GetFourCCFormatForOpaqueFramebuffer(gfx::BufferFormat format);
-
 int GetFourCCFormatForOpaqueFramebuffer(viz::SharedImageFormat format);
 
 gfx::Size GetMaximumCursorSize(const DrmWrapper& drm);
@@ -188,7 +186,6 @@ display::VariableRefreshRateState GetVariableRefreshRateState(
     const DrmWrapper& drm,
     HardwareDisplayControllerInfo* info);
 
-const char* GetNameForColorspace(const gfx::ColorSpace color_space);
 uint64_t GetEnumValueForName(const DrmWrapper& drm,
                              int property_id,
                              const char* str);

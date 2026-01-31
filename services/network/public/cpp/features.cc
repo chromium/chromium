@@ -154,6 +154,20 @@ BASE_FEATURE_PARAM(bool,
                    "AcceptCHFrameOffloadNotAllowedHints",
                    false);
 
+// When enabled, this parameter forces the generation of the `not_allowed_hints`
+// list for every navigation. This list contains client hints that were
+// disallowed by Permissions Policy. This is intended for performance analysis,
+// to isolate the cost of checking `IsClientHintAllowed` for all client hints
+// and serializing the resulting list, independent of whether the network
+// service will actually use this information for offloading `Accept-CH` checks.
+// For the network service to utilize this data,
+// `kAcceptCHFrameOffloadNotAllowedHints` must also be enabled.
+BASE_FEATURE_PARAM(bool,
+                   kAlwaysGenerateNotAllowedClientHints,
+                   &kOffloadAcceptCHFrameCheck,
+                   "AlwaysGenerateNotAllowedClientHints",
+                   false);
+
 // Enable offloading the network layer to check enabled client hints even when
 // cross origin redirect happens.
 // See crbug.com/406407746 for details.
@@ -258,7 +272,7 @@ BASE_FEATURE(kLocalNetworkAccessChecksWebTransport,
 // Splits the Local Network Access permission into 2 permissions. See
 // crbug.com/465491626.
 BASE_FEATURE(kLocalNetworkAccessChecksSplitPermissions,
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // If enabled, then the network service will parse the Cookie-Indices header.
 // This does not currently control changing cache behavior according to the
@@ -563,9 +577,6 @@ BASE_FEATURE(kProtectedAudienceCorsSafelistKVv2Signals,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kStorageAccessHeadersRespectPermissionsPolicy,
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-BASE_FEATURE(kDeviceBoundSessionAccessObserverSharedRemote,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kCSPScriptSrcV2, "ScriptSrcV2", base::FEATURE_DISABLED_BY_DEFAULT);

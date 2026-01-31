@@ -21,6 +21,7 @@ namespace webapps {
 namespace {
 
 constexpr char kExtendedScope[] = "scope";
+constexpr char kAllowMigration[] = "allow_migration";
 
 // Determines whether |url| is within scope of |extended_origin|'s path.
 bool UrlIsWithinScope(const GURL& url, const url::Origin& extended_origin) {
@@ -29,7 +30,7 @@ bool UrlIsWithinScope(const GURL& url, const url::Origin& extended_origin) {
 }
 
 std::optional<GURL> ParseExtendedScope(
-    const base::Value::Dict& extended_scope_info,
+    const base::DictValue& extended_scope_info,
     const url::Origin& associate_origin) {
   const std::string* extended_scope_ptr =
       extended_scope_info.FindString(kExtendedScope);
@@ -48,7 +49,7 @@ std::optional<GURL> ParseExtendedScope(
   return associate_extended_url;
 }
 
-ParsedAssociations ParseAssociatedWebApps(const base::Value::Dict& root_dict,
+ParsedAssociations ParseAssociatedWebApps(const base::DictValue& root_dict,
                                           const url::Origin& origin) {
   ParsedAssociations result;
   if (root_dict.empty()) {
@@ -69,13 +70,19 @@ ParsedAssociations ParseAssociatedWebApps(const base::Value::Dict& root_dict,
 
     std::optional<GURL> extended_scope =
         ParseExtendedScope(iter.second.GetDict(), origin);
-    if (!extended_scope) {
+    GURL scope_url;
+    if (extended_scope) {
+      scope_url = std::move(extended_scope).value();
+    } else {
       result.warnings.push_back(kInvalidScopeUrl);
-      continue;
     }
 
+    bool allow_migration =
+        iter.second.GetDict().FindBool(kAllowMigration).value_or(false);
+
     result.apps.push_back({.web_app_identity = std::move(web_app_manifest_id),
-                           .scope = std::move(extended_scope).value()});
+                           .scope = std::move(scope_url),
+                           .allow_migration = allow_migration});
   }
 
   return result;

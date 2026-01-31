@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/android/initialize_feature_list_android.h"
+
 #include "base/profiler/thread_group_profiler.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
 #include "base/time/default_clock.h"
@@ -13,6 +15,12 @@
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "chrome/android/base_module_jni/InitializeFeatureList_jni.h"
+
+namespace {
+
+bool did_init_feature_list_early = false;
+
+}  // namespace
 
 namespace variations::android {
 
@@ -38,6 +46,12 @@ static void JNI_InitializeFeatureList_InitializeFeatureList(JNIEnv* env) {
 
   // The FeatureList needs to be created before starting the ThreadPool.
   content::StartThreadPool();
+
+  did_init_feature_list_early = true;
+}
+
+bool DidInitFeatureListEarly() {
+  return did_init_feature_list_early;
 }
 
 }  // namespace variations::android

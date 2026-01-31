@@ -24,7 +24,7 @@ namespace security_interstitials {
 
 static void JNI_CaptivePortalHelper_SetOSReportsCaptivePortalForTesting(
     JNIEnv* env,
-    jboolean os_reports_captive_portal) {
+    bool os_reports_captive_portal) {
   content::GetUIThreadTaskRunner({})->PostTask(
       FROM_HERE,
       base::BindOnce(SSLErrorHandler::SetOSReportsCaptivePortalForTesting,

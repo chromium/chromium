@@ -179,13 +179,13 @@ public class SemanticColorUtils {
         return ContextCompat.getColor(context, R.color.dialog_bg_color);
     }
 
-    /** Returns the surface color value of the conceptual sheet_bg_color. */
+    /**
+     * Returns the surface color value of the conceptual sheet_bg_color.
+     *
+     * @deprecated Use bottom_sheet_bg_color instead.
+     * */
+    @Deprecated
     public static @ColorInt int getSheetBgColor(Context context) {
-        return resolve(R.attr.colorSurface, context);
-    }
-
-    /** Returns the surface color value of the conceptual snackbar_background_color. */
-    public static @ColorInt int getSnackbarBackgroundColor(Context context) {
         return resolve(R.attr.colorSurface, context);
     }
 
@@ -285,6 +285,11 @@ public class SemanticColorUtils {
     /** Returns the semantic color values that correspond to colorSurfaceDim. */
     public static @ColorInt int getColorSurfaceDim(Context context) {
         return resolve(R.attr.colorSurfaceDim, context);
+    }
+
+    /** Returns the semantic color values that correspond to colorSurfaceInverse. */
+    public static @ColorInt int getColorSurfaceInverse(Context context) {
+        return resolve(R.attr.colorSurfaceInverse, context);
     }
 
     /** Returns the surface color value of the conceptual floating snackbar background color. */

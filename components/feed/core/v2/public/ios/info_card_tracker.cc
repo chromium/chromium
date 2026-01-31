@@ -59,8 +59,8 @@ void InfoCardTracker::OnTrackInfoCardCommand(
   }
 }
 
-const base::Value::Dict& InfoCardTracker::GetInfoCardTrackingStates() {
-  const base::Value::Dict& tracking_state_dict =
+const base::DictValue& InfoCardTracker::GetInfoCardTrackingStates() {
+  const base::DictValue& tracking_state_dict =
       browser_state_prefs_->GetDict(feed::prefs::kInfoCardTrackingStateDict);
   return tracking_state_dict;
 }
@@ -68,7 +68,7 @@ const base::Value::Dict& InfoCardTracker::GetInfoCardTrackingStates() {
 feedwire::InfoCardTrackingState
 InfoCardTracker::GetInfoCardTrackingStateFromPref(int info_card_type) {
   feedwire::InfoCardTrackingState state;
-  const base::Value::Dict& tracking_state_dict =
+  const base::DictValue& tracking_state_dict =
       browser_state_prefs_->GetDict(feed::prefs::kInfoCardTrackingStateDict);
   const std::string* state_string =
       tracking_state_dict.FindString(base::NumberToString(info_card_type));

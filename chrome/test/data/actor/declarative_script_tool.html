@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<title>Declarative Script Tool test</title>
+
+<form toolname="declarative_tool" tooldescription="A declarative WebMCP tool">
+  <input id=text1 type=text name="text" required>
+  <label for=text2>text 2 label</label>
+  <input id=text2 type=text name="text2" required>
+  <label for="select">select label</label>
+  <select id="select" name="select" required>
+    <option value="Option 1">This is option 1</option>
+    <option value="Option 2">This is option 2</option>
+    <option value="Option 3">This is option 3</option>
+  </select>
+  <button type=submit name=submitname>Submit Content</button>
+</form>
+
+<script>
+  document.querySelector('form').addEventListener('submit',e => {
+    e.preventDefault();
+    e.respondWith(Promise.resolve("result value"));
+  })
+</script>

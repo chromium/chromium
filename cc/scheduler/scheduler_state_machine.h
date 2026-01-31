@@ -39,7 +39,7 @@ class CC_EXPORT SchedulerStateMachine {
   // settings must be valid for the lifetime of this class.
   explicit SchedulerStateMachine(const SchedulerSettings& settings);
   SchedulerStateMachine(const SchedulerStateMachine&) = delete;
-  ~SchedulerStateMachine();
+  virtual ~SchedulerStateMachine();
 
   SchedulerStateMachine& operator=(const SchedulerStateMachine&) = delete;
 
@@ -117,11 +117,6 @@ class CC_EXPORT SchedulerStateMachine {
       ForcedRedrawOnTimeoutStateToProtozeroEnum(
           ForcedRedrawOnTimeoutState state);
 
-  // Public for testing.
-  // Semi-arbitrary delay, chosen to be similar to Android's platform behavior.
-  static constexpr base::TimeDelta kUrgentBoostDuration =
-      base::Milliseconds(1500);
-
   BeginMainFrameState begin_main_frame_state() const {
     return begin_main_frame_state_;
   }
@@ -165,6 +160,7 @@ class CC_EXPORT SchedulerStateMachine {
   void WillNotifyBeginMainFrameNotExpectedUntil();
   void WillNotifyBeginMainFrameNotExpectedSoon();
   void WillCommit(bool commit_had_no_updates);
+  virtual bool CheckWillCommit() const;
   void DidCommit();
   void DidPostCommit();
   void WillActivate();
@@ -186,7 +182,7 @@ class CC_EXPORT SchedulerStateMachine {
   // notifications. This is different from BeginFrameNeeded() for cases where we
   // temporarily stop drawing. Unsubscribing and re-subscribing to BeginFrame
   // notifications creates unnecessary overhead.
-  bool ShouldSubscribeToBeginFrames() const;
+  virtual bool ShouldSubscribeToBeginFrames() const;
 
   // Indicates that the system has entered and left a BeginImplFrame callback.
   // The scheduler will not draw more than once in a given BeginImplFrame
@@ -396,9 +392,7 @@ class CC_EXPORT SchedulerStateMachine {
   }
 
   void SetShouldThrottleFrameRate(bool flag);
-
-  // Virtual for testing.
-  virtual base::TimeTicks Now() const;
+  void SetRequestHighFramerate(bool flag);
 
  protected:
   bool BeginFrameRequiredForAction() const;
@@ -413,12 +407,12 @@ class CC_EXPORT SchedulerStateMachine {
   // Indicates if we should post the deadline to draw immediately. This is true
   // when we aren't expecting a commit or activation, or we're prioritizing
   // active tree draw (see ImplLatencyTakesPriority()).
-  bool ShouldTriggerBeginImplFrameDeadlineImmediately() const;
+  virtual bool ShouldTriggerBeginImplFrameDeadlineImmediately() const;
 
-  // Indicates if we shouldn't schedule a deadline. Used to defer drawing until
-  // the entire pipeline is flushed and active tree is ready to draw for
-  // headless.
+  // Indicates if we shouldn't schedule a deadline.
   bool ShouldBlockDeadlineIndefinitely() const;
+  // Overwrite function for headless mode.
+  virtual bool CheckShouldBlockDeadlineIndefinitely() const;
 
   bool ShouldPerformImplSideInvalidation() const;
   bool CouldCreatePendingTree() const;
@@ -428,11 +422,12 @@ class CC_EXPORT SchedulerStateMachine {
 
   bool ShouldBeginLayerTreeFrameSinkCreation() const;
   bool ShouldDraw() const;
+  virtual bool CheckShouldDraw() const;
   bool ShouldActivateSyncTree() const;
   bool ShouldSendBeginMainFrame() const;
   bool ShouldCommit() const;
   bool ShouldRunPostCommit() const;
-  bool ShouldPrepareTiles() const;
+  virtual bool ShouldPrepareTiles() const;
   bool ShouldInvalidateLayerTreeFrameSink() const;
   bool ShouldNotifyBeginMainFrameNotExpectedUntil() const;
   bool ShouldNotifyBeginMainFrameNotExpectedSoon() const;
@@ -468,7 +463,6 @@ class CC_EXPORT SchedulerStateMachine {
   base::TimeTicks last_sent_begin_main_frame_time_;
   base::TimeDelta main_frame_throttled_interval_;
   base::TimeDelta unthrottled_frame_interval_;
-  base::TimeTicks last_urgent_main_frame_request_;
 
   // Inputs from the last impl frame that are required for decisions made in
   // this impl frame. The values from the last frame are cached before being
@@ -565,6 +559,7 @@ class CC_EXPORT SchedulerStateMachine {
   bool waiting_for_scroll_event_ = false;
 
   bool throttle_frame_rate_ = false;
+  uint64_t high_framerate_requests_count_ = 0;
 };
 
 }  // namespace cc

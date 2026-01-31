@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.bookmarks;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
@@ -11,12 +13,11 @@ import android.net.Uri;
 import android.provider.Browser;
 import android.text.format.DateUtils;
 
-import androidx.annotation.Nullable;
-
 import org.chromium.base.IntentUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.ActivityUtils;
 import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.document.ChromeLauncherActivity;
@@ -33,7 +34,7 @@ import java.util.function.Supplier;
 /** Implementation of {@link BookmarkOpener} which relies on intents. */
 @NullMarked
 public class BookmarkOpenerImpl implements BookmarkOpener {
-    private final Supplier<BookmarkModel> mBookmarkModelSupplier;
+    private final Supplier<@Nullable BookmarkModel> mBookmarkModelSupplier;
     private final Context mContext;
     private final @Nullable ComponentName mComponentName;
 
@@ -44,7 +45,7 @@ public class BookmarkOpenerImpl implements BookmarkOpener {
      * @param componentName The name of the parent component, can be null on tablets.
      */
     public BookmarkOpenerImpl(
-            Supplier<BookmarkModel> bookmarkModelSupplier,
+            Supplier<@Nullable BookmarkModel> bookmarkModelSupplier,
             Context context,
             @Nullable ComponentName componentName) {
         mBookmarkModelSupplier = bookmarkModelSupplier;
@@ -55,7 +56,7 @@ public class BookmarkOpenerImpl implements BookmarkOpener {
     @Override
     public boolean openBookmarkInCurrentTab(BookmarkId id, boolean incognito) {
         if (id == null) return false;
-        BookmarkItem item = mBookmarkModelSupplier.get().getBookmarkById(id);
+        BookmarkItem item = assumeNonNull(mBookmarkModelSupplier.get()).getBookmarkById(id);
         if (item == null) return false;
         maybeMarkReadingListItemAsRead(item);
         recordMetricsForOpenBookmarkInCurrentTab(item);
@@ -73,11 +74,12 @@ public class BookmarkOpenerImpl implements BookmarkOpener {
             @Nullable @TabLaunchType Integer tabLaunchType) {
         if (bookmarkIds.size() == 0) return false;
 
+        BookmarkModel bookmarkModel = assumeNonNull(mBookmarkModelSupplier.get());
         BookmarkItem firstItem = null;
         ArrayList<String> additionalUrls = new ArrayList<>();
         List<BookmarkItem> items = new ArrayList<>();
         for (BookmarkId id : bookmarkIds) {
-            BookmarkItem item = mBookmarkModelSupplier.get().getBookmarkById(id);
+            BookmarkItem item = bookmarkModel.getBookmarkById(id);
             if (item == null) continue;
             maybeMarkReadingListItemAsRead(item);
 
@@ -138,7 +140,8 @@ public class BookmarkOpenerImpl implements BookmarkOpener {
 
     private void maybeMarkReadingListItemAsRead(BookmarkItem item) {
         if (item.getId().getType() == BookmarkType.READING_LIST) {
-            mBookmarkModelSupplier.get().setReadStatusForReadingList(item.getId(), true);
+            assumeNonNull(mBookmarkModelSupplier.get())
+                    .setReadStatusForReadingList(item.getId(), true);
         }
     }
 

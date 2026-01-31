@@ -48,6 +48,7 @@
 <translation id="2761536921376153655">Scanningstype</translation>
 <translation id="28682968802727151">Spejl forhåndsvisning</translation>
 <translation id="2879583609344924966"><ph name="CAMERA" /> er tilsluttet.</translation>
+<translation id="3063987824612038785">Alle kamerafiler gemmes i Google Drev</translation>
 <translation id="3067436040345934772">Panorer mod højre</translation>
 <translation id="3081586908890909590">Skift til videooptagelse</translation>
 <translation id="3091480460059548935">Forhåndsvisning af Registrering af tekst</translation>
@@ -67,6 +68,7 @@
 <translation id="3642192109456033823">Videoen behandles…</translation>
 <translation id="3789724198583203151">Roter 90 grader mod uret</translation>
 <translation id="3810838688059735925">Video</translation>
+<translation id="386366972082231038">Alle kamerafiler gemmes i OneDrive</translation>
 <translation id="4060608699153044055">Du kan ikke optage, da der mangler lagerplads på enheden. Frigør plads på din enhed for at starte optagelsen.</translation>
 <translation id="4061162772429051350"><ph name="MAGAPIXELS_AMOUNT" /> MP</translation>
 <translation id="4118525110028899586">Sæt optagelsen på pause</translation>
@@ -100,6 +102,7 @@
 <translation id="5634947914995388399">Udvid dialogboks, og stop scanning</translation>
 <translation id="5662366948659129155">Scanner side <ph name="COUNT" /></translation>
 <translation id="5671277269877808209">Kvadrat</translation>
+<translation id="5725797473946373607">Vis ikke denne dialogboks næste gang</translation>
 <translation id="574392208103952083">Mellem</translation>
 <translation id="5746169159649715125">Gem som PDF</translation>
 <translation id="5753488212459587150">Aktivér eksperttilstand</translation>
@@ -157,6 +160,7 @@ Hvis din feedback omhandler billed- eller videokvalitet, bedes du vedhæfte et b
 <translation id="7983668134180549431">Tekst er registreret.</translation>
 <translation id="8079255378695216066">Optagelsen kan ikke startes</translation>
 <translation id="8120146556401698679">Panorer drej zoom</translation>
+<translation id="8127459436205030819">Dine filer kan være synlige for din administrator</translation>
 <translation id="8131740175452115882">Bekræft</translation>
 <translation id="8145038249676204903">Skift for at tage et billede</translation>
 <translation id="8167081290930651932">Gem som billede</translation>
@@ -166,6 +170,7 @@ Hvis din feedback omhandler billed- eller videokvalitet, bedes du vedhæfte et b
 <translation id="8609951387004618906">Åbn <ph name="URL" /></translation>
 <translation id="8629662593426079630">360p</translation>
 <translation id="8711011893539266636">Slå mikrofonen til eller fra. Lyden er slået fra</translation>
+<translation id="8712637175834984815">Forstået</translation>
 <translation id="8730621377337864115">Udført</translation>
 <translation id="8732462232047530626">Se forhåndsvisning af metadata</translation>
 <translation id="874854738381978209">Wi-Fi-netværk er registreret.</translation>

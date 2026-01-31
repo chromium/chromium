@@ -64,8 +64,12 @@ void VSyncProviderMac::RegisterCallback(VSyncCallbackMac::Callback callback,
     return;
   }
 
-  std::list<VSyncCallbackMac::Callback>& callbacks =
-      callback_lists_[display_id];
+  auto found = callback_lists_.find(display_id);
+  if (found == callback_lists_.end()) {
+    return;
+  }
+
+  std::list<VSyncCallbackMac::Callback>& callbacks = found->second;
   bool should_request_begin_frame = callbacks.empty();
 
   callbacks.push_back(std::move(callback));
@@ -87,8 +91,12 @@ void VSyncProviderMac::UnregisterCallback(VSyncCallbackMac::Callback callback,
     return;
   }
 
-  std::list<VSyncCallbackMac::Callback>& callbacks =
-      callback_lists_[display_id];
+  auto found = callback_lists_.find(display_id);
+  if (found == callback_lists_.end()) {
+    return;
+  }
+
+  std::list<VSyncCallbackMac::Callback>& callbacks = found->second;
   callbacks.remove(callback);
 
   // Stop BeginFrame in browser via IPC.

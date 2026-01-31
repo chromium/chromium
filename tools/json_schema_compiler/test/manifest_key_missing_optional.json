@@ -1,0 +1,17 @@
+[
+  {
+    "namespace": "nonOptionalManifestKeyException",
+    "description": "The nonOptionalManifestKeyException API. Should produce an exception as the manifest key has not been specified as optional.",
+    "manifest_keys": {
+      "foo": {
+        "type": "object",
+        "properties": {
+          "keyword": {
+            "type": "string",
+            "description": "The keyword to register with the foobox. Must be non-empty."
+          }
+        }
+      }
+    }
+  }
+]

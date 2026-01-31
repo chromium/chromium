@@ -5,6 +5,11 @@
 import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/v8_target_cpu.gni")
 
+# TODO(thakis): Remove all uses of these, then remove the variables.
+arm_fpu = "neon"
+arm_use_neon = true
+arm_optionally_use_neon = false
+
 # These are primarily relevant in current_cpu == "arm" contexts, where
 # ARM code is being compiled.  But they can also be relevant in the
 # other contexts when the code will change its behavior based on the
@@ -18,21 +23,6 @@ if (current_cpu == "arm" || v8_current_cpu == "arm") {
     # The ARM architecture. This will be a string like "armv6" or "armv7-a".
     # An empty string means to use the default for the arm_version.
     arm_arch = ""
-
-    # The ARM floating point hardware. This will be a string like "neon" or
-    # "vfpv3". An empty string means to use the default for the arm_version.
-    arm_fpu = ""
-
-    # The ARM variant-specific tuning mode. This will be a string like "armv6"
-    # or "cortex-a15". An empty string means to use the default for the
-    # arm_version.
-    arm_tune = ""
-
-    # Whether to use the neon FPU instruction set or not.
-    arm_use_neon = ""
-
-    # Whether to enable optional NEON code paths.
-    arm_optionally_use_neon = false
 
     # Thumb is a reduced instruction set available on some ARM processors that
     # has increased code density.
@@ -52,31 +42,8 @@ if (current_cpu == "arm" || v8_current_cpu == "arm") {
   assert(arm_float_abi == "" || arm_float_abi == "hard" ||
          arm_float_abi == "soft" || arm_float_abi == "softfp")
 
-  if (arm_use_neon == "") {
-    if (current_os == "linux" && target_cpu != v8_target_cpu) {
-      # Don't use neon on V8 simulator builds as a default.
-      arm_use_neon = false
-    } else {
-      arm_use_neon = true
-    }
-  }
-
   if (arm_version == 6) {
-    if (arm_arch == "") {
-      # v8 can still with version 6 but only with the armv6k extension.
-      arm_arch = "armv6k"
-    }
-    if (arm_tune != "") {
-      arm_tune = ""
-    }
-    if (arm_float_abi == "") {
-      arm_float_abi = "softfp"
-    }
-    if (arm_fpu == "") {
-      arm_fpu = "vfp"
-    }
-    arm_use_thumb = false
-    arm_use_neon = false
+    assert(false, "arm_version must be >= 7")
   } else if (arm_version == 7) {
     if (arm_arch == "") {
       arm_arch = "armv7-a"
@@ -90,39 +57,18 @@ if (current_cpu == "arm" || v8_current_cpu == "arm") {
         arm_float_abi = "hard"
       }
     }
-
-    if (arm_fpu == "") {
-      if (arm_use_neon) {
-        arm_fpu = "neon"
-      } else {
-        arm_fpu = "vfpv3-d16"
-      }
-    }
   } else if (arm_version == 8) {
     if (arm_arch == "") {
       arm_arch = "armv8-a"
     }
-    if (arm_tune == "") {
-      arm_tune = "generic-armv8-a"
-    }
-
     if (arm_float_abi == "") {
       arm_float_abi = "hard"
-    }
-
-    if (arm_fpu == "") {
-      if (arm_use_neon) {
-        arm_fpu = "neon"
-      } else {
-        arm_fpu = "vfpv3-d16"
-      }
     }
   }
 } else if (current_cpu == "arm64" || v8_current_cpu == "arm64" ||
            current_cpu == "arm64e" || v8_current_cpu == "arm64e") {
   # arm64 supports only "hard".
   arm_float_abi = "hard"
-  arm_use_neon = true
   declare_args() {
     # Enables the new Armv8 branch protection features. Valid strings are:
     # - "pac": Enables Pointer Authentication Code (PAC, featured in Armv8.3)

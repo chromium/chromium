@@ -1,0 +1,78 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+component("pending_file_set") {
+  public = [ "pending_file_set.h" ]
+
+  sources = [ "pending_file_set.cc" ]
+
+  public_deps = [ "//base" ]
+
+  defines = [ "IS_PENDING_FILE_SET_IMPL" ]
+}
+
+component("sqlite_vfs") {
+  # Cross-process file locks are not available on Fuchsia.
+  if (!is_fuchsia) {
+    public = [
+      "client.h",
+      "constants.h",
+      "file_type.h",
+      "lock_state.h",
+      "sandboxed_file.h",
+      "sqlite_database_vfs_file_set.h",
+      "sqlite_sandboxed_vfs.h",
+      "vfs_utils.h",
+    ]
+
+    sources = [
+      "constants.h",
+      "lock_state.h",
+      "metrics_util.cc",
+      "metrics_util.h",
+      "sandboxed_file.cc",
+      "sandboxed_file.h",
+      "sqlite_database_vfs_file_set.cc",
+      "sqlite_database_vfs_file_set.h",
+      "sqlite_sandboxed_vfs.cc",
+      "sqlite_sandboxed_vfs.h",
+      "vfs_utils.cc",
+      "vfs_utils.h",
+    ]
+
+    deps = [ "//third_party/sqlite" ]
+
+    public_deps = [
+      ":pending_file_set",
+      "//base",
+      "//sql",
+    ]
+  }
+
+  defines = [ "IS_SQLITE_VFS_IMPL" ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  # Cross-process file locks are not available on Fuchsia.
+  if (!is_fuchsia) {
+    sources = [
+      "sandboxed_file_unittest.cc",
+      "sqlite_database_vfs_file_set_unittest.cc",
+      "sqlite_sandboxed_vfs_unittest.cc",
+    ]
+
+    deps = [
+      ":sqlite_vfs",
+      "//base",
+      "//base/test:test_support",
+      "//components/sqlite_vfs/mojom:unit_tests",
+      "//sql",
+      "//testing/gmock",
+      "//testing/gtest",
+      "//third_party/sqlite",
+    ]
+  }
+}

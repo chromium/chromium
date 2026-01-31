@@ -12,6 +12,7 @@
 #include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/grit/signin_resources.h"
+#include "components/signin/public/base/signin_switches.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_data_source.h"
@@ -112,6 +113,10 @@ DiceWebSigninInterceptUI::DiceWebSigninInterceptUI(content::WebUI* web_ui)
 
   source->UseStringsJs();
   source->EnableReplaceI18nInJS();
+
+  source->AddBoolean("usePrimaryAndTonalButtonsForPromos",
+                     base::FeatureList::IsEnabled(
+                         switches::kUsePrimaryAndTonalButtonsForPromos));
 
   source->OverrideContentSecurityPolicy(
       network::mojom::CSPDirectiveName::ScriptSrc,

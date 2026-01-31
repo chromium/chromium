@@ -153,14 +153,14 @@ void Provider::VisitRegisteredExtension() {
     // If pre-installed apps aren't enabled for the profile, we short-circuit
     // the flow to load them from the file (which happens as a result of
     // VisitRegisteredExtension()), and immediately set empty prefs.
-    ExternalProviderImpl::SetPrefs(base::Value::Dict());
+    ExternalProviderImpl::SetPrefs(base::DictValue());
     return;
   }
 
   extensions::ExternalProviderImpl::VisitRegisteredExtension();
 }
 
-void Provider::SetPrefs(base::Value::Dict prefs) {
+void Provider::SetPrefs(base::DictValue prefs) {
   DCHECK(preinstalled_apps_enabled_);
 
   // First, check if this is for a migration from around 2013. Likely not.

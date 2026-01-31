@@ -34,19 +34,18 @@ void BackgroundSyncNetworkObserverAndroid::Observer::Init() {
   // scoped to the lifetime of this object.
   JNIEnv* env = base::android::AttachCurrentThread();
   j_observer_ = Java_BackgroundSyncNetworkObserver_createObserver(
-      env, reinterpret_cast<jlong>(this));
+      env, reinterpret_cast<int64_t>(this));
 }
 
 BackgroundSyncNetworkObserverAndroid::Observer::~Observer() {
   JNIEnv* env = base::android::AttachCurrentThread();
   Java_BackgroundSyncNetworkObserver_removeObserver(
-      env, j_observer_, reinterpret_cast<jlong>(this));
+      env, j_observer_, reinterpret_cast<int64_t>(this));
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 }
 
 void BackgroundSyncNetworkObserverAndroid::Observer::
-    NotifyConnectionTypeChanged(JNIEnv* env,
-                                jint new_connection_type) {
+    NotifyConnectionTypeChanged(JNIEnv* env, int32_t new_connection_type) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   callback_.Run(
       static_cast<network::mojom::ConnectionType>(new_connection_type));

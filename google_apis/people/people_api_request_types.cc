@@ -11,8 +11,8 @@
 
 namespace google_apis::people {
 
-base::Value::Dict EmailAddress::ToDict() && {
-  base::Value::Dict dict;
+base::DictValue EmailAddress::ToDict() && {
+  base::DictValue dict;
 
   if (!value.empty()) {
     dict.Set("value", std::move(value));
@@ -24,8 +24,8 @@ base::Value::Dict EmailAddress::ToDict() && {
   return dict;
 }
 
-base::Value::Dict Name::ToDict() && {
-  base::Value::Dict dict;
+base::DictValue Name::ToDict() && {
+  base::DictValue dict;
 
   if (!family_name.empty()) {
     dict.Set("familyName", std::move(family_name));
@@ -37,8 +37,8 @@ base::Value::Dict Name::ToDict() && {
   return dict;
 }
 
-base::Value::Dict PhoneNumber::ToDict() && {
-  base::Value::Dict dict;
+base::DictValue PhoneNumber::ToDict() && {
+  base::DictValue dict;
 
   if (!value.empty()) {
     dict.Set("value", std::move(value));
@@ -57,23 +57,23 @@ Contact::Contact(Contact&&) = default;
 Contact& Contact::operator=(Contact&&) = default;
 Contact::~Contact() = default;
 
-base::Value::Dict Contact::ToDict() && {
-  base::Value::Dict dict;
+base::DictValue Contact::ToDict() && {
+  base::DictValue dict;
 
   if (!email_addresses.empty()) {
-    base::Value::List emails = base::ToValueList(
+    base::ListValue emails = base::ToValueList(
         email_addresses,
         [](EmailAddress& email) { return std::move(email).ToDict(); });
     dict.Set("emailAddresses", std::move(emails));
   }
-  if (base::Value::Dict name_dict = std::move(name).ToDict();
+  if (base::DictValue name_dict = std::move(name).ToDict();
       !name_dict.empty()) {
-    auto names = base::Value::List::with_capacity(1);
+    auto names = base::ListValue::with_capacity(1);
     names.Append(std::move(name_dict));
     dict.Set("names", std::move(names));
   }
   if (!phone_numbers.empty()) {
-    base::Value::List phones = base::ToValueList(
+    base::ListValue phones = base::ToValueList(
         phone_numbers,
         [](PhoneNumber& phone) { return std::move(phone).ToDict(); });
     dict.Set("phoneNumbers", std::move(phones));

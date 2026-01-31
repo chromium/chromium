@@ -270,7 +270,7 @@ class PrintRenderFrameHelper
       mojo::PendingAssociatedRemote<mojom::PrintRenderer> print_renderer,
 #endif
       bool has_selection) override;
-  void PrintPreview(base::Value::Dict settings) override;
+  void PrintPreview(base::DictValue settings) override;
   void OnPrintPreviewDialogClosed() override;
 #endif  // BUILDFLAG(ENABLE_PRINT_PREVIEW)
   void PrintFrameContent(mojom::PrintFrameContentParamsPtr params,
@@ -280,7 +280,7 @@ class PrintRenderFrameHelper
   void PrintNodeUnderContextMenu() override;
 
   // Update |ignore_css_margins_| based on settings.
-  void UpdateFrameMarginsCssInfo(const base::Value::Dict& settings);
+  void UpdateFrameMarginsCssInfo(const base::DictValue& settings);
 
 #if BUILDFLAG(ENABLE_PRINT_PREVIEW)
   // Prepare frame for creating preview document.
@@ -350,7 +350,7 @@ class PrintRenderFrameHelper
   // name, number of copies, page range, etc.
   bool UpdatePrintSettings(blink::WebLocalFrame* frame,
                            const blink::WebNode& node,
-                           base::Value::Dict passed_job_settings);
+                           base::DictValue passed_job_settings);
 #endif  // BUILDFLAG(ENABLE_PRINT_PREVIEW)
 
   // Returns final print settings from the user.
@@ -455,7 +455,7 @@ class PrintRenderFrameHelper
 
 #if BUILDFLAG(IS_CHROMEOS)
   // Settings used by a PrintRenderer to create a preview document.
-  base::Value::Dict print_renderer_job_settings_;
+  base::DictValue print_renderer_job_settings_;
 
   // Used to render print documents from an external source (ARC, Crostini,
   // etc.).

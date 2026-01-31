@@ -60,7 +60,7 @@ LookalikeUrlBlockingPage::GetTypeForTesting() {
 }
 
 void LookalikeUrlBlockingPage::PopulateInterstitialStrings(
-    base::Value::Dict& load_time_data) {
+    base::DictValue& load_time_data) {
   lookalikes::PopulateLookalikeUrlBlockingPageStrings(load_time_data, safe_url_,
                                                       request_url());
 }

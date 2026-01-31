@@ -66,20 +66,16 @@ class InstanceIDAndroid : public InstanceID {
 
   // Methods called from Java via JNI:
   void DidGetID(JNIEnv* env,
-                jint request_id,
+                int32_t request_id,
                 const base::android::JavaRef<jstring>& jid);
   void DidGetCreationTime(JNIEnv* env,
-                          jint request_id,
-                          jlong creation_time_unix_ms);
+                          int32_t request_id,
+                          int64_t creation_time_unix_ms);
   void DidGetToken(JNIEnv* env,
-                   jint request_id,
+                   int32_t request_id,
                    const base::android::JavaRef<jstring>& jtoken);
-  void DidDeleteToken(JNIEnv* env,
-                      jint request_id,
-                      jboolean success);
-  void DidDeleteID(JNIEnv* env,
-                   jint request_id,
-                   jboolean success);
+  void DidDeleteToken(JNIEnv* env, int32_t request_id, bool success);
+  void DidDeleteID(JNIEnv* env, int32_t request_id, bool success);
 
  private:
   base::android::ScopedJavaGlobalRef<jobject> java_ref_;

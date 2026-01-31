@@ -12,6 +12,14 @@
                 ],
                 "path": "components_perftests"
             }
+        },
+        "crossbench": {
+            "loadline2-phone": {
+                "display_name": "loadline2_phone.crossbench",
+                "arguments": [
+                    "--debug"
+                ]
+            }
         }
     },
     "1": {
@@ -49,23 +57,17 @@
                     "--fileserver",
                     "--debug"
                 ]
-            },
-            "loadline2-phone": {
-                "display_name": "loadline2_phone.crossbench",
-                "arguments": [
-                    "--debug"
-                ]
             }
         },
         "benchmarks": {}
     },
     "extra_infos": {
-        "num_stories": 6,
-        "predicted_min_shard_time": 70.0,
-        "predicted_min_shard_index": 0,
+        "num_stories": 7,
+        "predicted_min_shard_time": 480,
+        "predicted_min_shard_index": 2,
         "predicted_max_shard_time": 7000,
         "predicted_max_shard_index": 1,
-        "shard #0": 70.0,
+        "shard #0": 1070.0,
         "shard #1": 7000,
         "shard #2": 480
     }

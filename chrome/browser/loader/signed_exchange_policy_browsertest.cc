@@ -75,7 +75,7 @@ IN_PROC_BROWSER_TEST_F(SignedExchangePolicyBrowserTest, BlockList) {
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
   EXPECT_EQ(expected_title, title_watcher.WaitAndGetTitle());
 
-  base::Value::List blocklist;
+  base::ListValue blocklist;
   blocklist.Append("test.example.org");
   policy::PolicyMap policies;
   policies.Set(policy::key::kURLBlocklist, policy::POLICY_LEVEL_MANDATORY,

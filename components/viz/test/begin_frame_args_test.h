@@ -36,16 +36,19 @@ BeginFrameArgs CreateBeginFrameArgsForTesting(
     uint64_t sequence_number,
     int64_t frame_time,
     int64_t deadline,
-    int64_t interval);
+    int64_t interval,
+    BeginFrameArgs::BeginFrameArgsType type = BeginFrameArgs::NORMAL,
+    int64_t unthrottled_interval = -1);
 
 BeginFrameArgs CreateBeginFrameArgsForTesting(
     BeginFrameArgs::CreationLocation location,
     uint64_t source_id,
     uint64_t sequence_number,
-    int64_t frame_time,
-    int64_t deadline,
-    int64_t interval,
-    BeginFrameArgs::BeginFrameArgsType type);
+    base::TimeTicks frame_time,
+    base::TimeTicks deadline,
+    base::TimeDelta interval,
+    BeginFrameArgs::BeginFrameArgsType type = BeginFrameArgs::NORMAL,
+    base::TimeDelta unthrottled_interval = base::TimeDelta());
 
 // Creates a BeginFrameArgs using the fake Now value stored on the
 // OrderSimpleTaskRunner.

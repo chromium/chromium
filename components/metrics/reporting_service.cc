@@ -216,10 +216,7 @@ void ReportingService::SendNextLog() {
 
 void ReportingService::SendStagedLog() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(log_store()->has_staged_log());
-  if (!log_store()->has_staged_log()) {
-    return;
-  }
+  CHECK(log_store()->has_staged_log());
 
   CHECK(!log_upload_in_progress_);
   log_upload_in_progress_ = true;

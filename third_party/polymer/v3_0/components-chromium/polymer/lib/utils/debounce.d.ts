@@ -93,4 +93,4 @@ export {flushDebouncers};
  */
 declare function flushDebouncers(): boolean;
 
-import {AsyncInterface} from '../../interfaces';
+import {AsyncInterface} from '../../interfaces.js';

@@ -20,8 +20,8 @@
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "cc/paint/paint_flags.h"
-#include "chromeos/crosapi/mojom/clipboard_history.mojom.h"
 #include "chromeos/ui/base/file_icon_util.h"
+#include "chromeos/ui/clipboard_history/clipboard_history_types.h"
 #include "ui/base/clipboard/clipboard_data.h"
 #include "ui/base/clipboard/custom_data_helper.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -248,7 +248,7 @@ bool IsEnabledInCurrentMode() {
 
 ui::ImageModel GetIconForFileClipboardItem(const ClipboardHistoryItem& item) {
   DCHECK_EQ(item.display_format(),
-            crosapi::mojom::ClipboardHistoryDisplayFormat::kFile);
+            chromeos::clipboard_history::DisplayFormat::kFile);
   const int copied_files_count = GetCountOfCopiedFiles(item.data());
   if (copied_files_count == 0)
     return ui::ImageModel();
@@ -274,9 +274,9 @@ ui::ImageModel GetHtmlPreviewPlaceholder() {
   return *model;
 }
 
-crosapi::mojom::ClipboardHistoryItemDescriptor ItemToDescriptor(
+chromeos::clipboard_history::ItemDescriptor ItemToDescriptor(
     const ClipboardHistoryItem& item) {
-  return crosapi::mojom::ClipboardHistoryItemDescriptor(
+  return chromeos::clipboard_history::ItemDescriptor(
       item.id(), item.display_format(), item.display_text(), item.file_count());
 }
 

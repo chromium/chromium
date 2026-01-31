@@ -149,7 +149,21 @@ class SecurePaymentConfirmationModel {
     cancel_button_visible_ = cancel_button_visible;
   }
 
-  // Opt Out text visibility and label.
+  // Footer text visibility and labels.
+  bool footer_visible() const { return footer_visible_; }
+  void set_footer_visible(const bool footer_visible) {
+    footer_visible_ = footer_visible;
+  }
+  const std::u16string& footer_label() const { return footer_label_; }
+  void set_footer_label(const std::u16string& footer_label) {
+    footer_label_ = footer_label;
+  }
+  const std::u16string& footer_link_label() const { return footer_link_label_; }
+  void set_footer_link_label(const std::u16string& footer_link_label) {
+    footer_link_label_ = footer_link_label;
+  }
+
+  // Opt Out text visibility and labels.
   bool opt_out_visible() const { return opt_out_visible_; }
   void set_opt_out_visible(const bool opt_out_visible) {
     opt_out_visible_ = opt_out_visible;
@@ -157,6 +171,13 @@ class SecurePaymentConfirmationModel {
   const std::u16string& opt_out_label() const { return opt_out_label_; }
   void set_opt_out_label(const std::u16string& opt_out_label) {
     opt_out_label_ = opt_out_label;
+  }
+  const std::u16string& opt_out_authenticator_label() const {
+    return opt_out_authenticator_label_;
+  }
+  void set_opt_out_authenticator_label(
+      const std::u16string& opt_out_authenticator_label) {
+    opt_out_authenticator_label_ = opt_out_authenticator_label;
   }
   const std::u16string& opt_out_link_label() const {
     return opt_out_link_label_;
@@ -202,8 +223,13 @@ class SecurePaymentConfirmationModel {
   bool cancel_button_enabled_ = true;
   bool cancel_button_visible_ = true;
 
+  bool footer_visible_ = false;
+  std::u16string footer_label_;
+  std::u16string footer_link_label_;
+
   bool opt_out_visible_ = false;
   std::u16string opt_out_label_;
+  std::u16string opt_out_authenticator_label_;
   std::u16string opt_out_link_label_;
 
   std::u16string relying_party_id_;

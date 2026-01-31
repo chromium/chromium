@@ -20,6 +20,7 @@
 #include "base/test/task_environment.h"
 #include "build/build_config.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "net/base/hash_value.h"
 #include "net/base/net_errors.h"
 #include "net/disk_cache/disk_cache.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
@@ -452,7 +453,8 @@ class ServiceWorkerStorageTest : public testing::Test {
     base::RunLoop loop;
 
     mojo::Remote<mojom::ServiceWorkerResourceReader> reader;
-    storage()->CreateResourceReader(id, reader.BindNewPipeAndPassReceiver());
+    storage()->CreateResourceReader(id, /*sha256_checksum=*/std::nullopt,
+                                    reader.BindNewPipeAndPassReceiver());
     reader.set_disconnect_handler(base::BindLambdaForTesting([&]() {
       out.result = net::ERR_CACHE_MISS;
       loop.Quit();

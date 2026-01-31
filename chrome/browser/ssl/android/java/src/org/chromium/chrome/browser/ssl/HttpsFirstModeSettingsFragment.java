@@ -13,8 +13,9 @@ import androidx.annotation.VisibleForTesting;
 import androidx.preference.Preference;
 
 import org.chromium.base.ApiCompatibilityUtils;
-import org.chromium.base.supplier.ObservableSupplier;
-import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.supplier.MonotonicObservableSupplier;
+import org.chromium.base.supplier.ObservableSuppliers;
+import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
 import org.chromium.build.annotations.Initializer;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -26,6 +27,7 @@ import org.chromium.chrome.browser.settings.search.ChromeBaseSearchIndexProvider
 import org.chromium.components.browser_ui.settings.ChromeBasePreference;
 import org.chromium.components.browser_ui.settings.ChromeSwitchPreference;
 import org.chromium.components.browser_ui.settings.SettingsUtils;
+import org.chromium.components.browser_ui.settings.search.SettingsIndexData;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.permissions.OsAdditionalSecurityPermissionUtil;
 
@@ -48,10 +50,11 @@ public class HttpsFirstModeSettingsFragment extends ChromeBaseSettingsFragment {
     private ChromeSwitchPreference mHttpsFirstModeSwitch;
     private HttpsFirstModeVariantPreference mHttpsFirstModeVariantPreference;
     private HttpsFirstModeBridge mHttpsFirstModeBridge;
-    private final ObservableSupplierImpl<String> mPageTitle = new ObservableSupplierImpl<>();
+    private final SettableMonotonicObservableSupplier<String> mPageTitle =
+            ObservableSuppliers.createMonotonic();
 
     @Override
-    public ObservableSupplier<String> getPageTitle() {
+    public MonotonicObservableSupplier<String> getPageTitle() {
         return mPageTitle;
     }
 
@@ -83,7 +86,11 @@ public class HttpsFirstModeSettingsFragment extends ChromeBaseSettingsFragment {
      * @return Whether the HTTPS-First Mode setting is enforced and not modifiable by the user.
      */
     public boolean isSettingEnforced() {
-        return mHttpsFirstModeBridge.isManaged()
+        return isSettingEnforced(mHttpsFirstModeBridge);
+    }
+
+    private static boolean isSettingEnforced(HttpsFirstModeBridge bridge) {
+        return bridge.isManaged()
                 || AdvancedProtectionStatusManagerAndroidBridge.isUnderAdvancedProtection();
     }
 
@@ -145,13 +152,19 @@ public class HttpsFirstModeSettingsFragment extends ChromeBaseSettingsFragment {
         mHttpsFirstModeVariantPreference.setEnabled(enabled && !isSettingEnforced());
         mHttpsFirstModeVariantPreference.setCheckedState(setting);
 
-        // If the setting is force-disabled by policy, don't show the radio
-        // group.
-        if (isSettingEnforced() && !enabled) {
+        // If the setting is force-disabled by policy, don't show the radio group.
+        if (!shouldShowModeVariantPref(getProfile())) {
             mHttpsFirstModeVariantPreference.setVisible(false);
         }
 
         maybeAddEnforcedByAdvancedProtectionWarning();
+    }
+
+    private static boolean shouldShowModeVariantPref(Profile profile) {
+        var httpsFirstModeBridge = new HttpsFirstModeBridge(profile);
+        @HttpsFirstModeSetting int setting = httpsFirstModeBridge.getCurrentSetting();
+        boolean enabled = setting != HttpsFirstModeSetting.DISABLED;
+        return enabled || !isSettingEnforced(httpsFirstModeBridge);
     }
 
     private void maybeAddEnforcedByAdvancedProtectionWarning() {
@@ -159,16 +172,14 @@ public class HttpsFirstModeSettingsFragment extends ChromeBaseSettingsFragment {
         if (existingWarning != null) {
             getPreferenceScreen().removePreference(existingWarning);
         }
-
-        var additionalSecurityProvider = OsAdditionalSecurityPermissionUtil.getProviderInstance();
-        if (!AdvancedProtectionStatusManagerAndroidBridge.isUnderAdvancedProtection()
-                || additionalSecurityProvider == null) {
-            return;
-        }
+        if (!shouldShowEnforedByAdvancedProtectionPref()) return;
 
         Context context = getPreferenceManager().getContext();
         ChromeBasePreference preference = new ChromeBasePreference(context, null);
         preference.setKey(PREF_ENFORCED_BY_ADVANCED_PROTECTION);
+        var additionalSecurityProvider = OsAdditionalSecurityPermissionUtil.getProviderInstance();
+        assert additionalSecurityProvider != null;
+
         int titleId =
                 additionalSecurityProvider
                         .getHttpsFirstModeEnforcedByAndroidAdvancedProtectionWarningResourceId();
@@ -186,6 +197,12 @@ public class HttpsFirstModeSettingsFragment extends ChromeBaseSettingsFragment {
         getPreferenceScreen().addPreference(preference);
     }
 
+    private static boolean shouldShowEnforedByAdvancedProtectionPref() {
+        var additionalSecurityProvider = OsAdditionalSecurityPermissionUtil.getProviderInstance();
+        return AdvancedProtectionStatusManagerAndroidBridge.isUnderAdvancedProtection()
+                && additionalSecurityProvider != null;
+    }
+
     @Override
     public void onStart() {
         super.onStart();
@@ -197,9 +214,21 @@ public class HttpsFirstModeSettingsFragment extends ChromeBaseSettingsFragment {
         return AnimationType.PROPERTY;
     }
 
-    // TODO(crbug.com/444470792): Determine what pieces of logic are dynamic and need handling.
     public static final ChromeBaseSearchIndexProvider SEARCH_INDEX_DATA_PROVIDER =
             new ChromeBaseSearchIndexProvider(
                     HttpsFirstModeSettingsFragment.class.getName(),
-                    R.xml.https_first_mode_settings);
+                    R.xml.https_first_mode_settings) {
+
+                @Override
+                public void updateDynamicPreferences(
+                        Context context, SettingsIndexData indexData, Profile profile) {
+                    String frag = HttpsFirstModeSettingsFragment.class.getName();
+                    if (!shouldShowEnforedByAdvancedProtectionPref()) {
+                        indexData.removeEntryForKey(frag, PREF_ENFORCED_BY_ADVANCED_PROTECTION);
+                    }
+                    if (!shouldShowModeVariantPref(profile)) {
+                        indexData.removeEntryForKey(frag, PREF_HTTPS_FIRST_MODE_VARIANT);
+                    }
+                }
+            };
 }

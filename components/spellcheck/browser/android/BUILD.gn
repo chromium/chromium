@@ -17,5 +17,8 @@ android_library("java") {
   ]
 
   srcjar_deps = [ ":jni_headers" ]
-  sources = [ "java/src/org/chromium/components/spellcheck/SpellCheckerSessionBridge.java" ]
+  sources = [
+    "java/src/org/chromium/components/spellcheck/SpellCheckerSessionBridge.java",
+    "java/src/org/chromium/components/spellcheck/SpellingMarker.java",
+  ]
 }

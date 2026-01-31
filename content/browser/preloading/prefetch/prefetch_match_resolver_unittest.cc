@@ -4,12 +4,31 @@
 
 #include "content/browser/preloading/prefetch/prefetch_match_resolver.h"
 
+#include "base/memory/scoped_refptr.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
 namespace content {
 namespace {
+
+class MockPrefetchRequest {
+ public:
+  MockPrefetchRequest()
+      : preload_pipeline_info_(
+            base::WrapRefCounted(static_cast<PreloadPipelineInfoImpl*>(
+                PreloadPipelineInfo::Create(
+                    /*planned_max_preloading_type=*/PreloadingType::kPrerender)
+                    .get()))) {}
+  ~MockPrefetchRequest() = default;
+
+  const PreloadPipelineInfoImpl& preload_pipeline_info() {
+    return *preload_pipeline_info_;
+  }
+
+ private:
+  scoped_refptr<PreloadPipelineInfoImpl> preload_pipeline_info_;
+};
 
 // Mock `PrefetchContainer` to test `CollectMatchCandidatesGeneric()`.
 class MockContainer {
@@ -69,6 +88,7 @@ class MockContainer {
   void UpdateServingPageMetrics() {}
 
   const PrefetchKey& key() const { return key_; }
+  MockPrefetchRequest request() const { return MockPrefetchRequest(); }
   const std::optional<net::HttpNoVarySearchData>& GetNoVarySearchHint() const {
     return no_vary_search_hint_;
   }
@@ -107,7 +127,9 @@ class CollectMatchCandidatesTestHelper {
     // https://www.open-std.org/jtc1/sc22/wg21/docs/papers/2022/p2718r0.html
     auto [candidates, _] = CollectMatchCandidatesGeneric(
         owned_prefetches_, navigated_key, is_nav_prerender,
-        /*serving_page_metrics_container=*/nullptr);
+        /*serving_page_metrics_container=*/nullptr,
+        /*key_ahead_of_prerender=*/nullptr,
+        /*collect_result_ahead_of_prerender=*/nullptr);
     for (const auto* container : candidates) {
       candidate_keys.push_back(container->key());
     }

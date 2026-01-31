@@ -5,6 +5,7 @@
 package org.chromium.components.browser_ui.widget.selectable_list;
 
 import android.content.Context;
+import android.content.res.Resources;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -17,7 +18,7 @@ import android.widget.TextView.OnEditorActionListener;
 
 import androidx.annotation.StringRes;
 
-import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.build.annotations.Initializer;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -46,17 +47,24 @@ public class InlineSearchBox {
 
     private final SearchDelegate mSearchDelegate;
 
-    private final ObservableSupplierImpl<Boolean> mHasSearchTextSupplier;
+    private final SettableNonNullObservableSupplier<Boolean> mHasSearchTextSupplier;
 
     private final KeyboardVisibilityDelegate mKeyboardVisibilityDelegate;
 
+    private final int mInlineStartPadding;
+
     public InlineSearchBox(
+            Context context,
             SearchDelegate searchDelegate,
-            ObservableSupplierImpl<Boolean> hasSearchTextSupplier,
+            SettableNonNullObservableSupplier<Boolean> hasSearchTextSupplier,
             KeyboardVisibilityDelegate keyboardVisibilityDelegate) {
         mSearchDelegate = searchDelegate;
         mHasSearchTextSupplier = hasSearchTextSupplier;
         mKeyboardVisibilityDelegate = keyboardVisibilityDelegate;
+        mInlineStartPadding =
+                context.getResources()
+                        .getDimensionPixelSize(
+                                R.dimen.selectable_list_inline_search_bar_start_padding);
     }
 
     /**
@@ -88,7 +96,17 @@ public class InlineSearchBox {
         initializeSearchText(hintStringResId, onEditorActionListener);
         initializeClearTextButton();
 
-        mInlineSearchBoxContainer.setBackgroundResource(R.drawable.search_toolbar_modern_bg);
+        Resources resources = context.getResources();
+        mInlineSearchBoxContainer.setBackgroundResource(R.drawable.search_row_modern_bg);
+        int paddingStart = Math.round(16 * resources.getDisplayMetrics().density);
+        mInlineSearchBoxContainer.setPaddingRelative(paddingStart, 0, 0, 0);
+
+        int height = Math.round(40 * resources.getDisplayMetrics().density);
+        int marginBottom = Math.round(2 * resources.getDisplayMetrics().density);
+        ViewGroup.MarginLayoutParams params =
+                new ViewGroup.MarginLayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, height);
+        params.bottomMargin = marginBottom;
+        mInlineSearchBoxContainer.setLayoutParams(params);
     }
 
     /**
@@ -141,7 +159,7 @@ public class InlineSearchBox {
      * calculated(in onDisplayStyleChanged()), so dynamical adjustment is needed for the inline
      * search box too.
      */
-    public void setInlinePadding(int left, int top, int right, int bottom) {
+    private void setInlinePadding(int left, int top, int right, int bottom) {
         if (mInlineSearchBoxContainer == null) return;
         mInlineSearchBoxContainer.post(
                 () -> {
@@ -157,6 +175,16 @@ public class InlineSearchBox {
                     mInlineSearchBoxContainer.setPaddingRelative(
                             left - (location[0] - appLocation[0]), top, right, bottom);
                 });
+    }
+
+    /**
+     * Updates the padding of the inline search box based on the current display style.
+     *
+     * @param paddingStart The base padding derived from the display style.
+     * @param paddingTop The top padding to apply.
+     */
+    public void updatePadding(int paddingStart, int paddingTop) {
+        setInlinePadding(paddingStart + mInlineStartPadding, paddingTop, 0, 0);
     }
 
     /**

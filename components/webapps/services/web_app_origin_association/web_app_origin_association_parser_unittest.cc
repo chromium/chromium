@@ -73,7 +73,35 @@ TEST_F(WebAppOriginAssociationParserTest, ValidEmptyScope) {
 
   EXPECT_TRUE(result.has_value());
   EXPECT_THAT(result->apps,
-              ElementsAre(FieldsAre(GURL("https://example.com/app"), _)));
+              ElementsAre(FieldsAre(
+                  /*web_app_identity=*/GURL("https://example.com/app"),
+                  /*scope=*/_,
+                  /*allow_migration=*/false)));
+}
+
+TEST_F(WebAppOriginAssociationParserTest, AllowMigration) {
+  auto result = ParseAssociationData(
+      R"({"https://example.com/app": {"allow_migration": true} })");
+
+  ASSERT_TRUE(result.has_value());
+  EXPECT_THAT(result->apps,
+              ElementsAre(FieldsAre(
+                  /*web_app_identity=*/GURL("https://example.com/app"),
+                  /*scope=*/_,
+                  /*allow_migration=*/true)));
+}
+
+TEST_F(WebAppOriginAssociationParserTest, InvalidScopeUrlWithAllowMigration) {
+  auto result = ParseAssociationData(
+      R"({"https://example.com/app": {"scope": "https://other.com", "allow_migration": true} })");
+
+  ASSERT_TRUE(result.has_value());
+  EXPECT_THAT(result->apps,
+              ElementsAre(FieldsAre(
+                  /*web_app_identity=*/GURL("https://example.com/app"),
+                  /*scope=*/GURL(),
+                  /*allow_migration=*/true)));
+  EXPECT_THAT(result->warnings, ElementsAre(kInvalidScopeUrl));
 }
 
 TEST_F(WebAppOriginAssociationParserTest, MultipleErrorsReporting) {
@@ -86,7 +114,10 @@ TEST_F(WebAppOriginAssociationParserTest, MultipleErrorsReporting) {
 
   auto result = ParseAssociationData(json);
   ASSERT_TRUE(result.has_value());
-  EXPECT_THAT(result->apps, IsEmpty());
+  EXPECT_THAT(result->apps, ElementsAre(FieldsAre(
+                                /*web_app_identity=*/GURL("https://foo.com"),
+                                /*scope=*/GURL(),
+                                /*allow_migration=*/false)));
   EXPECT_THAT(result->warnings, ElementsAre(kInvalidScopeUrl, kInvalidValueType,
                                             kInvalidManifestId));
 }
@@ -106,32 +137,24 @@ TEST_F(WebAppOriginAssociationParserTest, MultipleValidApps) {
 
   EXPECT_THAT(result->warnings, IsEmpty());
 
-  EXPECT_THAT(result->apps,
-              ElementsAre(
-                  AssociatedWebApp{
-                      .web_app_identity = GURL("https://foo.app/index"),
-                      .scope = GetAssociateOriginUrl(),
-                  },
-                  AssociatedWebApp{
-
-                      .web_app_identity = GURL("https://foo.com"),
-                      .scope = GURL(GetAssociateOriginString() + "/qwerty"),
-                  },
-
-                  AssociatedWebApp{
-                      .web_app_identity = GURL("https://foo.com/index"),
-                      .scope = GURL(GetAssociateOriginString() + "/app"),
-                  },
-
-                  AssociatedWebApp{
-                      .web_app_identity = GURL("https://foo.dev/index"),
-                      .scope = GetAssociateOriginUrl(),
-                  },
-
-                  AssociatedWebApp{
-                      .web_app_identity = GURL("https://zed.com/index"),
-                      .scope = GetAssociateOriginUrl(),
-                  }));
+  EXPECT_THAT(
+      result->apps,
+      ElementsAre(
+          FieldsAre(/*web_app_identity=*/GURL("https://foo.app/index"),
+                    /*scope=*/GetAssociateOriginUrl(),
+                    /*allow_migration=*/false),
+          FieldsAre(/*web_app_identity=*/GURL("https://foo.com"),
+                    /*scope=*/GURL(GetAssociateOriginString() + "/qwerty"),
+                    /*allow_migration=*/false),
+          FieldsAre(/*web_app_identity=*/GURL("https://foo.com/index"),
+                    /*scope=*/GURL(GetAssociateOriginString() + "/app"),
+                    /*allow_migration=*/false),
+          FieldsAre(/*web_app_identity=*/GURL("https://foo.dev/index"),
+                    /*scope=*/GetAssociateOriginUrl(),
+                    /*allow_migration=*/false),
+          FieldsAre(/*web_app_identity=*/GURL("https://zed.com/index"),
+                    /*scope=*/GetAssociateOriginUrl(),
+                    /*allow_migration=*/false)));
 }
 
 TEST_F(WebAppOriginAssociationParserTest, IgnoreInvalidAndValidateTwosApps) {
@@ -147,18 +170,14 @@ TEST_F(WebAppOriginAssociationParserTest, IgnoreInvalidAndValidateTwosApps) {
 
   EXPECT_THAT(result->warnings, ElementsAre(kInvalidManifestId));
 
-  EXPECT_THAT(result->apps,
-              ElementsAre(
-                  AssociatedWebApp{
-
-                      .web_app_identity = GURL("https://foo.com/index"),
-                      .scope = GetAssociateOriginUrl(),
-                  },
-                  AssociatedWebApp{
-
-                      .web_app_identity = GURL("https://foo.dev"),
-                      .scope = GetAssociateOriginUrl(),
-                  }));
+  EXPECT_THAT(
+      result->apps,
+      ElementsAre(FieldsAre(/*web_app_identity=*/GURL("https://foo.com/index"),
+                            /*scope=*/GetAssociateOriginUrl(),
+                            /*allow_migration=*/false),
+                  FieldsAre(/*web_app_identity=*/GURL("https://foo.dev"),
+                            /*scope=*/GetAssociateOriginUrl(),
+                            /*allow_migration=*/false)));
 }
 
 }  // namespace webapps

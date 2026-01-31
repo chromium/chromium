@@ -79,32 +79,6 @@ export class SettingsCrostiniSubpageElement extends
         },
       },
 
-      showCrostiniExtraContainers_: {
-        type: Boolean,
-        value() {
-          return loadTimeData.getBoolean('showCrostiniExtraContainers');
-        },
-      },
-
-      /**
-       * Whether the uninstall options should be displayed.
-       */
-      hideCrostiniUninstall_: {
-        type: Boolean,
-        computed: 'or_(installerShowing_, upgraderDialogShowing_)',
-      },
-
-      /**
-       * Whether the button to launch the Crostini container upgrade flow should
-       * be shown.
-       */
-      showCrostiniContainerUpgrade_: {
-        type: Boolean,
-        value() {
-          return loadTimeData.getBoolean('showCrostiniContainerUpgrade');
-        },
-      },
-
       showDiskResizeConfirmationDialog_: {
         type: Boolean,
         value: false,
@@ -112,19 +86,6 @@ export class SettingsCrostiniSubpageElement extends
 
       installerShowing_: {
         type: Boolean,
-      },
-
-      upgraderDialogShowing_: {
-        type: Boolean,
-      },
-
-      /**
-       * Whether the button to launch the Crostini container upgrade flow should
-       * be disabled.
-       */
-      disableUpgradeButton_: {
-        type: Boolean,
-        computed: 'or_(installerShowing_, upgraderDialogShowing_)',
       },
 
       /**
@@ -173,27 +134,21 @@ export class SettingsCrostiniSubpageElement extends
     Setting.kUninstallCrostini,
     Setting.kCrostiniDiskResize,
     Setting.kCrostiniMicAccess,
-    Setting.kCrostiniContainerUpgrade,
   ]);
 
   private browserProxy_: CrostiniBrowserProxy;
   private canDiskResize_: boolean;
-  private disableUpgradeButton_: boolean;
   private diskResizeButtonAriaLabel_: string;
   private diskResizeButtonLabel_: string;
   private diskResizeConfirmationState_: ConfirmationState;
   private diskSizeLabel_: string;
-  private hideCrostiniUninstall_: boolean;
   private installerShowing_: boolean;
   private isDiskUserChosenSize_: boolean;
-  private showCrostiniContainerUpgrade_: boolean;
   private readonly showCrostiniExportImport_: boolean;
-  private readonly showCrostiniExtraContainers_: boolean;
   private showCrostiniMicPermissionDialog_: boolean;
   private readonly showCrostiniPortForwarding_: boolean;
   private showDiskResizeConfirmationDialog_: boolean;
   private showDiskResizeDialog_: boolean;
-  private upgraderDialogShowing_: boolean;
 
   constructor() {
     super();
@@ -215,18 +170,7 @@ export class SettingsCrostiniSubpageElement extends
         'crostini-installer-status-changed', (status: boolean) => {
           this.installerShowing_ = status;
         });
-    this.addWebUiListener(
-        'crostini-upgrader-status-changed', (status: boolean) => {
-          this.upgraderDialogShowing_ = status;
-        });
-    this.addWebUiListener(
-        'crostini-container-upgrade-available-changed',
-        (canUpgrade: boolean) => {
-          this.showCrostiniContainerUpgrade_ = canUpgrade;
-        });
     this.browserProxy_.requestCrostiniInstallerStatus();
-    this.browserProxy_.requestCrostiniUpgraderDialogStatus();
-    this.browserProxy_.requestCrostiniContainerUpgradeAvailable();
     this.loadDiskInfo_();
   }
 
@@ -240,8 +184,6 @@ export class SettingsCrostiniSubpageElement extends
     this.addFocusConfig(r.CROSTINI_EXPORT_IMPORT, '#crostiniExportImportRow');
     this.addFocusConfig(
         r.CROSTINI_PORT_FORWARDING, '#crostiniPortForwardingRow');
-    this.addFocusConfig(
-        r.CROSTINI_EXTRA_CONTAINERS, '#crostiniExtraContainersRow');
   }
 
   override currentRouteChanged(newRoute: Route, oldRoute?: Route): void {
@@ -349,14 +291,6 @@ export class SettingsCrostiniSubpageElement extends
     recordSettingChange(Setting.kUninstallCrostini);
   }
 
-  /**
-   * Shows the upgrade flow dialog.
-   */
-  private onContainerUpgradeClick_(): void {
-    this.browserProxy_.requestCrostiniContainerUpgradeView();
-    recordSettingChange(Setting.kCrostiniContainerUpgrade);
-  }
-
   private onSharedPathsClick_(): void {
     Router.getInstance().navigateTo(routes.CROSTINI_SHARED_PATHS);
   }
@@ -367,10 +301,6 @@ export class SettingsCrostiniSubpageElement extends
 
   private onPortForwardingClick_(): void {
     Router.getInstance().navigateTo(routes.CROSTINI_PORT_FORWARDING);
-  }
-
-  private onExtraContainersClick_(): void {
-    Router.getInstance().navigateTo(routes.CROSTINI_EXTRA_CONTAINERS);
   }
 
   private getMicToggle_(): SettingsToggleButtonElement {

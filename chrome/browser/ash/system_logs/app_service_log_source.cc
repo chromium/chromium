@@ -57,7 +57,7 @@ void AppServiceLogSource::Fetch(SysLogsSourceCallback callback) {
   proxy->AppRegistryCache().ForEachApp([&log_data, &running, &seen, profile](
                                            const apps::AppUpdate& update) {
     std::string status =
-        base::Contains(running, update.AppId()) ? "running" : "installed";
+        running.contains(update.AppId()) ? "running" : "installed";
     auto app_type = apps::GetAppTypeHistogramName(
         apps::GetAppTypeName(profile, update.AppType(), update.AppId(),
                              apps::LaunchContainer::kLaunchContainerNone));
@@ -65,7 +65,7 @@ void AppServiceLogSource::Fetch(SysLogsSourceCallback callback) {
         apps::AppPlatformMetrics::GetURLForApp(profile, update.AppId()).spec();
     // Different apps can coalesce to the same ID, only report the first
     // instance.
-    if (id.empty() || base::Contains(seen, id)) {
+    if (id.empty() || seen.contains(id)) {
       return;
     }
     log_data << id << ", " << app_type << ", " << status << std::endl;

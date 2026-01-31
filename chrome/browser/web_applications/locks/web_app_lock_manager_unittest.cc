@@ -17,6 +17,7 @@
 #include "chrome/browser/web_applications/test/web_app_test.h"
 #include "chrome/browser/web_applications/web_app_command_manager.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
+#include "chrome/test/base/testing_profile.h"
 
 namespace web_app {
 
@@ -269,4 +270,112 @@ TEST_F(WebAppLockManagerTest, UpgradeInheritsLocks) {
   EXPECT_TRUE(web_contents_lock2->IsGranted());
 }
 
+TEST_F(WebAppLockManagerTest,
+       SharedWebContentsLock_DoesNotGrantDuringShutdown) {
+  std::unique_ptr<SharedWebContentsLock> lock_1 =
+      std::make_unique<SharedWebContentsLock>();
+  std::unique_ptr<SharedWebContentsLock> lock_2 =
+      std::make_unique<SharedWebContentsLock>();
+  base::test::TestFuture<void> lock_1_future;
+  base::test::TestFuture<void> lock_2_future;
+
+  lock_manager().AcquireLock(SharedWebContentsLockDescription(), *lock_1,
+                             lock_1_future.GetCallback(), FROM_HERE);
+
+  ASSERT_TRUE(lock_1_future.Wait());
+  EXPECT_TRUE(lock_1->IsGranted());
+
+  lock_1.reset();
+
+  profile()->NotifyWillBeDestroyed();
+
+  lock_manager().AcquireLock(SharedWebContentsLockDescription(), *lock_2,
+                             lock_2_future.GetCallback(), FROM_HERE);
+
+  FlushTaskRunner();
+  EXPECT_FALSE(lock_2_future.IsReady());
+  EXPECT_FALSE(lock_2->IsGranted());
+}
+
+TEST_F(WebAppLockManagerTest,
+       SharedWebContentsWithAppLock_DoesNotGrantDuringShutdown) {
+  std::unique_ptr<SharedWebContentsWithAppLock> lock_1 =
+      std::make_unique<SharedWebContentsWithAppLock>();
+  std::unique_ptr<SharedWebContentsWithAppLock> lock_2 =
+      std::make_unique<SharedWebContentsWithAppLock>();
+  base::test::TestFuture<void> lock_1_future;
+  base::test::TestFuture<void> lock_2_future;
+
+  lock_manager().AcquireLock(
+      SharedWebContentsWithAppLockDescription({"app_id_1"}), *lock_1,
+      lock_1_future.GetCallback(), FROM_HERE);
+  ASSERT_TRUE(lock_1_future.Wait());
+  EXPECT_TRUE(lock_1->IsGranted());
+
+  lock_1.reset();
+
+  profile()->NotifyWillBeDestroyed();
+
+  lock_manager().AcquireLock(
+      SharedWebContentsWithAppLockDescription({"app_id_2"}), *lock_2,
+      lock_2_future.GetCallback(), FROM_HERE);
+
+  FlushTaskRunner();
+  EXPECT_FALSE(lock_2_future.IsReady());
+  EXPECT_FALSE(lock_2->IsGranted());
+}
+
+TEST_F(WebAppLockManagerTest,
+       SharedWebContentsLock_ShutdownDuringLockAcquisition) {
+  std::unique_ptr<SharedWebContentsLock> lock1 =
+      std::make_unique<SharedWebContentsLock>();
+  std::unique_ptr<SharedWebContentsLock> lock2 =
+      std::make_unique<SharedWebContentsLock>();
+
+  base::test::TestFuture<void> lock1_future;
+  base::test::TestFuture<void> lock2_future;
+
+  lock_manager().AcquireLock(SharedWebContentsLockDescription(), *lock1,
+                             lock1_future.GetCallback(), FROM_HERE);
+  ASSERT_TRUE(lock1_future.Wait());
+  EXPECT_TRUE(lock1->IsGranted());
+
+  lock_manager().AcquireLock(SharedWebContentsLockDescription(), *lock2,
+                             lock2_future.GetCallback(), FROM_HERE);
+
+  profile()->NotifyWillBeDestroyed();
+
+  lock1.reset();
+  FlushTaskRunner();
+
+  EXPECT_FALSE(lock2_future.IsReady());
+  EXPECT_FALSE(lock2->IsGranted());
+}
+
+TEST_F(WebAppLockManagerTest,
+       UpgradeToSharedWebContentsWithAppLock_RespectShutdown) {
+  std::unique_ptr<SharedWebContentsLock> web_contents_lock =
+      std::make_unique<SharedWebContentsLock>();
+  base::test::TestFuture<void> web_contents_future;
+
+  lock_manager().AcquireLock(SharedWebContentsLockDescription(),
+                             *web_contents_lock,
+                             web_contents_future.GetCallback(), FROM_HERE);
+  ASSERT_TRUE(web_contents_future.Wait());
+  EXPECT_TRUE(web_contents_lock->IsGranted());
+
+  profile()->NotifyWillBeDestroyed();
+
+  std::unique_ptr<SharedWebContentsWithAppLock> upgraded_lock =
+      std::make_unique<SharedWebContentsWithAppLock>();
+  base::test::TestFuture<void> upgrade_future;
+
+  lock_manager().UpgradeAndAcquireLock(std::move(web_contents_lock),
+                                       *upgraded_lock, {"app_id"},
+                                       upgrade_future.GetCallback(), FROM_HERE);
+
+  FlushTaskRunner();
+  EXPECT_FALSE(upgrade_future.IsReady());
+  EXPECT_FALSE(upgraded_lock->IsGranted());
+}
 }  // namespace web_app

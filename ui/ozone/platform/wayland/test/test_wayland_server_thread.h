@@ -61,7 +61,7 @@ struct ServerConfig {
       PrimarySelectionProtocol::kNone;
   ShouldUseLinuxDrmSyncobjProtocol use_linux_drm_syncobj =
       ShouldUseLinuxDrmSyncobjProtocol::kNone;
-  bool supports_viewporter_surface_scaling = false;
+  bool supports_viewporter_surface_scaling = true;
 };
 
 class TestWaylandServerThread;

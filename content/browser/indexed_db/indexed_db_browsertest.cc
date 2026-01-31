@@ -776,6 +776,34 @@ IN_PROC_BROWSER_TEST_F(IndexedDBBrowserTestsWithCleanupScheduler,
   }));
 }
 
+// Verifies behavior for when the IndexedDB metadata changes during in-session
+// tombstone sweeping.
+IN_PROC_BROWSER_TEST_F(IndexedDBBrowserTestsWithCleanupScheduler,
+                       UpdateMetadataDuringTombstoneSweep) {
+  base::HistogramTester histograms;
+  const GURL kTestUrl =
+      GetTestUrl("indexeddb", "index_deletion_regression_tests.html");
+  EXPECT_TRUE(NavigateToURL(shell(), kTestUrl));
+
+  int num_entries = content::indexed_db::level_db::LevelDBCleanupScheduler::
+                        kTombstoneThreshold +
+                    1;
+  ASSERT_TRUE(ExecJs(
+      shell(),
+      base::StringPrintf(
+          "deleteIndexBetweenRounds(%d, %d)", num_entries,
+          content::indexed_db::level_db::LevelDBCleanupScheduler::kDeferTime
+              .InMilliseconds())));
+
+  // Cleanup will be completed after a short delay.
+  EXPECT_TRUE(base::test::RunUntil([&]() {
+    return histograms.GetBucketCount(
+               "IndexedDB.LevelDB.InSessionCleanupVerificationEvent",
+               level_db::BackingStore::InSessionCleanupVerificationEvent::
+                   kMatchedSnapshot) > 0;
+  }));
+}
+
 // Regression test for crbug.com/413540372.
 // More details in `index_deletion_regression_tests.js`.
 IN_PROC_BROWSER_TEST_F(IndexedDBBrowserTestsWithCleanupScheduler,
@@ -948,11 +976,6 @@ IN_PROC_BROWSER_TEST_P(IndexedDBBrowserTest, EmptyBlob) {
 }
 
 IN_PROC_BROWSER_TEST_P(IndexedDBBrowserTest, BlobsCountAgainstQuota) {
-  if (using_sqlite_) {
-    // TODO(crbug.com/433318798): Enable this test after reclaiming disk space
-    // on data deletion.
-    GTEST_SKIP();
-  }
   SimpleTest(GetTestUrl("indexeddb", "blobs_use_quota.html"));
 }
 
@@ -975,6 +998,9 @@ IN_PROC_BROWSER_TEST_P(IndexedDBBrowserTestWithGCExposed, BlobHistograms) {
                                0 /*Status::Type::kOk*/, 1);
   histograms.ExpectBucketCount("IndexedDB.BackingStore.ReadBlob.OnDisk",
                                0 /*net::Error::OK*/, 1);
+  histograms.ExpectTotalCount("IndexedDB.BackendDuration.WriteBlobs.OnDisk", 1);
+  histograms.ExpectTotalCount(
+      "IndexedDB.BackendDuration.CommitTransaction.OnDisk", 3);
 }
 
 // Regression test for crbug.com/330868483
@@ -1427,6 +1453,11 @@ IN_PROC_BROWSER_TEST_P(IndexedDBBrowserTest, ShutdownWithRequests) {
 // Regression test for https://crbug.com/429974682
 IN_PROC_BROWSER_TEST_P(IndexedDBBrowserTest, DeleteOpenUse) {
   SimpleTest(GetTestUrl("indexeddb", "delete_open_use.html"));
+}
+
+// Regression test for https://crbug.com/475947902
+IN_PROC_BROWSER_TEST_P(IndexedDBBrowserTest, ConcurrentlyWriteBlobAndRead) {
+  SimpleTest(GetTestUrl("indexeddb", "concurrently_write_blob_and_read.html"));
 }
 
 // Verifies that a "NotFound" DOMException is thrown on reading a large value

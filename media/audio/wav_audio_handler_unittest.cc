@@ -6,6 +6,7 @@
 
 #include <stddef.h>
 
+#include <algorithm>
 #include <array>
 #include <memory>
 #include <string>
@@ -664,6 +665,35 @@ TEST(WavAudioHandlerTest, SkipUnknownChunks) {
   EXPECT_EQ(4u, handler->data().size());
 }
 
+// Test that CopyTo() zeroes leftover frames when partially filling a bus.
+TEST(WavAudioHandlerTest, CopyToPartialBusZerosLeftoverFrames) {
+  std::string data(kTestAudioData, kTestAudioDataSize);
+  auto handler = WavAudioHandler::Create(base::as_byte_span(data));
+  ASSERT_TRUE(handler);
+  ASSERT_EQ(1, handler->total_frames_for_testing());
+
+  // Create a bus with 10 frames, even though we only have 1 frame of data.
+  auto bus = AudioBus::Create(handler->GetNumChannels(), 10);
+
+  // Fill the bus with a non-zero value to ensure that CopyTo() zeroes it.
+  for (auto channel : bus->AllChannels()) {
+    std::ranges::fill(channel, 1.0f);
+  }
+
+  size_t frames_written = 0;
+  EXPECT_TRUE(handler->CopyTo(bus.get(), &frames_written));
+  EXPECT_EQ(1u, frames_written);
+
+  for (auto channel : bus->AllChannels()) {
+    // The first frame should be non-zero (from the data).
+    EXPECT_NE(0.0f, channel[0]);
+
+    // The remaining 9 frames should be zeroed.
+    EXPECT_TRUE(std::ranges::all_of(
+        channel.subspan<1u>(), [](float sample) { return sample == 0.0f; }));
+  }
+}
+
 // Test to specifically trigger the DVLOG path that calls
 // valid_bits_per_sample() and is_extensible() accessor methods.
 TEST(WavAudioHandlerTest, TriggerAccessorMethodsInDVLOG) {
@@ -697,6 +727,115 @@ TEST(WavAudioHandlerTest, TriggerAccessorMethodsInDVLOG) {
 
   auto handler = WavAudioHandler::Create(base::span(kInvalidExtensibleWav));
   EXPECT_FALSE(handler);
+}
+
+// Test that unaligned data is correctly handled.
+TEST(WavAudioHandlerTest, UnalignedDataTest) {
+  // RIFF header (12 bytes)
+  // fmt chunk (8 + 16 = 24 bytes)
+  // junk chunk (8 + 1 = 9 bytes) -> forces next chunk to be at offset
+  // 12 + 24 + 9 = 45.
+  // data chunk (8 + 4 = 12 bytes) -> data starts at offset 45 + 8 = 53.
+  // 53 is not 2-byte aligned.
+
+  // clang-format off
+  auto data = std::to_array<uint8_t>({
+      'R', 'I', 'F', 'F',
+      0x31, 0x00, 0x00, 0x00,  // chunk size (57 - 8 = 49 bytes).
+      'W', 'A', 'V', 'E',
+      // fmt chunk.
+      'f', 'm', 't', ' ',
+      0x10, 0x00, 0x00, 0x00,  // chunk size (16 bytes).
+      0x01, 0x00,              // PCM format.
+      0x02, 0x00,              // 2 channels.
+      0x44, 0xAC, 0x00, 0x00,  // 44100 Hz sample rate.
+      0x10, 0xB1, 0x02, 0x00,  // byte rate (176400).
+      0x04, 0x00,              // block align (4).
+      0x10, 0x00,              // 16 bits per sample.
+      // junk chunk.
+      'j', 'u', 'n', 'k',
+      0x01, 0x00, 0x00, 0x00,  // chunk size (1 byte).
+      0x00,                    // 1 byte of junk.
+      // data chunk.
+      'd', 'a', 't', 'a',
+      0x04, 0x00, 0x00, 0x00,  // data size (4 bytes).
+      0x01, 0x00, 0x02, 0x00   // sample data (1 frame, 2 channels, 16-bit).
+  });
+  // clang-format on
+
+  auto handler = WavAudioHandler::Create(data);
+  ASSERT_TRUE(handler);
+  EXPECT_EQ(2, handler->GetNumChannels());
+  EXPECT_EQ(16, handler->bits_per_sample_for_testing());
+
+  // Create a bus with 2 frames, but we only have 1 frame of data.
+  auto bus = AudioBus::Create(2, 2);
+  // Fill with non-zero values to ensure they are zeroed.
+  for (auto channel : bus->AllChannels()) {
+    std::ranges::fill(channel, 1.0f);
+  }
+
+  size_t frames_written = 0;
+  EXPECT_TRUE(handler->CopyTo(bus.get(), &frames_written));
+  EXPECT_EQ(1u, frames_written);
+
+  EXPECT_EQ(1.0f / 32767.0f, bus->channel(0)[0]);
+  EXPECT_EQ(2.0f / 32767.0f, bus->channel(1)[0]);
+
+  // The second frame should be zeroed.
+  EXPECT_EQ(0.0f, bus->channel(0)[1]);
+  EXPECT_EQ(0.0f, bus->channel(1)[1]);
+}
+
+// Test that unaligned 64-bit float data is correctly handled.
+TEST(WavAudioHandlerTest, UnalignedFloat64DataTest) {
+  // Similar to above but with 64-bit float.
+  // data payload at offset 53 is not 8-byte aligned.
+
+  // clang-format off
+  auto data = std::to_array<uint8_t>({
+      'R', 'I', 'F', 'F',
+      0x35, 0x00, 0x00, 0x00,  // chunk size (53 bytes).
+      'W', 'A', 'V', 'E',
+      // fmt chunk.
+      'f', 'm', 't', ' ',
+      0x10, 0x00, 0x00, 0x00,  // chunk size (16 bytes).
+      0x03, 0x00,              // Float format.
+      0x01, 0x00,              // 1 channel.
+      0x44, 0xAC, 0x00, 0x00,  // 44100 Hz sample rate.
+      0x20, 0x62, 0x05, 0x00,  // byte rate (44100 * 1 * 8 = 352800).
+      0x08, 0x00,              // block align (8).
+      0x40, 0x00,              // 64 bits per sample.
+      // junk chunk.
+      'j', 'u', 'n', 'k',
+      0x01, 0x00, 0x00, 0x00,  // chunk size (1 byte).
+      0x00,                    // 1 byte of junk.
+      // data chunk.
+      'd', 'a', 't', 'a',
+      0x08, 0x00, 0x00, 0x00,  // data size (8 bytes).
+      0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0xf0, 0x3f  // 1.0 in little endian.
+  });
+  // clang-format on
+
+  auto handler = WavAudioHandler::Create(data);
+  ASSERT_TRUE(handler);
+  EXPECT_EQ(1, handler->GetNumChannels());
+  EXPECT_EQ(64, handler->bits_per_sample_for_testing());
+
+  // Create a bus with 2 frames, but we only have 1 frame of data.
+  auto bus = AudioBus::Create(1, 2);
+  // Fill with non-zero values to ensure they are zeroed.
+  for (auto channel : bus->AllChannels()) {
+    std::ranges::fill(channel, -1.0f);
+  }
+
+  size_t frames_written = 0;
+  EXPECT_TRUE(handler->CopyTo(bus.get(), &frames_written));
+  EXPECT_EQ(1u, frames_written);
+
+  EXPECT_EQ(1.0f, bus->channel(0)[0]);
+  // The second frame should be zeroed.
+  EXPECT_EQ(0.0f, bus->channel(0)[1]);
 }
 
 }  // namespace media

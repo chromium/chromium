@@ -11,11 +11,11 @@
 #include "chrome/browser/first_party_sets/first_party_sets_policy_service_factory.h"
 #include "chrome/browser/net/profile_network_context_service.h"
 #include "chrome/browser/privacy_sandbox/privacy_sandbox_settings_factory.h"
-#include "chrome/browser/privacy_sandbox/tracking_protection_settings_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ssl/sct_reporting_service_factory.h"
 #include "chrome/browser/webid/federated_identity_permission_context_factory.h"
 #include "chrome/common/buildflags.h"
+#include "components/signin/public/base/signin_buildflags.h"
 #include "crypto/crypto_buildflags.h"
 
 #if BUILDFLAG(USE_NSS_CERTS)
@@ -33,6 +33,10 @@
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 #include "chrome/browser/enterprise/client_certificates/certificate_provisioning_service_factory.h"
+#endif
+
+#if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
+#include "chrome/browser/signin/bound_session_credentials/unexportable_key_service_factory.h"
 #endif
 
 ProfileNetworkContextService*
@@ -81,12 +85,15 @@ ProfileNetworkContextServiceFactory::ProfileNetworkContextServiceFactory()
 #endif
   DependsOn(CookieSettingsFactory::GetInstance());
   DependsOn(HostContentSettingsMapFactory::GetInstance());
-  DependsOn(TrackingProtectionSettingsFactory::GetInstance());
   DependsOn(PrivacySandboxSettingsFactory::GetInstance());
   DependsOn(FederatedIdentityPermissionContextFactory::GetInstance());
   DependsOn(
       first_party_sets::FirstPartySetsPolicyServiceFactory::GetInstance());
   DependsOn(SCTReportingServiceFactory::GetInstance());
+
+#if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
+  DependsOn(UnexportableKeyServiceFactory::GetInstance());
+#endif
 }
 
 ProfileNetworkContextServiceFactory::~ProfileNetworkContextServiceFactory() =

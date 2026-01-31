@@ -12,6 +12,7 @@
 
 #include "components/lens/lens_entrypoints.h"
 #include "components/lens/lens_metadata.mojom.h"
+#include "components/lens/lens_overlay_invocation_source.h"
 #include "components/lens/lens_overlay_mime_type.h"
 #include "third_party/lens_server_proto/lens_overlay_request_id.pb.h"
 
@@ -112,6 +113,14 @@ GURL AppendDarkModeParamToURL(const GURL& url_to_modify, bool use_dark_mode);
 // Remove parameters that cause the SRP to be rendered for the side panel. Used
 // when opening the SRP in a new tab.
 GURL RemoveSidePanelURLParameters(const GURL& url);
+
+// Appends the invocation source parameter to the URL. If `is_contextual_tasks`
+// is true, the source URL param will be prefixed with `chrome.crn`. If false,
+// the param will be prefixed with `chrome.cr`.
+GURL AppendInvocationSourceParamToURL(
+    const GURL& url_to_modify,
+    lens::LensOverlayInvocationSource invocation_source,
+    bool is_contextual_tasks);
 
 }  // namespace lens
 

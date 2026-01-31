@@ -8,13 +8,14 @@
 #import "base/time/time.h"
 #import "ios/chrome/app/application_delegate/app_state.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
+#import "ios/chrome/browser/shared/coordinator/scene/state/incognito_state.h"
 
 namespace {
 // Minimum amount of time for a normal/incognito transition to be considered.
 constexpr base::TimeDelta kMinimumDelay = base::Seconds(10);
 }  // namespace
 
-@interface IncognitoUsageAppStateAgent ()
+@interface IncognitoUsageAppStateAgent () <IncognitoStateObserver>
 
 @property(nonatomic, assign) BOOL incognitoContentVisible;
 
@@ -24,6 +25,7 @@ constexpr base::TimeDelta kMinimumDelay = base::Seconds(10);
 @end
 
 @implementation IncognitoUsageAppStateAgent
+
 - (instancetype)init {
   self = [super init];
   if (self) {
@@ -36,9 +38,18 @@ constexpr base::TimeDelta kMinimumDelay = base::Seconds(10);
   return self;
 }
 
+- (void)setAppState:(AppState*)appState {
+  [super setAppState:appState];
+  for (SceneState* scene in self.appState.connectedScenes) {
+    [scene.incognitoState addObserver:self];
+  }
+}
+
+#pragma mark - Private
+
 - (BOOL)checkIncognitoContentVisible {
   for (SceneState* scene in self.appState.connectedScenes) {
-    if (scene.incognitoContentVisible &&
+    if (scene.incognitoState.incognitoContentVisible &&
         scene.activationLevel >= SceneActivationLevelForegroundInactive) {
       return YES;
     }
@@ -109,17 +120,31 @@ constexpr base::TimeDelta kMinimumDelay = base::Seconds(10);
 
 #pragma mark - SceneStateObserver
 
+- (void)appState:(AppState*)appState sceneConnected:(SceneState*)sceneState {
+  [super appState:appState sceneConnected:sceneState];
+  [sceneState.incognitoState addObserver:self];
+}
+
 - (void)sceneState:(SceneState*)sceneState
     transitionedToActivationLevel:(SceneActivationLevel)level {
   [super sceneState:sceneState transitionedToActivationLevel:level];
-  if (sceneState.incognitoContentVisible) {
+  if (sceneState.incognitoState.incognitoContentVisible) {
     [self updateIncognitoContentVisible];
   }
 }
 
-- (void)sceneState:(SceneState*)sceneState
-    isDisplayingIncognitoContent:(BOOL)level {
-  if (sceneState.activationLevel >= SceneActivationLevelForegroundInactive) {
+#pragma mark - IncognitoStateObserver
+
+- (void)willEnterIncognitoForState:(IncognitoState*)incognitoState {
+  if (incognitoState.sceneState.activationLevel >=
+      SceneActivationLevelForegroundInactive) {
+    [self updateIncognitoContentVisible];
+  }
+}
+
+- (void)willExitIncognitoForState:(IncognitoState*)incognitoState {
+  if (incognitoState.sceneState.activationLevel >=
+      SceneActivationLevelForegroundInactive) {
     [self updateIncognitoContentVisible];
   }
 }

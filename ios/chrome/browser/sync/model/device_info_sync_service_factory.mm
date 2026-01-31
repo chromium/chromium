@@ -14,6 +14,7 @@
 #import "base/memory/singleton.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/time/default_clock.h"
+#import "components/desktop_to_mobile_promos/features.h"
 #import "components/send_tab_to_self/features.h"
 #import "components/signin/public/base/device_id_helper.h"
 #import "components/signin/public/identity_manager/identity_manager.h"
@@ -135,6 +136,11 @@ class DeviceInfoSyncClient : public syncer::DeviceInfoSyncClient {
   // syncer::DeviceInfoSyncClient:
   // Returns false since we only care about Chrome OS devices
   bool IsUmaEnabledOnCrOSDevice() const override { return false; }
+
+  // syncer::DeviceInfoSyncClient:
+  bool GetDesktopToIOSPromoReceivingEnabled() const override {
+    return MobilePromoOnDesktopEnabled();
+  }
 
  private:
   const raw_ptr<PrefService> prefs_;

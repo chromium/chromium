@@ -7,7 +7,7 @@
 
 #import <UIKit/UIKit.h>
 
-@protocol ApplicationCommands;
+@protocol SceneCommands;
 enum class ShareKitFlowOutcome;
 class TabGroup;
 
@@ -23,8 +23,8 @@ class TabGroup;
 // The group image preview.
 @property(nonatomic, copy) UIImage* groupImage;
 
-// Application commands handler.
-@property(nonatomic, weak) id<ApplicationCommands> applicationHandler;
+// Scene commands handler.
+@property(nonatomic, weak) id<SceneCommands> sceneHandler;
 
 // Executed when the share flow ended.
 @property(nonatomic, copy) void (^completion)(ShareKitFlowOutcome outcome);

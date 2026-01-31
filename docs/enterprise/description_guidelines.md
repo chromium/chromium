@@ -125,11 +125,16 @@ particularly dangerous so there will be additional management requirements
 before applying them. For those policies, please append the following statements
 at the end of the policy description according to their supported platforms.
 
-```
-On <ph name="MS_WIN_NAME">Microsoft® Windows®</ph>, this policy is only available on instances that are joined to a <ph name="MS_AD_NAME">Microsoft® Active Directory®</ph> domain, joined to <ph name="MS_AAD_NAME">Microsoft® Azure® Active Directory®</ph> or enrolled in <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME">Chrome Enterprise Core</ph>`.
+Policies marked as `sensitive: true` will have the appropriate statements
+automatically appended to their description.
 
-On <ph name="MAC_OS_NAME">macOS</ph>, this policy is only available on instances that are managed via MDM, joined to a domain via MCX or enrolled in <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME">Chrome Enterprise Core</ph>.
+<!-- LINT.IfChange(sensitive_policy_notices) -->
 ```
+On <ph name="MS_WIN_NAME">Microsoft® Windows®</ph>, this policy is only available on instances that are joined to a <ph name="MS_AD_NAME">Microsoft® Active Directory®</ph> domain, joined to <ph name="MS_AAD_NAME">Microsoft® Azure® Active Directory®</ph> or enrolled in <ph name="CHROME_ENTERPRISE_CORE_NAME">Chrome Enterprise Core</ph>.
+
+On <ph name="MAC_OS_NAME">macOS</ph>, this policy is only available on instances that are managed via MDM, joined to a domain via MCX or enrolled in <ph name="CHROME_ENTERPRISE_CORE_NAME">Chrome Enterprise Core</ph>.
+```
+<!-- LINT.ThenChange(/components/policy/resources/policy_templates.py:sensitive_policy_notices) -->
 
 #### Too many details
 
@@ -210,6 +215,7 @@ avoid validation errors.
 * Google Cloud Print: `<ph name="CLOUD_PRINT_NAME">Google Cloud Print</ph>`
 * Google Drive: `<ph name="GOOGLE_DRIVE_NAME">Google Drive</ph>`
 * Google Gemini: `<ph name="GOOGLE_GEMINI_PRODUCT_NAME">Google Gemini</ph>`
+* Google Lens: `<ph name="GOOGLE_LENS_PRODUCT_NAME">Google Lens</ph>`
 * Google Photos: `<ph name="GOOGLE_PHOTOS_PRODUCT_NAME">Google Photos</ph>`
 * Google Search: `<ph name="GOOGLE_SEARCH_PRODUCT_NAME">Google Search</ph>`
 * Google Tasks: `<ph name="GOOGLE_TASKS_NAME">Google Tasks</ph>`

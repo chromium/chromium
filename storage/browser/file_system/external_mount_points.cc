@@ -112,7 +112,7 @@ void ExternalMountPoints::GetDebugJSONForKey(
     return;
   }
 
-  base::Value::Dict dict;
+  base::DictValue dict;
   {
     base::AutoLock locker(system_instance->lock_);
     for (const auto& pair : system_instance->instance_map_) {

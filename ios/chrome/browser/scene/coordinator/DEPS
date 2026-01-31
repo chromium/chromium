@@ -1,4 +1,16 @@
 include_rules = [
-  "+ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/tab_grid_paging.h",
-  "+ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/tab_grid_coordinator.h",
+  # keep-sorted start
+  "+ios/chrome/browser/ai_prototyping/coordinator",
+  "+ios/chrome/browser/assistant/coordinator",
+  "+ios/chrome/browser/authentication/account_menu",
+  "+ios/chrome/browser/authentication/ui_bundled",
+  "+ios/chrome/browser/feature_engagement/model",
+  "+ios/chrome/browser/history/ui_bundled",
+  "+ios/chrome/browser/safari_data_import/coordinator",
+  "+ios/chrome/browser/safari_data_import/model/features.h",
+  "+ios/chrome/browser/safari_data_import/public",
+  "+ios/chrome/browser/settings/ui_bundled",
+  "+ios/chrome/browser/signin/model",
+  "+ios/chrome/browser/tab_switcher/ui_bundled",
+  # keep-sorted end
 ]

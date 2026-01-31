@@ -4,8 +4,9 @@
 
 #include "chrome/browser/safe_browsing/extension_telemetry/potential_password_theft_signal_processor.h"
 
+#include <algorithm>
+
 #include "base/check_op.h"
-#include "base/containers/contains.h"
 #include "chrome/browser/safe_browsing/extension_telemetry/extension_telemetry_service.h"
 #include "chrome/browser/safe_browsing/extension_telemetry/password_reuse_signal.h"
 #include "chrome/browser/safe_browsing/extension_telemetry/remote_host_contacted_signal.h"
@@ -111,7 +112,7 @@ void PotentialPasswordTheftSignalProcessor::UpdateDataStores(
       // Each password reuse event has a reputable domain list, aka
       // matching_domains. Remote host urls that are in the reputable domain
       // lists associated with the password reuse events will not be added.
-      if (!base::Contains(matching_domains, host_url)) {
+      if (!std::ranges::contains(matching_domains, host_url)) {
         temp_remote_host_url_queue.push_back(host_url);
       }
     }
@@ -157,7 +158,7 @@ void PotentialPasswordTheftSignalProcessor::UpdatePasswordReuseInfo(
   reuse_info.count += 1;
   for (auto& domain : incoming_reuse_info.matching_domains) {
     // Update the matching domain list once we find new domains.
-    if (!base::Contains(matching_domains, domain)) {
+    if (!std::ranges::contains(matching_domains, domain)) {
       matching_domains.push_back(domain);
     }
   }

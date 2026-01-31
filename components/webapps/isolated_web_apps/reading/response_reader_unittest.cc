@@ -49,8 +49,6 @@ class IsolatedWebAppResponseReaderTest : public ::testing::Test {
  protected:
   void SetUp() override {
     IwaIdentityValidator::CreateSingleton();
-    ON_CALL(iwa_client(), ValidateTrust(_, web_bundle_id_, _))
-        .WillByDefault(Return(base::ok()));
     ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
   }
 
@@ -82,8 +80,6 @@ class IsolatedWebAppResponseReaderTest : public ::testing::Test {
     return future.Take();
   }
 
-  test::MockIwaClient& iwa_client() { return iwa_client_; }
-
   content::BrowserTaskEnvironment task_environment_;
   data_decoder::test::InProcessDataDecoder in_process_data_decoder_;
   base::ScopedTempDir temp_dir_;
@@ -91,7 +87,7 @@ class IsolatedWebAppResponseReaderTest : public ::testing::Test {
   content::TestBrowserContext browser_context_;
   web_package::SignedWebBundleId web_bundle_id_ =
       test::GetDefaultEd25519WebBundleId();
-  testing::NiceMock<test::MockIwaClient> iwa_client_;
+  test::TestIwaClient iwa_client_;
 
   GURL base_url_ = GURL(base::StrCat(
       {"isolated-app", url::kStandardSchemeSeparator, web_bundle_id_.id()}));
@@ -104,7 +100,7 @@ TEST_F(IsolatedWebAppResponseReaderTest, ChecksWhetherBundleIsStillTrusted) {
                        CreateReaderAndInitialize(web_bundle_path, base_url_));
 
   auto response_reader = std::make_unique<IsolatedWebAppResponseReaderImpl>(
-      std::move(reader), &browser_context_, web_bundle_id_, /*dev_mode=*/false);
+      std::move(reader), &browser_context_);
 
   {
     network::ResourceRequest request;
@@ -115,25 +111,6 @@ TEST_F(IsolatedWebAppResponseReaderTest, ChecksWhetherBundleIsStillTrusted) {
         response_future;
     response_reader->ReadResponse(request, response_future.GetCallback());
     EXPECT_THAT(response_future.Get(), HasValue());
-  }
-
-  testing::Mock::VerifyAndClearExpectations(&iwa_client());
-  ON_CALL(iwa_client(), ValidateTrust)
-      .WillByDefault(Return(base::unexpected("Trust is gone :(")));
-
-  {
-    network::ResourceRequest request;
-    request.url = base_url_;
-    base::test::TestFuture<
-        base::expected<IsolatedWebAppResponseReader::Response,
-                       IsolatedWebAppResponseReader::Error>>
-        response_future;
-    response_reader->ReadResponse(request, response_future.GetCallback());
-    EXPECT_THAT(
-        response_future.Get(),
-        ErrorIs(
-            Field(&IsolatedWebAppResponseReader::Error::type,
-                  Eq(IsolatedWebAppResponseReader::Error::Type::kNotTrusted))));
   }
 }
 
@@ -146,7 +123,7 @@ TEST_F(IsolatedWebAppResponseReaderTest,
                        CreateReaderAndInitialize(web_bundle_path, base_url_));
 
   auto response_reader = std::make_unique<IsolatedWebAppResponseReaderImpl>(
-      std::move(reader), &browser_context_, web_bundle_id_, /*dev_mode=*/false);
+      std::move(reader), &browser_context_);
 
   {
     network::ResourceRequest request;
@@ -177,7 +154,7 @@ TEST_F(IsolatedWebAppResponseReaderTest, ReadResponseBody) {
                        CreateReaderAndInitialize(web_bundle_path, base_url_));
 
   auto response_reader = std::make_unique<IsolatedWebAppResponseReaderImpl>(
-      std::move(reader), &browser_context_, web_bundle_id_, /*dev_mode=*/false);
+      std::move(reader), &browser_context_);
 
   network::ResourceRequest request;
   request.url = base_url_;
@@ -220,7 +197,7 @@ TEST_F(IsolatedWebAppResponseReaderTest, Close) {
   auto* raw_reader = reader.get();
 
   auto response_reader = std::make_unique<IsolatedWebAppResponseReaderImpl>(
-      std::move(reader), &browser_context_, web_bundle_id_, /*dev_mode=*/false);
+      std::move(reader), &browser_context_);
 
   network::ResourceRequest request;
   request.url = base_url_;

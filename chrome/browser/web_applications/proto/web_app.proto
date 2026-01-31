@@ -216,14 +216,42 @@ message InstalledBy {
   optional string requesting_url = 2;        // Required.
 }
 
+// Used to specify the behavior of a migration.
+enum WebAppMigrationBehavior {
+  WEB_APP_MIGRATION_BEHAVIOR_UNSPECIFIED = 0;
+  // The migration should be performed via a blocking dialog that the user must
+  // accept (or uninstall the app).
+  WEB_APP_MIGRATION_BEHAVIOR_FORCE = 1;
+  // The migration should be suggested to the user, who can choose to ignore it.
+  WEB_APP_MIGRATION_BEHAVIOR_SUGGEST = 2;
+}
+
+// Represents a possible source for migration, extracted from the manifest of
+// the new version of the app.
+message WebAppMigrationSource {
+  optional string manifest_id = 1;                // Required.
+  optional WebAppMigrationBehavior behavior = 2;  // Required.
+  optional string install_url = 3;
+}
+
+// Represents a migration that has been identified for this app, where this app
+// is the source of the migration.
+message PendingMigrationInfo {
+  // The manifest_id of the app that this app should migrate to.
+  optional string manifest_id = 1;                // Required.
+  optional WebAppMigrationBehavior behavior = 2;  // Required.
+}
+
 // Full WebApp object data. See detailed comments in
 // chrome/browser/web_applications/web_app.h. Note on database identities:
 // app_id is a hash of launch_url. app_id is the client tag for sync system.
 // app_id is the storage key in DataTypeStore.
 message WebApp {
+  // LINT.IfChange(MemberVariables)
   reserved "handle_links", "is_in_sync_install", "is_placeholder",
       "file_handler_os_integration_state",
-      "run_on_os_login_os_integration_state", "url_handlers", "update_token";
+      "run_on_os_login_os_integration_state", "url_handlers", "update_token",
+      "display_mode_override", "borderless_url_patterns";
   // Synced data. It is replicated across , all devices with WEB_APPS.
   //
   // |sync_data.name| and |sync_data.theme_color| are read by a device to
@@ -243,6 +271,18 @@ message WebApp {
     DISPLAY_MODE_TABBED = 6;
     DISPLAY_MODE_BORDERLESS = 7;
     DISPLAY_MODE_PICTURE_IN_PICTURE = 8;
+  }
+
+  // This message should be synced with
+  // third_party/blink/public/mojom/manifest/manifest.mojom
+  message DisplayOverrideItem {
+    // The display mode of this override.
+    optional DisplayMode display_mode = 1;
+    // The URL patterns where this override should apply. Empty means it applies
+    // in all URLs.
+    //
+    // Currently only parsed when `display_mode` is DISPLAY_MODE_BORDERLESS.
+    repeated UrlPattern url_patterns = 2;
   }
 
   // Local data. May vary across devices. Not to be synced.
@@ -301,8 +341,10 @@ message WebApp {
 
   optional uint32 background_color = 21;
 
+  // DEPRECATED: Use `display_overrides` instead.
   // A list of display modes specified in app manifest.
-  repeated DisplayMode display_mode_override = 22;
+  repeated DisplayMode display_mode_override_deprecated = 22
+      [deprecated = true];
 
   // A list of icon sizes we successfully downloaded to store on disk, for icons
   // that are designed for masking (ie. IconPurpose::MASKABLE). See also:
@@ -512,11 +554,26 @@ message WebApp {
   // |stored_trusted_icon_sizes_any|.
   repeated int32 stored_trusted_icon_sizes_maskable = 76;
 
-  // A list of URL patterns in which the app window should be borderless.
-  repeated UrlPattern borderless_url_patterns = 77;
+  reserved 77;
 
   // A list of up to ten unique URLs of the most recent pages that attempt to
   // install the app via the Web Install API. The order is that the front is
   // the oldest entry and the back is the newest.
   repeated InstalledBy installed_by = 78;
+
+  // Migration sources as specified in the manifest 'migrate_from' field. These
+  // are the apps that this app claims to be a migration from.
+  repeated WebAppMigrationSource unvalidated_migration_sources = 79;
+
+  // Subset of unvalidated_migration_sources that have been validated against
+  // the old origin (via .well-known).
+  repeated WebAppMigrationSource validated_migration_sources = 80;
+
+  // List of apps that this app can migrate to. This is populated by checking
+  // the validated_migration_sources of other installed apps.
+  optional PendingMigrationInfo pending_migration_info = 81;
+
+  // A list of display mode overrides specified in app manifest.
+  repeated DisplayOverrideItem display_overrides = 82;
+  // LINT.ThenChange(//chrome/browser/web_applications/web_app.h)
 }

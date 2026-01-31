@@ -1254,6 +1254,10 @@ class WebContents : public PageNavigator, public base::SupportsUserData {
   // Set the renderer's page scale to the given factor.
   virtual void SetPageScale(float page_scale_factor) = 0;
 
+  // Controls whether the WebContents should consume and discard gesture events
+  // that trigger page zooming (Pinch and Double-Tap) in the browser process.
+  virtual void SetIgnoreZoomGestures(bool ignore) = 0;
+
   // Gets the preferred size of the contents.
   virtual gfx::Size GetPreferredSize() = 0;
 
@@ -1537,8 +1541,8 @@ class WebContents : public PageNavigator, public base::SupportsUserData {
   // set to subframes when they are restored (e.g. from BFCache) to the primary
   // frame tree.
   //
-  // SubframePriorityContribution and SubframeImportance features are required
-  // to set subframe importance to other than NORMAL.
+  // SubframeImportance feature is required to set subframe importance to other
+  // than NORMAL.
   //
   // The subframe_importance must be less than or equal to the
   // main_frame_importance.

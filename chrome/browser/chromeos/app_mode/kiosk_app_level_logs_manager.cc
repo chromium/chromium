@@ -13,7 +13,7 @@
 #include "chrome/browser/chromeos/app_mode/kiosk_app_level_logs_saver.h"
 #include "chrome/browser/chromeos/app_mode/kiosk_service_workers_logs_collector.h"
 #include "chrome/browser/profiles/profile.h"
-#include "third_party/blink/public/mojom/devtools/console_message.mojom-data-view.h"
+#include "third_party/blink/public/mojom/devtools/console_message.mojom-shared.h"
 #include "ui/base/l10n/l10n_util.h"
 
 namespace chromeos {

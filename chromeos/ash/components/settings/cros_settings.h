@@ -70,10 +70,9 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_SETTINGS) CrosSettings {
   bool GetInteger(std::string_view path, int* out_value) const;
   bool GetDouble(std::string_view path, double* out_value) const;
   bool GetString(std::string_view path, std::string* out_value) const;
-  bool GetList(std::string_view path,
-               const base::Value::List** out_value) const;
+  bool GetList(std::string_view path, const base::ListValue** out_value) const;
   bool GetDictionary(std::string_view path,
-                     const base::Value::Dict** out_value) const;
+                     const base::DictValue** out_value) const;
 
   // Checks if the given username is on the list of users allowed to sign-in to
   // this device. |wildcard_match| may be nullptr. If it's present, it'll be set
@@ -94,7 +93,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_SETTINGS) CrosSettings {
                        bool* wildcard_match) const;
 
   // Same as above, but receives already populated user list.
-  static bool FindEmailInList(const base::Value::List& list,
+  static bool FindEmailInList(const base::ListValue& list,
                               const std::string& email,
                               bool* wildcard_match);
 

@@ -7,7 +7,7 @@ import {ParentAccessParams_FlowType} from 'chrome://parent-access/parent_access_
 
 export function buildWebApprovalsParams(): ParentAccessParams {
   const webApprovalsParams: WebApprovalsParams = {
-    url: {url: 'https://testing.com'},
+    url: 'https://testing.com',
     childDisplayName: 'Child name',
     faviconPngBytes: [],
   };

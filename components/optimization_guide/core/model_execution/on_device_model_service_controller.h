@@ -103,7 +103,7 @@ class OnDeviceModelServiceController final {
       std::unique_ptr<SafetyModelInfo> safety_model_info);
 
   // Updates the main execution model.
-  void UpdateModel(std::unique_ptr<OnDeviceModelMetadata> model_metadata);
+  void UpdateModel(MaybeOnDeviceModelMetadata model_metadata);
 
   // Updates the model adaptation for the feature.
   void MaybeUpdateModelAdaptation(mojom::OnDeviceFeature feature,
@@ -278,8 +278,6 @@ class OnDeviceModelServiceController final {
 
   // This may be null in the destructor, otherwise non-null.
   std::unique_ptr<OnDeviceModelAccessController> access_controller_;
-  base::WeakPtr<OnDeviceModelComponentStateManager>
-      on_device_component_state_manager_;
   base::raw_ref<UsageTracker> usage_tracker_;
 
   base::SafeRef<on_device_model::ServiceClient> service_client_;
@@ -289,6 +287,8 @@ class OnDeviceModelServiceController final {
   std::optional<OnDeviceModelMetadataLoader> model_metadata_loader_;
 
   std::optional<BaseModelController> base_model_controller_;
+  OnDeviceModelStatus base_model_status_ =
+      OnDeviceModelStatus::kNotReadyForUnknownReason;
 
   ModelBrokerImpl model_broker_impl_;
 

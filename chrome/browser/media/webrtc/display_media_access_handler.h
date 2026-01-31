@@ -25,7 +25,6 @@ namespace extensions {
 class Extension;
 }
 
-BASE_DECLARE_FEATURE(kDisplayMediaRejectLongDomains);
 
 // MediaAccessHandler for getDisplayMedia API, see
 // https://w3c.github.io/mediacapture-screen-share.
@@ -148,6 +147,7 @@ class DisplayMediaAccessHandler : public CaptureAccessHandlerBase,
   RequestsQueues pending_requests_;
 
   WebContentsCollection web_contents_collection_;
+  base::WeakPtrFactory<DisplayMediaAccessHandler> weak_factory_{this};
 };
 
 #endif  // CHROME_BROWSER_MEDIA_WEBRTC_DISPLAY_MEDIA_ACCESS_HANDLER_H_

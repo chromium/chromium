@@ -28,6 +28,12 @@ StatusOr<DomStorageDatabase::MapMetadata> ParseMapMetadata(
 
 DomStorageDatabase::Key GetSessionPrefix(const std::string& session_id);
 
+DomStorageDatabase::Key CreateMapMetadataKey(
+    std::string session_id,
+    const blink::StorageKey& storage_key);
+
+DomStorageDatabase::Key GetMapPrefix(int64_t map_id);
+
 std::vector<uint8_t> ToBytes(std::string source);
 
 namespace {
@@ -45,7 +51,14 @@ constexpr const char kThirdFakeSessionId[] =
 constexpr const char kThirdFakeUrlString[] = "https://c-fake.test/";
 constexpr int64_t kThirdFakeMapId = 1567;
 
+constexpr const char kFourthFakeSessionId[] =
+    "b5675eaf_30eb_462d_8d82_c6ba8e6bee4c";
+constexpr int64_t kFourthFakeMapId = 1570;
+
 constexpr const uint8_t kExpectedVersion[] = {'1'};
+
+constexpr const char kScriptKey1[] = "key_1";
+constexpr const char kScriptKey2[] = "key_2";
 
 void VerifyDatabaseVersionEntry(
     const DomStorageDatabase::KeyValuePair& version_entry) {
@@ -54,13 +67,38 @@ void VerifyDatabaseVersionEntry(
 }
 
 // Return "map-<map_id>-<script_key>".
-DomStorageDatabase::Key CreateMapDataKey(int64_t map_id,
-                                         std::string script_key) {
-  DomStorageDatabase::Key map_data_key =
-      SessionStorageLevelDB::GetMapPrefix(map_id);
+DomStorageDatabase::Key CreateMapEntryKey(int64_t map_id,
+                                          std::string script_key) {
+  DomStorageDatabase::Key map_data_key = GetMapPrefix(map_id);
 
   map_data_key.insert(map_data_key.end(), script_key.begin(), script_key.end());
   return map_data_key;
+}
+
+void CloneMapAndVerifyResults(
+    SessionStorageLevelDB& session_storage_leveldb,
+    const DomStorageDatabase::MapLocator& source_map_locator,
+    const DomStorageDatabase::MapLocator& target_map_locator,
+    const std::map<DomStorageDatabase::Key, DomStorageDatabase::Value>&
+        expected_entries) {
+  DbStatus status = session_storage_leveldb.CloneMap(
+      source_map_locator.Clone(), target_map_locator.Clone());
+  EXPECT_TRUE(status.ok()) << status.ToString();
+
+  // Verify the cloned entries exist.
+  ASSERT_OK_AND_ASSIGN(
+      (std::map<DomStorageDatabase::Key, DomStorageDatabase::Value>
+           cloned_entries),
+      session_storage_leveldb.ReadMapKeyValues(target_map_locator.Clone()));
+
+  EXPECT_EQ(cloned_entries, expected_entries);
+
+  // Verify the source entries did not change.
+  ASSERT_OK_AND_ASSIGN(
+      (std::map<DomStorageDatabase::Key, DomStorageDatabase::Value>
+           source_entries),
+      session_storage_leveldb.ReadMapKeyValues(source_map_locator.Clone()));
+  EXPECT_EQ(source_entries, expected_entries);
 }
 
 }  // namespace
@@ -92,10 +130,10 @@ void SessionStorageLevelDBTest::OpenInMemory(
   auto instance = std::make_unique<SessionStorageLevelDB>(
       DomStorageDatabaseFactory::CreatePassKeyForTesting());
 
-  DbStatus status = instance->Open(
-      DomStorageDatabaseFactory::CreatePassKeyForTesting(),
-      /*directory=*/base::FilePath(), "SessionStorageLevelDBTest",
-      /*memory_dump_id=*/std::nullopt);
+  DbStatus status =
+      instance->Open(DomStorageDatabaseFactory::CreatePassKeyForTesting(),
+                     /*directory=*/base::FilePath(),
+                     /*memory_dump_id=*/std::nullopt);
 
   ASSERT_TRUE(status.ok()) << status.ToString();
   *result = std::move(instance);
@@ -103,8 +141,7 @@ void SessionStorageLevelDBTest::OpenInMemory(
 
 TEST_F(SessionStorageLevelDBTest, ParseMapMetadata) {
   StatusOr<DomStorageDatabase::MapMetadata> map_metadata = ParseMapMetadata({
-      SessionStorageLevelDB::CreateMapMetadataKey(kFakeSessionId,
-                                                  kFakeUrlStorageKey),
+      CreateMapMetadataKey(kFakeSessionId, kFakeUrlStorageKey),
       /*value=*/ToBytes("314"),
   });
   ASSERT_TRUE(map_metadata.has_value());
@@ -173,8 +210,7 @@ TEST_F(SessionStorageLevelDBTest, ParseMapMetadataWithStorageKeyInvalid) {
 
 TEST_F(SessionStorageLevelDBTest, ParseMapMetadataWithMapIdInvalid) {
   StatusOr<DomStorageDatabase::MapMetadata> map_metadata = ParseMapMetadata({
-      SessionStorageLevelDB::CreateMapMetadataKey(kFakeSessionId,
-                                                  kFakeUrlStorageKey),
+      CreateMapMetadataKey(kFakeSessionId, kFakeUrlStorageKey),
       /*value=*/ToBytes("invalid"),
   });
   ASSERT_FALSE(map_metadata.has_value());
@@ -183,8 +219,7 @@ TEST_F(SessionStorageLevelDBTest, ParseMapMetadataWithMapIdInvalid) {
 
 TEST_F(SessionStorageLevelDBTest, ParseMapMetadataWithMapIdEmpty) {
   StatusOr<DomStorageDatabase::MapMetadata> map_metadata = ParseMapMetadata({
-      SessionStorageLevelDB::CreateMapMetadataKey(kFakeSessionId,
-                                                  kFakeUrlStorageKey),
+      CreateMapMetadataKey(kFakeSessionId, kFakeUrlStorageKey),
       /*value=*/ToBytes(""),
   });
   ASSERT_FALSE(map_metadata.has_value());
@@ -250,15 +285,14 @@ TEST_F(SessionStorageLevelDBTest, ReadAllMapMetadata) {
   std::unique_ptr<SessionStorageLevelDB> session_storage_leveldb;
   ASSERT_NO_FATAL_FAILURE(OpenInMemory(&session_storage_leveldb));
 
-  ASSERT_NO_FATAL_FAILURE(
-      WriteEntries(*session_storage_leveldb,
-                   {
-                       {
-                           SessionStorageLevelDB::CreateMapMetadataKey(
-                               kFakeSessionId, kFakeUrlStorageKey),
-                           /*value=*/ToBytes("5343"),
-                       },
-                   }));
+  ASSERT_NO_FATAL_FAILURE(WriteEntries(
+      *session_storage_leveldb,
+      {
+          {
+              CreateMapMetadataKey(kFakeSessionId, kFakeUrlStorageKey),
+              /*value=*/ToBytes("5343"),
+          },
+      }));
 
   StatusOr<DomStorageDatabase::Metadata> metadata =
       session_storage_leveldb->ReadAllMetadata();
@@ -306,25 +340,23 @@ TEST_F(SessionStorageLevelDBTest, ReadAllMapMetadataWithMultipleEntries) {
   std::unique_ptr<SessionStorageLevelDB> session_storage_leveldb;
   ASSERT_NO_FATAL_FAILURE(OpenInMemory(&session_storage_leveldb));
 
-  ASSERT_NO_FATAL_FAILURE(
-      WriteEntries(*session_storage_leveldb,
-                   {
-                       {
-                           SessionStorageLevelDB::CreateMapMetadataKey(
-                               kFakeSessionId, kFakeUrlStorageKey),
-                           /*value=*/ToBytes("5343"),
-                       },
-                       {
-                           SessionStorageLevelDB::CreateMapMetadataKey(
-                               kOtherFakeSessionId, kFakeUrlStorageKey),
-                           /*value=*/ToBytes("5343"),
-                       },
-                       {
-                           SessionStorageLevelDB::CreateMapMetadataKey(
-                               kOtherFakeSessionId, kOtherFakeUrlStorageKey),
-                           /*value=*/ToBytes("5346"),
-                       },
-                   }));
+  ASSERT_NO_FATAL_FAILURE(WriteEntries(
+      *session_storage_leveldb,
+      {
+          {
+              CreateMapMetadataKey(kFakeSessionId, kFakeUrlStorageKey),
+              /*value=*/ToBytes("5343"),
+          },
+          {
+              CreateMapMetadataKey(kOtherFakeSessionId, kFakeUrlStorageKey),
+              /*value=*/ToBytes("5343"),
+          },
+          {
+              CreateMapMetadataKey(kOtherFakeSessionId,
+                                   kOtherFakeUrlStorageKey),
+              /*value=*/ToBytes("5346"),
+          },
+      }));
 
   StatusOr<DomStorageDatabase::Metadata> metadata =
       session_storage_leveldb->ReadAllMetadata();
@@ -334,7 +366,7 @@ TEST_F(SessionStorageLevelDBTest, ReadAllMapMetadataWithMultipleEntries) {
   ASSERT_TRUE(metadata->next_map_id.has_value());
   EXPECT_EQ(*metadata->next_map_id, 0);
 
-  const DomStorageDatabase::MapMetadata kExpectedMapMetadata[] = {
+  DomStorageDatabase::MapMetadata expected_map_metadata[] = {
       {
           .map_locator{kOtherFakeSessionId, kFakeUrlStorageKey,
                        /*map_id=*/5343},
@@ -343,16 +375,17 @@ TEST_F(SessionStorageLevelDBTest, ReadAllMapMetadataWithMultipleEntries) {
           .map_locator{kOtherFakeSessionId, kOtherFakeUrlStorageKey,
                        /*map_id=*/5346},
       },
-      {
-          .map_locator{kFakeSessionId, kFakeUrlStorageKey, /*map_id=*/5343},
-      },
   };
-  ExpectEqualsMapMetadataSpan(metadata->map_metadata, kExpectedMapMetadata);
+
+  // Both `kFakeSessionId` and `kOtherFakeSessionId` use cloned map 5343.
+  expected_map_metadata[0].map_locator.AddSession(kFakeSessionId);
+
+  ExpectEqualsMapMetadataSpan(metadata->map_metadata, expected_map_metadata);
 }
 
 TEST_F(SessionStorageLevelDBTest, CreateMapMetadataKey) {
-  DomStorageDatabase::Key key = SessionStorageLevelDB::CreateMapMetadataKey(
-      kFakeSessionId, kFakeUrlStorageKey);
+  DomStorageDatabase::Key key =
+      CreateMapMetadataKey(kFakeSessionId, kFakeUrlStorageKey);
   EXPECT_EQ(key, ToBytes("namespace-ce8c7dc5_73b4_4320_a506_ce1f4fd3356f-https:"
                          "//a-fake.test/"));
 }
@@ -374,11 +407,11 @@ TEST_F(SessionStorageLevelDBTest, PutMetadata) {
   // Verify the contents in the database, which includes the "version" entry.
   ASSERT_OK_AND_ASSIGN(
       std::vector<DomStorageDatabase::KeyValuePair> all_entries,
-      session_storage_leveldb->GetLevelDB().GetPrefixed({}));
+      session_storage_leveldb->GetLevelDBForTesting().GetPrefixed({}));
   ASSERT_EQ(all_entries.size(), 3u);
 
-  EXPECT_EQ(all_entries[0].key, SessionStorageLevelDB::CreateMapMetadataKey(
-                                    kFakeSessionId, kFakeUrlStorageKey));
+  EXPECT_EQ(all_entries[0].key,
+            CreateMapMetadataKey(kFakeSessionId, kFakeUrlStorageKey));
   EXPECT_EQ(all_entries[0].value,
             base::as_byte_span(base::NumberToString(1565)));
 
@@ -418,22 +451,22 @@ TEST_F(SessionStorageLevelDBTest, PutMetadataWithMultipleMaps) {
     // Verify the contents in the database, which includes the "version" entry.
     ASSERT_OK_AND_ASSIGN(
         std::vector<DomStorageDatabase::KeyValuePair> all_entries,
-        session_storage_leveldb->GetLevelDB().GetPrefixed({}));
+        session_storage_leveldb->GetLevelDBForTesting().GetPrefixed({}));
     ASSERT_EQ(all_entries.size(), 5u);
 
-    EXPECT_EQ(all_entries[0].key,
-              SessionStorageLevelDB::CreateMapMetadataKey(
-                  kOtherFakeSessionId, kOtherFakeUrlStorageKey));
+    EXPECT_EQ(
+        all_entries[0].key,
+        CreateMapMetadataKey(kOtherFakeSessionId, kOtherFakeUrlStorageKey));
     EXPECT_EQ(all_entries[0].value,
               base::as_byte_span(base::NumberToString(kOtherFakeMapId + 1)));
 
-    EXPECT_EQ(all_entries[1].key, SessionStorageLevelDB::CreateMapMetadataKey(
-                                      kFakeSessionId, kFakeUrlStorageKey));
+    EXPECT_EQ(all_entries[1].key,
+              CreateMapMetadataKey(kFakeSessionId, kFakeUrlStorageKey));
     EXPECT_EQ(all_entries[1].value,
               base::as_byte_span(base::NumberToString(kFakeMapId)));
 
-    EXPECT_EQ(all_entries[2].key, SessionStorageLevelDB::CreateMapMetadataKey(
-                                      kFakeSessionId, kOtherFakeUrlStorageKey));
+    EXPECT_EQ(all_entries[2].key,
+              CreateMapMetadataKey(kFakeSessionId, kOtherFakeUrlStorageKey));
     EXPECT_EQ(all_entries[2].value,
               base::as_byte_span(base::NumberToString(kOtherFakeMapId)));
 
@@ -448,8 +481,39 @@ TEST_F(SessionStorageLevelDBTest, PutMetadataWithMultipleMaps) {
   }
 }
 
+TEST_F(SessionStorageLevelDBTest, PutMetadataWithMultipleSessions) {
+  constexpr int64_t kNextMapId = kFakeMapId + 1;
+
+  std::unique_ptr<SessionStorageLevelDB> session_storage_leveldb;
+  ASSERT_NO_FATAL_FAILURE(OpenInMemory(&session_storage_leveldb));
+
+  // Create the test metadata to read and write.
+  std::vector<DomStorageDatabase::MapMetadata> expected_map_metadata;
+  expected_map_metadata.push_back(
+      {.map_locator{kFakeSessionId, kFakeUrlStorageKey, kFakeMapId}});
+
+  // Clone `kFakeMapId` for `kOtherFakeSessionId`.
+  expected_map_metadata[0].map_locator.AddSession(kOtherFakeSessionId);
+
+  // Write `expected_map_metadata` to the database.
+  DomStorageDatabase::Metadata write_metadata;
+  write_metadata.next_map_id = kNextMapId;
+  write_metadata.map_metadata = CloneMapMetadataVector(expected_map_metadata);
+  DbStatus status =
+      session_storage_leveldb->PutMetadata(std::move(write_metadata));
+  EXPECT_TRUE(status.ok()) << status.ToString();
+
+  // Read the metadata from the database, which must equal
+  // `expected_map_metadata`.
+  ASSERT_OK_AND_ASSIGN(DomStorageDatabase::Metadata read_metadata,
+                       session_storage_leveldb->ReadAllMetadata());
+  EXPECT_EQ(read_metadata.next_map_id, kNextMapId);
+  ExpectEqualsMapMetadataSpan(read_metadata.map_metadata,
+                              expected_map_metadata);
+}
+
 TEST_F(SessionStorageLevelDBTest, GetMapPrefix) {
-  EXPECT_EQ(SessionStorageLevelDB::GetMapPrefix(1234), ToBytes("map-1234-"));
+  EXPECT_EQ(GetMapPrefix(1234), ToBytes("map-1234-"));
 }
 
 TEST_F(SessionStorageLevelDBTest, DeleteStorageKeysFromSessionWithMetadata) {
@@ -469,7 +533,7 @@ TEST_F(SessionStorageLevelDBTest, DeleteStorageKeysFromSessionWithMetadata) {
   // Verify the database contains the `metadata` and "VERSION" entries.
   ASSERT_OK_AND_ASSIGN(
       std::vector<DomStorageDatabase::KeyValuePair> all_entries,
-      session_storage_leveldb->GetLevelDB().GetPrefixed({}));
+      session_storage_leveldb->GetLevelDBForTesting().GetPrefixed({}));
   EXPECT_EQ(all_entries.size(), 2u);
 
   // Delete the `metadata` entry from the database.
@@ -480,8 +544,9 @@ TEST_F(SessionStorageLevelDBTest, DeleteStorageKeysFromSessionWithMetadata) {
 
   // Verify the contents in the database, which should only include the
   // "VERSION" entry.
-  ASSERT_OK_AND_ASSIGN(all_entries,
-                       session_storage_leveldb->GetLevelDB().GetPrefixed({}));
+  ASSERT_OK_AND_ASSIGN(
+      all_entries,
+      session_storage_leveldb->GetLevelDBForTesting().GetPrefixed({}));
 
   EXPECT_TRUE(status.ok()) << status.ToString();
   ASSERT_EQ(all_entries.size(), 1u);
@@ -498,11 +563,11 @@ TEST_F(SessionStorageLevelDBTest,
   ASSERT_NO_FATAL_FAILURE(WriteEntries(
       *session_storage_leveldb, {
                                     {
-                                        CreateMapDataKey(kFakeMapId, "key_1"),
+                                        CreateMapEntryKey(kFakeMapId, "key_1"),
                                         ToBytes("value_1"),
                                     },
                                     {
-                                        CreateMapDataKey(kFakeMapId, "key_2"),
+                                        CreateMapEntryKey(kFakeMapId, "key_2"),
                                         ToBytes("value_2"),
                                     },
                                 }));
@@ -511,12 +576,13 @@ TEST_F(SessionStorageLevelDBTest,
   // entry.
   ASSERT_OK_AND_ASSIGN(
       std::vector<DomStorageDatabase::KeyValuePair> all_entries,
-      session_storage_leveldb->GetLevelDB().GetPrefixed({}));
+      session_storage_leveldb->GetLevelDBForTesting().GetPrefixed({}));
   EXPECT_EQ(all_entries.size(), 3u);
 
   // Delete the two key/value entries from the database.
   std::vector<DomStorageDatabase::MapLocator> maps_to_delete;
   maps_to_delete.emplace_back(kFakeSessionId, kFakeUrlStorageKey, kFakeMapId);
+  maps_to_delete.back().RemoveSession(kFakeSessionId);
 
   DbStatus status = session_storage_leveldb->DeleteStorageKeysFromSession(
       kFakeSessionId, /*metadata_to_delete=*/{kFakeUrlStorageKey},
@@ -525,8 +591,9 @@ TEST_F(SessionStorageLevelDBTest,
 
   // Verify the contents in the database, which should only include the
   // "VERSION" entry.
-  ASSERT_OK_AND_ASSIGN(all_entries,
-                       session_storage_leveldb->GetLevelDB().GetPrefixed({}));
+  ASSERT_OK_AND_ASSIGN(
+      all_entries,
+      session_storage_leveldb->GetLevelDBForTesting().GetPrefixed({}));
 
   EXPECT_TRUE(status.ok()) << status.ToString();
   ASSERT_EQ(all_entries.size(), 1u);
@@ -552,7 +619,7 @@ TEST_F(SessionStorageLevelDBTest, DeleteStorageKeysFromSessionWithMapExcluded) {
   ASSERT_NO_FATAL_FAILURE(WriteEntries(
       *session_storage_leveldb, {
                                     {
-                                        CreateMapDataKey(kFakeMapId, "key_1"),
+                                        CreateMapEntryKey(kFakeMapId, "key_1"),
                                         ToBytes("value_1"),
                                     },
                                 }));
@@ -560,7 +627,7 @@ TEST_F(SessionStorageLevelDBTest, DeleteStorageKeysFromSessionWithMapExcluded) {
   // Verify the database contains the metadata, key/value and "VERSION" entries.
   ASSERT_OK_AND_ASSIGN(
       std::vector<DomStorageDatabase::KeyValuePair> all_entries,
-      session_storage_leveldb->GetLevelDB().GetPrefixed({}));
+      session_storage_leveldb->GetLevelDBForTesting().GetPrefixed({}));
   EXPECT_EQ(all_entries.size(), 3u);
 
   // Delete the `metadata` entry from the database.
@@ -571,14 +638,15 @@ TEST_F(SessionStorageLevelDBTest, DeleteStorageKeysFromSessionWithMapExcluded) {
 
   // Verify the contents in the database, which should include the
   // map key/value entry and the "VERSION" entry.
-  ASSERT_OK_AND_ASSIGN(all_entries,
-                       session_storage_leveldb->GetLevelDB().GetPrefixed({}));
+  ASSERT_OK_AND_ASSIGN(
+      all_entries,
+      session_storage_leveldb->GetLevelDBForTesting().GetPrefixed({}));
 
   EXPECT_TRUE(status.ok()) << status.ToString();
   ASSERT_EQ(all_entries.size(), 2u);
 
   // Verify the map key/value entry for `kFakeMapId`.
-  EXPECT_EQ(all_entries[0].key, CreateMapDataKey(kFakeMapId, "key_1"));
+  EXPECT_EQ(all_entries[0].key, CreateMapEntryKey(kFakeMapId, "key_1"));
   EXPECT_EQ(all_entries[0].value, ToBytes("value_1"));
 
   VerifyDatabaseVersionEntry(all_entries[1]);
@@ -638,29 +706,29 @@ TEST_F(SessionStorageLevelDBTest,
                    {
                        // Write the first map's key/value pairs.
                        {
-                           CreateMapDataKey(kFakeMapId, "key_1"),
+                           CreateMapEntryKey(kFakeMapId, "key_1"),
                            ToBytes("value_1"),
                        },
                        {
-                           CreateMapDataKey(kFakeMapId, "key_2"),
+                           CreateMapEntryKey(kFakeMapId, "key_2"),
                            ToBytes("value_2"),
                        },
                        // Write the second map's key/value pairs.
                        {
-                           CreateMapDataKey(kOtherFakeMapId, "key_3"),
+                           CreateMapEntryKey(kOtherFakeMapId, "key_3"),
                            ToBytes("value_3"),
                        },
                        // Write the third map's key/value pairs.
                        {
-                           CreateMapDataKey(kThirdFakeMapId, "key_4"),
+                           CreateMapEntryKey(kThirdFakeMapId, "key_4"),
                            ToBytes("value_4"),
                        },
                        {
-                           CreateMapDataKey(kThirdFakeMapId, "key_5"),
+                           CreateMapEntryKey(kThirdFakeMapId, "key_5"),
                            ToBytes("value_5"),
                        },
                        {
-                           CreateMapDataKey(kThirdFakeMapId, "key_6"),
+                           CreateMapEntryKey(kThirdFakeMapId, "key_6"),
                            ToBytes("value_6"),
                        },
                    }));
@@ -669,7 +737,7 @@ TEST_F(SessionStorageLevelDBTest,
   // entries and one "VERSION" entry.
   ASSERT_OK_AND_ASSIGN(
       std::vector<DomStorageDatabase::KeyValuePair> all_entries,
-      session_storage_leveldb->GetLevelDB().GetPrefixed({}));
+      session_storage_leveldb->GetLevelDBForTesting().GetPrefixed({}));
   EXPECT_EQ(all_entries.size(), 11u);
 
   // Delete `kFakeUrlStorageKey` from `kFakeSessionId`, which must remove one
@@ -684,31 +752,32 @@ TEST_F(SessionStorageLevelDBTest,
   // - Six map key/value entries for `kFakeMapId`, `kOtherFakeMapId` and
   //   `kThirdFakeMapId`.
   // - One database VERSION entry.
-  ASSERT_OK_AND_ASSIGN(all_entries,
-                       session_storage_leveldb->GetLevelDB().GetPrefixed({}));
+  ASSERT_OK_AND_ASSIGN(
+      all_entries,
+      session_storage_leveldb->GetLevelDBForTesting().GetPrefixed({}));
 
   EXPECT_TRUE(status.ok()) << status.ToString();
   ASSERT_EQ(all_entries.size(), 10u);
 
   // Verify the map key/value entries for `kFakeMapId`.
-  EXPECT_EQ(all_entries[0].key, CreateMapDataKey(kFakeMapId, "key_1"));
+  EXPECT_EQ(all_entries[0].key, CreateMapEntryKey(kFakeMapId, "key_1"));
   EXPECT_EQ(all_entries[0].value, ToBytes("value_1"));
 
-  EXPECT_EQ(all_entries[1].key, CreateMapDataKey(kFakeMapId, "key_2"));
+  EXPECT_EQ(all_entries[1].key, CreateMapEntryKey(kFakeMapId, "key_2"));
   EXPECT_EQ(all_entries[1].value, ToBytes("value_2"));
 
   // Verify the map key/value entries for `kOtherFakeMapId`.
-  EXPECT_EQ(all_entries[2].key, CreateMapDataKey(kOtherFakeMapId, "key_3"));
+  EXPECT_EQ(all_entries[2].key, CreateMapEntryKey(kOtherFakeMapId, "key_3"));
   EXPECT_EQ(all_entries[2].value, ToBytes("value_3"));
 
   // Verify the map key/value entries for `kThirdFakeMapId`.
-  EXPECT_EQ(all_entries[3].key, CreateMapDataKey(kThirdFakeMapId, "key_4"));
+  EXPECT_EQ(all_entries[3].key, CreateMapEntryKey(kThirdFakeMapId, "key_4"));
   EXPECT_EQ(all_entries[3].value, ToBytes("value_4"));
 
-  EXPECT_EQ(all_entries[4].key, CreateMapDataKey(kThirdFakeMapId, "key_5"));
+  EXPECT_EQ(all_entries[4].key, CreateMapEntryKey(kThirdFakeMapId, "key_5"));
   EXPECT_EQ(all_entries[4].value, ToBytes("value_5"));
 
-  EXPECT_EQ(all_entries[5].key, CreateMapDataKey(kThirdFakeMapId, "key_6"));
+  EXPECT_EQ(all_entries[5].key, CreateMapEntryKey(kThirdFakeMapId, "key_6"));
   EXPECT_EQ(all_entries[5].value, ToBytes("value_6"));
   VerifyDatabaseVersionEntry(all_entries[9]);
 
@@ -724,6 +793,7 @@ TEST_F(SessionStorageLevelDBTest,
   std::vector<DomStorageDatabase::MapLocator> maps_to_delete;
   maps_to_delete.emplace_back(kOtherFakeSessionId, kFakeUrlStorageKey,
                               kFakeMapId);
+  maps_to_delete.back().RemoveSession(kOtherFakeSessionId);
 
   status = session_storage_leveldb->DeleteStorageKeysFromSession(
       kOtherFakeSessionId, /*metadata_to_delete=*/{kFakeUrlStorageKey},
@@ -735,24 +805,25 @@ TEST_F(SessionStorageLevelDBTest,
   // - Four map key/value entry for `kOtherFakeMapId`.
   // - One database VERSION entry.
   all_entries.clear();
-  ASSERT_OK_AND_ASSIGN(all_entries,
-                       session_storage_leveldb->GetLevelDB().GetPrefixed({}));
+  ASSERT_OK_AND_ASSIGN(
+      all_entries,
+      session_storage_leveldb->GetLevelDBForTesting().GetPrefixed({}));
 
   EXPECT_TRUE(status.ok()) << status.ToString();
   ASSERT_EQ(all_entries.size(), 7u);
 
   // Verify the map key/value entry for `kOtherFakeMapId`.
-  EXPECT_EQ(all_entries[0].key, CreateMapDataKey(kOtherFakeMapId, "key_3"));
+  EXPECT_EQ(all_entries[0].key, CreateMapEntryKey(kOtherFakeMapId, "key_3"));
   EXPECT_EQ(all_entries[0].value, ToBytes("value_3"));
 
   // Verify the map key/value entries for `kThirdFakeMapId`.
-  EXPECT_EQ(all_entries[1].key, CreateMapDataKey(kThirdFakeMapId, "key_4"));
+  EXPECT_EQ(all_entries[1].key, CreateMapEntryKey(kThirdFakeMapId, "key_4"));
   EXPECT_EQ(all_entries[1].value, ToBytes("value_4"));
 
-  EXPECT_EQ(all_entries[2].key, CreateMapDataKey(kThirdFakeMapId, "key_5"));
+  EXPECT_EQ(all_entries[2].key, CreateMapEntryKey(kThirdFakeMapId, "key_5"));
   EXPECT_EQ(all_entries[2].value, ToBytes("value_5"));
 
-  EXPECT_EQ(all_entries[3].key, CreateMapDataKey(kThirdFakeMapId, "key_6"));
+  EXPECT_EQ(all_entries[3].key, CreateMapEntryKey(kThirdFakeMapId, "key_6"));
   EXPECT_EQ(all_entries[3].value, ToBytes("value_6"));
 
   VerifyDatabaseVersionEntry(all_entries[6]);
@@ -768,10 +839,14 @@ TEST_F(SessionStorageLevelDBTest,
   // `kOtherFakeSessionId`, which must remove two metadata entries and four map
   // key/value entries.
   maps_to_delete.clear();
+
   maps_to_delete.emplace_back(kOtherFakeSessionId, kOtherFakeUrlStorageKey,
                               kOtherFakeMapId);
+  maps_to_delete.back().RemoveSession(kOtherFakeSessionId);
+
   maps_to_delete.emplace_back(kOtherFakeSessionId, kThirdFakeStorageKey,
                               kThirdFakeMapId);
+  maps_to_delete.back().RemoveSession(kOtherFakeSessionId);
 
   status = session_storage_leveldb->DeleteStorageKeysFromSession(
       kOtherFakeSessionId,
@@ -783,8 +858,9 @@ TEST_F(SessionStorageLevelDBTest,
   // Verify the contents in the database, which should only include the
   // "VERSION" entry.
   all_entries.clear();
-  ASSERT_OK_AND_ASSIGN(all_entries,
-                       session_storage_leveldb->GetLevelDB().GetPrefixed({}));
+  ASSERT_OK_AND_ASSIGN(
+      all_entries,
+      session_storage_leveldb->GetLevelDBForTesting().GetPrefixed({}));
 
   EXPECT_TRUE(status.ok()) << status.ToString();
   ASSERT_EQ(all_entries.size(), 1u);
@@ -814,7 +890,7 @@ TEST_F(SessionStorageLevelDBTest, DeleteSessionsWithMetadata) {
   // Verify the database contains the `metadata` and "VERSION" entries.
   ASSERT_OK_AND_ASSIGN(
       std::vector<DomStorageDatabase::KeyValuePair> all_entries,
-      session_storage_leveldb->GetLevelDB().GetPrefixed({}));
+      session_storage_leveldb->GetLevelDBForTesting().GetPrefixed({}));
   EXPECT_EQ(all_entries.size(), 2u);
 
   // Delete the `metadata` entry from the database.
@@ -824,8 +900,9 @@ TEST_F(SessionStorageLevelDBTest, DeleteSessionsWithMetadata) {
 
   // Verify the contents in the database, which should only include the
   // "VERSION" entry.
-  ASSERT_OK_AND_ASSIGN(all_entries,
-                       session_storage_leveldb->GetLevelDB().GetPrefixed({}));
+  ASSERT_OK_AND_ASSIGN(
+      all_entries,
+      session_storage_leveldb->GetLevelDBForTesting().GetPrefixed({}));
 
   EXPECT_TRUE(status.ok()) << status.ToString();
   ASSERT_EQ(all_entries.size(), 1u);
@@ -841,11 +918,11 @@ TEST_F(SessionStorageLevelDBTest, DeleteSessionsWithMapKeyValues) {
   ASSERT_NO_FATAL_FAILURE(WriteEntries(
       *session_storage_leveldb, {
                                     {
-                                        CreateMapDataKey(kFakeMapId, "key_1"),
+                                        CreateMapEntryKey(kFakeMapId, "key_1"),
                                         ToBytes("value_1"),
                                     },
                                     {
-                                        CreateMapDataKey(kFakeMapId, "key_2"),
+                                        CreateMapEntryKey(kFakeMapId, "key_2"),
                                         ToBytes("value_2"),
                                     },
                                 }));
@@ -854,12 +931,13 @@ TEST_F(SessionStorageLevelDBTest, DeleteSessionsWithMapKeyValues) {
   // entry.
   ASSERT_OK_AND_ASSIGN(
       std::vector<DomStorageDatabase::KeyValuePair> all_entries,
-      session_storage_leveldb->GetLevelDB().GetPrefixed({}));
+      session_storage_leveldb->GetLevelDBForTesting().GetPrefixed({}));
   EXPECT_EQ(all_entries.size(), 3u);
 
   // Delete the two key/value entries from the database.
   std::vector<DomStorageDatabase::MapLocator> maps_to_delete;
   maps_to_delete.emplace_back(kFakeSessionId, kFakeUrlStorageKey, kFakeMapId);
+  maps_to_delete.back().RemoveSession(kFakeSessionId);
 
   DbStatus status = session_storage_leveldb->DeleteSessions(
       {kFakeSessionId}, std::move(maps_to_delete));
@@ -867,8 +945,9 @@ TEST_F(SessionStorageLevelDBTest, DeleteSessionsWithMapKeyValues) {
 
   // Verify the contents in the database, which should only include the
   // "VERSION" entry.
-  ASSERT_OK_AND_ASSIGN(all_entries,
-                       session_storage_leveldb->GetLevelDB().GetPrefixed({}));
+  ASSERT_OK_AND_ASSIGN(
+      all_entries,
+      session_storage_leveldb->GetLevelDBForTesting().GetPrefixed({}));
 
   EXPECT_TRUE(status.ok()) << status.ToString();
   ASSERT_EQ(all_entries.size(), 1u);
@@ -894,7 +973,7 @@ TEST_F(SessionStorageLevelDBTest, DeleteSessionsWithMapExcluded) {
   ASSERT_NO_FATAL_FAILURE(WriteEntries(
       *session_storage_leveldb, {
                                     {
-                                        CreateMapDataKey(kFakeMapId, "key_1"),
+                                        CreateMapEntryKey(kFakeMapId, "key_1"),
                                         ToBytes("value_1"),
                                     },
                                 }));
@@ -902,7 +981,7 @@ TEST_F(SessionStorageLevelDBTest, DeleteSessionsWithMapExcluded) {
   // Verify the database contains the metadata, key/value and "VERSION" entries.
   ASSERT_OK_AND_ASSIGN(
       std::vector<DomStorageDatabase::KeyValuePair> all_entries,
-      session_storage_leveldb->GetLevelDB().GetPrefixed({}));
+      session_storage_leveldb->GetLevelDBForTesting().GetPrefixed({}));
   EXPECT_EQ(all_entries.size(), 3u);
 
   // Delete the `metadata` entry from the database.
@@ -912,14 +991,15 @@ TEST_F(SessionStorageLevelDBTest, DeleteSessionsWithMapExcluded) {
 
   // Verify the contents in the database, which should include the
   // map key/value entry and the "VERSION" entry.
-  ASSERT_OK_AND_ASSIGN(all_entries,
-                       session_storage_leveldb->GetLevelDB().GetPrefixed({}));
+  ASSERT_OK_AND_ASSIGN(
+      all_entries,
+      session_storage_leveldb->GetLevelDBForTesting().GetPrefixed({}));
 
   EXPECT_TRUE(status.ok()) << status.ToString();
   ASSERT_EQ(all_entries.size(), 2u);
 
   // Verify the map key/value entry for `kFakeMapId`.
-  EXPECT_EQ(all_entries[0].key, CreateMapDataKey(kFakeMapId, "key_1"));
+  EXPECT_EQ(all_entries[0].key, CreateMapEntryKey(kFakeMapId, "key_1"));
   EXPECT_EQ(all_entries[0].value, ToBytes("value_1"));
 
   VerifyDatabaseVersionEntry(all_entries[1]);
@@ -932,41 +1012,25 @@ TEST_F(SessionStorageLevelDBTest, DeleteSessionsWithMultipleStorageKeys) {
   // Create two maps used by two storage keys across three sessions.
   //
   // Add 4 metadata entries with one for each map usage.
-  const DomStorageDatabase::MapMetadata kExpectedMapMetadataArray[] = {
-      // The first session's metadata:
-      {
-          .map_locator{
-              kFakeSessionId,
-              kFakeUrlStorageKey,
-              kFakeMapId,
-          },
+  std::vector<DomStorageDatabase::MapMetadata> expected_map_metadata;
+  expected_map_metadata.push_back({
+      .map_locator{
+          kFakeSessionId,
+          kFakeUrlStorageKey,
+          kFakeMapId,
       },
-      // The second session's metadata:
-      {
-          .map_locator{
-              kOtherFakeSessionId,
-              kFakeUrlStorageKey,
-              kFakeMapId,
-          },
+  });
+  // Clone `kFakeMapId` for `kOtherFakeSessionId`.
+  expected_map_metadata[0].map_locator.AddSession(kOtherFakeSessionId);
+  expected_map_metadata.push_back({
+      .map_locator{
+          kOtherFakeSessionId,
+          kOtherFakeUrlStorageKey,
+          kOtherFakeMapId,
       },
-      {
-          .map_locator{
-              kOtherFakeSessionId,
-              kOtherFakeUrlStorageKey,
-              kOtherFakeMapId,
-          },
-      },
-      // The third session's metadata:
-      {
-          .map_locator{
-              kThirdFakeSessionId,
-              kOtherFakeUrlStorageKey,
-              kOtherFakeMapId,
-          },
-      },
-  };
-  std::vector<DomStorageDatabase::MapMetadata> expected_map_metadata =
-      CloneMapMetadataVector(kExpectedMapMetadataArray);
+  });
+  // Clone `kOtherFakeMapId` for `kThirdFakeSessionId`.
+  expected_map_metadata[1].map_locator.AddSession(kThirdFakeSessionId);
 
   DomStorageDatabase::Metadata metadata;
   metadata.map_metadata = CloneMapMetadataVector(expected_map_metadata);
@@ -974,27 +1038,28 @@ TEST_F(SessionStorageLevelDBTest, DeleteSessionsWithMultipleStorageKeys) {
   EXPECT_TRUE(status.ok()) << status.ToString();
 
   // Write 3 map key/value entries.
-  ASSERT_NO_FATAL_FAILURE(WriteEntries(
-      *session_storage_leveldb, {// Write the first map's key/value pairs.
-                                 {
-                                     CreateMapDataKey(kFakeMapId, "key_1"),
-                                     ToBytes("value_1"),
-                                 },
-                                 {
-                                     CreateMapDataKey(kFakeMapId, "key_2"),
-                                     ToBytes("value_2"),
-                                 },
-                                 // Write the second map's key/value pairs.
-                                 {
-                                     CreateMapDataKey(kOtherFakeMapId, "key_3"),
-                                     ToBytes("value_3"),
-                                 }}));
+  ASSERT_NO_FATAL_FAILURE(
+      WriteEntries(*session_storage_leveldb,
+                   {// Write the first map's key/value pairs.
+                    {
+                        CreateMapEntryKey(kFakeMapId, "key_1"),
+                        ToBytes("value_1"),
+                    },
+                    {
+                        CreateMapEntryKey(kFakeMapId, "key_2"),
+                        ToBytes("value_2"),
+                    },
+                    // Write the second map's key/value pairs.
+                    {
+                        CreateMapEntryKey(kOtherFakeMapId, "key_3"),
+                        ToBytes("value_3"),
+                    }}));
 
   // Verify the database contains the four `metadata` entries, three `key/value`
   // entries and one "VERSION" entry.
   ASSERT_OK_AND_ASSIGN(
       std::vector<DomStorageDatabase::KeyValuePair> all_entries,
-      session_storage_leveldb->GetLevelDB().GetPrefixed({}));
+      session_storage_leveldb->GetLevelDBForTesting().GetPrefixed({}));
   EXPECT_EQ(all_entries.size(), 8u);
 
   // Delete `kFakeSessionId`, which must remove one metadata entry.
@@ -1007,21 +1072,22 @@ TEST_F(SessionStorageLevelDBTest, DeleteSessionsWithMultipleStorageKeys) {
   //   `kThirdFakeSessionId`.
   // - Three map key/value entries for `kFakeMapId`, and `kOtherFakeMapId`.
   // - One database VERSION entry.
-  ASSERT_OK_AND_ASSIGN(all_entries,
-                       session_storage_leveldb->GetLevelDB().GetPrefixed({}));
+  ASSERT_OK_AND_ASSIGN(
+      all_entries,
+      session_storage_leveldb->GetLevelDBForTesting().GetPrefixed({}));
 
   EXPECT_TRUE(status.ok()) << status.ToString();
   ASSERT_EQ(all_entries.size(), 7u);
 
   // Verify the map key/value entries for `kFakeMapId`.
-  EXPECT_EQ(all_entries[0].key, CreateMapDataKey(kFakeMapId, "key_1"));
+  EXPECT_EQ(all_entries[0].key, CreateMapEntryKey(kFakeMapId, "key_1"));
   EXPECT_EQ(all_entries[0].value, ToBytes("value_1"));
 
-  EXPECT_EQ(all_entries[1].key, CreateMapDataKey(kFakeMapId, "key_2"));
+  EXPECT_EQ(all_entries[1].key, CreateMapEntryKey(kFakeMapId, "key_2"));
   EXPECT_EQ(all_entries[1].value, ToBytes("value_2"));
 
   // Verify the map key/value entries for `kOtherFakeMapId`.
-  EXPECT_EQ(all_entries[2].key, CreateMapDataKey(kOtherFakeMapId, "key_3"));
+  EXPECT_EQ(all_entries[2].key, CreateMapEntryKey(kOtherFakeMapId, "key_3"));
   EXPECT_EQ(all_entries[2].value, ToBytes("value_3"));
 
   VerifyDatabaseVersionEntry(all_entries[6]);
@@ -1029,7 +1095,7 @@ TEST_F(SessionStorageLevelDBTest, DeleteSessionsWithMultipleStorageKeys) {
   // Verify the three metadata entries for `kOtherFakeSessionId` and
   // `kThirdFakeSessionId`. Pop `kFakeSessionId` from the front of
   // `expected_map_metadata`.
-  expected_map_metadata.erase(expected_map_metadata.begin());
+  expected_map_metadata[0].map_locator.RemoveSession(kFakeSessionId);
   ASSERT_OK_AND_ASSIGN(metadata, session_storage_leveldb->ReadAllMetadata());
   ExpectEqualsMapMetadataSpan(metadata.map_metadata, expected_map_metadata);
 
@@ -1039,6 +1105,7 @@ TEST_F(SessionStorageLevelDBTest, DeleteSessionsWithMultipleStorageKeys) {
   std::vector<DomStorageDatabase::MapLocator> maps_to_delete;
   maps_to_delete.emplace_back(kOtherFakeSessionId, kFakeUrlStorageKey,
                               kFakeMapId);
+  maps_to_delete.back().RemoveSession(kOtherFakeSessionId);
 
   status = session_storage_leveldb->DeleteSessions({kOtherFakeSessionId},
                                                    std::move(maps_to_delete));
@@ -1048,24 +1115,241 @@ TEST_F(SessionStorageLevelDBTest, DeleteSessionsWithMultipleStorageKeys) {
   // - One metadata entry for `kThirdFakeSessionId`.
   // - One map key/value entry for `kOtherFakeMapId`.
   // - One database VERSION entry.
-  ASSERT_OK_AND_ASSIGN(all_entries,
-                       session_storage_leveldb->GetLevelDB().GetPrefixed({}));
+  ASSERT_OK_AND_ASSIGN(
+      all_entries,
+      session_storage_leveldb->GetLevelDBForTesting().GetPrefixed({}));
 
   EXPECT_TRUE(status.ok()) << status.ToString();
   ASSERT_EQ(all_entries.size(), 3u);
 
   // Verify the map key/value entries for `kOtherFakeMapId`.
-  EXPECT_EQ(all_entries[0].key, CreateMapDataKey(kOtherFakeMapId, "key_3"));
+  EXPECT_EQ(all_entries[0].key, CreateMapEntryKey(kOtherFakeMapId, "key_3"));
   EXPECT_EQ(all_entries[0].value, ToBytes("value_3"));
 
   VerifyDatabaseVersionEntry(all_entries[2]);
 
   // Verify the one metadata entries for `kThirdFakeMapId`.  Pop
   // `kOtherFakeSessionId` from the front of`expected_map_metadata`.
-  expected_map_metadata.erase(expected_map_metadata.begin(),
-                              expected_map_metadata.begin() + 2);
+  expected_map_metadata.erase(expected_map_metadata.begin());
+  expected_map_metadata[0].map_locator.RemoveSession(kOtherFakeSessionId);
   ASSERT_OK_AND_ASSIGN(metadata, session_storage_leveldb->ReadAllMetadata());
   ExpectEqualsMapMetadataSpan(metadata.map_metadata, expected_map_metadata);
+}
+
+TEST_F(SessionStorageLevelDBTest, ReadMapKeyValuesWithEmpty) {
+  std::unique_ptr<SessionStorageLevelDB> session_storage_leveldb;
+  ASSERT_NO_FATAL_FAILURE(OpenInMemory(&session_storage_leveldb));
+
+  // An empty database must have no key/value pairs.
+  DomStorageDatabase::MapLocator map_locator{kFakeSessionId, kFakeUrlStorageKey,
+                                             kFakeMapId};
+  ASSERT_OK_AND_ASSIGN(
+      (std::map<DomStorageDatabase::Key, DomStorageDatabase::Value> entries),
+      session_storage_leveldb->ReadMapKeyValues(std::move(map_locator)));
+  EXPECT_EQ(entries.size(), 0u);
+}
+
+TEST_F(SessionStorageLevelDBTest, ReadMapKeyValues) {
+  std::unique_ptr<SessionStorageLevelDB> session_storage_leveldb;
+  ASSERT_NO_FATAL_FAILURE(OpenInMemory(&session_storage_leveldb));
+
+  // Add two key/value pairs to a single map.
+  const DomStorageDatabase::Value kValue1 = ToBytes("value_1");
+  const DomStorageDatabase::Value kValue2 = ToBytes("value_2");
+
+  ASSERT_NO_FATAL_FAILURE(
+      WriteEntries(*session_storage_leveldb,
+                   {
+                       {
+                           CreateMapEntryKey(kFakeMapId, kScriptKey1),
+                           kValue1,
+                       },
+                       {
+                           CreateMapEntryKey(kFakeMapId, kScriptKey2),
+                           kValue2,
+                       },
+                   }));
+
+  // Read the two key/value pairs from the database.
+  DomStorageDatabase::MapLocator map_locator{kFakeSessionId, kFakeUrlStorageKey,
+                                             kFakeMapId};
+  ASSERT_OK_AND_ASSIGN(
+      (std::map<DomStorageDatabase::Key, DomStorageDatabase::Value> entries),
+      session_storage_leveldb->ReadMapKeyValues(std::move(map_locator)));
+
+  ASSERT_EQ(entries.size(), 2u);
+  EXPECT_EQ(entries[ToBytes(kScriptKey1)], kValue1);
+  EXPECT_EQ(entries[ToBytes(kScriptKey2)], kValue2);
+}
+
+TEST_F(SessionStorageLevelDBTest, ReadMapKeyValuesWithMultipleMaps) {
+  std::unique_ptr<SessionStorageLevelDB> session_storage_leveldb;
+  ASSERT_NO_FATAL_FAILURE(OpenInMemory(&session_storage_leveldb));
+
+  // Create two maps, adding a key/value pair to each map.
+  const DomStorageDatabase::Value kValue1 = ToBytes("value_1");
+  const DomStorageDatabase::Value kValue2 = ToBytes("value_2");
+
+  ASSERT_NO_FATAL_FAILURE(
+      WriteEntries(*session_storage_leveldb,
+                   {
+                       {
+                           CreateMapEntryKey(kFakeMapId, kScriptKey1),
+                           kValue1,
+                       },
+                       {
+                           CreateMapEntryKey(kOtherFakeMapId, kScriptKey2),
+                           kValue2,
+                       },
+                   }));
+
+  // Read the first map's key/value pair.
+  DomStorageDatabase::MapLocator map_locator{kFakeSessionId, kFakeUrlStorageKey,
+                                             kFakeMapId};
+  ASSERT_OK_AND_ASSIGN(
+      (std::map<DomStorageDatabase::Key, DomStorageDatabase::Value> entries),
+      session_storage_leveldb->ReadMapKeyValues(std::move(map_locator)));
+
+  ASSERT_EQ(entries.size(), 1u);
+  EXPECT_EQ(entries[ToBytes(kScriptKey1)], kValue1);
+
+  // Read the second map's key/value pair.
+  DomStorageDatabase::MapLocator other_map_locator{
+      kFakeSessionId, kFakeUrlStorageKey, kOtherFakeMapId};
+  ASSERT_OK_AND_ASSIGN(entries, session_storage_leveldb->ReadMapKeyValues(
+                                    std::move(other_map_locator)));
+
+  ASSERT_EQ(entries.size(), 1u);
+  EXPECT_EQ(entries[ToBytes(kScriptKey2)], kValue2);
+}
+
+TEST_F(SessionStorageLevelDBTest, CloneMapWithEmpty) {
+  std::unique_ptr<SessionStorageLevelDB> session_storage_leveldb;
+  ASSERT_NO_FATAL_FAILURE(OpenInMemory(&session_storage_leveldb));
+
+  // Clone an empty map, which is a no-op.
+  DomStorageDatabase::MapLocator source_map_locator{
+      kFakeSessionId, kFakeUrlStorageKey, kFakeMapId};
+
+  DomStorageDatabase::MapLocator target_map_locator{
+      kOtherFakeSessionId, kFakeUrlStorageKey, kOtherFakeMapId};
+
+  ASSERT_NO_FATAL_FAILURE(
+      CloneMapAndVerifyResults(*session_storage_leveldb, source_map_locator,
+                               target_map_locator, /*expected_entries=*/{}));
+}
+
+TEST_F(SessionStorageLevelDBTest, CloneMap) {
+  std::unique_ptr<SessionStorageLevelDB> session_storage_leveldb;
+  ASSERT_NO_FATAL_FAILURE(OpenInMemory(&session_storage_leveldb));
+
+  // Add two key/value pairs to a single map.
+  const DomStorageDatabase::Value kValue1 = ToBytes("value_1");
+  const DomStorageDatabase::Value kValue2 = ToBytes("value_2");
+
+  ASSERT_NO_FATAL_FAILURE(
+      WriteEntries(*session_storage_leveldb,
+                   {
+                       {
+                           CreateMapEntryKey(kFakeMapId, kScriptKey1),
+                           kValue1,
+                       },
+                       {
+                           CreateMapEntryKey(kFakeMapId, kScriptKey2),
+                           kValue2,
+                       },
+                   }));
+
+  // Clone the map with two entries.
+  DomStorageDatabase::MapLocator source_map_locator{
+      kFakeSessionId, kFakeUrlStorageKey, kFakeMapId};
+
+  DomStorageDatabase::MapLocator target_map_locator{
+      kOtherFakeSessionId, kFakeUrlStorageKey, kOtherFakeMapId};
+
+  ASSERT_NO_FATAL_FAILURE(
+      CloneMapAndVerifyResults(*session_storage_leveldb, source_map_locator,
+                               target_map_locator, /*expected_entries=*/
+                               {
+                                   {
+                                       ToBytes(kScriptKey1),
+                                       kValue1,
+                                   },
+                                   {
+                                       ToBytes(kScriptKey2),
+                                       kValue2,
+                                   },
+                               }));
+}
+
+TEST_F(SessionStorageLevelDBTest, CloneMapWithMultipleMaps) {
+  std::unique_ptr<SessionStorageLevelDB> session_storage_leveldb;
+  ASSERT_NO_FATAL_FAILURE(OpenInMemory(&session_storage_leveldb));
+
+  // Create two maps, adding a key/value pair to each map.
+  const DomStorageDatabase::Value kValue1 = ToBytes("value_1");
+  const DomStorageDatabase::Value kValue2 = ToBytes("value_2");
+
+  ASSERT_NO_FATAL_FAILURE(
+      WriteEntries(*session_storage_leveldb,
+                   {
+                       {
+                           CreateMapEntryKey(kFakeMapId, kScriptKey1),
+                           kValue1,
+                       },
+                       {
+                           CreateMapEntryKey(kOtherFakeMapId, kScriptKey2),
+                           kValue2,
+                       },
+                   }));
+
+  // Clone the first map.
+  DomStorageDatabase::MapLocator first_source_map_locator{
+      kFakeSessionId, kFakeUrlStorageKey, kFakeMapId};
+
+  DomStorageDatabase::MapLocator first_target_map_locator{
+      kThirdFakeSessionId, kFakeUrlStorageKey, kThirdFakeMapId};
+
+  ASSERT_NO_FATAL_FAILURE(CloneMapAndVerifyResults(
+      *session_storage_leveldb, first_source_map_locator,
+      first_target_map_locator, /*expected_entries=*/
+      {
+          {
+              ToBytes(kScriptKey1),
+              kValue1,
+          },
+      }));
+
+  // Clone the second map.
+  DomStorageDatabase::MapLocator second_source_map_locator{
+      kOtherFakeSessionId, kFakeUrlStorageKey, kOtherFakeMapId};
+
+  DomStorageDatabase::MapLocator second_target_map_locator{
+      kFourthFakeSessionId, kFakeUrlStorageKey, kFourthFakeMapId};
+
+  ASSERT_NO_FATAL_FAILURE(CloneMapAndVerifyResults(
+      *session_storage_leveldb, second_source_map_locator,
+      second_target_map_locator, /*expected_entries=*/
+      {
+          {
+              ToBytes(kScriptKey2),
+              kValue2,
+          },
+      }));
+}
+
+TEST_F(SessionStorageLevelDBTest, UpdateMaps) {
+  std::unique_ptr<SessionStorageLevelDB> session_storage_leveldb;
+  ASSERT_NO_FATAL_FAILURE(OpenInMemory(&session_storage_leveldb));
+
+  DomStorageDatabase::MapLocator map1_locator{kFakeSessionId,
+                                              kFakeUrlStorageKey, kFakeMapId};
+
+  DomStorageDatabase::MapLocator map2_locator{
+      kFakeSessionId, kFakeUrlStorageKey, kOtherFakeMapId};
+
+  ASSERT_NO_FATAL_FAILURE(
+      TestUpdateMaps(*session_storage_leveldb, map1_locator, map2_locator));
 }
 
 }  // namespace storage

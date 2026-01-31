@@ -10,6 +10,7 @@
 #include "base/android/jni_string.h"
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
+#include "base/trace_event/trace_event.h"
 #include "base/values.h"
 #include "chrome/browser/digital_credentials/digital_identity_low_risk_origins.h"
 #include "chrome/browser/ui/digital_credentials/digital_identity_safety_interstitial_bridge_android.h"
@@ -80,6 +81,8 @@ void DigitalIdentityProviderAndroid::Get(content::WebContents* web_contents,
                                          const url::Origin& origin,
                                          base::ValueView request,
                                          DigitalIdentityCallback callback) {
+  TRACE_EVENT("content.digitalcredentials",
+              "DigitalIdentityProviderAndroid::Get");
   callback_ = std::move(callback);
 
   std::optional<std::string> request_str = base::WriteJson(request);
@@ -99,6 +102,8 @@ void DigitalIdentityProviderAndroid::Create(content::WebContents* web_contents,
                                             const url::Origin& origin,
                                             const base::ValueView request,
                                             DigitalIdentityCallback callback) {
+  TRACE_EVENT("content.digitalcredentials",
+              "DigitalIdentityProviderAndroid::Create");
   callback_ = std::move(callback);
   std::optional<std::string> request_str = base::WriteJson(request);
   CHECK(request_str.has_value());
@@ -116,7 +121,7 @@ void DigitalIdentityProviderAndroid::OnReceive(
     JNIEnv* env,
     std::optional<std::string> protocol,
     std::string result,
-    jint j_status_for_metrics) {
+    int32_t j_status_for_metrics) {
   if (!callback_) {
     return;
   }

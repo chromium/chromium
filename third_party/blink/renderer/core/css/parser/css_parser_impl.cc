@@ -52,6 +52,7 @@
 #include "third_party/blink/renderer/core/css/style_rule_keyframe.h"
 #include "third_party/blink/renderer/core/css/style_rule_namespace.h"
 #include "third_party/blink/renderer/core/css/style_rule_nested_declarations.h"
+#include "third_party/blink/renderer/core/css/style_rule_route.h"
 #include "third_party/blink/renderer/core/css/style_rule_view_transition.h"
 #include "third_party/blink/renderer/core/css/style_scope.h"
 #include "third_party/blink/renderer/core/css/style_sheet_contents.h"
@@ -901,6 +902,8 @@ StyleRuleBase* CSSParserImpl::ConsumeAtRuleContents(
       return ConsumePageRule(stream);
     case CSSAtRuleID::kCSSAtRuleProperty:
       return ConsumePropertyRule(stream);
+    case CSSAtRuleID::kCSSAtRuleRoute:
+      return ConsumeRouteRule(stream);
     case CSSAtRuleID::kCSSAtRuleNavigation:
       return ConsumeNavigationRule(stream, nesting_type,
                                    parent_rule_for_nesting);
@@ -1617,9 +1620,11 @@ StyleRuleFontFeature* CSSParserImpl::ConsumeFontFeatureRuleBlock(
       if (numbers->length() == max_allowed_values) {
         return nullptr;
       }
+      CSSParserLocalContext local_context =
+          CSSParserLocalContext::CreateWithoutPropertyForAtRules();
       CSSPrimitiveValue* parsed_number =
           css_parsing_utils::ConsumeIntegerOrNumberCalc(
-              stream, *context_,
+              stream, *context_, local_context,
               CSSPrimitiveValue::ValueRange::kNonNegativeInteger);
       if (!parsed_number) {
         return nullptr;
@@ -1894,10 +1899,18 @@ StyleRuleProperty* CSSParserImpl::ConsumePropertyRule(
       PropertyRegistration::ConvertSyntax(rule->GetSyntax());
   std::optional<bool> inherits =
       PropertyRegistration::ConvertInherits(rule->Inherits());
+
+  // Since random() might be element dependent, we should disallow random()
+  // values inside initial value of registered custom properties. Use
+  // CSSParserLocalContext with custom property name just to keep it consistent
+  // in case we need it in the future.
+  CSSParserLocalContext local_context =
+      CSSParserLocalContext(CSSPropertyName(AtomicString(name)));
   std::optional<const CSSValue*> initial =
-      syntax.has_value() ? PropertyRegistration::ConvertInitial(
-                               rule->GetInitialValue(), *syntax, *context_)
-                         : std::nullopt;
+      syntax.has_value()
+          ? PropertyRegistration::ConvertInitial(
+                rule->GetInitialValue(), *syntax, *context_, local_context)
+          : std::nullopt;
 
   bool invalid_rule =
       !syntax.has_value() || !inherits.has_value() || !initial.has_value();
@@ -1922,6 +1935,54 @@ StyleRuleProperty* CSSParserImpl::ConsumePropertyRule(
     return nullptr;
   }
   return rule;
+}
+
+StyleRuleRoute* CSSParserImpl::ConsumeRouteRule(CSSParserTokenStream& stream) {
+  // Parse the prelude.
+  wtf_size_t prelude_offset_start = stream.LookAheadOffset();
+  const CSSParserToken& name_token = stream.Peek();
+  // <dashed-ident>
+  String name;
+  if (name_token.GetType() == kIdentToken) {
+    name = name_token.Value().ToString();
+    if (!name.StartsWith("--")) {
+      ConsumeErroneousAtRule(stream, CSSAtRuleID::kCSSAtRuleRoute);
+      return nullptr;
+    }
+  } else {
+    ConsumeErroneousAtRule(stream, CSSAtRuleID::kCSSAtRuleRoute);
+    return nullptr;
+  }
+  stream.ConsumeIncludingWhitespace();
+  wtf_size_t prelude_offset_end = stream.LookAheadOffset();
+  if (!ConsumeEndOfPreludeForAtRuleWithBlock(stream,
+                                             CSSAtRuleID::kCSSAtRuleRoute)) {
+    return nullptr;
+  }
+
+  // Parse the actual block.
+  CSSParserTokenStream::BlockGuard guard(stream);
+  if (observer_) {
+    observer_->StartRuleHeader(StyleRule::kRoute, prelude_offset_start);
+    observer_->EndRuleHeader(prelude_offset_end);
+    observer_->StartRuleBody(stream.Offset());
+  }
+
+  ConsumeBlockContents(stream, StyleRule::kRoute, CSSNestingType::kNone,
+                       /*parent_rule_for_nesting=*/nullptr,
+                       /*nested_declarations_start_index=*/kNotFound,
+                       /*child_rules=*/nullptr);
+
+  if (observer_) {
+    observer_->EndRuleBody(stream.LookAheadOffset());
+  }
+
+  // TODO(crbug.com/436805487): Honor [ <pattern-descriptors> |
+  // <init-descriptors> ] (it should either be a URLPattern, OR init
+  // descriptors, not a combination).
+  return MakeGarbageCollected<StyleRuleRoute>(
+      name, CreateCSSPropertyValueSet(parsed_properties_, context_->Mode(),
+                                      context_->GetDocument()));
 }
 
 StyleRuleNavigation* CSSParserImpl::ConsumeNavigationRule(
@@ -2129,20 +2190,24 @@ StyleRuleContainer* CSSParserImpl::ConsumeContainerRule(
   // <container-name>
   AtomicString name;
   if (stream.Peek().GetType() == kIdentToken) {
+    CSSParserLocalContext local_context =
+        CSSParserLocalContext::CreateWithoutPropertyForAtRules();
     auto* ident = DynamicTo<CSSCustomIdentValue>(
-        css_parsing_utils::ConsumeSingleContainerName(stream, *context_));
+        css_parsing_utils::ConsumeSingleContainerName(stream, *context_,
+                                                      local_context));
     if (ident) {
       name = ident->Value();
     }
   }
 
   const ConditionalExpNode* query = query_parser.ParseCondition(stream);
-  if (!query) {
+  if (!query &&
+      (name.IsNull() || !RuntimeEnabledFeatures::ContainerNameOnlyEnabled())) {
     ConsumeErroneousAtRule(stream, CSSAtRuleID::kCSSAtRuleContainer);
     return nullptr;
   }
   ContainerQuery* container_query = MakeGarbageCollected<ContainerQuery>(
-      ContainerSelector(std::move(name), *query), query);
+      ContainerSelector(std::move(name), query), query);
 
   wtf_size_t prelude_offset_end = stream.LookAheadOffset();
   if (!ConsumeEndOfPreludeForAtRuleWithBlock(
@@ -2655,13 +2720,17 @@ CSSParserImpl::ConsumeFunctionParameters(CSSParserTokenStream& stream) {
           /*comma_ends_declaration=*/true, important_ignored, *context_);
     }
 
+    // We just check the syntax here, we don't actually parse calc()
+    // expressions, so we don't need property context for random().
+    CSSParserLocalContext local_context =
+        CSSParserLocalContext::CreateWithoutPropertyForSubstitutions();
     // If a type and a default are both provided, the default must
     // parse successfully according to that type.
     //
     // https://drafts.csswg.org/css-mixins-1/#function-rule
     if (type.has_value() && default_value) {
       if (!default_value->NeedsVariableResolution() &&
-          !type->Parse(default_value->OriginalText(), *context_,
+          !type->Parse(default_value->OriginalText(), *context_, local_context,
                        /*is_animation_tainted=*/false,
                        /*is_attr_tainted=*/false)) {
         return std::nullopt;
@@ -3199,6 +3268,7 @@ bool CSSParserImpl::ConsumeDeclaration(CSSParserTokenStream& stream,
   bool parsing_descriptor = rule_type == StyleRule::kFontFace ||
                             rule_type == StyleRule::kFontPaletteValues ||
                             rule_type == StyleRule::kProperty ||
+                            rule_type == StyleRule::kRoute ||
                             rule_type == StyleRule::kCounterStyle ||
                             rule_type == StyleRule::kViewTransition ||
                             rule_type == StyleRule::kFunction;
@@ -3373,9 +3443,11 @@ std::unique_ptr<Vector<KeyframeOffset>> CSSParserImpl::ConsumeKeyframeKeyList(
         result->push_back(KeyframeOffset(TimelineOffset::NamedRange::kNone, 1));
         stream.ConsumeIncludingWhitespace();
       } else {
+        CSSParserLocalContext local_context =
+            CSSParserLocalContext::CreateWithoutPropertyForAtRules();
         auto* stream_name_percent = To<CSSValueList>(
-            css_parsing_utils::ConsumeTimelineRangeNameAndPercent(stream,
-                                                                  *context));
+            css_parsing_utils::ConsumeTimelineRangeNameAndPercent(
+                stream, *context, local_context));
         if (!stream_name_percent) {
           return nullptr;
         }

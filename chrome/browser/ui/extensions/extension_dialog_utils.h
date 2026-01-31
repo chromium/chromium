@@ -13,6 +13,8 @@
 #include "extensions/common/extension_id.h"
 #include "ui/gfx/native_ui_types.h"
 
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
+
 namespace content {
 class WebContents;
 }  // namespace content
@@ -22,7 +24,7 @@ class DialogModel;
 }  // namespace ui
 
 class Browser;
-class ExtensionsToolbarContainer;
+class ExtensionsToolbarDesktop;
 
 // Shows the dialog constructed from `dialog_model` for a single extension. This
 // may be anchored to the extension's UI in the browser if available or
@@ -50,7 +52,7 @@ void ShowWebModalDialog(content::WebContents* web_contents,
 #if defined(TOOLKIT_VIEWS)
 // Shows the dialog constructed from `dialog_model` for `extension_ids` and
 // is anchored to `container`.
-void ShowDialog(ExtensionsToolbarContainer* container,
+void ShowDialog(ExtensionsToolbarDesktop* container,
                 const std::vector<extensions::ExtensionId>& extension_ids,
                 std::unique_ptr<ui::DialogModel> dialog_model);
 

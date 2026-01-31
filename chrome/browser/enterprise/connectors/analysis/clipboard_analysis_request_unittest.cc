@@ -16,17 +16,15 @@ TEST(ClipboardAnalysisRequest, GetRequestData) {
   ClipboardAnalysisRequest request(AnalysisSettings().cloud_or_local_settings,
                                    contents, base::DoNothing());
 
-  safe_browsing::BinaryUploadService::Request::Data data1;
+  BinaryUploadRequest::Data data1;
   request.GetRequestData(base::BindLambdaForTesting(
-      [&data1](ScanRequestUploadResult result,
-               safe_browsing::BinaryUploadService::Request::Data data) {
+      [&data1](ScanRequestUploadResult result, BinaryUploadRequest::Data data) {
         data1 = std::move(data);
       }));
 
-  safe_browsing::BinaryUploadService::Request::Data data2;
+  BinaryUploadRequest::Data data2;
   request.GetRequestData(base::BindLambdaForTesting(
-      [&data2](ScanRequestUploadResult result,
-               safe_browsing::BinaryUploadService::Request::Data data) {
+      [&data2](ScanRequestUploadResult result, BinaryUploadRequest::Data data) {
         data2 = std::move(data);
       }));
 

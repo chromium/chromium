@@ -225,7 +225,7 @@ class CORE_EXPORT ScriptPromiseResolverBase
 #if DCHECK_IS_ON()
   bool suppress_detach_check_ = false;
 
-  base::debug::StackTrace create_stack_trace_{8};
+  base::debug::StackTrace create_stack_trace_{11};
 #endif
 };
 

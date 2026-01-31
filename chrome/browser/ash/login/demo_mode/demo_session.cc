@@ -16,7 +16,6 @@
 #include "ash/public/cpp/wallpaper/wallpaper_controller.h"
 #include "base/barrier_closure.h"
 #include "base/command_line.h"
-#include "base/containers/contains.h"
 #include "base/containers/flat_set.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -33,7 +32,6 @@
 #include "base/task/thread_pool.h"
 #include "base/timer/timer.h"
 #include "base/trace_event/trace_event.h"
-#include "chrome/browser/apps/app_service/app_launch_params.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/apps/app_service/browser_app_launcher.h"
@@ -65,6 +63,7 @@
 #include "components/policy/core/common/policy_pref_names.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
+#include "components/services/app_service/public/cpp/app_launch_params.h"
 #include "components/services/app_service/public/cpp/app_launch_util.h"
 #include "components/services/app_service/public/cpp/app_types.h"
 #include "components/user_manager/user.h"
@@ -447,7 +446,8 @@ bool DemoSession::ShouldShowAppInShelf(const std::string& app_id_or_package) {
 
   // Ignore for specified chrome/android apps.
   if (content::GetNetworkConnectionTracker()->IsOffline() &&
-      base::Contains(ignore_pin_policy_offline_apps_, app_id_or_package)) {
+      std::ranges::contains(ignore_pin_policy_offline_apps_,
+                            app_id_or_package)) {
     return false;
   }
 
@@ -457,15 +457,15 @@ bool DemoSession::ShouldShowAppInShelf(const std::string& app_id_or_package) {
 }
 
 // static
-base::Value::List DemoSession::GetCountryList() {
-  base::Value::List country_list;
+base::ListValue DemoSession::GetCountryList() {
+  base::ListValue country_list;
   std::string region(GetDefaultRegion());
   bool country_selected = false;
 
   for (CountryCodeAndFullNamePair pair :
        GetSortedCountryCodeAndNamePairList()) {
     std::string country = pair.country_id;
-    base::Value::Dict dict;
+    base::DictValue dict;
     dict.Set("value", country);
     dict.Set("title", pair.country_name);
     if (country == region) {
@@ -480,7 +480,7 @@ base::Value::List DemoSession::GetCountryList() {
   }
 
   if (!country_selected) {
-    base::Value::Dict countryNotSelectedDict;
+    base::DictValue countryNotSelectedDict;
     countryNotSelectedDict.Set("value", DemoSession::kCountryNotSelectedId);
     countryNotSelectedDict.Set(
         "title",

@@ -40,8 +40,8 @@ class PrefStore;
 class Profile;
 
 namespace supervised_user {
-class SupervisedUserSettingsService;
-class SupervisedUserContentFiltersService;
+class DeviceParentalControls;
+class FamilyLinkSettingsService;
 }  // namespace supervised_user
 
 namespace os_crypt_async {
@@ -79,9 +79,8 @@ std::unique_ptr<sync_preferences::PrefServiceSyncable> CreateProfilePrefs(
     mojo::PendingRemote<prefs::mojom::TrackedPreferenceValidationDelegate>
         validation_delegate,
     policy::PolicyService* policy_service,
-    supervised_user::SupervisedUserSettingsService* supervised_user_settings,
-    supervised_user::SupervisedUserContentFiltersService*
-        content_filters_service,
+    supervised_user::FamilyLinkSettingsService* family_link_settings_service,
+    supervised_user::DeviceParentalControls& device_parental_controls,
     scoped_refptr<PrefStore> extension_prefs,
     scoped_refptr<user_prefs::PrefRegistrySyncable> pref_registry,
     policy::BrowserPolicyConnector* connector,
@@ -96,7 +95,7 @@ void DisableDomainCheckForTesting();
 // preference values in |master_prefs|. Returns true on success.
 bool InitializePrefsFromMasterPrefs(
     const base::FilePath& profile_path,
-    base::Value::Dict master_prefs,
+    base::DictValue master_prefs,
     os_crypt_async::OSCryptAsync* os_crypt_async);
 
 // Retrieves the time of the last preference reset event, if any, for the
@@ -109,7 +108,7 @@ void ClearResetTime(Profile* profile);
 
 // Returns the list of tampered pref paths. Returns an empty list if no prefs
 // are set.
-const base::Value::List& GetTamperedPrefList(Profile* profile);
+const base::ListValue& GetTamperedPrefList(Profile* profile);
 
 // Clears the list of tampered prefs.
 void ClearTamperedPrefList(Profile* profile);

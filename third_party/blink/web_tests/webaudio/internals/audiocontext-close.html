@@ -35,6 +35,9 @@
                 () => context = new AudioContext(),
                 'context0 = new AudioContext()')
                 .notThrow();
+            // AudioContext starts in "suspended" state and transitions to
+            // "running" asynchronously.
+            await context.resume();
             should(context.state, 'context0.state').beEqualTo('running');
 
             // Create gain and oscillator for testing later.

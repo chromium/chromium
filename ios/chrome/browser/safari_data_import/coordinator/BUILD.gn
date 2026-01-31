@@ -42,8 +42,11 @@ source_set("export_coordinator") {
     ":coordinator_delegate",
     ":import_coordinator",
     "//base",
+    "//ios/chrome/browser/ntp/model:set_up_list_item_type",
+    "//ios/chrome/browser/ntp/model:set_up_list_prefs",
     "//ios/chrome/browser/safari_data_import/public:metrics",
     "//ios/chrome/browser/safari_data_import/ui",
+    "//ios/chrome/browser/shared/model/application_context",
     "//ios/chrome/common/ui/confirmation_alert",
     "//ios/public/provider/chrome/browser/safari_data_import:safari_data_import_api",
   ]
@@ -77,7 +80,7 @@ source_set("import_coordinator") {
     "//ios/chrome/browser/data_import/public",
     "//ios/chrome/browser/data_import/ui",
     "//ios/chrome/browser/favicon/model",
-    "//ios/chrome/browser/first_run/ui_bundled:constants",
+    "//ios/chrome/browser/first_run/public:constants",
     "//ios/chrome/browser/history/model",
     "//ios/chrome/browser/passwords/model:store_factory",
     "//ios/chrome/browser/reading_list/model",
@@ -107,7 +110,7 @@ source_set("promo") {
     "safari_data_import_reminder_promo_display_handler.h",
     "safari_data_import_reminder_promo_display_handler.mm",
   ]
-  public_deps = [ "//ios/chrome/browser/promos_manager/ui_bundled:promos" ]
+  public_deps = [ "//ios/chrome/browser/promos_manager/coordinator:promos" ]
   deps = [
     "//components/feature_engagement/public",
     "//ios/chrome/browser/promos_manager/model:types",

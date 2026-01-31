@@ -135,6 +135,11 @@ void DocumentAssociatedData::PutCookieSettingOverride(
   cookie_setting_overrides_.Put(cookie_setting_override);
 }
 
+void DocumentAssociatedData::SetCrashReportContextRegion(
+    base::UnsafeSharedMemoryRegion region) {
+  crash_report_storage_region_ = std::move(region);
+}
+
 void DocumentAssociatedData::RemoveCookieSettingOverride(
     net::CookieSettingOverride cookie_setting_override) {
   cookie_setting_overrides_.Remove(cookie_setting_override);

@@ -267,7 +267,7 @@ class AccessCodeCastSinkService : public KeyedService,
   void ValidateStoredDevices(
       base::OnceCallback<void(const std::vector<MediaSinkInternal>&)>
           on_device_validated_callback,
-      base::Value::Dict stored_sinks);
+      base::DictValue stored_sinks);
 
   // Makes a new timer entry into the expiration map. Resets the current timer
   // if it already exists.

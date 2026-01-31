@@ -41,8 +41,8 @@ IN_PROC_BROWSER_TEST_F(ContentSettingImageModelBrowserTest, CreateBubbleModel) {
 
   // Automatic downloads are handled by DownloadRequestLimiter.
   DownloadRequestLimiter::TabDownloadState* tab_download_state =
-      g_browser_process->download_request_limiter()->GetDownloadState(
-          web_contents, true);
+      g_browser_process->download_request_limiter()->GetOrCreateDownloadState(
+          web_contents);
   tab_download_state->set_download_seen();
   tab_download_state->SetDownloadStatusAndNotify(
       url::Origin::Create(web_contents->GetVisibleURL()),

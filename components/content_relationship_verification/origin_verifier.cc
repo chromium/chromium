@@ -86,11 +86,11 @@ void OriginVerifier::OnRelationshipCheckComplete(
   auto j_origin = base::android::ConvertUTF8ToJavaString(env, origin);
 
   Java_OriginVerifier_onOriginVerificationResult(env, jobject_, j_origin,
-                                                 static_cast<jint>(result));
+                                                 static_cast<int32_t>(result));
 }
 
 // static
-jlong OriginVerifier::Init(
+int64_t OriginVerifier::Init(
     JNIEnv* env,
     const base::android::JavaRef<jobject>& obj,
     const base::android::JavaRef<jobject>& jbrowser_context_handle) {
@@ -103,7 +103,7 @@ void OriginVerifier::Destroy(JNIEnv* env) {
   delete this;
 }
 
-static jlong JNI_OriginVerifier_Init(
+static int64_t JNI_OriginVerifier_Init(
     JNIEnv* env,
     const base::android::JavaRef<jobject>& obj,
     const base::android::JavaRef<jobject>& jbrowser_context_handle) {

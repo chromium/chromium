@@ -152,7 +152,7 @@ class MediaEngagementAutoplayBrowserTest
     EXPECT_TRUE(base::CreateTemporaryFile(&output_path));
 
     // Write JSON file with the server origin in it.
-    base::Value::List list;
+    base::ListValue list;
     list.Append(origin.Serialize());
     EXPECT_TRUE(
         base::WriteFile(input_path, base::WriteJson(list).value_or("")));

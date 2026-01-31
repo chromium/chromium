@@ -33,18 +33,6 @@ chromium-metrics-reviews@google.com.
                saved state to resume.."/>
   <variant name="ComposeProactiveNudge"
       summary="For Compose feature; shown on autofill popup."/>
-  <variant name="DevToolsAiAssistanceFileAgent"
-      summary="Promotion for DevTools AI Assistance File Agent."/>
-  <variant name="DevToolsAiAssistanceNetworkAgent"
-      summary="Promotion for DevTools AI Assistance Network Agent."/>
-  <variant name="DevToolsAiAssistancePerformanceAgent"
-      summary="Promotion for DevTools AI Assistance Performance Agent."/>
-  <variant name="DevToolsAiDebugWithAi"
-      summary="Promotion for DevTools AI Debug with AI menu item."/>
-  <variant name="DevToolsAiSubmenuPrompts"
-      summary="Promotion for DevTools AI submenu prompts."/>
-  <variant name="DevToolsFreestyler"
-      summary="Promotion for DevTools AI Assistance Freestyler Agent."/>
   <variant name="Glic" summary="Glic toggle on settings page."/>
   <variant name="GlicAppMenuNewBadge"
       summary="Glic menu item in the three dot menu."/>
@@ -276,7 +264,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="UserEducation.MessageNotShown" enum="PromoFailure"
-    expires_after="2026-05-10">
+    expires_after="2026-07-12">
   <owner>mickeyburks@chromium.org</owner>
   <owner>frizzle-team@google.com</owner>
   <summary>
@@ -328,7 +316,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="UserEducation.MessageShown.TimeInQueue" units="ms"
-    expires_after="2026-04-26">
+    expires_after="2026-06-28">
   <owner>dfried@chromium.org</owner>
   <owner>frizzle-team@google.com</owner>
   <summary>
@@ -476,7 +464,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="UserEducation.Session.MonthlyActiveDays" units="count"
-    expires_after="2026-05-24">
+    expires_after="2026-07-26">
   <owner>dfried@chromium.org</owner>
   <owner>frizzle-team@google.com</owner>
   <summary>
@@ -488,7 +476,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="UserEducation.Session.RecentActiveDays" units="count"
-    expires_after="2026-05-24">
+    expires_after="2026-07-26">
   <owner>dfried@chromium.org</owner>
   <owner>frizzle-team@google.com</owner>
   <summary>
@@ -500,7 +488,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="UserEducation.Session.RecentActiveWeeks" units="count"
-    expires_after="2026-05-24">
+    expires_after="2026-07-26">
   <owner>dfried@chromium.org</owner>
   <owner>frizzle-team@google.com</owner>
   <summary>
@@ -689,6 +677,20 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<!-- expires-never: this provides usage information about a specific edition of
+     the "What's New" page. However, since the content on the page changes every
+     edition, this histogram cannot be allowed to expire. -->
+
+<histogram name="UserEducation.WhatsNew.TimeOnPageHeartbeat"
+    enum="BooleanYesNo" expires_after="never">
+  <owner>mickeyburks@chromium.org</owner>
+  <owner>frizzle-team@google.com</owner>
+  <summary>
+    Records whether the TimeOnPage metric came from the new heartbeat mechanism
+    or the legacy system.
+  </summary>
+</histogram>
+
 <!-- expires-never: this provides performance information about a specific
      edition of the "What's New" page. However, since the content on the page
      changes every edition, this histogram cannot be allowed to expire. -->
@@ -736,7 +738,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WhatsNew.LoadEvent" enum="WhatsNewLoadEvent"
-    expires_after="2026-05-10">
+    expires_after="2026-07-12">
   <owner>mickeyburks@chromium.org</owner>
   <owner>frizzle-team@google.com</owner>
   <summary>
@@ -751,7 +753,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WhatsNew.LoadResponseCode"
-    enum="CombinedHttpResponseAndNetErrorCode" expires_after="2026-05-10">
+    enum="CombinedHttpResponseAndNetErrorCode" expires_after="2026-07-12">
   <owner>mickeyburks@chromium.org</owner>
   <owner>frizzle-team@google.com</owner>
   <summary>
@@ -762,7 +764,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WhatsNew.StartupType" enum="WhatsNewStartupType"
-    expires_after="2026-05-10">
+    expires_after="2026-07-12">
   <owner>mickeyburks@chromium.org</owner>
   <owner>frizzle-team@google.com</owner>
   <summary>

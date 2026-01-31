@@ -6,7 +6,6 @@
 
 #include <utility>
 
-#include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -125,21 +124,29 @@ void PageTimingMetricsSender::DidObserveNewFeatureUsage(
 
 void PageTimingMetricsSender::DidObserveSoftNavigation(
     blink::SoftNavigationMetricsForReporting new_metrics) {
+  CHECK(new_metrics.count);
+  CHECK_GT(new_metrics.count, soft_navigation_metrics_->count);
+
+  CHECK(new_metrics.navigation_id);  // blink::kNavigationIdAbsentValue
+  // Increases strictly monotonically but can overflow,
+  // see blink::NavigationIdGenerator.
+  CHECK_NE(new_metrics.navigation_id, soft_navigation_metrics_->navigation_id);
+
   // The start_time is a TimeDelta, and its resolution is in microseconds.
-  // Every time we observe a new soft navigation we expect the total count to
-  // increase by one, and the navigation_id to update, however, we have no
-  // expectations about start_time values.  This is because soft-navs start_time
-  // might not be monotonically increasing. See: crbug.com/418449366#comment3
-  CHECK(new_metrics.count >= soft_navigation_metrics_->count);
+  // Note that it may not be monotonically increasing, see:
+  // crbug.com/418449366#comment3
   CHECK(!new_metrics.start_time.is_zero());
-  CHECK(new_metrics.navigation_id != soft_navigation_metrics_->navigation_id);
 
+  CHECK(!new_metrics.same_document_metrics_token.is_empty());
+  CHECK(new_metrics.same_document_metrics_token !=
+        soft_navigation_metrics_->same_document_metrics_token);
+
+  // Now that we've checked the invariants, start with a fresh Mojom
+  // message, including a cleared out largest_contentful_paint field.
+  soft_navigation_metrics_ = CreateSoftNavigationMetrics();
   soft_navigation_metrics_->count = new_metrics.count;
-
-  soft_navigation_metrics_->start_time = new_metrics.start_time;
-
   soft_navigation_metrics_->navigation_id = new_metrics.navigation_id;
-
+  soft_navigation_metrics_->start_time = new_metrics.start_time;
   soft_navigation_metrics_->same_document_metrics_token =
       new_metrics.same_document_metrics_token;
 
@@ -215,8 +222,9 @@ void PageTimingMetricsSender::DidLoadResourceFromMemoryCache(
   // ResourceFetcher::EmulateLoadStartedForInspector(). In this case, ignore
   // multiple resources being loaded in the document, as memory cache resources
   // are only reported once per context by design in all other cases.
-  if (base::Contains(page_resource_data_use_, request_id))
+  if (page_resource_data_use_.contains(request_id)) {
     return;
+  }
 
   FindOrInsertPageResourceDataUse(request_id)
       ->DidLoadFromMemoryCache(response_url, encoded_body_length, mime_type);
@@ -284,15 +292,13 @@ void PageTimingMetricsSender::Update(
   EnsureSendTimer(send_urgently);
 }
 
-void PageTimingMetricsSender::UpdateSoftNavigationMetrics(
-    mojom::SoftNavigationMetricsPtr soft_navigation_metrics) {
-  if (soft_navigation_metrics_->Equals(*soft_navigation_metrics)) {
-    return;
-  }
-
-  soft_navigation_metrics_ = std::move(soft_navigation_metrics);
-
-  EnsureSendTimer(true);
+void PageTimingMetricsSender::DidObserveSoftLargestContentfulPaint(
+    mojom::LargestContentfulPaintTimingPtr lcp) {
+  soft_navigation_metrics_->largest_contentful_paint = std::move(lcp);
+  // Until we introduce multiple pending soft lcps, send this urgently
+  // because the next arriving soft navigation will clear
+  // soft_navigation_metrics_.largest_contentful_paint.
+  EnsureSendTimer(/*urgent=*/true);
 }
 
 void PageTimingMetricsSender::SendCustomUserTimingMark(

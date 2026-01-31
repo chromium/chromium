@@ -101,7 +101,7 @@ TEST_F(FirstRunServiceTest, ShouldPopulateProfileNameFromPrimaryAccount) {
 
   AccountInfo primary_account_info = identity_test_env.MakeAccountAvailable(
       "primary@gmail.com",
-      {.primary_account_consent_level = signin::ConsentLevel::kSync});
+      {.primary_account_consent_level = signin::ConsentLevel::kSignin});
   AccountInfo secondary_account_info =
       identity_test_env.MakeAccountAvailable("secondary@gmail.com");
 

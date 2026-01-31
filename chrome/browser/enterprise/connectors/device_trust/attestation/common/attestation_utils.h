@@ -23,7 +23,7 @@ std::string ProtobufChallengeToJsonChallenge(
 // Takes the dictionary of signals `signals_dict` and converts it to a
 // signals proto.
 std::unique_ptr<SignalsType> DictionarySignalsToProtobufSignals(
-    const base::Value::Dict& signals_dict);
+    const base::DictValue& signals_dict);
 
 }  // namespace enterprise_connectors
 

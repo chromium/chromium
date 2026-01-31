@@ -94,16 +94,16 @@ GetSchedulerLoopQuarantineConfiguration(
   std::string config_str =
       features::kPartitionAllocSchedulerLoopQuarantineConfig.Get();
 
-  std::optional<Value::Dict> config_processes =
+  std::optional<DictValue> config_processes =
       JSONReader::ReadDict(config_str, kJSONParserOptions);
   if (!config_processes) {
     LOG(ERROR) << "Unparseable JSON: " << config_str;
     return config;  // Ill-formed JSON; disabled.
   }
 
-  const Value::Dict* config_entry = nullptr;
+  const DictValue* config_entry = nullptr;
 
-  const Value::Dict* config_current_process =
+  const DictValue* config_current_process =
       config_processes->FindDict(process_type_str);
   if (config_current_process) {
     // First, try the exact match.
@@ -119,7 +119,7 @@ GetSchedulerLoopQuarantineConfiguration(
     }
   }
 
-  Value::Dict* config_wildcard_process =
+  DictValue* config_wildcard_process =
       config_processes->FindDict(kProcessTypeWildcardStr);
   if (!config_entry && config_wildcard_process) {
     // Couldn't find a configuration entry with the exact process name match.

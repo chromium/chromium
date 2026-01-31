@@ -106,8 +106,34 @@ TEST_F(ApplyStyleCommandTest, FontSizeDeltaWithSpanElement) {
       GetDocument(), MakeGarbageCollected<EditingStyle>(style),
       InputEvent::InputType::kNone)
       ->Apply();
-  EXPECT_EQ("<div contenteditable><div></div><span>^a|</span></div>",
-            GetSelectionTextFromBody());
+  EXPECT_EQ(
+      "<div contenteditable><div></div><span style=\"font-size: "
+      "4px;\">^a|</span><span></span></div>",
+      GetSelectionTextFromBody());
+}
+
+// This is a regression test for https://crbug.com/471876082
+TEST_F(ApplyStyleCommandTest, FontSizeDeltaWithPartiallySelectedSpans) {
+  Selection().SetSelection(
+      SetSelectionTextToBody(
+          "<div contenteditable><span>SPA^N1</span>#<span>spa|n2</span></div>"),
+      SetSelectionOptions());
+
+  auto* style = MakeGarbageCollected<MutableCSSPropertyValueSet>(kUASheetMode);
+  style->ParseAndSetProperty(CSSPropertyID::kInternalFontSizeDelta, "3px",
+                             /* important */ false,
+                             GetFrame().DomWindow()->GetSecureContextMode());
+  MakeGarbageCollected<ApplyStyleCommand>(
+      GetDocument(), MakeGarbageCollected<EditingStyle>(style),
+      InputEvent::InputType::kNone)
+      ->Apply();  // Shouldn't crash.
+
+  EXPECT_EQ(
+      "<div contenteditable><span>SPA<span style=\"font-size: "
+      "4px;\">^N1</span></span><span style=\"font-size: "
+      "4px;\">#</span><span><span style=\"font-size: "
+      "4px;\">spa|</span>n2</span></div>",
+      GetSelectionTextFromBody());
 }
 
 // This is a regression test for https://crbug.com/1172007

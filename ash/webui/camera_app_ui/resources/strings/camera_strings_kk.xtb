@@ -48,6 +48,7 @@
 <translation id="2761536921376153655">Сканерлеу түрі</translation>
 <translation id="28682968802727151">Айна көрінісін алдын ала көру</translation>
 <translation id="2879583609344924966"><ph name="CAMERA" /> жалғанды.</translation>
+<translation id="3063987824612038785">Барлық камера файлы Google Drive-қа сақталады</translation>
 <translation id="3067436040345934772">Оңға жылжыту</translation>
 <translation id="3081586908890909590">Бейне жазуға ауысу</translation>
 <translation id="3091480460059548935">Алғы көріністе мәтінді анықтау</translation>
@@ -67,6 +68,7 @@
 <translation id="3642192109456033823">Бейне өңделіп жатыр…</translation>
 <translation id="3789724198583203151">Сағат тіліне қарсы 90 градус бұру</translation>
 <translation id="3810838688059735925">Бейне</translation>
+<translation id="386366972082231038">Барлық камера файлы OneDrive-қа сақталады</translation>
 <translation id="4060608699153044055">Құрылғының жад көлемі аз болғандықтан жазу мүмкін емес. Жазуды бастау үшін құрылғыңызда орын босатуыңыз керек.</translation>
 <translation id="4061162772429051350"><ph name="MAGAPIXELS_AMOUNT" /> мегапиксель</translation>
 <translation id="4118525110028899586">Жазуды кідірту</translation>
@@ -100,6 +102,7 @@
 <translation id="5634947914995388399">Диалогтік терезені жаю және сканерлеуді тоқтату</translation>
 <translation id="5662366948659129155"><ph name="COUNT" />-бет сканерленуде.</translation>
 <translation id="5671277269877808209">Шаршы</translation>
+<translation id="5725797473946373607">Бұл диалогтік терезені келесі жолы көрсетпеу</translation>
 <translation id="574392208103952083">Орташа</translation>
 <translation id="5746169159649715125">PDF ретінде сақтау</translation>
 <translation id="5753488212459587150">Сарапшы режимін қосу</translation>
@@ -156,6 +159,7 @@
 <translation id="7983668134180549431">Мәтін анықталды.</translation>
 <translation id="8079255378695216066">Жазуды бастау мүмкін емес</translation>
 <translation id="8120146556401698679">Панорама, қисайту, масштабтау</translation>
+<translation id="8127459436205030819">Файлдарыңыз әкімшіге көрінуі мүмкін.</translation>
 <translation id="8131740175452115882">Растау</translation>
 <translation id="8145038249676204903">Суретке түсіруге ауысу</translation>
 <translation id="8167081290930651932">Фотосурет ретінде сақтау</translation>
@@ -165,6 +169,7 @@
 <translation id="8609951387004618906"><ph name="URL" /> сілтемесін ашу</translation>
 <translation id="8629662593426079630">360p</translation>
 <translation id="8711011893539266636">Микрофон дыбысын өшіру/қосу. Дыбыс өшірулі.</translation>
+<translation id="8712637175834984815">Түсінікті</translation>
 <translation id="8730621377337864115">Дайын</translation>
 <translation id="8732462232047530626">Метадеректі алдын ала көру</translation>
 <translation id="874854738381978209">Wi-Fi желісі анықталды.</translation>

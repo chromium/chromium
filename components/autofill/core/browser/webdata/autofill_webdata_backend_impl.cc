@@ -17,7 +17,6 @@
 #include "base/observer_list.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/task/sequenced_task_runner.h"
-#include "base/types/cxx23_to_underlying.h"
 #include "base/uuid.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_instance.h"
 #include "components/autofill/core/browser/data_model/payments/autofill_offer_data.h"
@@ -137,7 +136,9 @@ enum class Result {
   kClearLocalCvcsUpToMay2025_Failure = 313,
   kCleanupForCrbug445879524_Success = 314,
   kCleanupForCrbug445879524_Failure = 315,
-  kMaxValue = kCleanupForCrbug445879524_Failure,
+  kAddOrUpdateValuableMetadata_Success = 316,
+  kAddOrUpdateValuableMetadata_Failure = 317,
+  kMaxValue = kAddOrUpdateValuableMetadata_Failure,
 };
 // LINT.ThenChange(/tools/metrics/histograms/metadata/autofill/enums.xml:AutofillWebDataBackendImplOperationResult)
 
@@ -630,6 +631,20 @@ std::unique_ptr<WDTypedResult> AutofillWebDataBackendImpl::GetLoyaltyCards(
   return std::make_unique<WDResult<std::vector<LoyaltyCard>>>(
       AUTOFILL_LOYALTY_CARD_RESULT,
       ValuablesTable::FromWebDatabase(db)->GetLoyaltyCards());
+}
+
+WebDatabase::State AutofillWebDataBackendImpl::UpdateValuableMetadata(
+    const ValuableMetadata& metadata,
+    WebDatabase* db) {
+  DCHECK(owning_task_runner()->RunsTasksInCurrentSequence());
+  ValuablesTable* table = ValuablesTable::FromWebDatabase(db);
+  if (!table->AddOrUpdateValuableMetadata(metadata)) {
+    ReportResult(Result::kAddOrUpdateValuableMetadata_Failure);
+    return WebDatabase::COMMIT_NOT_NEEDED;
+  }
+  ReportResult(Result::kAddOrUpdateValuableMetadata_Success);
+
+  return WebDatabase::COMMIT_NEEDED;
 }
 
 std::unique_ptr<WDTypedResult>

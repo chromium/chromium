@@ -4,7 +4,6 @@
 
 #include <stdint.h>
 
-#include "base/containers/contains.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/gmock_expected_support.h"
 #include "base/test/test_future.h"
@@ -258,9 +257,9 @@ TEST_F(SyncableFileSystemTest, ChangeTrackerSimple) {
   file_system_.GetChangedURLsInTracker(&urls);
 
   EXPECT_EQ(3U, urls.size());
-  EXPECT_TRUE(base::Contains(urls, path0));
-  EXPECT_TRUE(base::Contains(urls, path1));
-  EXPECT_TRUE(base::Contains(urls, path2));
+  EXPECT_TRUE(urls.contains(path0));
+  EXPECT_TRUE(urls.contains(path1));
+  EXPECT_TRUE(urls.contains(path2));
 
   VerifyAndClearChange(path0,
                        FileChange(FileChange::FILE_CHANGE_ADD_OR_UPDATE,
@@ -291,9 +290,9 @@ TEST_F(SyncableFileSystemTest, ChangeTrackerSimple) {
 
   // `path0` and its children (`path1` and `path2`) should be deleted.
   EXPECT_EQ(3U, urls.size());
-  EXPECT_TRUE(base::Contains(urls, path0));
-  EXPECT_TRUE(base::Contains(urls, path1));
-  EXPECT_TRUE(base::Contains(urls, path2));
+  EXPECT_TRUE(urls.contains(path0));
+  EXPECT_TRUE(urls.contains(path1));
+  EXPECT_TRUE(urls.contains(path2));
 
   VerifyAndClearChange(path0,
                        FileChange(FileChange::FILE_CHANGE_DELETE,

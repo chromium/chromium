@@ -342,6 +342,7 @@
 <translation id="2201071101391734388">Nýleg mynd <ph name="INDEX" /> af <ph name="TOTAL_COUNT" />.</translation>
 <translation id="2201687081523799384">Draga saman Google-verkefni</translation>
 <translation id="2208323208084708176">Sameinuð skjáborðsstilling</translation>
+<translation id="2210311543574621570">Klippiborð birtist þegar þú heldur inni Ctrl + V. Þú getur slökkt á þessari flýtileið með því að slökkva á flagginu #clipboard-history-longpress í chrome://flags.</translation>
 <translation id="2215920961700443347">Engin nettenging. Tengstu netinu og reyndu aftur.</translation>
 <translation id="2222841058024245321">Skrifborð 7</translation>
 <translation id="2223384056430485343">Í skjáskiptingu</translation>

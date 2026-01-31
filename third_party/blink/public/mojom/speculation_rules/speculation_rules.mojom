@@ -41,16 +41,10 @@ interface SpeculationHost {
 
 // The action that is proposed. The actions can be executed in a pipeline-like
 // way: prefetch -> prerender-until-script -> prerender.
-// TODO(https://crbug.com/428500219): Reorder after kPrefetchWithSubresources is
-// deprecated.
 enum SpeculationAction {
   kPrefetch,
-  // TODO(https://crbug.com/428500219): This action will be meaningless once the
-  // prerender-until-script feature is launched. Remove this action at that
-  // time.
-  kPrefetchWithSubresources,
-  kPrerender,
   kPrerenderUntilScript,
+  kPrerender,
 };
 
 // The target hint that is proposed.

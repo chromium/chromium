@@ -187,7 +187,9 @@ class CORE_EXPORT FrameLoader final {
   // receive the next document commit, or false otherwise.
   bool DetachDocument();
 
-  bool ShouldClose(bool is_reload = false);
+  bool ShouldClose(bool is_reload,
+                   base::TimeTicks& out_before_unload_dialog_opened_time,
+                   base::TimeTicks& out_before_unload_dialog_closed_time);
 
   // Dispatches the Unload event for the current document and fills in this
   // document's info in OldDocumentInfoForCommit if

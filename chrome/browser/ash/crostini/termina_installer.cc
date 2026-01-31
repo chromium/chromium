@@ -9,7 +9,6 @@
 #include <string_view>
 
 #include "base/barrier_closure.h"
-#include "base/containers/contains.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -212,7 +211,7 @@ void TerminaInstaller::RemoveDlc(base::OnceCallback<void()> callback,
 void TerminaInstaller::OnUninstallFinished(
     base::OnceCallback<void(bool)> callback,
     std::vector<UninstallResult> partial_results) {
-  std::move(callback).Run(!base::Contains(partial_results, 0));
+  std::move(callback).Run(!std::ranges::contains(partial_results, 0));
 }
 
 base::FilePath TerminaInstaller::GetInstallLocation() {

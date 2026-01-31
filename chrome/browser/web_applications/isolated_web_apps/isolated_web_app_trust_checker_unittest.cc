@@ -5,6 +5,7 @@
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_trust_checker.h"
 
 #include <memory>
+#include <utility>
 
 #include "base/check_deref.h"
 #include "base/containers/span.h"
@@ -12,7 +13,6 @@
 #include "base/strings/strcat.h"
 #include "base/test/gmock_expected_support.h"
 #include "base/test/scoped_feature_list.h"
-#include "base/types/cxx23_to_underlying.h"
 #include "build/build_config.h"
 #include "chrome/browser/policy/developer_tools_policy_handler.h"
 #include "chrome/browser/web_applications/test/web_app_test.h"
@@ -113,16 +113,16 @@ TEST_F(IsolatedWebAppTrustCheckerTest, UntrustedByDefault) {
 #if BUILDFLAG(IS_CHROMEOS)
 
 TEST_F(IsolatedWebAppTrustCheckerTest, TrustedViaPolicy) {
-  base::Value::List force_install_list;
+  base::ListValue force_install_list;
   {
-    base::Value::Dict force_install_entry;
+    base::DictValue force_install_entry;
     force_install_entry.Set(kPolicyWebBundleIdKey, "not a web bundle id");
     force_install_entry.Set(kPolicyUpdateManifestUrlKey,
                             "https://example.com/update-manifest.json");
     force_install_list.Append(std::move(force_install_entry));
   }
   {
-    base::Value::Dict force_install_entry;
+    base::DictValue force_install_entry;
     force_install_entry.Set(kPolicyWebBundleIdKey, kWebBundleId1.id());
     force_install_entry.Set(kPolicyUpdateManifestUrlKey,
                             "https://example.com/update-manifest.json");
@@ -165,7 +165,7 @@ TEST_F(IsolatedWebAppTrustCheckerTest, TrustedViaDevMode) {
 
   pref_service().SetInteger(
       prefs::kDevToolsAvailability,
-      base::to_underlying(
+      std::to_underlying(
           policy::DeveloperToolsPolicyHandler::Availability::kDisallowed));
   EXPECT_THAT(IsolatedWebAppTrustChecker::IsTrusted(
                   *profile(), kWebBundleId1, /*is_dev_mode_bundle=*/true),

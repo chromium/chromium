@@ -45,10 +45,11 @@ class CopyOutputResultSenderImpl : public viz::mojom::CopyOutputResultSender {
   ~CopyOutputResultSenderImpl() override {
     if (result_callback_) {
       result_callback_task_runner_->PostTask(
-          FROM_HERE, base::BindOnce(std::move(result_callback_),
-                                    std::make_unique<viz::CopyOutputResult>(
-                                        result_format_, result_destination_,
-                                        gfx::Rect(), false)));
+          FROM_HERE,
+          base::BindOnce(std::move(result_callback_),
+                         std::make_unique<viz::CopyOutputResult>(
+                             result_format_, result_destination_,
+                             viz::CopyOutputResult::Error::kUnknown)));
     }
   }
 

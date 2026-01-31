@@ -51,7 +51,7 @@ class TokenHandleChecker : public gaia::GaiaOAuthClient::Delegate {
   // gaia::GaiaOAuthClient::Delegate overrides.
   void OnOAuthError() override;
   void OnNetworkError(int response_code) override;
-  void OnGetTokenInfoResponse(const base::Value::Dict& token_info) override;
+  void OnGetTokenInfoResponse(const base::DictValue& token_info) override;
 
   // Completes the validation request.
   // `outcome` denotes the status of token handle.

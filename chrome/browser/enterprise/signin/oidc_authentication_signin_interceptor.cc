@@ -24,6 +24,7 @@
 #include "chrome/browser/enterprise/util/managed_browser_utils.h"
 #include "chrome/browser/new_tab_page/chrome_colors/selected_colors_info.h"
 #include "chrome/browser/policy/chrome_browser_policy_connector.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_attributes_entry.h"
 #include "chrome/browser/profiles/profile_attributes_storage.h"
 #include "chrome/browser/profiles/profile_manager.h"
@@ -541,6 +542,22 @@ void OidcAuthenticationSigninInterceptor::OnNewSignedInProfileCreated(
     // TODO(b/328055055): Replace this confusing check when bool
     // IsDasherlessManagement is replaced with an Enum.
     dasher_based_ = !new_profile_entry->IsDasherlessManagement();
+
+    if (dm_token_.empty()) {
+      VLOG_POLICY(2, OIDC_ENROLLMENT)
+          << "Using recovery OIDC token for profile switch due to no "
+             "registration.";
+      dm_token_ = new_profile->GetPrefs()->GetString(
+          enterprise_signin::prefs::kPolicyRecoveryToken);
+      if (dm_token_.empty()) {
+        LOG_POLICY(ERROR, OIDC_ENROLLMENT)
+            << "No OIDC recovery token to re-register during profile switch.";
+      }
+    }
+    if (client_id_.empty()) {
+      client_id_ = new_profile->GetPrefs()->GetString(
+          enterprise_signin::prefs::kPolicyRecoveryClientId);
+    }
   }
 
   RecordOidcProfileCreationFunnelStep(
@@ -598,6 +615,10 @@ void OidcAuthenticationSigninInterceptor::OnNewSignedInProfileCreated(
     HandleError(OidcProfileCreationResult::kFailedToFetchPolicy, dasher_based_);
     return;
   }
+
+  LOG_POLICY(ERROR, OIDC_ENROLLMENT) << "Shutting off GAIA policy service for "
+                                        "OIDC policy initializtion process.";
+  oidc_signin_service->ResetGaiaPolicyManagement();
 
   oidc_signin_service->FetchPolicyForOidcUser(
       AccountId(), dm_token_, client_id_, user_email_,

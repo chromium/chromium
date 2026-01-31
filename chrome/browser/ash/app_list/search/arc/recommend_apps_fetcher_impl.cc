@@ -241,9 +241,9 @@ std::optional<base::Value> RecommendAppsFetcherImpl::ParseResponse(
     return std::nullopt;
   }
 
-  base::Value::List output;
+  base::ListValue output;
   for (const auto& item : app_list) {
-    base::Value::Dict output_map;
+    base::DictValue output_map;
 
     const auto* dict = item.GetIfDict();
     if (!dict) {

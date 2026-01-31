@@ -28,8 +28,8 @@ NetworkProperties& NetworkProperties::operator=(NetworkProperties&& other) =
 
 NetworkProperties::~NetworkProperties() = default;
 
-base::Value::Dict NetworkProperties::ToValue(bool network_list) const {
-  base::Value::Dict value;
+base::DictValue NetworkProperties::ToValue(bool network_list) const {
+  base::DictValue value;
 
   value.Set(onc::network_config::kGUID, guid);
   value.Set(onc::network_config::kName, name);
@@ -40,7 +40,7 @@ base::Value::Dict NetworkProperties::ToValue(bool network_list) const {
   // For now, assume all WiFi services are connectable.
   value.Set(onc::network_config::kConnectable, true);
 
-  base::Value::Dict wifi;
+  base::DictValue wifi;
   wifi.Set(onc::wifi::kSecurity, security);
   wifi.Set(onc::wifi::kSignalStrength, static_cast<int>(signal_strength));
 
@@ -49,7 +49,7 @@ base::Value::Dict NetworkProperties::ToValue(bool network_list) const {
     if (frequency != kFrequencyUnknown) {
       wifi.Set(onc::wifi::kFrequency, frequency);
     }
-    base::Value::List frequency_list;
+    base::ListValue frequency_list;
     for (FrequencySet::const_iterator it = this->frequency_set.begin();
          it != this->frequency_set.end(); ++it) {
       frequency_list.Append(*it);
@@ -68,7 +68,7 @@ base::Value::Dict NetworkProperties::ToValue(bool network_list) const {
   return value;
 }
 
-bool NetworkProperties::UpdateFromValue(const base::Value::Dict& value) {
+bool NetworkProperties::UpdateFromValue(const base::DictValue& value) {
   const std::string* network_type =
       value.FindString(onc::network_config::kType);
   // Get network type and make sure that it is WiFi (if specified).
@@ -79,7 +79,7 @@ bool NetworkProperties::UpdateFromValue(const base::Value::Dict& value) {
     type = *network_type;
   }
 
-  const base::Value::Dict* wifi = value.FindDict(onc::network_type::kWiFi);
+  const base::DictValue* wifi = value.FindDict(onc::network_type::kWiFi);
   if (wifi) {
     const std::string* name_ptr = value.FindString(onc::network_config::kName);
     if (name_ptr) {

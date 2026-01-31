@@ -5,14 +5,14 @@
 package org.chromium.base.supplier;
 
 import org.chromium.base.Callback;
-import org.chromium.base.supplier.ObservableSupplier.NotifyBehavior;
+import org.chromium.base.supplier.MonotonicObservableSupplier.NotifyBehavior;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 
 import java.util.function.Function;
 import java.util.function.Supplier;
 
-/** An interface for classes that can be observed. */
+/** An interface for Suppliers that can be observed. Implementations are not thread-safe. */
 @NullMarked
 public interface NullableObservableSupplier<T> extends Supplier<@Nullable T> {
     /**
@@ -50,6 +50,11 @@ public interface NullableObservableSupplier<T> extends Supplier<@Nullable T> {
     /**
      * Adds a synchronous observer to the supplier and posts a notification if the value is not
      * null.
+     *
+     * <ul>
+     *   <li>Posted callbacks are not run if removeObserver() is called before they are run.
+     *   <li>Posted callbacks are not run if set() is called with a new value before they are run.
+     * </ul>
      *
      * @param obs The observer to add.
      * @return The current value of the supplier.
@@ -89,8 +94,23 @@ public interface NullableObservableSupplier<T> extends Supplier<@Nullable T> {
         return new TransitiveObservableSupplier<>(
                 (NullableObservableSupplier) this,
                 unwrapFunction,
-                /* initialValue= */ null,
+                /* defaultValue= */ null,
                 /* allowSetToNull= */ true);
+    }
+
+    /**
+     * Creates an ObservableSupplier that tracks an ObservableSupplier of this ObservableSupplier.
+     * If either supplier has not yet been initialized, uses the given default value. The current
+     * and transitive suppliers must both be non-null or monotonic.
+     */
+    @SuppressWarnings("Unchecked")
+    default <ChildT> SettableNonNullObservableSupplier<ChildT> createTransitiveNonNull(
+            ChildT defaultValue, Function<T, NonNullObservableSupplier<ChildT>> unwrapFunction) {
+        return new TransitiveObservableSupplier<>(
+                (NullableObservableSupplier) this,
+                unwrapFunction,
+                defaultValue,
+                /* allowSetToNull= */ false);
     }
 
     /** Creates an ObservableSupplier that tracks a value derived from this ObservableSupplier. */

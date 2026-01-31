@@ -59,7 +59,7 @@ class TestingTailoredSecurityService : public TailoredSecurityService {
 
   // This is sorta an override but override and static don't mix.
   // This function just calls TailoredSecurityService::ReadResponse.
-  static base::Value::Dict ReadResponse(Request* request);
+  static base::DictValue ReadResponse(Request* request);
 
   const std::string& GetExpectedPostData(
       TailoredSecurityService::Request* request);
@@ -247,8 +247,7 @@ TestingTailoredSecurityService::CreateRequest(
   return request;
 }
 
-base::Value::Dict TestingTailoredSecurityService::ReadResponse(
-    Request* request) {
+base::DictValue TestingTailoredSecurityService::ReadResponse(Request* request) {
   return TailoredSecurityService::ReadResponse(request);
 }
 
@@ -470,7 +469,7 @@ TEST_F(TailoredSecurityServiceTest, VerifyReadResponse) {
                       "  \"history_recording_enabled\": true\n"
                       "}"));
   // ReadResponse deletes the request
-  base::Value::Dict response_value =
+  base::DictValue response_value =
       TestingTailoredSecurityService::ReadResponse(request.get());
   EXPECT_TRUE(response_value.FindBool("history_recording_enabled").value());
   // Test that properly formatted response with good response code returns false
@@ -481,7 +480,7 @@ TEST_F(TailoredSecurityServiceTest, VerifyReadResponse) {
       "  \"history_recording_enabled\": false\n"
       "}"));
   // ReadResponse deletes the request
-  base::Value::Dict response_value2 =
+  base::DictValue response_value2 =
       TestingTailoredSecurityService::ReadResponse(request2.get());
   EXPECT_FALSE(response_value2.FindBool("history_recording_enabled").value());
 
@@ -493,7 +492,7 @@ TEST_F(TailoredSecurityServiceTest, VerifyReadResponse) {
                       "  \"history_recording_enabled\": true\n"
                       "}"));
   // ReadResponse deletes the request
-  base::Value::Dict response_value3 =
+  base::DictValue response_value3 =
       TestingTailoredSecurityService::ReadResponse(request3.get());
   EXPECT_THAT(response_value3, IsEmpty());
 
@@ -507,7 +506,7 @@ TEST_F(TailoredSecurityServiceTest, VerifyReadResponse) {
       "  \"history_recording_enabled\": not true\n"
       "}"));
   // ReadResponse deletes the request
-  base::Value::Dict response_value4 =
+  base::DictValue response_value4 =
       TestingTailoredSecurityService::ReadResponse(request4.get());
   EXPECT_THAT(response_value4, IsEmpty());
 
@@ -521,7 +520,7 @@ TEST_F(TailoredSecurityServiceTest, VerifyReadResponse) {
       "  \"history_recording\": true\n"
       "}"));
   // ReadResponse deletes the request
-  base::Value::Dict response_value5 =
+  base::DictValue response_value5 =
       TestingTailoredSecurityService::ReadResponse(request5.get());
   EXPECT_THAT(response_value5, Not(IsEmpty()));
   EXPECT_FALSE(

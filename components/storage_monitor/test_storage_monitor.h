@@ -42,22 +42,13 @@ class TestStorageMonitor : public StorageMonitor {
   // Synchronously initialize the current storage monitor.
   static void SyncInitialize();
 
+  // StorageMonitor:
   bool GetStorageInfoForPath(const base::FilePath& path,
                              StorageInfo* device_info) const override;
-
-#if BUILDFLAG(IS_WIN)
-  bool GetMTPStorageInfoFromDeviceId(
-      const std::string& storage_device_id,
-      std::wstring* device_location,
-      std::wstring* storage_object_id) const override;
-#endif
-
 #if BUILDFLAG(IS_CHROMEOS)
   device::mojom::MtpManager* media_transfer_protocol_manager() override;
 #endif
-
   Receiver* receiver() const override;
-
   void EjectDevice(
       const std::string& device_id,
       base::OnceCallback<void(StorageMonitor::EjectStatus)> callback) override;

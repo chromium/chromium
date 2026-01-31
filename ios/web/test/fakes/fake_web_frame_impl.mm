@@ -124,16 +124,24 @@ BrowserState* FakeWebFrameImpl::GetBrowserState() {
   return browser_state_;
 }
 
-void FakeWebFrameImpl::set_call_java_script_function_callback(
+void FakeWebFrameImpl::SetJavaScriptFunctionCallback(
+    const std::string& java_script_feature_name,
     base::RepeatingClosure callback) {
-  call_java_script_function_callback_ = std::move(callback);
+  if (callback) {
+    call_java_script_function_callback_[java_script_feature_name] =
+        std::move(callback);
+  } else {
+    call_java_script_function_callback_.erase(java_script_feature_name);
+  }
 }
 
 bool FakeWebFrameImpl::CallJavaScriptFunction(
     const std::string& name,
-    const base::Value::List& parameters) {
-  if (call_java_script_function_callback_) {
-    call_java_script_function_callback_.Run();
+    const base::ListValue& parameters) {
+  auto iter = call_java_script_function_callback_.find(name);
+  if (iter != call_java_script_function_callback_.end()) {
+    CHECK(iter->second);
+    iter->second.Run();
   }
 
   std::optional<std::pair<std::string_view, std::string_view>> name_parts =
@@ -172,7 +180,7 @@ bool FakeWebFrameImpl::CallJavaScriptFunction(
 
 bool FakeWebFrameImpl::CallJavaScriptFunction(
     const std::string& name,
-    const base::Value::List& parameters,
+    const base::ListValue& parameters,
     base::OnceCallback<void(const base::Value*)> callback,
     base::TimeDelta timeout) {
   bool success = CallJavaScriptFunction(name, parameters);
@@ -192,14 +200,14 @@ bool FakeWebFrameImpl::CallJavaScriptFunction(
 
 bool FakeWebFrameImpl::CallJavaScriptFunctionInContentWorld(
     const std::string& name,
-    const base::Value::List& parameters,
+    const base::ListValue& parameters,
     JavaScriptContentWorld* content_world) {
   return CallJavaScriptFunction(name, parameters);
 }
 
 bool FakeWebFrameImpl::CallJavaScriptFunctionInContentWorld(
     const std::string& name,
-    const base::Value::List& parameters,
+    const base::ListValue& parameters,
     JavaScriptContentWorld* content_world,
     base::OnceCallback<void(const base::Value*)> callback,
     base::TimeDelta timeout) {

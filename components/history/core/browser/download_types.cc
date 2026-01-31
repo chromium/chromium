@@ -78,6 +78,7 @@ DownloadDangerType IntToDownloadDangerType(int danger_type) {
     case DownloadDangerType::ASYNC_LOCAL_PASSWORD_SCANNING:
     case DownloadDangerType::BLOCKED_SCAN_FAILED:
     case DownloadDangerType::FORCED_SAVE_TO_GDRIVE:
+    case DownloadDangerType::FORCED_SAVE_TO_ONEDRIVE:
       return static_cast<DownloadDangerType>(danger_type);
 
     case DownloadDangerType::INVALID:
@@ -151,6 +152,8 @@ std::ostream& operator<<(std::ostream& stream, DownloadDangerType danger_type) {
       return stream << "history::DownloadDangerType::BLOCKED_SCAN_FAILED";
     case DownloadDangerType::FORCED_SAVE_TO_GDRIVE:
       return stream << "history::DownloadDangerType::FORCED_SAVE_TO_GDRIVE";
+    case DownloadDangerType::FORCED_SAVE_TO_ONEDRIVE:
+      return stream << "history::DownloadDangerType::FORCED_SAVE_TO_ONEDRIVE";
   }
   NOTREACHED();
 }

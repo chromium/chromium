@@ -4,11 +4,11 @@
 
 module ui.ozone.mojom;
 
+import "services/viz/public/mojom/compositing/shared_image_format.mojom";
 import "skia/public/mojom/skcolor4f.mojom";
 import "mojo/public/mojom/base/version.mojom";
 import "ui/gfx/geometry/mojom/geometry.mojom";
 import "ui/gfx/mojom/accelerated_widget.mojom";
-import "ui/gfx/mojom/buffer_types.mojom";
 import "ui/gfx/mojom/color_space.mojom";
 import "ui/gfx/mojom/gpu_fence_handle.mojom";
 import "ui/gfx/mojom/hdr_metadata.mojom";
@@ -31,7 +31,7 @@ interface WaylandBufferManagerHost {
   // used to ask Wayland to create a wl_buffer based on the |dmabuf_fd|
   // descriptor. The |size| is the size of the buffer, the |strides|,
   // |offsets| and |modifiers| are the descriptions of the drm buffer object.
-  // The |format| describes the buffer format (check gfx::BufferFormat) in
+  // The |format| describes the buffer format (check viz::SharedImageFormat) in
   // fourcc form. The |planes_count| says how many planes the buffer, backed
   // by the |file| descriptor has. And the |buffer_id| is a unique id for the
   // buffer, which is used to identify imported wl_buffers on the browser
@@ -94,10 +94,10 @@ interface WaylandBufferManagerHost {
 interface WaylandBufferManagerGpu {
   // Initializes the gpu side buffer manager by passing the interface pointer of
   // of the WaylandBufferManagerHost that lives in the browser process to it.
-  // Also supplies the gpu side manager with the supported buffer formats and
-  // modifiers so that gpu side clients could be aware of supported modifiers
-  // the Wayland compositor announces. The modifiers may be empty, which means
-  // modifiers are not supported.
+  // Also supplies the gpu side manager with the supported shared image formats
+  // and modifiers so that gpu side clients could be aware of supported
+  // modifiers the Wayland compositor announces. The modifiers may be empty,
+  // which means modifiers are not supported.
   // The browser process may also request the client to reset gbm device
   // instance to avoid using zwp_linux_dmabuf protocol by setting
   // `supports_dma_buf` to false, which results in using wl_egl_surface in a
@@ -110,8 +110,8 @@ interface WaylandBufferManagerGpu {
   // `supports_overlays` indicates whether overlays should be used with this
   // Wayland compositor.
   Initialize(pending_remote<WaylandBufferManagerHost> remote_host,
-             map<gfx.mojom.BufferFormat,
-                 array<uint64>> buffer_formats_with_modifiers,
+             map<viz.mojom.SharedImageFormat,
+                 array<uint64>> shared_image_formats_with_modifiers,
              bool supports_dma_buf,
              bool supports_viewporter,
              bool supports_acquire_fence,

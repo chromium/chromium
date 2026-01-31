@@ -48,7 +48,7 @@
 #include "components/optimization_guide/core/optimization_guide_util.h"
 #include "components/optimization_guide/proto/model_quality_service.pb.h"
 #include "components/optimization_guide/proto/on_device_model_execution_config.pb.h"
-#include "components/optimization_guide/public/mojom/model_broker.mojom-data-view.h"
+#include "components/optimization_guide/public/mojom/model_broker.mojom-shared.h"
 #include "components/policy/core/browser/browser_policy_connector.h"
 #include "components/policy/core/common/mock_configuration_policy_provider.h"
 #include "components/policy/core/common/policy_map.h"
@@ -309,8 +309,8 @@ class ModelExecutionBrowserTestBase : public InProcessBrowserTest {
     EXPECT_NE(request.headers.end(), request.headers.find("X-Client-Data"));
 
     // Access token should be set.
-    EXPECT_TRUE(base::Contains(request.headers,
-                               net::HttpRequestHeaders::kAuthorization));
+    EXPECT_TRUE(
+        request.headers.contains(net::HttpRequestHeaders::kAuthorization));
     EXPECT_EQ(expected_bearer_access_token_,
               request.headers.at(net::HttpRequestHeaders::kAuthorization));
 
@@ -358,8 +358,8 @@ class ModelExecutionBrowserTestBase : public InProcessBrowserTest {
     EXPECT_NE(request.headers.end(), request.headers.find("X-Client-Data"));
 
     // Access token should not be set.
-    EXPECT_FALSE(base::Contains(request.headers,
-                                net::HttpRequestHeaders::kAuthorization));
+    EXPECT_FALSE(
+        request.headers.contains(net::HttpRequestHeaders::kAuthorization));
 
     std::string serialized_response;
     response->set_code(net::HTTP_OK);

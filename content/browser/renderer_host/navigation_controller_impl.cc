@@ -466,7 +466,7 @@ void ValidateRequestMatchesEntry(NavigationRequest* request,
   }
   DCHECK_EQ(request->commit_params().should_clear_history_list,
             entry->should_clear_history_list());
-  DCHECK_EQ(request->common_params().has_user_gesture,
+  DCHECK_EQ(request->common_params().has_possibly_filtered_user_gesture,
             entry->has_user_gesture());
   DCHECK_EQ(request->common_params().base_url_for_data_url,
             entry->GetBaseURLForDataURL());
@@ -1208,7 +1208,14 @@ int NavigationControllerImpl::GetIndexForOffset(int offset) {
 }
 
 std::optional<int> NavigationControllerImpl::GetIndexForGoBack() {
-  for (int index = GetIndexForOffset(-1); index >= 0; index--) {
+  return GetIndexForGoBackWithSkipping(GetCurrentEntryIndex());
+}
+
+std::optional<int> NavigationControllerImpl::GetIndexForGoBackWithSkipping(
+    int from_index) {
+  // Start searching one step behind the provided index for the first entry that
+  // shouldn't be skipped by the history manipulation intervention.
+  for (int index = from_index - 1; index >= 0; index--) {
     if (!GetEntryAtIndex(index)->should_skip_on_back_forward_ui()) {
       return index;
     }
@@ -1241,7 +1248,14 @@ bool NavigationControllerImpl::ShouldEnableBackButton() {
 }
 
 std::optional<int> NavigationControllerImpl::GetIndexForGoForward() {
-  for (int index = GetIndexForOffset(1); index < GetEntryCount(); index++) {
+  return GetIndexForGoForwardWithSkipping(GetCurrentEntryIndex());
+}
+
+std::optional<int> NavigationControllerImpl::GetIndexForGoForwardWithSkipping(
+    int from_index) {
+  // Start searching one step ahead the provided index for the first entry that
+  // shouldn't be skipped by the history manipulation intervention.
+  for (int index = from_index + 1; index < GetEntryCount(); index++) {
     if (!GetEntryAtIndex(index)->should_skip_on_back_forward_ui()) {
       return index;
     }
@@ -1280,22 +1294,49 @@ bool NavigationControllerImpl::CanGoToOffset(int offset) {
 
 #if BUILDFLAG(IS_ANDROID)
 bool NavigationControllerImpl::CanGoToOffsetWithSkipping(int offset) {
+  return GetIndexForOffsetWithSkipping(offset).has_value();
+}
+#endif
+
+#if BUILDFLAG(IS_ANDROID)
+std::optional<int> NavigationControllerImpl::GetIndexForOffsetWithSkipping(
+    int offset) {
+  int current_scan_index = GetCurrentEntryIndex();
+
   if (offset == 0) {
-    return true;
+    return current_scan_index;
   }
-  int increment = offset > 0 ? 1 : -1;
-  int non_skippable_entries = 0;
-  for (int index = GetIndexForOffset(increment);
-       index >= 0 && index < GetEntryCount(); index += increment) {
-    if (!GetEntryAtIndex(index)->should_skip_on_back_forward_ui()) {
-      non_skippable_entries++;
+
+  int steps = std::abs(offset);
+
+  // Note on time complexity:
+  //
+  // This algorithm is O(N) (where N is the number of entries) despite the
+  // nested loop structure.
+  //
+  // The outer loop runs 'steps' times. However, 'current_scan_index' is updated
+  // at the end of each iteration. The inner scanning functions
+  // (GetIndexForGoBackWithSkipping / GetIndexForGoForwardWithSkipping) start
+  // scanning strictly adjacent to the passed input index and never backtrack.
+  // This ensures that each entry in the navigation list is visited at most
+  // once.
+  for (int i = 0; i < steps; ++i) {
+    std::optional<int> next_index;
+
+    if (offset < 0) {
+      next_index = GetIndexForGoBackWithSkipping(current_scan_index);
+    } else {
+      next_index = GetIndexForGoForwardWithSkipping(current_scan_index);
     }
 
-    if (non_skippable_entries == std::abs(offset)) {
-      return true;
+    if (!next_index.has_value()) {
+      return std::nullopt;
     }
+
+    current_scan_index = next_index.value();
   }
-  return false;
+
+  return current_scan_index;
 }
 #endif
 
@@ -1412,32 +1453,14 @@ NavigationControllerImpl::GoToIndexAndReturnAllRequests(int index) {
 
 #if BUILDFLAG(IS_ANDROID)
 void NavigationControllerImpl::GoToOffsetWithSkipping(int offset) {
+  std::optional<int> target_index = GetIndexForOffsetWithSkipping(offset);
+
   // Note: This is actually reached in unit tests.
-  if (!CanGoToOffsetWithSkipping(offset)) {
+  if (!target_index.has_value()) {
     return;
   }
 
-  if (offset == 0) {
-    GoToIndex(GetIndexForOffset(offset));
-    return;
-  }
-  int increment = offset > 0 ? 1 : -1;
-  // Find the offset without counting skippable entries.
-  int target_index = GetIndexForOffset(increment);
-  int non_skippable_entries = 0;
-  for (int index = target_index; index >= 0 && index < GetEntryCount();
-       index += increment) {
-    if (!GetEntryAtIndex(index)->should_skip_on_back_forward_ui()) {
-      non_skippable_entries++;
-    }
-
-    if (non_skippable_entries == std::abs(offset)) {
-      target_index = index;
-      break;
-    }
-  }
-
-  GoToIndex(target_index);
+  GoToIndex(target_index.value());
 }
 #endif
 
@@ -2904,8 +2927,7 @@ bool NavigationControllerImpl::ValidateDataURLAsString(
     return false;
   }
 
-  if (data_url_as_string->size() >
-      kMaxLengthOfDataURLString.InBytesUnsigned()) {
+  if (data_url_as_string->size() > kMaxLengthOfDataURLString.InBytes()) {
     return false;
   }
 
@@ -3052,6 +3074,7 @@ void NavigationControllerImpl::NavigateFromFrameProxy(
     scoped_refptr<network::SharedURLLoaderFactory> blob_url_loader_factory,
     bool is_form_submission,
     const std::optional<blink::Impression>& impression,
+    bool has_user_gesture,
     blink::mojom::NavigationInitiatorActivationAndAdStatus
         initiator_activation_and_ad_status,
     base::TimeTicks actual_navigation_start_time,
@@ -3170,8 +3193,7 @@ void NavigationControllerImpl::NavigateFromFrameProxy(
   params.can_load_local_resources = false;
   /* params.should_replace_current_entry: skip */
   /* params.frame_name: skip */
-  // TODO(clamy): See if user gesture should be propagated to this function.
-  params.has_user_gesture = false;
+  params.has_user_gesture = has_user_gesture;
   params.should_clear_history_list = false;
   params.started_from_context_menu = false;
   /* params.navigation_ui_data: skip */
@@ -3188,9 +3210,10 @@ void NavigationControllerImpl::NavigateFromFrameProxy(
   std::unique_ptr<NavigationRequest> request =
       CreateNavigationRequestFromLoadParams(
           node, params, override_user_agent, should_replace_current_entry,
-          false /* has_user_gesture */, std::move(source_location),
-          ReloadType::NONE, entry.get(), frame_entry.get(),
-          actual_navigation_start_time, navigation_start_time,
+          std::move(source_location), ReloadType::NONE, entry.get(),
+          frame_entry.get(), actual_navigation_start_time,
+          navigation_start_time,
+          /*from_frame_proxy=*/true,
           is_embedder_initiated_fenced_frame_navigation,
           is_unfenced_top_navigation, is_container_initiated,
           storage_access_api_status, embedder_shared_storage_context);
@@ -4085,9 +4108,9 @@ base::WeakPtr<NavigationHandle> NavigationControllerImpl::NavigateWithoutEntry(
   std::unique_ptr<NavigationRequest> request =
       CreateNavigationRequestFromLoadParams(
           node, params, override_user_agent, should_replace_current_entry,
-          params.has_user_gesture, network::mojom::SourceLocation::New(),
-          reload_type, pending_entry_, pending_entry_->GetFrameEntry(node),
-          actual_navigation_start, navigation_start_time);
+          network::mojom::SourceLocation::New(), reload_type, pending_entry_,
+          pending_entry_->GetFrameEntry(node), actual_navigation_start,
+          navigation_start_time, /*from_frame_proxy=*/false);
 
   // If the navigation couldn't start, return immediately and discard the
   // pending NavigationEntry.
@@ -4267,6 +4290,8 @@ NavigationControllerImpl::CreateNavigationEntryFromLoadParams(
   // started_from_context_menu. Move started_from_context_menu to
   // NavigationUIData.
   entry->set_started_from_context_menu(params.started_from_context_menu);
+  entry->set_remove_extra_headers_on_cross_origin_redirect(
+      params.remove_extra_headers_on_cross_origin_redirect);
 
   return entry;
 }
@@ -4277,13 +4302,13 @@ NavigationControllerImpl::CreateNavigationRequestFromLoadParams(
     const LoadURLParams& params,
     bool override_user_agent,
     bool should_replace_current_entry,
-    bool has_user_gesture,
     network::mojom::SourceLocationPtr source_location,
     ReloadType reload_type,
     NavigationEntryImpl* entry,
     FrameNavigationEntry* frame_entry,
     base::TimeTicks actual_navigation_start_time,
     base::TimeTicks navigation_start_time,
+    bool from_frame_proxy,
     bool is_embedder_initiated_fenced_frame_navigation,
     bool is_unfenced_top_navigation,
     bool is_container_initiated,
@@ -4388,6 +4413,10 @@ NavigationControllerImpl::CreateNavigationRequestFromLoadParams(
   std::string page_state_data =
       frame_entry ? frame_entry->page_state().ToEncodedData() : std::string();
 
+  // TODO(clamy): See if user gesture should be propagated to `common_params`.
+  bool has_user_gesture_for_common_params =
+      from_frame_proxy ? false : params.has_user_gesture;
+
   blink::mojom::CommonNavigationParamsPtr common_params =
       blink::mojom::CommonNavigationParams::New(
           url_to_load, params.initiator_origin, params.initiator_base_url,
@@ -4398,7 +4427,7 @@ NavigationControllerImpl::CreateNavigationRequestFromLoadParams(
           actual_navigation_start_time, navigation_start_time,
           params.load_type == LOAD_TYPE_HTTP_POST ? "POST" : "GET",
           params.post_data, std::move(source_location),
-          params.started_from_context_menu, has_user_gesture,
+          params.started_from_context_menu, has_user_gesture_for_common_params,
           false /* has_text_fragment_token */,
           network::mojom::CSPDisposition::CHECK, std::vector<int>(),
           params.href_translate,
@@ -4434,8 +4463,7 @@ NavigationControllerImpl::CreateNavigationRequestFromLoadParams(
           /*document_ukm_source_id=*/ukm::kInvalidSourceId,
           node->pending_frame_policy(),
           /*force_enabled_origin_trials=*/std::vector<std::string>(),
-          /*origin_agent_cluster=*/false,
-          /*origin_agent_cluster_left_as_default=*/true,
+          blink::mojom::AgentClusterKey::NewSiteKey(GURL()),
           /*enabled_client_hints=*/
           std::vector<network::mojom::WebClientHintsType>(),
           /*is_cross_site_cross_browsing_context_group=*/false,
@@ -4467,7 +4495,15 @@ NavigationControllerImpl::CreateNavigationRequestFromLoadParams(
           /*should_skip_screentshot=*/false,
           /*force_new_document_sequence_number=*/false,
           /*navigation_metrics_token=*/base::UnguessableToken::Create(),
-          /*commit_target_frame_token=*/std::nullopt);
+          /*commit_target_frame_token=*/std::nullopt,
+  /*is_initial_webui=*/
+#if !BUILDFLAG(IS_ANDROID)
+          GetContentClient()->browser()->IsInitialWebUIURL(common_params->url),
+#else
+          false,
+#endif
+          /*permissions_policy_override=*/std::nullopt);
+
 #if BUILDFLAG(IS_ANDROID)
   if (ValidateDataURLAsString(params.data_url_as_string)) {
     commit_params->data_url_as_string = params.data_url_as_string->as_string();
@@ -4503,6 +4539,8 @@ NavigationControllerImpl::CreateNavigationRequestFromLoadParams(
   if (params.force_no_https_upgrade) {
     navigation_request->set_force_no_https_upgrade();
   }
+  navigation_request->set_remove_extra_headers_on_cross_origin_redirect(
+      params.remove_extra_headers_on_cross_origin_redirect);
   return navigation_request;
 }
 
@@ -4614,7 +4652,7 @@ NavigationControllerImpl::CreateNavigationRequestFromEntry(
     commit_params->srcdoc_value = frame_tree_node->srcdoc_value();
   }
   const bool is_browser_initiated = !initiator_frame_token;
-  return NavigationRequest::Create(
+  std::unique_ptr<NavigationRequest> request = NavigationRequest::Create(
       frame_tree_node, std::move(common_params), std::move(commit_params),
       is_browser_initiated, false /* was_opener_suppressed */,
       initiator_frame_token, initiator_process_id, entry->extra_headers(),
@@ -4623,6 +4661,10 @@ NavigationControllerImpl::CreateNavigationRequestFromEntry(
       blink::mojom::NavigationInitiatorActivationAndAdStatus::
           kDidNotStartWithTransientActivation,
       false /* is_pdf */);
+
+  request->set_remove_extra_headers_on_cross_origin_redirect(
+      entry->remove_extra_headers_on_cross_origin_redirect());
+  return request;
 }
 
 void NavigationControllerImpl::NotifyNavigationEntryCommitted(

@@ -34,6 +34,9 @@ class NtpSyncedThemeBridge : public NtpCustomBackgroundServiceObserver {
   // Called by the Java counterpart to destroy this object.
   void Destroy(JNIEnv* env);
 
+  // Fetches the next image for a theme collection with daily refresh enabled.
+  void FetchNextThemeCollectionImage(JNIEnv* env);
+
   // Fetches the current custom background information (e.g., URL, collection
   // ID) from the NtpCustomBackgroundService.
   base::android::ScopedJavaLocalRef<jobject> GetCustomBackgroundInfo(

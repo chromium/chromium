@@ -12,7 +12,6 @@
 #include <utility>
 
 #include "base/compiler_specific.h"
-#include "base/containers/contains.h"
 #include "base/containers/queue.h"
 #include "base/files/file.h"
 #include "base/files/file_util.h"
@@ -270,9 +269,8 @@ class FileUploadDelegateTest : public ::testing::Test {
     ASSERT_TRUE(file.IsValid());
     ASSERT_THAT(file.error_details(), Eq(base::File::FILE_OK));
 
-    const int bytes_written =
-        UNSAFE_TODO(file.Write(0, kTestData, kTestDataSize));
-    EXPECT_THAT(bytes_written, Eq(static_cast<int>(kTestDataSize)));
+    EXPECT_TRUE(file.WriteAndCheck(
+        0, base::as_byte_span(kTestData).first(kTestDataSize)));
   }
 
   std::unique_ptr<::net::test_server::HttpResponse> HandlePostRequest(

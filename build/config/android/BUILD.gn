@@ -55,12 +55,13 @@ config("compiler") {
   ]
 
   if (current_cpu == "arm64") {
+    rustflags = [ "-Ctarget-feature=-outline-atomics" ]
     if (arm_control_flow_integrity == "standard") {
       cflags += [ "-mbranch-protection=standard" ]
-      rustflags = [ "-Zbranch-protection=pac-ret,bti" ]
+      rustflags += [ "-Zbranch-protection=pac-ret,bti" ]
     } else if (arm_control_flow_integrity == "pac") {
       cflags += [ "-mbranch-protection=pac-ret" ]
-      rustflags = [ "-Zbranch-protection=pac-ret" ]
+      rustflags += [ "-Zbranch-protection=pac-ret" ]
     }
   }
 
@@ -98,18 +99,6 @@ config("hide_all_but_jni") {
   inputs = [ _version_script ]
   ldflags =
       [ "-Wl,--version-script=" + rebase_path(_version_script, root_build_dir) ]
-}
-
-config("relr_relocations") {
-  # RELR supported API 30+, but supported 28+ with --use-android-relr-tags.
-  # https://android.googlesource.com/platform/bionic/+/master/android-changes-for-ndk-developers.md#relative-relocations-relr
-  ldflags = [ "-Wl,--pack-dyn-relocs=relr,--use-android-relr-tags" ]
-}
-
-config("default_relr_relocations") {
-  if (default_min_sdk_version >= 28) {
-    configs = [ ":relr_relocations" ]
-  }
 }
 
 config("lld_branch_target_hardening") {

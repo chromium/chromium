@@ -1,0 +1,7 @@
+This is a testharness.js-based test.
+[FAIL] TextDecoder end-of-queue handling
+  assert_equals: expected "\\ufffd" but got "\\ufffd\\ufffd"
+[FAIL] TextDecoder end-of-queue handling using stream: true
+  assert_equals: expected "" but got "\\ufffd"
+Harness: the test ran to completion.
+

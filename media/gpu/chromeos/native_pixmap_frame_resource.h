@@ -92,6 +92,7 @@ class NativePixmapFrameResource : public FrameResource {
   // CreateGpuMemoryBufferHandle() will duplicate file descriptors to make a
   // gfx::GpuMemoryBufferHandle.
   gfx::GpuMemoryBufferHandle CreateGpuMemoryBufferHandle() const override;
+  bool HasMappableSharedImage() const override;
   // Always returns nullptr.
   scoped_refptr<gpu::ClientSharedImage> GetSharedImage() const override;
   const VideoFrameLayout& layout() const override;

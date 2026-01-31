@@ -48,11 +48,11 @@ bool WriteFile::Execute(int request_id) {
   // Set the data directly on base::Value() to avoid an extra string copy.
   DCHECK(buffer_.get());
 
-  base::Value::Dict options_as_value = options.ToValue();
+  base::DictValue options_as_value = options.ToValue();
   options_as_value.Set("data", base::Value(base::as_bytes(UNSAFE_TODO(
                                    base::span(buffer_->data(), length_)))));
 
-  base::Value::List event_args;
+  base::ListValue event_args;
   event_args.Append(std::move(options_as_value));
 
   return SendEvent(

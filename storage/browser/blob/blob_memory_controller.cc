@@ -10,9 +10,8 @@
 
 #include "base/byte_count.h"
 #include "base/command_line.h"
-#include "base/compiler_specific.h"
-#include "base/containers/contains.h"
 #include "base/containers/small_map.h"
+#include "base/containers/span.h"
 #include "base/feature_list.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
@@ -237,21 +236,20 @@ std::pair<FileCreationInfo, int64_t> CreateFileAndWriteItems(
 
   // Write data.
   file.SetLength(total_size_bytes);
-  int bytes_written = 0;
   for (const auto& item : data) {
-    size_t length = item.size();
-    size_t bytes_left = length;
-    while (bytes_left > 0) {
-      bytes_written = UNSAFE_TODO(file.WriteAtCurrentPos(
-          reinterpret_cast<const char*>(item.data() + (length - bytes_left)),
-          base::saturated_cast<int>(bytes_left)));
-      if (bytes_written < 0)
+    base::span<const uint8_t> bytes_left = item;
+    while (!bytes_left.empty()) {
+      const std::optional<size_t> bytes_written =
+          file.WriteAtCurrentPos(bytes_left);
+      if (!bytes_written) {
         break;
-      DCHECK_LE(static_cast<size_t>(bytes_written), bytes_left);
-      bytes_left -= bytes_written;
+      }
+      bytes_left = bytes_left.subspan(*bytes_written);
     }
-    if (bytes_written < 0)
+    if (!bytes_left.empty()) {
+      creation_info.error = File::FILE_ERROR_FAILED;
       break;
+    }
   }
   if (!file.Flush()) {
     file.Close();
@@ -261,9 +259,9 @@ std::pair<FileCreationInfo, int64_t> CreateFileAndWriteItems(
   }
 
   File::Info info;
-  bool success = file.GetInfo(&info);
-  creation_info.error =
-      bytes_written < 0 || !success ? File::FILE_ERROR_FAILED : File::FILE_OK;
+  if (!file.GetInfo(&info)) {
+    creation_info.error = File::FILE_ERROR_FAILED;
+  }
   creation_info.last_modified = info.last_modified;
   return std::make_pair(std::move(creation_info), disk_availability);
 }
@@ -730,7 +728,7 @@ void BlobMemoryController::NotifyMemoryItemsUsed(
       continue;
     }
     // We don't want to re-add the item if we're currently paging it to disk.
-    if (base::Contains(items_paging_to_file_, item->item_id())) {
+    if (items_paging_to_file_.contains(item->item_id())) {
       return;
     }
     auto iterator = populated_memory_items_.Get(item->item_id());

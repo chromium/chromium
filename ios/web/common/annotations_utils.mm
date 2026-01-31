@@ -20,7 +20,7 @@ web::TextAnnotation ConvertMatchToAnnotation(NSString* source,
                                              NSRange range,
                                              NSTextCheckingResult* data,
                                              NSString* type) {
-  base::Value::Dict dict;
+  base::DictValue dict;
   NSString* start = [source substringWithRange:range];
   dict.Set(kAnnotationsStartKey, base::Value(static_cast<int>(range.location)));
   dict.Set(kAnnotationsEndKey,

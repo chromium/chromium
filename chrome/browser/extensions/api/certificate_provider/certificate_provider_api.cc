@@ -101,11 +101,11 @@ class RequestPinExceptFirstQuotaBucketMapper final
       const RequestPinExceptFirstQuotaBucketMapper&) = delete;
   ~RequestPinExceptFirstQuotaBucketMapper() override = default;
 
-  void GetBucketsForArgs(const base::Value::List& args,
+  void GetBucketsForArgs(const base::ListValue& args,
                          QuotaLimitHeuristic::BucketList* buckets) override {
     if (args.empty())
       return;
-    const base::Value::Dict* details = args.front().GetIfDict();
+    const base::DictValue* details = args.front().GetIfDict();
     if (!details)
       return;
     std::optional<int> sign_request_id = details->FindInt("signRequestId");
@@ -492,7 +492,7 @@ ExtensionFunction::ResponseAction CertificateProviderRequestPinFunction::Run() {
 
 void CertificateProviderRequestPinFunction::OnInputReceived(
     const std::string& value) {
-  base::Value::List create_results;
+  base::ListValue create_results;
   chromeos::CertificateProviderService* const service =
       chromeos::CertificateProviderServiceFactory::GetForBrowserContext(
           browser_context());

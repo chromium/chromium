@@ -70,7 +70,8 @@ NavigationItemImpl::NavigationItemImpl(
       timestamp_(TimeFromProto(storage.timestamp())),
       user_agent_type_(UserAgentTypeFromProto(storage.user_agent())),
       http_request_headers_(
-          HttpRequestHeadersFromProto(storage.http_request_headers())) {
+          HttpRequestHeadersFromProto(storage.http_request_headers())),
+      was_created_automatically_(storage.was_created_automatically()) {
   // While the virtual URL is persisted, the original request URL and the
   // non-virtual URL needs to be set upon NavigationItem creation. Since
   // GetVirtualURL() returns `url_` for the non-overridden case, this will
@@ -122,6 +123,9 @@ void NavigationItemImpl::SerializeToProto(
     storage.set_security_scoped_file_resource(
         static_cast<const char*>(security_scoped_file_resource_.bytes),
         security_scoped_file_resource_.length);
+  }
+  if (was_created_automatically_) {
+    storage.set_was_created_automatically(was_created_automatically_);
   }
 }
 
@@ -314,6 +318,14 @@ void NavigationItemImpl::SetIsCreatedFromHashChange(bool hash_change) {
 
 bool NavigationItemImpl::IsCreatedFromHashChange() const {
   return is_created_from_hash_change_;
+}
+
+void NavigationItemImpl::SetWasCreatedAutomatically(bool value) {
+  was_created_automatically_ = value;
+}
+
+bool NavigationItemImpl::WasCreatedAutomatically() const {
+  return was_created_automatically_;
 }
 
 void NavigationItemImpl::SetShouldSkipSerialization(bool skip) {

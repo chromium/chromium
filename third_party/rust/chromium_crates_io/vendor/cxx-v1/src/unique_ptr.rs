@@ -107,7 +107,7 @@ where
     /// UniquePtr. This differs from Rust norms, so extra care should be taken
     /// in the way the pointer is used.
     pub fn as_mut_ptr(&self) -> *mut T {
-        self.as_ptr() as *mut T
+        self.as_ptr().cast_mut()
     }
 
     /// Consumes the UniquePtr, releasing its ownership of the heap-allocated T.

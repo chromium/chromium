@@ -66,8 +66,10 @@ import org.robolectric.shadows.ShadowLooper;
 import org.chromium.base.Callback;
 import org.chromium.base.DeviceInfo;
 import org.chromium.base.supplier.LazyOneshotSupplier;
-import org.chromium.base.supplier.ObservableSupplier;
-import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.supplier.MonotonicObservableSupplier;
+import org.chromium.base.supplier.ObservableSuppliers;
+import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
+import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.base.supplier.SyncOneshotSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRule;
 import org.chromium.base.test.util.Features.DisableFeatures;
@@ -183,7 +185,8 @@ public class HubLayoutUnitTest {
 
     private SyncOneshotSupplierImpl<HubLayoutAnimator> mHubLayoutAnimatorSupplier;
     private Supplier<TabModelSelector> mTabModelSelectorSupplier;
-    private final ObservableSupplierImpl<Pane> mPaneSupplier = new ObservableSupplierImpl<>();
+    private final SettableMonotonicObservableSupplier<Pane> mPaneSupplier =
+            ObservableSuppliers.createMonotonic();
     private HubShowPaneHelper mHubShowPaneHelper;
 
     @Before
@@ -682,7 +685,8 @@ public class HubLayoutUnitTest {
 
     @Test
     public void testHubLayoutAnimationListener() {
-        ObservableSupplierImpl<Boolean> isAnimatingSupplier = new ObservableSupplierImpl<>();
+        SettableNonNullObservableSupplier<Boolean> isAnimatingSupplier =
+                ObservableSuppliers.createNonNull(false);
         HubLayoutAnimationListenerImpl listener =
                 new HubLayoutAnimationListenerImpl(isAnimatingSupplier);
 
@@ -696,7 +700,8 @@ public class HubLayoutUnitTest {
     @Test
     public void testIsAnimatingSupplier_startShowing() {
         setUpHubLayoutForAnimatingSupplierTests();
-        ObservableSupplier<Boolean> isAnimatingSupplier = mHubLayout.getIsAnimatingSupplier();
+        MonotonicObservableSupplier<Boolean> isAnimatingSupplier =
+                mHubLayout.getIsAnimatingSupplier();
 
         startShowing(LayoutType.BROWSING, true);
         verify(mCurrentAnimationRunner).addListener(mAnimationListenerCaptor.capture());
@@ -712,7 +717,8 @@ public class HubLayoutUnitTest {
     @Test
     public void testIsAnimatingSupplier_startHiding() {
         setUpHubLayoutForAnimatingSupplierTests();
-        ObservableSupplier<Boolean> isAnimatingSupplier = mHubLayout.getIsAnimatingSupplier();
+        MonotonicObservableSupplier<Boolean> isAnimatingSupplier =
+                mHubLayout.getIsAnimatingSupplier();
 
         startHiding(LayoutType.BROWSING, NEW_TAB_ID);
         verify(mCurrentAnimationRunner).addListener(mAnimationListenerCaptor.capture());
@@ -728,7 +734,8 @@ public class HubLayoutUnitTest {
     @Test
     public void testIsAnimatingSupplier_onTabCreated() {
         setUpHubLayoutForAnimatingSupplierTests();
-        ObservableSupplier<Boolean> isAnimatingSupplier = mHubLayout.getIsAnimatingSupplier();
+        MonotonicObservableSupplier<Boolean> isAnimatingSupplier =
+                mHubLayout.getIsAnimatingSupplier();
 
         mHubLayout.onTabCreated(FAKE_TIME, NEW_TAB_ID, NEW_TAB_INDEX, TAB_ID, false, false, 0, 0);
         verify(mCurrentAnimationRunner).addListener(mAnimationListenerCaptor.capture());

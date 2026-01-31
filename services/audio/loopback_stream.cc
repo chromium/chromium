@@ -8,7 +8,6 @@
 #include <string>
 #include <utility>
 
-#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/sync_socket.h"
 #include "base/task/sequenced_task_runner.h"
@@ -19,6 +18,7 @@
 #include "media/base/vector_math.h"
 #include "mojo/public/cpp/system/buffer.h"
 #include "mojo/public/cpp/system/platform_handle.h"
+#include "third_party/perfetto/include/perfetto/tracing/track_event_args.h"
 
 namespace audio {
 
@@ -231,8 +231,7 @@ LoopbackStream::LoopbackSignalForwarder::~LoopbackSignalForwarder() {
 void LoopbackStream::LoopbackSignalForwarder::GenerateMoreAudio() {
   DCHECK(loopback_task_runner_->RunsTasksInCurrentSequence());
 
-  TRACE_EVENT_WITH_FLOW0("audio", "GenerateMoreAudio", this,
-                         TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT);
+  TRACE_EVENT("audio", "GenerateMoreAudio", perfetto::Flow::FromPointer(this));
 
   double output_volume;
   base::TimeTicks delayed_capture_time;

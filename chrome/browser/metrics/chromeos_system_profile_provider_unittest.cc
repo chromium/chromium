@@ -252,6 +252,22 @@ TEST_F(ChromeOSSystemProfileProviderTest, FullHardwareClass) {
   EXPECT_EQ(expected_full_hw_class, proto_full_hw_class);
 }
 
+TEST_F(ChromeOSSystemProfileProviderTest, UpdatedHardwareClass) {
+  const std::string expected_updated_hw_class = "updated_hardware_class_foo";
+  fake_statistics_provider_.SetUpdatedHardwareClass(expected_updated_hw_class);
+
+  TestChromeOSSystemProfileProvider provider;
+  provider.OnDidCreateMetricsLog();
+  metrics::SystemProfileProto system_profile;
+  provider.ProvideSystemProfileMetrics(&system_profile);
+
+  ASSERT_TRUE(system_profile.has_hardware());
+  std::string proto_updated_hw_class =
+      system_profile.hardware().updated_hardware_class();
+
+  EXPECT_EQ(expected_updated_hw_class, proto_updated_hw_class);
+}
+
 TEST_F(ChromeOSSystemProfileProviderTest, DemoModeDimensions) {
   testing_profile_->ScopedCrosSettingsTestHelper()
       ->InstallAttributes()

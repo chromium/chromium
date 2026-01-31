@@ -338,6 +338,11 @@ public class AndroidPaymentAppFinder implements ManifestVerifyCallback {
                 Log.i(TAG, "App store method \"%s\".", method);
                 continue;
             }
+            if (methodHandledByInternalFactory(method)) {
+                Log.i(TAG, "Skipping method \"%s\" to be handled by internal factory.", method);
+                continue;
+            }
+
             if (UrlUtil.isValidUrlBasedPaymentMethodIdentifier(url)) {
                 Log.i(TAG, "PaymentRequest API supportedMethods: \"%s\".", method);
                 mMerchantRequestedUrlPaymentMethods.add(url);
@@ -362,7 +367,7 @@ public class AndroidPaymentAppFinder implements ManifestVerifyCallback {
         }
 
         boolean isReadyToPayQueryRestricted =
-                !mFactoryDelegate.prefsCanMakePayment()
+                !mFactoryDelegate.getParams().prefsCanMakePayment()
                         && PaymentFeatureList.isEnabledOrExperimentalFeaturesEnabled(
                                 PaymentFeatureList.RESTRICT_IS_READY_TO_PAY_QUERY);
         if (mIsOffTheRecord) {
@@ -574,7 +579,7 @@ public class AndroidPaymentAppFinder implements ManifestVerifyCallback {
             if (!mDownloader.isInitialized()) {
                 mDownloader.initialize(
                         mFactoryDelegate.getParams().getWebContents(),
-                        mFactoryDelegate.getCSPChecker());
+                        mFactoryDelegate.getParams().getCSPChecker());
             }
 
             manifestVerifiers.add(
@@ -854,7 +859,7 @@ public class AndroidPaymentAppFinder implements ManifestVerifyCallback {
                 getAppsSupportedDelegations(resolveInfo.activityInfo);
         // Allow-lists the Play Billing method for this feature in order for the Play Billing case
         // to skip the sheet in this case.
-        if (mFactoryDelegate.isFullDelegationRequired()
+        if (mFactoryDelegate.getParams().isFullDelegationRequired()
                 || methodName.equals(MethodStrings.GOOGLE_PLAY_BILLING)) {
             if (!appSupportedDelegations.providesAll(
                     mFactoryDelegate.getParams().getPaymentOptions())) {
@@ -893,9 +898,10 @@ public class AndroidPaymentAppFinder implements ManifestVerifyCallback {
             app =
                     new AndroidPaymentApp(
                             sAndroidIntentLauncherForTest == null
-                                    ? assumeNonNull(mFactoryDelegate.getAndroidIntentLauncher())
+                                    ? assumeNonNull(
+                                            mFactoryDelegate.getParams().getAndroidIntentLauncher())
                                     : sAndroidIntentLauncherForTest,
-                            mFactoryDelegate.getDialogController(),
+                            mFactoryDelegate.getParams().getDialogController(),
                             packageName,
                             resolveInfo.activityInfo.name,
                             readyToPayServiceName,
@@ -985,5 +991,28 @@ public class AndroidPaymentAppFinder implements ManifestVerifyCallback {
     public void addAppStoreForTest(String packageName, GURL paymentMethod) {
         assert paymentMethod.isValid();
         mAppStores.put(packageName, paymentMethod);
+    }
+
+    /**
+     * Determine whether this factory should yield to the internal factory to handle a given method.
+     *
+     * <p>TODO(crbug.com/400531531): Stop special-casing individual payment apps in Chrome.
+     */
+    private boolean methodHandledByInternalFactory(String method) {
+        if (!PaymentFeatureList.isEnabled(PaymentFeatureList.DEDUPLICATE_NATIVE_PAYMENT_APPS)) {
+            return false;
+        }
+
+        if (PaymentFeatureList.isEnabledOrExperimentalFeaturesEnabled(
+                PaymentFeatureList.GOOGLE_PAY_VIA_ANDROID_INTENTS)) {
+            return false;
+        }
+
+        if (!mFactoryDelegate.internalPaymentAppFactoryPresent()) {
+            return false;
+        }
+
+        return method.equals(MethodStrings.GOOGLE_PAY)
+                || method.equals(MethodStrings.GOOGLE_PAY_AUTHENTICATION);
     }
 }

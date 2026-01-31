@@ -12,7 +12,7 @@ namespace display {
 
 class DisplayLayout;
 
-DISPLAY_MANAGER_EXPORT bool JsonToDisplayLayout(const base::Value::Dict& dict,
+DISPLAY_MANAGER_EXPORT bool JsonToDisplayLayout(const base::DictValue& dict,
                                                 DisplayLayout* layout);
 
 // This will return false if `value` is not a dict.
@@ -22,7 +22,7 @@ DISPLAY_MANAGER_EXPORT bool JsonToDisplayLayout(const base::Value& value,
 
 // This will modify `dict` in place.
 DISPLAY_MANAGER_EXPORT void DisplayLayoutToJson(const DisplayLayout& layout,
-                                                base::Value::Dict& dict);
+                                                base::DictValue& dict);
 
 }  // namespace display
 

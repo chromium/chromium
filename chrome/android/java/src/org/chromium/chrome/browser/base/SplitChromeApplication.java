@@ -238,7 +238,12 @@ public class SplitChromeApplication extends SplitCompatApplication {
             if (ChromeFeatureList.sInitFeatureListEarly.getValue()) {
                 if (BuildConfig.IS_FOR_TEST) {
                     ContextUtils.sDoFeatureListInitHookForTesting =
-                            InitializeFeatureList::initializeFeatureList;
+                            () -> {
+                                if (CommandLine.getInstance()
+                                        .hasSwitch(ChromeSwitches.FORCE_INIT_FEATURE_LIST_EARLY)) {
+                                    InitializeFeatureList.initializeFeatureList();
+                                }
+                            };
                 } else {
                     InitializeFeatureList.initializeFeatureList();
                 }

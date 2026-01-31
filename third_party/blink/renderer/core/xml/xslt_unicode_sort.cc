@@ -113,10 +113,10 @@ void XsltUnicodeSortFunction(xsltTransformContextPtr ctxt,
         } else if (xmlStrEqual(comp->stype, ToXMLChar("number"))) {
           comp->number = 1;
         } else {
-          xsltTransformError(
+          UNSAFE_TODO(xsltTransformError(
               ctxt, nullptr, sorts[j],
               "xsltDoSortFunction: no support for data-type = %s\n",
-              comp->stype);
+              comp->stype));
           comp->number = 0;  // Use default.
         }
       }
@@ -132,9 +132,9 @@ void XsltUnicodeSortFunction(xsltTransformContextPtr ctxt,
         } else if (xmlStrEqual(comp->order, ToXMLChar("descending"))) {
           comp->descending = 1;
         } else {
-          xsltTransformError(ctxt, nullptr, sorts[j],
-                             "xsltDoSortFunction: invalid value %s for order\n",
-                             comp->order);
+          UNSAFE_TODO(xsltTransformError(
+              ctxt, nullptr, sorts[j],
+              "xsltDoSortFunction: invalid value %s for order\n", comp->order));
           comp->descending = 0;  // Use default.
         }
       }

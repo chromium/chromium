@@ -4,12 +4,9 @@
 
 #include "ui/views/accessibility/tree/widget_ax_manager.h"
 
-#if BUILDFLAG(IS_WIN)
-#include <oleacc.h>
-#endif  // BUILDFLAG(IS_WIN)
-
 #include <utility>
 
+#include "base/notreached.h"
 #include "base/task/single_thread_task_runner.h"
 #include "third_party/abseil-cpp/absl/cleanup/cleanup.h"
 #include "ui/accessibility/accessibility_features.h"
@@ -19,12 +16,84 @@
 #include "ui/views/accessibility/view_accessibility.h"
 
 #if BUILDFLAG(IS_WIN)
+#include <oleacc.h>
+
 #include "ui/views/win/hwnd_util.h"
 #endif  // BUILDFLAG(IS_WIN)
 
 #if BUILDFLAG(IS_MAC)
 #include "ui/views/widget/native_widget_mac.h"
 #endif  // BUILDFLAG(IS_MAC)
+
+namespace {
+
+using Event = ax::mojom::Event;
+bool ShouldSerializeEvent(Event event_type) {
+  switch (event_type) {
+    // TODO(crbug.com/40672441): Add events that must be serialized directly.
+    case Event::kBlur:
+    case Event::kFocus:
+      return true;
+    default:
+      break;
+  }
+
+  // The following events are not serialized because they are generated
+  // automatically during the serialization process.
+  switch (event_type) {
+    // TODO(crbug.com/40672441): Add events that are generated and must be
+    // skipped.
+    default:
+      break;
+  }
+
+  switch (event_type) {
+    case Event::kActiveDescendantChanged:
+    case Event::kAlert:
+    case Event::kBlur:
+    case Event::kCheckedStateChanged:
+    case Event::kChildrenChanged:
+    case Event::kControlsChanged:
+    case Event::kDocumentTitleChanged:
+    case Event::kExpandedChanged:
+    case Event::kFocus:
+    case Event::kFocusAfterMenuClose:
+    case Event::kFocusContext:
+    case Event::kHide:
+    case Event::kLiveRegionChanged:
+    case Event::kLiveRegionCreated:
+    case Event::kLoadComplete:
+    case Event::kLocationChanged:
+    case Event::kMenuEnd:
+    case Event::kMenuPopupEnd:
+    case Event::kMenuPopupStart:
+    case Event::kMenuStart:
+    case Event::kRowCollapsed:
+    case Event::kRowExpanded:
+    case Event::kSelection:
+    case Event::kSelectionAdd:
+    case Event::kSelectionRemove:
+    case Event::kSelectedChildrenChanged:
+    case Event::kStateChanged:
+    case Event::kTextChanged:
+    case Event::kTextSelectionChanged:
+    case Event::kTooltipClosed:
+    case Event::kTooltipOpened:
+    case Event::kTreeChanged:
+    case Event::kValueChanged:
+    case Event::kWindowActivated:
+    case Event::kWindowDeactivated:
+    case Event::kWindowVisibilityChanged:
+      return false;
+    default:
+      break;
+  }
+
+  NOTREACHED() << "Unhandled event " << event_type
+               << " in ShouldSerializeEvent";
+}
+
+}  // namespace
 
 namespace views {
 
@@ -57,7 +126,7 @@ void WidgetAXManager::Init() {
 
 void WidgetAXManager::OnEvent(ViewAccessibility& view_ax,
                               ax::mojom::Event event_type) {
-  if (!is_enabled_) {
+  if (!is_enabled_ || !ShouldSerializeEvent(event_type)) {
     return;
   }
 
@@ -205,19 +274,17 @@ WidgetAXManager::AccessibilityGetNativeViewAccessible() {
     return native_widget->GetNativeViewAccessibleForNSView();
   }
 #elif BUILDFLAG(IS_WIN)
-  // On Windows, we get the IAccessible for the HWND of the widget through an
-  // OS API call.
-  // TODO(accessibility): Consider caching the IAccessible object.
-  HWND hwnd = HWNDForView(widget_->GetRootView());
-  if (!hwnd) {
-    return nullptr;
-  }
-
-  IAccessible* parent;
-  if (SUCCEEDED(
-          ::AccessibleObjectFromWindow(hwnd, OBJID_WINDOW, IID_IAccessible,
-                                       reinterpret_cast<void**>(&parent)))) {
-    return parent;
+  // Hold a reference to the parent in this instance to ensure that it lives
+  // long enough for the caller to take its own reference, if needed.
+  if (!parent_accessible_) {
+    HWND hwnd = HWNDForView(widget_->GetRootView());
+    if (!hwnd) {
+      return nullptr;
+    }
+    if (SUCCEEDED(::AccessibleObjectFromWindow(
+            hwnd, OBJID_WINDOW, IID_PPV_ARGS(&parent_accessible_)))) {
+      return parent_accessible_.Get();
+    }
   }
 #endif
   return gfx::NativeViewAccessible();
@@ -400,6 +467,8 @@ void WidgetAXManager::SendPendingUpdate() {
   for (auto& event_copy : pending_events_copy) {
     const int id = event_copy.id;
     const ax::mojom::Event event_type = event_copy.event_type;
+
+    CHECK(ShouldSerializeEvent(event_type));
 
     ViewAccessibility* view_ax = cache_->Get(id);
     if (!view_ax) {

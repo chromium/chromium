@@ -4,7 +4,6 @@
 
 import {PageHandlerFactory, PageHandlerRemote} from './browser.mojom-webui.js';
 import {loadTimeData} from '//resources/js/load_time_data.js';
-import {Url as MojoUrl} from '//resources/mojo/url/mojom/url.mojom-webui.js';
 
 import '/strings.m.js';
 
@@ -57,7 +56,7 @@ class WebviewElement extends HTMLElement {
                                iframeContentWindow);
   }
 
-  navigate(src: MojoUrl) {
+  navigate(src: string) {
     BrowserProxy.getInstance().navigate(this.guestContentsId, src);
   }
 
@@ -83,7 +82,7 @@ function navigateToAddressBarUrl() {
       // validation error when sending this call to the browser. Successful
       // construction indicates a valid URL.
       const src = new URL(addressBar.value);
-      const mojoSrc: MojoUrl = {url: src.toString()};
+      const mojoSrc = src.toString();
       webview.navigate(mojoSrc);
     } catch (error) {
       console.error(error);

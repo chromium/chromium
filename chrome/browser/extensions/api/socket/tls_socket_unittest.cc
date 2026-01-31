@@ -90,7 +90,10 @@ class TLSSocketTestBase : public extensions::ExtensionServiceTestBase {
 
  protected:
   // extensions::ExtensionServiceTestBase implementation.
-  void SetUp() override { InitializeEmptyExtensionService(); }
+  void SetUp() override {
+    extensions::ExtensionServiceTestBase::SetUp();
+    InitializeEmptyExtensionService();
+  }
 
   void Initialize() {
     url_request_context_ = url_request_context_builder_->Build();

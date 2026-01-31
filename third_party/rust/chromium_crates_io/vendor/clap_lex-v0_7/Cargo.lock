@@ -15,7 +15,7 @@ dependencies = [
 
 [[package]]
 name = "clap_lex"
-version = "0.7.6"
+version = "0.7.7"
 dependencies = [
  "automod",
 ]

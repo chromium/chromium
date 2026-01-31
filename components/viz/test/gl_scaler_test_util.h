@@ -16,7 +16,6 @@
 #include "third_party/skia/include/core/SkColor.h"
 #include "third_party/skia/include/core/SkRect.h"
 #include "ui/gfx/color_space.h"
-#include "ui/gfx/color_transform.h"
 #include "ui/gfx/geometry/size.h"
 
 namespace gfx {
@@ -76,11 +75,6 @@ class GLScalerTestUtil {
                                           CyclicalPattern pattern,
                                           const std::vector<SkColor4f>& cycle,
                                           size_t rotation);
-
-  // Returns the RGB/YUV color spaces used by default when color space
-  // conversion is requested.
-  static gfx::ColorSpace DefaultRGBColorSpace();
-  static gfx::ColorSpace DefaultYUVColorSpace();
 
   // Performs an in-place transform of the given |image| from
   // DefaultRGBColorSpace() to DefaultYUVColorSpace(). The color channels (plus

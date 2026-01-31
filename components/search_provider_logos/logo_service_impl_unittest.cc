@@ -181,7 +181,7 @@ std::string MakeServerResponse(const SkBitmap& image,
                                const std::string& dark_mime_type,
                                const std::string& fingerprint,
                                base::TimeDelta time_to_live) {
-  base::Value::Dict dict;
+  base::DictValue dict;
 
   std::string data_uri = "data:";
   data_uri += mime_type;

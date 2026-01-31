@@ -9,7 +9,6 @@
 #include <string>
 
 #include "base/command_line.h"
-#include "base/containers/contains.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/scoped_feature_list.h"
@@ -48,7 +47,7 @@ class TestObserver : public NetworkSmsHandler::Observer {
   TestObserver() = default;
   ~TestObserver() override = default;
 
-  void MessageReceived(const base::Value::Dict& message) override {
+  void MessageReceived(const base::DictValue& message) override {
     const std::string* text = message.FindString(NetworkSmsHandler::kTextKey);
     if (text)
       messages_.insert(*text);
@@ -203,7 +202,7 @@ TEST_F(NetworkSmsHandlerTest, DbusStub) {
   // ModemMessagingClientStubImpl and SmsClientStubImpl.
   // TODO(stevenjb): Use a TestInterface to set this up to remove dependency.
   const char kMessage1[] = "FakeSMSClient: Test Message: /SMS/0";
-  EXPECT_FALSE(base::Contains(messages, kMessage1));
+  EXPECT_FALSE(messages.contains(kMessage1));
 
   // Test for messages delivered by signals.
   test_observer_->ClearMessages();
@@ -216,7 +215,7 @@ TEST_F(NetworkSmsHandlerTest, DbusStub) {
   network_sms_handler_->RequestUpdate();
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(test_observer_->message_count(), 1);
-  EXPECT_TRUE(base::Contains(messages, kMessage1));
+  EXPECT_TRUE(messages.contains(kMessage1));
 
   // There should be a request to delete the message after the message has been
   // received. Complete the request.
@@ -292,7 +291,7 @@ TEST_F(NetworkSmsHandlerTest, DeleteFailure) {
   // Note: The following string corresponds to values in
   // ModemMessagingClientStubImpl and SmsClientStubImpl.
   const char kMessage1[] = "FakeSMSClient: Test Message: /SMS/0";
-  EXPECT_FALSE(base::Contains(messages, kMessage1));
+  EXPECT_FALSE(messages.contains(kMessage1));
 
   // Test for messages delivered by signals.
   test_observer_->ClearMessages();
@@ -305,7 +304,7 @@ TEST_F(NetworkSmsHandlerTest, DeleteFailure) {
   network_sms_handler_->RequestUpdate();
   base::RunLoop().RunUntilIdle();
   EXPECT_GE(test_observer_->message_count(), 1);
-  EXPECT_TRUE(base::Contains(messages, kMessage1));
+  EXPECT_TRUE(messages.contains(kMessage1));
 
   // There should be a request to delete the message after the message has been
   // received.
@@ -391,7 +390,7 @@ TEST_F(NetworkSmsHandlerTest, ReceiveSmsTimeout) {
   // ModemMessagingClientStubImpl and SmsClientStubImpl.
   // TODO(stevenjb): Use a TestInterface to set this up to remove dependency.
   const char kMessage1[] = "FakeSMSClient: Test Message: /SMS/0";
-  EXPECT_FALSE(base::Contains(messages, kMessage1));
+  EXPECT_FALSE(messages.contains(kMessage1));
 
   // Receive 2 SMSes.
   test_observer_->ClearMessages();
@@ -415,8 +414,8 @@ TEST_F(NetworkSmsHandlerTest, ReceiveSmsTimeout) {
   network_sms_handler_->RequestUpdate();
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(test_observer_->message_count(), 1);
-  EXPECT_FALSE(base::Contains(messages, kMessage1));
-  EXPECT_TRUE(base::Contains(messages, "FakeSMSClient: Test Message: /SMS/2"));
+  EXPECT_FALSE(messages.contains(kMessage1));
+  EXPECT_TRUE(messages.contains("FakeSMSClient: Test Message: /SMS/2"));
 
   // There should be a request to delete the second SMS. Complete the request.
   EXPECT_EQ(sms_path_2,
@@ -463,7 +462,7 @@ TEST_F(NetworkSmsHandlerTest, DeviceObjectPathChange) {
   // ModemMessagingClientStubImpl and SmsClientStubImpl.
   // TODO(stevenjb): Use a TestInterface to set this up to remove dependency.
   const char kMessage1[] = "FakeSMSClient: Test Message: /SMS/0";
-  EXPECT_FALSE(base::Contains(messages, kMessage1));
+  EXPECT_FALSE(messages.contains(kMessage1));
 
   // Test for messages delivered by signals.
   test_observer_->ClearMessages();
@@ -475,7 +474,7 @@ TEST_F(NetworkSmsHandlerTest, DeviceObjectPathChange) {
   network_sms_handler_->RequestUpdate();
   base::RunLoop().RunUntilIdle();
   EXPECT_GE(test_observer_->message_count(), 1);
-  EXPECT_TRUE(base::Contains(messages, kMessage1));
+  EXPECT_TRUE(messages.contains(kMessage1));
 }
 
 TEST_F(NetworkSmsHandlerTest, NetworkGuidTest) {

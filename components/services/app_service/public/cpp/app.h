@@ -36,14 +36,14 @@ struct COMPONENT_EXPORT(APP_TYPES) App {
   std::unique_ptr<App> Clone() const;
 
   // Adds a new field for `extra`. The type `T` can be any type, e.g. int,
-  // double, string, base::Value::Dict, base::Value::List, base::Value, etc. The
-  // value is saved in base::Value::Dict `extra`. If the type `T` can't be
+  // double, string, base::DictValue, base::ListValue, base::Value, etc. The
+  // value is saved in base::DictValue `extra`. If the type `T` can't be
   // converted to base::Value, an explicit convert function can be added to
   // convert `value` to base::Value.
   template <typename T>
   void SetExtraField(const std::string& field_name, T&& value) {
     if (!extra.has_value()) {
-      extra = base::Value::Dict();
+      extra = base::DictValue();
     }
     extra->Set(field_name, value);
   }
@@ -174,7 +174,7 @@ struct COMPONENT_EXPORT(APP_TYPES) App {
   // app. `extra` needs to be modified as a whole, and we can't only modify part
   // of `extra`. AppService doesn't use the fields saved in `extra`. App
   // publishers modify the content saved in `extra`.
-  std::optional<base::Value::Dict> extra;
+  std::optional<base::DictValue> extra;
 
   // When adding new fields to the App type, the `Clone` function, the
   // `operator==` function, and the `AppUpdate` class should also be updated. If

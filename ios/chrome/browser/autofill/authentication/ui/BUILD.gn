@@ -1,0 +1,72 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("otp_input_dialog_ui") {
+  sources = [
+    "otp_input_dialog_consumer.h",
+    "otp_input_dialog_content.h",
+    "otp_input_dialog_content.mm",
+    "otp_input_dialog_mutator.h",
+    "otp_input_dialog_mutator_bridge.h",
+    "otp_input_dialog_mutator_bridge.mm",
+    "otp_input_dialog_mutator_bridge_target.h",
+    "otp_input_dialog_view_controller.h",
+    "otp_input_dialog_view_controller.mm",
+  ]
+  deps = [
+    "//components/strings:components_strings_grit",
+    "//ios/chrome/browser/autofill/authentication/public",
+    "//ios/chrome/browser/autofill/ui_bundled/cells",
+    "//ios/chrome/browser/net/model:crurl",
+    "//ios/chrome/browser/shared/ui/list_model",
+    "//ios/chrome/browser/shared/ui/table_view",
+    "//ios/chrome/browser/shared/ui/table_view:utils",
+    "//ios/chrome/common/ui/colors",
+    "//ui/base",
+  ]
+  frameworks = [ "UIKit.framework" ]
+}
+
+source_set("card_unmask_authentication_selection_view_controller") {
+  sources = [
+    "card_unmask_authentication_selection_view_controller.h",
+    "card_unmask_authentication_selection_view_controller.mm",
+  ]
+  deps = [
+    "//components/strings:components_strings_grit",
+    "//ios/chrome/browser/autofill/ui_bundled/cells",
+    "//ios/chrome/browser/shared/ui/symbols",
+    "//ios/chrome/browser/shared/ui/table_view",
+    "//ios/chrome/browser/shared/ui/table_view:utils",
+    "//ios/chrome/browser/shared/ui/table_view/cells",
+    "//ios/chrome/browser/shared/ui/table_view/content_configuration",
+    "//ios/chrome/common/ui/colors",
+    "//ui/base",
+  ]
+  public_deps = [
+    ":card_unmask_authentication_selection_consumer",
+    ":card_unmask_authentication_selection_mutator",
+    "//ios/chrome/browser/autofill/authentication/public",
+  ]
+  frameworks = [ "UIKit.framework" ]
+}
+
+source_set("card_unmask_authentication_selection_mutator") {
+  sources = [
+    "card_unmask_authentication_selection_mutator.h",
+    "card_unmask_authentication_selection_mutator_bridge.h",
+    "card_unmask_authentication_selection_mutator_bridge.mm",
+    "card_unmask_authentication_selection_mutator_bridge_target.h",
+  ]
+  public_deps = [
+    "//base",
+    "//ios/chrome/browser/autofill/authentication/public",
+  ]
+}
+
+source_set("card_unmask_authentication_selection_consumer") {
+  sources = [ "card_unmask_authentication_selection_consumer.h" ]
+  deps = [ "//base" ]
+  public_deps = [ "//ios/chrome/browser/autofill/authentication/public" ]
+}

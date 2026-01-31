@@ -97,7 +97,7 @@ export class ThemeSnapshotElement extends CrLitElement {
         return CustomizeThemeType.UPLOADED_IMAGE;
       }
 
-      if (this.theme_.backgroundImage.snapshotUrl?.url) {
+      if (this.theme_.backgroundImage.snapshotUrl) {
         return CustomizeThemeType.CUSTOM_THEME;
       }
     }

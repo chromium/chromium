@@ -115,6 +115,7 @@ union BaseUnion {
   bool b2;
   Empty em1;
   FourInts f1;
+  float fl;
 };
 
 union NestedUnion {
@@ -138,16 +139,16 @@ union NestederUnion {
 
 // This is extra complicated to make sure nested union pointers work from
 // various positions in the struct
-// Packing: u1 i1 i3 [pad 24] u2 i2 u3 u4
+// Packing: u1 i1 i2 [pad 24] u2 d1 u3 u4 i3
 struct WithManyUnions {
   NestedUnion u1;
   int8 i1;
   NestederUnion u2;
-  int64 i2;
+  double d1;
   BaseUnion u3;
   NestederUnion u4;
+  int32 i2;
   int32 i3;
-  int32 i4;
 };
 
 struct Arrays {
@@ -155,6 +156,7 @@ struct Arrays {
   array<uint64, 3> ints_sized;
   array<bool> bools; // Will be packed as bitfields
   array<bool, 13> bool_sized; // Will still be packed as bitfields
+  array<float> floats;
   array<TestEnum> enums;
   array<BaseUnion> unions;
   array<NestedUnion> unions_nested;
@@ -170,6 +172,7 @@ struct Maps {
   map<int8, FourInts> to_struct;
   map<int8, NestedUnion> to_union;
   map<int8, map<int16, uint32>> to_map;
+  map<float, int32> float_map;
 };
 
 struct Strings {
@@ -193,7 +196,7 @@ struct ComplexUnionHolder {
 
 ////// TESTS FOR NULLABLES //////
 
-// Packing: [b, nullable tags] n2 n1 e empty fourints
+// Packing: [b, nullable tags] n2 n1 e empty fourints f1 [pad 32] f2
 struct NullableBasics {
   bool? b;
   uint16? n1;
@@ -201,6 +204,8 @@ struct NullableBasics {
   Empty? empty;
   TestEnum? e;
   FourInts? fourints;
+  float? f1;
+  double? f2;
 };
 
 struct ArraysOfNullables {

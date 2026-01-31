@@ -110,7 +110,8 @@ class InfoBarContainerViewBrowserTest : public InProcessBrowserTest {
 class InfoBarContainerStandardTest : public InfoBarContainerViewBrowserTest {
  public:
   InfoBarContainerStandardTest() {
-    feature_list_.InitAndDisableFeature(infobars::kInfobarPrioritization);
+    feature_list_.InitAndDisableFeature(
+        infobars::features::kInfobarPrioritization);
   }
 };
 
@@ -160,8 +161,14 @@ IN_PROC_BROWSER_TEST_F(InfoBarContainerStandardTest, ReplaceInfoBar) {
   EXPECT_EQ("Replacement Message", messages[0]);
 }
 
+// TODO(crbug.com/476366053): Re-enable this test.
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+#define Maybe_NavigationDismissesInfoBar DISABLED_NavigationDismissesInfoBar
+#else
+#define Maybe_NavigationDismissesInfoBar NavigationDismissesInfoBar
+#endif
 IN_PROC_BROWSER_TEST_F(InfoBarContainerStandardTest,
-                       NavigationDismissesInfoBar) {
+                       Maybe_NavigationDismissesInfoBar) {
   AddInfoBar(infobars::InfoBarDelegate::InfobarPriority::kDefault, "Transient");
   ASSERT_EQ(1u, GetVisibleInfoBarMessages().size());
 
@@ -182,9 +189,10 @@ class InfoBarContainerPriorityTest : public InfoBarContainerViewBrowserTest {
   InfoBarContainerPriorityTest() {
     // These caps match the design doc's defaults.
     feature_list_.InitAndEnableFeatureWithParameters(
-        infobars::kInfobarPrioritization, {{"max_visible_critical", "2"},
-                                           {"max_visible_default", "1"},
-                                           {"max_visible_low", "1"}});
+        infobars::features::kInfobarPrioritization,
+        {{"max_visible_critical", "2"},
+         {"max_visible_default", "1"},
+         {"max_visible_low", "1"}});
   }
 };
 
@@ -319,9 +327,9 @@ class InfoBarContainerSplitTabTest : public InfoBarContainerViewBrowserTest,
     std::vector<base::test::FeatureRef> disabled_features;
 
     if (IsPrioritizationEnabled()) {
-      enabled_features.push_back(infobars::kInfobarPrioritization);
+      enabled_features.push_back(infobars::features::kInfobarPrioritization);
     } else {
-      disabled_features.push_back(infobars::kInfobarPrioritization);
+      disabled_features.push_back(infobars::features::kInfobarPrioritization);
     }
     feature_list_.InitWithFeatures(enabled_features, disabled_features);
   }

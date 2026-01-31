@@ -84,15 +84,15 @@ s! {
         pub st_atime: crate::time_t,
         pub st_atime_nsec: c_long,
         #[cfg(gnu_time_bits64)]
-        _atime_pad: c_int,
+        _atime_pad: Padding<c_int>,
         pub st_mtime: crate::time_t,
         pub st_mtime_nsec: c_long,
         #[cfg(gnu_time_bits64)]
-        _mtime_pad: c_int,
+        _mtime_pad: Padding<c_int>,
         pub st_ctime: crate::time_t,
         pub st_ctime_nsec: c_long,
         #[cfg(gnu_time_bits64)]
-        _ctime_pad: c_int,
+        _ctime_pad: Padding<c_int>,
         #[cfg(not(gnu_time_bits64))]
         pub st_ino: crate::ino64_t,
     }
@@ -122,7 +122,7 @@ s! {
         pub f_ffree: u64,
         pub f_favail: u64,
         pub f_fsid: c_ulong,
-        __f_unused: c_int,
+        __f_unused: Padding<c_int>,
         pub f_flag: c_ulong,
         pub f_namemax: c_ulong,
         __f_spare: [c_int; 6],
@@ -151,20 +151,20 @@ s! {
         pub msg_perm: crate::ipc_perm,
         pub msg_stime: crate::time_t,
         #[cfg(not(gnu_time_bits64))]
-        __glibc_reserved1: c_ulong,
+        __glibc_reserved1: Padding<c_ulong>,
         pub msg_rtime: crate::time_t,
         #[cfg(not(gnu_time_bits64))]
-        __glibc_reserved2: c_ulong,
+        __glibc_reserved2: Padding<c_ulong>,
         pub msg_ctime: crate::time_t,
         #[cfg(not(gnu_time_bits64))]
-        __glibc_reserved3: c_ulong,
+        __glibc_reserved3: Padding<c_ulong>,
         pub __msg_cbytes: c_ulong,
         pub msg_qnum: crate::msgqnum_t,
         pub msg_qbytes: crate::msglen_t,
         pub msg_lspid: crate::pid_t,
         pub msg_lrpid: crate::pid_t,
-        __glibc_reserved4: c_ulong,
-        __glibc_reserved5: c_ulong,
+        __glibc_reserved4: Padding<c_ulong>,
+        __glibc_reserved5: Padding<c_ulong>,
     }
 
     pub struct siginfo_t {

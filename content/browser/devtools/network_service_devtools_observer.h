@@ -41,6 +41,8 @@ class NetworkServiceDevToolsObserver : public network::mojom::DevToolsObserver {
       const net::CookieAccessResultList& request_cookie_list,
       std::vector<network::mojom::HttpRawHeaderPairPtr> request_headers,
       const base::TimeTicks timestamp,
+      std::vector<network::mojom::DeviceBoundSessionWithUsagePtr>
+          device_bound_session_usages,
       network::mojom::ClientSecurityStatePtr security_state,
       network::mojom::OtherPartitionInfoPtr other_partition_info,
       const std::optional<base::UnguessableToken>&

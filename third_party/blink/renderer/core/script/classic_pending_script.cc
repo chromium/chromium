@@ -38,6 +38,7 @@
 #include "third_party/blink/renderer/platform/loader/fetch/resource_client.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_fetcher.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
+#include "third_party/perfetto/include/perfetto/tracing/track_event_args.h"
 
 namespace blink {
 namespace {
@@ -463,14 +464,14 @@ void ClassicPendingScript::NotifyFinished(Resource* resource) {
       fetcher->GetUseCounter(), &fetcher->GetConsoleLogger(),
       resource->GetResponse(), AllowedByNosniff::MimeTypeCheck::kLaxForElement);
 
-  TRACE_EVENT_WITH_FLOW1(TRACE_DISABLED_BY_DEFAULT("v8.compile"),
-                         "ClassicPendingScript::NotifyFinished", this,
-                         TRACE_EVENT_FLAG_FLOW_OUT, "data",
-                         [&](perfetto::TracedValue context) {
-                           inspector_parse_script_event::Data(
-                               std::move(context), resource->InspectorId(),
-                               resource->Url().GetString());
-                         });
+  TRACE_EVENT(TRACE_DISABLED_BY_DEFAULT("v8.compile"),
+              "ClassicPendingScript::NotifyFinished",
+              perfetto::Flow::FromPointer(this), "data",
+              [&](perfetto::TracedValue context) {
+                inspector_parse_script_event::Data(std::move(context),
+                                                   resource->InspectorId(),
+                                                   resource->Url().GetString());
+              });
 
   // Ordinal ErrorOccurred(), SRI, and MIME check are all considered as network
   // errors in the Fetch spec.
@@ -568,10 +569,10 @@ ClassicScript* ClassicPendingScript::GetSource() const {
       GetSchedulingType(), classic_script_->Streamer(),
       classic_script_->NotStreamingReason());
 
-  TRACE_EVENT_WITH_FLOW1(TRACE_DISABLED_BY_DEFAULT("v8.compile"),
-                         "ClassicPendingScript::GetSource", this,
-                         TRACE_EVENT_FLAG_FLOW_IN, "not_streamed_reason",
-                         classic_script_->NotStreamingReason());
+  TRACE_EVENT(TRACE_DISABLED_BY_DEFAULT("v8.compile"),
+              "ClassicPendingScript::GetSource",
+              perfetto::TerminatingFlow::FromPointer(this),
+              "not_streamed_reason", classic_script_->NotStreamingReason());
 
   return classic_script_.Get();
 }

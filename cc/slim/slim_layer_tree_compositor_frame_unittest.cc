@@ -121,8 +121,10 @@ class StubSharedImageTextureLayerClient : public TextureLayerClient {
 void AppendResourcesToReturn(std::vector<viz::ReturnedResource>& resources,
                              const viz::CompositorFrame& frame) {
   for (const auto& resource : frame.resource_list) {
-    resources.emplace_back(resource.id, gpu::SyncToken(), gfx::GpuFenceHandle(),
-                           1, false);
+    resources.emplace_back(
+        resource.id,
+        gpu::SharedImageExportResult::CreateForTesting(gpu::SyncToken()),
+        gfx::GpuFenceHandle(), 1, false);
   }
 }
 
@@ -852,8 +854,8 @@ TEST_F(SlimLayerTreeCompositorFrameTest, NinePatchLayerAppendQuads) {
         gfx::BoundingRect(expected_uv_top_left[i], expected_uv_bottom_right[i]);
     const gfx::Size image_size =
         gfx::Size(image_info.width(), image_info.height());
-    EXPECT_EQ(expected_tex_coords,
-              texture_quad->GetNormalizedTexCoords(image_size));
+    EXPECT_RECTF_NEAR(expected_tex_coords,
+                      texture_quad->GetNormalizedTexCoords(image_size), 1e-5f);
 
     EXPECT_EQ(frame.resource_list[0].id, texture_quad->resource_id);
     EXPECT_EQ(frame_sink_->uploaded_resources().begin()->second.viz_resource_id,

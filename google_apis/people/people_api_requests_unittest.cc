@@ -112,8 +112,7 @@ class PeopleApiRequestsTest : public testing::Test {
             task_environment_.GetMainThreadTaskRunner(),
             "test-user-agent",
             TRAFFIC_ANNOTATION_FOR_TESTS),
-        gaia_urls_overrider_(base::CommandLine::ForCurrentProcess(),
-                             "people_api_origin_url",
+        gaia_urls_overrider_("people_api_origin_url",
                              mock_server_.base_url().spec()) {
     CHECK_EQ(mock_server_.base_url(),
              GaiaUrls::GetInstance()->people_api_origin_url());

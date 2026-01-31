@@ -113,6 +113,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Linux.KernelVersion" units="version" expires_after="never">
+<!-- expires-never: Needed to measure Linux ecosystem. -->
+
+  <owner>thestig@chromium.org</owner>
+  <owner>thomasanderson@chromium.org</owner>
+  <summary>
+    The version of the Linux kernel used. Logged as 1000000*major + 1000*minor +
+    patch. (Linux only) Logged on each start up.
+  </summary>
+</histogram>
+
 <histogram name="Linux.SandboxStatus" enum="LinuxSandboxStatus"
     expires_after="2025-05-11">
   <owner>mpdenton@google.com</owner>

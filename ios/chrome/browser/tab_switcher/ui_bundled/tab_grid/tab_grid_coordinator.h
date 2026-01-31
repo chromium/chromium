@@ -9,17 +9,17 @@
 #import "ios/chrome/browser/shared/coordinator/root_coordinator/root_coordinator.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/tab_grid_paging.h"
 
-@protocol ApplicationCommands;
 class Browser;
+@protocol SceneCommands;
 @protocol TabGridCoordinatorDelegate;
 
 @interface TabGridCoordinator : RootCoordinator
 
-- (instancetype)initWithApplicationCommandEndpoint:
-                    (id<ApplicationCommands>)applicationCommandEndpoint
-                                    regularBrowser:(Browser*)regularBrowser
-                                   inactiveBrowser:(Browser*)inactiveBrowser
-                                  incognitoBrowser:(Browser*)incognitoBrowser
+- (instancetype)initWithSceneCommandsEndpoint:
+                    (id<SceneCommands>)sceneCommandsEndpoint
+                               regularBrowser:(Browser*)regularBrowser
+                              inactiveBrowser:(Browser*)inactiveBrowser
+                             incognitoBrowser:(Browser*)incognitoBrowser
     NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)init NS_UNAVAILABLE;

@@ -81,6 +81,7 @@ const auto historical_reasons = std::to_array<InterruptReasonAssociation>({
     {"USER_CANCELED", 40},
     {"USER_SHUTDOWN", 41},
     {"CRASH", 50},
+    {"LOCAL_DOWNLOAD_BLOCKED", 51},
 });
 
 // Make sure no one has changed a DownloadInterruptReason we've previously

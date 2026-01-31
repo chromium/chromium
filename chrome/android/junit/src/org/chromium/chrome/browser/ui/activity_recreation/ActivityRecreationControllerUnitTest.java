@@ -16,10 +16,13 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 
 import static org.chromium.chrome.browser.ui.activity_recreation.ActivityRecreationController.ACTIVITY_RECREATION_UI_STATE;
+import static org.chromium.chrome.browser.ui.activity_recreation.ActivityRecreationController.IS_TAB_SWITCHER_SHOWN;
+import static org.chromium.chrome.browser.ui.activity_recreation.ActivityRecreationController.URL_BAR_EDIT_TEXT;
 
 import android.content.Context;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.PersistableBundle;
 
 import androidx.test.core.app.ApplicationProvider;
 
@@ -34,8 +37,9 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
-import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.OneshotSupplierImpl;
+import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.ActivityTabProvider;
 import org.chromium.chrome.browser.layouts.LayoutManager;
@@ -320,6 +324,72 @@ public class ActivityRecreationControllerUnitTest {
         verify(mExclusiveAccessManager).requestKeyboardLock(any(), eq(false));
     }
 
+    @Test
+    public void testRestoreOmniboxState_layoutPendingShow() {
+        String text = "editText";
+        ArgumentCaptor<LayoutStateObserver> layoutStateObserverCaptor =
+                ArgumentCaptor.forClass(LayoutStateObserver.class);
+        PersistableBundle persistableBundle = new PersistableBundle();
+        persistableBundle.putString(URL_BAR_EDIT_TEXT, text);
+
+        mActivityRecreationController.restorePersistentState(persistableBundle);
+
+        verify(mLayoutManager).addObserver(layoutStateObserverCaptor.capture());
+        // Simulate invocation of Layout#doneShowing after invocation of #restoreOmniboxState.
+        doReturn(true).when(mLayoutManager).isLayoutVisible(LayoutType.BROWSING);
+        layoutStateObserverCaptor.getValue().onFinishedShowing(LayoutType.BROWSING);
+        ArgumentCaptor<Runnable> postRunnableCaptor = ArgumentCaptor.forClass(Runnable.class);
+        verify(mHandler).post(postRunnableCaptor.capture());
+        postRunnableCaptor.getValue().run();
+        verify(mToolbarManager)
+                .setUrlBarFocusAndText(
+                        true, OmniboxFocusReason.ACTIVITY_RECREATION_RESTORATION, text);
+    }
+
+    @Test
+    public void testRestoreOmniboxState_layoutDoneShowing() {
+        // Assume that Layout#doneShowing is invoked before invocation of #restoreUiState.
+        doReturn(true).when(mLayoutManager).isLayoutVisible(LayoutType.BROWSING);
+        doReturn(false).when(mLayoutManager).isLayoutStartingToShow(LayoutType.BROWSING);
+
+        String text = "editText";
+        PersistableBundle persistableBundle = new PersistableBundle();
+        persistableBundle.putString(URL_BAR_EDIT_TEXT, text);
+
+        mActivityRecreationController.restorePersistentState(persistableBundle);
+        verify(mToolbarManager)
+                .setUrlBarFocusAndText(
+                        true, OmniboxFocusReason.ACTIVITY_RECREATION_RESTORATION, text);
+
+        String newText = "newEditText";
+        persistableBundle.putString(URL_BAR_EDIT_TEXT, newText);
+        mActivityRecreationController.restorePersistentState(persistableBundle);
+        verify(mToolbarManager)
+                .setUrlBarFocusAndText(
+                        true, OmniboxFocusReason.ACTIVITY_RECREATION_RESTORATION, newText);
+
+        // Omnibox code should restore keyboard.
+        verify(mKeyboardVisibilityDelegate, never()).showKeyboard(mContentView);
+    }
+
+    @Test
+    public void testRestoreTabSwitcherState_tabSwitcherShown() {
+        PersistableBundle persistableBundle = new PersistableBundle();
+        persistableBundle.putBoolean(IS_TAB_SWITCHER_SHOWN, true);
+
+        mActivityRecreationController.restorePersistentState(persistableBundle);
+        verify(mLayoutManager).showLayout(LayoutType.TAB_SWITCHER, false);
+    }
+
+    @Test
+    public void testRestoreTabSwitcherState_tabSwitcherNotShown() {
+        PersistableBundle persistableBundle = new PersistableBundle();
+        persistableBundle.putBoolean(IS_TAB_SWITCHER_SHOWN, false);
+
+        mActivityRecreationController.restorePersistentState(persistableBundle);
+        verify(mLayoutManager, never()).showLayout(anyInt(), anyBoolean());
+    }
+
     private void initializeSavedInstanceState(
             boolean urlBarFocused,
             String urlBarText,
@@ -341,7 +411,8 @@ public class ActivityRecreationControllerUnitTest {
     private void initializeController() {
         var toolbarManagerSupplier = new OneshotSupplierImpl<ToolbarManager>();
         toolbarManagerSupplier.set(mToolbarManager);
-        var layoutManagerSupplier = new ObservableSupplierImpl<LayoutManager>();
+        SettableMonotonicObservableSupplier<LayoutManager> layoutManagerSupplier =
+                ObservableSuppliers.createMonotonic();
         layoutManagerSupplier.set(mLayoutManager);
         mActivityRecreationController =
                 new ActivityRecreationController(

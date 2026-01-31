@@ -8,9 +8,11 @@ import("//build/config/chrome_build.gni")
 import("//build/config/chromeos/args.gni")
 import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/compiler/pgo/pgo.gni")
+import("//build/config/coverage/coverage.gni")
 import("//build/config/cronet/config.gni")
 import("//build/config/sanitizers/sanitizers.gni")
 import("//build/toolchain/cc_wrapper.gni")
+import("//build/toolchain/kythe.gni")
 import("//build/toolchain/toolchain.gni")
 import("//build_overrides/build.gni")
 
@@ -141,8 +143,9 @@ declare_args() {
   # Use offsets rather than pointers in vtables in order to reduce the number of
   # relocations. This is safe to enable only when all C++ code is built with the
   # flag set to the same value.
-  use_relative_vtables_abi = is_android && current_cpu == "arm64" &&
-                             use_custom_libcxx && !is_component_build
+  use_relative_vtables_abi =
+      is_fuchsia || (is_android && current_cpu == "arm64" &&
+                     use_custom_libcxx && !is_component_build)
 
   # Enable C++14 sized global deallocation functions.
   # Enable only on ASan or platforms without strict binary size requirements
@@ -150,12 +153,6 @@ declare_args() {
   # TODO(crbug.com/345541122): investigate the fuchsia binary size increase.
   use_sized_deallocation = is_clang && (is_asan || !optimize_for_size)
 }
-
-# To try out this combination, delete this assert.
-assert(
-    !use_relative_vtables_abi || !is_cfi,
-    "is_cfi=true is known to conflict with use_relative_vtables_abi=true.\n" +
-        "See https://bugs.chromium.org/p/chromium/issues/detail?id=1375035#c53")
 
 assert(!is_cfi || use_thin_lto, "CFI requires ThinLTO")
 assert(!enable_profiling || !is_component_build,
@@ -280,6 +277,12 @@ if (strip_absolute_paths_from_debug_symbols_default) {
 # absolute path to execute remotely in RBE.
 clang_need_input_root_absolute_path = !strip_absolute_paths_from_debug_symbols
 
+# TODO(crbug.com/473693507): Remove once fixed.
+# Builders as Kythe client might output system headers with absolute paths.
+if (is_win && enable_kythe_annotations) {
+  clang_need_input_root_absolute_path = true
+}
+
 if (clang_need_input_root_absolute_path) {
   compiler_logs += [ "clang_need_input_root_absolute_path=true" ]
 } else {
@@ -362,3 +365,9 @@ if (forbid_non_component_debug_builds) {
 # LzmaDecOpt.asm only works on x64 and not x86.
 # https://sourceforge.net/p/sevenzip/discussion/45797/thread/768932e9dd/?limit=25#0d6c
 disable_llvm_ml = host_os == "win" && target_cpu == "x64" && !is_msan
+
+# TODO(crbug.com/476018435): Remove this once the issue is resolved.
+if (is_win) {
+  assert(!use_clang_coverage || !is_component_build,
+         "Clang coverage requires non component build on Windows")
+}

@@ -121,7 +121,7 @@ class UseDateMergeTest
   UsageHistoryInformation ModelFromUsageHistory(
       const UsageHistoryMergeTestCase::UsageHistory& usage_history) {
     UsageHistoryInformation model(/*usage_history_size=*/3);
-    for (int i = 0; i < 3; i++) {
+    for (int i = 0; i < 3; ++i) {
       if (usage_history[i]) {
         model.set_use_date(base::Time::Now() - *usage_history[i], i + 1);
       }

@@ -55,6 +55,11 @@ class SessionServiceMock : public SessionService {
       GetAllSessionsAsync,
       (base::OnceCallback<void(const std::vector<SessionKey>&)> callback),
       (override));
+  MOCK_METHOD(
+      void,
+      GetAllSessionDisplaysAsync,
+      (base::OnceCallback<void(const std::vector<SessionDisplay>&)> callback),
+      (override));
   MOCK_METHOD(void,
               DeleteSessionAndNotify,
               (DeletionReason reason,
@@ -75,6 +80,10 @@ class SessionServiceMock : public SessionService {
               AddObserver,
               (const GURL& url,
                base::RepeatingCallback<void(const SessionAccess&)> callback),
+              (override));
+  MOCK_METHOD(base::CallbackListSubscription,
+              AddEventObserver,
+              (base::RepeatingCallback<void(const SessionEvent&)> callback),
               (override));
   MOCK_METHOD(const Session*,
               GetSession,
@@ -103,6 +112,12 @@ class SessionServiceMock : public SessionService {
   MOCK_METHOD(void,
               AddSigningOccurrence,
               (const SchemefulSite& site),
+              (override));
+  MOCK_METHOD(void,
+              HandleResponseHeaders,
+              (DbscRequest & request,
+               HttpResponseHeaders* headers,
+               const FirstPartySetMetadata& first_party_set_metadata),
               (override));
 };
 

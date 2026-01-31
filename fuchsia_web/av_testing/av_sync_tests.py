@@ -138,12 +138,12 @@ def run_video_perf_test(file: str, driver: ChromeDriverWrapper,
     # Ensure the original video won't be overwritten.
     assert camera_params.video_file != original_video
     video = driver.find_element_by_id('video')
-    with monitors.time_consumption(file, 'video_perf', 'playback', 'loading'), \
+    with monitors.time_consumption(file, 'playback', 'loading'), \
          RepeatingLog(f'Waiting for video {file} to be loaded.'):
         if not _wait_js_condition(driver, video, 'readyState >= 2'):
             logging.warning(
                 '%s may never be loaded, still go ahead to play it.', file)
-            monitors.average(file, 'video_perf', 'playback',
+            monitors.average(file, 'playback',
                              'failed_to_load').record(1)
     with StartProcess(camera.start, [camera_params], False):
         video.click()
@@ -152,11 +152,11 @@ def run_video_perf_test(file: str, driver: ChromeDriverWrapper,
     # network laggy and buffering.
     # TODO(crbug.com/40935291): May need to adjust the strategy here, the
     # final frame / barcode is considered laggy and drops the score.
-    with monitors.time_consumption(file, 'video_perf', 'playback', 'laggy'), \
+    with monitors.time_consumption(file, 'playback', 'laggy'), \
          RepeatingLog(f'Waiting for video {file} playback to finish.'):
         if not _wait_js_condition(driver, video, 'ended'):
             logging.warning('%s may never finish', file)
-            monitors.average(file, 'video_perf', 'playback',
+            monitors.average(file, 'playback',
                              'never_finish').record(1)
     logging.warning('Video %s finished', file)
     perf_trace.stop(file)
@@ -169,7 +169,7 @@ def run_video_perf_test(file: str, driver: ChromeDriverWrapper,
         # error and use the default value to filter them out instead of failing
         # the tests.
         # TODO(crbug.com/40935291): Revise the default value for errors.
-        monitors.average(file, 'video_perf', key).record(results.get(key, -128))
+        monitors.average(file, 'playback', key).record(results.get(key, -128))
 
     record('smoothness')
     record('freezing')
@@ -194,6 +194,8 @@ def main() -> int:
             build_info = get_build_info()
             logging.warning('Fuchsia build info %s', build_info)
             monitors.tag(
+                'fuchsia',
+                'video_perf',
                 version.chrome_version_str(), build_info.version,
                 version.chrome_version_str() + '/' + build_info.version)
             # TODO(crbug.com/391663618): Remove the condition once all the hosts

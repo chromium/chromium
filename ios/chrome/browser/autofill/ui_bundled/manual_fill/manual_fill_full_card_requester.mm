@@ -95,7 +95,9 @@ class CreditCard;
 // the process succeeded.
 - (void)onCreditCardFetched:(const autofill::CreditCard&)fetchedCard
                   fieldType:(manual_fill::PaymentFieldType)fieldType {
-  [_delegate onFullCardRequestSucceeded:fetchedCard fieldType:fieldType];
+  [_delegate onFullCardRequestSucceeded:fetchedCard
+                              fieldType:fieldType
+                            forWebState:self.webStateList->GetActiveWebState()];
 }
 
 @end

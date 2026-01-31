@@ -22,7 +22,9 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/strings/string_split.h"
+#include "base/types/expected.h"
 #include "net/base/completion_once_callback.h"
+#include "net/base/net_errors.h"
 #include "net/base/request_priority.h"
 #include "net/disk_cache/disk_cache.h"
 #include "net/http/http_cache.h"
@@ -162,8 +164,8 @@ class MockDiskCache : public disk_cache::Backend {
   MockDiskCache();
   ~MockDiskCache() override;
 
-  int32_t GetEntryCount(
-      net::Int32CompletionOnceCallback callback) const override;
+  base::expected<int32_t, net::Error> GetEntryCount(
+      GetEntryCountCallback callback) const override;
   EntryResult OpenOrCreateEntry(const std::string& key,
                                 RequestPriority request_priority,
                                 EntryResultCallback callback) override;

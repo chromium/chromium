@@ -24,7 +24,8 @@ public class ServiceMessage extends Message {
      * Reinterpret the given |message| as a message with the given |header|. The |message| must
      * contain the |header| as the start of its raw data.
      */
-    public ServiceMessage(Message baseMessage, MessageHeader header) {
+    public ServiceMessage(Message baseMessage, MessageHeader header)
+            throws DeserializationException {
         super(baseMessage.getData(), baseMessage.getHandles());
         assert header.equals(new org.chromium.mojo.bindings.MessageHeader(baseMessage));
         this.mHeader = header;
@@ -34,7 +35,7 @@ public class ServiceMessage extends Message {
      * Reinterpret the given |message| as a message with a header. The |message| must contain a
      * header as the start of it's raw data, which will be parsed by this constructor.
      */
-    ServiceMessage(Message baseMessage) {
+    ServiceMessage(Message baseMessage) throws DeserializationException {
         this(baseMessage, new org.chromium.mojo.bindings.MessageHeader(baseMessage));
     }
 

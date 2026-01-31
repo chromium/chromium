@@ -749,11 +749,6 @@ class BlinkPerfWebGL(_BlinkPerfBenchmark):
 class BlinkPerfWebGPU(_BlinkPerfBenchmark):
   # Run the WebGPU perf tests ONLY on core-capable adapters.
   SUBDIR = 'webgpu'
-  SUPPORTED_PLATFORMS = [
-      story.expectations.WIN_10,
-      story.expectations.ALL_MAC,
-      story.expectations.ALL_ANDROID,
-  ]
 
   @classmethod
   def Name(cls):

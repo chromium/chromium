@@ -74,7 +74,7 @@ class TestAnnotationTextObserver : public AnnotationsTextObserver {
   void OnTextExtracted(WebState* web_state,
                        const std::string& text,
                        int seq_id,
-                       const base::Value::Dict& metadata) override {
+                       const base::DictValue& metadata) override {
     extracted_text_ = text;
     EXPECT_GE(seq_id, 1);
     seq_id_ = seq_id;
@@ -85,7 +85,7 @@ class TestAnnotationTextObserver : public AnnotationsTextObserver {
                    int annotations,
                    int successes,
                    int failures,
-                   const base::Value::List& cancelled) override {
+                   const base::ListValue& cancelled) override {
     decoration_calls_++;
     annotations_ = annotations;
     successes_ = successes;
@@ -108,7 +108,7 @@ class TestAnnotationTextObserver : public AnnotationsTextObserver {
   int annotations() const { return annotations_; }
   int clicks() const { return clicks_; }
   int seq_id() const { return seq_id_; }
-  const base::Value::Dict& metadata() const { return metadata_; }
+  const base::DictValue& metadata() const { return metadata_; }
   const std::string& click_data() const { return click_data_; }
   void SetAnnotations(int count) { annotations_ = count; }
   int decoration_calls() const { return decoration_calls_; }
@@ -116,7 +116,7 @@ class TestAnnotationTextObserver : public AnnotationsTextObserver {
  private:
   std::string extracted_text_, click_data_;
   int successes_, failures_, annotations_, clicks_, seq_id_, decoration_calls_;
-  base::Value::Dict metadata_;
+  base::DictValue metadata_;
 };
 
 }  // namespace
@@ -207,7 +207,7 @@ class AnnotationTextManagerTest : public web::WebTestWithWebState {
       int seq_id) {
     int decoration_calls = observer()->decoration_calls();
     // Create annotation.
-    base::Value::List annotations;
+    base::ListValue annotations;
     for (NSString* type in items) {
       for (NSString* item in items[type]) {
         NSRange range = [source rangeOfString:item];
@@ -243,7 +243,7 @@ class AnnotationTextManagerTest : public web::WebTestWithWebState {
     const base::TimeDelta kCallJavascriptFunctionTimeout =
         kWaitForJSCompletionTimeout;
     __block bool message_received = false;
-    base::Value::List params;
+    base::ListValue params;
     params.Append(1000);
     MainWebFrame()->CallJavaScriptFunctionInContentWorld(
         "annotationsTest.getPageTaggedText", params, content_world_,
@@ -264,7 +264,7 @@ class AnnotationTextManagerTest : public web::WebTestWithWebState {
     const base::TimeDelta kCallJavascriptFunctionTimeout =
         kWaitForJSCompletionTimeout;
     __block bool message_received = false;
-    base::Value::List params;
+    base::ListValue params;
     params.Append(index);
     params.Append(viewport);
     MainWebFrame()->CallJavaScriptFunctionInContentWorld(
@@ -286,7 +286,7 @@ class AnnotationTextManagerTest : public web::WebTestWithWebState {
     const base::TimeDelta kCallJavascriptFunctionTimeout =
         kWaitForJSCompletionTimeout;
     __block bool message_received = false;
-    base::Value::List params;
+    base::ListValue params;
     MainWebFrame()->CallJavaScriptFunctionInContentWorld(
         "annotationsTest.countAnnotations", params, content_world_,
         base::BindOnce(^(const base::Value* result) {

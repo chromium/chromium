@@ -271,7 +271,7 @@ void HistoryEmbeddingsHandler::SetUserFeedback(
         l10n_util::GetStringUTF8(IDS_HISTORY_EMBEDDINGS_FEEDBACK_PLACEHOLDER),
         /*category_tag=*/"genai_history",
         /*extra_diagnostics=*/std::string(),
-        /*autofill_metadata=*/base::Value::Dict(), base::Value::Dict());
+        /*autofill_metadata=*/base::DictValue(), base::DictValue());
   }
 }
 

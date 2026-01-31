@@ -30,7 +30,7 @@ std::unique_ptr<base::Value> ExecuteJavaScript(web::WebState* web_state,
 std::unique_ptr<base::Value> CallJavaScriptFunction(
     web::WebState* web_state,
     const std::string& function,
-    const base::Value::List& parameters);
+    const base::ListValue& parameters);
 
 // Synchronously returns the result of the executed JavaScript function by
 // calling `function` with `parameters` in web_state's main frame in the
@@ -39,7 +39,7 @@ std::unique_ptr<base::Value> CallJavaScriptFunction(
 std::unique_ptr<base::Value> CallJavaScriptFunctionForFeature(
     web::WebState* web_state,
     const std::string& function,
-    const base::Value::List& parameters,
+    const base::ListValue& parameters,
     JavaScriptFeature* feature);
 
 // Returns the CGRect, in the coordinate system of web_state's view, that

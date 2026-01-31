@@ -72,9 +72,9 @@ class SocketDecoratorTest : public IntegrationTest {
       return status;
     }
     Timeout timeout{base::Seconds(10)};
-    base::Value::Dict result;
+    base::DictValue result;
     status = browser_client_->SendCommandAndGetResultWithTimeout(
-        "Browser.getVersion", base::Value::Dict(), &timeout, &result);
+        "Browser.getVersion", base::DictValue(), &timeout, &result);
     if (status.IsError()) {
       return status;
     }
@@ -167,7 +167,7 @@ class ResponseInterceptingSocket : public SyncWebSocketWrapper {
     if (!maybe_value || !maybe_value->is_dict()) {
       return;
     }
-    base::Value::Dict& dict = maybe_value->GetDict();
+    base::DictValue& dict = maybe_value->GetDict();
     const std::string* maybe_method = dict.FindString("method");
     if (maybe_method == nullptr ||
         *maybe_method != "Input.dispatchMouseEvent") {
@@ -182,7 +182,7 @@ class ResponseInterceptingSocket : public SyncWebSocketWrapper {
     awaited_response_id_ = maybe_cmd_id.value_or(-1);
   }
 
-  bool IsTargetDetachedEvent(const base::Value::Dict& dict) {
+  bool IsTargetDetachedEvent(const base::DictValue& dict) {
     const std::string* maybe_method = dict.FindString("method");
     if (maybe_method == nullptr) {
       return false;
@@ -190,7 +190,7 @@ class ResponseInterceptingSocket : public SyncWebSocketWrapper {
     return *maybe_method == "Target.detachedFromTarget";
   }
 
-  bool IsDispatchMouseEventResponse(const base::Value::Dict& dict) {
+  bool IsDispatchMouseEventResponse(const base::DictValue& dict) {
     if (awaited_response_id_ < 0) {
       return false;
     }
@@ -207,7 +207,7 @@ class ResponseInterceptingSocket : public SyncWebSocketWrapper {
 };
 
 Status Navigate(Session& session, WebView& web_view, const GURL& url) {
-  base::Value::Dict params;
+  base::DictValue params;
   params.Set("url", url.spec());
   std::unique_ptr<base::Value> result;
   // Navigation timeout is initialized with the session defaults
@@ -220,8 +220,8 @@ Status FindElement(Session& session,
                    const std::string& strategy,
                    const std::string& selector,
                    Timeout& timeout,
-                   base::Value::Dict& element_id) {
-  base::Value::Dict params;
+                   base::DictValue& element_id) {
+  base::DictValue params;
   std::unique_ptr<base::Value> tmp_result;
   params.Set("using", strategy);
   params.Set("value", selector);
@@ -242,7 +242,7 @@ Status WaitForElement(Session& session,
                       const std::string& strategy,
                       const std::string& selector,
                       Timeout& timeout,
-                      base::Value::Dict& element_id) {
+                      base::DictValue& element_id) {
   Status status{kOk};
   do {
     if (status.IsError()) {
@@ -260,8 +260,8 @@ Status FindElements(Session& session,
                     const std::string& strategy,
                     const std::string& selector,
                     Timeout& timeout,
-                    base::Value::List& element_id_list) {
-  base::Value::Dict params;
+                    base::ListValue& element_id_list) {
+  base::DictValue params;
   std::unique_ptr<base::Value> tmp_result;
   params.Set("using", strategy);
   params.Set("value", selector);
@@ -279,9 +279,9 @@ Status FindElements(Session& session,
 
 Status SwitchToFrame(Session& session_,
                      WebView& web_view,
-                     const base::Value::Dict& frame_id,
+                     const base::DictValue& frame_id,
                      Timeout& timeout) {
-  base::Value::Dict params;
+  base::DictValue params;
   std::unique_ptr<base::Value> result;
   params.Set("id", frame_id.Clone());
   return ExecuteSwitchToFrame(&session_, &web_view, params, &result, &timeout);
@@ -289,14 +289,14 @@ Status SwitchToFrame(Session& session_,
 
 Status ClickElement(Session& session,
                     WebView& web_view,
-                    const base::Value::Dict& element_id) {
+                    const base::DictValue& element_id) {
   std::unique_ptr<base::Value> result;
   const std::string* maybe_id = element_id.FindString(kElementIdKey);
   if (maybe_id == nullptr) {
     return Status{kUnknownError, "no element id was provided"};
   }
-  return ExecuteClickElement(&session, &web_view, *maybe_id,
-                             base::Value::Dict(), &result);
+  return ExecuteClickElement(&session, &web_view, *maybe_id, base::DictValue(),
+                             &result);
 }
 
 GURL ReplaceIPWithLocalhost(const GURL& original) {
@@ -380,13 +380,13 @@ TEST_P(DispatchingMouseEventsTest, TolerateTargetDetach) {
 
   ASSERT_TRUE(StatusOk(Navigate(session_, *page_view, main_url_)));
 
-  base::Value::Dict frame_id;
+  base::DictValue frame_id;
   ASSERT_TRUE(StatusOk(WaitForElement(session_, *page_view, "tag name",
                                       "iframe", timeout, frame_id)));
 
   ASSERT_TRUE(StatusOk(SwitchToFrame(session_, *page_view, frame_id, timeout)));
 
-  base::Value::Dict anchor_id;
+  base::DictValue anchor_id;
   ASSERT_TRUE(StatusOk(WaitForElement(session_, *page_view, "tag name", "a",
                                       timeout, anchor_id)));
 
@@ -397,7 +397,7 @@ TEST_P(DispatchingMouseEventsTest, TolerateTargetDetach) {
   ASSERT_TRUE(socket->DetachIsDetected());
 
   // Navigation has happened
-  base::Value::Dict paragraph_id;
+  base::DictValue paragraph_id;
   ASSERT_TRUE(StatusOk(WaitForElement(session_, *page_view, "tag name", "p",
                                       timeout, paragraph_id)));
 }
@@ -459,7 +459,7 @@ TEST_P(MouseClickNavigationInjectionTest, ClickWhileNavigating) {
     ASSERT_TRUE(StatusOk(Navigate(session_, *page_view, main_url_)))
         << "skip_count=" << skip_count;
 
-    base::Value::Dict frame_id;
+    base::DictValue frame_id;
     ASSERT_TRUE(StatusOk(WaitForElement(session_, *page_view, "tag name",
                                         "iframe", timeout, frame_id)))
         << "skip_count=" << skip_count;
@@ -475,7 +475,7 @@ TEST_P(MouseClickNavigationInjectionTest, ClickWhileNavigating) {
     const std::string session_id = child_web_view->GetSessionId();
     socket->SetSessionId(session_id);
 
-    base::Value::Dict anchor_id;
+    base::DictValue anchor_id;
     ASSERT_TRUE(StatusOk(WaitForElement(session_, *page_view, "tag name", "a",
                                         timeout, anchor_id)))
         << "skip_count=" << skip_count;
@@ -541,7 +541,7 @@ TEST_P(ScriptNavigateTest, ScriptNavigationWhileNavigating) {
     ASSERT_TRUE(StatusOk(Navigate(session_, web_view, main_url_)))
         << "skip_count=" << skip_count;
 
-    base::Value::Dict frame_id;
+    base::DictValue frame_id;
     ASSERT_TRUE(StatusOk(WaitForElement(session_, web_view, "tag name",
                                         "iframe", timeout, frame_id)))
         << "skip_count=" << skip_count;
@@ -556,16 +556,16 @@ TEST_P(ScriptNavigateTest, ScriptNavigationWhileNavigating) {
     const std::string session_id = child_web_view->GetSessionId();
     socket->SetSessionId(session_id);
 
-    base::Value::Dict anchor_id;
+    base::DictValue anchor_id;
     ASSERT_TRUE(StatusOk(WaitForElement(session_, web_view, "tag name", "a",
                                         timeout, anchor_id)))
         << "skip_count=" << skip_count;
 
     socket->SetSkipCount(skip_count);
 
-    base::Value::Dict params;
+    base::DictValue params;
     params.Set("script", "location.href=arguments[0]");
-    base::Value::List args;
+    base::ListValue args;
     args.Append(local_url_.spec().c_str());
     params.Set("args", std::move(args));
 
@@ -633,7 +633,7 @@ TEST_P(FindElementsTest, FindElementsWhileNavigating) {
     ASSERT_TRUE(StatusOk(Navigate(session_, web_view, main_url_)))
         << "skip_count=" << skip_count;
 
-    base::Value::Dict frame_id;
+    base::DictValue frame_id;
     ASSERT_TRUE(StatusOk(WaitForElement(session_, web_view, "tag name",
                                         "iframe", timeout, frame_id)))
         << "skip_count=" << skip_count;
@@ -648,14 +648,14 @@ TEST_P(FindElementsTest, FindElementsWhileNavigating) {
     const std::string session_id = child_web_view->GetSessionId();
     socket->SetSessionId(session_id);
 
-    base::Value::Dict anchor_id;
+    base::DictValue anchor_id;
     ASSERT_TRUE(StatusOk(WaitForElement(session_, web_view, "tag name", "a",
                                         timeout, anchor_id)))
         << "skip_count=" << skip_count;
 
     socket->SetSkipCount(skip_count);
 
-    base::Value::List elemend_id_list;
+    base::ListValue elemend_id_list;
     Status status = FindElements(session_, web_view, "tag name", "a", timeout,
                                  elemend_id_list);
 

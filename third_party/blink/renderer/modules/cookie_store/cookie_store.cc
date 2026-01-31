@@ -4,12 +4,12 @@
 
 #include "third_party/blink/renderer/modules/cookie_store/cookie_store.h"
 
+#include <algorithm>
 #include <cstddef>
 #include <cstdint>
 #include <optional>
 #include <utility>
 
-#include "base/containers/contains.h"
 #include "net/base/features.h"
 #include "net/cookies/canonical_cookie.h"
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
@@ -127,9 +127,9 @@ std::unique_ptr<net::CanonicalCookie> ToCanonicalCookie(
       name.StartsWithIgnoringASCIICase("__host-http-");
   if (is_http_prefix || is_host_http_prefix) {
     StringBuilder builder;
-    builder.AppendFormat(
+    UNSAFE_TODO(builder.AppendFormat(
         "Cookies with \"%s\" prefix cannot be set using the CookieStore API.",
-        is_http_prefix ? "__Http-" : "__Host-Http-");
+        is_http_prefix ? "__Http-" : "__Host-Http-"));
     exception_state.ThrowTypeError(builder.ToString());
     return nullptr;
   }
@@ -190,7 +190,8 @@ std::unique_ptr<net::CanonicalCookie> ToCanonicalCookie(
   // insecure origins. file:// are excluded too for consistency with
   // document.cookie.
   if (!network::IsUrlPotentiallyTrustworthy(GURL(cookie_url)) ||
-      base::Contains(url::GetLocalSchemes(), cookie_url.Protocol().Ascii())) {
+      std::ranges::contains(url::GetLocalSchemes(),
+                            cookie_url.Protocol().Ascii())) {
     exception_state.ThrowTypeError(
         "Cannot modify a secure cookie on insecure origin");
     return nullptr;

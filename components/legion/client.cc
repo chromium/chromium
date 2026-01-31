@@ -12,9 +12,10 @@
 #include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
 #include "base/strings/strcat.h"
-#include "components/legion/attestation_handler_impl.h"
+#include "components/legion/attestation/handler_impl.h"
 #include "components/legion/client_impl.h"
 #include "components/legion/features.h"
+#include "components/legion/phosphor/token_manager.h"
 #include "components/legion/secure_channel_impl.h"
 #include "components/legion/secure_session_async_impl.h"
 #include "components/legion/websocket_client.h"
@@ -25,13 +26,16 @@ namespace legion {
 
 // static
 std::unique_ptr<Client> Client::Create(
+    phosphor::TokenManager* token_manager,
     network::mojom::NetworkContext* network_context) {
-  return CreateWithUrl(FormatUrl(kLegionUrl.Get(), kLegionApiKey.Get()),
+  return CreateWithUrl(token_manager,
+                       FormatUrl(kLegionUrl.Get(), kLegionApiKey.Get()),
                        network_context);
 }
 
 // static
 std::unique_ptr<Client> Client::CreateWithUrl(
+    phosphor::TokenManager* token_manager,
     const GURL& url,
     network::mojom::NetworkContext* network_context) {
   CHECK(base::FeatureList::IsEnabled(kLegion));
@@ -54,7 +58,7 @@ std::unique_ptr<Client> Client::CreateWithUrl(
       url, base::Unretained(network_context));
 
   // Raw `new` is used here because the constructor is private.
-  return base::WrapUnique(new ClientImpl(std::move(factory)));
+  return base::WrapUnique(new ClientImpl(std::move(factory), token_manager));
 }
 
 // static

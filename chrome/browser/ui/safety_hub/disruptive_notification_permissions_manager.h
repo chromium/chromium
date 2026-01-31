@@ -21,6 +21,10 @@ class RevokedPermissionsOSNotificationDisplayManager;
 class GURL;
 class Profile;
 
+namespace content {
+class BrowserContext;
+}  // namespace content
+
 namespace site_engagement {
 class SiteEngagementService;
 }  // namespace site_engagement
@@ -95,7 +99,8 @@ class DisruptiveNotificationPermissionsManager {
   };
   // LINT.ThenChange(//tools/metrics/histograms/enums.xml:DisruptiveNotificationRevocationState)
 
-  explicit DisruptiveNotificationPermissionsManager(
+  DisruptiveNotificationPermissionsManager(
+      content::BrowserContext* browser_context,
       scoped_refptr<HostContentSettingsMap> hcsm,
       site_engagement::SiteEngagementService* site_engagement_service,
       RevokedPermissionsOSNotificationDisplayManager*
@@ -266,6 +271,9 @@ class DisruptiveNotificationPermissionsManager {
 
   // Report metrics for the daily run.
   void ReportDailyRunMetrics();
+
+  // Pointer to a browser context whose permissions are being updated.
+  raw_ptr<content::BrowserContext> browser_context_;
 
   scoped_refptr<HostContentSettingsMap> hcsm_;
 

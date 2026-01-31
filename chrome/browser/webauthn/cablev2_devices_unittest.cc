@@ -92,7 +92,8 @@ syncer::DeviceInfo TestDeviceInfo(const TestDeviceInfoConfig& config) {
           SyncEnums_SendTabReceivingType_SEND_TAB_RECEIVING_TYPE_CHROME_OR_UNSPECIFIED,
       /*sharing_info=*/std::nullopt, paask_info_opt,
       /*fcm_registration_token=*/"fcm_token", syncer::DataTypeSet(),
-      /*auto_sign_out_last_signin_timestamp=*/base::Time::Now());
+      /*auto_sign_out_last_signin_timestamp=*/base::Time::Now(),
+      /*desktop_to_ios_promo_receiving_enabled=*/false);
 }
 
 TEST(CableV2FromSyncInfoTest, Basic) {

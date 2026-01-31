@@ -41,6 +41,18 @@ enum class ModelPageTargetType {
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/actor/enums.xml:ModelPageTargetType)
 
+// LINT.IfChange(ActorUiTaskIconError)
+enum class ActorUiTaskIconError {
+  // Counts the number of times we try to create a task list bubble row for an
+  // invalid task id. Invalid meaning not in active or inactive task records.
+  kBubbleTaskDoesntExist = 0,
+  // Counts the number of times we try to create a task icon/nudge for an
+  // invalid task id. Invalid meaning not in active or inactive task records.
+  kNudgeTaskDoesntExist = 1,
+  kMaxValue = kNudgeTaskDoesntExist,
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/actor/enums.xml:ActorUiTaskIconError)
+
 }  // namespace actor::ui
 
 #endif  // CHROME_BROWSER_ACTOR_UI_ACTOR_UI_METRICS_TYPES_H_

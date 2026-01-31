@@ -122,7 +122,7 @@ namespace android {
 
 static void JNI_NullableValueTypesTestUtil_BindTestInterface(
     JNIEnv* env,
-    jlong raw_message_pipe_handle) {
+    int64_t raw_message_pipe_handle) {
   mojo::PendingReceiver<test::nullable_value_types::mojom::InterfaceV2>
       pending_receiver{mojo::ScopedMessagePipeHandle(
           mojo::MessagePipeHandle(raw_message_pipe_handle))};

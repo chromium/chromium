@@ -135,7 +135,7 @@ TEST_F(ContentSettingsRegistryTest, Inheritance) {
       ContentSettingsType::POPUPS,
       ContentSettingsType::AUTOMATIC_DOWNLOADS,
       ContentSettingsType::ADS,
-      ContentSettingsType::DURABLE_STORAGE,
+      ContentSettingsType::PERSISTENT_STORAGE,
       ContentSettingsType::LEGACY_COOKIE_ACCESS,
       ContentSettingsType::REQUEST_DESKTOP_SITE,
       ContentSettingsType::KEYBOARD_LOCK,
@@ -153,14 +153,6 @@ TEST_F(ContentSettingsRegistryTest, Inheritance) {
     // they should be marked as INHERIT_IN_INCOGNITO.
     if (info->IsSettingValid(CONTENT_SETTING_ALLOW) &&
         info->GetInitialDefaultSetting() == CONTENT_SETTING_ALLOW) {
-      EXPECT_EQ(info->incognito_behavior(),
-                ContentSettingsInfo::INHERIT_IN_INCOGNITO);
-      continue;
-    }
-    // Tracking protection content setting should be inherited in incognito.
-    if (info->website_settings_info()->type() ==
-            ContentSettingsType::TRACKING_PROTECTION &&
-        info->GetInitialDefaultSetting() == CONTENT_SETTING_BLOCK) {
       EXPECT_EQ(info->incognito_behavior(),
                 ContentSettingsInfo::INHERIT_IN_INCOGNITO);
       continue;

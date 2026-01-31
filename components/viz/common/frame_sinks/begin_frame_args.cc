@@ -10,6 +10,7 @@
 #include "base/trace_event/interned_args_helper.h"
 #include "base/trace_event/traced_value.h"
 #include "base/tracing/protos/chrome_track_event.pbzero.h"
+#include "build/build_config.h"
 #include "third_party/perfetto/protos/perfetto/trace/track_event/source_location.pbzero.h"
 
 namespace viz {
@@ -102,6 +103,7 @@ BeginFrameArgs::BeginFrameArgs()
     : frame_time(base::TimeTicks::Min()),
       deadline(base::TimeTicks::Min()),
       interval(base::Microseconds(-1)),
+      unthrottled_interval(base::Microseconds(-1)),
       frame_id(BeginFrameId(0, kInvalidFrameNumber)) {}
 
 BeginFrameArgs::~BeginFrameArgs() = default;
@@ -111,13 +113,30 @@ BeginFrameArgs::BeginFrameArgs(uint64_t source_id,
                                base::TimeTicks frame_time,
                                base::TimeTicks deadline,
                                base::TimeDelta interval,
-                               BeginFrameArgs::BeginFrameArgsType type)
+                               BeginFrameArgs::BeginFrameArgsType type,
+                               base::TimeDelta unthrottled_interval)
     : frame_time(frame_time),
       deadline(deadline),
       interval(interval),
+      unthrottled_interval(
+          unthrottled_interval.is_positive() ? unthrottled_interval : interval),
       frame_id(BeginFrameId(source_id, sequence_number)),
       type(type) {
   DCHECK_LE(kStartingFrameNumber, sequence_number);
+#if !BUILDFLAG(IS_MAC) && !BUILDFLAG(IS_ANDROID)
+  // TODO(crbug.com/477242770): Re-enable on Mac. Changing the system display
+  // refresh rate on macOS causes the unthrottled_interval state to go
+  // stale, which incorrectly trips this DCHECK.
+  //
+  // TODO(crbug.com/477617022): Re-enable on Android.
+  // ExternalBeginFrameSourceAndroid currently does not implement
+  // GetMinimumFrameInterval() causing unthrottled_interval to always be
+  // BeginFrameArgs::DefaultInterval()
+  if (type != BeginFrameArgs::INVALID && interval.is_positive()) {
+    DCHECK_LE(this->unthrottled_interval,
+              this->interval * kUnthrottledIntervalJitterMultiplier);
+  }
+#endif
 }
 
 BeginFrameArgs::BeginFrameArgs(const BeginFrameArgs& args) = default;
@@ -129,14 +148,16 @@ BeginFrameArgs BeginFrameArgs::Create(BeginFrameArgs::CreationLocation location,
                                       base::TimeTicks frame_time,
                                       base::TimeTicks deadline,
                                       base::TimeDelta interval,
-                                      BeginFrameArgs::BeginFrameArgsType type) {
+                                      BeginFrameArgs::BeginFrameArgsType type,
+                                      base::TimeDelta unthrottled_interval) {
   DCHECK_NE(type, BeginFrameArgs::INVALID);
 #ifdef NDEBUG
   return BeginFrameArgs(source_id, sequence_number, frame_time, deadline,
-                        interval, type);
+                        interval, type, unthrottled_interval);
 #else
-  BeginFrameArgs args = BeginFrameArgs(source_id, sequence_number, frame_time,
-                                       deadline, interval, type);
+  BeginFrameArgs args =
+      BeginFrameArgs(source_id, sequence_number, frame_time, deadline, interval,
+                     type, unthrottled_interval);
   args.created_from = location;
   return args;
 #endif
@@ -160,6 +181,8 @@ void BeginFrameArgs::AsValueInto(base::trace_event::TracedValue* state) const {
                    frame_time.since_origin().InMicrosecondsF());
   state->SetDouble("deadline_us", deadline.since_origin().InMicrosecondsF());
   state->SetDouble("interval_us", interval.InMicrosecondsF());
+  state->SetDouble("unthrottled_interval_us",
+                   unthrottled_interval.InMicrosecondsF());
 #ifndef NDEBUG
   state->SetString("created_from", created_from.ToString());
 #endif
@@ -178,6 +201,8 @@ void BeginFrameArgs::AsProtozeroInto(
   state->set_frame_time_us(frame_time.since_origin().InMicroseconds());
   state->set_deadline_us(deadline.since_origin().InMicroseconds());
   state->set_interval_delta_us(interval.InMicroseconds());
+  state->set_unthrottled_interval_delta_us(
+      unthrottled_interval.InMicroseconds());
   state->set_on_critical_path(on_critical_path);
   state->set_animate_only(animate_only);
 #ifndef NDEBUG

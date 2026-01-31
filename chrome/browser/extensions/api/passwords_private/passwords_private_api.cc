@@ -405,13 +405,13 @@ ResponseAction PasswordsPrivateRequestExportProgressStatusFunction::Run() {
 }
 
 // PasswordsPrivateIsAccountStorageEnabledFunction
-ResponseAction PasswordsPrivateIsAccountStorageEnabledFunction::Run() {
+ResponseAction PasswordsPrivateIsAccountStorageActiveFunction::Run() {
   if (!GetDelegate(browser_context())) {
     return RespondNow(Error(kNoDelegateError));
   }
 
   return RespondNow(
-      WithArguments(GetDelegate(browser_context())->IsAccountStorageEnabled()));
+      WithArguments(GetDelegate(browser_context())->IsAccountStorageActive()));
 }
 
 // PasswordsPrivateSetAccountStorageEnabledFunction

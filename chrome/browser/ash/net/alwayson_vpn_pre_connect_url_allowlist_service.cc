@@ -73,7 +73,7 @@ void AlwaysOnVpnPreConnectUrlAllowlistService::
                               ash::NetworkState::NetworkTechnologyType::kVPN &&
                           network->connection_state() == shill::kStateOnline;
 
-  const base::Value::List& pre_vpn_connect_url_allowlist =
+  const base::ListValue& pre_vpn_connect_url_allowlist =
       profile_pref_change_registrar_.prefs()->GetList(
           policy::policy_prefs::kAlwaysOnVpnPreConnectUrlAllowlist);
 

@@ -24,7 +24,7 @@ namespace {
 static void ConvertToValuesAndRespond(
     std::unique_ptr<PolicyList> policies,
     base::OnceCallback<void(base::Value)> response) {
-  base::Value::List policy_values;
+  base::ListValue policy_values;
   for (auto&& item : *policies) {
     auto snapshot = base::JSONReader::ReadAndReturnValueWithError(
         item->JsonString(), base::JSON_PARSE_RFC);

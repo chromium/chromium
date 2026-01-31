@@ -32,6 +32,7 @@ std::optional<autofill::FormData> JsonStringToFormData(
     NSString* json_string,
     const GURL& page_url,
     const url::Origin& frame_origin,
+    const GURL& form_frame_url,
     const autofill::FieldDataManager& field_data_manager,
     const std::string& frame_id);
 

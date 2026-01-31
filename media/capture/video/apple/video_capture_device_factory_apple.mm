@@ -24,7 +24,6 @@
 #include "media/capture/video/apple/video_capture_device_apple.h"
 #import "media/capture/video/apple/video_capture_device_avfoundation.h"
 #import "media/capture/video/apple/video_capture_device_avfoundation_utils.h"
-#include "media/capture/video/video_capture_metrics.h"
 
 #if BUILDFLAG(IS_MAC)
 #import <IOKit/audio/IOAudioTypes.h>
@@ -215,12 +214,11 @@ VideoCaptureErrorOrDevice VideoCaptureDeviceFactoryApple::CreateDevice(
   }
 #endif
 
-  if (capture_device) {
-    LogCaptureDeviceHashedModelId(descriptor);
 #if BUILDFLAG(IS_MAC)
+  if (capture_device) {
     LogReactionEffectsGesturesState();
-#endif
   }
+#endif
 
   return capture_device ? VideoCaptureErrorOrDevice(std::move(capture_device))
                         : VideoCaptureErrorOrDevice(

@@ -9,14 +9,16 @@ found in the LICENSE file.
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="wrap_content"
-    android:layout_height="match_parent"
-    android:orientation="horizontal"
-    android:gravity="center_vertical" >
+    android:layout_height="?attr/toolbarButtonHeight"
+    android:layout_marginVertical="?attr/toolbarButtonMarginVertical"
+    android:orientation="horizontal">
 
-    <org.chromium.chrome.browser.toolbar.extensions.ExtensionActionListContainer
+    <org.chromium.chrome.browser.toolbar.extensions.ExtensionActionListRecyclerView
         android:id="@+id/extension_action_list"
+        android:orientation="horizontal"
         android:layout_width="wrap_content"
-        android:layout_height="match_parent"/>
+        android:layout_height="match_parent"
+        android:layout_gravity="end"/>
 
     <org.chromium.ui.listmenu.ListMenuButton
         android:id="@+id/extensions_menu_button"
@@ -24,11 +26,14 @@ found in the LICENSE file.
         android:src="@drawable/chrome_extension"
         app:menuVerticalOverlapAnchor="false"
         app:tint="@color/default_icon_color_tint_list"
-        android:tooltipText="@string/accessibility_btn_extensions"/>
+        android:tooltipText="@string/accessibility_btn_extensions"
+        android:layout_height="match_parent"
+        />
 
     <com.google.android.material.divider.MaterialDivider
         android:id="@+id/extensions_divider"
         android:layout_width="@dimen/toolbar_divider_width"
-        android:layout_height="@dimen/toolbar_divider_height"/>
+        android:layout_height="@dimen/toolbar_divider_height"
+        android:layout_gravity="center_vertical"/>
 
 </LinearLayout>

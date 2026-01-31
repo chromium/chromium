@@ -224,7 +224,7 @@ void HTMLOptGroupElement::ManuallyAssignSlots() {
   for (Node& child : NodeTraversal::ChildrenOf(*this)) {
     if (!child.IsSlotable())
       continue;
-    if (RuntimeEnabledFeatures::CustomizableSelectInPageEnabled() ||
+    if (RuntimeEnabledFeatures::CustomizableSelectListboxEnabled() ||
         customizable_select_rendering_ || CanAssignToOptGroupSlot(child)) {
       opt_group_nodes.push_back(child);
     }
@@ -244,12 +244,12 @@ void HTMLOptGroupElement::UpdateGroupLabel() {
   // to display:none.
   // The ContainsOnlyWhitespaceOrEmpty() check here was shortsightedly added for
   // CustomizableSelect to remove the empty line behavior, but we want to remove
-  // it for CustomizableSelectInPage.
-  if ((!RuntimeEnabledFeatures::CustomizableSelectInPageEnabled() &&
+  // it for CustomizableSelectListbox.
+  if ((!RuntimeEnabledFeatures::CustomizableSelectListboxEnabled() &&
        label_text.ContainsOnlyWhitespaceOrEmpty()) ||
       FirstChildLegend(*this)) {
     if (customizable_select_rendering_ ||
-        RuntimeEnabledFeatures::CustomizableSelectInPageEnabled()) {
+        RuntimeEnabledFeatures::CustomizableSelectListboxEnabled()) {
       // If the author uses <legend> to label the <optgroup> instead of the
       // label attribute, then we don't want extra space being taken up for the
       // unused label attribute.

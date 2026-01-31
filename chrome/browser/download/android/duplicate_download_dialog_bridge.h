@@ -40,7 +40,7 @@ class DuplicateDownloadDialogBridge : public download::DownloadItem::Observer {
             DuplicateDownloadDialogCallback callback);
 
   // Called from Java via JNI.
-  void OnConfirmed(JNIEnv* env, jlong callback_id, jboolean accepted);
+  void OnConfirmed(JNIEnv* env, int64_t callback_id, bool accepted);
 
  private:
   // Validator for all JNI callbacks.

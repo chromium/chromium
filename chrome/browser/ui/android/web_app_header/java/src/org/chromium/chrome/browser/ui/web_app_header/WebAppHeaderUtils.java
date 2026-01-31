@@ -122,7 +122,7 @@ public class WebAppHeaderUtils {
 
         return intentDataProvider.isTrustedWebActivity()
                 && displayMode == DisplayMode.STANDALONE
-                && ChromeFeatureList.sAndroidWebAppHeaderForStandaloneMode.isEnabled();
+                && ChromeFeatureList.sAndroidTwaOriginDisplay.isEnabled();
     }
 
     /**

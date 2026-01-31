@@ -16,7 +16,10 @@ rust_static_library("pix_validator_rs_ffi_glue") {
   crate_root = "pix_validator_cxx.rs"
   sources = [ "pix_validator_cxx.rs" ]
 
-  visibility = [ ":*" ]
+  visibility = [
+    ":*",
+    "//components/facilitated_payments/core/browser",
+  ]
 
   allow_unsafe = true
   cxx_bindings = [ "pix_validator_cxx.rs" ]

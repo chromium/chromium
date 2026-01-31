@@ -7,19 +7,18 @@
 #import "components/policy/policy_constants.h"
 #import "components/signin/internal/identity_manager/account_capabilities_constants.h"
 #import "components/strings/grit/components_strings.h"
-#import "components/supervised_user/core/browser/supervised_user_url_filter.h"
 #import "components/supervised_user/core/common/features.h"
 #import "components/supervised_user/core/common/supervised_user_constants.h"
 #import "ios/chrome/browser/authentication/test/signin_earl_grey.h"
 #import "ios/chrome/browser/authentication/test/signin_earl_grey_ui_test_util.h"
-#import "ios/chrome/browser/content_suggestions/ui_bundled/content_suggestions_constants.h"
+#import "ios/chrome/browser/content_suggestions/public/content_suggestions_constants.h"
 #import "ios/chrome/browser/metrics/model/metrics_app_interface.h"
 #import "ios/chrome/browser/policy/model/policy_app_interface.h"
 #import "ios/chrome/browser/policy/model/policy_earl_grey_utils.h"
 #import "ios/chrome/browser/policy/model/policy_util.h"
-#import "ios/chrome/browser/popup_menu/ui_bundled/popup_menu_constants.h"
+#import "ios/chrome/browser/popup_menu/public/popup_menu_constants.h"
+#import "ios/chrome/browser/settings/ui_bundled/family_link_settings_app_interface.h"
 #import "ios/chrome/browser/settings/ui_bundled/google_services/manage_sync_settings_constants.h"
-#import "ios/chrome/browser/settings/ui_bundled/supervised_user_settings_app_interface.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/public/snackbar/snackbar_constants.h"
 #import "ios/chrome/browser/signin/model/capabilities_types.h"
@@ -125,8 +124,8 @@ static const char* kInterstitialDetails = "Details";
 
 - (void)tearDownHelper {
   [ChromeEarlGrey closeCurrentTab];
-  [SupervisedUserSettingsAppInterface resetSupervisedUserURLFilterBehavior];
-  [SupervisedUserSettingsAppInterface resetManualUrlFiltering];
+  [FamilyLinkSettingsAppInterface resetSupervisedUserURLFilterBehavior];
+  [FamilyLinkSettingsAppInterface resetManualUrlFiltering];
   [super tearDownHelper];
 }
 
@@ -240,7 +239,7 @@ static const char* kInterstitialDetails = "Details";
     MAYBE_testSupervisedUserURLFilteringReloadsOnlyRealizedExistingWebStates {
   // Signing in the user and allow all sites.
   [self signInSupervisedUser];
-  [SupervisedUserSettingsAppInterface setFilteringToAllowAllSites];
+  [FamilyLinkSettingsAppInterface setFilteringToAllowAllSites];
 
   // Open three tabs, visit a webpage from them and check they are unblocked.
   GURL URL = self.testServer->GetURL(kEchoPath);
@@ -267,7 +266,7 @@ static const char* kInterstitialDetails = "Details";
       [MetricsAppInterface setupHistogramTester]);
   // Change the filtering setting to block the previously used urls. This
   // results in a new filtering of the existing tabs.
-  [SupervisedUserSettingsAppInterface setFilteringToAllowApprovedSites];
+  [FamilyLinkSettingsAppInterface setFilteringToAllowApprovedSites];
 
   // There should be one realized web state (active tab).
   // Check that only one tab displays the intersitial.
@@ -282,7 +281,7 @@ static const char* kInterstitialDetails = "Details";
           base::test::ios::kWaitForPageLoadTimeout,
           ^bool {
             return
-                [SupervisedUserSettingsAppInterface
+                [FamilyLinkSettingsAppInterface
                     countSupervisedUserIntersitialsForExistingWebStates] == 1;
           }),
       @"Interstitial did not appear.");
@@ -299,7 +298,9 @@ static const char* kInterstitialDetails = "Details";
 
 // Tests that the user is correctly signed out after signin is disabled via
 // policy.
-- (void)testSupervisedUserSignedOutOnPolicyChange {
+// TODO(crbug.com/476358542): This test is flaky on iOS simulator. Reenable
+// this test.
+- (void)FLAKY_testSupervisedUserSignedOutOnPolicyChange {
   [self signInSupervisedUser];
 
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
@@ -348,7 +349,7 @@ static const char* kInterstitialDetails = "Details";
 // when they navigate to a non-approved site.
 - (void)testSupervisedUserWithAllowApprovedSitesFilteringIsShownInterstitial {
   [self signInSupervisedUser];
-  [SupervisedUserSettingsAppInterface setFilteringToAllowApprovedSites];
+  [FamilyLinkSettingsAppInterface setFilteringToAllowApprovedSites];
 
   GURL blockedURL = self.testServer->GetURL(kEchoPath);
   [ChromeEarlGrey loadURL:blockedURL];
@@ -360,9 +361,8 @@ static const char* kInterstitialDetails = "Details";
 // when they navigate to a site that ClassifyUrl classifies as unsafe.
 - (void)testSupervisedUserWithAllowAllSitesAndSafeSearchRestricted {
   [self signInSupervisedUser];
-  [SupervisedUserSettingsAppInterface setFilteringToAllowAllSites];
-  [SupervisedUserSettingsAppInterface
-      setDefaultClassifyURLNavigationIsAllowed:NO];
+  [FamilyLinkSettingsAppInterface setFilteringToAllowAllSites];
+  [FamilyLinkSettingsAppInterface setDefaultClassifyURLNavigationIsAllowed:NO];
 
   // When safe search classifies the url as restricted, the user navigation is
   // blocked.
@@ -376,11 +376,10 @@ static const char* kInterstitialDetails = "Details";
 // when they navigate to a website allowed by ClassifyUrl.
 - (void)testSupervisedUserWithAllowAllSitesAndSafeSearchAllowed {
   [self signInSupervisedUser];
-  [SupervisedUserSettingsAppInterface setFilteringToAllowAllSites];
+  [FamilyLinkSettingsAppInterface setFilteringToAllowAllSites];
   // TODO(b/297313665): Instead of a default response, introduce a stack-based
   // approach for the mocked reponses. See `kids_management_api_server_mock.h`.
-  [SupervisedUserSettingsAppInterface
-      setDefaultClassifyURLNavigationIsAllowed:YES];
+  [FamilyLinkSettingsAppInterface setDefaultClassifyURLNavigationIsAllowed:YES];
 
   // When safe search classifies the url as allowed, the user can navigate to
   // it.
@@ -395,10 +394,10 @@ static const char* kInterstitialDetails = "Details";
 - (void)
     testSupervisedUserWithAllowAllSitesFilteringIsShownInterstitialOnBlockedSite {
   [self signInSupervisedUser];
-  [SupervisedUserSettingsAppInterface setFilteringToAllowAllSites];
+  [FamilyLinkSettingsAppInterface setFilteringToAllowAllSites];
 
   GURL blockedURL = self.testServer->GetURL(kHost, kEchoPath);
-  [SupervisedUserSettingsAppInterface
+  [FamilyLinkSettingsAppInterface
       addWebsiteToBlockList:net::NSURLWithGURL(blockedURL)];
 
   [ChromeEarlGrey loadURL:blockedURL];
@@ -409,7 +408,7 @@ static const char* kInterstitialDetails = "Details";
 // when they navigate to an allow-listed website.
 - (void)testSupervisedUserWithAllowApprovedSitesFilteringCanViewAllowedWebages {
   [self signInSupervisedUser];
-  [SupervisedUserSettingsAppInterface setFilteringToAllowApprovedSites];
+  [FamilyLinkSettingsAppInterface setFilteringToAllowApprovedSites];
 
   GURL URL = self.testServer->GetURL(kEchoPath);
   // The page is originally blocked.
@@ -425,7 +424,7 @@ static const char* kInterstitialDetails = "Details";
   [self checkInterstitalIsShown];
 
   // Allow-list the page and re-visit it. It should now be unblocked.
-  [SupervisedUserSettingsAppInterface
+  [FamilyLinkSettingsAppInterface
       addWebsiteToAllowList:net::NSURLWithGURL(URL)];
 
   [ChromeEarlGrey loadURL:URL];
@@ -437,13 +436,13 @@ static const char* kInterstitialDetails = "Details";
 - (void)
     testSupervisedUserWithAllowApprovedFilteringIsUnblockedOnURLAllowListing {
   [self signInSupervisedUser];
-  [SupervisedUserSettingsAppInterface setFilteringToAllowApprovedSites];
+  [FamilyLinkSettingsAppInterface setFilteringToAllowApprovedSites];
 
   GURL URL = self.testServer->GetURL(kEchoPath);
   [ChromeEarlGrey loadURL:URL];
   [self checkInterstitalIsShown];
 
-  [SupervisedUserSettingsAppInterface
+  [FamilyLinkSettingsAppInterface
       addWebsiteToAllowList:net::NSURLWithGURL(URL)];
   // Ensure that the interstitial is refreshed and the un-blocked page is
   // displayed.
@@ -463,13 +462,13 @@ static const char* kInterstitialDetails = "Details";
 - (void)
     MAYBE_testSupervisedUserWithAllowAllFilteringIsBlockedOnURLBlockListing {
   [self signInSupervisedUser];
-  [SupervisedUserSettingsAppInterface setFilteringToAllowAllSites];
+  [FamilyLinkSettingsAppInterface setFilteringToAllowAllSites];
 
   GURL URL = self.testServer->GetURL(kEchoPath);
   [ChromeEarlGrey loadURL:URL];
   [ChromeEarlGrey waitForWebStateContainingText:kEchoContent];
 
-  [SupervisedUserSettingsAppInterface
+  [FamilyLinkSettingsAppInterface
       addWebsiteToBlockList:net::NSURLWithGURL(URL)];
   // Ensure that the interstitial is triggered.
   [self checkInterstitalIsShown];
@@ -493,7 +492,7 @@ static const char* kInterstitialDetails = "Details";
   [ChromeEarlGrey loadURL:safeURL];
   [ChromeEarlGrey waitForWebStateContainingText:kEchoContent];
 
-  [SupervisedUserSettingsAppInterface setFilteringToAllowApprovedSites];
+  [FamilyLinkSettingsAppInterface setFilteringToAllowApprovedSites];
   [self checkInterstitalIsShown];
 
   // Reloading the page should not affect the interstitial.
@@ -515,13 +514,13 @@ static const char* kInterstitialDetails = "Details";
 - (void)
     MAYBE_testSupervisedUserWithAllowAllSitesFilteringIsUnblockedOnFilterChange {
   [self signInSupervisedUser];
-  [SupervisedUserSettingsAppInterface setFilteringToAllowApprovedSites];
+  [FamilyLinkSettingsAppInterface setFilteringToAllowApprovedSites];
 
   GURL blockedURL = self.testServer->GetURL(kEchoPath);
   [ChromeEarlGrey loadURL:blockedURL];
   [self checkInterstitalIsShown];
 
-  [SupervisedUserSettingsAppInterface setFilteringToAllowAllSites];
+  [FamilyLinkSettingsAppInterface setFilteringToAllowAllSites];
   // Ensure that the interstitial is refreshed and the un-blocked page is
   // displayed.
   [ChromeEarlGrey waitForWebStateContainingText:kEchoContent];
@@ -531,11 +530,11 @@ static const char* kInterstitialDetails = "Details";
 // unblocked and upon unblocking the page is refreshed and displayed.
 - (void)testSupervisedUserWithAllowAllSitesFilteringCanUnblockRequestedWebsite {
   [self signInSupervisedUser];
-  [SupervisedUserSettingsAppInterface setFakePermissionCreator];
-  [SupervisedUserSettingsAppInterface setFilteringToAllowAllSites];
+  [FamilyLinkSettingsAppInterface setFakePermissionCreator];
+  [FamilyLinkSettingsAppInterface setFilteringToAllowAllSites];
 
   GURL blockedURL = self.testServer->GetURL(kEchoPath);
-  [SupervisedUserSettingsAppInterface
+  [FamilyLinkSettingsAppInterface
       addWebsiteToBlockList:net::NSURLWithGURL(blockedURL)];
 
   [ChromeEarlGrey loadURL:blockedURL];
@@ -548,7 +547,7 @@ static const char* kInterstitialDetails = "Details";
 
   // Approving the permission request for the blocked host
   // should refresh the newly unblocked page.
-  [SupervisedUserSettingsAppInterface
+  [FamilyLinkSettingsAppInterface
       approveWebsiteDomain:net::NSURLWithGURL(blockedURL)];
   [ChromeEarlGrey waitForWebStateContainingText:kEchoContent];
 }
@@ -566,8 +565,8 @@ static const char* kInterstitialDetails = "Details";
   }
 
   [self signInSupervisedUser];
-  [SupervisedUserSettingsAppInterface setFakePermissionCreator];
-  [SupervisedUserSettingsAppInterface setFilteringToAllowApprovedSites];
+  [FamilyLinkSettingsAppInterface setFakePermissionCreator];
+  [FamilyLinkSettingsAppInterface setFilteringToAllowApprovedSites];
 
   GURL blockedURL = self.testServer->GetURL(kHost, kEchoPath);
   [ChromeEarlGrey loadURL:blockedURL];
@@ -602,8 +601,8 @@ static const char* kInterstitialDetails = "Details";
   }
 
   [self signInSupervisedUser];
-  [SupervisedUserSettingsAppInterface setFakePermissionCreator];
-  [SupervisedUserSettingsAppInterface setFilteringToAllowApprovedSites];
+  [FamilyLinkSettingsAppInterface setFakePermissionCreator];
+  [FamilyLinkSettingsAppInterface setFilteringToAllowApprovedSites];
 
   GURL blockedURL = self.testServer->GetURL(kHost, kEchoPath);
   [ChromeEarlGrey loadURL:blockedURL];
@@ -641,7 +640,7 @@ static const char* kInterstitialDetails = "Details";
 // interstitial "Ask your parent" screen depending on the screen width.
 - (void)testSupervisedUserInterstitialShowBlockReasonAndDetails {
   [self signInSupervisedUser];
-  [SupervisedUserSettingsAppInterface setFilteringToAllowApprovedSites];
+  [FamilyLinkSettingsAppInterface setFilteringToAllowApprovedSites];
 
   GURL blockedURL = self.testServer->GetURL(kHost, kEchoPath);
 
@@ -668,12 +667,12 @@ static const char* kInterstitialDetails = "Details";
 // TODO(crbug.com/435140688): Reenable this test.
 - (void)MAYBE_testSupervisedUserInterstitialOnBackButton {
   [self signInSupervisedUser];
-  [SupervisedUserSettingsAppInterface setFakePermissionCreator];
-  [SupervisedUserSettingsAppInterface setFilteringToAllowAllSites];
+  [FamilyLinkSettingsAppInterface setFakePermissionCreator];
+  [FamilyLinkSettingsAppInterface setFilteringToAllowAllSites];
 
   GURL allowedURL = self.testServer->GetURL(kDefaultPath);
   GURL blockedURL = self.testServer->GetURL(kHost, kEchoPath);
-  [SupervisedUserSettingsAppInterface
+  [FamilyLinkSettingsAppInterface
       addWebsiteToBlockList:net::NSURLWithGURL(blockedURL)];
 
   [ChromeEarlGrey loadURL:allowedURL];
@@ -706,12 +705,12 @@ static const char* kInterstitialDetails = "Details";
 - (void)
     MAYBE_testSupervisedUserInterstitialOnLocalApprovalRequestFromWaitingScreen {
   [self signInSupervisedUser];
-  [SupervisedUserSettingsAppInterface setFakePermissionCreator];
-  [SupervisedUserSettingsAppInterface setFilteringToAllowAllSites];
+  [FamilyLinkSettingsAppInterface setFakePermissionCreator];
+  [FamilyLinkSettingsAppInterface setFilteringToAllowAllSites];
 
   GURL allowedURL = self.testServer->GetURL(kDefaultPath);
   GURL blockedURL = self.testServer->GetURL(kHost, kEchoPath);
-  [SupervisedUserSettingsAppInterface
+  [FamilyLinkSettingsAppInterface
       addWebsiteToBlockList:net::NSURLWithGURL(blockedURL)];
 
   [ChromeEarlGrey loadURL:allowedURL];
@@ -747,8 +746,8 @@ static const char* kInterstitialDetails = "Details";
 // in the waiting screen upon revisiting.
 - (void)testSupervisedUserInterstitialForAlreadyRequestedHostShowsWaitScreen {
   [self signInSupervisedUser];
-  [SupervisedUserSettingsAppInterface setFakePermissionCreator];
-  [SupervisedUserSettingsAppInterface setFilteringToAllowApprovedSites];
+  [FamilyLinkSettingsAppInterface setFakePermissionCreator];
+  [FamilyLinkSettingsAppInterface setFilteringToAllowApprovedSites];
 
   GURL blockedURL = self.testServer->GetURL(kHost, kEchoPath);
 
@@ -774,7 +773,7 @@ static const char* kInterstitialDetails = "Details";
 // Tests that the Zoom Text option is available for the interstitial.
 - (void)testSupervisedUserInterstitialSupportsZoom {
   [self signInSupervisedUser];
-  [SupervisedUserSettingsAppInterface setFilteringToAllowApprovedSites];
+  [FamilyLinkSettingsAppInterface setFilteringToAllowApprovedSites];
 
   GURL blockedURL = self.testServer->GetURL(kEchoPath);
   [ChromeEarlGrey loadURL:blockedURL];
@@ -790,9 +789,7 @@ static const char* kInterstitialDetails = "Details";
       grey_accessibilityID(kToolsMenuTextZoom), grey_accessibilityTrait(trait),
       grey_sufficientlyVisible(), nil);
   id<GREYMatcher> tableViewMatcher =
-      [ChromeEarlGrey isNewOverflowMenuEnabled]
-          ? grey_accessibilityID(kPopupMenuToolsMenuActionListId)
-          : grey_accessibilityID(kPopupMenuToolsMenuTableViewId);
+      grey_accessibilityID(kPopupMenuToolsMenuActionListId);
   [[[EarlGrey selectElementWithMatcher:zoomActionMatcher]
          usingSearchAction:grey_scrollInDirection(kGREYDirectionDown, 200)
       onElementWithMatcher:tableViewMatcher] assertWithMatcher:grey_notNil()];
@@ -805,8 +802,8 @@ static const char* kInterstitialDetails = "Details";
       [MetricsAppInterface setupHistogramTester]);
 
   [self signInSupervisedUser];
-  [SupervisedUserSettingsAppInterface setFakePermissionCreator];
-  [SupervisedUserSettingsAppInterface setFilteringToAllowApprovedSites];
+  [FamilyLinkSettingsAppInterface setFakePermissionCreator];
+  [FamilyLinkSettingsAppInterface setFilteringToAllowApprovedSites];
 
   GURL blockedURL = self.testServer->GetURL(kHost, kEchoPath);
   [ChromeEarlGrey loadURL:blockedURL];
@@ -877,8 +874,8 @@ static const char* kInterstitialDetails = "Details";
       [MetricsAppInterface setupHistogramTester]);
 
   [self signInSupervisedUser];
-  [SupervisedUserSettingsAppInterface setFakePermissionCreator];
-  [SupervisedUserSettingsAppInterface setFilteringToAllowApprovedSites];
+  [FamilyLinkSettingsAppInterface setFakePermissionCreator];
+  [FamilyLinkSettingsAppInterface setFilteringToAllowApprovedSites];
 
   GURL blockedURL = self.testServer->GetURL(kHost, kEchoPath);
   [ChromeEarlGrey loadURL:blockedURL];
@@ -958,8 +955,8 @@ static const char* kInterstitialDetails = "Details";
       [MetricsAppInterface setupHistogramTester]);
 
   [self signInSupervisedUser];
-  [SupervisedUserSettingsAppInterface setFakePermissionCreator];
-  [SupervisedUserSettingsAppInterface setFilteringToAllowApprovedSites];
+  [FamilyLinkSettingsAppInterface setFakePermissionCreator];
+  [FamilyLinkSettingsAppInterface setFilteringToAllowApprovedSites];
 
   GURL blockedURL = self.testServer->GetURL(kHost, kEchoPath);
   [ChromeEarlGrey loadURL:blockedURL];

@@ -136,6 +136,9 @@ class CORE_EXPORT LineBreaker {
  private:
   Document& GetDocument() const { return node_.GetDocument(); }
 
+  // True if `this` is for a part of an IFC. Used by Ruby.
+  bool IsSubLineBreaker() const { return end_item_index_ != Items().size(); }
+
   const String& Text() const { return text_content_; }
   const InlineItems& Items() const { return items_data_->items; }
 

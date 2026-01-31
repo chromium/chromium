@@ -11,11 +11,15 @@
 #include "base/run_loop.h"
 #include "base/scoped_observation.h"
 #include "base/strings/stringprintf.h"
-#include "chrome/browser/ash/growth/campaigns_manager_client_impl.h"
+#include "chrome/browser/ash/growth/campaigns_manager_test_helper.h"
 #include "chrome/browser/ash/growth/metrics.h"
 #include "chrome/browser/ash/growth/mock_ui_performer_observer.h"
+#include "chrome/browser/global_features.h"
+#include "chrome/test/base/browser_process_platform_part_test_api_chromeos.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile_manager.h"
+#include "chromeos/ash/components/growth/campaigns_manager.h"
+#include "components/component_updater/ash/fake_component_manager_ash.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/views/view.h"
@@ -52,6 +56,12 @@ class ShowNudgeActionPerformerTest : public testing::Test {
 
   void SetUp() override {
     ASSERT_TRUE(profile_manager_->SetUp());
+
+    // ShowNudgeActionPerformer depends on CampaignsManager.
+    campaign_manager_test_helper_.InitializeCampaignsManager(
+        base::MakeRefCounted<component_updater::FakeComponentManagerAsh>());
+    ASSERT_TRUE(growth::CampaignsManager::Get());
+
     action_ = std::make_unique<ShowNudgeActionPerformer>();
     scoped_observation_.Observe(action_.get());
     anchored_view_ = std::make_unique<views::View>();
@@ -61,6 +71,8 @@ class ShowNudgeActionPerformerTest : public testing::Test {
     scoped_observation_.Reset();
     profile_manager_->DeleteAllTestingProfiles();
     action_->SetAnchoredViewForTesting(std::nullopt);
+
+    campaign_manager_test_helper_.ShutdownCampaignsManager();
   }
 
   void SetTestAnchoredView(bool has_anchor_view) {
@@ -108,8 +120,9 @@ class ShowNudgeActionPerformerTest : public testing::Test {
 
   base::ScopedObservation<UiActionPerformer, UiActionPerformer::Observer>
       scoped_observation_{&mock_observer_};
-  CampaignsManagerClientImpl client_;
   std::unique_ptr<TestingProfileManager> profile_manager_;
+
+  CampaignsManagerTestHelper campaign_manager_test_helper_;
 };
 
 TEST_F(ShowNudgeActionPerformerTest, TestValidPayloadParams) {

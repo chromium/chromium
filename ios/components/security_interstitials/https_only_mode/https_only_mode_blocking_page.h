@@ -38,7 +38,7 @@ class HttpsOnlyModeBlockingPage
   // SecurityInterstitialPage implementation:
   bool ShouldCreateNewNavigation() const override;
   void PopulateInterstitialStrings(
-      base::Value::Dict& load_time_data) const override;
+      base::DictValue& load_time_data) const override;
   bool ShouldDisplayURL() const override;
 
  private:
@@ -46,7 +46,7 @@ class HttpsOnlyModeBlockingPage
       security_interstitials::SecurityInterstitialCommand command) override;
 
   raw_ptr<web::WebState> web_state_ = nullptr;
-  raw_ptr<HttpsUpgradeService, DanglingUntriaged> service_ = nullptr;
+  raw_ptr<HttpsUpgradeService> service_ = nullptr;
   std::unique_ptr<HttpsOnlyModeControllerClient> controller_;
 };
 

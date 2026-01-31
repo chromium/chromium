@@ -20,6 +20,8 @@ executable("compression_benchmark") {
     "//third_party/brotli:enc",
     "//third_party/snappy",
     "//third_party/zlib/google:compression_utils",
+    "//third_party/zstd:compress",
+    "//third_party/zstd:decompress",
   ]
   testonly = true
 }

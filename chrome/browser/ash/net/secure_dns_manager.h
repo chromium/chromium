@@ -96,8 +96,8 @@ class SecureDnsManager : public NetworkStateHandlerObserver {
 
   // Computes a collection of secure DNS providers to use based on the |mode|
   // and |templates| prefs applied to |local_doh_providers_|.
-  base::Value::Dict GetProviders(const std::string& mode,
-                                 const std::string& templates) const;
+  base::DictValue GetProviders(const std::string& mode,
+                               const std::string& templates) const;
 
   // Starts tracking user-configured secure DNS settings. This settings are
   // mapped to the pref service that belongs to the profile associated with the

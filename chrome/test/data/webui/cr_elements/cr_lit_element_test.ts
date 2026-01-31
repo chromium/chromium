@@ -523,7 +523,7 @@ suite('CrLitElement', function() {
     const dummyPayload = 'hello dummy';
 
     const whenFired = eventToPromise(dummyEventName, element);
-    element.fire(dummyEventName, dummyPayload);
+    element.fire<string>(dummyEventName, dummyPayload);
 
     const event = await whenFired;
     assertTrue(event.bubbles);

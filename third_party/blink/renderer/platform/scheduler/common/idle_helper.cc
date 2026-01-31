@@ -348,9 +348,7 @@ void IdleHelper::SetIdlePeriodState(IdlePeriodState new_state,
     return;
   }
 
-  bool is_tracing;
-  TRACE_EVENT_CATEGORY_GROUP_ENABLED("renderer.scheduler", &is_tracing);
-  if (is_tracing) {
+  if (TRACE_EVENT_CATEGORY_ENABLED("renderer.scheduler")) {
     base::TimeTicks now(optional_now.is_null() ? helper_->NowTicks()
                                                : optional_now);
     TraceEventIdlePeriodStateChange(new_state, running_idle_task_for_tracing_,
@@ -364,9 +362,7 @@ void IdleHelper::SetIdlePeriodState(IdlePeriodState new_state,
 void IdleHelper::TraceIdleIdleTaskStart() {
   helper_->CheckOnValidThread();
 
-  bool is_tracing;
-  TRACE_EVENT_CATEGORY_GROUP_ENABLED("renderer.scheduler", &is_tracing);
-  if (is_tracing) {
+  if (TRACE_EVENT_CATEGORY_ENABLED("renderer.scheduler")) {
     TraceEventIdlePeriodStateChange(idle_period_state_, true,
                                     idle_period_deadline_,
                                     base::TimeTicks::Now());
@@ -376,9 +372,7 @@ void IdleHelper::TraceIdleIdleTaskStart() {
 void IdleHelper::TraceIdleIdleTaskEnd() {
   helper_->CheckOnValidThread();
 
-  bool is_tracing;
-  TRACE_EVENT_CATEGORY_GROUP_ENABLED("renderer.scheduler", &is_tracing);
-  if (is_tracing) {
+  if (TRACE_EVENT_CATEGORY_ENABLED("renderer.scheduler")) {
     TraceEventIdlePeriodStateChange(idle_period_state_, false,
                                     idle_period_deadline_,
                                     base::TimeTicks::Now());

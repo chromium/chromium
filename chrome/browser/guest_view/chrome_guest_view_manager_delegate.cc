@@ -74,8 +74,12 @@ void ChromeGuestViewManagerDelegate::OnGuestAdded(
 // isolated and that it's only exposed in the expected schemes / feature modes.
 bool ChromeGuestViewManagerDelegate::IsOwnedByControlledFrameEmbedder(
     const guest_view::GuestViewBase* guest) {
+#if BUILDFLAG(ENABLE_EXTENSIONS)
   return ExtensionsGuestViewManagerDelegate::
       IsGuestAvailableToContextWithFeature(guest, "controlledFrameInternal");
+#else
+  return false;
+#endif
 }
 
 }  // namespace extensions

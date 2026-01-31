@@ -12,17 +12,31 @@ s! {
         pub st_uid: c_uint,
         pub st_gid: c_uint,
         pub st_rdev: c_ulonglong,
-        __st_rdev_padding: c_ulong,
+        __st_rdev_padding: Padding<c_ulong>,
         pub st_size: c_longlong,
         pub st_blksize: crate::blksize_t,
-        __st_blksize_padding: c_int,
+        __st_blksize_padding: Padding<c_int>,
         pub st_blocks: crate::blkcnt_t,
+
+        #[cfg(not(musl_v1_2_3))]
         pub st_atime: crate::time_t,
+        #[cfg(not(musl_v1_2_3))]
         pub st_atime_nsec: c_long,
+        #[cfg(not(musl_v1_2_3))]
         pub st_mtime: crate::time_t,
+        #[cfg(not(musl_v1_2_3))]
         pub st_mtime_nsec: c_long,
+        #[cfg(not(musl_v1_2_3))]
         pub st_ctime: crate::time_t,
+        #[cfg(not(musl_v1_2_3))]
         pub st_ctime_nsec: c_long,
+
+        #[cfg(musl_v1_2_3)]
+        pub st_atim: crate::timespec,
+        #[cfg(musl_v1_2_3)]
+        pub st_mtim: crate::timespec,
+        #[cfg(musl_v1_2_3)]
+        pub st_ctim: crate::timespec,
 
         __unused: Padding<[c_int; 2]>,
     }

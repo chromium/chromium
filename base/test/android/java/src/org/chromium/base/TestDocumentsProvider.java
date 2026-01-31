@@ -48,7 +48,6 @@ import java.net.URLDecoder;
  * </ul>
  */
 public class TestDocumentsProvider extends DocumentsProvider {
-    // TODO(crbug.com/443222522): Implement COLUMN_FLAGS projection
     private static final String[] DEFAULT_PROJECTION_FOR_TEST =
             new String[] {
                 DocumentsContract.Document.COLUMN_DOCUMENT_ID,
@@ -56,6 +55,7 @@ public class TestDocumentsProvider extends DocumentsProvider {
                 DocumentsContract.Document.COLUMN_MIME_TYPE,
                 DocumentsContract.Document.COLUMN_SIZE,
                 DocumentsContract.Document.COLUMN_LAST_MODIFIED,
+                DocumentsContract.Document.COLUMN_FLAGS,
             };
 
     // The authority cannot be static as its initialization depends on a Context. A ContentProvider
@@ -132,6 +132,14 @@ public class TestDocumentsProvider extends DocumentsProvider {
                         row[i] = file.length();
                     } else if (DocumentsContract.Document.COLUMN_LAST_MODIFIED.equals(colName)) {
                         row[i] = file.lastModified();
+                    } else if (DocumentsContract.Document.COLUMN_FLAGS.equals(colName)) {
+                        int flags = DocumentsContract.Document.FLAG_SUPPORTS_DELETE;
+                        if (file.isDirectory()) {
+                            flags |= DocumentsContract.Document.FLAG_DIR_SUPPORTS_CREATE;
+                        } else {
+                            flags |= DocumentsContract.Document.FLAG_SUPPORTS_WRITE;
+                        }
+                        row[i] = flags;
                     }
                 }
                 cursor.addRow(row);

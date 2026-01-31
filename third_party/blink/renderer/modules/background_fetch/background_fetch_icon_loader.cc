@@ -113,9 +113,14 @@ KURL BackgroundFetchIconLoader::PickBestIconForDisplay(
     icons.emplace_back(candidate_icon);
   }
 
-  return KURL(ManifestIconSelector::FindBestMatchingSquareIcon(
-      std::move(icons), ideal_size_pixels, kMinimumIconSizeInPx,
-      mojom::ManifestImageResource_Purpose::ANY));
+  ManifestIconSelectorParams params;
+  params.ideal_icon_size_in_px = ideal_size_pixels;
+  params.minimum_icon_size_in_px = kMinimumIconSizeInPx;
+  params.purpose = mojom::ManifestImageResource_Purpose::ANY;
+
+  auto result =
+      ManifestIconSelector::FindBestMatchingIcon(std::move(icons), params);
+  return result ? KURL(result->icon_url) : KURL();
 }
 
 void BackgroundFetchIconLoader::Stop() {

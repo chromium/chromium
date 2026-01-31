@@ -1,0 +1,26 @@
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = 'proto2';
+
+option optimize_for = LITE_RUNTIME;
+option java_package = 'org.chromium.components.omnibox';
+option java_outer_classname = 'SearchboxConfigProto';
+
+package omnibox;
+
+import "aim_models.proto";
+import "aim_tools.proto";
+import "searchbox_config_constraints.proto";
+
+// Configuration for the AI searchbox (e.g. input plate and fusebox)
+// Next ID: 4
+message SearchboxConfig {
+  // The rule set to use for the searchbox.
+  optional RuleSet rule_set = 1;
+  // The initial tool mode to use when the searchbox is first rendered.
+  optional ToolMode initial_tool_mode = 2;
+  // The initial model mode to use when the searchbox is first rendered.
+  optional ModelMode initial_model_mode = 3;
+}

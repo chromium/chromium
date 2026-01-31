@@ -116,8 +116,8 @@ void RecordGetDefaultPrinter(std::string& default_printer_out,
 // Used as a callback to `StartGetPrinters()` in tests.
 // Increases `call_count` and records values returned by `StartGetPrinters()`.
 void RecordPrinterList(size_t& call_count,
-                       base::Value::List& printers_out,
-                       base::Value::List printers) {
+                       base::ListValue& printers_out,
+                       base::ListValue printers) {
   ++call_count;
   printers_out = std::move(printers);
 }
@@ -128,8 +128,8 @@ void RecordPrintersDone(bool& is_done_out) {
   is_done_out = true;
 }
 
-void RecordGetCapability(base::Value::Dict& capabilities_out,
-                         base::Value::Dict capability) {
+void RecordGetCapability(base::DictValue& capabilities_out,
+                         base::DictValue capability) {
   capabilities_out = std::move(capability);
 }
 
@@ -580,7 +580,7 @@ TEST_P(LocalPrinterHandlerDefaultTest, GetPrinters) {
              /*requires_elevated_permissions=*/false);
 
   size_t call_count = 0;
-  base::Value::List printers;
+  base::ListValue printers;
   bool is_done = false;
 
   local_printer_handler()->StartGetPrinters(
@@ -624,7 +624,7 @@ TEST_P(LocalPrinterHandlerDefaultTest, GetPrinters) {
 
 TEST_P(LocalPrinterHandlerDefaultTest, GetPrintersNoneRegistered) {
   size_t call_count = 0;
-  base::Value::List printers;
+  base::ListValue printers;
   bool is_done = false;
 
   // Do not add any printers before attempt to get printer list.
@@ -650,7 +650,7 @@ TEST_F(LocalPrinterHandlerDefaultWithServiceTest,
   AddInvalidDataPrinter("printer2");
 
   size_t call_count = 0;
-  base::Value::List printers;
+  base::ListValue printers;
   bool is_done = false;
 
   local_printer_handler()->StartGetPrinters(
@@ -677,7 +677,7 @@ TEST_F(LocalPrinterHandlerDefaultWithServiceTest,
   SetTerminateServiceOnNextInteraction();
 
   size_t call_count = 0;
-  base::Value::List printers;
+  base::ListValue printers;
   bool is_done = false;
 
   local_printer_handler()->StartGetPrinters(
@@ -701,7 +701,7 @@ TEST_P(LocalPrinterHandlerDefaultTest, StartGetCapabilityValidPrinter) {
   AddPrinter("printer1", "default1", "description1", /*is_default=*/true,
              /*requires_elevated_permissions=*/false);
 
-  base::Value::Dict fetched_caps;
+  base::DictValue fetched_caps;
   local_printer_handler()->StartGetCapability(
       "printer1", base::BindOnce(&RecordGetCapability, std::ref(fetched_caps)));
 
@@ -714,7 +714,7 @@ TEST_P(LocalPrinterHandlerDefaultTest, StartGetCapabilityValidPrinter) {
 // Tests that fetching capabilities bails early when the provided printer
 // can't be found.
 TEST_P(LocalPrinterHandlerDefaultTest, StartGetCapabilityInvalidPrinter) {
-  base::Value::Dict fetched_caps;
+  base::DictValue fetched_caps;
   local_printer_handler()->StartGetCapability(
       /*destination_id=*/"invalid printer",
       base::BindOnce(&RecordGetCapability, std::ref(fetched_caps)));
@@ -732,7 +732,7 @@ TEST_P(LocalPrinterHandlerDefaultTest, StartGetCapabilityAccessDenied) {
   AddPrinter("printer1", "default1", "description1", /*is_default=*/true,
              /*requires_elevated_permissions=*/true);
 
-  base::Value::Dict fetched_caps;
+  base::DictValue fetched_caps;
   local_printer_handler()->StartGetCapability(
       /*destination_id=*/"printer1",
       base::BindOnce(&RecordGetCapability, std::ref(fetched_caps)));
@@ -753,7 +753,7 @@ TEST_F(LocalPrinterHandlerDefaultWithServiceTest,
   EXPECT_FALSE(PrintBackendServiceManager::GetInstance()
                    .PrinterDriverFoundToRequireElevatedPrivilege("printer1"));
 
-  base::Value::Dict fetched_caps;
+  base::DictValue fetched_caps;
   local_printer_handler()->StartGetCapability(
       /*destination_id=*/"printer1",
       base::BindOnce(&RecordGetCapability, std::ref(fetched_caps)));
@@ -773,7 +773,7 @@ TEST_F(LocalPrinterHandlerDefaultWithServiceTest,
        StartGetCapabilityInvalidPrinterDataFails) {
   AddInvalidDataPrinter("printer1");
 
-  base::Value::Dict fetched_caps;
+  base::DictValue fetched_caps;
   local_printer_handler()->StartGetCapability(
       /*destination_id=*/"printer1",
       base::BindOnce(&RecordGetCapability, std::ref(fetched_caps)));
@@ -793,7 +793,7 @@ TEST_F(LocalPrinterHandlerDefaultWithServiceTest,
   // Set up for service to terminate on next use.
   SetTerminateServiceOnNextInteraction();
 
-  base::Value::Dict fetched_caps;
+  base::DictValue fetched_caps;
   local_printer_handler()->StartGetCapability(
       /*destination_id=*/"crashing-test-printer",
       base::BindOnce(&RecordGetCapability, std::ref(fetched_caps)));
@@ -813,21 +813,21 @@ TEST_F(LocalPrinterHandlerDefaultWithServiceEnableXpsTest,
              /*requires_elevated_permissions=*/false);
   SetPrinterXml("printer1", kXmlTestFeature);
 
-  base::Value::Dict fetched_caps;
+  base::DictValue fetched_caps;
   local_printer_handler()->StartGetCapability(
       /*destination_id=*/"printer1",
       base::BindOnce(&RecordGetCapability, std::ref(fetched_caps)));
   RunUntilIdle();
 
   // Fetching capabilities should still succeed.
-  const base::Value::Dict* capabilities =
+  const base::DictValue* capabilities =
       fetched_caps.FindDict(kSettingCapabilities);
   ASSERT_TRUE(capabilities);
   EXPECT_TRUE(fetched_caps.FindDict(kPrinter));
 
   // None of the capabilities of interest exist in the XML, so no XML
   // capabilities should be added.
-  const base::Value::Dict* printer = capabilities->FindDict(kPrinter);
+  const base::DictValue* printer = capabilities->FindDict(kPrinter);
   ASSERT_TRUE(printer);
   ASSERT_FALSE(printer->FindList(kVendorCapabilities));
 }
@@ -840,23 +840,23 @@ TEST_F(LocalPrinterHandlerDefaultWithServiceEnableXpsTest,
              /*requires_elevated_permissions=*/false);
   SetPrinterXml("printer1", kXmlPageOutputQuality);
 
-  base::Value::Dict fetched_caps;
+  base::DictValue fetched_caps;
   local_printer_handler()->StartGetCapability(
       /*destination_id=*/"printer1",
       base::BindOnce(&RecordGetCapability, std::ref(fetched_caps)));
 
   RunUntilIdle();
 
-  const base::Value::Dict* capabilities =
+  const base::DictValue* capabilities =
       fetched_caps.FindDict(kSettingCapabilities);
   ASSERT_TRUE(capabilities);
   EXPECT_TRUE(fetched_caps.FindDict(kPrinter));
 
   // Check for XPS capabilities added.
-  const base::Value::Dict* printer = capabilities->FindDict(kPrinter);
+  const base::DictValue* printer = capabilities->FindDict(kPrinter);
   ASSERT_TRUE(printer);
 
-  const base::Value::List* vendor_capabilities =
+  const base::ListValue* vendor_capabilities =
       printer->FindList(kVendorCapabilities);
   ASSERT_TRUE(vendor_capabilities);
   ASSERT_EQ(vendor_capabilities->size(), 1u);
@@ -872,14 +872,14 @@ TEST_F(LocalPrinterHandlerDefaultWithServiceEnableXpsTest,
              /*requires_elevated_permissions=*/false);
   SetPrinterXml("printer1", "");
 
-  base::Value::Dict fetched_caps;
+  base::DictValue fetched_caps;
   local_printer_handler()->StartGetCapability(
       /*destination_id=*/"printer1",
       base::BindOnce(&RecordGetCapability, std::ref(fetched_caps)));
 
   RunUntilIdle();
 
-  const base::Value::Dict* capabilities =
+  const base::DictValue* capabilities =
       fetched_caps.FindDict(kSettingCapabilities);
   ASSERT_FALSE(capabilities);
 }

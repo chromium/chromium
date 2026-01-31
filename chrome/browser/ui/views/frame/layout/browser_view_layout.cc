@@ -10,11 +10,11 @@
 #include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "base/scoped_observation.h"
+#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/exclusive_access_bubble_views.h"
 #include "chrome/browser/ui/views/frame/layout/browser_view_app_layout_impl.h"
 #include "chrome/browser/ui/views/frame/layout/browser_view_layout_delegate.h"
-#include "chrome/browser/ui/views/frame/layout/browser_view_layout_impl_old.h"
 #include "chrome/browser/ui/views/frame/layout/browser_view_popup_layout_impl.h"
 #include "chrome/browser/ui/views/frame/layout/browser_view_tabbed_layout_impl.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
@@ -130,24 +130,23 @@ std::unique_ptr<BrowserViewLayout> BrowserViewLayout::CreateLayout(
     BrowserViewLayoutViews views) {
   // Browser can be null in unit tests.
   if (browser) {
-    if (browser->is_type_normal() &&
-        base::FeatureList::IsEnabled(features::kTabbedBrowserUseNewLayout)) {
-      return std::make_unique<BrowserViewTabbedLayoutImpl>(
-          std::move(delegate), browser, std::move(views));
-    } else if ((browser->is_type_app() || browser->is_type_app_popup()) &&
-               base::FeatureList::IsEnabled(
-                   features::kAppBrowserUseNewLayout)) {
-      return std::make_unique<BrowserViewAppLayoutImpl>(
-          std::move(delegate), browser, std::move(views));
-    } else if ((browser->is_type_popup() || browser->is_type_devtools()) &&
-               base::FeatureList::IsEnabled(
-                   features::kPopupBrowserUseNewLayout)) {
-      return std::make_unique<BrowserViewPopupLayoutImpl>(
-          std::move(delegate), browser, std::move(views));
+    switch (browser->type()) {
+      case Browser::TYPE_NORMAL:
+        return std::make_unique<BrowserViewTabbedLayoutImpl>(
+            std::move(delegate), browser, std::move(views));
+      case Browser::TYPE_APP:
+      case Browser::TYPE_APP_POPUP:
+        return std::make_unique<BrowserViewAppLayoutImpl>(
+            std::move(delegate), browser, std::move(views));
+      case Browser::TYPE_POPUP:
+      case Browser::TYPE_DEVTOOLS:
+      case Browser::TYPE_PICTURE_IN_PICTURE:
+        return std::make_unique<BrowserViewPopupLayoutImpl>(
+            std::move(delegate), browser, std::move(views));
     }
   }
-  return std::make_unique<BrowserViewLayoutImplOld>(std::move(delegate),
-                                                    browser, std::move(views));
+  NOTREACHED() << "Tried to create layout for unknown browser type: "
+               << browser->type();
 }
 
 BrowserViewLayout::BrowserViewLayout(
@@ -191,7 +190,7 @@ void BrowserViewLayout::UpdateBubbles() {
   // Adjust the fullscreen exit bubble bounds for |views().top_container|'s new
   // bounds. This makes the fullscreen exit bubble look like it animates with
   // |views().top_container| in immersive fullscreen.
-  ExclusiveAccessBubbleViews* exclusive_access_bubble =
+  ExclusiveAccessBubbleViews* const exclusive_access_bubble =
       delegate().GetExclusiveAccessBubble();
   if (exclusive_access_bubble) {
     exclusive_access_bubble->RepositionIfVisible();

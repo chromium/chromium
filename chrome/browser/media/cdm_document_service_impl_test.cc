@@ -117,12 +117,12 @@ class CdmDocumentServiceImplTest : public ChromeRenderViewHostTestHarness {
 
     // Create (or overwrite) an entry with only an origin id to simulate some
     // kind of corruption or simply an update to the preference format.
-    auto entry = base::Value::Dict().Set(
+    auto entry = base::DictValue().Set(
         kOriginId,
         base::UnguessableTokenToValue(base::UnguessableToken::Create()));
 
     ScopedDictPrefUpdate update(user_prefs, prefs::kMediaCdmOriginData);
-    base::Value::Dict& dict = update.Get();
+    base::DictValue& dict = update.Get();
     const std::string serialized_origin = web_contents()
                                               ->GetPrimaryMainFrame()
                                               ->GetLastCommittedOrigin()

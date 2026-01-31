@@ -252,6 +252,7 @@ class MODULES_EXPORT DecoderTemplate
   // initialization.
   bool low_delay_ = false;
   std::unique_ptr<MediaConfigType> active_config_;
+  std::optional<HardwarePreference> active_preference_;
 
   // TODO(sandersd): Store the last config, flush, and reset so that
   // duplicates can be elided.

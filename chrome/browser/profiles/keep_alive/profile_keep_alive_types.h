@@ -177,7 +177,10 @@ enum class ProfileKeepAliveOrigin {
   // First Run.
   kWaitingForBookmarksImportOnFirstRun = 42,
 
-  kMaxValue = kWaitingForBookmarksImportOnFirstRun,
+  // Used while showing the Skills dialog.
+  kSkillsDialog = 43,
+
+  kMaxValue = kSkillsDialog,
 };
 // LINT.ThenChange(/tools/metrics/histograms/metadata/profile/enums.xml)
 

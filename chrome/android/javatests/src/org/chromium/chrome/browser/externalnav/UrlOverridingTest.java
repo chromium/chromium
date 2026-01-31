@@ -68,12 +68,14 @@ import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.base.test.util.PackageManagerWrapper;
+import org.chromium.base.test.util.RequiresRestart;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.blink_public.common.BlinkFeatures;
 import org.chromium.build.annotations.Nullable;
@@ -91,12 +93,14 @@ import org.chromium.chrome.browser.document.ChromeLauncherActivity;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.init.AsyncInitializationActivity;
+import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.InterceptNavigationDelegateClientImpl;
 import org.chromium.chrome.browser.tab.InterceptNavigationDelegateTabHelper;
 import org.chromium.chrome.browser.tab.RedirectHandlerTabHelper;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabCreationState;
+import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tabmodel.TabModelJniBridge;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorObserver;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
@@ -131,6 +135,7 @@ import org.chromium.content_public.browser.test.util.TouchCommon;
 import org.chromium.net.NetError;
 import org.chromium.net.test.EmbeddedTestServer;
 import org.chromium.net.test.util.TestWebServer;
+import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.base.PageTransition;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.mojom.WindowOpenDisposition;
@@ -837,6 +842,7 @@ public class UrlOverridingTest {
 
     @Test
     @SmallTest
+    @DisableIf.Device(DeviceFormFactor.DESKTOP) // https://crbug.com/446934111
     public void testNavigationFromXHRCallback() throws Exception {
         WebPageStation ctaPage = mTabbedActivityTestRule.startOnBlankPage();
         loadUrlAndWaitForIntentUrl(
@@ -917,6 +923,7 @@ public class UrlOverridingTest {
 
     @Test
     @SmallTest
+    @DisableIf.Device(DeviceFormFactor.DESKTOP) // https://crbug.com/446934111
     public void testNavigationWithFallbackURL() throws Exception {
         WebPageStation ctaPage = mTabbedActivityTestRule.startOnBlankPage();
         String fallbackUrl = mTestServer.getURL(FALLBACK_LANDING_PATH);
@@ -1115,6 +1122,7 @@ public class UrlOverridingTest {
 
     @Test
     @LargeTest
+    @DisableIf.Device(DeviceFormFactor.DESKTOP) // https://crbug.com/446934111
     public void testCctRedirectFromIntentUriStaysInChrome_InIncognito() throws Exception {
         var initialCtaPage = mTabbedActivityTestRule.startOnBlankPage();
         // This will cause getActivityTab() in loadUrlAndWaitForIntentUrl to return an incognito tab
@@ -1187,6 +1195,7 @@ public class UrlOverridingTest {
 
     @Test
     @LargeTest
+    @DisableIf.Device(DeviceFormFactor.DESKTOP) // https://crbug.com/446934111
     public void testIntentURIWithEmptySchemeDoesNothing() throws Exception {
         WebPageStation ctaPage = mTabbedActivityTestRule.startOnBlankPage();
         String targetUrl =
@@ -1713,6 +1722,7 @@ public class UrlOverridingTest {
 
     @Test
     @LargeTest
+    @DisableIf.Device(DeviceFormFactor.DESKTOP) // https://crbug.com/446934111
     public void testExternalNavigationMessage() throws Exception {
         WebPageStation ctaPage = mTabbedActivityTestRule.startOnBlankPage();
 
@@ -2015,12 +2025,14 @@ public class UrlOverridingTest {
 
     @Test
     @LargeTest
+    @DisableIf.Device(DeviceFormFactor.DESKTOP) // https://crbug.com/446934111
     public void testIncognitoSubframeExternalNavigation_Rejected() throws Exception {
         doTestIncognitoSubframeExternalNavigation(false);
     }
 
     @Test
     @LargeTest
+    @DisableIf.Device(DeviceFormFactor.DESKTOP) // https://crbug.com/446934111
     public void testIncognitoSubframeExternalNavigation_Accepted() throws Exception {
         doTestIncognitoSubframeExternalNavigation(true);
     }
@@ -2044,10 +2056,62 @@ public class UrlOverridingTest {
                             null,
                             WindowOpenDisposition.NEW_FOREGROUND_TAB,
                             true,
-                            true);
+                            true,
+                            false);
                 });
 
         assertMessagePresent();
+    }
+
+    @Test
+    @LargeTest
+    @RequiresRestart // Avoid having multiple windows mess up the other tests
+    public void testFromLinkCreatingNewWindow() throws Exception {
+        final boolean expectReparent = MultiWindowUtils.isMultiInstanceApi31Enabled();
+        if (expectReparent) {
+            InterceptNavigationDelegateClientImpl.setIsDesktopWindowingModeForTesting(true);
+        }
+
+        mTabbedActivityTestRule.startOnBlankPage();
+        ChromeActivity activity = mTabbedActivityTestRule.getActivity();
+        GURL url = new GURL(mTestServer.getURL(HELLO_PAGE));
+
+        final AtomicReference<OverrideUrlLoadingResult> resultValue = new AtomicReference<>();
+        final CallbackHelper callbackHelper = new CallbackHelper();
+
+        Callback<Pair<GURL, OverrideUrlLoadingResult>> callback =
+                (result) -> {
+                    // The initial navigation in a new tab is to about:blank, which we should
+                    // ignore.
+                    if (!result.first.getSpec().equals("about:blank")) {
+                        resultValue.set(result.second);
+                        callbackHelper.notifyCalled();
+                    }
+                };
+        InterceptNavigationDelegateImpl.setResultCallbackForTesting(callback);
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    LoadUrlParams loadUrlParams = new LoadUrlParams(url);
+                    loadUrlParams.setHasUserGesture(true);
+                    loadUrlParams.setIsRendererInitiated(true);
+                    loadUrlParams.setInitiatorOrigin(createExampleOrigin());
+
+                    activity.getTabCreator(false)
+                            .createNewTab(
+                                    loadUrlParams,
+                                    TabLaunchType.FROM_LINK_CREATING_NEW_WINDOW,
+                                    activity.getActivityTab());
+                });
+
+        callbackHelper.waitForCallback(0, 1, 20, TimeUnit.SECONDS);
+        Assert.assertNotNull(resultValue.get());
+        Assert.assertEquals(
+                expectReparent
+                        ? OverrideUrlLoadingResultType.OVERRIDE_WITH_REPARENT_TO_NEW_WINDOW
+                        : OverrideUrlLoadingResultType.NO_OVERRIDE,
+                resultValue.get().getResultType());
+        Assert.assertNull(getCurrentExternalNavigationMessage());
     }
 
     @Test

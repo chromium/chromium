@@ -17,7 +17,6 @@
 struct wl_drm;
 
 namespace gfx {
-enum class BufferFormat : uint8_t;
 class Size;
 }  // namespace gfx
 
@@ -60,9 +59,9 @@ class WaylandDrm : public wl::GlobalObjectRegistrar<WaylandDrm> {
                     uint32_t planes_count,
                     wl::OnRequestBufferCallback callback);
 
-  // Returns supported buffer formats received from the Wayland compositor.
-  wl::BufferFormatsWithModifiersMap supported_buffer_formats() const {
-    return supported_buffer_formats_;
+  // Returns supported formats received from the Wayland compositor.
+  wl::SharedImageFormatsWithModifiersMap supported_formats() const {
+    return supported_formats_;
   }
 
   // Says if a new buffer can be created immediately.
@@ -96,10 +95,10 @@ class WaylandDrm : public wl::GlobalObjectRegistrar<WaylandDrm> {
   // Non-owned.
   const raw_ptr<WaylandConnection> connection_;
 
-  // Holds supported DRM formats translated to gfx::BufferFormat. Note that
+  // Holds supported DRM formats translated to viz::SharedImageFormat. Note that
   // |wl_drm| neither announces modifiers nor allows to create buffers with
   // modifiers. Thus, they are always empty.
-  wl::BufferFormatsWithModifiersMap supported_buffer_formats_;
+  wl::SharedImageFormatsWithModifiersMap supported_formats_;
 
   // Says if the drm device passed by the Wayland compositor authenticates this
   // client.

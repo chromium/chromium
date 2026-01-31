@@ -456,7 +456,7 @@ void AnchorElementMetricsSender::DidFinishLifecycleUpdate(
       continue;
     }
 
-    int random = base::RandInt(1, random_anchor_sampling_period_);
+    int random = base::RandIntInclusive(1, random_anchor_sampling_period_);
     if (random == 1) {
       // This anchor element is sampled in.
       if (viewport_position_tracker) {

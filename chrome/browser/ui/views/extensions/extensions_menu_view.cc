@@ -7,7 +7,7 @@
 #include <algorithm>
 
 #include "base/auto_reset.h"
-#include "base/containers/contains.h"
+#include "base/check_deref.h"
 #include "base/feature_list.h"
 #include "base/i18n/case_conversion.h"
 #include "base/memory/ptr_util.h"
@@ -21,7 +21,7 @@
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/chrome_typography.h"
 #include "chrome/browser/ui/views/controls/hover_button.h"
-#include "chrome/browser/ui/views/extensions/extension_action_platform_delegate_views.h"
+#include "chrome/browser/ui/views/extensions/extension_action_delegate_desktop.h"
 #include "chrome/browser/ui/views/extensions/extensions_container_views.h"
 #include "chrome/browser/ui/views/extensions/extensions_menu_item_view.h"
 #include "chrome/grit/generated_resources.h"
@@ -73,11 +73,13 @@ ExtensionMenuItemView* GetAsMenuItemView(views::View* view) {
 ExtensionsMenuView::ExtensionsMenuView(
     views::View* anchor_view,
     Browser* browser,
-    ExtensionsContainerViews* extensions_container)
+    ExtensionsContainer* extensions_container,
+    ExtensionsContainerViews* extensions_container_views)
     : BubbleDialogDelegateView(anchor_view,
                                views::BubbleBorder::Arrow::TOP_RIGHT),
       browser_(browser),
-      extensions_container_(extensions_container),
+      extensions_container_(CHECK_DEREF(extensions_container)),
+      extensions_container_views_(extensions_container_views),
       toolbar_model_(ToolbarActionsModel::Get(browser_->profile())),
       cant_access_{nullptr, nullptr,
                    IDS_EXTENSIONS_MENU_CANT_ACCESS_SITE_DATA_SHORT,
@@ -310,8 +312,9 @@ void ExtensionsMenuView::CreateAndInsertNewItem(
   std::unique_ptr<ExtensionActionViewModel> model =
       ExtensionActionViewModel::Create(
           id, browser_,
-          std::make_unique<ExtensionActionPlatformDelegateViews>(
-              browser_, extensions_container_));
+          std::make_unique<ExtensionActionDelegateDesktop>(
+              browser_, &extensions_container_.get(),
+              extensions_container_views_));
 
   // The bare `new` is safe here, because InsertMenuItem is guaranteed to
   // be added to the view hierarchy, which takes ownership.
@@ -416,7 +419,7 @@ void ExtensionsMenuView::SanityCheck() {
   // guarantees that we have a view per item in |action_ids| as well).
   for (ExtensionMenuItemView* item : extensions_menu_items_) {
     DCHECK(Contains(item));
-    DCHECK(base::Contains(action_ids, item->view_model()->GetId()));
+    DCHECK(action_ids.contains(item->view_model()->GetId()));
   }
 #endif
 }
@@ -426,9 +429,9 @@ std::u16string ExtensionsMenuView::GetAccessibleWindowTitle() const {
   return std::u16string();
 }
 
-void ExtensionsMenuView::TabChangedAt(content::WebContents* contents,
-                                      int index,
-                                      TabChangeType change_type) {
+void ExtensionsMenuView::OnTabChangedAt(tabs::TabInterface* tab,
+                                        int index,
+                                        TabChangeType change_type) {
   Update();
 }
 
@@ -505,14 +508,15 @@ base::AutoReset<bool> ExtensionsMenuView::AllowInstancesForTesting() {
 views::Widget* ExtensionsMenuView::ShowBubble(
     views::View* anchor_view,
     Browser* browser,
-    ExtensionsContainerViews* extensions_container) {
+    ExtensionsContainer* extensions_container,
+    ExtensionsContainerViews* extensions_container_views) {
   DCHECK(!g_extensions_dialog);
   // Experiment `kExtensionsMenuAccessControl` is introducing a new menu. Check
   // `ExtensionsMenuView` is only constructed when the experiment is disabled.
   DCHECK(!base::FeatureList::IsEnabled(
       extensions_features::kExtensionsMenuAccessControl));
-  g_extensions_dialog =
-      new ExtensionsMenuView(anchor_view, browser, extensions_container);
+  g_extensions_dialog = new ExtensionsMenuView(
+      anchor_view, browser, extensions_container, extensions_container_views);
   views::Widget* widget =
       views::BubbleDialogDelegateView::CreateBubble(g_extensions_dialog);
   widget->Show();

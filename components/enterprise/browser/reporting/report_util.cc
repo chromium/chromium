@@ -25,9 +25,9 @@ std::string SettingValueToString(
   }
 }
 
-base::Value::List RepeatedFieldptrToList(
+base::ListValue RepeatedFieldptrToList(
     const google::protobuf::RepeatedPtrField<std::string>& field_values) {
-  base::Value::List string_list;
+  base::ListValue string_list;
   for (auto field_value : field_values) {
     string_list.Append(field_value);
   }
@@ -36,9 +36,9 @@ base::Value::List RepeatedFieldptrToList(
 }
 
 #if BUILDFLAG(IS_WIN)
-base::Value::Dict AvProductToDict(
+base::DictValue AvProductToDict(
     enterprise_management::AntiVirusProduct av_product) {
-  base::Value::Dict antivirus_dict;
+  base::DictValue antivirus_dict;
   switch (av_product.state()) {
     case enterprise_management::AntiVirusProduct::ON:
       antivirus_dict.Set("state", "On");
@@ -151,7 +151,7 @@ std::unique_ptr<em::AntiVirusProduct> TranslateAvProduct(
 
 std::string GetSecuritySignalsInReport(
     const em::ChromeProfileReportRequest& chrome_profile_report_request) {
-  base::Value::Dict signals_dict;
+  base::DictValue signals_dict;
   std::string signals_json;
   signals_dict.Set("Error", "No error found in report");
 
@@ -191,7 +191,7 @@ std::string GetSecuritySignalsInReport(
                      os_report.windows_machine_domain());
     signals_dict.Set("windows_user_domain", os_report.windows_user_domain());
 
-    base::Value::List anti_virus_list;
+    base::ListValue anti_virus_list;
     for (auto antivirus_info : os_report.antivirus_info()) {
       anti_virus_list.Append(AvProductToDict(antivirus_info));
     }

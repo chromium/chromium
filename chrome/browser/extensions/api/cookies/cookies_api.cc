@@ -153,8 +153,8 @@ void CookiesEventRouter::OnCookieChange(bool otr,
       !change.cookie.PartitionKey()->IsSerializeable()) {
     return;
   }
-  base::Value::List args;
-  base::Value::Dict dict;
+  base::ListValue args;
+  base::DictValue dict;
   dict.Set(kRemovedKey,
            change.cause != net::CookieChangeCause::INSERTED &&
                change.cause !=
@@ -256,8 +256,16 @@ void CookiesEventRouter::MaybeStartListening() {
     BindToCookieManager(&receiver_, original_profile);
   }
 
-  if (!otr_receiver_.is_bound() && otr_profile) {
+  // Start observing the OTR profile iff we are not already doing so. In most
+  // cases, we should already be observing because
+  // `OnOffTheRecordProfileCreated()` starts the observation. However, in the
+  // case where the OTR profile already exists when this CookiesEventRouter is
+  // created, we need to start observing it here.
+  if (otr_profile && !otr_profile_observation_.IsObserving()) {
     otr_profile_observation_.Observe(otr_profile);
+  }
+
+  if (!otr_receiver_.is_bound() && otr_profile) {
     BindToCookieManager(&otr_receiver_, otr_profile);
   }
 }
@@ -288,7 +296,7 @@ void CookiesEventRouter::OnConnectionError(
 void CookiesEventRouter::DispatchEvent(content::BrowserContext* context,
                                        events::HistogramValue histogram_value,
                                        const std::string& event_name,
-                                       base::Value::List event_args,
+                                       base::ListValue event_args,
                                        const GURL& cookie_domain) {
   EventRouter* router = context ? EventRouter::Get(context) : nullptr;
   if (!router)
@@ -844,9 +852,9 @@ ExtensionFunction::ResponseAction CookiesGetPartitionKeyFunction::Run() {
 ExtensionFunction::ResponseAction CookiesGetAllCookieStoresFunction::Run() {
   Profile* original_profile = Profile::FromBrowserContext(browser_context());
   DCHECK(original_profile);
-  base::Value::List original_tab_ids;
+  base::ListValue original_tab_ids;
   Profile* incognito_profile = nullptr;
-  base::Value::List incognito_tab_ids;
+  base::ListValue incognito_tab_ids;
   if (include_incognito_information() &&
       original_profile->HasPrimaryOTRProfile()) {
     incognito_profile =

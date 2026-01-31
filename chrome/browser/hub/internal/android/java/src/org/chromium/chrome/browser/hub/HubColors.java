@@ -16,7 +16,7 @@ import androidx.core.content.ContextCompat;
 
 import com.google.android.material.color.MaterialColors;
 
-import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
@@ -27,7 +27,7 @@ import org.chromium.ui.util.ValueUtils;
 @NullMarked
 public final class HubColors {
     private static final String TAG = "HubColors";
-    private static @Nullable ObservableSupplier<Boolean> sXrSpaceModeObservableSupplier;
+    private static @Nullable MonotonicObservableSupplier<Boolean> sXrSpaceModeObservableSupplier;
     private static final int[][] SELECTED_AND_NORMAL_STATES =
             new int[][] {new int[] {android.R.attr.state_selected}, new int[] {}};
     private static final int[][] DISABLED_AND_NORMAL_STATES =
@@ -300,13 +300,13 @@ public final class HubColors {
     }
 
     /**
-     * Sets the {@link ObservableSupplier} for XR space mode.
+     * Sets the {@link MonotonicObservableSupplier} for XR space mode.
      * DISCLAIMER: This is possibly unsafe for multi-window mode. This should
      * be used with caution for more complex use cases.
-     * @param supplier The {@link ObservableSupplier} for XR space mode.
+     * @param supplier The {@link MonotonicObservableSupplier} for XR space mode.
      */
     public static void setXrSpaceModeObservableSupplier(
-            @Nullable ObservableSupplier<Boolean> supplier) {
+            @Nullable MonotonicObservableSupplier<Boolean> supplier) {
         sXrSpaceModeObservableSupplier = supplier;
     }
 

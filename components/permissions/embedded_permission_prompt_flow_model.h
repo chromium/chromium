@@ -122,7 +122,8 @@ class EmbeddedPermissionPromptFlowModel {
 
   void RecordElementAnchoredBubbleVariantUMA(Variant variant);
 
-  void SetDelegateAction(DelegateAction action);
+  void SetDelegateAction(DelegateAction action,
+                         const PromptOptions& prompt_options);
 
   bool HasDelegateActionSet() const { return action_.has_value(); }
 

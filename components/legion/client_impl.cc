@@ -4,6 +4,7 @@
 
 #include "components/legion/client_impl.h"
 
+#include <string>
 #include <utility>
 
 #include "base/functional/bind.h"
@@ -13,6 +14,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/task_runner.h"
 #include "base/time/time.h"
+#include "components/legion/phosphor/token_manager.h"
 #include "components/legion/proto/legion.pb.h"
 #include "components/legion/proto_utils/generate_content_response_utils.h"
 
@@ -20,7 +22,7 @@ namespace legion {
 
 namespace {
 
-void OnGenerateContentRequestCompleted(
+void ReceiveTextRequest(
     Client::OnTextRequestCompletedCallback cb,
     base::expected<proto::GenerateContentResponse, ErrorCode> result) {
   if (!result.has_value()) {
@@ -38,8 +40,42 @@ void OnGenerateContentRequestCompleted(
   std::move(cb).Run(text.value());
 }
 
-void OnRequestSent(
+void ReceiveGenerateContentResponse(
     Client::OnGenerateContentRequestCompletedCallback cb,
+    base::expected<proto::LegionResponse, ErrorCode> legion_response) {
+  if (!legion_response.has_value()) {
+    std::move(cb).Run(base::unexpected(legion_response.error()));
+    return;
+  }
+
+  if (!legion_response->has_generate_content_response()) {
+    LOG(ERROR) << "LegionResponse did not contain a "
+                  "generate_content_response";
+    std::move(cb).Run(base::unexpected(ErrorCode::kNoResponse));
+    return;
+  }
+  std::move(cb).Run(std::move(legion_response->generate_content_response()));
+}
+
+void ReceivePaicMessage(
+    Client::OnPaicMessageRequestCompletedCallback cb,
+    base::expected<proto::LegionResponse, ErrorCode> legion_response) {
+  if (!legion_response.has_value()) {
+    std::move(cb).Run(base::unexpected(legion_response.error()));
+    return;
+  }
+
+  if (!legion_response->has_paic_response()) {
+    LOG(ERROR) << "LegionResponse did not contain a "
+                  "paic_response";
+    std::move(cb).Run(base::unexpected(ErrorCode::kNoResponse));
+    return;
+  }
+  std::move(cb).Run(std::move(legion_response->paic_response()));
+}
+
+void ReceiveLegionResponse(
+    ClientImpl::OnLegionRequestCompletedCallback cb,
     base::expected<ClientImpl::BinaryEncodedProtoResponse, ErrorCode> result) {
   if (!result.has_value()) {
     std::move(cb).Run(base::unexpected(result.error()));
@@ -53,36 +89,105 @@ void OnRequestSent(
     return;
   }
 
-  if (!legion_response.has_generate_content_response()) {
-    LOG(ERROR) << "LegionResponse did not contain a "
-                  "generate_content_response";
-    std::move(cb).Run(base::unexpected(ErrorCode::kNoResponse));
-    return;
-  }
+  std::move(cb).Run(std::move(legion_response));
+}
 
-  std::move(cb).Run(legion_response.generate_content_response());
+ClientImpl::BinaryEncodedProtoRequest CreateClientAttestationRequest(
+    phosphor::BlindSignedAuthToken blind_token,
+    int32_t request_id) {
+  proto::LegionRequest request_proto;
+
+  request_proto.set_request_id(request_id);
+  request_proto.mutable_anonymous_token_request()->set_anonymous_token(
+      blind_token.token);
+  request_proto.mutable_anonymous_token_request()->set_encoded_extensions(
+      blind_token.encoded_extensions);
+
+  std::string serialized_request;
+  request_proto.SerializeToString(&serialized_request);
+  return ClientImpl::BinaryEncodedProtoRequest(serialized_request.begin(),
+                                               serialized_request.end());
 }
 
 }  // namespace
 
-ClientImpl::ClientImpl(SecureChannelFactory channel_factory)
-    : secure_channel_factory_(std::move(channel_factory)) {
-  RecreateSecureChannel();
+ClientImpl::ClientImpl(SecureChannelFactory channel_factory,
+                       phosphor::TokenManager* token_manager)
+    : secure_channel_factory_(std::move(channel_factory)),
+      token_manager_(token_manager) {
+  CHECK(token_manager_);
 }
 
 ClientImpl::~ClientImpl() = default;
 
 void ClientImpl::EstablishSession(
     OnEstablishSessionCompletedCallback callback) {
-  secure_channel_->EstablishChannel(
+  GetOrCreateSecureChannel()->EstablishChannel(
       base::BindOnce(&ClientImpl::OnSessionEstablished,
                      weak_factory_.GetWeakPtr(), std::move(callback)));
 }
 
-void ClientImpl::RecreateSecureChannel() {
-  secure_channel_ = secure_channel_factory_.Run();
-  secure_channel_->SetResponseCallback(base::BindRepeating(
-      &ClientImpl::OnResponseReceived, base::Unretained(this)));
+SecureChannel* ClientImpl::GetOrCreateSecureChannel() {
+  if (!secure_channel_) {
+    secure_channel_ = secure_channel_factory_.Run();
+    secure_channel_->SetResponseCallback(base::BindRepeating(
+        &ClientImpl::OnResponseReceived, base::Unretained(this)));
+    TrySendClientAttestationRequest();
+  }
+  return secure_channel_.get();
+}
+
+int32_t ClientImpl::CreateRequestId() {
+  int32_t request_id = next_request_id_;
+  next_request_id_++;
+  return request_id;
+}
+
+void ClientImpl::TrySendClientAttestationRequest() {
+  // TODO(b/475513974): Make it possible to get a token without a feature name.
+  token_manager_->GetAuthToken(
+      proto::FeatureName::FEATURE_NAME_CHROME_ZERO_STATE_SUGGESTION,
+      base::BindOnce(&ClientImpl::OnGetAuthTokenForAttestation,
+                     weak_factory_.GetWeakPtr()));
+}
+
+void ClientImpl::OnGetAuthTokenForAttestation(
+    std::optional<phosphor::BlindSignedAuthToken> auth_token) {
+  if (!secure_channel_) {
+    return;
+  }
+
+  if (!auth_token.has_value()) {
+    base::UmaHistogramEnumeration("Legion.Client.RequestErrorCode",
+                                  ErrorCode::kClientAttestationFailed);
+    LOG(ERROR) << "Failed to get anonymous auth token.";
+    return;
+  }
+
+  int32_t request_id = CreateRequestId();
+
+  BinaryEncodedProtoRequest request =
+      CreateClientAttestationRequest(auth_token.value(), request_id);
+
+  // This must be true because `TrySendClientAttestationRequest()` is called
+  // right after `secure_channel_` creation.
+  CHECK(secure_channel_);
+  if (secure_channel_->Write(std::move(request))) {
+    pending_requests_.emplace(
+        request_id, base::BindOnce(&ClientImpl::OnClientAttestationRequest,
+                                   base::Unretained(this)));
+  }
+}
+
+void ClientImpl::OnClientAttestationRequest(
+    base::expected<BinaryEncodedProtoResponse, ErrorCode> result) {
+  // If `result` is error, then this function was called from
+  // `FailAllPendingRequests()`, therefore all pending requests will fail
+  // anyway, so no-op here.
+  if (!result.has_value()) {
+    LOG(ERROR) << "Client attestation request failed.";
+    return;
+  }
 }
 
 void ClientImpl::SendRequest(int32_t request_id,
@@ -97,7 +202,9 @@ void ClientImpl::SendRequest(int32_t request_id,
       &ClientImpl::OnRequestCompleted, weak_factory_.GetWeakPtr(),
       std::move(callback), base::TimeTicks::Now());
 
-  if (secure_channel_->Write(std::move(request))) {
+  // TODO(b/475215692): Make it possible to buffer requests until client
+  // attestation response is received.
+  if (GetOrCreateSecureChannel()->Write(std::move(request))) {
     pending_requests_.emplace(request_id, std::move(wrapped_callback));
     base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
         FROM_HERE,
@@ -126,7 +233,7 @@ void ClientImpl::SendTextRequest(proto::FeatureName feature_name,
   part->set_text(text);
 
   auto text_response_callback =
-      base::BindOnce(&OnGenerateContentRequestCompleted, std::move(callback));
+      base::BindOnce(&ReceiveTextRequest, std::move(callback));
 
   SendGenerateContentRequest(feature_name, request,
                              std::move(text_response_callback), options);
@@ -137,25 +244,50 @@ void ClientImpl::SendGenerateContentRequest(
     const proto::GenerateContentRequest& request,
     OnGenerateContentRequestCompletedCallback callback,
     const RequestOptions& options) {
-  int32_t request_id = next_request_id_;
-  next_request_id_++;
-
   proto::LegionRequest request_proto;
-  request_proto.set_feature_name(feature_name);
-  request_proto.set_request_id(request_id);
   *request_proto.mutable_generate_content_request() = request;
+
+  auto response_callback =
+      base::BindOnce(&ReceiveGenerateContentResponse, std::move(callback));
+
+  SendLegionRequest(feature_name, std::move(request_proto),
+                    std::move(response_callback), options);
+}
+
+void ClientImpl::SendPaicRequest(proto::FeatureName feature_name,
+                                 const proto::PaicMessage& request,
+                                 OnPaicMessageRequestCompletedCallback callback,
+                                 const RequestOptions& options) {
+  proto::LegionRequest legion_request;
+  *legion_request.mutable_paic_request() = request;
+
+  auto response_callback =
+      base::BindOnce(&ReceivePaicMessage, std::move(callback));
+
+  SendLegionRequest(feature_name, std::move(legion_request),
+                    std::move(response_callback), options);
+}
+
+void ClientImpl::SendLegionRequest(proto::FeatureName feature_name,
+                                   proto::LegionRequest legion_request,
+                                   OnLegionRequestCompletedCallback callback,
+                                   const RequestOptions& options) {
+  int32_t request_id = CreateRequestId();
+
+  legion_request.set_feature_name(feature_name);
+  legion_request.set_request_id(request_id);
 
   base::UmaHistogramSparse("Legion.Client.FeatureName",
                            static_cast<int>(feature_name));
 
   std::string serialized_request;
-  request_proto.SerializeToString(&serialized_request);
+  legion_request.SerializeToString(&serialized_request);
   BinaryEncodedProtoRequest binary_encoded_proto_request(
       serialized_request.begin(), serialized_request.end());
 
   // The callback for when the response is received.
   auto response_parsing_callback =
-      base::BindOnce(&OnRequestSent, std::move(callback));
+      base::BindOnce(&ReceiveLegionResponse, std::move(callback));
 
   SendRequest(request_id, std::move(binary_encoded_proto_request),
               std::move(response_parsing_callback), options.timeout);
@@ -188,11 +320,11 @@ void ClientImpl::OnRequestTimeout(int32_t request_id) {
 void ClientImpl::OnResponseReceived(
     base::expected<BinaryEncodedProtoResponse, ErrorCode> result) {
   if (!result.has_value()) {
-    // The secure channel is broken. Fail all pending requests and recreate the
-    // channel.
-    DVLOG(1) << "Secure channel read failed. Recreating channel.";
+    // The secure channel is broken. Fail all pending requests and destroy the
+    // channel. It will be recreated on the next request.
+    DVLOG(1) << "Secure channel read failed. Destroying channel.";
     FailAllPendingRequests(result.error());
-    RecreateSecureChannel();
+    secure_channel_.reset();
     return;
   }
 

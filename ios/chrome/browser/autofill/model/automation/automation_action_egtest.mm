@@ -36,7 +36,7 @@ const char kTestPageUrl[] = "/components/test/data/autofill/"
 // then using JS to assert that the web page has been populated as a result
 // of the click.
 - (void)testAutomationActionClick {
-  base::Value::Dict dict;
+  base::DictValue dict;
   dict.Set("type", "click");
   dict.Set("selector", "//*[@id=\"fill_form\"]");
   AutomationAction* action =
@@ -56,16 +56,16 @@ const char kTestPageUrl[] = "/components/test/data/autofill/"
 // populates the name field after a few seconds, and using waitFor to verify
 // this eventually happens.
 - (void)testAutomationActionClickAndWaitFor {
-  base::Value::Dict clickDict;
+  base::DictValue clickDict;
   clickDict.Set("type", "click");
   clickDict.Set("selector", "//*[@id=\"fill_form_delay\"]");
   AutomationAction* clickAction =
       [AutomationAction actionWithValueDict:std::move(clickDict)];
   [clickAction execute];
 
-  base::Value::Dict waitForDict;
+  base::DictValue waitForDict;
   waitForDict.Set("type", "waitFor");
-  base::Value::List assertions = base::Value::List();
+  base::ListValue assertions = base::ListValue();
   assertions.Append(
       "return document.getElementsByName(\"name_address\")[0].value == \"Jane "
       "Smith\";");
@@ -76,7 +76,7 @@ const char kTestPageUrl[] = "/components/test/data/autofill/"
 }
 
 - (void)testAutomationActionSelectDropdown {
-  base::Value::Dict selectDict;
+  base::DictValue selectDict;
   selectDict.Set("type", "select");
   selectDict.Set("selector", "//*[@name=\"cc_month_exp\"]");
   selectDict.Set("index", 5);

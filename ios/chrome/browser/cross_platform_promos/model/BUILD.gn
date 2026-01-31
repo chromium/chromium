@@ -49,7 +49,11 @@ source_set("notification_client") {
   ]
   frameworks = [ "Foundation.framework" ]
   deps = [
+    ":model",
     "//base",
+    "//components/desktop_to_mobile_promos",
+    "//components/prefs",
+    "//ios/chrome/browser/push_notification/model:constants",
     "//ios/chrome/browser/push_notification/model:push_notification_client",
     "//ios/chrome/browser/push_notification/model:push_notification_client_id",
   ]
@@ -72,6 +76,9 @@ source_set("unit_tests") {
     "//components/prefs:test_support",
     "//components/sync_device_info",
     "//components/sync_device_info:test_support",
+    "//components/sync_preferences:features",
+    "//ios/chrome/browser/push_notification/model:constants",
+    "//ios/chrome/browser/shared/coordinator/scene:scene_state_header",
     "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/model/browser/test:test_support",
     "//ios/chrome/browser/shared/model/prefs:pref_names",

@@ -145,7 +145,7 @@ void SmbUrl::CanonicalizeSmbUrl(const std::string& url) {
   url::Component path;
   if (!(url::CanonicalizeHost(url, initial_parsed.host, &canonical_output,
                               &host_) &&
-        url::CanonicalizePath(url.c_str(), initial_parsed.path,
+        url::CanonicalizePath(initial_parsed.path.MaybeAsViewOn(url),
                               &canonical_output, &path))) {
     Reset();
     return;

@@ -11,7 +11,6 @@
 #include <utility>
 
 #include "base/compiler_specific.h"
-#include "base/containers/contains.h"
 #include "base/containers/span.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
@@ -150,7 +149,7 @@ bool FileSystemUsageCache::Exists(const base::FilePath& usage_file_path) {
   TRACE_EVENT0("FileSystem", "UsageCache::Exists");
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (is_incognito_)
-    return base::Contains(incognito_usages_, usage_file_path);
+    return incognito_usages_.contains(usage_file_path);
   return base::PathExists(usage_file_path);
 }
 
@@ -159,7 +158,7 @@ bool FileSystemUsageCache::Delete(const base::FilePath& usage_file_path) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CloseCacheFiles();
   if (is_incognito_) {
-    if (!base::Contains(incognito_usages_, usage_file_path))
+    if (!incognito_usages_.contains(usage_file_path))
       return false;
     incognito_usages_.erase(incognito_usages_.find(usage_file_path));
     return true;
@@ -264,7 +263,7 @@ bool FileSystemUsageCache::ReadBytes(const base::FilePath& file_path,
                                      base::span<uint8_t> buffer) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (is_incognito_) {
-    if (!base::Contains(incognito_usages_, file_path))
+    if (!incognito_usages_.contains(file_path))
       return false;
     UNSAFE_TODO(memcpy(buffer.data(), incognito_usages_[file_path].data(),
                        buffer.size()));
@@ -280,7 +279,7 @@ bool FileSystemUsageCache::WriteBytes(const base::FilePath& file_path,
                                       base::span<const uint8_t> buffer) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (is_incognito_) {
-    if (!base::Contains(incognito_usages_, file_path))
+    if (!incognito_usages_.contains(file_path))
       incognito_usages_[file_path] = std::vector<uint8_t>(buffer.size());
     UNSAFE_TODO(memcpy(incognito_usages_[file_path].data(), buffer.data(),
                        buffer.size()));
@@ -296,7 +295,7 @@ bool FileSystemUsageCache::FlushFile(const base::FilePath& file_path) {
   TRACE_EVENT0("FileSystem", "UsageCache::FlushFile");
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (is_incognito_)
-    return base::Contains(incognito_usages_, file_path);
+    return incognito_usages_.contains(file_path);
   base::File* file = GetFile(file_path);
   if (!file)
     return false;
@@ -314,7 +313,7 @@ void FileSystemUsageCache::ScheduleCloseTimer() {
 bool FileSystemUsageCache::HasCacheFileHandle(const base::FilePath& file_path) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK_LE(cache_files_.size(), kMaxHandleCacheSize);
-  return base::Contains(cache_files_, file_path);
+  return cache_files_.contains(file_path);
 }
 
 }  // namespace storage

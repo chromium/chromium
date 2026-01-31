@@ -26,6 +26,7 @@
 #include "components/services/storage/public/mojom/service_worker_storage_control.mojom.h"
 #include "components/services/storage/public/mojom/storage_policy_update.mojom.h"
 #include "components/services/storage/service_worker/service_worker_database.h"
+#include "net/base/hash_value.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "url/gurl.h"
 
@@ -262,6 +263,7 @@ class ServiceWorkerStorage {
   // associated with the disabled disk cache if the storage is disabled.
   void CreateResourceReader(
       int64_t resource_id,
+      const std::optional<net::SHA256HashValue>& sha256_checksum,
       mojo::PendingReceiver<mojom::ServiceWorkerResourceReader> receiver);
   void CreateResourceWriter(
       int64_t resource_id,

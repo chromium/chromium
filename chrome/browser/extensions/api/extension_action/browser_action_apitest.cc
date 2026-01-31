@@ -27,7 +27,7 @@
 #include "chrome/browser/ui/browser_navigator_params.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/toolbar/toolbar_action_view_model.h"
-#include "chrome/browser/ui/views/extensions/extensions_toolbar_container.h"
+#include "chrome/browser/ui/views/extensions/extensions_toolbar_desktop.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_icon_container_view.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
@@ -131,7 +131,7 @@ class BrowserActionApiTest : public ExtensionApiTest {
     views::test::ButtonTestApi(action_view).NotifyDefaultMouseClick();
   }
 
-  ExtensionsToolbarContainer* extensions_container() {
+  ExtensionsToolbarDesktop* extensions_container() {
     return browser()->GetBrowserView().toolbar()->extensions_container();
   }
 };
@@ -310,7 +310,8 @@ IN_PROC_BROWSER_TEST_F(BrowserActionApiCanvasTest, DynamicBrowserAction) {
   ToolbarActionView* action_view =
       extensions_container()->GetViewForId(extension->id());
   ToolbarActionViewModel* model =
-      extensions_container()->GetActionForId(extension->id());
+      extensions_container()->GetToolbarViewModel()->GetActionForId(
+          extension->id());
   ASSERT_TRUE(action_view);
   ASSERT_TRUE(model);
 
@@ -692,7 +693,7 @@ IN_PROC_BROWSER_TEST_P(BrowserActionApiTestWithContextType,
   // Open an incognito window and test that the browser action isn't there by
   // default.
   Browser* incognito_browser = CreateIncognitoBrowser(profile());
-  ExtensionsToolbarContainer* extensions_container_incognito =
+  ExtensionsToolbarDesktop* extensions_container_incognito =
       incognito_browser->GetBrowserView().toolbar()->extensions_container();
   ASSERT_EQ(0, extensions_container_incognito->GetNumberOfActionsForTesting());
 
@@ -747,7 +748,7 @@ IN_PROC_BROWSER_TEST_P(BrowserActionApiTestWithContextType,
   // Open an incognito window and test that the browser action isn't there by
   // default.
   Browser* incognito_browser = CreateIncognitoBrowser(profile());
-  ExtensionsToolbarContainer* extensions_container_incognito =
+  ExtensionsToolbarDesktop* extensions_container_incognito =
       incognito_browser->GetBrowserView().toolbar()->extensions_container();
   ASSERT_EQ(0, extensions_container_incognito->GetNumberOfActionsForTesting());
 

@@ -112,7 +112,7 @@ TEST_F(FileSystemProviderOperationsReadFileTest, Execute) {
   EXPECT_EQ(
       extensions::api::file_system_provider::OnReadFileRequested::kEventName,
       event->event_name);
-  const base::Value::List& event_args = event->event_args;
+  const base::ListValue& event_args = event->event_args;
   ASSERT_EQ(1u, event_args.size());
 
   const base::Value* options_as_value = &event_args[0];
@@ -158,7 +158,7 @@ TEST_F(FileSystemProviderOperationsReadFileTest, OnSuccess) {
   const bool has_more = false;
   const int execution_time = 0;
 
-  base::Value::List list;
+  base::ListValue list;
   list.Append(kFileSystemId);
   list.Append(kRequestId);
   list.Append(base::Value(base::as_byte_span(data)));

@@ -122,10 +122,10 @@ constexpr char kTestUserEmail[] = "user@gmail.com";
 constexpr char kChromeAppId[] = "chromeappid";
 constexpr char kAndroidAppId[] = "android.app.id";
 
-void AddKeyPermissionForAppId(base::Value::Dict& key_permissions,
+void AddKeyPermissionForAppId(base::DictValue& key_permissions,
                               const std::string& app_id,
                               bool allowed) {
-  base::Value::Dict cert_key_permission;
+  base::DictValue cert_key_permission;
   cert_key_permission.Set("allowCorporateKeyUsage", base::Value(allowed));
   key_permissions.Set(app_id, std::move(cert_key_permission));
 }
@@ -547,7 +547,7 @@ TEST_F(ArcPolicyBridgeTest, ExternalStorageDisabledTest) {
 }
 
 TEST_F(ArcPolicyBridgeTest, WallpaperImageSetTest) {
-  base::Value::Dict dict;
+  base::DictValue dict;
   dict.Set("url", "https://example.com/wallpaper.jpg");
   dict.Set("hash", "somehash");
   policy_map().Set(policy::key::kWallpaperImage, policy::POLICY_LEVEL_MANDATORY,
@@ -560,7 +560,7 @@ TEST_F(ArcPolicyBridgeTest, WallpaperImageSetTest) {
 }
 
 TEST_F(ArcPolicyBridgeTest, WallpaperImageSet_NotCompletePolicyTest) {
-  base::Value::Dict dict;
+  base::DictValue dict;
   dict.Set("url", "https://example.com/wallpaper.jpg");
   // "hash" attribute is missing, so the policy shouldn't be set
   policy_map().Set(policy::key::kWallpaperImage, policy::POLICY_LEVEL_MANDATORY,
@@ -867,7 +867,7 @@ TEST_F(ArcPolicyBridgeCertStoreTest, KeyPermissionsBasicTest) {
   // One certificate is required to be installed.
   cert_store_service()->set_required_cert_names_for_testing({kFakeCertName});
 
-  base::Value::Dict key_permissions;
+  base::DictValue key_permissions;
   AddKeyPermissionForAppId(key_permissions, kAndroidAppId, true /* allowed */);
   AddKeyPermissionForAppId(key_permissions, kChromeAppId, true /* allowed */);
 
@@ -888,7 +888,7 @@ TEST_F(ArcPolicyBridgeCertStoreTest, KeyPermissionsBasicTest) {
 // Tests that if cert store service is non-null, corporate usage key exists and
 // not to any ARC apps, ChoosePrivateKeyRules policy is not set.
 TEST_F(ArcPolicyBridgeCertStoreTest, KeyPermissionsEmptyTest) {
-  base::Value::Dict key_permissions;
+  base::DictValue key_permissions;
   AddKeyPermissionForAppId(key_permissions, kAndroidAppId, false /* allowed */);
   AddKeyPermissionForAppId(key_permissions, kChromeAppId, true /* allowed */);
 
@@ -909,7 +909,7 @@ TEST_F(ArcPolicyBridgeCertStoreTest, KeyPermissionsEmptyTest) {
 // exist, but in theory are available to ARC apps, ChoosePrivateKeyRules policy
 // is not set.
 TEST_F(ArcPolicyBridgeCertStoreTest, KeyPermissionsNoCertsTest) {
-  base::Value::Dict key_permissions;
+  base::DictValue key_permissions;
   AddKeyPermissionForAppId(key_permissions, kAndroidAppId, true /* allowed */);
   AddKeyPermissionForAppId(key_permissions, kChromeAppId, true /* allowed */);
 

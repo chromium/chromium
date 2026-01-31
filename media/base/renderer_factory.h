@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/memory/scoped_refptr.h"
-#include "base/task/sequenced_task_runner.h"
 #include "media/base/media_export.h"
 #include "media/base/media_resource.h"
 #include "media/base/overlay_info.h"
@@ -16,6 +15,7 @@
 #include "ui/gfx/color_space.h"
 
 namespace base {
+class SequencedTaskRunner;
 class TaskRunner;
 }
 

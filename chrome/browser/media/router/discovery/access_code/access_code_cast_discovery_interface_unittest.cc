@@ -5,6 +5,7 @@
 #include "chrome/browser/media/router/discovery/access_code/access_code_cast_discovery_interface.h"
 
 #include "base/command_line.h"
+#include "base/feature_list.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
@@ -18,6 +19,7 @@
 #include "components/endpoint_fetcher/endpoint_fetcher.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
+#include "components/sync/base/features.h"
 #include "content/public/test/browser_task_environment.h"
 #include "net/http/http_util.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
@@ -198,8 +200,13 @@ class AccessCodeCastDiscoveryInterfaceTest : public testing::Test {
         profile, "123456", logger_.get(),
         identity_test_env_.identity_manager());
 
-    // TODO(crbug.com/40067771): ConsentLevel::kSync is deprecated and should be
-    //     removed. See ConsentLevel::kSync documentation for details.
+    // TODO(crbug.com/417950948): ConsentLevel::kSync is deprecated and should
+    // be removed. See ConsentLevel::kSync documentation for details.
+    signin::ConsentLevel consent_level =
+        base::FeatureList::IsEnabled(syncer::kReplaceSyncPromosWithSignInPromos)
+            ? signin::ConsentLevel::kSignin
+            : signin::ConsentLevel::kSync;
+
     discovery_interface_->SetEndpointFetcherForTesting(
         std::make_unique<EndpointFetcher>(
             test_url_loader_factory, identity_test_env_.identity_manager(),
@@ -208,7 +215,7 @@ class AccessCodeCastDiscoveryInterfaceTest : public testing::Test {
                 .SetAuthType(endpoint_fetcher::OAUTH)
                 .SetOAuthConsumerId(
                     signin::OAuthConsumerId::kAccessCodeCastDiscovery)
-                .SetConsentLevel(signin::ConsentLevel::kSync)
+                .SetConsentLevel(consent_level)
                 .SetContentType(kMockContentType)
                 .SetTimeout(kMockTimeout)
                 .SetUrl(GURL(kMockEndpoint))
@@ -261,7 +268,11 @@ class AccessCodeCastDiscoveryInterfaceTest : public testing::Test {
   }
 
   void SignIn() {
-    SetProfileConsent(signin::ConsentLevel::kSync);
+    signin::ConsentLevel consent_level =
+        base::FeatureList::IsEnabled(syncer::kReplaceSyncPromosWithSignInPromos)
+            ? signin::ConsentLevel::kSignin
+            : signin::ConsentLevel::kSync;
+    SetProfileConsent(consent_level);
     identity_test_env_.SetAutomaticIssueOfAccessTokens(true);
   }
 
@@ -335,6 +346,11 @@ TEST_F(AccessCodeCastDiscoveryInterfaceTest, ServerError) {
 #if !BUILDFLAG(IS_CHROMEOS)
 // Revoking Sync consent is not possible on ChromeOS.
 TEST_F(AccessCodeCastDiscoveryInterfaceTest, SyncError) {
+  if (base::FeatureList::IsEnabled(
+          syncer::kReplaceSyncPromosWithSignInPromos)) {
+    GTEST_SKIP() << "RevokeSyncConsent() is no-op as Sync is deprecated";
+  }
+
   // Test to validate a fetch request without sync set for the account will
   // return a SYNC_ERROR.
   MockDiscoveryDeviceCallback mock_callback;

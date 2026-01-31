@@ -20,8 +20,9 @@ import androidx.preference.PreferenceCategory;
 import org.chromium.base.Callback;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.metrics.RecordHistogram;
-import org.chromium.base.supplier.ObservableSupplier;
-import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.supplier.MonotonicObservableSupplier;
+import org.chromium.base.supplier.ObservableSuppliers;
+import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
 import org.chromium.build.annotations.Initializer;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -54,7 +55,8 @@ public class GroupedWebsitesSettings extends BaseSiteSettingsFragment
 
     private @Nullable Dialog mConfirmationDialog;
 
-    private final ObservableSupplierImpl<String> mPageTitle = new ObservableSupplierImpl<>();
+    private final SettableMonotonicObservableSupplier<String> mPageTitle =
+            ObservableSuppliers.createMonotonic();
 
     /**
      * Returns a paused instance of GroupedWebsitesSettings, if any.
@@ -105,7 +107,7 @@ public class GroupedWebsitesSettings extends BaseSiteSettingsFragment
     }
 
     @Override
-    public ObservableSupplier<String> getPageTitle() {
+    public MonotonicObservableSupplier<String> getPageTitle() {
         return mPageTitle;
     }
 
@@ -314,8 +316,7 @@ public class GroupedWebsitesSettings extends BaseSiteSettingsFragment
         return AnimationType.PROPERTY;
     }
 
-    // TODO(crbug.com/444470792): Determine which prefs need creation in updateDynamicPreferences.
     public static final BaseSearchIndexProvider SEARCH_INDEX_DATA_PROVIDER =
             new BaseSearchIndexProvider(
-                    GroupedWebsitesSettings.class.getName(), R.xml.grouped_websites_preferences);
+                    GroupedWebsitesSettings.class.getName(), BaseSearchIndexProvider.INDEX_OPT_OUT);
 }

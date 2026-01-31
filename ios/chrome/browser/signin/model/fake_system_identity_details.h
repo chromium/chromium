@@ -40,6 +40,11 @@ using GetAccessTokenCallback =
 // The avatar cached for the associated SystemIdentity. May be nil.
 @property(nonatomic, strong) UIImage* cachedAvatar;
 
+// Returns YES when `cachedAvatar` has been updated. This property needs to be
+// reset to NO after the avatar has been fetched (see
+// `FakeSystemIdentityManager`).
+@property(nonatomic, assign) BOOL avatarUpdatedFromLastFetch;
+
 // If non-nil, fetching access token for the associated SystemIdentity
 // will be considered as failing, and the `error` value will be passed
 // to the observers.

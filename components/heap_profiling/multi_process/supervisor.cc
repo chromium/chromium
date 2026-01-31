@@ -22,7 +22,6 @@
 #include "content/public/browser/resource_coordinator_service.h"
 #include "content/public/browser/tracing_controller.h"
 #include "services/resource_coordinator/public/cpp/memory_instrumentation/memory_instrumentation.h"
-#include "services/resource_coordinator/public/mojom/memory_instrumentation/memory_instrumentation.mojom-data-view.h"
 #include "services/resource_coordinator/public/mojom/memory_instrumentation/memory_instrumentation.mojom.h"
 
 namespace heap_profiling {

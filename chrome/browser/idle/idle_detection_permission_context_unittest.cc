@@ -9,6 +9,7 @@
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/permissions/permission_decision.h"
+#include "components/permissions/permission_prompt_decision.h"
 #include "components/permissions/permission_request_data.h"
 #include "components/permissions/permission_request_id.h"
 #include "components/permissions/resolvers/content_setting_permission_resolver.h"
@@ -43,14 +44,12 @@ class TestIdleDetectionPermissionContext
       const permissions::PermissionRequestData& request_data,
       permissions::BrowserPermissionCallback callback,
       bool persist,
-      PermissionDecision decision,
-      bool is_final_decision) override {
+      const permissions::PermissionPromptDecision& decision) override {
     permission_set_count_++;
     last_permission_set_persisted_ = persist;
-    last_set_decision_ = decision;
+    last_set_decision_ = decision.overall_decision;
     IdleDetectionPermissionContext::NotifyPermissionSet(
-        request_data, std::move(callback), persist, decision,
-        is_final_decision);
+        request_data, std::move(callback), persist, decision);
   }
 
   int permission_set_count_ = 0;

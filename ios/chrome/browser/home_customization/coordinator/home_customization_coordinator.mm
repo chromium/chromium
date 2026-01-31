@@ -5,10 +5,12 @@
 #import "ios/chrome/browser/home_customization/coordinator/home_customization_coordinator.h"
 
 #import "base/feature_list.h"
+#import "components/feature_engagement/public/tracker.h"
 #import "components/image_fetcher/ios/ios_image_data_fetcher_wrapper.h"
 #import "components/prefs/pref_service.h"
 #import "ios/chrome/browser/commerce/model/shopping_service_factory.h"
 #import "ios/chrome/browser/discover_feed/model/discover_feed_visibility_browser_agent.h"
+#import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
 #import "ios/chrome/browser/google/model/google_logo_service_factory.h"
 #import "ios/chrome/browser/home_customization/coordinator/home_customization_background_configuration_mediator.h"
 #import "ios/chrome/browser/home_customization/coordinator/home_customization_background_picker_action_sheet_coordinator.h"
@@ -25,10 +27,13 @@
 #import "ios/chrome/browser/home_customization/ui/home_customization_search_engine_logo_mediator_provider.h"
 #import "ios/chrome/browser/home_customization/utils/home_customization_constants.h"
 #import "ios/chrome/browser/image_fetcher/model/image_fetcher_service_factory.h"
+#import "ios/chrome/browser/ntp/model/set_up_list_item_type.h"
+#import "ios/chrome/browser/ntp/model/set_up_list_prefs.h"
 #import "ios/chrome/browser/ntp/search_engine_logo/mediator/search_engine_logo_mediator.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_color_palette_util.h"
 #import "ios/chrome/browser/search_engines/model/template_url_service_factory.h"
 #import "ios/chrome/browser/shared/coordinator/alert/action_sheet_coordinator.h"
+#import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
@@ -156,6 +161,15 @@ CGFloat const kSheetCornerRadius = 30;
 
   [self dismissBackgroundPickerActionSheet];
 
+  if (self.openedForUserEducation) {
+    feature_engagement::Tracker* tracker =
+        feature_engagement::TrackerFactory::GetForProfile(self.profile);
+    if (tracker) {
+      tracker->Dismissed(
+          feature_engagement::kIPHiOSPromoBackgroundCustomizationFeature);
+    }
+  }
+
   if ([self.browser->GetCommandDispatcher()
           dispatchingForProtocol:@protocol(SnackbarCommands)]) {
     [HandlerForProtocol(self.browser->GetCommandDispatcher(), SnackbarCommands)
@@ -197,6 +211,16 @@ CGFloat const kSheetCornerRadius = 30;
 
 - (void)presentCustomizationMenuPage:(CustomizationMenuPage)page {
   UIViewController* menuPage = [self createMenuPage:page];
+
+  if (IsNTPBackgroundCustomizationEnabled() &&
+      page == CustomizationMenuPage::kMain) {
+    feature_engagement::Tracker* tracker =
+        feature_engagement::TrackerFactory::GetForProfile(self.profile);
+    if (tracker) {
+      tracker->NotifyUsedEvent(
+          feature_engagement::kIPHiOSPromoBackgroundCustomizationFeature);
+    }
+  }
 
   // True if this is the first page being presented in the half sheet hierarchy.
   BOOL isFirstPagePresentation =
@@ -329,6 +353,11 @@ CGFloat const kSheetCornerRadius = 30;
                                 resolver:expandedDetentResolver];
       [detents addObject:expandedDetent];
 
+      // Opening the Home Customization main page marks the
+      // background customization item as completed in prefs.
+      set_up_list_prefs::MarkItemComplete(
+          GetApplicationContext()->GetLocalState(),
+          SetUpListItemType::kBackgroundCustomization);
       break;
     }
     case CustomizationMenuPage::kMagicStack: {

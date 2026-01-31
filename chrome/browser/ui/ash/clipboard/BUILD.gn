@@ -57,6 +57,7 @@ source_set("browser_tests") {
     "//chromeos/ash/components/dbus/session_manager",
     "//chromeos/ash/experiences/clipboard:test_support",
     "//chromeos/constants",
+    "//chromeos/ui/clipboard_history",
     "//components/user_manager",
     "//content/public/browser",
     "//content/test:test_support",

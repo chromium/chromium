@@ -4,6 +4,7 @@
 
 #include <stdint.h>
 
+#include <algorithm>
 #include <memory>
 #include <string>
 #include <utility>
@@ -162,11 +163,11 @@ class RenderWidgetHostViewBrowserTest : public ContentBrowserTest {
 
   // Callback when using CopyFromSurface() API.
   void FinishCopyFromSurface(base::OnceClosure quit_closure,
-                             const viz::CopyOutputBitmapWithMetadata& result) {
-    const SkBitmap& bitmap = result.bitmap;
+                             const content::CopyFromSurfaceResult& result) {
     ++callback_invoke_count_;
-    if (!bitmap.drawsNothing())
+    if (result.has_value()) {
       ++frames_captured_;
+    }
     std::move(quit_closure).Run();
   }
 
@@ -883,7 +884,7 @@ IN_PROC_BROWSER_TEST_F(BFCachedRenderWidgetHostViewBrowserTest,
     const auto evicted_ids =
         static_cast<RenderWidgetHostImpl*>(rfh1->GetRenderWidgetHost())
             ->CollectSurfaceIdsForEviction();
-    ASSERT_TRUE(base::Contains(evicted_ids, id_after_cached));
+    ASSERT_TRUE(std::ranges::contains(evicted_ids, id_after_cached));
   }
 }
 
@@ -1146,7 +1147,7 @@ IN_PROC_BROWSER_TEST_P(CompositingRenderWidgetHostViewBrowserTest,
     ++count_attempts;
     base::RunLoop run_loop;
     GetRenderWidgetHostView()->CopyFromSurface(
-        gfx::Rect(), frame_size(),
+        gfx::Rect(), frame_size(), base::TimeDelta(),
         base::BindOnce(&RenderWidgetHostViewBrowserTest::FinishCopyFromSurface,
                        base::Unretained(this), run_loop.QuitClosure()));
     run_loop.Run();
@@ -1169,7 +1170,7 @@ IN_PROC_BROWSER_TEST_P(CompositingRenderWidgetHostViewBrowserTest,
 
   base::RunLoop run_loop;
   GetRenderWidgetHostView()->CopyFromSurface(
-      gfx::Rect(), frame_size(),
+      gfx::Rect(), frame_size(), base::TimeDelta(),
       base::BindOnce(&RenderWidgetHostViewBrowserTest::FinishCopyFromSurface,
                      base::Unretained(this), run_loop.QuitClosure()));
   shell()->web_contents()->Close();
@@ -1189,8 +1190,8 @@ class CompositingRenderWidgetHostViewBrowserTestTabCapture
         test_url_("data:text/html,<!doctype html>") {}
 
   void VerifyResult(base::OnceClosure quit_callback,
-                    const viz::CopyOutputBitmapWithMetadata& result) {
-    const SkBitmap& bitmap = result.bitmap;
+                    const content::CopyFromSurfaceResult& result) {
+    const SkBitmap& bitmap = result.has_value() ? result->bitmap : SkBitmap();
     if (bitmap.drawsNothing()) {
       readback_result_ = READBACK_FAILED;
       std::move(quit_callback).Run();
@@ -1372,7 +1373,7 @@ class CompositingRenderWidgetHostViewBrowserTestTabCapture
 
       base::RunLoop run_loop;
       rwhv->CopyFromSurface(
-          copy_rect, output_size,
+          copy_rect, output_size, base::TimeDelta(),
           base::BindOnce(&CompositingRenderWidgetHostViewBrowserTestTabCapture::
                              VerifyResult,
                          base::Unretained(this), run_loop.QuitClosure()));
@@ -1805,7 +1806,7 @@ void CheckSurfaceRangeRemovedAfterCopy(
     viz::SurfaceRange range,
     CompositorImpl* compositor,
     base::RepeatingClosure resume_test,
-    const viz::CopyOutputBitmapWithMetadata& result) {
+    const content::CopyFromSurfaceResult& result) {
   // The surface range is removed first when the browser receives the result
   // of the copy request. Then the result callback (including this function) is
   // run.
@@ -1864,7 +1865,7 @@ IN_PROC_BROWSER_TEST_F(RenderWidgetHostViewCopyFromSurfaceBrowserTest,
       std::nullopt, rwhv_android->GetCurrentSurfaceId());
   base::RunLoop run_loop;
   GetRenderViewHost()->GetWidget()->GetView()->CopyFromSurface(
-      gfx::Rect(), gfx::Size(),
+      gfx::Rect(), gfx::Size(), base::TimeDelta(),
       base::BindOnce(&CheckSurfaceRangeRemovedAfterCopy, range_for_copy,
                      compositor, run_loop.QuitClosure()));
 
@@ -1879,10 +1880,9 @@ IN_PROC_BROWSER_TEST_F(RenderWidgetHostViewCopyFromSurfaceBrowserTest,
 
 namespace {
 
-void AssertSnapshotIsPureWhite(
-    base::RepeatingClosure resume_test,
-    const viz::CopyOutputBitmapWithMetadata& result) {
-  const SkBitmap snapshot = result.bitmap;
+void AssertSnapshotIsPureWhite(base::RepeatingClosure resume_test,
+                               const content::CopyFromSurfaceResult& result) {
+  const SkBitmap& snapshot = result.has_value() ? result->bitmap : SkBitmap();
   for (int r = 0; r < snapshot.height(); ++r) {
     for (int c = 0; c < snapshot.width(); ++c) {
       ASSERT_EQ(snapshot.getColor(c, r), SK_ColorWHITE);

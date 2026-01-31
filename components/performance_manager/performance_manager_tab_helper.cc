@@ -9,7 +9,6 @@
 #include <utility>
 
 #include "base/check.h"
-#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
@@ -192,7 +191,7 @@ void PerformanceManagerTabHelper::RenderFrameCreated(
     content::RenderFrameHost* render_frame_host) {
   DCHECK_NE(nullptr, render_frame_host);
   // This must not exist in the map yet.
-  DCHECK(!base::Contains(frames_, render_frame_host));
+  DCHECK(!frames_.contains(render_frame_host));
 
   content::RenderFrameHost* parent = render_frame_host->GetParent();
   FrameNodeImpl* parent_frame_node = nullptr;

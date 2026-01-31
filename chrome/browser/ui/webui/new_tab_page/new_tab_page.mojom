@@ -49,6 +49,8 @@ struct Theme {
   skia.mojom.SkColor background_color;
   // True if user color mode is baseline.
   bool is_baseline;
+  // True if theme is GM3 (uses user color pref).
+  bool is_gm3;
   // True if the background is custom.
   bool is_custom_background;
   // True if daily refresh is enabled.
@@ -227,8 +229,6 @@ interface PageHandler {
   OnRestoreModule(string module_id);
   // If |visible| the modules will be shown.
   SetModulesVisible(bool visible);
-  // Disables module with ID |module_id| if |disabled|. Enables otherwise.
-  SetModuleDisabled(string module_id, bool disabled);
   // Triggers a call to |SetDisabledModules|.
   UpdateDisabledModules();
   // Called when at least one module has loaded with data.
@@ -240,6 +240,8 @@ interface PageHandler {
   OnModuleUsed(string module_id);
   // Returns a list of available module id and name pairs.
   GetModulesIdNames() => (array<ModuleIdName> data);
+  // Returns a list of module ids that are eligible for auto removal.
+  GetModulesEligibleForRemoval() => (array<string> module_ids);
   // Sets the order of modules.
   SetModulesOrder(array<string> module_ids);
   // Returns the order of modules or an empty array if the user has not
@@ -247,6 +249,11 @@ interface PageHandler {
   GetModulesOrder() => (array<string> module_ids);
   // Triggers a call to |SetModulesLoadable|.
   UpdateModulesLoadable();
+  // Disables modules with IDs |module_ids| if |disabled|. Enables otherwise.
+  // `is_user_action` is true if the action was triggered by a user action.
+  SetModulesDisabled(array<string> module_ids,
+                     bool disabled,
+                     bool is_user_action);
   // Updates the visibility of the action chips in the NTP on any pref changes.
   UpdateActionChipsVisibility();
   // Triggers a call to |FooterVisibilityUpdated|.
@@ -255,6 +262,8 @@ interface PageHandler {
   IncrementComposeButtonShownCount();
   // Opens Customize Chrome if eligibility conditions are met.
   MaybeTriggerAutomaticCustomizeChromePromo();
+  // Records that the context menu was clicked.
+  RecordContextMenuClick();
 
   // ======= METRICS =======
   // Logs that the One Google Bar was added to the DOM / loaded in an iframe at

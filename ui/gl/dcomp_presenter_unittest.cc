@@ -72,9 +72,6 @@ void PrintTo(const SwapResult& swap_result, ::std::ostream* os) {
     case SwapResult::SWAP_NAK_RECREATE_BUFFERS:
       *os << "SWAP_NAK_RECREATE_BUFFERS";
       return;
-    case SwapResult::SWAP_NON_SIMPLE_OVERLAYS_FAILED:
-      *os << "SWAP_NON_SIMPLE_OVERLAYS_FAILED";
-      return;
   }
   NOTREACHED();
 }

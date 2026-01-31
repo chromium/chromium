@@ -6,6 +6,7 @@
 
 #import "base/check.h"
 #import "base/format_macros.h"
+#import "base/i18n/number_formatting.h"
 #import "base/metrics/user_metrics.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/strings/utf_string_conversions.h"
@@ -15,6 +16,8 @@
 #import "components/signin/public/identity_manager/identity_manager.h"
 #import "components/strings/grit/components_strings.h"
 #import "components/sync/base/account_pref_utils.h"
+#import "components/sync/base/features.h"
+#import "components/sync/service/sync_service.h"
 #import "google_apis/gaia/gaia_id.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_feature.h"
 #import "ios/chrome/browser/policy/model/browser_policy_connector_ios.h"
@@ -32,6 +35,7 @@
 #import "ios/chrome/browser/signin/model/authentication_service.h"
 #import "ios/chrome/browser/signin/model/authentication_service_factory.h"
 #import "ios/chrome/browser/signin/model/identity_manager_factory.h"
+#import "ios/chrome/browser/sync/model/sync_service_factory.h"
 #import "ios/chrome/grit/ios_branded_strings.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util.h"
@@ -76,21 +80,32 @@ NSString* GetActionSheetCoordinatorTitle(
 // `signed_in_user_state` sign-in&sync state for the current primary account.
 NSString* GetActionSheetCoordinatorMessage(
     AuthenticationService* authentication_service,
+    syncer::SyncService* sync_service,
     SignedInUserState signed_in_user_state,
     bool account_profile_switch) {
   switch (signed_in_user_state) {
     case SignedInUserState::kNotSyncingAndReplaceSyncWithSignin: {
       // This dialog is triggered only if there is unsync data.
-      NSString* userEmail =
-          authentication_service
-              ->GetPrimaryIdentity(signin::ConsentLevel::kSignin)
-              .userEmail;
-      return account_profile_switch
-                 ? l10n_util::GetNSStringF(
-                       IDS_IOS_DATA_NOT_UPLOADED_SWITCH_DIALOG_BODY,
-                       base::SysNSStringToUTF16(userEmail))
-                 : l10n_util::GetNSString(
-                       IDS_IOS_SIGNOUT_DIALOG_MESSAGE_WITH_NOT_SAVED_DATA);
+      if (account_profile_switch) {
+        NSString* userEmail =
+            authentication_service
+                ->GetPrimaryIdentity(signin::ConsentLevel::kSignin)
+                .userEmail;
+        return l10n_util::GetNSStringF(
+            IDS_IOS_DATA_NOT_UPLOADED_SWITCH_DIALOG_BODY,
+            base::SysNSStringToUTF16(userEmail));
+      }
+
+      if (sync_service && sync_service->GetUserActionableError() ==
+                              syncer::SyncService::UserActionableError::
+                                  kBookmarksLimitExceeded) {
+        return l10n_util::GetNSStringF(
+            IDS_IOS_SIGNOUT_DIALOG_MESSAGE_WITH_BOOKMARKS_LIMIT_EXCEEDED,
+            base::FormatNumber(syncer::kSyncBookmarksLimitValue.Get()));
+      }
+
+      return l10n_util::GetNSString(
+          IDS_IOS_SIGNOUT_DIALOG_MESSAGE_WITH_NOT_SAVED_DATA);
     }
     case SignedInUserState::kManagedAccountClearsDataOnSignout:
       // Signing out may also cause tabs to be closed, see
@@ -330,8 +345,11 @@ ActionSheetCoordinator* GetLeavingPrimaryAccountConfirmationDialog(
       identity_manager, signed_in_user_state, account_profile_switch);
   AuthenticationService* authentication_service =
       AuthenticationServiceFactory::GetForProfile(profile);
+  syncer::SyncService* sync_service =
+      SyncServiceFactory::GetForProfile(profile);
   NSString* message = GetActionSheetCoordinatorMessage(
-      authentication_service, signed_in_user_state, account_profile_switch);
+      authentication_service, sync_service, signed_in_user_state,
+      account_profile_switch);
   ActionSheetCoordinator* actionSheetCoordinator =
       [[ActionSheetCoordinator alloc]
           initWithBaseViewController:base_view_controller

@@ -52,8 +52,8 @@ class UsageStatsBridge : public history::HistoryServiceObserver {
                     const JavaRef<jobject>& j_callback);
 
   void QueryEventsInRange(JNIEnv* j_env,
-                          const jlong j_start,
-                          const jlong j_end,
+                          const int64_t j_start,
+                          const int64_t j_end,
                           const JavaRef<jobject>& j_callback);
 
   void AddEvents(JNIEnv* j_env,
@@ -64,8 +64,8 @@ class UsageStatsBridge : public history::HistoryServiceObserver {
                        const JavaRef<jobject>& j_callback);
 
   void DeleteEventsInRange(JNIEnv* j_env,
-                           const jlong j_start,
-                           const jlong j_end,
+                           const int64_t j_start,
+                           const int64_t j_end,
                            const JavaRef<jobject>& j_callback);
 
   void DeleteEventsWithMatchingDomains(JNIEnv* j_env,

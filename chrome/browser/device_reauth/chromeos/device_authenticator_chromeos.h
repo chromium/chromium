@@ -29,6 +29,9 @@ class DeviceAuthenticatorChromeOS : public DeviceAuthenticatorCommon {
 
   void Cancel() override;
 
+  static void CacheIfPinIsAvailable(
+      AuthenticatorChromeOSInterface* authenticator);
+
  private:
   // Records authentication status and executes |callback| with |success|
   // parameter.

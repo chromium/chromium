@@ -141,9 +141,12 @@ TEST_F(SimpleFeatureTest, IsAvailableNullCase) {
 }
 
 TEST_F(SimpleFeatureTest, Allowlist) {
-  const HashedExtensionId kIdFoo("fooabbbbccccddddeeeeffffgggghhhh");
-  const HashedExtensionId kIdBar("barabbbbccccddddeeeeffffgggghhhh");
-  const HashedExtensionId kIdBaz("bazabbbbccccddddeeeeffffgggghhhh");
+  const HashedExtensionId kIdFoo(
+      ExtensionId("fooabbbbccccddddeeeeffffgggghhhh"));
+  const HashedExtensionId kIdBar(
+      ExtensionId("barabbbbccccddddeeeeffffgggghhhh"));
+  const HashedExtensionId kIdBaz(
+      ExtensionId("bazabbbbccccddddeeeeffffgggghhhh"));
   SimpleFeature feature;
   feature.set_allowlist({kIdFoo.value().c_str(), kIdBar.value().c_str()});
 
@@ -198,10 +201,11 @@ TEST_F(SimpleFeatureTest, HashedIdAllowlist) {
 
   EXPECT_EQ(Feature::AvailabilityResult::kIsAvailable,
             feature
-                .IsAvailableToManifest(
-                    HashedExtensionId(kIdFoo), Manifest::Type::kUnknown,
-                    ManifestLocation::kInvalidLocation, -1,
-                    Feature::UNSPECIFIED_PLATFORM, kUnspecifiedContextId)
+                .IsAvailableToManifest(HashedExtensionId(ExtensionId(kIdFoo)),
+                                       Manifest::Type::kUnknown,
+                                       ManifestLocation::kInvalidLocation, -1,
+                                       Feature::UNSPECIFIED_PLATFORM,
+                                       kUnspecifiedContextId)
                 .result());
   EXPECT_NE(Feature::AvailabilityResult::kIsAvailable,
             feature
@@ -214,7 +218,8 @@ TEST_F(SimpleFeatureTest, HashedIdAllowlist) {
       Feature::AvailabilityResult::kNotFoundInAllowlist,
       feature
           .IsAvailableToManifest(
-              HashedExtensionId("slightlytoooolongforanextensionid"),
+              HashedExtensionId(
+                  ExtensionId("slightlytoooolongforanextensionid")),
               Manifest::Type::kUnknown, ManifestLocation::kInvalidLocation, -1,
               Feature::UNSPECIFIED_PLATFORM, kUnspecifiedContextId)
           .result());
@@ -222,16 +227,19 @@ TEST_F(SimpleFeatureTest, HashedIdAllowlist) {
       Feature::AvailabilityResult::kNotFoundInAllowlist,
       feature
           .IsAvailableToManifest(
-              HashedExtensionId("tooshortforanextensionid"),
+              HashedExtensionId(ExtensionId("tooshortforanextensionid")),
               Manifest::Type::kUnknown, ManifestLocation::kInvalidLocation, -1,
               Feature::UNSPECIFIED_PLATFORM, kUnspecifiedContextId)
           .result());
 }
 
 TEST_F(SimpleFeatureTest, Blocklist) {
-  const HashedExtensionId kIdFoo("fooabbbbccccddddeeeeffffgggghhhh");
-  const HashedExtensionId kIdBar("barabbbbccccddddeeeeffffgggghhhh");
-  const HashedExtensionId kIdBaz("bazabbbbccccddddeeeeffffgggghhhh");
+  const HashedExtensionId kIdFoo(
+      ExtensionId("fooabbbbccccddddeeeeffffgggghhhh"));
+  const HashedExtensionId kIdBar(
+      ExtensionId("barabbbbccccddddeeeeffffgggghhhh"));
+  const HashedExtensionId kIdBaz(
+      ExtensionId("bazabbbbccccddddeeeeffffgggghhhh"));
   SimpleFeature feature;
   feature.set_blocklist({kIdFoo.value().c_str(), kIdBar.value().c_str()});
 
@@ -277,10 +285,11 @@ TEST_F(SimpleFeatureTest, HashedIdBlocklist) {
 
   EXPECT_EQ(Feature::AvailabilityResult::kFoundInBlocklist,
             feature
-                .IsAvailableToManifest(
-                    HashedExtensionId(kIdFoo), Manifest::Type::kUnknown,
-                    ManifestLocation::kInvalidLocation, -1,
-                    Feature::UNSPECIFIED_PLATFORM, kUnspecifiedContextId)
+                .IsAvailableToManifest(HashedExtensionId(ExtensionId(kIdFoo)),
+                                       Manifest::Type::kUnknown,
+                                       ManifestLocation::kInvalidLocation, -1,
+                                       Feature::UNSPECIFIED_PLATFORM,
+                                       kUnspecifiedContextId)
                 .result());
   EXPECT_NE(Feature::AvailabilityResult::kFoundInBlocklist,
             feature
@@ -293,7 +302,8 @@ TEST_F(SimpleFeatureTest, HashedIdBlocklist) {
       Feature::AvailabilityResult::kIsAvailable,
       feature
           .IsAvailableToManifest(
-              HashedExtensionId("slightlytoooolongforanextensionid"),
+              HashedExtensionId(
+                  ExtensionId("slightlytoooolongforanextensionid")),
               Manifest::Type::kUnknown, ManifestLocation::kInvalidLocation, -1,
               Feature::UNSPECIFIED_PLATFORM, kUnspecifiedContextId)
           .result());
@@ -301,7 +311,7 @@ TEST_F(SimpleFeatureTest, HashedIdBlocklist) {
       Feature::AvailabilityResult::kIsAvailable,
       feature
           .IsAvailableToManifest(
-              HashedExtensionId("tooshortforanextensionid"),
+              HashedExtensionId(ExtensionId("tooshortforanextensionid")),
               Manifest::Type::kUnknown, ManifestLocation::kInvalidLocation, -1,
               Feature::UNSPECIFIED_PLATFORM, kUnspecifiedContextId)
           .result());
@@ -352,7 +362,7 @@ TEST_F(SimpleFeatureTest, Context) {
   feature.set_min_manifest_version(21);
   feature.set_max_manifest_version(25);
 
-  auto manifest = base::Value::Dict()
+  auto manifest = base::DictValue()
                       .Set("name", "test")
                       .Set("version", "1")
                       .Set("manifest_version", 21);
@@ -365,7 +375,8 @@ TEST_F(SimpleFeatureTest, Context) {
   EXPECT_EQ(u"", error);
   ASSERT_TRUE(extension.get());
 
-  feature.set_allowlist({"monkey"});
+  feature.set_allowlist(
+      {HashedExtensionId(ExtensionId("monkey")).value().c_str()});
   EXPECT_EQ(Feature::AvailabilityResult::kNotFoundInAllowlist,
             feature
                 .IsAvailableToContext(extension.get(),
@@ -416,7 +427,7 @@ TEST_F(SimpleFeatureTest, Context) {
 
   {
     SimpleFeature other_feature;
-    other_feature.set_location(SimpleFeature::COMPONENT_LOCATION);
+    other_feature.set_location(SimpleFeature::Location::kComponent);
     EXPECT_EQ(Feature::AvailabilityResult::kInvalidLocation,
               other_feature
                   .IsAvailableToContext(
@@ -457,7 +468,7 @@ TEST_F(SimpleFeatureTest, Context) {
 }
 
 TEST_F(SimpleFeatureTest, SessionType) {
-  auto manifest = base::Value::Dict()
+  auto manifest = base::DictValue()
                       .Set("name", "test")
                       .Set("version", "1")
                       .Set("manifest_version", 2);
@@ -577,57 +588,57 @@ TEST_F(SimpleFeatureTest, SessionType) {
 
 TEST_F(SimpleFeatureTest, Location) {
   // Component extensions can access any location.
-  EXPECT_TRUE(LocationIsAvailable(SimpleFeature::COMPONENT_LOCATION,
+  EXPECT_TRUE(LocationIsAvailable(SimpleFeature::Location::kComponent,
                                   ManifestLocation::kComponent));
-  EXPECT_TRUE(LocationIsAvailable(SimpleFeature::EXTERNAL_COMPONENT_LOCATION,
+  EXPECT_TRUE(LocationIsAvailable(SimpleFeature::Location::kExternalComponent,
                                   ManifestLocation::kComponent));
-  EXPECT_TRUE(LocationIsAvailable(SimpleFeature::POLICY_LOCATION,
+  EXPECT_TRUE(LocationIsAvailable(SimpleFeature::Location::kPolicy,
                                   ManifestLocation::kComponent));
-  EXPECT_TRUE(LocationIsAvailable(SimpleFeature::UNPACKED_LOCATION,
+  EXPECT_TRUE(LocationIsAvailable(SimpleFeature::Location::kUnpacked,
                                   ManifestLocation::kComponent));
 
   // Only component extensions can access the "component" location.
-  EXPECT_FALSE(LocationIsAvailable(SimpleFeature::COMPONENT_LOCATION,
+  EXPECT_FALSE(LocationIsAvailable(SimpleFeature::Location::kComponent,
                                    ManifestLocation::kInvalidLocation));
-  EXPECT_FALSE(LocationIsAvailable(SimpleFeature::COMPONENT_LOCATION,
+  EXPECT_FALSE(LocationIsAvailable(SimpleFeature::Location::kComponent,
                                    ManifestLocation::kUnpacked));
-  EXPECT_FALSE(LocationIsAvailable(SimpleFeature::COMPONENT_LOCATION,
+  EXPECT_FALSE(LocationIsAvailable(SimpleFeature::Location::kComponent,
                                    ManifestLocation::kExternalComponent));
-  EXPECT_FALSE(LocationIsAvailable(SimpleFeature::COMPONENT_LOCATION,
+  EXPECT_FALSE(LocationIsAvailable(SimpleFeature::Location::kComponent,
                                    ManifestLocation::kExternalPrefDownload));
-  EXPECT_FALSE(LocationIsAvailable(SimpleFeature::COMPONENT_LOCATION,
+  EXPECT_FALSE(LocationIsAvailable(SimpleFeature::Location::kComponent,
                                    ManifestLocation::kExternalPolicy));
-  EXPECT_FALSE(LocationIsAvailable(SimpleFeature::COMPONENT_LOCATION,
+  EXPECT_FALSE(LocationIsAvailable(SimpleFeature::Location::kComponent,
                                    ManifestLocation::kExternalPolicyDownload));
 
   // Policy extensions can access the "policy" location.
-  EXPECT_TRUE(LocationIsAvailable(SimpleFeature::POLICY_LOCATION,
+  EXPECT_TRUE(LocationIsAvailable(SimpleFeature::Location::kPolicy,
                                   ManifestLocation::kExternalPolicy));
-  EXPECT_TRUE(LocationIsAvailable(SimpleFeature::POLICY_LOCATION,
+  EXPECT_TRUE(LocationIsAvailable(SimpleFeature::Location::kPolicy,
                                   ManifestLocation::kExternalPolicyDownload));
 
   // Non-policy (except component) extensions cannot access policy.
-  EXPECT_FALSE(LocationIsAvailable(SimpleFeature::POLICY_LOCATION,
+  EXPECT_FALSE(LocationIsAvailable(SimpleFeature::Location::kPolicy,
                                    ManifestLocation::kExternalComponent));
-  EXPECT_FALSE(LocationIsAvailable(SimpleFeature::POLICY_LOCATION,
+  EXPECT_FALSE(LocationIsAvailable(SimpleFeature::Location::kPolicy,
                                    ManifestLocation::kInvalidLocation));
-  EXPECT_FALSE(LocationIsAvailable(SimpleFeature::POLICY_LOCATION,
+  EXPECT_FALSE(LocationIsAvailable(SimpleFeature::Location::kPolicy,
                                    ManifestLocation::kUnpacked));
-  EXPECT_FALSE(LocationIsAvailable(SimpleFeature::POLICY_LOCATION,
+  EXPECT_FALSE(LocationIsAvailable(SimpleFeature::Location::kPolicy,
                                    ManifestLocation::kExternalPrefDownload));
 
   // External component extensions can access the "external_component"
   // location.
-  EXPECT_TRUE(LocationIsAvailable(SimpleFeature::EXTERNAL_COMPONENT_LOCATION,
+  EXPECT_TRUE(LocationIsAvailable(SimpleFeature::Location::kExternalComponent,
                                   ManifestLocation::kExternalComponent));
 
   // Only unpacked and command line extensions can access the "unpacked"
   // location.
-  EXPECT_TRUE(LocationIsAvailable(SimpleFeature::UNPACKED_LOCATION,
+  EXPECT_TRUE(LocationIsAvailable(SimpleFeature::Location::kUnpacked,
                                   ManifestLocation::kUnpacked));
-  EXPECT_TRUE(LocationIsAvailable(SimpleFeature::UNPACKED_LOCATION,
+  EXPECT_TRUE(LocationIsAvailable(SimpleFeature::Location::kUnpacked,
                                   ManifestLocation::kCommandLine));
-  EXPECT_FALSE(LocationIsAvailable(SimpleFeature::UNPACKED_LOCATION,
+  EXPECT_FALSE(LocationIsAvailable(SimpleFeature::Location::kUnpacked,
                                    ManifestLocation::kInternal));
 }
 

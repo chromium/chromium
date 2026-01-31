@@ -11,7 +11,6 @@
 #include "ash/system/diagnostics/diagnostics_log_controller.h"
 #include "ash/system/diagnostics/networking_log.h"
 #include "ash/webui/diagnostics_ui/backend/common/histogram_util.h"
-#include "base/containers/contains.h"
 #include "base/containers/fixed_flat_map.h"
 #include "base/functional/bind.h"
 #include "base/strings/string_util.h"
@@ -398,11 +397,11 @@ int GetScoreForNetwork(const mojom::NetworkPtr& network) {
            {mojom::NetworkType::kCellular, 1}});
 
   int state_priority = 0;
-  if (base::Contains(kNetworkStatePriorityMap, network->state)) {
+  if (kNetworkStatePriorityMap.contains(network->state)) {
     state_priority += kNetworkStatePriorityMap.at(network->state);
   }
 
-  DCHECK(base::Contains(kNetworkTypePriorityMap, network->type));
+  DCHECK(kNetworkTypePriorityMap.contains(network->type));
   return kNetworkTypePriorityMap.at(network->type) + state_priority;
 }
 
@@ -537,7 +536,7 @@ void NetworkHealthProvider::OnDeviceStateListReceived(
   // Remove any entry in |networks_| that doesn't match a device.
   for (auto it = networks_.begin(); it != networks_.end();) {
     const std::string& observer_guid = it->first;
-    if (!base::Contains(networks_seen, observer_guid)) {
+    if (!networks_seen.contains(observer_guid)) {
       it = networks_.erase(it);
       continue;
     }

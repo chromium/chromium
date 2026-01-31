@@ -15,12 +15,13 @@ desc: |-
 
   <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> does not support Single Sign-on using <ph name="EXTENSIBLE_ENTERPRISE_SSO_PRODUCT_NAME">Extensible Enterprise SSO</ph> in Incognito or Guest modes.
 
-  <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> only supports Single Sign-on using <ph name="EXTENSIBLE_ENTERPRISE_SSO_PRODUCT_NAME">Extensible Enterprise SSO</ph> for the following identity providers: Microsoft.
+  <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> only supports Single Sign-on using <ph name="EXTENSIBLE_ENTERPRISE_SSO_PRODUCT_NAME">Extensible Enterprise SSO</ph> for the following identity providers: Microsoft, Okta.
 
   This feature is available starting in <ph name="MAC_OS_NAME">macOS</ph> 10.15.
 
 owners:
 - ydago@chromium.org
+- ssolarewicz@chromium.org
 - file://components/policy/OWNERS
 
 supported_on:
@@ -35,6 +36,7 @@ schema:
     enum:
     - all
     - microsoft
+    - okta
     type: string
   type: array
 items:
@@ -44,6 +46,11 @@ items:
 - caption: Microsoft® cloud identity provider
   name: microsoft
   value: microsoft
+- caption: Okta® cloud identity provider
+  name: okta
+  value: okta
+  supported_on:
+    - chrome.mac:146-
 example_value:
 - all
 tags: []

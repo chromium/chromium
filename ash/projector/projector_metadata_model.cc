@@ -4,11 +4,11 @@
 
 #include "ash/projector/projector_metadata_model.h"
 
+#include <algorithm>
 #include <string_view>
 #include <vector>
 
 #include "ash/constants/ash_features.h"
-#include "base/containers/contains.h"
 #include "base/containers/fixed_flat_set.h"
 #include "base/json/json_writer.h"
 #include "base/strings/string_util.h"
@@ -58,13 +58,13 @@ constexpr auto kEnglishAbbreviationsInLowerCase =
          "etc.",    "d.",   "adv.",    "lib.",     "pro.",  "u.s.a.", "s.e.",
          "aa.",     "rep.", "sq.",     "as."});
 
-base::Value::Dict HypothesisPartsToDict(
+base::DictValue HypothesisPartsToDict(
     const media::HypothesisParts& hypothesis_parts) {
-  base::Value::List text_list;
+  base::ListValue text_list;
   for (auto& part : hypothesis_parts.text)
     text_list.Append(part);
 
-  base::Value::Dict hypothesis_part_dict;
+  base::DictValue hypothesis_part_dict;
   hypothesis_part_dict.Set(kTextKey, std::move(text_list));
   hypothesis_part_dict.Set(
       kOffset, static_cast<int>(
@@ -97,7 +97,7 @@ bool isEndOfSentence(const std::string& word,
     return false;
   }
 
-  if (base::Contains(kSentenceEndPunctuations, word.back())) {
+  if (std::ranges::contains(kSentenceEndPunctuations, word.back())) {
     if (caption_language.starts_with("en") &&
         kEnglishAbbreviationsInLowerCase.contains(base::ToLowerASCII(word))) {
       // This is an English abbreviation, not end of a sentence.
@@ -110,7 +110,7 @@ bool isEndOfSentence(const std::string& word,
 
 bool isEndOfCJKSentence(std::u16string word) {
   return !word.empty() &&
-         base::Contains(kCJKSentenceEndPunctuations, word.back());
+         std::ranges::contains(kCJKSentenceEndPunctuations, word.back());
 }
 
 std::vector<std::vector<media::HypothesisParts>>
@@ -224,9 +224,9 @@ ProjectorKeyIdea::~ProjectorKeyIdea() = default;
 //   "startOffset": INT
 //   "endOffset": INT
 //   "text": STRING
-base::Value::Dict ProjectorKeyIdea::ToJson() {
+base::DictValue ProjectorKeyIdea::ToJson() {
   auto transcript =
-      base::Value::Dict()
+      base::DictValue()
           .Set(kStartOffsetKey, static_cast<int>(start_time_.InMilliseconds()))
           .Set(kEndOffsetKey, static_cast<int>(end_time_.InMilliseconds()))
           .Set(kTextKey, text_);
@@ -273,14 +273,14 @@ ProjectorTranscript::~ProjectorTranscript() = default;
 //   "hypothesisParts": DICT LIST
 //
 //
-base::Value::Dict ProjectorTranscript::ToJson() {
-  base::Value::Dict transcript;
+base::DictValue ProjectorTranscript::ToJson() {
+  base::DictValue transcript;
   transcript.Set(kStartOffsetKey,
                  static_cast<int>(start_time_.InMilliseconds()));
   transcript.Set(kEndOffsetKey, static_cast<int>(end_time_.InMilliseconds()));
   transcript.Set(kTextKey, text_);
 
-  base::Value::List hypothesis_parts_list;
+  base::ListValue hypothesis_parts_list;
   for (auto& hypothesis_part : hypothesis_parts_)
     hypothesis_parts_list.Append(HypothesisPartsToDict(hypothesis_part));
 
@@ -367,16 +367,16 @@ std::string ProjectorMetadata::Serialize() {
 //   "captionLanguage": STRING
 //   "tableOfContent": LIST
 //   "recognitionStatus": INTEGER
-base::Value::Dict ProjectorMetadata::ToJson() {
-  base::Value::Dict metadata;
+base::DictValue ProjectorMetadata::ToJson() {
+  base::DictValue metadata;
   metadata.Set(kCaptionLanguage, caption_language_);
 
-  base::Value::List captions_list;
+  base::ListValue captions_list;
   for (auto& transcript : transcripts_)
     captions_list.Append(transcript->ToJson());
   metadata.Set(kCaptionsKey, std::move(captions_list));
 
-  base::Value::List key_ideas_list;
+  base::ListValue key_ideas_list;
   for (auto& key_idea : key_ideas_)
     key_ideas_list.Append(key_idea->ToJson());
   metadata.Set(kKeyIdeasKey, std::move(key_ideas_list));

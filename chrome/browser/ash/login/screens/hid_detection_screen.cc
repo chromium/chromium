@@ -159,7 +159,7 @@ void HIDDetectionScreen::ShowImpl() {
 
 void HIDDetectionScreen::HideImpl() {}
 
-void HIDDetectionScreen::OnUserAction(const base::Value::List& args) {
+void HIDDetectionScreen::OnUserAction(const base::ListValue& args) {
   const std::string& action_id = args[0].GetString();
   if (action_id == kUserActionContinue) {
     OnContinueButtonClicked();

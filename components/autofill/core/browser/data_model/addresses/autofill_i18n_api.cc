@@ -4,10 +4,10 @@
 
 #include "components/autofill/core/browser/data_model/addresses/autofill_i18n_api.h"
 
+#include <algorithm>
 #include <memory>
 #include <string>
 
-#include "base/containers/contains.h"
 #include "base/containers/flat_map.h"
 #include "base/feature_list.h"
 #include "base/notreached.h"
@@ -55,7 +55,7 @@ std::u16string GetFormattingExpressionOverrides(
            "SG", "LK", "TH", "GB", "US", "VN", "ZA"});
 
   if (field_type == ADDRESS_HOME_STREET_LOCATION) {
-    if (base::Contains(kHouseNumberFirstCountriesSet, country_code.value())) {
+    if (kHouseNumberFirstCountriesSet.contains(country_code.value())) {
       return u"${ADDRESS_HOME_HOUSE_NUMBER;;} ${ADDRESS_HOME_STREET_NAME;;}";
     }
   }
@@ -76,8 +76,7 @@ std::u16string GetFormattingExpressionOverrides(
 
   if (field_type == ADDRESS_HOME_ZIP &&
       base::FeatureList::IsEnabled(features::kAutofillSupportSplitZipCode)) {
-    if (base::Contains(kSpaceZipCodeSeparatorCountriesSet,
-                       country_code.value())) {
+    if (kSpaceZipCodeSeparatorCountriesSet.contains(country_code.value())) {
       return u"${ADDRESS_HOME_ZIP_PREFIX;;} ${ADDRESS_HOME_ZIP_SUFFIX;;}";
     }
   }
@@ -466,7 +465,7 @@ bool IsTypeEnabledForCountry(FieldType field_type,
   return std::ranges::any_of(
       it->second, [field_type](const FieldTypeDescription& description) {
         return description.field_type == field_type ||
-               base::Contains(description.children, field_type);
+               std::ranges::contains(description.children, field_type);
       });
 }
 

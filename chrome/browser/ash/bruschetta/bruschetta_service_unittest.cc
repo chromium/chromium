@@ -49,12 +49,12 @@ class BruschettaServiceTest : public testing::Test,
   void TearDown() override {}
 
   void SetupPrefs() {
-    base::Value::Dict pref;
-    base::Value::Dict config;
+    base::DictValue pref;
+    base::DictValue config;
     config.Set(prefs::kPolicyEnabledKey,
                static_cast<int>(prefs::PolicyEnabledState::RUN_ALLOWED));
 
-    base::Value::Dict vtpm;
+    base::DictValue vtpm;
     vtpm.Set(prefs::kPolicyVTPMEnabledKey, false);
     vtpm.Set(prefs::kPolicyVTPMUpdateActionKey,
              static_cast<int>(

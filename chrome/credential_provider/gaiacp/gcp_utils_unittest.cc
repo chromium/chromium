@@ -458,7 +458,7 @@ TEST(Enroll, EnrollToGoogleMdmIfNeeded_NotEnabled) {
   InitializeRegistryOverrideForTesting(&registry_override);
 
   // EnrollToGoogleMdmIfNeeded() should be a noop.
-  ASSERT_EQ(S_OK, EnrollToGoogleMdmIfNeeded(base::Value::Dict()));
+  ASSERT_EQ(S_OK, EnrollToGoogleMdmIfNeeded(base::DictValue()));
 }
 
 // Tests all possible data combinations sent to EnrollToGoogleMdmIfNeeded to
@@ -513,7 +513,7 @@ TEST_P(GcpEnrollmentArgsTest, EnrollToGoogleMdmIfNeeded_MissingArgs) {
                         has(serial_number) && has(machine_guid) &&
                         has(is_user_ad_joined);
 
-  base::Value::Dict properties;
+  base::DictValue properties;
   const auto set_property = [&](std::string_view key, const char* value) {
     if (value) {
       properties.Set(key, value);

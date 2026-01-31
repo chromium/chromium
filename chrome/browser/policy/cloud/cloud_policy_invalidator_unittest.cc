@@ -211,7 +211,7 @@ void CloudPolicyInvalidatorTestBase::StorePolicy(int64_t invalidation_version,
   data->set_policy_value(policy_value_cur_);
   store_.invalidation_version_ = invalidation_version;
   store_.set_policy_data_for_testing(std::move(data));
-  base::Value::Dict policies;
+  base::DictValue policies;
   policies.Set(key::kMaxInvalidationFetchDelay,
                static_cast<int>(
                    CloudPolicyInvalidator::kMaxFetchDelayMin.InMilliseconds()));

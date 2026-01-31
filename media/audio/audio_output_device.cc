@@ -159,7 +159,10 @@ bool AudioOutputDevice::SetVolume(double volume) {
 }
 
 OutputDeviceInfo AudioOutputDevice::GetOutputDeviceInfo() {
-  TRACE_EVENT0("audio", "AudioOutputDevice::GetOutputDeviceInfo");
+  // The wait in this method is a known source of high input latency. Use the
+  // "latency" category to ensure it's visible in general performance traces,
+  // not just audio-specific ones.
+  TRACE_EVENT0("audio,latency", "AudioOutputDevice::GetOutputDeviceInfo");
   DCHECK(!io_task_runner_->BelongsToCurrentThread());
   did_receive_auth_.Wait();
   return GetOutputDeviceInfo_Signaled();

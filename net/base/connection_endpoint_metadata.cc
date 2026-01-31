@@ -49,9 +49,9 @@ bool ConnectionEndpointMetadata::operator<(
 }
 
 base::Value ConnectionEndpointMetadata::ToValue() const {
-  base::Value::Dict dict;
+  base::DictValue dict;
 
-  base::Value::List alpns_list;
+  base::ListValue alpns_list;
   for (const std::string& alpn : supported_protocol_alpns) {
     alpns_list.Append(alpn);
   }
@@ -63,7 +63,7 @@ base::Value ConnectionEndpointMetadata::ToValue() const {
     dict.Set(kTargetNameKey, target_name);
   }
 
-  base::Value::List trust_anchor_ids_list;
+  base::ListValue trust_anchor_ids_list;
   for (const auto& tai : trust_anchor_ids) {
     trust_anchor_ids_list.Append(base::Base64Encode(tai));
   }
@@ -77,11 +77,11 @@ base::Value ConnectionEndpointMetadata::ToValue() const {
 // static
 std::optional<ConnectionEndpointMetadata> ConnectionEndpointMetadata::FromValue(
     const base::Value& value) {
-  const base::Value::Dict* dict = value.GetIfDict();
+  const base::DictValue* dict = value.GetIfDict();
   if (!dict)
     return std::nullopt;
 
-  const base::Value::List* alpns_list =
+  const base::ListValue* alpns_list =
       dict->FindList(kSupportedProtocolAlpnsKey);
   const std::string* ech_config_list_value =
       dict->FindString(kEchConfigListKey);
@@ -109,8 +109,7 @@ std::optional<ConnectionEndpointMetadata> ConnectionEndpointMetadata::FromValue(
     metadata.target_name = *target_name_value;
   }
 
-  const base::Value::List* trust_anchor_ids =
-      dict->FindList(kTrustAnchorIDsKey);
+  const base::ListValue* trust_anchor_ids = dict->FindList(kTrustAnchorIDsKey);
   if (trust_anchor_ids) {
     for (const base::Value& tai : *trust_anchor_ids) {
       const std::string* tai_string = tai.GetIfString();

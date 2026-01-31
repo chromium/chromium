@@ -94,8 +94,9 @@ class TestMessageBase {
     size_t num_handles = 0;
     message->GetSerializedSize(&num_bytes, &num_handles);
     std::vector<MojoHandle> handles(num_handles);
-    if (num_handles)
+    if (num_handles) {
       message->SerializeHandles(handles);
+    }
 
     MojoAppendMessageDataOptions options;
     options.struct_size = sizeof(options);
@@ -108,8 +109,9 @@ class TestMessageBase {
         &buffer_size);
     DCHECK_EQ(MOJO_RESULT_OK, rv);
     DCHECK_GE(buffer_size, base::checked_cast<uint32_t>(num_bytes));
-    if (num_bytes)
+    if (num_bytes) {
       message->SerializePayload(buffer);
+    }
   }
 
   static void DestroyMessageContext(uintptr_t context) {
@@ -127,8 +129,9 @@ class NeverSerializedMessage : public TestMessageBase {
   NeverSerializedMessage& operator=(const NeverSerializedMessage&) = delete;
 
   ~NeverSerializedMessage() override {
-    if (destruction_callback_)
+    if (destruction_callback_) {
       std::move(destruction_callback_).Run();
+    }
   }
 
  private:
@@ -155,8 +158,9 @@ class SimpleMessage : public TestMessageBase {
   SimpleMessage& operator=(const SimpleMessage&) = delete;
 
   ~SimpleMessage() override {
-    if (destruction_callback_)
+    if (destruction_callback_) {
       std::move(destruction_callback_).Run();
+    }
   }
 
   void AddMessagePipe(mojo::ScopedMessagePipeHandle handle) {
@@ -174,8 +178,9 @@ class SimpleMessage : public TestMessageBase {
 
   void SerializeHandles(base::span<MojoHandle> handles) override {
     ASSERT_TRUE(!handles_.empty());
-    for (size_t i = 0; i < handles_.size(); ++i)
+    for (size_t i = 0; i < handles_.size(); ++i) {
       handles[i] = handles_[i].release().value();
+    }
     handles_.clear();
   }
 
@@ -398,8 +403,10 @@ TEST_F(MessageTest, SendLocalSimpleMessageWithHandlesWithContext) {
   auto* original_message = message.get();
   mojo::MessagePipe pipes[4];
   MojoHandle original_handles[4] = {
-      pipes[0].handle0.get().value(), pipes[1].handle0.get().value(),
-      pipes[2].handle0.get().value(), pipes[3].handle0.get().value(),
+      pipes[0].handle0.get().value(),
+      pipes[1].handle0.get().value(),
+      pipes[2].handle0.get().value(),
+      pipes[3].handle0.get().value(),
   };
   message->AddMessagePipe(std::move(pipes[0].handle0));
   message->AddMessagePipe(std::move(pipes[1].handle0));
@@ -1082,8 +1089,9 @@ DEFINE_TEST_CLIENT_TEST_WITH_PIPE(ReadAndIgnoreMessage, MessageTest, h) {
 
   MojoHandle handles[5];
   MojoTestBase::ReadMessageWithHandles(h, handles, 5);
-  for (size_t i = 0; i < 5; ++i)
+  for (size_t i = 0; i < 5; ++i) {
     EXPECT_EQ(MOJO_RESULT_OK, MojoClose(handles[i]));
+  }
   EXPECT_EQ(MOJO_RESULT_OK, MojoClose(h));
 }
 
@@ -1152,8 +1160,9 @@ DEFINE_TEST_CLIENT_TEST_WITH_PIPE(ReadMessageAndCheckPipe, MessageTest, h) {
   MojoTestBase::WriteMessage(handles[0], kTestMessage);
   MojoTestBase::WaitForSignals(handles[4], MOJO_HANDLE_SIGNAL_READABLE);
   EXPECT_EQ(kTestMessage, MojoTestBase::ReadMessage(handles[4]));
-  for (size_t i = 0; i < 5; ++i)
+  for (size_t i = 0; i < 5; ++i) {
     EXPECT_EQ(MOJO_RESULT_OK, MojoClose(handles[i]));
+  }
   EXPECT_EQ(MOJO_RESULT_OK, MojoClose(h));
 }
 

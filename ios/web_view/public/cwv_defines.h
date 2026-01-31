@@ -117,6 +117,9 @@
 // Supports using Image Fetcher.
 #define IOS_WEB_VIEW_SUPPORTS_USING_IMAGE_FETCHER 1
 
+// Supports using card custom image for suggestions.
+#define IOS_WEB_VIEW_SUPPORTS_USING_CARD_CUSTOM_IMAGE 1
+
 // Supports CWVGlobalState.
 #define IOS_WEB_VIEW_SUPPORTS_GLOBAL_STATE 1
 
@@ -140,5 +143,8 @@
 
 // Supports VCN.
 #define IOS_WEB_VIEW_SUPPORTS_VCN 1
+
+// Supports risk based authentication.
+#define IOS_WEB_VIEW_SUPPORTS_RISK_BASED_AUTHENTICATION 1
 
 #endif  // IOS_WEB_VIEW_PUBLIC_CWV_DEFINES_H_

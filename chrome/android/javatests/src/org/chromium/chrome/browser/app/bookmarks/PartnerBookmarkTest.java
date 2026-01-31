@@ -34,7 +34,6 @@ import org.chromium.chrome.browser.bookmarks.BookmarkDelegate;
 import org.chromium.chrome.browser.bookmarks.BookmarkManagerCoordinator;
 import org.chromium.chrome.browser.bookmarks.BookmarkManagerTestingDelegate;
 import org.chromium.chrome.browser.bookmarks.BookmarkModel;
-import org.chromium.chrome.browser.bookmarks.BookmarkPromoHeader;
 import org.chromium.chrome.browser.bookmarks.BookmarkUtils;
 import org.chromium.chrome.browser.commerce.ShoppingServiceFactory;
 import org.chromium.chrome.browser.commerce.ShoppingServiceFactoryJni;
@@ -94,9 +93,6 @@ public class PartnerBookmarkTest {
                     mBookmarkModel.loadFakePartnerBookmarkShimForTesting();
                     mBookmarkModel.finishLoadingBookmarkModel(CallbackUtils.emptyRunnable());
                 });
-
-        // Exclude the BookmarkPromoHeader for a consistent testing setup.
-        BookmarkPromoHeader.forcePromoVisibilityForTesting(false);
 
         mBookmarkManagerCoordinator =
                 mBookmarkTestRule.showBookmarkManager(mActivityTestRule.getActivity());
@@ -201,10 +197,12 @@ public class PartnerBookmarkTest {
     }
 
     private boolean isViewHolderPassivelyDraggable(ViewHolder viewHolder) {
-        return runOnUiThreadBlocking(() -> mAdapter.isPassivelyDraggable(viewHolder));
+        return runOnUiThreadBlocking(
+                () -> mAdapter.getDragTouchHandlerForTest().isPassivelyDraggable(viewHolder));
     }
 
     private boolean isViewHoldersActivelyDraggable(ViewHolder viewHolder) {
-        return runOnUiThreadBlocking(() -> mAdapter.isActivelyDraggable(viewHolder));
+        return runOnUiThreadBlocking(
+                () -> mAdapter.getDragTouchHandlerForTest().isActivelyDraggable(viewHolder));
     }
 }

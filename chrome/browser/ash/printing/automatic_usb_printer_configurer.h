@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "base/check.h"
-#include "base/containers/contains.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
 #include "base/functional/callback.h"
@@ -75,7 +74,7 @@ class AutomaticUsbPrinterConfigurer {
   // the original one sent in UpdateListOfConnectedPrinters(), but the printer
   // id never changes.
   const chromeos::Printer& Printer(const std::string& printer_id) const {
-    DCHECK(base::Contains(connected_printers_, printer_id));
+    DCHECK(connected_printers_.contains(printer_id));
     return connected_printers_.at(printer_id).printer;
   }
 

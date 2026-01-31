@@ -18,7 +18,7 @@ source_set("pin_infobar") {
     "//chrome/browser:browser_public_dependencies",
     "//components/infobars/core",
     "//components/vector_icons",
-    "//ui/gfx:native_widget_types",
+    "//ui/gfx:native_ui_types",
   ]
 
   if (is_mac) {

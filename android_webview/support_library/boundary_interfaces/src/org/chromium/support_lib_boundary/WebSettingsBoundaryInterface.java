@@ -167,7 +167,11 @@ public interface WebSettingsBoundaryInterface {
 
     void setHyperlinkContextMenuItems(@HyperlinkContextMenuItems int hyperlinkMenuItems);
 
-    void setBackForwardCacheSettingsTimeout(int timeout);
+    void setBackForwardCacheSettingsTimeout(long timeout);
 
     void setBackForwardCacheSettingsMaxPagesInCache(int pagesInCache);
+
+    long getBackForwardCacheSettingsTimeout();
+
+    int getBackForwardCacheSettingsMaxPagesInCache();
 }

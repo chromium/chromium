@@ -13,6 +13,7 @@
 #include "base/notreached.h"
 #include "build/build_config.h"
 #include "components/cronet/cronet_context.h"
+#include "components/cronet/metrics_util.h"
 #include "net/base/idempotency.h"
 #include "net/base/io_buffer.h"
 #include "net/base/load_flags.h"
@@ -40,16 +41,6 @@
 namespace cronet {
 
 namespace {
-
-// Returns the string representation of the HostPortPair of the proxy server
-// that was used to fetch the response.
-std::string GetProxy(const net::HttpResponseInfo& info) {
-  if (!info.proxy_chain.IsValid() || info.proxy_chain.is_direct()) {
-    return net::HostPortPair().ToString();
-  }
-  CHECK(info.proxy_chain.is_single_proxy());
-  return info.proxy_chain.First().host_port_pair().ToString();
-}
 
 int CalculateLoadFlags(int load_flags,
                        bool disable_cache,
@@ -230,7 +221,8 @@ void CronetURLRequest::NetworkTasks::OnReceivedRedirect(
       request->response_headers()->GetStatusText(), request->response_headers(),
       request->response_info().was_cached,
       request->response_info().alpn_negotiated_protocol,
-      GetProxy(request->response_info()), received_byte_count_from_redirects_);
+      metrics_util::GetProxy(request->response_info().proxy_chain),
+      received_byte_count_from_redirects_);
   *defer_redirect = true;
 }
 
@@ -265,8 +257,9 @@ void CronetURLRequest::NetworkTasks::OnResponseStarted(net::URLRequest* request,
       request->GetResponseCode(), request->response_headers()->GetStatusText(),
       request->response_headers(), request->response_info().was_cached,
       request->response_info().alpn_negotiated_protocol,
-      GetProxy(request->response_info()),
-      received_byte_count_from_redirects_ + request->GetTotalReceivedBytes());
+      metrics_util::GetProxy(request->response_info().proxy_chain),
+      received_byte_count_from_redirects_ + request->GetTotalReceivedBytes(),
+      metrics_util::IsProxied(request->response_info().proxy_chain));
 }
 
 void CronetURLRequest::NetworkTasks::OnReadCompleted(net::URLRequest* request,

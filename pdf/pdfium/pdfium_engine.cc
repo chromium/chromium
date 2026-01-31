@@ -18,7 +18,6 @@
 #include "base/auto_reset.h"
 #include "base/check_op.h"
 #include "base/compiler_specific.h"
-#include "base/containers/contains.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/span.h"
 #include "base/dcheck_is_on.h"
@@ -98,6 +97,7 @@
 #include "ui/gfx/geometry/rect_conversions.h"
 #include "ui/gfx/geometry/rect_f.h"
 #include "ui/gfx/geometry/size.h"
+#include "ui/gfx/geometry/skia_conversions.h"
 #include "ui/gfx/geometry/vector2d.h"
 #include "ui/gfx/geometry/vector2d_conversions.h"
 #include "v8/include/v8.h"
@@ -393,6 +393,77 @@ wchar_t SimplifyForSearch(wchar_t c) {
     default:
       return c;
   }
+}
+
+struct AdjustedPageTextData {
+  std::u16string page_text;
+
+  // Values in `removed_indices` are in the adjusted text index space and
+  // indicate a character was removed from the page text before the given
+  // index. If multiple characters are removed in a row then there will be
+  // multiple entries with the same value.
+  std::vector<size_t> removed_indices;
+};
+
+AdjustedPageTextData GetAdjustedPageTextData(PDFiumPage* page,
+                                             int char_to_start_searching_from,
+                                             int char_count) {
+  std::u16string page_text;
+  PDFiumAPIStringBufferAdapter<std::u16string> api_string_adapter(
+      &page_text, char_count, false);
+  unsigned short* data =
+      reinterpret_cast<unsigned short*>(api_string_adapter.GetData());
+  int written = FPDFText_GetText(
+      page->GetTextPage(), char_to_start_searching_from, char_count, data);
+  api_string_adapter.Close(written);
+
+  const gfx::RectF page_bounds = page->GetCroppedRect();
+  std::u16string adjusted_page_text;
+  adjusted_page_text.reserve(page_text.size());
+  std::vector<size_t> removed_indices;
+  // When walking through the page text collapse any whitespace regions,
+  // including \r and \n, down to a single ' ' character. This code does
+  // not use base::CollapseWhitespace(), because that function does not
+  // return where the collapsing occurs, but uses the same underlying list of
+  // whitespace characters. Calculating where the collapsed regions are after
+  // the fact is as complex as collapsing them manually.
+  for (size_t i = 0; i < page_text.size(); i++) {
+    // Filter out characters outside the page bounds, which are semantically not
+    // part of the page.
+    if (!page->IsCharInPageBounds(char_to_start_searching_from + i,
+                                  page_bounds)) {
+      removed_indices.push_back(adjusted_page_text.size());
+      continue;
+    }
+
+    char16_t c = page_text[i];
+    // Collapse whitespace regions by inserting a ' ' into the
+    // adjusted text and recording any removed whitespace indices as preceding
+    // it.
+    if (base::IsUnicodeWhitespace(c)) {
+      size_t whitespace_region_begin = i;
+      while (i < page_text.size() && base::IsUnicodeWhitespace(page_text[i])) {
+        ++i;
+      }
+
+      size_t count = i - whitespace_region_begin - 1;
+      removed_indices.insert(removed_indices.end(), count,
+                             adjusted_page_text.size());
+      adjusted_page_text.push_back(' ');
+      if (i >= page_text.size()) {
+        break;
+      }
+      c = page_text[i];
+    }
+
+    if (IsIgnorableCharacter(c)) {
+      removed_indices.push_back(adjusted_page_text.size());
+    } else {
+      adjusted_page_text.push_back(SimplifyForSearch(c));
+    }
+  }
+
+  return {std::move(adjusted_page_text), std::move(removed_indices)};
 }
 
 FocusObjectType GetAnnotationFocusType(FPDF_ANNOTATION_SUBTYPE annot_type) {
@@ -1195,13 +1266,12 @@ void PDFiumEngine::RemoveTextFragments() {
 
 void PDFiumEngine::SearchForFragment(
     const std::u16string& term,
-    int character_to_start_searching_from,
-    int last_character_index_to_search,
+    int char_to_start_searching_from,
     int page_to_search,
     AddSearchResultCallback add_result_callback) {
   SearchUsingICU(term, /*case_sensitive=*/false, /*first_search=*/false,
-                 character_to_start_searching_from,
-                 last_character_index_to_search, page_to_search, page_to_search,
+                 char_to_start_searching_from, /*last_char_index_to_search=*/-1,
+                 page_to_search, page_to_search,
                  std::move(add_result_callback));
 }
 
@@ -2200,7 +2270,7 @@ void PDFiumEngine::StartFind(const std::u16string& text, bool case_sensitive) {
 #endif
 
   bool first_search = (current_find_text_ != text);
-  int character_to_start_searching_from = 0;
+  int char_to_start_searching_from = 0;
   if (first_search) {
     // Do not move `selection_` here, as StopFind() expects to start with the
     // existing selection.
@@ -2212,12 +2282,12 @@ void PDFiumEngine::StartFind(const std::u16string& text, bool case_sensitive) {
       // Start searching from the beginning of the document.
       next_page_to_search_ = 0;
       last_page_to_search_ = pages_.size() - 1;
-      last_character_index_to_search_ = -1;
+      last_char_index_to_search_ = -1;
     } else {
       // There's a current selection, so start from it.
       next_page_to_search_ = old_selection[0].page_index();
-      last_character_index_to_search_ = old_selection[0].char_index();
-      character_to_start_searching_from = old_selection[0].char_index();
+      last_char_index_to_search_ = old_selection[0].char_index();
+      char_to_start_searching_from = old_selection[0].char_index();
       last_page_to_search_ = next_page_to_search_;
     }
     search_in_progress_ = true;
@@ -2226,11 +2296,11 @@ void PDFiumEngine::StartFind(const std::u16string& text, bool case_sensitive) {
   int current_page = next_page_to_search_;
 
   if (pages_[current_page]->available()) {
-    SearchUsingICU(
-        text, case_sensitive, first_search, character_to_start_searching_from,
-        last_character_index_to_search_, current_page, last_page_to_search_,
-        base::BindRepeating(&PDFiumEngine::AddFindResult,
-                            weak_factory_.GetWeakPtr()));
+    SearchUsingICU(text, case_sensitive, first_search,
+                   char_to_start_searching_from, last_char_index_to_search_,
+                   current_page, last_page_to_search_,
+                   base::BindRepeating(&PDFiumEngine::AddFindResult,
+                                       weak_factory_.GetWeakPtr()));
 
     if (!IsPageVisible(current_page)) {
       pages_[current_page]->Unload();
@@ -2238,7 +2308,7 @@ void PDFiumEngine::StartFind(const std::u16string& text, bool case_sensitive) {
   }
 
   if (next_page_to_search_ != last_page_to_search_ ||
-      (first_search && last_character_index_to_search_ != -1)) {
+      (first_search && last_char_index_to_search_ != -1)) {
     ++next_page_to_search_;
   }
 
@@ -2250,7 +2320,7 @@ void PDFiumEngine::StartFind(const std::u16string& text, bool case_sensitive) {
   bool end_of_search =
       next_page_to_search_ == last_page_to_search_ &&
       // Only one page but didn't start midway.
-      ((pages_.size() == 1 && last_character_index_to_search_ == -1) ||
+      ((pages_.size() == 1 && last_char_index_to_search_ == -1) ||
        // Started midway, but only 1 page and we already looped around.
        (pages_.size() == 1 && !first_search) ||
        // Started midway, and we've just looped around.
@@ -2279,8 +2349,8 @@ void PDFiumEngine::StartFind(const std::u16string& text, bool case_sensitive) {
 void PDFiumEngine::SearchUsingICU(const std::u16string& term,
                                   bool case_sensitive,
                                   bool first_search,
-                                  int character_to_start_searching_from,
-                                  int last_character_index_to_search,
+                                  int char_to_start_searching_from,
+                                  int last_char_index_to_search,
                                   int current_page,
                                   int last_page_to_search,
                                   AddSearchResultCallback add_result_callback) {
@@ -2293,84 +2363,31 @@ void PDFiumEngine::SearchUsingICU(const std::u16string& term,
     c = SimplifyForSearch(c);
   }
 
-  const int original_text_length = pages_[current_page]->GetCharCount();
-  int text_length = original_text_length;
-  if (character_to_start_searching_from) {
-    text_length -= character_to_start_searching_from;
-  } else if (!first_search && last_character_index_to_search != -1 &&
+  PDFiumPage* page = pages_[current_page].get();
+  const int original_char_count = page->GetCharCount();
+  int char_count = original_char_count;
+  if (char_to_start_searching_from) {
+    char_count -= char_to_start_searching_from;
+  } else if (!first_search && last_char_index_to_search != -1 &&
              current_page == last_page_to_search) {
-    text_length = last_character_index_to_search;
+    char_count = last_char_index_to_search;
   }
-  if (text_length <= 0) {
+  if (char_count <= 0) {
     return;
   }
 
-  std::u16string page_text;
-  PDFiumAPIStringBufferAdapter<std::u16string> api_string_adapter(
-      &page_text, text_length, false);
-  unsigned short* data =
-      reinterpret_cast<unsigned short*>(api_string_adapter.GetData());
-  int written =
-      FPDFText_GetText(pages_[current_page]->GetTextPage(),
-                       character_to_start_searching_from, text_length, data);
-  api_string_adapter.Close(written);
-
-  const gfx::RectF page_bounds = pages_[current_page]->GetCroppedRect();
-  std::u16string adjusted_page_text;
-  adjusted_page_text.reserve(page_text.size());
-  // Values in `removed_indices` are in the adjusted text index space and
-  // indicate a character was removed from the page text before the given
-  // index. If multiple characters are removed in a row then there will be
-  // multiple entries with the same value.
-  std::vector<size_t> removed_indices;
-  // When walking through the page text collapse any whitespace regions,
-  // including \r and \n, down to a single ' ' character. This code does
-  // not use base::CollapseWhitespace(), because that function does not
-  // return where the collapsing occurs, but uses the same underlying list of
-  // whitespace characters. Calculating where the collapsed regions are after
-  // the fact is as complex as collapsing them manually.
-  for (size_t i = 0; i < page_text.size(); i++) {
-    // Filter out characters outside the page bounds, which are semantically not
-    // part of the page.
-    if (!pages_[current_page]->IsCharInPageBounds(
-            character_to_start_searching_from + i, page_bounds)) {
-      removed_indices.push_back(adjusted_page_text.size());
-      continue;
-    }
-
-    char16_t c = page_text[i];
-    // Collapse whitespace regions by inserting a ' ' into the
-    // adjusted text and recording any removed whitespace indices as preceding
-    // it.
-    if (base::IsUnicodeWhitespace(c)) {
-      size_t whitespace_region_begin = i;
-      while (i < page_text.size() && base::IsUnicodeWhitespace(page_text[i])) {
-        ++i;
-      }
-
-      size_t count = i - whitespace_region_begin - 1;
-      removed_indices.insert(removed_indices.end(), count,
-                             adjusted_page_text.size());
-      adjusted_page_text.push_back(' ');
-      if (i >= page_text.size()) {
-        break;
-      }
-      c = page_text[i];
-    }
-
-    if (IsIgnorableCharacter(c)) {
-      removed_indices.push_back(adjusted_page_text.size());
-    } else {
-      adjusted_page_text.push_back(SimplifyForSearch(c));
-    }
-  }
-
-  if (adjusted_page_text.empty()) {
+  AdjustedPageTextData adjusted_page_text_data =
+      GetAdjustedPageTextData(page, char_to_start_searching_from, char_count);
+  if (adjusted_page_text_data.page_text.empty()) {
     return;
   }
 
+  const std::vector<size_t>& removed_indices =
+      adjusted_page_text_data.removed_indices;
+  FPDF_TEXTPAGE text_page = page->GetTextPage();
   std::vector<PDFiumEngineClient::SearchStringResult> results =
-      client_->SearchString(adjusted_term, adjusted_page_text, case_sensitive);
+      client_->SearchString(adjusted_term, adjusted_page_text_data.page_text,
+                            case_sensitive);
   for (const auto& result : results) {
     // Need to convert from adjusted page text start to page text start, by
     // incrementing for all the characters adjusted before it in the string.
@@ -2393,27 +2410,27 @@ void PDFiumEngine::SearchUsingICU(const std::u16string& term,
     // Need to map the indexes from the page text, which may have generated
     // characters like space etc, to character indices from the page.
     int text_to_start_searching_from = FPDFText_GetTextIndexFromCharIndex(
-        pages_[current_page]->GetTextPage(), character_to_start_searching_from);
-    int temp_start =
+        text_page, char_to_start_searching_from);
+    int text_start =
         page_text_result_start_index + text_to_start_searching_from;
-    int start = FPDFText_GetCharIndexFromTextIndex(
-        pages_[current_page]->GetTextPage(), temp_start);
-    int end = FPDFText_GetCharIndexFromTextIndex(
-        pages_[current_page]->GetTextPage(),
-        temp_start + page_text_result_length);
+    int text_end = text_start + page_text_result_length;
+    int char_start = FPDFText_GetCharIndexFromTextIndex(text_page, text_start);
+    int char_end = FPDFText_GetCharIndexFromTextIndex(text_page, text_end);
 
-    // If `term` occurs at the end of a page, then `end` will be -1 due to the
-    // index being out of bounds. Compensate for this case so the range
+    // If `term` occurs at the end of a page, then `char_end` will be -1 due to
+    // the index being out of bounds. Compensate for this case so the range
     // character count calculation below works out.
-    if (temp_start + page_text_result_length == original_text_length) {
-      DCHECK_EQ(-1, end);
-      end = original_text_length;
+    int text_last_char =
+        FPDFText_GetTextIndexFromCharIndex(text_page, original_char_count - 1);
+    if (text_end == text_last_char + 1) {
+      DCHECK_EQ(-1, char_end);
+      char_end = original_char_count;
     }
-    DCHECK_LT(start, end);
-    DCHECK_EQ(term.size() + term_removed_count,
-              static_cast<size_t>(end - start));
+    DCHECK_GT(char_end, char_start);
+    DCHECK_LE(term.size() + term_removed_count,
+              static_cast<size_t>(char_end - char_start));
     add_result_callback.Run(
-        PDFiumRange(pages_[current_page].get(), start, end - start));
+        PDFiumRange(page, char_start, char_end - char_start));
   }
 }
 
@@ -2493,7 +2510,7 @@ void PDFiumEngine::StopFind() {
   find_results_.clear();
   next_page_to_search_ = -1;
   last_page_to_search_ = -1;
-  last_character_index_to_search_ = -1;
+  last_char_index_to_search_ = -1;
   current_find_index_.reset();
   current_find_text_.clear();
 
@@ -2777,16 +2794,16 @@ int PDFiumEngine::GetNumberOfPages() const {
   return pages_.size();
 }
 
-base::Value::List PDFiumEngine::GetBookmarks() {
-  base::Value::Dict dict = TraverseBookmarks(nullptr, 0);
+base::ListValue PDFiumEngine::GetBookmarks() {
+  base::DictValue dict = TraverseBookmarks(nullptr, 0);
   // The root bookmark contains no useful information.
-  base::Value::List* children = dict.FindList("children");
+  base::ListValue* children = dict.FindList("children");
   return std::move(*children);
 }
 
-base::Value::Dict PDFiumEngine::TraverseBookmarks(FPDF_BOOKMARK bookmark,
-                                                  unsigned int depth) {
-  base::Value::Dict dict;
+base::DictValue PDFiumEngine::TraverseBookmarks(FPDF_BOOKMARK bookmark,
+                                                unsigned int depth) {
+  base::DictValue dict;
   std::u16string title = CallPDFiumWideStringBufferApi(
       base::BindRepeating(&FPDFBookmark_GetTitle, bookmark),
       /*check_expected_size=*/true);
@@ -2825,7 +2842,7 @@ base::Value::Dict PDFiumEngine::TraverseBookmarks(FPDF_BOOKMARK bookmark,
     }
   }
 
-  base::Value::List children;
+  base::ListValue children;
 
   // Don't trust PDFium to handle circular bookmarks.
   constexpr unsigned int kMaxDepth = 128;
@@ -2835,7 +2852,7 @@ base::Value::Dict PDFiumEngine::TraverseBookmarks(FPDF_BOOKMARK bookmark,
              FPDFBookmark_GetFirstChild(doc(), bookmark);
          child_bookmark;
          child_bookmark = FPDFBookmark_GetNextSibling(doc(), child_bookmark)) {
-      if (base::Contains(seen_bookmarks, child_bookmark)) {
+      if (seen_bookmarks.contains(child_bookmark)) {
         break;
       }
 
@@ -3420,7 +3437,7 @@ void PDFiumEngine::CalculateVisiblePages() {
 bool PDFiumEngine::IsPageVisible(int page_index) const {
   // CalculateVisiblePages() must have been called first to populate
   // `visible_pages_`. Otherwise, this will always return false.
-  return base::Contains(visible_pages_, page_index);
+  return std::ranges::contains(visible_pages_, page_index);
 }
 
 void PDFiumEngine::ScrollToPage(int page) {
@@ -3445,7 +3462,7 @@ bool PDFiumEngine::CheckPageAvailable(uint32_t index,
 
   FX_DOWNLOADHINTS& download_hints = document_->download_hints();
   if (!FPDFAvail_IsPageAvail(fpdf_availability(), index, &download_hints)) {
-    if (!base::Contains(*pending, index)) {
+    if (!std::ranges::contains(*pending, index)) {
       pending->push_back(index);
     }
     return false;
@@ -3895,6 +3912,13 @@ void PDFiumEngine::Highlight(const RegionData& region,
                              SkColor color,
                              std::vector<gfx::Rect>& highlighted_rects) const {
   gfx::Rect new_rect = rect;
+  // `rect` has been found to be able to be outside the addressable bounds of
+  // `region` (see crbug.com/476663015 and duplicates), so intersect it with the
+  // addressable region. Taking `row_pixels == region.stride/4` works because
+  // the bitmap format is always some form of BGRx.
+  new_rect.Intersect(
+      gfx::Rect(region.stride / 4, region.buffer.size() / region.stride));
+
   for (const auto& highlighted : highlighted_rects) {
     new_rect.Subtract(highlighted);
   }

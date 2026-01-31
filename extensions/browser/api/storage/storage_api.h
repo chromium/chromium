@@ -58,7 +58,7 @@ class StorageStorageAreaGetFunction : public SettingsFunction {
   // Called after getting data from storage. If `defaults` is provided, merges
   // the data from `result` into the dictionary. This allows developers to
   // provide a fallback for data not present in storage.
-  void OnGetOperationFinished(std::optional<base::Value::Dict> defaults,
+  void OnGetOperationFinished(std::optional<base::DictValue> defaults,
                               StorageFrontend::GetResult result);
 };
 

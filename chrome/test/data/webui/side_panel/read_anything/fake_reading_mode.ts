@@ -28,6 +28,9 @@ export class FakeReadingMode {
   speechRate: number = 1;
   highlightGranularity: number = 0;
 
+  // Current line focus value.
+  lineFocus: number = 0;
+
   // Enum values for various visual theme changes.
   standardLineSpacing: number = 0;
   looseLineSpacing: number = 1;
@@ -60,6 +63,24 @@ export class FakeReadingMode {
   contentFinishedStopSource: number = 34;
   unexpectedUpdateContentStopSource: number = 35;
 
+  // Enum values for line focus modes.
+  lineFocusOff: number = 50;
+  lineFocusSmallStaticWindow: number = 51;
+  lineFocusMediumStaticWindow: number = 52;
+  lineFocusLargeStaticWindow: number = 53;
+  lineFocusSmallCursorWindow: number = 54;
+  lineFocusMediumCursorWindow: number = 55;
+  lineFocusLargeCursorWindow: number = 56;
+  lineFocusStaticLine: number = 57;
+  lineFocusCursorLine: number = 58;
+  // Enum values for presentation states.
+  inSidePanelPresentationState: number = 2;
+  inImmersiveOverlayPresentationState: number = 3;
+
+  // Current Read Anything distilled values.
+  htmlContent: string = '';
+  title: string = '';
+
   // Whether the Read Aloud feature flag is enabled.
   isReadAloudEnabled: boolean = true;
   imagesFeatureEnabled: boolean = false;
@@ -69,6 +90,12 @@ export class FakeReadingMode {
 
   // Whether the line focus feature flag is enabled.
   isLineFocusEnabled: boolean = false;
+
+  // Whether the text segmentation  feature flag is enabled.
+  isTsTextSegmentationEnabled: boolean = false;
+
+  // Whether the readability feature flag is enabled.
+  isReadabilityEnabled: boolean = false;
 
   // Returns true if the webpage corresponds to a Google Doc.
   isGoogleDocs: boolean = false;
@@ -216,6 +243,11 @@ export class FakeReadingMode {
     this.highlightGranularity = value;
   }
 
+  // Called when the line focus mode is changed via the webui toolbar.
+  onLineFocusChanged(value: number) {
+    this.lineFocus = value;
+  }
+
   // Called when a user toggles a switch in the language menu
   onLanguagePrefChange(lang: string, enabled: boolean) {
     if (enabled) {
@@ -275,6 +307,29 @@ export class FakeReadingMode {
 
   // Log when the empty state page is shown.
   logEmptyState(): void {}
+
+  // Ping that a line focus session has started.
+  startLineFocusSession(): void {}
+
+  // Log all the line focus session info, including length of time and
+  // movement activity.
+  logLineFocusSession(): void {}
+
+  // Add the given distance to the cumulative scroll distance for the current
+  // line focus session.
+  addLineFocusScrollDistance(_distance: number): void {}
+
+  // Add the given distance to the cumulative mouse distance for the current
+  // line focus session.
+  addLineFocusMouseDistance(_distance: number): void {}
+
+  // Increment the cumulative keyboard line count for the current line focus
+  // session.
+  incrementLineFocusKeyboardLines(): void {}
+
+  // Increment the cumulative speech line count for the current line focus
+  // session.
+  incrementLineFocusSpeechLines(): void {}
 
   // Called when the highlight granularity is changed via the webui toolbar.
   turnedHighlightOn() {
@@ -488,4 +543,14 @@ export class FakeReadingMode {
 
   // Logs the extension state.
   logExtenstionState() {}
+
+  // Called by the Read Anything app to request the presentation state.
+  sendGetPresentationStateRequest() {}
+
+  // Called by the Read Anything app to close the immersive mode UI.
+  close() {}
+
+  // Called by the Read Anything app to toggle between Side Panel and Immersive
+  // Mode.
+  togglePresentation() {}
 }

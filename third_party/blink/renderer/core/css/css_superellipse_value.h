@@ -29,6 +29,8 @@ class CSSSuperellipseValue : public CSSValue {
 
   const CSSPrimitiveValue& Param() const { return *param_; }
 
+  bool HasRandomFunctions() const;
+
   void TraceAfterDispatch(blink::Visitor*) const;
 
  private:

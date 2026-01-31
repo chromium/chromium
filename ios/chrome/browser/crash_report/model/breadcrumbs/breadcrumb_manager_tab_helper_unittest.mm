@@ -7,7 +7,6 @@
 #import <string>
 
 #import "base/containers/circular_deque.h"
-#import "base/containers/contains.h"
 #import "base/strings/string_split.h"
 #import "base/strings/stringprintf.h"
 #import "components/breadcrumbs/core/breadcrumb_manager.h"
@@ -109,13 +108,13 @@ TEST_F(BreadcrumbManagerTabHelperTest, EventsLogged) {
   const auto& events = GetEvents();
   ASSERT_EQ(1u, events.size());
   EXPECT_TRUE(
-      base::Contains(events.back(), breadcrumbs::kBreadcrumbDidStartNavigation))
+      events.back().contains(breadcrumbs::kBreadcrumbDidStartNavigation))
       << events.back();
 
   first_web_state_.OnNavigationFinished(&context);
   ASSERT_EQ(2u, events.size());
-  EXPECT_TRUE(base::Contains(events.back(),
-                             breadcrumbs::kBreadcrumbDidFinishNavigation))
+  EXPECT_TRUE(
+      events.back().contains(breadcrumbs::kBreadcrumbDidFinishNavigation))
       << events.back();
 }
 
@@ -131,11 +130,11 @@ TEST_F(BreadcrumbManagerTabHelperTest, UniqueEvents) {
   const auto& events = GetEvents();
   ASSERT_EQ(2u, events.size());
   EXPECT_STRNE(events.front().c_str(), events.back().c_str());
-  EXPECT_TRUE(base::Contains(events.front(),
-                             breadcrumbs::kBreadcrumbDidStartNavigation))
+  EXPECT_TRUE(
+      events.front().contains(breadcrumbs::kBreadcrumbDidStartNavigation))
       << events.front();
   EXPECT_TRUE(
-      base::Contains(events.back(), breadcrumbs::kBreadcrumbDidStartNavigation))
+      events.back().contains(breadcrumbs::kBreadcrumbDidStartNavigation))
       << events.back();
 }
 
@@ -149,8 +148,7 @@ TEST_F(BreadcrumbManagerTabHelperTest, GoogleNavigationStart) {
   const auto& events = GetEvents();
   ASSERT_EQ(1u, events.size());
 
-  EXPECT_TRUE(
-      base::Contains(events.front(), breadcrumbs::kBreadcrumbGoogleNavigation))
+  EXPECT_TRUE(events.front().contains(breadcrumbs::kBreadcrumbGoogleNavigation))
       << events.front();
 }
 
@@ -167,7 +165,7 @@ TEST_F(BreadcrumbManagerTabHelperTest, GooglePlayNavigationStart) {
   // #google is useful to indicate SRP. There is no need to know URLs of other
   // visited google properties.
   EXPECT_FALSE(
-      base::Contains(events.front(), breadcrumbs::kBreadcrumbGoogleNavigation))
+      events.front().contains(breadcrumbs::kBreadcrumbGoogleNavigation))
       << events.front();
 }
 
@@ -181,13 +179,11 @@ TEST_F(BreadcrumbManagerTabHelperTest, ChromeNewTabNavigationStart) {
   const auto& events = GetEvents();
   ASSERT_EQ(1u, events.size());
 
-  EXPECT_TRUE(base::Contains(
-      events.front(),
+  EXPECT_TRUE(events.front().contains(
       base::StringPrintf("%s%lld", breadcrumbs::kBreadcrumbDidStartNavigation,
                          context.GetNavigationId())))
       << events.front();
-  EXPECT_TRUE(
-      base::Contains(events.front(), breadcrumbs::kBreadcrumbNtpNavigation))
+  EXPECT_TRUE(events.front().contains(breadcrumbs::kBreadcrumbNtpNavigation))
       << events.front();
 }
 
@@ -201,13 +197,11 @@ TEST_F(BreadcrumbManagerTabHelperTest, AboutNewTabNavigationStart) {
   const auto& events = GetEvents();
   ASSERT_EQ(1u, events.size());
 
-  EXPECT_TRUE(base::Contains(
-      events.front(),
+  EXPECT_TRUE(events.front().contains(
       base::StringPrintf("%s%lld", breadcrumbs::kBreadcrumbDidStartNavigation,
                          context.GetNavigationId())))
       << events.front();
-  EXPECT_TRUE(
-      base::Contains(events.front(), breadcrumbs::kBreadcrumbNtpNavigation))
+  EXPECT_TRUE(events.front().contains(breadcrumbs::kBreadcrumbNtpNavigation))
       << events.front();
 }
 
@@ -221,8 +215,7 @@ TEST_F(BreadcrumbManagerTabHelperTest, NavigationUniqueId) {
   const auto& events = GetEvents();
   ASSERT_EQ(1u, events.size());
 
-  EXPECT_TRUE(base::Contains(
-      events.front(),
+  EXPECT_TRUE(events.front().contains(
       base::StringPrintf("%s%lld", breadcrumbs::kBreadcrumbDidStartNavigation,
                          context.GetNavigationId())))
       << events.front();
@@ -230,8 +223,7 @@ TEST_F(BreadcrumbManagerTabHelperTest, NavigationUniqueId) {
   // DidFinishNavigation
   first_web_state_.OnNavigationFinished(&context);
   ASSERT_EQ(2u, events.size());
-  EXPECT_TRUE(base::Contains(
-      events.back(),
+  EXPECT_TRUE(events.back().contains(
       base::StringPrintf("%s%lld", breadcrumbs::kBreadcrumbDidFinishNavigation,
                          context.GetNavigationId())))
       << events.back();
@@ -248,15 +240,15 @@ TEST_F(BreadcrumbManagerTabHelperTest, RendererInitiatedByUser) {
   const auto& events = GetEvents();
   ASSERT_EQ(1u, events.size());
 
-  EXPECT_TRUE(base::Contains(events.back(), "#link")) << events.back();
+  EXPECT_TRUE(events.back().contains("#link")) << events.back();
   EXPECT_TRUE(
-      base::Contains(events.back(), breadcrumbs::kBreadcrumbDidStartNavigation))
+      events.back().contains(breadcrumbs::kBreadcrumbDidStartNavigation))
       << events.back();
-  EXPECT_TRUE(base::Contains(events.back(),
-                             breadcrumbs::kBreadcrumbRendererInitiatedByUser))
+  EXPECT_TRUE(
+      events.back().contains(breadcrumbs::kBreadcrumbRendererInitiatedByUser))
       << events.back();
-  EXPECT_FALSE(base::Contains(
-      events.back(), breadcrumbs::kBreadcrumbRendererInitiatedByScript))
+  EXPECT_FALSE(
+      events.back().contains(breadcrumbs::kBreadcrumbRendererInitiatedByScript))
       << events.back();
 }
 
@@ -272,15 +264,15 @@ TEST_F(BreadcrumbManagerTabHelperTest, RendererInitiatedByScript) {
   const auto& events = GetEvents();
   ASSERT_EQ(1u, events.size());
 
-  EXPECT_TRUE(base::Contains(events.back(), "#reload")) << events.back();
+  EXPECT_TRUE(events.back().contains("#reload")) << events.back();
   EXPECT_TRUE(
-      base::Contains(events.back(), breadcrumbs::kBreadcrumbDidStartNavigation))
+      events.back().contains(breadcrumbs::kBreadcrumbDidStartNavigation))
       << events.back();
-  EXPECT_FALSE(base::Contains(events.back(),
-                              breadcrumbs::kBreadcrumbRendererInitiatedByUser))
+  EXPECT_FALSE(
+      events.back().contains(breadcrumbs::kBreadcrumbRendererInitiatedByUser))
       << events.back();
-  EXPECT_TRUE(base::Contains(events.back(),
-                             breadcrumbs::kBreadcrumbRendererInitiatedByScript))
+  EXPECT_TRUE(
+      events.back().contains(breadcrumbs::kBreadcrumbRendererInitiatedByScript))
       << events.back();
 }
 
@@ -295,15 +287,15 @@ TEST_F(BreadcrumbManagerTabHelperTest, BrowserInitiatedByScript) {
   const auto& events = GetEvents();
   ASSERT_EQ(1u, events.size());
 
-  EXPECT_TRUE(base::Contains(events.back(), "#typed")) << events.back();
+  EXPECT_TRUE(events.back().contains("#typed")) << events.back();
   EXPECT_TRUE(
-      base::Contains(events.back(), breadcrumbs::kBreadcrumbDidStartNavigation))
+      events.back().contains(breadcrumbs::kBreadcrumbDidStartNavigation))
       << events.back();
-  EXPECT_FALSE(base::Contains(events.back(),
-                              breadcrumbs::kBreadcrumbRendererInitiatedByUser))
+  EXPECT_FALSE(
+      events.back().contains(breadcrumbs::kBreadcrumbRendererInitiatedByUser))
       << events.back();
-  EXPECT_FALSE(base::Contains(
-      events.back(), breadcrumbs::kBreadcrumbRendererInitiatedByScript))
+  EXPECT_FALSE(
+      events.back().contains(breadcrumbs::kBreadcrumbRendererInitiatedByScript))
       << events.back();
 }
 
@@ -317,10 +309,10 @@ TEST_F(BreadcrumbManagerTabHelperTest, Download) {
   const auto& events = GetEvents();
   ASSERT_EQ(1u, events.size());
 
-  EXPECT_TRUE(base::Contains(events.back(),
-                             breadcrumbs::kBreadcrumbDidFinishNavigation))
+  EXPECT_TRUE(
+      events.back().contains(breadcrumbs::kBreadcrumbDidFinishNavigation))
       << events.back();
-  EXPECT_TRUE(base::Contains(events.back(), breadcrumbs::kBreadcrumbDownload))
+  EXPECT_TRUE(events.back().contains(breadcrumbs::kBreadcrumbDownload))
       << events.back();
 }
 
@@ -333,9 +325,9 @@ TEST_F(BreadcrumbManagerTabHelperTest, PdfLoad) {
   const auto& events = GetEvents();
   ASSERT_EQ(1u, events.size());
 
-  EXPECT_TRUE(base::Contains(events.back(), breadcrumbs::kBreadcrumbPageLoaded))
+  EXPECT_TRUE(events.back().contains(breadcrumbs::kBreadcrumbPageLoaded))
       << events.back();
-  EXPECT_TRUE(base::Contains(events.back(), breadcrumbs::kBreadcrumbPdfLoad))
+  EXPECT_TRUE(events.back().contains(breadcrumbs::kBreadcrumbPdfLoad))
       << events.back();
 }
 
@@ -347,10 +339,9 @@ TEST_F(BreadcrumbManagerTabHelperTest, PageLoadSuccess) {
   const auto& events = GetEvents();
   ASSERT_EQ(1u, events.size());
 
-  EXPECT_TRUE(base::Contains(events.back(), breadcrumbs::kBreadcrumbPageLoaded))
+  EXPECT_TRUE(events.back().contains(breadcrumbs::kBreadcrumbPageLoaded))
       << events.back();
-  EXPECT_FALSE(
-      base::Contains(events.back(), breadcrumbs::kBreadcrumbPageLoadFailure))
+  EXPECT_FALSE(events.back().contains(breadcrumbs::kBreadcrumbPageLoadFailure))
       << events.back();
 }
 
@@ -362,10 +353,9 @@ TEST_F(BreadcrumbManagerTabHelperTest, PageLoadFailure) {
   const auto& events = GetEvents();
   ASSERT_EQ(1u, events.size());
 
-  EXPECT_TRUE(base::Contains(events.back(), breadcrumbs::kBreadcrumbPageLoaded))
+  EXPECT_TRUE(events.back().contains(breadcrumbs::kBreadcrumbPageLoaded))
       << events.back();
-  EXPECT_TRUE(
-      base::Contains(events.back(), breadcrumbs::kBreadcrumbPageLoadFailure))
+  EXPECT_TRUE(events.back().contains(breadcrumbs::kBreadcrumbPageLoadFailure))
       << events.back();
 }
 
@@ -378,16 +368,14 @@ TEST_F(BreadcrumbManagerTabHelperTest, NtpPageLoad) {
   const auto& events = GetEvents();
   ASSERT_EQ(1u, events.size());
 
-  EXPECT_TRUE(base::Contains(events.back(), breadcrumbs::kBreadcrumbPageLoaded))
+  EXPECT_TRUE(events.back().contains(breadcrumbs::kBreadcrumbPageLoaded))
       << events.back();
-  EXPECT_TRUE(
-      base::Contains(events.back(), breadcrumbs::kBreadcrumbNtpNavigation))
+  EXPECT_TRUE(events.back().contains(breadcrumbs::kBreadcrumbNtpNavigation))
       << events.back();
   // NTP navigation can't fail, so there is no success/failure metadata.
-  EXPECT_TRUE(base::Contains(events.back(), breadcrumbs::kBreadcrumbPageLoaded))
+  EXPECT_TRUE(events.back().contains(breadcrumbs::kBreadcrumbPageLoaded))
       << events.back();
-  EXPECT_TRUE(
-      base::Contains(events.back(), breadcrumbs::kBreadcrumbNtpNavigation))
+  EXPECT_TRUE(events.back().contains(breadcrumbs::kBreadcrumbNtpNavigation))
       << events.back();
 }
 
@@ -405,11 +393,11 @@ TEST_F(BreadcrumbManagerTabHelperTest, NavigationError) {
   const auto& events = GetEvents();
   ASSERT_EQ(1u, events.size());
 
-  EXPECT_TRUE(base::Contains(events.back(),
-                             breadcrumbs::kBreadcrumbDidFinishNavigation))
+  EXPECT_TRUE(
+      events.back().contains(breadcrumbs::kBreadcrumbDidFinishNavigation))
       << events.back();
-  EXPECT_TRUE(base::Contains(
-      events.back(), net::ErrorToShortString(net::ERR_INTERNET_DISCONNECTED)))
+  EXPECT_TRUE(events.back().contains(
+      net::ErrorToShortString(net::ERR_INTERNET_DISCONNECTED)))
       << events.back();
 }
 
@@ -436,11 +424,10 @@ TEST_F(BreadcrumbManagerTabHelperTest, DidChangeVisibleSecurityState) {
   first_web_state_.OnVisibleSecurityStateChanged();
   const auto& events = GetEvents();
   ASSERT_EQ(1u, events.size());
-  EXPECT_TRUE(
-      base::Contains(events.back(), breadcrumbs::kBreadcrumbMixedContent))
+  EXPECT_TRUE(events.back().contains(breadcrumbs::kBreadcrumbMixedContent))
       << events.back();
-  EXPECT_FALSE(base::Contains(events.back(),
-                              breadcrumbs::kBreadcrumbAuthenticationBroken))
+  EXPECT_FALSE(
+      events.back().contains(breadcrumbs::kBreadcrumbAuthenticationBroken))
       << events.back();
 
   // Broken authentication.
@@ -448,11 +435,10 @@ TEST_F(BreadcrumbManagerTabHelperTest, DidChangeVisibleSecurityState) {
   status.security_style = web::SECURITY_STYLE_AUTHENTICATION_BROKEN;
   first_web_state_.OnVisibleSecurityStateChanged();
   ASSERT_EQ(2u, events.size());
-  EXPECT_FALSE(
-      base::Contains(events.back(), breadcrumbs::kBreadcrumbMixedContent))
+  EXPECT_FALSE(events.back().contains(breadcrumbs::kBreadcrumbMixedContent))
       << events.back();
-  EXPECT_TRUE(base::Contains(events.back(),
-                             breadcrumbs::kBreadcrumbAuthenticationBroken))
+  EXPECT_TRUE(
+      events.back().contains(breadcrumbs::kBreadcrumbAuthenticationBroken))
       << events.back();
 }
 
@@ -471,10 +457,8 @@ TEST_F(BreadcrumbManagerTabHelperTest, AddInfobar) {
 
   const auto& events = GetEvents();
   ASSERT_EQ(1u, events.size());
-  EXPECT_TRUE(base::Contains(
-      events.back(),
-      base::StringPrintf("%s%d", breadcrumbs::kBreadcrumbInfobarAdded,
-                         identifier)))
+  EXPECT_TRUE(events.back().contains(base::StringPrintf(
+      "%s%d", breadcrumbs::kBreadcrumbInfobarAdded, identifier)))
       << events.back();
 }
 
@@ -507,15 +491,11 @@ TEST_F(BreadcrumbManagerTabHelperTest, InfobarTypes) {
   const auto& events = GetEvents();
   ASSERT_EQ(3u, events.size());
   EXPECT_NE(events.front(), events.back());
-  EXPECT_TRUE(base::Contains(
-      events.front(),
-      base::StringPrintf("%s%d", breadcrumbs::kBreadcrumbInfobarAdded,
-                         first_identifier)))
+  EXPECT_TRUE(events.front().contains(base::StringPrintf(
+      "%s%d", breadcrumbs::kBreadcrumbInfobarAdded, first_identifier)))
       << events.back();
-  EXPECT_TRUE(base::Contains(
-      events.back(),
-      base::StringPrintf("%s%d", breadcrumbs::kBreadcrumbInfobarAdded,
-                         second_identifier)))
+  EXPECT_TRUE(events.back().contains(base::StringPrintf(
+      "%s%d", breadcrumbs::kBreadcrumbInfobarAdded, second_identifier)))
       << events.back();
 }
 
@@ -538,13 +518,11 @@ TEST_F(BreadcrumbManagerTabHelperTest, RemoveInfobarNotAnimated) {
 
   const auto& events = GetEvents();
   ASSERT_EQ(2u, events.size());
-  EXPECT_TRUE(base::Contains(
-      events.back(),
-      base::StringPrintf("%s%d", breadcrumbs::kBreadcrumbInfobarRemoved,
-                         identifier)))
+  EXPECT_TRUE(events.back().contains(base::StringPrintf(
+      "%s%d", breadcrumbs::kBreadcrumbInfobarRemoved, identifier)))
       << events.back();
   EXPECT_TRUE(
-      base::Contains(events.back(), breadcrumbs::kBreadcrumbInfobarNotAnimated))
+      events.back().contains(breadcrumbs::kBreadcrumbInfobarNotAnimated))
       << events.back();
 }
 
@@ -567,13 +545,11 @@ TEST_F(BreadcrumbManagerTabHelperTest, RemoveInfobarAnimated) {
 
   const auto& events = GetEvents();
   ASSERT_EQ(2u, events.size());
-  EXPECT_TRUE(base::Contains(
-      events.back(),
-      base::StringPrintf("%s%d", breadcrumbs::kBreadcrumbInfobarRemoved,
-                         identifier)))
+  EXPECT_TRUE(events.back().contains(base::StringPrintf(
+      "%s%d", breadcrumbs::kBreadcrumbInfobarRemoved, identifier)))
       << events.back();
   EXPECT_FALSE(
-      base::Contains(events.back(), breadcrumbs::kBreadcrumbInfobarNotAnimated))
+      events.back().contains(breadcrumbs::kBreadcrumbInfobarNotAnimated))
       << events.back();
 }
 
@@ -593,10 +569,8 @@ TEST_F(BreadcrumbManagerTabHelperTest, ReplaceInfobar) {
 
   InfoBarDelegate::InfoBarIdentifier identifier =
       InfoBarDelegate::InfoBarIdentifier::TEST_INFOBAR;
-  EXPECT_TRUE(base::Contains(
-      events.back(),
-      base::StringPrintf("%s%d", breadcrumbs::kBreadcrumbInfobarReplaced,
-                         identifier)))
+  EXPECT_TRUE(events.back().contains(base::StringPrintf(
+      "%s%d", breadcrumbs::kBreadcrumbInfobarReplaced, identifier)))
       << events.back();
 }
 
@@ -624,7 +598,7 @@ TEST_F(BreadcrumbManagerTabHelperTest, SequentialInfobarReplacements) {
   std::string expected_event =
       base::StringPrintf("%s%d %d", breadcrumbs::kBreadcrumbInfobarReplaced,
                          InfoBarDelegate::InfoBarIdentifier::TEST_INFOBAR, 200);
-  EXPECT_TRUE(base::Contains(events.back(), expected_event)) << events.back();
+  EXPECT_TRUE(events.back().contains(expected_event)) << events.back();
 }
 
 // Tests Zoom event.
@@ -637,7 +611,7 @@ TEST_F(BreadcrumbManagerTabHelperTest, Zoom) {
 
   const auto& events = GetEvents();
   ASSERT_EQ(1u, events.size());
-  EXPECT_TRUE(base::Contains(events.back(), breadcrumbs::kBreadcrumbZoom))
+  EXPECT_TRUE(events.back().contains(breadcrumbs::kBreadcrumbZoom))
       << events.back();
 }
 
@@ -650,7 +624,7 @@ TEST_F(BreadcrumbManagerTabHelperTest, Scroll) {
 
   const auto& events = GetEvents();
   ASSERT_EQ(1u, events.size());
-  EXPECT_TRUE(base::Contains(events.back(), breadcrumbs::kBreadcrumbScroll))
+  EXPECT_TRUE(events.back().contains(breadcrumbs::kBreadcrumbScroll))
       << events.back();
 }
 
@@ -672,5 +646,5 @@ TEST_F(BreadcrumbManagerTabHelperTest, MultipleScrolls) {
   // Validate the last one, which occurs at the 200th scroll completion.
   std::string expected =
       base::StringPrintf("%s %d", breadcrumbs::kBreadcrumbScroll, 200);
-  EXPECT_TRUE(base::Contains(events.back(), expected)) << events.back();
+  EXPECT_TRUE(events.back().contains(expected)) << events.back();
 }

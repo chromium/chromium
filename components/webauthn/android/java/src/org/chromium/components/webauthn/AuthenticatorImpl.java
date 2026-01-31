@@ -177,14 +177,13 @@ public final class AuthenticatorImpl implements Authenticator, AuthenticationCon
             return;
         }
 
-        boolean isConditionalCreate =
-                options.isConditional
-                        && DeviceFeatureMap.isEnabled(DeviceFeatureList.WEBAUTHN_PASSKEY_UPGRADE);
-
-        if (mCreateConfirmationUiDelegate != null && !isConditionalCreate) {
+        if (mCreateConfirmationUiDelegate != null && !options.isConditional) {
             if (!mCreateConfirmationUiDelegate.show(
                     () -> continueMakeCredential(options),
                     () -> {
+                        if (mRequestCallback == null) {
+                            return;
+                        }
                         RequestMetrics metrics =
                                 new RequestMetrics.Builder()
                                         .setMakeCredentialOutcome(
@@ -192,10 +191,9 @@ public final class AuthenticatorImpl implements Authenticator, AuthenticationCon
                                         .setMakeCredentialResult(
                                                 CredentialRequestResult.USER_CANCELLED)
                                         .build();
-                        assumeNonNull(mRequestCallback)
-                                .onComplete(
-                                        WebauthnRequestResponse.forFailedMakeCredential(
-                                                AuthenticatorStatus.NOT_ALLOWED_ERROR, metrics));
+                        mRequestCallback.onComplete(
+                                WebauthnRequestResponse.forFailedMakeCredential(
+                                        AuthenticatorStatus.NOT_ALLOWED_ERROR, metrics));
                     })) {
                 continueMakeCredential(options);
             }
@@ -241,9 +239,16 @@ public final class AuthenticatorImpl implements Authenticator, AuthenticationCon
         mIsConditionalRequest = options.mediation == Mediation.CONDITIONAL;
         mIsImmediateRequest = options.mediation == Mediation.IMMEDIATE;
 
+        boolean isPasswordOnlyFlux =
+                options.publicKey == null
+                        && options.password
+                        && options.mediation == Mediation.IMMEDIATE
+                        && DeviceFeatureMap.isEnabled(
+                                DeviceFeatureList
+                                        .WEBAUTHN_AUTHENTICATOR_PASSWORDS_ONLY_IMMEDIATE_REQUESTS);
         if (!GmsCoreUtils.isWebauthnSupported()
                 || (!isChrome(mWebContents) && !GmsCoreUtils.isResultReceiverSupported())
-                || options.publicKey == null) {
+                || (options.publicKey == null && !isPasswordOnlyFlux)) {
             RequestMetrics metrics =
                     new RequestMetrics.Builder()
                             .setGetAssertionOutcome(GetAssertionOutcome.OTHER_FAILURE)
@@ -253,7 +258,6 @@ public final class AuthenticatorImpl implements Authenticator, AuthenticationCon
                             AuthenticatorStatus.NOT_IMPLEMENTED, metrics));
             return;
         }
-        assumeNonNull(options.publicKey);
 
         mPendingFido2CredentialRequest = getFido2CredentialRequest();
         mPendingFido2CredentialRequest.handleGetCredentialRequest(
@@ -367,14 +371,10 @@ public final class AuthenticatorImpl implements Authenticator, AuthenticationCon
                                     createWebAuthnClientCapability(
                                             AuthenticatorConstants.CAPABILITY_UVPAA,
                                             couldSupportUvpaa() && isUvpaa));
-                            boolean conditionalCreateEnabled =
-                                    couldSupportConditionalMediation()
-                                            && DeviceFeatureMap.isEnabled(
-                                                    DeviceFeatureList.WEBAUTHN_PASSKEY_UPGRADE);
                             capabilities.add(
                                     createWebAuthnClientCapability(
                                             AuthenticatorConstants.CAPABILITY_CONDITIONAL_CREATE,
-                                            isUvpaa && conditionalCreateEnabled));
+                                            isUvpaa && couldSupportConditionalMediation()));
                             capabilities.add(
                                     createWebAuthnClientCapability(
                                             AuthenticatorConstants.CAPABILITY_IMMEDIATE_GET,

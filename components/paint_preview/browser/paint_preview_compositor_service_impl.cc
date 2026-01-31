@@ -86,25 +86,6 @@ PaintPreviewCompositorServiceImpl::CreateCompositor(
   return compositor;
 }
 
-void PaintPreviewCompositorServiceImpl::OnMemoryPressure(
-    base::MemoryPressureLevel memory_pressure_level) {
-  DCHECK(default_task_runner_->RunsTasksInCurrentSequence());
-  compositor_task_runner_->PostTask(
-      FROM_HERE,
-      base::BindOnce(
-          [](mojo::Remote<mojom::PaintPreviewCompositorCollection>* remote,
-             base::MemoryPressureLevel memory_pressure_level) {
-            if (!remote->is_bound()) {
-              return;
-            }
-            remote->get()->OnMemoryPressure(memory_pressure_level);
-          },
-          // `compositor_service_` is only deleted on `compositor_task_runner_`
-          // using TaskRunnerDeleter. Since the parent object is alive at this
-          // point passing a pointer is safe.
-          compositor_service_.get(), memory_pressure_level));
-}
-
 bool PaintPreviewCompositorServiceImpl::HasActiveClients() const {
   DCHECK(default_task_runner_->RunsTasksInCurrentSequence());
   return !active_clients_.empty();

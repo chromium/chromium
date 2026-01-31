@@ -6,7 +6,6 @@
 
 #include <unordered_set>
 
-#include "base/containers/contains.h"
 #include "base/no_destructor.h"
 #include "base/strings/string_util.h"
 
@@ -54,7 +53,7 @@ bool CommonSchemeRegistry::IsExtensionScheme(const std::string& scheme) {
     return false;
   }
   DCHECK_EQ(scheme, base::ToLowerASCII(scheme));
-  return base::Contains(GetExtensionSchemes(), scheme);
+  return GetExtensionSchemes().contains(scheme);
 }
 
 bool CommonSchemeRegistry::IsIsolatedAppScheme(const std::string& scheme) {
@@ -62,7 +61,7 @@ bool CommonSchemeRegistry::IsIsolatedAppScheme(const std::string& scheme) {
     return false;
   }
   DCHECK_EQ(scheme, base::ToLowerASCII(scheme));
-  return base::Contains(GetIsolatedAppSchemes(), scheme);
+  return GetIsolatedAppSchemes().contains(scheme);
 }
 
 }  // namespace blink

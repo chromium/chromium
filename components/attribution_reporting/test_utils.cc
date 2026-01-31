@@ -81,7 +81,7 @@ std::ostream& operator<<(std::ostream& out, const FilterData& filter_data) {
 }
 
 std::ostream& operator<<(std::ostream& out, const FilterPair& filters) {
-  base::Value::Dict dict;
+  base::DictValue dict;
   filters.SerializeIfNotEmpty(dict);
   return out << dict;
 }
@@ -93,14 +93,14 @@ std::ostream& operator<<(std::ostream& out,
 
 std::ostream& operator<<(std::ostream& out,
                          const EventReportWindows& event_report_windows) {
-  base::Value::Dict dict;
+  base::DictValue dict;
   event_report_windows.Serialize(dict);
   return out << dict;
 }
 
 std::ostream& operator<<(std::ostream& out,
                          const AttributionScopesSet& attribution_scopes_set) {
-  base::Value::Dict dict;
+  base::DictValue dict;
   attribution_scopes_set.SerializeForTrigger(dict);
   return out << dict;
 }
@@ -112,7 +112,7 @@ std::ostream& operator<<(std::ostream& out,
 
 std::ostream& operator<<(std::ostream& out,
                          const AggregatableNamedBudgetDefs& budgets) {
-  base::Value::Dict dict;
+  base::DictValue dict;
   budgets.Serialize(dict);
   return out << dict;
 }
@@ -165,7 +165,7 @@ std::ostream& operator<<(std::ostream& out, const TriggerDataSet& set) {
 std::ostream& operator<<(
     std::ostream& out,
     const AggregatableTriggerConfig& aggregatable_trigger_config) {
-  base::Value::Dict dict;
+  base::DictValue dict;
   aggregatable_trigger_config.Serialize(dict);
   return out << dict;
 }
@@ -200,14 +200,14 @@ std::ostream& operator<<(std::ostream& out, const RandomizedResponseData& r) {
 
 std::ostream& operator<<(std::ostream& out,
                          const AggregatableDebugReportingConfig& v) {
-  base::Value::Dict dict;
+  base::DictValue dict;
   v.Serialize(dict);
   return out << dict;
 }
 
 std::ostream& operator<<(std::ostream& out,
                          const SourceAggregatableDebugReportingConfig& v) {
-  base::Value::Dict dict;
+  base::DictValue dict;
   v.Serialize(dict);
   return out << dict;
 }

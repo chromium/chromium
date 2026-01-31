@@ -1,5 +1,4 @@
 include_rules = [
-  "+absl/cleanup",
   "+components/apdu",
   "+components/cbor",
   "+components/gcm_driver",

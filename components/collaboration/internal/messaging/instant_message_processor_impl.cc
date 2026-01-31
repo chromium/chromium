@@ -9,7 +9,6 @@
 #include <unordered_map>
 #include <vector>
 
-#include "base/containers/contains.h"
 #include "base/functional/callback_helpers.h"
 #include "base/hash/hash.h"
 #include "base/strings/to_string.h"
@@ -131,7 +130,7 @@ void InstantMessageProcessorImpl::HideInstantMessage(
     if (!current_message_id.has_value()) {
       return false;
     }
-    return base::Contains(message_ids, *current_message_id);
+    return message_ids.contains(*current_message_id);
   });
 
   // In case the message was displayed previously, we still tell the UI about

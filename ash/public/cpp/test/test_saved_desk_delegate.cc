@@ -4,9 +4,10 @@
 
 #include "ash/public/cpp/test/test_saved_desk_delegate.h"
 
+#include <algorithm>
+
 #include "ash/public/cpp/desk_template.h"
 #include "ash/public/cpp/window_properties.h"
-#include "base/containers/contains.h"
 #include "components/app_restore/app_launch_info.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/window.h"
@@ -84,7 +85,7 @@ std::string TestSavedDeskDelegate::GetAppShortName(const std::string& app_id) {
 }
 
 bool TestSavedDeskDelegate::IsAppAvailable(const std::string& app_id) const {
-  return !base::Contains(unavailable_app_ids_, app_id);
+  return !std::ranges::contains(unavailable_app_ids_, app_id);
 }
 
 }  // namespace ash

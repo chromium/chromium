@@ -21,12 +21,12 @@
 #include "chrome/browser/enterprise/reporting/cloud_profile_reporting_service_factory.h"
 #include "chrome/browser/enterprise/signals/user_permission_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/webui/connectors_internals/connectors_internals.mojom.h"
 #include "chrome/browser/ui/webui/connectors_internals/device_trust_utils.h"
 #include "components/device_signals/core/browser/user_permission_service.h"
 #include "components/enterprise/browser/reporting/common_pref_names.h"
 #include "components/enterprise/buildflags/buildflags.h"
 #include "components/enterprise/client_certificates/core/certificate_provisioning_service.h"
+#include "components/enterprise/connectors/connectors_internals.mojom.h"
 #include "components/prefs/pref_service.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -278,7 +278,7 @@ void ConnectorsInternalsPageHandler::GetSignalsReportingState(
 void ConnectorsInternalsPageHandler::OnSignalsCollected(
     GetDeviceTrustStateCallback callback,
     bool is_device_trust_enabled,
-    const base::Value::Dict signals) {
+    const base::DictValue signals) {
   std::string signals_json;
   base::JSONWriter::WriteWithOptions(
       signals, base::JSONWriter::OPTIONS_PRETTY_PRINT, &signals_json);

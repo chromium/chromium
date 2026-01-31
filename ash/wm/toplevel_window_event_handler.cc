@@ -76,10 +76,8 @@ bool CanStartOneFingerDrag(int window_component) {
 void ShowResizeShadow(aura::Window* window, int component) {
   // Don't show resize shadow if
   // 1) the window is not toplevel.
-  // 2) the device is in tablet mode.
-  // 3) the window is not resizable.
-  if (display::Screen::Get()->InTabletMode() ||
-      window != window->GetToplevelWindow() ||
+  // 2) the window is not resizable.
+  if (window != window->GetToplevelWindow() ||
       ((window->GetProperty(aura::client::kResizeBehaviorKey) &
         aura::client::kResizeBehaviorCanResize) == 0)) {
     return;
@@ -822,7 +820,8 @@ bool ToplevelWindowEventHandler::PrepareForPinch(
   }
 
   std::unique_ptr<WindowResizer> resizer(CreateWindowResizer(
-      window, point_in_parent, window_component, wm::WINDOW_MOVE_SOURCE_TOUCH));
+      window, point_in_parent, window_component, wm::WINDOW_MOVE_SOURCE_TOUCH,
+      /*pinch=*/true));
   if (!resizer) {
     return false;
   }

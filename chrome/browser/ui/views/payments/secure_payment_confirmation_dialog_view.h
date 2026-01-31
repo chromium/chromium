@@ -11,12 +11,7 @@
 #include "chrome/browser/picture_in_picture/scoped_picture_in_picture_occlusion_observation.h"
 #include "components/payments/content/secure_payment_confirmation_view.h"
 #include "ui/base/metadata/metadata_header_macros.h"
-#include "ui/views/controls/button/button.h"
 #include "ui/views/window/dialog_delegate.h"
-
-namespace views {
-class StyledLabel;
-}
 
 namespace payments {
 
@@ -46,11 +41,15 @@ class SecurePaymentConfirmationDialogView
     VIEW_ID_NONE = 0,
     HEADER_ICON,
     TITLE,
+    MERCHANT_ICON,
     MERCHANT_LABEL,
     MERCHANT_VALUE,
+    MERCHANT_SECONDARY_VALUE,
+    INSTRUMENT_ICON,
     INSTRUMENT_LABEL,
     INSTRUMENT_VALUE,
-    INSTRUMENT_ICON,
+    INSTRUMENT_SECONDARY_VALUE,
+    TOTAL_ICON,
     TOTAL_LABEL,
     TOTAL_VALUE,
   };
@@ -81,11 +80,10 @@ class SecurePaymentConfirmationDialogView
   void OnDialogAccepted();
   void OnDialogCancelled();
   void OnDialogClosed();
+  void OnAnotherWayClicked();
   void OnOptOutClicked();
 
   void InitChildViews();
-
-  std::unique_ptr<views::View> CreateHeaderView();
   std::unique_ptr<views::View> CreateBodyView();
   std::unique_ptr<views::View> CreateRows();
   std::unique_ptr<views::View> CreateRowView(
@@ -95,6 +93,19 @@ class SecurePaymentConfirmationDialogView
       DialogViewID value_id,
       const SkBitmap* icon = nullptr,
       DialogViewID icon_id = DialogViewID::VIEW_ID_NONE);
+
+  // Initialize views for the Secure Payment Confirmation dialog.
+  void InitViews();
+  std::unique_ptr<views::View> CreateHeaderView();
+  std::unique_ptr<views::View> CreateNewRowView(
+      ui::ImageModel icon,
+      DialogViewID icon_id,
+      const std::u16string& value,
+      DialogViewID value_id,
+      const std::u16string& secondary_value = std::u16string(),
+      DialogViewID secondary_value_id = DialogViewID::VIEW_ID_NONE);
+  std::unique_ptr<views::View> CreateFooterView();
+  std::unique_ptr<views::View> CreateOptOutView();
 
   void UpdateLabelView(DialogViewID id, const std::u16string& text);
 
@@ -106,6 +117,7 @@ class SecurePaymentConfirmationDialogView
 
   VerifyCallback verify_callback_;
   CancelCallback cancel_callback_;
+  AnotherWayCallback another_way_callback_;
   OptOutCallback opt_out_callback_;
 
   // Cache the instrument icon pointer so we don't needlessly update it in
@@ -118,7 +130,11 @@ class SecurePaymentConfirmationDialogView
 
   // The opt-out view stored in the dialog footnote. This is always created in
   // InitChildViews, but is only marked visible if opt-out was requested.
-  raw_ptr<views::StyledLabel> opt_out_view_ = nullptr;
+  raw_ptr<views::View> opt_out_view_ = nullptr;
+
+  // The footer view stored in the main dialog. This is always created
+  // in InitChildViews, but is only marked visible if footer was requested.
+  raw_ptr<views::View> footer_view_ = nullptr;
 
   ScopedPictureInPictureOcclusionObservation occlusion_observation_{this};
 

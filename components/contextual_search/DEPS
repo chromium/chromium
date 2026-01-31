@@ -1,10 +1,12 @@
 include_rules = [
+  "+components/contextual_tasks",
   "+components/endpoint_fetcher",
   "+components/keyed_service/core",
   "+components/lens",
   "+components/lens/proto/server",
   "+components/omnibox/composebox",
   "+components/prefs",
+  "+components/policy",
   "+components/search_engines",
   "+components/sessions/core",
   "+components/signin/public",

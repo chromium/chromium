@@ -76,7 +76,7 @@
 #include "third_party/skia/include/core/SkShader.h"
 #include "third_party/skia/include/core/SkString.h"
 #include "third_party/skia/include/effects/SkColorMatrix.h"
-#include "third_party/skia/include/effects/SkGradientShader.h"
+#include "third_party/skia/include/effects/SkGradient.h"
 #include "third_party/skia/include/effects/SkImageFilters.h"
 #include "third_party/skia/include/effects/SkOverdrawColorFilter.h"
 #include "third_party/skia/include/effects/SkRuntimeEffect.h"
@@ -1540,7 +1540,10 @@ void SkiaRenderer::PrepareCanvas(
   }
 }
 
-#define MaskColor(a) SkColorSetARGB(a, a, a, a);
+static inline SkColor4f MaskColor(unsigned alpha) {
+    const float a = alpha / 255.f;
+    return {a, a, a, a};
+}
 
 void SkiaRenderer::PrepareGradient(
     const std::optional<gfx::MaskFilterInfo>& mask_filter_info) {
@@ -1590,7 +1593,7 @@ void SkiaRenderer::PrepareGradient(
   }
 
   std::array<SkScalar, gfx::LinearGradient::kMaxStepSize> positions;
-  std::array<SkColor, gfx::LinearGradient::kMaxStepSize> gradient_colors;
+  std::array<SkColor4f, gfx::LinearGradient::kMaxStepSize> gradient_colors;
 
   size_t i = 0;
   for (; i < gradient_mask->step_count(); ++i) {
@@ -1599,9 +1602,8 @@ void SkiaRenderer::PrepareGradient(
   }
 
   SkPoint::Offset(start_end, /*count=*/2, rect.x(), rect.y());
-  sk_sp<SkShader> gradient = SkGradientShader::MakeLinear(
-      start_end, gradient_colors.data(), positions.data(), /*count=*/i,
-      SkTileMode::kClamp);
+  sk_sp<SkShader> gradient = SkShaders::LinearGradient(
+      start_end, {{{gradient_colors.data(), i}, {positions.data(), i}, SkTileMode::kClamp}, {}});
   current_canvas_->clipShader(std::move(gradient));
 }
 
@@ -3156,14 +3158,21 @@ SkiaRenderer::DrawRPDQParams SkiaRenderer::CalculateRPDQParams(
       backdrop_rect = gfx::RectFToSkRect(params->visible_rect);
     }
 
-    // Besides ensuring the output of the backdrop filter doesn't go beyond its
-    // bounds, it should not read pixels outside of its bounds to prevent color
-    // bleeding. If it's a pixel-moving filter, we compose a kMirror-tiling Crop
-    // image filter to enforce this requirement. Mirror tiling avoids jarring
-    // discontinuities and flickering when content moves in and out of the
-    // background. See https://github.com/w3c/fxtf-drafts/issues/374.
-    // NOTE: The above comment refers to the intended ideal behavior. Originally
-    // the edge mode was kClamp and a feature controls the active mode.
+    // Sanity check: limit backdrop filter size to the current render pass
+    // output to prevent excessively large filter/texture sizes.
+    // TODO(crbug.com/448789651): This somewhat odd hack is only necessary
+    // because backdrop source image size is not computed correctly. Previously,
+    // both source and destination images would be clamped to the visible area,
+    // but continued disagreements over the bdfilter spec meant this behavior
+    // was contested. When there's more clarity on this subject, this should be
+    // replaced with a more sensible calculation.
+    backdrop_rect.intersect(gfx::RectToSkRect(MoveFromDrawToWindowSpace(
+        current_frame()->current_render_pass->output_rect)));
+
+    // TODO(crbug.com/471150365): Although the mirroring behavior is not without
+    // some issues (particularly with flickering) it's much better tolerated by
+    // users and has the support of WebKit and Gecko. This FF should probably be
+    // removed.
     SkIRect sk_crop_rect = backdrop_rect.roundOut();
     SkIRect sk_src_rect = rpdq_params.backdrop_filter->filterBounds(
         sk_crop_rect, SkMatrix::I(), SkImageFilter::kReverse_MapDirection,
@@ -4246,8 +4255,11 @@ void SkiaRenderer::EnsureMinNumberOfBuffers(int n) {
   buffer_queue_->EnsureMinNumberOfBuffers(n);
 }
 
-#if BUILDFLAG(IS_OZONE)
 gpu::Mailbox SkiaRenderer::GetPrimaryPlaneOverlayTestingMailbox() {
+#if BUILDFLAG(IS_WIN)
+  // Windows dcomp uses a swap chain for primary plane instead of BufferQueue.
+  return gpu::Mailbox();
+#else
   // For the purpose of testing the overlay configuration, the mailbox for ANY
   // buffer from BufferQueue is good enough because they're all created with
   // identical properties.
@@ -4257,7 +4269,10 @@ gpu::Mailbox SkiaRenderer::GetPrimaryPlaneOverlayTestingMailbox() {
   // previous frame's mailbox.)
   CHECK(buffer_queue_);
   return buffer_queue_->GetLastSwappedBuffer();
+#endif
 }
+
+#if BUILDFLAG(IS_OZONE)
 
 DBG_FLAG_FBOOL("delegated.overlay.background_candidate.colored",
                toggle_background_overlay_color)  // False by default.

@@ -4,8 +4,7 @@
 
 package org.jni_zero;
 
-import android.util.ArrayMap;
-
+import java.util.HashMap;
 import java.util.Map;
 
 /** Native helpers. */
@@ -24,7 +23,7 @@ public class JniUtil {
     @CalledByNative
     private static Map<Object, Object> arrayToMap(Object[] array) {
         int len = array.length;
-        Map<Object, Object> ret = new ArrayMap(len / 2);
+        Map<Object, Object> ret = new HashMap<>(len / 2);
         for (int i = 0; i < len; i += 2) {
             ret.put(array[i], array[i + 1]);
         }

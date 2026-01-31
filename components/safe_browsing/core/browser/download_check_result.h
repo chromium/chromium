@@ -37,7 +37,8 @@ enum class DownloadCheckResult {
   BLOCKED_SCAN_FAILED = 19,
   IMMEDIATE_DEEP_SCAN = 20,
   FORCE_SAVE_TO_GDRIVE = 21,
-  kMaxValue = FORCE_SAVE_TO_GDRIVE,
+  FORCE_SAVE_TO_ONEDRIVE = 22,
+  kMaxValue = FORCE_SAVE_TO_ONEDRIVE,
 };
 
 std::string_view DownloadCheckResultToString(DownloadCheckResult result);

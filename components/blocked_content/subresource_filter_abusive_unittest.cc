@@ -2,8 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <algorithm>
+
 #include "base/check_op.h"
-#include "base/containers/contains.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/test/scoped_feature_list.h"
@@ -112,7 +113,7 @@ class SubresourceFilterAbusiveTest
   bool DidSendConsoleMessage(const std::string& message) {
     const auto& messages =
         content::RenderFrameHostTester::For(main_rfh())->GetConsoleMessages();
-    return base::Contains(messages, message);
+    return std::ranges::contains(messages, message);
   }
 
  protected:

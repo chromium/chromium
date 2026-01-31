@@ -117,8 +117,8 @@ TabAlertController* TabAlertController::From(TabInterface* tab) {
 }
 
 // static
-std::optional<tabs::TabAlert> TabAlertController::GetAlertStateToShow(
-    const std::vector<tabs::TabAlert>& alert_states) {
+std::optional<TabAlert> TabAlertController::GetAlertStateToShow(
+    const std::vector<TabAlert>& alert_states) {
   if (alert_states.empty()) {
     return std::nullopt;
   }
@@ -128,61 +128,61 @@ std::optional<tabs::TabAlert> TabAlertController::GetAlertStateToShow(
 
 // static:
 std::u16string TabAlertController::GetTabAlertStateText(
-    const tabs::TabAlert alert_state) {
+    const TabAlert alert_state) {
   switch (alert_state) {
-    case tabs::TabAlert::kAudioPlaying:
+    case TabAlert::kAudioPlaying:
       return l10n_util::GetStringUTF16(
           IDS_TOOLTIP_TAB_ALERT_STATE_AUDIO_PLAYING);
-    case tabs::TabAlert::kAudioMuting:
+    case TabAlert::kAudioMuting:
       return l10n_util::GetStringUTF16(
           IDS_TOOLTIP_TAB_ALERT_STATE_AUDIO_MUTING);
-    case tabs::TabAlert::kMediaRecording:
+    case TabAlert::kMediaRecording:
       return l10n_util::GetStringUTF16(
           IDS_TOOLTIP_TAB_ALERT_STATE_MEDIA_RECORDING);
-    case tabs::TabAlert::kAudioRecording:
+    case TabAlert::kAudioRecording:
       return l10n_util::GetStringUTF16(
           IDS_TOOLTIP_TAB_ALERT_STATE_AUDIO_RECORDING);
-    case tabs::TabAlert::kVideoRecording:
+    case TabAlert::kVideoRecording:
       return l10n_util::GetStringUTF16(
           IDS_TOOLTIP_TAB_ALERT_STATE_VIDEO_RECORDING);
-    case tabs::TabAlert::kTabCapturing:
+    case TabAlert::kTabCapturing:
       return l10n_util::GetStringUTF16(
           IDS_TOOLTIP_TAB_ALERT_STATE_TAB_CAPTURING);
-    case tabs::TabAlert::kBluetoothConnected:
+    case TabAlert::kBluetoothConnected:
       return l10n_util::GetStringUTF16(
           IDS_TOOLTIP_TAB_ALERT_STATE_BLUETOOTH_CONNECTED);
-    case tabs::TabAlert::kBluetoothScanActive:
+    case TabAlert::kBluetoothScanActive:
       return l10n_util::GetStringUTF16(
           IDS_TOOLTIP_TAB_ALERT_STATE_BLUETOOTH_SCAN_ACTIVE);
-    case tabs::TabAlert::kUsbConnected:
+    case TabAlert::kUsbConnected:
       return l10n_util::GetStringUTF16(
           IDS_TOOLTIP_TAB_ALERT_STATE_USB_CONNECTED);
-    case tabs::TabAlert::kHidConnected:
+    case TabAlert::kHidConnected:
       return l10n_util::GetStringUTF16(
           IDS_TOOLTIP_TAB_ALERT_STATE_HID_CONNECTED);
-    case tabs::TabAlert::kSerialConnected:
+    case TabAlert::kSerialConnected:
       return l10n_util::GetStringUTF16(
           IDS_TOOLTIP_TAB_ALERT_STATE_SERIAL_CONNECTED);
-    case tabs::TabAlert::kPipPlaying:
+    case TabAlert::kPipPlaying:
       return l10n_util::GetStringUTF16(IDS_TOOLTIP_TAB_ALERT_STATE_PIP_PLAYING);
-    case tabs::TabAlert::kDesktopCapturing:
+    case TabAlert::kDesktopCapturing:
       return l10n_util::GetStringUTF16(
           IDS_TOOLTIP_TAB_ALERT_STATE_DESKTOP_CAPTURING);
-    case tabs::TabAlert::kVrPresentingInHeadset:
+    case TabAlert::kVrPresentingInHeadset:
       return l10n_util::GetStringUTF16(
           IDS_TOOLTIP_TAB_ALERT_STATE_VR_PRESENTING);
     // TODO(crbug.com/461457730) Create new resources for ACTOR_ACCESSING of
     // relying on GLIC_ACCESSING resources below.
-    case tabs::TabAlert::kActorAccessing:
-    case tabs::TabAlert::kActorWaitingOnUser:
-    case tabs::TabAlert::kGlicAccessing:
+    case TabAlert::kActorAccessing:
+    case TabAlert::kActorWaitingOnUser:
+    case TabAlert::kGlicAccessing:
 #if BUILDFLAG(ENABLE_GLIC)
       return l10n_util::GetStringUTF16(
           IDS_TOOLTIP_TAB_ALERT_STATE_GLIC_ACCESSING);
 #else
       return u"";
 #endif
-    case tabs::TabAlert::kGlicSharing:
+    case TabAlert::kGlicSharing:
 #if BUILDFLAG(ENABLE_GLIC)
       return l10n_util::GetStringUTF16(
           IDS_TOOLTIP_TAB_ALERT_STATE_GLIC_SHARING);
@@ -191,6 +191,54 @@ std::u16string TabAlertController::GetTabAlertStateText(
 #endif
   }
   NOTREACHED();
+}
+
+// static:
+int TabAlertController::GetAccessibleAlertStringId(const TabAlert alert_state) {
+  switch (alert_state) {
+    case TabAlert::kAudioPlaying:
+      return IDS_TAB_AX_LABEL_AUDIO_PLAYING_FORMAT;
+    case TabAlert::kUsbConnected:
+      return IDS_TAB_AX_LABEL_USB_CONNECTED_FORMAT;
+    case TabAlert::kBluetoothConnected:
+      return IDS_TAB_AX_LABEL_BLUETOOTH_CONNECTED_FORMAT;
+    case TabAlert::kBluetoothScanActive:
+      return IDS_TAB_AX_LABEL_BLUETOOTH_SCAN_ACTIVE_FORMAT;
+    case TabAlert::kHidConnected:
+      return IDS_TAB_AX_LABEL_HID_CONNECTED_FORMAT;
+    case TabAlert::kSerialConnected:
+      return IDS_TAB_AX_LABEL_SERIAL_CONNECTED_FORMAT;
+    case TabAlert::kMediaRecording:
+      return IDS_TAB_AX_LABEL_MEDIA_RECORDING_FORMAT;
+    case TabAlert::kAudioRecording:
+      return IDS_TAB_AX_LABEL_AUDIO_RECORDING_FORMAT;
+    case TabAlert::kVideoRecording:
+      return IDS_TAB_AX_LABEL_VIDEO_RECORDING_FORMAT;
+    case TabAlert::kAudioMuting:
+      return IDS_TAB_AX_LABEL_AUDIO_MUTING_FORMAT;
+    case TabAlert::kTabCapturing:
+      return IDS_TAB_AX_LABEL_TAB_CAPTURING_FORMAT;
+    case TabAlert::kPipPlaying:
+      return IDS_TAB_AX_LABEL_PIP_PLAYING_FORMAT;
+    case TabAlert::kDesktopCapturing:
+      return IDS_TAB_AX_LABEL_DESKTOP_CAPTURING_FORMAT;
+    case TabAlert::kVrPresentingInHeadset:
+      return IDS_TAB_AX_LABEL_VR_PRESENTING;
+    case TabAlert::kActorAccessing:
+    case TabAlert::kActorWaitingOnUser:
+    case TabAlert::kGlicAccessing:
+#if BUILDFLAG(ENABLE_GLIC)
+      return IDS_TAB_AX_LABEL_GLIC_ACCESSING;
+#else
+      NOTREACHED();
+#endif
+    case TabAlert::kGlicSharing:
+#if BUILDFLAG(ENABLE_GLIC)
+      return IDS_TAB_AX_LABEL_GLIC_SHARING;
+#else
+      NOTREACHED();
+#endif
+  }
 }
 
 base::CallbackListSubscription

@@ -22,6 +22,7 @@ if (enable_chromium_prelude) {
     crate_root = "import_attribute.rs"
     sources = [ "import_attribute.rs" ]
     deps = [
+      "//third_party/rust/hmac_sha256/v1:lib",
       "//third_party/rust/proc_macro2/v1:lib",
       "//third_party/rust/quote/v1:lib",
       "//third_party/rust/syn/v2:lib",

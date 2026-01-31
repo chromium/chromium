@@ -89,7 +89,7 @@ pub fn generate_qr_code_using_rust(
             false
         }
         Ok(qr_code) => {
-            *out_qr_size = qr_code.width().into();
+            *out_qr_size = qr_code.width();
 
             assert!(out_pixels.is_empty());
             for color in qr_code.into_colors() {

@@ -12,6 +12,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.RuntimeEnvironment;
+import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.MinAndroidSdkLevel;
@@ -138,6 +139,8 @@ public class BackgroundTaskSchedulerJobServiceTest {
         Assert.assertEquals(TIME_100_MIN_TO_MS, jobInfo.getMinLatencyMillis());
     }
 
+    // TODO(crbug.com/450954710): This test fails on SDK 36.
+    @Config(sdk = 29)
     @Test
     @MinAndroidSdkLevel(34)
     public void testUserInitiatedTask() {

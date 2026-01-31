@@ -49,16 +49,16 @@ void RecordUpdateClustersLatencyHistogram(const std::string& histogram_name,
   base::UmaHistogramMediumTimes(histogram_name, elapsed_timer.Elapsed());
 }
 
-// Serializes a KeywordMap to a base::Value::Dict using hardcoded keys. Recover
+// Serializes a KeywordMap to a base::DictValue using hardcoded keys. Recover
 // a KeywordMap serialized in this way via DictToKeywordsCache.
-base::Value::Dict KeywordsCacheToDict(
+base::DictValue KeywordsCacheToDict(
     HistoryClustersService::KeywordMap* keyword_map) {
-  base::Value::Dict keyword_dict;
+  base::DictValue keyword_dict;
   if (!keyword_map) {
     return keyword_dict;
   }
   for (const auto& pair : *keyword_map) {
-    base::Value::Dict cluster_keyword_dict;
+    base::DictValue cluster_keyword_dict;
     cluster_keyword_dict.Set("type", pair.second.type);
     cluster_keyword_dict.Set("score", pair.second.score);
     keyword_dict.Set(base::UTF16ToUTF8(pair.first),
@@ -67,17 +67,17 @@ base::Value::Dict KeywordsCacheToDict(
   return keyword_dict;
 }
 
-// Deserializes a KeywordMap from a base::Value::Dict serialized using
+// Deserializes a KeywordMap from a base::DictValue serialized using
 // KeywordsCacheToDict().
 HistoryClustersService::KeywordMap DictToKeywordsCache(
-    const base::Value::Dict* dict) {
+    const base::DictValue* dict) {
   HistoryClustersService::KeywordMap keyword_map;
   if (!dict) {
     return keyword_map;
   }
 
   for (auto pair : *dict) {
-    const base::Value::Dict& entry_dict = pair.second.GetDict();
+    const base::DictValue& entry_dict = pair.second.GetDict();
     std::optional<int> type = entry_dict.FindInt("type");
     std::optional<double> score = entry_dict.FindDouble("score");
     if (!type || !score) {
@@ -558,18 +558,18 @@ void HistoryClustersService::LoadCachesFromPrefs() {
   }
 
   base::ElapsedTimer load_caches_timer;
-  const base::Value::Dict& short_cache_dict =
+  const base::DictValue& short_cache_dict =
       pref_service_->GetDict(prefs::kShortCache);
-  const base::Value::Dict* short_keywords_dict =
+  const base::DictValue* short_keywords_dict =
       short_cache_dict.FindDict("short_keywords");
   short_keyword_cache_ = DictToKeywordsCache(short_keywords_dict);
   short_keyword_cache_timestamp_ =
       base::ValueToTime(short_cache_dict.Find("short_timestamp"))
           .value_or(short_keyword_cache_timestamp_);
 
-  const base::Value::Dict& all_cache_dict =
+  const base::DictValue& all_cache_dict =
       pref_service_->GetDict(prefs::kAllCache);
-  const base::Value::Dict* all_keywords_dict =
+  const base::DictValue* all_keywords_dict =
       all_cache_dict.FindDict("all_keywords");
   all_keywords_cache_ = DictToKeywordsCache(all_keywords_dict);
   // When loading `all_keywords_cache_` from the prefs, make sure it will be
@@ -593,7 +593,7 @@ void HistoryClustersService::WriteShortCacheToPrefs() {
   }
 
   base::ElapsedTimer write_short_cache_timer;
-  base::Value::Dict short_cache_dict;
+  base::DictValue short_cache_dict;
   short_cache_dict.Set("short_keywords",
                        KeywordsCacheToDict(&short_keyword_cache_));
   short_cache_dict.Set("short_timestamp",
@@ -611,7 +611,7 @@ void HistoryClustersService::WriteAllCacheToPrefs() {
   }
 
   base::ElapsedTimer write_all_cache_timer;
-  base::Value::Dict all_cache_dict;
+  base::DictValue all_cache_dict;
   all_cache_dict.Set("all_keywords", KeywordsCacheToDict(&all_keywords_cache_));
   all_cache_dict.Set("all_timestamp",
                      base::TimeToValue(all_keywords_cache_timestamp_));

@@ -7,6 +7,7 @@
 #include "base/check.h"
 #include "base/trace_event/trace_event_impl.h"
 #include "base/trace_event/trace_log.h"
+#include "base/trace_event/trace_session_observer.h"
 #include "third_party/perfetto/include/perfetto/tracing/tracing.h"
 
 namespace base::test {
@@ -31,6 +32,7 @@ void InitializeTracing() {
   if (perfetto::Tracing::IsInitialized()) {
     return;
   }
+  base::trace_event::TraceSessionObserverList::Initialize();
   base::trace_event::SetPerfettoInitializedForTesting();
   base::trace_event::InitializeInProcessPerfettoBackend();
 }

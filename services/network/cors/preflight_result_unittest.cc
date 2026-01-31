@@ -651,7 +651,7 @@ TEST_F(PreflightResultTest, NetLogParams) {
         mojom::CredentialsMode::kOmit, test.allow_methods, test.allow_headers,
         std::nullopt, nullptr);
     ASSERT_TRUE(result);
-    base::Value::Dict dict = result->NetLogParams();
+    base::DictValue dict = result->NetLogParams();
     EXPECT_EQ(CHECK_DEREF(dict.FindString("access-control-allow-methods")),
               test.expected_methods);
     EXPECT_EQ(CHECK_DEREF(dict.FindString("access-control-allow-headers")),

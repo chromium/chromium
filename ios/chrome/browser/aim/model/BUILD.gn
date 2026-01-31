@@ -12,6 +12,7 @@ source_set("aim_availability") {
   deps = [
     "//components/omnibox/browser",
     "//components/search",
+    "//ios/chrome/app:tests_hook",
     "//ios/chrome/browser/search_engines/model:template_url_service_factory",
     "//ios/chrome/browser/shared/model/application_context",
     "//ios/chrome/browser/shared/model/profile",
@@ -25,5 +26,24 @@ source_set("aim_availability") {
   public_deps = [
     "//components/prefs",
     "//components/search_engines",
+  ]
+}
+
+source_set("test_support") {
+  testonly = true
+  sources = [
+    "mock_ios_chrome_aim_eligibility_service.h",
+    "mock_ios_chrome_aim_eligibility_service.mm",
+  ]
+  deps = [
+    ":aim_availability",
+    "//base",
+    "//components/keyed_service/core",
+    "//components/omnibox/browser:test_support",
+    "//ios/chrome/browser/search_engines/model:template_url_service_factory",
+    "//ios/chrome/browser/shared/model/profile",
+    "//ios/chrome/browser/signin/model",
+    "//services/network/public/cpp",
+    "//testing/gmock",
   ]
 }

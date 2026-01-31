@@ -476,8 +476,6 @@ bool GpuInit::InitializeAndStartSandbox(base::CommandLine* command_line,
   params.single_process = false;
   params.enable_native_gpu_memory_buffers =
       gpu_preferences_.enable_native_gpu_memory_buffers;
-  params.handle_overlays_swap_failure =
-      base::FeatureList::IsEnabled(features::kHandleOverlaysSwapFailure);
 
 #if BUILDFLAG(IS_CHROMEOS)
   params.allow_sync_and_real_buffer_page_flip_testing = true;
@@ -784,13 +782,18 @@ bool GpuInit::InitializeAndStartSandbox(base::CommandLine* command_line,
 #if BUILDFLAG(IS_OZONE)
   // We need to get supported formats before sandboxing to avoid an known
   // issue which breaks the camera preview. (b/166850715)
-  std::vector<gfx::BufferFormat> supported_buffer_formats_for_texturing;
+  bool supports_nv12_for_allocation_and_texturing;
+  bool supports_p010_for_allocation_and_texturing;
   {
-    TRACE_EVENT("gpu,startup", "ui::ozone::GetSupportedFormatsForTexturing");
-    supported_buffer_formats_for_texturing =
+    TRACE_EVENT("gpu,startup", "ui::ozone::IsFormatSupportedForTexturing");
+    supports_nv12_for_allocation_and_texturing =
         ui::OzonePlatform::GetInstance()
             ->GetSurfaceFactoryOzone()
-            ->GetSupportedFormatsForTexturing();
+            ->IsFormatSupportedForTexturing(viz::MultiPlaneFormat::kNV12);
+    supports_p010_for_allocation_and_texturing =
+        ui::OzonePlatform::GetInstance()
+            ->GetSurfaceFactoryOzone()
+            ->IsFormatSupportedForTexturing(viz::MultiPlaneFormat::kP010);
   }
   std::vector<viz::SharedImageFormat>
       supported_formats_for_gl_native_pixmap_import =
@@ -823,6 +826,12 @@ bool GpuInit::InitializeAndStartSandbox(base::CommandLine* command_line,
 
   if (gl_use_swiftshader_) {
     AdjustInfoToSwiftShader();
+  }
+  if (gl_disabled) {
+    // GL is disabled in display compositor mode, typically due to repeated GPU
+    // crashes. Disable WebNN to ensure stability in this state.
+    gpu_feature_info_.status_values[GPU_FEATURE_TYPE_WEBNN] =
+        kGpuFeatureStatusDisabled;
   }
 
   if (kGpuFeatureStatusEnabled !=
@@ -931,8 +940,10 @@ bool GpuInit::InitializeAndStartSandbox(base::CommandLine* command_line,
   SetSkiaBackendType();
 #if BUILDFLAG(IS_OZONE)
   ui::OzonePlatform::GetInstance()->AfterSandboxEntry();
-  gpu_feature_info_.supported_buffer_formats_for_allocation_and_texturing =
-      std::move(supported_buffer_formats_for_texturing);
+  gpu_feature_info_.supports_nv12_for_allocation_and_texturing =
+      supports_nv12_for_allocation_and_texturing;
+  gpu_feature_info_.supports_p010_for_allocation_and_texturing =
+      supports_p010_for_allocation_and_texturing;
   gpu_feature_info_.supported_formats_for_gl_native_pixmap_import =
       std::move(supported_formats_for_gl_native_pixmap_import);
   [[maybe_unused]] auto* factory =
@@ -1012,8 +1023,6 @@ void GpuInit::InitializeInProcess(base::CommandLine* command_line,
 #if BUILDFLAG(IS_OZONE)
   ui::OzonePlatform::InitParams params;
   params.single_process = true;
-  params.handle_overlays_swap_failure =
-      base::FeatureList::IsEnabled(features::kHandleOverlaysSwapFailure);
 
 #if BUILDFLAG(IS_CHROMEOS)
   params.allow_sync_and_real_buffer_page_flip_testing = true;
@@ -1138,19 +1147,27 @@ void GpuInit::InitializeInProcess(base::CommandLine* command_line,
   if (gl_use_swiftshader_) {
     AdjustInfoToSwiftShader();
   }
+  if (gl_disabled) {
+    // GL is disabled in display compositor mode, typically due to repeated GPU
+    // crashes. Disable WebNN to ensure stability in this state.
+    gpu_feature_info_.status_values[GPU_FEATURE_TYPE_WEBNN] =
+        kGpuFeatureStatusDisabled;
+  }
 
 #if BUILDFLAG(IS_OZONE)
-  const std::vector<gfx::BufferFormat> supported_buffer_formats_for_texturing =
-      ui::OzonePlatform::GetInstance()
-          ->GetSurfaceFactoryOzone()
-          ->GetSupportedFormatsForTexturing();
   const std::vector<viz::SharedImageFormat>
       supported_formats_for_gl_native_pixmap_import =
           ui::OzonePlatform::GetInstance()
               ->GetSurfaceFactoryOzone()
               ->GetSupportedFormatsForGLNativePixmapImport();
-  gpu_feature_info_.supported_buffer_formats_for_allocation_and_texturing =
-      std::move(supported_buffer_formats_for_texturing);
+  gpu_feature_info_.supports_nv12_for_allocation_and_texturing =
+      ui::OzonePlatform::GetInstance()
+          ->GetSurfaceFactoryOzone()
+          ->IsFormatSupportedForTexturing(viz::MultiPlaneFormat::kNV12);
+  gpu_feature_info_.supports_p010_for_allocation_and_texturing =
+      ui::OzonePlatform::GetInstance()
+          ->GetSurfaceFactoryOzone()
+          ->IsFormatSupportedForTexturing(viz::MultiPlaneFormat::kP010);
   gpu_feature_info_.supported_formats_for_gl_native_pixmap_import =
       std::move(supported_formats_for_gl_native_pixmap_import);
 #endif  // BUILDFLAG(IS_OZONE)
@@ -1191,6 +1208,11 @@ void GpuInit::RecordUMA() {
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CASTOS)
 
   UMA_HISTOGRAM_ENUMERATION("GPU.GLImplementation", gl::GetGLImplementation());
+
+#if BUILDFLAG(IS_WIN)
+  UMA_HISTOGRAM_BOOLEAN("GPU.DirectComposition.Supported",
+                        gl::DirectCompositionSupported());
+#endif
 
   UMA_HISTOGRAM_BOOLEAN("GPU.Sandboxed", gpu_info_.sandboxed);
   // Record the Skia backend type on GPU initialization.

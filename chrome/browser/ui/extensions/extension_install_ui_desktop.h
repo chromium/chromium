@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_EXTENSIONS_EXTENSION_INSTALL_UI_DESKTOP_H_
 
 #include "base/memory/scoped_refptr.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/extensions/extension_install_ui.h"
 #include "content/public/browser/web_contents.h"
 
@@ -17,7 +18,6 @@ namespace extensions {
 class Extension;
 }
 
-class Browser;
 class SkBitmap;
 
 // Manages the extension install UI bubble on Windows/Mac/Linux/ChromeOS.
@@ -33,12 +33,6 @@ class ExtensionInstallUIDesktop : public ExtensionInstallUI {
   void OnInstallSuccess(scoped_refptr<const extensions::Extension> extension,
                         const SkBitmap* icon) override;
   void OnInstallFailure(const extensions::CrxInstallError& error) override;
-
-  // Shows the install bubble UI.
-  static void ShowBubble(scoped_refptr<const extensions::Extension> extension,
-                         Browser* browser,
-                         Profile* profile,
-                         const SkBitmap& icon);
 };
 
 #endif  // CHROME_BROWSER_UI_EXTENSIONS_EXTENSION_INSTALL_UI_DESKTOP_H_

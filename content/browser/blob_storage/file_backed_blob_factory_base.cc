@@ -13,6 +13,7 @@
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/render_process_host.h"
+#include "content/public/common/child_process_id.h"
 #include "storage/browser/blob/blob_data_builder.h"
 #include "storage/browser/blob/blob_impl.h"
 #include "storage/browser/blob/blob_registry_impl.h"
@@ -114,9 +115,10 @@ void FileBackedBlobFactoryBase::RegisterBlobSync(
     RegisterBlobSyncCallback finish_callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
+  // TODO(crbug.com/379869738) Remove FromUnsafeValue.
   bool security_check_success =
-      ChildProcessSecurityPolicyImpl::GetInstance()->CanReadFile(process_id_,
-                                                                 file->path);
+      ChildProcessSecurityPolicyImpl::GetInstance()->CanReadFile(
+          ChildProcessId::FromUnsafeValue(process_id_), file->path);
 
   GURL url_for_file_access_checks = GetCurrentUrl();
 

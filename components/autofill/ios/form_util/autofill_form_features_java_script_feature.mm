@@ -40,7 +40,7 @@ void AutofillFormFeaturesJavaScriptFeature::SetAutofillAcrossIframes(
   CHECK(frame);
   frame->CallJavaScriptFunction(
       "autofill_form_features.setAutofillAcrossIframes",
-      base::Value::List().Append(enabled));
+      base::ListValue().Append(enabled));
 }
 
 void AutofillFormFeaturesJavaScriptFeature::
@@ -49,7 +49,7 @@ void AutofillFormFeaturesJavaScriptFeature::
   CHECK(frame);
   frame->CallJavaScriptFunction(
       "autofill_form_features.setAutofillDisallowMoreHyphenLikeLabels",
-      base::Value::List().Append(enabled));
+      base::ListValue().Append(enabled));
 }
 
 void AutofillFormFeaturesJavaScriptFeature::SetAutofillDisallowSlashDotLabels(
@@ -58,7 +58,7 @@ void AutofillFormFeaturesJavaScriptFeature::SetAutofillDisallowSlashDotLabels(
   CHECK(frame);
   frame->CallJavaScriptFunction(
       "autofill_form_features.setAutofillDisallowSlashDotLabels",
-      base::Value::List().Append(enabled));
+      base::ListValue().Append(enabled));
 }
 
 void AutofillFormFeaturesJavaScriptFeature::SetAutofillAcrossIframesThrottling(
@@ -67,7 +67,7 @@ void AutofillFormFeaturesJavaScriptFeature::SetAutofillAcrossIframesThrottling(
   CHECK(frame);
   frame->CallJavaScriptFunction(
       "autofill_form_features.setAutofillAcrossIframesThrottling",
-      base::Value::List().Append(enabled));
+      base::ListValue().Append(enabled));
 }
 
 void AutofillFormFeaturesJavaScriptFeature::SetAutofillIgnoreCheckableElements(
@@ -76,7 +76,7 @@ void AutofillFormFeaturesJavaScriptFeature::SetAutofillIgnoreCheckableElements(
   CHECK(frame);
   frame->CallJavaScriptFunction(
       "autofill_form_features.setAutofillIgnoreCheckableElements",
-      base::Value::List().Append(enabled));
+      base::ListValue().Append(enabled));
 }
 
 void AutofillFormFeaturesJavaScriptFeature::SetAutofillIsolatedContentWorld(
@@ -85,7 +85,7 @@ void AutofillFormFeaturesJavaScriptFeature::SetAutofillIsolatedContentWorld(
   CHECK(frame);
   frame->CallJavaScriptFunction(
       "autofill_form_features.setAutofillIsolatedContentWorld",
-      base::Value::List().Append(enabled));
+      base::ListValue().Append(enabled));
 }
 
 void AutofillFormFeaturesJavaScriptFeature::
@@ -94,7 +94,7 @@ void AutofillFormFeaturesJavaScriptFeature::
   CHECK(frame);
   frame->CallJavaScriptFunction(
       "autofill_form_features.setAutofillCorrectUserEditedBitInParsedField",
-      base::Value::List().Append(enabled));
+      base::ListValue().Append(enabled));
 }
 
 void AutofillFormFeaturesJavaScriptFeature::
@@ -103,7 +103,7 @@ void AutofillFormFeaturesJavaScriptFeature::
   CHECK(frame);
   frame->CallJavaScriptFunction(
       "autofill_form_features.setAutofillAllowDefaultPreventedSubmission",
-      base::Value::List().Append(enabled));
+      base::ListValue().Append(enabled));
 }
 
 void AutofillFormFeaturesJavaScriptFeature::SetAutofillDedupeFormSubmission(
@@ -112,7 +112,7 @@ void AutofillFormFeaturesJavaScriptFeature::SetAutofillDedupeFormSubmission(
   CHECK(frame);
   frame->CallJavaScriptFunction(
       "autofill_form_features.setAutofillDedupeFormSubmission",
-      base::Value::List().Append(enabled));
+      base::ListValue().Append(enabled));
 }
 
 // Enables/disables reporting form submission errors.
@@ -120,7 +120,7 @@ void AutofillFormFeaturesJavaScriptFeature::
     SetAutofillReportFormSubmissionErrors(web::WebFrame* frame, bool enabled) {
   frame->CallJavaScriptFunction(
       "autofill_form_features.setAutofillReportFormSubmissionErrors",
-      base::Value::List().Append(enabled));
+      base::ListValue().Append(enabled));
 }
 
 void AutofillFormFeaturesJavaScriptFeature::
@@ -128,7 +128,7 @@ void AutofillFormFeaturesJavaScriptFeature::
                                              bool enabled) {
   frame->CallJavaScriptFunction(
       "autofill_form_features.setAutofillCountFormSubmissionInRenderer",
-      base::Value::List().Append(enabled));
+      base::ListValue().Append(enabled));
 }
 
 }  // namespace autofill

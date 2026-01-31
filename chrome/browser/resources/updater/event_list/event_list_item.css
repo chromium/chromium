@@ -1,0 +1,159 @@
+/* Copyright 2025 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+/* #css_wrapper_metadata_start
+ * #type=style-lit
+ * #scheme=relative
+ * #import=chrome://resources/cr_elements/cr_shared_vars.css.js
+ * #import=../updater_shared.css.js
+ * #css_wrapper_metadata_end */
+
+:host {
+  --event-type-background-color: var(--google-blue-50);
+  --event-success-icon-color: var(--google-green-700);
+  --event-success-background-color: color-mix(in srgb, var(--google-green-500) 4%, white);
+
+  border-bottom: 1px solid var(--cr-scrollable-border-color);
+  display: block;
+}
+
+@media (prefers-color-scheme: dark) {
+  :host {
+    --event-type-background-color: var(--google-blue-900);
+    --event-success-icon-color: var(--google-green-700);
+    --event-success-background-color: color-mix(in srgb, var(--google-green-500) 10%, black);
+  }
+}
+
+:host([status=error]) {
+  background-color: var(--error-background-color);
+}
+
+:host([status=success]) {
+  background-color: var(--event-success-background-color);
+}
+
+cr-expand-button {
+  padding: 0px 12px;
+  --cr-section-vertical-padding: 4px;
+}
+
+.event-header {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  justify-content: space-between;
+  flex-grow: 1;
+  color: var(--cr-primary-text-color);
+}
+
+.event-summary {
+  display: flex;
+  gap: 8px;
+  align-items: baseline;
+  flex-grow: 1;
+}
+
+.event-date {
+  flex-basis: 10%;
+  flex-shrink: 0;
+  font-size: 0.8em;
+  color: var(--cr-secondary-text-color);
+}
+
+.event-duration {
+  min-height: 1em;
+}
+
+.event-scope-column {
+  flex-basis: 5%;
+  flex-shrink: 0;
+}
+
+.event-scope-column cr-icon {
+  color: var(--cr-secondary-text-color);
+}
+
+.event-type-column {
+  flex-basis: 10%;
+  flex-shrink: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.event-type {
+  display: block;
+  width: 75%;
+  text-align: center;
+  background-color: var(--event-type-background-color);
+  color: var(--cr-primary-text-color);
+  border-radius: 12px;
+  padding: 2px 6px;
+  font-size: 0.9em;
+  color: var(--cr-link-color);
+}
+
+.event-description-icon-column {
+  flex-basis: 1%;
+  flex-shrink: 0;
+ --iron-icon-width: 16px;
+ --iron-icon-height: 16px;
+}
+
+.event-description-icon-column cr-icon[icon='cr:check-circle'] {
+  --iron-icon-fill-color: var(--event-success-icon-color);
+}
+
+.event-description-icon-column cr-icon[icon='cr:warning'] {
+  --iron-icon-fill-color: var(--error-icon-color);
+}
+
+.event-description {
+  flex-basis: 54%;
+  flex-shrink: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.event-app {
+  font-weight: bold;
+  flex-basis: 20%;
+  flex-shrink: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: var(--cr-primary-text-color);
+}
+
+.event-app.internal-event {
+  font-style: italic;
+}
+
+.event-body {
+  padding: 4px 16px;
+  color: var(--cr-primary-text-color);
+}
+
+.event-error-details {
+  color: var(--cr-fallback-color-error);
+  margin-top: 4px;
+}
+
+pre, code {
+  white-space: pre-wrap;
+  word-break: break-all;
+  background: var(--code-background-color);
+  color: var(--cr-primary-text-color);
+  padding: 8px;
+  border-radius: 4px;
+}
+
+code {
+  padding: 2px 4px;
+  border-radius: 4px;
+  font-size: 0.9em;
+  font-family: monospace;
+}

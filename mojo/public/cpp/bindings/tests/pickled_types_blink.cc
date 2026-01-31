@@ -36,8 +36,9 @@ bool ParamTraits<mojo::test::PickledStructBlink>::Read(
     base::PickleIterator* iter,
     param_type* p) {
   int foo, bar;
-  if (!iter->ReadInt(&foo) || !iter->ReadInt(&bar) || foo < 0 || bar < 0)
+  if (!iter->ReadInt(&foo) || !iter->ReadInt(&bar) || foo < 0 || bar < 0) {
     return false;
+  }
 
   p->set_foo(foo);
   p->set_bar(bar);

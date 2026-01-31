@@ -6,9 +6,9 @@
 
 #include <stddef.h>
 
+#include <algorithm>
 #include <utility>
 
-#include "base/containers/contains.h"
 #include "base/values.h"
 #include "components/onc/onc_constants.h"
 #include "net/cert/x509_certificate.h"
@@ -18,7 +18,7 @@ namespace ash {
 
 namespace {
 
-bool GetAsListOfStrings(const base::Value::List& value,
+bool GetAsListOfStrings(const base::ListValue& value,
                         std::vector<std::string>* result) {
   result->clear();
   result->reserve(value.size());
@@ -68,7 +68,7 @@ bool OncCertificatePattern::Matches(
     return false;
   }
   if (!pem_encoded_issuer_cas_.empty() &&
-      !base::Contains(pem_encoded_issuer_cas_, pem_encoded_issuer_ca)) {
+      !std::ranges::contains(pem_encoded_issuer_cas_, pem_encoded_issuer_ca)) {
     return false;
   }
   return true;
@@ -76,9 +76,9 @@ bool OncCertificatePattern::Matches(
 
 // static
 std::optional<OncCertificatePattern>
-OncCertificatePattern::ReadFromONCDictionary(const base::Value::Dict& dict) {
+OncCertificatePattern::ReadFromONCDictionary(const base::DictValue& dict) {
   // All of these are optional.
-  const base::Value::List* pem_encoded_issuer_cas_value =
+  const base::ListValue* pem_encoded_issuer_cas_value =
       dict.FindList(onc::client_cert::kIssuerCAPEMs);
   std::vector<std::string> pem_encoded_issuer_cas;
   if (pem_encoded_issuer_cas_value &&
@@ -87,7 +87,7 @@ OncCertificatePattern::ReadFromONCDictionary(const base::Value::Dict& dict) {
     return std::nullopt;
   }
 
-  const base::Value::List* enrollment_uri_list_value =
+  const base::ListValue* enrollment_uri_list_value =
       dict.FindList(onc::client_cert::kEnrollmentURI);
   std::vector<std::string> enrollment_uri_list;
   if (enrollment_uri_list_value &&

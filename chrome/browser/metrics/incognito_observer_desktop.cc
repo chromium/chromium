@@ -3,32 +3,41 @@
 // found in the LICENSE file.
 
 #include "base/functional/callback.h"
+#include "base/scoped_observation.h"
 #include "chrome/browser/metrics/incognito_observer.h"
-#include "chrome/browser/ui/browser_list.h"
-#include "chrome/browser/ui/browser_list_observer.h"
+#include "chrome/browser/ui/browser_window/public/browser_collection_observer.h"
+#include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 
 namespace {
 
 class IncognitoObserverDesktop : public IncognitoObserver,
-                                 public BrowserListObserver {
+                                 public BrowserCollectionObserver {
  public:
   explicit IncognitoObserverDesktop(
       const base::RepeatingClosure& update_closure)
       : update_closure_(update_closure) {
-    BrowserList::AddObserver(this);
+    browser_collection_observation_.Observe(
+        GlobalBrowserCollection::GetInstance());
   }
 
   IncognitoObserverDesktop(const IncognitoObserverDesktop&) = delete;
   IncognitoObserverDesktop& operator=(const IncognitoObserverDesktop&) = delete;
 
-  ~IncognitoObserverDesktop() override { BrowserList::RemoveObserver(this); }
+  ~IncognitoObserverDesktop() override = default;
 
  private:
-  // BrowserListObserver:
-  void OnBrowserAdded(Browser* browser) override { update_closure_.Run(); }
-  void OnBrowserRemoved(Browser* browser) override { update_closure_.Run(); }
+  // BrowserCollectionObserver:
+  void OnBrowserCreated(BrowserWindowInterface* browser) override {
+    update_closure_.Run();
+  }
+  void OnBrowserClosed(BrowserWindowInterface* browser) override {
+    update_closure_.Run();
+  }
 
   const base::RepeatingClosure update_closure_;
+
+  base::ScopedObservation<GlobalBrowserCollection, BrowserCollectionObserver>
+      browser_collection_observation_{this};
 };
 
 }  // namespace

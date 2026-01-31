@@ -229,7 +229,7 @@ std::optional<api::printing::SubmitJob::Params> ConstructSubmitJobParams(
   request.job.content_type = content_type;
   request.document_blob_uuid = std::move(document_blob_uuid);
 
-  base::Value::List args;
+  base::ListValue args;
   args.Append(base::Value(request.ToValue()));
   return api::printing::SubmitJob::Params::Create(args);
 }
@@ -258,10 +258,21 @@ ConstructPrinterCapabilities() {
   capabilities.duplex_modes.push_back(printing::mojom::DuplexMode::kSimplex);
   capabilities.copies_max = 5;
   capabilities.dpis.emplace_back(kHorizontalDpi, kVerticalDpi);
+#if BUILDFLAG(IS_CHROMEOS)
+  const printing::PaperMargins kMargins(/*top_um=*/500, /*right_um=*/800,
+                                        /*bottom_um=*/200, /*left_um=*/600);
+  capabilities.papers.emplace_back(
+      /*display_name=*/"", kMediaSizeVendorId,
+      /*size_um=*/gfx::Size(kMediaSizeWidth, kMediaSizeHeight),
+      /*printable_area_um=*/gfx::Rect(), /*max_height_um=*/0,
+      /*has_borderless_variant=*/false,
+      /*supported_margins_um=*/kMargins);
+#else
   printing::PrinterSemanticCapsAndDefaults::Paper paper(
       /*display_name=*/"", kMediaSizeVendorId,
       {kMediaSizeWidth, kMediaSizeHeight});
   capabilities.papers.push_back(std::move(paper));
+#endif  // BUILDFLAG(IS_CHROMEOS)
   capabilities.collate_capable = true;
   return capabilities;
 }
@@ -460,7 +471,7 @@ class PrintingAPIHandlerUnittest : public testing::Test {
     testing_profile_ =
         profile_manager_->CreateTestingProfile(chrome::kInitialProfile);
 
-    base::Value::List extensions_list;
+    base::ListValue extensions_list;
     extensions_list.Append(kExtensionId);
     testing_profile_->GetTestingPrefService()->SetList(
         prefs::kPrintingAPIExtensionsAllowlist, std::move(extensions_list));
@@ -731,13 +742,13 @@ TEST_F(PrintingAPIHandlerUnittest, GetPrinterInfo_OutOfPaper) {
 
   auto [capabilities, printer_status, error] = printer_info_future.Take();
   ASSERT_TRUE(capabilities);
-  const base::Value::Dict* capabilities_dict =
+  const base::DictValue* capabilities_dict =
       capabilities->GetDict().FindDict("printer");
   ASSERT_TRUE(capabilities_dict);
 
-  const base::Value::Dict* color = capabilities_dict->FindDict("color");
+  const base::DictValue* color = capabilities_dict->FindDict("color");
   ASSERT_TRUE(color);
-  const base::Value::List* color_options = color->FindList("option");
+  const base::ListValue* color_options = color->FindList("option");
   ASSERT_TRUE(color_options);
   ASSERT_EQ(1u, color_options->size());
   const std::string* color_type =
@@ -745,10 +756,10 @@ TEST_F(PrintingAPIHandlerUnittest, GetPrinterInfo_OutOfPaper) {
   ASSERT_TRUE(color_type);
   EXPECT_EQ("STANDARD_MONOCHROME", *color_type);
 
-  const base::Value::Dict* page_orientation =
+  const base::DictValue* page_orientation =
       capabilities_dict->FindDict("page_orientation");
   ASSERT_TRUE(page_orientation);
-  const base::Value::List* page_orientation_options =
+  const base::ListValue* page_orientation_options =
       page_orientation->FindList("option");
   ASSERT_TRUE(page_orientation_options);
   ASSERT_EQ(3u, page_orientation_options->size());

@@ -75,7 +75,7 @@ class TestClipboardRequestHandler
  public:
   static std::unique_ptr<ClipboardRequestHandler> Create(
       enterprise_connectors::ContentAnalysisInfo* content_analysis_info,
-      safe_browsing::BinaryUploadService* upload_service,
+      enterprise_connectors::BinaryUploadService* upload_service,
       Profile* profile,
       GURL url,
       Type type,

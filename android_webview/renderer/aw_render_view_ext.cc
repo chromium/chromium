@@ -7,7 +7,6 @@
 #include <map>
 
 #include "android_webview/common/mojom/frame.mojom.h"
-#include "base/containers/contains.h"
 #include "base/no_destructor.h"
 #include "content/public/renderer/render_frame.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
@@ -28,7 +27,7 @@ AwRenderViewExt::AwRenderViewExt(blink::WebView* web_view,
     : blink::WebViewObserver(web_view),
       created_by_renderer_(created_by_renderer) {
   DCHECK(web_view != nullptr);
-  DCHECK(!base::Contains(*GetViewExtMap(), web_view));
+  DCHECK(!GetViewExtMap()->contains(web_view));
   GetViewExtMap()->emplace(web_view, this);
 }
 

@@ -85,7 +85,7 @@ class ManagedCellularPrefHandlerTest : public testing::Test {
       const char* expected_iccid,
       const char* expected_name,
       const policy_util::SmdxActivationCode& expected_activation_code) {
-    const base::Value::Dict* esim_metadata =
+    const base::DictValue* esim_metadata =
         managed_cellular_pref_handler_->GetESimMetadata(expected_iccid);
     ASSERT_TRUE(esim_metadata);
 
@@ -193,10 +193,10 @@ TEST_F(ManagedCellularPrefHandlerTest, AddAndRemovePolicyESimMetadata) {
 
   // Reach into the prefs and manually erase the field used to communicate that
   // an eSIM was installed by policy but is no longer managed.
-  base::Value::Dict prefs =
+  base::DictValue prefs =
       device_prefs()->GetDict(prefs::kManagedCellularESimMetadata).Clone();
   ASSERT_TRUE(prefs.contains(kIccid0));
-  base::Value::Dict* esim_metadata = prefs.FindDict(kIccid0);
+  base::DictValue* esim_metadata = prefs.FindDict(kIccid0);
   esim_metadata->Remove("PolicyMissing");
   device_prefs()->SetDict(prefs::kManagedCellularESimMetadata,
                           std::move(prefs));
@@ -273,14 +273,14 @@ TEST_F(ManagedCellularPrefHandlerTest,
   Init();
 
   // The value that we will set the existing/pre-migration prefs to.
-  auto existing_prefs = base::Value::Dict().Set(kIccid0, kActivationCode0);
+  auto existing_prefs = base::DictValue().Set(kIccid0, kActivationCode0);
   device_prefs()->Set(prefs::kManagedCellularIccidSmdpPair,
                       base::Value(existing_prefs.Clone()));
 
   // Set the pref to some arbitrary value since we just want to confirm that if
   // the pref has a value we will assume that we have already performed the
   // migration and will not attempt another migration.
-  base::Value::Dict new_prefs;
+  base::DictValue new_prefs;
   device_prefs()->Set(prefs::kManagedCellularESimMetadata,
                       base::Value(new_prefs.Clone()));
 
@@ -288,7 +288,7 @@ TEST_F(ManagedCellularPrefHandlerTest,
 
   SetDevicePrefs();
 
-  const base::Value::Dict& migrated_prefs =
+  const base::DictValue& migrated_prefs =
       device_prefs()->GetDict(prefs::kManagedCellularESimMetadata);
   EXPECT_EQ(new_prefs, migrated_prefs);
 }
@@ -297,19 +297,19 @@ TEST_F(ManagedCellularPrefHandlerTest, IccidSmdpPairMigration_Migration) {
   Init();
 
   auto generate_esim_metadata = [](const std::string& smdp_activation_code) {
-    return base::Value::Dict().Set(::onc::cellular::kSMDPAddress,
-                                   smdp_activation_code);
+    return base::DictValue().Set(::onc::cellular::kSMDPAddress,
+                                 smdp_activation_code);
   };
 
   // The value that we will set the existing/pre-migration prefs to.
-  base::Value::Dict existing_prefs;
+  base::DictValue existing_prefs;
 
   // The value that we expect the new/post-migration prefs to be.
-  base::Value::Dict new_prefs;
+  base::DictValue new_prefs;
 
   // Nothing missing
   existing_prefs.Set(kIccid0, kActivationCode0);
-  base::Value::Dict esim_metadata0 = generate_esim_metadata(kActivationCode0);
+  base::DictValue esim_metadata0 = generate_esim_metadata(kActivationCode0);
   new_prefs.Set(kIccid0, esim_metadata0.Clone());
 
   // Activation code empty
@@ -324,10 +324,10 @@ TEST_F(ManagedCellularPrefHandlerTest, IccidSmdpPairMigration_Migration) {
   EXPECT_EQ(device_prefs()->GetDict(prefs::kManagedCellularIccidSmdpPair),
             existing_prefs);
 
-  const base::Value::Dict& migrated_prefs =
+  const base::DictValue& migrated_prefs =
       device_prefs()->GetDict(prefs::kManagedCellularESimMetadata);
 
-  const base::Value::Dict* actual_pref = migrated_prefs.FindDict(kIccid0);
+  const base::DictValue* actual_pref = migrated_prefs.FindDict(kIccid0);
   ASSERT_TRUE(actual_pref);
   EXPECT_EQ(esim_metadata0, *actual_pref);
 

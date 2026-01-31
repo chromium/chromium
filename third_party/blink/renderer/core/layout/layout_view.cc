@@ -246,13 +246,16 @@ void LayoutView::AddChild(LayoutObject* new_child, LayoutObject* before_child) {
     // anonymous LayoutViewTransitionRoot between the ::view-transition and
     // LayoutView.
     CHECK(!before_child);
-    CHECK(!GetViewTransitionRoot());
 
-    LayoutViewTransitionRoot* snapshot_containing_block =
-        MakeGarbageCollected<LayoutViewTransitionRoot>(GetDocument());
-    LayoutBlockFlow::AddChild(snapshot_containing_block,
-                              /*before_child=*/nullptr);
-    snapshot_containing_block->AddChild(new_child);
+    // The view-transition root may already exist if the pseudo is being
+    // reinserted due to a positioned state change.
+    if (!GetViewTransitionRoot()) {
+      LayoutViewTransitionRoot* snapshot_containing_block =
+          MakeGarbageCollected<LayoutViewTransitionRoot>(GetDocument());
+      LayoutBlockFlow::AddChild(snapshot_containing_block,
+                                /*before_child=*/nullptr);
+    }
+    GetViewTransitionRoot()->AddChild(new_child);
 
     ViewTransition* transition =
         ViewTransitionUtils::GetTransition(GetDocument());
@@ -433,13 +436,21 @@ bool LayoutView::MapToVisualRectInAncestorSpaceInternal(
   if (ancestor == this)
     return true;
 
+  const bool apply_viewport_clip =
+      !(visual_rect_flags & VisualRectFlags::kSkipAncestorAndViewportClips);
+
   Element* owner = GetDocument().LocalOwner();
   if (!owner) {
     PhysicalRect rect = PhysicalRect::EnclosingRect(
         transform_state.LastPlanarQuad().BoundingBox());
+    const bool apply_overflow_clip =
+        apply_viewport_clip &&
+        !(visual_rect_flags & kDontApplyMainFrameOverflowClip);
+    const bool apply_viewport_transform =
+        visual_rect_flags & kVisualRectApplyRemoteViewportTransform;
     bool retval = GetFrameView()->MapToVisualRectInRemoteRootFrame(
-        rect, !(visual_rect_flags & kDontApplyMainFrameOverflowClip),
-        visual_rect_flags & kVisualRectApplyRemoteViewportTransform);
+        rect, apply_overflow_clip, apply_viewport_transform,
+        apply_viewport_clip);
     transform_state.SetQuad(gfx::QuadF(gfx::RectF(rect)));
     return retval;
   }
@@ -448,15 +459,16 @@ bool LayoutView::MapToVisualRectInAncestorSpaceInternal(
     PhysicalRect rect = PhysicalRect::EnclosingRect(
         transform_state.LastPlanarQuad().BoundingBox());
     PhysicalRect view_rectangle = ViewRect();
-    if (visual_rect_flags & kEdgeInclusive) {
-      if (!rect.InclusiveIntersect(view_rectangle)) {
-        transform_state.SetQuad(gfx::QuadF(gfx::RectF(rect)));
-        return false;
+    if (apply_viewport_clip) {
+      if (visual_rect_flags & kEdgeInclusive) {
+        if (!rect.InclusiveIntersect(view_rectangle)) {
+          transform_state.SetQuad(gfx::QuadF(gfx::RectF(rect)));
+          return false;
+        }
+      } else {
+        rect.Intersect(view_rectangle);
       }
-    } else {
-      rect.Intersect(view_rectangle);
     }
-
     // Frames are painted at rounded-int position. Since we cannot efficiently
     // compute the subpixel offset of painting at this point in a a bottom-up
     // walk, round to the enclosing int rect, which will enclose the actual

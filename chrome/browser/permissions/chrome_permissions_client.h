@@ -34,8 +34,6 @@ class ChromePermissionsClient : public permissions::PermissionsClient {
       content::BrowserContext* browser_context) override;
   scoped_refptr<content_settings::CookieSettings> GetCookieSettings(
       content::BrowserContext* browser_context) override;
-  privacy_sandbox::TrackingProtectionSettings* GetTrackingProtectionSettings(
-      content::BrowserContext* browser_context) override;
   bool IsSubresourceFilterActivated(content::BrowserContext* browser_context,
                                     const GURL& url) override;
   permissions::OriginKeyedPermissionActionService*
@@ -91,6 +89,7 @@ class ChromePermissionsClient : public permissions::PermissionsClient {
   void OnPromptResolved(
       const permissions::PermissionRequest* request,
       permissions::PermissionAction action,
+      const PromptOptions& prompt_options,
       permissions::PermissionPromptDisposition prompt_disposition,
       permissions::PermissionPromptDispositionReason prompt_disposition_reason,
       std::optional<QuietUiReason> quiet_ui_reason,

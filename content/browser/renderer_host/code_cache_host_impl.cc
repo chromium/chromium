@@ -16,6 +16,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/thread_annotations.h"
 #include "base/threading/thread.h"
+#include "base/trace_event/trace_event.h"
 #include "base/types/expected_macros.h"
 #include "build/build_config.h"
 #include "components/persistent_cache/pending_backend.h"
@@ -37,7 +38,8 @@
 #include "third_party/blink/public/common/cache_storage/cache_storage_utils.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/scheme_registry.h"
-#include "third_party/blink/public/mojom/loader/code_cache.mojom-data-view.h"
+#include "third_party/blink/public/mojom/loader/code_cache.mojom-shared.h"
+#include "third_party/perfetto/include/perfetto/tracing/track_event_args.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -201,10 +203,9 @@ void DidGenerateCacheableMetadataInCacheStorageOnUI(
     return;
 
   int64_t trace_id = blink::cache_storage::CreateTraceId();
-  TRACE_EVENT_WITH_FLOW1(
-      "CacheStorage",
-      "CodeCacheHostImpl::DidGenerateCacheableMetadataInCacheStorage",
-      TRACE_ID_GLOBAL(trace_id), TRACE_EVENT_FLAG_FLOW_OUT, "url", url.spec());
+  TRACE_EVENT("CacheStorage",
+              "CodeCacheHostImpl::DidGenerateCacheableMetadataInCacheStorage",
+              perfetto::Flow::Global(trace_id), "url", url.spec());
 
   mojo::Remote<blink::mojom::CacheStorage> remote;
   network::CrossOriginEmbedderPolicy cross_origin_embedder_policy;

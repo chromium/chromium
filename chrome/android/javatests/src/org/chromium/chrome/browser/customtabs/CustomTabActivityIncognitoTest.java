@@ -84,6 +84,7 @@ import org.chromium.chrome.test.util.ChromeTabUtils;
 import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.net.test.EmbeddedTestServerRule;
+import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 
 import java.util.concurrent.ExecutionException;
@@ -363,6 +364,7 @@ public class CustomTabActivityIncognitoTest {
 
     @Test
     @MediumTest
+    @DisableIf.Device(DeviceFormFactor.DESKTOP) // https://crbug.com/415118264
     public void ensureAddCustomMenuItemHasNoEffect() throws Exception {
         Intent intent = createTestCustomTabIntent();
         CustomTabsIntentTestUtils.addMenuEntriesToIntent(intent, 3, TEST_MENU_TITLE);

@@ -75,7 +75,7 @@ TEST_F(ExplicitlyAllowedNetworkPortsPolicyHandlerTest, Empty) {
 }
 
 TEST_F(ExplicitlyAllowedNetworkPortsPolicyHandlerTest, Valid) {
-  base::Value::List policy_value;
+  base::ListValue policy_value;
   policy_value.Append("6000");
   SetPolicyValue(base::Value(std::move(policy_value)));
   CheckAndApplyPolicySettings();
@@ -99,7 +99,7 @@ TEST_F(ExplicitlyAllowedNetworkPortsPolicyHandlerTest, NotAList) {
 
 // Non-string types are removed from the list, but the policy is still applied.
 TEST_F(ExplicitlyAllowedNetworkPortsPolicyHandlerTest, MixedTypes) {
-  base::Value::List policy_value;
+  base::ListValue policy_value;
   policy_value.Append(79);
   policy_value.Append("6000");
   SetPolicyValue(base::Value(std::move(policy_value)));
@@ -129,7 +129,7 @@ TEST_F(ExplicitlyAllowedNetworkPortsPolicyHandlerTest, InvalidStrings) {
       "\"514\"",       // Contains extra quotes.
       "6000",          // Valid.
   };
-  base::Value::List policy_value;
+  base::ListValue policy_value;
   for (const auto& value : kValues) {
     policy_value.Append(value);
   }

@@ -211,6 +211,12 @@ std::string GetStringNameForOptimizationType(
     case proto::OptimizationType::
         WALLETABLE_PASS_DETECTION_BOARDING_PASS_ALLOWLIST:
       return "WalletablePassDetectionBoardingPassAllowlist";
+    case proto::OptimizationType::
+        WALLETABLE_PASS_DETECTION_TRANSIT_TICKET_ALLOWLIST:
+      return "WalletablePassDetectionTransitTicketAllowlist";
+    case proto::OptimizationType::
+        WALLETABLE_PASS_DETECTION_EVENT_PASS_ALLOWLIST:
+      return "WalletablePassDetectionEventPassAllowlist";
     case proto::OptimizationType::NTP_NEXT_DEEP_DIVE_ACTION_CHIP_BLOCKLIST:
       return "NtpNextDeepDiveActionChipBlocklist";
     case proto::OptimizationType::NTP_NEXT_DEEP_DIVE_ACTION_CHIP_ALLOWLIST:
@@ -219,6 +225,8 @@ std::string GetStringNameForOptimizationType(
       return "ReaderModeEligible";
     case proto::OptimizationType::AUTOFILL_ACTOR_IFRAME_ORIGIN_ALLOWLIST:
       return "AutofillActorIframeOriginAllowlist";
+    case proto::OptimizationType::SKILLS:
+      return "Skills";
   }
 
   // The returned string is used to record histograms for the optimization type.

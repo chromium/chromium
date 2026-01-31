@@ -29,13 +29,15 @@ BoardingPass CreateBoardingPass(std::string_view barcode_raw_value,
                                 std::string_view destination,
                                 std::string_view airline,
                                 std::string_view flight_code,
-                                std::string_view date) {
+                                std::string_view date,
+                                std::string_view passenger_name) {
   BoardingPass pass;
   pass.origin = std::string(origin);
   pass.destination = std::string(destination);
   pass.airline = std::string(airline);
   pass.flight_code = std::string(flight_code);
   pass.date = std::string(date);
+  pass.passenger_name = std::string(passenger_name);
   pass.barcode = WalletBarcode{std::string(barcode_raw_value),
                                WalletBarcodeFormat::PDF417};
   return pass;
@@ -55,7 +57,8 @@ TEST(BoardingPassTest, ParseBoardingPass_ValidBCBP) {
   std::string raw =
       "M1PASSENGER NAME      EABCDEFGSFOJFKUA 1234 123Y12A 00001100";
   EXPECT_EQ(ParseBoardingPass(raw),
-            CreateBoardingPass(raw, "SFO", "JFK", "UA", "1234", "2023-05-03"));
+            CreateBoardingPass(raw, "SFO", "JFK", "UA", "1234", "2023-05-03",
+                               "PASSENGER NAME"));
 }
 
 TEST(BoardingPassTest, ParseBoardingPass_YearRollover) {
@@ -71,9 +74,9 @@ TEST(BoardingPassTest, ParseBoardingPass_YearRollover) {
 
     // Julian 010 -> Jan 10.
     std::string raw = "M1NameNameNameNameNameE1234567ORGDSTAIRFLIGT010";
-    EXPECT_EQ(
-        ParseBoardingPass(raw),
-        CreateBoardingPass(raw, "ORG", "DST", "AIR", "FLIGT", "2024-01-10"));
+    EXPECT_EQ(ParseBoardingPass(raw),
+              CreateBoardingPass(raw, "ORG", "DST", "AIR", "FLIGT",
+                                 "2024-01-10", "NameNameNameNameName"));
   }
 
   // Case 2: Current Jan 2024, Flight Dec (Day 360). Should be 2023.
@@ -88,9 +91,9 @@ TEST(BoardingPassTest, ParseBoardingPass_YearRollover) {
 
     // Julian 360 -> Dec 26 (in non-leap 2023).
     std::string raw = "M1NameNameNameNameNameE1234567ORGDSTAIRFLIGT360";
-    EXPECT_EQ(
-        ParseBoardingPass(raw),
-        CreateBoardingPass(raw, "ORG", "DST", "AIR", "FLIGT", "2023-12-26"));
+    EXPECT_EQ(ParseBoardingPass(raw),
+              CreateBoardingPass(raw, "ORG", "DST", "AIR", "FLIGT",
+                                 "2023-12-26", "NameNameNameNameName"));
   }
 }
 
@@ -106,9 +109,9 @@ TEST(BoardingPassTest, ParseBoardingPass_LeapYear) {
         nullptr, nullptr);
 
     std::string raw = "M1NameNameNameNameNameE1234567ORGDSTAIRFLIGT366";
-    EXPECT_EQ(
-        ParseBoardingPass(raw),
-        CreateBoardingPass(raw, "ORG", "DST", "AIR", "FLIGT", "2024-12-31"));
+    EXPECT_EQ(ParseBoardingPass(raw),
+              CreateBoardingPass(raw, "ORG", "DST", "AIR", "FLIGT",
+                                 "2024-12-31", "NameNameNameNameName"));
   }
 
   // Case 2: Non-leap year 2023. Julian 366 is invalid.
@@ -188,7 +191,8 @@ TEST(BoardingPassTest, TestGenericTwoLegs) {
       "M2MOZART/WOLFGANG AMADE4CWX3W PPTCDGAF 0077 137Y022J0048 3004CWX3W "
       "CDGTLSAF 7788 138Y001A0001 300";
   EXPECT_EQ(ParseBoardingPass(raw),
-            CreateBoardingPass(raw, "PPT", "CDG", "AF", "77", "2023-05-17"));
+            CreateBoardingPass(raw, "PPT", "CDG", "AF", "77", "2023-05-17",
+                               "MOZART/WOLFGANG AMAD"));
 }
 
 TEST(BoardingPassTest, ParseBoardingPass_FlightCodeLeadingZeros) {
@@ -205,19 +209,22 @@ TEST(BoardingPassTest, ParseBoardingPass_FlightCodeLeadingZeros) {
     std::string raw =
         "M1PASSENGER NAME      EABCDEFGSFOJFKUA 0007 123Y12A 00001100";
     EXPECT_EQ(ParseBoardingPass(raw),
-              CreateBoardingPass(raw, "SFO", "JFK", "UA", "7", "2023-05-03"));
+              CreateBoardingPass(raw, "SFO", "JFK", "UA", "7", "2023-05-03",
+                                 "PASSENGER NAME"));
   }
   {
     std::string raw =
         "M1PASSENGER NAME      EABCDEFGSFOJFKUA 0707 123Y12A 00001100";
     EXPECT_EQ(ParseBoardingPass(raw),
-              CreateBoardingPass(raw, "SFO", "JFK", "UA", "707", "2023-05-03"));
+              CreateBoardingPass(raw, "SFO", "JFK", "UA", "707", "2023-05-03",
+                                 "PASSENGER NAME"));
   }
   {
     std::string raw =
         "M1PASSENGER NAME      EABCDEFGSFOJFKUA 0000 123Y12A 00001100";
     EXPECT_EQ(ParseBoardingPass(raw),
-              CreateBoardingPass(raw, "SFO", "JFK", "UA", "0", "2023-05-03"));
+              CreateBoardingPass(raw, "SFO", "JFK", "UA", "0", "2023-05-03",
+                                 "PASSENGER NAME"));
   }
 }
 

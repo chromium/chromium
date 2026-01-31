@@ -58,7 +58,7 @@ class NET_EXPORT WindowsSystemProxyResolutionService
   void OnShutdown() override;
   void ClearBadProxiesCache() override;
   const ProxyRetryInfoMap& proxy_retry_info() const override;
-  base::Value::Dict GetProxyNetLogValues() override;
+  base::DictValue GetProxyNetLogValues() override;
   [[nodiscard]] bool CastToConfiguredProxyResolutionService(
       ConfiguredProxyResolutionService** configured_proxy_resolution_service)
       override;

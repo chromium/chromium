@@ -12,7 +12,6 @@
 #include <vector>
 
 #include "base/check.h"
-#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
@@ -367,8 +366,8 @@ TEST_F(ResourceAttrCPUMonitorTest, CreateTiming) {
   // `renderer5` is not measured yet.
   UpdateAndGetCPUMeasurements();
 
-  EXPECT_FALSE(base::Contains(current_measurements_,
-                              early_exit_renderer->GetResourceContext()));
+  EXPECT_FALSE(current_measurements_.contains(
+      early_exit_renderer->GetResourceContext()));
   EXPECT_THAT(current_measurements_[renderer1->GetResourceContext()],
               AllOf(CPUDeltaMatches(renderer1->GetResourceContext(),
                                     kTimeBetweenMeasurements),
@@ -381,10 +380,8 @@ TEST_F(ResourceAttrCPUMonitorTest, CreateTiming) {
               AllOf(CPUDeltaMatches(renderer3->GetResourceContext(),
                                     kTimeBetweenMeasurements / 2),
                     StartTimeMatches(renderer3_start_time)));
-  EXPECT_FALSE(
-      base::Contains(current_measurements_, renderer4->GetResourceContext()));
-  EXPECT_FALSE(
-      base::Contains(current_measurements_, renderer5->GetResourceContext()));
+  EXPECT_FALSE(current_measurements_.contains(renderer4->GetResourceContext()));
+  EXPECT_FALSE(current_measurements_.contains(renderer5->GetResourceContext()));
 
   SetProcessId(renderer5.get());
   const auto renderer5_start_time = base::TimeTicks::Now();
@@ -452,12 +449,9 @@ TEST_F(ResourceAttrCPUMonitorTest, ExitTiming) {
   const auto previous_update_time = base::TimeTicks::Now();
 
   // Renderers that have exited were never measured.
-  EXPECT_FALSE(
-      base::Contains(current_measurements_, renderer1->GetResourceContext()));
-  EXPECT_FALSE(
-      base::Contains(current_measurements_, renderer2->GetResourceContext()));
-  EXPECT_FALSE(
-      base::Contains(current_measurements_, renderer3->GetResourceContext()));
+  EXPECT_FALSE(current_measurements_.contains(renderer1->GetResourceContext()));
+  EXPECT_FALSE(current_measurements_.contains(renderer2->GetResourceContext()));
+  EXPECT_FALSE(current_measurements_.contains(renderer3->GetResourceContext()));
 
   // Remaining renderers are using 100% CPU.
   EXPECT_THAT(current_measurements_[renderer4->GetResourceContext()],
@@ -784,8 +778,7 @@ TEST_F(ResourceAttrCPUMonitorTest, CPUDistribution) {
 
         // `origin2_in_bi_context` has nothing, since nothing in
         // `page` is from http://b.com.
-        EXPECT_FALSE(
-            base::Contains(current_measurements_, origin2_in_bi_context));
+        EXPECT_FALSE(current_measurements_.contains(origin2_in_bi_context));
 
         // `origin1_in_other_bi_context` equals `child_frame`,
         // the only thing in `other_page` from http://a.com. It's hosted in
@@ -1096,7 +1089,7 @@ TEST_F(ResourceAttrCPUMonitorTest, AddRemoveNodes) {
               AllOf(CPUDeltaMatches(new_frame2_context, process_5way_split,
                                     MeasurementAlgorithm::kSplit),
                     StartTimeMatches(node_added_time2)));
-  EXPECT_FALSE(base::Contains(current_measurements_, new_frame3_context));
+  EXPECT_FALSE(current_measurements_.contains(new_frame3_context));
 
   EXPECT_THAT(
       current_measurements_[other_process_context],
@@ -1117,7 +1110,7 @@ TEST_F(ResourceAttrCPUMonitorTest, AddRemoveNodes) {
       AllOf(CPUDeltaMatches(new_worker2_context, other_process_4way_split,
                             MeasurementAlgorithm::kSplit),
             StartTimeMatches(node_added_time2)));
-  EXPECT_FALSE(base::Contains(current_measurements_, new_worker3_context));
+  EXPECT_FALSE(current_measurements_.contains(new_worker3_context));
 
   EXPECT_THAT(current_measurements_[page_context],
               CPUDeltaMatches(page_context, expected_page_delta,
@@ -1378,7 +1371,7 @@ TEST_F(ResourceAttrCPUMonitorTest, AddRemoveWorkerClients) {
   EXPECT_THAT(current_measurements_[origin1_in_bi_context],
               CPUDeltaMatches(origin1_in_bi_context, 2 * process_split,
                               MeasurementAlgorithm::kSum));
-  EXPECT_FALSE(base::Contains(current_measurements_, origin2_in_bi_context));
+  EXPECT_FALSE(current_measurements_.contains(origin2_in_bi_context));
   EXPECT_THAT(current_measurements_[origin1_in_other_bi_context],
               CPUDeltaMatches(origin1_in_other_bi_context, other_process_split,
                               MeasurementAlgorithm::kSum));
@@ -1783,8 +1776,9 @@ TEST_F(ResourceAttrCPUMonitorTest, BackgroundCPU) {
   performance_manager::MockMultiplePagesAndWorkersWithMultipleProcessesGraph
       mock_graph(graph());
 
-  mock_graph.process->set_priority(base::TaskPriority::USER_BLOCKING);
-  mock_graph.other_process->set_priority(base::TaskPriority::USER_BLOCKING);
+  mock_graph.process->set_priority(base::Process::Priority::kUserBlocking);
+  mock_graph.other_process->set_priority(
+      base::Process::Priority::kUserBlocking);
 
   SetProcessCPUUsage(mock_graph.process.get(), 0.6);
   SetProcessCPUUsage(mock_graph.other_process.get(), 0.5);
@@ -1801,12 +1795,12 @@ TEST_F(ResourceAttrCPUMonitorTest, BackgroundCPU) {
 
   // Set process' priority to `BEST_EFFORT` at 1/3 of the measurement interval.
   task_env().FastForwardBy(kTimeBetweenMeasurements / 3);
-  mock_graph.process->set_priority(base::TaskPriority::BEST_EFFORT);
+  mock_graph.process->set_priority(base::Process::Priority::kBestEffort);
 
   // Set process' priority to `USER_BLOCKING` at 2/3 of the measurement
   // interval.
   task_env().FastForwardBy(kTimeBetweenMeasurements / 3);
-  mock_graph.process->set_priority(base::TaskPriority::USER_BLOCKING);
+  mock_graph.process->set_priority(base::Process::Priority::kUserBlocking);
 
   task_env().FastForwardBy(kTimeBetweenMeasurements / 3);
   UpdateAndGetCPUMeasurements();
@@ -1857,7 +1851,7 @@ TEST_F(ResourceAttrCPUMonitorTest, BackgroundCPU) {
 
   // Set other process' priority to `BEST_EFFORT` for a full measurement
   // interval.
-  mock_graph.other_process->set_priority(base::TaskPriority::BEST_EFFORT);
+  mock_graph.other_process->set_priority(base::Process::Priority::kBestEffort);
   task_env().FastForwardBy(kTimeBetweenMeasurements);
   UpdateAndGetCPUMeasurements();
 
@@ -1979,7 +1973,7 @@ TEST_F(ResourceAttrCPUMonitorTest, OriginInBrowsingInstanceContextLifetime) {
     auto measurement = cpu_monitor_.UpdateAndGetCPUMeasurements(kQueryId);
     EXPECT_EQ(measurement[kOrigin1Context].cpu_time_result->cumulative_cpu,
               kCPUProportion * kTimeBetweenMeasurements * 2.5);
-    EXPECT_FALSE(base::Contains(measurement, kOrigin2Context));
+    EXPECT_FALSE(measurement.contains(kOrigin2Context));
   }
 
   {
@@ -1989,7 +1983,7 @@ TEST_F(ResourceAttrCPUMonitorTest, OriginInBrowsingInstanceContextLifetime) {
     auto measurement = cpu_monitor_.UpdateAndGetCPUMeasurements(kOtherQueryId);
     EXPECT_EQ(measurement[kOrigin1Context].cpu_time_result->cumulative_cpu,
               kCPUProportion * kTimeBetweenMeasurements * 2.5);
-    EXPECT_FALSE(base::Contains(measurement, kOrigin2Context));
+    EXPECT_FALSE(measurement.contains(kOrigin2Context));
   }
 
   // Revive the context for origin 2.
@@ -2047,10 +2041,8 @@ TEST_F(ResourceAttrCPUMonitorTest, MeasurementError) {
               AllOf(CPUDeltaMatches(renderer1->GetResourceContext(),
                                     kTimeBetweenMeasurements),
                     StartTimeMatches(monitoring_start_time)));
-  EXPECT_FALSE(
-      base::Contains(current_measurements_, renderer2->GetResourceContext()));
-  EXPECT_FALSE(
-      base::Contains(current_measurements_, renderer3->GetResourceContext()));
+  EXPECT_FALSE(current_measurements_.contains(renderer2->GetResourceContext()));
+  EXPECT_FALSE(current_measurements_.contains(renderer3->GetResourceContext()));
 
   // `renderer1` starts returning errors.
   SetProcessCPUUsageError(renderer1.get(), ProcessCPUUsageError::kSystemError);
@@ -2065,10 +2057,8 @@ TEST_F(ResourceAttrCPUMonitorTest, MeasurementError) {
           renderer1->GetResourceContext(), /*expected_delta=*/base::TimeDelta(),
           /*expected_background_delta=*/base::TimeDelta(),
           previous_measurement_time));
-  EXPECT_FALSE(
-      base::Contains(current_measurements_, renderer2->GetResourceContext()));
-  EXPECT_FALSE(
-      base::Contains(current_measurements_, renderer3->GetResourceContext()));
+  EXPECT_FALSE(current_measurements_.contains(renderer2->GetResourceContext()));
+  EXPECT_FALSE(current_measurements_.contains(renderer3->GetResourceContext()));
 
   SetProcessCPUUsageError(renderer1.get(), std::nullopt);
   SetProcessCPUUsageError(renderer2.get(), std::nullopt);
@@ -2497,11 +2487,10 @@ TEST_F(ResourceAttrCPUMonitorTimingTest, ProcessLifetime) {
     // Renderer process can't be measured yet, browser can.
     const auto measurements =
         cpu_monitor_->UpdateAndGetCPUMeasurements(kDummyQuery);
-    EXPECT_FALSE(
-        base::Contains(measurements, process_node->GetResourceContext()));
-    EXPECT_FALSE(base::Contains(measurements, frame_context));
-    EXPECT_TRUE(base::Contains(measurements,
-                               browser_process_node->GetResourceContext()));
+    EXPECT_FALSE(measurements.contains(process_node->GetResourceContext()));
+    EXPECT_FALSE(measurements.contains(frame_context));
+    EXPECT_TRUE(
+        measurements.contains(browser_process_node->GetResourceContext()));
   }
 
   // Assign a real process to the ProcessNode. (Will call
@@ -2537,19 +2526,18 @@ TEST_F(ResourceAttrCPUMonitorTimingTest, ProcessLifetime) {
     const auto measurements =
         cpu_monitor_->UpdateAndGetCPUMeasurements(kDummyQuery);
 
-    ASSERT_TRUE(
-        base::Contains(measurements, process_node->GetResourceContext()));
+    ASSERT_TRUE(measurements.contains(process_node->GetResourceContext()));
     cumulative_process_cpu =
         get_cumulative_cpu(measurements, process_node->GetResourceContext());
     EXPECT_FALSE(cumulative_process_cpu.is_negative());
 
-    ASSERT_TRUE(base::Contains(measurements,
-                               browser_process_node->GetResourceContext()));
+    ASSERT_TRUE(
+        measurements.contains(browser_process_node->GetResourceContext()));
     cumulative_browser_process_cpu = get_cumulative_cpu(
         measurements, browser_process_node->GetResourceContext());
     EXPECT_FALSE(cumulative_browser_process_cpu.is_negative());
 
-    ASSERT_TRUE(base::Contains(measurements, frame_context));
+    ASSERT_TRUE(measurements.contains(frame_context));
     cumulative_frame_cpu = get_cumulative_cpu(measurements, frame_context);
     EXPECT_FALSE(cumulative_frame_cpu.is_negative());
   }
@@ -2570,14 +2558,13 @@ TEST_F(ResourceAttrCPUMonitorTimingTest, ProcessLifetime) {
     const auto measurements =
         cpu_monitor_->UpdateAndGetCPUMeasurements(kDummyQuery);
 
-    ASSERT_TRUE(
-        base::Contains(measurements, process_node->GetResourceContext()));
+    ASSERT_TRUE(measurements.contains(process_node->GetResourceContext()));
     const base::TimeDelta new_process_cpu =
         get_cumulative_cpu(measurements, process_node->GetResourceContext());
     EXPECT_GE(new_process_cpu, cumulative_process_cpu);
     cumulative_process_cpu = new_process_cpu;
 
-    ASSERT_TRUE(base::Contains(measurements, frame_context));
+    ASSERT_TRUE(measurements.contains(frame_context));
     const base::TimeDelta new_frame_cpu =
         get_cumulative_cpu(measurements, frame_context);
     EXPECT_GE(new_frame_cpu, cumulative_frame_cpu);
@@ -2601,14 +2588,13 @@ TEST_F(ResourceAttrCPUMonitorTimingTest, ProcessLifetime) {
       const auto measurements =
           cpu_monitor_->UpdateAndGetCPUMeasurements(kDummyQuery);
 
-      ASSERT_TRUE(
-          base::Contains(measurements, process_node->GetResourceContext()));
+      ASSERT_TRUE(measurements.contains(process_node->GetResourceContext()));
       const base::TimeDelta new_process_cpu =
           get_cumulative_cpu(measurements, process_node->GetResourceContext());
       EXPECT_GE(new_process_cpu, cumulative_process_cpu);
       cumulative_process_cpu = new_process_cpu;
 
-      EXPECT_FALSE(base::Contains(measurements, frame_context));
+      EXPECT_FALSE(measurements.contains(frame_context));
 
       cpu_monitor_->RepeatingQueryStopped(kDummyQuery);
     }

@@ -61,7 +61,7 @@ void RunTaskNotifyCallback(
 static void JNI_DownloadBackgroundTask_StartBackgroundTask(
     JNIEnv* env,
     const JavaRef<jobject>& jkey,
-    jint task_type,
+    int32_t task_type,
     const JavaRef<jobject>& j_callback_wrapper) {
   base::android::ScopedJavaGlobalRef<jobject> j_callback =
       base::android::ScopedJavaGlobalRef<jobject>(j_callback_wrapper);
@@ -87,10 +87,10 @@ static void JNI_DownloadBackgroundTask_StartBackgroundTask(
 }
 
 // static
-static jboolean JNI_DownloadBackgroundTask_StopBackgroundTask(
+static bool JNI_DownloadBackgroundTask_StopBackgroundTask(
     JNIEnv* env,
     const JavaRef<jobject>& jkey,
-    jint task_type) {
+    int32_t task_type) {
   auto type = static_cast<DownloadTaskType>(task_type);
   switch (type) {
     case DownloadTaskType::DOWNLOAD_AUTO_RESUMPTION_TASK:

@@ -12,7 +12,6 @@
 #include <vector>
 
 #include "base/gtest_prod_util.h"
-#include "base/observer_list.h"
 #include "components/safe_browsing/content/browser/base_ui_manager.h"
 #include "components/safe_browsing/content/browser/safe_browsing_blocking_page_factory.h"
 #include "components/security_interstitials/content/security_interstitial_page.h"
@@ -36,29 +35,9 @@ namespace safe_browsing {
 
 class PingManager;
 
-struct HitReport;
-
 // Construction needs to happen on the main thread.
 class SafeBrowsingUIManager : public BaseUIManager {
  public:
-  // Observer class can be used to get notified when a SafeBrowsing hit
-  // is found.
-  class Observer {
-   public:
-    Observer(const Observer&) = delete;
-    Observer& operator=(const Observer&) = delete;
-
-    // Called when |resource| is classified as unsafe by SafeBrowsing, and is
-    // not allowlisted.
-    // The |resource| must not be accessed after OnSafeBrowsingHit returns.
-    // This method will be called on the UI thread.
-    virtual void OnSafeBrowsingHit(const UnsafeResource& resource) = 0;
-
-   protected:
-    Observer() = default;
-    virtual ~Observer() = default;
-  };
-
   // Interface via which the embedder supplies contextual information to
   // SafeBrowsingUIManager.
   class Delegate {
@@ -166,12 +145,6 @@ class SafeBrowsingUIManager : public BaseUIManager {
                           const GURL& main_frame_url,
                           bool showed_interstitial) override;
 
-  // Report hits to unsafe contents (malware, phishing, unsafe download URL)
-  // to the server. Can only be called on UI thread.  The hit report will
-  // only be sent if the user has enabled SBER and is not in incognito mode.
-  void MaybeReportSafeBrowsingHit(std::unique_ptr<HitReport> hit_report,
-                                  content::WebContents* web_contents) override;
-
   // Send ClientSafeBrowsingReport for unsafe contents (malware, phishing,
   // unsafe download URL) to the server. Can only be called on UI thread.  The
   // report will only be sent if the user has enabled SBER and is not in
@@ -185,10 +158,6 @@ class SafeBrowsingUIManager : public BaseUIManager {
   // expects the allowlist to exist, but the tests don't necessarily call
   // DisplayBlockingPage(), which creates it.
   static void CreateAllowlistForTesting(content::WebContents* web_contents);
-
-  // Add and remove observers. These methods must be invoked on the UI thread.
-  void AddObserver(Observer* observer);
-  void RemoveObserver(Observer* remove);
 
   // Invokes TriggerSecurityInterstitialShownExtensionEventIfDesired() on
   // |delegate_|.
@@ -214,20 +183,10 @@ class SafeBrowsingUIManager : public BaseUIManager {
  protected:
   ~SafeBrowsingUIManager() override;
 
-  // Creates a hit report for the given resource and calls
-  // MaybeReportSafeBrowsingHit. This also notifies all observers in
-  // |observer_list_|.
-  void CreateAndSendHitReport(const UnsafeResource& resource) override;
-
   // Creates a safe browsing report for the given resource and calls
   // MaybeSendClientSafeBrowsingWarningShownReport.
   void CreateAndSendClientSafeBrowsingWarningShownReport(
       const UnsafeResource& resource) override;
-
-  // Helper method to ensure hit reports are only sent when the user has
-  // opted in to extended reporting and is not currently in incognito mode.
-  bool ShouldSendHitReport(HitReport* hit_report,
-                           content::WebContents* web_contents);
 
   // Helper method to ensure client safe browsing reports are only sent when the
   // user has opted in to extended reporting and is not currently in incognito
@@ -247,8 +206,6 @@ class SafeBrowsingUIManager : public BaseUIManager {
   std::unique_ptr<SafeBrowsingBlockingPageFactory> blocking_page_factory_;
 
   GURL default_safe_page_;
-
-  base::ObserverList<Observer>::Unchecked observer_list_;
 
   bool shut_down_ = false;
 };

@@ -28,7 +28,6 @@
 <translation id="2329392777730037872">Клиент құрылғысында <ph name="URL" /> мекенжайы ашылмады.</translation>
 <translation id="2359808026110333948">Жалғастыру</translation>
 <translation id="2366718077645204424">Хостқа қол жеткізу мүмкін емес. Бұған сіз пайдаланып жатқан желінің конфигурациясы себеп болуы мүмкін.</translation>
-<translation id="242591256144136845">Copyright 2025 Google LLC. Барлық құқығы қорғалған.</translation>
 <translation id="2504109125669302160"><ph name="PRODUCT_NAME" /> қызметіне арнайы мүмкіндіктерді пайдалануға рұқсат беріңіз</translation>
 <translation id="2509394361235492552"><ph name="HOSTNAME" /> хостымен байланыс орнатылды</translation>
 <translation id="2540992418118313681">Бұл компьютерді басқа пайдаланушының көруі үшін және басқаруы үшін бөліскіңіз келе ме?</translation>
@@ -47,6 +46,7 @@
 <translation id="3150823315463303127">Хост саясатты оқи алмады.</translation>
 <translation id="3171922709365450819">Үшінші тарап аутентификациясы қажет болғандықтан, клиент бұл құрылғыға қолдау көрсетпейді.</translation>
 <translation id="3197730452537982411">Remote Desktop</translation>
+<translation id="3236334139428307578">Copyright 2026 The Chromium Authors. Барлық құқығы қорғалған.</translation>
 <translation id="324272851072175193">Осы нұсқаулықтарды электрондық хатпен жіберу</translation>
 <translation id="3305934114213025800"><ph name="PRODUCT_NAME" /> өзгерістер жасағысы келеді.</translation>
 <translation id="3339299787263251426">Компьютеріңізге интернет арқылы қауіпсіз түрде кіру</translation>
@@ -111,6 +111,7 @@
 <translation id="5823554426827907568"><ph name="CLIENT_USERNAME" /> экраныңызды көру, пернетақта мен тінтуірді басқару рұқсатын сұрады. Бұл сұрауды күтпесеңіз, ''<ph name="IDS_SHARE_CONFIRM_DIALOG_DECLINE" />'' түймесін басыңыз. Не болмаса дайын болған кезде байланысқа рұқсат беру үшін, ''<ph name="IDS_SHARE_CONFIRM_DIALOG_CONFIRM" />'' түймесін басыңыз.</translation>
 <translation id="5823658491130719298">Қашықтан кіргіңіз келетін компьютерде Chrome браузерін ашып, <ph name="INSTALLATION_LINK" /> бетіне өтіңіз</translation>
 <translation id="5841343754884244200">Көрсету опциялары</translation>
+<translation id="5965133372831030509">Copyright 2026 Google LLC. Барлық құқығы қорғалған.</translation>
 <translation id="6033507038939587647">Пернетақта опциялары</translation>
 <translation id="6040143037577758943">Жабу</translation>
 <translation id="6062854958530969723">Хост инициализациясы сәтсіз аяқталды.</translation>
@@ -138,7 +139,6 @@
 <translation id="7067321367069083429">Экран сенсорлық экран сияқты жұмыс істейді</translation>
 <translation id="7116737094673640201">Chrome Remote Desktop бетіне қош келдіңіз</translation>
 <translation id="7144878232160441200">Қайталау</translation>
-<translation id="7298392173540380852">Copyright 2025 The Chromium Authors. Барлық құқығы қорғалған.</translation>
 <translation id="7312846573060934304">Хост желіден тыс.</translation>
 <translation id="7319983568955948908">Бөлісуді тоқтату</translation>
 <translation id="7359298090707901886">Таңдалған браузерді жергілікті құрылғыдан URL мекенжайларын ашу үшін пайдалану мүмкін емес.</translation>

@@ -38,8 +38,7 @@ ReaderModeJavaScriptFeature::ReaderModeJavaScriptFeature()
               kScriptName,
               FeatureScript::InjectionTime::kDocumentEnd,
               FeatureScript::TargetFrames::kMainFrame,
-              FeatureScript::ReinjectionBehavior::kInjectOncePerWindow)},
-          {web::java_script_features::GetCommonJavaScriptFeature()}) {}
+              FeatureScript::ReinjectionBehavior::kInjectOncePerWindow)}) {}
 
 ReaderModeJavaScriptFeature::~ReaderModeJavaScriptFeature() = default;
 
@@ -111,7 +110,7 @@ void ReaderModeJavaScriptFeature::TriggerReaderModeHeuristic(
 
 std::optional<std::vector<double>>
 ReaderModeJavaScriptFeature::TransformToDerivedFeatures(
-    const base::Value::Dict& body,
+    const base::DictValue& body,
     const GURL& request_url) {
   std::optional<double> opt_num_elements = body.FindDouble("numElements");
   if (!opt_num_elements.has_value()) {

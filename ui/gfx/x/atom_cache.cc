@@ -157,6 +157,7 @@ constexpr auto kAtomsToCache = std::to_array<const char* const>({
     "application/octet-stream",
     "application/vnd.chromium.test",
     "chromium/filename",
+    "chromium/from-privileged",
     "chromium/x-bookmark-entries",
     "chromium/x-browser-actions",
     "chromium/x-file-system-files",
@@ -166,6 +167,7 @@ constexpr auto kAtomsToCache = std::to_array<const char* const>({
     "chromium/x-source-url",
     "chromium/x-web-custom-data",
     "chromium/x-webkit-paste",
+    "chromium/x-window-drag",
     "image/png",
     "image/svg+xml",
     "marker_event",
@@ -212,6 +214,7 @@ AtomCache::AtomCache(Connection* connection) : connection_(connection) {
 AtomCache::~AtomCache() = default;
 
 Atom AtomCache::GetAtom(const char* name) {
+  CHECK(name);
   const auto it = cached_atoms_.find(name);
   if (it != cached_atoms_.end()) {
     return it->second;

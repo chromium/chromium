@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "content/browser/file_system/browser_file_system_helper.h"
+
 #include <memory>
 #include <string>
 #include <vector>
@@ -12,7 +14,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/null_task_runner.h"
 #include "content/browser/child_process_security_policy_impl.h"
-#include "content/browser/file_system/browser_file_system_helper.h"
+#include "content/public/common/child_process_id.h"
 #include "content/public/common/content_client.h"
 #include "content/public/common/drop_data.h"
 #include "content/public/test/browser_task_environment.h"
@@ -35,6 +37,7 @@ namespace content {
 namespace browser_file_system_helper_unittest {
 
 const int kRendererID = 42;
+const ChildProcessId kRendererProcess(kRendererID);
 
 TEST(BrowserFileSystemHelperTest,
      PrepareDropDataForChildProcess_FileSystemFiles) {
@@ -97,14 +100,14 @@ TEST(BrowserFileSystemHelperTest,
   EXPECT_FALSE(p->CanCommitURL(kRendererID, kSensitiveOrigin));
 
   // Verify that initially no access is granted to the |original_file|.
-  EXPECT_FALSE(p->CanReadFileSystemFile(kRendererID, original_file));
-  EXPECT_FALSE(p->CanWriteFileSystemFile(kRendererID, original_file));
-  EXPECT_FALSE(p->CanCreateFileSystemFile(kRendererID, original_file));
-  EXPECT_FALSE(p->CanCopyIntoFileSystemFile(kRendererID, original_file));
-  EXPECT_FALSE(p->CanDeleteFileSystemFile(kRendererID, original_file));
+  EXPECT_FALSE(p->CanReadFileSystemFile(kRendererProcess, original_file));
+  EXPECT_FALSE(p->CanWriteFileSystemFile(kRendererProcess, original_file));
+  EXPECT_FALSE(p->CanCreateFileSystemFile(kRendererProcess, original_file));
+  EXPECT_FALSE(p->CanCopyIntoFileSystemFile(kRendererProcess, original_file));
+  EXPECT_FALSE(p->CanDeleteFileSystemFile(kRendererProcess, original_file));
 
   // Invoke the API under test to grant access to |drop_data|.
-  PrepareDropDataForChildProcess(&drop_data, p, kRendererID,
+  PrepareDropDataForChildProcess(&drop_data, p, kRendererProcess,
                                  test_file_system_context.get());
 
   // Verify that |drop_data| is mostly unchanged.
@@ -127,19 +130,19 @@ TEST(BrowserFileSystemHelperTest,
   EXPECT_FALSE(p->CanCommitURL(kRendererID, kSensitiveOrigin));
 
   // Verify that there is still no access to |original_file|.
-  EXPECT_FALSE(p->CanReadFileSystemFile(kRendererID, original_file));
-  EXPECT_FALSE(p->CanWriteFileSystemFile(kRendererID, original_file));
-  EXPECT_FALSE(p->CanCreateFileSystemFile(kRendererID, original_file));
-  EXPECT_FALSE(p->CanCopyIntoFileSystemFile(kRendererID, original_file));
-  EXPECT_FALSE(p->CanDeleteFileSystemFile(kRendererID, original_file));
+  EXPECT_FALSE(p->CanReadFileSystemFile(kRendererProcess, original_file));
+  EXPECT_FALSE(p->CanWriteFileSystemFile(kRendererProcess, original_file));
+  EXPECT_FALSE(p->CanCreateFileSystemFile(kRendererProcess, original_file));
+  EXPECT_FALSE(p->CanCopyIntoFileSystemFile(kRendererProcess, original_file));
+  EXPECT_FALSE(p->CanDeleteFileSystemFile(kRendererProcess, original_file));
 
   // Verify that read access (and no other access) is granted for
   // |dropped_file|.
-  EXPECT_TRUE(p->CanReadFileSystemFile(kRendererID, dropped_file));
-  EXPECT_FALSE(p->CanWriteFileSystemFile(kRendererID, dropped_file));
-  EXPECT_FALSE(p->CanCreateFileSystemFile(kRendererID, dropped_file));
-  EXPECT_FALSE(p->CanCopyIntoFileSystemFile(kRendererID, dropped_file));
-  EXPECT_FALSE(p->CanDeleteFileSystemFile(kRendererID, dropped_file));
+  EXPECT_TRUE(p->CanReadFileSystemFile(kRendererProcess, dropped_file));
+  EXPECT_FALSE(p->CanWriteFileSystemFile(kRendererProcess, dropped_file));
+  EXPECT_FALSE(p->CanCreateFileSystemFile(kRendererProcess, dropped_file));
+  EXPECT_FALSE(p->CanCopyIntoFileSystemFile(kRendererProcess, dropped_file));
+  EXPECT_FALSE(p->CanDeleteFileSystemFile(kRendererProcess, dropped_file));
 
   p->Remove(kRendererID);
 }
@@ -182,8 +185,8 @@ TEST(BrowserFileSystemHelperTest, PrepareDropDataForChildProcess_LocalFiles) {
 
   // Verify that initially no access is granted to both |kDraggedFile| and
   // |kOtherFile|.
-  EXPECT_FALSE(p->CanReadFile(kRendererID, kDraggedFile));
-  EXPECT_FALSE(p->CanReadFile(kRendererID, kOtherFile));
+  EXPECT_FALSE(p->CanReadFile(kRendererProcess, kDraggedFile));
+  EXPECT_FALSE(p->CanReadFile(kRendererProcess, kOtherFile));
   EXPECT_FALSE(
       p->CanRequestURL(kRendererID, net::FilePathToFileURL(kDraggedFile)));
   EXPECT_FALSE(
@@ -196,7 +199,7 @@ TEST(BrowserFileSystemHelperTest, PrepareDropDataForChildProcess_LocalFiles) {
       p->CanCommitURL(kRendererID, net::FilePathToFileURL(kOtherFile)));
 
   // Invoke the API under test to grant access to |drop_data|.
-  PrepareDropDataForChildProcess(&drop_data, p, kRendererID, nullptr);
+  PrepareDropDataForChildProcess(&drop_data, p, kRendererProcess, nullptr);
 
   // Verify that |drop_data| is unchanged.
   EXPECT_EQ(0u, drop_data.file_system_files.size());
@@ -206,7 +209,7 @@ TEST(BrowserFileSystemHelperTest, PrepareDropDataForChildProcess_LocalFiles) {
   // Verify that read access (and no other access) is granted for
   // |kDraggedFile|.  The renderer should be allowed to request this file, but
   // not commit it.
-  EXPECT_TRUE(p->CanReadFile(kRendererID, kDraggedFile));
+  EXPECT_TRUE(p->CanReadFile(kRendererProcess, kDraggedFile));
   EXPECT_FALSE(p->CanCreateReadWriteFile(kRendererID, kDraggedFile));
   EXPECT_TRUE(
       p->CanRequestURL(kRendererID, net::FilePathToFileURL(kDraggedFile)));
@@ -214,7 +217,7 @@ TEST(BrowserFileSystemHelperTest, PrepareDropDataForChildProcess_LocalFiles) {
       p->CanCommitURL(kRendererID, net::FilePathToFileURL(kDraggedFile)));
 
   // Verify that there is still no access for |kOtherFile|.
-  EXPECT_FALSE(p->CanReadFile(kRendererID, kOtherFile));
+  EXPECT_FALSE(p->CanReadFile(kRendererProcess, kOtherFile));
   EXPECT_FALSE(p->CanCreateReadWriteFile(kRendererID, kOtherFile));
   EXPECT_FALSE(
       p->CanRequestURL(kRendererID, net::FilePathToFileURL(kOtherFile)));

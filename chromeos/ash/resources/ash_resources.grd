@@ -13,11 +13,9 @@
   <release seq="1">
     <includes>
       <part file="audio_resources.grdp" />
-      <if expr="enable_cros_scalable_iph">
-        <part file="scalable_iph_unscaled_resources.grdp" />
-      </if>
       <if expr="is_chrome_branded">
         <part file="growth_framework_resources.grdp" />
+        <part file="scalable_iph_unscaled_resources.grdp" />
         <part file="scanner_resources.grdp" />
       </if>
     </includes>

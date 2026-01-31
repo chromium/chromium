@@ -74,7 +74,7 @@ class ProfileDiscardOptOutListHelperTest : public testing::Test {
 };
 
 TEST_F(ProfileDiscardOptOutListHelperTest, TestUserSpecifiedList) {
-  base::Value::Dict user_specified_values;
+  base::DictValue user_specified_values;
   user_specified_values.Set("foo", base::TimeToValue(base::Time::Now()));
   user_specified_values.Set("bar", base::TimeToValue(base::Time::Now()));
 
@@ -88,7 +88,7 @@ TEST_F(ProfileDiscardOptOutListHelperTest, TestUserSpecifiedList) {
 }
 
 TEST_F(ProfileDiscardOptOutListHelperTest, TestPolicySpecifiedList) {
-  base::Value::List policy_specified_values;
+  base::ListValue policy_specified_values;
   policy_specified_values.Append("foo");
   policy_specified_values.Append("bar");
 
@@ -103,7 +103,7 @@ TEST_F(ProfileDiscardOptOutListHelperTest, TestPolicySpecifiedList) {
 
 TEST_F(ProfileDiscardOptOutListHelperTest,
        TestPolicyAndUserSpecifiedListsMerged) {
-  base::Value::Dict user_specified_values;
+  base::DictValue user_specified_values;
   user_specified_values.Set("foo", base::TimeToValue(base::Time::Now()));
   user_specified_values.Set("bar", base::TimeToValue(base::Time::Now()));
 
@@ -111,7 +111,7 @@ TEST_F(ProfileDiscardOptOutListHelperTest,
       performance_manager::user_tuning::prefs::kTabDiscardingExceptionsWithTime,
       std::move(user_specified_values));
 
-  base::Value::List policy_specified_values;
+  base::ListValue policy_specified_values;
   policy_specified_values.Append("baz");
   prefs_.SetList(
       performance_manager::user_tuning::prefs::kManagedTabDiscardingExceptions,
@@ -123,7 +123,7 @@ TEST_F(ProfileDiscardOptOutListHelperTest,
 }
 
 TEST_F(ProfileDiscardOptOutListHelperTest, TestListsArePerProfile) {
-  base::Value::Dict user_specified_values;
+  base::DictValue user_specified_values;
   user_specified_values.Set("foo", base::TimeToValue(base::Time::Now()));
   user_specified_values.Set("bar", base::TimeToValue(base::Time::Now()));
 
@@ -145,7 +145,7 @@ TEST_F(ProfileDiscardOptOutListHelperTest, TestListsArePerProfile) {
       performance_manager::user_tuning::prefs::kManagedTabDiscardingExceptions);
   AddProfile(kSecondProfileUniqueId, &other_prefs);
 
-  base::Value::Dict other_user_specified_values;
+  base::DictValue other_user_specified_values;
   other_user_specified_values.Set("baz", base::TimeToValue(base::Time::Now()));
   other_prefs.SetDict(
       performance_manager::user_tuning::prefs::kTabDiscardingExceptionsWithTime,

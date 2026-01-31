@@ -74,11 +74,11 @@ class PolicyDataCollector
 
   SEQUENCE_CHECKER(sequence_checker_);
   PIIMap pii_map_;
-  base::Value::Dict policy_values_;
+  base::DictValue policy_values_;
   // Policy status is a dictionary of `status description` -> `status
   // dictionary` where `status dictionary` is a dictionary of `status field key`
   // -> `status field value`.
-  base::Value::Dict policy_status_;
+  base::DictValue policy_status_;
   std::unique_ptr<policy::PolicyValueAndStatusAggregator> policy_aggregator_;
   base::WeakPtrFactory<PolicyDataCollector> weak_ptr_factory_{this};
 };

@@ -85,8 +85,9 @@ class ReportBadMessageTest : public BindingsTestBase {
 
  private:
   void OnProcessError(const std::string& error) {
-    if (error_handler_)
+    if (error_handler_) {
       std::move(error_handler_).Run();
+    }
   }
 
   Remote<TestBadMessages> remote_;

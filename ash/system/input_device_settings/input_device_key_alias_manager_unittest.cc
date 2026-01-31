@@ -6,7 +6,6 @@
 
 #include "ash/system/input_device_settings/input_device_settings_utils.h"
 #include "ash/test/ash_test_base.h"
-#include "base/containers/contains.h"
 #include "ui/events/devices/input_device.h"
 
 namespace ash {
@@ -53,7 +52,7 @@ TEST_F(InputDeviceKeyAliasManagerTest, DeviceKeyAliasing) {
   const auto aliases =
       *manager_->GetAliasesForPrimaryDeviceKey(primary_device_key);
   EXPECT_EQ(1u, aliases.size());
-  EXPECT_TRUE(base::Contains(aliases, aliased_device_key));
+  EXPECT_TRUE(aliases.contains(aliased_device_key));
 }
 
 }  // namespace ash

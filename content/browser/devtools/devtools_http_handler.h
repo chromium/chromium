@@ -118,7 +118,7 @@ class DevToolsHttpHandler {
       const std::string& target_id,
       const std::string& host);
 
-  base::Value::Dict SerializeDescriptor(
+  base::DictValue SerializeDescriptor(
       scoped_refptr<DevToolsAgentHost> agent_host,
       const std::string& host);
 

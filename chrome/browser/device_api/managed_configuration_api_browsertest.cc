@@ -7,7 +7,6 @@
 #include <optional>
 
 #include "base/check.h"
-#include "base/containers/contains.h"
 #include "base/test/gtest_tags.h"
 #include "base/test/test_future.h"
 #include "base/values.h"
@@ -72,7 +71,7 @@ struct ResponseTemplate {
 std::unique_ptr<net::test_server::HttpResponse> HandleRequest(
     std::map<std::string, ResponseTemplate> templates,
     const net::test_server::HttpRequest& request) {
-  if (!base::Contains(templates, request.relative_url)) {
+  if (!templates.contains(request.relative_url)) {
     return std::make_unique<net::test_server::HungResponse>();
   }
 
@@ -91,7 +90,7 @@ std::unique_ptr<net::test_server::HttpResponse> HandleRequest(
   return http_response;
 }
 
-bool DictValueEquals(std::optional<base::Value::Dict> value,
+bool DictValueEquals(std::optional<base::DictValue> value,
                      const std::map<std::string, std::string>& expected) {
   DCHECK(value);
   std::map<std::string, std::string> actual;
@@ -116,8 +115,8 @@ class ManagedConfigurationAPITestBase : public MixinBasedInProcessBrowserTest {
 
   void SetConfiguration(const std::string& conf_url,
                         const std::string& conf_hash) {
-    base::Value::List trusted_apps;
-    base::Value::Dict entry;
+    base::ListValue trusted_apps;
+    base::DictValue entry;
     entry.Set(ManagedConfigurationAPI::kOriginKey, kOrigin);
     entry.Set(ManagedConfigurationAPI::kManagedConfigurationUrlKey,
               embedded_test_server()->GetURL(conf_url).spec());
@@ -129,12 +128,12 @@ class ManagedConfigurationAPITestBase : public MixinBasedInProcessBrowserTest {
 
   void ClearConfiguration() {
     profile()->GetPrefs()->SetList(prefs::kManagedConfigurationPerOrigin,
-                                   base::Value::List());
+                                   base::ListValue());
   }
 
-  std::optional<base::Value::Dict> GetValues(
+  std::optional<base::DictValue> GetValues(
       const std::vector<std::string>& keys) {
-    base::test::TestFuture<std::optional<base::Value::Dict>> value_future;
+    base::test::TestFuture<std::optional<base::DictValue>> value_future;
     api()->GetOriginPolicyConfiguration(origin_, keys,
                                         value_future.GetCallback());
     return value_future.Take();
@@ -319,7 +318,7 @@ class ManagedConfigurationAPIGuestTest
       ADD_FAILURE() << "No tab active";
       return {base::Value(), std::string()};
     }
-    base::Value::List keys_value;
+    base::ListValue keys_value;
     for (const auto& key : keys) {
       keys_value.Append(key);
     }

@@ -5,12 +5,8 @@
 #ifndef CHROME_BROWSER_UI_OMNIBOX_AI_MODE_PAGE_ACTION_CONTROLLER_H_
 #define CHROME_BROWSER_UI_OMNIBOX_AI_MODE_PAGE_ACTION_CONTROLLER_H_
 
-#include <memory>
-
 #include "base/memory/raw_ref.h"
 #include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
-
-class PrefChangeRegistrar;
 
 class BrowserWindowInterface;
 class LocationBarView;
@@ -57,8 +53,6 @@ class AiModePageActionController {
   const raw_ref<BrowserWindowInterface> bwi_;
   const raw_ref<Profile> profile_;
   const raw_ref<LocationBarView> location_bar_view_;
-
-  std::unique_ptr<PrefChangeRegistrar> pref_registrar_;
 
   ui::ScopedUnownedUserData<AiModePageActionController> scoped_data_;
 };

@@ -45,11 +45,12 @@
 #include "chrome/browser/web_applications/isolated_web_apps/policy/isolated_web_app_installer.h"
 #include "chrome/browser/web_applications/isolated_web_apps/policy/isolated_web_app_policy_constants.h"
 #include "chrome/browser/web_applications/isolated_web_apps/policy/isolated_web_app_policy_manager.h"
+#include "chrome/browser/web_applications/isolated_web_apps/runtime_data/chrome_iwa_runtime_data_provider.h"
+#include "chrome/browser/web_applications/isolated_web_apps/test/fake_chrome_iwa_runtime_data_provider.h"
 #include "chrome/browser/web_applications/isolated_web_apps/test/integrity_block_data_matcher.h"
 #include "chrome/browser/web_applications/isolated_web_apps/test/isolated_web_app_builder.h"
 #include "chrome/browser/web_applications/isolated_web_apps/test/isolated_web_app_test.h"
 #include "chrome/browser/web_applications/isolated_web_apps/test/iwa_test_server_configurator.h"
-#include "chrome/browser/web_applications/isolated_web_apps/test/key_distribution/test_utils.h"
 #include "chrome/browser/web_applications/isolated_web_apps/test/policy_generator.h"
 #include "chrome/browser/web_applications/isolated_web_apps/test/policy_test_utils.h"
 #include "chrome/browser/web_applications/isolated_web_apps/update/isolated_web_app_update_discovery_task.h"
@@ -194,11 +195,21 @@ class IsolatedWebAppUpdateManagerTest : public IsolatedWebAppTest {
 
  protected:
   IsolatedWebAppUpdateManager& update_manager() {
-    return provider().iwa_update_manager();
+    return provider().isolated_web_app_update_manager();
   }
 
   FakeWebAppUiManager& fake_ui_manager() {
     return static_cast<FakeWebAppUiManager&>(provider().ui_manager());
+  }
+
+  void SetUp() override {
+    resetter_ =
+        ChromeIwaRuntimeDataProvider::SetInstanceForTesting(&data_provider_);
+    IsolatedWebAppTest::SetUp();
+    data_provider_.Update([&](auto& update) {
+      update.AddToManagedAllowlist(test::GetDefaultEcdsaP256WebBundleId())
+          .AddToManagedAllowlist(test::GetDefaultEd25519WebBundleId());
+    });
   }
 
   void InitialIwaBundleForceInstall(
@@ -325,6 +336,9 @@ class IsolatedWebAppUpdateManagerTest : public IsolatedWebAppTest {
   }
 
   data_decoder::test::InProcessDataDecoder data_decoder_;
+
+  FakeIwaRuntimeDataProvider data_provider_;
+  std::optional<base::AutoReset<ChromeIwaRuntimeDataProvider*>> resetter_;
 };
 
 class IsolatedWebAppUpdateManagerDevModeUpdateTest : public IsolatedWebAppTest {
@@ -369,10 +383,12 @@ TEST_F(IsolatedWebAppUpdateManagerDevModeUpdateTest,
   update_bundle->FakeInstallPageState(profile());
 
   base::test::TestFuture<base::expected<IwaVersion, std::string>> future;
-  provider().iwa_update_manager().DiscoverApplyAndPrioritizeLocalDevModeUpdate(
-      IwaSourceBundleDevModeWithFileOp(update_bundle->path(),
-                                       IwaSourceBundleDevFileOp::kCopy),
-      url_info, future.GetCallback());
+  provider()
+      .isolated_web_app_update_manager()
+      .DiscoverApplyAndPrioritizeLocalDevModeUpdate(
+          IwaSourceBundleDevModeWithFileOp(update_bundle->path(),
+                                           IwaSourceBundleDevFileOp::kCopy),
+          url_info, future.GetCallback());
 
   EXPECT_THAT(future.Get(),
               ValueIs(Eq(*IwaVersion::Create(kUpdateIwaVersion))));
@@ -418,10 +434,10 @@ class IsolatedWebAppUpdateManagerUpdateTest
   }
 
   base::Value debug_log() {
-    return provider().iwa_update_manager().AsDebugValue();
+    return provider().isolated_web_app_update_manager().AsDebugValue();
   }
 
-  base::Value::List UpdateDiscoveryLog() {
+  base::ListValue UpdateDiscoveryLog() {
     return debug_log()
         .GetDict()
         .FindDict("task_queue")
@@ -429,7 +445,7 @@ class IsolatedWebAppUpdateManagerUpdateTest
         ->Clone();
   }
 
-  base::Value::List UpdateDiscoveryTasks() {
+  base::ListValue UpdateDiscoveryTasks() {
     return debug_log()
         .GetDict()
         .FindDict("task_queue")
@@ -437,7 +453,7 @@ class IsolatedWebAppUpdateManagerUpdateTest
         ->Clone();
   }
 
-  base::Value::List UpdateApplyLog() {
+  base::ListValue UpdateApplyLog() {
     return debug_log()
         .GetDict()
         .FindDict("task_queue")
@@ -445,7 +461,7 @@ class IsolatedWebAppUpdateManagerUpdateTest
         ->Clone();
   }
 
-  base::Value::List UpdateApplyTasks() {
+  base::ListValue UpdateApplyTasks() {
     return debug_log()
         .GetDict()
         .FindDict("task_queue")
@@ -453,7 +469,7 @@ class IsolatedWebAppUpdateManagerUpdateTest
         ->Clone();
   }
 
-  base::Value::List UpdateApplyWaiters() {
+  base::ListValue UpdateApplyWaiters() {
     return debug_log().GetDict().FindList("update_apply_waiters")->Clone();
   }
 };
@@ -764,12 +780,11 @@ TEST_F(IsolatedWebAppUpdateManagerUpdateMockTimeTest, KeyRotationUpdateRetry) {
       capture_discovery_task_result([&] {
         // Rotate the signing key from ed25519 to ecdsaP256. This will
         // trigger an unsuccessful update.
-        ASSERT_OK(test::KeyDistributionComponentBuilder(base::Version("1.0.1"))
-                      .AddToKeyRotations(
-                          GetIwa1WebBundleId(),
-                          test::GetDefaultEcdsaP256KeyPair().public_key.bytes())
-                      .Build()
-                      .UploadFromComponentFolder());
+        data_provider_.Update([&](auto& update) {
+          update.AddToKeyRotations(
+              GetIwa1WebBundleId(),
+              test::GetDefaultEcdsaP256KeyPair().public_key.bytes());
+        });
       }),
       ErrorIs(_));
 
@@ -825,11 +840,9 @@ TEST_F(IsolatedWebAppUpdateManagerUpdateMockTimeTest, SubsequentKeyRotations) {
         &provider().install_manager());
     manifest_updated_observer.BeginListening({app_id});
 
-    ASSERT_OK(test::KeyDistributionComponentBuilder(
-                  base::Version(base::StringPrintf("%d.0.0", comp_v)))
-                  .AddToKeyRotations(web_bundle_id, key_pair.public_key.bytes())
-                  .Build()
-                  .UploadFromComponentFolder());
+    data_provider_.Update([&](auto& update) {
+      update.AddToKeyRotations(web_bundle_id, key_pair.public_key.bytes());
+    });
 
     manifest_updated_observer.Wait();
 
@@ -1082,36 +1095,19 @@ TEST_F(IsolatedWebAppUpdateManagerUpdateTest,
 TEST_F(IsolatedWebAppUpdateManagerUpdateTest,
        SkipsUpdateDiscoveryTaskForNotAllowlistedIwa) {
   base::HistogramTester ht;
-  // Turn off default skipping of allowlist for IWA tests
-  IwaKeyDistributionInfoProvider::GetInstance()
-      .SkipManagedAllowlistChecksForTesting(false);
 
-  // Add both app to allowlist for installing them
-  EXPECT_OK(
-      test::KeyDistributionComponentBuilder(base::Version("1.0.1"))
-          .WithManagedAllowlist({GetIwa1WebBundleId(), GetIwa2WebBundleId()})
-          .Build()
-          .UploadFromComponentFolder());
+  // Add both apps to allowlist for installing them
+  data_provider_.Update([&](auto& update) {
+    update.SetManagedAllowlist({GetIwa1WebBundleId(), GetIwa2WebBundleId()});
+  });
 
   InitialIwaBundleForceInstall(CreateIwa1Bundle(kUpdateIwaVersion));
   InitialIwaBundleForceInstall(CreateIwa2Bundle("3.0.0"));
 
   // Remove the first app from the allowlist
-  EXPECT_OK(test::KeyDistributionComponentBuilder(base::Version("1.0.2"))
-                .WithManagedAllowlist({GetIwa2WebBundleId()})
-                .Build()
-                .UploadFromComponentFolder());
-
-  EXPECT_FALSE(
-      IwaKeyDistributionInfoProvider::GetInstance().IsManagedUpdatePermitted(
-          GetIwa1WebBundleId().id()));
-  EXPECT_TRUE(
-      IwaKeyDistributionInfoProvider::GetInstance().IsManagedUpdatePermitted(
-          GetIwa2WebBundleId().id()));
-
-  EXPECT_THAT(
-      ht.GetAllSamples(kIwaKeyDistributionManagedUpdateAllowedHistogramName),
-      base::BucketsAre(base::Bucket(false, 1), base::Bucket(true, 1)));
+  data_provider_.Update([&](auto& update) {
+    update.SetManagedAllowlist({GetIwa2WebBundleId()});
+  });
 
   test_update_server().AddBundle(CreateIwa1Bundle("2.1.0"));
   test_update_server().AddBundle(CreateIwa2Bundle("3.1.0"));
@@ -1122,10 +1118,6 @@ TEST_F(IsolatedWebAppUpdateManagerUpdateTest,
       &provider().install_manager());
   manifest_updated_observer.BeginListeningAndWait(
       {GetAppId(GetIwa2WebBundleId())});
-
-  EXPECT_THAT(
-      ht.GetAllSamples(kIwaKeyDistributionManagedUpdateAllowedHistogramName),
-      base::BucketsAre(base::Bucket(false, 2), base::Bucket(true, 2)));
 
   AssertAppInstalledAtVersion(GetIwa1WebBundleId(),
                               *IwaVersion::Create(kUpdateIwaVersion));
@@ -1307,15 +1299,13 @@ class IsolatedWebAppUpdateManagerUpdateApplyOnStartupTest
 
   std::unique_ptr<WebApp> CreateIsolatedWebApp(const GURL& start_url,
                                                IsolationData isolation_data) {
-    webapps::AppId app_id = GenerateAppId(/*manifest_id=*/"", start_url);
-    auto web_app = std::make_unique<WebApp>(app_id);
+    webapps::ManifestId manifest_id = webapps::ManifestId(start_url.Resolve("/"));
+    GURL scope = start_url.Resolve("/");
+    auto web_app = std::make_unique<WebApp>(manifest_id, start_url, scope);
     web_app->SetName("iwa name");
-    web_app->SetStartUrl(start_url);
-    web_app->SetScope(start_url.DeprecatedGetOriginAsURL());
-    web_app->SetManifestId(start_url.DeprecatedGetOriginAsURL());
     web_app->AddSource(WebAppManagement::Type::kIwaUserInstalled);
-    web_app->SetIsolationData(isolation_data);
     web_app->SetUserDisplayMode(mojom::UserDisplayMode::kStandalone);
+    web_app->SetIsolationData(std::move(isolation_data));
     return web_app;
   }
 

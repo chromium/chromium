@@ -109,7 +109,7 @@ void LogDummyNetworkRequestForTrafficAnnotation(const GURL& url,
   net::NetLogWithSource net_log =
       net::NetLogWithSource::Make(net::NetLogSourceType::URL_REQUEST);
   net_log.AddEvent(net::NetLogEventType::REQUEST_ALIVE, [&]() {
-    base::Value::Dict dict;
+    base::DictValue dict;
     dict.Set("priority", "IDLE");
     dict.Set("url", url.spec());
     dict.Set("traffic_annotation",

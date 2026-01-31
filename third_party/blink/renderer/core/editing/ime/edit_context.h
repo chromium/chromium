@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_EDITING_IME_EDIT_CONTEXT_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_EDITING_IME_EDIT_CONTEXT_H_
 
+#include "third_party/blink/public/mojom/input/input_handler.mojom-blink.h"
 #include "third_party/blink/public/platform/web_text_input_type.h"
 #include "third_party/blink/public/web/web_input_method_controller.h"
 #include "third_party/blink/renderer/bindings/core/v8/active_script_wrappable.h"
@@ -132,6 +133,12 @@ class CORE_EXPORT EditContext final : public EventTarget,
   void Trace(Visitor*) const override;
 
   // WebInputMethodController overrides.
+  bool SetComposition(const WebString& text,
+                      const std::vector<ui::ImeTextSpan>& ime_text_spans,
+                      const WebRange& replacement_range,
+                      int selection_start,
+                      int selection_end,
+                      mojom::blink::ImeState ime_state) override;
   bool SetComposition(const WebString& text,
                       const std::vector<ui::ImeTextSpan>& ime_text_spans,
                       const WebRange& replacement_range,

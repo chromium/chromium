@@ -13,6 +13,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/simple_test_clock.h"
 #include "base/test/simple_test_tick_clock.h"
 #include "base/time/time.h"
@@ -27,7 +28,6 @@
 #include "chrome/browser/resource_coordinator/tab_lifecycle_unit_external.h"
 #include "chrome/browser/resource_coordinator/tab_lifecycle_unit_source.h"
 #include "chrome/browser/resource_coordinator/tab_load_tracker.h"
-#include "chrome/browser/resource_coordinator/tab_manager_features.h"
 #include "chrome/browser/resource_coordinator/test_lifecycle_unit.h"
 #include "chrome/browser/resource_coordinator/time.h"
 #include "chrome/browser/resource_coordinator/utils.h"
@@ -114,7 +114,8 @@ class TabLifecycleUnitTest : public ChromeRenderViewHostTestHarness {
   TabLifecycleUnitTest& operator=(const TabLifecycleUnitTest&) = delete;
 
   void SetUp() override {
-    TestingBrowserProcess::GetGlobal()->CreateGlobalFeaturesForTesting();
+    TestingBrowserProcess::GetGlobal()->SetUpGlobalFeaturesForTesting(
+        /*profile_manager=*/false);
     ChromeRenderViewHostTestHarness::SetUp();
     pm_helper_.SetUp();
 
@@ -163,12 +164,14 @@ class TabLifecycleUnitTest : public ChromeRenderViewHostTestHarness {
   }
 
   void TearDown() override {
-    while (!tab_strip_model_->empty())
+    while (!tab_strip_model_->empty()) {
       tab_strip_model_->DetachAndDeleteWebContentsAt(0);
+    }
     tab_strip_model_.reset();
     metrics::DesktopSessionDurationTracker::CleanupForTesting();
     pm_helper_.TearDown();
     ChromeRenderViewHostTestHarness::TearDown();
+    TestingBrowserProcess::GetGlobal()->TearDownGlobalFeaturesForTesting();
   }
 
   // Create a new test WebContents and append it to the tab strip to allow
@@ -364,6 +367,87 @@ TEST_F(TabLifecycleUnitTest, LastActiveTimeUpdatedOnVisibilityChange) {
   wall_time_when_hidden = NowTicks();
   EXPECT_EQ(wall_time_when_hidden,
             tab_lifecycle_unit.GetWallTimeWhenHiddenForTesting());
+}
+
+TEST_F(TabLifecycleUnitTest, MetricsRecordedOnReload) {
+  base::HistogramTester histogram_tester;
+
+  // Register the observer so the Source handles the Discard swap.
+  tab_strip_model_->AddObserver(GetTabLifecycleUnitSource());
+  TabLifecycleUnit* tab_lifecycle_unit = AddNewHiddenLifecycleUnitToTabStrip();
+  ASSERT_TRUE(tab_lifecycle_unit);
+
+  // Advance the clock to avoid null timestamps.
+  test_tick_clock_.Advance(base::Seconds(10));
+  // Define memory in KiB, because that's what Discard() expects.
+  const uint64_t kMemoryEstimateBytes = 100 * 1024;
+
+  EXPECT_TRUE(tab_lifecycle_unit->Discard(LifecycleUnitDiscardReason::URGENT,
+                                          kMemoryEstimateBytes));
+
+  // Simulate a 5-minute interval between discard and reload.
+  const base::TimeDelta kTimeSinceDiscard = base::Minutes(5);
+  test_tick_clock_.Advance(kTimeSinceDiscard);
+
+  // Trigger a reload.
+  tab_lifecycle_unit->DidStartLoading();
+
+  // Verify immediate metrics.
+  histogram_tester.ExpectUniqueTimeSample(
+      "Tab.Discarding.Reload.TimeSinceDiscard", kTimeSinceDiscard, 1);
+  histogram_tester.ExpectUniqueSample("Tab.Discarding.Reload.CausedByFocus",
+                                      false, 1);
+
+  // Advance the clock to simulate load duration.
+  const base::TimeDelta kLoadTime = base::Seconds(2);
+  test_tick_clock_.Advance(kLoadTime);
+
+  tab_lifecycle_unit->DidStopLoading();
+
+  // Verify efficiency metrics.
+  histogram_tester.ExpectUniqueTimeSample("Tab.Discarding.Reload.LoadTime",
+                                          kLoadTime, 1);
+  histogram_tester.ExpectUniqueSample("Tab.Discarding.Reload.FreedMemoryMB",
+                                      100, 1);
+
+  // Verify no double-counting.
+  test_tick_clock_.Advance(base::Seconds(1));
+  tab_lifecycle_unit->DidStopLoading();
+  histogram_tester.ExpectTotalCount("Tab.Discarding.Reload.LoadTime", 1);
+
+  // Unregister the observer.
+  tab_strip_model_->RemoveObserver(GetTabLifecycleUnitSource());
+}
+
+TEST_F(TabLifecycleUnitTest, MetricsRecordedOnFocusTriggeredReload) {
+  base::HistogramTester histogram_tester;
+
+  tab_strip_model_->AddObserver(GetTabLifecycleUnitSource());
+  TabLifecycleUnit* tab_lifecycle_unit = AddNewHiddenLifecycleUnitToTabStrip();
+  ASSERT_TRUE(tab_lifecycle_unit);
+
+  // Setup and Discard.
+  test_tick_clock_.Advance(base::Seconds(10));
+  const uint64_t kMemoryEstimateBytes = 100 * 1024 * 1024;
+  EXPECT_TRUE(tab_lifecycle_unit->Discard(LifecycleUnitDiscardReason::URGENT,
+                                          kMemoryEstimateBytes));
+
+  test_tick_clock_.Advance(base::Minutes(1));
+
+  // Simulate user focus.
+  tab_lifecycle_unit->SetFocused(true);
+
+  // Trigger reload.
+  tab_lifecycle_unit->DidStartLoading();
+
+  // Verify CausedByFocus is true.
+  histogram_tester.ExpectUniqueSample("Tab.Discarding.Reload.CausedByFocus",
+                                      true, 1);
+
+  // Finish load to cleanup state.
+  tab_lifecycle_unit->DidStopLoading();
+
+  tab_strip_model_->RemoveObserver(GetTabLifecycleUnitSource());
 }
 
 }  // namespace resource_coordinator

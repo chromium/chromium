@@ -22,7 +22,7 @@ source_set("ui") {
     "//components/strings",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/data_import/ui",
-    "//ios/chrome/browser/first_run/ui_bundled:constants",
+    "//ios/chrome/browser/first_run/public:constants",
     "//ios/chrome/browser/safari_data_import/public",
     "//ios/chrome/browser/safari_data_import/public:metrics",
     "//ios/chrome/browser/safari_data_import/public:ui_utils",

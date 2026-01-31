@@ -1,0 +1,27 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chrome_build.gni")
+
+declare_args() {
+  # By default, only branded builds report active use. This affects reporting
+  # only through //components/activity_reporter; legacy reporting through
+  # ChromiumUpdater is not enabled/disabled by this flag.
+  report_activity = is_chrome_branded
+
+  # Starting in November 2025, there was an effort to redefine what it meant
+  # for the browser to be "actively used", in order to exclude certain types of
+  # background (non-user-visible) usage of the browser. If
+  # `use_legacy_active_definition` is true, the browser continues to signal the
+  # updater that is has been active under the old criteria, using legacy
+  # platform-specific code paths. If false, those codepaths are disabled and
+  # the browser will signal the updater under the new criteria when
+  # ActivityReporter::ReportActive is called. Even when true,
+  # ActivityReporter::ReportActive will report activity through non-updater
+  # paths.
+  #
+  # This can't be a runtime flag because legacy activity reporting happens
+  # before Finch is initialized.
+  use_legacy_active_definition = true
+}

@@ -26,7 +26,6 @@ struct IndexedDBObjectStoreMetadata;
 
 namespace leveldb {
 class DB;
-class Iterator;
 }  // namespace leveldb
 
 namespace content::indexed_db {
@@ -126,10 +125,7 @@ class CONTENT_EXPORT LevelDbTombstoneSweeper
 
   Status FlushDeletions();
 
-  bool ShouldContinueIteration(const leveldb::Iterator& iterator,
-                               SweepStatus* sweep_status,
-                               Status* leveldb_status,
-                               int* round_iters);
+  bool ShouldContinueIteration(SweepStatus* sweep_status, int* round_iters);
 
   SweepStatus DoSweep(Status* status);
 

@@ -25,13 +25,13 @@ class AdaptiveChargingControllerTest : public NoSessionAshTestBase {
   }
 
   void TearDown() override {
+    power_manager_client_ = nullptr;
     adaptive_charging_controller_.reset();
     NoSessionAshTestBase::TearDown();
   }
 
  protected:
-  raw_ptr<chromeos::FakePowerManagerClient, DanglingUntriaged>
-      power_manager_client_ = nullptr;
+  raw_ptr<chromeos::FakePowerManagerClient> power_manager_client_ = nullptr;
   std::unique_ptr<AdaptiveChargingController> adaptive_charging_controller_;
 };
 

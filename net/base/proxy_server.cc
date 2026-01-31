@@ -60,8 +60,7 @@ ProxyServer ProxyServer::FromSchemeHostAndPort(Scheme scheme,
   // Create INVALID proxies directly using `ProxyServer()`.
   DCHECK_NE(scheme, SCHEME_INVALID);
 
-  int port_number =
-      url::ParsePort(port_str.data(), url::Component(0, port_str.size()));
+  int port_number = url::ParsePort(port_str, url::Component(port_str));
   if (port_number == url::PORT_UNSPECIFIED)
     return FromSchemeHostAndPort(scheme, host, std::nullopt);
   if (port_number == url::PORT_INVALID)

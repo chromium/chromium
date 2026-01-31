@@ -7,34 +7,38 @@
 IdleServiceObserverBridge::IdleServiceObserverBridge(
     enterprise_idle::IdleService* service,
     id<IdleServiceObserving> observer)
-    : observer_(observer) {
-  DCHECK(observer_);
+    : observer_(observer), service_(service) {
+  CHECK(observer_);
+  CHECK(service_);
   scoped_observation_.Observe(service);
 }
 
 IdleServiceObserverBridge::~IdleServiceObserverBridge() = default;
 
 void IdleServiceObserverBridge::OnIdleTimeoutInForeground() {
-  if ([observer_ respondsToSelector:@selector(onIdleTimeoutInForeground)]) {
-    [observer_ onIdleTimeoutInForeground];
+  if ([observer_
+          respondsToSelector:@selector(idleServiceDidTimeoutInForeground:)]) {
+    [observer_ idleServiceDidTimeoutInForeground:service_];
   }
 }
 
 void IdleServiceObserverBridge::OnIdleTimeoutOnStartup() {
-  if ([observer_ respondsToSelector:@selector(onIdleTimeoutOnStartup)]) {
-    [observer_ onIdleTimeoutOnStartup];
+  if ([observer_
+          respondsToSelector:@selector(idleServiceDidTimeoutOnStartup:)]) {
+    [observer_ idleServiceDidTimeoutOnStartup:service_];
   }
 }
 
 void IdleServiceObserverBridge::OnIdleTimeoutActionsCompleted() {
-  if ([observer_ respondsToSelector:@selector(onIdleTimeoutActionsCompleted)]) {
-    [observer_ onIdleTimeoutActionsCompleted];
+  if ([observer_
+          respondsToSelector:@selector(idleServiceDidCompleteActions:)]) {
+    [observer_ idleServiceDidCompleteActions:service_];
   }
 }
 
 void IdleServiceObserverBridge::OnApplicationWillEnterBackground() {
   if ([observer_
-          respondsToSelector:@selector(onApplicationWillEnterBackground)]) {
-    [observer_ onApplicationWillEnterBackground];
+          respondsToSelector:@selector(idleServiceWillEnterBackground:)]) {
+    [observer_ idleServiceWillEnterBackground:service_];
   }
 }

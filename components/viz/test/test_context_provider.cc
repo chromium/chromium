@@ -132,7 +132,7 @@ scoped_refptr<TestContextProvider> TestContextProvider::CreateGLES(
       std::make_unique<TestContextSupport>(),
       std::make_unique<TestGLES2InterfaceForContextProvider>(
           std::move(additional_extensions)),
-      /*sii=*/nullptr, support_locking);
+      support_locking);
 }
 
 // static
@@ -144,18 +144,18 @@ scoped_refptr<TestContextProvider> TestContextProvider::CreateRaster() {
 scoped_refptr<TestContextProvider> TestContextProvider::CreateRaster(
     std::unique_ptr<TestRasterInterface> raster) {
   CHECK(raster);
-  return base::MakeRefCounted<TestContextProvider>(
-      std::make_unique<TestContextSupport>(), std::move(raster),
-      /*support_locking=*/false);
+  return new TestContextProvider(std::make_unique<TestContextSupport>(),
+                                 std::move(raster),
+                                 /*support_locking=*/false);
 }
 
 // static
 scoped_refptr<TestContextProvider> TestContextProvider::CreateRaster(
     std::unique_ptr<TestContextSupport> context_support) {
   CHECK(context_support);
-  return base::MakeRefCounted<TestContextProvider>(
-      std::move(context_support), std::make_unique<TestRasterInterface>(),
-      /*support_locking=*/false);
+  return new TestContextProvider(std::move(context_support),
+                                 std::make_unique<TestRasterInterface>(),
+                                 /*support_locking=*/false);
 }
 
 // static
@@ -166,11 +166,19 @@ scoped_refptr<TestContextProvider> TestContextProvider::CreateWorker() {
 // static
 scoped_refptr<TestContextProvider> TestContextProvider::CreateWorker(
     std::unique_ptr<TestContextSupport> support) {
+  return CreateWorker(std::move(support),
+                      std::make_unique<TestRasterInterface>());
+}
+
+// static
+scoped_refptr<TestContextProvider> TestContextProvider::CreateWorker(
+    std::unique_ptr<TestContextSupport> support,
+    std::unique_ptr<TestRasterInterface> raster) {
   DCHECK(support);
 
-  auto worker_context_provider = base::MakeRefCounted<TestContextProvider>(
-      std::move(support), std::make_unique<TestRasterInterface>(),
-      /*support_locking=*/true);
+  auto worker_context_provider = base::WrapRefCounted<TestContextProvider>(
+      new TestContextProvider(std::move(support), std::move(raster),
+                              /*support_locking=*/true));
 
   // Worker contexts are bound to the thread they are created on.
   auto result = worker_context_provider->BindToCurrentSequence();
@@ -208,7 +216,6 @@ TestContextProvider::TestContextProvider(
 TestContextProvider::TestContextProvider(
     std::unique_ptr<TestContextSupport> support,
     std::unique_ptr<TestGLES2Interface> gl,
-    scoped_refptr<gpu::TestSharedImageInterface> sii,
     bool support_locking)
     : support_(std::move(support)),
       context_gl_(std::move(gl)),
@@ -223,18 +230,14 @@ TestContextProvider::TestContextProvider(
   cache_controller_ =
       std::make_unique<ContextCacheController>(support_.get(), nullptr);
 
-  if (sii) {
-    shared_image_interface_ = std::move(sii);
-  } else {
-    shared_image_interface_ =
-        base::MakeRefCounted<gpu::TestSharedImageInterface>();
+  shared_image_interface_ =
+      base::MakeRefCounted<gpu::TestSharedImageInterface>();
 
-    // By default, luminance textures are supported in GLES2.
-    gpu::SharedImageCapabilities shared_image_caps;
-    shared_image_caps.supports_luminance_shared_images = true;
+  // By default, luminance textures are supported in GLES2.
+  gpu::SharedImageCapabilities shared_image_caps;
+  shared_image_caps.supports_luminance_shared_images = true;
 
-    shared_image_interface_->SetCapabilities(shared_image_caps);
-  }
+  shared_image_interface_->SetCapabilities(shared_image_caps);
 }
 
 TestContextProvider::~TestContextProvider() {

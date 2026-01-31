@@ -77,7 +77,7 @@ TEST(Syscall, WellKnownEntryPoint) {
 #elif defined(__aarch64__)
   EXPECT_EQ(0xD4000001u, LoadBehind<uint32_t>(Syscall::Call(-1)));  // SVC 0
 #else
-#warning Incomplete test case; need port for target platform
+#error Incomplete test case; need port for target platform
 #endif
 }
 

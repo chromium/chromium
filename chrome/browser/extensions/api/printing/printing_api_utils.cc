@@ -10,7 +10,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/containers/contains.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
 #include "base/json/json_reader.h"
@@ -90,8 +89,8 @@ bool ValidateVendorItem(const std::string& name,
       continue;
     }
 
-    return base::Contains(capability.values, value,
-                          &printing::AdvancedCapabilityValue::name);
+    return std::ranges::contains(capability.values, value,
+                                 &printing::AdvancedCapabilityValue::name);
   }
 
   return false;
@@ -107,7 +106,7 @@ std::optional<DefaultPrinterRules> GetDefaultPrinterRules(
   std::optional<base::Value> default_destination_selection_rules_value =
       base::JSONReader::Read(default_destination_selection_rules,
                              base::JSON_PARSE_CHROMIUM_EXTENSIONS);
-  base::Value::Dict* default_destination_selection_rules_dict =
+  base::DictValue* default_destination_selection_rules_dict =
       default_destination_selection_rules_value.has_value()
           ? default_destination_selection_rules_value->GetIfDict()
           : nullptr;
@@ -182,7 +181,7 @@ idl::PrinterStatus PrinterStatusToIdl(chromeos::PrinterErrorCode status) {
 }
 
 std::unique_ptr<printing::PrintSettings> ParsePrintTicket(
-    base::Value::Dict ticket) {
+    base::DictValue ticket) {
   cloud_devices::CloudDeviceDescription description;
   if (!description.InitFromValue(std::move(ticket))) {
     LOG(ERROR) << "Unable to initialize CDD from print ticket.";
@@ -358,7 +357,8 @@ bool CheckSettingsAndCapabilitiesCompatibility(
   if (settings.copies() > capabilities.copies_max)
     return false;
 
-  if (!base::Contains(capabilities.duplex_modes, settings.duplex_mode())) {
+  if (!std::ranges::contains(capabilities.duplex_modes,
+                             settings.duplex_mode())) {
     return false;
   }
 
@@ -376,7 +376,7 @@ bool CheckSettingsAndCapabilitiesCompatibility(
     return false;
   }
 
-  if (!base::Contains(capabilities.dpis, settings.dpi_size())) {
+  if (!std::ranges::contains(capabilities.dpis, settings.dpi_size())) {
     return false;
   }
 
@@ -401,7 +401,7 @@ bool CheckSettingsAndCapabilitiesCompatibility(
     // the value is not the default.
     if (settings.print_scaling() !=
         printing::mojom::PrintScalingType::kUnknownPrintScalingType) {
-      const bool uses_supported_print_scaling = base::Contains(
+      const bool uses_supported_print_scaling = std::ranges::contains(
           capabilities.print_scaling_types, settings.print_scaling());
       base::UmaHistogramBoolean("Extensions.Printing.UsesSupportedPrintScaling",
                                 uses_supported_print_scaling);

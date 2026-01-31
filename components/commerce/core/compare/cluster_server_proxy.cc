@@ -96,7 +96,7 @@ std::optional<uint64_t> Deserialize(const base::Value& value) {
     return std::nullopt;
   }
 
-  const base::Value::Dict& value_dict = value.GetDict();
+  const base::DictValue& value_dict = value.GetDict();
   auto* type = value_dict.FindString(kTypeKey);
   if (!type || *type != kGPCTypeName) {
     return std::nullopt;
@@ -170,7 +170,7 @@ void ClusterServerProxy::HandleCompareResponse(
     return;
   }
 
-  std::optional<base::Value::Dict> result =
+  std::optional<base::DictValue> result =
       base::JSONReader::ReadDict(response->response, base::JSON_PARSE_RFC);
 
   std::vector<uint64_t> product_cluster_ids;

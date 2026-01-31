@@ -49,7 +49,7 @@ scoped_refptr<media::VideoFrame> CreateTestFrame(
                             gpu::SHARED_IMAGE_USAGE_DISPLAY_READ |
                             gpu::SHARED_IMAGE_USAGE_RASTER_READ;
       auto shared_image = test_sii->CreateSharedImage(
-          {*si_format, coded_size, gfx::ColorSpace(),
+          {*si_format, coded_size, color_space,
            gpu::SharedImageUsageSet(si_usage), "CreateTestFrame"},
           gpu::kNullSurfaceHandle,
           gfx::BufferUsage::VEA_READ_CAMERA_AND_CPU_READ_WRITE);

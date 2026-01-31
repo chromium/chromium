@@ -14,27 +14,40 @@ build_webui("build") {
     "url_generator_container.html",
   ]
 
-  web_component_files = [
+  ts_files = [
+    "browser_proxy.ts",
+    "data_collectors.html.ts",
     "data_collectors.ts",
+    "data_export_done.html.ts",
     "data_export_done.ts",
+    "issue_details.html.ts",
     "issue_details.ts",
+    "pii_selection.html.ts",
     "pii_selection.ts",
+    "spinner_page.html.ts",
     "spinner_page.ts",
+    "support_tool.html.ts",
     "support_tool.ts",
+    "support_tool_page_mixin_lit.ts",
+    "url_generator.html.ts",
     "url_generator.ts",
   ]
 
-  ts_files = [
-    "browser_proxy.ts",
-    "support_tool_page_mixin.ts",
+  css_files = [
+    "data_collectors.css",
+    "data_export_done.css",
+    "issue_details.css",
+    "pii_selection.css",
+    "spinner_page.css",
+    "support_tool_shared_lit.css",
+    "url_generator.css",
+    "support_tool.css",
   ]
-
-  css_files = [ "support_tool_shared.css" ]
 
   icons_html_files = [ "icons.html" ]
 
   ts_deps = [
-    "//third_party/polymer/v3_0:library",
+    "//third_party/lit/v3_0:build_ts",
     "//ui/webui/resources/cr_elements:build_ts",
     "//ui/webui/resources/js:build_ts",
   ]

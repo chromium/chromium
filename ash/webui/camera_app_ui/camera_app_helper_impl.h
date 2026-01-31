@@ -91,7 +91,9 @@ class CameraAppHelperImpl : public ScreenBacklightObserver,
   void OpenUrlInBrowser(const GURL& url) override;
   void GetWindowStateController(
       GetWindowStateControllerCallback callback) override;
-  void SendNewCaptureBroadcast(bool is_video, const std::string& name) override;
+  void ProcessCapturedFile(camera_app::mojom::FileType file_type,
+                           camera_app::mojom::CaptureDestinationPtr destination,
+                           ProcessCapturedFileCallback callback) override;
   void MonitorFileDeletion(const std::string& name,
                            MonitorFileDeletionCallback callback) override;
   void IsDocumentScannerSupported(
@@ -191,6 +193,10 @@ class CameraAppHelperImpl : public ScreenBacklightObserver,
   std::unique_ptr<CameraAppEventsSender> events_sender_;
 
   display::ScopedDisplayObserver display_observer_{this};
+  base::ScopedObservation<ScreenBacklight, ScreenBacklightObserver>
+      screen_backlight_observation_{this};
+  base::ScopedObservation<SessionManagerClient, SessionManagerClient::Observer>
+      session_manager_client_observation_{this};
 
   // Client to connect to document detection service.
   std::unique_ptr<DocumentScannerServiceClient> document_scanner_service_;

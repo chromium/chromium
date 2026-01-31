@@ -8,25 +8,40 @@
 #include <optional>
 #include <string>
 
+#include "chrome/browser/ui/hats/hats_service.h"
 #include "components/signin/public/base/signin_metrics.h"
 
 class Profile;
 
 namespace signin {
-// Returns true if the HaTS survey associated with the given `trigger` is
-// enabled via its corresponding feature flag.
-bool IsFeatureEnabledForSigninHatsTrigger(const std::string& trigger);
-
-// Launches a HaTS survey for `profile`.
+// Launches a HaTS survey under the given `trigger` for the `profile`. It
+// attaches the given `data` to the survey.
+//
 // On Win/Mac/Linux, if no browser is active for the profile and
-// `defer_if_no_browser` is true, the survey is deferred until a browser becomes
-// available. Otherwise, this is a no-op.
-void LaunchSigninHatsSurveyForProfile(const std::string& trigger,
-                                      Profile* profile,
-                                      bool defer_if_no_browser = false,
-                                      std::optional<signin_metrics::AccessPoint>
-                                          access_point_for_data_type_promo =
-                                              std::nullopt);
+// `defer_if_no_browser` is `true`, the survey is deferred until a browser
+// becomes available. Otherwise, this is a no-op.
+void LaunchHatsSurveyForProfile(const std::string& trigger,
+                                Profile* profile,
+                                bool defer_if_no_browser,
+                                SurveyStringData data);
+
+// Launches a HaTS survey under the given `trigger` for the `profile`. It infers
+// the data to attach to the survey based on the `trigger`, the `profile` state
+// and the `access_point_for_data_type_promo`.
+//
+// On Win/Mac/Linux, if no browser is active for the profile and
+// `defer_if_no_browser` is `true`, the survey is deferred until a browser
+// becomes available. Otherwise, this is a no-op.
+//
+// If you need to attach custom data to the survey, use
+// `signin::LaunchHatsSurveyForProfile` overload accepting `SurveyStringData`
+// instead.
+void LaunchHatsSurveyForProfile(const std::string& trigger,
+                                Profile* profile,
+                                bool defer_if_no_browser = false,
+                                std::optional<signin_metrics::AccessPoint>
+                                    access_point_for_data_type_promo =
+                                        std::nullopt);
 }  // namespace signin
 
 #endif  // CHROME_BROWSER_SIGNIN_SIGNIN_HATS_UTIL_H_

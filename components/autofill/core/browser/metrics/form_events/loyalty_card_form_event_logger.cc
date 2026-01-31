@@ -176,8 +176,9 @@ LoyaltyCardFormEventLogger::GetSupportedFormTypeNamesForLogging() const {
 
 DenseSet<FormTypeNameForLogging>
 LoyaltyCardFormEventLogger::GetFormTypesForLogging(
-    const FormStructure& form) const {
-  return GetLoyaltyFormTypesForLogging(form);
+    const FormStructure& form,
+    AutocompleteUnrecognizedBehavior ac_unrecognized_behavior) const {
+  return GetLoyaltyFormTypesForLogging(form, ac_unrecognized_behavior);
 }
 
 }  // namespace autofill::autofill_metrics

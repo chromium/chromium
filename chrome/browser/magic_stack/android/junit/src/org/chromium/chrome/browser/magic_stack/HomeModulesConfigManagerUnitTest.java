@@ -196,19 +196,6 @@ public class HomeModulesConfigManagerUnitTest {
     }
 
     @Test
-    public void testHasModuleShownInSettings() {
-        registerModuleConfigChecker(1);
-
-        // Verifies that there isn't any module shown in the settings.
-        when(mModuleConfigCheckerList.get(0).isEligible()).thenReturn(false);
-        assertFalse(mHomeModulesConfigManager.hasModuleShownInSettings());
-
-        // Verifies the list contains the module which is eligible to build.
-        when(mModuleConfigCheckerList.get(0).isEligible()).thenReturn(true);
-        assertTrue(mHomeModulesConfigManager.hasModuleShownInSettings());
-    }
-
-    @Test
     public void testGetEducationalTipListItemShown() {
         for (@ModuleType int tipModule : getEducationalTipModuleList()) {
             registerModuleConfigCheckerWithEligibility(tipModule, true);

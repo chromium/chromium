@@ -30,8 +30,9 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.LooperMode;
 
-import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.OneshotSupplierImpl;
+import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider;
 import org.chromium.chrome.browser.layouts.LayoutType;
@@ -77,7 +78,7 @@ public class IncognitoReauthControllerImplTest {
     private OneshotSupplierImpl<TabSwitcherCustomViewManager>
             mTabSwitcherCustomViewManagerOneshotSupplier;
     private boolean mCustomViewManagerHasValue;
-    private ObservableSupplierImpl<Profile> mProfileObservableSupplier;
+    private SettableMonotonicObservableSupplier<Profile> mProfileObservableSupplier;
 
     private boolean mIsIncognitoReauthPendingOnRestore;
 
@@ -135,7 +136,7 @@ public class IncognitoReauthControllerImplTest {
         mLayoutStateProviderOneshotSupplier = new OneshotSupplierImpl<>();
         mLayoutStateProviderOneshotSupplier.set(mLayoutStateProviderMock);
 
-        mProfileObservableSupplier = new ObservableSupplierImpl<>();
+        mProfileObservableSupplier = ObservableSuppliers.createMonotonic();
 
         mIncognitoReauthController =
                 new IncognitoReauthControllerImpl(

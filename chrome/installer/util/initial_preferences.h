@@ -98,7 +98,7 @@ class InitialPreferences {
 
   // Parses a preferences directly from |prefs| and does not merge any command
   // line switches with the distribution dictionary.
-  explicit InitialPreferences(base::Value::Dict prefs);
+  explicit InitialPreferences(base::DictValue prefs);
 
   InitialPreferences(const InitialPreferences&) = delete;
   InitialPreferences& operator=(const InitialPreferences&) = delete;
@@ -143,7 +143,7 @@ class InitialPreferences {
   //   }
   // }
   std::string GetInitialExtensionsProviderName() const;
-  const base::Value::List* GetInitialExtensionsList() const;
+  const base::ListValue* GetInitialExtensionsList() const;
 
   // The initial preferences file can include a bookmarks block that gets
   // imported on the first run. This block contains bookmark and folder nodes
@@ -204,7 +204,7 @@ class InitialPreferences {
   //
   // The return value can be a nullptr if this dict is not specified in the
   // initial preferences file.
-  const base::Value::Dict* GetBookmarksBlock() const;
+  const base::DictValue* GetBookmarksBlock() const;
 
   // Returns the compressed variations seed entry from the initial prefs.
   std::string GetCompressedVariationsSeed();
@@ -217,7 +217,7 @@ class InitialPreferences {
   bool read_from_file() const { return preferences_read_from_file_; }
 
   // Returns a reference to this InitialPreferences' root dictionary of values.
-  const base::Value::Dict& initial_dictionary() const {
+  const base::DictValue& initial_dictionary() const {
     return *initial_dictionary_;
   }
 
@@ -244,8 +244,8 @@ class InitialPreferences {
   // copied over to profile preferences.
   std::string ExtractPrefString(const std::string& name);
 
-  std::optional<base::Value::Dict> initial_dictionary_;
-  raw_ptr<base::Value::Dict> distribution_ = nullptr;
+  std::optional<base::DictValue> initial_dictionary_;
+  raw_ptr<base::DictValue> distribution_ = nullptr;
   bool preferences_read_from_file_ = false;
 };
 

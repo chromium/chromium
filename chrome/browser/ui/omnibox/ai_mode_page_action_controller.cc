@@ -20,7 +20,6 @@
 #include "components/omnibox/browser/omnibox_pref_names.h"
 #include "components/omnibox/browser/omnibox_triggered_feature_service.h"
 #include "components/omnibox/browser/page_classification_functions.h"
-#include "components/prefs/pref_change_registrar.h"
 #include "components/tabs/public/tab_interface.h"
 #include "third_party/metrics_proto/omnibox_event.pb.h"
 #include "ui/views/focus/focus_manager.h"
@@ -144,12 +143,6 @@ AiModePageActionController::AiModePageActionController(
       scoped_data_(bwi.GetUnownedUserDataHost(), *this) {
   CHECK(IsPageActionMigrated(PageActionIconType::kAiMode));
 
-  pref_registrar_ = std::make_unique<PrefChangeRegistrar>();
-  pref_registrar_->Init(profile_->GetPrefs());
-  pref_registrar_->Add(
-      omnibox::kShowAiModeOmniboxButton,
-      base::BindRepeating(&AiModePageActionController::UpdatePageAction,
-                          base::Unretained(this)));
 }
 
 AiModePageActionController::~AiModePageActionController() = default;

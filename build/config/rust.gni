@@ -93,6 +93,27 @@ declare_args() {
   # a platform. Mostly applicable to Windows, where new versions can handle ANSI
   # escape sequences but it's not reliable in general.
   force_rustc_color_output = false
+
+  # Whether expansion of GN templates like `rust_static_library` automatically
+  # creates a target for invoking `clippy` against Rust sources.
+  #
+  # TODO(crbug.com/41484295): Consider enabling this in some configurations.
+  # This requires:
+  # * Fixing pre-existing violations of `clippy` lints (crbug.com/472355480)
+  # * Deciding on a policy (e.g. which trybots can/should cover `clippy`)
+  enable_rust_clippy = false
+
+  # Whether expansion of GN templates like `rust_static_library` will expand
+  # (if `cpp_api_from_rust` is set as an attribute of `rust_static_library`) to
+  # create a target for invoking Crubit tools to generate C++ bindings for the
+  # Rust library.
+  #
+  # TODO(crbug.com/470466915): Change `false` to `build_with_chromium` (after
+  # officially supporting building and distributing the `cpp_api_from_rust`
+  # (soon to be renamed to `cpp_api_from_rust`) tool - i.e. no more
+  # `fail_hard=False` when invoking `build_crubit.py` from
+  # `tools/rust/build_rust.py`).
+  enable_cpp_api_from_rust = false
 }
 
 declare_args() {
@@ -112,7 +133,7 @@ use_chromium_rust_toolchain = rust_sysroot_absolute == ""
 # `rustc_nightly_capability = false` will make the build avoid the use of
 # Rust nightly features. There are no bots that test this and there is no
 # guarantee it will work, but we accept patches for this configuration.
-rustc_nightly_capability = use_chromium_rust_toolchain
+rustc_nightly_capability = use_chromium_rust_toolchain || build_with_chromium
 
 # Platform support for the Rust toolchain.
 chromium_toolchain_supports_platform = !is_wasm
@@ -207,11 +228,7 @@ if (is_linux || is_chromeos) {
       # The thumbv7 vs. armv7 distinction is for legacy reasons and both
       # targets in fact target Thumb, see:
       # https://github.com/rust-lang/rust/issues/44722
-      if (arm_use_neon) {
-        rust_abi_target = "thumbv7neon-unknown-linux-gnueabi" + float_suffix
-      } else {
-        rust_abi_target = "armv7-unknown-linux-gnueabi" + float_suffix
-      }
+      rust_abi_target = "thumbv7neon-unknown-linux-gnueabi" + float_suffix
     } else {
       rust_abi_target = "arm-unknown-linux-gnueabi" + float_suffix
     }
@@ -235,12 +252,7 @@ if (is_linux || is_chromeos) {
     # Android clang target specifications mostly match Rust, but this
     # is an exception.
     # See section above for Linux for thumbv7neon vs. armv7.
-    # Note that on Android, NEON is enabled for all builds except Cronet.
-    if (arm_use_neon) {
-      rust_abi_target = "thumbv7neon-linux-androideabi"
-    } else {
-      rust_abi_target = "armv7-linux-androideabi"
-    }
+    rust_abi_target = "thumbv7neon-linux-androideabi"
   } else if (android_abi_target == "mipsel-linux-android") {
     # There is no MIPS android target.
     rust_abi_target = ""
@@ -385,7 +397,8 @@ assert(!toolchain_has_rust || rust_target_arch != "")
 # This is common between gcc/clang, Mac and Windows toolchains so specify once,
 # here. This is not the complete command-line: toolchains should add -o
 # and probably --emit arguments too.
-rustc_common_args = "--crate-name {{crate_name}} {{source}} --crate-type {{crate_type}} {{rustflags}}"
+rustc_common_args =
+    "--crate-name {{crate_name}} --crate-type {{crate_type}} {{rustflags}}"
 
 # Rust procedural macros are shared objects loaded into a prebuilt host rustc
 # binary. To build them, we obviously need to build for the host. Not only

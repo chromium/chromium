@@ -8,7 +8,6 @@
 #include "ash/constants/ash_pref_names.h"
 #include "ash/constants/ash_switches.h"
 #include "base/command_line.h"
-#include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/notreached.h"
 #include "chrome/browser/ash/login/quick_unlock/quick_unlock_utils.h"
@@ -30,7 +29,7 @@ const char kFactorsOptionFingerprint[] = "FINGERPRINT";
 bool HasPolicyValue(const PrefService& pref_service,
                     LegacyFingerprintEngine::Purpose purpose,
                     const char* value) {
-  const base::Value::List* factors = nullptr;
+  const base::ListValue* factors = nullptr;
   switch (purpose) {
     case LegacyFingerprintEngine::Purpose::kUnlock:
       factors = &pref_service.GetList(prefs::kQuickUnlockModeAllowlist);
@@ -41,7 +40,7 @@ bool HasPolicyValue(const PrefService& pref_service,
     default:
       return false;
   }
-  return base::Contains(*factors, base::Value(value));
+  return factors->contains(value);
 }
 
 // Check if fingerprint is disabled for a specific purpose (so not including

@@ -6,7 +6,6 @@
 
 #include <algorithm>
 
-#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/task/single_thread_task_runner.h"
@@ -34,6 +33,10 @@
 #include "extensions/browser/extension_registry.h"
 #include "extensions/common/constants.h"
 #endif  // (ENABLE_EXTENSIONS)
+
+#if BUILDFLAG(IS_CHROMEOS)
+#include "chrome/browser/ash/boca/on_task/on_task_locked_controller.h"
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 ////////////////////////////////////////////////////////////////////////////////
 // UnloadController, public:
@@ -65,7 +68,8 @@ bool UnloadController::CanCloseContents(content::WebContents* contents) {
 #if BUILDFLAG(IS_CHROMEOS)
   // Tabs cannot be closed when the app is locked for OnTask. Only relevant for
   // non-web browser scenarios.
-  if (browser_->IsLockedForOnTask()) {
+  if (ash::boca::OnTaskLockedController::From(browser_)
+          ->is_locked_for_on_task()) {
     return false;
   }
 #endif
@@ -281,7 +285,7 @@ UnloadController::GetTabsNeedingBeforeUnloadFired() const {
     // Note that we filter out tabs in `tabs_needing_unload_fired_` as they have
     // already had their BeforeUnload fired (and don't need it fired again
     // unless browser closing gets cancelled).
-    if (!base::Contains(tabs_needing_unload_fired_, contents) &&
+    if (!tabs_needing_unload_fired_.contains(contents) &&
         should_fire_beforeunload) {
       tabs_needing_beforeunload.insert(contents);
     }

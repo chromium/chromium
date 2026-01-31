@@ -1692,7 +1692,7 @@ pub trait Formatter {
     where
         W: ?Sized + io::Write,
     {
-        let mut buffer = ryu::Buffer::new();
+        let mut buffer = zmij::Buffer::new();
         let s = buffer.format_finite(value);
         writer.write_all(s.as_bytes())
     }
@@ -1717,7 +1717,7 @@ pub trait Formatter {
     where
         W: ?Sized + io::Write,
     {
-        let mut buffer = ryu::Buffer::new();
+        let mut buffer = zmij::Buffer::new();
         let s = buffer.format_finite(value);
         writer.write_all(s.as_bytes())
     }

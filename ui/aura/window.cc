@@ -13,7 +13,6 @@
 #include "base/check.h"
 #include "base/compiler_specific.h"
 #include "base/containers/adapters.h"
-#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
@@ -187,6 +186,8 @@ Window::Window(WindowDelegate* delegate, client::WindowType type)
 }
 
 Window::~Window() {
+  // TODO(crbug.com/461127606): Crash on re-entrant destruction.
+  CHECK(!is_destroying_, base::NotFatalUntil::M149);
   is_destroying_ = true;
   WindowOcclusionTracker::ScopedPause pause_occlusion_tracking;
 
@@ -389,7 +390,11 @@ bool Window::IsVisible() const {
 }
 
 Window::OcclusionState Window::GetOcclusionState() const {
+#if BUILDFLAG(IS_CHROMEOS)
+  return occlusion_state_override_.value_or(occlusion_state_);
+#else
   return occlusion_state_;
+#endif
 }
 
 ScopedWindowCaptureRequest Window::MakeWindowCapturable() {
@@ -548,7 +553,7 @@ void Window::AddChild(Window* child) {
 
   Window* old_root = child->GetRootWindow();
 
-  DCHECK(!base::Contains(children_, child));
+  DCHECK(!std::ranges::contains(children_, child));
   if (child->parent())
     child->parent()->RemoveChildImpl(child, this);
 
@@ -1015,7 +1020,7 @@ void Window::RemoveOrDestroyChildren() {
     if (child->owned_by_parent_) {
       delete child;
       // Deleting the child so remove it from out children_ list.
-      DCHECK(!base::Contains(children_, child));
+      DCHECK(!std::ranges::contains(children_, child));
     } else {
       // Even if we can't delete the child, we still need to remove it from the
       // parent so that relevant bookkeeping (parent_ back-pointers etc) are
@@ -1115,6 +1120,13 @@ void Window::SetOcclusionInfo(OcclusionState occlusion_state,
   OcclusionState old_occlusion_state = occlusion_state_;
   occlusion_state_ = occlusion_state;
   occluded_region_in_root_ = occluded_region;
+
+#if BUILDFLAG(IS_CHROMEOS)
+  if (occlusion_state_override_) {
+    return;
+  }
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
   if (delegate_)
     delegate_->OnWindowOcclusionChanged(old_occlusion_state, occlusion_state);
 
@@ -1474,6 +1486,10 @@ void Window::TrackOcclusionState() {
   Env::GetInstance()->GetWindowOcclusionTracker()->Track(this);
 }
 
+void Window::UntrackOcclusionState() {
+  Env::GetInstance()->GetWindowOcclusionTracker()->Untrack(this);
+}
+
 bool Window::RequiresDoubleTapGestureEvents() const {
   return delegate_ && delegate_->RequiresDoubleTapGestureEvents();
 }
@@ -1516,6 +1532,28 @@ void Window::SetOpaqueRegionsForOcclusion(
   for (auto& observer : observers_)
     observer.OnWindowOpaqueRegionsForOcclusionChanged(this);
 }
+
+#if BUILDFLAG(IS_CHROMEOS)
+void Window::SetOcclusionStateOverride(
+    std::optional<OcclusionState> occlusion_state) {
+  if (occlusion_state == occlusion_state_override_) {
+    return;
+  }
+  auto old_occlusion_state =
+      occlusion_state ? occlusion_state_override_.value_or(occlusion_state_)
+                      : occlusion_state_override_.value();
+  occlusion_state_override_ = occlusion_state;
+
+  if (delegate_) {
+    delegate_->OnWindowOcclusionChanged(old_occlusion_state,
+                                        GetOcclusionState());
+  }
+
+  for (WindowObserver& observer : observers_) {
+    observer.OnWindowOcclusionChanged(this);
+  }
+}
+#endif
 
 void Window::NotifyResizeLoopStarted() {
   for (auto& observer : observers_)

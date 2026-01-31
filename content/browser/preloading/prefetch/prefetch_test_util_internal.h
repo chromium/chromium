@@ -302,6 +302,10 @@ class PrefetchingMetricsTestBase : public RenderViewHostTestHarness {
       ExpectCorrectUkmLogsArgs args,
       GURL navigate_url = GURL("http://Not.Accurate.Trigger.Url/"));
 
+  // The cookie manager used in non-test code, i.e. in
+  // `PrefetchContainer::RegisterCookieListener()`.
+  network::mojom::CookieManager* cookie_manager();
+
  private:
   std::unique_ptr<ukm::TestAutoSetUkmRecorder> test_ukm_recorder_;
   std::unique_ptr<test::PreloadingAttemptUkmEntryBuilder>

@@ -20,7 +20,6 @@
 #include "ash/public/cpp/keyboard/keyboard_controller_observer.h"
 #include "ash/public/cpp/keyboard/keyboard_switches.h"
 #include "base/command_line.h"
-#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
@@ -410,7 +409,7 @@ bool KeyboardUIController::UpdateKeyboardConfig(const KeyboardConfig& config) {
 }
 
 void KeyboardUIController::SetEnableFlag(KeyboardEnableFlag flag) {
-  if (!base::Contains(keyboard_enable_flags_, flag))
+  if (!keyboard_enable_flags_.contains(flag))
     keyboard_enable_flags_.insert(flag);
 
   // If there is a flag that is mutually exclusive with |flag|, clear it.
@@ -447,7 +446,7 @@ void KeyboardUIController::ClearEnableFlag(KeyboardEnableFlag flag) {
 }
 
 bool KeyboardUIController::IsEnableFlagSet(KeyboardEnableFlag flag) const {
-  return base::Contains(keyboard_enable_flags_, flag);
+  return keyboard_enable_flags_.contains(flag);
 }
 
 bool KeyboardUIController::IsKeyboardEnableRequested() const {

@@ -5,6 +5,7 @@
 #include "chrome/browser/password_manager/password_change/form_filling_helper.h"
 
 #include "base/strings/to_string.h"
+#include "base/task/single_thread_task_runner.h"
 #include "chrome/browser/password_manager/password_change/typing_helper.h"
 #include "components/autofill/core/browser/foundations/autofill_manager.h"
 #include "components/password_manager/content/browser/content_password_manager_driver.h"

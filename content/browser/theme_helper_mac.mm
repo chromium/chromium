@@ -39,14 +39,14 @@ void FillScrollbarThemeParams(
   // in +[NSApplication _initializeRegisteredDefaults] as of 10.15. Their values
   // still seem to affect behavior, but their use is logged as an "unusual app
   // config", so it's not clear how much longer they'll be implemented.
-  params->has_initial_button_delay =
-      [defaults objectForKey:@"NSScrollerButtonDelay"] != nil;
-  params->initial_button_delay =
-      [defaults floatForKey:@"NSScrollerButtonDelay"];
-  params->has_autoscroll_button_delay =
-      [defaults objectForKey:@"NSScrollerButtonPeriod"] != nil;
-  params->autoscroll_button_delay =
-      [defaults floatForKey:@"NSScrollerButtonPeriod"];
+  if ([defaults objectForKey:@"NSScrollerButtonDelay"]) {
+    params->initial_button_delay =
+        [defaults floatForKey:@"NSScrollerButtonDelay"];
+  }
+  if ([defaults objectForKey:@"NSScrollerButtonPeriod"]) {
+    params->autoscroll_button_delay =
+        [defaults floatForKey:@"NSScrollerButtonPeriod"];
+  }
   params->jump_on_track_click =
       [defaults boolForKey:@"AppleScrollerPagingBehavior"];
   params->preferred_scroller_style =

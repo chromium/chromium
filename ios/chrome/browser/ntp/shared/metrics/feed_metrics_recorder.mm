@@ -567,7 +567,7 @@ using feed::FeedUserActionType;
   const base::Time now = base::Time::Now();
 
   // Check if the array is initialized.
-  base::Value::List lastReportedArray =
+  base::ListValue lastReportedArray =
       self.prefService->GetList(kActivityBucketLastReportedDateArrayKey)
           .Clone();
 
@@ -604,9 +604,9 @@ using feed::FeedUserActionType;
 
   // Calculate activity buckets.
   // Check if the array is initialized.
-  const base::Value::List& lastReportedArray =
+  const base::ListValue& lastReportedArray =
       self.prefService->GetList(kActivityBucketLastReportedDateArrayKey);
-  base::Value::List newLastReportedArray;
+  base::ListValue newLastReportedArray;
 
   // Do not save in newLastReportedArray dates > 28 days.
   for (NSUInteger i = 0; i < lastReportedArray.size(); ++i) {

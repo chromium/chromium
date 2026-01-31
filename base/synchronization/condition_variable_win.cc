@@ -29,15 +29,16 @@ ConditionVariable::ConditionVariable(Lock* user_lock)
 
 ConditionVariable::~ConditionVariable() = default;
 
-void ConditionVariable::Wait() {
-  TimedWait(TimeDelta::Max());
+void ConditionVariable::Wait(const Location& location) {
+  TimedWait(TimeDelta::Max(), location);
 }
 
-void ConditionVariable::TimedWait(const TimeDelta& max_time) {
+void ConditionVariable::TimedWait(const TimeDelta& max_time,
+                                  const Location& location) {
   std::optional<internal::ScopedBlockingCallWithBaseSyncPrimitives>
       scoped_blocking_call;
   if (waiting_is_blocking_) {
-    scoped_blocking_call.emplace(FROM_HERE, BlockingType::MAY_BLOCK);
+    scoped_blocking_call.emplace(location, BlockingType::MAY_BLOCK);
   }
 
   // Limit timeout to INFINITE.

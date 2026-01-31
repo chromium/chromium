@@ -356,6 +356,7 @@ chromium-metrics-reviews@google.com.
   <int value="155" label="IDC_CONTENT_CONTEXT_CLOSE_GLIC"/>
   <int value="156" label="IDC_CONTENT_CONTEXT_OPENLINKSPLITVIEW"/>
   <int value="157" label="IDC_CONTENT_CONTEXT_GLICSHAREIMAGE"/>
+  <int value="158" label="IDC_CONTENT_CONTEXT_ARCHIVE_GLIC"/>
 </enum>
 
 <!-- LINT.ThenChange(//chrome/browser/renderer_context_menu/render_view_context_menu.cc:RenderViewContextMenuItem) -->
@@ -451,6 +452,8 @@ chromium-metrics-reviews@google.com.
   <int value="77" label="UMA_TAB_PICKER_LIMIT_REACHED"/>
   <int value="78" label="UMA_FUSEBOX_MAX_ATTACHMENTS"/>
   <int value="79" label="UMA_FUSEBOX_UPLOAD_FAILED"/>
+  <int value="80" label="UMA_BOOKMARK_LINK_COPIED"/>
+  <int value="81" label="UMA_BOOKMARK_LINK_COPIED_NON_SELECTION"/>
 </enum>
 
 <enum name="WebUIPreloadReason">
@@ -545,7 +548,6 @@ chromium-metrics-reviews@google.com.
   <int value="-372127353" label="/content/paymentHandler"/>
   <int value="-327540120" label="/content/javascript"/>
   <int value="-319293467" label="/multidevice"/>
-  <int value="-308222292" label="/trackingProtection"/>
   <int value="-300300075" label="/system"/>
   <int value="-295702530" label="/smbShares"/>
   <int value="-237154443" label="/manageAccessibility/tts/googleTtsEngine"/>
@@ -678,7 +680,6 @@ chromium-metrics-reviews@google.com.
   <int value="-1949142440" label="chrome://smb-credentials-dialog/"/>
   <int value="-1941995226" label="chrome://attribution-internals/"/>
   <int value="-1911971715" label="chrome://history/"/>
-  <int value="-1905481895" label="chrome://reload-button.top-chrome/"/>
   <int value="-1899361569" label="chrome-untrusted://eche-app/"/>
   <int value="-1887206190" label="chrome://nfc-debug/"/>
   <int value="-1877210733" label="chrome-untrusted://privacy-sandbox-dialog/"/>
@@ -776,6 +777,7 @@ chromium-metrics-reviews@google.com.
   <int value="-905972126" label="chrome://signin-email-confirmation/"/>
   <int value="-892484505" label="chrome://sys-internals/"/>
   <int value="-891260101" label="chrome://inspect/"/>
+  <int value="-861872937" label="chrome://unexportable-keys-internals/"/>
   <int value="-853789543" label="chrome://bluetooth-pairing/"/>
   <int value="-833683433" label="chrome://on-device-internals/"/>
   <int value="-823585847" label="chrome://chrome-signin/"/>
@@ -795,6 +797,7 @@ chromium-metrics-reviews@google.com.
   <int value="-644310325" label="chrome://os-credits/"/>
   <int value="-643868788"
       label="chrome-untrusted://companion-side-panel.top-chrome/"/>
+  <int value="-639873909" label="chrome://skills/"/>
   <int value="-634350465" label="chrome://ukm/"/>
   <int value="-631384656" label="chrome://assistant-optin/"/>
   <int value="-624584089"
@@ -862,6 +865,7 @@ chromium-metrics-reviews@google.com.
   <int value="110166858" label="chrome://saved-tab-groups-unsupported/"/>
   <int value="112165789" label="chrome://device-emulator/"/>
   <int value="114748825" label="chrome-devtools://devtools/"/>
+  <int value="147345232" label="chrome://default-browser-modal/"/>
   <int value="164517522" label="chrome://discards/"/>
   <int value="171659041" label="chrome://webrtc-device-provider/"/>
   <int value="182993612" label="chrome-untrusted://help-app-kids-magazine/"/>
@@ -900,6 +904,7 @@ chromium-metrics-reviews@google.com.
   <int value="646837226" label="chrome://crashes/"/>
   <int value="654460550" label="chrome://contextual-tasks/"/>
   <int value="659389881" label="chrome://gpu/"/>
+  <int value="660800062" label="chrome://webui-toolbar.top-chrome/"/>
   <int value="662045902" label="chrome://smb-share-dialog/"/>
   <int value="689991895" label="chrome://supervised-user-internals/"/>
   <int value="701883986" label="chrome://privacy-sandbox-dialog/"/>
@@ -910,7 +915,6 @@ chromium-metrics-reviews@google.com.
   <int value="733891637" label="chrome://connection-monitoring-detected/"/>
   <int value="742272091" label="chrome://extensions/"/>
   <int value="745470397" label="chrome://parent-access/"/>
-  <int value="748142712" label="chrome://crostini-upgrader/"/>
   <int value="749881882" label="chrome://webuijserror/"/>
   <int value="754315733" label="chrome://theme/"/>
   <int value="762064551" label="chrome://graduation/"/>
@@ -1147,7 +1151,8 @@ chromium-metrics-reviews@google.com.
   <int value="99" label="Identity docs"/>
   <int value="100" label="Travel"/>
   <int value="101" label="Contact info"/>
-  <int value="102" label="Show contextual tasks side panel"/>
+  <int value="102"
+      label="(Obsolete) Show contextual tasks side panel. Removed 12/18/25"/>
 </enum>
 
 <!-- LINT.ThenChange(/chrome/browser/ui/toolbar/app_menu_model.h:AppMenuAction) -->

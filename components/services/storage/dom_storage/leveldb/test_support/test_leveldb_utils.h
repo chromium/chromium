@@ -19,7 +19,7 @@ template <typename TDatabase>
 void WriteEntries(TDatabase& database,
                   std::vector<DomStorageDatabase::KeyValuePair> entries) {
   std::unique_ptr<DomStorageBatchOperationLevelDB> batch =
-      database.GetLevelDB().CreateBatchOperation();
+      database.GetLevelDBForTesting().CreateBatchOperation();
 
   for (const DomStorageDatabase::KeyValuePair& entry : entries) {
     batch->Put(entry.key, entry.value);

@@ -31,8 +31,6 @@ source_set("fakes") {
     "crw_fake_script_message_handler.mm",
     "crw_fake_web_view_navigation_proxy.h",
     "crw_fake_web_view_navigation_proxy.mm",
-    "crw_fake_wk_frame_info.h",
-    "crw_fake_wk_frame_info.mm",
     "crw_fake_wk_navigation_action.h",
     "crw_fake_wk_navigation_action.mm",
     "fake_java_script_feature.h",

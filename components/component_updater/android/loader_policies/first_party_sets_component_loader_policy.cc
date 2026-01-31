@@ -36,7 +36,7 @@ FirstPartySetComponentLoaderPolicy::~FirstPartySetComponentLoaderPolicy() =
 void FirstPartySetComponentLoaderPolicy::ComponentLoaded(
     const base::Version& version,
     base::flat_map<std::string, base::ScopedFD>& fd_map,
-    base::Value::Dict manifest) {
+    base::DictValue manifest) {
   auto keys_fd_iterator = fd_map.find(kFpsMetadataComponentFileName);
   if (keys_fd_iterator == fd_map.end()) {
     VLOG(1) << "FirstPartySetComponentLoaderPolicy#ComponentLoaded "

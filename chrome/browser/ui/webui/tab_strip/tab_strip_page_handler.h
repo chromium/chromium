@@ -62,14 +62,11 @@ class TabStripPageHandler : public tab_strip::mojom::PageHandler,
       TabStripModel* tab_strip_model,
       const TabStripModelChange& change,
       const TabStripSelectionChange& selection) override;
-  void TabChangedAt(content::WebContents* contents,
-                    int index,
-                    TabChangeType change_type) override;
-  void TabPinnedStateChanged(TabStripModel* tab_strip_model,
-                             content::WebContents* contents,
-                             int index) override;
-  void TabBlockedStateChanged(content::WebContents* contents,
-                              int index) override;
+  void OnTabChangedAt(tabs::TabInterface* tab,
+                      int index,
+                      TabChangeType change_type) override;
+  void OnTabPinnedStateChanged(tabs::TabInterface* tab, int index) override;
+  void OnTabBlockedStateChanged(tabs::TabInterface* tab, int index) override;
 
   // content::WebContentsDelegate:
   bool PreHandleGestureEvent(content::WebContents* source,
@@ -106,7 +103,7 @@ class TabStripPageHandler : public tab_strip::mojom::PageHandler,
   tab_strip::mojom::TabGroupVisualDataPtr GetTabGroupData(TabGroup* group);
   void HandleThumbnailUpdate(content::WebContents* tab,
                              ThumbnailTracker::CompressedThumbnailData image);
-  void OnTabCloseCancelled(content::WebContents* tab);
+  void HandleTabCloseCancelled(content::WebContents* tab);
   void ReportTabDurationHistogram(const char* histogram_fragment,
                                   int tab_count,
                                   base::TimeDelta duration);

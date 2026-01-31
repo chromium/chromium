@@ -296,41 +296,6 @@ TEST_F(PartitionedLockManagerTest, PartitionsOperateSeparately) {
   EXPECT_EQ(0ll, lock_manager.LocksHeldForTesting());
 }
 
-TEST_F(PartitionedLockManagerTest, Prioritize) {
-  PartitionedLockManager lock_manager;
-  const PartitionedLockManager::PartitionedLockRequest common_lock_request{
-      {0, IntegerKey(0)}, PartitionedLockManager::LockType::kExclusive};
-  const PartitionedLockManager::PartitionedLockRequest unique_lock_request{
-      {1, IntegerKey(0)}, PartitionedLockManager::LockType::kExclusive};
-
-  // Grab the contentious lock.
-  PartitionedLockHolder lock_holder;
-  lock_manager.AcquireLocks({common_lock_request}, lock_holder,
-                            base::DoNothing());
-  EXPECT_FALSE(lock_holder.locks.empty());
-
-  // Enqueue a request that won't be satisfied right away. This request includes
-  // a unique lock request to verify that the lock manager doesn't overzealously
-  // grant that lock and then hold up later (but higher priority) acquisitions.
-  PartitionedLockHolder holder2, holder3;
-  lock_manager.AcquireLocks({common_lock_request, unique_lock_request}, holder2,
-                            base::DoNothing());
-  EXPECT_TRUE(holder2.locks.empty());
-
-  // Enqueue a request that has the highest priority.
-  lock_manager.AcquireLocks(
-      {common_lock_request}, holder3, base::DoNothing(),
-      base::BindRepeating(
-          [](const PartitionedLockHolder& other) { return true; }));
-  EXPECT_TRUE(holder3.locks.empty());
-
-  // After releasing the held lock, the higher priority request gets served.
-  EXPECT_FALSE(lock_holder.locks.empty());
-  lock_holder.locks.clear();
-  EXPECT_TRUE(holder2.locks.empty());
-  EXPECT_FALSE(holder3.locks.empty());
-}
-
 TEST_F(PartitionedLockManagerTest, NotReentrant) {
   PartitionedLockManager lock_manager;
   PartitionedLockHolder lock_holder;
@@ -409,7 +374,7 @@ TEST_F(PartitionedLockManagerTest, LockReleased) {
   // granted their locks because they only need the one that was freed (and they
   // don't need exclusive access, and they aren't blocked on holder3).
   holder2.locks.clear();
-  EXPECT_TRUE(holder3.locks.empty());
+  EXPECT_EQ(holder3.locks.size(), 1U);
   EXPECT_FALSE(holder4.locks.empty());
   EXPECT_FALSE(holder5.locks.empty());
 }

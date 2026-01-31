@@ -8,7 +8,7 @@
 
 #include <utility>
 
-#include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/notreached.h"
 #include "base/numerics/safe_math.h"
 #include "base/strings/string_util.h"
@@ -220,8 +220,7 @@ bool StructTraits<
 // static
 base::span<const uint8_t> StructTraits<chrome::mojom::ClsIdDataView,
                                        ::CLSID>::bytes(const ::CLSID& input) {
-  return UNSAFE_TODO(
-      base::span(reinterpret_cast<const uint8_t*>(&input), sizeof(input)));
+  return base::byte_span_from_ref(input);
 }
 
 // static
@@ -234,7 +233,7 @@ bool StructTraits<chrome::mojom::ClsIdDataView, ::CLSID>::Read(
 
   const ::CLSID* cls_id = reinterpret_cast<const ::CLSID*>(bytes_view.data());
 
-  UNSAFE_TODO(memcpy(out, cls_id, sizeof(*out)));
+  *out = *cls_id;
   return true;
 }
 

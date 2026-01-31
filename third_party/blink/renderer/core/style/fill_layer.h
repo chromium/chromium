@@ -215,6 +215,7 @@ class CORE_EXPORT FillLayer {
 
   bool ImageOccludesNextLayers(const Document&, const ComputedStyle&) const;
   bool ClipOccludesNextLayers() const;
+  bool AllImagesAreInvalid() const;
 
   EFillLayerType GetType() const { return static_cast<EFillLayerType>(type_); }
 

@@ -125,7 +125,7 @@ class PermissionElementBrowserTestBase
         permission_request_manager->GetCurrentPrompt()->GetPromptPosition(),
         position);
 
-    permission_request_manager->Dismiss();
+    permission_request_manager->Dismiss(/*prompt_options=*/std::monostate());
     permission_request_manager->FinalizeCurrentRequests();
   }
 
@@ -134,7 +134,7 @@ class PermissionElementBrowserTestBase
         "Audits.issueAdded",
         base::BindRepeating(
             [](const std::string& expected_issue_type,
-               const base::Value::Dict& params) {
+               const base::DictValue& params) {
               const std::string* code =
                   params.FindStringByDottedPath("issue.code");
               if (!code) {
@@ -703,5 +703,23 @@ IN_PROC_BROWSER_TEST_F(MiscellaneousElementBrowserTest,
     map->SetContentSettingDefaultScope(
         embedded_test_server()->base_url(), embedded_test_server()->base_url(),
         ContentSettingsType::GEOLOCATION, CONTENT_SETTING_DEFAULT);
+  }
+}
+
+IN_PROC_BROWSER_TEST_F(PermissionElementBrowserTest,
+                       CrashWhenInDocumentWithoutWindow) {
+  ASSERT_TRUE(content::ExecJs(web_contents(), R"(
+    const doc = document.cloneNode();
+    doc.write("<geolocation id=geolocation>")
+  )"));
+
+  {
+    permissions::PermissionRequestManager::FromWebContents(web_contents())
+        ->set_auto_response_for_test(permissions::PermissionRequestManager::
+                                         AutoResponseType::ACCEPT_ALL);
+    permissions::PermissionRequestObserver observer(web_contents());
+    ClickElementWithId(web_contents(), "geolocation");
+    observer.Wait();
+    WaitForPromptActionEvent("geolocation");
   }
 }

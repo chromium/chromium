@@ -20,7 +20,7 @@ LocalDataLossWarningScreenHandler::~LocalDataLossWarningScreenHandler() =
 void LocalDataLossWarningScreenHandler::Show(bool is_owner,
                                              const std::string& email,
                                              bool can_go_back) {
-  base::Value::Dict dict;
+  base::DictValue dict;
   dict.Set("isOwner", is_owner);
   dict.Set("email", email);
   dict.Set("canGoBack", can_go_back);

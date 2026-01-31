@@ -133,20 +133,20 @@ class AccessCodeCastSinkServiceTest : public testing::Test {
   }
 
   bool IsDevicesDictEmpty() {
-    base::test::TestFuture<base::Value::Dict> devices_dict;
+    base::test::TestFuture<base::DictValue> devices_dict;
     pref_updater()->GetDevicesDict(devices_dict.GetCallback());
     return devices_dict.Get().empty();
   }
 
   bool IsDeviceAddedTimeDictEmpty() {
-    base::test::TestFuture<base::Value::Dict> devices_added_time_dict;
+    base::test::TestFuture<base::DictValue> devices_added_time_dict;
     pref_updater()->GetDeviceAddedTimeDict(
         devices_added_time_dict.GetCallback());
     return devices_added_time_dict.Get().empty();
   }
 
   MediaSinkInternal GetMediaSinkInternalFromPref(const MediaSink::Id& sink_id) {
-    base::test::TestFuture<base::Value::Dict> devices_dict;
+    base::test::TestFuture<base::DictValue> devices_dict;
     pref_updater()->GetDevicesDict(devices_dict.GetCallback());
     auto* sink_dict = devices_dict.Get().FindDict(sink_id);
     EXPECT_TRUE(sink_dict);
@@ -1043,7 +1043,7 @@ TEST_F(AccessCodeCastSinkServiceTest, RefreshStoredDeviceInfo) {
 
   // Now we expect that the name for the sink with the id of existing_sink_1
   // should have changed.
-  base::test::TestFuture<base::Value::Dict> devices_dict;
+  base::test::TestFuture<base::DictValue> devices_dict;
   pref_updater()->GetDevicesDict(devices_dict.GetCallback());
   auto* sink_1_dict = devices_dict.Get().FindDict(existing_sink_1.id());
   auto* sink_2_dict = devices_dict.Get().FindDict(existing_sink_2.id());
@@ -1299,9 +1299,8 @@ TEST_F(AccessCodeCastSinkServiceTest, RestartExpirationTimerDoesntResetTimer) {
 
   MockAccessCodeCastPrefUpdater* mock_pref_updater =
       static_cast<MockAccessCodeCastPrefUpdater*>(pref_updater());
-  base::Value::Dict devices_dict_copy =
-      mock_pref_updater->devices_dict().Clone();
-  base::Value::Dict device_added_time_dict_copy =
+  base::DictValue devices_dict_copy = mock_pref_updater->devices_dict().Clone();
+  base::DictValue device_added_time_dict_copy =
       mock_pref_updater->device_added_time_dict().Clone();
 
   // Shutdown the access code cast sink service.
@@ -1356,7 +1355,7 @@ TEST_F(AccessCodeCastSinkServiceTest, AddRouteCallsHandleMediaRoute) {
 
 TEST_F(AccessCodeCastSinkServiceTest, InitializePrefUpdater) {
   auto cast_sink = CreateCastSink(1);
-  base::Value::Dict devices_dict;
+  base::DictValue devices_dict;
   devices_dict.Set(cast_sink.id(),
                    CreateValueDictFromMediaSinkInternal(cast_sink));
   GetTestingPrefs()->SetDict(prefs::kAccessCodeCastDevices,

@@ -20,6 +20,7 @@
 #include "components/permissions/permission_util.h"
 #include "components/permissions/prediction_service/permission_ui_selector.h"
 #include "components/permissions/request_type.h"
+#include "components/permissions/resolvers/permission_prompt_options.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "url/origin.h"
 
@@ -38,10 +39,6 @@ class WebContents;
 namespace content_settings {
 class CookieSettings;
 }
-
-namespace privacy_sandbox {
-class TrackingProtectionSettings;
-}  // namespace privacy_sandbox
 
 namespace permissions {
 class ObjectPermissionContextBase;
@@ -77,10 +74,6 @@ class PermissionsClient {
   // Retrieves the CookieSettings for this context.
   virtual scoped_refptr<content_settings::CookieSettings> GetCookieSettings(
       content::BrowserContext* browser_context) = 0;
-
-  // Retrieves the TrackingProtectionSettings for this context.
-  virtual privacy_sandbox::TrackingProtectionSettings*
-  GetTrackingProtectionSettings(content::BrowserContext* browser_context) = 0;
 
   // Retrieves the subresource filter activation from browser website settings.
   virtual bool IsSubresourceFilterActivated(
@@ -177,6 +170,7 @@ class PermissionsClient {
   virtual void OnPromptResolved(
       const PermissionRequest* request,
       PermissionAction action,
+      const PromptOptions& prompt_options,
       PermissionPromptDisposition prompt_disposition,
       PermissionPromptDispositionReason prompt_disposition_reason,
       std::optional<QuietUiReason> quiet_ui_reason,

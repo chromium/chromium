@@ -53,9 +53,7 @@ void RecordBackForwardCacheRestoreMetric(
 
 bool IsLatencyTraceCategoryEnabled() {
   // Avoid unnecessary work to compute a track.
-  bool category_enabled;
-  TRACE_EVENT_CATEGORY_GROUP_ENABLED("latency", &category_enabled);
-  return category_enabled;
+  return TRACE_EVENT_CATEGORY_ENABLED("latency");
 }
 
 void RecordTabSwitchTraceEvent(base::TimeTicks start_time,

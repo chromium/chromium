@@ -144,7 +144,7 @@ ManagedUserProfileNoticeHandler::ManagedUserProfileNoticeHandler(
 ManagedUserProfileNoticeHandler::~ManagedUserProfileNoticeHandler() {
   BrowserList::RemoveObserver(this);
   if (!canceling_) {
-    HandleCancel(base::Value::List());
+    HandleCancel(base::ListValue());
   }
 }
 
@@ -220,7 +220,7 @@ void ManagedUserProfileNoticeHandler::OnJavascriptDisallowed() {
 }
 
 void ManagedUserProfileNoticeHandler::HandleInitialized(
-    const base::Value::List& args) {
+    const base::ListValue& args) {
   CHECK_EQ(1u, args.size());
   AllowJavascript();
   const base::Value& callback_id = args[0];
@@ -228,7 +228,7 @@ void ManagedUserProfileNoticeHandler::HandleInitialized(
 }
 
 void ManagedUserProfileNoticeHandler::HandleInitializedWithSize(
-    const base::Value::List& args) {
+    const base::ListValue& args) {
   AllowJavascript();
 
   if (browser_) {
@@ -237,7 +237,7 @@ void ManagedUserProfileNoticeHandler::HandleInitializedWithSize(
 }
 
 void ManagedUserProfileNoticeHandler::HandleProceed(
-    const base::Value::List& args) {
+    const base::ListValue& args) {
   CHECK_EQ(2u, args.size());
   AllowJavascript();
   bool use_existing_profile = args[1].GetIfBool().value_or(false);
@@ -315,7 +315,7 @@ void ManagedUserProfileNoticeHandler::HandleProceed(
 }
 
 void ManagedUserProfileNoticeHandler::HandleCancel(
-    const base::Value::List& args) {
+    const base::ListValue& args) {
   canceling_ = true;
   if (IsJavascriptAllowed()) {
     DisallowJavascript();
@@ -406,8 +406,8 @@ std::string ManagedUserProfileNoticeHandler::GetManagedAccountTitleWithEmail(
 #endif  //  !BUILDFLAG(IS_CHROMEOS)
 }
 
-base::Value::Dict ManagedUserProfileNoticeHandler::GetProfileInfoValue() {
-  base::Value::Dict dict;
+base::DictValue ManagedUserProfileNoticeHandler::GetProfileInfoValue() {
+  base::DictValue dict;
   dict.Set("pictureUrl", GetPictureUrl());
 
   std::string title =

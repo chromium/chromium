@@ -10,6 +10,7 @@ import static org.chromium.chrome.browser.share.ShareDelegate.ShareOrigin.TAB_ST
 import android.app.Activity;
 import android.content.res.Resources;
 
+import androidx.annotation.DrawableRes;
 import androidx.annotation.IdRes;
 import androidx.annotation.StringRes;
 import androidx.annotation.VisibleForTesting;
@@ -39,7 +40,7 @@ import org.chromium.components.tab_group_sync.TabGroupSyncService;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.widget.AnchoredPopupWindow.HorizontalOrientation;
-import org.chromium.ui.widget.RectProvider;
+import org.chromium.ui.widget.ViewRectProvider;
 
 import java.util.List;
 import java.util.function.Supplier;
@@ -144,10 +145,13 @@ public class TabGridContextMenuCoordinator extends TabOverflowMenuCoordinator<@T
      * @param tabId The tab id of the interacting tab group.
      * @param focusable True if the menu should be focusable by default, false otherwise.
      */
-    public void showMenu(RectProvider anchorViewRectProvider, int tabId, boolean focusable) {
+    public void showMenu(ViewRectProvider anchorViewRectProvider, int tabId, boolean focusable) {
         mIsMenuFocusableUponCreation = focusable;
         boolean isIncognito = mTabGroupModelFilter.getTabModel().isIncognitoBranded();
         dismiss();
+
+        if (!anchorViewRectProvider.isViewShown()) return;
+
         createAndShowMenu(
                 anchorViewRectProvider,
                 tabId,
@@ -218,6 +222,12 @@ public class TabGridContextMenuCoordinator extends TabOverflowMenuCoordinator<@T
                                 TabClosureParams.closeTab(tab).allowUndo(allowUndo).build(),
                                 /* allowDialog= */ true);
                 recordUserActionWithPrefix("CloseTab");
+            } else if (menuId == R.id.mute_site) {
+                tabModel.setMuteSetting(List.of(tab), /* mute= */ true);
+                recordUserActionWithPrefix("MuteSite");
+            } else if (menuId == R.id.unmute_site) {
+                tabModel.setMuteSetting(List.of(tab), /* mute= */ false);
+                recordUserActionWithPrefix("UnmuteSite");
             }
         };
     }
@@ -228,15 +238,6 @@ public class TabGridContextMenuCoordinator extends TabOverflowMenuCoordinator<@T
         if (tab == null) return;
 
         boolean isIncognito = tab.isIncognitoBranded();
-        if (ShareUtils.shouldEnableShare(tab)) {
-            itemList.add(
-                    new ListItemBuilder()
-                            .withTitleRes(R.string.share)
-                            .withMenuId(R.id.share_tab)
-                            .withStartIconRes(R.drawable.tab_list_editor_share_icon)
-                            .withIsIncognito(isIncognito)
-                            .build());
-        }
 
         if (mTabGroupModelFilter.getTabGroupCount() == 0) {
             itemList.add(
@@ -266,7 +267,7 @@ public class TabGridContextMenuCoordinator extends TabOverflowMenuCoordinator<@T
                     new ListItemBuilder()
                             .withTitleRes(R.string.edit_bookmark)
                             .withMenuId(R.id.edit_bookmark)
-                            .withStartIconRes(R.drawable.btn_star_filled)
+                            .withStartIconRes(R.drawable.ic_star_filled_24dp)
                             .withIsIncognito(isIncognito)
                             .build());
         } else {
@@ -274,9 +275,27 @@ public class TabGridContextMenuCoordinator extends TabOverflowMenuCoordinator<@T
                     new ListItemBuilder()
                             .withTitleRes(R.string.add_to_bookmarks)
                             .withMenuId(R.id.add_to_bookmarks)
-                            .withStartIconRes(R.drawable.star_outline_24dp)
+                            .withStartIconRes(R.drawable.ic_star_24dp)
                             .withIsIncognito(isIncognito)
                             .build());
+        }
+
+        if (ShareUtils.shouldEnableShare(tab)) {
+            itemList.add(
+                    new ListItemBuilder()
+                            .withTitleRes(R.string.share)
+                            .withMenuId(R.id.share_tab)
+                            .withStartIconRes(R.drawable.tab_list_editor_share_icon)
+                            .withIsIncognito(isIncognito)
+                            .build());
+        }
+
+        if (shouldBuildPinTabMenuItem()) {
+            itemList.add(buildTogglePinStateItem(tab));
+        }
+
+        if (ChromeFeatureList.sMediaIndicatorsAndroid.isEnabled()) {
+            itemList.add(buildMuteUnmuteSiteItem(tab, isIncognito));
         }
 
         itemList.add(
@@ -286,10 +305,6 @@ public class TabGridContextMenuCoordinator extends TabOverflowMenuCoordinator<@T
                         .withStartIconRes(R.drawable.ic_edit_24dp)
                         .withIsIncognito(isIncognito)
                         .build());
-
-        if (shouldBuildPinTabMenuItem()) {
-            itemList.add(buildTogglePinStateItem(tab));
-        }
 
         itemList.add(
                 new ListItemBuilder()
@@ -340,6 +355,21 @@ public class TabGridContextMenuCoordinator extends TabOverflowMenuCoordinator<@T
                 .withMenuId(menuId)
                 .withStartIconRes(iconRes)
                 .withIsIncognito(tab.isIncognitoBranded())
+                .build();
+    }
+
+    private ListItem buildMuteUnmuteSiteItem(Tab tab, boolean isIncognito) {
+        boolean showUnmute = mTabGroupModelFilter.getTabModel().isMuted(tab);
+        @StringRes int titleRes = showUnmute ? R.string.unmute_site : R.string.mute_site;
+        @IdRes int menuId = showUnmute ? R.id.unmute_site : R.id.mute_site;
+        @DrawableRes
+        int iconRes = showUnmute ? R.drawable.volume_up_24dp : R.drawable.volume_off_24dp;
+
+        return new ListItemBuilder()
+                .withTitleRes(titleRes)
+                .withMenuId(menuId)
+                .withStartIconRes(iconRes)
+                .withIsIncognito(isIncognito)
                 .build();
     }
 }

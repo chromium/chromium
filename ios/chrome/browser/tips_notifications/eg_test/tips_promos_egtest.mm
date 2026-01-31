@@ -15,7 +15,7 @@
 
 @implementation TipsPromosTestCase
 
-+ (BOOL)loadMinimalAppUI {
+- (BOOL)loadMinimalAppUI {
   return YES;
 }
 

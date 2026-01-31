@@ -4,9 +4,9 @@
 
 #include "chrome/browser/safe_browsing/test_safe_browsing_database_helper.h"
 
+#include <algorithm>
 #include <utility>
 
-#include "base/containers/contains.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
@@ -62,7 +62,7 @@ class InsertingDatabaseFactory : public safe_browsing::TestV4DatabaseFactory {
       std::unique_ptr<safe_browsing::StoreMap> store_map) override {
     const base::FilePath base_store_path(FILE_PATH_LITERAL("UrlDb.store"));
     for (const auto& id : lists_to_insert_) {
-      if (!base::Contains(*store_map, id)) {
+      if (!store_map->contains(id)) {
         const base::FilePath store_path = base::GetUniquePath(base_store_path);
         store_map->insert(
             {id, store_factory_->CreateV4Store(
@@ -153,5 +153,5 @@ void TestSafeBrowsingDatabaseHelper::LocallyMarkPrefixAsBad(
 
 bool TestSafeBrowsingDatabaseHelper::HasListSynced(
     const safe_browsing::ListIdentifier& list_id) {
-  return base::Contains(v4_db_factory_->lists(), list_id);
+  return std::ranges::contains(v4_db_factory_->lists(), list_id);
 }

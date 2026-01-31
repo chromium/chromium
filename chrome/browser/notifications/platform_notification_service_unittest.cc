@@ -646,7 +646,7 @@ TEST_F(PlatformNotificationServiceTest, DisplayNameForContextMessage) {
   scoped_refptr<const extensions::Extension> extension =
       extensions::ExtensionBuilder()
           .SetID("honijodknafkokifofgiaalefdiedpko")
-          .SetManifest(base::Value::Dict()
+          .SetManifest(base::DictValue()
                            .Set("name", "NotificationTest")
                            .Set("version", "1.0")
                            .Set("manifest_version", 2)
@@ -677,7 +677,7 @@ TEST_F(PlatformNotificationServiceTest, CreateNotificationFromData) {
   scoped_refptr<const extensions::Extension> extension =
       extensions::ExtensionBuilder()
           .SetID("honijodknafkokifofgiaalefdiedpko")
-          .SetManifest(base::Value::Dict()
+          .SetManifest(base::DictValue()
                            .Set("name", "NotificationTest")
                            .Set("version", "1.0")
                            .Set("manifest_version", 2)
@@ -903,7 +903,7 @@ TEST_F(PlatformNotificationServiceTest_ReportNotificationContentDetectionData,
   base::Value cur_value(hcsm->GetWebsiteSetting(
       origin, origin, ContentSettingsType::SUSPICIOUS_NOTIFICATION_IDS));
 #if BUILDFLAG(IS_ANDROID)
-  const base::Value::List* suspicious_notification_ids =
+  const base::ListValue* suspicious_notification_ids =
       cur_value.GetDict().FindList(
           safe_browsing::kSuspiciousNotificationIdsKey);
   ASSERT_EQ(1u, suspicious_notification_ids->size());
@@ -945,12 +945,12 @@ class PlatformNotificationServiceTest_AutoRevokeSuspiciousNotification
   void RecordSuspiciousNotifications(const GURL& url, int count) {
     HostContentSettingsMap* hcsm =
         HostContentSettingsMapFactory::GetForProfile(profile_.get());
-    base::Value::Dict engagement;
+    base::DictValue engagement;
     std::string date =
         permissions::NotificationsEngagementService::GetBucketLabel(
             base::Time::Now());
-    base::Value::Dict* bucket =
-        &engagement.Set(date, base::Value::Dict())->GetDict();
+    base::DictValue* bucket =
+        &engagement.Set(date, base::DictValue())->GetDict();
     bucket->Set("suspicious_count", count);
     hcsm->SetWebsiteSettingDefaultScope(
         url, GURL(), ContentSettingsType::NOTIFICATION_INTERACTIONS,
@@ -998,7 +998,7 @@ TEST_F(PlatformNotificationServiceTest_AutoRevokeSuspiciousNotification,
       notification, std::move(metadata), /*should_show_warning=*/true,
       /* serialized_content_detection_metadata*/ std::nullopt);
 
-  base::Value::Dict notification_engagement_dict =
+  base::DictValue notification_engagement_dict =
       hcsm->GetWebsiteSetting(origin, GURL(),
                               ContentSettingsType::NOTIFICATION_INTERACTIONS)
           .GetDict()

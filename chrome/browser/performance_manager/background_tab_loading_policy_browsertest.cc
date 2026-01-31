@@ -9,18 +9,15 @@
 #include <vector>
 
 #include "base/test/bind.h"
-#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/tabs/tab_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
-#include "chrome/common/buildflags.h"
 #include "chrome/test/base/chrome_test_utils.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
-#include "components/performance_manager/public/features.h"
 #include "components/performance_manager/public/performance_manager.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
@@ -31,24 +28,11 @@ namespace performance_manager {
 class BackgroundTabLoadingBrowserTest : public InProcessBrowserTest {
  public:
   BackgroundTabLoadingBrowserTest() {
-    features_.InitAndEnableFeature(
-        performance_manager::features::
-            kBackgroundTabLoadingFromPerformanceManager);
     url_ = chrome_test_utils::GetTestUrl(
         base::FilePath().AppendASCII("session_history"),
         base::FilePath().AppendASCII("bot1.html"));
   }
   ~BackgroundTabLoadingBrowserTest() override = default;
-
-#if BUILDFLAG(ENABLE_SESSION_SERVICE)
-  void SetDefaultPropertiesForTesting(
-      policies::BackgroundTabLoadingPolicy* policy) {
-    // Set a value explicitly for MaxSimultaneousLoad threshold to avoid a
-    // dependency on the number of cores of the machine on which the test runs.
-    policy->SetMaxSimultaneousLoadsForTesting(1);
-    policy->SetFreeMemoryForTesting(150);
-  }
-#endif
 
  protected:
   // Adds tabs to the given browser, all navigated to |url_|.
@@ -84,18 +68,16 @@ class BackgroundTabLoadingBrowserTest : public InProcessBrowserTest {
     // Set a value explicitly for thresholds that depends on system information,
     // to avoid flakiness when tests run in different environments.
     policies::BackgroundTabLoadingPolicy* policy =
-        policies::BackgroundTabLoadingPolicy::GetInstance();
-    EXPECT_TRUE(policy);
+        policies::BackgroundTabLoadingPolicy::GetFromGraph();
+    ASSERT_TRUE(policy);
     policy->SetMaxSimultaneousLoadsForTesting(1);
     policy->SetFreeMemoryForTesting(
         policies::BackgroundTabLoadingPolicy::kDesiredAmountOfFreeMemoryMb);
   }
 
   GURL url_;
-  base::test::ScopedFeatureList features_;
 };
 
-#if BUILDFLAG(ENABLE_SESSION_SERVICE)
 IN_PROC_BROWSER_TEST_F(BackgroundTabLoadingBrowserTest, RestoreTab) {
   // A lambda that returns a collection holding the titles of all tabs in a
   // tab strip.
@@ -210,6 +192,5 @@ IN_PROC_BROWSER_TEST_F(BackgroundTabLoadingBrowserTest,
   EXPECT_FALSE(contents->IsLoading());
   EXPECT_TRUE(contents->GetController().NeedsReload());
 }
-#endif
 
 }  // namespace performance_manager

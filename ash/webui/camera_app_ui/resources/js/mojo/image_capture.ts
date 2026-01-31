@@ -170,7 +170,6 @@ export class CrosImageCapture {
 
     const callback = (metadata: CameraMetadata) => {
       const parsedMetadata: Record<string, unknown> = {};
-      // TODO(b/215648588): Make CameraMetadata.entries mandatory.
       assert(metadata.entries !== undefined);
       // Disabling check because this code assumes that metadata.entries is
       // either undefined or defined, but at runtime Mojo will always set this

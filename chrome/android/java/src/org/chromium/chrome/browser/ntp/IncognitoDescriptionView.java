@@ -52,7 +52,8 @@ public class IncognitoDescriptionView extends LinearLayout {
     private TextView[] mParagraphs;
     private @Nullable ViewGroup mCookieControlsCard;
 
-    private static final int BULLETPOINTS_HORIZONTAL_SPACING_DP = 40;
+    private static final int BULLETPOINTS_HORIZONTAL_SPACING_DP = 28;
+    private static final int BULLETPOINTS_HORIZONTAL_WIDTH_DP = 262;
     private static final int BULLETPOINTS_MARGIN_BOTTOM_DP = 12;
     private static final int CONDENSED_ICON_SIZE_DP = 40;
     private static final int CONTENT_WIDTH_DP = 600;
@@ -335,6 +336,11 @@ public class IncognitoDescriptionView extends LinearLayout {
 
             ((LinearLayout.LayoutParams) paragraph.getLayoutParams())
                     .setMargins(0, totalSpaceBetweenViews, rightMarginPx, 0);
+
+            if (bulletpointsArrangedHorizontally && paragraph != mSubtitle) {
+                paragraph.getLayoutParams().width =
+                        dpToPx(getContext(), BULLETPOINTS_HORIZONTAL_WIDTH_DP);
+            }
             paragraph.setLayoutParams(paragraph.getLayoutParams()); // Apply the new layout.
         }
 

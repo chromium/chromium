@@ -38,9 +38,6 @@ namespace webauthn::passkey_model_utils {
 
 namespace {
 
-// The byte length of the WebauthnCredentialSpecifics `credential_id` field.
-constexpr size_t kCredentialIdLength = 16u;
-
 // The length of the nonce prefix used for AES-256-GCM encryption of
 // `WebAuthnCredentialSpecifics.encrypted_data` (both `private_key` and
 // `encrypted` oneof cases).
@@ -116,34 +113,37 @@ ExtensionOutputData::ExtensionOutputData() = default;
 ExtensionOutputData::ExtensionOutputData(const ExtensionOutputData&) = default;
 ExtensionOutputData::~ExtensionOutputData() = default;
 
-ExtensionInputData::ExtensionInputData(base::span<const uint8_t> prf_input1,
-                                       base::span<const uint8_t> prf_input2) {
-  // prf_input must be created even if prf_input1 is empty, as it is an
-  // indication the the PRF extension is requested.
-  prf_input = device::PRFInput();
-  if (!prf_input1.empty()) {
-    prf_input->input1.insert(prf_input->input1.end(), prf_input1.begin(),
-                             prf_input1.end());
-    if (!prf_input2.empty()) {
-      std::vector<uint8_t> input2;
-      input2.insert(input2.end(), prf_input2.begin(), prf_input2.end());
-      prf_input->input2 = input2;
-    }
+PRFInputData::PRFInputData(
+    base::span<const uint8_t> prf_input1,
+    std::optional<base::span<const uint8_t>> prf_input2) {
+  input.input1.assign(prf_input1.begin(), prf_input1.end());
+  if (prf_input2.has_value()) {
+    input.input2.emplace(prf_input2->begin(), prf_input2->end());
   }
-  prf_input->HashInputsIntoSalts();
+  input.HashInputsIntoSalts();
 }
+
+PRFInputData::PRFInputData(const PRFInputData&) = default;
+PRFInputData::PRFInputData(PRFInputData&&) = default;
+PRFInputData& PRFInputData::operator=(PRFInputData&&) = default;
+PRFInputData::~PRFInputData() = default;
+
+ExtensionInputData::ExtensionInputData(PRFInputData prf_input_data)
+    :  // prf_input_data must be created even if prf_input1 is empty, as it is
+       // an indication that the PRF extension is requested.
+      prf_input_data(std::move(prf_input_data)) {}
 
 ExtensionInputData::ExtensionInputData() = default;
 ExtensionInputData::ExtensionInputData(const ExtensionInputData&) = default;
 ExtensionInputData::~ExtensionInputData() = default;
 
 bool ExtensionInputData::hasPRF() const {
-  return prf_input.has_value();
+  return prf_input_data.has_value();
 }
 
 ExtensionOutputData ExtensionInputData::ToOutputData(
     const sync_pb::WebauthnCredentialSpecifics_Encrypted& encrypted) const {
-  if (!hasPRF() || prf_input->input1.empty()) {
+  if (!hasPRF()) {
     return {};
   }
 
@@ -155,7 +155,7 @@ ExtensionOutputData ExtensionInputData::ToOutputData(
 std::vector<uint8_t> ExtensionInputData::EvaluateHMAC(
     const sync_pb::WebauthnCredentialSpecifics_Encrypted& encrypted) const {
   const std::string& hmac_secret = encrypted.hmac_secret();
-  return prf_input->EvaluateHMAC(
+  return prf_input_data->prf_input().EvaluateHMAC(
       hmac_secret.empty() ? DeriveHmacSecretFromPrivateKey(
                                 base::as_byte_span(encrypted.private_key()))
                           : base::as_byte_span(hmac_secret));
@@ -192,12 +192,18 @@ std::vector<sync_pb::WebauthnCredentialSpecifics> FilterShadowedCredentials(
       std::make_move_iterator(grouped.end()));
 }
 
-bool IsGpmPasskeyValid(const sync_pb::WebauthnCredentialSpecifics& passkey) {
+bool IsPasskeyValid(const sync_pb::WebauthnCredentialSpecifics& passkey) {
+  const size_t cred_id_size = passkey.credential_id().size();
   return passkey.sync_id().size() == kSyncIdLength &&
-         passkey.credential_id().size() == kCredentialIdLength &&
-         !passkey.rp_id().empty() &&
+         !passkey.rp_id().empty() && cred_id_size >= kCredentialIdMinLength &&
+         cred_id_size <= kCredentialIdMaxLength &&
          passkey.user_id().length() <= kUserIdMaxLength &&
          (passkey.has_private_key() || passkey.has_encrypted());
+}
+
+bool IsGpmPasskeyValid(const sync_pb::WebauthnCredentialSpecifics& passkey) {
+  return IsPasskeyValid(passkey) &&
+         passkey.credential_id().size() == kGpmCreatedCredentialIdLength;
 }
 
 std::pair<sync_pb::WebauthnCredentialSpecifics, std::vector<uint8_t>>
@@ -209,7 +215,8 @@ GeneratePasskeyAndEncryptSecrets(std::string_view rp_id,
                                  ExtensionOutputData* extension_output_data) {
   sync_pb::WebauthnCredentialSpecifics specifics;
   specifics.set_sync_id(base::RandBytesAsString(kSyncIdLength));
-  specifics.set_credential_id(base::RandBytesAsString(kCredentialIdLength));
+  specifics.set_credential_id(
+      base::RandBytesAsString(kGpmCreatedCredentialIdLength));
   specifics.set_rp_id(std::string(rp_id));
   specifics.set_user_id(user_entity.id.data(), user_entity.id.size());
   specifics.set_user_name(user_entity.name);

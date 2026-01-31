@@ -18,7 +18,7 @@ namespace payments {
 namespace android {
 
 // static
-static jlong JNI_PaymentHandlerHost_Init(
+static int64_t JNI_PaymentHandlerHost_Init(
     JNIEnv* env,
     const base::android::JavaRef<jobject>& web_contents,
     const base::android::JavaRef<jobject>& listener) {
@@ -46,8 +46,7 @@ PaymentHandlerHost::PaymentHandlerHost(
 
 PaymentHandlerHost::~PaymentHandlerHost() = default;
 
-jboolean PaymentHandlerHost::IsWaitingForPaymentDetailsUpdate(
-    JNIEnv* env) const {
+bool PaymentHandlerHost::IsWaitingForPaymentDetailsUpdate(JNIEnv* env) const {
   return payment_handler_host_.is_waiting_for_payment_details_update();
 }
 

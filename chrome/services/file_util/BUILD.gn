@@ -35,7 +35,11 @@ source_set("file_util") {
     "//mojo/public/mojom/base",
   ]
 
-  defines = []
+  defines = [ "USE_UNRAR=$safe_browsing_use_unrar" ]
+
+  if (safe_browsing_use_unrar) {
+    deps += [ "//third_party/unrar" ]
+  }
 
   if (is_chromeos) {
     sources += [
@@ -66,8 +70,6 @@ source_set("file_util") {
       "//chrome/utility/safe_browsing",
       "//components/enterprise/obfuscation/core:enterprise_obfuscation",
     ]
-
-    defines += [ "USE_UNRAR=$safe_browsing_use_unrar" ]
   }
 
   if (enable_extractors) {

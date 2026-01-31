@@ -69,8 +69,8 @@ std::string GetOsInfo() {
 
 // Returns the version information to be displayed on the chrome://policy/logs
 // page.
-base::Value::Dict GetVersionInfo() {
-  base::Value::Dict version_info;
+base::DictValue GetVersionInfo() {
+  base::DictValue version_info;
 
   version_info.Set("revision", version_info::GetLastChange());
   version_info.Set("version", version_info::GetVersionNumber());
@@ -300,7 +300,7 @@ base::Value PolicyUI::GetSchema(Profile* profile) {
   //   },
   //   ...
   // }
-  base::Value::Dict dict;
+  base::DictValue dict;
   for (const auto domain : kDomains) {
     const policy::ComponentMap* components =
         registry->schema_map()->GetComponents(domain);
@@ -309,7 +309,7 @@ base::Value PolicyUI::GetSchema(Profile* profile) {
     }
     for (const auto& [component_id, schema] : *components) {
       DCHECK_EQ(schema.type(), base::Value::Type::DICT);
-      base::Value::List policy_names;
+      base::ListValue policy_names;
       auto it = schema.GetPropertiesIterator();
       for (; !it.IsAtEnd(); it.Advance()) {
         if (it.schema().IsSensitiveValue() ||

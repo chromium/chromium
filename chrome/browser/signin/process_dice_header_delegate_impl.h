@@ -80,7 +80,8 @@ class ProcessDiceHeaderDelegateImpl : public ProcessDiceHeaderDelegate {
   // ProcessDiceHeaderDelegate:
   void HandleTokenExchangeSuccess(CoreAccountId account_id,
                                   bool is_new_account) override;
-  void EnableSync(const CoreAccountInfo& account_info) override;
+  void CompleteChromeSignInAfterGaiaSignin(
+      const CoreAccountInfo& account_info) override;
   void HandleTokenExchangeFailure(const std::string& email,
                                   const GoogleServiceAuthError& error) override;
   signin_metrics::AccessPoint GetAccessPoint() override;

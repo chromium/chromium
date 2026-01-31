@@ -29,14 +29,14 @@ perf_test::PerfResultReporter SetUpReporter(const std::string& story_name) {
 
 // Generates a simple dictionary value with simple data types, a string and a
 // list.
-Value::Dict GenerateDict() {
-  Value::Dict root;
+DictValue GenerateDict() {
+  DictValue root;
   root.Set("Double", 3.141);
   root.Set("Bool", true);
   root.Set("Int", 42);
   root.Set("String", "Foo");
 
-  Value::List list;
+  ListValue list;
   list.Append(2.718);
   list.Append(false);
   list.Append(123);
@@ -47,13 +47,13 @@ Value::Dict GenerateDict() {
 }
 
 // Generates a tree-like dictionary value with a size of O(breadth ** depth).
-Value::Dict GenerateLayeredDict(int breadth, int depth) {
+DictValue GenerateLayeredDict(int breadth, int depth) {
   if (depth == 1) {
     return GenerateDict();
   }
 
-  Value::Dict root = GenerateDict();
-  Value::Dict next = GenerateLayeredDict(breadth, depth - 1);
+  DictValue root = GenerateDict();
+  DictValue next = GenerateLayeredDict(breadth, depth - 1);
 
   for (int i = 0; i < breadth; ++i) {
     root.Set("Dict" + base::NumberToString(i), next.Clone());
@@ -69,7 +69,7 @@ class JSONPerfTest : public testing::Test {
   void TestWriteAndRead(int breadth, int depth) {
     std::string description = "Breadth: " + base::NumberToString(breadth) +
                               ", Depth: " + base::NumberToString(depth);
-    Value::Dict dict = GenerateLayeredDict(breadth, depth);
+    DictValue dict = GenerateLayeredDict(breadth, depth);
     std::string json;
 
     TimeTicks start_write = TimeTicks::Now();

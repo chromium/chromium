@@ -20,8 +20,6 @@
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "third_party/blink/public/common/features_generated.h"
 #include "third_party/blink/public/mojom/ai/ai_common.mojom.h"
-#include "third_party/blink/public/mojom/ai/ai_language_model.mojom-forward.h"
-#include "third_party/blink/public/mojom/ai/ai_language_model.mojom-shared.h"
 #include "third_party/blink/public/mojom/ai/ai_language_model.mojom.h"
 
 namespace content {
@@ -289,7 +287,7 @@ void EchoAIManagerImpl::CreateProofreader(
 }
 
 void EchoAIManagerImpl::AddModelDownloadProgressObserver(
-    mojo::PendingRemote<blink::mojom::ModelDownloadProgressObserver>
+    mojo::PendingRemote<on_device_model::mojom::DownloadObserver>
         observer_remote) {
   download_progress_observers_.Add(std::move(observer_remote));
 }
@@ -397,7 +395,9 @@ void EchoAIManagerImpl::ReturnAILanguageModelCreationResult(
           kMaxContextSizeInTokens, initial_input_usage,
           std::move(model_sampling_params),
           std::vector<blink::mojom::AILanguageModelPromptType>(
-              enabled_input_types.begin(), enabled_input_types.end())));
+              enabled_input_types.begin(), enabled_input_types.end()),
+          /*audio_sample_rate_hz=*/std::nullopt,
+          /*audio_channel_count=*/std::nullopt));
 }
 
 void EchoAIManagerImpl::DoMockDownloadingAndReturn(base::OnceClosure callback) {

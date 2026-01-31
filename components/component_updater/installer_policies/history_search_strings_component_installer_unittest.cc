@@ -81,7 +81,7 @@ TEST_F(HistorySearchStringsComponentInstallerPolicyTest, BadBinaryProtoFile) {
       install_dir.GetPath().AppendASCII(kHistorySearchStringsBinaryPbFileName),
       "foobar"));
 
-  base::Value::Dict manifest;
+  base::DictValue manifest;
   ASSERT_TRUE(installer()->VerifyInstallation(manifest, install_dir.GetPath()));
 
   installer()->ComponentReady(base::Version("1.2.3"), install_dir.GetPath(),
@@ -104,7 +104,7 @@ TEST_F(HistorySearchStringsComponentInstallerPolicyTest, LoadBinaryProtoFile) {
       install_dir.GetPath().AppendASCII(kHistorySearchStringsBinaryPbFileName),
       file_content));
 
-  base::Value::Dict manifest;
+  base::DictValue manifest;
   ASSERT_TRUE(installer()->VerifyInstallation(manifest, install_dir.GetPath()));
 
   installer()->ComponentReady(base::Version("1.2.3"), install_dir.GetPath(),

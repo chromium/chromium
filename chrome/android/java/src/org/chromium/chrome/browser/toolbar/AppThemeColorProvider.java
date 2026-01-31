@@ -70,7 +70,7 @@ public class AppThemeColorProvider extends ThemeColorProvider
      * @param desktopWindowStateManager The {@link DesktopWindowStateManager} for the current
      *     activity. {@code null} if desktop window state observation is not required.
      */
-    AppThemeColorProvider(
+    public AppThemeColorProvider(
             Context context,
             @Nullable ActivityLifecycleDispatcher activityLifecycleDispatcher,
             @Nullable DesktopWindowStateManager desktopWindowStateManager) {

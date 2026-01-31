@@ -19,7 +19,8 @@
 #import "services/network/public/cpp/shared_url_loader_factory.h"
 #import "ui/base/page_transition_types.h"
 
-using password_manager::WellKnownChangePasswordTabHelper;
+using WellKnownChangePasswordResult =
+    password_manager::WellKnownChangePasswordResult;
 
 WellKnownChangePasswordTabHelper::WellKnownChangePasswordTabHelper(
     web::WebState* web_state)
@@ -56,7 +57,7 @@ void WellKnownChangePasswordTabHelper::ShouldAllowRequest(
         ui::PageTransitionCoreTypeIs(request_info.transition_type,
                                      ui::PAGE_TRANSITION_TYPED) &&
         web_state_->GetLastCommittedURL().is_empty() &&  // empty tab history
-        IsWellKnownChangePasswordUrl(request_url)) {
+        password_manager::IsWellKnownChangePasswordUrl(request_url)) {
       request_url_ = request_url;
       if (affiliation_service_->GetChangePasswordURL(request_url_).is_empty()) {
         well_known_change_password_state_.PrefetchChangePasswordURL(

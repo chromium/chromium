@@ -75,13 +75,14 @@ public class SiteSettingsCategory {
         Type.ANTI_ABUSE,
         Type.ZOOM,
         Type.STORAGE_ACCESS,
-        Type.TRACKING_PROTECTION,
         Type.FILE_EDITING,
         Type.JAVASCRIPT_OPTIMIZER,
         Type.SERIAL_PORT,
         Type.LOCAL_NETWORK_ACCESS,
         Type.WINDOW_MANAGEMENT,
         Type.AUTO_PICTURE_IN_PICTURE,
+        Type.LOCAL_NETWORK,
+        Type.LOOPBACK_NETWORK,
         Type.NUM_ENTRIES
     })
     @Retention(RetentionPolicy.SOURCE)
@@ -118,17 +119,18 @@ public class SiteSettingsCategory {
         int ANTI_ABUSE = 27;
         int ZOOM = 28;
         int STORAGE_ACCESS = 29;
-        int TRACKING_PROTECTION = 30;
-        int HAND_TRACKING = 31;
-        int FILE_EDITING = 32;
-        int JAVASCRIPT_OPTIMIZER = 33;
-        int SERIAL_PORT = 34;
-        int LOCAL_NETWORK_ACCESS = 35;
-        int WINDOW_MANAGEMENT = 36;
-        int AUTO_PICTURE_IN_PICTURE = 37;
+        int HAND_TRACKING = 30;
+        int FILE_EDITING = 31;
+        int JAVASCRIPT_OPTIMIZER = 32;
+        int SERIAL_PORT = 33;
+        int LOCAL_NETWORK_ACCESS = 34;
+        int WINDOW_MANAGEMENT = 35;
+        int AUTO_PICTURE_IN_PICTURE = 36;
+        int LOCAL_NETWORK = 37;
+        int LOOPBACK_NETWORK = 38;
 
         /** Number of handled categories used for calculating array sizes. */
-        int NUM_ENTRIES = 38;
+        int NUM_ENTRIES = 39;
     }
 
     private final BrowserContextHandle mBrowserContextHandle;
@@ -261,6 +263,10 @@ public class SiteSettingsCategory {
                 return ContentSettingsType.JAVASCRIPT_OPTIMIZER;
             case Type.LOCAL_NETWORK_ACCESS:
                 return ContentSettingsType.LOCAL_NETWORK_ACCESS;
+            case Type.LOCAL_NETWORK:
+                return ContentSettingsType.LOCAL_NETWORK;
+            case Type.LOOPBACK_NETWORK:
+                return ContentSettingsType.LOOPBACK_NETWORK;
             case Type.MICROPHONE:
                 return ContentSettingsType.MEDIASTREAM_MIC;
             case Type.NFC:
@@ -288,7 +294,6 @@ public class SiteSettingsCategory {
             case Type.ALL_SITES:
             case Type.USE_STORAGE:
             case Type.ZOOM:
-            case Type.TRACKING_PROTECTION:
                 return ContentSettingsType.DEFAULT; // Conversion unavailable.
         }
         assert false;
@@ -358,6 +363,10 @@ public class SiteSettingsCategory {
                 return "javascript_optimizer";
             case Type.LOCAL_NETWORK_ACCESS:
                 return "local_network_access";
+            case Type.LOCAL_NETWORK:
+                return "local_network";
+            case Type.LOOPBACK_NETWORK:
+                return "loopback_network";
             case Type.MICROPHONE:
                 return "microphone";
             case Type.NFC:
@@ -386,8 +395,6 @@ public class SiteSettingsCategory {
                 return "site_data";
             case Type.THIRD_PARTY_COOKIES:
                 return "third_party_cookies";
-            case Type.TRACKING_PROTECTION:
-                return "tracking_protection";
             case Type.WINDOW_MANAGEMENT:
                 return "window_management";
             case Type.ZOOM:

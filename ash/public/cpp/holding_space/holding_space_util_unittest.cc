@@ -183,7 +183,7 @@ TEST_F(HoldingSpaceUtilTest, GetAllFileSystemTypes) {
         should_exist_in_all_types_set = true;
     }
 
-    EXPECT_EQ(base::Contains(all_types, type), should_exist_in_all_types_set);
+    EXPECT_EQ(all_types.contains(type), should_exist_in_all_types_set);
   }
 }
 
@@ -215,7 +215,7 @@ TEST_F(HoldingSpaceUtilTest, GetAllItemTypes) {
         should_exist_in_all_types_set = true;
     }
 
-    EXPECT_EQ(base::Contains(all_types, type), should_exist_in_all_types_set);
+    EXPECT_EQ(all_types.contains(type), should_exist_in_all_types_set);
   }
 }
 

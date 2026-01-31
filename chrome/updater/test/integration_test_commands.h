@@ -41,14 +41,14 @@ class IntegrationTestCommands
                              std::optional<EventLoggingPermissionProvider>
                                  event_logging_permission_provider) const = 0;
   virtual void ExitTestMode() const = 0;
-  virtual void SetDictPolicies(const base::Value::Dict& values) const = 0;
-  virtual void SetPlatformPolicies(const base::Value::Dict& values) const = 0;
+  virtual void SetDictPolicies(const base::DictValue& values) const = 0;
+  virtual void SetPlatformPolicies(const base::DictValue& values) const = 0;
   virtual void SetMachineManaged(bool is_managed_device) const = 0;
   virtual void Clean() const = 0;
   virtual void ExpectClean() const = 0;
   virtual void ExpectInstalled() const = 0;
   virtual void ExpectCandidateUninstalled() const = 0;
-  virtual void Install(const base::Value::List& switches) const = 0;
+  virtual void Install(const base::ListValue& switches) const = 0;
   virtual void InstallUpdaterAndApp(
       const std::string& app_id,
       bool is_silent_install,
@@ -59,17 +59,19 @@ class IntegrationTestCommands
       bool expect_success,
       bool wait_for_the_installer,
       int expected_exit_code,
-      const base::Value::List& additional_switches,
+      const base::ListValue& additional_switches,
       const base::FilePath& updater_path) const = 0;
   virtual void SetActive(const std::string& app_id) const = 0;
   virtual void ExpectActive(const std::string& app_id) const = 0;
   virtual void ExpectNotActive(const std::string& app_id) const = 0;
-  virtual void ExpectSelfUpdateSequence(ScopedServer* test_server) const = 0;
-  virtual void ExpectPing(ScopedServer* test_server,
+  virtual void ExpectSelfUpdateSequence(ScopedServer& test_server) const = 0;
+  virtual void ExpectPing(ScopedServer& test_server,
                           int event_type,
                           std::optional<GURL> target_url) const = 0;
+  virtual void ExpectInstallSource(ScopedServer& test_server,
+                                   const std::string& install_source) const = 0;
   virtual void ExpectAppCommandPing(
-      ScopedServer* test_server,
+      ScopedServer& test_server,
       const std::string& appid,
       const std::string& appcommandid,
       int errorcode,
@@ -77,15 +79,15 @@ class IntegrationTestCommands
       int event_type,
       const base::Version& version,
       const base::Version& updater_version) const = 0;
-  virtual void ExpectUpdateCheckRequest(ScopedServer* test_server) const = 0;
+  virtual void ExpectUpdateCheckRequest(ScopedServer& test_server) const = 0;
   virtual void ExpectUpdateCheckSequence(
-      ScopedServer* test_server,
+      ScopedServer& test_server,
       const std::string& app_id,
       UpdateService::Priority priority,
       const base::Version& from_version,
       const base::Version& to_version,
       const base::Version& updater_version) const = 0;
-  virtual void ExpectUpdateSequence(ScopedServer* test_server,
+  virtual void ExpectUpdateSequence(ScopedServer& test_server,
                                     const std::string& app_id,
                                     const std::string& install_data_index,
                                     UpdateService::Priority priority,
@@ -97,13 +99,13 @@ class IntegrationTestCommands
                                     const std::string& event_regex,
                                     bool use_xz) const = 0;
   virtual void ExpectUpdateSequenceBadHash(
-      ScopedServer* test_server,
+      ScopedServer& test_server,
       const std::string& app_id,
       const std::string& install_data_index,
       UpdateService::Priority priority,
       const base::Version& from_version,
       const base::Version& to_version) const = 0;
-  virtual void ExpectInstallSequence(ScopedServer* test_server,
+  virtual void ExpectInstallSequence(ScopedServer& test_server,
                                      const std::string& app_id,
                                      const std::string& install_data_index,
                                      UpdateService::Priority priority,
@@ -114,7 +116,7 @@ class IntegrationTestCommands
                                      const base::Version& updater_version,
                                      const std::string& event_regex) const = 0;
   virtual void ExpectEnterpriseCompanionAppOTAInstallSequence(
-      ScopedServer* test_server) const = 0;
+      ScopedServer& test_server) const = 0;
   virtual void ExpectVersionActive(const std::string& version) const = 0;
   virtual void ExpectVersionNotActive(const std::string& version) const = 0;
   virtual void Uninstall() const = 0;
@@ -125,7 +127,7 @@ class IntegrationTestCommands
   virtual void SetupFakeUpdaterHigherVersion() const = 0;
   virtual void SetupFakeUpdaterLowerVersion() const = 0;
   virtual void SetupRealUpdater(const base::FilePath& updater_path,
-                                const base::Value::List& switches) const = 0;
+                                const base::ListValue& switches) const = 0;
   virtual void SetExistenceCheckerPath(const std::string& app_id,
                                        const base::FilePath& path) const = 0;
   virtual void SetServerStarts(int value) const = 0;
@@ -155,7 +157,7 @@ class IntegrationTestCommands
                       const std::string& install_data_index) const = 0;
   virtual void UpdateAll() const = 0;
   virtual void GetAppStates(
-      const base::Value::Dict& expected_app_states) const = 0;
+      const base::DictValue& expected_app_states) const = 0;
   virtual void DeleteUpdaterDirectory() const = 0;
   virtual void DeleteActiveUpdaterExecutable() const = 0;
   virtual void DeleteFile(const base::FilePath& path) const = 0;
@@ -175,7 +177,7 @@ class IntegrationTestCommands
   virtual void ExpectLegacyAppCommandWebSucceeds(
       const std::string& app_id,
       const std::string& command_id,
-      const base::Value::List& parameters,
+      const base::ListValue& parameters,
       int expected_exit_code) const = 0;
   virtual void ExpectLegacyPolicyStatusSucceeds(
       const base::Version& updater_version) const = 0;
@@ -195,7 +197,7 @@ class IntegrationTestCommands
 #endif  // BUILDFLAG(IS_WIN)
   virtual void InstallAppViaService(
       const std::string& app_id,
-      const base::Value::Dict& expected_final_values) const = 0;
+      const base::DictValue& expected_final_values) const = 0;
   virtual void StressUpdateService() const = 0;
   virtual void CallServiceUpdate(const std::string& app_id,
                                  const std::string& install_data_index,
@@ -232,7 +234,8 @@ class IntegrationTestCommands
   virtual void RunOfflineInstall(bool is_legacy_install,
                                  bool is_silent_install,
                                  int installer_result,
-                                 int installer_error) = 0;
+                                 int installer_error,
+                                 const std::string& install_source) = 0;
   virtual void RunOfflineInstallOsNotSupported(bool is_legacy_install,
                                                bool is_silent_install,
                                                const std::string& language) = 0;
@@ -252,7 +255,7 @@ class IntegrationTestCommands
   virtual void DMCleanup() = 0;
   virtual void InstallEnterpriseCompanionApp() = 0;
   virtual void InstallEnterpriseCompanionAppOverrides(
-      const base::Value::Dict& external_overrides) = 0;
+      const base::DictValue& external_overrides) = 0;
   virtual void ExpectEnterpriseCompanionAppNotInstalled() = 0;
   virtual void UninstallEnterpriseCompanionApp() = 0;
   virtual void SetAppAllowsUsageStats(const std::string& identifier,

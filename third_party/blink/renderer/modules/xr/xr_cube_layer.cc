@@ -14,9 +14,10 @@
 namespace blink {
 
 XRCubeLayer::XRCubeLayer(const XRCubeLayerInit* init,
+                         V8XRLayerLayout::Enum final_layout,
                          XRGraphicsBinding* binding,
                          XRLayerDrawingContext* drawing_context)
-    : XRShapedLayer(init, binding, drawing_context) {
+    : XRShapedLayer(init, final_layout, binding, drawing_context) {
   if (init->hasOrientation()) {
     orientation_ = init->orientation();
   } else {

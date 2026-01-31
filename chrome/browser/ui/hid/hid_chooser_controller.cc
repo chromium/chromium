@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "base/command_line.h"
-#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/strings/stringprintf.h"
 #include "chrome/browser/chooser_controller/title_util.h"
@@ -59,10 +58,11 @@ bool FilterMatch(const blink::mojom::HidDeviceFilterPtr& filter,
 
   if (filter->usage) {
     if (filter->usage->is_page()) {
-      if (!base::Contains(device.collections, filter->usage->get_page(),
-                          [](const device::mojom::HidCollectionInfoPtr& c) {
-                            return c->usage->usage_page;
-                          })) {
+      if (!std::ranges::contains(
+              device.collections, filter->usage->get_page(),
+              [](const device::mojom::HidCollectionInfoPtr& c) {
+                return c->usage->usage_page;
+              })) {
         return false;
       }
     } else if (filter->usage->is_usage_and_page()) {
@@ -140,7 +140,7 @@ size_t HidChooserController::NumOptions() const {
 
 std::u16string HidChooserController::GetOption(size_t index) const {
   DCHECK_LT(index, items_.size());
-  DCHECK(base::Contains(device_map_, items_[index]));
+  DCHECK(device_map_.contains(items_[index]));
   const auto& devices = device_map_.find(items_[index])->second;
   auto device = std::ranges::find_if(
       devices, [](const auto& d) { return !d->product_name.empty(); });
@@ -157,7 +157,7 @@ bool HidChooserController::IsPaired(size_t index) const {
     return false;
   }
 
-  DCHECK(base::Contains(device_map_, items_[index]));
+  DCHECK(device_map_.contains(items_[index]));
   const auto& device_infos = device_map_.find(items_[index])->second;
   DCHECK_GT(device_infos.size(), 0u);
   for (const auto& device : device_infos) {
@@ -179,7 +179,7 @@ void HidChooserController::Select(const std::vector<size_t>& indices) {
     return;
   }
 
-  DCHECK(base::Contains(device_map_, items_[index]));
+  DCHECK(device_map_.contains(items_[index]));
   auto& device_infos = device_map_.find(items_[index])->second;
   DCHECK_GT(device_infos.size(), 0u);
   std::vector<device::mojom::HidDeviceInfoPtr> devices;
@@ -260,7 +260,7 @@ void HidChooserController::OnDeviceRemoved(
 void HidChooserController::OnDeviceChanged(
     const device::mojom::HidDeviceInfo& device) {
   bool has_chooser_item =
-      base::Contains(items_, PhysicalDeviceIdFromDeviceInfo(device));
+      std::ranges::contains(items_, PhysicalDeviceIdFromDeviceInfo(device));
   if (!DisplayDevice(device)) {
     if (has_chooser_item) {
       OnDeviceRemoved(device);
@@ -310,8 +310,8 @@ bool HidChooserController::DisplayDevice(
   // devices may be displayed if the origin is privileged or the blocklist is
   // disabled.
   const bool has_fido_collection =
-      base::Contains(device.collections, device::mojom::kPageFido,
-                     [](const auto& c) { return c->usage->usage_page; });
+      std::ranges::contains(device.collections, device::mojom::kPageFido,
+                            [](const auto& c) { return c->usage->usage_page; });
   if (has_fido_collection) {
     if (base::CommandLine::ForCurrentProcess()->HasSwitch(
             switches::kDisableHidBlocklist) ||

@@ -15,7 +15,6 @@
 #include "ash/system/diagnostics/diagnostics_log_controller.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/webui/shimless_rma/backend/fake_shimless_rma_delegate.h"
-#include "ash/webui/shimless_rma/mojom/shimless_rma.mojom-shared.h"
 #include "ash/webui/shimless_rma/mojom/shimless_rma.mojom.h"
 #include "base/files/file_path.h"
 #include "base/functional/callback.h"

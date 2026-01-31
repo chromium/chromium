@@ -294,7 +294,7 @@ TEST_F(ServicesCustomizationDocumentTest, Basic) {
   ASSERT_TRUE(default_apps);
   EXPECT_EQ(default_apps->size(), 2u);
 
-  const base::Value::Dict* app_entry =
+  const base::DictValue* app_entry =
       default_apps->FindDict("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa");
   ASSERT_TRUE(app_entry);
   EXPECT_EQ(app_entry->size(), 1u);

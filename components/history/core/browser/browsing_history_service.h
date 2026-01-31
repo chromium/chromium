@@ -230,6 +230,9 @@ class BrowsingHistoryService : public HistoryServiceObserver,
   // BrowsingHistoryDriver.
   void ReturnResultsToDriver(scoped_refptr<QueryHistoryState> state);
 
+  void RecordResultsMetrics(const std::vector<HistoryEntry>& results,
+                            bool has_remote_results);
+
   // Callback from `web_history_timer_` when a response from web history has
   // not been received in time.
   void WebHistoryTimeout(scoped_refptr<QueryHistoryState> state);

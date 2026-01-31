@@ -210,7 +210,7 @@ void ContextSharingBorderViewControllerImpl::UpdateBorderView(
           // There is be a chance that the border view has already stopped
           // showing. In that case, gracefully handle the crash case in
           // crbug.com/398319435 by closing(minimizing) the glic window.
-          glic_service_->window_controller().Close();
+          glic_service_->window_controller().Close({});
         }
 
         border_view_->ResetAnimationCycle();

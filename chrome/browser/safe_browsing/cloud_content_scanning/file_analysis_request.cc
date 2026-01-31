@@ -7,177 +7,25 @@
 #include <algorithm>
 #include <string_view>
 
-#include "base/containers/span.h"
 #include "base/feature_list.h"
-#include "base/files/memory_mapped_file.h"
-#include "base/metrics/histogram_functions.h"
-#include "base/strings/string_number_conversions.h"
-#include "base/task/thread_pool.h"
 #include "chrome/browser/enterprise/connectors/common.h"
-#include "chrome/browser/file_util_service.h"
-#include "chrome/browser/safe_browsing/cloud_content_scanning/binary_upload_service.h"
 #include "components/enterprise/connectors/core/cloud_content_scanning/binary_upload_request.h"
-#include "components/enterprise/connectors/core/features.h"
+#include "components/file_access/scoped_file_access.h"
+#include "content/public/browser/browser_thread.h"
+
+#if !BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/file_util_service.h"
 #include "components/enterprise/obfuscation/core/download_obfuscator.h"
 #include "components/enterprise/obfuscation/core/utils.h"
-#include "components/file_access/scoped_file_access.h"
-#include "components/file_access/scoped_file_access_delegate.h"
-#include "content/public/browser/browser_thread.h"
-#include "crypto/secure_hash.h"
-#include "crypto/sha2.h"
-#include "net/base/filename_util.h"
-#include "net/base/mime_sniffer.h"
-#include "net/base/mime_util.h"
+#endif
 
 namespace safe_browsing {
 
 namespace {
 
 using ::enterprise_connectors::BinaryUploadRequest;
+using ::enterprise_connectors::FileAnalysisRequestBase;
 using ::enterprise_connectors::GetBrowserPolicyConnector;
-
-constexpr size_t kReadFileChunkSize = 4096;
-constexpr size_t kMaxUploadSizeMetricsKB = 500 * 1024;
-
-std::string GetFileMimeType(const base::FilePath& path,
-                            std::string_view first_bytes) {
-  std::string sniffed_mime_type;
-  bool sniff_found = net::SniffMimeType(
-      std::string_view(first_bytes.data(),
-                       std::min(first_bytes.size(),
-                                static_cast<size_t>(net::kMaxBytesToSniff))),
-      net::FilePathToFileURL(path),
-      /*type_hint*/ std::string(), net::ForceSniffFileUrlsForHtml::kDisabled,
-      &sniffed_mime_type);
-
-  if (sniff_found && !sniffed_mime_type.empty() &&
-      sniffed_mime_type != "text/*" &&
-      sniffed_mime_type != "application/octet-stream") {
-    return sniffed_mime_type;
-  }
-
-  // If the file got a trivial or empty mime type sniff, fall back to using its
-  // extension if possible.
-  base::FilePath::StringType ext = path.FinalExtension();
-  if (ext.empty())
-    return sniffed_mime_type;
-
-  if (ext[0] == FILE_PATH_LITERAL('.'))
-    ext = ext.substr(1);
-
-  std::string ext_mime_type;
-  bool ext_found = net::GetMimeTypeFromExtension(ext, &ext_mime_type);
-
-  if (!ext_found || ext_mime_type.empty())
-    return sniffed_mime_type;
-
-  return ext_mime_type;
-}
-
-std::pair<enterprise_connectors::ScanRequestUploadResult,
-          BinaryUploadRequest::Data>
-GetFileDataBlocking(const base::FilePath& path,
-                    bool detect_mime_type,
-                    bool is_obfuscated) {
-  DCHECK(!path.empty());
-
-  // The returned `Data` must always have a valid `path` member, regardless
-  // if this function succeeds or not.  The other members of `Data` may or
-  // may not be filled in.
-  BinaryUploadRequest::Data file_data;
-  file_data.path = path;
-
-  // FLAG_WIN_SHARE_DELETE is necessary to allow the file to be renamed by the
-  // user clicking "Open Now" without causing download errors.
-  base::File file(path, base::File::FLAG_OPEN | base::File::FLAG_READ |
-                            base::File::FLAG_WIN_SHARE_DELETE);
-
-  if (!file.IsValid()) {
-    return std::make_pair(
-        enterprise_connectors::ScanRequestUploadResult::kUnknown, file_data);
-  }
-
-  file_data.size = file.GetLength();
-  if (file_data.size == 0) {
-    return std::make_pair(
-        enterprise_connectors::ScanRequestUploadResult::kSuccess, file_data);
-  }
-
-  std::unique_ptr<crypto::SecureHash> secure_hash =
-      crypto::SecureHash::Create(crypto::SecureHash::SHA256);
-  size_t bytes_read = 0;
-  std::vector<char> buf(kReadFileChunkSize);
-
-  while (bytes_read < file_data.size) {
-    std::optional<size_t> bytes_currently_read =
-        file.ReadAtCurrentPos(base::as_writable_byte_span(buf));
-    if (!bytes_currently_read.has_value()) {
-      // Reset the size to zero since some code assumes an UNKNOWN result is
-      // matched with a zero size.
-      file_data.size = 0;
-      return {enterprise_connectors::ScanRequestUploadResult::kUnknown,
-              file_data};
-    }
-
-    // Use the first read chunk to get the mimetype as necessary.
-    if (detect_mime_type && bytes_read == 0) {
-      file_data.mime_type = GetFileMimeType(
-          path, std::string_view(buf.data(), bytes_currently_read.value()));
-    }
-
-    secure_hash->Update(
-        base::as_byte_span(buf).first(bytes_currently_read.value()));
-    bytes_read += bytes_currently_read.value();
-  }
-
-  std::array<uint8_t, crypto::kSHA256Length> hash;
-  secure_hash->Finish(hash);
-
-  // TODO(b/367257039): Pass along hash of unobfuscated file for enterprise
-  // scans
-  file_data.hash = base::HexEncode(hash);
-
-  // Since we will be sending the deobfuscated file data in the request, set the
-  // size to match.
-  if (is_obfuscated) {
-    enterprise_obfuscation::DownloadObfuscator obfuscator;
-    auto overhead = obfuscator.CalculateDeobfuscationOverhead(file);
-    if (overhead.has_value()) {
-      file_data.size -= overhead.value();
-      file_data.is_obfuscated = true;
-    }
-  }
-
-  // Create a histogram to track the size of files being scanned up to 500MB.
-  base::UmaHistogramCustomCounts(
-      "Enterprise.FileAnalysisRequest.FileSize", file_data.size / 1024, 1,
-      kMaxUploadSizeMetricsKB, 50);
-
-  size_t max_file_size_bytes = BinaryUploadService::kMaxUploadSizeBytes;
-  if (base::FeatureList::IsEnabled(
-          enterprise_connectors::kEnableNewUploadSizeLimit)) {
-    max_file_size_bytes =
-        1024 * 1024 * enterprise_connectors::kMaxContentAnalysisFileSizeMB.Get();
-  }
-  return {file_data.size <= max_file_size_bytes
-              ? enterprise_connectors::ScanRequestUploadResult::kSuccess
-              : enterprise_connectors::ScanRequestUploadResult::kFileTooLarge,
-          std::move(file_data)};
-}
-
-bool IsZipFile(const base::FilePath::StringType& extension,
-               const std::string& mime_type) {
-  return extension == FILE_PATH_LITERAL(".zip") ||
-         mime_type == "application/x-zip-compressed" ||
-         mime_type == "application/zip";
-}
-
-bool IsRarFile(const base::FilePath::StringType& extension,
-               const std::string& mime_type) {
-  return extension == FILE_PATH_LITERAL(".rar") ||
-         mime_type == "application/vnd.rar" ||
-         mime_type == "application/x-rar-compressed";
-}
 
 }  // namespace
 
@@ -190,115 +38,54 @@ FileAnalysisRequest::FileAnalysisRequest(
     BinaryUploadRequest::ContentAnalysisCallback callback,
     BinaryUploadRequest::RequestStartCallback start_callback,
     bool is_obfuscated)
-    : BinaryUploadRequest(std::move(callback),
-                          analysis_settings.cloud_or_local_settings,
-                          std::move(start_callback),
-                          base::BindRepeating(&GetBrowserPolicyConnector)),
-      has_cached_result_(false),
-      tag_settings_(analysis_settings.tags),
-      path_(std::move(path)),
-      file_name_(std::move(file_name)),
-      delay_opening_file_(delay_opening_file),
-      is_obfuscated_(is_obfuscated) {
-  DCHECK(!path_.empty());
-  set_filename(path_.AsUTF8Unsafe());
-  cached_data_.mime_type = std::move(mime_type);
-}
+    : FileAnalysisRequestBase(analysis_settings,
+                              std::move(path),
+                              std::move(file_name),
+                              std::move(mime_type),
+                              delay_opening_file,
+                              std::move(callback),
+                              base::BindRepeating(&GetBrowserPolicyConnector),
+                              content::GetUIThreadTaskRunner({}),
+                              std::move(start_callback),
+                              is_obfuscated) {}
 
 FileAnalysisRequest::~FileAnalysisRequest() = default;
 
-void FileAnalysisRequest::GetRequestData(DataCallback callback) {
-  data_callback_ = std::move(callback);
-
-  if (has_cached_result_) {
-    RunCallback();
-    return;
+#if !BUILDFLAG(IS_ANDROID)
+void FileAnalysisRequest::ProcessZipFile(Data data) {
+  auto callback =
+      base::BindOnce(&FileAnalysisRequest::OnCheckedForEncryption,
+                     weakptr_factory_.GetWeakPtr(), std::move(data));
+  if (is_obfuscated_ &&
+      base::FeatureList::IsEnabled(
+          enterprise_obfuscation::kEnterpriseFileObfuscationArchiveAnalyzer)) {
+    zip_analyzer_ = SandboxedZipAnalyzer::CreateObfuscatedAnalyzer(
+        path_,
+        /*password=*/password(), std::move(callback), LaunchFileUtilService());
+  } else {
+    zip_analyzer_ = SandboxedZipAnalyzer::CreateAnalyzer(
+        path_,
+        /*password=*/password(), std::move(callback), LaunchFileUtilService());
   }
-
-  if (!delay_opening_file_) {
-    file_access::RequestFilesAccessForSystem(
-        {path_}, base::BindOnce(&FileAnalysisRequest::GetData,
-                                weakptr_factory_.GetWeakPtr()));
-  }
+  zip_analyzer_->Start();
 }
 
-void FileAnalysisRequest::OpenFile() {
-  DCHECK(!data_callback_.is_null());
-
-  // Opening the file synchronously here is OK since OpenFile should be called
-  // on a base::MayBlock() thread.
-  std::pair<enterprise_connectors::ScanRequestUploadResult, Data> file_data =
-      GetFileDataBlocking(path_, cached_data_.mime_type.empty(),
-                          is_obfuscated_);
-
-  // The result of opening the file is passed back to the UI thread since
-  // |data_callback_| calls functions that must run there.
-  content::GetUIThreadTaskRunner({})->PostTask(
-      FROM_HERE,
-      base::BindOnce(&FileAnalysisRequest::OnGotFileData,
-                     weakptr_factory_.GetWeakPtr(), std::move(file_data)));
-}
-
-bool FileAnalysisRequest::HasMalwareRequest() const {
-  for (const std::string& tag : content_analysis_request().tags()) {
-    if (tag == "malware")
-      return true;
-  }
-  return false;
-}
-
-void FileAnalysisRequest::OnGotFileData(
-    std::pair<enterprise_connectors::ScanRequestUploadResult, Data>
-        result_and_data) {
-  DCHECK(!result_and_data.second.path.empty());
-  DCHECK_EQ(result_and_data.second.path, path_);
-
-  scoped_file_access_.reset();
-  if (result_and_data.first !=
-      enterprise_connectors::ScanRequestUploadResult::kSuccess) {
-    CacheResultAndData(result_and_data.first,
-                       std::move(result_and_data.second));
-    RunCallback();
-    return;
-  }
-
-  const std::string& mime_type = cached_data_.mime_type.empty()
-                                     ? result_and_data.second.mime_type
-                                     : cached_data_.mime_type;
-  base::FilePath::StringType ext(file_name_.FinalExtension());
-  std::ranges::transform(ext, ext.begin(), tolower);
-  if (IsZipFile(ext, mime_type)) {
-    auto callback = base::BindOnce(&FileAnalysisRequest::OnCheckedForEncryption,
-                                   weakptr_factory_.GetWeakPtr(),
-                                   std::move(result_and_data.second));
-    if (is_obfuscated_ && base::FeatureList::IsEnabled(
-                              enterprise_obfuscation::
-                                  kEnterpriseFileObfuscationArchiveAnalyzer)) {
-      zip_analyzer_ = SandboxedZipAnalyzer::CreateObfuscatedAnalyzer(
-          path_,
-          /*password=*/password(), std::move(callback),
-          LaunchFileUtilService());
-    } else {
-      zip_analyzer_ = SandboxedZipAnalyzer::CreateAnalyzer(
-          path_,
-          /*password=*/password(), std::move(callback),
-          LaunchFileUtilService());
-    }
-    zip_analyzer_->Start();
-  } else if (IsRarFile(ext, mime_type)) {
+void FileAnalysisRequest::ProcessRarFile(Data data) {
+  auto callback =
+      base::BindOnce(&FileAnalysisRequest::OnCheckedForEncryption,
+                     weakptr_factory_.GetWeakPtr(), std::move(data));
+  if (is_obfuscated_ &&
+      base::FeatureList::IsEnabled(
+          enterprise_obfuscation::kEnterpriseFileObfuscationArchiveAnalyzer)) {
+    rar_analyzer_ = SandboxedRarAnalyzer::CreateObfuscatedAnalyzer(
+        path_,
+        /*password=*/password(), std::move(callback), LaunchFileUtilService());
+  } else {
     rar_analyzer_ = SandboxedRarAnalyzer::CreateAnalyzer(
         path_,
-        /*password=*/password(),
-        base::BindOnce(&FileAnalysisRequest::OnCheckedForEncryption,
-                       weakptr_factory_.GetWeakPtr(),
-                       std::move(result_and_data.second)),
-        LaunchFileUtilService());
-    rar_analyzer_->Start();
-  } else {
-    CacheResultAndData(enterprise_connectors::ScanRequestUploadResult::kSuccess,
-                       std::move(result_and_data.second));
-    RunCallback();
+        /*password=*/password(), std::move(callback), LaunchFileUtilService());
   }
+  rar_analyzer_->Start();
 }
 
 void FileAnalysisRequest::OnCheckedForEncryption(
@@ -314,39 +101,6 @@ void FileAnalysisRequest::OnCheckedForEncryption(
   CacheResultAndData(result, std::move(data));
   RunCallback();
 }
-
-void FileAnalysisRequest::CacheResultAndData(
-    enterprise_connectors::ScanRequestUploadResult result,
-    Data data) {
-  has_cached_result_ = true;
-  cached_result_ = result;
-
-  // If the mime type is already set, it shouldn't be overwritten.
-  if (!cached_data_.mime_type.empty())
-    data.mime_type = std::move(cached_data_.mime_type);
-
-  DCHECK(!data.path.empty());
-  cached_data_ = std::move(data);
-
-  set_digest(cached_data_.hash);
-  set_content_type(cached_data_.mime_type);
-}
-
-void FileAnalysisRequest::RunCallback() {
-  if (!data_callback_.is_null()) {
-    std::move(data_callback_).Run(cached_result_, cached_data_);
-  }
-}
-
-void FileAnalysisRequest::GetData(file_access::ScopedFileAccess file_access) {
-  scoped_file_access_ =
-      std::make_unique<file_access::ScopedFileAccess>(std::move(file_access));
-  base::ThreadPool::PostTaskAndReplyWithResult(
-      FROM_HERE, {base::TaskPriority::USER_VISIBLE, base::MayBlock()},
-      base::BindOnce(&GetFileDataBlocking, path_,
-                     cached_data_.mime_type.empty(), is_obfuscated_),
-      base::BindOnce(&FileAnalysisRequest::OnGotFileData,
-                     weakptr_factory_.GetWeakPtr()));
-}
+#endif
 
 }  // namespace safe_browsing

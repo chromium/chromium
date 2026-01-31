@@ -22,10 +22,10 @@ enum FeatureCapability {
   OPEN_THREADS_VIEW = 15;
 
   // SetCobrowsingDisplayMode event
-  COBROWSING_DISPLAY_CONTROL = 16;
+  COBROWSING_DISPLAY_CONTROL = 17;
 
   // AiModeUpdateThreadContextLibrary() method
-  THREAD_CONTEXT_LIBRARY = 17;
+  THREAD_CONTEXT_LIBRARY = 18;
 }
 
 ////////////////////////////////////////////////////////////////////////////////

@@ -32,6 +32,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_transform_stream.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_writable_stream.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
+#include "third_party/blink/renderer/core/dom/quota_exceeded_error.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/fileapi/blob.h"
 #include "third_party/blink/renderer/core/fileapi/file.h"
@@ -802,6 +803,20 @@ bool V8ScriptValueSerializer::WriteDOMObject(ScriptWrappable* wrappable,
     // string in order to avoid future scheme changes.
     String stack_unused;
     WriteUTF8String(stack_unused);
+    return true;
+  }
+  if (auto* quota_exceeded_error =
+          dispatcher.ToMostDerived<QuotaExceededError>()) {
+    WriteAndRequireInterfaceTag(kQuotaExceededErrorTag);
+    WriteUTF8String(quota_exceeded_error->message());
+    // We may serialize the stack property in the future, so we store a null
+    // string in order to avoid future scheme changes.
+    String stack_unused;
+    WriteUTF8String(stack_unused);
+    WriteUint32(quota_exceeded_error->quota().has_value() ? 1 : 0);
+    WriteDouble(quota_exceeded_error->quota().value_or(0.0));
+    WriteUint32(quota_exceeded_error->requested().has_value() ? 1 : 0);
+    WriteDouble(quota_exceeded_error->requested().value_or(0.0));
     return true;
   }
   if (auto* config = dispatcher.ToMostDerived<FencedFrameConfig>()) {

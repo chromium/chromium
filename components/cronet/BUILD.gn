@@ -7,8 +7,6 @@ import("//build/toolchain/toolchain.gni")
 import("//build/util/lastchange.gni")
 import("//build/util/process_version.gni")
 import("//chrome/version.gni")
-import("//components/cronet/native/include/headers.gni")
-import("//components/grpc_support/include/headers.gni")
 import("//testing/test.gni")
 import("//third_party/protobuf/proto_library.gni")
 
@@ -56,6 +54,7 @@ source_set("cronet_common") {
   ]
   deps = [
     ":cronet_version_header",
+    ":metrics_util",
     ":request_context_config_proto",
     "//base",
     "//components/prefs",
@@ -70,7 +69,10 @@ source_set("metrics_util") {
     "metrics_util.cc",
     "metrics_util.h",
   ]
-  deps = [ "//base" ]
+  deps = [
+    "//base",
+    "//net:net",
+  ]
 }
 
 # Unit tests for Cronet common implementation.
@@ -91,158 +93,9 @@ source_set("cronet_common_unittests") {
   ]
 }
 
-# For platforms on which the native Cronet library is used, build the library,
-# a cronet_tests binary that exercises it, and a unit-tests binary.
 if (is_android) {
   group("cronet_package") {
     testonly = true
     deps = [ "//components/cronet/android:cronet_package_android" ]
-  }
-} else {
-  _cronet_shared_lib_name = "cronet.$chrome_version_full"
-  _cronet_shared_lib_file_name =
-      "$shlib_prefix$_cronet_shared_lib_name$shlib_extension"
-
-  shared_library("cronet") {
-    output_name = _cronet_shared_lib_name
-
-    deps = [
-      "//base",
-      "//components/cronet:cronet_common",
-      "//components/cronet/native:cronet_native_impl",
-      "//net",
-    ]
-
-    sources = [ "cronet_global_state_stubs.cc" ]
-
-    # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
-    # enable the diagnostic by removing this line.
-    configs += [ "//build/config/compiler:no_exit_time_destructors" ]
-  }
-
-  test("cronet_tests") {
-    deps = [
-      ":cronet_common",
-      "//base",
-      "//base/test:test_support",
-      "//components/cronet/native:cronet_native_impl",
-      "//components/cronet/native/test:cronet_native_tests",
-      "//net",
-    ]
-
-    sources = [
-      "cronet_global_state_stubs.cc",
-      "run_all_unittests.cc",
-    ]
-
-    defines = [ "CRONET_TESTS_IMPLEMENTATION" ]
-
-    if ((is_linux || is_chromeos) && !is_component_build) {
-      public_configs = [ "//build/config/gcc:rpath_for_built_shared_libraries" ]
-    }
-
-    if (is_fuchsia) {
-      additional_manifest_fragments =
-          [ "//build/config/fuchsia/test/network.shard.test-cml" ]
-    }
-
-    # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
-    # enable the diagnostic by removing this line.
-    configs += [ "//build/config/compiler:no_exit_time_destructors" ]
-  }
-
-  test("cronet_unittests") {
-    deps = [
-      ":cronet_common",
-      ":cronet_common_unittests",
-      "//base",
-      "//base/test:test_support",
-      "//components/cronet/native:cronet_native_unittests",
-      "//net",
-    ]
-
-    sources = [
-      "cronet_global_state_stubs.cc",
-      "run_all_unittests.cc",
-    ]
-
-    # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
-    # enable the diagnostic by removing this line.
-    configs += [ "//build/config/compiler:no_exit_time_destructors" ]
-  }
-
-  _package_dir = "$root_out_dir/cronet"
-
-  # Generate LICENSE file by recursively joining all dependent licenses.
-  action("generate_license") {
-    _license_path = "$_package_dir/LICENSE"
-
-    script = "//tools/licenses/licenses.py"
-    inputs = [ lastchange_file ]
-    outputs = [ _license_path ]
-    args = [
-      "license_file",
-      rebase_path(_license_path, root_build_dir),
-      "--gn-target",
-      "//components/cronet:cronet",
-      "--gn-out-dir",
-      ".",
-    ]
-  }
-
-  # Copy boiler-plate files into the package.
-  copy("cronet_package_copy") {
-    sources = [
-      "${root_out_dir}${shlib_subdir}/${_cronet_shared_lib_file_name}",
-      "//AUTHORS",
-      "//chrome/VERSION",
-    ]
-    deps = [ ":cronet" ]
-    outputs = [ "$_package_dir/{{source_file_part}}" ]
-  }
-
-  # Copy headers.
-  copy("cronet_package_headers") {
-    sources = cronet_native_public_headers + grpc_public_headers
-
-    outputs = [ "$_package_dir/include/{{source_file_part}}" ]
-  }
-
-  group("cronet_package") {
-    deps = [
-      ":cronet_package_copy",
-      ":cronet_package_headers",
-      ":generate_license",
-    ]
-  }
-
-  executable("cronet_sample") {
-    testonly = true
-    sources = [
-      "native/sample/main.cc",
-      "native/sample/sample_executor.cc",
-      "native/sample/sample_executor.h",
-      "native/sample/sample_url_request_callback.cc",
-      "native/sample/sample_url_request_callback.h",
-    ]
-    deps = [
-      "//components/cronet",
-      "//components/cronet/native:cronet_native_headers",
-    ]
-    if ((is_linux || is_chromeos) && !is_component_build) {
-      public_configs = [ "//build/config/gcc:rpath_for_built_shared_libraries" ]
-    }
-  }
-
-  test("cronet_sample_test") {
-    sources = [ "native/sample/test/sample_test.cc" ]
-    deps = [
-      ":cronet_sample",
-      "//testing/gtest",
-    ]
-
-    # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
-    # enable the diagnostic by removing this line.
-    configs += [ "//build/config/compiler:no_exit_time_destructors" ]
   }
 }

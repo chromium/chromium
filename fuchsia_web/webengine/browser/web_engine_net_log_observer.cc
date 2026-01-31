@@ -19,18 +19,18 @@
 namespace {
 
 // TODO(crbug.com/40257546): This should be updated to pass a
-// base::Value::Dict instead of a std::unique_ptr.
-std::unique_ptr<base::Value::Dict> GetWebEngineConstants() {
-  base::Value::Dict constants_dict = net::GetNetConstants();
+// base::DictValue instead of a std::unique_ptr.
+std::unique_ptr<base::DictValue> GetWebEngineConstants() {
+  base::DictValue constants_dict = net::GetNetConstants();
 
-  base::Value::Dict dict;
+  base::DictValue dict;
   dict.Set("name", "WebEngine");
   dict.Set("command_line",
            base::CommandLine::ForCurrentProcess()->GetCommandLineString());
 
   constants_dict.Set("clientInfo", std::move(dict));
 
-  return std::make_unique<base::Value::Dict>(std::move(constants_dict));
+  return std::make_unique<base::DictValue>(std::move(constants_dict));
 }
 
 }  // namespace

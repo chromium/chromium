@@ -53,8 +53,8 @@ std::string Base64UrlEncode(std::string_view data) {
 }
 
 std::optional<std::string> CombineHeaderAndPayload(
-    const base::Value::Dict& header,
-    const base::Value::Dict& payload) {
+    const base::DictValue& header,
+    const base::DictValue& payload) {
   std::optional<std::string> header_serialized = base::WriteJson(header);
   if (!header_serialized) {
     DVLOG(1) << "Unexpected JSONWriter error while serializing a registration "
@@ -77,18 +77,21 @@ std::optional<std::string> CombineHeaderAndPayload(
 // Helper function for the shared functionality of refresh and
 // registration JWTs.
 std::optional<std::string> CreateHeaderAndPayload(
-    std::string_view challenge,
+    std::optional<std::string> challenge,
     crypto::SignatureVerifier::SignatureAlgorithm algorithm,
-    std::optional<base::Value::Dict> jwk,
+    std::optional<base::DictValue> jwk,
     const std::optional<std::string>& authorization) {
-  auto header = base::Value::Dict()
+  auto header = base::DictValue()
                     .Set("alg", SignatureAlgorithmToString(algorithm))
                     .Set("typ", "dbsc+jwt");
   if (jwk.has_value()) {
     header.Set("jwk", std::move(*jwk));
   }
 
-  auto payload = base::Value::Dict().Set("jti", challenge);
+  auto payload = base::DictValue();
+  if (challenge.has_value()) {
+    payload.Set("jti", *challenge);
+  }
   if (authorization.has_value()) {
     payload.Set("authorization", authorization.value());
   }
@@ -99,11 +102,11 @@ std::optional<std::string> CreateHeaderAndPayload(
 }  // namespace
 
 std::optional<std::string> CreateKeyRegistrationHeaderAndPayload(
-    std::string_view challenge,
+    std::optional<std::string> challenge,
     crypto::SignatureVerifier::SignatureAlgorithm algorithm,
     base::span<const uint8_t> pubkey_spki,
     std::optional<std::string> authorization) {
-  base::Value::Dict jwk = ConvertPkeySpkiToJwk(algorithm, pubkey_spki);
+  base::DictValue jwk = ConvertPkeySpkiToJwk(algorithm, pubkey_spki);
   if (jwk.empty()) {
     DVLOG(1) << "Unexpected error when converting the SPKI to a JWK";
     return std::nullopt;
@@ -114,7 +117,7 @@ std::optional<std::string> CreateKeyRegistrationHeaderAndPayload(
 }
 
 std::optional<std::string> CreateKeyRefreshHeaderAndPayload(
-    std::string_view challenge,
+    std::optional<std::string> challenge,
     crypto::SignatureVerifier::SignatureAlgorithm algorithm) {
   return CreateHeaderAndPayload(challenge, algorithm, /*jwk=*/std::nullopt,
                                 /*authorization=*/std::nullopt);

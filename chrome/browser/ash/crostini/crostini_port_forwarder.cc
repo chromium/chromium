@@ -91,8 +91,8 @@ void CrostiniPortForwarder::AddNewPortPreference(const PortRuleKey& key,
   PrefService* pref_service = profile_->GetPrefs();
   ScopedListPrefUpdate update(pref_service,
                               crostini::prefs::kCrostiniPortForwarding);
-  base::Value::List& all_ports = update.Get();
-  base::Value::Dict new_port_metadata;
+  base::ListValue& all_ports = update.Get();
+  base::DictValue new_port_metadata;
   new_port_metadata.Set(kPortNumberKey, key.port_number);
   new_port_metadata.Set(kPortProtocolKey, static_cast<int>(key.protocol_type));
   new_port_metadata.Set(kPortLabelKey, label);
@@ -107,7 +107,7 @@ bool CrostiniPortForwarder::RemovePortPreference(const PortRuleKey& key) {
   PrefService* pref_service = profile_->GetPrefs();
   ScopedListPrefUpdate update(pref_service,
                               crostini::prefs::kCrostiniPortForwarding);
-  base::Value::List& update_list = update.Get();
+  base::ListValue& update_list = update.Get();
   auto it = std::ranges::find_if(update_list, [&key, this](const auto& dict) {
     return MatchPortRuleDict(dict, key);
   });
@@ -121,7 +121,7 @@ bool CrostiniPortForwarder::RemovePortPreference(const PortRuleKey& key) {
 std::optional<base::Value> CrostiniPortForwarder::ReadPortPreference(
     const PortRuleKey& key) {
   PrefService* pref_service = profile_->GetPrefs();
-  const base::Value::List& all_ports =
+  const base::ListValue& all_ports =
       pref_service->GetList(crostini::prefs::kCrostiniPortForwarding);
   auto it = std::ranges::find_if(all_ports, [&key, this](const auto& dict) {
     return MatchPortRuleDict(dict, key);
@@ -365,10 +365,10 @@ void CrostiniPortForwarder::RemoveAllPorts(
   DeactivateAllActivePorts(container_id);
 }
 
-base::Value::List CrostiniPortForwarder::GetActivePorts() {
-  base::Value::List forwarded_ports_list;
+base::ListValue CrostiniPortForwarder::GetActivePorts() {
+  base::ListValue forwarded_ports_list;
   for (const auto& port : forwarded_ports_) {
-    base::Value::Dict port_info;
+    base::DictValue port_info;
     port_info.Set(kPortNumberKey, port.first.port_number);
     port_info.Set(kPortProtocolKey, static_cast<int>(port.first.protocol_type));
     port_info.Set(kPortContainerIdKey, port.first.container_id.ToDictValue());
@@ -377,8 +377,8 @@ base::Value::List CrostiniPortForwarder::GetActivePorts() {
   return forwarded_ports_list;
 }
 
-base::Value::List CrostiniPortForwarder::GetActiveNetworkInfo() {
-  base::Value::List network_info;
+base::ListValue CrostiniPortForwarder::GetActiveNetworkInfo() {
+  base::ListValue network_info;
   network_info.Append(base::Value(current_interface_));
   network_info.Append(base::Value(ip_address_));
   return network_info;

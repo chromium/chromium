@@ -4,7 +4,6 @@
 
 #include "chrome/browser/ui/webui/nearby_internals/nearby_internals_ui_presence_handler.h"
 
-#include "base/containers/contains.h"
 #include "chrome/browser/ash/nearby/nearby_process_manager_factory.h"
 #include "chrome/browser/ash/nearby/presence/nearby_presence_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -68,9 +67,9 @@ std::string PresenceActionToString(nearby::presence::PresenceAction action) {
 
 // Converts |presence_device| to a raw dictionary value used as a JSON argument
 // to JavaScript functions.
-base::Value::Dict PresenceDeviceToDictionary(
+base::DictValue PresenceDeviceToDictionary(
     nearby::presence::PresenceDevice presence_device) {
-  base::Value::Dict dictionary;
+  base::DictValue dictionary;
   dictionary.Set(kDeviceNameKey,
                  presence_device.GetDeviceIdentityMetadata().device_name());
   // TODO(b/277820435): add other device type options.
@@ -143,12 +142,12 @@ void NearbyInternalsPresenceHandler::OnJavascriptAllowed() {}
 
 void NearbyInternalsPresenceHandler::OnJavascriptDisallowed() {}
 
-void NearbyInternalsPresenceHandler::Initialize(const base::Value::List& args) {
+void NearbyInternalsPresenceHandler::Initialize(const base::ListValue& args) {
   AllowJavascript();
 }
 
 void NearbyInternalsPresenceHandler::HandleStartPresenceScan(
-    const base::Value::List& args) {
+    const base::ListValue& args) {
   ash::nearby::presence::NearbyPresenceService* service =
       ash::nearby::presence::NearbyPresenceServiceFactory::GetForBrowserContext(
           context_);
@@ -166,12 +165,12 @@ void NearbyInternalsPresenceHandler::HandleStartPresenceScan(
 }
 
 void NearbyInternalsPresenceHandler::HandleStopPresenceScan(
-    const base::Value::List& args) {
+    const base::ListValue& args) {
   scan_session_.reset();
 }
 
 void NearbyInternalsPresenceHandler::HandleSyncPresenceCredentials(
-    const base::Value::List& args) {
+    const base::ListValue& args) {
   ash::nearby::presence::NearbyPresenceService* service =
       ash::nearby::presence::NearbyPresenceServiceFactory::GetForBrowserContext(
           context_);
@@ -183,7 +182,7 @@ void NearbyInternalsPresenceHandler::HandleSyncPresenceCredentials(
 }
 
 void NearbyInternalsPresenceHandler::HandleFirstTimePresenceFlow(
-    const base::Value::List& args) {
+    const base::ListValue& args) {
   ash::nearby::presence::NearbyPresenceService* service =
       ash::nearby::presence::NearbyPresenceServiceFactory::GetForBrowserContext(
           context_);
@@ -258,13 +257,13 @@ void NearbyInternalsPresenceHandler::OnScanSessionInvalidated() {
 }
 
 void NearbyInternalsPresenceHandler::HandleConnectToPresenceDevice(
-    const base::Value::List& args) {
+    const base::ListValue& args) {
   const std::string& endpoint_id = args[0].GetString();
   CD_LOG(VERBOSE, Feature::NEARBY_INFRA)
       << __func__
       << ": Connection attempt for device with endpoint id: " << endpoint_id;
 
-  if (!base::Contains(endpoint_id_to_presence_device_map_, endpoint_id)) {
+  if (!endpoint_id_to_presence_device_map_.contains(endpoint_id)) {
     CD_LOG(WARNING, Feature::NEARBY_INFRA)
         << __func__ << ": Received endpoint_id for device no longer in map.";
     return;
@@ -295,7 +294,7 @@ void NearbyInternalsPresenceHandler::OnConnection(
 }
 
 void NearbyInternalsPresenceHandler::HandleSendUpdateCredentialsMessage(
-    const base::Value::List& args) {
+    const base::ListValue& args) {
   push_notification::PushNotificationService* service =
       push_notification::PushNotificationServiceFactory::GetForBrowserContext(
           context_);

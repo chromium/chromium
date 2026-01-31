@@ -59,11 +59,6 @@ SensorsSettings:
   - DefaultSensorsSetting
   - SensorsAllowedForUrls
   - SensorsBlockedForUrls
-ThirdPartyStoragePartitioningSettings:
-  caption: Third-party storage partitioning settings
-  policies:
-  - DefaultThirdPartyStoragePartitioningSetting
-  - ThirdPartyStoragePartitioningBlockedForOrigins
 WebUsbSettings:
   caption: Web USB settings
   policies:

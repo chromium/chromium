@@ -9,7 +9,6 @@
 #include <utility>
 
 #include "base/check.h"
-#include "base/containers/contains.h"
 #include "base/files/file_path.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/path_service.h"
@@ -35,6 +34,7 @@
 #include "chrome/browser/web_applications/test/web_app_test_utils.h"
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_command_manager.h"
+#include "chrome/browser/web_applications/web_app_filter.h"
 #include "chrome/browser/web_applications/web_app_icon_generator.h"
 #include "chrome/browser/web_applications/web_app_icon_manager.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
@@ -366,7 +366,8 @@ IN_PROC_BROWSER_TEST_F(CreateShortcutBrowserTest, InstallOverTabShortcutApp) {
   NavigateViaLinkClickToURLAndWait(browser(), GetInstallableAppURL());
   webapps::AppId app_installed_from_menu = InstallDiyAppForCurrentUrl();
 
-  EXPECT_TRUE(registrar().IsDiyApp(app_installed_from_menu));
+  EXPECT_FALSE(registrar().AppMatches(app_installed_from_menu,
+                                      WebAppFilter::IsCraftedApp()));
 
   Browser* new_browser =
       NavigateInNewWindowAndAwaitInstallabilityCheck(GetInstallableAppURL());
@@ -379,7 +380,7 @@ IN_PROC_BROWSER_TEST_F(CreateShortcutBrowserTest, InstallOverTabShortcutApp) {
   webapps::AppId web_app_id = test::InstallPwaForCurrentUrl(new_browser);
 
   EXPECT_EQ(app_installed_from_menu, web_app_id);
-  EXPECT_FALSE(registrar().IsDiyApp(web_app_id));
+  EXPECT_TRUE(registrar().AppMatches(web_app_id, WebAppFilter::IsCraftedApp()));
 }
 
 }  // namespace web_app

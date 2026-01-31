@@ -60,8 +60,7 @@ FakeScannerProfileScopedDelegate::GetGoogleApisRequestSender() {
     CHECK(test_server_->Start());
 
     gaia_urls_overrider_ = std::make_unique<GaiaUrlsOverriderForTesting>(
-        base::CommandLine::ForCurrentProcess(), "people_api_origin_url",
-        test_server_->base_url().spec());
+        "people_api_origin_url", test_server_->base_url().spec());
 
     CHECK_EQ(test_server_->base_url(),
              GaiaUrls::GetInstance()->people_api_origin_url());

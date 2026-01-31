@@ -19,7 +19,7 @@ class DevicePostureRegistryWatcherWinTest : public testing::Test {
   ~DevicePostureRegistryWatcherWinTest() override = default;
 
   static std::optional<std::vector<gfx::Rect>> ParseViewportSegments(
-      const base::Value::List& viewport_segments) {
+      const base::ListValue& viewport_segments) {
     return DevicePostureRegistryWatcherWin::ParseViewportSegments(
         viewport_segments);
   }
@@ -52,7 +52,7 @@ TEST_F(DevicePostureRegistryWatcherWinTest, ValidPostureData) {
 }
 
 TEST_F(DevicePostureRegistryWatcherWinTest, InvalidViewportSegmentsData) {
-  base::Value::List list;
+  base::ListValue list;
   std::optional<std::vector<gfx::Rect>> result_viewport_segments =
       ParseViewportSegments(list);
   EXPECT_FALSE(result_viewport_segments);
@@ -151,7 +151,7 @@ TEST_F(DevicePostureRegistryWatcherWinTest, InvalidViewportSegmentsData) {
 
 TEST_F(DevicePostureRegistryWatcherWinTest, ValidViewportSegmentsData) {
   std::optional<std::vector<gfx::Rect>> result_viewport_segments;
-  base::Value::List list = base::test::ParseJsonList(R"([
+  base::ListValue list = base::test::ParseJsonList(R"([
     "132, 123, 123, 123"
   ])");
   result_viewport_segments = ParseViewportSegments(list);

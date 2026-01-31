@@ -23,7 +23,7 @@ chromium-metrics-reviews@google.com.
 <histograms>
 
 <histogram name="Session.Android.TabbedSessionContainedGoogleSearch"
-    enum="Boolean" expires_after="2026-05-03">
+    enum="Boolean" expires_after="2026-07-05">
   <owner>nafisabedin@google.com</owner>
   <owner>yfriedman@chromium.org</owner>
   <summary>
@@ -35,7 +35,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Session.Background.TotalDuration" units="ms"
-    expires_after="2026-04-26">
+    expires_after="2026-06-28">
   <owner>asvitkine@chromium.org</owner>
   <owner>src/base/metrics/OWNERS</owner>
   <summary>
@@ -49,7 +49,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Session.BrowserFullscreen.DurationUpTo24H" units="ms"
-    expires_after="2026-05-24">
+    expires_after="2026-07-26">
   <owner>avi@chromium.org</owner>
   <owner>chrome-mac-dev@google.com</owner>
   <summary>
@@ -79,10 +79,13 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Session.IsActive" enum="BooleanActive"
-    expires_after="2026-05-03">
+    expires_after="2026-07-05">
   <owner>rogerm@chromium.org</owner>
   <owner>src/base/metrics/OWNERS</owner>
   <summary>
+    Warning: This histogram is broken on Android, please use Session.IsActive2
+    there instead.
+
     Was a browsing session active when the UMA record was captured? This metric
     is recorded with every UMA log upload when the session tracker is running
     (which, in principle, should always be the case). This metric is NOT
@@ -97,8 +100,30 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Session.IsActive2" enum="BooleanActive"
+    expires_after="2026-07-05">
+  <owner>rogerm@chromium.org</owner>
+  <owner>src/base/metrics/OWNERS</owner>
+  <summary>
+    Fixes an issue with Session.IsActive where foreground Sessions were not
+    marked as active on Android.
+
+    Was a browsing session active when the UMA record was captured? This metric
+    is recorded with every UMA log upload when the session tracker is running
+    (which, in principle, should always be the case). This metric is NOT
+    recorded in logs that reflect information from a previous session (i.e.,
+    &quot;stability logs&quot; or &quot;persistent UMA&quot; data related to the
+    previous session but not uploaded during the previous session).
+
+    Recorded only on Android.
+
+    For information on what's considered &quot;active&quot;, see the histogram
+    description for Session.TotalDuration.
+  </summary>
+</histogram>
+
 <histogram name="Session.OpenedTabCounts" units="operations"
-    expires_after="2026-05-03">
+    expires_after="2026-07-05">
   <owner>rohitrao@chromium.org</owner>
   <owner>marq@chromium.org</owner>
   <summary>
@@ -928,7 +953,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Session.TotalDurationMax1Day.{HistorySyncState}" units="ms"
-    expires_after="2026-05-17">
+    expires_after="2026-07-19">
   <owner>mastiz@chromium.org</owner>
   <owner>msarda@chromium.org</owner>
   <owner>treib@chromium.org</owner>
@@ -972,7 +997,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Session.TotalDurationMax1Day.{MsbbState}" units="ms"
-    expires_after="2026-05-17">
+    expires_after="2026-07-19">
   <owner>mastiz@chromium.org</owner>
   <owner>msarda@chromium.org</owner>
   <owner>treib@chromium.org</owner>
@@ -1180,7 +1205,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SessionRestore.ForegroundTabFirstPaint4.FinishReason"
-    enum="SessionRestoreFinishReason" expires_after="2026-04-26">
+    enum="SessionRestoreFinishReason" expires_after="2026-06-28">
   <owner>joenotcharles@google.com</owner>
   <owner>catan-team@chromium.org</owner>
   <summary>
@@ -1195,7 +1220,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="SessionRestore.ForegroundTabFirstPaint4{SessionRestoreTabCounts}"
-    units="ms" expires_after="2026-04-26">
+    units="ms" expires_after="2026-06-28">
   <owner>joenotcharles@google.com</owner>
   <owner>catan-team@chromium.org</owner>
   <improvement direction="LOWER_IS_BETTER"/>
@@ -1241,7 +1266,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SessionRestore.PageStateOldVersions" units="version"
-    expires_after="2026-04-26">
+    expires_after="2026-06-28">
   <owner>creis@chromium.org</owner>
   <owner>chrome-security-architecture@google.com</owner>
   <summary>
@@ -1254,7 +1279,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SessionRestore.TabCount{TabType}" units="tabs"
-    expires_after="2026-05-03">
+    expires_after="2026-07-05">
   <owner>joenotcharles@google.com</owner>
   <owner>catan-team@chromium.org</owner>
   <summary>
@@ -1274,12 +1299,6 @@ chromium-metrics-reviews@google.com.
         summary="tabs with background notification permission"/>
     <variant name=".Grouped" summary="tabs that are part of tab groups"/>
     <variant name=".InternalPage" summary="tabs hosting internal WebUI pages"/>
-    <variant name=".LowSiteEngagement"
-        summary="tabs with site engagement below the restore threshold"/>
-    <variant name=".LowSiteEngagementWithBackgroundCommunication"
-        summary="tabs with LowSiteEngagement but either
-                 BackgroundNotificationPermission or
-                 UpdatesTitleOrFaviconInBackground"/>
     <variant name=".Pinned" summary="pinned tabs"/>
     <variant name=".UpdatesTitleOrFaviconInBackground"
         summary="tabs that update their title or favicon in the background"/>

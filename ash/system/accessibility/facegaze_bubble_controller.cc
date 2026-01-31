@@ -24,9 +24,15 @@ constexpr base::TimeDelta kShowTimeout = base::Seconds(1);
 
 FaceGazeBubbleController::FaceGazeBubbleController(
     const base::RepeatingCallback<void()>& on_close_button_clicked)
-    : on_close_button_clicked_(std::move(on_close_button_clicked)) {}
+    : on_close_button_clicked_(std::move(on_close_button_clicked)) {
+  display::Screen::Get()->AddObserver(this);
+}
 
 FaceGazeBubbleController::~FaceGazeBubbleController() {
+  if (display::Screen::Get()) {
+    display::Screen::Get()->RemoveObserver(this);
+  }
+
   show_timer_.Stop();
   if (widget_ && !widget_->IsClosed()) {
     widget_->CloseNow();
@@ -42,6 +48,15 @@ void FaceGazeBubbleController::OnViewIsDeleting(views::View* observed_view) {
   facegaze_bubble_view_->views::View::RemoveObserver(this);
   facegaze_bubble_view_ = nullptr;
   widget_ = nullptr;
+}
+
+void FaceGazeBubbleController::OnDisplayMetricsChanged(
+    const display::Display& display,
+    uint32_t changed_metrics) {
+  if (changed_metrics & DISPLAY_METRIC_ROTATION) {
+    // Update the bubble position when the display is rotated.
+    UpdatePosition();
+  }
 }
 
 void FaceGazeBubbleController::UpdateBubble(const std::u16string& text,
@@ -79,7 +94,10 @@ void FaceGazeBubbleController::Update(const std::u16string& text,
   }
 
   facegaze_bubble_view_->Update(text, is_warning);
+  UpdatePosition();
+}
 
+void FaceGazeBubbleController::UpdatePosition() {
   const gfx::Rect primary_work_area =
       display::Screen::Get()->GetPrimaryDisplay().work_area();
   const gfx::Size work_area_size = primary_work_area.size();

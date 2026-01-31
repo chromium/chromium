@@ -11,6 +11,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/trace_event/trace_event.h"
 #include "components/viz/service/display/delegated_ink_trail_data.h"
+#include "third_party/perfetto/include/perfetto/tracing/track_event_args.h"
 
 namespace viz {
 
@@ -41,11 +42,10 @@ void DelegatedInkPointRendererBase::SetDelegatedInkMetadata(
   const bool metadata_is_new = previous_metadata_ != *metadata_;
   previous_metadata_ = *metadata_;
 
-  TRACE_EVENT_WITH_FLOW1(
-      "delegated_ink_trails",
-      "DelegatedInkPointRendererBase::SetDelegatedInkMetadata",
-      TRACE_ID_GLOBAL(metadata_->trace_id()), TRACE_EVENT_FLAG_FLOW_IN,
-      "metadata", metadata_->ToString());
+  TRACE_EVENT("delegated_ink_trails",
+              "DelegatedInkPointRendererBase::SetDelegatedInkMetadata",
+              perfetto::TerminatingFlow::Global(metadata_->trace_id()),
+              "metadata", metadata_->ToString());
 
   // If we already have a cached pointer ID, check if the same pointer ID
   // matches the new metadata.
@@ -131,9 +131,9 @@ DelegatedInkPointRendererBase::FilterPoints() {
   std::vector<gfx::DelegatedInkPoint> points_to_draw;
   for (const auto& [_, point] : trail_data.GetPoints()) {
     points_to_draw.emplace_back(point);
-    TRACE_EVENT_WITH_FLOW1("delegated_ink_trails", "Filtering to draw point",
-                           TRACE_ID_GLOBAL(point.trace_id()),
-                           TRACE_EVENT_FLAG_FLOW_IN, "point", point.ToString());
+    TRACE_EVENT("delegated_ink_trails", "Filtering to draw point",
+                perfetto::TerminatingFlow::Global(point.trace_id()), "point",
+                point.ToString());
   }
 
   if (!points_to_draw.front().MatchesDelegatedInkMetadata(metadata_.get())) {
@@ -205,12 +205,10 @@ void DelegatedInkPointRendererBase::ReportPointsDrawn() {
 
 void DelegatedInkPointRendererBase::StoreDelegatedInkPoint(
     const gfx::DelegatedInkPoint& point) {
-  TRACE_EVENT_WITH_FLOW1(
-      "delegated_ink_trails",
-      "DelegatedInkPointRendererImpl::StoreDelegatedInkPoint",
-      TRACE_ID_GLOBAL(point.trace_id()),
-      TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT, "point",
-      point.ToString());
+  TRACE_EVENT("delegated_ink_trails",
+              "DelegatedInkPointRendererImpl::StoreDelegatedInkPoint",
+              perfetto::Flow::Global(point.trace_id()), "point",
+              point.ToString());
 
   pointer_ids_[point.pointer_id()].AddPoint(point);
 }

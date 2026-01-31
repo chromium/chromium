@@ -8,13 +8,13 @@
 #import <Foundation/Foundation.h>
 
 @class AccountPickerTable;
-@class AccountInfo;
+@class ShareExtensionAccountInfo;
 
 // Delegate protocol for `AccountPickerTable`.
 @protocol AccountPickerDelegate
 
 - (void)didSelectAccountInTable:(AccountPickerTable*)table
-                selectedAccount:(AccountInfo*)selectedAccount;
+                selectedAccount:(ShareExtensionAccountInfo*)selectedAccount;
 
 @end
 

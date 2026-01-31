@@ -12,7 +12,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/containers/contains.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/time/time.h"
@@ -207,7 +206,7 @@ void HistoryURLVisitDataFetcher::OnGotAnnotatedVisits(
   for (auto& annotated_visit : annotated_visits) {
     Source current_visit_source = GetVisitSource(
         sync_device_info, annotated_visit, device_info_sync_service_);
-    if (!base::Contains(requested_fetch_sources, current_visit_source)) {
+    if (!std::ranges::contains(requested_fetch_sources, current_visit_source)) {
       continue;
     }
 

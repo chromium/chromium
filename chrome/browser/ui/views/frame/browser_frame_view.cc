@@ -41,6 +41,7 @@
 #include "ui/gfx/scoped_canvas.h"
 #include "ui/views/background.h"
 #include "ui/views/controls/label.h"
+#include "ui/views/layout/layout_types.h"
 #include "ui/views/view.h"
 #include "ui/views/view_class_properties.h"
 #include "ui/views/window/hit_test_utils.h"
@@ -175,11 +176,8 @@ bool BrowserFrameView::CaptionButtonsOnTrailingEdge() const {
   return !CaptionButtonsOnLeadingEdge();
 }
 
-void BrowserFrameView::LayoutWebAppWindowTitle(
-    const gfx::Rect& available_space,
-    views::Label& window_title_label) const {
-  // Default is no title.
-  window_title_label.SetVisible(false);
+views::LayoutAlignment BrowserFrameView::GetWindowTitleAlignment() const {
+  return views::LayoutAlignment::kStart;
 }
 
 void BrowserFrameView::UpdateFullscreenTopUI() {}
@@ -307,25 +305,16 @@ void BrowserFrameView::PaintAsActiveChanged() {
   SchedulePaint();
 }
 
+ClientFrameElementInfo BrowserFrameView::GetClientFrameElementInfo() const {
+  if (auto* const browser_view = GetBrowserView()) {
+    return browser_view->GetFrameElementInfo();
+  }
+  return ClientFrameElementInfo();
+}
+
 BrowserFrameView::BoundsAndMargins BrowserFrameView::GetCaptionButtonBounds()
     const {
-  // This is a hacky solution that uses existing logic to compute bounds.
-  // It should ideally be overridden with platform-appropriate code.
-  const int fallback_height = TabStyle::Get()->GetStandardHeight();
-  const gfx::Rect proposed_tabstrip_bounds =
-      GetBoundsForTabStripRegion(gfx::Size(0, fallback_height));
-  gfx::RectF bounds;
-  if (CaptionButtonsOnLeadingEdge()) {
-    bounds = gfx::RectF(0, 0, proposed_tabstrip_bounds.x(),
-                        proposed_tabstrip_bounds.bottom());
-  } else {
-    const float x = proposed_tabstrip_bounds.right();
-    bounds = gfx::RectF(x, 0, width() - x, proposed_tabstrip_bounds.bottom());
-  }
-  // Because we only have the tabstrip region bounds to work from, it is not
-  // possible to determine which part of the region is button and which is
-  // padding; therefore assume all of it is button.
-  return BoundsAndMargins{bounds};
+  return BoundsAndMargins();
 }
 
 bool BrowserFrameView::ShouldPaintAsActiveForState(
@@ -404,17 +393,10 @@ void BrowserFrameView::OnGestureEvent(ui::GestureEvent* event) {
 }
 
 int BrowserFrameView::GetSystemMenuY() const {
-  if (!GetBrowserView()->GetTabStripVisible()) {
-    return GetTopInset(false);
-  }
-
-  // TODO(crbug.com/437915662): Find an alternative way to get the starting Y
-  // position when in vertical tabs mode since the top element will now be the
-  // toolbar instead of the tabstrip.
-  return GetBoundsForTabStripRegion(
-             GetBrowserView()->tab_strip_view()->GetMinimumSize())
-             .bottom() -
-         GetLayoutConstant(TABSTRIP_TOOLBAR_OVERLAP);
+  return GetTopInset(false) +
+         std::max(
+             0, GetClientFrameElementInfo().tabstrip_preferred_height -
+                    GetLayoutConstant(LayoutConstant::kTabstripToolbarOverlap));
 }
 #endif  // BUILDFLAG(IS_WIN)
 

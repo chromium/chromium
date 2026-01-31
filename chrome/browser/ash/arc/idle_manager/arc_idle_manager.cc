@@ -15,13 +15,15 @@
 #include "chrome/browser/ash/arc/idle_manager/arc_window_observer.h"
 #include "chromeos/ash/components/dbus/patchpanel/patchpanel_client.h"
 #include "chromeos/ash/experiences/arc/arc_browser_context_keyed_service_factory_base.h"
-#include "chromeos/ash/experiences/arc/arc_features.h"
 #include "chromeos/ash/experiences/arc/mojom/power.mojom.h"
 #include "chromeos/ash/experiences/arc/session/arc_bridge_service.h"
 
 namespace arc {
 
 namespace {
+
+// Constant value for idle-manager's "enable_delay_".
+constexpr base::TimeDelta kArcIdleManagerDelay = base::Seconds(360);
 
 class DefaultDelegateImpl : public ArcIdleManager::Delegate {
  public:
@@ -86,14 +88,12 @@ ArcIdleManager::ArcIdleManager(content::BrowserContext* context,
   AddObserver(std::make_unique<ArcCpuThrottleObserver>());
   AddObserver(std::make_unique<ArcBackgroundServiceObserver>());
   AddObserver(std::make_unique<ArcWindowObserver>());
-  if (kEnableArcIdleManagerIgnoreBatteryForPLT.Get()) {
-    LOG(WARNING) << "Doze will be enabled regardless of battery status";
-  } else {
-    AddObserver(std::make_unique<ArcOnBatteryObserver>());
-  }
+  // For test purposes, ignore battery status changes, allowing Doze mode to
+  // kick in even if we do not receive powerd changes related to battery.
+  LOG(WARNING) << "Doze will be enabled regardless of battery status";
   AddObserver(std::make_unique<ArcDisplayPowerObserver>());
 
-  enable_delay_ = base::Milliseconds(kEnableArcIdleManagerDelayMs.Get());
+  enable_delay_ = kArcIdleManagerDelay;
 
   arc_power_bridge_ = ArcPowerBridge::GetForBrowserContext(context);
 
@@ -179,7 +179,7 @@ void ArcIdleManager::OnPowerStateChanged(
     }
   } else {
     // Display is ON.
-    enable_delay_ = base::Milliseconds(kEnableArcIdleManagerDelayMs.Get());
+    enable_delay_ = kArcIdleManagerDelay;
   }
 }
 
@@ -204,7 +204,7 @@ void ArcIdleManager::ThrottleInstance(bool should_throttle) {
   } else {
     bool is_running = enable_timer_.IsRunning();
     enable_timer_.Stop();
-    if (!(is_running && !kEnableArcIdleManagerPendingIdleReactivate.Get())) {
+    if (!is_running) {
       // Disable Doze mode should execute immediately, otherwise app launch may
       // be blocked.
       RequestDoze(false);

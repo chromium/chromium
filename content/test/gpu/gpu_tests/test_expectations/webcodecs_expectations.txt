@@ -66,6 +66,7 @@
 #         mesa_ge_23.2
 #         mesa_ge_24.2
 #         nvidia_ge_31.0.15.4601 nvidia_lt_31.0.15.4601
+#         nvidia_ge_32.0.15.8180 nvidia_lt_32.0.15.8180
 #         nvidia_ge_535.183.01 nvidia_lt_535.183.01 ]
 # ASan
 # tags: [ asan no-asan ]
@@ -284,9 +285,6 @@ crbug.com/417899571 [ angle-metal intel-0x3e9b no-asan sequoia ] WebCodecs_SVC_a
 crbug.com/417899571 [ angle-metal intel-0x3e9b no-asan sequoia ] WebCodecs_SVC_vp09.00.10.08_prefer-software_layers_* [ Failure ]
 crbug.com/417899571 [ angle-metal graphite-enabled intel-0x3e9b no-asan sequoia ] WebCodecs_SVC_av01.0.04M.08_prefer-software_layers_2 [ Failure ]
 
-#Mac Intel WebCodecs Flakes
-crbug.com/446649135 [ angle-metal graphite-enabled intel-0x3e9b no-asan sequoia ] WebCodecs_EncodingRateControl_av01.0.04M.08_prefer-software_constant_3000000 [ Failure ]
-crbug.com/446649135 [ angle-metal graphite-enabled intel-0x3e9b no-asan sequoia ] WebCodecs_EncodingRateControl_avc1.420034_prefer-software_constant_3000000 [ Failure ]
 
 # Pixel 10
 crbug.com/447317875 [ android mobile android-pixel-10 ] WebCodecs_EncodingRateControl_av01.0.04M.08_prefer-hardware_constant_1500000 [ Failure ]
@@ -339,6 +337,16 @@ crbug.com/452841787 [ win11 qualcomm-0x36334330 ] WebCodecs_FrameSizeChange_av01
 crbug.com/465527389 [ chromeos chromeos-board-amd64-generic ] WebCodecs_copyTo_offscreen [ Failure ]
 crbug.com/465527389 [ chromeos chromeos-board-amd64-generic ] WebCodecs_EncodeDecode_capture_vp8_prefer-software [ Failure ]
 crbug.com/465527389 [ chromeos chromeos-board-amd64-generic ] WebCodecs_EncodeDecode_capture_avc1.42001E_prefer-software [ Failure ]
+
+# Flakily times out on M2 devices.
+crbug.com/473593123 [ mac apple-angle-metal-renderer:-apple-m2 ] WebCodecs_Encode_camera_hvc1.1.6.L123.00_prefer-software [ Failure ]
+crbug.com/473593123 [ mac apple-angle-metal-renderer:-apple-m2 ] WebCodecs_EncodingRateControl_hvc1.1.6.L123.00_prefer-software_constant_1500000 [ Failure ]
+crbug.com/473593123 [ mac apple-angle-metal-renderer:-apple-m2 ] WebCodecs_EncodingRateControl_hvc1.1.6.L123.00_prefer-software_constant_2000000 [ Failure ]
+crbug.com/473593123 [ mac apple-angle-metal-renderer:-apple-m2 ] WebCodecs_EncodingRateControl_hvc1.1.6.L123.00_prefer-software_constant_3000000 [ Failure ]
+crbug.com/473593123 [ mac apple-angle-metal-renderer:-apple-m2 ] WebCodecs_EncodingRateControl_hvc1.1.6.L123.00_prefer-software_variable_1500000 [ Failure ]
+
+# Mac ASAN Intel flaky timeouts
+crbug.com/476389233 [ mac intel-0x3e9b asan angle-opengl graphite-disabled ] WebCodecs_EncodingRateControl_hvc1.1.6.L123.00_prefer-software_* [ Slow ]
 
 #######################################################################
 # Automated Entries After This Point - Do Not Manually Add Below Here #

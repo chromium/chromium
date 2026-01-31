@@ -30,6 +30,10 @@ BASE_FEATURE(kWebViewBypassHttpCacheForPrefetchFromHeader,
 BASE_FEATURE(kWebViewConfigurableLibraryPrefetch,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Enables content restriction support in WebView.
+BASE_FEATURE(kWebViewContentRestrictionSupport,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enable JS FileSystemAccess API.
 // This flag is set by WebView internal code based on an app's targetSdkVersion.
 // It is enabled for version B+. The default value here is not relevant, and is
@@ -46,6 +50,11 @@ BASE_FEATURE(kWebViewIgnoreDuplicateNavs, base::FEATURE_DISABLED_BY_DEFAULT);
 // Fetch Hand Writing icon lazily.
 BASE_FEATURE(kWebViewLazyFetchHandWritingIcon,
              base::FEATURE_ENABLED_BY_DEFAULT);
+
+// When enabled, cookie policy settings are captured at RestrictedCookieManager
+// creation time and used throughout its lifetime. This enables shared memory
+// cookie versioning to reduce IPC overhead.
+BASE_FEATURE(kWebViewLatchedCookiePolicy, base::FEATURE_DISABLED_BY_DEFAULT);
 
 // When enabled, passive mixed content (Audio/Video/Image subresources loaded
 // over HTTP on HTTPS sites) will be autoupgraded to HTTPS, and the load will be
@@ -124,11 +133,6 @@ BASE_FEATURE(kWebViewWebauthn, base::FEATURE_ENABLED_BY_DEFAULT);
 // iff both this feature flag and the content/public kRenderDocument flag is
 // enabled.
 BASE_FEATURE(kWebViewRenderDocument, base::FEATURE_DISABLED_BY_DEFAULT);
-
-// When enabled, WebView disables MSAA and doesn't auto sharpen mip-mapped
-// textures on very large screen devices (such as TVs). The exact criteria for
-// what qualifies for this can be found in AwGrContextOptionsProvider.java.
-BASE_FEATURE(kWebViewUseRenderingHeuristic, base::FEATURE_ENABLED_BY_DEFAULT);
 
 // When enabled, webview chromium initialization uses the startup tasks logic
 // where it runs the startup tasks asynchronously if startup is triggered from a
@@ -252,9 +256,24 @@ BASE_FEATURE(kWebViewPersistentMetricsInNoBackupDir,
 BASE_FEATURE(kPrerender2WarmUpCompositorForWebView,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Keeps the renderer process alive after the last WebView is destroyed to
+// allow for reuse.
+BASE_FEATURE(kWebViewRendererKeepAlive, base::FEATURE_DISABLED_BY_DEFAULT);
+
+const base::FeatureParam<base::TimeDelta> kWebViewRendererKeepAliveDuration{
+    &kWebViewRendererKeepAlive, "webview_renderer_keep_alive_duration",
+    base::Seconds(30)};
+
 // Enables fetching the Origin Trials configuration update component in the
 // embedded WebView.
 BASE_FEATURE(kWebViewFetchOriginTrialsComponent,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Enables recording user actions for API calls.
+BASE_FEATURE(kWebViewEnableApiCallUserActions,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Kill switch for reporting web performance metrics.
+BASE_FEATURE(kWebViewWebPerformanceMetricsReporting,
+             base::FEATURE_ENABLED_BY_DEFAULT);
 }  // namespace android_webview::features

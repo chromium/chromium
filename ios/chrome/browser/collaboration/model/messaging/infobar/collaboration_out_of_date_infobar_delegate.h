@@ -10,14 +10,14 @@
 #import "components/infobars/core/confirm_infobar_delegate.h"
 
 class ProfileIOS;
-@protocol ApplicationCommands;
+@protocol SceneCommands;
 
 // Shows an out-of-date message related to shared tab groups support in an
 // infobar.
 class CollaborationOutOfDateInfoBarDelegate : public ConfirmInfoBarDelegate {
  public:
   explicit CollaborationOutOfDateInfoBarDelegate(
-      id<ApplicationCommands> application_commands_handler);
+      id<SceneCommands> scene_handler);
 
   CollaborationOutOfDateInfoBarDelegate(
       const CollaborationOutOfDateInfoBarDelegate&) = delete;
@@ -41,7 +41,7 @@ class CollaborationOutOfDateInfoBarDelegate : public ConfirmInfoBarDelegate {
   ui::ImageModel GetIcon() const override;
 
  private:
-  id<ApplicationCommands> application_commands_handler_;
+  id<SceneCommands> scene_handler_;
 };
 
 #endif  // IOS_CHROME_BROWSER_COLLABORATION_MODEL_MESSAGING_INFOBAR_COLLABORATION_OUT_OF_DATE_INFOBAR_DELEGATE_H_

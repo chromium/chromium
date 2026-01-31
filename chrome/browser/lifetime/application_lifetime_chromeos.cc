@@ -150,7 +150,7 @@ bool UpdatePending() {
 bool SetLocaleForNextStart(PrefService* local_state) {
   // If a policy mandates the login screen locale, use it.
   ash::CrosSettings* cros_settings = ash::CrosSettings::Get();
-  const base::Value::List* login_screen_locales = nullptr;
+  const base::ListValue* login_screen_locales = nullptr;
   if (cros_settings->GetList(ash::kDeviceLoginScreenLocales,
                              &login_screen_locales) &&
       !login_screen_locales->empty() &&

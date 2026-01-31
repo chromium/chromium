@@ -278,6 +278,8 @@ class LoginDisplayHostWebUI : public LoginDisplayHostCommon,
   base::ScopedObservation<session_manager::SessionManager,
                           session_manager::SessionManagerObserver>
       session_observation_{this};
+  base::ScopedObservation<SessionManagerClient, SessionManagerClient::Observer>
+      session_manager_client_observation_{this};
 
   display::ScopedDisplayObserver display_observer_{this};
 

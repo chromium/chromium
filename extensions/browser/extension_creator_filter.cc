@@ -9,7 +9,6 @@
 #include <algorithm>
 #include <vector>
 
-#include "base/containers/contains.h"
 #include "build/build_config.h"
 #include "extensions/common/constants.h"
 
@@ -46,7 +45,7 @@ bool ExtensionCreatorFilter::ShouldPackageFile(
       FILE_PATH_LITERAL(".svn"),        FILE_PATH_LITERAL("__MACOSX"),
       FILE_PATH_LITERAL("desktop.ini"), FILE_PATH_LITERAL("Thumbs.db")};
   for (const auto& component : file_path.GetComponents()) {
-    if (base::Contains(kNamesToExclude, component)) {
+    if (std::ranges::contains(kNamesToExclude, component)) {
       return false;
     }
   }

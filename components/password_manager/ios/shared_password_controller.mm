@@ -17,6 +17,7 @@
 #import "base/check_op.h"
 #import "base/containers/to_vector.h"
 #import "base/debug/crash_logging.h"
+#import "base/debug/dump_without_crashing.h"
 #import "base/feature_list.h"
 #import "base/functional/bind.h"
 #import "base/memory/raw_ptr.h"
@@ -50,6 +51,7 @@
 #import "components/autofill/ios/common/field_data_manager_factory_ios.h"
 #import "components/autofill/ios/form_util/form_activity_observer_bridge.h"
 #import "components/autofill/ios/form_util/form_activity_params.h"
+#import "components/password_manager/core/browser/passkey_credential.h"
 #import "components/password_manager/core/browser/password_bubble_experiment.h"
 #import "components/password_manager/core/browser/password_feature_manager.h"
 #import "components/password_manager/core/browser/password_generation_frame_helper.h"
@@ -64,6 +66,7 @@
 #import "components/password_manager/ios/password_manager_java_script_feature.h"
 #import "components/password_manager/ios/shared_password_controller+private.h"
 #import "components/strings/grit/components_strings.h"
+#import "components/webauthn/ios/passkey_suggestion_utils.h"
 #import "ios/web/common/url_scheme_util.h"
 #import "ios/web/public/js_messaging/web_frame.h"
 #import "ios/web/public/js_messaging/web_frames_manager.h"
@@ -100,6 +103,7 @@ using password_manager::PasswordGenerationFrameHelper;
 using password_manager::PasswordManagerClient;
 using password_manager::PasswordManagerDriver;
 using password_manager::PasswordManagerInterface;
+using password_manager::WebAuthnCredentialsDelegate;
 using password_manager::metrics_util::LogPasswordDropdownShown;
 using password_manager::metrics_util::PasswordDropdownState;
 
@@ -189,7 +193,7 @@ autofill::LocalFrameToken GetLocalFrameToken(web::WebFrame* frame) {
 
   // The WebState this instance is observing. Will be null after
   // -webStateDestroyed: has been called.
-  raw_ptr<web::WebState, DanglingUntriaged> _webState;
+  raw_ptr<web::WebState> _webState;
 
   PasswordControllerDriverHelper* _driverHelper;
 
@@ -413,6 +417,9 @@ autofill::LocalFrameToken GetLocalFrameToken(web::WebFrame* frame) {
   if (_webState->IsBeingDestroyed()) {
     return;
   }
+
+  [_suggestionHelper cleanupForFrameId:frameId];
+
   web::WebFramesManager* framesManager = [self webFramesManager];
   web::WebFrame* webFrame = framesManager->GetFrameWithId(frameId);
   if (!webFrame) {
@@ -456,6 +463,7 @@ autofill::LocalFrameToken GetLocalFrameToken(web::WebFrame* frame) {
   _lastFocusedFormIdentifier = FormRendererId();
   _lastFocusedFieldIdentifier = FieldRendererId();
   _lastFocusedFrame = nullptr;
+  _driverHelper = nil;
   _passwordManager = nullptr;
   _lastSubmittedPasswordManagerDriver = nullptr;
   _agentDelegate.reset();
@@ -641,37 +649,18 @@ autofill::LocalFrameToken GetLocalFrameToken(web::WebFrame* frame) {
     completion({}, self);
     return;
   }
-  NSArray<FormSuggestion*>* rawSuggestions =
-      [self.suggestionHelper retrieveSuggestionsWithForm:formQuery];
 
-  NSMutableArray<FormSuggestion*>* suggestions = [NSMutableArray array];
-  bool isPasswordField = [self.suggestionHelper isPasswordFieldOnForm:formQuery
-                                                             webFrame:frame];
-  for (FormSuggestion* rawSuggestion in rawSuggestions) {
-    // 1) If this is a focus event or the field is empty show all suggestions.
-    // Otherwise:
-    // 2) If this is a username field then show only credentials with matching
-    // prefixes.
-    // 3) If this is a password field then show suggestions only if
-    // the field is empty.
-    if (![formQuery hasFocusType] && formQuery.typedValue.length > 0 &&
-        (isPasswordField ||
-         ![rawSuggestion.value hasPrefix:formQuery.typedValue])) {
-      continue;
-    }
-    DCHECK(self.delegate.passwordManagerClient);
-    FormSuggestion* suggestion =
-        [FormSuggestion suggestionWithValue:rawSuggestion.value
-                         displayDescription:rawSuggestion.displayDescription
-                                       icon:nil
-                                       type:rawSuggestion.type
-                                    payload:autofill::Suggestion::Payload()
-                             requiresReauth:YES
-                 acceptanceA11yAnnouncement:nil
-                                   metadata:rawSuggestion.metadata];
-    [suggestions addObject:suggestion];
-  }
+  // Retrieve passkey and password suggestions.
+  NSArray<FormSuggestion*>* passkeySuggestions =
+      [self retrievePasskeySuggestionsForFrame:frame];
+  NSArray<FormSuggestion*>* passwordSuggestions =
+      [self retrievePasswordSuggestionsForFormQuery:formQuery frame:frame];
 
+  NSMutableArray<FormSuggestion*>* suggestions = [[NSMutableArray alloc]
+      initWithArray:webauthn::MergePasskeyAndPasswordSuggestions(
+                        passkeySuggestions, passwordSuggestions)];
+
+  // Add a password generation suggestion when appropriate.
   if (!formQuery.onlyPassword &&
       [self canGeneratePasswordForForm:formQuery.formRendererID
                        fieldIdentifier:formQuery.fieldRendererID
@@ -736,6 +725,29 @@ autofill::LocalFrameToken GetLocalFrameToken(web::WebFrame* frame) {
           password_manager::metrics_util::PasswordDropdownSelectedOption::
               kGenerate,
           [self IsOffTheRecord]);
+      return;
+    }
+    case autofill::SuggestionType::kWebauthnCredential: {
+      WebAuthnCredentialsDelegate* webAuthnCredentialsDelegate =
+          [self retrieveWebAuthnCredentialsDelegateForFrame:frame];
+      CHECK(webAuthnCredentialsDelegate);
+
+      // Get the encoded credential ID. Fall back to an empty ID if one wasn't
+      // added to the suggestion, which will result in deferring the passkey
+      // selection to the renderer.
+      const std::string encodedCredentialID =
+          std::holds_alternative<autofill::Suggestion::Guid>(suggestion.payload)
+              ? std::get<autofill::Suggestion::Guid>(suggestion.payload).value()
+              : std::string();
+
+      // An empty `encodedCredentialID` shouldn't cause a crash as there's a
+      // deferring mechanism in place, but it is unexpected.
+      if (encodedCredentialID.empty()) {
+        base::debug::DumpWithoutCrashing();
+      }
+
+      webAuthnCredentialsDelegate->SelectPasskey(encodedCredentialID,
+                                                 base::DoNothing());
       return;
     }
     default: {
@@ -1239,6 +1251,81 @@ autofill::LocalFrameToken GetLocalFrameToken(web::WebFrame* frame) {
       }
       break;
   }
+}
+
+// Retrieves the WebAuthnCredentialsDelegate from the PasswordManagerClient
+// for the given `frame`.
+- (WebAuthnCredentialsDelegate*)retrieveWebAuthnCredentialsDelegateForFrame:
+    (web::WebFrame*)frame {
+  PasswordManagerClient* passwordManagerClient =
+      self.delegate.passwordManagerClient;
+  CHECK(passwordManagerClient);
+
+  IOSPasswordManagerDriver* driver =
+      [_driverHelper PasswordManagerDriver:frame];
+  CHECK(driver);
+
+  return passwordManagerClient->GetWebAuthnCredentialsDelegateForDriver(driver);
+}
+
+// Retrieves passkey suggestions for the provided `frame`.
+- (NSArray<FormSuggestion*>*)retrievePasskeySuggestionsForFrame:
+    (web::WebFrame*)frame {
+  WebAuthnCredentialsDelegate* webAuthnCredentialsDelegate =
+      [self retrieveWebAuthnCredentialsDelegateForFrame:frame];
+  if (!webAuthnCredentialsDelegate) {
+    // No WebAuthnCredentialsDelegate means that passkeys are not supported.
+    return @[];
+  }
+
+  base::expected<const std::vector<password_manager::PasskeyCredential>*,
+                 WebAuthnCredentialsDelegate::PasskeysUnavailableReason>
+      passkeys = webAuthnCredentialsDelegate->GetPasskeys();
+  if (!passkeys.has_value()) {
+    // An unset `passkeys` vector means that no passkey request has been
+    // received.
+    return @[];
+  }
+
+  return webauthn::FormSuggestionsFromPasskeyCredentials(**passkeys);
+}
+
+// Retrieves password suggestions for the provided `formQuery` and `frame`.
+- (NSArray<FormSuggestion*>*)
+    retrievePasswordSuggestionsForFormQuery:
+        (FormSuggestionProviderQuery*)formQuery
+                                      frame:(web::WebFrame*)frame {
+  NSArray<FormSuggestion*>* rawSuggestions =
+      [self.suggestionHelper retrieveSuggestionsWithForm:formQuery];
+
+  NSMutableArray<FormSuggestion*>* suggestions = [NSMutableArray array];
+  bool isPasswordField = [self.suggestionHelper isPasswordFieldOnForm:formQuery
+                                                             webFrame:frame];
+  for (FormSuggestion* rawSuggestion in rawSuggestions) {
+    // 1) If this is a focus event or the field is empty show all suggestions.
+    // Otherwise:
+    // 2) If this is a username field then show only credentials with matching
+    // prefixes.
+    // 3) If this is a password field then show suggestions only if
+    // the field is empty.
+    if (![formQuery hasFocusType] && formQuery.typedValue.length > 0 &&
+        (isPasswordField ||
+         ![rawSuggestion.value hasPrefix:formQuery.typedValue])) {
+      continue;
+    }
+
+    FormSuggestion* suggestion =
+        [FormSuggestion suggestionWithValue:rawSuggestion.value
+                         displayDescription:rawSuggestion.displayDescription
+                                       icon:nil
+                                       type:rawSuggestion.type
+                                    payload:autofill::Suggestion::Payload()
+                             requiresReauth:YES
+                 acceptanceA11yAnnouncement:nil
+                                   metadata:rawSuggestion.metadata];
+    [suggestions addObject:suggestion];
+  }
+  return suggestions;
 }
 
 #pragma mark - FormActivityObserver

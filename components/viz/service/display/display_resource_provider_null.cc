@@ -17,12 +17,12 @@ DisplayResourceProviderNull::~DisplayResourceProviderNull() {
   Destroy();
 }
 
-std::vector<ReturnedResource>
+std::vector<ReturnedResourceViz>
 DisplayResourceProviderNull::DeleteAndReturnUnusedResourcesToChildImpl(
     Child& child_info,
     DeleteStyle style,
     const std::vector<ResourceId>& unused) {
-  std::vector<ReturnedResource> to_return;
+  std::vector<ReturnedResourceViz> to_return;
   to_return.reserve(unused.size());
 
   for (ResourceId local_id : unused) {

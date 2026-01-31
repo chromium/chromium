@@ -1,4 +1,10 @@
 features:
+- name: lang-attr
+  files:
+  - lang-attribute*
+  - lang-xmllang-01.html
+  - lang-xyzzy.html
+  - the-lang-attribute-*
 - name: style-attr
   files:
   - style-01.html
@@ -10,3 +16,8 @@ features:
 - name: title-attr
   files:
   - title-manual.html
+- name: dataset
+  files:
+  - dataset-*
+  - custom-attrs.html
+  - data_unicode_attr.html

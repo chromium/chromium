@@ -10,10 +10,16 @@
 
 namespace blink {
 
-enum class FitTextTarget : uint8_t {
+enum class FitTextType : uint8_t {
   kNone,
-  kPerLine,
+  kGrow,
+  kShrink,
+};
+
+enum class FitTextTarget : uint8_t {
   kConsistent,
+  kPerLine,
+  kPerLineAll,
 };
 
 enum class FitTextMethod : uint8_t {
@@ -28,29 +34,27 @@ class CORE_EXPORT FitText {
 
  public:
   FitText() = default;
-  FitText(FitTextTarget target,
-          std::optional<FitTextMethod> method,
-          std::optional<float> size_limit)
-      : target_(target), method_(method), size_limit_(size_limit) {}
+  FitText(FitTextType type, FitTextTarget target, std::optional<float> limit)
+      : type_(type), target_(target), scale_factor_limit_(limit) {}
 
   bool operator==(const FitText& other) const {
-    return target_ == other.target_ && method_ == other.method_ &&
-           size_limit_ == other.size_limit_;
+    return type_ == other.type_ && target_ == other.target_ &&
+           scale_factor_limit_ == other.scale_factor_limit_;
   }
 
+  FitTextType Type() const { return type_; }
   FitTextTarget Target() const { return target_; }
-  FitTextMethod Method() const {
-    return method_.value_or(FitTextMethod::kScale);
-  }
-  std::optional<float> SizeLimit() const { return size_limit_; }
+  FitTextMethod Method() const { return FitTextMethod::kScale; }
+  // This returns 1.0 for "100%".
+  std::optional<float> ScaleFactorLimit() const { return scale_factor_limit_; }
 
   // A debug helper.
   String ToString() const;
 
  private:
-  FitTextTarget target_ = FitTextTarget::kNone;
-  std::optional<FitTextMethod> method_;
-  std::optional<float> size_limit_;
+  FitTextType type_ = FitTextType::kNone;
+  FitTextTarget target_ = FitTextTarget::kConsistent;
+  std::optional<float> scale_factor_limit_;
 };
 
 }  // namespace blink

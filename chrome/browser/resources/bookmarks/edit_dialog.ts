@@ -13,9 +13,11 @@ import {getCss as getSharedStyleCss} from 'chrome://resources/cr_elements/cr_sha
 import {assert} from 'chrome://resources/js/assert.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
+import type {PropertyValues} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
 import {highlightUpdatedItems, trackUpdatedItems} from './api_listener.js';
 import {BookmarksApiProxyImpl} from './bookmarks_api_proxy.js';
+import {MAX_BOOKMARK_INPUT_LENGTH} from './constants.js';
 import {DialogFocusManager} from './dialog_focus_manager.js';
 import {getHtml} from './edit_dialog.html.js';
 import type {BookmarkNode} from './types.js';
@@ -67,6 +69,43 @@ export class BookmarksEditDialogElement extends CrLitElement {
   private accessor parentId_: string|null = null;
   protected accessor titleValue_: string = '';
   protected accessor urlValue_: string = '';
+
+  override firstUpdated(changedProperties: PropertyValues<this>) {
+    super.firstUpdated(changedProperties);
+    const urlInput = this.$.url;
+    const nameInput = this.$.name;
+    // Intercept paste for the URL and name textfields
+    // provide sanitized clipboard text
+    urlInput.addEventListener('paste', this.onPaste_.bind(this, urlInput));
+    nameInput.addEventListener('paste', this.onPaste_.bind(this, nameInput));
+  }
+
+  private onPaste_(inputComponent: CrInputElement, e: ClipboardEvent) {
+    const text = e.clipboardData?.getData('text/plain');
+    if (!text) {
+      return;
+    }
+
+    // Limit to 500KB to match Chrome address bar (Omnibox) behavior and
+    // prevent performance issues with extremely long strings.
+    if (text.length <= MAX_BOOKMARK_INPUT_LENGTH) {
+      return;
+    }
+
+    e.preventDefault();
+    const truncated = text.substring(0, MAX_BOOKMARK_INPUT_LENGTH);
+    // Insert the truncated text using setRangeText, which is the modern
+    // replacement for execCommand('insertText').
+    // Note: This may not preserve the undo history as robustly as execCommand
+    // in all cases, but it is the standard API.
+    const input = inputComponent.inputElement;
+    const start = input.selectionStart || 0;
+    const end = input.selectionEnd || 0;
+    input.setRangeText(truncated, start, end, 'end');
+    // Manually trigger input/change events so cr-input updates its value.
+    input.dispatchEvent(new Event('input', {bubbles: true, composed: true}));
+    input.dispatchEvent(new Event('change', {bubbles: true, composed: true}));
+  }
 
   /**
    * Show the dialog to add a new folder (if |isFolder|) or item, which will be
@@ -135,6 +174,13 @@ export class BookmarksEditDialogElement extends CrLitElement {
   validateUrl(): boolean {
     const urlInput = this.$.url;
 
+    // Early check for URL length
+    // avoid performance issues with extremely long URLs.
+    // Limit to 500KB to match Chrome address bar (Omnibox) behavior.
+    if (this.urlValue_.length > MAX_BOOKMARK_INPUT_LENGTH) {
+      return false;
+    }
+
     if (urlInput.validate()) {
       return true;
     }
@@ -156,8 +202,9 @@ export class BookmarksEditDialogElement extends CrLitElement {
   }
 
   protected onSaveButtonClick_() {
-    const edit: { title: string, url?: string, parentId?: string|null } =
-        { 'title': this.titleValue_ };
+    const edit: {title: string, url?: string, parentId?: string|null} = {
+      'title': this.titleValue_.substring(0, MAX_BOOKMARK_INPUT_LENGTH),
+    };
     if (!this.isFolder_) {
       if (!this.validateUrl()) {
         return;

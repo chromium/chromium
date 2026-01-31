@@ -9,7 +9,6 @@
 #include <set>
 #include <string>
 
-#include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "chrome/browser/ui/safety_hub/safety_hub_result.h"
@@ -114,7 +113,7 @@ void NotificationPermissionsReviewService::
     AddPatternToNotificationPermissionReviewBlocklist(
         const ContentSettingsPattern& primary_pattern,
         const ContentSettingsPattern& secondary_pattern) {
-  base::Value::Dict permission_dict;
+  base::DictValue permission_dict;
   permission_dict.Set(kExcludedKey, base::Value(true));
 
   hcsm_->SetWebsiteSettingCustomScope(
@@ -158,7 +157,7 @@ NotificationPermissionsReviewService::UpdateOnUIThread(
     }
 
     // Blocklisted permissions should not be in the review list.
-    if (base::Contains(ignored_patterns_set, pair)) {
+    if (ignored_patterns_set.contains(pair)) {
       continue;
     }
 
@@ -205,7 +204,7 @@ NotificationPermissionsReviewService::GetNotificationPermissions() {
       static_cast<NotificationPermissionsReviewResult*>(result.release()));
 }
 
-base::Value::List NotificationPermissionsReviewService::
+base::ListValue NotificationPermissionsReviewService::
     PopulateNotificationPermissionReviewData() {
   return (GetNotificationPermissions().get())->GetSortedListValueForUI();
 }

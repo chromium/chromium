@@ -7,6 +7,7 @@ package org.chromium.components.signin.base;
 import androidx.annotation.VisibleForTesting;
 
 import org.jni_zero.CalledByNative;
+import org.jni_zero.JNINamespace;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.components.signin.AccountCapabilitiesConstants;
@@ -21,6 +22,7 @@ import java.util.Map;
  * counterpart.
  */
 @NullMarked
+@JNINamespace("signin")
 public class AccountCapabilities {
     private final Map<String, Boolean> mAccountCapabilities;
 
@@ -100,34 +102,6 @@ public class AccountCapabilities {
     }
 
     /**
-     * @return canToggleAutoUpdates capability value.
-     */
-    public @Tribool int canToggleAutoUpdates() {
-        return getCapabilityByName(AccountCapabilitiesConstants.CAN_TOGGLE_AUTO_UPDATES_NAME);
-    }
-
-    /**
-     * @return canUseChromeIpProtection capability value.
-     */
-    public @Tribool int canUseChromeIpProtection() {
-        return getCapabilityByName(AccountCapabilitiesConstants.CAN_USE_CHROME_IP_PROTECTION_NAME);
-    }
-
-    /**
-     * @return canUseChromeOSGenerativeAi capability value.
-     */
-    public @Tribool int canUseChromeOSGenerativeAi() {
-        return getCapabilityByName(AccountCapabilitiesConstants.CAN_USE_CHROMEOS_GENERATIVE_AI);
-    }
-
-    /**
-     * @return canUseCopyeditorFeature capability value.
-     */
-    public @Tribool int canUseCopyeditorFeature() {
-        return getCapabilityByName(AccountCapabilitiesConstants.CAN_USE_COPYEDITOR_FEATURE_NAME);
-    }
-
-    /**
      * @return canUseDevToolsGenerativeAiFeatures capability value.
      */
     public @Tribool int canUseDevToolsGenerativeAiFeatures() {
@@ -145,19 +119,11 @@ public class AccountCapabilities {
     }
 
     /**
-     * @return canUseGenerativeAiInRecorderApp capability value.
+     * @return canUseGeminiInChromeCapability capability value.
      */
-    public @Tribool int canUseGenerativeAiInRecorderApp() {
+    public @Tribool int canUseGeminiInChromeCapability() {
         return getCapabilityByName(
-                AccountCapabilitiesConstants.CAN_USE_GENERATIVE_AI_IN_RECORDER_APP);
-    }
-
-    /**
-     * @return canUseGenerativeAiPhotoEditing capability value.
-     */
-    public @Tribool int canUseGenerativeAiPhotoEditing() {
-        return getCapabilityByName(
-                AccountCapabilitiesConstants.CAN_USE_GENERATIVE_AI_PHOTO_EDITING);
+                AccountCapabilitiesConstants.CAN_USE_GEMINI_IN_CHROME_CAPABILITY_NAME);
     }
 
     /**

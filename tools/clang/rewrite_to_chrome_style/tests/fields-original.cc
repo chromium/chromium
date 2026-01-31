@@ -41,8 +41,8 @@ class C {
 };
 
 struct Derived : public C {
-  using C::m_flagField;
   using C::m_fieldMentioningHTTPAndHTTPS;
+  using C::m_flagField;
 };
 
 int C::instanceCount = 0;

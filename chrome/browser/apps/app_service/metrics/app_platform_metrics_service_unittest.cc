@@ -24,7 +24,6 @@
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "base/unguessable_token.h"
-#include "chrome/browser/apps/app_service/app_launch_params.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/apps/app_service/metrics/app_platform_metrics.h"
@@ -57,6 +56,7 @@
 #include "components/metrics/structured/test/test_structured_metrics_provider.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
+#include "components/services/app_service/public/cpp/app_launch_params.h"
 #include "components/services/app_service/public/cpp/app_launch_util.h"
 #include "components/services/app_service/public/cpp/app_types.h"
 #include "components/services/app_service/public/cpp/instance.h"
@@ -486,7 +486,7 @@ class AppPlatformMetricsServiceTest : public AppPlatformMetricsServiceTestBase {
 
   void VerifyAppRunningDuration(const base::TimeDelta time_delta,
                                 AppTypeName app_type_name) {
-    const base::Value::Dict& dict =
+    const base::DictValue& dict =
         GetPrefService()->GetDict(kAppRunningDuration);
     std::string key = GetAppTypeHistogramName(app_type_name);
 
@@ -540,8 +540,7 @@ class AppPlatformMetricsServiceTest : public AppPlatformMetricsServiceTestBase {
   }
 
   void VerifyAppActivatedCount(int expected_count, AppTypeName app_type_name) {
-    const base::Value::Dict& dict =
-        GetPrefService()->GetDict(kAppActivatedCount);
+    const base::DictValue& dict = GetPrefService()->GetDict(kAppActivatedCount);
     std::string key = GetAppTypeHistogramName(app_type_name);
 
     std::optional<int> activated_count = dict.FindIntByDottedPath(key);
@@ -1970,8 +1969,8 @@ TEST_F(AppPlatformInputMetricsTest, KeyEvents) {
     counts.insert(
         *(test_ukm_recorder()->GetEntryMetric(entry, "AppInputEventCount")));
   }
-  EXPECT_TRUE(base::Contains(counts, 1));
-  EXPECT_TRUE(base::Contains(counts, 2));
+  EXPECT_TRUE(counts.contains(1));
+  EXPECT_TRUE(counts.contains(2));
 }
 
 TEST_F(AppPlatformInputMetricsTest, MultipleEvents) {

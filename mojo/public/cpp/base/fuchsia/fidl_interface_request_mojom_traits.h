@@ -23,8 +23,9 @@ struct FidlInterfaceRequestStructTraits {
 
   static bool Read(DataView input, fidl::InterfaceRequest<Interface>* output) {
     PlatformHandle handle = input.TakeRequest();
-    if (!handle.is_valid_handle())
+    if (!handle.is_valid_handle()) {
       return false;
+    }
 
     output->set_channel(zx::channel(handle.TakeHandle()));
     return true;

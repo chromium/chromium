@@ -8,8 +8,8 @@ import static org.chromium.build.NullUtil.assumeNonNull;
 
 import org.chromium.base.Token;
 import org.chromium.base.lifetime.Destroyable;
+import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.base.supplier.NullableObservableSupplier;
-import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.SettableNullableObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
@@ -24,7 +24,7 @@ import java.util.Objects;
 
 /**
  * A wrapper for {@link SharedGroupObserver} that supports changing the observed tab group id while
- * continuing to observe a single set of {@link ObservableSupplier} for updates. If only a single
+ * continuing to observe a single set of {@link MonotonicObservableSupplier} for updates. If only a single
  * tab group is of interest, prefer {@link SharedGroupObserver}.
  *
  * <p>This class abstracts away the record keeping that would otherwise be required to register and

@@ -16,9 +16,10 @@
 #include "base/functional/callback.h"
 #include "base/json/json_reader.h"
 #include "base/location.h"
+#include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/trace_event/trace_event.h"
 #include "base/values.h"
-#include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/webid/delegation/sd_jwt.h"
 #include "content/browser/webid/flags.h"
 #include "content/public/browser/browser_thread.h"
@@ -27,11 +28,12 @@
 #include "content/public/browser/digital_identity_provider.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/common/content_client.h"
+#include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
 #include "third_party/blink/public/mojom/webid/digital_identity_request.mojom-forward.h"
 #include "third_party/re2/src/re2/re2.h"
 
-using base::Value;
 using blink::mojom::RequestDigitalIdentityStatus;
 using InterstitialType = content::DigitalIdentityInterstitialType;
 using RequestStatusForMetrics =
@@ -41,10 +43,8 @@ using DigitalIdentityInterstitialAbortCallback =
 
 namespace content {
 namespace {
-using base::Value;
 namespace sdjwt = ::content::sdjwt;
 
-constexpr char kPreviewProtocol[] = "preview";
 constexpr char kOpenid4vpProtocolPrefix[] = "openid4vp";
 
 constexpr char kMdlDocumentType[] = "org.iso.18013.5.1.mDL";
@@ -71,9 +71,9 @@ constexpr char kDigitalIdentityHighRiskDialogParamValue[] = "high_risk";
 
 // Returns entry if `dict` has a list with a single dict element for key
 // `list_key`.
-const Value::Dict* FindSingleElementListEntry(const Value::Dict& dict,
-                                              const std::string& list_key) {
-  const Value::List* list = dict.FindList(list_key);
+const base::DictValue* FindSingleElementListEntry(const base::DictValue& dict,
+                                                  const std::string& list_key) {
+  const base::ListValue* list = dict.FindList(list_key);
   if (!list || list->size() != 1u) {
     return nullptr;
   }
@@ -106,14 +106,14 @@ bool CanVctValueBypassInterstitial(const std::string& vct_value) {
 }
 
 bool CanRequestCredentialBypassInterstitialForOpenid4vpProtocolWithPresentationDefition(
-    const Value::Dict& request) {
-  const Value::Dict* presentation_dict =
+    const base::DictValue& request) {
+  const base::DictValue* presentation_dict =
       request.FindDict("presentation_definition");
   if (!presentation_dict) {
     return false;
   }
 
-  const Value::Dict* input_descriptor_dict =
+  const base::DictValue* input_descriptor_dict =
       FindSingleElementListEntry(*presentation_dict, "input_descriptors");
   if (!input_descriptor_dict) {
     return false;
@@ -125,19 +125,19 @@ bool CanRequestCredentialBypassInterstitialForOpenid4vpProtocolWithPresentationD
     return false;
   }
 
-  const Value::Dict* constraints_dict =
+  const base::DictValue* constraints_dict =
       input_descriptor_dict->FindDict("constraints");
   if (!constraints_dict) {
     return false;
   }
 
-  const Value::Dict* field_dict =
+  const base::DictValue* field_dict =
       FindSingleElementListEntry(*constraints_dict, "fields");
   if (!field_dict) {
     return false;
   }
 
-  const Value::List* field_paths = field_dict->FindList("path");
+  const base::ListValue* field_paths = field_dict->FindList("path");
   if (!field_paths) {
     return false;
   }
@@ -155,24 +155,24 @@ bool CanRequestCredentialBypassInterstitialForOpenid4vpProtocolWithPresentationD
 }
 
 bool CanRequestCredentialBypassInterstitialForOpenid4vpProtocolWithDCQL(
-    const Value::Dict& request) {
-  const Value::Dict* query_dict = request.FindDict("dcql_query");
+    const base::DictValue& request) {
+  const base::DictValue* query_dict = request.FindDict("dcql_query");
   if (!query_dict) {
     return false;
   }
   auto credential_to_claims =
-      [](const Value::Dict& credential) -> std::vector<std::string> {
-    const Value::List* claims_list = credential.FindList("claims");
+      [](const base::DictValue& credential) -> std::vector<std::string> {
+    const base::ListValue* claims_list = credential.FindList("claims");
     if (!claims_list) {
       return {};
     }
     std::vector<std::string> claims;
-    for (const Value& claim : *claims_list) {
-      const Value::Dict* claim_dict = claim.GetIfDict();
+    for (const base::Value& claim : *claims_list) {
+      const base::DictValue* claim_dict = claim.GetIfDict();
       if (!claim_dict) {
         return {};
       }
-      const Value::List* paths = claim_dict->FindList("path");
+      const base::ListValue* paths = claim_dict->FindList("path");
       if (!paths) {
         return {};
       }
@@ -186,13 +186,13 @@ bool CanRequestCredentialBypassInterstitialForOpenid4vpProtocolWithDCQL(
   };
 
   auto meta_to_vct_values =
-      [](const Value::Dict& meta) -> std::vector<std::string> {
-    const Value::List* vct_values_list = meta.FindList("vct_values");
+      [](const base::DictValue& meta) -> std::vector<std::string> {
+    const base::ListValue* vct_values_list = meta.FindList("vct_values");
     if (!vct_values_list) {
       return {};
     }
     std::vector<std::string> vct_values;
-    for (const Value& vct_value : *vct_values_list) {
+    for (const base::Value& vct_value : *vct_values_list) {
       if (!vct_value.is_string()) {
         return {};
       }
@@ -201,15 +201,15 @@ bool CanRequestCredentialBypassInterstitialForOpenid4vpProtocolWithDCQL(
     return vct_values;
   };
 
-  const Value::List* credentials = query_dict->FindList("credentials");
+  const base::ListValue* credentials = query_dict->FindList("credentials");
   if (!credentials) {
     return false;
   }
 
   base::flat_set<std::string> all_claims;
   base::flat_set<std::string> all_vct_values;
-  for (const Value& credential : *credentials) {
-    const Value::Dict* credential_dict = credential.GetIfDict();
+  for (const base::Value& credential : *credentials) {
+    const base::DictValue* credential_dict = credential.GetIfDict();
     if (!credential_dict) {
       return false;
     }
@@ -217,7 +217,7 @@ bool CanRequestCredentialBypassInterstitialForOpenid4vpProtocolWithDCQL(
         credential_to_claims(*credential_dict);
     all_claims.insert(credential_claims.begin(), credential_claims.end());
 
-    const Value::Dict* meta_dict = credential_dict->FindDict("meta");
+    const base::DictValue* meta_dict = credential_dict->FindDict("meta");
     if (!meta_dict) {
       continue;
     }
@@ -229,15 +229,15 @@ bool CanRequestCredentialBypassInterstitialForOpenid4vpProtocolWithDCQL(
 }
 
 bool CanRequestCredentialBypassInterstitialForOpenid4vpProtocol(
-    const Value& request) {
+    const base::Value& request) {
   CHECK(request.is_dict());
-  const Value::Dict* request_dict = &request.GetDict();
+  const base::DictValue* request_dict = &request.GetDict();
 
   // The request may be a JWT. In that case, we need to parse the JWT to get to
   // the actual request payload.
-  std::optional<Value> payload;
+  std::optional<base::Value> payload;
   if (const std::string* jwt_str = request_dict->FindString("request")) {
-    std::optional<base::Value::List> parsed_jwt = sdjwt::Jwt::Parse(*jwt_str);
+    std::optional<base::ListValue> parsed_jwt = sdjwt::Jwt::Parse(*jwt_str);
     if (!parsed_jwt) {
       return false;
     }
@@ -266,37 +266,10 @@ bool CanRequestCredentialBypassInterstitialForOpenid4vpProtocol(
   return false;
 }
 
-bool CanRequestCredentialBypassInterstitialForPreviewProtocol(
-    const Value& request) {
-  CHECK(request.is_dict());
-  const Value::Dict& request_dict = request.GetDict();
-  const Value::Dict* selector_dict = request_dict.FindDict("selector");
-  if (!selector_dict) {
-    return false;
-  }
-
-  const std::string* doctype = selector_dict->FindString("doctype");
-  if (!doctype || *doctype != kMdlDocumentType) {
-    return false;
-  }
-
-  const Value::List* fields_list = selector_dict->FindList("fields");
-  if (!fields_list || fields_list->size() != 1u) {
-    return false;
-  }
-
-  const Value::Dict* field_dict = fields_list->front().GetIfDict();
-  if (!field_dict) {
-    return false;
-  }
-  const std::string* mdoc_data_element = field_dict->FindString("name");
-  return mdoc_data_element && CanClaimBypassInterstitial(*mdoc_data_element);
-}
-
 // Returns whether an interstitial should be shown based on the assertions being
 // requested.
 bool CanRequestCredentialBypassInterstitial(const std::string& protocol,
-                                            const Value& request) {
+                                            const base::Value& request) {
   if (!request.is_dict()) {
     return false;
   }
@@ -304,8 +277,7 @@ bool CanRequestCredentialBypassInterstitial(const std::string& protocol,
   if (protocol.starts_with(kOpenid4vpProtocolPrefix)) {
     return CanRequestCredentialBypassInterstitialForOpenid4vpProtocol(request);
   }
-  return protocol == kPreviewProtocol &&
-         CanRequestCredentialBypassInterstitialForPreviewProtocol(request);
+  return false;
 }
 
 blink::mojom::RequestDigitalIdentityStatus ToRequestDigitalIdentityStatus(
@@ -438,38 +410,40 @@ void DigitalIdentityRequestImpl::CompleteRequestWithStatus(
   }
 }
 
-Value BuildGetRequest(
+base::Value BuildGetRequest(
     const std::vector<blink::mojom::DigitalCredentialGetRequestPtr>&
         digital_credential_requests) {
-  auto requests = Value::List();
+  auto requests = base::ListValue();
   for (const auto& request : digital_credential_requests) {
-    auto result = Value::Dict();
+    auto result = base::DictValue();
     result.Set("protocol", request->protocol);
     result.Set("data", request->data.Clone());
     requests.Append(std::move(result));
   }
-  Value::Dict out = Value::Dict().Set("requests", std::move(requests));
-  return Value(std::move(out));
+  base::DictValue out = base::DictValue().Set("requests", std::move(requests));
+  return base::Value(std::move(out));
 }
 
-Value BuildCreateRequest(
+base::Value BuildCreateRequest(
     std::vector<blink::mojom::DigitalCredentialCreateRequestPtr>
         digital_credential_requests) {
-  auto requests = Value::List();
+  auto requests = base::ListValue();
   for (const auto& request : digital_credential_requests) {
-    auto result = Value::Dict();
+    auto result = base::DictValue();
     result.Set("protocol", request->protocol);
     result.Set("data", std::move(request->data));
     requests.Append(std::move(result));
   }
-  Value::Dict out = Value::Dict().Set("requests", std::move(requests));
-  return Value(std::move(out));
+  base::DictValue out = base::DictValue().Set("requests", std::move(requests));
+  return base::Value(std::move(out));
 }
 
 void DigitalIdentityRequestImpl::Get(
     std::vector<blink::mojom::DigitalCredentialGetRequestPtr>
         digital_credential_requests,
     GetCallback callback) {
+  TRACE_EVENT("content.digitalcredentials", "DigitalIdentityRequestImpl::Get",
+              "size", digital_credential_requests.size());
   if (!webid::IsDigitalCredentialsEnabled()) {
     std::move(callback).Run(RequestDigitalIdentityStatus::kError,
                             /*protocol=*/std::nullopt, /*token=*/std::nullopt);
@@ -491,13 +465,6 @@ void DigitalIdentityRequestImpl::Get(
   }
 
   callback_ = std::move(callback);
-
-  if (!render_frame_host().HasTransientUserActivation()) {
-    CompleteRequestWithError(
-        RequestStatusForMetrics::kErrorNoTransientUserActivation);
-    return;
-  }
-
   if (digital_credential_requests.empty()) {
     CompleteRequestWithError(RequestStatusForMetrics::kErrorNoRequests);
     return;
@@ -526,7 +493,7 @@ void DigitalIdentityRequestImpl::Get(
         base::BindOnce(&DigitalIdentityRequestImpl::CompleteRequest,
                        weak_ptr_factory_.GetWeakPtr(), protocol,
                        DigitalIdentityProvider::DigitalCredential(
-                           protocol, Value(Value::Dict().Set(
+                           protocol, base::Value(base::DictValue().Set(
                                          "token", "fake_test_token")))),
         base::Milliseconds(1));
     return;
@@ -548,7 +515,7 @@ void DigitalIdentityRequestImpl::Get(
   std::optional<InterstitialType> interstitial_type = ComputeInterstitialType(
       render_frame_host(), provider_.get(), digital_credential_requests);
 
-  Value request_to_send = BuildGetRequest(digital_credential_requests);
+  base::Value request_to_send = BuildGetRequest(digital_credential_requests);
   if (!interstitial_type) {
     OnInterstitialDone(std::move(protocol), std::move(request_to_send),
                        RequestStatusForMetrics::kSuccess);
@@ -568,6 +535,9 @@ void DigitalIdentityRequestImpl::Create(
     std::vector<blink::mojom::DigitalCredentialCreateRequestPtr>
         digital_credential_requests,
     CreateCallback callback) {
+  TRACE_EVENT("content.digitalcredentials",
+              "DigitalIdentityRequestImpl::Create", "size",
+              static_cast<int>(digital_credential_requests.size()));
   if (!webid::IsDigitalCredentialsCreationEnabled()) {
     std::move(callback).Run(RequestDigitalIdentityStatus::kError,
                             /*protocol=*/std::nullopt, /*token=*/std::nullopt);
@@ -590,12 +560,6 @@ void DigitalIdentityRequestImpl::Create(
 
   callback_ = std::move(callback);
 
-  if (!render_frame_host().HasTransientUserActivation()) {
-    CompleteRequestWithError(
-        RequestStatusForMetrics::kErrorNoTransientUserActivation);
-    return;
-  }
-
   if (digital_credential_requests.empty()) {
     CompleteRequestWithError(RequestStatusForMetrics::kErrorNoRequests);
     return;
@@ -613,7 +577,7 @@ void DigitalIdentityRequestImpl::Create(
   // that send only one request.
   std::string protocol = digital_credential_requests[0]->protocol;
 
-  Value request_to_send =
+  base::Value request_to_send =
       BuildCreateRequest(std::move(digital_credential_requests));
 
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(
@@ -624,7 +588,7 @@ void DigitalIdentityRequestImpl::Create(
         base::BindOnce(&DigitalIdentityRequestImpl::CompleteRequest,
                        weak_ptr_factory_.GetWeakPtr(), protocol,
                        DigitalIdentityProvider::DigitalCredential(
-                           protocol, Value(Value::Dict().Set(
+                           protocol, base::Value(base::DictValue().Set(
                                          "token", "fake_test_token")))),
         base::Milliseconds(1));
     return;
@@ -668,7 +632,7 @@ void DigitalIdentityRequestImpl::Abort() {
 
 void DigitalIdentityRequestImpl::OnInterstitialDone(
     std::optional<std::string> protocol,
-    Value request_to_send,
+    base::Value request_to_send,
     RequestStatusForMetrics status_after_interstitial) {
   if (status_after_interstitial != RequestStatusForMetrics::kSuccess) {
     CompleteRequestWithError(status_after_interstitial);

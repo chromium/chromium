@@ -8,7 +8,6 @@
 #include <string>
 #include <vector>
 
-#include "base/containers/contains.h"
 #include "base/functional/callback_helpers.h"
 #include "base/no_destructor.h"
 #include "build/build_config.h"
@@ -91,15 +90,19 @@ OpenXrDevice::OpenXrDevice(
         mojom::XRSessionFeature::WEBGPU);
   }
 
-  // Only support hit test if the feature flag is enabled.
+  // Only support AR features if AR is enabled.
   if (device::features::IsOpenXrArEnabled()) {
     device_data.supported_features.emplace_back(
         mojom::XRSessionFeature::HIT_TEST);
     device_data.supported_features.emplace_back(
         mojom::XRSessionFeature::LIGHT_ESTIMATION);
     device_data.supported_features.emplace_back(mojom::XRSessionFeature::DEPTH);
-    device_data.supported_features.emplace_back(
-        mojom::XRSessionFeature::PLANE_DETECTION);
+
+    // Only support Plane Detection if the feature flag is enabled.
+    if (base::FeatureList::IsEnabled(features::kWebXRPlaneDetection)) {
+      device_data.supported_features.emplace_back(
+          mojom::XRSessionFeature::PLANE_DETECTION);
+    }
   }
 
   SetDeviceData(std::move(device_data));

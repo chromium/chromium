@@ -25,7 +25,7 @@ using base::android::ScopedJavaLocalRef;
 // Called by Java when the WebContents instance for a request Id is available.
 static void JNI_ServiceTabLauncher_OnWebContentsForRequestAvailable(
     JNIEnv* env,
-    jint request_id,
+    int32_t request_id,
     const JavaRef<jobject>& android_web_contents) {
   ServiceTabLauncher::GetInstance()->OnTabLaunched(
       request_id,

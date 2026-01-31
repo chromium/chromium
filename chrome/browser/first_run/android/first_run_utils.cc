@@ -13,7 +13,7 @@
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "chrome/android/chrome_jni_headers/FirstRunUtils_jni.h"
 
-static jboolean JNI_FirstRunUtils_GetFirstRunEulaAccepted(JNIEnv* env) {
+static bool JNI_FirstRunUtils_GetFirstRunEulaAccepted(JNIEnv* env) {
   return g_browser_process->local_state()->GetBoolean(prefs::kEulaAccepted);
 }
 
@@ -21,7 +21,7 @@ static void JNI_FirstRunUtils_SetEulaAccepted(JNIEnv* env) {
   g_browser_process->local_state()->SetBoolean(prefs::kEulaAccepted, true);
 }
 
-static jboolean JNI_FirstRunUtils_GetCctTosDialogEnabled(JNIEnv* env) {
+static bool JNI_FirstRunUtils_GetCctTosDialogEnabled(JNIEnv* env) {
   int behavior = g_browser_process->local_state()->GetInteger(
       first_run::kTosDialogBehavior);
   return static_cast<first_run::TosDialogBehavior>(behavior) !=

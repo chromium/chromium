@@ -36,7 +36,7 @@ std::string WeightedIdentifier::ToString() const {
 }
 
 base::Value WeightedIdentifier::AsValue() const {
-  base::Value::Dict wi;
+  base::DictValue wi;
   wi.Set("value", value());
   wi.Set("weight", weight());
   return base::Value(std::move(wi));
@@ -64,7 +64,7 @@ bool BatchAnnotationResult::HasOutputForType() const {
 }
 
 base::Value BatchAnnotationResult::AsValue() const {
-  base::Value::Dict result;
+  base::DictValue result;
   result.Set("input", input());
   result.Set("type", AnnotationTypeToString(type()));
 

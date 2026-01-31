@@ -171,7 +171,7 @@ void TabCollectionTabModelImpl::CreateTabGroup(
     JNIEnv* env,
     const base::Token& tab_group_id,
     const std::u16string& tab_group_title,
-    jint j_color_id,
+    int32_t j_color_id,
     bool is_collapsed) {
   TabGroupAndroid::Factory factory(profile_);
   std::unique_ptr<TabGroupTabCollection> group_collection =
@@ -283,9 +283,8 @@ int TabCollectionTabModelImpl::MoveTabGroupTo(JNIEnv* env,
     tab_indices.push_back(base::checked_cast<int>(i));
   }
 
-  const std::set<tabs::TabCollection::Type> kRetainCollectionTypes =
-      std::set<tabs::TabCollection::Type>(
-          {tabs::TabCollection::Type::SPLIT, tabs::TabCollection::Type::GROUP});
+  static constexpr TabCollection::TypeEnumSet kRetainCollectionTypes{
+      tabs::TabCollection::Type::SPLIT, tabs::TabCollection::Type::GROUP};
 
   tab_strip_collection_->MoveTabsRecursive(
       tab_indices, static_cast<size_t>(to_index),
@@ -299,7 +298,7 @@ void TabCollectionTabModelImpl::UpdateTabGroupVisualData(
     JNIEnv* env,
     const base::Token& tab_group_id,
     const std::optional<std::u16string>& tab_group_title,
-    const std::optional<jint>& j_color_id,
+    const std::optional<int32_t>& j_color_id,
     const std::optional<bool>& is_collapsed) {
   TabGroup* group = GetTabGroupChecked(TabGroupId::FromRawToken(tab_group_id));
   const TabGroupVisualData* old_visual_data = group->visual_data();
@@ -321,12 +320,12 @@ std::u16string TabCollectionTabModelImpl::GetTabGroupTitle(
   return visual_data->title();
 }
 
-jint TabCollectionTabModelImpl::GetTabGroupColor(
+int32_t TabCollectionTabModelImpl::GetTabGroupColor(
     JNIEnv* env,
     const base::Token& tab_group_id) {
   const TabGroupVisualData* visual_data = GetTabGroupVisualDataChecked(
       TabGroupId::FromRawToken(tab_group_id), /*allow_detached=*/true);
-  return static_cast<jint>(visual_data->color());
+  return static_cast<int32_t>(visual_data->color());
 }
 
 bool TabCollectionTabModelImpl::GetTabGroupCollapsed(
@@ -587,7 +586,7 @@ TabCollectionTabModelImpl::GetTabGroupVisualDataChecked(
   return visual_data;
 }
 
-static jlong JNI_TabCollectionTabModelImpl_Init(
+static int64_t JNI_TabCollectionTabModelImpl_Init(
     JNIEnv* env,
     const JavaRef<jobject>& j_java_object,
     Profile* profile) {

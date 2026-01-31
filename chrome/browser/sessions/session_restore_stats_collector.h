@@ -49,8 +49,8 @@ class SessionRestoreStatsCollector : public content::RenderWidgetHostObserver {
   };
 
   // Houses all of the statistics gathered by the SessionRestoreStatsCollector
-  // while the underlying TabLoader is active. These statistics are all reported
-  // at once via the reporting delegate.
+  // while a session restore is active. These statistics are all reported at
+  // once via the reporting delegate.
   struct TabLoaderStats {
     // Constructor that initializes everything to zero.
     TabLoaderStats();
@@ -78,15 +78,6 @@ class SessionRestoreStatsCollector : public content::RenderWidgetHostObserver {
     size_t internal_page_tab_count = 0;
     size_t pinned_tab_count = 0;
     size_t grouped_tab_count = 0;
-
-    // Count of tabs in a session whose site engagement score is below the
-    // minimum to load.
-    size_t low_site_engagement_tab_count = 0;
-
-    // Count of tabs included in `low_site_engagement_tab_count` that use
-    // background communications (notification permission or update
-    // title/favicon in background.)
-    size_t low_site_engagement_with_background_communication_tab_count = 0;
 
     // Count of tabs in a session with notification permission.
     size_t notification_permission_tab_count = 0;
@@ -144,8 +135,7 @@ class SessionRestoreStatsCollector : public content::RenderWidgetHostObserver {
 
   // Updates counts that depend on async lookup of UpdatesFaviconInBackground()
   // and UpdatesTitleInBackground() in SiteDataReader.
-  void OnTabUpdatesInBackground(bool low_site_engagement,
-                                bool notification_permission,
+  void OnTabUpdatesInBackground(bool notification_permission,
                                 bool updates_in_background);
 
   // Won't record time for foreground tab paint because a non-restored
@@ -162,7 +152,7 @@ class SessionRestoreStatsCollector : public content::RenderWidgetHostObserver {
   // to a bool indicating whether the tab was ever hidden or occluded.
   std::map<content::RenderWidgetHost*, bool> tracked_tabs_occluded_map_;
 
-  // Statistics gathered regarding the TabLoader.
+  // Statistics gathered regarding tab loading during session restore.
   TabLoaderStats tab_loader_stats_;
 
   // The reporting delegate used to report gathered statistics.
@@ -185,7 +175,7 @@ class SessionRestoreStatsCollector::StatsReportingDelegate {
 
   virtual ~StatsReportingDelegate() = default;
 
-  // Called when TabLoader has completed its work.
+  // Called when tab loading is finished.
   virtual void ReportTabLoaderStats(const TabLoaderStats& tab_loader_stats) = 0;
 };
 

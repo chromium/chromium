@@ -11,7 +11,6 @@
 #include <utility>
 
 #include "base/check_op.h"
-#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/no_destructor.h"
@@ -43,6 +42,7 @@
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/storage_partition.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
 #include "ui/base/l10n/l10n_util.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -191,7 +191,7 @@ void SpellcheckService::GetDictionaries(
     content::BrowserContext* browser_context,
     std::vector<Dictionary>* dictionaries) {
   PrefService* prefs = user_prefs::UserPrefs::Get(browser_context);
-  std::set<std::string> spellcheck_dictionaries;
+  absl::flat_hash_set<std::string> spellcheck_dictionaries;
   for (const auto& value :
        prefs->GetList(spellcheck::prefs::kSpellCheckDictionaries)) {
     const std::string* dictionary = value.GetIfString();
@@ -226,7 +226,7 @@ void SpellcheckService::GetDictionaries(
       continue;
 
     dictionary.used_for_spellcheck =
-        spellcheck_dictionaries.count(dictionary.language) > 0;
+        spellcheck_dictionaries.contains(dictionary.language);
     dictionaries->push_back(dictionary);
   }
 }
@@ -295,7 +295,7 @@ std::string SpellcheckService::GetSupportedAcceptLanguageCode(
   // language, but not sr-Cyrl-CS. Matching language + script subtags assures
   // we get the correct script for spellchecking, and not use sr-Latn-RS if
   // language packs for both scripts are installed on the system.
-  if (!base::Contains(supported_language_full_tag, "-")) {
+  if (!supported_language_full_tag.contains("-")) {
     return "";
   }
 
@@ -332,7 +332,7 @@ void SpellcheckService::EnableFirstUserLanguageForSpellcheck(
     PrefService* prefs) {
   // Ensure that spellcheck is enabled for the first language in the
   // accept languages list.
-  base::Value::List user_dictionaries =
+  base::ListValue user_dictionaries =
       prefs->GetList(spellcheck::prefs::kSpellCheckDictionaries).Clone();
   std::vector<std::string> user_languages =
       base::SplitString(prefs->GetString(language::prefs::kAcceptLanguages),
@@ -348,7 +348,7 @@ void SpellcheckService::EnableFirstUserLanguageForSpellcheck(
   std::vector<std::string> accept_languages;
   l10n_util::GetAcceptLanguages(&accept_languages);
   for (const auto& user_language : user_languages) {
-    if (base::Contains(accept_languages, user_language)) {
+    if (std::ranges::contains(accept_languages, user_language)) {
       first_user_language = user_language;
       break;
     }
@@ -357,7 +357,7 @@ void SpellcheckService::EnableFirstUserLanguageForSpellcheck(
   bool first_user_language_spellchecked = false;
   for (const auto& dictionary_value : user_dictionaries) {
     first_user_language_spellchecked =
-        base::Contains(dictionary_value.GetString(), first_user_language);
+        dictionary_value.GetString().contains(first_user_language);
     if (first_user_language_spellchecked)
       break;
   }
@@ -434,15 +434,16 @@ void SpellcheckService::LoadDictionaries() {
   PrefService* prefs = user_prefs::UserPrefs::Get(context_);
   DCHECK(prefs);
 
-  const base::Value::List& user_dictionaries =
+  const base::ListValue& user_dictionaries =
       prefs->GetList(spellcheck::prefs::kSpellCheckDictionaries);
-  const base::Value::List& forced_dictionaries =
+  const base::ListValue& forced_dictionaries =
       prefs->GetList(spellcheck::prefs::kSpellCheckForcedDictionaries);
 
   // Build a lookup of blocked dictionaries to skip loading them.
-  const base::Value::List& blocked_dictionaries =
+  const base::ListValue& blocked_dictionaries =
       prefs->GetList(spellcheck::prefs::kSpellCheckBlocklistedDictionaries);
-  std::unordered_set<std::string> blocked_dictionaries_lookup;
+  absl::flat_hash_set<std::string_view> blocked_dictionaries_lookup;
+  blocked_dictionaries_lookup.reserve(blocked_dictionaries.size());
   for (const auto& blocked_dict : blocked_dictionaries) {
     blocked_dictionaries_lookup.insert(blocked_dict.GetString());
   }
@@ -450,15 +451,15 @@ void SpellcheckService::LoadDictionaries() {
   // Merge both lists of dictionaries. Use a set to avoid duplicates.
   std::set<std::string> dictionaries;
   for (const auto& dictionary_value : user_dictionaries) {
-    if (blocked_dictionaries_lookup.find(dictionary_value.GetString()) ==
-        blocked_dictionaries_lookup.end())
+    if (!blocked_dictionaries_lookup.contains(dictionary_value.GetString())) {
       dictionaries.insert(dictionary_value.GetString());
+    }
   }
   for (const auto& dictionary_value : forced_dictionaries) {
     dictionaries.insert(dictionary_value.GetString());
   }
 
-  for (const auto& dictionary : dictionaries) {
+  for (const std::string& dictionary : dictionaries) {
     // The spellcheck language passed to platform APIs may differ from the
     // accept language.
     std::string platform_spellcheck_language;
@@ -754,7 +755,7 @@ bool SpellcheckService::HasPrivateUseSubTag(const std::string& full_tag) {
 
   // Private use subtags are separated from the other subtags by the reserved
   // single-character subtag 'x'.
-  return base::Contains(subtags, "x");
+  return std::ranges::contains(subtags, "x");
 }
 
 // static
@@ -864,7 +865,7 @@ void SpellcheckService::OnAcceptLanguagesChanged() {
   std::vector<std::string> filtered_dictionaries;
 
   for (const auto& dictionary : dictionaries) {
-    if (base::Contains(accept_languages, dictionary)) {
+    if (std::ranges::contains(accept_languages, dictionary)) {
       filtered_dictionaries.push_back(dictionary);
     }
   }

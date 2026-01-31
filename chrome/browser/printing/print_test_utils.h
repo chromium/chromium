@@ -38,7 +38,7 @@ extern const PrinterBasicInfoOptions kPrintInfoOptions;
 
 // Creates a print ticket with some default values. Based on ticket creation in
 // chrome/browser/resources/print_preview/native_layer.js.
-base::Value::Dict GetPrintTicket(mojom::PrinterType type);
+base::DictValue GetPrintTicket(mojom::PrinterType type);
 
 // Make some settings which correspond to the defaults for the indicated
 // printer.

@@ -308,6 +308,7 @@ if (!is_android) {
     sources = [
       "password_change_ui_controller_browsertest.cc",
       "password_generation_popup_view_browsertest.cc",
+      "ui_utils_browsertest.cc",
       "well_known_change_password_navigation_throttle_browsertest.cc",
     ]
     deps = [
@@ -320,6 +321,7 @@ if (!is_android) {
       "//chrome/browser/profiles:profile",
       "//chrome/browser/ui",
       "//chrome/browser/ui:browser_navigator_params_headers",
+      "//chrome/browser/ui/hats:test_support",
       "//chrome/common",
       "//chrome/test:test_support",
       "//chrome/test:test_support_ui",

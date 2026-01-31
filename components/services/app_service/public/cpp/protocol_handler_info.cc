@@ -14,7 +14,7 @@ ProtocolHandlerInfo::ProtocolHandlerInfo(const ProtocolHandlerInfo& other) =
 ProtocolHandlerInfo::~ProtocolHandlerInfo() = default;
 
 base::Value ProtocolHandlerInfo::AsDebugValue() const {
-  base::Value::Dict root;
+  base::DictValue root;
   root.Set("protocol", protocol);
   root.Set("url", url.spec());
   if (!name.empty()) {

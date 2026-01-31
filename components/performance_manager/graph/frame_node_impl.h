@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/byte_size.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
@@ -124,8 +125,8 @@ class FrameNodeImpl
   bool IsRendered() const override;
   bool IsImportant() const override;
   const RenderFrameHostProxy& GetRenderFrameHostProxy() const override;
-  base::ByteCount GetResidentSetEstimate() const override;
-  base::ByteCount GetPrivateFootprintEstimate() const override;
+  base::ByteSize GetResidentSetEstimate() const override;
+  base::ByteSize GetPrivateFootprintEstimate() const override;
   void CrossProcessSubframeRenderProcessGone() override;
 
   // TracingObserver implementation:
@@ -164,8 +165,8 @@ class FrameNodeImpl
   void SetIsRendered(bool is_rendered);
   void SetIsIntersectingLargeArea(bool is_intersecting_large_area);
   void SetIsImportant(bool is_important);
-  void SetResidentSetEstimate(base::ByteCount rss_estimate);
-  void SetPrivateFootprintEstimate(base::ByteCount private_footprint_estimate);
+  void SetResidentSetEstimate(base::ByteSize rss_estimate);
+  void SetPrivateFootprintEstimate(base::ByteSize private_footprint_estimate);
 
   // Invoked when a navigation is committed in the frame.
   void OnNavigationCommitted(GURL url,
@@ -360,9 +361,9 @@ class FrameNodeImpl
   // The set of pages that have been embedded by this frame.
   NodeSet embedded_page_nodes_;
 
-  base::ByteCount resident_set_estimate_;
+  base::ByteSize resident_set_estimate_;
 
-  base::ByteCount private_footprint_estimate_;
+  base::ByteSize private_footprint_estimate_;
 
   // Does *not* change when a navigation is committed.
   ObservedProperty::NotifiesOnlyOnChanges<

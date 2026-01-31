@@ -25,7 +25,7 @@ class ConflictsDataFetcher : public ModuleDatabaseObserver {
   using UniquePtr =
       std::unique_ptr<ConflictsDataFetcher, base::OnTaskRunnerDeleter>;
   using OnConflictsDataFetchedCallback =
-      base::OnceCallback<void(base::Value::Dict results)>;
+      base::OnceCallback<void(base::DictValue results)>;
 
   ConflictsDataFetcher(const ConflictsDataFetcher&) = delete;
   ConflictsDataFetcher& operator=(const ConflictsDataFetcher&) = delete;
@@ -57,7 +57,7 @@ class ConflictsDataFetcher : public ModuleDatabaseObserver {
 
   // Temporarily holds the module list while the modules are being
   // enumerated.
-  std::optional<base::Value::List> module_list_;
+  std::optional<base::ListValue> module_list_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 };

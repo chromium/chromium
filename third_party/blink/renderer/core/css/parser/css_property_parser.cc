@@ -6,6 +6,7 @@
 
 #include "base/compiler_specific.h"
 #include "third_party/blink/renderer/core/css/css_pending_substitution_value.h"
+#include "third_party/blink/renderer/core/css/css_property_name.h"
 #include "third_party/blink/renderer/core/css/css_unicode_range_value.h"
 #include "third_party/blink/renderer/core/css/css_unparsed_declaration_value.h"
 #include "third_party/blink/renderer/core/css/hash_tools.h"
@@ -153,9 +154,8 @@ bool CSSPropertyParser::ParseValueStart(CSSPropertyID unresolved_property,
   // since they start from the same place and we reset both below,
   // so they cannot go out of sync.
   if (is_shorthand) {
-    const auto local_context =
-        CSSParserLocalContext()
-            .WithAliasParsing(IsPropertyAlias(unresolved_property))
+    auto local_context =
+        CSSParserLocalContext(CSSPropertyName(unresolved_property))
             .WithCurrentShorthand(property_id);
     // Variable references will fail to parse here and will fall out to the
     // variable ref parser below.
@@ -254,7 +254,7 @@ static inline bool QuasiLowercaseIntoBuffer(base::span<const UChar> chars,
     if (c == 0 || c >= 0x7F) {  // illegal character
       return false;
     }
-    UNSAFE_TODO(dst[i++]) = ToASCIILower(c);
+    UNSAFE_BUFFERS(dst[i++]) = ToASCIILower(c);
   }
   return true;
 }
@@ -279,13 +279,13 @@ static inline bool QuasiLowercaseIntoBuffer(base::span<const LChar> chars,
   unsigned i;
   for (i = 0; i < (length & ~3); i += 4) {
     uint32_t x;
-    UNSAFE_TODO(memcpy(&x, src + i, sizeof(x)));
+    UNSAFE_BUFFERS(memcpy(&x, src + i, sizeof(x)));
     x |= (x & 0x40404040) >> 1;
-    UNSAFE_TODO(memcpy(dst + i, &x, sizeof(x)));
+    UNSAFE_BUFFERS(memcpy(dst + i, &x, sizeof(x)));
   }
   for (; i < length; ++i) {
-    LChar c = UNSAFE_TODO(src[i]);
-    UNSAFE_TODO(dst[i]) = c | ((c & 0x40) >> 1);
+    LChar c = UNSAFE_BUFFERS(src[i]);
+    UNSAFE_BUFFERS(dst[i]) = c | ((c & 0x40) >> 1);
   }
   return true;
 }
@@ -327,7 +327,7 @@ static CSSPropertyID UnresolvedCSSPropertyID(
     return CSSPropertyID::kInvalid;
   }
   if (length >= 3 && property_name[0] == '-' &&
-      UNSAFE_TODO(property_name[1]) == '-') {
+      UNSAFE_BUFFERS(property_name[1]) == '-') {
     return CSSPropertyID::kVariable;
   }
   if (length > kMaxCSSPropertyNameLength) {
@@ -344,7 +344,7 @@ static CSSPropertyID UnresolvedCSSPropertyID(
 #if DCHECK_IS_ON()
   // Verify that we get the same answer with standard lowercasing.
   for (unsigned i = 0; i < length; ++i) {
-    UNSAFE_TODO(buffer[i] = ToASCIILower(property_name[i]));
+    UNSAFE_BUFFERS(buffer[i] = ToASCIILower(property_name[i]));
   }
   DCHECK_EQ(hash_table_entry, FindProperty(buffer, length));
 #endif
@@ -389,7 +389,7 @@ static CSSValueID CssValueKeywordID(
 #if DCHECK_IS_ON()
   // Verify that we get the same answer with standard lowercasing.
   for (unsigned i = 0; i < length; ++i) {
-    UNSAFE_TODO(buffer[i] = ToASCIILower(value_keyword[i]));
+    UNSAFE_BUFFERS(buffer[i] = ToASCIILower(value_keyword[i]));
   }
   DCHECK_EQ(hash_table_entry, FindValue(buffer, length));
 #endif

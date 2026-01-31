@@ -766,9 +766,8 @@ TEST(ChannelTest, ShutDownStress) {
 
   // Block the peer thread while some tasks are queued up from the test main
   // thread.
-  peer_thread.task_runner()->PostTask(
-      FROM_HERE,
-      base::BindOnce(&base::WaitableEvent::Wait, base::Unretained(&go_event)));
+  peer_thread.task_runner()->PostTask(FROM_HERE,
+                                      go_event.GetWaitCallbackForTesting());
 
   // First, write some messages for Channel B.
   for (int i = 0; i < 500; ++i) {

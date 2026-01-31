@@ -118,10 +118,17 @@ const AtomicString& ExtendableMessageEvent::InterfaceName() const {
 }
 
 DOMOrigin* ExtendableMessageEvent::GetDOMOrigin(LocalDOMWindow*) const {
+  // We only create `DOMOrigin` objects for `ExtendableMessageEvent` objects
+  // that were not constructed from JavaScript, as the JavaScript constructor
+  // accepts an untrusted string serialization of an origin.
+  if (!potentially_invalid_origin_serialization_.IsNull() ||
+      !GetSecurityOrigin()) {
+    return nullptr;
+  }
+
   // No access check is required, as this object intentionally reveals its
   // sender's origin cross-origin.
-  return GetSecurityOrigin() ? DOMOrigin::Create(GetSecurityOrigin())
-                             : DOMOrigin::Create();
+  return DOMOrigin::Create(GetSecurityOrigin());
 }
 
 void ExtendableMessageEvent::Trace(Visitor* visitor) const {

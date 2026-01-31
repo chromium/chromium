@@ -24,7 +24,7 @@ namespace web_app {
 namespace {
 
 base::Value SynchronizeOptionsDebugValue(const SynchronizeOsOptions& options) {
-  base::Value::Dict debug_dict;
+  base::DictValue debug_dict;
   debug_dict.Set("force_unregister_os_integration",
                  options.force_unregister_os_integration);
   debug_dict.Set("add_shortcut_to_desktop", options.add_shortcut_to_desktop);
@@ -72,15 +72,22 @@ void OsIntegrationSynchronizeCommand::StartWithLock(
   // command line uninstalling an app from the operating system integration. In
   // that case, `Synchronize` still needs to be called below to attempt cleanup.
 
-  bool in_registrar = app_lock_->registrar().IsInRegistrar(app_id_);
+  std::optional<proto::InstallState> app_install_state =
+      app_lock_->registrar().GetInstallState(app_id_);
   bool was_installed_with_os_integration =
-      app_lock_->registrar().GetInstallState(app_id_) ==
-      proto::INSTALLED_WITH_OS_INTEGRATION;
-  GetMutableDebugValue().Set("in_registrar", in_registrar);
-  GetMutableDebugValue().Set("was_fully_installed",
-                             was_installed_with_os_integration);
+      (app_install_state == proto::INSTALLED_WITH_OS_INTEGRATION);
+  GetMutableDebugValue().Set("in_registrar", app_install_state.has_value());
+  if (app_install_state) {
+    GetMutableDebugValue().Set("app_install_state", *app_install_state);
+  }
 
-  if (in_registrar && !was_installed_with_os_integration &&
+  // Do not allowed apps that are suggested for migration.
+  if (app_install_state == proto::SUGGESTED_FROM_MIGRATION) {
+    CompleteAndSelfDestruct(CommandResult::kSuccess);
+    return;
+  }
+
+  if (app_install_state && !was_installed_with_os_integration &&
       upgrade_to_fully_installed_if_installed_) {
     ScopedRegistryUpdate update = app_lock_->sync_bridge().BeginUpdate();
     WebApp* app = update->UpdateApp(app_id_);
@@ -92,7 +99,7 @@ void OsIntegrationSynchronizeCommand::StartWithLock(
       synchronize_options_->force_unregister_os_integration;
   GetMutableDebugValue().Set("force_unregister_os_integration",
                              force_unregister_os_integration);
-  if (!force_unregister_os_integration && !in_registrar) {
+  if (!force_unregister_os_integration && !app_install_state) {
     // The app must have been uninstalled since the command was scheduled.
     CompleteAndSelfDestruct(CommandResult::kSuccess);
     return;

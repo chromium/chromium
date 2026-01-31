@@ -20,6 +20,7 @@ android_library("java") {
     "java/src/org/chromium/components/webapps/AppBannerManager.java",
     "java/src/org/chromium/components/webapps/AppData.java",
     "java/src/org/chromium/components/webapps/AppDetailsDelegate.java",
+    "java/src/org/chromium/components/webapps/TwaInstaller.java",
     "java/src/org/chromium/components/webapps/WebappsIconUtils.java",
     "java/src/org/chromium/components/webapps/WebappsUtils.java",
     "java/src/org/chromium/components/webapps/bottomsheet/AddToHomescreenBottomSheetViewBinder.java",
@@ -75,6 +76,7 @@ generate_jni("webapps_jni_headers") {
     "java/src/org/chromium/components/webapps/AddToHomescreenInstaller.java",
     "java/src/org/chromium/components/webapps/AddToHomescreenMediator.java",
     "java/src/org/chromium/components/webapps/AppBannerManager.java",
+    "java/src/org/chromium/components/webapps/TwaInstaller.java",
     "java/src/org/chromium/components/webapps/WebappsIconUtils.java",
     "java/src/org/chromium/components/webapps/WebappsUtils.java",
     "java/src/org/chromium/components/webapps/bottomsheet/PwaBottomSheetController.java",
@@ -93,6 +95,7 @@ java_cpp_enum("webapps_java_enums_srcjar") {
     "//components/webapps/browser/banners/app_banner_manager.h",
     "//components/webapps/browser/banners/app_banner_settings_helper.h",
     "//components/webapps/browser/installable/installable_metrics.h",
+    "add_to_homescreen_installer.h",
     "add_to_homescreen_params.h",
     "shortcut_info.h",
   ]

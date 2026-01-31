@@ -74,7 +74,8 @@ public final class FullscreenSigninAndHistorySyncConfig {
                             /* subtitle= */ mSigninSubtitle,
                             /* dismissText= */ mSigninDismissText,
                             /* logoId= */ mSigninLogoId,
-                            /* shouldDisableSignin= */ mShouldDisableSignin);
+                            /* shouldDisableSignin= */ mShouldDisableSignin,
+                            /* surveyType= */ null);
             final HistorySyncConfig historySyncConfig =
                     new HistorySyncConfig(
                             /* title= */ mHistorySyncTitle, /* subtitle= */ mHistorySyncSubtitle);

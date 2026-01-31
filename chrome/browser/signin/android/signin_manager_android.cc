@@ -16,16 +16,20 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
+#include "chrome/browser/bookmarks/android/bookmark_bridge.h"
+#include "chrome/browser/bookmarks/bookmark_model_factory.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browsing_data/chrome_browsing_data_remover_constants.h"
 #include "chrome/browser/enterprise/util/managed_browser_utils.h"
 #include "chrome/browser/policy/cloud/user_policy_signin_service_factory.h"
 #include "chrome/browser/policy/cloud/user_policy_signin_service_mobile.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/reading_list/reading_list_model_factory.h"
 #include "chrome/browser/signin/account_id_from_account_info.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/common/pref_names.h"
+#include "components/bookmarks/browser/bookmark_model.h"
 #include "components/google/core/common/google_util.h"
 #include "components/password_manager/core/browser/features/password_features.h"
 #include "components/policy/core/common/cloud/user_cloud_policy_manager.h"
@@ -56,44 +60,63 @@ namespace {
 class ProfileDataRemover : public content::BrowsingDataRemover::Observer {
  public:
   ProfileDataRemover(Profile* profile,
-                     bool all_data,
+                     ClearedTypes cleared_types,
                      base::OnceClosure callback)
       : profile_(profile),
-        all_data_(all_data),
+        cleared_types_(cleared_types),
         callback_(std::move(callback)),
         origin_runner_(base::SingleThreadTaskRunner::GetCurrentDefault()),
         remover_(profile->GetBrowsingDataRemover()) {
     remover_->AddObserver(this);
 
-    if (all_data) {
-      chrome_browsing_data_remover::DataType removed_types =
-          chrome_browsing_data_remover::ALL_DATA_TYPES;
-      // Browser sign-in won't upload existing passwords, so there's no reason
-      // to wipe them immediately before. Similarly, on browser sign-out,
-      // account passwords should survive (outside of the browser) to be used by
-      // other apps, until system-level sign-out. In other words, the browser
-      // has no business deleting any passwords here.
-      removed_types &= ~chrome_browsing_data_remover::DATA_TYPE_PASSWORDS;
-      remover_->RemoveAndReply(base::Time(), base::Time::Max(), removed_types,
-                               chrome_browsing_data_remover::ALL_ORIGIN_TYPES,
-                               this);
-    } else {
-      std::unique_ptr<content::BrowsingDataFilterBuilder> google_tld_filter =
-          content::BrowsingDataFilterBuilder::Create(
-              content::BrowsingDataFilterBuilder::Mode::kDelete);
+    switch (cleared_types) {
+      case ClearedTypes::kGoogleServiceWorkerCaches: {
+        std::unique_ptr<content::BrowsingDataFilterBuilder> google_tld_filter =
+            content::BrowsingDataFilterBuilder::Create(
+                content::BrowsingDataFilterBuilder::Mode::kDelete);
 
-      // TODO(msramek): BrowsingDataFilterBuilder was not designed for
-      // large filters. Optimize it.
-      for (const std::string& domain :
-           google_util::GetGoogleRegistrableDomains()) {
-        google_tld_filter->AddRegisterableDomain(domain);
+        // TODO(msramek): BrowsingDataFilterBuilder was not designed for
+        // large filters. Optimize it.
+        for (const std::string& domain :
+             google_util::GetGoogleRegistrableDomains()) {
+          google_tld_filter->AddRegisterableDomain(domain);
+        }
+
+        remover_->RemoveWithFilterAndReply(
+            base::Time(), base::Time::Max(),
+            content::BrowsingDataRemover::DATA_TYPE_CACHE_STORAGE,
+            chrome_browsing_data_remover::ALL_ORIGIN_TYPES,
+            std::move(google_tld_filter), this);
+        break;
       }
-
-      remover_->RemoveWithFilterAndReply(
-          base::Time(), base::Time::Max(),
-          content::BrowsingDataRemover::DATA_TYPE_CACHE_STORAGE,
-          chrome_browsing_data_remover::ALL_ORIGIN_TYPES,
-          std::move(google_tld_filter), this);
+      case ClearedTypes::kSyncData: {
+        // TODO(crbug.com/469453727): determine if DATA_TYPE_READING_LIST should
+        // be added here.
+        chrome_browsing_data_remover::DataType removed_types =
+            content::BrowsingDataRemover::DATA_TYPE_CACHE |
+            chrome_browsing_data_remover::DATA_TYPE_FORM_DATA |
+            chrome_browsing_data_remover::DATA_TYPE_SITE_DATA |
+            chrome_browsing_data_remover::DATA_TYPE_HISTORY |
+            chrome_browsing_data_remover::DATA_TYPE_BOOKMARKS;
+        remover_->RemoveAndReply(base::Time(), base::Time::Max(), removed_types,
+                                 chrome_browsing_data_remover::ALL_ORIGIN_TYPES,
+                                 this);
+        break;
+      }
+      case ClearedTypes::kAllData: {
+        chrome_browsing_data_remover::DataType removed_types =
+            chrome_browsing_data_remover::ALL_DATA_TYPES;
+        // Browser sign-in won't upload existing passwords, so there's no reason
+        // to wipe them immediately before. Similarly, on browser sign-out,
+        // account passwords should survive (outside of the browser) to be used
+        // by other apps, until system-level sign-out. In other words, the
+        // browser has no business deleting any passwords here.
+        removed_types &= ~chrome_browsing_data_remover::DATA_TYPE_PASSWORDS;
+        remover_->RemoveAndReply(base::Time(), base::Time::Max(), removed_types,
+                                 chrome_browsing_data_remover::ALL_ORIGIN_TYPES,
+                                 this);
+        break;
+      }
     }
   }
 
@@ -105,7 +128,7 @@ class ProfileDataRemover : public content::BrowsingDataRemover::Observer {
   void OnBrowsingDataRemoverDone(uint64_t failed_data_types) override {
     remover_->RemoveObserver(this);
 
-    if (all_data_) {
+    if (cleared_types_ == ClearedTypes::kAllData) {
       // All the Profile data has been wiped. Clear the last signed in username
       // as well, so that the next signin doesn't trigger the account
       // change dialog.
@@ -122,7 +145,7 @@ class ProfileDataRemover : public content::BrowsingDataRemover::Observer {
 
  private:
   raw_ptr<Profile> profile_;
-  bool all_data_;
+  ClearedTypes cleared_types_;
   base::OnceClosure callback_;
   scoped_refptr<base::SingleThreadTaskRunner> origin_runner_;
   raw_ptr<content::BrowsingDataRemover> remover_;
@@ -155,7 +178,7 @@ SigninManagerAndroid::SigninManagerAndroid(
 
   java_signin_manager_ = Java_SigninManagerImpl_create(
       base::android::AttachCurrentThread(), reinterpret_cast<intptr_t>(this),
-      profile_, profile_->GetPrefs(), identity_manager_,
+      profile_->GetPrefs(), identity_manager_,
       identity_manager_->GetIdentityMutatorJavaObject());
 }
 
@@ -277,21 +300,27 @@ SigninManagerAndroid::GetManagementDomain(JNIEnv* env) {
 void SigninManagerAndroid::WipeProfileData(
     JNIEnv* env,
     const base::RepeatingClosure& callback) {
-  WipeData(profile_, true /* all data */, callback);
+  WipeData(profile_, ClearedTypes::kAllData, callback);
 }
 
 void SigninManagerAndroid::WipeGoogleServiceWorkerCaches(
     JNIEnv* env,
     const base::RepeatingClosure& callback) {
-  WipeData(profile_, false /* only Google service worker caches */, callback);
+  WipeData(profile_, ClearedTypes::kGoogleServiceWorkerCaches, callback);
+}
+
+void SigninManagerAndroid::WipeSyncUserData(
+    JNIEnv* env,
+    const base::RepeatingClosure& callback) {
+  WipeData(profile_, ClearedTypes::kSyncData, callback);
 }
 
 // static
 void SigninManagerAndroid::WipeData(Profile* profile,
-                                    bool all_data,
+                                    ClearedTypes cleared_types,
                                     base::OnceClosure callback) {
   // The ProfileDataRemover deletes itself once done.
-  new ProfileDataRemover(profile, all_data, std::move(callback));
+  new ProfileDataRemover(profile, cleared_types, std::move(callback));
 }
 
 static std::string JNI_SigninManagerImpl_ExtractDomainName(JNIEnv* env,

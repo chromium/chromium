@@ -88,8 +88,7 @@ LINK_RESOURCE_ID(IDR_CREDIT_CARD_CVC_HINT_BACK, R.drawable.cvc_icon)
 LINK_RESOURCE_ID(IDR_CREDIT_CARD_CVC_HINT_FRONT_AMEX, R.drawable.cvc_icon_amex)
 
 // A generic info outline icon.
-DECLARE_RESOURCE_ID(IDR_ANDROID_INFO_OUTLINE_LOGO_24DP,
-                    R.drawable.ic_info_outline_grey_24dp)
+DECLARE_RESOURCE_ID(IDR_ANDROID_INFO_OUTLINE_LOGO_24DP, R.drawable.ic_info_24dp)
 
 // About this site resources
 // Page insights logo is used for Google branded builds only.
@@ -98,5 +97,5 @@ DECLARE_RESOURCE_ID(IDR_ANDROID_ABOUT_THIS_SITE_LOGO_24DP,
                     R.drawable.ic_page_insights_logo_24dp)
 #else
 DECLARE_RESOURCE_ID(IDR_ANDROID_ABOUT_THIS_SITE_LOGO_24DP,
-                    R.drawable.ic_info_outline_grey_24dp)
+                    R.drawable.ic_info_24dp)
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING) && BUILDFLAG(IS_ANDROID)

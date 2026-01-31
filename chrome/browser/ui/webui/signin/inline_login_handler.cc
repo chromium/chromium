@@ -23,7 +23,6 @@
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
-#include "chrome/browser/ui/profiles/profile_picker.h"
 #include "chrome/common/pref_names.h"
 #include "components/metrics/metrics_pref_names.h"
 #include "components/prefs/pref_service.h"
@@ -81,8 +80,7 @@ void InlineLoginHandler::OnJavascriptDisallowed() {
   weak_ptr_factory_.InvalidateWeakPtrs();
 }
 
-void InlineLoginHandler::HandleInitializeMessage(
-    const base::Value::List& args) {
+void InlineLoginHandler::HandleInitializeMessage(const base::ListValue& args) {
   AllowJavascript();
   content::WebContents* contents = web_ui()->GetWebContents();
   content::StoragePartition* partition =
@@ -110,7 +108,7 @@ void InlineLoginHandler::HandleInitializeMessage(
 }
 
 void InlineLoginHandler::ContinueHandleInitializeMessage() {
-  base::Value::Dict params;
+  base::DictValue params;
 
   const std::string& app_locale = g_browser_process->GetApplicationLocale();
   params.Set("hl", app_locale);
@@ -136,8 +134,7 @@ void InlineLoginHandler::ContinueHandleInitializeMessage() {
 
   Profile* profile = Profile::FromWebUI(web_ui());
   std::string default_email;
-  if (reason == signin_metrics::Reason::kSigninPrimaryAccount ||
-      reason == signin_metrics::Reason::kForcedSigninPrimaryAccount) {
+  if (reason == signin_metrics::Reason::kSigninPrimaryAccount) {
     default_email = profile->GetPrefs()->GetString(
         prefs::kGoogleServicesLastSyncingUsername);
   } else {
@@ -164,7 +161,7 @@ void InlineLoginHandler::ContinueHandleInitializeMessage() {
 }
 
 void InlineLoginHandler::HandleCompleteLoginMessage(
-    const base::Value::List& args) {
+    const base::ListValue& args) {
   // When the network service is enabled, the webRequest API doesn't expose
   // cookie headers. So manually fetch the cookies for the GAIA URL from the
   // CookieManager.
@@ -181,11 +178,11 @@ void InlineLoginHandler::HandleCompleteLoginMessage(
 }
 
 void InlineLoginHandler::HandleCompleteLoginMessageWithCookies(
-    const base::Value::List& args,
+    const base::ListValue& args,
     const net::CookieAccessResultList& cookies,
     const net::CookieAccessResultList& excluded_cookies) {
   CHECK_EQ(args.size(), 1u);
-  const base::Value::Dict& dict = args[0].GetDict();
+  const base::DictValue& dict = args[0].GetDict();
 
   CompleteLoginParams params;
   params.email = CHECK_DEREF(dict.FindString("email"));
@@ -210,7 +207,7 @@ void InlineLoginHandler::HandleCompleteLoginMessageWithCookies(
 }
 
 void InlineLoginHandler::HandleSwitchToFullTabMessage(
-    const base::Value::List& args) {
+    const base::ListValue& args) {
   Browser* browser = chrome::FindBrowserWithTab(web_ui()->GetWebContents());
   if (browser) {
     // |web_ui| is already presented in a full tab. Ignore this call.
@@ -240,7 +237,7 @@ void InlineLoginHandler::HandleSwitchToFullTabMessage(
   CloseDialogFromJavascript();
 }
 
-void InlineLoginHandler::HandleDialogClose(const base::Value::List& args) {
+void InlineLoginHandler::HandleDialogClose(const base::ListValue& args) {
   // TODO(crbug.com/381231566): This is now dead code, it should be removed in
   // upcoming changes along with associated code.
 }

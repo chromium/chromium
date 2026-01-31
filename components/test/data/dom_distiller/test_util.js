@@ -13,7 +13,7 @@ window.completePromise = new Promise((res, rej) => {
 // TODO(crbug.com/40108835): Look into using that class directly.
 function TestReporter(runner) {
   let passes = 0;
-  let failures = 0;
+  const failures = [];
 
   runner.on('pass', function(test) {
     passes++;
@@ -21,7 +21,6 @@ function TestReporter(runner) {
 
   // TODO(crbug.com/40108835): Show diff between actual and expected results.
   runner.on('fail', function(test, err) {
-    failures++;
     let message = 'Mocha test failed: ' + test.fullTitle() + '\n';
 
     // Remove unhelpful mocha lines from stack trace.
@@ -36,14 +35,18 @@ function TestReporter(runner) {
       message += err.toString();
     }
 
+    failures.push(message);
     console.error(message);
   });
 
   runner.on('end', function() {
-    if (failures === 0 && passes > 0) {
+    if (failures.length > 0) {
+      return reject(new Error(failures.join('\n')));
+    }
+    if (passes > 0) {
       return resolve();
     }
-    return reject(new Error('Some tests failed, or no tests were run'));
+    return reject(new Error('No tests were run.'));
   });
 }
 

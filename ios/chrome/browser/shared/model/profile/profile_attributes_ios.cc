@@ -11,7 +11,7 @@
 
 namespace {
 
-using Dict = base::Value::Dict;
+using Dict = base::DictValue;
 
 // Constants used as key in the dictionary.
 constexpr std::string_view kActiveTimeKey = "active_time";
@@ -83,7 +83,7 @@ void SetString(Dict& dict, std::string_view key, std::string_view value) {
 template <typename StringSet = std::set<std::string>>
 StringSet GetStringSet(const Dict& dict, std::string_view key) {
   StringSet set;
-  if (const base::Value::List* list = dict.FindList(key)) {
+  if (const base::ListValue* list = dict.FindList(key)) {
     for (const base::Value& value : *list) {
       if (const std::string* string = value.GetIfString()) {
         set.emplace(*string);
@@ -99,7 +99,7 @@ void SetStringSet(Dict& dict, std::string_view key, const StringSet& set) {
   if (set.empty()) {
     dict.Remove(key);
   } else {
-    base::Value::List list;
+    base::ListValue list;
     for (const auto& string : set) {
       list.Append(ToValue(string));
     }
@@ -126,7 +126,7 @@ void SetDict(Dict& dict, std::string_view key, Dict value) {
 // static
 ProfileAttributesIOS ProfileAttributesIOS::CreateNew(
     std::string_view profile_name) {
-  base::Value::Dict dict;
+  base::DictValue dict;
   SetBool(dict, kNewProfile, true);
   return ProfileAttributesIOS(profile_name, std::move(dict));
 }
@@ -134,13 +134,13 @@ ProfileAttributesIOS ProfileAttributesIOS::CreateNew(
 // static
 ProfileAttributesIOS ProfileAttributesIOS::WithAttrs(
     std::string_view profile_name,
-    const base::Value::Dict& storage) {
+    const base::DictValue& storage) {
   return ProfileAttributesIOS(profile_name, storage.Clone());
 }
 
 ProfileAttributesIOS ProfileAttributesIOS::DeletedProfile(
     std::string_view profile_name) {
-  base::Value::Dict dict;
+  base::DictValue dict;
   SetBool(dict, kIsDeletedProfile, true);
   return ProfileAttributesIOS(profile_name, std::move(dict));
 }
@@ -240,12 +240,12 @@ void ProfileAttributesIOS::SetNotificationPermissions(Dict permissions) {
   SetDict(storage_, kNotificationPermissions, std::move(permissions));
 }
 
-base::Value::Dict ProfileAttributesIOS::GetStorage() && {
+base::DictValue ProfileAttributesIOS::GetStorage() && {
   return std::move(storage_);
 }
 
 ProfileAttributesIOS::ProfileAttributesIOS(std::string_view profile_name,
-                                           base::Value::Dict storage)
+                                           base::DictValue storage)
     : profile_name_(profile_name), storage_(std::move(storage)) {
   DCHECK(!profile_name_.empty());
 }

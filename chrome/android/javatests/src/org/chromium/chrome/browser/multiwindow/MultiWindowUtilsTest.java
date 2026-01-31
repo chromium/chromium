@@ -48,6 +48,7 @@ import org.chromium.chrome.test.transit.ChromeTransitTestRules;
 import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
 import org.chromium.chrome.test.transit.page.WebPageStation;
 import org.chromium.ui.base.DeviceFormFactor;
+import org.chromium.ui.test.util.DeviceRestriction;
 
 import java.util.concurrent.TimeoutException;
 
@@ -471,7 +472,10 @@ public class MultiWindowUtilsTest {
     @Test
     @SmallTest
     @Feature("MultiWindow")
-    @Restriction(DeviceFormFactor.TABLET_OR_DESKTOP)
+    @Restriction({
+        DeviceFormFactor.TABLET_OR_DESKTOP,
+        DeviceRestriction.RESTRICTION_TYPE_NON_FOLDABLE
+    })
     @Features.EnableFeatures({ChromeFeatureList.ANDROID_OPEN_INCOGNITO_AS_WINDOW})
     public void
             testIsOpenInOtherWindowSupported_noOtherActivity_incognitoWindowEnabled_returnsFalse() {

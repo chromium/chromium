@@ -26,11 +26,11 @@ const char16_t kTestTitle2[] = u"Foo2";
 const char kTestUrl1[] = "http://foo1.com/";
 const char kTestUrl2[] = "http://foo2.com/";
 
-base::Value::Dict CreatePolicyLink(const std::string& url,
-                                   const std::string& title,
-                                   bool allow_user_edit,
-                                   bool allow_user_delete) {
-  base::Value::Dict link;
+base::DictValue CreatePolicyLink(const std::string& url,
+                                 const std::string& title,
+                                 bool allow_user_edit,
+                                 bool allow_user_delete) {
+  base::DictValue link;
   link.Set(EnterpriseShortcutsStore::kDictionaryKeyUrl, url);
   link.Set(EnterpriseShortcutsStore::kDictionaryKeyTitle, title);
   link.Set(EnterpriseShortcutsStore::kDictionaryKeyPolicyOrigin,
@@ -199,7 +199,7 @@ TEST_F(EnterpriseShortcutsStoreTest,
       enterprise_shortcuts_store_->RegisterCallbackForOnChanged(callback.Get());
   EXPECT_CALL(callback, Run());
 
-  base::Value::List policy_links;
+  base::ListValue policy_links;
   policy_links.Append(
       CreatePolicyLink(kTestUrl1, base::UTF16ToUTF8(kTestTitle1),
                        /*allow_user_edit=*/true, /*allow_user_delete=*/false));
@@ -225,7 +225,7 @@ TEST_F(EnterpriseShortcutsStoreTest,
       enterprise_shortcuts_store_->RegisterCallbackForOnChanged(callback.Get());
   EXPECT_CALL(callback, Run());
 
-  base::Value::List policy_links;
+  base::ListValue policy_links;
   policy_links.Append(
       CreatePolicyLink(kTestUrl1, base::UTF16ToUTF8(kTestTitle1),
                        /*allow_user_edit=*/true, /*allow_user_delete=*/false));
@@ -249,8 +249,8 @@ TEST_F(EnterpriseShortcutsStoreTest, RetrieveLinks_InvalidDataReturnsEmpty) {
       enterprise_shortcuts_store_->RegisterCallbackForOnChanged(callback.Get());
   EXPECT_CALL(callback, Run()).Times(0);
 
-  base::Value::List stored_links;
-  base::Value::Dict invalid_link;
+  base::ListValue stored_links;
+  base::DictValue invalid_link;
   invalid_link.Set(EnterpriseShortcutsStore::kDictionaryKeyUrl, kTestUrl1);
   // Missing title.
   stored_links.Append(std::move(invalid_link));
@@ -271,7 +271,7 @@ TEST_F(EnterpriseShortcutsStoreTest,
 
   ASSERT_TRUE(enterprise_shortcuts_store_->RetrieveLinks().empty());
 
-  base::Value::List policy_links;
+  base::ListValue policy_links;
   policy_links.Append(
       CreatePolicyLink(kTestUrl1, base::UTF16ToUTF8(kTestTitle1),
                        /*allow_user_edit=*/true, /*allow_user_delete=*/false));
@@ -314,7 +314,7 @@ TEST_F(EnterpriseShortcutsStoreTest, OnPreferenceChanged_PolicyRemoved) {
   enterprise_shortcuts_store_->StoreLinks({link});
   ASSERT_FALSE(enterprise_shortcuts_store_->RetrieveLinks().empty());
 
-  prefs_.SetList(prefs::kEnterpriseShortcutsPolicyList, base::Value::List());
+  prefs_.SetList(prefs::kEnterpriseShortcutsPolicyList, base::ListValue());
 
   EXPECT_TRUE(enterprise_shortcuts_store_->RetrieveLinks().empty());
 }
@@ -336,7 +336,7 @@ TEST_F(EnterpriseShortcutsStoreTest, OnPreferenceChanged_Merge_AddNewLink) {
       enterprise_shortcuts_store_->RetrieveLinks();
   ASSERT_EQ(1u, retrieved_links.size());
 
-  base::Value::List policy_links;
+  base::ListValue policy_links;
   policy_links.Append(
       CreatePolicyLink(kTestUrl1, base::UTF16ToUTF8(kTestTitle1),
                        /*allow_user_edit=*/true, /*allow_user_delete=*/true));
@@ -380,7 +380,7 @@ TEST_F(EnterpriseShortcutsStoreTest, OnPreferenceChanged_Merge_RemoveLink) {
       enterprise_shortcuts_store_->RetrieveLinks();
   ASSERT_EQ(2u, retrieved_links.size());
 
-  base::Value::List policy_links;
+  base::ListValue policy_links;
   policy_links.Append(
       CreatePolicyLink(kTestUrl1, base::UTF16ToUTF8(kTestTitle1),
                        /*allow_user_edit=*/true, /*allow_user_delete=*/true));
@@ -405,7 +405,7 @@ TEST_F(EnterpriseShortcutsStoreTest, OnPreferenceChanged_Merge_UpdateLink) {
       /*allow_user_edit=*/true, /*allow_user_delete=*/true);
   enterprise_shortcuts_store_->StoreLinks({user_link});
 
-  base::Value::List policy_links;
+  base::ListValue policy_links;
   policy_links.Append(
       CreatePolicyLink(kTestUrl1, base::UTF16ToUTF8(kTestTitle2),
                        /*allow_user_edit=*/false, /*allow_user_delete=*/false));
@@ -434,7 +434,7 @@ TEST_F(EnterpriseShortcutsStoreTest,
       /*allow_user_edit=*/true, /*allow_user_delete=*/true);
   enterprise_shortcuts_store_->StoreLinks({user_link});
 
-  base::Value::List policy_links;
+  base::ListValue policy_links;
   policy_links.Append(
       CreatePolicyLink(kTestUrl1, base::UTF16ToUTF8(kTestTitle2),
                        /*allow_user_edit=*/true, /*allow_user_delete=*/false));
@@ -468,7 +468,7 @@ TEST_F(EnterpriseShortcutsStoreTest,
       /*allow_user_edit=*/true, /*allow_user_delete=*/true);
   enterprise_shortcuts_store_->StoreLinks({user_link});
 
-  base::Value::List policy_links;
+  base::ListValue policy_links;
   policy_links.Append(
       CreatePolicyLink(kTestUrl1, base::UTF16ToUTF8(kTestTitle1),
                        /*allow_user_edit=*/true, /*allow_user_delete=*/false));

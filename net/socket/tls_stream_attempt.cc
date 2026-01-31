@@ -8,6 +8,7 @@
 #include <optional>
 #include <string_view>
 
+#include "base/check.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/trace_event/trace_event.h"
 #include "base/values.h"
@@ -19,6 +20,7 @@
 #include "net/socket/client_socket_factory.h"
 #include "net/socket/tcp_stream_attempt.h"
 #include "net/ssl/ssl_cert_request_info.h"
+#include "net/ssl/ssl_info.h"
 
 namespace net {
 
@@ -75,8 +77,8 @@ LoadState TlsStreamAttempt::GetLoadState() const {
   }
 }
 
-base::Value::Dict TlsStreamAttempt::GetInfoAsValue() const {
-  base::Value::Dict dict;
+base::DictValue TlsStreamAttempt::GetInfoAsValue() const {
+  base::DictValue dict;
   dict.Set("next_state", StateToString(next_state_));
   dict.Set("tcp_handshake_completed", tcp_handshake_completed_);
   dict.Set("tls_handshake_started", tls_handshake_started_);
@@ -97,8 +99,8 @@ int TlsStreamAttempt::StartInternal() {
   return DoLoop(OK);
 }
 
-base::Value::Dict TlsStreamAttempt::GetNetLogStartParams() {
-  base::Value::Dict dict;
+base::DictValue TlsStreamAttempt::GetNetLogStartParams() {
+  base::DictValue dict;
   dict.Set("host_port", host_port_pair_.ToString());
   return dict;
 }
@@ -201,8 +203,7 @@ int TlsStreamAttempt::DoTlsAttempt(int rv) {
     const SSLContextConfig& ssl_context_config =
         params().ssl_client_context->config();
     ssl_config_ = base_ssl_config_;
-    if (!ssl_context_config.trust_anchor_ids.empty() &&
-        base::FeatureList::IsEnabled(features::kTLSTrustAnchorIDs)) {
+    if (ssl_context_config.ShouldAdvertiseTrustAnchorIDs()) {
       ssl_config_->trust_anchor_ids = ssl_context_config.SelectTrustAnchorIDs(
           endpoint->metadata.trust_anchor_ids);
     }
@@ -275,28 +276,30 @@ int TlsStreamAttempt::DoTlsAttemptComplete(int rv) {
 
     std::vector<std::vector<uint8_t>> server_trust_anchor_ids =
         ssl_socket_->GetServerTrustAnchorIDsForRetry();
+    SSLInfo ssl_info;
+    CHECK(ssl_socket_->GetSSLInfo(&ssl_info));
+    CHECK(ssl_info.cert.get());
     // https://tlswg.org/tls-trust-anchor-ids/draft-ietf-tls-trust-anchor-ids.html#name-retry-mechanism:
     // If the EncryptedExtensions had no trust_anchor extension, or no match was
     // found, the client returns the error to the application.
-    if (!server_trust_anchor_ids.empty()) {
-      std::vector<uint8_t> trust_anchor_ids_for_retry =
-          params().ssl_client_context->config().SelectTrustAnchorIDs(
-              server_trust_anchor_ids);
-      if (!trust_anchor_ids_for_retry.empty()) {
-        retried_for_trust_anchor_ids_ = true;
-        ssl_config_->trust_anchor_ids = trust_anchor_ids_for_retry;
+    std::optional<std::vector<uint8_t>> trust_anchor_ids_for_retry =
+        params().ssl_client_context->config().SelectTrustAnchorIDsForRetry(
+            ssl_info.cert.get(), server_trust_anchor_ids,
+            &trust_anchor_retry_used_mtc_fallback_);
+    if (trust_anchor_ids_for_retry.has_value()) {
+      retried_for_trust_anchor_ids_ = true;
+      ssl_config_->trust_anchor_ids = *trust_anchor_ids_for_retry;
 
-        ResetStateForRestart();
-        next_state_ = State::kTcpAttempt;
-        return OK;
-      }
+      ResetStateForRestart();
+      next_state_ = State::kTcpAttempt;
+      return OK;
     }
   }
 
   SSLClientSocket::RecordSSLConnectResult(
       ssl_socket_.get(), rv, is_ech_capable_, ech_enabled, ech_retry_configs_,
       trust_anchor_ids_from_dns_, retried_for_trust_anchor_ids_,
-      connect_timing());
+      trust_anchor_retry_used_mtc_fallback_, connect_timing());
 
   if (rv == OK || IsCertificateError(rv)) {
     CHECK(ssl_socket_);

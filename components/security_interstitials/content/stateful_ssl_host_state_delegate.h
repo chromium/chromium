@@ -21,7 +21,7 @@ class PrefService;
 
 namespace base {
 class Clock;
-class Value;
+class DictValue;
 class FilePath;
 }  //  namespace base
 
@@ -132,9 +132,9 @@ class StatefulSSLHostStateDelegate : public content::SSLHostStateDelegate,
   // GetValidCertDecisionsDict will create a new set of entries within the
   // dictionary if they do not already exist. Otherwise will fail and return if
   // NULL if they do not exist.
-  base::Value::Dict* GetValidCertDecisionsDict(
+  base::DictValue* GetValidCertDecisionsDict(
       CreateDictionaryEntriesDisposition create_entries,
-      base::Value::Dict& dict);
+      base::DictValue& dict);
 
   bool HasCertAllowExceptionForAnyHost(
       content::StoragePartition* storage_partition);

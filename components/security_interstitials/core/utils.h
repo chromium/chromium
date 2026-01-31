@@ -11,7 +11,7 @@ namespace security_interstitials {
 
 // Adjusts the interstitial page's template parameter "fontsize" by the font
 // size multiplier.
-void AdjustFontSize(base::Value::Dict& load_time_data,
+void AdjustFontSize(base::DictValue& load_time_data,
                     float font_size_multiplier);
 
 }  // namespace security_interstitials

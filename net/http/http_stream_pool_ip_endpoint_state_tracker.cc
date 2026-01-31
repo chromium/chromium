@@ -143,11 +143,10 @@ void HttpStreamPool::IPEndPointStateTracker::FindBetterIPEndPoint(
   }
 }
 
-base::Value::List HttpStreamPool::IPEndPointStateTracker::GetInfoAsValue()
-    const {
-  base::Value::List list;
+base::ListValue HttpStreamPool::IPEndPointStateTracker::GetInfoAsValue() const {
+  base::ListValue list;
   for (const auto& [ip_endpoint, state] : ip_endpoint_states_) {
-    list.Append(base::Value::Dict()
+    list.Append(base::DictValue()
                     .Set("ip_endpoint", ip_endpoint.ToString())
                     .Set("state", static_cast<int>(state)));
   }

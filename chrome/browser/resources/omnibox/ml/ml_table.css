@@ -3,7 +3,7 @@
  * found in the LICENSE file. */
 
 :host {
-  display: block
+  display: block;
 }
 
 select {

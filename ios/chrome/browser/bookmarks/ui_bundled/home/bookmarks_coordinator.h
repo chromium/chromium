@@ -51,10 +51,6 @@ class GURL;
 // Presents the bookmark editor for the given URL `node`.
 - (void)presentEditorForURLNode:(const bookmarks::BookmarkNode*)node;
 
-// Removes any bookmark modal controller from view if visible.
-// override this method.
-- (void)dismissBookmarkModalControllerAnimated:(BOOL)animated;
-
 // Removes any snackbar related to bookmarks that could have been presented.
 - (void)dismissSnackbar;
 

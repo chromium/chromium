@@ -112,6 +112,8 @@ constexpr auto kReasonDescriptionMap = std::to_array<ReasonAndDescription>({
     {CompositingReason::kCanvas,
      "Is an accelerated canvas, or is a display list backed canvas that was "
      "promoted to a layer based on a performance heuristic."},
+    {CompositingReason::kCanvasChild,
+     "Is the direct child of a canvas with 'layoutSubtree' attribute."},
     {CompositingReason::kPlugin, "Is an accelerated plugin."},
     {CompositingReason::kScrollbar, "Is an accelerated scrollbar."},
     {CompositingReason::kLinkHighlight, "Is a tap highlight on a link."},

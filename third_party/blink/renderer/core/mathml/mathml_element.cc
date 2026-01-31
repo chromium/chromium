@@ -8,6 +8,7 @@
 #include "third_party/blink/renderer/core/css/css_property_name.h"
 #include "third_party/blink/renderer/core/css/css_to_length_conversion_data.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser.h"
+#include "third_party/blink/renderer/core/css/parser/css_parser_local_context.h"
 #include "third_party/blink/renderer/core/css_value_keywords.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
@@ -148,10 +149,15 @@ const CSSPrimitiveValue* MathMLElement::ParseMathLength(
   if (!FastHasAttribute(attr_name))
     return nullptr;
   auto value = FastGetAttribute(attr_name);
+  // TODO(crbug.com/476061189) We are using attribute name as property name for
+  // caching property-dependent random() values. This behaviour is not
+  // specified.
+  CSSParserLocalContext local_context = CSSParserLocalContext(
+      CSSPropertyName(AtomicString(attr_name.ToString())));
   const CSSPrimitiveValue* parsed_value = CSSParser::ParseLengthPercentage(
       value,
       StrictCSSParserContext(GetExecutionContext()->GetSecureContextMode()),
-      value_range);
+      local_context, value_range);
   if (!parsed_value || parsed_value->IsCalculated() ||
       (parsed_value->IsPercentage() &&
        allow_percentages == AllowPercentages::kNo)) {

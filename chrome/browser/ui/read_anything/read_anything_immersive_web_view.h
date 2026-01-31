@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_READ_ANYTHING_READ_ANYTHING_IMMERSIVE_WEB_VIEW_H_
 #define CHROME_BROWSER_UI_READ_ANYTHING_READ_ANYTHING_IMMERSIVE_WEB_VIEW_H_
 
+#include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/read_anything/read_anything_enums.h"
 #include "chrome/browser/ui/webui/side_panel/read_anything/read_anything_untrusted_ui.h"
@@ -29,6 +30,7 @@ class ReadAnythingImmersiveWebView : public views::WebView,
 
  public:
   ReadAnythingImmersiveWebView(
+      base::OnceClosure on_show_ui_callback,
       std::unique_ptr<WebUIContentsWrapperT<ReadAnythingUntrustedUI>>
           contents_wrapper,
       ReadAnythingOpenTrigger trigger);
@@ -36,13 +38,18 @@ class ReadAnythingImmersiveWebView : public views::WebView,
   ~ReadAnythingImmersiveWebView() override;
 
   std::unique_ptr<WebUIContentsWrapperT<ReadAnythingUntrustedUI>>
-  TakeContentsWrapper();
+  CloseAndTakeContentsWrapper();
 
   // WebUIContentsWrapper::Host:
   void ShowUI() override;
   void CloseUI() override;
+  bool HandleContextMenu(content::RenderFrameHost& render_frame_host,
+                         const content::ContextMenuParams& params) override;
+  bool HandleKeyboardEvent(content::WebContents* source,
+                           const input::NativeWebKeyboardEvent& event) override;
 
  private:
+  base::OnceClosure on_show_ui_callback_;
   std::unique_ptr<WebUIContentsWrapperT<ReadAnythingUntrustedUI>>
       contents_wrapper_;
   const ReadAnythingOpenTrigger trigger_;

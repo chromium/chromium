@@ -18,7 +18,6 @@
 #include "base/memory/unsafe_shared_memory_region.h"
 #include "base/sync_socket.h"
 #include "base/test/mock_callback.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
@@ -26,7 +25,6 @@
 #include "media/base/audio_glitch_info.h"
 #include "media/base/audio_parameters.h"
 #include "media/base/channel_layout.h"
-#include "media/base/media_switches.h"
 #include "services/audio/input_glitch_counter.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -39,7 +37,6 @@ namespace {
 
 // Number of audio buffers in the faked ring buffer.
 const int kSegments = 10;
-enum class ConfirmReadsViaShmemSetting { kEnabled, kDisabled };
 
 }  // namespace
 
@@ -47,14 +44,11 @@ enum class ConfirmReadsViaShmemSetting { kEnabled, kDisabled };
 // outstanding reads, i.e. the diff between send and receive calls.
 class MockCancelableSyncSocket : public base::CancelableSyncSocket {
  public:
-  explicit MockCancelableSyncSocket(int buffer_size,
-                                    bool confirm_reads_via_shmem)
+  explicit MockCancelableSyncSocket(int buffer_size)
       : in_failure_mode_(false),
         writes_(0),
         reads_(0),
-        receives_(0),
-        buffer_size_(buffer_size),
-        confirm_reads_via_shmem_(confirm_reads_via_shmem) {}
+        buffer_size_(buffer_size) {}
 
   MockCancelableSyncSocket(const MockCancelableSyncSocket&) = delete;
   MockCancelableSyncSocket& operator=(const MockCancelableSyncSocket&) = delete;
@@ -68,28 +62,19 @@ class MockCancelableSyncSocket : public base::CancelableSyncSocket {
   }
 
   size_t Receive(base::span<uint8_t> buffer) override {
-    EXPECT_FALSE(confirm_reads_via_shmem_);
-    EXPECT_EQ(0u, buffer.size() % sizeof(uint32_t));
-
-    if (in_failure_mode_)
-      return 0;
-    if (receives_ == reads_)
-      return 0;
-
-    base::SpanWriter writer(buffer);
-    while (receives_ < reads_ && writer.remaining()) {
-      ++receives_;
-      writer.WriteU32LittleEndian(++read_buffer_index_);
-    }
-    return writer.num_written();
+    // With confirmation via shared memory, Receive() should not be called
+    // for confirmation tokens.
+    ADD_FAILURE() << "Receive() should not be called.";
+    return 0;
   }
 
   size_t Peek() override {
-    EXPECT_FALSE(confirm_reads_via_shmem_);
-    return (reads_ - receives_) * sizeof(uint32_t);
+    // With confirmation via shared memory, Peek() should not be called.
+    ADD_FAILURE() << "Peek() should not be called.";
+    return 0;
   }
 
-  // Simluates reading |buffers| number of buffers from the ring buffer.
+  // Simulates reading |buffers| number of buffers from the ring buffer.
   void Read(int buffers) {
     reads_ += buffers;
     EXPECT_LE(reads_, writes_);
@@ -106,10 +91,7 @@ class MockCancelableSyncSocket : public base::CancelableSyncSocket {
   bool in_failure_mode_;
   int writes_;
   int reads_;
-  int receives_;
   int buffer_size_;
-  uint32_t read_buffer_index_{0};
-  bool confirm_reads_via_shmem_;
 };
 
 class MockInputGlitchCounter : public InputGlitchCounter {
@@ -124,21 +106,9 @@ class MockInputGlitchCounter : public InputGlitchCounter {
   MOCK_METHOD1(ReportMissedReadDeadline, void(bool));
 };
 
-class InputSyncWriterTest
-    : public testing::TestWithParam<ConfirmReadsViaShmemSetting> {
+class InputSyncWriterTest : public testing::Test {
  public:
   InputSyncWriterTest() {
-    confirm_reads_via_shmem_ =
-        GetParam() == ConfirmReadsViaShmemSetting::kEnabled;
-
-    if (confirm_reads_via_shmem_) {
-      scoped_feature_list_.InitWithFeatures(
-          {base::test::FeatureRef(media::kAudioInputConfirmReadsViaShmem)}, {});
-    } else {
-      scoped_feature_list_.InitWithFeatures(
-          {}, {base::test::FeatureRef(media::kAudioInputConfirmReadsViaShmem)});
-    }
-
     const int sampling_frequency_hz = 16000;
     const int frames = sampling_frequency_hz / 100;  // 10 ms
     const media::AudioParameters audio_params(
@@ -150,8 +120,7 @@ class InputSyncWriterTest
     auto shared_memory = base::UnsafeSharedMemoryRegion::Create(data_size);
     EXPECT_TRUE(shared_memory.IsValid());
 
-    auto socket = std::make_unique<MockCancelableSyncSocket>(
-        kSegments, confirm_reads_via_shmem_);
+    auto socket = std::make_unique<MockCancelableSyncSocket>(kSegments);
     socket_ = socket.get();
 
     auto mock_input_glitch_counter =
@@ -192,14 +161,9 @@ class InputSyncWriterTest
                                      size_t number_of_buffers_in_fifo) {
     EXPECT_EQ(number_of_buffers_in_socket, socket_->NumberOfBuffersFilled());
     EXPECT_EQ(number_of_buffers_in_fifo, writer_->overflow_data_.size());
-    if (!confirm_reads_via_shmem_) {
-      EXPECT_EQ(number_of_verifications_in_socket, socket_->Peek());
-    }
 
     return number_of_buffers_in_socket == socket_->NumberOfBuffersFilled() &&
-           number_of_buffers_in_fifo == writer_->overflow_data_.size() &&
-           (confirm_reads_via_shmem_ ||
-            number_of_verifications_in_socket == socket_->Peek());
+           number_of_buffers_in_fifo == writer_->overflow_data_.size();
   }
 
   void TestGlitchInfoExpectations(
@@ -228,12 +192,8 @@ class InputSyncWriterTest
   }
 
   void ReadDataOnRenderer(int times) {
-    if (confirm_reads_via_shmem_) {
-      for (int i = 0; i < times; i++) {
-        SimulateConfirmReadsViaShmem();
-      }
-    } else {
-      socket_->Read(times);
+    for (int i = 0; i < times; i++) {
+      SimulateConfirmReadsViaShmem();
     }
   }
 
@@ -250,13 +210,11 @@ class InputSyncWriterTest
   base::UnsafeSharedMemoryRegion renderer_shared_memory_region_;
   base::WritableSharedMemoryMapping renderer_shared_memory_mapping_;
   media::AudioParameters params_;
-  base::test::ScopedFeatureList scoped_feature_list_;
   int current_renderer_side_buffer_ = 0;
   int segment_length_;
-  bool confirm_reads_via_shmem_;
 };
 
-TEST_P(InputSyncWriterTest, SingleWriteAndRead) {
+TEST_F(InputSyncWriterTest, SingleWriteAndRead) {
   EXPECT_CALL(mock_logger_, Run(_)).Times(GetTotalNumberOfExpectedLogCalls(0));
 
   EXPECT_CALL(*mock_input_glitch_counter_, ReportDroppedData(false));
@@ -271,7 +229,7 @@ TEST_P(InputSyncWriterTest, SingleWriteAndRead) {
   TestGlitchInfoExpectations(0, glitch_info);
 }
 
-TEST_P(InputSyncWriterTest, MultipleWritesAndReads) {
+TEST_F(InputSyncWriterTest, MultipleWritesAndReads) {
   EXPECT_CALL(mock_logger_, Run(_)).Times(GetTotalNumberOfExpectedLogCalls(0));
 
   for (int i = 1; i <= 2 * kSegments; ++i) {
@@ -289,7 +247,7 @@ TEST_P(InputSyncWriterTest, MultipleWritesAndReads) {
   }
 }
 
-TEST_P(InputSyncWriterTest, MultipleWritesNoReads) {
+TEST_F(InputSyncWriterTest, MultipleWritesNoReads) {
   EXPECT_CALL(mock_logger_, Run(_)).Times(GetTotalNumberOfExpectedLogCalls(1));
 
   // Fill the ring buffer.
@@ -309,7 +267,7 @@ TEST_P(InputSyncWriterTest, MultipleWritesNoReads) {
   }
 }
 
-TEST_P(InputSyncWriterTest, FillAndEmptyRingBuffer) {
+TEST_F(InputSyncWriterTest, FillAndEmptyRingBuffer) {
   EXPECT_CALL(mock_logger_, Run(_)).Times(GetTotalNumberOfExpectedLogCalls(2));
 
   // Fill the ring buffer.
@@ -358,7 +316,7 @@ TEST_P(InputSyncWriterTest, FillAndEmptyRingBuffer) {
   EXPECT_TRUE(TestSocketAndFifoExpectations(0, 2 * sizeof(uint32_t), 0));
 }
 
-TEST_P(InputSyncWriterTest, FillRingBufferAndFifo) {
+TEST_F(InputSyncWriterTest, FillRingBufferAndFifo) {
   EXPECT_CALL(mock_logger_, Run(_)).Times(GetTotalNumberOfExpectedLogCalls(2));
 
   // Fill the ring buffer.
@@ -384,7 +342,7 @@ TEST_P(InputSyncWriterTest, FillRingBufferAndFifo) {
   EXPECT_TRUE(TestSocketAndFifoExpectations(kSegments, 0, max_fifo_size));
 }
 
-TEST_P(InputSyncWriterTest, MultipleFillAndEmptyRingBufferAndPartOfFifo) {
+TEST_F(InputSyncWriterTest, MultipleFillAndEmptyRingBufferAndPartOfFifo) {
   EXPECT_CALL(mock_logger_, Run(_)).Times(GetTotalNumberOfExpectedLogCalls(4));
 
   // Fill the ring buffer.
@@ -467,7 +425,7 @@ TEST_P(InputSyncWriterTest, MultipleFillAndEmptyRingBufferAndPartOfFifo) {
   EXPECT_TRUE(TestSocketAndFifoExpectations(0, 3 * sizeof(uint32_t), 0));
 }
 
-TEST_P(InputSyncWriterTest, ShouldNotDropGlitchInfoInFifo) {
+TEST_F(InputSyncWriterTest, ShouldNotDropGlitchInfoInFifo) {
   // We are not testing the logger or glitch counter in this test.
   EXPECT_CALL(mock_logger_, Run(_)).Times(testing::AnyNumber());
   EXPECT_CALL(*mock_input_glitch_counter_, ReportDroppedData(_))
@@ -502,7 +460,7 @@ TEST_P(InputSyncWriterTest, ShouldNotDropGlitchInfoInFifo) {
   TestGlitchInfoExpectations(1, glitch_info_2);
 }
 
-TEST_P(InputSyncWriterTest, ShouldNotDropGlitchInfoWhenDroppingAudio) {
+TEST_F(InputSyncWriterTest, ShouldNotDropGlitchInfoWhenDroppingAudio) {
   // We are not testing the logger or glitch counter in this test.
   EXPECT_CALL(mock_logger_, Run(_)).Times(testing::AnyNumber());
   EXPECT_CALL(*mock_input_glitch_counter_, ReportDroppedData(_))
@@ -548,19 +506,5 @@ TEST_P(InputSyncWriterTest, ShouldNotDropGlitchInfoWhenDroppingAudio) {
   TestGlitchInfoExpectations((index_of_dropped_buffer) % kSegments,
                              glitch_info);
 }
-
-std::string ParamNameFunc(
-    const testing::TestParamInfo<ConfirmReadsViaShmemSetting>& info) {
-  return info.param == ConfirmReadsViaShmemSetting::kEnabled
-             ? "ConfirmReadsViaShmemEnabled"
-             : "ConfirmReadsViaShmemDisabled";
-}
-
-INSTANTIATE_TEST_SUITE_P(
-    InputSyncWriterTest,
-    InputSyncWriterTest,
-    testing::Values(ConfirmReadsViaShmemSetting::kEnabled,
-                    ConfirmReadsViaShmemSetting::kDisabled),
-    ParamNameFunc);
 
 }  // namespace audio

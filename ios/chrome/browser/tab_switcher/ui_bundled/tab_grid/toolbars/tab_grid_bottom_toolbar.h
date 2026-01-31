@@ -90,6 +90,9 @@
 // Sets whether the incognito toolbar background should be hidden.
 - (void)setIncognitoBackgroundHidden:(BOOL)hidden;
 
+// Sets the background color of the new tab button.
+- (void)updateNewTabButtonBackgroundColor:(UIColor*)backgroundColor;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_TAB_SWITCHER_UI_BUNDLED_TAB_GRID_TOOLBARS_TAB_GRID_BOTTOM_TOOLBAR_H_

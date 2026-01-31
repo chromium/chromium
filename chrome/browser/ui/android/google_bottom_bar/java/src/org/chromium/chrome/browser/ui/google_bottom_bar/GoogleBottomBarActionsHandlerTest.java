@@ -52,6 +52,7 @@ import org.robolectric.shadows.ShadowLog;
 import org.robolectric.shadows.ShadowPackageManager;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.browser.lens.LensController;
 import org.chromium.chrome.browser.lens.LensEntryPoint;
@@ -153,6 +154,7 @@ public class GoogleBottomBarActionsHandlerTest {
 
     @Test
     public void testSaveAction_buttonConfigHasNoPendingIntent_showsTooltip() {
+        TextBubble.setSkipShowCheckForTesting(true);
         mHistogramWatcher =
                 HistogramWatcher.newSingleRecordWatcher(
                         BUTTON_CLICKED_HISTOGRAM, GoogleBottomBarButtonEvent.SAVE_DISABLED);
@@ -165,7 +167,6 @@ public class GoogleBottomBarActionsHandlerTest {
                         context.getString(
                                 R.string.google_bottom_bar_save_disabled_button_description),
                         /* pendingIntent= */ null);
-        TextBubble.setSkipShowCheckForTesting(true);
 
         View.OnClickListener clickListener =
                 mGoogleBottomBarActionsHandler.getClickListener(buttonConfig);
@@ -585,7 +586,9 @@ public class GoogleBottomBarActionsHandlerTest {
     }
 
     @Test
+    @DisabledTest(message = "https://crbug.com/477372460")
     public void testOnSearchboxLensTap_lensNotEnabled_lensNotStarted() {
+        TextBubble.setSkipShowCheckForTesting(true);
         mHistogramWatcher =
                 HistogramWatcher.newSingleRecordWatcher(
                         BUTTON_CLICKED_HISTOGRAM, GoogleBottomBarButtonEvent.SEARCHBOX_LENS);

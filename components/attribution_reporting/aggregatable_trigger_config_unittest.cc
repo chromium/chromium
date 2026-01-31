@@ -73,7 +73,7 @@ TEST(AggregatableTriggerConfigTest, ParseAggregatableSourceRegistrationTime) {
   for (const auto& test_case : kTestCases) {
     SCOPED_TRACE(test_case.desc);
 
-    base::Value::Dict input = base::test::ParseJsonDict(test_case.json);
+    base::DictValue input = base::test::ParseJsonDict(test_case.json);
 
     EXPECT_THAT(AggregatableTriggerConfig::Parse(input), test_case.matches);
   }
@@ -126,7 +126,7 @@ TEST(AggregatableTriggerConfigTest, ParseTriggerContextId) {
   for (const auto& test_case : kTestCases) {
     SCOPED_TRACE(test_case.desc);
 
-    base::Value::Dict input = base::test::ParseJsonDict(test_case.json);
+    base::DictValue input = base::test::ParseJsonDict(test_case.json);
     EXPECT_THAT(AggregatableTriggerConfig::Parse(input),
                 test_case.enabled_matches);
   }
@@ -178,7 +178,7 @@ TEST(AggregatableTriggerConfigTest, ParseAggregatableFilteringIdMaxByte) {
   for (const auto& test_case : kTestCases) {
     SCOPED_TRACE(test_case.desc);
 
-    base::Value::Dict input = base::test::ParseJsonDict(test_case.json);
+    base::DictValue input = base::test::ParseJsonDict(test_case.json);
     EXPECT_THAT(AggregatableTriggerConfig::Parse(input), test_case.matches);
   }
 }
@@ -289,7 +289,7 @@ TEST(AggregatableTriggerConfigTest, Create) {
 TEST(AggregatableTriggerConfigTest, Parse_TriggerContextIdLength) {
   constexpr char kTriggerContextId[] = "trigger_context_id";
 
-  base::Value::Dict dict;
+  base::DictValue dict;
   dict.Set(kTriggerContextId, std::string(64, 'a'));
   EXPECT_THAT(AggregatableTriggerConfig::Parse(dict),
               ValueIs(Property(&AggregatableTriggerConfig::trigger_context_id,
@@ -337,7 +337,7 @@ TEST(AggregatableTriggerConfigTest, Serialize) {
   for (const auto& test_case : kTestCases) {
     SCOPED_TRACE(test_case.input);
 
-    base::Value::Dict dict;
+    base::DictValue dict;
     test_case.input.Serialize(dict);
     EXPECT_THAT(dict, base::test::IsJson(test_case.expected_json));
   }

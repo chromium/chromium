@@ -3,10 +3,10 @@
 // found in the LICENSE file.
 
 import {BrowserProxy, PageCallbackRouter, PageHandlerRemote} from 'chrome://omnibox-popup.top-chrome/omnibox_popup.js';
-import {assertTrue} from 'chrome://webui-test/chai_assert.js';
-import {TestMock} from 'chrome://webui-test/test_mock.js';
-import {eventToPromise, microtasksFinished} from 'chrome://webui-test/test_util.js';
 import type {PageRemote} from 'chrome://omnibox-popup.top-chrome/omnibox_popup.js';
+import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {TestMock} from 'chrome://webui-test/test_mock.js';
+import {microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 class TestAimBrowserProxy {
   callbackRouter: PageCallbackRouter;
@@ -27,16 +27,6 @@ suite('AimAppTest', function() {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     testProxy = new TestAimBrowserProxy();
     BrowserProxy.setInstance(testProxy as unknown as BrowserProxy);
-  });
-
-  test('ContextMenuPrevented', async function() {
-    const app = document.createElement('omnibox-aim-app');
-    document.body.appendChild(app);
-    const whenFired = eventToPromise('contextmenu', document.documentElement);
-    document.documentElement.dispatchEvent(
-        new Event('contextmenu', {cancelable: true}));
-    const e = await whenFired;
-    assertTrue(e.defaultPrevented);
   });
 
   test('ClearsInputOnCloseByDefault', async function() {
@@ -154,5 +144,28 @@ suite('AimAppTest', function() {
     });
     await microtasksFinished();
     assertTrue(glowAnimationPlayed);
+  });
+
+  test('VoiceInputClearedAndReturnedEmptyOnClose', async function() {
+    const app = document.createElement('omnibox-aim-app');
+    document.body.appendChild(app);
+
+    // Set some input.
+    app.$.composebox.addSearchContext({
+      input: 'voice command',
+      attachments: [],
+      toolMode: 0,
+    });
+    // Force isVoiceInput to true.
+    (app.$.composebox as any).isVoiceInput_ = true;
+
+    // Even if we want to preserve context, voice input should override this.
+    testProxy.page.setPreserveContextOnClose(true);
+
+    const {input} = await testProxy.page.onPopupHidden();
+
+    assertEquals('', input);
+    assertEquals('', app.$.composebox.getInputText());
+    assertFalse(app.$.composebox.isVoiceInput);
   });
 });

@@ -4,7 +4,7 @@
 
 module gfx.mojom;
 
-// See ui/gfx/native_widget_types.h.
+// See ui/gfx/native_ui_types.h.
 struct AcceleratedWidget {
   uint64 widget;
 };

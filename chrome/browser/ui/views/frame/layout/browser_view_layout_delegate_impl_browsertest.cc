@@ -21,6 +21,7 @@
 #include "chrome/browser/web_applications/test/os_integration_test_override_impl.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
+#include "content/public/common/content_switches.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -147,15 +148,21 @@ INSTANTIATE_TEST_SUITE_P(,
 
 IN_PROC_BROWSER_TEST_P(BrowserViewLayoutDelegateImplBrowsertest,
                        Screenshot_TabbedBrowser) {
+  // Setup will actually fail on some non-pixel-test bots due to issues around
+  // waiting for the window to be maximized. For safety's sake, bail out here.
+  if (!base::CommandLine::ForCurrentProcess()->HasSwitch(
+          switches::kVerifyPixels)) {
+    GTEST_SKIP();
+  }
+
   ApplyWindowState(browser());
 
   gfx::Rect bounds;
   RunTestSequence(
-      SetOnIncompatibleAction(OnIncompatibleAction::kSkipTest,
-                              "Screenshot not supported on all platforms"),
       WithView(kBrowserViewElementId,
                [&bounds](BrowserView* browser_view) {
-                 TabStrip* const tabstrip = browser_view->tabstrip();
+                 TabStrip* const tabstrip =
+                     browser_view->horizontal_tab_strip_for_testing();
                  tabstrip->InvalidateLayout();
                  views::test::RunScheduledLayout(browser_view);
                  bounds = GetBoundsInWindow(tabstrip);
@@ -168,6 +175,13 @@ IN_PROC_BROWSER_TEST_P(BrowserViewLayoutDelegateImplBrowsertest,
 
 IN_PROC_BROWSER_TEST_P(BrowserViewLayoutDelegateImplBrowsertest,
                        Screenshot_AppBrowser) {
+  // Setup will actually fail on some non-pixel-test bots due to issues around
+  // waiting for the window to be maximized. For safety's sake, bail out here.
+  if (!base::CommandLine::ForCurrentProcess()->HasSwitch(
+          switches::kVerifyPixels)) {
+    GTEST_SKIP();
+  }
+
   // App browser can't be created inside RunTestSequence due to RunLoop issues.
   auto* const app_browser = CreateAppBrowser();
 
@@ -175,8 +189,6 @@ IN_PROC_BROWSER_TEST_P(BrowserViewLayoutDelegateImplBrowsertest,
 
   gfx::Rect bounds;
   RunTestSequence(
-      SetOnIncompatibleAction(OnIncompatibleAction::kSkipTest,
-                              "Screenshot not supported on all platforms"),
       InContext(
           BrowserElements::From(app_browser)->GetContext(),
           WaitForShow(kBrowserViewElementId),

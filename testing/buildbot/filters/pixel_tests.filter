@@ -125,15 +125,8 @@ PlusAddressCreationDialogWithNoticeTest.ShowNoticeAndCancel
 *PopupViewViewsBrowsertest*
 *PopupViewViewsPlusAddressSuggestionBrowsertest*
 PriceTrackingBubbleDialogViewBrowserTest.*
-PrivacySandboxPSNoticeDialogViewBrowserTest.*
-PrivacySandboxDialogViewBrowserTest.*
-PrivacySandboxDialogViewAdsApiUxEnhancementBrowserTest.*
-PrivacySandboxDialogViewAdsApiUxEnhancementsLearnMoreBrowserTest.*
-PrivacySandboxDialogViewPrivacyPolicyBrowserTest.*
-PrivacySandboxDialogViewAdsApiUxEnhancementPrivacyPolicyBrowserTest.*
-PrivacySandboxNoticeBubbleBrowserTest.*
-PrivacySandboxSettingsTopicsInteractiveTest.*
 ProfileMenuViewPixelTest.*
+ProfilePickerSigninToolbarUIPixelTest.*
 ProfilePickerUIPixelTest.*
 ProfileTypeChoiceUIPixelTest.*
 PromptForScanningModalDialogTest.*
@@ -142,6 +135,7 @@ QuietPromptInteractiveUITest.*
 RecentActivityBubbleDialogViewInteractiveUiTest.*
 RelaunchRecommendedBubbleViewDialogTest.*
 RelaunchRequiredDialogViewDialogTest.*
+ReloadButtonWebViewPixelBrowserTest.*
 ReopenTabPromoControllerDialogBrowserTest.*
 SafetyTipPageInfoBubbleViewDialogTest.*
 *SaveOrUpdateAutofillAiDataBubbleViewBrowsertest*

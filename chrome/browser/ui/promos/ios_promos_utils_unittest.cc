@@ -58,7 +58,8 @@ std::unique_ptr<syncer::DeviceInfo> CreateDeviceInfo(
       /*paask_info=*/std::nullopt,
       /*fcm_registration_token=*/std::string(),
       /*interested_data_types=*/syncer::DataTypeSet::All(),
-      /*auto_sign_out_last_signin_timestamp=*/std::nullopt);
+      /*auto_sign_out_last_signin_timestamp=*/std::nullopt,
+      /*desktop_to_ios_promo_receiving_enabled=*/false);
 }
 
 std::unique_ptr<syncer::DeviceInfo> CreateDeviceInfoWithTime(
@@ -80,7 +81,8 @@ std::unique_ptr<syncer::DeviceInfo> CreateDeviceInfoWithTime(
       /*paask_info=*/std::nullopt,
       /*fcm_registration_token=*/std::string(),
       /*interested_data_types=*/syncer::DataTypeSet::All(),
-      /*auto_sign_out_last_signin_timestamp=*/std::nullopt);
+      /*auto_sign_out_last_signin_timestamp=*/std::nullopt,
+      /*desktop_to_ios_promo_receiving_enabled=*/false);
 }
 
 class IOSPromosUtilsTest : public testing::Test {
@@ -125,12 +127,12 @@ class IOSPromosUtilsTest : public testing::Test {
                              std::string_view device_guid,
                              base::Value&& value,
                              base::Time timestamp = base::Time::Now()) {
-    base::Value::Dict timestamped_value;
+    base::DictValue timestamped_value;
     timestamped_value.Set("value", std::move(value));
     timestamped_value.Set("last_observed_change_time",
                           base::TimeToValue(timestamp));
     timestamped_value.Set("update_time", base::TimeToValue(timestamp));
-    base::Value::Dict cross_device_value;
+    base::DictValue cross_device_value;
     cross_device_value.Set(device_guid, std::move(timestamped_value));
     prefs->SetDict(pref_name, std::move(cross_device_value));
   }

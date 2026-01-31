@@ -44,6 +44,7 @@ const LocalPasswordSetupBase = OobeDialogHostMixin(
  * Data that is passed to the screen during onBeforeShow.
  */
 interface LocalPasswordSetupScreenData {
+  authToken: string;
   showBackButton: boolean;
   isRecoveryFlow: boolean;
 }
@@ -59,8 +60,8 @@ export class LocalPasswordSetup extends LocalPasswordSetupBase {
 
   static get properties(): PolymerElementProperties {
     return {
-      /**
-       */
+      authToken: String,
+
       backButtonVisible: {
         type: Boolean,
       },
@@ -75,6 +76,8 @@ export class LocalPasswordSetup extends LocalPasswordSetupBase {
       },
     };
   }
+
+  authToken: string|undefined;
 
   private backButtonVisible: boolean;
   private isRecoveryFlow: boolean;
@@ -116,6 +119,7 @@ export class LocalPasswordSetup extends LocalPasswordSetupBase {
   override onBeforeShow(data: LocalPasswordSetupScreenData): void {
     super.onBeforeShow(data);
     this.reset();
+    this.authToken = data['authToken'];
     this.backButtonVisible = data['showBackButton'];
     this.isRecoveryFlow = data['isRecoveryFlow'];
   }

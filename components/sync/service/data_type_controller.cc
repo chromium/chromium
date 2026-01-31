@@ -285,7 +285,7 @@ void DataTypeController::GetUnsyncedDataCount(
 void DataTypeController::GetAllNodesForDebugging(AllNodesCallback callback) {
   // Precautionary safeguard.
   if (state_ != RUNNING) {
-    std::move(callback).Run(base::Value::List());
+    std::move(callback).Run(base::ListValue());
     return;
   }
 

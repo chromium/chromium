@@ -8,7 +8,7 @@
 #include <string>
 #include <vector>
 
-#include "base/byte_count.h"
+#include "base/byte_size.h"
 #include "base/strings/string_util.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
@@ -17,10 +17,13 @@
 #include "chrome/browser/ui/browser_command_controller.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/performance_controls/tab_resource_usage_tab_helper.h"
+#include "chrome/browser/ui/recently_audible_helper.h"
 #include "chrome/browser/ui/tabs/alert/tab_alert.h"
 #include "chrome/browser/ui/tabs/features.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_utils.h"
 #include "chrome/browser/ui/tabs/split_tab_metrics.h"
+#include "chrome/browser/ui/tabs/tab_group_attention_indicator.h"
+#include "chrome/browser/ui/tabs/tab_group_features.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
 #include "chrome/browser/ui/tabs/tab_renderer_data.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -997,8 +1000,7 @@ IN_PROC_BROWSER_TEST_F(TabStripBrowsertest, AccessibleName) {
 
   // AccessibleName should update with crashedstatus
   TabRendererData tab_renderer_data = tab_strip()->tab_at(1)->data();
-  tab_renderer_data.crashed_status =
-      base::TERMINATION_STATUS_PROCESS_WAS_KILLED;
+  tab_renderer_data.is_crashed = true;
   tab_strip()->tab_at(1)->SetData(tab_renderer_data);
   data = ui::AXNodeData();
   tab_strip()->tab_at(1)->GetViewAccessibility().GetAccessibleNodeData(&data);
@@ -1021,7 +1023,9 @@ IN_PROC_BROWSER_TEST_F(TabStripBrowsertest, AccessibleName) {
   // AccessibleName update with alert on tab
   tab_renderer_data = tab_strip()->tab_at(new_index)->data();
   tab_renderer_data.network_state = TabNetworkState::kLoading;
-  tab_renderer_data.alert_state.push_back(tabs::TabAlert::kAudioPlaying);
+  RecentlyAudibleHelper::FromWebContents(
+      tab_strip_model()->GetWebContentsAt(new_index))
+      ->SetCurrentlyAudibleForTesting();
   tab_strip()->tab_at(new_index)->SetData(tab_renderer_data);
   data = ui::AXNodeData();
   tab_strip()->tab_at(new_index)->GetViewAccessibility().GetAccessibleNodeData(
@@ -1033,7 +1037,7 @@ IN_PROC_BROWSER_TEST_F(TabStripBrowsertest, AccessibleName) {
   // AccessibleName update with tab resource usage update
   tab_renderer_data = tab_strip()->tab_at(new_index)->data();
   auto tab_resource_usage = base::MakeRefCounted<TabResourceUsage>();
-  tab_resource_usage->SetMemoryUsage(base::ByteCount(100));
+  tab_resource_usage->SetMemoryUsage(base::ByteSize(100));
   tab_renderer_data.tab_resource_usage = std::move(tab_resource_usage);
   tab_strip()->tab_at(new_index)->SetData(tab_renderer_data);
   data = ui::AXNodeData();
@@ -1043,7 +1047,7 @@ IN_PROC_BROWSER_TEST_F(TabStripBrowsertest, AccessibleName) {
                 IDS_TAB_AX_MEMORY_USAGE,
                 l10n_util::GetStringFUTF16(
                     IDS_TAB_AX_LABEL_AUDIO_PLAYING_FORMAT, title),
-                ui::FormatBytes(base::ByteCount(100))),
+                ui::FormatBytes(base::ByteSize(100))),
             data.GetString16Attribute(ax::mojom::StringAttribute::kName));
 }
 
@@ -1603,9 +1607,14 @@ IN_PROC_BROWSER_TEST_F(TabStripSaveBrowsertest, AttentionIndicatorIsShown) {
 
   auto* group_header = tab_strip()->group_header(group);
 
-  group_header->SetTabGroupNeedsAttention(true);
+  TabGroup* tab_group =
+      browser()->tab_strip_model()->group_model()->GetTabGroup(group);
+
+  TabGroupAttentionIndicator* attention_indicator =
+      tab_group->GetTabGroupFeatures()->attention_indicator();
+  attention_indicator->SetHasAttention(true);
   EXPECT_TRUE(group_header->attention_indicator_->GetVisible());
 
-  group_header->SetTabGroupNeedsAttention(false);
+  attention_indicator->SetHasAttention(false);
   EXPECT_FALSE(group_header->attention_indicator_->GetVisible());
 }

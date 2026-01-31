@@ -7,6 +7,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
+#include "chrome/browser/ui/color/chrome_color_id.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/color/color_id.h"
 #include "ui/gfx/geometry/size.h"
@@ -17,7 +18,8 @@ namespace gfx {
 struct VectorIcon;
 }  // namespace gfx
 
-class TabStripController;
+class BrowserFrameView;
+class BrowserWindowInterface;
 
 enum class Edge {
   kNone = 0,
@@ -33,19 +35,19 @@ class TabStripControlButton : public views::LabelButton,
   static const int kIconSize;
   static const gfx::Size kButtonSize;
 
-  TabStripControlButton(TabStripController* tab_strip,
+  TabStripControlButton(BrowserWindowInterface* browser_window_interface,
                         PressedCallback callback,
                         const gfx::VectorIcon& icon,
                         Edge fixed_flat_edge = Edge::kNone,
                         Edge animated_flat_edge = Edge::kNone);
 
-  TabStripControlButton(TabStripController* tab_strip,
+  TabStripControlButton(BrowserWindowInterface* browser_window_interface,
                         PressedCallback callback,
                         const std::u16string& text,
                         Edge fixed_flat_edge = Edge::kNone,
                         Edge animated_flat_edge = Edge::kNone);
 
-  TabStripControlButton(TabStripController* tab_strip,
+  TabStripControlButton(BrowserWindowInterface* browser_window_interface,
                         PressedCallback callback,
                         const gfx::VectorIcon& icon,
                         const std::u16string& text,
@@ -62,6 +64,10 @@ class TabStripControlButton : public views::LabelButton,
   void SetBackgroundFrameActiveColorId(ui::ColorId new_color_id);
   void SetBackgroundFrameInactiveColorId(ui::ColorId new_color_id);
 
+  // Set custom ColorIds for the InkDrop hover and ripple effects.
+  void SetInkdropHoverColorId(const ChromeColorIds new_color_id);
+  void SetInkdropRippleColorId(const ChromeColorIds new_color_id);
+
   // Updates the icon model.
   void SetVectorIcon(const gfx::VectorIcon& icon);
 
@@ -72,6 +78,18 @@ class TabStripControlButton : public views::LabelButton,
   virtual int GetCornerRadius() const;
   virtual int GetFlatCornerRadius() const;
   float GetScaledCornerRadius(float initial_radius, Edge edge) const;
+
+  // Optionally set the left and right corner radius individually and update the
+  // background. Both default to the value set in GetCornerRadius if not set.
+  void SetLeftRightCornerRadii(int left, int right);
+
+  int GetLeftCornerRadius() const {
+    return left_corner_radius_.value_or(GetCornerRadius());
+  }
+
+  int GetRightCornerRadius() const {
+    return right_corner_radius_.value_or(GetCornerRadius());
+  }
 
   Edge animated_flat_edge() { return animated_flat_edge_; }
   float flat_edge_factor_for_testing() { return flat_edge_factor_; }
@@ -95,11 +113,11 @@ class TabStripControlButton : public views::LabelButton,
   // views::LabelButton
   void SetText(std::u16string_view text) override;
 
- protected:
   // Returns colors based on the Frame active status.
   ui::ColorId GetBackgroundColor();
   ui::ColorId GetForegroundColor();
 
+ protected:
   // Called whenever a color change occurs (theming/frame state). By default
   // this only changes the hover color and updates the icon. Override for any
   // additional changes.
@@ -114,11 +132,17 @@ class TabStripControlButton : public views::LabelButton,
         paint_transparent_for_custom_image_theme;
   }
 
+  // See BrowserFrameView::IsFrameCondensed(). This accessor is made virtual for
+  // testing.
+  virtual bool IsFrameCondensed() const;
+
  private:
   void UpdateBackground();
   void UpdateInkDrop();
 
   bool IsWidgetAlive() const;
+
+  BrowserFrameView* GetBrowserFrameView() const;
 
   // Optional icon for the label button.
   raw_ref<const gfx::VectorIcon> icon_;
@@ -137,14 +161,22 @@ class TabStripControlButton : public views::LabelButton,
   // 1. Used for animating corner radius.
   float flat_edge_factor_ = 1;
 
-  // Tab strip that contains this button.
-  raw_ptr<TabStripController> tab_strip_controller_;
+  // Browser that contains this button.
+  raw_ptr<BrowserWindowInterface> browser_window_interface_;
 
   // Stored ColorId values to differentiate for ChromeRefresh.
   ui::ColorId foreground_frame_active_color_id_;
   ui::ColorId foreground_frame_inactive_color_id_;
   ui::ColorId background_frame_active_color_id_;
   ui::ColorId background_frame_inactive_color_id_;
+
+  // ColorIds used for the InkDrop hover and ripple effects.
+  ChromeColorIds inkdrop_hover_color_id_;
+  ChromeColorIds inkdrop_ripple_color_id_;
+
+  // Optional radii for setting different edges on each side of the button.
+  std::optional<int> left_corner_radius_;
+  std::optional<int> right_corner_radius_;
 
   base::CallbackListSubscription paint_as_active_subscription_;
 };

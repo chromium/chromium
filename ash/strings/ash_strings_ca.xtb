@@ -342,6 +342,7 @@
 <translation id="2201071101391734388">Foto recent <ph name="INDEX" /> de <ph name="TOTAL_COUNT" />.</translation>
 <translation id="2201687081523799384">Replega Google Tasks</translation>
 <translation id="2208323208084708176">Mode d'escriptori unificat</translation>
+<translation id="2210311543574621570">Veuràs el porta-retalls quan mantinguis premudes les tecles Ctrl+V. Pots desactivar aquesta drecera desactivant la marca #clipboard-history-longpress a chrome://flags.</translation>
 <translation id="2215920961700443347">No hi ha connexió a Internet. Connecta-t'hi i torna-ho a provar.</translation>
 <translation id="2222841058024245321">Escriptori 7</translation>
 <translation id="2223384056430485343">En una pantalla dividida</translation>
@@ -2390,7 +2391,7 @@ Per apagar el dispositiu, torna a mantenir premut el botó d'engegada.</translat
 <translation id="8956420987536947088">Obre les finestres i les aplicacions anteriors</translation>
 <translation id="8959380109429710384">Has premut la tecla de drecera de la lupa de pantalla completa. Fes servir Ctrl+Alt+fletxes per moure't per la visualització ampliada.</translation>
 <translation id="8964525410783593407">1 h</translation>
-<translation id="8970887620466824814">S'ha produït un error.</translation>
+<translation id="8970887620466824814">Hi ha hagut un error.</translation>
 <translation id="8973885907461690937">Situa el focus a la icona del menú</translation>
 <translation id="8980862970816311842">Mou la icona d'una aplicació a dins o fora d'una carpeta a la quadrícula d'aplicacions</translation>
 <translation id="8982906748181120328">Visibilitat Nearby</translation>

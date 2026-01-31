@@ -20,10 +20,10 @@ FileHandler::AcceptEntry::AcceptEntry(const AcceptEntry& accept_entry) =
     default;
 
 base::Value FileHandler::AcceptEntry::AsDebugValue() const {
-  base::Value::Dict root;
+  base::DictValue root;
 
   root.Set("mime_type", mime_type);
-  base::Value::List& file_extensions_json = *root.EnsureList("file_extensions");
+  base::ListValue& file_extensions_json = *root.EnsureList("file_extensions");
   for (const std::string& file_extension : file_extensions)
     file_extensions_json.Append(file_extension);
 
@@ -31,13 +31,13 @@ base::Value FileHandler::AcceptEntry::AsDebugValue() const {
 }
 
 base::Value FileHandler::AsDebugValue() const {
-  base::Value::Dict root;
+  base::DictValue root;
 
-  base::Value::List& accept_json = *root.EnsureList("accept");
+  base::ListValue& accept_json = *root.EnsureList("accept");
   for (const AcceptEntry& entry : accept)
     accept_json.Append(entry.AsDebugValue());
   root.Set("action", action.spec());
-  base::Value::List& icons_json = *root.EnsureList("downloaded_icons");
+  base::ListValue& icons_json = *root.EnsureList("downloaded_icons");
   for (const IconInfo& entry : downloaded_icons)
     icons_json.Append(entry.AsDebugValue());
   root.Set("name", display_name);

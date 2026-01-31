@@ -6,24 +6,20 @@
     </title>
     <script src="../../resources/testharness.js"></script>
     <script src="../../resources/testharnessreport.js"></script>
-    <script src="../resources/audit-util.js"></script>
-    <script src="../resources/audit.js"></script>
   </head>
   <body>
-    <script id="layout-test-code">
+    <script>
       // Arbitrary parameters for the offline context.
       const sampleRate = 48000;
       const renderDuration = 1;
       const channels = 2;
       const renderFrames = renderDuration * sampleRate;
 
-      const audit = Audit.createTaskRunner();
-
-      audit.define('crash', (task, should) => {
+      promise_test(async () => {
         const context =
             new OfflineAudioContext(channels, renderFrames, sampleRate);
-        const source = context.createConstantSource();
-        const analyser = context.createAnalyser();
+        const source = new ConstantSourceNode(context);
+        const analyser = new AnalyserNode(context);
         source.connect(analyser);
 
         // Scheduling the following at an earlier time than above causes the
@@ -34,13 +30,9 @@
 
         source.start(context.currentTime);
 
-        context.startRendering().then(() => {
-          // Should finish without a crash.
-          task.done();
-        });
-      });
-
-      audit.run();
+        await context.startRendering();
+        // Should finish without a crash.
+      }, 'crash');
     </script>
   </body>
 </html>

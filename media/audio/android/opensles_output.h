@@ -99,17 +99,17 @@ class OpenSLESOutputStream : public MuteableAudioOutputStream {
   // See SLES/OpenSLES_Android.h for details.
   SLint32 stream_type_;
 
-  raw_ptr<AudioSourceCallback> callback_;
+  raw_ptr<AudioSourceCallback> callback_ = nullptr;
 
   // Shared engine interfaces for the app.
   media::ScopedSLObjectItf engine_object_;
   media::ScopedSLObjectItf player_object_;
   media::ScopedSLObjectItf output_mixer_;
 
-  SLPlayItf player_;
+  SLPlayItf player_ = nullptr;
 
   // Buffer queue recorder interface.
-  SLAndroidSimpleBufferQueueItf simple_buffer_queue_;
+  SLAndroidSimpleBufferQueueItf simple_buffer_queue_ = nullptr;
 
   SLAndroidDataFormat_PCM_EX float_format_;
 
@@ -117,24 +117,20 @@ class OpenSLESOutputStream : public MuteableAudioOutputStream {
   // during construction.
   std::array<base::HeapArray<uint8_t>, kMaxNumOfBuffersInQueue> audio_data_;
 
-  int active_buffer_index_;
+  int active_buffer_index_ = 0;
 
-  bool started_;
+  bool started_ = false;
 
   // Volume control coming from hardware. It overrides |volume_| when it's
   // true. Otherwise, use |volume_| for scaling.
   // This is needed because platform voice volume never goes to zero in
   // COMMUNICATION mode on Android.
-  bool muted_;
+  bool muted_ = false;
 
   // Volume level from 0 to 1.
-  float volume_;
+  float volume_ = 1.0;
 
   int samples_per_second_;
-
-  // On Android 5.0+ we can output directly to float instead of in integer, so
-  // there we'll use kSampleFormatF32. If not, this will be kSampleFormatS16.
-  SampleFormat sample_format_;
 
   int bytes_per_frame_;
   size_t buffer_size_bytes_;

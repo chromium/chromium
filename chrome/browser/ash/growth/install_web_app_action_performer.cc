@@ -28,7 +28,7 @@ inline constexpr char kUrl[] = "url";
 inline constexpr char kIconUrl[] = "iconPath";
 
 std::unique_ptr<web_app::WebAppInstallInfo> GetAppInstallInfo(
-    const base::Value::Dict& entry) {
+    const base::DictValue& entry) {
   std::optional<bool> launch_in_standalone_window =
       entry.FindBool(kLaunchInStandaloneWindow);
   auto* app_title = entry.FindString(kAppTitle);
@@ -63,7 +63,7 @@ std::unique_ptr<web_app::WebAppInstallInfo> GetAppInstallInfo(
 }
 
 std::unique_ptr<web_app::WebAppInstallInfo>
-ParseInstallWebAppActionPerformerParams(const base::Value::Dict* params) {
+ParseInstallWebAppActionPerformerParams(const base::DictValue* params) {
   if (!params) {
     CAMPAIGNS_LOG(ERROR) << "Empty parameter to InstallWebAction.";
     return nullptr;
@@ -125,7 +125,7 @@ InstallWebAppActionPerformer::~InstallWebAppActionPerformer() = default;
 void InstallWebAppActionPerformer::Run(
     int campaign_id,
     std::optional<int> group_id,
-    const base::Value::Dict* params,
+    const base::DictValue* params,
     growth::ActionPerformer::Callback callback) {
   if (!GetWebAppProvider()) {
     std::move(callback).Run(

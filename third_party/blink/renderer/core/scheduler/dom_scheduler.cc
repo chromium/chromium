@@ -245,7 +245,8 @@ void DOMScheduler::setTaskId(v8::Isolate* isolate,
   }
   auto* task_state = MakeGarbageCollected<TaskAttributionInfoImpl>(
       scheduler::TaskAttributionId(task_id),
-      /*soft_navigation_context=*/nullptr);
+      /*soft_navigation_context=*/nullptr,
+      /*resource_timing_context=*/nullptr);
   TaskAttributionTaskState::SetCurrent(isolate, task_state);
   auto* scheduler = ThreadScheduler::Current()->ToMainThreadScheduler();
   // This test API is only available on the main thread.

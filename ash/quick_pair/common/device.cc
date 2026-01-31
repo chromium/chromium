@@ -33,8 +33,7 @@ std::ostream& OutputToStream(std::ostream& stream,
 
 }  // namespace
 
-namespace ash {
-namespace quick_pair {
+namespace ash::quick_pair {
 
 Device::Device(const std::string& metadata_id,
                const std::string& ble_address,
@@ -57,5 +56,4 @@ std::ostream& operator<<(std::ostream& stream, scoped_refptr<Device> device) {
                         device->protocol());
 }
 
-}  // namespace quick_pair
-}  // namespace ash
+}  // namespace ash::quick_pair

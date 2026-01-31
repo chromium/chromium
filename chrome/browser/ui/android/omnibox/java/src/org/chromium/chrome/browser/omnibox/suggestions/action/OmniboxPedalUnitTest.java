@@ -10,6 +10,8 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 
+import static org.chromium.chrome.browser.url_constants.UrlConstantResolver.getOriginalNativeHistoryUrl;
+
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -165,7 +167,7 @@ public class OmniboxPedalUnitTest {
     @Test
     public void executePedal_viewChromeHistory() {
         new OmniboxPedal(0, "hint", "", OmniboxPedalId.VIEW_CHROME_HISTORY).execute(mDelegate);
-        verify(mDelegate, times(1)).loadPageInCurrentTab(UrlConstants.NATIVE_HISTORY_URL);
+        verify(mDelegate, times(1)).loadPageInCurrentTab(getOriginalNativeHistoryUrl());
         verifyNoMoreInteractions(mDelegate);
     }
 

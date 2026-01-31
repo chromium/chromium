@@ -77,13 +77,15 @@ String PermissionNameToString(PermissionName name) {
   switch (name) {
     case PermissionName::GEOLOCATION:
       return "geolocation";
+    case PermissionName::GEOLOCATION_APPROXIMATE:
+      return "geolocation-approximate";
     case PermissionName::NOTIFICATIONS:
       return "notifications";
     case PermissionName::MIDI:
       return "midi";
     case PermissionName::PROTECTED_MEDIA_IDENTIFIER:
       return "protected_media_identifier";
-    case PermissionName::DURABLE_STORAGE:
+    case PermissionName::PERSISTENT_STORAGE:
       return "durable_storage";
     case PermissionName::AUDIO_CAPTURE:
       return "audio_capture";
@@ -231,240 +233,266 @@ PermissionDescriptorPtr ParsePermissionDescriptor(
   }
 
   const auto& name = permission->name();
-  if (name == V8PermissionName::Enum::kGeolocation) {
-    return CreatePermissionDescriptor(PermissionName::GEOLOCATION);
-  }
-  if (name == V8PermissionName::Enum::kCamera) {
-    CameraDevicePermissionDescriptor* camera_device_permission =
-        NativeValueTraits<CameraDevicePermissionDescriptor>::NativeValue(
-            script_state->GetIsolate(), raw_descriptor.V8Value(),
-            exception_state);
-    if (exception_state.HadException()) {
-      return nullptr;
+
+  switch (name.AsEnum()) {
+    case V8PermissionName::Enum::kGeolocation:
+      return CreatePermissionDescriptor(PermissionName::GEOLOCATION);
+
+    case V8PermissionName::Enum::kNotifications:
+      return CreatePermissionDescriptor(PermissionName::NOTIFICATIONS);
+
+    case V8PermissionName::Enum::kPush: {
+      PushPermissionDescriptor* push_permission =
+          NativeValueTraits<PushPermissionDescriptor>::NativeValue(
+              script_state->GetIsolate(), raw_descriptor.V8Value(),
+              exception_state);
+      if (exception_state.HadException()) {
+        return nullptr;
+      }
+
+      // Only "userVisibleOnly" push is supported for now.
+      if (!push_permission->userVisibleOnly()) {
+        exception_state.ThrowDOMException(
+            DOMExceptionCode::kNotSupportedError,
+            "Push Permission without userVisibleOnly:true isn't supported "
+            "yet.");
+        return nullptr;
+      }
+
+      return CreatePermissionDescriptor(PermissionName::NOTIFICATIONS);
     }
 
-    return CreateVideoCapturePermissionDescriptor(
-        camera_device_permission->panTiltZoom());
-  }
-  if (name == V8PermissionName::Enum::kMicrophone) {
-    return CreatePermissionDescriptor(PermissionName::AUDIO_CAPTURE);
-  }
-  if (name == V8PermissionName::Enum::kNotifications) {
-    return CreatePermissionDescriptor(PermissionName::NOTIFICATIONS);
-  }
-  if (name == V8PermissionName::Enum::kPersistentStorage) {
-    return CreatePermissionDescriptor(PermissionName::DURABLE_STORAGE);
-  }
-  if (name == V8PermissionName::Enum::kPush) {
-    PushPermissionDescriptor* push_permission =
-        NativeValueTraits<PushPermissionDescriptor>::NativeValue(
-            script_state->GetIsolate(), raw_descriptor.V8Value(),
-            exception_state);
-    if (exception_state.HadException()) {
-      return nullptr;
+    case V8PermissionName::Enum::kMidi: {
+      MidiPermissionDescriptor* midi_permission =
+          NativeValueTraits<MidiPermissionDescriptor>::NativeValue(
+              script_state->GetIsolate(), raw_descriptor.V8Value(),
+              exception_state);
+      return CreateMidiPermissionDescriptor(midi_permission->sysex());
     }
 
-    // Only "userVisibleOnly" push is supported for now.
-    if (!push_permission->userVisibleOnly()) {
-      exception_state.ThrowDOMException(
-          DOMExceptionCode::kNotSupportedError,
-          "Push Permission without userVisibleOnly:true isn't supported yet.");
-      return nullptr;
+    case V8PermissionName::Enum::kCamera: {
+      CameraDevicePermissionDescriptor* camera_device_permission =
+          NativeValueTraits<CameraDevicePermissionDescriptor>::NativeValue(
+              script_state->GetIsolate(), raw_descriptor.V8Value(),
+              exception_state);
+      if (exception_state.HadException()) {
+        return nullptr;
+      }
+
+      return CreateVideoCapturePermissionDescriptor(
+          camera_device_permission->panTiltZoom());
     }
 
-    return CreatePermissionDescriptor(PermissionName::NOTIFICATIONS);
-  }
-  if (name == V8PermissionName::Enum::kMidi) {
-    MidiPermissionDescriptor* midi_permission =
-        NativeValueTraits<MidiPermissionDescriptor>::NativeValue(
-            script_state->GetIsolate(), raw_descriptor.V8Value(),
-            exception_state);
-    return CreateMidiPermissionDescriptor(midi_permission->sysex());
-  }
-  if (name == V8PermissionName::Enum::kBackgroundSync) {
-    return CreatePermissionDescriptor(PermissionName::BACKGROUND_SYNC);
-  }
-  if (name == V8PermissionName::Enum ::kAmbientLightSensor ||
-      name == V8PermissionName::Enum::kAccelerometer ||
-      name == V8PermissionName::Enum::kGyroscope ||
-      name == V8PermissionName::Enum::kMagnetometer) {
-    // ALS requires an extra flag.
-    if (name == V8PermissionName::Enum::kAmbientLightSensor) {
+    case V8PermissionName::Enum::kMicrophone:
+      return CreatePermissionDescriptor(PermissionName::AUDIO_CAPTURE);
+
+    case V8PermissionName::Enum::kBackgroundFetch:
+      return CreatePermissionDescriptor(PermissionName::BACKGROUND_FETCH);
+
+    case V8PermissionName::Enum::kBackgroundSync:
+      return CreatePermissionDescriptor(PermissionName::BACKGROUND_SYNC);
+
+    case V8PermissionName::Enum::kPersistentStorage:
+      return CreatePermissionDescriptor(PermissionName::PERSISTENT_STORAGE);
+
+    case V8PermissionName::Enum::kAmbientLightSensor:
       if (!RuntimeEnabledFeatures::SensorExtraClassesEnabled()) {
         exception_state.ThrowTypeError(
             "GenericSensorExtraClasses flag is not enabled.");
         return nullptr;
       }
+      [[fallthrough]];
+    case V8PermissionName::Enum::kAccelerometer:
+    case V8PermissionName::Enum::kGyroscope:
+    case V8PermissionName::Enum::kMagnetometer:
+      return CreatePermissionDescriptor(PermissionName::SENSORS);
+
+    case V8PermissionName::Enum::kScreenWakeLock:
+      return CreatePermissionDescriptor(PermissionName::SCREEN_WAKE_LOCK);
+
+    case V8PermissionName::Enum::kNfc: {
+      if (!RuntimeEnabledFeatures::WebNFCEnabled(
+              ExecutionContext::From(script_state))) {
+        exception_state.ThrowTypeError("Web NFC is not enabled.");
+        return nullptr;
+      }
+      return CreatePermissionDescriptor(PermissionName::NFC);
     }
 
-    return CreatePermissionDescriptor(PermissionName::SENSORS);
-  }
-  if (name == V8PermissionName::Enum::kClipboardRead ||
-      name == V8PermissionName::Enum::kClipboardWrite) {
-    PermissionName permission_name = PermissionName::CLIPBOARD_READ;
-    if (name == V8PermissionName::Enum::kClipboardWrite) {
-      permission_name = PermissionName::CLIPBOARD_WRITE;
+    case V8PermissionName::Enum::kDisplayCapture:
+      return CreatePermissionDescriptor(PermissionName::DISPLAY_CAPTURE);
+
+    case V8PermissionName::Enum::kClipboardRead: {
+      ClipboardPermissionDescriptor* clipboard_permission =
+          NativeValueTraits<ClipboardPermissionDescriptor>::NativeValue(
+              script_state->GetIsolate(), raw_descriptor.V8Value(),
+              exception_state);
+      return CreateClipboardPermissionDescriptor(
+          PermissionName::CLIPBOARD_READ,
+          /*has_user_gesture=*/!clipboard_permission->allowWithoutGesture(),
+          /*will_be_sanitized=*/
+          !clipboard_permission->allowWithoutSanitization());
     }
 
-    ClipboardPermissionDescriptor* clipboard_permission =
-        NativeValueTraits<ClipboardPermissionDescriptor>::NativeValue(
-            script_state->GetIsolate(), raw_descriptor.V8Value(),
-            exception_state);
-    return CreateClipboardPermissionDescriptor(
-        permission_name,
-        /*has_user_gesture=*/!clipboard_permission->allowWithoutGesture(),
-        /*will_be_sanitized=*/
-        !clipboard_permission->allowWithoutSanitization());
-  }
-  if (name == V8PermissionName::Enum::kPaymentHandler) {
-    return CreatePermissionDescriptor(PermissionName::PAYMENT_HANDLER);
-  }
-  if (name == V8PermissionName::Enum::kBackgroundFetch) {
-    return CreatePermissionDescriptor(PermissionName::BACKGROUND_FETCH);
-  }
-  if (name == V8PermissionName::Enum::kIdleDetection) {
-    return CreatePermissionDescriptor(PermissionName::IDLE_DETECTION);
-  }
-  if (name == V8PermissionName::Enum::kPeriodicBackgroundSync) {
-    return CreatePermissionDescriptor(PermissionName::PERIODIC_BACKGROUND_SYNC);
-  }
-  if (name == V8PermissionName::Enum::kScreenWakeLock) {
-    return CreatePermissionDescriptor(PermissionName::SCREEN_WAKE_LOCK);
-  }
-  if (name == V8PermissionName::Enum::kSystemWakeLock) {
-    if (!RuntimeEnabledFeatures::SystemWakeLockEnabled(
-            ExecutionContext::From(script_state))) {
-      exception_state.ThrowTypeError("System Wake Lock is not enabled.");
-      return nullptr;
-    }
-    return CreatePermissionDescriptor(PermissionName::SYSTEM_WAKE_LOCK);
-  }
-  if (name == V8PermissionName::Enum::kNfc) {
-    if (!RuntimeEnabledFeatures::WebNFCEnabled(
-            ExecutionContext::From(script_state))) {
-      exception_state.ThrowTypeError("Web NFC is not enabled.");
-      return nullptr;
-    }
-    return CreatePermissionDescriptor(PermissionName::NFC);
-  }
-  if (name == V8PermissionName::Enum::kStorageAccess) {
-    return CreatePermissionDescriptor(PermissionName::STORAGE_ACCESS);
-  }
-  if (name == V8PermissionName::Enum::kTopLevelStorageAccess) {
-    TopLevelStorageAccessPermissionDescriptor*
-        top_level_storage_access_permission =
-            NativeValueTraits<TopLevelStorageAccessPermissionDescriptor>::
-                NativeValue(script_state->GetIsolate(),
-                            raw_descriptor.V8Value(), exception_state);
-    if (exception_state.HadException()) {
-      return nullptr;
-    }
-    KURL origin_as_kurl{top_level_storage_access_permission->requestedOrigin()};
-    if (!origin_as_kurl.IsValid()) {
-      exception_state.ThrowTypeError("The requested origin is invalid.");
-      return nullptr;
+    case V8PermissionName::Enum::kClipboardWrite: {
+      ClipboardPermissionDescriptor* clipboard_permission =
+          NativeValueTraits<ClipboardPermissionDescriptor>::NativeValue(
+              script_state->GetIsolate(), raw_descriptor.V8Value(),
+              exception_state);
+      return CreateClipboardPermissionDescriptor(
+          PermissionName::CLIPBOARD_WRITE,
+          /*has_user_gesture=*/!clipboard_permission->allowWithoutGesture(),
+          /*will_be_sanitized=*/
+          !clipboard_permission->allowWithoutSanitization());
     }
 
-    return CreateTopLevelStorageAccessPermissionDescriptor(origin_as_kurl);
-  }
-  if (name == V8PermissionName::Enum::kWindowManagement) {
-    return CreatePermissionDescriptor(PermissionName::WINDOW_MANAGEMENT);
-  }
-  if (name == V8PermissionName::Enum::kLocalFonts) {
-    if (!RuntimeEnabledFeatures::FontAccessEnabled(
-            ExecutionContext::From(script_state))) {
-      exception_state.ThrowTypeError("Local Fonts Access API is not enabled.");
-      return nullptr;
+    case V8PermissionName::Enum::kPaymentHandler:
+      return CreatePermissionDescriptor(PermissionName::PAYMENT_HANDLER);
+
+    case V8PermissionName::Enum::kIdleDetection:
+      return CreatePermissionDescriptor(PermissionName::IDLE_DETECTION);
+
+    case V8PermissionName::Enum::kPeriodicBackgroundSync:
+      return CreatePermissionDescriptor(
+          PermissionName::PERIODIC_BACKGROUND_SYNC);
+
+    case V8PermissionName::Enum::kSystemWakeLock: {
+      if (!RuntimeEnabledFeatures::SystemWakeLockEnabled(
+              ExecutionContext::From(script_state))) {
+        exception_state.ThrowTypeError("System Wake Lock is not enabled.");
+        return nullptr;
+      }
+      return CreatePermissionDescriptor(PermissionName::SYSTEM_WAKE_LOCK);
     }
-    return CreatePermissionDescriptor(PermissionName::LOCAL_FONTS);
-  }
-  if (name == V8PermissionName::Enum::kDisplayCapture) {
-    return CreatePermissionDescriptor(PermissionName::DISPLAY_CAPTURE);
-  }
-  if (name == V8PermissionName::Enum::kCapturedSurfaceControl) {
-    if (!RuntimeEnabledFeatures::CapturedSurfaceControlEnabled(
-            ExecutionContext::From(script_state))) {
-      exception_state.ThrowTypeError(
-          "The Captured Surface Control API is not enabled.");
-      return nullptr;
+
+    case V8PermissionName::Enum::kStorageAccess:
+      return CreatePermissionDescriptor(PermissionName::STORAGE_ACCESS);
+
+    case V8PermissionName::Enum::kWindowManagement:
+      return CreatePermissionDescriptor(PermissionName::WINDOW_MANAGEMENT);
+
+    case V8PermissionName::Enum::kLocalFonts: {
+      if (!RuntimeEnabledFeatures::FontAccessEnabled(
+              ExecutionContext::From(script_state))) {
+        exception_state.ThrowTypeError(
+            "Local Fonts Access API is not enabled.");
+        return nullptr;
+      }
+      return CreatePermissionDescriptor(PermissionName::LOCAL_FONTS);
     }
-    return CreatePermissionDescriptor(PermissionName::CAPTURED_SURFACE_CONTROL);
-  }
-  if (name == V8PermissionName::Enum::kSpeakerSelection) {
-    if (!RuntimeEnabledFeatures::SpeakerSelectionEnabled(
-            ExecutionContext::From(script_state))) {
-      exception_state.ThrowTypeError(
-          "The Speaker Selection API is not enabled.");
-      return nullptr;
+
+    case V8PermissionName::Enum::kTopLevelStorageAccess: {
+      TopLevelStorageAccessPermissionDescriptor*
+          top_level_storage_access_permission =
+              NativeValueTraits<TopLevelStorageAccessPermissionDescriptor>::
+                  NativeValue(script_state->GetIsolate(),
+                              raw_descriptor.V8Value(), exception_state);
+      if (exception_state.HadException()) {
+        return nullptr;
+      }
+      KURL origin_as_kurl{
+          top_level_storage_access_permission->requestedOrigin()};
+      if (!origin_as_kurl.IsValid()) {
+        exception_state.ThrowTypeError("The requested origin is invalid.");
+        return nullptr;
+      }
+
+      return CreateTopLevelStorageAccessPermissionDescriptor(origin_as_kurl);
     }
-    return CreatePermissionDescriptor(PermissionName::SPEAKER_SELECTION);
-  }
-  if (name == V8PermissionName::Enum::kKeyboardLock) {
+
+    case V8PermissionName::Enum::kCapturedSurfaceControl: {
+      if (!RuntimeEnabledFeatures::CapturedSurfaceControlEnabled(
+              ExecutionContext::From(script_state))) {
+        exception_state.ThrowTypeError(
+            "The Captured Surface Control API is not enabled.");
+        return nullptr;
+      }
+      return CreatePermissionDescriptor(
+          PermissionName::CAPTURED_SURFACE_CONTROL);
+    }
+
+    case V8PermissionName::Enum::kSpeakerSelection: {
+      if (!RuntimeEnabledFeatures::SpeakerSelectionEnabled(
+              ExecutionContext::From(script_state))) {
+        exception_state.ThrowTypeError(
+            "The Speaker Selection API is not enabled.");
+        return nullptr;
+      }
+      return CreatePermissionDescriptor(PermissionName::SPEAKER_SELECTION);
+    }
+
+    case V8PermissionName::Enum::kKeyboardLock: {
 #if !BUILDFLAG(IS_ANDROID)
-    return CreatePermissionDescriptor(PermissionName::KEYBOARD_LOCK);
+      return CreatePermissionDescriptor(PermissionName::KEYBOARD_LOCK);
 #else
-    exception_state.ThrowTypeError(
-        "The Keyboard Lock permission isn't available on Android.");
-    return nullptr;
+      exception_state.ThrowTypeError(
+          "The Keyboard Lock permission isn't available on Android.");
+      return nullptr;
 #endif
-  }
+    }
 
-  if (name == V8PermissionName::Enum::kPointerLock) {
+    case V8PermissionName::Enum::kPointerLock: {
 #if !BUILDFLAG(IS_ANDROID)
-    return CreatePermissionDescriptor(PermissionName::POINTER_LOCK);
+      return CreatePermissionDescriptor(PermissionName::POINTER_LOCK);
 #else
-    exception_state.ThrowTypeError(
-        "The Pointer Lock permission isn't available on Android.");
-    return nullptr;
+      exception_state.ThrowTypeError(
+          "The Pointer Lock permission isn't available on Android.");
+      return nullptr;
 #endif
+    }
+
+    case V8PermissionName::Enum::kFullscreen: {
+      FullscreenPermissionDescriptor* fullscreen_permission =
+          NativeValueTraits<FullscreenPermissionDescriptor>::NativeValue(
+              script_state->GetIsolate(), raw_descriptor.V8Value(),
+              exception_state);
+      if (exception_state.HadException()) {
+        return nullptr;
+      }
+      if (!fullscreen_permission->allowWithoutGesture()) {
+        // There is no permission state for fullscreen with user gesture.
+        exception_state.ThrowTypeError(
+            "Fullscreen Permission only supports allowWithoutGesture:true.");
+        return nullptr;
+      }
+      return CreateFullscreenPermissionDescriptor(
+          fullscreen_permission->allowWithoutGesture());
+    }
+
+    case V8PermissionName::Enum::kWebAppInstallation: {
+      if (!RuntimeEnabledFeatures::WebAppInstallationEnabled(
+              ExecutionContext::From(script_state))) {
+        exception_state.ThrowTypeError(
+            "The Web App Install API is not enabled.");
+        return nullptr;
+      }
+      return CreatePermissionDescriptor(PermissionName::WEB_APP_INSTALLATION);
+    }
+
+    case V8PermissionName::Enum::kLocalNetworkAccess:
+      return CreatePermissionDescriptor(PermissionName::LOCAL_NETWORK_ACCESS);
+
+    case V8PermissionName::Enum::kLocalNetwork: {
+      if (!RuntimeEnabledFeatures::
+              LocalNetworkAccessSplitPermissionsEnabled()) {
+        exception_state.ThrowTypeError(
+            "Local Network Access Split permissions are not enabled.");
+        return nullptr;
+      }
+      return CreatePermissionDescriptor(PermissionName::LOCAL_NETWORK);
+    }
+
+    case V8PermissionName::Enum::kLoopbackNetwork: {
+      if (!RuntimeEnabledFeatures::
+              LocalNetworkAccessSplitPermissionsEnabled()) {
+        exception_state.ThrowTypeError(
+            "Local Network Access Split permissions are not enabled.");
+        return nullptr;
+      }
+      return CreatePermissionDescriptor(PermissionName::LOOPBACK_NETWORK);
+    }
   }
 
-  if (name == V8PermissionName::Enum::kFullscreen) {
-    FullscreenPermissionDescriptor* fullscreen_permission =
-        NativeValueTraits<FullscreenPermissionDescriptor>::NativeValue(
-            script_state->GetIsolate(), raw_descriptor.V8Value(),
-            exception_state);
-    if (exception_state.HadException()) {
-      return nullptr;
-    }
-    if (!fullscreen_permission->allowWithoutGesture()) {
-      // There is no permission state for fullscreen with user gesture.
-      exception_state.ThrowTypeError(
-          "Fullscreen Permission only supports allowWithoutGesture:true.");
-      return nullptr;
-    }
-    return CreateFullscreenPermissionDescriptor(
-        fullscreen_permission->allowWithoutGesture());
-  }
-  if (name == V8PermissionName::Enum::kWebAppInstallation) {
-    if (!RuntimeEnabledFeatures::WebAppInstallationEnabled(
-            ExecutionContext::From(script_state))) {
-      exception_state.ThrowTypeError("The Web App Install API is not enabled.");
-      return nullptr;
-    }
-    return CreatePermissionDescriptor(PermissionName::WEB_APP_INSTALLATION);
-  }
-
-  if (name == V8PermissionName::Enum::kLocalNetworkAccess) {
-    return CreatePermissionDescriptor(PermissionName::LOCAL_NETWORK_ACCESS);
-  }
-
-  if (name == V8PermissionName::Enum::kLocalNetwork) {
-    if (!RuntimeEnabledFeatures::LocalNetworkAccessSplitPermissionsEnabled()) {
-      exception_state.ThrowTypeError(
-          "Local Network Access Split permissions are not enabled.");
-      return nullptr;
-    }
-    return CreatePermissionDescriptor(PermissionName::LOCAL_NETWORK);
-  }
-  if (name == V8PermissionName::Enum::kLoopbackNetwork) {
-    if (!RuntimeEnabledFeatures::LocalNetworkAccessSplitPermissionsEnabled()) {
-      exception_state.ThrowTypeError(
-          "Local Network Access Split permissions are not enabled.");
-      return nullptr;
-    }
-    return CreatePermissionDescriptor(PermissionName::LOOPBACK_NETWORK);
-  }
   return nullptr;
 }
 

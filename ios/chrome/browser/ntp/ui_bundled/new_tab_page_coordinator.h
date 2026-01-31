@@ -59,6 +59,9 @@ class WebState;
 // Whether the NTP is scrolled to the top.
 - (BOOL)isScrolledToTop;
 
+// Scroll the NTP to the top.
+- (void)scrollToTop;
+
 // Reloads the content of the NewTabPage. Does not do anything on Incognito.
 - (void)reload;
 

@@ -11,7 +11,6 @@
 #include <optional>
 #include <utility>
 
-#include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/lazy_instance.h"
@@ -102,7 +101,7 @@ void PreferenceEventRouter::OnPrefChanged(PrefService* pref_service,
       browser_pref, &event_name, &permission);
   DCHECK(rv);
 
-  base::Value::List args;
+  base::ListValue args;
   const PrefService::Preference* pref =
       pref_service->FindPreference(browser_pref);
   CHECK(pref);
@@ -116,7 +115,7 @@ void PreferenceEventRouter::OnPrefChanged(PrefService* pref_service,
     return;
   }
 
-  base::Value::Dict dict;
+  base::DictValue dict;
   dict.Set(kValue, std::move(*transformed_value));
   if (incognito) {
     ExtensionPrefs* ep = ExtensionPrefs::Get(profile_);
@@ -312,7 +311,7 @@ ExtensionFunction::ResponseAction GetPreferenceFunction::Run() {
       extensions::preference_helpers::GetLevelOfControl(
           profile, extension_id(), browser_pref, incognito);
 
-  base::Value::Dict result;
+  base::DictValue result;
   ProduceGetResult(&result, pref->GetValue(), level_of_control, browser_pref,
                    incognito);
 
@@ -320,7 +319,7 @@ ExtensionFunction::ResponseAction GetPreferenceFunction::Run() {
 }
 
 void GetPreferenceFunction::ProduceGetResult(
-    base::Value::Dict* result,
+    base::DictValue* result,
     const base::Value* pref_value,
     const std::string& level_of_control,
     const std::string& browser_pref,
@@ -355,7 +354,7 @@ ExtensionFunction::ResponseAction SetPreferenceFunction::Run() {
   EXTENSION_FUNCTION_VALIDATE(args()[1].is_dict());
 
   std::string pref_key = args()[0].GetString();
-  const base::Value::Dict& details = args()[1].GetDict();
+  const base::DictValue& details = args()[1].GetDict();
 
   const base::Value* value = details.Find(kValue);
   EXTENSION_FUNCTION_VALIDATE(value);
@@ -473,7 +472,7 @@ ExtensionFunction::ResponseAction ClearPreferenceFunction::Run() {
   EXTENSION_FUNCTION_VALIDATE(args()[1].is_dict());
 
   std::string pref_key = args()[0].GetString();
-  const base::Value::Dict& details = args()[1].GetDict();
+  const base::DictValue& details = args()[1].GetDict();
 
   ChromeSettingScope scope = ChromeSettingScope::kRegular;
   if (const std::string* scope_str = details.FindString(kScopeKey)) {

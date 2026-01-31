@@ -395,6 +395,38 @@ gfx::RectF GetEffectiveCropBox(FPDF_PAGE page,
   return effective_crop_box;
 }
 
+// Groups consecutive unprocessed text run indices into ranges.
+std::vector<UnassociatedTextRunRange> FindUnassociatedTextRunRanges(
+    const std::vector<chrome_pdf::AccessibilityTextRunInfo>& text_runs,
+    const std::set<size_t>& processed_text_run_indices) {
+  std::vector<UnassociatedTextRunRange> ranges;
+
+  // Group consecutive unprocessed runs.
+  size_t i = 0;
+  while (i < text_runs.size()) {
+    // Skip processed indices.
+    if (processed_text_run_indices.contains(i)) {
+      ++i;
+      continue;
+    }
+
+    // Found start of an unprocessed range.
+    size_t range_start = i;
+    size_t range_end = i;
+
+    // Find end of consecutive unprocessed range.
+    while (range_end + 1 < text_runs.size() &&
+           !processed_text_run_indices.contains(range_end + 1)) {
+      ++range_end;
+    }
+
+    ranges.push_back({range_start, range_end});
+    i = range_end + 1;
+  }
+
+  return ranges;
+}
+
 }  // namespace
 
 PDFiumPage::LinkTarget::LinkTarget() : page(-1) {}
@@ -598,6 +630,11 @@ std::unique_ptr<AccessibilityStructureElement> PDFiumPage::GetStructureTree() {
       tree_root->children[i]->parent = tree_root.get();
     }
   }
+
+  // After walking the full tree, calculated unassociated text run ranges.
+  tree_root->unassociated_text_run_ranges_for_page =
+      FindUnassociatedTextRunRanges(text_runs_, associated_text_run_indices_);
+
   return tree_root;
 }
 
@@ -624,6 +661,9 @@ void PDFiumPage::AssociateMarkedContentWithStructureElement(
       for (size_t text_run_index : text_run_indices) {
         tree_node->associated_text_runs_if_available.push_back(
             &text_runs_[text_run_index]);
+
+        // Keep track of text runs that are associated with structured elements.
+        associated_text_run_indices_.insert(text_run_index);
       }
     }
 

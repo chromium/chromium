@@ -6,15 +6,17 @@
 
 #include <optional>
 #include <string>
+#include <string_view>
+#include <utility>
 
 #include "base/containers/flat_set.h"
 #include "base/containers/to_vector.h"
+#include "base/notimplemented.h"
 #include "base/notreached.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
-#include "base/types/cxx23_to_underlying.h"
 #include "base/values.h"
 #include "chrome/common/extensions/api/autofill_private.h"
 #include "components/autofill/core/browser/autofill_field.h"
@@ -59,13 +61,15 @@ using autofill::EntityTypeName;
 //    `api::autofill_private::EntityInstanceWithLabels` to the output.
 void EntityInstanceToPrivateApiEntityInstanceWithLabels(
     base::span<const EntityInstance*> entity_instances,
-    const std::string& app_locale,
+    std::string_view app_locale,
+    bool obfuscate_sensitive_types,
     std::vector<autofill_private::EntityInstanceWithLabels>& output) {
   // Step 1#, get all available labels for `entity_instances`.
   const std::vector<autofill::EntityLabel> labels_for_entities =
       autofill::GetLabelsForEntities(entity_instances,
                                      /*attribute_types_to_ignore=*/{},
                                      /*only_disambiguating_types=*/false,
+                                     /*obfuscate_sensitive_types=*/obfuscate_sensitive_types,
                                      app_locale);
 
   // Step 2#
@@ -88,7 +92,7 @@ void EntityInstanceToPrivateApiEntityInstanceWithLabels(
 
     const EntityType entity_type = entity_instance.type();
     entity_instance_with_labels.type.type_name =
-        base::to_underlying(entity_type.name());
+        std::to_underlying(entity_type.name());
     entity_instance_with_labels.type.type_name_as_string =
         base::UTF16ToUTF8(entity_type.GetNameForI18n());
     entity_instance_with_labels.type.add_entity_type_string =
@@ -128,7 +132,7 @@ AttributeTypeDataTypeToPrivateApiAttributeTypeDataType(
 
 std::optional<EntityInstance> PrivateApiEntityInstanceToEntityInstance(
     const autofill_private::EntityInstance& private_api_entity_instance,
-    const std::string& app_locale) {
+    std::string_view app_locale) {
   base::flat_set<AttributeInstance, AttributeInstance::CompareByType>
       attribute_instances;
   for (const autofill_private::AttributeInstance&
@@ -136,7 +140,7 @@ std::optional<EntityInstance> PrivateApiEntityInstanceToEntityInstance(
        private_api_entity_instance.attribute_instances) {
     if (private_api_attribute_instance.type.type_name < 0 ||
         private_api_attribute_instance.type.type_name >
-            base::to_underlying(AttributeTypeName::kMaxValue)) {
+            std::to_underlying(AttributeTypeName::kMaxValue)) {
       return std::nullopt;
     }
 
@@ -206,16 +210,22 @@ std::optional<EntityInstance> PrivateApiEntityInstanceToEntityInstance(
 
 autofill_private::EntityInstance EntityInstanceToPrivateApiEntityInstance(
     const EntityInstance& entity_instance,
-    const std::string& app_locale) {
+    std::string_view app_locale) {
   std::vector<autofill_private::AttributeInstance>
       private_api_attribute_instances;
+  bool should_authenticate_to_view = false;
   for (const AttributeInstance& attribute_instance :
        entity_instance.attributes()) {
     private_api_attribute_instances.emplace_back();
     private_api_attribute_instances.back().type.type_name =
-        base::to_underlying(attribute_instance.type().name());
+        std::to_underlying(attribute_instance.type().name());
     private_api_attribute_instances.back().type.type_name_as_string =
         base::UTF16ToUTF8(attribute_instance.type().GetNameForI18n());
+
+    if (attribute_instance.type().is_obfuscated() &&
+        !attribute_instance.GetCompleteRawInfo().empty()) {
+      should_authenticate_to_view = true;
+    }
 
     AttributeType::DataType data_type = attribute_instance.type().data_type();
     private_api_attribute_instances.back().type.data_type =
@@ -252,7 +262,7 @@ autofill_private::EntityInstance EntityInstanceToPrivateApiEntityInstance(
 
   autofill_private::EntityInstance private_api_entity_instance;
   private_api_entity_instance.type.type_name =
-      base::to_underlying(entity_instance.type().name());
+      std::to_underlying(entity_instance.type().name());
   private_api_entity_instance.type.type_name_as_string =
       base::UTF16ToUTF8(entity_instance.type().GetNameForI18n());
   private_api_entity_instance.type.add_entity_type_string =
@@ -265,13 +275,16 @@ autofill_private::EntityInstance EntityInstanceToPrivateApiEntityInstance(
       std::move(private_api_attribute_instances);
   private_api_entity_instance.guid = *entity_instance.guid();
   private_api_entity_instance.nickname = entity_instance.nickname();
+  private_api_entity_instance.should_authenticate_to_view =
+      should_authenticate_to_view;
   return private_api_entity_instance;
 }
 
 std::vector<autofill_private::EntityInstanceWithLabels>
 EntityInstancesToPrivateApiEntityInstancesWithLabels(
     base::span<const EntityInstance> entity_instances,
-    const std::string& app_locale) {
+    bool obfuscate_sensitive_types,
+    std::string_view app_locale) {
   // Entity labels should be generated based on other entities of the same
   // type. This is because the disambiguation values of attributes are only
   // relevant inside a specific entity type.
@@ -282,17 +295,17 @@ EntityInstancesToPrivateApiEntityInstancesWithLabels(
   std::vector<autofill_private::EntityInstanceWithLabels> response;
   response.reserve(entity_instances.size());
   for (auto& [entity_type, entities] : entities_per_type) {
-    EntityInstanceToPrivateApiEntityInstanceWithLabels(entities, app_locale,
-                                                       response);
+    EntityInstanceToPrivateApiEntityInstanceWithLabels(
+        entities, app_locale, obfuscate_sensitive_types, response);
   }
   return response;
 }
 
 api::autofill_private::EntityType EntityTypeToPrivateApiEntityType(
-    const EntityType& entity_type,
+    EntityType entity_type,
     bool supports_wallet_storage) {
   autofill_private::EntityType api_type;
-  api_type.type_name = base::to_underlying(entity_type.name());
+  api_type.type_name = std::to_underlying(entity_type.name());
   api_type.type_name_as_string =
       base::UTF16ToUTF8(entity_type.GetNameForI18n());
   api_type.add_entity_type_string =
@@ -303,6 +316,36 @@ api::autofill_private::EntityType EntityTypeToPrivateApiEntityType(
       autofill::GetDeleteEntityTypeStringForI18n(entity_type);
   api_type.supports_wallet_storage = supports_wallet_storage;
   return api_type;
+}
+
+api::autofill_private::AttributeType AttributeTypeToPrivateApiAttributeType(
+    autofill::AttributeType attribute_type) {
+  api::autofill_private::AttributeType api_attr;
+  api_attr.type_name = std::to_underlying(attribute_type.name());
+  api_attr.type_name_as_string =
+      base::UTF16ToUTF8(attribute_type.GetNameForI18n());
+  api_attr.data_type = AttributeTypeDataTypeToPrivateApiAttributeTypeDataType(
+      attribute_type.data_type());
+  return api_attr;
+}
+
+std::vector<api::autofill_private::AttributeType> GetRequiredAttributesForType(
+    autofill::EntityType entity_type) {
+  return base::ToVector(entity_type.import_constraints(), [](autofill::DenseSet<
+                                                              AttributeType>
+                                                                 group) {
+    // It was decided to keep the schema expressive to allow future complex
+    // constraints, rather than restricting it to match current UI
+    // capabilities. Consequently, this code enforces the current UI limitation
+    // (simple disjunctions only) via runtime checks.
+    // Ex. "[[a]]", "[[a], [b]]", "[[a], [b], [c]]" etc are supported in UI.
+    // More details here: crrev.com/c/7245980
+    CHECK_EQ(group.size(), 1u)
+        << "Unsupported format: Complex constraint groups not supported by UI";
+
+    // Flatten the constraints: {{A}, {B}} -> [A, B]
+    return AttributeTypeToPrivateApiAttributeType(*group.begin());
+  });
 }
 
 }  // namespace extensions::autofill_ai_util

@@ -34,6 +34,7 @@ NSString* const kOriginServerHost = @"AlternateOriginServerHost";
 NSString* const kWhatsNewPromoStatus = @"WhatsNewPromoStatus";
 NSString* const kClearApplicationGroup = @"ClearApplicationGroup";
 NSString* const kNextPromoForDisplayOverride = @"NextPromoForDisplayOverride";
+NSString* const kHomeSurfaceDuration = @"HomeSurfaceDuration";
 NSString* const kFirstRunRecency = @"FirstRunRecency";
 NSString* const kIgnoreDeviceLocaleConditions = @"IgnoreDeviceLocaleConditions";
 NSString* const kForceExperienceForDeviceSwitcherExperimentalSettings =
@@ -69,6 +70,8 @@ NSString* const kLensResultPanelGwsURL = @"LensResultPanelGwsURL";
 NSString* const kForceDisableAIMEligibility = @"ForceDisableAIMEligibility";
 NSString* const kForceDisableCreateImagesEligibility =
     @"ForceDisableCreateImagesEligibility";
+NSString* const kForceDisableCanvasEligibility =
+    @"ForceDisableCanvasEligibility";
 NSString* const kForceDisablePdfUploadEligibility =
     @"ForceDisablePdfUploadEligibility";
 NSString* const kShowCatalogItems = @"ShowCatalogItems";
@@ -204,6 +207,15 @@ std::optional<int> GetSafetyCheckWeakPasswordsCount() {
   }
 
   return weakPasswordsCount;
+}
+
+base::TimeDelta GetReturnToHomeSurfaceDuration() {
+  int duration = [[NSUserDefaults standardUserDefaults]
+      integerForKey:kHomeSurfaceDuration];
+  if (duration == 0) {
+    return base::Hours(4);
+  }
+  return base::Seconds(duration);
 }
 
 std::optional<int> GetFirstRunRecency() {
@@ -358,6 +370,11 @@ bool ShouldForceDisableComposeboxAIM() {
 bool ShouldForceDisableComposeboxCreateImages() {
   return [[NSUserDefaults standardUserDefaults]
       boolForKey:kForceDisableCreateImagesEligibility];
+}
+
+bool ShouldForceDisableComposeboxCanvas() {
+  return [[NSUserDefaults standardUserDefaults]
+      boolForKey:kForceDisableCanvasEligibility];
 }
 
 bool ShouldForceDisableComposeboxPdfUpload() {

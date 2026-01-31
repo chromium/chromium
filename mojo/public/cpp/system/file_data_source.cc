@@ -14,8 +14,9 @@ namespace mojo {
 namespace {
 
 uint64_t CalculateEndOffset(base::File* file, MojoResult* result) {
-  if (!file->IsValid())
+  if (!file->IsValid()) {
     return 0u;
+  }
   int64_t length = file->GetLength();
   if (length < 0) {
     *result =
@@ -60,8 +61,9 @@ void FileDataSource::SetRange(uint64_t start, uint64_t end) {
   if (start > end) {
     start_offset_ = 0;
     end_offset_ = 0;
-    if (error_ == MOJO_RESULT_OK)
+    if (error_ == MOJO_RESULT_OK) {
       error_ = MOJO_RESULT_INVALID_ARGUMENT;
+    }
   } else {
     start_offset_ = start;
     end_offset_ = end;
@@ -76,10 +78,11 @@ DataPipeProducer::DataSource::ReadResult FileDataSource::Read(
     uint64_t offset,
     base::span<char> buffer) {
   ReadResult result;
-  if (error_ != MOJO_RESULT_OK)
+  if (error_ != MOJO_RESULT_OK) {
     result.result = error_;
-  else if (GetLength() < offset)
+  } else if (GetLength() < offset) {
     result.result = MOJO_RESULT_INVALID_ARGUMENT;
+  }
 
   uint64_t readable_size = GetLength() - offset;
   uint64_t read_size =
@@ -88,11 +91,13 @@ DataPipeProducer::DataSource::ReadResult FileDataSource::Read(
   // |read_offset| should not overflow if 'GetLength() < offset' is true.
   // Otherwise, MOJO_RESULT_INVALID_ARGUMENT should be already set.
   uint64_t read_offset = start_offset_ + offset;
-  if (read_offset > std::numeric_limits<int64_t>::max())
+  if (read_offset > std::numeric_limits<int64_t>::max()) {
     result.result = MOJO_RESULT_INVALID_ARGUMENT;
+  }
 
-  if (result.result != MOJO_RESULT_OK)
+  if (result.result != MOJO_RESULT_OK) {
     return result;
+  }
 
   std::optional<size_t> bytes_read =
       file_.Read(static_cast<int64_t>(read_offset),

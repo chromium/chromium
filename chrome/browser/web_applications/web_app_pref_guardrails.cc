@@ -41,16 +41,16 @@ bool TimeOccurredWithinDays(std::optional<base::Time> time, int days) {
   return time && (now - time.value()).InDays() < days;
 }
 
-const base::Value::Dict* GetWebAppDictionary(const PrefService* pref_service,
-                                             const webapps::AppId& app_id) {
+const base::DictValue* GetWebAppDictionary(const PrefService* pref_service,
+                                           const webapps::AppId& app_id) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  const base::Value::Dict& web_apps_prefs =
+  const base::DictValue& web_apps_prefs =
       pref_service->GetDict(prefs::kWebAppsPreferences);
 
   return web_apps_prefs.FindDict(app_id);
 }
 
-base::Value::Dict& UpdateWebAppDictionary(
+base::DictValue& UpdateWebAppDictionary(
     ScopedDictPrefUpdate& web_apps_prefs_update,
     const webapps::AppId& app_id) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
@@ -62,7 +62,7 @@ base::Value::Dict& UpdateWebAppDictionary(
 std::optional<int> GetIntWebAppPref(const PrefService* pref_service,
                                     const webapps::AppId& app_id,
                                     std::string_view path) {
-  const base::Value::Dict* web_app_prefs =
+  const base::DictValue* web_app_prefs =
       GetWebAppDictionary(pref_service, app_id);
   if (!web_app_prefs) {
     return std::nullopt;
@@ -277,7 +277,7 @@ std::optional<std::string> WebAppPrefGuardrails::IsGloballyBlocked() {
   if (!HasGlobalPrefs()) {
     return std::nullopt;
   }
-  const base::Value::Dict& dict =
+  const base::DictValue& dict =
       pref_service_->GetDict(pref_names_->global_pref_name);
 
   // Block if user ignored the action last N+ times for any app.
@@ -368,7 +368,7 @@ bool WebAppPrefGuardrails::ShouldResetGlobalGuardrails() {
   }
 
   CHECK(!pref_names_->all_blocked_time_name.empty());
-  const base::Value::Dict& dict =
+  const base::DictValue& dict =
       pref_service_->GetDict(pref_names_->global_pref_name);
   const base::Value* value =
       dict.FindByDottedPath(pref_names_->all_blocked_time_name);
@@ -410,7 +410,7 @@ bool WebAppPrefGuardrails::IsGlobalBlockActive() {
   if (pref_names_->all_blocked_time_name.empty()) {
     return false;
   }
-  const base::Value::Dict& dict =
+  const base::DictValue& dict =
       pref_service_->GetDict(pref_names_->global_pref_name);
   return dict.contains(pref_names_->all_blocked_time_name);
 }
@@ -439,7 +439,7 @@ void WebAppPrefGuardrails::UpdateIntWebAppPref(const webapps::AppId& app_id,
                                                int value) {
   ScopedDictPrefUpdate update(pref_service_, prefs::kWebAppsPreferences);
 
-  base::Value::Dict& web_app_prefs = UpdateWebAppDictionary(update, app_id);
+  base::DictValue& web_app_prefs = UpdateWebAppDictionary(update, app_id);
   web_app_prefs.SetByDottedPath(path, value);
 }
 

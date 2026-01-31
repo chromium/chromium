@@ -7,6 +7,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/byte_size.h"
 #include "base/check_op.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
@@ -240,9 +241,9 @@ const GURL& PageNodeImpl::GetMainFrameUrl() const {
   return main_frame_url_.value();
 }
 
-base::ByteCount PageNodeImpl::EstimateMainFramePrivateFootprintSize() const {
+base::ByteSize PageNodeImpl::EstimateMainFramePrivateFootprintSize() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  base::ByteCount total;
+  base::ByteSize total;
   FrameNodeImpl* main_frame = main_frame_node();
   if (main_frame) {
     performance_manager::GraphImplOperations::VisitFrameAndChildrenPreOrder(
@@ -268,9 +269,9 @@ base::WeakPtr<content::WebContents> PageNodeImpl::GetWebContents() const {
   return web_contents_;
 }
 
-base::ByteCount PageNodeImpl::EstimateResidentSetSize() const {
+base::ByteSize PageNodeImpl::EstimateResidentSetSize() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  base::ByteCount total;
+  base::ByteSize total;
   performance_manager::GraphOperations::VisitFrameTreePreOrder(
       this, [&total](const FrameNode* frame_node) {
         total += frame_node->GetResidentSetEstimate();
@@ -279,9 +280,9 @@ base::ByteCount PageNodeImpl::EstimateResidentSetSize() const {
   return total;
 }
 
-base::ByteCount PageNodeImpl::EstimatePrivateFootprintSize() const {
+base::ByteSize PageNodeImpl::EstimatePrivateFootprintSize() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  base::ByteCount total;
+  base::ByteSize total;
   performance_manager::GraphOperations::VisitFrameTreePreOrder(
       this, [&total](const FrameNode* frame_node) {
         total += frame_node->GetPrivateFootprintEstimate();

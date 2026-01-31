@@ -36,7 +36,6 @@
 #include "ash/wm/window_util.h"
 #include "ash/wm/wm_event.h"
 #include "ash/wm/workspace/phantom_window_controller.h"
-#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_macros.h"
@@ -340,7 +339,7 @@ int GetDraggingThreshold(const DragDetails& details) {
       WindowStateType::kDefault,        WindowStateType::kNormal,
       WindowStateType::kPrimarySnapped, WindowStateType::kSecondarySnapped,
       WindowStateType::kMaximized,      WindowStateType::kFloated};
-  DCHECK(base::Contains(draggable_states, state));
+  DCHECK(std::ranges::contains(draggable_states, state));
 #endif
 
   // Snapped and maximized windows need to be dragged a certain amount before
@@ -503,7 +502,8 @@ std::unique_ptr<WindowResizer> CreateWindowResizer(
     aura::Window* window,
     const gfx::PointF& point_in_parent,
     int window_component,
-    wm::WindowMoveSource source) {
+    wm::WindowMoveSource source,
+    bool for_pinch) {
   DCHECK(window);
 
   WindowState* window_state = WindowState::Get(window);
@@ -532,13 +532,17 @@ std::unique_ptr<WindowResizer> CreateWindowResizer(
       window_state->CreateDragDetails(point_in_parent, window_component,
                                       source);
       MaybeRecordResizeHandleUsage(window, point_in_parent);
-      return std::make_unique<PipWindowResizer>(window_state);
+      return std::make_unique<PipWindowResizer>(window_state, for_pinch);
     } else {
       return nullptr;
     }
   }
 
-  if (display::Screen::Get()->InTabletMode()) {
+  // For windows in always-top-container, allow for default resizing/dragging in
+  // tablet-mode.
+  const auto* parent = window->parent();
+  if (display::Screen::Get()->InTabletMode() && parent &&
+      parent->GetId() != kShellWindowId_AlwaysOnTopContainer) {
     return CreateWindowResizerForTabletMode(window, point_in_parent,
                                             window_component, source);
   }
@@ -582,7 +586,6 @@ std::unique_ptr<WindowResizer> CreateWindowResizer(
   // layout manager that a drag has started or stopped. It may be possible to
   // refactor and eliminate chaining.
   std::unique_ptr<WindowResizer> window_resizer;
-  const auto* parent = window->parent();
   if (parent &&
       // TODO(afakhry): Maybe use switchable containers?
       (desks_util::IsDeskContainer(parent) ||
@@ -1401,7 +1404,7 @@ bool WorkspaceWindowResizer::UpdateMagnetismWindow(
   for (auto i = children.rbegin();
        i != children.rend() && !matcher.AreEdgesObscured(); ++i) {
     // Ignore already attached windows.
-    if (base::Contains(attached_windows_, *i)) {
+    if (std::ranges::contains(attached_windows_, *i)) {
       continue;
     }
 

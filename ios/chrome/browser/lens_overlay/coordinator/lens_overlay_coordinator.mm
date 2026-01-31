@@ -61,15 +61,14 @@
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
-#import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/browser_coordinator_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/lens_commands.h"
 #import "ios/chrome/browser/shared/public/commands/lens_overlay_commands.h"
-#import "ios/chrome/browser/shared/public/commands/load_query_commands.h"
 #import "ios/chrome/browser/shared/public/commands/open_lens_input_selection_command.h"
 #import "ios/chrome/browser/shared/public/commands/open_new_tab_command.h"
 #import "ios/chrome/browser/shared/public/commands/page_side_swipe_commands.h"
+#import "ios/chrome/browser/shared/public/commands/scene_commands.h"
 #import "ios/chrome/browser/shared/public/commands/snackbar_commands.h"
 #import "ios/chrome/browser/shared/public/commands/toolbar_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
@@ -78,6 +77,7 @@
 #import "ios/chrome/browser/shared/ui/util/rtl_geometry.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/snapshots/model/snapshot_tab_helper.h"
+#import "ios/chrome/browser/url_loading/model/url_loading_browser_agent.h"
 #import "ios/chrome/browser/web/model/web_state_delegate_browser_agent.h"
 #import "ios/public/provider/chrome/browser/lens/lens_configuration.h"
 #import "ios/public/provider/chrome/browser/lens/lens_image_metadata.h"
@@ -276,8 +276,8 @@ const base::TimeDelta kSearchWithCameraTooltipHintDelay = base::Seconds(2.0);
   _mediator = [[LensOverlayMediator alloc]
       initWithWebStateList:browser->GetWebStateList()
               profilePrefs:browser->GetProfile()->GetPrefs()];
-  _mediator.applicationHandler =
-      HandlerForProtocol(browser->GetCommandDispatcher(), ApplicationCommands);
+  _mediator.sceneHandler =
+      HandlerForProtocol(browser->GetCommandDispatcher(), SceneCommands);
   _mediator.metricsRecorder = _metricsRecorder;
 
   // Results UI is lazily initialized; see comment in LensOverlayResultConsumer
@@ -699,6 +699,7 @@ const base::TimeDelta kSearchWithCameraTooltipHintDelay = base::Seconds(2.0);
   [self destroyViewControllersAndMediators];
   [self notifyDestroyCompleted];
   self.exiting = NO;
+  [self.presentationEnvironment lensOverlayDidDisappear];
 }
 
 #pragma mark - Exit helpers
@@ -1193,6 +1194,7 @@ const base::TimeDelta kSearchWithCameraTooltipHintDelay = base::Seconds(2.0);
   _associatedTabHelper->SetLensOverlayCommandsHandler(self);
   _associatedTabHelper->SetLensOverlayUIAttachedAndAlive(true);
 
+  [self.presentationEnvironment lensOverlayDidPrepare];
   return YES;
 }
 
@@ -1202,7 +1204,7 @@ const base::TimeDelta kSearchWithCameraTooltipHintDelay = base::Seconds(2.0);
       [OpenNewTabCommand commandWithURLFromChrome:URL
                                       inIncognito:self.isOffTheRecord];
 
-  [HandlerForProtocol(self.browser->GetCommandDispatcher(), ApplicationCommands)
+  [HandlerForProtocol(self.browser->GetCommandDispatcher(), SceneCommands)
       openURLInNewTab:command];
 }
 
@@ -1234,10 +1236,8 @@ const base::TimeDelta kSearchWithCameraTooltipHintDelay = base::Seconds(2.0);
           [weakPageSideSwipeHandler slideToCenterAnimated];
         }];
 
-  id<LoadQueryCommands> loadQueryHandler = HandlerForProtocol(
-      self.browser->GetCommandDispatcher(), LoadQueryCommands);
-  [loadQueryHandler loadQuery:base::SysUTF8ToNSString(URL.spec())
-                  immediately:YES];
+  UrlLoadingBrowserAgent::FromBrowser(self.browser)
+      ->LoadURLForQuery(base::SysUTF8ToNSString(URL.spec()));
 }
 
 // Returns whether or not the consent dialog should be shown.
@@ -1288,8 +1288,8 @@ const base::TimeDelta kSearchWithCameraTooltipHintDelay = base::Seconds(2.0);
       browserWebStateDelegate:browserWebStateDelegate
                  webStateList:browser->GetWebStateList()
                   isIncognito:profile->IsOffTheRecord()];
-  _resultMediator.applicationHandler =
-      HandlerForProtocol(browser->GetCommandDispatcher(), ApplicationCommands);
+  _resultMediator.sceneHandler =
+      HandlerForProtocol(browser->GetCommandDispatcher(), SceneCommands);
   _resultMediator.snackbarHandler =
       HandlerForProtocol(browser->GetCommandDispatcher(), SnackbarCommands);
   _resultMediator.errorHandler = _networkIssuePresenter;

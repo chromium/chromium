@@ -9,10 +9,8 @@
 #include <string>
 #include <vector>
 
-#include "base/byte_count.h"
 #include "base/byte_size.h"
 #include "base/check.h"
-#include "base/containers/contains.h"
 #include "base/containers/enum_set.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
@@ -375,7 +373,7 @@ base::flat_set<raw_ptr<const PageNode>> FreezingPolicy::GetConnectedPages(
       CHECK(it != browsing_instance_states_.end());
       const BrowsingInstanceState& browsing_instance_state = it->second;
       for (auto* browsing_instance_page : browsing_instance_state.pages) {
-        if (!base::Contains(connected_pages, browsing_instance_page)) {
+        if (!connected_pages.contains(browsing_instance_page)) {
           pages_to_visit.insert(browsing_instance_page);
         }
       }
@@ -414,8 +412,7 @@ void FreezingPolicy::UpdateFrozenState(
   // Determine whether:
   // - Any connected page has a `CannotFreezeReason`.
   // - Any browsing instance hosting a frame from a connected page was CPU
-  //   intensive in the background and Battery Saver is active and the
-  //   `kFreezingOnBatterySaver` feature is enabled.
+  //   intensive in the background and Battery Saver mode is active.
   // - Any connected page is in a periodic unfreeze period.
   // - All connected page have a freeze vote.
   CanFreezePerTypeTracker can_freeze_per_type_tracker;
@@ -447,16 +444,7 @@ void FreezingPolicy::UpdateFrozenState(
       if (browsing_instance_state
                   .highest_cpu_without_battery_saver_cannot_freeze >=
               high_cpu_proportion &&
-          is_battery_saver_active_ &&
-          // Note: Feature state is checked last so that only clients that
-          // have a browsing instance that is CPU intensive in background
-          // while Battery Saver is active are enrolled in the experiment.
-          base::FeatureList::IsEnabled(features::kFreezingOnBatterySaver)) {
-        eligible_for_freezing_on_battery_saver = true;
-      }
-
-      if (base::FeatureList::IsEnabled(
-              features::kFreezingOnBatterySaverForTesting)) {
+          is_battery_saver_active_) {
         eligible_for_freezing_on_battery_saver = true;
       }
     }
@@ -627,7 +615,7 @@ void FreezingPolicy::OnBeforePageNodeRemoved(const PageNode* page_node) {
   }
 
   CHECK(page_node->GetMainFrameNodes().empty());
-  CHECK(!base::Contains(most_recently_used_, page_node),
+  CHECK(!std::ranges::contains(most_recently_used_, page_node),
         base::NotFatalUntil::M140);
   CheckMostRecentlyUsedListSize();
 }
@@ -678,7 +666,7 @@ void FreezingPolicy::OnIsVisibleChanged(const PageNode* page_node) {
   } else {
     // Page becomes hidden.
     if (page_node->GetType() == PageType::kTab) {
-      CHECK(!base::Contains(most_recently_used_, page_node),
+      CHECK(!std::ranges::contains(most_recently_used_, page_node),
             base::NotFatalUntil::M140);
       CHECK_GT(num_visible_tabs_, 0, base::NotFatalUntil::M140);
       --num_visible_tabs_;
@@ -958,9 +946,9 @@ void FreezingPolicy::OnIsCapturingDisplayChanged(const PageNode* page_node) {
                              CannotFreezeReason::kCapturingDisplay);
 }
 
-base::Value::Dict FreezingPolicy::DescribePageNodeData(
+base::DictValue FreezingPolicy::DescribePageNodeData(
     const PageNode* node) const {
-  base::Value::Dict ret;
+  base::DictValue ret;
 
   const auto& page_freezing_state = GetFreezingState(node);
 
@@ -969,7 +957,7 @@ base::Value::Dict FreezingPolicy::DescribePageNodeData(
 
   // Present browsing instances for this page.
   {
-    base::Value::List browsing_instances;
+    base::ListValue browsing_instances;
     for (auto browsing_instance : GetBrowsingInstances(node)) {
       browsing_instances.Append(browsing_instance.value());
     }
@@ -978,7 +966,7 @@ base::Value::Dict FreezingPolicy::DescribePageNodeData(
 
   // Present `CannotFreezeReason`s for this page.
   {
-    base::Value::List cannot_freeze_reasons_list;
+    base::ListValue cannot_freeze_reasons_list;
     for (auto reason : page_freezing_state.cannot_freeze_reasons) {
       cannot_freeze_reasons_list.Append(CannotFreezeReasonToString(reason));
     }
@@ -1003,7 +991,7 @@ base::Value::Dict FreezingPolicy::DescribePageNodeData(
         }
       }
     }
-    base::Value::List cannot_freeze_reasons_other_pages_list;
+    base::ListValue cannot_freeze_reasons_other_pages_list;
     for (CannotFreezeReason reason : cannot_freeze_reasons_other_pages) {
       cannot_freeze_reasons_other_pages_list.Append(
           CannotFreezeReasonToString(reason));
@@ -1044,8 +1032,9 @@ void FreezingPolicy::DiscardFrozenPagesWithGrowingMemoryOnMemoryMeasurement(
     }
   }
 
-  const base::ByteCount growth_threshold =
-      base::KiB(features::kFreezingMemoryGrowthThresholdToDiscardKb.Get());
+  const base::ByteSize growth_threshold =
+      base::KiBU(base::checked_cast<uint64_t>(
+          features::kFreezingMemoryGrowthThresholdToDiscardKb.Get()));
 
   // Traverse memory measurements to find pages to discard.
   std::set<const PageNode*> pages_to_discard;
@@ -1071,10 +1060,9 @@ void FreezingPolicy::DiscardFrozenPagesWithGrowingMemoryOnMemoryMeasurement(
       continue;
     }
 
-    const base::ByteCount current =
+    const base::ByteSize current =
         result.memory_summary_result->private_footprint;
-    if (base::Contains(browsing_instance_states_without_initial_measurement,
-                       id)) {
+    if (browsing_instance_states_without_initial_measurement.contains(id)) {
       // Store the first PMF measurement after being frozen.
       state.per_origin_pmf_after_freezing[origin_in_browsing_instance_context
                                               .GetOrigin()] = current;
@@ -1082,7 +1070,7 @@ void FreezingPolicy::DiscardFrozenPagesWithGrowingMemoryOnMemoryMeasurement(
       // Compare current measurement against the one stored after being frozen.
       auto it = state.per_origin_pmf_after_freezing.find(
           origin_in_browsing_instance_context.GetOrigin());
-      base::ByteCount after_freezing;
+      base::ByteSize after_freezing;
       if (it == state.per_origin_pmf_after_freezing.end()) {
         // No memory measurement was stored for this origin after being frozen.
         // This could indicate a measurement error (e.g. process missing in a
@@ -1095,14 +1083,14 @@ void FreezingPolicy::DiscardFrozenPagesWithGrowingMemoryOnMemoryMeasurement(
         // stored in `per_origin_pmf_after_freezing` to prevent it from
         // growing without bounds if the page continuously navigates to new
         // origins.
-        after_freezing = base::ByteCount(0);
+        after_freezing = base::ByteSize(0);
       } else {
         after_freezing = it->second;
       }
 
-      const base::ByteCount growth = current > after_freezing
-                                         ? current - after_freezing
-                                         : base::ByteCount(0);
+      const base::ByteSize growth =
+          current > after_freezing ? (current - after_freezing).AsByteSize()
+                                   : base::ByteSize(0);
       if (growth > growth_threshold) {
         pages_to_discard.insert(state.pages.begin(), state.pages.end());
       }
@@ -1406,7 +1394,7 @@ void FreezingPolicy::RecordFreezingEligibilityUKMForPageStatic(
 
 base::TimeTicks FreezingPolicy::GenerateRandomPeriodicUnfreezePhase() const {
   return base::TimeTicks() +
-         base::Milliseconds(base::RandInt(
+         base::Milliseconds(base::RandIntInclusive(
              0, features::kInfiniteTabsFreezing_UnfreezeInterval.Get()
                     .InMilliseconds()));
 }
@@ -1454,7 +1442,7 @@ void FreezingPolicy::UpdateAllPagesFrozenState() {
 
   base::flat_set<raw_ptr<const PageNode>> visited_pages;
   for (auto& [id, state] : browsing_instance_states_) {
-    if (!base::Contains(visited_pages, *state.pages.begin())) {
+    if (!visited_pages.contains(*state.pages.begin())) {
       UpdateFrozenState(*state.pages.begin(), now, &visited_pages);
     }
   }

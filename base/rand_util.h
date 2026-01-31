@@ -58,6 +58,9 @@ BASE_EXPORT uint64_t RandUint64();
 // exclude `max`) to parallel other APIs here.
 BASE_EXPORT int RandInt(int min, int max);
 
+// Alias for RandInt during migration for https://crbug.com/40283703.
+BASE_EXPORT int RandIntInclusive(int min, int max);
+
 // Returns a random number in range [0, range).  Thread-safe.
 BASE_EXPORT uint64_t RandGenerator(uint64_t range);
 
@@ -211,6 +214,15 @@ class NonAllocatingRandomBitGenerator {
 template <typename Itr>
 void RandomShuffle(Itr first, Itr last) {
   std::shuffle(first, last, RandomBitGenerator());
+}
+
+// Return a random element from the given range, which must be nonempty.
+template <typename Range>
+  requires(std::ranges::random_access_range<Range> &&
+           std::ranges::sized_range<Range>)
+decltype(auto) RandomChoice(Range&& r) {
+  CHECK(!r.empty());
+  return r[base::RandGenerator(r.size())];
 }
 
 #if BUILDFLAG(IS_POSIX)

@@ -4,7 +4,8 @@
 
 #include "third_party/blink/renderer/platform/webrtc/convert_to_webrtc_video_frame_buffer.h"
 
-#include "base/containers/contains.h"
+#include <algorithm>
+
 #include "base/containers/span.h"
 #include "base/logging.h"
 #include "base/numerics/safe_conversions.h"
@@ -263,12 +264,11 @@ namespace blink {
 // static
 bool CanConvertToWebRtcVideoFrameBuffer(const media::VideoFrame* frame) {
   // Currently accept I420, I420A, NV12 formats in a mapped frame,
-  // or a texture or GPU memory buffer frame.
+  // or a SharedImage-backed frame.
   return (frame->IsMappable() &&
-          base::Contains(GetPixelFormatsMappableToWebRtcVideoFrameBuffer(),
-                         frame->format())) ||
-         frame->storage_type() ==
-             media::VideoFrame::STORAGE_MAPPABLE_SHARED_IMAGE ||
+          std::ranges::contains(
+              GetPixelFormatsMappableToWebRtcVideoFrameBuffer(),
+              frame->format())) ||
          frame->HasSharedImage();
 }
 
@@ -299,8 +299,7 @@ webrtc::scoped_refptr<webrtc::VideoFrameBuffer> ConvertToWebRtcVideoFrameBuffer(
         frame.natural_size(), 0u, 0x80, 0x80, frame.timestamp()));
   };
 
-  if (video_frame->storage_type() ==
-      media::VideoFrame::StorageType::STORAGE_MAPPABLE_SHARED_IMAGE) {
+  if (video_frame->HasMappableSharedImage()) {
     auto converted_frame =
         shared_resources
             ? shared_resources->ConstructVideoFrameFromGpu(video_frame)

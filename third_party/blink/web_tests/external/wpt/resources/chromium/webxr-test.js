@@ -1219,7 +1219,7 @@ class MockRuntime {
       // The JavaScript bindings convert c_style_names to camelCase names.
       const options = {
         transportMethod:
-            vrMojom.XRPresentationTransportMethod.SUBMIT_AS_MAILBOX_HOLDER,
+            vrMojom.XRPresentationTransportMethod.SUBMIT_AS_TEST,
         waitForTransferNotification: true,
         waitForRenderNotification: true,
         waitForGpuFence: false,
@@ -1274,6 +1274,9 @@ class MockRuntime {
               // If depth was not enabled above, this should be null.
               depthConfiguration: this.depthConfiguration_,
               views: this._getDefaultViews(),
+              // Typical OpenXR maxLayerCount is 16. We may also show
+              // a base layer, and a layer can have 2 eyes.
+              maxRenderLayers: (16 - 1) / 2,
             },
             enviromentBlendMode: this.enviromentBlendMode_,
             interactionMode: this.interactionMode_
@@ -2399,11 +2402,11 @@ class MockXRPresentationProvider {
   // XRPresentationProvider mojo implementation
   updateLayerBounds(frameId, leftBounds, rightBounds, sourceSize) {}
 
-  submitFrameMissing(frameId, mailboxHolder, timeWaited) {
+  submitFrameMissing(frameId, timeWaited) {
     this.missing_frame_count_++;
   }
 
-  submitFrame(frameId, mailboxHolder, timeWaited) {
+  submitFrame(frameId, timeWaited) {
     this.submit_frame_count_++;
 
     // Trigger the submit completion callbacks here. WARNING: The

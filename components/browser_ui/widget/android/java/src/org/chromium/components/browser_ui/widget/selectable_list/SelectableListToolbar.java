@@ -41,14 +41,15 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.core.graphics.drawable.DrawableCompat;
 import androidx.core.view.ViewCompat;
 
-import org.chromium.base.supplier.ObservableSupplier;
-import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.supplier.MonotonicObservableSupplier;
+import org.chromium.base.supplier.ObservableSuppliers;
+import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
+import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.browser_ui.widget.NumberRollView;
 import org.chromium.components.browser_ui.widget.R;
-import org.chromium.components.browser_ui.widget.TintedDrawable;
 import org.chromium.components.browser_ui.widget.displaystyle.DisplayStyleObserver;
 import org.chromium.components.browser_ui.widget.displaystyle.HorizontalDisplayStyle;
 import org.chromium.components.browser_ui.widget.displaystyle.UiConfig;
@@ -122,8 +123,8 @@ public class SelectableListToolbar<E> extends Toolbar
     @SuppressWarnings("NullAway.Init")
     protected SelectionDelegate<E> mSelectionDelegate;
 
-    private final ObservableSupplierImpl<Boolean> mIsSearchingSupplier =
-            new ObservableSupplierImpl<>();
+    private final SettableMonotonicObservableSupplier<Boolean> mIsSearchingSupplier =
+            ObservableSuppliers.createMonotonic();
     private boolean mHasSearchView;
 
     @SuppressWarnings("NullAway.Init")
@@ -177,8 +178,8 @@ public class SelectableListToolbar<E> extends Toolbar
     // current view type that SelectableListToolbar is showing
     private int mViewType;
     private boolean mIsLargeScreenWithKeyboard;
-    private final ObservableSupplierImpl<Boolean> mHasSearchTextSupplier =
-            new ObservableSupplierImpl<>(false);
+    private final SettableNonNullObservableSupplier<Boolean> mHasSearchTextSupplier =
+            ObservableSuppliers.createNonNull(false);
 
     /** Constructor for inflating from XML. */
     public SelectableListToolbar(Context context, AttributeSet attrs) {
@@ -583,7 +584,7 @@ public class SelectableListToolbar<E> extends Toolbar
     /**
      * @return An observable supplier that notifies observers if the search box has text.
      */
-    public ObservableSupplier<Boolean> hasSearchTextSupplier() {
+    public MonotonicObservableSupplier<Boolean> hasSearchTextSupplier() {
         return mHasSearchTextSupplier;
     }
 
@@ -704,11 +705,7 @@ public class SelectableListToolbar<E> extends Toolbar
                 this.getPaddingBottom());
 
         if (mInlineSearchBox != null) {
-            mInlineSearchBox.setInlinePadding(
-                    padding + paddingStartOffset + navigationButtonStartOffsetPx,
-                    this.getPaddingTop(),
-                    0,
-                    0);
+            mInlineSearchBox.updatePadding(padding, this.getPaddingTop());
         }
     }
 
@@ -723,7 +720,7 @@ public class SelectableListToolbar<E> extends Toolbar
         return mIsSearchingSupplier.get();
     }
 
-    public ObservableSupplier<Boolean> isSearchingSupplier() {
+    public MonotonicObservableSupplier<Boolean> isSearchingSupplier() {
         return mIsSearchingSupplier;
     }
 
@@ -828,13 +825,12 @@ public class SelectableListToolbar<E> extends Toolbar
         if (infoMenuItem != null) {
             if (mShowInfoIcon) {
                 Drawable iconDrawable =
-                        TintedDrawable.constructTintedDrawable(
+                        UiUtils.getTintedDrawable(
                                 getContext(),
-                                R.drawable.btn_info,
+                                R.drawable.ic_info_24dp,
                                 infoShowing
                                         ? R.color.default_icon_color_accent1_tint_list
                                         : R.color.default_icon_color_secondary_tint_list);
-
                 infoMenuItem.setIcon(iconDrawable);
             }
 
@@ -924,6 +920,7 @@ public class SelectableListToolbar<E> extends Toolbar
         this.getMenu().removeItem(searchMenuItemId);
         mInlineSearchBox =
                 new InlineSearchBox(
+                        getContext(),
                         mSearchDelegate,
                         mHasSearchTextSupplier,
                         KeyboardVisibilityDelegate.getInstance());

@@ -101,8 +101,8 @@ class TestDriver {
                      bool success,
                      std::string trace_json);
 
-  bool ValidateBrowserAllocations(const base::Value::Dict& dump_json);
-  bool ValidateRendererAllocations(const base::Value::Dict& dump_json);
+  bool ValidateBrowserAllocations(const base::DictValue& dump_json);
+  bool ValidateRendererAllocations(const base::DictValue& dump_json);
 
   bool ShouldProfileBrowser();
   bool ShouldProfileRenderer();

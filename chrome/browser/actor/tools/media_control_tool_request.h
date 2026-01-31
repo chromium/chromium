@@ -19,7 +19,7 @@ struct PauseMedia {};
 
 // A media control action to seek to a specific time in the media.
 struct SeekMedia {
-  int64_t seek_time_microseconds;
+  int64_t seek_time_milliseconds;
 };
 
 // A variant that holds one of several possible media control actions.

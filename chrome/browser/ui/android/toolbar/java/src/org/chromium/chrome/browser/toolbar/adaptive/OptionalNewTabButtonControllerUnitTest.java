@@ -31,7 +31,8 @@ import org.mockito.junit.MockitoRule;
 import org.robolectric.RuntimeEnvironment;
 import org.robolectric.annotation.Config;
 
-import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.supplier.ObservableSuppliers;
+import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features;
 import org.chromium.base.test.util.Features.EnableFeatures;
@@ -41,9 +42,9 @@ import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabCreator;
 import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
+import org.chromium.chrome.browser.tabstrip.StripVisibilityState;
 import org.chromium.chrome.browser.toolbar.optional_button.ButtonData;
 import org.chromium.chrome.browser.toolbar.optional_button.ButtonDataProvider;
-import org.chromium.chrome.browser.toolbar.top.tab_strip.StripVisibilityState;
 import org.chromium.chrome.browser.user_education.IphCommandBuilder;
 import org.chromium.components.feature_engagement.EventConstants;
 import org.chromium.components.feature_engagement.FeatureConstants;
@@ -70,8 +71,8 @@ public final class OptionalNewTabButtonControllerUnitTest {
     @Mock private Tracker mTracker;
     @Mock private ButtonDataProvider.ButtonDataObserver mButtonDataObserver;
 
-    private final ObservableSupplierImpl<@StripVisibilityState Integer>
-            mTabStripVisibilitySupplier = new ObservableSupplierImpl<>();
+    private final SettableMonotonicObservableSupplier<Integer> mTabStripVisibilitySupplier =
+            ObservableSuppliers.createMonotonic();
 
     private final Configuration mConfiguration = new Configuration();
     private OptionalNewTabButtonController mOptionalNewTabButtonController;

@@ -60,7 +60,7 @@ suite('GooglePhotosCollectionElementTest', function() {
       dedupKey: '2d0d1595-14af-4471-b2db-b9c8eae3a491',
       name: 'foo',
       date: '',
-      url: {url: 'foo.com'},
+      url: 'foo.com',
       location: 'home',
     }]);
     googlePhotosCollectionElement = await displayElement();
@@ -92,7 +92,7 @@ suite('GooglePhotosCollectionElementTest', function() {
       id: '1',
       title: '',
       photoCount: 0,
-      preview: {url: ''},
+      preview: '',
       timestamp: {internalValue: BigInt('1')},
       isShared: false,
     }]);
@@ -153,7 +153,7 @@ suite('GooglePhotosCollectionElementTest', function() {
       id: '9bd1d7a3-f995-4445-be47-53c5b58ce1cb',
       title: 'Album 0',
       photoCount: 1,
-      preview: {url: 'foo.com'},
+      preview: 'foo.com',
       timestamp: {internalValue: BigInt(`13318040939308000`)},
       isShared: false,
     }];
@@ -163,7 +163,7 @@ suite('GooglePhotosCollectionElementTest', function() {
       dedupKey: '2d0d1595-14af-4471-b2db-b9c8eae3a491',
       name: 'foo',
       date: '',
-      url: {url: 'foo.com'},
+      url: 'foo.com',
       location: 'home',
     }]);
     googlePhotosCollectionElement = await displayElement();
@@ -290,7 +290,7 @@ suite('GooglePhotosCollectionElementTest', function() {
       title: '',
       photoCount: 0,
       isShared: false,
-      preview: {url: ''},
+      preview: '',
       timestamp: {internalValue: BigInt(0)},
     };
 

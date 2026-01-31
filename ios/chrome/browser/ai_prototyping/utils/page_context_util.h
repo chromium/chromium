@@ -54,7 +54,17 @@ void PopulatePageContextWithTimeout(PageContextWrapper* wrapper,
 SavePageContextResult SaveSerializedPageContextToDisk(
     const optimization_guide::proto::PageContext& page_context);
 
+// Serializes the given `page_context` and saves it to a file on disk with the
+// given `dir_name` and `file_name`.
+SavePageContextResult SaveSerializedPageContextToDisk(
+    const optimization_guide::proto::PageContext& page_context,
+    const std::string& dir_name,
+    const std::string& file_name);
+
 std::string FileNameForPageContext(
     const optimization_guide::proto::PageContext& page_context);
+
+// Sanitze give `url` to be used as file name.
+NSString* SanitizeUrl(NSString* url);
 
 #endif  // IOS_CHROME_BROWSER_AI_PROTOTYPING_UTILS_PAGE_CONTEXT_UTIL_H_

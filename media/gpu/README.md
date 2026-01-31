@@ -12,12 +12,12 @@ Common classes shared between platforms are here:
 * `GpuVideoAcceleratorFactory`, which provides `VideoDecodeAccelerator`
   implementations to the IPC layer.
 
-# //media/gpu/ipc
+## //media/gpu/ipc
 
 Glue to use `VideoDecodeAccelerator` implementations via
 `MojoVideoDecoderService`.
 
-# Platform-specific directories
+## Platform-specific directories
 
 There are platform-specific directories for `android`, `chromeos`, `mac`, and
 `windows`, as well as `v4l2` and `vaapi` which are can be built on chromeos and

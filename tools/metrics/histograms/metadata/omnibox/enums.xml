@@ -61,6 +61,7 @@ chromium-metrics-reviews@google.com.
   <int value="1" label="kPrefs"/>
   <int value="2" label="kServer"/>
   <int value="3" label="kBrowserCache"/>
+  <int value="4" label="kUser"/>
 </enum>
 
 <!-- LINT.ThenChange(//components/omnibox/browser/aim_eligibility_service.h:EligibilityResponseSource) -->
@@ -107,6 +108,30 @@ chromium-metrics-reviews@google.com.
   <int value="0" label="Regular"/>
   <int value="1" label="Off the record"/>
 </enum>
+
+<!-- LINT.IfChange(ComposeboxDragAndDropType) -->
+
+<enum name="ComposeboxDragAndDropType">
+  <int value="0" label="Text"/>
+  <int value="1" label="Image"/>
+  <int value="2" label="Tab"/>
+  <int value="3" label="PDF"/>
+  <int value="4" label="Unknown"/>
+</enum>
+
+<!-- LINT.ThenChange(ios/chrome/browser/composebox/ui/composebox_metrics_recorder.h:ComposeboxDragAndDropType, //tools/metrics/histograms/metadata/omnibox/histograms.xml:ComposeboxDragAndDropType) -->
+
+<!-- LINT.IfChange(ContextType) -->
+
+<enum name="ContextType">
+  <int value="0" label="Tab"/>
+  <int value="1" label="File"/>
+  <int value="2" label="Image"/>
+  <int value="3" label="ImageGen"/>
+  <int value="4" label="DeepResearch"/>
+</enum>
+
+<!-- LINT.ThenChange(chrome/browser/ui/omnibox/omnibox_context_menu_controller.h:ContextType) -->
 
 <enum name="DocumentProviderAllowedReason">
   <int value="0" label="Allowed"/>
@@ -247,6 +272,20 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="Title prefix"/>
   <int value="3" label="Title non-prefix"/>
   <int value="4" label="Shortcut text prefix"/>
+</enum>
+
+<enum name="OmniboxWebUIRendererProcessGoneStatus">
+  <int value="0" label="Normal termination"/>
+  <int value="1" label="Abnormal termination"/>
+  <int value="2" label="Process was killed"/>
+  <int value="3" label="Process crashed"/>
+  <int value="4" label="Still running"/>
+  <int value="5" label="Process was killed by OOM"/>
+  <int value="6" label="OOM protected"/>
+  <int value="7" label="Launch failed"/>
+  <int value="8" label="OOM"/>
+  <int value="9" label="Integrity failure"/>
+  <int value="10" label="Evicted for memory"/>
 </enum>
 
 <!-- LINT.IfChange(OpenMatchWithKeyboardModifiers) -->

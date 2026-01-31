@@ -65,7 +65,7 @@ class TestPrintViewManager : public PrintViewManager {
       PrintJobManager* print_job_manager) override;
 
   // printing::mojom::PrintManagerHost:
-  void UpdatePrintSettings(base::Value::Dict job_settings,
+  void UpdatePrintSettings(base::DictValue job_settings,
                            UpdatePrintSettingsCallback callback) override;
 
   base::OnceClosure quit_closure_;

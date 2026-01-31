@@ -40,6 +40,7 @@ class VIEWS_EXAMPLES_EXPORT ButtonExample : public ExampleBase {
  private:
   void LabelButtonPressed(LabelButton* label_button, const ui::Event& event);
   void ImageButtonPressed();
+  void MdButtonPressed(MdTextButton* md_button, const ui::Event& event);
 
   // Example buttons.
   raw_ptr<LabelButton> label_button_ = nullptr;
@@ -49,6 +50,7 @@ class VIEWS_EXAMPLES_EXPORT ButtonExample : public ExampleBase {
   raw_ptr<MdTextButton> md_tonal_button_ = nullptr;
   raw_ptr<MdTextButton> md_text_button_ = nullptr;
   raw_ptr<MdTextButton> md_icon_text_button_ = nullptr;
+  raw_ptr<MdTextButton> fab_button_ = nullptr;
   raw_ptr<ImageButton> image_button_ = nullptr;
 
   raw_ptr<const gfx::ImageSkia> icon_ = nullptr;

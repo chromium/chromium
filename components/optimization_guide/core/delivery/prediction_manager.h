@@ -270,7 +270,7 @@ class PredictionManager : public PredictionModelDownloadObserver,
   base::FilePath GetBaseModelDirForDownload(
       proto::OptimizationTarget optimization_target);
 
-  void SetModelCacheKeyForTesting(const proto::ModelCacheKey& model_cache_key) {
+  void SetModelCacheKeyForTesting(const ClientCacheKey& model_cache_key) {
     model_cache_key_ = model_cache_key;
   }
 
@@ -332,7 +332,7 @@ class PredictionManager : public PredictionModelDownloadObserver,
   std::string application_locale_;
 
   // Model cache key for the profile.
-  proto::ModelCacheKey model_cache_key_;
+  ClientCacheKey model_cache_key_;
 
   // The path to the directory containing the models.
   base::FilePath models_dir_path_;

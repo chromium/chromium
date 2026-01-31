@@ -5,9 +5,9 @@
 #include "ash/glanceables/common/glanceables_progress_bar_view.h"
 
 #include <memory>
+#include <utility>
 
 #include "ash/glanceables/common/glanceables_view_id.h"
-#include "base/types/cxx23_to_underlying.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/gfx/geometry/insets.h"
@@ -35,7 +35,7 @@ GlanceablesProgressBarView::GlanceablesProgressBarView() {
   progress_bar_ = AddChildView(std::make_unique<views::ProgressBar>());
   progress_bar_->SetPreferredHeight(kProgressBarThickness);
   progress_bar_->SetPreferredCornerRadii(std::nullopt);
-  progress_bar_->SetID(base::to_underlying(GlanceablesViewId::kProgressBar));
+  progress_bar_->SetID(std::to_underlying(GlanceablesViewId::kProgressBar));
   progress_bar_->SetBackgroundColorId(cros_tokens::kCrosSysSystemOnBase);
   progress_bar_->SetForegroundColorId(cros_tokens::kCrosSysPrimary);
   progress_bar_->SetProperty(

@@ -66,15 +66,15 @@ suite('AutoTabGroupsPageTest', () => {
             tabs: [
               createTab({
                 title: 'Tab 1 Organization ' + i,
-                url: {url: 'https://tab-1.com/'},
+                url: 'https://tab-1.com/',
               }),
               createTab({
                 title: 'Tab 2 Organization ' + i,
-                url: {url: 'https://tab-2.com/'},
+                url: 'https://tab-2.com/',
               }),
               createTab({
                 title: 'Tab 3 Organization ' + i,
-                url: {url: 'https://tab-3.com/'},
+                url: 'https://tab-3.com/',
               }),
             ],
           },
@@ -389,12 +389,9 @@ suite('AutoTabGroupsPageTest', () => {
         name: 'foo',
         firstNewTabIndex: 0,
         tabs: [
-          createTab(
-              {title: 'Tab 1', url: {url: 'https://tab-1.com/'}, tabId: 1}),
-          createTab(
-              {title: 'Tab 2', url: {url: 'https://tab-2.com/'}, tabId: 2}),
-          createTab(
-              {title: 'Tab 3', url: {url: 'https://tab-3.com/'}, tabId: 3}),
+          createTab({title: 'Tab 1', url: 'https://tab-1.com/', tabId: 1}),
+          createTab({title: 'Tab 2', url: 'https://tab-2.com/', tabId: 2}),
+          createTab({title: 'Tab 3', url: 'https://tab-3.com/', tabId: 3}),
         ],
       }],
     });
@@ -423,12 +420,9 @@ suite('AutoTabGroupsPageTest', () => {
         name: 'foo',
         firstNewTabIndex: 0,
         tabs: [
-          createTab(
-              {title: 'Tab 1', url: {url: 'https://tab-1.com/'}, tabId: 1}),
-          createTab(
-              {title: 'Tab 2', url: {url: 'https://tab-2.com/'}, tabId: 2}),
-          createTab(
-              {title: 'Tab 3', url: {url: 'https://tab-3.com/'}, tabId: 3}),
+          createTab({title: 'Tab 1', url: 'https://tab-1.com/', tabId: 1}),
+          createTab({title: 'Tab 2', url: 'https://tab-2.com/', tabId: 2}),
+          createTab({title: 'Tab 3', url: 'https://tab-3.com/', tabId: 3}),
         ],
       }],
     });

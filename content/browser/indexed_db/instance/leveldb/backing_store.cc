@@ -23,6 +23,7 @@
 #include "base/containers/span.h"
 #include "base/dcheck_is_on.h"
 #include "base/files/file.h"
+#include "base/files/file_enumerator.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
@@ -284,12 +285,13 @@ std::tuple<bool, Status> AreSchemasKnown(TransactionalLevelDBDatabase* db) {
   if (!found) {
     return {true, s};
   }
-  if (raw_db_data_version < 0) {
+  std::optional<IndexedDBDataFormatVersion> db_data_version =
+      IndexedDBDataFormatVersion::Decode(raw_db_data_version);
+  if (!db_data_version) {
     return {false, Status::Corruption("Invalid IndexedDB data version.")};
   }
 
-  return {IndexedDBDataFormatVersion::GetCurrent().IsAtLeast(
-              IndexedDBDataFormatVersion::Decode(raw_db_data_version)),
+  return {IndexedDBDataFormatVersion::GetCurrent().IsAtLeast(*db_data_version),
           s};
 }
 
@@ -1232,7 +1234,13 @@ Status BackingStore::Initialize(bool clean_active_journal) {
       INTERNAL_CONSISTENCY_ERROR(SET_UP_METADATA);
       return InternalInconsistencyStatus();
     }
-    db_data_version = IndexedDBDataFormatVersion::Decode(raw_db_data_version);
+    std::optional<IndexedDBDataFormatVersion> decoded =
+        IndexedDBDataFormatVersion::Decode(raw_db_data_version);
+    if (!decoded) {
+      INTERNAL_CONSISTENCY_ERROR(SET_UP_METADATA);
+      return InternalInconsistencyStatus();
+    }
+    db_data_version = *decoded;
   }
   if (latest_known_data_version == db_data_version) {
     // Up to date. Nothing to do.
@@ -1528,7 +1536,6 @@ BackingStore::DoOpenAndVerify(BucketContext& bucket_context,
   scoped_refptr<LevelDBState> database_state;
   {
     TRACE_EVENT0("IndexedDB", "BackingStore::OpenAndVerify.OpenLevelDB");
-    base::TimeTicks begin_time = base::TimeTicks::Now();
     leveldb::Status ldb_status;
     bool is_disk_full = false;
     std::tie(database_state, ldb_status, is_disk_full) = CreateLevelDBState(
@@ -1542,8 +1549,6 @@ BackingStore::DoOpenAndVerify(BucketContext& bucket_context,
       return {nullptr, std::move(ldb_status), IndexedDBDataLossInfo(),
               is_disk_full};
     }
-    DEPRECATED_UMA_HISTOGRAM_MEDIUM_TIMES("WebCore.IndexedDB.LevelDB.OpenTime",
-                                          base::TimeTicks::Now() - begin_time);
   }
 
   // Create the LevelDBScopes wrapper.
@@ -1649,6 +1654,13 @@ BackingStore::OpenAndVerify(BucketContext& bucket_context,
                          sanitized_message);
   }
   return return_values;
+}
+
+// static
+uint64_t BackingStore::ReadSizeFromDisk(const base::FilePath& database_path,
+                                        const base::FilePath& blob_path) {
+  return base::ComputeDirectorySize(database_path) +
+         base::ComputeDirectorySize(blob_path);
 }
 
 Status BackingStore::GetCompleteMetadata(
@@ -1845,7 +1857,7 @@ Status BackingStore::Transaction::CreateObjectStore(
     blink::IndexedDBKeyPath key_path,
     bool auto_increment) {
   CHECK_EQ(mode(), blink::mojom::IDBTransactionMode::VersionChange);
-  if (base::Contains(database_->metadata().object_stores, object_store_id)) {
+  if (database_->metadata().object_stores.contains(object_store_id)) {
     return Status::InvalidArgument("Invalid object_store_id");
   }
 
@@ -2262,26 +2274,51 @@ StatusOr<IndexedDBValue> BackingStore::Transaction::GetRecord(
   return record;
 }
 
-int64_t BackingStore::GetInMemorySize() const {
-  CHECK(in_memory());
-
-  int64_t blob_size = 0;
-  for (const auto& kvp : in_memory_external_object_map_) {
-    for (const IndexedDBExternalObject& object :
-         kvp.second->external_objects()) {
-      if (object.object_type() == IndexedDBExternalObject::ObjectType::kBlob) {
-        blob_size += object.size();
+uint64_t BackingStore::EstimateSize(bool write_in_progress) const {
+  if (in_memory()) {
+    uint64_t blob_size = 0;
+    for (const auto& kvp : in_memory_external_object_map_) {
+      for (const IndexedDBExternalObject& object :
+           kvp.second->external_objects()) {
+        if (object.object_type() ==
+            IndexedDBExternalObject::ObjectType::kBlob) {
+          blob_size += object.size();
+        }
       }
     }
+
+    int64_t level_db_size = 0;
+    Status s = GetDBSizeFromEnv(db_->env(), "/", &level_db_size);
+    if (!s.ok()) {
+      LOG(ERROR) << "Failed to GetDBSizeFromEnv: " << s.ToString();
+    }
+    CHECK_GE(level_db_size, 0);
+    return blob_size + level_db_size;
   }
 
-  int64_t level_db_size = 0;
-  Status s = GetDBSizeFromEnv(db_->env(), "/", &level_db_size);
-  if (!s.ok()) {
-    LOG(ERROR) << "Failed to GetDBSizeFromEnv: " << s.ToString();
+#if BUILDFLAG(IS_WIN)
+  // On Windows, `base::FileEnumerator` (and therefore
+  // `base::ComputeDirectorySize()`) will not report up-to-date sizes when a
+  // file is currently being written. When transactions are not set to
+  // "flush"/"sync" (terminology varies based on context), LevelDB will keep
+  // open its file handles. Therefore, on Windows, `ComputeDirectorySize()` may
+  // not take into account recent writes, leading to situations where
+  // `navigator.storage.estimate()` will not report updates when interleaved
+  // with relaxed durability IDB transactions. The workaround for this is to
+  // open and close new file handles for all the files in the LevelDB data
+  // directory before calculating usage, as this updates the file system
+  // directory entry's metadata. See crbug.com/1489517 and
+  // https://devblogs.microsoft.com/oldnewthing/20111226-00/?p=8813
+  if (write_in_progress) {
+    base::FileEnumerator(database_path_, /*recursive=*/false,
+                         base::FileEnumerator::FILES)
+        .ForEach([](const base::FilePath& file_path) {
+          base::File file(file_path, base::File::FLAG_OPEN |
+                                         base::File::FLAG_WIN_SHARE_DELETE);
+        });
   }
-
-  return blob_size + level_db_size;
+#endif
+  return ReadSizeFromDisk(database_path_, blob_path_);
 }
 
 StatusOr<BackingStore::RecordIdentifier> BackingStore::Transaction::PutRecord(
@@ -2308,8 +2345,10 @@ StatusOr<BackingStore::RecordIdentifier> BackingStore::Transaction::PutRecord(
   std::string v;
   EncodeVarInt(version, &v);
   // The value must fit inline as larger values would have gotten wrapped.
-  CHECK_EQ(value.bits.storage_type(),
-           mojo_base::BigBuffer::StorageType::kBytes);
+  if (value.bits.storage_type() != mojo_base::BigBuffer::StorageType::kBytes) {
+    return base::unexpected(
+        Status::InvalidArgument("Value bits must be inlined"));
+  }
   v.append(value.bits.begin(), value.bits.end());
 
   s = leveldb_transaction->Put(object_store_data_key, &v);
@@ -2913,7 +2952,7 @@ void BackingStore::OnCleanupStarted() {
   }
 }
 
-void BackingStore::OnCleanupDone() {
+void BackingStore::OnCleanupStopped(bool completed) {
   if (dbs_snapshot_.has_value()) {
     base::ListValue dbs_snapshot_before = *std::move(dbs_snapshot_);
     dbs_snapshot_.reset();
@@ -2930,9 +2969,11 @@ void BackingStore::OnCleanupDone() {
     }
   }
 
-  // Update the timers for traditional sweeper.
-  UpdateEarliestSweepTime();
-  UpdateEarliestCompactionTime();
+  if (completed) {
+    // Update the timers for traditional sweeper.
+    UpdateEarliestSweepTime();
+    UpdateEarliestCompactionTime();
+  }
 }
 
 StatusOr<base::ListValue> BackingStore::SnapshotAllDatabases(
@@ -3100,7 +3141,7 @@ StatusOr<IndexedDBKey> BackingStore::Transaction::GetFirstPrimaryKeyForIndexKey(
 StatusOr<bool> BackingStore::DatabaseExists(std::u16string_view database_name) {
   return GetDatabaseNames().transform(
       [&](const std::vector<std::u16string>& names) {
-        return base::Contains(names, database_name);
+        return std::ranges::contains(names, database_name);
       });
 }
 
@@ -4346,7 +4387,7 @@ BackingStore::Transaction::PrepareCursor(std::unique_ptr<Cursor> cursor) {
   });
 }
 
-Status BackingStore::Transaction::CommitPhaseOne(
+StatusOr<bool> BackingStore::Transaction::CommitPhaseOne(
     BlobWriteCallback callback,
     SerializeFsaCallback /*unused*/) {
   DCHECK(transaction_.get());
@@ -4359,7 +4400,7 @@ Status BackingStore::Transaction::CommitPhaseOne(
   if (!s.ok()) {
     INTERNAL_WRITE_ERROR(TRANSACTION_COMMIT_METHOD);
     transaction_ = nullptr;
-    return s;
+    return base::unexpected(s);
   }
 
   DCHECK(external_object_change_map_.empty() ||
@@ -4367,19 +4408,12 @@ Status BackingStore::Transaction::CommitPhaseOne(
   if (!CollectBlobFilesToRemove()) {
     INTERNAL_WRITE_ERROR(TRANSACTION_COMMIT_METHOD);
     transaction_ = nullptr;
-    return InternalInconsistencyStatus();
+    return base::unexpected(InternalInconsistencyStatus());
   }
 
   committing_ = true;
   backing_store_->WillCommitTransaction();
-
-  if (!external_object_change_map_.empty() && !backing_store_->in_memory()) {
-    // This kicks off the writes of the new blobs, if any.
-    return WriteNewBlobs(std::move(callback));
-  } else {
-    return std::move(callback).Run(
-        BlobWriteResult::kRunPhaseTwoAndReturnResult);
-  }
+  return WriteNewBlobs(std::move(callback));
 }
 
 Status BackingStore::Transaction::CommitPhaseTwo() {
@@ -4520,10 +4554,12 @@ Status BackingStore::Transaction::CommitPhaseTwo() {
   return s;
 }
 
-Status BackingStore::Transaction::WriteNewBlobs(BlobWriteCallback callback) {
+bool BackingStore::Transaction::WriteNewBlobs(BlobWriteCallback callback) {
   DCHECK(backing_store_);
-  DCHECK(!backing_store_->in_memory());
-  DCHECK(!external_object_change_map_.empty());
+
+  if (backing_store_->in_memory()) {
+    return false;
+  }
 
   TRACE_EVENT_BEGIN("IndexedDB", "BackingStore::Transaction::WriteNewBlobs",
                     perfetto::Track::FromPointer(this));
@@ -4550,8 +4586,7 @@ Status BackingStore::Transaction::WriteNewBlobs(BlobWriteCallback callback) {
   }
   if (num_objects_to_write == 0) {
     TRACE_EVENT_END("IndexedDB", perfetto::Track::FromPointer(this));
-    return std::move(callback).Run(
-        BlobWriteResult::kRunPhaseTwoAndReturnResult);
+    return false;
   }
 
   write_state_.emplace(num_objects_to_write, std::move(callback));
@@ -4575,8 +4610,7 @@ Status BackingStore::Transaction::WriteNewBlobs(BlobWriteCallback callback) {
           TRACE_EVENT_END("IndexedDB",
                           perfetto::Track::FromPointer(transaction.get()));
           std::move(on_complete)
-              .Run(base::unexpected(
-                  Status::IOError(WriteBlobToFileResultToString(result))));
+              .Run(Status::IOError(WriteBlobToFileResultToString(result)));
           return;
         }
         --(write_state.calls_left);
@@ -4585,7 +4619,7 @@ Status BackingStore::Transaction::WriteNewBlobs(BlobWriteCallback callback) {
           transaction->write_state_.reset();
           TRACE_EVENT_END("IndexedDB",
                           perfetto::Track::FromPointer(transaction.get()));
-          std::move(on_complete).Run(BlobWriteResult::kRunPhaseTwoAsync);
+          std::move(on_complete).Run(Status::OK());
         }
       },
       weak_ptr_factory_.GetWeakPtr());
@@ -4671,7 +4705,7 @@ Status BackingStore::Transaction::WriteNewBlobs(BlobWriteCallback callback) {
       }
     }
   }
-  return Status::OK();
+  return true;
 }
 
 void BackingStore::Transaction::Rollback() {

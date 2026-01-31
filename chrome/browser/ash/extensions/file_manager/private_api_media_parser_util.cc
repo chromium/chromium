@@ -46,7 +46,7 @@ namespace api {
 
 namespace file_manager_private {
 
-base::Value::Dict MojoMediaMetadataToValue(
+base::DictValue MojoMediaMetadataToValue(
     chrome::mojom::MediaMetadataPtr metadata) {
   DCHECK(metadata);
 

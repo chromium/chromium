@@ -1363,7 +1363,7 @@ s! {
         pub ut_type: c_short,
         pub ut_tv: crate::timeval,
         pub ut_host: [c_char; _UTX_HOSTSIZE],
-        ut_pad: [u32; 16],
+        ut_pad: Padding<[u32; 16]>,
     }
 
     pub struct sigevent {

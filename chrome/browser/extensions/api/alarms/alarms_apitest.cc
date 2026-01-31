@@ -37,7 +37,7 @@ class AlarmsApiTest : public ExtensionApiTest {
     ASSERT_TRUE(StartEmbeddedTestServer());
   }
 
-  static base::Value::List BuildEventArguments(bool last_message) {
+  static base::ListValue BuildEventArguments(bool last_message) {
     api::test::OnMessage::Info info;
     info.data = "";
     info.last_message = last_message;

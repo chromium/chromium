@@ -8,7 +8,6 @@
 #include <string>
 #include <utility>
 
-#include "base/compiler_specific.h"
 #include "base/logging.h"
 #include "remoting/host/security_key/security_key_message.h"
 
@@ -39,23 +38,20 @@ bool SecurityKeyMessageWriterImpl::WriteMessageWithPayload(
 
   // First we send the message header which is the length of the message_type
   // and message_payload in bytes.
-  if (!WriteBytesToOutput(reinterpret_cast<char*>(&total_message_size_bytes),
-                          SecurityKeyMessage::kHeaderSizeBytes)) {
+  if (!WriteBytesToOutput(base::byte_span_from_ref(total_message_size_bytes))) {
     LOG(ERROR) << "Failed to send message header.";
     return false;
   }
 
   // Next we send the message_type.
-  if (!WriteBytesToOutput(reinterpret_cast<char*>(&message_type),
-                          SecurityKeyMessage::kMessageTypeSizeBytes)) {
+  if (!WriteBytesToOutput(base::byte_span_from_ref(message_type))) {
     LOG(ERROR) << "Failed to send message type.";
     return false;
   }
 
   // Lastly, send the message data if appropriate.
   if (!message_payload.empty()) {
-    if (!WriteBytesToOutput(message_payload.data(),
-                            message_payload_size_bytes)) {
+    if (!WriteBytesToOutput(base::as_byte_span(message_payload))) {
       LOG(ERROR) << "Failed to send message payload.";
       return false;
     }
@@ -64,16 +60,14 @@ bool SecurityKeyMessageWriterImpl::WriteMessageWithPayload(
   return true;
 }
 
-bool SecurityKeyMessageWriterImpl::WriteBytesToOutput(const char* message,
-                                                      int bytes_to_write) {
-  DCHECK(message);
-  DCHECK_GT(bytes_to_write, 0);
+bool SecurityKeyMessageWriterImpl::WriteBytesToOutput(
+    base::span<const uint8_t> message) {
+  DCHECK(!message.empty());
 
-  int result =
-      UNSAFE_TODO(output_stream_.WriteAtCurrentPos(message, bytes_to_write));
-  if (result != bytes_to_write) {
+  std::optional<size_t> result = output_stream_.WriteAtCurrentPos(message);
+  if (!result.has_value() || result.value() != message.size()) {
     LOG(ERROR) << "Failed to write all bytes to output stream.  bytes written: "
-               << result << ", file error: "
+               << (result.has_value() ? result.value() : 0) << ", file error: "
                << base::File::ErrorToString(output_stream_.error_details());
     write_failed_ = true;
     return false;

@@ -382,7 +382,7 @@ bool ExtensionMatched(const std::string& file_name,
 }
 
 base::Value ConvertIntentToValue(const apps::IntentPtr& intent) {
-  base::Value::Dict intent_value;
+  base::DictValue intent_value;
   intent_value.Set(kActionKey, intent->action);
 
   if (intent->url.has_value()) {
@@ -394,7 +394,7 @@ base::Value ConvertIntentToValue(const apps::IntentPtr& intent) {
     intent_value.Set(kMimeTypeKey, intent->mime_type.value());
 
   if (!intent->files.empty()) {
-    base::Value::List file_urls_list;
+    base::ListValue file_urls_list;
     for (const auto& file : intent->files) {
       DCHECK(file->url.is_valid());
       file_urls_list.Append(base::Value(file->url.spec()));
@@ -422,7 +422,7 @@ base::Value ConvertIntentToValue(const apps::IntentPtr& intent) {
     intent_value.Set(kStartTypeKey, intent->start_type.value());
 
   if (!intent->categories.empty()) {
-    base::Value::List categories;
+    base::ListValue categories;
     for (const auto& category : intent->categories) {
       categories.Append(category);
     }
@@ -437,7 +437,7 @@ base::Value ConvertIntentToValue(const apps::IntentPtr& intent) {
   }
 
   if (!intent->extras.empty()) {
-    base::Value::Dict extras;
+    base::DictValue extras;
     for (const auto& extra : intent->extras) {
       extras.Set(extra.first, extra.second);
     }
@@ -447,7 +447,7 @@ base::Value ConvertIntentToValue(const apps::IntentPtr& intent) {
   return base::Value(std::move(intent_value));
 }
 
-std::optional<std::string> GetStringValueFromDict(const base::Value::Dict& dict,
+std::optional<std::string> GetStringValueFromDict(const base::DictValue& dict,
                                                   const std::string& key_name) {
   const base::Value* value = dict.Find(key_name);
   if (!value)
@@ -460,12 +460,12 @@ std::optional<std::string> GetStringValueFromDict(const base::Value::Dict& dict,
   return *string_value;
 }
 
-std::optional<bool> GetBoolValueFromDict(const base::Value::Dict& dict,
+std::optional<bool> GetBoolValueFromDict(const base::DictValue& dict,
                                          const std::string& key_name) {
   return dict.FindBool(key_name);
 }
 
-std::optional<GURL> GetGurlValueFromDict(const base::Value::Dict& dict,
+std::optional<GURL> GetGurlValueFromDict(const base::DictValue& dict,
                                          const std::string& key_name) {
   const std::string* url_spec = dict.FindString(key_name);
   if (!url_spec)
@@ -478,9 +478,9 @@ std::optional<GURL> GetGurlValueFromDict(const base::Value::Dict& dict,
   return url;
 }
 
-std::vector<apps::IntentFilePtr> GetFilesFromDict(const base::Value::Dict& dict,
+std::vector<apps::IntentFilePtr> GetFilesFromDict(const base::DictValue& dict,
                                                   const std::string& key_name) {
-  const base::Value::List* value = dict.FindList(key_name);
+  const base::ListValue* value = dict.FindList(key_name);
   if (!value || value->empty())
     return std::vector<apps::IntentFilePtr>();
 
@@ -494,9 +494,9 @@ std::vector<apps::IntentFilePtr> GetFilesFromDict(const base::Value::Dict& dict,
   return files;
 }
 
-std::vector<std::string> GetCategoriesFromDict(const base::Value::Dict& dict,
+std::vector<std::string> GetCategoriesFromDict(const base::DictValue& dict,
                                                const std::string& key_name) {
-  const base::Value::List* value = dict.FindList(key_name);
+  const base::ListValue* value = dict.FindList(key_name);
   if (!value || value->empty())
     return std::vector<std::string>();
 
@@ -508,9 +508,9 @@ std::vector<std::string> GetCategoriesFromDict(const base::Value::Dict& dict,
 }
 
 base::flat_map<std::string, std::string> GetExtrasFromDict(
-    const base::Value::Dict& dict,
+    const base::DictValue& dict,
     const std::string& key_name) {
-  const base::Value::Dict* value = dict.FindDict(key_name);
+  const base::DictValue* value = dict.FindDict(key_name);
   if (!value)
     return base::flat_map<std::string, std::string>();
 
@@ -524,14 +524,14 @@ base::flat_map<std::string, std::string> GetExtrasFromDict(
 }
 
 apps::IntentPtr ConvertValueToIntent(base::Value&& value) {
-  base::Value::Dict* dict = value.GetIfDict();
+  base::DictValue* dict = value.GetIfDict();
   if (!dict)
     return nullptr;
 
   return ConvertDictToIntent(*dict);
 }
 
-apps::IntentPtr ConvertDictToIntent(const base::Value::Dict& dict) {
+apps::IntentPtr ConvertDictToIntent(const base::DictValue& dict) {
   auto action = GetStringValueFromDict(dict, kActionKey);
   if (!action.has_value())
     return nullptr;

@@ -8,24 +8,9 @@
 #import "ios/chrome/browser/qr_scanner/ui/qr_scanner_camera_controller_delegate.h"
 #import "ios/chrome/browser/scanner/ui_bundled/scanner_view_controller.h"
 
-@protocol LoadQueryCommands;
-
 // View controller for the QR Scanner.
 @interface QRScannerViewController
     : ScannerViewController <QRScannerCameraControllerDelegate>
-
-- (instancetype)initWithPresentationProvider:
-                    (id<ScannerPresenting>)presentationProvider
-                                 queryLoader:(id<LoadQueryCommands>)queryLoader
-    NS_DESIGNATED_INITIALIZER;
-
-- (instancetype)initWithPresentationProvider:
-    (id<ScannerPresenting>)presentationProvider NS_UNAVAILABLE;
-
-- (instancetype)initWithNibName:(NSString*)name
-                         bundle:(NSBundle*)bundle NS_UNAVAILABLE;
-
-- (instancetype)initWithCoder:(NSCoder*)coder NS_UNAVAILABLE;
 
 // Returns a view controller to be presented based on the camera state. Returns
 // `self` if the camera is available or an appropriate UIAlertController if

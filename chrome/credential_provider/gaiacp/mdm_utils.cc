@@ -136,7 +136,7 @@ bool IsEnrolledWithGoogleMdm(const std::wstring& mdm_url) {
   return is_enrolled;
 }
 
-HRESULT ExtractRegistrationData(const base::Value::Dict& registration_data,
+HRESULT ExtractRegistrationData(const base::DictValue& registration_data,
                                 std::wstring* out_email,
                                 std::wstring* out_id_token,
                                 std::wstring* out_access_token,
@@ -198,9 +198,8 @@ HRESULT ExtractRegistrationData(const base::Value::Dict& registration_data,
   return S_OK;
 }
 
-HRESULT RegisterWithGoogleDeviceManagement(
-    const std::wstring& mdm_url,
-    const base::Value::Dict& properties) {
+HRESULT RegisterWithGoogleDeviceManagement(const std::wstring& mdm_url,
+                                           const base::DictValue& properties) {
   // Make sure all the needed data is present in the dictionary.
   std::wstring email;
   std::wstring id_token;
@@ -256,7 +255,7 @@ HRESULT RegisterWithGoogleDeviceManagement(
 
   // Build the json data needed by the server.
   auto registration_data =
-      base::Value::Dict()
+      base::DictValue()
           .Set("id_token", base::WideToUTF8(id_token))
           .Set("access_token", base::WideToUTF8(access_token))
           .Set("sid", base::WideToUTF8(sid))
@@ -449,7 +448,7 @@ bool IsOnlineLoginEnforced(const std::wstring& sid) {
   return is_online_login_enforced_for_user;
 }
 
-HRESULT EnrollToGoogleMdmIfNeeded(const base::Value::Dict& properties) {
+HRESULT EnrollToGoogleMdmIfNeeded(const base::DictValue& properties) {
   LOGFN(VERBOSE);
 
   if (UserPoliciesManager::Get()->CloudPoliciesEnabled()) {

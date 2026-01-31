@@ -15,7 +15,6 @@
 #include "components/signin/public/base/oauth_consumer_id.h"
 #include "components/signin/public/identity_manager/access_token_fetcher.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
-#include "components/signin/public/identity_manager/scope_set.h"
 #include "google_apis/gaia/core_account_id.h"
 
 class GoogleServiceAuthError;

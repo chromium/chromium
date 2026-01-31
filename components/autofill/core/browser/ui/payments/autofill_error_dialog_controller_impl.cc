@@ -9,6 +9,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "components/autofill/core/browser/payments/autofill_error_dialog_context.h"
 #include "components/autofill/core/browser/ui/payments/autofill_error_dialog_view.h"
+#include "components/autofill/core/common/autofill_payments_features.h"
 #include "components/strings/grit/components_strings.h"
 #include "ui/base/l10n/l10n_util.h"
 
@@ -104,6 +105,9 @@ const std::u16string AutofillErrorDialogControllerImpl::GetTitle() {
     case AutofillErrorDialogType::kBnplTemporaryError:
     case AutofillErrorDialogType::kBnplPermanentError:
       return l10n_util::GetStringUTF16(IDS_AUTOFILL_BNPL_ERROR_DIALOG_TITLE);
+    case AutofillErrorDialogType::kBnplUnsupportedCurrencyError:
+      return l10n_util::GetStringUTF16(
+          IDS_AUTOFILL_BNPL_UNSUPPORTED_CURRENCY_ERROR_DIALOG_TITLE);
 
     case AutofillErrorDialogType::kTypeUnknown:
       NOTREACHED();
@@ -151,7 +155,9 @@ const std::u16string AutofillErrorDialogControllerImpl::GetDescription() {
     case AutofillErrorDialogType::kCreditCardUploadError:
 #if BUILDFLAG(IS_IOS)
       return l10n_util::GetStringUTF16(
-          IDS_AUTOFILL_SAVE_CARD_CONFIRMATION_FAILURE_DESCRIPTION_TEXT);
+          base::FeatureList::IsEnabled(features::kAutofillEnableWalletBranding)
+              ? IDS_AUTOFILL_SAVE_CARD_TO_WALLET_CONFIRMATION_FAILURE_DESCRIPTION_TEXT
+              : IDS_AUTOFILL_SAVE_CARD_CONFIRMATION_FAILURE_DESCRIPTION_TEXT);
 #else
       NOTREACHED();
 #endif  // BUILDFLAG(IS_IOS)
@@ -168,6 +174,9 @@ const std::u16string AutofillErrorDialogControllerImpl::GetDescription() {
     case AutofillErrorDialogType::kBnplPermanentError:
       return l10n_util::GetStringUTF16(
           IDS_AUTOFILL_BNPL_PERMANENT_ERROR_DESCRIPTION);
+    case AutofillErrorDialogType::kBnplUnsupportedCurrencyError:
+      return l10n_util::GetStringUTF16(
+          IDS_AUTOFILL_BNPL_UNSUPPORTED_CURRENCY_ERROR_DESCRIPTION);
     case AutofillErrorDialogType::kTypeUnknown:
       NOTREACHED();
   }

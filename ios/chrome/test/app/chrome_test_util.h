@@ -9,12 +9,12 @@
 #import "ios/chrome/browser/shared/public/commands/browser_commands.h"
 #import "ios/chrome/browser/shared/public/commands/browser_coordinator_commands.h"
 
-@protocol ApplicationCommands;
 class Browser;
 @protocol CountryCodePickerCommands;
 @protocol DriveFilePickerCommands;
 @class MainController;
 class ProfileIOS;
+@protocol SceneCommands;
 @class SceneController;
 @class SceneState;
 @class UIViewController;
@@ -55,7 +55,7 @@ Browser* GetCurrentBrowser();
 UIViewController* GetActiveViewController();
 
 // Returns the dispatcher for the active Browser.
-id<ApplicationCommands,
+id<SceneCommands,
    BrowserCommands,
    BrowserCoordinatorCommands,
    UnitConversionCommands,
@@ -100,10 +100,6 @@ bool IsCrashpadEnabled();
 
 // Checks whether crashpad reporting is enabled or not.
 bool IsCrashpadReportingEnabled();
-
-// Simulates launching Chrome from another application.
-void OpenChromeFromExternalApp(const GURL& url);
-
 // Purges cached web view page, so the next time back navigation will not use
 // cached page. Browsers don't have to use fresh version for back forward
 // navigation for HTTP pages and may serve version from the cache even if

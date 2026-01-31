@@ -7,7 +7,6 @@
 #include <algorithm>
 #include <utility>
 
-#include "base/containers/contains.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_macros.h"
@@ -84,7 +83,8 @@ bool BluetoothPortIsAllowed(
   if (*port.bluetooth_service_class_id == device::GetSerialPortProfileUUID()) {
     return true;
   }
-  return base::Contains(allowed_ids, port.bluetooth_service_class_id.value());
+  return std::ranges::contains(allowed_ids,
+                               port.bluetooth_service_class_id.value());
 }
 
 }  // namespace

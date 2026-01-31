@@ -49,6 +49,9 @@ class ContentVerifierIOData {
     // The version of the extension.
     base::Version version;
 
+    // The root path of the extension install directory.
+    base::FilePath extension_root;
+
     // The manifest version of the extension.
     int manifest_version = 0;
 

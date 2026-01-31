@@ -1,0 +1,35 @@
+[package]
+name = "jxl_transforms"
+description = "High performance Rust implementation of a JPEG XL decoder - Transforms"
+version = "0.3.0"
+readme = "../README.md"
+keywords = ["jpeg-xl", "simd", "dct"]
+categories = ["multimedia::images"]
+authors = ["Luca Versari <veluca93@gmail.com>"]
+repository = "https://github.com/libjxl/jxl-rs"
+edition = "2021"
+license = "BSD-3-Clause"
+
+[dependencies]
+jxl_simd = { path = "../jxl_simd", version = "=0.3.0" }
+
+[dev-dependencies]
+criterion = { version = "0.7.0", features = ["html_reports"] }
+test-log = "0.2.14"
+paste = "1.0.15"
+rand = "0.9.2"
+rand_chacha = "0.9.0"
+
+[features]
+all-simd = ["jxl_simd/all-simd"]
+sse42 = ["jxl_simd/sse42"]
+avx = ["jxl_simd/avx"]
+avx512 = ["jxl_simd/avx512"]
+neon = ["jxl_simd/neon"]
+
+[[bench]]
+name = "dct"
+harness = false
+
+[lints]
+workspace = true

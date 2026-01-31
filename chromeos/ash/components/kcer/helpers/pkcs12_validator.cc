@@ -13,7 +13,6 @@
 #include <vector>
 
 #include "base/compiler_specific.h"
-#include "base/containers/contains.h"
 #include "base/containers/span.h"
 #include "base/logging.h"
 #include "base/strings/string_number_conversions.h"
@@ -59,7 +58,7 @@ Pkcs12ReaderStatusCode MakeNicknameUnique(
   std::string temp_nickname;
   while (unique_counter < kMaxAttemptUniqueNicknameCreation) {
     temp_nickname = AddUniqueIndex(nickname, unique_counter);
-    if (!base::Contains(existing_nicknames, temp_nickname)) {
+    if (!existing_nicknames.contains(temp_nickname)) {
       unique_nickname = temp_nickname;
       return Pkcs12ReaderStatusCode::kSuccess;
     }

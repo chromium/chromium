@@ -70,9 +70,9 @@ TEST_F(FederatedIdentityAccountKeyedPermissionContextTest,
 
   // Old Format
   {
-    base::Value::Dict new_object;
+    base::DictValue new_object;
     new_object.Set(kTestIdpOriginKey, idp.Serialize());
-    base::Value::List account_list;
+    base::ListValue account_list;
     account_list.Append(account);
     new_object.Set("account-ids", base::Value(std::move(account_list)));
     context()->GrantObjectPermission(rp, std::move(new_object));
@@ -133,18 +133,18 @@ TEST_F(FederatedIdentityAccountKeyedPermissionContextTest,
   const std::string account_c("wellesley");
 
   {
-    base::Value::Dict new_object;
+    base::DictValue new_object;
     new_object.Set(kTestIdpOriginKey, idp1.Serialize());
-    base::Value::List account_list;
+    base::ListValue account_list;
     account_list.Append(account_a);
     account_list.Append(account_b);
     new_object.Set("account-ids", base::Value(std::move(account_list)));
     context()->GrantObjectPermission(rp, std::move(new_object));
   }
   {
-    base::Value::Dict new_object;
+    base::DictValue new_object;
     new_object.Set(kTestIdpOriginKey, idp2.Serialize());
-    base::Value::List account_list;
+    base::ListValue account_list;
     account_list.Append(account_c);
     new_object.Set("account-ids", base::Value(std::move(account_list)));
     context()->GrantObjectPermission(rp, std::move(new_object));
@@ -278,7 +278,7 @@ TEST_F(FederatedIdentityAccountKeyedPermissionContextTest,
     EXPECT_EQ(*str1, *str2);
   }
 
-  base::Value::List* account_list1 =
+  base::ListValue* account_list1 =
       granted_objects1[0]->value.FindList("account-ids");
   ASSERT_TRUE(account_list1);
   ASSERT_EQ(account_list1->size(), 1u);
@@ -288,7 +288,7 @@ TEST_F(FederatedIdentityAccountKeyedPermissionContextTest,
   EXPECT_TRUE(account_dict1.FindString("account-id"));
   EXPECT_TRUE(account_dict1.FindString("timestamp"));
 
-  base::Value::List* account_list2 =
+  base::ListValue* account_list2 =
       granted_objects1[0]->value.FindList("account-ids");
   ASSERT_TRUE(account_list2);
   ASSERT_EQ(account_list2->size(), 1u);
@@ -312,7 +312,7 @@ TEST_F(FederatedIdentityAccountKeyedPermissionContextTest, RecoverFrom1381130) {
 
   // Storing data not associated with a signed-in account is bad because it
   // makes the expected behaviour of RevokePermission() unclear.
-  base::Value::Dict new_object;
+  base::DictValue new_object;
   new_object.Set(kTestIdpOriginKey, site.Serialize());
   new_object.Set("bug", base::Value("wrong"));
   context()->GrantObjectPermission(site, std::move(new_object));
@@ -446,12 +446,12 @@ TEST_F(FederatedIdentityAccountKeyedPermissionContextTest,
       base::StringPrintf("%s<%s", identity_provider.Serialize().c_str(),
                          relying_party_embedder.Serialize().c_str());
 
-  base::Value::Dict new_object;
+  base::DictValue new_object;
   new_object.Set("rp-requester", relying_party_requester.Serialize());
   new_object.Set("rp-embedder", relying_party_embedder.Serialize());
   new_object.Set("idp-origin", identity_provider.Serialize());
 
-  base::Value::List account_list;
+  base::ListValue account_list;
   account_list.Append(account_a);
   account_list.Append(account_b);
   new_object.Set("account-ids", base::Value(std::move(account_list)));

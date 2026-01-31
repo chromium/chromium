@@ -20,7 +20,7 @@ const char kCanonicalEmail[] = "email";
 const char kGAIAIdKey[] = "gaia_id";
 const char kAccountTypeKey[] = "account_type";
 
-std::optional<AccountId> LoadAccountId(const base::Value::Dict& dict) {
+std::optional<AccountId> LoadAccountId(const base::DictValue& dict) {
   const std::string* email = dict.FindString(kCanonicalEmail);
   const std::string* gaia_id = dict.FindString(kGAIAIdKey);
   AccountType account_type = AccountType::GOOGLE;
@@ -43,7 +43,7 @@ std::optional<AccountId> LoadAccountId(const base::Value::Dict& dict) {
 }
 
 bool AccountIdMatches(const AccountId& account_id,
-                      const base::Value::Dict& dict) {
+                      const base::DictValue& dict) {
   const std::string* account_type = dict.FindString(kAccountTypeKey);
   if (account_id.GetAccountType() != AccountType::UNKNOWN && account_type &&
       account_id.GetAccountType() !=
@@ -74,7 +74,7 @@ bool AccountIdMatches(const AccountId& account_id,
   return false;
 }
 
-void StoreAccountId(const AccountId& account_id, base::Value::Dict& dict) {
+void StoreAccountId(const AccountId& account_id, base::DictValue& dict) {
   if (!account_id.GetUserEmail().empty()) {
     dict.Set(kCanonicalEmail, account_id.GetUserEmail());
   }

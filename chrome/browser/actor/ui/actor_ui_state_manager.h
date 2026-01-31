@@ -24,12 +24,22 @@ class ActorUiStateManager : public ActorUiStateManagerInterface {
   // ActorUiStateManagerInterface:
   void OnUiEvent(AsyncUiEvent event, UiCompleteCallback callback) override;
   void OnUiEvent(SyncUiEvent event) override;
+#if !BUILDFLAG(SKIP_ANDROID_UNMIGRATED_ACTOR_FILES)
   void MaybeShowToast(BrowserWindowInterface* bwi) override;
+#endif
+
+  std::optional<std::string> GetActorTaskTitle(TaskId id) override;
+  std::optional<raw_ptr<tabs::TabInterface>> GetLastActedOnTab(
+      TaskId id) override;
+  std::optional<actor::ActorTask::State> GetActorTaskState(TaskId id) override;
+  size_t GetInactiveTaskCount() override;
 
   base::CallbackListSubscription RegisterActorTaskStateChange(
       ActorTaskStateChangeCallback callback) override;
   base::CallbackListSubscription RegisterActorTaskStopped(
       ActorTaskStoppedCallback callback) override;
+  base::CallbackListSubscription RegisterActorTaskRemoved(
+      ActorTaskRemovedCallback callback) override;
 
   // Returns the tabs associated with a given task id.
   std::vector<tabs::TabInterface*> GetTabs(TaskId id);
@@ -38,14 +48,20 @@ class ActorUiStateManager : public ActorUiStateManagerInterface {
   // Notify profile scoped ui components about actor task state changes.
   void NotifyActorTaskStateChange(TaskId task_id);
   // Called whenever an actor task state changes.
-  void OnActorTaskStateChange(TaskId task_id,
-                              ActorTask::State new_task_state,
-                              const std::string& title);
+  void OnActorTaskStateChange(TaskId task_id, ActorTask::State new_task_state);
 
   // Notify profile scoped ui components about actor task stop.
-  void NotifyActorTaskStopped(TaskId task_id,
-                              ActorTask::State final_state,
-                              const std::string& title);
+  void NotifyActorTaskStopped(TaskId task_id);
+
+  // Notify profile scoped ui components about actor task removal.
+  // This is called after an actor task has been stopped and has hit its expiry
+  // period after `kGlicActorUiCompletedTaskExpiryDelaySeconds` seconds.
+  void ActorTaskRemoved(TaskId task_id);
+
+  // Stores completed and failed tasks. Does NOT store tasks intentionally
+  // cancelled by the user. Elements in this map are cleared after
+  // kGlicActorUiCompletedTaskExpiryDelaySeconds period of time.
+  absl::flat_hash_map<TaskId, StoppedTaskInfo> stopped_task_info_;
 
   base::OneShotTimer notify_actor_task_state_change_debounce_timer_;
 
@@ -54,8 +70,9 @@ class ActorUiStateManager : public ActorUiStateManagerInterface {
   base::RepeatingCallbackList<void(TaskId)>
       actor_task_state_change_callback_list_;
 
-  base::RepeatingCallbackList<void(TaskId, ActorTask::State, std::string)>
-      actor_task_stopped_callback_list_;
+  base::RepeatingCallbackList<void(TaskId)> actor_task_stopped_callback_list_;
+
+  base::RepeatingCallbackList<void(TaskId)> actor_task_removed_callback_list_;
 
   base::WeakPtrFactory<ActorUiStateManager> weak_factory_{this};
 };

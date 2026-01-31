@@ -30,7 +30,7 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
-import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.autofill.AutofillImageFetcher;
@@ -59,7 +59,7 @@ public final class AutofillVcnEnrollBottomSheetCoordinatorTest {
 
     @Mock private ManagedBottomSheetController mBottomSheetController;
     @Mock private LayoutStateProvider mLayoutStateProvider;
-    @Mock private ObservableSupplier<TabModelSelector> mTabModelSelectorSupplier;
+    @Mock private MonotonicObservableSupplier<TabModelSelector> mTabModelSelectorSupplier;
     @Mock private Profile mProfile;
     @Mock private AutofillImageFetcher mImageFetcher;
 

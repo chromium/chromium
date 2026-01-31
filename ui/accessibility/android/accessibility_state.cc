@@ -24,21 +24,19 @@ static void JNI_AccessibilityState_OnAnimatorDurationScaleChanged(JNIEnv* env) {
 
 static void JNI_AccessibilityState_OnDisplayInversionEnabledChanged(
     JNIEnv* env,
-    jboolean enabled) {
-  AccessibilityState::Get()->NotifyDisplayInversionEnabledObservers(
-      static_cast<bool>(enabled));
+    bool enabled) {
+  AccessibilityState::Get()->NotifyDisplayInversionEnabledObservers(enabled);
 }
 
 static void JNI_AccessibilityState_OnContrastLevelChanged(
     JNIEnv* env,
-    jboolean highContrastEnabled) {
-  AccessibilityState::Get()->NotifyContrastLevelObservers(
-      static_cast<bool>(highContrastEnabled));
+    bool highContrastEnabled) {
+  AccessibilityState::Get()->NotifyContrastLevelObservers(highContrastEnabled);
 }
 
 static void JNI_AccessibilityState_OnTextCursorBlinkIntervalChanged(
     JNIEnv* env,
-    jint newIntervalMs) {
+    int32_t newIntervalMs) {
   AccessibilityState::Get()->NotifyTextCursorBlinkIntervalObservers(
       base::Milliseconds(newIntervalMs));
 }

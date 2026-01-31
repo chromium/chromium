@@ -7,7 +7,6 @@
 #include <string>
 #include <string_view>
 
-#include "base/containers/contains.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "extensions/browser/api/declarative_net_request/utils.h"
@@ -62,13 +61,13 @@ constexpr std::string_view kUseActionCountAsBadgeText =
 constexpr std::string_view kDynamicRulesetPref = "dnr_dynamic_ruleset";
 
 base::flat_set<int> GetDisabledStaticRuleIdsFromDict(
-    const base::Value::Dict* disabled_rule_ids_dict,
+    const base::DictValue* disabled_rule_ids_dict,
     RulesetID ruleset_id) {
   if (!disabled_rule_ids_dict) {
     return {};
   }
 
-  const base::Value::List* disabled_rule_id_list =
+  const base::ListValue* disabled_rule_id_list =
       disabled_rule_ids_dict->FindList(
           base::NumberToString(ruleset_id.value()));
   if (!disabled_rule_id_list) {
@@ -93,7 +92,7 @@ base::flat_set<int> GetDisabledStaticRuleIdsFromDict(
   return disabled_rule_ids;
 }
 
-size_t CountDisabledRules(const base::Value::Dict* disabled_rule_ids_dict) {
+size_t CountDisabledRules(const base::DictValue* disabled_rule_ids_dict) {
   if (!disabled_rule_ids_dict) {
     return 0;
   }
@@ -135,7 +134,7 @@ PrefsHelper::RuleIdsToUpdate::RuleIdsToUpdate(
   if (ids_to_enable) {
     for (int id : *ids_to_enable) {
       // |ids_to_disable| takes priority over |ids_to_enable|.
-      if (base::Contains(this->ids_to_disable, id)) {
+      if (this->ids_to_disable.contains(id)) {
         continue;
       }
       this->ids_to_enable.insert(id);
@@ -155,8 +154,7 @@ PrefsHelper::UpdateDisabledStaticRulesResult::
 PrefsHelper::UpdateDisabledStaticRulesResult::
     ~UpdateDisabledStaticRulesResult() = default;
 
-const base::Value::Dict*
-PrefsHelper::GetDisabledRuleIdsDict(
+const base::DictValue* PrefsHelper::GetDisabledRuleIdsDict(
     const ExtensionId& extension_id) const {
   return prefs_->ReadPrefAsDict(
       extension_id,
@@ -197,7 +195,7 @@ void PrefsHelper::SetDisabledStaticRuleIds(
   std::unique_ptr<prefs::DictionaryValueUpdate> disabled_rule_ids_dict =
       update.Create();
 
-  base::Value::List ids_list;
+  base::ListValue ids_list;
   ids_list.reserve(disabled_rule_ids.size());
   for (int id : disabled_rule_ids) {
     ids_list.Append(id);
@@ -214,14 +212,14 @@ PrefsHelper::UpdateDisabledStaticRules(
     const RuleIdsToUpdate& rule_ids_to_update) {
   UpdateDisabledStaticRulesResult result;
 
-  const base::Value::Dict* disabled_rule_ids_dict =
+  const base::DictValue* disabled_rule_ids_dict =
       GetDisabledRuleIdsDict(extension_id);
 
   base::flat_set<int> old_disabled_rule_ids(
       GetDisabledStaticRuleIdsFromDict(disabled_rule_ids_dict, ruleset_id));
 
   for (int id : old_disabled_rule_ids) {
-    if (base::Contains(rule_ids_to_update.ids_to_enable, id)) {
+    if (rule_ids_to_update.ids_to_enable.contains(id)) {
       result.changed = true;
       continue;
     }
@@ -294,7 +292,7 @@ void PrefsHelper::SetDynamicRulesetChecksum(const ExtensionId& extension_id,
 std::optional<std::set<RulesetID>> PrefsHelper::GetEnabledStaticRulesets(
     const ExtensionId& extension_id) const {
   std::set<RulesetID> ids;
-  const base::Value::List* ids_value =
+  const base::ListValue* ids_value =
       prefs_->ReadPrefAsList(extension_id, kEnabledStaticRulesetIDs);
   if (!ids_value) {
     return std::nullopt;
@@ -313,7 +311,7 @@ std::optional<std::set<RulesetID>> PrefsHelper::GetEnabledStaticRulesets(
 
 void PrefsHelper::SetEnabledStaticRulesets(const ExtensionId& extension_id,
                                            const std::set<RulesetID>& ids) {
-  base::Value::List ids_list;
+  base::ListValue ids_list;
   for (const auto& id : ids) {
     ids_list.Append(id.value());
   }

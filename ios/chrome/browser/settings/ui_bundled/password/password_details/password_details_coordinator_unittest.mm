@@ -18,8 +18,8 @@
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
-#import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
+#import "ios/chrome/browser/shared/public/commands/scene_commands.h"
 #import "ios/chrome/browser/shared/public/commands/settings_commands.h"
 #import "ios/chrome/browser/shared/public/commands/snackbar_commands.h"
 #import "ios/chrome/browser/sync/model/mock_sync_service_utils.h"
@@ -88,8 +88,8 @@ class PasswordDetailsCoordinatorTest : public PlatformTest {
     browser_ = std::make_unique<TestBrowser>(profile_.get(), scene_state_);
 
     CommandDispatcher* dispatcher = browser_->GetCommandDispatcher();
-    // Mock ApplicationCommands and SettingsCommands
-    HandleCommand(@protocol(ApplicationCommands), dispatcher);
+    // Mock SceneCommands and SettingsCommands
+    HandleCommand(@protocol(SceneCommands), dispatcher);
     HandleCommand(@protocol(SettingsCommands), dispatcher);
 
     // Mock SnackbarCommands.

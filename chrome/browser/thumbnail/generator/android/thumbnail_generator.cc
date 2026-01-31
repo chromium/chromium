@@ -95,7 +95,7 @@ void ThumbnailGenerator::RetrieveThumbnail(JNIEnv* env,
                                            const JavaRef<jstring>& jcontent_id,
                                            const JavaRef<jstring>& jfile_path,
                                            const JavaRef<jstring>& jmime_type,
-                                           jint icon_size,
+                                           int32_t icon_size,
                                            const JavaRef<jobject>& callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
@@ -138,8 +138,8 @@ void ThumbnailGenerator::RetrieveThumbnail(JNIEnv* env,
 }
 
 // static
-static jlong JNI_ThumbnailGenerator_Init(JNIEnv* env,
-                                         const JavaRef<jobject>& jobj) {
+static int64_t JNI_ThumbnailGenerator_Init(JNIEnv* env,
+                                           const JavaRef<jobject>& jobj) {
   return reinterpret_cast<intptr_t>(new ThumbnailGenerator(jobj));
 }
 

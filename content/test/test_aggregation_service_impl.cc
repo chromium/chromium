@@ -47,14 +47,14 @@ AggregationServicePayloadContents::Operation ConvertToOperation(
 }
 
 void HandleAggregatableReportCallback(
-    base::OnceCallback<void(base::Value::Dict)> callback,
+    base::OnceCallback<void(base::DictValue)> callback,
     AggregatableReportRequest,
     std::optional<AggregatableReport> report,
     AggregatableReportAssembler::AssemblyStatus status) {
   if (!report.has_value()) {
     LOG(ERROR) << "Failed to assemble the report, status: "
                << static_cast<int>(status);
-    std::move(callback).Run(base::Value::Dict());
+    std::move(callback).Run(base::DictValue());
     return;
   }
 
@@ -114,7 +114,7 @@ void TestAggregationServiceImpl::SetPublicKeys(
 
 void TestAggregationServiceImpl::AssembleReport(
     AssembleRequest request,
-    base::OnceCallback<void(base::Value::Dict)> callback) {
+    base::OnceCallback<void(base::DictValue)> callback) {
   constexpr size_t kDefaultFilteringIdMaxBytes = 1;
 
   AggregationServicePayloadContents payload_contents(
@@ -142,7 +142,7 @@ void TestAggregationServiceImpl::AssembleReport(
           std::move(request.processing_url), std::move(payload_contents),
           std::move(shared_info));
   if (!report_request.has_value()) {
-    std::move(callback).Run(base::Value::Dict());
+    std::move(callback).Run(base::DictValue());
     return;
   }
 

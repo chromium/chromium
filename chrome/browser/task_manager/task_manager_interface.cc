@@ -18,7 +18,7 @@
 #include "content/public/browser/child_process_host.h"
 
 #if BUILDFLAG(IS_MAC)
-#include "chrome/browser/ui/browser_dialogs.h"  // nogncheck
+#include "chrome/browser/ui/dialogs/browser_dialogs.h"  // nogncheck
 #endif  // BUILDFLAG(IS_MAC)
 
 namespace task_manager {
@@ -47,8 +47,8 @@ TaskManagerInterface* TaskManagerInterface::GetTaskManager() {
 // static
 void TaskManagerInterface::UpdateAccumulatedStatsNetworkForRoute(
     content::GlobalRenderFrameHostId render_frame_host_id,
-    base::ByteCount recv_bytes,
-    base::ByteCount sent_bytes) {
+    base::ByteSize recv_bytes,
+    base::ByteSize sent_bytes) {
   // Don't create a task manager if it hasn't already been created.
   if (TaskManagerImpl::IsCreated()) {
     TaskManagerImpl::GetInstance()->UpdateAccumulatedStatsNetworkForRoute(

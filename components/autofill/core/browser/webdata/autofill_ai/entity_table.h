@@ -188,7 +188,7 @@ class EntityTable : public WebDatabaseTable {
       EntityInstance::EntityId guid,
       std::string nickname,
       base::Time date_modified,
-      int use_count,
+      int64_t use_count,
       base::Time use_date,
       std::underlying_type_t<EntityInstance::RecordType>
           underlying_storage_type,

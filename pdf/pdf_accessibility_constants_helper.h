@@ -9,7 +9,7 @@
 
 #include "base/containers/fixed_flat_map.h"
 #include "pdf/pdf_accessibility_constants.h"
-#include "ui/accessibility/ax_enums.mojom-data-view.h"
+#include "ui/accessibility/ax_enums.mojom-shared.h"
 
 namespace chrome_pdf {
 
@@ -17,7 +17,7 @@ namespace chrome_pdf {
 ax::mojom::Role AXRoleFromPdfTagType(PdfTagType tag_type);
 
 // Returns the PDF tag type string-to-enum map.
-const base::fixed_flat_map<std::string_view, PdfTagType, 35>&
+const base::fixed_flat_map<std::string_view, PdfTagType, 36>&
 GetPdfTagTypeMap();
 
 // Given a string containing a PDF tag type, such as "H1", returns the

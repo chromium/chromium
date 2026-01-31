@@ -17,6 +17,8 @@
 #include "net/device_bound_sessions/proto/storage.pb.h"
 #include "net/device_bound_sessions/session.h"
 #include "net/device_bound_sessions/session_error.h"
+#include "net/device_bound_sessions/session_inclusion_rules_display.h"
+#include "net/device_bound_sessions/url_rule_display.h"
 
 namespace net::device_bound_sessions {
 
@@ -30,11 +32,9 @@ bool IsIncludeSiteAllowed(const url::Origin& origin) {
   return !domain_and_registry.empty() && origin.host() == domain_and_registry;
 }
 
-proto::RuleType GetRuleTypeProto(
-    SessionInclusionRules::InclusionResult result) {
-  return result == SessionInclusionRules::InclusionResult::kInclude
-             ? proto::RuleType::INCLUDE
-             : proto::RuleType::EXCLUDE;
+proto::RuleType GetRuleTypeProto(InclusionResult result) {
+  return result == InclusionResult::kInclude ? proto::RuleType::INCLUDE
+                                             : proto::RuleType::EXCLUDE;
 }
 
 std::optional<SessionParams::Scope::Specification::Type> GetInclusionResult(
@@ -49,11 +49,11 @@ std::optional<SessionParams::Scope::Specification::Type> GetInclusionResult(
   return std::nullopt;
 }
 
-std::string RuleTypeToString(SessionInclusionRules::InclusionResult rule_type) {
+std::string RuleTypeToString(InclusionResult rule_type) {
   switch (rule_type) {
-    case SessionInclusionRules::InclusionResult::kExclude:
+    case InclusionResult::kExclude:
       return "exclude";
-    case SessionInclusionRules::InclusionResult::kInclude:
+    case InclusionResult::kInclude:
       return "include";
   }
 }
@@ -88,6 +88,9 @@ struct SessionInclusionRules::UrlRule {
   // Returns whether the given `url` matches this rule. Note that this
   // function does not check the scheme and port portions of the URL/origin.
   bool MatchesHostAndPath(const GURL& url) const;
+
+  // Returns a display-friendly version of this UrlRule. Used for DevTools.
+  UrlRuleDisplay ToDisplay() const;
 };
 
 // static
@@ -107,8 +110,8 @@ SessionInclusionRules::Create(const url::Origin& origin,
   for (const auto& spec : scope_params.specifications) {
     const auto inclusion_result =
         spec.type == SessionParams::Scope::Specification::Type::kExclude
-            ? SessionInclusionRules::InclusionResult::kExclude
-            : SessionInclusionRules::InclusionResult::kInclude;
+            ? InclusionResult::kExclude
+            : InclusionResult::kInclude;
     SessionError::ErrorType add_url_rule_result =
         rules.AddUrlRuleIfValid(inclusion_result, spec.domain, spec.path);
     if (add_url_rule_result != SessionError::kSuccess) {
@@ -121,7 +124,7 @@ SessionInclusionRules::Create(const url::Origin& origin,
     // prevent them from ever refreshing when a cookie expires. We intentionally
     // don't return an error if the rule is not valid or add a CHECK, because a
     // refresh URL is allowed to be outside an origin-scoped session.
-    rules.AddUrlRuleIfValid(SessionInclusionRules::InclusionResult::kExclude,
+    rules.AddUrlRuleIfValid(InclusionResult::kExclude,
                             refresh_endpoint.GetHost(),
                             refresh_endpoint.GetPath());
   }
@@ -197,15 +200,15 @@ SessionError::ErrorType SessionInclusionRules::AddUrlRuleIfValid(
   return SessionError::kSuccess;
 }
 
-SessionInclusionRules::InclusionResult
-SessionInclusionRules::EvaluateRequestUrl(const GURL& url) const {
+InclusionResult SessionInclusionRules::EvaluateRequestUrl(
+    const GURL& url) const {
   bool same_origin = origin_.IsSameOriginWith(url);
   if (include_site_ && !include_site_->IsSameSiteWith(url)) {
-    return SessionInclusionRules::kExclude;
+    return InclusionResult::kExclude;
   }
 
   if (!include_site_ && !same_origin) {
-    return SessionInclusionRules::kExclude;
+    return InclusionResult::kExclude;
   }
 
   // Evaluate against specific rules, most-recently-added first.
@@ -219,7 +222,7 @@ SessionInclusionRules::EvaluateRequestUrl(const GURL& url) const {
     }
   }
 
-  return SessionInclusionRules::kInclude;
+  return InclusionResult::kInclude;
 }
 
 bool SessionInclusionRules::AllowsRefreshForInitiator(
@@ -260,6 +263,10 @@ bool SessionInclusionRules::UrlRule::MatchesHostAndPath(const GURL& url) const {
   }
 
   return true;
+}
+
+UrlRuleDisplay SessionInclusionRules::UrlRule::ToDisplay() const {
+  return UrlRuleDisplay(rule_type, host_pattern, path_prefix);
 }
 
 size_t SessionInclusionRules::num_url_rules_for_testing() const {
@@ -319,6 +326,16 @@ std::optional<SessionInclusionRules> SessionInclusionRules::CreateFromProto(
   }
 
   return std::move(*inclusion_rules_or_error);
+}
+
+SessionInclusionRulesDisplay SessionInclusionRules::ToDisplay() const {
+  std::vector<UrlRuleDisplay> display_rules;
+  display_rules.reserve(url_rules_.size());
+  for (const auto& rule : url_rules_) {
+    display_rules.push_back(rule.ToDisplay());
+  }
+  return SessionInclusionRulesDisplay(
+      origin_.Serialize(), include_site_.has_value(), std::move(display_rules));
 }
 
 std::string SessionInclusionRules::DebugString() const {

@@ -203,9 +203,9 @@ class UserImageManagerTestBase : public LoginManagerTest,
   void ExpectUserImageInfo(const AccountId& account_id,
                            int image_index,
                            const base::FilePath& image_path) {
-    const base::Value::Dict& images_pref =
+    const base::DictValue& images_pref =
         local_state_->GetDict(UserImageManagerImpl::kUserImageProperties);
-    const base::Value::Dict* image_properties =
+    const base::DictValue* image_properties =
         images_pref.FindDict(account_id.GetUserEmail());
     ASSERT_TRUE(image_properties);
     std::optional<int> actual_image_index =

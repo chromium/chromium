@@ -511,7 +511,7 @@ TEST_P(NetworkErrorLoggingServiceTest, SuccessReportQueued) {
   EXPECT_THAT(
       reports()[0].body,
       Pointee(IsSupersetOfValue(
-          base::Value::Dict()
+          base::DictValue()
               .Set(NetworkErrorLoggingService::kReferrerKey, kReferrer_.spec())
               .Set(NetworkErrorLoggingService::kSamplingFractionKey, 1.0)
               .Set(NetworkErrorLoggingService::kServerIpKey,
@@ -547,7 +547,7 @@ TEST_P(NetworkErrorLoggingServiceTest, FailureReportQueued) {
   EXPECT_THAT(
       reports()[0].body,
       Pointee(IsSupersetOfValue(
-          base::Value::Dict()
+          base::DictValue()
               .Set(NetworkErrorLoggingService::kReferrerKey, kReferrer_.spec())
               .Set(NetworkErrorLoggingService::kSamplingFractionKey, 1.0)
               .Set(NetworkErrorLoggingService::kServerIpKey,
@@ -575,7 +575,7 @@ TEST_P(NetworkErrorLoggingServiceTest, UnknownFailureReportQueued) {
   ASSERT_EQ(1u, reports().size());
   EXPECT_THAT(reports()[0].body,
               Pointee(IsSupersetOfValue(
-                  base::Value::Dict()
+                  base::DictValue()
                       .Set(NetworkErrorLoggingService::kPhaseKey, "application")
                       .Set(NetworkErrorLoggingService::kTypeKey, "unknown"))));
 }
@@ -597,7 +597,7 @@ TEST_P(NetworkErrorLoggingServiceTest, UnknownCertFailureReportQueued) {
   ASSERT_EQ(1u, reports().size());
   EXPECT_THAT(reports()[0].body,
               Pointee(IsSupersetOfValue(
-                  base::Value::Dict()
+                  base::DictValue()
                       .Set(NetworkErrorLoggingService::kPhaseKey, "connection")
                       .Set(NetworkErrorLoggingService::kTypeKey, "unknown"))));
 }
@@ -624,7 +624,7 @@ TEST_P(NetworkErrorLoggingServiceTest, HttpErrorReportQueued) {
   EXPECT_THAT(
       reports()[0].body,
       Pointee(IsSupersetOfValue(
-          base::Value::Dict()
+          base::DictValue()
               .Set(NetworkErrorLoggingService::kReferrerKey, kReferrer_.spec())
               .Set(NetworkErrorLoggingService::kSamplingFractionKey, 1.0)
               .Set(NetworkErrorLoggingService::kServerIpKey,
@@ -656,7 +656,7 @@ TEST_P(NetworkErrorLoggingServiceTest, SuccessReportDowngraded) {
   EXPECT_THAT(
       reports()[0].body,
       Pointee(IsSupersetOfValue(
-          base::Value::Dict()
+          base::DictValue()
               .Set(NetworkErrorLoggingService::kReferrerKey, kReferrer_.spec())
               .Set(NetworkErrorLoggingService::kSamplingFractionKey, 1.0)
               .Set(NetworkErrorLoggingService::kServerIpKey,
@@ -689,7 +689,7 @@ TEST_P(NetworkErrorLoggingServiceTest, FailureReportDowngraded) {
   EXPECT_THAT(
       reports()[0].body,
       Pointee(IsSupersetOfValue(
-          base::Value::Dict()
+          base::DictValue()
               .Set(NetworkErrorLoggingService::kReferrerKey, kReferrer_.spec())
               .Set(NetworkErrorLoggingService::kSamplingFractionKey, 1.0)
               .Set(NetworkErrorLoggingService::kServerIpKey,
@@ -722,7 +722,7 @@ TEST_P(NetworkErrorLoggingServiceTest, HttpErrorReportDowngraded) {
   EXPECT_THAT(
       reports()[0].body,
       Pointee(IsSupersetOfValue(
-          base::Value::Dict()
+          base::DictValue()
               .Set(NetworkErrorLoggingService::kReferrerKey, kReferrer_.spec())
               .Set(NetworkErrorLoggingService::kSamplingFractionKey, 1.0)
               .Set(NetworkErrorLoggingService::kServerIpKey,
@@ -755,7 +755,7 @@ TEST_P(NetworkErrorLoggingServiceTest, DNSFailureReportNotDowngraded) {
   EXPECT_THAT(
       reports()[0].body,
       Pointee(IsSupersetOfValue(
-          base::Value::Dict()
+          base::DictValue()
               .Set(NetworkErrorLoggingService::kReferrerKey, kReferrer_.spec())
               .Set(NetworkErrorLoggingService::kSamplingFractionKey, 1.0)
               .Set(NetworkErrorLoggingService::kServerIpKey,
@@ -787,7 +787,7 @@ TEST_P(NetworkErrorLoggingServiceTest, SuccessPOSTReportQueued) {
   EXPECT_THAT(
       reports()[0].body,
       Pointee(IsSupersetOfValue(
-          base::Value::Dict()
+          base::DictValue()
               .Set(NetworkErrorLoggingService::kReferrerKey, kReferrer_.spec())
               .Set(NetworkErrorLoggingService::kSamplingFractionKey, 1.0)
               .Set(NetworkErrorLoggingService::kServerIpKey,
@@ -862,7 +862,7 @@ TEST_P(NetworkErrorLoggingServiceTest, SuccessFractionHalf) {
     // Our header includes a different value for failure_fraction, so that this
     // check verifies that we copy the correct fraction into sampling_fraction.
     EXPECT_THAT(report.body,
-                Pointee(IsSupersetOfValue(base::Value::Dict().Set(
+                Pointee(IsSupersetOfValue(base::DictValue().Set(
                     NetworkErrorLoggingService::kSamplingFractionKey, 0.5))));
   }
 }
@@ -915,7 +915,7 @@ TEST_P(NetworkErrorLoggingServiceTest, FailureFractionHalf) {
 
   for (const auto& report : reports()) {
     EXPECT_THAT(report.body,
-                Pointee(IsSupersetOfValue(base::Value::Dict().Set(
+                Pointee(IsSupersetOfValue(base::DictValue().Set(
                     NetworkErrorLoggingService::kSamplingFractionKey, 0.5))));
   }
 }
@@ -1260,7 +1260,7 @@ TEST_P(NetworkErrorLoggingServiceTest, SuccessReportQueued_SignedExchange) {
   EXPECT_THAT(
       reports()[0].body,
       Pointee(IsSupersetOfValue(
-          base::Value::Dict()
+          base::DictValue()
               .Set(NetworkErrorLoggingService::kReferrerKey, kReferrer_.spec())
               .Set(NetworkErrorLoggingService::kSamplingFractionKey, 1.0)
               .Set(NetworkErrorLoggingService::kServerIpKey,
@@ -1273,13 +1273,13 @@ TEST_P(NetworkErrorLoggingServiceTest, SuccessReportQueued_SignedExchange) {
                    NetworkErrorLoggingService::kSignedExchangePhaseValue)
               .Set(NetworkErrorLoggingService::kTypeKey, "ok")
               .Set(NetworkErrorLoggingService::kSignedExchangeBodyKey,
-                   base::Value::Dict()
+                   base::DictValue()
                        .Set(NetworkErrorLoggingService::kOuterUrlKey,
                             kUrl_.spec())
                        .Set(NetworkErrorLoggingService::kInnerUrlKey,
                             kInnerUrl_.spec())
                        .Set(NetworkErrorLoggingService::kCertUrlKey,
-                            base::Value::List().Append(kCertUrl_.spec()))))));
+                            base::ListValue().Append(kCertUrl_.spec()))))));
 }
 
 TEST_P(NetworkErrorLoggingServiceTest, FailureReportQueued_SignedExchange) {
@@ -1301,7 +1301,7 @@ TEST_P(NetworkErrorLoggingServiceTest, FailureReportQueued_SignedExchange) {
   EXPECT_THAT(
       reports()[0].body,
       Pointee(IsSupersetOfValue(
-          base::Value::Dict()
+          base::DictValue()
               .Set(NetworkErrorLoggingService::kReferrerKey, kReferrer_.spec())
               .Set(NetworkErrorLoggingService::kSamplingFractionKey, 1.0)
               .Set(NetworkErrorLoggingService::kServerIpKey,
@@ -1314,13 +1314,13 @@ TEST_P(NetworkErrorLoggingServiceTest, FailureReportQueued_SignedExchange) {
                    NetworkErrorLoggingService::kSignedExchangePhaseValue)
               .Set(NetworkErrorLoggingService::kTypeKey, "sxg.failed")
               .Set(NetworkErrorLoggingService::kSignedExchangeBodyKey,
-                   base::Value::Dict()
+                   base::DictValue()
                        .Set(NetworkErrorLoggingService::kOuterUrlKey,
                             kUrl_.spec())
                        .Set(NetworkErrorLoggingService::kInnerUrlKey,
                             kInnerUrl_.spec())
                        .Set(NetworkErrorLoggingService::kCertUrlKey,
-                            base::Value::List().Append(kCertUrl_.spec()))))));
+                            base::ListValue().Append(kCertUrl_.spec()))))));
 }
 
 TEST_P(NetworkErrorLoggingServiceTest, MismatchingSubdomain_SignedExchange) {

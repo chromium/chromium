@@ -7,6 +7,7 @@
 #import "ios/chrome/browser/bookmarks/model/bookmark_storage_type.h"
 #import "ios/chrome/browser/bookmarks/test/bookmark_earl_grey.h"
 #import "ios/chrome/browser/data_import/public/accessibility_utils.h"
+#import "ios/chrome/browser/data_import/public/credential_item_identifier.h"
 #import "ios/chrome/browser/passwords/model/password_manager_app_interface.h"
 #import "ios/chrome/browser/safari_data_import/test/safari_data_import_app_interface.h"
 #import "ios/chrome/browser/safari_data_import/test/safari_data_import_earl_grey_ui.h"
@@ -27,10 +28,11 @@
 #import "ios/testing/earl_grey/earl_grey_test.h"
 #import "ui/base/l10n/l10n_util.h"
 
-using chrome_test_util::ButtonStackSecondaryButton;
-using chrome_test_util::StaticTextWithAccessibilityLabelId;
-
 namespace {
+
+using ::chrome_test_util::ButtonStackSecondaryButton;
+using ::chrome_test_util::NavigationBarDoneButton;
+using ::chrome_test_util::StaticTextWithAccessibilityLabelId;
 
 /// User name and passwords for conflicted passwords in the valid ZIP file.
 NSString* const kURL = @"https://sebsg.github.io/";
@@ -53,7 +55,6 @@ NSString* const kInvalidPasswordUsername = @"Superman";
 /// the Safari import feature by default. No other behavior is overridden.
 - (AppLaunchConfiguration)appConfigurationNoOverrideBehavior {
   AppLaunchConfiguration config = [super appConfigurationForTestCase];
-  config.features_enabled.push_back(kImportPasswordsFromSafari);
   config.relaunch_policy = ForceRelaunchByCleanShutdown;
   return config;
 }
@@ -113,6 +114,7 @@ NSString* const kInvalidPasswordUsername = @"Superman";
     /// Show the First Run UI at startup.
     firstRunConfig.additional_args.push_back("-FirstRunForceEnabled");
     firstRunConfig.additional_args.push_back("true");
+    firstRunConfig.features_disabled.push_back(kBestOfAppFRE);
     firstRunConfig.relaunch_policy = ForceRelaunchByCleanShutdown;
     [[AppLaunchManager sharedManager]
         ensureAppLaunchedWithConfiguration:firstRunConfig];
@@ -262,11 +264,16 @@ NSString* const kInvalidPasswordUsername = @"Superman";
             StaticTextWithAccessibilityLabelId(
                 IDS_IOS_SAFARI_IMPORT_INVALID_PASSWORD_REASON_MISSING_URL)]
         assertWithMatcher:grey_sufficientlyVisible()];
-    [[EarlGrey
-        selectElementWithMatcher:
-            grey_buttonTitle(l10n_util::GetNSString(
-                IDS_IOS_SAFARI_IMPORT_INVALID_PASSWORD_LIST_BUTTON_CLOSE))]
-        performAction:grey_tap()];
+    if (@available(iOS 26, *)) {
+      [[EarlGrey selectElementWithMatcher:NavigationBarDoneButton()]
+          performAction:grey_tap()];
+    } else {
+      [[EarlGrey
+          selectElementWithMatcher:
+              grey_buttonTitle(l10n_util::GetNSString(
+                  IDS_IOS_SAFARI_IMPORT_INVALID_PASSWORD_LIST_BUTTON_CLOSE))]
+          performAction:grey_tap()];
+    }
     /// Dismiss the workflow. Verify that NTP logo is interactable, which means
     /// that the entry point is dismissed.
     CompletesImportWorkflow();
@@ -304,12 +311,16 @@ NSString* const kInvalidPasswordUsername = @"Superman";
                        IDS_IOS_SAFARI_IMPORT_IMPORT_ACTION_BUTTON_IMPORT)]
         performAction:grey_tap()];
     id<GREYMatcher> conflictResolutionTable = grey_accessibilityID(
-        GetPasswordConflictResolutionTableViewAccessibilityIdentifier());
+        GetCredentialConflictResolutionTableViewAccessibilityIdentifier());
     [ChromeEarlGrey
         waitForUIElementToAppearWithMatcher:conflictResolutionTable];
     /// Tests password reveal.
+    CredentialItemIdentifier* identifier =
+        [[CredentialItemIdentifier alloc] initWithType:CredentialType::kPassword
+                                                 index:1];
     id<GREYMatcher> row2 = grey_accessibilityID(
-        GetPasswordConflictResolutionTableViewCellAccessibilityIdentifier(1));
+        GetCredentialConflictResolutionTableViewCellAccessibilityIdentifier(
+            identifier));
     [[EarlGrey
         selectElementWithMatcher:grey_allOf(
                                      grey_ancestor(row2),
@@ -348,9 +359,15 @@ NSString* const kInvalidPasswordUsername = @"Superman";
         assertWithMatcher:grey_sufficientlyVisible()];
     ExpectPasswordConflictCellAtIndexSelected(0, YES);
     ExpectPasswordConflictCellAtIndexSelected(1, NO);
-    [[EarlGrey selectElementWithMatcher:grey_buttonTitle(l10n_util::GetNSString(
-                                            IDS_CONTINUE))]
-        performAction:grey_tap()];
+    if (@available(iOS 26, *)) {
+      [[EarlGrey selectElementWithMatcher:NavigationBarDoneButton()]
+          performAction:grey_tap()];
+    } else {
+      [[EarlGrey
+          selectElementWithMatcher:grey_buttonTitle(
+                                       l10n_util::GetNSString(IDS_CONTINUE))]
+          performAction:grey_tap()];
+    }
     /// Dismiss the workflow after import completes. Verify that NTP logo is
     /// interactable, which means that the entry point is dismissed.
     [ChromeEarlGrey waitForUIElementToAppearWithMatcher:

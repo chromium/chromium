@@ -17,49 +17,49 @@ class WebView;
 
 Status ExecuteCancelDialog(Session* session,
                            WebView* web_view,
-                           const base::Value::Dict& params,
+                           const base::DictValue& params,
                            std::unique_ptr<base::Value>* value,
                            Timeout* timeout);
 
 Status ExecuteSelectAccount(Session* session,
                             WebView* web_view,
-                            const base::Value::Dict& params,
+                            const base::DictValue& params,
                             std::unique_ptr<base::Value>* value,
                             Timeout* timeout);
 
 Status ExecuteClickDialogButton(Session* session,
                                 WebView* web_view,
-                                const base::Value::Dict& params,
+                                const base::DictValue& params,
                                 std::unique_ptr<base::Value>* value,
                                 Timeout* timeout);
 
 Status ExecuteGetAccounts(Session* session,
                           WebView* web_view,
-                          const base::Value::Dict& params,
+                          const base::DictValue& params,
                           std::unique_ptr<base::Value>* value,
                           Timeout* timeout);
 
 Status ExecuteGetFedCmTitle(Session* session,
                             WebView* web_view,
-                            const base::Value::Dict& params,
+                            const base::DictValue& params,
                             std::unique_ptr<base::Value>* value,
                             Timeout* timeout);
 
 Status ExecuteGetDialogType(Session* session,
                             WebView* web_view,
-                            const base::Value::Dict& params,
+                            const base::DictValue& params,
                             std::unique_ptr<base::Value>* value,
                             Timeout* timeout);
 
 Status ExecuteSetDelayEnabled(Session* session,
                               WebView* web_view,
-                              const base::Value::Dict& params,
+                              const base::DictValue& params,
                               std::unique_ptr<base::Value>* value,
                               Timeout* timeout);
 
 Status ExecuteResetCooldown(Session* session,
                             WebView* web_view,
-                            const base::Value::Dict& params,
+                            const base::DictValue& params,
                             std::unique_ptr<base::Value>* value,
                             Timeout* timeout);
 

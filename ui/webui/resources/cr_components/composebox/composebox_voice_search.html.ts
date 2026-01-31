@@ -13,7 +13,7 @@ export function getHtml(this: ComposeboxVoiceSearchElement) {
         <span id="error-message">${this.errorMessage_}</span>
         <a id="details" target="_blank" href="${this.detailsUrl_}"
             @click="${this.onLinkClick_}">
-          ${this.i18n('details')}
+          ${this.i18n('voiceDetails')}
         </a>
       </div>
       <textarea id="input"
@@ -23,7 +23,7 @@ export function getHtml(this: ComposeboxVoiceSearchElement) {
       </textarea>
       <cr-icon-button id="closeButton" class="icon-clear"
           part="voice-close-button"
-          title="Close" @click="${this.onCloseClick_}">
+          title="${this.i18n('voiceClose')}" @click="${this.onCloseClick_}">
       </cr-icon-button>
     </div>
   `;

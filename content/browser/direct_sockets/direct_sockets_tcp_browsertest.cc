@@ -46,6 +46,7 @@
 #include "services/network/public/mojom/tcp_socket.mojom.h"
 #include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "third_party/blink/public/common/features.h"
+#include "third_party/blink/public/mojom/navigation/navigation_params.mojom.h"
 #include "url/gurl.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -788,15 +789,14 @@ class NoCoiPermissionIsolatedWebAppContentBrowserClient
       const url::Origin& isolated_app_origin)
       : IsolatedWebAppContentBrowserClient(isolated_app_origin) {}
 
-  std::optional<network::ParsedPermissionsPolicy>
+  std::optional<std::vector<blink::mojom::IsolatedAppPermissionPolicyEntryPtr>>
   GetPermissionsPolicyForIsolatedWebApp(
-      WebContents* web_contents,
+      content::BrowserContext* browser_context,
       const url::Origin& app_origin) override {
-    return {{network::ParsedPermissionsPolicyDeclaration(
-        network::mojom::PermissionsPolicyFeature::kDirectSockets,
-        /*allowed_origins=*/{},
-        /*self_if_matches=*/app_origin,
-        /*matches_all_origins=*/false, /*matches_opaque_src=*/false)}};
+    std::vector<blink::mojom::IsolatedAppPermissionPolicyEntryPtr> policies;
+    policies.push_back(blink::mojom::IsolatedAppPermissionPolicyEntry::New(
+        "direct-sockets", std::vector<std::string>{"'self'"}));
+    return policies;
   }
 };
 

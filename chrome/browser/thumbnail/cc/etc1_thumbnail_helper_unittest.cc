@@ -28,7 +28,7 @@
 #include "third_party/skia/include/core/SkMallocPixelRef.h"
 #include "third_party/skia/include/core/SkPaint.h"
 #include "third_party/skia/include/core/SkScalar.h"
-#include "third_party/skia/include/effects/SkGradientShader.h"
+#include "third_party/skia/include/effects/SkGradient.h"
 #include "ui/display/screen.h"
 #include "ui/display/screen_base.h"
 
@@ -61,10 +61,10 @@ class Etc1ThumbnailHelperTest : public ::testing::Test {
 
   thumbnail::Etc1ThumbnailHelper& GetInterface() { return *interface_; }
   SkPaint SetupPaint() {
-    SkColor colors[] = {SK_ColorRED, SK_ColorGREEN, SK_ColorBLUE};
+    SkColor4f colors[] = {SkColors::kRed, SkColors::kGreen, SkColors::kBlue};
     SkScalar pos[] = {0, SK_Scalar1 / 2, SK_Scalar1};
     SkPaint paint;
-    paint.setShader(SkGradientShader::MakeSweep(256, 256, colors, pos, 3));
+    paint.setShader(SkShaders::SweepGradient({256, 256}, {{colors, pos, SkTileMode::kClamp}, {}}));
     return paint;
   }
 

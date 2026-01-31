@@ -107,6 +107,15 @@ interface FrameSinkManager {
   // ExternalBeginFrameController.
   CreateRootCompositorFrameSink(RootCompositorFrameSinkParams params);
 
+
+  // Create a DisplayLinkMac instance for the privileged client
+  // (e.g. CoreAnimation CADisplayLink). The client can call a method to signal
+  // a VSync event to Viz. |external_begin_frames_controller_client| needs to be
+  // set, so the VSync can be driven by ExternalBeginFrameSourceMojoMac via
+  // ExternalBeginFrameController.
+  [EnableIf=is_mac]
+  CreateCompositorDisplayLink(CompositorDisplayLinkParams params);
+
   // Used by unprivileged clients to create a new FrameSinkBundle in the
   // service. Each bundle can be used to communicate aggregate notifications and
   // requests to and from any frame sinks belonging to the same client.
@@ -186,9 +195,15 @@ interface FrameSinkManager {
   //
   // `capture_exact_surface_id`, when set to true, makes sure the snapshot will
   // only be taken by the surface with the exact `surface_id`.
+  //
+  // `timeout` when non-zero will ensure the CopyOutputResultSender is called
+  // by, even with an empty snapshot. Note that there may be an arbitrary delay
+  // in receiving the mojo message and this is not accounted for. The timeout
+  // starts when this message is received.
   RequestCopyOfOutput(SurfaceId surface_id,
                       CopyOutputRequest request,
-                      bool capture_exact_surface_id);
+                      bool capture_exact_surface_id,
+                      mojo_base.mojom.TimeDelta timeout);
 
   // Caches the back buffer for the |root_frame_sink_id|. The back buffer is
   // keyed using |cache_id| and evicted when EvictBackBuffer with the same id is
@@ -307,4 +322,14 @@ interface RendererInputRouterDelegateRegistry {
           rir_delegate_client_remote,
       pending_associated_receiver<input.mojom.RenderInputRouterDelegate>
           rir_delegate_receiver);
+};
+
+// Initialization parameters for CreateCompositorDisplayLink.
+  [EnableIf=is_mac]
+struct CompositorDisplayLinkParams {
+  pending_receiver<ExternalBeginFrameController>?
+      external_begin_frame_controller;
+
+  pending_remote<ExternalBeginFrameControllerClient>?
+      external_begin_frame_controller_client;
 };

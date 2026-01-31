@@ -144,7 +144,7 @@ void OfflinePageArchivePublisherImpl::UnpublishArchives(
 
 bool OfflinePageArchivePublisherImpl::Delegate::IsDownloadManagerInstalled() {
   JNIEnv* env = base::android::AttachCurrentThread();
-  jboolean is_installed =
+  bool is_installed =
       Java_OfflinePageArchivePublisherBridge_isAndroidDownloadManagerInstalled(
           env);
   return is_installed;

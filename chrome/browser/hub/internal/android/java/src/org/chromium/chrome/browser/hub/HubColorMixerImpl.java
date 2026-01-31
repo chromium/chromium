@@ -4,7 +4,6 @@
 
 package org.chromium.chrome.browser.hub;
 
-import static org.chromium.build.NullUtil.assumeNonNull;
 import static org.chromium.chrome.browser.hub.HubAnimationConstants.PANE_COLOR_BLEND_ANIMATION_DURATION_MS;
 import static org.chromium.chrome.browser.hub.HubColorMixer.StateChange.HUB_CLOSED;
 import static org.chromium.chrome.browser.hub.HubColorMixer.StateChange.HUB_SHOWN;
@@ -20,8 +19,10 @@ import androidx.annotation.FloatRange;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Callback;
-import org.chromium.base.supplier.ObservableSupplier;
-import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.supplier.MonotonicObservableSupplier;
+import org.chromium.base.supplier.NonNullObservableSupplier;
+import org.chromium.base.supplier.ObservableSuppliers;
+import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.ui.animation.AnimationHandler;
@@ -35,12 +36,13 @@ public class HubColorMixerImpl implements HubColorMixer {
     @VisibleForTesting
     interface HubOverviewColorProvider extends HubViewColorBlend.ColorGetter {}
 
-    private final ObservableSupplierImpl<Integer> mOverviewColorSupplier =
-            new ObservableSupplierImpl<>(Color.TRANSPARENT);
+    private final SettableNonNullObservableSupplier<Integer> mOverviewColorSupplier =
+            ObservableSuppliers.createNonNull(Color.TRANSPARENT);
     private final Callback<Boolean> mOnHubVisibilityObserver = this::onHubVisibilityChange;
-    private final Callback<Pane> mOnFocusedPaneObserver = this::onFocusedPaneChange;
-    private final ObservableSupplier<Boolean> mHubVisibilitySupplier;
-    private final ObservableSupplier<Pane> mFocusedPaneSupplier;
+    private final Callback<Pane> mOnFocusedPaneObserver =
+            (Callback<Pane>) this::onFocusedPaneChange;
+    private final NonNullObservableSupplier<Boolean> mHubVisibilitySupplier;
+    private final MonotonicObservableSupplier<Pane> mFocusedPaneSupplier;
     private final HubColorBlendAnimatorSetHelper mAnimatorSetBuilder;
     private final AnimationHandler mColorBlendAnimatorHandler;
     private final boolean mIsTablet;
@@ -55,8 +57,8 @@ public class HubColorMixerImpl implements HubColorMixer {
      */
     public HubColorMixerImpl(
             Context context,
-            ObservableSupplier<Boolean> hubVisibilitySupplier,
-            ObservableSupplier<Pane> focusedPaneSupplier) {
+            NonNullObservableSupplier<Boolean> hubVisibilitySupplier,
+            MonotonicObservableSupplier<Pane> focusedPaneSupplier) {
         this(
                 hubVisibilitySupplier,
                 focusedPaneSupplier,
@@ -68,8 +70,8 @@ public class HubColorMixerImpl implements HubColorMixer {
 
     @VisibleForTesting
     HubColorMixerImpl(
-            ObservableSupplier<Boolean> hubVisibilitySupplier,
-            ObservableSupplier<Pane> focusedPaneSupplier,
+            NonNullObservableSupplier<Boolean> hubVisibilitySupplier,
+            MonotonicObservableSupplier<Pane> focusedPaneSupplier,
             HubColorBlendAnimatorSetHelper animatorSetHelper,
             AnimationHandler animationHandler,
             HubOverviewColorProvider hubOverviewColorProvider,
@@ -99,7 +101,7 @@ public class HubColorMixerImpl implements HubColorMixer {
     }
 
     @Override
-    public ObservableSupplier<Integer> getOverviewColorSupplier() {
+    public NonNullObservableSupplier<Integer> getOverviewColorSupplier() {
         return mOverviewColorSupplier;
     }
 
@@ -140,7 +142,7 @@ public class HubColorMixerImpl implements HubColorMixer {
     public OverviewModeAlphaObserver getOverviewModeAlphaObserver() {
         return alpha -> {
             mOverviewColorAlpha = (float) alpha;
-            @ColorInt int color = assumeNonNull(mOverviewColorSupplier.get());
+            @ColorInt int color = mOverviewColorSupplier.get();
             processOverviewColor(color, mOverviewColorAlpha);
         };
     }

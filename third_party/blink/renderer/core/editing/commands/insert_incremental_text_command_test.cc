@@ -24,8 +24,9 @@ TEST_F(InsertIncrementalTextCommandTest, SurrogatePairsReplace) {
                                .Build(),
                            SetSelectionOptions());
   CompositeEditCommand* const command =
-      MakeGarbageCollected<InsertIncrementalTextCommand>(GetDocument(),
-                                                         new_text);
+      MakeGarbageCollected<InsertIncrementalTextCommand>(
+          GetDocument(), new_text,
+          EditCommand::PasswordEchoBehavior::kDoNotEcho);
   command->Apply();
 
   EXPECT_EQ(String(Vector<UChar>{'b', 0xD83D, 0xDE38}),
@@ -43,8 +44,9 @@ TEST_F(InsertIncrementalTextCommandTest, SurrogatePairsNoReplace) {
                                .Build(),
                            SetSelectionOptions());
   CompositeEditCommand* const command =
-      MakeGarbageCollected<InsertIncrementalTextCommand>(GetDocument(),
-                                                         new_text);
+      MakeGarbageCollected<InsertIncrementalTextCommand>(
+          GetDocument(), new_text,
+          EditCommand::PasswordEchoBehavior::kDoNotEcho);
   command->Apply();
 
   EXPECT_EQ(String(Vector<UChar>{'b', 0xD83D, 0xDE3A}),
@@ -64,8 +66,9 @@ TEST_F(InsertIncrementalTextCommandTest, SurrogatePairsTwo) {
                                .Build(),
                            SetSelectionOptions());
   CompositeEditCommand* const command =
-      MakeGarbageCollected<InsertIncrementalTextCommand>(GetDocument(),
-                                                         new_text);
+      MakeGarbageCollected<InsertIncrementalTextCommand>(
+          GetDocument(), new_text,
+          EditCommand::PasswordEchoBehavior::kDoNotEcho);
   command->Apply();
 
   EXPECT_EQ(String(Vector<UChar>{'b', 0xD83D, 0xDE38}),
@@ -86,8 +89,9 @@ TEST_F(InsertIncrementalTextCommandTest,
                                .Build(),
                            SetSelectionOptions());
   CompositeEditCommand* const command =
-      MakeGarbageCollected<InsertIncrementalTextCommand>(GetDocument(),
-                                                         new_text);
+      MakeGarbageCollected<InsertIncrementalTextCommand>(
+          GetDocument(), new_text,
+          EditCommand::PasswordEchoBehavior::kDoNotEcho);
   command->Apply();
 
   EXPECT_EQ(String(Vector<UChar>{0xD83D, 0xDE3A, 0xD83D, 0xDE38}),

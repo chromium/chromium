@@ -385,6 +385,9 @@ mojo.internal.Message = class {
     /** @public {!Array<MojoHandle>} */
     this.handles = [];
 
+    // Refer to:
+    //   //mojo/public/cpp/bindings/lib/message_internal.h
+    // For message header format.
     const header = new DataView(this.buffer);
     header.setUint32(0, headerSize, mojo.internal.kHostLittleEndian);
     header.setUint32(4, version, mojo.internal.kHostLittleEndian);
@@ -395,11 +398,15 @@ mojo.internal.Message = class {
     if (version >= 1) {
       mojo.internal.setUint64(header, 24, requestId);
       if (version >= 2) {
+        // Payload offset from this byte.
         mojo.internal.setUint64(header, 32, BigInt(16));
+        // Interface IDs array offset from this byte.
         mojo.internal.setUint64(header, 40, BigInt(headerWithPayloadSize - 40));
+        // Interface IDs array num_bytes.
         header.setUint32(
             headerWithPayloadSize, interfaceIdsSize,
             mojo.internal.kHostLittleEndian);
+        // Interface IDs array num_elements.
         header.setUint32(
             headerWithPayloadSize + 4, dimensions.numInterfaceIds || 0,
             mojo.internal.kHostLittleEndian);

@@ -488,9 +488,9 @@ void EmojiPageHandler::GetInitialQuery(GetInitialQueryCallback callback) {
 void EmojiPageHandler::UpdateHistoryInPrefs(
     emoji_picker::mojom::Category category,
     std::vector<emoji_picker::mojom::HistoryItemPtr> history) {
-  base::Value::List history_value;
+  base::ListValue history_value;
   for (const auto& item : history) {
-    history_value.Append(base::Value::Dict()
+    history_value.Append(base::DictValue()
                              .Set(kPrefsHistoryTextFieldName, item->emoji)
                              .Set(kPrefsHistoryTimestampFieldName,
                                   base::TimeToValue(item->timestamp)));
@@ -501,7 +501,7 @@ void EmojiPageHandler::UpdateHistoryInPrefs(
 
 void EmojiPageHandler::UpdatePreferredVariantsInPrefs(
     std::vector<emoji_picker::mojom::EmojiVariantPtr> preferred_variants) {
-  base::Value::Dict value;
+  base::DictValue value;
   for (const auto& variant : preferred_variants) {
     value.Set(variant->base, variant->variant);
   }
@@ -517,7 +517,7 @@ void EmojiPageHandler::GetHistoryFromPrefs(
     std::move(callback).Run({});
     return;
   }
-  const base::Value::List* history =
+  const base::ListValue* history =
       profile_->GetPrefs()
           ->GetDict(prefs::kEmojiPickerHistory)
           .FindList(ConvertCategoryToPrefString(category));
@@ -527,7 +527,7 @@ void EmojiPageHandler::GetHistoryFromPrefs(
   }
   std::vector<emoji_picker::mojom::HistoryItemPtr> results;
   for (const auto& it : *history) {
-    const base::Value::Dict* value_dict = it.GetIfDict();
+    const base::DictValue* value_dict = it.GetIfDict();
     if (value_dict == nullptr) {
       continue;
     }

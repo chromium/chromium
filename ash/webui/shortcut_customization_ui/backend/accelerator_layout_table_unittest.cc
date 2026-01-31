@@ -10,7 +10,6 @@
 #include "ash/public/cpp/accelerators.h"
 #include "ash/public/mojom/accelerator_info.mojom-shared.h"
 #include "ash/test/ash_test_util.h"
-#include "base/containers/contains.h"
 #include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -85,11 +84,11 @@ class AcceleratorLayoutMetadataTest : public testing::Test {
 
  protected:
   bool ShouldNotHaveLayouts(ash::AcceleratorAction action) {
-    return base::Contains(kAshAcceleratorsWithoutLayout, action);
+    return kAshAcceleratorsWithoutLayout.contains(action);
   }
 
   bool HasLayouts(ash::AcceleratorAction action) {
-    return base::Contains(ash_accelerator_with_layouts_, action);
+    return ash_accelerator_with_layouts_.contains(action);
   }
 
   // Ash accelerator with layouts.

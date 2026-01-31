@@ -38,8 +38,8 @@ class TestServiceWorkerLifetimeManager : public ServiceWorkerLifetimeManager {
   }
 
   void DecrementKeepalive(const KeepaliveKey& key) override {
-    DCHECK(base::Contains(*keepalive_map_, key.worker_id));
-    DCHECK(base::Contains((*keepalive_map_)[key.worker_id], key.request_uuid));
+    DCHECK(keepalive_map_->contains(key.worker_id));
+    DCHECK((*keepalive_map_)[key.worker_id].contains(key.request_uuid));
     (*keepalive_map_)[key.worker_id].erase(key.request_uuid);
     if ((*keepalive_map_)[key.worker_id].empty()) {
       keepalive_map_->erase(key.worker_id);

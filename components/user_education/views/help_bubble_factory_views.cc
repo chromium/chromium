@@ -15,6 +15,7 @@
 #include "components/user_education/views/help_bubble_view.h"
 #include "components/user_education/views/help_bubble_views.h"
 #include "components/user_education/views/toggle_tracked_element_attention_utils.h"
+#include "components/user_education/views/view_subregion_anchor.h"
 #include "ui/base/accelerators/accelerator.h"
 #include "ui/base/accelerators/accelerator_manager.h"
 #include "ui/base/interaction/element_tracker.h"
@@ -38,11 +39,17 @@ std::unique_ptr<HelpBubble> HelpBubbleFactoryViews::CreateBubble(
     ui::TrackedElement* element,
     HelpBubbleParams params) {
   internal::HelpBubbleAnchorParams anchor;
-  anchor.view = element->AsA<views::TrackedElementViews>()->view();
   std::unique_ptr<HelpBubbleEventRelay> event_relay;
-  if (auto* menu_item = views::AsViewClass<views::MenuItemView>(anchor.view)) {
-    event_relay =
-        std::make_unique<internal::MenuHelpBubbleEventProcessor>(menu_item);
+  if (auto* const element_views = element->AsA<views::TrackedElementViews>()) {
+    anchor.view = element_views->view();
+    if (auto* menu_item =
+            views::AsViewClass<views::MenuItemView>(anchor.view)) {
+      event_relay =
+          std::make_unique<internal::MenuHelpBubbleEventProcessor>(menu_item);
+    }
+  } else {
+    anchor.view = &element->AsA<ViewSubregionAnchor>()->view();
+    anchor.rect = element->GetScreenBounds();
   }
   return CreateBubbleImpl(element, anchor, std::move(params),
                           std::move(event_relay));
@@ -50,7 +57,8 @@ std::unique_ptr<HelpBubble> HelpBubbleFactoryViews::CreateBubble(
 
 bool HelpBubbleFactoryViews::CanBuildBubbleForTrackedElement(
     const ui::TrackedElement* element) const {
-  return element->IsA<views::TrackedElementViews>();
+  return element->IsA<views::TrackedElementViews>() ||
+         element->IsA<ViewSubregionAnchor>();
 }
 
 std::unique_ptr<HelpBubble> HelpBubbleFactoryViews::CreateBubbleImpl(

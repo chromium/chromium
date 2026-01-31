@@ -10,7 +10,6 @@
 #include <utility>
 
 #include "base/check_is_test.h"
-#include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -80,7 +79,7 @@ void WebAppCommandManager::ScheduleCommand(
   command->SetScheduledAt(base::PassKey<WebAppCommandManager>());
   command->SetCommandManager(base::PassKey<WebAppCommandManager>(), this);
   internal::CommandBase::Id command_id = command->id();
-  CHECK(!base::Contains(commands_, command_id));
+  CHECK(!commands_.contains(command_id));
 
   if (!started_) {
     commands_waiting_for_start_.emplace_back(std::move(command), location);
@@ -171,7 +170,7 @@ void WebAppCommandManager::Shutdown() {
 }
 
 base::Value WebAppCommandManager::ToDebugValue() {
-  base::Value::List queued;
+  base::ListValue queued;
   for (const auto& [command, location] : commands_waiting_for_start_) {
     queued.Append(command->GetDebugValue().Clone());
   }
@@ -179,7 +178,7 @@ base::Value WebAppCommandManager::ToDebugValue() {
     queued.Append(command->GetDebugValue().Clone());
   }
 
-  base::Value::Dict state;
+  base::DictValue state;
   if (log_) {
     state.Set("command_log", log_->CloneToList());
   }

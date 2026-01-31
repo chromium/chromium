@@ -6,6 +6,7 @@
 
 #include <stdint.h>
 
+#include <algorithm>
 #include <optional>
 
 #include "base/functional/bind.h"
@@ -35,7 +36,6 @@
 #include "third_party/blink/renderer/core/events/mouse_event.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/frame/csp/content_security_policy.h"
-#include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/local_frame_ukm_aggregator.h"
 #include "third_party/blink/renderer/core/frame/visual_viewport.h"
@@ -415,7 +415,7 @@ Node::InsertionNotificationRequest HTMLPermissionElement::InsertedInto(
     ContainerNode& insertion_point) {
   HTMLElement::InsertedInto(insertion_point);
   if (!is_cache_registered_ && !permission_descriptors_.empty()) {
-    CachedPermissionStatus::From(GetDocument().domWindow())
+    CachedPermissionStatus::From(GetExecutionContext())
         ->RegisterClient(this, permission_descriptors_);
     is_cache_registered_ = true;
   }
@@ -467,10 +467,9 @@ void HTMLPermissionElement::RemovedFrom(ContainerNode& insertion_point) {
     disable_reason_expire_timer_.Stop();
   }
   intersection_rect_ = std::nullopt;
-  LocalDOMWindow* window = GetDocument().domWindow();
-  if (window && is_cache_registered_) {
-    CachedPermissionStatus::From(window)->UnregisterClient(
-        this, permission_descriptors_);
+  if (is_cache_registered_) {
+    CachedPermissionStatus::From(GetExecutionContext())
+        ->UnregisterClient(this, permission_descriptors_);
     is_cache_registered_ = false;
   }
   EnsureUnregisterPageEmbeddedPermissionControl();
@@ -630,7 +629,25 @@ void HTMLPermissionElement::UpdateAppearance() {
 }
 
 void HTMLPermissionElement::UpdateIcon(PermissionName permnission) {
-  permission_internal_icon_->SetIcon(permnission, is_precise_location_);
+  PermissionIconType icon_type;
+  switch (permnission) {
+    case PermissionName::GEOLOCATION:
+      icon_type = is_precise_location_ ? PermissionIconType::kLocationPrecise
+                                       : PermissionIconType::kLocation;
+      break;
+    case PermissionName::VIDEO_CAPTURE:
+      icon_type = PermissionIconType::kCamera;
+      break;
+    case PermissionName::AUDIO_CAPTURE:
+      icon_type = PermissionIconType::kMicrophone;
+      break;
+    case PermissionName::WEB_APP_INSTALLATION:
+      icon_type = PermissionIconType::kInstall;
+      break;
+    default:
+      return;
+  }
+  permission_internal_icon_->SetIcon(icon_type);
 }
 
 void HTMLPermissionElement::UpdatePermissionStatusAndAppearance() {
@@ -837,7 +854,7 @@ void HTMLPermissionElement::LangAttributeChanged() {
   HTMLElement::LangAttributeChanged();
 }
 
-void HTMLPermissionElement::AttributeChanged(
+void HTMLPermissionElement::ParseAttribute(
     const AttributeModificationParams& params) {
   if (params.name == html_names::kTypeAttr) {
     setType(params.new_value);
@@ -849,7 +866,7 @@ void HTMLPermissionElement::AttributeChanged(
     SetPreciseLocation(params.new_value != nullptr);
   }
 
-  HTMLElement::AttributeChanged(params);
+  HTMLElement::ParseAttribute(params);
 }
 
 void HTMLPermissionElement::DidAddUserAgentShadowRoot(ShadowRoot& root) {
@@ -1532,8 +1549,8 @@ bool HTMLPermissionElement::IsStyleValid() {
     return false;
   }
 
-  if (base::Contains(kInvalidDisplayStyles,
-                     style->GetDisplayStyle().Display()) ||
+  if (std::ranges::contains(kInvalidDisplayStyles,
+                            style->GetDisplayStyle().Display()) ||
       style->IsDisplayTableType()) {
     AuditsIssue::ReportPermissionElementIssue(
         GetExecutionContext(), GetDomNodeId(),

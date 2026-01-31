@@ -34,10 +34,11 @@ import org.chromium.base.ResettersForTesting;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
-import org.chromium.base.supplier.ObservableSupplier;
-import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.supplier.MonotonicObservableSupplier;
+import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.OneShotCallback;
 import org.chromium.base.supplier.OneshotSupplier;
+import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
 import org.chromium.build.annotations.Initializer;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -243,9 +244,10 @@ public class SearchActivity extends AsyncInitializationActivity
     private View mAnchorView;
 
     private SnackbarManager mSnackbarManager;
-    private final ObservableSupplierImpl<Profile> mProfileSupplier = new ObservableSupplierImpl<>();
-    private final ObservableSupplierImpl<TabModelSelector> mTabModelSelectorSupplier =
-            new ObservableSupplierImpl<>();
+    private final SettableMonotonicObservableSupplier<Profile> mProfileSupplier =
+            ObservableSuppliers.createMonotonic();
+    private final SettableMonotonicObservableSupplier<TabModelSelector> mTabModelSelectorSupplier =
+            ObservableSuppliers.createMonotonic();
 
     // SearchBoxDataProvider and LocationBarEmbedderUiOverrides are passed to several child
     // components upon construction. Ensure we don't accidentally introduce disconnection by
@@ -256,7 +258,7 @@ public class SearchActivity extends AsyncInitializationActivity
     private UmaActivityObserver mUmaActivityObserver;
 
     public SearchActivity() {
-        mStartupMetricsTracker = new StartupMetricsTracker(mTabModelSelectorSupplier);
+        mStartupMetricsTracker = new StartupMetricsTracker(mTabModelSelectorSupplier, () -> false);
         mLocationBarUiOverrides.setForcedPhoneStyleOmnibox();
     }
 
@@ -373,7 +375,8 @@ public class SearchActivity extends AsyncInitializationActivity
                         null,
                         backPressManager,
                         /* omniboxSuggestionsDropdownScrollListener= */ null,
-                        /* tabModelSelectorSupplier= */ new ObservableSupplierImpl<>(),
+                        /* tabModelSelectorSupplier= */ ObservableSuppliers.createMonotonic(),
+                        /* topInsetProviderSupplier= */ ObservableSuppliers.createMonotonic(),
                         new LocationBarEmbedder() {},
                         mLocationBarUiOverrides,
                         findViewById(R.id.control_container),
@@ -588,9 +591,19 @@ public class SearchActivity extends AsyncInitializationActivity
 
     @Override
     public void onPauseWithNative() {
-        umaSessionEnd();
+        if (!ChromeFeatureList.isEnabled(ChromeFeatureList.UMA_SESSION_CORRECTNESS_FIXES)) {
+            umaSessionEnd();
+        }
         RevenueStats.setCustomTabSearchClient(null);
         super.onPauseWithNative();
+    }
+
+    @Override
+    public void onStopWithNative() {
+        super.onStopWithNative();
+        if (ChromeFeatureList.isEnabled(ChromeFeatureList.UMA_SESSION_CORRECTNESS_FIXES)) {
+            umaSessionEnd();
+        }
     }
 
     @Override
@@ -723,7 +736,7 @@ public class SearchActivity extends AsyncInitializationActivity
     // defined on initialize in {@link SearchActivityLocationBarLayout}.
     private void setColorScheme(boolean isIncognito) {
         @ColorRes int anchorViewBackgroundColorRes = R.color.omnibox_suggestion_dropdown_bg;
-        @ColorRes int searchBoxColorRes = R.color.omnibox_suggestion_bg;
+        @ColorRes int searchBoxColorRes = R.color.search_suggestion_bg_color;
 
         var searchBoxBackground = mSearchBox.getBackground();
 
@@ -930,7 +943,7 @@ public class SearchActivity extends AsyncInitializationActivity
         return mLocationBarUiOverrides;
     }
 
-    /* package */ ObservableSupplier<Profile> getProfileSupplierForTesting() {
+    /* package */ MonotonicObservableSupplier<Profile> getProfileSupplierForTesting() {
         return mProfileSupplier;
     }
 

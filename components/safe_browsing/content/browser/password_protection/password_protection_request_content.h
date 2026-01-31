@@ -21,6 +21,7 @@
 #include "components/safe_browsing/core/browser/password_protection/metrics_util.h"
 #include "components/safe_browsing/core/browser/password_protection/password_protection_request.h"
 #include "components/safe_browsing/core/common/proto/csd.pb.h"
+#include "content/public/browser/render_widget_host_view.h"
 
 #if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
 #include "components/safe_browsing/content/common/safe_browsing.mojom.h"
@@ -34,10 +35,6 @@ class GURL;
 namespace content {
 class WebContents;
 }  // namespace content
-
-namespace viz {
-struct CopyOutputBitmapWithMetadata;
-}  // namespace viz
 
 namespace safe_browsing {
 
@@ -158,7 +155,7 @@ class PasswordProtectionRequestContent final
   void CollectVisualFeatures();
 
   // Processes the screenshot of the login page into visual features.
-  void OnScreenshotTaken(const viz::CopyOutputBitmapWithMetadata& result);
+  void OnScreenshotTaken(const content::CopyFromSurfaceResult& result);
 
   // Called when the visual feature extraction is complete.
   void OnVisualFeatureCollectionDone(

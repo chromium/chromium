@@ -15,7 +15,6 @@
 #include <utility>
 
 #include "base/compiler_specific.h"
-#include "base/containers/contains.h"
 #include "base/containers/span.h"
 #include "base/files/file_path.h"
 #include "base/files/scoped_temp_dir.h"
@@ -38,6 +37,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/test_future.h"
 #include "base/time/time.h"
+#include "base/types/expected.h"
 #include "build/build_config.h"
 #include "components/services/storage/public/cpp/buckets/constants.h"
 #include "components/services/storage/public/mojom/cache_storage_control.mojom.h"
@@ -55,6 +55,7 @@
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "mojo/public/cpp/system/data_pipe.h"
 #include "mojo/public/cpp/system/data_pipe_drainer.h"
+#include "net/base/net_errors.h"
 #include "net/base/test_completion_callback.h"
 #include "net/base/url_util.h"
 #include "net/disk_cache/disk_cache.h"
@@ -117,8 +118,8 @@ class DelayableBackend : public disk_cache::Backend {
         delay_open_entry_(false) {}
 
   // disk_cache::Backend overrides
-  int32_t GetEntryCount(
-      net::Int32CompletionOnceCallback callback) const override {
+  base::expected<int32_t, net::Error> GetEntryCount(
+      GetEntryCountCallback callback) const override {
     return backend_->GetEntryCount(std::move(callback));
   }
 
@@ -280,8 +281,8 @@ class FailableBackend : public disk_cache::Backend {
         stage_(stage) {}
 
   // disk_cache::Backend overrides
-  int32_t GetEntryCount(
-      net::Int32CompletionOnceCallback callback) const override {
+  base::expected<int32_t, net::Error> GetEntryCount(
+      GetEntryCountCallback callback) const override {
     return backend_->GetEntryCount(std::move(callback));
   }
 
@@ -1311,7 +1312,7 @@ TEST_P(CacheStorageCacheTestP, PutReplaceInBatchFails) {
   // A duplicate operation error should provide an informative message
   // containing the URL of the duplicate request.
   ASSERT_TRUE(callback_message_);
-  EXPECT_TRUE(base::Contains(callback_message_.value(), BodyUrl().spec()));
+  EXPECT_TRUE(callback_message_.value().contains(BodyUrl().spec()));
 
   // Neither operation should have completed.
   EXPECT_FALSE(Match(body_request_));

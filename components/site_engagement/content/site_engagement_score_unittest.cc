@@ -68,11 +68,11 @@ class SiteEngagementScoreTest : public testing::Test {
   }
 
   void TestScoreInitializesAndUpdates(
-      base::Value::Dict score_dict,
+      base::DictValue score_dict,
       double expected_raw_score,
       double expected_points_added_today,
       base::Time expected_last_engagement_time) {
-    base::Value::Dict copy(score_dict.Clone());
+    base::DictValue copy(score_dict.Clone());
 
     SiteEngagementScore initial_score(&test_clock_, GURL(),
                                       std::move(score_dict));
@@ -294,13 +294,13 @@ TEST_F(SiteEngagementScoreTest, GoBackInTime) {
 // Test that scores are read / written correctly from / to empty score
 // dictionaries.
 TEST_F(SiteEngagementScoreTest, EmptyDictionary) {
-  TestScoreInitializesAndUpdates(base::Value::Dict(), 0, 0, base::Time());
+  TestScoreInitializesAndUpdates(base::DictValue(), 0, 0, base::Time());
 }
 
 // Test that scores are read / written correctly from / to partially empty
 // score dictionaries.
 TEST_F(SiteEngagementScoreTest, PartiallyEmptyDictionary) {
-  base::Value::Dict dict;
+  base::DictValue dict;
   dict.Set(SiteEngagementScore::kPointsAddedTodayKey, 2.);
 
   TestScoreInitializesAndUpdates(std::move(dict), 0, 2, base::Time());
@@ -309,7 +309,7 @@ TEST_F(SiteEngagementScoreTest, PartiallyEmptyDictionary) {
 // Test that scores are read / written correctly from / to populated score
 // dictionaries.
 TEST_F(SiteEngagementScoreTest, PopulatedDictionary) {
-  base::Value::Dict dict;
+  base::DictValue dict;
   dict.Set(SiteEngagementScore::kRawScoreKey, 1.);
   dict.Set(SiteEngagementScore::kPointsAddedTodayKey, 2.);
   dict.Set(SiteEngagementScore::kLastEngagementTimeKey,

@@ -34,7 +34,7 @@ TEST_F(GuestIdTest, GuestIdEquality) {
 
 TEST_F(GuestIdTest, GuestIdFromDictValue) {
   {
-    auto dict = base::Value::Dict()
+    auto dict = base::DictValue()
                     .Set(prefs::kVmNameKey, "foo")
                     .Set(prefs::kContainerNameKey, "bar");
     EXPECT_TRUE(GuestId(base::Value(std::move(dict))) ==
@@ -42,7 +42,7 @@ TEST_F(GuestIdTest, GuestIdFromDictValue) {
   }
 
   {
-    auto dict = base::Value::Dict()
+    auto dict = base::DictValue()
                     .Set(prefs::kVmTypeKey, 0)
                     .Set(prefs::kVmNameKey, "foo")
                     .Set(prefs::kContainerNameKey, "bar");
@@ -51,7 +51,7 @@ TEST_F(GuestIdTest, GuestIdFromDictValue) {
   }
 
   {
-    auto dict = base::Value::Dict()
+    auto dict = base::DictValue()
                     .Set(prefs::kVmTypeKey, 1)
                     .Set(prefs::kVmNameKey, "foo")
                     .Set(prefs::kContainerNameKey, "bar");

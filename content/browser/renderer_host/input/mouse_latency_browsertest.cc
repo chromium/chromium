@@ -260,12 +260,12 @@ class MouseLatencyBrowserTest : public ContentBrowserTest {
   }
 
   std::string ShowTraceEventsWithId(const std::string& id_to_show,
-                                    const base::Value::List* traceEvents) {
+                                    const base::ListValue* traceEvents) {
     std::stringstream stream;
     for (const base::Value& traceEvent_value : *traceEvents) {
       if (!traceEvent_value.is_dict())
         continue;
-      const base::Value::Dict& traceEvent = traceEvent_value.GetDict();
+      const base::DictValue& traceEvent = traceEvent_value.GetDict();
 
       const std::string* id = traceEvent.FindString("id");
       if (!id)
@@ -279,10 +279,10 @@ class MouseLatencyBrowserTest : public ContentBrowserTest {
 
   void AssertTraceIdsBeginAndEnd(const base::Value& trace_data,
                                  const std::string& trace_event_name) {
-    const base::Value::Dict* trace_data_dict = trace_data.GetIfDict();
+    const base::DictValue* trace_data_dict = trace_data.GetIfDict();
     ASSERT_TRUE(trace_data_dict);
 
-    const base::Value::List* traceEvents =
+    const base::ListValue* traceEvents =
         trace_data_dict->FindList("traceEvents");
     ASSERT_TRUE(traceEvents);
 
@@ -290,7 +290,7 @@ class MouseLatencyBrowserTest : public ContentBrowserTest {
 
     for (const base::Value& traceEvent_value : *traceEvents) {
       ASSERT_TRUE(traceEvent_value.is_dict());
-      const base::Value::Dict& traceEvent = traceEvent_value.GetDict();
+      const base::DictValue& traceEvent = traceEvent_value.GetDict();
 
       const std::string* name = traceEvent.FindString("name");
       ASSERT_TRUE(name);
@@ -332,18 +332,17 @@ IN_PROC_BROWSER_TEST_F(MouseLatencyBrowserTest,
             filter->GetAckStateWaitIfNecessary());
   const base::Value& trace_data = StopTracing();
 
-  const base::Value::Dict* trace_data_dict = trace_data.GetIfDict();
+  const base::DictValue* trace_data_dict = trace_data.GetIfDict();
   ASSERT_TRUE(trace_data_dict);
 
-  const base::Value::List* traceEvents =
-      trace_data_dict->FindList("traceEvents");
+  const base::ListValue* traceEvents = trace_data_dict->FindList("traceEvents");
   ASSERT_TRUE(traceEvents);
 
   std::vector<std::string> trace_event_names;
 
   for (const base::Value& traceEvent_value : *traceEvents) {
     ASSERT_TRUE(traceEvent_value.is_dict());
-    const base::Value::Dict& traceEvent = traceEvent_value.GetDict();
+    const base::DictValue& traceEvent = traceEvent_value.GetDict();
 
     const std::string* name = traceEvent.FindString("name");
     ASSERT_TRUE(name);

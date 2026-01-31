@@ -14,7 +14,7 @@
 #include "base/containers/flat_set.h"
 #include "base/memory/memory_pressure_listener.h"
 #include "base/memory/raw_ptr.h"
-#include "chrome/browser/actor/actor_task_delegate.h"
+#include "build/build_config.h"
 #include "chrome/browser/glic/glic_metrics.h"
 #include "chrome/browser/glic/glic_zero_state_suggestions_manager.h"
 #include "chrome/browser/glic/host/context/glic_sharing_manager_provider.h"
@@ -31,6 +31,10 @@
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/web_contents.h"
+
+#if !BUILDFLAG(IS_ANDROID)  // Single instance only
+#include "chrome/browser/actor/actor_task_delegate.h"
+#endif
 
 class BrowserWindowInterface;
 class Profile;
@@ -57,12 +61,10 @@ class GlicMetrics;
 class GlicOcclusionNotifier;
 class GlicProfileManager;
 class GlicRegionCaptureController;
-class GlicScreenshotCapturer;
 class GlicShareImageHandler;
 class GlicTabDataObserver;
 class GlicWindowController;
 class HostManager;
-class GlicActorTaskManager;
 class GlicWebContentsWarmingPool;
 
 enum class GlicPrewarmingChecksResult;
@@ -78,6 +80,10 @@ enum class GlicPrewarmingFreSource {
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/glic/enums.xml:GlicPrewarmingFreSource)
 
+#if !BUILDFLAG(IS_ANDROID)  // Single instance only
+class GlicActorTaskManager;
+#endif
+
 // The GlicKeyedService is created for each eligible (i.e. non-incognito,
 // non-system, etc.) browser profile if Glic flags are enabled, regardless
 // of whether the profile is enabled or disabled at runtime (currently
@@ -86,9 +92,15 @@ enum class GlicPrewarmingFreSource {
 // preference for changes and cause the UI to respond to it.
 class GlicKeyedService : public KeyedService,
                          public GlicSharingManagerProvider,
+#if !BUILDFLAG(IS_ANDROID)  // Single instance only
                          public Host::InstanceDelegate,
-                         public base::MemoryPressureListener,
-                         public actor::ActorTaskDelegate {
+#endif
+                         public base::MemoryPressureListener
+#if !BUILDFLAG(IS_ANDROID)  // Single instance only
+    ,
+                         public actor::ActorTaskDelegate
+#endif
+{
  public:
   explicit GlicKeyedService(
       Profile* profile,
@@ -142,19 +154,30 @@ class GlicKeyedService : public KeyedService,
   GlicEnabling& enabling() { return *enabling_.get(); }
 
   GlicMetrics* metrics() { return metrics_.get(); }
-  GlicFreController& fre_controller();
-  GlicWindowController& window_controller() const;
+  virtual GlicFreController& fre_controller();
+  virtual GlicWindowController& window_controller() const;
+#if !BUILDFLAG(IS_ANDROID)  // Single instance only
   GlicWindowControllerInterface& GetSingleInstanceWindowController() const;
+#endif
   GlicSharingManager& sharing_manager() override;
+
+  bool IsTabPinnedToAnyInstance(const tabs::TabHandle& tab_handle) const;
+
+  // Unpins the specified tabs from all instances.
+  void UnpinTabsFromAllInstances(base::span<const tabs::TabHandle> tab_handles,
+                                 GlicUnpinTrigger trigger);
 
   // Called when a webview guest is created within a chrome://glic WebUI.
   void GuestAdded(content::WebContents* guest_contents);
 
   // Virtual for testing.
   virtual bool IsWindowShowing() const;
+  virtual bool IsFreShowing() const;
 
-  // Returns true if `bwi` has a glic panel showing for its active tab.
-  bool IsPanelShowingForBrowser(const BrowserWindowInterface& bwi) const;
+  // Returns true if `bwi` has a glic panel showing for its active tab. Virtual
+  // for testing.
+  virtual bool IsPanelShowingForBrowser(
+      const BrowserWindowInterface& bwi) const;
 
   // Virtual for testing.
   virtual bool IsWindowDetached() const;
@@ -194,7 +217,16 @@ class GlicKeyedService : public KeyedService,
       const ::GURL& url,
       bool open_in_background,
       const std::optional<int32_t>& window_id,
-      glic::mojom::WebClientHandler::CreateTabCallback callback) override;
+      glic::mojom::WebClientHandler::CreateTabCallback callback)
+#if !BUILDFLAG(IS_ANDROID)
+      override;
+#else
+      ;  // multi instance doesn't use keyed service as an
+         // instance delegate, so it doesn't need the override keyword.
+#endif
+
+#if !BUILDFLAG(IS_ANDROID)  // multi instance doesn't use keyed service as an
+                            // instance delegate
   void CreateTask(
       base::WeakPtr<actor::ActorTaskDelegate> delegate,
       actor::webui::mojom::TaskOptionsPtr options,
@@ -202,6 +234,9 @@ class GlicKeyedService : public KeyedService,
   void PerformActions(
       const std::vector<uint8_t>& actions_proto,
       mojom::WebClientHandler::PerformActionsCallback callback) override;
+  void CancelActions(
+      actor::TaskId task_id,
+      mojom::WebClientHandler::CancelActionsCallback callback) override;
   void StopActorTask(actor::TaskId task_id,
                      mojom::ActorTaskStopReason stop_reason) override;
   void PauseActorTask(actor::TaskId task_id,
@@ -239,7 +274,10 @@ class GlicKeyedService : public KeyedService,
   void PrepareForOpen() override;
   void OnInteractionModeChange(mojom::WebClientMode new_mode) override;
   glic::GlicInstanceMetrics* instance_metrics() override;
+  glic::GlicInstanceMetricsBackwardsCompatibility&
+  instance_metrics_backwards_compatibility() override;
   bool IsActive() override;
+#endif
 
   void OnUserInputSubmitted(glic::mojom::WebClientMode mode);
 
@@ -249,9 +287,11 @@ class GlicKeyedService : public KeyedService,
   base::CallbackListSubscription AddUserInputSubmittedCallback(
       base::RepeatingClosure callback);
 
+#if !BUILDFLAG(IS_ANDROID)  // Single instance only
   void CaptureRegion(
       content::WebContents* web_contents,
       mojo::PendingRemote<mojom::CaptureRegionObserver> observer);
+#endif
 
   // Fetches the image for the context menu item (if possible, and potentially
   // scaling and reencoding) and sends the result to the web client as
@@ -262,7 +302,9 @@ class GlicKeyedService : public KeyedService,
 
   AuthController& GetAuthController() { return *auth_controller_; }
 
+#if !BUILDFLAG(IS_ANDROID)  // Single instance only
   GlicRegionCaptureController& region_capture_controller();
+#endif
 
   bool IsActiveWebContents(content::WebContents* contents);
 
@@ -275,6 +317,9 @@ class GlicKeyedService : public KeyedService,
   // Close the active embedder for an instance associated with this render frame
   // host.
   void Close(content::RenderFrameHost* outermost_render_frame_host);
+  // Archive the active embedder for an instance associated with this render
+  // frame host.
+  void Archive(content::RenderFrameHost* outermost_render_frame_host);
   Profile* profile() const { return profile_; }
 
   // Used only for testing purposes.
@@ -284,10 +329,6 @@ class GlicKeyedService : public KeyedService,
 
   void OnMemoryPressure(base::MemoryPressureLevel level) override;
 
-  // ActorTaskDelegate:
-  void OnTabAddedToTask(actor::TaskId task_id,
-                        const tabs::TabInterface::Handle& tab_handle) override;
-
   HostManager& host_manager();
 
   GlicWebContentsWarmingPool& web_contents_warming_pool() {
@@ -296,7 +337,11 @@ class GlicKeyedService : public KeyedService,
 
   // Null in multi-instance mode.
   GlicZeroStateSuggestionsManager* zero_state_suggestions_manager() {
+#if !BUILDFLAG(IS_ANDROID)  // Single instance only
     return zero_state_suggestions_manager_.get();
+#else
+    return nullptr;
+#endif
   }
 
   // Returns whether this process host is either the Glic FRE WebUI or the Glic
@@ -320,15 +365,12 @@ class GlicKeyedService : public KeyedService,
   void SendAdditionalContext(tabs::TabHandle tab_handle,
                              mojom::AdditionalContextPtr context);
 
-  // Registers a callback to be invoked when the TabData for an explicitly
-  // observed tab changes. Note that currently, only tabs observed via
-  // `OnTabAddedToTask` trigger updates.
-  using TabDataChangedCallback =
-      base::RepeatingCallback<void(const TabDataChange&)>;
-  base::CallbackListSubscription AddTabDataChangedCallback(
-      TabDataChangedCallback callback);
+  GlicTabDataObserver& tab_data_observer() { return *tab_data_observer_; }
 
+#if !BUILDFLAG(IS_ANDROID)  // Single instance only
   // ActorTaskDelegate:
+  void OnTabAddedToTask(actor::TaskId task_id,
+                        const tabs::TabInterface::Handle& tab_handle) override;
   void RequestToShowCredentialSelectionDialog(
       actor::TaskId task_id,
       const base::flat_map<std::string, gfx::Image>& icons,
@@ -349,6 +391,7 @@ class GlicKeyedService : public KeyedService,
       actor::TaskId task_id,
       std::vector<autofill::ActorFormFillingRequest> requests,
       AutofillSuggestionSelectedCallback callback) override;
+#endif
 
  private:
   // A helper function to route GetZeroStateSuggestionsForFocusedTabCallback
@@ -382,17 +425,22 @@ class GlicKeyedService : public KeyedService,
   std::unique_ptr<GlicWindowController> window_controller_;
   std::unique_ptr<GlicSharingManager> sharing_manager_;
   std::unique_ptr<GlicShareImageHandler> share_image_handler_;
-  std::unique_ptr<GlicScreenshotCapturer> screenshot_capturer_;
+#if !BUILDFLAG(IS_ANDROID)  // Single instance only
   std::unique_ptr<GlicRegionCaptureController> region_capture_controller_;
+#endif
   std::unique_ptr<AuthController> auth_controller_;
   std::unique_ptr<base::MemoryPressureListenerRegistration>
       memory_pressure_listener_registration_;
+#if !BUILDFLAG(IS_ANDROID)  // Single instance only
   // Null in multi-instance mode.
   std::unique_ptr<GlicOcclusionNotifier> occlusion_notifier_;
   std::unique_ptr<GlicZeroStateSuggestionsManager>
       zero_state_suggestions_manager_;
+#endif
   base::OnceCallback<void()> preload_callback_;
+#if !BUILDFLAG(IS_ANDROID)  // Single instance only
   std::unique_ptr<GlicActorTaskManager> actor_task_manager_;
+#endif
   std::unique_ptr<GlicTabDataObserver> tab_data_observer_;
   std::unique_ptr<GlicWebContentsWarmingPool> web_contents_warming_pool_;
 

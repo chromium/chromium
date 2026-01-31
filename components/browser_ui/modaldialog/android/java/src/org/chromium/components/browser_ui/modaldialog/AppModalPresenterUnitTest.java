@@ -30,7 +30,8 @@ import org.mockito.junit.MockitoRule;
 import org.robolectric.Shadows;
 import org.robolectric.annotation.Config;
 
-import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.supplier.ObservableSuppliers;
+import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.ui.base.TestActivity;
@@ -53,7 +54,7 @@ public class AppModalPresenterUnitTest {
     private DisplayMetrics mDisplayMetrics;
     private AppModalPresenter mAppModalPresenter;
     private PropertyModel mModel;
-    private ObservableSupplierImpl<Boolean> mEdgeToEdgeStateSupplier;
+    private SettableNonNullObservableSupplier<Boolean> mEdgeToEdgeStateSupplier;
 
     @Before
     public void setup() {
@@ -62,7 +63,7 @@ public class AppModalPresenterUnitTest {
         mDisplayMetrics.density = 1;
         mAppModalPresenter = new AppModalPresenter(activity);
         mAppModalPresenter.setInsetObserver(mInsetObserver);
-        mEdgeToEdgeStateSupplier = new ObservableSupplierImpl<>();
+        mEdgeToEdgeStateSupplier = ObservableSuppliers.createNonNull(false);
         mAppModalPresenter.setEdgeToEdgeStateSupplier(
                 mEdgeToEdgeStateSupplier, /* isEdgeToEdgeEverywhereEnabled= */ false);
         mModel = new PropertyModel.Builder(ModalDialogProperties.ALL_KEYS).build();

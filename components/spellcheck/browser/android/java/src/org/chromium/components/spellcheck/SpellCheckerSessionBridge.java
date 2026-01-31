@@ -7,6 +7,8 @@ package org.chromium.components.spellcheck;
 import static org.chromium.build.NullUtil.assumeNonNull;
 
 import android.content.Context;
+import android.text.SpannableString;
+import android.text.Spanned;
 import android.text.style.SuggestionSpan;
 import android.view.textservice.SentenceSuggestionsInfo;
 import android.view.textservice.SpellCheckerSession;
@@ -16,6 +18,7 @@ import android.view.textservice.TextInfo;
 import android.view.textservice.TextServicesManager;
 
 import org.jni_zero.CalledByNative;
+import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.ContextUtils;
@@ -27,15 +30,6 @@ import java.util.ArrayList;
 /** JNI interface for native SpellCheckerSessionBridge to use Android's spellchecker. */
 @NullMarked
 public class SpellCheckerSessionBridge implements SpellCheckerSessionListener {
-    // LINT.IfChange(SpellCheckResultDecoration)
-    /** Values from SpellCheckResult::Decoration on the C++ side * */
-    private static class SpellCheckResultDecoration {
-        public static final int SPELLING = 0;
-        public static final int GRAMMAR = 1;
-    }
-
-    // LINT.ThenChange(/components/spellcheck/common/spellcheck_result.h:DecorationEnum)
-
     private long mNativeSpellCheckerSessionBridge;
     private final boolean mAllowGrammarChecks;
     private final boolean mAllowHideSuggestionMenuAttribute;
@@ -107,24 +101,53 @@ public class SpellCheckerSessionBridge implements SpellCheckerSessionListener {
 
     /**
      * Queries the input text against the SpellCheckerSession.
+     *
      * @param text Text to be queried.
+     * @param spellingMarkers the existing spelling markers present in the given text.
      */
     @CalledByNative
-    private void requestTextCheck(String text) {
+    private void requestTextCheck(
+            String text,
+            @JniType("std::vector<spellcheck::SpellingMarker>") SpellingMarker[] spellingMarkers) {
         // SpellCheckerSession thinks that any word ending with a period is a typo.
         // We trim the period off before sending the text for spellchecking in order to avoid
         // unnecessary red underlines when the user ends a sentence with a period.
         // Filed as an Android bug here: https://code.google.com/p/android/issues/detail?id=183294
+        if (text == null) {
+            return;
+        }
         if (text.endsWith(".")) {
             text = text.substring(0, text.length() - 1);
         }
+        if (text.length() == 0) {
+            return;
+        }
+        SpannableString spannable = new SpannableString(text);
+        for (SpellingMarker marker : spellingMarkers) {
+            if (marker.start() > text.length() - 1 || marker.end() > text.length()) {
+                continue;
+            }
+            spannable.setSpan(
+                    new SuggestionSpan(
+                            ContextUtils.getApplicationContext(),
+                            new String[] {},
+                            marker.type() == SpellingMarker.Decoration.GRAMMAR
+                                    ? SuggestionSpan.FLAG_GRAMMAR_ERROR
+                                    : SuggestionSpan.FLAG_MISSPELLED),
+                    marker.start(),
+                    marker.end(),
+                    Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+        }
+
         assumeNonNull(mSpellCheckerSession)
                 .getSentenceSuggestions(
-                        new TextInfo[] {new TextInfo(text)}, SuggestionSpan.SUGGESTIONS_MAX_SIZE);
+                        new TextInfo[] {new TextInfo(spannable, 0, spannable.length(), 0, 0)},
+                        SuggestionSpan.SUGGESTIONS_MAX_SIZE);
     }
 
     /**
      * Checks for typos and sends results back to native through a JNI call.
+     *
      * @param results Results returned by the Android spellchecker.
      */
     @Override
@@ -136,7 +159,7 @@ public class SpellCheckerSessionBridge implements SpellCheckerSessionListener {
         ArrayList<Integer> offsets = new ArrayList<Integer>();
         ArrayList<Integer> lengths = new ArrayList<Integer>();
         ArrayList<String[]> suggestions = new ArrayList<String[]>();
-        ArrayList<Integer> spellcheckResultDecorations = new ArrayList<Integer>();
+        ArrayList<Integer> spellCheckDecorations = new ArrayList<Integer>();
         ArrayList<Boolean> hideSuggestionMenuBooleans = new ArrayList<Boolean>();
 
         for (SentenceSuggestionsInfo result : results) {
@@ -167,11 +190,11 @@ public class SpellCheckerSessionBridge implements SpellCheckerSessionListener {
                     lengths.add(result.getLengthAt(i));
                     // TODO(crbug.com/434080921): Verify which should take precedence if both are
                     // set.
-                    final int decoration =
+                    final @SpellingMarker.Decoration int decoration =
                             (attributes & grammarBitMask) != 0
-                                    ? SpellCheckResultDecoration.GRAMMAR
-                                    : SpellCheckResultDecoration.SPELLING;
-                    spellcheckResultDecorations.add(decoration);
+                                    ? SpellingMarker.Decoration.GRAMMAR
+                                    : SpellingMarker.Decoration.SPELLING;
+                    spellCheckDecorations.add(decoration);
                     ArrayList<String> suggestionsForWord = new ArrayList<String>();
                     for (int j = 0; j < info.getSuggestionsCount(); ++j) {
                         String suggestion = info.getSuggestionAt(j);
@@ -193,7 +216,7 @@ public class SpellCheckerSessionBridge implements SpellCheckerSessionListener {
                         convertIntListToArray(offsets),
                         convertIntListToArray(lengths),
                         suggestions.toArray(new String[suggestions.size()][]),
-                        convertIntListToArray(spellcheckResultDecorations),
+                        convertIntListToArray(spellCheckDecorations),
                         convertBoolListToArray(hideSuggestionMenuBooleans));
     }
 
@@ -225,6 +248,16 @@ public class SpellCheckerSessionBridge implements SpellCheckerSessionListener {
         return array;
     }
 
+    @CalledByNative
+    private static @Nullable SpellingMarker createSpellingMarker(
+            int start, int end, @SpellingMarker.Decoration int type) {
+        try {
+            return new SpellingMarker(start, end, type);
+        } catch (IllegalArgumentException e) {
+            return null;
+        }
+    }
+
     @Override
     public void onGetSuggestions(SuggestionsInfo[] results) {}
 
@@ -235,7 +268,7 @@ public class SpellCheckerSessionBridge implements SpellCheckerSessionListener {
                 int[] offsets,
                 int[] lengths,
                 String[][] suggestions,
-                int[] spellcheckResultDecorations,
+                int[] spellCheckDecorations,
                 boolean[] hideSuggestionMenuBooleans);
     }
 }

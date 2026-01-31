@@ -136,6 +136,7 @@ blink_core_sources_loader = [
   "resource/video_timing.h",
   "resource/xsl_style_sheet_resource.cc",
   "resource/xsl_style_sheet_resource.h",
+  "resource_initiator_helper.h",
   "resource_load_observer_for_frame.cc",
   "resource_load_observer_for_frame.h",
   "resource_load_observer_for_worker.cc",

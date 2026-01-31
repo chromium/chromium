@@ -72,6 +72,9 @@ class XRRenderState : public ScriptWrappable {
   // list.
   bool HasActiveLayer() const;
 
+  // Returns true if the layer is included in the current render state.
+  bool HasLayer(XRLayer*) const;
+
   // Gets the transport delegate from the baseLayer, or from the last layer in
   // the layers list if baseLayer is null.
   XRFrameTransportDelegate* GetTransportDelegate();

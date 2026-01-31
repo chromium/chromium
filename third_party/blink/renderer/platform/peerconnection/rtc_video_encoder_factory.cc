@@ -4,9 +4,9 @@
 
 #include "third_party/blink/renderer/platform/peerconnection/rtc_video_encoder_factory.h"
 
+#include <algorithm>
 #include <memory>
 
-#include "base/containers/contains.h"
 #include "base/logging.h"
 #include "base/strings/string_util.h"
 #include "build/build_config.h"
@@ -271,7 +271,7 @@ SupportedFormats GetSupportedFormatsInternal(
       continue;
     }
 
-    if (base::Contains(disabled_profiles, profile.profile)) {
+    if (std::ranges::contains(disabled_profiles, profile.profile)) {
       continue;
     }
 
@@ -479,8 +479,9 @@ RTCVideoEncoderFactory::QueryCodecSupport(
               : std::nullopt;
       if (!scalability_mode ||
           (mode.has_value() &&
-           base::Contains(supported_formats.sdp_formats[i].scalability_modes,
-                          mode.value()))) {
+           std::ranges::contains(
+               supported_formats.sdp_formats[i].scalability_modes,
+               mode.value()))) {
         return {/*is_supported=*/true, /*is_power_efficient=*/true};
       }
       break;

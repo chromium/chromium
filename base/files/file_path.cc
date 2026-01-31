@@ -11,7 +11,6 @@
 #include <string_view>
 
 #include "base/check_op.h"
-#include "base/containers/contains.h"
 #include "base/containers/span.h"
 #include "base/features.h"
 #include "base/files/safe_base_name.h"
@@ -320,7 +319,7 @@ std::ostream& operator<<(std::ostream& out, const FilePath& file_path) {
 // static
 bool FilePath::IsSeparator(CharType character) {
   span<const CharType> all_known_separators = SeparatorsAsSpan();
-  return base::Contains(all_known_separators, character);
+  return std::ranges::contains(all_known_separators, character);
 }
 
 std::vector<FilePath::StringType> FilePath::GetComponents() const {
@@ -1621,7 +1620,7 @@ FilePath FilePath::NormalizePathSeparatorsTo(
     CharType normalized_separator) const {
 #if defined(FILE_PATH_USES_WIN_SEPARATORS)
   span<const CharType> all_known_separators = SeparatorsAsSpan();
-  DCHECK(base::Contains(all_known_separators, normalized_separator));
+  DCHECK(std::ranges::contains(all_known_separators, normalized_separator));
 
   StringType copy = path_;
   for (CharType known_separator : all_known_separators) {

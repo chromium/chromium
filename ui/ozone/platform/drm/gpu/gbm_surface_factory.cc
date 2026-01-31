@@ -10,7 +10,6 @@
 #include <memory>
 #include <utility>
 
-#include "base/containers/contains.h"
 #include "base/files/file_path.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/string_util.h"
@@ -206,47 +205,6 @@ class GLOzoneEGLGbm : public GLOzoneEGL {
   gl::EGLDisplayPlatform native_display_;
 };
 
-std::vector<gfx::BufferFormat> EnumerateSupportedBufferFormatsForTexturing() {
-  std::vector<gfx::BufferFormat> supported_buffer_formats;
-  // We cannot use FileEnumerator here because the sandbox is already closed.
-  constexpr char kRenderNodeFilePattern[] = "/dev/dri/renderD%d";
-  for (int i = 128; /* end on first card# that does not exist */; i++) {
-    base::FilePath dev_path(FILE_PATH_LITERAL(
-        base::StringPrintf(kRenderNodeFilePattern, i).c_str()));
-
-    ScopedAllowBlockingForGbmSurface scoped_allow_blocking;
-    base::File dev_path_file(dev_path,
-                             base::File::FLAG_OPEN | base::File::FLAG_READ);
-    if (!dev_path_file.IsValid())
-      break;
-
-    // Skip the virtual graphics memory manager device.
-    ScopedDrmVersionPtr version(drmGetVersion(dev_path_file.GetPlatformFile()));
-    if (!version || base::EqualsCaseInsensitiveASCII(version->name, "vgem")) {
-      continue;
-    }
-
-    ScopedGbmDevice device(gbm_create_device(dev_path_file.GetPlatformFile()));
-    if (!device) {
-      LOG(ERROR) << "Couldn't create Gbm Device at " << dev_path.MaybeAsASCII();
-      continue;
-    }
-    VLOG(1) << "Found Gbm Device at " << dev_path.MaybeAsASCII();
-
-    for (int j = 0; j <= static_cast<int>(gfx::BufferFormat::LAST); ++j) {
-      const gfx::BufferFormat buffer_format = static_cast<gfx::BufferFormat>(j);
-      if (base::Contains(supported_buffer_formats, buffer_format))
-        continue;
-      if (gbm_device_is_format_supported(
-              device.get(), GetFourCCFormatFromBufferFormat(buffer_format),
-              GBM_BO_USE_TEXTURING)) {
-        supported_buffer_formats.push_back(buffer_format);
-      }
-    }
-  }
-  return supported_buffer_formats;
-}
-
 }  // namespace
 
 GbmSurfaceFactory::GbmSurfaceFactory(DrmThreadProxy* drm_thread_proxy)
@@ -339,7 +297,8 @@ scoped_refptr<gfx::NativePixmap> GbmSurfaceFactory::CreateNativePixmapForVulkan(
   base::ScopedFD vk_image_fd(dup(buffer->GetPlaneFd(0)));
   DCHECK(vk_image_fd.is_valid());
 
-  // TODO(spang): Fix this for formats other than gfx::BufferFormat::BGRA_8888
+  // TODO(spang): Fix this for formats other than
+  // viz::SinglePlaneFormat::kBGRA_8888
   DCHECK_EQ(viz::SinglePlaneFormat::kBGRA_8888,
             display::DisplaySnapshot::PrimaryFormat());
   VkFormat vk_format = VK_FORMAT_B8G8R8A8_SRGB;
@@ -477,9 +436,41 @@ void GbmSurfaceFactory::SetGetProtectedNativePixmapDelegate(
   get_protected_native_pixmap_callback_ = get_protected_native_pixmap_callback;
 }
 
-std::vector<gfx::BufferFormat>
-GbmSurfaceFactory::GetSupportedFormatsForTexturing() const {
-  return EnumerateSupportedBufferFormatsForTexturing();
+bool GbmSurfaceFactory::IsFormatSupportedForTexturing(
+    viz::SharedImageFormat format) const {
+  // We cannot use FileEnumerator here because the sandbox is already closed.
+  constexpr char kRenderNodeFilePattern[] = "/dev/dri/renderD%d";
+  for (int i = 128; /* end on first card# that does not exist */; i++) {
+    base::FilePath dev_path(FILE_PATH_LITERAL(
+        base::StringPrintf(kRenderNodeFilePattern, i).c_str()));
+
+    ScopedAllowBlockingForGbmSurface scoped_allow_blocking;
+    base::File dev_path_file(dev_path,
+                             base::File::FLAG_OPEN | base::File::FLAG_READ);
+    if (!dev_path_file.IsValid()) {
+      break;
+    }
+
+    // Skip the virtual graphics memory manager device.
+    ScopedDrmVersionPtr version(drmGetVersion(dev_path_file.GetPlatformFile()));
+    if (!version || base::EqualsCaseInsensitiveASCII(version->name, "vgem")) {
+      continue;
+    }
+
+    ScopedGbmDevice device(gbm_create_device(dev_path_file.GetPlatformFile()));
+    if (!device) {
+      LOG(ERROR) << "Couldn't create Gbm Device at " << dev_path.MaybeAsASCII();
+      continue;
+    }
+    VLOG(1) << "Found Gbm Device at " << dev_path.MaybeAsASCII();
+
+    if (gbm_device_is_format_supported(
+            device.get(), GetFourCCFormatFromSharedImageFormat(format),
+            GBM_BO_USE_TEXTURING)) {
+      return true;
+    }
+  }
+  return false;
 }
 
 }  // namespace ui

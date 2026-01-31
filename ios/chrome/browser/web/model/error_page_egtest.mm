@@ -71,8 +71,6 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
 // multiple times. See http://crbug.com/944037 .
 // TODO:(crbug.com/443199230): Fails on simulator and device.
 - (void)DISABLED_testBackForwardErrorPage {
-  // TODO(crbug.com/40159013): Going back/forward on the same host is failing.
-  // Use chrome:// to have a different hosts.
   std::string errorText = net::ErrorToShortString(net::ERR_INVALID_URL);
   self.serverRespondsWithContent = YES;
 

@@ -13,7 +13,6 @@
 #include "content/public/browser/web_contents.h"
 #include "extensions/browser/process_util.h"
 #include "extensions/buildflags/buildflags.h"
-#include "third_party/blink/public/common/input/web_input_event.h"
 #include "ui/events/keycodes/keyboard_codes.h"
 
 static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
@@ -42,6 +41,8 @@ ExtensionViewHost::ExtensionViewHost(
   // in TabHelpers::AttachTabHelpers, but popups don't.
   // TODO(kalman): How much of TabHelpers::AttachTabHelpers should be here?
   autofill::ChromeAutofillClient::CreateForWebContents(host_contents());
+
+  host_contents()->SetIgnoreZoomGestures(true);
 }
 
 ExtensionViewHost::~ExtensionViewHost() = default;
@@ -151,13 +152,6 @@ bool ExtensionViewHost::HandleKeyboardEvent(
   return UnhandledKeyboardEvent(source, event);
 }
 
-bool ExtensionViewHost::PreHandleGestureEvent(
-    content::WebContents* source,
-    const blink::WebGestureEvent& event) {
-  // Disable pinch zooming.
-  return blink::WebInputEvent::IsPinchGestureEventType(event.GetType());
-}
-
 void ExtensionViewHost::RunFileChooser(
     content::RenderFrameHost* render_frame_host,
     scoped_refptr<content::FileSelectListener> listener,
@@ -185,14 +179,8 @@ void ExtensionViewHost::RenderFrameCreated(
   view_->RenderFrameCreated(frame_host);
 }
 
-WindowController* ExtensionViewHost::GetExtensionWindowController() const {
+WindowController* ExtensionViewHost::GetExtensionWindowController() {
   return delegate_->GetExtensionWindowController();
-}
-
-content::WebContents* ExtensionViewHost::GetVisibleWebContents() const {
-  return (extension_host_type() == mojom::ViewType::kExtensionPopup)
-             ? host_contents()
-             : nullptr;
 }
 
 void ExtensionViewHost::OnExtensionHostDocumentElementAvailable(

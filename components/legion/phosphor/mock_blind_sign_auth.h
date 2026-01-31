@@ -11,6 +11,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/functional/callback.h"
 #include "base/threading/platform_thread.h"
 #include "net/third_party/quiche/src/quiche/blind_sign_auth/blind_sign_auth_interface.h"
 #include "third_party/abseil-cpp/absl/status/status.h"
@@ -28,7 +29,7 @@ class MockBlindSignAuth : public quiche::BlindSignAuthInterface {
   void GetTokens(std::optional<std::string> oauth_token,
                  int num_tokens,
                  quiche::ProxyLayer proxy_layer,
-                 quiche::BlindSignAuthServiceType /*service_type*/,
+                 quiche::BlindSignAuthServiceType service_type,
                  quiche::SignedTokenCallback callback) override;
 
   void GetAttestationTokens(
@@ -36,6 +37,11 @@ class MockBlindSignAuth : public quiche::BlindSignAuthInterface {
       quiche::ProxyLayer layer,
       quiche::AttestationDataCallback attestation_data_callback,
       quiche::SignedTokenCallback token_callback) override;
+
+  // Sets a closure that runs when GetTokens is called.
+  void set_on_get_tokens_callback(base::OnceClosure callback) {
+    on_get_tokens_callback_ = std::move(callback);
+  }
 
   void set_tokens(std::vector<quiche::BlindSignToken> tokens) {
     tokens_ = std::move(tokens);
@@ -53,6 +59,10 @@ class MockBlindSignAuth : public quiche::BlindSignAuthInterface {
   int num_tokens() const { return num_tokens_; }
 
   quiche::ProxyLayer proxy_layer() const { return proxy_layer_; }
+
+  quiche::BlindSignAuthServiceType service_type() const {
+    return service_type_;
+  }
 
   const absl::Status& status() const { return status_; }
 
@@ -76,7 +86,11 @@ class MockBlindSignAuth : public quiche::BlindSignAuthInterface {
   int num_tokens_ = 0;
 
   // The proxy for which the tokens are intended for.
-  quiche::ProxyLayer proxy_layer_ = quiche::ProxyLayer::kProxyA;
+  quiche::ProxyLayer proxy_layer_ = quiche::ProxyLayer::kTerminalLayer;
+
+  // The service for which the tokens are intended for.
+  quiche::BlindSignAuthServiceType service_type_ =
+      quiche::BlindSignAuthServiceType::kChromePrivateAratea;
 
   // If not Ok, the status that will be returned from `GetTokens()`.
   absl::Status status_ = absl::OkStatus();
@@ -84,6 +98,9 @@ class MockBlindSignAuth : public quiche::BlindSignAuthInterface {
   // The tokens that will be returned from `GetTokens()` , if `status_` is not
   // `OkStatus`.
   std::vector<quiche::BlindSignToken> tokens_;
+
+  // If set, runs when `GetTokens()` is called.
+  base::OnceClosure on_get_tokens_callback_;
 };
 
 }  // namespace legion::phosphor

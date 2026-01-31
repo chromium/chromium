@@ -19,7 +19,6 @@
 #include <vector>
 
 #include "base/command_line.h"
-#include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -361,7 +360,7 @@ void FocusFrame(FrameTreeNode* frame) {
 }
 
 bool ConvertJSONToPoint(const std::string& str, gfx::PointF* point) {
-  std::optional<base::Value::Dict> value =
+  std::optional<base::DictValue> value =
       base::JSONReader::ReadDict(str, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   if (!value) {
     return false;
@@ -592,6 +591,16 @@ void SitePerProcessIgnoreCertErrorsBrowserTest::
   SitePerProcessBrowserTest::TearDownInProcessBrowserTestFixture();
   mock_cert_verifier_.TearDownInProcessBrowserTestFixture();
 }
+
+class MainFrameThresholdTestBrowserClient
+    : public ContentBrowserTestContentBrowserClient {
+ public:
+  bool ShouldReuseAnyExistingProcessForNewMainFrameSiteInstance(
+      content::BrowserContext* browser_context,
+      const GURL& site_instance_original_url) override {
+    return true;
+  }
+};
 
 // SitePerProcessAutoplayBrowserTest
 
@@ -6402,11 +6411,9 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
   run_loop2.Run();
 
   // At this point, we should have two pending WebContents.
-  EXPECT_TRUE(base::Contains(
-      web_contents()->pending_contents_,
+  EXPECT_TRUE(web_contents()->pending_contents_.contains(
       GlobalRoutingID(process1->GetDeprecatedID(), routing_id1)));
-  EXPECT_TRUE(base::Contains(
-      web_contents()->pending_contents_,
+  EXPECT_TRUE(web_contents()->pending_contents_.contains(
       GlobalRoutingID(process2->GetDeprecatedID(), routing_id2)));
 
   // Both subframes were set up in the same way, so the next routing ID for the
@@ -6561,8 +6568,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
       GlobalRoutingID(process1->GetDeprecatedID(), routing_id1);
   // Add an interceptor for first popup widget so it doesn't get closed
   // immediately while the other one is being opened.
-  EXPECT_TRUE(
-      base::Contains(web_contents()->pending_widgets_, first_popup_global_id));
+  EXPECT_TRUE(web_contents()->pending_widgets_.contains(first_popup_global_id));
 
   RequestCloseWidgetInterceptor child1_popup_widget_interceptor(
       static_cast<RenderWidgetHostImpl*>(
@@ -6582,10 +6588,8 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
   run_loop2.Run();
 
   // At this point, we should have two pending widgets.
-  EXPECT_TRUE(
-      base::Contains(web_contents()->pending_widgets_, first_popup_global_id));
-  EXPECT_TRUE(base::Contains(
-      web_contents()->pending_widgets_,
+  EXPECT_TRUE(web_contents()->pending_widgets_.contains(first_popup_global_id));
+  EXPECT_TRUE(web_contents()->pending_widgets_.contains(
       GlobalRoutingID(process2->GetDeprecatedID(), routing_id2)));
 
   // Both subframes were set up in the same way, so the next routing ID for the
@@ -6596,11 +6600,9 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
   // Now simulate both widgets being shown.
   interceptor1.ResumeShowPopupWidget();
   interceptor2.ResumeShowPopupWidget();
-  EXPECT_FALSE(base::Contains(
-      web_contents()->pending_widgets_,
+  EXPECT_FALSE(web_contents()->pending_widgets_.contains(
       GlobalRoutingID(process1->GetDeprecatedID(), routing_id1)));
-  EXPECT_FALSE(base::Contains(
-      web_contents()->pending_widgets_,
+  EXPECT_FALSE(web_contents()->pending_widgets_.contains(
       GlobalRoutingID(process2->GetDeprecatedID(), routing_id2)));
 
   // There are posted tasks that must be run before the test shuts down, lest
@@ -9523,8 +9525,7 @@ class SitePerProcessBrowserTestWithSubframePriority
  public:
   SitePerProcessBrowserTestWithSubframePriority() {
     scoped_feature_list_.InitWithFeatures(
-        /* enabled_features= */ {features::kSubframePriorityContribution,
-                                 features::kSubframeImportance},
+        /* enabled_features= */ {features::kSubframeImportance},
         /* disabled_features= */ {});
   }
 
@@ -10159,7 +10160,8 @@ class TouchEventObserver : public RenderWidgetHost::InputEventObserver {
   TouchEventObserver& operator=(const TouchEventObserver&) = delete;
 
   void OnInputEvent(const RenderWidgetHost& widget,
-                    const blink::WebInputEvent& event) override {
+                    const blink::WebInputEvent& event,
+                    InputEventSource source) override {
     if (!blink::WebInputEvent::IsTouchEventType(event.GetType()))
       return;
 
@@ -11294,8 +11296,6 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest, FrameDepthTest) {
   EXPECT_FALSE(child1_rvh->is_active());
   EXPECT_EQ(RenderProcessHostImpl::kMaxFrameDepthForPriority,
             child1_rvh->GetWidget()->GetPriority().frame_depth);
-  EXPECT_FALSE(static_cast<RenderWidgetHostOwnerDelegate*>(child1_rvh)
-                   ->ShouldContributePriorityToProcess());
   // The RenderWidgetHost of the RenderFrameHost is different from the
   // RenderWidgetHost of the RenderViewHost and contributes to the priority.
   EXPECT_NE(child1->current_frame_host()->GetRenderWidgetHost(),
@@ -14164,6 +14164,11 @@ class SitePerProcessWithMainFrameThresholdTestBase
   }
   ~SitePerProcessWithMainFrameThresholdTestBase() override = default;
 
+  void SetUpOnMainThread() override {
+    SitePerProcessBrowserTestBase::SetUpOnMainThread();
+    test_client_ = std::make_unique<MainFrameThresholdTestBrowserClient>();
+  }
+
   Shell* CreateShellAndNavigateToURL(const GURL& url) {
     const GURL kOtherUrl =
         embedded_test_server()->GetURL("bar.test", "/title1.html");
@@ -14180,6 +14185,8 @@ class SitePerProcessWithMainFrameThresholdTestBase
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
+
+  std::unique_ptr<MainFrameThresholdTestBrowserClient> test_client_;
 };
 
 class SitePerProcessWithMainFrameThresholdTest
@@ -14791,9 +14798,9 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
   crash_observer.Wait();
 
   EXPECT_EQ(test_client.crashed_rfhs().size(), 2u);
-  EXPECT_TRUE(base::Contains(test_client.crashed_rfhs(), rfh_b1));
-  EXPECT_TRUE(base::Contains(test_client.crashed_rfhs(), rfh_b2));
-  EXPECT_FALSE(base::Contains(test_client.crashed_rfhs(), rfh_b3));
+  EXPECT_TRUE(std::ranges::contains(test_client.crashed_rfhs(), rfh_b1));
+  EXPECT_TRUE(std::ranges::contains(test_client.crashed_rfhs(), rfh_b2));
+  EXPECT_FALSE(std::ranges::contains(test_client.crashed_rfhs(), rfh_b3));
 }
 
 INSTANTIATE_TEST_SUITE_P(All,

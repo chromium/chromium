@@ -6,6 +6,7 @@
 
 #include <stddef.h>
 
+#include <algorithm>
 #include <memory>
 #include <queue>
 #include <utility>
@@ -769,8 +770,8 @@ TEST_P(MediaDevicesDispatcherHostTest,
   // Verify that both added devices are present and only those.
   ASSERT_EQ(audio_output_devices.size(), 2u);
 
-  EXPECT_TRUE(base::Contains(audio_output_devices, hmac_device_info1));
-  EXPECT_TRUE(base::Contains(audio_output_devices, hmac_device_info2));
+  EXPECT_TRUE(std::ranges::contains(audio_output_devices, hmac_device_info1));
+  EXPECT_TRUE(std::ranges::contains(audio_output_devices, hmac_device_info2));
 }
 
 TEST_P(MediaDevicesDispatcherHostTest, SubscribeDeviceChange) {

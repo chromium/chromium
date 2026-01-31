@@ -49,6 +49,7 @@ class CORE_EXPORT CSSPaletteMixValue : public CSSValue {
   Color::HueInterpolationMethod HueInterpolationMethod() const {
     return hue_interpolation_method_;
   }
+  bool HasRandomFunctions() const;
 
  private:
   Member<const CSSValue> palette1_;

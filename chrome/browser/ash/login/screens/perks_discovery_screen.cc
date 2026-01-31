@@ -54,7 +54,7 @@ void RecordUmaSelectedPerk(const std::string& perk_id, bool selected) {
 
 void RecordPerksUmaHistograms(
     const std::vector<SinglePerkDiscoveryPayload>& perks,
-    const base::Value::List& selected_perks) {
+    const base::ListValue& selected_perks) {
   size_t selected_perks_count = selected_perks.size();
   size_t total_perks_count = perks.size();
 
@@ -79,7 +79,7 @@ void RecordPerksErrorReasonUmaHistogram(
 }
 
 bool CheckPayloadFormat(const growth::Payload* payload) {
-  const base::Value::List* perks = payload->FindList("perks");
+  const base::ListValue* perks = payload->FindList("perks");
   if (!perks) {
     return false;
   }
@@ -114,7 +114,7 @@ std::vector<SinglePerkDiscoveryPayload> ParsePayload(
     return perks_result;
   }
 
-  const base::Value::List* perks = payload->FindList("perks");
+  const base::ListValue* perks = payload->FindList("perks");
   for (const auto& perk : *perks) {
     perks_result.push_back(SinglePerkDiscoveryPayload(perk.GetDict()));
   }
@@ -124,7 +124,7 @@ std::vector<SinglePerkDiscoveryPayload> ParsePayload(
 }  // namespace
 
 SinglePerkDiscoveryPayload::SinglePerkDiscoveryPayload(
-    const base::Value::Dict& perk_data)
+    const base::DictValue& perk_data)
     : id(*perk_data.FindString("id")),
       title(*perk_data.FindString("title")),
       subtitle(*perk_data.FindString("text")),
@@ -326,7 +326,7 @@ void PerksDiscoveryScreen::ShowOverviewStep() {
   }
 }
 
-void PerksDiscoveryScreen::OnUserAction(const base::Value::List& args) {
+void PerksDiscoveryScreen::OnUserAction(const base::ListValue& args) {
   const std::string& action_id = args[0].GetString();
 
   if (action_id == kUserActionLoaded) {
@@ -353,7 +353,7 @@ void PerksDiscoveryScreen::OnUserAction(const base::Value::List& args) {
 }
 
 void PerksDiscoveryScreen::OnPerksSelectionFinished(
-    const base::Value::List& selected_perks) {
+    const base::ListValue& selected_perks) {
   for (const auto& perk_selected : selected_perks) {
     auto perk = std::find_if(perks_data_.cbegin(), perks_data_.cend(),
                              [&](const SinglePerkDiscoveryPayload& perk_data) {
@@ -369,7 +369,7 @@ void PerksDiscoveryScreen::OnPerksSelectionFinished(
 }
 
 void PerksDiscoveryScreen::PerformButtonAction(
-    const base::Value::Dict& button_data) {
+    const base::DictValue& button_data) {
   if (!button_data.FindDict("action")) {
     RecordPerksErrorReasonUmaHistogram(
         PerksDiscoveryErrorReason::kNoActionFound);

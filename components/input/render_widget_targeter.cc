@@ -18,6 +18,7 @@
 #include "components/input/render_widget_host_view_input.h"
 #include "components/viz/common/surfaces/frame_sink_id.h"
 #include "third_party/blink/public/common/input/web_input_event.h"
+#include "third_party/perfetto/include/perfetto/tracing/track_event_args.h"
 #include "ui/events/blink/blink_event_util.h"
 #include "ui/gfx/geometry/point_f.h"
 #include "ui/latency/latency_info.h"
@@ -212,10 +213,9 @@ void RenderWidgetTargeter::ResolveTargetingRequest(TargetingRequest request) {
   }
   RenderWidgetHostViewInput* target = result.view;
   if (!is_autoscroll_in_progress_ && result.should_query_view) {
-    TRACE_EVENT_WITH_FLOW2(
-        "viz,benchmark", "Event.Pipeline", TRACE_ID_GLOBAL(trace_id_),
-        TRACE_EVENT_FLAG_FLOW_OUT, "step", "QueryClient(Start)",
-        "event_location", request.GetLocation().ToString());
+    TRACE_EVENT("viz,benchmark", "Event.Pipeline",
+                perfetto::Flow::Global(trace_id_), "step", "QueryClient(Start)",
+                "event_location", request.GetLocation().ToString());
 
     // TODO(kenrb, sadrul): When all event types support asynchronous hit
     // testing, we should be able to have FindTargetSynchronously return the
@@ -289,10 +289,9 @@ void RenderWidgetTargeter::QueryClient(
                      weak_ptr_factory_.GetWeakPtr(), target->GetInputWeakPtr(),
                      target_location));
 
-  TRACE_EVENT_WITH_FLOW2(
-      "viz,benchmark", "Event.Pipeline", TRACE_ID_GLOBAL(trace_id_),
-      TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT, "step",
-      "QueryClient", "event_location", location.ToString());
+  TRACE_EVENT("viz,benchmark", "Event.Pipeline",
+              perfetto::Flow::Global(trace_id_), "step", "QueryClient",
+              "event_location", location.ToString());
 
   target_client->FrameSinkIdAt(
       target_location, trace_id_,
@@ -363,9 +362,9 @@ void RenderWidgetTargeter::FoundFrameSinkId(
     // Reduced scope is required since FoundTarget can trigger another query
     // which would end up linked to the current query.
     {
-      TRACE_EVENT_WITH_FLOW1("viz,benchmark", "Event.Pipeline",
-                             TRACE_ID_GLOBAL(trace_id_),
-                             TRACE_EVENT_FLAG_FLOW_IN, "step", "FoundTarget");
+      TRACE_EVENT("viz,benchmark", "Event.Pipeline",
+                  perfetto::TerminatingFlow::Global(trace_id_), "step",
+                  "FoundTarget");
     }
 
     if (request.IsWebInputEventRequest() &&

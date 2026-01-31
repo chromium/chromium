@@ -5,6 +5,10 @@
 #ifndef CHROMEOS_ASH_EXPERIENCES_ARC_COMPAT_MODE_ARC_RESIZE_LOCK_MANAGER_H_
 #define CHROMEOS_ASH_EXPERIENCES_ARC_COMPAT_MODE_ARC_RESIZE_LOCK_MANAGER_H_
 
+#include <map>
+#include <vector>
+
+#include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_multi_source_observation.h"
 #include "base/scoped_observation.h"
@@ -76,6 +80,10 @@ class ArcResizeLockManager : public KeyedService,
   void UpdateResizeLockState(aura::Window* window);
   void UpdateShadow(aura::Window* window);
 
+  // Runs `callback` immediately if the `window` has a valid app ID.
+  // Otherwise, queues `callback` to run when the `window` gets a valid app ID.
+  void RunWhenAppIdReady(aura::Window* window, base::OnceClosure callback);
+
   // virtual for unittest.
   virtual void ShowSplashScreenDialog(aura::Window* window,
                                       bool is_fully_locked);
@@ -89,6 +97,9 @@ class ArcResizeLockManager : public KeyedService,
 
   base::flat_set<raw_ptr<aura::Window, CtnExperimental>>
       resize_lock_enabled_windows_;
+
+  std::map<aura::Window*, std::vector<base::OnceClosure>>
+      pending_app_id_callbacks_;
 
   base::ScopedObservation<aura::Env, aura::EnvObserver> env_observation{this};
 

@@ -392,7 +392,7 @@ class RootWindowTargeter : public aura::WindowTargeter {
   }
 
   // Stop-gap workaround for telemetry tests that send events far outside of the
-  // display (e.g. 512, -4711). Fix the test and remove this (crbgu.com/904623).
+  // display (e.g. 512, -4711). Fix the test and remove this (crbug.com/904623).
   bool IsEventInsideDisplayForTelemetryHack(aura::Window* window,
                                             ui::LocatedEvent* event) {
     constexpr int ExtraMarginForTelemetryTest = -10;
@@ -511,6 +511,17 @@ class FillLayoutManager : public aura::LayoutManager {
 
   raw_ptr<aura::Window> container_;
 };
+
+void SetOcclusionOverrideToTrackedWindow(
+    aura::Window* subtree,
+    std::optional<aura::Window::OcclusionState> state) {
+  if (subtree->GetOcclusionState() != aura::Window::OcclusionState::UNKNOWN) {
+    subtree->SetOcclusionStateOverride(state);
+  }
+  for (auto child : subtree->children()) {
+    SetOcclusionOverrideToTrackedWindow(child, state);
+  }
+}
 
 }  // namespace
 
@@ -953,6 +964,13 @@ void RootWindowController::EndSplitViewOverviewSession(
   split_view_overview_session_.reset();
 }
 
+void RootWindowController::ForceOccludeWindowsInAlwaysOnTop(bool occlude) {
+  SetOcclusionOverrideToTrackedWindow(
+      GetContainer(kShellWindowId_AlwaysOnTopContainer),
+      occlude ? std::optional(aura::Window::OcclusionState::OCCLUDED)
+              : std::nullopt);
+}
+
 void RootWindowController::SetScreenRotationAnimatorForTest(
     std::unique_ptr<ScreenRotationAnimator> animator) {
   screen_rotation_animator_ = std::move(animator);
@@ -1210,6 +1228,8 @@ void RootWindowController::CreateContainers() {
                       "AlwaysOnTopContainer", shutdown_screenshot_container);
   ::wm::SetChildWindowVisibilityChangesAnimated(always_on_top_container);
   always_on_top_container->SetProperty(::wm::kUsesScreenCoordinatesKey, true);
+  window_util::SetChildrenUseExtendedHitRegionForWindow(
+      always_on_top_container);
 
   aura::Window* float_container =
       CreateContainer(kShellWindowId_FloatContainer, "FloatContainer",

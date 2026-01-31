@@ -41,6 +41,7 @@ class HomeBackgroundCustomizationService;
 @protocol NewTabPageConsumer;
 @protocol NewTabPageContentDelegate;
 @protocol NewTabPageHeaderConsumer;
+class NTPBackgroundImageCacheService;
 class PlaceholderService;
 class PrefService;
 class TemplateURLService;
@@ -69,6 +70,8 @@ class UserUploadedImageManager;
                    regionalCapabilitiesService
         backgroundCustomizationService:
             (HomeBackgroundCustomizationService*)backgroundCustomizationService
+           backgroundImageCacheService:
+               (NTPBackgroundImageCacheService*)backgroundImageCacheService
                    imageFetcherService:
                        (image_fetcher::ImageFetcherService*)imageFetcherService
               userUploadedImageManager:

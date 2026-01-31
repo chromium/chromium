@@ -255,6 +255,9 @@ TEST_F(SignoutActionSheetCoordinatorTest, ShouldShowActionSheetIfUnsyncedData) {
       "Sync.UnsyncedDataOnSignout2",
       syncer::DataTypeForHistograms::kPreferences, 0u);
 
+  histogram_tester.ExpectUniqueSample(
+      "Sync.BookmarksLimitExceededOnSignoutPrompt", false, 1u);
+
   histogram_tester.ExpectTotalCount("Sync.SignoutWithUnsyncedData", 0u);
 }
 
@@ -294,6 +297,39 @@ TEST_F(SignoutActionSheetCoordinatorTest,
 
   [signout_coordinator_ start];
   ASSERT_NE(nil, signout_coordinator_.title);
+}
+
+TEST_F(SignoutActionSheetCoordinatorTest,
+       ShouldShowActionSheetIfBookmarksLimitExceeded) {
+  authentication_service()->SignIn(identity_,
+                                   signin_metrics::AccessPoint::kUnknown);
+
+  CreateCoordinator();
+  // Mock returning no unsynced datatype.
+  ON_CALL(*sync_service_mock_, GetTypesWithUnsyncedData)
+      .WillByDefault(
+          [](syncer::DataTypeSet requested_types,
+             base::OnceCallback<void(
+                 absl::flat_hash_map<syncer::DataType, size_t>)> callback) {
+            std::move(callback).Run(
+                absl::flat_hash_map<syncer::DataType, size_t>());
+          });
+
+  ON_CALL(*sync_service_mock_, GetUserActionableError())
+      .WillByDefault(testing::Return(
+          syncer::SyncService::UserActionableError::kBookmarksLimitExceeded));
+
+  EXPECT_CALL(completion_callback_, Run);
+
+  base::HistogramTester histogram_tester;
+
+  [signout_coordinator_ start];
+
+  // The action sheet should be shown.
+  ASSERT_NE(nil, signout_coordinator_.message);
+
+  histogram_tester.ExpectUniqueSample(
+      "Sync.BookmarksLimitExceededOnSignoutPrompt", true, 1u);
 }
 
 // TODO(crbug.com/40075765): Add test for recording signout outcome upon warning

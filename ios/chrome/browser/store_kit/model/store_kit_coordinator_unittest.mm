@@ -134,7 +134,7 @@ TEST_F(StoreKitCoordinatorTest, NoOverlappingStoreKitsPresented) {
   NoOverlappingPresentedViewControllers
 #else
 #define MAYBE_NoOverlappingPresentedViewControllers \
-  FLAKY_NoOverlappingPresentedViewControllers
+  DISABLED_NoOverlappingPresentedViewControllers
 #endif
 TEST_F(StoreKitCoordinatorTest, MAYBE_NoOverlappingPresentedViewControllers) {
   NSString* kTestITunesItemIdentifier = @"TestITunesItemIdentifier";

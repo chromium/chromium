@@ -9,7 +9,7 @@
 #include <variant>
 
 #include "chrome/browser/actor/actor_task.h"
-#include "chrome/browser/actor/shared_types.h"
+#include "chrome/common/actor.mojom-forward.h"
 #include "chrome/common/actor/task_id.h"
 #include "components/tabs/public/tab_interface.h"
 #include "ui/gfx/geometry/point.h"
@@ -34,13 +34,29 @@ struct StartTask {
   ~StartTask();
 };
 
+// STATUS: Dispatched when ActorTask state changes to a Final State (Completed,
+// Cancelled, Failed). This should be tracked separately as information about a
+// stopped task is no longer being persisted.
+struct StopTask {
+  actor::TaskId task_id;
+  ActorTask::State final_state;
+  std::string title;
+  tabs::TabInterface::Handle last_acted_on_tab_handle;
+
+  StopTask(actor::TaskId,
+           ActorTask::State,
+           const std::string& title,
+           tabs::TabInterface::Handle);
+  StopTask(const StopTask&);
+  ~StopTask();
+};
+
 // STATUS: Dispatched when ActorTask state changes.
 struct TaskStateChanged {
   actor::TaskId task_id;
   ActorTask::State state;
-  std::string title;
 
-  TaskStateChanged(actor::TaskId, ActorTask::State, const std::string& title);
+  TaskStateChanged(actor::TaskId, ActorTask::State);
   TaskStateChanged(const TaskStateChanged&);
   ~TaskStateChanged();
 };
@@ -80,10 +96,12 @@ struct MouseMove {
 // STATUS: Dispatched pre-tool invocation.
 struct MouseClick {
   tabs::TabInterface::Handle tab_handle;
-  MouseClickType click_type;
-  MouseClickCount click_count;
+  actor::mojom::ClickType click_type;
+  actor::mojom::ClickCount click_count;
 
-  MouseClick(tabs::TabInterface::Handle, MouseClickType, MouseClickCount);
+  MouseClick(tabs::TabInterface::Handle,
+             actor::mojom::ClickType,
+             actor::mojom::ClickCount);
   MouseClick(const MouseClick&);
   ~MouseClick();
 };
@@ -99,9 +117,10 @@ using AsyncUiEvent = std::variant<StartingToActOnTab, MouseClick, MouseMove>;
 // these events or for callers to wait for ActorUiStateManager to finish async
 // work before proceeding.
 using SyncUiEvent =
-    std::variant<StartTask, TaskStateChanged, StoppedActingOnTab>;
+    std::variant<StartTask, StopTask, TaskStateChanged, StoppedActingOnTab>;
 
 using UiEvent = std::variant<StartTask,
+                             StopTask,
                              StartingToActOnTab,
                              StoppedActingOnTab,
                              TaskStateChanged,

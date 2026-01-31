@@ -28,6 +28,6 @@ struct BlitRequest {
   // SyncToken to wait on before accessing the shared image.
   gpu.mojom.SyncToken sync_token;
 
-  // True if the shared image has been created from a `GpuMemoryBuffer`.
-  bool populates_gpu_memory_buffer;
+  // True if the shared image that will be populated is mappable.
+  bool populates_mappable_shared_image;
 };

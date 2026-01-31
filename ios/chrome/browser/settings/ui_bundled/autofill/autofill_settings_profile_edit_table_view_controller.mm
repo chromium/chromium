@@ -275,7 +275,7 @@ const CGFloat kSymbolSize = 22;
 
     OpenNewTabCommand* command =
         [OpenNewTabCommand commandWithURLFromChrome:GURL(URL)];
-    [self.applicationHandler closePresentedViewsAndOpenURL:command];
+    [self.sceneHandler closePresentedViewsAndOpenURL:command];
     return;
   }
   [self.handler didSelectRowAtIndexPath:indexPath];

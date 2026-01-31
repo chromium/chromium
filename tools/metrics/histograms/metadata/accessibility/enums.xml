@@ -1695,72 +1695,73 @@ Unknown properties are collapsed to zero. -->
   <int value="2" label="Open new tab"/>
   <int value="3" label="Open new tab incognito"/>
   <int value="4" label="Open new window"/>
-  <int value="5" label="Reload tab"/>
-  <int value="6" label="Reload tab, bypassing cache"/>
-  <int value="7" label="Move to tab left"/>
-  <int value="8" label="Move to tab right"/>
-  <int value="9" label="Move to specific tab"/>
-  <int value="10" label="Move to last tab"/>
-  <int value="11" label="Search currently-open tabs (not implemented)"/>
-  <int value="12" label="Toggle multi-task menu (not implemented)"/>
-  <int value="13" label="Close tab"/>
-  <int value="14" label="Close window"/>
-  <int value="15" label="Quit Chrome (not implemented)"/>
-  <int value="16" label="Jump to omnibox"/>
-  <int value="17" label="Jump to search"/>
-  <int value="18" label="Focus the next web contents pane (not implemented)"/>
-  <int value="19" label="Scroll down (not implemented)"/>
-  <int value="20" label="Scroll up (not implemented)"/>
-  <int value="21" label="Place keyboard focus on the toolbar"/>
-  <int value="22" label="Place keyboard focus on the bookmarks bar"/>
-  <int value="23"
+  <int value="5" label="Open new window incognito"/>
+  <int value="6" label="Reload tab"/>
+  <int value="7" label="Reload tab, bypassing cache"/>
+  <int value="8" label="Move to tab left"/>
+  <int value="9" label="Move to tab right"/>
+  <int value="10" label="Move to specific tab"/>
+  <int value="11" label="Move to last tab"/>
+  <int value="12" label="Search currently-open tabs (not implemented)"/>
+  <int value="13" label="Toggle multi-task menu (not implemented)"/>
+  <int value="14" label="Close tab"/>
+  <int value="15" label="Close window"/>
+  <int value="16" label="Quit Chrome (not implemented)"/>
+  <int value="17" label="Jump to omnibox"/>
+  <int value="18" label="Jump to search"/>
+  <int value="19" label="Focus the next web contents pane (not implemented)"/>
+  <int value="20" label="Scroll down (not implemented)"/>
+  <int value="21" label="Scroll up (not implemented)"/>
+  <int value="22" label="Place keyboard focus on the toolbar"/>
+  <int value="23" label="Place keyboard focus on the bookmarks bar"/>
+  <int value="24"
       label="Switch which row of the top controls (tab strip, toolbar,
              bookmarks bar) is keyboard-focused"/>
-  <int value="24"
-      label="Open the context menu for the keyboard-focused tab strip item"/>
   <int value="25"
-      label="Reorder the keyboard-focused tab strip item to the left"/>
+      label="Open the context menu for the keyboard-focused tab strip item"/>
   <int value="26"
-      label="Reorder the keyboard-focused tab strip item to the right"/>
+      label="Reorder the keyboard-focused tab strip item to the left"/>
   <int value="27"
-      label="Reorder the currently-open tab to the left (not implemented)"/>
+      label="Reorder the keyboard-focused tab strip item to the right"/>
   <int value="28"
+      label="Reorder the currently-open tab to the left (not implemented)"/>
+  <int value="29"
       label="Reorder the currently-open tab to the right (not implemented)"/>
-  <int value="29" label="Toggle caret browsing (not implemented)"/>
-  <int value="30" label="Focus on inactive dialogs (not implemented)"/>
-  <int value="31" label="Open bookmarks"/>
-  <int value="32" label="Bookmark page"/>
-  <int value="33" label="Bookmark all tabs (not implemented)"/>
-  <int value="34" label="Show or hide the bookmarks bar"/>
-  <int value="35" label="Toggle immersive mode (not implemented)"/>
-  <int value="36" label="Exit immersive mode (not implemented)"/>
-  <int value="37" label="Open developer tools"/>
-  <int value="38" label="Open developer tools console (not implemented)"/>
-  <int value="39"
+  <int value="30" label="Toggle caret browsing (not implemented)"/>
+  <int value="31" label="Focus on inactive dialogs (not implemented)"/>
+  <int value="32" label="Open bookmarks"/>
+  <int value="33" label="Bookmark page"/>
+  <int value="34" label="Bookmark all tabs (not implemented)"/>
+  <int value="35" label="Show or hide the bookmarks bar"/>
+  <int value="36" label="Toggle immersive mode (not implemented)"/>
+  <int value="37" label="Exit immersive mode (not implemented)"/>
+  <int value="38" label="Open developer tools"/>
+  <int value="39" label="Open developer tools console (not implemented)"/>
+  <int value="40"
       label="Open developer tools element inspection (not implemented)"/>
-  <int value="40" label="Toggle showing developer tools (not implemented)"/>
-  <int value="41" label="View page source"/>
-  <int value="42" label="Open task manager"/>
-  <int value="43" label="Save page"/>
-  <int value="44" label="Show downloads"/>
-  <int value="45" label="Open history"/>
-  <int value="46" label="Go back in history"/>
-  <int value="47" label="Go forward in history"/>
-  <int value="48" label="Clear browsing data (not implemented)"/>
-  <int value="49" label="Print"/>
-  <int value="50" label="Basic print (not implemented)"/>
-  <int value="51" label="Zoom in"/>
-  <int value="52" label="Zoom out"/>
-  <int value="53" label="Zoom reset"/>
-  <int value="54" label="Show avatar menu (not implemented)"/>
-  <int value="55" label="Show feedback form"/>
-  <int value="56" label="Find in page"/>
-  <int value="57" label="Go to home page (not implemented)"/>
-  <int value="58" label="Open help"/>
-  <int value="59" label="Open menu"/>
-  <int value="60"
+  <int value="41" label="Toggle showing developer tools (not implemented)"/>
+  <int value="42" label="View page source"/>
+  <int value="43" label="Open task manager"/>
+  <int value="44" label="Save page"/>
+  <int value="45" label="Show downloads"/>
+  <int value="46" label="Open history"/>
+  <int value="47" label="Go back in history"/>
+  <int value="48" label="Go forward in history"/>
+  <int value="49" label="Clear browsing data (not implemented)"/>
+  <int value="50" label="Print"/>
+  <int value="51" label="Basic print (not implemented)"/>
+  <int value="52" label="Zoom in"/>
+  <int value="53" label="Zoom out"/>
+  <int value="54" label="Zoom reset"/>
+  <int value="55" label="Show avatar menu (not implemented)"/>
+  <int value="56" label="Show feedback form"/>
+  <int value="57" label="Find in page"/>
+  <int value="58" label="Go to home page (not implemented)"/>
+  <int value="59" label="Open help"/>
+  <int value="60" label="Open menu"/>
+  <int value="61"
       label="Use a custom keyboard shortcut registered by an extension"/>
-  <int value="61" label="Toggle multiselect"/>
+  <int value="62" label="Toggle multiselect"/>
 </enum>
 
 <!-- LINT.ThenChange(//chrome/android/java/src/org/chromium/chrome/browser/KeyboardShortcuts.java:KeyboardShortcutsSemanticMeaning, //tools/metrics/histograms/metadata/accessibility/histograms.xml:KeyboardShortcutsSemanticMeaning) -->
@@ -2137,6 +2138,21 @@ Unknown properties are collapsed to zero. -->
 
 <!-- LINT.ThenChange(//chrome/common/read_anything/read_anything.mojom:Colors) -->
 
+<!-- LINT.IfChange(ReadAnythingDistillationScheme) -->
+
+<enum name="ReadAnythingDistillationScheme">
+  <int value="0" label="HTTP/HTTPS (Success)"/>
+  <int value="1" label="File"/>
+  <int value="2" label="Internal (chrome://)"/>
+  <int value="3" label="About (about:blank)"/>
+  <int value="4" label="Data"/>
+  <int value="5" label="Chrome Extension"/>
+  <int value="6" label="Blob"/>
+  <int value="7" label="Other"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/ui/webui/side_panel/read_anything/read_anything_untrusted_page_handler.h:ReadAnythingDistillationScheme) -->
+
 <!-- LINT.IfChange(ReadAnythingDistillationStatus) -->
 
 <enum name="ReadAnythingDistillationStatus">
@@ -2222,6 +2238,25 @@ Unknown properties are collapsed to zero. -->
 
 <!-- LINT.ThenChange(//chrome/common/read_anything/read_anything.mojom:LetterSpacing) -->
 
+<!-- LINT.IfChange(ReadAnythingLineFocus) -->
+
+<enum name="ReadAnythingLineFocus">
+  <int value="0" label="Off"/>
+  <int value="1" label="One Line Window (Deprecated)"/>
+  <int value="2" label="Three Line Window (Deprecated)"/>
+  <int value="3" label="Five Line Window (Deprecated)"/>
+  <int value="4" label="Static Line"/>
+  <int value="5" label="Cursor Line"/>
+  <int value="6" label="Small Static Window"/>
+  <int value="7" label="Medium Static Window"/>
+  <int value="8" label="Large Static Window"/>
+  <int value="9" label="Small Cursor Window"/>
+  <int value="10" label="Medium Cursor Window"/>
+  <int value="11" label="Large Cursor Window"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/common/read_anything/read_anything.mojom:LineFocus) -->
+
 <!-- LINT.IfChange(ReadAnythingLineSpacing) -->
 
 <enum name="ReadAnythingLineSpacing">
@@ -2284,6 +2319,9 @@ Unknown properties are collapsed to zero. -->
   <int value="4" label="Letter spacing change"/>
   <int value="5" label="Links enabled change"/>
   <int value="6" label="Images enabled change"/>
+  <int value="7" label="Line focus change (Deprecated)"/>
+  <int value="8" label="Line focus style change"/>
+  <int value="9" label="Line focus movement change"/>
 </enum>
 
 <!-- LINT.ThenChange(//chrome/browser/resources/side_panel/read_anything/shared/metrics_browser_proxy.ts:ReadAnythingSettingsChange) -->
@@ -2350,7 +2388,7 @@ Unknown properties are collapsed to zero. -->
 
 <!-- LINT.ThenChange(//components/dom_distiller/content/browser/uma_helper.h:ReaderModeEntryPoint) -->
 
-<enum name="ReaderModePrefsFontStyle">
+<enum name="ReaderModePrefsFontFamily">
   <int value="0" label="Sans serif"/>
   <int value="1" label="Serif"/>
   <int value="2" label="Monospace"/>

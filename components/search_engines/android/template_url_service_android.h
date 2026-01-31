@@ -30,13 +30,13 @@ class TemplateUrlServiceAndroid : public TemplateURLServiceObserver {
   void SetUserSelectedDefaultSearchProvider(
       JNIEnv* env,
       const base::android::JavaRef<jstring>& jkeyword,
-      jint choice_made_location);
-  jboolean IsLoaded(JNIEnv* env) const;
-  jboolean IsDefaultSearchManaged(JNIEnv* env);
-  jboolean IsSearchByImageAvailable(JNIEnv* env);
-  jboolean DoesDefaultSearchEngineHaveLogo(JNIEnv* env);
-  jboolean IsDefaultSearchEngineGoogle(JNIEnv* env);
-  jboolean IsSearchResultsPageFromDefaultSearchProvider(
+      int32_t choice_made_location);
+  bool IsLoaded(JNIEnv* env) const;
+  bool IsDefaultSearchManaged(JNIEnv* env);
+  bool IsSearchByImageAvailable(JNIEnv* env);
+  bool DoesDefaultSearchEngineHaveLogo(JNIEnv* env);
+  bool IsDefaultSearchEngineGoogle(JNIEnv* env);
+  bool IsSearchResultsPageFromDefaultSearchProvider(
       JNIEnv* env,
       const base::android::JavaRef<jobject>& jurl);
   base::android::ScopedJavaLocalRef<jstring> GetUrlForSearchQuery(
@@ -56,7 +56,7 @@ class TemplateUrlServiceAndroid : public TemplateURLServiceObserver {
       JNIEnv* env,
       const base::android::JavaRef<jstring>& jquery,
       const base::android::JavaRef<jstring>& jalternate_term,
-      jboolean jshould_prefetch,
+      bool jshould_prefetch,
       const base::android::JavaRef<jstring>& jprotocol_version);
   base::android::ScopedJavaLocalRef<jstring> GetSearchEngineUrlFromTemplateUrl(
       JNIEnv* env,
@@ -69,7 +69,7 @@ class TemplateUrlServiceAndroid : public TemplateURLServiceObserver {
   // Returns true if search engine was successfully added, false if search
   // engine from Play API with such keyword already existed (e.g. from previous
   // attempt to set search engine).
-  jboolean SetPlayAPISearchEngine(
+  bool SetPlayAPISearchEngine(
       JNIEnv* env,
       const base::android::JavaRef<jstring>& jname,
       const base::android::JavaRef<jstring>& jkeyword,
@@ -90,7 +90,7 @@ class TemplateUrlServiceAndroid : public TemplateURLServiceObserver {
   base::android::ScopedJavaLocalRef<jstring> AddSearchEngineForTesting(
       JNIEnv* env,
       const base::android::JavaRef<jstring>& jkeyword,
-      jint age_in_days);
+      int32_t age_in_days);
 
   // Finds the search engine whose keyword matches |jkeyword| and sets its
   // last_visited time as the current time.

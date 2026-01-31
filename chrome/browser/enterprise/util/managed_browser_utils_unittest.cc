@@ -215,11 +215,11 @@ class AutoSelectCertificateTest : public testing::Test {
         {client_1_, client_2_});
   }
 
-  void SetPolicyValueInContentSettings(base::Value::List filters) {
+  void SetPolicyValueInContentSettings(base::ListValue filters) {
     HostContentSettingsMap* m =
         HostContentSettingsMapFactory::GetForProfile(profile());
 
-    base::Value::Dict root;
+    base::DictValue root;
     root.Set("filters", std::move(filters));
 
     m->SetWebsiteSettingDefaultScope(
@@ -228,17 +228,17 @@ class AutoSelectCertificateTest : public testing::Test {
         base::Value(std::move(root)));
   }
 
-  base::Value::Dict CreateFilterValue(const std::string& issuer,
-                                      const std::string& subject) {
+  base::DictValue CreateFilterValue(const std::string& issuer,
+                                    const std::string& subject) {
     EXPECT_FALSE(issuer.empty() && subject.empty());
 
-    base::Value::Dict filter;
+    base::DictValue filter;
     if (!issuer.empty()) {
-      filter.Set("ISSUER", base::Value::Dict().Set("CN", issuer));
+      filter.Set("ISSUER", base::DictValue().Set("CN", issuer));
     }
 
     if (!subject.empty()) {
-      filter.Set("SUBJECT", base::Value::Dict().Set("CN", subject));
+      filter.Set("SUBJECT", base::DictValue().Set("CN", subject));
     }
 
     return filter;
@@ -279,7 +279,7 @@ TEST_F(AutoSelectCertificateTest,
   net::ClientCertIdentityList client_certs_list = GetDefaultClientCertList();
 
   // client_1.pem has "B CA" as its issuer, so set up filters to select it
-  base::Value::List filters;
+  base::ListValue filters;
   filters.Append(CreateFilterValue("B CA", ""));
 
   SetPolicyValueInContentSettings(std::move(filters));
@@ -299,7 +299,7 @@ TEST_F(AutoSelectCertificateTest,
   net::ClientCertIdentityList client_certs_list = GetDefaultClientCertList();
 
   // client_2.pem has "E CA" as its issuer, so set up filters to select it
-  base::Value::List filters;
+  base::ListValue filters;
   filters.Append(CreateFilterValue("E CA", ""));
 
   SetPolicyValueInContentSettings(std::move(filters));
@@ -321,7 +321,7 @@ TEST_F(AutoSelectCertificateTest,
 
   // client_1.pem has "Client Cert A" as its subject, so set up filters to
   // select it
-  base::Value::List filters;
+  base::ListValue filters;
   filters.Append(CreateFilterValue("", "Client Cert A"));
 
   SetPolicyValueInContentSettings(std::move(filters));
@@ -343,7 +343,7 @@ TEST_F(AutoSelectCertificateTest,
 
   // client_2.pem has "Client Cert D" as its subject, so set up filters to
   // select it
-  base::Value::List filters;
+  base::ListValue filters;
   filters.Append(CreateFilterValue("", "Client Cert D"));
 
   SetPolicyValueInContentSettings(std::move(filters));
@@ -362,7 +362,7 @@ TEST_F(AutoSelectCertificateTest, IssuerNotMatchingDoesntSelectCerts) {
   GURL requesting_url(kRequestingUrl);
   net::ClientCertIdentityList client_certs_list = GetDefaultClientCertList();
 
-  base::Value::List filters;
+  base::ListValue filters;
   filters.Append(CreateFilterValue("Bad Issuer", "Client Cert D"));
 
   SetPolicyValueInContentSettings(std::move(filters));
@@ -382,7 +382,7 @@ TEST_F(AutoSelectCertificateTest, SubjectNotMatchingDoesntSelectCerts) {
   GURL requesting_url(kRequestingUrl);
   net::ClientCertIdentityList client_certs_list = GetDefaultClientCertList();
 
-  base::Value::List filters;
+  base::ListValue filters;
   filters.Append(CreateFilterValue("E CA", "Bad Subject"));
 
   SetPolicyValueInContentSettings(std::move(filters));
@@ -402,7 +402,7 @@ TEST_F(AutoSelectCertificateTest, MatchingCertOnDifferentUrlDoesntSelectCerts) {
   GURL requesting_url("http://other.domain.example.com");
   net::ClientCertIdentityList client_certs_list = GetDefaultClientCertList();
 
-  base::Value::List filters;
+  base::ListValue filters;
   filters.Append(CreateFilterValue("E CA", ""));
 
   SetPolicyValueInContentSettings(std::move(filters));

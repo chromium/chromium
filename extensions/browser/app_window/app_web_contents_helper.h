@@ -10,10 +10,6 @@
 #include "extensions/common/extension_id.h"
 #include "third_party/blink/public/common/mediastream/media_stream_request.h"
 
-namespace blink {
-class WebGestureEvent;
-}
-
 namespace content {
 class BrowserContext;
 class RenderFrameHost;
@@ -38,9 +34,6 @@ class AppWebContentsHelper {
 
   AppWebContentsHelper(const AppWebContentsHelper&) = delete;
   AppWebContentsHelper& operator=(const AppWebContentsHelper&) = delete;
-
-  // Returns true if the given `event` should not be handled by the renderer.
-  static bool ShouldSuppressGestureEvent(const blink::WebGestureEvent& event);
 
   // Opens a new URL inside the passed in WebContents. See WebContentsDelegate.
   content::WebContents* OpenURLFromTab(

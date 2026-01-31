@@ -83,6 +83,8 @@ class ContextSharingBorderView : public AnimatedEffectView {
   // Returns the rounded corner radius to use for the border.
   gfx::RoundedCornersF GetContentBorderRadius() const;
 
+  raw_ptr<Browser> browser_ = nullptr;
+
   // The controller to notify the view about various browser UI status change.
   const std::unique_ptr<ContextSharingBorderViewController> controller_;
 };

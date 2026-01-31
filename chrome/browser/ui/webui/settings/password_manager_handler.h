@@ -24,7 +24,7 @@ class PasswordManagerHandler : public content::WebUIMessageHandler {
   // WebUIMessageHandler:
   void RegisterMessages() override;
 
-  void HandleShowPasswordManager(const base::Value::List& args);
+  void HandleShowPasswordManager(const base::ListValue& args);
 };
 
 }  // namespace settings

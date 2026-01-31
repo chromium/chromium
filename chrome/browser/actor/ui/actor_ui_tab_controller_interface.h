@@ -90,6 +90,9 @@ class ActorUiTabControllerInterface {
   // Returns the current UiTabState.
   virtual UiTabState GetCurrentUiTabState() const = 0;
 
+  // Called when the omnibox popup visibility changes.
+  virtual void OnWindowOmniboxPopupVisibilityChanged() = 0;
+
   // Callbacks:
   using ActorTabIndicatorStateChangedCallback =
       base::RepeatingCallback<void(TabIndicatorStatus)>;

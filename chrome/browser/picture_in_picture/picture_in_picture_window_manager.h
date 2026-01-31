@@ -144,7 +144,7 @@ class PictureInPictureWindowManager {
 
   // Returns the window bounds of the video picture-in-picture or the document
   // picture-in-picture if either of them is present.
-  std::optional<gfx::Rect> GetPictureInPictureWindowBounds() const;
+  std::optional<gfx::Rect> GetPictureInPictureWindowBoundsInScreen() const;
 
   // Used for Document picture-in-picture windows only. The returned dimensions
   // represent the outer window bounds.

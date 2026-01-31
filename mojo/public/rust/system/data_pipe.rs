@@ -78,7 +78,7 @@ impl DataPipeConsumerHandle {
             mojo_ffi::MojoReadData(
                 self.handle.get_native_handle(),
                 options.as_ptr(),
-                ptr::null_mut() as *mut c_void,
+                ptr::null_mut(),
                 &mut num_bytes as *mut u32,
             )
         };

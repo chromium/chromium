@@ -692,12 +692,11 @@ void NativeViewGLSurfaceEGL::TraceSwapEvents(EGLuint64KHR oldFrameId) {
   const char* pending_symbols = valid_symbols.c_str();
   for (size_t i = 1; i < tracePairs.size(); i++) {
     UNSAFE_TODO(pending_symbols++);
-    TRACE_EVENT_COPY_NESTABLE_ASYNC_BEGIN_WITH_TIMESTAMP0(
-        kSwapEventTraceCategories, pending_symbols, trace_id,
-        tracePairs[i - 1].time);
-    TRACE_EVENT_COPY_NESTABLE_ASYNC_END_WITH_TIMESTAMP0(
-        kSwapEventTraceCategories, pending_symbols, trace_id,
-        tracePairs[i].time);
+    TRACE_EVENT_BEGIN(kSwapEventTraceCategories,
+                      perfetto::DynamicString(pending_symbols),
+                      perfetto::Track(trace_id), tracePairs[i - 1].time);
+    TRACE_EVENT_END(kSwapEventTraceCategories, perfetto::Track(trace_id),
+                    tracePairs[i].time);
     TRACE_EVENT_INSTANT(kSwapEventTraceCategories,
                         perfetto::StaticString(tracePairs[i].name),
                         perfetto::Track(trace_id), tracePairs[i].time);

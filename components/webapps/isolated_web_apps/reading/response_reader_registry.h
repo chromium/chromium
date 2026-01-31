@@ -83,7 +83,6 @@ class IsolatedWebAppReaderRegistry : public KeyedService {
   // both the response head and a closure it can call to read the response body,
   // or a string if an error occurs.
   void ReadResponse(const base::FilePath& web_bundle_path,
-                    bool dev_mode,
                     const web_package::SignedWebBundleId& web_bundle_id,
                     const network::ResourceRequest& resource_request,
                     ReadResponseCallback callback);
@@ -129,7 +128,6 @@ class IsolatedWebAppReaderRegistry : public KeyedService {
 
   void OnResponseReaderCreated(
       const base::FilePath& web_bundle_path,
-      const web_package::SignedWebBundleId& web_bundle_id,
       base::expected<std::unique_ptr<IsolatedWebAppResponseReader>,
                      UnusableSwbnFileError> reader);
 

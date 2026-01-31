@@ -5,13 +5,17 @@
 #ifndef UI_VIEWS_COREWM_TOOLTIP_STATE_MANAGER_H_
 #define UI_VIEWS_COREWM_TOOLTIP_STATE_MANAGER_H_
 
+#include <stdint.h>
+
 #include <map>
 #include <memory>
 #include <string>
 
 #include "base/memory/raw_ptr.h"
+#include "base/scoped_observation.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
+#include "ui/aura/window_observer.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/views/corewm/tooltip.h"
 #include "ui/views/corewm/tooltip_controller.h"
@@ -34,12 +38,12 @@ class TooltipControllerTestHelper;
 // TooltipStateManager separates the state handling from the events handling of
 // the TooltipController. It is in charge of updating the tooltip state and
 // keeping track of it.
-class VIEWS_EXPORT TooltipStateManager {
+class VIEWS_EXPORT TooltipStateManager : public aura::WindowObserver {
  public:
   explicit TooltipStateManager(std::unique_ptr<Tooltip> tooltip);
   TooltipStateManager(const TooltipStateManager&) = delete;
   TooltipStateManager& operator=(const TooltipStateManager&) = delete;
-  ~TooltipStateManager();
+  ~TooltipStateManager() override;
 
   void AddObserver(wm::TooltipObserver* observer);
   void RemoveObserver(wm::TooltipObserver* observer);
@@ -61,9 +65,9 @@ class VIEWS_EXPORT TooltipStateManager {
             const base::TimeDelta show_delay,
             const base::TimeDelta hide_delay);
 
-  // Returns the `tooltip_id_`, which corresponds to the pointer of the view on
-  // which the tooltip was last added.
-  const void* tooltip_id() const { return tooltip_id_; }
+  // Returns the `tooltip_id_`, which corresponds to the pointer value of the
+  // view on which the tooltip was last added.
+  std::uintptr_t tooltip_id() const { return tooltip_id_; }
   // Returns the `tooltip_text_`, which corresponds to the last value the
   // tooltip got updated to.
   const std::u16string& tooltip_text() const { return tooltip_text_; }
@@ -79,8 +83,14 @@ class VIEWS_EXPORT TooltipStateManager {
   void UpdatePositionIfNeeded(const gfx::Point& position,
                               TooltipTrigger trigger);
 
+  // aura::WindowObserver:
+  void OnWindowDestroying(aura::Window* window) override;
+
  private:
   friend class test::TooltipControllerTestHelper;
+
+  // Sets the tooltip parent window and manages observation.
+  void SetTooltipParentWindow(aura::Window* window);
 
   // Called once the `will_show_tooltip_timer_` fires to show the tooltip.
   void ShowNow(const std::u16string& trimmed_text,
@@ -105,9 +115,8 @@ class VIEWS_EXPORT TooltipStateManager {
 
   std::unique_ptr<Tooltip> tooltip_;
 
-  // The pointer to the view for which the tooltip is set.
-  // TODO(crbug.com/40285438) - Fix this dangling pointer.
-  raw_ptr<const void, DanglingUntriaged> tooltip_id_ = nullptr;
+  // The pointer value of the view for which the tooltip is set.
+  std::uintptr_t tooltip_id_ = 0;
 
   // The text value used at the last tooltip update.
   std::u16string tooltip_text_;
@@ -121,6 +130,10 @@ class VIEWS_EXPORT TooltipStateManager {
   // and one to display the tooltip when the timer fires.
   base::OneShotTimer will_hide_tooltip_timer_;
   base::OneShotTimer will_show_tooltip_timer_;
+
+  // Observes the tooltip parent window to detect destruction.
+  base::ScopedObservation<aura::Window, aura::WindowObserver>
+      window_observation_{this};
 
   // WeakPtrFactory to use for callbacks.
   base::WeakPtrFactory<TooltipStateManager> weak_factory_{this};

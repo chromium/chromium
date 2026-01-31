@@ -10,7 +10,6 @@
 #include <iterator>
 #include <string_view>
 
-#include "base/containers/contains.h"
 #include "build/build_config.h"
 #include "build/buildflag.h"
 #include "third_party/blink/public/mojom/origin_trials/origin_trial_feature.mojom-shared.h"
@@ -38,8 +37,8 @@ static constexpr struct TrialToFeature {
 } // namespace
 
 bool origin_trials::IsTrialValid(std::string_view trial_name) {
-  return base::Contains(kTrialToFeaturesMap, trial_name,
-                        &TrialToFeature::trial_name);
+  return std::ranges::contains(kTrialToFeaturesMap, trial_name,
+                               &TrialToFeature::trial_name);
 }
 
 bool origin_trials::IsTrialEnabledForInsecureContext(std::string_view trial_name) {
@@ -48,7 +47,7 @@ bool origin_trials::IsTrialEnabledForInsecureContext(std::string_view trial_name
       "{{trial}}",
   {% endfor %}
   };
-  return base::Contains(kEnabledForInsecureContext, trial_name);
+  return std::ranges::contains(kEnabledForInsecureContext, trial_name);
 }
 
 bool origin_trials::IsTrialEnabledForThirdPartyOrigins(std::string_view trial_name) {
@@ -57,7 +56,7 @@ bool origin_trials::IsTrialEnabledForThirdPartyOrigins(std::string_view trial_na
       "{{trial}}",
   {% endfor %}
   };
-  return base::Contains(kEnabledForThirdPartyOrigins, trial_name);
+  return std::ranges::contains(kEnabledForThirdPartyOrigins, trial_name);
 }
 
 bool origin_trials::IsTrialEnabledForBrowserProcessReadAccess(std::string_view trial_name) {
@@ -71,7 +70,7 @@ bool origin_trials::IsTrialEnabledForBrowserProcessReadAccess(std::string_view t
     {% endif %}
   {% endfor %}
   };
-  return base::Contains(kEnabledForBrowserProcessReadWriteAccess, trial_name);
+  return std::ranges::contains(kEnabledForBrowserProcessReadWriteAccess, trial_name);
 }
 
 bool origin_trials::IsDeprecationTrial(std::string_view trial_name) {

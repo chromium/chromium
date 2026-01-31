@@ -13,7 +13,6 @@
 #import "components/autofill/core/common/autofill_payments_features.h"
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/autofill/model/message/save_card_message_with_links.h"
-#import "ios/chrome/browser/autofill/ui_bundled/save_card_infobar_metrics_recorder.h"
 #import "ios/chrome/browser/infobars/model/infobar_metrics_recorder.h"
 #import "ios/chrome/browser/infobars/ui_bundled/modals/infobar_modal_constants.h"
 #import "ios/chrome/browser/infobars/ui_bundled/modals/infobar_save_card_modal_constants.h"
@@ -35,8 +34,8 @@ namespace {
 const int kNumberOfMonthsInYear = 12;
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-// Height of the Google pay logo.
-CGFloat const kGooglePayLogoHeight = 26;
+// Height of the Google Wallet logo.
+CGFloat const kGoogleWalletLogoHeight = 26;
 #endif
 
 }  // namespace
@@ -357,26 +356,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
 #pragma mark - TableViewTextEditItemDelegate
 
 - (void)tableViewItemDidBeginEditing:(TableViewTextEditItem*)tableViewItem {
-  ItemType itemType = static_cast<ItemType>(tableViewItem.type);
-  switch (itemType) {
-    case ItemTypeCardLastDigits:
-      // Not editable.
-      break;
-    case ItemTypeCardHolderName:
-      [self nameEditDidBegin];
-      break;
-    case ItemTypeCardExpireMonth:
-      [self monthEditDidBegin];
-      break;
-    case ItemTypeCardExpireYear:
-      [self yearEditDidBegin];
-      break;
-    case ItemTypeCardCvc:
-      // No metrics recorded.
-      break;
-    case ItemTypeCardLegalMessage:
-      NOTREACHED();
-  }
+  // No op.
 }
 
 - (void)tableViewItemDidChange:(TableViewTextEditItem*)tableViewItem {
@@ -424,26 +404,6 @@ typedef NS_ENUM(NSInteger, ItemType) {
     newButtonState = NO;
   }
   [self.containerDelegate updateSaveButtonEnabled:newButtonState];
-}
-
-- (void)nameEditDidBegin {
-  [SaveCardInfobarMetricsRecorder
-      recordModalEvent:MobileMessagesSaveCardModalEvent::EditedCardHolderName];
-}
-
-- (void)monthEditDidBegin {
-  [SaveCardInfobarMetricsRecorder
-      recordModalEvent:MobileMessagesSaveCardModalEvent::EditedExpirationMonth];
-}
-
-- (void)yearEditDidBegin {
-  [SaveCardInfobarMetricsRecorder
-      recordModalEvent:MobileMessagesSaveCardModalEvent::EditedExpirationYear];
-}
-
-- (void)cvcEditDidBegin {
-  [SaveCardInfobarMetricsRecorder
-      recordModalEvent:MobileMessagesSaveCardModalEvent::EditedCvc];
 }
 
 - (void)nameDidChange {
@@ -547,8 +507,12 @@ typedef NS_ENUM(NSInteger, ItemType) {
 
 - (UIImage*)logoIconImage {
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-  return MakeSymbolMulticolor(
-      CustomSymbolWithPointSize(kGooglePaySymbol, kGooglePayLogoHeight));
+  return MakeSymbolMulticolor(CustomSymbolWithPointSize(
+      base::FeatureList::IsEnabled(
+          autofill::features::kAutofillEnableWalletBranding)
+          ? kGoogleWalletSymbol
+          : kGooglePaySymbol,
+      kGoogleWalletLogoHeight));
 #else
   return self.logoIcon;
 #endif

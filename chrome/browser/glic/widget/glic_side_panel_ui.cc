@@ -28,7 +28,6 @@
 #include "components/web_modal/web_contents_modal_dialog_manager.h"
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/web_contents.h"
-#include "third_party/skia/include/core/SkRegion.h"
 #include "ui/views/view.h"
 
 namespace glic {
@@ -134,15 +133,6 @@ void GlicSidePanelUi::Resize(const gfx::Size& size,
   std::move(callback).Run();
 }
 
-void GlicSidePanelUi::SetDraggableAreas(
-    const std::vector<gfx::Rect>& draggable_areas) {
-  NOTIMPLEMENTED();
-}
-
-void GlicSidePanelUi::SetDraggableRegion(const SkRegion& draggable_region) {
-  NOTIMPLEMENTED();
-}
-
 void GlicSidePanelUi::EnableDragResize(bool enabled) {
   NOTIMPLEMENTED();
 }
@@ -168,7 +158,8 @@ bool GlicSidePanelUi::IsShowing() const {
   if (!glic_side_panel_coordinator) {
     return false;
   }
-  return glic_side_panel_coordinator->IsShowing();
+  return glic_side_panel_coordinator->state() !=
+         GlicSidePanelCoordinator::State::kClosed;
 }
 
 void GlicSidePanelUi::Focus() {
@@ -242,20 +233,26 @@ void GlicSidePanelUi::Show(const ShowOptions& options) {
   glic_side_panel_coordinator->Show(suppress_animations);
 }
 
-void GlicSidePanelUi::Close() {
+void GlicSidePanelUi::Close(const CloseOptions& options) {
   if (screenshot_capturer_) {
     screenshot_capturer_->CloseScreenPicker();
   }
   auto* glic_side_panel_coordinator = GetGlicSidePanelCoordinator();
-  if (!glic_side_panel_coordinator || !IsShowing()) {
+  if (!glic_side_panel_coordinator) {
     return;
   }
   // NOTE: `this` will be destroyed after this call.
-  glic_side_panel_coordinator->Close();
+  glic_side_panel_coordinator->Close(options);
 }
 
 void GlicSidePanelUi::ClosePanel() {
-  Close();
+  Close(CloseOptions());
+}
+
+void GlicSidePanelUi::OnReload() {
+  if (glic_view_) {
+    glic_view_->SetWebContents(delegate_->host().webui_contents());
+  }
 }
 
 std::unique_ptr<GlicUiEmbedder> GlicSidePanelUi::CreateInactiveEmbedder()

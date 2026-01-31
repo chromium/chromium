@@ -111,12 +111,12 @@ CommerceHeuristicsData::GetHintHeuristicsJSONForDomain(
   if (!hint_heuristics_.contains(domain)) {
     return std::nullopt;
   }
-  base::Value::Dict domain_heuristics =
+  base::DictValue domain_heuristics =
       hint_heuristics_.FindDict(domain)->Clone();
   if (domain_heuristics.empty()) {
     return std::nullopt;
   }
-  base::Value::Dict res_dic;
+  base::DictValue res_dic;
   res_dic.Set(domain, std::move(domain_heuristics));
   return base::WriteJson(res_dic).value_or("");
 }
@@ -207,8 +207,7 @@ std::optional<std::string> CommerceHeuristicsData::GetCommerceHintHeuristics(
   if (!hint_heuristics_.contains(domain)) {
     return std::nullopt;
   }
-  const base::Value::Dict* domain_heuristics =
-      hint_heuristics_.FindDict(domain);
+  const base::DictValue* domain_heuristics = hint_heuristics_.FindDict(domain);
   if (!domain_heuristics || domain_heuristics->empty() ||
       !domain_heuristics->contains(type)) {
     return std::nullopt;

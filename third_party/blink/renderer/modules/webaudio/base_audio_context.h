@@ -119,7 +119,8 @@ class MODULES_EXPORT BaseAudioContext
   float sampleRate() const { return destination_handler_->SampleRate(); }
   double currentTime() const { return destination_handler_->CurrentTime(); }
   AudioListener* listener() { return listener_.Get(); }
-  V8AudioContextState state() const;
+  // Virtual so AudioContext::state() can add UseCounters.
+  virtual V8AudioContextState state() const;
   uint32_t renderQuantumSize() const {
     return deferred_task_handler_->RenderQuantumFrames();
   }

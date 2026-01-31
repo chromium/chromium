@@ -7,7 +7,9 @@
 #include "base/command_line.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
+#include "base/notimplemented.h"
 #include "base/task/sequenced_task_runner.h"
+#include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/glic/fre/glic_fre_controller.h"
 #include "chrome/browser/glic/host/host.h"
@@ -19,14 +21,19 @@
 #include "chrome/browser/profiles/nuke_profile_directory_utils.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
-#include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_finder.h"
+#include "chrome/browser/ui/browser_window/public/browser_collection.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
-#include "chrome/browser/ui/profiles/profile_picker.h"
-#include "chrome/browser/ui/scoped_tabbed_browser_displayer.h"
+#include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_switches.h"
 #include "content/public/browser/network_service_instance.h"
+
+#if !BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/profiles/profile_picker.h"
+#include "chrome/browser/ui/scoped_tabbed_browser_displayer.h"
+#endif
 
 namespace {
 bool g_prewarming_enabled_for_testing_ = true;
@@ -48,17 +55,25 @@ void AutoOpenGlicPanel() {
     return;
   }
 
-  Browser* browser = nullptr;
+  BrowserWindowInterface* last_active = nullptr;
   mojom::InvocationSource pretend_source = mojom::InvocationSource::kOsButton;
   if (base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
           ::switches::kGlicOpenOnStartup) == "attached") {
     // Attachment is best effort; FindLastActiveWithProfile() may return null
     // here.
-    browser = chrome::FindLastActiveWithProfile(profile);
+    GlobalBrowserCollection::GetInstance()->ForEach(
+        [&](BrowserWindowInterface* bwi) {
+          if (bwi->GetProfile() == profile) {
+            last_active = bwi;
+            return false;
+          }
+          return true;
+        },
+        BrowserCollection::Order::kActivation);
     pretend_source = mojom::InvocationSource::kTopChromeButton;
   }
   GlicKeyedServiceFactory::GetGlicKeyedService(profile)->ToggleUI(
-      browser, /*prevent_close=*/true, pretend_source);
+      last_active, /*prevent_close=*/true, pretend_source);
 }
 
 }  // namespace
@@ -131,7 +146,7 @@ void GlicProfileManager::SetActiveGlic(GlicKeyedService* glic) {
       last_active_glic_->IsWindowShowing()) {
     // This is only relevant to single-instance glic, as IsWindowShowing remains
     // unimplemented in multi-instance.
-    last_active_glic_->window_controller().Close();
+    last_active_glic_->window_controller().Close({});
   }
   Profile* last_active_glic_profile = nullptr;
   if (glic) {
@@ -150,7 +165,7 @@ void GlicProfileManager::SetCurrentDetachedGlic(Profile* profile) {
     return;
   }
   if (current_detached_glic_ && current_detached_glic_->profile() != profile) {
-    current_detached_glic_->window_controller().Close();
+    current_detached_glic_->window_controller().Close({});
   }
   current_detached_glic_ = GlicKeyedService::Get(profile)->GetWeakPtr();
 }
@@ -264,13 +279,16 @@ void GlicProfileManager::ShowProfilePicker() {
       &GlicProfileManager::DidSelectProfile, weak_ptr_factory_.GetWeakPtr());
   // If the panel is not closed it will be on top of the profile picker.
   if (last_active_glic_) {
-    last_active_glic_->window_controller().Close();
+    last_active_glic_->window_controller().Close({});
   }
 
   // TODO(crbug.com/450679848): Profile Picker doesn't make sense on ChromeOS.
 #if !BUILDFLAG(IS_CHROMEOS)
+// Profile picker won't be used on Android.
+#if !BUILDFLAG(IS_ANDROID)
   ProfilePicker::Show(
       ProfilePicker::Params::ForGlicManager(std::move(callback)));
+#endif
 #endif
 }
 
@@ -283,11 +301,15 @@ void GlicProfileManager::DidSelectProfile(Profile* profile) {
       GlicKeyedServiceFactory::GetGlicKeyedService(profile);
 
   if (!GlicEnabling::HasConsentedForProfile(profile) &&
-      !base::FeatureList::IsEnabled(features::kGlicTrustFirstOnboarding)) {
+      !GlicEnabling::IsTrustFirstOnboardingEnabled()) {
+#if !BUILDFLAG(IS_ANDROID)
     // Open a browser and show the FRE in a new tab.
     chrome::ScopedTabbedBrowserDisplayer displayer(profile);
     service->OpenFreDialogInNewTab(displayer.browser(),
                                    mojom::InvocationSource::kProfilePicker);
+#else
+    NOTIMPLEMENTED() << "OpenFreDialogInNewTab";
+#endif
   } else {
     // Toggle glic but prevent close if it is already open for the selected
     // profile.

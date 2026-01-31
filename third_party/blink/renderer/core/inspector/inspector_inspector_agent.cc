@@ -8,9 +8,7 @@
 
 namespace blink {
 
-InspectorInspectorAgent::InspectorInspectorAgent(
-    WorkerGlobalScope* worker_global_scope)
-    : worker_global_scope_(worker_global_scope) {}
+InspectorInspectorAgent::InspectorInspectorAgent() = default;
 
 InspectorInspectorAgent::~InspectorInspectorAgent() = default;
 
@@ -19,7 +17,6 @@ void InspectorInspectorAgent::WorkerScriptLoaded() {
 }
 
 void InspectorInspectorAgent::Trace(Visitor* visitor) const {
-  visitor->Trace(worker_global_scope_);
   InspectorBaseAgent::Trace(visitor);
 }
 

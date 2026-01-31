@@ -107,9 +107,14 @@ component("crypto") {
         "apple/scoped_lacontext.mm",
         "apple/security_framework_lock.cc",
         "apple/security_framework_lock.h",
-        "apple/unexportable_key_mac.h",
-        "apple/unexportable_key_mac.mm",
         "user_verifying_key_mac.mm",
+      ]
+    }
+
+    if (!(is_ios && target_platform == "tvos")) {
+      sources += [
+        "apple/unexportable_key_apple.h",
+        "apple/unexportable_key_apple.mm",
       ]
     }
 
@@ -221,6 +226,10 @@ test("crypto_unittests") {
 
   if (is_apple) {
     sources += [ "apple/mock_keychain_unittest.cc" ]
+
+    if (!(is_ios && target_platform == "tvos")) {
+      sources += [ "apple/unexportable_key_apple_unittest.mm" ]
+    }
   }
 
   if (is_ios) {
@@ -238,7 +247,6 @@ test("crypto_unittests") {
   if (is_mac) {
     sources += [
       "apple/keychain_util_unittest.mm",
-      "apple/unexportable_key_mac_unittest.mm",
       "user_verifying_key_mac_unittest.mm",
     ]
   }
@@ -291,7 +299,7 @@ static_library("test_support") {
     ]
   }
 
-  if (is_mac) {
+  if (is_mac || is_ios) {
     sources += [
       "apple/fake_keychain_v2.h",
       "apple/fake_keychain_v2.mm",
@@ -301,9 +309,12 @@ static_library("test_support") {
     frameworks = [
       "CoreFoundation.framework",
       "Foundation.framework",
-      "LocalAuthentication.framework",
       "Security.framework",
     ]
+
+    if (is_mac || (is_ios && target_platform != "tvos")) {
+      frameworks += [ "LocalAuthentication.framework" ]
+    }
   }
 
   deps = [

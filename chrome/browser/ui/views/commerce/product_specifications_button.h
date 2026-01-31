@@ -8,7 +8,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/ui/commerce/product_specifications_entry_point_controller.h"
-#include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/views/tabs/tab_search_container.h"
 #include "chrome/browser/ui/views/tabs/tab_strip_control_button.h"
 #include "ui/base/metadata/metadata_header_macros.h"
@@ -18,7 +17,8 @@
 #include "ui/views/mouse_watcher.h"
 #include "ui/views/view.h"
 
-class TabStripController;
+class BrowserWindowInterface;
+class TabStripModel;
 
 class ProductSpecificationsButton
     : public TabStripControlButton,
@@ -28,8 +28,7 @@ class ProductSpecificationsButton
 
  public:
   ProductSpecificationsButton(
-      TabStripController* tab_strip_controller,
-      TabStripModel* tab_strip_model,
+      BrowserWindowInterface* browser_window_interface,
       commerce::ProductSpecificationsEntryPointController*
           entry_point_controller,
       bool before_tab_strip,

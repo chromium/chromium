@@ -9,9 +9,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/uuid.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/contextual_search/contextual_search_web_contents_helper.h"
 #include "chrome/browser/contextual_tasks/ai_mode_context_library_converter.h"
-#include "chrome/browser/contextual_tasks/contextual_tasks_context_controller.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui_service.h"
 #include "chrome/browser/global_features.h"
@@ -25,7 +23,10 @@
 #include "components/contextual_tasks/public/contextual_task.h"
 #include "components/contextual_tasks/public/contextual_task_context.h"
 #include "components/contextual_tasks/public/features.h"
+#include "components/contextual_tasks/public/prefs.h"
 #include "components/lens/lens_url_utils.h"
+#include "components/prefs/pref_service.h"
+#include "components/sessions/core/session_id.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/web_ui.h"
 #include "google_apis/gaia/gaia_constants.h"
@@ -35,7 +36,6 @@
 namespace {
 
 constexpr char kMyActivityUrl[] = "https://myactivity.google.com/myactivity";
-constexpr char kHelpUrl[] = "https://support.google.com/websearch/";
 
 void OpenUrlInNewTab(content::WebUI* web_ui, const GURL& url) {
   NavigateParams params(Profile::FromWebUI(web_ui), url,
@@ -44,23 +44,43 @@ void OpenUrlInNewTab(content::WebUI* web_ui, const GURL& url) {
   Navigate(&params);
 }
 
-std::vector<contextual_tasks::mojom::TabPtr> TabsFromContext(
-    std::unique_ptr<contextual_tasks::ContextualTaskContext> context) {
+void PopulateContextualResources(
+    contextual_tasks::ContextualTaskContext* context,
+    std::vector<contextual_tasks::mojom::TabPtr>& tabs,
+    std::vector<contextual_tasks::mojom::UploadedFilePtr>& files,
+    std::vector<contextual_tasks::mojom::ImagePtr>& images) {
   if (!context) {
-    return {};
+    return;
   }
-
-  std::vector<contextual_tasks::mojom::TabPtr> tabs;
 
   for (const auto& attachment : context->GetUrlAttachments()) {
-    auto tab = contextual_tasks::mojom::Tab::New();
-    tab->tab_id = attachment.GetTabSessionId().id();
-    tab->title = base::UTF16ToUTF8(attachment.GetTitle());
-    tab->url = attachment.GetURL();
-    tabs.push_back(std::move(tab));
+    switch (attachment.GetResourceType()) {
+      case contextual_tasks::ResourceType::kWebpage: {
+        auto tab = contextual_tasks::mojom::Tab::New();
+        tab->tab_id = attachment.GetTabSessionId().id();
+        tab->title = base::UTF16ToUTF8(attachment.GetTitle());
+        tab->url = attachment.GetURL();
+        tabs.push_back(std::move(tab));
+        break;
+      }
+      case contextual_tasks::ResourceType::kPdf: {
+        auto file = contextual_tasks::mojom::UploadedFile::New();
+        file->name = base::UTF16ToUTF8(attachment.GetTitle());
+        file->url = attachment.GetURL();
+        files.push_back(std::move(file));
+        break;
+      }
+      case contextual_tasks::ResourceType::kImage: {
+        auto image = contextual_tasks::mojom::Image::New();
+        image->title = base::UTF16ToUTF8(attachment.GetTitle());
+        image->url = attachment.GetURL();
+        images.push_back(std::move(image));
+        break;
+      }
+      case contextual_tasks::ResourceType::kUnknown:
+        break;
+    }
   }
-
-  return tabs;
 }
 
 }  // namespace
@@ -69,13 +89,13 @@ ContextualTasksPageHandler::ContextualTasksPageHandler(
     mojo::PendingReceiver<contextual_tasks::mojom::PageHandler> receiver,
     ContextualTasksUI* web_ui_controller,
     contextual_tasks::ContextualTasksUiService* ui_service,
-    contextual_tasks::ContextualTasksContextController* context_controller)
+    contextual_tasks::ContextualTasksService* contextual_tasks_service)
     : receiver_(this, std::move(receiver)),
       web_ui_controller_(web_ui_controller),
       ui_service_(ui_service),
-      context_controller_(context_controller) {
-  CHECK(context_controller_);
-  context_controller_observation_.Observe(context_controller_);
+      contextual_tasks_service_(contextual_tasks_service) {
+  CHECK(contextual_tasks_service_);
+  contextual_tasks_service_observation_.Observe(contextual_tasks_service_);
 }
 
 ContextualTasksPageHandler::~ContextualTasksPageHandler() = default;
@@ -114,6 +134,16 @@ void ContextualTasksPageHandler::SetThreadTitle(const std::string& title) {
   web_ui_controller_->SetThreadTitle(title);
 }
 
+void ContextualTasksPageHandler::IsZeroState(const GURL& url,
+                                             IsZeroStateCallback callback) {
+  std::move(callback).Run(ContextualTasksUI::IsZeroState(url, ui_service_));
+}
+
+void ContextualTasksPageHandler::IsAiPage(const GURL& url,
+                                          IsAiPageCallback callback) {
+  std::move(callback).Run(ui_service_->IsAiUrl(url));
+}
+
 void ContextualTasksPageHandler::CloseSidePanel() {
   web_ui_controller_->CloseSidePanel();
 }
@@ -134,7 +164,14 @@ void ContextualTasksPageHandler::OpenMyActivityUi() {
 }
 
 void ContextualTasksPageHandler::OpenHelpUi() {
-  OpenUrlInNewTab(web_ui_controller_->web_ui(), GURL(kHelpUrl));
+  OpenUrlInNewTab(web_ui_controller_->web_ui(),
+                  GURL(contextual_tasks::GetContextualTasksHelpUrl()));
+}
+
+void ContextualTasksPageHandler::OpenOnboardingHelpUi() {
+  OpenUrlInNewTab(
+      web_ui_controller_->web_ui(),
+      GURL(contextual_tasks::GetContextualTasksOnboardingTooltipHelpUrl()));
 }
 
 void ContextualTasksPageHandler::MoveTaskUiToNewTab() {
@@ -156,6 +193,23 @@ void ContextualTasksPageHandler::OnTabClickedFromSourcesMenu(int32_t tab_id,
         tab_id, url,
         webui::GetBrowserWindowInterface(
             web_ui_controller_->web_ui()->GetWebContents()));
+  }
+}
+
+void ContextualTasksPageHandler::OnFileClickedFromSourcesMenu(const GURL& url) {
+  if (ui_service_) {
+    ui_service_->OnFileClickedFromSourcesMenu(
+        url, webui::GetBrowserWindowInterface(
+                 web_ui_controller_->web_ui()->GetWebContents()));
+  }
+}
+
+void ContextualTasksPageHandler::OnImageClickedFromSourcesMenu(
+    const GURL& url) {
+  if (ui_service_) {
+    ui_service_->OnImageClickedFromSourcesMenu(
+        url, webui::GetBrowserWindowInterface(
+                 web_ui_controller_->web_ui()->GetWebContents()));
   }
 }
 
@@ -193,13 +247,43 @@ void ContextualTasksPageHandler::GetCommonSearchParams(
   if (contextual_tasks::ShouldForceGscInTabMode()) {
     is_side_panel = true;
   }
-  auto params = lens::GetCommonSearchParametersMap(
-      /*country_code=*/g_browser_process->GetFeatures()
-          ->application_locale_storage()
-          ->Get(),
-      is_dark_mode, is_side_panel);
+
+  std::string country_code =
+      g_browser_process->GetFeatures()->application_locale_storage()->Get();
+
+  if (contextual_tasks::ShouldForceCountryCodeUS()) {
+    country_code = "US";
+  }
+
+  auto params = lens::GetCommonSearchParametersMap(country_code, is_dark_mode,
+                                                   is_side_panel);
+  if (contextual_tasks::ShouldForceCountryCodeUS()) {
+    params["gl"] = "us";
+  }
   std::move(callback).Run(
       base::flat_map<std::string, std::string>(params.begin(), params.end()));
+}
+
+void ContextualTasksPageHandler::OnboardingTooltipDismissed() {
+  if (!web_ui_controller_->web_ui()) {
+    return;
+  }
+
+  Profile* profile = Profile::FromWebUI(web_ui_controller_->web_ui());
+  if (!profile) {
+    return;
+  }
+
+  PrefService* prefs = profile->GetPrefs();
+  if (!prefs) {
+    return;
+  }
+
+  int count = prefs->GetInteger(
+      contextual_tasks::kContextualTasksOnboardingTooltipDismissedCount);
+  prefs->SetInteger(
+      contextual_tasks::kContextualTasksOnboardingTooltipDismissedCount,
+      count + 1);
 }
 
 void ContextualTasksPageHandler::PostMessageToWebview(
@@ -240,15 +324,24 @@ void ContextualTasksPageHandler::OnTaskUpdated(
 
 void ContextualTasksPageHandler::UpdateContextForTask(
     const base::Uuid& task_id) {
-  context_controller_->GetContextForTask(
+  if (!base::FeatureList::IsEnabled(
+          contextual_tasks::kContextualTasksContextLibrary)) {
+    web_ui_controller_->page()->OnContextUpdated({}, {}, {});
+    return;
+  }
+  contextual_tasks_service_->GetContextForTask(
       task_id, {contextual_tasks::ContextualTaskContextSource::kTabStrip},
       std::make_unique<contextual_tasks::ContextDecorationParams>(),
       base::BindOnce(
           [](base::WeakPtr<ContextualTasksPageHandler> self,
              std::unique_ptr<contextual_tasks::ContextualTaskContext> context) {
             if (self && self->web_ui_controller_->page()) {
+              std::vector<contextual_tasks::mojom::TabPtr> tabs;
+              std::vector<contextual_tasks::mojom::UploadedFilePtr> files;
+              std::vector<contextual_tasks::mojom::ImagePtr> images;
+              PopulateContextualResources(context.get(), tabs, files, images);
               self->web_ui_controller_->page()->OnContextUpdated(
-                  TabsFromContext(std::move(context)));
+                  std::move(tabs), std::move(files), std::move(images));
             }
           },
           weak_ptr_factory_.GetWeakPtr()));
@@ -265,10 +358,8 @@ void ContextualTasksPageHandler::OnReceivedUpdatedThreadContextLibrary(
     return;
   }
 
-  auto* helper = ContextualSearchWebContentsHelper::FromWebContents(
-      web_ui_controller_->GetWebUIWebContents());
   contextual_search::ContextualSearchSessionHandle* handle =
-      helper ? helper->session_handle() : nullptr;
+      web_ui_controller_->GetOrCreateContextualSessionHandle();
 
   std::vector<contextual_search::FileInfo> submitted_context;
   if (handle) {
@@ -282,5 +373,6 @@ void ContextualTasksPageHandler::OnReceivedUpdatedThreadContextLibrary(
   std::vector<contextual_tasks::UrlResource> committed_context =
       contextual_tasks::ConvertAiModeContextToUrlResources(message,
                                                            submitted_context);
-  context_controller_->SetUrlResourcesFromServer(*task_id, committed_context);
+  contextual_tasks_service_->SetUrlResourcesFromServer(*task_id,
+                                                       committed_context);
 }

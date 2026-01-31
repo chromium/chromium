@@ -18,10 +18,10 @@
 #include "content/browser/preloading/prerender/prerender_attributes.h"
 #include "content/browser/preloading/prerender/prerender_final_status.h"
 #include "content/browser/preloading/speculation_rules/speculation_rules_tags.h"
-#include "content/browser/prerender_host_id.h"
 #include "content/browser/renderer_host/frame_tree.h"
 #include "content/browser/renderer_host/navigation_controller_delegate.h"
 #include "content/common/content_export.h"
+#include "content/public/browser/prerender_host_id.h"
 #include "content/public/browser/render_frame_host.h"
 #include "net/http/http_no_vary_search_data.h"
 #include "third_party/blink/public/mojom/navigation/navigation_params.mojom-forward.h"
@@ -89,7 +89,8 @@ class CONTENT_EXPORT PrerenderHost {
     kIsHistoryNavigationInNewChildFrame = 22,
     // kReferrerPolicy = 23,  Obsolete
     kRequestDestination = 24,
-    kMaxValue = kRequestDestination,
+    kIsOverridingUserAgent = 25,
+    kMaxValue = kIsOverridingUserAgent,
   };
   // LINT.ThenChange(//tools/metrics/histograms/metadata/navigation/enums.xml:PrerenderActivationNavigationParamsMatch)
 
@@ -159,10 +160,6 @@ class CONTENT_EXPORT PrerenderHost {
     // Called from the PrerenderHost's destructor. The observer should drop any
     // reference to the host.
     virtual void OnHostDestroyed(PrerenderFinalStatus status) {}
-
-    // Called when the PrerenderHost is reused for another prerender. The
-    // observer shall not cancel the host if OnHostReused is called.
-    virtual void OnHostReused() {}
   };
 
   // Returns the PrerenderHost that the given `frame_tree_node` is in, if it is
@@ -173,6 +170,10 @@ class CONTENT_EXPORT PrerenderHost {
   // be in prerendering.
   static PrerenderHost& GetFromFrameTreeNode(FrameTreeNode& frame_tree_node);
   static PrerenderHost& GetFromFrameTree(FrameTree* frame_tree);
+
+  // Returns the root FrameTreeNodeId of the prerendered page corresponding to
+  // `id`. Returns an invalid FrameTreeNodeId if it is not found.
+  static FrameTreeNodeId GetFrameTreeNodeIdForId(PrerenderHostId id);
 
   // Checks whether two headers are the same in a case-insensitive and
   // order-insensitive way.
@@ -196,7 +197,7 @@ class CONTENT_EXPORT PrerenderHost {
 
   // Sets a callback to be called on PrerenderHost creation.
   static void SetHostCreationCallbackForTesting(
-      base::OnceCallback<void(FrameTreeNodeId host_id)> callback);
+      base::OnceCallback<void(PrerenderHostId host_id)> callback);
 
   PrerenderHost(std::unique_ptr<PrerenderHost> reuse_host,
                 const PrerenderAttributes& attributes,
@@ -438,8 +439,6 @@ class CONTENT_EXPORT PrerenderHost {
   void AddAdditionalRequestHeaders(net::HttpRequestHeaders& headers,
                                    FrameTreeNode& navigating_frame_tree_node);
 
-  void NotifyReused();
-
   // Called just before cancellation
   void OnWillBeCancelled(const PrerenderCancellationReason& reason);
 
@@ -483,6 +482,7 @@ class CONTENT_EXPORT PrerenderHost {
     bool OnRenderFrameProxyVisibilityChanged(
         RenderFrameProxyHost* render_frame_proxy_host,
         blink::mojom::FrameVisibility visibility) override;
+    PrerenderHostId GetPrerenderHostId() override;
 
     // NavigationControllerDelegate
     void NotifyNavigationStateChangedFromController(
@@ -547,6 +547,11 @@ class CONTENT_EXPORT PrerenderHost {
   AreCommonNavigationParamsCompatibleWithNavigation(
       const blink::mojom::CommonNavigationParams& potential_activation,
       bool allow_partial_mismatch);
+  // This function only checks partial parameters since `CommitNavigationParams`
+  // is not fully prepared at the point of the prerender activation check.
+  ActivationNavigationParamsMatch
+  AreCommitNavigationParamsCompatibleWithNavigation(
+      const blink::mojom::CommitNavigationParams& potential_activation);
 
   void MaybeSetNoVarySearch(network::mojom::NoVarySearchWithParseError&
                                 no_vary_search_with_parse_error);
@@ -585,6 +590,12 @@ class CONTENT_EXPORT PrerenderHost {
   // for a navigation.
   blink::mojom::BeginNavigationParamsPtr begin_params_;
   blink::mojom::CommonNavigationParamsPtr common_params_;
+  // To check values of `is_overriding_user_agent` of `CommitNavigationParams`
+  // as a workaround for crbug.com/40252581. This field must be set at the same
+  // time with `begin_params_` and `common_params_`.
+  // TODO(crbug.com/474391717): Save whole `CommitNavigationParams` once further
+  // checking is needed.
+  bool commit_params_is_overriding_user_agent_ = false;
 
   // Stores the client hints type that applies to this page.
   base::flat_map<url::Origin, std::vector<network::mojom::WebClientHintsType>>

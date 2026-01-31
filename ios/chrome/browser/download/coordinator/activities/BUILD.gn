@@ -12,7 +12,6 @@ source_set("activities") {
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/download/coordinator/activities/resources",
     "//ios/chrome/browser/download/model",
-    "//ios/chrome/browser/popup_menu/ui_bundled/public:ui",
     "//ios/chrome/browser/shared/public/commands",
     "//ios/chrome/browser/shared/ui/symbols",
     "//ui/base",

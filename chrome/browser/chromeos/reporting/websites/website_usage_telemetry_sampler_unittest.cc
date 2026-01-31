@@ -49,7 +49,7 @@ class WebsiteUsageTelemetrySamplerTest : public ::testing::Test {
     PrefService* const user_prefs = profile_->GetPrefs();
     if (!user_prefs->HasPrefPath(kWebsiteUsage)) {
       // Create empty dictionary if none exists in the pref store.
-      user_prefs->SetDict(kWebsiteUsage, base::Value::Dict());
+      user_prefs->SetDict(kWebsiteUsage, base::DictValue());
     }
 
     ScopedDictPrefUpdate usage_dict_pref(user_prefs, kWebsiteUsage);

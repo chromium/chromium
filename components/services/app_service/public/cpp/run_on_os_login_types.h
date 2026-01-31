@@ -47,19 +47,18 @@ struct COMPONENT_EXPORT(APP_TYPES) RunOnOsLogin {
 
 using RunOnOsLoginPtr = std::unique_ptr<RunOnOsLogin>;
 
-// Converts `run_on_os_login` to base::Value::Dict, e.g.:
+// Converts `run_on_os_login` to base::DictValue, e.g.:
 // {
 //   "login_mode": 2,
 //   "is_managed": false,
 // }
 COMPONENT_EXPORT(APP_TYPES)
-base::Value::Dict ConvertRunOnOsLoginToDict(
-    const RunOnOsLogin& run_on_os_login);
+base::DictValue ConvertRunOnOsLoginToDict(const RunOnOsLogin& run_on_os_login);
 
-// Converts base::Value::Dict to RunOnOsLoginPtr.
+// Converts base::DictValue to RunOnOsLoginPtr.
 COMPONENT_EXPORT(APP_TYPES)
 std::optional<RunOnOsLogin> ConvertDictToRunOnOsLogin(
-    const base::Value::Dict* dict);
+    const base::DictValue* dict);
 
 }  // namespace apps
 

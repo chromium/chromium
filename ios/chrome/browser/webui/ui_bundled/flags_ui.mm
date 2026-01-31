@@ -78,16 +78,16 @@ class FlagsDOMHandler : public web::WebUIIOSMessageHandler {
   void RegisterMessages() override;
 
   // Callback for the "requestExperimentFeatures" message.
-  void HandleRequestExperimentalFeatures(const base::Value::List& args);
+  void HandleRequestExperimentalFeatures(const base::ListValue& args);
 
   // Callback for the "enableExperimentalFeature" message.
-  void HandleEnableExperimentalFeatureMessage(const base::Value::List& args);
+  void HandleEnableExperimentalFeatureMessage(const base::ListValue& args);
 
   // Callback for the "restartBrowser" message. Restores all tabs on restart.
-  void HandleRestartBrowser(const base::Value::List& args);
+  void HandleRestartBrowser(const base::ListValue& args);
 
   // Callback for the "resetAllFlags" message.
-  void HandleResetAllFlags(const base::Value::List& args);
+  void HandleResetAllFlags(const base::ListValue& args);
 
  private:
   std::unique_ptr<flags_ui::FlagsStorage> flags_storage_;
@@ -122,17 +122,17 @@ void FlagsDOMHandler::Init(
 }
 
 void FlagsDOMHandler::HandleRequestExperimentalFeatures(
-    const base::Value::List& args) {
+    const base::ListValue& args) {
   DCHECK(flags_storage_);
   DCHECK(!args.empty());
   const base::Value& callback_id = args[0];
 
-  base::Value::List supported_features;
-  base::Value::List unsupported_features;
+  base::ListValue supported_features;
+  base::ListValue unsupported_features;
   GetFlagFeatureEntries(flags_storage_.get(), access_, supported_features,
                         unsupported_features);
 
-  base::Value::Dict results;
+  base::DictValue results;
   results.Set(flags_ui::kSupportedFeatures, std::move(supported_features));
   results.Set(flags_ui::kUnsupportedFeatures, std::move(unsupported_features));
 
@@ -147,7 +147,7 @@ void FlagsDOMHandler::HandleRequestExperimentalFeatures(
 }
 
 void FlagsDOMHandler::HandleEnableExperimentalFeatureMessage(
-    const base::Value::List& args) {
+    const base::ListValue& args) {
   DCHECK(flags_storage_);
   DCHECK_EQ(2u, args.size());
   if (args.size() != 2) {
@@ -165,13 +165,13 @@ void FlagsDOMHandler::HandleEnableExperimentalFeatureMessage(
   flags_storage_->CommitPendingWrites();
 }
 
-void FlagsDOMHandler::HandleRestartBrowser(const base::Value::List& args) {
+void FlagsDOMHandler::HandleRestartBrowser(const base::ListValue& args) {
 #if BUILDFLAG(CHROMIUM_BRANDING)
   NOTREACHED();
 #endif  // BUILDFLAG(CHROMIUM_BRANDING)
 }
 
-void FlagsDOMHandler::HandleResetAllFlags(const base::Value::List& args) {
+void FlagsDOMHandler::HandleResetAllFlags(const base::ListValue& args) {
   DCHECK(flags_storage_);
   ResetAllFlags(flags_storage_.get());
   flags_storage_->CommitPendingWrites();

@@ -9,6 +9,7 @@
 #include "base/metrics/field_trial_params.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/task/single_thread_task_runner.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/metrics/desktop_session_duration/desktop_session_duration_tracker.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_list.h"
@@ -18,13 +19,12 @@
 namespace metrics {
 
 ChromeVisibilityObserver::ChromeVisibilityObserver() {
-  BrowserList::AddObserver(this);
+  browser_collection_observation_.Observe(
+      GlobalBrowserCollection::GetInstance());
   InitVisibilityGapTimeout();
 }
 
-ChromeVisibilityObserver::~ChromeVisibilityObserver() {
-  BrowserList::RemoveObserver(this);
-}
+ChromeVisibilityObserver::~ChromeVisibilityObserver() = default;
 
 void ChromeVisibilityObserver::SendVisibilityChangeEvent(
     bool active,
@@ -36,14 +36,17 @@ void ChromeVisibilityObserver::CancelVisibilityChange() {
   weak_factory_.InvalidateWeakPtrs();
 }
 
-void ChromeVisibilityObserver::OnBrowserSetLastActive(Browser* browser) {
-  if (weak_factory_.HasWeakPtrs())
+void ChromeVisibilityObserver::OnBrowserActivated(
+    BrowserWindowInterface* browser) {
+  if (weak_factory_.HasWeakPtrs()) {
     CancelVisibilityChange();
-  else
+  } else {
     SendVisibilityChangeEvent(true, base::TimeDelta());
+  }
 }
 
-void ChromeVisibilityObserver::OnBrowserNoLongerActive(Browser* browser) {
+void ChromeVisibilityObserver::OnBrowserDeactivated(
+    BrowserWindowInterface* browser) {
   // Check if there is an active browser instead of assuming ordering of the
   // observation calls when we are switching between browsers.
   const auto* const last_active_bwi =
@@ -64,7 +67,8 @@ void ChromeVisibilityObserver::OnBrowserNoLongerActive(Browser* browser) {
   }
 }
 
-void ChromeVisibilityObserver::OnBrowserRemoved(Browser* browser) {
+void ChromeVisibilityObserver::OnBrowserClosed(
+    BrowserWindowInterface* browser) {
   // If there are no browser instances left then we should notify that browser
   // is not visible anymore immediately without waiting.
   if (GlobalBrowserCollection::GetInstance()->IsEmpty()) {
@@ -79,8 +83,9 @@ void ChromeVisibilityObserver::InitVisibilityGapTimeout() {
   int timeout_seconds = kDefaultVisibilityGapTimeout;
   std::string param_value = base::GetFieldTrialParamValue(
       "DesktopSessionDuration", "visibility_gap_timeout");
-  if (!param_value.empty())
+  if (!param_value.empty()) {
     base::StringToInt(param_value, &timeout_seconds);
+  }
 
   visibility_gap_timeout_ = base::Seconds(timeout_seconds);
 }

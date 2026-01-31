@@ -12,7 +12,7 @@
  * See //docs/updater/history_log.md for details on the serialization format.
  */
 
-import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
+import {loadTimeData} from './i18n_setup.js';
 
 // ---------------------------------------------------------------------------
 // Common Types
@@ -51,7 +51,7 @@ const UPDATE_PRIORITIES = ['BACKGROUND', 'FOREGROUND'] as const;
  */
 export type UpdatePriority = (typeof UPDATE_PRIORITIES)[number];
 
-const SCOPES = ['USER', 'SYSTEM'] as const;
+export const SCOPES = ['USER', 'SYSTEM'] as const;
 /**
  * The scope of an updater process.
  */
@@ -79,18 +79,16 @@ interface BaseEvent {
   errors: UpdaterError[];
 }
 
+type StartEvent = BaseEvent&{bound: 'START'};
+type EndEvent = BaseEvent&{bound: 'END'};
+
 /**
  * Represents a pair of START and END events of the same type.
  */
-interface EventPair < Event, Start extends BaseEvent&{
-  eventType: Event,
-  bound: 'START',
-}
-, End extends BaseEvent&{
-  eventType: Event,
-  bound: 'END',
-}
-, > {
+// clang-format off
+interface EventPair<Event,
+                    Start extends StartEvent&{eventType: Event},
+                    End extends EndEvent&{eventType: Event}> {
   /**
    * The type of the events in the pair.
    */
@@ -104,6 +102,7 @@ interface EventPair < Event, Start extends BaseEvent&{
    */
   endEvent: End;
 }
+// clang-format on
 
 /**
  * Represents an app registered with the updater.
@@ -155,6 +154,14 @@ export function localizeUpdateOutcome(outcome: CommonUpdateOutcome) {
   return loadTimeData.getString(`updateOutcome${outcome}`);
 }
 
+/**
+ * Returns the localized title of a scope.
+ */
+export function localizeScope(scope: Scope): string {
+  return loadTimeData.getString(
+      scope === 'SYSTEM' ? 'scopeSystem' : 'scopeUser');
+}
+
 // ---------------------------------------------------------------------------
 // Specific Event Definitions
 // ---------------------------------------------------------------------------
@@ -162,18 +169,16 @@ export function localizeUpdateOutcome(outcome: CommonUpdateOutcome) {
 /**
  * An event marking the start of an app install.
  */
-export interface InstallStartEvent extends BaseEvent {
+export interface InstallStartEvent extends StartEvent {
   eventType: 'INSTALL';
-  bound: 'START';
   appId: string;
 }
 
 /**
  * An event marking the end of an app install.
  */
-export interface InstallEndEvent extends BaseEvent {
+export interface InstallEndEvent extends EndEvent {
   eventType: 'INSTALL';
-  bound: 'END';
   version?: string;
 }
 
@@ -186,9 +191,8 @@ export type MergedInstallEvent =
 /**
  * An event marking the start of an app uninstall.
  */
-export interface UninstallStartEvent extends BaseEvent {
+export interface UninstallStartEvent extends StartEvent {
   eventType: 'UNINSTALL';
-  bound: 'START';
   appId: string;
   version: string;
   reason: string;
@@ -197,9 +201,8 @@ export interface UninstallStartEvent extends BaseEvent {
 /**
  * An event marking the end of an app uninstall.
  */
-export interface UninstallEndEvent extends BaseEvent {
+export interface UninstallEndEvent extends EndEvent {
   eventType: 'UNINSTALL';
-  bound: 'END';
 }
 
 /**
@@ -211,17 +214,15 @@ export type MergedUninstallEvent =
 /**
  * An event marking the start of updater qualification.
  */
-export interface QualifyStartEvent extends BaseEvent {
+export interface QualifyStartEvent extends StartEvent {
   eventType: 'QUALIFY';
-  bound: 'START';
 }
 
 /**
  * An event marking the end of updater qualification.
  */
-export interface QualifyEndEvent extends BaseEvent {
+export interface QualifyEndEvent extends EndEvent {
   eventType: 'QUALIFY';
-  bound: 'END';
   qualified?: boolean;
 }
 
@@ -234,17 +235,15 @@ export type MergedQualifyEvent =
 /**
  * An event marking the start of updater activation.
  */
-export interface ActivateStartEvent extends BaseEvent {
+export interface ActivateStartEvent extends StartEvent {
   eventType: 'ACTIVATE';
-  bound: 'START';
 }
 
 /**
  * An event marking the end of updater activation.
  */
-export interface ActivateEndEvent extends BaseEvent {
+export interface ActivateEndEvent extends EndEvent {
   eventType: 'ACTIVATE';
-  bound: 'END';
   activated?: boolean;
 }
 
@@ -257,18 +256,16 @@ export type MergedActivateEvent =
 /**
  * An event marking the start of an Omaha request.
  */
-export interface PostRequestStartEvent extends BaseEvent {
+export interface PostRequestStartEvent extends StartEvent {
   eventType: 'POST_REQUEST';
-  bound: 'START';
   request: string;
 }
 
 /**
  * An event marking the end of an Omaha request.
  */
-export interface PostRequestEndEvent extends BaseEvent {
+export interface PostRequestEndEvent extends EndEvent {
   eventType: 'POST_REQUEST';
-  bound: 'END';
   response?: string;
 }
 
@@ -281,17 +278,15 @@ export type MergedPostRequestEvent =
 /**
  * An event marking the start of policy loading.
  */
-export interface LoadPolicyStartEvent extends BaseEvent {
+export interface LoadPolicyStartEvent extends StartEvent {
   eventType: 'LOAD_POLICY';
-  bound: 'START';
 }
 
 /**
  * An event marking the end of policy loading.
  */
-export interface LoadPolicyEndEvent extends BaseEvent {
+export interface LoadPolicyEndEvent extends EndEvent {
   eventType: 'LOAD_POLICY';
-  bound: 'END';
   policySet?: PolicySet;
 }
 
@@ -304,9 +299,8 @@ export type MergedLoadPolicyEvent =
 /**
  * An event marking the start of an update operation.
  */
-export interface UpdateStartEvent extends BaseEvent {
+export interface UpdateStartEvent extends StartEvent {
   eventType: 'UPDATE';
-  bound: 'START';
   appId?: string;
   priority?: UpdatePriority;
 }
@@ -314,9 +308,8 @@ export interface UpdateStartEvent extends BaseEvent {
 /**
  * An event marking the end of an update operation.
  */
-export interface UpdateEndEvent extends BaseEvent {
+export interface UpdateEndEvent extends EndEvent {
   eventType: 'UPDATE';
-  bound: 'END';
   outcome?: string;
   nextVersion?: string;
 }
@@ -330,9 +323,8 @@ export type MergedUpdateEvent =
 /**
  * An event marking the start of an updater process.
  */
-export interface UpdaterProcessStartEvent extends BaseEvent {
+export interface UpdaterProcessStartEvent extends StartEvent {
   eventType: 'UPDATER_PROCESS';
-  bound: 'START';
   commandLine?: string;
   timestamp?: Date;
   updaterVersion?: string;
@@ -347,9 +339,8 @@ export interface UpdaterProcessStartEvent extends BaseEvent {
 /**
  * An event marking the end of an updater process.
  */
-export interface UpdaterProcessEndEvent extends BaseEvent {
+export interface UpdaterProcessEndEvent extends EndEvent {
   eventType: 'UPDATER_PROCESS';
-  bound: 'END';
   exitCode?: number;
 }
 
@@ -362,9 +353,8 @@ export type MergedUpdaterProcessEvent = EventPair<
 /**
  * An event marking the start of an app command.
  */
-export interface AppCommandStartEvent extends BaseEvent {
+export interface AppCommandStartEvent extends StartEvent {
   eventType: 'APP_COMMAND';
-  bound: 'START';
   appId: string;
   commandLine?: string;
 }
@@ -372,9 +362,8 @@ export interface AppCommandStartEvent extends BaseEvent {
 /**
  * An event marking the end of an app command.
  */
-export interface AppCommandEndEvent extends BaseEvent {
+export interface AppCommandEndEvent extends EndEvent {
   eventType: 'APP_COMMAND';
-  bound: 'END';
   exitCode?: number;
   output?: string;
 }
@@ -422,164 +411,89 @@ export type MergedHistoryEvent =
 // Type Guards
 // ---------------------------------------------------------------------------
 
-function isInstallStart(
-    event: BaseEvent,
-    ): event is BaseEvent&{
-  eventType: 'INSTALL', bound: 'START',
-} {
+function isInstallStart(event: BaseEvent): event is InstallStartEvent {
   return event.eventType === 'INSTALL' && event.bound === 'START';
 }
 
-function isInstallEnd(
-    event: BaseEvent,
-    ): event is BaseEvent&{
-  eventType: 'INSTALL', bound: 'END',
-} {
+function isInstallEnd(event: BaseEvent): event is InstallEndEvent {
   return event.eventType === 'INSTALL' && event.bound === 'END';
 }
 
-function isUninstallStart(
-    event: BaseEvent,
-    ): event is BaseEvent&{
-  eventType: 'UNINSTALL', bound: 'START',
-} {
+function isUninstallStart(event: BaseEvent): event is UninstallStartEvent {
   return event.eventType === 'UNINSTALL' && event.bound === 'START';
 }
 
-function isUninstallEnd(
-    event: BaseEvent,
-    ): event is BaseEvent&{
-  eventType: 'UNINSTALL', bound: 'END',
-} {
+function isUninstallEnd(event: BaseEvent): event is UninstallEndEvent {
   return event.eventType === 'UNINSTALL' && event.bound === 'END';
 }
 
-function isUpdateStart(
-    event: BaseEvent,
-    ): event is BaseEvent&{
-  eventType: 'UPDATE', bound: 'START',
-} {
+function isUpdateStart(event: BaseEvent): event is UpdateStartEvent {
   return event.eventType === 'UPDATE' && event.bound === 'START';
 }
 
-function isUpdateEnd(
-    event: BaseEvent,
-    ): event is BaseEvent&{
-  eventType: 'UPDATE', bound: 'END',
-} {
+function isUpdateEnd(event: BaseEvent): event is UpdateEndEvent {
   return event.eventType === 'UPDATE' && event.bound === 'END';
 }
 
-function isPersistedData(
-    event: BaseEvent,
-    ): event is BaseEvent&{
-  eventType: 'PERSISTED_DATA', bound: 'INSTANT',
-} {
+function isPersistedData(event: BaseEvent): event is PersistedDataEvent {
   return event.eventType === 'PERSISTED_DATA' && event.bound === 'INSTANT';
 }
 
-function isQualifyStart(
-    event: BaseEvent,
-    ): event is BaseEvent&{
-  eventType: 'QUALIFY', bound: 'START',
-} {
+function isQualifyStart(event: BaseEvent): event is QualifyStartEvent {
   return event.eventType === 'QUALIFY' && event.bound === 'START';
 }
 
-function isQualifyEnd(
-    event: BaseEvent,
-    ): event is BaseEvent&{
-  eventType: 'QUALIFY', bound: 'END',
-} {
+function isQualifyEnd(event: BaseEvent): event is QualifyEndEvent {
   return event.eventType === 'QUALIFY' && event.bound === 'END';
 }
 
-function isActivateStart(
-    event: BaseEvent,
-    ): event is BaseEvent&{
-  eventType: 'ACTIVATE', bound: 'START',
-} {
+function isActivateStart(event: BaseEvent): event is ActivateStartEvent {
   return event.eventType === 'ACTIVATE' && event.bound === 'START';
 }
 
-function isActivateEnd(
-    event: BaseEvent,
-    ): event is BaseEvent&{
-  eventType: 'ACTIVATE', bound: 'END',
-} {
+function isActivateEnd(event: BaseEvent): event is ActivateEndEvent {
   return event.eventType === 'ACTIVATE' && event.bound === 'END';
 }
 
-function isPostRequestStart(
-    event: BaseEvent,
-    ): event is BaseEvent&{
-  eventType: 'POST_REQUEST', bound: 'START',
-} {
+function isPostRequestStart(event: BaseEvent): event is PostRequestStartEvent {
   return event.eventType === 'POST_REQUEST' && event.bound === 'START';
 }
 
-function isPostRequestEnd(
-    event: BaseEvent,
-    ): event is BaseEvent&{
-  eventType: 'POST_REQUEST', bound: 'END',
-} {
+function isPostRequestEnd(event: BaseEvent): event is PostRequestEndEvent {
   return event.eventType === 'POST_REQUEST' && event.bound === 'END';
 }
 
-function isLoadPolicyStart(
-    event: BaseEvent,
-    ): event is BaseEvent&{
-  eventType: 'LOAD_POLICY', bound: 'START',
-} {
+function isLoadPolicyStart(event: BaseEvent): event is LoadPolicyStartEvent {
   return event.eventType === 'LOAD_POLICY' && event.bound === 'START';
 }
 
-function isLoadPolicyEnd(
-    event: BaseEvent,
-    ): event is BaseEvent&{
-  eventType: 'LOAD_POLICY', bound: 'END',
-} {
+function isLoadPolicyEnd(event: BaseEvent): event is LoadPolicyEndEvent {
   return event.eventType === 'LOAD_POLICY' && event.bound === 'END';
 }
 
-function isUpdaterProcessStart(
-    event: BaseEvent,
-    ): event is BaseEvent&{
-  eventType: 'UPDATER_PROCESS', bound: 'START',
-} {
+function isUpdaterProcessStart(event: BaseEvent):
+    event is UpdaterProcessStartEvent {
   return event.eventType === 'UPDATER_PROCESS' && event.bound === 'START';
 }
 
-function isUpdaterProcessEnd(
-    event: BaseEvent,
-    ): event is BaseEvent&{
-  eventType: 'UPDATER_PROCESS', bound: 'END',
-} {
+function isUpdaterProcessEnd(event: BaseEvent):
+    event is UpdaterProcessEndEvent {
   return event.eventType === 'UPDATER_PROCESS' && event.bound === 'END';
 }
 
-function isAppCommandStart(
-    event: BaseEvent,
-    ): event is BaseEvent&{
-  eventType: 'APP_COMMAND', bound: 'START',
-} {
+function isAppCommandStart(event: BaseEvent): event is AppCommandStartEvent {
   return event.eventType === 'APP_COMMAND' && event.bound === 'START';
 }
 
-function isAppCommandEnd(
-    event: BaseEvent,
-    ): event is BaseEvent&{
-  eventType: 'APP_COMMAND', bound: 'END',
-} {
+function isAppCommandEnd(event: BaseEvent): event is AppCommandEndEvent {
   return event.eventType === 'APP_COMMAND' && event.bound === 'END';
 }
 
 /**
  * Type guard for MergedHistoryEvent.
  */
-export function isMergedHistoryEvent(
-    event: HistoryEvent|MergedHistoryEvent,
-    ): event is MergedHistoryEvent {
+export function isMergedHistoryEvent(event: HistoryEvent|MergedHistoryEvent):
+    event is MergedHistoryEvent {
   return 'startEvent' in event;
 }
 
@@ -600,9 +514,7 @@ function required<T>(
         message: Record<string, unknown>,
         fieldName: string,
         ) => T | undefined,
-    message: Record<string, unknown>,
-    fieldName: string,
-    ): T {
+    message: Record<string, unknown>, fieldName: string): T {
   const parsed = parser(message, fieldName);
   if (parsed === undefined) {
     throw new ParseError(`Message missing required field '${fieldName}'`);
@@ -615,9 +527,7 @@ function required<T>(
  * the string representation an integer.
  */
 function parseInteger(
-    message: Record<string, unknown>,
-    fieldName: string,
-    ): number|undefined {
+    message: Record<string, unknown>, fieldName: string): number|undefined {
   const value = message[fieldName];
   if (value === undefined || value === null) {
     return undefined;
@@ -651,9 +561,7 @@ function parseInteger(
  * Parses a string field from a message.
  */
 function parseString(
-    message: Record<string, unknown>,
-    fieldName: string,
-    ): string|undefined {
+    message: Record<string, unknown>, fieldName: string): string|undefined {
   const value = message[fieldName];
   if (value === undefined || value === null) {
     return undefined;
@@ -671,9 +579,7 @@ function parseString(
  * Parses a boolean field from a message.
  */
 function parseBoolean(
-    message: Record<string, unknown>,
-    fieldName: string,
-    ): boolean|undefined {
+    message: Record<string, unknown>, fieldName: string): boolean|undefined {
   const value = message[fieldName];
   if (value === undefined || value === null) {
     return undefined;
@@ -690,10 +596,8 @@ function parseBoolean(
 /**
  * Parses an object field from a message.
  */
-function parseObject(
-    message: Record<string, unknown>,
-    fieldName: string,
-    ): Record<string, unknown>|undefined {
+function parseObject(message: Record<string, unknown>, fieldName: string):
+    Record<string, unknown>|undefined {
   const value = message[fieldName];
   if (value === undefined || value === null) {
     return undefined;
@@ -711,9 +615,7 @@ function parseObject(
  * Parses an EventType field from a message.
  */
 function parseEventType(
-    message: Record<string, unknown>,
-    fieldName: string,
-    ): EventType|undefined {
+    message: Record<string, unknown>, fieldName: string): EventType|undefined {
   const eventType = parseString(message, fieldName);
   if (eventType === undefined) {
     return undefined;
@@ -728,9 +630,7 @@ function parseEventType(
  * Parses a Bound field from a message.
  */
 function parseBound(
-    message: Record<string, unknown>,
-    fieldName: string,
-    ): Bound {
+    message: Record<string, unknown>, fieldName: string): Bound {
   const bound = parseString(message, fieldName) ?? 'INSTANT';
   if (!BOUNDS.includes(bound as Bound)) {
     throw new ParseError(`Message contains unknown bound: ${bound}`);
@@ -814,20 +714,16 @@ function parseRegisteredApps(
   const parsedRegisteredApps: RegisteredApp[] = [];
   for (const appItem of registeredApps) {
     if (typeof appItem !== 'object' || appItem === null) {
-      throw new ParseError(
-          `Message has field '${
-              fieldName}' containing an element of unexpected type '${
-              typeof appItem}', expected 'object'.`,
-      );
+      throw new ParseError(`Message has field '${
+          fieldName}' containing an element of unexpected type '${
+          typeof appItem}', expected 'object'.`);
     }
     if (Array.isArray(appItem)) {
       throw new ParseError(
-          `Message has field '${fieldName}' of unexpected array type.`,
-      );
+          `Message has field '${fieldName}' of unexpected array type.`);
     }
     parsedRegisteredApps.push(
-        parseRegisteredApp(appItem as Record<string, unknown>),
-    );
+        parseRegisteredApp(appItem as Record<string, unknown>));
   }
   return parsedRegisteredApps;
 }
@@ -845,8 +741,7 @@ function parseUpdatePriority(
   }
   if (!UPDATE_PRIORITIES.includes(priority as UpdatePriority)) {
     throw new ParseError(
-        `Message contains unknown update priority: ${priority}`,
-    );
+        `Message contains unknown update priority: ${priority}`);
   }
   return priority as UpdatePriority;
 }
@@ -888,37 +783,34 @@ function parsePolicySet(
   if (policySet === undefined) {
     return undefined;
   }
-  const policiesByNameMessage = required(
-      parseObject,
-      policySet,
-      'policiesByName',
-  );
+  const policiesByNameMessage =
+      required(parseObject, policySet, 'policiesByName');
   const policiesByName: {[key: string]: PolicyData} = {};
   for (const key of Object.keys(policiesByNameMessage)) {
     policiesByName[key] = parsePolicyData(
         required(parseObject, policiesByNameMessage, key),
     );
   }
-  const policiesByAppIdMessage = required(
-      parseObject,
-      policySet,
-      'policiesByAppId',
-  );
+  const policiesByAppIdMessage =
+      required(parseObject, policySet, 'policiesByAppId');
   const policiesByAppId: {[key: string]: {[key: string]: PolicyData}} = {};
   for (const key of Object.keys(policiesByAppIdMessage)) {
     policiesByAppId[key] = {};
     const appPolicies = required(parseObject, policiesByAppIdMessage, key);
     for (const appKey of Object.keys(appPolicies)) {
-      policiesByAppId[key][appKey] = parsePolicyData(
-          required(parseObject, appPolicies, appKey),
-      );
+      policiesByAppId[key][appKey] =
+          parsePolicyData(required(parseObject, appPolicies, appKey));
     }
   }
   return {policiesByName, policiesByAppId};
 }
 
+// Microseconds between 1601-01-01 and 1970-01-01.
+const WINDOWS_TO_UNIX_EPOCH_OFFSET = 11644473600000000n;
+
 /**
- * Parses a Date field from a message.
+ * Parses a Date field from a message. Dates are received as string-encoded
+ * integer number of microseconds since Windows epoch.
  */
 function parseDate(
     message: Record<string, unknown>,
@@ -928,14 +820,20 @@ function parseDate(
   if (dateStr === undefined) {
     return undefined;
   }
-  const date = new Date(dateStr);
-  if (isNaN(date.getTime())) {
-    throw new ParseError(
-        `Message has field '${fieldName}' with unparsable datetime value '${
-            dateStr}'`,
-    );
+  let windowsMicroseconds;
+  try {
+    windowsMicroseconds = BigInt(dateStr);
+  } catch (e) {
+    throw new ParseError(`Message has field '${
+        fieldName}' with unparsable datetime value '${dateStr}'`);
   }
-  return date;
+  const unixMilliseconds =
+      Number((windowsMicroseconds - WINDOWS_TO_UNIX_EPOCH_OFFSET) / 1000n);
+  if (!Number.isFinite(unixMilliseconds)) {
+    throw new ParseError(`Message has field '${
+        fieldName}' with unparsable datetime value '${dateStr}'`);
+  }
+  return new Date(unixMilliseconds);
 }
 
 /**
@@ -953,10 +851,7 @@ function parseBaseEvent(message: Record<string, unknown>): BaseEvent {
 }
 
 function parseInstallStartEvent(
-    base: BaseEvent&{
-      eventType: 'INSTALL',
-      bound: 'START',
-    },
+    base: StartEvent&{eventType: 'INSTALL'},
     message: Record<string, unknown>,
     ): InstallStartEvent {
   const appId = required(parseString, message, 'appId');
@@ -964,10 +859,7 @@ function parseInstallStartEvent(
 }
 
 function parseInstallEndEvent(
-    base: BaseEvent&{
-      eventType: 'INSTALL',
-      bound: 'END',
-    },
+    base: EndEvent&{eventType: 'INSTALL'},
     message: Record<string, unknown>,
     ): InstallEndEvent {
   const version = required(parseString, message, 'version');
@@ -975,10 +867,7 @@ function parseInstallEndEvent(
 }
 
 function parseUninstallStartEvent(
-    base: BaseEvent&{
-      eventType: 'UNINSTALL',
-      bound: 'START',
-    },
+    base: StartEvent&{eventType: 'UNINSTALL'},
     message: Record<string, unknown>,
     ): UninstallStartEvent {
   const appId = required(parseString, message, 'appId');
@@ -988,20 +877,14 @@ function parseUninstallStartEvent(
 }
 
 function parseUninstallEndEvent(
-    base: BaseEvent&{
-      eventType: 'UNINSTALL',
-      bound: 'END',
-    },
+    base: EndEvent&{eventType: 'UNINSTALL'},
     _: Record<string, unknown>,
     ): UninstallEndEvent {
   return {...base};
 }
 
 function parseUpdateStartEvent(
-    base: BaseEvent&{
-      eventType: 'UPDATE',
-      bound: 'START',
-    },
+    base: StartEvent&{eventType: 'UPDATE'},
     message: Record<string, unknown>,
     ): UpdateStartEvent {
   const appId = parseString(message, 'appId');
@@ -1010,10 +893,7 @@ function parseUpdateStartEvent(
 }
 
 function parseUpdateEndEvent(
-    base: BaseEvent&{
-      eventType: 'UPDATE',
-      bound: 'END',
-    },
+    base: EndEvent&{eventType: 'UPDATE'},
     message: Record<string, unknown>,
     ): UpdateEndEvent {
   const outcome = parseString(message, 'outcome');
@@ -1022,20 +902,14 @@ function parseUpdateEndEvent(
 }
 
 function parseQualifyStartEvent(
-    base: BaseEvent&{
-      eventType: 'QUALIFY',
-      bound: 'START',
-    },
+    base: StartEvent&{eventType: 'QUALIFY'},
     _: Record<string, unknown>,
     ): QualifyStartEvent {
   return {...base};
 }
 
 function parseQualifyEndEvent(
-    base: BaseEvent&{
-      eventType: 'QUALIFY',
-      bound: 'END',
-    },
+    base: EndEvent&{eventType: 'QUALIFY'},
     message: Record<string, unknown>,
     ): QualifyEndEvent {
   const qualified = parseBoolean(message, 'qualified');
@@ -1043,20 +917,14 @@ function parseQualifyEndEvent(
 }
 
 function parseActivateStartEvent(
-    base: BaseEvent&{
-      eventType: 'ACTIVATE',
-      bound: 'START',
-    },
+    base: StartEvent&{eventType: 'ACTIVATE'},
     _: Record<string, unknown>,
     ): ActivateStartEvent {
   return {...base};
 }
 
 function parseActivateEndEvent(
-    base: BaseEvent&{
-      eventType: 'ACTIVATE',
-      bound: 'END',
-    },
+    base: EndEvent&{eventType: 'ACTIVATE'},
     message: Record<string, unknown>,
     ): ActivateEndEvent {
   const activated = parseBoolean(message, 'activated');
@@ -1064,10 +932,7 @@ function parseActivateEndEvent(
 }
 
 function parsePostRequestStartEvent(
-    base: BaseEvent&{
-      eventType: 'POST_REQUEST',
-      bound: 'START',
-    },
+    base: StartEvent&{eventType: 'POST_REQUEST'},
     message: Record<string, unknown>,
     ): PostRequestStartEvent {
   const request = required(parseString, message, 'request');
@@ -1075,10 +940,7 @@ function parsePostRequestStartEvent(
 }
 
 function parsePostRequestEndEvent(
-    base: BaseEvent&{
-      eventType: 'POST_REQUEST',
-      bound: 'END',
-    },
+    base: EndEvent&{eventType: 'POST_REQUEST'},
     message: Record<string, unknown>,
     ): PostRequestEndEvent {
   const response = parseString(message, 'response');
@@ -1086,20 +948,14 @@ function parsePostRequestEndEvent(
 }
 
 function parseLoadPolicyStartEvent(
-    base: BaseEvent&{
-      eventType: 'LOAD_POLICY',
-      bound: 'START',
-    },
+    base: StartEvent&{eventType: 'LOAD_POLICY'},
     _: Record<string, unknown>,
     ): LoadPolicyStartEvent {
   return {...base};
 }
 
 function parseLoadPolicyEndEvent(
-    base: BaseEvent&{
-      eventType: 'LOAD_POLICY',
-      bound: 'END',
-    },
+    base: EndEvent&{eventType: 'LOAD_POLICY'},
     message: Record<string, unknown>,
     ): LoadPolicyEndEvent {
   const policySet = parsePolicySet(message, 'policySet');
@@ -1107,10 +963,7 @@ function parseLoadPolicyEndEvent(
 }
 
 function parseUpdaterProcessStartEvent(
-    base: BaseEvent&{
-      eventType: 'UPDATER_PROCESS',
-      bound: 'START',
-    },
+    base: StartEvent&{eventType: 'UPDATER_PROCESS'},
     message: Record<string, unknown>,
     ): UpdaterProcessStartEvent {
   const commandLine = parseString(message, 'commandLine');
@@ -1137,35 +990,23 @@ function parseUpdaterProcessStartEvent(
 }
 
 function parseUpdaterProcessEndEvent(
-    base: BaseEvent&{
-      eventType: 'UPDATER_PROCESS',
-      bound: 'END',
-    },
-    message: Record<string, unknown>,
-    ): UpdaterProcessEndEvent {
+    base: EndEvent&{eventType: 'UPDATER_PROCESS'},
+    message: Record<string, unknown>): UpdaterProcessEndEvent {
   const exitCode = parseInteger(message, 'exitCode');
   return {...base, exitCode};
 }
 
 function parseAppCommandStartEvent(
-    base: BaseEvent&{
-      eventType: 'APP_COMMAND',
-      bound: 'START',
-    },
-    message: Record<string, unknown>,
-    ): AppCommandStartEvent {
+    base: StartEvent&{eventType: 'APP_COMMAND'},
+    message: Record<string, unknown>): AppCommandStartEvent {
   const appId = required(parseString, message, 'appId');
   const commandLine = parseString(message, 'commandLine');
   return {...base, appId, commandLine};
 }
 
 function parseAppCommandEndEvent(
-    base: BaseEvent&{
-      eventType: 'APP_COMMAND',
-      bound: 'END',
-    },
-    message: Record<string, unknown>,
-    ): AppCommandEndEvent {
+    base: EndEvent&{eventType: 'APP_COMMAND'},
+    message: Record<string, unknown>): AppCommandEndEvent {
   const exitCode = parseInteger(message, 'exitCode');
   const output = parseString(message, 'output');
   return {...base, exitCode, output};
@@ -1176,8 +1017,7 @@ function parsePersistedDataEvent(
       eventType: 'PERSISTED_DATA',
       bound: 'INSTANT',
     },
-    message: Record<string, unknown>,
-    ): PersistedDataEvent {
+    message: Record<string, unknown>): PersistedDataEvent {
   const eulaRequired = required(parseBoolean, message, 'eulaRequired');
   const lastChecked = parseDate(message, 'lastChecked');
   const lastStarted = parseDate(message, 'lastStarted');
@@ -1248,8 +1088,7 @@ export function parseEvent(message: Record<string, unknown>): HistoryEvent {
     return parsePersistedDataEvent(base, message);
   }
   throw new ParseError(
-      `No parser implemented for ${base.eventType} with bound ${base.bound}`,
-  );
+      `No parser implemented for ${base.eventType} with bound ${base.bound}`);
 }
 
 /**
@@ -1363,13 +1202,14 @@ export function mergeEvents(events: HistoryEvent[]):
 }
 
 /**
- * Returns the app ID associated with an event, if any.
+ * Returns the lower-case app ID associated with an event, if any.
  */
 export function getAppId(
     event: HistoryEvent|MergedHistoryEvent,
     ): string|undefined {
   const eventWithAppId = isMergedHistoryEvent(event) ? event.startEvent : event;
-  return 'appId' in eventWithAppId ? eventWithAppId.appId : undefined;
+  return 'appId' in eventWithAppId ? eventWithAppId.appId?.toLowerCase() :
+                                     undefined;
 }
 
 /**
@@ -1387,12 +1227,9 @@ export class UpdaterProcessMap {
         // processes.
         console.assert(
             UpdaterProcessMap.eventProcessKey(event.startEvent) ===
-                UpdaterProcessMap.eventProcessKey(event.endEvent),
-        );
+            UpdaterProcessMap.eventProcessKey(event.endEvent));
         this.updaterProcesses.set(
-            UpdaterProcessMap.eventProcessKey(event.startEvent),
-            event,
-        );
+            UpdaterProcessMap.eventProcessKey(event.startEvent), event);
       }
     }
   }
@@ -1402,22 +1239,17 @@ export class UpdaterProcessMap {
    * The lookup is based on the event's process ID and token. It can accept
    * either a merged event or an unmerged history event.
    */
-  getUpdaterProcessForEvent(
-      event: MergedHistoryEvent,
-      ): MergedUpdaterProcessEvent|undefined;
-  getUpdaterProcessForEvent(
-      event: HistoryEvent,
-      ): MergedUpdaterProcessEvent|undefined;
-  getUpdaterProcessForEvent(
-      event: MergedHistoryEvent|HistoryEvent,
-      ): MergedUpdaterProcessEvent|undefined;
-  getUpdaterProcessForEvent(
-      event: MergedHistoryEvent|HistoryEvent,
-      ): MergedUpdaterProcessEvent|undefined {
+  getUpdaterProcessForEvent(event: MergedHistoryEvent):
+      MergedUpdaterProcessEvent|undefined;
+  getUpdaterProcessForEvent(event: HistoryEvent): MergedUpdaterProcessEvent
+      |undefined;
+  getUpdaterProcessForEvent(event: MergedHistoryEvent|HistoryEvent):
+      MergedUpdaterProcessEvent|undefined;
+  getUpdaterProcessForEvent(event: MergedHistoryEvent|HistoryEvent):
+      MergedUpdaterProcessEvent|undefined {
     const keyEvent = isMergedHistoryEvent(event) ? event.startEvent : event;
     return this.updaterProcesses.get(
-        UpdaterProcessMap.eventProcessKey(keyEvent),
-    );
+        UpdaterProcessMap.eventProcessKey(keyEvent));
   }
 
   /**
@@ -1441,8 +1273,7 @@ export class UpdaterProcessMap {
     const startDeviceUptimeMs = updaterProcess.startEvent.deviceUptime / 1000;
     const keyEventDeviceUptimeMs = keyEvent.deviceUptime / 1000;
     return new Date(
-        startTimestampMs - startDeviceUptimeMs + keyEventDeviceUptimeMs,
-    );
+        startTimestampMs - startDeviceUptimeMs + keyEventDeviceUptimeMs);
   }
 
   /**
@@ -1477,6 +1308,40 @@ export class UpdaterProcessMap {
     eventsWithDates.sort((a, b) => b.date.getTime() - a.date.getTime());
     const sortedEventsWithDates = eventsWithDates.map((item) => item.event);
     return {sortedEventsWithDates, unsortedEventsWithoutDates};
+  }
+
+  /**
+   * Determines the policy set which was effective for `event` by locating its
+   * most recent LOAD_POLICY event.
+   */
+  effectivePolicySet(
+      event: HistoryEvent|MergedHistoryEvent,
+      events: Array<HistoryEvent|MergedHistoryEvent>): PolicySet|undefined {
+    const process = this.getUpdaterProcessForEvent(event);
+    if (process === undefined) {
+      return undefined;
+    }
+
+    const eventTime = isMergedHistoryEvent(event) ?
+        event.startEvent.deviceUptime :
+        event.deviceUptime;
+    const loadPolicyEvents = events.filter(
+        (e): e is MergedLoadPolicyEvent => isMergedHistoryEvent(e) &&
+            e.eventType === 'LOAD_POLICY' &&
+            e.endEvent.policySet !== undefined &&
+            e.startEvent.pid === process.startEvent.pid &&
+            e.startEvent.processToken === process.startEvent.processToken &&
+            e.startEvent.deviceUptime <= eventTime);
+    if (loadPolicyEvents.length === 0) {
+      return undefined;
+    }
+    return loadPolicyEvents
+        .reduce(
+            (prev, current) =>
+                prev.endEvent.deviceUptime > current.endEvent.deviceUptime ?
+                prev :
+                current)
+        .endEvent.policySet;
   }
 
   /**

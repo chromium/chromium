@@ -24,6 +24,7 @@
 #include "chrome/common/buildflags.h"
 #include "chrome/test/base/testing_browser_process_platform_part.h"
 #include "chrome/test/base/testing_profile_manager.h"
+#include "components/activity_reporter/activity_reporter.h"
 #include "components/signin/core/browser/active_primary_accounts_metrics_recorder.h"
 #include "extensions/buildflags/buildflags.h"
 #include "media/media_buildflags.h"
@@ -70,6 +71,13 @@ namespace resource_coordinator {
 class ResourceCoordinatorParts;
 }
 
+namespace supervised_user {
+#if BUILDFLAG(IS_ANDROID)
+class AndroidParentalControls;
+#endif
+class DeviceParentalControls;
+}  // namespace supervised_user
+
 namespace variations {
 class VariationsService;
 }
@@ -94,18 +102,17 @@ class TestingBrowserProcess
   TestingBrowserProcess(const TestingBrowserProcess&) = delete;
   TestingBrowserProcess& operator=(const TestingBrowserProcess&) = delete;
 
-  // Handles creating the global features and optionally profile manager in the
-  // correct order. Should be called after Init() in unit tests that need to to
-  // create GlobalFeatures after modifying feature flags, or unit tests that
-  // need more than just the core GlobalFeatures initialized.
-  std::unique_ptr<TestingProfileManager> SetUpGlobalFeaturesForTesting(
+  // Handles creating the global features and optionally testing profile manager
+  // in the correct order. Should be called after Init() in unit tests that need
+  // to to create GlobalFeatures after modifying feature flags, or unit tests
+  // that need more than just the core GlobalFeatures initialized.
+  raw_ptr<TestingProfileManager> SetUpGlobalFeaturesForTesting(
       bool profile_manager);
 
-  // Destroys the global features, optionally profile manager, and resource
+  // Destroys the global features, testing profile manager, and resource
   // coordinator parts in the correct order. Should be used if (and only if)
   // SetUpGlobalFeaturesForTesting() was used in initialization.
-  void TearDownGlobalFeaturesForTesting(
-      std::unique_ptr<TestingProfileManager> profile_manager);
+  void TearDownGlobalFeaturesForTesting();
 
   // BrowserProcess overrides:
   ui::UnownedUserDataHost& GetUnownedUserDataHost() override;
@@ -153,6 +160,12 @@ class TestingBrowserProcess
   printing::PrintPreviewDialogController* print_preview_dialog_controller()
       override;
   printing::BackgroundPrintingManager* background_printing_manager() override;
+  supervised_user::DeviceParentalControls& device_parental_controls() override;
+#if BUILDFLAG(IS_ANDROID)
+  // Additional convenience accessor to device_parental_controls() that returns
+  // the value cast to specific implementation.
+  supervised_user::AndroidParentalControls& android_parental_controls();
+#endif
   const std::string& GetApplicationLocale() override;
   void SetApplicationLocale(const std::string& actual_locale) override;
   DownloadStatusUpdater* download_status_updater() override;
@@ -163,6 +176,7 @@ class TestingBrowserProcess
   void StartAutoupdateTimer() override {}
 #endif
 
+  activity_reporter::ActivityReporter* activity_reporter() override;
   component_updater::ComponentUpdateService* component_updater() override;
 #if BUILDFLAG(IS_CHROMEOS)
   MediaFileSystemRegistry* media_file_system_registry() override;
@@ -190,7 +204,6 @@ class TestingBrowserProcess
 
   BuildState* GetBuildState() override;
   GlobalFeatures* GetFeatures() override;
-  void CreateGlobalFeaturesForTesting() override;
 
   // TaskEnvironment::DestructionObserver:
   void WillDestroyCurrentTaskEnvironment() override;
@@ -261,7 +274,17 @@ class TestingBrowserProcess
       test_network_quality_tracker_;
   raw_ptr<metrics::MetricsService> metrics_service_ = nullptr;
   raw_ptr<variations::VariationsService> variations_service_ = nullptr;
+
+  // The `ProfileManager` is here as part of the `BrowserProcess` API. It is
+  // typically created during initialization of the `TestingProfileManager`, but
+  // can also be set directly by tests using `SetProfileManager()`.
   std::unique_ptr<ProfileManager> profile_manager_;
+
+  // The `TestingProfileManager` (not to be confused with the `ProfileManager`
+  // above) is created by `SetUpGlobalFeaturesForTesting()` and cleaned up by
+  // `TearDownGlobalFeaturesForTesting()`. Initialization causes the above
+  // `ProfileManager` to also be created and set.
+  std::unique_ptr<TestingProfileManager> testing_profile_manager_;
 
   std::unique_ptr<TestingPrefServiceSimple> testing_local_state_;
 
@@ -285,6 +308,15 @@ class TestingBrowserProcess
       background_printing_manager_;
   std::unique_ptr<printing::PrintPreviewDialogController>
       print_preview_dialog_controller_;
+#endif
+
+// TODO(crbug.com/474377651): instead ForTesting(), offer proper fake.
+#if BUILDFLAG(IS_ANDROID)
+  std::unique_ptr<supervised_user::AndroidParentalControls>
+      device_parental_controls_;
+#else
+  std::unique_ptr<supervised_user::DeviceParentalControls>
+      device_parental_controls_;
 #endif
 
   scoped_refptr<safe_browsing::SafeBrowsingService> sb_service_;
@@ -314,6 +346,7 @@ class TestingBrowserProcess
       resource_coordinator_parts_;
 
   std::unique_ptr<SerialPolicyAllowedPorts> serial_policy_allowed_ports_;
+  std::unique_ptr<activity_reporter::ActivityReporter> activity_reporter_;
 #if !BUILDFLAG(IS_ANDROID)
   std::unique_ptr<HidSystemTrayIcon> hid_system_tray_icon_;
   std::unique_ptr<UsbSystemTrayIcon> usb_system_tray_icon_;

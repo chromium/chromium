@@ -24,6 +24,7 @@ import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.commerce.ShoppingServiceFactory;
 import org.chromium.chrome.browser.commerce.ShoppingServiceFactoryJni;
+import org.chromium.chrome.browser.device_reauth.ReauthenticatorBridge;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.hub.LoadHint;
 import org.chromium.chrome.browser.page_image_service.ImageServiceBridge;
@@ -37,9 +38,13 @@ import org.chromium.chrome.browser.sync.SyncServiceFactory;
 import org.chromium.chrome.browser.ui.favicon.FaviconHelper;
 import org.chromium.chrome.browser.ui.favicon.FaviconHelperJni;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
+import org.chromium.components.signin.SigninFeatures;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.sync.SyncService;
+import org.chromium.ui.base.ActivityResultTracker;
 import org.chromium.ui.base.TestActivity;
+import org.chromium.ui.base.WindowAndroid;
 
 import java.util.function.DoubleConsumer;
 
@@ -47,11 +52,9 @@ import java.util.function.DoubleConsumer;
 @RunWith(BaseRobolectricTestRunner.class)
 @EnableFeatures({
     ChromeFeatureList.BOOKMARK_PANE_ANDROID,
+    SigninFeatures.ENABLE_SEAMLESS_SIGNIN,
 })
-@DisableFeatures({
-    ChromeFeatureList.UNO_PHASE_2_FOLLOW_UP,
-    ChromeFeatureList.ENABLE_ESCAPE_HANDLING_FOR_SECONDARY_ACTIVITIES
-})
+@DisableFeatures({ChromeFeatureList.ENABLE_ESCAPE_HANDLING_FOR_SECONDARY_ACTIVITIES})
 public class BookmarkPaneUnitTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
@@ -59,7 +62,10 @@ public class BookmarkPaneUnitTest {
             new OneshotSupplierImpl<>();
 
     @Mock private DoubleConsumer mOnToolbarAlphaChange;
+    @Mock private WindowAndroid mWindowAndroid;
     @Mock private SnackbarManager mSnackbarManager;
+    @Mock private BottomSheetController mBottomSheetController;
+    @Mock private ActivityResultTracker mActivityResultTracker;
     @Mock private ProfileProvider mProfileProvider;
     @Mock private Profile mProfile;
     @Mock private BookmarkBridge.Natives mBookmarkBridgeNatives;
@@ -71,6 +77,7 @@ public class BookmarkPaneUnitTest {
     @Mock private ImageServiceBridge.Natives mImageServiceBridgeNatives;
     @Mock private FaviconHelper.Natives mFaviconHelperNatives;
     @Mock private SyncService mSyncService;
+    @Mock private ReauthenticatorBridge mReauthenticatorBridge;
 
     private BookmarkPane mBookmarkPane;
 
@@ -90,12 +97,16 @@ public class BookmarkPaneUnitTest {
         when(mFaviconHelperNatives.init()).thenReturn(1L);
         FaviconHelperJni.setInstanceForTesting(mFaviconHelperNatives);
         SyncServiceFactory.setInstanceForTesting(mSyncService);
+        ReauthenticatorBridge.setInstanceForTesting(mReauthenticatorBridge);
 
         mBookmarkPane =
                 new BookmarkPane(
                         mOnToolbarAlphaChange,
+                        mWindowAndroid,
                         Robolectric.buildActivity(TestActivity.class).setup().get(),
                         mSnackbarManager,
+                        () -> mBottomSheetController,
+                        mActivityResultTracker,
                         mProfileProviderSupplier);
     }
 

@@ -133,7 +133,7 @@ class ExtensionAPI {
   // Ownership remains with this object.
   // TODO(devlin): Now that we use GetSchemaStringPiece() in the renderer, we
   // may not really need this anymore.
-  const base::Value::Dict* GetSchema(const std::string& full_name);
+  const base::DictValue* GetSchema(const std::string& full_name);
 
   // Splits a full name from the extension API into its API and child name
   // parts. Some examples:
@@ -185,7 +185,7 @@ class ExtensionAPI {
   base::Lock lock_;
 
   // Schemas for each namespace.
-  using SchemaMap = std::map<std::string, base::Value::Dict>;
+  using SchemaMap = std::map<std::string, base::DictValue>;
   SchemaMap schemas_ GUARDED_BY(lock_);
 
   // FeatureProviders used for resolving dependencies.

@@ -26,14 +26,18 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &switches::kForceHistoryOptInScreen,
     &switches::kSkipCheckForAccountManagementOnSignin,
     &switches::kSyncEnableBookmarksInTransportMode,
-    &switches::kHistoryOptInEducationalTip,
-    &switches::kMakeAccountsAvailableInIdentityManager,
     &switches::kMigrateAccountManagerDelegate,
     &switches::kFullscreenSignInPromoUseDate,
     &switches::kSmartEmailLineBreaking,
     &switches::kSupportWebSigninAddSession,
     &switches::kSkipRefreshTokenCheckInIdentityManager,
     &switches::kFRESignInAlternativeSecondaryButtonText,
+    &switches::kChromeAndroidIdentitySurveyFirstRun,
+    &switches::kChromeAndroidIdentitySurveyWeb,
+    &switches::kChromeAndroidIdentitySurveyNtpAvatar,
+    &switches::kChromeAndroidIdentitySurveyNtpPromo,
+    &switches::kChromeAndroidIdentitySurveyBookmarkPromo,
+    &switches::kSigninLevelUpButton,
 };
 
 // static
@@ -45,8 +49,8 @@ base::android::FeatureMap* GetFeatureMap() {
 
 }  // namespace
 
-static jlong JNI_SigninFeatureMap_GetNativeMap(JNIEnv* env) {
-  return reinterpret_cast<jlong>(GetFeatureMap());
+static int64_t JNI_SigninFeatureMap_GetNativeMap(JNIEnv* env) {
+  return reinterpret_cast<int64_t>(GetFeatureMap());
 }
 
 }  // namespace signin

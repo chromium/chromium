@@ -5,6 +5,7 @@
 #include "components/segmentation_platform/internal/selection/result_refresh_manager.h"
 
 #include "base/metrics/field_trial_params.h"
+#include "base/task/single_thread_task_runner.h"
 #include "components/segmentation_platform/internal/selection/selection_utils.h"
 #include "components/segmentation_platform/internal/stats.h"
 #include "components/segmentation_platform/public/config.h"

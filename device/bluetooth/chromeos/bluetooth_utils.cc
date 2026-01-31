@@ -10,7 +10,6 @@
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/constants/ash_switches.h"
-#include "base/containers/contains.h"
 #include "base/containers/fixed_flat_set.h"
 #include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
@@ -282,8 +281,7 @@ bool IsNonPhonePolyDevice(const device::BluetoothDevice* device) {
   constexpr auto kNonPhonePolyOuis = base::MakeFixedFlatSet<std::string_view>(
       {"64:16:7F", "48:25:67", "00:04:F2", "00:E0:DB", "00:10:1A"});
 
-  return base::Contains(kNonPhonePolyOuis,
-                        device->GetOuiPortionOfBluetoothAddress());
+  return kNonPhonePolyOuis.contains(device->GetOuiPortionOfBluetoothAddress());
 }
 
 // Provide heuristics for which transport to use for a dual device
@@ -428,10 +426,9 @@ bool IsUnsupportedDevice(const device::BluetoothDevice* device) {
       }
       // Check the service UUID to determine if it supports HID or second factor
       // authenticator (security key).
-      if (base::Contains(device->GetUUIDs(),
-                         device::BluetoothUUID(kHIDServiceUUID)) ||
-          base::Contains(device->GetUUIDs(),
-                         device::BluetoothUUID(kSecurityKeyServiceUUID))) {
+      if (device->GetUUIDs().contains(device::BluetoothUUID(kHIDServiceUUID)) ||
+          device->GetUUIDs().contains(
+              device::BluetoothUUID(kSecurityKeyServiceUUID))) {
         return false;
       }
       break;

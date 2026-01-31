@@ -27,12 +27,12 @@ std::unique_ptr<KeyedService> BuildOverrideRegistrar(
 
 scoped_refptr<const Extension> GetNtpExtension(const std::string& name) {
   return ExtensionBuilder()
-      .SetManifest(base::Value::Dict()
+      .SetManifest(base::DictValue()
                        .Set("name", name)
                        .Set("version", "1.0")
                        .Set("manifest_version", 2)
                        .Set("chrome_url_overrides",
-                            base::Value::Dict().Set("newtab", "newtab.html")))
+                            base::DictValue().Set("newtab", "newtab.html")))
       .SetID(crx_file::id_util::GenerateId(name))
       .Build();
 }

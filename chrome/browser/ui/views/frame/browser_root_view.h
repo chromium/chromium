@@ -15,7 +15,6 @@
 #include "ui/views/widget/root_view.h"
 
 class BrowserView;
-class TabStrip;
 class ToolbarView;
 
 namespace ui {
@@ -138,7 +137,6 @@ class BrowserRootView : public views::internal::RootView {
   // `OnDragUpdated()` or calling the drop callback in tests.
   void SetOnFilteringCompleteClosureForTesting(base::OnceClosure closure);
 
-  TabStrip* tabstrip();
   ToolbarView* toolbar();
 
   // Returns a URL if |data| has string contents and the user can "paste and

@@ -53,7 +53,8 @@ import org.chromium.base.ValueChangedCallback;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.shared_preferences.SharedPreferencesManager;
-import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.NonNullObservableSupplier;
+import org.chromium.base.supplier.NullableObservableSupplier;
 import org.chromium.build.annotations.Initializer;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -112,6 +113,7 @@ import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.undo_tab_close_snackbar.UndoBarExplicitTrigger;
 import org.chromium.chrome.tab_ui.R;
+import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.components.browser_ui.util.motion.MotionEventInfo;
 import org.chromium.components.browser_ui.widget.list_view.ListViewTouchTracker;
 import org.chromium.components.browser_ui.widget.selectable_list.SelectionDelegate;
@@ -327,7 +329,7 @@ class TabListMediator implements TabListNotificationHandler {
     private final TabListModel mModelList;
     private final @TabListMode int mMode;
     private final @Nullable ModalDialogManager mModalDialogManager;
-    private final ObservableSupplier<@Nullable TabGroupModelFilter>
+    private final NullableObservableSupplier<TabGroupModelFilter>
             mCurrentTabGroupModelFilterSupplier;
     private final @Nullable ThumbnailProvider mThumbnailProvider;
     private final TabListFaviconProvider mTabListFaviconProvider;
@@ -344,6 +346,7 @@ class TabListMediator implements TabListNotificationHandler {
     private final @Nullable UndoBarExplicitTrigger mUndoBarExplicitTrigger;
     private final @Nullable SnackbarManager mSnackbarManager;
     private final int mAllowedSelectionCount;
+    private final boolean mIsSingleContextMode;
 
     private int mCurrentSelectionCount;
     private int mNextTabId = Tab.INVALID_TAB_ID;
@@ -451,7 +454,8 @@ class TabListMediator implements TabListNotificationHandler {
                     if (model == null) return;
 
                     boolean selected = model.get(TabProperties.IS_SELECTED);
-                    if (!selected
+                    if (!mIsSingleContextMode
+                            && !selected
                             && mAllowedSelectionCount > 0
                             && mCurrentSelectionCount >= mAllowedSelectionCount) {
                         showLimitSnackbar();
@@ -467,12 +471,11 @@ class TabListMediator implements TabListNotificationHandler {
                     if (selected) {
                         TabUiMetricsHelper.recordSelectionEditorActionMetrics(
                                 TabListEditorActionMetricGroups.UNSELECTED);
-                        mCurrentSelectionCount -= 1;
                     } else {
                         TabUiMetricsHelper.recordSelectionEditorActionMetrics(
                                 TabListEditorActionMetricGroups.SELECTED);
-                        mCurrentSelectionCount += 1;
                     }
+                    mCurrentSelectionCount = selectionDelegate.getSelectedItems().size();
                     model.set(TabProperties.IS_SELECTED, !selected);
                     // Reset thumbnail to ensure the color of the blank tab slots is correct.
                     TabGroupModelFilter filter = getCurrentFilterChecked();
@@ -1028,7 +1031,7 @@ class TabListMediator implements TabListNotificationHandler {
             TabListModel modelList,
             @TabListMode int mode,
             @Nullable ModalDialogManager modalDialogManager,
-            ObservableSupplier<@Nullable TabGroupModelFilter> tabGroupModelFilterSupplier,
+            NullableObservableSupplier<TabGroupModelFilter> tabGroupModelFilterSupplier,
             @Nullable ThumbnailProvider thumbnailProvider,
             TabListFaviconProvider tabListFaviconProvider,
             boolean actionOnRelatedTabs,
@@ -1043,7 +1046,9 @@ class TabListMediator implements TabListNotificationHandler {
             @Nullable Runnable onTabGroupCreation,
             @Nullable UndoBarExplicitTrigger undoBarExplicitTrigger,
             @Nullable SnackbarManager snackbarManager,
-            int allowedSelectionCount) {
+            int allowedSelectionCount,
+            boolean isSingleContextMode,
+            Runnable onDragStateChangedListener) {
         mActivity = activity;
         mModelList = modelList;
         mMode = mode;
@@ -1063,6 +1068,7 @@ class TabListMediator implements TabListNotificationHandler {
         mUndoBarExplicitTrigger = undoBarExplicitTrigger;
         mSnackbarManager = snackbarManager;
         mAllowedSelectionCount = allowedSelectionCount;
+        mIsSingleContextMode = isSingleContextMode;
 
         mTabModelObserver =
                 new TabModelObserver() {
@@ -1419,7 +1425,8 @@ class TabListMediator implements TabListNotificationHandler {
                         mTabGridDialogHandler,
                         mComponentName,
                         mActionsOnAllRelatedTabs,
-                        mMode);
+                        mMode,
+                        onDragStateChangedListener);
     }
 
     private TabGroupModelFilter getCurrentFilterChecked() {
@@ -1748,6 +1755,7 @@ class TabListMediator implements TabListNotificationHandler {
             selectTab(mLastSelectedTabListModelIndex, index);
             mTabToAddDelayed = null;
         }
+        mTabGridItemTouchHelperCallback.clearCardState();
     }
 
     private boolean isSelectedTab(Tab tab, int tabModelSelectedTabId) {
@@ -2786,7 +2794,7 @@ class TabListMediator implements TabListNotificationHandler {
     }
 
     /** Provides the tab ID for the most recently swiped tab. */
-    ObservableSupplier<Integer> getRecentlySwipedTabSupplier() {
+    NonNullObservableSupplier<Integer> getRecentlySwipedTabSupplier() {
         return mTabGridItemTouchHelperCallback.getRecentlySwipedTabIdSupplier();
     }
 
@@ -3389,12 +3397,30 @@ class TabListMediator implements TabListNotificationHandler {
 
     private void showLimitSnackbar() {
         if (mSnackbarManager == null) return;
+
+        int limitCount = mIsSingleContextMode ? 1 : 10;
+        String message =
+                mActivity
+                        .getResources()
+                        .getQuantityString(
+                                R.plurals.tab_item_picker_limit_reached, limitCount, limitCount);
+
         Snackbar snackbar =
                 Snackbar.make(
-                        mActivity.getString(R.string.tab_item_picker_limit_reached),
+                        message,
                         null,
                         Snackbar.TYPE_NOTIFICATION,
                         Snackbar.UMA_TAB_PICKER_LIMIT_REACHED);
+        TabModel tabModel = getCurrentTabModelChecked();
+        boolean isIncognito = tabModel.isIncognitoBranded();
+        snackbar.setBackgroundColor(ChromeColors.getInverseBgColor(mActivity, isIncognito));
+
+        int textAppearanceResId =
+                isIncognito
+                        ? R.style.TextAppearance_TextMedium_Primary_Baseline_Dark
+                        : R.style.TextAppearance_TextMedium_Primary_OnInverseSurface;
+        snackbar.setTextAppearance(textAppearanceResId);
+
         mSnackbarManager.showSnackbar(snackbar);
     }
 

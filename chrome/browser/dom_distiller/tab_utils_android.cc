@@ -83,8 +83,8 @@ JNI_DomDistillerTabUtils_GetFormattedUrlFromOriginalDistillerUrl(
                                   nullptr);
 }
 
-static jint JNI_DomDistillerTabUtils_GetDistillerHeuristics(JNIEnv* env) {
-  return static_cast<jint>(dom_distiller::GetDistillerHeuristicsType());
+static int32_t JNI_DomDistillerTabUtils_GetDistillerHeuristics(JNIEnv* env) {
+  return static_cast<int32_t>(dom_distiller::GetDistillerHeuristicsType());
 }
 
 static void JNI_DomDistillerTabUtils_SetInterceptNavigationDelegate(

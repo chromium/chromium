@@ -88,7 +88,7 @@ void DocumentIsolationPolicyReporter::QueueAndNotify(
         kType, context_url_, blink::mojom::ReportBody::New(std::move(list))));
   }
   if (endpoint) {
-    base::Value::Dict body_to_pass;
+    base::DictValue body_to_pass;
     for (const auto& pair : body) {
       body_to_pass.Set(pair.first, pair.second);
     }

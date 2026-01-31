@@ -8,6 +8,7 @@
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "components/strings/grit/components_strings.h"
+#include "content/public/common/content_features.h"
 #include "content/public/test/navigation_simulator.h"
 #include "url/gurl.h"
 #include "url/origin.h"
@@ -59,12 +60,12 @@ TEST_F(CreateChooserTitleTest, UrlFrameTree) {
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 TEST_F(CreateChooserTitleTest, ExtensionsFrameTree) {
-  auto manifest = base::Value::Dict()
+  auto manifest = base::DictValue()
                       .Set("name", "Chooser Title Subframe Test")
                       .Set("version", "0.1")
                       .Set("manifest_version", 2)
                       .Set("web_accessible_resources",
-                           base::Value::List().Append("index.html"));
+                           base::ListValue().Append("index.html"));
   scoped_refptr<const extensions::Extension> extension =
       extensions::ExtensionBuilder().SetManifest(std::move(manifest)).Build();
   ASSERT_TRUE(extension);
@@ -94,6 +95,7 @@ TEST_F(CreateChooserTitleTest, ExtensionsFrameTree) {
 
 #if !BUILDFLAG(IS_ANDROID)
 TEST_F(CreateChooserTitleTest, IsolatedWebAppFrameTree) {
+  base::test::ScopedFeatureList scoped_feature_list{features::kIsolatedWebApps};
   data_decoder::test::InProcessDataDecoder in_process_data_decoder;
   web_app::test::AwaitStartWebAppProviderAndSubsystems(profile());
 

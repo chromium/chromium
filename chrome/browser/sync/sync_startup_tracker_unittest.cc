@@ -3,10 +3,13 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/sync/sync_startup_tracker.h"
+
 #include <memory>
 
 #include "base/test/mock_callback.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
+#include "components/signin/public/base/consent_level.h"
 #include "components/sync/test/test_sync_service.h"
 #include "google_apis/gaia/google_service_auth_error.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -17,9 +20,13 @@ using ::testing::Mock;
 
 namespace {
 
+// TODO(crbug.com/40066949): Remove once kSync becomes unreachable or is
+// deleted from the codebase. See ConsentLevel::kSync documentation for
+// details.
 class SyncStartupTrackerTest : public testing::Test {
  public:
   void SetupNonInitializedSyncService() {
+    sync_service_.SetSignedIn(signin::ConsentLevel::kSync);
     sync_service_.SetMaxTransportState(
         syncer::SyncService::TransportState::INITIALIZING);
   }
@@ -33,6 +40,7 @@ class SyncStartupTrackerTest : public testing::Test {
 };
 
 TEST_F(SyncStartupTrackerTest, SyncAlreadyInitialized) {
+  sync_service_.SetSignedIn(signin::ConsentLevel::kSync);
   sync_service_.SetMaxTransportState(
       syncer::SyncService::TransportState::ACTIVE);
   EXPECT_CALL(callback_,

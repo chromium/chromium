@@ -147,6 +147,111 @@ std::tuple<base::File, uint64_t> FontDataServiceImpl::GetFileHandle(
   return std::make_tuple(std::move(font_file), GetUniqueFileId(font_file_path));
 }
 
+// This is a port of a DWriteFontProxy workaround, reimplemented for
+// compatibility. This workaround makes Chrome non-compliant with the CSS font
+// matching algorithm standard (see
+// https://www.w3.org/TR/css-fonts-3/#font-style-matching) and should be removed
+// (see crbug.com/475810976).
+
+// As a workaround for crbug.com/635932, refuse to
+// load some common fonts that do not contain certain styles. We found that
+// sometimes these fonts are installed only in specialized styles ('Open Sans'
+// might only be available in the condensed light variant, or Helvetica might
+// only be available in bold). That results in a poor user experience because
+// websites that use those fonts usually expect them to be rendered in the
+// regular variant.
+//
+// The specific logic is:
+// If the matched typeface's style matches the requested style, return it
+//  (the exact requested font is installed)
+//
+//   - Request is regular and match is regular -> return regular
+//   - Request is non-regular and match is non-regular -> return non-regular
+//
+// If the matched typeface's style doesn't match the requested style, but the
+//  matched typeface's style is regular, return it. Otherwise return null (we
+//  assume DirectWrite returns the most appropriate font it can find, so we have
+//  to evaluate if it's good enough)
+//
+//   - Request is regular and match is non-regular -> return null (addresses the
+//     original bug)
+//   - Request is non-regular and match is regular -> return regular (complies
+//     with the standard + using regular for a non-regular request is less
+//     problematic UX-wise than using a styled font for a regular request)
+//
+// For each of these criteria, the exact value for each style component isn't
+// used directly. For instance, the weight doesn't need to be an exact match but
+// does need to be in the same "direction" (light/normal/bold) as the request.
+// Likewise for width (condensed/normal/expanded).
+bool FontDataServiceImpl::CheckMatchesRequiredStyle(
+    const SkFontStyle& actual_style,
+    const std::string& requested_family_name,
+    const SkFontStyle& requested_style) {
+#if BUILDFLAG(IS_WIN)
+  static const std::string kFamiliesWithRequiredStyles[] = {
+      // The regular version of Gill Sans is actually in the Gill Sans MT
+      // family,
+      // and the Gill Sans family typically contains just the ultra-bold styles.
+      "gill sans",
+      "helvetica",
+      "open sans",
+  };
+
+  // Returns the "direction" of a given style component. For example, using this
+  // lambda for "weight" will return -1 if the typeface is light, 1 if it's
+  // bold, and 0 if it's normal. Used to compare styles directionally between 2
+  // typefaces.
+  auto find_style_component_direction = [](auto value, auto lower_bound,
+                                           auto upper_bound) {
+    if (value <= lower_bound) {
+      return -1;
+    }
+    if (value >= upper_bound) {
+      return 1;
+    }
+    return 0;
+  };
+
+  // SkTypeface defines "is bold" as >= Semibold. The enum has "light" as the
+  // first weight under "normal". That only leaves "medium" to classify, which
+  // is between "normal" and "semi-bold", so let's consider medium as "normal".
+  int requested_weight_direction = find_style_component_direction(
+      requested_style.weight(), SkFontStyle::kLight_Weight,
+      SkFontStyle::kSemiBold_Weight);
+  // For width, there's no precedent anywhere else in the codebase but the enum
+  // is pretty explicit. Anything under semi-condensed is "condensed", anything
+  // above semi-expanded is "expanded", and "normal" is right in the middle.
+  int requested_width_direction = find_style_component_direction(
+      requested_style.width(), SkFontStyle::kSemiCondensed_Width,
+      SkFontStyle::kSemiExpanded_Width);
+
+  for (const auto& family_name : kFamiliesWithRequiredStyles) {
+    if (base::EqualsCaseInsensitiveASCII(requested_family_name, family_name)) {
+      int found_weight_direction = find_style_component_direction(
+          actual_style.weight(), SkFontStyle::kLight_Weight,
+          SkFontStyle::kSemiBold_Weight);
+      int found_width_direction = find_style_component_direction(
+          actual_style.width(), SkFontStyle::kSemiCondensed_Width,
+          SkFontStyle::kSemiExpanded_Width);
+
+      // The regular variant is always usable if it's found.
+      if (found_weight_direction == 0 && found_width_direction == 0 &&
+          actual_style.slant() == SkFontStyle::kUpright_Slant) {
+        return true;
+      }
+
+      // If the requested style and the found typeface's styles match, consider
+      // the found typeface to be usable.
+      return requested_weight_direction == found_weight_direction &&
+             requested_width_direction == found_width_direction &&
+             requested_style.slant() == actual_style.slant();
+    }
+  }
+#endif
+  // The requested family doesn't have style requirements, consider it usable.
+  return true;
+}
+
 void FontDataServiceImpl::MatchFamilyName(const std::string& family_name,
                                           mojom::TypefaceStylePtr style,
                                           MatchFamilyNameCallback callback) {
@@ -163,7 +268,8 @@ void FontDataServiceImpl::MatchFamilyName(const std::string& family_name,
   sk_sp<SkTypeface> typeface =
       font_manager_->matchFamilyStyle(family_name.c_str(), sk_font_style);
 
-  std::move(callback).Run(CreateMatchFamilyNameResult(typeface));
+  std::move(callback).Run(
+      CreateMatchFamilyNameResult(typeface, family_name, sk_font_style));
 }
 
 void FontDataServiceImpl::MatchFamilyNameCharacter(
@@ -196,7 +302,8 @@ void FontDataServiceImpl::MatchFamilyNameCharacter(
       family_name.c_str(), sk_font_style, bcp47s_array.data(), bcp47s.size(),
       character);
 
-  std::move(callback).Run(CreateMatchFamilyNameResult(typeface));
+  std::move(callback).Run(
+      CreateMatchFamilyNameResult(typeface, family_name, sk_font_style));
 }
 
 void FontDataServiceImpl::GetAllFamilyNames(
@@ -231,7 +338,11 @@ void FontDataServiceImpl::LegacyMakeTypeface(
   sk_sp<SkTypeface> typeface = font_manager_->legacyMakeTypeface(
       family_name ? family_name->c_str() : nullptr, sk_font_style);
 
-  std::move(callback).Run(CreateMatchFamilyNameResult(typeface));
+  // CreateMatchFamilyNameResult uses `family_name` to check against a list of
+  // hard-coded family names so passing "" when `family_name` is `nullopt` is
+  // OK.
+  std::move(callback).Run(CreateMatchFamilyNameResult(
+      typeface, family_name ? *family_name : "", sk_font_style));
 }
 
 size_t FontDataServiceImpl::GetOrCreateAssetIndex(
@@ -282,7 +393,10 @@ uint64_t FontDataServiceImpl::GetUniqueFileId(base::FilePath path) {
 }
 
 mojom::MatchFamilyNameResultPtr
-FontDataServiceImpl::CreateMatchFamilyNameResult(sk_sp<SkTypeface> typeface) {
+FontDataServiceImpl::CreateMatchFamilyNameResult(
+    sk_sp<SkTypeface> typeface,
+    const std::string& family_name,
+    const SkFontStyle& requested_style) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   CreateResult result_status = CreateResult::kNoTypeface;
@@ -290,6 +404,11 @@ FontDataServiceImpl::CreateMatchFamilyNameResult(sk_sp<SkTypeface> typeface) {
   auto result = mojom::MatchFamilyNameResult::New();
 
   if (typeface) {
+    if (!CheckMatchesRequiredStyle(typeface->fontStyle(), family_name,
+                                   requested_style)) {
+      return nullptr;
+    }
+
     auto iter = typeface_to_asset_index_.find(typeface->uniqueID());
     if (iter != typeface_to_asset_index_.end()) {
       const size_t asset_index = iter->second.asset_index;

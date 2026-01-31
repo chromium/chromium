@@ -27,7 +27,6 @@
 <translation id="2329392777730037872">କ୍ଲାଏଣ୍ଟରେ <ph name="URL" /> ଖୋଲିବା ବିଫଳ ହୋଇଛି।</translation>
 <translation id="2359808026110333948">ଜାରି ରଖନ୍ତୁ</translation>
 <translation id="2366718077645204424">ହୋଷ୍ଟ ପାଖରେ ପହଞ୍ଚି ପାରିଲା ନାହିଁ। ଏହା ସମ୍ଭବତଃ ଆପଣ ବ୍ୟବହାର କରୁଥିବା ନେଟ୍‍ୱାର୍କର କନଫିଗ୍‌ରେସନ୍ କାରଣରୁ ହୋଇଛି।</translation>
-<translation id="242591256144136845">କପିରାଇଟ 2025 Google LLC। ସମସ୍ତ ଅଧିକାର ସଂରକ୍ଷିତ ଅଛି।</translation>
 <translation id="2504109125669302160"><ph name="PRODUCT_NAME" />କୁ ’ଆକ୍ସେସିବିଲିଟୀ’ ଅନୁମତି ଦିଅନ୍ତୁ</translation>
 <translation id="2509394361235492552"><ph name="HOSTNAME" /> ସହ ସଂଯୁକ୍ତ ଅଛି</translation>
 <translation id="2540992418118313681">ଆପଣ ଦେଖିବା ଏବଂ ନିୟନ୍ତ୍ରଣ କରିବା ପାଇଁ ଏହି କମ୍ପ୍ୟୁଟରକୁ ଅନ୍ୟ ଜଣେ ୟୁଜର ସହ ସେୟାର କରିବାକୁ ଚାହିଁବେ?</translation>
@@ -46,6 +45,7 @@
 <translation id="3150823315463303127">ନୀତି ପଢ଼ିବାରେ ହୋଷ୍ଟ ବିଫଳ ହେଲା।</translation>
 <translation id="3171922709365450819">ଏହି ଡିଭାଇସ୍ ଏହି କ୍ଲାଏଣ୍ଟ ଦ୍ୱାରା ସମର୍ଥିତ ନୁହେଁ କାରଣ ଏଥିପାଇଁ ତୃତୀୟ ପକ୍ଷ ପ୍ରାମାଣିକତାର ଆବଶ୍ୟକତା ରହିଛି।</translation>
 <translation id="3197730452537982411">ରିମୋଟ୍ ଡେସ୍କଟପ୍</translation>
+<translation id="3236334139428307578">Copyright 2026 The Chromium Authors। ସମସ୍ତ ଅଧିକାର ସଂରକ୍ଷିତ ଅଛି।</translation>
 <translation id="324272851072175193">ଏହି ନିର୍ଦ୍ଦେଶଗୁଡ଼ିକୁ ଇମେଲ୍ କରନ୍ତୁ</translation>
 <translation id="3305934114213025800"><ph name="PRODUCT_NAME" /> ପରିବର୍ତ୍ତନ କରିବାକୁ ଚାହୁଁଛି।</translation>
 <translation id="3339299787263251426">ଇଣ୍ଟର୍ନେ‍ଟ୍ ବ୍ୟବହାର କରିବା ସମୟରେ ଆପଣଙ୍କ କମ୍ପ୍ୟୁଟରକୁ ସୁରକ୍ଷିତ ଭାବେ ଆକ୍ସେସ୍ କରନ୍ତୁ</translation>
@@ -110,6 +110,7 @@
 <translation id="5823554426827907568"><ph name="CLIENT_USERNAME" /> ଆପଣଙ୍କ ସ୍କ୍ରିନକୁ ଦେଖିବା ଏବଂ ଆପଣଙ୍କ କୀବୋର୍ଡ ଓ ମାଉସକୁ ନିୟନ୍ତ୍ରଣ କରିବା ପାଇଁ ଆକ୍ସେସର ଅନୁରୋଧ କରିଛନ୍ତି। ଯଦି ଆପଣ ଏହି ଅନୁରୋଧ ପାଇବାକୁ ଆଶା କରୁନାହାଁନ୍ତି, ତେବେ ''<ph name="IDS_SHARE_CONFIRM_DIALOG_DECLINE" />''କୁ ଦବାନ୍ତୁ। ନଚେତ ସଂଯୋଗଟି ପ୍ରସ୍ତୁତ ହେଲେ ଏହାକୁ ଅନୁମତି ଦେବା ପାଇଁ ''<ph name="IDS_SHARE_CONFIRM_DIALOG_CONFIRM" />''କୁ ଚୟନ କରନ୍ତୁ।</translation>
 <translation id="5823658491130719298">କମ୍ପ୍ୟୁଟର୍‌ରେ ଆପଣ ରିମୋଟ୍ ଭାବରେ ଆକ୍ସେସ୍ କରିବାକୁ ଚାହୁଁଛନ୍ତି, Chrome ଖୋଲନ୍ତୁ ଏବଂ <ph name="INSTALLATION_LINK" />କୁ ଯାଆନ୍ତୁ</translation>
 <translation id="5841343754884244200">ପ୍ରଦର୍ଶନ ବିକଳ୍ପ</translation>
+<translation id="5965133372831030509">କପିରାଇଟ 2026 Google LLC। ସମସ୍ତ ଅଧିକାର ସଂରକ୍ଷିତ ଅଛି।</translation>
 <translation id="6033507038939587647">କୀ-ବୋର୍ଡ୍ ବିକଳ୍ପସମୂହ</translation>
 <translation id="6040143037577758943">ବନ୍ଦ</translation>
 <translation id="6062854958530969723">ହୋଷ୍ଟ ପ୍ରାରମ୍ଭିକରଣ ବିଫଳ ହେଲା।</translation>
@@ -137,7 +138,6 @@
 <translation id="7067321367069083429">ଏହି ସ୍କ୍ରିନ୍‌ ଏକ ସ୍ପର୍ଶ ସ୍କ୍ରିନ୍‍ ପରି କାର୍ଯ୍ୟ କରେ</translation>
 <translation id="7116737094673640201">Chrome ରିମୋଟ୍ ଡେସ୍କଟପ୍‌କୁ ସ୍ଵାଗତ</translation>
 <translation id="7144878232160441200">ପୁଣି ଚେଷ୍ଟା କରନ୍ତୁ</translation>
-<translation id="7298392173540380852">କପିରାଇଟ 2025 The Chromium Authors। ସମସ୍ତ ଅଧିକାର ସଂରକ୍ଷିତ ଅଛି।</translation>
 <translation id="7312846573060934304">ହୋଷ୍ଟ ଅଫ୍‌ଲାଇନ୍‌ ଅଛି</translation>
 <translation id="7319983568955948908">ସେୟାର୍‍ କରିବା ବନ୍ଦ କରନ୍ତୁ</translation>
 <translation id="7359298090707901886">ସ୍ଥାନୀୟ ମେସିନରେ URLଗୁଡ଼ିକୁ ଖୋଲିବା ପାଇଁ ବଛାଯାଇଥିବା ବ୍ରାଉଜରକୁ ବ୍ୟବହାର କରାଯାଇପାରିବ ନାହିଁ।</translation>

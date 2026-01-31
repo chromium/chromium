@@ -8,7 +8,6 @@
 #include <memory>
 #include <utility>
 
-#include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/rand_util.h"
@@ -30,10 +29,6 @@ bool AlmostEqual(base::TimeDelta a, base::TimeDelta b) {
 
 BASE_FEATURE(kForceMacVSyncTimerForDebugging,
              base::FEATURE_DISABLED_BY_DEFAULT);
-
-// Allow CADisplayLink to handle refresh rate within the range based on the app
-// work load.
-BASE_FEATURE(kUseRefreshRateRange, base::FEATURE_DISABLED_BY_DEFAULT);
 
 // These values are logged to UMA. Entries should not be renumbered and
 // numeric values should never be reused. Please keep in sync with
@@ -80,7 +75,7 @@ ExternalBeginFrameSourceMac::ExternalBeginFrameSourceMac(
         << "DisplayLinkMac ID is not available. "
            "Switch to DelayBasedTimeSource(Timer) for BeginFrameSource.";
   } else {
-    SetVSyncDisplayID(display_id);
+    SetVSyncDisplayID(display_id, /*force_update=*/false);
   }
 }
 
@@ -99,8 +94,32 @@ void ExternalBeginFrameSourceMac::CreateDelayBasedTimeSourceIfNeeded() {
   }
 }
 
-void ExternalBeginFrameSourceMac::SetVSyncDisplayID(int64_t display_id) {
-  if (display_id_ == display_id) {
+// UpdateVSyncDisplay() is called only when using ExternalDisplayLinkMac which
+// is connected to a CADisplayLink created in the browser and there is a display
+// added/Removed or CADisplayLink error. For display additions and removals, the
+// sequence of calls between SetVSyncDisplayID() and
+// VSyncProviderMac::AddSupportedDisplayLinkId() is uncertain. Therefore,
+// UpdateVSyncDisplay() is called to guarantee that ExternalBeginFrameSourceMac
+// receives the displayLink for the current display.
+void ExternalBeginFrameSourceMac::UpdateVSyncDisplay() {
+  // Check whether the current display is still valid.
+  bool is_allowed = ui::DisplayLinkMac::IsDisplayLinkAllowed(display_id_);
+  if (is_allowed && display_link_mac_) {
+    return;
+  }
+
+  // Invalidate the display id first to force an update later in
+  // ImageTransportSurfaceOverlayMacEGL of this output surface.
+  // ImageTransportSurfaceOverlayMacEGL does not output an displaylink
+  // error or record the displaylink histogram.
+  output_surface_->SetVSyncDisplayID(display::kInvalidDisplayId);
+
+  SetVSyncDisplayID(display_id_, /*force_update=*/true);
+}
+
+void ExternalBeginFrameSourceMac::SetVSyncDisplayID(int64_t display_id,
+                                                    bool force_update) {
+  if (display_id_ == display_id && !force_update) {
     return;
   }
 
@@ -118,9 +137,7 @@ void ExternalBeginFrameSourceMac::SetVSyncDisplayID(int64_t display_id) {
   display_id_ = display_id;
 
   // Get DisplayLinkMac with the new CGDirectDisplayID.
-  if (display_id != display::kInvalidDisplayId) {
-    display_link_mac_ = ui::DisplayLinkMac::GetForDisplay(display_id);
-  }
+  display_link_mac_ = ui::DisplayLinkMac::GetForDisplay(display_id);
 
   // For debugging only. Use the timer for BeginFrameSource.
   if (base::FeatureList::IsEnabled(kForceMacVSyncTimerForDebugging)) {
@@ -128,31 +145,17 @@ void ExternalBeginFrameSourceMac::SetVSyncDisplayID(int64_t display_id) {
   }
 
   if (display_link_mac_) {
-    nominal_refresh_period_ = GetMinimumFrameInterval();
-    preferred_interval_ = nominal_refresh_period_;
+    preferred_interval_ = min_refresh_interval_ = GetMinimumFrameInterval();
     VLOG(kOutputLevel) << "ExternalBeginFrameSourceMac(" << this << ")"
                        << "::SetVSyncDisplayID: " << display_id_
-                       << ", refresh_period_: " << nominal_refresh_period_;
+                       << ", min_refresh_interval: " << min_refresh_interval_;
 
     display_link_mac_->GetRefreshIntervalRange(
         min_refresh_interval_, max_refresh_interval_, granularity_);
 
-    // Call multiple_hw_refresh_rates_callback_ to notify FrameRateDecider
-    // whether the supported refresh rate list will be provided. If set to
-    // true, there will not be a list.
-    if (base::FeatureList::IsEnabled(kUseRefreshRateRange)) {
-      hw_takes_any_refresh_rate_ =
-          granularity_ <= base::Milliseconds(1) &&
-          min_refresh_interval_ != max_refresh_interval_;
-
-      if (multiple_hw_refresh_rates_callback_) {
-        multiple_hw_refresh_rates_callback_.Run(hw_takes_any_refresh_rate_);
-      }
-    }
-
     if (update_vsync_params_callback_) {
       update_vsync_params_callback_.Run(display_link_mac_->GetCurrentTime(),
-                                        nominal_refresh_period_);
+                                        min_refresh_interval_);
     }
 
     RecordDisplayLinkCreateStatus(DisplayLinkResult::kSuccess);
@@ -166,6 +169,7 @@ void ExternalBeginFrameSourceMac::SetVSyncDisplayID(int64_t display_id) {
     DLOG(ERROR) << "Fail to create DisplayLinkMac with DisplayID: "
                 << display_id_ << ". Switch to DelayBasedTimeSource.";
 
+    // TODO: Set hw_takes_any_refresh_rate_ to true for Timer.
     hw_takes_any_refresh_rate_ = false;
     if (multiple_hw_refresh_rates_callback_) {
       multiple_hw_refresh_rates_callback_.Run(false);
@@ -261,7 +265,7 @@ void ExternalBeginFrameSourceMac::OnDisplayLinkCallback(
     // Invalid parameters should be rare. Use the default refresh rate.
     frame_time = now;
     interval = params.display_times_valid ? params.display_interval
-                                          : nominal_refresh_period_;
+                                          : min_refresh_interval_;
   }
 
   auto callback_delay =
@@ -278,26 +282,30 @@ void ExternalBeginFrameSourceMac::OnDisplayLinkCallback(
   }
 
   bool display_link_frame_interval_changed =
-      !AlmostEqual(nominal_refresh_period_, interval);
+      !AlmostEqual(min_refresh_interval_, interval);
 
-  nominal_refresh_period_ = interval;
+  min_refresh_interval_ = interval;
 
-  // If the preferred frame interval is not equal to |nominal_refresh_period_|,
+  // If the preferred frame interval is not equal to |min_refresh_interval_|,
   // vsync_subsampling_factor_ is bigger than 1.
   vsyncs_to_skip_ = vsync_subsampling_factor_ - 1;
   interval *= vsync_subsampling_factor_;
 
+  // |min_refresh_interval_| here in BeginFrameArgs is the unthrottled minimum
+  // refresh interval the display can support. Be careful not to set it to a
+  // throttled frame interval as it can cause a recursive loop where it halves
+  // the frame rate repeatedly until it becomes zero.
   OnBeginFrame(begin_frame_args_generator_.GenerateBeginFrameArgs(
-      source_id(), frame_time, frame_time + interval, interval));
+      source_id(), frame_time, frame_time + interval, interval,
+      min_refresh_interval_));
 
   // Notify Display FrameRateDecider of the frame interval change.
   if (display_link_frame_interval_changed) {
     DCHECK(update_vsync_params_callback_);
     VLOG(kOutputLevel) << "ExternalBeginFrameSourceMac(" << this << ")"
                        << "::OnDisplayLinkCallback: " << display_id_
-                       << ", nominal_refresh_period_: "
-                       << nominal_refresh_period_;
-    update_vsync_params_callback_.Run(frame_time, nominal_refresh_period_);
+                       << ", min_refresh_interval_: " << min_refresh_interval_;
+    update_vsync_params_callback_.Run(frame_time, min_refresh_interval_);
   } else if (!just_started_begin_frame_) {
     // There might be delay between the system CVDisplayLink thread and
     // the VizCompositorThread for the CVDisplayLink Callback. This histogram
@@ -323,7 +331,7 @@ BeginFrameArgs ExternalBeginFrameSourceMac::GetMissedBeginFrameArgs(
       frame_time = now.SnappedToNextTick(frame_time, interval) - interval;
     } else {
       frame_time = now;
-      interval = nominal_refresh_period_ * vsync_subsampling_factor_;
+      interval = min_refresh_interval_ * vsync_subsampling_factor_;
     }
   } else {
     base::TimeTicks now = base::TimeTicks::Now();
@@ -339,7 +347,8 @@ BeginFrameArgs ExternalBeginFrameSourceMac::GetMissedBeginFrameArgs(
   if (!last_begin_frame_args_.IsValid() ||
       frame_time > last_begin_frame_args_.frame_time) {
     last_begin_frame_args_ = begin_frame_args_generator_.GenerateBeginFrameArgs(
-        source_id(), frame_time, frame_time + interval, interval);
+        source_id(), frame_time, frame_time + interval, interval,
+        min_refresh_interval_);
   }
 
   return ExternalBeginFrameSource::GetMissedBeginFrameArgs(obs);
@@ -359,7 +368,8 @@ void ExternalBeginFrameSourceMac::OnTimerTick() {
   auto interval = time_source_->Interval();
 
   OnBeginFrame(begin_frame_args_generator_.GenerateBeginFrameArgs(
-      source_id(), frame_time, time_source_->NextTickTime(), interval));
+      source_id(), frame_time, time_source_->NextTickTime(), interval,
+      min_refresh_interval_));
 
   if (last_interval_ != interval) {
     DCHECK(update_vsync_params_callback_);
@@ -383,31 +393,13 @@ void ExternalBeginFrameSourceMac::SetPreferredInterval(
     return;
   }
 
-  // For the monitor with multitple refresh rates and CVDisplayLink
-  // SetPreferredInterval is supported. Just set the preferred interval without
-  // skipping VSyncs.
-  if (min_refresh_interval_ != max_refresh_interval_) {
-    if (base::FeatureList::IsEnabled(kUseRefreshRateRange)) {
-      // Request a dynamic refrate rate with a range.
-      display_link_mac_->SetPreferredIntervalRange(
-          min_refresh_interval_, max_refresh_interval_, interval);
-    } else {
-      // Request a fixed refresh rate.
-      display_link_mac_->SetPreferredInterval(interval);
-    }
-    nominal_refresh_period_ = interval;
-    vsync_subsampling_factor_ = 1;
-    vsyncs_to_skip_ = 0;
-    return;
-  }
-
   // Here is for the monitor with a fixed refresh rate.
   // Cap the preferred refresh interval if it's out of the range.
   base::TimeDelta adjusted_interval = interval;
-  if (interval < nominal_refresh_period_) {
-    adjusted_interval = nominal_refresh_period_;
+  if (interval < min_refresh_interval_) {
+    adjusted_interval = min_refresh_interval_;
   } else if (interval > kMaxSupportedFrameInterval &&
-             !AlmostEqual(interval, nominal_refresh_period_)) {
+             !AlmostEqual(interval, min_refresh_interval_)) {
     adjusted_interval = kMaxSupportedFrameInterval;
   }
 
@@ -415,7 +407,7 @@ void ExternalBeginFrameSourceMac::SetPreferredInterval(
   // interal.
 
   vsync_subsampling_factor_ =
-      adjusted_interval.IntDiv((nominal_refresh_period_ - kDeltaAlmostEqual));
+      adjusted_interval.IntDiv((min_refresh_interval_ - kDeltaAlmostEqual));
 
   TRACE_EVENT1("gpu", "ExternalBeginFrameSourceMac::SetPreferredInterval",
                "vsync_subsampling_factor", vsync_subsampling_factor_);
@@ -451,42 +443,28 @@ ExternalBeginFrameSourceMac::GetSupportedFrameIntervals(
     return {};
   }
 
-  if (nominal_refresh_period_ > kMaxSupportedFrameInterval &&
+  if (min_refresh_interval_ > kMaxSupportedFrameInterval &&
       min_refresh_interval_ == max_refresh_interval_) {
-    VLOG(kOutputLevel) << "nominal_refresh_period_: "
-                       << nominal_refresh_period_;
-    return {nominal_refresh_period_};
-  }
-
-  if (granularity_.is_zero()) {
-    return {nominal_refresh_period_};
+    VLOG(kOutputLevel) << "min_refresh_interval_: " << min_refresh_interval_;
+    return {min_refresh_interval_};
   }
 
   base::flat_set<base::TimeDelta> supported_intervals;
 
-  // Check if we can set various preferred intervals within the range.
-  if (display_link_mac_ && min_refresh_interval_ != max_refresh_interval_) {
-    // |max_refresh_interval_| might not be the same as
-    // (|min_refresh_interval_| + n*|granularity_|), so add
-    // |max_refresh_interval_| separately after the loop.
-    auto upper_bound = max_refresh_interval_ - granularity_ / 2;
-    for (base::TimeDelta interval = min_refresh_interval_;
-         interval < upper_bound; interval += granularity_) {
-      supported_intervals.insert(interval);
-    }
-    supported_intervals.insert(max_refresh_interval_);
-
-    return supported_intervals;
-  }
-
   // Can only do fixed refresh rates. Now try to implement 2^n refresh
   // rates by skipping VSyncs.
-  nominal_refresh_period_ = GetMinimumFrameInterval();
-  base::TimeDelta interval = nominal_refresh_period_;
+  min_refresh_interval_ = GetMinimumFrameInterval();
+  base::TimeDelta interval = min_refresh_interval_;
   while (interval <= kMaxSupportedFrameInterval) {
     VLOG(kOutputLevel) << interval;
     supported_intervals.insert(interval);
     interval *= 2;
+  }
+
+  // FrameIntervalDecider::UpdateSettings() requires non-empty supported
+  // intervals for FixedIntervalSettings.
+  if (supported_intervals.empty()) {
+    supported_intervals.insert(min_refresh_interval_);
   }
 
   return supported_intervals;

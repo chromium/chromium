@@ -15,7 +15,9 @@ import androidx.annotation.NonNull;
 
 import org.chromium.base.Callback;
 import org.chromium.base.DeviceInfo;
-import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.supplier.NonNullObservableSupplier;
+import org.chromium.base.supplier.ObservableSuppliers;
+import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.signin.services.ProfileDataCache;
@@ -85,8 +87,8 @@ public class AccountPickerBottomSheetMediator
     private boolean mAcceptedAccountManagement;
 
     private final PropertyObserver<PropertyKey> mModelPropertyChangedObserver;
-    private final ObservableSupplierImpl<Boolean> mBackPressStateChangedSupplier =
-            new ObservableSupplierImpl<>();
+    private final SettableNonNullObservableSupplier<Boolean> mBackPressStateChangedSupplier =
+            ObservableSuppliers.createNonNull(false);
     private final AccountPickerDismissalLogger mDismissalLogger;
 
     static AccountPickerBottomSheetMediator create(
@@ -330,7 +332,7 @@ public class AccountPickerBottomSheetMediator
     }
 
     @Override
-    public ObservableSupplierImpl<Boolean> getBackPressStateChangedSupplier() {
+    public NonNullObservableSupplier<Boolean> getBackPressStateChangedSupplier() {
         return mBackPressStateChangedSupplier;
     }
 
@@ -565,6 +567,7 @@ public class AccountPickerBottomSheetMediator
             mDismissalLogger.logDismissedButtonClick();
             // Seamless sign-in does not have an initial account picker view. Hide the bottom sheet.
             mDismissBottomSheet.run();
+            mAccountPickerDelegate.onSignInCancel();
         } else {
             mModel.set(AccountPickerBottomSheetProperties.VIEW_STATE, mInitialViewState);
         }
@@ -578,6 +581,7 @@ public class AccountPickerBottomSheetMediator
         assert !mIsSeamlessSignin : "Account picker sheet is not supported for seamless sign-in";
         mDismissalLogger.logDismissedButtonClick();
         mDismissBottomSheet.run();
+        mAccountPickerDelegate.onSignInCancel();
     }
 
     void launchDeviceLockIfNeededAndSignIn() {
@@ -659,10 +663,8 @@ public class AccountPickerBottomSheetMediator
                     .clearWebSigninAccountPickerActiveDismissalCount();
         }
 
-        // TODO(crbug.com/435381574): Investigate whether this sign-out is still needed, and remove
-        // it if possible.
         if (mIdentityManager.hasPrimaryAccount(ConsentLevel.SIGNIN)) {
-            mAccountPickerDelegate.onSignoutBeforeSignin();
+            // Signout before sign-in is from web sign-in traffic (crbug.com/435381574)
             mSigninManager.signOut(SignoutReason.SIGNIN_RETRIGGERED);
         }
 
@@ -710,7 +712,9 @@ public class AccountPickerBottomSheetMediator
             mSigninTimestampsLogger.recordTimestamp(Event.SIGNIN_ABORTED);
         }
 
-        mAccountPickerDelegate.onSeamlessSigninAbandoned();
+        // Dismisses the bottom sheet, if shown.
+        mDismissBottomSheet.run();
+        mAccountPickerDelegate.onSignInCancel();
     }
 
     private void updateCredentials() {

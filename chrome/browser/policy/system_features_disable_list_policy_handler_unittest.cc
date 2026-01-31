@@ -31,7 +31,7 @@ class SystemFeaturesDisableListPolicyHandlerTest : public testing::Test {
 
   void ApplyPolicySettings(std::vector<std::string> list) {
     PolicyMap policy_map;
-    base::Value::List features_list;
+    base::ListValue features_list;
     for (auto& i : list) {
       features_list.Append(i);
     }
@@ -43,7 +43,7 @@ class SystemFeaturesDisableListPolicyHandlerTest : public testing::Test {
   }
 
   void VerifyPrefList(std::vector<SystemFeature> expected) {
-    base::Value::List expected_list;
+    base::ListValue expected_list;
     for (auto& i : expected) {
       expected_list.Append(static_cast<int>(i));
     }

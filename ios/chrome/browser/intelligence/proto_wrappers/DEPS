@@ -1,5 +1,7 @@
 include_rules = [
+  # keep-sorted start
   "+ios/chrome/browser/snapshots/model/snapshot_tab_helper.h",
   "+ios/web/find_in_page/find_in_page_java_script_feature.h",
   "+ios/web/util/content_type_util.h",
+  # keep-sorted end
 ]

@@ -44,9 +44,9 @@ class PuffOperationTest : public testing::Test {
     return dest;
   }
 
-  base::RepeatingCallback<void(base::Value::Dict)> MakePingCallback() {
+  base::RepeatingCallback<void(base::DictValue)> MakePingCallback() {
     return base::BindLambdaForTesting(
-        [&](base::Value::Dict ping) { pings_.push_back(std::move(ping)); });
+        [&](base::DictValue ping) { pings_.push_back(std::move(ping)); });
   }
 
   base::RepeatingCallback<void(update_client::ComponentState)>
@@ -58,7 +58,7 @@ class PuffOperationTest : public testing::Test {
 
   SEQUENCE_CHECKER(sequence_checker_);
   base::RunLoop loop_;
-  std::vector<base::Value::Dict> pings_;
+  std::vector<base::DictValue> pings_;
 
  private:
   base::ScopedTempDir temp_dir_;

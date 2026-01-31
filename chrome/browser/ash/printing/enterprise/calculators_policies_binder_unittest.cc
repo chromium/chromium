@@ -81,7 +81,7 @@ template <class Container>
 base::Value StringsToList(Container container) {
   auto first = container.begin();
   auto last = container.end();
-  base::Value::List list;
+  base::ListValue list;
 
   while (first != last) {
     list.Append(*first);

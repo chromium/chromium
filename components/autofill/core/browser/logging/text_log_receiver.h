@@ -23,11 +23,11 @@ class TextLogReceiver : public LogReceiver {
   TextLogReceiver& operator=(const TextLogReceiver&) = delete;
   ~TextLogReceiver() override = default;
 
-  void LogEntry(const base::Value::Dict& entry) override;
+  void LogEntry(const base::DictValue& entry) override;
 
   // Converts a log entry that is passed to the LogEntry() function to text.
   // The logic is extracted into a separate function to enable unit testing.
-  std::string LogEntryToText(const base::Value::Dict& entry) const;
+  std::string LogEntryToText(const base::DictValue& entry) const;
 };
 
 }  // namespace autofill

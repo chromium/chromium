@@ -23,8 +23,7 @@ namespace ash {
 // attestation during SAML authentication.
 class SamlChallengeKeyHandler final {
  public:
-  using CallbackType =
-      base::OnceCallback<void(const base::Value::Dict response)>;
+  using CallbackType = base::OnceCallback<void(const base::DictValue response)>;
 
   SamlChallengeKeyHandler();
   SamlChallengeKeyHandler(const SamlChallengeKeyHandler&) = delete;

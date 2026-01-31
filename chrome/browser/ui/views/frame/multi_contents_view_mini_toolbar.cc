@@ -113,29 +113,19 @@ MultiContentsViewMiniToolbar::MultiContentsViewMiniToolbar(
   alert_state_indicator_ = AddChildView(std::make_unique<views::ImageView>());
   alert_state_indicator_->SetProperty(views::kFlexBehaviorKey,
                                       icon_flex_spec.WithOrder(2));
-  if (features::kSideBySideMiniToolbarActiveConfiguration.Get() ==
-      features::MiniToolbarActiveConfiguration::ShowClose) {
-    image_button_ = AddChildView(views::CreateVectorImageButtonWithNativeTheme(
-        base::BindRepeating(&MultiContentsViewMiniToolbar::CloseCurrentView,
-                            base::Unretained(this)),
-        kCloseTabChromeRefreshIcon, 16,
-        kColorMultiContentsViewMiniToolbarForeground));
-    SetAccessibleNameAndTooltip(image_button_, IDS_SPLIT_TAB_CLOSE);
-  } else {
-    image_button_ = AddChildView(views::CreateVectorImageButtonWithNativeTheme(
-        base::RepeatingClosure(), kBrowserToolsChromeRefreshIcon, 16,
-        kColorMultiContentsViewMiniToolbarForeground));
-    SetAccessibleNameAndTooltip(
-        image_button_, IDS_ACCNAME_SPLIT_VIEW_MINI_TOOLBAR_MENU_BUTTON);
-    image_button_->SetButtonController(
-        std::make_unique<views::MenuButtonController>(
-            image_button_,
-            base::BindRepeating(
-                &MultiContentsViewMiniToolbar::OpenSplitViewMenu,
-                base::Unretained(this)),
-            std::make_unique<views::Button::DefaultButtonControllerDelegate>(
-                image_button_)));
-  }
+
+  image_button_ = AddChildView(views::CreateVectorImageButtonWithNativeTheme(
+      base::RepeatingClosure(), kBrowserToolsChromeRefreshIcon, 16,
+      kColorMultiContentsViewMiniToolbarForeground));
+  SetAccessibleNameAndTooltip(image_button_,
+                              IDS_ACCNAME_SPLIT_VIEW_MINI_TOOLBAR_MENU_BUTTON);
+  image_button_->SetButtonController(
+      std::make_unique<views::MenuButtonController>(
+          image_button_,
+          base::BindRepeating(&MultiContentsViewMiniToolbar::OpenSplitViewMenu,
+                              base::Unretained(this)),
+          std::make_unique<views::Button::DefaultButtonControllerDelegate>(
+              image_button_)));
   image_button_->SetProperty(
       views::kFlexBehaviorKey,
       views::FlexSpecification(views::MinimumFlexSizeRule::kPreferred,
@@ -189,12 +179,6 @@ void MultiContentsViewMiniToolbar::UpdateState(bool is_active,
       ->SetInteriorMargin(is_active ? kActiveInteriorMargins
                                     : kInactiveInteriorMargins);
 
-  if (features::kSideBySideMiniToolbarActiveConfiguration.Get() ==
-      features::MiniToolbarActiveConfiguration::Hide) {
-    SetVisible(!is_active);
-    return;
-  }
-
   SetVisible(!is_highlighted);
 
   favicon_->SetVisible(!is_active);
@@ -225,10 +209,10 @@ void MultiContentsViewMiniToolbar::ClearWebContents(views::WebView*) {
   web_contents_ = nullptr;
 }
 
-void MultiContentsViewMiniToolbar::TabChangedAt(content::WebContents* contents,
-                                                int index,
-                                                TabChangeType change_type) {
-  if (!web_contents_ || contents != web_contents_) {
+void MultiContentsViewMiniToolbar::OnTabChangedAt(tabs::TabInterface* tab,
+                                                  int index,
+                                                  TabChangeType change_type) {
+  if (!web_contents_ || tab->GetContents() != web_contents_) {
     return;
   }
   TabStripModel* model = browser_view_->browser()->tab_strip_model();
@@ -307,6 +291,8 @@ void MultiContentsViewMiniToolbar::UpdateContents(TabRendererData tab_data) {
     domain = l10n_util::GetStringUTF16(IDS_HOVER_CARD_FILE_URL_SOURCE);
   } else if (domain_url.SchemeIsBlob()) {
     domain = l10n_util::GetStringUTF16(IDS_HOVER_CARD_BLOB_URL_SOURCE);
+  } else if (domain_url.SchemeIs(url::kViewSourceScheme)) {
+    domain = l10n_util::GetStringUTF16(IDS_HOVER_CARD_VIEW_SOURCE_URL_SOURCE);
   } else if (tab_data.should_display_url) {
     domain = url_formatter::FormatUrl(
         domain_url,

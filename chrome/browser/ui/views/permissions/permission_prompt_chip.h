@@ -49,7 +49,6 @@ class PermissionPromptChip : public PermissionPromptDesktop {
   }
 
  private:
-  void ModulatePermissionPromiseLifetime();
   // The controller handling the chip view
   raw_ptr<ChipController> chip_controller_;
 

@@ -17,7 +17,7 @@
 
 namespace {
 
-std::string FormatListAsJSON(const base::Value::List& list) {
+std::string FormatListAsJSON(const base::ListValue& list) {
   std::string json;
   base::JSONWriter::WriteWithOptions(
       list, base::JSONWriter::OPTIONS_PRETTY_PRINT, &json);
@@ -42,13 +42,13 @@ const char kContactMessageNumUnreachableContactsKey[] =
 // TODO(nohle): We should probably break up this dictionary into smaller
 // dictionaries corresponding to each contact-manager observer functions. This
 // will require changes at the javascript layer as well.
-base::Value::Dict ContactMessageToDictionary(
+base::DictValue ContactMessageToDictionary(
     std::optional<bool> did_contacts_change_since_last_upload,
     const std::optional<std::set<std::string>>& allowed_contact_ids,
     const std::optional<std::vector<nearby::sharing::proto::ContactRecord>>&
         contacts,
     std::optional<uint32_t> num_unreachable_contacts_filtered_out) {
-  base::Value::Dict dictionary;
+  base::DictValue dictionary;
 
   dictionary.Set(kContactMessageTimeKey, GetJavascriptTimestamp());
   if (did_contacts_change_since_last_upload.has_value()) {
@@ -56,7 +56,7 @@ base::Value::Dict ContactMessageToDictionary(
                    *did_contacts_change_since_last_upload);
   }
   if (allowed_contact_ids) {
-    base::Value::List allowed_ids_list;
+    base::ListValue allowed_ids_list;
     allowed_ids_list.reserve(allowed_contact_ids->size());
     for (const auto& contact_id : *allowed_contact_ids) {
       allowed_ids_list.Append(contact_id);
@@ -65,7 +65,7 @@ base::Value::Dict ContactMessageToDictionary(
                    FormatListAsJSON(allowed_ids_list));
   }
   if (contacts) {
-    base::Value::List contact_list;
+    base::ListValue contact_list;
     contact_list.reserve(contacts->size());
     for (const auto& contact : *contacts) {
       contact_list.Append(ContactRecordToReadableDictionary(contact));
@@ -116,12 +116,12 @@ void NearbyInternalsContactHandler::OnJavascriptDisallowed() {
 }
 
 void NearbyInternalsContactHandler::InitializeContents(
-    const base::Value::List& args) {
+    const base::ListValue& args) {
   AllowJavascript();
 }
 
 void NearbyInternalsContactHandler::HandleDownloadContacts(
-    const base::Value::List& args) {
+    const base::ListValue& args) {
   NearbySharingService* service_ =
       NearbySharingServiceFactory::GetForBrowserContext(context_);
   if (service_) {

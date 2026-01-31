@@ -8,7 +8,6 @@ import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
-import android.graphics.drawable.ColorStateListDrawable;
 import android.graphics.drawable.Drawable;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
@@ -18,7 +17,6 @@ import androidx.annotation.DimenRes;
 import androidx.annotation.DrawableRes;
 import androidx.annotation.LayoutRes;
 import androidx.annotation.VisibleForTesting;
-import androidx.appcompat.content.res.AppCompatResources;
 import androidx.core.content.res.ResourcesCompat;
 import androidx.core.graphics.drawable.RoundedBitmapDrawable;
 
@@ -270,10 +268,6 @@ public class TileRenderer {
                                 .inflate(mTileLayoutResId, parent, false);
 
         tileView.initialize(tile, mTitleLinesCount);
-        tileView.setBackground(
-                new ColorStateListDrawable(
-                        AppCompatResources.getColorStateList(
-                                parent.getContext(), R.color.tile_bg_color_list)));
 
         if (!mNativeInitializationComplete || setupDelegate == null) {
             return tileView;

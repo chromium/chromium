@@ -28,7 +28,7 @@ EcheAppUI::EcheAppUI(content::WebUI* web_ui, EcheAppManager* manager)
       content::WebUIDataSource::CreateAndAdd(browser_context,
                                              kChromeUIEcheAppHost);
 
-  html_source->AddResourcePath("", IDR_ASH_ECHE_INDEX_HTML);
+  html_source->SetDefaultResource(IDR_ASH_ECHE_INDEX_HTML);
   html_source->AddResourcePath("system_assets/app_icon_32.png",
                                IDR_ASH_ECHE_APP_ICON_32_PNG);
   html_source->AddResourcePath("system_assets/app_icon_256.png",

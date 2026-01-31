@@ -41,6 +41,14 @@ class ManagePasswordsPageActionController;
 class BookmarkBarPreloadPipelineManager;
 class NewTabPagePreloadPipelineManager;
 
+namespace skills {
+class SkillsUiTabControllerInterface;
+}  // namespace skills
+
+namespace back_to_opener {
+class BackToOpenerController;
+}  // namespace back_to_opener
+
 namespace autofill {
 class BubbleManager;
 }  // namespace autofill
@@ -70,6 +78,10 @@ class WebContents;
 namespace contextual_cueing {
 class ContextualCueingHelper;
 }  // namespace contextual_cueing
+
+namespace contextual_tasks {
+class ContextualTasksTabVisitTracker;
+}  // namespace contextual_tasks
 
 namespace customize_chrome {
 class SidePanelController;
@@ -193,6 +205,11 @@ class TabFeatures {
     return commerce_ui_tab_helper_.get();
   }
 
+  contextual_tasks::ContextualTasksTabVisitTracker*
+  contextual_tasks_tab_visit_tracker() {
+    return contextual_tasks_tab_visit_tracker_.get();
+  }
+
   privacy_sandbox::PrivacySandboxTabObserver* privacy_sandbox_tab_observer() {
     return privacy_sandbox_tab_observer_.get();
   }
@@ -295,11 +312,9 @@ class TabFeatures {
     return ask_before_http_dialog_controller_.get();
   }
 
-#if BUILDFLAG(ENABLE_GLIC)
-  glic::GlicSidePanelCoordinator* glic_side_panel_coordinator() {
-    return glic_side_panel_coordinator_.get();
+  back_to_opener::BackToOpenerController* back_to_opener_controller() {
+    return back_to_opener_controller_.get();
   }
-#endif  // BUILDFLAG(ENABLE_GLIC)
 
   BookmarkBarPreloadPipelineManager* bookmarkbar_preload_pipeline_manager() {
     return bookmarkbar_preload_pipeline_manager_.get();
@@ -502,10 +517,20 @@ class TabFeatures {
   std::unique_ptr<NewTabPagePreloadPipelineManager>
       new_tab_page_preload_pipeline_manager_;
 
+  std::unique_ptr<back_to_opener::BackToOpenerController>
+      back_to_opener_controller_;
+
+  std::unique_ptr<skills::SkillsUiTabControllerInterface>
+      skills_ui_tab_controller_;
+
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
     BUILDFLAG(IS_CHROMEOS)
   std::unique_ptr<wallet::ChromeWalletablePassClient> walletable_pass_client_;
 #endif
+
+  std::unique_ptr<contextual_tasks::ContextualTasksTabVisitTracker>
+      contextual_tasks_tab_visit_tracker_;
+
   // Must be the last member.
   base::WeakPtrFactory<TabFeatures> weak_factory_{this};
 };

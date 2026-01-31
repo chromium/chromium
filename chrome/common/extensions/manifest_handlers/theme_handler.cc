@@ -55,11 +55,11 @@ bool IsThemeImageMimeTypeValid(const base::FilePath& relative_path,
 }
 
 bool LoadImages(const Extension& extension,
-                const base::Value::Dict& theme_dict,
+                const base::DictValue& theme_dict,
                 std::u16string* error,
                 std::vector<std::string>* warnings,
                 ThemeInfo* theme_info) {
-  if (const base::Value::Dict* images_dict =
+  if (const base::DictValue* images_dict =
           theme_dict.FindDict(keys::kThemeImages)) {
     ThemeInfo::ThemeImages theme_images;
 
@@ -116,10 +116,10 @@ bool LoadImages(const Extension& extension,
   return true;
 }
 
-bool LoadColors(const base::Value::Dict& theme_dict,
+bool LoadColors(const base::DictValue& theme_dict,
                 std::u16string* error,
                 ThemeInfo* theme_info) {
-  if (const base::Value::Dict* colors_value =
+  if (const base::DictValue* colors_value =
           theme_dict.FindDict(keys::kThemeColors)) {
     // Validate that the colors are RGB or RGBA lists.
     for (const auto [key, value] : *colors_value) {
@@ -127,7 +127,7 @@ bool LoadColors(const base::Value::Dict& theme_dict,
         *error = errors::kInvalidThemeColors;
         return false;
       }
-      const base::Value::List& color_list = value.GetList();
+      const base::ListValue& color_list = value.GetList();
 
       // There must be either 3 items (RGB), or 4 (RGBA).
       if (!(color_list.size() == 3 || color_list.size() == 4)) {
@@ -155,10 +155,10 @@ bool LoadColors(const base::Value::Dict& theme_dict,
   return true;
 }
 
-bool LoadTints(const base::Value::Dict& theme_dict,
+bool LoadTints(const base::DictValue& theme_dict,
                std::u16string* error,
                ThemeInfo* theme_info) {
-  const base::Value::Dict* tints_dict = theme_dict.FindDict(keys::kThemeTints);
+  const base::DictValue* tints_dict = theme_dict.FindDict(keys::kThemeTints);
   if (!tints_dict) {
     return true;
   }
@@ -170,7 +170,7 @@ bool LoadTints(const base::Value::Dict& theme_dict,
       return false;
     }
 
-    const base::Value::List& tint_list = value.GetList();
+    const base::ListValue& tint_list = value.GetList();
     if (tint_list.size() != 3) {
       *error = errors::kInvalidThemeTints;
       return false;
@@ -187,10 +187,10 @@ bool LoadTints(const base::Value::Dict& theme_dict,
   return true;
 }
 
-bool LoadDisplayProperties(const base::Value::Dict& theme_dict,
+bool LoadDisplayProperties(const base::DictValue& theme_dict,
                            std::u16string* error,
                            ThemeInfo* theme_info) {
-  if (const base::Value::Dict* display_properties_value =
+  if (const base::DictValue* display_properties_value =
           theme_dict.FindDict(keys::kThemeDisplayProperties)) {
     theme_info->theme_display_properties_ = display_properties_value->Clone();
   }
@@ -202,7 +202,7 @@ bool LoadDisplayProperties(const base::Value::Dict& theme_dict,
 // `theme_info` and returns true. And if the check fails then it populates the
 // `error` message and returns false.
 bool LoadTabGroupColorPalette(
-    const base::Value::Dict& theme_dict,
+    const base::DictValue& theme_dict,
     // TODO(crbug.com/427972612): Take string by reference instead of taking a
     // pointer to the string.
     std::u16string* error,
@@ -216,7 +216,7 @@ bool LoadTabGroupColorPalette(
     return true;
   }
 
-  const base::Value::Dict* tab_group_color_palette_dict =
+  const base::DictValue* tab_group_color_palette_dict =
       theme_dict.FindDict(keys::kThemeTabGroupColorPalette);
   if (!tab_group_color_palette_dict) {
     return true;
@@ -251,26 +251,26 @@ const ThemeInfo::ThemeImages* ThemeInfo::GetImages(const Extension* extension) {
 }
 
 // static
-const base::Value::Dict* ThemeInfo::GetColors(const Extension* extension) {
+const base::DictValue* ThemeInfo::GetColors(const Extension* extension) {
   const ThemeInfo* theme_info = GetInfo(extension);
   return theme_info ? &theme_info->theme_colors_ : nullptr;
 }
 
 // static
-const base::Value::Dict* ThemeInfo::GetTints(const Extension* extension) {
+const base::DictValue* ThemeInfo::GetTints(const Extension* extension) {
   const ThemeInfo* theme_info = GetInfo(extension);
   return theme_info ? &theme_info->theme_tints_ : nullptr;
 }
 
 // static
-const base::Value::Dict* ThemeInfo::GetDisplayProperties(
+const base::DictValue* ThemeInfo::GetDisplayProperties(
     const Extension* extension) {
   const ThemeInfo* theme_info = GetInfo(extension);
   return theme_info ? &theme_info->theme_display_properties_ : nullptr;
 }
 
 // static
-const base::Value::Dict* ThemeInfo::GetTabGroupColorPalette(
+const base::DictValue* ThemeInfo::GetTabGroupColorPalette(
     const Extension* extension) {
   const ThemeInfo* theme_info = GetInfo(extension);
   return theme_info ? &theme_info->theme_tab_group_color_palette_ : nullptr;
@@ -281,7 +281,7 @@ ThemeHandler::ThemeHandler() = default;
 ThemeHandler::~ThemeHandler() = default;
 
 bool ThemeHandler::Parse(Extension* extension, std::u16string* error) {
-  const base::Value::Dict* theme_dict =
+  const base::DictValue* theme_dict =
       extension->manifest()->FindDictPath(keys::kTheme);
   if (!theme_dict) {
     *error = errors::kInvalidTheme;

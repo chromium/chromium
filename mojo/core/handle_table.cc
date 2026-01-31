@@ -107,8 +107,9 @@ base::Lock& HandleTable::GetLock() {
 
 MojoHandle HandleTable::AddDispatcher(scoped_refptr<Dispatcher> dispatcher) {
   // Oops, we're out of handles.
-  if (next_available_handle_ == MOJO_HANDLE_INVALID)
+  if (next_available_handle_ == MOJO_HANDLE_INVALID) {
     return MOJO_HANDLE_INVALID;
+  }
 
   MojoHandle handle = next_available_handle_++;
   const bool inserted = entries_.Add(handle, Entry(std::move(dispatcher)));
@@ -188,8 +189,9 @@ MojoResult HandleTable::BeginTransit(
     Dispatcher::DispatcherInTransit d;
     d.local_handle = UNSAFE_TODO(handles[i]);
     d.dispatcher = entry->dispatcher;
-    if (!d.dispatcher->BeginTransit())
+    if (!d.dispatcher->BeginTransit()) {
       return MOJO_RESULT_BUSY;
+    }
     entry->busy = true;
     dispatchers->push_back(d);
   }
@@ -220,8 +222,9 @@ void HandleTable::CancelTransit(
 
 void HandleTable::GetActiveHandlesForTest(std::vector<MojoHandle>* handles) {
   handles->clear();
-  for (const auto& entry : entries_.GetUnderlyingMap())
+  for (const auto& entry : entries_.GetUnderlyingMap()) {
     handles->push_back(entry.first);
+  }
 }
 
 // MemoryDumpProvider implementation.

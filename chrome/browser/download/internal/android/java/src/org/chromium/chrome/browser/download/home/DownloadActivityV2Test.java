@@ -64,7 +64,9 @@ import org.chromium.base.Callback;
 import org.chromium.base.DeviceInfo;
 import org.chromium.base.DiscardableReferencePool;
 import org.chromium.base.ThreadUtils;
-import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.supplier.NonNullObservableSupplier;
+import org.chromium.base.supplier.ObservableSuppliers;
+import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.base.test.BaseActivityTestRule;
@@ -135,7 +137,7 @@ public class DownloadActivityV2Test {
     public OverrideContextWrapperTestRule mOverrideContextWrapperTestRule =
             new OverrideContextWrapperTestRule();
 
-    private ObservableSupplierImpl<EdgeToEdgeController> mEdgeToEdgeSupplier;
+    private SettableMonotonicObservableSupplier<EdgeToEdgeController> mEdgeToEdgeSupplier;
 
     private ModalDialogManager.Presenter mAppModalPresenter;
 
@@ -224,7 +226,7 @@ public class DownloadActivityV2Test {
             boolean showDangerousItems, boolean inlineSearchBar, boolean autoFocusSearchBox) {
         // Initialize this here to avoid "wrong thread" assertion.
         ThreadUtils.runOnUiThreadBlocking(
-                () -> mEdgeToEdgeSupplier = new ObservableSupplierImpl<>());
+                () -> mEdgeToEdgeSupplier = ObservableSuppliers.createMonotonic());
 
         DownloadManagerUiConfig config =
                 DownloadManagerUiConfigHelper.fromFlags(sActivity)
@@ -254,8 +256,8 @@ public class DownloadActivityV2Test {
                             final String url, int faviconSizePx, Callback<Bitmap> callback) {}
                 };
         Callback<Context> settingsNavigation = context -> {};
-        ObservableSupplierImpl<Boolean> isPrefetchEnabledSupplier = new ObservableSupplierImpl<>();
-        isPrefetchEnabledSupplier.set(true);
+        NonNullObservableSupplier<Boolean> isPrefetchEnabledSupplier =
+                ObservableSuppliers.alwaysTrue();
 
         mDownloadCoordinator =
                 new DownloadManagerCoordinatorImpl(

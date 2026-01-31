@@ -157,18 +157,12 @@ BASE_FEATURE(kDevToolsNewPermissionDialog, base::FEATURE_ENABLED_BY_DEFAULT);
 // Whether DevTools drawer can be toggled to vertical orientation.
 BASE_FEATURE(kDevToolsVerticalDrawer, base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Whether DevTools shows submenu example prompts for the AI Assistance panel
-// in context menus.
-BASE_FEATURE(kDevToolsAiSubmenuPrompts, base::FEATURE_ENABLED_BY_DEFAULT);
-
-// Whether DevTools shows 'Debug with AI' and new badges.
-BASE_FEATURE(kDevToolsAiDebugWithAi, base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Turns on the GreenDev experimental UI.
 BASE_FEATURE(kDevToolsGreenDevUi, base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Whether the global AI entrypoint is enabled.
 BASE_FEATURE(kDevToolsGlobalAiButton, base::FEATURE_ENABLED_BY_DEFAULT);
+
 // Whether the promotion animation is enabled.
 const base::FeatureParam<bool> kDevToolsGlobalAiButtonPromotionEnabled{
     &kDevToolsGlobalAiButton, "promotion_enabled",
@@ -187,10 +181,6 @@ const base::FeatureParam<bool> kDevToolsGdpProfilesStarterBadgeEnabled{
     &kDevToolsGdpProfiles, "starter_badge_enabled",
     /*default_value=*/true};
 
-// Whether DevTools Live Edit (Debugger.setScriptSource usage in CDP) is
-// enabled.
-BASE_FEATURE(kDevToolsLiveEdit, base::FEATURE_DISABLED_BY_DEFAULT);
-
 BASE_FEATURE(kDevToolsIndividualRequestThrottling,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
@@ -201,9 +191,6 @@ BASE_FEATURE(kDevToolsAiPromptApi, base::FEATURE_DISABLED_BY_DEFAULT);
 const base::FeatureParam<bool> kDevToolsAiPromptApiAllowWithoutGpu{
     &kDevToolsAiPromptApi, "allow_without_gpu",
     /*default_value=*/false};
-
-// Whether showing animation styles in the styles tab is enabled.
-BASE_FEATURE(kDevToolsStartingStyleDebugging, base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Whether Network panel should use Durable Messages to preserve network bodies.
 BASE_FEATURE(kDevToolsEnableDurableMessages, base::FEATURE_DISABLED_BY_DEFAULT);
@@ -219,5 +206,22 @@ BASE_FEATURE(kDevToolsShowPolicyDialog, base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kDevToolsAiAssistanceContextSelectionAgent,
              base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Whether Console Insights Teasers are enabled.
+BASE_FEATURE(kDevToolsConsoleInsightsTeasers,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+// Whether Console Insights Teasers are allowed to run on devices without a
+// dedicated GPU.
+const base::FeatureParam<bool> kDevToolsConsoleInsightsTeasersAllowWithoutGpu{
+    &kDevToolsConsoleInsightsTeasers, "allow_without_gpu",
+    /*default_value=*/false};
+
+BASE_FEATURE(kDevToolsAiAssistanceV2, base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Whether the Protocol Monitor panel is enabled.
+BASE_FEATURE(kDevToolsProtocolMonitor, base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Whether to display the Gemini rebranding for AI Assistance.
+BASE_FEATURE(kDevToolsGeminiRebranding, base::FEATURE_DISABLED_BY_DEFAULT);
 
 }  // namespace features

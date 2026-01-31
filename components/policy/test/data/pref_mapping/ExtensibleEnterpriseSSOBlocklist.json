@@ -14,7 +14,7 @@
           },
           "extensible_enterprise_sso.enabled_idps": {
             "location": "local_state",
-            "default_value": ["microsoft"]
+            "default_value": ["microsoft", "okta"]
           }
         }
       },
@@ -29,7 +29,7 @@
           },
           "extensible_enterprise_sso.enabled_idps": {
             "location": "local_state",
-            "value": ["microsoft"]
+            "value": ["microsoft", "okta"]
           }
         }
       },
@@ -51,6 +51,36 @@
       {
         "policies": {
           "ExtensibleEnterpriseSSOBlocklist": ["microsoft"]
+        },
+        "prefs": {
+          "extensible_enterprise_sso.enabled": {
+            "location": "local_state",
+            "value": 1
+          },
+          "extensible_enterprise_sso.enabled_idps": {
+            "location": "local_state",
+            "value": ["okta"]
+          }
+        }
+      },
+      {
+        "policies": {
+          "ExtensibleEnterpriseSSOBlocklist": ["okta"]
+        },
+        "prefs": {
+          "extensible_enterprise_sso.enabled": {
+            "location": "local_state",
+            "value": 1
+          },
+          "extensible_enterprise_sso.enabled_idps": {
+            "location": "local_state",
+            "value": ["microsoft"]
+          }
+        }
+      },
+      {
+        "policies": {
+          "ExtensibleEnterpriseSSOBlocklist": ["microsoft", "okta"]
         },
         "prefs": {
           "extensible_enterprise_sso.enabled": {

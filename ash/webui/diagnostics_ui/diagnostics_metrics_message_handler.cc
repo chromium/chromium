@@ -103,7 +103,7 @@ void DiagnosticsMetricsMessageHandler::SetWebUiForTesting(
 
 // Message Handlers:
 void DiagnosticsMetricsMessageHandler::HandleRecordNavigation(
-    const base::Value::List& args) {
+    const base::ListValue& args) {
   // Ensure JS arguments received are valid before using in calls to metrics.
   if (args.size() != 2u || !IsValidNavigationViewValue(args[0]) ||
       !IsValidNavigationViewValue(args[1]) || args[0] == args[1]) {

@@ -10,6 +10,8 @@ include_rules = [
   "+components/base32",
   "+components/metrics",
   "+components/version_info/channel.h",
+  "+services/webnn/buildflags.h",
+  "+services/webnn/public/cpp",
   "+third_party/crashpad",
 ]
 

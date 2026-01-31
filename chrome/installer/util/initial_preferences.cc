@@ -33,9 +33,9 @@ base::LazyInstance<installer::InitialPreferences>::DestructorAtExit
     g_initial_preferences = LAZY_INSTANCE_INITIALIZER;
 
 std::vector<std::string> GetNamedList(const char* name,
-                                      const base::Value::Dict& prefs) {
+                                      const base::DictValue& prefs) {
   std::vector<std::string> list;
-  const base::Value::List* value_list = prefs.FindListByDottedPath(name);
+  const base::ListValue* value_list = prefs.FindListByDottedPath(name);
   if (!value_list)
     return list;
 
@@ -49,7 +49,7 @@ std::vector<std::string> GetNamedList(const char* name,
   return list;
 }
 
-std::optional<base::Value::Dict> ParseDistributionPreferences(
+std::optional<base::DictValue> ParseDistributionPreferences(
     const std::string& json_data) {
   JSONStringValueDeserializer json(json_data);
   std::string error;
@@ -99,7 +99,7 @@ InitialPreferences::InitialPreferences(const std::string& prefs) {
   InitializeFromString(prefs);
 }
 
-InitialPreferences::InitialPreferences(base::Value::Dict prefs)
+InitialPreferences::InitialPreferences(base::DictValue prefs)
     : initial_dictionary_(std::move(prefs)) {
   // Cache a pointer to the distribution dictionary.
   distribution_ = initial_dictionary_->FindDict(
@@ -320,13 +320,13 @@ std::string InitialPreferences::GetInitialExtensionsProviderName() const {
   return provider_name ? *provider_name : std::string();
 }
 
-const base::Value::List* InitialPreferences::GetInitialExtensionsList() const {
+const base::ListValue* InitialPreferences::GetInitialExtensionsList() const {
   return initial_dictionary_->FindListByDottedPath(
       initial_preferences::kInitialExtensionsList);
 }
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
-const base::Value::Dict* InitialPreferences::GetBookmarksBlock() const {
+const base::DictValue* InitialPreferences::GetBookmarksBlock() const {
   return initial_dictionary_->FindDict(initial_preferences::kBookmarksBlock);
 }
 

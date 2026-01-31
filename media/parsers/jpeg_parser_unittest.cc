@@ -77,7 +77,7 @@ TEST(JpegParserTest, Parsing) {
   EXPECT_EQ(3, result.scan.components[2].component_selector);
   EXPECT_EQ(1, result.scan.components[2].dc_selector);
   EXPECT_EQ(1, result.scan.components[2].ac_selector);
-  EXPECT_EQ(121148u, result.data_size);
+  EXPECT_EQ(121148u, result.data.size());
   EXPECT_EQ(121358u, result.image_size);
 }
 
@@ -100,7 +100,7 @@ TEST(JpegParserTest, TrailingZerosShouldBeIgnored) {
   // Verify selected fields
 
   // SOS fields
-  EXPECT_EQ(121148u, result.data_size);
+  EXPECT_EQ(121148u, result.data.size());
   EXPECT_EQ(121358u, result.image_size);
 }
 

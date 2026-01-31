@@ -38,6 +38,7 @@ class SignoutConfirmationHandler
   void UpdateViewHeight(uint32_t height) override;
   void Accept(bool uninstall_account_extensions) override;
   void Cancel(bool uninstall_account_extensions) override;
+  void PerformReauth() override;
   void Close() override;
 
  private:

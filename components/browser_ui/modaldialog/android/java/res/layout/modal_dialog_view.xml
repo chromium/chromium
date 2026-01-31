@@ -47,7 +47,7 @@ found in the LICENSE file.
             <Space
                 android:id="@+id/message_paragraphs_bottom_spacer"
                 android:layout_width="match_parent"
-                android:layout_height="16dp"
+                android:layout_height="@dimen/modal_dialog_bottom_spacer_height"
                 android:visibility="gone" />
 
             <LinearLayout
@@ -155,5 +155,11 @@ found in the LICENSE file.
             android:paddingVertical="@dimen/modal_dialog_footer_vertical_padding" />
 
     </LinearLayout>
+
+    <Space
+        android:id="@+id/dialog_bottom_spacer"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/modal_dialog_bottom_spacer_height"
+        android:visibility="gone" />
 
 </org.chromium.components.browser_ui.modaldialog.ModalDialogView>

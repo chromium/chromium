@@ -150,7 +150,7 @@ CWV_EXPORT
 // Defaults to NO.
 @property(nonatomic, class) BOOL webInspectorEnabled;
 
-// Normally ios/web_view/ CHECKs IsAccountStorageEnabled() early on. Setting
+// Normally ios/web_view/ CHECKs IsAccountStorageActive() early on. Setting
 // this to true will cause the CHECK to be skipped, which potentially fixes
 // crbug.com/347862165.
 @property(nonatomic, class) BOOL skipAccountStorageCheckEnabled;

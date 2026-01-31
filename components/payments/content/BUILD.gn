@@ -82,6 +82,7 @@ static_library("content") {
     "//components/url_formatter",
     "//components/webauthn/content/browser",
     "//components/webauthn/core/browser",
+    "//components/webauthn/core/browser:common_utils",
     "//components/webdata/common",
     "//components/webdata_services",
     "//content/public/browser",

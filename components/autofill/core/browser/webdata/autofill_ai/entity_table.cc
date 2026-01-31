@@ -10,6 +10,7 @@
 #include <ranges>
 #include <string>
 #include <type_traits>
+#include <utility>
 
 #include "base/command_line.h"
 #include "base/feature_list.h"
@@ -20,7 +21,6 @@
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
-#include "base/types/cxx23_to_underlying.h"
 #include "base/uuid.h"
 #include "components/autofill/core/browser/autofill_field.h"
 #include "components/autofill/core/browser/data_model/addresses/autofill_structured_address_component.h"
@@ -407,7 +407,7 @@ bool EntityTable::AddEntityInstance(const EntityInstance& entity) {
   s.BindString(0, *entity.guid());
   s.BindString(1, entity.type().name_as_string());
   s.BindString(2, entity.nickname());
-  s.BindInt(3, base::to_underlying(entity.record_type()));
+  s.BindInt(3, std::to_underlying(entity.record_type()));
   s.BindBool(4, entity.are_attributes_read_only().value());
   s.BindString(5, entity.frecency_override(/*pass_key=*/{}));
 
@@ -508,7 +508,7 @@ std::optional<EntityInstance::EntityMetadata> EntityTable::GetEntityMetadata(
   }
 
   EntityInstance::EntityId entity_guid(s.ColumnString(0));
-  size_t use_count = s.ColumnInt64(1);
+  int64_t use_count = s.ColumnInt64(1);
   base::Time use_date = s.ColumnTime(2);
   base::Time date_modified = base::Time::FromTimeT(s.ColumnInt64(3));
 
@@ -549,7 +549,7 @@ EntityTable::LoadMetadata() const {
 
   while (s.Step()) {
     EntityInstance::EntityId entity_guid(s.ColumnString(0));
-    size_t use_count = s.ColumnInt64(1);
+    int64_t use_count = s.ColumnInt64(1);
     base::Time use_date = s.ColumnTime(2);
     base::Time date_modified = base::Time::FromTimeT(s.ColumnInt64(3));
     metadata_records[entity_guid] =
@@ -640,7 +640,7 @@ std::vector<EntityInstance> EntityTable::GetEntityInstances(
       record_type.has_value()
           ? base::StrCat(
                 {"WHERE ", entities::kRecordType, "= ",
-                 base::NumberToString(base::to_underlying(*record_type))})
+                 base::NumberToString(std::to_underlying(*record_type))})
           : "";
   // Collects all entities and populates them with the attributes from the
   // previous query.
@@ -687,7 +687,7 @@ std::optional<EntityInstance> EntityTable::ValidateInstance(
     EntityInstance::EntityId guid,
     std::string nickname,
     base::Time date_modified,
-    int use_count,
+    int64_t use_count,
     base::Time use_date,
     std::underlying_type_t<EntityInstance::RecordType> underlying_record_type,
     std::map<std::string, std::vector<AttributeRecord>> attribute_records,

@@ -6,10 +6,10 @@
 
 #include <stddef.h>
 
+#include <algorithm>
 #include <utility>
 
 #include "ash/constants/ash_features.h"
-#include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/files/file_enumerator.h"
 #include "base/functional/bind.h"
@@ -245,7 +245,7 @@ void DebugDaemonLogSource::OnGetLogs(const base::TimeTicks get_start_time,
   // debug info as we can even if we failed partway through parsing, and if we
   // couldn't fetch any of it, none of the fields will even appear.
   for (const auto& log : logs) {
-    if (base::Contains(kExcludeList, log.first)) {
+    if (std::ranges::contains(kExcludeList, log.first)) {
       continue;
     }
     response_->insert(log);

@@ -421,7 +421,7 @@ IN_PROC_BROWSER_TEST_F(SupervisedUserPendingStateNavigationTest,
 // Accepts a net::test_server::HttpRequest and checks if the google
 // api key is present in the headers.
 MATCHER(ContainsGoogleApiKey, "") {
-  return base::Contains(arg.headers, "X-Goog-Api-Key");
+  return arg.headers.contains("X-Goog-Api-Key");
 }
 
 // Tests that when the user doesn't have a valid access token the request is

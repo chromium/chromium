@@ -19,7 +19,7 @@ bool DefaultPrefStore::GetValue(std::string_view key,
   return prefs_.GetValue(key, result);
 }
 
-base::Value::Dict DefaultPrefStore::GetValues() const {
+base::DictValue DefaultPrefStore::GetValues() const {
   return prefs_.AsDict();
 }
 

@@ -144,6 +144,10 @@ class CORE_EXPORT ArrayBufferContents {
     return UNSAFE_BUFFERS(
         base::span(static_cast<uint8_t*>(Data()), DataLength()));
   }
+  base::span<uint8_t> ByteSpanShared() const {
+    DCHECK(IsShared());
+    return ByteSpanMaybeShared();
+  }
   base::span<uint8_t> ByteSpanMaybeShared() const {
     // SAFETY: `BackingStore` guarantees that `Data()` points to at least
     // `DataLength()` many bytes.

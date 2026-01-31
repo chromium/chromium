@@ -8,6 +8,7 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/shared_remote.h"
 #include "services/viz/privileged/mojom/gl/gpu_host.mojom.h"
+#include "services/webnn/host/weights_file_provider.h"
 
 namespace webnn::test {
 
@@ -71,6 +72,11 @@ void FakeGpuHostForTesting::EnsureWebNNExecutionProvidersReady(
   webnn::EnsureExecutionProvidersReady(std::move(callback));
 }
 #endif
+
+void FakeGpuHostForTesting::CreateWebNNWeightsFile(
+    CreateWebNNWeightsFileCallback callback) {
+  webnn::CreateWeightsFile(std::move(callback));
+}
 
 WebNNTestEnvironment::WebNNTestEnvironment(
     WebNNContextProviderImpl::WebNNStatus status,

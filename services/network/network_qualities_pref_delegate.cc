@@ -37,12 +37,12 @@ class PrefDelegateImpl
 
   ~PrefDelegateImpl() override {}
 
-  void SetDictionaryValue(const base::Value::Dict& dict) override {
+  void SetDictionaryValue(const base::DictValue& dict) override {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     pref_service_->SetDict(path_, dict.Clone());
   }
 
-  base::Value::Dict GetDictionaryValue() override {
+  base::DictValue GetDictionaryValue() override {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     return pref_service_->GetDict(path_).Clone();
   }

@@ -217,7 +217,7 @@ class TaskManagerTableModel : public TaskManagerObserver,
   // exists, or the default column settings.
   // The columns settings are the visible columns and the last sorted column
   // and the direction of the sort.
-  base::Value::Dict columns_settings_;
+  base::DictValue columns_settings_;
 
   // The table model observer that will be set by the table view of the task
   // manager.

@@ -15,7 +15,7 @@
 #include "components/performance_manager/public/graph/graph_registered.h"
 #include "components/performance_manager/public/graph/page_node.h"
 #include "components/performance_manager/public/graph/process_node.h"
-#include "content/public/browser/child_process_id.h"
+#include "content/public/common/child_process_id.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
 
 namespace performance_manager::policies {

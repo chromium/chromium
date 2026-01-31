@@ -33,7 +33,7 @@ class CrashUploadListChromeOS : public TextLogUploadList {
 
   // TextLogUploadList::
   std::unique_ptr<UploadList::UploadInfo> TryParseJsonLogEntry(
-      const base::Value::Dict& dict) override;
+      const base::DictValue& dict) override;
 };
 
 #endif  // CHROME_BROWSER_CRASH_UPLOAD_LIST_CRASH_UPLOAD_LIST_CHROMEOS_H_

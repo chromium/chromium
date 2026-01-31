@@ -162,7 +162,7 @@ PageInfoPermissionContentView::PageInfoPermissionContentView(
   // Calculate difference between label height and icon size to align icons
   // and label in the first row.
   const int margin =
-      (title_height - GetLayoutConstant(PAGE_INFO_ICON_SIZE)) / 2;
+      (title_height - GetLayoutConstant(LayoutConstant::kPageInfoIconSize)) / 2;
   icon_->SetProperty(views::kMarginsKey, gfx::Insets::VH(margin, 0));
   toggle_button_->SetProperty(views::kMarginsKey, gfx::Insets::VH(margin, 0));
 

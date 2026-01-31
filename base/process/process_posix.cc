@@ -200,9 +200,6 @@ namespace base {
 Process::Process(ProcessHandle handle) : process_(handle) {}
 
 Process::Process(Process&& other) : process_(other.process_) {
-#if BUILDFLAG(IS_CHROMEOS)
-  unique_token_ = std::move(other.unique_token_);
-#endif
 #if BUILDFLAG(IS_IOS) && BUILDFLAG(USE_BLINK) && TARGET_OS_SIMULATOR
   content_process_ = other.content_process_;
 #endif
@@ -212,9 +209,6 @@ Process::Process(Process&& other) : process_(other.process_) {
 
 Process& Process::operator=(Process&& other) {
   process_ = other.process_;
-#if BUILDFLAG(IS_CHROMEOS)
-  unique_token_ = std::move(other.unique_token_);
-#endif
 #if BUILDFLAG(IS_IOS) && BUILDFLAG(USE_BLINK) && TARGET_OS_SIMULATOR
   content_process_ = other.content_process_;
 #endif
@@ -267,9 +261,7 @@ Process Process::Duplicate() const {
   }
 
   Process duplicate = Process(process_);
-#if BUILDFLAG(IS_CHROMEOS)
-  duplicate.unique_token_ = unique_token_;
-#elif BUILDFLAG(IS_IOS) && BUILDFLAG(USE_BLINK) && TARGET_OS_SIMULATOR
+#if BUILDFLAG(IS_IOS) && BUILDFLAG(USE_BLINK) && TARGET_OS_SIMULATOR
   duplicate.content_process_ = content_process_;
 #endif
   return duplicate;
@@ -312,11 +304,6 @@ bool Process::TerminateInternal(int exit_code, bool wait) const {
   if (maybe_compromised) {
     // Forcibly terminate the process immediately.
     const bool was_killed = kill(process_, SIGKILL) == 0;
-#if BUILDFLAG(IS_CHROMEOS)
-    if (was_killed) {
-      CleanUpProcessAsync();
-    }
-#endif
     DPLOG_IF(ERROR, !was_killed) << "Unable to terminate process " << process_;
     return was_killed;
   }
@@ -326,10 +313,6 @@ bool Process::TerminateInternal(int exit_code, bool wait) const {
     DPLOG(ERROR) << "Unable to terminate process " << process_;
     return false;
   }
-
-#if BUILDFLAG(IS_CHROMEOS)
-  CleanUpProcessAsync();
-#endif
 
   if (!wait || WaitForExitWithTimeout(Seconds(60), nullptr)) {
     return true;
@@ -416,11 +399,7 @@ bool Process::WaitForExitWithTimeoutImpl(base::ProcessHandle handle,
 }
 #endif
 
-void Process::Exited(int exit_code) const {
-#if BUILDFLAG(IS_CHROMEOS)
-  CleanUpProcessAsync();
-#endif
-}
+void Process::Exited(int exit_code) const {}
 
 int Process::GetOSPriority() const {
   DCHECK(IsValid());

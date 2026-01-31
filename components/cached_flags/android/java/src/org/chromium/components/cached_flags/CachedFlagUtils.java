@@ -127,6 +127,10 @@ public class CachedFlagUtils {
     public static void cacheNativeFlagsImmediately(
             @JniType("std::map<std::string, std::string>") Map<String, String> features) {
         if (features.isEmpty()) return;
+        // If sListsOfCachedFlags is null, then we have not called setFullListOfFlags(),
+        // which means we are in early start-up, which means this function is not executed as a
+        // result of user manually turning on/off a flag, which means we should do nothing.
+        if (sListsOfCachedFlags == null) return;
 
         final SharedPreferences.Editor editor =
                 CachedFlagsSharedPreferences.getInstance().getEditor();
@@ -160,6 +164,10 @@ public class CachedFlagUtils {
             @JniType("std::map<std::string, std::map<std::string, std::string>>")
                     Map<String, Map<String, String>> featureParams) {
         if (featureParams.isEmpty()) return;
+        // If sListsOfFeatureParams is null, then we have not called setFullListOfFeatureParams(),
+        // which means we are in early start-up, which means this function is not executed as a
+        // result of user manually turning on/off a flag, which means we should do nothing.
+        if (sListsOfFeatureParams == null) return;
 
         eraseFeatureParamCachedValues(new ArrayList<>(featureParams.keySet()));
 
@@ -189,6 +197,10 @@ public class CachedFlagUtils {
     public static void eraseNativeFlagCachedValues(
             @JniType("std::vector<std::string>") List<String> featuresToErase) {
         if (featuresToErase.isEmpty()) return;
+        // If sListsOfCachedFlags is null, then we have not called setFullListOfFlags(),
+        // which means we are in early start-up, which means this function is not executed as a
+        // result of user manually turning on/off a flag, which means we should do nothing.
+        if (sListsOfCachedFlags == null) return;
 
         final SharedPreferences.Editor editor =
                 CachedFlagsSharedPreferences.getInstance().getEditor();
@@ -211,6 +223,10 @@ public class CachedFlagUtils {
     public static void eraseFeatureParamCachedValues(
             @JniType("std::vector<std::string>") List<String> featuresWithParamsToErase) {
         if (featuresWithParamsToErase.isEmpty()) return;
+        // If sListsOfFeatureParams is null, then we have not called setFullListOfFeatureParams(),
+        // which means we are in early start-up, which means this function is not executed as a
+        // result of user manually turning on/off a flag, which means we should do nothing.
+        if (sListsOfFeatureParams == null) return;
 
         final SharedPreferencesManager manager = CachedFlagsSharedPreferences.getInstance();
         for (String featureName : featuresWithParamsToErase) {

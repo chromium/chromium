@@ -10,7 +10,6 @@
 
 #include "base/check_is_test.h"
 #include "base/containers/adapters.h"
-#include "base/containers/contains.h"
 #include "base/debug/crash_logging.h"
 #include "base/debug/dump_without_crashing.h"
 #include "base/feature_list.h"
@@ -258,8 +257,24 @@ void RendererStartupHelper::OnRenderProcessLaunched(
     // extensions should have already been initialized in
     // OnRenderProcessHostCreated(), if it corresponds to the same context.
     ExtensionsBrowserClient* client = ExtensionsBrowserClient::Get();
+#if BUILDFLAG(IS_ANDROID)
+    // On Android, handle race condition during process restart:
+    // 1. OnRenderProcessHostCreated() initializes extensions and populates
+    // process_mojo_map_.
+    // 2. Process startup fails in some cases.
+    // 3. RenderProcessExited() clears process_mojo_map_ via UntrackProcess().
+    // 4. The process is reused and OnRenderProcessLaunched() is still called.
+    //
+    // Re-register the process to restore Mojo communication without
+    // re-initializing extensions to avoid duplicate loading.
+    if (GetRenderer(host) == nullptr &&
+        client->IsSameContext(browser_context_, host->GetBrowserContext())) {
+      RegisterProcess(host);
+    }
+#else
     CHECK(GetRenderer(host) != nullptr ||
           !client->IsSameContext(browser_context_, host->GetBrowserContext()));
+#endif  // BUILDFLAG(IS_ANDROID)
     return;
   }
   // Otherwise, we should *not* have initialized the host yet.
@@ -278,6 +293,12 @@ void RendererStartupHelper::RenderProcessHostDestroyed(
   UntrackProcess(host);
 }
 
+void RendererStartupHelper::RegisterProcess(
+    content::RenderProcessHost* process) {
+  process_mojo_map_.emplace(process, BindNewRendererRemote(process));
+  process->AddObserver(this);
+}
+
 void RendererStartupHelper::InitializeProcess(
     content::RenderProcessHost* process) {
   // If the process is for an initial WebUI, we don't need to initialize
@@ -291,10 +312,8 @@ void RendererStartupHelper::InitializeProcess(
     return;
   }
 
-  mojom::Renderer* renderer =
-      process_mojo_map_.emplace(process, BindNewRendererRemote(process))
-          .first->second.get();
-  process->AddObserver(this);
+  RegisterProcess(process);
+  mojom::Renderer* renderer = GetRenderer(process);
 
   bool activity_logging_enabled =
       client->IsActivityLoggingEnabled(process->GetBrowserContext());
@@ -351,8 +370,8 @@ void RendererStartupHelper::InitializeProcess(
       ExtensionRegistry::Get(browser_context_)->enabled_extensions();
   for (const auto& ext : extensions) {
     // OnExtensionLoaded should have already been called for the extension.
-    DCHECK(base::Contains(extension_process_map_, ext->id()));
-    DCHECK(!base::Contains(extension_process_map_[ext->id()], process));
+    DCHECK(extension_process_map_.contains(ext->id()));
+    DCHECK(!extension_process_map_[ext->id()].contains(process));
 
     if (!util::IsExtensionVisibleToContext(*ext, renderer_context)) {
       continue;
@@ -380,8 +399,8 @@ void RendererStartupHelper::InitializeProcess(
     for (const ExtensionId& id : iter->second) {
       // The extension should be loaded in the process.
       DCHECK(extensions.Contains(id));
-      DCHECK(base::Contains(extension_process_map_, id));
-      DCHECK(base::Contains(extension_process_map_[id], process));
+      DCHECK(extension_process_map_.contains(id));
+      DCHECK(extension_process_map_[id].contains(process));
       renderer->ActivateExtension(id);
     }
   }
@@ -408,7 +427,7 @@ void RendererStartupHelper::ActivateExtensionInProcess(
     content::RenderProcessHost* process) {
   // The extension should have been loaded already. Dump without crashing to
   // debug crbug.com/528026.
-  if (!base::Contains(extension_process_map_, extension.id())) {
+  if (!extension_process_map_.contains(extension.id())) {
     DUMP_WILL_BE_NOTREACHED()
         << "Extension " << extension.id() << " activated before loading";
     return;
@@ -439,7 +458,7 @@ void RendererStartupHelper::ActivateExtensionInProcess(
 
   auto remote = process_mojo_map_.find(process);
   if (remote != process_mojo_map_.end()) {
-    DCHECK(base::Contains(extension_process_map_[extension.id()], process));
+    DCHECK(extension_process_map_[extension.id()].contains(process));
     remote->second->ActivateExtension(extension.id());
   } else {
     pending_active_extensions_[process].insert(extension.id());
@@ -447,7 +466,7 @@ void RendererStartupHelper::ActivateExtensionInProcess(
 }
 
 void RendererStartupHelper::OnExtensionLoaded(const Extension& extension) {
-  DCHECK(!base::Contains(extension_process_map_, extension.id()));
+  DCHECK(!extension_process_map_.contains(extension.id()));
 
   // Mark the extension as loaded.
   std::set<raw_ptr<content::RenderProcessHost, SetExperimental>>&
@@ -483,7 +502,7 @@ void RendererStartupHelper::OnExtensionLoaded(const Extension& extension) {
 }
 
 void RendererStartupHelper::OnExtensionUnloaded(const Extension& extension) {
-  DCHECK(base::Contains(extension_process_map_, extension.id()));
+  DCHECK(extension_process_map_.contains(extension.id()));
 
   const std::set<raw_ptr<content::RenderProcessHost, SetExperimental>>&
       loaded_process_set = extension_process_map_[extension.id()];
@@ -602,7 +621,7 @@ BrowserContext* RendererStartupHelper::GetRendererBrowserContext() {
 void RendererStartupHelper::AddAPIActionToActivityLog(
     const std::optional<ExtensionId>& extension_id,
     const std::string& call_name,
-    base::Value::List args,
+    base::ListValue args,
     const std::string& extra) {
   auto* browser_context = GetRendererBrowserContext();
   if (!browser_context) {
@@ -617,7 +636,7 @@ void RendererStartupHelper::AddAPIActionToActivityLog(
 void RendererStartupHelper::AddEventToActivityLog(
     const std::optional<ExtensionId>& extension_id,
     const std::string& call_name,
-    base::Value::List args,
+    base::ListValue args,
     const std::string& extra) {
   auto* browser_context = GetRendererBrowserContext();
   if (!browser_context) {
@@ -632,7 +651,7 @@ void RendererStartupHelper::AddEventToActivityLog(
 void RendererStartupHelper::AddDOMActionToActivityLog(
     const ExtensionId& extension_id,
     const std::string& call_name,
-    base::Value::List args,
+    base::ListValue args,
     const GURL& url,
     const std::u16string& url_title,
     int32_t call_type) {

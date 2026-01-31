@@ -59,7 +59,7 @@ void LanguageDetectionJavaScriptFeature::ScriptMessageReceived(
     return;
   }
 
-  base::Value::Dict& body_dict = script_message.body()->GetDict();
+  base::DictValue& body_dict = script_message.body()->GetDict();
 
   std::optional<bool> has_notranslate = body_dict.FindBool("hasNoTranslate");
   const std::string* html_lang = body_dict.FindString("htmlLang");

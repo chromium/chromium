@@ -148,27 +148,21 @@ int MultiContentsDropTargetView::GetMaxWidth(int web_contents_width,
 
   switch (state) {
     case DropTargetState::kNudge:
-      CHECK(base::FeatureList::IsEnabled(features::kSideBySideDropTargetNudge));
-      min_width = features::kSideBySideDropTargetNudgeMinWidth.Get();
-      max_width = features::kSideBySideDropTargetNudgeMaxWidth.Get();
-      percentage =
-          features::kSideBySideDropTargetNudgeTargetWidthPercentage.Get();
+      min_width = kNudgeMinWidth;
+      max_width = kNudgeMaxWidth;
+      percentage = kNudgeTargetWidthPercentage;
       break;
     case DropTargetState::kNudgeToFull:
-      CHECK(base::FeatureList::IsEnabled(features::kSideBySideDropTargetNudge));
-      min_width = features::kSideBySideDropTargetNudgeToFullMinWidth.Get();
-      max_width = features::kSideBySideDropTargetNudgeToFullMaxWidth.Get();
-      percentage =
-          features::kSideBySideDropTargetNudgeToFullTargetWidthPercentage.Get();
+      min_width = kNudgeToFullMinWidth;
+      max_width = kNudgeToFullMaxWidth;
+      percentage = kNudgeToFullTargetWidthPercentage;
       break;
     case DropTargetState::kFull:
-      min_width = features::kSideBySideDropTargetMinWidth.Get();
-      max_width = features::kSideBySideDropTargetMaxWidth.Get();
-      percentage =
-          drag_type == DragType::kTab
-              ? features::kSideBySideDropTargetTargetWidthPercentage.Get()
-              : features::kSideBySideDropTargetForLinkTargetWidthPercentage
-                    .Get();
+      min_width = kDropTargetMinWidth;
+      max_width = kDropTargetMaxWidth;
+      percentage = drag_type == DragType::kTab
+                       ? kDropTargetTargetWidthPercentage
+                       : kDropTargetForLinkTargetWidthPercentage;
       break;
     default:
       NOTREACHED();
@@ -214,11 +208,6 @@ void MultiContentsDropTargetView::AnimationEnded(
 void MultiContentsDropTargetView::Show(DropSide side,
                                        DropTargetState state,
                                        DragType drag_type) {
-  if (state == DropTargetState::kNudge ||
-      state == DropTargetState::kNudgeToFull) {
-    CHECK(base::FeatureList::IsEnabled(features::kSideBySideDropTargetNudge));
-  }
-
   // If transitioning from a nudge to full state, start a new animation.
   if (state == DropTargetState::kNudgeToFull &&
       state_ == MultiContentsDropTargetView::DropTargetState::kNudge) {

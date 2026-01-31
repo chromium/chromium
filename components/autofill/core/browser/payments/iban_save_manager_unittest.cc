@@ -91,7 +91,7 @@ class IbanSaveManagerTest : public testing::Test {
                     payments::PaymentsAutofillClient::PaymentsRpcResult,
                     const std::u16string& validation_regex,
                     const std::u16string& context_token,
-                    std::unique_ptr<base::Value::Dict>)> callback) {
+                    std::unique_ptr<base::DictValue>)> callback) {
               std::move(callback).Run(
                   is_successful ? payments::PaymentsAutofillClient::
                                       PaymentsRpcResult::kSuccess
@@ -99,12 +99,12 @@ class IbanSaveManagerTest : public testing::Test {
                                       PaymentsRpcResult::kPermanentFailure,
                   regex, u"this is a context token",
                   includes_invalid_legal_message
-                      ? std::make_unique<base::Value::Dict>(
+                      ? std::make_unique<base::DictValue>(
                             base::JSONReader::ReadDict(
                                 kInvalidLegalMessageLines,
                                 base::JSON_PARSE_CHROMIUM_EXTENSIONS)
                                 .value())
-                      : std::make_unique<base::Value::Dict>(
+                      : std::make_unique<base::DictValue>(
                             base::JSONReader::ReadDict(
                                 kLegalMessageLines,
                                 base::JSON_PARSE_CHROMIUM_EXTENSIONS)

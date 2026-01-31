@@ -7,6 +7,7 @@ package org.chromium.android_webview.robolectric;
 import androidx.test.filters.SmallTest;
 
 import org.junit.Assert;
+import org.junit.Assume;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -17,6 +18,7 @@ import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.base.test.util.InMemorySharedPreferences;
+import org.chromium.build.BuildConfig;
 
 import java.util.Map;
 import java.util.Set;
@@ -29,6 +31,16 @@ public class WebViewCachedFlagsTest {
     private static final String CACHED_DISABLED_FLAGS_PREF = "CachedFlagsDisabled";
     private static final String CACHED_FLAGS_EXIST_HISTOGRAM_NAME =
             "Android.WebView.CachedFlagsExist";
+
+    @Test
+    @Feature({"AndroidWebView"})
+    @SmallTest
+    public void doubleInitFailsAssertion() {
+        Assume.assumeTrue(BuildConfig.ENABLE_ASSERTS);
+        InMemorySharedPreferences sharedPrefs = new InMemorySharedPreferences();
+        WebViewCachedFlags.init(sharedPrefs);
+        Assert.assertThrows(AssertionError.class, () -> WebViewCachedFlags.init(sharedPrefs));
+    }
 
     @Test
     @Feature({"AndroidWebView"})

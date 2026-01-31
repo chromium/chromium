@@ -19,7 +19,6 @@
 #include "ash/webui/shimless_rma/mojom/shimless_rma.mojom.h"
 #include "ash/webui/shimless_rma/mojom/shimless_rma_mojom_traits.h"
 #include "base/check_op.h"
-#include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
@@ -341,7 +340,7 @@ void ShimlessRmaService::OnForgetNewNetworkConnections(
   for (auto& network : networks) {
     const std::string& guid = network->guid;
     const bool found_network_guid =
-        base::Contains(existing_saved_network_guids_.value(), guid);
+        existing_saved_network_guids_.value().contains(guid);
 
     if (!found_network_guid) {
       pending_network_guids_to_forget_.insert(guid);

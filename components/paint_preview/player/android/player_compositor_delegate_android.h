@@ -23,12 +23,12 @@ class PlayerCompositorDelegateAndroid : public PlayerCompositorDelegate {
       JNIEnv* env,
       const base::android::JavaRef<jobject>& j_object,
       PaintPreviewBaseService* paint_preview_service,
-      jlong j_capture_result_ptr,
+      int64_t j_capture_result_ptr,
       const base::android::JavaRef<jstring>& j_url_spec,
       const base::android::JavaRef<jstring>& j_directory_key,
-      jboolean j_main_frame_mode,
+      bool j_main_frame_mode,
       const base::android::JavaRef<jobject>& j_compositor_error_callback,
-      jboolean j_is_low_mem);
+      bool j_is_low_mem);
 
   void OnCompositorReady(
       CompositorStatus compositor_status,
@@ -36,25 +36,23 @@ class PlayerCompositorDelegateAndroid : public PlayerCompositorDelegate {
       float page_scale_factor,
       std::unique_ptr<ui::AXTreeUpdate> ax_tree) override;
 
-  void OnMemoryPressure(
-      base::MemoryPressureLevel memory_pressure_level) override;
-
   base::android::ScopedJavaLocalRef<jintArray> GetRootFrameOffsets(JNIEnv* env);
 
   // Called from Java when there is a request for a new bitmap. When the bitmap
   // is ready, it will be passed to j_bitmap_callback. In case of any failure,
   // j_error_callback will be called.
-  jint RequestBitmap(JNIEnv* env,
-                     std::optional<base::UnguessableToken>& frame_guid,
-                     const base::android::JavaRef<jobject>& j_bitmap_callback,
-                     const base::android::JavaRef<jobject>& j_error_callback,
-                     jfloat j_scale_factor,
-                     jint j_clip_x,
-                     jint j_clip_y,
-                     jint j_clip_width,
-                     jint j_clip_height);
+  int32_t RequestBitmap(
+      JNIEnv* env,
+      std::optional<base::UnguessableToken>& frame_guid,
+      const base::android::JavaRef<jobject>& j_bitmap_callback,
+      const base::android::JavaRef<jobject>& j_error_callback,
+      float j_scale_factor,
+      int32_t j_clip_x,
+      int32_t j_clip_y,
+      int32_t j_clip_width,
+      int32_t j_clip_height);
 
-  jboolean CancelBitmapRequest(JNIEnv* env, jint j_request_id);
+  bool CancelBitmapRequest(JNIEnv* env, int32_t j_request_id);
 
   void CancelAllBitmapRequests(JNIEnv* env);
 
@@ -62,11 +60,11 @@ class PlayerCompositorDelegateAndroid : public PlayerCompositorDelegate {
   base::android::ScopedJavaLocalRef<jstring> OnClick(
       JNIEnv* env,
       std::optional<base::UnguessableToken>& frame_guid,
-      jint j_x,
-      jint j_y);
+      int32_t j_x,
+      int32_t j_y);
 
   // Called to set if compression should happen at close time.
-  void SetCompressOnClose(JNIEnv* env, jboolean compress_on_close);
+  void SetCompressOnClose(JNIEnv* env, bool compress_on_close);
 
   void Destroy(JNIEnv* env);
 

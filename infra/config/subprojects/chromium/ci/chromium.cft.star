@@ -306,11 +306,6 @@ ci.builder(
                 args = [
                     "--test-launcher-filter-file=../../testing/buildbot/filters/win.win-rel-cft.browser_tests.filter",
                 ],
-                swarming = targets.swarming(
-                    # This is for slow test execution that often becomes a critical path of
-                    # swarming jobs. crbug.com/868114
-                    shards = 15,
-                ),
             ),
             "browser_tests_no_field_trial": targets.remove(
                 reason = "crbug.com/40630866",

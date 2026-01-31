@@ -99,6 +99,8 @@ downloads::mojom::DangerType GetDangerType(
       return downloads::mojom::DangerType::kSensitiveContentWarning;
     case download::DOWNLOAD_DANGER_TYPE_FORCE_SAVE_TO_GDRIVE:
       return downloads::mojom::DangerType::kForcedSaveToGdrive;
+    case download::DOWNLOAD_DANGER_TYPE_FORCE_SAVE_TO_ONEDRIVE:
+      return downloads::mojom::DangerType::kForcedSaveToOnedrive;
     case download::DOWNLOAD_DANGER_TYPE_SENSITIVE_CONTENT_BLOCK:
       return downloads::mojom::DangerType::kSensitiveContentBlock;
     case download::DOWNLOAD_DANGER_TYPE_DEEP_SCANNED_FAILED:
@@ -161,27 +163,7 @@ std::string TimeFormatLongDate(const base::Time& time) {
   return base::UTF16ToUTF8(base::i18n::UnicodeStringToString16(date_string));
 }
 
-std::u16string GetFormattedDisplayUrl(const GURL& url) {
-  std::u16string result = url_formatter::FormatUrlForSecurityDisplay(url);
-  // Truncate long URL. We truncate the beginning so that the end of it is
-  // shown, which typically contains the eTLD+1. This may truncate the scheme
-  // part of the URL.
-  if (result.size() > kMaxDisplayURLChars) {
-    result = result.substr(result.size() - kMaxDisplayURLChars);
-  }
-  return result;
-}
 
-void FillUrlFields(const GURL& url,
-                   std::optional<GURL>& data_url,
-                   std::u16string& display_url_out) {
-  // If URL is too long, don't make it clickable.
-  if (url.is_valid() && url.spec().length() <= url::kMaxURLChars) {
-    data_url = std::make_optional<GURL>(url);
-  }
-
-  display_url_out = GetFormattedDisplayUrl(url);
-}
 
 // Returns a formatted string representing the initiator origin of the download
 // request. May return empty string if there is no suitable origin to display.
@@ -399,8 +381,11 @@ downloads::mojom::DataPtr DownloadsListTracker::CreateDownloadData(
   file_name = base::i18n::GetDisplayStringInLTRDirectionality(file_name);
 
   file_value->file_name = base::UTF16ToUTF8(file_name);
-  FillUrlFields(download_item->GetURL(), file_value->url,
-                file_value->display_url);
+  // Include URL unless it is too long.
+  if (download_item->GetURL().is_valid() &&
+      download_item->GetURL().spec().length() <= url::kMaxURLChars) {
+    file_value->url = std::make_optional<GURL>(download_item->GetURL());
+  }
   file_value->display_initiator_origin =
       GetFormattedInitiatorOrigin(download_item);
   file_value->total = download_item->GetTotalBytes();

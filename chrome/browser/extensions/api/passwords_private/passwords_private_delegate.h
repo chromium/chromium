@@ -217,7 +217,7 @@ class PasswordsPrivateDelegate
   // Whether the current signed-in user (aka unconsented primary account) has
   // the Google account storage for passwords is enabled (as opposed to
   // local/profile storage).
-  virtual bool IsAccountStorageEnabled() = 0;
+  virtual bool IsAccountStorageActive() = 0;
 
   // Enables/disables use of the Google account storage for passwords
   virtual void SetAccountStorageEnabled(bool enabled,

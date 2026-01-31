@@ -80,8 +80,8 @@ TEST_F(TabStripModelSelectionStateTest, SetActiveTab) {
                                               tab1_.get());
   selection_state.SetActiveTab(tab2_.get());
   EXPECT_EQ(tab2_.get(), selection_state.active_tab());
-  EXPECT_FALSE(selection_state.IsSelected(tab2_.get()));
-  EXPECT_EQ(1u, selection_state.selected_tabs().size());
+  EXPECT_TRUE(selection_state.IsSelected(tab2_.get()));
+  EXPECT_EQ(2u, selection_state.selected_tabs().size());
   EXPECT_TRUE(selection_state.Valid());
 }
 
@@ -90,8 +90,8 @@ TEST_F(TabStripModelSelectionStateTest, SetAnchorTab) {
                                               tab1_.get());
   selection_state.SetAnchorTab(tab2_.get());
   EXPECT_EQ(tab2_.get(), selection_state.anchor_tab());
-  EXPECT_FALSE(selection_state.IsSelected(tab2_.get()));
-  EXPECT_EQ(1u, selection_state.selected_tabs().size());
+  EXPECT_TRUE(selection_state.IsSelected(tab2_.get()));
+  EXPECT_EQ(2u, selection_state.selected_tabs().size());
   EXPECT_TRUE(selection_state.Valid());
 }
 

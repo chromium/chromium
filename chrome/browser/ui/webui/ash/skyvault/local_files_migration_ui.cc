@@ -110,7 +110,7 @@ void LocalFilesMigrationUI::SetInitialDialogInfo(
 }
 
 void LocalFilesMigrationUI::ProcessResponseAndCloseDialog(DialogAction action) {
-  base::Value::List values;
+  base::ListValue values;
   if (action == DialogAction::kUploadNow) {
     // Signal to the dialog to run the migration callback.
     values.Append(kStartMigration);

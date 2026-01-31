@@ -110,7 +110,7 @@ TEST_F(MutableProfileAttributesStorageIOSTest, AddProfile) {
     EXPECT_TRUE(attr.IsNewProfile());
 
     attr.ClearIsNewProfile();
-    EXPECT_EQ(std::move(attr).GetStorage(), base::Value::Dict());
+    EXPECT_EQ(std::move(attr).GetStorage(), base::DictValue());
   }
 
   // There is no duplicate, so there should be exactly as many Profile
@@ -499,7 +499,7 @@ TEST_F(MutableProfileAttributesStorageIOSTest, CanDeleteProfileWithName) {
 TEST_F(MutableProfileAttributesStorageIOSTest, CanCreateProfileWithName) {
   pref_service()->SetDict(
       prefs::kLegacyProfileMap,
-      base::Value::Dict().Set(kLegacyProfile, base::Value::Dict()));
+      base::DictValue().Set(kLegacyProfile, base::DictValue()));
 
   MutableProfileAttributesStorageIOS storage(pref_service());
 
@@ -625,9 +625,8 @@ TEST_F(MutableProfileAttributesStorageIOSTest,
   // Set up the prefs in an inconsistent state corresponding to the
   // personal profile as marked for deletion.
   pref_service()->SetString(prefs::kPersonalProfileName, kTestProfile1);
-  pref_service()->SetList(
-      prefs::kProfilesToRemove,
-      base::Value::List().Append(std::string(kTestProfile1)));
+  pref_service()->SetList(prefs::kProfilesToRemove,
+                          base::ListValue().Append(std::string(kTestProfile1)));
 
   MutableProfileAttributesStorageIOS storage(pref_service());
 
@@ -646,7 +645,7 @@ TEST_F(MutableProfileAttributesStorageIOSTest,
 TEST_F(MutableProfileAttributesStorageIOSTest, RemoveInvalidValuesFromCache) {
   pref_service()->SetDict(
       prefs::kProfileInfoCache,
-      base::Value::Dict().Set(kInvalidProfile, "not a dictionary"));
+      base::DictValue().Set(kInvalidProfile, "not a dictionary"));
 
   MutableProfileAttributesStorageIOS storage(pref_service());
 

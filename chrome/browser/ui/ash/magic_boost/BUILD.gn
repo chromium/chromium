@@ -25,7 +25,6 @@ source_set("magic_boost") {
     "//chrome/browser/ui/ash/read_write_cards",
     "//chromeos/components/magic_boost/public/cpp",
     "//chromeos/components/mahi/public/cpp",
-    "//chromeos/crosapi/mojom",
     "//chromeos/strings:strings_grit",
     "//chromeos/ui/vector_icons",
     "//components/application_locale_storage",
@@ -48,14 +47,14 @@ source_set("test_support") {
   testonly = true
 
   sources = [
-    "test/mock_magic_boost_controller_crosapi.cc",
-    "test/mock_magic_boost_controller_crosapi.h",
+    "test/mock_magic_boost_controller.cc",
+    "test/mock_magic_boost_controller.h",
   ]
 
   deps = [
     ":magic_boost",
     "//base",
-    "//chromeos/crosapi/mojom",
+    "//chrome/browser/ash/magic_boost",
     "//testing/gmock",
   ]
 }

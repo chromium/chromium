@@ -6,11 +6,11 @@
 
 #include <stddef.h>
 
+#include <algorithm>
 #include <memory>
 #include <string>
 #include <utility>
 
-#include "base/containers/contains.h"
 #include "base/files/file_path.h"
 #include "base/json/json_reader.h"
 #include "base/memory/raw_ptr.h"
@@ -423,11 +423,13 @@ TEST_F(DownloadItemNotificationTest, NotificationActionsForPdf) {
   auto actions = GetExtraActions();
 
 #if BUILDFLAG(IS_CHROMEOS)
-  EXPECT_TRUE(base::Contains(*actions, DownloadCommands::EDIT_WITH_MEDIA_APP));
+  EXPECT_TRUE(
+      std::ranges::contains(*actions, DownloadCommands::EDIT_WITH_MEDIA_APP));
   EXPECT_EQ(u"Open and edit",
             GetCommandLabel(DownloadCommands::EDIT_WITH_MEDIA_APP));
 #else
-  EXPECT_FALSE(base::Contains(*actions, DownloadCommands::EDIT_WITH_MEDIA_APP));
+  EXPECT_FALSE(
+      std::ranges::contains(*actions, DownloadCommands::EDIT_WITH_MEDIA_APP));
 #endif
 }
 
@@ -443,10 +445,12 @@ TEST_F(DownloadItemNotificationTest, NotificationActionsForAudio) {
   auto actions = GetExtraActions();
 
 #if BUILDFLAG(IS_CHROMEOS)
-  EXPECT_TRUE(base::Contains(*actions, DownloadCommands::OPEN_WITH_MEDIA_APP));
+  EXPECT_TRUE(
+      std::ranges::contains(*actions, DownloadCommands::OPEN_WITH_MEDIA_APP));
   EXPECT_EQ(u"Open", GetCommandLabel(DownloadCommands::OPEN_WITH_MEDIA_APP));
 #else
-  EXPECT_FALSE(base::Contains(*actions, DownloadCommands::OPEN_WITH_MEDIA_APP));
+  EXPECT_FALSE(
+      std::ranges::contains(*actions, DownloadCommands::OPEN_WITH_MEDIA_APP));
 #endif
 }
 

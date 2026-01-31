@@ -22,7 +22,7 @@
 #include "chrome/browser/ui/views/extensions/extensions_menu_item_view.h"
 #include "chrome/browser/ui/views/extensions/extensions_menu_view.h"
 #include "chrome/browser/ui/views/extensions/extensions_toolbar_button.h"
-#include "chrome/browser/ui/views/extensions/extensions_toolbar_container.h"
+#include "chrome/browser/ui/views/extensions/extensions_toolbar_desktop.h"
 #include "chrome/browser/ui/views/extensions/extensions_toolbar_interactive_uitest.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/hover_button_controller.h"
@@ -97,8 +97,7 @@ class ExtensionsMenuViewInteractiveUITest : public ExtensionsToolbarUITest {
     EXPECT_TRUE(ExtensionsToolbarUITest::VerifyUi());
 
     if (ui_test_name_ == "ReloadPageBubble") {
-      ExtensionsToolbarContainer* const container =
-          GetExtensionsToolbarContainer();
+      ExtensionsToolbarDesktop* const container = GetExtensionsToolbarDesktop();
       // Clicking the extension should close the extensions menu, pop out the
       // extension, and display the "reload this page" bubble.
       EXPECT_TRUE(container->GetAnchoredWidgetForExtensionForTesting(
@@ -226,8 +225,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionsMenuViewInteractiveUITest, TriggerPopup) {
   ShowUi("");
   VerifyUi();
 
-  ExtensionsToolbarContainer* const extensions_container =
-      GetExtensionsToolbarContainer();
+  ExtensionsToolbarDesktop* const extensions_container =
+      GetExtensionsToolbarDesktop();
 
   EXPECT_EQ(std::nullopt, extensions_container->GetPoppedOutActionId());
   EXPECT_TRUE(GetVisibleToolbarActionViews().empty());
@@ -258,8 +257,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionsMenuViewInteractiveUITest,
   ShowUi("");
   VerifyUi();
 
-  ExtensionsToolbarContainer* const extensions_container =
-      GetExtensionsToolbarContainer();
+  ExtensionsToolbarDesktop* const extensions_container =
+      GetExtensionsToolbarDesktop();
 
   EXPECT_EQ(std::nullopt, extensions_container->GetPoppedOutActionId());
   EXPECT_TRUE(GetVisibleToolbarActionViews().empty());
@@ -412,8 +411,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionsMenuViewInteractiveUITest,
   LoadTestExtension("extensions/simple_with_popup");
 
   ClickExtensionsMenuButton();
-  ExtensionsToolbarContainer* const extensions_container =
-      GetExtensionsToolbarContainer();
+  ExtensionsToolbarDesktop* const extensions_container =
+      GetExtensionsToolbarDesktop();
 
   // Pin extension from menu.
   ASSERT_TRUE(VerifyUi());
@@ -454,7 +453,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionsMenuViewInteractiveUITest,
   // Verify the context menu option, when opened from the toolbar action, is to
   // unpin the extension.
   ui::SimpleMenuModel* context_menu = static_cast<ui::SimpleMenuModel*>(
-      extensions_container->GetActionForId(extensions()[0]->id())
+      extensions_container->GetToolbarViewModel()
+          ->GetActionForId(extensions()[0]->id())
           ->GetContextMenu(extensions::ExtensionContextMenuModel::
                                ContextMenuSource::kToolbarAction));
   std::optional<size_t> visibility_index = context_menu->GetIndexOfCommandId(
@@ -470,8 +470,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionsMenuViewInteractiveUITest,
   LoadTestExtension("extensions/simple_with_popup");
 
   ClickExtensionsMenuButton();
-  ExtensionsToolbarContainer* const extensions_container =
-      GetExtensionsToolbarContainer();
+  ExtensionsToolbarDesktop* const extensions_container =
+      GetExtensionsToolbarDesktop();
 
   TriggerSingleExtensionButton();
 
@@ -487,7 +487,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionsMenuViewInteractiveUITest,
   // Verify the context menu option, when opened from the toolbar action, is to
   // unpin the extension.
   ui::SimpleMenuModel* context_menu = static_cast<ui::SimpleMenuModel*>(
-      extensions_container->GetActionForId(extensions()[0]->id())
+      extensions_container->GetToolbarViewModel()
+          ->GetActionForId(extensions()[0]->id())
           ->GetContextMenu(extensions::ExtensionContextMenuModel::
                                ContextMenuSource::kToolbarAction));
   std::optional<size_t> visibility_index = context_menu->GetIndexOfCommandId(
@@ -612,7 +613,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionsMenuViewInteractiveUITest,
 
   // Change the extension permissions to run on click using the context menu.
   auto* context_menu = static_cast<extensions::ExtensionContextMenuModel*>(
-      GetExtensionsToolbarContainer()
+      GetExtensionsToolbarDesktop()
+          ->GetToolbarViewModel()
           ->GetActionForId(extensions()[0]->id())
           ->GetContextMenu(extensions::ExtensionContextMenuModel::
                                ContextMenuSource::kMenuItem));

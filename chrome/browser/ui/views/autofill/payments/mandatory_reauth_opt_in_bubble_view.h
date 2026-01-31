@@ -14,7 +14,7 @@ namespace autofill {
 
 class MandatoryReauthOptInBubbleView : public AutofillLocationBarBubble {
  public:
-  MandatoryReauthOptInBubbleView(views::View* anchor_view,
+  MandatoryReauthOptInBubbleView(views::BubbleAnchor anchor,
                                  content::WebContents* web_contents,
                                  MandatoryReauthBubbleController* controller);
   MandatoryReauthOptInBubbleView(const MandatoryReauthOptInBubbleView&) =

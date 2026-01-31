@@ -32,27 +32,25 @@ class InteractionProvider;
 class APIBindingsSystem {
  public:
   using GetAPISchemaMethod =
-      base::RepeatingCallback<const base::Value::Dict&(const std::string&)>;
+      base::RepeatingCallback<const base::DictValue&(const std::string&)>;
   using CustomTypeHandler = base::RepeatingCallback<v8::Local<v8::Object>(
       v8::Isolate* isolate,
       const std::string& property_name,
-      const base::Value::List* property_values,
+      const base::ListValue* property_values,
       APIRequestHandler* request_handler,
       APIEventHandler* event_handler,
       APITypeReferenceMap* type_refs,
       const BindingAccessChecker* access_checker)>;
 
-  APIBindingsSystem(
-      GetAPISchemaMethod get_api_schema,
-      BindingAccessChecker::APIAvailabilityCallback api_available,
-      BindingAccessChecker::PromiseAvailabilityCallback promises_available,
-      APIRequestHandler::SendRequestMethod send_request,
-      std::unique_ptr<InteractionProvider> interaction_provider,
-      APIEventListeners::ListenersUpdated event_listeners_changed,
-      APIEventHandler::ContextOwnerIdGetter context_owner_getter,
-      APIBinding::OnSilentRequest on_silent_request,
-      binding::AddConsoleError add_console_error,
-      APILastError last_error);
+  APIBindingsSystem(GetAPISchemaMethod get_api_schema,
+                    BindingAccessChecker::APIAvailabilityCallback api_available,
+                    APIRequestHandler::SendRequestMethod send_request,
+                    std::unique_ptr<InteractionProvider> interaction_provider,
+                    APIEventListeners::ListenersUpdated event_listeners_changed,
+                    APIEventHandler::ContextOwnerIdGetter context_owner_getter,
+                    APIBinding::OnSilentRequest on_silent_request,
+                    binding::AddConsoleError add_console_error,
+                    APILastError last_error);
 
   APIBindingsSystem(const APIBindingsSystem&) = delete;
   APIBindingsSystem& operator=(const APIBindingsSystem&) = delete;
@@ -68,7 +66,7 @@ class APIBindingsSystem {
   // Responds to the request with the given `request_id`, calling the callback
   // with `response`. If `error` is non-empty, sets the last error.
   void CompleteRequest(int request_id,
-                       const base::Value::List& response,
+                       const base::ListValue& response,
                        const std::string& error,
                        mojom::ExtraResponseDataPtr extra_data = nullptr);
 
@@ -76,7 +74,7 @@ class APIBindingsSystem {
   // listeners.
   void FireEventInContext(const std::string& event_name,
                           v8::Local<v8::Context> context,
-                          const base::Value::List& response,
+                          const base::ListValue& response,
                           mojom::EventFilteringInfoPtr filter);
 
   // Registers the custom hook on the APIBindingHooks object for the given API.
@@ -90,6 +88,9 @@ class APIBindingsSystem {
   void RegisterCustomType(const std::string& type_name,
                           CustomTypeHandler function);
 
+  // Handles any initialization of the context. This should be called before any
+  // APIs or other objects are created.
+  void DidCreateContext(v8::Local<v8::Context> context);
   // Handles any cleanup necessary before releasing the given `context`.
   void WillReleaseContext(v8::Local<v8::Context> context);
 
@@ -114,7 +115,7 @@ class APIBindingsSystem {
       v8::Isolate* isolate,
       const std::string& type_name,
       const std::string& property_name,
-      const base::Value::List* property_values);
+      const base::ListValue* property_values);
 
   // The map of cached API reference types.
   APITypeReferenceMap type_reference_map_;

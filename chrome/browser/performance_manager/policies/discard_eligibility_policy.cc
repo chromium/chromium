@@ -4,6 +4,8 @@
 
 #include "chrome/browser/performance_manager/policies/discard_eligibility_policy.h"
 
+#include "base/metrics/histogram_functions.h"
+#include "base/strings/strcat.h"
 #include "chrome/common/chrome_features.h"
 #include "components/performance_manager/graph/page_node_impl.h"
 #include "components/performance_manager/public/decorators/page_live_state_decorator.h"
@@ -122,6 +124,51 @@ void DiscardEligibilityPolicy::OnTakenFromGraph(Graph* graph) {
   graph->RemovePageNodeObserver(this);
 }
 
+bool DiscardEligibilityPolicy::WillDiscardBePerceptible(
+    const PageNode* page_node) const {
+  if (page_node->IsAudible() || page_node->HasPictureInPicture() ||
+      page_node->GetNotificationPermissionStatus() ==
+          blink::mojom::PermissionStatus::GRANTED) {
+    return true;
+  }
+
+  const auto* live_state_data =
+      PageLiveStateDecorator::Data::FromPageNode(page_node);
+  if (live_state_data) {
+    if (live_state_data->IsCapturingVideo() ||
+        live_state_data->IsCapturingAudio() ||
+        live_state_data->IsBeingMirrored() ||
+        live_state_data->IsCapturingWindow() ||
+        live_state_data->IsCapturingDisplay() ||
+        live_state_data->IsConnectedToBluetoothDevice() ||
+        live_state_data->IsConnectedToUSBDevice()) {
+      return true;
+    }
+  }
+
+  return false;
+}
+
+bool DiscardEligibilityPolicy::IsDiscardAllowed(
+    const PageNode* page_node) const {
+  const GURL& main_frame_url = page_node->GetMainFrameUrl();
+  if (IsPageOptedOutOfDiscarding(page_node->GetBrowserContextID(),
+                                 main_frame_url)) {
+    return false;
+  }
+
+  const auto* live_state_data =
+      PageLiveStateDecorator::Data::FromPageNode(page_node);
+  if (live_state_data) {
+    if (!live_state_data->IsAutoDiscardable() ||
+        live_state_data->IsPinnedTab()) {
+      return false;
+    }
+  }
+
+  return true;
+}
+
 // NOTE: This is used by ProcessRankPolicyAndroid. If you add a new condition to
 // this, you need to add an observer callback to ProcessRankPolicyAndroid as
 // well.
@@ -238,30 +285,35 @@ CanDiscardResult DiscardEligibilityPolicy::CanDiscard(
   }
 
 #if !BUILDFLAG(IS_ANDROID)
-  // Do not discard Desktop PWA windows. Preserve native-app experience.
-  content::WebContents* web_contents = page_node->GetWebContents().get();
-  if (web_contents) {
-    web_app::WebAppTabHelper* tab_helper =
-        web_app::WebAppTabHelper::FromWebContents(web_contents);
-    if (tab_helper && tab_helper->is_in_app_window()) {
-      add_reason_and_update_result(CannotDiscardReason::kWebApp,
-                                   CanDiscardResult::kProtected);
+  {
+    // Do not discard Desktop PWA windows. Preserve native-app experience.
+    content::WebContents* web_contents = page_node->GetWebContents().get();
+    if (web_contents) {
+      web_app::WebAppTabHelper* tab_helper =
+          web_app::WebAppTabHelper::FromWebContents(web_contents);
+      if (tab_helper && tab_helper->is_in_app_window()) {
+        add_reason_and_update_result(CannotDiscardReason::kWebApp,
+                                     CanDiscardResult::kProtected);
+      }
     }
   }
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(ENABLE_GLIC)
-  // Do not discard pages that are pin-shared with Glic.
-  if (web_contents && is_proactive_or_suggested) {
-    auto* tab_interface =
-        tabs::TabInterface::MaybeGetFromContents(web_contents);
-    if (tab_interface) {
-      auto* glic_service = glic::GlicKeyedServiceFactory::GetGlicKeyedService(
-          web_contents->GetBrowserContext());
-      if (glic_service && glic_service->sharing_manager().IsTabPinned(
-                              tab_interface->GetHandle())) {
-        add_reason_and_update_result(CannotDiscardReason::kGlicShared,
-                                     CanDiscardResult::kProtected);
+  {
+    content::WebContents* web_contents = page_node->GetWebContents().get();
+    // Do not discard pages that are pin-shared with Glic.
+    if (web_contents && is_proactive_or_suggested) {
+      auto* tab_interface =
+          tabs::TabInterface::MaybeGetFromContents(web_contents);
+      if (tab_interface) {
+        auto* glic_service = glic::GlicKeyedServiceFactory::GetGlicKeyedService(
+            web_contents->GetBrowserContext());
+        if (glic_service && glic_service->sharing_manager().IsTabPinned(
+                                tab_interface->GetHandle())) {
+          add_reason_and_update_result(CannotDiscardReason::kGlicShared,
+                                       CanDiscardResult::kProtected);
+        }
       }
     }
   }
@@ -373,6 +425,14 @@ CanDiscardResult DiscardEligibilityPolicy::CanDiscard(
                                  CanDiscardResult::kProtected);
   }
 
+  // Record metrics regarding the discard decision.
+  // If |cannot_discard_reasons| is null, the caller isn't interested in the
+  // specific reasons, so pass an empty vector to the metrics helper.
+  RecordDiscardDecisionMetrics(page_node, discard_reason, result,
+                               cannot_discard_reasons
+                                   ? *cannot_discard_reasons
+                                   : std::vector<CannotDiscardReason>{});
+
   return result;
 }
 
@@ -398,7 +458,7 @@ void DiscardEligibilityPolicy::OnMainFrameDocumentChanged(
   DiscardAttemptMarker::Destroy(PageNodeImpl::FromNode(page_node));
 }
 
-base::Value::Dict DiscardEligibilityPolicy::DescribePageNodeData(
+base::DictValue DiscardEligibilityPolicy::DescribePageNodeData(
     const PageNode* node) const {
   auto can_discard = [this, node](DiscardReason discard_reason) {
     switch (this->CanDiscard(node, discard_reason, base::TimeDelta())) {
@@ -411,7 +471,7 @@ base::Value::Dict DiscardEligibilityPolicy::DescribePageNodeData(
     }
   };
 
-  base::Value::Dict ret;
+  base::DictValue ret;
   ret.Set("can_urgently_discard", can_discard(DiscardReason::URGENT));
   ret.Set("can_proactively_discard", can_discard(DiscardReason::PROACTIVE));
   if (!node->GetMainFrameUrl().is_empty()) {
@@ -420,6 +480,68 @@ base::Value::Dict DiscardEligibilityPolicy::DescribePageNodeData(
   }
 
   return ret;
+}
+
+void DiscardEligibilityPolicy::RecordDiscardDecisionMetrics(
+    const PageNode* page_node,
+    DiscardReason discard_reason,
+    CanDiscardResult result,
+    base::span<const CannotDiscardReason> protection_reasons) const {
+  base::UmaHistogramEnumeration("PerformanceManager.Discarding.DecisionResult",
+                                result);
+
+  // Break down the result by trigger (e.g. Urgent vs Proactive) to detect
+  // if specific triggers are disproportionately rejected.
+  // Initialize to empty string for safety.
+  std::string_view reason_suffix = "";
+
+  switch (discard_reason) {
+    case DiscardReason::URGENT:
+      reason_suffix = ".Urgent";
+      break;
+    case DiscardReason::PROACTIVE:
+      reason_suffix = ".Proactive";
+      break;
+    case DiscardReason::SUGGESTED:
+      reason_suffix = ".Suggested";
+      break;
+    case DiscardReason::EXTERNAL:
+      reason_suffix = ".External";
+      break;
+    case DiscardReason::FROZEN_WITH_GROWING_MEMORY:
+      reason_suffix = ".Frozen";
+      break;
+    default:
+      NOTREACHED();
+  }
+
+  base::UmaHistogramEnumeration(
+      base::StrCat(
+          {"PerformanceManager.Discarding.DecisionResult", reason_suffix}),
+      result);
+
+  if (result == CanDiscardResult::kProtected) {
+    for (const auto& protection_reason : protection_reasons) {
+      base::UmaHistogramEnumeration(
+          "PerformanceManager.Discarding.ProtectionReason", protection_reason);
+    }
+  }
+
+  // Record heuristics signals to assist with future model tuning.
+  if (page_node) {
+    const base::TimeDelta time_hidden =
+        base::TimeTicks::Now() - page_node->GetLastVisibilityChangeTime();
+    base::UmaHistogramCustomTimes(
+        "PerformanceManager.Discarding.TimeHiddenAtDecision", time_hidden,
+        base::Seconds(1), base::Days(1), 50);
+
+    base::UmaHistogramBoolean(
+        "PerformanceManager.Discarding.HadFormInteraction",
+        page_node->HadFormInteraction());
+
+    base::UmaHistogramBoolean("PerformanceManager.Discarding.HadUserEdits",
+                              page_node->HadUserEdits());
+  }
 }
 
 }  // namespace performance_manager::policies

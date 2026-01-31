@@ -86,7 +86,7 @@ class SupportPacketMetadata {
   // Looks-up the string with key `chrome_metadata_key` in `chrome_metadata` and
   // if found, adds it to `metadata_` as value with key `support_packet_key`.
   void FindStringAndSetInSupportPacketMetadata(
-      const base::Value::Dict& chrome_metadata,
+      const base::DictValue& chrome_metadata,
       const char* chrome_metadata_key,
       const char* support_packet_key);
 

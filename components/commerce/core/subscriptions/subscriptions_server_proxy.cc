@@ -101,13 +101,13 @@ void SubscriptionsServerProxy::Create(
     return;
   }
 
-  base::Value::List subscriptions_list;
+  base::ListValue subscriptions_list;
   for (const auto& subscription : *subscriptions) {
     subscriptions_list.Append(Serialize(subscription));
   }
-  base::Value::Dict subscriptions_json;
+  base::DictValue subscriptions_json;
   subscriptions_json.Set(kSubscriptionsKey, std::move(subscriptions_list));
-  base::Value::Dict request_json;
+  base::DictValue request_json;
   request_json.Set(kCreateRequestParamsKey, std::move(subscriptions_json));
   std::string post_data = base::WriteJson(request_json).value_or("");
 
@@ -173,14 +173,14 @@ void SubscriptionsServerProxy::Delete(
     return;
   }
 
-  base::Value::List deletions_list;
+  base::ListValue deletions_list;
   for (const auto& subscription : *subscriptions) {
     if (subscription.timestamp != kUnknownSubscriptionTimestamp)
       deletions_list.Append(base::Int64ToValue(subscription.timestamp));
   }
-  base::Value::Dict deletions_json;
+  base::DictValue deletions_json;
   deletions_json.Set(kEventTimestampsKey, std::move(deletions_list));
-  base::Value::Dict request_json;
+  base::DictValue request_json;
   request_json.Set(kDeleteRequestParamsKey, std::move(deletions_json));
   std::string post_data = base::WriteJson(request_json).value_or("");
 
@@ -317,7 +317,7 @@ void SubscriptionsServerProxy::HandleManageSubscriptionsResponses(
     return;
   }
 
-  std::optional<base::Value::Dict> result =
+  std::optional<base::DictValue> result =
       base::JSONReader::ReadDict(responses->response, base::JSON_PARSE_RFC);
 
   if (result.has_value()) {
@@ -354,7 +354,7 @@ void SubscriptionsServerProxy::HandleGetSubscriptionsResponses(
     return;
   }
 
-  std::optional<base::Value::Dict> result =
+  std::optional<base::DictValue> result =
       base::JSONReader::ReadDict(responses->response, base::JSON_PARSE_RFC);
   if (!result.has_value()) {
     DVLOG(1) << "Got an invalid reply from the server";
@@ -376,7 +376,7 @@ void SubscriptionsServerProxy::HandleGetSubscriptionsResponses(
 
 std::unique_ptr<std::vector<CommerceSubscription>>
 SubscriptionsServerProxy::GetSubscriptionsFromParsedJson(
-    const base::Value::Dict& result) {
+    const base::DictValue& result) {
   auto subscriptions = std::make_unique<std::vector<CommerceSubscription>>();
   if (auto* subscriptions_json = result.FindList(kSubscriptionsKey)) {
     for (const auto& subscription_json : *subscriptions_json) {
@@ -392,9 +392,9 @@ bool SubscriptionsServerProxy::IsPriceTrackingLocaleKeyEnabled() {
   return base::FeatureList::IsEnabled(kPriceTrackingSubscriptionServiceLocaleKey);
 }
 
-base::Value::Dict SubscriptionsServerProxy::Serialize(
+base::DictValue SubscriptionsServerProxy::Serialize(
     const CommerceSubscription& subscription) {
-  base::Value::Dict subscription_json;
+  base::DictValue subscription_json;
   subscription_json.Set(kSubscriptionTypeKey,
                         SubscriptionTypeToString(subscription.type));
   subscription_json.Set(kSubscriptionIdTypeKey,
@@ -404,7 +404,7 @@ base::Value::Dict SubscriptionsServerProxy::Serialize(
       kSubscriptionManagementTypeKey,
       SubscriptionManagementTypeToString(subscription.management_type));
   if (auto seen_offer = subscription.user_seen_offer) {
-    base::Value::Dict seen_offer_json;
+    base::DictValue seen_offer_json;
     seen_offer_json.Set(kSeenOfferIdKey, seen_offer->offer_id);
     seen_offer_json.Set(kSeenOfferPriceKey,
                         base::NumberToString(seen_offer->user_seen_price));
@@ -420,7 +420,7 @@ base::Value::Dict SubscriptionsServerProxy::Serialize(
 
 std::optional<CommerceSubscription> SubscriptionsServerProxy::Deserialize(
     const base::Value& value) {
-  if (const base::Value::Dict* value_dict = value.GetIfDict()) {
+  if (const base::DictValue* value_dict = value.GetIfDict()) {
     auto* type = value_dict->FindString(kSubscriptionTypeKey);
     auto* id_type = value_dict->FindString(kSubscriptionIdTypeKey);
     auto* id = value_dict->FindString(kSubscriptionIdKey);

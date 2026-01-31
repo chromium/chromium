@@ -12,9 +12,9 @@
 #include <string>
 #include <vector>
 
+#include "base/android/device_info.h"
 #include "base/command_line.h"
 #include "base/compiler_specific.h"
-#include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/logging.h"
 #include "base/no_destructor.h"
@@ -154,33 +154,6 @@ const std::string& GetWindowsPlatformVersion() {
 }
 #endif  // BUILDFLAG(IS_WIN)
 
-// For desktop:
-// Returns true if both kReduceUserAgentMinorVersionName and
-// kReduceUserAgentPlatformOsCpu are enabled. It makes
-// kReduceUserAgentPlatformOsCpu depend on kReduceUserAgentMinorVersionName.
-//
-// For android:
-// Returns true if both kReduceUserAgentMinorVersionName and
-// kReduceUserAgentAndroidVersionDeviceModel are enabled. It makes
-// kReduceUserAgentAndroidVersionDeviceModel depend on
-// kReduceUserAgentMinorVersionName.
-//
-// It helps us avoid introducing individual enterprise policy controls for
-// sending unified platform for the user agent string.
-bool ShouldSendUserAgentUnifiedPlatform() {
-  bool reduce_minor_version = base::FeatureList::IsEnabled(
-      blink::features::kReduceUserAgentMinorVersion);
-#if BUILDFLAG(IS_ANDROID)
-  return reduce_minor_version &&
-         base::FeatureList::IsEnabled(
-             blink::features::kReduceUserAgentAndroidVersionDeviceModel);
-#else
-  return reduce_minor_version &&
-         base::FeatureList::IsEnabled(
-             blink::features::kReduceUserAgentPlatformOsCpu);
-#endif
-}
-
 const blink::UserAgentBrandList GetUserAgentBrandList(
     const std::string& major_version,
     const std::string& full_version,
@@ -216,6 +189,16 @@ const blink::UserAgentBrandList GetUserAgentBrandMajorVersionListInternal(
                                additional_brand_version);
 }
 
+// For desktop and android:
+// Returns true if kReduceUserAgentMinorVersionName is enabled.
+//
+// It helps us avoid introducing individual enterprise policy controls for
+// sending unified platform for the user agent string.
+bool ShouldSendUserAgentUnifiedPlatform() {
+  return base::FeatureList::IsEnabled(
+      blink::features::kReduceUserAgentMinorVersion);
+}
+
 // Return UserAgentBrandList with the full version populated in the brand
 // `version` value.
 // TODO(crbug.com/1291612): Consolidate *FullVersionList() methods by using
@@ -242,10 +225,6 @@ std::string GetUserAgentInternal() {
   }
 #endif
 
-  // In User-Agent reduction phase 5, only apply the <unifiedPlatform> to
-  // desktop UA strings.
-  // In User-Agent reduction phase 6, only apply the <unifiedPlatform> to
-  // android UA strings.
   return ShouldSendUserAgentUnifiedPlatform()
              ? BuildUnifiedPlatformUserAgentFromProduct(product)
              : BuildUserAgentFromProduct(product);
@@ -327,8 +306,8 @@ std::string GetUnifiedPlatform() {
 #if BUILDFLAG(IS_ANDROID)
   // The Android XR device by default also has the unified platform of desktop
   // form factor.
-  if (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_DESKTOP ||
-      ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_XR) {
+  if (base::android::device_info::is_desktop() ||
+      base::android::device_info::is_xr()) {
     return kUnifiedPlatformLinuxX64;
   }
   return "Linux; Android 10; K";
@@ -462,8 +441,7 @@ std::string BuildOSCpuInfo(
 std::string GetProductAndVersion() {
   return base::FeatureList::IsEnabled(
              blink::features::kReduceUserAgentMinorVersion)
-             ? version_info::GetProductNameAndVersionForReducedUserAgent(
-                   blink::features::kUserAgentFrozenBuildVersion.Get())
+             ? version_info::GetProductNameAndVersionForReducedUserAgent()
              : std::string(
                    version_info::GetProductNameAndVersionForUserAgent());
 }
@@ -587,8 +565,8 @@ bool GetMobileBitForUAMetadata() {
   // Android and not a desktop form factor, AND the kUseMobileUserAgent switch
   // is present.
 #if BUILDFLAG(IS_ANDROID)
-  if (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_DESKTOP ||
-      ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_XR) {
+  if (base::android::device_info::is_desktop() ||
+      base::android::device_info::is_xr()) {
     return false;
   }
 #endif
@@ -610,8 +588,8 @@ std::string GetPlatformVersion() {
 #endif
 
 #if BUILDFLAG(IS_ANDROID)
-  if (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_DESKTOP ||
-      ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_XR) {
+  if (base::android::device_info::is_desktop() ||
+      base::android::device_info::is_xr()) {
     return std::string();
   }
 #endif
@@ -630,8 +608,8 @@ std::string GetPlatformVersion() {
 
 std::string GetPlatformForUAMetadata() {
 #if BUILDFLAG(IS_ANDROID)
-  if (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_DESKTOP ||
-      ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_XR) {
+  if (base::android::device_info::is_desktop() ||
+      base::android::device_info::is_xr()) {
     return "Linux";
   }
 #endif
@@ -701,7 +679,7 @@ std::vector<std::string> GetFormFactorsClientHint(
       is_mobile ? blink::kMobileFormFactor : blink::kDesktopFormFactor};
 
 #if BUILDFLAG(IS_ANDROID)
-  if (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_XR) {
+  if (base::android::device_info::is_xr()) {
     form_factors.push_back(blink::kXRFormFactor);
   }
 #endif  // BUILDFLAG(IS_ANDROID)
@@ -749,8 +727,8 @@ std::string GetCpuArchitecture() {
   // TODO(crbug.com/433345971) The user agent string should contain the actual
   // cpu type information obtained from the Android device. Same for the cpu bit
   // count in #GetCpuBitness below.
-  if (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_DESKTOP ||
-      ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_XR) {
+  if (base::android::device_info::is_desktop() ||
+      base::android::device_info::is_xr()) {
     return "x86";
   }
   return std::string();
@@ -789,13 +767,13 @@ std::string GetCpuBitness() {
 #elif BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_FUCHSIA)
   return "64";
 #elif BUILDFLAG(IS_ANDROID)
-  if (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_DESKTOP ||
-      ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_XR) {
+  if (base::android::device_info::is_desktop() ||
+      base::android::device_info::is_xr()) {
     return "64";
   }
   return std::string();
 #elif BUILDFLAG(IS_POSIX)
-  return base::Contains(BuildCpuInfo(), "64") ? "64" : "32";
+  return BuildCpuInfo().contains("64") ? "64" : "32";
 #else
 #error Unsupported platform
 #endif
@@ -862,7 +840,7 @@ std::string BuildUserAgentFromProduct(const std::string& product) {
 std::string BuildModelInfo() {
 #if BUILDFLAG(IS_ANDROID)
   // Model information is not exposed on Android desktop.
-  if (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_DESKTOP) {
+  if (base::android::device_info::is_desktop()) {
     return std::string();
   }
 

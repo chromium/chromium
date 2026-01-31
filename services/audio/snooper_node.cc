@@ -14,6 +14,7 @@
 #include "media/audio/audio_features.h"
 #include "media/base/audio_bus.h"
 #include "media/base/audio_timestamp_helper.h"
+#include "third_party/perfetto/include/perfetto/tracing/track_event_args.h"
 
 using Helper = media::AudioTimestampHelper;
 
@@ -108,11 +109,10 @@ void SnooperNode::OnData(const media::AudioBus& input_bus,
   DCHECK_EQ(input_bus.channels(), input_params_.channels());
   DCHECK_EQ(input_bus.frames(), input_params_.frames_per_buffer());
 
-  TRACE_EVENT_WITH_FLOW2("audio", "SnooperNode::OnData", this,
-                         TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT,
-                         "reference_time (bogo-μs)",
-                         reference_time.since_origin().InMicroseconds(),
-                         "write_position", write_position_);
+  TRACE_EVENT("audio", "SnooperNode::OnData", perfetto::Flow::FromPointer(this),
+              "reference_time (bogo-μs)",
+              reference_time.since_origin().InMicroseconds(), "write_position",
+              write_position_);
 
   base::AutoLock scoped_lock(lock_);
 
@@ -197,10 +197,9 @@ void SnooperNode::Render(base::TimeTicks reference_time,
   DCHECK_EQ(output_bus->channels(), output_params_.channels());
   DCHECK_EQ(output_bus->frames(), output_params_.frames_per_buffer());
 
-  TRACE_EVENT_WITH_FLOW1("audio", "SnooperNode::Render", this,
-                         TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT,
-                         "reference_time (bogo-μs)",
-                         reference_time.since_origin().InMicroseconds());
+  TRACE_EVENT("audio", "SnooperNode::Render", perfetto::Flow::FromPointer(this),
+              "reference_time (bogo-μs)",
+              reference_time.since_origin().InMicroseconds());
 
   // Use the difference in reference times between OnData() and Render() to
   // estimate the position of the audio about to come out of the resampler.

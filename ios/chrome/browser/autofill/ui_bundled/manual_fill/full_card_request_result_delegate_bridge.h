@@ -10,13 +10,18 @@
 #include "components/autofill/core/browser/data_model/payments/credit_card.h"
 #include "ios/chrome/browser/autofill/ui_bundled/manual_fill/manual_fill_constants.h"
 
+namespace web {
+class WebState;
+}
+
 // Obj-C delegate to receive the success or failure result, when asking credit
 // card unlocking.
 @protocol FullCardRequestResultDelegateObserving <NSObject>
 
 // Called with unlocked credit card, when authentication succeeded.
 - (void)onFullCardRequestSucceeded:(const autofill::CreditCard&)card
-                         fieldType:(manual_fill::PaymentFieldType)fieldType;
+                         fieldType:(manual_fill::PaymentFieldType)fieldType
+                       forWebState:(web::WebState*)webState;
 
 @end
 

@@ -126,9 +126,9 @@ DefaultSearchManager::DefaultSearchManager(
     LoadSavedGuestSearch();
   }
   LoadDefaultSearchEngineFromPrefs();
-  const base::Value::Dict& url_dict =
+  const base::DictValue& url_dict =
       pref_service_->GetDict(kDefaultSearchProviderDataPrefName);
-  const base::Value::Dict& mirrored_dict =
+  const base::DictValue& mirrored_dict =
       pref_service_->GetDict(kMirroredDefaultSearchProviderDataPrefName);
   if (mirrored_dict.empty() && !url_dict.empty()) {
     pref_service_->SetDict(kMirroredDefaultSearchProviderDataPrefName,
@@ -157,7 +157,7 @@ void DefaultSearchManager::RegisterProfilePrefs(
 }
 
 // static
-void DefaultSearchManager::AddPrefValueToMap(base::Value::Dict value,
+void DefaultSearchManager::AddPrefValueToMap(base::DictValue value,
                                              PrefValueMap* pref_value_map) {
   pref_value_map->SetValue(kDefaultSearchProviderDataPrefName,
                            base::Value(std::move(value)));
@@ -274,7 +274,7 @@ void DefaultSearchManager::OnDefaultSearchPrefChanged() {
 
   LoadDefaultSearchEngineFromPrefs();
   // Mirror the dse pref to the mirrored pref.
-  const base::Value::Dict& url_dict =
+  const base::DictValue& url_dict =
       pref_service_->GetDict(kDefaultSearchProviderDataPrefName);
   pref_service_->SetDict(kMirroredDefaultSearchProviderDataPrefName,
                          url_dict.Clone());
@@ -333,7 +333,7 @@ void DefaultSearchManager::LoadDefaultSearchEngineFromPrefs() {
   default_search_mandatory_by_policy_ = pref->IsManaged();
   default_search_recommended_by_policy_ = pref->IsRecommended();
 
-  const base::Value::Dict& url_dict =
+  const base::DictValue& url_dict =
       pref_service_->GetDict(kDefaultSearchProviderDataPrefName);
   if (url_dict.empty()) {
     return;
@@ -383,8 +383,8 @@ void DefaultSearchManager::NotifyObserver() {
 }
 
 void DefaultSearchManager::HandleDefaultSearchEngineTampering(
-    const base::Value::Dict& url_dict,
-    const base::Value::Dict& mirrored_dict) {
+    const base::DictValue& url_dict,
+    const base::DictValue& mirrored_dict) {
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
 
   if (!base::FeatureList::IsEnabled(

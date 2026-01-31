@@ -5,7 +5,6 @@
 #include "third_party/blink/renderer/platform/scheduler/main_thread/agent_group_scheduler_impl.h"
 
 #include "base/auto_reset.h"
-#include "base/containers/contains.h"
 #include "base/task/single_thread_task_runner.h"
 #include "third_party/blink/public/platform/browser_interface_broker_proxy.h"
 #include "third_party/blink/public/platform/task_type.h"
@@ -102,7 +101,7 @@ v8::Isolate* AgentGroupSchedulerImpl::Isolate() {
 }
 
 void AgentGroupSchedulerImpl::AddAgent(Agent* agent) {
-  DCHECK(!base::Contains(agents_, agent));
+  DCHECK(!agents_.Contains(agent));
   agents_.insert(agent);
 }
 
@@ -127,7 +126,7 @@ void AgentGroupSchedulerImpl::Trace(Visitor* visitor) const {
 void AgentGroupSchedulerImpl::AddPageSchedulerForTesting(
     PageSchedulerImpl* page_scheduler) {
   CHECK(!is_updating_policy_);
-  CHECK(!base::Contains(page_schedulers_, page_scheduler));
+  CHECK(!page_schedulers_.Contains(page_scheduler));
   page_schedulers_.insert(page_scheduler);
 }
 

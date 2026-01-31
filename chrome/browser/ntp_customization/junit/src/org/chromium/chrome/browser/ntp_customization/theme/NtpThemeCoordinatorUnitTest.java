@@ -10,11 +10,11 @@ import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.spy;
-import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationCoordinator.BottomSheetType.THEME;
+import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils.NtpBackgroundImageType.IMAGE_FROM_DISK;
 
 import android.content.Context;
 import android.graphics.Bitmap;
@@ -64,7 +64,7 @@ public class NtpThemeCoordinatorUnitTest {
     @Mock private NtpThemeCollectionBridge.Natives mNtpThemeCollectionBridgeJniMock;
     @Mock private NtpCustomizationConfigManager mNtpCustomizationConfigManager;
     @Mock private NtpThemeBottomSheetView mNtpThemeBottomSheetView;
-    @Mock private Runnable mOnDailyUpdateCancelledCallback;
+    @Mock private Runnable mResetCustomizedThemeRunnable;
     @Mock private NtpThemeCollectionsCoordinator mNtpThemeCollectionsCoordinator;
     @Mock private ImageFetcher mImageFetcher;
     @Captor private ArgumentCaptor<Callback<Bitmap>> mBitmapCallbackCaptor;
@@ -88,7 +88,7 @@ public class NtpThemeCoordinatorUnitTest {
                 new NtpThemeCoordinator(
                         mContext, mBottomSheetDelegate, mProfile, mDismissBottomSheet);
 
-        mMediator = mCoordinator.getMediatorForTesting();
+        mMediator = spy(mCoordinator.getMediatorForTesting());
         mCoordinator.setMediatorForTesting(mMediator);
         mCoordinator.setNtpThemeBottomSheetViewForTesting(mNtpThemeBottomSheetView);
         mCoordinator.setNtpThemeCollectionsCoordinatorForTesting(mNtpThemeCollectionsCoordinator);
@@ -117,13 +117,15 @@ public class NtpThemeCoordinatorUnitTest {
         mCoordinator.onPreviewClosed(isImageSelected);
 
         verify(mBottomSheetDelegate, never()).onNewColorSelected(anyBoolean());
-        verify(mDismissBottomSheet).run();
+        verify(mDismissBottomSheet, never()).run();
+        verify(mMediator, never()).updateTrailingIconVisibilityForSectionType(eq(IMAGE_FROM_DISK));
 
         isImageSelected = true;
         mCoordinator.onPreviewClosed(isImageSelected);
 
         verify(mBottomSheetDelegate).onNewColorSelected(eq(true));
-        verify(mDismissBottomSheet, times(2)).run();
+        verify(mDismissBottomSheet).run();
+        verify(mMediator).updateTrailingIconVisibilityForSectionType(eq(IMAGE_FROM_DISK));
     }
 
     @Test
@@ -137,14 +139,12 @@ public class NtpThemeCoordinatorUnitTest {
         List<BackgroundCollection> collections = new ArrayList<>();
         mCoordinator
                 .getNtpThemeDelegateForTesting()
-                .onThemeCollectionsClicked(mOnDailyUpdateCancelledCallback, collections);
+                .onThemeCollectionsClicked(mResetCustomizedThemeRunnable, collections);
         verify(mBottomSheetDelegate).showBottomSheet(eq(BottomSheetType.THEME_COLLECTIONS));
     }
 
     @Test
     public void testOnThemeImageSelectedCallback() {
-        mMediator = spy(mCoordinator.getMediatorForTesting());
-        mCoordinator.setMediatorForTesting(mMediator);
         NtpThemeCollectionManager ntpThemeCollectionManager =
                 mCoordinator.getNtpThemeManagerForTesting();
 

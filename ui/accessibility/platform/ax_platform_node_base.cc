@@ -31,7 +31,6 @@
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/accessibility/ax_action_data.h"
 #include "ui/accessibility/ax_enums.mojom-shared-internal.h"
-#include "ui/accessibility/ax_enums.mojom-shared.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/accessibility/ax_role_properties.h"
@@ -2208,6 +2207,17 @@ int AXPlatformNodeBase::FindTextBoundary(
     ax::mojom::MoveDirection direction,
     ax::mojom::TextAffinity affinity) const {
   DCHECK_NE(boundary, ax::mojom::TextBoundary::kNone);
+
+  // TODO(crbug.com/40887363): AXPosition support for sentences is broken. Rely
+  // upon known working utility method below.
+  if (boundary == ax::mojom::TextBoundary::kSentenceStart ||
+      boundary == ax::mojom::TextBoundary::kSentenceEnd ||
+      boundary == ax::mojom::TextBoundary::kSentenceStartOrEnd) {
+    std::vector<int32_t> unused_line_start_offsets;
+    return static_cast<int>(
+        FindAccessibleTextBoundary(GetHypertext(), unused_line_start_offsets,
+                                   boundary, offset, direction, affinity));
+  }
 
   const AXPosition position =
       GetDelegate()->CreateTextPositionAt(offset, affinity);

@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/ash/desks/desks_client.h"
 
+#include <algorithm>
 #include <cstdint>
 #include <cstdlib>
 #include <memory>
@@ -49,7 +50,6 @@
 #include "ash/wm/splitview/split_view_constants.h"
 #include "ash/wm/window_state.h"
 #include "ash/wm/window_util.h"
-#include "base/containers/contains.h"
 #include "base/json/json_writer.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_base.h"
@@ -131,8 +131,8 @@
 #include "content/public/test/test_utils.h"
 #include "extensions/common/constants.h"
 #include "ui/aura/client/aura_constants.h"
+#include "ui/aura/test/window_destroyed_waiter.h"
 #include "ui/aura/window.h"
-#include "ui/aura/window_observer.h"
 #include "ui/base/mojom/window_show_state.mojom.h"
 #include "ui/compositor/layer.h"
 #include "ui/display/screen.h"
@@ -272,7 +272,7 @@ bool ContainUuidInTemplates(
     const std::vector<raw_ptr<const ash::DeskTemplate, VectorExperimental>>&
         desk_templates) {
   DCHECK(uuid.is_valid());
-  return base::Contains(desk_templates, uuid, &ash::DeskTemplate::uuid);
+  return std::ranges::contains(desk_templates, uuid, &ash::DeskTemplate::uuid);
 }
 
 std::string GetTemplateJson(const base::Uuid& uuid, Profile* profile) {
@@ -444,31 +444,6 @@ class BrowsersAddedObserver : public BrowserListObserver {
  private:
   int num_browser_adds_left_;
   base::RunLoop run_loop_;
-};
-
-class WindowDestroyedObserver : public aura::WindowObserver {
- public:
-  explicit WindowDestroyedObserver(aura::Window* window) {
-    CHECK(window);
-    window_observation_.Observe(window);
-  }
-
-  void Wait() {
-    if (window_observation_.IsObserving()) {
-      run_loop_.Run();
-    }
-  }
-
-  // aura::WindowObserver:
-  void OnWindowDestroyed(aura::Window* window) override {
-    window_observation_.Reset();
-    run_loop_.Quit();
-  }
-
- private:
-  base::RunLoop run_loop_;
-  base::ScopedObservation<aura::Window, aura::WindowObserver>
-      window_observation_{this};
 };
 
 }  // namespace
@@ -1474,7 +1449,7 @@ IN_PROC_BROWSER_TEST_F(DesksClientTest, GetDeskTemplateJson) {
       GetTemplateJson(desk_template->uuid(), browser()->profile());
 
   // content of the conversion is tested in:
-  // components/desks_storage/core/desk_template_conversion_unittests.cc in this
+  // components/desks_storage/core/desk_template_conversion_unittest.cc in this
   // case we're simply interested in whether or not we got content back.
   ASSERT_TRUE(!template_json.empty());
 }
@@ -3028,11 +3003,13 @@ IN_PROC_BROWSER_TEST_F(SaveAndRecallBrowserTest,
   // Send a key to OK the close dialog. Wait for the Browser to close and its
   // NativeWindow to be destroyed (which may occur async and independently to
   // Browser destruction).
-  WindowDestroyedObserver window_destroyed_observer(
-      browser()->window()->GetNativeWindow());
-  SendKey(ui::VKEY_RETURN);
-  ui_test_utils::WaitForBrowserToClose(browser());
-  window_destroyed_observer.Wait();
+  {
+    aura::test::WindowDestroyedWaiter waiter(
+        browser()->window()->GetNativeWindow());
+    SendKey(ui::VKEY_RETURN);
+    ui_test_utils::WaitForBrowserToClose(browser());
+    waiter.Wait();
+  }
 
   EXPECT_EQ(0u, chrome::GetTotalBrowserCount());
 
@@ -3429,8 +3406,8 @@ class AdminTemplateTest : public extensions::PlatformAppBrowserTest {
   };
 
   // Converts a `gfx::Rect` to a list, as expected by `RestoreData`.
-  base::Value::List CreateBounds(const gfx::Rect& bounds) {
-    base::Value::List list;
+  base::ListValue CreateBounds(const gfx::Rect& bounds) {
+    base::ListValue list;
     list.Append(bounds.x());
     list.Append(bounds.y());
     list.Append(bounds.width());
@@ -3441,9 +3418,9 @@ class AdminTemplateTest : public extensions::PlatformAppBrowserTest {
   // Creates an admin template with the windows and URLs given by `definition`.
   std::unique_ptr<ash::DeskTemplate> CreateAdminTemplate(
       const AdminTemplateDefinition& definition) {
-    base::Value::Dict windows;
+    base::DictValue windows;
     for (size_t i = 0; i != definition.windows.size(); ++i) {
-      base::Value::Dict window;
+      base::DictValue window;
       window.Set("title", "Chrome");
       window.Set("window_state_type", 0);
 
@@ -3456,7 +3433,7 @@ class AdminTemplateTest : public extensions::PlatformAppBrowserTest {
         window.Set("index", *definition.windows[i].activation_index);
       }
 
-      base::Value::List urls;
+      base::ListValue urls;
       for (const std::string& url : definition.windows[i].urls) {
         urls.Append(url);
       }
@@ -3465,12 +3442,12 @@ class AdminTemplateTest : public extensions::PlatformAppBrowserTest {
       windows.Set(base::NumberToString(i + 1), std::move(window));
     }
 
-    base::Value::Dict root;
+    base::DictValue root;
     root.Set(app_constants::kChromeAppId, std::move(windows));
 
     // Policy for the admin template. The contents doesn't matter for the test
     // as long as the root is a dict.
-    base::Value policy(base::Value::Dict{});
+    base::Value policy(base::DictValue{});
 
     auto admin_template = std::make_unique<ash::DeskTemplate>(
         base::Uuid::GenerateRandomV4(), ash::DeskTemplateSource::kPolicy,

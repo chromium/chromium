@@ -13,6 +13,7 @@
 
 #include "base/cancelable_callback.h"
 #include "base/check.h"
+#include "base/containers/flat_map.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -359,6 +360,28 @@ void UpdateServiceProxyMojoImpl::RunInstaller(
   remote_->RunInstaller(
       app_id, installer_path, install_args, install_data, install_settings,
       language, MakeStateChangeObserver(state_update, std::move(callback)));
+}
+
+void UpdateServiceProxyMojoImpl::GetUpdaterState(
+    base::OnceCallback<
+        void(base::expected<UpdateService::UpdaterState, RpcError>)> callback) {
+  VLOG(1) << __func__;
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  EnsureConnecting();
+  remote_->GetUpdaterState(
+      base::BindOnce([](mojom::UpdaterStatePtr updater_state_mojo) {
+        return *updater_state_mojo;
+      }).Then(ToMojoCallback(std::move(callback))));
+}
+
+void UpdateServiceProxyMojoImpl::GetPoliciesJson(
+    base::OnceCallback<void(base::expected<std::string, RpcError>)> callback) {
+  VLOG(1) << __func__;
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  EnsureConnecting();
+  remote_->GetPoliciesJson(base::BindOnce([](const std::string& policies_json) {
+                             return policies_json;
+                           }).Then(ToMojoCallback(std::move(callback))));
 }
 
 #if BUILDFLAG(IS_WIN)

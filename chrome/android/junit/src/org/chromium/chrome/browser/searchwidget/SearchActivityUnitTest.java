@@ -24,6 +24,8 @@ import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 import static org.robolectric.Shadows.shadowOf;
 
+import static org.chromium.chrome.browser.url_constants.UrlConstantResolver.getOriginalNativeNtpUrl;
+
 import android.app.Activity;
 import android.app.SearchManager;
 import android.content.Intent;
@@ -52,7 +54,7 @@ import org.robolectric.shadows.ShadowActivity;
 import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.Callback;
-import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.DisableFeatures;
@@ -85,7 +87,6 @@ import org.chromium.chrome.browser.ui.searchactivityutils.SearchActivityClient.I
 import org.chromium.chrome.browser.ui.searchactivityutils.SearchActivityExtras.IntentOrigin;
 import org.chromium.chrome.browser.ui.searchactivityutils.SearchActivityExtras.ResolutionType;
 import org.chromium.chrome.browser.ui.searchactivityutils.SearchActivityExtras.SearchType;
-import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.metrics.OmniboxEventProtos.OmniboxEventProto.PageClassification;
 import org.chromium.components.omnibox.OmniboxFeatureList;
 import org.chromium.components.omnibox.OmniboxFeatures;
@@ -180,7 +181,7 @@ public class SearchActivityUnitTest {
     private @Mock UmaActivityObserver mUmaObserver;
     private @Mock Callback<@Nullable String> mSetCustomTabSearchClient;
     private @Mock LocationBarBackgroundDrawable mSearchBoxBackground;
-    private ObservableSupplier<Profile> mProfileSupplier;
+    private MonotonicObservableSupplier<Profile> mProfileSupplier;
     private OneshotSupplier<ProfileProvider> mProfileProviderSupplier;
 
     private ActivityController<SearchActivity> mController;
@@ -213,7 +214,7 @@ public class SearchActivityUnitTest {
         mAnchorView = new View(mActivity);
         GradientDrawable anchorViewBackground = new GradientDrawable();
         anchorViewBackground.setTint(
-                ContextCompat.getColor(mActivity, R.color.omnibox_suggestion_bg));
+                ContextCompat.getColor(mActivity, R.color.search_suggestion_bg_color));
         mAnchorView.setBackground(anchorViewBackground);
         mActivity.setAnchorViewForTesting(mAnchorView);
 
@@ -1055,12 +1056,10 @@ public class SearchActivityUnitTest {
 
     @Test
     public void onPauseWithNative() {
-        mActivity.setUmaActivityObserverForTesting(mUmaObserver);
         mActivity.onPauseWithNative();
 
-        verify(mUmaObserver).endUmaSession();
         verify(mSetCustomTabSearchClient).onResult(null);
-        verifyNoMoreInteractions(mUmaObserver, mSetCustomTabSearchClient);
+        verifyNoMoreInteractions(mSetCustomTabSearchClient);
     }
 
     @Test
@@ -1079,7 +1078,7 @@ public class SearchActivityUnitTest {
 
     @Test
     public void recordNavigationTargetType() {
-        GURL native_url = new GURL(UrlConstants.NTP_URL);
+        GURL native_url = new GURL(getOriginalNativeNtpUrl());
         GURL search_url = new GURL("https://google.com");
         GURL web_url = new GURL("https://abc.xyz");
 
@@ -1188,7 +1187,7 @@ public class SearchActivityUnitTest {
                 ((GradientDrawable) mAnchorView.getBackground()).getColor());
         verify(mSearchBoxBackground)
                 .setBackgroundColor(
-                        ContextCompat.getColor(mActivity, R.color.omnibox_suggestion_bg));
+                        ContextCompat.getColor(mActivity, R.color.search_suggestion_bg_color));
 
         // Toggle the incognito state and check that the search box has the correct color scheme.
         mDataProvider.setIsIncognitoForTesting(true);
@@ -1211,6 +1210,6 @@ public class SearchActivityUnitTest {
                 ((GradientDrawable) mAnchorView.getBackground()).getColor());
         verify(mSearchBoxBackground, times(2))
                 .setBackgroundColor(
-                        ContextCompat.getColor(mActivity, R.color.omnibox_suggestion_bg));
+                        ContextCompat.getColor(mActivity, R.color.search_suggestion_bg_color));
     }
 }

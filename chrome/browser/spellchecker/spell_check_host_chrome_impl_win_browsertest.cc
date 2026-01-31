@@ -129,6 +129,7 @@ void SpellCheckHostChromeImplWinBrowserTest::RunSpellCheckReturnMessageTest() {
 
   spell_check_host_->RequestTextCheck(
       u"zz.",
+      /*spelling_markers=*/{},
       base::BindOnce(
           &SpellCheckHostChromeImplWinBrowserTest::OnSpellcheckResult,
           base::Unretained(this)));
@@ -137,5 +138,5 @@ void SpellCheckHostChromeImplWinBrowserTest::RunSpellCheckReturnMessageTest() {
   ASSERT_EQ(1U, result_.size());
   EXPECT_EQ(result_[0].location, 0);
   EXPECT_EQ(result_[0].length, 2);
-  EXPECT_EQ(result_[0].decoration, SpellCheckResult::SPELLING);
+  EXPECT_EQ(result_[0].decoration, spellcheck::Decoration::SPELLING);
 }

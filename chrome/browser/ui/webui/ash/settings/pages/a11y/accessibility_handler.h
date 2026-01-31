@@ -31,20 +31,19 @@ class AccessibilityHandler : public ::settings::SettingsPageUIHandler,
   void OnJavascriptDisallowed() override;
 
   // Callback which updates if startup sound is enabled. Visible for testing.
-  void HandleManageA11yPageReady(const base::Value::List& args);
+  void HandleManageA11yPageReady(const base::ListValue& args);
 
  private:
   friend class AccessibilityHandlerTest;
 
   void HandleRecordSelectedShowShelfNavigationButtonsValue(
-      const base::Value::List& args);
-  void HandleShowBrowserAppearanceSettings(const base::Value::List& args);
-  void HandleShowChromeVoxTutorial(const base::Value::List& args);
-  void HandleSetStartupSoundEnabled(const base::Value::List& args);
-  void HandleUpdateBluetoothBrailleDisplayAddress(
-      const base::Value::List& args);
-  void HandleGetStartupSoundEnabled(const base::Value::List& args);
-  void HandlePreviewFlashNotification(const base::Value::List& args);
+      const base::ListValue& args);
+  void HandleShowBrowserAppearanceSettings(const base::ListValue& args);
+  void HandleShowChromeVoxTutorial(const base::ListValue& args);
+  void HandleSetStartupSoundEnabled(const base::ListValue& args);
+  void HandleUpdateBluetoothBrailleDisplayAddress(const base::ListValue& args);
+  void HandleGetStartupSoundEnabled(const base::ListValue& args);
+  void HandlePreviewFlashNotification(const base::ListValue& args);
 
   void OpenExtensionOptionsPage(const char extension_id[]);
 

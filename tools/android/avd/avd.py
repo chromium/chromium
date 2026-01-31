@@ -78,6 +78,11 @@ def get_avd_configs():
   configs = []
   for path_obj in pathlib.Path(__file__).parent.glob('proto/*.textpb'):
     configs.append(avd.AvdConfig(str(path_obj)))
+
+  clank_proto_dir = pathlib.Path(_SRC_ROOT) / 'clank/tools/android/avd/proto'
+  if clank_proto_dir.is_dir():
+    for path_obj in clank_proto_dir.glob('*.textpb'):
+      configs.append(avd.AvdConfig(str(path_obj)))
   return configs
 
 

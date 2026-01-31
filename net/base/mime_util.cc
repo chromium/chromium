@@ -185,6 +185,7 @@ static const MimeInfo kPrimaryMappings[] = {
     {"image/avif", "avif"},
     {"image/gif", "gif"},
     {"image/jpeg", "jpeg,jpg,jpe"},
+    {"image/jxl", "jxl"},
     {"image/png", "png"},
     {"image/apng", "png,apng"},
     {"image/svg+xml", "svg,svgz"},
@@ -722,6 +723,7 @@ static const char* const kStandardImageTypes[] = {"image/avif",
                                                   "image/heif",
                                                   "image/ief",
                                                   "image/jpeg",
+                                                  "image/jxl",
                                                   "image/webp",
                                                   "image/pict",
                                                   "image/pipeg",
@@ -854,19 +856,6 @@ void UnorderedSetToVector(std::unordered_set<T>* source,
     (*target)[old_target_size + i] = *iter;
 }
 
-// Characters to be used for mime multipart boundary.
-//
-// TODO(rsleevi): crbug.com/575779: Follow the spec or fix the spec.
-// The RFC 2046 spec says the alphanumeric characters plus the
-// following characters are legal for boundaries:  '()+_,-./:=?
-// However the following characters, though legal, cause some sites
-// to fail: (),./:=+
-constexpr std::string_view kMimeBoundaryCharacters(
-    "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ");
-
-// Size of mime multipart boundary.
-const size_t kMimeBoundarySize = 69;
-
 }  // namespace
 
 void GetExtensionsForMimeType(
@@ -929,13 +918,25 @@ NET_EXPORT std::string GenerateMimeMultipartBoundary() {
   //   bcharsnospace := DIGIT / ALPHA / "'" / "(" / ")" / "+" /
   //            "_" / "," / "-" / "." / "/" / ":" / "=" / "?"
 
+  // Note: this diverges from all the relevant specs. See
+  // https://github.com/whatwg/html/issues/6424 for discussion and
+  // https://issues.chromium.org/issues/40451606 for historical context.
+  //
+  // RFC 2046 and later specs say the alphanumeric characters plus the
+  // following characters are legal for boundaries:  '()+_,-./:=?
+  // However the following characters, though legal, cause some sites
+  // to fail: (),./:=+
+  constexpr std::string_view kMimeBoundaryCharacters(
+      "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ");
+
+  // Size of mime multipart boundary.
+  const size_t kMimeBoundarySize = 69;
+
   std::string result;
   result.reserve(kMimeBoundarySize);
   result.append("----MultipartBoundary--");
   while (result.size() < (kMimeBoundarySize - 4)) {
-    char c = kMimeBoundaryCharacters[base::RandInt(
-        0, kMimeBoundaryCharacters.size() - 1)];
-    result.push_back(c);
+    result.push_back(base::RandomChoice(kMimeBoundaryCharacters));
   }
   result.append("----");
 

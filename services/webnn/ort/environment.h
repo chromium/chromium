@@ -17,11 +17,10 @@
 #include "base/synchronization/lock.h"
 #include "base/types/expected.h"
 #include "base/types/pass_key.h"
-#include "gpu/config/gpu_info.h"
+#include "gpu/config/gpu_feature_info.h"
 #include "services/webnn/ort/scoped_ort_types.h"
 #include "services/webnn/public/cpp/execution_providers_info.h"
 #include "services/webnn/public/mojom/ep_package_info.mojom.h"
-#include "services/webnn/public/mojom/webnn_device.mojom.h"
 #include "third_party/windows_app_sdk_headers/src/inc/abi/winml/winml/onnxruntime_c_api.h"
 
 namespace webnn::ort {
@@ -33,7 +32,7 @@ class Environment : public base::subtle::RefCountedThreadSafeBase {
   REQUIRE_ADOPTION_FOR_REFCOUNTED_TYPE();
 
   static base::expected<scoped_refptr<Environment>, std::string> GetInstance(
-      const gpu::GPUInfo& gpu_info,
+      const gpu::GpuFeatureInfo& gpu_feature_info,
       const base::flat_map<std::string, mojom::EpPackageInfoPtr>&
           ep_package_info_map);
 
@@ -55,7 +54,7 @@ class Environment : public base::subtle::RefCountedThreadSafeBase {
   // devices will be selected.
   static std::vector<const OrtEpDevice*> SelectEpDevices(
       base::span<const OrtEpDevice* const> available_devices,
-      mojom::Device device_type);
+      OrtHardwareDeviceType device_type);
 
   // Returns a span of registered execution provider devices in `env`. The span
   // is guaranteed to be valid until `env_` is released or the list of execution
@@ -69,18 +68,20 @@ class Environment : public base::subtle::RefCountedThreadSafeBase {
 
   // Get combined EP workarounds for the EPs that will be selected according to
   // the given device type.
-  EpWorkarounds GetEpWorkarounds(mojom::Device device_type) const;
+  EpWorkarounds GetEpWorkarounds(OrtHardwareDeviceType device_type) const;
 
   const OrtEnv* get() const { return env_.get(); }
 
   // Get all EP-specific session configuration entries for the EPs that will be
   // selected according to the given device type.
   std::vector<SessionConfigEntry> GetEpConfigEntries(
-      mojom::Device device_type) const;
+      OrtHardwareDeviceType device_type) const;
+
+  static bool is_npu_blocklisted() { return is_npu_blocklisted_; }
 
  private:
   static base::expected<scoped_refptr<Environment>, std::string> Create(
-      const gpu::GPUInfo& gpu_info,
+      const gpu::GpuFeatureInfo& gpu_feature_info,
       const base::flat_map<std::string, mojom::EpPackageInfoPtr>&
           ep_package_info_map);
 
@@ -97,6 +98,8 @@ class Environment : public base::subtle::RefCountedThreadSafeBase {
   // `Environment::Create()` that is already protected by `GetLock()`.
   static base::flat_set<std::wstring>& GetDependentEpPackages()
       EXCLUSIVE_LOCKS_REQUIRED(GetLock());
+
+  static bool is_npu_blocklisted_;
 };
 
 }  // namespace webnn::ort

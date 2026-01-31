@@ -43,6 +43,13 @@ class TabModelObserver;
 class TabModel : public TabListInterface {
  public:
   DECLARE_USER_DATA(TabModel);
+
+  // LINT.IfChange(kInvalidIndex)
+  // Keep this in sync with
+  // chrome/browser/tabmodel/android/java/src/org/chromium/chrome/browser/tabmodel/TabList.java
+  static constexpr int kInvalidIndex = -1;
+  // LINT.ThenChange(//chrome/browser/tabmodel/android/java/src/org/chromium/chrome/browser/tabmodel/TabList.java:INVALID_TAB_INDEX)
+
   // LINT.IfChange(TabLaunchType)
   // Various ways tabs can be launched.
   // Values must be numbered from 0 and can't have gaps.
@@ -243,10 +250,12 @@ class TabModel : public TabListInterface {
   virtual void ForceCloseAllTabs() = 0;
   virtual void CloseTabAt(int index) = 0;
 
-  // Used for restoring tabs from synced foreign sessions.
-  virtual void CreateTab(TabAndroid* parent,
-                         content::WebContents* web_contents,
-                         bool select) = 0;
+  virtual tabs::TabInterface* CreateTab(
+      TabAndroid* parent,
+      std::unique_ptr<content::WebContents> web_contents,
+      int index,
+      TabLaunchType type,
+      bool should_pin) = 0;
 
   virtual void HandlePopupNavigation(TabAndroid* parent,
                                      NavigateParams* params) = 0;

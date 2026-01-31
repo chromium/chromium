@@ -33,7 +33,6 @@
 #include "chrome/grit/downloads_resources_map.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/grit/theme_resources.h"
-#include "components/download/public/common/download_features.h"
 #include "components/feature_engagement/public/feature_constants.h"
 #include "components/feature_engagement/public/feature_list.h"
 #include "components/google/core/common/google_util.h"
@@ -106,7 +105,7 @@ content::WebUIDataSource* CreateAndAddDownloadsUIHTMLSource(Profile* profile) {
        IDS_BLOCK_REASON_SENSITIVE_CONTENT_WARNING},
       {"sensitiveContentBlockedDesc",
        IDS_SENSITIVE_CONTENT_BLOCKED_DESCRIPTION},
-      {"forcedSaveToGdriveDesc", IDS_FORCED_SAVE_TO_GDRIVE_DESCRIPTION},
+      {"forcedSaveToCloudDesc", IDS_FORCED_SAVE_TO_CLOUD_DESCRIPTION},
       {"blockedTooLargeDesc", IDS_BLOCKED_TOO_LARGE_DESCRIPTION},
       {"blockedPasswordProtectedDesc",
        IDS_BLOCKED_PASSWORD_PROTECTED_DESCRIPTION},
@@ -198,9 +197,6 @@ content::WebUIDataSource* CreateAndAddDownloadsUIHTMLSource(Profile* profile) {
   };
   source->AddLocalizedStrings(kStrings);
 
-  source->AddBoolean("showInitiatorOrigin",
-                     base::FeatureList::IsEnabled(
-                         download::features::kDisplayInitiatorOrigin));
   source->AddLocalizedString(
       "dangerUncommonDesc",
       requests_ap_verdicts

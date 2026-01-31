@@ -60,8 +60,8 @@
 // saturating pack, since our values are in little-endian already.
 static inline __m128i LoadAndCollapseHighBytes(const UChar* ptr) {
   __m128i x1 = _mm_loadu_si128(reinterpret_cast<const __m128i*>(ptr));
-  __m128i x2 =
-      _mm_loadu_si128(UNSAFE_TODO(reinterpret_cast<const __m128i*>(ptr + 8)));
+  __m128i x2 = _mm_loadu_si128(
+      UNSAFE_BUFFERS(reinterpret_cast<const __m128i*>(ptr + 8)));
   return _mm_packus_epi16(x1, x2);
 }
 
@@ -84,9 +84,9 @@ ALWAYS_INLINE static size_t FindLengthOfDeclarationList(
   __m128i prev_parens = _mm_setzero_si128();
 
   const CharType* ptr = begin;
-  while (UNSAFE_TODO(ptr + 17) <= end) {
+  while (UNSAFE_BUFFERS(ptr + 17) <= end) {
     __m128i x = LoadAndCollapseHighBytes(ptr);
-    __m128i next_x = LoadAndCollapseHighBytes(UNSAFE_TODO(ptr + 1));
+    __m128i next_x = LoadAndCollapseHighBytes(UNSAFE_BUFFERS(ptr + 1));
 
     // We don't want deal with escaped characters within strings,
     // and they are generally rare, so if we see any backslashes,
@@ -247,7 +247,7 @@ ALWAYS_INLINE static size_t FindLengthOfDeclarationList(
                              parens;
     if (_mm_movemask_epi8(must_end) != 0) {
       unsigned idx = __builtin_ctz(_mm_movemask_epi8(must_end));
-      UNSAFE_TODO(ptr += idx);
+      UNSAFE_BUFFERS(ptr += idx);
       if (*ptr == '}') {
         // Check that we have balanced parens at the end point
         // (the paren counter is zero).
@@ -264,7 +264,7 @@ ALWAYS_INLINE static size_t FindLengthOfDeclarationList(
       }
     }
 
-    UNSAFE_TODO(ptr += 16);
+    UNSAFE_BUFFERS(ptr += 16);
     prev_quoted = _mm_srli_si128(quoted, 15);
     prev_parens = _mm_srli_si128(parens, 15);
   }
@@ -285,7 +285,7 @@ __attribute__((target("avx2"))) static inline __m256i
 LoadAndCollapseHighBytesAVX2(const UChar* ptr) {
   __m256i x1 = _mm256_loadu_si256(reinterpret_cast<const __m256i*>(ptr));
   __m256i x2 = _mm256_loadu_si256(
-      reinterpret_cast<const __m256i*>(UNSAFE_TODO(ptr + 16)));
+      reinterpret_cast<const __m256i*>(UNSAFE_BUFFERS(ptr + 16)));
   __m256i packed = _mm256_packus_epi16(x1, x2);
 
   // AVX2 pack is per-lane (two separate 16 -> 8 packs),
@@ -365,9 +365,9 @@ FindLengthOfDeclarationListAVX2(base::span<const CharType> chars) {
   __m256i prev_parens = _mm256_setzero_si256();
 
   const CharType* ptr = begin;
-  while (UNSAFE_TODO(ptr + 33) <= end) {
+  while (UNSAFE_BUFFERS(ptr + 33) <= end) {
     __m256i x = LoadAndCollapseHighBytesAVX2(ptr);
-    __m256i next_x = LoadAndCollapseHighBytesAVX2(UNSAFE_TODO(ptr + 1));
+    __m256i next_x = LoadAndCollapseHighBytesAVX2(UNSAFE_BUFFERS(ptr + 1));
 
     const __m256i eq_backslash = _mm256_cmpeq_epi8(x, _mm256_set1_epi8('\\'));
 
@@ -434,7 +434,7 @@ FindLengthOfDeclarationListAVX2(base::span<const CharType> chars) {
         _mm256_movemask_epi8(parens | eq_backslash | quoted_newline);
     if (must_end != 0) {
       unsigned idx = __builtin_ctzll(must_end);
-      UNSAFE_TODO(ptr += idx);
+      UNSAFE_BUFFERS(ptr += idx);
       if (*ptr == '}') {
         uint32_t mask = _mm256_movemask_epi8(
             _mm256_cmpeq_epi8(parens, _mm256_setzero_si256()));
@@ -449,7 +449,7 @@ FindLengthOfDeclarationListAVX2(base::span<const CharType> chars) {
       }
     }
 
-    UNSAFE_TODO(ptr += 32);
+    UNSAFE_BUFFERS(ptr += 32);
 
     // We keep prev_*_quote as integers, unlike in SSE2; there's no need
     // to waste cross-lane shifts on them.
@@ -475,7 +475,7 @@ FindLengthOfDeclarationListAVX2(blink::StringView str) {
 static inline uint8x16_t LoadAndCollapseHighBytes(const UChar* ptr) {
   uint8x16_t x1;
   uint8x16_t x2;
-  UNSAFE_TODO({
+  UNSAFE_BUFFERS({
     memcpy(&x1, ptr, sizeof(x1));
     memcpy(&x2, ptr + 8, sizeof(x2));
   });
@@ -485,7 +485,7 @@ static inline uint8x16_t LoadAndCollapseHighBytes(const UChar* ptr) {
 }
 static inline uint8x16_t LoadAndCollapseHighBytes(const blink::LChar* ptr) {
   uint8x16_t ret;
-  UNSAFE_TODO(memcpy(&ret, ptr, sizeof(ret)));
+  UNSAFE_BUFFERS(memcpy(&ret, ptr, sizeof(ret)));
   return ret;
 }
 
@@ -512,9 +512,9 @@ ALWAYS_INLINE static size_t FindLengthOfDeclarationList(
   uint8x16_t prev_parens = vdupq_n_u8(0);
 
   const CharType* ptr = begin;
-  while (UNSAFE_TODO(ptr + 17) <= end) {
+  while (UNSAFE_BUFFERS(ptr + 17) <= end) {
     uint8x16_t x = LoadAndCollapseHighBytes(ptr);
-    const uint8x16_t next_x = LoadAndCollapseHighBytes(UNSAFE_TODO(ptr + 1));
+    const uint8x16_t next_x = LoadAndCollapseHighBytes(UNSAFE_BUFFERS(ptr + 1));
     const uint8x16_t eq_backslash = x == '\\';
     const uint8x16_t eq_double_quote = x == '"';
     const uint8x16_t eq_single_quote = x == '\'';
@@ -596,7 +596,7 @@ ALWAYS_INLINE static size_t FindLengthOfDeclarationList(
         vreinterpret_u64_u8(vshrn_n_u16(vreinterpretq_u16_u8(must_end), 4)), 0);
     if (must_end_narrowed != 0) {
       unsigned idx = __builtin_ctzll(must_end_narrowed) >> 2;
-      UNSAFE_TODO(ptr += idx);
+      UNSAFE_BUFFERS(ptr += idx);
       if (*ptr == '}') {
         // Since we don't have cheap PMOVMSKB, and this is not on
         // the most critical path, we just chicken out here and let
@@ -613,7 +613,7 @@ ALWAYS_INLINE static size_t FindLengthOfDeclarationList(
     }
 
     // As mentioned above, broadcast instead of shifting.
-    UNSAFE_TODO(ptr += 16);
+    UNSAFE_BUFFERS(ptr += 16);
     prev_quoted = vdupq_lane_u8(
         vreinterpret_u8_u64(vget_high_u64(vreinterpretq_u64_u8(quoted))), 7);
     prev_parens = vdupq_lane_u8(

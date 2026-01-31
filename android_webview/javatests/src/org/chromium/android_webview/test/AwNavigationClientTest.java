@@ -8,6 +8,8 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.greaterThan;
 import static org.hamcrest.Matchers.lessThan;
 
+import androidx.test.InstrumentationRegistry;
+import androidx.test.filters.LargeTest;
 import androidx.test.filters.SmallTest;
 
 import org.json.JSONArray;
@@ -21,19 +23,22 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.UseParametersRunnerFactory;
 
+import org.chromium.android_webview.AwContents;
+import org.chromium.android_webview.AwPage;
 import org.chromium.base.test.util.CallbackHelper;
+import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Feature;
+import org.chromium.content_public.browser.test.util.HistoryUtils;
 import org.chromium.net.test.util.TestWebServer;
 
-import java.time.Duration;
-import java.time.temporal.ChronoUnit;
 import java.util.List;
 
 /** Tests for the AwNavigationClient class. */
 @RunWith(Parameterized.class)
 @UseParametersRunnerFactory(AwJUnit4ClassRunnerWithParameters.Factory.class)
 @DoNotBatch(reason = "Tests that need browser start are incompatible with @Batch")
+@CommandLineFlags.Add("enable-features=WebViewWebPerformanceMetricsReporting")
 public class AwNavigationClientTest extends AwParameterizedTest {
     @Rule public AwActivityTestRule mActivityTestRule;
 
@@ -54,6 +59,14 @@ public class AwNavigationClientTest extends AwParameterizedTest {
                 <body>
                         <div style="font-size: 0.5em">First LCP Trigger</div>
                         <div id="second-lcp" style="font-size: 1.5em"></div>
+                </body>
+                </html>
+            """;
+    private static final String SIMPLE_PAGE_HTML =
+            """
+                <html>
+                <body>
+                        <div>Hello</div>
                 </body>
                 </html>
             """;
@@ -92,6 +105,15 @@ public class AwNavigationClientTest extends AwParameterizedTest {
 
                 // Run the task once the DOM is ready
                 document.addEventListener('DOMContentLoaded', runHeavyTask);
+            """;
+    private static final String METRICS_BF_CACHE_JS =
+            """
+                let count = 0;
+                window.addEventListener('pageshow', (event) => {
+                        performance.mark('mark' + count);
+                        count++;
+                        testListener.postMessage("page shown");
+                });
             """;
 
     public AwNavigationClientTest(AwSettingsMutation param) {
@@ -142,15 +164,13 @@ public class AwNavigationClientTest extends AwParameterizedTest {
         // Wait for paint event to occur and js fcp load time to be returned via postmessage
         TestWebMessageListener.Data data = listener.waitForOnPostMessage();
 
-        // Note: js value is in milliseconds, navigation client value is in microseconds
         JSONObject jsFCPTimeData = new JSONArray(data.getAsString()).getJSONObject(1);
-        Duration jsFCP = Duration.ofMillis((long) jsFCPTimeData.getDouble("startTime"));
+        long jsFCP = jsFCPTimeData.getLong("startTime");
 
         // Wait for FCP callback on the listener
         mCallbackHelper.waitForCallback(callBackCount, 1);
-        Long navigationFCPTime = mNavigationListener.getLastFirstContentfulPaintLoadTime();
-        Assert.assertNotNull(navigationFCPTime);
-        Duration navigationFCP = Duration.of(navigationFCPTime, ChronoUnit.MICROS);
+        Long navigationFCP = mNavigationListener.getLastFirstContentfulPaintLoadTime();
+        Assert.assertNotNull(navigationFCP);
 
         // Note: The two time values may differ slightly. This is primarily due to
         // coarsening for security reasons. We check here for a difference of 5 milliseconds
@@ -160,7 +180,7 @@ public class AwNavigationClientTest extends AwParameterizedTest {
         // and https://developer.mozilla.org/en-US/docs/Web/API/DOMHighResTimeStamp
         // and
         // https://source.chromium.org/chromium/chromium/src/+/main:third_party/blink/renderer/core/paint/timing/paint_timing.cc
-        long diffFCP = jsFCP.minus(navigationFCP).toMillis();
+        long diffFCP = jsFCP - navigationFCP;
         assertThat(diffFCP, lessThan(5L));
         assertThat(diffFCP, greaterThan(-5L));
     }
@@ -277,5 +297,117 @@ public class AwNavigationClientTest extends AwParameterizedTest {
                     jsMark.getLong("startTime"),
                     listenerMark.markTimeMs);
         }
+    }
+
+    // Test that web performance metrics are still recorded after a page is
+    // restored from the BFCache. For simplicity we test using performance mark only.
+    // See @link (AwWebPerformanceMetricsObserver::OnEnterBackForwardCache)
+    @Test
+    @LargeTest
+    @Feature({"AndroidWebView"})
+    public void testMetricsBFCache() throws Exception, Throwable {
+        AwContents awContents = mTestContainerView.getAwContents();
+        awContents.getSettings().setBackForwardCacheEnabled(true);
+
+        mActivityTestRule.getAwSettingsOnUiThread(awContents).setJavaScriptEnabled(true);
+
+        TestWebMessageListener listener = new TestWebMessageListener();
+        TestWebMessageListener.addWebMessageListenerOnUiThread(
+                awContents, JS_OBJECT_NAME, new String[] {"*"}, listener);
+
+        // Load initial page
+        String testPageInitial =
+                mWebServer.setResponse(
+                        "/web_performance_metrics_initial.html",
+                        String.format(WEB_PERFORMANCE_METRICS_HTML, METRICS_BF_CACHE_JS),
+                        null);
+        mActivityTestRule.loadUrlSync(
+                awContents, mContentsClient.getOnPageFinishedHelper(), testPageInitial);
+
+        // Wait for post message to verify page has been shown and mark should have been set
+        listener.waitForOnPostMessage();
+
+        // Check we obseve the first performance mark
+        List<TestAwNavigationListener.PerformanceMark> listenerPerformanceMarks =
+                mNavigationListener.getPerformanceMarks();
+        Assert.assertEquals(
+                "Initial load - number of marks observered via listener is incorrect",
+                1,
+                listenerPerformanceMarks.size());
+
+        // Navigate forward
+        String testPageForward =
+                mWebServer.setResponse(
+                        "/web_performance_metrics_forward.html",
+                        WEB_PERFORMANCE_METRICS_HTML,
+                        null);
+        mActivityTestRule.loadUrlSync(
+                awContents, mContentsClient.getOnPageFinishedHelper(), testPageForward);
+
+        // Navigate back to initial page
+        HistoryUtils.goBackSync(
+                InstrumentationRegistry.getInstrumentation(),
+                awContents.getWebContents(),
+                mContentsClient.getOnPageStartedHelper());
+
+        // Wait for post message to verify page has been shown again and mark should have been set
+        listener.waitForOnPostMessage();
+
+        // Check that we received another mark after the page was restored from the cache
+        listenerPerformanceMarks = mNavigationListener.getPerformanceMarks();
+        Assert.assertEquals(
+                "After restore - number of marks observered via listener is incorrect",
+                2,
+                listenerPerformanceMarks.size());
+        for (int i = 0; i < 2; i++) {
+            TestAwNavigationListener.PerformanceMark listenerMark = listenerPerformanceMarks.get(i);
+            String expectedMarkName = "mark" + i;
+            Assert.assertEquals(
+                    "Name of mark observered via listener is incorrect",
+                    expectedMarkName,
+                    listenerMark.markName);
+        }
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"AndroidWebView"})
+    public void testPageGetUrl() throws Throwable {
+        final String url = mWebServer.setResponse("/page.html", SIMPLE_PAGE_HTML, null);
+
+        // Load the page
+        mActivityTestRule.loadUrlSync(
+                mTestContainerView.getAwContents(), mContentsClient.getOnPageFinishedHelper(), url);
+
+        // Verify the page URL
+        AwPage page = mNavigationListener.getLastPageWithLoadEventFired();
+        Assert.assertNotNull(page);
+        Assert.assertEquals(url, page.getUrl());
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"AndroidWebView"})
+    public void testPageGetUrlSameDocument() throws Throwable {
+        final String url = mWebServer.setResponse("/page.html", SIMPLE_PAGE_HTML, null);
+        final String fragmentUrl = url + "#ref";
+
+        // Load the page
+        mActivityTestRule.loadUrlSync(
+                mTestContainerView.getAwContents(), mContentsClient.getOnPageFinishedHelper(), url);
+        AwPage page = mNavigationListener.getLastPageWithLoadEventFired();
+        Assert.assertNotNull(page);
+
+        // Verify the page URL
+        Assert.assertEquals(url, page.getUrl());
+
+        // Load the page with a fragment
+        mActivityTestRule.loadUrlSync(
+                mTestContainerView.getAwContents(),
+                mContentsClient.getOnPageFinishedHelper(),
+                fragmentUrl);
+
+        // Verify the page URL is the fragment URL
+        Assert.assertEquals(fragmentUrl, page.getUrl());
     }
 }

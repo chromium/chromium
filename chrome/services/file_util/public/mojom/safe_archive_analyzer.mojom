@@ -59,6 +59,15 @@ interface SafeArchiveAnalyzer {
                            ObfuscatedFileUtilHeaderData header_data,
                            pending_remote<TemporaryFileGetter> temp_file_getter)
       => (SafeArchiveAnalyzerResults results);
+
+  // Build flag SAFE_BROWSING_DOWNLOAD_PROTECTION: Analyze the `rar_file` for
+  // malicious download protection. The file is encrypted/obfuscated.
+  // This uses the enterprise delegate for decryption.
+  AnalyzeObfuscatedRarFile(mojo_base.mojom.ReadOnlyFile rar_file,
+                           string? password,
+                           ObfuscatedFileUtilHeaderData header_data,
+                           pending_remote<TemporaryFileGetter> temp_file_getter)
+      => (SafeArchiveAnalyzerResults results);
 };
 
 // TemporaryFileGetter is provided by the browser process and exposed

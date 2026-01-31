@@ -127,7 +127,7 @@ bool CreateUploadDataSourcesFromResourceRequest(
   return true;
 }
 
-std::optional<base::Value::Dict> CreateRequestBodyData(
+std::optional<base::DictValue> CreateRequestBodyData(
     const std::string& method,
     const net::HttpRequestHeaders& request_headers,
     const std::vector<std::unique_ptr<UploadDataSource>>& data_sources) {
@@ -135,7 +135,7 @@ std::optional<base::Value::Dict> CreateRequestBodyData(
     return std::nullopt;
   }
 
-  base::Value::Dict request_body_data;
+  base::DictValue request_body_data;
 
   // Get the data presenters, ordered by how specific they are.
   ParsedDataPresenter parsed_data_presenter(request_headers);
@@ -307,8 +307,7 @@ void WebRequestInfo::EraseOutprioritizedDNRActions() {
           // Check that the cache contains the action's extension ID
           // to make sure that rule matching was performed for that
           // extension.
-          DCHECK(
-              base::Contains(max_priority_allow_action, action.extension_id));
+          DCHECK(max_priority_allow_action.contains(action.extension_id));
 
           uint64_t allow_rule_priority_for_extension = 0u;
           if (auto& allow_action =

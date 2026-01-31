@@ -100,8 +100,9 @@ void InfoBarContainerAndroid::PlatformSpecificRemoveInfoBar(
 
 // Native JNI methods ---------------------------------------------------------
 
-static jlong JNI_InfoBarContainer_Init(JNIEnv* env,
-                                       const jni_zero::JavaRef<jobject>& obj) {
+static int64_t JNI_InfoBarContainer_Init(
+    JNIEnv* env,
+    const jni_zero::JavaRef<jobject>& obj) {
   InfoBarContainerAndroid* infobar_container =
       new InfoBarContainerAndroid(env, obj);
   return reinterpret_cast<intptr_t>(infobar_container);

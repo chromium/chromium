@@ -25,9 +25,9 @@ import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.chrome.browser.IntentHandler;
-import org.chromium.chrome.browser.omnibox.fusebox.FuseboxMediator;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.components.browser_ui.styles.ChromeColors;
+import org.chromium.components.browser_ui.util.ChromeItemPickerExtras;
 
 /** Instrumentation Test for ChromeItemPickerActivity. */
 @RunWith(ChromeJUnit4ClassRunner.class)
@@ -42,7 +42,7 @@ public class ChromeItemPickerActivityTest {
     private Intent createPickerIntent(boolean isIncognito) {
         Context context = ContextUtils.getApplicationContext();
         Intent intent = new Intent(context, ChromeItemPickerActivity.class);
-        intent.putExtra(FuseboxMediator.EXTRA_IS_INCOGNITO_BRANDED, isIncognito);
+        intent.putExtra(ChromeItemPickerExtras.EXTRA_IS_INCOGNITO_BRANDED, isIncognito);
         intent.putExtra(IntentHandler.EXTRA_WINDOW_ID, TEST_WINDOW_ID);
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 

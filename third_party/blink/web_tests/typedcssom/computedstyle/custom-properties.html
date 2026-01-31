@@ -130,8 +130,8 @@ test(function() {
 
 test(function() {
   assert_false(computedStyleMap.has('--my-non-property'));
-  assert_equals(computedStyleMap.get('--my-non-property'), null);
-}, 'Getting the value of a property that isn\'t registered returns null');
+  assert_equals(computedStyleMap.get('--my-non-property'), undefined);
+}, 'Getting the value of a property that isn\'t registered returns undefined');
 
 test(function() {
   var result = computedStyleMap.getAll('--my-length');

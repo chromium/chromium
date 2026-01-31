@@ -168,11 +168,12 @@ void LogErrorMessageToConsole(
 void LogErrorAndFail(
     const std::string& error_message,
     const std::optional<content::FrameTreeNodeId>& frame_tree_node_id,
-    mojo::PendingRemote<network::mojom::URLLoaderClient> client) {
+    mojo::PendingRemote<network::mojom::URLLoaderClient> client,
+    net::Error err) {
   LogErrorMessageToConsole(frame_tree_node_id, error_message);
 
   mojo::Remote<network::mojom::URLLoaderClient>(std::move(client))
-      ->OnComplete(network::URLLoaderCompletionStatus(net::ERR_FAILED));
+      ->OnComplete(network::URLLoaderCompletionStatus(err));
 }
 
 void HandleProxy(

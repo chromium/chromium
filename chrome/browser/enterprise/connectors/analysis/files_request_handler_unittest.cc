@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-
 #include "chrome/browser/enterprise/connectors/analysis/files_request_handler.h"
 
 #include <map>
@@ -32,7 +31,6 @@
 #include "chrome/browser/enterprise/connectors/test/fake_content_analysis_delegate.h"
 #include "chrome/browser/enterprise/connectors/test/fake_files_request_handler.h"
 #include "chrome/browser/policy/dm_token_utils.h"
-#include "chrome/browser/safe_browsing/cloud_content_scanning/binary_upload_service.h"
 #include "chrome/browser/safe_browsing/cloud_content_scanning/deep_scanning_utils.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/test/base/testing_browser_process.h"
@@ -40,6 +38,7 @@
 #include "chrome/test/base/testing_profile_manager.h"
 #include "components/enterprise/buildflags/buildflags.h"
 #include "components/enterprise/common/proto/connectors.pb.h"
+#include "components/enterprise/connectors/core/cloud_content_scanning/binary_upload_service.h"
 #include "components/file_access/test/mock_scoped_file_access_delegate.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/safe_browsing/core/common/features.h"
@@ -643,8 +642,7 @@ TEST_F(FilesRequestHandlerTest, FileIsLarge) {
   base::ScopedTempDir temp_dir;
   ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
   base::FilePath file_path = temp_dir.GetPath().AppendASCII("large.doc");
-  std::string contents(
-      safe_browsing::BinaryUploadService::kMaxUploadSizeBytes + 1, 'a');
+  std::string contents(BinaryUploadService::kMaxUploadSizeBytes + 1, 'a');
   base::WriteFile(file_path, contents);
   paths.emplace_back(file_path);
   SetExpectedUserActionRequestsCount(1);
@@ -673,8 +671,7 @@ TEST_F(FilesRequestHandlerTest, FileIsLarge_LocalAnalysis) {
   base::ScopedTempDir temp_dir;
   ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
   base::FilePath file_path = temp_dir.GetPath().AppendASCII("large.doc");
-  std::string contents(
-      safe_browsing::BinaryUploadService::kMaxUploadSizeBytes + 1, 'a');
+  std::string contents(BinaryUploadService::kMaxUploadSizeBytes + 1, 'a');
   base::WriteFile(file_path, contents);
   paths.emplace_back(file_path);
   SetExpectedUserActionRequestsCount(1);
@@ -711,8 +708,7 @@ TEST_F(FilesRequestHandlerTest, FileIsLarge_PolicyAllows) {
   base::ScopedTempDir temp_dir;
   ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
   base::FilePath file_path = temp_dir.GetPath().AppendASCII("large.doc");
-  std::string contents(
-      safe_browsing::BinaryUploadService::kMaxUploadSizeBytes + 1, 'a');
+  std::string contents(BinaryUploadService::kMaxUploadSizeBytes + 1, 'a');
   base::WriteFile(file_path, contents);
   paths.emplace_back(file_path);
   SetExpectedUserActionRequestsCount(1);

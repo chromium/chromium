@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/login/test/session_flags_manager.h"
 
+#include <algorithm>
 #include <memory>
 #include <string>
 #include <vector>
@@ -11,7 +12,6 @@
 #include "ash/constants/ash_switches.h"
 #include "base/base64.h"
 #include "base/command_line.h"
-#include "base/containers/contains.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/json/json_file_value_serializer.h"
@@ -123,7 +123,7 @@ void SessionFlagsManager::LoadStateFromBackingFile() {
     return;
   }
 
-  base::Value::Dict& value_dict = value->GetDict();
+  base::DictValue& value_dict = value->GetDict();
   const std::string* user_id = value_dict.FindString(kUserIdKey);
   if (user_id && !user_id->empty()) {
     user_id_ = *user_id;
@@ -134,7 +134,7 @@ void SessionFlagsManager::LoadStateFromBackingFile() {
     user_hash_ = *user_hash;
   }
 
-  base::Value::List* user_flags = value_dict.FindList(kUserFlagsKey);
+  base::ListValue* user_flags = value_dict.FindList(kUserFlagsKey);
   if (user_flags) {
     user_flags_ = std::vector<Switch>();
     for (const base::Value& flag : *user_flags) {
@@ -145,7 +145,7 @@ void SessionFlagsManager::LoadStateFromBackingFile() {
     }
   }
 
-  base::Value::List* restart_job = value_dict.FindList(kRestartJobKey);
+  base::ListValue* restart_job = value_dict.FindList(kRestartJobKey);
   if (restart_job) {
     restart_job_ = std::vector<Switch>();
     for (const base::Value& job_switch : *restart_job) {
@@ -189,7 +189,7 @@ void SessionFlagsManager::StoreStateToBackingFile() {
     user_profile = it->second;
   }
 
-  base::Value::Dict cached_state;
+  base::DictValue cached_state;
 
   // Restart job command line should already contain login user and profile
   // switches, no reason to store it separately.
@@ -214,10 +214,10 @@ void SessionFlagsManager::StoreStateToBackingFile() {
   if (has_restart_job) {
     const std::vector<std::string>& argv =
         FakeSessionManagerClient::Get()->restart_job_argv().value();
-    DCHECK(
-        base::Contains(argv, base::StringPrintf("--%s=%s", switches::kLoginUser,
-                                                user_manager::kGuestUserName)));
-    DCHECK(base::Contains(
+    DCHECK(std::ranges::contains(
+        argv, base::StringPrintf("--%s=%s", switches::kLoginUser,
+                                 user_manager::kGuestUserName)));
+    DCHECK(std::ranges::contains(
         argv, base::StringPrintf("--%s=%s", switches::kLoginProfile, "user")));
 
     cached_state.Set(kRestartJobKey, GetSwitchesValueFromArgv(argv));
@@ -227,15 +227,15 @@ void SessionFlagsManager::StoreStateToBackingFile() {
   serializer.Serialize(cached_state);
 }
 
-base::Value::List SessionFlagsManager::GetSwitchesValueFromArgv(
+base::ListValue SessionFlagsManager::GetSwitchesValueFromArgv(
     const std::vector<std::string>& argv) {
   // Parse flag name-value pairs using command line initialization.
   base::CommandLine cmd_line(base::CommandLine::NO_PROGRAM);
   cmd_line.InitFromArgv(argv);
 
-  base::Value::List flag_list;
+  base::ListValue flag_list;
   for (const auto& flag : cmd_line.GetSwitches()) {
-    auto flag_value = base::Value::Dict()
+    auto flag_value = base::DictValue()
                           .Set(kFlagNameKey, flag.first)
                           .Set(kFlagValueKey, flag.second);
     flag_list.Append(std::move(flag_value));

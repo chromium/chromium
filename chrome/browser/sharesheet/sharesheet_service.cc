@@ -486,8 +486,6 @@ void SharesheetService::RecordUserActionMetrics(
             SharesheetMetrics::UserAction::kArc);
         return;
       case apps::AppType::kWeb:
-      // TODO(crbug.com/40172532): Add a separate metrics for System Web Apps if
-      // needed.
       case apps::AppType::kSystemWeb:
         SharesheetMetrics::RecordSharesheetActionMetrics(
             SharesheetMetrics::UserAction::kWeb);

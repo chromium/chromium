@@ -270,17 +270,18 @@ void IconCacherImpl::OnMostLikelyFaviconDownloaded(
 
 bool IconCacherImpl::StartRequest(const GURL& request_url,
                                   base::OnceClosure icon_available) {
-  bool in_flight = in_flight_requests_.count(request_url) > 0;
-  in_flight_requests_[request_url].push_back(std::move(icon_available));
+  auto [it, inserted] = in_flight_requests_.try_emplace(request_url);
+  bool in_flight = !inserted;
+  it->second.push_back(std::move(icon_available));
   return !in_flight;
 }
 
 void IconCacherImpl::FinishRequestAndNotifyIconAvailable(
     const GURL& request_url,
     bool newly_available) {
-  std::vector<base::OnceClosure> callbacks =
-      std::move(in_flight_requests_[request_url]);
-  in_flight_requests_.erase(request_url);
+  auto it = in_flight_requests_.try_emplace(request_url).first;
+  std::vector<base::OnceClosure> callbacks = std::move(it->second);
+  in_flight_requests_.erase(it);
   if (!newly_available) {
     return;
   }

@@ -19,6 +19,7 @@
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/omnibox/browser/aim_eligibility_service_features.h"
 #include "components/prefs/pref_change_registrar.h"
+#include "components/search_engines/template_url_service_observer.h"
 #include "components/signin/public/identity_manager/accounts_in_cookie_jar_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "google_apis/gaia/google_service_auth_error.h"
@@ -42,7 +43,8 @@ class SharedURLLoaderFactory;
 class AimEligibilityService
     : public KeyedService,
       public net::NetworkChangeNotifier::NetworkChangeObserver,
-      public signin::IdentityManager::Observer {
+      public signin::IdentityManager::Observer,
+      public TemplateURLServiceObserver {
  public:
   // Helper that individual AIM features can use to check if they should be
   // enabled. Unlike most chrome features, which simply check if the
@@ -61,6 +63,24 @@ class AimEligibilityService
   static void RegisterProfilePrefs(PrefRegistrySimple* registry);
   // Returns true if the AIM is allowed per the policy.
   static bool IsAimAllowedByPolicy(const PrefService* prefs);
+
+  // Tracks the source of `most_recent_response_`.
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
+  // LINT.IfChange(EligibilityResponseSource)
+  enum class EligibilityResponseSource {
+    kDefault = 0,
+    kPrefs = 1,
+    kServer = 2,
+    kBrowserCache = 3,
+    kUser = 4,
+    kMaxValue = kUser,
+  };
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/omnibox/enums.xml:AimEligibilityResponseSource)
+
+  // Converts EligibilityResponseSource enum to string.
+  static std::string EligibilityResponseSourceToString(
+      EligibilityResponseSource source);
 
   AimEligibilityService(
       PrefService& pref_service,
@@ -84,6 +104,10 @@ class AimEligibilityService
   // Virtual for testing purposes.
   virtual bool IsServerEligibilityEnabled() const;
 
+  // Checks if AIM is allowed by default search engine (Google DSE).
+  // Virtual for testing purposes.
+  virtual bool IsAimAllowedByDse() const;
+
   // Checks if user is locally eligible for AI mode (excludes server checks).
   // Virtual for testing purposes.
   virtual bool IsAimLocallyEligible() const;
@@ -103,6 +127,31 @@ class AimEligibilityService
   // returns false for off-the-record profiles.
   virtual bool IsCreateImagesEligible() const;
 
+  // Checks if user is eligible for Canvas in AIM features.
+  virtual bool IsCanvasEligible() const;
+
+  // Determining whether the provided URL is an AI page based on server-provided
+  // params.
+  virtual bool HasAimUrlParams(const GURL& url) const;
+
+  // Returns the most recent eligibility response proto.
+  virtual const omnibox::AimEligibilityResponse& GetMostRecentResponse() const;
+
+  // Returns the source of the most recent eligibility response.
+  EligibilityResponseSource GetMostRecentResponseSource() const;
+
+  // Returns the `SearchboxConfig` from the AIMEligibilityResponse.
+  const omnibox::SearchboxConfig* GetSearchboxConfig() const;
+
+  // NOTE: Following methods are intended for chrome://aim-eligibility-internals
+  // for debugging purposes only:
+  // Triggers a server request to fetch eligibility from the server.
+  void StartServerEligibilityRequestForDebugging();
+  // Sets the eligibility response directly from a base64-encoded string.
+  // Returns true if the response was successfully decoded and saved.
+  bool SetEligibilityResponseForDebugging(
+      const std::string& base64_encoded_response);
+
  protected:
   // Virtual methods for platform-specific country and locale access.
   virtual std::string GetCountryCode() const = 0;
@@ -120,9 +169,13 @@ class AimEligibilityService
     kCookieChange = 1,
     kPrimaryAccountChange = 2,
     kNetworkChange = 3,
-    kMaxValue = kNetworkChange,
+    kUser = 4,
+    kMaxValue = kUser,
   };
   // LINT.ThenChange(//tools/metrics/histograms/metadata/omnibox/histograms.xml:AimEligibilityRequestSource)
+
+  // Converts RequestSource enum to histogram suffix string.
+  static std::string RequestSourceToString(RequestSource source);
 
   // Tracks the status of the eligibility request.
   // These values are persisted to logs. Entries should not be renumbered and
@@ -138,23 +191,8 @@ class AimEligibilityService
   };
   // LINT.ThenChange(//tools/metrics/histograms/metadata/omnibox/enums.xml:AimEligibilityRequestStatus)
 
-  // Tracks the source of `most_recent_response_`.
-  // These values are persisted to logs. Entries should not be renumbered and
-  // numeric values should never be reused.
-  // LINT.IfChange(EligibilityResponseSource)
-  enum class EligibilityResponseSource {
-    kDefault = 0,
-    kPrefs = 1,
-    kServer = 2,
-    kBrowserCache = 3,
-    kMaxValue = kBrowserCache,
-  };
-  // LINT.ThenChange(//tools/metrics/histograms/metadata/omnibox/enums.xml:AimEligibilityResponseSource)
-
-  // Initializes the service. This isn't inlined in the constructor because
-  // initialization may have to be delayed until after `template_url_service_`
-  // has loaded.
-  void Initialize();
+  // Returns server eligibility if the feature is AIM eligible.
+  bool IsEligibleByServer(bool server_eligibility) const;
 
   // signin::IdentityManager::Observer:
   void OnPrimaryAccountChanged(
@@ -167,13 +205,24 @@ class AimEligibilityService
   void OnNetworkChanged(
       net::NetworkChangeNotifier::ConnectionType type) override;
 
+  // TemplateURLServiceObserver:
+  void OnTemplateURLServiceChanged() override;
+  void OnTemplateURLServiceShuttingDown() override;
+
+  // Callback for when the DSE changes.
+  void OnDseChanged();
+
+  // Callback for when the AIM policy changes.
+  void OnPolicyChanged();
+
   // Callback for when the eligibility response changes. Notifies observers.
   void OnEligibilityResponseChanged();
 
   // Updates `most_recent_response_` and the prefs with `response_proto`.
   void UpdateMostRecentResponse(
       const omnibox::AimEligibilityResponse& response_proto,
-      bool was_fetched_via_cache = false);
+      EligibilityResponseSource response_source);
+
   // Loads `most_recent_response_` from the prefs, if valid.
   void LoadMostRecentResponse();
 
@@ -192,12 +241,9 @@ class AimEligibilityService
   void ProcessServerEligibilityResponse(
       RequestSource request_source,
       int response_code,
-      bool was_fetched_via_cache,
+      EligibilityRequestStatus request_status,
       int num_retries,
       std::optional<std::string> response_string);
-
-  // Returns true if AIM is allowed by policy and Google is the DSE.
-  bool IsAimAllowedByPolicyAndDse() const;
 
   // Returns the given histogram name sliced by the given request source.
   std::string GetHistogramNameSlicedByRequestSource(
@@ -225,16 +271,19 @@ class AimEligibilityService
                                          RequestSource request_source) const;
   // Record total and sliced histograms for eligibility response.
   void LogEligibilityResponse(RequestSource request_source) const;
-  // Record histograms for eligibility response change.
-  void LogEligibilityResponseChange() const;
+  // Record histograms for eligibility response changes.
+  void LogEligibilityResponseChanges(
+      const omnibox::AimEligibilityResponse& old_response,
+      const omnibox::AimEligibilityResponse& new_response) const;
 
   const raw_ref<PrefService, DanglingUntriaged> pref_service_;
   // Outlives `this` due to BCKSF dependency. Can be nullptr in tests.
-  const raw_ptr<TemplateURLService, DanglingUntriaged> template_url_service_;
+  raw_ptr<TemplateURLService> template_url_service_;
   const scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
   // Outlives `this` due to BCKSF dependency. Can be nullptr in tests.
   const raw_ptr<signin::IdentityManager, DanglingUntriaged> identity_manager_;
   const bool is_off_the_record_;
+  bool is_dse_google_ = false;
 
   PrefChangeRegistrar pref_change_registrar_;
   base::CallbackListSubscription template_url_service_subscription_;
@@ -249,11 +298,11 @@ class AimEligibilityService
   EligibilityResponseSource most_recent_response_source_ =
       EligibilityResponseSource::kDefault;
 
-  // Tracks whether the service has been initialized.
-  bool initialized_ = false;
-
   // Tracks whether the startup request has been sent.
   bool startup_request_sent_ = false;
+
+  // Used to store the default config when the response doesn't have one.
+  mutable omnibox::SearchboxConfig fallback_config_;
 
   // For binding the `OnServerEligibilityResponse()` callback.
   base::WeakPtrFactory<AimEligibilityService> weak_factory_{this};

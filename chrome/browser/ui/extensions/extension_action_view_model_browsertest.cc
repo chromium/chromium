@@ -26,12 +26,12 @@
 #include "chrome/browser/extensions/scoped_test_mv2_enabler.h"
 #include "chrome/browser/extensions/test_extension_system.h"
 #include "chrome/browser/extensions/user_script_listener.h"
-#include "chrome/browser/ui/extensions/extension_action_platform_delegate.h"
+#include "chrome/browser/ui/extensions/extension_action_delegate.h"
 #include "chrome/browser/ui/extensions/extensions_container.h"
 #include "chrome/browser/ui/extensions/icon_with_badge_image_source.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/toolbar/toolbar_actions_model.h"
-#include "chrome/browser/ui/views/extensions/extensions_toolbar_container.h"
+#include "chrome/browser/ui/views/extensions/extensions_toolbar_desktop.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/common/extensions/api/side_panel.h"
@@ -127,7 +127,7 @@ class ExtensionActionViewModelBrowserTest : public InProcessBrowserTest {
     // It's safe to static cast here, because these tests only deal with
     // extensions.
     return static_cast<ExtensionActionViewModel*>(
-        container()->GetActionForId(action_id));
+        container()->GetToolbarViewModel()->GetActionForId(action_id));
   }
 
   scoped_refptr<const extensions::Extension> CreateAndAddExtension(
@@ -170,7 +170,7 @@ class ExtensionActionViewModelBrowserTest : public InProcessBrowserTest {
     return ToolbarActionsModel::Get(browser()->profile());
   }
 
-  ExtensionsToolbarContainer* container() {
+  ExtensionsToolbarDesktop* container() {
     return browser()->GetBrowserView().toolbar()->extensions_container();
   }
 
@@ -1229,45 +1229,8 @@ IN_PROC_BROWSER_TEST_P(ExtensionActionViewModelFeatureRolloutBrowserTest,
   EXPECT_FALSE(model->IsEnabled(web_contents));
 }
 
-// Ensures that the observer is called on navigation.
-IN_PROC_BROWSER_TEST_P(ExtensionActionViewModelFeatureRolloutBrowserTest,
-                       ObserverCalledOnNavigation) {
-  Init();
-  const std::string id =
-      CreateAndAddExtension("extension", extensions::ActionInfo::Type::kPage)
-          ->id();
-
-  // Register an observer.
-  ExtensionActionViewModel* const model = GetViewModelForId(id);
-  ASSERT_TRUE(model);
-
-  bool observer_called = false;
-  auto registration = model->RegisterUpdateObserver(base::BindRepeating(
-      [](bool* observer_called) { *observer_called = true; },
-      &observer_called));
-
-  // The observer is not immediately called.
-  EXPECT_FALSE(observer_called);
-
-  // Navigate to a different page.
-  NavigateAndCommitActiveTab(GURL("https://www.example.com/2"));
-  EXPECT_TRUE(observer_called);
-  observer_called = false;
-
-  // Create a new tab.
-  AddTab(browser(), GURL("https://www.example.com/3"));
-  EXPECT_TRUE(observer_called);
-  observer_called = false;
-
-  // Navigate to a different page.
-  NavigateAndCommitActiveTab(GURL("https://www.example.com/4"));
-  EXPECT_TRUE(observer_called);
-  observer_called = false;
-}
-
-// A fake implementation of ExtensionActionPlatformDelegate that does nothing.
-class FakeExtensionActionPlatformDelegate
-    : public ExtensionActionPlatformDelegate {
+// A fake implementation of ExtensionActionDelegate that does nothing.
+class FakeExtensionActionDelegate : public ExtensionActionDelegate {
  public:
   void AttachToModel(ExtensionActionViewModel* model) override {}
   void DetachFromModel() override {}
@@ -1297,7 +1260,7 @@ IN_PROC_BROWSER_TEST_P(ExtensionActionViewModelFeatureRolloutBrowserTest,
   // Create ExtensionActionViewModel that is not associated with the
   // lifetime of the view.
   auto action = ExtensionActionViewModel::Create(
-      id, browser(), std::make_unique<FakeExtensionActionPlatformDelegate>());
+      id, browser(), std::make_unique<FakeExtensionActionDelegate>());
 
   extension_registrar()->DisableExtension(
       id, {extensions::disable_reason::DISABLE_USER_ACTION});

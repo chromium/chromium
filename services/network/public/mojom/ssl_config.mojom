@@ -91,6 +91,11 @@ struct SSLConfig {
   // Merkle Tree Certificate TLS Trust Anchor IDs that are configured as
   // trusted, each in binary representation.
   array<array<uint8>> mtc_trust_anchor_ids;
+
+  // The time (represented as seconds since the unix epoch) that the latest
+  // MtcMetadata was generated. See also MtcMetadata.update_time_seconds in
+  // net/cert/root_store.proto.
+  int64 mtc_update_time_seconds;
 };
 
 // Receives SSL configuration updates.

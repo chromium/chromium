@@ -43,6 +43,8 @@ class OmniboxAimPopupWebUIContent : public OmniboxPopupWebUIBaseContent {
   // <escape>, presses the 'x' button, or moves focus out of the popup.
   void CloseUI() override;
   void ShowUI() override;
+  bool HandleContextMenu(content::RenderFrameHost& render_frame_host,
+                         const content::ContextMenuParams& params) override;
 
   // Returns the WebUI Handler. Can return null.
   OmniboxPopupAimHandler* popup_aim_handler();

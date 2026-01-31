@@ -40,8 +40,8 @@
 #include "components/policy/core/common/policy_map.h"
 #include "components/policy/policy_constants.h"
 #include "components/saved_tab_groups/public/features.h"
+#include "components/split_tabs/split_tab_visual_data.h"
 #include "components/tab_groups/tab_group_id.h"
-#include "components/tabs/public/split_tab_visual_data.h"
 #include "components/tabs/public/tab_interface.h"
 #include "components/webapps/common/web_app_id.h"
 #include "content/public/browser/web_contents.h"
@@ -104,8 +104,8 @@ class TabStripModelPreventCloseTest : public PreventCloseTestBase,
 
   // TabStripModelObserver:
   MOCK_METHOD(void,
-              TabCloseCancelled,
-              (const content::WebContents* contents),
+              OnTabCloseCancelled,
+              (const tabs::TabInterface* tab),
               (override));
 
  protected:
@@ -131,7 +131,7 @@ IN_PROC_BROWSER_TEST_F(TabStripModelPreventCloseTest,
   EXPECT_EQ(!kShouldPreventClose, tab_strip_model->IsTabClosable(
                                       tab_strip_model->GetActiveWebContents()));
 
-  EXPECT_CALL(*this, TabCloseCancelled(_)).Times(kShouldPreventClose ? 1 : 0);
+  EXPECT_CALL(*this, OnTabCloseCancelled(_)).Times(kShouldPreventClose ? 1 : 0);
 
   tab_strip_model->CloseAllTabs();
   EXPECT_EQ(kShouldPreventClose ? 1 : 0, tab_strip_model->count());
@@ -172,7 +172,7 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_TRUE(
       tab_strip_model->IsTabClosable(tab_strip_model->GetActiveWebContents()));
 
-  EXPECT_CALL(*this, TabCloseCancelled(_)).Times(0);
+  EXPECT_CALL(*this, OnTabCloseCancelled(_)).Times(0);
 
   tab_strip_model->CloseAllTabs();
   EXPECT_EQ(0, tab_strip_model->count());
@@ -271,11 +271,6 @@ IN_PROC_BROWSER_TEST_F(TabStripModelBrowserTest, CommandOrganizeTabs) {
   EXPECT_NE(session, nullptr);
   EXPECT_EQ(session->request()->state(),
             TabOrganizationRequest::State::NOT_STARTED);
-
-  histogram_tester.ExpectUniqueSample("Tab.Organization.AllEntrypoints.Clicked",
-                                      true, 1);
-  histogram_tester.ExpectUniqueSample("Tab.Organization.TabContextMenu.Clicked",
-                                      true, 1);
 }
 
 IN_PROC_BROWSER_TEST_F(TabStripModelBrowserTest,

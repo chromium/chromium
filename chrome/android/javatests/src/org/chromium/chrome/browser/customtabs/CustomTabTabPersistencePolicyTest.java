@@ -9,6 +9,8 @@ import static androidx.test.espresso.matcher.ViewMatchers.assertThat;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 import android.app.Activity;
 import android.util.SparseBooleanArray;
@@ -27,7 +29,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
@@ -94,7 +95,7 @@ public class CustomTabTabPersistencePolicyTest {
     @Before
     public void setUp() throws Exception {
 
-        Mockito.when(mIncognitoProfile.isOffTheRecord()).thenReturn(true);
+        when(mIncognitoProfile.isOffTheRecord()).thenReturn(true);
 
         // CustomTabsConnection needs a true context, not the mock context set below.
         ThreadUtils.runOnUiThreadBlocking(() -> CustomTabsConnection.getInstance());
@@ -432,13 +433,13 @@ public class CustomTabTabPersistencePolicyTest {
         ApplicationStatus.registerStateListenerForActivity(stateListener, customTabActivity);
         ApplicationStatus.onStateChangeForTesting(customTabActivity, ActivityState.STARTED);
 
-        OneshotSupplierImpl<ProfileProvider> profileProviderSupplier = new OneshotSupplierImpl<>();
-        profileProviderSupplier.set(mProfileProvider);
-        Mockito.when(mProfileProvider.getOriginalProfile()).thenReturn(mProfile);
+        OneshotSupplierImpl<ProfileProvider> profileProviderSupplier = mock();
+        when(profileProviderSupplier.get()).thenReturn(mProfileProvider);
+        when(mProfileProvider.getOriginalProfile()).thenReturn(mProfile);
 
         CustomTabsTabModelOrchestrator orchestrator = new CustomTabsTabModelOrchestrator();
         orchestrator.createTabModels(
-                mAppContext,
+                customTabActivity,
                 profileProviderSupplier,
                 customTabActivity,
                 buildTestPersistencePolicy(),

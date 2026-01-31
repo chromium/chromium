@@ -87,7 +87,7 @@ class PrintViewManagerBase : public PrintManager, public PrintJob::Observer {
   // `job_settings`. Runs `callback` with an error string on failure and with an
   // empty string if the print job is started successfully. `rfh` is the render
   // frame host for the preview initiator contents respectively.
-  void PrintForPrintPreview(base::Value::Dict job_settings,
+  void PrintForPrintPreview(base::DictValue job_settings,
                             scoped_refptr<base::RefCountedMemory> print_data,
                             content::RenderFrameHost* rfh,
                             PrinterHandler::PrintCallback callback);
@@ -121,7 +121,7 @@ class PrintViewManagerBase : public PrintManager, public PrintJob::Observer {
   void GetDefaultPrintSettings(
       GetDefaultPrintSettingsCallback callback) override;
 #if BUILDFLAG(ENABLE_PRINT_PREVIEW)
-  void UpdatePrintSettings(base::Value::Dict job_settings,
+  void UpdatePrintSettings(base::DictValue job_settings,
                            UpdatePrintSettingsCallback callback) override;
   void SetAccessibilityTree(
       int32_t cookie,
@@ -276,13 +276,13 @@ class PrintViewManagerBase : public PrintManager, public PrintJob::Observer {
   // Helpers for UpdatePrintSettings().
 #if BUILDFLAG(IS_WIN)
   void OnDidUpdatePrintableArea(std::unique_ptr<PrinterQuery> printer_query,
-                                base::Value::Dict job_settings,
+                                base::DictValue job_settings,
                                 std::unique_ptr<PrintSettings> print_settings,
                                 UpdatePrintSettingsCallback callback,
                                 bool success);
 #endif
   void CompleteUpdatePrintSettings(
-      base::Value::Dict job_settings,
+      base::DictValue job_settings,
       std::unique_ptr<PrintSettings> print_settings,
       UpdatePrintSettingsCallback callback);
 

@@ -62,7 +62,7 @@ const char kAudioNodesUpdated[] = "audioNodesUpdated";
 const double kPowerLevelHigh = 50;
 const double kPowerLevelLow = 2;
 
-bool GetString(const base::Value::Dict& dict,
+bool GetString(const base::DictValue& dict,
                std::string_view key,
                std::string* result) {
   CHECK(result);
@@ -108,7 +108,7 @@ class DeviceEmulatorMessageHandler::BluetoothObserver
 
 void DeviceEmulatorMessageHandler::BluetoothObserver::DeviceAdded(
     const dbus::ObjectPath& object_path) {
-  base::Value::Dict device = owner_->GetDeviceInfo(object_path);
+  base::DictValue device = owner_->GetDeviceInfo(object_path);
 
   // Request to add the device to the view's list of devices.
   owner_->FireWebUIListener("bluetooth-device-added", device);
@@ -178,7 +178,7 @@ class DeviceEmulatorMessageHandler::PowerObserver
 
 void DeviceEmulatorMessageHandler::PowerObserver::PowerChanged(
     const power_manager::PowerSupplyProperties& proto) {
-  base::Value::Dict power_properties;
+  base::DictValue power_properties;
 
   power_properties.Set("battery_percent", int(proto.battery_percent()));
   power_properties.Set("battery_state", int(proto.battery_state()));
@@ -205,7 +205,7 @@ DeviceEmulatorMessageHandler::DeviceEmulatorMessageHandler()
 
 DeviceEmulatorMessageHandler::~DeviceEmulatorMessageHandler() = default;
 
-void DeviceEmulatorMessageHandler::Init(const base::Value::List& args) {
+void DeviceEmulatorMessageHandler::Init(const base::ListValue& args) {
   AllowJavascript();
 }
 
@@ -219,12 +219,12 @@ void DeviceEmulatorMessageHandler::BluetoothDeviceAdapterReady(
 }
 
 void DeviceEmulatorMessageHandler::RequestPowerInfo(
-    const base::Value::List& args) {
+    const base::ListValue& args) {
   fake_power_manager_client_->RequestStatusUpdate();
 }
 
 void DeviceEmulatorMessageHandler::HandleRemoveBluetoothDevice(
-    const base::Value::List& args) {
+    const base::ListValue& args) {
   CHECK(!args.empty());
   const std::string& path = args[0].GetString();
   fake_bluetooth_device_client_->RemoveDevice(
@@ -233,12 +233,12 @@ void DeviceEmulatorMessageHandler::HandleRemoveBluetoothDevice(
 }
 
 void DeviceEmulatorMessageHandler::HandleRequestBluetoothDiscover(
-    const base::Value::List& args) {
+    const base::ListValue& args) {
   CreateBluetoothDeviceFromListValue(args);
 }
 
 void DeviceEmulatorMessageHandler::HandleRequestBluetoothInfo(
-    const base::Value::List& args) {
+    const base::ListValue& args) {
   AllowJavascript();
   // Get a list containing paths of the devices which are connected to
   // the main adapter.
@@ -247,7 +247,7 @@ void DeviceEmulatorMessageHandler::HandleRequestBluetoothInfo(
           dbus::ObjectPath(bluez::FakeBluetoothAdapterClient::kAdapterPath));
 
   // Get each device's properties.
-  base::Value::List devices;
+  base::ListValue devices;
   for (const dbus::ObjectPath& path : paths) {
     devices.Append(GetDeviceInfo(path));
   }
@@ -255,7 +255,7 @@ void DeviceEmulatorMessageHandler::HandleRequestBluetoothInfo(
   base::Value predefined_devices =
       fake_bluetooth_device_client_->GetBluetoothDevicesAsDictionaries();
 
-  base::Value::List pairing_method_options;
+  base::ListValue pairing_method_options;
   pairing_method_options.Append(
       bluez::FakeBluetoothDeviceClient::kPairingMethodNone);
   pairing_method_options.Append(
@@ -263,7 +263,7 @@ void DeviceEmulatorMessageHandler::HandleRequestBluetoothInfo(
   pairing_method_options.Append(
       bluez::FakeBluetoothDeviceClient::kPairingMethodPassKey);
 
-  base::Value::List pairing_action_options;
+  base::ListValue pairing_action_options;
   pairing_action_options.Append(
       bluez::FakeBluetoothDeviceClient::kPairingActionDisplay);
   pairing_action_options.Append(
@@ -273,7 +273,7 @@ void DeviceEmulatorMessageHandler::HandleRequestBluetoothInfo(
   pairing_action_options.Append(
       bluez::FakeBluetoothDeviceClient::kPairingActionFail);
 
-  base::Value::Dict info;
+  base::DictValue info;
   info.Set("predefined_devices", std::move(predefined_devices));
   info.Set("devices", std::move(devices));
   info.Set("pairing_method_options", std::move(pairing_method_options));
@@ -284,7 +284,7 @@ void DeviceEmulatorMessageHandler::HandleRequestBluetoothInfo(
 }
 
 void DeviceEmulatorMessageHandler::HandleRequestBluetoothPair(
-    const base::Value::List& args) {
+    const base::ListValue& args) {
   // Create the device if it does not already exist.
   std::string path = CreateBluetoothDeviceFromListValue(args);
   bluez::FakeBluetoothDeviceClient::Properties* props =
@@ -299,18 +299,18 @@ void DeviceEmulatorMessageHandler::HandleRequestBluetoothPair(
 }
 
 void DeviceEmulatorMessageHandler::HandleRequestAudioNodes(
-    const base::Value::List& args) {
+    const base::ListValue& args) {
   AllowJavascript();
   UpdateAudioNodes();
 }
 
 void DeviceEmulatorMessageHandler::HandleInsertAudioNode(
-    const base::Value::List& args) {
+    const base::ListValue& args) {
   AudioNode audio_node;
 
   const base::Value& device_value = args[0];
   CHECK(device_value.is_dict());
-  const base::Value::Dict& device_dict = device_value.GetDict();
+  const base::DictValue& device_dict = device_value.GetDict();
   audio_node.is_input = device_dict.FindBool("isInput").value();
   CHECK(GetString(device_dict, "deviceName", &audio_node.device_name));
   CHECK(GetString(device_dict, "type", &audio_node.type));
@@ -325,7 +325,7 @@ void DeviceEmulatorMessageHandler::HandleInsertAudioNode(
 }
 
 void DeviceEmulatorMessageHandler::HandleRemoveAudioNode(
-    const base::Value::List& args) {
+    const base::ListValue& args) {
   CHECK(!args.empty());
   const std::string& tmp_id = args[0].GetString();
   uint64_t id;
@@ -335,7 +335,7 @@ void DeviceEmulatorMessageHandler::HandleRemoveAudioNode(
 }
 
 void DeviceEmulatorMessageHandler::HandleSetHasTouchpad(
-    const base::Value::List& args) {
+    const base::ListValue& args) {
   CHECK(!args.empty());
   const bool has_touchpad = args[0].GetBool();
 
@@ -344,7 +344,7 @@ void DeviceEmulatorMessageHandler::HandleSetHasTouchpad(
 }
 
 void DeviceEmulatorMessageHandler::HandleSetHasMouse(
-    const base::Value::List& args) {
+    const base::ListValue& args) {
   CHECK(!args.empty());
   const bool has_mouse = args[0].GetBool();
 
@@ -353,7 +353,7 @@ void DeviceEmulatorMessageHandler::HandleSetHasMouse(
 }
 
 void DeviceEmulatorMessageHandler::UpdateBatteryPercent(
-    const base::Value::List& args) {
+    const base::ListValue& args) {
   if (args.size() >= 1 && args[0].is_int()) {
     int new_percent = args[0].GetInt();
     power_manager::PowerSupplyProperties props =
@@ -364,7 +364,7 @@ void DeviceEmulatorMessageHandler::UpdateBatteryPercent(
 }
 
 void DeviceEmulatorMessageHandler::UpdateBatteryState(
-    const base::Value::List& args) {
+    const base::ListValue& args) {
   if (args.size() >= 1 && args[0].is_int()) {
     int battery_state = args[0].GetInt();
     power_manager::PowerSupplyProperties props =
@@ -377,7 +377,7 @@ void DeviceEmulatorMessageHandler::UpdateBatteryState(
 }
 
 void DeviceEmulatorMessageHandler::UpdateTimeToEmpty(
-    const base::Value::List& args) {
+    const base::ListValue& args) {
   if (args.size() >= 1 && args[0].is_int()) {
     int new_time = args[0].GetInt();
     power_manager::PowerSupplyProperties props =
@@ -388,7 +388,7 @@ void DeviceEmulatorMessageHandler::UpdateTimeToEmpty(
 }
 
 void DeviceEmulatorMessageHandler::UpdateTimeToFull(
-    const base::Value::List& args) {
+    const base::ListValue& args) {
   if (args.size() >= 1 && args[0].is_int()) {
     int new_time = args[0].GetInt();
     power_manager::PowerSupplyProperties props =
@@ -399,9 +399,9 @@ void DeviceEmulatorMessageHandler::UpdateTimeToFull(
 }
 
 void DeviceEmulatorMessageHandler::UpdatePowerSources(
-    const base::Value::List& args) {
+    const base::ListValue& args) {
   CHECK(!args.empty() && args[0].is_list());
-  const base::Value::List& sources = args[0].GetList();
+  const base::ListValue& sources = args[0].GetList();
 
   power_manager::PowerSupplyProperties props =
       *fake_power_manager_client_->GetLastStatus();
@@ -460,7 +460,7 @@ void DeviceEmulatorMessageHandler::UpdatePowerSources(
 }
 
 void DeviceEmulatorMessageHandler::UpdatePowerSourceId(
-    const base::Value::List& args) {
+    const base::ListValue& args) {
   CHECK(!args.empty() && args[0].is_string());
   const std::string& id = args[0].GetString();
   fake_power_manager_client_->SetPowerSource(id);
@@ -561,12 +561,12 @@ void DeviceEmulatorMessageHandler::OnJavascriptDisallowed() {
 }
 
 std::string DeviceEmulatorMessageHandler::CreateBluetoothDeviceFromListValue(
-    const base::Value::List& args) {
+    const base::ListValue& args) {
   bluez::FakeBluetoothDeviceClient::IncomingDeviceProperties props;
 
   const base::Value& device_value = args[0];
   CHECK(device_value.is_dict());
-  const base::Value::Dict& device_dict = device_value.GetDict();
+  const base::DictValue& device_dict = device_value.GetDict();
   CHECK(GetString(device_dict, "path", &props.device_path));
   CHECK(GetString(device_dict, "name", &props.device_name));
   CHECK(GetString(device_dict, "alias", &props.device_alias));
@@ -590,7 +590,7 @@ std::string DeviceEmulatorMessageHandler::CreateBluetoothDeviceFromListValue(
   return props.device_path;
 }
 
-base::Value::Dict DeviceEmulatorMessageHandler::GetDeviceInfo(
+base::DictValue DeviceEmulatorMessageHandler::GetDeviceInfo(
     const dbus::ObjectPath& object_path) {
   // Get the device's properties.
   bluez::FakeBluetoothDeviceClient::Properties* props =
@@ -598,7 +598,7 @@ base::Value::Dict DeviceEmulatorMessageHandler::GetDeviceInfo(
   bluez::FakeBluetoothDeviceClient::SimulatedPairingOptions* options =
       fake_bluetooth_device_client_->GetPairingOptions(object_path);
 
-  base::Value::Dict device;
+  base::DictValue device;
   device.Set("path", object_path.value());
   device.Set("name", props->name.value());
   device.Set("alias", props->alias.value());
@@ -616,7 +616,7 @@ base::Value::Dict DeviceEmulatorMessageHandler::GetDeviceInfo(
   device.Set("isTrusted", bool(props->trusted.value()));
   device.Set("incoming", false);
 
-  base::Value::List uuids;
+  base::ListValue uuids;
   for (const std::string& uuid : props->uuids.value()) {
     uuids.Append(uuid);
   }
@@ -669,9 +669,9 @@ void DeviceEmulatorMessageHandler::PointingStickExists(bool exists) {
 void DeviceEmulatorMessageHandler::UpdateAudioNodes() {
   // Get every active audio node and create a dictionary to
   // send it to JavaScript.
-  base::Value::List audio_nodes;
+  base::ListValue audio_nodes;
   for (const AudioNode& node : FakeCrasAudioClient::Get()->node_list()) {
-    base::Value::Dict audio_node;
+    base::DictValue audio_node;
 
     audio_node.Set("isInput", node.is_input);
     audio_node.Set("id", base::NumberToString(node.id));

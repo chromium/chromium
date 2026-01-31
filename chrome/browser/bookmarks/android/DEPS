@@ -1,6 +1,7 @@
 include_rules = [
     "+components/power_bookmarks/core",
     "+chrome/browser/partnerbookmarks",
+    "+components/browser_ui/bottomsheet/android",
     "+components/image_fetcher",
 
     # TODO(crbug.com/395908100): Temporary exceptions to bookmark modularization.
@@ -9,6 +10,7 @@ include_rules = [
     "+chrome/android/java/src/org/chromium/chrome/browser/app/bookmarks/BookmarkActivity.java",
     "+chrome/android/java/src/org/chromium/chrome/browser/app/bookmarks/BookmarkEditActivity.java",
     "+chrome/android/java/src/org/chromium/chrome/browser/app/bookmarks/BookmarkFolderPickerActivity.java",
+    "+chrome/android/java/src/org/chromium/chrome/browser/device_lock/DeviceLockActivityLauncherImpl.java",
     "+chrome/android/java/src/org/chromium/chrome/browser/document/ChromeLauncherActivity.java",
     "+chrome/android/java/src/org/chromium/chrome/browser/offlinepages/OfflinePageUtils.java",
     "+chrome/android/java/src/org/chromium/chrome/browser/signin/LegacySyncPromoView.java",

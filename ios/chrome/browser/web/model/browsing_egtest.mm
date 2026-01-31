@@ -258,22 +258,15 @@ id<GREYMatcher> TabWithTitle(const std::string& tab_title) {
 
   [ChromeEarlGrey loadURL:URL];
   [ChromeEarlGrey tapWebStateElementWithID:@"link"];
-
-  [[EarlGrey selectElementWithMatcher:OmniboxText(destURL.GetContent())]
-      assertWithMatcher:grey_notNil()];
+  [ChromeEarlGrey waitForWebStateVisibleURL:destURL];
 
   [ChromeEarlGrey goBack];
   [ChromeEarlGrey waitForWebStateContainingText:"Link"];
+  const GURL newOriginURL = web::test::HttpServer::MakeUrl("http://origin/#");
 
-  // Using partial match for Omnibox text because the displayed URL is now
-  // "http://origin/#" due to the link click. This is consistent with all
-  // other browsers.
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::Omnibox()]
-      assertWithMatcher:chrome_test_util::OmniboxContainingText(
-                            URL.GetContent())];
-  GREYAssertEqual(web::test::HttpServer::MakeUrl("http://origin/#"),
-                  [ChromeEarlGrey webStateVisibleURL],
-                  @"Unexpected URL after going back");
+  // The displayed URL is now "http://origin/#" due to the link click. This is
+  // consistent with all other browsers.
+  [ChromeEarlGrey waitForWebStateVisibleURL:newOriginURL];
 }
 
 // Tests that a link with WebUI URL does not trigger a load. WebUI pages may

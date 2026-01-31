@@ -10,6 +10,7 @@
 #import "ios/chrome/browser/composebox/ui/composebox_snackbar_presenter.h"
 #import "ios/chrome/browser/composebox/ui/composebox_tab_picker_consumer.h"
 #import "ios/chrome/browser/intelligence/persist_tab_context/model/persist_tab_context_browser_agent.h"
+#import "ios/chrome/browser/ntp/model/new_tab_page_util.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/snapshots/model/snapshot_tab_helper.h"
@@ -198,6 +199,9 @@
   NSMutableArray<GridItemIdentifier*>* items = [[NSMutableArray alloc] init];
   for (int i = 0; i < self.webStateList->count(); i++) {
     web::WebState* webState = self.webStateList->GetWebStateAt(i);
+    if (IsVisibleURLNewTabPage(webState)) {
+      continue;
+    }
     GridItemIdentifier* item = [GridItemIdentifier tabIdentifier:webState];
     [items addObject:item];
   }
@@ -248,6 +252,9 @@
   _validAPCwebStatesIDs = validCachedwebStatesIDs;
   for (int i = 0; i < self.webStateList->count(); ++i) {
     web::WebState* webState = self.webStateList->GetWebStateAt(i);
+    if (IsVisibleURLNewTabPage(webState)) {
+      continue;
+    }
     GridItemIdentifier* item = [GridItemIdentifier tabIdentifier:webState];
     [items addObject:item];
   }

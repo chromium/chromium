@@ -26,7 +26,7 @@ namespace {
 // If |proxies| is non-empty, sets it in |dict| under the key |name|.
 void AddProxyListToValue(const char* name,
                          const ProxyList& proxies,
-                         base::Value::Dict* dict) {
+                         base::DictValue* dict) {
   if (!proxies.IsEmpty()) {
     dict->Set(name, proxies.ToValue());
   }
@@ -260,12 +260,12 @@ bool ProxyConfig::ProxyOverrideRule::operator==(
          proxy_list.Equals(other.proxy_list);
 }
 
-base::Value::Dict ProxyConfig::ProxyOverrideRule::ToDict() const {
-  base::Value::Dict dict;
+base::DictValue ProxyConfig::ProxyOverrideRule::ToDict() const {
+  base::DictValue dict;
   dict.Set("destination_matchers", destination_matchers.ToString());
   dict.Set("proxy_list", proxy_list.ToValue());
 
-  base::Value::List dns_conditions_value;
+  base::ListValue dns_conditions_value;
   for (const auto& dns_condition : dns_conditions) {
     dns_conditions_value.Append(dns_condition.ToDict());
   }
@@ -282,9 +282,9 @@ bool ProxyConfig::ProxyOverrideRule::MatchesDestination(const GURL& url) const {
 bool ProxyConfig::ProxyOverrideRule::DnsProbeCondition::operator==(
     const DnsProbeCondition& other) const = default;
 
-base::Value::Dict ProxyConfig::ProxyOverrideRule::DnsProbeCondition::ToDict()
+base::DictValue ProxyConfig::ProxyOverrideRule::DnsProbeCondition::ToDict()
     const {
-  base::Value::Dict dict;
+  base::DictValue dict;
   dict.Set("host", host.Serialize());
 
   std::string_view result_str;
@@ -330,7 +330,7 @@ void ProxyConfig::ClearAutomaticSettings() {
 }
 
 base::Value ProxyConfig::ToValue() const {
-  base::Value::Dict dict;
+  base::DictValue dict;
 
   // Output the automatic settings.
   if (auto_detect_) {
@@ -353,7 +353,7 @@ base::Value ProxyConfig::ToValue() const {
         AddProxyListToValue("single_proxy", proxy_rules_.single_proxies, &dict);
         break;
       case ProxyRules::Type::PROXY_LIST_PER_SCHEME: {
-        base::Value::Dict dict2;
+        base::DictValue dict2;
         AddProxyListToValue("http", proxy_rules_.proxies_for_http, &dict2);
         AddProxyListToValue("https", proxy_rules_.proxies_for_https, &dict2);
         AddProxyListToValue("ftp", proxy_rules_.proxies_for_ftp, &dict2);
@@ -372,7 +372,7 @@ base::Value ProxyConfig::ToValue() const {
         dict.Set("reverse_bypass", true);
       }
 
-      base::Value::List list;
+      base::ListValue list;
 
       for (const auto& bypass_rule : bypass.rules()) {
         list.Append(bypass_rule->ToString());
@@ -384,7 +384,7 @@ base::Value ProxyConfig::ToValue() const {
 
   // Output override rules.
   if (!proxy_override_rules_.empty()) {
-    base::Value::List override_rules;
+    base::ListValue override_rules;
     for (const auto& override_rule : proxy_override_rules_) {
       override_rules.Append(override_rule.ToDict());
     }

@@ -16,12 +16,10 @@ namespace base {
 class UnguessableToken;
 }  // namespace base
 
-namespace crosapi::mojom {
-class ClipboardHistoryItemDescriptor;
-enum class ClipboardHistoryControllerShowSource;
-}  // namespace crosapi::mojom
-
 namespace chromeos::clipboard_history {
+
+struct ItemDescriptor;
+enum class ShowSource;
 
 // A context submenu model that contains clipboard history item descriptors.
 // Used only if the clipboard history refresh feature is enabled.
@@ -36,7 +34,7 @@ class COMPONENT_EXPORT(CHROMEOS_UI_CLIPBOARD_HISTORY)
 
   static std::unique_ptr<ClipboardHistorySubmenuModel>
   CreateClipboardHistorySubmenuModel(
-      crosapi::mojom::ClipboardHistoryControllerShowSource submenu_type,
+      ShowSource submenu_type,
       ShowClipboardHistoryMenuCallback show_menu_callback);
 
   ClipboardHistorySubmenuModel(const ClipboardHistorySubmenuModel&) = delete;
@@ -52,13 +50,12 @@ class COMPONENT_EXPORT(CHROMEOS_UI_CLIPBOARD_HISTORY)
   void OnMenuWillShow(SimpleMenuModel* model) override;
 
   ClipboardHistorySubmenuModel(
-      crosapi::mojom::ClipboardHistoryControllerShowSource submenu_type,
-      const std::vector<crosapi::mojom::ClipboardHistoryItemDescriptor>&
-          item_descriptors,
+      ShowSource submenu_type,
+      const std::vector<ItemDescriptor>& item_descriptors,
       ShowClipboardHistoryMenuCallback show_menu_callback);
 
   // Indicates the type of submenu where this model is used.
-  const crosapi::mojom::ClipboardHistoryControllerShowSource submenu_type_;
+  const ShowSource submenu_type_;
 
   // Mappings from command ids to clipboard history item ids.
   std::map<int, base::UnguessableToken> item_ids_by_command_ids_;

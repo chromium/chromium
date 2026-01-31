@@ -81,10 +81,13 @@ std::map<PlatformThreadId, std::string> ThreadNames(pid_t pid) {
     }
 
     char buffer[4096 + 1];
-    int bytes_read = stat_file.ReadAtCurrentPos(buffer, 4096);
-    if (bytes_read <= 0)
+    base::span<uint8_t> buffer_span = base::as_writable_byte_span(buffer);
+    std::optional<size_t> bytes_read =
+        stat_file.ReadAtCurrentPos(buffer_span.first(4096u));
+    if (!bytes_read || *bytes_read == 0) {
       continue;
-    buffer[bytes_read] = '\0';
+    }
+    buffer_span[*bytes_read] = 0;
 
     int process_id, ppid, pgrp;
     char name[256];
@@ -98,10 +101,11 @@ std::map<PlatformThreadId, std::string> ThreadNames(pid_t pid) {
       LOG(WARNING) << "Invalid file: " << status_path.value();
       continue;
     }
-    bytes_read = status_file.ReadAtCurrentPos(buffer, 4096);
-    if (bytes_read <= 0)
+    bytes_read = status_file.ReadAtCurrentPos(buffer_span.first(4096u));
+    if (!bytes_read || *bytes_read == 0) {
       continue;
-    buffer[bytes_read] = '\0';
+    }
+    buffer_span[*bytes_read] = 0;
     auto lines = SplitString(buffer, "\n", base::TRIM_WHITESPACE,
                              base::SPLIT_WANT_NONEMPTY);
     for (std::string_view sp : lines) {
@@ -286,12 +290,12 @@ bool PartitionRootInspector::GatherStatistics() {
   Update();
   bucket_stats_.clear();
 
-  for (auto& bucket : root_.get()->buckets) {
+  for (auto& bucket : root_.get()->buckets_) {
     BucketStats stats;
     stats.slot_size = bucket.slot_size;
     stats.bucket = bucket;
 
-    // Only look at the small buckets.
+    // Only look at the small buckets_.
     if (bucket.slot_size > 4096)
       return true;
 
@@ -451,42 +455,43 @@ void DisplayRootData(PartitionRootInspector& root_inspector,
 
   const auto& bucket_stats =
       root_inspector.bucket_stats()[detailed_bucket_index];
-  std::cout << "\nFreelist size for active buckets of size = "
+  std::cout << "\nFreelist size for active buckets_ of size = "
             << bucket_stats.slot_size << "\n";
   for (size_t freelist_size : bucket_stats.freelist_sizes)
     std::cout << freelist_size << " ";
   std::cout << "\n";
 
   auto* root = root_inspector.root();
-  uint64_t syscall_count = root->syscall_count.load(std::memory_order_relaxed);
+  uint64_t syscall_count_ =
+      root->syscall_count_.load(std::memory_order_relaxed);
   uint64_t total_duration_ms =
-      root->syscall_total_time_ns.load(std::memory_order_relaxed) / 1e6;
+      root->syscall_total_time_ns_.load(std::memory_order_relaxed) / 1e6;
 
   uint64_t virtual_size =
-      root->total_size_of_super_pages.load(std::memory_order_relaxed) +
-      root->total_size_of_direct_mapped_pages.load(std::memory_order_relaxed);
+      root->total_size_of_super_pages_.load(std::memory_order_relaxed) +
+      root->total_size_of_direct_mapped_pages_.load(std::memory_order_relaxed);
 
   std::cout
-      << "\n\nSyscall count = " << syscall_count
+      << "\n\nSyscall count = " << syscall_count_
       << "\tTotal duration = " << total_duration_ms << "ms\n"
       << "Max committed size = "
-      << root->max_size_of_committed_pages.load(std::memory_order_relaxed) /
+      << root->max_size_of_committed_pages_.load(std::memory_order_relaxed) /
              1024
       << "kiB\n"
       << "Allocated/Committed/Virtual = "
       << root->get_total_size_of_allocated_bytes() / 1024 << " / "
-      << root->total_size_of_committed_pages.load(std::memory_order_relaxed) /
+      << root->total_size_of_committed_pages_.load(std::memory_order_relaxed) /
              1024
       << " / " << virtual_size / 1024 << " kiB\n";
   std::cout << "\nEmpty Slot Spans Dirty Size = "
-            << TS_UNCHECKED_READ(root->empty_slot_spans_dirty_bytes) / 1024
+            << TS_UNCHECKED_READ(root->empty_slot_spans_dirty_bytes_) / 1024
             << "kiB";
 }
 
-base::Value::Dict Dump(PartitionRootInspector& root_inspector) {
+base::DictValue Dump(PartitionRootInspector& root_inspector) {
   auto slot_span_to_value = [](const SlotSpanMetadata& slot_span,
                                size_t slots_per_span) {
-    base::Value::Dict result;
+    base::DictValue result;
 
     result.Set("num_allocated_slots", slot_span.num_allocated_slots);
     result.Set("num_unprovisioned_slots", slot_span.num_unprovisioned_slots);
@@ -505,7 +510,7 @@ base::Value::Dict Dump(PartitionRootInspector& root_inspector) {
   };
 
   auto bucket_to_value = [&](const PartitionRootInspector::BucketStats& stats) {
-    base::Value::Dict result;
+    base::DictValue result;
     const size_t kPageSize = base::GetPageSize();
     size_t slots_per_span =
         (stats.bucket.num_system_pages_per_slot_span * kPageSize) /
@@ -519,19 +524,19 @@ base::Value::Dict Dump(PartitionRootInspector& root_inspector) {
     result.Set("allocated_slots", static_cast<int>(stats.allocated_slots));
     result.Set("freelist_size", static_cast<int>(stats.freelist_size));
 
-    base::Value::List active_list;
+    base::ListValue active_list;
     for (auto& slot_span : stats.active_slot_spans) {
       active_list.Append(slot_span_to_value(slot_span, slots_per_span));
     }
     result.Set("active_slot_spans", std::move(active_list));
 
-    base::Value::List empty_list;
+    base::ListValue empty_list;
     for (auto& slot_span : stats.empty_slot_spans) {
       empty_list.Append(slot_span_to_value(slot_span, slots_per_span));
     }
     result.Set("empty_slot_spans", std::move(empty_list));
 
-    base::Value::List decommitted_list;
+    base::ListValue decommitted_list;
     for (auto& slot_span : stats.decommitted_slot_spans) {
       decommitted_list.Append(slot_span_to_value(slot_span, slots_per_span));
     }
@@ -540,12 +545,12 @@ base::Value::Dict Dump(PartitionRootInspector& root_inspector) {
     return result;
   };
 
-  base::Value::List bucket_stats;
+  base::ListValue bucket_stats;
   for (const auto& stats : root_inspector.bucket_stats()) {
     bucket_stats.Append(bucket_to_value(stats));
   }
 
-  base::Value::Dict result;
+  base::DictValue result;
   result.Set("buckets", std::move(bucket_stats));
   return result;
 }
@@ -618,7 +623,7 @@ int main(int argc, char** argv) {
                       (iter / 50) % root_inspector.bucket_stats().size());
 
       if (!json_filename.empty()) {
-        base::Value::Dict dump = Dump(root_inspector);
+        base::DictValue dump = Dump(root_inspector);
         std::string json_string;
         ok = base::JSONWriter::WriteWithOptions(
             dump, base::JSONWriter::OPTIONS_PRETTY_PRINT, &json_string);

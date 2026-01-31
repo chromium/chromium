@@ -223,7 +223,7 @@ void ConnectorsManagerBase::CacheReportingConnectorPolicy() {
   const char* pref = kOnSecurityEventPref;
   DCHECK(pref);
 
-  const base::Value::List& policy_value = prefs()->GetList(pref);
+  const base::ListValue& policy_value = prefs()->GetList(pref);
   for (const base::Value& service_settings : policy_value) {
     reporting_connector_settings_.emplace_back(service_settings,
                                                *service_provider_config_);

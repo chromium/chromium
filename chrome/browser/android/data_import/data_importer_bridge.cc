@@ -40,7 +40,7 @@ void DataImporterBridge::Destroy(JNIEnv* env) {
 
 void DataImporterBridge::ImportBookmarks(
     JNIEnv* env,
-    jint owned_fd,
+    int32_t owned_fd,
     const base::android::JavaRef<jobject>& j_callback) {
   base::android::ScopedJavaGlobalRef<jobject> callback(j_callback);
   base::File file(owned_fd, base::File::FLAG_OPEN | base::File::FLAG_READ);
@@ -52,7 +52,7 @@ void DataImporterBridge::ImportBookmarks(
 
 void DataImporterBridge::ImportReadingList(
     JNIEnv* env,
-    jint owned_fd,
+    int32_t owned_fd,
     const base::android::JavaRef<jobject>& j_callback) {
   base::android::ScopedJavaGlobalRef<jobject> callback(j_callback);
   base::File file(owned_fd, base::File::FLAG_OPEN | base::File::FLAG_READ);
@@ -64,7 +64,7 @@ void DataImporterBridge::ImportReadingList(
 
 void DataImporterBridge::ImportHistory(
     JNIEnv* env,
-    jint owned_fd,
+    int32_t owned_fd,
     const base::android::JavaRef<jobject>& j_callback) {
   base::android::ScopedJavaGlobalRef<jobject> callback(j_callback);
   base::File file(owned_fd, base::File::FLAG_OPEN | base::File::FLAG_READ);
@@ -92,7 +92,7 @@ void DataImporterBridge::ImportHistoryDone(
   base::android::RunIntCallbackAndroid(callback, count);
 }
 
-static jlong JNI_DataImporterBridge_Init(JNIEnv* env, Profile* profile) {
+static int64_t JNI_DataImporterBridge_Init(JNIEnv* env, Profile* profile) {
   DataImporterBridge* bridge = new DataImporterBridge(profile);
   return reinterpret_cast<intptr_t>(bridge);
 }

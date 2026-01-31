@@ -53,7 +53,6 @@ chromium-metrics-reviews@google.com.
   <variant name="IPH_AddToHomescreenTextBubble"
       summary="(obsolete) educating users about adding website shortcuts to
                their home screen (using a text bubble)"/>
-  <variant name="IPH_AIHubNewBadge" summary="AI Hub entrypoint on the omnibox"/>
   <variant name="IPH_AndroidTabDeclutter"
       summary="Shows how to access tabs which have been archived."/>
   <variant name="IPH_AppSpecificHistory" summary="App Specific History action"/>
@@ -252,11 +251,13 @@ chromium-metrics-reviews@google.com.
   <variant name="IPH_FeedSwipeRefresh" summary="swipe refreshing feeds on NTP"/>
   <variant name="IPH_FollowWhileBrowsing"
       summary="IPH for following the current site"/>
-  <variant name="IPH_GeminiContextualCueChip"
-      summary="Gemini contextual cue chip on the omnibox"/>
   <variant name="IPH_GenericAlwaysTriggerHelpUiFeature"
       summary="generic feature to always show help Ui whenever asked"/>
   <variant name="IPH_GlicPromo" summary="Glic promotion"/>
+  <variant name="IPH_GlicTrustFirstOnboardingShortcutSnoozePromo"
+      summary="Glic quick access shortcut snooze promo."/>
+  <variant name="IPH_GlicTrustFirstOnboardingShortcutToastPromo"
+      summary="Glic quick access shortcut toast promo."/>
   <variant name="IPH_GlicTryIt" summary="Glic promo with a call to action."/>
   <variant name="IPH_GlobalMediaControls" summary="the Global Media Controls"/>
   <variant name="IPH_GMCCastStartStop"
@@ -279,6 +280,8 @@ chromium-metrics-reviews@google.com.
   <variant name="IPH_IntentChip" summary="opening a webpage in an app"/>
   <variant name="IPH_iOSAddressPromoDesktop"
       summary="showing the iOS address promo on desktop"/>
+  <variant name="IPH_iOSAIHubNewBadge"
+      summary="AI Hub entrypoint on the omnibox"/>
   <variant name="IPH_iOSBWGPromo" summary="shows users a promo for BWG"/>
   <variant name="IPH_iOSChoiceScreenFeature"
       summary="(obsolete) showing the Choice screen on iOS"/>
@@ -311,8 +314,12 @@ chromium-metrics-reviews@google.com.
       summary="Showing the animated Feed Swipe IPH on iOS."/>
   <variant name="IPH_iOSFeedSwipeStaticFeature"
       summary="Showing the static Feed Swipe IPH on iOS."/>
+  <variant name="IPH_iOSGeminiContextualCueChip"
+      summary="Gemini contextual cue chip on the omnibox"/>
   <variant name="IPH_iOSGeminiFullscreenPromoFeature"
       summary="showing the fullscreen Gemini promo on iOS"/>
+  <variant name="IPH_iOSGeminiImageRemix"
+      summary="showing the Gemini Image Remix IPH on iOS"/>
   <variant name="IPH_iOSHistoryOnOverflowMenuFeature"
       summary="history item on the overflow menu on iOS"/>
   <variant name="IPH_iOSHomepageCustomizationNewBadge"
@@ -344,12 +351,17 @@ chromium-metrics-reviews@google.com.
       summary="showing the iOS password promo on desktop"/>
   <variant name="IPH_iOSPaymentPromoDesktop"
       summary="showing the iOS payment promo on desktop"/>
+  <variant name="IPH_iOSPinMostVisitedSiteFeature"
+      summary="showing the in-product help for customizing sites on the most
+               visited tiles on iOS"/>
   <variant name="IPH_iOSPostDefaultAbandonmentPromo"
       summary="showing the iOS post-default browser abandonment promo on iOS"/>
   <variant name="IPH_iOSPromoAllTabs"
       summary="showing All Tabs default browser promo"/>
   <variant name="IPH_iOSPromoAppStore"
       summary="showing the App Store Promo on iOS"/>
+  <variant name="IPH_iOSPromoBackgroundCustomization"
+      summary="Background customization feature for the iOS NTP"/>
   <variant name="IPH_iOSPromoCredentialProviderExtension"
       summary="showing the Credential Provider Extension Promo on iOS"/>
   <variant name="IPH_iOSPromoDefaultBrowser"
@@ -386,6 +398,9 @@ chromium-metrics-reviews@google.com.
       summary="showing the Whats New Promo on iOS"/>
   <variant name="IPH_iOSPullToRefreshFeature"
       summary="the full screen IPH for pull to refresh"/>
+  <variant name="IPH_iOSReaderModeLargeOmniboxEntrypointFeature"
+      summary="the eligibility of the expanded omnibox entrypoint for Reading
+               Mode on iOS"/>
   <variant name="IPH_iOSReaderModeOptionsFeature"
       summary="the IPH for Reader Mode options"/>
   <variant name="IPH_iOSReminderNotificationsOverflowMenuBubbleFeature"
@@ -440,6 +455,9 @@ chromium-metrics-reviews@google.com.
   <variant name="IPH_NewTab" summary="new tab"/>
   <variant name="IPH_NewTabPageHomeButton"
       summary="(obsolete) new tab page button"/>
+  <variant name="IPH_NewTabPageThemeCustomization"
+      summary="informing user of customizing new tab page theme via NTP
+               customization option in the App menu"/>
   <variant name="IPH_NewTabTip" summary="new tab tip"/>
   <variant name="IPH_PageInfo" summary="opening PageInfo"/>
   <variant name="IPH_PageInfoStoreInfo" summary="PageInfoStoreInfo feature"/>
@@ -563,70 +581,6 @@ chromium-metrics-reviews@google.com.
   <variant name="IPH_RtlGestureNavigation"
       summary="the in product help dialog to educate users on how to do
                gesture navigation in RTL mode."/>
-  <variant name="IPH_ScalableIphGaming"
-      summary="A variant for gaming scalable iph"/>
-  <variant name="IPH_ScalableIphHelpAppBasedEight"
-      summary="A variant of help app based scalable iph"/>
-  <variant name="IPH_ScalableIphHelpAppBasedFive"
-      summary="A variant of help app based scalable iph"/>
-  <variant name="IPH_ScalableIphHelpAppBasedFour"
-      summary="A variant of help app based scalable iph"/>
-  <variant name="IPH_ScalableIphHelpAppBasedNine"
-      summary="A variant of help app based scalable iph"/>
-  <variant name="IPH_ScalableIphHelpAppBasedNudge"
-      summary="A variant of help app based scalable iph"/>
-  <variant name="IPH_ScalableIphHelpAppBasedOne"
-      summary="A variant of help app based scalable iph"/>
-  <variant name="IPH_ScalableIphHelpAppBasedSeven"
-      summary="A variant of help app based scalable iph"/>
-  <variant name="IPH_ScalableIphHelpAppBasedSix"
-      summary="A variant of help app based scalable iph"/>
-  <variant name="IPH_ScalableIphHelpAppBasedTen"
-      summary="A variant of help app based scalable iph"/>
-  <variant name="IPH_ScalableIphHelpAppBasedThree"
-      summary="A variant of help app based scalable iph"/>
-  <variant name="IPH_ScalableIphHelpAppBasedTwo"
-      summary="A variant of help app based scalable iph"/>
-  <variant name="IPH_ScalableIphTimerBasedEight"
-      summary="A variant of timer based scalable iph"/>
-  <variant name="IPH_ScalableIphTimerBasedFive"
-      summary="A variant of timer based scalable iph"/>
-  <variant name="IPH_ScalableIphTimerBasedFour"
-      summary="A variant of timer based scalable iph"/>
-  <variant name="IPH_ScalableIphTimerBasedNine"
-      summary="A variant of timer based scalable iph"/>
-  <variant name="IPH_ScalableIphTimerBasedOne"
-      summary="A variant of timer based scalable iph"/>
-  <variant name="IPH_ScalableIphTimerBasedSeven"
-      summary="A variant of timer based scalable iph"/>
-  <variant name="IPH_ScalableIphTimerBasedSix"
-      summary="A variant of timer based scalable iph"/>
-  <variant name="IPH_ScalableIphTimerBasedTen"
-      summary="A variant of timer based scalable iph"/>
-  <variant name="IPH_ScalableIphTimerBasedThree"
-      summary="A variant of timer based scalable iph"/>
-  <variant name="IPH_ScalableIphTimerBasedTwo"
-      summary="A variant of timer based scalable iph"/>
-  <variant name="IPH_ScalableIphUnlockedBasedEight"
-      summary="A variant of unlocked based scalable iph"/>
-  <variant name="IPH_ScalableIphUnlockedBasedFive"
-      summary="A variant of unlocked based scalable iph"/>
-  <variant name="IPH_ScalableIphUnlockedBasedFour"
-      summary="A variant of unlocked based scalable iph"/>
-  <variant name="IPH_ScalableIphUnlockedBasedNine"
-      summary="A variant of unlocked based scalable iph"/>
-  <variant name="IPH_ScalableIphUnlockedBasedOne"
-      summary="A variant of unlocked based scalable iph"/>
-  <variant name="IPH_ScalableIphUnlockedBasedSeven"
-      summary="A variant of unlocked based scalable iph"/>
-  <variant name="IPH_ScalableIphUnlockedBasedSix"
-      summary="A variant of unlocked based scalable iph"/>
-  <variant name="IPH_ScalableIphUnlockedBasedTen"
-      summary="A variant of unlocked based scalable iph"/>
-  <variant name="IPH_ScalableIphUnlockedBasedThree"
-      summary="A variant of unlocked based scalable iph"/>
-  <variant name="IPH_ScalableIphUnlockedBasedTwo"
-      summary="A variant of unlocked based scalable iph"/>
   <variant name="IPH_SharedHighlightingBuilder"
       summary="the in product help message to notify the user that the share
                action can preemptively share a link-to-text"/>
@@ -766,7 +720,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="InProductHelp.Db.TotalEvents" units="events"
-    expires_after="2026-05-24">
+    expires_after="2026-07-26">
   <owner>nyquist@chromium.org</owner>
   <summary>
     Records the total number of event records in the database for in-product
@@ -784,7 +738,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="InProductHelp.DismissalReason.iOS"
-    enum="InProductHelpDismissalReason" expires_after="2026-04-05">
+    enum="InProductHelpDismissalReason" expires_after="2026-06-21">
   <owner>lpromero@google.com</owner>
   <owner>gambard@chromium.org</owner>
   <summary>
@@ -805,7 +759,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="InProductHelp.Gestural.DismissalReason.iOS"
-    enum="InProductHelpDismissalReason" expires_after="2026-04-26">
+    enum="InProductHelpDismissalReason" expires_after="2026-06-28">
   <owner>ginnyhuang@chromium.org</owner>
   <owner>adamta@google.com</owner>
   <summary>
@@ -815,7 +769,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="InProductHelp.NotifyEventReadyState.{IPHFeature}"
-    enum="BooleanSuccess" expires_after="2026-05-24">
+    enum="BooleanSuccess" expires_after="2026-07-26">
   <owner>nyquist@chromium.org</owner>
   <summary>
     Records if the model is ready when in-product help event happens for
@@ -825,7 +779,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="InProductHelp.ShouldTriggerHelpUI.{IPHFeature}"
-    enum="TriggerHelpUIResult" expires_after="2026-05-24">
+    enum="TriggerHelpUIResult" expires_after="2026-07-26">
   <owner>nyquist@chromium.org</owner>
   <summary>
     Records if in-product help for {IPHFeature} is shown to the user, and the
@@ -837,7 +791,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="InProductHelp.ShownTime.{IPHFeature}" units="ms"
-    expires_after="2026-04-26">
+    expires_after="2026-06-28">
   <owner>lpromero@google.com</owner>
   <owner>gambard@chromium.org</owner>
   <summary>
@@ -850,7 +804,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="InProductHelp.ShownTime2.{IPHFeature}" units="ms"
-    expires_after="2026-05-03">
+    expires_after="2026-07-05">
   <owner>gayane@google.com</owner>
   <owner>lpromero@google.com</owner>
   <owner>gambard@chromium.org</owner>
@@ -915,7 +869,7 @@ In the future, Desktop IPH may be completely moved to the user_education folder.
 </histogram>
 
 <histogram name="UserEducation.MessageNotShown.TimeInQueue.{IPHFeature}"
-    units="ms" expires_after="2026-04-12">
+    units="ms" expires_after="2026-06-21">
   <owner>dfried@chromium.org</owner>
   <owner>frizzle-team@google.com</owner>
   <summary>
@@ -945,7 +899,7 @@ In the future, Desktop IPH may be completely moved to the user_education folder.
 </histogram>
 
 <histogram name="UserEducation.MessageShown.TimeInQueue.{IPHFeature}"
-    units="ms" expires_after="2026-05-10">
+    units="ms" expires_after="2026-07-12">
   <owner>dfried@chromium.org</owner>
   <owner>frizzle-team@google.com</owner>
   <summary>

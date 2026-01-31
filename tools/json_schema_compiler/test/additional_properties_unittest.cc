@@ -15,10 +15,10 @@ namespace ap = test::api::additional_properties;
 TEST(JsonSchemaCompilerAdditionalPropertiesTest,
     AdditionalPropertiesTypePopulate) {
   {
-    base::Value::List list_value;
+    base::ListValue list_value;
     list_value.Append("asdf");
     list_value.Append(4);
-    base::Value::Dict type_value;
+    base::DictValue type_value;
     type_value.Set("string", "value");
     type_value.Set("other", 9);
     type_value.Set("another", std::move(list_value));
@@ -27,7 +27,7 @@ TEST(JsonSchemaCompilerAdditionalPropertiesTest,
     EXPECT_EQ(type->additional_properties, type_value);
   }
   {
-    base::Value::Dict type_dict;
+    base::DictValue type_dict;
     type_dict.Set("string", 3);
     auto type = ap::AdditionalPropertiesType::FromValue(type_dict);
     EXPECT_FALSE(type);
@@ -36,11 +36,11 @@ TEST(JsonSchemaCompilerAdditionalPropertiesTest,
 
 TEST(JsonSchemaCompilerAdditionalPropertiesTest,
     AdditionalPropertiesParamsCreate) {
-  base::Value::Dict param_object_dict;
+  base::DictValue param_object_dict;
   param_object_dict.Set("str", "a");
   param_object_dict.Set("num", 1);
   base::Value param_object_value(std::move(param_object_dict));
-  base::Value::List params_value;
+  base::ListValue params_value;
   params_value.Append(param_object_value.Clone());
   std::optional<ap::AdditionalProperties::Params> params(
       ap::AdditionalProperties::Params::Create(params_value));
@@ -54,9 +54,9 @@ TEST(JsonSchemaCompilerAdditionalPropertiesTest,
   result_object.integer = 5;
   result_object.additional_properties["key"] = "value";
 
-  base::Value::List expected;
+  base::ListValue expected;
   {
-    base::Value::Dict dict;
+    base::DictValue dict;
     dict.Set("integer", 5);
     dict.Set("key", "value");
     expected.Append(std::move(dict));

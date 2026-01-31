@@ -7,7 +7,6 @@
 #include <algorithm>
 #include <optional>
 
-#include "base/containers/contains.h"
 #include "base/memory/memory_pressure_listener.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
@@ -535,15 +534,15 @@ IN_PROC_BROWSER_TEST_F(SearchPrefetchServiceEnabledBrowserTest,
   EXPECT_NE(std::string::npos,
             search_server_requests()[0].GetURL().spec().find(search_terms));
   auto headers = search_server_requests()[0].headers;
-  ASSERT_TRUE(base::Contains(headers, "Accept"));
-  EXPECT_TRUE(base::Contains(headers["Accept"], "text/html"));
+  ASSERT_TRUE(headers.contains("Accept"));
+  EXPECT_TRUE(headers["Accept"].contains("text/html"));
   EXPECT_EQ(1u, search_server_request_count());
   EXPECT_EQ(1u, search_server_prefetch_request_count());
   // Make sure we don't get client hints headers by default.
-  EXPECT_FALSE(base::Contains(headers, "viewport-width"));
-  EXPECT_TRUE(base::Contains(headers, "User-Agent"));
-  ASSERT_TRUE(base::Contains(headers, "Upgrade-Insecure-Requests"));
-  EXPECT_TRUE(base::Contains(headers["Upgrade-Insecure-Requests"], "1"));
+  EXPECT_FALSE(headers.contains("viewport-width"));
+  EXPECT_TRUE(headers.contains("User-Agent"));
+  ASSERT_TRUE(headers.contains("Upgrade-Insecure-Requests"));
+  EXPECT_TRUE(headers["Upgrade-Insecure-Requests"].contains("1"));
 
   prefetch_status = search_prefetch_service->GetSearchPrefetchStatusForTesting(
       canonical_search_url);
@@ -688,8 +687,8 @@ IN_PROC_BROWSER_TEST_F(SearchPrefetchServiceEnabledBrowserTest,
 
   auto headers = search_server_requests()[0].headers;
   EXPECT_EQ(1u, search_server_requests().size());
-  ASSERT_TRUE(base::Contains(headers, kThrottleHeader));
-  EXPECT_TRUE(base::Contains(headers[kThrottleHeader], kThrottleHeaderValue));
+  ASSERT_TRUE(headers.contains(kThrottleHeader));
+  EXPECT_TRUE(headers[kThrottleHeader].contains(kThrottleHeaderValue));
 
   prefetch_status = search_prefetch_service->GetSearchPrefetchStatusForTesting(
       canonical_search_url);
@@ -1030,7 +1029,7 @@ IN_PROC_BROWSER_TEST_F(SearchPrefetchServiceEnabledBrowserTest,
   auto headers = search_server_requests()[0].headers;
 
   // Make sure we can get client hints headers.
-  EXPECT_TRUE(base::Contains(headers, "viewport-width"));
+  EXPECT_TRUE(headers.contains("viewport-width"));
 }
 
 IN_PROC_BROWSER_TEST_F(SearchPrefetchServiceEnabledBrowserTest,
@@ -1288,11 +1287,15 @@ IN_PROC_BROWSER_TEST_F(SearchPrefetchServiceEnabledBrowserTest,
 
   auto inner_html = GetDocumentInnerHTML();
 
-  EXPECT_FALSE(base::Contains(inner_html, "regular"));
-  EXPECT_TRUE(base::Contains(inner_html, "prefetch"));
+  EXPECT_FALSE(inner_html.contains("regular"));
+  EXPECT_TRUE(inner_html.contains("prefetch"));
   histogram_tester.ExpectUniqueSample(
       "Omnibox.SearchPrefetch.PrefetchFinalStatus.SuggestionPrefetch",
       SearchPrefetchStatus::kPrefetchServedForRealNavigation, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Omnibox.SearchPrefetch.TakePrefetchResponseFromMemoryCache."
+      "ResourceResponseReceived",
+      true, 1);
   histogram_tester.ExpectTotalCount(
       "Omnibox.SearchPrefetch.ClickToNavigationIntercepted", 1);
   histogram_tester.ExpectTotalCount(
@@ -1440,8 +1443,8 @@ IN_PROC_BROWSER_TEST_P(SearchPrefetchServiceEnabledWithNVSBrowserTest,
   // The prefetch should be served, and only 1 request should be issued.
   EXPECT_EQ(1u, search_server_requests().size());
   auto inner_html = GetDocumentInnerHTML();
-  EXPECT_FALSE(base::Contains(inner_html, "regular"));
-  EXPECT_TRUE(base::Contains(inner_html, "prefetch"));
+  EXPECT_FALSE(inner_html.contains("regular"));
+  EXPECT_TRUE(inner_html.contains("prefetch"));
   histogram_tester.ExpectTotalCount(
       "Omnibox.SearchPrefetch.ClickToNavigationIntercepted", 1);
   histogram_tester.ExpectTotalCount(
@@ -1470,8 +1473,8 @@ IN_PROC_BROWSER_TEST_P(SearchPrefetchServiceEnabledWithNVSBrowserTest,
   // request) should be issued.
   EXPECT_EQ(2u, search_server_requests().size());
   inner_html = GetDocumentInnerHTML();
-  EXPECT_FALSE(base::Contains(inner_html, "regular"));
-  EXPECT_TRUE(base::Contains(inner_html, "prefetch"));
+  EXPECT_FALSE(inner_html.contains("regular"));
+  EXPECT_TRUE(inner_html.contains("prefetch"));
   histogram_tester.ExpectTotalCount(
       "Omnibox.SearchPrefetch.ClickToNavigationIntercepted", 2);
   histogram_tester.ExpectTotalCount(
@@ -1485,8 +1488,8 @@ IN_PROC_BROWSER_TEST_P(SearchPrefetchServiceEnabledWithNVSBrowserTest,
   // request.
   EXPECT_EQ(3u, search_server_requests().size());
   inner_html = GetDocumentInnerHTML();
-  EXPECT_TRUE(base::Contains(inner_html, "regular"));
-  EXPECT_FALSE(base::Contains(inner_html, "prefetch"));
+  EXPECT_TRUE(inner_html.contains("regular"));
+  EXPECT_FALSE(inner_html.contains("prefetch"));
   histogram_tester.ExpectTotalCount(
       "Omnibox.SearchPrefetch.ClickToNavigationIntercepted", 2);
   histogram_tester.ExpectTotalCount(
@@ -1500,8 +1503,8 @@ IN_PROC_BROWSER_TEST_P(SearchPrefetchServiceEnabledWithNVSBrowserTest,
   // network request.
   EXPECT_EQ(3u, search_server_requests().size());
   inner_html = GetDocumentInnerHTML();
-  EXPECT_FALSE(base::Contains(inner_html, "regular"));
-  EXPECT_TRUE(base::Contains(inner_html, "prefetch"));
+  EXPECT_FALSE(inner_html.contains("regular"));
+  EXPECT_TRUE(inner_html.contains("prefetch"));
   histogram_tester.ExpectTotalCount(
       "Omnibox.SearchPrefetch.ClickToNavigationIntercepted", 2);
 
@@ -1545,8 +1548,8 @@ IN_PROC_BROWSER_TEST_P(SearchPrefetchServiceEnabledWithNVSBrowserTest,
   // The prefetch should be served, and only 1 request should be issued.
   EXPECT_EQ(1u, search_server_requests().size());
   auto inner_html = GetDocumentInnerHTML();
-  EXPECT_FALSE(base::Contains(inner_html, "regular"));
-  EXPECT_TRUE(base::Contains(inner_html, "prefetch"));
+  EXPECT_FALSE(inner_html.contains("regular"));
+  EXPECT_TRUE(inner_html.contains("prefetch"));
   histogram_tester.ExpectTotalCount(
       "Omnibox.SearchPrefetch.ClickToNavigationIntercepted", 1);
   histogram_tester.ExpectTotalCount(
@@ -1569,8 +1572,8 @@ IN_PROC_BROWSER_TEST_P(SearchPrefetchServiceEnabledWithNVSBrowserTest,
   // request) should be issued.
   EXPECT_EQ(2u, search_server_requests().size());
   inner_html = GetDocumentInnerHTML();
-  EXPECT_FALSE(base::Contains(inner_html, "regular"));
-  EXPECT_TRUE(base::Contains(inner_html, "prefetch"));
+  EXPECT_FALSE(inner_html.contains("regular"));
+  EXPECT_TRUE(inner_html.contains("prefetch"));
   histogram_tester.ExpectTotalCount(
       "Omnibox.SearchPrefetch.ClickToNavigationIntercepted", 2);
   histogram_tester.ExpectTotalCount(
@@ -1584,8 +1587,8 @@ IN_PROC_BROWSER_TEST_P(SearchPrefetchServiceEnabledWithNVSBrowserTest,
   // request.
   EXPECT_EQ(3u, search_server_requests().size());
   inner_html = GetDocumentInnerHTML();
-  EXPECT_TRUE(base::Contains(inner_html, "regular"));
-  EXPECT_FALSE(base::Contains(inner_html, "prefetch"));
+  EXPECT_TRUE(inner_html.contains("regular"));
+  EXPECT_FALSE(inner_html.contains("prefetch"));
   histogram_tester.ExpectTotalCount(
       "Omnibox.SearchPrefetch.ClickToNavigationIntercepted", 2);
   histogram_tester.ExpectTotalCount(
@@ -1599,8 +1602,8 @@ IN_PROC_BROWSER_TEST_P(SearchPrefetchServiceEnabledWithNVSBrowserTest,
   // network request.
   EXPECT_EQ(3u, search_server_requests().size());
   inner_html = GetDocumentInnerHTML();
-  EXPECT_FALSE(base::Contains(inner_html, "regular"));
-  EXPECT_TRUE(base::Contains(inner_html, "prefetch"));
+  EXPECT_FALSE(inner_html.contains("regular"));
+  EXPECT_TRUE(inner_html.contains("prefetch"));
   histogram_tester.ExpectTotalCount(
       "Omnibox.SearchPrefetch.ClickToNavigationIntercepted", 2);
 
@@ -1632,8 +1635,8 @@ IN_PROC_BROWSER_TEST_P(SearchPrefetchServiceEnabledWithNVSBrowserTest,
   // The prefetch should be served, and only 1 request should be issued.
   EXPECT_EQ(1u, search_server_requests().size());
   auto inner_html = GetDocumentInnerHTML();
-  EXPECT_FALSE(base::Contains(inner_html, "regular"));
-  EXPECT_TRUE(base::Contains(inner_html, "prefetch"));
+  EXPECT_FALSE(inner_html.contains("regular"));
+  EXPECT_TRUE(inner_html.contains("prefetch"));
 
   search_terms = "prefetch_content_2";
   prefetch_url = GetSearchServerQueryURL(search_terms + "&pf=cs");
@@ -1649,8 +1652,8 @@ IN_PROC_BROWSER_TEST_P(SearchPrefetchServiceEnabledWithNVSBrowserTest,
   // request) should be issued.
   EXPECT_EQ(2u, search_server_requests().size());
   inner_html = GetDocumentInnerHTML();
-  EXPECT_FALSE(base::Contains(inner_html, "regular"));
-  EXPECT_TRUE(base::Contains(inner_html, "prefetch"));
+  EXPECT_FALSE(inner_html.contains("regular"));
+  EXPECT_TRUE(inner_html.contains("prefetch"));
 
   content::TestNavigationObserver back_load_observer(GetWebContents());
   GetWebContents()->GetController().GoBack();
@@ -1660,8 +1663,8 @@ IN_PROC_BROWSER_TEST_P(SearchPrefetchServiceEnabledWithNVSBrowserTest,
   // request.
   EXPECT_EQ(3u, search_server_requests().size());
   inner_html = GetDocumentInnerHTML();
-  EXPECT_TRUE(base::Contains(inner_html, "regular"));
-  EXPECT_FALSE(base::Contains(inner_html, "prefetch"));
+  EXPECT_TRUE(inner_html.contains("regular"));
+  EXPECT_FALSE(inner_html.contains("prefetch"));
 
   // Reload the map from prefs.
   EXPECT_FALSE(search_prefetch_service->LoadFromPrefsForTesting());
@@ -1674,8 +1677,8 @@ IN_PROC_BROWSER_TEST_P(SearchPrefetchServiceEnabledWithNVSBrowserTest,
   // network request.
   EXPECT_EQ(3u, search_server_requests().size());
   inner_html = GetDocumentInnerHTML();
-  EXPECT_FALSE(base::Contains(inner_html, "regular"));
-  EXPECT_TRUE(base::Contains(inner_html, "prefetch"));
+  EXPECT_FALSE(inner_html.contains("regular"));
+  EXPECT_TRUE(inner_html.contains("prefetch"));
 }
 
 IN_PROC_BROWSER_TEST_P(SearchPrefetchServiceEnabledWithNVSBrowserTest,
@@ -1702,8 +1705,8 @@ IN_PROC_BROWSER_TEST_P(SearchPrefetchServiceEnabledWithNVSBrowserTest,
   // The prefetch should be served, and only 1 request should be issued.
   EXPECT_EQ(1u, search_server_requests().size());
   auto inner_html = GetDocumentInnerHTML();
-  EXPECT_FALSE(base::Contains(inner_html, "regular"));
-  EXPECT_TRUE(base::Contains(inner_html, "prefetch"));
+  EXPECT_FALSE(inner_html.contains("regular"));
+  EXPECT_TRUE(inner_html.contains("prefetch"));
 
   search_terms = "prefetch_content_2";
   ASSERT_TRUE(content::NavigateToURL(GetWebContents(),
@@ -1713,8 +1716,8 @@ IN_PROC_BROWSER_TEST_P(SearchPrefetchServiceEnabledWithNVSBrowserTest,
   // request) should be issued.
   EXPECT_EQ(2u, search_server_requests().size());
   inner_html = GetDocumentInnerHTML();
-  EXPECT_TRUE(base::Contains(inner_html, "regular"));
-  EXPECT_FALSE(base::Contains(inner_html, "prefetch"));
+  EXPECT_TRUE(inner_html.contains("regular"));
+  EXPECT_FALSE(inner_html.contains("prefetch"));
 
   // Reload the map from prefs.
   EXPECT_FALSE(search_prefetch_service->LoadFromPrefsForTesting());
@@ -1727,8 +1730,8 @@ IN_PROC_BROWSER_TEST_P(SearchPrefetchServiceEnabledWithNVSBrowserTest,
   // network request.
   EXPECT_EQ(2u, search_server_requests().size());
   inner_html = GetDocumentInnerHTML();
-  EXPECT_FALSE(base::Contains(inner_html, "regular"));
-  EXPECT_TRUE(base::Contains(inner_html, "prefetch"));
+  EXPECT_FALSE(inner_html.contains("regular"));
+  EXPECT_TRUE(inner_html.contains("prefetch"));
 }
 
 IN_PROC_BROWSER_TEST_P(SearchPrefetchServiceEnabledWithNVSBrowserTest,
@@ -1755,11 +1758,10 @@ IN_PROC_BROWSER_TEST_P(SearchPrefetchServiceEnabledWithNVSBrowserTest,
 
   // The prefetch should be served, and only 1 request should be issued.
   ASSERT_EQ(1u, search_server_requests().size());
-  EXPECT_TRUE(
-      base::Contains(search_server_requests()[0].GetURL().spec(), "pf=cs"));
+  EXPECT_TRUE(search_server_requests()[0].GetURL().spec().contains("pf=cs"));
   auto inner_html = GetDocumentInnerHTML();
-  EXPECT_FALSE(base::Contains(inner_html, "regular"));
-  EXPECT_TRUE(base::Contains(inner_html, "prefetch"));
+  EXPECT_FALSE(inner_html.contains("regular"));
+  EXPECT_TRUE(inner_html.contains("prefetch"));
 
   ASSERT_TRUE(content::NavigateToURL(GetWebContents(),
                                      GetSearchServerQueryURL("search")));
@@ -1768,8 +1770,8 @@ IN_PROC_BROWSER_TEST_P(SearchPrefetchServiceEnabledWithNVSBrowserTest,
   // request) should be issued.
   EXPECT_EQ(2u, search_server_requests().size());
   inner_html = GetDocumentInnerHTML();
-  EXPECT_TRUE(base::Contains(inner_html, "regular"));
-  EXPECT_FALSE(base::Contains(inner_html, "prefetch"));
+  EXPECT_TRUE(inner_html.contains("regular"));
+  EXPECT_FALSE(inner_html.contains("prefetch"));
 
   // Clearing cache should cause the back forward loader to fail over to the
   // regular URL.
@@ -1789,11 +1791,10 @@ IN_PROC_BROWSER_TEST_P(SearchPrefetchServiceEnabledWithNVSBrowserTest,
   // There should not be a cached prefetch request, so there should be a network
   // request.
   ASSERT_EQ(3u, search_server_requests().size());
-  EXPECT_FALSE(
-      base::Contains(search_server_requests()[2].GetURL().spec(), "pf=cs"));
+  EXPECT_FALSE(search_server_requests()[2].GetURL().spec().contains("pf=cs"));
   inner_html = GetDocumentInnerHTML();
-  EXPECT_TRUE(base::Contains(inner_html, "regular"));
-  EXPECT_FALSE(base::Contains(inner_html, "prefetch"));
+  EXPECT_TRUE(inner_html.contains("regular"));
+  EXPECT_FALSE(inner_html.contains("prefetch"));
 
   histogram_tester.ExpectUniqueSample(
       "Omnibox.SearchPrefetch.CacheAliasFallbackReason",
@@ -1885,8 +1886,8 @@ IN_PROC_BROWSER_TEST_F(SearchPrefetchServiceEnabledBrowserTest,
 
   auto inner_html = GetDocumentInnerHTML();
 
-  EXPECT_TRUE(base::Contains(inner_html, "regular"));
-  EXPECT_FALSE(base::Contains(inner_html, "prefetch"));
+  EXPECT_TRUE(inner_html.contains("regular"));
+  EXPECT_FALSE(inner_html.contains("prefetch"));
   histogram_tester.ExpectUniqueSample(
       "Omnibox.SearchPrefetch.PrefetchServingReason2",
       SearchPrefetchServingReason::kNoPrefetch, 1);
@@ -1923,8 +1924,8 @@ IN_PROC_BROWSER_TEST_F(SearchPrefetchServiceEnabledBrowserTest,
 
   auto inner_html = GetDocumentInnerHTML();
 
-  EXPECT_TRUE(base::Contains(inner_html, "regular"));
-  EXPECT_FALSE(base::Contains(inner_html, "prefetch"));
+  EXPECT_TRUE(inner_html.contains("regular"));
+  EXPECT_FALSE(inner_html.contains("prefetch"));
   histogram_tester.ExpectUniqueSample(
       "Omnibox.SearchPrefetch.PrefetchServingReason2",
       SearchPrefetchServingReason::kNoPrefetch, 1);
@@ -2040,8 +2041,8 @@ IN_PROC_BROWSER_TEST_F(SearchPrefetchServiceEnabledBrowserTest,
 
   auto inner_html = GetDocumentInnerHTML();
 
-  EXPECT_FALSE(base::Contains(inner_html, "regular"));
-  EXPECT_TRUE(base::Contains(inner_html, "prefetch"));
+  EXPECT_FALSE(inner_html.contains("regular"));
+  EXPECT_TRUE(inner_html.contains("prefetch"));
 }
 
 IN_PROC_BROWSER_TEST_F(SearchPrefetchServiceEnabledBrowserTest,
@@ -2104,8 +2105,8 @@ IN_PROC_BROWSER_TEST_F(SearchPrefetchServiceEnabledBrowserTest,
 
   auto inner_html = GetDocumentInnerHTML();
 
-  EXPECT_TRUE(base::Contains(inner_html, "regular"));
-  EXPECT_FALSE(base::Contains(inner_html, "prefetch"));
+  EXPECT_TRUE(inner_html.contains("regular"));
+  EXPECT_FALSE(inner_html.contains("prefetch"));
 }
 
 IN_PROC_BROWSER_TEST_F(SearchPrefetchServiceEnabledBrowserTest,
@@ -2190,6 +2191,7 @@ IN_PROC_BROWSER_TEST_F(SearchPrefetchServiceEnabledBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(SearchPrefetchServiceEnabledBrowserTest,
                        PrefetchServedBeforeHeaders) {
+  base::HistogramTester histogram_tester;
   set_service_deferral_type(
       SearchPreloadTestResponseDeferralType::kDeferHeader);
   std::string search_terms = kOmniboxSuggestPrefetchQuery;
@@ -2212,14 +2214,20 @@ IN_PROC_BROWSER_TEST_F(SearchPrefetchServiceEnabledBrowserTest,
 
   location_bar->GetOmniboxController()->edit_model()->OpenSelectionForTesting();
   WaitUntilStatusChangesTo(canonical_search_url, std::nullopt);
+
+  histogram_tester.ExpectUniqueSample(
+      "Omnibox.SearchPrefetch.TakePrefetchResponseFromMemoryCache."
+      "ResourceResponseReceived",
+      false, 1);
+
   DispatchDelayedResponseTask();
 
   content::WaitForLoadStop(GetWebContents());
 
   auto inner_html = GetDocumentInnerHTML();
 
-  EXPECT_FALSE(base::Contains(inner_html, "regular"));
-  EXPECT_TRUE(base::Contains(inner_html, "prefetch"));
+  EXPECT_FALSE(inner_html.contains("regular"));
+  EXPECT_TRUE(inner_html.contains("prefetch"));
 }
 
 // After search prefetch is activated, it can fallback to a real navigation
@@ -2266,8 +2274,8 @@ IN_PROC_BROWSER_TEST_F(SearchPrefetchServiceEnabledBrowserTest,
 
   auto inner_html = GetDocumentInnerHTML();
 
-  EXPECT_TRUE(base::Contains(inner_html, "regular"));
-  EXPECT_FALSE(base::Contains(inner_html, "prefetch"));
+  EXPECT_TRUE(inner_html.contains("regular"));
+  EXPECT_FALSE(inner_html.contains("prefetch"));
 
   EXPECT_FALSE(search_prefetch_service->MaybePrefetchURL(
       GetSearchServerQueryURL("other_query"), GetWebContents()));
@@ -2330,8 +2338,8 @@ IN_PROC_BROWSER_TEST_F(SearchPrefetchServiceEnabledBrowserTest,
   auto inner_html = GetDocumentInnerHTML();
 
   // Check we are on the prefetched page, and the security level is correct.
-  EXPECT_FALSE(base::Contains(inner_html, "regular"));
-  EXPECT_TRUE(base::Contains(inner_html, "prefetch"));
+  EXPECT_FALSE(inner_html.contains("regular"));
+  EXPECT_TRUE(inner_html.contains("prefetch"));
   EXPECT_EQ(helper->GetSecurityLevel(), security_state::SECURE);
 }
 
@@ -2378,8 +2386,8 @@ IN_PROC_BROWSER_TEST_F(SearchPrefetchServiceEnabledBrowserTest,
 
   // Check we fell back to the regular page, and the security level is
   // correct.
-  EXPECT_TRUE(base::Contains(inner_html, "regular"));
-  EXPECT_FALSE(base::Contains(inner_html, "prefetch"));
+  EXPECT_TRUE(inner_html.contains("regular"));
+  EXPECT_FALSE(inner_html.contains("prefetch"));
   EXPECT_EQ(helper->GetSecurityLevel(), security_state::SECURE);
 }
 
@@ -2994,8 +3002,8 @@ IN_PROC_BROWSER_TEST_F(SearchPrefetchServiceEnabledBrowserTest,
 
   auto inner_html = GetDocumentInnerHTML();
 
-  EXPECT_FALSE(base::Contains(inner_html, "regular"));
-  EXPECT_TRUE(base::Contains(inner_html, "prefetch"));
+  EXPECT_FALSE(inner_html.contains("regular"));
+  EXPECT_TRUE(inner_html.contains("prefetch"));
 
   prefetch_status = search_prefetch_service->GetSearchPrefetchStatusForTesting(
       canonical_search_url);
@@ -3197,8 +3205,8 @@ IN_PROC_BROWSER_TEST_F(SearchPrefetchServiceBFCacheTest,
   // The prefetch should be served, and only 1 request should be issued.
   EXPECT_EQ(1u, search_server_requests().size());
   auto inner_html = GetDocumentInnerHTML();
-  EXPECT_FALSE(base::Contains(inner_html, "regular"));
-  EXPECT_TRUE(base::Contains(inner_html, "prefetch"));
+  EXPECT_FALSE(inner_html.contains("regular"));
+  EXPECT_TRUE(inner_html.contains("prefetch"));
 
   search_terms = "prefetch_content_2";
   prefetch_url = GetSearchServerQueryURL(search_terms + "&pf=cs");
@@ -3213,8 +3221,8 @@ IN_PROC_BROWSER_TEST_F(SearchPrefetchServiceBFCacheTest,
   // The page should be restored from BF cache.
   EXPECT_EQ(2u, search_server_requests().size());
   inner_html = GetDocumentInnerHTML();
-  EXPECT_FALSE(base::Contains(inner_html, "regular"));
-  EXPECT_TRUE(base::Contains(inner_html, "prefetch"));
+  EXPECT_FALSE(inner_html.contains("regular"));
+  EXPECT_TRUE(inner_html.contains("prefetch"));
   histogram_tester.ExpectTotalCount("BackForwardCache.HistoryNavigationOutcome",
                                     0);
 
@@ -3225,8 +3233,8 @@ IN_PROC_BROWSER_TEST_F(SearchPrefetchServiceBFCacheTest,
   // The page should be restored from BF cache.
   EXPECT_EQ(2u, search_server_requests().size());
   inner_html = GetDocumentInnerHTML();
-  EXPECT_FALSE(base::Contains(inner_html, "regular"));
-  EXPECT_TRUE(base::Contains(inner_html, "prefetch"));
+  EXPECT_FALSE(inner_html.contains("regular"));
+  EXPECT_TRUE(inner_html.contains("prefetch"));
   histogram_tester.ExpectUniqueSample(
       "BackForwardCache.HistoryNavigationOutcome", 0 /* Restored */, 1);
 
@@ -3237,8 +3245,8 @@ IN_PROC_BROWSER_TEST_F(SearchPrefetchServiceBFCacheTest,
   // The page should be restored from BF cache.
   EXPECT_EQ(2u, search_server_requests().size());
   inner_html = GetDocumentInnerHTML();
-  EXPECT_FALSE(base::Contains(inner_html, "regular"));
-  EXPECT_TRUE(base::Contains(inner_html, "prefetch"));
+  EXPECT_FALSE(inner_html.contains("regular"));
+  EXPECT_TRUE(inner_html.contains("prefetch"));
   histogram_tester.ExpectUniqueSample(
       "BackForwardCache.HistoryNavigationOutcome", 0 /* Restored */, 2);
 }
@@ -3430,7 +3438,7 @@ IN_PROC_BROWSER_TEST_F(GooglePFTest, BaseGoogleSearchHasPFForPrefetch) {
 
   std::string generated_url = default_search->url_ref().ReplaceSearchTerms(
       search_terms_args, template_url_service->search_terms_data(), nullptr);
-  EXPECT_TRUE(base::Contains(generated_url, "pf=cs"));
+  EXPECT_TRUE(generated_url.contains("pf=cs"));
 }
 
 IN_PROC_BROWSER_TEST_F(GooglePFTest, BaseGoogleSearchNoPFForNonPrefetch) {
@@ -3444,7 +3452,7 @@ IN_PROC_BROWSER_TEST_F(GooglePFTest, BaseGoogleSearchNoPFForNonPrefetch) {
 
   std::string generated_url = default_search->url_ref().ReplaceSearchTerms(
       search_terms_args, template_url_service->search_terms_data(), nullptr);
-  EXPECT_FALSE(base::Contains(generated_url, "pf="));
+  EXPECT_FALSE(generated_url.contains("pf="));
 }
 
 class GooglePFTestFieldTrialOverride : public GooglePFTest {
@@ -3475,7 +3483,7 @@ IN_PROC_BROWSER_TEST_F(GooglePFTestFieldTrialOverride,
       default_search->url_ref().ReplaceSearchTerms(
           search_terms_args, template_url_service->search_terms_data(),
           nullptr);
-  EXPECT_TRUE(base::Contains(suggest_generated_url, "pf=spp"));
+  EXPECT_TRUE(suggest_generated_url.contains("pf=spp"));
 
   // Check kNavigationPrefetchParam.
   search_terms_args.prefetch_param = kNavigationPrefetchParam.Get();
@@ -3484,7 +3492,7 @@ IN_PROC_BROWSER_TEST_F(GooglePFTestFieldTrialOverride,
       default_search->url_ref().ReplaceSearchTerms(
           search_terms_args, template_url_service->search_terms_data(),
           nullptr);
-  EXPECT_TRUE(base::Contains(navigation_generated_url, "pf=npp"));
+  EXPECT_TRUE(navigation_generated_url.contains("pf=npp"));
 }
 
 class GooglePFTestDefaultFieldTrialValue : public GooglePFTest {
@@ -3513,7 +3521,7 @@ IN_PROC_BROWSER_TEST_F(GooglePFTestDefaultFieldTrialValue,
       default_search->url_ref().ReplaceSearchTerms(
           search_terms_args, template_url_service->search_terms_data(),
           nullptr);
-  EXPECT_TRUE(base::Contains(suggest_generated_url, "pf=cs"));
+  EXPECT_TRUE(suggest_generated_url.contains("pf=cs"));
 
   // Check kNavigationPrefetchParam.
   search_terms_args.prefetch_param = kNavigationPrefetchParam.Get();
@@ -3522,7 +3530,7 @@ IN_PROC_BROWSER_TEST_F(GooglePFTestDefaultFieldTrialValue,
       default_search->url_ref().ReplaceSearchTerms(
           search_terms_args, template_url_service->search_terms_data(),
           nullptr);
-  EXPECT_TRUE(base::Contains(navigation_generated_url, "pf=op"));
+  EXPECT_TRUE(navigation_generated_url.contains("pf=op"));
 }
 
 class SearchPrefetchServiceNavigationPrefetchBrowserTest
@@ -3607,8 +3615,8 @@ IN_PROC_BROWSER_TEST_F(
   ASSERT_TRUE(content::NavigateToURL(GetWebContents(), search_url));
 
   auto inner_html = GetDocumentInnerHTML();
-  EXPECT_FALSE(base::Contains(inner_html, "regular"));
-  EXPECT_TRUE(base::Contains(inner_html, "prefetch"));
+  EXPECT_FALSE(inner_html.contains("regular"));
+  EXPECT_TRUE(inner_html.contains("prefetch"));
   histogram_tester.ExpectTotalCount(
       "Omnibox.SearchPrefetch."
       "DuplicateSearchTermsAgeAheadOfNavigationalPrefetch",
@@ -3652,8 +3660,8 @@ IN_PROC_BROWSER_TEST_F(SearchPrefetchServiceNavigationPrefetchBrowserTest,
   EXPECT_FALSE(prefetch_status.has_value());
 
   auto inner_html = GetDocumentInnerHTML();
-  EXPECT_FALSE(base::Contains(inner_html, "regular"));
-  EXPECT_TRUE(base::Contains(inner_html, "prefetch"));
+  EXPECT_FALSE(inner_html.contains("regular"));
+  EXPECT_TRUE(inner_html.contains("prefetch"));
 
   {
     ukm::SourceId ukm_source_id =
@@ -3736,8 +3744,8 @@ IN_PROC_BROWSER_TEST_F(SearchPrefetchServiceNavigationPrefetchBrowserTest,
   EXPECT_FALSE(prefetch_status.has_value());
 
   auto inner_html = GetDocumentInnerHTML();
-  EXPECT_FALSE(base::Contains(inner_html, "regular"));
-  EXPECT_TRUE(base::Contains(inner_html, "prefetch"));
+  EXPECT_FALSE(inner_html.contains("regular"));
+  EXPECT_TRUE(inner_html.contains("prefetch"));
 
   {
     ukm::SourceId ukm_source_id =
@@ -3819,8 +3827,8 @@ IN_PROC_BROWSER_TEST_F(SearchPrefetchServiceNavigationPrefetchBrowserTest,
   EXPECT_FALSE(prefetch_status.has_value());
 
   auto inner_html = GetDocumentInnerHTML();
-  EXPECT_FALSE(base::Contains(inner_html, "regular"));
-  EXPECT_TRUE(base::Contains(inner_html, "prefetch"));
+  EXPECT_FALSE(inner_html.contains("regular"));
+  EXPECT_TRUE(inner_html.contains("prefetch"));
 
   {
     ukm::SourceId ukm_source_id =
@@ -4015,8 +4023,8 @@ IN_PROC_BROWSER_TEST_F(SearchPrefetchServiceNavigationPrefetchBrowserTest,
   content::WaitForLoadStop(GetWebContents());
 
   auto inner_html = GetDocumentInnerHTML();
-  EXPECT_TRUE(base::Contains(inner_html, "regular"));
-  EXPECT_FALSE(base::Contains(inner_html, "prefetch"));
+  EXPECT_TRUE(inner_html.contains("regular"));
+  EXPECT_FALSE(inner_html.contains("prefetch"));
 }
 
 IN_PROC_BROWSER_TEST_F(SearchPrefetchServiceNavigationPrefetchBrowserTest,
@@ -4315,6 +4323,6 @@ IN_PROC_BROWSER_TEST_F(SearchNavigationPrefetchIncognitoBrowserTest,
       content::EvalJs(browser()->tab_strip_model()->GetActiveWebContents(),
                       "document.documentElement.innerHTML")
           .ExtractString();
-  EXPECT_FALSE(base::Contains(inner_html, "regular"));
-  EXPECT_TRUE(base::Contains(inner_html, "prefetch"));
+  EXPECT_FALSE(inner_html.contains("regular"));
+  EXPECT_TRUE(inner_html.contains("prefetch"));
 }

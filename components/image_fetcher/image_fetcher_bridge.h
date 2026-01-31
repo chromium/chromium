@@ -35,34 +35,34 @@ class ImageFetcherBridge {
 
   static void FetchImageData(JNIEnv* j_env,
                              const JavaRef<jobject>& j_simple_factory_key,
-                             const jint j_image_fetcher_config,
+                             const int32_t j_image_fetcher_config,
                              const JavaRef<jstring>& j_url,
                              const JavaRef<jstring>& j_client_name,
-                             const jint j_expiration_interval_mins,
+                             const int32_t j_expiration_interval_mins,
                              const JavaRef<jobject>& j_callback);
 
   static void FetchImage(JNIEnv* j_env,
                          const JavaRef<jobject>& j_simple_factory_key,
-                         const jint j_image_fetcher_config,
+                         const int32_t j_image_fetcher_config,
                          const JavaRef<jstring>& j_url,
                          const JavaRef<jstring>& j_client_name,
-                         const jint j_frame_width,
-                         const jint j_frame_height,
-                         const jint j_expiration_interval_mins,
+                         const int32_t j_frame_width,
+                         const int32_t j_frame_height,
+                         const int32_t j_expiration_interval_mins,
                          const JavaRef<jobject>& j_callback);
 
   static void ReportEvent(JNIEnv* j_env,
                           const JavaRef<jstring>& j_client_name,
-                          const jint j_event_id);
+                          const int32_t j_event_id);
 
   static void ReportCacheHitTime(JNIEnv* j_env,
                                  const JavaRef<jstring>& j_client_name,
-                                 const jlong start_time_millis);
+                                 const int64_t start_time_millis);
 
   static void ReportTotalFetchTimeFromNative(
       JNIEnv* j_env,
       const JavaRef<jstring>& j_client_name,
-      const jlong start_time_millis);
+      const int64_t start_time_millis);
 
  private:
   ImageFetcherBridge();

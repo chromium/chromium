@@ -46,19 +46,24 @@ VIEWS_EXPORT std::unique_ptr<ToggleImageButton> CreateVectorToggleImageButton(
 // preparation for applying a vector icon with SetImageFromVectorIcon below.
 VIEWS_EXPORT void ConfigureVectorImageButton(ImageButton* button);
 
-// Sets images on |button| for STATE_NORMAL and STATE_DISABLED from the given
-// vector icon and colors.
-VIEWS_EXPORT void SetImageFromVectorIconWithColor(ImageButton* button,
-                                                  const gfx::VectorIcon& icon,
-                                                  SkColor icon_color,
-                                                  SkColor icon_disabled_color);
+struct VIEWS_EXPORT IconColors {
+  ui::ColorVariant color;
+  ui::ColorVariant disabled_color;
+};
 
 // As above, but creates the images at the given size.
 VIEWS_EXPORT void SetImageFromVectorIconWithColor(ImageButton* button,
                                                   const gfx::VectorIcon& icon,
                                                   int dip_size,
-                                                  SkColor icon_color,
-                                                  SkColor icon_disabled_color);
+                                                  IconColors colors);
+
+// Sets images on |button| for STATE_NORMAL and STATE_DISABLED with the default
+// size from the given vector icon and colors,
+VIEWS_EXPORT void SetImageFromVectorIconWithColor(
+    ImageButton* button,
+    const gfx::VectorIcon& icon,
+    IconColors colors,
+    std::optional<int> icon_size = std::nullopt);
 
 // As above, but sets the toggled images for a toggled image button
 // with a given icon color instead of deriving from a text color.
@@ -66,25 +71,14 @@ VIEWS_EXPORT void SetToggledImageFromVectorIconWithColor(
     ToggleImageButton* button,
     const gfx::VectorIcon& icon,
     int dip_size,
-    SkColor icon_color,
-    SkColor disabled_color);
-
-// Sets images on |button| for STATE_NORMAL and STATE_DISABLED with the default
-// size from the given vector icon and colors,
-VIEWS_EXPORT void SetImageFromVectorIconWithColorId(
-    ImageButton* button,
-    const gfx::VectorIcon& icon,
-    ui::ColorId icon_color_id,
-    ui::ColorId icon_disabled_color_id,
-    std::optional<int> icon_size = std::nullopt);
+    IconColors colors);
 
 // Sets images on a `ToggleImageButton` |button| for STATE_NORMAL and
 // STATE_DISABLED with the default size from the given vector icon and colors.
-VIEWS_EXPORT void SetToggledImageFromVectorIconWithColorId(
+VIEWS_EXPORT void SetToggledImageFromVectorIconWithColor(
     ToggleImageButton* button,
     const gfx::VectorIcon& icon,
-    ui::ColorId icon_color_id,
-    ui::ColorId icon_disabled_color_id,
+    IconColors colors,
     std::optional<int> icon_size = std::nullopt);
 
 }  // namespace views

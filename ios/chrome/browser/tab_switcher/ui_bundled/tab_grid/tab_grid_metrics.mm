@@ -5,10 +5,17 @@
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/tab_grid_metrics.h"
 
 #import "base/metrics/histogram_functions.h"
+#import "base/metrics/user_metrics.h"
+#import "base/metrics/user_metrics_action.h"
 
 namespace {
 // Key of the UMA IOS.TabGrid.CloseTabs histogram.
 const char kTabGridCloseMultipleTabsHistogram[] = "IOS.TabGrid.CloseTabs";
+
+const char kMobileTabGridCloseOtherIncognitoTabs[] =
+    "MobileTabGridCloseOtherIncognitoTabs";
+const char kMobileTabGridCloseOtherRegularTabs[] =
+    "MobileTabGridCloseOtherRegularTabs";
 }  // namespace
 
 // Key of the UMA IOS.TabSwitcher.PageChangeInteraction histogram.
@@ -24,4 +31,14 @@ void RecordTabGridCloseTabsCount(int count) {
 
 void RecordIncognitoGridStatus(IncognitoGridStatus status) {
   base::UmaHistogramEnumeration(kUMAIncognitoGridStatusHistogram, status);
+}
+
+void RecordTabGridCloseOtherTabs(bool incognito) {
+  if (incognito) {
+    base::RecordAction(
+        base::UserMetricsAction(kMobileTabGridCloseOtherIncognitoTabs));
+  } else {
+    base::RecordAction(
+        base::UserMetricsAction(kMobileTabGridCloseOtherRegularTabs));
+  }
 }

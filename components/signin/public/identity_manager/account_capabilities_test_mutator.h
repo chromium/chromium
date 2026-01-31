@@ -25,26 +25,38 @@ class AccountCapabilitiesTestMutator {
   // Exposes setters for the supported capabilities.
   // keep-sorted start sticky_prefixes=#if group_prefixes=#endif
   void set_can_fetch_family_member_info(bool value);
+#if !BUILDFLAG(IS_IOS)
   void set_can_have_email_address_displayed(bool value);
+#endif
 #if !BUILDFLAG(IS_ANDROID)
   void set_can_make_chrome_search_engine_choice_screen_choice(bool value);
 #endif
+#if !BUILDFLAG(IS_IOS)
   void set_can_run_chrome_privacy_sandbox_trials(bool value);
+#endif
   void set_can_show_history_sync_opt_ins_without_minor_mode_restrictions(
       bool value);
+#if BUILDFLAG(IS_CHROMEOS)
   void set_can_toggle_auto_updates(bool value);
-  void set_can_use_chrome_ip_protection(bool value);
+#endif
 #if BUILDFLAG(IS_CHROMEOS)
   void set_can_use_chromeos_generative_ai(bool value);
 #endif  // BUILDFLAG(IS_CHROMEOS)
-  void set_can_use_copyeditor_feature(bool value);
+#if !BUILDFLAG(IS_IOS)
   void set_can_use_devtools_generative_ai_features(bool value);
+#endif
+#if !BUILDFLAG(IS_IOS)
   void set_can_use_edu_features(bool value);
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+#endif
+#if !BUILDFLAG(IS_IOS)
   void set_can_use_gemini_in_chrome(bool value);
 #endif
+#if BUILDFLAG(IS_CHROMEOS)
   void set_can_use_generative_ai_in_recorder_app(bool value);
+#endif
+#if BUILDFLAG(IS_CHROMEOS)
   void set_can_use_generative_ai_photo_editing(bool value);
+#endif
   void set_can_use_manta_service(bool value);
   void set_can_use_model_execution_features(bool value);
   void set_can_use_speaker_label_in_recorder_app(bool value);

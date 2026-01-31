@@ -96,7 +96,7 @@ class SaveAndFillManagerImpl : public SaveAndFillManager {
       base::TimeTicks request_sent_timestamp,
       PaymentsAutofillClient::PaymentsRpcResult result,
       const std::u16string& context_token,
-      std::unique_ptr<base::Value::Dict> legal_message,
+      std::unique_ptr<base::DictValue> legal_message,
       std::vector<std::pair<int, int>> supported_card_bin_ranges);
 
   // If server upload is enabled, populate info to the `upload_details_` for
@@ -125,6 +125,10 @@ class SaveAndFillManagerImpl : public SaveAndFillManager {
   void OnDidCreateCard(base::TimeTicks request_sent_timestamp,
                        PaymentsAutofillClient::PaymentsRpcResult result,
                        const std::string& instrument_id);
+
+  void OnPendingDialogCanceled(CardSaveAndFillDialogUserDecision user_decision,
+                               const UserProvidedCardSaveAndFillDetails&
+                                   user_provided_card_save_and_fill_details);
 
   // Function invoked when the flow ends. This resets the state variables in
   // this class.

@@ -8,7 +8,6 @@
 
 #include <algorithm>
 
-#include "base/containers/contains.h"
 #include "base/observer_list.h"
 #include "build/buildflag.h"
 #include "ui/display/display.h"
@@ -35,7 +34,7 @@ void DisplayChangeNotifier::NotifyDisplaysChanged(
   // Display present in old_displays but not in new_displays has been removed.
   for (auto old_it = old_displays.begin(); old_it != old_displays.end();
        ++old_it) {
-    if (!base::Contains(new_displays, old_it->id(), &Display::id)) {
+    if (!std::ranges::contains(new_displays, old_it->id(), &Display::id)) {
       removed_displays.push_back(*old_it);
     }
   }

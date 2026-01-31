@@ -38,6 +38,7 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.library_loader.LibraryLoader;
 import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.util.Batch;
+import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.browser.password_manager.PasswordManagerUtilBridge;
 import org.chromium.chrome.browser.password_manager.PasswordManagerUtilBridgeJni;
 import org.chromium.chrome.browser.preferences.Pref;
@@ -54,6 +55,7 @@ import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.signin.metrics.SignoutReason;
 import org.chromium.components.sync.DataType;
 import org.chromium.components.sync.SyncService;
+import org.chromium.components.sync.UserActionableError;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.components.user_prefs.UserPrefsJni;
 import org.chromium.ui.test.util.BlankUiTestActivity;
@@ -205,9 +207,33 @@ public class SignOutCoordinatorTest {
 
     @Test
     @MediumTest
+    public void testSignOutDialog_bookmarksLimitExceeded() {
+        setUpMocks();
+        when(mSyncService.getUserActionableError())
+                .thenReturn(UserActionableError.BOOKMARKS_LIMIT_EXCEEDED);
+        when(mSyncService.getBookmarksLimit()).thenReturn(100000);
+
+        HistogramWatcher histogramWatcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "Sync.BookmarksLimitExceededOnSignoutPrompt", true);
+
+        startSignOutFlow(SignoutReason.USER_CLICKED_SIGNOUT_SETTINGS, mOnSignOut, false);
+
+        onView(withText(R.string.sign_out_unsaved_data_title))
+                .inRoot(isDialog())
+                .check(matches(isDisplayed()));
+        histogramWatcher.assertExpected();
+    }
+
+    @Test
+    @MediumTest
     public void testUnsavedDataDialog() {
         setUpMocks();
         mUnsyncedDataTypes.add(DataType.BOOKMARKS);
+
+        HistogramWatcher histogramWatcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "Sync.BookmarksLimitExceededOnSignoutPrompt", false);
 
         startSignOutFlow(SignoutReason.USER_CLICKED_SIGNOUT_SETTINGS, mOnSignOut, false);
 
@@ -221,6 +247,7 @@ public class SignOutCoordinatorTest {
                 .inRoot(isDialog())
                 .check(matches(isDisplayed()));
         onView(withText(R.string.cancel)).inRoot(isDialog()).check(matches(isDisplayed()));
+        histogramWatcher.assertExpected();
     }
 
     @Test
@@ -361,15 +388,19 @@ public class SignOutCoordinatorTest {
         mUnsyncedDataTypes.add(DataType.BOOKMARKS);
 
         assertUndoSignInWithSnackbarThrows(
-                IllegalStateException.class, SignoutReason.USER_TAPPED_UNDO_RIGHT_AFTER_SIGN_IN);
+                IllegalStateException.class,
+                SignoutReason.USER_TAPPED_UNDO_RIGHT_AFTER_SIGN_IN_FROM_BOOKMARKS);
     }
 
     @Test
     @SmallTest
     public void testUndoSignInWithSnackbarThrowsForUnsupportedReasons() {
         for (@SignoutReason int reason = 0; reason <= SignoutReason.MAX_VALUE; reason++) {
-            if (reason == SignoutReason.USER_TAPPED_UNDO_RIGHT_AFTER_SIGN_IN) {
-                continue;
+            switch (reason) {
+                case SignoutReason.USER_TAPPED_UNDO_RIGHT_AFTER_SIGN_IN_FROM_BOOKMARKS:
+                case SignoutReason.USER_TAPPED_UNDO_RIGHT_AFTER_SIGN_IN_FROM_NTP:
+                case SignoutReason.USER_TAPPED_UNDO_RIGHT_AFTER_SIGN_IN_FROM_RECENT_TABS:
+                    continue;
             }
             // All other reasons should throw.
             assertUndoSignInWithSnackbarThrows(IllegalArgumentException.class, reason);
@@ -386,7 +417,8 @@ public class SignOutCoordinatorTest {
         doReturn(false).when(mIdentityManagerMock).hasPrimaryAccount(ConsentLevel.SIGNIN);
 
         assertUndoSignInWithSnackbarThrows(
-                IllegalStateException.class, SignoutReason.USER_TAPPED_UNDO_RIGHT_AFTER_SIGN_IN);
+                IllegalStateException.class,
+                SignoutReason.USER_TAPPED_UNDO_RIGHT_AFTER_SIGN_IN_FROM_BOOKMARKS);
     }
 
     private <T extends Throwable> void assertUndoSignInWithSnackbarThrows(

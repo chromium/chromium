@@ -6,7 +6,7 @@ package org.chromium.chrome.browser.paint_preview;
 
 import org.chromium.base.UnownedUserDataHost;
 import org.chromium.base.UnownedUserDataKey;
-import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.ui.base.WindowAndroid;
@@ -16,14 +16,14 @@ import org.chromium.ui.base.WindowAndroid;
  */
 @NullMarked
 public class StartupPaintPreviewHelperSupplier {
-    private static final UnownedUserDataKey<ObservableSupplier<StartupPaintPreviewHelper>> KEY =
-            new UnownedUserDataKey<>();
+    private static final UnownedUserDataKey<MonotonicObservableSupplier<StartupPaintPreviewHelper>>
+            KEY = new UnownedUserDataKey<>();
 
     /**
      * Return {@link StartupPaintPreviewHelper} supplier associated with the given {@link
      * WindowAndroid} or null if not yet initialized.
      */
-    public static @Nullable ObservableSupplier<StartupPaintPreviewHelper> from(
+    public static @Nullable MonotonicObservableSupplier<StartupPaintPreviewHelper> from(
             WindowAndroid windowAndroid) {
         return KEY.retrieveDataFromHost(windowAndroid.getUnownedUserDataHost());
     }
@@ -34,11 +34,12 @@ public class StartupPaintPreviewHelperSupplier {
      * @param host The host to attach the supplier to.
      */
     public static void attach(
-            UnownedUserDataHost host, ObservableSupplier<StartupPaintPreviewHelper> supplier) {
+            UnownedUserDataHost host,
+            MonotonicObservableSupplier<StartupPaintPreviewHelper> supplier) {
         KEY.attachToHost(host, supplier);
     }
 
-    public static void destroy(ObservableSupplier<StartupPaintPreviewHelper> supplier) {
+    public static void destroy(MonotonicObservableSupplier<StartupPaintPreviewHelper> supplier) {
         KEY.detachFromAllHosts(supplier);
     }
 

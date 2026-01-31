@@ -28,7 +28,6 @@
 <translation id="2329392777730037872">క్లయింట్ పరికరంలో <ph name="URL" />‌ను తెరవడం విఫలమైంది.</translation>
 <translation id="2359808026110333948">కొనసాగించండి</translation>
 <translation id="2366718077645204424">హోస్ట్‌కు చేరుకోవడం సాధ్యపడలేదు. ఇది బహుశా మీరు ఉపయోగిస్తున్న నెట్‌వర్క్ కాన్ఫిగరేషన్ వల్ల ఏర్పడి ఉండవచ్చు.</translation>
-<translation id="242591256144136845">కాపీరైట్ 2025 Google LLC. సర్వ హక్కులు కేటాయించబడ్డాయి.</translation>
 <translation id="2504109125669302160"><ph name="PRODUCT_NAME" />కు 'యాక్సెస్ సామర్థ్యం' అనుమతిని మంజూరు చేయండి</translation>
 <translation id="2509394361235492552"><ph name="HOSTNAME" />కి కనెక్ట్ అయ్యింది</translation>
 <translation id="2540992418118313681">మీరు ఈ కంప్యూటర్‌ను మరో వినియోగదారు చూడటానికి మరియు నియంత్రించడానికి దీన్ని షేర్‌ చేయాలని అనుకుంటున్నారా?</translation>
@@ -47,6 +46,7 @@
 <translation id="3150823315463303127">విధానాన్ని చదవడంలో హోస్ట్ విఫలమైంది.</translation>
 <translation id="3171922709365450819">ఈ పరికరానికి మూడవ పక్షం ప్రామాణీకరణ అవసరమైనందున దీనికి ఈ క్లయింట్ మద్దతు లేదు.</translation>
 <translation id="3197730452537982411">రిమోట్ డెస్క్‌టాప్</translation>
+<translation id="3236334139428307578">కాపీరైట్ 2026 The Chromium Authors. సర్వ హక్కులు కేటాయించబడ్డాయి.</translation>
 <translation id="324272851072175193">ఈ సూచనలను ఈమెయిల్‌ ద్వారా పంపు</translation>
 <translation id="3305934114213025800"><ph name="PRODUCT_NAME" /> మార్పులు చేయాలనుకుంటోంది.</translation>
 <translation id="3339299787263251426">ఇంటర్నెట్‌ని ఉపయోగించేటప్పుడు మీ కంప్యూటర్‌ని సురక్షితంగా యాక్సెస్ చేయండి</translation>
@@ -111,6 +111,7 @@
 <translation id="5823554426827907568">మీ స్క్రీన్‌ను చూడడానికి, ఇంకా మీ కీబోర్డ్, మౌస్‌ను కంట్రోల్ చేయడానికి కావాల్సిన యాక్సెస్ కోసం <ph name="CLIENT_USERNAME" /> రిక్వెస్ట్ చేశారు. మీరు ఈ రిక్వెస్ట్ కోసం వేచి ఉండకూదనుకుంటే "<ph name="IDS_SHARE_CONFIRM_DIALOG_DECLINE" />"ను నొక్కండి. లేకపోతే, కనెక్షన్ సిద్ధంగా ఉన్నప్పుడు దానిని అనుమతించడానికి "<ph name="IDS_SHARE_CONFIRM_DIALOG_CONFIRM" />"ను ఎంచుకోండి.</translation>
 <translation id="5823658491130719298">మీరు రిమోట్‌గా యాక్సెస్ చేయాలనుకుంటున్న కంప్యూటర్‌లో Chromeను తెరిచి, <ph name="INSTALLATION_LINK" />ను సందర్శించండి</translation>
 <translation id="5841343754884244200">ప్రదర్శన ఎంపికలు</translation>
+<translation id="5965133372831030509">కాపీరైట్ 2026 Google LLC. సర్వ హక్కులు కేటాయించబడ్డాయి.</translation>
 <translation id="6033507038939587647">కీబోర్డ్ ఎంపికలు</translation>
 <translation id="6040143037577758943">మూసివేయండి</translation>
 <translation id="6062854958530969723">హోస్ట్‌ను ప్రారంభించడంలో విఫలమైంది.</translation>
@@ -138,7 +139,6 @@
 <translation id="7067321367069083429">స్క్రీన్, టచ్ స్క్రీన్ లాగా పని చేస్తుంది</translation>
 <translation id="7116737094673640201">Chrome రిమోట్ డెస్క్‌టాప్‌కు స్వాగతం</translation>
 <translation id="7144878232160441200">మళ్లీ ట్రై చేయండి</translation>
-<translation id="7298392173540380852">Copyright 2025 The Chromium Authors. సర్వ హక్కులు కేటాయించబడ్డాయి.</translation>
 <translation id="7312846573060934304">హోస్ట్ ఆఫ్‌లైన్‌లో ఉంది.</translation>
 <translation id="7319983568955948908">భాగస్వామ్యం చేయడాన్ని ఆపివేయి</translation>
 <translation id="7359298090707901886">లోకల్ మెషిన్‌లో URLలను తెరవడానికి, ఎంచుకున్న బ్రౌజర్‌ను ఉపయోగించడం సాధ్యపడదు.</translation>

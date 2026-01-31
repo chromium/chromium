@@ -132,17 +132,17 @@ double TaskGroupSampler::RefreshCpuUsage() {
   return cpu_usage;
 }
 
-base::ByteCount TaskGroupSampler::RefreshSwappedMem() {
+base::ByteSize TaskGroupSampler::RefreshSwappedMem() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(worker_pool_sequenced_checker_);
 
 #if BUILDFLAG(IS_CHROMEOS)
   auto info = process_metrics_->GetMemoryInfo();
   if (!info.has_value()) {
-    return base::ByteCount(0);
+    return base::ByteSize(0);
   }
-  return base::ByteCount(info->vm_swap_bytes);
+  return base::ByteSize(info->vm_swap_bytes);
 #else
-  return base::ByteCount(0);
+  return base::ByteSize(0);
 #endif  // BUILDFLAG(IS_CHROMEOS)
 }
 

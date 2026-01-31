@@ -4,8 +4,11 @@
 
 #include "net/server/http_server_response_info.h"
 
+#include <string_view>
+
 #include "base/check.h"
 #include "base/format_macros.h"
+#include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
 #include "net/http/http_request_headers.h"
 
@@ -24,33 +27,32 @@ HttpServerResponseInfo::~HttpServerResponseInfo() = default;
 // static
 HttpServerResponseInfo HttpServerResponseInfo::CreateFor404() {
   HttpServerResponseInfo response(HTTP_NOT_FOUND);
-  response.SetBody(std::string(), "text/html");
+  response.SetBody("", "text/html");
   return response;
 }
 
 // static
 HttpServerResponseInfo HttpServerResponseInfo::CreateFor500(
-    const std::string& body) {
+    std::string_view body) {
   HttpServerResponseInfo response(HTTP_INTERNAL_SERVER_ERROR);
   response.SetBody(body, "text/html");
   return response;
 }
 
-void HttpServerResponseInfo::AddHeader(const std::string& name,
-                                       const std::string& value) {
+void HttpServerResponseInfo::AddHeader(std::string_view name,
+                                       std::string_view value) {
   headers_.emplace_back(name, value);
 }
 
-void HttpServerResponseInfo::SetBody(const std::string& body,
-                                     const std::string& content_type) {
+void HttpServerResponseInfo::SetBody(std::string_view body,
+                                     std::string_view content_type) {
   DCHECK(body_.empty());
   body_ = body;
   SetContentHeaders(body.length(), content_type);
 }
 
-void HttpServerResponseInfo::SetContentHeaders(
-    size_t content_length,
-    const std::string& content_type) {
+void HttpServerResponseInfo::SetContentHeaders(size_t content_length,
+                                               std::string_view content_type) {
   AddHeader(HttpRequestHeaders::kContentLength,
             base::StringPrintf("%" PRIuS, content_length));
   AddHeader(HttpRequestHeaders::kContentType, content_type);
@@ -59,11 +61,11 @@ void HttpServerResponseInfo::SetContentHeaders(
 std::string HttpServerResponseInfo::Serialize() const {
   std::string response = base::StringPrintf(
       "HTTP/1.1 %d %s\r\n", status_code_, GetHttpReasonPhrase(status_code_));
-  Headers::const_iterator header;
-  for (header = headers_.begin(); header != headers_.end(); ++header)
-    response += header->first + ":" + header->second + "\r\n";
+  for (const std::pair<std::string, std::string>& header : headers_) {
+    base::StrAppend(&response, {header.first, ":", header.second, "\r\n"});
+  }
 
-  return response + "\r\n" + body_;
+  return base::StrCat({response, "\r\n", body_});
 }
 
 HttpStatusCode HttpServerResponseInfo::status_code() const {

@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <algorithm>
 #include <set>
 #include <string>
 #include <vector>
 
 #include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
-#include "base/containers/contains.h"
 #include "chrome/browser/file_system_access/chrome_file_system_access_permission_context.h"
 #include "chrome/browser/file_system_access/file_system_access_permission_context_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -58,13 +58,13 @@ JNI_ChromeSiteSettingsDelegate_GetFileSystemAccessGrants(
       display_names.push_back(grant.display_name);
     }
     for (const content::PathInfo& grant : grants.file_read_grants) {
-      if (!base::Contains(grants.file_write_grants, grant)) {
+      if (!std::ranges::contains(grants.file_write_grants, grant)) {
         paths.push_back(grant.path.value());
         display_names.push_back(grant.display_name);
       }
     }
     for (const content::PathInfo& grant : grants.directory_read_grants) {
-      if (!base::Contains(grants.directory_write_grants, grant)) {
+      if (!std::ranges::contains(grants.directory_write_grants, grant)) {
         paths.push_back(grant.path.value());
         display_names.push_back(grant.display_name);
       }

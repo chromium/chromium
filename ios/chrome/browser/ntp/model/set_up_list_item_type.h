@@ -18,7 +18,9 @@ enum class SetUpListItemType {
   kNotifications = 6,
   // Removed: kDocking = 7,
   // Removed: kAddressBar = 8,
-  kMaxValue = kNotifications
+  kSafariImport = 9,
+  kBackgroundCustomization = 10,
+  kMaxValue = kBackgroundCustomization
 };
 // LINT.ThenChange(/tools/metrics/histograms/metadata/ios/enums.xml)
 

@@ -89,18 +89,18 @@ public class CookieSettingsTest {
     public void shouldRecordUserActionWhenCookiePreferenceChanges() throws IOException {
         onView(withId(R.id.block_third_party_with_aux)).perform(click());
         assertEquals(1, mUserActionTester.getActionCount("Settings.ThirdPartyCookies.Block"));
-        onView(withId(R.id.block_third_party_incognito_with_aux)).perform(click());
+        onView(withId(R.id.allow_third_party_with_aux)).perform(click());
         assertEquals(1, mUserActionTester.getActionCount("Settings.ThirdPartyCookies.Allow"));
     }
 
     @Test
     @SmallTest
     public void shouldDisplayAllowDescriptionWhenAuxButtonClicked() throws IOException {
-        onView(withId(R.id.block_third_party_incognito_with_aux)).perform(click());
+        onView(withId(R.id.allow_third_party_with_aux)).perform(click());
         onView(
                         allOf(
                                 withId(R.id.expand_arrow),
-                                isDescendantOfA(withId(R.id.block_third_party_incognito_with_aux))))
+                                isDescendantOfA(withId(R.id.allow_third_party_with_aux))))
                 .perform(click());
         onView(withText(R.string.settings_cookies_block_third_party_settings_allow_bullet_one))
                 .check(matches(isDisplayed()));
@@ -138,11 +138,11 @@ public class CookieSettingsTest {
     @Feature({"RenderTest"})
     @DisableFeatures(ChromeFeatureList.SETTINGS_MULTI_COLUMN)
     public void renderAllowDescriptionWhenAuxButtonClicked() throws IOException {
-        onView(withId(R.id.block_third_party_incognito_with_aux)).perform(click());
+        onView(withId(R.id.allow_third_party_with_aux)).perform(click());
         onView(
                         allOf(
                                 withId(R.id.expand_arrow),
-                                isDescendantOfA(withId(R.id.block_third_party_incognito_with_aux))))
+                                isDescendantOfA(withId(R.id.allow_third_party_with_aux))))
                 .perform(click());
 
         mRenderTestRule.render(

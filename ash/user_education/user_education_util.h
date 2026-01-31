@@ -75,7 +75,7 @@ template <typename... Properties>
 ASH_EXPORT user_education::HelpBubbleParams::ExtendedProperties
 CreateExtendedProperties(Properties&&... properties) {
   user_education::HelpBubbleParams::ExtendedProperties extended_properties;
-  base::Value::Dict& values = extended_properties.values();
+  base::DictValue& values = extended_properties.values();
   ([&] { values.Merge(std::move(properties.values())); }(), ...);
   return extended_properties;
 }

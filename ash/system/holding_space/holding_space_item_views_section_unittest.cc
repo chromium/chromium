@@ -87,6 +87,7 @@ class HoldingSpaceItemViewsSectionTest
   }
 
   void TearDown() override {
+    item_views_section_ = nullptr;
     if (!tear_down_asynchronously_)
       widget_->CloseNow();
 
@@ -115,8 +116,7 @@ class HoldingSpaceItemViewsSectionTest
   views::UniqueWidgetPtr widget_;
   std::unique_ptr<HoldingSpaceViewDelegate> view_delegate_;
 
-  raw_ptr<TestHoldingSpaceItemViewsSection, DanglingUntriaged>
-      item_views_section_ = nullptr;
+  raw_ptr<TestHoldingSpaceItemViewsSection> item_views_section_ = nullptr;
 };
 
 INSTANTIATE_TEST_SUITE_P(All,

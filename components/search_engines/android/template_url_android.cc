@@ -23,13 +23,13 @@
 using base::android::JavaRef;
 using base::android::ScopedJavaLocalRef;
 
-TemplateURL* ToTemplateURL(jlong j_template_url) {
+TemplateURL* ToTemplateURL(int64_t j_template_url) {
   return reinterpret_cast<TemplateURL*>(j_template_url);
 }
 
 static ScopedJavaLocalRef<jstring> JNI_TemplateUrl_GetShortName(
     JNIEnv* env,
-    jlong template_url_ptr) {
+    int64_t template_url_ptr) {
   TemplateURL* template_url = ToTemplateURL(template_url_ptr);
   return base::android::ConvertUTF16ToJavaString(env,
                                                  template_url->short_name());
@@ -37,36 +37,36 @@ static ScopedJavaLocalRef<jstring> JNI_TemplateUrl_GetShortName(
 
 static ScopedJavaLocalRef<jstring> JNI_TemplateUrl_GetKeyword(
     JNIEnv* env,
-    jlong template_url_ptr) {
+    int64_t template_url_ptr) {
   TemplateURL* template_url = ToTemplateURL(template_url_ptr);
   return base::android::ConvertUTF16ToJavaString(env, template_url->keyword());
 }
 
 static ScopedJavaLocalRef<jobject> JNI_TemplateUrl_GetFaviconURL(
     JNIEnv* env,
-    jlong template_url_ptr) {
+    int64_t template_url_ptr) {
   TemplateURL* template_url = ToTemplateURL(template_url_ptr);
 
   return url::GURLAndroid::FromNativeGURL(env, template_url->favicon_url());
 }
 
-static jboolean JNI_TemplateUrl_IsPrepopulatedOrDefaultProviderByPolicy(
+static bool JNI_TemplateUrl_IsPrepopulatedOrDefaultProviderByPolicy(
     JNIEnv* env,
-    jlong template_url_ptr) {
+    int64_t template_url_ptr) {
   TemplateURL* template_url = ToTemplateURL(template_url_ptr);
   return template_url->prepopulate_id() > 0 ||
          template_url->CreatedByPolicy() ||
          template_url->CreatedByRegulatoryProgram();
 }
 
-static jlong JNI_TemplateUrl_GetLastVisitedTime(JNIEnv* env,
-                                                jlong template_url_ptr) {
+static int64_t JNI_TemplateUrl_GetLastVisitedTime(JNIEnv* env,
+                                                  int64_t template_url_ptr) {
   TemplateURL* template_url = ToTemplateURL(template_url_ptr);
   return template_url->last_visited().InMillisecondsSinceUnixEpoch();
 }
 
-static jint JNI_TemplateUrl_GetPrepopulatedId(JNIEnv* env,
-                                              jlong template_url_ptr) {
+static int32_t JNI_TemplateUrl_GetPrepopulatedId(JNIEnv* env,
+                                                 int64_t template_url_ptr) {
   TemplateURL* template_url = ToTemplateURL(template_url_ptr);
   return template_url->prepopulate_id();
 }
@@ -79,14 +79,14 @@ ScopedJavaLocalRef<jobject> CreateTemplateUrlAndroid(
 
 static ScopedJavaLocalRef<jstring> JNI_TemplateUrl_GetURL(
     JNIEnv* env,
-    jlong template_url_ptr) {
+    int64_t template_url_ptr) {
   TemplateURL* template_url = ToTemplateURL(template_url_ptr);
   return base::android::ConvertUTF8ToJavaString(env, template_url->url());
 }
 
 static ScopedJavaLocalRef<jstring> JNI_TemplateUrl_GetNewTabURL(
     JNIEnv* env,
-    jlong template_url_ptr) {
+    int64_t template_url_ptr) {
   TemplateURL* template_url = ToTemplateURL(template_url_ptr);
   return base::android::ConvertUTF8ToJavaString(env,
                                                 template_url->new_tab_url());
@@ -94,7 +94,7 @@ static ScopedJavaLocalRef<jstring> JNI_TemplateUrl_GetNewTabURL(
 
 static jni_zero::ScopedJavaLocalRef<jbyteArray>
 JNI_TemplateUrl_GetBuiltInSearchEngineIcon(JNIEnv* env,
-                                           jlong template_url_ptr) {
+                                           int64_t template_url_ptr) {
 #if BUILDFLAG(ENABLE_BUILTIN_SEARCH_PROVIDER_ASSETS)
   TemplateURL* template_url = ToTemplateURL(template_url_ptr);
   // This would be better served by ResourcesUtil::GetThemeResourceId(), but

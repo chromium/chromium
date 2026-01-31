@@ -142,6 +142,14 @@ class HatsServiceBrowserTestBase : public policy::PolicyTest {
     return kHatsSurveyTriggerSettings;
   }
 
+  std::string MockSurveyWithProfileAgeRequirement(
+      hats::SurveyConfig::ProfileAgeRequirement profile_age_requirement) {
+    GetHatsService()
+        ->GetSurveyConfigsByTriggersForTesting()[kHatsSurveyTriggerSettings]
+        .profile_age_requirement = profile_age_requirement;
+    return kHatsSurveyTriggerSettings;
+  }
+
  private:
   std::optional<ScopedSetMetricsConsent> scoped_metrics_consent_;
 
@@ -218,8 +226,8 @@ class HatsServiceSurveyFeatureControlledByGroup
   ~HatsServiceSurveyFeatureControlledByGroup() override = default;
 
   void AddProfileToGroup(const std::string& group) {
-    base::Value::List pref_groups_list;
-    base::Value::Dict group_dict;
+    base::ListValue pref_groups_list;
+    base::DictValue group_dict;
     group_dict.Set(variations::kDogfoodGroupsSyncPrefGaiaIdKey, group);
     pref_groups_list.Append(std::move(group_dict));
     profile()->GetPrefs()->SetList(
@@ -532,6 +540,17 @@ IN_PROC_BROWSER_TEST_F(HatsServiceProbabilityOne, ProfileOldEnoughToShow) {
   browser()->profile()->SetCreationTimeForTesting(base::Time::Now() -
                                                   base::Days(31));
   GetHatsService()->LaunchSurvey(kHatsSurveyTriggerSettings);
+  EXPECT_TRUE(HatsNextDialogCreated());
+}
+
+IN_PROC_BROWSER_TEST_F(HatsServiceProbabilityOne,
+                       ProfileJustCreatedAnyAgeRequirementShow) {
+  SetMetricsConsent(true);
+  // Simulate a brand new profile.
+  browser()->profile()->SetCreationTimeForTesting(base::Time::Now());
+  // Launch the survey with kAnyAge requirement.
+  GetHatsService()->LaunchSurvey(MockSurveyWithProfileAgeRequirement(
+      hats::SurveyConfig::ProfileAgeRequirement::kAnyAge));
   EXPECT_TRUE(HatsNextDialogCreated());
 }
 

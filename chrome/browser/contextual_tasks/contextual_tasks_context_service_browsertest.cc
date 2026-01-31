@@ -10,25 +10,29 @@
 #include "base/test/test_future.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_context_service_factory.h"
+#include "chrome/browser/contextual_tasks/contextual_tasks_tab_visit_tracker.h"
 #include "chrome/browser/optimization_guide/browser_test_util.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/page_content_annotations/page_content_annotations_service_factory.h"
-#include "chrome/browser/page_content_annotations/page_content_extraction_service.h"
 #include "chrome/browser/page_content_annotations/page_content_extraction_service_factory.h"
-#include "chrome/browser/page_content_annotations/page_content_extraction_types.h"
-#include "chrome/browser/passage_embeddings/page_embeddings_service.h"
 #include "chrome/browser/passage_embeddings/page_embeddings_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_commands.h"
+#include "chrome/browser/ui/tabs/public/tab_features.h"
+#include "chrome/browser/ui/tabs/tab_list_interface.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/contextual_tasks/public/features.h"
 #include "components/optimization_guide/core/model_quality/test_model_quality_logs_uploader_service.h"
+#include "components/page_content_annotations/content/page_content_extraction_service.h"
 #include "components/page_content_annotations/core/page_content_annotations_service.h"
+#include "components/page_content_annotations/core/page_content_extraction_types.h"
 #include "components/page_content_annotations/core/test_page_content_annotator.h"
-#include "components/passage_embeddings/passage_embeddings_features.h"
-#include "components/passage_embeddings/passage_embeddings_test_util.h"
+#include "components/passage_embeddings/content/page_embeddings_service.h"
+#include "components/passage_embeddings/core/passage_embeddings_features.h"
+#include "components/passage_embeddings/core/passage_embeddings_test_util.h"
+#include "components/tabs/public/tab_interface.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "net/dns/mock_host_resolver.h"
@@ -282,9 +286,15 @@ class ContextualTasksContextServiceTest : public InProcessBrowserTest {
 
   void NavigateToValidURL() {
     // Navigate to a valid URL.
-    content::WebContents* web_contents =
-        browser()->tab_strip_model()->GetActiveWebContents();
-    content::NavigateToURLBlockUntilNavigationsComplete(web_contents,
+    tabs::TabInterface* tab = TabListInterface::From(browser())->GetActiveTab();
+    if (!tab) {
+      return;
+    }
+    if (auto* tracker =
+            tab->GetTabFeatures()->contextual_tasks_tab_visit_tracker()) {
+      tracker->SetClockForTesting(&test_clock_);
+    }
+    content::NavigateToURLBlockUntilNavigationsComplete(tab->GetContents(),
                                                         valid_url(), 1);
   }
 
@@ -412,8 +422,6 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksContextServiceTest, Success) {
       "ContextualTasks.Context.TabOverlapPercentage", 100, 1);
   histogram_tester.ExpectUniqueSample("ContextualTasks.Context.TabExcessCount",
                                       0, 1);
-
-  EXPECT_TRUE(logs_uploader()->uploaded_logs().empty());
 }
 
 IN_PROC_BROWSER_TEST_F(ContextualTasksContextServiceTest,
@@ -517,12 +525,28 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksContextServiceTest,
   EXPECT_EQ(1u, future.Get().size());
 }
 
-IN_PROC_BROWSER_TEST_F(ContextualTasksContextServiceTest,
-                       MultiSignalScoringMetrics) {
+struct ContextualTasksTestParams {
+  mojom::TabSelectionMode mode;
+  int expected_tab_score_bucket;
+};
+
+class ContextualTasksContextServiceParameterizedTest
+    : public ContextualTasksContextServiceTest,
+      public testing::WithParamInterface<ContextualTasksTestParams> {};
+
+IN_PROC_BROWSER_TEST_P(ContextualTasksContextServiceParameterizedTest,
+                       LogSignalsAndMetricsInAllTabSelectionModes) {
+  const ContextualTasksTestParams& params = GetParam();
   base::HistogramTester histogram_tester;
 
   test_clock_.SetNowTicks(base::TimeTicks::Now());
+  // Navigates to a page with title "Test Page"
   NavigateToValidURL();
+  // Simulate a long time spent on the tab.
+  test_clock_.Advance(base::Seconds(60));
+  // Simulate a short time passed since the tab has been hidden.
+  TabListInterface::From(browser())->GetActiveTab()->GetContents()->WasHidden();
+  test_clock_.Advance(base::Seconds(3));
 
   NotifyEmbedderMetadata();
 
@@ -536,15 +560,12 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksContextServiceTest,
   EXPECT_CALL(*page_embeddings_service(), GetEmbeddings(_))
       .WillOnce(Return(fake_page_embeddings));
 
-  test_clock_.Advance(base::Seconds(10));
-
   base::test::TestFuture<void> logging_future;
   logs_uploader()->WaitForLogUpload(logging_future.GetCallback());
 
   base::test::TestFuture<std::vector<content::WebContents*>> future;
   service()->GetRelevantTabsForQuery(
-      {.tab_selection_mode = mojom::TabSelectionMode::kMultiSignalScoring},
-      "some text",
+      {.tab_selection_mode = params.mode}, "summarize the test page",
       /*explicit_urls=*/{GURL("https://notinrelevantset.com")},
       future.GetCallback());
   EXPECT_EQ(1u, future.Get().size());
@@ -560,8 +581,10 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksContextServiceTest,
       "ContextualTasks.Context.EmbeddingSimilarityScore", 99, 1);
   histogram_tester.ExpectTotalCount(
       "ContextualTasks.Context.DurationSinceLastActive", 1);
-  histogram_tester.ExpectUniqueSample("ContextualTasks.Context.TabScore", 100,
-                                      1);
+  histogram_tester.ExpectUniqueSample(
+      "ContextualTasks.Context.MatchingWordsCount", 2, 1);
+  histogram_tester.ExpectUniqueSample("ContextualTasks.Context.TabScore",
+                                      params.expected_tab_score_bucket, 1);
   histogram_tester.ExpectUniqueSample(
       "ContextualTasks.Context.ExplicitTabsCount", 1, 1);
   histogram_tester.ExpectUniqueSample("ContextualTasks.Context.TabOverlapCount",
@@ -581,22 +604,40 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksContextServiceTest,
   EXPECT_EQ(uploaded_quality_log.eligible_tabs().size(), 1);
   EXPECT_GT(uploaded_quality_log.eligible_tabs()[0].best_embedding_score(),
             0.99f);
-  EXPECT_GE(uploaded_quality_log.eligible_tabs()[0].seconds_since_last_active(),
-            10);
+  EXPECT_EQ(uploaded_quality_log.eligible_tabs()[0].seconds_since_last_active(),
+            3);
+  EXPECT_GE(uploaded_quality_log.eligible_tabs()[0].seconds_of_last_visit(),
+            60);
   EXPECT_EQ(uploaded_quality_log.eligible_tabs()[0].number_of_common_words(),
-            0);
-  EXPECT_FLOAT_EQ(uploaded_quality_log.eligible_tabs()[0].aggregate_tab_score(),
-                  1.0f);
+            2);
+  EXPECT_NEAR(uploaded_quality_log.eligible_tabs()[0].aggregate_tab_score(),
+              1.0f, 0.001f);
   EXPECT_EQ(uploaded_quality_log.eligible_tabs()[0].was_explicitly_chosen(),
             false);
 }
 
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    ContextualTasksContextServiceParameterizedTest,
+    testing::Values(
+        ContextualTasksTestParams{mojom::TabSelectionMode::kEmbeddingsMatch,
+                                  99},
+        ContextualTasksTestParams{mojom::TabSelectionMode::kStaticSignalsOnly,
+                                  99},
+        ContextualTasksTestParams{mojom::TabSelectionMode::kMultiSignalScoring,
+                                  100}));
+
 IN_PROC_BROWSER_TEST_F(ContextualTasksContextServiceTest,
-                       HighEmbeddingsScoreQualifiesTab) {
+                       MultiSignalScoring_HighEmbeddingsScoreQualifiesTab) {
   base::HistogramTester histogram_tester;
 
   test_clock_.SetNowTicks(base::TimeTicks::Now());
   NavigateToValidURL();
+  // Simulate low time spent on the tab.
+  test_clock_.Advance(base::Seconds(3));
+  // Simulate a long time passed since the tab has been hidden.
+  TabListInterface::From(browser())->GetActiveTab()->GetContents()->WasHidden();
+  test_clock_.Advance(base::Seconds(1800));
 
   NotifyEmbedderMetadata();
 
@@ -610,9 +651,6 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksContextServiceTest,
        CreateFakeEmbedding(1.0f)}};
   EXPECT_CALL(*page_embeddings_service(), GetEmbeddings(_))
       .WillOnce(Return(fake_page_embeddings));
-
-  // Tab got old.
-  test_clock_.Advance(base::Seconds(1800));
 
   base::test::TestFuture<std::vector<content::WebContents*>> future;
   service()->GetRelevantTabsForQuery(
@@ -636,11 +674,16 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksContextServiceTest,
 }
 
 IN_PROC_BROWSER_TEST_F(ContextualTasksContextServiceTest,
-                       HighRecencyScoreQualifiesTab) {
+                       MultiSignalScoring_HighRecencyLongDurationQualifiesTab) {
   base::HistogramTester histogram_tester;
 
   test_clock_.SetNowTicks(base::TimeTicks::Now());
   NavigateToValidURL();
+  // Simulate a long time spent on the tab.
+  test_clock_.Advance(base::Seconds(60));
+  // Simulate a short time passed since the tab has been hidden.
+  TabListInterface::From(browser())->GetActiveTab()->GetContents()->WasHidden();
+  test_clock_.Advance(base::Seconds(3));
 
   NotifyEmbedderMetadata();
 
@@ -655,9 +698,6 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksContextServiceTest,
   EXPECT_CALL(*page_embeddings_service(), GetEmbeddings(_))
       .WillOnce(Return(fake_page_embeddings));
 
-  // Recently active tab.
-  test_clock_.Advance(base::Seconds(5));
-
   base::test::TestFuture<std::vector<content::WebContents*>> future;
   service()->GetRelevantTabsForQuery(
       {.tab_selection_mode = mojom::TabSelectionMode::kMultiSignalScoring},
@@ -668,12 +708,54 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksContextServiceTest,
       "ContextualTasks.Context.RelevantTabsCount", 1, 1);
 }
 
-IN_PROC_BROWSER_TEST_F(ContextualTasksContextServiceTest,
-                       HighLexicalMatchScoreQualifiesTab) {
+IN_PROC_BROWSER_TEST_F(
+    ContextualTasksContextServiceTest,
+    MultiSignalScoring_HighRecencyShortDurationDoesNotQualifyTab) {
   base::HistogramTester histogram_tester;
 
+  test_clock_.SetNowTicks(base::TimeTicks::Now());
+  NavigateToValidURL();
+  // Simulate a short time spent on the tab.
+  test_clock_.Advance(base::Seconds(3));
+  // Simulate a short time passed since the tab has been hidden.
+  TabListInterface::From(browser())->GetActiveTab()->GetContents()->WasHidden();
+  test_clock_.Advance(base::Seconds(3));
+
+  NotifyEmbedderMetadata();
+
+  // None of the passages have high embeddings score.
+  std::vector<passage_embeddings::PassageEmbedding> fake_page_embeddings = {
+      {std::make_pair("passage 1",
+                      passage_embeddings::PassageType::kPageContent),
+       CreateFakeEmbedding(-1.0f)},
+      {std::make_pair("passage 2",
+                      passage_embeddings::PassageType::kPageContent),
+       CreateFakeEmbedding(-1.0f)}};
+  EXPECT_CALL(*page_embeddings_service(), GetEmbeddings(_))
+      .WillOnce(Return(fake_page_embeddings));
+
+  base::test::TestFuture<std::vector<content::WebContents*>> future;
+  service()->GetRelevantTabsForQuery(
+      {.tab_selection_mode = mojom::TabSelectionMode::kMultiSignalScoring},
+      "some text", /*explicit_urls=*/{}, future.GetCallback());
+  EXPECT_EQ(0u, future.Get().size());
+
+  histogram_tester.ExpectUniqueSample(
+      "ContextualTasks.Context.RelevantTabsCount", 0, 1);
+}
+
+IN_PROC_BROWSER_TEST_F(ContextualTasksContextServiceTest,
+                       MultiSignalScoring_HighLexicalMatchScoreQualifiesTab) {
+  base::HistogramTester histogram_tester;
+
+  test_clock_.SetNowTicks(base::TimeTicks::Now());
   // Navigates to a page with title "Test Page"
   NavigateToValidURL();
+  // Simulate a short time spent on the tab.
+  test_clock_.Advance(base::Seconds(3));
+  // Simulate a long time passed since the tab has been hidden.
+  TabListInterface::From(browser())->GetActiveTab()->GetContents()->WasHidden();
+  test_clock_.Advance(base::Seconds(1800));
 
   NotifyEmbedderMetadata();
 
@@ -691,11 +773,17 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksContextServiceTest,
       "ContextualTasks.Context.RelevantTabsCount", 1, 1);
 }
 
-IN_PROC_BROWSER_TEST_F(ContextualTasksContextServiceTest, NotRelevantTab) {
+IN_PROC_BROWSER_TEST_F(ContextualTasksContextServiceTest,
+                       MultiSignalScoring_NotRelevantTab) {
   base::HistogramTester histogram_tester;
 
   test_clock_.SetNowTicks(base::TimeTicks::Now());
   NavigateToValidURL();
+  // Simulate a short time spent on the tab.
+  test_clock_.Advance(base::Seconds(3));
+  // Simulate a long time passed since the tab has been hidden.
+  TabListInterface::From(browser())->GetActiveTab()->GetContents()->WasHidden();
+  test_clock_.Advance(base::Seconds(1800));
 
   NotifyEmbedderMetadata();
 

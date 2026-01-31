@@ -33,6 +33,7 @@
 #include "chrome/browser/ui/web_applications/web_app_launch_utils.h"
 #include "chrome/browser/ui/web_applications/web_app_tabbed_utils.h"
 #include "chrome/browser/web_applications/locks/app_lock.h"
+#include "chrome/browser/web_applications/model/display_override.h"
 #include "chrome/browser/web_applications/proto/web_app.pb.h"
 #include "chrome/browser/web_applications/ui_manager/update_dialog_types.h"
 #include "chrome/browser/web_applications/url_pattern_with_regex_matcher.h"
@@ -58,6 +59,7 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_features.h"
 #include "third_party/blink/public/common/features.h"
+#include "third_party/blink/public/common/safe_url_pattern.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/favicon_size.h"
 #include "ui/gfx/image/image.h"
@@ -140,6 +142,11 @@ WebAppBrowserController::WebAppBrowserController(
   install_manager_observation_.Observe(&provider.install_manager());
   registrar_observation_.Observe(&provider.registrar_unsafe());
   PerformDigitalAssetLinkVerification(browser);
+
+  if (AppUsesWindowControlsOverlay()) {
+    per_window_wco_enabled_ =
+        registrar().GetWindowControlsOverlayEnabled(this->app_id());
+  }
 }
 
 WebAppBrowserController::~WebAppBrowserController() = default;
@@ -172,25 +179,25 @@ bool WebAppBrowserController::AppUsesWindowControlsOverlay() const {
 }
 
 bool WebAppBrowserController::IsWindowControlsOverlayEnabled() const {
-  return AppUsesWindowControlsOverlay() &&
-         registrar().GetWindowControlsOverlayEnabled(app_id());
+  return AppUsesWindowControlsOverlay() && per_window_wco_enabled_;
 }
 
 void WebAppBrowserController::ToggleWindowControlsOverlayEnabled(
     base::OnceClosure on_complete) {
   DCHECK(AppUsesWindowControlsOverlay());
 
+  per_window_wco_enabled_ = !IsWindowControlsOverlayEnabled();
+
   provider_->scheduler().ScheduleCallback(
       "WebAppBrowserController::ToggleWindowControlsOverlayEnabled",
       AppLockDescription(app_id()),
       base::BindOnce(
-          [](const webapps::AppId& app_id, AppLock& lock,
-             base::Value::Dict& debug_value) {
-            lock.sync_bridge().SetAppWindowControlsOverlayEnabled(
-                app_id,
-                !lock.registrar().GetWindowControlsOverlayEnabled(app_id));
+          [](const webapps::AppId& app_id, bool wco_enabled, AppLock& lock,
+             base::DictValue& debug_value) {
+            lock.sync_bridge().SetAppWindowControlsOverlayEnabled(app_id,
+                                                                  wco_enabled);
           },
-          app_id()),
+          app_id(), per_window_wco_enabled_),
       /*on_complete=*/std::move(on_complete));
 }
 
@@ -205,11 +212,20 @@ bool WebAppBrowserController::UrlMatchesBorderlessPattern(
   if (app == nullptr) {
     return false;
   }
-  return app->borderless_url_patterns().empty() ||
-         std::ranges::any_of(app->borderless_url_patterns(),
-                             [&url](const blink::SafeUrlPattern& p) {
-                               return UrlPatternWithRegexMatcher(p).Match(url);
-                             });
+
+  auto it = std::ranges::find_if(
+      app->display_mode_override(), [](const DisplayOverride& item) {
+        return item.display_mode() == DisplayMode::kBorderless;
+      });
+  if (it == app->display_mode_override().end()) {
+    return false;
+  }
+
+  return it->url_patterns().empty() ||
+         std::ranges::any_of(
+             it->url_patterns(), [&url](const blink::SafeUrlPattern& pattern) {
+               return UrlPatternWithRegexMatcher(pattern).Match(url);
+             });
 }
 
 bool WebAppBrowserController::AppUsesTabbed() const {
@@ -319,7 +335,7 @@ void WebAppBrowserController::ToggleAlwaysShowToolbarInFullscreen() {
       AppLockDescription(app_id()),
       base::BindOnce(
           [](const webapps::AppId& app_id, AppLock& lock,
-             base::Value::Dict& debug_value) {
+             base::DictValue& debug_value) {
             lock.sync_bridge().SetAlwaysShowToolbarInFullscreen(
                 app_id,
                 !lock.registrar().AlwaysShowToolbarInFullscreen(app_id));
@@ -658,10 +674,10 @@ void WebAppBrowserController::Uninstall(
 }
 
 bool WebAppBrowserController::IsInstalled() const {
-  return registrar().IsInstallState(
-      app_id(), {proto::InstallState::SUGGESTED_FROM_ANOTHER_DEVICE,
-                 proto::InstallState::INSTALLED_WITHOUT_OS_INTEGRATION,
-                 proto::InstallState::INSTALLED_WITH_OS_INTEGRATION});
+  // TODO(crbug.com/379136842): This is likely too 'permissive' of a check, and
+  // different more restrictive filter should likely be used instead.
+  return registrar().AppMatches(app_id(),
+                                WebAppFilter::IsAppSurfaceableToUser());
 }
 
 void WebAppBrowserController::SetIconLoadCallbackForTesting(

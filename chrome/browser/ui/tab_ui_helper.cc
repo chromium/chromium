@@ -7,6 +7,7 @@
 #include "base/callback_list.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
+#include "base/process/kill.h"
 #include "build/build_config.h"
 #include "chrome/browser/favicon/favicon_utils.h"
 #include "chrome/browser/sessions/session_restore.h"
@@ -103,6 +104,19 @@ void TabUIHelper::SetWasActiveAtLeastOnce() {
   if (!base::FeatureList::IsEnabled(kSessionRestoreShowThrobberOnVisible)) {
     was_active_at_least_once_ = true;
   }
+}
+
+bool TabUIHelper::IsCrashed() {
+  const base::TerminationStatus crashed_status =
+      web_contents()->GetCrashedStatus();
+  return (crashed_status == base::TERMINATION_STATUS_PROCESS_WAS_KILLED ||
+#if BUILDFLAG(IS_CHROMEOS)
+          crashed_status ==
+              base::TERMINATION_STATUS_PROCESS_WAS_KILLED_BY_OOM ||
+#endif
+          crashed_status == base::TERMINATION_STATUS_PROCESS_CRASHED ||
+          crashed_status == base::TERMINATION_STATUS_ABNORMAL_TERMINATION ||
+          crashed_status == base::TERMINATION_STATUS_LAUNCH_FAILED);
 }
 
 base::CallbackListSubscription TabUIHelper::AddTitleUpdatedCallback(

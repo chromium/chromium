@@ -23,7 +23,9 @@ suite('SpeechController', () => {
   let readAloudModel: TestReadAloudModelBrowserProxy;
   let app: AppElement;
   let isSpeechActiveChanged: boolean;
+  let audioCurrentlyPlayingChanged: boolean;
   let onPlayingFromSelection: boolean;
+  let onWordBoundary: boolean;
 
   function onPlayPauseToggle(text: string) {
     const element = document.createElement('p');
@@ -46,7 +48,9 @@ suite('SpeechController', () => {
       isSpeechActiveChanged = true;
     },
 
-    onIsAudioCurrentlyPlayingChange() {},
+    onIsAudioCurrentlyPlayingChange() {
+      audioCurrentlyPlayingChanged = true;
+    },
 
     onEngineStateChange() {},
 
@@ -54,6 +58,10 @@ suite('SpeechController', () => {
 
     onPlayingFromSelection() {
       onPlayingFromSelection = true;
+    },
+
+    onWordBoundary() {
+      onWordBoundary = true;
     },
   };
 
@@ -85,6 +93,9 @@ suite('SpeechController', () => {
     ContentController.setInstance(new ContentController());
     speechController.addListener(speechListener);
     speech.reset();
+    onWordBoundary = false;
+    isSpeechActiveChanged = false;
+    onPlayingFromSelection = false;
 
     app = await createApp();
   });
@@ -177,6 +188,7 @@ suite('SpeechController', () => {
     const text = 'And I am a massive deal';
     const node: Node = setContent(text, readAloudModel);
     wordBoundaries.updateBoundary(4);
+    speechController.setHasSpeechBeenTriggered(true);
     chrome.readingMode.onHighlightGranularityChanged(
         chrome.readingMode.sentenceHighlighting);
     speechController.onHighlightGranularityChange(
@@ -201,14 +213,6 @@ suite('SpeechController', () => {
   });
 
   test('onPlayPauseToggle propagates state', async () => {
-    let propagatedSpeechActive = false;
-    let propagatedAudioPlaying = false;
-    chrome.readingMode.onIsSpeechActiveChanged = () => {
-      propagatedSpeechActive = true;
-    };
-    chrome.readingMode.onIsAudioCurrentlyPlayingChanged = () => {
-      propagatedAudioPlaying = true;
-    };
     const text = 'You bring the corsets';
     readAloudModel.setInitialized(true);
     const node = setContent(text, readAloudModel);
@@ -218,8 +222,9 @@ suite('SpeechController', () => {
     assertTrue(!!spoken.onstart);
     spoken.onstart(new SpeechSynthesisEvent('type', {utterance: spoken}));
 
-    assertTrue(propagatedSpeechActive);
-    assertTrue(propagatedAudioPlaying);
+    assertTrue(isSpeechActiveChanged);
+    assertTrue(audioCurrentlyPlayingChanged);
+    assertTrue(onWordBoundary);
   });
 
   test('onPlayPauseToggle ignores hidden nodes', () => {
@@ -263,6 +268,22 @@ suite('SpeechController', () => {
 
         assertEquals(1, speech.getCallCount('speak'));
         assertEquals(1, speech.getCallCount('cancel'));
+      });
+
+  test(
+      'onPlayPauseToggle resume with word boundaries notifies of change',
+      () => {
+        const textContent = 'And our fame and our faces';
+        const node = setContent(textContent, readAloudModel);
+        speechController.onPlayPauseToggle(node as HTMLElement);
+        speechController.onPlayPauseToggle(node as HTMLElement);
+        wordBoundaries.updateBoundary(10);
+        speech.reset();
+        onWordBoundary = false;
+
+        speechController.onPlayPauseToggle(node as HTMLElement);
+
+        assertTrue(onWordBoundary);
       });
 
   test('onPlayPauseToggle with selection reads from there', async () => {
@@ -426,6 +447,7 @@ suite('SpeechController', () => {
     const text = 'But I took your hand';
     setContent(text, readAloudModel);
     wordBoundaries.updateBoundary(4);
+    speechController.setHasSpeechBeenTriggered(true);
     chrome.readingMode.onHighlightGranularityChanged(
         chrome.readingMode.sentenceHighlighting);
     speechController.onHighlightGranularityChange(
@@ -448,6 +470,7 @@ suite('SpeechController', () => {
     const text = 'And promised I\'d withstand';
     setContent(text, readAloudModel);
     wordBoundaries.updateBoundary(4);
+    speechController.setHasSpeechBeenTriggered(true);
     chrome.readingMode.onHighlightGranularityChanged(
         chrome.readingMode.sentenceHighlighting);
     speechController.onHighlightGranularityChange(

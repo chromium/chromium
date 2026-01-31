@@ -64,7 +64,7 @@ def _DiffFileContents(expected_path, actual_data):
     return None
 
   if _REBASELINE_PROGUARD:
-    pathlib.Path(expected_path).write_text('\n'.join(actual_lines),
+    pathlib.Path(expected_path).write_text('\n'.join(actual_lines) + '\n',
                                            encoding='utf-8')
     print(f'Updated {expected_path}')
     return None

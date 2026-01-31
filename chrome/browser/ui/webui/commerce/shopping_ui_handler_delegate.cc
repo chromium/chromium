@@ -126,7 +126,7 @@ void ShoppingUiHandlerDelegate::ShowFeedbackForProductSpecifications(
     return;
   }
 
-  base::Value::Dict feedback_metadata;
+  base::DictValue feedback_metadata;
   feedback_metadata.Set("log_id", log_id);
   chrome::ShowFeedbackPage(
       browser, feedback::kFeedbackSourceAI,
@@ -135,7 +135,7 @@ void ShoppingUiHandlerDelegate::ShowFeedbackForProductSpecifications(
       l10n_util::GetStringUTF8(IDS_COMPARE_FEEDBACK_PLACEHOLDER),
       /*category_tag=*/"compare",
       /*extra_diagnostics=*/std::string(),
-      /*autofill_metadata=*/base::Value::Dict(), std::move(feedback_metadata));
+      /*autofill_metadata=*/base::DictValue(), std::move(feedback_metadata));
 }
 
 ukm::SourceId ShoppingUiHandlerDelegate::GetCurrentTabUkmSourceId() {

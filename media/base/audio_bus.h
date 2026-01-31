@@ -18,6 +18,7 @@
 #include "base/functional/callback.h"
 #include "base/memory/aligned_memory.h"
 #include "base/memory/raw_ptr_exclusion.h"
+#include "base/numerics/checked_math.h"
 #include "media/base/media_export.h"
 
 namespace media {
@@ -110,47 +111,108 @@ class MEDIA_EXPORT AudioBus {
   // Returns the currently used bitstream data.
   BitstreamData bitstream_data() const { return bitstream_data_; }
 
+  // Note: DEPRECATED, prefer spanified version instead.
   // Overwrites the sample values stored in this AudioBus instance with values
-  // from a given interleaved |source_buffer| with expected layout
+  // from a given interleaved `source_buffer` with expected layout
   // [ch0, ch1, ..., chN, ch0, ch1, ...] and sample values in the format
   // corresponding to the given SourceSampleTypeTraits.
   // The sample values are converted to float values by means of the method
   // convert_to_float32() provided by the SourceSampleTypeTraits. For a list of
   // ready-to-use SampleTypeTraits, see file audio_sample_types.h.
-  // If |num_frames_to_write| is less than frames(), the remaining frames are
-  // zeroed out. If |num_frames_to_write| is more than frames(), this results in
+  // If `num_frames_to_write` is less than frames(), the remaining frames are
+  // zeroed out. If `num_frames_to_write` is more than frames(), this results in
   // undefined behavior.
+  // TODO(crbug.com/373960632): Delete this function.
   template <class SourceSampleTypeTraits>
   void FromInterleaved(
       const typename SourceSampleTypeTraits::ValueType* source_buffer,
       int num_frames_to_write);
 
+  // Overwrites every sample stored in this AudioBus instance with values
+  // from a given interleaved `source` with expected layout
+  // [ch0, ch1, ..., chN, ch0, ch1, ...]. The sample values are converted to
+  // float values by means of the method provided by the SourceSampleTypeTraits.
+  // If `zero_remaining_frames` is true, frames not overwritten by the contents
+  // of `source` will be zeroed. If it is false, `source` must have the exact
+  // size to hold `frames() * channels()` elements.
+  template <class SourceSampleTypeTraits>
+  void FromInterleaved(
+      base::span<const typename SourceSampleTypeTraits::ValueType> source,
+      bool zero_remaining_frames = false);
+
+  // Note: DEPRECATED, prefer spanified version instead.
   // Similar to FromInterleaved...(), but overwrites the frames starting at a
-  // given offset |write_offset_in_frames| and does not zero out frames that are
+  // given offset `write_offset_in_frames` and does not zero out frames that are
   // not overwritten.
+  // TODO(crbug.com/373960632): Delete this function.
   template <class SourceSampleTypeTraits>
   void FromInterleavedPartial(
       const typename SourceSampleTypeTraits::ValueType* source_buffer,
       int write_offset_in_frames,
       int num_frames_to_write);
 
+  // Similar to FromInterleaved...(), but overwrites the frames starting at a
+  // given offset `write_offset`, without zero'ing other frames.
+  template <class SourceSampleTypeTraits>
+  void FromInterleavedPartial(
+      base::span<const typename SourceSampleTypeTraits::ValueType> source,
+      size_t write_offset);
+
+  // Note: DEPRECATED, prefer spanified version instead.
   // Reads the sample values stored in this AudioBus instance and places them
-  // into the given |dest_buffer| in interleaved format using the sample format
+  // into the given `dest_buffer` in interleaved format using the sample format
   // specified by TargetSampleTypeTraits. For a list of ready-to-use
-  // SampleTypeTraits, see file audio_sample_types.h. If |num_frames_to_read| is
+  // SampleTypeTraits, see file audio_sample_types.h. If `num_frames_to_read` is
   // larger than frames(), this results in undefined behavior.
+  // TODO(crbug.com/373960632): Delete this function.
   template <class TargetSampleTypeTraits>
   void ToInterleaved(
       int num_frames_to_read,
       typename TargetSampleTypeTraits::ValueType* dest_buffer) const;
 
+  // Fills `dest` with the sample values in this AudioBus instance. Converts the
+  // samples to the format specified by `TargetSampleTypeTraits` and places them
+  // in interleaved format.
+  // Note: `dest` must have the exact size to hold `frames() * channels()`
+  // elements.
+  template <class TargetSampleTypeTraits>
+  void ToInterleaved(
+      base::span<typename TargetSampleTypeTraits::ValueType> dest) const;
+
+  // Note: DEPRECATED, prefer spanified version instead.
   // Similar to ToInterleaved(), but reads the frames starting at a given
-  // offset |read_offset_in_frames|.
+  // offset `read_offset_in_frames`.
+  // TODO(crbug.com/373960632): Delete this function.
   template <class TargetSampleTypeTraits>
   void ToInterleavedPartial(
       int read_offset_in_frames,
       int num_frames_to_read,
       typename TargetSampleTypeTraits::ValueType* dest_buffer) const;
+
+  // Similar to ToInterleaved...(), but reads the frames starting at a given
+  // `read_offset`.
+  // Note: `dest` must have a multiple of `channels()` elements, but it does not
+  // need to be big enough to hold all remaining frames past `read_offset`.
+  template <class TargetSampleTypeTraits>
+  void ToInterleavedPartial(
+      size_t read_offset,
+      base::span<typename TargetSampleTypeTraits::ValueType> dest) const;
+
+  // Helpers delegating to their respective "byte-less" function, included for
+  // convenience. Handles up casting the byte spans safely into spans of the
+  // appropriate sample type.
+  // Prefer using "byte-less" functions directly.
+  template <class SourceSampleTypeTraits>
+  void FromInterleavedBytes(base::span<const uint8_t> source,
+                            bool zero_remaining_frames = false);
+  template <class SourceSampleTypeTraits>
+  void FromInterleavedBytesPartial(base::span<const uint8_t> source,
+                                   size_t write_offset);
+  template <class TargetSampleTypeTraits>
+  void ToInterleavedBytes(base::span<uint8_t> dest) const;
+  template <class TargetSampleTypeTraits>
+  void ToInterleavedBytesPartial(size_t read_offset,
+                                 base::span<uint8_t> dest) const;
 
   // Helper method for copying channel data from one AudioBus to another.  Both
   // AudioBus object must have the same frames() and channels().
@@ -171,8 +233,6 @@ class MEDIA_EXPORT AudioBus {
   // Returns a raw pointer to the requested channel.  Pointer is guaranteed to
   // have a 16-byte alignment.  Warning: Do not rely on having sane (i.e. not
   // inf, nan, or between [-1.0, 1.0]) values in the channel data.
-  // TODO(crbug.com/373960632): Replace all `channel_span()` calls with
-  // `channel()` and delete `channel_span()`.
   Channel channel(int channel) {
     CHECK(!is_bitstream_format_);
     return channel_data_[channel];
@@ -180,10 +240,6 @@ class MEDIA_EXPORT AudioBus {
   ConstChannel channel(int channel) const {
     CHECK(!is_bitstream_format_);
     return channel_data_[channel];
-  }
-  Channel channel_span(int channel_number) { return channel(channel_number); }
-  ConstChannel channel_span(int channel_number) const {
-    return channel(channel_number);
   }
 
   // Convenience function to allow range-based for-loops.
@@ -242,6 +298,11 @@ class MEDIA_EXPORT AudioBus {
       int write_offset_in_frames,
       int num_frames_to_write,
       AudioBus* dest);
+  template <class SourceSampleTypeTraits>
+  static void CopyConvertFromInterleavedSourceToAudioBus(
+      base::span<const typename SourceSampleTypeTraits::ValueType> source,
+      size_t write_offset,
+      AudioBus* dest);
 
   template <class TargetSampleTypeTraits>
   static void CopyConvertFromAudioBusToInterleavedTarget(
@@ -249,6 +310,41 @@ class MEDIA_EXPORT AudioBus {
       int read_offset_in_frames,
       int num_frames_to_read,
       typename TargetSampleTypeTraits::ValueType* dest_buffer);
+  template <class TargetSampleTypeTraits>
+  static void CopyConvertFromAudioBusToInterleavedTarget(
+      const AudioBus* source,
+      size_t read_offset,
+      base::span<typename TargetSampleTypeTraits::ValueType> dest);
+
+  template <typename T>
+  static size_t get_frame_count(base::span<T> data, size_t channels) {
+    CHECK_EQ(data.size() % channels, 0u);
+    return data.size() / channels;
+  }
+
+  template <typename T>
+  static base::span<T> cast_span(base::span<uint8_t> data) {
+    if constexpr (std::is_same_v<T, uint8_t>) {
+      return data;
+    } else {
+      CHECK_EQ(data.size() % sizeof(T), 0u);
+      CHECK(base::IsAligned(data.data(), alignof(T)));
+      return base::span<T>(reinterpret_cast<T*>(data.data()),
+                           data.size() / sizeof(T));
+    }
+  }
+
+  template <typename T>
+  static base::span<const T> cast_const_span(base::span<const uint8_t> data) {
+    if constexpr (std::is_same_v<T, uint8_t>) {
+      return data;
+    } else {
+      CHECK_EQ(data.size() % sizeof(T), 0u);
+      CHECK(base::IsAligned(data.data(), alignof(T)));
+      return base::span<const T>(reinterpret_cast<const T*>(data.data()),
+                                 data.size() / sizeof(T));
+    }
+  }
 
   // Contiguous block of channel memory.
   base::AlignedHeapArray<float> data_;
@@ -297,6 +393,26 @@ void AudioBus::FromInterleaved(
   ZeroFramesPartial(num_frames_to_write, frames_ - num_frames_to_write);
 }
 
+// Delegates to FromInterleavedPartial()
+template <class SourceSampleTypeTraits>
+void AudioBus::FromInterleaved(
+    base::span<const typename SourceSampleTypeTraits::ValueType> source,
+    bool zero_remaining_frames) {
+  const size_t source_frame_count = get_frame_count(source, channels());
+  CHECK_LE(source_frame_count, frames_);
+
+  FromInterleavedPartial<SourceSampleTypeTraits>(source, 0u);
+
+  const size_t remaining_frames = frames_ - source_frame_count;
+  if (!remaining_frames) {
+    return;
+  }
+
+  // If not using `zero_remaining_frames`, `source` should have the exact size.
+  CHECK(zero_remaining_frames);
+  ZeroFramesPartial(source_frame_count, remaining_frames);
+}
+
 template <class SourceSampleTypeTraits>
 void AudioBus::FromInterleavedPartial(
     const typename SourceSampleTypeTraits::ValueType* source_buffer,
@@ -305,6 +421,19 @@ void AudioBus::FromInterleavedPartial(
   CheckOverflow(write_offset_in_frames, num_frames_to_write, frames_);
   CopyConvertFromInterleavedSourceToAudioBus<SourceSampleTypeTraits>(
       source_buffer, write_offset_in_frames, num_frames_to_write, this);
+}
+
+template <class SourceSampleTypeTraits>
+void AudioBus::FromInterleavedPartial(
+    base::span<const typename SourceSampleTypeTraits::ValueType> source,
+    size_t write_offset) {
+  const size_t frame_count = get_frame_count(source, channels());
+  const size_t total_offset =
+      base::CheckAdd(frame_count, write_offset).ValueOrDie();
+  CHECK_LE(total_offset, frames_);
+
+  CopyConvertFromInterleavedSourceToAudioBus<SourceSampleTypeTraits>(
+      source, write_offset, this);
 }
 
 // Delegates to ToInterleavedPartial()
@@ -316,6 +445,15 @@ void AudioBus::ToInterleaved(
                                                dest_buffer);
 }
 
+// Delegates to ToInterleavedPartial()
+template <class TargetSampleTypeTraits>
+void AudioBus::ToInterleaved(
+    base::span<typename TargetSampleTypeTraits::ValueType> dest) const {
+  const size_t frames_count = get_frame_count(dest, channels());
+  CHECK_EQ(frames_count, frames_);
+  ToInterleavedPartial<TargetSampleTypeTraits>(0u, dest);
+}
+
 template <class TargetSampleTypeTraits>
 void AudioBus::ToInterleavedPartial(
     int read_offset_in_frames,
@@ -324,6 +462,18 @@ void AudioBus::ToInterleavedPartial(
   CheckOverflow(read_offset_in_frames, num_frames_to_read, frames_);
   CopyConvertFromAudioBusToInterleavedTarget<TargetSampleTypeTraits>(
       this, read_offset_in_frames, num_frames_to_read, dest);
+}
+
+template <class TargetSampleTypeTraits>
+void AudioBus::ToInterleavedPartial(
+    size_t read_offset,
+    base::span<typename TargetSampleTypeTraits::ValueType> dest) const {
+  const size_t frame_count = get_frame_count(dest, channels());
+  const size_t total_offset =
+      base::CheckAdd(frame_count, read_offset).ValueOrDie();
+  CHECK_LE(total_offset, frames_);
+  CopyConvertFromAudioBusToInterleavedTarget<TargetSampleTypeTraits>(
+      this, read_offset, dest);
 }
 
 // TODO(chfremer): Consider using vector instructions to speed this up,
@@ -348,6 +498,27 @@ void AudioBus::CopyConvertFromInterleavedSourceToAudioBus(
   }
 }
 
+template <class SourceSampleTypeTraits>
+void AudioBus::CopyConvertFromInterleavedSourceToAudioBus(
+    base::span<const typename SourceSampleTypeTraits::ValueType> source,
+    size_t write_offset,
+    AudioBus* dest) {
+  const size_t channels = dest->channels();
+  const size_t frame_count = get_frame_count(source, channels);
+  const size_t total_offset =
+      base::CheckAdd(frame_count, write_offset).ValueOrDie();
+  CHECK_LE(total_offset, static_cast<size_t>(dest->frames()));
+
+  for (size_t ch = 0; ch < channels; ++ch) {
+    auto channel_data = dest->channel(ch).subspan(write_offset, frame_count);
+    for (size_t dest_idx = 0, src_idx = ch; dest_idx < frame_count;
+         ++dest_idx, src_idx += channels) {
+      auto source_sample = source[src_idx];
+      channel_data[dest_idx] = SourceSampleTypeTraits::ToFloat(source_sample);
+    }
+  }
+}
+
 // TODO(chfremer): Consider using vector instructions to speed this up,
 //                 https://crbug.com/619628
 template <class TargetSampleTypeTraits>
@@ -367,6 +538,53 @@ void AudioBus::CopyConvertFromAudioBusToInterleavedTarget(
           TargetSampleTypeTraits::FromFloat(sourceSampleValue);
     }
   }
+}
+
+template <class TargetSampleTypeTraits>
+void AudioBus::CopyConvertFromAudioBusToInterleavedTarget(
+    const AudioBus* source,
+    size_t read_offset,
+    base::span<typename TargetSampleTypeTraits::ValueType> dest) {
+  const size_t channels = source->channels();
+  const size_t frame_count = get_frame_count(dest, channels);
+  const size_t total_offset =
+      base::CheckAdd(frame_count, read_offset).ValueOrDie();
+  CHECK_LE(total_offset, static_cast<size_t>(source->frames()));
+
+  for (size_t ch = 0; ch < channels; ++ch) {
+    auto channel_data = source->channel(ch).subspan(read_offset, frame_count);
+    for (size_t src_idx = 0, dest_idx = ch; src_idx < frame_count;
+         ++src_idx, dest_idx += channels) {
+      float source_sample = channel_data[src_idx];
+      dest[dest_idx] = TargetSampleTypeTraits::FromFloat(source_sample);
+    }
+  }
+}
+
+template <class SourceSampleTypeTraits>
+void AudioBus::FromInterleavedBytes(base::span<const uint8_t> source,
+                                    bool zero_remaining_frames) {
+  FromInterleaved<SourceSampleTypeTraits>(
+      cast_const_span<typename SourceSampleTypeTraits::ValueType>(source),
+      zero_remaining_frames);
+}
+template <class SourceSampleTypeTraits>
+void AudioBus::FromInterleavedBytesPartial(base::span<const uint8_t> source,
+                                           size_t write_offset) {
+  FromInterleavedPartial<SourceSampleTypeTraits>(
+      cast_const_span<typename SourceSampleTypeTraits::ValueType>(source),
+      write_offset);
+}
+template <class TargetSampleTypeTraits>
+void AudioBus::ToInterleavedBytes(base::span<uint8_t> dest) const {
+  ToInterleaved<TargetSampleTypeTraits>(
+      cast_span<typename TargetSampleTypeTraits::ValueType>(dest));
+}
+template <class TargetSampleTypeTraits>
+void AudioBus::ToInterleavedBytesPartial(size_t read_offset,
+                                         base::span<uint8_t> dest) const {
+  ToInterleavedPartial<TargetSampleTypeTraits>(
+      read_offset, cast_span<typename TargetSampleTypeTraits::ValueType>(dest));
 }
 
 }  // namespace media

@@ -12,7 +12,7 @@ import {assert} from '//resources/js/assert.js';
 import {EventTracker} from '//resources/js/event_tracker.js';
 import {loadTimeData} from '//resources/js/load_time_data.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
-import type {PageHandlerInterface as SearchboxPageHandlerInterface, SearchContextStub} from '//resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
+import type {PageHandlerInterface as SearchboxPageHandlerInterface, SearchContext} from '//resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 
 import {getCss} from './aim_app.css.js';
 import {getHtml} from './aim_app.html.js';
@@ -40,9 +40,11 @@ export class OmniboxAimAppElement extends CrLitElement {
 
   protected searchboxLayoutMode_: string =
       loadTimeData.getString('searchboxLayoutMode');
+  protected disableCaretColorAnimation_: boolean =
+      loadTimeData.getBoolean('caretColorAnimationDisabled');
+  protected disableComposeboxAnimation_: boolean =
+      loadTimeData.getBoolean('composeboxAnimationDisabled');
 
-  private isDebug_: boolean =
-      new URLSearchParams(window.location.search).has('debug');
   private eventTracker_ = new EventTracker();
   private searchboxPageHandler_: SearchboxPageHandlerInterface;
   private pageHandler_: PageHandlerInterface;
@@ -72,13 +74,6 @@ export class OmniboxAimAppElement extends CrLitElement {
     ];
 
     this.$.composebox.focusInput();
-
-    if (!this.isDebug_) {
-      this.eventTracker_.add(
-          document.documentElement, 'contextmenu', (e: Event) => {
-            e.preventDefault();
-          });
-    }
 
     this.setupLocalizedLinkListener();
   }
@@ -123,7 +118,7 @@ export class OmniboxAimAppElement extends CrLitElement {
     this.preserveContextOnClose_ = preserveContextOnClose;
   }
 
-  private onPopupShown_(context: SearchContextStub) {
+  private onPopupShown_(context: SearchContext) {
     if (!this.preserveContextOnClose_) {
       // Avoid showing the glow animation when coming back from a preserved
       // context on close as this indicates that the user is returning to the
@@ -135,29 +130,33 @@ export class OmniboxAimAppElement extends CrLitElement {
     this.preserveContextOnClose_ = false;
   }
 
-  private addContext_(context: SearchContextStub) {
+  private addContext_(context: SearchContext) {
     this.$.composebox.addSearchContext(context);
     this.$.composebox.focusInput();
   }
 
   private onPopupHidden_(): Promise<{input: string}> {
+    if (this.$.composebox.isVoiceInput) {
+      this.$.composebox.clearInput();
+    }
     const input = this.$.composebox.getInputText();
     if (!this.preserveContextOnClose_) {
-      this.$.composebox.clearAllInputs();
+      this.$.composebox.clearAllInputs(/* querySubmitted= */ false);
       this.$.composebox.clearAutocompleteMatches();
       this.$.composebox.resetModes();
     }
+    // Transfer input text to the location bar.
     return Promise.resolve({input});
   }
 
   protected onComposeboxSubmit_() {
-    this.$.composebox.clearAllInputs();
+    this.$.composebox.clearAllInputs(/* querySubmitted= */ true);
   }
 
   private onLinkClick_(e: Event) {
     e.preventDefault();
     const href = (e.currentTarget as HTMLAnchorElement).href;
-    this.pageHandler_.navigateCurrentTab({url: href});
+    this.pageHandler_.navigateCurrentTab(href);
   }
 }
 

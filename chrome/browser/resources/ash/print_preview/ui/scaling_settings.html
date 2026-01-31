@@ -17,6 +17,11 @@
           disabled$="[[!isPdf]]">
         $i18n{optionFitToPaper}
       </option>
+      <option value="[[scalingTypeEnum_.ACTUAL_SIZE]]"
+          hidden$="[[!computeOptionActualSizeEnabled_(isPdf, alignPdfDefaultPrintSettingsWithHTML_)]]"
+          disabled$="[[!computeOptionActualSizeEnabled_(isPdf, alignPdfDefaultPrintSettingsWithHTML_)]]">
+        $i18n{optionActualSize}
+      </option>
       <option value="[[scalingTypeEnum_.CUSTOM]]">
         $i18n{optionCustomScaling}
       </option>

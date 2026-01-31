@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #include "content/test/mock_background_sync_controller.h"
-#include "base/containers/contains.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/time/time.h"
@@ -57,7 +56,7 @@ void MockBackgroundSyncController::ApplyFieldTrialParamsOverrides() {
   if (!base::GetFieldTrialParams(kFieldTrialName, &field_params))
     return;
 
-  if (base::Contains(field_params, kMaxAttemptsParameterName)) {
+  if (field_params.contains(kMaxAttemptsParameterName)) {
     int max_attempts;
     if (base::StringToInt(field_params[kMaxAttemptsParameterName],
                           &max_attempts)) {
@@ -65,7 +64,7 @@ void MockBackgroundSyncController::ApplyFieldTrialParamsOverrides() {
     }
   }
 
-  if (base::Contains(field_params, kMinPeriodicSyncEventsInterval)) {
+  if (field_params.contains(kMinPeriodicSyncEventsInterval)) {
     int min_periodic_sync_events_interval_sec;
     if (base::StringToInt(field_params[kMinPeriodicSyncEventsInterval],
                           &min_periodic_sync_events_interval_sec)) {

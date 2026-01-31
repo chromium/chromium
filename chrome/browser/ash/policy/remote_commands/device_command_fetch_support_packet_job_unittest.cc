@@ -185,11 +185,11 @@ TEST_F(DeviceCommandFetchSupportPacketTest,
        FailIfPayloadContainsEmptyDataCollectors) {
   DeviceCommandFetchSupportPacketJob job;
   // Wrong payload with empty data collectors list.
-  base::Value::Dict command_payload =
+  base::DictValue command_payload =
       test::GetFetchSupportPacketCommandPayloadDict(
           {support_tool::DataCollectorType::CHROMEOS_SYSTEM_LOGS});
   command_payload.SetByDottedPath(
-      "supportPacketDetails.requestedDataCollectors", base::Value::List());
+      "supportPacketDetails.requestedDataCollectors", base::ListValue());
   auto wrong_payload = base::WriteJson(std::move(command_payload));
   ASSERT_TRUE(wrong_payload.has_value());
 
@@ -219,7 +219,7 @@ TEST_F(DeviceCommandFetchSupportPacketTest, FailWhenLogUploadDisabled) {
   // supported on the device.
   EXPECT_THAT(
       *job.GetResultPayload(),
-      IsJson(base::Value::Dict().Set(
+      IsJson(base::DictValue().Set(
           "result", enterprise_management::FetchSupportPacketResultCode::
                         FAILURE_COMMAND_NOT_ENABLED)));
 
@@ -266,7 +266,7 @@ TEST_P(DeviceCommandFetchSupportPacketTestParameterized,
   // The result payload should contain the success result code.
   EXPECT_THAT(
       enqueued_event.remote_command_details().command_result_payload(),
-      IsJson(base::Value::Dict().Set(
+      IsJson(base::DictValue().Set(
           "result", enterprise_management::FetchSupportPacketResultCode::
                         FETCH_SUPPORT_PACKET_RESULT_SUCCESS)));
   EXPECT_EQ(enqueued_event.remote_command_details().command_id(), kUniqueID);
@@ -324,7 +324,7 @@ TEST_P(DeviceCommandFetchSupportPacketTestParameterized,
   EXPECT_EQ(enqueued_event.remote_command_details().command_id(), kUniqueID);
 
   // The result payload should contain the success result code.
-  base::Value::Dict expected_payload;
+  base::DictValue expected_payload;
   expected_payload.Set("result",
                        enterprise_management::FetchSupportPacketResultCode::
                            FETCH_SUPPORT_PACKET_RESULT_SUCCESS);
@@ -332,7 +332,7 @@ TEST_P(DeviceCommandFetchSupportPacketTestParameterized,
     // A note will be added to the result payload when requested PII is
     // not included in the collected logs.
     expected_payload.Set(
-        "notes", base::Value::List().Append(
+        "notes", base::ListValue().Append(
                      enterprise_management::FetchSupportPacketResultNote::
                          WARNING_PII_NOT_ALLOWED));
   }

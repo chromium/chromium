@@ -11,7 +11,6 @@
 #include "base/containers/flat_map.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
-#include "chrome/browser/apps/app_service/app_launch_params.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/locks/all_apps_lock.h"
 #include "chrome/browser/web_applications/web_app_command_scheduler.h"
@@ -20,6 +19,7 @@
 #include "chrome/browser/web_applications/web_app_ui_manager.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
 #include "chrome/common/chrome_features.h"
+#include "components/services/app_service/public/cpp/app_launch_params.h"
 #include "components/services/app_service/public/cpp/app_launch_util.h"
 #include "content/public/browser/network_service_instance.h"
 #include "content/public/browser/web_contents.h"
@@ -46,10 +46,6 @@ void WebAppRunOnOsLoginManager::Start() {
     return;
   }
 
-  if (!base::FeatureList::IsEnabled(features::kDesktopPWAsRunOnOsLogin)) {
-    return;
-  }
-
   network::mojom::ConnectionType connection_type;
   // `GetConnectionType` will execute either synchronously (and return true and
   // store the value in the `connection_type`) or asynchronously (and return
@@ -65,9 +61,8 @@ void WebAppRunOnOsLoginManager::Start() {
   }
 }
 
-void WebAppRunOnOsLoginManager::RunAppsOnOsLogin(
-    AllAppsLock& lock,
-    base::Value::Dict& debug_value) {
+void WebAppRunOnOsLoginManager::RunAppsOnOsLogin(AllAppsLock& lock,
+                                                 base::DictValue& debug_value) {
   base::flat_map<webapps::AppId, WebAppUiManager::RoolNotificationBehavior>
       notification_behaviors;
 

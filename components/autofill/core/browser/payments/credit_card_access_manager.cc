@@ -42,7 +42,7 @@
 #include "components/autofill/core/browser/payments/payments_window_manager.h"
 #include "components/autofill/core/browser/payments/virtual_card_enrollment_manager.h"
 #include "components/autofill/core/browser/payments/webauthn_callback_types.h"
-#include "components/autofill/core/browser/suggestions/payments/payments_suggestion_generator.h"
+#include "components/autofill/core/browser/suggestions/payments/payments_suggestion_generator_util.h"
 #include "components/autofill/core/common/autofill_clock.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
 #include "components/strings/grit/components_strings.h"
@@ -422,7 +422,7 @@ bool CreditCardAccessManager::IsMaskedServerCardRiskBasedAuthAvailable() const {
     return false;
   }
 
-  bool isCardInfoRetrievalEnrolled =
+  bool is_card_info_retrieval_enrolled =
       base::FeatureList::IsEnabled(
           features::kAutofillEnableCardInfoRuntimeRetrieval) &&
       (card_->card_info_retrieval_enrollment_state() ==
@@ -430,7 +430,7 @@ bool CreditCardAccessManager::IsMaskedServerCardRiskBasedAuthAvailable() const {
   return !card_->IsExpired(AutofillClock::Now()) &&
          (base::FeatureList::IsEnabled(
               features::kAutofillEnableFpanRiskBasedAuthentication) ||
-          isCardInfoRetrievalEnrolled);
+          is_card_info_retrieval_enrolled);
 }
 
 void CreditCardAccessManager::FIDOAuthOptChange(bool opt_in) {
@@ -620,7 +620,7 @@ void CreditCardAccessManager::Authenticate(
       // come from the risk based authentication response. But for masked server
       // cards if the risk based auth is not available, `fido_request_options`
       // comes from the UnmaskDetails.
-      base::Value::Dict fido_request_options;
+      base::DictValue fido_request_options;
       std::optional<std::string> context_token;
       if (card_->record_type() == CreditCard::RecordType::kVirtualCard) {
         context_token = risk_based_authentication_response_.context_token;
@@ -768,7 +768,7 @@ void CreditCardAccessManager::OnCvcAuthenticationComplete(
     unmask_auth_flow_type_ = UnmaskAuthFlowType::kNone;
   } else if (should_register_card_with_fido) {
 #if !BUILDFLAG(IS_IOS)
-    base::Value::Dict request_options;
+    base::DictValue request_options;
     if (!unmask_details_.fido_request_options.empty()) {
       // For opted-in user (CVC then FIDO case), request options are returned in
       // unmask detail response.

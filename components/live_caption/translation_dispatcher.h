@@ -48,6 +48,9 @@ class TranslationDispatcher {
                               absl::string_view target_language,
                               TranslateEventCallback callback);
 
+  void SetURLLoaderFactoryForTest(
+      mojo::Remote<network::mojom::URLLoaderFactory> url_loader_factory);
+
  private:
   void ResetURLLoaderFactory();
   void OnURLLoadComplete(TranslateEventCallback callback,

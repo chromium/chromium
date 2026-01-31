@@ -987,8 +987,8 @@ IN_PROC_BROWSER_TEST_F(DownloadTest, DownloadResourceThrottleCancels) {
   WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
   DownloadRequestLimiter::TabDownloadState* tab_download_state =
-      g_browser_process->download_request_limiter()->GetDownloadState(
-          web_contents, true);
+      g_browser_process->download_request_limiter()->GetOrCreateDownloadState(
+          web_contents);
   ASSERT_TRUE(tab_download_state);
   tab_download_state->set_download_seen();
   tab_download_state->SetDownloadStatusAndNotify(
@@ -1038,8 +1038,8 @@ IN_PROC_BROWSER_TEST_F(DownloadTest,
   WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
   DownloadRequestLimiter::TabDownloadState* tab_download_state =
-      g_browser_process->download_request_limiter()->GetDownloadState(
-          web_contents, true);
+      g_browser_process->download_request_limiter()->GetOrCreateDownloadState(
+          web_contents);
   ASSERT_TRUE(tab_download_state);
   // Let the first download to fail.
   tab_download_state->set_download_seen();
@@ -1093,8 +1093,8 @@ IN_PROC_BROWSER_TEST_F(PrerenderDownloadTest,
   // those cannot be done in prerendering.
   auto* web_contents = GetWebContents();
   DownloadRequestLimiter::TabDownloadState* tab_download_state =
-      g_browser_process->download_request_limiter()->GetDownloadState(
-          web_contents, true);
+      g_browser_process->download_request_limiter()->GetOrCreateDownloadState(
+          web_contents);
   ASSERT_TRUE(tab_download_state);
   tab_download_state->SetDownloadStatusAndNotify(
       url::Origin::Create(kInitialUrl),
@@ -1104,7 +1104,7 @@ IN_PROC_BROWSER_TEST_F(PrerenderDownloadTest,
           permissions::PermissionRequestManager::DENY_ALL);
 
   // Launch a prerendering page.
-  const content::FrameTreeNodeId host_id =
+  const content::PrerenderHostId host_id =
       prerender_helper()->AddPrerender(kPrerenderingUrl);
   ASSERT_TRUE(host_id);
   content::test::PrerenderHostObserver host_observer(*web_contents, host_id);
@@ -1114,7 +1114,7 @@ IN_PROC_BROWSER_TEST_F(PrerenderDownloadTest,
   // the test DownloadRequestLimiterTest.ResetOnNavigation).
   ASSERT_EQ(tab_download_state,
             g_browser_process->download_request_limiter()->GetDownloadState(
-                web_contents, false));
+                web_contents));
   ASSERT_EQ(tab_download_state->download_status(),
             DownloadRequestLimiter::PROMPT_BEFORE_DOWNLOAD);
 
@@ -1173,8 +1173,8 @@ IN_PROC_BROWSER_TEST_F(FencedFrameDownloadTest,
   // those cannot be done in a fenced frame.
   auto* web_contents = GetWebContents();
   DownloadRequestLimiter::TabDownloadState* tab_download_state =
-      g_browser_process->download_request_limiter()->GetDownloadState(
-          web_contents, true);
+      g_browser_process->download_request_limiter()->GetOrCreateDownloadState(
+          web_contents);
   ASSERT_TRUE(tab_download_state);
   tab_download_state->SetDownloadStatusAndNotify(
       url::Origin::Create(kInitialUrl),
@@ -1196,7 +1196,7 @@ IN_PROC_BROWSER_TEST_F(FencedFrameDownloadTest,
   // in the test DownloadRequestLimiterTest.ResetOnNavigation).
   ASSERT_EQ(tab_download_state,
             g_browser_process->download_request_limiter()->GetDownloadState(
-                web_contents, false));
+                web_contents));
   ASSERT_EQ(tab_download_state->download_status(),
             DownloadRequestLimiter::PROMPT_BEFORE_DOWNLOAD);
 
@@ -4160,17 +4160,7 @@ IN_PROC_BROWSER_TEST_F(DownloadTest, DownloadTest_PauseResumeCancel) {
 // Contents/Info.plist file in cocoa apps. browser_tests cannot test
 // quarantining files on Mac because it is not a cocoa app.
 // TODO(benjhayden) test the equivalents on other platforms.
-
-#if BUILDFLAG(IS_LINUX) && defined(ARCH_CPU_ARM_FAMILY)
-// Timing out on ARM linux: http://crbug.com/238459
-#define MAYBE_DownloadTest_PercentComplete DISABLED_DownloadTest_PercentComplete
-#elif BUILDFLAG(IS_WIN) && defined(ADDRESS_SANITIZER)
-// Stack overflow on Win/ASan: http://crbug.com/367746304
-#define MAYBE_DownloadTest_PercentComplete DISABLED_DownloadTest_PercentComplete
-#else
-#define MAYBE_DownloadTest_PercentComplete DownloadTest_PercentComplete
-#endif
-IN_PROC_BROWSER_TEST_F(DownloadTest, MAYBE_DownloadTest_PercentComplete) {
+IN_PROC_BROWSER_TEST_F(DownloadTest, DownloadTest_PercentComplete) {
   // Write a huge file. Make sure the test harness can supply "Content-Length"
   // header to indicate the file size, or the download will not have valid
   // percentage progression.
@@ -4607,6 +4597,8 @@ class InProgressDownloadTest : public DownloadTest {
             base::NullCallback());
   }
 
+  void TearDownOnMainThread() override { set_in_progress_manager(nullptr); }
+
   download::InProgressDownloadManager* in_progress_manager() {
     return in_progress_manager_;
   }
@@ -4618,8 +4610,7 @@ class InProgressDownloadTest : public DownloadTest {
 
  private:
   base::test::ScopedFeatureList feature_list_;
-  raw_ptr<download::InProgressDownloadManager, DanglingUntriaged>
-      in_progress_manager_ = nullptr;
+  raw_ptr<download::InProgressDownloadManager> in_progress_manager_ = nullptr;
 };
 
 // Check that if a download exists in both in-progress and history DB,

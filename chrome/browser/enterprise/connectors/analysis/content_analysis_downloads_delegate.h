@@ -56,6 +56,9 @@ class ContentAnalysisDownloadsDelegate
   // download::DownloadItem::Observer:
   void OnDownloadDestroyed(download::DownloadItem* download) override;
 
+  // Returns the file name of the content, if it exists.
+  std::optional<std::u16string> GetFilename() const override;
+
  private:
   // Resets |open_file_callback_| and |discard_file_callback_|, ensuring actions
   // can't be attempted on a file that has already been opened or discarded

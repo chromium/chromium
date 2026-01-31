@@ -29,13 +29,13 @@ std::optional<gfx::Size> ParsePaperSizeDefault(const PrefService& prefs) {
   if (!prefs.HasPrefPath(prefs::kPrintingPaperSizeDefault))
     return std::nullopt;
 
-  const base::Value::Dict& paper_size_dict =
+  const base::DictValue& paper_size_dict =
       prefs.GetDict(prefs::kPrintingPaperSizeDefault);
 
   if (paper_size_dict.empty())
     return std::nullopt;
 
-  const base::Value::Dict* custom_size_dict =
+  const base::DictValue* custom_size_dict =
       paper_size_dict.FindDict(kPaperSizeCustomSize);
   if (custom_size_dict) {
     return gfx::Size(*custom_size_dict->FindInt(kPaperSizeWidth),

@@ -145,7 +145,7 @@ void WebNNTensorImpl::ImportTensor(const gpu::SyncToken& fence) {
               return;
             }
 
-            if (!self->ImportTensorOnMainThread()) {
+            if (!self->ImportTensorInternal()) {
               LOG(ERROR)
                   << "[WebNN] Failed to import tensor from shared image.";
               std::move(bad_message_cb).Run(kBadMessageInvalidTensor);
@@ -189,7 +189,7 @@ void WebNNTensorImpl::OnDisconnect() {
   context_->RemoveWebNNTensorImpl(handle());
 }
 
-bool WebNNTensorImpl::ImportTensorOnMainThread() {
+bool WebNNTensorImpl::ImportTensorInternal() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(gpu_sequence_checker_);
 
   if (!representation_) {
@@ -197,33 +197,39 @@ bool WebNNTensorImpl::ImportTensorOnMainThread() {
     return false;
   }
 
+  auto begin_access = [](gpu::WebNNTensorRepresentation* representation,
+                         scoped_refptr<base::SequencedTaskRunner> task_runner) {
+    return ScopedAccessPtr(representation->BeginScopedAccess().release(),
+                           OnTaskRunnerDeleter(std::move(task_runner)));
+  };
+
   ScopedAccessPtr access(nullptr, OnTaskRunnerDeleter(nullptr));
 
-  // Shared image access must be acquired on the main thread. If WebNN runs on
-  // its own thread, a task is posted to the main thread and waits for
-  // completion. Otherwise, if WebNN is already running on the main thread,
-  // access begins immediately.
-  RunOrPostTaskAndWaitOnSequence(
-      context_->main_task_runner(),
-      base::BindOnce(
-          [](gpu::WebNNTensorRepresentation* representation,
-             scoped_refptr<base::SequencedTaskRunner> main_task_runner,
-             ScopedAccessPtr* out_result) {
-            CHECK(representation);
-            auto access = representation->BeginScopedAccess();
-            if (!access) {
-              return;
-            }
-            // Tensor will own the access.
-            *out_result = ScopedAccessPtr(
-                access.release(),
-                OnTaskRunnerDeleter(std::move(main_task_runner)));
-          },
-          // Safe to use base::Unretained because we must run or wait for the
-          // post task to complete and `this` tensor cannot destruct while the
-          // task is running.
-          base::Unretained(representation_.get()), context_->main_task_runner(),
-          &access));
+  // Shared image is thread safe, access the representation on the sequence
+  // owning the tensor.
+  if (representation_->is_thread_safe()) {
+    access = begin_access(representation_.get(), owning_task_runner());
+  } else {
+    // Shared image access must be acquired on the main thread. If WebNN runs on
+    // its own thread, a task is posted to the main thread and waits for
+    // completion. Otherwise, if WebNN is already running on the main thread,
+    // access begins immediately.
+    RunOrPostTaskAndWaitOnSequence(
+        context_->main_task_runner(),
+        base::BindOnce(
+            [](gpu::WebNNTensorRepresentation* representation,
+               scoped_refptr<base::SequencedTaskRunner> task_runner,
+               decltype(begin_access) begin_access_cb,
+               ScopedAccessPtr* out_result) {
+              *out_result =
+                  begin_access_cb(representation, std::move(task_runner));
+            },
+            // Safe to use base::Unretained because we must run or wait for the
+            // post task to complete and `this` tensor cannot destruct while the
+            // task is running.
+            base::Unretained(representation_.get()),
+            context_->main_task_runner(), begin_access, &access));
+  }
 
   // Nothing to import if access failed.
   if (!access) {

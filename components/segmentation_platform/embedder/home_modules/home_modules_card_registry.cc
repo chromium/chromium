@@ -9,10 +9,11 @@
 
 #include "components/segmentation_platform/embedder/home_modules/home_modules_card_registry.h"
 
+#include <string>
 #include <string_view>
 
-#include "base/containers/contains.h"
 #include "base/metrics/field_trial_params.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_split.h"
 #include "components/commerce/core/commerce_feature_list.h"
 #include "components/segmentation_platform/embedder/home_modules/auxiliary_search_promo.h"
@@ -160,6 +161,13 @@ void AddCardForTip(TipIdentifier tip,
     }
   }
 }
+
+// Returns the default sequence of tips variations for iOS.
+std::string GetDefaultTipsExperimentTrain() {
+  return base::StrCat({kLensEphemeralModuleSearchVariation, ",",
+                       kEnhancedSafeBrowsingEphemeralModule});
+}
+
 #endif
 
 }  // namespace
@@ -444,45 +452,41 @@ void HomeModulesCardRegistry::CreateAllCards() {
   int default_browser_promo_count = profile_prefs_->GetInteger(
       kDefaultBrowserPromoEphemeralModuleImpressionCounterPref);
 
-  if (base::FeatureList::IsEnabled(
-          features::kSegmentationPlatformTipsEphemeralCard)) {
-    std::optional<CardSelectionInfo::ShowResult> forced_result =
-        GetForcedEphemeralModuleShowResult();
+  std::optional<CardSelectionInfo::ShowResult> forced_result =
+      GetForcedEphemeralModuleShowResult();
 
-    // Determine the forced card identifier and label, if any.
-    TipIdentifier forced_identifier = TipIdentifier::kUnknown;
-    std::string_view forced_label;
+  // Determine the forced card identifier and label, if any.
+  TipIdentifier forced_identifier = TipIdentifier::kUnknown;
+  std::string_view forced_label;
 
-    if (forced_result.has_value() &&
-        forced_result.value().position == EphemeralHomeModuleRank::kTop) {
-      forced_label = forced_result.value().result_label.value();
-      forced_identifier = TipIdentifierForOutputLabel(forced_label);
+  if (forced_result.has_value() &&
+      forced_result.value().position == EphemeralHomeModuleRank::kTop) {
+    forced_label = forced_result.value().result_label.value();
+    forced_identifier = TipIdentifierForOutputLabel(forced_label);
 
-      if (forced_identifier != TipIdentifier::kUnknown) {
-        AddCardForTip(forced_identifier, all_cards_by_priority_,
-                      profile_prefs_);
-      }
+    if (forced_identifier != TipIdentifier::kUnknown) {
+      AddCardForTip(forced_identifier, all_cards_by_priority_, profile_prefs_);
+    }
+  }
+
+  // Iterate through variation labels and add unique cards.
+  for (std::string_view variation_label :
+       base::SplitString(GetDefaultTipsExperimentTrain(), ",",
+                         base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY)) {
+    TipIdentifier identifier = TipIdentifierForOutputLabel(variation_label);
+
+    // Skip adding if:
+    // 1. The identifier is unknown.
+    // 2. It matches the forced identifier.
+    // 3. Both belong to the same "family" of Lens cards.
+    if (identifier == TipIdentifier::kUnknown ||
+        identifier == forced_identifier ||
+        (LensEphemeralModule::IsModuleLabel(variation_label) &&
+         LensEphemeralModule::IsModuleLabel(forced_label))) {
+      continue;
     }
 
-    // Iterate through variation labels and add unique cards.
-    for (std::string_view variation_label :
-         base::SplitString(features::TipsExperimentTrainEnabled(), ",",
-                           base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY)) {
-      TipIdentifier identifier = TipIdentifierForOutputLabel(variation_label);
-
-      // Skip adding if:
-      // 1. The identifier is unknown.
-      // 2. It matches the forced identifier.
-      // 3. Both belong to the same "family" of Lens cards.
-      if (identifier == TipIdentifier::kUnknown ||
-          identifier == forced_identifier ||
-          (LensEphemeralModule::IsModuleLabel(variation_label) &&
-           LensEphemeralModule::IsModuleLabel(forced_label))) {
-        continue;
-      }
-
-      AddCardForTip(identifier, all_cards_by_priority_, profile_prefs_);
-    }
+    AddCardForTip(identifier, all_cards_by_priority_, profile_prefs_);
   }
 
   if (SendTabNotificationPromo::IsEnabled(send_tab_promo_count)) {

@@ -237,7 +237,6 @@ source_set("unit_tests") {
     "//components/policy/core/common",
     "//components/policy/core/common:test_support",
     "//components/prefs:test_support",
-    "//content/test:test_support",
     "//crypto",
     "//crypto:test_support",
     "//net",

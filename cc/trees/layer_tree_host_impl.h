@@ -20,7 +20,6 @@
 #include "base/containers/flat_set.h"
 #include "base/containers/lru_cache.h"
 #include "base/functional/callback.h"
-#include "base/memory/memory_pressure_listener.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ptr_exclusion.h"
 #include "base/memory/shared_memory_mapping.h"
@@ -67,6 +66,7 @@
 #include "cc/trees/render_frame_metadata.h"
 #include "cc/trees/task_runner_provider.h"
 #include "cc/trees/throttle_decider.h"
+#include "cc/trees/tracked_element_bounds.h"
 #include "components/viz/common/frame_sinks/begin_frame_args.h"
 #include "components/viz/common/gpu/context_cache_controller.h"
 #include "components/viz/common/quads/compositor_render_pass.h"
@@ -142,8 +142,7 @@ class CC_EXPORT LayerTreeHostImpl : public TileManagerClient,
                                     public MutatorHostClient,
                                     public ImageAnimationController::Client,
                                     public CompositorDelegateForInput,
-                                    public EventLatencyTracker,
-                                    public base::MemoryPressureListener {
+                                    public EventLatencyTracker {
  public:
   // A struct of data for a single UIResource, including the backing
   // pixels, and metadata about it.
@@ -218,6 +217,7 @@ class CC_EXPORT LayerTreeHostImpl : public TileManagerClient,
   bool OnlyExpandTopControlsAtPageTop() const override;
   bool HaveRootScrollNode() const override;
   void SetNeedsCommit() override;
+  base::TimeDelta CurrentFrameInterval() const override;
 
   // ImageAnimationController::Client implementation.
   void RequestBeginFrameForAnimatedImages() override;
@@ -363,6 +363,9 @@ class CC_EXPORT LayerTreeHostImpl : public TileManagerClient,
   void SetPrefersReducedMotion(bool prefers_reduced_motion);
 
   void SetMayThrottleIfUndrawnFrames(bool may_throttle_if_undrawn_frames);
+  bool may_throttle_if_undrawn_frames() const {
+    return may_throttle_if_undrawn_frames_;
+  }
 
   // Analogous to a commit, this function is used to create a sync tree and
   // add impl-side invalidations to it.
@@ -749,6 +752,7 @@ class CC_EXPORT LayerTreeHostImpl : public TileManagerClient,
   void ScheduleMicroBenchmark(std::unique_ptr<MicroBenchmarkImpl> benchmark);
 
   viz::RegionCaptureBounds CollectRegionCaptureBounds();
+  TrackedElementBounds CollectTrackedElementBounds();
 
   viz::CompositorFrameMetadata MakeCompositorFrameMetadata();
   RenderFrameMetadata MakeRenderFrameMetadata(FrameData* frame);
@@ -1048,8 +1052,6 @@ class CC_EXPORT LayerTreeHostImpl : public TileManagerClient,
   // active tree.
   void ActivateStateForImages();
 
-  void OnMemoryPressure(base::MemoryPressureLevel level) override;
-
   void AllocateLocalSurfaceId();
 
   // Log the AverageLag events from the frame identified by |frame_token| and
@@ -1325,9 +1327,6 @@ class CC_EXPORT LayerTreeHostImpl : public TileManagerClient,
   // once this value is updated, it will never return to |kNull|.
   viz::VerticalScrollDirection last_vertical_scroll_direction_ =
       viz::VerticalScrollDirection::kNull;
-
-  std::unique_ptr<base::AsyncMemoryPressureListenerRegistration>
-      memory_pressure_listener_registration_;
 
   PresentationTimeCallbackBuffer presentation_time_callbacks_;
 

@@ -144,8 +144,7 @@ class FuchsiaVideoDecoder::OutputMailbox {
   OutputMailbox& operator=(const OutputMailbox&) = delete;
 
   ~OutputMailbox() {
-    raster_context_provider_->SharedImageInterface()->DestroySharedImage(
-        release_sync_token_, std::move(shared_image_));
+    shared_image_->UpdateDestructionSyncToken(release_sync_token_);
   }
 
   const gpu::Mailbox& mailbox() { return shared_image_->mailbox(); }

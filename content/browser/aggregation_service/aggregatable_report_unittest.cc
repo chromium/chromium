@@ -614,7 +614,7 @@ TEST_F(AggregatableReportTest,
       /*report_id=*/
       base::Uuid::ParseLowercase("21abd97f-73e8-4b88-9389-a9fee6abda5e"),
       url::Origin::Create(GURL("https://reporting.example")),
-      AggregatableReportSharedInfo::DebugMode::kDisabled, base::Value::Dict(),
+      AggregatableReportSharedInfo::DebugMode::kDisabled, base::DictValue(),
       /*api_version=*/"1.0",
       /*api_identifier=*/"example-api");
 
@@ -637,7 +637,7 @@ TEST_F(AggregatableReportTest,
       /*report_id=*/
       base::Uuid::ParseLowercase("21abd97f-73e8-4b88-9389-a9fee6abda5e"),
       url::Origin::Create(GURL("https://reporting.example")),
-      AggregatableReportSharedInfo::DebugMode::kEnabled, base::Value::Dict(),
+      AggregatableReportSharedInfo::DebugMode::kEnabled, base::DictValue(),
       /*api_version=*/"1.0",
       /*api_identifier=*/"example-api");
 
@@ -655,7 +655,7 @@ TEST_F(AggregatableReportTest,
 }
 
 TEST_F(AggregatableReportTest, SharedInfoAdditionalFields) {
-  base::Value::Dict additional_fields;
+  base::DictValue additional_fields;
   additional_fields.Set("foo", "1");
   additional_fields.Set("bar", "2");
   additional_fields.Set("baz", "3");
@@ -1108,7 +1108,7 @@ TEST(AggregatableReportProtoMigrationTest,
               /*reporting_origin=*/
               url::Origin::Create(GURL("https://example.com")),
               AggregatableReportSharedInfo::DebugMode::kDisabled,
-              /*additional_fields=*/base::Value::Dict(),
+              /*additional_fields=*/base::DictValue(),
               /*api_version=*/"example-version",
               /*api_identifier=*/"example-api"),
           /*delay_type=*/std::nullopt,
@@ -1155,7 +1155,7 @@ TEST(AggregatableReportProtoMigrationTest, NegativeDebugKey_ParsesCorrectly) {
               /*reporting_origin=*/
               url::Origin::Create(GURL("https://example.com")),
               AggregatableReportSharedInfo::DebugMode::kEnabled,
-              /*additional_fields=*/base::Value::Dict(),
+              /*additional_fields=*/base::DictValue(),
               /*api_version=*/"example-version",
               /*api_identifier=*/"example-api"),
           /*delay_type=*/std::nullopt,
@@ -1203,7 +1203,7 @@ TEST(
               /*reporting_origin=*/
               url::Origin::Create(GURL("https://example.com")),
               AggregatableReportSharedInfo::DebugMode::kDisabled,
-              /*additional_fields=*/base::Value::Dict(),
+              /*additional_fields=*/base::DictValue(),
               /*api_version=*/"example-version",
               /*api_identifier=*/"example-api"),
           /*delay_type=*/std::nullopt,
@@ -1269,7 +1269,7 @@ TEST_F(AggregatableReportTest, AggregationCoordinator_ProcessingUrlSet) {
                 base::Uuid::GenerateRandomV4(),
                 url::Origin::Create(GURL("https://reporting.example")),
                 AggregatableReportSharedInfo::DebugMode::kDisabled,
-                /*additional_fields=*/base::Value::Dict(),
+                /*additional_fields=*/base::DictValue(),
                 /*api_version=*/"",
                 /*api_identifier=*/"example-api"),
             AggregatableReportRequest::DelayType::Unscheduled,

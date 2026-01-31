@@ -70,6 +70,7 @@ source_set("impl") {
     "//chrome/browser/ui:browser_navigator_params_headers",
     "//chrome/browser/ui:ui_features",
     "//chrome/browser/ui/browser_window",
+    "//chrome/browser/ui/dialogs",
     "//chrome/browser/ui/tabs:tab_group",
     "//chrome/browser/ui/tabs:tab_strip",
     "//chrome/browser/ui/tabs/saved_tab_groups",

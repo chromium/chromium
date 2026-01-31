@@ -39,7 +39,7 @@ const char kProductId[] = "product_id";
 const char kUsbProtocol[] = "usb_protocol";
 
 std::optional<ManagedPrinterConfiguration::PpdResource> PpdResourceFromDict(
-    const base::Value::Dict& ppd_resource) {
+    const base::DictValue& ppd_resource) {
   std::optional<bool> autoconf = ppd_resource.FindBool(kAutoconf);
   const std::string* effective_model = ppd_resource.FindString(kEffectiveModel);
   const std::string* user_supplied_ppd_uri =
@@ -129,7 +129,7 @@ std::optional<Printer::UsbDeviceId> UsbDeviceIdFromInts(int vendor_id,
 }
 
 std::optional<ManagedPrinterConfiguration::UsbDeviceId>
-UsbDeviceIdProtoFromDict(const base::Value::Dict& dict) {
+UsbDeviceIdProtoFromDict(const base::DictValue& dict) {
   std::optional<int> vendor_id = dict.FindInt(kVendorId);
   std::optional<int> product_id = dict.FindInt(kProductId);
   std::optional<int> usb_protocol = dict.FindInt(kUsbProtocol);
@@ -175,15 +175,14 @@ UsbDeviceIdProtoFromDict(const base::Value::Dict& dict) {
 }  // namespace
 
 std::optional<ManagedPrinterConfiguration> ManagedPrinterConfigFromDict(
-    const base::Value::Dict& config) {
+    const base::DictValue& config) {
   const std::string* guid = config.FindString(kGuid);
   const std::string* display_name = config.FindString(kDisplayName);
   const std::string* description = config.FindString(kDescription);
   const std::string* uri = config.FindString(kUri);
-  const base::Value::Dict* usb_device_id_dict = config.FindDict(kUsbDeviceId);
-  const base::Value::Dict* ppd_resource = config.FindDict(kPpdResource);
-  const base::Value::Dict* print_job_options =
-      config.FindDict(kPrintJobOptions);
+  const base::DictValue* usb_device_id_dict = config.FindDict(kUsbDeviceId);
+  const base::DictValue* ppd_resource = config.FindDict(kPpdResource);
+  const base::DictValue* print_job_options = config.FindDict(kPrintJobOptions);
 
   ManagedPrinterConfiguration result;
   if (guid) {

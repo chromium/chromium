@@ -9,6 +9,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/types/expected.h"
 #include "components/keyed_service/core/keyed_service.h"
+#include "components/one_time_tokens/core/browser/gmail_otp_backend.h"
 #include "components/one_time_tokens/core/browser/one_time_token.h"
 #include "components/one_time_tokens/core/browser/one_time_token_cache.h"
 #include "components/one_time_tokens/core/browser/one_time_token_retrieval_error.h"
@@ -32,8 +33,11 @@ inline constexpr base::TimeDelta kCacheDurationForOldTokens = base::Minutes(3);
 class OneTimeTokenServiceImpl : public OneTimeTokenService,
                                 public KeyedService {
  public:
-  // If `sms_otp_backend` is null, this class does not do any subscriptions.
-  explicit OneTimeTokenServiceImpl(SmsOtpBackend* sms_otp_backend);
+  // If `sms_otp_backend` is null, this class does not do any SMS-based
+  // subscriptions. If `gmail_otp_backend` is null, this class does not do any
+  // Gmail-based subscriptions.
+  OneTimeTokenServiceImpl(SmsOtpBackend* sms_otp_backend,
+                          GmailOtpBackend* gmail_otp_backend);
   OneTimeTokenServiceImpl(const OneTimeTokenServiceImpl&) = delete;
   OneTimeTokenServiceImpl& operator=(const OneTimeTokenServiceImpl&) = delete;
   ~OneTimeTokenServiceImpl() override;
@@ -50,6 +54,9 @@ class OneTimeTokenServiceImpl : public OneTimeTokenService,
   void RetrieveSmsOtpIfNeeded();
   void OnResponseFromSmsOtpBackend(
       base::expected<OneTimeToken, OneTimeTokenRetrievalError> reply);
+  void RetrieveGmailOtpIfNeeded();
+  void OnResponseFromGmailOtpBackend(
+      base::expected<OneTimeToken, OneTimeTokenRetrievalError> reply);
 
   // Handles subscriptions to the `OneTimeTokenService`.
   ExpiringSubscriptionManager<CallbackSignature> subscription_manager_;
@@ -59,6 +66,14 @@ class OneTimeTokenServiceImpl : public OneTimeTokenService,
     bool has_pending_request = false;
     raw_ptr<SmsOtpBackend> backend;
   } sms_;
+
+  // Handles requests of the `OneTimeTokenService` to the `GmailOtpBackend`.
+  struct {
+    bool has_pending_request = false;
+    raw_ptr<GmailOtpBackend> backend;
+  } gmail_;
+
+  ExpiringSubscription gmail_subscription_;
 
   OneTimeTokenCache cache_;
 

@@ -38,6 +38,7 @@
 #include "components/keyed_service/core/keyed_service.h"
 #include "content/public/common/content_features.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/browser_test_utils.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/skia/include/core/SkBitmap.h"
@@ -224,7 +225,8 @@ IN_PROC_BROWSER_TEST_F(ManifestSilentUpdateCommandBrowserTest,
   // TODO(crbug.com/442643377): Delete this wait after the update runs for every
   // navigation.
   provider().command_manager().AwaitAllCommandsCompleteForTesting();
-  EXPECT_TRUE(provider().registrar_unsafe().IsInRegistrar(app_id));
+  EXPECT_TRUE(
+      provider().registrar_unsafe().GetInstallState(app_id).has_value());
   EXPECT_TRUE(gfx::test::AreBitmapsClose(
       web_app::test::LoadTestImageFromDisk(kBlueIcon).AsBitmap(),
       GetBitmapForInstalledAppOnDisk(app_id, provider().icon_manager()),
@@ -300,7 +302,8 @@ IN_PROC_BROWSER_TEST_F(ManifestSilentUpdateCommandBrowserTest,
   // TODO(crbug.com/442643377): Delete this wait after the update runs for every
   // navigation.
   provider().command_manager().AwaitAllCommandsCompleteForTesting();
-  EXPECT_TRUE(provider().registrar_unsafe().IsInRegistrar(app_id));
+  EXPECT_TRUE(
+      provider().registrar_unsafe().GetInstallState(app_id).has_value());
   EXPECT_TRUE(gfx::test::AreBitmapsClose(
       web_app::test::LoadTestImageFromDisk(kBlueIcon).AsBitmap(),
       GetBitmapForInstalledAppOnDisk(app_id, provider().icon_manager()),
@@ -478,6 +481,68 @@ IN_PROC_BROWSER_TEST_F(ManifestSilentUpdateCommandBrowserTest,
   EXPECT_FALSE(menu_button->IsLabelPresentAndVisible());
 }
 
+IN_PROC_BROWSER_TEST_F(ManifestSilentUpdateCommandBrowserTest,
+                       UpdateFromNonInScopePage) {
+  clock_->SetNow(base::Time::Now());
+  const GURL app_url = https_server()->GetURL("/web_apps/updating/index.html");
+  const webapps::AppId app_id = InstallWebAppFromPage(browser(), app_url);
+
+  EXPECT_EQ(app_url, provider().registrar_unsafe().GetAppStartUrl(app_id));
+
+  // Navigate the normal browser to a page that is out of scope for the web app
+  // but links to the web app's manifest, specifying a different start_url.
+  const GURL update_url =
+      https_server()->GetURL("/web_apps/updating_out_of_scope_page.html");
+  const GURL new_start_url =
+      https_server()->GetURL("/web_apps/updating/new_start_url_page.html");
+  {
+    UpdateAwaiter awaiter(provider().install_manager());
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), update_url));
+    awaiter.AwaitUpdate();
+    // Wait for the command to complete so all data is saved.
+    provider().command_manager().AwaitAllCommandsCompleteForTesting();
+  }
+  EXPECT_EQ(new_start_url,
+            provider().registrar_unsafe().GetAppStartUrl(app_id));
+}
+
+IN_PROC_BROWSER_TEST_F(ManifestSilentUpdateCommandBrowserTest,
+                       UpdateFromEachManifestSeen) {
+  clock_->SetNow(base::Time::Now());
+  const GURL app_url = https_server()->GetURL("/web_apps/updating/index.html");
+  const webapps::AppId app_id =
+      InstallWebAppFromPageAndCloseAppBrowser(browser(), app_url);
+
+  EXPECT_EQ(app_url, provider().registrar_unsafe().GetAppStartUrl(app_id));
+
+  // Navigate the normal browser to a page that updates the start_url.
+  const GURL new_start_url =
+      https_server()->GetURL("/web_apps/updating/new_start_url_page.html");
+  {
+    UpdateAwaiter awaiter(provider().install_manager());
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), new_start_url));
+    awaiter.AwaitUpdate();
+    // Wait for the command to complete so all data is saved.
+    provider().command_manager().AwaitAllCommandsCompleteForTesting();
+  }
+  EXPECT_EQ(new_start_url,
+            provider().registrar_unsafe().GetAppStartUrl(app_id));
+
+  // Now, change the manifest link in that page to the old start_url manifest,
+  // and verify that the app is updated without any new navigation.
+  {
+    UpdateAwaiter awaiter(provider().install_manager());
+    EXPECT_TRUE(
+        content::ExecJs(browser()->tab_strip_model()->GetActiveWebContents(),
+                        "document.querySelector('link[rel=manifest]').href = "
+                        "'first_manifest.json'"));
+    awaiter.AwaitUpdate();
+    // Wait for the command to complete so all data is saved.
+    provider().command_manager().AwaitAllCommandsCompleteForTesting();
+  }
+  EXPECT_EQ(app_url, provider().registrar_unsafe().GetAppStartUrl(app_id));
+}
+
 // Used to verify that if the `kBypassSmallIconDiffThrottle` flag is used,
 // the throttle for limiting silent icon updates of small diffs to once per day
 // can be bypassed.
@@ -504,7 +569,8 @@ IN_PROC_BROWSER_TEST_F(ManifestSilentUpdateCommandLineTests,
   // TODO(crbug.com/442643377): Delete this wait after the update runs for every
   // navigation.
   provider().command_manager().AwaitAllCommandsCompleteForTesting();
-  EXPECT_TRUE(provider().registrar_unsafe().IsInRegistrar(app_id));
+  EXPECT_TRUE(
+      provider().registrar_unsafe().GetInstallState(app_id).has_value());
   EXPECT_TRUE(gfx::test::AreBitmapsClose(
       web_app::test::LoadTestImageFromDisk(kBlueIcon).AsBitmap(),
       GetBitmapForInstalledAppOnDisk(app_id, provider().icon_manager()),

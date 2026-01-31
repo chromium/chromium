@@ -4,9 +4,9 @@
 
 #include "chrome/browser/ui/webui/tab_search/tab_search_ui.h"
 
+#include <algorithm>
 #include <string>
 
-#include "base/containers/contains.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/run_until.h"
@@ -145,7 +145,7 @@ IN_PROC_BROWSER_TEST_F(TabSearchUIBrowserTest, DISABLED_CloseTabAction) {
     open_tab_ids.push_back(
         browser()->tab_strip_model()->GetTabAtIndex(tab_index)->GetHandle());
   }
-  ASSERT_FALSE(base::Contains(open_tab_ids, tab_id));
+  ASSERT_FALSE(std::ranges::contains(open_tab_ids, tab_id));
 }
 
 // When hosting the Tab Search UI as a browser tab, ensure that closing the tab
@@ -193,7 +193,7 @@ IN_PROC_BROWSER_TEST_F(TabSearchUIBrowserTest,
     open_tab_ids.push_back(
         tab_strip_model->GetTabAtIndex(tab_index)->GetHandle());
   }
-  ASSERT_FALSE(base::Contains(open_tab_ids, tab_id));
+  ASSERT_FALSE(std::ranges::contains(open_tab_ids, tab_id));
 }
 
 #if BUILDFLAG(ENABLE_WEBUI_GENERATE_CODE_CACHE)

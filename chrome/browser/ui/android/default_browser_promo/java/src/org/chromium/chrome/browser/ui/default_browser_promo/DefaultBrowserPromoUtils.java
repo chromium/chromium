@@ -10,8 +10,11 @@ import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.role.RoleManager;
 import android.content.Context;
+import android.content.Intent;
+import android.provider.Settings;
 
 import org.chromium.base.CommandLine;
+import org.chromium.base.IntentUtils;
 import org.chromium.base.ObserverList;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.TimeUtils;
@@ -225,6 +228,51 @@ public class DefaultBrowserPromoUtils {
         boolean isRoleAvailable = roleManager.isRoleAvailable(RoleManager.ROLE_BROWSER);
         boolean isRoleHeld = roleManager.isRoleHeld(RoleManager.ROLE_BROWSER);
         return isRoleAvailable && !isRoleHeld;
+    }
+
+    /**
+     * @return True if: 1. sDefaultBrowserPromoEntryPoint is enabled. 2. Chrome is not the default
+     *     browser. Used by surfaces such as the app menu, in which the menu item doesn't persist.
+     */
+    public boolean shouldShowAppMenuItemEntryPoint() {
+        return ChromeFeatureList.sDefaultBrowserPromoEntryPoint.isEnabled()
+                && mStateProvider.shouldShowPromo();
+    }
+
+    private void openSystemDefaultAppsSettings(Context context) {
+        Intent intent = new Intent(Settings.ACTION_MANAGE_DEFAULT_APPS_SETTINGS);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        IntentUtils.safeStartActivity(context, intent);
+    }
+
+    /**
+     * Shared logic for handling the click on the menu items (default promo entry points) in
+     * Settings & App Menu. Note that the Role Manager dialog is shown if eligible; otherwise falls
+     * back to the Android System Settings default apps page.
+     *
+     * @param activity The current activity.
+     * @param windowAndroid The WindowAndroid (required for Role Manager).
+     */
+    public void onMenuItemClick(Activity activity, @Nullable WindowAndroid windowAndroid) {
+        // Show the role manager if:
+        // a) Role manager hasn't been shown before AND
+        // b) If the device supports setting a default browser via role API AND
+        // c) Chrome is currently not a default browser
+        boolean roleManagerShownBefore = mImpressionCounter.getPromoCount() > 0;
+
+        if (!roleManagerShownBefore
+                && isRoleAvailableButNotHeld(activity)
+                && windowAndroid != null) {
+
+            mImpressionCounter.onPromoShown();
+            DefaultBrowserPromoManager manager =
+                    new DefaultBrowserPromoManager(
+                            activity, windowAndroid, mImpressionCounter, mStateProvider);
+            manager.promoByRoleManager();
+        } else {
+            // Fallback: show the default apps page in Android settings.
+            openSystemDefaultAppsSettings(activity);
+        }
     }
 
     public static void setInstanceForTesting(DefaultBrowserPromoUtils testInstance) {

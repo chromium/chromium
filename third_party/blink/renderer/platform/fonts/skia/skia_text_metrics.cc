@@ -58,13 +58,12 @@ void SkFontGetGlyphWidthForHarfBuzz(const SkFont& font,
   // Batch the call to getWidths because its function entry cost is not
   // cheap. getWidths accepts multiple glyphd ID, but not from a sparse
   // array that copy them to a regular array.
-  Vector<Glyph, 256> glyph_array;
-  glyph_array.ReserveInitialCapacity(count);
+  Vector<Glyph, 512> glyph_array(count);
   for (unsigned i = 0; i < count;
        i++, glyphs = advance_by_byte_size(glyphs, glyph_stride)) {
-    glyph_array.push_back(*glyphs);
+    glyph_array[i] = *glyphs;
   }
-  Vector<SkScalar, 256> sk_width_array(count);
+  Vector<SkScalar, 512> sk_width_array(count);
   font.getWidths(glyph_array, sk_width_array);
 
   if (font.isSubpixel()) {

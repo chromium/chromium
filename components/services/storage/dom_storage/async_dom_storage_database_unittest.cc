@@ -16,9 +16,6 @@
 #include "base/test/test_future.h"
 #include "components/services/storage/dom_storage/dom_storage_constants.h"
 #include "components/services/storage/dom_storage/dom_storage_database.h"
-#include "components/services/storage/dom_storage/leveldb/dom_storage_batch_operation_leveldb.h"
-#include "components/services/storage/dom_storage/leveldb/dom_storage_database_leveldb.h"
-#include "components/services/storage/dom_storage/leveldb/local_storage_leveldb.h"
 #include "components/services/storage/dom_storage/test_support/dom_storage_database_testing.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
@@ -88,26 +85,6 @@ TEST_F(AsyncDomStorageDatabaseTest,
   ASSERT_NO_FATAL_FAILURE(OpenAsyncDomStorageDatabaseInMemorySync(
       StorageType::kLocalStorage, &database));
 
-  // Writing empty metadata must not update the local storage LevelDB.
-  ASSERT_NO_FATAL_FAILURE(PutMetadataSync(*database, /*metadata=*/{}));
-
-  DomStorageDatabase::Metadata read_metadata;
-  ASSERT_NO_FATAL_FAILURE(ReadAllMetadataSync(*database, &read_metadata));
-  EXPECT_EQ(read_metadata.map_metadata.size(), 0u);
-  EXPECT_EQ(read_metadata.next_map_id, std::nullopt);
-
-  // Writing metadata without usage must not update the local storage LevelDB.
-  DomStorageDatabase::Metadata metadata_without_usage;
-  metadata_without_usage.map_metadata.push_back({
-      .map_locator{kLocalStorageSessionId, kSecondStorageKey},
-  });
-  ASSERT_NO_FATAL_FAILURE(
-      PutMetadataSync(*database, std::move(metadata_without_usage)));
-
-  ASSERT_NO_FATAL_FAILURE(ReadAllMetadataSync(*database, &read_metadata));
-  EXPECT_EQ(read_metadata.map_metadata.size(), 0u);
-  EXPECT_EQ(read_metadata.next_map_id, std::nullopt);
-
   // Write each map's metadata to the database.
   for (size_t i = 0; i < kExpectedMapMetadata.size(); ++i) {
     // Write the metadata for a single map.
@@ -119,6 +96,7 @@ TEST_F(AsyncDomStorageDatabaseTest,
         PutMetadataSync(*database, std::move(cloned_metadata)));
 
     // Read the metadata from the database.
+    DomStorageDatabase::Metadata read_metadata;
     ASSERT_NO_FATAL_FAILURE(ReadAllMetadataSync(*database, &read_metadata));
 
     // Read back the metadata written so far.
@@ -139,6 +117,7 @@ TEST_F(AsyncDomStorageDatabaseTest,
                                    {kFirstStorageKey, kThirdStorageKey},
                                    std::move(maps_to_delete));
 
+  DomStorageDatabase::Metadata read_metadata;
   ASSERT_NO_FATAL_FAILURE(ReadAllMetadataSync(*database, &read_metadata));
   EXPECT_EQ(read_metadata.next_map_id, std::nullopt);
 
@@ -166,12 +145,11 @@ TEST_F(AsyncDomStorageDatabaseTest, EnqueuePendingTasksWhileOpening) {
       },
   };
 
-  // Open an in-memory LevelDB.
+  // Open an in-memory database.
   base::test::TestFuture<DbStatus> open_status_future;
   std::unique_ptr<AsyncDomStorageDatabase> database =
       AsyncDomStorageDatabase::Open(
-          StorageType::kLocalStorage, /*directory=*/base::FilePath(),
-          "TestPendingTasks",
+          StorageType::kLocalStorage, /*database_path=*/base::FilePath(),
           /*memory_dump_id=*/std::nullopt, open_status_future.GetCallback());
 
   // Immediately start using the database, which will enqueue pending tasks
@@ -198,6 +176,37 @@ TEST_F(AsyncDomStorageDatabaseTest, EnqueuePendingTasksWhileOpening) {
 
   ExpectEqualsMapMetadataSpan(metadata->map_metadata, kExpectedMapMetadata);
   EXPECT_EQ(metadata->next_map_id, std::nullopt);
+}
+
+TEST_F(AsyncDomStorageDatabaseTest, MapLocatorToDebugStringWithoutSessions) {
+  DomStorageDatabase::MapLocator map_locator{"session_id1", kFirstStorageKey,
+                                             /*map_id=*/216};
+  map_locator.RemoveSession("session_id1");
+  EXPECT_EQ(map_locator.ToDebugString(),
+            "sessions_ids:, storage_key:{ origin: https://a-fake-url.test, "
+            "top-level site: https://a-fake-url.test, nonce: <null>, ancestor "
+            "chain bit: Same-Site }, map_id:216");
+}
+
+TEST_F(AsyncDomStorageDatabaseTest,
+       MapLocatorToDebugStringWithMultipleSessions) {
+  DomStorageDatabase::MapLocator map_locator{"session_id1", kFirstStorageKey,
+                                             /*map_id=*/216};
+  map_locator.AddSession("session_id2");
+  EXPECT_EQ(map_locator.ToDebugString(),
+            "sessions_ids:session_id1:session_id2, storage_key:{ origin: "
+            "https://a-fake-url.test, top-level site: https://a-fake-url.test, "
+            "nonce: <null>, ancestor chain bit: Same-Site }, "
+            "map_id:216");
+}
+
+TEST_F(AsyncDomStorageDatabaseTest, MapLocatorToDebugStringWithoutMapId) {
+  DomStorageDatabase::MapLocator map_locator{"session_id1", kFirstStorageKey};
+  EXPECT_EQ(map_locator.ToDebugString(),
+            "sessions_ids:session_id1, storage_key:{ origin: "
+            "https://a-fake-url.test, top-level site: https://a-fake-url.test, "
+            "nonce: <null>, ancestor chain bit: Same-Site }, "
+            "map_id:null");
 }
 
 }  // namespace storage

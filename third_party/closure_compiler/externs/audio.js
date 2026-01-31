@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors
+// Copyright 2026 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -144,8 +144,8 @@ chrome.audio.setProperties = function(id, properties, callback) {};
  * Gets the system-wide mute state for the specified stream type.
  * @param {!chrome.audio.StreamType} streamType Stream type for which mute state
  *     should be fetched.
- * @param {function(boolean): void} callback Callback reporting whether mute is
- *     set or not for specified stream type.
+ * @param {function(boolean): void} callback Promise that resolves with a
+ *     boolean indicating whether mute is set or not for specified stream type.
  * @see https://developer.chrome.com/extensions/audio#method-getMute
  */
 chrome.audio.getMute = function(streamType, callback) {};

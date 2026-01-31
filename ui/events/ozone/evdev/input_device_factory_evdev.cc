@@ -8,10 +8,10 @@
 #include <linux/input.h>
 #include <stddef.h>
 
+#include <algorithm>
 #include <utility>
 
 #include "base/command_line.h"
-#include "base/containers/contains.h"
 #include "base/files/scoped_file.h"
 #include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
@@ -212,7 +212,7 @@ void InputDeviceFactoryEvdev::AttachInputDevice(
         imposter_checker_->OnDeviceAdded(converters_[path].get());
     // Check for imposters on all devices that share the same physical port.
     for (const auto& it : converters_) {
-      if (base::Contains(ids_to_check, it.second->id()) &&
+      if (std::ranges::contains(ids_to_check, it.second->id()) &&
           imposter_checker_->FlagSuspectedImposter(it.second.get())) {
         UpdateDirtyFlags(it.second.get());
       }
@@ -254,7 +254,7 @@ void InputDeviceFactoryEvdev::DetachInputDevice(const base::FilePath& path) {
     // Declassify any devices as no longer imposters, if the removal of this
     // device changes their status.
     for (const auto& it : converters_) {
-      if (base::Contains(ids_to_check, it.second->id()) &&
+      if (std::ranges::contains(ids_to_check, it.second->id()) &&
           !imposter_checker_->FlagSuspectedImposter(it.second.get())) {
         UpdateDirtyFlags(it.second.get());
       }
@@ -454,7 +454,7 @@ void InputDeviceFactoryEvdev::ApplyInputDeviceSettings() {
 
     // Block modifiers on the current converter if the device id exists in
     // `input_device_settings_.blocked_modifiers_devices`
-    converter->SetBlockModifiers(base::Contains(
+    converter->SetBlockModifiers(std::ranges::contains(
         input_device_settings_.blocked_modifiers_devices, converter->id()));
 
     converter->ApplyDeviceSettings(input_device_settings_);

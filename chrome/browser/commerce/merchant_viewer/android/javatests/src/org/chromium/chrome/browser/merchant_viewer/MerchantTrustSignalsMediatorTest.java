@@ -24,7 +24,7 @@ import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.Callback;
-import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabHidingType;
@@ -44,7 +44,7 @@ public class MerchantTrustSignalsMediatorTest {
 
     @Mock private Tab mMockTab;
 
-    @Mock private ObservableSupplier<Tab> mMockTabProvider;
+    @Mock private MonotonicObservableSupplier<Tab> mMockTabProvider;
 
     @Mock private WebContents mMockWebContents;
 

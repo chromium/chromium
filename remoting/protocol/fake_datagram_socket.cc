@@ -4,16 +4,18 @@
 
 #include "remoting/protocol/fake_datagram_socket.h"
 
+#include <cstddef>
 #include <utility>
 
+#include "base/byte_size.h"
 #include "base/compiler_specific.h"
-#include "base/containers/contains.h"
 #include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/string_view_util.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/types/expected.h"
 #include "net/base/address_list.h"
 #include "net/base/io_buffer.h"
 #include "net/base/net_errors.h"
@@ -36,7 +38,7 @@ void FakeDatagramSocket::AppendInputPacket(const std::string& data) {
   // Complete pending read if any.
   if (!read_callback_.is_null()) {
     DCHECK_EQ(input_pos_, static_cast<int>(input_packets_.size()) - 1);
-    int result = CopyReadData(read_buffer_.get(), read_buffer_size_);
+    base::ByteSize result = CopyReadData(read_buffer_.get(), read_buffer_size_);
     read_buffer_ = nullptr;
 
     std::move(read_callback_).Run(result);
@@ -53,9 +55,10 @@ base::WeakPtr<FakeDatagramSocket> FakeDatagramSocket::GetWeakPtr() {
   return weak_factory_.GetWeakPtr();
 }
 
-int FakeDatagramSocket::Recv(const scoped_refptr<net::IOBuffer>& buf,
-                             int buf_len,
-                             const net::CompletionRepeatingCallback& callback) {
+base::expected<base::ByteSize, net::Error> FakeDatagramSocket::Recv(
+    const scoped_refptr<net::IOBuffer>& buf,
+    base::ByteSize buf_len,
+    P2PDatagramSocket::Callback callback) {
   EXPECT_TRUE(task_runner_->BelongsToCurrentThread());
   if (input_pos_ < static_cast<int>(input_packets_.size())) {
     return CopyReadData(buf, buf_len);
@@ -63,13 +66,14 @@ int FakeDatagramSocket::Recv(const scoped_refptr<net::IOBuffer>& buf,
     read_buffer_ = buf;
     read_buffer_size_ = buf_len;
     read_callback_ = callback;
-    return net::ERR_IO_PENDING;
+    return base::unexpected(net::ERR_IO_PENDING);
   }
 }
 
-int FakeDatagramSocket::Send(const scoped_refptr<net::IOBuffer>& buf,
-                             int buf_len,
-                             const net::CompletionRepeatingCallback& callback) {
+base::expected<base::ByteSize, net::Error> FakeDatagramSocket::Send(
+    const scoped_refptr<net::IOBuffer>& buf,
+    base::ByteSize buf_len,
+    P2PDatagramSocket::Callback callback) {
   EXPECT_TRUE(task_runner_->BelongsToCurrentThread());
   EXPECT_FALSE(send_pending_);
 
@@ -79,16 +83,15 @@ int FakeDatagramSocket::Send(const scoped_refptr<net::IOBuffer>& buf,
         FROM_HERE,
         base::BindOnce(&FakeDatagramSocket::DoAsyncSend,
                        weak_factory_.GetWeakPtr(), buf, buf_len, callback));
-    return net::ERR_IO_PENDING;
+    return base::unexpected(net::ERR_IO_PENDING);
   } else {
     return DoSend(buf, buf_len);
   }
 }
 
-void FakeDatagramSocket::DoAsyncSend(
-    const scoped_refptr<net::IOBuffer>& buf,
-    int buf_len,
-    const net::CompletionRepeatingCallback& callback) {
+void FakeDatagramSocket::DoAsyncSend(const scoped_refptr<net::IOBuffer>& buf,
+                                     base::ByteSize buf_len,
+                                     P2PDatagramSocket::Callback callback) {
   EXPECT_TRUE(task_runner_->BelongsToCurrentThread());
 
   EXPECT_TRUE(send_pending_);
@@ -96,17 +99,18 @@ void FakeDatagramSocket::DoAsyncSend(
   callback.Run(DoSend(buf, buf_len));
 }
 
-int FakeDatagramSocket::DoSend(const scoped_refptr<net::IOBuffer>& buf,
-                               int buf_len) {
+base::expected<base::ByteSize, net::Error> FakeDatagramSocket::DoSend(
+    const scoped_refptr<net::IOBuffer>& buf,
+    base::ByteSize buf_len) {
   EXPECT_TRUE(task_runner_->BelongsToCurrentThread());
 
   if (next_send_error_ != net::OK) {
-    int r = next_send_error_;
+    net::Error r = next_send_error_;
     next_send_error_ = net::OK;
-    return r;
+    return base::unexpected(r);
   }
 
-  auto packet = buf->first(base::checked_cast<size_t>(buf_len));
+  auto packet = buf->first(buf_len.InBytes());
   written_packets_.emplace_back(base::as_string_view(packet));
 
   if (peer_socket_.get()) {
@@ -119,14 +123,15 @@ int FakeDatagramSocket::DoSend(const scoped_refptr<net::IOBuffer>& buf,
   return buf_len;
 }
 
-int FakeDatagramSocket::CopyReadData(const scoped_refptr<net::IOBuffer>& buf,
-                                     int buf_len) {
-  const size_t read_size = std::min(base::checked_cast<size_t>(buf_len),
-                                    input_packets_[input_pos_].size());
+base::ByteSize FakeDatagramSocket::CopyReadData(
+    const scoped_refptr<net::IOBuffer>& buf,
+    base::ByteSize buf_len) {
+  size_t read_size =
+      std::min<size_t>(buf_len.InBytes(), input_packets_[input_pos_].size());
   buf->span().copy_prefix_from(
       base::as_byte_span(input_packets_[input_pos_]).first(read_size));
   ++input_pos_;
-  return read_size;
+  return base::ByteSize(read_size);
 }
 
 FakeDatagramChannelFactory::FakeDatagramChannelFactory()
@@ -185,7 +190,7 @@ void FakeDatagramChannelFactory::NotifyChannelCreated(
     std::unique_ptr<FakeDatagramSocket> owned_socket,
     const std::string& name,
     ChannelCreatedCallback callback) {
-  if (base::Contains(channels_, name)) {
+  if (channels_.contains(name)) {
     std::move(callback).Run(std::move(owned_socket));
   }
 }

@@ -69,11 +69,11 @@ class NetworkConnectImpl : public NetworkConnect {
   void ShowCarrierUnlockNotification() override;
   void ShowPortalSignin(const std::string& network_id, Source source) override;
   void ConfigureNetworkIdAndConnect(const std::string& network_id,
-                                    const base::Value::Dict& shill_properties,
+                                    const base::DictValue& shill_properties,
                                     bool shared) override;
-  void CreateConfigurationAndConnect(base::Value::Dict shill_properties,
+  void CreateConfigurationAndConnect(base::DictValue shill_properties,
                                      bool shared) override;
-  void CreateConfiguration(base::Value::Dict shill_properties,
+  void CreateConfiguration(base::DictValue shill_properties,
                            bool shared) override;
 
  private:
@@ -89,19 +89,19 @@ class NetworkConnectImpl : public NetworkConnect {
   void OnConfigureSucceeded(bool connect_on_configure,
                             const std::string& service_path,
                             const std::string& network_id);
-  void CallCreateConfiguration(base::Value::Dict properties,
+  void CallCreateConfiguration(base::DictValue properties,
                                bool shared,
                                bool connect_on_configure);
   void SetPropertiesFailed(const std::string& desc,
                            const std::string& network_id,
                            const std::string& config_error_name);
-  void SetPropertiesToClear(base::Value::Dict* properties_to_set,
+  void SetPropertiesToClear(base::DictValue* properties_to_set,
                             std::vector<std::string>* properties_to_clear);
   void ClearPropertiesAndConnect(
       const std::string& network_id,
       const std::vector<std::string>& properties_to_clear);
   void ConfigureSetProfileSucceeded(const std::string& network_id,
-                                    base::Value::Dict properties_to_set);
+                                    base::DictValue properties_to_set);
 
   raw_ptr<Delegate> delegate_;
   base::WeakPtrFactory<NetworkConnectImpl> weak_factory_{this};
@@ -271,7 +271,7 @@ void NetworkConnectImpl::OnConfigureSucceeded(bool connect_on_configure,
 }
 
 void NetworkConnectImpl::CallCreateConfiguration(
-    base::Value::Dict shill_properties,
+    base::DictValue shill_properties,
     bool shared,
     bool connect_on_configure) {
   std::string profile_path;
@@ -302,7 +302,7 @@ void NetworkConnectImpl::SetPropertiesFailed(
 }
 
 void NetworkConnectImpl::SetPropertiesToClear(
-    base::Value::Dict* properties_to_set,
+    base::DictValue* properties_to_set,
     std::vector<std::string>* properties_to_clear) {
   // Move empty string properties to properties_to_clear.
   for (auto iter : *properties_to_set) {
@@ -342,7 +342,7 @@ void NetworkConnectImpl::ClearPropertiesAndConnect(
 
 void NetworkConnectImpl::ConfigureSetProfileSucceeded(
     const std::string& network_id,
-    base::Value::Dict properties_to_set) {
+    base::DictValue properties_to_set) {
   std::vector<std::string> properties_to_clear;
   SetPropertiesToClear(&properties_to_set, &properties_to_clear);
   const NetworkState* network = GetNetworkStateFromId(network_id);
@@ -450,12 +450,12 @@ void NetworkConnectImpl::ShowPortalSignin(const std::string& network_id,
 
 void NetworkConnectImpl::ConfigureNetworkIdAndConnect(
     const std::string& network_id,
-    const base::Value::Dict& properties,
+    const base::DictValue& properties,
     bool shared) {
   NET_LOG(USER) << "ConfigureNetworkIdAndConnect: "
                 << NetworkGuidId(network_id);
 
-  base::Value::Dict properties_to_set = properties.Clone();
+  base::DictValue properties_to_set = properties.Clone();
 
   std::string profile_path;
   if (!GetNetworkProfilePath(shared, &profile_path)) {
@@ -480,14 +480,14 @@ void NetworkConnectImpl::ConfigureNetworkIdAndConnect(
 }
 
 void NetworkConnectImpl::CreateConfigurationAndConnect(
-    base::Value::Dict properties,
+    base::DictValue properties,
     bool shared) {
   NET_LOG(USER) << "CreateConfigurationAndConnect";
   CallCreateConfiguration(std::move(properties), shared,
                           true /* connect_on_configure */);
 }
 
-void NetworkConnectImpl::CreateConfiguration(base::Value::Dict properties,
+void NetworkConnectImpl::CreateConfiguration(base::DictValue properties,
                                              bool shared) {
   NET_LOG(USER) << "CreateConfiguration";
   CallCreateConfiguration(std::move(properties), shared,

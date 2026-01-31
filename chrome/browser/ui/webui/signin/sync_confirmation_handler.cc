@@ -19,7 +19,6 @@
 #include "chrome/browser/profiles/profile_avatar_icon_util.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/sync/sync_service_factory.h"
-#include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/signin/signin_view_controller_delegate.h"
 #include "chrome/browser/ui/webui/signin/login_ui_service_factory.h"
@@ -101,12 +100,14 @@ SyncConfirmationHandler::SyncConfirmationHandler(
       browser_(browser),
       identity_manager_(IdentityManagerFactory::GetForProfile(profile_)) {
   DCHECK(profile_);
-  BrowserList::AddObserver(this);
+  if (browser_) {
+    browser_close_subscription_ =
+        browser_->RegisterBrowserDidClose(base::BindRepeating(
+            &SyncConfirmationHandler::OnBrowserClosed, base::Unretained(this)));
+  }
 }
 
 SyncConfirmationHandler::~SyncConfirmationHandler() {
-  BrowserList::RemoveObserver(this);
-
   // Abort signin and prevent sync from starting if none of the actions on the
   // sync confirmation dialog are taken by the user.
   if (!did_user_explicitly_interact_) {
@@ -114,7 +115,7 @@ SyncConfirmationHandler::~SyncConfirmationHandler() {
   }
 }
 
-void SyncConfirmationHandler::OnBrowserRemoved(Browser* browser) {
+void SyncConfirmationHandler::OnBrowserClosed(BrowserWindowInterface* browser) {
   if (browser_ == browser) {
     browser_ = nullptr;
   }
@@ -141,15 +142,14 @@ void SyncConfirmationHandler::RegisterMessages() {
                           base::Unretained(this)));
 }
 
-void SyncConfirmationHandler::HandleConfirm(const base::Value::List& args) {
+void SyncConfirmationHandler::HandleConfirm(const base::ListValue& args) {
   CHECK_EQ(3U, args.size());
   did_user_explicitly_interact_ = true;
   RecordConsent(args[0].GetList(), args[1].GetString());
   CloseModalSigninWindow(LoginUIService::SYNC_WITH_DEFAULT_SETTINGS);
 }
 
-void SyncConfirmationHandler::HandleGoToSettings(
-    const base::Value::List& args) {
+void SyncConfirmationHandler::HandleGoToSettings(const base::ListValue& args) {
   CHECK_EQ(3U, args.size());
   DCHECK(SyncServiceFactory::IsSyncAllowed(profile_));
   did_user_explicitly_interact_ = true;
@@ -157,14 +157,14 @@ void SyncConfirmationHandler::HandleGoToSettings(
   CloseModalSigninWindow(LoginUIService::CONFIGURE_SYNC_FIRST);
 }
 
-void SyncConfirmationHandler::HandleUndo(const base::Value::List& args) {
+void SyncConfirmationHandler::HandleUndo(const base::ListValue& args) {
   CHECK_EQ(1U, args.size());
   did_user_explicitly_interact_ = true;
   CloseModalSigninWindow(LoginUIService::ABORT_SYNC);
 }
 
 void SyncConfirmationHandler::HandleAccountInfoRequest(
-    const base::Value::List& args) {
+    const base::ListValue& args) {
   DCHECK(SyncServiceFactory::IsSyncAllowed(profile_));
   AccountInfo primary_account_info = identity_manager_->FindExtendedAccountInfo(
       identity_manager_->GetPrimaryAccountInfo(ConsentLevel::kSignin));
@@ -177,7 +177,7 @@ void SyncConfirmationHandler::HandleAccountInfoRequest(
 }
 
 void SyncConfirmationHandler::RecordConsent(
-    const base::Value::List& consent_description,
+    const base::ListValue& consent_description,
     const std::string& consent_confirmation) {
   // The strings returned by the WebUI are not free-form, they must belong into
   // a pre-determined set of strings (stored in |string_to_grd_id_map_|). As
@@ -219,7 +219,7 @@ void SyncConfirmationHandler::OnAvatarChanged(const AccountInfo& info) {
   GURL picture_gurl_with_options = signin::GetAvatarImageURLWithOptions(
       picture_gurl, kProfileImageSize, /*no_silhouette=*/false);
 
-  base::Value::Dict value;
+  base::DictValue value;
   value.Set("src", picture_gurl_with_options.spec());
   value.Set("showEnterpriseBadge", info.IsManaged() == signin::Tribool::kTrue);
   FireWebUIListener("account-info-changed", value);
@@ -347,7 +347,7 @@ void SyncConfirmationHandler::CloseModalSigninWindow(
 }
 
 void SyncConfirmationHandler::HandleInitializedWithSize(
-    const base::Value::List& args) {
+    const base::ListValue& args) {
   AccountInfo primary_account_info = identity_manager_->FindExtendedAccountInfo(
       identity_manager_->GetPrimaryAccountInfo(ConsentLevel::kSignin));
   if (primary_account_info.IsEmpty()) {

@@ -119,7 +119,7 @@ void SyncFileSystemRequestFileSystemFunction::DidOpenFileSystem(
     return;
   }
 
-  base::Value::Dict dict;
+  base::DictValue dict;
   dict.Set("name", file_system_name);
   dict.Set("root", ::sync_file_system::GetSyncableFileSystemRootURI(
                        root_url.origin().GetURL())

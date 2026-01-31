@@ -14,11 +14,11 @@ struct AuctionConfig;
 struct InterestGroup;
 
 // Serializes the configuration in a manner suitable for sending to devtools.
-base::Value::Dict BLINK_COMMON_EXPORT
+base::DictValue BLINK_COMMON_EXPORT
 SerializeAuctionConfigForDevtools(const AuctionConfig& conf);
 
 // Serializes the interest grouo in a manner suitable for sending to devtools.
-base::Value::Dict BLINK_COMMON_EXPORT
+base::DictValue BLINK_COMMON_EXPORT
 SerializeInterestGroupForDevtools(const InterestGroup& ig);
 
 }  // namespace blink

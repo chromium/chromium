@@ -22,9 +22,11 @@ struct SameSizeAsPaintChunk {
   Member<HitTestData> hit_test_data;
   Member<RegionCaptureData> region_capture_data;
   Member<LayerSelectionData> layer_selection;
+  Member<TrackedElementData> tracked_element_data;
   gfx::Rect bounds;
   gfx::Rect drawable_bounds;
   gfx::Rect rect_known_to_be_opaque;
+  CompositorElementId canvas_subtree_id;
   uint8_t raster_effect_outset;
   uint8_t hit_test_opaqueness;
   bool b;
@@ -39,10 +41,13 @@ bool PaintChunk::EqualsForUnderInvalidationChecking(
          base::ValuesEquivalent(hit_test_data, other.hit_test_data) &&
          base::ValuesEquivalent(region_capture_data,
                                 other.region_capture_data) &&
+         base::ValuesEquivalent(tracked_element_data,
+                                other.tracked_element_data) &&
          drawable_bounds == other.drawable_bounds &&
          raster_effect_outset == other.raster_effect_outset &&
          hit_test_opaqueness == other.hit_test_opaqueness &&
-         effectively_invisible == other.effectively_invisible;
+         effectively_invisible == other.effectively_invisible &&
+         canvas_subtree_id == other.canvas_subtree_id;
   // Derived fields like rect_known_to_be_opaque are not checked because they
   // are updated when we create the next chunk or release chunks. We ensure
   // their correctness with unit tests and under-invalidation checking of
@@ -62,6 +67,9 @@ size_t PaintChunk::MemoryUsageInBytes() const {
   if (region_capture_data) {
     total_size += sizeof(*region_capture_data);
   }
+  if (tracked_element_data) {
+    total_size += sizeof(*tracked_element_data);
+  }
   if (layer_selection_data) {
     total_size += sizeof(*layer_selection_data);
   }
@@ -77,13 +85,13 @@ static String ToStringImpl(const PaintChunk& c,
                   c.is_cacheable, c.bounds.ToString().c_str(),
                   c.is_moved_from_cached_subsequence);
   if (!concise) {
-    sb.AppendFormat(
+    UNSAFE_TODO(sb.AppendFormat(
         " props=(%s) rect_known_to_be_opaque=%s hit_test_opaqueness=%s "
         "effectively_invisible=%d drawscontent=%d",
         c.properties.ToString().Utf8().c_str(),
         c.rect_known_to_be_opaque.ToString().c_str(),
         cc::HitTestOpaquenessToString(c.hit_test_opaqueness),
-        c.effectively_invisible, c.DrawsContent());
+        c.effectively_invisible, c.DrawsContent()));
     if (c.hit_test_data) {
       sb.Append(" hit_test_data=");
       sb.Append(c.hit_test_data->ToString());
@@ -91,6 +99,14 @@ static String ToStringImpl(const PaintChunk& c,
     if (c.region_capture_data) {
       sb.Append(" region_capture_data=");
       sb.Append(c.region_capture_data->ToString());
+    }
+    if (c.tracked_element_data) {
+      sb.Append(" tracked_element_data=");
+      sb.Append(c.tracked_element_data->ToString());
+    }
+    if (c.canvas_subtree_id) {
+      sb.Append(" canvas_subtree_id=");
+      sb.Append(c.canvas_subtree_id.ToString().c_str());
     }
   }
   sb.Append(')');

@@ -40,6 +40,7 @@
 #include "chrome/browser/ui/web_applications/web_app_launch_utils.h"
 #include "chrome/browser/ui/web_applications/web_app_tabbed_utils.h"
 #include "chrome/browser/web_applications/manifest_update_manager.h"
+#include "chrome/browser/web_applications/model/display_override.h"
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/web_app_command_scheduler.h"
@@ -69,6 +70,7 @@
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "ash/wm/window_pin_util.h"
+#include "chrome/browser/ash/boca/on_task/on_task_locked_controller.h"
 #endif
 
 using content::OpenURLParams;
@@ -129,7 +131,8 @@ class WebAppTabStripBrowserTest : public WebAppBrowserTestBase,
     web_app_info->title = u"Test app";
     web_app_info->background_color = kAppBackgroundColor;
     web_app_info->user_display_mode = mojom::UserDisplayMode::kStandalone;
-    web_app_info->display_override = {blink::mojom::DisplayMode::kTabbed};
+    web_app_info->display_override = {
+        web_app::DisplayOverride::Create(blink::mojom::DisplayMode::kTabbed)};
     return test::InstallWebApp(profile, std::move(web_app_info));
   }
 
@@ -1356,7 +1359,8 @@ IN_PROC_BROWSER_TEST_P(WebAppTabStripForOnTaskBrowserTest,
       embedded_test_server()->GetURL("/web_apps/tab_strip_customizations.html");
   const webapps::AppId app_id = InstallTestWebApp(start_url);
   Browser* const app_browser = FindWebAppBrowser(browser()->profile(), app_id);
-  app_browser->SetLockedForOnTask(true);
+  ash::boca::OnTaskLockedController::From(app_browser)
+      ->set_locked_for_on_task(true);
 
   const TabStripModel* const tab_strip_model = app_browser->tab_strip_model();
   ASSERT_TRUE(registrar().IsTabbedWindowModeEnabled(app_id));
@@ -1396,7 +1400,8 @@ IN_PROC_BROWSER_TEST_P(WebAppTabStripForOnTaskBrowserTest,
       embedded_test_server()->GetURL("/web_apps/tab_strip_customizations.html");
   const webapps::AppId app_id = InstallTestWebApp(start_url);
   Browser* const app_browser = FindWebAppBrowser(browser()->profile(), app_id);
-  app_browser->SetLockedForOnTask(false);
+  ash::boca::OnTaskLockedController::From(app_browser)
+      ->set_locked_for_on_task(false);
 
   const TabStripModel* const tab_strip_model = app_browser->tab_strip_model();
   ASSERT_TRUE(registrar().IsTabbedWindowModeEnabled(app_id));

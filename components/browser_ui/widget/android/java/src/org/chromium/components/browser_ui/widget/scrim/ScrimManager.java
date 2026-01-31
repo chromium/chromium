@@ -5,6 +5,7 @@
 package org.chromium.components.browser_ui.widget.scrim;
 
 import static org.chromium.build.NullUtil.assumeNonNull;
+import static org.chromium.components.browser_ui.widget.scrim.ScrimManager.ScrimClient.BOOKMARK_ACTIVITY;
 import static org.chromium.components.browser_ui.widget.scrim.ScrimManager.ScrimClient.CREATOR_COORDINATOR;
 import static org.chromium.components.browser_ui.widget.scrim.ScrimManager.ScrimClient.HISTORY_ACTIVITY;
 import static org.chromium.components.browser_ui.widget.scrim.ScrimManager.ScrimClient.NONE;
@@ -24,8 +25,10 @@ import androidx.core.util.Function;
 
 import org.chromium.base.Callback;
 import org.chromium.base.metrics.RecordHistogram;
-import org.chromium.base.supplier.ObservableSupplier;
-import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.supplier.MonotonicObservableSupplier;
+import org.chromium.base.supplier.NonNullObservableSupplier;
+import org.chromium.base.supplier.ObservableSuppliers;
+import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -61,6 +64,7 @@ public class ScrimManager {
         TABBED_ROOT_UI_COORDINATOR,
         HISTORY_ACTIVITY,
         SETTINGS_ACTIVITY,
+        BOOKMARK_ACTIVITY,
     })
     @Retention(RetentionPolicy.SOURCE)
     public @interface ScrimClient {
@@ -71,17 +75,18 @@ public class ScrimManager {
         int TABBED_ROOT_UI_COORDINATOR = 4;
         int HISTORY_ACTIVITY = 5;
         int SETTINGS_ACTIVITY = 6;
-        int COUNT = 7;
+        int BOOKMARK_ACTIVITY = 7;
+        int COUNT = 8;
     }
 
     // LINT.ThenChange(//tools/metrics/histograms/metadata/android/enums.xml:ScrimClient)
 
-    private final ObservableSupplierImpl<Boolean> mScrimVisibilitySupplier =
-            new ObservableSupplierImpl<>(false);
-    private final ObservableSupplierImpl<Integer> mStatusBarColorSupplier =
-            new ObservableSupplierImpl<>(ScrimProperties.INVALID_COLOR);
-    private final ObservableSupplierImpl<Integer> mNavigationBarColorSupplier =
-            new ObservableSupplierImpl<>(ScrimProperties.INVALID_COLOR);
+    private final SettableNonNullObservableSupplier<Boolean> mScrimVisibilitySupplier =
+            ObservableSuppliers.createNonNull(false);
+    private final SettableNonNullObservableSupplier<Integer> mStatusBarColorSupplier =
+            ObservableSuppliers.createNonNull(Color.TRANSPARENT);
+    private final SettableNonNullObservableSupplier<Integer> mNavigationBarColorSupplier =
+            ObservableSuppliers.createNonNull(Color.TRANSPARENT);
 
     private final Context mContext;
     private final ViewGroup mParent;
@@ -111,8 +116,8 @@ public class ScrimManager {
         }
         mModelToScrim.clear();
         mScrimVisibilitySupplier.set(false);
-        mStatusBarColorSupplier.set(ScrimProperties.INVALID_COLOR);
-        mNavigationBarColorSupplier.set(ScrimProperties.INVALID_COLOR);
+        mStatusBarColorSupplier.set(Color.TRANSPARENT);
+        mNavigationBarColorSupplier.set(Color.TRANSPARENT);
     }
 
     /** Temporary alternative to {@link #getScrimVisibilitySupplier()} to make migration easier. */
@@ -134,7 +139,7 @@ public class ScrimManager {
     }
 
     /** Returns observable visibility information about all scrims. */
-    public ObservableSupplier<Boolean> getScrimVisibilitySupplier() {
+    public NonNullObservableSupplier<Boolean> getScrimVisibilitySupplier() {
         return mScrimVisibilitySupplier;
     }
 
@@ -142,7 +147,7 @@ public class ScrimManager {
      * Returns observable composite color information that's the result of all scrims effecting the
      * status bar.
      */
-    public ObservableSupplier<Integer> getStatusBarColorSupplier() {
+    public MonotonicObservableSupplier<Integer> getStatusBarColorSupplier() {
         return mStatusBarColorSupplier;
     }
 
@@ -150,7 +155,7 @@ public class ScrimManager {
      * Returns observable composite color information that's the result of all scrims effecting the
      * navigation bar.
      */
-    public ObservableSupplier<Integer> getNavigationBarColorSupplier() {
+    public MonotonicObservableSupplier<Integer> getNavigationBarColorSupplier() {
         return mNavigationBarColorSupplier;
     }
 
@@ -286,7 +291,7 @@ public class ScrimManager {
 
     private void updateColorSupplier(
             Function<ScrimCoordinator, Supplier<Integer>> unwrap,
-            ObservableSupplierImpl<Integer> targetSupplier) {
+            SettableNonNullObservableSupplier<Integer> targetSupplier) {
         @ColorInt int color = Color.TRANSPARENT;
         for (ScrimCoordinator coordinator : orderedScrims()) {
             Supplier<Integer> inputSupplier = unwrap.apply(coordinator);

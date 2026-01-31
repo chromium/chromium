@@ -150,8 +150,9 @@ void ChannelPosix::Write(MessagePtr message) {
   bool write_error = false;
   {
     base::AutoLock lock(write_lock_);
-    if (reject_writes_)
+    if (reject_writes_) {
       return;
+    }
     if (outgoing_messages_.empty()) {
       if (!WriteNoLock(MessageView(std::move(message), 0))) {
         reject_writes_ = write_error = true;
@@ -181,8 +182,9 @@ bool ChannelPosix::GetReadPlatformHandles(
     const void* extra_header,
     size_t extra_header_size,
     std::vector<PlatformHandle>* handles) {
-  if (num_handles > std::numeric_limits<uint16_t>::max())
+  if (num_handles > std::numeric_limits<uint16_t>::max()) {
     return false;
+  }
 
   return GetReadPlatformHandlesForIpcz(num_handles, *handles);
 }
@@ -267,8 +269,9 @@ void ChannelPosix::ShutDownOnIOThread() {
 
 void ChannelPosix::WillDestroyCurrentMessageLoop() {
   DCHECK(io_task_runner_->RunsTasksInCurrentSequence());
-  if (self_)
+  if (self_) {
     ShutDownOnIOThread();
+  }
 }
 
 void ChannelPosix::OnFdReadable(int fd) {
@@ -288,8 +291,9 @@ void ChannelPosix::OnFdReadable(int fd) {
     std::vector<base::ScopedFD> incoming_fds;
     ssize_t read_result =
         SocketRecvmsg(socket_.get(), buffer, buffer_capacity, &incoming_fds);
-    for (auto& incoming_fd : incoming_fds)
+    for (auto& incoming_fd : incoming_fds) {
       incoming_fds_.emplace_back(std::move(incoming_fd));
+    }
 
     if (read_result > 0) {
       bytes_read = static_cast<size_t>(read_result);
@@ -316,10 +320,11 @@ void ChannelPosix::OnFdReadable(int fd) {
       base::AutoLock lock(write_lock_);
       read_watcher_.reset();
     }
-    if (validation_error)
+    if (validation_error) {
       OnError(Error::kReceivedMalformedData);
-    else
+    } else {
       OnError(Error::kDisconnected);
+    }
   }
 }
 
@@ -328,11 +333,13 @@ void ChannelPosix::OnFdWritable(int fd) {
   {
     base::AutoLock lock(write_lock_);
     pending_write_ = false;
-    if (!FlushOutgoingMessagesNoLock())
+    if (!FlushOutgoingMessagesNoLock()) {
       reject_writes_ = write_error = true;
+    }
   }
-  if (write_error)
+  if (write_error) {
     OnWriteError(Error::kDisconnected);
+  }
 }
 
 // Attempts to write a message directly to the channel. If the full message
@@ -356,8 +363,9 @@ bool ChannelPosix::WriteNoLock(MessageView message_view) {
       // a payload causes the message to be dropped.
       CHECK(num_handles_to_send && (message_view.data_num_bytes() > 0));
       std::vector<base::ScopedFD> fds(num_handles_to_send);
-      for (size_t i = 0; i < num_handles_to_send; ++i)
+      for (size_t i = 0; i < num_handles_to_send; ++i) {
         fds[i] = handles[i + handles_written].TakeHandle().TakeFD();
+      }
       // TODO: Handle lots of handles.
       result = SendmsgWithHandles(socket_.get(), &iov, 1, fds);
       if (result >= 0) {
@@ -373,13 +381,15 @@ bool ChannelPosix::WriteNoLock(MessageView message_view) {
         MessagePtr fds_message = Message::CreateMessage(
             sizeof(int) * fds.size(), 0, Message::MessageType::HANDLES_SENT);
         int* fd_data = reinterpret_cast<int*>(fds_message->mutable_payload());
-        for (size_t i = 0; i < fds.size(); ++i)
+        for (size_t i = 0; i < fds.size(); ++i) {
           fd_data[i] = fds[i].get();
+        }
         outgoing_messages_.emplace_back(std::move(fds_message), 0);
         {
           base::AutoLock l(fds_to_close_lock_);
-          for (auto& fd : fds)
+          for (auto& fd : fds) {
             fds_to_close_.emplace_back(std::move(fd));
+          }
         }
 #endif  // BUILDFLAG(IS_IOS)
         handles_written += num_handles_to_send;
@@ -443,8 +453,9 @@ bool ChannelPosix::FlushOutgoingMessagesNoLock() {
   }
 
   while (!messages.empty()) {
-    if (!WriteNoLock(std::move(messages.front())))
+    if (!WriteNoLock(std::move(messages.front()))) {
       return false;
+    }
 
     messages.pop_front();
     if (!outgoing_messages_.empty()) {
@@ -490,8 +501,6 @@ void ChannelPosix::OnWriteError(Error error) {
   OnError(error);
 }
 
-
-
 bool ChannelPosix::OnControlMessage(Message::MessageType message_type,
                                     const void* payload,
                                     size_t payload_size,
@@ -506,8 +515,9 @@ bool ChannelPosix::OnControlMessage(Message::MessageType message_type,
     }
 #if BUILDFLAG(IS_IOS)
     case Message::MessageType::HANDLES_SENT: {
-      if (payload_size == 0)
+      if (payload_size == 0) {
         break;
+      }
       MessagePtr message = Message::CreateMessage(
           payload_size, 0, Message::MessageType::HANDLES_SENT_ACK);
       memcpy(message->mutable_payload(), payload, payload_size);
@@ -517,12 +527,14 @@ bool ChannelPosix::OnControlMessage(Message::MessageType message_type,
 
     case Message::MessageType::HANDLES_SENT_ACK: {
       size_t num_fds = payload_size / sizeof(int);
-      if (num_fds == 0 || payload_size % sizeof(int) != 0)
+      if (num_fds == 0 || payload_size % sizeof(int) != 0) {
         break;
+      }
 
       const int* fds = reinterpret_cast<const int*>(payload);
-      if (!CloseHandles(fds, num_fds))
+      if (!CloseHandles(fds, num_fds)) {
         break;
+      }
       return true;
     }
 #endif
@@ -538,12 +550,14 @@ bool ChannelPosix::OnControlMessage(Message::MessageType message_type,
 // |fds| does not match a sequence of handles in |fds_to_close_|.
 bool ChannelPosix::CloseHandles(const int* fds, size_t num_fds) {
   base::AutoLock l(fds_to_close_lock_);
-  if (!num_fds)
+  if (!num_fds) {
     return false;
+  }
 
   auto start = std::ranges::find(fds_to_close_, fds[0], &base::ScopedFD::get);
-  if (start == fds_to_close_.end())
+  if (start == fds_to_close_.end()) {
     return false;
+  }
 
   auto it = start;
   size_t i = 0;
@@ -554,11 +568,13 @@ bool ChannelPosix::CloseHandles(const int* fds, size_t num_fds) {
   // message, and map that to a vector of FDs to close, to avoid the
   // need for this traversal? Id could even be the first FD in the message.
   for (; i < num_fds && it != fds_to_close_.end(); i++, ++it) {
-    if (it->get() != fds[i])
+    if (it->get() != fds[i]) {
       return false;
+    }
   }
-  if (i != num_fds)
+  if (i != num_fds) {
     return false;
+  }
 
   // Close the FDs by erase()ing their ScopedFDs.
   fds_to_close_.erase(start, it);

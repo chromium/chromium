@@ -85,7 +85,7 @@ export class AmbientThemeItemElement extends WithPersonalizationStore {
     if (this.ambientThemePreviews_ === null) {
       return '';
     }
-    return this.ambientThemePreviews_[ambientTheme]?.url || '';
+    return this.ambientThemePreviews_[ambientTheme] || '';
   }
 
   /** Invoked when item is selected. */

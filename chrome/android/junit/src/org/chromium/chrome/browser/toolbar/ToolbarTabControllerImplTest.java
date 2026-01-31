@@ -26,7 +26,7 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 
-import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.homepage.HomepageManager;
@@ -71,7 +71,11 @@ public class ToolbarTabControllerImplTest {
     @Mock private Supplier<Tab> mTabSupplier;
     @Mock private Tab mTab;
     @Mock private Tab mTab2;
-    @Mock private ObservableSupplier<BottomControlsCoordinator> mBottomControlsCoordinatorSupplier;
+
+    @Mock
+    private MonotonicObservableSupplier<BottomControlsCoordinator>
+            mBottomControlsCoordinatorSupplier;
+
     @Mock private BottomControlsCoordinator mBottomControlsCoordinator;
     @Mock private Tracker mTracker;
     @Mock private Supplier<Tracker> mTrackerSupplier;

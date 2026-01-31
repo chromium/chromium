@@ -29,7 +29,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/task/task_traits.h"
-#include "base/types/optional_ref.h"
 #include "build/build_config.h"
 #include "build/buildflag.h"
 #include "components/unexportable_keys/unexportable_key_service.h"
@@ -339,9 +338,6 @@ class NET_EXPORT URLRequestContextBuilder {
   void set_persistent_reporting_and_nel_store(
       std::unique_ptr<PersistentReportingAndNelStore>
           persistent_reporting_and_nel_store);
-
-  void set_enterprise_reporting_endpoints(
-      const base::flat_map<std::string, GURL>& enterprise_reporting_endpoints);
 #endif  // BUILDFLAG(ENABLE_REPORTING)
 
   // Override the default in-memory cookie store. If |cookie_store| is NULL,
@@ -403,6 +399,15 @@ class NET_EXPORT URLRequestContextBuilder {
   void set_has_device_bound_session_service(bool enable) {
 #if BUILDFLAG(ENABLE_DEVICE_BOUND_SESSIONS)
     has_device_bound_session_service_ = enable;
+#else
+    NOTREACHED();
+#endif  // BUILDFLAG(ENABLE_DEVICE_BOUND_SESSIONS)
+  }
+
+  void set_device_bound_sessions_restricted_sites(
+      const std::vector<SchemefulSite>& restricted_sites) {
+#if BUILDFLAG(ENABLE_DEVICE_BOUND_SESSIONS)
+    device_bound_sessions_restricted_sites_ = restricted_sites;
 #else
     NOTREACHED();
 #endif  // BUILDFLAG(ENABLE_DEVICE_BOUND_SESSIONS)
@@ -534,7 +539,6 @@ class NET_EXPORT URLRequestContextBuilder {
   std::unique_ptr<NetworkErrorLoggingService> network_error_logging_service_;
   std::unique_ptr<PersistentReportingAndNelStore>
       persistent_reporting_and_nel_store_;
-  base::flat_map<std::string, GURL> enterprise_reporting_endpoints_ = {};
 #endif  // BUILDFLAG(ENABLE_REPORTING)
   std::unique_ptr<HttpServerProperties> http_server_properties_;
   std::map<std::string, std::unique_ptr<URLRequestJobFactory::ProtocolHandler>>
@@ -542,6 +546,7 @@ class NET_EXPORT URLRequestContextBuilder {
   std::unique_ptr<net::CacheEncryptionDelegate> cache_encryption_delegate_;
 #if BUILDFLAG(ENABLE_DEVICE_BOUND_SESSIONS)
   bool has_device_bound_session_service_ = false;
+  std::vector<SchemefulSite> device_bound_sessions_restricted_sites_;
   std::unique_ptr<unexportable_keys::UnexportableKeyService>
       unexportable_key_service_;
   std::unique_ptr<device_bound_sessions::SessionService>

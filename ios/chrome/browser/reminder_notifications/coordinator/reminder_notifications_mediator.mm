@@ -55,7 +55,7 @@ const char kReminderNotificationsCreationTimeKey[] = "creation_time";
   ScopedDictPrefUpdate update(_profilePrefs, prefs::kReminderNotifications);
 
   // Create the dictionary value for this specific reminder.
-  base::Value::Dict reminderDetails;
+  base::DictValue reminderDetails;
 
   reminderDetails.Set(kReminderNotificationsTimeKey, base::TimeToValue(time));
   reminderDetails.Set(kReminderNotificationsCreationTimeKey,

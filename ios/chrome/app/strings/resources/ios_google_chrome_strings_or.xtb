@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="or">
 <translation id="1076643793026027628">Chrome ସ୍ୱତଃ YouTube ଇନକଗ୍ନିଟୋ ଲିଙ୍କଗୁଡ଼ିକୁ ଇନକଗ୍ନିଟୋରେ ଖୋଲେ।</translation>
+<translation id="1081114897601629648">ନିମ୍ନଲିଖିତ ପାସୱାର୍ଡଗୁଡ଼ିକ Google Password Managerରେ ଇମ୍ପୋର୍ଟ କରାଯାଇନାହିଁ, କାରଣ ସେଗୁଡ଼ିକ ଆବଶ୍ୟକତା ସହିତ ମେଳ ହେଉନାହିଁ।</translation>
 <translation id="1086486568852410168">Google Lens ମାଧ୍ୟମରେ ସର୍ଚ୍ଚ କରନ୍ତୁ</translation>
 <translation id="1088490543924960890">Google Password Manager ମାଧ୍ୟମରେ ପାସକୀଗୁଡ଼ିକୁସେଭ କରିବା ଆରମ୍ଭ କରନ୍ତୁ</translation>
 <translation id="1143896152279775643"><ph name="EMAIL" />ର Google ପାସୱାର୍ଡ ମ୍ୟାନେଜରରେ ଆପଣଙ୍କ ପାସୱାର୍ଡ ସେଭ ହୋଇଯିବ।</translation>
@@ -85,6 +86,9 @@
 <translation id="2767464022270041271">ସେଭ କରାଯାଇଥିବା କୌଣସି ପାସୱାର୍ଡ ନାହିଁ। ଆପଣ ଆପଣଙ୍କ ପାସୱାର୍ଡଗୁଡ଼ିକୁ ସେଭ କଲେ Google Password Manager ସେଗୁଡ଼ିକୁ ଯାଞ୍ଚ କରିପାରିବ।</translation>
 <translation id="2788811701191021538">Chromeରେ ପେମେଣ୍ଟ ପଦ୍ଧତି ସେଟିଂ ପୃଷ୍ଠା ଖୋଲେ।</translation>
 <translation id="2876628302275096482"><ph name="BEGIN_LINK" />Chrome ଆପଣଙ୍କ ଡାଟାକୁ କିପରି ପ୍ରାଇଭେଟ ରଖେ<ph name="END_LINK" /> ସେ ବିଷୟରେ ଅଧିକ ଜାଣନ୍ତୁ</translation>
+<translation id="288992067439702510">ଆପଣ Google Chromeର <ph name="LIMIT" /> ବୁକମାର୍କର ସୀମାରେ ପହଞ୍ଚିଯାଇଛନ୍ତି, ତେଣୁ ଆପଣଙ୍କର କିଛି ବୁକମାର୍କ ଏପର୍ଯ୍ୟନ୍ତ ଆପଣଙ୍କ Google ଆକାଉଣ୍ଟରେ ସେଭ ହୋଇନାହିଁ।
+
+ଆପଣ କିଛି ବୁକମାର୍କକୁ ଡିଲିଟ ନକରିବା ପର୍ଯ୍ୟନ୍ତ ଆପଣଙ୍କ ଆକାଉଣ୍ଟରେ ନୂଆ ବୁକମାର୍କଗୁଡ଼ିକୁ ସେଭ କରାଯାଇପାରିବ ନାହିଁ। ଯଦି ଆପଣ ବର୍ତ୍ତମାନ ସାଇନ ଆଉଟ କରନ୍ତି, ତେବେ ସେଭ ହୋଇନଥିବା ବୁକମାର୍କଗୁଡ଼ିକ ଡିଲିଟ ହୋଇଯିବ।</translation>
 <translation id="2922914028977213693">ଆପଣଙ୍କ iPadରେ Chromeରୁ ସବୁଠୁ ଅଧିକ ସୁବିଧା ପାଇବା ପାଇଁ ଏଠାରେ ଟାପ କରନ୍ତୁ।</translation>
 <translation id="292371311537977079">Chrome ସେଟିଂସ</translation>
 <translation id="2923827943290349720">ଆପଣ Chrome ବନ୍ଦ କରିବା ସମୟରେ ଇନକଗ୍ନିଟୋ ଟାବଗୁଡ଼ିକୁ ଲକ୍ କରନ୍ତୁ</translation>
@@ -115,6 +119,7 @@
 <translation id="3460369101684070455">ଆପଣଙ୍କ ଅନ୍ୟ ଆପ୍ସରେ ଆପଣଙ୍କର ସେଭ କରାଯାଇଥିବା ପାସୱାର୍ଡଗୁଡ଼ିକୁ ସହଜରେ ପାଇବାକୁ ଅଟୋଫିଲ ପାଇଁ Chromeକୁ ବାଛନ୍ତୁ</translation>
 <translation id="3472587960215700950">Chrome ଚିହ୍ନଟ କରାଯାଇଥିବା ଠିକଣାଗୁଡ଼ିକ ବିଷୟରେ ଆପଣଙ୍କୁ ଦିଗନିର୍ଦ୍ଦେଶ ଏବଂ ସ୍ଥାନୀୟ ସୂଚନା ଦେବା ନିମନ୍ତେ Google Maps ବ୍ୟବହାର କରେ।</translation>
 <translation id="3482807551645716768">ଆପଣଙ୍କ iPadର ହୋମ ସ୍କ୍ରିନରୁ Chromeକୁ ଶୀଘ୍ର ଆକ୍ସେସ କରନ୍ତୁ।</translation>
+<translation id="3491067552520121605">ଦେଖାଯାଇଥିବା ସାଇଟଗୁଡ଼ିକ ପାଇଁ ଆପଣଙ୍କର Google Password Managerରେ ପୂର୍ବରୁ ପାସୱାର୍ଡ କିମ୍ବା ପାସକୀଗୁଡ଼ିକ ଅଛି। Google Password Managerରେ ଥିବା ସୂଚନାକୁ ଓଭରରାଇଟ କରି ଦେଖାଯାଇଥିବା ସାଇନ-ଇନ ସୂଚନାକୁ ରଖିବା ପାଇଁ ଏକ ଆକାଉଣ୍ଟ ଚୟନ କରନ୍ତୁ।</translation>
 <translation id="3503014945441706099">ଏହି Chrome ପ୍ରୋଫାଇଲ ପାଇଁ ମଧ୍ୟ ଉନ୍ନତ ସୁରକ୍ଷିତ ବ୍ରାଉଜିଂ ପାଆନ୍ତୁ</translation>
 <translation id="3522659714780527202">ଆପଣ Chrome ବ୍ୟବହାର କରୁଥିବା ଯେ କୌଣସି ସ୍ଥାନରୁ ଆପଣଙ୍କ ଟାବଗୁଡ଼ିକ ଦେଖିବାକୁ, ସିଙ୍କ୍ ଚାଲୁ କରନ୍ତୁ</translation>
 <translation id="364480321352456989">ଆପଣଙ୍କ Chrome ପୁରୁଣା ଅଟେ।</translation>
@@ -134,6 +139,7 @@
 <translation id="4167555379306984168">Chromeରେ ନୂଆ କଣ ଅଛି ତାହା ଦେଖନ୍ତୁ</translation>
 <translation id="417201473131094001">Chrome Canaryରେ ସମର୍ଥିତ ନୁହେଁ</translation>
 <translation id="424864128008805179">Chromeରୁ ସାଇନ୍‌ ଆଉଟ୍‍ କରିବେ?</translation>
+<translation id="4409545895715116037">ନିମ୍ନଲିଖିତ ପାସକୀଗୁଡ଼ିକ Google Password Managerରେ ଇମ୍ପୋର୍ଟ କରାଯାଇନାହିଁ, କାରଣ ସେଗୁଡ଼ିକ ଆବଶ୍ୟକତାଗୁଡ଼ିକ ସହିତ ମେଳ ହେଉନାହିଁ।</translation>
 <translation id="4430797724889237570">Chromeରେ Gmail, Maps, YouTube ଏବଂ ଅନ୍ୟ ଆପ୍ସରୁ ଲିଙ୍କଗୁଡ଼ିକୁ ଖୋଲନ୍ତୁ</translation>
 <translation id="447252321002412580">Chromeର ବୈଶିଷ୍ଟ୍ୟଗୁଡ଼ିକୁ ଏବଂ କାର୍ଯ୍ୟଦକ୍ଷତାକୁ ଉନ୍ନତ କରିବାରେ ସାହାଯ୍ୟ କରେ</translation>
 <translation id="4523886039239821078">କିଛି ଏଡ୍-ଅନ୍ କାରଣରୁ Chrome କ୍ରାଶ୍ ହୋଇଯାଉଛି। ଦୟାକରି ଅନ୍‌ଇନ୍‌ଷ୍ଟଲ୍ କରନ୍ତୁ:</translation>
@@ -272,6 +278,7 @@
 <translation id="7284245284340063465">ଯଦି ଆପଣଙ୍କ ପାସଫ୍ରେଜକୁ ଆପଣ ଭୁଲି ଯାଇଛନ୍ତି କିମ୍ବା ଏହି ସେଟିଂକୁ ପରିବର୍ତ୍ତନ କରିବା ପାଇଁ ଚାହାଁନ୍ତି, ତେବେ <ph name="BEGIN_LINK" />ଆପଣଙ୍କ ଆକାଉଣ୍ଟରେ ଥିବା Chrome ଡାଟାକୁ ଡିଲିଟ କରନ୍ତୁ<ph name="END_LINK" />।</translation>
 <translation id="7296102444587051536">iOS ପାଇଁ Chrome</translation>
 <translation id="7299681342915173313">ବର୍ତ୍ତମାନ ଆପଣ ଇମେଲ, ଡକ୍ୟୁମେଣ୍ଟ ଓ ଅନ୍ୟ ଆପ୍ସରେ ଥିବା ଲିଙ୍କରେ ଯେ କୌଣସି ସମୟରେ ଟାପ କରି Chrome ବ୍ୟବହାର କରିପାରିବେ।</translation>
+<translation id="7334364820047587268">ଆପଣଙ୍କ Google Password Managerରେ ଏହି ଆକାଉଣ୍ଟଗୁଡ଼ିକ ପାଇଁ ଆପଣଙ୍କର ପୂର୍ବରୁ ପାସୱାର୍ଡଗୁଡ଼ିକ ଅଛି। ଯଦି ଆପଣ ନିମ୍ନରେ ଥିବା ପାସୱାର୍ଡଗୁଡ଼ିକ ମଧ୍ୟରୁ ଗୋଟିଏ ଇମ୍ପୋର୍ଟ କରିବାକୁ ବାଛନ୍ତି, ତେବେ ଏହା ପୂର୍ବରୁ ଥିବା ପାସୱାର୍ଡକୁ ପରିବର୍ତ୍ତନ କରିବ।</translation>
 <translation id="7344094882820374540">ବିପଦଜନକ ସାଇଟଗୁଡ଼ିକରୁ Chromeର ସବୁଠାରୁ ଶକ୍ତିଶାଳୀ ସୁରକ୍ଷା ପାଆନ୍ତୁ</translation>
 <translation id="7349129508108954623">ଚିହ୍ନଟ କରାଯାଇଥିବା ଠିକଣାଗୁଡ଼ିକ ବିଷୟରେ ଆପଣଙ୍କୁ ଦିଗନିର୍ଦ୍ଦେଶ ଏବଂ ସ୍ଥାନୀୟ ସୂଚନା ଦେବା ନିମନ୍ତେ Google Maps ବ୍ୟବହାର କରିବା ପାଇଁ Chromeକୁ ଅନୁମତି ଦିଅନ୍ତୁ।</translation>
 <translation id="7371674917547846460">ଉପଯୋଗୀ Chrome ଟିପ୍ସ ଏବଂ ଆହୁରି ଅନେକ କିଛି ବିଷୟରେ ଜାଣନ୍ତୁ।</translation>
@@ -300,11 +307,11 @@
 <translation id="7787205077729386167">iOSରେ Chrome ସେଟିଂସ ଖୋଲନ୍ତୁ, ତା'ପରେ "ଡିଫଲ୍ଟ ବ୍ରାଉଜର ଆପ"ରେ ଟାପ କରି Chromeକୁ ଚୟନ କରନ୍ତୁ।</translation>
 <translation id="778855399387580014">ଗୋଟିଏ ନୂଆ Chrome ଟାବ୍‌ରେ ଏକ ସର୍ଚ୍ଚ କରନ୍ତୁ।</translation>
 <translation id="7792140019572081272">ଫେସ ID ମାଧ୍ୟମରେ Chrome ଆପଣଙ୍କ ସମ୍ବେଦନଶୀଳ ଡାଟାକୁ ସୁରକ୍ଷିତ ରଖେ।</translation>
+<translation id="7825648984449922731">Chromeରେ Gemini ମାଧ୍ୟମରେ ଇମେଜକୁ ଏଡିଟ କରନ୍ତୁ</translation>
 <translation id="7855730255114109580">Google Chrome ଅପ୍-ଟୁ-ଡେଟ୍ ଅଛି</translation>
 <translation id="787226752901403048">ଟାବ ଗ୍ରୁପଗୁଡ଼ିକରେ ସେୟାର କରିବା ଓ ଯୋଗ ଦେବା ଏବଂ ଆଇଡିଆଗୁଡ଼ିକ ଉପରେ ଏକାଠି କାମ କରିବା ପାଇଁ Chromeରେ ସାଇନ ଇନ କରନ୍ତୁ</translation>
 <translation id="7897703007638178753">Chromeର ବର୍ତ୍ତମାନର ଟାବଗୁଡ଼ିକୁ ଦେଖନ୍ତୁ</translation>
 <translation id="7948283758957877064">Chromeରେ ନୂଆ କଣ ଅଛି</translation>
-<translation id="7996707498590516621">Chromeରେ Gemini ମାଧ୍ୟମରେ ଇମେଜ ତିଆରି କରନ୍ତୁ</translation>
 <translation id="8000174216052461231">Chrome ଟିପ: Chromeର ସବୁଠାରୁ ଶକ୍ତିଶାଳୀ ସୁରକ୍ଷା ପାଆନ୍ତୁ</translation>
 <translation id="8006014511203279255">ମେସେଜ କିମ୍ବା ଅନ୍ୟ ଆପ୍ସରେ ଥିବା ଲିଙ୍କରେ ଟାପ କରି ଆପଣ ଯେ କୌଣସି ସମୟରେ Chrome ବ୍ୟବହାର କରନ୍ତୁ।</translation>
 <translation id="8014670471808569312">Chrome ଆପଣଙ୍କ ପାସୱାର୍ଡ ସେଭ କରିବା ପାଇଁ ଦେବ।</translation>

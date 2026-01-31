@@ -84,7 +84,7 @@ class PdfInkModule {
   bool HandleInputEvent(const blink::WebInputEvent& event);
 
   // Returns whether the message was handled or not.
-  bool OnMessage(const base::Value::Dict& message);
+  bool OnMessage(const base::DictValue& message);
 
   // Informs PdfInkModule that the plugin geometry changed.
   void OnGeometryChanged();
@@ -294,6 +294,11 @@ class PdfInkModule {
   bool OnTouchEnd(const blink::WebTouchEvent& event);
   bool OnTouchMove(const blink::WebTouchEvent& event);
 
+  // Dedicated handlers for eraser tip events from stylus devices.
+  bool OnEraserTipTouchStart(const blink::WebTouchEvent& event);
+  bool OnEraserTipTouchEnd(const blink::WebTouchEvent& event);
+  bool OnEraserTipTouchMove(const blink::WebTouchEvent& event);
+
   // Helper for event handlers above that deals with potentially missing events.
   // Can only be called when is_drawing_stroke() returns true.
   void MaybeFinishStrokeForMissingMouseUpEvent();
@@ -364,14 +369,14 @@ class PdfInkModule {
   // `ink::StrokeInput::ToolType::kTouch`.
   bool ShouldIgnoreTouchInput(ink::StrokeInput::ToolType tool_type);
 
-  void HandleAnnotationRedoMessage(const base::Value::Dict& message);
-  void HandleAnnotationUndoMessage(const base::Value::Dict& message);
-  void HandleFinishTextAnnotationMessage(const base::Value::Dict& message);
-  void HandleGetAllTextAnnotationsMessage(const base::Value::Dict& message);
-  void HandleGetAnnotationBrushMessage(const base::Value::Dict& message);
-  void HandleSetAnnotationBrushMessage(const base::Value::Dict& message);
-  void HandleSetAnnotationModeMessage(const base::Value::Dict& message);
-  void HandleStartTextAnnotationMessage(const base::Value::Dict& message);
+  void HandleAnnotationRedoMessage(const base::DictValue& message);
+  void HandleAnnotationUndoMessage(const base::DictValue& message);
+  void HandleEditTextAnnotationMessage(const base::DictValue& message);
+  void HandleFinishTextAnnotationMessage(const base::DictValue& message);
+  void HandleGetAllTextAnnotationsMessage(const base::DictValue& message);
+  void HandleGetAnnotationBrushMessage(const base::DictValue& message);
+  void HandleSetAnnotationBrushMessage(const base::DictValue& message);
+  void HandleSetAnnotationModeMessage(const base::DictValue& message);
 
   bool is_drawing_stroke() const {
     return std::holds_alternative<DrawingStrokeState>(current_tool_state_);
@@ -517,6 +522,9 @@ class PdfInkModule {
   // The state of the current tool that is in use.
   std::variant<DrawingStrokeState, EraserState, TextHighlightState>
       current_tool_state_;
+
+  // Brush type to restore after eraser tip interaction ends.
+  std::optional<PdfInkBrush::Type> saved_brush_type_for_eraser_tip_;
 
   // The state of the strokes that have been completed.
   DocumentStrokesMap strokes_;

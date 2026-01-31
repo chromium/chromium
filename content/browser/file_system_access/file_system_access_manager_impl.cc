@@ -2148,8 +2148,7 @@ bool FileSystemAccessManagerImpl::IsSafePathComponent(
     // Check for both '/' and '\' as path separators, regardless of what OS
     // we're running on.
     return component16 != u"." && component16 != u".." &&
-           !base::Contains(component16, '/') &&
-           !base::Contains(component16, '\\');
+           !component16.contains('/') && !component16.contains('\\');
   }
 
   // base::i18n::IsFilenameLegal blocks names that start with '.', so strip out

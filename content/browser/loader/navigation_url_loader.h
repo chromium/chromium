@@ -48,6 +48,9 @@ class CONTENT_EXPORT NavigationURLLoader {
 
     // Creates a noop NavigationURLLoader for Prerender activation.
     kNoopForPrerender,
+
+    // Creates a noop NavigationURLLoader for initial WebUI navigation.
+    kNoopForInitialWebUI,
   };
 
   // Creates a NavigationURLLoader. The caller is responsible for ensuring that

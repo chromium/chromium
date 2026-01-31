@@ -96,7 +96,7 @@ TEST_F(TypingCommandTest,
 
   // This call shouldn't crash.
   TypingCommand::InsertText(
-      GetDocument(), " ", 0,
+      GetDocument(), " ", 0, EditCommand::PasswordEchoBehavior::kDoNotEcho,
       TypingCommand::TextCompositionType::kTextCompositionUpdate, true);
   EXPECT_EQ("<div contenteditable><h1>\xC2\xA0|</h1></div>",
             GetSelectionTextFromBody());
@@ -156,10 +156,10 @@ TEST_F(TypingCommandTest, TypedCharactersInContentEditable) {
                                .Build(),
                            SetSelectionOptions());
   TypingCommand::InsertText(
-      GetDocument(), "b", 0,
+      GetDocument(), "b", 0, EditCommand::PasswordEchoBehavior::kDoNotEcho,
       TypingCommand::TextCompositionType::kTextCompositionUpdate, true);
   TypingCommand::InsertText(
-      GetDocument(), "c", 0,
+      GetDocument(), "c", 0, EditCommand::PasswordEchoBehavior::kDoNotEcho,
       TypingCommand::TextCompositionType::kTextCompositionUpdate, true);
   EXPECT_EQ("<table contenteditable>abc|</table>", GetSelectionTextFromBody());
   EXPECT_EQ(2u, chrome_client->didUserChangeContentEditableContentCount);
@@ -178,7 +178,7 @@ TEST_F(TypingCommandTest, FirstTypedCharactersInContentEditable) {
                            SetSelectionOptions());
   EXPECT_EQ(0u, chrome_client->didUserChangeContentEditableContentCount);
   TypingCommand::InsertText(
-      GetDocument(), "b", 0,
+      GetDocument(), "b", 0, EditCommand::PasswordEchoBehavior::kDoNotEcho,
       TypingCommand::TextCompositionType::kTextCompositionUpdate, true);
   EXPECT_EQ("<table contenteditable>ab|</table>", GetSelectionTextFromBody());
   EXPECT_EQ(1u, chrome_client->didUserChangeContentEditableContentCount);

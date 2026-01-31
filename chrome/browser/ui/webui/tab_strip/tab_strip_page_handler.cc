@@ -181,7 +181,7 @@ TabStripPageHandler::TabStripPageHandler(
           base::BindRepeating(&TabStripPageHandler::HandleThumbnailUpdate,
                               base::Unretained(this))),
       tab_before_unload_tracker_(
-          base::BindRepeating(&TabStripPageHandler::OnTabCloseCancelled,
+          base::BindRepeating(&TabStripPageHandler::HandleTabCloseCancelled,
                               base::Unretained(this))),
       context_menu_after_tap_(base::FeatureList::IsEnabled(
           features::kWebUITabStripContextMenuAfterTap)),
@@ -349,27 +349,21 @@ void TabStripPageHandler::OnTabStripModelChanged(
   }
 }
 
-void TabStripPageHandler::TabChangedAt(content::WebContents* contents,
-                                       int index,
-                                       TabChangeType change_type) {
+void TabStripPageHandler::OnTabChangedAt(tabs::TabInterface* tab,
+                                         int index,
+                                         TabChangeType change_type) {
   TRACE_EVENT0("browser", "TabStripPageHandler:TabChangedAt");
-  TabStripModel* tab_strip_model = browser_->tab_strip_model();
-  page_->TabUpdated(
-      GetTabData(contents, tab_strip_model->GetTabAtIndex(index), index));
+  page_->TabUpdated(GetTabData(tab->GetContents(), tab, index));
 }
 
-void TabStripPageHandler::TabPinnedStateChanged(TabStripModel* tab_strip_model,
-                                                content::WebContents* contents,
-                                                int index) {
-  page_->TabUpdated(
-      GetTabData(contents, tab_strip_model->GetTabAtIndex(index), index));
+void TabStripPageHandler::OnTabPinnedStateChanged(tabs::TabInterface* tab,
+                                                  int index) {
+  page_->TabUpdated(GetTabData(tab->GetContents(), tab, index));
 }
 
-void TabStripPageHandler::TabBlockedStateChanged(content::WebContents* contents,
-                                                 int index) {
-  TabStripModel* tab_strip_model = browser_->tab_strip_model();
-  page_->TabUpdated(
-      GetTabData(contents, tab_strip_model->GetTabAtIndex(index), index));
+void TabStripPageHandler::OnTabBlockedStateChanged(tabs::TabInterface* tab,
+                                                   int index) {
+  page_->TabUpdated(GetTabData(tab->GetContents(), tab, index));
 }
 
 bool TabStripPageHandler::PreHandleGestureEvent(
@@ -551,7 +545,7 @@ tab_strip::mojom::TabPtr TabStripPageHandler::GetTabData(
   tab_data->network_state = tab_renderer_data.network_state;
   tab_data->should_hide_throbber = tab_renderer_data.should_hide_throbber;
   tab_data->blocked = tab_renderer_data.blocked;
-  tab_data->crashed = tab_renderer_data.IsCrashed();
+  tab_data->crashed = tab_renderer_data.is_crashed;
   // TODO(johntlee): Add the rest of TabRendererData
 
   tab_data->alert_states =
@@ -658,10 +652,10 @@ void TabStripPageHandler::MoveGroup(const std::string& group_id_string,
           source_tab_strip_model->group_model(), group_id_string);
   TabGroup* const group =
       source_tab_strip_model->group_model()->GetTabGroup(group_id.value());
-  const gfx::Range tabs_in_group = group->ListTabs();
+  const gfx::Range tabs_in_group_indices = group->ListTabs();
 
   if (source_browser == target_browser) {
-    if (static_cast<int>(tabs_in_group.start()) == to_index) {
+    if (static_cast<int>(tabs_in_group_indices.start()) == to_index) {
       // If the group is already in place, don't move it. This may happen
       // if multiple drag events happen while the tab group is still
       // being moved.
@@ -671,11 +665,15 @@ void TabStripPageHandler::MoveGroup(const std::string& group_id_string,
     // When a group is moved, all the tabs in it need to be selected at the same
     // time. This mimics the way the native tab strip works and also allows
     // this handler to ignore the events for each individual tab moving.
-    ui::ListSelectionModel group_selection;
-    group_selection.SetSelectedIndex(tabs_in_group.start());
-    group_selection.SetSelectionFromAnchorTo(tabs_in_group.end() - 1);
-    group_selection.set_active(
-        target_browser->tab_strip_model()->selection_model().active());
+    std::vector<tabs::TabInterface*> tabs_in_group =
+        target_browser->tab_strip_model()->GetTabsAtIndices(
+            tabs_in_group_indices.ToIntVector());
+    tabs::TabStripModelSelectionState group_selection(
+        target_browser->tab_strip_model());
+    group_selection.SetSelectedTabs(
+        {tabs_in_group.begin(), tabs_in_group.end()},
+        target_browser->tab_strip_model()->selection_model().active_tab(),
+        target_browser->tab_strip_model()->selection_model().anchor_tab());
     target_browser->tab_strip_model()->SetSelectionFromModel(group_selection);
 
     target_browser->tab_strip_model()->MoveGroupTo(group_id.value(), to_index);
@@ -878,7 +876,7 @@ void TabStripPageHandler::HandleThumbnailUpdate(
   page_->TabThumbnailUpdated(tab_id, data_uri);
 }
 
-void TabStripPageHandler::OnTabCloseCancelled(content::WebContents* tab) {
+void TabStripPageHandler::HandleTabCloseCancelled(content::WebContents* tab) {
   tab_before_unload_tracker_.Unobserve(tab);
   const SessionID::id_type tab_id = extensions::ExtensionTabUtil::GetTabId(tab);
   page_->TabCloseCancelled(tab_id);

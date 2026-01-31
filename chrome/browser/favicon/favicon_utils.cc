@@ -189,6 +189,7 @@ bool ShouldThemifyFavicon(GURL url) {
          url.host() != chrome::kChromeUIVersionHost &&
          url.host() != chrome::kChromeUINetExportHost &&
          url.host() != chrome::kChromeUINewTabHost &&
+         url.host() != chrome::kChromeUIContextualTasksHost &&
          url.host() != password_manager::kChromeUIPasswordManagerHost;
 }
 

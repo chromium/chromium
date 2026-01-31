@@ -25,7 +25,6 @@
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/contextual_tasks/contextual_tasks_side_panel_coordinator.h"
 #include "chrome/browser/defaults.h"
 #include "chrome/browser/extensions/extension_ui_util.h"
 #include "chrome/browser/media/router/media_router_feature.h"
@@ -98,7 +97,6 @@
 #include "chrome/grit/theme_resources.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/bookmarks/common/bookmark_pref_names.h"
-#include "components/contextual_tasks/public/features.h"
 #include "components/dom_distiller/content/browser/distillable_page_utils.h"
 #include "components/dom_distiller/content/browser/uma_helper.h"
 #include "components/dom_distiller/core/dom_distiller_features.h"
@@ -406,7 +404,8 @@ std::u16string GetOpenPWALabel(const Browser* browser) {
   return l10n_util::GetStringFUTF16(
       IDS_OPEN_IN_APP_WINDOW,
       ui::EscapeMenuLabelAmpersands(gfx::TruncateString(
-          short_name, GetLayoutConstant(APP_MENU_MAXIMUM_CHARACTER_LENGTH),
+          short_name,
+          GetLayoutConstant(LayoutConstant::kAppMenuMaximumCharacterLength),
           gfx::CHARACTER_BREAK)));
 }
 
@@ -481,7 +480,7 @@ ProfileSubMenuModel::ProfileSubMenuModel(
       app_menu_model_delegate_(delegate),
       next_other_profile_menu_id_(AppMenuModel::kMinOtherProfileCommandId) {
   const int avatar_icon_size =
-      GetLayoutConstant(APP_MENU_PROFILE_ROW_AVATAR_ICON_SIZE);
+      GetLayoutConstant(LayoutConstant::kAppMenuProfileRowAvatarIconSize);
   avatar_image_model_ = ui::ImageModel::FromVectorIcon(
       kAccountCircleChromeRefreshIcon, ui::kColorMenuIcon, avatar_icon_size);
   if (profile->IsIncognitoProfile()) {
@@ -543,7 +542,7 @@ ProfileSubMenuModel::ProfileSubMenuModel(
           menu_id,
           ui::EscapeMenuLabelAmpersands(gfx::TruncateString(
               display_name,
-              GetLayoutConstant(APP_MENU_MAXIMUM_CHARACTER_LENGTH),
+              GetLayoutConstant(LayoutConstant::kAppMenuMaximumCharacterLength),
               gfx::CHARACTER_BREAK)),
           ui::ImageModel::FromImage(profiles::GetSizedAvatarIcon(
               profile_entry->GetAvatarIcon(
@@ -679,10 +678,11 @@ bool ProfileSubMenuModel::BuildSyncSection() {
           icon = &vector_icons::kErrorOutlineIcon;
           break;
         case syncer::SyncService::UserActionableError::kBookmarksLimitExceeded:
-          // TODO(crbug.com/452968646): Adjust this with providing the concrete
-          // help center article link.
-          break;
+          // For this specific error (as opposed to all others), there is no
+          // error UI in the menu.
+          return true;
       }
+      CHECK_NE(command_id, 0);
       AddItemWithStringIdAndVectorIcon(this, command_id, button_string_id,
                                        *icon);
       return true;
@@ -1020,12 +1020,6 @@ void ToolsMenuModel::Build(Browser* browser) {
     AddItemWithStringIdAndVectorIcon(this, IDC_SHOW_CUSTOMIZE_CHROME_SIDE_PANEL,
                                      IDS_SHOW_CUSTOMIZE_CHROME_SIDE_PANEL,
                                      kEditChromeRefreshIcon);
-  }
-
-  if (base::FeatureList::IsEnabled(contextual_tasks::kContextualTasks)) {
-    AddItemWithStringIdAndVectorIcon(
-        this, IDC_SHOW_CONTEXTUAL_TASKS_SIDE_PANEL,
-        IDS_CONTEXTUAL_TASKS_CONTEXTUAL_TASKS_TITLE, kDockToRightSparkIcon);
   }
 
   AddSeparator(ui::NORMAL_SEPARATOR);
@@ -1822,8 +1816,7 @@ void AppMenuModel::LogMenuMetrics(int command_id) {
         base::UmaHistogramMediumTimes("WrenchMenu.TimeToAction.DeclutterTabs",
                                       delta);
       }
-      tabs::TabDeclutterController::EmitEntryPointHistogram(
-          tab_search::mojom::TabDeclutterEntryPoint::kAppMenu);
+
       LogMenuAction(MENU_ACTION_DECLUTTER_TABS);
       break;
     case IDC_SAFETY_HUB_MANAGE_EXTENSIONS:
@@ -1834,28 +1827,6 @@ void AppMenuModel::LogMenuMetrics(int command_id) {
       }
       LogMenuAction(MENU_ACTION_SAFETY_HUB_MANAGE_EXTENSIONS);
       break;
-    case IDC_SHOW_CONTEXTUAL_TASKS_SIDE_PANEL: {
-      if (!uma_action_recorded_) {
-        base::UmaHistogramMediumTimes(
-            "WrenchMenu.TimeToAction.ShowContextualTasksSidePanel", delta);
-      }
-      LogMenuAction(MENU_ACTION_SHOW_CONTEXTUAL_TASKS_SIDE_PANEL);
-      const auto* coordinator =
-          contextual_tasks::ContextualTasksSidePanelCoordinator::From(browser_);
-      CHECK(coordinator);
-      if (coordinator->IsSidePanelOpenForContextualTask()) {
-        base::RecordAction(base::UserMetricsAction(
-            "ContextualTasks.AppMenu.UserAction.CloseSidePanel"));
-        base::UmaHistogramBoolean(
-            "ContextualTasks.AppMenu.UserAction.CloseSidePanel", true);
-      } else {
-        base::RecordAction(base::UserMetricsAction(
-            "ContextualTasks.AppMenu.UserAction.OpenSidePanel"));
-        base::UmaHistogramBoolean(
-            "ContextualTasks.AppMenu.UserAction.OpenSidePanel", true);
-      }
-      break;
-    }
     default: {
       if (IsOtherProfileCommand(command_id)) {
         if (!uma_action_recorded_) {
@@ -2007,20 +1978,9 @@ void AppMenuModel::Build() {
   if (!browser_->profile()->IsGuestSession()) {
     sub_menus_.push_back(
         std::make_unique<PasswordsAndAutofillSubMenuModel>(this));
-    bool use_your_saved_info_branding =
-        base::FeatureList::IsEnabled(
-            autofill::features::kYourSavedInfoSettingsPage) ||
-        base::FeatureList::IsEnabled(
-            autofill::features::kYourSavedInfoBrandingInSettings);
-    int string_id = use_your_saved_info_branding
-                        ? IDS_SETTINGS_YOUR_SAVED_INFO
-                        : IDS_PASSWORDS_AND_AUTOFILL_MENU;
-    const gfx::VectorIcon& vector_icon =
-        use_your_saved_info_branding ? vector_icons::kPersonTextIcon
-                                     : vector_icons::kPasswordManagerIcon;
     AddSubMenuWithStringIdAndVectorIcon(this, IDC_PASSWORDS_AND_AUTOFILL_MENU,
-                                        string_id, sub_menus_.back().get(),
-                                        vector_icon);
+                                        IDS_PASSWORDS_AND_AUTOFILL_MENU, sub_menus_.back().get(),
+                                        vector_icons::kPasswordManagerIcon);
     SetElementIdentifierAt(
         GetIndexOfCommandId(IDC_PASSWORDS_AND_AUTOFILL_MENU).value(),
         kPasswordAndAutofillMenuItem);

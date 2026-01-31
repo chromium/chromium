@@ -71,8 +71,7 @@
           "group": "tryserver.chromium.win"
         }
       ],
-      "targets_spec_directory": "infra/config/generated/builders/ci/Win11 FYI arm64 Release (Qualcomm Snapdragon X Elite)/targets",
-      "targets_spec_directory_relative_to_source_dir": true
+      "targets_spec_directory": "infra/config/generated/builders/ci/Win11 FYI arm64 Release (Qualcomm Snapdragon X Elite)/targets"
     }
   },
   "$recipe_engine/resultdb/test_presentation": {

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2025, Alliance for Open Media. All rights reserved.
+ * Copyright (c) 2026, Alliance for Open Media. All rights reserved.
  *
  * This source code is subject to the terms of the BSD 2 Clause License and
  * the Alliance for Open Media Patent License 1.0. If the BSD 2 Clause License
@@ -14,9 +14,9 @@
 #define VERSION_MAJOR 3
 #define VERSION_MINOR 13
 #define VERSION_PATCH 1
-#define VERSION_EXTRA "124-g5d80673d72"
+#define VERSION_EXTRA "210-gf0160a1b1c"
 #define VERSION_PACKED \
   ((VERSION_MAJOR << 16) | (VERSION_MINOR << 8) | (VERSION_PATCH))
-#define VERSION_STRING_NOSP "3.13.1-124-g5d80673d72"
-#define VERSION_STRING " 3.13.1-124-g5d80673d72"
+#define VERSION_STRING_NOSP "3.13.1-210-gf0160a1b1c"
+#define VERSION_STRING " 3.13.1-210-gf0160a1b1c"
 #endif  // AOM_VERSION_H_

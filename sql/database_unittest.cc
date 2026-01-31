@@ -23,7 +23,6 @@
 #include <vector>
 
 #include "base/check.h"
-#include "base/containers/contains.h"
 #include "base/containers/span.h"
 #include "base/files/file.h"
 #include "base/files/file_util.h"
@@ -35,7 +34,6 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
 #include "base/sequence_checker.h"
-#include "base/strings/cstring_view.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_view_util.h"
 #include "base/strings/stringprintf.h"
@@ -180,9 +178,8 @@ class SQLDatabaseTest : public testing::Test,
         return false;
     }
 
-    static constexpr char kText[] = "Now is the winter of our discontent.";
-    constexpr int kTextBytes = sizeof(kText) - 1;
-    return file.Write(0, kText, kTextBytes) == kTextBytes;
+  return file.WriteAndCheck(0, base::byte_span_with_nul_from_cstring(
+                                     "Now is the winter of our discontent."));
   }
 
  protected:
@@ -1832,8 +1829,8 @@ TEST_P(SQLDatabaseTest, OnMemoryDump) {
 // worrying too much about what they generate (since that will change).
 TEST_P(SQLDatabaseTest, CollectDiagnosticInfo) {
   const std::string corruption_info = db_->CollectCorruptionInfo();
-  EXPECT_TRUE(base::Contains(corruption_info, "SQLITE_CORRUPT"));
-  EXPECT_TRUE(base::Contains(corruption_info, "integrity_check"));
+  EXPECT_TRUE(corruption_info.contains("SQLITE_CORRUPT"));
+  EXPECT_TRUE(corruption_info.contains("integrity_check"));
 
   // A statement to see in the results.
   static constexpr char kSimpleSql[] = "SELECT 'mountain'";
@@ -1844,7 +1841,7 @@ TEST_P(SQLDatabaseTest, CollectDiagnosticInfo) {
     DatabaseDiagnostics diagnostics;
     const std::string readonly_info =
         db_->CollectErrorInfo(SQLITE_READONLY, &s, &diagnostics);
-    EXPECT_TRUE(base::Contains(readonly_info, kSimpleSql));
+    EXPECT_TRUE(readonly_info.contains(kSimpleSql));
     EXPECT_EQ(diagnostics.sql_statement, kSimpleSql);
   }
 
@@ -1853,7 +1850,7 @@ TEST_P(SQLDatabaseTest, CollectDiagnosticInfo) {
     DatabaseDiagnostics diagnostics;
     const std::string full_info =
         db_->CollectErrorInfo(SQLITE_FULL, nullptr, &diagnostics);
-    EXPECT_FALSE(base::Contains(full_info, kSimpleSql));
+    EXPECT_FALSE(full_info.contains(kSimpleSql));
     EXPECT_TRUE(diagnostics.sql_statement.empty());
   }
 
@@ -1868,9 +1865,9 @@ TEST_P(SQLDatabaseTest, CollectDiagnosticInfo) {
     DatabaseDiagnostics diagnostics;
     const std::string error_info =
         db_->CollectErrorInfo(SQLITE_ERROR, &s, &diagnostics);
-    EXPECT_TRUE(base::Contains(error_info, kSimpleSql));
-    EXPECT_TRUE(base::Contains(error_info, "volcano"));
-    EXPECT_TRUE(base::Contains(error_info, "version: 4"));
+    EXPECT_TRUE(error_info.contains(kSimpleSql));
+    EXPECT_TRUE(error_info.contains("volcano"));
+    EXPECT_TRUE(error_info.contains("version: 4"));
     EXPECT_EQ(diagnostics.sql_statement, kSimpleSql);
     EXPECT_EQ(diagnostics.version, 4);
 
@@ -1896,14 +1893,14 @@ TEST_P(SQLDatabaseTest, CollectDiagnosticInfo) {
     const std::string error_info =
         db_->CollectErrorInfo(SQLITE_ERROR, &s, &diagnostics);
     // Expect that the error message contains the table name and a column error.
-    EXPECT_TRUE(base::Contains(diagnostics.error_message, "table"));
-    EXPECT_TRUE(base::Contains(diagnostics.error_message, "volcano"));
-    EXPECT_TRUE(base::Contains(diagnostics.error_message, "column"));
+    EXPECT_TRUE(diagnostics.error_message.contains("table"));
+    EXPECT_TRUE(diagnostics.error_message.contains("volcano"));
+    EXPECT_TRUE(diagnostics.error_message.contains("column"));
 
     // Expect that bound values are not present.
-    EXPECT_FALSE(base::Contains(diagnostics.error_message, "bound_value1"));
-    EXPECT_FALSE(base::Contains(diagnostics.error_message, "42"));
-    EXPECT_FALSE(base::Contains(diagnostics.error_message, "1234"));
+    EXPECT_FALSE(diagnostics.error_message.contains("bound_value1"));
+    EXPECT_FALSE(diagnostics.error_message.contains("42"));
+    EXPECT_FALSE(diagnostics.error_message.contains("1234"));
   }
 }
 

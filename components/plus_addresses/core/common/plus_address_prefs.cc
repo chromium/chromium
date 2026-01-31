@@ -13,7 +13,7 @@ namespace plus_addresses::prefs {
 
 void RegisterProfilePrefs(PrefRegistrySimple* registry) {
   registry->RegisterIntegerPref(kPreallocatedAddressesVersion, 1);
-  registry->RegisterListPref(kPreallocatedAddresses, base::Value::List());
+  registry->RegisterListPref(kPreallocatedAddresses, base::ListValue());
   registry->RegisterIntegerPref(kPreallocatedAddressesNext, 0);
   registry->RegisterTimePref(kFirstPlusAddressCreationTime, base::Time(),
                              user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);

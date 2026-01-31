@@ -7,7 +7,6 @@
 #include <string_view>
 
 #include "ash/constants/web_app_id_constants.h"
-#include "base/containers/contains.h"
 #include "base/no_destructor.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"

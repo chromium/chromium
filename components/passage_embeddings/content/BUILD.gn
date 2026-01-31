@@ -1,0 +1,40 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("content") {
+  sources = [
+    "embeddings_candidate_generator.cc",
+    "embeddings_candidate_generator.h",
+    "page_embeddings_service.cc",
+    "page_embeddings_service.h",
+  ]
+
+  public_deps = [
+    "//base",
+    "//components/keyed_service/core",
+    "//components/page_content_annotations/content",
+    "//components/passage_embeddings/core",
+    "//content/public/browser",
+  ]
+
+  deps = [
+    "//components/optimization_guide/proto:optimization_guide_proto",
+    "//components/passage_embeddings/core:passage_embeddings_types",
+    "//services/passage_embeddings/public/mojom",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "page_embeddings_service_unittest.cc" ]
+  deps = [
+    ":content",
+    "//components/optimization_guide/proto:optimization_guide_proto",
+    "//components/os_crypt/async/browser:test_support",
+    "//components/passage_embeddings/core:passage_embeddings_types",
+    "//content/test:test_support",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
+}

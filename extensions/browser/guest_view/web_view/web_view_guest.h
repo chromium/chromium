@@ -191,10 +191,10 @@ class WebViewGuest : public guest_view::GuestView<WebViewGuest> {
   // GuestViewBase implementation.
   void CreateInnerPage(std::unique_ptr<GuestViewBase> owned_this,
                        scoped_refptr<content::SiteInstance> site_instance,
-                       const base::Value::Dict& create_params,
+                       const base::DictValue& create_params,
                        GuestPageCreatedCallback callback) final;
   void DidAttachToEmbedder() final;
-  void DidInitialize(const base::Value::Dict& create_params) final;
+  void DidInitialize(const base::DictValue& create_params) final;
   void MaybeRecreateGuestContents(
       content::RenderFrameHost* outer_contents_frame) final;
   void EmbedderFullscreenToggled(bool entered_fullscreen) final;
@@ -328,7 +328,7 @@ class WebViewGuest : public guest_view::GuestView<WebViewGuest> {
   void CreateInnerPageWithSiteInstance(
       std::unique_ptr<GuestViewBase> owned_this,
       scoped_refptr<content::SiteInstance> guest_site_instance,
-      const base::Value::Dict& create_params,
+      const base::DictValue& create_params,
       GuestPageCreatedCallback callback);
 
   // Informs the embedder of a frame name change.
@@ -370,13 +370,13 @@ class WebViewGuest : public guest_view::GuestView<WebViewGuest> {
 
   bool HandleKeyboardShortcuts(const input::NativeWebKeyboardEvent& event);
 
-  void ApplyAttributes(const base::Value::Dict& params);
+  void ApplyAttributes(const base::DictValue& params);
 
   void SetTransparency(content::RenderFrameHost* render_frame_host);
 
   void CreateInnerPageWithStoragePartition(
       std::unique_ptr<GuestViewBase> owned_this,
-      const base::Value::Dict& create_params,
+      const base::DictValue& create_params,
       GuestPageCreatedCallback callback,
       std::optional<content::StoragePartitionConfig> storage_partition_config);
 

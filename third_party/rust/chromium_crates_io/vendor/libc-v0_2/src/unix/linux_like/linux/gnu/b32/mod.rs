@@ -106,20 +106,20 @@ cfg_if! {
                 pub st_atime: crate::time_t,
                 pub st_atime_nsec: c_long,
                 #[cfg(gnu_time_bits64)]
-                _atime_pad: c_int,
+                _atime_pad: Padding<c_int>,
                 pub st_mtime: crate::time_t,
                 pub st_mtime_nsec: c_long,
                 #[cfg(gnu_time_bits64)]
-                _mtime_pad: c_int,
+                _mtime_pad: Padding<c_int>,
                 pub st_ctime: crate::time_t,
                 pub st_ctime_nsec: c_long,
                 #[cfg(gnu_time_bits64)]
-                _ctime_pad: c_int,
+                _ctime_pad: Padding<c_int>,
 
                 #[cfg(not(gnu_file_offset_bits64))]
-                __glibc_reserved4: c_long,
+                __glibc_reserved4: Padding<c_long>,
                 #[cfg(not(gnu_file_offset_bits64))]
-                __glibc_reserved5: c_long,
+                __glibc_reserved5: Padding<c_long>,
                 #[cfg(all(not(gnu_time_bits64), gnu_file_offset_bits64))]
                 pub st_ino: crate::ino_t,
             }
@@ -138,7 +138,7 @@ s! {
         pub f_ffree: crate::fsfilcnt_t,
         pub f_favail: crate::fsfilcnt_t,
         pub f_fsid: c_ulong,
-        __f_unused: c_int,
+        __f_unused: Padding<c_int>,
         pub f_flag: c_ulong,
         pub f_namemax: c_ulong,
         __f_spare: [c_int; 6],
@@ -207,8 +207,8 @@ s! {
             ))
         ))]
         __reserved2: Padding<crate::__syscall_ulong_t>,
-        __glibc_reserved3: crate::__syscall_ulong_t,
-        __glibc_reserved4: crate::__syscall_ulong_t,
+        __glibc_reserved3: Padding<crate::__syscall_ulong_t>,
+        __glibc_reserved4: Padding<crate::__syscall_ulong_t>,
     }
 
     #[cfg(gnu_time_bits64)]

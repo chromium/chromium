@@ -42,7 +42,6 @@
 #include "components/performance_manager/embedder/performance_manager_lifetime.h"
 #include "components/performance_manager/embedder/performance_manager_registry.h"
 #include "components/performance_manager/embedder/scoped_global_scenario_memory.h"
-#include "components/performance_manager/graph/policies/bfcache_policy.h"
 #include "components/performance_manager/graph/policies/process_priority_policy.h"
 #include "components/performance_manager/performance_manager_feature_observer_client.h"
 #include "components/performance_manager/public/decorators/page_live_state_decorator.h"
@@ -97,7 +96,9 @@
 
 #if BUILDFLAG(IS_WIN)
 #include "base/path_service.h"
-#include "chrome/browser/performance_manager/policies/priority_boost_disabler.h"
+#include "chrome/browser/performance_manager/policies/priority_boost_browser_network_policy.h"
+#include "chrome/browser/performance_manager/policies/priority_boost_gpu_browser_network_policy.h"
+#include "chrome/browser/performance_manager/policies/priority_boost_loading_browser_network_policy.h"
 #endif
 
 namespace {
@@ -205,11 +206,24 @@ void ChromeBrowserMainExtraPartsPerformanceManager::CreatePoliciesAndDecorators(
     graph->PassToGraph(
         std::make_unique<performance_manager::TerminationTargetPolicy>());
   }
-  if (base::FeatureList::IsEnabled(features::kDisableBoostPriority) &&
-      features::kDisableBoostPriorityMode.Get() ==
-          features::DisableBoostPriorityMode::kAfterLoading) {
-    graph->PassToGraph(
-        std::make_unique<performance_manager::PriorityBoostDisabler>());
+  if (base::FeatureList::IsEnabled(features::kDisableBoostPriority)) {
+    switch (features::kDisableBoostPriorityExemption.Get()) {
+      case features::DisableBoostPriorityExemption::kBrowserNetwork:
+        graph->PassToGraph(
+            std::make_unique<performance_manager::policies::
+                                 PriorityBoostBrowserNetworkPolicy>());
+        break;
+      case features::DisableBoostPriorityExemption::kGpuBrowserNetwork:
+        graph->PassToGraph(
+            std::make_unique<performance_manager::policies::
+                                 PriorityBoostGpuBrowserNetworkPolicy>());
+        break;
+      case features::DisableBoostPriorityExemption::kLoadingBrowserNetwork:
+        graph->PassToGraph(
+            std::make_unique<performance_manager::policies::
+                                 PriorityBoostLoadingBrowserNetworkPolicy>());
+        break;
+    }
   }
 #endif  // BUILDFLAG(IS_WIN)
 
@@ -235,19 +249,13 @@ void ChromeBrowserMainExtraPartsPerformanceManager::CreatePoliciesAndDecorators(
           performance_manager::policies::UrgentPageDiscardingPolicy>());
 #endif  // URGENT_DISCARDING_FROM_PERFORMANCE_MANAGER()
 
-  if (base::FeatureList::IsEnabled(
-          performance_manager::features::
-              kBackgroundTabLoadingFromPerformanceManager)) {
-    graph->PassToGraph(
-        std::make_unique<
-            performance_manager::policies::BackgroundTabLoadingPolicy>(
-            base::BindRepeating([]() {
-              content::GetUIThreadTaskRunner({})->PostTask(
-                  FROM_HERE,
-                  base::BindOnce(
-                      &SessionRestore::OnTabLoaderFinishedLoadingTabs));
-            })));
-  }
+  graph->PassToGraph(std::make_unique<
+                     performance_manager::policies::BackgroundTabLoadingPolicy>(
+      base::BindRepeating([]() {
+        content::GetUIThreadTaskRunner({})->PostTask(
+            FROM_HERE,
+            base::BindOnce(&SessionRestore::OnTabLoaderFinishedLoadingTabs));
+      })));
 
   // The freezing policy isn't enabled on Android yet as it doesn't play well
   // with the freezing logic already in place in renderers. This logic should be
@@ -280,12 +288,6 @@ void ChromeBrowserMainExtraPartsPerformanceManager::CreatePoliciesAndDecorators(
           performance_manager::features::kThrottleUnimportantFrameRate)) {
     graph->PassToGraph(std::make_unique<
                        performance_manager::policies::FrameThrottlingPolicy>());
-  }
-
-  if (base::FeatureList::IsEnabled(
-          performance_manager::features::kBFCachePerformanceManagerPolicy)) {
-    graph->PassToGraph(
-        std::make_unique<performance_manager::policies::BFCachePolicy>());
   }
 
 #if !BUILDFLAG(IS_ANDROID)
@@ -371,7 +373,7 @@ void ChromeBrowserMainExtraPartsPerformanceManager::PostCreateThreads() {
   // early UI code can register observers, but only start them in
   // PreMainMessageLoopRun because they require other systems like the
   // HostFrameSinkManager to exist.
-  base::ByteCount system_memory = base::SysInfo::AmountOfPhysicalMemory();
+  base::ByteSize system_memory = base::SysInfo::AmountOfTotalPhysicalMemory();
   user_performance_tuning_manager_ = base::WrapUnique(
       new performance_manager::user_tuning::UserPerformanceTuningManager(
           g_browser_process->local_state(),

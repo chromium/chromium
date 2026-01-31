@@ -14,6 +14,7 @@
 #include "base/files/file.h"
 #include "base/memory/read_only_shared_memory_region.h"
 #include "base/sequence_checker.h"
+#include "base/strings/string_util.h"
 #include "components/services/font_data/public/mojom/font_data_service.mojom.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
@@ -88,6 +89,13 @@ class FontDataServiceImpl : public mojom::FontDataService {
   // file on disk, even for multiple different file handles to that same file.
   virtual std::tuple<base::File, uint64_t> GetFileHandle(SkTypeface& typeface);
 
+  // Checks if `actual_size` matches the required styles for the requested
+  // family. See the comments in the implementation for more information.
+  // Protected to allow unit testing.
+  bool CheckMatchesRequiredStyle(const SkFontStyle& actual_style,
+                                 const std::string& requested_family_name,
+                                 const SkFontStyle& requested_style);
+
  private:
   // Checks the shared memory region cache and returns an index if found. On
   // cache miss, creates a new entry caching the data.
@@ -99,7 +107,9 @@ class FontDataServiceImpl : public mojom::FontDataService {
   // Prepares a MatchFamilyNameResult representing `typeface` that can be sent
   // over mojo from `MatchFamilyName*` calls.
   mojom::MatchFamilyNameResultPtr CreateMatchFamilyNameResult(
-      sk_sp<SkTypeface> typeface);
+      sk_sp<SkTypeface> typeface,
+      const std::string& family_name,
+      const SkFontStyle& requested_style);
 
   mojo::ReceiverSet<mojom::FontDataService> receivers_;
 

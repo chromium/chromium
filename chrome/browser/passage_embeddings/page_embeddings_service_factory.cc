@@ -9,12 +9,16 @@
 #include "chrome/browser/history_embeddings/history_embeddings_utils.h"
 #include "chrome/browser/page_content_annotations/page_content_extraction_service_factory.h"
 #include "chrome/browser/passage_embeddings/chrome_passage_embeddings_service_controller.h"
-#include "chrome/browser/passage_embeddings/embeddings_candidate_generator.h"
-#include "chrome/browser/passage_embeddings/page_embeddings_service.h"
 #include "chrome/browser/passage_embeddings/passage_embedder_model_observer_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_selections.h"
-#include "components/passage_embeddings/passage_embeddings_features.h"
+#include "components/passage_embeddings/content/embeddings_candidate_generator.h"
+#include "components/passage_embeddings/content/page_embeddings_service.h"
+#include "components/passage_embeddings/core/passage_embeddings_features.h"
+
+#if BUILDFLAG(IS_CHROMEOS)
+#include "chromeos/constants/chromeos_features.h"
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 namespace passage_embeddings {
 
@@ -48,6 +52,13 @@ PageEmbeddingsServiceFactory::~PageEmbeddingsServiceFactory() = default;
 std::unique_ptr<KeyedService>
 PageEmbeddingsServiceFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* browser_context) const {
+#if BUILDFLAG(IS_CHROMEOS)
+  if (!base::FeatureList::IsEnabled(
+          chromeos::features::kFeatureManagementPassageEmbedder)) {
+    return nullptr;
+  }
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
   Profile* profile = Profile::FromBrowserContext(browser_context);
   // Don't run the experiment for clients with history embeddings enabled.
   if (history_embeddings::IsHistoryEmbeddingsEnabledForProfile(profile)) {

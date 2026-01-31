@@ -53,6 +53,10 @@ bool CSSBorderImageSliceValue::Equals(
   return fill_ == other.fill_ && base::ValuesEquivalent(slices_, other.slices_);
 }
 
+bool CSSBorderImageSliceValue::HasRandomFunctions() const {
+  return slices_ && slices_->HasRandomFunctions();
+}
+
 void CSSBorderImageSliceValue::TraceAfterDispatch(
     blink::Visitor* visitor) const {
   visitor->Trace(slices_);

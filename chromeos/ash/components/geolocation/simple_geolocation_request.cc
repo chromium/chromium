@@ -226,9 +226,9 @@ bool ParseServerResponse(const GURL& server_url,
     RecordUmaEvent(SIMPLE_GEOLOCATION_REQUEST_EVENT_RESPONSE_MALFORMED);
     return false;
   }
-  base::Value::Dict& response_value_dict = response_value.GetDict();
-  base::Value::Dict* error_object = response_value_dict.FindDict(kErrorString);
-  base::Value::Dict* location_object =
+  base::DictValue& response_value_dict = response_value.GetDict();
+  base::DictValue* error_object = response_value_dict.FindDict(kErrorString);
+  base::DictValue* location_object =
       response_value_dict.FindDict(kLocationString);
 
   position->timestamp = base::Time::Now();
@@ -322,9 +322,9 @@ void ReportUmaHasCellTowers(bool value) {
 }
 
 // Helpers to reformat data into dictionaries for conversion to request JSON
-base::Value::Dict CreateAccessPointDictionary(
+base::DictValue CreateAccessPointDictionary(
     const WifiAccessPoint& access_point) {
-  base::Value::Dict access_point_dictionary;
+  base::DictValue access_point_dictionary;
 
   access_point_dictionary.Set(kMacAddress, access_point.mac_address);
   access_point_dictionary.Set(kSignalStrength, access_point.signal_strength);
@@ -342,8 +342,8 @@ base::Value::Dict CreateAccessPointDictionary(
   return access_point_dictionary;
 }
 
-base::Value::Dict CreateCellTowerDictionary(const CellTower& cell_tower) {
-  base::Value::Dict cell_tower_dictionary;
+base::DictValue CreateCellTowerDictionary(const CellTower& cell_tower) {
+  base::DictValue cell_tower_dictionary;
   cell_tower_dictionary.Set(kCellId, cell_tower.ci);
   cell_tower_dictionary.Set(kLocationAreaCode, cell_tower.lac);
   cell_tower_dictionary.Set(kMobileCountryCode, cell_tower.mcc);
@@ -399,11 +399,11 @@ std::string SimpleGeolocationRequest::FormatRequestBody() const {
   if (!cell_tower_data_ && !wifi_data_)
     return std::string(kSimpleGeolocationRequestBody);
 
-  base::Value::Dict request;
+  base::DictValue request;
   request.Set(kConsiderIp, true);
 
   if (wifi_data_) {
-    base::Value::List wifi_access_points;
+    base::ListValue wifi_access_points;
     for (const WifiAccessPoint& access_point : *wifi_data_) {
       wifi_access_points.Append(CreateAccessPointDictionary(access_point));
     }
@@ -411,7 +411,7 @@ std::string SimpleGeolocationRequest::FormatRequestBody() const {
   }
 
   if (cell_tower_data_) {
-    base::Value::List cell_towers;
+    base::ListValue cell_towers;
     for (const CellTower& cell_tower : *cell_tower_data_) {
       cell_towers.Append(CreateCellTowerDictionary(cell_tower));
     }

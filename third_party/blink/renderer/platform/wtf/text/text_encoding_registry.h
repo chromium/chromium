@@ -37,15 +37,17 @@ namespace blink {
 class TextCodec;
 class TextEncoding;
 
-// Use TextResourceDecoder::decode to decode resources, since it handles BOMs.
-// Use TextEncoding::encode to encode, since it takes care of normalization.
+// Creates a TextCodec instance for the specified encoding. This function
+// returns a null unique_ptr if an invalid encoding is specified.
+//
+// Use TextResourceDecoder::Decode to decode resources, since it handles BOMs.
+// Use TextEncoding::Encode to encode, since it takes care of normalization.
 WTF_EXPORT std::unique_ptr<TextCodec> NewTextCodec(const TextEncoding&);
 
 // Only TextEncoding should use the following functions directly.
-AtomicString AtomicCanonicalTextEncodingName(const char* alias);
+AtomicString AtomicCanonicalTextEncodingName(StringView alias);
 template <typename CharacterType>
 const char* AtomicCanonicalTextEncodingName(const CharacterType*, size_t);
-AtomicString AtomicCanonicalTextEncodingName(const String&);
 bool NoExtendedTextEncodingNameUsed();
 
 // Exposed for testing (via window.internals) that the set of supported

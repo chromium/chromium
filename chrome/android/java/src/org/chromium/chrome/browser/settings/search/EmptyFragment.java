@@ -13,12 +13,14 @@ import android.text.style.ForegroundColorSpan;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.window.layout.WindowMetricsCalculator;
 
 import org.chromium.build.annotations.EnsuresNonNull;
 import org.chromium.build.annotations.Initializer;
@@ -29,14 +31,19 @@ import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 /** Empty Fragment used to clear the settings screen and display guiding information. */
 @NullMarked
 public class EmptyFragment extends Fragment {
+    private static final String KEY_IMAGE_SRC = "ImageSrc";
 
     private int mImageSrc;
     private Runnable mOpenHelpCenter;
 
     @Initializer
-    @EnsuresNonNull("mOpenHelpCenter")
-    public void init(int imageSrc, Runnable openHelpCenter) {
+    public void setImageSrc(int imageSrc) {
         mImageSrc = imageSrc;
+    }
+
+    @Initializer
+    @EnsuresNonNull("mOpenHelpCenter")
+    public void setOpenHelpCenter(Runnable openHelpCenter) {
         mOpenHelpCenter = openHelpCenter;
     }
 
@@ -45,18 +52,28 @@ public class EmptyFragment extends Fragment {
             LayoutInflater inflater,
             @Nullable ViewGroup container,
             @Nullable Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.empty_state_view, container, false);
+        return inflater.inflate(R.layout.settings_empty_state_view, container, false);
     }
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        if (savedInstanceState != null) mImageSrc = savedInstanceState.getInt(KEY_IMAGE_SRC);
         if (mImageSrc == 0) {
             clear();
             return;
         }
         ImageView stateImage = view.findViewById(R.id.empty_state_icon);
         stateImage.setImageResource(mImageSrc);
+        View content = view.findViewById(R.id.empty_state_content);
+        var lp = (FrameLayout.LayoutParams) content.getLayoutParams();
+        var windowMetrics =
+                WindowMetricsCalculator.getOrCreate().computeCurrentWindowMetrics(getActivity());
+
+        // Position the content above the center so that they remain visible with the soft
+        // keyboard likely also visible on screen most of the time.
+        lp.topMargin = windowMetrics.getBounds().height() / 6;
+        content.setLayoutParams(lp);
 
         TextView guideMsg = view.findViewById(R.id.empty_state_text_title);
         TextView linkHelpCenter = view.findViewById(R.id.empty_state_text_description);
@@ -86,11 +103,17 @@ public class EmptyFragment extends Fragment {
         return ss;
     }
 
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putInt(KEY_IMAGE_SRC, mImageSrc);
+    }
+
     void clear() {
         // No need to actively hide the widgets when the fragment is going away.
-        if (isRemoving()) return;
-
         Activity activity = getActivity();
+        if (isRemoving() || activity.isDestroyed()) return;
+
         activity.findViewById(R.id.empty_state_icon).setVisibility(View.GONE);
         activity.findViewById(R.id.empty_state_text_title).setVisibility(View.GONE);
         activity.findViewById(R.id.empty_state_text_description).setVisibility(View.GONE);

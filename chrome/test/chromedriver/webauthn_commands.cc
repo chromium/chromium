@@ -29,12 +29,12 @@ static constexpr char kUnrecognizedExtension[] =
 static constexpr char kUnrecognizedProtocol[] =
     " is not a recognized protocol version";
 
-// Creates a base::Value::Dict by cloning the parameters specified by
+// Creates a base::DictValue by cloning the parameters specified by
 // |mapping| from |params|.
-base::Value::Dict MapParams(
+base::DictValue MapParams(
     const base::flat_map<const char*, const char*>& mapping,
-    const base::Value::Dict& params) {
-  base::Value::Dict options;
+    const base::DictValue& params) {
+  base::DictValue options;
   for (const std::pair<const char*, const char*>& pair : mapping) {
     const base::Value* value = params.Find(pair.second);
     if (value)
@@ -45,7 +45,7 @@ base::Value::Dict MapParams(
 
 // Converts the string |keys| in |params| from base64url to base64. Returns a
 // status error if conversion of one of the keys failed.
-Status ConvertBase64UrlToBase64(base::Value::Dict& params,
+Status ConvertBase64UrlToBase64(base::DictValue& params,
                                 const std::vector<std::string>& keys) {
   for (const std::string& key : keys) {
     base::Value* maybe_value = params.Find(key);
@@ -69,7 +69,7 @@ Status ConvertBase64UrlToBase64(base::Value::Dict& params,
 }
 
 // Converts the string |keys| in |params| from base64 to base64url.
-void ConvertBase64ToBase64Url(base::Value::Dict& params,
+void ConvertBase64ToBase64Url(base::DictValue& params,
                               const std::vector<std::string>& keys) {
   for (const std::string& key : keys) {
     std::string* maybe_value = params.FindString(key);
@@ -89,14 +89,14 @@ void ConvertBase64ToBase64Url(base::Value::Dict& params,
 
 Status ExecuteWebAuthnCommand(const WebAuthnCommand& command,
                               Session* session,
-                              const base::Value::Dict& params,
+                              const base::DictValue& params,
                               std::unique_ptr<base::Value>* value) {
   WebView* web_view = nullptr;
   Status status = session->GetTargetWindow(&web_view);
   if (status.IsError())
     return status;
 
-  status = web_view->SendCommand("WebAuthn.enable", base::Value::Dict());
+  status = web_view->SendCommand("WebAuthn.enable", base::DictValue());
   if (status.IsError())
     return status;
 
@@ -104,9 +104,9 @@ Status ExecuteWebAuthnCommand(const WebAuthnCommand& command,
 }
 
 Status ExecuteAddVirtualAuthenticator(WebView* web_view,
-                                      const base::Value::Dict& params,
+                                      const base::DictValue& params,
                                       std::unique_ptr<base::Value>* value) {
-  base::Value::Dict mapped_params = MapParams(
+  base::DictValue mapped_params = MapParams(
       {
           {"options.protocol", "protocol"},
           {"options.transport", "transport"},
@@ -175,7 +175,7 @@ Status ExecuteAddVirtualAuthenticator(WebView* web_view,
 }
 
 Status ExecuteRemoveVirtualAuthenticator(WebView* web_view,
-                                         const base::Value::Dict& params,
+                                         const base::DictValue& params,
                                          std::unique_ptr<base::Value>* value) {
   return web_view->SendCommandAndGetResult(
       "WebAuthn.removeVirtualAuthenticator",
@@ -183,9 +183,9 @@ Status ExecuteRemoveVirtualAuthenticator(WebView* web_view,
 }
 
 Status ExecuteAddCredential(WebView* web_view,
-                            const base::Value::Dict& params,
+                            const base::DictValue& params,
                             std::unique_ptr<base::Value>* value) {
-  base::Value::Dict mapped_params = MapParams(
+  base::DictValue mapped_params = MapParams(
       {
           {"authenticatorId", "authenticatorId"},
           {"credential.credentialId", "credentialId"},
@@ -201,7 +201,7 @@ Status ExecuteAddCredential(WebView* web_view,
           {"credential.userDisplayName", "userDisplayName"},
       },
       params);
-  base::Value::Dict* credential = mapped_params.FindDict("credential");
+  base::DictValue* credential = mapped_params.FindDict("credential");
   if (!credential)
     return Status(kInvalidArgument, "'credential' must be a JSON object");
   Status status = ConvertBase64UrlToBase64(
@@ -214,7 +214,7 @@ Status ExecuteAddCredential(WebView* web_view,
 }
 
 Status ExecuteGetCredentials(WebView* web_view,
-                             const base::Value::Dict& params,
+                             const base::DictValue& params,
                              std::unique_ptr<base::Value>* value) {
   std::unique_ptr<base::Value> result;
   Status status = web_view->SendCommandAndGetResult(
@@ -240,9 +240,9 @@ Status ExecuteGetCredentials(WebView* web_view,
 }
 
 Status ExecuteRemoveCredential(WebView* web_view,
-                               const base::Value::Dict& params,
+                               const base::DictValue& params,
                                std::unique_ptr<base::Value>* value) {
-  base::Value::Dict mapped_params = MapParams(
+  base::DictValue mapped_params = MapParams(
       {
           {"authenticatorId", "authenticatorId"},
           {"credentialId", "credentialId"},
@@ -257,7 +257,7 @@ Status ExecuteRemoveCredential(WebView* web_view,
 }
 
 Status ExecuteRemoveAllCredentials(WebView* web_view,
-                                   const base::Value::Dict& params,
+                                   const base::DictValue& params,
                                    std::unique_ptr<base::Value>* value) {
   return web_view->SendCommandAndGetResult(
       "WebAuthn.clearCredentials",
@@ -265,7 +265,7 @@ Status ExecuteRemoveAllCredentials(WebView* web_view,
 }
 
 Status ExecuteSetUserVerified(WebView* web_view,
-                              const base::Value::Dict& params,
+                              const base::DictValue& params,
                               std::unique_ptr<base::Value>* value) {
   return web_view->SendCommandAndGetResult(
       "WebAuthn.setUserVerified",
@@ -279,7 +279,7 @@ Status ExecuteSetUserVerified(WebView* web_view,
 }
 
 Status ExecuteSetCredentialProperties(WebView* web_view,
-                                      const base::Value::Dict& params,
+                                      const base::DictValue& params,
                                       std::unique_ptr<base::Value>* value) {
   return web_view->SendCommandAndGetResult(
       "WebAuthn.setCredentialProperties",

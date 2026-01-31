@@ -57,14 +57,20 @@ bool StructTraits<viz::mojom::BeginFrameIdDataView, viz::BeginFrameId>::Read(
 // static
 bool StructTraits<viz::mojom::BeginFrameArgsDataView, viz::BeginFrameArgs>::
     Read(viz::mojom::BeginFrameArgsDataView data, viz::BeginFrameArgs* out) {
+  std::optional<base::TimeDelta> unthrottled_interval;
   if (!data.ReadFrameTime(&out->frame_time) ||
       !data.ReadDeadline(&out->deadline) ||
       !data.ReadInterval(&out->interval) || !data.ReadFrameId(&out->frame_id) ||
       !data.ReadType(&out->type) ||
       !data.ReadDispatchTime(&out->dispatch_time) ||
-      !data.ReadClientArrivalTime(&out->client_arrival_time)) {
+      !data.ReadClientArrivalTime(&out->client_arrival_time) ||
+      !data.ReadUnthrottledInterval(&unthrottled_interval)) {
     return false;
   }
+
+  // If omitted, default to the regular interval.
+  out->unthrottled_interval = unthrottled_interval.value_or(out->interval);
+
   out->frames_throttled_since_last = data.frames_throttled_since_last();
   out->trace_id = data.trace_id();
   out->on_critical_path = data.on_critical_path();
@@ -87,5 +93,21 @@ bool StructTraits<viz::mojom::BeginFrameAckDataView, viz::BeginFrameAck>::Read(
   out->has_damage = data.has_damage();
   return true;
 }
+
+#if BUILDFLAG(IS_MAC)
+// static
+bool StructTraits<viz::mojom::CADisplayLinkParamsDataView,
+                  viz::CADisplayLinkParams>::
+    Read(viz::mojom::CADisplayLinkParamsDataView data,
+         viz::CADisplayLinkParams* out) {
+  if (!data.ReadTimestamp(&out->timestamp) ||
+      !data.ReadTargetTimestamp(&out->target_timestamp) ||
+      !data.ReadInterval(&out->interval)) {
+    return false;
+  }
+  out->display_id = data.display_id();
+  return true;
+}
+#endif
 
 }  // namespace mojo

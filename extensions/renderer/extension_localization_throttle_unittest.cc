@@ -518,7 +518,7 @@ class ExtensionLocalizationThrottleTestWithRendererThread
   scoped_refptr<const Extension> GetExtension(
       const std::string& manifest_json) {
     std::u16string error;
-    base::Value::Dict manifest_dict;
+    base::DictValue manifest_dict;
     auto manifest_value =
         base::JSONReader::ReadDict(manifest_json, base::JSON_PARSE_RFC);
     EXPECT_TRUE(manifest_value.has_value());

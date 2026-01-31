@@ -24,24 +24,24 @@ GURL MockPermissionPromptDelegate::GetEmbeddingOrigin() const {
   return GURL("https://example.com");
 }
 
-void MockPermissionPromptDelegate::Accept() {
+void MockPermissionPromptDelegate::Accept(const PromptOptions& prompt_options) {
   accept_called_ = true;
 }
-void MockPermissionPromptDelegate::AcceptThisTime() {
+void MockPermissionPromptDelegate::AcceptThisTime(
+    const PromptOptions& prompt_options) {
   accept_this_time_called_ = true;
 }
-void MockPermissionPromptDelegate::Deny() {
+void MockPermissionPromptDelegate::Deny(const PromptOptions& prompt_options) {
   deny_called_ = true;
 }
-void MockPermissionPromptDelegate::Dismiss() {}
-void MockPermissionPromptDelegate::Ignore() {}
-
+void MockPermissionPromptDelegate::Dismiss(
+    const PromptOptions& prompt_options) {}
+void MockPermissionPromptDelegate::Ignore(const PromptOptions& prompt_options) {
+}
 GeolocationAccuracy
 MockPermissionPromptDelegate::GetInitialGeolocationAccuracySelection() const {
   return GeolocationAccuracy::kPrecise;
 }
-void MockPermissionPromptDelegate::SetPromptOptions(
-    PromptOptions prompt_options) {}
 void MockPermissionPromptDelegate::FinalizeCurrentRequests() {}
 void MockPermissionPromptDelegate::OpenHelpCenterLink(const ui::Event& event) {}
 void MockPermissionPromptDelegate::PreIgnoreQuietPrompt() {}

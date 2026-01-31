@@ -100,7 +100,7 @@ PrinterList LocalPrinterHandlerDefault::EnumeratePrintersOnBlockingTaskRunner(
 }
 
 // static
-base::Value::Dict
+base::DictValue
 LocalPrinterHandlerDefault::FetchCapabilitiesOnBlockingTaskRunner(
     const std::string& device_name,
     const std::string& locale) {
@@ -131,7 +131,7 @@ LocalPrinterHandlerDefault::FetchCapabilitiesOnBlockingTaskRunner(
   if (result != mojom::ResultCode::kSuccess) {
     PRINTER_LOG(ERROR) << "Invalid printer when getting basic info for "
                        << device_name << ", result: " << result;
-    return base::Value::Dict();
+    return base::DictValue();
   }
 
   PRINTER_LOG(EVENT) << "Got basic info for " << device_name;
@@ -265,7 +265,7 @@ void LocalPrinterHandlerDefault::StartGetCapability(
 
 void LocalPrinterHandlerDefault::StartPrint(
     const std::u16string& job_title,
-    base::Value::Dict settings,
+    base::DictValue settings,
     scoped_refptr<base::RefCountedMemory> print_data,
     PrintCallback callback) {
   StartLocalPrint(std::move(settings), std::move(print_data),
@@ -352,14 +352,14 @@ void LocalPrinterHandlerDefault::OnDidFetchCapabilitiesFromPrintBackendService(
     }
 
     // Unable to fallback, call back without data.
-    std::move(callback).Run(base::Value::Dict());
+    std::move(callback).Run(base::DictValue());
     return;
   }
 
   PRINTER_LOG(EVENT) << "Received printer info & capabilities via service for "
                      << device_name;
   const mojom::PrinterCapsAndInfoPtr& caps_and_info = result.value();
-  base::Value::Dict settings = AssemblePrinterSettings(
+  base::DictValue settings = AssemblePrinterSettings(
       device_name, caps_and_info->printer_info,
       /*has_secure_protocol=*/false, &caps_and_info->printer_caps);
   std::move(callback).Run(std::move(settings));

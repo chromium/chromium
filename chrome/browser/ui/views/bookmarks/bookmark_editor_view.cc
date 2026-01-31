@@ -20,7 +20,7 @@
 #include "chrome/browser/ui/bookmarks/bookmark_editor.h"
 #include "chrome/browser/ui/bookmarks/bookmark_utils.h"
 #include "chrome/browser/ui/bookmarks/bookmark_utils_desktop.h"
-#include "chrome/browser/ui/browser_dialogs.h"
+#include "chrome/browser/ui/dialogs/browser_dialogs.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/grit/locale_settings.h"
@@ -447,8 +447,7 @@ GURL BookmarkEditorView::GetInputURL() const {
   if (!url_tf_) {
     return GURL();
   }
-  return url_formatter::FixupURL(base::UTF16ToUTF8(url_tf_->GetText()),
-                                 std::string());
+  return url_formatter::FixupURL(base::UTF16ToUTF8(url_tf_->GetText()));
 }
 
 void BookmarkEditorView::UserInputChanged() {

@@ -4,7 +4,6 @@
 
 #include "device/bluetooth/adapter.h"
 
-#include "base/containers/contains.h"
 #include "base/functional/callback_helpers.h"
 #include "base/run_loop.h"
 #include "base/task/sequenced_task_runner.h"
@@ -192,7 +191,7 @@ class AdapterTest : public testing::Test, public mojom::GattServiceObserver {
         mock_bluetooth_adapter_->last_advertisement_data_->service_data());
     auto last_scan_response_data =
         mock_bluetooth_adapter_->last_advertisement_data_->scan_response_data();
-    ASSERT_TRUE(base::Contains(*last_scan_response_data, 0x16));
+    ASSERT_TRUE(last_scan_response_data->contains(0x16));
     const auto& raw_data = (*last_scan_response_data)[0x16];
     // First two bytes should be the identifying bits of the kServiceId UUID.
     // They should be in litten endian order (reversed).

@@ -278,11 +278,14 @@ class VariantMap {
     return const_iterator(const_cast<VariantMap*>(this)->find(key));
   }
 
+  bool contains(const Key& key) const { return find(key) != end(); }
+
  private:
   FRIEND_TEST_ALL_PREFIXES(VariantMapTest, Construction);
   FRIEND_TEST_ALL_PREFIXES(VariantMapTest, Insertion);
   FRIEND_TEST_ALL_PREFIXES(VariantMapTest, At);
   FRIEND_TEST_ALL_PREFIXES(VariantMapTest, Find);
+  FRIEND_TEST_ALL_PREFIXES(VariantMapTest, Contains);
   FRIEND_TEST_ALL_PREFIXES(VariantMapTest, Iteration);
   FRIEND_TEST_ALL_PREFIXES(VariantMapTest, Empty);
   FRIEND_TEST_ALL_PREFIXES(VariantMapTest, Clear);

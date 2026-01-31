@@ -31,6 +31,7 @@
 #include "components/sync/base/pref_names.h"
 #include "components/sync/service/sync_feature_status_for_migrations_recorder.h"
 #include "components/sync/service/sync_prefs.h"
+#include "extensions/buildflags/buildflags.h"
 #include "google_apis/gaia/gaia_id.h"
 
 namespace browser_sync {
@@ -54,6 +55,28 @@ enum class SyncToSigninMigrationDecision {
   kMaxValue = kDontMigrateAuthError
 };
 // LINT.ThenChange(/tools/metrics/histograms/metadata/sync/enums.xml:SyncToSigninMigrationDecisionOverall)
+
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused. Additionally, they're also persisted
+// in a pref, so no existing entry should be removed.
+// LINT.IfChange(SyncToSigninMigrationType)
+enum class SyncToSigninMigrationType {
+  // The user was migrated, but the migration type is unknown. This is logged in
+  // case the migration happened before the corresponding histogram was
+  // introduced.
+  kUnknown = 0,
+  // The user was migrated following the standard migration logic.
+  kMigrated = 1,
+  // The user was migrated with the force migration flag enabled.
+  kForceMigrated = 2,
+  // The user was have not yet been migrated.
+  kNotMigratedYet = 3,
+  // The users are already in the desired state, and the migration is not
+  // needed.
+  kMigrationNotNeeded = 4,
+  kMaxValue = kMigrationNotNeeded
+};
+// LINT.ThenChange(/tools/metrics/histograms/metadata/sync/enums.xml:SyncToSigninMigrationType)
 
 #if !BUILDFLAG(IS_CHROMEOS)
 // These values are persisted to logs. Entries should not be renumbered and
@@ -196,6 +219,7 @@ void UndoSyncToSigninMigration(PrefService* pref_service) {
         prefs::kGoogleServicesSyncingGaiaIdMigratedToSignedIn);
     pref_service->ClearPref(
         prefs::kGoogleServicesSyncingUsernameMigratedToSignedIn);
+    pref_service->ClearPref(prefs::kGoogleServicesSyncingUserMigrationType);
     return;
   }
 
@@ -226,6 +250,7 @@ void UndoSyncToSigninMigration(PrefService* pref_service) {
       prefs::kGoogleServicesSyncingGaiaIdMigratedToSignedIn);
   pref_service->ClearPref(
       prefs::kGoogleServicesSyncingUsernameMigratedToSignedIn);
+  pref_service->ClearPref(prefs::kGoogleServicesSyncingUserMigrationType);
 
   // Selected-data-types prefs: No reverse migration - the user will just go
   // back to their previous Sync settings.
@@ -243,6 +268,12 @@ void UndoSyncToSigninMigration(PrefService* pref_service) {
   // now.
   pref_service->ClearPref(
       syncer::prefs::internal::kMigrateReadingListFromLocalToAccount);
+
+  // Extensions: The migration is asynchronous. Most likely it has been
+  // completed by this point, but in case it's still pending, stop attempting it
+  // now.
+  pref_service->ClearPref(
+      syncer::prefs::internal::kMigrateExtensionsFromLocalToAccount);
 }
 
 const char* GetHistogramMigratingOrNotInfix(bool doing_migration) {
@@ -285,6 +316,59 @@ void RecordMigrationResult(base::Time start_time, bool migration_successful) {
                           base::Time::Now() - start_time);
 }
 
+void RecordMigrationType(PrefService* pref_service,
+                         SyncToSigninMigrationDecision decision) {
+  SyncToSigninMigrationType type =
+      SyncToSigninMigrationType::kMigrationNotNeeded;
+  switch (decision) {
+    case SyncToSigninMigrationDecision::kDontMigrateNotSignedIn:
+    case SyncToSigninMigrationDecision::kDontMigrateNotSyncing:
+      // The user is already in the desired state.
+      {
+        const bool was_migrated =
+            !pref_service
+                 ->GetString(
+                     prefs::kGoogleServicesSyncingGaiaIdMigratedToSignedIn)
+                 .empty();
+        if (was_migrated) {
+          // This returns kUnknown (the default value) if the pref is unset,
+          // which implies that the migration happened before this metric
+          // logging was introduced.
+          type =
+              static_cast<SyncToSigninMigrationType>(pref_service->GetInteger(
+                  prefs::kGoogleServicesSyncingUserMigrationType));
+        }
+        // Else, the user was always in the desired state, so `type` remains
+        // `kMigrationNotNeeded`.
+      }
+      break;
+    case SyncToSigninMigrationDecision::kMigrate:
+      // The user is currently undergoing regular migration.
+      type = SyncToSigninMigrationType::kMigrated;
+      break;
+    case SyncToSigninMigrationDecision::kMigrateForced:
+      // The user is currently undergoing forced migration.
+      type = SyncToSigninMigrationType::kForceMigrated;
+      break;
+    case SyncToSigninMigrationDecision::kDontMigrateFlagDisabled:
+    case SyncToSigninMigrationDecision::kDontMigrateSyncStatusUndefined:
+    case SyncToSigninMigrationDecision::kDontMigrateSyncStatusInitializing:
+    case SyncToSigninMigrationDecision::kDontMigrateAuthError:
+      // These cases should not be reached in case the migration has already
+      // happened, or is happening right now. But rather, this implies the user
+      // is eligible for regular migration but some pre-condition has not been
+      // met.
+      type = SyncToSigninMigrationType::kNotMigratedYet;
+      break;
+    case SyncToSigninMigrationDecision::kUndoMigration:
+    case SyncToSigninMigrationDecision::kUndoNotNecessary:
+      // No need to record the metric in this case.
+      return;
+  }
+  base::UmaHistogramEnumeration("Sync.SyncToSigninMigration.MigrationType",
+                                type);
+}
+
 // Helper used to share the logic between MaybeMigrateSyncingUserToSignedIn()
 // and MaybeMigrateSyncingUserToSignedInAsync(). If `closure` is null, all is
 // run on the current sequence otherwise IO ops are scheduled on a background
@@ -316,7 +400,7 @@ void MaybeMigrateSyncingUserToSignedInInternal(
   const SyncToSigninMigrationDecision decision =
       GetSyncToSigninMigrationDecision(pref_service);
   base::UmaHistogramEnumeration("Sync.SyncToSigninMigrationDecision", decision);
-
+  RecordMigrationType(pref_service, decision);
   switch (decision) {
     case SyncToSigninMigrationDecision::kUndoMigration:
       // Undo the migration (if appropriate) and nothing else.
@@ -381,6 +465,29 @@ void MaybeMigrateSyncingUserToSignedInInternal(
                     syncer::DataTypeToHistogramSuffix(syncer::READING_LIST)}),
       reading_list_decision);
 
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+  const SyncToSigninMigrationDataTypeDecision extensions_decision =
+      GetSyncToSigninMigrationDataTypeDecision(
+          pref_service, syncer::EXTENSIONS,
+          syncer::prefs::internal::kSyncExtensions);
+  base::UmaHistogramEnumeration(
+      base::StrCat({"Sync.SyncToSigninMigrationDecision.",
+                    GetHistogramMigratingOrNotInfix(doing_migration),
+                    syncer::DataTypeToHistogramSuffix(syncer::EXTENSIONS)}),
+      extensions_decision);
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
+
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+  const SyncToSigninMigrationDataTypeDecision themes_decision =
+      GetSyncToSigninMigrationDataTypeDecision(
+          pref_service, syncer::THEMES, syncer::prefs::internal::kSyncThemes);
+  base::UmaHistogramEnumeration(
+      base::StrCat({"Sync.SyncToSigninMigrationDecision.",
+                    GetHistogramMigratingOrNotInfix(doing_migration),
+                    syncer::DataTypeToHistogramSuffix(syncer::THEMES)}),
+      themes_decision);
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+
   if (!doing_migration) {
     return;
   }
@@ -408,6 +515,11 @@ void MaybeMigrateSyncingUserToSignedInInternal(
   pref_service->SetString(
       prefs::kGoogleServicesSyncingUsernameMigratedToSignedIn,
       pref_service->GetString(prefs::kGoogleServicesLastSyncingUsername));
+  pref_service->SetInteger(
+      prefs::kGoogleServicesSyncingUserMigrationType,
+      static_cast<int>(decision == SyncToSigninMigrationDecision::kMigrate
+                           ? SyncToSigninMigrationType::kMigrated
+                           : SyncToSigninMigrationType::kForceMigrated));
   // Clear the "previously syncing user" prefs, to prevent accidental misuse.
   pref_service->ClearPref(prefs::kGoogleServicesLastSyncingGaiaId);
   pref_service->ClearPref(prefs::kGoogleServicesLastSyncingUsername);
@@ -476,6 +588,21 @@ void MaybeMigrateSyncingUserToSignedInInternal(
     // `migration_successful` here. The actual outcome will be recorded in other
     // histograms.
   }
+
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+  if (extensions_decision == SyncToSigninMigrationDataTypeDecision::kMigrate) {
+    pref_service->SetBoolean(
+        syncer::prefs::internal::kMigrateExtensionsFromLocalToAccount, true);
+    // TODO(crbug.com/328400930): Add metrics to track this migration.
+  }
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
+
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+  if (themes_decision == SyncToSigninMigrationDataTypeDecision::kMigrate) {
+    pref_service->SetBoolean(
+        syncer::prefs::internal::kMigrateThemeFromLocalToAccount, true);
+  }
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 
   if (!is_blocking_allowed) {
     base::ThreadPool::PostTaskAndReplyWithResult(

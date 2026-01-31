@@ -10,16 +10,11 @@ import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
 import {ItemEventType} from './url_item_delegate.js';
 import type {UrlItem, UrlItemDelegate} from './url_item_delegate.js';
-import {getCss} from './url_item_grid.css.js';
 import {getHtml} from './url_item_grid.html.js';
 
 export class UrlItemGrid extends CrLitElement {
   static get is() {
     return 'url-item-grid';
-  }
-
-  static override get styles() {
-    return getCss();
   }
 
   override render() {

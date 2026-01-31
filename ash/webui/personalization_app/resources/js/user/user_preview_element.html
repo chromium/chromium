@@ -162,7 +162,7 @@
       aria-label$="[[getImageContainerAriaLabel_(path, imageIsEnterpriseManaged_)]]">
     <template is="dom-if" if="[[imageUrl_]]">
       <template is="dom-if" if="[[imageIsEnterpriseManaged_]]">
-        <img id="avatar" class="managed" src$="[[getAvatarUrl_(imageUrl_.url)]]"
+        <img id="avatar" class="managed" src$="[[getAvatarUrl_(imageUrl_)]]"
             alt="$i18n{managedSetting}" title="$i18n{managedSetting}">
         <div id="enterpriseIconContainer">
           <iron-icon icon="personalization:managed"
@@ -187,18 +187,18 @@
               tabindex="0"
               id="avatar"
               class="clickable"
-              src$="[[getAvatarUrl_(imageUrl_.url)]]"
+              src$="[[getAvatarUrl_(imageUrl_)]]"
               alt$="[[getImageAlt_(image_)]]"
               role="button"
               on-click="onClickUserSubpageLink_"
               on-keypress="onClickUserSubpageLink_"
               on-error="onImgError_"
-              style$="[[getImgBackgroundStyle_(imageUrl_.url)]]">
+              style$="[[getImgBackgroundStyle_(imageUrl_)]]">
         </div>
       </template>
       <template is="dom-if"
           if="[[shouldShowSubpageView_(path, imageIsEnterpriseManaged_)]]">
-        <img id="avatar2" src$="[[getAvatarUrl_(imageUrl_.url)]]"
+        <img id="avatar2" src$="[[getAvatarUrl_(imageUrl_)]]"
             alt$="[[getImageAlt_(image_)]]">
       </template>
     </template>

@@ -244,20 +244,20 @@ class EventReportValidator : public EventReportValidatorBase {
   void ExpectFrameUrlChain(const std::vector<std::string>& frame_urls);
 
  private:
-  void ValidateReport(const base::Value::Dict* report);
-  void ValidateFederatedOrigin(const base::Value::Dict* value);
-  void ValidateIdentities(const base::Value::Dict* value);
-  void ValidateMimeType(const base::Value::Dict* value);
-  void ValidateDlpVerdict(const base::Value::Dict* value,
+  void ValidateReport(const base::DictValue* report);
+  void ValidateFederatedOrigin(const base::DictValue* value);
+  void ValidateIdentities(const base::DictValue* value);
+  void ValidateMimeType(const base::DictValue* value);
+  void ValidateDlpVerdict(const base::DictValue* value,
                           const ContentAnalysisResponse::Result& result);
   void ValidateDlpRule(
-      const base::Value::Dict* value,
+      const base::DictValue* value,
       const ContentAnalysisResponse::Result::TriggeredRule& expected_rule);
-  void ValidateFilenameMappedAttributes(const base::Value::Dict* value);
+  void ValidateFilenameMappedAttributes(const base::DictValue* value);
 #if BUILDFLAG(ENABLE_EXTENSIONS)
-  void ValidateDataMaskingAttributes(const base::Value::Dict* event);
+  void ValidateDataMaskingAttributes(const base::DictValue* event);
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
-  void ValidateFrameUrlChain(const base::Value::Dict* value);
+  void ValidateFrameUrlChain(const base::DictValue* value);
 
   std::string event_key_;
   std::optional<std::string> url_;

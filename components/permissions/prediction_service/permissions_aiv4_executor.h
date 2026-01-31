@@ -12,7 +12,7 @@
 #include "base/types/optional_ref.h"
 #include "components/optimization_guide/core/inference/base_model_executor.h"
 #include "components/optimization_guide/core/inference/model_executor.h"
-#include "components/passage_embeddings/passage_embeddings_types.h"
+#include "components/passage_embeddings/core/passage_embeddings_types.h"
 #include "components/permissions/permission_request_enums.h"
 #include "components/permissions/prediction_service/permissions_ai_encoder_base.h"
 #include "components/permissions/prediction_service/permissions_aiv4_model_metadata.pb.h"

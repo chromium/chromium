@@ -172,7 +172,7 @@ RecorderAppUI::RecorderAppUI(content::WebUI* web_ui,
 
   source->AddResourcePaths(kRecorderAppResources);
 
-  source->AddResourcePath("", IDR_RECORDER_APP_INDEX_HTML);
+  source->SetDefaultResource(IDR_RECORDER_APP_INDEX_HTML);
 
   source->AddString("deviceType", GetDeviceTypeString());
 

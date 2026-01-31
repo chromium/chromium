@@ -10,7 +10,7 @@
 #include <string>
 
 #include "base/functional/callback.h"
-#include "third_party/blink/public/mojom/devtools/console_message.mojom-data-view.h"
+#include "third_party/blink/public/mojom/devtools/console_message.mojom-shared.h"
 
 namespace chromeos {
 

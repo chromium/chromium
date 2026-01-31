@@ -24,8 +24,6 @@
 namespace quick_answers {
 namespace {
 
-using base::Value;
-
 // The JSON we generate looks like this:
 // {
 //  "q": [
@@ -44,9 +42,9 @@ constexpr std::string_view kSourceLanguageKey = "source";
 constexpr std::string_view kTargetLanguageKey = "target";
 
 std::string BuildTranslationRequestBody(const IntentInfo& intent_info) {
-  Value::Dict payload;
+  base::DictValue payload;
 
-  Value::List query;
+  base::ListValue query;
   query.Append(intent_info.intent_text);
   payload.Set(kQueryKey, std::move(query));
 

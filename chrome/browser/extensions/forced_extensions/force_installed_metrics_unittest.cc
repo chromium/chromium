@@ -18,7 +18,7 @@
 #include "chrome/browser/extensions/external_provider_impl.h"
 #include "chrome/browser/extensions/forced_extensions/force_installed_test_base.h"
 #include "chrome/browser/extensions/forced_extensions/force_installed_tracker.h"
-#include "chrome/browser/extensions/forced_extensions/install_stage_tracker.h"
+#include "chrome/browser/extensions/forced_extensions/install_stage_tracker_factory.h"
 #include "chrome/browser/extensions/test_extension_system.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/test/base/testing_browser_process.h"
@@ -27,6 +27,7 @@
 #include "extensions/browser/disable_reason.h"
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/extension_registry.h"
+#include "extensions/browser/forced_extensions/install_stage_tracker.h"
 #include "extensions/browser/install/crx_install_error.h"
 #include "extensions/browser/install/sandboxed_unpacker_failure_reason.h"
 #include "extensions/browser/pref_names.h"
@@ -193,13 +194,13 @@ class ForceInstalledMetricsTest : public ForceInstalledTestBase {
   }
 
   void SetupExtensionManagementPref() {
-    base::Value::Dict extension_entry =
-        base::Value::Dict()
+    base::DictValue extension_entry =
+        base::DictValue()
             .Set("installation_mode", "allowed")
             .Set(ExternalProviderImpl::kExternalUpdateUrl, kExtensionUpdateUrl);
     prefs()->SetManagedPref(
         pref_names::kExtensionManagement,
-        base::Value::Dict().Set(kExtensionId1, std::move(extension_entry)));
+        base::DictValue().Set(kExtensionId1, std::move(extension_entry)));
   }
 
   void CreateExtensionService(bool extensions_enabled) {
@@ -1368,8 +1369,7 @@ TEST_F(ForceInstalledMetricsTest,
        NonMisconfigurationFailureNotPresentDisallowedByPolicyTypeError) {
   SetupForceList(ExtensionOrigin::kWebStore);
   // Set TYPE_EXTENSION and TYPE_THEME as the allowed extension types.
-  base::Value::List list =
-      base::Value::List().Append("extension").Append("theme");
+  base::ListValue list = base::ListValue().Append("extension").Append("theme");
   prefs()->SetManagedPref(pref_names::kAllowedTypes, std::move(list));
 
   scoped_refptr<const Extension> ext1 = CreateNewExtension(
@@ -1398,8 +1398,7 @@ TEST_F(ForceInstalledMetricsTest,
   SetupForceList(ExtensionOrigin::kWebStore);
 
   // Set TYPE_EXTENSION and TYPE_THEME as the allowed extension types.
-  base::Value::List list =
-      base::Value::List().Append("extension").Append("theme");
+  base::ListValue list = base::ListValue().Append("extension").Append("theme");
   prefs()->SetManagedPref(pref_names::kAllowedTypes, std::move(list));
 
   scoped_refptr<const Extension> ext1 = CreateNewExtension(

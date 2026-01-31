@@ -6,6 +6,7 @@
 
 #include <memory>
 #include <string>
+#include <utility>
 
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
@@ -127,7 +128,7 @@ class LobsterSystemStateProviderImplBaseTest : public testing::Test {
     pref_.registry()->RegisterBooleanPref(ash::prefs::kLobsterEnabled, true);
     pref_.registry()->RegisterIntegerPref(
         ash::prefs::kLobsterEnterprisePolicySettings,
-        base::to_underlying(
+        std::to_underlying(
             ash::LobsterEnterprisePolicyValue::kAllowedWithModelImprovement));
   }
 
@@ -185,7 +186,7 @@ class LobsterSystemStateProviderImplBaseTest : public testing::Test {
   void SetPolicyValue(
       ash::LobsterEnterprisePolicyValue enterprise_policy_value) {
     pref_.SetInteger(ash::prefs::kLobsterEnterprisePolicySettings,
-                     base::to_underlying(enterprise_policy_value));
+                     std::to_underlying(enterprise_policy_value));
   }
 
   ash::LobsterSystemState GetSystemState(

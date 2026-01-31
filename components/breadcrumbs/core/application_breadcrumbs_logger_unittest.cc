@@ -8,6 +8,7 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/memory_pressure_listener.h"
+#include "base/memory/memory_pressure_listener_registry.h"
 #include "base/metrics/user_metrics_action.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
@@ -64,6 +65,7 @@ class ApplicationBreadcrumbsLoggerTest : public PlatformTest {
   // have finished.
   base::ScopedTempDir temp_dir_;
 
+  base::MemoryPressureListenerRegistry memory_pressure_listener_registry_;
   base::test::TaskEnvironment task_environment_;
   std::unique_ptr<ApplicationBreadcrumbsLogger> logger_;
 };

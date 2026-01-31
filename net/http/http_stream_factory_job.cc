@@ -8,7 +8,6 @@
 #include <utility>
 
 #include "base/check_op.h"
-#include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -96,8 +95,8 @@ const char* NetLogHttpStreamJobType(HttpStreamFactory::JobType job_type) {
 }
 
 // Returns parameters associated with the ALPN protocol of a HTTP stream.
-base::Value::Dict NetLogHttpStreamProtoParams(NextProto negotiated_protocol) {
-  base::Value::Dict dict;
+base::DictValue NetLogHttpStreamProtoParams(NextProto negotiated_protocol) {
+  base::DictValue dict;
 
   dict.Set("proto", NextProtoToString(negotiated_protocol));
   return dict;
@@ -226,7 +225,7 @@ void HttpStreamFactory::Job::Start(HttpStreamRequest::StreamType stream_type) {
   const NetLogWithSource* delegate_net_log = delegate_->GetNetLog();
   if (delegate_net_log) {
     net_log_.BeginEvent(NetLogEventType::HTTP_STREAM_JOB, [&] {
-      base::Value::Dict dict;
+      base::DictValue dict;
       const auto& source = delegate_net_log->source();
       if (source.IsValid()) {
         source.AddToEventParameters(dict);
@@ -800,20 +799,14 @@ int HttpStreamFactory::Job::DoInitConnectionImpl() {
     auto callback =
         base::BindOnce(&Job::OnIOComplete, ptr_factory_.GetWeakPtr());
 
-    // TODO(crbug.com/391578657): Check proxy info for did try IPP proxy to
-    // populate `fail_if_alias_requires_proxy_override` and pass into method for
-    // Preconnect.
     return PreconnectSocketsForHttpRequest(
         destination_, request_info_.load_flags, priority_, session_,
         proxy_info_, allowed_bad_certs_, request_info_.privacy_mode,
         request_info_.network_anonymization_key,
         request_info_.secure_dns_policy, net_log_, num_streams_,
-        /*fail_if_alias_requires_proxy_override_=*/false, std::move(callback));
+        std::move(callback));
   }
 
-  // TODO(crbug.com/383134117): Check proxy info for did try IPP proxy to
-  // populate `fail_if_alias_requires_proxy_override` and pass into
-  // `InitSocketHandleForWebSocketRequest` and `InitSocketHandleForHttpRequest`
   ClientSocketPool::ProxyAuthCallback proxy_auth_callback =
       base::BindRepeating(&HttpStreamFactory::Job::OnNeedsProxyAuthCallback,
                           base::Unretained(this));
@@ -824,8 +817,7 @@ int HttpStreamFactory::Job::DoInitConnectionImpl() {
         destination_, request_info_.load_flags, priority_, session_,
         proxy_info_, allowed_bad_certs_, request_info_.privacy_mode,
         request_info_.network_anonymization_key, net_log_, connection_.get(),
-        io_callback_, proxy_auth_callback,
-        /*fail_if_alias_requires_proxy_override_=*/false);
+        io_callback_, proxy_auth_callback);
   }
 
   return InitSocketHandleForHttpRequest(
@@ -833,7 +825,7 @@ int HttpStreamFactory::Job::DoInitConnectionImpl() {
       allowed_bad_certs_, request_info_.privacy_mode,
       request_info_.network_anonymization_key, request_info_.secure_dns_policy,
       request_info_.socket_tag, net_log_, connection_.get(), io_callback_,
-      proxy_auth_callback, /*fail_if_alias_requires_proxy_override_=*/false);
+      proxy_auth_callback);
 }
 
 int HttpStreamFactory::Job::DoInitConnectionImplQuic() {

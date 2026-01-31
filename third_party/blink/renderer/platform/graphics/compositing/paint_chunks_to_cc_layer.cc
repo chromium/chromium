@@ -1166,11 +1166,13 @@ class LayerPropertiesUpdater {
                          const PropertyTreeState& layer_state,
                          const PaintChunkSubset& chunks,
                          cc::LayerSelection& layer_selection,
-                         bool selection_only)
+                         bool selection_only,
+                         CompositorElementId canvas_subtree_id)
       : chunk_to_layer_mapper_(layer_state, layer.offset_to_transform_parent()),
         layer_(layer),
         chunks_(chunks),
         layer_selection_(layer_selection),
+        canvas_subtree_id_(canvas_subtree_id),
         selection_only_(selection_only),
         layer_scroll_translation_(
             layer_state.Transform().NearestScrollTranslationNode()) {}
@@ -1193,6 +1195,7 @@ class LayerPropertiesUpdater {
 
   void UpdateForNonCompositedScrollbar(const ScrollbarDisplayItem&);
   void UpdateRegionCaptureData(const RegionCaptureData&);
+  void UpdateTrackedElementData(const TrackedElementData&);
   gfx::Point MapSelectionBoundPoint(const gfx::Point&) const;
   cc::LayerSelectionBound PaintedSelectionBoundToLayerSelectionBound(
       const PaintedSelectionBound&) const;
@@ -1202,6 +1205,7 @@ class LayerPropertiesUpdater {
   cc::Layer& layer_;
   const PaintChunkSubset& chunks_;
   cc::LayerSelection& layer_selection_;
+  CompositorElementId canvas_subtree_id_;
   const bool selection_only_;
   const TransformPaintPropertyNode& layer_scroll_translation_;
 
@@ -1215,6 +1219,7 @@ class LayerPropertiesUpdater {
 #endif
   cc::Region main_thread_scroll_hit_test_region_;
   viz::RegionCaptureBounds capture_bounds_;
+  cc::TrackedElementBounds tracked_element_bounds_;
 
   // Top-level (i.e., non-nested) non-composited scrolls. Nested non-composited
   // scrollers will force the containing top non-composited scroller to hit test
@@ -1523,6 +1528,15 @@ void LayerPropertiesUpdater::UpdateRegionCaptureData(
   }
 }
 
+void LayerPropertiesUpdater::UpdateTrackedElementData(
+    const TrackedElementData& tracked_element_data) {
+  for (const std::pair<TrackedElementId, gfx::Rect>& pair :
+       tracked_element_data.map) {
+    gfx::Rect rect = chunk_to_layer_mapper_.MapVisualRect(pair.second);
+    tracked_element_bounds_[pair.first.value()] = {rect};
+  }
+}
+
 gfx::Point LayerPropertiesUpdater::MapSelectionBoundPoint(
     const gfx::Point& point) const {
   return gfx::ToRoundedPoint(
@@ -1579,7 +1593,8 @@ void LayerPropertiesUpdater::Update() {
         NonCompositedScrollbarDisplayItem(it, layer_);
     if ((!selection_only_ &&
          (chunk.hit_test_data || non_composited_scrollbar ||
-          chunk.region_capture_data || !top_non_composited_scrolls_.empty())) ||
+          chunk.region_capture_data || chunk.tracked_element_data ||
+          !top_non_composited_scrolls_.empty())) ||
         chunk.layer_selection_data) {
       chunk_to_layer_mapper_.SwitchToChunk(chunk);
     }
@@ -1599,6 +1614,9 @@ void LayerPropertiesUpdater::Update() {
       if (chunk.region_capture_data) {
         UpdateRegionCaptureData(*chunk.region_capture_data);
       }
+      if (chunk.tracked_element_data) {
+        UpdateTrackedElementData(*chunk.tracked_element_data);
+      }
     }
     if (chunk.layer_selection_data) {
       any_selection_was_painted |=
@@ -1617,6 +1635,7 @@ void LayerPropertiesUpdater::Update() {
 #endif
 
     layer_.SetCaptureBounds(std::move(capture_bounds_));
+    layer_.SetTrackedElementBounds(std::move(tracked_element_bounds_));
 
     std::vector<cc::ScrollHitTestRect> non_composited_scroll_hit_test_rects;
     for (const auto& scroll : top_non_composited_scrolls_) {
@@ -1632,6 +1651,7 @@ void LayerPropertiesUpdater::Update() {
         std::move(main_thread_scroll_hit_test_region_));
     layer_.SetNonCompositedScrollHitTestRects(
         std::move(non_composited_scroll_hit_test_rects));
+    layer_.SetCanvasSubtreeId(canvas_subtree_id_);
   }
 
   if (any_selection_was_painted) {
@@ -1657,9 +1677,10 @@ void PaintChunksToCcLayer::UpdateLayerProperties(
     const PropertyTreeState& layer_state,
     const PaintChunkSubset& chunks,
     cc::LayerSelection& layer_selection,
-    bool selection_only) {
+    bool selection_only,
+    CompositorElementId canvas_subtree_id) {
   LayerPropertiesUpdater(layer, layer_state, chunks, layer_selection,
-                         selection_only)
+                         selection_only, canvas_subtree_id)
       .Update();
 }
 

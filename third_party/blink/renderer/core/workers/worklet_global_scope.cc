@@ -79,6 +79,7 @@ WorkletGlobalScope::WorkletGlobalScope(
           MakeGarbageCollected<Agent>(
               isolate,
               creation_params->agent_cluster_id,
+              blink::Agent::AgentType::kNonCrossOriginIsolatedWorker,
               v8::MicrotaskQueue::New(isolate, v8::MicrotasksPolicy::kScoped)),
           creation_params->global_scope_name,
           creation_params->parent_devtools_token,
@@ -90,7 +91,6 @@ WorkletGlobalScope::WorkletGlobalScope(
           /*is_worker_loaded_from_data_url=*/false,
           /*is_default_world_of_isolate=*/
           creation_params->is_default_world_of_isolate),
-      ActiveScriptWrappable<WorkletGlobalScope>({}),
       url_(creation_params->script_url),
       user_agent_(creation_params->user_agent),
       document_security_origin_(creation_params->starter_origin),
@@ -107,7 +107,7 @@ WorkletGlobalScope::WorkletGlobalScope(
               ? creation_params->parent_context_token->GetAs<LocalFrameToken>()
               : blink::LocalFrameToken()),
       parent_cross_origin_isolated_capability_(
-          creation_params->parent_cross_origin_isolated_capability),
+          creation_params->cross_origin_isolated_capability),
       parent_is_isolated_context_(creation_params->parent_is_isolated_context),
       browser_interface_broker_proxy_(this) {
   DCHECK((thread_type_ == ThreadType::kMainThread && frame_) ||
@@ -357,10 +357,6 @@ void WorkletGlobalScope::Trace(Visitor* visitor) const {
   visitor->Trace(frame_);
   visitor->Trace(browser_interface_broker_proxy_);
   WorkerOrWorkletGlobalScope::Trace(visitor);
-}
-
-bool WorkletGlobalScope::HasPendingActivity() const {
-  return !ExecutionContext::IsContextDestroyed();
 }
 
 }  // namespace blink

@@ -64,7 +64,7 @@ WebUIDataSource* WebUIDataSource::CreateAndAdd(BrowserContext* browser_context,
 // static
 void WebUIDataSource::Update(BrowserContext* browser_context,
                              const std::string& source_name,
-                             const base::Value::Dict& update) {
+                             const base::DictValue& update) {
   URLDataManager::UpdateWebUIDataSource(browser_context, source_name,
                                         std::move(update));
 }
@@ -132,8 +132,6 @@ void GetDataResourceBytesOnWorkerThreadFromDisk(
               filepath, std::move(callback)));
 }
 #endif  // BUILDFLAG(LOAD_WEBUI_FROM_DISK)
-
-const int kNonExistentResource = -1;
 
 }  // namespace
 
@@ -210,8 +208,7 @@ class WebUIDataSourceImpl::InternalDataSource : public URLDataSource {
 WebUIDataSourceImpl::WebUIDataSourceImpl(const std::string& source_name)
     : URLDataSourceImpl(source_name,
                         std::make_unique<InternalDataSource>(this)),
-      source_name_(source_name),
-      default_resource_(kNonExistentResource) {
+      source_name_(source_name) {
   // |source_name| is assumed to match one of the following patterns:
   //
   // some-host
@@ -256,7 +253,7 @@ void WebUIDataSourceImpl::AddLocalizedStrings(
 }
 
 void WebUIDataSourceImpl::AddLocalizedStrings(
-    const base::Value::Dict& localized_strings) {
+    const base::DictValue& localized_strings) {
   localized_strings_.Merge(localized_strings.Clone());
   ui::TemplateReplacementsFromDictionaryValue(localized_strings,
                                               &replacements_);
@@ -302,7 +299,7 @@ void WebUIDataSourceImpl::AddResourcePaths(
 }
 
 void WebUIDataSourceImpl::SetDefaultResource(int resource_id) {
-  default_resource_ = resource_id;
+  AddResourcePath("", resource_id);
 }
 
 void WebUIDataSourceImpl::SetRequestFilter(
@@ -371,7 +368,7 @@ void WebUIDataSourceImpl::EnsureLoadTimeDataDefaultsAdded() {
 
   add_load_time_data_defaults_ = false;
   std::string locale = GetContentClient()->browser()->GetApplicationLocale();
-  base::Value::Dict defaults;
+  base::DictValue defaults;
   webui::SetLoadTimeDataDefaults(locale, &defaults);
   AddLocalizedStrings(defaults);
 }
@@ -538,7 +535,7 @@ void WebUIDataSourceImpl::SendLocalizedStringsAsJSON(
       base::MakeRefCounted<base::RefCountedString>(std::move(template_data)));
 }
 
-const base::Value::Dict* WebUIDataSourceImpl::GetLocalizedStrings() const {
+const base::DictValue* WebUIDataSourceImpl::GetLocalizedStrings() const {
   return &localized_strings_;
 }
 
@@ -551,9 +548,6 @@ int WebUIDataSourceImpl::URLToIdrOrDefault(const GURL& url) const {
   auto it = path_to_idr_map_.find(path);
   if (it != path_to_idr_map_.end())
     return it->second;
-
-  if (default_resource_ != kNonExistentResource)
-    return default_resource_;
 
   // Use GetMimeType() to check for most file requests. It returns text/html by
   // default regardless of the extension if it does not match a different file

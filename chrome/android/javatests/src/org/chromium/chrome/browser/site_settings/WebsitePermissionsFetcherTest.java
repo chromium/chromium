@@ -728,9 +728,7 @@ public class WebsitePermissionsFetcherTest {
         // If the ContentSettingsType.MAX_VALUE value changes *and* a new value has been exposed on
         // Android, then please update this code block to include a test for your new type.
         // Otherwise, just update count in the assert.
-        // TODO(https://b/332704817): Add test for Tracking Protection content setting after Android
-        // integration.
-        assertEquals(122, ContentSettingsType.MAX_VALUE);
+        assertEquals(120, ContentSettingsType.MAX_VALUE);
         websitePreferenceBridge.addContentSettingException(
                 new ContentSettingException(
                         ContentSettingsType.COOKIES,
@@ -832,6 +830,20 @@ public class WebsitePermissionsFetcherTest {
         websitePreferenceBridge.addContentSettingException(
                 new ContentSettingException(
                         ContentSettingsType.LOCAL_NETWORK_ACCESS,
+                        ORIGIN,
+                        ContentSetting.DEFAULT,
+                        ProviderType.PREF_PROVIDER,
+                        /* isEmbargoed= */ false));
+        websitePreferenceBridge.addContentSettingException(
+                new ContentSettingException(
+                        ContentSettingsType.LOCAL_NETWORK,
+                        ORIGIN,
+                        ContentSetting.DEFAULT,
+                        ProviderType.PREF_PROVIDER,
+                        /* isEmbargoed= */ false));
+        websitePreferenceBridge.addContentSettingException(
+                new ContentSettingException(
+                        ContentSettingsType.LOOPBACK_NETWORK,
                         ORIGIN,
                         ContentSetting.DEFAULT,
                         ProviderType.PREF_PROVIDER,

@@ -41,12 +41,12 @@ void ReauthenticateChildAccount(
   JNIEnv* env = AttachCurrentThread();
   Java_ChildAccountService_reauthenticateChildAccount(
       env, window_android->GetJavaObject(), email,
-      reinterpret_cast<jlong>(callback_copy.release()));
+      reinterpret_cast<int64_t>(callback_copy.release()));
 }
 
 static void JNI_ChildAccountService_OnReauthenticationFailed(
     JNIEnv* env,
-    jlong jcallbackPtr) {
+    int64_t jcallbackPtr) {
   // Cast the pointer value back to a Callback and take ownership of it.
   std::unique_ptr<base::RepeatingCallback<void()>> callback(
       reinterpret_cast<base::RepeatingCallback<void()>*>(jcallbackPtr));

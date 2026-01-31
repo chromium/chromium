@@ -34,9 +34,9 @@ constexpr char kBlockedTopics[] = "blockedTopics";
 // Key of the dictionary returned by getFirstLevelTopics
 constexpr char kFirstLevelTopics[] = "firstLevelTopics";
 
-base::Value::Dict ConvertTopicToValue(
+base::DictValue ConvertTopicToValue(
     const privacy_sandbox::CanonicalTopic& topic) {
-  base::Value::Dict topic_value;
+  base::DictValue topic_value;
   topic_value.Set(kTopicId, topic.topic_id().value());
   topic_value.Set(kTaxonomyVersion, topic.taxonomy_version());
   topic_value.Set(kDisplayString, topic.GetLocalizedRepresentation());
@@ -94,14 +94,13 @@ void PrivacySandboxHandler::RegisterMessages() {
 }
 
 void PrivacySandboxHandler::HandleSetFledgeJoiningAllowed(
-    const base::Value::List& args) {
+    const base::ListValue& args) {
   const std::string& site = args[0].GetString();
   const bool enabled = args[1].GetBool();
   GetPrivacySandboxService()->SetFledgeJoiningAllowed(site, enabled);
 }
 
-void PrivacySandboxHandler::HandleGetFledgeState(
-    const base::Value::List& args) {
+void PrivacySandboxHandler::HandleGetFledgeState(const base::ListValue& args) {
   AllowJavascript();
   const std::string& callback_id = args[0].GetString();
   GetPrivacySandboxService()->GetFledgeJoiningEtldPlusOneForDisplay(
@@ -109,8 +108,7 @@ void PrivacySandboxHandler::HandleGetFledgeState(
                      weak_ptr_factory_.GetWeakPtr(), callback_id));
 }
 
-void PrivacySandboxHandler::HandleSetTopicAllowed(
-    const base::Value::List& args) {
+void PrivacySandboxHandler::HandleSetTopicAllowed(const base::ListValue& args) {
   const int topic_id = args[0].GetInt();
   const int taxonomy_version = args[1].GetInt();
   const bool allowed = args[2].GetBool();
@@ -120,27 +118,26 @@ void PrivacySandboxHandler::HandleSetTopicAllowed(
       allowed);
 }
 
-void PrivacySandboxHandler::HandleGetTopicsState(
-    const base::Value::List& args) {
+void PrivacySandboxHandler::HandleGetTopicsState(const base::ListValue& args) {
   AllowJavascript();
-  base::Value::List top_topics_list;
+  base::ListValue top_topics_list;
   for (const auto& topic : GetPrivacySandboxService()->GetCurrentTopTopics()) {
     top_topics_list.Append(ConvertTopicToValue(topic));
   }
 
-  base::Value::List blocked_topics_list;
+  base::ListValue blocked_topics_list;
   for (const auto& topic : GetPrivacySandboxService()->GetBlockedTopics()) {
     blocked_topics_list.Append(ConvertTopicToValue(topic));
   }
 
-  base::Value::Dict topics_state;
+  base::DictValue topics_state;
   topics_state.Set(kTopTopics, std::move(top_topics_list));
   topics_state.Set(kBlockedTopics, std::move(blocked_topics_list));
   ResolveJavascriptCallback(args[0], std::move(topics_state));
 }
 
 void PrivacySandboxHandler::HandleTopicsToggleChanged(
-    const base::Value::List& args) {
+    const base::ListValue& args) {
   AllowJavascript();
   const int toggle_value = args[0].GetBool();
 
@@ -152,19 +149,19 @@ void PrivacySandboxHandler::OnFledgeJoiningSitesRecieved(
     std::vector<std::string> joining_sites) {
   // Combine |joining_sites| with the blocked FLEDGE sites information. The
   // latter is available synchronously.
-  base::Value::List joining_sites_list;
+  base::ListValue joining_sites_list;
   for (const auto& site : joining_sites) {
     joining_sites_list.Append(site);
   }
 
   const auto blocked_sites =
       GetPrivacySandboxService()->GetBlockedFledgeJoiningTopFramesForDisplay();
-  base::Value::List blocked_sites_list;
+  base::ListValue blocked_sites_list;
   for (const auto& site : blocked_sites) {
     blocked_sites_list.Append(site);
   }
 
-  base::Value::Dict fledge_state;
+  base::DictValue fledge_state;
   fledge_state.Set(kJoiningSites, std::move(joining_sites_list));
   fledge_state.Set(kBlockedSites, std::move(blocked_sites_list));
 
@@ -172,19 +169,19 @@ void PrivacySandboxHandler::OnFledgeJoiningSitesRecieved(
 }
 
 void PrivacySandboxHandler::HandleGetFirstLevelTopics(
-    const base::Value::List& args) {
+    const base::ListValue& args) {
   AllowJavascript();
-  base::Value::List blocked_topics_list;
+  base::ListValue blocked_topics_list;
   for (const auto& topic : GetPrivacySandboxService()->GetBlockedTopics()) {
     blocked_topics_list.Append(ConvertTopicToValue(topic));
   }
 
-  base::Value::List first_level_topics_list;
+  base::ListValue first_level_topics_list;
   for (const auto& topic : GetPrivacySandboxService()->GetFirstLevelTopics()) {
     first_level_topics_list.Append(ConvertTopicToValue(topic));
   }
 
-  base::Value::Dict first_level_topics_state;
+  base::DictValue first_level_topics_state;
   first_level_topics_state.Set(kBlockedTopics, std::move(blocked_topics_list));
   first_level_topics_state.Set(kFirstLevelTopics,
                                std::move(first_level_topics_list));
@@ -192,9 +189,9 @@ void PrivacySandboxHandler::HandleGetFirstLevelTopics(
 }
 
 void PrivacySandboxHandler::HandleGetChildTopicsCurrentlyAssigned(
-    const base::Value::List& args) {
+    const base::ListValue& args) {
   AllowJavascript();
-  base::Value::List child_topics_currently_assigned_list;
+  base::ListValue child_topics_currently_assigned_list;
   const int topic_id = args[1].GetInt();
   const int taxonomy_version = args[2].GetInt();
   for (const auto& topic :
@@ -209,7 +206,7 @@ void PrivacySandboxHandler::HandleGetChildTopicsCurrentlyAssigned(
 
 void PrivacySandboxHandler::
     HandlePrivacySandboxPrivacyGuideShouldShowAdTopicsCard(
-        const base::Value::List& args) {
+        const base::ListValue& args) {
   AllowJavascript();
   bool should_show_ad_topics_card =
       GetPrivacySandboxService()
@@ -218,7 +215,7 @@ void PrivacySandboxHandler::
 }
 
 void PrivacySandboxHandler::HandleShouldShowPrivacySandboxAdTopicsContentParity(
-    const base::Value::List& args) {
+    const base::ListValue& args) {
   AllowJavascript();
   ResolveJavascriptCallback(
       args[0], base::FeatureList::IsEnabled(

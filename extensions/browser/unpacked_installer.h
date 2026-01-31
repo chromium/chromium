@@ -1,0 +1,210 @@
+// Copyright 2012 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#ifndef EXTENSIONS_BROWSER_UNPACKED_INSTALLER_H_
+#define EXTENSIONS_BROWSER_UNPACKED_INSTALLER_H_
+
+#include <memory>
+#include <optional>
+#include <string>
+#include <utility>
+#include <vector>
+
+#include "base/callback_list.h"
+#include "base/files/file_path.h"
+#include "base/functional/bind.h"
+#include "base/memory/raw_ptr.h"
+#include "base/memory/ref_counted.h"
+#include "base/scoped_observation.h"
+#include "base/values.h"
+#include "content/public/browser/browser_thread.h"
+#include "extensions/browser/preload_check.h"
+#include "extensions/buildflags/buildflags.h"
+#include "extensions/common/manifest.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
+
+namespace content {
+class BrowserContext;
+}
+
+namespace extensions {
+
+class Extension;
+class ExtensionService;
+class PreloadCheckGroup;
+
+// Installs and loads an unpacked extension. Because internal state needs to be
+// held about the installation process, only one call to Load*() should be made
+// per UnpackedInstaller.
+// TODO(erikkay): It might be useful to be able to load a packed extension
+// (presumably into memory) without installing it.
+class UnpackedInstaller : public base::RefCountedThreadSafe<
+                              UnpackedInstaller,
+                              content::BrowserThread::DeleteOnUIThread> {
+ public:
+  using CompletionCallback = base::OnceCallback<void(const Extension* extension,
+                                                     const base::FilePath&,
+                                                     const std::u16string&)>;
+
+  UnpackedInstaller(const UnpackedInstaller&) = delete;
+  UnpackedInstaller& operator=(const UnpackedInstaller&) = delete;
+
+  static void EnsureShutdownNotifierFactoryBuilt();
+
+  static scoped_refptr<UnpackedInstaller> Create(
+      content::BrowserContext* context);
+
+  // Loads the extension from the directory `extension_path`, which is
+  // the top directory of a specific extension where its manifest file lives.
+  // Errors are reported through LoadErrorReporter. On success,
+  // ExtensionService::AddExtension() is called.
+  void Load(const base::FilePath& extension_path);
+
+  // Loads the extension from the directory `extension_path`;
+  // for use with command line switch --load-extension=path or
+  // --load-and-launch-app=path.
+  // This is equivalent to Load, except that it reads the extension from
+  // `extension_path` synchronously.
+  // The return value indicates whether the installation has begun successfully.
+  // The id of the extension being loaded is returned in `extension_id`.
+  // `only_allow_apps` is used to avoid side-loading of non-app extensions.
+  bool LoadFromCommandLine(const base::FilePath& extension_path,
+                           std::string* extension_id,
+                           bool only_allow_apps);
+
+  // Allows overriding of whether modern manifest versions are required;
+  // intended for testing.
+  bool require_modern_manifest_version() const {
+    return require_modern_manifest_version_;
+  }
+  void set_require_modern_manifest_version(bool val) {
+    require_modern_manifest_version_ = val;
+  }
+
+  void set_be_noisy_on_failure(bool be_noisy_on_failure) {
+    be_noisy_on_failure_ = be_noisy_on_failure;
+  }
+
+  void set_completion_callback(CompletionCallback callback) {
+    callback_ = std::move(callback);
+  }
+
+  void set_allow_file_access(bool allow) { allow_file_access_ = allow; }
+
+  void set_allow_incognito_access(bool allow) {
+    allow_incognito_access_ = allow;
+  }
+
+  void set_install_param(const std::string& param) { install_param_ = param; }
+
+ private:
+  friend struct content::BrowserThread::DeleteOnThread<
+      content::BrowserThread::UI>;
+  friend class base::DeleteHelper<UnpackedInstaller>;
+
+  explicit UnpackedInstaller(content::BrowserContext* context);
+  ~UnpackedInstaller();
+
+  // Must be called from the UI thread. Begin management policy and requirements
+  // checks.
+  void StartInstallChecks();
+
+  // Callback from PreloadCheckGroup.
+  void OnInstallChecksComplete(const PreloadCheck::Errors& errors);
+
+  // Verifies if loading unpacked extensions is allowed.
+  bool IsLoadingUnpackedAllowed() const;
+
+  // We change the input extension path to an absolute path, on the file thread.
+  // Then we need to check the file access preference, which needs
+  // to happen back on the UI thread, so it posts CheckExtensionFileAccess on
+  // the UI thread. In turn, once that gets the pref, it goes back to the
+  // file thread with LoadWithFileAccess.
+  // TODO(yoz): It would be nice to remove this ping-pong, but we need to know
+  // what file access flags to pass to file_util::LoadExtension.
+  void GetAbsolutePathOnFileThread();
+  void CheckExtensionFileAccess();
+  void LoadWithFileAccessOnFileThread(int flags);
+
+  // Notify the frontend that an attempt to retry will not be necessary.
+  void UnregisterLoadRetryListener();
+
+  // Notify the frontend that there was an error loading an extension.
+  void ReportExtensionLoadError(const std::u16string& error);
+
+  // Passes the extension onto extension service.
+  void InstallExtension();
+
+  // Helper to get the Extension::CreateFlags for the installing extension.
+  int GetFlags();
+
+  // Helper to load an extension. Should be called on a sequence where file IO
+  // is allowed. Loads the extension, validates extension locales and persists
+  // the ruleset for the Declarative Net Request API, if needed. In case of an
+  // error, returns false and populates `error`.
+  bool LoadExtension(mojom::ManifestLocation location,
+                     int flags,
+                     std::u16string* error);
+
+  // Reads the Declarative Net Request JSON rulesets for the extension, if it
+  // provided any, and persists the indexed rulesets. Returns false and
+  // populates `error` in case of an error. Should be called on a sequence where
+  // file IO is allowed.
+  bool IndexAndPersistRulesIfNeeded(std::u16string* error);
+
+  // Called on BrowserContext shutdown.
+  void Shutdown();
+
+  const Extension* extension() { return extension_.get(); }
+
+  // The service we will report results back to.
+  raw_ptr<ExtensionService> service_ = nullptr;
+
+  // The BrowserContext the extension is being installed in.
+  raw_ptr<content::BrowserContext> browser_context_;
+
+  // The pathname of the directory to load from, which is an absolute path
+  // after GetAbsolutePath has been called.
+  base::FilePath extension_path_;
+
+  // The extension being installed.
+  scoped_refptr<Extension> extension_;
+
+  // Whether to require the extension installed to have a modern manifest
+  // version.
+  bool require_modern_manifest_version_;
+
+  // Whether or not to be noisy (show a dialog) on failure. Defaults to true.
+  bool be_noisy_on_failure_;
+
+  // Checks to run before the extension can be installed.
+  std::unique_ptr<PreloadCheck> policy_check_;
+  std::unique_ptr<PreloadCheck> requirements_check_;
+
+  // Runs the above checks.
+  std::unique_ptr<PreloadCheckGroup> check_group_;
+
+  // Install prefs needed for the Declarative Net Request API.
+  base::DictValue ruleset_install_prefs_;
+
+  CompletionCallback callback_;
+
+  // Override default file access.
+  std::optional<bool> allow_file_access_;
+
+  // Override default incognito access.
+  std::optional<bool> allow_incognito_access_;
+
+  // Specify an install param.
+  std::optional<std::string> install_param_;
+
+  // Subscription for a callback that runs when the BrowserContext* is
+  // destroyed.
+  base::CallbackListSubscription browser_context_shutdown_subscription_;
+};
+
+}  // namespace extensions
+
+#endif  // EXTENSIONS_BROWSER_UNPACKED_INSTALLER_H_

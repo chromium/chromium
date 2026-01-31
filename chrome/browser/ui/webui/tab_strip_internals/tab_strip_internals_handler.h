@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_WEBUI_TAB_STRIP_INTERNALS_TAB_STRIP_INTERNALS_HANDLER_H_
 
 #include <memory>
+#include <vector>
 
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/webui/tab_strip_internals/tab_strip_internals.mojom.h"
@@ -13,7 +14,12 @@
 #include "mojo/public/cpp/bindings/remote.h"
 
 class Profile;
+class SessionID;
 class TabStripInternalsObserver;
+
+namespace sessions {
+struct SessionWindow;
+}  // namespace sessions
 
 // Browser side handler for requests from `chrome://tab-strip-internals` WebUI.
 class TabStripInternalsPageHandler
@@ -37,12 +43,22 @@ class TabStripInternalsPageHandler
   tab_strip_internals::mojom::ContainerPtr BuildSnapshot();
   // Push live updates to the webui.
   void NotifyTabStripUpdated();
+  // Callback invoked when session data is read from disk.
+  void OnGotSavedSession(
+      std::vector<std::unique_ptr<sessions::SessionWindow>> windows,
+      SessionID active_window_id,
+      bool read_error);
 
   mojo::Receiver<tab_strip_internals::mojom::PageHandler> receiver_;
   mojo::Remote<tab_strip_internals::mojom::Page> page_;
 
   raw_ptr<Profile> profile_;
   std::unique_ptr<TabStripInternalsObserver> observer_;
+
+  // Callback for pending Mojo request.
+  GetTabStripDataCallback pending_callback_;
+  // Cache of saved session restore data.
+  std::vector<std::unique_ptr<sessions::SessionWindow>> saved_session_windows_;
 
   base::WeakPtrFactory<TabStripInternalsPageHandler> weak_ptr_factory_{this};
 };

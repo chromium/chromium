@@ -529,6 +529,7 @@ void MediaItemUIDetailedView::UpdateDeviceSelectorAvailability(
   if (visible != start_casting_button_->GetVisible()) {
     start_casting_button_->SetVisible(visible);
     UpdateCastingState();
+    container_->OnListViewSizeChanged();
   }
 }
 
@@ -537,7 +538,8 @@ void MediaItemUIDetailedView::UpdateDeviceSelectorAvailability(
 
 void MediaItemUIDetailedView::AddedToWidget() {
   // Ink drop on the start casting button requires color provider to be ready,
-  // so we need to update the state after the widget is ready.
+  // so we need to update the state after the widget is ready. Do not update the
+  // container size during view initialization to avoid crashing.
   if (device_selector_view_) {
     UpdateCastingState();
   }
@@ -590,8 +592,8 @@ void MediaItemUIDetailedView::UpdateActionButtonsVisibility() {
   bool should_invalidate_layout = false;
 
   for (views::Button* button : action_buttons_) {
-    bool should_show = base::Contains(
-        enabled_actions_, static_cast<MediaSessionAction>(button->GetID()));
+    bool should_show = enabled_actions_.contains(
+        static_cast<MediaSessionAction>(button->GetID()));
 
     if (button == picture_in_picture_button_) {
       // Force the picture-in-picture button to be visible if the media is
@@ -716,6 +718,7 @@ void MediaItemUIDetailedView::StartCastingButtonPressed() {
         device_selector_view_->ShowDevices();
       }
       UpdateCastingState();
+      container_->OnListViewSizeChanged();
       break;
     }
     default:
@@ -762,8 +765,6 @@ void MediaItemUIDetailedView::UpdateCastingState() {
     device_selector_view_->SetVisible(false);
     device_selector_view_separator_->SetVisible(false);
   }
-
-  container_->OnListViewSizeChanged();
 }
 
 void MediaItemUIDetailedView::UpdateChapterListViewWithMetadata(
@@ -1007,6 +1008,7 @@ void MediaItemUIDetailedView::ToggleChapterListView() {
         device_selector_view_->IsDeviceSelectorExpanded()) {
       device_selector_view_->HideDevices();
       UpdateCastingState();
+      container_->OnListViewSizeChanged();
     }
   }
 

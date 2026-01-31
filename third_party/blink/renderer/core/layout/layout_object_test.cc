@@ -1970,4 +1970,68 @@ TEST_F(LayoutObjectTest, QuadsInAncestor_Inline) {
   EXPECT_EQ(quads[2].BoundingBox(), gfx::RectF(110, 280, 20, 20));
 }
 
+TEST_F(LayoutObjectTest, GeneratingNode) {
+  SetBodyInnerHTML(R"HTML(
+    <style>
+      #pseudo::before { content: "before"; display: block; }
+    </style>
+    <div id="normal">Normal</div>
+    <div id="pseudo"></div>
+    <div id="table" style="display: table">
+      <div id="row" style="display: table-row">
+        Text
+      </div>
+    </div>
+    <div id="table2" style="display: table">
+      Text2
+    </div>
+  )HTML");
+
+  // 1. Normal element
+  LayoutObject* normal = GetLayoutObjectByElementId("normal");
+  EXPECT_EQ(GetElementById("normal"), normal->GeneratingNode());
+
+  // 2. Pseudo element ::before
+  Element* pseudo = GetElementById("pseudo");
+  LayoutObject* pseudo_layout = pseudo->GetLayoutObject();
+  LayoutObject* before = pseudo_layout->SlowFirstChild();
+  ASSERT_TRUE(before);
+  ASSERT_TRUE(before->IsPseudoElement());
+  EXPECT_EQ(pseudo, before->GeneratingNode());
+
+  // 3. Anonymous object
+  // The text node "Text" is inside "row". A table row expects cells.
+  // So an anonymous table cell should be created around the text.
+  // The hierarchy: LayoutTable -> LayoutTableRow -> LayoutTableCell (Anonymous)
+  // -> LayoutText
+  LayoutObject* row = GetLayoutObjectByElementId("row");
+  LayoutObject* anonymous_cell = row->SlowFirstChild();
+  ASSERT_TRUE(anonymous_cell);
+  EXPECT_TRUE(anonymous_cell->IsAnonymous());
+  EXPECT_TRUE(anonymous_cell->IsTableCell());
+
+  // GetNode() is null for anonymous objects, so it recurses up to Parent().
+  // Parent is "row", so it should return the row element.
+  EXPECT_EQ(GetElementById("row"), anonymous_cell->GeneratingNode());
+
+  // 4. Nested Anonymous objects
+  // Hierarchy: LayoutTable -> LayoutTableSection(Anon) -> LayoutTableRow(Anon)
+  // -> LayoutTableCell(Anon) -> LayoutText
+  LayoutObject* table2 = GetLayoutObjectByElementId("table2");
+  LayoutObject* section = table2->SlowFirstChild();
+  ASSERT_TRUE(section);
+  EXPECT_TRUE(section->IsAnonymous());
+  EXPECT_EQ(GetElementById("table2"), section->GeneratingNode());
+
+  LayoutObject* row2 = section->SlowFirstChild();
+  ASSERT_TRUE(row2);
+  EXPECT_TRUE(row2->IsAnonymous());
+  EXPECT_EQ(GetElementById("table2"), row2->GeneratingNode());
+
+  LayoutObject* cell2 = row2->SlowFirstChild();
+  ASSERT_TRUE(cell2);
+  EXPECT_TRUE(cell2->IsAnonymous());
+  EXPECT_EQ(GetElementById("table2"), cell2->GeneratingNode());
+}
+
 }  // namespace blink

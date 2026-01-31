@@ -12,13 +12,15 @@
 #include "base/functional/callback_helpers.h"
 #include "base/scoped_multi_source_observation.h"
 #include "base/scoped_observation.h"
-#include "chrome/browser/ui/browser_list.h"
-#include "chrome/browser/ui/browser_list_observer.h"
+#include "chrome/browser/ui/browser_window/public/browser_collection_observer.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 #include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "extensions/browser/extension_host_registry.h"
+
+class BrowserWindowInterface;
+class GlobalBrowserCollection;
 
 namespace content {
 class BrowserContext;
@@ -39,7 +41,7 @@ class ExtensionHost;
 // Should the class become used in a wider context, additional logic to remove
 // such stale entries should be added.
 class CustomCursorSuppressor
-    : public BrowserListObserver,
+    : public BrowserCollectionObserver,
       public TabStripModelObserver,
       public extensions::ExtensionHostRegistry::Observer {
  public:
@@ -81,11 +83,11 @@ class CustomCursorSuppressor
   // already disallowed on `web_contents`.
   void MaybeObserveNavigationsInWebContents(content::WebContents& web_contents);
 
-  // BrowserListObserver:
+  // BrowserCollectionObserver:
   // Starts observing the tab strip model of `browser`. Note that there is
-  // no corresponding `OnBrowserRemoved`, since `TabStripModelObserver`
+  // no corresponding OnBrowserClosed, since `TabStripModelObserver`
   // already handles model destruction itself.
-  void OnBrowserAdded(Browser* browser) override;
+  void OnBrowserCreated(BrowserWindowInterface* browser) override;
 
   // TabStripModelObserver:
   void OnTabStripModelChanged(
@@ -120,8 +122,8 @@ class CustomCursorSuppressor
     Callback callback_;
   };
 
-  base::ScopedObservation<BrowserList, BrowserListObserver>
-      browser_list_observation_{this};
+  base::ScopedObservation<GlobalBrowserCollection, BrowserCollectionObserver>
+      browser_collection_observation_{this};
 
   // Observes when new `ExtensionHost`s load their documents and when
   // `ExtensionHostRegistry`s shut down.

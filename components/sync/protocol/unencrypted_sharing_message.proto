@@ -21,12 +21,69 @@ message UnencryptedSharingMessage {
   // Payload of the message, contains one of the messages below.
   oneof payload {
     SendTabToSelfPush send_tab_message = 2;
+    DesktopToMobilePromoMessage desktop_to_mobile_promo_message = 4;
   }
 
   // The name of the device sending this message.
   optional string sender_device_name = 3;
 }
 
+// Generic push notification message.
+message PushNotificationMessage {
+  // Required. Notification title text to display.
+  optional string title = 1;
+
+  // Required. Actual body text to display.
+  optional string text = 2;
+
+  message Image {
+    // Required. URL of this image resource. FIFE hosted URLs are preferred.
+    optional string url = 1;
+
+    // Optional. Alternate text to display if the image cannot be found and for
+    // accessibility reasons.
+    optional string alt_text = 2;
+  }
+
+  // Optional. An icon to be displayed alongside the notification, or a series
+  // of icons to be put in a collage. If no icon is specified, the frontend
+  // will display a generic icon image.
+  repeated Image icon = 3;
+
+  // Optional. A small app icon to display in certain notification views. This
+  // field can be omitted in favor of using a favicon specified in the
+  // chrome_chime client config. If this field is omitted and the client config
+  // favicon is unspecified, no icon is displayed.
+  optional Image favicon = 4;
+
+  // Required. A URL that will be visited when clicking on this notification.
+  optional string destination_url = 5;
+
+  // Placeholder title. Will be used if payload is not properly assembled on
+  // receiving device. Will not get encrypted by Chime.
+  optional string placeholder_title = 6;
+
+  // Placeholder body. Will be used if payload is not properly assembled on
+  // receiving device. Will not get encrypted by Chime.
+  optional string placeholder_body = 7;
+
+  // Required. Should match Chromium enum at
+  // ios/chrome/browser/push_notification/model/push_notification_client_id.h.
+  optional string push_notification_client_id = 8;
+}
+
+// Message specific to desktop-to-mobile promo notifications.
+message DesktopToMobilePromoMessage {
+  // Required. Contains the common fields required to configure a push
+  // notification.
+  optional PushNotificationMessage push_notification = 1;
+
+  // Required. Should match Chromium enum desktop_to_mobile_promos::PromoType at
+  // components/desktop_to_mobile_promos/promos_types.h.
+  optional int32 promo_type = 2;
+}
+
+// Message for Send Tab To Self notifications.
 message SendTabToSelfPush {
   // Required. Notification title text to display.
   optional string title = 1;

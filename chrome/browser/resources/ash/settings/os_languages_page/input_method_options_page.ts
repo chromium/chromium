@@ -29,8 +29,10 @@ import type {Route} from '../router.js';
 import {Router, routes} from '../router.js';
 
 import {getTemplate} from './input_method_options_page.html.js';
-import type {OPTION_DEFAULT} from './input_method_util.js';
-import {AUTOCORRECT_OPTION_MAP_OVERRIDE, generateOptions, getDefaultValue, getFirstPartyInputMethodEngineId, getOptionLabelName, getOptionMenuItems, getOptionSubtitleName, getOptionUiType, getOptionUrl, getSubmenuButtonType, getUntranslatedOptionLabelName, isOptionLabelTranslated, OptionType, PHYSICAL_KEYBOARD_AUTOCORRECT_ENABLED_BY_DEFAULT, SettingsHeaders, shouldStoreAsNumber, SubmenuButton, UiType} from './input_method_util.js';
+import {OptionType, PHYSICAL_KEYBOARD_AUTOCORRECT_ENABLED_BY_DEFAULT} from './input_method_prefs_consts.js';
+import type {OPTION_DEFAULT} from './input_method_prefs_defaults.js';
+import type {UiOptionType} from './input_method_util.js';
+import {AUTOCORRECT_OPTION_MAP_OVERRIDE, generateOptions, getDefaultValue, getFirstPartyInputMethodEngineId, getOptionLabelName, getOptionMenuItems, getOptionSubtitleName, getOptionUiType, getOptionUrl, getSubmenuButtonType, getUntranslatedOptionLabelName, isOptionLabelTranslated, SettingsHeaders, shouldStoreAsNumber, SubmenuButton, UiType} from './input_method_util.js';
 import type {LanguageHelper} from './languages_types.js';
 
 /**
@@ -53,7 +55,7 @@ type PrefsObjectType =
  */
 // TODO(b/263829863): Use a discriminated union for better type-safety.
 interface Option {
-  name: OptionType;
+  name: OptionType|UiOptionType;
   uiType: UiType;
   value: OptionValue;
   label: string;
@@ -212,6 +214,13 @@ export class SettingsInputMethodOptionsPageElement extends
    * For some engineId, we want to store the data in a different storage
    * engineId. i.e. we want to use the nacl_mozc_jp settings data for
    * the nacl_mozc_us settings.
+   *
+   * TODO(b:203464079): Use distinct CrOS-Prefs for nacl_mozc_jp (Japanese) &
+   * nacl_mozc_us (Japanese for US keyboard) input methods. Due to singleton
+   * constraints in legacy impl, unlike all other input methods whose settings
+   * were distinct from one another, these two shared the the same settings.
+   * Upon CrOS-Prefs migration, the unintended sharing was retained till the
+   * issue is separately addressed outside the scope of the said migration.
    */
   private getStorageEngineId_(): string {
     return this.engineId_ !== 'nacl_mozc_us' ? this.engineId_ : 'nacl_mozc_jp';
@@ -221,7 +230,7 @@ export class SettingsInputMethodOptionsPageElement extends
    * Get menu items for an option, and enrich the items with selected status and
    * i18n label.
    */
-  getMenuItems(name: OptionType, value: OptionValue): Array<{
+  getMenuItems(name: OptionType|UiOptionType, value: OptionValue): Array<{
     selected: boolean,
     label: string|number,
     name?: string, value: string|number,
@@ -249,15 +258,12 @@ export class SettingsInputMethodOptionsPageElement extends
       isVietnameseFirstPartyInputSettingsAllowed:
           loadTimeData.getBoolean('allowFirstPartyVietnameseInput'),
     });
-    // The settings for Japanese for both engine nacl_mozc_us and nacl_mozc_jp
-    // types will be stored in nacl_mozc_us. See:
-    // https://crsrc.org/c/chrome/browser/ash/input_method/input_method_settings.cc;drc=5b784205e8043fb7d1c11e3d80521e80704947ca;l=25
     const engineId = this.getStorageEngineId_();
     const currentSettings = inputMethodSpecificSettings[engineId] ?? {};
     const defaultOverrides = this.getDefaultValueOverrides_(engineId);
 
     const makeOption = (option: {
-      name: OptionType,
+      name: OptionType|UiOptionType,
       dependentOptions?: OptionType[],
     }): Option => {
       const name = option.name;
@@ -368,7 +374,7 @@ export class SettingsInputMethodOptionsPageElement extends
     };
   }
 
-  private dependentOptionsDisabled_(value: OptionValue): boolean {
+  private dependentOptionsDisabled_(value: OptionValue|string): boolean {
     // TODO(b/189909728): Sometimes the value comes as a string, other times as
     // an integer, other times as a boolean, so handle all cases. Try to
     // understand and fix this.
@@ -391,7 +397,8 @@ export class SettingsInputMethodOptionsPageElement extends
     });
   }
 
-  private isSettingValueValid_(name: OptionType, value: OptionValue): boolean {
+  private isSettingValueValid_(
+      name: OptionType|UiOptionType, value: OptionValue): boolean {
     // TODO(b/238031866): Move this to be a function, as this method does not
     // use `this`.
     const uiType = getOptionUiType(name);
@@ -408,7 +415,8 @@ export class SettingsInputMethodOptionsPageElement extends
    * Callers must ensure that `newValue` is the value DISPLAYED for `optionName`
    * as this method maps back displayed values to stored prefs values.
    */
-  private updatePref_(optionName: OptionType, newValue: OptionValue): void {
+  private updatePref_(
+      optionName: OptionType|UiOptionType, newValue: OptionValue): void {
     // Get the existing settings dictionary, in order to update it later.
     // |PrefsMixin.setPrefValue| will update Cros Prefs only if the reference
     // of variable has changed, so we need to copy the current content into a

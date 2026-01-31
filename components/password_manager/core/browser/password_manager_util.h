@@ -62,12 +62,6 @@ bool IsLoggingActive(password_manager::PasswordManagerClient* client);
 bool ManualPasswordGenerationEnabled(
     password_manager::PasswordManagerDriver* driver);
 
-// Returns true iff the "Show all saved passwords" option should be shown in
-// Context Menu. Also records metric, that the Context Menu will have "Show all
-// saved passwords" option.
-bool ShowAllSavedPasswordsContextMenuEnabled(
-    password_manager::PasswordManagerDriver* driver);
-
 // Triggers password generation flow and records the metrics. If the user should
 // be asked to opt in to account storage, will trigger a reauth flow first and
 // generation will only happen on success.

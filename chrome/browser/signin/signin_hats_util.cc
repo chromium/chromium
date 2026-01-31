@@ -6,10 +6,12 @@
 
 #include <optional>
 #include <string>
+#include <string_view>
 
-#include "base/containers/flat_map.h"
+#include "base/containers/fixed_flat_set.h"
 #include "base/containers/map_util.h"
 #include "base/feature_list.h"
+#include "base/functional/callback.h"
 #include "base/no_destructor.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/version.h"
@@ -31,6 +33,7 @@
 #include "components/signin/public/base/signin_metrics.h"
 #include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 
 #if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/profiles/profile_window.h"
@@ -49,16 +52,14 @@ constexpr char kDismissedSigninBubbleType[] =
 constexpr char kIdentityState[] = "Sign-in Status";
 
 // Launches a HaTS survey for the profile associated with `browser`.
-void LaunchSigninHatsSurveyForBrowser(const std::string& trigger,
-                                      Browser* browser) {
+void LaunchHatsSurveyForBrowser(const std::string& trigger, Browser* browser) {
   if (!browser) {
     return;
   }
-  signin::LaunchSigninHatsSurveyForProfile(trigger, browser->GetProfile());
+  signin::LaunchHatsSurveyForProfile(trigger, browser->GetProfile());
 }
 
-std::string GetDismissedSigninBubbleType(
-    signin_metrics::AccessPoint access_point) {
+std::string GetDismissedBubbleType(signin_metrics::AccessPoint access_point) {
   switch (access_point) {
     case signin_metrics::AccessPoint::kAddressBubble:
       return "Address Bubble";
@@ -73,11 +74,10 @@ std::string GetDismissedSigninBubbleType(
   }
 }
 
-SurveyStringData GetSigninSurveyStringData(
-    const std::string& trigger,
-    Profile* profile,
-    std::optional<signin_metrics::AccessPoint>
-        access_point_for_data_type_promo) {
+SurveyStringData GetSurveyStringData(const std::string& trigger,
+                                     Profile* profile,
+                                     std::optional<signin_metrics::AccessPoint>
+                                         access_point_for_data_type_promo) {
   SurveyStringData data;
   data.emplace(
       kChannel,
@@ -89,7 +89,7 @@ SurveyStringData GetSigninSurveyStringData(
     CHECK(access_point_for_data_type_promo.has_value());
     data.emplace(
         kDismissedSigninBubbleType,
-        GetDismissedSigninBubbleType(access_point_for_data_type_promo.value()));
+        GetDismissedBubbleType(access_point_for_data_type_promo.value()));
   }
 
   // For bucketing, report "5+" if the number of profiles is larger than 5.
@@ -116,16 +116,30 @@ SurveyStringData GetSigninSurveyStringData(
   return data;
 }
 
-#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+// Returns true if surveys are allowed for the current application locale.
+bool IsLocaleAllowedForSurvey() {
+  static constexpr auto kAllowedSurveyLocales =
+      base::MakeFixedFlatSet<std::string_view>({
+          "de",
+          "en",
+          "en-GB",
+          "en-US",
+          "fr",
+          "fr-CA",
+          "ja",
+          "pt",
+      });
+  return kAllowedSurveyLocales.contains(
+      g_browser_process->GetApplicationLocale());
+}
 
-}  // namespace
-
-namespace signin {
-
-bool IsFeatureEnabledForSigninHatsTrigger(const std::string& trigger) {
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+// Returns true if the survey corresponding to `trigger` should be enabled.
+// Surveys are gated by both a feature flag and locale eligibility.
+// However, if the feature flag is overridden (e.g., by Finch or command-line),
+// the locale check is bypassed to allow server-side control.
+bool IsSurveyEnabledForHatsTrigger(const std::string& trigger) {
   static const base::NoDestructor<
-      base::flat_map<std::string_view, const base::Feature*>>
+      absl::flat_hash_map<std::string_view, const base::Feature*>>
       kChromeIdentityHatsTriggerFeatureMap({
           {kHatsSurveyTriggerIdentityAddressBubbleSignin,
            &switches::kChromeIdentitySurveyAddressBubbleSignin},
@@ -152,24 +166,40 @@ bool IsFeatureEnabledForSigninHatsTrigger(const std::string& trigger) {
           {kHatsSurveyTriggerIdentitySwitchProfileFromProfilePicker,
            &switches::kChromeIdentitySurveySwitchProfileFromProfilePicker},
       });
-  if (const auto* feature =
-          base::FindPtrOrNull(*kChromeIdentityHatsTriggerFeatureMap, trigger)) {
+
+  const auto* feature =
+      base::FindPtrOrNull(*kChromeIdentityHatsTriggerFeatureMap, trigger);
+
+  if (!feature) {
+    // No matching feature for the given trigger.
+    return false;
+  }
+
+  auto* feature_list = base::FeatureList::GetInstance();
+  if (feature_list && feature_list->IsFeatureOverridden(feature->name)) {
+    // If the feature state is overridden (e.g., by Finch or command-line),
+    // bypass the locale check. This allows Finch to enable surveys for
+    // locales not listed in `IsLocaleAllowedForSurvey`.
     return base::FeatureList::IsEnabled(*feature);
   }
-#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 
-  // No matching feature for the given trigger, or the current platform does not
-  // support signin surveys.
-  return false;
+  // If not overridden, the survey is enabled only if the feature is on
+  // AND the locale is eligible.
+  return IsLocaleAllowedForSurvey() && base::FeatureList::IsEnabled(*feature);
 }
 
-void LaunchSigninHatsSurveyForProfile(const std::string& trigger,
-                                      Profile* profile,
-                                      bool defer_if_no_browser,
-                                      std::optional<signin_metrics::AccessPoint>
-                                          access_point_for_data_type_promo) {
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+
+// Attempts to launch the survey, whose SurveyStringData is provided at the last
+// possible moment by `data_factory`. This avoids unnecessary work in case the
+// survey can't be launched anyway.
+void LaunchHatsSurveyForProfileInternal(
+    const std::string& trigger,
+    Profile* profile,
+    bool defer_if_no_browser,
+    base::OnceCallback<SurveyStringData()> data_factory) {
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
-  if (!profile || !IsFeatureEnabledForSigninHatsTrigger(trigger)) {
+  if (!profile || !IsSurveyEnabledForHatsTrigger(trigger)) {
     return;
   }
 
@@ -182,7 +212,7 @@ void LaunchSigninHatsSurveyForProfile(const std::string& trigger,
       // TODO(crbug.com/427971911): Fix test crashes due to the dangling
       // pointer.
       new profiles::BrowserAddedForProfileObserver(
-          profile, base::BindOnce(&LaunchSigninHatsSurveyForBrowser, trigger));
+          profile, base::BindOnce(&LaunchHatsSurveyForBrowser, trigger));
     }
     return;
   }
@@ -198,10 +228,38 @@ void LaunchSigninHatsSurveyForProfile(const std::string& trigger,
       trigger,
       switches::kChromeIdentitySurveyLaunchWithDelayDuration.Get()
           .InMilliseconds(),
-      /*product_specific_bits_data=*/{},
-      GetSigninSurveyStringData(trigger, profile,
-                                access_point_for_data_type_promo));
+      /*product_specific_bits_data=*/{}, std::move(data_factory).Run());
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+}
+
+}  // namespace
+
+namespace signin {
+
+void LaunchHatsSurveyForProfile(const std::string& trigger,
+                                Profile* profile,
+                                bool defer_if_no_browser,
+                                std::optional<signin_metrics::AccessPoint>
+                                    access_point_for_data_type_promo) {
+  LaunchHatsSurveyForProfileInternal(
+      trigger, profile, defer_if_no_browser,
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+      base::BindOnce(&GetSurveyStringData, trigger, profile,
+                     access_point_for_data_type_promo)
+#else
+      base::BindOnce([]() { return SurveyStringData(); })
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+  );
+}
+
+void LaunchHatsSurveyForProfile(const std::string& trigger,
+                                Profile* profile,
+                                bool defer_if_no_browser,
+                                SurveyStringData data) {
+  LaunchHatsSurveyForProfileInternal(
+      trigger, profile, defer_if_no_browser,
+      base::BindOnce([](SurveyStringData data) { return data; },
+                     std::move(data)));
 }
 
 }  // namespace signin

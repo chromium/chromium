@@ -1,0 +1,10 @@
+This is a testharness.js-based test.
+[PRECONDITION_FAILED] A held lock on the main thread should not prevent bfcache
+  Could have been BFCached but actually wasn't
+[PRECONDITION_FAILED] A held lock on a worker should not prevent bfcache
+  Could have been BFCached but actually wasn't
+[PRECONDITION_FAILED] A held lock on a nested worker should not prevent bfcache
+  Could have been BFCached but actually wasn't
+[PRECONDITION_FAILED] A held lock on a shared worker should not prevent bfcache
+  Could have been BFCached but actually wasn't
+Harness: the test ran to completion.

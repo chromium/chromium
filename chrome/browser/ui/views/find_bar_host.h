@@ -63,15 +63,17 @@ class FindBarHost : public FindBar,
   // was forwarded, false if not.
   bool MaybeForwardKeyEventToWebpage(const ui::KeyEvent& key_event);
 
+  // Ensures the owner widget is active if it is not already, since the find bar
+  // is not activatable. See crbug.com/40616214.
+  void ActivateOwnerWidgetIfNecessary();
+
   // Returns true if the find bar view is visible, or false otherwise.
   bool IsVisible() const;
 
   FindBarOwner* find_bar_owner() { return find_bar_owner_; }
 
-#if BUILDFLAG(IS_MAC)
   // Get the host widget.
   views::Widget* GetHostWidget() override;
-#endif
 
   // FindBar implementation:
   FindBarController* GetFindBarController() const override;

@@ -52,8 +52,8 @@ source_set("extensions") {
 
   if (!is_chromeos) {
     deps += [
-      "//chrome/browser/apps/app_service:constants",
       "//chrome/browser/ui/extensions",
+      "//components/services/app_service",
     ]
   }
 }

@@ -9,7 +9,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -100,7 +99,7 @@ int FlossManagerClient::GetDefaultAdapter() const {
 }
 
 bool FlossManagerClient::GetAdapterPresent(int adapter) const {
-  return base::Contains(adapter_to_enabled_, adapter);
+  return adapter_to_enabled_.contains(adapter);
 }
 
 bool FlossManagerClient::GetAdapterEnabled(int adapter) const {
@@ -329,7 +328,7 @@ void FlossManagerClient::HandleGetAvailableAdapters(
     // Emit present for new adapters that weren't in old list. Also emit the
     // enabled changed for them.
     for (auto& [adapter, enabled] : adapter_to_enabled_) {
-      if (!base::Contains(previous_adapters, adapter)) {
+      if (!previous_adapters.contains(adapter)) {
         observer.AdapterPresent(adapter, true);
         observer.AdapterEnabledChanged(adapter, enabled);
       }
@@ -339,7 +338,7 @@ void FlossManagerClient::HandleGetAvailableAdapters(
     // We don't need to emit AdapterEnabledChanged since we emit
     // AdapterPresent is false
     for (auto& [adapter, enabled] : previous_adapters) {
-      if (!base::Contains(adapter_to_enabled_, adapter)) {
+      if (!adapter_to_enabled_.contains(adapter)) {
         observer.AdapterPresent(adapter, false);
       }
     }
@@ -363,7 +362,7 @@ void FlossManagerClient::HandleRegisterCallback(DBusResult<Void> result) {
 void FlossManagerClient::HandleGetAdapterEnabledAfterPresent(
     int32_t adapter,
     DBusResult<bool> response) {
-  if (!base::Contains(adapter_present_pending_, adapter)) {
+  if (!adapter_present_pending_.contains(adapter)) {
     // We may have cleared the pending list in OnHciEnabledChanged.
     return;
   }
@@ -387,10 +386,10 @@ void FlossManagerClient::HandleGetAdapterEnabledAfterPresent(
 }
 
 void FlossManagerClient::OnHciDeviceChanged(int32_t adapter, bool present) {
-  auto was_present = base::Contains(adapter_to_enabled_, adapter);
+  auto was_present = adapter_to_enabled_.contains(adapter);
   // Newly present
   if (!was_present && present) {
-    if (!base::Contains(adapter_present_pending_, adapter)) {
+    if (!adapter_present_pending_.contains(adapter)) {
       // Defer the AdapterPresent event until we know the actual state.
       adapter_present_pending_.insert(adapter);
       CallManagerMethod<bool>(
@@ -428,7 +427,7 @@ void FlossManagerClient::OnHciDeviceChanged(int32_t adapter, bool present) {
 void FlossManagerClient::OnHciEnabledChanged(int32_t adapter, bool enabled) {
   adapter_to_enabled_[adapter] = enabled;
 
-  if (base::Contains(adapter_present_pending_, adapter)) {
+  if (adapter_present_pending_.contains(adapter)) {
     // We haven't notified the presence for this adapter. Notify now.
     adapter_present_pending_.erase(adapter);
     for (auto& observer : observers_) {

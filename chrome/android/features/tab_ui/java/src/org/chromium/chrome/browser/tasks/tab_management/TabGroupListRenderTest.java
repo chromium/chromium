@@ -96,8 +96,7 @@ public class TabGroupListRenderTest {
                 () -> {
                     ChromeTabbedActivity cta = mCtaTestRule.getActivity();
                     TabModelSelector selector = cta.getTabModelSelector();
-                    TabGroupModelFilter filter =
-                            selector.getTabGroupModelFilterProvider().getTabGroupModelFilter(false);
+                    TabGroupModelFilter filter = selector.getTabGroupModelFilter(false);
                     TabModel model = cta.getTabModelSelector().getModel(false);
                     Tab tab =
                             model.getTabCreator()

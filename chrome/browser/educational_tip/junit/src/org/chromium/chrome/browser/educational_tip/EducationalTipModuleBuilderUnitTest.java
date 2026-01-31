@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.educational_tip;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
@@ -25,8 +26,8 @@ import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.Callback;
-import org.chromium.base.supplier.ObservableSupplier;
-import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.supplier.NonNullObservableSupplier;
+import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
@@ -36,9 +37,10 @@ import org.chromium.chrome.browser.magic_stack.ModuleDelegate;
 import org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType;
 import org.chromium.chrome.browser.magic_stack.ModuleProvider;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.setup_list.SetupListManager;
+import org.chromium.chrome.browser.setup_list.SetupListModuleUtils;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
-import org.chromium.chrome.browser.tabmodel.TabGroupModelFilterProvider;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.ui.default_browser_promo.DefaultBrowserPromoUtils;
@@ -48,6 +50,8 @@ import org.chromium.components.segmentation_platform.InputContext;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.ui.shadows.ShadowAppCompatResources;
+
+import java.util.List;
 
 /** Test relating to {@link EducationalTipModuleBuilder} */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -64,20 +68,22 @@ public class EducationalTipModuleBuilderUnitTest {
     @Mock private Tracker mTracker;
     @Mock private DefaultBrowserPromoUtils mMockDefaultBrowserPromoUtils;
     @Mock private TabModelSelector mTabModelSelector;
-    @Mock private TabGroupModelFilterProvider mProvider;
     @Mock private TabGroupModelFilter mNormalFilter;
     @Mock private TabGroupModelFilter mIncognitoFilter;
     @Mock private TabModel mNormalModel;
     @Mock private TabModel mIncognitoModel;
     @Mock private IdentityServicesProvider mIdentityServicesProvider;
     @Mock private IdentityManager mIdentityManagerMock;
+    @Mock private SetupListManager mSetupListManager;
 
-    private ObservableSupplier<Profile> mProfileSupplier;
+    private NonNullObservableSupplier<Profile> mProfileSupplier;
     private EducationalTipModuleBuilder mModuleBuilder;
 
     @Before
     public void setUp() {
-        mProfileSupplier = new ObservableSupplierImpl(mProfile);
+        SetupListManager.setInstanceForTesting(mSetupListManager);
+        when(mSetupListManager.isSetupListActive()).thenReturn(false);
+        mProfileSupplier = ObservableSuppliers.createNonNull(mProfile);
         when(mActionDelegate.getProfileSupplier()).thenReturn(mProfileSupplier);
         when(mProfile.getOriginalProfile()).thenReturn(mProfile);
         DefaultBrowserPromoUtils.setInstanceForTesting(mMockDefaultBrowserPromoUtils);
@@ -85,9 +91,9 @@ public class EducationalTipModuleBuilderUnitTest {
         when(mTracker.wouldTriggerHelpUi(FeatureConstants.DEFAULT_BROWSER_PROMO_MAGIC_STACK))
                 .thenReturn(true);
         when(mActionDelegate.getTabModelSelector()).thenReturn(mTabModelSelector);
-        when(mTabModelSelector.getTabGroupModelFilterProvider()).thenReturn(mProvider);
-        when(mProvider.getTabGroupModelFilter(/* isIncognito= */ false)).thenReturn(mNormalFilter);
-        when(mProvider.getTabGroupModelFilter(/* isIncognito= */ true))
+        when(mTabModelSelector.getTabGroupModelFilter(/* isIncognito= */ false))
+                .thenReturn(mNormalFilter);
+        when(mTabModelSelector.getTabGroupModelFilter(/* isIncognito= */ true))
                 .thenReturn(mIncognitoFilter);
         when(mNormalFilter.getTabGroupCount()).thenReturn(0);
         when(mIncognitoFilter.getTabGroupCount()).thenReturn(0);
@@ -188,5 +194,73 @@ public class EducationalTipModuleBuilderUnitTest {
         assertNotNull(inputContextForTest.getEntryValue("tab_group_exists"));
         assertNotNull(inputContextForTest.getEntryValue("number_of_tabs"));
         assertNotNull(inputContextForTest.getEntryValue("is_user_signed_in"));
+    }
+
+    @Test
+    @SmallTest
+    public void testGetManualRank_ReturnsRankForSetupListModuleWhenActive() {
+        when(mSetupListManager.isSetupListActive()).thenReturn(true);
+
+        List<Integer> rankedModules =
+                List.of(
+                        ModuleType.ADDRESS_BAR_PLACEMENT_PROMO,
+                        ModuleType.ENHANCED_SAFE_BROWSING_PROMO,
+                        ModuleType.SIGN_IN_PROMO,
+                        ModuleType.SAVE_PASSWORDS_PROMO,
+                        ModuleType.PASSWORD_CHECKUP_PROMO);
+        SetupListModuleUtils.setRankedModuleTypesForTesting(rankedModules);
+
+        EducationalTipModuleBuilder builder1 =
+                new EducationalTipModuleBuilder(
+                        ModuleType.ADDRESS_BAR_PLACEMENT_PROMO, mActionDelegate);
+        Integer manualOrder1 = builder1.getManualRank();
+        assertNotNull(manualOrder1);
+        assertEquals(0, manualOrder1.intValue()); // ADDRESS_BAR_PLACEMENT_PROMO is at index 0
+
+        EducationalTipModuleBuilder builder2 =
+                new EducationalTipModuleBuilder(
+                        ModuleType.ENHANCED_SAFE_BROWSING_PROMO, mActionDelegate);
+        Integer manualOrder2 = builder2.getManualRank();
+        assertNotNull(manualOrder2);
+        assertEquals(1, manualOrder2.intValue()); // ENHANCED_SAFE_BROWSING_PROMO is at index 1
+
+        EducationalTipModuleBuilder builder3 =
+                new EducationalTipModuleBuilder(ModuleType.SIGN_IN_PROMO, mActionDelegate);
+        Integer manualOrder3 = builder3.getManualRank();
+        assertNotNull(manualOrder3);
+        assertEquals(2, manualOrder3.intValue()); // SIGN_IN_PROMO is at index 2
+
+        EducationalTipModuleBuilder builder4 =
+                new EducationalTipModuleBuilder(ModuleType.SAVE_PASSWORDS_PROMO, mActionDelegate);
+        Integer manualOrder4 = builder4.getManualRank();
+        assertNotNull(manualOrder4);
+        assertEquals(3, manualOrder4.intValue()); // SAVE_PASSWORDS_PROMO is at index 3
+
+        EducationalTipModuleBuilder builder5 =
+                new EducationalTipModuleBuilder(ModuleType.PASSWORD_CHECKUP_PROMO, mActionDelegate);
+        Integer manualOrder5 = builder5.getManualRank();
+        assertNotNull(manualOrder5);
+        assertEquals(4, manualOrder5.intValue()); // PASSWORD_CHECKUP_PROMO is at index 4
+    }
+
+    @Test
+    @SmallTest
+    public void testGetManualRank_ReturnsEmptyForNonSetupListModuleWhenActive() {
+        when(mSetupListManager.isSetupListActive()).thenReturn(true);
+
+        EducationalTipModuleBuilder builder =
+                new EducationalTipModuleBuilder(ModuleType.QUICK_DELETE_PROMO, mActionDelegate);
+        assertNull(builder.getManualRank());
+    }
+
+    @Test
+    @SmallTest
+    public void testGetManualRank_ReturnsEmptyWhenSetupListInactive() {
+        when(mSetupListManager.isSetupListActive()).thenReturn(false);
+
+        EducationalTipModuleBuilder builder =
+                new EducationalTipModuleBuilder(
+                        ModuleType.ENHANCED_SAFE_BROWSING_PROMO, mActionDelegate);
+        assertNull(builder.getManualRank());
     }
 }

@@ -4,13 +4,13 @@
 
 #include "components/commerce/core/compare/cluster_manager.h"
 
+#include <algorithm>
 #include <optional>
 #include <set>
 #include <string>
 #include <vector>
 
 #include "base/barrier_callback.h"
-#include "base/containers/contains.h"
 #include "components/commerce/core/commerce_feature_list.h"
 #include "components/commerce/core/commerce_utils.h"
 #include "components/commerce/core/compare/candidate_product.h"
@@ -83,7 +83,7 @@ std::string FindTitleForSimilarProducts(
       if (bottom_label) {
         std::string bottom_label_string = bottom_label.value();
         bottom_labels.insert(bottom_label_string);
-        if (!base::Contains(counted_labels, bottom_label_string)) {
+        if (!counted_labels.contains(bottom_label_string)) {
           counted_labels.insert(bottom_label_string);
           label_count[bottom_label_string]++;
         }
@@ -93,7 +93,7 @@ std::string FindTitleForSimilarProducts(
       if (second_to_bottom_label) {
         std::string second_to_bottom_label_string =
             second_to_bottom_label.value();
-        if (!base::Contains(counted_labels, second_to_bottom_label)) {
+        if (!counted_labels.contains(second_to_bottom_label)) {
           counted_labels.insert(second_to_bottom_label_string);
           label_count[second_to_bottom_label_string]++;
         }
@@ -546,7 +546,7 @@ void ClusterManager::OnGetComparableProducts(
   const std::vector<UrlInfo> url_infos = get_open_url_infos_cb_.Run();
   for (const auto& kv : entry_point_info.similar_candidate_products) {
     // If the product Id cannot be clustered, skip it.
-    if (!base::Contains(cluster_product_ids, kv.second)) {
+    if (!std::ranges::contains(cluster_product_ids, kv.second)) {
       continue;
     }
 

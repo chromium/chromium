@@ -88,13 +88,13 @@ class MerchantPromoCodeManagerTest : public testing::Test {
                                   const GURL& offer_details_url) {
     payments_data_manager().SetAutofillWalletImportEnabled(true);
     payments_data_manager().SetAutofillPaymentMethodsEnabled(true);
-    AutofillOfferData testPromoCodeOfferData =
+    AutofillOfferData test_promo_code_offer_data =
         test::GetPromoCodeOfferData(GURL(origin));
-    testPromoCodeOfferData.SetOfferDetailsUrl(offer_details_url);
+    test_promo_code_offer_data.SetOfferDetailsUrl(offer_details_url);
     test_api(payments_data_manager())
         .AddOfferData(
-            std::make_unique<AutofillOfferData>(testPromoCodeOfferData));
-    return testPromoCodeOfferData.GetPromoCode();
+            std::make_unique<AutofillOfferData>(test_promo_code_offer_data));
+    return test_promo_code_offer_data.GetPromoCode();
   }
 
   // Returns a mutable reference, which is valid until the next DoNothing()

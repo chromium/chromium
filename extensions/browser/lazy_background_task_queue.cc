@@ -5,7 +5,6 @@
 #include "extensions/browser/lazy_background_task_queue.h"
 
 #include "base/check.h"
-#include "base/containers/contains.h"
 #include "base/functional/callback.h"
 #include "base/notreached.h"
 #include "content/public/browser/browser_context.h"
@@ -241,7 +240,7 @@ void LazyBackgroundTaskQueue::CreateLazyBackgroundHostOnExtensionLoaded(
     const Extension* extension) {
   const auto key = LazyContextId::ForExtension(browser_context, extension);
   CHECK(key.IsForBackgroundPage());
-  if (!base::Contains(pending_tasks_, key)) {
+  if (!pending_tasks_.contains(key)) {
     return;
   }
 

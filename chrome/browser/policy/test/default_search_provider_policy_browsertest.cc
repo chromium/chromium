@@ -77,7 +77,7 @@ IN_PROC_BROWSER_TEST_F(PolicyTest, DefaultSearchProvider) {
   policies.Set(key::kDefaultSearchProviderSearchURL, POLICY_LEVEL_MANDATORY,
                POLICY_SCOPE_USER, POLICY_SOURCE_CLOUD, base::Value(kSearchURL),
                nullptr);
-  base::Value::List alternate_urls;
+  base::ListValue alternate_urls;
   alternate_urls.Append(kAlternateURL0);
   alternate_urls.Append(kAlternateURL1);
   policies.Set(key::kDefaultSearchProviderAlternateURLs, POLICY_LEVEL_MANDATORY,

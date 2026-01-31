@@ -218,6 +218,7 @@ macro_rules! dispatch_on_enum_state(
 /// When it is not set, errors will be reported as `Err` objects with a string message.
 /// By default this flag is not set. Use `enable_errors` and `disable_errors` methods
 /// to toggle the behavior.
+#[derive(Clone)]
 pub(crate) struct Lexer {
     st: State,
     reader: CharReader,

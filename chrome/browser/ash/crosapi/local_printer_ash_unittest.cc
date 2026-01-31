@@ -36,7 +36,6 @@
 #include "chrome/common/pref_names.h"
 #include "chrome/common/printing/printer_capabilities.h"
 #include "chrome/test/base/testing_profile.h"
-#include "chromeos/crosapi/mojom/local_printer.mojom-forward.h"
 #include "chromeos/crosapi/mojom/local_printer.mojom.h"
 #include "chromeos/printing/cups_printer_status.h"
 #include "chromeos/printing/ppd_provider.h"
@@ -53,7 +52,6 @@
 #include "printing/backend/printing_restrictions.h"
 #include "printing/backend/test_print_backend.h"
 #include "printing/buildflags/buildflags.h"
-#include "printing/mojom/print.mojom-forward.h"
 #include "printing/mojom/print.mojom.h"
 #include "printing/printing_features.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -852,7 +850,7 @@ TEST_F(LocalPrinterAshTest, GetPolicies_Unset) {
 
 TEST_F(LocalPrinterAshTest, GetPolicies_PaperSize) {
   auto* prefs = GetPrefs();
-  base::Value::Dict paper_size;
+  base::DictValue paper_size;
   paper_size.Set(kPaperSizeName, "iso_a4_210x297mm");
   prefs->Set("printing.paper_size_default", base::Value(std::move(paper_size)));
 

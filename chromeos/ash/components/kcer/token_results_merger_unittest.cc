@@ -127,7 +127,7 @@ TEST_F(KcerTokenResultsMergerTest, OneFailureResult) {
   EXPECT_TRUE(result_waiter.IsReady());
   EXPECT_TRUE(result_waiter.Get<0>().empty());
   const base::flat_map<Token, Error>& error_map = result_waiter.Get<1>();
-  ASSERT_TRUE(base::Contains(error_map, Token::kDevice));
+  ASSERT_TRUE(error_map.contains(Token::kDevice));
   EXPECT_EQ(error_map.at(Token::kDevice), Error::kUnknownError);
 }
 
@@ -190,8 +190,8 @@ TEST_F(KcerTokenResultsMergerTest, TwoFailureResults) {
   EXPECT_TRUE(result_waiter.IsReady());
   EXPECT_TRUE(result_waiter.Get<0>().empty());
   const base::flat_map<Token, Error>& error_map = result_waiter.Get<1>();
-  ASSERT_TRUE(base::Contains(error_map, Token::kDevice));
-  ASSERT_TRUE(base::Contains(error_map, Token::kUser));
+  ASSERT_TRUE(error_map.contains(Token::kDevice));
+  ASSERT_TRUE(error_map.contains(Token::kUser));
   EXPECT_EQ(error_map.at(Token::kDevice), Error::kUnknownError);
   EXPECT_EQ(error_map.at(Token::kUser), Error::kTokenIsNotAvailable);
 }
@@ -224,7 +224,7 @@ TEST_F(KcerTokenResultsMergerTest, OneFailOneSuccessResults) {
   EXPECT_TRUE(result_waiter.IsReady());
   EXPECT_EQ(result_waiter.Get<0>(), MoveOnlyType::CreateVector(3));
   const base::flat_map<Token, Error>& error_map = result_waiter.Get<1>();
-  ASSERT_TRUE(base::Contains(error_map, Token::kDevice));
+  ASSERT_TRUE(error_map.contains(Token::kDevice));
   EXPECT_EQ(error_map.at(Token::kDevice), Error::kUnknownError);
 }
 

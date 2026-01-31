@@ -77,7 +77,7 @@ void PasswordsPrivateEventRouter::OnPasswordsExportProgress(
   params.file_path = file_path;
   params.folder_name = folder_name;
 
-  base::Value::List event_value;
+  base::ListValue event_value;
   event_value.Append(params.ToValue());
 
   auto extension_event = std::make_unique<Event>(
@@ -87,13 +87,13 @@ void PasswordsPrivateEventRouter::OnPasswordsExportProgress(
   event_router_->BroadcastEvent(std::move(extension_event));
 }
 
-void PasswordsPrivateEventRouter::OnAccountStorageEnabledStateChanged(
-    bool enabled) {
+void PasswordsPrivateEventRouter::OnAccountStorageActiveStateChanged(
+    bool active) {
   auto extension_event = std::make_unique<Event>(
       events::PASSWORDS_PRIVATE_ON_ACCOUNT_STORAGE_ENABLED_STATE_CHANGED,
-      api::passwords_private::OnAccountStorageEnabledStateChanged::kEventName,
-      api::passwords_private::OnAccountStorageEnabledStateChanged::Create(
-          enabled));
+      api::passwords_private::OnAccountStorageActiveStateChanged::kEventName,
+      api::passwords_private::OnAccountStorageActiveStateChanged::Create(
+          active));
   event_router_->BroadcastEvent(std::move(extension_event));
 }
 

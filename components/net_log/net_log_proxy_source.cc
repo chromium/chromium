@@ -91,7 +91,7 @@ void NetLogProxySource::SendNetLogEntry(net::NetLogEventType type,
                                         const net::NetLogSource& net_log_source,
                                         net::NetLogEventPhase phase,
                                         base::TimeTicks time,
-                                        base::Value::Dict params) {
+                                        base::DictValue params) {
   proxy_sink_remote_->AddEntry(static_cast<uint32_t>(type), net_log_source,
                                phase, time, std::move(params));
 }

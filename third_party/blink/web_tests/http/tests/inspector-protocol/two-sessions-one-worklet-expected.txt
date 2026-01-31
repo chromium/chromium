@@ -1,0 +1,18 @@
+Tests attaching two sessions to one worklet.
+Attached to worklet {
+    sessionId : <string>
+    targetInfo : {
+        attached : true
+        browserContextId : <string>
+        canAccessOpener : false
+        targetId : <string>
+        title : http://127.0.0.1:8000/inspector-protocol/resources/inspector-protocol-page.html
+        type : worklet
+        url : http://127.0.0.1:8000/inspector-protocol/resources/inspector-protocol-page.html
+    }
+    waitingForDebugger : true
+}
+Attached to worklet once again {
+    sessionId : <string>
+}
+

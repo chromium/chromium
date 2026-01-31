@@ -28,7 +28,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_LOGIN_AUTH_PUBLIC)
   // Initialize an instance of this class with data received from javascript.
   // The input data must be of type SyncTrustedVaultKeys as defined in
   // authenticator.js.
-  static SyncTrustedVaultKeys FromJs(const base::Value::Dict& js_object);
+  static SyncTrustedVaultKeys FromJs(const base::DictValue& js_object);
 
   const GaiaId& gaia_id() const;
 

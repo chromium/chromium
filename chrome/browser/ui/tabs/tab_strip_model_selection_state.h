@@ -6,8 +6,11 @@
 #define CHROME_BROWSER_UI_TABS_TAB_STRIP_MODEL_SELECTION_STATE_H_
 
 #include <unordered_set>
+#include <vector>
 
 #include "base/memory/raw_ptr.h"
+#include "base/types/pass_key.h"
+#include "ui/base/models/list_selection_model.h"
 
 class TabStripModel;
 
@@ -21,14 +24,13 @@ class TabInterface;
 // TabStripModel's TabStripCollection.
 class TabStripModelSelectionState final {
  public:
-  TabStripModelSelectionState();
+  explicit TabStripModelSelectionState(TabStripModel* model = nullptr);
   TabStripModelSelectionState(
       std::unordered_set<raw_ptr<TabInterface>> selected_tabs,
       raw_ptr<TabInterface> active_tab,
       raw_ptr<TabInterface> anchor_tab);
-  TabStripModelSelectionState(const TabStripModelSelectionState&) = delete;
-  TabStripModelSelectionState& operator=(const TabStripModelSelectionState&) =
-      delete;
+  TabStripModelSelectionState(const TabStripModelSelectionState&);
+  TabStripModelSelectionState& operator=(const TabStripModelSelectionState&);
   ~TabStripModelSelectionState();
 
   bool operator==(const TabStripModelSelectionState& other) const;
@@ -38,6 +40,8 @@ class TabStripModelSelectionState final {
   const std::unordered_set<raw_ptr<TabInterface>>& selected_tabs() const {
     return selected_tabs_;
   }
+
+  void Clear();
   bool empty() const { return selected_tabs_.empty(); }
   size_t size() const { return selected_tabs_.size(); }
 
@@ -60,7 +64,7 @@ class TabStripModelSelectionState final {
 
   // Adds tabs to the selection model, does not update the active tab, or the
   // anchor tab.
-  bool AppendTabsToSelection(std::unordered_set<TabInterface*> tabs);
+  bool AppendTabsToSelection(const std::unordered_set<TabInterface*>& tabs);
 
   // Updates the set of selected tabs with the new TabInterface ptrs. If the
   // active/anchor tabs are provided, then they will be CHECKed to make sure
@@ -72,9 +76,23 @@ class TabStripModelSelectionState final {
 
   // Returns true if the selection model has at least 1 selected tab, an anchor
   // and an active tab. Otherwise returns false.
-  bool Valid();
+  bool Valid() const;
+
+  // Access the current object as a ListSelectionModel. Requires the
+  // |model_| member to be non null.
+  const ui::ListSelectionModel& GetListSelectionModel() const;
+
+  // Helper functions to update the |list_selection_model_| member,
+  // which is a ListSelectionModel representation of the current
+  // selection model. Requires |model_| to be non null.
+  void InvalidateListSelectionModel(base::PassKey<TabStripModel>) const;
+  void UpdateListSelectionModel(base::PassKey<TabStripModel>) const;
 
  private:
+  void UpdateListSelectionModel() const;
+  ui::ListSelectionModel::SelectedIndices ComputeSelectedIndices() const;
+  void InvalidateListSelectionModel() const;
+
   // The selected tabs in the tabstrip.
   std::unordered_set<raw_ptr<TabInterface>> selected_tabs_;
 
@@ -83,6 +101,14 @@ class TabStripModelSelectionState final {
 
   // The anchor tab for selection.
   raw_ptr<TabInterface> anchor_tab_ = nullptr;
+
+  // If |model_| is non-null, this member represents a ListSelectionModel that
+  // represents the current selection model. Otherwise it is a nullopt. The
+  // value of this member is cached and generated only on access, if
+  // necessary.
+  mutable std::optional<ui::ListSelectionModel> list_selection_model_;
+
+  raw_ptr<TabStripModel> model_ = nullptr;
 };
 
 }  // namespace tabs

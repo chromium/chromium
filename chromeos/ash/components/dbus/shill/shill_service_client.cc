@@ -37,7 +37,7 @@ ShillServiceClient* g_instance = nullptr;
 void OnGetDictionaryError(
     const std::string& method_name,
     const dbus::ObjectPath& service_path,
-    chromeos::DBusMethodCallback<base::Value::Dict> callback,
+    chromeos::DBusMethodCallback<base::DictValue> callback,
     const std::string& error_name,
     const std::string& error_message) {
   const std::string log_string = "Failed to call org.chromium.shill.Service." +
@@ -96,10 +96,10 @@ class ShillServiceClientImpl : public ShillServiceClient {
 
   void GetProperties(
       const dbus::ObjectPath& service_path,
-      chromeos::DBusMethodCallback<base::Value::Dict> callback) override {
+      chromeos::DBusMethodCallback<base::DictValue> callback) override {
     auto* helper = GetHelper(service_path);
     if (!helper) {
-      std::move(callback).Run(base::Value::Dict());
+      std::move(callback).Run(base::DictValue());
       return;
     }
     dbus::MethodCall method_call(shill::kFlimflamServiceInterface,
@@ -132,7 +132,7 @@ class ShillServiceClientImpl : public ShillServiceClient {
   }
 
   void SetProperties(const dbus::ObjectPath& service_path,
-                     const base::Value::Dict& properties,
+                     const base::DictValue& properties,
                      base::OnceClosure callback,
                      ErrorCallback error_callback) override {
     auto* helper = GetHelper(service_path);
@@ -241,10 +241,10 @@ class ShillServiceClientImpl : public ShillServiceClient {
 
   void GetLoadableProfileEntries(
       const dbus::ObjectPath& service_path,
-      chromeos::DBusMethodCallback<base::Value::Dict> callback) override {
+      chromeos::DBusMethodCallback<base::DictValue> callback) override {
     auto* helper = GetHelper(service_path);
     if (!helper) {
-      std::move(callback).Run(base::Value::Dict());
+      std::move(callback).Run(base::DictValue());
       return;
     }
     dbus::MethodCall method_call(shill::kFlimflamServiceInterface,
@@ -380,12 +380,12 @@ class ShillServiceClientImpl : public ShillServiceClient {
     delete helper;
   }
 
-  static base::OnceCallback<void(base::Value::Dict result)>
+  static base::OnceCallback<void(base::DictValue result)>
   AdaptCallbackWithoutStatus(
-      chromeos::DBusMethodCallback<base::Value::Dict> callback) {
+      chromeos::DBusMethodCallback<base::DictValue> callback) {
     return base::BindOnce(
-        [](chromeos::DBusMethodCallback<base::Value::Dict> callback,
-           base::Value::Dict result) {
+        [](chromeos::DBusMethodCallback<base::DictValue> callback,
+           base::DictValue result) {
           std::move(callback).Run(std::move(result));
         },
         std::move(callback));

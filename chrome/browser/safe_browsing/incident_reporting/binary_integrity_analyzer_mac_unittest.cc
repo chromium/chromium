@@ -13,6 +13,7 @@
 #include "base/apple/foundation_util.h"
 #include "base/apple/scoped_cftyperef.h"
 #include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/files/file.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
@@ -44,7 +45,7 @@ bool CorruptFileContent(const base::FilePath& file_path) {
   if (!file.IsValid())
     return false;
   char vec[] = {'\xAA'};
-  return UNSAFE_TODO(file.Write(text_pos, vec, sizeof(vec))) == sizeof(vec);
+  return file.WriteAndCheck(text_pos, base::as_byte_span(vec));
 }
 
 }  // namespace

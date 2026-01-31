@@ -20,7 +20,7 @@ NetworkScreenHandler::NetworkScreenHandler() : BaseScreenHandler(kScreenId) {}
 
 NetworkScreenHandler::~NetworkScreenHandler() = default;
 
-void NetworkScreenHandler::ShowScreenWithData(base::Value::Dict data) {
+void NetworkScreenHandler::ShowScreenWithData(base::DictValue data) {
   ShowInWebUI(std::move(data));
 }
 
@@ -61,7 +61,7 @@ void NetworkScreenHandler::DeclareLocalizedValues(
   cellular_setup::AddLocalizedValuesToBuilder(builder);
 }
 
-void NetworkScreenHandler::GetAdditionalParameters(base::Value::Dict* dict) {
+void NetworkScreenHandler::GetAdditionalParameters(base::DictValue* dict) {
   cellular_setup::AddNonStringLoadTimeDataToDict(dict);
 }
 

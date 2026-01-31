@@ -8,6 +8,7 @@
 #include <string_view>
 
 #include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/files/file.h"
 #include "base/files/file_enumerator.h"
 #include "base/files/file_path.h"
@@ -220,7 +221,7 @@ HRESULT UserPoliciesManager::FetchAndStorePolicies(
   }
 
   // Make the fetch policies HTTP request.
-  std::optional<base::Value::Dict> request_result;
+  std::optional<base::DictValue> request_result;
   HRESULT hr = WinHttpUrlFetcher::BuildRequestAndFetchResultFromHttpService(
       user_policies_url, access_token, {}, {},
       kDefaultFetchPoliciesRequestTimeout, kMaxNumHttpRetries, &request_result);
@@ -251,17 +252,12 @@ HRESULT UserPoliciesManager::FetchAndStorePolicies(
     return (fetch_status_ = E_FAIL);
   }
 
-  int num_bytes_written = UNSAFE_TODO(
-      policy_file->Write(0, policy_data.c_str(), policy_data.size()));
-
-  policy_file.reset();
-
-  if (size_t(num_bytes_written) != policy_data.size()) {
-    LOGFN(ERROR) << "Failed writing policy data to file! Only "
-                 << num_bytes_written << " bytes written out of "
-                 << policy_data.size();
+  if (!policy_file->WriteAndCheck(0, base::as_byte_span(policy_data))) {
+    LOGFN(ERROR) << "Failed writing policy data to file!";
     return (fetch_status_ = E_FAIL);
   }
+
+  policy_file.reset();
 
   base::Time fetch_time = base::Time::Now();
   std::wstring fetch_time_millis = base::NumberToWString(
@@ -285,17 +281,20 @@ bool UserPoliciesManager::GetUserPolicies(const std::wstring& sid,
   }
 
   std::vector<uint8_t> buffer(policy_file->GetLength());
-  policy_file->Read(0, buffer);
+  if (!policy_file->ReadAndCheck(0, buffer)) {
+    LOGFN(ERROR) << "Failed to read policy data from file!";
+    return false;
+  }
   policy_file.reset();
 
-  std::optional<base::Value::Dict> policy_data = base::JSONReader::ReadDict(
+  std::optional<base::DictValue> policy_data = base::JSONReader::ReadDict(
       base::as_string_view(buffer), base::JSON_ALLOW_TRAILING_COMMAS);
   if (!policy_data) {
     LOGFN(ERROR) << "Failed to read policy data from file!";
     return false;
   }
 
-  const base::Value::Dict* policies =
+  const base::DictValue* policies =
       policy_data->FindDict(kPolicyFetchResponseKeyName);
   if (!policies) {
     LOGFN(ERROR) << "User policies not found!";

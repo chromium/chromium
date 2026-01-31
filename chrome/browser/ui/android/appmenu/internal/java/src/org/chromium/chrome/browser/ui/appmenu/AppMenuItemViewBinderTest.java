@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.ui.appmenu;
 import static org.junit.Assert.assertThrows;
 
 import android.app.Activity;
+import android.content.res.ColorStateList;
 import android.graphics.drawable.Drawable;
 import android.os.SystemClock;
 import android.view.InputDevice;
@@ -18,6 +19,7 @@ import android.widget.TextView;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.content.res.AppCompatResources;
+import androidx.core.widget.ImageViewCompat;
 import androidx.test.annotation.UiThreadTest;
 import androidx.test.filters.MediumTest;
 
@@ -697,5 +699,89 @@ public class AppMenuItemViewBinderTest {
                 TITLE_5,
                 button.getContentDescription());
         Assert.assertNotNull("Should have an icon for icon 5", button.getIcon());
+    }
+
+    @Test
+    @UiThreadTest
+    @MediumTest
+    public void testStandardMenuItem_IconNoTint() {
+        PropertyModel model = createStandardMenuItem(MENU_ID1, TITLE_1);
+
+        Drawable icon =
+                AppCompatResources.getDrawable(
+                        mActivity,
+                        org.chromium.chrome.browser.ui.appmenu.test.R.drawable
+                                .test_ic_vintage_filter);
+        model.set(AppMenuItemProperties.ICON, icon);
+
+        // We are testing if setting ICON_NO_TINT to true will override the default grey tint that
+        // is set when ICON_COLOR_RES = 0.
+        model.set(AppMenuItemProperties.ICON_NO_TINT, true);
+        model.set(AppMenuItemProperties.ICON_COLOR_RES, 0);
+
+        ViewGroup parentView = mActivity.findViewById(android.R.id.content);
+        View view = mModelListAdapter.getView(0, null, parentView);
+        ChromeImageView itemIcon = view.findViewById(R.id.menu_item_icon);
+
+        ColorStateList tint = ImageViewCompat.getImageTintList(itemIcon);
+        Assert.assertNull("Tint should be null when ICON_NO_TINT is set to true", tint);
+    }
+
+    @Test
+    @UiThreadTest
+    @MediumTest
+    public void testStandardMenuItem_DefaultTint() {
+        PropertyModel model = createStandardMenuItem(MENU_ID1, TITLE_1);
+
+        // Set an icon without the no_tint flag.
+        Drawable icon =
+                AppCompatResources.getDrawable(
+                        mActivity,
+                        org.chromium.chrome.browser.ui.appmenu.test.R.drawable
+                                .test_ic_vintage_filter);
+        model.set(AppMenuItemProperties.ICON, icon);
+        // Should trigger the default grey tint.
+        model.set(AppMenuItemProperties.ICON_COLOR_RES, 0);
+
+        ViewGroup parentView = mActivity.findViewById(android.R.id.content);
+        View view = mModelListAdapter.getView(0, null, parentView);
+        ChromeImageView itemIcon = view.findViewById(R.id.menu_item_icon);
+
+        // Assert that the tint list is not null.
+        ColorStateList tint = ImageViewCompat.getImageTintList(itemIcon);
+        Assert.assertNotNull("Standard icons should have a default tint", tint);
+    }
+
+    @Test
+    @UiThreadTest
+    @MediumTest
+    public void testStandardMenuItem_SpecificColorTint() {
+        PropertyModel model = createStandardMenuItem(MENU_ID1, TITLE_1);
+
+        //  Set an icon with a specific color resource.
+        int specificColorRes = android.R.color.holo_blue_light;
+
+        Drawable icon =
+                AppCompatResources.getDrawable(
+                        mActivity,
+                        org.chromium.chrome.browser.ui.appmenu.test.R.drawable
+                                .test_ic_vintage_filter);
+        model.set(AppMenuItemProperties.ICON, icon);
+        model.set(AppMenuItemProperties.ICON_COLOR_RES, specificColorRes);
+
+        ViewGroup parentView = mActivity.findViewById(android.R.id.content);
+        View view = mModelListAdapter.getView(0, null, parentView);
+        ChromeImageView itemIcon = view.findViewById(R.id.menu_item_icon);
+
+        // Assert tint list is present and matches the requested color.
+        ColorStateList tint = ImageViewCompat.getImageTintList(itemIcon);
+        Assert.assertNotNull("Specific color icons should have a tint", tint);
+
+        // Check if the tint matches the expected color.
+        int expectedColor = mActivity.getColor(specificColorRes);
+        Assert.assertEquals(
+                "Tint should match the requested color resource",
+                expectedColor,
+                tint.getDefaultColor());
     }
 }

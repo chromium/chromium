@@ -38,7 +38,6 @@
 #include "base/numerics/safe_conversions.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
 #include "third_party/blink/renderer/platform/wtf/ref_counted.h"
-#include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 #include "third_party/blink/renderer/platform/wtf/wtf_export.h"
@@ -143,9 +142,7 @@ class WTF_EXPORT SegmentedBuffer {
 
   // Returns an iterator for the given position of bytes. Returns |cend()| if
   // |position| is greater than or equal to |size()|.
-  HAS_STRICTLY_TYPED_ARG
-  Iterator GetIteratorAt(STRICTLY_TYPED_ARG(position)) const {
-    STRICT_ARG_TYPE(size_t);
+  Iterator GetIteratorAt(base::StrictNumeric<size_t> position) const {
     return GetIteratorAtInternal(position);
   }
 

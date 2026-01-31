@@ -8,7 +8,6 @@
 #include <vector>
 
 #include "base/compiler_specific.h"
-#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/task/thread_pool.h"
@@ -109,7 +108,7 @@ void PlatformSensorProviderLinux::OnDeviceAdded(
     std::unique_ptr<SensorInfoLinux> sensor_device) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   // At the moment, we support only one device per type.
-  if (base::Contains(sensor_devices_by_type_, type)) {
+  if (sensor_devices_by_type_.contains(type)) {
     DVLOG(1) << "Sensor ignored. Type " << type
              << ". Node: " << sensor_device->device_node;
     return;

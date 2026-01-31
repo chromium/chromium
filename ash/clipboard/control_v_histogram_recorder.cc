@@ -7,7 +7,6 @@
 #include "ash/accelerators/accelerator_controller_impl.h"
 #include "ash/accelerators/accelerator_history_impl.h"
 #include "ash/shell.h"
-#include "base/containers/contains.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/time/time.h"
 #include "ui/events/event.h"
@@ -23,8 +22,8 @@ bool IsControlVPressed() {
                                            ->accelerator_controller()
                                            ->GetAcceleratorHistory()
                                            ->currently_pressed_keys();
-  return base::Contains(currently_pressed_keys, ui::VKEY_CONTROL) &&
-         base::Contains(currently_pressed_keys, ui::VKEY_V) &&
+  return currently_pressed_keys.contains(ui::VKEY_CONTROL) &&
+         currently_pressed_keys.contains(ui::VKEY_V) &&
          currently_pressed_keys.size() == 2;
 }
 

@@ -13,6 +13,7 @@
 #include <algorithm>
 #include <cstring>
 
+#include "base/files/scoped_file.h"
 #include "base/logging.h"
 #include "base/notimplemented.h"
 #include "base/timer/elapsed_timer.h"
@@ -159,17 +160,17 @@ void WaylandZwpLinuxDmabuf::AddSupportedFourCCFormatAndModifier(
     return;
   }
 
-  // If the buffer format has already been stored, it must be another supported
-  // modifier sent by the Wayland compositor.
-  gfx::BufferFormat format = GetBufferFormatFromFourCCFormat(fourcc_format);
-  auto it = supported_buffer_formats_with_modifiers_.find(format);
-  if (it == supported_buffer_formats_with_modifiers_.end()) {
+  // If the shared image format has already been stored, it must be another
+  // supported modifier sent by the Wayland compositor.
+  viz::SharedImageFormat format =
+      GetSharedImageFormatFromFourCCFormat(fourcc_format);
+  auto it = supported_formats_with_modifiers_.find(format);
+  if (it == supported_formats_with_modifiers_.end()) {
     std::vector<uint64_t> modifiers;
     if (modifier.has_value()) {
       modifiers.emplace_back(modifier.value());
     }
-    supported_buffer_formats_with_modifiers_.emplace(format,
-                                                     std::move(modifiers));
+    supported_formats_with_modifiers_.emplace(format, std::move(modifiers));
   } else if (modifier.has_value()) {
     it->second.emplace_back(modifier.value());
   }
@@ -237,6 +238,7 @@ void WaylandZwpLinuxDmabuf::OnFormatTable(
     zwp_linux_dmabuf_feedback_v1* feedback,
     int32_t fd,
     uint32_t size) {
+  base::ScopedFD scoped_fd(fd);
   auto* self = static_cast<WaylandZwpLinuxDmabuf*>(data);
   if (!self) {
     return;
@@ -246,9 +248,10 @@ void WaylandZwpLinuxDmabuf::OnFormatTable(
   // send a new format table and resend all feedback parameters. Clean up any
   // existing table and formats to make room for the new ones.
   self->format_table_.clear();
-  self->supported_buffer_formats_with_modifiers_.clear();
+  self->supported_formats_with_modifiers_.clear();
 
-  void* format_ptr = mmap(nullptr, size, PROT_READ, MAP_PRIVATE, fd, 0);
+  void* format_ptr =
+      mmap(nullptr, size, PROT_READ, MAP_PRIVATE, scoped_fd.get(), 0);
   if (format_ptr == MAP_FAILED) {
     LOG(ERROR) << "Failed to map zwp_linux_dmabuf_feedback_v1 format table";
     return;
@@ -318,7 +321,7 @@ void WaylandZwpLinuxDmabuf::OnMainDevice(void* data,
   self->connection_->SetRenderNodePath(drm_fd, drm_device_path);
 
   // Prepare to receive new formats and modifiers
-  self->supported_buffer_formats_with_modifiers_.clear();
+  self->supported_formats_with_modifiers_.clear();
 #endif  // defined(WAYLAND_GBM)
 }
 

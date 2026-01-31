@@ -4,7 +4,6 @@
 
 #include "chromeos/ash/components/kcer/chaps/high_level_chaps_client.h"
 
-#include "base/containers/contains.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/gmock_move_support.h"
 #include "base/test/test_future.h"

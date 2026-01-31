@@ -124,6 +124,10 @@ CONTENT_EXPORT BASE_DECLARE_FEATURE(kPrefetchGracefulNotification);
 // TODO(crbug.com/400761083): Remove it after confirming stability.
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kPrefetchAsyncCancelOnCookiesChange);
 
+// Kill switch for fixing header modifications upon redirects.
+// TODO(crbug.com/467177773): Remove it after confirming stability.
+CONTENT_EXPORT BASE_DECLARE_FEATURE(kPrefetchFixHeaderUpdatesOnRedirect);
+
 }  // namespace features
 
 #endif  // CONTENT_BROWSER_PRELOADING_PREFETCH_PREFETCH_FEATURES_H_

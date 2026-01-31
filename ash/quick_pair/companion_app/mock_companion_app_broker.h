@@ -10,8 +10,7 @@
 #include "base/observer_list.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
-namespace ash {
-namespace quick_pair {
+namespace ash::quick_pair {
 
 class MockCompanionAppBroker : public CompanionAppBroker {
  public:
@@ -35,7 +34,6 @@ class MockCompanionAppBroker : public CompanionAppBroker {
   base::ObserverList<Observer> observers_;
 };
 
-}  // namespace quick_pair
-}  // namespace ash
+}  // namespace ash::quick_pair
 
 #endif  // ASH_QUICK_PAIR_COMPANION_APP_MOCK_COMPANION_APP_BROKER_H_

@@ -81,12 +81,40 @@ export function isCCADisallowed(): boolean {
 }
 
 /**
+ * Returns the path relative to the root folder where files will be saved.
+ */
+export function getPathRelativeToRoot(): string {
+  return loadTimeData.getString('path_relative_to_root');
+}
+
+/**
+ * Returns the cloud destination where the camera app saves files or empty
+ * string if it saves files locally.
+ */
+export function getCloudDestination(): string {
+  return loadTimeData.getString('cloud_destination');
+}
+
+/**
+ * Returns whether the camera app saves files on cloud.
+ */
+export function isCloudDestination(): boolean {
+  return getCloudDestination() !== '';
+}
+
+/**
+ * Returns whether the camera app saves files on Microsoft OneDrive.
+ */
+export function isCloudDestinationOnedrive(): boolean {
+  return getCloudDestination() === 'microsoft_onedrive';
+}
+
+/**
  * Returns the OS version string.
  */
 export function getOsVersion(): string {
   return loadTimeData.getString('os_version');
 }
-
 
 /**
  * Returns if BigBuffer can be used.

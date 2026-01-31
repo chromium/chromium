@@ -109,12 +109,12 @@ class ESimPolicyLoginMetricsLoggerTest : public testing::Test {
   }
 
   void SetGlobalPolicy(bool allow_only_policy_cellular) {
-    auto global_config = base::Value::Dict().Set(
+    auto global_config = base::DictValue().Set(
         ::onc::global_network_config::kAllowOnlyPolicyCellularNetworks,
         allow_only_policy_cellular);
     managed_config_handler_->SetPolicy(
         ::onc::ONC_SOURCE_DEVICE_POLICY, /*userhash=*/std::string(),
-        /*network_configs_onc=*/base::Value::List(), global_config);
+        /*network_configs_onc=*/base::ListValue(), global_config);
   }
 
   base::test::TaskEnvironment task_environment_;

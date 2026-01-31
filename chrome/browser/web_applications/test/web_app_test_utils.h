@@ -49,7 +49,8 @@ namespace test {
 // web_app_install_test_util.h.
 std::unique_ptr<WebApp> CreateWebApp(
     const GURL& start_url = GURL("https://example.com/path"),
-    WebAppManagement::Type source_type = WebAppManagement::kSync);
+    WebAppManagement::Type source_type = WebAppManagement::kSync,
+    const GURL& scope = GURL());
 
 // Do not use this for installation! Instead, use the utilities in
 // web_app_install_test_util.h.
@@ -72,7 +73,7 @@ struct CreateRandomWebAppParams {
   // When randomly generating an app, if it is randomly a sub-app, then this
   // manifest id is used for the parent id. Set this to an empty url to not
   // generate sub-apps.
-  webapps::ManifestId parent_manifest_id{"https://www.appparent.com/"};
+  webapps::ManifestId parent_manifest_id{GURL("https://www.appparent.com/")};
 };
 std::unique_ptr<WebApp> CreateRandomWebApp(
     const CreateRandomWebAppParams& params);

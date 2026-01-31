@@ -48,7 +48,6 @@
 #include "extensions/common/switches.h"
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
 #include "third_party/blink/public/common/mediastream/media_stream_request.h"
-#include "third_party/blink/public/mojom/mediastream/media_stream.mojom-shared.h"
 #include "third_party/blink/public/mojom/mediastream/media_stream.mojom.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_capture_types.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -420,6 +419,9 @@ void DesktopCaptureAccessHandler::HandleRequest(
 
   // Resolve DesktopMediaID for the specified device id.
   content::DesktopMediaID media_id;
+  // TODO(crbug.com/469624802): Replace "main RenderFrame" IDs with the
+  // request's actual RenderFrame IDs once the desktop capture extension API
+  // implementation is fixed.
   content::WebContents* const web_contents_for_stream =
       content::WebContents::FromRenderFrameHost(
           content::RenderFrameHost::FromID(request.render_process_id,

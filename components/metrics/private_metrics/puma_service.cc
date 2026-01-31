@@ -45,7 +45,7 @@ UnsentLogStore::UnsentLogStoreLimits GetLogStoreLimits() {
 PrivateMetricEndpointPayload BuildPrivateMetricEndpointPayload(
     PrivateUserMetrics private_uma_report) {
   PrivateMetricEndpointPayload payload;
-  payload.set_report_type(PrivateMetricEndpointPayload::PUMA_RC);
+  payload.set_report_type(PrivateMetricEndpointPayload::PUMA);
   payload.mutable_private_uma_report()->Swap(&private_uma_report);
   return payload;
 }

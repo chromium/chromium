@@ -180,11 +180,15 @@ void ElasticOverscrollController::UpdateVelocity(
     OverscrollEntry& entry,
     const gfx::Vector2dF& event_delta,
     const base::TimeTicks& event_timestamp) {
+  gfx::Vector2dF adjusted_overscroll_delta =
+      helper_->ConstrainOverscrollDelta(entry.target_scroller_id, event_delta);
+
   float time_delta =
       (event_timestamp - entry.last_scroll_event_timestamp).InSecondsF();
   if (time_delta < kScrollVelocityZeroingTimeout && time_delta > 0) {
-    entry.scroll_velocity = gfx::Vector2dF(event_delta.x() / time_delta,
-                                           event_delta.y() / time_delta);
+    entry.scroll_velocity =
+        gfx::Vector2dF(adjusted_overscroll_delta.x() / time_delta,
+                       adjusted_overscroll_delta.y() / time_delta);
   } else {
     entry.scroll_velocity = gfx::Vector2dF();
   }
@@ -208,16 +212,14 @@ ElasticOverscrollController::GetEntry(cc::ElementId element_id) {
 void ElasticOverscrollController::Overscroll(
     OverscrollEntry& entry,
     const gfx::Vector2dF& overscroll_delta) {
-  gfx::Vector2dF adjusted_overscroll_delta = overscroll_delta;
 
   // The effect can be dynamically disabled by setting styles to disallow user
   // scrolling. When disabled, disallow active or momentum overscrolling, but
   // allow any current overscroll to animate back.
-  if (!helper_->IsUserScrollableHorizontal(entry.target_scroller_id)) {
-    adjusted_overscroll_delta.set_x(0);
-  }
-  if (!helper_->IsUserScrollableVertical(entry.target_scroller_id)) {
-    adjusted_overscroll_delta.set_y(0);
+  gfx::Vector2dF adjusted_overscroll_delta = helper_->ConstrainOverscrollDelta(
+      entry.target_scroller_id, overscroll_delta);
+  if (!helper_->IsUserOverscrollable(entry.target_scroller_id)) {
+    adjusted_overscroll_delta = gfx::Vector2dF();
   }
 
   if (adjusted_overscroll_delta.IsZero())
@@ -480,6 +482,11 @@ void ElasticOverscrollController::ReconcileStretchAndScroll() {
 gfx::Vector2dF ElasticOverscrollController::StretchAmount(
     cc::ElementId element_id) const {
   return helper_->StretchAmount(element_id);
+}
+
+bool ElasticOverscrollController::CanOverscroll(
+    cc::ElementId element_id) const {
+  return helper_->IsUserOverscrollable(element_id);
 }
 
 gfx::Size ElasticOverscrollController::ScrollBounds(

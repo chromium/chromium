@@ -1847,13 +1847,13 @@ void SharedStorageWorkletHost::OnOptInRequestComplete(
   // `data_origin_opt_in_url_loader_` is no longer needed after this point.
   data_origin_opt_in_url_loader_.reset();
 
-  std::optional<base::Value::List> parsed =
+  std::optional<base::ListValue> parsed =
       base::JSONReader::ReadList(*response_body, base::JSON_PARSE_RFC);
   OnJsonParsed(std::move(parsed));
 }
 
 void SharedStorageWorkletHost::OnJsonParsed(
-    std::optional<base::Value::List> result) {
+    std::optional<base::ListValue> result) {
   std::string shared_storage_origin_str = shared_storage_origin_.Serialize();
   if (!result.has_value()) {
     SetDataOriginOptInResultAndMaybeFinish(
@@ -1891,7 +1891,7 @@ void SharedStorageWorkletHost::OnJsonParsed(
     const std::string* script_origin_string =
         item_value.GetDict().FindString("scriptOrigin");
     if (!script_origin_string) {
-      const base::Value::List* script_origin_list =
+      const base::ListValue* script_origin_list =
           item_value.GetDict().FindList("scriptOrigin");
       if (!script_origin_list || script_origin_list->empty()) {
         SetDataOriginOptInResultAndMaybeFinish(
@@ -1928,7 +1928,7 @@ void SharedStorageWorkletHost::OnJsonParsed(
     const std::string* context_origin_string =
         item_value.GetDict().FindString("contextOrigin");
     if (!context_origin_string) {
-      const base::Value::List* context_origin_list =
+      const base::ListValue* context_origin_list =
           item_value.GetDict().FindList("contextOrigin");
       if (!context_origin_list || context_origin_list->empty()) {
         SetDataOriginOptInResultAndMaybeFinish(

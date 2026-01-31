@@ -11,7 +11,6 @@
 #include "base/metrics/field_trial.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/test/scoped_feature_list.h"
-#include "build/build_config.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -73,27 +72,12 @@ TEST(PageContentAnnotationsFeaturesTest,
   EXPECT_FALSE(features::ShouldExecutePageVisibilityModelOnPageContent(""));
 }
 
-TEST(PageContentAnnotationsFeaturesTest, RemotePageMetadataEnabled) {
-  base::test::ScopedFeatureList scoped_feature_list;
-
-  scoped_feature_list.InitAndEnableFeatureWithParameters(
-      features::kRemotePageMetadata,
-      {{"supported_locales", "en-US,en-CA"}, {"supported_countries", "US,CA"}});
-
-  EXPECT_TRUE(features::RemotePageMetadataEnabled("en-US", "CA"));
-  EXPECT_FALSE(features::RemotePageMetadataEnabled("", ""));
-  EXPECT_FALSE(features::RemotePageMetadataEnabled("en-US", "badcountry"));
-  EXPECT_FALSE(features::RemotePageMetadataEnabled("badlocale", "US"));
-}
-
-TEST(PageContentAnnotationsFeaturesTest, RemotePageMetadataEnabledWildcard) {
-  base::test::ScopedFeatureList scoped_feature_list;
-
-  scoped_feature_list.InitAndEnableFeatureWithParameters(
-      features::kRemotePageMetadata,
-      {{"supported_locales", "*"}, {"supported_countries", "*"}});
-
-  EXPECT_TRUE(features::RemotePageMetadataEnabled("en-US", "CA"));
+TEST(PageContentAnnotationsFeaturesTest, RemotePageMetadataEnabledDefaults) {
+  // All allowed by default
+  EXPECT_TRUE(features::RemotePageMetadataEnabled("en", "US"));
+  EXPECT_TRUE(features::RemotePageMetadataEnabled("en-CA", "CA"));
+  EXPECT_TRUE(features::RemotePageMetadataEnabled("zh-CN", "CN"));
+  EXPECT_TRUE(features::RemotePageMetadataEnabled("de", "DE"));
   EXPECT_TRUE(features::RemotePageMetadataEnabled("", ""));
   EXPECT_TRUE(features::RemotePageMetadataEnabled("en-US", "badcountry"));
   EXPECT_TRUE(features::RemotePageMetadataEnabled("badlocale", "US"));
@@ -111,23 +95,6 @@ TEST(PageContentAnnotationsFeaturesTest,
   EXPECT_FALSE(features::ShouldExecutePageVisibilityModelOnPageContent(""));
   EXPECT_FALSE(
       features::ShouldExecutePageVisibilityModelOnPageContent("zh-CN"));
-}
-
-TEST(PageContentAnnotationsFeaturesTest, ShouldPersistSalientImageMetadata) {
-#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
-  // Mobile should accept all locales and countries.
-  EXPECT_TRUE(features::ShouldPersistSalientImageMetadata("en-US", "CA"));
-  EXPECT_TRUE(features::ShouldPersistSalientImageMetadata("fr-CH", "CH"));
-#else
-  // Desktop should only accept en-US, US.
-  EXPECT_TRUE(features::ShouldPersistSalientImageMetadata("en-US", "US"));
-  // Tests case-insensitivity.
-  EXPECT_TRUE(features::ShouldPersistSalientImageMetadata("en-US", "uS"));
-  EXPECT_FALSE(features::ShouldPersistSalientImageMetadata("", ""));
-  EXPECT_FALSE(
-      features::ShouldPersistSalientImageMetadata("en-US", "badcountry"));
-  EXPECT_FALSE(features::ShouldPersistSalientImageMetadata("badlocale", "US"));
-#endif
 }
 
 TEST(PageContentAnnotationsFeaturesTest,

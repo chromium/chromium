@@ -20,7 +20,6 @@
 #include "base/check_deref.h"
 #include "base/command_line.h"
 #include "base/containers/adapters.h"
-#include "base/containers/contains.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/map_util.h"
 #include "base/containers/to_vector.h"
@@ -220,7 +219,7 @@ void FormStructure::RationalizeAndAssignSections(
   // The sections are mapped to consecutive natural numbers starting at 1.
   std::map<Section, size_t> section_id_map;
   for (const auto& field : fields_) {
-    if (!base::Contains(section_id_map, field->section())) {
+    if (!section_id_map.contains(field->section())) {
       size_t next_section_id = section_id_map.size() + 1;
       section_id_map[field->section()] = next_section_id;
     }
@@ -699,10 +698,12 @@ FormData FormStructure::ToFormData() const {
   return data;
 }
 
-DenseSet<FormType> FormStructure::GetFormTypes() const {
+DenseSet<FormType> FormStructure::GetFormTypes(
+    AutocompleteUnrecognizedBehavior ac_unrecognized_behavior) const {
   DenseSet<FormType> form_types;
   for (const auto& field : fields_) {
-    if (field->ShouldSuppressSuggestionsAndFillingByDefault()) {
+    if (field->ShouldSuppressSuggestionsAndFillingByDefault(
+            ac_unrecognized_behavior)) {
       // Types are predicted for fields with unrecognized autocomplete
       // attribute, but suggestions are suppressed. So we don't want such fields
       // to affect the key and quality metrics. We therefore exclude them from
@@ -961,7 +962,7 @@ LogBuffer& operator<<(LogBuffer& buffer, const FormStructure& form) {
 
     buffer << Tr{} << "Is empty:" << ToYesOrNo(field->value().empty());
     buffer << Tr{} << "Is focusable:"
-           << (field->IsFocusable() ? "Yes (focusable)" : "No (unfocusable)");
+           << (field->is_focusable() ? "Yes (focusable)" : "No (unfocusable)");
     buffer << Tr{} << "Is visible:"
            << (field->is_visible() ? "Yes (visible)" : "No (invisible)");
     buffer << Tr{} << "Ranks: "

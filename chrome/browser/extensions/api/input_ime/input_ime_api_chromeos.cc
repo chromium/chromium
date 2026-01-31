@@ -298,7 +298,7 @@ class ImeObserverChromeOS
       return;
     }
     // Note: this is a private API event.
-    base::Value::List args;
+    base::ListValue args;
     args.Append(is_projected);
 
     DispatchEventToExtension(
@@ -565,7 +565,7 @@ class ImeObserverChromeOS
   void DispatchEventToExtension(
       extensions::events::HistogramValue histogram_value,
       const std::string& event_name,
-      base::Value::List args) {
+      base::ListValue args) {
     if (event_name == input_ime::OnActivate::kEventName) {
       // Send onActivate event regardless of it's listened by the IME.
       auto event = std::make_unique<extensions::Event>(
@@ -962,7 +962,7 @@ ExtensionFunction::ResponseAction InputImeClearCompositionFunction::Run() {
       parent_params->parameters;
 
   bool success = engine->ClearComposition(params.context_id, &error);
-  base::Value::List results;
+  base::ListValue results;
   results.Append(success);
   return RespondNow(success
                         ? ArgumentList(std::move(results))
@@ -1055,7 +1055,7 @@ InputImeSetCandidateWindowPropertiesFunction::Run() {
 
   if (properties.visible &&
       !engine->SetCandidateWindowVisible(*properties.visible, &error)) {
-    base::Value::List results;
+    base::ListValue results;
     results.Append(false);
     return RespondNow(ErrorWithArgumentsDoNotUse(
         std::move(results), InformativeError(error, static_function_name())));
@@ -1146,7 +1146,7 @@ ExtensionFunction::ResponseAction InputImeSetCandidatesFunction::Run() {
 
   bool success =
       engine->SetCandidates(params.context_id, candidates_out, &error);
-  base::Value::List results;
+  base::ListValue results;
   results.Append(success);
   return RespondNow(success
                         ? ArgumentList(std::move(results))
@@ -1170,7 +1170,7 @@ ExtensionFunction::ResponseAction InputImeSetCursorPositionFunction::Run() {
 
   bool success =
       engine->SetCursorPosition(params.context_id, params.candidate_id, &error);
-  base::Value::List results;
+  base::ListValue results;
   results.Append(success);
   return RespondNow(success
                         ? ArgumentList(std::move(results))

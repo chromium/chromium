@@ -20,6 +20,7 @@
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/common/bindings_policy.h"
+#include "content/public/common/child_process_id.h"
 #include "content/public/common/content_client.h"
 #include "content/public/common/drop_data.h"
 #include "content/public/common/url_constants.h"
@@ -172,16 +173,17 @@ TEST_F(RenderViewHostTest, DragEnteredFileURLsStillBlocked) {
       base::DoNothing());
 
   int id = process()->GetDeprecatedID();
+  ChildProcessId process_id = process()->GetID();
   ChildProcessSecurityPolicyImpl* policy =
       ChildProcessSecurityPolicyImpl::GetInstance();
 
   // Permissions are not granted at DragEnter.
   EXPECT_FALSE(policy->CanRequestURL(id, highlighted_file_url));
-  EXPECT_FALSE(policy->CanReadFile(id, highlighted_file_path));
+  EXPECT_FALSE(policy->CanReadFile(process_id, highlighted_file_path));
   EXPECT_FALSE(policy->CanRequestURL(id, dragged_file_url));
-  EXPECT_FALSE(policy->CanReadFile(id, dragged_file_path));
+  EXPECT_FALSE(policy->CanReadFile(process_id, dragged_file_path));
   EXPECT_FALSE(policy->CanRequestURL(id, sensitive_file_url));
-  EXPECT_FALSE(policy->CanReadFile(id, sensitive_file_path));
+  EXPECT_FALSE(policy->CanReadFile(process_id, sensitive_file_path));
 }
 
 TEST_F(RenderViewHostTest, MessageWithBadHistoryItemFiles) {
@@ -193,7 +195,7 @@ TEST_F(RenderViewHostTest, MessageWithBadHistoryItemFiles) {
   EXPECT_EQ(1, process()->bad_msg_count());
 
   ChildProcessSecurityPolicyImpl::GetInstance()->GrantReadFile(
-      process()->GetDeprecatedID(), file_path);
+      process()->GetID(), file_path);
   test_rvh()->TestOnUpdateStateWithFile(file_path);
   EXPECT_EQ(1, process()->bad_msg_count());
 }
@@ -213,7 +215,7 @@ TEST_F(RenderViewHostTest, NavigationWithBadHistoryItemFiles) {
   EXPECT_EQ(1, process()->bad_msg_count());
 
   ChildProcessSecurityPolicyImpl::GetInstance()->GrantReadFile(
-      process()->GetDeprecatedID(), file_path);
+      process()->GetID(), file_path);
   auto navigation2 =
       NavigationSimulatorImpl::CreateRendererInitiated(url, main_test_rfh());
   navigation2->set_page_state(

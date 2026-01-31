@@ -8,7 +8,6 @@
 
 #include "base/auto_reset.h"
 #include "base/check_op.h"
-#include "base/containers/contains.h"
 #include "base/containers/span.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/synchronization/waitable_event.h"
@@ -59,12 +58,14 @@ bool SyncHandleRegistry::RegisterHandle(const Handle& handle,
                                         HandleCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  if (base::Contains(handles_, handle))
+  if (handles_.contains(handle)) {
     return false;
+  }
 
   MojoResult result = wait_set_.AddHandle(handle, handle_signals);
-  if (result != MOJO_RESULT_OK)
+  if (result != MOJO_RESULT_OK) {
     return false;
+  }
 
   handles_[handle] = std::move(callback);
   return true;
@@ -72,8 +73,9 @@ bool SyncHandleRegistry::RegisterHandle(const Handle& handle,
 
 void SyncHandleRegistry::UnregisterHandle(const Handle& handle) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!base::Contains(handles_, handle))
+  if (!handles_.contains(handle)) {
     return;
+  }
 
   MojoResult result = wait_set_.RemoveHandle(handle);
   DCHECK_EQ(MOJO_RESULT_OK, result);

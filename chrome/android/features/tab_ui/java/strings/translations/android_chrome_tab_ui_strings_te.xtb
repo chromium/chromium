@@ -20,6 +20,7 @@
 <translation id="1499635324672558517">అన్ని అజ్ఞాత ట్యాబ్‌లను మూసివేయాలా?</translation>
 <translation id="1501480321619201731">గ్రూప్‌ను తొలగించండి</translation>
 <translation id="1553638665176794706">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> ఇన్‌యాక్టివ్ ఐటెమ్}other{<ph name="TABS_COUNT_MANY" /> ఇన్‌యాక్టివ్ ఐటెమ్‌లు}}</translation>
+<translation id="1568067597247500137">సైట్‌ను మ్యూట్ చేయండి</translation>
 <translation id="1645759014353344461"><ph name="TABS_COUNT_MANY" /> ట్యాబ్‌లు గ్రూప్ అయ్యాయి</translation>
 <translation id="1657719826150349398">ట్యాబ్‌ని కిందికి తరలించు</translation>
 <translation id="1670942869417022142">మ్యూట్ చేసిన ఆడియో</translation>
@@ -82,13 +83,13 @@
 <translation id="3619255692378312441">యాక్సెస్‌ను మేనేజ్ చేయండి</translation>
 <translation id="3649471731638882002">{TAB_COUNT,plural, =1{ఐటెమ్‌ను మూసివేయండి}other{ఐటెమ్‌లను మూసివేయండి}}</translation>
 <translation id="3652027618765638838"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
+<translation id="3714430408451673233">సగం ఎత్తులో ట్యాబ్ కింద ఉన్న షీట్.</translation>
 <translation id="374923079891132274">షేర్షీట్ ప్రివ్యూథంబ్నెయిల్</translation>
 <translation id="3776329373944672717">ట్యాబ్ గ్రూప్ టైటిల్ <ph name="TITLE_OF_GROUP" /></translation>
 <translation id="3810973564298564668">మేనేజ్ చేయండి</translation>
 <translation id="3849789634341518784">{TAB_COUNT,plural, =1{ట్యాబ్‌ను అన్‌పిన్ చేయండి}other{ట్యాబ్‌లను అన్‌పిన్ చేయండి}}</translation>
 <translation id="3940195383040445971">ధరలను ట్యాబ్‌లలో ట్రాక్ చేయండి</translation>
 <translation id="3940717704786481856">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> కొత్త ట్యాబ్, <ph name="ANY_CLOSED" /> మూసివేయబడింది}other{<ph name="MANY_ADDED" /> కొత్త ట్యాబ్‌లు, <ph name="ANY_CLOSED" /> మూసివేయబడ్డాయి}}</translation>
-<translation id="3954615705217314756">{TABS_COUNT,plural, =1{ట్యాబ్‌ను గ్రూప్ చేయండి}other{ట్యాబ్‌లను గ్రూప్ చేయండి}}</translation>
 <translation id="3962134438902735041">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> ఎంచుకున్న ట్యాబ్ పిన్‌ను తీసివేయండి}other{<ph name="TABS_COUNT_MANY" /> ఎంచుకున్న ట్యాబ్‌ల పిన్‌ను తీసివేయండి}}</translation>
 <translation id="4009732926939031387">{NUM_DAYS,plural, =1{<ph name="NUM_DAYS_ONE" /> రోజు క్రితం క్రియేట్ చేయడం జరిగింది}other{<ph name="NUM_DAYS_MANY" /> రోజుల క్రితం క్రియేట్ చేయడం జరిగింది}}</translation>
 <translation id="4076226664360336092">ట్యాబ్ గ్రూప్ లిస్ట్, ఫుల్ స్క్రీన్‌లో తెరవబడింది</translation>
@@ -126,8 +127,10 @@
 <translation id="5339733443032484186">మీ చివరి ట్యాబ్</translation>
 <translation id="5380159289133845234">డూప్లికేట్ ట్యాబ్‌లను ఆర్కైవ్ చేయండి</translation>
 <translation id="5446043142172831860">ట్యాబ్‌ను తీసివేసి, గ్రూప్ నుండి నిష్క్రమించండి</translation>
+<translation id="5465437530117042974">ట్యాబ్ కింద ఉన్న షీట్ మార్పులు మూసివేయబడ్డాయి.</translation>
 <translation id="5490235265819901748">ట్యాబ్ గ్రూప్ విస్తరించబడింది</translation>
 <translation id="5494920125229734069">అన్నీ ఎంచుకోండి</translation>
+<translation id="5505998972479309757">{LIMIT_COUNT,plural, =1{గరిష్ఠంగా <ph name="LIMIT_COUNT_ONE" /> ఫైల్‌ను, ట్యాబ్‌ను, లేదా ఇమేజ్‌ను జోడించండి}other{గరిష్ఠంగా <ph name="LIMIT_COUNT_MANY" /> ఫైల్స్‌ను, ట్యాబ్‌లను, లేదా ఇమేజ్‌లను జోడించండి}}</translation>
 <translation id="5551694449008560081">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" /> ట్యాబ్‌తో ఉన్న ట్యాబ్ గ్రూప్‌ను, <ph name="COLOR_NAME" /> రంగుతో మూసివేయండి.}other{<ph name="TABS_COUNT_MANY" /> ట్యాబ్‌లతో ఉన్న ట్యాబ్ గ్రూప్‌ను, <ph name="COLOR_NAME" /> రంగుతో మూసివేయండి.}}</translation>
 <translation id="5556417849629758491">స్టోర్ సమాచారాన్ని చూడండి, ఆప్షన్ స్క్రీన్ పైభాగంలో అందుబాటులో ఉంది</translation>
 <translation id="5627941783489838464">ట్యాబ్ అప్‌డేట్‌లు ఏవీ లేవు</translation>
@@ -140,7 +143,9 @@
 <translation id="6040143037577758943">మూసివేయండి</translation>
 <translation id="6051432659151380973">మీ ట్యాబ్ గ్రూప్‌లు ఆటోమేటిక్‌గా సేవ్ చేయబడతాయి</translation>
 <translation id="6054741997831917303">ఈ ఐటెమ్ ధర ఇటీవల <ph name="PREVIOUS_PRICE" /> నుండి <ph name="NEW_PRICE" />కు తగ్గింది</translation>
+<translation id="606985262342505139">ట్యాబ్ కింద ఉన్న షీట్ పూర్తి ఎత్తులో ఉంది</translation>
 <translation id="6109251075362363230">ఇటీవల ఉపయోగించిన కాపీ మినహా అన్ని డూప్లికేట్ ట్యాబ్‌లు కూడా ఇప్పుడు ఆర్కైవ్ చేయబడతాయి.</translation>
+<translation id="612596694132302162">సైట్‌ను అన్‌మ్యూట్ చేయండి</translation>
 <translation id="6149218574440723463">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> ఎంచుకున్న ఐటెమ్‌ను మూసివేయండి}other{<ph name="TABS_COUNT_MANY" /> ఎంచుకున్న ఐటెమ్‌లను మూసివేయండి}}</translation>
 <translation id="61924696525243173">{WINDOW_COUNT,plural, =1{గ్రూప్‌ను కొత్త విండోకు తరలించండి}other{గ్రూప్‌ను మరొక విండోకు తరలించండి}}</translation>
 <translation id="6212374449852603982">{TAB_COUNT,plural, =1{ట్యాబ్‌ను కుడి వైపునకు తరలించండి}other{ట్యాబ్‌లను కుడి వైపునకు తరలించండి}}</translation>
@@ -195,7 +200,6 @@
 <translation id="7792771145871471484">సూచనలను రివ్యూ చేయండి.</translation>
 <translation id="7792860826279960128">షేర్ చేసిన ట్యాబ్ గ్రూప్‌నకు చేసిన మార్పుల గురించి నోటీసు హాఫ్ స్క్రీన్‌లో చూపబడుతోంది</translation>
 <translation id="7825973332242257878">ట్యాబ్ గ్రూప్‌లు</translation>
-<translation id="7838146321400849846">{TABS_COUNT,plural, =1{ఎంచుకున్న <ph name="TABS_COUNT_ONE" /> ట్యాబ్ గ్రూప్ చేయబడుతుంది}other{ఎంచుకున్న <ph name="TABS_COUNT_MANY" /> ట్యాబ్‌లు గ్రూప్ చేయబడతాయి}}</translation>
 <translation id="7853202427316060426">కార్యాచరణ</translation>
 <translation id="7854360405711302755">{REVIEWS,plural, =1{ <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /> రేటింగ్, <ph name="REVIEWS_COUNT_ONE" /> రివ్యూ}other{<ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /> రేటింగ్, <ph name="REVIEWS_COUNT_MANY" /> రివ్యూలు}}</translation>
 <translation id="7885132941432959125">ట్యాబ్‌ను కుడి వైపునకు తరలించు</translation>
@@ -223,7 +227,6 @@
 <translation id="8428213095426709021">సెట్టింగ్‌లు</translation>
 <translation id="855081842937141170">ట్యాబ్‌ను పిన్ చేయి</translation>
 <translation id="8633025649649592204">ఇటీవలి యాక్టివిటీ</translation>
-<translation id="8635822281281406185">గరిష్ఠంగా 10 ఫైల్స్‌ను, ట్యాబ్‌లను, లేదా ఇమేజ్‌లను జోడించండి</translation>
 <translation id="8712637175834984815">అర్థమైంది</translation>
 <translation id="8714939927607906138">తక్కువ ధర</translation>
 <translation id="8730621377337864115">పూర్తయింది</translation>

@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/controller/user_level_memory_pressure_signal_generator.h"
 
 #include "base/memory/memory_pressure_listener.h"
+#include "base/memory/memory_pressure_listener_registry.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/platform/testing/task_environment.h"
@@ -32,7 +33,6 @@ class UserLevelMemoryPressureSignalGeneratorTest
     memory_pressure_listener_registration_ =
         std::make_unique<base::MemoryPressureListenerRegistration>(
             base::MemoryPressureListenerTag::kTest, this);
-    base::MemoryPressureListener::SetNotificationsSuppressed(false);
   }
 
   void TearDown() override { memory_pressure_listener_registration_.reset(); }
@@ -55,6 +55,7 @@ class UserLevelMemoryPressureSignalGeneratorTest
   }
 
  protected:
+  base::MemoryPressureListenerRegistry memory_pressure_listener_registry_;
   blink::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   std::unique_ptr<base::MemoryPressureListenerRegistration>
@@ -446,6 +447,43 @@ TEST_F(UserLevelMemoryPressureSignalGeneratorTest, CriticalToNoneToCritical) {
   EXPECT_CALL(*this, OnMemoryPressure(base::MEMORY_PRESSURE_LEVEL_CRITICAL));
   generator->RequestMemoryPressureSignal(base::MEMORY_PRESSURE_LEVEL_CRITICAL);
   testing::Mock::VerifyAndClearExpectations(this);
+}
+
+TEST_F(UserLevelMemoryPressureSignalGeneratorTest,
+       RespectsMinimumIntervalAfterLoading) {
+  std::unique_ptr<UserLevelMemoryPressureSignalGenerator> generator(
+      CreateUserLevelMemoryPressureSignalGenerator(kInertInterval));
+
+  // 1. Generate CRITICAL signal at T=0.
+  EXPECT_CALL(*this, OnMemoryPressure(base::MEMORY_PRESSURE_LEVEL_CRITICAL));
+  generator->RequestMemoryPressureSignal(base::MEMORY_PRESSURE_LEVEL_CRITICAL);
+  testing::Mock::VerifyAndClearExpectations(this);
+
+  // 2. Request CRITICAL signal at T=1m.
+  // It should wait until T=10m (minimum interval).
+  FastForwardBy(base::Minutes(1));
+  generator->RequestMemoryPressureSignal(base::MEMORY_PRESSURE_LEVEL_CRITICAL);
+
+  // 3. Start Loading at T=2m. Timer stopped.
+  FastForwardBy(base::Minutes(1));
+  generator->OnRAILModeChanged(RAILMode::kLoad);
+
+  // 4. End Loading at T=3m.
+  // inert_interval from now = 3m + 5m = 8m.
+  // minimum_interval check = 10m.
+  // The timer should respect the minimum interval.
+  FastForwardBy(base::Minutes(1));
+  generator->OnRAILModeChanged(RAILMode::kDefault);
+
+  // 5. Fast forward to T=8m (inert interval expiry).
+  // The timer should NOT fire here because minimum interval (10m) hasn't
+  // passed.
+  FastForwardBy(base::Minutes(5));
+
+  // 6. Fast forward to T=10m (minimum interval expiry).
+  // Signal should be generated here.
+  EXPECT_CALL(*this, OnMemoryPressure(base::MEMORY_PRESSURE_LEVEL_CRITICAL));
+  FastForwardBy(base::Minutes(2));
 }
 
 }  // namespace blink::user_level_memory_pressure_signal_generator_test

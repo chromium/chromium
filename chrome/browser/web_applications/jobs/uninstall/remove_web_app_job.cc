@@ -51,13 +51,13 @@ bool IsOsIntegrationRemovedForApp(
 RemoveWebAppJob::RemoveWebAppJob(
     webapps::WebappUninstallSource uninstall_source,
     Profile& profile,
-    base::Value::Dict& debug_value,
+    base::DictValue& debug_value,
     webapps::AppId app_id)
     : uninstall_source_(uninstall_source),
       profile_(profile),
       debug_value_(debug_value),
       app_id_(app_id) {
-  base::Value::Dict dict;
+  base::DictValue dict;
   debug_value_->Set("!job", "RemoveWebAppJob");
   debug_value_->Set("app_id", app_id_);
 }
@@ -95,7 +95,7 @@ void RemoveWebAppJob::Start(AllAppsLock& lock, Callback callback) {
   }
 
   sub_apps_pending_removal_ = lock_->registrar().GetAllSubAppIds(app_id_);
-  base::Value::List* list = debug_value_->EnsureList("sub_apps_found");
+  base::ListValue* list = debug_value_->EnsureList("sub_apps_found");
   for (const webapps::AppId& sub_app_id : sub_apps_pending_removal_) {
     list->Append(sub_app_id);
   }

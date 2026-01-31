@@ -13,7 +13,6 @@
 #include <set>
 
 #include "base/command_line.h"
-#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/i18n/rtl.h"
 #include "base/memory/raw_ptr.h"
@@ -191,7 +190,7 @@ void ConstructTree(views::View* view, int depth) {
   if (depth == 0) {
     return;
   }
-  int count = base::RandInt(1, 5);
+  int count = base::RandIntInclusive(1, 5);
   for (int i = 0; i < count; i++) {
     views::View* v = new views::View;
     view->AddChildViewRaw(v);
@@ -4971,8 +4970,8 @@ TEST_F(ViewTest, GetViewByID) {
   View::Views views;
   v1.GetViewsInGroup(kGroup, &views);
   EXPECT_EQ(2U, views.size());
-  EXPECT_TRUE(base::Contains(views, &v3));
-  EXPECT_TRUE(base::Contains(views, &v4));
+  EXPECT_TRUE(std::ranges::contains(views, &v3));
+  EXPECT_TRUE(std::ranges::contains(views, &v4));
 }
 
 TEST_F(ViewTest, AddExistingChild) {

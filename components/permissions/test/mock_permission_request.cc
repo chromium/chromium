@@ -9,6 +9,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/memory/weak_ptr.h"
 #include "components/permissions/permission_decision.h"
+#include "components/permissions/permission_prompt_decision.h"
 #include "components/permissions/permission_request_data.h"
 #include "components/permissions/permission_request_enums.h"
 #include "components/permissions/request_type.h"
@@ -113,14 +114,14 @@ void MockPermissionRequest::RegisterOnPermissionDecidedCallback(
 }
 
 void MockPermissionRequest::PermissionDecided(
-    PermissionDecision decision,
-    bool is_final_decision,
+    const permissions::PermissionPromptDecision& decision,
     const permissions::PermissionRequestData& request_data) {
   if (request_state_) {
-    request_state_->granted = (decision == PermissionDecision::kAllow) ||
-                              (decision == PermissionDecision::kAllowThisTime);
+    request_state_->granted =
+        (decision.overall_decision == PermissionDecision::kAllow) ||
+        (decision.overall_decision == PermissionDecision::kAllowThisTime);
 
-    if (decision == PermissionDecision::kNone) {
+    if (decision.overall_decision == PermissionDecision::kNone) {
       request_state_->cancelled = true;
     }
   }

@@ -28,7 +28,7 @@ void OnGotExtensionValue(GetExtensionKeyPermissionsServiceCallback callback,
     return;
   }
 
-  base::Value::List store_state_list;
+  base::ListValue store_state_list;
   if (value && value->is_list()) {
     store_state_list = std::move(*value).TakeList();
   } else if (value) {

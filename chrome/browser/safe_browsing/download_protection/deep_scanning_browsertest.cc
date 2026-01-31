@@ -31,7 +31,6 @@
 #include "chrome/browser/enterprise/identifiers/profile_id_service_factory.h"
 #include "chrome/browser/policy/dm_token_utils.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/safe_browsing/cloud_content_scanning/binary_upload_service.h"
 #include "chrome/browser/safe_browsing/cloud_content_scanning/cloud_binary_upload_service.h"
 #include "chrome/browser/safe_browsing/cloud_content_scanning/cloud_binary_upload_service_factory.h"
 #include "chrome/browser/safe_browsing/download_protection/deep_scanning_request.h"
@@ -48,6 +47,7 @@
 #include "components/download/public/common/download_features.h"
 #include "components/enterprise/browser/identifiers/profile_id_service.h"
 #include "components/enterprise/common/proto/connectors.pb.h"
+#include "components/enterprise/connectors/core/cloud_content_scanning/binary_upload_service.h"
 #include "components/enterprise/connectors/core/cloud_content_scanning/common.h"
 #include "components/enterprise/connectors/core/reporting_constants.h"
 #include "components/enterprise/obfuscation/core/utils.h"
@@ -199,7 +199,7 @@ class DownloadDeepScanningBrowserTestBase
     identity_test_environment_ =
         std::make_unique<signin::IdentityTestEnvironment>();
     identity_test_environment_->MakePrimaryAccountAvailable(
-        kUserName, signin::ConsentLevel::kSync);
+        kUserName, signin::ConsentLevel::kSignin);
     enterprise_connectors::RealtimeReportingClientFactory::GetForProfile(
         browser()->profile())
         ->SetIdentityManagerForTesting(
@@ -1116,7 +1116,7 @@ class AllowlistedUrlDeepScanningBrowserTest
   void SetUpOnMainThread() override {
     DownloadDeepScanningBrowserTestBase::SetUpOnMainThread();
 
-    base::Value::List domain_list;
+    base::ListValue domain_list;
     domain_list.Append(embedded_test_server()->base_url().host());
     browser()->profile()->GetPrefs()->SetList(
         prefs::kSafeBrowsingAllowlistDomains, std::move(domain_list));

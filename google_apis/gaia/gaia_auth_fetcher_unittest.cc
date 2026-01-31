@@ -11,7 +11,6 @@
 #include <vector>
 
 #include "base/base64url.h"
-#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/json/json_reader.h"
 #include "base/memory/ref_counted.h"
@@ -274,7 +273,7 @@ TEST_F(GaiaAuthFetcherTest, StartAuthCodeForOAuth2TokenExchangeSuccess) {
   EXPECT_EQ(google_apis::GetOmitCredentialsModeForGaiaRequests(),
             received_requests_.at(0).credentials_mode);
   std::string body = GetRequestBodyAsString(&received_requests_.at(0));
-  EXPECT_FALSE(base::Contains(body, "device_type=chrome"));
+  EXPECT_FALSE(body.contains("device_type=chrome"));
   EXPECT_TRUE(auth.HasPendingFetch());
 
   auth.TestOnURLLoadCompleteInternal(net::OK, net::HTTP_OK,
@@ -293,8 +292,8 @@ TEST_F(GaiaAuthFetcherTest, StartAuthCodeForOAuth2TokenExchangeDeviceId) {
   EXPECT_EQ(google_apis::GetOmitCredentialsModeForGaiaRequests(),
             received_requests_.at(0).credentials_mode);
   std::string body = GetRequestBodyAsString(&received_requests_.at(0));
-  EXPECT_TRUE(base::Contains(body, "device_type=chrome"));
-  EXPECT_TRUE(base::Contains(body, "device_id=device_ABCDE_1"));
+  EXPECT_TRUE(body.contains("device_type=chrome"));
+  EXPECT_TRUE(body.contains("device_id=device_ABCDE_1"));
 }
 
 TEST_F(GaiaAuthFetcherTest,
@@ -313,8 +312,7 @@ TEST_F(GaiaAuthFetcherTest,
   EXPECT_EQ(google_apis::GetOmitCredentialsModeForGaiaRequests(),
             received_requests_.at(0).credentials_mode);
   std::string body = GetRequestBodyAsString(&received_requests_.at(0));
-  EXPECT_TRUE(
-      base::Contains(body, "bound_token_registration_jwt=registration_jwt"));
+  EXPECT_TRUE(body.contains("bound_token_registration_jwt=registration_jwt"));
   EXPECT_THAT(received_requests_.at(0).headers.GetHeader(kVersionListHeader),
               Optional(std::string("version_list")));
   EXPECT_TRUE(auth.HasPendingFetch());
@@ -340,8 +338,7 @@ TEST_F(
   EXPECT_EQ(google_apis::GetOmitCredentialsModeForGaiaRequests(),
             received_requests_.at(0).credentials_mode);
   std::string body = GetRequestBodyAsString(&received_requests_.at(0));
-  EXPECT_TRUE(
-      base::Contains(body, "bound_token_registration_jwt=registration_jwt"));
+  EXPECT_TRUE(body.contains("bound_token_registration_jwt=registration_jwt"));
   EXPECT_FALSE(received_requests_.at(0).headers.HasHeader(kVersionListHeader));
   EXPECT_TRUE(auth.HasPendingFetch());
 

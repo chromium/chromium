@@ -30,7 +30,7 @@ class MockPrivateKeyFactory : public PrivateKeyFactory {
               (override));
   MOCK_METHOD(void,
               LoadPrivateKeyFromDict,
-              (const base::Value::Dict&, PrivateKeyFactory::PrivateKeyCallback),
+              (const base::DictValue&, PrivateKeyFactory::PrivateKeyCallback),
               (override));
 };
 

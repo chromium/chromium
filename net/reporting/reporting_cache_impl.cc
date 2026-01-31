@@ -10,12 +10,10 @@
 #include <unordered_set>
 #include <utility>
 
-#include "base/containers/contains.h"
 #include "base/memory/raw_ptr.h"
 #include "base/stl_util.h"
 #include "base/time/clock.h"
 #include "base/time/tick_clock.h"
-#include "net/base/features.h"
 #include "net/base/network_anonymization_key.h"
 #include "net/base/url_util.h"
 #include "net/log/net_log.h"
@@ -23,12 +21,9 @@
 
 namespace net {
 
-ReportingCacheImpl::ReportingCacheImpl(
-    ReportingContext* context,
-    const base::flat_map<std::string, GURL>& enterprise_reporting_endpoints)
+ReportingCacheImpl::ReportingCacheImpl(ReportingContext* context)
     : context_(context) {
   DCHECK(context_);
-  SetEnterpriseReportingEndpoints(enterprise_reporting_endpoints);
 }
 
 ReportingCacheImpl::~ReportingCacheImpl() = default;
@@ -40,7 +35,7 @@ void ReportingCacheImpl::AddReport(
     const std::string& user_agent,
     const std::string& group_name,
     const std::string& type,
-    base::Value::Dict body,
+    base::DictValue body,
     int depth,
     base::TimeTicks queued,
     ReportingTargetType target_type) {
@@ -106,9 +101,9 @@ base::Value ReportingCacheImpl::GetReportsAsValue() const {
                      std::tie(report2->queued, report2->url);
             });
 
-  base::Value::List report_list;
+  base::ListValue report_list;
   for (const ReportingReport* report : sorted_reports) {
-    base::Value::Dict report_dict;
+    base::DictValue report_dict;
     report_dict.Set("network_anonymization_key",
                     report->network_anonymization_key.ToDebugString());
     report_dict.Set("url", report->url.spec());
@@ -489,28 +484,6 @@ void ReportingCacheImpl::OnParsedReportingEndpointsHeader(
       FilterEndpointsByOrigin(document_endpoints_, origin));
 }
 
-void ReportingCacheImpl::SetEnterpriseReportingEndpoints(
-    const base::flat_map<std::string, GURL>& endpoints) {
-  if (!base::FeatureList::IsEnabled(
-          net::features::kReportingApiEnableEnterpriseCookieIssues)) {
-    return;
-  }
-  std::vector<ReportingEndpoint> new_enterprise_endpoints;
-  new_enterprise_endpoints.reserve(endpoints.size());
-  for (const auto& [endpoint_name, endpoint_url] : endpoints) {
-    ReportingEndpoint endpoint;
-    endpoint.group_key = ReportingEndpointGroupKey(
-        NetworkAnonymizationKey(), /*reporting_source=*/std::nullopt,
-        /*origin=*/std::nullopt, endpoint_name,
-        ReportingTargetType::kEnterprise);
-    ReportingEndpoint::EndpointInfo endpoint_info;
-    endpoint_info.url = endpoint_url;
-    endpoint.info = endpoint_info;
-    new_enterprise_endpoints.push_back(endpoint);
-  }
-  enterprise_endpoints_.swap(new_enterprise_endpoints);
-}
-
 std::set<url::Origin> ReportingCacheImpl::GetAllOrigins() const {
   ConsistencyCheckClients();
   std::set<url::Origin> origins_out;
@@ -829,7 +802,7 @@ ReportingCacheImpl::GetCandidateEndpointsForDelivery(
 
 base::Value ReportingCacheImpl::GetClientsAsValue() const {
   ConsistencyCheckClients();
-  base::Value::List client_list;
+  base::ListValue client_list;
   for (const auto& domain_and_client : clients_) {
     const Client& client = domain_and_client.second;
     client_list.Append(GetClientAsValue(client));
@@ -870,11 +843,6 @@ ReportingEndpoint ReportingCacheImpl::GetEndpointForTesting(
       return endpoint;
   }
   return ReportingEndpoint();
-}
-
-std::vector<ReportingEndpoint>
-ReportingCacheImpl::GetEnterpriseEndpointsForTesting() const {
-  return enterprise_endpoints_;
 }
 
 bool ReportingCacheImpl::EndpointGroupExistsForTesting(
@@ -1209,14 +1177,14 @@ void ReportingCacheImpl::ConsistencyCheckEndpoint(
   DCHECK_LE(0, endpoint.info.weight);
 
   // The endpoint is in the |endpoint_its_by_url_| index.
-  DCHECK(base::Contains(endpoint_its_by_url_, endpoint.info.url));
+  DCHECK(endpoint_its_by_url_.contains(endpoint.info.url));
   auto url_range = endpoint_its_by_url_.equal_range(endpoint.info.url);
   std::vector<EndpointMap::iterator> endpoint_its_for_url;
   for (auto index_it = url_range.first; index_it != url_range.second;
        ++index_it) {
     endpoint_its_for_url.push_back(index_it->second);
   }
-  DCHECK(base::Contains(endpoint_its_for_url, endpoint_it));
+  DCHECK(std::ranges::contains(endpoint_its_for_url, endpoint_it));
 #endif  // DCHECK_IS_ON()
 }
 
@@ -1361,7 +1329,7 @@ void ReportingCacheImpl::RemoveEndpointsInGroupOtherThan(
 
   const auto group_range = endpoints_.equal_range(group_key);
   for (auto it = group_range.first; it != group_range.second;) {
-    if (base::Contains(endpoints_to_keep_urls, it->second.info.url)) {
+    if (endpoints_to_keep_urls.contains(it->second.info.url)) {
       ++it;
       continue;
     }
@@ -1695,12 +1663,12 @@ void ReportingCacheImpl::RemoveEndpointItFromIndex(
 }
 
 base::Value ReportingCacheImpl::GetClientAsValue(const Client& client) const {
-  base::Value::Dict client_dict;
+  base::DictValue client_dict;
   client_dict.Set("network_anonymization_key",
                   client.network_anonymization_key.ToDebugString());
   client_dict.Set("origin", client.origin.Serialize());
 
-  base::Value::List group_list;
+  base::ListValue group_list;
   for (const std::string& group_name : client.endpoint_group_names) {
     // The target_type is set to kDeveloper because enterprise endpoints
     // follow a different path.
@@ -1718,13 +1686,13 @@ base::Value ReportingCacheImpl::GetClientAsValue(const Client& client) const {
 
 base::Value ReportingCacheImpl::GetEndpointGroupAsValue(
     const CachedReportingEndpointGroup& group) const {
-  base::Value::Dict group_dict;
+  base::DictValue group_dict;
   group_dict.Set("name", group.group_key.group_name);
   group_dict.Set("expires", NetLog::TimeToString(group.expires));
   group_dict.Set("includeSubdomains",
                  group.include_subdomains == OriginSubdomains::INCLUDE);
 
-  base::Value::List endpoint_list;
+  base::ListValue endpoint_list;
 
   const auto group_range = endpoints_.equal_range(group.group_key);
   for (auto it = group_range.first; it != group_range.second; ++it) {
@@ -1739,18 +1707,18 @@ base::Value ReportingCacheImpl::GetEndpointGroupAsValue(
 
 base::Value ReportingCacheImpl::GetEndpointAsValue(
     const ReportingEndpoint& endpoint) const {
-  base::Value::Dict endpoint_dict;
+  base::DictValue endpoint_dict;
   endpoint_dict.Set("url", endpoint.info.url.spec());
   endpoint_dict.Set("priority", endpoint.info.priority);
   endpoint_dict.Set("weight", endpoint.info.weight);
 
   const ReportingEndpoint::Statistics& stats = endpoint.stats;
-  base::Value::Dict successful_dict;
+  base::DictValue successful_dict;
   successful_dict.Set("uploads", stats.successful_uploads);
   successful_dict.Set("reports", stats.successful_reports);
   endpoint_dict.Set("successful", std::move(successful_dict));
 
-  base::Value::Dict failed_dict;
+  base::DictValue failed_dict;
   failed_dict.Set("uploads",
                   stats.attempted_uploads - stats.successful_uploads);
   failed_dict.Set("reports",

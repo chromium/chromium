@@ -19,6 +19,21 @@ enum class ThreadType {
   kAiMode,
 };
 
+// Represents the type of a resource attached to a task's context.
+enum class ResourceType {
+  // Type is unknown.
+  kUnknown,
+
+  // A standard web page or tab.
+  kWebpage,
+
+  // An image.
+  kImage,
+
+  // A PDF document.
+  kPdf,
+};
+
 // Represents a server-side conversation that is part of a `ContextualTask`.
 struct Thread {
   Thread(ThreadType type,
@@ -42,7 +57,7 @@ struct Thread {
 };
 
 struct UrlResource {
-  explicit UrlResource(const GURL& url);
+  explicit UrlResource(const GURL& url, ResourceType resource_type);
   UrlResource(const base::Uuid& url_id, const GURL& url);
   UrlResource(const UrlResource& other);
   ~UrlResource();
@@ -61,6 +76,9 @@ struct UrlResource {
 
   // The unique context ID for this resource.
   std::optional<int64_t> context_id;
+
+  // The type of resource.
+  ResourceType resource_type = ResourceType::kUnknown;
 };
 
 // A task is a representation of a user's journey to accomplish a goal. It

@@ -427,7 +427,6 @@ shared_library("remoting_core") {
     "$root_gen_dir/remoting/core.rc",
     "$root_gen_dir/remoting/host/win/remoting_host_messages.rc",
     "$root_gen_dir/remoting/version.rc",
-    "//remoting/host/desktop_process_main.cc",
     "chromoting_lib.rc",
     "chromoting_module.cc",
     "chromoting_module.h",

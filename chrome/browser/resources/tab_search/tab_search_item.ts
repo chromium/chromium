@@ -94,7 +94,7 @@ export class TabSearchItemElement extends TabSearchItemBase {
         showIcon: false,
         tabId: 1,
         title: '',
-        url: {url: ''},
+        url: '',
       },
       TabItemType.OPEN_TAB, '');
   protected accessor buttonRipples_: boolean =
@@ -164,10 +164,9 @@ export class TabSearchItemElement extends TabSearchItemBase {
   protected faviconUrl_(): string {
     const tab = this.data.tab;
     return (tab as Tab).faviconUrl ?
-        `url("${(tab as Tab).faviconUrl!.url}")` :
+        `url("${(tab as Tab).faviconUrl!}")` :
         getFaviconForPageURL(
-            (tab as Tab).isDefaultFavicon ? 'chrome://newtab' : tab.url.url,
-            false);
+            (tab as Tab).isDefaultFavicon ? 'chrome://newtab' : tab.url, false);
   }
 
   /**
@@ -240,7 +239,7 @@ export class TabSearchItemElement extends TabSearchItemBase {
         });
 
     // Show chrome:// if it's a chrome internal url
-    const protocol = new URL(normalizeURL(data.tab.url.url)).protocol;
+    const protocol = new URL(normalizeURL(data.tab.url)).protocol;
     if (protocol === 'chrome:') {
       this.$.secondaryText.prepend(document.createTextNode('chrome://'));
     }

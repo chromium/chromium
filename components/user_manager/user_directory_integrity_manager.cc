@@ -50,7 +50,7 @@ void UserDirectoryIntegrityManager::RecordCreatingNewUser(
     const AccountId& account_id,
     CleanupStrategy strategy) {
   LOG(WARNING) << "Creating new user, don't have credentials yet.";
-  base::Value::Dict serialized_account;
+  base::DictValue serialized_account;
   StoreAccountId(account_id, serialized_account);
   serialized_account.Set(kCleanupStrategyKey, static_cast<int>(strategy));
   local_state_->SetDict(kUserDirectoryIntegrityAccountPrefV2,
@@ -72,7 +72,7 @@ void UserDirectoryIntegrityManager::ClearPrefs() {
 
 std::optional<AccountId>
 UserDirectoryIntegrityManager::GetMisconfiguredUserAccountId() {
-  const base::Value::Dict& account_dict =
+  const base::DictValue& account_dict =
       local_state_->GetDict(kUserDirectoryIntegrityAccountPrefV2);
   std::optional<AccountId> result = LoadAccountId(account_dict);
   if (result) {
@@ -83,7 +83,7 @@ UserDirectoryIntegrityManager::GetMisconfiguredUserAccountId() {
 
 CleanupStrategy
 UserDirectoryIntegrityManager::GetMisconfiguredUserCleanupStrategy() {
-  const base::Value::Dict& account_dict =
+  const base::DictValue& account_dict =
       local_state_->GetDict(kUserDirectoryIntegrityAccountPrefV2);
   std::optional<int> raw_strategy = account_dict.FindInt(kCleanupStrategyKey);
   if (raw_strategy) {
@@ -144,7 +144,7 @@ UserDirectoryIntegrityManager::GetMisconfiguredUserEmail() {
 
 bool UserDirectoryIntegrityManager::IsUserMisconfigured(
     const AccountId& account_id) {
-  const base::Value::Dict& account_dict =
+  const base::DictValue& account_dict =
       local_state_->GetDict(kUserDirectoryIntegrityAccountPrefV2);
   if (!account_dict.empty()) {
     return AccountIdMatches(account_id, account_dict);

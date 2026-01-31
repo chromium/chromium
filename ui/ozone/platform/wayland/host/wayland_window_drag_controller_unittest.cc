@@ -1221,14 +1221,18 @@ TEST_P(WaylandWindowDragControllerTest, CursorPositionIsUpdatedOnMotion) {
       const uint32_t surface_id = window->root_surface()->get_surface_id();
       const uint32_t output_id = wl_proxy_get_id(
           reinterpret_cast<wl_proxy*>(output.second->get_output()));
-      self->PostToServerAndWait([surface_id, output_id](
-                                    wl::TestWaylandServerThread* server) {
+      const float scale = output.second->scale_factor();
+      self->PostToServerAndWait([surface_id, output_id,
+                                 scale](wl::TestWaylandServerThread* server) {
         wl::MockSurface* surface =
             server->GetObject<wl::MockSurface>(surface_id);
         ASSERT_TRUE(surface);
         wl::TestOutput* output = server->GetObject<wl::TestOutput>(output_id);
         ASSERT_TRUE(output);
         wl_surface_send_enter(surface->resource(), output->resource());
+        if (surface->fractional_scale()) {
+          surface->fractional_scale()->SendPreferredScale(scale);
+        }
       });
       EXPECT_EQ(output.second->scale_factor(),
                 window->applied_state().window_scale);

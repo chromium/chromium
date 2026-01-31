@@ -16,8 +16,11 @@ LocalPasswordSetupHandler::LocalPasswordSetupHandler()
 
 LocalPasswordSetupHandler::~LocalPasswordSetupHandler() = default;
 
-void LocalPasswordSetupHandler::Show(bool can_go_back, bool is_recovery_flow) {
-  base::Value::Dict dict;
+void LocalPasswordSetupHandler::Show(const std::string& auth_token,
+                                     bool can_go_back,
+                                     bool is_recovery_flow) {
+  base::DictValue dict;
+  dict.Set("authToken", base::Value(auth_token));
   dict.Set("showBackButton", can_go_back);
   dict.Set("isRecoveryFlow", is_recovery_flow);
   ShowInWebUI(std::move(dict));
@@ -50,6 +53,14 @@ void LocalPasswordSetupHandler::DeclareLocalizedValues(
                IDS_AUTH_SETUP_SET_LOCAL_PASSWORD_CONFIRM_PLACEHOLDER);
   builder->Add("setLocalPasswordMinCharsHint",
                IDS_AUTH_SETUP_SET_LOCAL_PASSWORD_MIN_CHARS_HINT);
+  builder->Add("setLocalPasswordComplexityErrorNone",
+               IDS_AUTH_SETUP_SET_LOCAL_PASSWORD_COMPLEXITY_ERROR_NONE);
+  builder->Add("setLocalPasswordComplexityErrorLow",
+               IDS_AUTH_SETUP_SET_LOCAL_PASSWORD_COMPLEXITY_ERROR_LOW);
+  builder->Add("setLocalPasswordComplexityErrorMedium",
+               IDS_AUTH_SETUP_SET_LOCAL_PASSWORD_COMPLEXITY_ERROR_MEDIUM);
+  builder->Add("setLocalPasswordComplexityErrorHigh",
+               IDS_AUTH_SETUP_SET_LOCAL_PASSWORD_COMPLEXITY_ERROR_HIGH);
   builder->Add("setLocalPasswordNoMatchError",
                IDS_AUTH_SETUP_SET_LOCAL_PASSWORD_NO_MATCH_ERROR);
 }

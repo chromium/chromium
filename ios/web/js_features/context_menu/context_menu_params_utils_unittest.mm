@@ -59,7 +59,7 @@ TEST_F(ContextMenuParamsUtilsTest, EmptyParams) {
 // Tests the parsing of the element NSDictionary.
 TEST_F(ContextMenuParamsUtilsTest, DictionaryConstructorTest) {
   auto element_dict =
-      base::Value::Dict()
+      base::DictValue()
           .Set(kContextMenuElementHyperlink, kLinkUrl)
           .Set(kContextMenuElementSource, kSrcUrl)
           .Set(kContextMenuElementTitle, kTitle)

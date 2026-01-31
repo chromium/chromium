@@ -51,7 +51,7 @@ constexpr char kJsonContentType[] = "application/json;charset=UTF-8";
 
 std::unique_ptr<const GaiaAuthConsumer::ClientOAuthResult>
 ExtractOAuth2TokenPairResponse(const std::string& data) {
-  std::optional<base::Value::Dict> dict =
+  std::optional<base::DictValue> dict =
       base::JSONReader::ReadDict(data, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   if (!dict) {
     return nullptr;
@@ -96,7 +96,7 @@ GetTokenRevocationStatusFromResponseData(const std::string& data,
   if (response_code == net::HTTP_INTERNAL_SERVER_ERROR)
     return GaiaAuthConsumer::TokenRevocationStatus::kServerError;
 
-  std::optional<base::Value::Dict> dict =
+  std::optional<base::DictValue> dict =
       base::JSONReader::ReadDict(data, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   if (!dict) {
     return GaiaAuthConsumer::TokenRevocationStatus::kUnknownError;
@@ -114,9 +114,9 @@ GetTokenRevocationStatusFromResponseData(const std::string& data,
   return GaiaAuthConsumer::TokenRevocationStatus::kUnknownError;
 }
 
-base::Value::Dict ParseJSONDict(const std::string& data) {
+base::DictValue ParseJSONDict(const std::string& data) {
   return base::JSONReader::ReadDict(data, base::JSON_PARSE_CHROMIUM_EXTENSIONS)
-      .value_or(base::Value::Dict());
+      .value_or(base::DictValue());
 }
 
 GaiaAuthConsumer::ReAuthProofTokenStatus ErrorMessageToReAuthProofTokenStatus(
@@ -610,7 +610,7 @@ void GaiaAuthFetcher::StartCreateReAuthProofTokenForParent(
     const GaiaId& parent_obfuscated_gaia_id,
     const std::string& parent_credential) {
   // Create the post body.
-  base::Value::Dict post_body_value;
+  base::DictValue post_body_value;
   post_body_value.Set("credentialType", "password");
   post_body_value.Set("credential", parent_credential);
   std::string post_body;
@@ -801,7 +801,7 @@ void GaiaAuthFetcher::OnReAuthApiInfoFetched(const std::string& data,
                                              net::Error net_error,
                                              int response_code) {
   if (net_error == net::OK) {
-    base::Value::Dict response_dict = ParseJSONDict(data);
+    base::DictValue response_dict = ParseJSONDict(data);
 
     if (response_code == net::HTTP_OK) {
       std::string* rapt_token = response_dict.FindString("encodedRapt");

@@ -14,7 +14,6 @@
 
 #include "base/auto_reset.h"
 #include "base/containers/adapters.h"
-#include "base/containers/contains.h"
 #include "base/i18n/case_conversion.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
@@ -494,7 +493,11 @@ bool MenuItemView::HasSubmenu() const {
   return (submenu_ != nullptr);
 }
 
-SubmenuView* MenuItemView::GetSubmenu() const {
+SubmenuView* MenuItemView::GetSubmenu() {
+  return submenu_.get();
+}
+
+const SubmenuView* MenuItemView::GetSubmenu() const {
   return submenu_.get();
 }
 
@@ -1618,7 +1621,7 @@ bool MenuItemView::ShouldPaintAsSelected(PaintMode mode) const {
 
 bool MenuItemView::IsScheduledForDeletion() const {
   return parent_menu_item_ &&
-         (base::Contains(parent_menu_item_->removed_items_, this) ||
+         (std::ranges::contains(parent_menu_item_->removed_items_, this) ||
           parent_menu_item_->IsScheduledForDeletion());
 }
 

@@ -5,7 +5,6 @@
 // This file contains UI interactive tests for the extensions commands API.
 // For non-UI interactive tests, see extension_keybinding_browsertest.cc.
 
-#include "base/containers/contains.h"
 #include "base/strings/stringprintf.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -15,7 +14,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/toolbar/toolbar_action_view_model.h"
-#include "chrome/browser/ui/views/extensions/extensions_toolbar_container.h"
+#include "chrome/browser/ui/views/extensions/extensions_toolbar_desktop.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/test/base/interactive_test_utils.h"
@@ -214,7 +213,7 @@ void SendKeyPressToAction(Browser* browser,
   base::RunLoop().RunUntilIdle();
   // Check that the event was dispatched if and only if we expected it to be.
   EXPECT_EQ(expect_dispatch,
-            base::Contains(event_tracker.dispatched_events(), event_name));
+            event_tracker.dispatched_events().contains(event_name));
 
   // Do a round-trip to the extension renderer. This serves as a pseudo-
   // RunUntilIdle()-type of method for the extension renderer itself, since
@@ -342,7 +341,7 @@ IN_PROC_BROWSER_TEST_F(CommandsApiTest, Basic) {
   ASSERT_TRUE(RunExtensionTest("keybinding/conflicting")) << message_;
 
   // Test that there are two browser actions in the toolbar.
-  ExtensionsToolbarContainer* extensions_container =
+  ExtensionsToolbarDesktop* extensions_container =
       browser()->GetBrowserView().toolbar()->extensions_container();
   ASSERT_EQ(2, extensions_container->GetNumberOfActionsForTesting());
 
@@ -410,7 +409,7 @@ IN_PROC_BROWSER_TEST_F(CommandsApiTest, UnpinnedPageActionTriggers) {
   // initial hidden/disabled state.
   DisableActionGlobally(profile(), *extension);
 
-  ExtensionsToolbarContainer* extensions_container =
+  ExtensionsToolbarDesktop* extensions_container =
       browser()->GetBrowserView().toolbar()->extensions_container();
   RunScheduledLayouts();
   EXPECT_FALSE(extensions_container->IsActionVisibleOnToolbar(extension->id()));
@@ -675,9 +674,8 @@ IN_PROC_BROWSER_TEST_P(IncognitoCommandsApiTest, IncognitoMode) {
   } else {
     base::RunLoop().RunUntilIdle();
   }
-  EXPECT_EQ(
-      is_incognito_enabled,
-      base::Contains(test_observer.dispatched_events(), "action.onClicked"));
+  EXPECT_EQ(is_incognito_enabled,
+            test_observer.dispatched_events().contains("action.onClicked"));
 
   test_observer.ClearEvents();
 
@@ -691,9 +689,8 @@ IN_PROC_BROWSER_TEST_P(IncognitoCommandsApiTest, IncognitoMode) {
     base::RunLoop().RunUntilIdle();
   }
   base::RunLoop().RunUntilIdle();
-  EXPECT_EQ(
-      is_incognito_enabled,
-      base::Contains(test_observer.dispatched_events(), "commands.onCommand"));
+  EXPECT_EQ(is_incognito_enabled,
+            test_observer.dispatched_events().contains("commands.onCommand"));
 }
 
 IN_PROC_BROWSER_TEST_P(ActionCommandsApiTest,
@@ -839,7 +836,7 @@ IN_PROC_BROWSER_TEST_P(ActionCommandsApiTest, TriggeringCommandTriggersPopup) {
   EXPECT_TRUE(catcher.GetNextResult()) << catcher.message();
 
   // Verify popup is shown.
-  ExtensionsToolbarContainer* extensions_container =
+  ExtensionsToolbarDesktop* extensions_container =
       browser()->GetBrowserView().toolbar()->extensions_container();
   ToolbarActionViewModel* popup_owner =
       extensions_container->popup_owner_for_testing();

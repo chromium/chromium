@@ -85,6 +85,7 @@ class FeatureTilesContainerViewTest : public AshTestBase,
 
   void TearDown() override {
     container_->RemoveObserver(this);
+    container_ = nullptr;
     widget_.reset();
     tray_controller_.reset();
     tray_model_.reset();
@@ -154,7 +155,7 @@ class FeatureTilesContainerViewTest : public AshTestBase,
   std::unique_ptr<views::Widget> widget_;
   std::unique_ptr<UnifiedSystemTrayController> tray_controller_;
   scoped_refptr<UnifiedSystemTrayModel> tray_model_;
-  raw_ptr<FeatureTilesContainerView, DanglingUntriaged> container_;
+  raw_ptr<FeatureTilesContainerView> container_;
 };
 
 // Tests `CalculateRowsFromHeight()` which returns the number of max displayable

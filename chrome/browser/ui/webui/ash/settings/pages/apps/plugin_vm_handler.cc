@@ -38,7 +38,7 @@ void PluginVmHandler::OnJavascriptAllowed() {}
 void PluginVmHandler::OnJavascriptDisallowed() {}
 
 void PluginVmHandler::HandleIsRelaunchNeededForNewPermissions(
-    const base::Value::List& args) {
+    const base::ListValue& args) {
   AllowJavascript();
 
   CHECK_EQ(1U, args.size());
@@ -50,7 +50,7 @@ void PluginVmHandler::HandleIsRelaunchNeededForNewPermissions(
       base::Value(requires_relaunch));
 }
 
-void PluginVmHandler::HandleRelaunchPluginVm(const base::Value::List& args) {
+void PluginVmHandler::HandleRelaunchPluginVm(const base::ListValue& args) {
   CHECK_EQ(0U, args.size());
   plugin_vm::PluginVmManagerFactory::GetForProfile(profile_)
       ->RelaunchPluginVm();

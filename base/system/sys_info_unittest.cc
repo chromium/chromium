@@ -6,12 +6,12 @@
 
 #include <stdint.h>
 
+#include <algorithm>
 #include <optional>
 #include <string_view>
 #include <utility>
 #include <vector>
 
-#include "base/byte_count.h"
 #include "base/byte_size.h"
 #include "base/environment.h"
 #include "base/files/file_util.h"
@@ -91,7 +91,7 @@ TEST_F(SysInfoTest, NumProcsWithSecurityMitigationEnabled) {
 
 TEST_F(SysInfoTest, AmountOfMem) {
   // We aren't actually testing that it's correct, just that it's sane.
-  EXPECT_GT(SysInfo::AmountOfPhysicalMemory(), ByteCount(0));
+  EXPECT_GT(SysInfo::AmountOfTotalPhysicalMemory(), ByteSize(0));
   // The maxmimal amount of virtual memory can be zero which means unlimited.
   EXPECT_GE(SysInfo::AmountOfVirtualMemory(), ByteSize(0));
 }
@@ -485,4 +485,47 @@ TEST_F(SysInfoTest, KernelVersionNumber) {
   EXPECT_LT(current_kernel_version, next_bugfix_kernel_version);
 }
 #endif  // BUILDFLAG(IS_POSIX)
+
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
+TEST_F(SysInfoTest, NumberOfEfficientProcessors) {
+  std::vector<uint64_t> frequencies = SysInfo::MaxFrequencyPerProcessor();
+  if (frequencies.empty()) {
+    GTEST_SKIP() << "Cannot test, not able to detect max core frequency. "
+                 << "This is expected on VMs for instance";
+  }
+
+  EXPECT_EQ(static_cast<int>(frequencies.size()),
+            SysInfo::NumberOfProcessors());
+  // Can be 0, if this is not a big.LITTLE architecture.
+  EXPECT_LE(static_cast<int>(SysInfo::NumberOfEfficientProcessors()),
+            SysInfo::NumberOfProcessors());
+  uint64_t min_frequency =
+      *std::min_element(frequencies.begin(), frequencies.end());
+  size_t expected_count = SysInfo::NumberOfEfficientProcessors() == 0
+                              ? frequencies.size()
+                              : SysInfo::NumberOfEfficientProcessors();
+  EXPECT_EQ(std::count_if(frequencies.begin(), frequencies.end(),
+                          [min_frequency](uint64_t freq) {
+                            return freq == min_frequency;
+                          }),
+            expected_count);
+}
+
+TEST_F(SysInfoTest, MaxFrequencyPerProcessor) {
+  std::vector<uint64_t> frequencies = SysInfo::MaxFrequencyPerProcessor();
+  if (frequencies.empty()) {
+    GTEST_SKIP() << "Cannot test, not able to detect max core frequency. "
+                 << "This is expected on VMs for instance";
+  }
+
+  EXPECT_EQ(static_cast<int>(frequencies.size()),
+            SysInfo::NumberOfProcessors());
+  // Make sure that the frequency is correctly parsed. We could perhaps assert
+  // that it's somewhat realistic, but this might fail in e.g. VM environments.
+  EXPECT_TRUE(std::all_of(frequencies.begin(), frequencies.end(),
+                          [](uint64_t freq) { return freq > 0; }));
+}
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) ||
+        // BUILDFLAG(IS_ANDROID)
+
 }  // namespace base

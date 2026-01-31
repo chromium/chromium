@@ -22,10 +22,10 @@
 #include <utility>
 
 #include "base/check_op.h"
-#include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/format_macros.h"
 #include "base/functional/bind.h"
+#include "base/memory/safety_checks.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
@@ -625,6 +625,10 @@ void AutocompleteController::RemoveObserver(Observer* observer) {
 void AutocompleteController::Start(const AutocompleteInput& input) {
   TRACE_EVENT1("omnibox", "AutocompleteController::Start", "text",
                base::UTF16ToUTF8(input.text()));
+  // Autocomplete is a critical user journey for Omnibox interaction, we exclude
+  // it from additional memory safety checks.
+  // TODO(crbug.com/478634529): Optimize and remove if possible.
+  base::ScopedSafetyChecksExclusion excluded;
 
   // Providers assume synchronous inputs (`omit_asynchronous_matches() ==
   // true`) are not zero-suggest ones. See crbug.com/1339425.
@@ -751,6 +755,10 @@ void AutocompleteController::Start(const AutocompleteInput& input) {
 void AutocompleteController::StartPrefetch(const AutocompleteInput& input) {
   TRACE_EVENT1("omnibox", "AutocompleteController::StartPrefetch", "text",
                base::UTF16ToUTF8(input.text()));
+  // Autocomplete is a critical user journey for Omnibox interaction, we exclude
+  // it from additional memory safety checks.
+  // TODO(crbug.com/478634529): Optimize and remove if possible.
+  base::ScopedSafetyChecksExclusion excluded;
   if (!OmniboxFieldTrial::IsZeroSuggestPrefetchingEnabledInContext(
           input.current_page_classification()) &&
       !omnibox_feature_configs::OmniboxUrlSuggestionsOnFocus::Get()
@@ -780,6 +788,10 @@ void AutocompleteController::StartPrefetch(const AutocompleteInput& input) {
 }
 
 void AutocompleteController::Stop(AutocompleteStopReason stop_reason) {
+  // Autocomplete is a critical user journey for Omnibox interaction, we exclude
+  // it from additional memory safety checks.
+  // TODO(crbug.com/478634529): Optimize and remove if possible.
+  base::ScopedSafetyChecksExclusion excluded;
   // Must be called before `expire_timer_.Stop()`, modifying `done_`, or
   // modifying `AutocompleteProvider::done_` below. If the current request has
   // not completed, and therefore has not been logged yet, will log it now.
@@ -799,7 +811,8 @@ void AutocompleteController::Stop(AutocompleteStopReason stop_reason) {
   UpdateResult(UpdateType::kStop);
   CancelNotifyChangedRequest();
 
-  const bool non_empty_result = !internal_result_.empty();
+  const bool non_empty_result =
+      !internal_result_.empty() || internal_result_.has_contextual_chips();
   if (stop_reason == AutocompleteStopReason::kClobbered) {
     internal_result_.Reset();
     if (non_empty_result) {
@@ -848,6 +861,10 @@ void AutocompleteController::OnProviderUpdate(
     bool updated_matches,
     const AutocompleteProvider* provider) {
   TRACE_EVENT0("omnibox", "AutocompleteController::OnProviderUpdate");
+  // Autocomplete is a critical user journey for Omnibox interaction, we exclude
+  // it from additional memory safety checks.
+  // TODO(crbug.com/478634529): Optimize and remove if possible.
+  base::ScopedSafetyChecksExclusion excluded;
   // Should be called even if `sync_pass_done_` is false in order to include
   // early exited async providers. If the provider is done, will log how long
   // the provider took.
@@ -1522,6 +1539,12 @@ void AutocompleteController::UpdateResult(UpdateType update_type,
 
   PostProcessMatches();
 
+  const bool is_lens_enabled = autocomplete_provider_client()->IsLensEnabled();
+
+  internal_result_.set_has_contextual_chips(
+      autocomplete_provider_client()->IsOmniboxNextAimPopupEnabled() &&
+      (is_lens_enabled || can_show_contextual_suggestions));
+
   bool default_match_changed = CheckWhetherDefaultMatchChanged(
       old_result.last_default_match,
       old_result.last_default_associated_keyword);
@@ -1885,7 +1908,7 @@ void AutocompleteController::UpdateKeywordDescriptions(
       }
 
 #if BUILDFLAG(IS_ANDROID)
-      if (i->keyword == default_engine->keyword()) {
+      if (default_engine && i->keyword == default_engine->keyword()) {
         continue;
       }
 #endif
@@ -2160,6 +2183,10 @@ void AutocompleteController::UpdateTailSuggestPrefix(
 
 void AutocompleteController::NotifyChanged() {
   TRACE_EVENT0("omnibox", "AutocompleteController::NotifyChanged");
+  // Autocomplete is a critical user journey for Omnibox interaction, we exclude
+  // it from additional memory safety checks.
+  // TODO(crbug.com/478634529): Optimize and remove if possible.
+  base::ScopedSafetyChecksExclusion excluded;
   // Will log metrics for how many matches changed. Will also log timing metrics
   // for the current request if it's complete; otherwise, will just update
   // timestamps of when the last update changed any or the default suggestion.

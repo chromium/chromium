@@ -55,6 +55,8 @@ public class SiteSettingsUtil {
         ContentSettingsType.REQUEST_DESKTOP_SITE,
         ContentSettingsType.JAVASCRIPT_OPTIMIZER,
         ContentSettingsType.LOCAL_NETWORK_ACCESS,
+        ContentSettingsType.LOCAL_NETWORK,
+        ContentSettingsType.LOOPBACK_NETWORK,
     };
 
     static final int[] CHOOSER_PERMISSIONS = {

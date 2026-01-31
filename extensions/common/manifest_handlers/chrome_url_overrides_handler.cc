@@ -58,21 +58,22 @@ bool URLOverridesHandler::Parse(Extension* extension, std::u16string* error) {
     return false;
   }
 
+  CHECK(manifest_keys.chrome_url_overrides.has_value());
   using UrlOverrideInfo = api::chrome_url_overrides::UrlOverrideInfo;
   auto url_overrides = std::make_unique<URLOverrides>();
   auto property_map =
       std::map<const char*,
                std::reference_wrapper<const std::optional<std::string>>>{
           {UrlOverrideInfo::kNewtab,
-           std::ref(manifest_keys.chrome_url_overrides.newtab)},
+           std::ref(manifest_keys.chrome_url_overrides->newtab)},
           {UrlOverrideInfo::kBookmarks,
-           std::ref(manifest_keys.chrome_url_overrides.bookmarks)},
+           std::ref(manifest_keys.chrome_url_overrides->bookmarks)},
           {UrlOverrideInfo::kHistory,
-           std::ref(manifest_keys.chrome_url_overrides.history)},
+           std::ref(manifest_keys.chrome_url_overrides->history)},
           {UrlOverrideInfo::kActivationmessage,
-           std::ref(manifest_keys.chrome_url_overrides.activationmessage)},
+           std::ref(manifest_keys.chrome_url_overrides->activationmessage)},
           {UrlOverrideInfo::kKeyboard,
-           std::ref(manifest_keys.chrome_url_overrides.keyboard)}};
+           std::ref(manifest_keys.chrome_url_overrides->keyboard)}};
 
   for (const auto& property : property_map) {
     if (!property.second.get()) {
@@ -105,7 +106,7 @@ bool URLOverridesHandler::Parse(Extension* extension, std::u16string* error) {
   }
 
   // If this is an NTP override extension, add the NTP override permission.
-  if (manifest_keys.chrome_url_overrides.newtab) {
+  if (manifest_keys.chrome_url_overrides->newtab) {
     PermissionsParser::AddAPIPermission(
         extension, mojom::APIPermissionID::kNewTabPageOverride);
   }

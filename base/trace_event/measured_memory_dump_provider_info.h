@@ -5,6 +5,8 @@
 #ifndef BASE_TRACE_EVENT_MEASURED_MEMORY_DUMP_PROVIDER_INFO_H_
 #define BASE_TRACE_EVENT_MEASURED_MEMORY_DUMP_PROVIDER_INFO_H_
 
+#include <optional>
+
 #include "base/base_export.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/timer/elapsed_timer.h"
@@ -93,7 +95,7 @@ class BASE_EXPORT MeasuredMemoryDumpProviderInfo {
   // Updates the current status of the provider. The status begins as kQueued,
   // and MemoryDumpManager should update it whenever it moves the
   // MemoryDumpProviderInfo to a new state.
-  void SetStatus(Status status) { status_ = status; }
+  void SetStatus(Status status);
 
  private:
   scoped_refptr<MemoryDumpProviderInfo> provider_info_;
@@ -105,7 +107,11 @@ class BASE_EXPORT MeasuredMemoryDumpProviderInfo {
   // being destroyed. This includes the time the MemoryDumpProvider spent in the
   // queue (while other providers were running), and the time the provider was
   // running (if `status_` is kDumpSucceeded or kDumpFailed).
-  base::ElapsedTimer elapsed_timer_;
+  base::ElapsedLiveTimer elapsed_timer_;
+
+  // Measures the time it takes for a MemoryDumpProvider that's posted to
+  // execute on another thread to finish.
+  std::optional<base::ElapsedLiveTimer> post_task_timer_;
 };
 
 }  // namespace base::trace_event

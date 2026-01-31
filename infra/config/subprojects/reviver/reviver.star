@@ -20,7 +20,6 @@ luci.bucket(
             # TODO(crbug.com/40232487) Switch this to something more sensible once
             # the builders are verified
             users = [
-                "gbeaty@google.com",
                 "reviver-builder@chops-service-accounts.iam.gserviceaccount.com",
             ],
         ),

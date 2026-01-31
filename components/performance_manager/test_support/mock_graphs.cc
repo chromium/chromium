@@ -31,7 +31,7 @@ const content::BrowsingInstanceId kBrowsingInstanceForOtherPage =
 TestProcessNodeImpl::TestProcessNodeImpl()
     : ProcessNodeImpl(RenderProcessHostProxy::CreateForTesting(
                           NextTestRenderProcessHostId()),
-                      base::TaskPriority::HIGHEST) {}
+                      base::Process::Priority::kMaxValue) {}
 
 TestProcessNodeImpl::TestProcessNodeImpl(content::ProcessType process_type)
     : ProcessNodeImpl(process_type,

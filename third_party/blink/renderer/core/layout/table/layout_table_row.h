@@ -83,10 +83,25 @@ class CORE_EXPORT LayoutTableRow : public LayoutBlock {
 
   unsigned RowIndex() const;
 
- protected:
+ private:
   bool IsTableRow() const final {
     NOT_DESTROYED();
     return true;
+  }
+
+  bool IsEligibleForPaintOrLayoutContainment() const final {
+    NOT_DESTROYED();
+    return false;
+  }
+
+  bool IsEligibleForSizeContainment() const final {
+    NOT_DESTROYED();
+    return false;
+  }
+
+  bool CanMergeWith(const LayoutBoxModelObject& other) const override {
+    NOT_DESTROYED();
+    return other.IsTableRow();
   }
 
   // Table section paints background specially.

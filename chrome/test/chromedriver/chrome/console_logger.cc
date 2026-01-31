@@ -41,7 +41,7 @@ Status ConsoleLogger::OnConnected(DevToolsClient* client) {
     // Tab targets do not support the commands ConsoleLogger needs.
     return Status(kOk);
   }
-  base::Value::Dict params;
+  base::DictValue params;
   Status status = client->SendCommand("Log.enable", params);
   if (status.IsError()) {
     return status;
@@ -51,7 +51,7 @@ Status ConsoleLogger::OnConnected(DevToolsClient* client) {
 
 Status ConsoleLogger::OnEvent(DevToolsClient* client,
                               const std::string& method,
-                              const base::Value::Dict& params) {
+                              const base::DictValue& params) {
   if (method == "Log.entryAdded")
     return OnLogEntryAdded(params);
   if (method == "Runtime.consoleAPICalled")
@@ -61,8 +61,8 @@ Status ConsoleLogger::OnEvent(DevToolsClient* client,
   return Status(kOk);
 }
 
-Status ConsoleLogger::OnLogEntryAdded(const base::Value::Dict& params) {
-  const base::Value::Dict* entry = params.FindDict("entry");
+Status ConsoleLogger::OnLogEntryAdded(const base::DictValue& params) {
+  const base::DictValue* entry = params.FindDict("entry");
   if (!entry)
     return Status(kUnknownError, "missing or invalid 'entry'");
 
@@ -99,8 +99,7 @@ Status ConsoleLogger::OnLogEntryAdded(const base::Value::Dict& params) {
   return Status(kOk);
 }
 
-Status ConsoleLogger::OnRuntimeConsoleApiCalled(
-    const base::Value::Dict& params) {
+Status ConsoleLogger::OnRuntimeConsoleApiCalled(const base::DictValue& params) {
   const std::string* type = params.FindString("type");
   if (!type)
     return Status(kUnknownError, "missing or invalid type");
@@ -110,13 +109,13 @@ Status ConsoleLogger::OnRuntimeConsoleApiCalled(
 
   std::string origin = "console-api";
   std::string line_column = "-";
-  const base::Value::Dict* stack_trace = params.FindDict("stackTrace");
+  const base::DictValue* stack_trace = params.FindDict("stackTrace");
   if (stack_trace) {
-    const base::Value::List* call_frames = stack_trace->FindList("callFrames");
+    const base::ListValue* call_frames = stack_trace->FindList("callFrames");
     if (!call_frames)
       return Status(kUnknownError, "missing or invalid callFrames");
     const base::Value& call_frame_value = call_frames->front();
-    const base::Value::Dict* call_frame = call_frame_value.GetIfDict();
+    const base::DictValue* call_frame = call_frame_value.GetIfDict();
     if (call_frame) {
       const std::string* url = call_frame->FindString("url");
       if (!url)
@@ -133,14 +132,14 @@ Status ConsoleLogger::OnRuntimeConsoleApiCalled(
     }
   }
 
-  const base::Value::List* args = params.FindList("args");
+  const base::ListValue* args = params.FindList("args");
   if (!args || args->empty())
     return Status(kUnknownError, "missing or invalid args");
 
   std::string text;
   int arg_count = args->size();
   for (int i = 0; i < arg_count; i++) {
-    const base::Value::Dict* current_arg = (*args)[i].GetIfDict();
+    const base::DictValue* current_arg = (*args)[i].GetIfDict();
     if (!current_arg) {
       std::string error_message = base::StringPrintf("Argument %d is missing or invalid", i);
       return Status(kUnknownError, error_message);
@@ -176,9 +175,8 @@ Status ConsoleLogger::OnRuntimeConsoleApiCalled(
   return Status(kOk);
 }
 
-Status ConsoleLogger::OnRuntimeExceptionThrown(
-    const base::Value::Dict& params) {
-  const base::Value::Dict* exception_details =
+Status ConsoleLogger::OnRuntimeExceptionThrown(const base::DictValue& params) {
+  const base::DictValue* exception_details =
       params.FindDict("exceptionDetails");
   ;
   if (!exception_details)
@@ -199,16 +197,16 @@ Status ConsoleLogger::OnRuntimeExceptionThrown(
   std::string line_column = base::StringPrintf("%d:%d", line, column);
 
   std::string text;
-  const base::Value::Dict* exception = exception_details->FindDict("exception");
-  const base::Value::Dict* preview =
+  const base::DictValue* exception = exception_details->FindDict("exception");
+  const base::DictValue* preview =
       exception ? exception->FindDict("preview") : nullptr;
-  const base::Value::List* properties =
+  const base::ListValue* properties =
       preview ? preview->FindList("properties") : nullptr;
   if (properties) {
     // If the event contains an object which is an instance of the JS Error
     // class, attempt to get the message property for the exception.
     for (const base::Value& property_value : *properties) {
-      const base::Value::Dict* dict = property_value.GetIfDict();
+      const base::DictValue* dict = property_value.GetIfDict();
       if (dict) {
         const std::string* name = dict->FindString("name");
         if (name && *name == "message") {

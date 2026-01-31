@@ -34,6 +34,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_HTML_FORMS_INPUT_TYPE_H_
 
 #include <optional>
+#include <utility>
 
 #include "third_party/blink/public/mojom/forms/form_control_type.mojom-blink.h"
 #include "third_party/blink/renderer/core/core_export.h"
@@ -62,38 +63,38 @@ class CORE_EXPORT InputType : public GarbageCollected<InputType> {
   // These values are a subset of the `FormControlType` enum. They have the same
   // binary representation so that FormControlType() reduces to a type cast.
   enum class Type : std::underlying_type_t<mojom::blink::FormControlType> {
-    kButton = base::to_underlying(mojom::blink::FormControlType::kInputButton),
-    kColor = base::to_underlying(mojom::blink::FormControlType::kInputColor),
-    kFile = base::to_underlying(mojom::blink::FormControlType::kInputFile),
-    kHidden = base::to_underlying(mojom::blink::FormControlType::kInputHidden),
-    kImage = base::to_underlying(mojom::blink::FormControlType::kInputImage),
-    kNumber = base::to_underlying(mojom::blink::FormControlType::kInputNumber),
-    kRange = base::to_underlying(mojom::blink::FormControlType::kInputRange),
-    kReset = base::to_underlying(mojom::blink::FormControlType::kInputReset),
-    kSubmit = base::to_underlying(mojom::blink::FormControlType::kInputSubmit),
+    kButton = std::to_underlying(mojom::blink::FormControlType::kInputButton),
+    kColor = std::to_underlying(mojom::blink::FormControlType::kInputColor),
+    kFile = std::to_underlying(mojom::blink::FormControlType::kInputFile),
+    kHidden = std::to_underlying(mojom::blink::FormControlType::kInputHidden),
+    kImage = std::to_underlying(mojom::blink::FormControlType::kInputImage),
+    kNumber = std::to_underlying(mojom::blink::FormControlType::kInputNumber),
+    kRange = std::to_underlying(mojom::blink::FormControlType::kInputRange),
+    kReset = std::to_underlying(mojom::blink::FormControlType::kInputReset),
+    kSubmit = std::to_underlying(mojom::blink::FormControlType::kInputSubmit),
 
     // BaseCheckable
-    kRadio = base::to_underlying(mojom::blink::FormControlType::kInputRadio),
+    kRadio = std::to_underlying(mojom::blink::FormControlType::kInputRadio),
     kCheckbox =
-        base::to_underlying(mojom::blink::FormControlType::kInputCheckbox),
+        std::to_underlying(mojom::blink::FormControlType::kInputCheckbox),
 
     // BaseTemporal
-    kDate = base::to_underlying(mojom::blink::FormControlType::kInputDate),
+    kDate = std::to_underlying(mojom::blink::FormControlType::kInputDate),
     kDateTimeLocal =
-        base::to_underlying(mojom::blink::FormControlType::kInputDatetimeLocal),
-    kMonth = base::to_underlying(mojom::blink::FormControlType::kInputMonth),
-    kTime = base::to_underlying(mojom::blink::FormControlType::kInputTime),
-    kWeek = base::to_underlying(mojom::blink::FormControlType::kInputWeek),
+        std::to_underlying(mojom::blink::FormControlType::kInputDatetimeLocal),
+    kMonth = std::to_underlying(mojom::blink::FormControlType::kInputMonth),
+    kTime = std::to_underlying(mojom::blink::FormControlType::kInputTime),
+    kWeek = std::to_underlying(mojom::blink::FormControlType::kInputWeek),
 
     // BaseText
-    kEmail = base::to_underlying(mojom::blink::FormControlType::kInputEmail),
+    kEmail = std::to_underlying(mojom::blink::FormControlType::kInputEmail),
     kPassword =
-        base::to_underlying(mojom::blink::FormControlType::kInputPassword),
-    kSearch = base::to_underlying(mojom::blink::FormControlType::kInputSearch),
+        std::to_underlying(mojom::blink::FormControlType::kInputPassword),
+    kSearch = std::to_underlying(mojom::blink::FormControlType::kInputSearch),
     kTelephone =
-        base::to_underlying(mojom::blink::FormControlType::kInputTelephone),
-    kURL = base::to_underlying(mojom::blink::FormControlType::kInputUrl),
-    kText = base::to_underlying(mojom::blink::FormControlType::kInputText),
+        std::to_underlying(mojom::blink::FormControlType::kInputTelephone),
+    kURL = std::to_underlying(mojom::blink::FormControlType::kInputUrl),
+    kText = std::to_underlying(mojom::blink::FormControlType::kInputText),
   };
 
   static const AtomicString& TypeToString(Type);
@@ -112,7 +113,7 @@ class CORE_EXPORT InputType : public GarbageCollected<InputType> {
   const AtomicString& FormControlTypeAsString() const;
   mojom::blink::FormControlType FormControlType() const {
     return static_cast<mojom::blink::FormControlType>(
-        base::to_underlying(type_));
+        std::to_underlying(type_));
   }
 
   virtual bool IsInteractiveContent() const;

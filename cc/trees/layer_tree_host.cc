@@ -15,7 +15,6 @@
 #include "base/auto_reset.h"
 #include "base/command_line.h"
 #include "base/containers/adapters.h"
-#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/logging.h"
@@ -79,6 +78,7 @@
 #include "services/metrics/public/cpp/ukm_recorder.h"
 #include "services/tracing/public/cpp/perfetto/macros.h"
 #include "third_party/perfetto/include/perfetto/tracing/track.h"
+#include "third_party/perfetto/include/perfetto/tracing/track_event_args.h"
 #include "ui/gfx/geometry/size_conversions.h"
 #include "ui/gfx/geometry/vector2d_conversions.h"
 #include "ui/gfx/presentation_feedback.h"
@@ -746,6 +746,28 @@ void LayerTreeHost::SetShouldThrottleFrameRate(bool flag) {
   proxy_->SetShouldThrottleFrameRate(flag);
 }
 
+ScopedRequestHighFramerate::ScopedRequestHighFramerate(LayerTreeHost* host)
+    : host_(host->weak_ptr_factory_.GetWeakPtr()) {
+  host->SetRequestHighFramerate(true);
+}
+
+ScopedRequestHighFramerate::~ScopedRequestHighFramerate() {
+  LayerTreeHost* host = host_.get();
+  if (host) {
+    host_->SetRequestHighFramerate(false);
+  }
+}
+
+std::unique_ptr<ScopedRequestHighFramerate>
+LayerTreeHost::RequestHighFramerate() {
+  return std::make_unique<ScopedRequestHighFramerate>(this);
+}
+
+void LayerTreeHost::SetRequestHighFramerate(bool flag) {
+  TRACE_EVENT("cc", __PRETTY_FUNCTION__);
+  proxy_->SetRequestHighFramerate(flag);
+}
+
 DISABLE_CFI_PERF
 void LayerTreeHost::SetNeedsAnimate(bool urgent) {
   DCHECK(IsMainThread());
@@ -971,7 +993,7 @@ void LayerTreeHost::AddViewTransitionRequest(
     std::unique_ptr<ViewTransitionRequest> request) {
   // Store the commit callback on LayerTreeHost, so that we can invoke them
   // when the request is finished.
-  DCHECK(!base::Contains(view_transition_callbacks_, request->sequence_id()));
+  DCHECK(!view_transition_callbacks_.contains(request->sequence_id()));
   if (auto callback = request->TakeFinishedCallback()) {
     view_transition_callbacks_[request->sequence_id()] = std::move(callback);
   }
@@ -1243,7 +1265,7 @@ void LayerTreeHost::AnimateLayers(base::TimeTicks monotonic_time) {
 
 int LayerTreeHost::ScheduleMicroBenchmark(
     const std::string& benchmark_name,
-    base::Value::Dict settings,
+    base::DictValue settings,
     MicroBenchmark::DoneCallback callback) {
   DCHECK(IsMainThread());
   return micro_benchmark_controller_.ScheduleRun(
@@ -1251,7 +1273,7 @@ int LayerTreeHost::ScheduleMicroBenchmark(
 }
 
 bool LayerTreeHost::SendMessageToMicroBenchmark(int id,
-                                                base::Value::Dict message) {
+                                                base::DictValue message) {
   DCHECK(IsMainThread());
   return micro_benchmark_controller_.SendMessage(id, std::move(message));
 }
@@ -1639,18 +1661,18 @@ void LayerTreeHost::SetLocalSurfaceIdFromParent(
   // incoming flow (it comes from a different process), and TRACE_ID_LOCAL for
   // the outgoing flow. The outgoing flow uses local to ensure that it doesn't
   // flow into the wrong trace in different process.
-  TRACE_EVENT_WITH_FLOW2(
-      TRACE_DISABLED_BY_DEFAULT("viz.surface_id_flow"),
-      "LocalSurfaceId.Submission.Flow",
-      TRACE_ID_GLOBAL(local_surface_id_from_parent.submission_trace_id()),
-      TRACE_EVENT_FLAG_FLOW_IN, "step", "SetLocalSurfaceIdFromParent",
-      "local_surface_id", local_surface_id_from_parent.ToString());
-  TRACE_EVENT_WITH_FLOW2(
-      TRACE_DISABLED_BY_DEFAULT("viz.surface_id_flow"),
-      "LocalSurfaceId.Submission.Flow",
-      TRACE_ID_LOCAL(local_surface_id_from_parent.submission_trace_id()),
-      TRACE_EVENT_FLAG_FLOW_OUT, "step", "SetLocalSurfaceIdFromParent",
-      "local_surface_id", local_surface_id_from_parent.ToString());
+  TRACE_EVENT(TRACE_DISABLED_BY_DEFAULT("viz.surface_id_flow"),
+              "LocalSurfaceId.Submission.Flow",
+              perfetto::TerminatingFlow::Global(
+                  local_surface_id_from_parent.submission_trace_id()),
+              "step", "SetLocalSurfaceIdFromParent", "local_surface_id",
+              local_surface_id_from_parent.ToString());
+  TRACE_EVENT(TRACE_DISABLED_BY_DEFAULT("viz.surface_id_flow"),
+              "LocalSurfaceId.Submission.Flow",
+              perfetto::Flow::ProcessScoped(
+                  local_surface_id_from_parent.submission_trace_id()),
+              "step", "SetLocalSurfaceIdFromParent", "local_surface_id",
+              local_surface_id_from_parent.ToString());
   // Always update the cached state of the viz::LocalSurfaceId to reflect the
   // latest value received from our parent.
   pending_commit_state()->local_surface_id_from_parent =

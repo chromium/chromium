@@ -566,7 +566,7 @@ TEST_F(ChromeLabsViewControllerTest, DISABLED_ShowFeedbackPage) {
 // This test checks that experiments that are removed from the model will be
 // removed from the PrefService when updating new badge prefs.
 TEST_F(ChromeLabsViewControllerTest, CleanUpNewBadgePrefsTest) {
-  const base::Value::Dict& new_badge_prefs =
+  const base::DictValue& new_badge_prefs =
 #if BUILDFLAG(IS_CHROMEOS)
       browser_view()->browser()->profile()->GetPrefs()->GetDict(
           chrome_labs_prefs::kChromeLabsNewBadgeDictAshChrome);

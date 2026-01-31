@@ -166,16 +166,14 @@ ScriptPromise<SelectorDirective> FragmentDirective::createSelectorDirective(
   return promise;
 }
 
-void FragmentDirective::ParseDirectives(const String& fragment_directive) {
-  Vector<String> directive_strings;
-  fragment_directive.Split("&", /*allow_empty_entries=*/true,
-                           directive_strings);
+void FragmentDirective::ParseDirectives(const StringView& fragment_directive) {
+  Vector<StringView> directive_strings = fragment_directive.Split('&');
 
   HeapVector<Member<Directive>> new_directives;
   HashSet<String> text_directives;
-  for (String& directive_string : directive_strings) {
-    if (directive_string.StartsWith("text=")) {
-      String value = directive_string.Right(directive_string.length() - 5);
+  for (const auto& directive_string : directive_strings) {
+    if (directive_string.starts_with("text=")) {
+      String value = directive_string.substr(5).ToString();
       if (value.empty() ||
           (RuntimeEnabledFeatures::
                ScrollToTextFragmentUniqueFragmentsEnabled() &&

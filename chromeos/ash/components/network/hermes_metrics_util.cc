@@ -4,7 +4,8 @@
 
 #include "chromeos/ash/components/network/hermes_metrics_util.h"
 
-#include "base/containers/contains.h"
+#include <algorithm>
+
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/time/tick_clock.h"
@@ -30,7 +31,7 @@ void LogInstallViaQrCodeResult(HermesResponseStatus status,
   }
 
   if (status == HermesResponseStatus::kSuccess ||
-      !base::Contains(kHermesUserErrorCodes, status)) {
+      !std::ranges::contains(kHermesUserErrorCodes, status)) {
     base::UmaHistogramEnumeration(
         "Network.Cellular.ESim.Installation.NonUserErrorSuccessRate", status);
   }

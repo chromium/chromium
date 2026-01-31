@@ -607,6 +607,10 @@ void LockStateController::OnLockStateChanged(bool locked) {
   } else {
     StartUnlockAnimationAfterLockUIDestroyed();
   }
+
+  for (auto& rwc : Shell::GetAllRootWindowControllers()) {
+    rwc->ForceOccludeWindowsInAlwaysOnTop(locked);
+  }
 }
 
 void LockStateController::CancelUnlockAnimation() {

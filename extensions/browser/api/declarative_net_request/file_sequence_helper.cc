@@ -12,7 +12,6 @@
 
 #include "base/barrier_closure.h"
 #include "base/check_op.h"
-#include "base/containers/contains.h"
 #include "base/files/file_util.h"
 #include "base/files/important_file_writer.h"
 #include "base/functional/bind.h"
@@ -211,7 +210,7 @@ bool GetNewDynamicRules(const FileBackedRulesetSource& source,
   // Remove old rules
   std::set<int> ids_to_remove(rule_ids_to_remove.begin(), rule_ids_to_remove.end());
   std::erase_if(*new_rules, [&ids_to_remove](const dnr_api::Rule& rule) {
-    return base::Contains(ids_to_remove, rule.id);
+    return ids_to_remove.contains(rule.id);
   });
 
   // Add new rules
@@ -300,7 +299,7 @@ bool UpdateAndIndexDynamicRules(const FileBackedRulesetSource& source,
   // Treat rules which exceed the regex memory limit as errors if these are new
   // rules. Just surface an error for the first such rule.
   for (const auto& warning : info.rule_ignored_warnings()) {
-    if (!base::Contains(rule_ids_to_add, warning.rule_id)) {
+    if (!rule_ids_to_add.contains(warning.rule_id)) {
       // Any rule added earlier which is ignored now (say due to exceeding the
       // regex memory limit), will be silently ignored.
       // TODO(crbug.com/40118204): Notify the extension about the same.

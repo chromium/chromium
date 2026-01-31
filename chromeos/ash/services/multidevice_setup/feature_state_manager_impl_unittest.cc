@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "ash/constants/ash_features.h"
-#include "base/containers/contains.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "chromeos/ash/components/multidevice/remote_device_test_util.h"
@@ -221,7 +220,7 @@ class MultiDeviceSetupFeatureStateManagerImplTest : public testing::Test {
 
   void VerifyFeatureState(mojom::FeatureState expected_feature_state,
                           mojom::Feature feature) {
-    EXPECT_TRUE(base::Contains(manager_->GetFeatureStates(), feature));
+    EXPECT_TRUE(manager_->GetFeatureStates().contains(feature));
     EXPECT_EQ(expected_feature_state, manager_->GetFeatureStates()[feature]);
   }
 

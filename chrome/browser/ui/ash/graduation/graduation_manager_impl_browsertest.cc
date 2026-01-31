@@ -25,6 +25,8 @@
 #include "chrome/browser/ash/login/test/logged_in_user_mixin.h"
 #include "chrome/browser/ash/system_web_apps/system_web_app_manager.h"
 #include "chrome/browser/ash/system_web_apps/test_support/system_web_app_browsertest_base.h"
+#include "chrome/browser/browser_process.h"
+#include "chrome/browser/global_features.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/web_applications/web_app_command_manager.h"
@@ -132,7 +134,7 @@ class GraduationManagerTest : public SystemWebAppBrowserTestBase,
   }
 
   void SetGraduationEnablement(bool is_enabled) {
-    base::Value::Dict status;
+    base::DictValue status;
     status.Set("is_enabled", is_enabled);
     browser()->profile()->GetPrefs()->SetDict(
         prefs::kGraduationEnablementStatus, status.Clone());
@@ -142,9 +144,9 @@ class GraduationManagerTest : public SystemWebAppBrowserTestBase,
                                             int day,
                                             int month,
                                             int year) {
-    base::Value::Dict status;
+    base::DictValue status;
     status.Set("is_enabled", is_enabled);
-    base::Value::Dict start_date;
+    base::DictValue start_date;
     start_date.Set("day", day);
     start_date.Set("month", month);
     start_date.Set("year", year);
@@ -157,9 +159,9 @@ class GraduationManagerTest : public SystemWebAppBrowserTestBase,
                                           int day,
                                           int month,
                                           int year) {
-    base::Value::Dict status;
+    base::DictValue status;
     status.Set("is_enabled", is_enabled);
-    base::Value::Dict end_date;
+    base::DictValue end_date;
     end_date.Set("day", day);
     end_date.Set("month", month);
     end_date.Set("year", year);
@@ -364,9 +366,10 @@ IN_PROC_BROWSER_TEST_F(GraduationManagerTest, GetLanguageCode) {
 
   // Switch the application locale to Spanish.
   base::RunLoop run_loop;
-  locale_util::SwitchLanguage("es", true, false,
-                              base::BindRepeating(&OnLocaleSwitched, &run_loop),
-                              ProfileManager::GetActiveUserProfile());
+  locale_util::SwitchLanguage(
+      g_browser_process->GetFeatures()->application_locale_storage(), "es",
+      true, false, base::BindRepeating(&OnLocaleSwitched, &run_loop),
+      ProfileManager::GetActiveUserProfile());
   run_loop.Run();
 
   EXPECT_EQ("es", GetLanguageCode());

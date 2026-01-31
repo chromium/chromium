@@ -32,7 +32,7 @@ namespace extensions {
 class NetworkingPrivateLinux : public NetworkingPrivateDelegate {
  public:
   using GuidList = std::vector<std::string>;
-  using NetworkMap = std::map<std::u16string, base::Value::Dict>;
+  using NetworkMap = std::map<std::u16string, base::DictValue>;
 
   NetworkingPrivateLinux();
   ~NetworkingPrivateLinux() override;
@@ -49,12 +49,12 @@ class NetworkingPrivateLinux : public NetworkingPrivateDelegate {
                 DictionaryCallback success_callback,
                 FailureCallback failure_callback) override;
   void SetProperties(const std::string& guid,
-                     base::Value::Dict properties,
+                     base::DictValue properties,
                      bool allow_set_shared_config,
                      VoidCallback success_callback,
                      FailureCallback failure_callback) override;
   void CreateNetwork(bool shared,
-                     base::Value::Dict properties,
+                     base::DictValue properties,
                      StringCallback success_callback,
                      FailureCallback failure_callback) override;
   void ForgetNetwork(const std::string& guid,
@@ -212,7 +212,7 @@ class NetworkingPrivateLinux : public NetworkingPrivateDelegate {
       dbus::Response* response);
   void OnGetAccessPointInfo(scoped_refptr<GetAllWiFiAccessPointsState> state,
                             base::RepeatingClosure finished_callback,
-                            std::optional<base::Value::Dict> access_point_info);
+                            std::optional<base::DictValue> access_point_info);
 
   // Reply callback accepts the map of networks and fires the
   // OnNetworkListChanged event and user callbacks.
@@ -226,14 +226,14 @@ class NetworkingPrivateLinux : public NetworkingPrivateDelegate {
 
   // Helper function for OnAccessPointsFound and OnAccessPointsFoundViaScan to
   // fire the OnNetworkListChangedEvent.
-  void SendNetworkListChangedEvent(const base::Value::List& network_list);
+  void SendNetworkListChangedEvent(const base::ListValue& network_list);
 
   // Gets a dictionary of information about the access point.
   void GetAccessPointInfo(
       const dbus::ObjectPath& access_point_path,
       const dbus::ObjectPath& device_path,
       const dbus::ObjectPath& connected_access_point_path,
-      base::OnceCallback<void(std::optional<base::Value::Dict>)> callback);
+      base::OnceCallback<void(std::optional<base::DictValue>)> callback);
   void OnGetSsidForAccessPointInfo(
       std::unique_ptr<GetAccessPointInfoState> state,
       dbus::Response* response);
@@ -259,7 +259,7 @@ class NetworkingPrivateLinux : public NetworkingPrivateDelegate {
   // the access point is updated (eg. with the max of the signal
   // strength).
   void AddOrUpdateAccessPoint(NetworkMap* network_map,
-                              base::Value::Dict access_point);
+                              base::DictValue access_point);
 
   // Maps the WPA security flags to a human readable string.
   void MapSecurityFlagsToString(uint32_t securityFlags, std::string* security);
@@ -308,7 +308,7 @@ class NetworkingPrivateLinux : public NetworkingPrivateDelegate {
                                       const std::string& connection_state);
 
   void GetCachedNetworkProperties(const std::string& guid,
-                                  base::Value::Dict* properties,
+                                  base::DictValue* properties,
                                   std::string* error);
 
   // DBus instance.

@@ -391,7 +391,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ContentSettings.Popups.StrongBlockerActions"
-    enum="StrongPopupBlockerAction" expires_after="2026-04-12">
+    enum="StrongPopupBlockerAction" expires_after="2026-06-14">
   <owner>csharrison@chromium.org</owner>
   <summary>
     Counts of various events related to the strong popup blocker (aka abusive
@@ -400,7 +400,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ContentSettings.RegularProfile.DefaultAutoVerifySetting"
-    enum="ContentSetting" expires_after="2026-05-17">
+    enum="ContentSetting" expires_after="2026-07-19">
   <owner>ryankalla@google.com</owner>
   <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
   <summary>
@@ -819,7 +819,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="ContentSettings.{RegularProfileFiltered}DefaultRequestDesktopSiteSetting"
-    enum="ContentSetting" expires_after="2026-05-03">
+    enum="ContentSetting" expires_after="2026-07-05">
   <owner>shuyng@google.com</owner>
   <owner>twellington@chromium.org</owner>
   <summary>
@@ -1300,7 +1300,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ContentSuggestions.Feed.RefreshTrigger"
-    enum="FeedRefreshTrigger" expires_after="2026-04-12">
+    enum="FeedRefreshTrigger" expires_after="2026-06-21">
   <owner>adamta@google.com</owner>
   <owner>feed@chromium.org</owner>
   <summary>
@@ -1829,6 +1829,7 @@ chromium-metrics-reviews@google.com.
 
   <owner>jianli@chromium.org</owner>
   <owner>feed@chromium.org</owner>
+  <improvement direction="HIGHER_IS_BETTER"/>
   <summary>
     Tracks user behavior with {FeedType}. Each bucket is one of two types of
     metric. Per-visit metrics sample once per &quot;visit&quot;, which is a

@@ -28,7 +28,7 @@
 
   function compareErrors(expectedError) {
     return function(error) {
-      console.log('getDisplayMedia error: ' + error.name, error);
+      console.log('getDisplayMedia error:', error.toString());
       return logAndReturn(error.toString() == expectedError
           ? "expected-error"
           : "unexpected-error");
@@ -36,7 +36,7 @@
   }
 
   function handleError(error) {
-    console.log('getDisplayMedia error: ' + error.name, error);
+    console.log('getDisplayMedia error:', error.toString());
     return logAndReturn("capture-failure");
   }
 

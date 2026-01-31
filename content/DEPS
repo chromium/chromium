@@ -43,6 +43,7 @@ include_rules = [
   "+components/services/font/public",
   "+components/services/font_data/public",
   "+components/startup_metric_utils",
+  "+components/url_pattern",
   "+components/variations",
   "+components/value_store",
 

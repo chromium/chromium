@@ -7,7 +7,6 @@
 #import <Foundation/Foundation.h>
 #import <OCMock/OCMock.h>
 
-#import "base/containers/contains.h"
 #import "base/memory/raw_ptr.h"
 #import "base/notreached.h"
 #import "base/strings/sys_string_conversions.h"
@@ -46,7 +45,7 @@ using bookmarks::BookmarkNode;
 }
 
 - (void)bookmarkNodeDeleted:(const BookmarkNode*)bookmarkNode {
-  if (base::Contains(_editedNodes, bookmarkNode)) {
+  if (_editedNodes.contains(bookmarkNode)) {
     _editedNodes.erase(bookmarkNode);
   }
   _bookmarkNodeDeletedArg = bookmarkNode;

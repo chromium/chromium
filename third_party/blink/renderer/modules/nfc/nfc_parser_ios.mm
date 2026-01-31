@@ -28,9 +28,9 @@ device::mojom::blink::NDEFRawMessagePtr ConvertNFCDefRawMessage(
     auto identifier_span = base::apple::NSDataToSpan([record identifier]);
     mojo_record->identifier.assign(identifier_span);
     auto payload_span = base::apple::NSDataToSpan([record payload]);
-    mojo_record->identifier.assign(payload_span);
+    mojo_record->payload.assign(payload_span);
     auto type_span = base::apple::NSDataToSpan([record type]);
-    mojo_record->identifier.assign(type_span);
+    mojo_record->type.assign(type_span);
     records.push_back(std::move(mojo_record));
   }
   return device::mojom::blink::NDEFRawMessage::New(std::move(records));

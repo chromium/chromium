@@ -63,7 +63,7 @@ void OfficeFallbackUI::CreatePageHandler(
 }
 
 void OfficeFallbackUI::CloseDialog(mojom::DialogChoice choice) {
-  base::Value::List args;
+  base::ListValue args;
   switch (choice) {
     case mojom::DialogChoice::kCancel:
       args.Append(kDialogChoiceCancel);

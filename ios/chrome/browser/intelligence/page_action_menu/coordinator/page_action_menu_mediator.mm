@@ -34,6 +34,7 @@
 #import "ios/chrome/browser/shared/public/commands/page_action_menu_commands.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
+#import "ios/chrome/browser/signin/model/authentication_service.h"
 #import "ios/chrome/browser/translate/model/chrome_ios_translate_client.h"
 #import "ios/chrome/browser/web/model/blocked_popup_tab_helper.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -60,6 +61,9 @@ const CGFloat kFeatureRowIconSize = 20;
   // Observer for the WebState.
   std::unique_ptr<web::WebStateObserverBridge> _webStateObserver;
 
+  // The authentication service to check sign-in status.
+  raw_ptr<AuthenticationService> _authenticationService;
+
   // The `PrefService` used to store reminder data.
   raw_ptr<PrefService> _profilePrefs;
 
@@ -77,6 +81,7 @@ const CGFloat kFeatureRowIconSize = 20;
 }
 
 - (instancetype)initWithWebState:(web::WebState*)webState
+           authenticationService:(AuthenticationService*)authenticationService
               profilePrefService:(PrefService*)profilePrefs
               templateURLService:(TemplateURLService*)templateURLService
                       BWGService:(BwgService*)BWGService
@@ -86,6 +91,7 @@ const CGFloat kFeatureRowIconSize = 20;
   self = [super init];
   if (self) {
     _webState = webState;
+    _authenticationService = authenticationService;
     _profilePrefs = profilePrefs;
     _templateURLService = templateURLService;
     _BWGService = BWGService;
@@ -117,6 +123,14 @@ const CGFloat kFeatureRowIconSize = 20;
 
 #pragma mark - PageActionMenuMutator
 
+- (BOOL)shouldShowFeatureEntryPoints {
+  if (!_authenticationService) {
+    return NO;
+  }
+  return _authenticationService->HasPrimaryIdentity(
+      signin::ConsentLevel::kSignin);
+}
+
 - (BOOL)isLensAvailableForTraitCollection:(UITraitCollection*)traitCollection {
   BOOL isLandscape = IsCompactHeight(traitCollection);
   return [self isLensAvailableForProfile] &&
@@ -125,6 +139,10 @@ const CGFloat kFeatureRowIconSize = 20;
 }
 
 - (BOOL)isGeminiAvailable {
+  if (!_BWGService) {
+    return NO;
+  }
+
   if (IsGeminiImmediateOverlayEnabled()) {
     return _BWGService->IsBwgAvailableForWebState(_webState);
   } else {
@@ -155,8 +173,7 @@ const CGFloat kFeatureRowIconSize = 20;
 
   switch (featureType) {
     case PageActionMenuTranslate: {
-      ChromeIOSTranslateClient* translateClient =
-          ChromeIOSTranslateClient::FromWebState(_webState);
+      ChromeIOSTranslateClient* translateClient = [self findTranslateClient];
       return IsTranslateActive(translateClient);
     }
     case PageActionMenuCameraPermission: {
@@ -216,8 +233,7 @@ const CGFloat kFeatureRowIconSize = 20;
     return nil;
   }
 
-  ChromeIOSTranslateClient* translateClient =
-      ChromeIOSTranslateClient::FromWebState(_webState);
+  ChromeIOSTranslateClient* translateClient = [self findTranslateClient];
 
   if (!IsTranslateActive(translateClient) ||
       !translateClient->GetTranslateManager()) {
@@ -379,6 +395,29 @@ const CGFloat kFeatureRowIconSize = 20;
                  actionType:PageActionMenuButtonAction];
     priceTrackingFeature.actionText =
         l10n_util::GetNSString(IDS_IOS_AI_HUB_PRICE_TRACKING_BUTTON_LABEL);
+
+    ContextualPanelTabHelper* tabHelper =
+        ContextualPanelTabHelper::FromWebState(_webState);
+    if (tabHelper) {
+      std::vector<base::WeakPtr<ContextualPanelItemConfiguration>> configs =
+          tabHelper->GetCurrentCachedConfigurations();
+      for (const auto& config_weak : configs) {
+        if (!config_weak) {
+          continue;
+        }
+        ContextualPanelItemConfiguration* config = config_weak.get();
+        if (config->item_type == ContextualPanelItemType::PriceInsightsItem) {
+          PriceInsightsItemConfiguration* priceInsightsConfig =
+              static_cast<PriceInsightsItemConfiguration*>(config);
+          if (!priceInsightsConfig->is_subscribed) {
+            priceTrackingFeature.actionText = l10n_util::GetNSString(
+                IDS_IOS_AI_HUB_PRICE_TRACKING_TRACK_BUTTON_LABEL);
+          }
+          break;
+        }
+      }
+    }
+
     [features addObject:priceTrackingFeature];
   }
 
@@ -424,8 +463,7 @@ const CGFloat kFeatureRowIconSize = 20;
     return;
   }
 
-  ChromeIOSTranslateClient* translateClient =
-      ChromeIOSTranslateClient::FromWebState(_webState);
+  ChromeIOSTranslateClient* translateClient = [self findTranslateClient];
   if (!translateClient || !translateClient->GetTranslateManager()) {
     return;
   }
@@ -512,8 +550,7 @@ std::string GetTargetLanguageCode(ChromeIOSTranslateClient* translate_client) {
     return;
   }
 
-  ChromeIOSTranslateClient* translateClient =
-      ChromeIOSTranslateClient::FromWebState(webState);
+  ChromeIOSTranslateClient* translateClient = [self findTranslateClient];
   if (!translateClient || !translateClient->GetTranslateManager()) {
     return;
   }
@@ -574,6 +611,21 @@ std::string GetTargetLanguageCode(ChromeIOSTranslateClient* translate_client) {
       base::BindOnce(^(NSArray<NSString*>* suggestions){
           // No-op.
       }));
+}
+
+// Finds the translate client depending on whether Reader mode is active.
+- (ChromeIOSTranslateClient*)findTranslateClient {
+  web::WebState* targetWebState = _webState;
+  ReaderModeTabHelper* readerModeTabHelper =
+      ReaderModeTabHelper::FromWebState(_webState);
+  if (readerModeTabHelper) {
+    web::WebState* readerModeWebState =
+        readerModeTabHelper->GetReaderModeWebState();
+    if (readerModeWebState) {
+      targetWebState = readerModeWebState;
+    }
+  }
+  return ChromeIOSTranslateClient::FromWebState(targetWebState);
 }
 
 // Finds the translate infobar.

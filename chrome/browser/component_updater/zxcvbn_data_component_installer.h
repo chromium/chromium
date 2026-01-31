@@ -55,7 +55,7 @@ class ZxcvbnDataComponentInstallerPolicy : public ComponentInstallerPolicy {
   // ComponentInstallerPolicy overrides:
   // Confirms that the version entry in the manifest exists and is well-formed
   // and verifies that all files expected for the component version exist.
-  bool VerifyInstallation(const base::Value::Dict& manifest,
+  bool VerifyInstallation(const base::DictValue& manifest,
                           const base::FilePath& install_dir) const override;
 
   bool SupportsGroupPolicyEnabledComponentUpdates() const override;
@@ -63,14 +63,14 @@ class ZxcvbnDataComponentInstallerPolicy : public ComponentInstallerPolicy {
   bool RequiresNetworkEncryption() const override;
 
   update_client::CrxInstaller::Result OnCustomInstall(
-      const base::Value::Dict& manifest,
+      const base::DictValue& manifest,
       const base::FilePath& install_dir) override;
 
   void OnCustomUninstall() override;
 
   void ComponentReady(const base::Version& version,
                       const base::FilePath& install_dir,
-                      base::Value::Dict manifest) override;
+                      base::DictValue manifest) override;
 
   base::FilePath GetRelativeInstallDir() const override;
 

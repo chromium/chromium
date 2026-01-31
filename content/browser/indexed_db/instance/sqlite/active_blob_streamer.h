@@ -11,6 +11,7 @@
 #include "base/memory/weak_ptr.h"
 #include "components/services/storage/public/mojom/blob_storage_context.mojom.h"
 #include "content/browser/indexed_db/indexed_db_external_object.h"
+#include "content/browser/indexed_db/instance/blob_endpoint.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "net/base/net_errors.h"
@@ -32,9 +33,7 @@ namespace content::indexed_db::sqlite {
 // This class borrows heavily from `indexed_db::BlobReader`, which is used to
 // read blobs that are stored as standalone files, and is likely to be
 // eventually phased out.
-class ActiveBlobStreamer : public blink::mojom::Blob,
-                           public network::mojom::DataPipeGetter,
-                           public storage::mojom::BlobDataItemReader {
+class ActiveBlobStreamer : public BlobEndpoint {
  public:
   ActiveBlobStreamer(
       const IndexedDBExternalObject& blob_info,
@@ -48,9 +47,9 @@ class ActiveBlobStreamer : public blink::mojom::Blob,
   ActiveBlobStreamer(const ActiveBlobStreamer&) = delete;
   ActiveBlobStreamer& operator=(const ActiveBlobStreamer&) = delete;
 
-  // Like Clone(), but called by the DatabaseConnection (which owns `this`).
+  // BlobEndpoint:
   void AddReceiver(mojo::PendingReceiver<blink::mojom::Blob> receiver,
-                   storage::mojom::BlobStorageContext& blob_registry);
+                   storage::mojom::BlobStorageContext& blob_registry) override;
 
   // blink::mojom::Blob:
   void Clone(mojo::PendingReceiver<blink::mojom::Blob> receiver) override;

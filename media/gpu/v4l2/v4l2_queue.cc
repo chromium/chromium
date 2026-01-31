@@ -17,7 +17,6 @@
 #include <sys/ioctl.h>
 #include <sys/mman.h>
 
-#include "base/containers/contains.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/not_fatal_until.h"
@@ -733,7 +732,7 @@ bool V4L2WritableBufferRef::QueueDMABuf(scoped_refptr<FrameResource> frame,
   // TODO(andrescj): consider replacing this by a DCHECK.
   if (frame->storage_type() != VideoFrame::STORAGE_MAPPABLE_SHARED_IMAGE &&
       frame->storage_type() != VideoFrame::STORAGE_DMABUFS) {
-    VLOGF(1) << "Only frames with GpuMemoryBuffer and dma-buf are supported";
+    VLOGF(1) << "Only frames with MappableSI and dma-buf are supported";
     return false;
   }
 
@@ -1397,7 +1396,7 @@ std::optional<V4L2WritableBufferRef> V4L2Queue::GetFreeBufferForFrame(
 
   // If |id| has already been used in |buffers_|, then return that buffer.
   // Otherwise use the next buffer from |free_buffers_indexes_|.
-  if (!base::Contains(free_buffers_indexes_, id)) {
+  if (!free_buffers_indexes_.contains(id)) {
     if (free_buffers_indexes_.size() >= buffers_.size()) {
       return std::nullopt;
     }

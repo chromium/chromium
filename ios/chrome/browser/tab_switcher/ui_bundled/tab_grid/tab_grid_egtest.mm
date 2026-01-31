@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "base/containers/contains.h"
 #import "base/format_macros.h"
 #import "base/i18n/message_formatter.h"
 #import "base/ios/ios_util.h"
@@ -22,7 +21,7 @@
 #import "ios/chrome/browser/history/ui_bundled/history_ui_constants.h"
 #import "ios/chrome/browser/metrics/model/metrics_app_interface.h"
 #import "ios/chrome/browser/optimization_guide/model/optimization_guide_test_app_interface.h"
-#import "ios/chrome/browser/popup_menu/ui_bundled/popup_menu_constants.h"
+#import "ios/chrome/browser/popup_menu/public/popup_menu_constants.h"
 #import "ios/chrome/browser/reading_list/ui_bundled/reading_list_app_interface.h"
 #import "ios/chrome/browser/settings/ui_bundled/settings_app_interface.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
@@ -216,6 +215,12 @@ id<GREYMatcher> SelectTabsContextMenuItem() {
       IDS_IOS_CONTENT_CONTEXT_SELECTTABS);
 }
 
+// Matcher for the Close Other Tabs button in the context menu.
+id<GREYMatcher> CloseOtherTabsButton() {
+  return chrome_test_util::ContextMenuItemWithAccessibilityLabelId(
+      IDS_IOS_CONTENT_CONTEXT_CLOSEOTHERTABS);
+}
+
 // Type `text` into the TabGridSearchBar and press enter.
 void PerformTabGridSearch(NSString* text) {
   [[EarlGrey selectElementWithMatcher:TabGridSearchBar()]
@@ -254,7 +259,7 @@ class EchoURLDefaultSearchEngineResponseProvider
 
 bool EchoURLDefaultSearchEngineResponseProvider::CanHandleRequest(
     const Request& request) {
-  return base::Contains(request.url.spec(), kSearchEngineHost);
+  return request.url.spec().contains(kSearchEngineHost);
 }
 
 void EchoURLDefaultSearchEngineResponseProvider::GetResponseHeadersAndBody(
@@ -284,6 +289,15 @@ void EchoURLDefaultSearchEngineResponseProvider::GetResponseHeadersAndBody(
   AppLaunchConfiguration config;
   if ([self isRunningTest:@selector(testDragAndDropCreatesGroup)]) {
     config.features_enabled.push_back(kTabGridDragAndDrop);
+  }
+
+  if ([self isRunningTest:@selector(testCloseOtherTabsUsingEditMenu)] ||
+      [self isRunningTest:@selector(testCloseOtherTabsUsingContextMenu)] ||
+      [self isRunningTest:@selector(testCloseOtherTabsUnavailableInEditMenu)] ||
+      [self isRunningTest:@selector
+            (testCloseOtherTabsUnavailableInContextMenu)]) {
+    config.features_enabled.push_back(kCloseOtherTabs);
+    config.features_disabled.push_back(kTabSwitcherOverflowMenu);
   }
 
   if ([self isRunningTest:@selector(testCloseAllAndUndoCloseAll)] ||
@@ -623,6 +637,106 @@ void EchoURLDefaultSearchEngineResponseProvider::GetResponseHeadersAndBody(
                                    grey_accessibilityTrait(
                                        UIAccessibilityTraitNotEnabled),
                                    nil)];
+}
+
+// Tests "Close Other Tabs" functionality from the Edit menu.
+- (void)testCloseOtherTabsUsingEditMenu {
+  // Load 3 tabs with distinct content.
+  [ChromeEarlGrey loadURL:_URL1];
+  [ChromeEarlGrey waitForWebStateContainingText:kResponse1];
+  [ChromeEarlGrey openNewTab];
+  [ChromeEarlGrey loadURL:_URL2];
+  [ChromeEarlGrey waitForWebStateContainingText:kResponse2];
+  [ChromeEarlGrey openNewTab];
+  [ChromeEarlGrey loadURL:_URL3];
+  [ChromeEarlGrey waitForWebStateContainingText:kResponse3];
+  [ChromeEarlGrey waitForMainTabCount:3];
+  [ChromeEarlGreyUI openTabGrid];
+
+  // Tap Edit button to enter selection mode.
+  TapVisibleTabGridEditButton();
+
+  // Tap "Close Other Tabs" in the Edit menu.
+  [[EarlGrey selectElementWithMatcher:CloseOtherTabsButton()]
+      performAction:grey_tap()];
+  GREYWaitForAppToIdle(@"App failed to idle");
+
+  // Expect 1 tab remaining.
+  [ChromeEarlGrey waitForMainTabCount:1];
+
+  // Verify the remaining tab is the one that was active (third tab).
+  [[EarlGrey selectElementWithMatcher:TabGridCellAtIndex(0)]
+      performAction:grey_tap()];
+  [ChromeEarlGrey waitForWebStateContainingText:kResponse3];
+}
+
+// Tests "Close Other Tabs" functionality from the Context menu.
+- (void)testCloseOtherTabsUsingContextMenu {
+  // Load 3 tabs with distinct content.
+  [ChromeEarlGrey loadURL:_URL1];
+  [ChromeEarlGrey waitForWebStateContainingText:kResponse1];
+  [ChromeEarlGrey openNewTab];
+  [ChromeEarlGrey loadURL:_URL2];
+  [ChromeEarlGrey waitForWebStateContainingText:kResponse2];
+  [ChromeEarlGrey openNewTab];
+  [ChromeEarlGrey loadURL:_URL3];
+  [ChromeEarlGrey waitForWebStateContainingText:kResponse3];
+  [ChromeEarlGrey waitForMainTabCount:3];
+  [ChromeEarlGreyUI openTabGrid];
+
+  // Long press on the second tab.
+  [self longPressTabWithTitle:kTitle2];
+
+  // Tap "Close Other Tabs" in the context menu.
+  [[EarlGrey selectElementWithMatcher:CloseOtherTabsButton()]
+      performAction:grey_tap()];
+
+  // Wait for the context menu to disappear.
+  [self waitForContextMenuToDisappear];
+
+  // Expect 1 tab remaining.
+  [ChromeEarlGrey waitForMainTabCount:1];
+
+  // Verify the remaining tab is Page two.
+  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:TabWithTitle(kTitle2)];
+}
+
+// Tests that "Close Other Tabs" is not available in the Edit Menu when there is
+// only one tab.
+- (void)testCloseOtherTabsUnavailableInEditMenu {
+  [ChromeEarlGrey waitForMainTabCount:1];
+  [ChromeEarlGreyUI openTabGrid];
+
+  // Open Edit Menu.
+  TapVisibleTabGridEditButton();
+
+  // Verify the menu is open by checking for "Close All Tabs".
+  [[EarlGrey selectElementWithMatcher:TabGridEditMenuCloseAllButton()]
+      assertWithMatcher:grey_sufficientlyVisible()];
+
+  // Verify "Close Other Tabs" is NOT present.
+  [[EarlGrey selectElementWithMatcher:CloseOtherTabsButton()]
+      assertWithMatcher:grey_nil()];
+}
+
+// Tests that "Close Other Tabs" is not available in the Context Menu when there
+// is only one tab.
+- (void)testCloseOtherTabsUnavailableInContextMenu {
+  [ChromeEarlGrey waitForMainTabCount:1];
+  [ChromeEarlGreyUI openTabGrid];
+
+  // Open Context Menu.
+  [[EarlGrey selectElementWithMatcher:TabGridCellAtIndex(0)]
+      performAction:grey_longPress()];
+
+  // Verify the menu is open by checking for "Select Tabs" (which should be
+  // present).
+  [[EarlGrey selectElementWithMatcher:SelectTabsContextMenuItem()]
+      assertWithMatcher:grey_sufficientlyVisible()];
+
+  // Verify "Close Other Tabs" is NOT present.
+  [[EarlGrey selectElementWithMatcher:CloseOtherTabsButton()]
+      assertWithMatcher:grey_nil()];
 }
 
 // Tests that the Undo button is no longer available after tapping Close All,
@@ -2666,8 +2780,10 @@ void EchoURLDefaultSearchEngineResponseProvider::GetResponseHeadersAndBody(
   config.relaunch_policy = ForceRelaunchByCleanShutdown;
   config.additional_args.push_back("-InactiveTabsTestMode");
   config.additional_args.push_back("true");
-  if (![self isRunningTest:@selector
-             (testCloseAllAndUndoCloseAllWithInactiveTabs)]) {
+  if ([self isRunningTest:@selector
+            (testCloseAllAndUndoCloseAllWithInactiveTabs)]) {
+    config.features_disabled.push_back(kTabSwitcherOverflowMenu);
+  } else {
     config.features_enabled.push_back(kTabSwitcherOverflowMenu);
   }
   [[AppLaunchManager sharedManager] ensureAppLaunchedWithConfiguration:config];

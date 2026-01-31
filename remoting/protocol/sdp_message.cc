@@ -99,8 +99,8 @@ void SdpMessage::SetPreferredVideoFormat(const webrtc::SdpVideoFormat& format) {
       continue;
     }
 
-    auto video_line_parts = base::SplitString(line, " ", base::TRIM_WHITESPACE,
-                                              base::SPLIT_WANT_NONEMPTY);
+    std::vector<std::string_view> video_line_parts = base::SplitStringPiece(
+        line, " ", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
     // The video line looks similar to this:
     // m=video 9 UDP/TLS/RTP/SAVPF 96 97 98 99 35 36 45 46 47 48 119 120 121
     //
@@ -127,7 +127,7 @@ SdpMessage::Payloads SdpMessage::FindCodecPayloads(
     const std::string& codec) const {
   Payloads results;
   for (size_t i = 0; i < sdp_lines_.size(); ++i) {
-    const auto& line = sdp_lines_[i];
+    const std::string_view line = sdp_lines_[i];
     if (!base::StartsWith(line, kRtpMapPrefix, base::CompareCase::SENSITIVE)) {
       continue;
     }
@@ -137,9 +137,10 @@ SdpMessage::Payloads SdpMessage::FindCodecPayloads(
     }
     if (line.substr(space_pos + 1, codec.size()) == codec &&
         line[space_pos + 1 + codec.size()] == '/') {
-      std::string payload_type =
-          line.substr(kRtpMapPrefix.size(), space_pos - kRtpMapPrefix.size());
-      results.push_back({i, std::move(payload_type)});
+      results.push_back(
+          {.index = i,
+           .type = std::string(line.substr(kRtpMapPrefix.size(),
+                                           space_pos - kRtpMapPrefix.size()))});
     }
   }
   return results;

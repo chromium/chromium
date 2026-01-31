@@ -5,6 +5,8 @@
 #include "base/run_loop.h"
 #include "base/task/sequenced_task_runner.h"
 #include "build/build_config.h"
+#include "chrome/browser/chrome_browser_main.h"
+#include "chrome/browser/chrome_browser_main_extra_parts.h"
 #include "chrome/browser/metrics/desktop_session_duration/chrome_visibility_observer.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
@@ -20,21 +22,91 @@
 #endif
 
 namespace metrics {
-// Test class for |ChromeVisibilityObserver|.
-class ChromeVisibilityObserverInteractiveTest
-    : public metrics::ChromeVisibilityObserver,
-      public InProcessBrowserTest {
+
+// ChromeVisibilityObserver implementation for the unit test below. This needs
+// to be a separate class because it has a different lifetime than
+// InProcessBrowserTest.
+class ChromeVisibilityObserverInteractiveTestImpl
+    : public ChromeVisibilityObserver {
  public:
-  ChromeVisibilityObserverInteractiveTest() : is_active_(false) {
+  ChromeVisibilityObserverInteractiveTestImpl() {
     SetVisibilityGapTimeoutForTesting(base::TimeDelta());
   }
+
+  bool is_active() const { return is_active_; }
+
+ private:
+  // ChromeVisibilityObserver:
+  void SendVisibilityChangeEvent(bool active,
+                                 base::TimeDelta time_ago) override {
+    is_active_ = active;
+  }
+
+  bool is_active_ = false;
+};
+
+// Lifetime manager for ChromeVisibilityObserverInteractiveTestImpl. Ensures
+// that ChromeVisibilityObserver is created and destroyed at the correct times
+// in browser process startup and shutdown.
+class ChromeVisibilityObserverInteractiveTestImplLifetimeManager
+    : public ChromeBrowserMainExtraParts {
+ public:
+  ChromeVisibilityObserverInteractiveTestImplLifetimeManager(
+      base::OnceClosure create_impl_callback,
+      base::OnceClosure destroy_impl_callback)
+      : create_impl_callback_(std::move(create_impl_callback)),
+        destroy_impl_callback_(std::move(destroy_impl_callback)) {}
+
+  // ChromeBrowserMainExtraParts:
+  void PreCreateThreads() override {
+    // Runs after BrowserProcessImpl::Init() - ie, after
+    // g_browser_process->features_ is created and initialized - but before a
+    // Browser is created. This is important because ChromeVisibilityObserver
+    // depends on the global GlobalBrowsersCollection instance, which is a
+    // member of g_browser_process->features_, and we want
+    // ChromeVisibilityObserver to be able to observe the first Browser
+    // creation.
+    std::move(create_impl_callback_).Run();
+  }
+  void PostMainMessageLoopRun() override {
+    // Runs before g_browser_process shutdown begins (ie, before
+    // g_browser_process->features_ teardown begins), and thus ensures that
+    // ChromeBrowserMainExtraParts is cleaned up before its dependency,
+    // GlobalBrowsersCollection.
+    std::move(destroy_impl_callback_).Run();
+  }
+
+ private:
+  base::OnceClosure create_impl_callback_;
+  base::OnceClosure destroy_impl_callback_;
+};
+
+// Test class for |ChromeVisibilityObserver|.
+class ChromeVisibilityObserverInteractiveTest : public InProcessBrowserTest {
+ public:
+  ChromeVisibilityObserverInteractiveTest() = default;
 
   ChromeVisibilityObserverInteractiveTest(
       const ChromeVisibilityObserverInteractiveTest&) = delete;
   ChromeVisibilityObserverInteractiveTest& operator=(
       const ChromeVisibilityObserverInteractiveTest&) = delete;
 
-  bool is_active() const { return is_active_; }
+  // InProcessBrowserTest:
+  void CreatedBrowserMainParts(content::BrowserMainParts* parts) override {
+    ChromeBrowserMainParts* chrome_browser_main_parts =
+        static_cast<ChromeBrowserMainParts*>(parts);
+    chrome_browser_main_parts->AddParts(
+        std::make_unique<
+            ChromeVisibilityObserverInteractiveTestImplLifetimeManager>(
+            base::BindOnce(
+                &ChromeVisibilityObserverInteractiveTest::create_impl,
+                base::Unretained(this)),
+            base::BindOnce(
+                &ChromeVisibilityObserverInteractiveTest::destroy_impl,
+                base::Unretained(this))));
+  }
+
+  bool is_active() const { return impl_->is_active(); }
 
   // Waits for |is_active_| to be equal to |active| by processing tasks in 1
   // second intervals, up to 3 seconds. This is to account for scenarios when
@@ -48,23 +120,25 @@ class ChromeVisibilityObserverInteractiveTest
     content::HandleMissingKeyWindow();
 #endif
 
-    for (size_t i = 0; is_active_ != active && i < 3; ++i) {
+    for (size_t i = 0; is_active() != active && i < 3; ++i) {
       base::RunLoop run_loop;
       base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
           FROM_HERE, run_loop.QuitClosure(), base::Seconds(1));
       run_loop.Run();
     }
-    EXPECT_EQ(is_active_, active);
+    EXPECT_EQ(is_active(), active);
   }
 
  private:
-  // metrics::ChromeVisibilityObserver:
-  void SendVisibilityChangeEvent(bool active,
-                                 base::TimeDelta time_ago) override {
-    is_active_ = active;
+  // Callbacks for `ChromeVisibilityObserverInteractiveTestImplLifetimeManager`
+  // to create and destroy `impl_` at the proper time in browser process
+  // startup and teardown.
+  void create_impl() {
+    impl_ = std::make_unique<ChromeVisibilityObserverInteractiveTestImpl>();
   }
+  void destroy_impl() { impl_.reset(); }
 
-  bool is_active_;
+  std::unique_ptr<ChromeVisibilityObserverInteractiveTestImpl> impl_;
 };
 
 // This test doesn't check whether switching between browser windows results in

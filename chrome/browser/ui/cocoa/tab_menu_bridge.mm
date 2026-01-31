@@ -25,6 +25,7 @@
 #include "ui/base/models/image_model.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/image/image_skia_util_mac.h"
+#include "ui/gfx/mac/menu_text_elider_mac.h"
 
 using MenuItemCallback = base::RepeatingCallback<void(NSMenuItem*)>;
 
@@ -52,10 +53,11 @@ void UpdateItemForWebContents(NSMenuItem* item,
       emoji = u"\U0001F50A";
     }
 
-    item.title =
-        l10n_util::GetNSStringF(title_id, tab_ui_helper->GetTitle(), emoji);
+    item.title = l10n_util::GetNSStringF(
+        title_id, gfx::ElideMenuItemTitle(tab_ui_helper->GetTitle()), emoji);
   } else {
-    item.title = base::SysUTF16ToNSString(tab_ui_helper->GetTitle());
+    item.title = base::SysUTF16ToNSString(
+        gfx::ElideMenuItemTitle(tab_ui_helper->GetTitle()));
   }
 
   if (base::FeatureList::IsEnabled(features::kShowTabGroupsMacSystemMenu)) {
@@ -87,29 +89,55 @@ void RemoveMenuItems(NSArray* menu_items) {
 
 }  // namespace
 
-@interface TabMenuListener : NSObject
-- (instancetype)initWithCallback:(MenuItemCallback)callback;
+@interface TabMenuListener : NSObject <NSMenuDelegate>
+@property(nonatomic, readonly, getter=isMenuOpen) BOOL menuOpen;
+@property(nonatomic, assign) BOOL rebuildMenu;
+
+- (instancetype)initWithCallback:(MenuItemCallback)callback
+                 rebuildCallback:
+                     (base::RepeatingCallback<void()>)rebuildCallback;
 - (void)activateTab:(id)sender;
 @end
 
 @implementation TabMenuListener {
   MenuItemCallback _callback;
+  base::RepeatingCallback<void()> _rebuildCallback;
 }
 
-- (instancetype)initWithCallback:(MenuItemCallback)callback {
+@synthesize menuOpen = _menuOpen;
+@synthesize rebuildMenu = _rebuildMenu;
+
+- (instancetype)initWithCallback:(MenuItemCallback)callback
+                 rebuildCallback:
+                     (base::RepeatingCallback<void()>)rebuildCallback {
   if ((self = [super init])) {
     _callback = callback;
+    _rebuildCallback = rebuildCallback;
   }
   return self;
+}
+
+- (void)menuNeedsUpdate:(NSMenu*)menu {
+  if (_rebuildMenu) {
+    _rebuildCallback.Run();
+    _rebuildMenu = NO;
+  }
 }
 
 - (IBAction)activateTab:(id)sender {
   _callback.Run(sender);
 }
+
+- (void)menuWillOpen:(NSMenu*)menu {
+  _menuOpen = YES;
+}
+
+- (void)menuDidClose:(NSMenu*)menu {
+  _menuOpen = NO;
+}
 @end
 
-TabMenuBridge::TabMenuBridge(TabStripModel* model, NSMenuItem* menu_item)
-    : model_(model), menu_item_(menu_item) {
+TabMenuBridge::TabMenuBridge(NSMenuItem* menu_item) : menu_item_(menu_item) {
   menu_listener_ = [[TabMenuListener alloc]
       initWithCallback:base::BindRepeating(
                            &TabMenuBridge::OnDynamicItemChosen,
@@ -117,20 +145,46 @@ TabMenuBridge::TabMenuBridge(TabStripModel* model, NSMenuItem* menu_item)
                            // MenuListener, which holds the callback
                            // being constructed here, so the callback
                            // will be destructed before this class.
+                           base::Unretained(this))
+       rebuildCallback:base::BindRepeating(
+                           &TabMenuBridge::AddDynamicItemsFromModel,
+                           // Unretained is safe here: this class owns
+                           // MenuListener, which holds the callback
+                           // being constructed here, so the callback
+                           // will be destructed before this class.
                            base::Unretained(this))];
-  model_->AddObserver(this);
+  [menu_item_.submenu setDelegate:menu_listener_];
 }
 
 TabMenuBridge::~TabMenuBridge() {
+  [menu_item_.submenu setDelegate:nil];
   if (model_) {
     model_->RemoveObserver(this);
   }
   RemoveMenuItems(DynamicMenuItems());
 }
 
-void TabMenuBridge::BuildMenu() {
-  DCHECK(model_);
-  AddDynamicItemsFromModel();
+void TabMenuBridge::SetTabStripModel(TabStripModel* model) {
+  if (model_ == model) {
+    return;
+  }
+
+  if (model_) {
+    model_->RemoveObserver(this);
+  }
+
+  model_ = model;
+
+  if (model_) {
+    model_->AddObserver(this);
+    AddDynamicItemsFromModel();
+  } else {
+    RemoveMenuItems(DynamicMenuItems());
+  }
+}
+
+void TabMenuBridge::SetForceRebuildMenuForTesting(bool force) {
+  force_rebuild_menu_ = force;
 }
 
 NSMutableArray* TabMenuBridge::DynamicMenuItems() {
@@ -148,6 +202,10 @@ NSMutableArray* TabMenuBridge::DynamicMenuItems() {
 }
 
 void TabMenuBridge::AddDynamicItemsFromModel() {
+  if (!model_) {
+    return;
+  }
+
   NSMutableArray* recyclable_items = DynamicMenuItems();
   NSMenu* tabMenu = menu_item_.submenu;
 
@@ -198,6 +256,11 @@ void TabMenuBridge::OnTabStripModelChanged(
   DCHECK(tab_strip_model);
   DCHECK_EQ(tab_strip_model, model_);
 
+  if (!force_rebuild_menu_ && ![menu_listener_ isMenuOpen]) {
+    [menu_listener_ setRebuildMenu:YES];
+    return;
+  }
+
   // If a single WebContents is being replaced, just regenerate that one menu
   // item.
   if (change.type() == TabStripModelChange::kReplaced) {
@@ -211,14 +274,19 @@ void TabMenuBridge::OnTabStripModelChanged(
   AddDynamicItemsFromModel();
 }
 
-void TabMenuBridge::TabChangedAt(content::WebContents* contents,
-                                 int index,
-                                 TabChangeType change_type) {
+void TabMenuBridge::OnTabChangedAt(tabs::TabInterface* tab,
+                                   int index,
+                                   TabChangeType change_type) {
   DCHECK(model_);
 
   // Ignore loading state changes - they happen very often during page load and
   // are used to drive the load spinner, which is not interesting to this menu.
   if (change_type == TabChangeType::kLoadingOnly) {
+    return;
+  }
+
+  if (!force_rebuild_menu_ && ![menu_listener_ isMenuOpen]) {
+    [menu_listener_ setRebuildMenu:YES];
     return;
   }
 
@@ -241,11 +309,16 @@ void TabMenuBridge::TabChangedAt(content::WebContents* contents,
   }
 
   NSMenuItem* item = [menu_item_.submenu itemAtIndex:menu_index];
-  UpdateItemForWebContents(item, contents, model_);
+  UpdateItemForWebContents(item, tab->GetContents(), model_);
 }
 
 // If a tab group is changed, update group indicator for each tab.
 void TabMenuBridge::OnTabGroupChanged(const TabGroupChange& change) {
+  if (!force_rebuild_menu_ && ![menu_listener_ isMenuOpen]) {
+    [menu_listener_ setRebuildMenu:YES];
+    return;
+  }
+
   AddDynamicItemsFromModel();
 }
 
@@ -257,6 +330,14 @@ void TabMenuBridge::TabGroupedStateChanged(
     std::optional<tab_groups::TabGroupId> new_group,
     tabs::TabInterface* tab,
     int index) {
+  DCHECK(tab_strip_model);
+  DCHECK_EQ(tab_strip_model, model_);
+
+  if (!force_rebuild_menu_ && ![menu_listener_ isMenuOpen]) {
+    [menu_listener_ setRebuildMenu:YES];
+    return;
+  }
+
   AddDynamicItemsFromModel();
 }
 

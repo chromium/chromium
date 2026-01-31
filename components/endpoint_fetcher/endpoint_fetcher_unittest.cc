@@ -83,8 +83,8 @@ class EndpointFetcherTest : public testing::Test {
   }
 
   void SignIn() {
-    identity_test_env_.MakePrimaryAccountAvailable(kEmail,
-                                                   signin::ConsentLevel::kSync);
+    identity_test_env_.MakePrimaryAccountAvailable(
+        kEmail, signin::ConsentLevel::kSignin);
     identity_test_env_.SetAutomaticIssueOfAccessTokens(true);
   }
 
@@ -519,7 +519,7 @@ TEST_F(EndpointFetcherTest, OAuthDcheckMissingParams) {
                    HttpMethod::kGet, TRAFFIC_ANNOTATION_FOR_TESTS)
                    .SetAuthType(AuthType::OAUTH)
                    // Missing consumer id
-                   .SetConsentLevel(signin::ConsentLevel::kSync)
+                   .SetConsentLevel(signin::ConsentLevel::kSignin)
                    .Build(),
                "OAUTH requests require oauth_consumer_id");
 }

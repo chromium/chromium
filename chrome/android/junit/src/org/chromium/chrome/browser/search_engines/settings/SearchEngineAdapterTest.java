@@ -32,6 +32,8 @@ import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.Features.DisableFeatures;
+import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.version_info.VersionInfo;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.regional_capabilities.RegionalCapabilitiesServiceFactory;
@@ -39,6 +41,7 @@ import org.chromium.chrome.browser.search_engines.R;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.components.favicon.LargeIconBridge;
 import org.chromium.components.favicon.LargeIconBridgeJni;
+import org.chromium.components.omnibox.OmniboxFeatureList;
 import org.chromium.components.regional_capabilities.RegionalCapabilitiesService;
 import org.chromium.components.search_engines.TemplateUrl;
 import org.chromium.components.search_engines.TemplateUrlService;
@@ -50,6 +53,7 @@ import java.util.List;
 /** Unit tests for {@link SearchEngineAdapter}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
+@DisableFeatures(OmniboxFeatureList.OMNIBOX_SITE_SEARCH)
 public class SearchEngineAdapterTest {
     public @Rule MockitoRule mMockitoRule = MockitoJUnit.rule();
 
@@ -196,6 +200,19 @@ public class SearchEngineAdapterTest {
         checkSortAndFilterOutput(templateUrls, c3, List.of(p1, c3, c1));
     }
 
+    @Test
+    @EnableFeatures(OmniboxFeatureList.OMNIBOX_SITE_SEARCH)
+    public void testSortAndFilterUnnecessaryTemplateUrl_DisableRecentSearchEngines() {
+        long lastVisitedTime = System.currentTimeMillis();
+        TemplateUrl p1 = buildMockTemplateUrl("prepopulated", 1, lastVisitedTime);
+        TemplateUrl c1 = buildMockTemplateUrl("custom1", 0, lastVisitedTime);
+        TemplateUrl r1 = buildMockTemplateUrl("recent1", 0, lastVisitedTime);
+        TemplateUrl r2 = buildMockTemplateUrl("recent2", 0, lastVisitedTime);
+
+        List<TemplateUrl> templateUrls = new ArrayList<>(List.of(p1, c1, r1, r2));
+        checkSortAndFilterOutput(templateUrls, c1, List.of(p1, c1));
+    }
+
     /**
      * Calls {@link SearchEngineAdapter#sortAndFilterUnnecessaryTemplateUrl} twice to verify that
      * the outputs are consistent. The first time it indicates that the user is in the EEA, and the
@@ -235,30 +252,31 @@ public class SearchEngineAdapterTest {
         doReturn(false).when(mRegionalCapabilities).isInEeaCountry();
         RegionalCapabilitiesServiceFactory.setInstanceForTesting(mRegionalCapabilities);
 
-        var adapter = new SearchEngineAdapter(mContext, mProfile);
+        var adapter =
+                new SearchEngineAdapter(mContext, mProfile, /* siteSearchClickHandler= */ null);
         adapter.start();
 
         assertEquals(4, adapter.getCount());
 
         // Checking the data that was used to render the view.
-        assertEquals(SearchEngineAdapter.VIEW_TYPE_ITEM, adapter.getItemViewType(0));
+        assertEquals(SearchEngineAdapter.ViewType.ITEM, adapter.getItemViewType(0));
         verify(p1, never()).getShortName();
         View v = adapter.getView(0, null, null);
         verify(p1, atLeastOnce()).getShortName();
         assertEquals(View.VISIBLE, v.findViewById(R.id.url).getVisibility());
         assertThat(v.findViewById(R.id.logo), notNullValue());
 
-        assertEquals(SearchEngineAdapter.VIEW_TYPE_ITEM, adapter.getItemViewType(1));
+        assertEquals(SearchEngineAdapter.ViewType.ITEM, adapter.getItemViewType(1));
         verify(p2, never()).getShortName();
         v = adapter.getView(1, null, null);
         verify(p2, atLeastOnce()).getShortName();
         assertEquals(View.GONE, v.findViewById(R.id.url).getVisibility()); // Because no keyword.
         assertThat(v.findViewById(R.id.logo), notNullValue());
 
-        assertEquals(SearchEngineAdapter.VIEW_TYPE_DIVIDER, adapter.getItemViewType(2));
+        assertEquals(SearchEngineAdapter.ViewType.DIVIDER, adapter.getItemViewType(2));
         assertNotNull(adapter.getView(2, null, null));
 
-        assertEquals(SearchEngineAdapter.VIEW_TYPE_ITEM, adapter.getItemViewType(3));
+        assertEquals(SearchEngineAdapter.ViewType.ITEM, adapter.getItemViewType(3));
         verify(c1, never()).getShortName();
         v = adapter.getView(3, null, null);
         verify(c1, atLeastOnce()).getShortName();
@@ -284,7 +302,8 @@ public class SearchEngineAdapterTest {
         doReturn(false).when(mRegionalCapabilities).isInEeaCountry();
         RegionalCapabilitiesServiceFactory.setInstanceForTesting(mRegionalCapabilities);
 
-        var adapter = new SearchEngineAdapter(mContext, mProfile);
+        var adapter =
+                new SearchEngineAdapter(mContext, mProfile, /* siteSearchClickHandler= */ null);
         adapter.start();
 
         // The adapter will show 2 prepopulated engines, a divider, and the unknown DSE.
@@ -298,7 +317,7 @@ public class SearchEngineAdapterTest {
         doReturn(true).when(mRegionalCapabilities).isInEeaCountry();
         RegionalCapabilitiesServiceFactory.setInstanceForTesting(mRegionalCapabilities);
 
-        adapter = new SearchEngineAdapter(mContext, mProfile);
+        adapter = new SearchEngineAdapter(mContext, mProfile, /* siteSearchClickHandler= */ null);
         adapter.start();
 
         // The adapter will show 2 prepopulated engines, a divider, and the unknown DSE.
@@ -326,7 +345,8 @@ public class SearchEngineAdapterTest {
         doReturn(false).when(mRegionalCapabilities).isInEeaCountry();
         RegionalCapabilitiesServiceFactory.setInstanceForTesting(mRegionalCapabilities);
 
-        var adapter = new SearchEngineAdapter(mContext, mProfile);
+        var adapter =
+                new SearchEngineAdapter(mContext, mProfile, /* siteSearchClickHandler= */ null);
         adapter.start();
 
         // The adapter will show 2 prepopulated engines, a divider, and the unknown DSE.

@@ -17,7 +17,6 @@
 #include <vector>
 
 #include "base/compiler_specific.h"
-#include "base/containers/contains.h"
 #include "base/containers/span.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
@@ -43,10 +42,12 @@
 #include "base/threading/sequence_local_storage_slot.h"
 #include "base/threading/thread.h"
 #include "base/time/time.h"
+#include "base/types/expected.h"
 #include "build/build_config.h"
 #include "components/services/storage/dom_storage/async_dom_storage_database.h"
+#include "components/services/storage/dom_storage/dom_storage_constants.h"
 #include "components/services/storage/dom_storage/dom_storage_database.h"
-#include "components/services/storage/dom_storage/leveldb/local_storage_database.pb.h"
+#include "components/services/storage/dom_storage/test_support/dom_storage_database_testing.h"
 #include "components/services/storage/public/cpp/constants.h"
 #include "components/services/storage/public/mojom/local_storage_control.mojom.h"
 #include "components/services/storage/public/mojom/storage_service.mojom.h"
@@ -85,6 +86,7 @@
 #include "content/public/test/test_renderer_host.h"
 #include "content/public/test/test_utils.h"
 #include "content/services/auction_worklet/public/mojom/bidder_worklet.mojom.h"
+#include "net/base/net_errors.h"
 #include "net/base/network_isolation_key.h"
 #include "net/base/schemeful_site.h"
 #include "net/base/test_completion_callback.h"
@@ -110,7 +112,6 @@
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/mojom/interest_group/interest_group_types.mojom.h"
 #include "third_party/blink/public/mojom/quota/quota_types.mojom-shared.h"
-#include "third_party/leveldatabase/env_chromium.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -358,18 +359,15 @@ class RemoveLocalStorageTester {
         // it's the same path, and calling `GetStoragePartition()` too early
         // will cause a race against DOMStorageContextWrapper/LocalStorageImpl
         // creation.
-        browser_context_->GetPath().Append(storage::kLocalStoragePath),
-        storage::kLocalStorageLeveldbName, /*memory_dump_id=*/std::nullopt,
+        storage::GetLocalStorageDatabasePath(browser_context_->GetPath()),
+        /*memory_dump_id=*/std::nullopt,
         base::BindLambdaForTesting([&](storage::DbStatus status) {
           ASSERT_TRUE(status.ok());
           open_loop.Quit();
         }));
     open_loop.Run();
 
-    database->database().PostTaskWithThisObject(
-        base::BindLambdaForTesting([&](storage::DomStorageDatabase* db) {
-          PopulateDatabase(&db->GetLevelDB(), origin1, origin2, origin3);
-        }));
+    PopulateDatabase(database.get(), origin1, origin2, origin3);
     database.reset();
 
     // This will trigger creating the `StoragePartitionImpl`, the
@@ -383,47 +381,48 @@ class RemoveLocalStorageTester {
     EXPECT_TRUE(DOMStorageExistsForOrigin(origin3));
   }
 
-  static void PopulateDatabase(storage::DomStorageDatabaseLevelDB* db,
+  static void PopulateLocalStorageMap(storage::AsyncDomStorageDatabase* db,
+                                      const url::Origin& origin,
+                                      base::Time last_accessed,
+                                      base::Time last_modified) {
+    // Create an ID for the map using `origin`.
+    storage::DomStorageDatabase::MapLocator map_locator{
+        storage::kLocalStorageSessionId,
+        blink::StorageKey::CreateFirstParty(origin)};
+
+    // Write a key/value pair to the database for the map.
+    storage::FakeCommitter committer(db, map_locator.Clone());
+    ASSERT_NO_FATAL_FAILURE(
+        committer.PutMapKeyValueSync(/*key=*/{'X'}, /*value=*/{}));
+
+    // Write the map's usage metadata to the database.
+    storage::DomStorageDatabase::Metadata usage;
+    usage.map_metadata.push_back({
+        .map_locator = map_locator.Clone(),
+        .last_accessed = last_accessed,
+        .last_modified = last_modified,
+        .total_size = base::ByteSize{16},
+    });
+    ASSERT_NO_FATAL_FAILURE(storage::PutMetadataSync(*db, std::move(usage)));
+  }
+
+  static void PopulateDatabase(storage::AsyncDomStorageDatabase* db,
                                const url::Origin& origin1,
                                const url::Origin& origin2,
                                const url::Origin& origin3) {
-    storage::LocalStorageAreaAccessMetaData access_data;
-    storage::LocalStorageAreaWriteMetaData write_data;
-    std::map<std::vector<uint8_t>, std::vector<uint8_t>> entries;
-
     base::Time now = base::Time::Now();
-    access_data.set_last_accessed(now.ToInternalValue());
-    write_data.set_last_modified(now.ToInternalValue());
-    write_data.set_size_bytes(16);
-    ASSERT_TRUE(db->Put(CreateAccessMetaDataKey(origin1),
-                        base::as_byte_span(access_data.SerializeAsString()))
-                    .ok());
-    ASSERT_TRUE(db->Put(CreateWriteMetaDataKey(origin1),
-                        base::as_byte_span(write_data.SerializeAsString()))
-                    .ok());
-    ASSERT_TRUE(db->Put(CreateDataKey(origin1), {}).ok());
+    ASSERT_NO_FATAL_FAILURE(PopulateLocalStorageMap(
+        db, origin1, /*last_accessed=*/now, /*last_modified=*/now));
 
     base::Time one_day_ago = now - base::Days(1);
-    access_data.set_last_accessed(one_day_ago.ToInternalValue());
-    write_data.set_last_modified(one_day_ago.ToInternalValue());
-    ASSERT_TRUE(db->Put(CreateAccessMetaDataKey(origin2),
-                        base::as_byte_span(access_data.SerializeAsString()))
-                    .ok());
-    ASSERT_TRUE(db->Put(CreateWriteMetaDataKey(origin2),
-                        base::as_byte_span((write_data.SerializeAsString())))
-                    .ok());
-    ASSERT_TRUE(db->Put(CreateDataKey(origin2), {}).ok());
+    ASSERT_NO_FATAL_FAILURE(
+        PopulateLocalStorageMap(db, origin2, /*last_accessed=*/one_day_ago,
+                                /*last_modified=*/one_day_ago));
 
     base::Time sixty_days_ago = now - base::Days(60);
-    access_data.set_last_accessed(sixty_days_ago.ToInternalValue());
-    write_data.set_last_modified(sixty_days_ago.ToInternalValue());
-    ASSERT_TRUE(db->Put(CreateAccessMetaDataKey(origin3),
-                        base::as_byte_span(access_data.SerializeAsString()))
-                    .ok());
-    ASSERT_TRUE(db->Put(CreateWriteMetaDataKey(origin3),
-                        base::as_byte_span(write_data.SerializeAsString()))
-                    .ok());
-    ASSERT_TRUE(db->Put(CreateDataKey(origin3), {}).ok());
+    ASSERT_NO_FATAL_FAILURE(
+        PopulateLocalStorageMap(db, origin3, /*last_accessed=*/sixty_days_ago,
+                                /*last_modified=*/sixty_days_ago));
   }
 
   // Clears LocalStorage according to parameters, and refreshes the local cache
@@ -454,61 +453,6 @@ class RemoveLocalStorageTester {
   }
 
  private:
-  static std::vector<uint8_t> CreateDataKey(const url::Origin& origin) {
-    auto origin_str = origin.Serialize();
-    std::vector<uint8_t> serialized_origin(origin_str.begin(),
-                                           origin_str.end());
-    std::vector<uint8_t> key = {'_'};
-    key.insert(key.end(), serialized_origin.begin(), serialized_origin.end());
-    key.push_back(0);
-    key.push_back('X');
-    return key;
-  }
-
-  static std::vector<uint8_t> CreateAccessMetaDataKey(
-      const url::Origin& origin) {
-    const auto kMetaPrefix = std::to_array<uint8_t>({
-        'M',
-        'E',
-        'T',
-        'A',
-        'A',
-        'C',
-        'C',
-        'E',
-        'S',
-        'S',
-        ':',
-    });
-    auto origin_str = origin.Serialize();
-    std::vector<uint8_t> serialized_origin(origin_str.begin(),
-                                           origin_str.end());
-    std::vector<uint8_t> key;
-    key.reserve(std::size(kMetaPrefix) + serialized_origin.size());
-    key.insert(key.end(), kMetaPrefix.data(),
-               base::span<const uint8_t>(kMetaPrefix)
-                   .subspan(std::size(kMetaPrefix))
-                   .data());
-    key.insert(key.end(), serialized_origin.begin(), serialized_origin.end());
-    return key;
-  }
-
-  static std::vector<uint8_t> CreateWriteMetaDataKey(
-      const url::Origin& origin) {
-    const auto kMetaPrefix = std::to_array<uint8_t>({'M', 'E', 'T', 'A', ':'});
-    auto origin_str = origin.Serialize();
-    std::vector<uint8_t> serialized_origin(origin_str.begin(),
-                                           origin_str.end());
-    std::vector<uint8_t> key;
-    key.reserve(std::size(kMetaPrefix) + serialized_origin.size());
-    key.insert(key.end(), kMetaPrefix.data(),
-               base::span<const uint8_t>(kMetaPrefix)
-                   .subspan(std::size(kMetaPrefix))
-                   .data());
-    key.insert(key.end(), serialized_origin.begin(), serialized_origin.end());
-    return key;
-  }
-
   raw_ptr<TestBrowserContext> browser_context_;
 
   std::vector<content::StorageUsageInfo> infos_;
@@ -926,8 +870,14 @@ class StoragePartitionShaderClearTest : public testing::Test {
   }
 
   int32_t Size() {
-    net::TestInt32CompletionCallback cb;
-    return cb.GetResult(cache_->Size(cb.callback()));
+    base::test::TestFuture<int32_t> future;
+    base::expected<int32_t, net::Error> result =
+        cache_->Size(future.GetCallback());
+    if (result.has_value()) {
+      return result.value();
+    }
+    CHECK_EQ(result.error(), net::ERR_IO_PENDING);
+    return future.Get();
   }
 
   TestBrowserContext* browser_context() { return browser_context_.get(); }
@@ -2595,6 +2545,7 @@ TEST_F(StoragePartitionImplLocalNetworkAccessTest,
   base::test::TestFuture<network::mojom::LocalNetworkAccessResult> lna_result;
   observer->OnLocalNetworkAccessPermissionRequired(
       network::mojom::TransportType::kDirect,
+      network::mojom::IPAddressSpace::kLocal,
       base::BindOnce(lna_result.GetCallback()));
   EXPECT_EQ(network::mojom::LocalNetworkAccessResult::kDenied,
             lna_result.Get());
@@ -2628,6 +2579,7 @@ TEST_F(StoragePartitionImplLocalNetworkAccessTest,
   base::test::TestFuture<network::mojom::LocalNetworkAccessResult> lna_result;
   observer->OnLocalNetworkAccessPermissionRequired(
       network::mojom::TransportType::kDirect,
+      network::mojom::IPAddressSpace::kLocal,
       base::BindOnce(lna_result.GetCallback()));
   EXPECT_EQ(network::mojom::LocalNetworkAccessResult::kDenied,
             lna_result.Get());
@@ -2652,6 +2604,7 @@ TEST_F(StoragePartitionImplLocalNetworkAccessTest,
   base::test::TestFuture<network::mojom::LocalNetworkAccessResult> lna_result;
   observer->OnLocalNetworkAccessPermissionRequired(
       network::mojom::TransportType::kDirect,
+      network::mojom::IPAddressSpace::kLocal,
       base::BindOnce(lna_result.GetCallback()));
   EXPECT_EQ(network::mojom::LocalNetworkAccessResult::kDenied,
             lna_result.Get());

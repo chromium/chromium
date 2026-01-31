@@ -26,8 +26,9 @@ class GlicWebContentsWarmingPool {
   // container is available, one will be created and then returned. A new
   // container is then preloaded in the background to replace the taken one.
   std::unique_ptr<WebUIContentsContainer> TakeContainer();
-  // Preloads a WebUIContentsContainer if one is not already warmed.
-  void Preload();
+  // Ensures that a WebUIContentsContainer is preloaded. If the existing one is
+  // crashed, it will be replaced.
+  void EnsurePreload();
   // Shuts down the warming pool and destroys any warmed WebContents.
   void Shutdown();
 

@@ -41,7 +41,7 @@ ArCoreInstallHelper::ArCoreInstallHelper() {
       AttachCurrentThread());
 
   java_install_utils_ = Java_ArCoreInstallUtils_create(
-      AttachCurrentThread(), reinterpret_cast<jlong>(this));
+      AttachCurrentThread(), reinterpret_cast<int64_t>(this));
 }
 
 ArCoreInstallHelper::~ArCoreInstallHelper() {

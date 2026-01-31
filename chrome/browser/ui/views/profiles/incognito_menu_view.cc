@@ -16,7 +16,6 @@
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_finder.h"
-#include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
@@ -76,8 +75,5 @@ void IncognitoMenuView::OnExitButtonClicked() {
   // Skipping before-unload trigger to give incognito mode users a chance to
   // quickly close all incognito windows without needing to confirm closing the
   // open forms.
-  BrowserList::CloseAllBrowsersWithIncognitoProfile(
-      &profile(), /*on_close_success=*/base::DoNothing(),
-      /*on_close_aborted=*/base::DoNothing(),
-      /*skip_beforeunload=*/true);
+  chrome::CloseAllBrowsersWithIncognitoProfile(&profile());
 }

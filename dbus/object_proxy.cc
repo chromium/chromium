@@ -9,7 +9,6 @@
 #include <utility>
 
 #include "base/check.h"
-#include "base/containers/contains.h"
 #include "base/debug/alias.h"
 #include "base/debug/crash_logging.h"
 #include "base/debug/leak_annotations.h"
@@ -611,7 +610,7 @@ bool ObjectProxy::AddMatchRuleWithCallback(
   DCHECK(!absolute_signal_name.empty());
   bus_->AssertOnDBusThread();
 
-  if (!base::Contains(match_rules_, match_rule)) {
+  if (!match_rules_.contains(match_rule)) {
     dbus::Error error;
     bus_->AddMatch(match_rule, &error);
     if (error.IsValid()) {
@@ -639,7 +638,7 @@ bool ObjectProxy::AddMatchRuleWithoutCallback(
   DCHECK(!absolute_signal_name.empty());
   bus_->AssertOnDBusThread();
 
-  if (base::Contains(match_rules_, match_rule)) {
+  if (match_rules_.contains(match_rule)) {
     return true;
   }
 

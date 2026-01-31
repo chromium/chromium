@@ -574,7 +574,7 @@ void SafariDataImporter::PreparePasswords(std::string csv_data) {
   metrics_recorder_.password_metrics().LogFileSizeBytes(csv_data.length());
 
   password_manager::PasswordForm::Store to_store = {
-      password_manager::features_util::IsAccountStorageEnabled(sync_service_)
+      password_manager::features_util::IsAccountStorageActive(sync_service_)
           ? password_manager::PasswordForm::Store::kAccountStore
           : password_manager::PasswordForm::Store::kProfileStore};
 

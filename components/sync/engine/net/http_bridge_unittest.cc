@@ -412,8 +412,7 @@ TEST_F(MAYBE_SyncHttpBridgeTest, AbortAndReleaseBeforeFetchComplete) {
       base::WaitableEvent::ResetPolicy::AUTOMATIC,
       base::WaitableEvent::InitialState::NOT_SIGNALED);
   ASSERT_TRUE(io_thread()->task_runner()->PostTask(
-      FROM_HERE, base::BindOnce(&base::WaitableEvent::Wait,
-                                base::Unretained(&io_waiter))));
+      FROM_HERE, io_waiter.GetWaitCallbackForTesting()));
 
   signal_when_created.Wait();  // Wait till we have a bridge to abort.
   ASSERT_TRUE(bridge_for_race_test());

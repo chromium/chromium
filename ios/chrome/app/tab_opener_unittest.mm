@@ -10,7 +10,6 @@
 #import "ios/chrome/app/application_delegate/url_opener_params.h"
 #import "ios/chrome/app/profile/profile_init_stage.h"
 #import "ios/chrome/app/profile/profile_state.h"
-#import "ios/chrome/browser/main/ui_bundled/browser_view_wrangler.h"
 #import "ios/chrome/browser/main/ui_bundled/wrangled_browser.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_controller.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_controller_testing.h"

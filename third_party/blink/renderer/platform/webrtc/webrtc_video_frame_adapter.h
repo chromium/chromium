@@ -19,7 +19,7 @@
 #include "media/base/video_types.h"
 #include "media/capture/video/video_capture_feedback.h"
 #include "media/video/gpu_video_accelerator_factories.h"
-#include "media/video/renderable_gpu_memory_buffer_video_frame_pool.h"
+#include "media/video/renderable_mappable_shared_image_video_frame_pool.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/wtf/ref_counted.h"
 #include "third_party/blink/renderer/platform/wtf/thread_safe_ref_counted.h"
@@ -135,7 +135,7 @@ class PLATFORM_EXPORT WebRtcVideoFrameAdapter
     media::VideoFramePool pool_;
     media::VideoFramePool pool_for_mapped_frames_;
 
-    std::unique_ptr<media::RenderableGpuMemoryBufferVideoFramePool>
+    std::unique_ptr<media::RenderableMappableSharedImageVideoFramePool>
         accelerated_frame_pool_;
     bool disable_gmb_frames_ = false;
 

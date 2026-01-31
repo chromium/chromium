@@ -101,7 +101,7 @@ class TestWebUIProvider
   }
 
  private:
-  base::Value::Dict dict_;
+  base::DictValue dict_;
 };
 
 base::LazyInstance<TestWebUIProvider>::DestructorAtExit test_webui_provider_ =

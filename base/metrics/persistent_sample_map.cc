@@ -11,7 +11,6 @@
 #include <type_traits>
 
 #include "base/check_op.h"
-#include "base/containers/contains.h"
 #include "base/debug/crash_logging.h"
 #include "base/metrics/histogram_base.h"
 #include "base/metrics/histogram_macros.h"

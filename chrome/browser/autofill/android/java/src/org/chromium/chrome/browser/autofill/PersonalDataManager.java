@@ -1278,6 +1278,7 @@ public class PersonalDataManager implements Destroyable {
 
         BankAccount[] getMaskedBankAccounts(long nativePersonalDataManagerAndroid);
 
+        @JniType("base::span<const autofill::Ewallet>")
         Ewallet[] getEwallets(long nativePersonalDataManagerAndroid);
 
         boolean isCardEligibleForBenefits(

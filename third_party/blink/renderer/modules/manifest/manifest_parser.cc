@@ -23,6 +23,7 @@
 #include "services/network/public/cpp/permissions_policy/origin_with_possible_wildcards.h"
 #include "services/network/public/cpp/permissions_policy/permissions_policy_declaration.h"
 #include "third_party/blink/public/common/features.h"
+#include "third_party/blink/public/common/manifest/manifest.h"
 #include "third_party/blink/public/common/manifest/manifest_util.h"
 #include "third_party/blink/public/common/safe_url_pattern.h"
 #include "third_party/blink/public/common/security/protocol_handler_security_level.h"
@@ -101,7 +102,7 @@ bool VerifyFiles(const Vector<mojom::blink::ManifestFileFilterPtr>& files) {
 // Determines whether |url| is within scope of |scope|.
 bool URLIsWithinScope(const KURL& url, const KURL& scope) {
   return SecurityOrigin::AreSameOrigin(url, scope) &&
-         url.GetPath().ToString().StartsWith(scope.GetPath());
+         url.GetPath().starts_with(scope.GetPath());
 }
 
 bool IsHostValidForScopeExtension(String host) {
@@ -282,6 +283,37 @@ String ResolveRelativePathnamePattern(const KURL& base_url, String pathname) {
   return pathname;
 }
 
+std::optional<mojom::blink::ManifestMigrationBehavior>
+MigrationBehaviorFromString(const std::string& behavior) {
+  if (EqualIgnoringASCIICase(String(behavior), "suggest")) {
+    return mojom::blink::ManifestMigrationBehavior::kSuggest;
+  }
+  if (EqualIgnoringASCIICase(String(behavior), "force")) {
+    return mojom::blink::ManifestMigrationBehavior::kForce;
+  }
+  return std::nullopt;
+}
+
+template <typename T>
+std::vector<T> ToStdVector(const Vector<T>& blink_vector) {
+  std::vector<T> std_vector;
+  std_vector.reserve(blink_vector.size());
+  for (const auto& p : blink_vector) {
+    std_vector.push_back(p);
+  }
+  return std_vector;
+}
+
+template <typename T>
+Vector<T> ToBlinkVector(const std::vector<T>& std_vector) {
+  Vector<T> blink_vector;
+  blink_vector.reserve(std_vector.size());
+  for (const auto& p : std_vector) {
+    blink_vector.push_back(p);
+  }
+  return blink_vector;
+}
+
 }  // anonymous namespace
 
 ManifestParser::ManifestParser(const String& data,
@@ -365,25 +397,34 @@ bool ManifestParser::Parse() {
     }
   }
 
-  manifest_->display_override = ParseDisplayOverride(root_object.get());
-  for (const mojom::blink::DisplayMode& display_override :
-       manifest_->display_override) {
-    if (display_override == mojom::blink::DisplayMode::kWindowControlsOverlay) {
-      UseCounter::Count(execution_context_,
-                        WebFeature::kWebAppWindowControlsOverlay);
-    } else if (display_override == mojom::blink::DisplayMode::kBorderless &&
-               base::FeatureList::IsEnabled(
-                   blink::features::kWebAppBorderless)) {
-      UseCounter::Count(execution_context_, WebFeature::kWebAppBorderless);
-    } else if (display_override == mojom::blink::DisplayMode::kBorderless) {
-      UseCounter::Count(execution_context_, WebFeature::kUnframedIwa);
-    } else if (display_override == mojom::blink::DisplayMode::kTabbed) {
-      UseCounter::Count(execution_context_, WebFeature::kWebAppTabbed);
+  Vector<blink::Manifest::DisplayOverride> display_override =
+      ParseDisplayOverride(root_object.get());
+  for (const auto& item : display_override) {
+    manifest_->display_override.push_back(
+        mojom::blink::DisplayOverrideItem::New(
+            item.display(), ToBlinkVector(item.url_patterns())));
+
+    switch (item.display()) {
+      case mojom::blink::DisplayMode::kWindowControlsOverlay:
+        UseCounter::Count(execution_context_,
+                          WebFeature::kWebAppWindowControlsOverlay);
+        break;
+      case mojom::blink::DisplayMode::kBorderless:
+        UseCounter::Count(
+            execution_context_,
+            base::FeatureList::IsEnabled(blink::features::kWebAppBorderless)
+                ? WebFeature::kWebAppBorderless
+                : WebFeature::kUnframedIwa);
+        break;
+      case mojom::blink::DisplayMode::kTabbed:
+        UseCounter::Count(execution_context_, WebFeature::kWebAppTabbed);
+        break;
+      default:
+        break;
     }
   }
 
-  if (base::FeatureList::IsEnabled(blink::features::kWebAppBorderless) ||
-      base::FeatureList::IsEnabled(blink::features::kUnframedIwa)) {
+  if (base::FeatureList::IsEnabled(blink::features::kWebAppBorderless)) {
     manifest_->borderless_url_patterns =
         ParseUrlPatterns(root_object.get(), "borderless_url_patterns");
   }
@@ -393,10 +434,13 @@ bool ManifestParser::Parse() {
   if (!manifest_->icons.empty()) {
     UseCounter::Count(execution_context_, WebFeature::kWebAppManifestIcons);
   }
-  manifest_->icons_localized = ParseIconsLocalized(root_object.get());
-  if (!manifest_->icons_localized.empty()) {
-    UseCounter::Count(execution_context_,
-                      WebFeature::kWebAppManifestIconsLocalized);
+  if (base::FeatureList::IsEnabled(features::kWebAppManifestLocalization)) {
+    auto icons_localized = ParseIconsLocalized(root_object.get());
+    if (!icons_localized.empty()) {
+      manifest_->icons_localized = std::move(icons_localized);
+      UseCounter::Count(execution_context_,
+                        WebFeature::kWebAppManifestIconsLocalized);
+    }
   }
   manifest_->screenshots = ParseScreenshots(root_object.get());
   if (!manifest_->screenshots.empty()) {
@@ -418,8 +462,10 @@ bool ManifestParser::Parse() {
                       WebFeature::kWebAppManifestProtocolHandlers);
   }
 
-  if (!(execution_context_ && execution_context_->IsIsolatedContext())) {
-    // TODO(crbug.com/383094092): Scope Extensions for IWAs are not defined yet.
+  bool is_iwa = execution_context_ && execution_context_->IsIsolatedContext();
+  if (!is_iwa ||
+      base::FeatureList::IsEnabled(
+          blink::features::kWebAppEnableScopeExtensionsForIsolatedWebApps)) {
     manifest_->scope_extensions = ParseScopeExtensions(root_object.get());
     if (!manifest_->scope_extensions.empty()) {
       UseCounter::Count(execution_context_,
@@ -446,6 +492,10 @@ bool ManifestParser::Parse() {
   if (manifest_->prefer_related_applications) {
     UseCounter::Count(execution_context_,
                       WebFeature::kWebAppManifestPrefer_Related_Applications);
+  }
+  if (base::FeatureList::IsEnabled(blink::features::kWebAppMigrationApi)) {
+    manifest_->migrate_from = ParseMigrateFrom(root_object.get());
+    manifest_->migrate_to = ParseMigrateTo(root_object.get());
   }
 
   std::optional<RGBA32> theme_color = ParseThemeColor(root_object.get());
@@ -510,23 +560,27 @@ bool ManifestParser::Parse() {
     UseCounter::Count(execution_context_, WebFeature::kWebAppManifestVersion);
   }
 
-  manifest_->name_localized = ParseNameLocalized(root_object.get());
-  if (!manifest_->name_localized.empty()) {
-    UseCounter::Count(execution_context_,
-                      WebFeature::kWebAppManifestNameLocalized);
-  }
+  if (base::FeatureList::IsEnabled(features::kWebAppManifestLocalization)) {
+    auto name_localized = ParseNameLocalized(root_object.get());
+    if (!name_localized.empty()) {
+      manifest_->name_localized = std::move(name_localized);
+      UseCounter::Count(execution_context_,
+                        WebFeature::kWebAppManifestNameLocalized);
+    }
 
-  manifest_->short_name_localized = ParseShortNameLocalized(root_object.get());
-  if (!manifest_->short_name_localized.empty()) {
-    UseCounter::Count(execution_context_,
-                      WebFeature::kWebAppManifestShortNameLocalized);
-  }
+    auto short_name_localized = ParseShortNameLocalized(root_object.get());
+    if (!short_name_localized.empty()) {
+      manifest_->short_name_localized = std::move(short_name_localized);
+      UseCounter::Count(execution_context_,
+                        WebFeature::kWebAppManifestShortNameLocalized);
+    }
 
-  manifest_->description_localized =
-      ParseDescriptionLocalized(root_object.get());
-  if (!manifest_->description_localized.empty()) {
-    UseCounter::Count(execution_context_,
-                      WebFeature::kWebAppManifestDescriptionLocalized);
+    auto description_localized = ParseDescriptionLocalized(root_object.get());
+    if (!description_localized.empty()) {
+      manifest_->description_localized = std::move(description_localized);
+      UseCounter::Count(execution_context_,
+                        WebFeature::kWebAppManifestDescriptionLocalized);
+    }
   }
 
   ParseSucceeded(manifest_, document_url_);
@@ -667,6 +721,19 @@ std::optional<RGBA32> ManifestParser::ParseColor(const JSONObject* object,
   }
 
   return color.Rgb();
+}
+
+std::optional<icu::Locale> ManifestParser::ParseLocaleKey(
+    const String& locale_str) {
+  UErrorCode status = U_ZERO_ERROR;
+  StringUtf8Adaptor locale_utf8(locale_str);
+  icu::Locale locale =
+      icu::Locale::forLanguageTag(locale_utf8.AsStringView(), status);
+  if (U_FAILURE(status) || locale.isBogus() ||
+      locale == icu::Locale::getRoot()) {
+    return std::nullopt;
+  }
+  return locale;
 }
 
 KURL ManifestParser::ParseURL(const JSONObject* object,
@@ -899,9 +966,9 @@ blink::mojom::DisplayMode ManifestParser::ParseDisplay(
   return display_enum;
 }
 
-Vector<mojom::blink::DisplayMode> ManifestParser::ParseDisplayOverride(
+Vector<blink::Manifest::DisplayOverride> ManifestParser::ParseDisplayOverride(
     const JSONObject* object) {
-  Vector<mojom::blink::DisplayMode> display_override;
+  Vector<blink::Manifest::DisplayOverride> display_override;
 
   JSONValue* json_value = object->Get("display_override");
   if (!json_value) {
@@ -916,10 +983,17 @@ Vector<mojom::blink::DisplayMode> ManifestParser::ParseDisplayOverride(
 
   for (const JSONValue& value : *display_override_list) {
     String display_enum_string;
-    // AsString will return an empty string if a type error occurs,
-    // which will cause DisplayModeFromString to return kUndefined,
-    // resulting in this entry being ignored.
-    value.AsString(&display_enum_string);
+
+    // If a type error occurs, `GetString` and `AsString` do not modify
+    // `display_enum_string`, so `DisplayModeFromString` returns `kUndefined`
+    // and this entry is ignored.
+    const auto* display_override_object = JSONObject::Cast(&value);
+    if (display_override_object) {
+      display_override_object->GetString("display", &display_enum_string);
+    } else {
+      value.AsString(&display_enum_string);
+    }
+
     display_enum_string = display_enum_string.StripWhiteSpace();
     mojom::blink::DisplayMode display_enum =
         DisplayModeFromString(display_enum_string.Utf8());
@@ -936,7 +1010,22 @@ Vector<mojom::blink::DisplayMode> ManifestParser::ParseDisplayOverride(
     }
 
     if (display_enum != mojom::blink::DisplayMode::kUndefined) {
-      display_override.push_back(display_enum);
+      std::vector<SafeUrlPattern> url_patterns;
+      if (display_override_object) {
+        url_patterns = ToStdVector(
+            ParseUrlPatterns(display_override_object, "url_patterns"));
+      }
+      if (display_enum == mojom::blink::DisplayMode::kBorderless) {
+        display_override.push_back(
+            blink::Manifest::DisplayOverride::CreateUnframed(
+                std::move(url_patterns)));
+      } else if (url_patterns.empty()) {
+        display_override.push_back(
+            blink::Manifest::DisplayOverride::Create(display_enum));
+      } else {
+        AddErrorInfo(StrCat({"display override '", display_enum_string,
+                             "' ignored, url_patterns are not allowed."}));
+      }
     }
   }
 
@@ -1081,9 +1170,9 @@ Vector<mojom::blink::ManifestImageResourcePtr> ManifestParser::ParseIcons(
   return ParseImageResourceArray("icons", object);
 }
 
-HashMap<String, Vector<mojom::blink::ManifestImageResourcePtr>>
+HashMap<icu::Locale, Vector<mojom::blink::ManifestImageResourcePtr>>
 ManifestParser::ParseIconsLocalized(const JSONObject* object) {
-  HashMap<String, Vector<mojom::blink::ManifestImageResourcePtr>>
+  HashMap<icu::Locale, Vector<mojom::blink::ManifestImageResourcePtr>>
       localized_icons;
   JSONValue* json_value = object->Get("icons_localized");
   if (!json_value) {
@@ -1098,12 +1187,20 @@ ManifestParser::ParseIconsLocalized(const JSONObject* object) {
 
   for (wtf_size_t i = 0; i < icons_localized_object->size(); ++i) {
     const JSONObject::Entry& entry = icons_localized_object->at(i);
-    const String& locale = entry.first;
+    const String& locale_str = entry.first;
+
+    std::optional<icu::Locale> locale = ParseLocaleKey(locale_str);
+    if (!locale.has_value()) {
+      AddErrorInfo(StrCat({"property 'icons_localized' entry for '", locale_str,
+                           "' ignored, invalid locale key."}));
+      continue;
+    }
+
     Vector<mojom::blink::ManifestImageResourcePtr> icons =
-        ParseImageResourceArray(locale, icons_localized_object);
+        ParseImageResourceArray(locale_str, icons_localized_object);
 
     if (!icons.empty()) {
-      localized_icons.Set(locale, std::move(icons));
+      localized_icons.Set(*locale, std::move(icons));
     }
   }
 
@@ -1270,17 +1367,32 @@ Vector<mojom::blink::ManifestShortcutItemPtr> ManifestParser::ParseShortcuts(
     shortcut->description = ParseShortcutDescription(shortcut_object);
 
     // Parse localized text fields
-    shortcut->name_localized = ParseNameLocalized(shortcut_object);
-    shortcut->short_name_localized = ParseShortNameLocalized(shortcut_object);
-    shortcut->description_localized =
-        ParseDescriptionLocalized(shortcut_object);
+    if (base::FeatureList::IsEnabled(features::kWebAppManifestLocalization)) {
+      auto name_localized = ParseNameLocalized(shortcut_object);
+      if (!name_localized.empty()) {
+        shortcut->name_localized = std::move(name_localized);
+      }
+      auto short_name_localized = ParseShortNameLocalized(shortcut_object);
+      if (!short_name_localized.empty()) {
+        shortcut->short_name_localized = std::move(short_name_localized);
+      }
+      auto description_localized = ParseDescriptionLocalized(shortcut_object);
+      if (!description_localized.empty()) {
+        shortcut->description_localized = std::move(description_localized);
+      }
+    }
 
     auto icons = ParseIcons(shortcut_object);
     if (!icons.empty()) {
       shortcut->icons = std::move(icons);
     }
 
-    shortcut->icons_localized = ParseIconsLocalized(shortcut_object);
+    if (base::FeatureList::IsEnabled(features::kWebAppManifestLocalization)) {
+      auto icons_localized = ParseIconsLocalized(shortcut_object);
+      if (!icons_localized.empty()) {
+        shortcut->icons_localized = std::move(icons_localized);
+      }
+    }
 
     shortcuts.push_back(std::move(shortcut));
   }
@@ -2084,6 +2196,132 @@ bool ManifestParser::ParsePreferRelatedApplications(const JSONObject* object) {
   return ParseBoolean(object, "prefer_related_applications", false);
 }
 
+Vector<mojom::blink::ManifestMigrateFromPtr> ManifestParser::ParseMigrateFrom(
+    const JSONObject* object) {
+  Vector<mojom::blink::ManifestMigrateFromPtr> migrate_from_list;
+
+  JSONValue* value = object->Get("migrate_from");
+  if (!value) {
+    return migrate_from_list;
+  }
+
+  JSONArray* migrate_from_array = object->GetArray("migrate_from");
+  if (!migrate_from_array) {
+    AddErrorInfo(
+        "property 'migrate_from' ignored,"
+        " type array expected.");
+    return migrate_from_list;
+  }
+
+  for (const JSONValue& entry : *migrate_from_array) {
+    // migrate_from can be a string (the manifest ID) or an object.
+    if (entry.GetType() == JSONValue::kTypeString) {
+      String manifest_id_str;
+      entry.AsString(&manifest_id_str);
+      KURL manifest_id = KURL(manifest_url_, manifest_id_str);
+      if (!manifest_id.IsValid()) {
+        AddErrorInfo("migrate_from entry ignored, string is not a valid URL.");
+        continue;
+      }
+      auto migrate_from_entry = mojom::blink::ManifestMigrateFrom::New();
+      migrate_from_entry->id = manifest_id;
+      migrate_from_list.push_back(std::move(migrate_from_entry));
+      continue;
+    }
+
+    const JSONObject* entry_object = JSONObject::Cast(&entry);
+    if (!entry_object) {
+      AddErrorInfo(
+          "migrate_from entry ignored, type string or object expected.");
+      continue;
+    }
+
+    // Use kNoRestrictions when parsing migration related URLs, as these
+    // generally are expected to be cross-origin (and thus out of scope) URLs.
+    auto migrate_from_entry = mojom::blink::ManifestMigrateFrom::New();
+    KURL id = ParseURL(entry_object, "id", manifest_url_,
+                       ParseURLRestrictions::kNoRestrictions,
+                       /*ignore_empty_string=*/true);
+    if (!id.IsValid()) {
+      AddErrorInfo(
+          "migrate_from entry ignored, 'id' is missing or not a valid URL.");
+      continue;
+    }
+    migrate_from_entry->id = id;
+
+    // install_url is optional, but if present must be a valid URL and same
+    // origin as id.
+    KURL install_url = ParseURL(entry_object, "install_url", manifest_url_,
+                                ParseURLRestrictions::kNoRestrictions);
+    if (install_url.IsValid()) {
+      if (!SecurityOrigin::AreSameOrigin(id, install_url)) {
+        AddErrorInfo(
+            "migrate_from entry ignored, 'install_url' must be same origin as "
+            "'id'.");
+        continue;
+      }
+      migrate_from_entry->install_url = install_url;
+    }
+
+    using ManifestMigrationBehavior = mojom::blink::ManifestMigrationBehavior;
+    migrate_from_entry->behavior =
+        ParseFirstValidEnum<std::optional<ManifestMigrationBehavior>>(
+            entry_object, "behavior", &MigrationBehaviorFromString,
+            /*invalid_value=*/std::nullopt)
+            .value_or(ManifestMigrationBehavior::kSuggest);
+
+    migrate_from_list.push_back(std::move(migrate_from_entry));
+  }
+
+  return migrate_from_list;
+}
+
+mojom::blink::ManifestMigrateToPtr ManifestParser::ParseMigrateTo(
+    const JSONObject* object) {
+  JSONValue* value = object->Get("migrate_to");
+  if (!value) {
+    return nullptr;
+  }
+
+  const JSONObject* migrate_to_object = object->GetJSONObject("migrate_to");
+  if (!migrate_to_object) {
+    AddErrorInfo("property 'migrate_to' ignored, type object expected.");
+    return nullptr;
+  }
+
+  // Use kNoRestrictions when parsing migration related URLs, as these
+  // generally are expected to be cross-origin (and thus out of scope) URLs.
+  KURL id = ParseURL(migrate_to_object, "id", manifest_url_,
+                     ParseURLRestrictions::kNoRestrictions,
+                     /*ignore_empty_string=*/true);
+  if (!id.IsValid()) {
+    AddErrorInfo(
+        "property 'migrate_to' ignored, 'id' is missing or not a valid URL.");
+    return nullptr;
+  }
+
+  KURL install_url = ParseURL(migrate_to_object, "install_url", manifest_url_,
+                              ParseURLRestrictions::kNoRestrictions);
+  if (!install_url.IsValid()) {
+    AddErrorInfo(
+        "property 'migrate_to' ignored, 'install_url' is missing or invalid.");
+    return nullptr;
+  }
+
+  if (!SecurityOrigin::AreSameOrigin(id, install_url)) {
+    AddErrorInfo(
+        "property 'migrate_to' ignored, 'install_url' must be same origin as "
+        "'id'.");
+    return nullptr;
+  }
+
+  auto migrate_to = mojom::blink::ManifestMigrateTo::New();
+  migrate_to->id = id;
+  migrate_to->install_url = install_url;
+
+  return migrate_to;
+}
+
 std::optional<RGBA32> ManifestParser::ParseThemeColor(
     const JSONObject* object) {
   return ParseColor(object, "theme_color");
@@ -2167,7 +2405,7 @@ ManifestParser::ParseIsolatedAppPermissions(const JSONObject* object) {
       "Error with permissions_policy manifest field: ");
   network::ParsedPermissionsPolicy parsed_policy =
       PermissionsPolicyParser::ParsePolicyFromNode(
-          policy, SecurityOrigin::Create(manifest_url_), logger,
+          policy, *SecurityOrigin::Create(manifest_url_), logger,
           execution_context_);
 
   Vector<network::ParsedPermissionsPolicyDeclaration> out;
@@ -2616,11 +2854,11 @@ void ManifestParser::AddErrorInfo(const String& error_msg,
   errors_.push_back(std::move(error));
 }
 
-HashMap<String, mojom::blink::ManifestLocalizedTextObjectPtr>
+HashMap<icu::Locale, mojom::blink::ManifestLocalizedTextObjectPtr>
 ManifestParser::ParseLocalizedField(const JSONObject* object,
                                     const String& field_name) {
   JSONObject* localized_value = object->GetJSONObject(field_name);
-  HashMap<String, mojom::blink::ManifestLocalizedTextObjectPtr> result;
+  HashMap<icu::Locale, mojom::blink::ManifestLocalizedTextObjectPtr> result;
   if (!localized_value) {
     return result;
   }
@@ -2632,6 +2870,13 @@ ManifestParser::ParseLocalizedField(const JSONObject* object,
 
     // Parse individual localized text object
     if (!json_value) {
+      continue;
+    }
+
+    std::optional<icu::Locale> locale = ParseLocaleKey(key);
+    if (!locale.has_value()) {
+      AddErrorInfo(StrCat({"property '", field_name, "' entry for '", key,
+                           "' ignored, invalid locale key."}));
       continue;
     }
 
@@ -2697,22 +2942,22 @@ ManifestParser::ParseLocalizedField(const JSONObject* object,
     localized_text->value = std::move(value);
     localized_text->lang = std::move(lang);
     localized_text->dir = dir;
-    result.Set(key, std::move(localized_text));
+    result.Set(*locale, std::move(localized_text));
   }
   return result;
 }
 
-HashMap<String, mojom::blink::ManifestLocalizedTextObjectPtr>
+HashMap<icu::Locale, mojom::blink::ManifestLocalizedTextObjectPtr>
 ManifestParser::ParseNameLocalized(const JSONObject* object) {
   return ParseLocalizedField(object, "name_localized");
 }
 
-HashMap<String, mojom::blink::ManifestLocalizedTextObjectPtr>
+HashMap<icu::Locale, mojom::blink::ManifestLocalizedTextObjectPtr>
 ManifestParser::ParseShortNameLocalized(const JSONObject* object) {
   return ParseLocalizedField(object, "short_name_localized");
 }
 
-HashMap<String, mojom::blink::ManifestLocalizedTextObjectPtr>
+HashMap<icu::Locale, mojom::blink::ManifestLocalizedTextObjectPtr>
 ManifestParser::ParseDescriptionLocalized(const JSONObject* object) {
   return ParseLocalizedField(object, "description_localized");
 }

@@ -17,6 +17,8 @@
 #include "third_party/blink/renderer/core/display_lock/display_lock_document_state.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/dom_node_ids.h"
+#include "third_party/blink/renderer/core/dom/events/event.h"
+#include "third_party/blink/renderer/core/dom/events/native_event_listener.h"
 #include "third_party/blink/renderer/core/editing/editing_utilities.h"
 #include "third_party/blink/renderer/core/editing/frame_selection.h"
 #include "third_party/blink/renderer/core/editing/selection_template.h"
@@ -38,6 +40,7 @@
 #include "third_party/blink/renderer/core/html/html_meta_element.h"
 #include "third_party/blink/renderer/core/html/media/html_video_element.h"
 #include "third_party/blink/renderer/core/input/event_handler.h"
+#include "third_party/blink/renderer/core/layout/geometry/physical_rect.h"
 #include "third_party/blink/renderer/core/layout/layout_embedded_content.h"
 #include "third_party/blink/renderer/core/layout/layout_html_canvas.h"
 #include "third_party/blink/renderer/core/layout/layout_iframe.h"
@@ -61,8 +64,11 @@
 #include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/modules/accessibility/ax_object.h"
 #include "third_party/blink/renderer/modules/content_extraction/ai_page_content_debug_utils.h"
+#include "third_party/blink/renderer/platform/geometry/infinite_int_rect.h"
+#include "third_party/blink/renderer/platform/geometry/layout_unit.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/scheduler/public/thread_scheduler.h"
+#include "third_party/blink/renderer/platform/web_test_support.h"
 #include "third_party/blink/renderer/platform/weborigin/security_origin.h"
 #include "third_party/blink/renderer/platform/widget/frame_widget.h"
 #include "ui/accessibility/ax_role_properties.h"
@@ -70,6 +76,72 @@
 #include "ui/gfx/geometry/rect_conversions.h"
 
 namespace blink {
+#if DCHECK_IS_ON()
+class AutoBuildHelper final : public NativeEventListener {
+ public:
+  explicit AutoBuildHelper(AIPageContentAgent& agent) : agent_(agent) {}
+
+  void Trace(Visitor* visitor) const override {
+    EventListener::Trace(visitor);
+    visitor->Trace(agent_);
+  }
+
+  void StartListening() {
+    AIPageContentAgent* agent = agent_.Get();
+    if (!agent) {
+      return;
+    }
+    Document* document = agent->GetSupplementable();
+    if (!document || listener_registered_) {
+      return;
+    }
+    document->addEventListener(event_type_names::kDOMContentLoaded, this,
+                               false);
+    listener_registered_ = true;
+  }
+
+  void Invoke(ExecutionContext* execution_context, Event* event) override {
+    DCHECK(execution_context->IsWindow());
+
+    LocalDOMWindow& window = *To<LocalDOMWindow>(execution_context);
+    Document& document = *window.document();
+    AIPageContentAgent* agent = agent_.Get();
+    if (!agent || agent->GetSupplementable() != &document) {
+      return;
+    }
+    RunAfterDOMContentLoaded();
+  }
+
+  void RunAfterDOMContentLoaded() {
+    AIPageContentAgent* agent = agent_.Get();
+    if (!agent) {
+      return;
+    }
+    Document* document = agent->GetSupplementable();
+    if (!document) {
+      return;
+    }
+    // When tracing is active (e.g. inspector-protocol tracing tests like
+    // http/tests/inspector-protocol/tracing/rendering.js), APC auto-build can
+    // trigger the list-based hit test used for actionable extraction. Inspector
+    // tracing records list-based hit tests with `listBased`/`rect` fields
+    // instead of `nodeId`/`nodeName`, which changes rendering-expected.txt.
+    // Skip auto- build to keep those tests stable.
+    if (base::TrackEvent::IsEnabled()) {
+      return;
+    }
+
+    // Reuse the common APC request path so lifecycle handling matches mojo
+    // calls.
+    LOG(INFO) << "\n" << agent->DumpContentNodeTreeForTest();
+  }
+
+ private:
+  Member<AIPageContentAgent> agent_;
+  bool listener_registered_ = false;
+};
+#endif  // DCHECK_IS_ON()
+
 namespace {
 
 // Coordinate mapping flags
@@ -105,7 +177,14 @@ ListBasedHitTestBehavior CollectHitTestNodes(std::vector<DOMNodeId>& hit_nodes,
 //
 // The returned rectangle is in viewport coordinates (relative to the top-left
 // of the visible area), which is why coordinates are always >= 0.
-gfx::Rect ComputeVisibleBoundingBox(const LayoutObject& object) {
+//
+// When |local_bounding_box_out| is provided, populate it with the local-space
+// bounding box used as input to the visual-rect mapping. This lets callers
+// reuse the same local geometry for unclipped mapping without duplicating the
+// clip-path/LocalBoundingBoxRectForAccessibility selection logic.
+gfx::Rect ComputeVisibleBoundingBox(
+    const LayoutObject& object,
+    gfx::RectF* local_bounding_box_out = nullptr) {
   // Layout must be complete before computing bounding boxes.
   DCHECK(object.GetDocument().Lifecycle().GetState() >=
          DocumentLifecycle::kLayoutClean)
@@ -116,6 +195,9 @@ gfx::Rect ComputeVisibleBoundingBox(const LayoutObject& object) {
       ClipPathClipper::LocalClipPathBoundingBox(object).value_or(
           object.LocalBoundingBoxRectForAccessibility(
               LayoutObject::IncludeDescendants(false)));
+  if (local_bounding_box_out) {
+    *local_bounding_box_out = object_rect;
+  }
 
   // Transform the local bounding box to viewport coordinates, applying:
   // 1. All CSS transforms (translate, scale, rotate, etc.)
@@ -165,6 +247,52 @@ gfx::Rect ComputeOuterBoundingBox(const LayoutObject& object) {
   return absolute_box.IsEmpty() ? gfx::Rect() : absolute_box;
 }
 
+bool IsUnboundedOrSaturatedViewportRect(const gfx::Rect& rect) {
+  // `InfiniteIntRect()` is a sentinel used for "unknown/unbounded" clip rects.
+  if (rect == InfiniteIntRect()) {
+    return true;
+  }
+
+  // When geometry is too large to represent in LayoutUnits, mapping paths that
+  // go through PhysicalRect/LayoutUnit can clamp/saturate. Those saturated
+  // rects are also "unknown/unbounded" for APC purposes.
+  //
+  // LayoutUnit uses a fixed-point int32 representation with 6 fractional bits.
+  // Its maximum integer component is LayoutUnit::Max().ToInt().
+  constexpr int kMaxLayoutInt = LayoutUnit::Max().ToInt();
+  return rect.width() > kMaxLayoutInt || rect.height() > kMaxLayoutInt;
+}
+
+// Maps a local bounding box to an unclipped outer bounding box in viewport
+// coordinates using the GeometryMapper pipeline.
+gfx::Rect LocalToOuterBoundingBox(const LayoutObject& object,
+                                  const gfx::RectF& local_bounding_box) {
+  // This mapping intentionally skips ancestor and viewport clips while still
+  // applying transforms, scroll offsets, and filters. It keeps the math aligned
+  // with ComputeVisibleBoundingBox() without re-deriving local geometry.
+  gfx::RectF unclipped_box = local_bounding_box;
+  const bool mapped_outer = object.MapToVisualRectInAncestorSpace(
+      nullptr, unclipped_box,
+      static_cast<VisualRectFlags>(kVisualRectFlags |
+                                   kSkipAncestorAndViewportClips));
+  if (!mapped_outer || unclipped_box.IsEmpty()) {
+    return gfx::Rect();
+  }
+  gfx::Rect outer_box = gfx::ToEnclosingRect(unclipped_box);
+
+  // Under extreme transforms, MapToVisualRectInAncestorSpace() may saturate
+  // and return blink::InfiniteIntRect() as a sentinel "unknown/unbounded"
+  // rectangle. This is intentional and used by crash/fuzz-style tests (e.g.
+  // WPT cases with scale(1e38)). The sentinel is not a meaningful "outer"
+  // bounding box, and it may not contain the (clipped-to-viewport) visible
+  // box because it ends at (0,0). Treat it as empty so callers can decide how
+  // to fall back (e.g. clamp to the visible box in APC).
+  if (IsUnboundedOrSaturatedViewportRect(outer_box)) {
+    return gfx::Rect();
+  }
+  return outer_box;
+}
+
 // Processes fragment bounding boxes for layout objects that can be split.
 //
 // Uses QuadsInAncestor() to retrieve quads for each object, then converts them
@@ -206,49 +334,27 @@ void ComputeFragmentBoundingBoxes(
   }
 }
 
-// Validates the relationship between outer and visible bounding boxes.
-//
-// The visible bounding box should generally be contained within or equal to
-// the outer bounding box, since it represents the visible portion of the
-// object. However, there are some exceptions:
-// 1. Inline elements can have different calculation methods that cause slight
-// differences
-// 2. Floating-point to integer conversions can introduce small rounding errors
-// 3. CSS transforms can cause complex geometric relationships
 #if DCHECK_IS_ON()
-void ValidateBoundingBoxes(const gfx::Rect& outer_box_in_absolute_coords,
+// Validates the relationship between the viewport, outer box and visible
+// bounding boxes.
+void ValidateBoundingBoxes(const gfx::Rect& outer_box_in_viewport_coords,
                            const gfx::Rect& visible_box_in_viewport_coords,
                            const LayoutObject& object) {
-  // Visible box coordinates should always be viewport-relative (>= 0)
-  DCHECK_GE(visible_box_in_viewport_coords.x(), 0)
-      << "Visible box should have x >= 0, got: "
-      << visible_box_in_viewport_coords.ToString() << " for object: " << object;
-  DCHECK_GE(visible_box_in_viewport_coords.y(), 0)
-      << "Visible box should have y >= 0, got: "
-      << visible_box_in_viewport_coords.ToString() << " for object: " << object;
-
-  // For block-level elements, the visible box should generally be no larger
-  // than the outer box (with some tolerance for rounding errors).
-  // Inline elements are exempt because they can have different calculation
-  // methods that cause the visible box to be larger.
-  // TODO(crbug.com/422588784): Fixinline element box sizing  and enable check.
-  if (!object.IsInline()) {
-    const int kTolerancePixels = 1;
-    DCHECK_LE(visible_box_in_viewport_coords.width(),
-              outer_box_in_absolute_coords.width() + kTolerancePixels)
-        << "Visible box width should not exceed outer box width by more than "
-        << kTolerancePixels
-        << "px. Visible: " << visible_box_in_viewport_coords.ToString()
-        << ", Outer: " << outer_box_in_absolute_coords.ToString()
-        << " for object: " << object;
-    DCHECK_LE(visible_box_in_viewport_coords.height(),
-              outer_box_in_absolute_coords.height() + kTolerancePixels)
-        << "Visible box height should not exceed outer box height by more than "
-        << kTolerancePixels
-        << "px. Visible: " << visible_box_in_viewport_coords.ToString()
-        << ", Outer: " << outer_box_in_absolute_coords.ToString()
-        << " for object: " << object;
+  if (visible_box_in_viewport_coords.IsEmpty()) {
+    return;
   }
+
+  // Skip validation when outer bounds are "unknown/unbounded" sentinels due to
+  // extreme transforms or saturation. Containment is not meaningful then.
+  if (IsUnboundedOrSaturatedViewportRect(outer_box_in_viewport_coords)) {
+    return;
+  }
+
+  DCHECK(outer_box_in_viewport_coords.Contains(visible_box_in_viewport_coords))
+      << "Visible box must lie within outer box. Visible: "
+      << visible_box_in_viewport_coords.ToString()
+      << ", Outer: " << outer_box_in_viewport_coords.ToString()
+      << "\nFor: " << object;
 }
 #endif  // DCHECK_IS_ON()
 
@@ -375,6 +481,11 @@ std::optional<DOMNodeId> GetDomNodeId(const LayoutObject& object) {
 bool IsVisible(const LayoutObject& object) {
   // Don't add content when node is invisible.
   return object.Style()->Visibility() == EVisibility::kVisible;
+}
+
+bool AreChildrenBlockedByDisplayLock(const LayoutObject& object) {
+  return object.ChildLayoutBlockedByDisplayLock() ||
+         object.ChildPrePaintBlockedByDisplayLock();
 }
 
 void AddClickabilityReasons(
@@ -536,7 +647,7 @@ bool ShouldSkipDescendants(
   // If the feature is disabled, we don't capture the SVG layout internally so
   // there's no need to walk their tree.
   if (content_node->content_attributes->attribute_type ==
-          mojom::blink::AIPageContentAttributeType::kSVG &&
+          mojom::blink::AIPageContentAttributeType::kSvgRoot &&
       !RuntimeEnabledFeatures::AIPageContentIncludeSVGSubtreeEnabled()) {
     return true;
   }
@@ -604,7 +715,8 @@ void ProcessImageNode(const LayoutObject& layout_image,
 
 void ProcessSVGRoot(const LayoutSVGRoot& layout_svg,
                     mojom::blink::AIPageContentAttributes& attributes) {
-  attributes.attribute_type = mojom::blink::AIPageContentAttributeType::kSVG;
+  attributes.attribute_type =
+      mojom::blink::AIPageContentAttributeType::kSvgRoot;
   CHECK(IsVisible(layout_svg));
 
   auto* element = DynamicTo<Element>(layout_svg.GetNode());
@@ -612,11 +724,11 @@ void ProcessSVGRoot(const LayoutSVGRoot& layout_svg,
     return;
   }
 
-  auto svg_data = mojom::blink::AIPageContentSVGData::New();
+  auto svg_root_data = mojom::blink::AIPageContentSvgRootData::New();
   // TODO(b/452908424): Consider removing this given that the inner text is
   // available in the text nodes.
-  svg_data->inner_text = element->GetInnerTextWithoutUpdate();
-  attributes.svg_data = std::move(svg_data);
+  svg_root_data->inner_text = element->GetInnerTextWithoutUpdate();
+  attributes.svg_root_data = std::move(svg_root_data);
 }
 
 void ProcessCanvasNode(const LayoutHTMLCanvas& layout_canvas,
@@ -933,17 +1045,14 @@ void AIPageContentAgent::
   // installs its Document, so `frame` should always expose one here.
   Document* document = frame.GetDocument();
   DCHECK(document);
-  auto* agent = AIPageContentAgent::GetOrCreateForTesting(*document);
-  if (!agent->is_auto_actionable_extraction_pending_) {
-    agent->is_auto_actionable_extraction_pending_ = true;
-    agent->EnsureLifecycleObserverRegistered();
-    // Ensure that we get a lifecycle update no matter what.
-    LocalFrameView* frame_view = document->View();
-    Page* page = document->GetPage();
-    if (frame_view && page && !page->Animator().IsServicingAnimations()) {
-      page->Animator().ScheduleVisualUpdate(&frame);
-    }
+  // Skip the initial empty document to avoid auto-build work before the real
+  // navigation commits. Auto-builds for the initial empty document do not
+  // provide useful coverage and can interfere with subsequent loads.
+  if (document->IsInitialEmptyDocument()) {
+    return;
   }
+  auto* agent = AIPageContentAgent::GetOrCreateForTesting(*document);
+  agent->ListenForDOMContentLoadedForAutoBuild();
 }
 #endif
 
@@ -966,6 +1075,9 @@ void AIPageContentAgent::Bind(
 void AIPageContentAgent::Trace(Visitor* visitor) const {
   visitor->Trace(receiver_set_);
   Supplement<Document>::Trace(visitor);
+#if DCHECK_IS_ON()
+  visitor->Trace(auto_build_helper_);
+#endif
 }
 
 void AIPageContentAgent::DidFinishPostLifecycleSteps(const LocalFrameView&) {
@@ -973,9 +1085,6 @@ void AIPageContentAgent::DidFinishPostLifecycleSteps(const LocalFrameView&) {
     std::move(task).Run();
   }
   async_extraction_tasks_.clear();
-#if DCHECK_IS_ON()
-  MaybeRunAutomaticActionableExtraction();
-#endif
 }
 
 void AIPageContentAgent::GetAIPageContent(
@@ -989,10 +1098,16 @@ void AIPageContentAgent::GetAIPageContent(
   // notifications and the layout is likely clean.
   const bool can_do_sync_extraction = !view || !view->LifecycleUpdatePending();
 
+  // TODO(b/467336183): Remove VLOGs once resolved.
   if (can_do_sync_extraction || NeedsSyncExtraction(*options)) {
+    VLOG(1) << "GetAIPageContent SYNC MainFrame: "
+            << GetSupplementable()->IsInMainFrame();
     GetAIPageContentSync(std::move(options), std::move(callback), start_time);
+    VLOG(1) << "GetAIPageContent SYNC DONE";
     return;
   }
+
+  VLOG(1) << "GetAIPageContent ASYNC";
 
   EnsureLifecycleObserverRegistered();
 
@@ -1034,26 +1149,27 @@ void AIPageContentAgent::EnsureLifecycleObserverRegistered() {
 }
 
 #if DCHECK_IS_ON()
-void AIPageContentAgent::MaybeRunAutomaticActionableExtraction() {
-  if (!is_auto_actionable_extraction_pending_) {
+AutoBuildHelper* AIPageContentAgent::GetOrCreateAutoBuildHelper() {
+  if (!auto_build_helper_) {
+    auto_build_helper_ = MakeGarbageCollected<AutoBuildHelper>(*this);
+  }
+  return auto_build_helper_.Get();
+}
+
+void AIPageContentAgent::ListenForDOMContentLoadedForAutoBuild() {
+  Document* document = GetSupplementable();
+  if (!document) {
     return;
   }
 
-  if (!GetSupplementable()->LoadEventFinished()) {
-    return;
-  }
-  LocalFrame* frame = GetSupplementable()->GetFrame();
-  if (!frame) {
-    return;
-  }
+  // Register the DOMContentLoaded listener and schedule the auto-build after
+  // the event dispatch completes. This keeps auto-build out of document
+  // installation/handler execution windows where frame state can be unstable.
+  GetOrCreateAutoBuildHelper()->StartListening();
+}
 
-  is_auto_actionable_extraction_pending_ = false;
-
-  mojom::blink::AIPageContentOptions options;
-  options.on_critical_path = true;
-  options.mode = mojom::blink::AIPageContentMode::kActionableElements;
-
-  GetAIPageContentInternal(options);
+void AIPageContentAgent::RunAutoBuildAfterDOMContentLoadedForTesting() {
+  GetOrCreateAutoBuildHelper()->RunAfterDOMContentLoaded();
 }
 #endif
 
@@ -1166,6 +1282,8 @@ mojom::blink::AIPageContentPtr AIPageContentAgent::ContentBuilder::Build(
   CHECK(root_node);
   WalkChildren(*layout_view, *root_node, *document_style);
   page_content->root_node = std::move(root_node);
+  page_content->visible_bounding_boxes_for_password_redaction =
+      std::move(visible_bounding_box_for_passwords_);
 
   if (stack_depth_exceeded_) {
     ukm::builders::OptimizationGuide_AIPageContentAgent(document.UkmSourceID())
@@ -1320,7 +1438,9 @@ bool AIPageContentAgent::ContentBuilder::WalkChildren(
     const LayoutObject& object,
     mojom::blink::AIPageContentNode& content_node,
     const RecursionData& recursion_data) {
-  if (object.ChildPrePaintBlockedByDisplayLock()) {
+  if (AreChildrenBlockedByDisplayLock(object)) {
+    // APC only includes content with layout objects; display-locked subtrees
+    // skip child layout/prepaint, so they are not included in the layout tree.
     return false;
   }
 
@@ -1412,6 +1532,11 @@ void AIPageContentAgent::ContentBuilder::ProcessIframe(
     }
   }
 
+  if (AreChildrenBlockedByDisplayLock(object)) {
+    // Avoid forcing layout or hit-testing in display-locked iframe subtrees.
+    return;
+  }
+
   // Add interaction metadata before walking the tree to ensure we promote
   // interactive DOM nodes to ContentNodes.
   if (local_frame->GetDocument()) {
@@ -1452,7 +1577,6 @@ AIPageContentAgent::ContentBuilder::MaybeGenerateContentNode(
       mojom::blink::AIPageContentAttributes::New();
   mojom::blink::AIPageContentAttributes& attributes =
       *content_node->content_attributes;
-
   // Compute state that is used to decide whether this node generates a
   // ContentNode before making the decision below.
   AddAnnotatedRoles(object, attributes.annotated_roles);
@@ -1685,13 +1809,40 @@ void AIPageContentAgent::ContentBuilder::AddAnnotatedRoles(
   }
 }
 
+void AIPageContentAgent::ContentBuilder::TrackPasswordRedactionIfNeeded(
+    const LayoutObject& object,
+    mojom::blink::AIPageContentAttributes& attributes,
+    std::optional<gfx::Rect> visible_bounding_box) {
+  if (!options_->include_passwords_for_redaction) {
+    return;
+  }
+
+  if (!attributes.form_control_data) {
+    return;
+  }
+
+  switch (attributes.form_control_data->redaction_decision) {
+    case mojom::blink::AIPageContentRedactionDecision::kNoRedactionNecessary:
+    case mojom::blink::AIPageContentRedactionDecision::
+        kUnredacted_EmptyPassword:
+      return;
+    case mojom::blink::AIPageContentRedactionDecision::
+        kRedacted_HasBeenPassword:
+      break;
+  }
+
+  visible_bounding_box_for_passwords_.push_back(
+      visible_bounding_box.value_or(ComputeVisibleBoundingBox(object)));
+}
+
 void AIPageContentAgent::ContentBuilder::AddNodeGeometry(
     const LayoutObject& object,
-    mojom::blink::AIPageContentAttributes& attributes) const {
+    mojom::blink::AIPageContentAttributes& attributes) {
   // When in non-actionable mode, we only want to add geometry for the
   // accessibility focused node.
   if (!actionable_mode() &&
       attributes.dom_node_id != accessibility_focused_node_id_) {
+    TrackPasswordRedactionIfNeeded(object, attributes);
     return;
   }
 
@@ -1717,11 +1868,33 @@ void AIPageContentAgent::ContentBuilder::AddNodeGeometry(
   //
   // These boxes serve different purposes:
   // - outer_bounding_box: Used for hit-testing semantics and determining the
-  //   object’s overall size and position relative to the viewport.
+  //   object’s overall size and position relative to the viewport once scrolled
+  //   into view (ignoring ancestor clips).
   // - visible_bounding_box: Used for determining what is actually visible to
   //   users and immediately hit-testable without scrolling.
-  geometry.outer_bounding_box = ComputeOuterBoundingBox(object);
-  geometry.visible_bounding_box = ComputeVisibleBoundingBox(object);
+  // Compute the visible bounding box and capture the local box so the outer
+  // box can reuse identical geometry inputs when the feature flag is enabled.
+  gfx::RectF local_bounding_box;
+  geometry.visible_bounding_box =
+      ComputeVisibleBoundingBox(object, &local_bounding_box);
+  const bool map_to_outer =
+      RuntimeEnabledFeatures::AIPageContentOuterBoxMapToAncestorSpaceEnabled();
+  geometry.outer_bounding_box =
+      map_to_outer ? LocalToOuterBoundingBox(object, local_bounding_box)
+                   : ComputeOuterBoundingBox(object);
+
+  // For APC, the most useful fallback is to clamp the outer box to the visible
+  // box when the mapping fails or saturates:
+  // - It preserves the key invariant checked by ValidateBoundingBoxes().
+  // - It avoids emitting enormous/sentinel geometry to consumers.
+  // - It does not change visible_bounding_box semantics.
+  if (map_to_outer && geometry.outer_bounding_box.IsEmpty() &&
+      !geometry.visible_bounding_box.IsEmpty()) {
+    geometry.outer_bounding_box = geometry.visible_bounding_box;
+  }
+
+  TrackPasswordRedactionIfNeeded(object, attributes,
+                                 geometry.visible_bounding_box);
 
   // Validate the relationship between outer and visible bounding boxes
   // TODO(aleventhal): restore for Canary builds.

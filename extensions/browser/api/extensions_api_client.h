@@ -37,7 +37,7 @@ class SingleThreadTaskRunner;
 namespace content {
 class BrowserContext;
 class WebContents;
-}
+}  // namespace content
 
 namespace guest_view {
 class GuestViewManagerDelegate;
@@ -109,8 +109,8 @@ class ExtensionsAPIClient {
 
   // Attaches any extra web contents helpers (like ExtensionWebContentsObserver)
   // to `web_contents`.
-  virtual void AttachWebContentsHelpers(content::WebContents* web_contents)
-      const;
+  virtual void AttachWebContentsHelpers(
+      content::WebContents* web_contents) const;
 
   // Returns true if the header should be hidden to extensions.
   virtual bool ShouldHideResponseHeader(const GURL& url,
@@ -158,9 +158,11 @@ class ExtensionsAPIClient {
   virtual std::unique_ptr<guest_view::GuestViewManagerDelegate>
   CreateGuestViewManagerDelegate() const;
 
+#if BUILDFLAG(ENABLE_EXTENSIONS)
   // Creates a delegate for MimeHandlerViewGuest.
   virtual std::unique_ptr<MimeHandlerViewGuestDelegate>
   CreateMimeHandlerViewGuestDelegate(MimeHandlerViewGuest* guest) const;
+#endif
 
   // Creates a delegate for some of WebViewGuest's behavior.
   virtual std::unique_ptr<WebViewGuestDelegate> CreateWebViewGuestDelegate(

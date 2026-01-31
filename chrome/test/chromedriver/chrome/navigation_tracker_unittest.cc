@@ -32,7 +32,7 @@ class DeterminingLoadStateDevToolsClient : public StubDevToolsClient {
   DeterminingLoadStateDevToolsClient(bool has_empty_base_url,
                                      bool is_loading,
                                      const std::string& send_event_first,
-                                     base::Value::Dict* send_event_first_params)
+                                     base::DictValue* send_event_first_params)
       : has_empty_base_url_(has_empty_base_url),
         is_loading_(is_loading),
         send_event_first_(send_event_first),
@@ -41,8 +41,8 @@ class DeterminingLoadStateDevToolsClient : public StubDevToolsClient {
   ~DeterminingLoadStateDevToolsClient() override = default;
 
   Status SendCommandAndGetResult(const std::string& method,
-                                 const base::Value::Dict& params,
-                                 base::Value::Dict* result) override {
+                                 const base::DictValue& params,
+                                 base::DictValue* result) override {
     if (method == "DOM.describeNode") {
       if (has_empty_base_url_) {
         result->SetByDottedPath("node.baseURL", "about:blank");
@@ -83,7 +83,7 @@ class DeterminingLoadStateDevToolsClient : public StubDevToolsClient {
   bool has_empty_base_url_;
   bool is_loading_;
   std::string send_event_first_;
-  raw_ptr<base::Value::Dict> send_event_first_params_;
+  raw_ptr<base::DictValue> send_event_first_params_;
 };
 
 class EvaluateScriptWebView : public StubWebView {
@@ -110,7 +110,7 @@ class EvaluateScriptWebView : public StubWebView {
   Status CallFunctionWithTimeout(
       const std::string& frame,
       const std::string& function,
-      const base::Value::List& args,
+      const base::ListValue& args,
       const base::TimeDelta& timeout,
       const CallFunctionOptions& options,
       std::unique_ptr<base::Value>* result) override {
@@ -125,7 +125,7 @@ class EvaluateScriptWebView : public StubWebView {
 }  // namespace
 
 TEST(NavigationTracker, FrameLoadStartStop) {
-  base::Value::Dict dict;
+  base::DictValue dict;
   BrowserInfo browser_info;
   std::unique_ptr<DevToolsClient> client_uptr =
       std::make_unique<DeterminingLoadStateDevToolsClient>(
@@ -136,7 +136,7 @@ TEST(NavigationTracker, FrameLoadStartStop) {
                        PageLoadStrategy::kNormal, true);
   NavigationTracker tracker(client_ptr, &web_view);
 
-  base::Value::Dict params;
+  base::DictValue params;
   params.Set("frameId", client_ptr->GetId());
 
   ASSERT_EQ(
@@ -152,7 +152,7 @@ TEST(NavigationTracker, FrameLoadStartStop) {
 // can sometimes see two Page.frameStartedLoading events with only a single
 // Page.loadEventFired event.
 TEST(NavigationTracker, FrameLoadStartStartStop) {
-  base::Value::Dict dict;
+  base::DictValue dict;
   BrowserInfo browser_info;
   std::unique_ptr<DevToolsClient> client_uptr =
       std::make_unique<DeterminingLoadStateDevToolsClient>(
@@ -163,7 +163,7 @@ TEST(NavigationTracker, FrameLoadStartStartStop) {
                        PageLoadStrategy::kNormal, true);
   NavigationTracker tracker(client_ptr, &web_view);
 
-  base::Value::Dict params;
+  base::DictValue params;
   params.Set("frameId", client_ptr->GetId());
 
   ASSERT_EQ(
@@ -180,7 +180,7 @@ TEST(NavigationTracker, FrameLoadStartStartStop) {
 }
 
 TEST(NavigationTracker, MultipleFramesLoad) {
-  base::Value::Dict dict;
+  base::DictValue dict;
   BrowserInfo browser_info;
   std::unique_ptr<DevToolsClient> client_uptr =
       std::make_unique<DeterminingLoadStateDevToolsClient>(
@@ -191,7 +191,7 @@ TEST(NavigationTracker, MultipleFramesLoad) {
                        PageLoadStrategy::kNormal, true);
   NavigationTracker tracker(client_ptr, &web_view);
 
-  base::Value::Dict params;
+  base::DictValue params;
   std::string top_frame_id = client_ptr->GetId();
   params.Set("frameId", top_frame_id);
 
@@ -232,7 +232,7 @@ TEST(NavigationTracker, MultipleFramesLoad) {
 }
 
 TEST(NavigationTracker, NavigationScheduledForOtherFrame) {
-  base::Value::Dict dict;
+  base::DictValue dict;
   BrowserInfo browser_info;
   std::unique_ptr<DevToolsClient> client_uptr =
       std::make_unique<DeterminingLoadStateDevToolsClient>(
@@ -244,7 +244,7 @@ TEST(NavigationTracker, NavigationScheduledForOtherFrame) {
   NavigationTracker tracker(client_ptr, NavigationTracker::kNotLoading,
                             &web_view);
 
-  base::Value::Dict params_scheduled;
+  base::DictValue params_scheduled;
   params_scheduled.Set("delay", 0);
   params_scheduled.Set("frameId", "other");
 
@@ -256,7 +256,7 @@ TEST(NavigationTracker, NavigationScheduledForOtherFrame) {
 }
 
 TEST(NavigationTracker, CurrentFrameLoading) {
-  base::Value::Dict dict;
+  base::DictValue dict;
   std::unique_ptr<DevToolsClient> client_uptr =
       std::make_unique<DeterminingLoadStateDevToolsClient>(
           false, false, std::string(), &dict);
@@ -264,7 +264,7 @@ TEST(NavigationTracker, CurrentFrameLoading) {
   EvaluateScriptWebView web_view(kOk);
   NavigationTracker tracker(client_ptr, &web_view);
 
-  base::Value::Dict params;
+  base::DictValue params;
   std::string top_frame_id = client_ptr->GetId();
   std::string current_frame_id = "2";
   params.Set("frameId", current_frame_id);
@@ -306,7 +306,7 @@ TEST(NavigationTracker, CurrentFrameLoading) {
 }
 
 TEST(NavigationTracker, FrameAttachDetach) {
-  base::Value::Dict dict;
+  base::DictValue dict;
   std::unique_ptr<DevToolsClient> client_uptr =
       std::make_unique<DeterminingLoadStateDevToolsClient>(
           false, false, std::string(), &dict);
@@ -314,7 +314,7 @@ TEST(NavigationTracker, FrameAttachDetach) {
   EvaluateScriptWebView web_view(kOk);
   NavigationTracker tracker(client_ptr, &web_view);
 
-  base::Value::Dict params;
+  base::DictValue params;
   std::string top_frame_id = client_ptr->GetId();
   std::string current_frame_id = "2";
   params.Set("frameId", current_frame_id);
@@ -344,7 +344,7 @@ TEST(NavigationTracker, FrameAttachDetach) {
 }
 
 TEST(NavigationTracker, SetFrameNoFrame) {
-  base::Value::Dict dict;
+  base::DictValue dict;
   std::unique_ptr<DevToolsClient> client_uptr =
       std::make_unique<DeterminingLoadStateDevToolsClient>(
           false, false, std::string(), &dict);
@@ -352,7 +352,7 @@ TEST(NavigationTracker, SetFrameNoFrame) {
   EvaluateScriptWebView web_view(kOk);
   NavigationTracker tracker(client_ptr, &web_view);
 
-  base::Value::Dict params;
+  base::DictValue params;
   std::string top_frame_id = client_ptr->GetId();
   web_view.SetNextEvaluateScriptResult("uninitialized", kOk);
   ASSERT_NO_FATAL_FAILURE(tracker.SetFrame(std::string()));
@@ -387,8 +387,8 @@ class FailToEvalScriptDevToolsClient : public StubDevToolsClient {
   ~FailToEvalScriptDevToolsClient() override = default;
 
   Status SendCommandAndGetResult(const std::string& method,
-                                 const base::Value::Dict& params,
-                                 base::Value::Dict* result) override {
+                                 const base::DictValue& params,
+                                 base::DictValue* result) override {
     if (!is_dom_getDocument_requested_ && method == "DOM.describeNode") {
       is_dom_getDocument_requested_ = true;
       result->SetByDottedPath("node.baseURL", "http://chromedriver.test");
@@ -427,7 +427,7 @@ TEST(NavigationTracker, UnknownStateFailsToDetermineState) {
 }
 
 TEST(NavigationTracker, UnknownStatePageNotLoadAtAll) {
-  base::Value::Dict dict;
+  base::DictValue dict;
   BrowserInfo browser_info;
   std::unique_ptr<DevToolsClient> client_uptr =
       std::make_unique<DeterminingLoadStateDevToolsClient>(
@@ -442,7 +442,7 @@ TEST(NavigationTracker, UnknownStatePageNotLoadAtAll) {
 }
 
 TEST(NavigationTracker, UnknownStateForcesStart) {
-  base::Value::Dict dict;
+  base::DictValue dict;
   std::unique_ptr<DevToolsClient> client_uptr =
       std::make_unique<DeterminingLoadStateDevToolsClient>(
           false, true, std::string(), &dict);
@@ -454,7 +454,7 @@ TEST(NavigationTracker, UnknownStateForcesStart) {
 }
 
 TEST(NavigationTracker, UnknownStateForcesStartReceivesStop) {
-  base::Value::Dict dict;
+  base::DictValue dict;
   BrowserInfo browser_info;
   std::unique_ptr<DevToolsClient> client_uptr =
       std::make_unique<DeterminingLoadStateDevToolsClient>(
@@ -465,7 +465,7 @@ TEST(NavigationTracker, UnknownStateForcesStartReceivesStop) {
                        PageLoadStrategy::kNormal, true);
   NavigationTracker tracker(client_ptr, &web_view);
 
-  base::Value::Dict params;
+  base::DictValue params;
   params.Set("frameId", client_ptr->GetId());
   ASSERT_EQ(kOk,
             tracker.OnEvent(client_ptr, "Page.loadEventFired", params).code());
@@ -473,7 +473,7 @@ TEST(NavigationTracker, UnknownStateForcesStartReceivesStop) {
 }
 
 TEST(NavigationTracker, OnSuccessfulNavigate) {
-  base::Value::Dict dict;
+  base::DictValue dict;
   std::unique_ptr<DevToolsClient> client_uptr =
       std::make_unique<DeterminingLoadStateDevToolsClient>(
           false, true, std::string(), &dict);
@@ -482,8 +482,8 @@ TEST(NavigationTracker, OnSuccessfulNavigate) {
   NavigationTracker tracker(client_ptr, NavigationTracker::kNotLoading,
                             &web_view);
 
-  base::Value::Dict params;
-  base::Value::Dict result;
+  base::DictValue params;
+  base::DictValue result;
   result.Set("frameId", client_ptr->GetId());
   web_view.SetNextEvaluateScriptResult("loading", kOk);
   tracker.OnCommandSuccess(client_ptr, "Page.navigate", &result, Timeout());
@@ -494,7 +494,7 @@ TEST(NavigationTracker, OnSuccessfulNavigate) {
 }
 
 TEST(NavigationTracker, OnNetworkErroredNavigate) {
-  base::Value::Dict dict;
+  base::DictValue dict;
   std::unique_ptr<DevToolsClient> client_uptr =
       std::make_unique<DeterminingLoadStateDevToolsClient>(
           false, true, std::string(), &dict);
@@ -503,8 +503,8 @@ TEST(NavigationTracker, OnNetworkErroredNavigate) {
   NavigationTracker tracker(client_ptr, NavigationTracker::kNotLoading,
                             &web_view);
 
-  base::Value::Dict params;
-  base::Value::Dict result;
+  base::DictValue params;
+  base::DictValue result;
   result.Set("frameId", client_ptr->GetId());
   result.Set("errorText", "net::ERR_PROXY_CONNECTION_FAILED");
   web_view.SetNextEvaluateScriptResult("loading", kOk);
@@ -516,7 +516,7 @@ TEST(NavigationTracker, OnNetworkErroredNavigate) {
 }
 
 TEST(NavigationTracker, OnNonNetworkErroredNavigate) {
-  base::Value::Dict dict;
+  base::DictValue dict;
   std::unique_ptr<DevToolsClient> client_uptr =
       std::make_unique<DeterminingLoadStateDevToolsClient>(
           false, true, std::string(), &dict);
@@ -525,8 +525,8 @@ TEST(NavigationTracker, OnNonNetworkErroredNavigate) {
   NavigationTracker tracker(client_ptr, NavigationTracker::kNotLoading,
                             &web_view);
 
-  base::Value::Dict params;
-  base::Value::Dict result;
+  base::DictValue params;
+  base::DictValue result;
   result.Set("frameId", client_ptr->GetId());
   result.Set("errorText", "net::ERR_CERT_COMMON_NAME_INVALID");
   web_view.SetNextEvaluateScriptResult("loading", kOk);
@@ -546,8 +546,8 @@ class TargetClosedDevToolsClient : public StubDevToolsClient {
   ~TargetClosedDevToolsClient() override = default;
 
   Status SendCommandAndGetResult(const std::string& method,
-                                 const base::Value::Dict& params,
-                                 base::Value::Dict* result) override {
+                                 const base::DictValue& params,
+                                 base::DictValue* result) override {
     return Status(kUnknownError, "Inspected target navigated or closed");
   }
 };

@@ -218,7 +218,7 @@ class VerdictCacheManager : public history::HistoryServiceObserver,
   // Removes expired verdicts from a sub-dictionary within the
   // `cache_dictionary`.
   void RemoveExpiredVerdictsFromSubDict(
-      base::Value::Dict& cache_dictionary,
+      base::DictValue& cache_dictionary,
       const char* sub_dict_key,
       std::optional<size_t>& stored_verdict_count,
       size_t& verdicts_removed,
@@ -226,12 +226,12 @@ class VerdictCacheManager : public history::HistoryServiceObserver,
 
   bool RemoveExpiredPhishGuardVerdicts(
       LoginReputationClientRequest::TriggerType trigger_type,
-      base::Value::Dict& cache_dictionary);
+      base::DictValue& cache_dictionary);
   // Computes the number of entries in `cache_dictionary`. If
   // `remove_expired_verdicts` is true, it will also remove any expired entries
   // from `cache_dictionary` and return the number of removed entries.
   DictionaryCounts ComputeCountsAndMaybeRemoveExpiredRealTimeUrlCheckVerdicts(
-      base::Value::Dict& cache_dictionary,
+      base::DictValue& cache_dictionary,
       bool remove_expired_verdicts);
 
   size_t GetPhishGuardVerdictCountForURL(

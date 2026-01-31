@@ -113,6 +113,13 @@ class PasswordSuggestionGenerator {
   GetWebauthnSignInWithAnotherDeviceSuggestion() const;
 
  private:
+  // If there are any fillable suggestions already in the list, append a "Manage
+  // passwords" entry (and a preceding separator) to `suggestions`. If Passkeys
+  // may assist with the focused field, adds the entry point to the hybrid
+  // passkey flow.
+  void AppendOptionalFooterSection(
+      std::vector<autofill::Suggestion>* suggestions) const;
+
   const raw_ptr<PasswordManagerDriver> password_manager_driver_;
   const raw_ptr<PasswordManagerClient> password_client_;
   const raw_ptr<autofill::AutofillClient> autofill_client_;

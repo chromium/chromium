@@ -45,11 +45,11 @@ class NearbyInternalsPresenceHandler
       nearby::presence::PresenceDevice presence_device) override;
   void OnScanSessionInvalidated() override;
 
-  void Initialize(const base::Value::List& args);
-  void HandleStartPresenceScan(const base::Value::List& args);
-  void HandleStopPresenceScan(const base::Value::List& args);
-  void HandleSyncPresenceCredentials(const base::Value::List& args);
-  void HandleFirstTimePresenceFlow(const base::Value::List& args);
+  void Initialize(const base::ListValue& args);
+  void HandleStartPresenceScan(const base::ListValue& args);
+  void HandleStopPresenceScan(const base::ListValue& args);
+  void HandleSyncPresenceCredentials(const base::ListValue& args);
+  void HandleFirstTimePresenceFlow(const base::ListValue& args);
 
   void OnScanStarted(
       std::unique_ptr<ash::nearby::presence::NearbyPresenceService::ScanSession>
@@ -57,9 +57,9 @@ class NearbyInternalsPresenceHandler
       ash::nearby::presence::enums::StatusCode status);
   void OnNearbyPresenceCredentialManagerInitialized();
 
-  void HandleConnectToPresenceDevice(const base::Value::List& args);
+  void HandleConnectToPresenceDevice(const base::ListValue& args);
 
-  void HandleSendUpdateCredentialsMessage(const base::Value::List& args);
+  void HandleSendUpdateCredentialsMessage(const base::ListValue& args);
 
   void OnConnection(const std::string& endpoint_id,
                     NearbyConnection* connection);

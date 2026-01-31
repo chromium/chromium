@@ -14,21 +14,21 @@ namespace functions_on_types = test::api::functions_on_types;
 
 TEST(JsonSchemaCompilerFunctionsOnTypesTest, StorageAreaGetParamsCreate) {
   {
-    base::Value::List params_value;
+    base::ListValue params_value;
     std::optional<functions_on_types::StorageArea::Get::Params> params(
         functions_on_types::StorageArea::Get::Params::Create(params_value));
     ASSERT_TRUE(params);
     EXPECT_FALSE(params->keys);
   }
   {
-    base::Value::List params_value;
+    base::ListValue params_value;
     params_value.Append(9);
     std::optional<functions_on_types::StorageArea::Get::Params> params(
         functions_on_types::StorageArea::Get::Params::Create(params_value));
     EXPECT_FALSE(params);
   }
   {
-    base::Value::List params_value;
+    base::ListValue params_value;
     params_value.Append("test");
     std::optional<functions_on_types::StorageArea::Get::Params> params(
         functions_on_types::StorageArea::Get::Params::Create(params_value));
@@ -37,10 +37,10 @@ TEST(JsonSchemaCompilerFunctionsOnTypesTest, StorageAreaGetParamsCreate) {
     EXPECT_EQ("test", *params->keys->as_string);
   }
   {
-    base::Value::Dict keys_object_value;
+    base::DictValue keys_object_value;
     keys_object_value.Set("integer", 5);
     keys_object_value.Set("string", "string");
-    base::Value::List params_value;
+    base::ListValue params_value;
     params_value.Append(keys_object_value.Clone());
     std::optional<functions_on_types::StorageArea::Get::Params> params(
         functions_on_types::StorageArea::Get::Params::Create(params_value));
@@ -63,9 +63,9 @@ TEST(JsonSchemaCompilerFunctionsOnTypesTest, StorageAreaGetResultCreate) {
 }
 
 TEST(JsonSchemaCompilerFunctionsOnTypesTest, ChromeSettingGetParamsCreate) {
-  base::Value::Dict details_value;
+  base::DictValue details_value;
   details_value.Set("incognito", true);
-  base::Value::List params_value;
+  base::ListValue params_value;
   params_value.Append(std::move(details_value));
   std::optional<functions_on_types::ChromeSetting::Get::Params> params(
       functions_on_types::ChromeSetting::Get::Params::Create(params_value));

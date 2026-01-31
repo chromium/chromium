@@ -30,6 +30,7 @@ component("input") {
     "input_disposition_handler.h",
     "input_event_ack_state.cc",
     "input_event_ack_state.h",
+    "input_event_source.h",
     "input_event_stream_validator.cc",
     "input_event_stream_validator.h",
     "input_router.h",

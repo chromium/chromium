@@ -17,7 +17,7 @@ class CommandLine;
 // Updates the `command_line` based on `config`. Returns `false` if the config
 // is invalid.
 WEB_ENGINE_EXPORT bool UpdateCommandLineFromConfigFile(
-    const base::Value::Dict& config,
+    const base::DictValue& config,
     base::CommandLine* command_line);
 
 // Returns if a service worker should be persistent even when the resources are

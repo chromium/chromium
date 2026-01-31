@@ -34,26 +34,26 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) Normalizer
   // is set, but the field "HexSSID" is not, the contents of the "SSID" field is
   // converted to UTF-8 encoding, a hex representation of the byte sequence is
   // created and stored in the field "HexSSID".
-  base::Value::Dict NormalizeObject(
+  base::DictValue NormalizeObject(
       const chromeos::onc::OncValueSignature* object_signature,
-      const base::Value::Dict& onc_object);
+      const base::DictValue& onc_object);
 
  private:
   // Dispatch to the right normalization function according to |signature|.
-  base::Value::Dict MapObject(const chromeos::onc::OncValueSignature& signature,
-                              const base::Value::Dict& onc_object,
-                              bool* error) override;
+  base::DictValue MapObject(const chromeos::onc::OncValueSignature& signature,
+                            const base::DictValue& onc_object,
+                            bool* error) override;
 
-  void NormalizeCertificate(base::Value::Dict* cert);
-  void NormalizeEAP(base::Value::Dict* eap);
-  void NormalizeEthernet(base::Value::Dict* ethernet);
-  void NormalizeIPsec(base::Value::Dict* ipsec);
-  void NormalizeNetworkConfiguration(base::Value::Dict* network);
-  void NormalizeOpenVPN(base::Value::Dict* openvpn);
-  void NormalizeProxySettings(base::Value::Dict* proxy);
-  void NormalizeVPN(base::Value::Dict* vpn);
-  void NormalizeWiFi(base::Value::Dict* wifi);
-  void NormalizeStaticIPConfigForNetwork(base::Value::Dict* network);
+  void NormalizeCertificate(base::DictValue* cert);
+  void NormalizeEAP(base::DictValue* eap);
+  void NormalizeEthernet(base::DictValue* ethernet);
+  void NormalizeIPsec(base::DictValue* ipsec);
+  void NormalizeNetworkConfiguration(base::DictValue* network);
+  void NormalizeOpenVPN(base::DictValue* openvpn);
+  void NormalizeProxySettings(base::DictValue* proxy);
+  void NormalizeVPN(base::DictValue* vpn);
+  void NormalizeWiFi(base::DictValue* wifi);
+  void NormalizeStaticIPConfigForNetwork(base::DictValue* network);
 
   const bool remove_recommended_fields_;
 };

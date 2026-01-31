@@ -75,10 +75,11 @@ void SessionStorageAreaImpl::Put(
     const std::optional<std::vector<uint8_t>>& client_old_value,
     const std::string& source,
     PutCallback callback) {
-  DCHECK(IsBound());
-  DCHECK_NE(0, shared_data_map_->map_data()->ReferenceCount());
-  if (shared_data_map_->map_data()->ReferenceCount() > 1)
+  CHECK(IsBound());
+  CHECK(!shared_data_map_->map_locator().session_ids().empty());
+  if (shared_data_map_->map_locator().session_ids().size() >= 2) {
     CreateNewMap(NewMapType::FORKED, std::nullopt);
+  }
   shared_data_map_->storage_area()->Put(key, value, client_old_value, source,
                                         std::move(callback));
 }
@@ -88,10 +89,11 @@ void SessionStorageAreaImpl::Delete(
     const std::optional<std::vector<uint8_t>>& client_old_value,
     const std::string& source,
     DeleteCallback callback) {
-  DCHECK(IsBound());
-  DCHECK_NE(0, shared_data_map_->map_data()->ReferenceCount());
-  if (shared_data_map_->map_data()->ReferenceCount() > 1)
+  CHECK(IsBound());
+  CHECK(!shared_data_map_->map_locator().session_ids().empty());
+  if (shared_data_map_->map_locator().session_ids().size() >= 2) {
     CreateNewMap(NewMapType::FORKED, std::nullopt);
+  }
   shared_data_map_->storage_area()->Delete(key, client_old_value, source,
                                            std::move(callback));
 }
@@ -102,7 +104,7 @@ void SessionStorageAreaImpl::DeleteAll(
     DeleteAllCallback callback) {
   // Note: This can be called by the Clear Browsing Data flow, and thus doesn't
   // have to be bound.
-  if (shared_data_map_->map_data()->ReferenceCount() > 1) {
+  if (shared_data_map_->map_locator().session_ids().size() >= 2) {
     CreateNewMap(NewMapType::EMPTY_FROM_DELETE_ALL, source);
     if (new_observer)
       AddObserver(std::move(new_observer));
@@ -118,16 +120,16 @@ void SessionStorageAreaImpl::DeleteAll(
 
 void SessionStorageAreaImpl::Get(const std::vector<uint8_t>& key,
                                  GetCallback callback) {
-  DCHECK(IsBound());
-  DCHECK_NE(0, shared_data_map_->map_data()->ReferenceCount());
+  CHECK(IsBound());
+  CHECK(!shared_data_map_->map_locator().session_ids().empty());
   shared_data_map_->storage_area()->Get(key, std::move(callback));
 }
 
 void SessionStorageAreaImpl::GetAll(
     mojo::PendingRemote<blink::mojom::StorageAreaObserver> new_observer,
     GetAllCallback callback) {
-  DCHECK(IsBound());
-  DCHECK_NE(0, shared_data_map_->map_data()->ReferenceCount());
+  CHECK(IsBound());
+  CHECK(!shared_data_map_->map_locator().session_ids().empty());
   shared_data_map_->storage_area()->GetAll(
       /*new_observer=*/mojo::NullRemote(),
       base::BindOnce(&SessionStorageAreaImpl::OnGetAllResult,

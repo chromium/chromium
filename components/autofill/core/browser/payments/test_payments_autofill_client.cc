@@ -303,6 +303,12 @@ bool TestPaymentsAutofillClient::IsMandatoryReauthEnabled() {
   return GetPaymentsDataManager().IsPaymentMethodsMandatoryReauthEnabled();
 }
 
+#if BUILDFLAG(IS_IOS)
+bool TestPaymentsAutofillClient::IsUsingCustomCardIconEnabled() const {
+  return true;
+}
+#endif  // BUILDFLAG(IS_IOS)
+
 void TestPaymentsAutofillClient::ShowMandatoryReauthOptInPrompt(
     base::OnceClosure accept_mandatory_reauth_callback,
     base::OnceClosure cancel_mandatory_reauth_callback,
@@ -369,7 +375,13 @@ bool TestPaymentsAutofillClient::ShowTouchToFillIban(
   return false;
 }
 
-bool TestPaymentsAutofillClient::ShowTouchToFillLoyaltyCard(
+bool TestPaymentsAutofillClient::ShowTouchToFillAffiliatedLoyaltyCard(
+    base::WeakPtr<TouchToFillDelegate> delegate,
+    std::vector<LoyaltyCard> loyalty_cards_to_suggest) {
+  return false;
+}
+
+bool TestPaymentsAutofillClient::ShowTouchToFillForAllLoyaltyCards(
     base::WeakPtr<TouchToFillDelegate> delegate,
     std::vector<LoyaltyCard> loyalty_cards_to_suggest) {
   return false;
@@ -446,7 +458,8 @@ void TestPaymentsAutofillClient::ShowCreditCardUploadSaveAndFillDialog(
     const LegalMessageLines& legal_message_lines,
     CardSaveAndFillDialogCallback callback) {}
 
-void TestPaymentsAutofillClient::ShowCreditCardSaveAndFillPendingDialog() {}
+void TestPaymentsAutofillClient::ShowCreditCardSaveAndFillPendingDialog(
+    CardSaveAndFillDialogCallback callback) {}
 
 void TestPaymentsAutofillClient::HideCreditCardSaveAndFillDialog() {}
 

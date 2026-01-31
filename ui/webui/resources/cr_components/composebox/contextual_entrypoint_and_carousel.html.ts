@@ -6,18 +6,59 @@ import '//resources/cr_elements/cr_icons.css.js';
 
 import {html} from '//resources/lit/v3_0/lit.rollup.js';
 
+import {ToolMode as ComposeboxToolMode} from './composebox_query.mojom-webui.js';
 import type {ContextualEntrypointAndCarouselElement} from './contextual_entrypoint_and_carousel.js';
 
 export function getHtml(this: ContextualEntrypointAndCarouselElement) {
-  const showDescription = this.searchboxLayoutMode !== 'Compact' &&
+  const showDescription =
       this.showContextMenuDescription_ && !this.shouldShowRecentTabChip_;
-  const toolChipsVisible = this.shouldShowRecentTabChip_ ||
-      this.inDeepSearchMode_ || this.inCreateImageMode_;
+  const getActiveToolChip = () => {
+    switch (this.activeTool_) {
+      case ComposeboxToolMode.kDeepSearch:
+        return html`
+        <cr-composebox-tool-chip
+            icon="composebox:deepSearch"
+            label="${this.i18n('deepSearch')}"
+            remove-chip-aria-label="${
+            this.i18n('removeToolChipAriaLabel', this.i18n('deepSearch'))}"
+            ?visible="${true}"
+            @click="${
+            () => this.handleToolClick_(ComposeboxToolMode.kDeepSearch)}">
+        </cr-composebox-tool-chip>
+        `;
+      case ComposeboxToolMode.kImageGen:
+        return html`
+        <cr-composebox-tool-chip
+            icon="composebox:nanoBanana"
+            label="${this.i18n('createImages')}"
+            remove-chip-aria-label="${
+            this.i18n('removeToolChipAriaLabel', this.i18n('createImages'))}"
+            ?visible="${true}"
+            @click="${
+            () => this.handleToolClick_(ComposeboxToolMode.kImageGen)}">
+        </cr-composebox-tool-chip>
+        `;
+      case ComposeboxToolMode.kCanvas:
+        return html`
+        <cr-composebox-tool-chip
+            icon="composebox:canvas"
+            label="${this.i18n('canvas')}"
+            remove-chip-aria-label="${
+            this.i18n('removeToolChipAriaLabel', this.i18n('canvas'))}"
+            ?visible="${true}"
+            @click="${() => this.handleToolClick_(ComposeboxToolMode.kCanvas)}">
+        </cr-composebox-tool-chip>
+        `;
+      default:
+        return '';
+    }
+  };
+
   const toolChips = html`
         ${
       this.shouldShowRecentTabChip_ ? html`
         <composebox-recent-tab-chip id="recentTabChip"
-            class="upload-button"
+            class="upload-button contextual-chip"
             .recentTab="${this.recentTabForChip_}"
             @add-tab-context="${this.addTabContext_}">
         </composebox-recent-tab-chip>
@@ -25,26 +66,11 @@ export function getHtml(this: ContextualEntrypointAndCarouselElement) {
                                       ''}
       ${
       this.shouldShowLensSearchChip_ ? html`
-        <cr-composebox-lens-search id="lensSearchChip" class="upload-button">
+        <cr-composebox-lens-search id="lensSearchChip" class="upload-button contextual-chip">
         </cr-composebox-lens-search>
       ` :
                                        ''}
-        <cr-composebox-tool-chip
-            icon="composebox:deepSearch"
-            label="${this.i18n('deepSearch')}"
-            remove-chip-aria-label="${
-      this.i18n('removeToolChipAriaLabel', this.i18n('deepSearch'))}"
-            ?visible="${this.inDeepSearchMode_}"
-            @click="${this.onDeepSearchClick_}">
-        </cr-composebox-tool-chip>
-        <cr-composebox-tool-chip
-            icon="composebox:nanoBanana"
-            label="${this.i18n('createImages')}"
-            remove-chip-aria-label="${
-      this.i18n('removeToolChipAriaLabel', this.i18n('createImages'))}"
-            ?visible="${this.inCreateImageMode_}"
-            @click="${this.onCreateImageClick_}">
-        </cr-composebox-tool-chip>
+      ${getActiveToolChip()}
   `;
 
   const voiceSearchButton = html`
@@ -59,6 +85,32 @@ export function getHtml(this: ContextualEntrypointAndCarouselElement) {
       <div class="context-menu-container" part="context-menu-and-tools"
           @mousedown="${this.preventFocus_}"
           @click="${this.onContextMenuContainerClick_}">
+        ${
+      this.showModelPicker ?
+          html`
+        <cr-composebox-contextual-entrypoint-button id="contextEntrypoint"
+            part="composebox-entrypoint"
+            exportparts="context-menu-entrypoint-icon"
+            class="upload-button no-overlap"
+            .tabSuggestions="${this.tabSuggestions}"
+            .entrypointName="${this.entrypointName}"
+            @open-image-upload="${this.openImageUpload_}"
+            @open-file-upload="${this.openFileUpload_}"
+            @add-tab-context="${this.addTabContext_}"
+            @delete-tab-context="${this.onDeleteFile_}"
+            @tool-click="${this.onToolClick_}"
+            .hasImageFiles="${this.hasImageFiles()}"
+            .hideEntrypointButton="${this.shouldHideEntrypointButton_}"
+            .disabledTabIds="${this.addedTabsIds_}"
+            .fileNum="${this.files_.size}"
+            .searchboxLayoutMode="${this.searchboxLayoutMode}"
+            .inputState="${this.inputState}"
+            ?inputs-disabled="${this.inputsDisabled_}"
+            ?show-context-menu-description="${showDescription}"
+            glif-animation-state="${this.contextMenuGlifAnimationState}">
+        </cr-composebox-contextual-entrypoint-button>
+        ` :
+          html`
         <cr-composebox-context-menu-entrypoint id="contextEntrypoint"
             part="composebox-entrypoint"
             exportparts="context-menu-entrypoint-icon"
@@ -68,23 +120,27 @@ export function getHtml(this: ContextualEntrypointAndCarouselElement) {
             @open-image-upload="${this.openImageUpload_}"
             @open-file-upload="${this.openFileUpload_}"
             @add-tab-context="${this.addTabContext_}"
-            @deep-search-click="${this.onDeepSearchClick_}"
-            @create-image-click="${this.onCreateImageClick_}"
+            @deep-search-click="${
+              () => this.handleToolClick_(ComposeboxToolMode.kDeepSearch)}"
+            @create-image-click="${
+              () => this.handleToolClick_(ComposeboxToolMode.kImageGen)}"
             @delete-tab-context="${this.onDeleteFile_}"
-            .inCreateImageMode="${this.inCreateImageMode_}"
+            .inCreateImageMode="${
+              this.activeTool_ === ComposeboxToolMode.kImageGen}"
             .hasImageFiles="${this.hasImageFiles()}"
+            .hideEntrypointButton="${this.shouldHideEntrypointButton_}"
             .disabledTabIds="${this.addedTabsIds_}"
             .fileNum="${this.files_.size}"
             .searchboxLayoutMode="${this.searchboxLayoutMode}"
             ?inputs-disabled="${this.inputsDisabled_}"
             ?show-context-menu-description="${showDescription}"
             glif-animation-state="${this.contextMenuGlifAnimationState}">
-        </cr-composebox-context-menu-entrypoint>
+        </cr-composebox-context-menu-entrypoint>`}
         ${
       this.searchboxLayoutMode === 'Compact' && this.showVoiceSearch ?
           voiceSearchButton :
           ''}
-        ${this.searchboxLayoutMode !== 'Compact' ? toolChips : ''}
+        ${this.shouldShowToolChipsForTallMode_ ? toolChips : ''}
         ${
       this.searchboxLayoutMode === 'TallTopContext' && this.showVoiceSearch ?
           voiceSearchButton :
@@ -98,32 +154,32 @@ export function getHtml(this: ContextualEntrypointAndCarouselElement) {
 
   // clang-format off
   return html`<!--_html_template_start_-->
-  ${this.searchboxLayoutMode === 'Compact' ? contextMenu : ''}
-  <div part="carousel-container">
+  ${this.searchboxLayoutMode === 'Compact' && !this.isOmniboxInCompactMode_ ? contextMenu : ''}
+    <div part="carousel-container">
     ${this.showFileCarousel_ ? html`
       <cr-composebox-file-carousel
         part="cr-composebox-file-carousel"
+        exportparts="thumbnail"
         id="carousel"
         class="${this.carouselOnTop_ ? 'top' : ''}"
         .files="${Array.from(this.files_.values())}"
         @delete-file="${this.onDeleteFile_}">
       </cr-composebox-file-carousel> ` : ''}
-    ${this.submitButtonShown && (this.searchboxLayoutMode === 'Compact' || this.searchboxLayoutMode === 'TallBottomContext') ?
+    ${this.submitButtonShown && this.searchboxLayoutMode === 'Compact' ?
       html`<slot name="submit-button"></slot>` :
       ''}
   </div>
   ${this.searchboxLayoutMode === 'TallTopContext' ? contextMenu : ''}
-  ${this.showDropdown && (this.showFileCarousel_ ||
-    this.searchboxLayoutMode === 'TallTopContext' ||
-    this.submitButtonShown) ? html`
-  <div class="carousel-divider" part="carousel-divider"></div>` : ''}
+  ${this.shouldShowDivider_ ? html`
+    <div class="carousel-divider" part="carousel-divider"></div>
+  ` : ''}
   <!-- Suggestions are slotted in from the parent component. -->
   <slot id="dropdownMatches"></slot>
-  ${this.searchboxLayoutMode === 'Compact' && toolChipsVisible ? html`
+  ${this.shouldShowToolChipsForCompactMode_ ? html`
     <div class="context-menu-container" id="toolChipsContainer"
         part="tool-chips-container">${toolChips}</div>
   ` : ''}
-  ${this.searchboxLayoutMode === 'TallBottomContext' || this.searchboxLayoutMode === '' ? html`
+  ${this.searchboxLayoutMode === 'TallBottomContext' || this.searchboxLayoutMode === '' || this.isOmniboxInCompactMode_ ? html`
     ${this.contextMenuEnabled_ ? contextMenu : html`
       <div part="upload-container" id="uploadContainer" class="icon-fade">
           <cr-icon-button
@@ -162,6 +218,9 @@ export function getHtml(this: ContextualEntrypointAndCarouselElement) {
   ${(this.searchboxLayoutMode === 'TallBottomContext' || !this.searchboxLayoutMode) && this.showVoiceSearch ?
           voiceSearchButton :
           ''}
+  ${this.submitButtonShown && this.searchboxLayoutMode === 'TallBottomContext' ?
+      html`<slot name="submit-button"></slot>` :
+      ''}
 <!--_html_template_end_-->`;
   // clang-format on
 }

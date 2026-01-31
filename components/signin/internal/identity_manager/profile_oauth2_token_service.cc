@@ -401,7 +401,7 @@ void ProfileOAuth2TokenService::OnRefreshTokenRevokedNotified(
     const CoreAccountId& account_id) {
   token_manager_->CancelRequestsForAccount(
       account_id,
-      GoogleServiceAuthError(GoogleServiceAuthError::USER_NOT_SIGNED_UP));
+      GoogleServiceAuthError(GoogleServiceAuthError::ACCOUNT_NOT_FOUND));
 }
 
 void ProfileOAuth2TokenService::OnRefreshTokensLoaded() {

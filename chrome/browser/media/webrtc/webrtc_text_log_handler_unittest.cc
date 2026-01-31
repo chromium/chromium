@@ -191,8 +191,7 @@ TEST_F(WebRtcTextLogHandlerTest, LogMessageCallbackWritesToBuffer) {
 
   std::string buffer_content;
   buffer_content.resize(kWebRtcLogSize);
-  read_buffer.Read(reinterpret_cast<uint8_t*>(&buffer_content[0]),
-                   kWebRtcLogSize);
+  read_buffer.Read(base::as_writable_bytes(base::span(buffer_content)));
 
   // The buffer contains startup info, then our message.
   // Let's just check if our message is present.

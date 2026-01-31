@@ -4,6 +4,7 @@
 
 #include "components/commerce/core/shopping_service.h"
 
+#include <algorithm>
 #include <array>
 #include <string>
 
@@ -585,18 +586,18 @@ TEST_P(ShoppingServiceTest, TestWebWrapperSet) {
       shopping_service_->GetUrlInfosForActiveWebWrappers();
 
   ASSERT_EQ(3u, open_urls.size());
-  ASSERT_TRUE(base::Contains(open_urls, url_info1));
-  ASSERT_TRUE(base::Contains(open_urls, url_info2));
-  ASSERT_TRUE(base::Contains(open_urls, url_info3));
+  ASSERT_TRUE(std::ranges::contains(open_urls, url_info1));
+  ASSERT_TRUE(std::ranges::contains(open_urls, url_info2));
+  ASSERT_TRUE(std::ranges::contains(open_urls, url_info3));
 
   // Close one of the tabs
   WebWrapperDestroyed(&web1);
 
   open_urls = shopping_service_->GetUrlInfosForActiveWebWrappers();
   ASSERT_EQ(2u, open_urls.size());
-  ASSERT_FALSE(base::Contains(open_urls, url_info1));
-  ASSERT_TRUE(base::Contains(open_urls, url_info2));
-  ASSERT_TRUE(base::Contains(open_urls, url_info3));
+  ASSERT_FALSE(std::ranges::contains(open_urls, url_info1));
+  ASSERT_TRUE(std::ranges::contains(open_urls, url_info2));
+  ASSERT_TRUE(std::ranges::contains(open_urls, url_info3));
 
   WebWrapperDestroyed(&web2);
   WebWrapperDestroyed(&web3);
@@ -982,7 +983,7 @@ TEST_P(ShoppingServiceTest,
   test_features_.InitWithFeatures({kShoppingList, kCommerceAllowLocalImages},
                                   {});
 
-  auto result = base::Value::Dict();
+  auto result = base::DictValue();
   result.Set("image", std::string(kImageUrl));
   base::Value js_result(std::move(result));
   NiceMockWebWrapper web(GURL(kProductUrl), false, &js_result);
@@ -1055,7 +1056,7 @@ TEST_P(ShoppingServiceTest,
        TestProductInfoCacheFullLifecycleWithFallback_PageLoaded) {
   test_features_.InitWithFeatures({kCommerceAllowLocalImages}, {});
 
-  auto result = base::Value::Dict();
+  auto result = base::DictValue();
   result.Set("image", std::string(kImageUrl));
   base::Value js_result(std::move(result));
   NiceMockWebWrapper web(GURL(kProductUrl), false, &js_result);
@@ -1314,7 +1315,7 @@ TEST_P(ShoppingServiceTest, TestDataMergeWithLeadImage) {
   ProductInfo info;
   info.image_url = GURL(kImageUrl);
 
-  base::Value::Dict data_map;
+  base::DictValue data_map;
   data_map.Set("image", "https://example.com/fallback_image.png");
 
   MergeProductInfoData(&info, data_map);
@@ -1326,7 +1327,7 @@ TEST_P(ShoppingServiceTest, TestDataMergeWithNoLeadImage) {
   test_features_.InitWithFeatures({kCommerceAllowLocalImages}, {});
   ProductInfo info;
 
-  base::Value::Dict data_map;
+  base::DictValue data_map;
   data_map.Set("image", kImageUrl);
 
   MergeProductInfoData(&info, data_map);
@@ -1338,7 +1339,7 @@ TEST_P(ShoppingServiceTest, TestDataMergeWithTitle) {
   ProductInfo info;
   info.title = kTitle;
 
-  base::Value::Dict data_map;
+  base::DictValue data_map;
   data_map.Set("title", "Some other fallback title");
 
   MergeProductInfoData(&info, data_map);
@@ -1349,7 +1350,7 @@ TEST_P(ShoppingServiceTest, TestDataMergeWithTitle) {
 TEST_P(ShoppingServiceTest, TestDataMergeWithNoTitle) {
   ProductInfo info;
 
-  base::Value::Dict data_map;
+  base::DictValue data_map;
   data_map.Set("title", kTitle);
 
   MergeProductInfoData(&info, data_map);

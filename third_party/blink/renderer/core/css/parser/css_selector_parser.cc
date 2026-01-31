@@ -15,11 +15,12 @@
 #include "third_party/blink/renderer/core/css/css_selector_list.h"
 #include "third_party/blink/renderer/core/css/parser/css_nesting_type.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_context.h"
+#include "third_party/blink/renderer/core/css/parser/css_parser_local_context.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_observer.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_save_point.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_token.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_token_stream.h"
-#include "third_party/blink/renderer/core/css/parser/navigation_parser.h"
+#include "third_party/blink/renderer/core/css/parser/link_condition_parser.h"
 #include "third_party/blink/renderer/core/css/properties/css_parsing_utils.h"
 #include "third_party/blink/renderer/core/css/style_sheet_contents.h"
 #include "third_party/blink/renderer/core/dom/document.h"
@@ -1759,13 +1760,15 @@ bool CSSSelectorParser::ConsumePseudo(CSSParserTokenStream& stream,
         name_and_classes->push_back(CSSSelector::UniversalSelectorAtom());
       }
 
+      CSSParserLocalContext local_context =
+          CSSParserLocalContext::CreateWithoutPropertyForSelectors();
       if (name_and_classes->empty()) {
         const CSSParserToken& ident = stream.Peek();
         if (ident.GetType() == kDelimiterToken && ident.Delimiter() == '*') {
           name_and_classes->push_back(CSSSelector::UniversalSelectorAtom());
           stream.Consume();
         } else if (auto* custom_ident = css_parsing_utils::ConsumeCustomIdent(
-                       stream, *context_)) {
+                       stream, *context_, local_context)) {
           name_and_classes->push_back(custom_ident->Value());
         } else {
           return false;
@@ -1782,7 +1785,8 @@ bool CSSSelectorParser::ConsumePseudo(CSSParserTokenStream& stream,
         }
 
         CSSCustomIdentValue* custom_ident =
-            css_parsing_utils::ConsumeCustomIdent(stream, *context_);
+            css_parsing_utils::ConsumeCustomIdent(stream, *context_,
+                                                  local_context);
         if (!custom_ident) {
           return false;
         }
@@ -1953,10 +1957,9 @@ bool CSSSelectorParser::ConsumePseudo(CSSParserTokenStream& stream,
       if (!RuntimeEnabledFeatures::RouteMatchingEnabled()) {
         return false;
       }
-      if (NavigationLocation* navigation_location =
-              NavigationParser::ParseLocation(stream,
-                                              *context_->GetDocument())) {
-        selector.SetNavigationLocation(navigation_location);
+      if (LinkCondition* link_condition =
+              LinkConditionParser::Parse(stream, *context_->GetDocument())) {
+        selector.SetLinkCondition(link_condition);
         output_.push_back(std::move(selector));
         return true;
       }

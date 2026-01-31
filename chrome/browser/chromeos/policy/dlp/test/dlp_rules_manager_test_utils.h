@@ -27,7 +27,7 @@ class DlpRule {
 
   // Return a dictionary version of the rule that can be use to set up the
   // DataLeakPreventionRulesList policy.
-  base::Value::Dict Create() const;
+  base::DictValue Create() const;
 
  private:
   const std::string name;

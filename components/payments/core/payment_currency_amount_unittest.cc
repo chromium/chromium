@@ -16,7 +16,7 @@ TEST(PaymentRequestTest, PaymentCurrencyAmountFromValueDictSuccess) {
   expected.currency = "AUD";
   expected.value = "-438.23";
 
-  base::Value::Dict amount_dict;
+  base::DictValue amount_dict;
   amount_dict.Set("currency", "AUD");
   amount_dict.Set("value", "-438.23");
 
@@ -35,7 +35,7 @@ TEST(PaymentRequestTest, PaymentCurrencyAmountFromValueDictFailure) {
   mojom::PaymentCurrencyAmount actual;
 
   // Both a currency and a value are required.
-  base::Value::Dict amount_dict;
+  base::DictValue amount_dict;
   EXPECT_FALSE(PaymentCurrencyAmountFromValueDict(amount_dict, &actual));
 
   // Both values must be strings.
@@ -73,7 +73,7 @@ TEST(PaymentRequestTest, PaymentCurrencyAmountEquality) {
 // Tests that serializing a default PaymentCurrencyAmount yields the expected
 // result.
 TEST(PaymentRequestTest, EmptyPaymentCurrencyAmountDictionary) {
-  base::Value::Dict expected_value;
+  base::DictValue expected_value;
 
   expected_value.Set("currency", "");
   expected_value.Set("value", "");
@@ -86,7 +86,7 @@ TEST(PaymentRequestTest, EmptyPaymentCurrencyAmountDictionary) {
 // Tests that serializing a populated PaymentCurrencyAmount yields the expected
 // result.
 TEST(PaymentRequestTest, PopulatedCurrencyAmountDictionary) {
-  base::Value::Dict expected_value;
+  base::DictValue expected_value;
 
   expected_value.Set("currency", "AUD");
   expected_value.Set("value", "-438.23");

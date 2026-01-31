@@ -54,6 +54,7 @@ inline constexpr char kUrnScheme[] = "urn";
 inline constexpr char16_t kUrnScheme16[] = u"urn";
 inline constexpr char kUuidInPackageScheme[] = "uuid-in-package";
 inline constexpr char16_t kUuidInPackageScheme16[] = u"uuid-in-package";
+inline constexpr char kViewSourceScheme[] = "view-source";
 inline constexpr char kWebcalScheme[] = "webcal";
 inline constexpr char16_t kWebcalScheme16[] = u"webcal";
 inline constexpr char kWsScheme[] = "ws";

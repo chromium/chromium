@@ -41,7 +41,7 @@ class IwaOrigin {
       content::BrowserContext* browser_context,
       std::optional<StoragePartitionConfigOptions> = std::nullopt) const;
 
-  bool operator<=>(const IwaOrigin&) const = default;
+  auto operator<=>(const IwaOrigin&) const = default;
 
  private:
   url::Origin origin_;

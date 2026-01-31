@@ -73,7 +73,7 @@ bool IsFullyStructuredProfile(const AutofillProfile& profile) {
 // RecordType::kLocalOrSyncable is returned. If a record type with invalid value
 // is specified, an error message is logged and std::nullopt is returned.
 std::optional<AutofillProfile::RecordType> GetRecordTypeFromDict(
-    const base::Value::Dict& dict) {
+    const base::DictValue& dict) {
   if (!dict.contains(kKeyRecordType)) {
     return AutofillProfile::RecordType::kLocalOrSyncable;
   }
@@ -94,7 +94,7 @@ std::optional<AutofillProfile::RecordType> GetRecordTypeFromDict(
 // level (= setting-visible) nodes are user verified.
 // If a field type cannot be mapped, or if the resulting profile is not
 // `IsFullyStructuredProfile()`, std::nullopt is returned.
-std::optional<AutofillProfile> MakeProfile(const base::Value::Dict& dict) {
+std::optional<AutofillProfile> MakeProfile(const base::DictValue& dict) {
   std::optional<AutofillProfile::RecordType> record_type =
       GetRecordTypeFromDict(dict);
   if (!record_type.has_value()) {
@@ -140,7 +140,7 @@ std::optional<AutofillProfile> MakeProfile(const base::Value::Dict& dict) {
   return profile;
 }
 
-std::optional<CreditCard> MakeCard(const base::Value::Dict& dict) {
+std::optional<CreditCard> MakeCard(const base::DictValue& dict) {
   CreditCard card;
   // `dict` is a dictionary of std::string -> base::Value.
   for (const auto [key, value] : dict) {
@@ -205,8 +205,8 @@ void SetData(
 // `to_data_model`. In case any conversion fails, nullopt is returned.
 template <class T>
 std::optional<std::vector<T>> DataModelsFromJSON(
-    const base::Value::List* const json_array,
-    base::RepeatingCallback<std::optional<T>(const base::Value::Dict&)>
+    const base::ListValue* const json_array,
+    base::RepeatingCallback<std::optional<T>(const base::DictValue&)>
         to_data_model) {
   if (!json_array) {
     return std::vector<T>{};
@@ -231,14 +231,14 @@ std::optional<std::vector<T>> DataModelsFromJSON(
 // If parsing fails the error is logged and std::nullopt is returned.
 std::optional<AutofillProfilesAndCreditCards> LoadDataFromJSONContent(
     const std::string& file_content) {
-  std::optional<base::Value::Dict> json = base::JSONReader::ReadDict(
+  std::optional<base::DictValue> json = base::JSONReader::ReadDict(
       file_content, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   if (!json) {
     LOG(ERROR) << "Failed to parse JSON file.";
     return std::nullopt;
   }
-  const base::Value::List* const profiles_json = json->FindList(kKeyProfiles);
-  const base::Value::List* const cards_json = json->FindList(kKeyCreditCards);
+  const base::ListValue* const profiles_json = json->FindList(kKeyProfiles);
+  const base::ListValue* const cards_json = json->FindList(kKeyCreditCards);
   if (!cards_json && !profiles_json) {
     LOG(ERROR) << "JSON has no " << kKeyProfiles << " or " << kKeyCreditCards
                << " keys.";
@@ -280,12 +280,12 @@ std::optional<std::vector<CreditCard>> LoadCreditCardsFromFile(
 }
 
 std::optional<std::vector<AutofillProfile>> AutofillProfilesFromJSON(
-    const base::Value::List* const profiles_json) {
+    const base::ListValue* const profiles_json) {
   return DataModelsFromJSON(profiles_json, base::BindRepeating(&MakeProfile));
 }
 
 std::optional<std::vector<CreditCard>> CreditCardsFromJSON(
-    const base::Value::List* const cards_json) {
+    const base::ListValue* const cards_json) {
   return DataModelsFromJSON(cards_json, base::BindRepeating(&MakeCard));
 }
 

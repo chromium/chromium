@@ -11,14 +11,14 @@ namespace enterprise_connectors {
 
 AshSignalsFilterer::~AshSignalsFilterer() = default;
 
-void AshSignalsFilterer::Filter(base::Value::Dict& signals) {
+void AshSignalsFilterer::Filter(base::DictValue& signals) {
   if (ShouldRemoveStableDeviceIdentifiers()) {
     RemoveStableDeviceIdentifiers(signals);
   }
 }
 
 void AshSignalsFilterer::RemoveStableDeviceIdentifiers(
-    base::Value::Dict& signals) {
+    base::DictValue& signals) {
   signals.Remove(device_signals::names::kDeviceHostName);
   signals.Remove(device_signals::names::kDisplayName);
   signals.Remove(device_signals::names::kImei);

@@ -35,7 +35,9 @@ enum class ErrorCode {
   kNoResponse,
   // The request timed out. The client may retry the request.
   kTimeout,
-  kMaxValue = kTimeout,
+  // Client attestation failed. The client may retry the request.
+  kClientAttestationFailed,
+  kMaxValue = kClientAttestationFailed,
 };
 // LINT.ThenChange(//tools/metrics/histograms/enums.xml:LegionErrorCode)
 

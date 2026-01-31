@@ -44,6 +44,8 @@ class CORE_EXPORT CSSShadowValue : public CSSValue {
 
   bool Equals(const CSSShadowValue&) const;
 
+  bool HasRandomFunctions() const;
+
   Member<CSSPrimitiveValue> x;
   Member<CSSPrimitiveValue> y;
   Member<CSSPrimitiveValue> blur;

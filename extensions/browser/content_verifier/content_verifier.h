@@ -62,7 +62,9 @@ class Extension;
 //      the filepath in case-insensitive systems and trimming ignored suffixes
 //      if appropriate.
 //      See content_verifier_utils::CanonicalizeRelativePath() for details.
-class ContentVerifier : public base::RefCountedThreadSafe<ContentVerifier>,
+class ContentVerifier : public base::RefCountedThreadSafe<
+                            ContentVerifier,
+                            content::BrowserThread::DeleteOnIOThread>,
                         public ExtensionRegistryObserver {
  public:
   class TestObserver {
@@ -124,6 +126,7 @@ class ContentVerifier : public base::RefCountedThreadSafe<ContentVerifier>,
   scoped_refptr<const ContentHash> GetCachedContentHash(
       const ExtensionId& extension_id,
       const base::Version& extension_version,
+      const base::FilePath& extension_root,
       bool force_missing_computed_hashes_creation);
 
   // Returns whether or not we should compute hashes during installation.
@@ -164,7 +167,12 @@ class ContentVerifier : public base::RefCountedThreadSafe<ContentVerifier>,
       std::unique_ptr<ContentVerifierDelegate> delegate);
 
  private:
-  friend class base::RefCountedThreadSafe<ContentVerifier>;
+  friend class base::RefCountedThreadSafe<
+      ContentVerifier,
+      content::BrowserThread::DeleteOnIOThread>;
+  friend struct content::BrowserThread::DeleteOnThread<
+      content::BrowserThread::IO>;
+  friend class base::DeleteHelper<ContentVerifier>;
   friend class HashHelper;
   ~ContentVerifier() override;
 
@@ -222,7 +230,8 @@ class ContentVerifier : public base::RefCountedThreadSafe<ContentVerifier>,
       std::unique_ptr<ContentVerifierIOData::ExtensionData> data);
   // Performs IO thread operations after extension unload.
   void OnExtensionUnloadedOnIO(const ExtensionId& extension_id,
-                               const base::Version& extension_version);
+                               const base::Version& extension_version,
+                               const base::FilePath& extension_root);
 
   // Called to indicate that all the relevant data is ready for the extension,
   // and we can start verifying files.
@@ -269,8 +278,7 @@ class ContentVerifier : public base::RefCountedThreadSafe<ContentVerifier>,
   bool hash_helper_created_ = false;
 
   // Created and used on IO thread.
-  std::unique_ptr<HashHelper, content::BrowserThread::DeleteOnIOThread>
-      hash_helper_;
+  std::unique_ptr<HashHelper> hash_helper_;
 
   std::map<CacheKey, scoped_refptr<const ContentHash>> cache_;
 

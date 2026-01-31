@@ -71,7 +71,7 @@ CreditCardFidoAuthenticator::~CreditCardFidoAuthenticator() {
 void CreditCardFidoAuthenticator::Authenticate(
     CreditCard card,
     base::WeakPtr<Requester> requester,
-    base::Value::Dict request_options,
+    base::DictValue request_options,
     std::optional<std::string> context_token) {
   card_ = std::move(card);
   requester_ = requester;
@@ -90,7 +90,7 @@ void CreditCardFidoAuthenticator::Authenticate(
 }
 
 void CreditCardFidoAuthenticator::Register(std::string card_authorization_token,
-                                           base::Value::Dict creation_options) {
+                                           base::DictValue creation_options) {
   // Cancel any previous pending WebAuthn requests.
   authenticator()->Cancel();
 
@@ -111,7 +111,7 @@ void CreditCardFidoAuthenticator::Register(std::string card_authorization_token,
 void CreditCardFidoAuthenticator::Authorize(
     base::WeakPtr<Requester> requester,
     std::string card_authorization_token,
-    base::Value::Dict request_options) {
+    base::DictValue request_options) {
   requester_ = requester;
   card_authorization_token_ = card_authorization_token;
 
@@ -280,7 +280,7 @@ CreditCardFidoAuthenticator::GetOrCreateFidoAuthenticationStrikeDatabase() {
 }
 
 bool CreditCardFidoAuthenticator::IsValidRequestOptions(
-    const base::Value::Dict& request_options) {
+    const base::DictValue& request_options) {
   if (request_options.empty() || !request_options.contains("challenge") ||
       !request_options.contains("key_info")) {
     return false;
@@ -351,7 +351,7 @@ void CreditCardFidoAuthenticator::MakeCredential(
 }
 
 void CreditCardFidoAuthenticator::OptChange(
-    base::Value::Dict authenticator_response) {
+    base::DictValue authenticator_response) {
   payments::OptChangeRequestDetails request_details;
   request_details.app_locale = payments_data_manager().app_locale();
 
@@ -526,7 +526,7 @@ void CreditCardFidoAuthenticator::OnFullCardRequestFailed(
 
 blink::mojom::PublicKeyCredentialRequestOptionsPtr
 CreditCardFidoAuthenticator::ParseRequestOptions(
-    base::Value::Dict request_options) {
+    base::DictValue request_options) {
   auto options = blink::mojom::PublicKeyCredentialRequestOptions::New();
   options->extensions =
       blink::mojom::AuthenticationExtensionsClientInputs::New();
@@ -553,7 +553,7 @@ CreditCardFidoAuthenticator::ParseRequestOptions(
 
 blink::mojom::PublicKeyCredentialCreationOptionsPtr
 CreditCardFidoAuthenticator::ParseCreationOptions(
-    base::Value::Dict creation_options) {
+    base::DictValue creation_options) {
   auto options = blink::mojom::PublicKeyCredentialCreationOptions::New();
 
   std::string* const rpid = creation_options.FindString("relying_party_id");
@@ -643,9 +643,9 @@ CreditCardFidoAuthenticator::ParseCredentialDescriptor(
       std::move(authenticator_transports));
 }
 
-base::Value::Dict CreditCardFidoAuthenticator::ParseAssertionResponse(
+base::DictValue CreditCardFidoAuthenticator::ParseAssertionResponse(
     blink::mojom::GetAssertionAuthenticatorResponsePtr assertion_response) {
-  base::Value::Dict response;
+  base::DictValue response;
   response.Set("credential_id",
                BytesToBase64(assertion_response->info->raw_id));
   response.Set("authenticator_data",
@@ -656,11 +656,11 @@ base::Value::Dict CreditCardFidoAuthenticator::ParseAssertionResponse(
   return response;
 }
 
-base::Value::Dict CreditCardFidoAuthenticator::ParseAttestationResponse(
+base::DictValue CreditCardFidoAuthenticator::ParseAttestationResponse(
     blink::mojom::MakeCredentialAuthenticatorResponsePtr attestation_response) {
-  base::Value::Dict response;
+  base::DictValue response;
 
-  base::Value::Dict fido_attestation_info;
+  base::DictValue fido_attestation_info;
   fido_attestation_info.Set(
       "client_data",
       BytesToBase64(attestation_response->info->client_data_json));
@@ -668,7 +668,7 @@ base::Value::Dict CreditCardFidoAuthenticator::ParseAttestationResponse(
       "attestation_object",
       BytesToBase64(attestation_response->attestation_object));
 
-  base::Value::List authenticator_transport_list;
+  base::ListValue authenticator_transport_list;
   for (device::FidoTransportProtocol protocol :
        attestation_response->transports) {
     authenticator_transport_list.Append(
@@ -683,7 +683,7 @@ base::Value::Dict CreditCardFidoAuthenticator::ParseAttestationResponse(
 }
 
 bool CreditCardFidoAuthenticator::IsValidCreationOptions(
-    const base::Value::Dict& creation_options) {
+    const base::DictValue& creation_options) {
   return creation_options.contains("challenge");
 }
 
@@ -732,7 +732,7 @@ void CreditCardFidoAuthenticator::HandleGetAssertionSuccess(
     blink::mojom::GetAssertionAuthenticatorResponsePtr assertion_response) {
   switch (current_flow_) {
     case Flow::kAuthenticationFlow: {
-      base::Value::Dict response =
+      base::DictValue response =
           ParseAssertionResponse(std::move(assertion_response));
       full_card_request_ =
           std::make_unique<payments::FullCardRequest>(autofill_client_);
@@ -773,7 +773,7 @@ void CreditCardFidoAuthenticator::HandleGetAssertionSuccess(
     }
   }
 
-  base::Value::Dict response;
+  base::DictValue response;
   response.Set("fido_assertion_info",
                ParseAssertionResponse(std::move(assertion_response)));
   OptChange(std::move(response));

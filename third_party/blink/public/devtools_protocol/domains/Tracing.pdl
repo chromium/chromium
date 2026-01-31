@@ -78,6 +78,12 @@ domain Tracing
       # A list of supported tracing categories.
       array of string categories
 
+  # Return a descriptor for all available tracing categories.
+  experimental command getTrackEventDescriptor
+    returns
+      # Base64-encoded serialized perfetto.protos.TrackEventDescriptor protobuf message.
+      binary descriptor
+
   # Record a clock sync marker in the trace.
   experimental command recordClockSyncMarker
     parameters

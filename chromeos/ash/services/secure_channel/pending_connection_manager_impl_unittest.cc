@@ -9,7 +9,6 @@
 #include <optional>
 #include <sstream>
 
-#include "base/containers/contains.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/to_vector.h"
 #include "base/functional/bind.h"
@@ -603,8 +602,8 @@ class SecureChannelPendingConnectionManagerImplTest : public testing::Test {
                 fake_pending_ble_initiator_connection_request_factory_
                     ->last_created_instance()
                     ->GetRequestId();
-            EXPECT_TRUE(base::Contains(active_attempt->id_to_request_map(),
-                                       token_for_last_init_request));
+            EXPECT_TRUE(active_attempt->id_to_request_map().contains(
+                token_for_last_init_request));
             break;
           }
 
@@ -615,8 +614,8 @@ class SecureChannelPendingConnectionManagerImplTest : public testing::Test {
                 fake_pending_ble_listener_connection_request_factory_
                     ->last_created_instance()
                     ->GetRequestId();
-            EXPECT_TRUE(base::Contains(active_attempt->id_to_request_map(),
-                                       token_for_last_listen_request));
+            EXPECT_TRUE(active_attempt->id_to_request_map().contains(
+                token_for_last_listen_request));
             break;
           }
         }
@@ -631,8 +630,8 @@ class SecureChannelPendingConnectionManagerImplTest : public testing::Test {
                 fake_pending_nearby_initiator_connection_request_factory_
                     ->last_created_instance()
                     ->GetRequestId();
-            EXPECT_TRUE(base::Contains(active_attempt->id_to_request_map(),
-                                       token_for_last_init_request));
+            EXPECT_TRUE(active_attempt->id_to_request_map().contains(
+                token_for_last_init_request));
             break;
           }
 

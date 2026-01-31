@@ -189,6 +189,12 @@ Vector<String> HTMLInputElement::FilesFromFileInputFormControlState(
 }
 
 bool HTMLInputElement::ShouldAutocomplete() const {
+  if (IsBaseAppearanceCombobox()) {
+    // If we are rendering the combobox's options inside the document using a
+    // popover, then we don't need to show the same options in the browser
+    // autofill popup.
+    return false;
+  }
   if (autocomplete_ != kUninitialized)
     return autocomplete_ == kOn;
   return TextControlElement::ShouldAutocomplete();
@@ -307,6 +313,12 @@ bool HTMLInputElement::HasCustomFocusLogic() const {
 bool HTMLInputElement::IsKeyboardFocusableSlow(
     UpdateBehavior update_behavior) const {
   return input_type_->IsKeyboardFocusableSlow(update_behavior);
+}
+
+void HTMLInputElement::FillWebMCPData(JSONValue& data) {
+  CHECK(RuntimeEnabledFeatures::WebMCPEnabled());
+  String selected_value = GetMCPJSONValue(data);
+  SetValue(selected_value);
 }
 
 bool HTMLInputElement::MayTriggerVirtualKeyboard() const {
@@ -1627,7 +1639,7 @@ static inline bool IsRFC2616TokenCharacter(UChar ch) {
          (ch < '[' || ch > ']') && ch != '{' && ch != '}' && ch != 0x7f;
 }
 
-static bool IsValidMIMEType(const String& type) {
+static bool IsValidMIMEType(const StringView& type) {
   size_t slash_position = type.find('/');
   if (slash_position == kNotFound || !slash_position ||
       slash_position == type.length() - 1)
@@ -1639,27 +1651,27 @@ static bool IsValidMIMEType(const String& type) {
   return true;
 }
 
-static bool IsValidFileExtension(const String& type) {
+static bool IsValidFileExtension(const StringView& type) {
   if (type.length() < 2)
     return false;
   return type[0] == '.';
 }
 
-static Vector<String> ParseAcceptAttribute(const String& accept_string,
-                                           bool (*predicate)(const String&)) {
+static Vector<String> ParseAcceptAttribute(
+    const String& accept_string,
+    bool (*predicate)(const StringView&)) {
   Vector<String> types;
   if (accept_string.empty())
     return types;
 
-  Vector<String> split_types;
-  accept_string.Split(',', false, split_types);
-  for (const String& split_type : split_types) {
-    String trimmed_type = StripLeadingAndTrailingHTMLSpaces(split_type);
+  Vector<StringView> split_types = StringView(accept_string).Split(',');
+  for (const StringView& split_type : split_types) {
+    StringView trimmed_type = split_type.StripWhiteSpace(IsHTMLSpace);
     if (trimmed_type.empty())
       continue;
     if (!predicate(trimmed_type))
       continue;
-    types.push_back(trimmed_type.DeprecatedLower());
+    types.push_back(trimmed_type.ToString().DeprecatedLower());
   }
 
   return types;
@@ -1923,10 +1935,9 @@ HTMLInputElement::FilteredDataListOptions() const {
 
   String editor_value = InnerEditorValue();
   if (Multiple() && FormControlType() == FormControlType::kInputEmail) {
-    Vector<String> emails;
-    editor_value.Split(',', true, emails);
+    auto emails = StringView(editor_value).SplitSkippingEmpty(',');
     if (!emails.empty())
-      editor_value = emails.back().StripWhiteSpace();
+      editor_value = emails.back().StripWhiteSpace().ToString();
   }
 
   HTMLDataListOptionsCollection* options = data_list->options();
@@ -2505,6 +2516,16 @@ void HTMLInputElement::SetFocused(bool is_focused,
 bool HTMLInputElement::SupportsBaseAppearanceInternal(
     BaseAppearanceValue value) const {
   return input_type_->SupportsBaseAppearance(value);
+}
+
+bool HTMLInputElement::IsBaseAppearanceCombobox() const {
+  if (!RuntimeEnabledFeatures::CustomizableComboboxEnabled() || !IsTextField()) {
+    return false;
+  }
+  if (HTMLDataListElement* datalist = DataList()) {
+    return IsAppearanceBase() && datalist->IsAppearanceBase();
+  }
+  return false;
 }
 
 }  // namespace blink

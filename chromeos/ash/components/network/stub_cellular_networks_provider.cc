@@ -5,7 +5,6 @@
 #include "chromeos/ash/components/network/stub_cellular_networks_provider.h"
 
 #include "ash/constants/ash_features.h"
-#include "base/containers/contains.h"
 #include "base/uuid.h"
 #include "chromeos/ash/components/network/cellular_esim_profile.h"
 #include "chromeos/ash/components/network/cellular_esim_profile_handler.h"
@@ -168,7 +167,7 @@ bool StubCellularNetworksProvider::AddStubNetworks(
 
   for (const IccidEidPair& iccid_eid_pair : esim_and_slot_metadata) {
     // Network already exists for this ICCID; no need to add a stub.
-    if (base::Contains(all_iccids, iccid_eid_pair.first))
+    if (all_iccids.contains(iccid_eid_pair.first))
       continue;
 
     bool is_managed = false;

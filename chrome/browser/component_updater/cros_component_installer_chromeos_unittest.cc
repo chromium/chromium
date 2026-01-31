@@ -9,7 +9,6 @@
 #include <utility>
 
 #include "ash/constants/ash_paths.h"
-#include "base/containers/contains.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
@@ -85,8 +84,8 @@ class TestUpdater : public OnDemandUpdater {
 
   // Whether has a pending update request (either foreground or background).
   bool HasPendingUpdate(const std::string& name) {
-    return base::Contains(background_updates_, name) ||
-           base::Contains(foreground_updates_, name);
+    return background_updates_.contains(name) ||
+           foreground_updates_.contains(name);
   }
 
   // Finishes a foreground update request. Returns false if there is no pending
@@ -411,7 +410,7 @@ TEST_F(CrOSComponentInstallerTest, CompatibilityOK) {
   EnvVersionInstallerPolicy policy(config, installer.get());
   base::Version version;
   base::FilePath path("/path");
-  base::Value::Dict manifest;
+  base::DictValue manifest;
   manifest.Set("min_env_version", "2.1");
   policy.ComponentReady(version, path, std::move(manifest));
   // Component is compatible and was registered.
@@ -427,7 +426,7 @@ TEST_F(CrOSComponentInstallerTest, CompatibilityMissingManifest) {
   EnvVersionInstallerPolicy policy(config, installer.get());
   base::Version version;
   base::FilePath path("/path");
-  base::Value::Dict manifest;
+  base::DictValue manifest;
   policy.ComponentReady(version, path, std::move(manifest));
   // No compatible path was registered.
   EXPECT_EQ(base::FilePath(), installer->GetCompatiblePath("component"));

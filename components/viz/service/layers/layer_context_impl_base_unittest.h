@@ -189,6 +189,51 @@ class LayerContextImplTest : public testing::Test {
       int uid,
       mojom::TransferableUIResourceRequest::Type type);
 
+  // Helper to set layer_extra on a LayerPtr, handling the nested structure.
+  void SetLayerExtra(mojom::Layer* layer, mojom::LayerExtraPtr extra);
+
+  // Helper to get layer_extra from a LayerPtr, handling the nested structure.
+  // Note: Returns a raw pointer to the union, or nullptr if not present.
+  const mojom::LayerExtra* GetLayerExtra(const mojom::Layer* layer);
+  mojom::LayerExtra* GetLayerExtra(mojom::Layer* layer);
+
+  void EnsureGeneralProperties(mojom::Layer* layer);
+
+  int GetLayerId(const mojom::Layer* layer);
+  cc::mojom::LayerType GetLayerType(const mojom::Layer* layer);
+  int GetLayerTransformTreeIndex(const mojom::Layer* layer);
+  int GetLayerClipTreeIndex(const mojom::Layer* layer);
+  int GetLayerEffectTreeIndex(const mojom::Layer* layer);
+  int GetLayerScrollTreeIndex(const mojom::Layer* layer);
+
+  void SetLayerId(mojom::Layer* layer, int id);
+  void SetLayerType(mojom::Layer* layer, cc::mojom::LayerType type);
+  void SetLayerTransformTreeIndex(mojom::Layer* layer,
+                                  int transform_tree_index);
+  void SetLayerClipTreeIndex(mojom::Layer* layer, int clip_tree_index);
+  void SetLayerEffectTreeIndex(mojom::Layer* layer, int effect_tree_index);
+  void SetLayerScrollTreeIndex(mojom::Layer* layer, int scroll_tree_index);
+  void SetLayerBounds(mojom::Layer* layer, const gfx::Size& bounds);
+  void SetLayerContentsOpaque(mojom::Layer* layer, bool opaque);
+  void SetLayerContentsOpaqueForText(mojom::Layer* layer, bool opaque);
+  void SetLayerSafeOpaqueBackgroundColor(mojom::Layer* layer, SkColor4f color);
+  void SetLayerBackgroundColor(mojom::Layer* layer, SkColor4f color);
+  void SetLayerIsDrawable(mojom::Layer* layer, bool is_drawable);
+  void SetLayerHitTestOpaqueness(mojom::Layer* layer,
+                                 cc::HitTestOpaqueness opaqueness);
+  void SetLayerElementId(mojom::Layer* layer, cc::ElementId element_id);
+  void SetLayerOffsetToTransformParent(mojom::Layer* layer,
+                                       const gfx::Vector2dF& offset);
+  void SetLayerShouldCheckBackfaceVisibility(mojom::Layer* layer,
+                                             bool should_check);
+  void SetLayerUpdateRect(mojom::Layer* layer, const gfx::Rect& rect);
+  void SetLayerRareProperties(mojom::Layer* layer,
+                              mojom::RarePropertiesPtr rare_properties);
+  void SetLayerPropertyChangedNotFromPropertyTrees(mojom::Layer* layer,
+                                                   bool changed);
+  void SetLayerPropertyChangedFromPropertyTrees(mojom::Layer* layer,
+                                                bool changed);
+
  protected:
   cc::LayerImpl* GetLayerFromActiveTree(int layer_id);
   void RecreateLayerContextImplWithSettings(

@@ -23,7 +23,6 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
-#include "base/memory/memory_pressure_listener.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/no_destructor.h"
@@ -434,10 +433,6 @@ void HistoryBackend::Init(
     // browser shutdown. Continue it.
     StartDeletingForeignVisits();
   }
-
-  memory_pressure_listener_registration_ =
-      std::make_unique<base::AsyncMemoryPressureListenerRegistration>(
-          FROM_HERE, base::MemoryPressureListenerTag::kHistoryBackend, this);
 }
 
 void HistoryBackend::SetOnBackendDestroyTask(
@@ -1324,7 +1319,7 @@ void HistoryBackend::InitImpl(
 
   // Generate the history and favicon database metrics only after performing
   // any migration work.
-  if (base::RandInt(1, 100) == 50) {
+  if (base::RandIntInclusive(1, 100) == 50) {
     // Only do this computation sometimes since it can be expensive.
     db_->ComputeDatabaseMetrics(history_name);
   }
@@ -1342,19 +1337,6 @@ void HistoryBackend::InitImpl(
 
   // Start expiring old stuff.
   expirer_.StartExpiringOldStuff(base::Days(kExpireDaysThreshold));
-}
-
-void HistoryBackend::OnMemoryPressure(
-    base::MemoryPressureLevel memory_pressure_level) {
-  // TODO(sebmarchand): Check if MEMORY_PRESSURE_LEVEL_MODERATE should also be
-  // ignored.
-  if (memory_pressure_level == base::MEMORY_PRESSURE_LEVEL_NONE) {
-    return;
-  }
-  if (db_)
-    db_->TrimMemory();
-  if (favicon_backend_)
-    favicon_backend_->TrimMemory();
 }
 
 void HistoryBackend::CloseAllDatabases() {

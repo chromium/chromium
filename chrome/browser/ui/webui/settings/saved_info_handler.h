@@ -35,9 +35,7 @@ class SavedInfoHandler
   void OnJavascriptDisallowed() override;
 
  private:
-  friend class TestSavedInfoHandler;
-  FRIEND_TEST_ALL_PREFIXES(SavedInfoHandlerTest, HandleGetPasswordCount);
-  FRIEND_TEST_ALL_PREFIXES(SavedInfoHandlerTest, HandleGetLoyaltyCardsCount);
+  friend class SavedInfoHandlerTestApi;
 
   // password_manager::SavedPasswordsPresenter::Observer:
   void OnSavedPasswordsChanged(
@@ -52,11 +50,13 @@ class SavedInfoHandler
   // autofill::ValuablesDataManager::Observer:
   void OnValuablesDataChanged() override;
 
-  void HandleGetPasswordCount(const base::Value::List& args);
-  base::Value::Dict GetPasswordCounts();
+  void HandleGetPasswordCount(const base::ListValue& args);
+  base::DictValue GetPasswordCounts();
 
-  void HandleGetLoyaltyCardsCount(const base::Value::List& args);
+  void HandleGetLoyaltyCardsCount(const base::ListValue& args);
   base::Value GetLoyaltyCardsCount();
+
+  void HandleRequestDataManagementSurvey(const base::ListValue& args);
 
   raw_ptr<Profile> profile_;
 

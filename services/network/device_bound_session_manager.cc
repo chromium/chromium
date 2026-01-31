@@ -4,6 +4,8 @@
 
 #include "services/network/device_bound_session_manager.h"
 
+#include <algorithm>
+
 #include "base/barrier_callback.h"
 #include "base/containers/unique_ptr_adapters.h"
 #include "base/functional/callback_helpers.h"
@@ -68,13 +70,13 @@ void DeviceBoundSessionManager::DeleteAllSessions(
         // TODO(crbug.com/384437667): Consolidate ClearDataFilter matching logic
         [](const mojom::ClearDataFilter& filter, const url::Origin& origin,
            const net::SchemefulSite& site) {
-          bool is_match = base::Contains(filter.origins, origin);
+          bool is_match = std::ranges::contains(filter.origins, origin);
           if (!is_match && !filter.domains.empty()) {
             const std::string etld1_for_origin =
                 net::registry_controlled_domains::GetDomainAndRegistry(
                     site.GetURL(), net::registry_controlled_domains::
                                        INCLUDE_PRIVATE_REGISTRIES);
-            is_match = base::Contains(filter.domains, etld1_for_origin);
+            is_match = std::ranges::contains(filter.domains, etld1_for_origin);
           }
 
           switch (filter.type) {
@@ -92,19 +94,24 @@ void DeviceBoundSessionManager::DeleteAllSessions(
                               std::move(completion_callback));
 }
 
-DeviceBoundSessionManager::ObserverRegistration::ObserverRegistration() =
-    default;
-DeviceBoundSessionManager::ObserverRegistration::~ObserverRegistration() =
-    default;
+DeviceBoundSessionManager::AccessObserverRegistration::
+    AccessObserverRegistration() = default;
+DeviceBoundSessionManager::AccessObserverRegistration::
+    ~AccessObserverRegistration() = default;
+
+DeviceBoundSessionManager::EventObserverRegistration::
+    EventObserverRegistration() = default;
+DeviceBoundSessionManager::EventObserverRegistration::
+    ~EventObserverRegistration() = default;
 
 void DeviceBoundSessionManager::AddObserver(
     const GURL& url,
     mojo::PendingRemote<network::mojom::DeviceBoundSessionAccessObserver>
         observer) {
-  auto registration = std::make_unique<ObserverRegistration>();
+  auto registration = std::make_unique<AccessObserverRegistration>();
   registration->remote.Bind(std::move(observer));
   registration->remote.set_disconnect_handler(
-      base::BindOnce(&DeviceBoundSessionManager::RemoveObserver,
+      base::BindOnce(&DeviceBoundSessionManager::RemoveAccessObserver,
                      // base::Unretained is safe because `this` owns
                      // `registration`, which owns the callback.
                      base::Unretained(this), registration.get()));
@@ -113,7 +120,38 @@ void DeviceBoundSessionManager::AddObserver(
       base::BindRepeating(&network::mojom::DeviceBoundSessionAccessObserver::
                               OnDeviceBoundSessionAccessed,
                           base::Unretained(registration->remote.get())));
-  observer_registrations_.push_back(std::move(registration));
+  access_observer_registrations_.push_back(std::move(registration));
+}
+
+void DeviceBoundSessionManager::AddEventObserver(
+    mojo::PendingRemote<mojom::DeviceBoundSessionEventObserver> observer) {
+  auto registration = std::make_unique<EventObserverRegistration>();
+  registration->remote.Bind(std::move(observer));
+  registration->remote.set_disconnect_handler(
+      base::BindOnce(&DeviceBoundSessionManager::RemoveEventObserver,
+                     // base::Unretained is safe because `this` owns
+                     // `registration`, which owns the callback.
+                     base::Unretained(this), registration.get()));
+
+  registration->subscription = service_->AddEventObserver(
+      base::BindRepeating(&network::mojom::DeviceBoundSessionEventObserver::
+                              OnDeviceBoundSessionEventReceived,
+                          base::Unretained(registration->remote.get())));
+
+  service_->GetAllSessionDisplaysAsync(base::BindOnce(
+      &DeviceBoundSessionManager::PopulateSessionDisplays,
+      weak_factory_.GetWeakPtr(), registration->weak_factory.GetWeakPtr()));
+  event_observer_registrations_.push_back(std::move(registration));
+}
+
+void DeviceBoundSessionManager::PopulateSessionDisplays(
+    base::WeakPtr<EventObserverRegistration> registration,
+    const std::vector<net::device_bound_sessions::SessionDisplay>&
+        session_displays) {
+  if (!registration) {
+    return;
+  }
+  registration->remote->AddDeviceBoundSessionDisplays(session_displays);
 }
 
 void DeviceBoundSessionManager::CreateBoundSessions(
@@ -173,9 +211,16 @@ void DeviceBoundSessionManager::OnCreateBoundSessionsAdded(
   }
 }
 
-void DeviceBoundSessionManager::RemoveObserver(
-    DeviceBoundSessionManager::ObserverRegistration* registration) {
-  std::erase_if(observer_registrations_, base::MatchesUniquePtr(registration));
+void DeviceBoundSessionManager::RemoveAccessObserver(
+    AccessObserverRegistration* registration) {
+  std::erase_if(access_observer_registrations_,
+                base::MatchesUniquePtr(registration));
+}
+
+void DeviceBoundSessionManager::RemoveEventObserver(
+    EventObserverRegistration* registration) {
+  std::erase_if(event_observer_registrations_,
+                base::MatchesUniquePtr(registration));
 }
 
 }  // namespace network

@@ -2,8 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import Interop
-import UIKit
+import Pointer
 import XCTest
 
 class PointerTest: XCTestCase {
@@ -18,9 +17,13 @@ class PointerTest: XCTestCase {
   func testReturnedObjectPointer() throws {
     var returner = PointerReturner()
     let ptr = returner.ObjectPointer()!
-    XCTAssertEqual(ptr.pointee.Valid(), true, "Object returned by pointer not valid?")
+    XCTAssertEqual(
+      ptr.pointee.Valid(), true,
+      "Object returned by pointer not valid?")
     let intPtr = ptr.pointee.IntegerPointer()!
-    XCTAssertEqual(intPtr.pointee, 17, "Pointer-to-integer returned from pointer-to-object broken")
+    XCTAssertEqual(
+      intPtr.pointee, 17,
+      "Pointer-to-integer returned from pointer-to-object broken")
   }
 
 }

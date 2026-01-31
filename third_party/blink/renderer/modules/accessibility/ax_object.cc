@@ -32,6 +32,7 @@
 #include <ostream>
 
 #include "base/auto_reset.h"
+#include "base/debug/crash_logging.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/string_util.h"
 #include "build/build_config.h"
@@ -51,6 +52,7 @@
 #include "third_party/blink/renderer/core/dom/events/simulated_click_options.h"
 #include "third_party/blink/renderer/core/dom/focus_params.h"
 #include "third_party/blink/renderer/core/dom/focusgroup_flags.h"
+#include "third_party/blink/renderer/core/dom/indexed_pseudo_element.h"
 #include "third_party/blink/renderer/core/dom/shadow_root.h"
 #include "third_party/blink/renderer/core/dom/slot_assignment_engine.h"
 #include "third_party/blink/renderer/core/editing/editing_utilities.h"
@@ -104,12 +106,14 @@
 #include "third_party/blink/renderer/core/layout/layout_box_model_object.h"
 #include "third_party/blink/renderer/core/layout/layout_image.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
+#include "third_party/blink/renderer/core/overscroll/overscroll_area_tracker.h"
 #include "third_party/blink/renderer/core/page/chrome_client.h"
 #include "third_party/blink/renderer/core/page/focus_controller.h"
 #include "third_party/blink/renderer/core/page/focusgroup_controller_utils.h"
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/core/page/scrolling/top_document_root_scroller_controller.h"
 #include "third_party/blink/renderer/core/scroll/scroll_into_view_util.h"
+#include "third_party/blink/renderer/core/style/computed_style_constants.h"
 #include "third_party/blink/renderer/core/svg/svg_desc_element.h"
 #include "third_party/blink/renderer/core/svg/svg_element.h"
 #include "third_party/blink/renderer/core/svg/svg_g_element.h"
@@ -723,6 +727,21 @@ Node* AXObject::GetParentNodeForComputeParent(AXObjectCacheImpl& cache,
     }
   }
 
+  // Targets of toggle-overscroll actions are reparented under their
+  // corresponding ::-internal-overscroll-area on their overscroll container.
+  if (Element* element = DynamicTo<Element>(node)) {
+    if (PseudoElement* overscroll_area_parent =
+            element->GetPseudoElement(kPseudoIdOverscrollAreaParent)) {
+      return overscroll_area_parent;
+    }
+  }
+  if (PseudoElement* pseudo_element = DynamicTo<PseudoElement>(node);
+      pseudo_element &&
+      pseudo_element->GetPseudoId() == kPseudoIdOverscrollAreaParent) {
+    return pseudo_element->UltimateOriginatingElement()
+        .GetOverscrollContainer();
+  }
+
   // Use LayoutTreeBuilderTraversal::Parent(), which handles pseudo content.
   // This can return nullptr for a node that is never visited by
   // LayoutTreeBuilderTraversal's child traversal. For example, while an element
@@ -1185,10 +1204,19 @@ void AXObject::Serialize(ui::AXNodeData* node_data,
   SerializeAriaNotificationAttributes(
       AXObjectCache().RetrieveAriaNotifications(this), node_data);
 
+  // Over write ignored status when printing to PDF. All text that appears
+  // in the PDF should appear in the PDF's structured tree.
+  bool ignore = IsIgnored();
+  if (accessibility_mode.has_mode(ui::AXMode::kPDFPrinting)) {
+    if (node_data->role == ax::mojom::blink::Role::kStaticText) {
+      ignore = false;
+    }
+  }
+
   // Return early. The following attributes are unnecessary for ignored nodes.
   // Exception: focusable ignored nodes are fully serialized, so that reasonable
   // verbalizations can be made if they actually receive focus.
-  if (IsIgnored()) {
+  if (ignore) {
     node_data->AddState(ax::mojom::blink::State::kIgnored);
     if (!CanSetFocusAttribute()) {
       return;
@@ -1202,12 +1230,17 @@ void AXObject::Serialize(ui::AXNodeData* node_data,
 
   SerializeUnignoredAttributes(node_data, accessibility_mode, is_snapshot);
 
-  if (!accessibility_mode.has_mode(ui::AXMode::kExtendedProperties)) {
+  if (!accessibility_mode.has_mode(ui::AXMode::kExtendedProperties) &&
+      !accessibility_mode.has_mode(ui::AXMode::kPDFPrinting)) {
     // Return early. None of the following attributes are needed outside of
-    // screen reader mode.
+    // screen reader mode or PDF printing.
     return;
   }
 
+  // TODO(crbug.com/469328924): Not all of the attributes in
+  // SerializeScreenReaderAttributes are needed for PDF printing. Refactor this
+  // function (and maybe all of Serialize) to better separate out attributes
+  // needed printing and other modes.
   SerializeScreenReaderAttributes(node_data);
 
   if (accessibility_mode.has_mode(ui::AXMode::kPDFPrinting)) {
@@ -1771,6 +1804,14 @@ void AXObject::SerializeScreenReaderAttributes(ui::AXNodeData* node_data) const 
         ax::mojom::blink::IntAttribute::kActivedescendantId,
         active_descendant->AXObjectID());
   }
+
+  if (CheckedState() != ax::mojom::blink::CheckedState::kNone) {
+    node_data->SetCheckedState(CheckedState());
+  }
+
+  if (::features::IsAccessibilityTextChangeTypesEnabled()) {
+    SerializeTextChangeTypesAttributes(node_data);
+  }
 }
 
 String AXObject::KeyboardShortcut() const {
@@ -1854,10 +1895,6 @@ void AXObject::SerializeOtherScreenReaderAttributes(
 
   if (GetInvalidState() != ax::mojom::blink::InvalidState::kNone)
     node_data->SetInvalidState(GetInvalidState());
-
-  if (CheckedState() != ax::mojom::blink::CheckedState::kNone) {
-    node_data->SetCheckedState(CheckedState());
-  }
 
   if (node_data->role == ax::mojom::blink::Role::kListMarker) {
     SerializeListMarkerAttributes(node_data);
@@ -2851,6 +2888,31 @@ void AXObject::SerializeTextInsertionDeletionOffsetAttributes(
   node_data->AddIntListAttribute(
       ax::mojom::blink::IntListAttribute::kTextOperations, operations_ints);
   AXObjectCache().ClearTextOperationInNodeIdMap();
+}
+
+void AXObject::SerializeTextChangeTypesAttributes(
+    ui::AXNodeData* node_data) const {
+  ImeContext* ime_context = AXObjectCache().GetImeContext(this);
+  if (!ime_context) {
+    return;
+  }
+
+  if (ime_context->committed_text_length > 0) {
+    node_data->AddIntAttribute(
+        ax::mojom::blink::IntAttribute::kCommittedTextLength,
+        ime_context->committed_text_length);
+  } else if (ime_context->has_composition) {
+    node_data->AddBoolAttribute(
+        ax::mojom::blink::BoolAttribute::kHasComposition, true);
+    if (ime_context->ime_state ==
+        mojom::blink::ImeState::kTextSuggestionSelected) {
+      node_data->AddBoolAttribute(
+          ax::mojom::blink::BoolAttribute::kTextSuggestionSelectedByIME, true);
+    }
+  } else {
+    NOTREACHED();
+  }
+  AXObjectCache().ClearImeContext();
 }
 
 bool AXObject::IsAXNodeObject() const {
@@ -4152,7 +4214,7 @@ bool AXObject::ComputeIsIgnoredButIncludedInTree() {
   CHECK(!IsDetached());
 
   // Nothing inside an inactive scroll marker's tab is included in the tree.
-  if (InsideOriginatingElementForInactiveScrollMarkerInTabsMode()) {
+  if (InsideInactiveScrollMarkerTab()) {
     return false;
   }
 
@@ -8229,6 +8291,8 @@ const AXObject* AXObject::LowestCommonAncestor(const AXObject& first,
 
 // Extra checks that only occur during serialization.
 void AXObject::PreSerializationConsistencyCheck() const{
+  SCOPED_CRASH_KEY_STRING256("AXObject", "Error",
+                             this->ToString().Utf8().c_str());
   CHECK(!IsDetached()) << "Do not serialize detached nodes: " << this;
   CHECK(AXObjectCache().IsFrozen());
   CHECK(!NeedsToUpdateCachedValues()) << "Stale values on: " << this;

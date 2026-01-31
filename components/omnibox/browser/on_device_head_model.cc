@@ -293,16 +293,13 @@ bool ReadNextChild(OnDeviceModelParams* params, MatchCandidate* candidate) {
       candidate->address = score_or_address;
       candidate->is_complete_suggestion = false;
 
-      // TODO(crbug.com/40947213): remove this guard after evaluating the fix.
-      if (OmniboxFieldTrial::ShouldApplyOnDeviceHeadModelSelectionFix()) {
-        MatchCandidate unused_candidate;
-        uint32_t address = params->GetModelFileStream()->tellg();
-        uint32_t max_score = ReadMaxScoreAsRoot(
-            params, score_or_address, &unused_candidate, &is_successful);
-        params->GetModelFileStream()->seekg(address);
-        if (is_successful) {
-          candidate->score = max_score;
-        }
+      MatchCandidate unused_candidate;
+      uint32_t address = params->GetModelFileStream()->tellg();
+      uint32_t max_score = ReadMaxScoreAsRoot(
+          params, score_or_address, &unused_candidate, &is_successful);
+      params->GetModelFileStream()->seekg(address);
+      if (is_successful) {
+        candidate->score = max_score;
       }
     }
   }

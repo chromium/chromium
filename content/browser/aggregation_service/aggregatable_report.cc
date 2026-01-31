@@ -282,7 +282,7 @@ std::optional<AggregatableReportSharedInfo> ConvertSharedInfoFromProto(
       scheduled_report_time, std::move(report_id), std::move(reporting_origin),
       debug_mode,
       // TODO(alexmt): Persist additional_fields when it becomes necessary.
-      /*additional_fields=*/base::Value::Dict(),
+      /*additional_fields=*/base::DictValue(),
       // TODO(crbug.com/40230303): Add mechanism to upgrade stored requests from
       // older to newer versions.
       std::move(api_version), std::move(api_identifier));
@@ -475,7 +475,7 @@ AggregatableReportSharedInfo::AggregatableReportSharedInfo(
     base::Uuid report_id,
     url::Origin reporting_origin,
     DebugMode debug_mode,
-    base::Value::Dict additional_fields,
+    base::DictValue additional_fields,
     std::string api_version,
     std::string api_identifier)
     : scheduled_report_time(scheduled_report_time),
@@ -499,7 +499,7 @@ AggregatableReportSharedInfo AggregatableReportSharedInfo::Clone() const {
 }
 
 std::string AggregatableReportSharedInfo::SerializeAsJson() const {
-  base::Value::Dict value;
+  base::DictValue value;
 
   CHECK(report_id.is_valid());
   value.Set("report_id", report_id.AsLowercaseString());
@@ -812,15 +812,15 @@ AggregatableReport::Provider::CreateFromRequestAndPublicKey(
       report_request.payload_contents().aggregation_coordinator_origin);
 }
 
-base::Value::Dict AggregatableReport::GetAsJson() const {
-  base::Value::Dict value;
+base::DictValue AggregatableReport::GetAsJson() const {
+  base::DictValue value;
 
   value.Set("shared_info", shared_info_);
 
   // When invoked for reports being shown in the WebUI, `payload_` may be
   // `std::nullopt` prior to assembly or if assembly failed.
   if (payload_.has_value()) {
-    base::Value::Dict payload_dict_value;
+    base::DictValue payload_dict_value;
     payload_dict_value.Set("payload", base::Base64Encode(payload_->payload));
     payload_dict_value.Set("key_id", payload_->key_id);
     if (payload_->debug_cleartext_payload.has_value()) {
@@ -830,7 +830,7 @@ base::Value::Dict AggregatableReport::GetAsJson() const {
     }
 
     value.Set("aggregation_service_payloads",
-              base::Value::List().Append(std::move(payload_dict_value)));
+              base::ListValue().Append(std::move(payload_dict_value)));
   }
 
   if (debug_key_.has_value()) {

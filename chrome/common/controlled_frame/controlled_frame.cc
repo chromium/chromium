@@ -4,9 +4,9 @@
 
 #include "chrome/common/controlled_frame/controlled_frame.h"
 
+#include <algorithm>
 #include <string>
 
-#include "base/containers/contains.h"
 #include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -97,7 +97,7 @@ bool AvailabilityCheck(const std::string& api_full_name,
   return (extension == nullptr) && url.SchemeIs(webapps::kIsolatedAppScheme) &&
          context == extensions::mojom::ContextType::kWebPage &&
          context_data.HasControlledFrameCapability() &&
-         base::Contains(GetControlledFrameFeatureList(), api_full_name);
+         std::ranges::contains(GetControlledFrameFeatureList(), api_full_name);
 #else   // !(BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) ||
         // BUILDFLAG(IS_CHROMEOS))
   return false;

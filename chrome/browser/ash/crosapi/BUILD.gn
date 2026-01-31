@@ -33,8 +33,6 @@ static_library("crosapi") {
     "local_printer_ash.h",
     "primary_profile_creation_waiter.cc",
     "primary_profile_creation_waiter.h",
-    "vpn_service_ash.cc",
-    "vpn_service_ash.h",
   ]
 
   deps = [
@@ -95,12 +93,12 @@ static_library("crosapi") {
     "//chrome/browser/ash/system",
     "//chrome/browser/ash/system_web_apps",
     "//chrome/browser/ash/system_web_apps/apps",
-    "//chrome/browser/chromeos/extensions/vpn_provider",
     "//chrome/browser/chromeos/platform_keys",
     "//chrome/browser/chromeos/printing/print_preview",
     "//chrome/browser/extensions",
     "//chrome/browser/media/router/discovery/access_code:access_code_cast_feature",
     "//chrome/browser/media/webrtc",
+    "//chrome/browser/notifications:system_notification_helper",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/ui",
     "//chrome/browser/ui:browser_navigator_params_headers",
@@ -139,8 +137,6 @@ static_library("crosapi") {
     "//chromeos/ash/components/login/auth",
     "//chromeos/ash/components/login/login_state",
     "//chromeos/ash/components/nearby/common/connections_manager",
-    "//chromeos/ash/components/network",
-    "//chromeos/ash/components/network:vpn_providers_observer",
     "//chromeos/ash/components/osauth/public",
     "//chromeos/ash/components/platform_keys",
     "//chromeos/ash/components/settings",
@@ -243,7 +239,6 @@ static_library("crosapi") {
   ]
 
   allow_circular_includes_from = [
-    "//chrome/browser/chromeos/extensions/vpn_provider",
     "//chrome/browser/chromeos/platform_keys",
     "//chrome/browser/chromeos/printing/print_preview",
     "//chrome/browser/extensions",
@@ -333,6 +328,7 @@ source_set("unit_tests") {
     "//chrome/browser/ash/scanning",
     "//chrome/browser/ash/scanning:test_support",
     "//chrome/browser/ash/settings:test_support",
+    "//chrome/browser/notifications:system_notification_helper",
     "//chrome/browser/ui/ash/desks",
     "//chrome/browser/ui/ash/shelf",
     "//chrome/common/printing",
@@ -373,7 +369,6 @@ source_set("browser_tests") {
   defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
 
   sources = [
-    "magic_boost_ash_browsertest.cc",
     "power_ash_apitest.cc",
     "print_preview_ash_browsertest.cc",
   ]
@@ -390,8 +385,6 @@ source_set("browser_tests") {
     "//chrome/browser/apps/app_service",
     "//chrome/browser/apps/app_service:app_registry_cache_waiter",
     "//chrome/browser/ash/fileapi",
-    "//chrome/browser/ash/magic_boost",
-    "//chrome/browser/ash/mahi",
     "//chrome/browser/ash/printing/print_preview",
     "//chrome/browser/ash/system_web_apps/test_support:test_support_ui",
     "//chrome/browser/ui",

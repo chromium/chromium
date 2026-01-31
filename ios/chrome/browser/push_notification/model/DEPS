@@ -1,18 +1,20 @@
 include_rules = [
-  "+components/sharing_message",
+  # keep-sorted start
   "+components/desktop_to_mobile_promos",
+  "+components/sharing_message",
   "+ios/chrome/browser/commerce/model",
   "+ios/chrome/browser/content_notification/model",
   "+ios/chrome/browser/cross_platform_promos/model",
   "+ios/chrome/browser/reminder_notifications/model",
   "+ios/chrome/browser/safety_check_notifications/model",
+  "+ios/chrome/browser/safety_check_notifications/utils/constants.h",
   "+ios/chrome/browser/search_engines/model/template_url_service_factory.h",
   "+ios/chrome/browser/send_tab_to_self/model",
   "+ios/chrome/browser/signin/model",
   "+ios/chrome/browser/sync/model",
   "+ios/chrome/browser/tips_notifications/model",
   "+ios/chrome/browser/url_loading",
-  "+ios/chrome/browser/safety_check_notifications/utils/constants.h",
+  # keep-sorted end
 ]
 
 specific_include_rules = {

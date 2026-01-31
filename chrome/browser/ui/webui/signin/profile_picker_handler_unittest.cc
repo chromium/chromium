@@ -39,7 +39,7 @@
 
 namespace {
 
-void VerifyProfileEntry(const base::Value::Dict& dict,
+void VerifyProfileEntry(const base::DictValue& dict,
                         ProfileAttributesEntry* entry) {
   EXPECT_EQ(*dict.Find("profilePath"), base::FilePathToValue(entry->GetPath()));
   EXPECT_EQ(*dict.FindString("localProfileName"),
@@ -127,7 +127,7 @@ class ProfilePickerHandlerTest : public testing::Test {
 
   void InitializeMainViewAndVerifyProfileList(
       const std::vector<ProfileAttributesEntry*>& ordered_profile_entries) {
-    base::Value::List empty_args;
+    base::ListValue empty_args;
     web_ui()->HandleReceivedMessage("mainViewInitialize", empty_args);
     VerifyProfileListWasPushed(ordered_profile_entries);
   }
@@ -410,7 +410,7 @@ TEST_F(ProfilePickerHandlerTest, UpdateProfileOrder) {
 
   // Perform first changes.
   {
-    base::Value::List args;
+    base::ListValue args;
     args.Append(0);  // `from_index`
     args.Append(2);  // `to_index`
     web_ui()->HandleReceivedMessage("updateProfileOrder", args);
@@ -423,7 +423,7 @@ TEST_F(ProfilePickerHandlerTest, UpdateProfileOrder) {
 
   // Perform second changes.
   {
-    base::Value::List args;
+    base::ListValue args;
     args.Append(1);  // `from_index`
     args.Append(3);  // `to_index`
     web_ui()->HandleReceivedMessage("updateProfileOrder", args);

@@ -12,8 +12,7 @@
 #include "net/base/ip_address.h"
 #include "net/base/ip_endpoint.h"
 
-namespace ash {
-namespace nearby {
+namespace ash::nearby {
 
 // An implementation of TcpSocketFactory used for unit tests. The user sets
 // expectations--via SetCreate{Server,Connected}SocketCallExpectations()--for
@@ -70,7 +69,6 @@ class FakeTcpSocketFactory : public sharing::mojom::TcpSocketFactory {
       pending_create_connected_socket_callbacks_;
 };
 
-}  // namespace nearby
-}  // namespace ash
+}  // namespace ash::nearby
 
 #endif  // CHROMEOS_ASH_SERVICES_NEARBY_PUBLIC_CPP_FAKE_TCP_SOCKET_FACTORY_H_

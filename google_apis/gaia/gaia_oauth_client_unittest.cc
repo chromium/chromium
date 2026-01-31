@@ -206,11 +206,10 @@ class MockGaiaOAuthClientDelegate : public gaia::GaiaOAuthClient::Delegate {
                void(const std::string& access_token, int expires_in_seconds));
   MOCK_METHOD1(OnGetUserEmailResponse, void(const std::string& user_email));
   MOCK_METHOD1(OnGetUserIdResponse, void(const std::string& user_id));
-  MOCK_METHOD1(OnGetUserInfoResponse, void(const base::Value::Dict& user_info));
-  MOCK_METHOD1(OnGetTokenInfoResponse,
-               void(const base::Value::Dict& token_info));
+  MOCK_METHOD1(OnGetUserInfoResponse, void(const base::DictValue& user_info));
+  MOCK_METHOD1(OnGetTokenInfoResponse, void(const base::DictValue& token_info));
   MOCK_METHOD1(OnGetAccountCapabilitiesResponse,
-               void(const base::Value::Dict& account_capabilities));
+               void(const base::DictValue& account_capabilities));
   MOCK_METHOD0(OnOAuthError, void());
   MOCK_METHOD1(OnNetworkError, void(int response_code));
 };
@@ -451,11 +450,11 @@ TEST_F(GaiaOAuthClientTest, GetUserId) {
 }
 
 TEST_F(GaiaOAuthClientTest, GetUserInfo) {
-  base::Value::Dict captured_result;
+  base::DictValue captured_result;
 
   MockGaiaOAuthClientDelegate delegate;
   EXPECT_CALL(delegate, OnGetUserInfoResponse(_))
-      .WillOnce([&](const base::Value::Dict& result) {
+      .WillOnce([&](const base::DictValue& result) {
         captured_result = result.Clone();
       });
 
@@ -474,11 +473,11 @@ TEST_F(GaiaOAuthClientTest, GetUserInfo) {
 }
 
 TEST_F(GaiaOAuthClientTest, GetTokenInfo) {
-  base::Value::Dict captured_result;
+  base::DictValue captured_result;
 
   MockGaiaOAuthClientDelegate delegate;
   EXPECT_CALL(delegate, OnGetTokenInfoResponse(_))
-      .WillOnce([&](const base::Value::Dict& result) {
+      .WillOnce([&](const base::DictValue& result) {
         captured_result = result.Clone();
       });
 
@@ -495,11 +494,11 @@ TEST_F(GaiaOAuthClientTest, GetTokenInfo) {
 }
 
 TEST_F(GaiaOAuthClientTest, GetTokenHandleInfo) {
-  base::Value::Dict captured_result;
+  base::DictValue captured_result;
 
   MockGaiaOAuthClientDelegate delegate;
   EXPECT_CALL(delegate, OnGetTokenInfoResponse(_))
-      .WillOnce([&](const base::Value::Dict& result) {
+      .WillOnce([&](const base::DictValue& result) {
         captured_result = result.Clone();
       });
 
@@ -516,11 +515,11 @@ TEST_F(GaiaOAuthClientTest, GetTokenHandleInfo) {
 }
 
 TEST_P(GaiaOAuthClientGetAccountCapabilitiesTest, GetAccountCapabilities) {
-  base::Value::Dict captured_result;
+  base::DictValue captured_result;
 
   MockGaiaOAuthClientDelegate delegate;
   EXPECT_CALL(delegate, OnGetAccountCapabilitiesResponse(_))
-      .WillOnce([&](const base::Value::Dict& result) {
+      .WillOnce([&](const base::DictValue& result) {
         captured_result = result.Clone();
       });
 
@@ -557,7 +556,7 @@ TEST_P(GaiaOAuthClientGetAccountCapabilitiesTest, GetAccountCapabilities) {
   injector.Finish();
   FlushNetwork();
 
-  const base::Value::List& capabilities =
+  const base::ListValue& capabilities =
       *captured_result.FindList("accountCapabilities");
   ASSERT_EQ(capabilities.size(), 2U);
   EXPECT_EQ(*capabilities[0].GetDict().FindString("name"),

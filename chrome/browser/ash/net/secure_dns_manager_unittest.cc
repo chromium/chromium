@@ -66,10 +66,10 @@ void OnGetDictProperties(const std::string& prop_name,
                          bool* success_out,
                          std::map<std::string, std::string>* props_out,
                          base::OnceClosure callback,
-                         std::optional<base::Value::Dict> result) {
+                         std::optional<base::DictValue> result) {
   *success_out = result.has_value();
   if (result) {
-    base::Value::Dict* value = result->FindDict(prop_name);
+    base::DictValue* value = result->FindDict(prop_name);
     if (value != nullptr) {
       for (const auto kv : *value) {
         props_out->emplace(kv.first, kv.second.GetString());
@@ -83,10 +83,10 @@ void OnGetStringsProperties(const std::string& prop_name,
                             bool* success_out,
                             std::vector<std::string>* props_out,
                             base::OnceClosure callback,
-                            std::optional<base::Value::Dict> result) {
+                            std::optional<base::DictValue> result) {
   *success_out = result.has_value();
   if (result) {
-    base::Value::List* value = result->FindList(prop_name);
+    base::ListValue* value = result->FindList(prop_name);
     if (value != nullptr) {
       for (const auto& e : *value) {
         props_out->push_back(e.GetString());
@@ -191,9 +191,9 @@ class SecureDnsManagerTest : public testing::Test {
     local_state_.registry()->RegisterStringPref(
         ::prefs::kDnsOverHttpsEffectiveTemplatesChromeOS, "");
     local_state_.registry()->RegisterListPref(
-        prefs::kDnsOverHttpsExcludedDomains, base::Value::List());
+        prefs::kDnsOverHttpsExcludedDomains, base::ListValue());
     local_state_.registry()->RegisterListPref(
-        prefs::kDnsOverHttpsIncludedDomains, base::Value::List());
+        prefs::kDnsOverHttpsIncludedDomains, base::ListValue());
     local_state_.registry()->RegisterBooleanPref(
         ::prefs::kBuiltInDnsClientEnabled, true);
     local_state_.registry()->RegisterBooleanPref(

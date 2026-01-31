@@ -25,7 +25,7 @@
 #include "base/strings/stringprintf.h"
 #include "build/build_config.h"
 #include "gpu/command_buffer/client/test_shared_image_interface.h"
-#include "gpu/command_buffer/common/mailbox_holder.h"
+#include "gpu/command_buffer/common/mailbox.h"
 #include "media/base/color_plane_layout.h"
 #include "media/base/limits.h"
 #include "media/base/simple_sync_token_client.h"
@@ -658,9 +658,9 @@ static void TextureCallback(gpu::SyncToken* called_sync_token,
   *called_sync_token = release_sync_token;
 }
 
-// Verify the gpu::MailboxHolder::ReleaseCallback is called when VideoFrame is
-// destroyed with the default release sync point.
-TEST(VideoFrame, TextureNoLongerNeededCallbackIsCalled) {
+// Verify the `called_sync_token` is not set for when VideoFrame is created with
+// WrapSharedImage and UpdateReleaseSyncToken is not called.
+TEST(VideoFrame, WrapSharedImageUnsetReleaseSyncToken) {
   gpu::SyncToken called_sync_token(gpu::CommandBufferNamespace::GPU_IO,
                                    gpu::CommandBufferId::FromUnsafeValue(1), 1);
 
@@ -691,11 +691,10 @@ TEST(VideoFrame, TextureNoLongerNeededCallbackIsCalled) {
   EXPECT_FALSE(called_sync_token.HasData());
 }
 
-// Verify the gpu::MailboxHolder::ReleaseCallback is called when VideoFrame is
-// destroyed with the release sync point, which was updated by clients.
-// (i.e. the compositor, webgl).
-TEST(VideoFrame,
-     TexturesNoLongerNeededCallbackAfterTakingAndReleasingMailboxes) {
+// Verify the `called_sync_token` is set for when VideoFrame is
+// created with WrapSharedImage, and which is updated through
+// UpdateReleaseSyncToken by clients. (i.e. the compositor, webgl).
+TEST(VideoFrame, WrapSharedImageSetReleaseSyncToken) {
   const gpu::CommandBufferNamespace kNamespace =
       gpu::CommandBufferNamespace::GPU_IO;
   const gpu::CommandBufferId kCommandBufferId =

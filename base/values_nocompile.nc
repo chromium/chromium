@@ -21,19 +21,19 @@ void DisallowValueConstructionFromPointers() {
   }
 
   {
-    Value::Dict dict;
+    DictValue dict;
     dict.Set("moo", ptr);  // expected-error {{call to deleted member function 'Set'}}
     dict.SetByDottedPath("moo.moo", ptr);  // expected-error {{call to deleted member function 'SetByDottedPath'}}
 
-    Value::Dict().Set("moo", ptr);  // expected-error {{call to deleted member function 'Set'}}
-    Value::Dict().SetByDottedPath("moo", ptr);  // expected-error {{call to deleted member function 'SetByDottedPath'}}
+    DictValue().Set("moo", ptr);  // expected-error {{call to deleted member function 'Set'}}
+    DictValue().SetByDottedPath("moo", ptr);  // expected-error {{call to deleted member function 'SetByDottedPath'}}
   }
 
   {
-    Value::List list;
+    ListValue list;
     list.Append(ptr);  // expected-error {{call to deleted member function 'Append'}}
 
-    Value::List().Append(ptr);  // expected-error {{call to deleted member function 'Append'}}
+    ListValue().Append(ptr);  // expected-error {{call to deleted member function 'Append'}}
   }
 }
 
@@ -68,19 +68,19 @@ void DisallowValueConstructionFromInt64() {
   }
 
   {
-    Value::Dict dict;
+    DictValue dict;
     dict.Set("あいうえお", big_int);  // expected-error {{call to member function 'Set' is ambiguous}}
     dict.SetByDottedPath("あいうえお", big_int);  // expected-error {{call to member function 'SetByDottedPath' is ambiguous}}
 
-    Value::Dict().Set("あいうえお", big_int);  // expected-error {{call to member function 'Set' is ambiguous}}
-    Value::Dict().SetByDottedPath("あいうえお", big_int);  // expected-error {{call to member function 'SetByDottedPath' is ambiguous}}
+    DictValue().Set("あいうえお", big_int);  // expected-error {{call to member function 'Set' is ambiguous}}
+    DictValue().SetByDottedPath("あいうえお", big_int);  // expected-error {{call to member function 'SetByDottedPath' is ambiguous}}
   }
 
   {
-    Value::List list;
+    ListValue list;
     list.Append(big_int);  // expected-error {{call to member function 'Append' is ambiguous}}
 
-    Value::List().Append(big_int);  // expected-error {{call to member function 'Append' is ambiguous}}
+    ListValue().Append(big_int);  // expected-error {{call to member function 'Append' is ambiguous}}
   }
 }
 
@@ -112,17 +112,17 @@ void DisallowValueViewConstructionFromTemporaryBlob() {
 }
 
 void DisallowValueViewConstructionFromTemporaryDict() {
-  [[maybe_unused]] ValueView v = Value::Dict();  // expected-error {{object backing the pointer will be destroyed at the end of the full-expression}}
+  [[maybe_unused]] ValueView v = DictValue();  // expected-error {{object backing the pointer will be destroyed at the end of the full-expression}}
   // Not an error here since the lifetime of the temporary lasts until the end
   // of the full expression, i.e. until TakesValueView() returns.
-  TakesValueView(Value::Dict());
+  TakesValueView(DictValue());
 }
 
 void DisallowValueViewConstructionFromTemporaryList() {
-  [[maybe_unused]] ValueView v = Value::List();  // expected-error {{object backing the pointer will be destroyed at the end of the full-expression}}
+  [[maybe_unused]] ValueView v = ListValue();  // expected-error {{object backing the pointer will be destroyed at the end of the full-expression}}
   // Not an error here since the lifetime of the temporary lasts until the end
   // of the full expression, i.e. until TakesValueView() returns.
-  TakesValueView(Value::List());
+  TakesValueView(ListValue());
 }
 
 void DisallowValueViewConstructionFromTemporaryValue() {

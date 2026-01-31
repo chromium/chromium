@@ -4,15 +4,14 @@
 
 #include "chrome/browser/ui/views/web_apps/protocol_handler_picker_coordinator.h"
 
+#include <algorithm>
 #include <string>
 #include <vector>
 
 #include "base/barrier_callback.h"
-#include "base/containers/contains.h"
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
-#include "chrome/browser/apps/app_service/app_launch_params.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -22,6 +21,7 @@
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/url_identity.h"
 #include "chrome/browser/ui/views/web_apps/protocol_handler_picker_dialog.h"
+#include "components/services/app_service/public/cpp/app_launch_params.h"
 #include "components/services/app_service/public/cpp/app_update.h"
 #include "components/services/app_service/public/cpp/icon_types.h"
 #include "components/tabs/public/tab_interface.h"
@@ -123,7 +123,7 @@ std::optional<std::string> ProtocolHandlerPickerCoordinator::FindPreferredApp(
     const std::vector<std::string>& app_ids) {
   if (std::optional<std::string> app_id =
           proxy_->PreferredAppsList().FindPreferredAppForUrl(protocol_url)) {
-    if (base::Contains(app_ids, *app_id)) {
+    if (std::ranges::contains(app_ids, *app_id)) {
       return app_id;
     }
   }

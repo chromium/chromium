@@ -17,7 +17,7 @@ interface RemotingHostControl {
   // owner email and robot account to use for authentication to service APIs.
   // This method may be called multiple times as changes are detected in the
   // host configuration file.
-  [EnableIf=is_win]
+  [EnableIf=is_win|is_linux]
   ApplyHostConfig(mojo_base.mojom.DictionaryValue config);
 
   // Provides the network process with a set of platform handles which are used
@@ -30,12 +30,11 @@ interface RemotingHostControl {
                             handle<platform> unprivileged_handle);
 
   // Requests the network process to bind a pending receiver of
-  // ChromotingHostServices coming from a user-launched process. On Windows and
-  // Mac, the daemon process or agent broker process is responsible for
-  // brokering all mojo IPCs, but it doesn't affect where the receivers and
-  // remotes are bound. Please see comments on the ChromotingHostServices
-  // interface.
-  [EnableIf=is_win|is_mac]
+  // ChromotingHostServices coming from a user-launched process. On
+  // multi-process hosts, the daemon process or agent broker process is
+  // responsible for brokering all mojo IPCs, but it doesn't affect where the
+  // receivers and remotes are bound. Please see comments on the
+  // ChromotingHostServices interface.
   BindChromotingHostServices(pending_receiver<ChromotingHostServices> receiver,
                              int32 peer_pid);
 };
@@ -47,7 +46,7 @@ interface RemotingHostControl {
 interface DesktopSessionConnectionEvents {
   // Notifies the network process that the daemon has disconnected the desktop
   // session from the associated desktop environment.
-  [EnableIf=is_win]
+  [EnableIf=is_win|is_linux]
   OnTerminalDisconnected(int32 terminal_id);
 
   // Notifies the network process that |terminal_id| is now attached to
@@ -55,7 +54,7 @@ interface DesktopSessionConnectionEvents {
   // session attached. |desktop_pipe| is the client end of the message pipe
   // which will be used for IPC communication between the desktop process and
   // the network process.
-  [EnableIf=is_win]
+  [EnableIf=is_win|is_linux]
   OnDesktopSessionAgentAttached(int32 terminal_id, int32 session_id,
                                 handle<message_pipe> desktop_pipe);
 };

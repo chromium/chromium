@@ -628,8 +628,7 @@ TEST_F(AnnotationAgentImplTest, AttachmentReportsRectsToHost) {
     WebView().SetPageScaleFactor(2);
     GetDocument().View()->GetRootFrameViewport()->SetScrollOffset(
         ScrollOffset(123, 3000), mojom::blink::ScrollType::kProgrammatic,
-        cc::ScrollSourceType::kNone, mojom::blink::ScrollBehavior::kInstant,
-        ScrollableArea::ScrollCallback());
+        cc::ScrollSourceType::kNone, mojom::blink::ScrollBehavior::kInstant);
 
     // The visual viewport consumes all the horizontal scroll and 300px (its
     // max scroll offset) of the vertical scroll.

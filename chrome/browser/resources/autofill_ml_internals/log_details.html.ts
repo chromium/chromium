@@ -17,7 +17,7 @@ export function getHtml(this: LogDetailsElement) {
     </div>
     <div class="row">
       <span class="label">URL</span>
-      <span>${this.log.formUrl.url}</span>
+      <span>${this.log.formUrl}</span>
     </div>
     <div class="row">
       <span class="label">Optimization Target</span>

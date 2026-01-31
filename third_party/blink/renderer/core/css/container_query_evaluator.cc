@@ -19,6 +19,7 @@
 #include "third_party/blink/renderer/core/css/style_recalc_context.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/flat_tree_traversal.h"
+#include "third_party/blink/renderer/core/dom/node-inl.h"
 #include "third_party/blink/renderer/core/layout/layout_box.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
 
@@ -86,7 +87,7 @@ bool TypeMatches(const ComputedStyle& style,
                  const ContainerSelector& container_selector) {
   DCHECK(!container_selector.HasUnknownFeature());
   unsigned type = container_selector.Type(style.GetWritingMode());
-  return !type || ((style.ContainerType() & type) == type);
+  return type == kContainerTypeNormal || (style.ContainerType() & type) == type;
 }
 
 bool Matches(const ComputedStyle& style,
@@ -211,6 +212,10 @@ bool ContainerQueryEvaluator::EvalAndAdd(
   if (Element* container = CachedContainer(starting_element, selector,
                                            match_result.CurrentTreeScope(),
                                            container_selector_cache)) {
+    if (!query.Query()) {
+      // Querying name only, which is already matched in FindContainer.
+      return true;
+    }
     Change change = starting_element == container
                         ? Change::kNearestContainer
                         : Change::kDescendantContainers;

@@ -28,6 +28,7 @@
 #import "ios/chrome/browser/shared/public/commands/page_action_menu_commands.h"
 #import "ios/chrome/browser/shared/public/commands/reader_mode_commands.h"
 #import "ios/chrome/browser/shared/public/commands/reader_mode_options_commands.h"
+#import "ios/chrome/browser/signin/model/authentication_service_factory.h"
 
 @interface PageActionMenuCoordinator () <
     PageActionMenuViewControllerDelegate,
@@ -47,6 +48,13 @@
 #pragma mark - ChromeCoordinator
 
 - (void)start {
+  raw_ptr<BwgService> BWGService =
+      BwgServiceFactory::GetForProfile(self.profile);
+
+  // TODO(crbug.com/474126721): Understand if/when the PageActionMenu is started
+  // while BWGService is nullptr. Remove when investigation is complete.
+  CHECK(BWGService != nullptr, base::NotFatalUntil::M150);
+
   web::WebState* activeWebState =
       self.browser->GetWebStateList()->GetActiveWebState();
 
@@ -59,10 +67,12 @@
       ios::HostContentSettingsMapFactory::GetForProfile(self.profile);
   _mediator = [[PageActionMenuMediator alloc]
             initWithWebState:activeWebState
+       authenticationService:AuthenticationServiceFactory::GetForProfile(
+                                 self.profile)
           profilePrefService:self.profile->GetPrefs()
           templateURLService:ios::TemplateURLServiceFactory::GetForProfile(
                                  self.profile)
-                  BWGService:BwgServiceFactory::GetForProfile(self.profile)
+                  BWGService:BWGService
          readerModeTabHelper:readerModeTabHelper
       hostContentSettingsMap:hostContentSettingsMap];
 

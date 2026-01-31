@@ -13,6 +13,7 @@
 #include "components/lens/proto/server/lens_overlay_response.pb.h"
 #include "components/omnibox/browser/autocomplete_enums.h"
 #include "components/omnibox/browser/autocomplete_input.h"
+#include "components/omnibox/browser/autocomplete_match.h"
 #include "components/omnibox/browser/base_search_provider.h"
 #include "components/omnibox/browser/search_suggestion_parser.h"
 
@@ -47,6 +48,9 @@ class ContextualSearchProvider : public BaseSearchProvider {
   // Whether or not the Lens action (i.e. "Ask Google about this page") is
   // present in the Omnibox toolbelt.
   bool HasToolbeltLensAction() const;
+
+  // Create the Lens entrypoint takeover action match.
+  AutocompleteMatch CreateLensEntrypointMatch(const AutocompleteInput& input);
 
   // Show on web & SRP, but not NTP.
   // Http, https, & local files are allowed but not other local schemes.
@@ -86,9 +90,6 @@ class ContextualSearchProvider : public BaseSearchProvider {
   void ConvertSuggestResultsToAutocompleteMatches(
       const SearchSuggestionParser::Results& results,
       const AutocompleteInput& input);
-
-  // Adds the Lens entrypoint takeover action match.
-  void AddLensEntrypointMatch(const AutocompleteInput& input);
 
   // Adds a default match for verbatim input, or keyword instructions if there
   // is no input yet. This is the match that holds the omnibox in keyword mode

@@ -10,8 +10,8 @@
 #include "chrome/browser/resource_coordinator/tab_lifecycle_unit_external.h"
 #include "chrome/browser/resource_coordinator/tab_lifecycle_unit_source.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "components/split_tabs/split_tab_id.h"
 #include "components/tabs/public/split_tab_data.h"
-#include "components/tabs/public/split_tab_id.h"
 
 namespace split_tabs {
 

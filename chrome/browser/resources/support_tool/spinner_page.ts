@@ -2,41 +2,48 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import './support_tool_shared.css.js';
 import 'chrome://resources/cr_elements/cr_button/cr_button.js';
-import 'chrome://resources/cr_elements/cr_spinner_style.css.js';
 
-import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import type {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.js';
+import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
 import type {BrowserProxy} from './browser_proxy.js';
 import {BrowserProxyImpl} from './browser_proxy.js';
-import {getTemplate} from './spinner_page.html.js';
-import {SupportToolPageMixin} from './support_tool_page_mixin.js';
+import {getCss} from './spinner_page.css.js';
+import {getHtml} from './spinner_page.html.js';
+import {SupportToolPageMixinLit} from './support_tool_page_mixin_lit.js';
 
-const SpinnerPageElementBase = SupportToolPageMixin(PolymerElement);
+export interface SpinnerPageElement {
+  $: {
+    cancelButton: CrButtonElement,
+  };
+}
+
+const SpinnerPageElementBase = SupportToolPageMixinLit(CrLitElement);
 
 export class SpinnerPageElement extends SpinnerPageElementBase {
   static get is() {
     return 'spinner-page';
   }
 
-  static get template() {
-    return getTemplate();
+  static override get styles() {
+    return getCss();
   }
 
-  static get properties() {
+  override render() {
+    return getHtml.bind(this)();
+  }
+
+  static override get properties() {
     return {
-      pageTitle: {
-        type: String,
-        value: '',
-      },
+      pageTitle: {type: String},
     };
   }
 
-  declare pageTitle: string;
+  protected accessor pageTitle: string = '';
   private browserProxy_: BrowserProxy = BrowserProxyImpl.getInstance();
 
-  private onCancelClick_() {
+  protected onCancelClick_() {
     this.browserProxy_.cancelDataCollection();
   }
 }

@@ -9,7 +9,7 @@
 #include <memory>
 #include <optional>
 #include <string>
-#include <unordered_set>
+#include <string_view>
 #include <utility>
 #include <variant>
 #include <vector>
@@ -86,6 +86,7 @@
 #include "storage/browser/quota/quota_manager_observer.mojom-forward.h"
 #include "storage/browser/quota/quota_manager_proxy.h"
 #include "storage/browser/quota/quota_override_handle.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
 #include "third_party/abseil-cpp/absl/functional/overload.h"
 #include "third_party/blink/public/common/interest_group/devtools_serialization.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
@@ -626,38 +627,38 @@ Response StorageHandler::GetStorageKey(std::optional<std::string> frame_id,
 
 namespace {
 uint32_t GetRemoveDataMask(const std::string& storage_types) {
-  std::vector<std::string> types = base::SplitString(
+  std::vector<std::string_view> types = base::SplitStringPiece(
       storage_types, ",", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
-  std::unordered_set<std::string> set(types.begin(), types.end());
+  absl::flat_hash_set<std::string_view> set = {types.begin(), types.end()};
   uint32_t remove_mask = 0;
-  if (set.count(Storage::StorageTypeEnum::Cookies)) {
+  if (set.contains(Storage::StorageTypeEnum::Cookies)) {
     remove_mask |= StoragePartition::REMOVE_DATA_MASK_COOKIES;
   }
-  if (set.count(Storage::StorageTypeEnum::File_systems)) {
+  if (set.contains(Storage::StorageTypeEnum::File_systems)) {
     remove_mask |= StoragePartition::REMOVE_DATA_MASK_FILE_SYSTEMS;
   }
-  if (set.count(Storage::StorageTypeEnum::Indexeddb)) {
+  if (set.contains(Storage::StorageTypeEnum::Indexeddb)) {
     remove_mask |= StoragePartition::REMOVE_DATA_MASK_INDEXEDDB;
   }
-  if (set.count(Storage::StorageTypeEnum::Local_storage)) {
+  if (set.contains(Storage::StorageTypeEnum::Local_storage)) {
     remove_mask |= StoragePartition::REMOVE_DATA_MASK_LOCAL_STORAGE;
   }
-  if (set.count(Storage::StorageTypeEnum::Shader_cache)) {
+  if (set.contains(Storage::StorageTypeEnum::Shader_cache)) {
     remove_mask |= StoragePartition::REMOVE_DATA_MASK_SHADER_CACHE;
   }
-  if (set.count(Storage::StorageTypeEnum::Service_workers)) {
+  if (set.contains(Storage::StorageTypeEnum::Service_workers)) {
     remove_mask |= StoragePartition::REMOVE_DATA_MASK_SERVICE_WORKERS;
   }
-  if (set.count(Storage::StorageTypeEnum::Cache_storage)) {
+  if (set.contains(Storage::StorageTypeEnum::Cache_storage)) {
     remove_mask |= StoragePartition::REMOVE_DATA_MASK_CACHE_STORAGE;
   }
-  if (set.count(Storage::StorageTypeEnum::Interest_groups)) {
+  if (set.contains(Storage::StorageTypeEnum::Interest_groups)) {
     remove_mask |= StoragePartition::REMOVE_DATA_MASK_INTEREST_GROUPS;
   }
-  if (set.count(Storage::StorageTypeEnum::Shared_storage)) {
+  if (set.contains(Storage::StorageTypeEnum::Shared_storage)) {
     remove_mask |= StoragePartition::REMOVE_DATA_MASK_SHARED_STORAGE;
   }
-  if (set.count(Storage::StorageTypeEnum::All)) {
+  if (set.contains(Storage::StorageTypeEnum::All)) {
     remove_mask |= StoragePartition::REMOVE_DATA_MASK_ALL;
   }
   return remove_mask;
@@ -924,7 +925,9 @@ StorageHandler::IndexedDBObserver* StorageHandler::GetIndexedDBObserver() {
 }
 
 SharedStorageRuntimeManager* StorageHandler::GetSharedStorageRuntimeManager() {
-  DCHECK(storage_partition_);
+  if (!storage_partition_) {
+    return nullptr;
+  }
   return static_cast<StoragePartitionImpl*>(storage_partition_)
       ->GetSharedStorageRuntimeManager();
 }
@@ -1141,7 +1144,7 @@ void SendGetInterestGroup(
     return;
   }
 
-  base::Value::Dict ig_serialization =
+  base::DictValue ig_serialization =
       SerializeInterestGroupForDevtools(storage_group.value()->interest_group);
 
   // "joiningOrigin" is in StorageInterestGroup, not InterestGroup, so it needs
@@ -1149,7 +1152,7 @@ void SendGetInterestGroup(
   ig_serialization.Set("joiningOrigin",
                        storage_group.value()->joining_origin.Serialize());
   callback->sendSuccess(
-      std::make_unique<base::Value::Dict>(std::move(ig_serialization)));
+      std::make_unique<base::DictValue>(std::move(ig_serialization)));
 }
 
 }  // namespace
@@ -1474,6 +1477,8 @@ void StorageHandler::ClearSharedStorageEntries(
 }
 
 Response StorageHandler::SetSharedStorageTracking(bool enable) {
+  // FIXME: this should remember the state and restore it
+  // once the StorageRunTimeManager or the storage partition is available.
   if (enable) {
     auto* manager = GetSharedStorageRuntimeManager();
     if (!manager) {
@@ -2481,7 +2486,7 @@ void StorageHandler::OnReportSent(const AttributionReport& report,
 
   frontend_->AttributionReportingReportSent(
       report.ReportURL(is_debug_report).spec(),
-      std::make_unique<base::Value::Dict>(report.ReportBody()), out_result,
+      std::make_unique<base::DictValue>(report.ReportBody()), out_result,
       net_error, std::move(net_error_name), http_status_code);
 }
 
@@ -2501,11 +2506,11 @@ void StorageHandler::OnDebugReportSent(const AttributionDebugReport& report,
     net_error_name = net::ErrorToShortString(status);
   }
 
-  auto body = std::make_unique<Array<Value::Dict>>();
+  auto body = std::make_unique<Array<base::DictValue>>();
   for (const auto& item : report.ReportBody()) {
     const auto* as_dict = item.GetIfDict();
     CHECK(as_dict);
-    body->push_back(std::make_unique<Value::Dict>(as_dict->Clone()));
+    body->push_back(std::make_unique<base::DictValue>(as_dict->Clone()));
   }
 
   frontend_->AttributionReportingVerboseDebugReportSent(
@@ -2535,7 +2540,7 @@ void StorageHandler::NotifyInterestGroupAuctionEventOccurred(
     content::InterestGroupAuctionEventType type,
     const std::string& unique_auction_id,
     base::optional_ref<const std::string> parent_auction_id,
-    const base::Value::Dict& auction_config) {
+    const base::DictValue& auction_config) {
   if (!interest_group_auction_tracking_enabled_) {
     return;
   }
@@ -2551,7 +2556,7 @@ void StorageHandler::NotifyInterestGroupAuctionEventOccurred(
   frontend_->InterestGroupAuctionEventOccurred(
       event_time.InSecondsFSinceUnixEpoch(), type_enum, unique_auction_id,
       parent_auction_id.CopyAsOptional(),
-      std::make_unique<base::Value::Dict>(auction_config.Clone()));
+      std::make_unique<base::DictValue>(auction_config.Clone()));
 }
 
 void StorageHandler::NotifyInterestGroupAuctionNetworkRequestCreated(

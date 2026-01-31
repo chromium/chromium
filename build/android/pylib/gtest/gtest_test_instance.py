@@ -20,6 +20,7 @@ from pylib.base import base_test_result
 from pylib.base import test_instance
 from pylib.symbols import deobfuscator
 from pylib.symbols import stack_symbolizer
+from pylib.utils import logging_utils
 from pylib.utils import test_filter
 
 with host_paths.SysPath(host_paths.BUILD_UTIL_PATH):
@@ -633,11 +634,21 @@ class GtestTestInstance(test_instance.TestInstance):
   #override
   def SetUp(self):
     """Map data dependencies via isolate."""
+    if self.wait_for_java_debugger:
+      if self._apk_helper and not self._apk_helper.GetIsDebuggable():
+        raise Exception('Passed --wait-for-java-debugger flag but did not set '
+                        'debuggable_apks = true in GN args')
     self._data_deps.extend(
         self._data_deps_delegate(self._runtime_deps_path))
     if self._proguard_mapping_path:
       self._deobfuscator = deobfuscator.DeobfuscatorPool(
           self._proguard_mapping_path)
+
+  def GetLogcatPackageNames(self):
+    ret = {x.GetPackageName() for x in self._additional_apks}
+    if pkg := self.package:
+      ret.add(pkg)
+    return ','.join(sorted(ret))
 
   def MaybeDeobfuscateLines(self, lines):
     if not self._deobfuscator:
@@ -677,8 +688,9 @@ class GtestTestInstance(test_instance.TestInstance):
         filtered_test_list = unittest_util.FilterTestNames(
             filtered_test_list, gtest_filter_string)
 
-      if self._run_disabled and self._gtest_filters:
+      if self._gtest_filters:
         out_filtered_test_list = list(set(test_list)-set(filtered_test_list))
+        disabled_tests = []
         for test in out_filtered_test_list:
           test_name_no_disabled = TestNameWithoutDisabledPrefix(test)
           if test_name_no_disabled == test:
@@ -687,7 +699,16 @@ class GtestTestInstance(test_instance.TestInstance):
               unittest_util.FilterTestNames([test_name_no_disabled],
                                             gtest_filter)
               for gtest_filter in self._gtest_filters):
-            filtered_test_list.append(test)
+            disabled_tests.append(test)
+        if disabled_tests:
+          if self._run_disabled:
+            filtered_test_list += disabled_tests
+          else:
+            color = (logging_utils.BACK.YELLOW, logging_utils.FORE.BLACK)
+            with logging_utils.OverrideColor(logging.WARNING, color):
+              logging.warning(
+                  'Excluded one or more disabled tests. '
+                  'Consider adding: --gtest_also_run_disabled_tests')
     return filtered_test_list
 
   def _GenerateDisabledFilterString(self, disabled_prefixes):

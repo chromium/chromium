@@ -53,6 +53,11 @@ enum class ChromeSignoutConfirmationPromptVariant {
   // The user is supervised and parental controls apply to their profile.
   // Available choices: `kSignout` and `kDismissed`.
   kProfileWithParentalControls,
+  // The user has more bookmarks than the account storage limit, so at least
+  // some of them are unsynced, and can choose between canceling the signout or
+  // proceeding anyway.
+  // Available choices: `kSignout` and `kDismissed`.
+  kTooManyBookmarks,
 };
 
 void RecordChromeSignoutConfirmationPromptMetrics(

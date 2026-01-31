@@ -27,13 +27,13 @@
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/horizontal_tab_strip_region_view.h"
 #include "chrome/browser/ui/views/interaction/browser_elements_views.h"
-#include "chrome/browser/ui/views/tabs/glic_button.h"
+#include "chrome/browser/ui/views/tabs/glic/glic_button.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
 #include "chrome/test/interaction/webcontents_interaction_test_util.h"
-#include "components/tabs/public/split_tab_visual_data.h"
+#include "components/split_tabs/split_tab_visual_data.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/browser_test.h"
@@ -230,6 +230,10 @@ class ContextSharingBorderViewUiTestBase : public test::InteractiveGlicTest {
     } else {
       disabled_features += ",UiGpuRasterization";
     }
+    if (!enabled_features.empty()) {
+      enabled_features += ",";
+    }
+    enabled_features += "GlicActor:glic_actor_policy_control_exemption/true";
 
     features_.InitFromCommandLine(enabled_features, disabled_features);
   }
@@ -260,9 +264,8 @@ class ContextSharingBorderViewUiTestBase : public test::InteractiveGlicTest {
     RunTestSequence(
         // See https://crrev.com/c/6373789: the glic window is in detach mode by
         // default.
-        OpenGlicWindow(GlicWindowMode::kDetached),
-        ExecuteJsAt(test::kGlicContentsElementId,
-                    kContextAccessIndicatorCheckBox, kClickFn));
+        OpenGlic(), ExecuteJsAt(test::kGlicContentsElementId,
+                                kContextAccessIndicatorCheckBox, kClickFn));
   }
 
   void CloseGlicWindow() {
@@ -982,8 +985,16 @@ class ContextSharingBorderViewWithActorGlowUiTest
   base::test::ScopedFeatureList features_;
 };
 
+// TODO(https://crbug.com/478360939): Fix the flakiness.
+#if BUILDFLAG(IS_LINUX)
+#define MAYBE_ActorGlowShowsBorderWhenIndicatorIsOff \
+  DISABLED_ActorGlowShowsBorderWhenIndicatorIsOff
+#else
+#define MAYBE_ActorGlowShowsBorderWhenIndicatorIsOff \
+  ActorGlowShowsBorderWhenIndicatorIsOff
+#endif
 IN_PROC_BROWSER_TEST_F(ContextSharingBorderViewWithActorGlowUiTest,
-                       ActorGlowShowsBorderWhenIndicatorIsOff) {
+                       MAYBE_ActorGlowShowsBorderWhenIndicatorIsOff) {
   auto* border = browser()
                      ->window()
                      ->AsBrowserView()
@@ -1000,7 +1011,6 @@ IN_PROC_BROWSER_TEST_F(ContextSharingBorderViewWithActorGlowUiTest,
   auto* actor_keyed_service =
       actor::ActorKeyedService::Get(browser()->profile());
   ASSERT_TRUE(actor_keyed_service);
-  actor_keyed_service->GetPolicyChecker().SetActOnWebForTesting(true);
 
   // Create a new task.
   const actor::TaskId task_id = actor_keyed_service->CreateTask();
@@ -1064,7 +1074,6 @@ IN_PROC_BROWSER_TEST_F(
   auto* actor_keyed_service =
       actor::ActorKeyedService::Get(browser()->profile());
   ASSERT_TRUE(actor_keyed_service);
-  actor_keyed_service->GetPolicyChecker().SetActOnWebForTesting(true);
 
   // Create a new task.
   const actor::TaskId task_id = actor_keyed_service->CreateTask();

@@ -4321,10 +4321,10 @@ IN_PROC_BROWSER_TEST_P(ProcessReuseOnPrerenderCOOPSwapBrowserTest,
   // with new BrowsingInstance / SiteInstance, and a new process will be
   // assigned to it accordingly.
   ASSERT_TRUE(navigation_manager.WaitForRequestStart());
-  FrameTreeNodeId prerender_host_id =
+  PrerenderHostId prerender_host_id =
       prerender_helper().GetHostForUrl(prerender_page);
-  RenderFrameHostImpl* rfh_2 =
-      web_contents()->UnsafeFindFrameByFrameTreeNodeId(prerender_host_id);
+  auto* rfh_2 = static_cast<RenderFrameHostImpl*>(
+      prerender_helper().GetPrerenderedMainFrameHost(prerender_host_id));
   ASSERT_TRUE(rfh_2);
   scoped_refptr<SiteInstanceImpl> si_2 = rfh_2->GetSiteInstance();
   base::UnguessableToken bi_token_2 =
@@ -4343,8 +4343,8 @@ IN_PROC_BROWSER_TEST_P(ProcessReuseOnPrerenderCOOPSwapBrowserTest,
   // recreated.
   ASSERT_TRUE(navigation_manager.WaitForNavigationFinished());
   ASSERT_TRUE(navigation_manager.was_successful());
-  RenderFrameHostImpl* rfh_3 =
-      web_contents()->UnsafeFindFrameByFrameTreeNodeId(prerender_host_id);
+  auto* rfh_3 = static_cast<RenderFrameHostImpl*>(
+      prerender_helper().GetPrerenderedMainFrameHost(prerender_host_id));
   ASSERT_TRUE(rfh_3);
   scoped_refptr<SiteInstanceImpl> si_3 = rfh_3->GetSiteInstance();
   base::UnguessableToken bi_token_3 =

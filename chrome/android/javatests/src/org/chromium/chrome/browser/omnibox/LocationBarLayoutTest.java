@@ -141,8 +141,9 @@ public class LocationBarLayoutTest {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     locationBarMediator.setUrlBarFocus(
-                            true,
+                            /* shouldBeFocused= */ true,
                             SEARCH_TERMS_URL,
+                            /* selectText= */ false,
                             OmniboxFocusReason.FAKE_BOX_LONG_PRESS,
                             AutocompleteRequestType.SEARCH);
                 });
@@ -155,8 +156,9 @@ public class LocationBarLayoutTest {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     locationBarMediator.setUrlBarFocus(
-                            true,
+                            /* shouldBeFocused= */ true,
                             SEARCH_TERMS,
+                            /* selectText= */ false,
                             OmniboxFocusReason.SEARCH_QUERY,
                             AutocompleteRequestType.SEARCH);
                 });
@@ -169,8 +171,9 @@ public class LocationBarLayoutTest {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     locationBarMediator.setUrlBarFocus(
-                            false,
+                            /* shouldBeFocused= */ false,
                             null,
+                            /* selectText= */ false,
                             OmniboxFocusReason.UNFOCUS,
                             AutocompleteRequestType.SEARCH);
                 });
@@ -182,8 +185,9 @@ public class LocationBarLayoutTest {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     locationBarMediator.setUrlBarFocus(
-                            true,
+                            /* shouldBeFocused= */ true,
                             null,
+                            /* selectText= */ false,
                             OmniboxFocusReason.OMNIBOX_TAP,
                             AutocompleteRequestType.SEARCH);
                 });

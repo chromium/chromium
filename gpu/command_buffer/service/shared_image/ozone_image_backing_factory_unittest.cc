@@ -15,7 +15,6 @@
 #include "gpu/config/gpu_finch_features.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "ui/gfx/buffer_format_util.h"
 #include "ui/gl/gl_context.h"
 #include "ui/gl/gl_surface_egl.h"
 #include "ui/gl/gl_utils.h"
@@ -623,7 +622,7 @@ TEST_F(OzoneImageBackingFactoryTest, CreateGpuMemoryBufferHandle) {
     };
     for (auto usage : usages) {
       if (!ui::OzonePlatform::GetInstance()->IsNativePixmapConfigSupported(
-              viz::SharedImageFormatToBufferFormat(format), usage)) {
+              format, usage)) {
         continue;
       }
 

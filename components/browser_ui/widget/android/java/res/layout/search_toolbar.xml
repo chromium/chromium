@@ -13,9 +13,8 @@ found in the LICENSE file.
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="horizontal"
-    android:visibility="gone" >
+    android:visibility="gone">
 
-    <!-- TODO(crbug.com/40600572): Fix and remove lint ignore -->
     <EditText
         tools:ignore="Autofill,LabelFor"
         android:id="@+id/search_text"
@@ -40,4 +39,5 @@ found in the LICENSE file.
         android:contentDescription="@string/accessibility_toolbar_btn_delete_url"
         android:visibility="invisible"
         app:tint="@color/default_icon_color_tint_list" />
+
 </LinearLayout>

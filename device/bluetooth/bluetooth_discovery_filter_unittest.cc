@@ -6,7 +6,6 @@
 
 #include <memory>
 
-#include "base/containers/contains.h"
 #include "device/bluetooth/bluetooth_common.h"
 #include "device/bluetooth/bluetooth_discovery_session.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -188,9 +187,9 @@ TEST(BluetoothDiscoveryFilterTest, MergeUUIDs) {
   // df3 should contain all uuids from df1 and df2
   std::set<device::BluetoothUUID> out_uuids;
   df3->GetUUIDs(out_uuids);
-  EXPECT_TRUE(base::Contains(out_uuids, uuid1020));
-  EXPECT_TRUE(base::Contains(out_uuids, uuid1003));
-  EXPECT_TRUE(base::Contains(out_uuids, uuid1004));
+  EXPECT_TRUE(out_uuids.contains(uuid1020));
+  EXPECT_TRUE(out_uuids.contains(uuid1003));
+  EXPECT_TRUE(out_uuids.contains(uuid1004));
 
   // Merging with empty filter would return empty filter
   df3 = BluetoothDiscoveryFilter::Merge(&df1, nullptr);

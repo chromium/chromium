@@ -68,7 +68,7 @@ found in the LICENSE file.
         <!-- For now, the name of a native-only service must be prefixed with "NativeService". This is
              only for the prototype, and once it actually lands in the Android tree, there will be a
              better mechanism than this. -->
-        <service android:name="org.chromium.content.app.NativeServiceSandboxedProcessService{{ i }}"
+        <service android:name="org.chromium.content.app.NativeOnlySandboxedProcessService{{ i }}"
             android:process=":sandboxed_process{{ i }}"
             android:isolatedProcess="true"
           android:exported="false" >

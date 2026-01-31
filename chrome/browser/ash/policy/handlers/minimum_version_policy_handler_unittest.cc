@@ -17,6 +17,7 @@
 #include "chrome/browser/ash/policy/handlers/minimum_version_policy_test_helpers.h"
 #include "chrome/browser/ash/settings/scoped_cros_settings_test_helper.h"
 #include "chrome/browser/ash/settings/scoped_testing_cros_settings.h"
+#include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chromeos/ash/components/dbus/shill/shill_service_client.h"
@@ -60,7 +61,7 @@ class MinimumVersionPolicyHandlerTest
   void TearDown() override;
 
   // MinimumVersionPolicyHandler::Delegate:
-  bool IsKioskMode() const override;
+  bool IsKioskMode(const PrefService&) const override;
   bool IsDeviceEnterpriseManaged() const override;
   base::Version GetCurrentVersion() const override;
   bool IsUserEnterpriseManaged() const override;
@@ -78,7 +79,7 @@ class MinimumVersionPolicyHandlerTest
       const;
 
   // Set new value for policy pref.
-  void SetPolicyPref(base::Value::Dict value);
+  void SetPolicyPref(base::DictValue value);
 
   MinimumVersionPolicyHandler* GetMinimumVersionPolicyHandler() {
     return minimum_version_policy_handler_.get();
@@ -128,8 +129,13 @@ void MinimumVersionPolicyHandlerTest::TearDown() {
 
 void MinimumVersionPolicyHandlerTest::CreateMinimumVersionHandler() {
   minimum_version_policy_handler_ =
-      std::make_unique<MinimumVersionPolicyHandler>(this,
-                                                    ash::CrosSettings::Get());
+      std::make_unique<MinimumVersionPolicyHandler>(
+          TestingBrowserProcess::GetGlobal()->local_state(),
+          TestingBrowserProcess::GetGlobal()->GetBuildState(),
+          TestingBrowserProcess::GetGlobal()
+              ->platform_part()
+              ->browser_policy_connector_ash(),
+          this, ash::CrosSettings::Get());
 }
 
 const MinimumVersionRequirement* MinimumVersionPolicyHandlerTest::GetState()
@@ -143,7 +149,7 @@ void MinimumVersionPolicyHandlerTest::SetCurrentVersionString(
   ASSERT_TRUE(current_version_->IsValid());
 }
 
-bool MinimumVersionPolicyHandlerTest::IsKioskMode() const {
+bool MinimumVersionPolicyHandlerTest::IsKioskMode(const PrefService&) const {
   return false;
 }
 
@@ -167,7 +173,7 @@ base::Version MinimumVersionPolicyHandlerTest::GetCurrentVersion() const {
   return *current_version_;
 }
 
-void MinimumVersionPolicyHandlerTest::SetPolicyPref(base::Value::Dict value) {
+void MinimumVersionPolicyHandlerTest::SetPolicyPref(base::DictValue value) {
   scoped_testing_cros_settings_.device_settings()->Set(
       ash::kDeviceMinimumVersion, base::Value(std::move(value)));
 }
@@ -184,8 +190,8 @@ TEST_F(MinimumVersionPolicyHandlerTest, RequirementsNotMetState) {
       run_loop.QuitClosure());
 
   // Create policy value as a list of requirements.
-  base::Value::List requirement_list;
-  base::Value::Dict new_version_short_warning =
+  base::ListValue requirement_list;
+  base::DictValue new_version_short_warning =
       CreateMinimumVersionPolicyRequirement(kNewVersion, kShortWarning,
                                             kNoWarning);
   auto strongest_requirement = MinimumVersionRequirement::CreateInstanceIfValid(
@@ -213,7 +219,7 @@ TEST_F(MinimumVersionPolicyHandlerTest, RequirementsNotMetState) {
             kShortWarning);
 
   // Reset the pref to empty list and verify state is reset.
-  SetPolicyPref(base::Value::Dict());
+  SetPolicyPref(base::DictValue());
   EXPECT_TRUE(GetMinimumVersionPolicyHandler()->RequirementsAreSatisfied());
   EXPECT_FALSE(GetState());
   EXPECT_FALSE(GetMinimumVersionPolicyHandler()->GetTimeRemainingInDays());
@@ -286,7 +292,7 @@ TEST_F(MinimumVersionPolicyHandlerTest, RequirementsMetState) {
   EXPECT_FALSE(GetState());
 
   // Create policy value as a list of requirements.
-  base::Value::List requirement_list;
+  base::ListValue requirement_list;
   auto current_version_no_warning = CreateMinimumVersionPolicyRequirement(
       kFakeCurrentVersion, kNoWarning, kNoWarning);
   auto old_version_long_warning = CreateMinimumVersionPolicyRequirement(

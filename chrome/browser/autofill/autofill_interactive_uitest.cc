@@ -620,7 +620,7 @@ class AutofillInteractiveTestBase : public AutofillUiTest {
 
   std::unique_ptr<net::test_server::HttpResponse> HandleTestURL(
       const net::test_server::HttpRequest& request) {
-    if (!base::Contains(path_keyed_response_bodies_, request.relative_url)) {
+    if (!path_keyed_response_bodies_.contains(request.relative_url)) {
       return nullptr;
     }
 
@@ -2056,58 +2056,6 @@ IN_PROC_BROWSER_TEST_F(AutofillInteractiveTest,
 
   EXPECT_EQ(email, GetFieldValueById("EMAIL_CONFIRM"));
   // TODO(isherman): verify entire form.
-}
-
-// Test latency time on form submit with lots of stored Autofill profiles.
-// This test verifies when a profile is selected from the Autofill dictionary
-// that consists of thousands of profiles, the form does not hang after being
-// submitted.
-// Flakily times out creating 1500 profiles: http://crbug.com/281527
-IN_PROC_BROWSER_TEST_F(AutofillInteractiveTest,
-                       DISABLED_FormFillLatencyAfterSubmit) {
-  std::vector<std::string> cities;
-  cities.push_back("San Jose");
-  cities.push_back("San Francisco");
-  cities.push_back("Sacramento");
-  cities.push_back("Los Angeles");
-
-  std::vector<std::string> streets;
-  streets.push_back("St");
-  streets.push_back("Ave");
-  streets.push_back("Ln");
-  streets.push_back("Ct");
-
-  constexpr int kNumProfiles = 1500;
-  for (int i = 0; i < kNumProfiles; i++) {
-    AutofillProfile profile(AddressCountryCode("US"));
-    std::u16string name(base::NumberToString16(i));
-    std::u16string email(name + u"@example.com");
-    std::u16string street =
-        ASCIIToUTF16(base::NumberToString(base::RandInt(0, 10000)) + " " +
-                     streets[base::RandInt(0, streets.size() - 1)]);
-    std::u16string city =
-        ASCIIToUTF16(cities[base::RandInt(0, cities.size() - 1)]);
-    std::u16string zip(base::NumberToString16(base::RandInt(0, 10000)));
-    profile.SetRawInfo(NAME_FIRST, name);
-    profile.SetRawInfo(EMAIL_ADDRESS, email);
-    profile.SetRawInfo(ADDRESS_HOME_LINE1, street);
-    profile.SetRawInfo(ADDRESS_HOME_CITY, city);
-    profile.SetRawInfo(ADDRESS_HOME_STATE, u"CA");
-    profile.SetRawInfo(ADDRESS_HOME_ZIP, zip);
-    AddTestProfile(browser()->profile(), profile);
-  }
-
-  GURL url = embedded_test_server()->GetURL(
-      "/autofill/latency_after_submit_test.html");
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
-  ASSERT_TRUE(AutofillFlow(GetElementById("NAME_FIRST"), this));
-
-  content::LoadStopObserver load_stop_observer(GetWebContents());
-
-  ASSERT_TRUE(content::ExecJs(GetWebContents(),
-                              "document.getElementById('testform').submit();"));
-  // This will ensure the test didn't hang.
-  load_stop_observer.Wait();
 }
 
 // Test that Chrome doesn't crash when autocomplete is disabled while the user

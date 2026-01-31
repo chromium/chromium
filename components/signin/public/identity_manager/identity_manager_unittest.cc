@@ -46,7 +46,6 @@
 #include "components/signin/public/identity_manager/accounts_cookie_mutator.h"
 #include "components/signin/public/identity_manager/device_accounts_synchronizer.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
-#include "components/signin/public/identity_manager/scope_set.h"
 #include "components/signin/public/identity_manager/set_accounts_in_cookie_result.h"
 #include "components/signin/public/identity_manager/test_identity_manager_observer.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
@@ -84,7 +83,7 @@ class CustomFakeOAuth2AccessTokenManager : public FakeOAuth2AccessTokenManager {
 
   void set_on_access_token_invalidated_info(
       CoreAccountId expected_account_id_to_invalidate,
-      std::set<std::string> expected_scopes_to_invalidate,
+      const ScopeSet& expected_scopes_to_invalidate,
       std::string expected_access_token_to_invalidate,
       base::OnceClosure callback) {
     expected_account_id_to_invalidate_ = expected_account_id_to_invalidate;
@@ -116,7 +115,7 @@ class CustomFakeOAuth2AccessTokenManager : public FakeOAuth2AccessTokenManager {
   }
 
   CoreAccountId expected_account_id_to_invalidate_;
-  std::set<std::string> expected_scopes_to_invalidate_;
+  ScopeSet expected_scopes_to_invalidate_;
   std::string expected_access_token_to_invalidate_;
   base::OnceClosure on_access_token_invalidated_callback_;
 };
@@ -143,7 +142,7 @@ class CustomFakeProfileOAuth2TokenService
 
   void set_on_access_token_invalidated_info(
       CoreAccountId expected_account_id_to_invalidate,
-      std::set<std::string> expected_scopes_to_invalidate,
+      const ScopeSet& expected_scopes_to_invalidate,
       std::string expected_access_token_to_invalidate,
       base::OnceClosure callback) {
     GetCustomAccessTokenManager()->set_on_access_token_invalidated_info(
@@ -1117,8 +1116,8 @@ TEST_F(IdentityManagerTest,
   CoreAccountId account_id2 = account_info2.account_id;
   SetRefreshTokenForAccount(identity_manager(), account_id2);
 
-  GoogleServiceAuthError user_not_signed_up_error =
-      GoogleServiceAuthError(GoogleServiceAuthError::State::USER_NOT_SIGNED_UP);
+  GoogleServiceAuthError account_not_found_error =
+      GoogleServiceAuthError(GoogleServiceAuthError::State::ACCOUNT_NOT_FOUND);
   GoogleServiceAuthError invalid_gaia_credentials_error =
       GoogleServiceAuthError(
           GoogleServiceAuthError::State::INVALID_GAIA_CREDENTIALS);
@@ -1127,12 +1126,12 @@ TEST_F(IdentityManagerTest,
 
   // Set a persistent error for |account_id2| and check that it's reflected.
   token_service()->UpdateAuthErrorForTesting(account_id2,
-                                             user_not_signed_up_error);
+                                             account_not_found_error);
   EXPECT_EQ(account_id2,
             identity_manager_observer()
                 ->AccountFromErrorStateOfRefreshTokenUpdatedCallback()
                 .account_id);
-  EXPECT_EQ(user_not_signed_up_error,
+  EXPECT_EQ(account_not_found_error,
             identity_manager_observer()
                 ->ErrorFromErrorStateOfRefreshTokenUpdatedCallback());
 
@@ -1143,7 +1142,7 @@ TEST_F(IdentityManagerTest,
             identity_manager_observer()
                 ->AccountFromErrorStateOfRefreshTokenUpdatedCallback()
                 .account_id);
-  EXPECT_EQ(user_not_signed_up_error,
+  EXPECT_EQ(account_not_found_error,
             identity_manager_observer()
                 ->ErrorFromErrorStateOfRefreshTokenUpdatedCallback());
 
@@ -1263,8 +1262,8 @@ TEST_F(IdentityManagerTest, GetErrorStateOfRefreshTokenForAccount) {
       identity_manager()->HasAccountWithRefreshTokenInPersistentErrorState(
           account_id2));
 
-  GoogleServiceAuthError user_not_signed_up_error =
-      GoogleServiceAuthError(GoogleServiceAuthError::State::USER_NOT_SIGNED_UP);
+  GoogleServiceAuthError account_not_found_error =
+      GoogleServiceAuthError(GoogleServiceAuthError::State::ACCOUNT_NOT_FOUND);
   GoogleServiceAuthError invalid_gaia_credentials_error =
       GoogleServiceAuthError(
           GoogleServiceAuthError::State::INVALID_GAIA_CREDENTIALS);
@@ -1273,9 +1272,9 @@ TEST_F(IdentityManagerTest, GetErrorStateOfRefreshTokenForAccount) {
 
   // Set a persistent error for |account_id2| and check that it's reflected.
   token_service()->UpdateAuthErrorForTesting(account_id2,
-                                             user_not_signed_up_error);
+                                             account_not_found_error);
   EXPECT_EQ(
-      user_not_signed_up_error,
+      account_not_found_error,
       identity_manager()->GetErrorStateOfRefreshTokenForAccount(account_id2));
   EXPECT_TRUE(
       identity_manager()->HasAccountWithRefreshTokenInPersistentErrorState(
@@ -1302,7 +1301,7 @@ TEST_F(IdentityManagerTest, GetErrorStateOfRefreshTokenForAccount) {
   token_service()->UpdateAuthErrorForTesting(primary_account_id,
                                              invalid_gaia_credentials_error);
   EXPECT_EQ(
-      user_not_signed_up_error,
+      account_not_found_error,
       identity_manager()->GetErrorStateOfRefreshTokenForAccount(account_id2));
   EXPECT_TRUE(
       identity_manager()->HasAccountWithRefreshTokenInPersistentErrorState(
@@ -1517,7 +1516,7 @@ TEST_F(IdentityManagerTest,
   run_loop.Run();
 
   EXPECT_TRUE(token_fetcher);
-  EXPECT_EQ(GoogleServiceAuthError(GoogleServiceAuthError::USER_NOT_SIGNED_UP),
+  EXPECT_EQ(GoogleServiceAuthError(GoogleServiceAuthError::ACCOUNT_NOT_FOUND),
             identity_manager_diagnostics_observer()
                 ->on_access_token_request_completed_error());
 }
@@ -1590,11 +1589,11 @@ TEST_F(IdentityManagerTest,
   run_loop.Run();
 
   EXPECT_TRUE(token_fetcher);
-  EXPECT_EQ(GoogleServiceAuthError(GoogleServiceAuthError::USER_NOT_SIGNED_UP),
+  EXPECT_EQ(GoogleServiceAuthError(GoogleServiceAuthError::ACCOUNT_NOT_FOUND),
             identity_manager_diagnostics_observer()
                 ->on_access_token_request_completed_error());
   histogram_tester.ExpectUniqueSample(
-      "Signin.AccessTokenFetch.Failure.UserNotSignedUp", 0, 1);
+      "Signin.AccessTokenFetch.Failure.AccountNotFound", 0, 1);
 }
 
 TEST_F(IdentityManagerTest, GetAccountsCookieMutator) {
@@ -2447,7 +2446,7 @@ TEST_F(IdentityManagerTest, RefreshAccountInfoIfStale) {
   identity_manager()->GetAccountFetcherService()->OnNetworkInitialized();
   AccountInfo account_info =
       MakeAccountAvailable(identity_manager(), kTestEmail2);
-  identity_manager()->RefreshAccountInfoIfStale(account_info.account_id);
+  identity_manager()->RefreshAccountInfoIfStale(account_info.GetAccountId());
 
   SimulateSuccessfulFetchOfAccountInfo(
       identity_manager(), account_info.account_id, account_info.email,
@@ -2456,14 +2455,14 @@ TEST_F(IdentityManagerTest, RefreshAccountInfoIfStale) {
 
   const AccountInfo& refreshed_account_info =
       identity_manager_observer()->AccountFromAccountUpdatedCallback();
-  EXPECT_EQ(account_info.account_id, refreshed_account_info.account_id);
-  EXPECT_EQ(account_info.email, refreshed_account_info.email);
-  EXPECT_EQ(account_info.gaia, refreshed_account_info.gaia);
-  EXPECT_EQ(kTestHostedDomain, refreshed_account_info.GetHostedDomain());
-  EXPECT_EQ(kTestFullName, refreshed_account_info.full_name);
-  EXPECT_EQ(kTestGivenName, refreshed_account_info.given_name);
-  EXPECT_EQ(kTestLocale, refreshed_account_info.locale);
-  EXPECT_EQ(kTestPictureUrl, refreshed_account_info.picture_url);
+  EXPECT_EQ(refreshed_account_info.GetAccountId(), account_info.GetAccountId());
+  EXPECT_EQ(refreshed_account_info.GetEmail(), account_info.GetEmail());
+  EXPECT_EQ(refreshed_account_info.GetGaiaId(), account_info.GetGaiaId());
+  EXPECT_EQ(refreshed_account_info.GetHostedDomain(), kTestHostedDomain);
+  EXPECT_EQ(refreshed_account_info.GetFullName(), kTestFullName);
+  EXPECT_EQ(refreshed_account_info.GetGivenName(), kTestGivenName);
+  EXPECT_EQ(refreshed_account_info.GetLocale(), kTestLocale);
+  EXPECT_EQ(refreshed_account_info.GetAvatarUrl(), kTestPictureUrl);
 }
 #endif  // BUILDFLAG(IS_ANDROID)
 

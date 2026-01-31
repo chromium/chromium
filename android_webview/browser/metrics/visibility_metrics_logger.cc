@@ -5,7 +5,6 @@
 #include "android_webview/browser/metrics/visibility_metrics_logger.h"
 
 #include "base/compiler_specific.h"
-#include "base/containers/contains.h"
 #include "base/metrics/histogram.h"
 #include "base/metrics/histogram_base.h"
 #include "base/time/time.h"
@@ -163,7 +162,7 @@ VisibilityMetricsLogger::~VisibilityMetricsLogger() = default;
 
 void VisibilityMetricsLogger::AddClient(Client* client) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  DCHECK(!base::Contains(client_visibility_, client));
+  DCHECK(!client_visibility_.contains(client));
 
   UpdateDurations();
 
@@ -174,7 +173,7 @@ void VisibilityMetricsLogger::AddClient(Client* client) {
 
 void VisibilityMetricsLogger::RemoveClient(Client* client) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  DCHECK(base::Contains(client_visibility_, client));
+  DCHECK(client_visibility_.contains(client));
 
   UpdateDurations();
 
@@ -184,7 +183,7 @@ void VisibilityMetricsLogger::RemoveClient(Client* client) {
 
 void VisibilityMetricsLogger::ClientVisibilityChanged(Client* client) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  DCHECK(base::Contains(client_visibility_, client));
+  DCHECK(client_visibility_.contains(client));
 
   UpdateDurations();
 

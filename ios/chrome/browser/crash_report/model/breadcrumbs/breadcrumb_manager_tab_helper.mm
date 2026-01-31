@@ -4,7 +4,6 @@
 
 #import "ios/chrome/browser/crash_report/model/breadcrumbs/breadcrumb_manager_tab_helper.h"
 
-#import "base/containers/contains.h"
 #import "base/ios/ns_error_util.h"
 #import "base/strings/stringprintf.h"
 #import "components/breadcrumbs/core/breadcrumb_manager_keyed_service.h"
@@ -76,8 +75,7 @@ BreadcrumbManagerTabHelper::BreadcrumbManagerTabHelper(web::WebState* web_state)
 BreadcrumbManagerTabHelper::~BreadcrumbManagerTabHelper() = default;
 
 void BreadcrumbManagerTabHelper::PlatformLogEvent(const std::string& event) {
-  const bool is_scroll_event =
-      base::Contains(event, breadcrumbs::kBreadcrumbScroll);
+  const bool is_scroll_event = event.contains(breadcrumbs::kBreadcrumbScroll);
   if (!is_scroll_event) {
     // `sequentially_scrolled_` is incremented for each scroll event and reset
     // here when non-scrolling event is logged. The user can scroll multiple

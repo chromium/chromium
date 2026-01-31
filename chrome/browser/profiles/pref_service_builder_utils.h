@@ -38,6 +38,10 @@ namespace os_crypt_async {
 class OSCryptAsync;
 }  // namespace os_crypt_async
 
+namespace supervised_user {
+class DeviceParentalControls;
+}  // namespace supervised_user
+
 // This file includes multiple helper functions to create the Profile's
 // PrefService. Note: please update all of the callers if updating any helper
 // function. Currently, these code are called in both ProfileImpl and
@@ -62,6 +66,7 @@ std::unique_ptr<sync_preferences::PrefServiceSyncable> CreateProfilePrefService(
     SimpleFactoryKey* key,
     const base::FilePath& profile_path,
     bool async_prefs,
-    os_crypt_async::OSCryptAsync* os_crypt_async);
+    os_crypt_async::OSCryptAsync* os_crypt_async,
+    supervised_user::DeviceParentalControls& device_parental_controls);
 
 #endif  // CHROME_BROWSER_PROFILES_PREF_SERVICE_BUILDER_UTILS_H_

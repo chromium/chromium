@@ -22,6 +22,7 @@
 
 #if BUILDFLAG(IS_ANDROID)
 #include "content/browser/accessibility/browser_accessibility_manager_android.h"
+#include "content/browser/accessibility/browser_accessibility_state_impl_android.h"
 #endif
 
 namespace content {
@@ -185,4 +186,41 @@ TEST_F(BrowserAccessibilityStateImplTest, PlatformActivationFiltering) {
   }
 }
 
+#if BUILDFLAG(IS_ANDROID)
+
+// Test Accessibility Histogram Recording.
+TEST(BrowserAccessibilityStateImplAndroidTest,
+     RecordAccessibilityTechHistograms) {
+  base::HistogramTester histogram_tester;
+
+  std::array<std::string_view, 5> histograms{
+      "Accessibility.Android.AccessibilitySuite",
+      "Accessibility.Android.SoundAmplifier",
+      "Accessibility.Android.ActionBlocks", "Accessibility.Android.VoiceAccess",
+      "Accessibility.Android.BrailleBack"};
+
+  ASSERT_FALSE(RecordAssistiveTechHistogram(0));
+
+  // Ensure we start at zeroes.
+  for (std::string_view histogram : histograms) {
+    histogram_tester.ExpectTotalCount(histogram, 0);
+  }
+
+  // Start recording.
+  ASSERT_TRUE(RecordAssistiveTechHistogram(0x349d4b1a));  // AccessibilitySuite
+  ASSERT_TRUE(RecordAssistiveTechHistogram(0xa5a469fc));  // SoundAmplifier
+  ASSERT_TRUE(RecordAssistiveTechHistogram(0xb13e6179));  // ActionBlocks
+  ASSERT_TRUE(RecordAssistiveTechHistogram(0xb38ef877));  // VoiceAccess
+  ASSERT_TRUE(RecordAssistiveTechHistogram(0xbc2897b4));  // BrailleBack
+
+  for (std::string_view histogram : histograms) {
+    histogram_tester.ExpectTotalCount(histogram, 1);
+  }
+
+  // One more.
+  ASSERT_TRUE(RecordAssistiveTechHistogram(0x349d4b1a));  // AccessibilitySuite
+  histogram_tester.ExpectTotalCount(histograms[0], 2);
+}
+
+#endif  // BUILDFLAG(IS_ANDROID)
 }  // namespace content

@@ -34,6 +34,25 @@ uploading your change for review.  These are checked by presubmit scripts.
   <int value="5" label="Admin Policy"/>
 </enum>
 
+<enum name="InternalPaymentAppAvailability">
+<!-- Must be kept in sync with the enum of the same name in internal Chrome for Android code. -->
+
+  <int value="0" label="Unknown"/>
+  <int value="1" label="Not Applicable - non-internal method"/>
+  <int value="2" label="Available"/>
+  <int value="3" label="Unavailable - Payment Request being aborted"/>
+  <int value="4" label="Unavailable - Cannot get page context"/>
+  <int value="5" label="Unavailable - Cannot use first-party Play Services"/>
+  <int value="6" label="Unavailable - Play Services is too old"/>
+  <int value="7"
+      label="Unavailable - Used legacy https://android.com/pay method"/>
+  <int value="8" label="Unavailable - Connection to Play Services failed"/>
+  <int value="9"
+      label="Unavailable - Connection to Play Services was suspended"/>
+  <int value="10" label="Unavailable - IsReadyToPay task failed"/>
+  <int value="11" label="Unavailable - IsReadyToPay task returned false"/>
+</enum>
+
 <enum name="PaymentRequestAddressEditorMode">
   <int value="0" label="Add new address"/>
   <int value="1" label="Edit existing address"/>

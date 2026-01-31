@@ -78,23 +78,25 @@ class AwPrefetchManager {
       const base::android::JavaRef<jobject>& callback,
       const base::android::JavaRef<jobject>& callback_executor);
 
-  void CancelPrefetch(JNIEnv* env, jint prefetch_key);
+  void CancelPrefetch(JNIEnv* env, int32_t prefetch_key);
 
-  bool GetIsPrefetchInCacheForTesting(JNIEnv* env, jint prefetch_key);
+  bool GetIsPrefetchInCacheForTesting(JNIEnv* env, int32_t prefetch_key);
 
   // Updates Time-To-Live (TTL) for the prefetched content in seconds.
-  void SetTtlInSec(JNIEnv* env, jint ttl_in_sec) { ttl_in_sec_ = ttl_in_sec; }
+  void SetTtlInSec(JNIEnv* env, int32_t ttl_in_sec) {
+    ttl_in_sec_ = ttl_in_sec;
+  }
 
   // Updates the maximum number of allowed prefetches in cache
-  void SetMaxPrefetches(JNIEnv* env, jint max_prefetches) {
+  void SetMaxPrefetches(JNIEnv* env, int32_t max_prefetches) {
     max_prefetches_ = std::min(max_prefetches, ABSOLUTE_MAX_PREFETCHES);
   }
 
   // Returns the Time-to-Live (TTL) for prefetched content in seconds.
-  jint GetTtlInSec(JNIEnv* env) const { return ttl_in_sec_; }
+  int32_t GetTtlInSec(JNIEnv* env) const { return ttl_in_sec_; }
 
   // Returns the maximum number of allowed prefetches in cache.
-  jint GetMaxPrefetches(JNIEnv* env) const { return max_prefetches_; }
+  int32_t GetMaxPrefetches(JNIEnv* env) const { return max_prefetches_; }
 
   // Returns the key associated with the prefetch handle inside of
   // `all_prefetches_map_`.

@@ -430,7 +430,7 @@ TEST_F(PolicyServiceTest, SinglePolicyManager) {
 TEST_F(PolicyServiceTest, MultiplePolicyManagers) {
   PolicyManagers managers;
 
-  auto manager = base::MakeRefCounted<FakePolicyManager>(true, "group_policy");
+  auto manager = base::MakeRefCounted<FakePolicyManager>(true, "Group Policy");
   manager->SetCloudPolicyOverridesPlatformPolicy(false);
   UpdatesSuppressedTimes updates_suppressed_times;
   updates_suppressed_times.start_hour_ = 5;
@@ -444,7 +444,7 @@ TEST_F(PolicyServiceTest, MultiplePolicyManagers) {
   manager->SetUpdatePolicy(enterprise_companion::kCompanionAppId, 0);
   managers.push_back(std::move(manager));
 
-  manager = base::MakeRefCounted<FakePolicyManager>(true, "device_management");
+  manager = base::MakeRefCounted<FakePolicyManager>(true, "Device Management");
   manager->SetUpdatesSuppressedTimes(updates_suppressed_times);
   manager->SetPackageCacheExpirationTimeDays(60);
   manager->SetInstallPolicy("app1", 1);
@@ -452,7 +452,7 @@ TEST_F(PolicyServiceTest, MultiplePolicyManagers) {
   manager->SetUpdatePolicy("app1", 3);
   managers.push_back(std::move(manager));
 
-  manager = base::MakeRefCounted<FakePolicyManager>(true, "imaginary");
+  manager = base::MakeRefCounted<FakePolicyManager>(true, "DictValuePolicy");
   manager->SetProxyMode("direct");
   manager->SetProxyPacUrl("url://proxyurl");
   manager->SetProxyServer("test-server");
@@ -462,7 +462,7 @@ TEST_F(PolicyServiceTest, MultiplePolicyManagers) {
   updates_suppressed_times.duration_minute_ = 20;
   manager->SetInstallPolicy(enterprise_companion::kCompanionAppId, 0);
   manager->SetUpdatesSuppressedTimes(updates_suppressed_times);
-  manager->SetChannel("app1", "channel_imaginary");
+  manager->SetChannel("app1", "channel_DictValuePolicy");
   manager->SetTargetVersionPrefix("app1", "103.3.");
   manager->SetUpdatePolicy("app1", 2);
   manager->SetInstallPolicy("app2", 2);
@@ -473,22 +473,22 @@ TEST_F(PolicyServiceTest, MultiplePolicyManagers) {
 
   auto policy_service = CreatePolicyServiceForTesting(std::move(managers));
   EXPECT_EQ(policy_service->source(),
-            "group_policy;device_management;imaginary;Default");
+            "Group Policy;Device Management;DictValuePolicy;Default");
 
   EXPECT_TRUE(policy_service->CloudPolicyOverridesPlatformPolicy());
   EXPECT_FALSE(policy_service->CloudPolicyOverridesPlatformPolicy().policy());
   EXPECT_THAT(
       policy_service->GetPackageCacheSizeLimitMBytes().effective_policy(),
-      Optional(PolicyEntry("group_policy", 1000)));
+      Optional(PolicyEntry("Group Policy", 1000)));
   EXPECT_THAT(
       policy_service->GetPackageCacheExpirationTimeDays().effective_policy(),
-      Optional(PolicyEntry("device_management", 60)));
+      Optional(PolicyEntry("Device Management", 60)));
   EXPECT_THAT(policy_service->GetProxyMode().effective_policy(),
-              Optional(PolicyEntry("imaginary", "direct")));
+              Optional(PolicyEntry("DictValuePolicy", "direct")));
   EXPECT_THAT(policy_service->GetProxyPacUrl().effective_policy(),
-              Optional(PolicyEntry("imaginary", "url://proxyurl")));
+              Optional(PolicyEntry("DictValuePolicy", "url://proxyurl")));
   EXPECT_THAT(policy_service->GetProxyServer().effective_policy(),
-              Optional(PolicyEntry("imaginary", "test-server")));
+              Optional(PolicyEntry("DictValuePolicy", "test-server")));
 
   PolicyStatus<UpdatesSuppressedTimes> suppressed_time_status =
       policy_service->GetUpdatesSuppressedTimes();
@@ -497,7 +497,7 @@ TEST_F(PolicyServiceTest, MultiplePolicyManagers) {
   EXPECT_THAT(
       suppressed_time_status.effective_policy(),
       Optional(PolicyEntry(
-          "group_policy",
+          "Group Policy",
           UpdatesSuppressedTimes{
               .start_hour_ = 5, .start_minute_ = 10, .duration_minute_ = 30})));
 
@@ -505,14 +505,15 @@ TEST_F(PolicyServiceTest, MultiplePolicyManagers) {
       policy_service->GetTargetChannel("app1");
   ASSERT_TRUE(channel_status);
   EXPECT_THAT(channel_status.effective_policy(),
-              Optional(PolicyEntry("group_policy", "channel_gp")));
+              Optional(PolicyEntry("Group Policy", "channel_gp")));
   EXPECT_THAT(channel_status.conflict_policy(),
-              Optional(PolicyEntry("device_management", "channel_dm")));
+              Optional(PolicyEntry("Device Management", "channel_dm")));
   EXPECT_EQ(channel_status.policy(), "channel_gp");
-  EXPECT_THAT(channel_status.all_policies(),
-              ElementsAre(PolicyEntry("group_policy", "channel_gp"),
-                          PolicyEntry("device_management", "channel_dm"),
-                          PolicyEntry("imaginary", "channel_imaginary")));
+  EXPECT_THAT(
+      channel_status.all_policies(),
+      ElementsAre(PolicyEntry("Group Policy", "channel_gp"),
+                  PolicyEntry("Device Management", "channel_dm"),
+                  PolicyEntry("DictValuePolicy", "channel_DictValuePolicy")));
 
   PolicyStatus<int> companion_app_install_status =
       policy_service->GetPolicyForAppInstalls(
@@ -530,229 +531,232 @@ TEST_F(PolicyServiceTest, MultiplePolicyManagers) {
       policy_service->GetPolicyForAppInstalls("app1");
   ASSERT_TRUE(app1_install_status);
   EXPECT_THAT(app1_install_status.effective_policy(),
-              Optional(PolicyEntry("group_policy", 0)));
+              Optional(PolicyEntry("Group Policy", 0)));
   EXPECT_THAT(app1_install_status.conflict_policy(),
-              Optional(PolicyEntry("device_management", 1)));
+              Optional(PolicyEntry("Device Management", 1)));
   EXPECT_EQ(app1_install_status.policy(), 0);
   EXPECT_THAT(app1_install_status.all_policies(),
-              ElementsAre(PolicyEntry("group_policy", 0),
-                          PolicyEntry("device_management", 1),
+              ElementsAre(PolicyEntry("Group Policy", 0),
+                          PolicyEntry("Device Management", 1),
                           PolicyEntry("Default", 1)));
 
   PolicyStatus<int> app1_update_status =
       policy_service->GetPolicyForAppUpdates("app1");
   ASSERT_TRUE(app1_update_status);
   EXPECT_THAT(app1_update_status.effective_policy(),
-              Optional(PolicyEntry("device_management", 3)));
+              Optional(PolicyEntry("Device Management", 3)));
   EXPECT_THAT(app1_update_status.conflict_policy(),
-              Optional(PolicyEntry("imaginary", 2)));
+              Optional(PolicyEntry("DictValuePolicy", 2)));
   EXPECT_EQ(app1_update_status.policy(), 3);
-  EXPECT_THAT(
-      app1_update_status.all_policies(),
-      ElementsAre(PolicyEntry("device_management", 3),
-                  PolicyEntry("imaginary", 2), PolicyEntry("Default", 1)));
+  EXPECT_THAT(app1_update_status.all_policies(),
+              ElementsAre(PolicyEntry("Device Management", 3),
+                          PolicyEntry("DictValuePolicy", 2),
+                          PolicyEntry("Default", 1)));
 
   PolicyStatus<int> app2_install_status =
       policy_service->GetPolicyForAppInstalls("app2");
   ASSERT_TRUE(app2_install_status);
   EXPECT_THAT(app2_install_status.effective_policy(),
-              Optional(PolicyEntry("imaginary", 2)));
+              Optional(PolicyEntry("DictValuePolicy", 2)));
   EXPECT_THAT(app2_install_status.conflict_policy(),
               Optional(PolicyEntry("Default", 1)));
   EXPECT_EQ(app2_install_status.policy(), 2);
-  EXPECT_THAT(
-      app2_install_status.all_policies(),
-      ElementsAre(PolicyEntry("imaginary", 2), PolicyEntry("Default", 1)));
+  EXPECT_THAT(app2_install_status.all_policies(),
+              ElementsAre(PolicyEntry("DictValuePolicy", 2),
+                          PolicyEntry("Default", 1)));
 
   PolicyStatus<int> app2_update_status =
       policy_service->GetPolicyForAppUpdates("app2");
   ASSERT_TRUE(app2_update_status);
   EXPECT_THAT(app2_update_status.effective_policy(),
-              Optional(PolicyEntry("group_policy", 1)));
+              Optional(PolicyEntry("Group Policy", 1)));
   EXPECT_EQ(app2_update_status.policy(), 1);
   EXPECT_EQ(app2_update_status.conflict_policy(), std::nullopt);
   EXPECT_THAT(
       app2_update_status.all_policies(),
-      ElementsAre(PolicyEntry("group_policy", 1), PolicyEntry("Default", 1)));
+      ElementsAre(PolicyEntry("Group Policy", 1), PolicyEntry("Default", 1)));
 
   PolicyStatus<std::string> download_preference_status =
       policy_service->GetDownloadPreference();
   ASSERT_TRUE(download_preference_status);
   EXPECT_THAT(download_preference_status.effective_policy(),
-              Optional(PolicyEntry("imaginary", "cacheable")));
+              Optional(PolicyEntry("DictValuePolicy", "cacheable")));
   EXPECT_EQ(download_preference_status.conflict_policy(), std::nullopt);
 
   EXPECT_EQ(policy_service->GetAllPoliciesAsString(),
             base::StringPrintf(
                 "{\n"
-                "  CloudPolicyOverridesPlatformPolicy = 0 (group_policy)\n"
-                "  LastCheckPeriod = 270 (Default)\n"
-                "  UpdatesSuppressed = "
-                "{StartHour: 5, StartMinute: 10, Duration: 30} (group_policy)\n"
-                "  DownloadPreference = cacheable (imaginary)\n"
-                "  PackageCacheSizeLimit = 1000 MB (group_policy)\n"
-                "  PackageCacheExpires = 60 days (device_management)\n"
-                "  ProxyMode = direct (imaginary)\n"
-                "  ProxyPacURL = url://proxyurl (imaginary)\n"
-                "  ProxyServer = test-server (imaginary)\n"
+                "  CloudPolicyOverridesPlatformPolicy = false (Group Policy)\n"
+                "  DownloadPreference = cacheable (DictValuePolicy)\n"
+                "  LastCheckPeriod = 16200 s (Default)\n"
+                "  PackageCacheExpires = 60 (Device Management)\n"
+                "  PackageCacheSizeLimit = 1000 (Group Policy)\n"
+                "  ProxyMode = direct (DictValuePolicy)\n"
+                "  ProxyPacURL = url://proxyurl (DictValuePolicy)\n"
+                "  ProxyServer = test-server (DictValuePolicy)\n"
+                "  UpdatesSuppressed = 5, 10, 30 (Group Policy)\n"
                 "  \"app1\": {\n"
-                "    Install = 0 (group_policy)\n"
-                "    Update = 3 (device_management)\n"
-                "    TargetChannel = channel_gp (group_policy)\n"
-                "    TargetVersionPrefix = 103.3. (imaginary)\n"
-                "    RollbackToTargetVersionAllowed = 0 (Default)\n"
+                "    Install = 0 (Group Policy)\n"
+                "    RollbackToTargetVersionAllowed = false (Default)\n"
+                "    TargetChannel = channel_gp (Group Policy)\n"
+                "    TargetVersionPrefix = 103.3. (DictValuePolicy)\n"
+                "    Update = 3 (Device Management)\n"
                 "  }\n"
                 "  \"app2\": {\n"
-                "    Install = 2 (imaginary)\n"
-                "    Update = 1 (group_policy)\n"
-                "    RollbackToTargetVersionAllowed = 0 (Default)\n"
+                "    Install = 2 (DictValuePolicy)\n"
+                "    RollbackToTargetVersionAllowed = false (Default)\n"
+                "    Update = 1 (Group Policy)\n"
                 "  }\n"
                 "  \"%s\": {\n"
                 "    \n"
                 "  }\n"
                 "}\n",
                 enterprise_companion::kCompanionAppId));
+
   EXPECT_EQ(
       policy_service->GetAllPolicies(),
-      base::Value::Dict()
+      base::DictValue()
+          .Set("policiesByName",
+               base::DictValue()
+                   .Set("CloudPolicyOverridesPlatformPolicy",
+                        base::DictValue()
+                            .Set("valuesBySource",
+                                 base::DictValue().Set("Group Policy", false))
+                            .Set("prevailingSource", "Group Policy"))
+                   .Set("LastCheckPeriod",
+                        base::DictValue()
+                            .Set("valuesBySource",
+                                 base::DictValue().Set("Default",
+                                                       base::TimeDeltaToValue(
+                                                           base::Minutes(270))))
+                            .Set("prevailingSource", "Default"))
+                   .Set("UpdatesSuppressed",
+                        base::DictValue()
+                            .Set("valuesBySource",
+                                 base::DictValue()
+                                     .Set("Group Policy",
+                                          base::DictValue()
+                                              .Set("StartHour", 5)
+                                              .Set("StartMinute", 10)
+                                              .Set("Duration", 30))
+                                     .Set("DictValuePolicy",
+                                          base::DictValue()
+                                              .Set("StartHour", 1)
+                                              .Set("StartMinute", 1)
+                                              .Set("Duration", 20))
+                                     .Set("Device Management",
+                                          base::DictValue()
+                                              .Set("StartHour", 5)
+                                              .Set("StartMinute", 10)
+                                              .Set("Duration", 30)))
+                            .Set("prevailingSource", "Group Policy"))
+                   .Set("DownloadPreference",
+                        base::DictValue()
+                            .Set("valuesBySource",
+                                 base::DictValue().Set("DictValuePolicy",
+                                                       "cacheable"))
+                            .Set("prevailingSource", "DictValuePolicy"))
+                   .Set("PackageCacheSizeLimit",
+                        base::DictValue()
+                            .Set("valuesBySource",
+                                 base::DictValue().Set("Group Policy", 1000))
+                            .Set("prevailingSource", "Group Policy"))
+                   .Set("PackageCacheExpires",
+                        base::DictValue()
+                            .Set("valuesBySource",
+                                 base::DictValue().Set("Device Management", 60))
+                            .Set("prevailingSource", "Device Management"))
+                   .Set("ProxyMode",
+                        base::DictValue()
+                            .Set("valuesBySource",
+                                 base::DictValue().Set("DictValuePolicy",
+                                                       "direct"))
+                            .Set("prevailingSource", "DictValuePolicy"))
+                   .Set("ProxyPacURL",
+                        base::DictValue()
+                            .Set("valuesBySource",
+                                 base::DictValue().Set("DictValuePolicy",
+                                                       "url://proxyurl"))
+                            .Set("prevailingSource", "DictValuePolicy"))
+                   .Set("ProxyServer",
+                        base::DictValue()
+                            .Set("valuesBySource",
+                                 base::DictValue().Set("DictValuePolicy",
+                                                       "test-server"))
+                            .Set("prevailingSource", "DictValuePolicy")))
           .Set(
-              "policiesByName",
-              base::Value::Dict()
-                  .Set("CloudPolicyOverridesPlatformPolicy",
-                       base::Value::Dict()
-                           .Set("valuesBySource",
-                                base::Value::Dict().Set("group_policy", false))
-                           .Set("prevailingSource", "group_policy"))
-                  .Set("LastCheckPeriod",
-                       base::Value::Dict()
-                           .Set("valuesBySource",
-                                base::Value::Dict().Set(
-                                    "Default",
-                                    base::TimeDeltaToValue(base::Minutes(270))))
-                           .Set("prevailingSource", "Default"))
-                  .Set("UpdatesSuppressed",
-                       base::Value::Dict()
-                           .Set("valuesBySource",
-                                base::Value::Dict()
-                                    .Set("group_policy",
-                                         base::Value::Dict()
-                                             .Set("StartHour", 5)
-                                             .Set("StartMinute", 10)
-                                             .Set("Duration", 30))
-                                    .Set("imaginary", base::Value::Dict()
-                                                          .Set("StartHour", 1)
-                                                          .Set("StartMinute", 1)
-                                                          .Set("Duration", 20))
-                                    .Set("device_management",
-                                         base::Value::Dict()
-                                             .Set("StartHour", 5)
-                                             .Set("StartMinute", 10)
-                                             .Set("Duration", 30)))
-                           .Set("prevailingSource", "group_policy"))
-                  .Set("DownloadPreference",
-                       base::Value::Dict()
-                           .Set("valuesBySource", base::Value::Dict().Set(
-                                                      "imaginary", "cacheable"))
-                           .Set("prevailingSource", "imaginary"))
-                  .Set("PackageCacheSizeLimit",
-                       base::Value::Dict()
-                           .Set("valuesBySource",
-                                base::Value::Dict().Set("group_policy", 1000))
-                           .Set("prevailingSource", "group_policy"))
-                  .Set("PackageCacheExpires",
-                       base::Value::Dict()
-                           .Set("valuesBySource", base::Value::Dict().Set(
-                                                      "device_management", 60))
-                           .Set("prevailingSource", "device_management"))
-                  .Set("ProxyMode",
-                       base::Value::Dict()
-                           .Set("valuesBySource",
-                                base::Value::Dict().Set("imaginary", "direct"))
-                           .Set("prevailingSource", "imaginary"))
-                  .Set("ProxyPacURL",
-                       base::Value::Dict()
-                           .Set("valuesBySource",
-                                base::Value::Dict().Set("imaginary",
-                                                        "url://proxyurl"))
-                           .Set("prevailingSource", "imaginary"))
-                  .Set("ProxyServer",
-                       base::Value::Dict()
-                           .Set("valuesBySource",
-                                base::Value::Dict().Set("imaginary",
-                                                        "test-server"))
-                           .Set("prevailingSource", "imaginary")))
-          .Set("policiesByAppId",
-               base::Value::Dict()
-                   .Set("app1",
-                        base::Value::Dict()
-                            .Set("Install",
-                                 base::Value::Dict()
-                                     .Set("valuesBySource",
-                                          base::Value::Dict()
-                                              .Set("group_policy", 0)
-                                              .Set("device_management", 1)
-                                              .Set("Default", 1))
-                                     .Set("prevailingSource", "group_policy"))
-                            .Set("Update",
-                                 base::Value::Dict()
-                                     .Set("valuesBySource",
-                                          base::Value::Dict()
-                                              .Set("device_management", 3)
-                                              .Set("imaginary", 2)
-                                              .Set("Default", 1))
-                                     .Set("prevailingSource",
-                                          "device_management"))
-                            .Set("TargetChannel",
-                                 base::Value::Dict()
-                                     .Set("valuesBySource",
-                                          base::Value::Dict()
-                                              .Set("group_policy", "channel_gp")
-                                              .Set("device_management",
-                                                   "channel_dm")
-                                              .Set("imaginary",
-                                                   "channel_imaginary"))
-                                     .Set("prevailingSource", "group_policy"))
-                            .Set("TargetVersionPrefix",
-                                 base::Value::Dict()
-                                     .Set("valuesBySource",
-                                          base::Value::Dict().Set("imaginary",
-                                                                  "103.3."))
-                                     .Set("prevailingSource", "imaginary"))
-                            .Set("RollbackToTargetVersionAllowed",
-                                 base::Value::Dict()
-                                     .Set("valuesBySource",
-                                          base::Value::Dict().Set("Default",
-                                                                  false))
-                                     .Set("prevailingSource", "Default")))
-                   .Set("app2",
-                        base::Value::Dict()
-                            .Set("Install",
-                                 base::Value::Dict()
-                                     .Set("valuesBySource",
-                                          base::Value::Dict()
-                                              .Set("imaginary", 2)
-                                              .Set("Default", 1))
-                                     .Set("prevailingSource", "imaginary"))
-                            .Set("Update",
-                                 base::Value::Dict()
-                                     .Set("valuesBySource",
-                                          base::Value::Dict()
-                                              .Set("group_policy", 1)
-                                              .Set("Default", 1))
-                                     .Set("prevailingSource", "group_policy"))
-                            .Set("RollbackToTargetVersionAllowed",
-                                 base::Value::Dict()
-                                     .Set("valuesBySource",
-                                          base::Value::Dict().Set("Default",
-                                                                  false))
-                                     .Set("prevailingSource", "Default")))));
+              "policiesByAppId",
+              base::DictValue()
+                  .Set(
+                      "app1",
+                      base::DictValue()
+                          .Set("Install",
+                               base::DictValue()
+                                   .Set("valuesBySource",
+                                        base::DictValue()
+                                            .Set("Group Policy", 0)
+                                            .Set("Device Management", 1)
+                                            .Set("Default", 1))
+                                   .Set("prevailingSource", "Group Policy"))
+                          .Set(
+                              "Update",
+                              base::DictValue()
+                                  .Set("valuesBySource",
+                                       base::DictValue()
+                                           .Set("Device Management", 3)
+                                           .Set("DictValuePolicy", 2)
+                                           .Set("Default", 1))
+                                  .Set("prevailingSource", "Device Management"))
+                          .Set("TargetChannel",
+                               base::DictValue()
+                                   .Set("valuesBySource",
+                                        base::DictValue()
+                                            .Set("Group Policy", "channel_gp")
+                                            .Set("Device Management",
+                                                 "channel_dm")
+                                            .Set("DictValuePolicy",
+                                                 "channel_DictValuePolicy"))
+                                   .Set("prevailingSource", "Group Policy"))
+                          .Set("TargetVersionPrefix",
+                               base::DictValue()
+                                   .Set("valuesBySource",
+                                        base::DictValue().Set("DictValuePolicy",
+                                                              "103.3."))
+                                   .Set("prevailingSource", "DictValuePolicy"))
+                          .Set("RollbackToTargetVersionAllowed",
+                               base::DictValue()
+                                   .Set("valuesBySource",
+                                        base::DictValue().Set("Default", false))
+                                   .Set("prevailingSource", "Default")))
+                  .Set(
+                      "app2",
+                      base::DictValue()
+                          .Set("Install",
+                               base::DictValue()
+                                   .Set("valuesBySource",
+                                        base::DictValue()
+                                            .Set("DictValuePolicy", 2)
+                                            .Set("Default", 1))
+                                   .Set("prevailingSource", "DictValuePolicy"))
+                          .Set("Update",
+                               base::DictValue()
+                                   .Set("valuesBySource",
+                                        base::DictValue()
+                                            .Set("Group Policy", 1)
+                                            .Set("Default", 1))
+                                   .Set("prevailingSource", "Group Policy"))
+                          .Set("RollbackToTargetVersionAllowed",
+                               base::DictValue()
+                                   .Set("valuesBySource",
+                                        base::DictValue().Set("Default", false))
+                                   .Set("prevailingSource", "Default")))));
 }
 
 TEST_F(PolicyServiceTest, MultiplePolicyManagers_WithUnmanagedOnes) {
   PolicyManagers managers;
 
   auto manager =
-      base::MakeRefCounted<FakePolicyManager>(true, "device_management");
+      base::MakeRefCounted<FakePolicyManager>(true, "Device Management");
   UpdatesSuppressedTimes updates_suppressed_times;
   updates_suppressed_times.start_hour_ = 5;
   updates_suppressed_times.start_minute_ = 10;
@@ -762,19 +766,19 @@ TEST_F(PolicyServiceTest, MultiplePolicyManagers_WithUnmanagedOnes) {
   manager->SetUpdatePolicy("app1", 3);
   managers.push_back(std::move(manager));
 
-  manager = base::MakeRefCounted<FakePolicyManager>(true, "imaginary");
+  manager = base::MakeRefCounted<FakePolicyManager>(true, "DictValuePolicy");
   updates_suppressed_times.start_hour_ = 1;
   updates_suppressed_times.start_minute_ = 1;
   updates_suppressed_times.duration_minute_ = 20;
   manager->SetUpdatesSuppressedTimes(updates_suppressed_times);
-  manager->SetChannel("app1", "channel_imaginary");
+  manager->SetChannel("app1", "channel_DictValuePolicy");
   manager->SetUpdatePolicy("app1", 2);
   manager->SetDownloadPreference("cacheable");
   managers.push_back(std::move(manager));
 
   managers.push_back(GetDefaultValuesPolicyManager());
 
-  manager = base::MakeRefCounted<FakePolicyManager>(false, "group_policy");
+  manager = base::MakeRefCounted<FakePolicyManager>(false, "Group Policy");
   updates_suppressed_times.start_hour_ = 5;
   updates_suppressed_times.start_minute_ = 10;
   updates_suppressed_times.duration_minute_ = 30;
@@ -784,12 +788,13 @@ TEST_F(PolicyServiceTest, MultiplePolicyManagers_WithUnmanagedOnes) {
   managers.push_back(std::move(manager));
 
   auto policy_service = CreatePolicyServiceForTesting(std::move(managers));
-  EXPECT_EQ(policy_service->source(), "device_management;imaginary;Default");
+  EXPECT_EQ(policy_service->source(),
+            "Device Management;DictValuePolicy;Default");
 
   EXPECT_THAT(
       policy_service->GetUpdatesSuppressedTimes().effective_policy(),
       Optional(PolicyEntry(
-          "device_management",
+          "Device Management",
           UpdatesSuppressedTimes{
               .start_hour_ = 5, .start_minute_ = 10, .duration_minute_ = 30})));
 
@@ -797,27 +802,29 @@ TEST_F(PolicyServiceTest, MultiplePolicyManagers_WithUnmanagedOnes) {
       policy_service->GetTargetChannel("app1");
   ASSERT_TRUE(channel_status);
   EXPECT_THAT(channel_status.effective_policy(),
-              Optional(PolicyEntry("device_management", "channel_dm")));
-  EXPECT_THAT(channel_status.conflict_policy(),
-              Optional(PolicyEntry("imaginary", "channel_imaginary")));
+              Optional(PolicyEntry("Device Management", "channel_dm")));
+  EXPECT_THAT(
+      channel_status.conflict_policy(),
+      Optional(PolicyEntry("DictValuePolicy", "channel_DictValuePolicy")));
   EXPECT_EQ(channel_status.policy(), "channel_dm");
-  EXPECT_THAT(channel_status.all_policies(),
-              ElementsAre(PolicyEntry("device_management", "channel_dm"),
-                          PolicyEntry("imaginary", "channel_imaginary"),
-                          PolicyEntry("group_policy", "channel_gp")));
+  EXPECT_THAT(
+      channel_status.all_policies(),
+      ElementsAre(PolicyEntry("Device Management", "channel_dm"),
+                  PolicyEntry("DictValuePolicy", "channel_DictValuePolicy"),
+                  PolicyEntry("Group Policy", "channel_gp")));
 
   PolicyStatus<int> app1_update_status =
       policy_service->GetPolicyForAppUpdates("app1");
   ASSERT_TRUE(app1_update_status);
   EXPECT_THAT(app1_update_status.effective_policy(),
-              Optional(PolicyEntry("device_management", 3)));
+              Optional(PolicyEntry("Device Management", 3)));
   EXPECT_THAT(app1_update_status.conflict_policy(),
-              Optional(PolicyEntry("imaginary", 2)));
+              Optional(PolicyEntry("DictValuePolicy", 2)));
   EXPECT_EQ(app1_update_status.policy(), 3);
-  EXPECT_THAT(
-      app1_update_status.all_policies(),
-      ElementsAre(PolicyEntry("device_management", 3),
-                  PolicyEntry("imaginary", 2), PolicyEntry("Default", 1)));
+  EXPECT_THAT(app1_update_status.all_policies(),
+              ElementsAre(PolicyEntry("Device Management", 3),
+                          PolicyEntry("DictValuePolicy", 2),
+                          PolicyEntry("Default", 1)));
 
   PolicyStatus<int> app2_update_status =
       policy_service->GetPolicyForAppUpdates("app2");
@@ -828,37 +835,35 @@ TEST_F(PolicyServiceTest, MultiplePolicyManagers_WithUnmanagedOnes) {
   EXPECT_EQ(app2_update_status.policy(), 1);
   EXPECT_THAT(
       app2_update_status.all_policies(),
-      ElementsAre(PolicyEntry("Default", 1), PolicyEntry("group_policy", 1)));
+      ElementsAre(PolicyEntry("Default", 1), PolicyEntry("Group Policy", 1)));
 
   PolicyStatus<std::string> download_preference_status =
       policy_service->GetDownloadPreference();
   ASSERT_TRUE(download_preference_status);
   EXPECT_THAT(download_preference_status.effective_policy(),
-              Optional(PolicyEntry("imaginary", "cacheable")));
+              Optional(PolicyEntry("DictValuePolicy", "cacheable")));
   EXPECT_EQ(download_preference_status.policy(), "cacheable");
   EXPECT_EQ(download_preference_status.conflict_policy(), std::nullopt);
 
   EXPECT_FALSE(policy_service->GetPackageCacheSizeLimitMBytes());
 
-  EXPECT_EQ(
-      policy_service->GetAllPoliciesAsString(),
-      "{\n"
-      "  LastCheckPeriod = 270 (Default)\n"
-      "  UpdatesSuppressed = "
-      "{StartHour: 5, StartMinute: 10, Duration: 30} (device_management)\n"
-      "  DownloadPreference = cacheable (imaginary)\n"
-      "  \"app1\": {\n"
-      "    Install = 1 (Default)\n"
-      "    Update = 3 (device_management)\n"
-      "    TargetChannel = channel_dm (device_management)\n"
-      "    RollbackToTargetVersionAllowed = 0 (Default)\n"
-      "  }\n"
-      "  \"app2\": {\n"
-      "    Install = 1 (Default)\n"
-      "    Update = 1 (Default)\n"
-      "    RollbackToTargetVersionAllowed = 0 (Default)\n"
-      "  }\n"
-      "}\n");
+  EXPECT_EQ(policy_service->GetAllPoliciesAsString(),
+            "{\n"
+            "  DownloadPreference = cacheable (DictValuePolicy)\n"
+            "  LastCheckPeriod = 16200 s (Default)\n"
+            "  UpdatesSuppressed = 5, 10, 30 (Device Management)\n"
+            "  \"app1\": {\n"
+            "    Install = 1 (Default)\n"
+            "    RollbackToTargetVersionAllowed = false (Default)\n"
+            "    TargetChannel = channel_dm (Device Management)\n"
+            "    Update = 3 (Device Management)\n"
+            "  }\n"
+            "  \"app2\": {\n"
+            "    Install = 1 (Default)\n"
+            "    RollbackToTargetVersionAllowed = false (Default)\n"
+            "    Update = 1 (Default)\n"
+            "  }\n"
+            "}\n");
 }
 
 struct PolicyServiceAreUpdatesSuppressedNowTestCase {
@@ -896,7 +901,7 @@ INSTANTIATE_TEST_SUITE_P(
     }));
 
 TEST_P(PolicyServiceAreUpdatesSuppressedNowTest, TestCases) {
-  auto manager = base::MakeRefCounted<FakePolicyManager>(true, "group_policy");
+  auto manager = base::MakeRefCounted<FakePolicyManager>(true, "Group Policy");
   manager->SetUpdatesSuppressedTimes(GetParam().updates_suppressed_times);
 
   base::Time now;
@@ -1005,7 +1010,7 @@ class PolicyManagersTest : public ::testing::Test {
   }
 #endif
 
-  void SetPlatformPolicies(const base::Value::Dict& policies) const {
+  void SetPlatformPolicies(const base::DictValue& policies) const {
 #if BUILDFLAG(IS_MAC)
     const base::FilePath policy_file_path =
         GetLibraryFolderPath(UpdaterScope::kSystem)
@@ -1093,7 +1098,7 @@ TEST_F(PolicyManagersTest, ValidDictPlatformPolicies) {
   }
 #endif
 
-  base::Value::Dict dict_policies;
+  base::DictValue dict_policies;
   dict_policies.Set("a", 1);
 
   ASSERT_TRUE(ExternalConstantsBuilder()
@@ -1101,10 +1106,10 @@ TEST_F(PolicyManagersTest, ValidDictPlatformPolicies) {
                   .SetDictPolicies(dict_policies)
                   .Overwrite());
 
-  base::Value::Dict policies;
+  base::DictValue policies;
   policies.Set(kGlobalPolicyKey,
-               base::Value::Dict().Set("CloudPolicyOverridesPlatformPolicy",
-                                       kPolicyEnabled));
+               base::DictValue().Set("CloudPolicyOverridesPlatformPolicy",
+                                     kPolicyEnabled));
   ASSERT_NO_FATAL_FAILURE(SetPlatformPolicies(policies));
 
   PolicyService::PolicyManagers managers(CreateExternalConstants());
@@ -1130,10 +1135,10 @@ TEST_F(PolicyManagersTest, ValidDeviceManagementPlatformPolicyNoCloudOverride) {
 
   ASSERT_TRUE(ExternalConstantsBuilder().SetMachineManaged(true).Overwrite());
 
-  base::Value::Dict policies;
+  base::DictValue policies;
   policies.Set(kGlobalPolicyKey,
-               base::Value::Dict().Set("CloudPolicyOverridesPlatformPolicy",
-                                       kPolicyDisabled));
+               base::DictValue().Set("CloudPolicyOverridesPlatformPolicy",
+                                     kPolicyDisabled));
   ASSERT_NO_FATAL_FAILURE(SetPlatformPolicies(policies));
 
   auto omaha_settings =
@@ -1170,10 +1175,10 @@ TEST_F(PolicyManagersTest, ValidDeviceManagementPlatformPolicyCloudOverride) {
 
   ASSERT_TRUE(ExternalConstantsBuilder().SetMachineManaged(true).Overwrite());
 
-  base::Value::Dict policies;
+  base::DictValue policies;
   policies.Set(kGlobalPolicyKey,
-               base::Value::Dict().Set("CloudPolicyOverridesPlatformPolicy",
-                                       kPolicyEnabled));
+               base::DictValue().Set("CloudPolicyOverridesPlatformPolicy",
+                                     kPolicyEnabled));
   ASSERT_NO_FATAL_FAILURE(SetPlatformPolicies(policies));
 
   auto omaha_settings =
@@ -1202,7 +1207,7 @@ TEST_F(PolicyManagersTest,
   }
 #endif
 
-  base::Value::Dict dict_policies;
+  base::DictValue dict_policies;
   dict_policies.Set("a", 1);
 
   ASSERT_TRUE(ExternalConstantsBuilder()
@@ -1210,10 +1215,10 @@ TEST_F(PolicyManagersTest,
                   .SetDictPolicies(dict_policies)
                   .Overwrite());
 
-  base::Value::Dict policies;
+  base::DictValue policies;
   policies.Set(kGlobalPolicyKey,
-               base::Value::Dict().Set("CloudPolicyOverridesPlatformPolicy",
-                                       kPolicyEnabled));
+               base::DictValue().Set("CloudPolicyOverridesPlatformPolicy",
+                                     kPolicyEnabled));
   ASSERT_NO_FATAL_FAILURE(SetPlatformPolicies(policies));
 
   auto omaha_settings =

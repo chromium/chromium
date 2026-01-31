@@ -41,3 +41,65 @@ enum FileUploadErrorType {
   // Image processing error.
   kImageProcessingError = 6,
 };
+
+// The AIM model mode.
+enum ModelMode {
+  // Model is unspecified.
+  kUnspecified = 0,
+  // Uses Regular Gemini Model.
+  kGeminiRegular = 1,
+  // Uses Gemini Pro Model.
+  kGeminiPro = 2,
+  // Uses Gemini Pro Model with automatic routing capabilities.
+  kGeminiProAutoroute = 3,
+};
+
+// The AIM tool mode.
+enum ToolMode {
+  // Tool is unspecified.
+  kUnspecified = 0,
+  // Enables Deep Search functionality.
+  kDeepSearch = 1,
+  // Enables Canvas Tool.
+  kCanvas = 2,
+  // Enables Image generation functionality.
+  kImageGen = 3,
+  // Enables Deep Browse functionality.
+  kDeepBrowse = 4,
+  // Enables Image Generation for uploaded images.
+  kImageGenUpload = 5,
+  // Enables Image Generation for Selfie type images.
+  kImageGenSelfie = 6,
+};
+
+// The AIM input type.
+enum InputType {
+  // Input is unspecified.
+  kUnspecified = 0,
+  // Input is an image.
+  kLensImage = 1,
+  // Input is a file.
+  kLensFile = 2,
+  // Input is a browser tab.
+  kBrowserTab = 3,
+};
+
+// Represents the current state of inputs, models, and tools within AIM.
+struct InputState {
+  // The set of allowed models.
+  array<ModelMode> allowed_models;
+  // The set of allowed tools.
+  array<ToolMode> allowed_tools;
+  // The set of allowed input types.
+  array<InputType> allowed_input_types;
+  // The currently active model.
+  ModelMode active_model;
+  // The currently active tool.
+  ToolMode active_tool;
+  // The set of currently disabled models.
+  array<ModelMode> disabled_models;
+  // The set of currently disabled tools.
+  array<ToolMode> disabled_tools;
+  // The set of currently disabled input types.
+  array<InputType> disabled_input_types;
+};

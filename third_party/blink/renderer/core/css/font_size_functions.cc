@@ -88,13 +88,21 @@ const FontSizeTableType kStrictFontSizeTable{{
 const std::array<float, kTotalKeywords> kFontSizeFactors{
     0.60f, 0.75f, 0.89f, 1.0f, 1.2f, 1.5f, 2.0f, 3.0f};
 
-int inline RowFromMediumFontSizeInRange(const Settings* settings,
+int inline RowFromMediumFontSizeInRange(const Document* document,
                                         bool quirks_mode,
                                         bool is_monospace,
                                         int& medium_size) {
+  const Settings* settings = document ? document->GetSettings() : nullptr;
   medium_size = settings ? (is_monospace ? settings->GetDefaultFixedFontSize()
                                          : settings->GetDefaultFontSize())
                          : kDefaultMediumFontSize;
+
+  if (document && document->TextScaleMetaTagPresent() && settings) {
+    medium_size =
+        round(medium_size * FontSizeFunctions::SnapToClosestFontScaleBucket(
+                                settings->GetAccessibilityFontScaleFactor()));
+  }
+
   if (medium_size >= kFontSizeTableMin && medium_size <= kFontSizeTableMax) {
     return medium_size - kFontSizeTableMin;
   }
@@ -219,7 +227,7 @@ float FontSizeFunctions::FontSizeForKeyword(const Document* document,
   bool quirks_mode = document && document->InQuirksMode();
 
   int medium_size = 0;
-  int row = RowFromMediumFontSizeInRange(settings, quirks_mode, is_monospace,
+  int row = RowFromMediumFontSizeInRange(document, quirks_mode, is_monospace,
                                          medium_size);
   if (row >= 0) {
     int col = (keyword - 1);
@@ -244,7 +252,7 @@ int FontSizeFunctions::LegacyFontSize(const Document* document,
 
   bool quirks_mode = document->InQuirksMode();
   int medium_size = 0;
-  int row = RowFromMediumFontSizeInRange(settings, quirks_mode, is_monospace,
+  int row = RowFromMediumFontSizeInRange(document, quirks_mode, is_monospace,
                                          medium_size);
   if (row >= 0) {
     return FindNearestLegacyFontSize<int>(
@@ -286,6 +294,31 @@ std::optional<float> FontSizeFunctions::MetricsMultiplierAdjustedFontSize(
     return std::nullopt;
   }
   return (size_adjust.Value() / aspect_value) * computed_size;
+}
+
+double FontSizeFunctions::SnapToClosestFontScaleBucket(double raw_font_scale) {
+  static const std::array<double, 7> font_scale_buckets = {0.85, 1,   1.15, 1.3,
+                                                           1.5,  1.8, 2};
+
+  // Handle cases where the input value is outside the range of literals.
+  if (raw_font_scale <= font_scale_buckets.front()) {
+    return font_scale_buckets.front();
+  }
+  if (raw_font_scale >= font_scale_buckets.back()) {
+    return font_scale_buckets.back();
+  }
+
+  // std::lower_bound finds the first element >= raw_font_scale.
+  const auto it = std::lower_bound(font_scale_buckets.begin(),
+                                   font_scale_buckets.end(), raw_font_scale);
+
+  const double higher_candidate = *it;
+  const double lower_candidate = *(it - 1);
+
+  const double diff_to_lower = std::abs(raw_font_scale - lower_candidate);
+  const double diff_to_higher = std::abs(raw_font_scale - higher_candidate);
+
+  return (diff_to_lower <= diff_to_higher) ? lower_candidate : higher_candidate;
 }
 
 }  // namespace blink

@@ -214,7 +214,7 @@ std::vector<uint64_t> InputControllerEvdev::GetKeyboardKeyBits(int id) {
 
 void InputControllerEvdev::SetCurrentLayoutByName(
     const std::string& layout_name,
-    base::OnceCallback<void(bool)> callback) {
+    base::OnceCallback<void(bool success)> callback) {
   keyboard_->SetCurrentLayoutByName(layout_name, std::move(callback));
 }
 

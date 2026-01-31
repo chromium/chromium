@@ -31,6 +31,12 @@ WriteQuotaChecker* WriteQuotaChecker::Get(content::BrowserContext* context) {
 }
 
 // static
+WriteQuotaChecker* WriteQuotaChecker::GetIfExists(
+    content::BrowserContext* context) {
+  return BrowserContextKeyedAPIFactory<WriteQuotaChecker>::GetIfExists(context);
+}
+
+// static
 BrowserContextKeyedAPIFactory<WriteQuotaChecker>*
 WriteQuotaChecker::GetFactoryInstance() {
   static base::NoDestructor<BrowserContextKeyedAPIFactory<WriteQuotaChecker>>

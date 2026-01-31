@@ -24,7 +24,6 @@
 #include "chrome/browser/metrics/chrome_metrics_service_accessor.h"
 #include "chrome/browser/metrics/chrome_metrics_service_client.h"
 #include "chrome/browser/metrics/variations/chrome_variations_service_client.h"
-#include "chrome/browser/metrics/variations/ui_string_overrider_factory.h"
 #include "chrome/browser/net/system_network_context_manager.h"
 #include "chrome/browser/ui/browser_otr_state.h"
 #include "chrome/common/chrome_paths.h"
@@ -291,7 +290,6 @@ ChromeMetricsServicesManagerClient::CreateVariationsService() {
   return variations::VariationsService::Create(
       std::make_unique<ChromeVariationsServiceClient>(), local_state_,
       GetMetricsStateManager(), switches::kDisableBackgroundNetworking,
-      chrome_variations::CreateUIStringOverrider(),
       base::BindOnce(&content::GetNetworkConnectionTracker));
 }
 

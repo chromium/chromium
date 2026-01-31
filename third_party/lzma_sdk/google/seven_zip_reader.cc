@@ -14,6 +14,7 @@
 #include "base/check.h"
 #include "base/containers/buffer_iterator.h"
 #include "base/containers/heap_array.h"
+#include "base/containers/span.h"
 #include "base/containers/span_writer.h"
 #include "base/files/memory_mapped_file.h"
 #include "base/functional/bind.h"
@@ -153,10 +154,12 @@ SRes FileSeekInStream::DoRead(const ISeekInStream* p, void* buf, size_t* size) {
   // so we cast away the const to do this.
   auto* stream =
       const_cast<FileSeekInStream*>(static_cast<const FileSeekInStream*>(p));
-  int res = stream->file_.ReadAtCurrentPos(static_cast<char*>(buf), *size);
-  if (res < 0)
+  std::optional<size_t> res = stream->file_.ReadAtCurrentPos(
+      base::span(static_cast<uint8_t*>(buf), *size));
+  if (!res.has_value()) {
     return SZ_ERROR_READ;
-  *size = res;
+  }
+  *size = *res;
   return SZ_OK;
 }
 

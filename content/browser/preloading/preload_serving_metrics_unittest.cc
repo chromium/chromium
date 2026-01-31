@@ -1399,6 +1399,9 @@ TEST(PreloadServingMetricsTest, PrefetchMatchPrerenderDebugMetrics) {
   log_prerender->prefetch_match_metrics_list[0]
       ->prerender_debug_metrics->prefetch_ahead_of_prerender_debug_metrics
       ->queue_index = 3;
+  log_prerender->prefetch_match_metrics_list[0]
+      ->prerender_debug_metrics->prefetch_ahead_of_prerender_debug_metrics
+      ->collect_result = PrefetchPotentialCandidateCollectResult::kAvailable;
   log_prerender->is_prerender_aborted_by_prerender_url_loader_throttle = true;
   auto log = MakeSkeletonPreloadServingMetrics({.n_prefetch_match_metrics = 1});
   log->prefetch_match_metrics_list[0]->time_match_start = Millis(10157);
@@ -1450,6 +1453,16 @@ TEST(PreloadServingMetricsTest, PrefetchMatchPrerenderDebugMetrics) {
       // 2 = PrefetchContainer::LoadState::kEligible
       // 1 = is_expired == false
       4121, 1);
+  histogram_tester.ExpectUniqueSample(
+      "PreloadServingMetrics.ForPrerenderInitialNavigationFailed."
+      "FallbackAborted.Match0.PrefetchMatchMetrics.ExistsPaopThen."
+      "PotentialCandidateCollectResultAndServableStateAndMatcherAction",
+      // 1 = PrefetchPotentialCandidateCollectResult::kAvailable
+      // 4 = PrefetchServableState::kNotServable
+      // 1 = PrefetchMatchResolverAction::ActionKind::kDrop
+      // 2 = PrefetchContainer::LoadState::kEligible
+      // 1 = is_expired == false
+      14121, 1);
   histogram_tester.ExpectUniqueSample(
       "PreloadServingMetrics.ForPrerenderInitialNavigationFailed."
       "FallbackAborted.Match0.PrefetchMatchMetrics.ExistsPaopThen."

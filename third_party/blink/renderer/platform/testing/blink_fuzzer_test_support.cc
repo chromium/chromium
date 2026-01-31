@@ -10,6 +10,9 @@
 #include "content/public/test/blink_test_environment.h"
 #include "content/public/test/setup_field_trials.h"
 #include "third_party/blink/renderer/platform/heap/thread_state.h"
+#include "third_party/skia/include/codec/SkCodec.h"
+#include "third_party/skia/include/codec/SkPngRustDecoder.h"
+
 namespace blink {
 
 BlinkFuzzerTestSupport::BlinkFuzzerTestSupport()
@@ -20,6 +23,7 @@ BlinkFuzzerTestSupport::BlinkFuzzerTestSupport(int argc, char** argv) {
   // is complete, this is for efficiency. We rerun the fuzzer with the same
   // environment as the previous iteration.
   CHECK(base::i18n::InitializeICU());
+  SkCodecs::Register(SkPngRustDecoder::Decoder());
 
   base::CommandLine::Init(argc, argv);
 

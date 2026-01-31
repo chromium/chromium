@@ -59,8 +59,7 @@ class VIEWS_EXPORT CompositorAnimationRunner
   // been destroyed during animation.
   raw_ptr<ui::Compositor> compositor_ = nullptr;
 
-  base::TimeDelta min_interval_ = base::TimeDelta::Max();
-  base::TimeTicks last_tick_;
+  base::TimeTicks start_tick_;
 };
 
 }  // namespace views

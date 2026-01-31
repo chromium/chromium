@@ -30,11 +30,11 @@
 #include "chrome/browser/sessions/session_restore.h"
 #include "chrome/browser/sessions/tab_restore_service_factory.h"
 #include "chrome/browser/sync/session_sync_service_factory.h"
-#include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_finder.h"
-#include "chrome/browser/ui/browser_live_tab_context.h"
-#include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
+#include "chrome/browser/ui/tabs/tab_list_interface.h"
 #include "components/sessions/content/content_live_tab.h"
+#include "components/sessions/core/live_tab_context.h"
 #include "components/sessions/core/tab_restore_service.h"
 #include "components/sync_sessions/open_tabs_ui_delegate.h"
 #include "components/sync_sessions/session_sync_service.h"
@@ -45,9 +45,23 @@
 #include "extensions/browser/extension_function_dispatcher.h"
 #include "extensions/browser/extension_function_registry.h"
 #include "extensions/browser/extension_system.h"
+#include "extensions/buildflags/buildflags.h"
 #include "extensions/common/error_utils.h"
 #include "extensions/common/mojom/context_type.mojom.h"
 #include "ui/base/mojom/window_show_state.mojom.h"
+
+#if BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/ui/android/tab_model/android_live_tab_context.h"
+#endif
+
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_finder.h"
+#include "chrome/browser/ui/browser_live_tab_context.h"
+#include "chrome/browser/ui/tabs/tab_strip_model.h"
+#endif
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 namespace extensions {
 
@@ -67,6 +81,13 @@ const char kNoBrowserToRestoreSession[] =
 const char kSessionSyncError[] = "Synced sessions are not available.";
 const char kRestoreInIncognitoError[] =
     "Can not restore sessions in incognito mode.";
+const char kNoLiveTabContextError[] = "Unable to determine live tab context.";
+const char kNoActiveTabError[] = "No active tab.";
+
+#if !BUILDFLAG(ENABLE_EXTENSIONS)
+const char kWindowRestoreNotSupportedError[] =
+    "Window restore is not supported on this platform.";
+#endif
 
 // Comparator function for use with std::sort that will sort sessions by
 // descending modified_time (i.e., most recent first).
@@ -154,6 +175,42 @@ bool is_window_entry(const sessions::tab_restore::Entry& entry) {
   return entry.type == sessions::tab_restore::Type::WINDOW;
 }
 
+// Returns the active web contents or null if none is found.
+content::WebContents* GetActiveWebContents(BrowserWindowInterface* browser) {
+  CHECK(browser);
+  tabs::TabInterface* active_tab =
+      TabListInterface::From(browser)->GetActiveTab();
+  return active_tab ? active_tab->GetContents() : nullptr;
+}
+
+// Returns the `LiveTabContent` for a browser. The lookup method depends on
+// the platform. Returns null if none is found.
+sessions::LiveTabContext* GetLiveTabContextForBrowser(
+    BrowserWindowInterface* browser) {
+  CHECK(browser);
+  auto* web_contents = GetActiveWebContents(browser);
+  if (!web_contents) {
+    return nullptr;
+  }
+#if BUILDFLAG(IS_ANDROID)
+  return AndroidLiveTabContext::FindContextForWebContents(web_contents);
+#else
+  return BrowserLiveTabContext::FindContextForWebContents(web_contents);
+#endif
+}
+
+// Returns the `BrowserWindowInterface` for a `Profile` or null if none is
+// found.
+BrowserWindowInterface* FindBrowserWindowInterfaceWithProfile(
+    Profile* profile) {
+  for (BrowserWindowInterface* bwi : GetAllBrowserWindowInterfaces()) {
+    if (bwi->GetProfile() == profile) {
+      return bwi;
+    }
+  }
+  return nullptr;
+}
+
 }  // namespace
 
 api::tabs::Tab SessionsGetRecentlyClosedFunction::CreateTabModel(
@@ -215,10 +272,11 @@ ExtensionFunction::ResponseAction SessionsGetRecentlyClosedFunction::Run() {
       GetRecentlyClosed::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
   int max_results = api::sessions::MAX_SESSION_RESULTS;
-  if (params->filter && params->filter->max_results)
+  if (params->filter && params->filter->max_results) {
     max_results = *params->filter->max_results;
-  EXTENSION_FUNCTION_VALIDATE(max_results >= 0 &&
-      max_results <= api::sessions::MAX_SESSION_RESULTS);
+  }
+  EXTENSION_FUNCTION_VALIDATE(
+      max_results >= 0 && max_results <= api::sessions::MAX_SESSION_RESULTS);
 
   std::vector<api::sessions::Session> result;
   sessions::TabRestoreService* tab_restore_service =
@@ -242,16 +300,19 @@ ExtensionFunction::ResponseAction SessionsGetRecentlyClosedFunction::Run() {
     // rather than sharding the group out into individual tabs.
     if (entry->type == sessions::tab_restore::Type::GROUP) {
       auto& group = static_cast<const sessions::tab_restore::Group&>(*entry);
-      for (const auto& tab : group.tabs)
-        if (counter++ < max_results)
+      for (const auto& tab : group.tabs) {
+        if (counter++ < max_results) {
           result.push_back(CreateSessionModel(*tab));
-        else
+        } else {
           break;
+        }
+      }
     } else {
-      if (counter++ < max_results)
+      if (counter++ < max_results) {
         result.push_back(CreateSessionModel(*entry));
-      else
+      } else {
         break;
+      }
     }
   }
 
@@ -277,15 +338,17 @@ SessionsGetDevicesFunction::CreateWindowModel(
 
   // Ignore app popup window for now because we do not have a corresponding
   // api::windows::WindowType value.
-  if (window.type == sessions::SessionWindow::TYPE_APP_POPUP)
+  if (window.type == sessions::SessionWindow::TYPE_APP_POPUP) {
     return std::nullopt;
+  }
 
   // Prune tabs that are not syncable or are NewTabPage. Then, sort the tabs
   // from most recent to least recent.
   std::vector<const sessions::SessionTab*> tabs_in_window;
   for (const auto& tab : window.tabs) {
-    if (tab->navigations.empty())
+    if (tab->navigations.empty()) {
       continue;
+    }
     const sessions::SerializedNavigationEntry& current_navigation =
         tab->navigations.at(tab->normalized_navigation_index());
     if (search::IsNTPOrRelatedURL(
@@ -295,8 +358,9 @@ SessionsGetDevicesFunction::CreateWindowModel(
     }
     tabs_in_window.push_back(tab.get());
   }
-  if (tabs_in_window.empty())
+  if (tabs_in_window.empty()) {
     return std::nullopt;
+  }
   std::sort(tabs_in_window.begin(), tabs_in_window.end(), SortTabsByRecency);
 
   std::vector<api::tabs::Tab> tabs;
@@ -330,9 +394,6 @@ SessionsGetDevicesFunction::CreateWindowModel(
       type = api::windows::WindowType::kDevtools;
       break;
     case sessions::SessionWindow::TYPE_APP_POPUP:
-#if BUILDFLAG(IS_CHROMEOS)
-    case sessions::SessionWindow::TYPE_CUSTOM_TAB:
-#endif
       NOTREACHED();
   }
 
@@ -376,8 +437,9 @@ SessionsGetDevicesFunction::CreateSessionModel(
       CreateWindowModel(window, session_tag);
   // There is a chance that after pruning uninteresting tabs the window will be
   // empty.
-  if (!window_model)
+  if (!window_model) {
     return std::nullopt;
+  }
 
   return CreateSessionModelHelper(window.timestamp.ToTimeT(), std::nullopt,
                                   std::move(window_model), std::nullopt);
@@ -388,8 +450,9 @@ api::sessions::Device SessionsGetDevicesFunction::CreateDeviceModel(
   int max_results = api::sessions::MAX_SESSION_RESULTS;
   // Already validated in RunAsync().
   std::optional<GetDevices::Params> params = GetDevices::Params::Create(args());
-  if (params->filter && params->filter->max_results)
+  if (params->filter && params->filter->max_results) {
     max_results = *params->filter->max_results;
+  }
 
   api::sessions::Device device_struct;
   device_struct.info = session->GetSessionName();
@@ -401,8 +464,9 @@ api::sessions::Device SessionsGetDevicesFunction::CreateDeviceModel(
        ++it) {
     std::optional<api::sessions::Session> session_model = CreateSessionModel(
         it->second->wrapped_window, session->GetSessionTag());
-    if (session_model)
+    if (session_model) {
       device_struct.sessions.push_back(std::move(*session_model));
+    }
   }
   return device_struct;
 }
@@ -427,7 +491,8 @@ ExtensionFunction::ResponseAction SessionsGetDevicesFunction::Run() {
   EXTENSION_FUNCTION_VALIDATE(params);
   if (params->filter && params->filter->max_results) {
     EXTENSION_FUNCTION_VALIDATE(*params->filter->max_results >= 0 &&
-        *params->filter->max_results <= api::sessions::MAX_SESSION_RESULTS);
+                                *params->filter->max_results <=
+                                    api::sessions::MAX_SESSION_RESULTS);
   }
 
   std::vector<api::sessions::Device> result;
@@ -460,7 +525,7 @@ SessionsRestoreFunction::GetRestoredWindowResult(int window_id) {
                                                &window_controller, &error)) {
     return Error(error);
   }
-  base::Value::Dict window_value =
+  base::DictValue window_value =
       window_controller->CreateWindowValueForExtension(
           extension(), WindowController::kPopulateTabs, source_context_type());
   std::optional<api::windows::Window> window =
@@ -472,20 +537,23 @@ SessionsRestoreFunction::GetRestoredWindowResult(int window_id) {
 }
 
 ExtensionFunction::ResponseValue
-SessionsRestoreFunction::RestoreMostRecentlyClosed(Browser* browser) {
+SessionsRestoreFunction::RestoreMostRecentlyClosed(
+    BrowserWindowInterface* browser) {
   sessions::TabRestoreService* tab_restore_service =
       TabRestoreServiceFactory::GetForProfile(
           Profile::FromBrowserContext(browser_context()));
   const sessions::TabRestoreService::Entries& entries =
       tab_restore_service->entries();
 
-  if (entries.empty())
+  if (entries.empty()) {
     return Error(kNoRecentlyClosedSessionsError);
+  }
 
   bool is_window = is_window_entry(*entries.front());
-  sessions::LiveTabContext* context =
-      BrowserLiveTabContext::FindContextForWebContents(
-          browser->tab_strip_model()->GetActiveWebContents());
+  sessions::LiveTabContext* context = GetLiveTabContextForBrowser(browser);
+  if (!context) {
+    return Error(kNoLiveTabContextError);
+  }
   std::vector<sessions::LiveTab*> restored_tabs =
       tab_restore_service->RestoreMostRecentEntry(context);
   DCHECK(restored_tabs.size());
@@ -494,23 +562,24 @@ SessionsRestoreFunction::RestoreMostRecentlyClosed(Browser* browser) {
       static_cast<sessions::ContentLiveTab*>(restored_tabs[0]);
   if (is_window) {
     return GetRestoredWindowResult(
-        ExtensionTabUtil::GetWindowIdOfTab(first_tab->web_contents()));
+        ExtensionTabUtil::GetWindowIdOfTab(&first_tab->GetWebContents()));
   }
 
-  return GetRestoredTabResult(first_tab->web_contents());
+  return GetRestoredTabResult(&first_tab->GetWebContents());
 }
 
 ExtensionFunction::ResponseValue SessionsRestoreFunction::RestoreLocalSession(
     const SessionId& session_id,
-    Browser* browser) {
+    BrowserWindowInterface* browser) {
   sessions::TabRestoreService* tab_restore_service =
       TabRestoreServiceFactory::GetForProfile(
           Profile::FromBrowserContext(browser_context()));
   const sessions::TabRestoreService::Entries& entries =
       tab_restore_service->entries();
 
-  if (entries.empty())
+  if (entries.empty()) {
     return Error(kInvalidSessionIdError, session_id.ToString());
+  }
 
   // Check if the recently closed list contains an entry with the provided id.
   bool is_window = false;
@@ -523,16 +592,18 @@ ExtensionFunction::ResponseValue SessionsRestoreFunction::RestoreLocalSession(
     }
   }
 
-  sessions::LiveTabContext* context =
-      BrowserLiveTabContext::FindContextForWebContents(
-          browser->tab_strip_model()->GetActiveWebContents());
+  sessions::LiveTabContext* context = GetLiveTabContextForBrowser(browser);
+  if (!context) {
+    return Error(kNoLiveTabContextError);
+  }
   std::vector<sessions::LiveTab*> restored_tabs =
       tab_restore_service->RestoreEntryById(
           context, SessionID::FromSerializedValue(session_id.id()),
           WindowOpenDisposition::UNKNOWN);
   // If the ID is invalid, restored_tabs will be empty.
-  if (restored_tabs.empty())
+  if (restored_tabs.empty()) {
     return Error(kInvalidSessionIdError, session_id.ToString());
+  }
 
   sessions::ContentLiveTab* first_tab =
       static_cast<sessions::ContentLiveTab*>(restored_tabs[0]);
@@ -540,33 +611,35 @@ ExtensionFunction::ResponseValue SessionsRestoreFunction::RestoreLocalSession(
   // Retrieve the window through any of the tabs in restored_tabs.
   if (is_window) {
     return GetRestoredWindowResult(
-        ExtensionTabUtil::GetWindowIdOfTab(first_tab->web_contents()));
+        ExtensionTabUtil::GetWindowIdOfTab(&first_tab->GetWebContents()));
   }
 
-  return GetRestoredTabResult(first_tab->web_contents());
+  return GetRestoredTabResult(&first_tab->GetWebContents());
 }
 
 ExtensionFunction::ResponseValue SessionsRestoreFunction::RestoreForeignSession(
     const SessionId& session_id,
-    Browser* browser) {
+    BrowserWindowInterface* browser) {
   Profile* profile = Profile::FromBrowserContext(browser_context());
   sync_sessions::SessionSyncService* service =
-      SessionSyncServiceFactory::GetInstance()->GetForProfile(
-          Profile::FromBrowserContext(browser_context()));
+      SessionSyncServiceFactory::GetInstance()->GetForProfile(profile);
   DCHECK(service);
 
   sync_sessions::OpenTabsUIDelegate* open_tabs =
       service->GetOpenTabsUIDelegate();
   // If the user has disabled tab sync, GetOpenTabsUIDelegate() returns null.
-  if (!open_tabs)
+  if (!open_tabs) {
     return Error(kSessionSyncError);
+  }
 
   const sessions::SessionTab* tab = nullptr;
   if (open_tabs->GetForeignTab(session_id.session_tag(),
                                SessionID::FromSerializedValue(session_id.id()),
                                &tab)) {
-    TabStripModel* tab_strip = browser->tab_strip_model();
-    content::WebContents* contents = tab_strip->GetActiveWebContents();
+    content::WebContents* contents = GetActiveWebContents(browser);
+    if (!contents) {
+      return Error(kNoActiveTabError);
+    }
 
     content::WebContents* tab_contents =
         SessionRestore::RestoreForeignSessionTab(
@@ -583,19 +656,26 @@ ExtensionFunction::ResponseValue SessionsRestoreFunction::RestoreForeignSession(
 
   std::vector<const sessions::SessionWindow*>::const_iterator window =
       windows.begin();
-  while (window != windows.end()
-         && (*window)->window_id.id() != session_id.id()) {
+  while (window != windows.end() &&
+         (*window)->window_id.id() != session_id.id()) {
     ++window;
   }
-  if (window == windows.end())
+  if (window == windows.end()) {
     return Error(kInvalidSessionIdError, session_id.ToString());
+  }
 
+#if BUILDFLAG(ENABLE_EXTENSIONS)
   // Only restore one window at a time.
-  std::vector<Browser*> browsers =
+  std::vector<BrowserWindowInterface*> browsers =
       SessionRestore::RestoreForeignSessionWindows(profile, window, window + 1);
   // Will always create one browser because we only restore one window per call.
   DCHECK_EQ(1u, browsers.size());
   return GetRestoredWindowResult(ExtensionTabUtil::GetWindowId(browsers[0]));
+#else
+  // TODO(crbug.com/405219627): Support window restore on desktop Android.
+  NOTIMPLEMENTED();
+  return Error(kWindowRestoreNotSupportedError);
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 }
 
 ExtensionFunction::ResponseAction SessionsRestoreFunction::Run() {
@@ -603,22 +683,28 @@ ExtensionFunction::ResponseAction SessionsRestoreFunction::Run() {
   EXTENSION_FUNCTION_VALIDATE(params);
 
   Profile* profile = Profile::FromBrowserContext(browser_context());
-  Browser* browser = chrome::FindBrowserWithProfile(profile);
-  if (!browser)
+  BrowserWindowInterface* browser =
+      FindBrowserWindowInterfaceWithProfile(profile);
+  if (!browser) {
     return RespondNow(Error(kNoBrowserToRestoreSession));
+  }
 
-  if (profile != profile->GetOriginalProfile())
+  if (profile != profile->GetOriginalProfile()) {
     return RespondNow(Error(kRestoreInIncognitoError));
+  }
 
-  if (!ExtensionTabUtil::IsTabStripEditable())
+  if (!ExtensionTabUtil::IsTabStripEditable()) {
     return RespondNow(Error(ExtensionTabUtil::kTabStripNotEditableError));
+  }
 
-  if (!params->session_id)
+  if (!params->session_id) {
     return RespondNow(RestoreMostRecentlyClosed(browser));
+  }
 
   std::unique_ptr<SessionId> session_id(SessionId::Parse(*params->session_id));
-  if (!session_id)
+  if (!session_id) {
     return RespondNow(Error(kInvalidSessionIdError, *params->session_id));
+  }
 
   return RespondNow(session_id->IsForeign()
                         ? RestoreForeignSession(*session_id, browser)
@@ -637,15 +723,16 @@ SessionsEventRouter::SessionsEventRouter(Profile* profile)
 }
 
 SessionsEventRouter::~SessionsEventRouter() {
-  if (tab_restore_service_)
+  if (tab_restore_service_) {
     tab_restore_service_->RemoveObserver(this);
+  }
 }
 
 void SessionsEventRouter::TabRestoreServiceChanged(
     sessions::TabRestoreService* service) {
   EventRouter::Get(profile_)->BroadcastEvent(std::make_unique<Event>(
       events::SESSIONS_ON_CHANGED, api::sessions::OnChanged::kEventName,
-      base::Value::List()));
+      base::ListValue()));
 }
 
 void SessionsEventRouter::TabRestoreServiceDestroyed(
@@ -655,8 +742,8 @@ void SessionsEventRouter::TabRestoreServiceDestroyed(
 
 SessionsAPI::SessionsAPI(content::BrowserContext* context)
     : browser_context_(context) {
-  EventRouter::Get(browser_context_)->RegisterObserver(this,
-      api::sessions::OnChanged::kEventName);
+  EventRouter::Get(browser_context_)
+      ->RegisterObserver(this, api::sessions::OnChanged::kEventName);
 }
 
 SessionsAPI::~SessionsAPI() = default;
@@ -668,8 +755,7 @@ void SessionsAPI::Shutdown() {
 static base::LazyInstance<BrowserContextKeyedAPIFactory<SessionsAPI>>::
     DestructorAtExit g_sessions_api_factory = LAZY_INSTANCE_INITIALIZER;
 
-BrowserContextKeyedAPIFactory<SessionsAPI>*
-SessionsAPI::GetFactoryInstance() {
+BrowserContextKeyedAPIFactory<SessionsAPI>* SessionsAPI::GetFactoryInstance() {
   return g_sessions_api_factory.Pointer();
 }
 

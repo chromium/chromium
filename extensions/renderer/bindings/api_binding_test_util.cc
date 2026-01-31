@@ -64,29 +64,29 @@ base::Value ValueFromString(std::string_view str) {
   return std::move(value.value());
 }
 
-base::Value::List ListValueFromString(std::string_view str) {
+base::ListValue ListValueFromString(std::string_view str) {
   base::Value value = ValueFromString(str);
   if (value.is_none()) {
-    return base::Value::List();
+    return base::ListValue();
   }
 
   if (!value.is_list()) {
     ADD_FAILURE() << "Not a list: " << str;
-    return base::Value::List();
+    return base::ListValue();
   }
 
   return std::move(value).TakeList();
 }
 
-base::Value::Dict DictValueFromString(std::string_view str) {
+base::DictValue DictValueFromString(std::string_view str) {
   base::Value value = ValueFromString(str);
   if (value.is_none()) {
-    return base::Value::Dict();
+    return base::DictValue();
   }
 
   if (!value.is_dict()) {
     ADD_FAILURE() << "Not a dict: " << str;
-    return base::Value::Dict();
+    return base::DictValue();
   }
 
   return std::move(value).TakeDict();

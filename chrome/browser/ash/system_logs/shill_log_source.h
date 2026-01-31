@@ -27,24 +27,23 @@ class ShillLogSource : public SystemLogsSource {
   void Fetch(SysLogsSourceCallback callback) override;
 
  private:
-  void OnGetManagerProperties(std::optional<base::Value::Dict> result);
+  void OnGetManagerProperties(std::optional<base::DictValue> result);
   void OnGetDevice(const std::string& device_path,
-                   std::optional<base::Value::Dict> properties);
+                   std::optional<base::DictValue> properties);
   void AddDeviceAndRequestIPConfigs(const std::string& device_path,
-                                    const base::Value::Dict& properties);
+                                    const base::DictValue& properties);
   void OnGetIPConfig(const std::string& device_path,
                      const std::string& ip_config_path,
-                     std::optional<base::Value::Dict> properties);
+                     std::optional<base::DictValue> properties);
   void AddIPConfig(const std::string& device_path,
                    const std::string& ip_config_path,
-                   const base::Value::Dict& properties);
+                   const base::DictValue& properties);
   void OnGetService(const std::string& service_path,
-                    std::optional<base::Value::Dict> properties);
+                    std::optional<base::DictValue> properties);
   // Scrubs |properties| for PII data based on the |object_path|. Also expands
   // UIData from JSON into a dictionary if present.
-  base::Value::Dict ScrubAndExpandProperties(
-      const std::string& object_path,
-      const base::Value::Dict& properties);
+  base::DictValue ScrubAndExpandProperties(const std::string& object_path,
+                                           const base::DictValue& properties);
   // Check whether all property requests have completed. If so, invoke
   // |callback_| and clear results.
   void CheckIfDone();
@@ -55,8 +54,8 @@ class ShillLogSource : public SystemLogsSource {
   std::set<std::string> service_paths_;
   // More than one device may request the same IP configs, so use multiset.
   std::multiset<std::string> ip_config_paths_;
-  base::Value::Dict devices_;
-  base::Value::Dict services_;
+  base::DictValue devices_;
+  base::DictValue services_;
   base::WeakPtrFactory<ShillLogSource> weak_ptr_factory_{this};
 };
 

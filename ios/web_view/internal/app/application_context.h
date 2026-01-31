@@ -15,6 +15,10 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/network/public/mojom/network_service.mojom.h"
 
+namespace activity_reporter {
+class ActivityReporter;
+}
+
 namespace component_updater {
 class ComponentUpdateService;
 }
@@ -70,6 +74,9 @@ class ApplicationContext {
 
   // Gets the NetLog.
   net::NetLog* GetNetLog();
+
+  // Gets the ActivityReporter.
+  activity_reporter::ActivityReporter* GetActivityReporter();
 
   // Gets the ComponentUpdateService.
   component_updater::ComponentUpdateService* GetComponentUpdateService();
@@ -128,6 +135,7 @@ class ApplicationContext {
   std::unique_ptr<network::NetworkConnectionTracker>
       network_connection_tracker_;
 
+  std::unique_ptr<activity_reporter::ActivityReporter> activity_reporter_;
   std::unique_ptr<component_updater::ComponentUpdateService> component_updater_;
 
   scoped_refptr<SafeBrowsingService> safe_browsing_service_;

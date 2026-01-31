@@ -155,7 +155,7 @@ bool DisplaySizeScreen::ShouldBeSkipped(const WizardContext& context) const {
   // Skip the screen if the `recommended` value in `DeviceDisplayResolution`
   // policy is set to false.
   if (ash::InstallAttributes::Get()->IsEnterpriseManaged()) {
-    const base::Value::Dict* resolution_pref = nullptr;
+    const base::DictValue* resolution_pref = nullptr;
     ash::CrosSettings::Get()->GetDictionary(ash::kDeviceDisplayResolution,
                                             &resolution_pref);
     if (resolution_pref && !resolution_pref->empty()) {
@@ -194,12 +194,12 @@ void DisplaySizeScreen::ShowImpl() {
   }
 
   auto factors = GetZoomFactors();
-  base::Value::List factors_list;
+  base::ListValue factors_list;
   for (auto factor : factors) {
     factors_list.Append(base::Value(factor));
   }
 
-  base::Value::Dict data;
+  base::DictValue data;
   data.Set("availableSizes", std::move(factors_list));
   data.Set(
       "currentSize",
@@ -213,7 +213,7 @@ void DisplaySizeScreen::ShowImpl() {
 
 void DisplaySizeScreen::HideImpl() {}
 
-void DisplaySizeScreen::OnUserAction(const base::Value::List& args) {
+void DisplaySizeScreen::OnUserAction(const base::ListValue& args) {
   const std::string& action_id = args[0].GetString();
   if (action_id == kUserActionNext) {
     CHECK_EQ(args.size(), 2u);

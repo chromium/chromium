@@ -38,7 +38,7 @@ scoped_refptr<extensions::Extension> CreateExtension(
     const std::string& extension_id,
     const std::string& name,
     const std::string& url) {
-  base::Value::Dict manifest;
+  base::DictValue manifest;
   manifest.Set(extensions::manifest_keys::kName, name);
   manifest.Set(extensions::manifest_keys::kVersion, "1");
   manifest.Set(extensions::manifest_keys::kManifestVersion, 2);

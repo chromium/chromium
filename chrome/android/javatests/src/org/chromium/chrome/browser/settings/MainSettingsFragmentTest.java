@@ -25,9 +25,11 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import static org.chromium.base.test.transit.ViewFinder.waitForNoView;
 import static org.chromium.chrome.browser.settings.MainSettings.PREF_APPEARANCE;
 import static org.chromium.chrome.browser.settings.MainSettings.PREF_TOOLBAR_SHORTCUT;
 import static org.chromium.chrome.browser.settings.MainSettings.PREF_UI_THEME;
@@ -91,8 +93,6 @@ import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.homepage.HomepageTestRule;
 import org.chromium.chrome.browser.homepage.settings.HomepageSettings;
 import org.chromium.chrome.browser.language.settings.LanguageSettings;
-import org.chromium.chrome.browser.magic_stack.HomeModulesConfigManager;
-import org.chromium.chrome.browser.magic_stack.HomeModulesConfigSettings;
 import org.chromium.chrome.browser.night_mode.NightModeMetrics.ThemeSettingsEntry;
 import org.chromium.chrome.browser.night_mode.settings.ThemeSettingsFragment;
 import org.chromium.chrome.browser.password_manager.PasswordManagerUtilBridge;
@@ -127,6 +127,7 @@ import org.chromium.chrome.test.R;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
 import org.chromium.chrome.test.util.browser.signin.SigninTestRule;
 import org.chromium.components.browser_ui.accessibility.AccessibilitySettings;
+import org.chromium.components.browser_ui.settings.search.SettingsIndexData;
 import org.chromium.components.browser_ui.site_settings.SiteSettings;
 import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.components.policy.test.annotations.Policies;
@@ -140,7 +141,6 @@ import org.chromium.components.signin.test.util.AccountCapabilitiesBuilder;
 import org.chromium.components.signin.test.util.TestAccounts;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.test.util.GmsCoreVersionRestriction;
-import org.chromium.ui.test.util.ViewUtils;
 import org.chromium.ui.text.SpanApplier;
 import org.chromium.ui.text.SpanApplier.SpanInfo;
 
@@ -190,16 +190,17 @@ public class MainSettingsFragmentTest {
     @Mock private PasswordManagerUtilBridge.Natives mPasswordManagerUtilBridgeJniMock;
 
     @Mock private SigninAndHistorySyncActivityLauncher mSigninAndHistorySyncActivityLauncher;
-    @Mock private HomeModulesConfigManager mHomeModulesConfigManager;
 
     @Mock private Tracker mTestTracker;
     @Mock private DefaultBrowserPromoUtils mMockDefaultBrowserPromoUtils;
+
+    @Mock private SettingsIndexData mSearchIndexDataMock;
 
     private MainSettings mMainSettings;
 
     @Before
     public void setup() {
-        // ObservableSupplierImpl needs a Looper.
+        // ObservableSupplier needs a Looper.
         Looper.prepare();
         InstrumentationRegistry.getInstrumentation().setInTouchMode(true);
         PasswordManagerUtilBridgeJni.setInstanceForTesting(mPasswordManagerUtilBridgeJniMock);
@@ -509,7 +510,7 @@ public class MainSettingsFragmentTest {
 
         // Wait for the default browser promo view to disappear to avoid flakiness due to race
         // conditions.
-        ViewUtils.waitForViewCheckingState(withId(R.id.promo_card_view), ViewUtils.VIEW_NULL);
+        waitForNoView(withId(R.id.promo_card_view));
         View view =
                 mSettingsActivityTestRule
                         .getActivity()
@@ -741,43 +742,6 @@ public class MainSettingsFragmentTest {
         intended(IntentMatchers.hasData("https://test.plusaddresses.google.com"));
     }
 
-    /**
-     * Verifies that when the feature flag is enabled, the PREF_HOME_MODULES_CONFIG is removed from
-     * the settings page.
-     */
-    // TODO(crbug.com/376238770): Remove @EnableFeatures once the feature flag is turned on by
-    // default.
-    @Test
-    @SmallTest
-    @EnableFeatures(ChromeFeatureList.NEW_TAB_PAGE_CUSTOMIZATION)
-    public void testHomeModulesConfigSettingsWithCustomizableModuleWhileFeatureTurnOn() {
-        when(mHomeModulesConfigManager.hasModuleShownInSettings()).thenReturn(true);
-        HomeModulesConfigManager.setInstanceForTesting(mHomeModulesConfigManager);
-        startSettings();
-        assertSettingsNotExists(MainSettings.PREF_HOME_MODULES_CONFIG);
-    }
-
-    /**
-     * Verifies that when the feature flag is turned off, the PREF_HOME_MODULES_CONFIG is removed
-     * from the settings page, only if hasModuleShownInSettings returns false.
-     */
-    // TODO(crbug.com/376238770): Removes this test when the feature flag is turned on by default.
-    @Test
-    @SmallTest
-    @DisableFeatures("NewTabPageCustomization")
-    public void testHomeModulesConfigSettingsWithCustomizableModuleWhileFeatureTurnOff() {
-        when(mHomeModulesConfigManager.hasModuleShownInSettings()).thenReturn(true);
-        HomeModulesConfigManager.setInstanceForTesting(mHomeModulesConfigManager);
-        startSettings();
-        assertSettingsExists(
-                MainSettings.PREF_HOME_MODULES_CONFIG, HomeModulesConfigSettings.class);
-
-        when(mHomeModulesConfigManager.hasModuleShownInSettings()).thenReturn(false);
-        HomeModulesConfigManager.setInstanceForTesting(mHomeModulesConfigManager);
-        startSettings();
-        assertSettingsNotExists(MainSettings.PREF_HOME_MODULES_CONFIG);
-    }
-
     @Test
     @SmallTest
     public void testTabsSettingsOn() {
@@ -853,6 +817,58 @@ public class MainSettingsFragmentTest {
         Preference preference = mMainSettings.findPreference(MainSettings.PREF_SETTINGS_PROMO_CARD);
         Assert.assertNotNull(
                 "Settings promo preference exist when feature flag is enabled", preference);
+    }
+
+    @Test
+    @SmallTest
+    @EnableFeatures(ChromeFeatureList.DEFAULT_BROWSER_PROMO_ENTRY_POINT)
+    public void testDefaultBrowserSettingEnabled() {
+        startSettings();
+        Preference preference = mMainSettings.findPreference(MainSettings.PREF_DEFAULT_BROWSER);
+        Assert.assertNotNull(
+                "Default Browser preference should exist when flag is enabled", preference);
+        Assert.assertTrue("Default Browser preference should be visible", preference.isVisible());
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    var indexProvider = MainSettings.SEARCH_INDEX_DATA_PROVIDER;
+                    indexProvider.updateDynamicPreferences(
+                            mSettingsActivityTestRule.getActivity(),
+                            mSearchIndexDataMock,
+                            mMainSettings.getProfile());
+                });
+
+        // Verify that the preference is not removed from the index so that it remains searchable.
+        verify(mSearchIndexDataMock, never())
+                .removeEntry(
+                        MainSettings.SEARCH_INDEX_DATA_PROVIDER.getUniqueId(
+                                MainSettings.PREF_DEFAULT_BROWSER));
+    }
+
+    @Test
+    @SmallTest
+    @DisableFeatures(ChromeFeatureList.DEFAULT_BROWSER_PROMO_ENTRY_POINT)
+    public void testDefaultBrowserSettingDisabled() {
+        startSettings();
+        Assert.assertNull(
+                "Default Browser preference should not exist when flag is disabled",
+                mMainSettings.findPreference(MainSettings.PREF_DEFAULT_BROWSER));
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    var indexProvider = MainSettings.SEARCH_INDEX_DATA_PROVIDER;
+                    indexProvider.updateDynamicPreferences(
+                            mSettingsActivityTestRule.getActivity(),
+                            mSearchIndexDataMock,
+                            mMainSettings.getProfile());
+                });
+
+        // Verify that the preference is removed from the search index so that it does not appear in
+        // search results.
+        verify(mSearchIndexDataMock)
+                .removeEntry(
+                        MainSettings.SEARCH_INDEX_DATA_PROVIDER.getUniqueId(
+                                MainSettings.PREF_DEFAULT_BROWSER));
     }
 
     @Test
@@ -945,11 +961,6 @@ public class MainSettingsFragmentTest {
             throw new AssertionError("Pref fragment <" + pref.getFragment() + "> is not found.");
         }
         return pref;
-    }
-
-    private void assertSettingsNotExists(String prefKey) {
-        Preference pref = mMainSettings.findPreference(prefKey);
-        Assert.assertNull(pref);
     }
 
     private boolean supportAddressBarSettings() {

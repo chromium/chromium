@@ -4,8 +4,6 @@
 
 #include "chrome/browser/ui/views/extensions/extensions_request_access_button.h"
 
-#include <algorithm>
-#include <iterator>
 #include <memory>
 #include <string>
 
@@ -18,18 +16,17 @@
 #include "chrome/browser/extensions/extension_action_runner.h"
 #include "chrome/browser/extensions/extension_ui_util.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
-#include "chrome/browser/ui/browser_window.h"
-#include "chrome/browser/ui/extensions/extension_dialog_utils.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/extensions/extensions_toolbar_view_model.h"
+#include "chrome/browser/ui/tabs/tab_list_interface.h"
 #include "chrome/browser/ui/toolbar/toolbar_action_view_model.h"
 #include "chrome/browser/ui/user_education/browser_user_education_interface.h"
-#include "chrome/browser/ui/views/extensions/extension_view_utils.h"
 #include "chrome/browser/ui/views/extensions/extensions_container_views.h"
 #include "chrome/browser/ui/views/extensions/extensions_request_access_hover_card_coordinator.h"
+#include "chrome/browser/ui/views/extensions/extensions_toolbar_desktop.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_chip_button.h"
 #include "chrome/grit/generated_resources.h"
-#include "components/feature_engagement/public/event_constants.h"
 #include "components/feature_engagement/public/feature_constants.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -57,47 +54,42 @@ std::vector<const extensions::Extension*> GetExtensions(
 }  // namespace
 
 ExtensionsRequestAccessButton::ExtensionsRequestAccessButton(
-    Browser* browser,
-    ExtensionsContainerViews* extensions_container)
+    BrowserWindowInterface* browser,
+    ExtensionsContainer* extensions_container,
+    ExtensionsContainerViews* extensions_container_views)
     : ToolbarChipButton(
           base::BindRepeating(&ExtensionsRequestAccessButton::OnButtonPressed,
                               base::Unretained(this)),
           ToolbarChipButton::Edge::kRight),
       browser_(browser),
       extensions_container_(extensions_container),
+      extensions_container_views_(extensions_container_views),
       hover_card_coordinator_(
           std::make_unique<ExtensionsRequestAccessHoverCardCoordinator>()) {
   // Set button for IPH.
   SetProperty(views::kElementIdentifierKey,
               kExtensionsRequestAccessButtonElementId);
-
-  UpdateTooltipText();
-  browser_->tab_strip_model()->AddObserver(this);
 }
 
-ExtensionsRequestAccessButton::~ExtensionsRequestAccessButton() {
-  browser_->tab_strip_model()->RemoveObserver(this);
-}
+ExtensionsRequestAccessButton::~ExtensionsRequestAccessButton() = default;
 
 void ExtensionsRequestAccessButton::Update(
-    std::vector<extensions::ExtensionId>& extension_ids) {
+    const ExtensionsToolbarViewModel::RequestAccessButtonParams&
+        request_access_button_params) {
   CHECK(!IsShowingConfirmation());
+  extension_ids_ = request_access_button_params.extension_ids;
 
-  extension_ids_ = extension_ids;
-  SetVisible(!extension_ids_.empty());
-  UpdateTooltipText();
-
-  if (extension_ids_.empty()) {
-    return;
-  }
+  SetVisible(!request_access_button_params.extension_ids.empty());
+  SetTooltipText(request_access_button_params.tooltip_text);
 
   // TODO(crbug.com/40784980): Set the label and background color without
   // borders separately to match the mocks. For now, using SetHighlight to
   // display that adds a border and highlight color in addition to the label.
   std::optional<SkColor> color;
   SetHighlight(
-      l10n_util::GetStringFUTF16Int(IDS_EXTENSIONS_REQUEST_ACCESS_BUTTON,
-                                    static_cast<int>(extension_ids_.size())),
+      l10n_util::GetStringFUTF16Int(
+          IDS_EXTENSIONS_REQUEST_ACCESS_BUTTON,
+          static_cast<int>(request_access_button_params.extension_ids.size())),
       color);
   SetEnabled(true);
 }
@@ -148,44 +140,6 @@ bool ExtensionsRequestAccessButton::ShouldShowInkdropAfterIphInteraction() {
   return false;
 }
 
-void ExtensionsRequestAccessButton::OnTabStripModelChanged(
-    TabStripModel* tab_strip_model,
-    const TabStripModelChange& change,
-    const TabStripSelectionChange& selection) {
-  if (selection.active_tab_changed()) {
-    UpdateTooltipText();
-  }
-}
-
-void ExtensionsRequestAccessButton::TabChangedAt(content::WebContents* contents,
-                                                 int index,
-                                                 TabChangeType change_type) {
-  if (contents == GetActiveWebContents()) {
-    UpdateTooltipText();
-  }
-}
-
-void ExtensionsRequestAccessButton::UpdateTooltipText() {
-  std::vector<std::u16string> tooltip_parts;
-  content::WebContents* active_contents = GetActiveWebContents();
-
-  // Active contents can be null if the window is closing.
-  if (!active_contents) {
-    SetTooltipText(std::u16string());
-    return;
-  }
-
-  tooltip_parts.push_back(l10n_util::GetStringFUTF16(
-      IDS_EXTENSIONS_REQUEST_ACCESS_BUTTON_TOOLTIP_MULTIPLE_EXTENSIONS,
-      extensions::ui_util::GetFormattedHostForDisplay(*active_contents)));
-  for (const auto& extension_id : extension_ids_) {
-    ToolbarActionViewModel* view_model =
-        extensions_container_->GetActionForId(extension_id);
-    tooltip_parts.push_back(view_model->GetActionName());
-  }
-  SetTooltipText(base::JoinString(tooltip_parts, u"\n"));
-}
-
 void ExtensionsRequestAccessButton::OnButtonPressed() {
   // Record IPH usage.
   BrowserUserEducationInterface::From(browser_)->NotifyFeaturePromoFeatureUsed(
@@ -206,12 +160,12 @@ void ExtensionsRequestAccessButton::OnButtonPressed() {
 
   // Always grant access to this site to all extensions.
   DCHECK_GT(extension_ids_.size(), 0u);
+  Profile* profile = browser_->GetProfile();
   std::vector<const extensions::Extension*> extensions_to_run =
-      GetExtensions(browser_->profile(), extension_ids_);
-  extensions::SitePermissionsHelper(browser_->profile())
-      .UpdateSiteAccess(
-          extensions_to_run, web_contents,
-          extensions::PermissionsManager::UserSiteAccess::kOnSite);
+      GetExtensions(profile, extension_ids_);
+  extensions::SitePermissionsHelper(profile).UpdateSiteAccess(
+      extensions_to_run, web_contents,
+      extensions::PermissionsManager::UserSiteAccess::kOnSite);
 
   // Show confirmation message, and disable the button, for a specific duration.
   std::optional<SkColor> color;
@@ -228,7 +182,7 @@ void ExtensionsRequestAccessButton::OnButtonPressed() {
   collapse_timer_.Start(
       FROM_HERE, collapse_duration,
       base::BindOnce(&ExtensionsContainerViews::CollapseConfirmation,
-                     base::Unretained(extensions_container_)));
+                     base::Unretained(extensions_container_views_)));
 
   base::RecordAction(base::UserMetricsAction(
       "Extensions.Toolbar.ExtensionsActivatedFromRequestAccessButton"));
@@ -239,7 +193,8 @@ void ExtensionsRequestAccessButton::OnButtonPressed() {
 
 content::WebContents* ExtensionsRequestAccessButton::GetActiveWebContents()
     const {
-  return browser_->tab_strip_model()->GetActiveWebContents();
+  auto* tab = TabListInterface::From(browser_)->GetActiveTab();
+  return tab ? tab->GetContents() : nullptr;
 }
 
 BEGIN_METADATA(ExtensionsRequestAccessButton)

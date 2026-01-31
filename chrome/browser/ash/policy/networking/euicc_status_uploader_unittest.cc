@@ -344,7 +344,7 @@ class EuiccStatusUploaderTest : public testing::Test {
         // otherwise would not be acceptable by the API of
         // ManagedCellularPrefHandler, e.g. an empty name or activation code
         // value, that we want to protect against uploading.
-        base::Value::Dict esim_metadata;
+        base::DictValue esim_metadata;
         esim_metadata.Set(::onc::network_config::kName,
                           test_profile.network_name);
         esim_metadata.Set(
@@ -354,7 +354,7 @@ class EuiccStatusUploaderTest : public testing::Test {
                 : ::onc::cellular::kSMDSAddress,
             test_profile.activation_code_value);
 
-        base::Value::Dict existing_prefs =
+        base::DictValue existing_prefs =
             local_state_.GetDict(ash::prefs::kManagedCellularESimMetadata)
                 .Clone();
         existing_prefs.Set(test_profile.iccid, std::move(esim_metadata));

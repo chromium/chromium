@@ -10,7 +10,6 @@
 #include "base/time/time.h"
 #include "chrome/browser/content_settings/cookie_settings_factory.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
-#include "chrome/browser/privacy_sandbox/tracking_protection_settings_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
@@ -21,7 +20,6 @@
 #include "chrome/browser/ui/views/page_action/page_action_controller.h"
 #include "chrome/browser/ui/views/page_action/page_action_observer.h"
 #include "chrome/grit/generated_resources.h"
-#include "components/content_settings/core/common/cookie_blocking_3pcd_status.h"
 #include "components/content_settings/core/common/cookie_controls_state.h"
 #include "components/feature_engagement/public/feature_constants.h"
 #include "components/privacy_sandbox/privacy_sandbox_features.h"
@@ -84,13 +82,9 @@ class BubbleDelegateImpl
   const raw_ref<tabs::TabInterface> tab_interface_;
 };
 
-int GetLabelForStatus(CookieControlsState controls_state,
-                      CookieBlocking3pcdStatus blocking_status) {
-  if (controls_state == CookieControlsState::kAllowed3pc) {
-    return IDS_COOKIE_CONTROLS_PAGE_ACTION_COOKIES_ALLOWED_LABEL;
-  }
-  return blocking_status == CookieBlocking3pcdStatus::kLimited
-             ? IDS_COOKIE_CONTROLS_PAGE_ACTION_COOKIES_LIMITED_LABEL
+int GetLabelForStatus(CookieControlsState controls_state) {
+  return controls_state == CookieControlsState::kAllowed3pc
+             ? IDS_COOKIE_CONTROLS_PAGE_ACTION_COOKIES_ALLOWED_LABEL
              : IDS_COOKIE_CONTROLS_PAGE_ACTION_COOKIES_BLOCKED_LABEL;
 }
 
@@ -117,7 +111,6 @@ CookieControlsPageActionController::CookieControlsPageActionController(
                                              profile.GetOriginalProfile())
                                        : nullptr,
               HostContentSettingsMapFactory::GetForProfile(&profile),
-              TrackingProtectionSettingsFactory::GetForProfile(&profile),
               profile.IsIncognitoProfile())),
       bubble_delegate_(std::make_unique<BubbleDelegateImpl>(tab_interface)),
       scoped_unowned_user_data_(tab_interface.GetUnownedUserDataHost(), *this) {
@@ -141,7 +134,6 @@ void CookieControlsPageActionController::Init() {
   icon_status_.controls_state = CookieControlsState::kHidden;
   icon_status_.icon_visible = false;
   icon_status_.should_highlight = false;
-  icon_status_.blocking_status = CookieBlocking3pcdStatus::kMaxValue;
 
   cookie_controls_controller_->Update(tab_->GetContents());
 
@@ -194,18 +186,15 @@ void CookieControlsPageActionController::OnPageActionChipShown(
 void CookieControlsPageActionController::OnCookieControlsIconStatusChanged(
     bool icon_visible,
     CookieControlsState controls_state,
-    CookieBlocking3pcdStatus blocking_status,
     bool should_highlight) {
   const bool controls_state_changed =
       controls_state != icon_status_.controls_state;
   const bool should_update_icon =
       controls_state_changed ||
-      blocking_status != icon_status_.blocking_status ||
       should_highlight != icon_status_.should_highlight;
   icon_status_ = CookieControlsIconStatus{
       .icon_visible = icon_visible,
       .controls_state = controls_state,
-      .blocking_status = blocking_status,
       .should_highlight = should_highlight,
   };
 
@@ -229,21 +218,9 @@ void CookieControlsPageActionController::OnCookieControlsIconStatusChanged(
       bubble_delegate_->HasBubble()) {
     return;
   }
-  if (icon_status_.blocking_status == CookieBlocking3pcdStatus::kNotIn3pcd) {
-    if (auto* user_education = BrowserUserEducationInterface::From(
-            tab_->GetBrowserWindowInterface())) {
-      MaybeShowIPH(*user_education);
-    }
-  } else if (!IsManagedIPHActive()) {
-    page_action_controller_->OverrideText(
-        kActionShowCookieControls,
-        l10n_util::GetStringUTF16(
-            IDS_TRACKING_PROTECTION_PAGE_ACTION_SITE_NOT_WORKING_LABEL));
-    page_action_controller_->ShowSuggestionChip(
-        kActionShowCookieControls, page_actions::SuggestionChipConfig{
-                                       .should_animate = true,
-                                       .should_announce_chip = true,
-                                   });
+  if (auto* user_education = BrowserUserEducationInterface::From(
+          tab_->GetBrowserWindowInterface())) {
+    MaybeShowIPH(*user_education);
   }
 }
 
@@ -281,8 +258,8 @@ void CookieControlsPageActionController::UpdateIconVisibility() {
 }
 
 std::u16string CookieControlsPageActionController::GetLabelForState() const {
-  return l10n_util::GetStringUTF16(GetLabelForStatus(
-      icon_status_.controls_state, icon_status_.blocking_status));
+  return l10n_util::GetStringUTF16(
+      GetLabelForStatus(icon_status_.controls_state));
 }
 
 bool CookieControlsPageActionController::IsManagedIPHActive() const {

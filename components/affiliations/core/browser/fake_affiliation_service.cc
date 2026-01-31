@@ -61,4 +61,8 @@ void FakeAffiliationService::UpdateAffiliationsAndBranding(
 void FakeAffiliationService::RegisterSource(
     std::unique_ptr<AffiliationSource> source) {}
 
+base::WeakPtr<AffiliationService> FakeAffiliationService::AsWeakPtr() {
+  return weak_ptr_factory_.GetWeakPtr();
+}
+
 }  // namespace affiliations

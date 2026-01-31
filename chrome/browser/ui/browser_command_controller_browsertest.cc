@@ -4,10 +4,10 @@
 
 #include "chrome/browser/ui/browser_command_controller.h"
 
+#include <algorithm>
 #include <string_view>
 
 #include "base/command_line.h"
-#include "base/containers/contains.h"
 #include "base/run_loop.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
@@ -61,6 +61,7 @@
 #if BUILDFLAG(IS_CHROMEOS)
 #include "ash/constants/ash_switches.h"
 #include "ash/wm/window_pin_util.h"
+#include "chrome/browser/ash/boca/on_task/on_task_locked_controller.h"
 #include "chrome/browser/ash/login/test/guest_session_mixin.h"
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
 #include "ui/aura/window.h"
@@ -276,7 +277,8 @@ class BrowserCommandControllerBrowserTestLockedFullscreen
 
 IN_PROC_BROWSER_TEST_F(BrowserCommandControllerBrowserTestLockedFullscreen,
                        WhenNotLockedForOnTask) {
-  browser()->SetLockedForOnTask(false);
+  ash::boca::OnTaskLockedController::From(browser())->set_locked_for_on_task(
+      false);
   CommandUpdaterImpl* const command_updater = GetCommandUpdater();
 
   // IDC_EXIT is always enabled in regular mode so it's a perfect candidate for
@@ -291,7 +293,7 @@ IN_PROC_BROWSER_TEST_F(BrowserCommandControllerBrowserTestLockedFullscreen,
   // Go through all the command ids and ensure only allowlisted commands are
   // enabled.
   for (int id : command_updater->GetAllIds()) {
-    bool is_command_allowlisted = base::Contains(kAllowlistedIds, id);
+    bool is_command_allowlisted = std::ranges::contains(kAllowlistedIds, id);
     EXPECT_EQ(command_updater->IsCommandEnabled(id), is_command_allowlisted)
         << "Command " << id << " failed to meet enabled state expectation";
   }
@@ -303,7 +305,8 @@ IN_PROC_BROWSER_TEST_F(BrowserCommandControllerBrowserTestLockedFullscreen,
 
 IN_PROC_BROWSER_TEST_F(BrowserCommandControllerBrowserTestLockedFullscreen,
                        WhenLockedForOnTask) {
-  browser()->SetLockedForOnTask(true);
+  ash::boca::OnTaskLockedController::From(browser())->set_locked_for_on_task(
+      true);
   CommandUpdaterImpl* const command_updater = GetCommandUpdater();
 
   // IDC_EXIT is always enabled in regular mode so it's a perfect candidate for
@@ -330,7 +333,7 @@ IN_PROC_BROWSER_TEST_F(BrowserCommandControllerBrowserTestLockedFullscreen,
   // Go through all the command ids and ensure only allowlisted commands are
   // enabled.
   for (int id : command_updater->GetAllIds()) {
-    bool is_command_allowlisted = base::Contains(kAllowlistedIds, id);
+    bool is_command_allowlisted = std::ranges::contains(kAllowlistedIds, id);
     EXPECT_EQ(command_updater->IsCommandEnabled(id), is_command_allowlisted)
         << "Command " << id << " failed to meet enabled state expectation";
   }
@@ -763,8 +766,7 @@ class BrowserCommandControllerBrowserTestGlicChromeOSGuest
     : public MixinBasedInProcessBrowserTest {
  public:
   BrowserCommandControllerBrowserTestGlicChromeOSGuest() {
-    scoped_feature_list_.InitWithFeatures(
-        {features::kGlic, features::kTabstripComboButton}, {});
+    scoped_feature_list_.InitWithFeatures({features::kGlic}, {});
   }
 
   BrowserCommandControllerBrowserTestGlicChromeOSGuest(

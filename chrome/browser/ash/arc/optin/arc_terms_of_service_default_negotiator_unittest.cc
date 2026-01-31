@@ -25,6 +25,7 @@
 #include "chrome/browser/ash/settings/stats_reporting_controller.h"
 #include "chrome/browser/consent_auditor/consent_auditor_factory.h"
 #include "chrome/browser/consent_auditor/consent_auditor_test_utils.h"
+#include "chrome/browser/global_features.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
@@ -162,7 +163,12 @@ class ArcTermsOfServiceDefaultNegotiatorTest
         local_state_.registry());
     ash::StatsReportingController::Initialize(&local_state_);
 
-    support_host_ = std::make_unique<ArcSupportHost>(profile());
+    support_host_ = std::make_unique<ArcSupportHost>(
+        TestingBrowserProcess::GetGlobal()->local_state(),
+        TestingBrowserProcess::GetGlobal()
+            ->GetFeatures()
+            ->application_locale_storage(),
+        profile());
     fake_arc_support_ = std::make_unique<FakeArcSupport>(support_host_.get());
     negotiator_ = std::make_unique<ArcTermsOfServiceDefaultNegotiator>(
         profile()->GetPrefs(), support_host(), test_metrics_service_.get());

@@ -51,14 +51,14 @@ class LocalPrinterHandlerDefault : public PrinterHandler {
   void StartGetCapability(const std::string& destination_id,
                           GetCapabilityCallback callback) override;
   void StartPrint(const std::u16string& job_title,
-                  base::Value::Dict settings,
+                  base::DictValue settings,
                   scoped_refptr<base::RefCountedMemory> print_data,
                   PrintCallback callback) override;
 
  private:
   static PrinterList EnumeratePrintersOnBlockingTaskRunner(
       const std::string& locale);
-  static base::Value::Dict FetchCapabilitiesOnBlockingTaskRunner(
+  static base::DictValue FetchCapabilitiesOnBlockingTaskRunner(
       const std::string& device_name,
       const std::string& locale);
   static std::string GetDefaultPrinterOnBlockingTaskRunner(

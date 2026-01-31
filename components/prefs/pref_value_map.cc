@@ -184,8 +184,8 @@ void PrefValueMap::GetDifferingKeys(
     differing_keys->push_back(other_pref->first);
 }
 
-base::Value::Dict PrefValueMap::AsDict() const {
-  base::Value::Dict dictionary;
+base::DictValue PrefValueMap::AsDict() const {
+  base::DictValue dictionary;
   for (const auto& value : prefs_)
     dictionary.SetByDottedPath(value.first, value.second.Clone());
 

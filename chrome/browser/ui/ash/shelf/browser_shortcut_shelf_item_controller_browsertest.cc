@@ -5,14 +5,17 @@
 #include "chrome/browser/ui/ash/shelf/browser_shortcut_shelf_item_controller.h"
 
 #include "ash/public/cpp/shelf_model.h"
+#include "ash/public/cpp/shelf_types.h"
 #include "base/functional/callback_helpers.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
+#include "chrome/browser/ash/login/test/guest_session_mixin.h"
 #include "chrome/browser/ui/ash/shelf/chrome_shelf_controller.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/test/base/in_process_browser_test.h"
+#include "chrome/test/base/mixin_based_in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "content/public/test/browser_test.h"
 #include "ui/display/types/display_constants.h"
@@ -113,4 +116,23 @@ IN_PROC_BROWSER_TEST_F(BrowserShortcutShelfItemControllerTest, AppMenu) {
   EXPECT_EQ(1U, items.size());
   browser_destroyed_observer.Wait();
   EXPECT_EQ(1U, chrome::GetTotalBrowserCount());
+}
+
+class BrowserShortcutShelfItemControllerGuestTest
+    : public MixinBasedInProcessBrowserTest {
+ private:
+  ash::GuestSessionMixin guest_session_{&mixin_host_};
+};
+
+// Regression test for crbug.com/469261395.
+IN_PROC_BROWSER_TEST_F(BrowserShortcutShelfItemControllerGuestTest,
+                       LaunchFromShelf) {
+  BrowserShortcutShelfItemController* controller =
+      ChromeShelfController::instance()
+          ->GetBrowserShortcutShelfItemControllerForTesting();
+  ASSERT_TRUE(controller);
+
+  controller->ItemSelected(
+      /*event=*/nullptr, display::kInvalidDisplayId, ash::LAUNCH_FROM_SHELF,
+      base::DoNothing(), base::NullCallback());
 }

@@ -31,7 +31,10 @@ bool ShouldStartDistillabilityService() {
 }
 
 BASE_FEATURE(kReaderModeUseReadability,
-#if BUILDFLAG(IS_IOS)
+// iOS enabled by default as part of a launch.
+// Desktop enabled by default as part of a dogfood, it will be controlled by a
+// separate feature flag on it's launch.
+#if !BUILDFLAG(IS_ANDROID)
              base::FEATURE_ENABLED_BY_DEFAULT
 #else
 
@@ -53,7 +56,7 @@ constexpr base::FeatureParam<int>
         /*default_value=*/160};
 constexpr base::FeatureParam<int> kReaderModeUseReadabilityMinContentLength{
     &kReaderModeUseReadability, /*name=*/"min_content_length",
-#if BUILDFLAG(IS_IOS)
+#if !BUILDFLAG(IS_ANDROID)
     /*default_value=*/0
 #else
     /*default_value=*/100
@@ -84,7 +87,7 @@ int GetMinimumAllowableDistilledContentLength() {
 }
 
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
-BASE_FEATURE(kReaderModeSupportNewFonts, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kReaderModeSupportNewFonts, base::FEATURE_ENABLED_BY_DEFAULT);
 #endif
 
 #if BUILDFLAG(IS_ANDROID)
@@ -94,20 +97,16 @@ BASE_FEATURE(kReaderModeDistillInApp, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kReaderModeImprovements, base::FEATURE_DISABLED_BY_DEFAULT);
 
 namespace android {
-static jlong JNI_DomDistillerFeatureMap_GetNativeMap(JNIEnv* env) {
+static int64_t JNI_DomDistillerFeatureMap_GetNativeMap(JNIEnv* env) {
   static const base::Feature* const kFeaturesExposedToJava[] = {
       &kReaderModeDistillInApp, &kReaderModeImprovements,
       &kReaderModeSupportNewFonts, &kReaderModeUseReadability};
   static base::NoDestructor<base::android::FeatureMap> kFeatureMap(
       kFeaturesExposedToJava);
-  return reinterpret_cast<jlong>(kFeatureMap.get());
+  return reinterpret_cast<int64_t>(kFeatureMap.get());
 }
 }  // namespace android
 #endif  // BUILDFLAG(IS_ANDROID)
-
-#if BUILDFLAG(IS_IOS)
-BASE_FEATURE(kEnableReaderModeNewCss, base::FEATURE_ENABLED_BY_DEFAULT);
-#endif  // BUILDFLAG(IS_IOS)
 
 }  // namespace dom_distiller
 

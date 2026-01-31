@@ -12,7 +12,6 @@
 #include "chrome/browser/extensions/crx_installer.h"
 #include "chrome/browser/extensions/extension_util.h"
 #include "chrome/browser/extensions/load_error_waiter.h"
-#include "chrome/browser/extensions/unpacked_installer.h"
 #include "chrome/browser/profiles/profile.h"
 #include "content/public/browser/render_process_host.h"
 #include "extensions/browser/extension_creator.h"
@@ -23,6 +22,7 @@
 #include "extensions/browser/extension_util.h"
 #include "extensions/browser/install_prefs_helper.h"
 #include "extensions/browser/test_extension_registry_observer.h"
+#include "extensions/browser/unpacked_installer.h"
 #include "extensions/browser/user_script_loader.h"
 #include "extensions/browser/user_script_manager.h"
 #include "extensions/common/manifest_constants.h"
@@ -168,9 +168,15 @@ scoped_refptr<const Extension> ChromeTestExtensionLoader::LoadExtension(
 void ChromeTestExtensionLoader::LoadUnpackedExtensionAsync(
     const base::FilePath& file_path,
     base::OnceCallback<void(const Extension*)> callback) {
-  auto observer =
-      std::make_unique<ExtensionLoadedObserver>(extension_registry_, file_path);
-  UnpackedInstaller::Create(browser_context_)->Load(file_path);
+  // Resolve symlinks. Otherwise ExtensionLoadedObserver can miss events if the
+  // directory is under a symlink.
+  base::ScopedAllowBlockingForTesting allow_blocking;
+  base::FilePath absolute_file_path = base::MakeAbsoluteFilePath(file_path);
+  DCHECK(!absolute_file_path.empty());
+
+  auto observer = std::make_unique<ExtensionLoadedObserver>(extension_registry_,
+                                                            absolute_file_path);
+  UnpackedInstaller::Create(browser_context_)->Load(absolute_file_path);
   ExtensionLoadedObserver::ObserveOnce(std::move(observer),
                                        std::move(callback));
 }

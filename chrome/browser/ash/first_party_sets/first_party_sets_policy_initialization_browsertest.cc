@@ -58,7 +58,7 @@ class FirstPartySetsPolicyInitializationTest : public LoginManagerTest {
   // FirstPartySetsOverrides policies with `true` and `overrides` respectively.
   //
   // If `overrides` is nullopt, this disables the FirstPartySetsEnabled policy.
-  void SetFirstPartySetsPolicies(std::optional<base::Value::Dict> overrides) {
+  void SetFirstPartySetsPolicies(std::optional<base::DictValue> overrides) {
     policy_.Set(
         policy::key::kFirstPartySetsEnabled, policy::POLICY_LEVEL_MANDATORY,
         policy::POLICY_SCOPE_USER, policy::POLICY_SOURCE_ENTERPRISE_DEFAULT,

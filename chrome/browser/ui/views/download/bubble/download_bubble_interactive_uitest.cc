@@ -300,6 +300,9 @@ class DownloadBubbleInteractiveUiTest
 #endif  // BUILDFLAG(IS_MAC)
 
   bool IsPartialViewEnabled() {
+    // TODO(chlily): This is now solely a function of Profile prefs. Add
+    // explicit coverage for the pref being enabled/disabled, and simplify the
+    // rest of the tests by assuming the pref's default value.
     return download::IsDownloadBubblePartialViewEnabled(browser()->profile());
   }
 
@@ -581,6 +584,30 @@ IN_PROC_BROWSER_TEST_F(DownloadBubbleInteractiveUiTest,
             "Main view is shown after clicking button."),
       // The main view widget should be active.
       Check(DownloadBubbleIsActive(true), "Main view is active."),
+      // Hide the bubble so it's not showing while tearing down the
+      // test browser (which causes a crash on Mac).
+      Do(ChangeBubbleVisibility(false)), Do(ChangeButtonVisibility(false)),
+      WaitForState(kDownloadsButtonVisible, false));
+}
+
+IN_PROC_BROWSER_TEST_F(DownloadBubbleInteractiveUiTest,
+                       ClosePartialBubbleOnEscKeypress) {
+  RunTestSequence(
+      // Download a test file so that the partial view shows up.
+      Do(DownloadTestFile()),
+      ObserveState(kDownloadsButtonVisible, GetContainerView()),
+      WaitForState(kDownloadsButtonVisible, true),
+      Check(DownloadBubbleIsShowingDetails(IsPartialViewEnabled()),
+            "Partial view shows after download, if enabled."),
+      If([&] { return IsPartialViewEnabled(); },
+         // The bubble, if enabled, should be shown as inactive to avoid
+         // stealing focus from the page.
+         Then(Check(DownloadBubbleIsActive(false),
+                    "Partial view, if enabled, is inactive."))),
+      SendKeyPress(kBrowserViewElementId, ui::VKEY_ESCAPE),
+      EnsureNotPresent(kToolbarDownloadBubbleElementId),
+      Check(DownloadBubbleIsShowingDetails(false),
+            "Inactive bubble was closed"),
       // Hide the bubble so it's not showing while tearing down the
       // test browser (which causes a crash on Mac).
       Do(ChangeBubbleVisibility(false)), Do(ChangeButtonVisibility(false)),

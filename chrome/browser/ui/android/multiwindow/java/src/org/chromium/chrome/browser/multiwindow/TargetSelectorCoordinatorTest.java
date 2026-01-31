@@ -4,7 +4,6 @@
 
 package org.chromium.chrome.browser.multiwindow;
 
-import static androidx.test.espresso.Espresso.onData;
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
@@ -14,7 +13,6 @@ import static androidx.test.espresso.matcher.ViewMatchers.isEnabled;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
-import static org.hamcrest.Matchers.anything;
 import static org.hamcrest.Matchers.not;
 
 import androidx.test.filters.SmallTest;
@@ -29,9 +27,6 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
-import org.chromium.base.test.util.Features.DisableFeatures;
-import org.chromium.base.test.util.Features.EnableFeatures;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.components.browser_ui.modaldialog.AppModalPresenter;
@@ -80,78 +75,7 @@ public class TargetSelectorCoordinatorTest {
 
     @Test
     @SmallTest
-    @DisableFeatures(ChromeFeatureList.INSTANCE_SWITCHER_V2)
-    public void testTargetSelectorCoordinatorTest_moveWindow() throws Exception {
-        InstanceInfo[] instances =
-                new InstanceInfo[] {
-                    new InstanceInfo(
-                            /* instanceId= */ 0,
-                            /* taskId= */ 57,
-                            InstanceInfo.Type.CURRENT,
-                            "url0",
-                            "title0",
-                            /* customTitle= */ null,
-                            /* tabCount= */ 1,
-                            /* incognitoTabCount= */ 0,
-                            /* isIncognitoSelected= */ false,
-                            /* lastAccessedTime= */ 0,
-                            /* markedForDeletion= */ false),
-                    new InstanceInfo(
-                            /* instanceId= */ 1,
-                            /* taskId= */ 58,
-                            InstanceInfo.Type.OTHER,
-                            "ur11",
-                            "title1",
-                            /* customTitle= */ null,
-                            /* tabCount= */ 2,
-                            /* incognitoTabCount= */ 0,
-                            /* isIncognitoSelected= */ false,
-                            /* lastAccessedTime= */ 0,
-                            /* markedForDeletion= */ false),
-                    new InstanceInfo(
-                            /* instanceId= */ 2,
-                            /* taskId= */ 59,
-                            InstanceInfo.Type.OTHER,
-                            "url2",
-                            "title2",
-                            /* customTitle= */ null,
-                            /* tabCount= */ 1,
-                            /* incognitoTabCount= */ 1,
-                            /* isIncognitoSelected= */ false,
-                            /* lastAccessedTime= */ 0,
-                            /* markedForDeletion= */ false)
-                };
-        final CallbackHelper itemClickCallbackHelper = new CallbackHelper();
-        final int itemClickCount = itemClickCallbackHelper.getCallCount();
-        Callback<InstanceInfo> moveCallback = (item) -> itemClickCallbackHelper.notifyCalled();
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    TargetSelectorCoordinator.showDialog(
-                            mActivityTestRule.getActivity(),
-                            mModalDialogManager,
-                            mIconBridge,
-                            moveCallback,
-                            Arrays.asList(instances),
-                            R.string.menu_move_to_other_window);
-                });
-
-        // Choose a target window.
-        onData(anything()).inRoot(isDialog()).atPosition(1).perform(click());
-
-        // Click 'move tab'.
-        String moveTab =
-                mActivityTestRule
-                        .getActivity()
-                        .getResources()
-                        .getString(R.string.target_selector_move);
-        onView(withText(moveTab)).perform(click());
-        itemClickCallbackHelper.waitForCallback(itemClickCount);
-    }
-
-    @Test
-    @SmallTest
-    @EnableFeatures(ChromeFeatureList.INSTANCE_SWITCHER_V2)
-    public void testTargetSelectorCoordinatorTest_moveWindow_V2() throws Exception {
+    public void testMoveWindow() throws Exception {
         InstanceInfo[] instances =
                 new InstanceInfo[] {
                     new InstanceInfo(

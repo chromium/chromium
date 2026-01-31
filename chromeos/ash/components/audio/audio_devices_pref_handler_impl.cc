@@ -41,7 +41,7 @@ const char kActivateByUserKey[] = "activate_by_user";
 // (which is expected to be equal to |intended_key|), if the entry can
 // be found.
 // Returns whether the migration occurred.
-bool MigrateDeviceIdInSettings(base::Value::Dict* settings,
+bool MigrateDeviceIdInSettings(base::DictValue* settings,
                                const std::string& intended_key,
                                const AudioDevice& device) {
   if (device.stable_device_id_version == 1) {
@@ -146,7 +146,7 @@ void AudioDevicesPrefHandlerImpl::SetMuteValue(const AudioDevice& device,
 void AudioDevicesPrefHandlerImpl::SetDeviceActive(const AudioDevice& device,
                                                   bool active,
                                                   bool activate_by_user) {
-  base::Value::Dict dict;
+  base::DictValue dict;
   dict.Set(kActiveKey, active);
   if (active) {
     dict.Set(kActivateByUserKey, activate_by_user);
@@ -172,7 +172,7 @@ bool AudioDevicesPrefHandlerImpl::GetDeviceActive(const AudioDevice& device,
     return false;
   }
 
-  base::Value::Dict* dict =
+  base::DictValue* dict =
       device_state_settings_.FindDictByDottedPath(device_id_str);
   if (!dict) {
     LOG(ERROR) << "Could not get device state for device:" << device.ToString();
@@ -218,9 +218,9 @@ void AudioDevicesPrefHandlerImpl::SetUserPriorityHigherThan(
   }
 
   auto target_id = GetDeviceIdString(target);
-  base::Value::Dict& priority_prefs =
-      target.is_input ? input_device_user_priority_settings_
-                      : output_device_user_priority_settings_;
+  base::DictValue& priority_prefs = target.is_input
+                                        ? input_device_user_priority_settings_
+                                        : output_device_user_priority_settings_;
 
   if (t != kUserPriorityNone) {
     // before: [. . . t - - - b . . .]
@@ -267,7 +267,7 @@ const std::optional<uint64_t>
 AudioDevicesPrefHandlerImpl::GetPreferredDeviceFromPreferenceSet(
     bool is_input,
     const AudioDeviceList& devices) {
-  const base::Value::Dict& device_pref_set =
+  const base::DictValue& device_pref_set =
       is_input ? input_device_preference_set_settings_
                : output_device_preference_set_settings_;
   const std::string ids = GetDeviceSetIdString(devices);
@@ -292,7 +292,7 @@ void AudioDevicesPrefHandlerImpl::UpdateDevicePreferenceSet(
   }
 
   bool is_input = preferred_device.is_input;
-  base::Value::Dict& device_pref_set =
+  base::DictValue& device_pref_set =
       is_input ? input_device_preference_set_settings_
                : output_device_preference_set_settings_;
   device_pref_set.Set(GetDeviceSetIdString(devices),
@@ -305,7 +305,7 @@ void AudioDevicesPrefHandlerImpl::UpdateDevicePreferenceSet(
   }
 }
 
-const base::Value::List&
+const base::ListValue&
 AudioDevicesPrefHandlerImpl::GetMostRecentActivatedDeviceIdList(bool is_input) {
   return is_input ? most_recent_activated_input_device_ids_
                   : most_recent_activated_output_device_ids_;
@@ -313,9 +313,9 @@ AudioDevicesPrefHandlerImpl::GetMostRecentActivatedDeviceIdList(bool is_input) {
 
 void AudioDevicesPrefHandlerImpl::UpdateMostRecentActivatedDeviceIdList(
     const AudioDevice& device) {
-  base::Value::List& ids = device.is_input
-                               ? most_recent_activated_input_device_ids_
-                               : most_recent_activated_output_device_ids_;
+  base::ListValue& ids = device.is_input
+                             ? most_recent_activated_input_device_ids_
+                             : most_recent_activated_output_device_ids_;
   std::string target_device_id = GetDeviceIdString(device);
   // Find if this device is already in the list, remove it if so.
   for (auto it = ids.begin(); it != ids.end(); it++) {
@@ -340,7 +340,7 @@ void AudioDevicesPrefHandlerImpl::DropLeastRecentlySeenDevices(
     size_t keep_devices) {
   ScopedDictPrefUpdate last_seen_update(local_state_,
                                         prefs::kAudioDevicesLastSeen);
-  base::Value::Dict& last_seen = last_seen_update.Get();
+  base::DictValue& last_seen = last_seen_update.Get();
 
   // Set timestamp of connected devices.
   double time = base::Time::Now().InSecondsFSinceUnixEpoch();
@@ -370,8 +370,8 @@ void AudioDevicesPrefHandlerImpl::DropLeastRecentlySeenDevices(
   // Remove preferences if not seen recently, keeping the most recent
   // `keep_devices` devices.
   // TODO(aaronyu): Consider also remove volume/mute/gain preferences.
-  for (base::Value::Dict& settings :
-       std::initializer_list<std::reference_wrapper<base::Value::Dict>>{
+  for (base::DictValue& settings :
+       std::initializer_list<std::reference_wrapper<base::DictValue>>{
            input_device_user_priority_settings_,
            output_device_user_priority_settings_}) {
     std::vector<std::string> to_remove;
@@ -543,7 +543,7 @@ void AudioDevicesPrefHandlerImpl::InitializePrefObservers() {
 }
 
 void AudioDevicesPrefHandlerImpl::LoadDevicesMutePref() {
-  const base::Value::Dict& mute_prefs =
+  const base::DictValue& mute_prefs =
       local_state_->GetDict(prefs::kAudioDevicesMute);
   device_mute_settings_ = mute_prefs.Clone();
 }
@@ -554,7 +554,7 @@ void AudioDevicesPrefHandlerImpl::SaveDevicesMutePref() {
 }
 
 void AudioDevicesPrefHandlerImpl::LoadDevicesVolumePref() {
-  const base::Value::Dict& volume_prefs =
+  const base::DictValue& volume_prefs =
       local_state_->GetDict(prefs::kAudioDevicesVolumePercent);
   device_volume_settings_ = volume_prefs.Clone();
 }
@@ -565,7 +565,7 @@ void AudioDevicesPrefHandlerImpl::SaveDevicesVolumePref() {
 }
 
 void AudioDevicesPrefHandlerImpl::LoadDevicesGainPref() {
-  const base::Value::Dict& gain_prefs =
+  const base::DictValue& gain_prefs =
       local_state_->GetDict(prefs::kAudioDevicesGainPercent);
   device_gain_settings_ = gain_prefs.Clone();
 }
@@ -576,7 +576,7 @@ void AudioDevicesPrefHandlerImpl::SaveDevicesGainPref() {
 }
 
 void AudioDevicesPrefHandlerImpl::LoadDevicesStatePref() {
-  const base::Value::Dict& state_prefs =
+  const base::DictValue& state_prefs =
       local_state_->GetDict(prefs::kAudioDevicesState);
   device_state_settings_ = state_prefs.Clone();
 }
@@ -587,7 +587,7 @@ void AudioDevicesPrefHandlerImpl::SaveDevicesStatePref() {
 }
 
 void AudioDevicesPrefHandlerImpl::LoadInputDevicesUserPriorityPref() {
-  const base::Value::Dict& priority_prefs =
+  const base::DictValue& priority_prefs =
       local_state_->GetDict(prefs::kAudioInputDevicesUserPriority);
   input_device_user_priority_settings_ = priority_prefs.Clone();
 }
@@ -598,7 +598,7 @@ void AudioDevicesPrefHandlerImpl::SaveInputDevicesUserPriorityPref() {
 }
 
 void AudioDevicesPrefHandlerImpl::LoadOutputDevicesUserPriorityPref() {
-  const base::Value::Dict& priority_prefs =
+  const base::DictValue& priority_prefs =
       local_state_->GetDict(prefs::kAudioOutputDevicesUserPriority);
   output_device_user_priority_settings_ = priority_prefs.Clone();
 }
@@ -609,7 +609,7 @@ void AudioDevicesPrefHandlerImpl::SaveOutputDevicesUserPriorityPref() {
 }
 
 void AudioDevicesPrefHandlerImpl::LoadInputDevicePreferenceSetPref() {
-  const base::Value::Dict& preference_set_prefs =
+  const base::DictValue& preference_set_prefs =
       local_state_->GetDict(prefs::kAudioInputDevicePreferenceSet);
   input_device_preference_set_settings_ = preference_set_prefs.Clone();
 }
@@ -620,7 +620,7 @@ void AudioDevicesPrefHandlerImpl::SaveInputDevicePreferenceSetPref() {
 }
 
 void AudioDevicesPrefHandlerImpl::LoadOutputDevicePreferenceSetPref() {
-  const base::Value::Dict& preference_set_prefs =
+  const base::DictValue& preference_set_prefs =
       local_state_->GetDict(prefs::kAudioOutputDevicePreferenceSet);
   output_device_preference_set_settings_ = preference_set_prefs.Clone();
 }
@@ -631,7 +631,7 @@ void AudioDevicesPrefHandlerImpl::SaveMostRecentActivatedInputDeviceIdsPref() {
 }
 
 void AudioDevicesPrefHandlerImpl::LoadMostRecentActivatedInputDeviceIdsPref() {
-  const base::Value::List& id_list_pref =
+  const base::ListValue& id_list_pref =
       local_state_->GetList(prefs::kAudioMostRecentActivatedInputDeviceIds);
   most_recent_activated_input_device_ids_ = id_list_pref.Clone();
 }
@@ -642,7 +642,7 @@ void AudioDevicesPrefHandlerImpl::SaveMostRecentActivatedOutputDeviceIdsPref() {
 }
 
 void AudioDevicesPrefHandlerImpl::LoadMostRecentActivatedOutputDeviceIdsPref() {
-  const base::Value::List& id_list_pref =
+  const base::ListValue& id_list_pref =
       local_state_->GetList(prefs::kAudioMostRecentActivatedOutputDeviceIds);
   most_recent_activated_output_device_ids_ = id_list_pref.Clone();
 }

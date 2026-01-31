@@ -13,6 +13,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/types/optional_ref.h"
 #include "chrome/browser/ui/autofill/autofill_ai/autofill_ai_import_data_controller.h"
+#include "chrome/browser/ui/autofill/autofill_ai/entity_attribute_update_details.h"
 #include "chrome/browser/ui/autofill/autofill_bubble_controller_base.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_instance.h"
 #include "components/autofill/core/browser/integrators/autofill_ai/autofill_ai_manager.h"
@@ -42,14 +43,14 @@ class AutofillAiImportDataControllerImpl
   void ShowPrompt(EntityInstance new_entity,
                   std::optional<EntityInstance> old_entity,
                   AutofillClient::EntityImportPromptResultCallback
-                      prompt_closed_callback) override;
+                      prompt_result_callback) override;
   void OnSaveButtonClicked() override;
   base::optional_ref<const EntityInstance> GetAutofillAiData() const override;
-  void OnBubbleClosed(
-      AutofillClient::AutofillAiBubbleClosedReason closed_reason) override;
+  void OnBubbleClosed(AutofillClient::AutofillAiBubbleResult result) override;
   base::WeakPtr<AutofillAiImportDataController> GetWeakPtr() override;
   std::u16string GetDialogTitle() const override;
   std::u16string GetPrimaryAccountEmail() const override;
+  std::u16string GetDialogPrimaryButtonText() const override;
   bool IsWalletableEntity() const override;
   void OnGoToWalletLinkClicked() override;
   std::vector<EntityAttributeUpdateDetails> GetUpdatedAttributesDetails()
@@ -87,7 +88,7 @@ class AutofillAiImportDataControllerImpl
   void SetupPrompt(
       EntityInstance new_entity,
       std::optional<EntityInstance> old_entity,
-      AutofillClient::EntityImportPromptResultCallback prompt_closed_callback);
+      AutofillClient::EntityImportPromptResultCallback prompt_result_callback);
 
   // The browser's locale when the object was instantiated.
   const std::string app_locale_;
@@ -102,7 +103,7 @@ class AutofillAiImportDataControllerImpl
 
   // Callback to notify the data provider about the user decision for the save
   // or update prompt.
-  AutofillClient::EntityImportPromptResultCallback prompt_closed_callback_;
+  AutofillClient::EntityImportPromptResultCallback prompt_result_callback_;
 
   // Whether the bubble should be re-shown when the current web_contents becomes
   // visible. This is true when the user has clicked a link in the bubble that

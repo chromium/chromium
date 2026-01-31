@@ -27,8 +27,8 @@ suite('FileSuggestion', () => {
         justificationText: `Edited ${i} days ago`,
         title: `${i} title`,
         id: `${i} id`,
-        iconUrl: {url: `https://example.com/application/vnd.google-apps.${i}`},
-        itemUrl: {url: 'https://${i}.com'},
+        iconUrl: `https://example.com/application/vnd.google-apps.${i}`,
+        itemUrl: 'https://${i}.com',
         recommendationType: fileType,
       });
     }

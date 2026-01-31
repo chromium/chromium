@@ -4,6 +4,7 @@
 
 #include "ash/style/tab_slider.h"
 
+#include <algorithm>
 #include <cstddef>
 
 #include "ash/style/style_util.h"
@@ -135,7 +136,7 @@ TabSliderButton* TabSlider::GetButtonAtIndex(size_t index) {
 
 void TabSlider::OnButtonSelected(TabSliderButton* button) {
   DCHECK(button);
-  DCHECK(base::Contains(buttons_, button));
+  DCHECK(std::ranges::contains(buttons_, button));
   DCHECK(button->selected());
 
   // Deselect all the other buttons and check if the tab slider has focus.

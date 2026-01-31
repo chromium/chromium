@@ -48,6 +48,7 @@ public class TabStateExtractor {
         tabState.tabGroupId = tab.getTabGroupId();
         tabState.tabHasSensitiveContent = tab.getTabHasSensitiveContent();
         tabState.isPinned = tab.getIsPinned();
+        tabState.url = tab.getUrl();
         return tabState;
     }
 

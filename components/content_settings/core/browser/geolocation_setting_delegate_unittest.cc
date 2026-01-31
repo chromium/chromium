@@ -25,7 +25,7 @@ class GeolocationSettingDelegateTest : public testing::Test {
 
 TEST_F(GeolocationSettingDelegateTest, ParseGeolocationSetting) {
   auto geo_result = delegate().FromValue(base::Value(
-      base::Value::Dict()
+      base::DictValue()
           .Set("approximate", static_cast<int>(PermissionOption::kAllowed))
           .Set("precise", static_cast<int>(PermissionOption::kDenied))));
   GeolocationSetting setting;
@@ -37,12 +37,12 @@ TEST_F(GeolocationSettingDelegateTest, ParseGeolocationSetting) {
 TEST_F(GeolocationSettingDelegateTest, ParseInvalidGeolocationSetting) {
   EXPECT_FALSE(delegate().FromValue(
       base::Value(static_cast<int>(PermissionOption::kAllowed))));
-  EXPECT_FALSE(delegate().FromValue(base::Value(base::Value::Dict().Set(
+  EXPECT_FALSE(delegate().FromValue(base::Value(base::DictValue().Set(
       "approximate", static_cast<int>(PermissionOption::kDenied)))));
-  EXPECT_FALSE(delegate().FromValue(base::Value(base::Value::Dict().Set(
+  EXPECT_FALSE(delegate().FromValue(base::Value(base::DictValue().Set(
       "precise", static_cast<int>(PermissionOption::kDenied)))));
   EXPECT_FALSE(delegate().FromValue(base::Value(
-      base::Value::Dict()
+      base::DictValue()
           .Set("approximate", 999)
           .Set("precise", static_cast<int>(PermissionOption::kDenied)))));
 }

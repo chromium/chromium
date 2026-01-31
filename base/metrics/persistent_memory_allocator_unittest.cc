@@ -2,16 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "base/metrics/persistent_memory_allocator.h"
 
 #include <memory>
 #include <optional>
 
+#include "base/compiler_specific.h"
 #include "base/containers/heap_array.h"
 #include "base/files/file.h"
 #include "base/files/file_util.h"
@@ -89,7 +85,7 @@ class PersistentMemoryAllocatorTest : public testing::Test {
 
   void SetUp() override {
     allocator_.reset();
-    ::memset(mem_segment_.data(), 0, TEST_MEMORY_SIZE);
+    UNSAFE_TODO(::memset(mem_segment_.data(), 0, TEST_MEMORY_SIZE));
     allocator_ = std::make_unique<PersistentMemoryAllocator>(
         mem_segment_.data(), TEST_MEMORY_SIZE, TEST_MEMORY_PAGE, TEST_ID,
         TEST_NAME, PersistentMemoryAllocator::kReadWrite);
@@ -157,8 +153,8 @@ TEST_F(PersistentMemoryAllocatorTest, AllocateAndIterate) {
   EXPECT_EQ(block1, allocator_->GetAsReference(memory1, 0));
   EXPECT_EQ(block1, allocator_->GetAsReference(memory1, 1));
   EXPECT_EQ(0U, allocator_->GetAsReference(memory1, 2));
-  EXPECT_EQ(0U, allocator_->GetAsReference(memory1 + 1, 0));
-  EXPECT_EQ(0U, allocator_->GetAsReference(memory1 + 16, 0));
+  EXPECT_EQ(0U, allocator_->GetAsReference(UNSAFE_TODO(memory1 + 1), 0));
+  EXPECT_EQ(0U, allocator_->GetAsReference(UNSAFE_TODO(memory1 + 16), 0));
   EXPECT_EQ(0U, allocator_->GetAsReference(nullptr, 0));
   EXPECT_EQ(0U, allocator_->GetAsReference(&base_name, 0));
 
@@ -636,7 +632,7 @@ TEST_F(PersistentMemoryAllocatorTest, MAYBE_CorruptionTest) {
   do {
     size_t offset = RandInt(0, TEST_MEMORY_SIZE - 1);
     char value = RandInt(0, 255);
-    memory[offset] = value;
+    UNSAFE_TODO(memory[offset]) = value;
   } while (!allocator_->IsCorrupt() && !allocator_->IsFull());
 
   t1.Join();
@@ -666,18 +662,18 @@ TEST_F(PersistentMemoryAllocatorTest, MaliciousTest) {
   // Create loop in iterable list and ensure it doesn't hang. The return value
   // from CountIterables() in these cases is unpredictable. If there is a
   // failure, the call will hang and the test killed for taking too long.
-  uint32_t* header4 = (uint32_t*)(mem_segment_.data() + block4);
-  EXPECT_EQ(block5, header4[3]);
-  header4[3] = block4;
+  uint32_t* header4 = (uint32_t*)(UNSAFE_TODO(mem_segment_.data() + block4));
+  EXPECT_EQ(block5, UNSAFE_TODO(header4[3]));
+  UNSAFE_TODO(header4[3]) = block4;
   CountIterables();  // loop: 1-2-3-4-4
   EXPECT_TRUE(allocator_->IsCorrupt());
 
   // Test where loop goes back to previous block.
-  header4[3] = block3;
+  UNSAFE_TODO(header4[3]) = block3;
   CountIterables();  // loop: 1-2-3-4-3
 
   // Test where loop goes back to the beginning.
-  header4[3] = block1;
+  UNSAFE_TODO(header4[3]) = block1;
   CountIterables();  // loop: 1-2-3-4-1
 }
 
@@ -783,19 +779,19 @@ TEST(SharedPersistentMemoryAllocatorTest, CreationTest) {
   int* data = shalloc3.GetAsArray<int>(data_ref, 911, 4);
   ASSERT_TRUE(data);
   data[0] = 0;
-  data[1] = 1;
-  data[2] = 2;
-  data[3] = 3;
+  UNSAFE_TODO(data[1]) = 1;
+  UNSAFE_TODO(data[2]) = 2;
+  UNSAFE_TODO(data[3]) = 3;
   ASSERT_TRUE(shalloc3.ChangeType(data_ref, 119, 911, false));
   EXPECT_EQ(0, data[0]);
-  EXPECT_EQ(1, data[1]);
-  EXPECT_EQ(2, data[2]);
-  EXPECT_EQ(3, data[3]);
+  EXPECT_EQ(1, UNSAFE_TODO(data[1]));
+  EXPECT_EQ(2, UNSAFE_TODO(data[2]));
+  EXPECT_EQ(3, UNSAFE_TODO(data[3]));
   ASSERT_TRUE(shalloc3.ChangeType(data_ref, 191, 119, true));
   EXPECT_EQ(0, data[0]);
-  EXPECT_EQ(0, data[1]);
-  EXPECT_EQ(0, data[2]);
-  EXPECT_EQ(0, data[3]);
+  EXPECT_EQ(0, UNSAFE_TODO(data[1]));
+  EXPECT_EQ(0, UNSAFE_TODO(data[2]));
+  EXPECT_EQ(0, UNSAFE_TODO(data[3]));
 }
 
 //----- FilePersistentMemoryAllocator ------------------------------------------
@@ -822,7 +818,7 @@ TEST(FilePersistentMemoryAllocatorTest, CreationTest) {
 
     File writer(file_path, File::FLAG_CREATE | File::FLAG_WRITE);
     ASSERT_TRUE(writer.IsValid());
-    writer.Write(0, (const char*)local.data(), local.used());
+    UNSAFE_TODO(writer.Write(0, (const char*)local.data(), local.used()));
   }
 
   auto mmfile = std::make_unique<MemoryMappedFile>();
@@ -876,7 +872,7 @@ TEST(FilePersistentMemoryAllocatorTest, ExtendTest) {
 
     File writer(file_path, File::FLAG_CREATE | File::FLAG_WRITE);
     ASSERT_TRUE(writer.IsValid());
-    writer.Write(0, (const char*)local.data(), local.used());
+    UNSAFE_TODO(writer.Write(0, (const char*)local.data(), local.used()));
   }
   ASSERT_TRUE(PathExists(file_path));
   std::optional<int64_t> before_size = GetFileSize(file_path);
@@ -936,7 +932,7 @@ TEST(FilePersistentMemoryAllocatorTest, AcceptableTest) {
     {
       File writer(file_path, File::FLAG_CREATE | File::FLAG_WRITE);
       ASSERT_TRUE(writer.IsValid());
-      writer.Write(0, (const char*)local.data(), filesize);
+      UNSAFE_TODO(writer.Write(0, (const char*)local.data(), filesize));
     }
     ASSERT_TRUE(PathExists(file_path));
 
@@ -1036,8 +1032,8 @@ TEST_F(PersistentMemoryAllocatorTest, TruncateTest) {
 
     File writer(file_path, File::FLAG_CREATE | File::FLAG_WRITE);
     ASSERT_TRUE(writer.IsValid());
-    writer.Write(0, static_cast<const char*>(allocator.data()),
-                 allocator.size());
+    UNSAFE_TODO(writer.Write(0, static_cast<const char*>(allocator.data()),
+                             allocator.size()));
   }
   ASSERT_TRUE(PathExists(file_path));
   EXPECT_LE(a1_used, a2_ref);

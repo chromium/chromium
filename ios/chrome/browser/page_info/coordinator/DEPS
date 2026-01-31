@@ -1,0 +1,10 @@
+include_rules = [
+  # keep-sorted start
+  "+components/page_info/core",
+  "+ios/chrome/browser/feature_engagement/model/tracker_factory.h",
+  "+ios/chrome/browser/history",
+  "+ios/chrome/browser/permissions",
+  "+ios/chrome/browser/reading_list/model/offline_page_tab_helper.h",
+  "+ios/chrome/browser/web/model/web_navigation_util.h",
+  # keep-sorted end
+]

@@ -83,7 +83,7 @@ found in the LICENSE file.
             android:layout_width="44dp"
             android:layout_height="match_parent"
             android:contentDescription="@string/search"
-            android:src="@drawable/ic_search"
+            android:src="@drawable/ic_search_24dp"
             android:tooltipText="@string/accessibility_search_loupe_tooltip_text"
             style="@style/ToolbarMenuButton"
             app:tint="@color/default_icon_color_tint_list"  />

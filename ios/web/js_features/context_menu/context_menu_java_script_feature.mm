@@ -27,17 +27,15 @@ const char kFindElementResultHandlerName[] = "FindElementResultHandler";
 namespace web {
 
 ContextMenuJavaScriptFeature::ContextMenuJavaScriptFeature()
-    : JavaScriptFeature(
-          ContentWorld::kIsolatedWorld,
-          {FeatureScript::CreateWithFilename(
-               kAllFramesContextMenuScript,
-               FeatureScript::InjectionTime::kDocumentStart,
-               FeatureScript::TargetFrames::kAllFrames),
-           FeatureScript::CreateWithFilename(
-               kMainFrameContextMenuScript,
-               FeatureScript::InjectionTime::kDocumentStart,
-               FeatureScript::TargetFrames::kMainFrame)},
-          {web::java_script_features::GetCommonJavaScriptFeature()}) {}
+    : JavaScriptFeature(ContentWorld::kIsolatedWorld,
+                        {FeatureScript::CreateWithFilename(
+                             kAllFramesContextMenuScript,
+                             FeatureScript::InjectionTime::kDocumentStart,
+                             FeatureScript::TargetFrames::kAllFrames),
+                         FeatureScript::CreateWithFilename(
+                             kMainFrameContextMenuScript,
+                             FeatureScript::InjectionTime::kDocumentStart,
+                             FeatureScript::TargetFrames::kMainFrame)}) {}
 ContextMenuJavaScriptFeature::~ContextMenuJavaScriptFeature() = default;
 
 // static
@@ -64,7 +62,7 @@ void ContextMenuJavaScriptFeature::GetElementAtPoint(
   callbacks_[requestID] = std::move(callback);
 
   WebFrame* main_frame = GetWebFramesManager(web_state)->GetMainWebFrame();
-  base::Value::List parameters;
+  base::ListValue parameters;
   parameters.Append(requestID);
   parameters.Append(point.x);
   parameters.Append(point.y);

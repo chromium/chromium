@@ -112,7 +112,7 @@ class EncryptedReportingClient {
 
   // Presets common settings to be applied to future cached uploads. May be
   // called more than once, but settings are expected to end up being the same.
-  void PresetUploads(base::Value::Dict context,
+  void PresetUploads(base::DictValue context,
                      std::string dm_token,
                      std::string client_id);
 
@@ -162,7 +162,7 @@ class EncryptedReportingClient {
       policy::EncryptedReportingJobConfiguration::UploadResponseCallback
           response_cb,
       ResponseCallback callback,
-      std::optional<base::Value::Dict> payload_result,
+      std::optional<base::DictValue> payload_result,
       ScopedReservation scoped_reservation,
       int64_t last_sequence_id,
       uint64_t events_to_send);
@@ -178,7 +178,7 @@ class EncryptedReportingClient {
                                policy::DeviceManagementService::Job* job,
                                policy::DeviceManagementStatus status,
                                int response_code,
-                               std::optional<base::Value::Dict> response);
+                               std::optional<base::DictValue> response);
 
   // Checks the new job against the history, determines how soon the upload will
   // be allowed. Returns positive value if not allowed, and 0 or negative
@@ -202,7 +202,7 @@ class EncryptedReportingClient {
   // Cached elements expected by the reporting server.
   std::string dm_token_ GUARDED_BY_CONTEXT(sequence_checker_);
   std::string client_id_ GUARDED_BY_CONTEXT(sequence_checker_);
-  base::Value::Dict context_ GUARDED_BY_CONTEXT(sequence_checker_);
+  base::DictValue context_ GUARDED_BY_CONTEXT(sequence_checker_);
 
   const std::unique_ptr<Delegate> delegate_;
 

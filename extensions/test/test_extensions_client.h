@@ -54,7 +54,7 @@ class TestExtensionsClient : public ExtensionsClient {
   std::set<base::FilePath> GetBrowserImagePaths(
       const Extension* extension) override;
 
-  // A allowlist of extensions that can script anywhere. Do not add to this
+  // An allowlist of extensions that can script anywhere. Do not add to this
   // list (except in tests) without consulting the Extensions team first.
   // Note: Component extensions have this right implicitly and do not need to be
   // added to this list.

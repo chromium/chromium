@@ -11,8 +11,7 @@
 #include "base/component_export.h"
 #include "services/network/public/mojom/url_response_head.mojom-forward.h"
 
-namespace ash {
-namespace quick_pair {
+namespace ash::quick_pair {
 
 // This class is used to represent server errors (both network and HTTP errors)
 // we encounter in the repository component.
@@ -41,7 +40,6 @@ class COMPONENT_EXPORT(QUICK_PAIR_COMMON) FastPairHttpResult {
   std::optional<int> http_response_error_;
 };
 
-}  // namespace quick_pair
-}  // namespace ash
+}  // namespace ash::quick_pair
 
 #endif  // ASH_QUICK_PAIR_COMMON_FAST_PAIR_FAST_PAIR_HTTP_RESULT_H_

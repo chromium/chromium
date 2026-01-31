@@ -2,11 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/feature_list.h"
-#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/data_sharing/data_sharing_service_factory.h"
 #include "chrome/browser/tab_group_sync/tab_group_sync_service_factory.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
+#include "chrome/browser/ui/tabs/tab_group_attention_indicator.h"
+#include "chrome/browser/ui/tabs/tab_group_features.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/views/tabs/recent_activity_bubble_dialog_view.h"
@@ -15,12 +15,10 @@
 #include "chrome/browser/ui/views/test/tab_strip_interactive_test_mixin.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
-#include "components/collaboration/public/features.h"
-#include "components/data_sharing/public/features.h"
-#include "components/saved_tab_groups/public/features.h"
 #include "components/saved_tab_groups/public/tab_group_sync_service.h"
 #include "components/signin/public/base/avatar_icon_util.h"
 #include "components/tab_groups/tab_group_id.h"
+#include "components/tab_groups/tab_group_visual_data.h"
 #include "components/tabs/public/tab_group.h"
 #include "content/public/test/browser_test.h"
 #include "net/dns/mock_host_resolver.h"
@@ -33,22 +31,10 @@
 #include "ui/gfx/image/image_unittest_util.h"
 #include "ui/views/interaction/polling_view_observer.h"
 
-// The Param value sets tab_groups::kLeftClickOpensTabGroupBubble.
 class TabGroupHeaderInteractiveUiTest
-    : public TabStripInteractiveTestMixin<InteractiveBrowserTest>,
-      public testing::WithParamInterface<bool> {
+    : public TabStripInteractiveTestMixin<InteractiveBrowserTest> {
  public:
-  TabGroupHeaderInteractiveUiTest() {
-    if (GetParam()) {
-      scoped_feature_list_.InitWithFeatures(
-          /* enabled_features =*/{tab_groups::kLeftClickOpensTabGroupBubble},
-          /* disabled_features =*/{});
-    } else {
-      scoped_feature_list_.InitWithFeatures(
-          /* enabled_features =*/{},
-          /* disabled_features =*/{tab_groups::kLeftClickOpensTabGroupBubble});
-    }
-  }
+  TabGroupHeaderInteractiveUiTest() = default;
 
   ~TabGroupHeaderInteractiveUiTest() override = default;
 
@@ -71,8 +57,10 @@ class TabGroupHeaderInteractiveUiTest
     return browser()->tab_strip_model()->AddToNewGroup(tab_indices);
   }
 
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
+  TabStrip* GetTabStrip() {
+    return BrowserView::GetBrowserViewForBrowser(browser())
+        ->horizontal_tab_strip_for_testing();
+  }
 };
 
 // Disable these tests on windows.
@@ -85,13 +73,10 @@ using TabGroupCollapsedObserver =
     views::test::PollingViewPropertyObserver<bool, TabGroupHeader>;
 DEFINE_LOCAL_STATE_IDENTIFIER_VALUE(TabGroupCollapsedObserver,
                                     kTabGroupCollapsedState);
-IN_PROC_BROWSER_TEST_P(TabGroupHeaderInteractiveUiTest, MAYBE_Collapse) {
+IN_PROC_BROWSER_TEST_F(TabGroupHeaderInteractiveUiTest, MAYBE_Collapse) {
   CreateTabGroup({CreateTab()});
 
-  ui_controls::MouseButton action =
-      base::FeatureList::IsEnabled(tab_groups::kLeftClickOpensTabGroupBubble)
-          ? ui_controls::MouseButton::RIGHT
-          : ui_controls::MouseButton::LEFT;
+  ui_controls::MouseButton action = ui_controls::MouseButton::LEFT;
 
   RunTestSequence(
       WaitForShow(kTabGroupHeaderElementId), FinishTabstripAnimations(),
@@ -101,13 +86,10 @@ IN_PROC_BROWSER_TEST_P(TabGroupHeaderInteractiveUiTest, MAYBE_Collapse) {
       WaitForState(kTabGroupCollapsedState, true));
 }
 
-IN_PROC_BROWSER_TEST_P(TabGroupHeaderInteractiveUiTest, OpenEditorBubble) {
+IN_PROC_BROWSER_TEST_F(TabGroupHeaderInteractiveUiTest, OpenEditorBubble) {
   CreateTabGroup({CreateTab()});
 
-  ui_controls::MouseButton action =
-      base::FeatureList::IsEnabled(tab_groups::kLeftClickOpensTabGroupBubble)
-          ? ui_controls::MouseButton::LEFT
-          : ui_controls::MouseButton::RIGHT;
+  ui_controls::MouseButton action = ui_controls::MouseButton::RIGHT;
 
   RunTestSequence(WaitForShow(kTabGroupHeaderElementId),
                   FinishTabstripAnimations(),
@@ -115,6 +97,29 @@ IN_PROC_BROWSER_TEST_P(TabGroupHeaderInteractiveUiTest, OpenEditorBubble) {
                   WaitForShow(kTabGroupEditorBubbleId));
 }
 
-INSTANTIATE_TEST_SUITE_P(TabGroupFeature,
-                         TabGroupHeaderInteractiveUiTest,
-                         ::testing::Bool());
+IN_PROC_BROWSER_TEST_F(TabGroupHeaderInteractiveUiTest, AttentionIndicator) {
+  tab_groups::TabGroupId group_id = CreateTabGroup({CreateTab()});
+
+  ui_controls::MouseButton action = ui_controls::MouseButton::LEFT;
+
+  RunTestSequence(
+      WaitForShow(kTabGroupHeaderElementId), FinishTabstripAnimations(),
+      PollViewProperty(kTabGroupCollapsedState, kTabGroupHeaderElementId,
+                       &TabGroupHeader::is_collapsed_for_testing),
+      // Click the group to collapse it.
+      MoveMouseTo(kTabGroupHeaderElementId), ClickMouse(action), Do([&]() {
+        // Set the attention indicator to true.
+        browser()
+            ->tab_strip_model()
+            ->group_model()
+            ->GetTabGroup(group_id)
+            ->GetTabGroupFeatures()
+            ->attention_indicator()
+            ->SetHasAttention(true);
+      }),
+      Do([&]() {
+        EXPECT_TRUE(GetTabStrip()
+                        ->group_header(group_id)
+                        ->ShouldShowAttentionIndicator());
+      }));
+}

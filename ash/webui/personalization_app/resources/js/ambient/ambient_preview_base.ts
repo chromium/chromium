@@ -195,9 +195,8 @@ export class AmbientPreviewBase extends WithPersonalizationStore {
     // Replace the resolution suffix appended at the end of the images
     // with a new resolution suffix of 512px so that we do not download very
     // large images. This won't impact images with no resolution suffix.
-    return album && album.url ?
-        replaceResolutionSuffix(album.url.url, '=s512') :
-        '';
+    return album && album.url ? replaceResolutionSuffix(album.url, '=s512') :
+                                '';
   }
 
   private getPreviewTextAriaLabel_(): string {

@@ -18,7 +18,6 @@
 #include "components/segmentation_platform/public/constants.h"
 #include "components/segmentation_platform/public/features.h"
 #include "components/send_tab_to_self/features.h"
-#include "components/signin/public/base/signin_switches.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -53,18 +52,16 @@ class HomeModulesCardRegistryTest : public testing::Test {
 // when its feature is enabled.
 #if BUILDFLAG(IS_IOS)
 TEST_F(HomeModulesCardRegistryTest, TestPriceTrackingNotificationPromoCard) {
-  feature_list_.InitWithFeatures(
-      {}, {features::kSegmentationPlatformTipsEphemeralCard});
   registry_ = std::make_unique<HomeModulesCardRegistry>(
       &profile_pref_service_, &local_state_pref_service_);
 
-  ASSERT_EQ(2u, registry_->all_output_labels().size());
+  ASSERT_EQ(7u, registry_->all_output_labels().size());
   ASSERT_EQ(0u, registry_->get_label_index(kPlaceholderEphemeralModuleLabel));
   ASSERT_EQ(1u, registry_->get_label_index(kPriceTrackingNotificationPromo));
-  ASSERT_EQ(3u, registry_->all_cards_input_size());
+  ASSERT_EQ(13u, registry_->all_cards_input_size());
   const std::vector<std::unique_ptr<CardSelectionInfo>>& all_cards =
       registry_->get_all_cards_by_priority();
-  ASSERT_EQ(1u, all_cards.size());
+  ASSERT_EQ(4u, all_cards.size());
   ASSERT_EQ(std::string(kPriceTrackingNotificationPromo),
             std::string(all_cards.front()->card_name()));
   const CardSignalMap& signal_map = registry_->get_card_signal_map();
@@ -76,19 +73,17 @@ TEST_F(HomeModulesCardRegistryTest, TestPriceTrackingNotificationPromoCard) {
 // Tests that the Registry registers the TipsEphemeralModule cards when the
 // Tips (Magic Stack) is enabled.
 TEST_F(HomeModulesCardRegistryTest, TestTipsEphemeralModuleCards) {
-  feature_list_.InitWithFeatures(
-      {features::kSegmentationPlatformTipsEphemeralCard}, {});
   registry_ = std::make_unique<HomeModulesCardRegistry>(
       &profile_pref_service_, &local_state_pref_service_);
 
-  ASSERT_EQ(6u, registry_->all_output_labels().size());
+  ASSERT_EQ(7u, registry_->all_output_labels().size());
   ASSERT_EQ(0u, registry_->get_label_index(kPlaceholderEphemeralModuleLabel));
   ASSERT_EQ(2u,
             registry_->get_label_index(kLensEphemeralModuleSearchVariation));
-  ASSERT_EQ(12u, registry_->all_cards_input_size());
+  ASSERT_EQ(13u, registry_->all_cards_input_size());
   const std::vector<std::unique_ptr<CardSelectionInfo>>& all_cards =
       registry_->get_all_cards_by_priority();
-  ASSERT_EQ(3u, all_cards.size());
+  ASSERT_EQ(4u, all_cards.size());
 
   // Verify that the Lens card is registered.
   ASSERT_TRUE(std::any_of(all_cards.begin(), all_cards.end(),
@@ -110,17 +105,17 @@ TEST_F(HomeModulesCardRegistryTest, TestSendTabEphemeralModuleCard) {
       {{send_tab_to_self::kSendTabToSelfIOSPushNotifications,
         {{send_tab_to_self::kSendTabIOSPushNotificationsWithMagicStackCardParam,
           "true"}}}},
-      {features::kSegmentationPlatformTipsEphemeralCard});
+      {});
   registry_ = std::make_unique<HomeModulesCardRegistry>(
       &profile_pref_service_, &local_state_pref_service_);
 
-  ASSERT_EQ(3u, registry_->all_output_labels().size());
+  ASSERT_EQ(7u, registry_->all_output_labels().size());
   ASSERT_EQ(0u, registry_->get_label_index(kPlaceholderEphemeralModuleLabel));
-  ASSERT_EQ(2u, registry_->get_label_index(kSendTabNotificationPromo));
-  ASSERT_EQ(4u, registry_->all_cards_input_size());
+  ASSERT_EQ(6u, registry_->get_label_index(kSendTabNotificationPromo));
+  ASSERT_EQ(13u, registry_->all_cards_input_size());
   const std::vector<std::unique_ptr<CardSelectionInfo>>& all_cards =
       registry_->get_all_cards_by_priority();
-  ASSERT_EQ(2u, all_cards.size());
+  ASSERT_EQ(4u, all_cards.size());
   // Verify that the Send Tab Notification Promo card is registered.
   ASSERT_TRUE(std::any_of(all_cards.begin(), all_cards.end(),
                           [](const std::unique_ptr<CardSelectionInfo>& card) {
@@ -128,9 +123,9 @@ TEST_F(HomeModulesCardRegistryTest, TestSendTabEphemeralModuleCard) {
                                    kSendTabNotificationPromo;
                           }));
   const CardSignalMap& signal_map = registry_->get_card_signal_map();
-  ASSERT_EQ(3u, signal_map.find(kSendTabNotificationPromo)
-                    ->second.find("send_tab_infobar_received_in_last_session")
-                    ->second);
+  ASSERT_EQ(12u, signal_map.find(kSendTabNotificationPromo)
+                     ->second.find("send_tab_infobar_received_in_last_session")
+                     ->second);
 }
 
 // Tests that the Registry registers the `AppBundlePromoEphemeralModule` card
@@ -450,9 +445,7 @@ TEST_F(HomeModulesCardRegistryTest, TestAuxiliarySearchPromoCardDisabled) {
 // Tests that the Registry registers the HistorySyncPromo card when its feature
 // is enabled.
 TEST_F(HomeModulesCardRegistryTest, TestHistorySyncPromoCardEnabled) {
-  feature_list_.InitWithFeatures(
-      {features::kEducationalTipModule, switches::kHistoryOptInEducationalTip},
-      {});
+  feature_list_.InitWithFeatures({features::kEducationalTipModule}, {});
   registry_ = std::make_unique<HomeModulesCardRegistry>(
       &profile_pref_service_, &local_state_pref_service_);
 
@@ -474,9 +467,7 @@ TEST_F(HomeModulesCardRegistryTest, TestHistorySyncPromoCardEnabled) {
 // Tests that the Registry won't register the HistorySyncPromo card when it is
 // disabled because of user's interaction history.
 TEST_F(HomeModulesCardRegistryTest, TestHistorySyncPromoCardDisabled) {
-  feature_list_.InitWithFeatures(
-      {features::kEducationalTipModule, switches::kHistoryOptInEducationalTip},
-      {});
+  feature_list_.InitWithFeatures({features::kEducationalTipModule}, {});
   profile_pref_service_.SetUserPref(kHistorySyncPromoImpressionCounterPref,
                                     std::make_unique<base::Value>(11));
   registry_ = std::make_unique<HomeModulesCardRegistry>(

@@ -93,6 +93,8 @@ class BrowserTabStripModelDelegate : public TabStripModelDelegate {
   bool GlicPinTabs(base::span<const tabs::TabHandle> tab_handles) override;
   bool GlicUnpinTabs(base::span<const tabs::TabHandle> tab_handles) override;
   void OpenGlicWindowFromSharedTab() override;
+  void GlicUnpinTabsFromAllConversations(
+      base::span<const tabs::TabHandle> tab_handles) override;
 #endif
 
   void CloseFrame();

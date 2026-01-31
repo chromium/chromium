@@ -11,8 +11,7 @@ namespace blink {
 
 LayoutTextControlInnerEditor::LayoutTextControlInnerEditor(Element* element)
     : LayoutBlockFlow(element),
-      is_multiline_(IsA<HTMLTextAreaElement>(element->OwnerShadowHost()) &&
-                    RuntimeEnabledFeatures::TextareaMultipleIfcsEnabled()) {}
+      is_multiline_(IsA<HTMLTextAreaElement>(element->OwnerShadowHost())) {}
 
 void LayoutTextControlInnerEditor::AddChild(LayoutObject* new_child,
                                             LayoutObject* before_child) {
@@ -98,8 +97,7 @@ void LayoutTextControlInnerEditor::StyleDidChange(
     const StyleChangeContext& style_change_context) {
   LayoutBlockFlow::StyleDidChange(diff, old_style, style_change_context);
 
-  if (RuntimeEnabledFeatures::TextareaMultipleIfcsEnabled() && old_style &&
-      old_style->UsedUserModify() != StyleRef().UsedUserModify() &&
+  if (old_style && old_style->UsedUserModify() != StyleRef().UsedUserModify() &&
       !FirstChild()) {
     // If this has no children and the UserModify state is changed from
     // non-editable to editable, the box height was zero and this box should be

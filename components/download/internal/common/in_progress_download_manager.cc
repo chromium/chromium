@@ -6,7 +6,6 @@
 
 #include <optional>
 
-#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/string_util.h"
@@ -514,9 +513,6 @@ void InProgressDownloadManager::StartDownload(
   DVLOG(20) << __func__
             << "() result=" << DownloadInterruptReasonToString(info->result);
 
-  GURL url = info->url();
-  std::vector<GURL> url_chain = info->url_chain;
-  std::string mime_type = info->mime_type;
 
   // If the download cannot be found locally, ask |delegate_| to provide the
   // DownloadItem.
@@ -573,7 +569,7 @@ void InProgressDownloadManager::StartDownloadWithItem(
   if (info->is_new_download && !should_persist_new_download)
     non_persistent_download_guids_.insert(download->GetGuid());
   // If the download is not persisted, don't notify |download_db_cache_|.
-  if (!base::Contains(non_persistent_download_guids_, download->GetGuid())) {
+  if (!non_persistent_download_guids_.contains(download->GetGuid())) {
     download_db_cache_->AddOrReplaceEntry(
         CreateDownloadDBEntryFromItem(*download));
     download->RemoveObserver(download_db_cache_.get());
@@ -641,7 +637,7 @@ void InProgressDownloadManager::OnDownloadNamesRetrieved(
     uint32_t download_id = item->GetId();
     // Remove entries with duplicate ids.
     if (download_id != DownloadItem::kInvalidId &&
-        base::Contains(download_ids, download_id)) {
+        download_ids.contains(download_id)) {
       RemoveInProgressDownload(item->GetGuid());
       continue;
     }

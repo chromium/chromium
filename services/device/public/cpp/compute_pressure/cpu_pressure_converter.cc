@@ -48,7 +48,7 @@ double CpuPressureConverter::hysteresis_threshold_delta() const {
 
 void CpuPressureConverter::EnableStateRandomizationMitigation() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  randomization_time_ = base::Seconds(base::RandInt(
+  randomization_time_ = base::Seconds(base::RandIntInclusive(
       kMinRandomizationTimeInSeconds, kMaxRandomizationTimeInSeconds));
   randomization_timer_.Start(
       FROM_HERE, randomization_time_,
@@ -66,7 +66,7 @@ void CpuPressureConverter::ToggleStateRandomization() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   state_randomization_requested_ = !state_randomization_requested_;
-  randomization_time_ = base::Seconds(base::RandInt(
+  randomization_time_ = base::Seconds(base::RandIntInclusive(
       kMinRandomizationTimeInSeconds, kMaxRandomizationTimeInSeconds));
   randomization_timer_.Start(
       FROM_HERE, randomization_time_,

@@ -146,7 +146,7 @@ TabCaptureRegistry::GetFactoryInstance() {
 
 void TabCaptureRegistry::GetCapturedTabs(
     const std::string& extension_id,
-    base::Value::List* capture_info_list) const {
+    base::ListValue* capture_info_list) const {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DCHECK(capture_info_list);
   capture_info_list->clear();
@@ -283,7 +283,7 @@ void TabCaptureRegistry::DispatchStatusChangeEvent(
   if (!router)
     return;
 
-  base::Value::List args;
+  base::ListValue args;
   tab_capture::CaptureInfo info;
   request->GetCaptureInfo(&info);
   args.Append(info.ToValue());

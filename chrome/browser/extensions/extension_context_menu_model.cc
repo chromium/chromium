@@ -6,7 +6,6 @@
 
 #include <memory>
 
-#include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_macros.h"
@@ -116,7 +115,7 @@ bool MenuItemMatchesAction(const std::optional<ActionInfo::Type> action_type,
 // the toolbar by policy.
 bool IsExtensionForcePinned(const Extension& extension, Profile* profile) {
   auto* management = ExtensionManagementFactory::GetForBrowserContext(profile);
-  return base::Contains(management->GetForcePinnedList(), extension.id());
+  return management->GetForcePinnedList().contains(extension.id());
 }
 
 // Returns true if the given |extension| is allowed to be inspected based on
@@ -524,14 +523,8 @@ void ExtensionContextMenuModel::ExecuteCommand(int command_id,
       break;
     }
     case UNINSTALL: {
-#if BUILDFLAG(ENABLE_EXTENSIONS)
       UninstallDialogHelper::UninstallExtension(
           profile_, browser_->GetWindow()->GetNativeWindow(), extension);
-#else
-      // TODO(crbug.com/448879321): Make it possible to uninstall extensions
-      // from here on Desktop Android.
-      NOTIMPLEMENTED();
-#endif
       break;
     }
     case TOGGLE_SIDE_PANEL_VISIBILITY: {
@@ -657,10 +650,7 @@ void ExtensionContextMenuModel::MenuClosed(ui::SimpleMenuModel* menu) {
 #if !BUILDFLAG(IS_ANDROID)
     if (source_ == ContextMenuSource::kMenuItem &&
         was_side_panel_action_taken) {
-      browser_->GetBrowserForMigrationOnly()
-          ->window()
-          ->GetExtensionsContainer()
-          ->CloseOverflowMenuIfOpen();
+      ExtensionsContainer::From(*browser_)->CloseOverflowMenuIfOpen();
       // WARNING: The overflow menu was the parent for this menu, so it's
       // possible `this` is now deleted.
     }

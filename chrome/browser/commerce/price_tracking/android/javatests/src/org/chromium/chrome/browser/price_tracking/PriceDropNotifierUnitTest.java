@@ -26,7 +26,6 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
-import org.robolectric.shadows.ShadowLog;
 
 import org.chromium.base.Callback;
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -100,7 +99,6 @@ public class PriceDropNotifierUnitTest {
 
     @Before
     public void setUp() {
-        ShadowLog.stream = System.out;
         BaseNotificationManagerProxyFactory.setInstanceForTesting(mNotificationManagerProxy);
         mPriceDropNotifier =
                 new TestPriceDropNotifier(mProfile, mImageFetcher, mNotificationBuilder);

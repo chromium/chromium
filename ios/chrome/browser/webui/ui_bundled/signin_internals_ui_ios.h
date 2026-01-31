@@ -34,13 +34,13 @@ class SignInInternalsHandlerIOS : public web::WebUIIOSMessageHandler,
   // web::WebUIIOSMessageHandler:
   void RegisterMessages() override;
 
-  void HandleGetSignInInfo(const base::Value::List& args);
+  void HandleGetSignInInfo(const base::ListValue& args);
 
   // AboutSigninInternals::Observer::OnSigninStateChanged implementation.
-  void OnSigninStateChanged(const base::Value::Dict& info) override;
+  void OnSigninStateChanged(const base::DictValue& info) override;
 
   // Notification that the cookie accounts are ready to be displayed.
-  void OnCookieAccountsFetched(const base::Value::Dict& info) override;
+  void OnCookieAccountsFetched(const base::DictValue& info) override;
 
  private:
   base::ScopedObservation<AboutSigninInternals, AboutSigninInternals::Observer>

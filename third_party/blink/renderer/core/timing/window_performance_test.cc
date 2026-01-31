@@ -1379,7 +1379,7 @@ TEST_P(WindowPerformanceTest, PerformanceMarkTraceEvent) {
 
   ASSERT_TRUE(events[0]->HasDictArg("data"));
 
-  base::Value::Dict arg_dict = events[0]->GetKnownArgAsDict("data");
+  base::DictValue arg_dict = events[0]->GetKnownArgAsDict("data");
 
   std::optional<double> start_time = arg_dict.FindDouble("startTime");
   ASSERT_TRUE(start_time.has_value());
@@ -1408,7 +1408,7 @@ TEST_P(WindowPerformanceTest, ElementTimingTraceEvent) {
   EXPECT_TRUE(events[0]->HasStringArg("frame"));
 
   ASSERT_TRUE(events[0]->HasDictArg("data"));
-  base::Value::Dict arg_dict = events[0]->GetKnownArgAsDict("data");
+  base::DictValue arg_dict = events[0]->GetKnownArgAsDict("data");
   std::string* element_type = arg_dict.FindString("elementType");
   ASSERT_TRUE(element_type);
   EXPECT_EQ(*element_type, "image-paint");
@@ -1486,7 +1486,7 @@ TEST_P(WindowPerformanceTest, EventTimingTraceEvents) {
 
   // pointerdown
   ASSERT_TRUE(pointerdown_begin->HasDictArg("data"));
-  base::Value::Dict arg_dict = pointerdown_begin->GetKnownArgAsDict("data");
+  base::DictValue arg_dict = pointerdown_begin->GetKnownArgAsDict("data");
   EXPECT_GT(arg_dict.FindInt("interactionId").value_or(-1), 0);
   std::string* event_name = arg_dict.FindString("type");
   ASSERT_TRUE(event_name);
@@ -1744,7 +1744,7 @@ TEST_P(WindowPerformanceTest, ContainerTimingTraceEvent) {
   EXPECT_TRUE(events[0]->HasStringArg("frame"));
 
   ASSERT_TRUE(events[0]->HasDictArg("data"));
-  base::Value::Dict arg_dict = events[0]->GetKnownArgAsDict("data");
+  base::DictValue arg_dict = events[0]->GetKnownArgAsDict("data");
   std::string* element_type = arg_dict.FindString("elementType");
   ASSERT_TRUE(element_type);
   EXPECT_EQ(*element_type, "container-paints");

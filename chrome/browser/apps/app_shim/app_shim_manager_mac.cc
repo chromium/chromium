@@ -104,17 +104,17 @@ void RecordSignatureValidationResult(SignatureValidationResult result) {
   base::UmaHistogramEnumeration(kAppShimSignatureValidationResult, result);
 }
 
-// This function logs the status and error_details using OSSTATUS_LOG(). It also
-// calls base::debug::DumpWithoutCrashing() using app_shim_requirement_crash_key
-// as a crash key. The status and error_details are appended to the crash key.
-void DumpOSStatusError(OSStatus status, std::string error_details) {
-  OSSTATUS_LOG(ERROR, status) << error_details;
-  crash_reporter::ScopedCrashKeyString crash_key_value(
-      &app_shim_requirement_crash_key,
-      base::StringPrintf("%s: %s (%d)", error_details.c_str(),
-                         logging::DescriptionFromOSStatus(status).c_str(),
-                         status));
-  base::debug::DumpWithoutCrashing();
+// Records the status to a histogram. If the status is an error, it also logs
+// the status and error_details using OSSTATUS_LOG().
+void RecordMacSecurityFrameworkOSStatus(const std::string& operation,
+                                        OSStatus status) {
+  base::UmaHistogramSparse(
+      base::StringPrintf("Apps.AppShim.MacSecurityFrameworkOSStatus.%s",
+                         operation.c_str()),
+      status);
+  if (status != errSecSuccess) {
+    OSSTATUS_LOG(ERROR, status) << operation;
+  }
 }
 
 // This function is similar to DumpOSStatusError(), however it operates without
@@ -179,16 +179,8 @@ bool IsAcceptablyCodeSignedLegacy(audit_token_t app_shim_audit_token) {
 
   OSStatus status = base::mac::ProcessIsSignedAndFulfillsRequirement(
       app_shim_audit_token, app_shim_requirement->value().get());
+  RecordMacSecurityFrameworkOSStatus("SecCodeCheckValidityLegacy", status);
   if (status != errSecSuccess) {
-    if (status == errSecCSReqFailed &&
-        AppShimRegistry::Get()->HasSavedAnyCdHashes()) {
-      // errSecCSReqFailed is most likely a result of opening an ad-hoc signed
-      // app shim after leaving the ad-hoc signing experiment group.
-      // Log the error but skip `DumpWithoutCrashing`.
-      OSSTATUS_LOG(ERROR, status) << "SecCodeCheckValidity";
-    } else {
-      DumpOSStatusError(status, "SecCodeCheckValidity");
-    }
     return false;
   }
   return true;
@@ -203,8 +195,8 @@ void VerifyCodeDirectoryHash(
   OSStatus status = SecCodeCopySigningInformation(
       app_shim_code.get(), kSecCSSigningInformation,
       app_shim_info.InitializeInto());
+  RecordMacSecurityFrameworkOSStatus("SecCodeCopySigningInformation", status);
   if (status != errSecSuccess) {
-    DumpOSStatusError(status, "SecCodeCopySigningInformation");
     std::move(callback).Run(false);
     return;
   }
@@ -254,15 +246,15 @@ void IsAcceptablyAdHocCodeSigned(
   OSStatus status = SecCodeCopyGuestWithAttributes(
       nullptr, app_shim_attributes.get(), kSecCSDefaultFlags,
       app_shim_code.InitializeInto());
+  RecordMacSecurityFrameworkOSStatus("SecCodeCopyGuestWithAttributes", status);
   if (status != errSecSuccess) {
-    DumpOSStatusError(status, "SecCodeCopyGuestWithAttributes");
     std::move(callback).Run(SignatureValidationResult::kInvalidSignature);
     return;
   }
   status =
       SecCodeCheckValidity(app_shim_code.get(), kSecCSDefaultFlags, nullptr);
+  RecordMacSecurityFrameworkOSStatus("SecCodeCheckValidityAdHoc", status);
   if (status != errSecSuccess) {
-    DumpOSStatusError(status, "SecCodeCheckValidity");
     std::move(callback).Run(SignatureValidationResult::kInvalidSignature);
     return;
   }
@@ -2021,13 +2013,12 @@ std::map<base::FilePath, int> AppShimManager::GetProfilesWithMatchingHandlers(
           std::string file_extension =
               base::FilePath(file_path.Extension()).AsUTF8Unsafe();
           return file_extension.length() > 1 &&
-                 base::Contains(handler_info.file_handler_extensions,
-                                file_extension);
+                 handler_info.file_handler_extensions.contains(file_extension);
         });
 
     if (protocol_handler_url.is_valid() &&
-        base::Contains(handler_info.protocol_handlers,
-                       protocol_handler_url.GetScheme())) {
+        handler_info.protocol_handlers.contains(
+            protocol_handler_url.GetScheme())) {
       count++;
     }
 

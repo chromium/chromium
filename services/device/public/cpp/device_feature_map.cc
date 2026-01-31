@@ -23,9 +23,9 @@ namespace {
 // services/device/public/cpp/device_features.h or in other locations in the
 // code base.
 const base::Feature* const kFeaturesExposedToJava[] = {
+    &device::kAuthenticatorPasswordsOnlyImmediateRequests,
     &device::kWebAuthnAndroidSignal,
     &device::kWebAuthnImmediateGet,
-    &device::kWebAuthnPasskeyUpgrade,
     &kGenericSensorExtraClasses,
     &kBatteryStatusManagerBroadcastReceiverInBackground,
     &device::features::kGmsCoreLocationRequestParamOverride};
@@ -39,8 +39,8 @@ base::android::FeatureMap* GetFeatureMap() {
 
 }  // namespace
 
-static jlong JNI_DeviceFeatureMap_GetNativeMap(JNIEnv* env) {
-  return reinterpret_cast<jlong>(GetFeatureMap());
+static int64_t JNI_DeviceFeatureMap_GetNativeMap(JNIEnv* env) {
+  return reinterpret_cast<int64_t>(GetFeatureMap());
 }
 
 }  // namespace features

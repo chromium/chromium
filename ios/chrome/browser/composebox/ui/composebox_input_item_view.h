@@ -10,17 +10,6 @@
 #import "ios/chrome/browser/composebox/public/composebox_theme.h"
 #import "ios/chrome/browser/composebox/ui/composebox_input_item.h"
 
-namespace composeboxAttachments {
-/// The height of input items.
-const float kAttachmentHeight = 44.0f;
-/// The corner radius of input items.
-const float kAttachmentCornerRadius = kAttachmentHeight / 2;
-/// Image input item size.
-const CGSize kImageInputItemSize = {86.0f, kAttachmentHeight};
-/// Tab/File input item size.
-const CGSize kTabFileInputItemSize = {136.0f, kAttachmentHeight};
-}  // namespace composeboxAttachments
-
 // The aim input item view.
 @interface ComposeboxInputItemView : UIView
 

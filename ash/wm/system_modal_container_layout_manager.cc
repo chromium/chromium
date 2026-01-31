@@ -14,7 +14,6 @@
 #include "ash/shell.h"
 #include "ash/wm/window_dimmer.h"
 #include "ash/wm/window_util.h"
-#include "base/containers/contains.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/window.h"
 #include "ui/base/mojom/ui_base_types.mojom-shared.h"
@@ -69,7 +68,7 @@ void SystemModalContainerLayoutManager::OnChildWindowVisibilityChanged(
   }
 
   if (window->IsVisible()) {
-    DCHECK(!base::Contains(modal_windows_, window));
+    DCHECK(!std::ranges::contains(modal_windows_, window));
     AddModalWindow(window);
   } else {
     if (RemoveModalWindow(window))
@@ -127,7 +126,7 @@ void SystemModalContainerLayoutManager::OnWindowPropertyChanged(
 
   if (window->GetProperty(aura::client::kModalKey) ==
       ui::mojom::ModalType::kSystem) {
-    if (base::Contains(modal_windows_, window))
+    if (std::ranges::contains(modal_windows_, window))
       return;
     AddModalWindow(window);
   } else {
@@ -225,7 +224,7 @@ void SystemModalContainerLayoutManager::AddModalWindow(aura::Window* window) {
       capture_window->ReleaseCapture();
   }
   DCHECK(window->IsVisible());
-  DCHECK(!base::Contains(modal_windows_, window));
+  DCHECK(!std::ranges::contains(modal_windows_, window));
 
   modal_windows_.push_back(window);
   // Create the modal background on all displays for |window|.

@@ -1,0 +1,207 @@
+Tests device-bound-sessions protocol additions.
+
+Running test: testSessionsAndEvents
+
+--- Checking initial set of sessions is empty ---
+Received deviceBoundSessionsAdded event.
+No sessions when initialized.
+
+--- Creation event ---
+Creation event: {
+    creationEventDetails : {
+        fetchResult : Success
+        newSession : {
+            allowedRefreshInitiators : [
+                [0] : dbsc.test
+            ]
+            cookieCravings : [
+                [0] : {
+                    domain : .dbsc.test
+                    httpOnly : true
+                    name : dbsc-cookie
+                    path : /
+                    sameSite : Lax
+                    secure : true
+                }
+            ]
+            expiryDate : <number>
+            inclusionRules : {
+                includeSite : false
+                origin : https://dbsc.test:8443
+                urlRules : [
+                    [0] : {
+                        hostPattern : dbsc.test
+                        pathPrefix : /inspector-protocol/network/resources/dbsc/
+                        ruleType : Exclude
+                    }
+                    [1] : {
+                        hostPattern : dbsc.test
+                        pathPrefix : /inspector-protocol/network/resources/dbsc/protected-resource.php
+                        ruleType : Include
+                    }
+                    [2] : {
+                        hostPattern : dbsc.test
+                        pathPrefix : /inspector-protocol/network/resources/dbsc/refresh.php
+                        ruleType : Exclude
+                    }
+                ]
+            }
+            key : {
+                id : dbsc-session-id
+                site : https://dbsc.test
+            }
+            refreshUrl : https://dbsc.test:8443/inspector-protocol/network/resources/dbsc/refresh.php?cookie_name=dbsc-cookie&domain_prefix=dbsc
+        }
+    }
+    eventId : <string>
+    sessionId : dbsc-session-id
+    site : https://dbsc.test
+    succeeded : true
+}
+
+--- Reset tracking device bound session events ---
+Device Bound Sessions disabled in DevTools.
+
+--- Checking new set of sessions has one session ---
+Re-enabling Device Bound Sessions in DevTools.
+New sessions: {
+    sessions : [
+        [0] : {
+            allowedRefreshInitiators : [
+                [0] : dbsc.test
+            ]
+            cookieCravings : [
+                [0] : {
+                    domain : .dbsc.test
+                    httpOnly : true
+                    name : dbsc-cookie
+                    path : /
+                    sameSite : Lax
+                    secure : true
+                }
+            ]
+            expiryDate : <number>
+            inclusionRules : {
+                includeSite : false
+                origin : https://dbsc.test:8443
+                urlRules : [
+                    [0] : {
+                        hostPattern : dbsc.test
+                        pathPrefix : /inspector-protocol/network/resources/dbsc/
+                        ruleType : Exclude
+                    }
+                    [1] : {
+                        hostPattern : dbsc.test
+                        pathPrefix : /inspector-protocol/network/resources/dbsc/protected-resource.php
+                        ruleType : Include
+                    }
+                    [2] : {
+                        hostPattern : dbsc.test
+                        pathPrefix : /inspector-protocol/network/resources/dbsc/refresh.php
+                        ruleType : Exclude
+                    }
+                ]
+            }
+            key : {
+                id : dbsc-session-id
+                site : https://dbsc.test
+            }
+            refreshUrl : https://dbsc.test:8443/inspector-protocol/network/resources/dbsc/refresh.php?cookie_name=dbsc-cookie&domain_prefix=dbsc
+        }
+    ]
+}
+
+--- Trigger refresh event ---
+Refresh event: {
+    eventId : <string>
+    refreshEventDetails : {
+        fetchResult : Success
+        refreshResult : Refreshed
+        wasFullyProactiveRefresh : false
+    }
+    sessionId : dbsc-session-id
+    site : https://dbsc.test
+    succeeded : true
+}
+
+--- Trigger challenge event ---
+Challenge event: {
+    challengeEventDetails : {
+        challenge : new challenge
+        challengeResult : Success
+    }
+    eventId : <string>
+    sessionId : dbsc-session-id
+    site : https://dbsc.test
+    succeeded : true
+}
+
+--- Trigger termination event ---
+Termination event: {
+    eventId : <string>
+    sessionId : dbsc-session-id
+    site : https://dbsc.test
+    succeeded : true
+    terminationEventDetails : {
+        deletionReason : StoragePartitionCleared
+    }
+}
+
+Running test: testFetchSchemefulSite
+{
+    schemefulSite : https://google.com
+}
+{
+    schemefulSite : http://localhost
+}
+{
+    schemefulSite : https://192.168.1.1
+}
+{
+    schemefulSite : file://
+}
+
+Running test: testRequestWillBeSentExtraInfo
+
+--- Make sure initial set of sessions is empty ---
+Num sessions received: 0
+
+--- Set up four sessions (one for a different site) ---
+Sessions added successfully: 4
+
+--- Trigger deferred refresh for session 1, proactive refresh for session 2, nothing for session 3 ---
+Usages (only same-site included): [
+    [0] : {
+        sessionKey : {
+            id : dbsc-session-id1
+            site : https://dbsc.test
+        }
+        usage : Deferred
+    }
+    [1] : {
+        sessionKey : {
+            id : dbsc-session-id2
+            site : https://dbsc.test
+        }
+        usage : ProactiveRefreshAttempted
+    }
+    [2] : {
+        sessionKey : {
+            id : dbsc-session-id3
+            site : https://dbsc.test
+        }
+        usage : InScopeRefreshNotYetNeeded
+    }
+]
+
+--- Trigger deferred refresh for session 1 for alternate site ---
+Usages (only same-site for alternate site included): [
+    [0] : {
+        sessionKey : {
+            id : dbsc-session-id1
+            site : https://dbsc-alternate.test
+        }
+        usage : Deferred
+    }
+]
+

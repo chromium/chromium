@@ -96,13 +96,6 @@ ContextImplCoreml::CreateTensorImpl(
         mojom::Error::New(mojom::Error::Code::kNotSupportedError,
                           "Creation of constant tensors is not supported."));
   }
-  // TODO(crbug.com/345352987): implement WebGPU interop tensors for CoreML
-  // backend.
-  if (tensor_info->usage.Has(MLTensorUsageFlags::kWebGpuInterop)) {
-    return base::unexpected(
-        mojom::Error::New(mojom::Error::Code::kNotSupportedError,
-                          "WebGPU Interop is not supported."));
-  }
   return TensorImplCoreml::Create(std::move(receiver), AsWeakPtr(),
                                   std::move(tensor_info));
 }

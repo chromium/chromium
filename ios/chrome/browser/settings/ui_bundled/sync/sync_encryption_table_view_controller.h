@@ -15,7 +15,7 @@ class Browser;
 
 // Called when the SyncEncryptionTableViewController has been
 // dismissed.
-- (void)syncEncryptionTableViewControllerDidDisappear:
+- (void)syncEncryptionTableViewControllerDidDismiss:
     (SyncEncryptionTableViewController*)viewController;
 
 @end

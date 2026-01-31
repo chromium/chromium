@@ -174,7 +174,7 @@ class DataTypeManager {
       DataTypeSet throttled_types,
       DataTypeSet backed_off_types) const = 0;
   virtual void GetAllNodesForDebugging(
-      base::OnceCallback<void(base::Value::List)> callback) const = 0;
+      base::OnceCallback<void(base::ListValue)> callback) const = 0;
   virtual void GetEntityCountsForDebugging(
       base::RepeatingCallback<void(const TypeEntitiesCount&)> callback)
       const = 0;

@@ -84,8 +84,7 @@
           "group": "tryserver.chromium.android"
         }
       ],
-      "targets_spec_directory": "infra/config/generated/builders/ci/Android FYI Release (NVIDIA Shield TV)/targets",
-      "targets_spec_directory_relative_to_source_dir": true
+      "targets_spec_directory": "infra/config/generated/builders/ci/Android FYI Release (NVIDIA Shield TV)/targets"
     }
   },
   "$recipe_engine/resultdb/test_presentation": {

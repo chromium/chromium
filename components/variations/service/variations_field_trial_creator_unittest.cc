@@ -393,10 +393,10 @@ class TestVariationsFieldTrialCreator : public VariationsFieldTrialCreator {
       const base::FilePath user_data_dir = base::FilePath(),
       metrics::StartupVisibility startup_visibility =
           metrics::StartupVisibility::kUnknown)
-      : VariationsFieldTrialCreator(client,
-                                    // Pass a VariationsSeedStore to base class.
-                                    CreateSeedStore(local_state, user_data_dir),
-                                    UIStringOverrider()),
+      : VariationsFieldTrialCreator(
+            client,
+            // Pass a VariationsSeedStore to base class.
+            CreateSeedStore(local_state, user_data_dir)),
         enabled_state_provider_(/*consent=*/true, /*enabled=*/true),
         // Instead, use a TestVariationsSeedStore as the member variable.
         seed_store_(local_state),
@@ -445,8 +445,6 @@ class TestVariationsFieldTrialCreator : public VariationsFieldTrialCreator {
   void ApplyFieldTrialTestingConfig(base::FeatureList* feature_list) override {
     AssociateParamsFromFieldTrialConfig(
         kTestingConfig,
-        base::BindRepeating(&TestVariationsFieldTrialCreator::OverrideUIString,
-                            base::Unretained(this)),
         GetPlatform(), GetCurrentFormFactor(), feature_list);
   }
 #endif  // BUILDFLAG(FIELDTRIAL_TESTING_ENABLED)
@@ -510,8 +508,9 @@ class FieldTrialCreatorTest : public ::testing::Test {
     CHECK(base::WriteFile(seed_file_path(), compressed_seed));
 
     // Write the seed for the seed file experiment's control-group clients.
-    local_state()->SetString(prefs::kVariationsCompressedSeed,
-                             base::Base64Encode(compressed_seed));
+    local_state()->SetString(
+        prefs::kVariationsCompressedSeed,
+        base::Base64EncodeEarlyStartup(base::as_byte_span(compressed_seed)));
 
     // Allows and writes an empty signature for the test seed.
     base::CommandLine::ForCurrentProcess()->AppendSwitch(
@@ -956,8 +955,8 @@ TEST_F(FieldTrialCreatorTest, LoadSeedFromTestSeedJsonPath) {
   base::WriteFile(test_seed_file,
                   base::StringPrintf("{\"variations_compressed_seed\": \"%s\","
                                      "\"variations_seed_signature\": \"%s\"}",
-                                     kTestSeedData.base64_compressed_data,
-                                     kTestSeedData.base64_signature));
+                                     TestSeedData().base64_compressed_data,
+                                     TestSeedData().base64_signature));
 
   base::CommandLine::ForCurrentProcess()->AppendSwitchPath(
       variations::switches::kVariationsTestSeedJsonPath, test_seed_file);
@@ -966,8 +965,8 @@ TEST_F(FieldTrialCreatorTest, LoadSeedFromTestSeedJsonPath) {
   // the VariationsSeedStore::LoadSeedSync() logic.
   TestVariationsServiceClient variations_service_client;
   auto seed_store = CreateSeedStore(local_state(), seed_file_path());
-  VariationsFieldTrialCreator field_trial_creator(
-      &variations_service_client, std::move(seed_store), UIStringOverrider());
+  VariationsFieldTrialCreator field_trial_creator(&variations_service_client,
+                                                  std::move(seed_store));
   metrics::TestEnabledStateProvider enabled_state_provider(
       /*consent=*/true,
       /*enabled=*/true);
@@ -978,7 +977,8 @@ TEST_F(FieldTrialCreatorTest, LoadSeedFromTestSeedJsonPath) {
   PlatformFieldTrials platform_field_trials;
   NiceMock<MockSafeSeedManager> safe_seed_manager(local_state());
 
-  ASSERT_FALSE(base::FieldTrialList::TrialExists(kTestSeedData.study_names[0]));
+  ASSERT_FALSE(
+      base::FieldTrialList::TrialExists(TestSeedData().study_names[0]));
 
   EXPECT_TRUE(field_trial_creator.SetUpFieldTrials(
       /*variation_ids=*/{},
@@ -990,7 +990,7 @@ TEST_F(FieldTrialCreatorTest, LoadSeedFromTestSeedJsonPath) {
       *metrics_state_manager->CreateEntropyProviders(
           /*enable_limited_entropy_mode=*/false)));
 
-  EXPECT_TRUE(base::FieldTrialList::TrialExists(kTestSeedData.study_names[0]));
+  EXPECT_TRUE(base::FieldTrialList::TrialExists(TestSeedData().study_names[0]));
   EXPECT_EQ(
       local_state()->GetInteger(prefs::kVariationsFailedToFetchSeedStreak), 0);
   EXPECT_EQ(local_state()->GetInteger(prefs::kVariationsCrashStreak), 0);
@@ -1087,8 +1087,8 @@ TEST_F(FieldTrialCreatorTest, LoadPermanentConsistencyCountry) {
     }
 
     TestVariationsServiceClient variations_service_client;
-    VariationsFieldTrialCreator field_trial_creator(
-        &variations_service_client, std::move(seed_store), UIStringOverrider());
+    VariationsFieldTrialCreator field_trial_creator(&variations_service_client,
+                                                    std::move(seed_store));
 
     base::HistogramTester histogram_tester;
     EXPECT_EQ(test.expected_country,
@@ -1142,8 +1142,8 @@ TEST_F(FieldTrialCreatorTest, SetUpFieldTrials_LoadsCountryOnFirstRun) {
           /*seed_file_dir=*/base::FilePath(), version_info::Channel::UNKNOWN,
           /*entropy_providers=*/nullptr),
       version_info::Channel::UNKNOWN, /*seed_file_dir=*/base::FilePath());
-  VariationsFieldTrialCreator field_trial_creator(
-      &variations_service_client, std::move(seed_store), UIStringOverrider());
+  VariationsFieldTrialCreator field_trial_creator(&variations_service_client,
+                                                  std::move(seed_store));
 
   metrics::TestEnabledStateProvider enabled_state_provider(/*consent=*/true,
                                                            /*enabled=*/true);
@@ -1601,7 +1601,7 @@ TEST_F(FieldTrialCreatorTest, GetGoogleGroupsFromPrefsWhenEmptyDict) {
       user_data_dir_path());
 
   // Add an empty dict value for the pref.
-  base::Value::Dict google_groups_dict;
+  base::DictValue google_groups_dict;
   local_state()->SetDict(prefs::kVariationsGoogleGroups,
                          std::move(google_groups_dict));
 
@@ -1618,8 +1618,8 @@ TEST_F(FieldTrialCreatorTest,
       user_data_dir_path());
 
   // Add an empty dict value for the pref.
-  base::Value::Dict google_groups_dict;
-  base::Value::List profile_1_groups;
+  base::DictValue google_groups_dict;
+  base::ListValue profile_1_groups;
   google_groups_dict.Set("Profile 1", std::move(profile_1_groups));
   local_state()->SetDict(prefs::kVariationsGoogleGroups,
                          std::move(google_groups_dict));
@@ -1637,8 +1637,8 @@ TEST_F(FieldTrialCreatorTest,
       user_data_dir_path());
 
   // Add an empty dict value for the pref.
-  base::Value::Dict google_groups_dict;
-  base::Value::List profile_1_groups;
+  base::DictValue google_groups_dict;
+  base::ListValue profile_1_groups;
   profile_1_groups.Append("123");
   profile_1_groups.Append("456");
   google_groups_dict.Set("Profile 1", std::move(profile_1_groups));
@@ -1658,8 +1658,8 @@ TEST_F(FieldTrialCreatorTest,
       user_data_dir_path());
 
   // Add an empty dict value for the pref.
-  base::Value::Dict google_groups_dict;
-  base::Value::List profile_1_groups;
+  base::DictValue google_groups_dict;
+  base::ListValue profile_1_groups;
   profile_1_groups.Append("Alice");
   profile_1_groups.Append("Bob");
   google_groups_dict.Set("Profile 1", std::move(profile_1_groups));
@@ -1718,8 +1718,8 @@ TEST_P(LimitedLayerFieldTrialCreatorTest, SetUpFieldTrials) {
   TestVariationsServiceClient variations_service_client;
   std::unique_ptr<VariationsSeedStore> seed_store =
       CreateSeedStore(local_state(), seed_file_path());
-  VariationsFieldTrialCreator field_trial_creator(
-      &variations_service_client, std::move(seed_store), UIStringOverrider());
+  VariationsFieldTrialCreator field_trial_creator(&variations_service_client,
+                                                  std::move(seed_store));
 
   // Third, create the FieldTrialList.
   metrics::TestEnabledStateProvider enabled_state_provider(
@@ -1830,7 +1830,7 @@ TEST_P(FieldTrialCreatorFormFactorTest, FilterByFormFactor) {
   // Set up the field trials.
   VariationsFieldTrialCreator field_trial_creator{
       &variations_service_client,
-      CreateSeedStore(local_state(), seed_file_path()), UIStringOverrider()};
+      CreateSeedStore(local_state(), seed_file_path())};
   EXPECT_TRUE(field_trial_creator.SetUpFieldTrials(
       /*variation_ids=*/{},
       /*command_line_variation_ids=*/std::string(),

@@ -35,7 +35,7 @@ TEST(PmfUtilsTest, CalculatePrivateMemoryFootprint) {
   base::File status_file(status_path,
                          base::File::FLAG_OPEN | base::File::FLAG_READ);
 
-  std::optional<ByteCount> pmf =
+  std::optional<ByteSize> pmf =
       PmfUtils::CalculatePrivateMemoryFootprintForTesting(statm_file,
                                                           status_file);
 

@@ -70,6 +70,13 @@ class IOSPromoBubbleView : public views::BubbleDialogDelegateView,
   std::u16string GetConfirmationDescriptionText(
       const std::u16string& device_name);
 
+  // Returns the name of the iOS device (e.g. "iPhone", "iPad").
+  std::u16string GetDeviceName() const;
+
+  // Returns true if the anchor button should be highlighted when the bubble is
+  // shown.
+  bool ShouldHighlightAnchorButton() const;
+
   const raw_ptr<Profile> profile_;
   const desktop_to_mobile_promos::PromoType promo_type_;
   raw_ptr<const syncer::DeviceInfo> ios_device_info_;

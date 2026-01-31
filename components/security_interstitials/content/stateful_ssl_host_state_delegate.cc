@@ -13,7 +13,6 @@
 #include <utility>
 
 #include "base/base64.h"
-#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
@@ -124,7 +123,7 @@ void StatefulSSLHostStateDelegate::AllowCert(
   if (!value.is_dict())
     value = base::Value(base::Value::Type::DICT);
 
-  base::Value::Dict* cert_dict =
+  base::DictValue* cert_dict =
       GetValidCertDecisionsDict(CREATE_DICTIONARY_ENTRIES, value.GetDict());
   // If a a valid certificate dictionary cannot be extracted from the content
   // setting, that means it's in an unknown format. Unfortunately, there's
@@ -181,8 +180,8 @@ StatefulSSLHostStateDelegate::QueryPolicy(
     }
     AllowedCert allowed_cert =
         AllowedCert(GetKey(cert, error), storage_partition->GetPath());
-    if (base::Contains(allowed_certs_for_non_default_storage_partitions_[host],
-                       allowed_cert)) {
+    if (allowed_certs_for_non_default_storage_partitions_[host].contains(
+            allowed_cert)) {
       return ALLOWED;
     }
     return DENIED;
@@ -195,7 +194,7 @@ StatefulSSLHostStateDelegate::QueryPolicy(
   if (!value.is_dict())
     return DENIED;
 
-  base::Value::Dict* cert_error_dict = GetValidCertDecisionsDict(
+  base::DictValue* cert_error_dict = GetValidCertDecisionsDict(
       DO_NOT_CREATE_DICTIONARY_ENTRIES, value.GetDict());
   if (!cert_error_dict) {
     // This revoke is necessary to clear any old expired setting that may be
@@ -233,9 +232,9 @@ bool StatefulSSLHostStateDelegate::DidHostRunInsecureContent(
     InsecureContentType content_type) {
   switch (content_type) {
     case MIXED_CONTENT:
-      return base::Contains(ran_mixed_content_hosts_, host);
+      return ran_mixed_content_hosts_.contains(host);
     case CERT_ERRORS_CONTENT:
-      return base::Contains(ran_content_with_cert_errors_hosts_, host);
+      return ran_content_with_cert_errors_hosts_.contains(host);
   }
   NOTREACHED();
 }
@@ -400,8 +399,7 @@ bool StatefulSSLHostStateDelegate::HasCertAllowException(
     content::StoragePartition* storage_partition) {
   if (!storage_partition ||
       storage_partition != browser_context_->GetDefaultStoragePartition()) {
-    return base::Contains(allowed_certs_for_non_default_storage_partitions_,
-                          host);
+    return allowed_certs_for_non_default_storage_partitions_.contains(host);
   }
 
   GURL url = GetSecureGURLForHost(host);
@@ -436,9 +434,9 @@ bool StatefulSSLHostStateDelegate::HasCertAllowException(
 // addition to there not being any values in the dictionary). If create_entries
 // is set to |CREATE_DICTIONARY_ENTRIES|, if no dictionary is found or the
 // decisions are expired, a new dictionary will be created.
-base::Value::Dict* StatefulSSLHostStateDelegate::GetValidCertDecisionsDict(
+base::DictValue* StatefulSSLHostStateDelegate::GetValidCertDecisionsDict(
     CreateDictionaryEntriesDisposition create_entries,
-    base::Value::Dict& dict) {
+    base::DictValue& dict) {
   // Extract the version of the certificate decision structure from the content
   // setting.
   std::optional<int> version = dict.FindInt(kSSLCertDecisionVersionKey);
@@ -490,7 +488,7 @@ base::Value::Dict* StatefulSSLHostStateDelegate::GetValidCertDecisionsDict(
   }
 
   // Extract the map of certificate fingerprints to errors from the setting.
-  base::Value::Dict* cert_error_dict =
+  base::DictValue* cert_error_dict =
       dict.FindDict(kSSLCertDecisionCertErrorMapKey);
   if (expired || !cert_error_dict) {
     if (create_entries == DO_NOT_CREATE_DICTIONARY_ENTRIES)

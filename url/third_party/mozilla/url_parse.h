@@ -96,7 +96,8 @@ struct Component {
     if (!is_valid()) {
       return std::nullopt;
     }
-    return std::basic_string_view(&UNSAFE_TODO(source[begin]), len);
+    // SAFETY: It's unsafe. Do not use this function.
+    return std::basic_string_view(&UNSAFE_BUFFERS(source[begin]), len);
   }
 
   // Returns a std::optional<string_view> using `source` as a backend.
@@ -471,7 +472,8 @@ void ParseAuthority(std::u16string_view spec,
 // Overloads for `const char*` and `const char16_t*` are deprecated. Use an
 // overload for `std::string_view` or `std::u16string_view` instead.
 enum SpecialPort { PORT_UNSPECIFIED = -1, PORT_INVALID = -2 };
-COMPONENT_EXPORT(URL) int ParsePort(const char* url, const Component& port);
+UNSAFE_BUFFER_USAGE COMPONENT_EXPORT(URL) int ParsePort(const char* url,
+                                                        const Component& port);
 COMPONENT_EXPORT(URL)
 int ParsePort(std::string_view url, const Component& port);
 COMPONENT_EXPORT(URL)

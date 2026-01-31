@@ -16,6 +16,7 @@
 #include "base/notreached.h"
 #include "base/strings/strcat.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/trusted_vault/trusted_vault_encryption_keys_tab_helper.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window.h"
@@ -212,7 +213,7 @@ class AuthenticatorRequestWindow
 
     GURL url;
     switch (step_) {
-      case AuthenticatorRequestDialogModel::Step::kRecoverSecurityDomain:
+      case AuthenticatorRequestDialogModel::Step::kGPMRecoverSecurityDomain:
         url = GaiaUrls::GetInstance()->signin_chrome_passkey_unlock_url();
         device::enclave::RecordEvent(device::enclave::Event::kRecoveryShown);
         webauthn::user_actions::RecordRecoveryShown(model_->request_type);
@@ -240,8 +241,22 @@ class AuthenticatorRequestWindow
     }
 
     content::NavigationController::LoadURLParams load_params(url);
-    web_contents->GetController().LoadURLWithParams(load_params);
+    base::WeakPtr<content::NavigationHandle> navigation_handle =
+        web_contents->GetController().LoadURLWithParams(load_params);
     web_contents_weak_ptr_ = web_contents->GetWeakPtr();
+
+    if (navigation_handle &&
+        step_ ==
+            AuthenticatorRequestDialogModel::Step::kGPMRecoverSecurityDomain) {
+      TrustedVaultEncryptionKeysTabHelper* encryption_keys_tab_helper =
+          TrustedVaultEncryptionKeysTabHelper::FromWebContents(
+              navigation_handle->GetWebContents());
+      if (encryption_keys_tab_helper) {
+        encryption_keys_tab_helper->SetUserActionTrigger(
+            trusted_vault::TrustedVaultUserActionTriggerForUMA::
+                kPasskeyBootstrappingFlow);
+      }
+    }
 
     browser->tab_strip_model()->AddWebContents(
         std::move(web_contents), /*index=*/0,
@@ -273,7 +288,7 @@ class AuthenticatorRequestWindow
     }
     if (model_->step() == step_) {
       webauthn::user_actions::RecordRecoveryCancelled();
-      model_->OnRecoverSecurityDomainClosed();
+      model_->OnGPMRecoverSecurityDomainClosed();
     }
   }
 
@@ -300,13 +315,13 @@ class AuthenticatorRequestWindow
 
   void OnHaveToken(std::string rapt) {
     if (model_) {
-      model_->OnReauthComplete(std::move(rapt));
+      model_->OnGPMReauthComplete(std::move(rapt));
     }
   }
 
   void OnPasskeysReset(bool success) {
     if (model_) {
-      model_->OnGpmPasskeysReset(success);
+      model_->OnGPMPasskeysReset(success);
     }
   }
 

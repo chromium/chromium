@@ -37,8 +37,8 @@ constexpr char kWriteErrorEventUnrecoverableErrorCountKey[] =
 // ability to see the last few restarts.
 constexpr size_t kMaxEventCount = 20;
 
-base::Value::Dict SerializeEvent(const SessionServiceEvent& event) {
-  base::Value::Dict serialized_event;
+base::DictValue SerializeEvent(const SessionServiceEvent& event) {
+  base::DictValue serialized_event;
   serialized_event.Set(kEventTypeKey, static_cast<int>(event.type));
   serialized_event.Set(
       kEventTimeKey,
@@ -83,7 +83,7 @@ base::Value::Dict SerializeEvent(const SessionServiceEvent& event) {
   return serialized_event;
 }
 
-bool DeserializeEvent(const base::Value::Dict& serialized_event,
+bool DeserializeEvent(const base::DictValue& serialized_event,
                       SessionServiceEvent& event) {
   auto type = serialized_event.FindInt(kEventTypeKey);
   if (!type)
@@ -196,7 +196,7 @@ void SaveEventsToPrefs(Profile* profile,
 }  // namespace
 
 std::list<SessionServiceEvent> GetSessionServiceEvents(Profile* profile) {
-  const base::Value::List& serialized_events =
+  const base::ListValue& serialized_events =
       profile->GetPrefs()->GetList(kEventPrefKey);
   std::list<SessionServiceEvent> events;
   for (const auto& serialized_event : serialized_events) {

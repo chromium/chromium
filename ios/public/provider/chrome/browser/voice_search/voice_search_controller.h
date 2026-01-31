@@ -11,7 +11,14 @@ namespace web {
 class WebState;
 }
 
-@protocol LoadQueryCommands;
+// Delegate for voice search queries.
+@protocol VoiceSearchDelegate <NSObject>
+
+@optional
+// Called when voice search received a search query.
+- (void)voiceSearchDidReceiveSearchQuery:(NSString*)query;
+
+@end
 
 // Protocol for interacting with the Voice Search UI.
 @protocol VoiceSearchController <NSObject>
@@ -31,8 +38,9 @@ class WebState;
 // Called before the object is destroyed.
 - (void)disconnect;
 
-// Dispatcher for this object.
-@property(nonatomic, weak) id<LoadQueryCommands> dispatcher;
+// Optional delegate for voice search queries. If not provided, queries are
+// loaded in the browser.
+@property(nonatomic, weak) id<VoiceSearchDelegate> delegate;
 
 // Whether or not the Text To Speech user preference is enabled.
 @property(nonatomic, readonly) BOOL textToSpeechEnabled;

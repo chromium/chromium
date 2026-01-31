@@ -169,6 +169,7 @@ public class TabPersistentStoreImpl implements TabPersistentStore {
     private final TabCreatorManager mTabCreatorManager;
     private final TabWindowManager mTabWindowManager;
     private final CipherFactory mCipherFactory;
+    private final boolean mRecordLegacyTabCountMetrics;
     private final ObserverList<TabPersistentStoreObserver> mObservers;
     private final Deque<Tab> mTabsToSave;
     private final ArrayDeque<Tab> mTabsToMigrate;
@@ -214,6 +215,7 @@ public class TabPersistentStoreImpl implements TabPersistentStore {
      *     creators, or faked out creators if in non-authoritative mode.
      * @param tabWindowManager Used to avoid deleting archived tab state files.
      * @param cipherFactory The {@link CipherFactory} used for encrypting and decrypting files.
+     * @param recordLegacyTabCountMetrics Whether to record legacy tab count metrics.
      */
     public TabPersistentStoreImpl(
             String clientTag,
@@ -221,13 +223,15 @@ public class TabPersistentStoreImpl implements TabPersistentStore {
             TabModelSelector modelSelector,
             TabCreatorManager tabCreatorManager,
             TabWindowManager tabWindowManager,
-            CipherFactory cipherFactory) {
+            CipherFactory cipherFactory,
+            boolean recordLegacyTabCountMetrics) {
         mClientTag = clientTag;
         mPersistencePolicy = policy;
         mTabModelSelector = modelSelector;
         mTabCreatorManager = tabCreatorManager;
         mTabWindowManager = tabWindowManager;
         mCipherFactory = cipherFactory;
+        mRecordLegacyTabCountMetrics = recordLegacyTabCountMetrics;
 
         mTabsToSave = new ArrayDeque<>();
         mTabsToMigrate = new ArrayDeque<>();
@@ -1485,6 +1489,7 @@ public class TabPersistentStoreImpl implements TabPersistentStore {
     }
 
     protected void recordLegacyTabCountMetrics() {
+        if (!mRecordLegacyTabCountMetrics) return;
         RecordHistogram.recordCount1MHistogram(
                 "Tabs.Startup.TabCount.Regular", mTabModelSelector.getModel(false).getCount());
         RecordHistogram.recordCount1MHistogram(

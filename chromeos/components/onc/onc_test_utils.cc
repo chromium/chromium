@@ -77,7 +77,7 @@ base::Value ReadTestJson(const std::string& filename) {
 
 }  // namespace
 
-base::Value::Dict ReadTestDictionary(const std::string& filename) {
+base::DictValue ReadTestDictionary(const std::string& filename) {
   base::Value content = ReadTestJson(filename);
   CHECK(content.is_dict())
       << "File '" << filename
@@ -86,7 +86,7 @@ base::Value::Dict ReadTestDictionary(const std::string& filename) {
   return std::move(content.GetDict());
 }
 
-base::Value::List ReadTestList(const std::string& filename) {
+base::ListValue ReadTestList(const std::string& filename) {
   base::Value content = ReadTestJson(filename);
   CHECK(content.is_list()) << "File '" << filename
                            << "' does not contain a list as expected, but type "
@@ -94,8 +94,8 @@ base::Value::List ReadTestList(const std::string& filename) {
   return std::move(content.GetList());
 }
 
-::testing::AssertionResult Equals(const base::Value::Dict* expected,
-                                  const base::Value::Dict* actual) {
+::testing::AssertionResult Equals(const base::DictValue* expected,
+                                  const base::DictValue* actual) {
   CHECK(expected != nullptr);
   if (actual == nullptr) {
     return ::testing::AssertionFailure() << "Actual value pointer is nullptr";
@@ -113,9 +113,9 @@ base::Value::List ReadTestList(const std::string& filename) {
 
 namespace {
 
-base::Value::List ConvertToBaseValueList(
+base::ListValue ConvertToBaseValueList(
     const std::vector<std::string>& string_vector) {
-  base::Value::List result;
+  base::ListValue result;
   for (const std::string& str : string_vector) {
     result.Append(str);
   }
@@ -152,8 +152,8 @@ TestToplevelApnData::TestToplevelApnData(const TestToplevelApnData& other)
       admin_assigned_apn_ids(other.admin_assigned_apn_ids) {}
 
 // Helper function to build an individual APN dictionary
-base::Value::Dict BuildApnDict(TestToplevelApnData apn_data) {
-  base::Value::Dict apn_dict;
+base::DictValue BuildApnDict(TestToplevelApnData apn_data) {
+  base::DictValue apn_dict;
 
   auto maybe_set_string = [&](const char* key,
                               const std::optional<std::string>& value) {
@@ -177,17 +177,17 @@ base::Value::Dict BuildApnDict(TestToplevelApnData apn_data) {
 
 const std::string GenerateTopLevelWithCellularWithAPNAsJSON(
     TestToplevelApnData apn_data) {
-  base::Value::Dict top_level_dict =
+  base::DictValue top_level_dict =
       test_utils::ReadTestDictionary("toplevel_cellular_no_apn.onc");
 
   // Locate the Cellular config within the top-level dictionary
-  base::Value::List* network_configs =
+  base::ListValue* network_configs =
       top_level_dict.FindList(::onc::toplevel_config::kNetworkConfigurations);
   DCHECK(network_configs);
-  base::Value::Dict* cellular_network_config_dict =
+  base::DictValue* cellular_network_config_dict =
       network_configs->front().GetIfDict();
   DCHECK(cellular_network_config_dict);
-  base::Value::Dict* cellular_dict =
+  base::DictValue* cellular_dict =
       cellular_network_config_dict->FindDict(::onc::network_config::kCellular);
   DCHECK(cellular_dict);
   cellular_dict->Set(::onc::cellular::kAPN, BuildApnDict(apn_data));
@@ -198,7 +198,7 @@ const std::string GenerateTopLevelWithCellularWithAPNAsJSON(
   }
 
   if (apn_data.admin_apn_list_ids.has_value()) {
-    base::Value::List admin_apn_list;
+    base::ListValue admin_apn_list;
 
     for (const std::string& apn_id : apn_data.admin_apn_list_ids.value()) {
       // Use BuildApnDict with the apn_id and optional values as null
@@ -213,7 +213,7 @@ const std::string GenerateTopLevelWithCellularWithAPNAsJSON(
 
   if (apn_data.psim_admin_assigned_apn_ids.has_value()) {
     // Locate the Global network config within the top-level dictionary
-    base::Value::Dict* global_network_config = top_level_dict.FindDict(
+    base::DictValue* global_network_config = top_level_dict.FindDict(
         ::onc::toplevel_config::kGlobalNetworkConfiguration);
     DCHECK(global_network_config);
     global_network_config->Set(

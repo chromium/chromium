@@ -14,6 +14,7 @@
 #include "base/sequence_checker.h"
 #include "content/browser/preloading/prefetch/prefetch_container.h"
 #include "content/browser/preloading/prefetch/prefetch_key.h"
+#include "content/browser/preloading/prefetch/prefetch_match_resolver.h"
 #include "content/browser/preloading/prefetch/prefetch_streaming_url_loader_common_types.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/frame_tree_node_id.h"
@@ -224,7 +225,10 @@ class CONTENT_EXPORT PrefetchService : public PrefetchContainer::Observer {
   CollectMatchCandidates(const PrefetchKey& key,
                          bool is_nav_prerender,
                          base::WeakPtr<PrefetchServingPageMetricsContainer>
-                             serving_page_metrics_container);
+                             serving_page_metrics_container,
+                         const PrefetchKey* key_ahead_of_prerender,
+                         PrefetchPotentialCandidateCollectResult*
+                             collect_result_ahead_of_prerender);
   PrefetchContainer* FindPrefetchAheadOfPrerenderForMetrics(
       const PreloadPipelineInfo& pipeline_info);
 

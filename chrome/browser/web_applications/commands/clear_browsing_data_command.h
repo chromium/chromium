@@ -20,7 +20,7 @@ class AllAppsLock;
 void ClearWebAppBrowsingData(const base::Time& begin_time,
                              const base::Time& end_time,
                              AllAppsLock& lock,
-                             base::Value::Dict& debug_value);
+                             base::DictValue& debug_value);
 
 }  // namespace web_app
 

@@ -27,7 +27,7 @@ import androidx.constraintlayout.widget.ConstraintLayout;
 
 import org.chromium.base.DeviceInfo;
 import org.chromium.base.Token;
-import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.build.annotations.Initializer;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -98,7 +98,7 @@ public class StripDragShadowView extends FrameLayout {
 
     // External Dependencies
     private BrowserControlsStateProvider mBrowserControlStateProvider;
-    private ObservableSupplier<LayerTitleCache> mLayerTitleCacheSupplier;
+    private MonotonicObservableSupplier<LayerTitleCache> mLayerTitleCacheSupplier;
     private TabModelSelector mTabModelSelector;
     private ShadowUpdateHost mShadowUpdateHost;
 
@@ -152,7 +152,7 @@ public class StripDragShadowView extends FrameLayout {
             BrowserControlsStateProvider browserControlsStateProvider,
             MultiThumbnailCardProvider multiThumbnailCardProvider,
             TabContentManager tabContentManager,
-            ObservableSupplier<LayerTitleCache> layerTitleCacheSupplier,
+            MonotonicObservableSupplier<LayerTitleCache> layerTitleCacheSupplier,
             TabModelSelector tabModelSelector,
             ShadowUpdateHost shadowUpdateHost) {
         mBrowserControlStateProvider = browserControlsStateProvider;
@@ -277,10 +277,7 @@ public class StripDragShadowView extends FrameLayout {
     public void prepareForGroupDrag(Tab tab, int sourceWidthPx) {
         Context context = getContext();
         boolean isIncognito = tab.isIncognitoBranded();
-        TabGroupModelFilter modelFilter =
-                mTabModelSelector
-                        .getTabGroupModelFilterProvider()
-                        .getTabGroupModelFilter(isIncognito);
+        TabGroupModelFilter modelFilter = mTabModelSelector.getTabGroupModelFilter(isIncognito);
         assumeNonNull(modelFilter);
 
         // Background color

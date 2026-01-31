@@ -61,7 +61,7 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) GeolocationHandlerImpl
   void Init();
 
   // ShillManagerClient callback
-  void ManagerPropertiesCallback(std::optional<base::Value::Dict> properties);
+  void ManagerPropertiesCallback(std::optional<base::DictValue> properties);
 
   // Called from OnPropertyChanged or ManagerPropertiesCallback.
   void HandlePropertyChanged(const std::string& key, const base::Value& value);
@@ -71,13 +71,13 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) GeolocationHandlerImpl
   void RequestGeolocationObjects();
 
   // Callback for receiving Geolocation data.
-  void GeolocationCallback(std::optional<base::Value::Dict> properties);
+  void GeolocationCallback(std::optional<base::DictValue> properties);
 
   bool cellular_enabled_ = false;
   bool wifi_enabled_ = false;
 
-  void AddCellTowerFromDict(const base::Value::Dict& entry);
-  void AddAccessPointFromDict(const base::Value::Dict& entry);
+  void AddCellTowerFromDict(const base::DictValue& entry);
+  void AddAccessPointFromDict(const base::DictValue& entry);
 
   // Cached network information and update time
   WifiAccessPointVector wifi_access_points_;

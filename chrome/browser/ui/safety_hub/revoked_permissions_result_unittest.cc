@@ -99,7 +99,7 @@ class RevokedPermissionsResultTest
   bool IsUrlInRevokedSettings(std::list<PermissionsData> permissions_data,
                               std::string url) {
     // TODO(crbug.com/40250875): Replace the below with a lambda method and
-    // base::Contains.
+    // std::ranges::contains.
     std::string url_pattern =
         ContentSettingsPattern::FromURLNoWildcard(GURL(url)).ToString();
     for (const auto& permission : permissions_data) {
@@ -155,7 +155,7 @@ TEST_P(RevokedPermissionsResultTest, ResultToFromDict) {
 
   // When converting to dict, the values of the revoked permissions should be
   // correctly converted to base::Value.
-  base::Value::Dict dict = result->ToDictValue();
+  base::DictValue dict = result->ToDictValue();
   auto* revoked_origins_list = dict.FindList(kRevokedPermissionsResultKey);
   if (ShouldSetupUnusedSites() && ShouldSetupSafeBrowsing()) {
     EXPECT_THAT(*revoked_origins_list, UnorderedElementsAre(url1, url2, url3));

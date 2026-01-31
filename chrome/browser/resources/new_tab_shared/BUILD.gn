@@ -11,8 +11,8 @@ build_webui("build") {
   grd_resource_path_prefix = "shared"
 
   ts_files = [
-    "customize_buttons/customize_buttons.ts",
     "customize_buttons/customize_buttons.html.ts",
+    "customize_buttons/customize_buttons.ts",
     "customize_buttons/icons.html.ts",
   ]
   css_files = [ "customize_buttons/customize_buttons.css" ]

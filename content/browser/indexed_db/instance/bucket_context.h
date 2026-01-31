@@ -32,10 +32,10 @@
 #include "components/services/storage/public/cpp/quota_error_or.h"
 #include "components/services/storage/public/mojom/blob_storage_context.mojom.h"
 #include "components/services/storage/public/mojom/file_system_access_context.mojom.h"
-#include "content/browser/indexed_db/blob_reader.h"
 #include "content/browser/indexed_db/indexed_db_data_loss_info.h"
 #include "content/browser/indexed_db/indexed_db_database_error.h"
 #include "content/browser/indexed_db/indexed_db_external_object.h"
+#include "content/browser/indexed_db/instance/blob_reader.h"
 #include "content/browser/indexed_db/status.h"
 #include "content/common/content_export.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -145,6 +145,13 @@ class CONTENT_EXPORT BucketContext
 
   ~BucketContext() override;
 
+  // Calculate the usage of the bucket by directly examining the disk. Should be
+  // used in lieu of `GetUsage()` only when there is no live `BucketContext` for
+  // the given bucket.
+  static uint64_t ReadUsageFromDisk(
+      const storage::BucketLocator& bucket_locator,
+      const base::FilePath& data_path);
+
   // All `BucketContext` instances created during the lifetime of the returned
   // object will use SQLite iff `use_sqlite` is true.
   static base::AutoReset<std::optional<bool>> OverrideShouldUseSqliteForTesting(
@@ -172,7 +179,10 @@ class CONTENT_EXPORT BucketContext
   void StartMetadataRecording();
   std::vector<storage::mojom::IdbBucketMetadataPtr> StopMetadataRecording();
 
-  int64_t GetInMemorySize();
+  // Returns the current usage of the bucket, in bytes. `write_in_progress` is
+  // true iff the last readwrite transaction did not flush changes to disk
+  // (i.e., had relaxed durability).
+  uint64_t GetUsage(bool write_in_progress);
 
   bool IsClosing() const {
     return closing_stage_ != ClosingState::kNotClosing;

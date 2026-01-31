@@ -19,7 +19,7 @@ using base::android::JavaRef;
 namespace mojo {
 namespace android {
 
-static jlong JNI_BaseRunLoop_CreateBaseRunLoop(JNIEnv* env) {
+static int64_t JNI_BaseRunLoop_CreateBaseRunLoop(JNIEnv* env) {
   base::SingleThreadTaskExecutor* task_executor =
       new base::SingleThreadTaskExecutor;
   return reinterpret_cast<uintptr_t>(task_executor);
@@ -40,9 +40,9 @@ static void RunJavaRunnable(
 }
 
 static void JNI_BaseRunLoop_PostDelayedTask(JNIEnv* env,
-                                            jlong runLoopID,
+                                            int64_t runLoopID,
                                             const JavaRef<jobject>& runnable,
-                                            jlong delay) {
+                                            int64_t delay) {
   base::android::ScopedJavaGlobalRef<jobject> runnable_ref;
   // ScopedJavaGlobalRef do not hold onto the env reference, so it is safe to
   // use it across threads. |RunJavaRunnable| will acquire a new JNIEnv before
@@ -55,7 +55,7 @@ static void JNI_BaseRunLoop_PostDelayedTask(JNIEnv* env,
                         base::Microseconds(delay));
 }
 
-static void JNI_BaseRunLoop_DeleteMessageLoop(JNIEnv* env, jlong runLoopID) {
+static void JNI_BaseRunLoop_DeleteMessageLoop(JNIEnv* env, int64_t runLoopID) {
   base::SingleThreadTaskExecutor* task_executor =
       reinterpret_cast<base::SingleThreadTaskExecutor*>(runLoopID);
   delete task_executor;

@@ -85,7 +85,7 @@ PendingWriteStore::GetPendingWrites() {
     return list;
   }
 
-  const base::Value::Dict& result =
+  const base::DictValue& result =
       pref_service->GetDict(kFastPairPendingWritesPref);
 
   for (const auto item : result) {
@@ -173,7 +173,7 @@ PendingWriteStore::GetPendingDeletes() {
     return list;
   }
 
-  const base::Value::Dict& result =
+  const base::DictValue& result =
       pref_service->GetDict(kFastPairPendingDeletesPref);
 
   for (const auto item : result) {
@@ -208,7 +208,7 @@ void PendingWriteStore::OnPairedDeviceDeleted(
 
   std::string hex_account_key = base::HexEncode(account_key);
   ScopedDictPrefUpdate update(pref_service, kFastPairPendingDeletesPref);
-  const base::Value::Dict result =
+  const base::DictValue result =
       pref_service->GetDict(kFastPairPendingDeletesPref).Clone();
   for (const auto item : result) {
     if (item.second == hex_account_key) {

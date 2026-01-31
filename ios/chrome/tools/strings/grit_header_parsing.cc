@@ -8,7 +8,6 @@
 #include <string_view>
 #include <vector>
 
-#include "base/containers/contains.h"
 #include "base/files/file.h"
 #include "base/files/file_util.h"
 #include "base/strings/string_number_conversions.h"
@@ -44,7 +43,7 @@ bool FillResourcesFromGritHeader(const base::FilePath& header,
     }
 
     const std::string_view key = items[1];
-    if (base::Contains(resource_map, key)) {
+    if (resource_map.contains(key)) {
       fprintf(stderr, "ERROR: entry duplicated in parsed headers: %s\n",
               std::string(key).c_str());
       return false;

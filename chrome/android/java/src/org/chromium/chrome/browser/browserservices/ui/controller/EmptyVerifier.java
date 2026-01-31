@@ -29,7 +29,7 @@ public class EmptyVerifier implements Verifier {
     }
 
     @Override
-    public boolean shouldIgnoreExternalIntentHandlers(String url) {
+    public boolean isUrlInVerifiedScope(String url) {
         return false;
     }
 }

@@ -183,11 +183,17 @@ void OSExchangeDataProviderMac::SetString(std::u16string_view string) {
                      forType:NSPasteboardTypeString];
 }
 
-void OSExchangeDataProviderMac::SetURL(const GURL& url,
-                                       std::u16string_view title) {
+void OSExchangeDataProviderMac::SetURLs(
+    base::span<const ClipboardUrlInfo> url_infos) {
+  if (url_infos.empty()) {
+    return;
+  }
+  // TODO(http://crbug.com/41011768): we should support multiple URLs,
+  // but currently only the first one is used.
+  const auto& url_info = url_infos.front();
   NSArray<NSPasteboardItem*>* items = clipboard_util::PasteboardItemsFromUrls(
-      @[ base::SysUTF8ToNSString(url.spec()) ],
-      @[ base::SysUTF16ToNSString(title) ]);
+      @[ base::SysUTF8ToNSString(url_info.url.spec()) ],
+      @[ base::SysUTF16ToNSString(url_info.title) ]);
   clipboard_util::AddDataToPasteboard(GetPasteboard(), items.firstObject);
 }
 
@@ -215,41 +221,27 @@ std::optional<std::u16string> OSExchangeDataProviderMac::GetString() const {
   }
 
   // There was no NSString, check for an NSURL.
-  if (std::optional<UrlInfo> url_info =
-          GetURLAndTitle(FilenameToURLPolicy::DO_NOT_CONVERT_FILENAMES);
-      url_info.has_value()) {
-    return base::UTF8ToUTF16(url_info->url.spec());
+  std::vector<ClipboardUrlInfo> url_infos =
+      GetURLs(FilenameToURLPolicy::DO_NOT_CONVERT_FILENAMES);
+  if (!url_infos.empty()) {
+    return base::UTF8ToUTF16(url_infos.front().url.spec());
   }
 
   return std::nullopt;
 }
 
-std::optional<OSExchangeDataProvider::UrlInfo>
-OSExchangeDataProviderMac::GetURLAndTitle(FilenameToURLPolicy policy) const {
-  NSArray<URLAndTitle*>* urls_and_titles =
-      clipboard_util::URLsAndTitlesFromPasteboard(
-          GetPasteboard(), policy == FilenameToURLPolicy::CONVERT_FILENAMES);
-  if (!urls_and_titles.count) {
-    return std::nullopt;
-  }
-
-  GURL url(base::SysNSStringToUTF8(urls_and_titles.firstObject.URL));
-  return UrlInfo{std::move(url),
-                 base::SysNSStringToUTF16(urls_and_titles.firstObject.title)};
-}
-
-std::optional<std::vector<GURL>> OSExchangeDataProviderMac::GetURLs(
+std::vector<ClipboardUrlInfo> OSExchangeDataProviderMac::GetURLs(
     FilenameToURLPolicy policy) const {
   NSArray<URLAndTitle*>* urls_and_titles =
       clipboard_util::URLsAndTitlesFromPasteboard(
           GetPasteboard(), policy == FilenameToURLPolicy::CONVERT_FILENAMES);
   if (!urls_and_titles.count) {
-    return std::nullopt;
+    return {};
   }
-
-  std::vector<GURL> local_urls;
+  std::vector<ClipboardUrlInfo> local_urls;
   for (URLAndTitle* url_and_title in urls_and_titles) {
-    local_urls.emplace_back(base::SysNSStringToUTF8(url_and_title.URL));
+    local_urls.emplace_back(GURL(base::SysNSStringToUTF8(url_and_title.URL)),
+                            base::SysNSStringToUTF16(url_and_title.title));
   }
   return local_urls;
 }
@@ -280,7 +272,7 @@ bool OSExchangeDataProviderMac::HasString() const {
 }
 
 bool OSExchangeDataProviderMac::HasURL(FilenameToURLPolicy policy) const {
-  return GetURLAndTitle(policy).has_value();
+  return !GetURLs(policy).empty();
 }
 
 bool OSExchangeDataProviderMac::HasFile() const {

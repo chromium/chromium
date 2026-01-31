@@ -4,7 +4,6 @@
 
 #include "components/autofill/core/browser/ui/autofill_image_fetcher.h"
 
-#include "base/containers/contains.h"
 #include "base/containers/span.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"

@@ -9,6 +9,7 @@
 
 #include "base/functional/bind.h"
 #include "base/time/time.h"
+#include "base/types/optional_ref.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "net/base/address_list.h"
 #include "net/dns/public/host_resolver_results.h"
@@ -38,6 +39,7 @@ class ResolveHostClientImpl : public network::ResolveHostClientBase {
   ResolveHostClientImpl(
       const GURL& url,
       const net::NetworkAnonymizationKey& network_anonymization_key,
+      base::optional_ref<const base::UnguessableToken> network_restrictions_id,
       ResolveHostCallback callback,
       network::mojom::NetworkContext* network_context);
 

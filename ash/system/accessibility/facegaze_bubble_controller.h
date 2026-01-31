@@ -11,6 +11,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/timer/timer.h"
+#include "ui/display/display_observer.h"
 #include "ui/views/view_observer.h"
 
 namespace ui {
@@ -27,7 +28,8 @@ namespace ash {
 class FaceGazeBubbleView;
 
 // Manages the FaceGaze bubble view.
-class ASH_EXPORT FaceGazeBubbleController : public views::ViewObserver {
+class ASH_EXPORT FaceGazeBubbleController : public views::ViewObserver,
+                                            public display::DisplayObserver {
  public:
   FaceGazeBubbleController(
       const base::RepeatingCallback<void()>& on_close_button_clicked);
@@ -37,6 +39,10 @@ class ASH_EXPORT FaceGazeBubbleController : public views::ViewObserver {
 
   // views::ViewObserver:
   void OnViewIsDeleting(views::View* observed_view) override;
+
+  // display::DisplayObserver:
+  void OnDisplayMetricsChanged(const display::Display& display,
+                               uint32_t changed_metrics) override;
 
   // Updates the bubble's visibility and text content.
   void UpdateBubble(const std::u16string& text, bool is_warning);
@@ -51,6 +57,9 @@ class ASH_EXPORT FaceGazeBubbleController : public views::ViewObserver {
 
   // Updates the view and widget.
   void Update(const std::u16string& text, bool is_warning);
+
+  // Updates the position of the bubble on the screen.
+  void UpdatePosition();
 
   // Called whenever the mouse enters the the main content of
   // FaceGazeBubbleView; this method doesn't get called if the mouse hovers the

@@ -5,14 +5,16 @@
 #include "chromeos/ui/frame/interior_resize_handler_targeter.h"
 
 #include "chromeos/ui/base/chromeos_ui_constants.h"
+#include "chromeos/ui/base/window_properties.h"
 #include "ui/aura/window.h"
 
 namespace chromeos {
 
 InteriorResizeHandleTargeter::InteriorResizeHandleTargeter(
+    const ResizeBorderInsets& border_insets,
     WindowStateTypeCallback window_state_type_cb)
     : window_state_type_cb_(std::move(window_state_type_cb)) {
-  SetInsets(gfx::Insets(chromeos::kResizeInsideBoundsSize));
+  SetInsets(border_insets.for_mouse, border_insets.for_touch);
 }
 
 InteriorResizeHandleTargeter::~InteriorResizeHandleTargeter() = default;

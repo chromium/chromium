@@ -466,6 +466,8 @@ void TestRenderFrameHost::SendRendererInitiatedNavigationRequest(
           nullptr /* trust_token_params */, std::nullopt /* impression */,
           base::TimeTicks() /* renderer_before_unload_start */,
           base::TimeTicks() /* renderer_before_unload_end */,
+          base::TimeTicks() /* before_unload_dialog_opened */,
+          base::TimeTicks() /* before_unload_dialog_closed */,
           blink::mojom::NavigationInitiatorActivationAndAdStatus::
               kDidNotStartWithTransientActivation,
           false /* is_container_initiated */,
@@ -478,7 +480,7 @@ void TestRenderFrameHost::SendRendererInitiatedNavigationRequest(
   common_params->transition = ui::PAGE_TRANSITION_LINK;
   common_params->navigation_type =
       blink::mojom::NavigationType::DIFFERENT_DOCUMENT;
-  common_params->has_user_gesture = has_user_gesture;
+  common_params->has_possibly_filtered_user_gesture = has_user_gesture;
   common_params->request_destination =
       network::mojom::RequestDestination::kDocument;
 

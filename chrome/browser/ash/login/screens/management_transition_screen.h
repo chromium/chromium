@@ -39,7 +39,7 @@ class ManagementTransitionScreen : public BaseScreen {
   base::RepeatingClosure* exit_callback() { return &exit_callback_; }
 
  private:
-  void OnUserAction(const base::Value::List& args) override;
+  void OnUserAction(const base::ListValue& args) override;
   void OnManagementTransitionFailed();
 
   // Called when transition has finished, exits the screen.

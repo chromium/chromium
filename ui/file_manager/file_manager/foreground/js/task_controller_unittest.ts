@@ -6,7 +6,6 @@ import {assert} from 'chrome://resources/ash/common/assert.js';
 import {getTrustedHTML} from 'chrome://resources/js/static_types.js';
 import {assertDeepEquals, assertEquals, assertNotReached, assertTrue} from 'chrome://webui-test/chromeos/chai_assert.js';
 
-import {createCrostiniForTest} from '../../background/js/mock_crostini.js';
 import type {ProgressCenter} from '../../background/js/progress_center.js';
 import type {VolumeInfo} from '../../background/js/volume_info.js';
 import type {VolumeManager} from '../../background/js/volume_manager.js';
@@ -117,7 +116,7 @@ function createTaskController(fileSelectionHandler: FileSelectionHandler):
         getCurrentRootType: () => null,
       } as unknown as DirectoryModel,
       fileSelectionHandler, {} as unknown as MetadataUpdateController,
-      createCrostiniForTest(), {} as unknown as ProgressCenter);
+      {} as unknown as ProgressCenter);
 
   return taskController;
 }

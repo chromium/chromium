@@ -32,7 +32,7 @@ std::optional<base::Value> ConvertToBaseValue(const cbor::Value& cbor_value) {
 
     case cbor::Value::Type::ARRAY: {
       const std::vector<cbor::Value>& input_array = cbor_value.GetArray();
-      base::Value::List output_array;
+      base::ListValue output_array;
 
       for (const auto& el : input_array) {
         std::optional<base::Value> converted_el = ConvertToBaseValue(el);
@@ -46,7 +46,7 @@ std::optional<base::Value> ConvertToBaseValue(const cbor::Value& cbor_value) {
 
     case cbor::Value::Type::MAP: {
       const cbor::Value::MapValue& input_map = cbor_value.GetMap();
-      base::Value::Dict output_map;
+      base::DictValue output_map;
 
       for (const auto& el : input_map) {
         std::string key;

@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/auto_reset.h"
+#include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_types.h"
 
 namespace content {
@@ -20,6 +21,15 @@ class WindowAndroid;
 }
 
 namespace permissions {
+
+namespace internal {
+
+void ResolveNotificationsPermissionRequest(content::WebContents* web_contents,
+                                           ContentSetting content_setting);
+
+void DismissNotificationsPermissionRequest(content::WebContents* web_contents);
+
+}  // namespace internal
 
 // Appends to `out` the required Android permissions associated with
 // `content_settings_type`.

@@ -7,7 +7,6 @@
 #include <iterator>
 #include <ostream>
 
-#include "base/containers/contains.h"
 #include "base/logging.h"
 #include "base/no_destructor.h"
 #include "base/stl_util.h"
@@ -280,12 +279,12 @@ bool URLPatternSet::OverlapsWith(const URLPatternSet& other) const {
   return false;
 }
 
-base::Value::List URLPatternSet::ToValue() const {
-  base::Value::List result;
+base::ListValue URLPatternSet::ToValue() const {
+  base::ListValue result;
   for (const auto& pattern : patterns_) {
-    base::Value pattern_str_value(pattern.GetAsString());
-    if (!base::Contains(result, pattern_str_value)) {
-      result.Append(std::move(pattern_str_value));
+    std::string pattern_str_value(pattern.GetAsString());
+    if (!result.contains(pattern_str_value)) {
+      result.Append(pattern_str_value);
     }
   }
   return result;
@@ -323,7 +322,7 @@ std::vector<std::string> URLPatternSet::ToStringVector() const {
   return result;
 }
 
-bool URLPatternSet::Populate(const base::Value::List& value,
+bool URLPatternSet::Populate(const base::ListValue& value,
                              int valid_schemes,
                              bool allow_file_access,
                              std::string* error) {

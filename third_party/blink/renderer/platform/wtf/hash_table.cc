@@ -45,8 +45,7 @@ void HashTableStats::Copy(const HashTableStats& other) {
 
   max_collisions = other.max_collisions;
   num_collisions = other.num_collisions;
-  UNSAFE_TODO(memcpy(collision_graph.data(), other.collision_graph.data(),
-                     sizeof(collision_graph)));
+  collision_graph = other.collision_graph;
 }
 
 void HashTableStats::RecordCollisionAtCount(int count) {

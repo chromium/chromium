@@ -52,7 +52,7 @@ class DictionaryValueINIParser : public INIParser {
 
   ~DictionaryValueINIParser() override;
 
-  const base::Value::Dict& root() const { return root_; }
+  const base::DictValue& root() const { return root_; }
 
  private:
   // INIParser implementation.
@@ -60,7 +60,7 @@ class DictionaryValueINIParser : public INIParser {
                      std::string_view key,
                      std::string_view value) override;
 
-  base::Value::Dict root_;
+  base::DictValue root_;
 };
 
 #endif  // CHROME_COMMON_INI_PARSER_H_

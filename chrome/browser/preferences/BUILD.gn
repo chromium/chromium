@@ -69,7 +69,6 @@ java_cpp_strings("java_pref_names_srcjar") {
     "//components/payments/core/payment_prefs.h",
     "//components/policy/core/common/policy_pref_names.h",
     "//components/privacy_sandbox/privacy_sandbox_prefs.h",
-    "//components/privacy_sandbox/tracking_protection_prefs.h",
     "//components/safe_browsing/core/common/safe_browsing_prefs.h",
     "//components/safety_check/safety_check_pref_names.h",
     "//components/saved_tab_groups/public/pref_names.h",

@@ -4,8 +4,10 @@
 
 #include <third_party/blink/renderer/core/dom/scroll_marker_group_data.h>
 
+#include "third_party/blink/renderer/core/dom/column_pseudo_element.h"
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/dom/layout_tree_builder_traversal.h"
+#include "third_party/blink/renderer/core/dom/scroll_marker_group_pseudo_element.h"
 #include "third_party/blink/renderer/core/html/html_anchor_element.h"
 #include "third_party/blink/renderer/core/layout/layout_box.h"
 #include "third_party/blink/renderer/core/scroll/scroll_into_view_util.h"
@@ -48,6 +50,26 @@ mojom::blink::ScrollAlignment GetAlignmentForScrollTarget(
           y_snap_align);
   return scroll_into_view_util::ResolveToPhysicalAlignment(
       x_position, y_position, axis, *target_object->Style());
+}
+
+// Returns the ColumnPseudoElement that is the direct parent of this scroll
+// marker, if this scroll marker is a ::column::scroll-marker and its
+// scroll-marker-group is in tabs mode. Returns nullptr otherwise.
+ColumnPseudoElement* GetColumnFromScrollMarkerInTabsMode(
+    Element* scroll_marker) {
+  auto* scroll_marker_pseudo =
+      DynamicTo<ScrollMarkerPseudoElement>(scroll_marker);
+  if (!scroll_marker_pseudo) {
+    return nullptr;
+  }
+  // Only apply inactive column marking for tabs mode.
+  ScrollMarkerGroupPseudoElement* scroll_marker_group =
+      scroll_marker_pseudo->ScrollMarkerGroup();
+  if (!scroll_marker_group || scroll_marker_group->ScrollMarkerGroupMode() !=
+                                  ScrollMarkerGroup::ScrollMarkerMode::kTabs) {
+    return nullptr;
+  }
+  return DynamicTo<ColumnPseudoElement>(scroll_marker_pseudo->parentElement());
 }
 
 }  // namespace
@@ -275,7 +297,6 @@ void ScrollMarkerGroupData::AddToFocusGroup(Element& scroll_marker) {
   // have added HTMLAnchorElement.
   if (scroll_marker.HasTagName(html_names::kATag)) {
     SetNeedsScrollersMapUpdate();
-    scroll_marker.GetDocument().SetNeedsScrollTargetGroupsMapUpdate();
     scroll_marker.SetScrollTargetGroupContainerData(this);
   }
   focus_group_.push_back(scroll_marker);
@@ -288,7 +309,6 @@ void ScrollMarkerGroupData::RemoveFromFocusGroup(Element& scroll_marker) {
     // have added HTMLAnchorElement.
     if (scroll_marker.HasTagName(html_names::kATag)) {
       SetNeedsScrollersMapUpdate();
-      scroll_marker.GetDocument().SetNeedsScrollTargetGroupsMapUpdate();
       scroll_marker.SetScrollTargetGroupContainerData(nullptr);
     }
     if (selected_marker_ == scroll_marker) {
@@ -314,6 +334,14 @@ void ScrollMarkerGroupData::ApplyPendingScrollMarker() {
     return;
   }
   invalidation_state_ = InvalidationState::kClean;
+
+  // Track old and new columns for updating IsInsideInactiveColumnTab bits.
+  // Only applies to scroll-marker-groups in tabs mode.
+  ColumnPseudoElement* old_column =
+      GetColumnFromScrollMarkerInTabsMode(selected_marker_.Get());
+  ColumnPseudoElement* new_column =
+      GetColumnFromScrollMarkerInTabsMode(pending_selected_marker_.Get());
+
   // Notify the currently selected marker before updating it.
   if (auto* scroll_marker_pseudo =
           DynamicTo<ScrollMarkerPseudoElement>(selected_marker_.Get())) {
@@ -352,6 +380,36 @@ void ScrollMarkerGroupData::ApplyPendingScrollMarker() {
       scroll_marker->PseudoStateChanged(CSSSelector::kPseudoTargetAfter);
     }
   }
+
+  // Update IsInsideInactiveColumnTab bits on LayoutObjects inside columns.
+  // This is used by accessibility to efficiently determine which content
+  // should be hidden without walking the fragment tree for each node.
+  if (old_column != new_column) {
+    if (old_column) {
+      // Mark all content in the old active column as inactive.
+      old_column->SetIsInsideInactiveColumnTabForDescendants(true);
+    } else {
+      DCHECK(new_column);
+      // On first selection (old_column is null), mark all other columns as
+      // inactive. This must be done before marking the new column as active,
+      // so that elements spanning multiple columns end up active if any of
+      // their fragments is in the active column.
+      Element& multicol_container = new_column->UltimateOriginatingElement();
+      if (const ColumnPseudoElementsVector* columns =
+              multicol_container.GetColumnPseudoElements()) {
+        for (ColumnPseudoElement* column : *columns) {
+          if (column != new_column) {
+            column->SetIsInsideInactiveColumnTabForDescendants(true);
+          }
+        }
+      }
+    }
+    if (new_column) {
+      // Mark all content in the new active column as active.
+      new_column->SetIsInsideInactiveColumnTabForDescendants(false);
+    }
+  }
+
   apply_snap_alignment_ = false;
   pending_selected_marker_.Clear();
 }
@@ -546,24 +604,30 @@ void ScrollMarkerGroupData::UpdateSelectedScrollMarker() {
   invalidation_state_ = InvalidationState::kNeedsFullUpdate;
 }
 
-void ScrollMarkerGroupData::UpdateScrollableAreaSubscriptions(
-    HeapHashSet<Member<PaintLayerScrollableArea>>& scrollable_areas) {
+void ScrollMarkerGroupData::UpdateScrollableAreaSubscriptions() {
   if (!needs_scrollers_map_update_) {
     return;
   }
-  for (PaintLayerScrollableArea* scrollable_area : scrollable_areas) {
+  for (PaintLayerScrollableArea* scrollable_area : scrollable_areas_) {
     scrollable_area->RemoveScrollMarkerGroupContainerData(this);
   }
-  scrollable_areas.clear();
+  scrollable_areas_.clear();
   for (Element* anchor_scroll_marker : focus_group_) {
     if (PaintLayerScrollableArea* scrollable_area =
             To<HTMLAnchorElement>(anchor_scroll_marker)
                 ->AncestorScrollableAreaOfScrollTargetElement()) {
-      scrollable_areas.insert(scrollable_area);
+      scrollable_areas_.insert(scrollable_area);
       scrollable_area->AddScrollMarkerGroupContainerData(this);
     }
   }
   needs_scrollers_map_update_ = false;
+}
+
+void ScrollMarkerGroupData::ClearScrollableAreaSubscriptions() {
+  for (PaintLayerScrollableArea* scrollable_area : scrollable_areas_) {
+    scrollable_area->RemoveScrollMarkerGroupContainerData(this);
+  }
+  scrollable_areas_.clear();
 }
 
 Element* ScrollMarkerGroupData::FindNextScrollMarker(const Element* current) {
@@ -605,6 +669,7 @@ void ScrollMarkerGroupData::Trace(Visitor* v) const {
   v->Trace(selected_marker_);
   v->Trace(pending_selected_marker_);
   v->Trace(focus_group_);
+  v->Trace(scrollable_areas_);
   PostLayoutSnapshotClient::Trace(v);
   ElementRareDataField::Trace(v);
 }

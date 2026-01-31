@@ -159,7 +159,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebRTC.Audio.AgcClippingAdjustmentAllowed" enum="Boolean"
-    expires_after="2026-05-10">
+    expires_after="2026-07-12">
   <owner>hlundin@chromium.org</owner>
   <owner>webrtc-audio-uma@google.com</owner>
   <summary>
@@ -242,7 +242,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebRTC.Audio.ApmCaptureInputLevelAverageRms"
-    units="dBFS (negated)" expires_after="2026-04-12">
+    units="dBFS (negated)" expires_after="2026-06-21">
   <owner>hlundin@chromium.org</owner>
   <owner>webrtc-audio-uma@google.com</owner>
   <summary>
@@ -255,7 +255,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebRTC.Audio.ApmCaptureInputLevelPeakRms"
-    units="dBFS (negated)" expires_after="2026-04-12">
+    units="dBFS (negated)" expires_after="2026-06-21">
   <owner>hlundin@chromium.org</owner>
   <owner>webrtc-audio-uma@google.com</owner>
   <summary>
@@ -268,7 +268,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebRTC.Audio.ApmCaptureOutputLevelAverageRms"
-    units="dBFS (negated)" expires_after="2026-05-10">
+    units="dBFS (negated)" expires_after="2026-07-12">
   <owner>peah@chromium.org</owner>
   <owner>webrtc-audio-uma@google.com</owner>
   <summary>
@@ -281,7 +281,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebRTC.Audio.ApmCaptureOutputLevelPeakRms"
-    units="dBFS (negated)" expires_after="2026-05-10">
+    units="dBFS (negated)" expires_after="2026-07-12">
   <owner>peah@chromium.org</owner>
   <owner>webrtc-audio-uma@google.com</owner>
   <summary>
@@ -379,7 +379,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebRTC.Audio.EchoCanceller.CaptureSaturation" enum="Boolean"
-    expires_after="2026-04-12">
+    expires_after="2026-06-21">
   <owner>peah@chromium.org</owner>
   <owner>saza@chromium.org</owner>
   <owner>webrtc-audio-uma@google.com</owner>
@@ -652,7 +652,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebRTC.Audio.ReceiverJitterBufferDelayMs" units="ms"
-    expires_after="2026-05-11">
+    expires_after="2026-07-12">
   <owner>hlundin@chromium.org</owner>
   <owner>webrtc-audio-uma@google.com</owner>
   <summary>
@@ -721,7 +721,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebRTC.AudioInputSampleRateUnexpected" units="Hz"
-    expires_after="2026-05-11">
+    expires_after="2026-07-19">
   <owner>saza@chromium.org</owner>
   <owner>olka@chromium.org</owner>
   <owner>webrtc-audio-uma@google.com</owner>
@@ -746,7 +746,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebRTC.AudioOutputSampleRateUnexpected" units="Hz"
-    expires_after="2026-05-11">
+    expires_after="2026-07-19">
   <owner>saza@chromium.org</owner>
   <owner>olka@chromium.org</owner>
   <owner>webrtc-audio-uma@google.com</owner>
@@ -759,20 +759,20 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebRTC.BWE.InitialBandwidthEstimate" units="kbps"
-    expires_after="2026-05-24">
+    expires_after="2026-07-26">
   <owner>holmer@chromium.org</owner>
   <summary>The bandwidth estimate 2 seconds into a WebRTC call.</summary>
 </histogram>
 
 <histogram name="WebRTC.BWE.InitiallyLostPackets" units="packets"
-    expires_after="2026-04-19">
+    expires_after="2026-06-28">
   <owner>holmer@chromium.org</owner>
   <summary>
     The number of video packets lost durig the first 2 seconds in a WebRTC call.
   </summary>
 </histogram>
 
-<histogram name="WebRTC.BWE.InitialRtt" units="ms" expires_after="2026-04-12">
+<histogram name="WebRTC.BWE.InitialRtt" units="ms" expires_after="2026-06-14">
   <owner>holmer@chromium.org</owner>
   <summary>
     The round-trip time as measured 2 seconds into a WebRTC call.
@@ -780,7 +780,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebRTC.BWE.InitialVsConvergedDiff" units="kbps"
-    expires_after="2026-04-12">
+    expires_after="2026-06-14">
   <owner>holmer@chromium.org</owner>
   <summary>
     The difference between the bandwidth estimate at 2 seconds and 20 seconds
@@ -799,7 +799,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebRTC.BWE.RampUpTimeTo2000kbpsInMs" units="ms"
-    expires_after="2026-05-24">
+    expires_after="2026-07-26">
   <owner>holmer@chromium.org</owner>
   <summary>
     The time it takes the estimated bandwidth to reach 2000 kbps from the first
@@ -904,7 +904,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebRTC.Call.AudioBitrateReceivedInKbps" units="kbps"
-    expires_after="2026-04-12">
+    expires_after="2026-06-14">
   <owner>holmer@chromium.org</owner>
   <summary>
     Average audio bitrate received during a call, counted from first packet
@@ -914,7 +914,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebRTC.Call.BitrateReceivedInKbps" units="kbps"
-    expires_after="2026-05-24">
+    expires_after="2026-07-26">
   <owner>holmer@chromium.org</owner>
   <summary>
     Average total bitrate received during a call (audio + video + RTCP), counted
@@ -934,7 +934,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebRTC.Call.LifetimeInSeconds" units="seconds"
-    expires_after="2026-04-12">
+    expires_after="2026-06-21">
   <owner>asapersson@chromium.org</owner>
   <summary>
     The lifetime of a call. Recorded when a Call instance is destroyed.
@@ -952,7 +952,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebRTC.Call.RtcpBitrateReceivedInBps" units="bits/s"
-    expires_after="2026-04-12">
+    expires_after="2026-06-14">
   <owner>holmer@chromium.org</owner>
   <summary>
     Average RTCP bitrate received during a call, counted from first packet
@@ -990,7 +990,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebRTC.Call.VideoBitrateReceivedInKbps" units="kbps"
-    expires_after="2026-05-24">
+    expires_after="2026-07-26">
   <owner>holmer@chromium.org</owner>
   <summary>
     Average video bitrate received during a call, counted from first packet
@@ -1010,7 +1010,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebRTC.DataChannelCounters" enum="DataChannelCounters"
-    expires_after="2026-05-17">
+    expires_after="2026-07-19">
   <owner>orphis@chromium.org</owner>
   <owner>toprice@chromium.org</owner>
   <summary>
@@ -1148,7 +1148,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebRTC.DesktopCapture.Win.WgcCaptureSessionTimeToFirstFrame"
-    units="ms" expires_after="2026-02-05">
+    units="ms" expires_after="2027-02-05">
   <owner>alcooper@chromium.org</owner>
   <owner>ilnik@chromium.org</owner>
   <owner>gabrielbrito@microsoft.com</owner>
@@ -1162,7 +1162,7 @@ chromium-metrics-reviews@google.com.
 <histogram
     name="WebRTC.DesktopCapture.Win.WgcCaptureSessionWaitForFirstFrameResult"
     enum="WebRtcWgcCaptureSessionWaitForFirstFrameResult"
-    expires_after="2026-02-05">
+    expires_after="2027-02-05">
   <owner>alcooper@chromium.org</owner>
   <owner>ilnik@chromium.org</owner>
   <owner>gabrielbrito@microsoft.com</owner>
@@ -1187,9 +1187,10 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebRTC.DesktopCapture.Win.{Capturer}CapturerFrameTime"
-    units="ms" expires_after="2026-02-01">
+    units="ms" expires_after="2027-02-01">
   <owner>alcooper@chromium.org</owner>
   <owner>henrika@chromium.org</owner>
+  <owner>ilnik@chromium.org</owner>
   <owner>edgecapabilitiesdev@microsoft.com</owner>
   <summary>This measures the performance of the {Capturer} capturer.</summary>
   <token key="Capturer">
@@ -1245,7 +1246,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebRTC.PeerConnection.AddIceCandidate"
-    enum="AddIceCandidateResult" expires_after="2026-05-03">
+    enum="AddIceCandidateResult" expires_after="2026-07-05">
   <owner>hta@chromium.org</owner>
   <owner>webrtc-dev@chromium.org</owner>
   <summary>
@@ -1326,7 +1327,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebRTC.PeerConnection.DtlsFingerprintLegacySha1"
-    enum="Boolean" expires_after="2026-04-12">
+    enum="Boolean" expires_after="2026-06-21">
   <owner>hta@chromium.org</owner>
   <owner>webrtc-dev@chromium.org</owner>
   <owner>phancke@meta.com</owner>
@@ -1349,6 +1350,36 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="WebRTC.PeerConnection.DtlsVersion{Role}"
+    enum="WebRtcDtlsVersion" expires_after="2026-11-10">
+  <owner>guidou@chromium.org</owner>
+  <owner>hta@chromium.org</owner>
+  <owner>webrtc-dev@chromium.org</owner>
+  <summary>
+    DTLS version used by the peer when acting as a DTLS {Role}. Recorded when
+    the DTLS state changes to Connected.
+  </summary>
+  <token key="Role">
+    <variant name="ClientRole"/>
+    <variant name="ServerRole"/>
+  </token>
+</histogram>
+
+<histogram name="WebRTC.PeerConnection.Dtls{Role}ConnectionTime"
+    units="microseconds" expires_after="2026-11-10">
+  <owner>guidou@chromium.org</owner>
+  <owner>hta@chromium.org</owner>
+  <owner>webrtc-dev@chromium.org</owner>
+  <summary>
+    Time elapsed between the moment the DTLS state changes from Connecting to
+    Connected if the peer is acting as a DTLS {Role}.
+  </summary>
+  <token key="Role">
+    <variant name="ClientRole"/>
+    <variant name="ServerRole"/>
+  </token>
+</histogram>
+
 <histogram name="WebRTC.PeerConnection.Duration.Network" units="microseconds"
     expires_after="2024-09-15">
   <owner>handellm@google.com</owner>
@@ -1366,7 +1397,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebRTC.PeerConnection.Duration.Signaling" units="microseconds"
-    expires_after="2026-05-24">
+    expires_after="2026-07-26">
   <owner>handellm@google.com</owner>
   <owner>webrtc-dev@chromium.org</owner>
   <summary>
@@ -1462,7 +1493,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebRTC.PeerConnection.Latency.Signaling" units="microseconds"
-    expires_after="2026-05-24">
+    expires_after="2026-07-26">
   <owner>handellm@google.com</owner>
   <owner>webrtc-dev@chromium.org</owner>
   <summary>
@@ -1478,7 +1509,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebRTC.PeerConnection.Latency.Worker" units="microseconds"
-    expires_after="2026-05-24">
+    expires_after="2026-07-26">
   <owner>handellm@google.com</owner>
   <owner>webrtc-dev@chromium.org</owner>
   <summary>
@@ -1536,7 +1567,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebRTC.PeerConnection.RestrictedCandidates.MungeAllowed"
-    enum="Boolean" expires_after="2026-05-03">
+    enum="Boolean" expires_after="2026-07-05">
   <owner>hta@chromium.org</owner>
   <owner>webrtc-dev@chromium.org</owner>
   <owner>tov@chromium.org</owner>
@@ -1598,7 +1629,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebRTC.PeerConnection.RtpTransportCount" units="counts"
-    expires_after="2026-04-13">
+    expires_after="2026-06-21">
   <owner>hta@chromium.org</owner>
   <owner>webrtc-dev@chromium.org</owner>
   <summary>
@@ -1608,7 +1639,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebRTC.PeerConnection.SdpMunging.Outcome"
-    enum="SdpMungingOutcome" expires_after="2026-05-03">
+    enum="SdpMungingOutcome" expires_after="2026-07-05">
   <owner>hta@chromium.org</owner>
   <owner>webrtc-dev@chromium.org</owner>
   <summary>
@@ -1634,7 +1665,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebRTC.PeerConnection.SdpMunging.{DescriptionType}.{Stage}"
-    enum="SdpMungingType" expires_after="2026-05-03">
+    enum="SdpMungingType" expires_after="2026-07-05">
   <owner>hta@chromium.org</owner>
   <owner>webrtc-dev@chromium.org</owner>
   <summary>
@@ -1745,7 +1776,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebRTC.PeerConnection.ValidBundledPayloadTypes" enum="Boolean"
-    expires_after="2026-05-17">
+    expires_after="2026-07-19">
   <owner>hbos@chromium.org</owner>
   <owner>webrtc-dev@chromium.org</owner>
   <owner>phancke@microsoft.com</owner>
@@ -1760,7 +1791,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebRTC.PeerConnection.ValidIceChars" enum="Boolean"
-    expires_after="2026-04-26">
+    expires_after="2026-06-28">
   <owner>hta@chromium.org</owner>
   <owner>webrtc-dev@chromium.org</owner>
   <owner>phancke@microsoft.com</owner>
@@ -1843,6 +1874,20 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="WebRTC.Screenshare.DesktopCapturerFullScreenFindEditorUsage"
+    enum="Boolean" expires_after="2026-12-31">
+  <owner>agpalak@chromium.org</owner>
+  <owner>tovep@chromium.org</owner>
+  <owner>rtc-meet-in-chrome@google.com</owner>
+  <summary>
+    Tracks the usage of the WebRTC FullScreen Detector heuristic for finding
+    full screen window. The Fullscreen Detector is used when capturing
+    presentation applications such as PowerPoint. This boolean histogram tracks
+    if the captured window is the same as the chosen slide show window when the
+    heuristic for finding the editor is enabled.
+  </summary>
+</histogram>
+
 <histogram name="WebRTC.Screenshare.FullScreenDetectorResult"
     enum="FullScreenDetectorResult" expires_after="2026-06-16">
   <owner>agpalak@chromium.org</owner>
@@ -1852,6 +1897,20 @@ chromium-metrics-reviews@google.com.
     Detector is used when capturing presentation applications such as
     PowerPoint. This histogram records an enum that tracks if the heuristic was
     used or not to find the corresponding full screen window.
+  </summary>
+</histogram>
+
+<histogram name="WebRTC.Screenshare.FullScreenFindEditorResult"
+    enum="FullScreenFindEditorResult" expires_after="2026-12-16">
+  <owner>agpalak@chromium.org</owner>
+  <owner>tovep@chromium.org</owner>
+  <owner>rtc-meet-in-chrome@google.com</owner>
+  <summary>
+    Tracks the usage of the WebRTC FullScreen Detector heuristic for finding
+    editor window. The Fullscreen Detector is used when capturing presentation
+    applications such as PowerPoint. This histogram records an enum that tracks
+    if the heuristic was able to find the corresponding editor window when a
+    full screen slide show window was chosen.
   </summary>
 </histogram>
 
@@ -1930,14 +1989,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="WebRTC.UserMediaRequest.{RequestType}.Result"
-    enum="MediaStreamRequestResult2" expires_after="2026-11-26">
+<histogram name="WebRTC.UserMediaRequest.{RequestType}.Result2"
+    enum="MediaStreamRequestResult" expires_after="2026-11-26">
   <owner>tovep@chromium.org</owner>
   <owner>agpalak@chromium.org</owner>
   <owner>rtc-meet-in-chrome@google.com</owner>
   <summary>
     Counters for UserMediaRequests results for type {RequestType} such as
     failure reasons. The standard specification error names are in parenthesis.
+    The suffix 2 to the histogram name was added when the new enum
+    MediaStreamRequestResult was added.
   </summary>
   <token key="RequestType">
     <variant name="GetAllScreensMedia"/>
@@ -2487,7 +2548,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebRTC.Video.HarmonicFrameRate" units="fps"
-    expires_after="2026-05-17">
+    expires_after="2026-07-19">
   <owner>ssilkin@chromium.org</owner>
   <owner>webrtc-video@google.com</owner>
   <summary>
@@ -2499,7 +2560,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebRTC.Video.HwCapabilities.Decode.{Codec}" enum="Boolean"
-    expires_after="2026-01-04">
+    expires_after="2027-01-04">
   <owner>kron@chromium.org</owner>
   <owner>video-performance-team@google.com</owner>
   <summary>
@@ -2516,7 +2577,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebRTC.Video.HwCapabilities.Encode.{Codec}"
-    enum="EncodeScalabilityMode" expires_after="2026-01-04">
+    enum="EncodeScalabilityMode" expires_after="2027-01-04">
   <owner>kron@chromium.org</owner>
   <owner>video-performance-team@google.com</owner>
   <summary>
@@ -3279,7 +3340,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebRTC.Video.Screenshare.HarmonicFrameRate" units="fps"
-    expires_after="2026-05-24">
+    expires_after="2026-07-26">
   <owner>ssilkin@chromium.org</owner>
   <owner>webrtc-video@google.com</owner>
   <summary>

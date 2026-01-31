@@ -29,7 +29,6 @@
 #include "ash/quick_insert/search/quick_insert_search_source.h"
 #include "base/check.h"
 #include "base/check_deref.h"
-#include "base/containers/contains.h"
 #include "base/containers/fixed_flat_set.h"
 #include "base/containers/flat_set.h"
 #include "base/containers/span.h"
@@ -42,7 +41,6 @@
 #include "base/parameter_pack.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
-#include "base/types/cxx23_to_underlying.h"
 #include "chromeos/ash/components/emoji/gif_tenor_api_fetcher.h"
 #include "chromeos/ash/components/emoji/tenor_types.mojom.h"
 #include "components/endpoint_fetcher/endpoint_fetcher.h"
@@ -84,7 +82,7 @@ const char* SearchSourceToHistogram(QuickInsertSearchSource source) {
     case QuickInsertSearchSource::kGifs:
       return "Ash.Picker.Search.Gifs.QueryTime";
   }
-  NOTREACHED() << "Unexpected search source " << base::to_underlying(source);
+  NOTREACHED() << "Unexpected search source " << std::to_underlying(source);
 }
 
 [[nodiscard]] std::vector<QuickInsertSearchResult>
@@ -160,15 +158,18 @@ QuickInsertSearchRequest::QuickInsertSearchRequest(
   std::vector<QuickInsertSearchSource> cros_search_sources;
   cros_search_sources.reserve(3);
   if ((!category.has_value() || category == QuickInsertCategory::kLinks) &&
-      base::Contains(available_categories, QuickInsertCategory::kLinks)) {
+      std::ranges::contains(available_categories,
+                            QuickInsertCategory::kLinks)) {
     cros_search_sources.push_back(QuickInsertSearchSource::kOmnibox);
   }
   if ((!category.has_value() || category == QuickInsertCategory::kLocalFiles) &&
-      base::Contains(available_categories, QuickInsertCategory::kLocalFiles)) {
+      std::ranges::contains(available_categories,
+                            QuickInsertCategory::kLocalFiles)) {
     cros_search_sources.push_back(QuickInsertSearchSource::kLocalFile);
   }
   if ((!category.has_value() || category == QuickInsertCategory::kDriveFiles) &&
-      base::Contains(available_categories, QuickInsertCategory::kDriveFiles)) {
+      std::ranges::contains(available_categories,
+                            QuickInsertCategory::kDriveFiles)) {
     cros_search_sources.push_back(QuickInsertSearchSource::kDrive);
   }
 
@@ -183,7 +184,8 @@ QuickInsertSearchRequest::QuickInsertSearchRequest(
   }
 
   if ((!category.has_value() || category == QuickInsertCategory::kClipboard) &&
-      base::Contains(available_categories, QuickInsertCategory::kClipboard)) {
+      std::ranges::contains(available_categories,
+                            QuickInsertCategory::kClipboard)) {
     clipboard_provider_ =
         std::make_unique<QuickInsertClipboardHistoryProvider>();
     MarkSearchStarted(QuickInsertSearchSource::kClipboard);
@@ -194,14 +196,16 @@ QuickInsertSearchRequest::QuickInsertSearchRequest(
   }
 
   if ((!category.has_value() || category == QuickInsertCategory::kDatesTimes) &&
-      base::Contains(available_categories, QuickInsertCategory::kDatesTimes)) {
+      std::ranges::contains(available_categories,
+                            QuickInsertCategory::kDatesTimes)) {
     MarkSearchStarted(QuickInsertSearchSource::kDate);
     // Date results is currently synchronous.
     HandleDateSearchResults(QuickInsertDateSearch(base::Time::Now(), query));
   }
 
   if ((!category.has_value() || category == QuickInsertCategory::kUnitsMaths) &&
-      base::Contains(available_categories, QuickInsertCategory::kUnitsMaths)) {
+      std::ranges::contains(available_categories,
+                            QuickInsertCategory::kUnitsMaths)) {
     MarkSearchStarted(QuickInsertSearchSource::kMath);
     // Math results is currently synchronous.
     HandleMathSearchResults(QuickInsertMathSearch(query));
@@ -222,8 +226,8 @@ QuickInsertSearchRequest::QuickInsertSearchRequest(
         QuickInsertActionSearch(available_categories, caps_lock_state_to_search,
                                 search_case_transforms, query));
 
-    if (base::Contains(available_categories,
-                       QuickInsertCategory::kEditorWrite)) {
+    if (std::ranges::contains(available_categories,
+                              QuickInsertCategory::kEditorWrite)) {
       // Editor results are currently synchronous.
       MarkSearchStarted(QuickInsertSearchSource::kEditorWrite);
       HandleEditorSearchResults(
@@ -232,8 +236,8 @@ QuickInsertSearchRequest::QuickInsertSearchRequest(
                                   query));
     }
 
-    if (base::Contains(available_categories,
-                       QuickInsertCategory::kEditorRewrite)) {
+    if (std::ranges::contains(available_categories,
+                              QuickInsertCategory::kEditorRewrite)) {
       // Editor results are currently synchronous.
       MarkSearchStarted(QuickInsertSearchSource::kEditorRewrite);
       HandleEditorSearchResults(
@@ -242,8 +246,9 @@ QuickInsertSearchRequest::QuickInsertSearchRequest(
                                   query));
     }
 
-    if (base::Contains(available_categories,
-                       QuickInsertCategory::kLobsterWithNoSelectedText)) {
+    if (std::ranges::contains(
+            available_categories,
+            QuickInsertCategory::kLobsterWithNoSelectedText)) {
       // Lobster results are currently synchronous.
       MarkSearchStarted(QuickInsertSearchSource::kLobsterWithNoSelectedText);
       HandleLobsterSearchResults(
@@ -252,8 +257,8 @@ QuickInsertSearchRequest::QuickInsertSearchRequest(
                                    query));
     }
 
-    if (base::Contains(available_categories,
-                       QuickInsertCategory::kLobsterWithSelectedText)) {
+    if (std::ranges::contains(available_categories,
+                              QuickInsertCategory::kLobsterWithSelectedText)) {
       // Lobster results are currently synchronous.
       MarkSearchStarted(QuickInsertSearchSource::kLobsterWithSelectedText);
       HandleLobsterSearchResults(
@@ -413,14 +418,14 @@ void QuickInsertSearchRequest::HandleLobsterSearchResults(
 void QuickInsertSearchRequest::MarkSearchStarted(
     QuickInsertSearchSource source) {
   CHECK(!SwapSearchStart(source, base::TimeTicks::Now()).has_value())
-      << "search_starts_ enum " << base::to_underlying(source)
+      << "search_starts_ enum " << std::to_underlying(source)
       << " was already set";
 }
 
 void QuickInsertSearchRequest::MarkSearchEnded(QuickInsertSearchSource source) {
   std::optional<base::TimeTicks> start = SwapSearchStart(source, std::nullopt);
   CHECK(start.has_value()) << "search_starts_ enum "
-                           << base::to_underlying(source) << " was not set";
+                           << std::to_underlying(source) << " was not set";
 
   base::TimeDelta elapsed = base::TimeTicks::Now() - *start;
   base::UmaHistogramTimes(SearchSourceToHistogram(source), elapsed);
@@ -429,7 +434,7 @@ void QuickInsertSearchRequest::MarkSearchEnded(QuickInsertSearchSource source) {
 std::optional<base::TimeTicks> QuickInsertSearchRequest::SwapSearchStart(
     QuickInsertSearchSource source,
     std::optional<base::TimeTicks> new_value) {
-  return std::exchange(search_starts_[base::to_underlying(source)],
+  return std::exchange(search_starts_[std::to_underlying(source)],
                        std::move(new_value));
 }
 

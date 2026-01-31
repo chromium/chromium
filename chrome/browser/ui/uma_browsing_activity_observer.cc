@@ -111,8 +111,8 @@ void UMABrowsingActivityObserver::LogBrowserTabCount() const {
                                     tab_strip_model->count(), 1, 200, 50);
         tab_count += tab_strip_model->count();
 
-        for (int i = 0; i < tab_strip_model->count(); ++i) {
-          if (tab_strip_model->IsTabPinned(i)) {
+        for (const tabs::TabInterface* tab : *tab_strip_model) {
+          if (tab->IsPinned()) {
             pinned_tab_count++;
           }
         }

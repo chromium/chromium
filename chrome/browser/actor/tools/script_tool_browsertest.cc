@@ -3,6 +3,8 @@
 // found in the LICENSE file.
 
 #include "base/test/test_future.h"
+#include "base/test/values_test_util.h"
+#include "base/values.h"
 #include "chrome/browser/actor/actor_task.h"
 #include "chrome/browser/actor/actor_test_util.h"
 #include "chrome/browser/actor/tools/script_tool_request.h"
@@ -52,8 +54,11 @@ IN_PROC_BROWSER_TEST_F(ActorToolsTestScriptTool, Basic) {
   const auto& action_results = result.Get<2>();
   ASSERT_EQ(action_results.size(), 1u);
   ASSERT_TRUE(action_results.at(0).result->script_tool_response);
-  EXPECT_EQ(*action_results.at(0).result->script_tool_response,
+  EXPECT_EQ(action_results.at(0).result->script_tool_response->result,
             "This is an example sentence.");
+  EXPECT_EQ(action_results.at(0).result->script_tool_response->name, "echo");
+  EXPECT_EQ(action_results.at(0).result->script_tool_response->input_arguments,
+            input_arguments);
 }
 
 IN_PROC_BROWSER_TEST_F(ActorToolsTestScriptTool, BadToolName) {
@@ -68,7 +73,7 @@ IN_PROC_BROWSER_TEST_F(ActorToolsTestScriptTool, BadToolName) {
       MakeScriptToolRequest(*main_frame(), "invalid", input_arguments);
   ActResultFuture result;
   actor_task().Act(ToRequestList(action), result.GetCallback());
-  ExpectErrorResult(result, mojom::ActionResultCode::kScriptToolNoResponse);
+  ExpectErrorResult(result, mojom::ActionResultCode::kScriptToolInvalidName);
 }
 
 IN_PROC_BROWSER_TEST_F(ActorToolsTestScriptTool, ProvideContext) {
@@ -88,8 +93,13 @@ IN_PROC_BROWSER_TEST_F(ActorToolsTestScriptTool, ProvideContext) {
   const auto& echo_action_results = echo_result.Get<2>();
   ASSERT_EQ(echo_action_results.size(), 1u);
   ASSERT_TRUE(echo_action_results.at(0).result->script_tool_response);
-  EXPECT_EQ(*echo_action_results.at(0).result->script_tool_response,
+  EXPECT_EQ(echo_action_results.at(0).result->script_tool_response->result,
             "Hello World");
+  EXPECT_EQ(echo_action_results.at(0).result->script_tool_response->name,
+            "echo");
+  EXPECT_EQ(
+      echo_action_results.at(0).result->script_tool_response->input_arguments,
+      echo_input);
 
   const std::string reverse_input =
       R"JSON(
@@ -104,8 +114,13 @@ IN_PROC_BROWSER_TEST_F(ActorToolsTestScriptTool, ProvideContext) {
   const auto& reverse_action_results = reverse_result.Get<2>();
   ASSERT_EQ(reverse_action_results.size(), 1u);
   ASSERT_TRUE(reverse_action_results.at(0).result->script_tool_response);
-  EXPECT_EQ(*reverse_action_results.at(0).result->script_tool_response,
+  EXPECT_EQ(reverse_action_results.at(0).result->script_tool_response->result,
             "321cba");
+  EXPECT_EQ(reverse_action_results.at(0).result->script_tool_response->name,
+            "reverse");
+  EXPECT_EQ(reverse_action_results.at(0)
+                .result->script_tool_response->input_arguments,
+            reverse_input);
 }
 
 IN_PROC_BROWSER_TEST_F(ActorToolsTestScriptTool, ClearContext) {
@@ -131,7 +146,102 @@ IN_PROC_BROWSER_TEST_F(ActorToolsTestScriptTool, ClearContext) {
   actor_task().Act(ToRequestList(echo_action_after_clear),
                    echo_result_after_clear.GetCallback());
   ExpectErrorResult(echo_result_after_clear,
-                    mojom::ActionResultCode::kScriptToolNoResponse);
+                    mojom::ActionResultCode::kScriptToolInvalidName);
+}
+
+IN_PROC_BROWSER_TEST_F(ActorToolsTestScriptTool, DeclarativeTool) {
+  const GURL url =
+      embedded_test_server()->GetURL("/actor/declarative_script_tool.html");
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
+
+  const std::string declarative_input =
+      R"JSON(
+        {
+          "text": "text #1",
+          "text2": "text #2",
+          "select": "Option 2"
+        }
+      )JSON";
+  auto action = MakeScriptToolRequest(*main_frame(), "declarative_tool",
+                                      declarative_input);
+  ActResultFuture result;
+  actor_task().Act(ToRequestList(action), result.GetCallback());
+  ExpectOkResult(result);
+
+  const auto& action_results = result.Get<2>();
+  ASSERT_EQ(action_results.size(), 1u);
+  ASSERT_TRUE(action_results.at(0).result->script_tool_response);
+  EXPECT_EQ(action_results.at(0).result->script_tool_response->name,
+            "declarative_tool");
+  EXPECT_EQ(action_results.at(0).result->script_tool_response->input_arguments,
+            declarative_input);
+}
+
+IN_PROC_BROWSER_TEST_F(ActorToolsTestScriptTool, NavigateAfterResponse) {
+  const GURL url = embedded_test_server()->GetURL(
+      "/actor/script_tool_navigate_after_response.html");
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
+
+  const std::string input_arguments =
+      R"JSON(
+      { "text": "This is an example sentence." }
+    )JSON";
+  auto action = MakeScriptToolRequest(*main_frame(), "echo", input_arguments);
+  ActResultFuture result;
+  actor_task().Act(ToRequestList(action), result.GetCallback());
+
+  ExpectOkResult(result);
+
+  const auto& action_results = result.Get<2>();
+  ASSERT_EQ(action_results.size(), 1u);
+  ASSERT_TRUE(action_results.at(0).result->script_tool_response);
+  EXPECT_EQ(action_results.at(0).result->script_tool_response->result,
+            "This is an example sentence.");
+}
+
+IN_PROC_BROWSER_TEST_F(ActorToolsTestScriptTool, DeclarativeToolCrossDocument) {
+  const GURL url = embedded_test_server()->GetURL(
+      "/actor/declarative_script_tool_cross_document.html");
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
+
+  const std::string declarative_input =
+      R"JSON(
+        {
+          "echo": "hello world"
+        }
+      )JSON";
+  auto action = MakeScriptToolRequest(*main_frame(), "declarative_tool",
+                                      declarative_input);
+  ActResultFuture result;
+  actor_task().Act(ToRequestList(action), result.GetCallback());
+  ExpectOkResult(result);
+
+  const auto& action_results = result.Get<2>();
+  ASSERT_EQ(action_results.size(), 1u);
+  ASSERT_TRUE(action_results.at(0).result->script_tool_response);
+  EXPECT_EQ(action_results.at(0).result->script_tool_response->name,
+            "declarative_tool");
+  EXPECT_EQ(action_results.at(0).result->script_tool_response->input_arguments,
+            declarative_input);
+
+  base::Value actual_json = base::test::ParseJson(
+      *action_results.at(0).result->script_tool_response->result);
+  base::Value expected_json = base::test::ParseJson(R"JSON(
+  [
+    {
+      "@context": "https://schema.org",
+      "@type": "Message",
+      "text": "echoed value"
+    },
+    {
+      "@context": "https://schema.org",
+      "@type": "Message",
+      "text": "extra stuff"
+    }
+  ]
+)JSON");
+
+  EXPECT_EQ(actual_json, expected_json);
 }
 
 }  // namespace

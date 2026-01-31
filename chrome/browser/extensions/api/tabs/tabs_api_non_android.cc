@@ -15,7 +15,6 @@
 
 #include "base/check_op.h"
 #include "base/command_line.h"
-#include "base/containers/contains.h"
 #include "base/containers/flat_set.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
@@ -43,8 +42,10 @@
 #include "chrome/browser/extensions/api/tabs/tabs_constants.h"
 #include "chrome/browser/extensions/api/tabs/windows_util.h"
 #include "chrome/browser/extensions/browser_extension_window_controller.h"
+#include "chrome/browser/extensions/browser_window_util.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/extension_tab_util.h"
+#include "chrome/browser/extensions/open_tab_helper.h"
 #include "chrome/browser/extensions/tab_helper.h"
 #include "chrome/browser/extensions/window_controller.h"
 #include "chrome/browser/extensions/window_controller_list.h"
@@ -62,12 +63,10 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/browser/ui/browser_window/public/create_browser_window.h"
-#include "chrome/browser/ui/incognito_allowed_url.h"
 #include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
 #include "chrome/browser/ui/tabs/tab_list_interface.h"
 #include "chrome/browser/ui/tabs/tab_model.h"
-#include "chrome/browser/ui/tabs/tab_muted_utils.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_user_gesture_details.h"
 #include "chrome/browser/ui/tabs/tab_utils.h"
@@ -83,15 +82,16 @@
 #include "chrome/common/extensions/api/windows.h"
 #include "chrome/common/extensions/extension_constants.h"
 #include "chrome/common/pref_names.h"
+#include "chrome/common/webui_url_constants.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_service.h"
 #include "components/safe_browsing/buildflags.h"
 #include "components/sessions/content/session_tab_helper.h"
+#include "components/split_tabs/split_tab_id.h"
 #include "components/tab_groups/tab_group_color.h"
 #include "components/tab_groups/tab_group_id.h"
 #include "components/tab_groups/tab_group_visual_data.h"
 #include "components/tabs/public/split_tab_data.h"
-#include "components/tabs/public/split_tab_id.h"
 #include "components/tabs/public/tab_group.h"
 #include "components/tabs/public/tab_interface.h"
 #include "components/webapps/common/web_app_id.h"
@@ -115,6 +115,7 @@
 #include "extensions/common/extension.h"
 #include "extensions/common/manifest_constants.h"
 #include "extensions/common/manifest_handlers/default_locale_handler.h"
+#include "extensions/common/manifest_handlers/incognito_info.h"
 #include "extensions/common/message_bundle.h"
 #include "extensions/common/mojom/context_type.mojom.h"
 #include "extensions/common/mojom/host_id.mojom.h"
@@ -158,50 +159,10 @@ namespace {
 constexpr char kTabIndexNotFoundError[] = "No tab at index: *.";
 constexpr char kCannotFindTabToDiscard[] = "Cannot find a tab to discard.";
 constexpr char kNoHighlightedTabError[] = "No highlighted tab";
-constexpr char kCannotUpdateMuteCaptured[] =
-    "Cannot update mute state for tab *, tab has audio or video currently "
-    "being captured";
 
 }  // namespace
 
 // Tabs ------------------------------------------------------------------------
-
-ExtensionFunction::ResponseAction TabsCreateFunction::Run() {
-  std::optional<tabs::Create::Params> params =
-      tabs::Create::Params::Create(args());
-  EXTENSION_FUNCTION_VALIDATE(params);
-  return RespondNow([&] {
-    if (!ExtensionTabUtil::IsTabStripEditable()) {
-      return Error(ExtensionTabUtil::kTabStripNotEditableError);
-    }
-
-    ExtensionTabUtil::OpenTabParams options;
-    options.window_id = params->create_properties.window_id;
-    options.opener_tab_id = params->create_properties.opener_tab_id;
-    options.active = params->create_properties.selected;
-    // The 'active' property has replaced the 'selected' property.
-    options.active = params->create_properties.active;
-    options.pinned = params->create_properties.pinned;
-    options.index = params->create_properties.index;
-    options.url = params->create_properties.url;
-
-    auto result = ExtensionTabUtil::OpenTab(this, options, user_gesture());
-    if (!result.has_value()) {
-      return Error(result.error());
-    }
-
-#if BUILDFLAG(FULL_SAFE_BROWSING)
-    tabs_internal::NotifyExtensionTelemetry(
-        Profile::FromBrowserContext(browser_context()), extension(),
-        safe_browsing::TabsApiInfo::CREATE,
-        /*current_url=*/std::string(), options.url.value_or(std::string()),
-        js_callstack());
-#endif
-
-    // Return data about the newly created tab.
-    return has_callback() ? WithArguments(std::move(*result)) : NoArguments();
-  }());
-}
 
 ExtensionFunction::ResponseAction TabsHighlightFunction::Run() {
   std::optional<tabs::Highlight::Params> params =
@@ -292,356 +253,6 @@ bool TabsHighlightFunction::HighlightTab(TabStripModel* tabstrip,
 
   selection->AddIndexToSelection(index);
   return true;
-}
-
-TabsUpdateFunction::TabsUpdateFunction() = default;
-
-ExtensionFunction::ResponseAction TabsUpdateFunction::Run() {
-  std::optional<tabs::Update::Params> params =
-      tabs::Update::Params::Create(args());
-  EXTENSION_FUNCTION_VALIDATE(params);
-
-  std::string error;
-  int tab_id = -1;
-  WebContents* contents = nullptr;
-  if (!params->tab_id) {
-    // Attempt to look up the current tab in the current window.
-    if (!ComputeDefaultTabId(tab_id, contents, error)) {
-      return RespondNow(Error(std::move(error)));
-    }
-  } else {
-    tab_id = *params->tab_id;
-  }
-
-  int tab_index = -1;
-  WindowController* window = nullptr;
-  if (!tabs_internal::GetTabById(tab_id, browser_context(),
-                                 include_incognito_information(), &window,
-                                 &contents, &tab_index, &error)) {
-    return RespondNow(Error(std::move(error)));
-  }
-
-  if (DevToolsWindow::IsDevToolsWindow(contents)) {
-    return RespondNow(Error(tabs_constants::kNotAllowedForDevToolsError));
-  }
-
-  // tabs_internal::GetTabById may return a null window for prerender tabs.
-  if (!window || !window->SupportsTabs()) {
-    return RespondNow(Error(ExtensionTabUtil::kNoCurrentWindowError));
-  }
-  Browser* browser = window->GetBrowser();
-  TabStripModel* tab_strip = browser->tab_strip_model();
-
-  // Cache the original web contents.
-  content::WebContents* original_contents = contents;
-
-  // Update the active (aka selected) tab.
-  if (!UpdateActiveTab(*params, tab_strip, tab_index, contents, error)) {
-    return RespondNow(Error(std::move(error)));
-  }
-
-  // Update the highlighted tab.
-  if (!UpdateHighlightedTab(*params, tab_strip, tab_index, error)) {
-    return RespondNow(Error(std::move(error)));
-  }
-
-  if (params->update_properties.muted &&
-      !SetTabAudioMuted(contents, *params->update_properties.muted,
-                        TabMutedReason::kExtension, extension()->id())) {
-    return RespondNow(Error(ErrorUtils::FormatErrorMessage(
-        kCannotUpdateMuteCaptured, base::NumberToString(tab_id))));
-  }
-
-  if (params->update_properties.opener_tab_id) {
-    int opener_id = *params->update_properties.opener_tab_id;
-    WebContents* opener_contents = nullptr;
-    if (opener_id == tab_id) {
-      return RespondNow(Error("Cannot set a tab's opener to itself."));
-    }
-    if (!ExtensionTabUtil::GetTabById(opener_id, browser_context(),
-                                      include_incognito_information(),
-                                      &opener_contents)) {
-      return RespondNow(Error(
-          ErrorUtils::FormatErrorMessage(ExtensionTabUtil::kTabNotFoundError,
-                                         base::NumberToString(opener_id))));
-    }
-
-    // Bug fix for crbug.com/1197888. Don't let the extension update the tab
-    // if the user is dragging tabs.
-    if (!ExtensionTabUtil::IsTabStripEditable()) {
-      return RespondNow(Error(ExtensionTabUtil::kTabStripNotEditableError));
-    }
-
-    if (tab_strip->GetIndexOfWebContents(opener_contents) ==
-        TabStripModel::kNoTab) {
-      return RespondNow(
-          Error("Tab opener must be in the same window as the updated tab."));
-    }
-    tab_strip->SetOpenerOfWebContentsAt(tab_index, opener_contents);
-  }
-
-  if (params->update_properties.auto_discardable) {
-    bool state = *params->update_properties.auto_discardable;
-    resource_coordinator::TabLifecycleUnitExternal::FromWebContents(
-        original_contents)
-        ->SetAutoDiscardable(state);
-  }
-
-  if (params->update_properties.pinned) {
-    // Bug fix for crbug.com/1197888. Don't let the extension update the tab if
-    // the user is dragging tabs.
-    if (!ExtensionTabUtil::IsTabStripEditable()) {
-      return RespondNow(Error(ExtensionTabUtil::kTabStripNotEditableError));
-    }
-
-    bool pinned = *params->update_properties.pinned;
-    tab_strip->SetTabPinned(tab_index, pinned);
-
-    // Update the tab index because it may move when being pinned.
-    tab_index = tab_strip->GetIndexOfWebContents(contents);
-  }
-
-  // TODO(rafaelw): handle setting remaining tab properties:
-  // -title
-  // -favIconUrl
-
-  // Navigate the tab to a new location if the url is different.
-  if (params->update_properties.url) {
-    std::string updated_url = *params->update_properties.url;
-    if (browser->profile()->IsIncognitoProfile() &&
-        !IsURLAllowedInIncognito(GURL(updated_url))) {
-      return RespondNow(Error(ErrorUtils::FormatErrorMessage(
-          tabs_constants::kURLsNotAllowedInIncognitoError, updated_url)));
-    }
-
-    // Get last committed or pending URL.
-    std::string current_url = contents->GetVisibleURL().is_valid()
-                                  ? contents->GetVisibleURL().spec()
-                                  : std::string();
-
-    // See tabs_api.cc for the implementation of UpdateURL().
-    if (!UpdateURL(original_contents, updated_url, tab_id, &error)) {
-      return RespondNow(Error(std::move(error)));
-    }
-
-#if BUILDFLAG(FULL_SAFE_BROWSING)
-    tabs_internal::NotifyExtensionTelemetry(
-        Profile::FromBrowserContext(browser_context()), extension(),
-        safe_browsing::TabsApiInfo::UPDATE, current_url, updated_url,
-        js_callstack());
-#endif
-  }
-
-  // See tabs_api.cc for the implementation of GetResult().
-  return RespondNow(GetResult(original_contents));
-}
-
-bool TabsUpdateFunction::ComputeDefaultTabId(int& tab_id,
-                                             content::WebContents*& contents,
-                                             std::string& error) {
-  const auto* window_controller =
-      ChromeExtensionFunctionDetails(this).GetCurrentWindowController();
-  if (!window_controller) {
-    error = ExtensionTabUtil::kNoCurrentWindowError;
-    return false;
-  }
-  if (!ExtensionTabUtil::IsTabStripEditable()) {
-    error = ExtensionTabUtil::kTabStripNotEditableError;
-    return false;
-  }
-  contents = window_controller->GetActiveTab();
-  if (!contents) {
-    error = tabs_constants::kNoSelectedTabError;
-    return false;
-  }
-  tab_id = ExtensionTabUtil::GetTabId(contents);
-  return true;
-}
-
-bool TabsUpdateFunction::UpdateActiveTab(
-    const api::tabs::Update::Params& params,
-    TabStripModel* tab_strip,
-    int tab_index,
-    const content::WebContents* contents,
-    std::string& error) {
-  bool active = false;
-  // TODO(rafaelw): Setting |active| from js doesn't make much sense.
-  // Move tab selection management up to window.
-  if (params.update_properties.selected) {
-    active = *params.update_properties.selected;
-  }
-
-  // The 'active' property has replaced 'selected'.
-  if (params.update_properties.active) {
-    active = *params.update_properties.active;
-  }
-
-  if (!active) {
-    // Nothing to activate.
-    return true;
-  }
-
-  // Bug fix for crbug.com/1197888. Don't let the extension update the tab
-  // if the user is dragging tabs.
-  if (!ExtensionTabUtil::IsTabStripEditable()) {
-    error = ExtensionTabUtil::kTabStripNotEditableError;
-    return false;
-  }
-
-  if (tab_strip->active_index() != tab_index) {
-    tab_strip->ActivateTabAt(tab_index);
-    DCHECK_EQ(contents, tab_strip->GetActiveWebContents());
-  }
-  return true;
-}
-
-bool TabsUpdateFunction::UpdateHighlightedTab(
-    const api::tabs::Update::Params& params,
-    TabStripModel* tab_strip,
-    int tab_index,
-    std::string& error) {
-  if (!params.update_properties.highlighted.has_value()) {
-    // Nothing to highlight.
-    return true;
-  }
-
-  // Bug fix for crbug.com/1197888. Don't let the extension update the tab
-  // if the user is dragging tabs.
-  if (!ExtensionTabUtil::IsTabStripEditable()) {
-    error = ExtensionTabUtil::kTabStripNotEditableError;
-    return false;
-  }
-
-  if (params.update_properties.highlighted.value()) {
-    tab_strip->SelectTabAt(tab_index);
-  } else {
-    tab_strip->DeselectTabAt(tab_index);
-  }
-  return true;
-}
-
-ExtensionFunction::ResponseAction TabsGroupFunction::Run() {
-  std::optional<tabs::Group::Params> params =
-      tabs::Group::Params::Create(args());
-  EXTENSION_FUNCTION_VALIDATE(params);
-
-  std::string error;
-
-  // Get the target browser from the parameters.
-  int group_id = -1;
-  WindowController* target_window = nullptr;
-  tab_groups::TabGroupId group = tab_groups::TabGroupId::CreateEmpty();
-  if (params->options.group_id) {
-    if (params->options.create_properties) {
-      return RespondNow(Error(tabs_constants::kGroupParamsError));
-    }
-
-    group_id = *params->options.group_id;
-    if (!ExtensionTabUtil::GetGroupById(
-            group_id, browser_context(), include_incognito_information(),
-            &target_window, &group, nullptr, &error)) {
-      return RespondNow(Error(std::move(error)));
-    }
-  } else {
-    int window_id = extension_misc::kCurrentWindowId;
-    if (params->options.create_properties &&
-        params->options.create_properties->window_id) {
-      window_id = *params->options.create_properties->window_id;
-    }
-    target_window = ExtensionTabUtil::GetControllerFromWindowID(
-        ChromeExtensionFunctionDetails(this), window_id, &error);
-    if (!target_window) {
-      return RespondNow(Error(std::move(error)));
-    }
-  }
-
-  DCHECK(target_window);
-  if (!target_window->HasEditableTabStrip()) {
-    return RespondNow(Error(ExtensionTabUtil::kTabStripNotEditableError));
-  }
-
-  // Get all tab IDs from parameters.
-  std::vector<int> tab_ids;
-  if (params->options.tab_ids.as_integers) {
-    tab_ids = *params->options.tab_ids.as_integers;
-    EXTENSION_FUNCTION_VALIDATE(!tab_ids.empty());
-  } else {
-    EXTENSION_FUNCTION_VALIDATE(params->options.tab_ids.as_integer);
-    tab_ids.push_back(*params->options.tab_ids.as_integer);
-  }
-
-  // Get each tab's current window. All tabs will need to be moved into the
-  // target window before grouping.
-  std::vector<WindowController*> tab_windows;
-  tab_windows.reserve(tab_ids.size());
-  for (int tab_id : tab_ids) {
-    WindowController* tab_window = nullptr;
-    content::WebContents* web_contents = nullptr;
-    if (!tabs_internal::GetTabById(tab_id, browser_context(),
-                                   include_incognito_information(), &tab_window,
-                                   &web_contents, nullptr, &error)) {
-      return RespondNow(Error(std::move(error)));
-    }
-    if (tab_window) {
-      tab_windows.push_back(tab_window);
-    }
-
-    if (DevToolsWindow::IsDevToolsWindow(web_contents)) {
-      return RespondNow(Error(tabs_constants::kNotAllowedForDevToolsError));
-    }
-  }
-
-  // Move all tabs to the target browser, appending to the end each time. Only
-  // tabs that are not already in the target browser are moved.
-  for (size_t i = 0; i < tab_ids.size(); ++i) {
-    if (tab_windows[i] != target_window) {
-      if (tabs_internal::MoveTabToWindow(
-              this, tab_ids[i], target_window->GetBrowser(), -1, &error) < 0) {
-        return RespondNow(Error(std::move(error)));
-      }
-    }
-  }
-
-  // Get the resulting tab indices in the target browser. We recalculate these
-  // after all tabs are moved so that any callbacks are resolved and the indices
-  // are final.
-  std::vector<int> tab_indices;
-  tab_indices.reserve(tab_ids.size());
-  for (int tab_id : tab_ids) {
-    int tab_index = -1;
-    if (!tabs_internal::GetTabById(
-            tab_id, browser_context(), include_incognito_information(),
-            /*window_out=*/nullptr, /*contents_out=*/nullptr, &tab_index,
-            &error)) {
-      return RespondNow(Error(std::move(error)));
-    }
-    tab_indices.push_back(tab_index);
-  }
-  // Sort and dedupe these indices for processing in the tabstrip.
-  std::sort(tab_indices.begin(), tab_indices.end());
-  tab_indices.erase(std::unique(tab_indices.begin(), tab_indices.end()),
-                    tab_indices.end());
-
-  // Get the remaining group metadata and add the tabs to the group.
-  // At this point, we assume this is a valid action due to the checks above.
-  if (!ExtensionTabUtil::IsTabStripEditable()) {
-    return RespondNow(Error(ExtensionTabUtil::kTabStripNotEditableError));
-  }
-  TabStripModel* tab_strip = target_window->GetBrowser()->tab_strip_model();
-  if (!tab_strip->SupportsTabGroups()) {
-    return RespondNow(
-        Error(ExtensionTabUtil::kTabStripDoesNotSupportTabGroupsError));
-  }
-  if (group.is_empty()) {
-    group = tab_strip->AddToNewGroup(tab_indices);
-    group_id = ExtensionTabUtil::GetGroupId(group);
-  } else {
-    tab_strip->AddToExistingGroup(tab_indices, group);
-  }
-
-  DCHECK_GT(group_id, 0);
-
-  return RespondNow(WithArguments(group_id));
 }
 
 ExtensionFunction::ResponseAction TabsUngroupFunction::Run() {

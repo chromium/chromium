@@ -20,7 +20,7 @@ class CORE_EXPORT TextFragmentSelector final {
   // serialized argument is of the form: "prefix-,start,end,-suffix", where
   // prefix, end, and suffix are optional. If end is specified, the selector is
   // a range; otherwise, it is an exact match.
-  static TextFragmentSelector FromTextDirective(const String& directive);
+  static TextFragmentSelector FromTextDirective(const StringView& directive);
 
   enum SelectorType {
     // An invalid text selector.

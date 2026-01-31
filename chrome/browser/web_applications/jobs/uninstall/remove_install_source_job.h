@@ -28,7 +28,7 @@ class RemoveInstallSourceJob : public UninstallJob {
  public:
   RemoveInstallSourceJob(webapps::WebappUninstallSource uninstall_source,
                          Profile& profile,
-                         base::Value::Dict& debug_value,
+                         base::DictValue& debug_value,
                          webapps::AppId app_id,
                          WebAppManagementTypes install_managements_to_remove);
   ~RemoveInstallSourceJob() override;
@@ -46,7 +46,7 @@ class RemoveInstallSourceJob : public UninstallJob {
   const webapps::WebappUninstallSource uninstall_source_;
   // `this` must be owned by `profile_`.
   const raw_ref<Profile> profile_;
-  const raw_ref<base::Value::Dict> debug_value_;
+  const raw_ref<base::DictValue> debug_value_;
   const webapps::AppId app_id_;
   const WebAppManagementTypes install_managements_to_remove_;
 

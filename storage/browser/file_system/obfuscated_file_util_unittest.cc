@@ -17,6 +17,7 @@
 #include <vector>
 
 #include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/files/file.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -513,7 +514,8 @@ class ObfuscatedFileUtilTest : public testing::Test,
               base::MakeRefCounted<net::StringIOBuffer>(data).get(), length));
     } else {
       ASSERT_TRUE(file.IsValid());
-      UNSAFE_TODO(ASSERT_EQ(length, file.Write(0, data, length)));
+      ASSERT_TRUE(file.WriteAndCheck(
+          0, base::as_byte_span(data).first(static_cast<size_t>(length))));
       file.Close();
     }
 

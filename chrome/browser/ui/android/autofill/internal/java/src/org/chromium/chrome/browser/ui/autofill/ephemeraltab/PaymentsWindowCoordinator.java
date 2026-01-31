@@ -6,7 +6,7 @@ package org.chromium.chrome.browser.ui.autofill.ephemeraltab;
 
 import static org.chromium.build.NullUtil.assumeNonNull;
 
-import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.ephemeraltab.EphemeralTabCoordinator;
@@ -48,7 +48,7 @@ class PaymentsWindowCoordinator implements EphemeralTabObserver {
         assert merchantWebContents != null;
         WindowAndroid windowAndroid = merchantWebContents.getTopLevelNativeWindow();
         if (windowAndroid == null) return;
-        ObservableSupplier<EphemeralTabCoordinator> supplier =
+        MonotonicObservableSupplier<EphemeralTabCoordinator> supplier =
                 EphemeralTabCoordinatorSupplier.from(windowAndroid);
         if (supplier == null) return;
         mEphemeralTabCoordinator = supplier.get();

@@ -1,0 +1,6 @@
+include_rules = [
+  # keep-sorted start
+  "+ios/chrome/browser/default_browser/model/utils.h",
+  "+ios/chrome/browser/promos_manager/model",
+  # keep-sorted end
+]

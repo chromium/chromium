@@ -106,6 +106,7 @@ extern crate alloc;
 extern crate std;
 
 mod arbitrary;
+mod inner;
 #[macro_use]
 mod macros;
 #[cfg(feature = "borsh")]

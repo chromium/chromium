@@ -11,12 +11,6 @@
 
 namespace features {
 
-#if BUILDFLAG(IS_WIN)
-// Enables application audio capture for getDisplayMedia (gDM) window capture in
-// Windows.
-BASE_FEATURE(kApplicationAudioCaptureWin, base::FEATURE_DISABLED_BY_DEFAULT);
-#endif
-
 #if BUILDFLAG(IS_ANDROID)
 // Enables loading and using AAudio instead of OpenSLES on compatible devices,
 // for audio output streams. This feature is disabled on ATV HDMI dongle devices
@@ -45,7 +39,9 @@ BASE_FEATURE(kAlwaysUseAudioManagerOutputFramesPerBuffer,
 
 // Enables the AudioDeviceListener, which listens for changes to the list of
 // audio devices exposed by the OS.
-BASE_FEATURE(kAndroidAudioDeviceListener, base::FEATURE_DISABLED_BY_DEFAULT);
+//
+// TODO(crbug.com/468998638): Remove after successful launch.
+BASE_FEATURE(kAndroidAudioDeviceListener, base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Use stereo channel layout for input stream parameters.
 // TODO(crbug.com/440210010): Remove when the experiment is done.
@@ -82,26 +78,7 @@ BASE_FEATURE(kMacAVFoundationPlayback, base::FEATURE_DISABLED_BY_DEFAULT);
 // will report an error if the sample rate is changed.
 BASE_FEATURE(kMacCatapRestartOnDeviceChange, base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Enables application audio capture for getDisplayMedia (gDM) window capture in
-// macOS.
-BASE_FEATURE(kApplicationAudioCaptureMac, base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
 
 }  // namespace features
 
-namespace media {
-
-bool IsApplicationAudioCaptureSupported() {
-#if BUILDFLAG(IS_WIN)
-  return base::FeatureList::IsEnabled(features::kApplicationAudioCaptureWin);
-#elif BUILDFLAG(IS_MAC)
-  return base::FeatureList::IsEnabled(features::kApplicationAudioCaptureMac) &&
-         media::IsMacCatapSystemLoopbackCaptureSupported() &&
-         base::FeatureList::IsEnabled(
-             media::kMacCatapLoopbackAudioForScreenShare);
-#else
-  return false;
-#endif  // BUILDFLAG(IS_WIN)
-}
-
-}  // namespace media

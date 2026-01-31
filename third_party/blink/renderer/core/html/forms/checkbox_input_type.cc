@@ -87,14 +87,9 @@ ClickHandlingState* CheckboxInputType::LegacyPreActivationBehavior() {
   //      this element's checkedness to its opposite value (i.e. true if it is
   //      false, false if it is true) and set this element's indeterminate IDL
   //      attribute to false.
-  //
-  // Note it is not clear if the ordering of these two operations is important,
-  // since we technically do them in the opposite order than the spec. This
-  // should only be observable if `SetChecked()` fires an event whose handlers
-  // can read the indeterminate state.
-  GetElement().setIndeterminate(false);
   GetElement().SetChecked(!state->checked,
                           TextFieldEventBehavior::kDispatchChangeEvent);
+  GetElement().setIndeterminate(false);
 
   is_in_click_handler_ = true;
   return state;

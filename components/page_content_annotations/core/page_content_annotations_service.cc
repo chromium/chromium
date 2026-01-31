@@ -10,7 +10,6 @@
 
 #include "base/barrier_closure.h"
 #include "base/containers/adapters.h"
-#include "base/containers/contains.h"
 #include "base/functional/callback_helpers.h"
 #include "base/i18n/case_conversion.h"
 #include "base/metrics/histogram_functions.h"
@@ -35,7 +34,7 @@
 #include "components/page_content_annotations/core/page_content_annotations_features.h"
 #include "components/page_content_annotations/core/page_content_annotations_switches.h"
 #include "components/page_content_annotations/core/page_content_annotations_validator.h"
-#include "components/passage_embeddings/passage_embeddings_types.h"
+#include "components/passage_embeddings/core/passage_embeddings_types.h"
 #include "components/search/search.h"
 #include "services/metrics/public/cpp/metrics_utils.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
@@ -231,22 +230,15 @@ PageContentAnnotationsService::PageContentAnnotationsService(
   }
 #endif
 
-  is_remote_page_metadata_fetching_enabled_ =
-      features::RemotePageMetadataEnabled(application_locale, country_code);
-  is_salient_image_metadata_fetching_enabled_ =
-      features::ShouldPersistSalientImageMetadata(application_locale,
-                                                  country_code);
-  std::vector<optimization_guide::proto::OptimizationType> optimization_types;
-  if (is_remote_page_metadata_fetching_enabled_) {
+  if (features::RemotePageMetadataEnabled(application_locale, country_code)) {
+    std::vector<optimization_guide::proto::OptimizationType> optimization_types;
     optimization_types.emplace_back(optimization_guide::proto::PAGE_ENTITIES);
-  }
-  if (is_salient_image_metadata_fetching_enabled_) {
     optimization_types.emplace_back(optimization_guide::proto::SALIENT_IMAGE);
+    if (optimization_guide_decider_) {
+      optimization_guide_decider_->RegisterOptimizationTypes(
+          optimization_types);
+    }
   }
-  if (optimization_guide_decider_ && !optimization_types.empty()) {
-    optimization_guide_decider_->RegisterOptimizationTypes(optimization_types);
-  }
-
   validator_ =
       PageContentAnnotationsValidator::MaybeCreateAndStartTimer(annotator_);
 }
@@ -563,8 +555,8 @@ void PageContentAnnotationsService::OnZeroSuggestResponseUpdated(
   std::vector<std::string> related_searches;
   for (const auto& result : suggest_results) {
     // Suggestions with HIVEMIND subtype are considered "related searches".
-    if (base::Contains(result.subtypes,
-                       omnibox::SuggestSubtype::SUBTYPE_HIVEMIND)) {
+    if (std::ranges::contains(result.subtypes,
+                              omnibox::SuggestSubtype::SUBTYPE_HIVEMIND)) {
       related_searches.push_back(
           base::UTF16ToUTF8(base::CollapseWhitespace(result.suggestion, true)));
     }
@@ -785,17 +777,13 @@ void PageContentAnnotationsService::OnURLVisitedWithNavigationId(
     return;
   }
 
-  if (is_remote_page_metadata_fetching_enabled_ &&
-      optimization_guide_decider_) {
+  if (optimization_guide_decider_) {
     optimization_guide_decider_->CanApplyOptimization(
         url_row.url(), optimization_guide::proto::PAGE_ENTITIES,
         base::BindOnce(
             &PageContentAnnotationsService::OnOptimizationGuideResponseReceived,
             weak_ptr_factory_.GetWeakPtr(), history_visit,
             optimization_guide::proto::PAGE_ENTITIES));
-  }
-  if (is_salient_image_metadata_fetching_enabled_ &&
-      optimization_guide_decider_) {
     optimization_guide_decider_->CanApplyOptimization(
         url_row.url(), optimization_guide::proto::SALIENT_IMAGE,
         base::BindOnce(

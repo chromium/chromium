@@ -57,14 +57,13 @@ void AccessCodeCastPrefUpdaterImpl::UpdateDeviceAddedTimeDict(
 }
 
 void AccessCodeCastPrefUpdaterImpl::GetDevicesDict(
-    base::OnceCallback<void(base::Value::Dict)> get_devices_callback) {
+    base::OnceCallback<void(base::DictValue)> get_devices_callback) {
   std::move(get_devices_callback)
       .Run(pref_service_->GetDict(prefs::kAccessCodeCastDevices).Clone());
 }
 
 void AccessCodeCastPrefUpdaterImpl::GetDeviceAddedTimeDict(
-    base::OnceCallback<void(base::Value::Dict)>
-        get_device_added_time_callback) {
+    base::OnceCallback<void(base::DictValue)> get_device_added_time_callback) {
   std::move(get_device_added_time_callback)
       .Run(pref_service_->GetDict(prefs::kAccessCodeCastDeviceAdditionTime)
                .Clone());
@@ -89,14 +88,14 @@ void AccessCodeCastPrefUpdaterImpl::RemoveSinkIdFromDeviceAddedTimeDict(
 
 void AccessCodeCastPrefUpdaterImpl::ClearDevicesDict(
     base::OnceClosure on_cleared_callback) {
-  pref_service_->SetDict(prefs::kAccessCodeCastDevices, base::Value::Dict());
+  pref_service_->SetDict(prefs::kAccessCodeCastDevices, base::DictValue());
   std::move(on_cleared_callback).Run();
 }
 
 void AccessCodeCastPrefUpdaterImpl::ClearDeviceAddedTimeDict(
     base::OnceClosure on_cleared_callback) {
   pref_service_->SetDict(prefs::kAccessCodeCastDeviceAdditionTime,
-                         base::Value::Dict());
+                         base::DictValue());
   std::move(on_cleared_callback).Run();
 }
 

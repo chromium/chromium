@@ -5,7 +5,6 @@
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/transitions/legacy_grid_transition_animation.h"
 
 #import "ios/chrome/browser/shared/public/features/features.h"
-#import "ios/chrome/browser/shared/public/prototypes/diamond/utils.h"
 #import "ios/chrome/browser/shared/ui/util/property_animator_group.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/transitions/legacy_grid_to_tab_transition_view.h"
@@ -222,11 +221,7 @@ CGFloat CalculateResizeDampingCorrection(LegacyGridTransitionLayout* layout) {
 
   // C: Round the corners of the active cell.
   UIView<LegacyGridToTabTransitionView>* cell = self.layout.activeItem.cell;
-  if (IsDiamondPrototypeEnabled()) {
-    cell.cornerRadius = kDiamondBrowserCornerRadius;
-  } else {
-    cell.cornerRadius = DeviceCornerRadius();
-  }
+  cell.cornerRadius = DeviceCornerRadius();
   auto roundCornersAnimation = ^{
     cell.cornerRadius = self.finalActiveCellCornerRadius;
   };
@@ -363,11 +358,7 @@ CGFloat CalculateResizeDampingCorrection(LegacyGridTransitionLayout* layout) {
   // C: Square the active cell's corners.
   UIView<LegacyGridToTabTransitionView>* cell = self.layout.activeItem.cell;
   auto squareCornersAnimation = ^{
-    if (IsDiamondPrototypeEnabled()) {
-      cell.cornerRadius = kDiamondBrowserCornerRadius;
-    } else {
-      cell.cornerRadius = DeviceCornerRadius();
-    }
+    cell.cornerRadius = DeviceCornerRadius();
   };
   auto squareCornersKeyframeAnimation =
       [self keyframeAnimationWithRelativeStart:0.0

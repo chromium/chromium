@@ -59,7 +59,7 @@ JNI_SendTabToSelfAndroidBridge_GetAllTargetDeviceInfos(JNIEnv* env,
 
 // Adds a new entry with the specified parameters. Returns whether the
 // the persistent entry in the bridge was created.
-static jboolean JNI_SendTabToSelfAndroidBridge_AddEntry(
+static bool JNI_SendTabToSelfAndroidBridge_AddEntry(
     JNIEnv* env,
     Profile* profile,
     const JavaRef<jstring>& j_url,

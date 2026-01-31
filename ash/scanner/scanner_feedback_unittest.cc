@@ -22,7 +22,7 @@ namespace {
 using ::base::test::IsJson;
 
 TEST(ScannerFeedbackTest, UnsetActionToDict) {
-  base::Value::Dict dict = ScannerActionToDict(manta::proto::ScannerAction());
+  base::DictValue dict = ScannerActionToDict(manta::proto::ScannerAction());
 
   EXPECT_THAT(dict, IsJson("{}"));
 }
@@ -35,7 +35,7 @@ TEST(ScannerFeedbackTest, NewEventActionToDict) {
   new_event.set_dates("20241014T160000/20241014T161500");
   new_event.set_location("Wonderland");
 
-  base::Value::Dict dict = ScannerActionToDict(std::move(action));
+  base::DictValue dict = ScannerActionToDict(std::move(action));
 
   EXPECT_THAT(dict, IsJson(R"json({
     "new_event": {
@@ -71,7 +71,7 @@ TEST(ScannerFeedbackTest, NewContactActionToDict) {
   home_number.set_value("+61390000000");
   home_number.set_type("home");
 
-  base::Value::Dict dict = ScannerActionToDict(std::move(action));
+  base::DictValue dict = ScannerActionToDict(std::move(action));
 
   EXPECT_THAT(dict, IsJson(R"json({
     "new_contact": {
@@ -110,7 +110,7 @@ TEST(ScannerFeedbackTest, NewGoogleDocActionToDict) {
   new_google_doc.set_title("Doc Title");
   new_google_doc.set_html_contents("<span>Contents</span>");
 
-  base::Value::Dict dict = ScannerActionToDict(std::move(action));
+  base::DictValue dict = ScannerActionToDict(std::move(action));
 
   EXPECT_THAT(dict, IsJson(R"json({
     "new_google_doc": {
@@ -127,7 +127,7 @@ TEST(ScannerFeedbackTest, NewGoogleSheetActionToDict) {
   new_google_sheet.set_title("Sheet Title");
   new_google_sheet.set_csv_contents("a,b\n1,2");
 
-  base::Value::Dict dict = ScannerActionToDict(std::move(action));
+  base::DictValue dict = ScannerActionToDict(std::move(action));
 
   EXPECT_THAT(dict, IsJson(R"json({
     "new_google_sheet": {
@@ -144,7 +144,7 @@ TEST(ScannerFeedbackTest, CopyToClipboardActionToDict) {
   copy_to_clipboard.set_plain_text("Hello");
   copy_to_clipboard.set_html_text("<b>Hello</b>");
 
-  base::Value::Dict dict = ScannerActionToDict(std::move(action));
+  base::DictValue dict = ScannerActionToDict(std::move(action));
 
   EXPECT_THAT(dict, IsJson(R"json({
     "copy_to_clipboard": {
@@ -397,7 +397,7 @@ TEST(ScannerFeedbackTest, ValueToUserFacingStringReturnsNulloptWithBinary) {
 
 TEST(ScannerFeedbackTest,
      ValueToUserFacingStringReturnsNulloptWithNestedBinary) {
-  base::Value::Dict nested_value;
+  base::DictValue nested_value;
   nested_value.EnsureDict("a")->EnsureList("b")->Append(
       base::Value(base::as_byte_span("binaryvalue")));
 

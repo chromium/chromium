@@ -24,6 +24,7 @@ namespace enterprise_connectors {
 #if BUILDFLAG(ENTERPRISE_CACHE_ENCRYPTION)
 const char kCacheEncryptionEnabledPref[] =
     "enterprise_connectors.cache_encryption_enabled";
+const char kEncryptedCacheMasterKey[] = "enterprise.encrypted_cache_master_key";
 #endif
 
 const char kOnFileAttachedPref[] = "enterprise_connectors.on_file_attached";
@@ -66,6 +67,8 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry) {
   registry->RegisterIntegerPref(kEnterpriseRealTimeUrlCheckScope, 0);
   registry->RegisterListPref(kOnSecurityEventPref);
   registry->RegisterIntegerPref(kOnSecurityEventScopePref, 0);
+  registry->RegisterListPref(kOnFileDownloadedPref);
+  registry->RegisterIntegerPref(kOnFileDownloadedScopePref, 0);
   registry->RegisterIntegerPref(kWatermarkStyleFillOpacityPref,
                                 kWatermarkStyleFillOpacityDefault);
   registry->RegisterIntegerPref(kWatermarkStyleOutlineOpacityPref,
@@ -75,14 +78,12 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry) {
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
   registry->RegisterListPref(kOnFileAttachedPref);
-  registry->RegisterListPref(kOnFileDownloadedPref);
   registry->RegisterListPref(kOnBulkDataEntryPref);
   registry->RegisterListPref(kOnPrintPref);
 #if BUILDFLAG(IS_CHROMEOS)
   registry->RegisterListPref(kOnFileTransferPref);
 #endif
   registry->RegisterIntegerPref(kOnFileAttachedScopePref, 0);
-  registry->RegisterIntegerPref(kOnFileDownloadedScopePref, 0);
   registry->RegisterIntegerPref(kOnBulkDataEntryScopePref, 0);
   registry->RegisterIntegerPref(kOnPrintScopePref, 0);
 
@@ -95,8 +96,10 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry) {
 #if BUILDFLAG(ENTERPRISE_CLIENT_CERTIFICATES)
   client_certificates::RegisterProfilePrefs(registry);
 #endif  // BUILDFLAG(ENTERPRISE_CLIENT_CERTIFICATES)
+
 #if BUILDFLAG(ENTERPRISE_CACHE_ENCRYPTION)
   registry->RegisterBooleanPref(kCacheEncryptionEnabledPref, false);
+  registry->RegisterStringPref(kEncryptedCacheMasterKey, "");
 #endif
 }
 

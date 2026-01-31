@@ -55,7 +55,7 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/download/public/common/download_item.h"
 #include "components/prefs/pref_service.h"
-#include "components/safe_browsing/content/common/file_type_policies_test_util.h"
+#include "components/safe_browsing/buildflags.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -102,6 +102,10 @@
 #include "chrome/test/base/ui_test_utils.h"
 #if !BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/ui/download/download_display.h"
+#endif
+
+#if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
+#include "components/safe_browsing/content/common/file_type_policies_test_util.h"
 #endif
 #endif
 
@@ -189,12 +193,12 @@ class DownloadsEventsListener : public EventRouter::TestObserver {
     // [ { "filename": { "current": "content://...." } } ].
     void MaybeCacheFilename() {
       CHECK(args_.is_list());
-      const base::Value::List& arg_list = args_.GetList();
+      const base::ListValue& arg_list = args_.GetList();
       if (arg_list.empty() || !arg_list[0].is_dict()) {
         return;
       }
-      const base::Value::Dict& main_dict = arg_list[0].GetDict();
-      const base::Value::Dict* filename_dict = main_dict.FindDict("filename");
+      const base::DictValue& main_dict = arg_list[0].GetDict();
+      const base::DictValue* filename_dict = main_dict.FindDict("filename");
       if (!filename_dict) {
         return;
       }
@@ -230,8 +234,8 @@ class DownloadsEventsListener : public EventRouter::TestObserver {
           return false;
         }
 
-        const base::Value::Dict& left_dict = left_value.GetDict();
-        const base::Value::Dict& right_dict = right_value.GetDict();
+        const base::DictValue& left_dict = left_value.GetDict();
+        const base::DictValue& right_dict = right_value.GetDict();
         // Expect that all keys present in both dictionaries are equal. If a key
         // is only present in one of the dictionaries, ignore it. This allows us
         // to verify the properties we care about in the test without needing to
@@ -383,7 +387,7 @@ class DownloadOpenObserver : public download::DownloadItem::Observer {
   base::ScopedObservation<download::DownloadItem,
                           download::DownloadItem::Observer>
       open_observation_{this};
-  raw_ptr<download::DownloadItem, DanglingUntriaged> item_;
+  raw_ptr<download::DownloadItem> item_;
   base::OnceClosure completion_closure_;
 };
 
@@ -1078,7 +1082,7 @@ IN_PROC_BROWSER_TEST_F(DownloadExtensionTest, DownloadExtensionTest_Open) {
 
   open_function = base::MakeRefCounted<DownloadsOpenFunction>();
   open_function->set_user_gesture(true);
-  base::Value::List args_list;
+  base::ListValue args_list;
   args_list.Append(static_cast<int>(download_item->GetId()));
   open_function->SetArgs(std::move(args_list));
   open_function->set_extension(extension());
@@ -1186,7 +1190,7 @@ IN_PROC_BROWSER_TEST_F(DownloadExtensionTest,
   ASSERT_TRUE(result);
   download_item = nullptr;
   ASSERT_TRUE(result->is_list());
-  const base::Value::List& result_list = result->GetList();
+  const base::ListValue& result_list = result->GetList();
   ASSERT_EQ(1UL, result_list.size());
   ASSERT_TRUE(result_list[0].is_int());
   EXPECT_EQ(id, result_list[0].GetInt());
@@ -1685,7 +1689,7 @@ IN_PROC_BROWSER_TEST_F(
   ASSERT_TRUE(result_value->is_list());
   ASSERT_EQ(2UL, result_value->GetList().size());
   {
-    const base::Value::Dict& result_dict = result_value->GetList()[0].GetDict();
+    const base::DictValue& result_dict = result_value->GetList()[0].GetDict();
     const std::string* filename = result_dict.FindString("filename");
     ASSERT_TRUE(filename);
     std::optional<bool> is_incognito = result_dict.FindBool("incognito");
@@ -1695,7 +1699,7 @@ IN_PROC_BROWSER_TEST_F(
     EXPECT_FALSE(is_incognito.value());
   }
   {
-    const base::Value::Dict& result_dict = result_value->GetList()[1].GetDict();
+    const base::DictValue& result_dict = result_value->GetList()[1].GetDict();
     const std::string* filename = result_dict.FindString("filename");
     ASSERT_TRUE(filename);
     std::optional<bool> is_incognito = result_dict.FindBool("incognito");
@@ -1714,7 +1718,7 @@ IN_PROC_BROWSER_TEST_F(
   ASSERT_TRUE(result_value->is_list());
   ASSERT_EQ(1UL, result_value->GetList().size());
   {
-    const base::Value::Dict& result_dict = result_value->GetList()[0].GetDict();
+    const base::DictValue& result_dict = result_value->GetList()[0].GetDict();
     const std::string* filename = result_dict.FindString("filename");
     ASSERT_TRUE(filename);
     EXPECT_TRUE(on_item->GetTargetFilePath() ==
@@ -3371,7 +3375,7 @@ IN_PROC_BROWSER_TEST_F(
 #endif
 }
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_EXTENSIONS) && BUILDFLAG(SAFE_BROWSING_AVAILABLE)
 // Tests that overriding a dangerous file extension to a safe extension will
 // trigger the dangerous prompt and will not change the extension.
 // TODO(crbug.com/405219117): Port to desktop Android when the dangerous
@@ -3450,7 +3454,7 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_EQ(downloads_directory().AppendASCII("overridden.swf"),
             item->GetTargetFilePath());
 }
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS) && BUILDFLAG(SAFE_BROWSING_AVAILABLE)
 
 IN_PROC_BROWSER_TEST_F(
     DownloadExtensionTest,
@@ -4626,6 +4630,7 @@ void OnDangerPromptCreated(DownloadDangerPrompt* prompt) {
   prompt->InvokeActionForTesting(DownloadDangerPrompt::ACCEPT);
 }
 
+#if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
 // TODO(crbug.com/450662444): Enable this test on desktop Android when the
 // DownloadDangerPrompt is implemented.
 IN_PROC_BROWSER_TEST_F(DownloadExtensionTest,
@@ -4670,6 +4675,7 @@ IN_PROC_BROWSER_TEST_F(DownloadExtensionTest,
 
   observer->WaitForFinished();
 }
+#endif  // BUILDFLAG(SAFE_BROWSING_AVAILABLE)
 
 // Test that file deletion event is correctly generated after download
 // completion.

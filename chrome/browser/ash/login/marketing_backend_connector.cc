@@ -21,7 +21,6 @@
 #include "components/signin/public/identity_manager/access_token_info.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
-#include "components/signin/public/identity_manager/scope_set.h"
 #include "components/user_manager/user.h"
 #include "components/user_manager/user_manager.h"
 #include "google_apis/credentials_mode.h"
@@ -237,7 +236,7 @@ void MarketingBackendConnector::OnSimpleLoaderCompleteInternal(
 }
 
 std::string MarketingBackendConnector::GetRequestContent() {
-  base::Value::Dict request_dict;
+  base::DictValue request_dict;
   request_dict.Set("country_code", country_code_);
   request_dict.Set("language", "en");
 

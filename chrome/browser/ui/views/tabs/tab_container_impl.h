@@ -32,7 +32,7 @@
 
 class TabStrip;
 class TabHoverCardController;
-class TabDragContextBase;
+class TabDragPositioningDelegateBase;
 
 // A View that contains a sequence of Tabs for the TabStrip.
 class TabContainerImpl : public TabContainer,
@@ -44,7 +44,7 @@ class TabContainerImpl : public TabContainer,
  public:
   TabContainerImpl(TabContainerController& controller,
                    TabHoverCardController* hover_card_controller,
-                   TabDragContextBase* drag_context,
+                   TabDragPositioningDelegateBase* drag_position_delegate,
                    TabSlotController& tab_slot_controller);
   ~TabContainerImpl() override;
 
@@ -355,7 +355,8 @@ class TabContainerImpl : public TabContainer,
       hover_card_controller_;
 
   // May be nullptr in tests.
-  const raw_ptr<TabDragContextBase, DanglingUntriaged> drag_context_;
+  const raw_ptr<TabDragPositioningDelegateBase, DanglingUntriaged>
+      drag_position_delegate_;
 
   const raw_ref<TabSlotController> tab_slot_controller_;
 

@@ -26,7 +26,7 @@ namespace media {
 
 namespace {
 
-bool ParseVolumeLimit(const base::Value::Dict* dict, float* min, float* max) {
+bool ParseVolumeLimit(const base::DictValue* dict, float* min, float* max) {
   auto min_value = dict->FindDouble("min");
   auto max_value = dict->FindDouble("max");
   if (!min_value && !max_value) {

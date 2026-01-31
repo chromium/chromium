@@ -34,7 +34,7 @@ public class DeduplicatePaymentAppsUnitTest {
 
     @Before
     public void setUp() {
-        mService.addFactory(mFactory);
+        mService.addUniqueFactory(mFactory, "testFactoryId");
     }
 
     @After
@@ -56,7 +56,7 @@ public class DeduplicatePaymentAppsUnitTest {
         mFactory.addApp(app2);
 
         // Trigger the deduplication logic:
-        mService.create(mDelegate);
+        mService.createPaymentApps(mDelegate);
 
         Assert.assertTrue(mDelegate.getIsDoneCreatingPaymentApps());
         Assert.assertEquals(2, mDelegate.getApps().size());
@@ -81,7 +81,7 @@ public class DeduplicatePaymentAppsUnitTest {
         mFactory.addApp(notGoogleInternalApp);
 
         // Trigger the deduplication logic:
-        mService.create(mDelegate);
+        mService.createPaymentApps(mDelegate);
 
         Assert.assertTrue(mDelegate.getIsDoneCreatingPaymentApps());
         Assert.assertEquals(1, mDelegate.getApps().size());
@@ -101,7 +101,7 @@ public class DeduplicatePaymentAppsUnitTest {
         mFactory.addApp(notGoogleInternalApp);
 
         // Trigger the deduplication logic:
-        mService.create(mDelegate);
+        mService.createPaymentApps(mDelegate);
 
         Assert.assertTrue(mDelegate.getIsDoneCreatingPaymentApps());
         Assert.assertEquals(1, mDelegate.getApps().size());
@@ -119,7 +119,7 @@ public class DeduplicatePaymentAppsUnitTest {
         mFactory.addApp(new TestApp("id-2"));
 
         // Trigger the deduplication logic:
-        mService.create(mDelegate);
+        mService.createPaymentApps(mDelegate);
 
         Assert.assertTrue(mDelegate.getIsDoneCreatingPaymentApps());
         Assert.assertEquals(2, mDelegate.getApps().size());
@@ -142,7 +142,7 @@ public class DeduplicatePaymentAppsUnitTest {
         mFactory.addApp(new TestApp("id-2"));
 
         // Trigger the deduplication logic:
-        mService.create(mDelegate);
+        mService.createPaymentApps(mDelegate);
 
         Assert.assertTrue(mDelegate.getIsDoneCreatingPaymentApps());
         Assert.assertEquals(2, mDelegate.getApps().size());
@@ -161,7 +161,7 @@ public class DeduplicatePaymentAppsUnitTest {
         mFactory.addApp(new TestApp("id-2"));
 
         // Trigger the deduplication logic:
-        mService.create(mDelegate);
+        mService.createPaymentApps(mDelegate);
 
         Assert.assertTrue(mDelegate.getIsDoneCreatingPaymentApps());
         Assert.assertEquals(1, mDelegate.getApps().size());
@@ -181,7 +181,7 @@ public class DeduplicatePaymentAppsUnitTest {
         mFactory.addApp(new TestApp("id-2"));
 
         // Trigger the deduplication logic:
-        mService.create(mDelegate);
+        mService.createPaymentApps(mDelegate);
 
         Assert.assertTrue(mDelegate.getIsDoneCreatingPaymentApps());
         Assert.assertEquals(1, mDelegate.getApps().size());
@@ -199,7 +199,7 @@ public class DeduplicatePaymentAppsUnitTest {
         mFactory.addApp(new TestApp("id-3"));
 
         // Trigger the deduplication logic:
-        mService.create(mDelegate);
+        mService.createPaymentApps(mDelegate);
 
         Assert.assertTrue(mDelegate.getIsDoneCreatingPaymentApps());
         Assert.assertEquals(1, mDelegate.getApps().size());
@@ -211,7 +211,7 @@ public class DeduplicatePaymentAppsUnitTest {
     @Feature({"Payments"})
     public void testNoApps() throws Exception {
         // Trigger the deduplication logic:
-        mService.create(mDelegate);
+        mService.createPaymentApps(mDelegate);
 
         Assert.assertTrue(mDelegate.getIsDoneCreatingPaymentApps());
         Assert.assertTrue(mDelegate.getApps().isEmpty());
@@ -330,7 +330,7 @@ public class DeduplicatePaymentAppsUnitTest {
     }
 
     /** The class for receiving the list of payment apps from the payment app service. */
-    private static final class TestDelegate implements PaymentAppFactoryDelegate {
+    private static final class TestDelegate implements PaymentAppServiceDelegate {
         private final List<PaymentApp> mApps = new ArrayList<>();
         private boolean mIsDoneCreatingPaymentApps;
 
@@ -349,40 +349,34 @@ public class DeduplicatePaymentAppsUnitTest {
             return mIsDoneCreatingPaymentApps;
         }
 
-        // PaymentAppFactoryDelegate:
+        // PaymentAppServiceDelegate:
         @Override
-        public void onPaymentAppCreated(PaymentApp paymentApp) {
-            mApps.add(paymentApp);
-        }
-
-        // PaymentAppFactoryDelegate:
-        @Override
-        public boolean prefsCanMakePayment() {
-            return true;
-        }
-
-        // PaymentAppFactoryDelegate:
-        @Override
-        public void onDoneCreatingPaymentApps(PaymentAppFactoryInterface factory) {
+        public void onDoneCreatingPaymentApps(List<PaymentApp> apps) {
+            mApps.addAll(apps);
             mIsDoneCreatingPaymentApps = true;
         }
 
-        // PaymentAppFactoryDelegate:
-        @Override
-        public CSPChecker getCSPChecker() {
-            return null;
-        }
-
-        // PaymentAppFactoryDelegate:
+        // PaymentAppServiceDelegate:
         @Override
         public PaymentAppFactoryParams getParams() {
             return null;
         }
 
-        // PaymentAppFactoryDelegate:
+        // PaymentAppServiceDelegate:
         @Override
-        public boolean isFullDelegationRequired() {
-            return false;
-        }
+        public void onCanMakePaymentCalculated(boolean canMakePayment) {}
+
+        // PaymentAppServiceDelegate:
+        @Override
+        public void onPaymentAppCreationError(
+                String errorMessage, @AppCreationFailureReason int errorReason) {}
+
+        // PaymentAppServiceDelegate:
+        @Override
+        public void setCanMakePaymentEvenWithoutApps() {}
+
+        // PaymentAppServiceDelegate:
+        @Override
+        public void setOptOutOffered() {}
     }
 }

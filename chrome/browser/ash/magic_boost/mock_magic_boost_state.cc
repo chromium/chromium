@@ -5,12 +5,12 @@
 #include "chrome/browser/ash/magic_boost/mock_magic_boost_state.h"
 
 #include "base/functional/bind.h"
-#include "chrome/browser/ash/magic_boost/magic_boost_state_ash.h"
+#include "chrome/browser/ash/magic_boost/magic_boost_state.h"
 
 namespace ash {
 
 MockMagicBoostState::MockMagicBoostState()
-    : MagicBoostStateAsh(base::BindRepeating(
+    : MagicBoostState(base::BindRepeating(
           []() { return static_cast<Profile*>(nullptr); })) {}
 
 MockMagicBoostState::~MockMagicBoostState() = default;

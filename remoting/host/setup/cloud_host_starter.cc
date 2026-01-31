@@ -56,7 +56,7 @@ class CloudHostStarter : public HostStarterBase {
   void RetrieveApiAccessToken() override;
   void RegisterNewHost(std::optional<std::string> access_token) override;
   void RemoveOldHostFromDirectory(base::OnceClosure on_host_removed) override;
-  void ApplyConfigValues(base::Value::Dict& config) override;
+  void ApplyConfigValues(base::DictValue& config) override;
 
   // CloudServiceClient callback.
   void OnProvisionGceInstanceResponse(
@@ -206,7 +206,7 @@ void CloudHostStarter::RemoveOldHostFromDirectory(
   std::move(on_host_removed).Run();
 }
 
-void CloudHostStarter::ApplyConfigValues(base::Value::Dict& config) {
+void CloudHostStarter::ApplyConfigValues(base::DictValue& config) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   config.Set(kHostTypeHintPath, kCloudHostTypeHint);

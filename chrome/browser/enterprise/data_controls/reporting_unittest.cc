@@ -14,6 +14,7 @@
 #include "components/enterprise/data_controls/core/browser/prefs.h"
 #include "components/enterprise/data_controls/core/browser/verdict.h"
 #include "components/policy/core/common/cloud/mock_cloud_policy_client.h"
+#include "components/policy/core/common/cloud/realtime_reporting_job_configuration.h"
 #include "components/policy/core/common/policy_types.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/clipboard_types.h"
@@ -338,29 +339,57 @@ TEST_F(DataControlsReportingTest, PasteInManagedProfile_OSClipboardSource) {
   auto validator = helper_->CreateValidator();
   base::RunLoop validator_run_loop;
   validator.SetDoneClosure(validator_run_loop.QuitClosure());
-  validator.ExpectDataControlsSensitiveDataEvent(
-      /*expected_url=*/
-      kChromiumUrl,
-      /*expected_tab_url=*/kChromiumUrl,
-#if BUILDFLAG(IS_CHROMEOS)
-      /*expected_source=*/"https://google.com/",
-#else
-      /*expected_source=*/"CLIPBOARD",
-#endif  // BUILDFLAG(IS_CHROMEOS)
-      /*expected_destination=*/kChromiumUrl,
-      /*expected_mimetypes=*/
-      []() {
-        static std::set<std::string> set = {"text/plain"};
-        return &set;
-      }(),
-      /*expected_trigger=*/"WEB_CONTENT_UPLOAD",
-      /*triggered_rules=*/triggered_rules,
-      /*expected_result=*/"EVENT_RESULT_WARNED",
-      /*expected_profile_username=*/kUserName,
-      /*expected_profile_identifier=*/
-      managed_profile_->GetPath().AsUTF8Unsafe(),
-      /*expected_content_size=*/1234);
 
+  if (base::FeatureList::IsEnabled(
+          policy::kUploadRealtimeReportingEventsUsingProto)) {
+    chrome::cros::reporting::proto::DlpSensitiveDataEvent expected_event;
+    expected_event.set_url(kChromiumUrl);
+    expected_event.set_tab_url(kChromiumUrl);
+    expected_event.set_source("CLIPBOARD");
+    expected_event.set_destination(kChromiumUrl);
+    expected_event.set_content_type("text/plain");
+    expected_event.set_content_size(1234);
+
+    expected_event.set_trigger(
+        chrome::cros::reporting::proto::DataTransferEventTrigger::
+            WEB_CONTENT_UPLOAD);
+    expected_event.set_event_result(
+        chrome::cros::reporting::proto::EventResult::EVENT_RESULT_WARNED);
+
+    ::chrome::cros::reporting::proto::TriggeredRuleInfo triggered_rule;
+    triggered_rule.set_rule_id(1);
+    triggered_rule.set_rule_name("rule_1_name");
+
+    *expected_event.add_triggered_rule_info() = triggered_rule;
+    expected_event.set_profile_identifier(
+        managed_profile_->GetPath().AsUTF8Unsafe());
+    expected_event.set_profile_user_name(kUserName);
+
+    validator.ExpectSensitiveDataEvent(std::move(expected_event));
+  } else {
+    validator.ExpectDataControlsSensitiveDataEvent(
+        /*expected_url=*/
+        kChromiumUrl,
+        /*expected_tab_url=*/kChromiumUrl,
+#if BUILDFLAG(IS_CHROMEOS)
+        /*expected_source=*/"https://google.com/",
+#else
+        /*expected_source=*/"CLIPBOARD",
+#endif  // BUILDFLAG(IS_CHROMEOS)
+        /*expected_destination=*/kChromiumUrl,
+        /*expected_mimetypes=*/
+        []() {
+          static std::set<std::string> set = {"text/plain"};
+          return &set;
+        }(),
+        /*expected_trigger=*/"WEB_CONTENT_UPLOAD",
+        /*triggered_rules=*/triggered_rules,
+        /*expected_result=*/"EVENT_RESULT_WARNED",
+        /*expected_profile_username=*/kUserName,
+        /*expected_profile_identifier=*/
+        managed_profile_->GetPath().AsUTF8Unsafe(),
+        /*expected_content_size=*/1234);
+  }
   auto* router =
       enterprise_connectors::ReportingEventRouterFactory::GetForBrowserContext(
           managed_profile_);
@@ -382,24 +411,53 @@ TEST_F(DataControlsReportingTest,
   auto validator = helper_->CreateValidator();
   base::RunLoop validator_run_loop;
   validator.SetDoneClosure(validator_run_loop.QuitClosure());
-  validator.ExpectDataControlsSensitiveDataEvent(
-      /*expected_url=*/
-      kChromiumUrl,
-      /*expected_tab_url=*/kChromiumUrl,
-      /*expected_source=*/"INCOGNITO",
-      /*expected_destination=*/kChromiumUrl,
-      /*expected_mimetypes=*/
-      []() {
-        static std::set<std::string> set = {"text/plain"};
-        return &set;
-      }(),
-      /*expected_trigger=*/"WEB_CONTENT_UPLOAD",
-      /*triggered_rules=*/triggered_rules,
-      /*expected_result=*/"EVENT_RESULT_WARNED",
-      /*expected_profile_username=*/kUserName,
-      /*expected_profile_identifier=*/
-      managed_profile_->GetPath().AsUTF8Unsafe(),
-      /*expected_content_size=*/1234);
+
+  if (base::FeatureList::IsEnabled(
+          policy::kUploadRealtimeReportingEventsUsingProto)) {
+    chrome::cros::reporting::proto::DlpSensitiveDataEvent expected_event;
+    expected_event.set_url(kChromiumUrl);
+    expected_event.set_tab_url(kChromiumUrl);
+    expected_event.set_source("INCOGNITO");
+    expected_event.set_destination(kChromiumUrl);
+    expected_event.set_content_type("text/plain");
+    expected_event.set_content_size(1234);
+
+    expected_event.set_trigger(
+        chrome::cros::reporting::proto::DataTransferEventTrigger::
+            WEB_CONTENT_UPLOAD);
+    expected_event.set_event_result(
+        chrome::cros::reporting::proto::EventResult::EVENT_RESULT_WARNED);
+
+    ::chrome::cros::reporting::proto::TriggeredRuleInfo triggered_rule;
+    triggered_rule.set_rule_id(1);
+    triggered_rule.set_rule_name("rule_1_name");
+
+    *expected_event.add_triggered_rule_info() = triggered_rule;
+    expected_event.set_profile_identifier(
+        managed_profile_->GetPath().AsUTF8Unsafe());
+    expected_event.set_profile_user_name(kUserName);
+
+    validator.ExpectSensitiveDataEvent(std::move(expected_event));
+  } else {
+    validator.ExpectDataControlsSensitiveDataEvent(
+        /*expected_url=*/
+        kChromiumUrl,
+        /*expected_tab_url=*/kChromiumUrl,
+        /*expected_source=*/"INCOGNITO",
+        /*expected_destination=*/kChromiumUrl,
+        /*expected_mimetypes=*/
+        []() {
+          static std::set<std::string> set = {"text/plain"};
+          return &set;
+        }(),
+        /*expected_trigger=*/"WEB_CONTENT_UPLOAD",
+        /*triggered_rules=*/triggered_rules,
+        /*expected_result=*/"EVENT_RESULT_WARNED",
+        /*expected_profile_username=*/kUserName,
+        /*expected_profile_identifier=*/
+        managed_profile_->GetPath().AsUTF8Unsafe(),
+        /*expected_content_size=*/1234);
+  }
 
   auto* router =
       enterprise_connectors::ReportingEventRouterFactory::GetForBrowserContext(
@@ -421,24 +479,52 @@ TEST_F(DataControlsReportingTest, PasteInManagedProfile_ManagedSourceProfile) {
   auto validator = helper_->CreateValidator();
   base::RunLoop validator_run_loop;
   validator.SetDoneClosure(validator_run_loop.QuitClosure());
-  validator.ExpectDataControlsSensitiveDataEvent(
-      /*expected_url=*/
-      kChromiumUrl,
-      /*expected_tab_url=*/kChromiumUrl,
-      /*source=*/kGoogleUrl,
-      /*destination=*/kChromiumUrl,
-      /*mime_types=*/
-      []() {
-        static std::set<std::string> set = {"text/plain"};
-        return &set;
-      }(),
-      /*trigger=*/"WEB_CONTENT_UPLOAD",
-      /*triggered_rules=*/triggered_rules,
-      /*event_result=*/"EVENT_RESULT_WARNED",
-      /*profile_username=*/kUserName,
-      /*profile_identifier=*/managed_profile_->GetPath().AsUTF8Unsafe(),
-      /*content_size=*/1234);
 
+  if (base::FeatureList::IsEnabled(
+          policy::kUploadRealtimeReportingEventsUsingProto)) {
+    chrome::cros::reporting::proto::DlpSensitiveDataEvent expected_event;
+    expected_event.set_url(kChromiumUrl);
+    expected_event.set_tab_url(kChromiumUrl);
+    expected_event.set_source(kGoogleUrl);
+    expected_event.set_destination(kChromiumUrl);
+    expected_event.set_content_type("text/plain");
+    expected_event.set_content_size(1234);
+
+    expected_event.set_trigger(
+        chrome::cros::reporting::proto::DataTransferEventTrigger::
+            WEB_CONTENT_UPLOAD);
+    expected_event.set_event_result(
+        chrome::cros::reporting::proto::EventResult::EVENT_RESULT_WARNED);
+
+    ::chrome::cros::reporting::proto::TriggeredRuleInfo triggered_rule;
+    triggered_rule.set_rule_id(1);
+    triggered_rule.set_rule_name("rule_1_name");
+
+    *expected_event.add_triggered_rule_info() = triggered_rule;
+    expected_event.set_profile_identifier(
+        managed_profile_->GetPath().AsUTF8Unsafe());
+    expected_event.set_profile_user_name(kUserName);
+
+    validator.ExpectSensitiveDataEvent(std::move(expected_event));
+  } else {
+    validator.ExpectDataControlsSensitiveDataEvent(
+        /*expected_url=*/
+        kChromiumUrl,
+        /*expected_tab_url=*/kChromiumUrl,
+        /*source=*/kGoogleUrl,
+        /*destination=*/kChromiumUrl,
+        /*mime_types=*/
+        []() {
+          static std::set<std::string> set = {"text/plain"};
+          return &set;
+        }(),
+        /*trigger=*/"WEB_CONTENT_UPLOAD",
+        /*triggered_rules=*/triggered_rules,
+        /*event_result=*/"EVENT_RESULT_WARNED",
+        /*profile_username=*/kUserName,
+        /*profile_identifier=*/managed_profile_->GetPath().AsUTF8Unsafe(),
+        /*content_size=*/1234);
+  }
   auto* router =
       enterprise_connectors::ReportingEventRouterFactory::GetForBrowserContext(
           managed_profile_);
@@ -463,23 +549,56 @@ TEST_F(DataControlsReportingTest,
   auto validator = helper_->CreateValidator();
   base::RunLoop validator_run_loop;
   validator.SetDoneClosure(validator_run_loop.QuitClosure());
-  validator.ExpectDataControlsSensitiveDataEvent(
-      /*expected_url=*/
-      kChromiumUrl,
-      /*expected_tab_url=*/kChromiumUrl,
-      /*source=*/"INCOGNITO",
-      /*destination=*/kChromiumUrl,
-      /*mime_types=*/
-      []() {
-        static std::set<std::string> set = {"text/html"};
-        return &set;
-      }(),
-      /*trigger=*/"WEB_CONTENT_UPLOAD",
-      /*triggered_rules=*/triggered_rules,
-      /*event_result=*/"EVENT_RESULT_BYPASSED",
-      /*profile_username=*/kUserName,
-      /*profile_identifier=*/managed_profile_->GetPath().AsUTF8Unsafe(),
-      /*content_size=*/1234);
+
+  if (base::FeatureList::IsEnabled(
+          policy::kUploadRealtimeReportingEventsUsingProto)) {
+    chrome::cros::reporting::proto::DlpSensitiveDataEvent expected_event;
+    expected_event.set_url(kChromiumUrl);
+    expected_event.set_tab_url(kChromiumUrl);
+    expected_event.set_source("INCOGNITO");
+    expected_event.set_destination(kChromiumUrl);
+    expected_event.set_content_type("text/html");
+    expected_event.set_content_size(1234);
+
+    expected_event.set_trigger(
+        chrome::cros::reporting::proto::DataTransferEventTrigger::
+            WEB_CONTENT_UPLOAD);
+    expected_event.set_event_result(
+        chrome::cros::reporting::proto::EventResult::EVENT_RESULT_BYPASSED);
+
+    ::chrome::cros::reporting::proto::TriggeredRuleInfo triggered_rule_1;
+    triggered_rule_1.set_rule_id(1);
+    triggered_rule_1.set_rule_name("rule_1_name");
+    ::chrome::cros::reporting::proto::TriggeredRuleInfo triggered_rule_2;
+    triggered_rule_2.set_rule_id(2);
+    triggered_rule_2.set_rule_name("rule_2_name");
+
+    *expected_event.add_triggered_rule_info() = triggered_rule_1;
+    *expected_event.add_triggered_rule_info() = triggered_rule_2;
+    expected_event.set_profile_identifier(
+        managed_profile_->GetPath().AsUTF8Unsafe());
+    expected_event.set_profile_user_name(kUserName);
+
+    validator.ExpectSensitiveDataEvent(std::move(expected_event));
+  } else {
+    validator.ExpectDataControlsSensitiveDataEvent(
+        /*expected_url=*/
+        kChromiumUrl,
+        /*expected_tab_url=*/kChromiumUrl,
+        /*source=*/"INCOGNITO",
+        /*destination=*/kChromiumUrl,
+        /*mime_types=*/
+        []() {
+          static std::set<std::string> set = {"text/html"};
+          return &set;
+        }(),
+        /*trigger=*/"WEB_CONTENT_UPLOAD",
+        /*triggered_rules=*/triggered_rules,
+        /*event_result=*/"EVENT_RESULT_BYPASSED",
+        /*profile_username=*/kUserName,
+        /*profile_identifier=*/managed_profile_->GetPath().AsUTF8Unsafe(),
+        /*content_size=*/1234);
+  }
 
   auto* router =
       enterprise_connectors::ReportingEventRouterFactory::GetForBrowserContext(
@@ -502,27 +621,60 @@ TEST_F(DataControlsReportingTest,
   auto validator = helper_->CreateValidator();
   base::RunLoop validator_run_loop;
   validator.SetDoneClosure(validator_run_loop.QuitClosure());
-  validator.ExpectDataControlsSensitiveDataEvent(
-      /*expected_url=*/
-      kChromiumUrl,
-      /*expected_tab_url=*/kChromiumUrl,
+
+  if (base::FeatureList::IsEnabled(
+          policy::kUploadRealtimeReportingEventsUsingProto)) {
+    chrome::cros::reporting::proto::DlpSensitiveDataEvent expected_event;
+    expected_event.set_url(kChromiumUrl);
+    expected_event.set_tab_url(kChromiumUrl);
 #if BUILDFLAG(IS_CHROMEOS)
-      /*source=*/"https://google.com/",
+    expected_event.set_source(kGoogleUrl);
 #else
-      /*source=*/"OTHER_PROFILE",
+    expected_event.set_source("OTHER_PROFILE");
 #endif  // BUILDFLAG(IS_CHROMEOS)
-      /*destination=*/kChromiumUrl,
-      /*mime_types=*/
-      []() {
-        static std::set<std::string> set = {"image/svg+xml"};
-        return &set;
-      }(),
-      /*trigger=*/"WEB_CONTENT_UPLOAD",
-      /*triggered_rules=*/triggered_rules,
-      /*event_result=*/"EVENT_RESULT_ALLOWED",
-      /*profile_username=*/kUserName,
-      /*profile_identifier=*/managed_profile_->GetPath().AsUTF8Unsafe(),
-      /*content_size=*/1234);
+    expected_event.set_destination(kChromiumUrl);
+    expected_event.set_content_type("image/svg+xml");
+    expected_event.set_content_size(1234);
+
+    expected_event.set_trigger(
+        chrome::cros::reporting::proto::DataTransferEventTrigger::
+            WEB_CONTENT_UPLOAD);
+    expected_event.set_event_result(
+        chrome::cros::reporting::proto::EventResult::EVENT_RESULT_ALLOWED);
+
+    ::chrome::cros::reporting::proto::TriggeredRuleInfo triggered_rule;
+    triggered_rule.set_rule_id(1);
+    triggered_rule.set_rule_name("rule_1_name");
+
+    *expected_event.add_triggered_rule_info() = triggered_rule;
+    expected_event.set_profile_identifier(
+        managed_profile_->GetPath().AsUTF8Unsafe());
+    expected_event.set_profile_user_name(kUserName);
+
+    validator.ExpectSensitiveDataEvent(std::move(expected_event));
+  } else {
+    validator.ExpectDataControlsSensitiveDataEvent(
+        /*expected_url=*/
+        kChromiumUrl,
+        /*expected_tab_url=*/kChromiumUrl,
+#if BUILDFLAG(IS_CHROMEOS)
+        /*source=*/"https://google.com/",
+#else
+        /*source=*/"OTHER_PROFILE",
+#endif  // BUILDFLAG(IS_CHROMEOS)
+        /*destination=*/kChromiumUrl,
+        /*mime_types=*/
+        []() {
+          static std::set<std::string> set = {"image/svg+xml"};
+          return &set;
+        }(),
+        /*trigger=*/"WEB_CONTENT_UPLOAD",
+        /*triggered_rules=*/triggered_rules,
+        /*event_result=*/"EVENT_RESULT_ALLOWED",
+        /*profile_username=*/kUserName,
+        /*profile_identifier=*/managed_profile_->GetPath().AsUTF8Unsafe(),
+        /*content_size=*/1234);
+  }
 
   auto* router =
       enterprise_connectors::ReportingEventRouterFactory::GetForBrowserContext(
@@ -550,24 +702,52 @@ TEST_F(DataControlsReportingTest,
   auto validator = helper_->CreateValidator();
   base::RunLoop validator_run_loop;
   validator.SetDoneClosure(validator_run_loop.QuitClosure());
-  validator.ExpectDataControlsSensitiveDataEvent(
-      /*expected_url=*/
-      kChromiumUrl,
-      /*expected_tab_url=*/kChromiumUrl,
-      /*source=*/kGoogleUrl,
-      /*destination=*/kChromiumUrl,
-      /*mime_types=*/
-      []() {
-        static std::set<std::string> set = {"text/rtf"};
-        return &set;
-      }(),
-      /*trigger=*/"WEB_CONTENT_UPLOAD",
-      /*triggered_rules=*/triggered_rules,
-      /*event_result=*/"EVENT_RESULT_BLOCKED",
-      /*profile_username=*/kUserName,
-      /*profile_identifier=*/managed_profile_->GetPath().AsUTF8Unsafe(),
-      /*content_size=*/1234);
 
+  if (base::FeatureList::IsEnabled(
+          policy::kUploadRealtimeReportingEventsUsingProto)) {
+    chrome::cros::reporting::proto::DlpSensitiveDataEvent expected_event;
+    expected_event.set_url(kChromiumUrl);
+    expected_event.set_tab_url(kChromiumUrl);
+    expected_event.set_source(kGoogleUrl);
+    expected_event.set_destination(kChromiumUrl);
+    expected_event.set_content_type("text/rtf");
+    expected_event.set_content_size(1234);
+
+    expected_event.set_trigger(
+        chrome::cros::reporting::proto::DataTransferEventTrigger::
+            WEB_CONTENT_UPLOAD);
+    expected_event.set_event_result(
+        chrome::cros::reporting::proto::EventResult::EVENT_RESULT_BLOCKED);
+
+    ::chrome::cros::reporting::proto::TriggeredRuleInfo triggered_rule;
+    triggered_rule.set_rule_id(1);
+    triggered_rule.set_rule_name("rule_1_name");
+
+    *expected_event.add_triggered_rule_info() = triggered_rule;
+    expected_event.set_profile_identifier(
+        managed_profile_->GetPath().AsUTF8Unsafe());
+    expected_event.set_profile_user_name(kUserName);
+
+    validator.ExpectSensitiveDataEvent(std::move(expected_event));
+  } else {
+    validator.ExpectDataControlsSensitiveDataEvent(
+        /*expected_url=*/
+        kChromiumUrl,
+        /*expected_tab_url=*/kChromiumUrl,
+        /*source=*/kGoogleUrl,
+        /*destination=*/kChromiumUrl,
+        /*mime_types=*/
+        []() {
+          static std::set<std::string> set = {"text/rtf"};
+          return &set;
+        }(),
+        /*trigger=*/"WEB_CONTENT_UPLOAD",
+        /*triggered_rules=*/triggered_rules,
+        /*event_result=*/"EVENT_RESULT_BLOCKED",
+        /*profile_username=*/kUserName,
+        /*profile_identifier=*/managed_profile_->GetPath().AsUTF8Unsafe(),
+        /*content_size=*/1234);
+  }
   auto* router =
       enterprise_connectors::ReportingEventRouterFactory::GetForBrowserContext(
           managed_profile_);
@@ -592,23 +772,51 @@ TEST_F(DataControlsReportingTest, CopyInManagedProfile) {
     auto validator = helper_->CreateValidator();
     base::RunLoop validator_run_loop;
     validator.SetDoneClosure(validator_run_loop.QuitClosure());
-    validator.ExpectDataControlsSensitiveDataEvent(
-        /*expected_url=*/
-        kChromiumUrl,
-        /*expected_tab_url=*/kChromiumUrl,
-        /*source=*/kChromiumUrl,
-        /*destination=*/"",
-        /*mime_types=*/
-        []() {
-          static std::set<std::string> set = {"text/plain"};
-          return &set;
-        }(),
-        /*trigger=*/"CLIPBOARD_COPY",
-        /*triggered_rules=*/triggered_rules,
-        /*event_result=*/"EVENT_RESULT_WARNED",
-        /*profile_username=*/kUserName,
-        /*profile_identifier=*/managed_profile_->GetPath().AsUTF8Unsafe(),
-        /*content_size=*/1234);
+
+    if (base::FeatureList::IsEnabled(
+            policy::kUploadRealtimeReportingEventsUsingProto)) {
+      chrome::cros::reporting::proto::DlpSensitiveDataEvent expected_event;
+      expected_event.set_url(kChromiumUrl);
+      expected_event.set_tab_url(kChromiumUrl);
+      expected_event.set_source(kChromiumUrl);
+      expected_event.set_destination("");
+      expected_event.set_content_type("text/plain");
+      expected_event.set_content_size(1234);
+
+      expected_event.set_trigger(chrome::cros::reporting::proto::
+                                     DataTransferEventTrigger::CLIPBOARD_COPY);
+      expected_event.set_event_result(
+          chrome::cros::reporting::proto::EventResult::EVENT_RESULT_WARNED);
+
+      ::chrome::cros::reporting::proto::TriggeredRuleInfo triggered_rule;
+      triggered_rule.set_rule_id(1);
+      triggered_rule.set_rule_name("rule_1_name");
+
+      *expected_event.add_triggered_rule_info() = triggered_rule;
+      expected_event.set_profile_identifier(
+          managed_profile_->GetPath().AsUTF8Unsafe());
+      expected_event.set_profile_user_name(kUserName);
+
+      validator.ExpectSensitiveDataEvent(std::move(expected_event));
+    } else {
+      validator.ExpectDataControlsSensitiveDataEvent(
+          /*expected_url=*/
+          kChromiumUrl,
+          /*expected_tab_url=*/kChromiumUrl,
+          /*source=*/kChromiumUrl,
+          /*destination=*/"",
+          /*mime_types=*/
+          []() {
+            static std::set<std::string> set = {"text/plain"};
+            return &set;
+          }(),
+          /*trigger=*/"CLIPBOARD_COPY",
+          /*triggered_rules=*/triggered_rules,
+          /*event_result=*/"EVENT_RESULT_WARNED",
+          /*profile_username=*/kUserName,
+          /*profile_identifier=*/managed_profile_->GetPath().AsUTF8Unsafe(),
+          /*content_size=*/1234);
+    }
 
     router->ReportCopy(
         ChromeClipboardContext(
@@ -624,23 +832,51 @@ TEST_F(DataControlsReportingTest, CopyInManagedProfile) {
     auto validator = helper_->CreateValidator();
     base::RunLoop validator_run_loop;
     validator.SetDoneClosure(validator_run_loop.QuitClosure());
-    validator.ExpectDataControlsSensitiveDataEvent(
-        /*expected_url=*/
-        kChromiumUrl,
-        /*expected_tab_url=*/kChromiumUrl,
-        /*source=*/kChromiumUrl,
-        /*destination=*/"",
-        /*mime_types=*/
-        []() {
-          static std::set<std::string> set = {"image/png"};
-          return &set;
-        }(),
-        /*trigger=*/"CLIPBOARD_COPY",
-        /*triggered_rules=*/triggered_rules,
-        /*event_result=*/"EVENT_RESULT_BYPASSED",
-        /*profile_username=*/kUserName,
-        /*profile_identifier=*/managed_profile_->GetPath().AsUTF8Unsafe(),
-        /*content_size=*/1234);
+
+    if (base::FeatureList::IsEnabled(
+            policy::kUploadRealtimeReportingEventsUsingProto)) {
+      chrome::cros::reporting::proto::DlpSensitiveDataEvent expected_event;
+      expected_event.set_url(kChromiumUrl);
+      expected_event.set_tab_url(kChromiumUrl);
+      expected_event.set_source(kChromiumUrl);
+      expected_event.set_destination("");
+      expected_event.set_content_type("image/png");
+      expected_event.set_content_size(1234);
+
+      expected_event.set_trigger(chrome::cros::reporting::proto::
+                                     DataTransferEventTrigger::CLIPBOARD_COPY);
+      expected_event.set_event_result(
+          chrome::cros::reporting::proto::EventResult::EVENT_RESULT_BYPASSED);
+
+      ::chrome::cros::reporting::proto::TriggeredRuleInfo triggered_rule;
+      triggered_rule.set_rule_id(1);
+      triggered_rule.set_rule_name("rule_1_name");
+
+      *expected_event.add_triggered_rule_info() = triggered_rule;
+      expected_event.set_profile_identifier(
+          managed_profile_->GetPath().AsUTF8Unsafe());
+      expected_event.set_profile_user_name(kUserName);
+
+      validator.ExpectSensitiveDataEvent(std::move(expected_event));
+    } else {
+      validator.ExpectDataControlsSensitiveDataEvent(
+          /*expected_url=*/
+          kChromiumUrl,
+          /*expected_tab_url=*/kChromiumUrl,
+          /*source=*/kChromiumUrl,
+          /*destination=*/"",
+          /*mime_types=*/
+          []() {
+            static std::set<std::string> set = {"image/png"};
+            return &set;
+          }(),
+          /*trigger=*/"CLIPBOARD_COPY",
+          /*triggered_rules=*/triggered_rules,
+          /*event_result=*/"EVENT_RESULT_BYPASSED",
+          /*profile_username=*/kUserName,
+          /*profile_identifier=*/managed_profile_->GetPath().AsUTF8Unsafe(),
+          /*content_size=*/1234);
+    }
 
     router->ReportCopyWarningBypassed(
         ChromeClipboardContext(
@@ -656,23 +892,51 @@ TEST_F(DataControlsReportingTest, CopyInManagedProfile) {
     auto validator = helper_->CreateValidator();
     base::RunLoop validator_run_loop;
     validator.SetDoneClosure(validator_run_loop.QuitClosure());
-    validator.ExpectDataControlsSensitiveDataEvent(
-        /*expected_url=*/
-        kChromiumUrl,
-        /*expected_tab_url=*/kChromiumUrl,
-        /*source=*/kChromiumUrl,
-        /*destination=*/"",
-        /*mime_types=*/
-        []() {
-          static std::set<std::string> set = {"image/svg+xml"};
-          return &set;
-        }(),
-        /*trigger=*/"CLIPBOARD_COPY",
-        /*triggered_rules=*/triggered_rules,
-        /*event_result=*/"EVENT_RESULT_BLOCKED",
-        /*profile_username=*/kUserName,
-        /*profile_identifier=*/managed_profile_->GetPath().AsUTF8Unsafe(),
-        /*content_size=*/1234);
+
+    if (base::FeatureList::IsEnabled(
+            policy::kUploadRealtimeReportingEventsUsingProto)) {
+      chrome::cros::reporting::proto::DlpSensitiveDataEvent expected_event;
+      expected_event.set_url(kChromiumUrl);
+      expected_event.set_tab_url(kChromiumUrl);
+      expected_event.set_source(kChromiumUrl);
+      expected_event.set_destination("");
+      expected_event.set_content_type("image/svg+xml");
+      expected_event.set_content_size(1234);
+
+      expected_event.set_trigger(chrome::cros::reporting::proto::
+                                     DataTransferEventTrigger::CLIPBOARD_COPY);
+      expected_event.set_event_result(
+          chrome::cros::reporting::proto::EventResult::EVENT_RESULT_BLOCKED);
+
+      ::chrome::cros::reporting::proto::TriggeredRuleInfo triggered_rule;
+      triggered_rule.set_rule_id(1);
+      triggered_rule.set_rule_name("rule_1_name");
+
+      *expected_event.add_triggered_rule_info() = triggered_rule;
+      expected_event.set_profile_identifier(
+          managed_profile_->GetPath().AsUTF8Unsafe());
+      expected_event.set_profile_user_name(kUserName);
+
+      validator.ExpectSensitiveDataEvent(std::move(expected_event));
+    } else {
+      validator.ExpectDataControlsSensitiveDataEvent(
+          /*expected_url=*/
+          kChromiumUrl,
+          /*expected_tab_url=*/kChromiumUrl,
+          /*source=*/kChromiumUrl,
+          /*destination=*/"",
+          /*mime_types=*/
+          []() {
+            static std::set<std::string> set = {"image/svg+xml"};
+            return &set;
+          }(),
+          /*trigger=*/"CLIPBOARD_COPY",
+          /*triggered_rules=*/triggered_rules,
+          /*event_result=*/"EVENT_RESULT_BLOCKED",
+          /*profile_username=*/kUserName,
+          /*profile_identifier=*/managed_profile_->GetPath().AsUTF8Unsafe(),
+          /*content_size=*/1234);
+    }
 
     router->ReportCopy(
         ChromeClipboardContext(
@@ -688,24 +952,51 @@ TEST_F(DataControlsReportingTest, CopyInManagedProfile) {
     auto validator = helper_->CreateValidator();
     base::RunLoop validator_run_loop;
     validator.SetDoneClosure(validator_run_loop.QuitClosure());
-    validator.ExpectDataControlsSensitiveDataEvent(
-        /*expected_url=*/
-        kChromiumUrl,
-        /*expected_tab_url=*/kChromiumUrl,
-        /*source=*/kChromiumUrl,
-        /*destination=*/"",
-        /*mime_types=*/
-        []() {
-          static std::set<std::string> set = {"text/rtf"};
-          return &set;
-        }(),
-        /*trigger=*/"CLIPBOARD_COPY",
-        /*triggered_rules=*/triggered_rules,
-        /*event_result=*/"EVENT_RESULT_ALLOWED",
-        /*profile_username=*/kUserName,
-        /*profile_identifier=*/managed_profile_->GetPath().AsUTF8Unsafe(),
-        /*content_size=*/1234);
 
+    if (base::FeatureList::IsEnabled(
+            policy::kUploadRealtimeReportingEventsUsingProto)) {
+      chrome::cros::reporting::proto::DlpSensitiveDataEvent expected_event;
+      expected_event.set_url(kChromiumUrl);
+      expected_event.set_tab_url(kChromiumUrl);
+      expected_event.set_source(kChromiumUrl);
+      expected_event.set_destination("");
+      expected_event.set_content_type("text/rtf");
+      expected_event.set_content_size(1234);
+
+      expected_event.set_trigger(chrome::cros::reporting::proto::
+                                     DataTransferEventTrigger::CLIPBOARD_COPY);
+      expected_event.set_event_result(
+          chrome::cros::reporting::proto::EventResult::EVENT_RESULT_ALLOWED);
+
+      ::chrome::cros::reporting::proto::TriggeredRuleInfo triggered_rule;
+      triggered_rule.set_rule_id(1);
+      triggered_rule.set_rule_name("rule_1_name");
+
+      *expected_event.add_triggered_rule_info() = triggered_rule;
+      expected_event.set_profile_identifier(
+          managed_profile_->GetPath().AsUTF8Unsafe());
+      expected_event.set_profile_user_name(kUserName);
+
+      validator.ExpectSensitiveDataEvent(std::move(expected_event));
+    } else {
+      validator.ExpectDataControlsSensitiveDataEvent(
+          /*expected_url=*/
+          kChromiumUrl,
+          /*expected_tab_url=*/kChromiumUrl,
+          /*source=*/kChromiumUrl,
+          /*destination=*/"",
+          /*mime_types=*/
+          []() {
+            static std::set<std::string> set = {"text/rtf"};
+            return &set;
+          }(),
+          /*trigger=*/"CLIPBOARD_COPY",
+          /*triggered_rules=*/triggered_rules,
+          /*event_result=*/"EVENT_RESULT_ALLOWED",
+          /*profile_username=*/kUserName,
+          /*profile_identifier=*/managed_profile_->GetPath().AsUTF8Unsafe(),
+          /*content_size=*/1234);
+    }
     router->ReportCopy(
         ChromeClipboardContext(
             managed_endpoint(GURL(kChromiumUrl)),

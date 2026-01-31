@@ -75,13 +75,18 @@ mojom::blink::EmbeddedPermissionRequestDescriptorPtr
 HTMLGeolocationElement::CreateEmbeddedPermissionRequestDescriptor() {
   auto descriptor = mojom::blink::EmbeddedPermissionRequestDescriptor::New();
   descriptor->element_position = BoundsInWidget();
-  descriptor->geolocation =
+
+  auto geolocation_descriptor =
       mojom::blink::GeolocationEmbeddedPermissionRequestDescriptor::New();
-  descriptor->geolocation->autolocate = autolocate();
+  geolocation_descriptor->autolocate = autolocate();
+  descriptor->detail =
+      mojom::blink::EmbeddedPermissionControlDescriptorExtension::
+          NewGeolocation(std::move(geolocation_descriptor));
+
   return descriptor;
 }
 
-void HTMLGeolocationElement::AttributeChanged(
+void HTMLGeolocationElement::ParseAttribute(
     const AttributeModificationParams& params) {
   // The "preciselocation" attribute does not have a special meaning on the
   // geolocation element. It is handled by the generic HTMLElement attribute
@@ -90,7 +95,7 @@ void HTMLGeolocationElement::AttributeChanged(
   // attribute is removed entirely along with the "geolocation" permission
   // element type.
   if (params.name == html_names::kPreciselocationAttr) {
-    HTMLElement::AttributeChanged(params);
+    HTMLElement::ParseAttribute(params);
     return;
   } else if (params.name == html_names::kAutolocateAttr) {
     if (params.new_value) {
@@ -107,7 +112,7 @@ void HTMLGeolocationElement::AttributeChanged(
 
   // If it's not a geolocation element specific attribute, the base class
   // permission element can handle attributes.
-  HTMLPermissionElement::AttributeChanged(params);
+  HTMLPermissionElement::ParseAttribute(params);
 }
 
 void HTMLGeolocationElement::DefaultEventHandler(Event& event) {

@@ -9,7 +9,7 @@
 #include <utility>
 #include <vector>
 
-#include "base/byte_count.h"
+#include "base/byte_size.h"
 #include "base/memory/raw_ptr.h"
 #include "base/process/process.h"
 #include "base/run_loop.h"
@@ -46,9 +46,9 @@ using FrameContext = resource_attribution::FrameContext;
 using ProcessContext = resource_attribution::ProcessContext;
 using WorkerContext = resource_attribution::WorkerContext;
 
-constexpr base::ByteCount kFakeResidentSet = base::KiB(12345);
-constexpr base::ByteCount kFakePrivateFootprint = base::KiB(67890);
-constexpr base::ByteCount kFakePrivateSwap = base::KiB(13579);
+constexpr base::ByteSize kFakeResidentSet = base::KiBU(12345);
+constexpr base::ByteSize kFakePrivateFootprint = base::KiBU(67890);
+constexpr base::ByteSize kFakePrivateSwap = base::KiBU(13579);
 
 // Test version of the |ProcessMetricsDecorator| class.
 class LenientTestProcessMetricsDecorator : public ProcessMetricsDecorator {
@@ -117,9 +117,9 @@ class ProcessMetricsDecoratorTest : public GraphTestHarness {
   }
 
   void PrepareProcessQueryResults(ProcessNode* process_node,
-                                  base::ByteCount resident_set,
-                                  base::ByteCount private_footprint,
-                                  base::ByteCount private_swap) {
+                                  base::ByteSize resident_set,
+                                  base::ByteSize private_footprint,
+                                  base::ByteSize private_swap) {
     MemoryMeasurementDelegate::MemorySummaryMap& memory_summaries =
         GetMemoryDelegate().memory_summaries();
     memory_summaries[process_node->GetResourceContext()] = {
@@ -158,9 +158,9 @@ class ProcessMetricsDecoratorTest : public GraphTestHarness {
   }
 
   void ExpectProcessResults(ProcessNode* process_node,
-                            base::ByteCount resident_set,
-                            base::ByteCount private_footprint,
-                            base::ByteCount private_swap) {
+                            base::ByteSize resident_set,
+                            base::ByteSize private_footprint,
+                            base::ByteSize private_swap) {
     ASSERT_TRUE(process_node);
     auto child_size = process_node->GetFrameNodes().size() +
                       process_node->GetWorkerNodes().size();
@@ -182,30 +182,30 @@ class ProcessMetricsDecoratorTest : public GraphTestHarness {
   }
 
   void ResetResults() {
-    mock_graph()->process->set_resident_set(base::ByteCount(0));
-    mock_graph()->process->set_private_footprint(base::ByteCount(0));
-    mock_graph()->process->set_private_swap(base::ByteCount(0));
-    mock_graph()->frame->SetResidentSetEstimate(base::ByteCount(0));
-    mock_graph()->frame->SetPrivateFootprintEstimate(base::ByteCount(0));
-    mock_graph()->other_frame->SetResidentSetEstimate(base::ByteCount(0));
-    mock_graph()->other_frame->SetPrivateFootprintEstimate(base::ByteCount(0));
-    mock_graph()->worker->SetResidentSetEstimate(base::ByteCount(0));
-    mock_graph()->worker->SetPrivateFootprintEstimate(base::ByteCount(0));
-    mock_graph()->other_process->set_resident_set(base::ByteCount(0));
-    mock_graph()->other_process->set_private_footprint(base::ByteCount(0));
-    mock_graph()->other_process->set_private_swap(base::ByteCount(0));
-    mock_graph()->child_frame->SetResidentSetEstimate(base::ByteCount(0));
-    mock_graph()->child_frame->SetPrivateFootprintEstimate(base::ByteCount(0));
-    mock_graph()->other_worker->SetResidentSetEstimate(base::ByteCount(0));
-    mock_graph()->other_worker->SetPrivateFootprintEstimate(base::ByteCount(0));
-    mock_utility_process_->set_resident_set(base::ByteCount(0));
-    mock_utility_process_->set_private_footprint(base::ByteCount(0));
-    mock_utility_process_->set_private_swap(base::ByteCount(0));
+    mock_graph()->process->set_resident_set(base::ByteSize(0));
+    mock_graph()->process->set_private_footprint(base::ByteSize(0));
+    mock_graph()->process->set_private_swap(base::ByteSize(0));
+    mock_graph()->frame->SetResidentSetEstimate(base::ByteSize(0));
+    mock_graph()->frame->SetPrivateFootprintEstimate(base::ByteSize(0));
+    mock_graph()->other_frame->SetResidentSetEstimate(base::ByteSize(0));
+    mock_graph()->other_frame->SetPrivateFootprintEstimate(base::ByteSize(0));
+    mock_graph()->worker->SetResidentSetEstimate(base::ByteSize(0));
+    mock_graph()->worker->SetPrivateFootprintEstimate(base::ByteSize(0));
+    mock_graph()->other_process->set_resident_set(base::ByteSize(0));
+    mock_graph()->other_process->set_private_footprint(base::ByteSize(0));
+    mock_graph()->other_process->set_private_swap(base::ByteSize(0));
+    mock_graph()->child_frame->SetResidentSetEstimate(base::ByteSize(0));
+    mock_graph()->child_frame->SetPrivateFootprintEstimate(base::ByteSize(0));
+    mock_graph()->other_worker->SetResidentSetEstimate(base::ByteSize(0));
+    mock_graph()->other_worker->SetPrivateFootprintEstimate(base::ByteSize(0));
+    mock_utility_process_->set_resident_set(base::ByteSize(0));
+    mock_utility_process_->set_private_footprint(base::ByteSize(0));
+    mock_utility_process_->set_private_swap(base::ByteSize(0));
   }
 
-  void ExpectAndResetAllProcessResults(base::ByteCount resident_set,
-                                       base::ByteCount private_footprint,
-                                       base::ByteCount private_swap) {
+  void ExpectAndResetAllProcessResults(base::ByteSize resident_set,
+                                       base::ByteSize private_footprint,
+                                       base::ByteSize private_swap) {
     WaitForMetricsUpdated();
     ExpectProcessResults(mock_graph()->process.get(), resident_set,
                          private_footprint, private_swap);
@@ -238,8 +238,8 @@ class ProcessMetricsDecoratorTest : public GraphTestHarness {
 
 TEST_F(ProcessMetricsDecoratorTest, UpdateByOtherQueries) {
   // There's no data available initially.
-  ExpectAndResetAllProcessResults(base::ByteCount(0), base::ByteCount(0),
-                                  base::ByteCount(0));
+  ExpectAndResetAllProcessResults(base::ByteSize(0), base::ByteSize(0),
+                                  base::ByteSize(0));
 
   auto interest_token =
       ProcessMetricsDecorator::RegisterInterestForProcessMetrics(graph());
@@ -258,8 +258,8 @@ TEST_F(ProcessMetricsDecoratorTest, UpdateByOtherQueries) {
   // Do not update results when there are no tokens left.
   interest_token.reset();
   TriggerOtherQueryOnce();
-  ExpectAndResetAllProcessResults(base::ByteCount(0), base::ByteCount(0),
-                                  base::ByteCount(0));
+  ExpectAndResetAllProcessResults(base::ByteSize(0), base::ByteSize(0),
+                                  base::ByteSize(0));
 }
 
 TEST_F(ProcessMetricsDecoratorTest, UpdateByQueryTimer) {
@@ -268,8 +268,8 @@ TEST_F(ProcessMetricsDecoratorTest, UpdateByQueryTimer) {
   graph()->AddSystemNodeObserver(&sys_node_observer);
 
   // There's no data available initially.
-  ExpectAndResetAllProcessResults(base::ByteCount(0), base::ByteCount(0),
-                                  base::ByteCount(0));
+  ExpectAndResetAllProcessResults(base::ByteSize(0), base::ByteSize(0),
+                                  base::ByteSize(0));
 
   // The first measurement should be taken immediately.
   EXPECT_CALL(sys_node_observer, OnProcessMemoryMetricsAvailable(_));
@@ -287,8 +287,8 @@ TEST_F(ProcessMetricsDecoratorTest, UpdateByQueryTimer) {
   // Refreshes should stop when there are no tokens left.
   interest_token.reset();
   task_env().FastForwardBy(decorator()->GetTimerDelayForTesting());
-  ExpectAndResetAllProcessResults(base::ByteCount(0), base::ByteCount(0),
-                                  base::ByteCount(0));
+  ExpectAndResetAllProcessResults(base::ByteSize(0), base::ByteSize(0),
+                                  base::ByteSize(0));
 
   graph()->RemoveSystemNodeObserver(&sys_node_observer);
 }
@@ -306,10 +306,10 @@ TEST_F(ProcessMetricsDecoratorTest, PartialUpdate) {
   WaitForMetricsUpdated();
   ExpectProcessResults(mock_graph()->process.get(), kFakeResidentSet,
                        kFakePrivateFootprint, kFakePrivateSwap);
-  ExpectProcessResults(mock_graph()->other_process.get(), base::ByteCount(0),
-                       base::ByteCount(0), base::ByteCount(0));
-  ExpectProcessResults(mock_utility_process_.get(), base::ByteCount(0),
-                       base::ByteCount(0), base::ByteCount(0));
+  ExpectProcessResults(mock_graph()->other_process.get(), base::ByteSize(0),
+                       base::ByteSize(0), base::ByteSize(0));
+  ExpectProcessResults(mock_utility_process_.get(), base::ByteSize(0),
+                       base::ByteSize(0), base::ByteSize(0));
 
   // Do another partial refresh but this time for the other process. The
   // data attached to |mock_graph()->process| shouldn't change.
@@ -323,14 +323,14 @@ TEST_F(ProcessMetricsDecoratorTest, PartialUpdate) {
                        kFakePrivateFootprint, kFakePrivateSwap);
   ExpectProcessResults(mock_graph()->other_process.get(), kFakeResidentSet * 2,
                        kFakePrivateFootprint * 2, kFakePrivateSwap * 2);
-  ExpectProcessResults(mock_utility_process_.get(), base::ByteCount(0),
-                       base::ByteCount(0), base::ByteCount(0));
+  ExpectProcessResults(mock_utility_process_.get(), base::ByteSize(0),
+                       base::ByteSize(0), base::ByteSize(0));
 }
 
 TEST_F(ProcessMetricsDecoratorTest, UpdateByImmediateRequest) {
   // There's no data available initially.
-  ExpectAndResetAllProcessResults(base::ByteCount(0), base::ByteCount(0),
-                                  base::ByteCount(0));
+  ExpectAndResetAllProcessResults(base::ByteSize(0), base::ByteSize(0),
+                                  base::ByteSize(0));
 
   // The first measurement should be taken immediately.
   auto interest_token =

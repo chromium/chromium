@@ -2,9 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "components/viz/common/frame_sinks/begin_frame_args.h"
+
 #include <string>
 
-#include "components/viz/common/frame_sinks/begin_frame_args.h"
+#include "base/test/gtest_util.h"
+#include "build/build_config.h"
 #include "components/viz/test/begin_frame_args_test.h"
 #include "testing/gtest/include/gtest/gtest-spi.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -84,15 +87,19 @@ TEST(BeginFrameArgsTest, Helpers) {
   // operator<<
   std::stringstream out1;
   out1 << args1;
-  EXPECT_EQ("BeginFrameArgs(NORMAL, 0, 1, 0, 0, -1us, 0)", out1.str());
+  EXPECT_EQ("BeginFrameArgs(NORMAL, 0, 1, 0, 0, -1us, -1us (unthrottled), 0)",
+            out1.str());
   std::stringstream out2;
   out2 << args2;
-  EXPECT_EQ("BeginFrameArgs(NORMAL, 123, 10, 1, 2, 3us, 0)", out2.str());
+  EXPECT_EQ("BeginFrameArgs(NORMAL, 123, 10, 1, 2, 3us, 3us (unthrottled), 0)",
+            out2.str());
 
   // PrintTo
-  EXPECT_EQ(std::string("BeginFrameArgs(NORMAL, 0, 1, 0, 0, -1us, 0)"),
+  EXPECT_EQ(std::string("BeginFrameArgs(NORMAL, 0, 1, 0, 0, -1us, "
+                        "-1us (unthrottled), 0)"),
             ::testing::PrintToString(args1));
-  EXPECT_EQ(std::string("BeginFrameArgs(NORMAL, 123, 10, 1, 2, 3us, 0)"),
+  EXPECT_EQ(std::string("BeginFrameArgs(NORMAL, 123, 10, 1, 2, 3us, "
+                        "3us (unthrottled), 0)"),
             ::testing::PrintToString(args2));
 }
 
@@ -126,6 +133,24 @@ TEST(BeginFrameArgsTest, Location) {
   EXPECT_EQ(expected_location.ToString(), args.created_from.ToString());
 }
 #endif
+
+// TODO(crbug.com/477242770): Changing the system display refresh rate on macOS
+// causes the unthrottled_interval state to go stale, which incorrectly trips
+// the DCHECK enforced by this test. Re-enable once this is fixed.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_InvalidUnthrottledInterval DISABLED_InvalidUnthrottledInterval
+#else
+#define MAYBE_InvalidUnthrottledInterval InvalidUnthrottledInterval
+#endif
+
+TEST(BeginFrameArgsTest, MAYBE_InvalidUnthrottledInterval) {
+#if DCHECK_IS_ON()
+  EXPECT_DCHECK_DEATH(BeginFrameArgs::Create(
+      BEGINFRAME_FROM_HERE, 0, BeginFrameArgs::kStartingFrameNumber,
+      base::TimeTicks(), base::TimeTicks(), base::Milliseconds(16),
+      BeginFrameArgs::NORMAL, base::Milliseconds(25)));
+#endif
+}
 
 }  // namespace
 }  // namespace viz

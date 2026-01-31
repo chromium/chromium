@@ -74,6 +74,12 @@ class BASE_EXPORT WallClockTimer : public PowerSuspendObserver {
   // Returns whether the timer is running.
   bool IsRunning() const;
 
+  // Sets the task runner on which the delayed task should be scheduled. This
+  // method can only be called while the timer isn't running. The task runner
+  // must run tasks on the same sequence on which this Timer is bound to
+  // (started from).
+  void SetTaskRunner(scoped_refptr<SequencedTaskRunner> task_runner);
+
   // PowerSuspendObserver:
   void OnResume() override;
 

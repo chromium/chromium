@@ -6,7 +6,6 @@
 
 #include <string_view>
 
-#include "base/containers/contains.h"
 #include "base/containers/span.h"
 #include "base/feature_list.h"
 #include "base/numerics/byte_conversions.h"
@@ -109,7 +108,7 @@ BackgroundTracingHelper::BackgroundTracingHelper(ExecutionContext* context) {
   uint32_t this_site_hash = MD5Hash32(this_site_ascii);
 
   // We only need the site information if it's allowed by the allow list.
-  if (base::Contains(GetSiteHashSet(), this_site_hash)) {
+  if (GetSiteHashSet().Contains(this_site_hash)) {
     site_ = this_site_ascii;
     site_hash_ = this_site_hash;
   }

@@ -80,14 +80,14 @@ static_library("test_support") {
 source_set("unit_tests") {
   testonly = true
   sources = [
-    "core/admin_template_service_unittests.cc",
-    "core/desk_model_wrapper_unittests.cc",
+    "core/admin_template_service_unittest.cc",
+    "core/desk_model_wrapper_unittest.cc",
     "core/desk_sync_bridge_unittest.cc",
-    "core/desk_template_conversion_unittests.cc",
-    "core/desk_template_semantics_unittests.cc",
-    "core/desk_template_util_unittests.cc",
-    "core/desk_test_util_unittests.cc",
-    "core/local_desk_data_manager_unittests.cc",
+    "core/desk_template_conversion_unittest.cc",
+    "core/desk_template_semantics_unittest.cc",
+    "core/desk_template_util_unittest.cc",
+    "core/desk_test_util_unittest.cc",
+    "core/local_desk_data_manager_unittest.cc",
     "core/saved_desk_test_util.cc",
     "core/saved_desk_test_util.h",
   ]

@@ -7,6 +7,8 @@ package org.chromium.chrome.browser.suggestions.tile;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
+import static org.chromium.chrome.browser.url_constants.UrlConstantResolver.getOriginalNativeNtpUrl;
+
 import androidx.test.core.app.ApplicationProvider;
 import androidx.test.filters.MediumTest;
 
@@ -17,7 +19,6 @@ import org.junit.runner.RunWith;
 
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
-import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
@@ -33,7 +34,6 @@ import org.chromium.chrome.test.transit.ntp.RegularNewTabPageStation;
 import org.chromium.chrome.test.transit.page.WebPageStation;
 import org.chromium.chrome.test.util.browser.suggestions.SuggestionsDependenciesRule;
 import org.chromium.chrome.test.util.browser.suggestions.mostvisited.FakeMostVisitedSites;
-import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.net.test.EmbeddedTestServer;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.url.GURL;
@@ -101,7 +101,7 @@ public class TileGroupTest {
     private MvtRemovedSnackbarFacility doTestDismissTileWithContextMenuImpl() {
         RegularNewTabPageStation ntp =
                 mInitialPage.loadPageProgrammatically(
-                        UrlConstants.NTP_URL, RegularNewTabPageStation.newBuilder());
+                        getOriginalNativeNtpUrl(), RegularNewTabPageStation.newBuilder());
         MvtsFacility mvts = ntp.focusOnMvts(mSiteSuggestions);
         MvtsTileFacility tile = mvts.ensureTileIsDisplayedAndGet(0);
 
@@ -143,7 +143,6 @@ public class TileGroupTest {
     @MediumTest
     @Feature({"NewTabPage"})
     @Restriction({DeviceFormFactor.PHONE})
-    @DisabledTest(message = "Disabled due to crbug.com/454314629")
     public void testUnpinCustomTile_Phones() {
         doTestUnpinCustomTileImpl();
     }
@@ -152,7 +151,6 @@ public class TileGroupTest {
     @MediumTest
     @Feature({"NewTabPage"})
     @Restriction({DeviceFormFactor.TABLET_OR_DESKTOP})
-    @DisabledTest(message = "Disabled due to crbug.com/454314629")
     public void testUnpinCustomTile_Tablets() {
         doTestUnpinCustomTileImpl();
     }
@@ -161,7 +159,6 @@ public class TileGroupTest {
     @MediumTest
     @Feature({"NewTabPage"})
     @Restriction({DeviceFormFactor.PHONE})
-    @DisabledTest(message = "Disabled due to crbug.com/454314629")
     public void testUnpinCustomTile_undo_Phones() {
         var snackbar = doTestUnpinCustomTileImpl();
 
@@ -174,7 +171,6 @@ public class TileGroupTest {
     @MediumTest
     @Feature({"NewTabPage"})
     @Restriction({DeviceFormFactor.TABLET_OR_DESKTOP})
-    @DisabledTest(message = "Disabled due to crbug.com/454314629")
     public void testUnpinCustomTile_undo_Tablets() {
         var snackbar = doTestUnpinCustomTileImpl();
 
@@ -188,7 +184,7 @@ public class TileGroupTest {
 
         RegularNewTabPageStation ntp =
                 mInitialPage.loadPageProgrammatically(
-                        UrlConstants.NTP_URL, RegularNewTabPageStation.newBuilder());
+                        getOriginalNativeNtpUrl(), RegularNewTabPageStation.newBuilder());
         MvtsFacility mvts =
                 ntp.focusOnMvts(
                         mMostVisitedSites.getCombinedSuggestions(),

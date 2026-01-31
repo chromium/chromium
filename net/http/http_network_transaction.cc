@@ -837,10 +837,6 @@ void HttpNetworkTransaction::CloseConnectionOnDestruction() {
   close_connection_on_destruction_ = true;
 }
 
-bool HttpNetworkTransaction::IsMdlMatchForMetrics() const {
-  return proxy_info_.is_mdl_match();
-}
-
 void HttpNetworkTransaction::OnStreamReady(const ProxyInfo& used_proxy_info,
                                            std::unique_ptr<HttpStream> stream) {
   DCHECK_EQ(STATE_CREATE_STREAM_COMPLETE, next_state_);
@@ -2222,8 +2218,6 @@ void HttpNetworkTransaction::ResetConnectionAndRequestForResend(
               "HttpNetworkTransaction::ResetConnectionAndRequestForResend",
               NetLogWithSourceToFlow(net_log_), "retry_reason", retry_reason);
 
-  reset_connection_and_request_for_resend_start_time_ = base::TimeTicks::Now();
-
   // TODO:(crbug.com/1495705): Remove this CHECK after fixing the bug.
   CHECK(request_);
   base::UmaHistogramEnumeration(
@@ -2438,13 +2432,6 @@ void HttpNetworkTransaction::RecordStreamRequestResult(int result) {
     base::UmaHistogramTimes(base::StrCat({histogram_name, ".", address_suffix}),
                             create_time);
 
-    if (!reset_connection_and_request_for_resend_start_time_.is_null()) {
-      base::UmaHistogramTimes(
-          "Net.NetworkTransaction.ResetConnectionAndResendRequestTime",
-          base::TimeTicks::Now() -
-              reset_connection_and_request_for_resend_start_time_);
-    }
-
     CHECK(stream_request_completion_details_.has_value());
     if (stream_request_completion_details_->session_source.has_value()) {
       base::UmaHistogramEnumeration(
@@ -2526,7 +2513,6 @@ void HttpNetworkTransaction::AddTraceParamsForStreamRequestResult(
 void HttpNetworkTransaction::SetProxyInfoInResponse(
     const ProxyInfo& proxy_info,
     HttpResponseInfo* response_info) {
-  response_info->was_mdl_match = proxy_info.is_mdl_match();
   if (proxy_info.is_empty()) {
     response_info->proxy_chain = ProxyChain();
   } else {

@@ -32,7 +32,7 @@ class MockObserver : public DeviceAccountsProvider::Observer {
   MOCK_METHOD(void, OnAccountsOnDeviceChanged, (), (override));
   MOCK_METHOD(void,
               OnAccountOnDeviceUpdated,
-              (const DeviceAccountsProvider::AccountInfo& device_account),
+              (const DeviceAccountsProvider::DeviceAccountInfo& device_account),
               (override));
 };
 
@@ -80,7 +80,8 @@ TEST_F(DeviceAccountsProviderImplTest, TestFetchWithUnknownIdentity) {
          DeviceAccountsProvider::AccessTokenResult result) {
         EXPECT_FALSE(result.has_value());
         EXPECT_EQ(result.error(),
-                  kAuthenticationErrorCategoryUnknownIdentityErrors);
+                  GoogleServiceAuthError(
+                      GoogleServiceAuthError::State::ACCOUNT_NOT_FOUND));
         run_loop->Quit();
       },
       &run_loop);
@@ -131,8 +132,9 @@ TEST_F(DeviceAccountsProviderImplTest, TestOnAccountOnDeviceUpdated) {
       scoped_observation{&observer};
   scoped_observation.Observe(provider);
 
-  EXPECT_CALL(observer, OnAccountOnDeviceUpdated(Property(
-                            &DeviceAccountsProvider::AccountInfo::GetGaiaId,
-                            Eq(fake_identity.gaiaId))));
+  EXPECT_CALL(observer,
+              OnAccountOnDeviceUpdated(Property(
+                  &DeviceAccountsProvider::DeviceAccountInfo::GetGaiaId,
+                  Eq(fake_identity.gaiaId))));
   fake_system_identity_manager_->FireIdentityUpdatedNotification(fake_identity);
 }

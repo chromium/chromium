@@ -58,7 +58,7 @@ class WebViewsInfo {
   const WebViewInfo& Get(int index) const;
   size_t GetSize() const;
   const WebViewInfo* GetForId(const std::string& id) const;
-  Status FillFromTargetsInfo(const base::Value::List& target_infos);
+  Status FillFromTargetsInfo(const base::ListValue& target_infos);
   bool ContainsTargetType(WebViewInfo::Type type) const;
   const WebViewInfo* FindFirst(WebViewInfo::Type type) const;
 

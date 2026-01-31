@@ -1740,7 +1740,7 @@ inline constexpr char kLocalAuthFactorsComplexity[] =
     "ash.local_auth_factors.complexity";
 
 // A list of allowed local auth factors.
-inline constexpr char kLocalAuthFactors[] =
+inline constexpr char kAllowedLocalAuthFactors[] =
     "ash.local_auth_factors.enabled_factors";
 
 // Dictionary prefs in local state that keeps information about detachable
@@ -2068,6 +2068,11 @@ inline constexpr char kAutozoomNudges[] = "ash.camera.autozoom_nudges";
 // by default.
 inline constexpr char kCameraAppDevToolsOpen[] =
     "ash.camera.cca_dev_tools_open";
+
+// Boolean pref to record if the cancel upload confirmation dialog should be
+// skipped when the user tries to cancel camera file upload to cloud.
+inline constexpr char kCameraAppSkipCancelUploadDialog[] =
+    "ash.camera.skip_cancel_upload_dialog";
 
 // A string pref that is set by enterprise policy when admin forces a custom
 // path to save camera photos.

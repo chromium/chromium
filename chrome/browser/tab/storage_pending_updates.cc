@@ -66,15 +66,22 @@ class SaveNodeUpdateUnit : public StorageUpdateUnit {
 // StorageUpdateUnit to save a payload.
 class SavePayloadUpdateUnit : public StorageUpdateUnit {
  public:
-  SavePayloadUpdateUnit(StorageId id, std::unique_ptr<Payload> payload)
-      : id_(id), payload_(std::move(payload)) {}
+  SavePayloadUpdateUnit(StorageId id,
+                        std::string window_tag,
+                        bool is_off_the_record,
+                        std::unique_ptr<Payload> payload)
+      : id_(id),
+        window_tag_(std::move(window_tag)),
+        is_off_the_record_(is_off_the_record),
+        payload_(std::move(payload)) {}
 
   ~SavePayloadUpdateUnit() override = default;
 
   bool Execute(TabStateStorageDatabase* db,
                OpenTransaction* transaction) override {
     bool success =
-        db->SaveNodePayload(transaction, id_, payload_->SerializePayload());
+        db->SaveNodePayload(transaction, id_, window_tag_, is_off_the_record_,
+                            payload_->SerializePayload());
     if (!success) {
       DLOG(ERROR) << "Could not perform node payload update operation.";
     }
@@ -83,6 +90,8 @@ class SavePayloadUpdateUnit : public StorageUpdateUnit {
 
  private:
   StorageId id_;
+  std::string window_tag_;
+  const bool is_off_the_record_;
   std::unique_ptr<Payload> payload_;
 };
 
@@ -173,10 +182,14 @@ std::unique_ptr<StorageUpdateUnit> SaveNodePendingUpdate::CreateUnit() {
 
 SavePayloadPendingUpdate::SavePayloadPendingUpdate(
     StorageId id,
+    std::string window_tag,
+    bool is_off_the_record,
     TabStoragePackager* packager,
     StorageIdMapping& mapping,
     TabCollectionNodeHandle handle)
     : StoragePendingUpdate(id),
+      window_tag_(std::move(window_tag)),
+      is_off_the_record_(is_off_the_record),
       mapping_(mapping),
       packager_(packager),
       handle_(std::move(handle)) {}
@@ -198,7 +211,8 @@ std::unique_ptr<StorageUpdateUnit> SavePayloadPendingUpdate::CreateUnit() {
     TabHandle tab_handle = std::get<TabHandle>(handle_);
     payload = packager_->Package(tab_handle.Get());
   }
-  return std::make_unique<SavePayloadUpdateUnit>(id_, std::move(payload));
+  return std::make_unique<SavePayloadUpdateUnit>(
+      id_, std::move(window_tag_), is_off_the_record_, std::move(payload));
 }
 
 SaveChildrenPendingUpdate::SaveChildrenPendingUpdate(

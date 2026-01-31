@@ -126,21 +126,16 @@ class TpcdMetadataDevtoolsObserverBrowserTest
     : public subresource_filter::SubresourceFilterBrowserTest {
  public:
   explicit TpcdMetadataDevtoolsObserverBrowserTest(
-      bool enable_tracking_protection = true,
+      bool enable_3pcd = true,
       bool enable_metadata_feature = true,
       bool enable_staged_control = true)
       : https_server_(net::EmbeddedTestServer::TYPE_HTTPS) {
     enabled_features_.push_back(
         {network::features::kSkipTpcdMitigationsForAds,
          {{"SkipTpcdMitigationsForAdsMetadata", "true"}}});
-    // Since Tracking Protection is always enabled via the field trial config
-    // for browser tests, we need to manually disable it.
-    if (enable_tracking_protection) {
+    if (enable_3pcd) {
       enabled_features_.push_back(
           {content_settings::features::kTrackingProtection3pcd, {}});
-    } else {
-      disabled_features_.push_back(
-          content_settings::features::kTrackingProtection3pcd);
     }
     if (enable_metadata_feature) {
       enabled_features_.push_back({net::features::kTpcdMetadataGrants, {}});
@@ -238,27 +233,27 @@ class TpcdMetadataDevtoolsObserverBrowserTest
   void WaitForMetadataIssueAndCheck(const std::vector<std::string>& sites,
                                     uint32_t opt_out_percentage,
                                     bool is_opt_out_top_level) {
-    auto is_metadata_issue = [](const base::Value::Dict& params) {
+    auto is_metadata_issue = [](const base::DictValue& params) {
       const std::string* issue_code =
           params.FindStringByDottedPath("issue.code");
       return issue_code && *issue_code == "CookieDeprecationMetadataIssue";
     };
 
     // Wait for notification of a Metadata Issue.
-    base::Value::Dict params =
+    base::DictValue params =
         web_contents_devtools_client.WaitForMatchingNotification(
             "Audits.issueAdded", base::BindRepeating(is_metadata_issue));
     const std::string* issue_code = params.FindStringByDottedPath("issue.code");
     ASSERT_TRUE(issue_code);
     ASSERT_EQ(*issue_code, "CookieDeprecationMetadataIssue");
 
-    base::Value::Dict* metadata_issue_details = params.FindDictByDottedPath(
+    base::DictValue* metadata_issue_details = params.FindDictByDottedPath(
         "issue.details.cookieDeprecationMetadataIssueDetails");
     ASSERT_TRUE(metadata_issue_details);
 
     // Verify the reported allowed sites match the expected sites.
     std::vector<std::string> allowed_sites;
-    base::Value::List* allowed_sites_list =
+    base::ListValue* allowed_sites_list =
         metadata_issue_details->FindList("allowedSites");
     if (allowed_sites_list) {
       for (const auto& val : *allowed_sites_list) {
@@ -289,14 +284,14 @@ class TpcdMetadataDevtoolsObserverBrowserTest
                                   std::string_view exclusion) {
     CHECK(warning.empty() || exclusion.empty())
         << "inclusion reason and exclusion reason should not co-exist";
-    auto is_cookie_issue = [](const base::Value::Dict& params) {
+    auto is_cookie_issue = [](const base::DictValue& params) {
       const std::string* issue_code =
           params.FindStringByDottedPath("issue.code");
       return issue_code && *issue_code == "CookieIssue";
     };
 
     // Wait for notification of a Cookie Issue.
-    base::Value::Dict params =
+    base::DictValue params =
         web_contents_devtools_client.WaitForMatchingNotification(
             "Audits.issueAdded", base::BindRepeating(is_cookie_issue));
 
@@ -332,7 +327,7 @@ class TpcdMetadataDevtoolsObserverBrowserTest
   void SendSetCookieControls(bool enable_third_party_cookie_restriction,
                              bool disable_third_party_cookie_metadata,
                              bool disable_third_party_cookie_heuristics) {
-    base::Value::Dict command_params;
+    base::DictValue command_params;
     command_params.Set("enableThirdPartyCookieRestriction",
                        enable_third_party_cookie_restriction);
     command_params.Set("disableThirdPartyCookieMetadata",
@@ -436,7 +431,7 @@ class TpcdMetadataDevtoolsObserverTrackingProtectionDisabledBrowserTest
  public:
   TpcdMetadataDevtoolsObserverTrackingProtectionDisabledBrowserTest()
       : TpcdMetadataDevtoolsObserverBrowserTest(
-            /*enable_tracking_protection=*/false) {}
+            /*enable_3pcd=*/false) {}
 };
 
 IN_PROC_BROWSER_TEST_F(
@@ -511,7 +506,7 @@ class TpcdMetadataDevtoolsObserverDtrpDisabledBrowserTest
  public:
   TpcdMetadataDevtoolsObserverDtrpDisabledBrowserTest()
       : TpcdMetadataDevtoolsObserverBrowserTest(
-            /*enable_tracking_protection=*/true,
+            /*enable_3pcd=*/true,
             /*enable_metadata_feature=*/true,
             /*enable_staged_control=*/false) {}
 };
@@ -544,16 +539,6 @@ IN_PROC_BROWSER_TEST_F(TpcdMetadataDevtoolsObserverBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(TpcdMetadataDevtoolsObserverBrowserTest,
-                       DoesNotEmitDevtoolsIssueWithBlockedCookiesSetting) {
-  browser()->profile()->GetPrefs()->SetBoolean(prefs::kBlockAll3pcToggleEnabled,
-                                               true);
-
-  AddCookieAccess("a.test", "b.test", /*is_ad_tagged=*/false);
-
-  CheckNoAddedIssue();
-}
-
-IN_PROC_BROWSER_TEST_F(TpcdMetadataDevtoolsObserverBrowserTest,
                        DoesNotEmitDevtoolsIssueForAdTaggedCookie) {
   AddCookieAccess("a.test", "b.test", /*is_ad_tagged=*/true);
 
@@ -565,7 +550,7 @@ class TpcdMetadataDevtoolsObserverDisabledBrowserTest
  public:
   TpcdMetadataDevtoolsObserverDisabledBrowserTest()
       : TpcdMetadataDevtoolsObserverBrowserTest(
-            /*enable_tracking_protection=*/true,
+            /*enable_3pcd=*/true,
             /*enable_metadata_feature=*/false,
             /*enable_staged_control=*/true) {}
 };

@@ -4,12 +4,12 @@
 
 #include "ui/gfx/render_text_harfbuzz.h"
 
+#include <algorithm>
 #include <limits>
 #include <set>
 #include <string_view>
 
 #include "base/command_line.h"
-#include "base/containers/contains.h"
 #include "base/containers/lru_cache.h"
 #include "base/containers/span.h"
 #include "base/debug/alias.h"
@@ -177,10 +177,11 @@ void ScriptSetIntersect(UChar32 codepoint, std::vector<UScriptCode>& result) {
     return;
   }
 
-  CHECK(!base::Contains(extensions, USCRIPT_INHERITED));
+  CHECK(!std::ranges::contains(extensions, USCRIPT_INHERITED));
 
-  std::erase_if(
-      result, [&](auto script) { return !base::Contains(extensions, script); });
+  std::erase_if(result, [&](auto script) {
+    return !std::ranges::contains(extensions, script);
+  });
 }
 
 struct GraphemeProperties {

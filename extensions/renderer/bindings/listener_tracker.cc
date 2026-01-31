@@ -35,7 +35,7 @@ bool ListenerTracker::RemoveUnfilteredListener(
 std::pair<bool, int> ListenerTracker::AddFilteredListener(
     const std::string& context_owner_id,
     const std::string& event_name,
-    std::unique_ptr<base::Value::Dict> filter,
+    std::unique_ptr<base::DictValue> filter,
     int routing_id) {
   int filter_id = event_filter_.AddEventMatcher(
       event_name,
@@ -53,7 +53,7 @@ std::pair<bool, int> ListenerTracker::AddFilteredListener(
   return std::make_pair(was_first_of_kind, filter_id);
 }
 
-std::pair<bool, std::unique_ptr<base::Value::Dict>>
+std::pair<bool, std::unique_ptr<base::DictValue>>
 ListenerTracker::RemoveFilteredListener(const std::string& context_owner_id,
                                         const std::string& event_name,
                                         int filter_id) {
@@ -77,7 +77,7 @@ ListenerTracker::RemoveFilteredListener(const std::string& context_owner_id,
   event_filter_.RemoveEventMatcher(filter_id);
   return std::make_pair(
       was_last_of_kind,
-      std::make_unique<base::Value::Dict>(std::move(filter_copy).TakeDict()));
+      std::make_unique<base::DictValue>(std::move(filter_copy).TakeDict()));
 }
 
 std::set<int> ListenerTracker::GetMatchingFilteredListeners(

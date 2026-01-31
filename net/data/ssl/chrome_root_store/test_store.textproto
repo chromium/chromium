@@ -61,6 +61,30 @@ trust_anchors {
   trust_anchor_id: "\x05\x05\x05"
 }
 
+mtc_anchors {
+  log_id: "\x09\x01\x03\x04"
+  tls_trust_anchor: true
+}
+
+# mtc anchor that doesn't have tls_trust_anchor set. Should be ignored.
+mtc_anchors {
+  log_id: "\x09\x02\x03\x04"
+  tls_trust_anchor: false
+}
+
+mtc_anchors {
+  log_id: "\x08\x03\x02\x01"
+  tls_trust_anchor: true
+}
+
+mtc_anchors {
+  log_id: "\x08\x04\x05\x06"
+  tls_trust_anchor: true
+  constraints: {
+    permitted_dns_names: "mtc.example.com"
+  }
+}
+
 # "CN=Qualified e-Szigno TLS CA 2018,O=Microsec Ltd.,L=Budapest,C=HU,2.5.4.97=#130e56415448552d3233353834343937"
 additional_certs {
   sha256_hex: "f7c7e28fb5e79f314aaac6bbba932f15e1a72069f435d4c9e707f93ca1482ee3"

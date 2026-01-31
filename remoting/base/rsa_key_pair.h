@@ -7,7 +7,9 @@
 
 #include <memory>
 #include <string>
+#include <vector>
 
+#include "base/containers/span.h"
 #include "base/memory/ref_counted.h"
 #include "crypto/keypair.h"
 
@@ -34,6 +36,10 @@ class RsaKeyPair : public base::RefCountedThreadSafe<RsaKeyPair> {
 
   // Returns a base64-encoded string representing the public key.
   std::string GetPublicKey() const;
+
+  // Signs |data| with this key pair using RSA-PSS with SHA-256.
+  // Returns an empty vector if signing fails.
+  std::vector<uint8_t> Sign(base::span<const uint8_t> data);
 
   EVP_PKEY* private_key() { return key_.key(); }
 

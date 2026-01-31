@@ -199,7 +199,7 @@ public class AccountManagerFacadeImpl implements AccountManagerFacade {
         PlatformAccount platformAccount = getPlatformAccount(coreAccountInfo.getGaiaId());
         if (platformAccount == null) {
             callback.onGetTokenFailure(
-                    new GoogleServiceAuthError(GoogleServiceAuthErrorState.USER_NOT_SIGNED_UP));
+                    new GoogleServiceAuthError(GoogleServiceAuthErrorState.ACCOUNT_NOT_FOUND));
             pendingRequestFinished();
             return;
         }

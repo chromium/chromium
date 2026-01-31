@@ -33,7 +33,7 @@ class LensSearchboxClient {
 
   // Returns the Lens autocomplete inputs. Used to report iil=, vsrid=,
   // gsessionid=, and vsint= in the Suggest requests.
-  virtual const lens::proto::LensOverlaySuggestInputs& GetLensSuggestInputs()
+  virtual lens::proto::LensOverlaySuggestInputs GetLensSuggestInputs()
       const = 0;
 
   // Called when the user modifies the text in any way (add, delete, paste,

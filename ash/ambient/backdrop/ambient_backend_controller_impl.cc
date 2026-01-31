@@ -173,7 +173,7 @@ std::string BuildBackdropTopicDetails(
   }
 }
 
-std::optional<std::string> GetStringValue(const base::Value::List& values,
+std::optional<std::string> GetStringValue(const base::ListValue& values,
                                           size_t field_number) {
   if (values.empty() || values.size() < field_number)
     return std::nullopt;
@@ -185,7 +185,7 @@ std::optional<std::string> GetStringValue(const base::Value::List& values,
   return v.GetString();
 }
 
-std::optional<double> GetDoubleValue(const base::Value::List& values,
+std::optional<double> GetDoubleValue(const base::ListValue& values,
                                      size_t field_number) {
   if (values.empty() || values.size() < field_number)
     return std::nullopt;
@@ -197,7 +197,7 @@ std::optional<double> GetDoubleValue(const base::Value::List& values,
   return v.GetDouble();
 }
 
-std::optional<bool> GetBoolValue(const base::Value::List& values,
+std::optional<bool> GetBoolValue(const base::ListValue& values,
                                  size_t field_number) {
   if (values.empty() || values.size() < field_number)
     return std::nullopt;

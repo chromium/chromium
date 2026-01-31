@@ -61,7 +61,6 @@ source_set("common") {
     "//ui/base",
     "//ui/gfx/geometry",
     "//ui/gfx/ipc/geometry",
-    "//ui/gfx/ipc/skia",
     "//url",
   ]
 }

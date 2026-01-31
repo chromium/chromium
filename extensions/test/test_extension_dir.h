@@ -31,8 +31,8 @@ class TestExtensionDir {
   // is performed. If desired this should be done on extension installation.
   void WriteManifest(std::string_view manifest);
 
-  // As above, but using a base::Value::Dict instead of JSON string.
-  void WriteManifest(const base::Value::Dict& manifest);
+  // As above, but using a base::DictValue instead of JSON string.
+  void WriteManifest(const base::DictValue& manifest);
 
   // Writes `contents` to `filename` within the unpacked dir, overwriting
   // anything that was already there.

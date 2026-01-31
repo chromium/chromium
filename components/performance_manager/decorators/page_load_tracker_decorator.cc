@@ -54,9 +54,9 @@ void PageLoadTrackerDecorator::OnTakenFromGraph(Graph* graph) {
   UnregisterObservers(graph);
 }
 
-base::Value::Dict PageLoadTrackerDecorator::DescribePageNodeData(
+base::DictValue PageLoadTrackerDecorator::DescribePageNodeData(
     const PageNode* page_node) const {
-  base::Value::Dict ret;
+  base::DictValue ret;
 
   PageNodeImpl* page_node_impl = PageNodeImpl::FromNode(page_node);
   if (!Data::Exists(page_node_impl)) {

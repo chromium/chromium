@@ -15,6 +15,7 @@
 #include "base/i18n/rtl.h"
 #include "base/scoped_observation_traits.h"
 #include "build/build_config.h"
+#include "components/input/input_event_source.h"
 #include "components/input/native_web_keyboard_event.h"
 #include "content/common/content_export.h"
 #include "content/public/common/drop_data.h"
@@ -108,6 +109,12 @@ class CONTENT_EXPORT RenderWidgetHost {
   static std::unique_ptr<RenderWidgetHostIterator> GetRenderWidgetHosts();
 
   virtual ~RenderWidgetHost() {}
+
+  // This is a method to manually trigger user interaction notifications. This
+  // is useful for mechanisms that do not use the normal input stack and thus
+  // would not normally send notifications to observers (e.g. tools in
+  // `actor::`).
+  virtual void SimulateUserInteraction(const blink::WebInputEvent& event) = 0;
 
   // Returns the viz::FrameSinkId that this object uses to put things on screen.
   // This value is constant throughout the lifetime of this object. Note that
@@ -226,10 +233,14 @@ class CONTENT_EXPORT RenderWidgetHost {
   // Observer for WebInputEvents.
   class InputEventObserver {
    public:
-    virtual ~InputEventObserver() {}
+    using InputEventSource = input::InputEventSource;
+    virtual ~InputEventObserver() = default;
 
-    virtual void OnInputEvent(const RenderWidgetHost&,
-                              const blink::WebInputEvent&) {}
+    // Called when an input event is received. `source` indicates whether the
+    // event was received from the browser or Viz process.
+    virtual void OnInputEvent(const RenderWidgetHost& host,
+                              const blink::WebInputEvent& event,
+                              InputEventSource source) {}
     virtual void OnInputEventAck(const RenderWidgetHost&,
                                  blink::mojom::InputEventResultSource source,
                                  blink::mojom::InputEventResultState state,
@@ -342,6 +353,9 @@ class CONTENT_EXPORT RenderWidgetHost {
   // This can run synchronously on failure.
   using VisualStateCallback = base::OnceCallback<void(bool)>;
   virtual void InsertVisualStateCallback(VisualStateCallback callback) {}
+
+  // Sets the timeout for the hung renderer detection.
+  virtual void SetHungRendererDelay(const base::TimeDelta& delay) = 0;
 };
 
 }  // namespace content

@@ -13,6 +13,9 @@
 #include "chrome/browser/ui/extensions/controlled_home_dialog_controller_interface.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_registry_observer.h"
+#include "extensions/buildflags/buildflags.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 class Profile;
 

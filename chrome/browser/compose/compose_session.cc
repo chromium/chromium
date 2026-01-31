@@ -29,9 +29,9 @@
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_dialogs.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/chrome_pages.h"
+#include "chrome/browser/ui/dialogs/browser_dialogs.h"
 #include "chrome/browser/ui/hats/hats_service_factory.h"
 #include "chrome/browser/ui/hats/survey_config.h"
 #include "chrome/common/compose/type_conversions.h"
@@ -967,7 +967,7 @@ bool ComposeSession::CanShowFeedbackPage() {
 }
 
 void ComposeSession::OpenFeedbackPage(std::string feedback_id) {
-  base::Value::Dict feedback_metadata;
+  base::DictValue feedback_metadata;
   feedback_metadata.Set("log_id", feedback_id);
 
   chrome::ShowFeedbackPage(
@@ -979,7 +979,7 @@ void ComposeSession::OpenFeedbackPage(std::string feedback_id) {
       l10n_util::GetStringUTF8(IDS_COMPOSE_FEEDBACK_PLACEHOLDER),
       /*category_tag=*/"compose",
       /*extra_diagnostics=*/std::string(),
-      /*autofill_metadata=*/base::Value::Dict(), std::move(feedback_metadata));
+      /*autofill_metadata=*/base::DictValue(), std::move(feedback_metadata));
 }
 
 void ComposeSession::SetUserFeedback(compose::mojom::UserFeedback feedback) {

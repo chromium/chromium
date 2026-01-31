@@ -127,17 +127,40 @@ BASE_FEATURE(kBrowsingHistoryActorIntegrationM1,
 BASE_FEATURE(kBrowsingHistoryActorIntegrationM2,
              base::FeatureState::FEATURE_DISABLED_BY_DEFAULT);
 
+// Enables Milestone 3 of History-Actor integration, this includes improvements
+// in history entry grouping and filtering.
+BASE_FEATURE(kBrowsingHistoryActorIntegrationM3,
+             base::FeatureState::FEATURE_DISABLED_BY_DEFAULT);
+
 // Whether Browsing History Actor Integration M1 or any dependent feature is
 // enabled.
 bool IsBrowsingHistoryActorIntegrationM1Enabled() {
   return base::FeatureList::IsEnabled(kBrowsingHistoryActorIntegrationM1) ||
          base::FeatureList::IsEnabled(kBrowsingHistoryActorIntegrationM2);
 }
+
+// Whether Browsing History Actor Integration M2 or any dependent feature is
+// enabled.
+bool IsBrowsingHistoryActorIntegrationM2Enabled() {
+  return base::FeatureList::IsEnabled(kBrowsingHistoryActorIntegrationM2) ||
+         base::FeatureList::IsEnabled(kBrowsingHistoryActorIntegrationM3);
+}
+
+// Whether Browsing History Actor Integration M3 is enabled.
+bool IsBrowsingHistoryActorIntegrationM3Enabled() {
+  return base::FeatureList::IsEnabled(kBrowsingHistoryActorIntegrationM3);
+}
+
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 
 // If enabled, the BrowsingHistoryService will start querying only local data,
 // and switch to querying remote data only once all local data has been
 // exhausted.
 BASE_FEATURE(kHistoryQueryOnlyLocalFirst, base::FEATURE_DISABLED_BY_DEFAULT);
+
+// If enabled, the WebHistoryService will use a new API for querying browsing
+// history (https://footprints-pa.googleapis.com/...) instead of the old and
+// deprecated one (https://history.google.com/history/api/...).
+BASE_FEATURE(kWebHistoryUseNewApi, base::FEATURE_DISABLED_BY_DEFAULT);
 
 }  // namespace history

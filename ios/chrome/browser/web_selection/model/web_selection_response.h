@@ -20,7 +20,7 @@ class WebState;
 
 // Parses a serialized response stored in `dict` into a WebSelectionResponse.
 // `webState` must not be null.
-+ (instancetype)selectionResponseWithDict:(const base::Value::Dict&)dict
++ (instancetype)selectionResponseWithDict:(const base::DictValue&)dict
                                  webState:(web::WebState*)webState;
 
 // Return a response with every field nil and `valid`=NO.

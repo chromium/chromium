@@ -12,80 +12,12 @@
 #include "base/check.h"
 #include "base/check_op.h"
 #include "base/compiler_specific.h"
-#include "base/containers/to_vector.h"
-#include "base/notreached.h"
 #include "base/stl_util.h"
 #include "crypto/openssl_util.h"
 #include "crypto/secure_util.h"
 #include "third_party/boringssl/src/include/openssl/hmac.h"
 
 namespace crypto {
-
-HMAC::HMAC(HashAlgorithm hash_alg) : hash_alg_(hash_alg), initialized_(false) {
-  // Only SHA-1 and SHA-256 hash algorithms are supported now.
-  DCHECK(hash_alg_ == SHA1 || hash_alg_ == SHA256);
-}
-
-HMAC::~HMAC() {
-  // Zero out key copy.
-  key_.assign(key_.size(), 0);
-  base::STLClearObject(&key_);
-}
-
-size_t HMAC::DigestLength() const {
-  switch (hash_alg_) {
-    case SHA1:
-      return 20;
-    case SHA256:
-      return 32;
-    default:
-      NOTREACHED();
-  }
-}
-
-bool HMAC::Init(base::span<const uint8_t> key) {
-  // Init must not be called more than once on the same HMAC object.
-  DCHECK(!initialized_);
-  initialized_ = true;
-  key_ = base::ToVector(key);
-  return true;
-}
-
-bool HMAC::Sign(std::string_view data,
-                unsigned char* digest,
-                size_t digest_length) const {
-  return Sign(base::as_byte_span(data),
-              UNSAFE_TODO(base::span(digest, digest_length)));
-}
-
-bool HMAC::Sign(base::span<const uint8_t> data,
-                base::span<uint8_t> digest) const {
-  DCHECK(initialized_);
-
-  if (digest.size() > DigestLength())
-    return false;
-
-  ScopedOpenSSLSafeSizeBuffer<EVP_MAX_MD_SIZE> result(digest.data(),
-                                                      digest.size());
-  return !!::HMAC(hash_alg_ == SHA1 ? EVP_sha1() : EVP_sha256(), key_.data(),
-                  key_.size(), data.data(), data.size(), result.safe_buffer(),
-                  nullptr);
-}
-
-bool HMAC::Verify(std::string_view data, std::string_view digest) const {
-  return Verify(base::as_byte_span(data), base::as_byte_span(digest));
-}
-
-bool HMAC::Verify(base::span<const uint8_t> data,
-                  base::span<const uint8_t> digest) const {
-  std::array<uint8_t, EVP_MAX_MD_SIZE> computed_buffer;
-  auto computed_digest = base::span(computed_buffer).first(DigestLength());
-  if (!Sign(data, computed_digest)) {
-    return false;
-  }
-
-  return SecureMemEqual(digest, computed_digest);
-}
 
 namespace hmac {
 

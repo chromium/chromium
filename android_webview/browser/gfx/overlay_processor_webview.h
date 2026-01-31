@@ -68,10 +68,6 @@ class OverlayProcessorWebView : public viz::OverlayProcessorSurfaceControl,
   // OverlaysInfoProvider implenentation:
   bool IsFrameSinkOverlayed(viz::FrameSinkId frame_sink_id) override;
 
- protected:
-  // viz::OverlayProcessorUsingStrategy overrides:
-  bool ShouldCreatePrimaryPlane() const override;
-
  private:
   class Manager;
 

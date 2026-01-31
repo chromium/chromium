@@ -16,7 +16,7 @@ namespace syncer::sync_ui_util {
 namespace {
 
 // Helper function that allows using ASSERT_xxx inside because it returns void.
-void FindStatWithNameImpl(const base::Value::Dict& strings,
+void FindStatWithNameImpl(const base::DictValue& strings,
                           const std::string& stat_name,
                           const base::Value** result) {
   const base::Value* details = strings.Find("details");
@@ -50,7 +50,7 @@ void FindStatWithNameImpl(const base::Value::Dict& strings,
   }
 }
 
-const base::Value* FindStatWithName(const base::Value::Dict& strings,
+const base::Value* FindStatWithName(const base::DictValue& strings,
                                     const std::string& stat_name) {
   const base::Value* result = nullptr;
   FindStatWithNameImpl(strings, stat_name, &result);
@@ -61,7 +61,7 @@ TEST(SyncUIUtilTestAbout, ConstructAboutInformationWithUnrecoverableErrorTest) {
   TestSyncService service;
   service.SetHasUnrecoverableError(true);
 
-  const base::Value::Dict strings = ConstructAboutInformation(
+  const base::DictValue strings = ConstructAboutInformation(
       IncludeSensitiveData(true), &service, std::string());
 
   EXPECT_TRUE(strings.Find("unrecoverable_error_detected"));
@@ -71,7 +71,7 @@ TEST(
     SyncUIUtilTestAbout,
     ConstructAboutInformationWithTrustedUnspecifiedVaultAutoUpgradeExperiment) {
   TestSyncService service;
-  const base::Value::Dict strings = ConstructAboutInformation(
+  const base::DictValue strings = ConstructAboutInformation(
       IncludeSensitiveData(true), &service, std::string());
   const base::Value* auto_upgrade_experiment_group =
       FindStatWithName(strings, "Trusted Vault Auto Upgrade Group");
@@ -94,7 +94,7 @@ TEST(SyncUIUtilTestAbout,
 
   service.SetDetailedSyncStatus(/*engine_available=*/true, status);
 
-  const base::Value::Dict strings = ConstructAboutInformation(
+  const base::DictValue strings = ConstructAboutInformation(
       IncludeSensitiveData(true), &service, std::string());
   const base::Value* auto_upgrade_experiment_group =
       FindStatWithName(strings, "Trusted Vault Auto Upgrade Group");

@@ -92,7 +92,7 @@ class BruschettaInstallerImpl : public BruschettaInstaller {
 
   std::string vm_name_;
   std::string config_id_;
-  base::Value::Dict config_;
+  base::DictValue config_;
 
   base::FilePath boot_disk_path_;
   base::FilePath pflash_path_;

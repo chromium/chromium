@@ -165,7 +165,6 @@ void CreateTrialsFromSeedFuzzer(
   StickyActivationManager sticky_activation_manager(/*local_state=*/nullptr);
   VariationsSeedProcessor(sticky_activation_manager)
       .CreateTrialsFromSeed(seed, *client_state,
-                            base::BindRepeating(NoopUIStringOverrideCallback),
                             *entropy_providers, layers, &feature_list);
 
   // There are numerous conditions for which the seed could be rejected. They

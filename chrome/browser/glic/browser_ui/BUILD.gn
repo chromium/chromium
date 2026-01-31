@@ -65,6 +65,7 @@ source_set("glow_impl") {
     ":glow",
     "//chrome/browser/glic/resources:browser_resources",
     "//chrome/browser/themes",
+    "//chrome/browser/ui/browser_window",
     "//chrome/browser/ui/tabs:tab_strip",
   ]
 }
@@ -79,9 +80,11 @@ source_set("browser_ui") {
   ]
   deps = [
     "//chrome/browser/actor/ui",
+    "//chrome/browser/glic/fre",
     "//chrome/browser/themes",
     "//chrome/browser/ui/tabs:tab_strip",
     "//chrome/browser/ui/user_education",
+    "//chrome/browser/ui/views/tabs/glic",
     "//components/feature_engagement/public",
   ]
   public_deps = [ "//chrome/browser/glic" ]
@@ -97,6 +100,7 @@ source_set("unit_tests") {
     "//chrome/browser:global_features",
     "//chrome/browser/actor:test_support",
     "//chrome/browser/glic",
+    "//chrome/browser/glic/fre",
     "//chrome/browser/glic/test_support",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/ui:ui_features",
@@ -139,6 +143,7 @@ source_set("interactive_ui_tests") {
     "//chrome/browser/ui:browser_element_identifiers",
     "//chrome/browser/ui/tabs/alert:tab_alert",
     "//chrome/browser/ui/views/frame",
+    "//chrome/browser/ui/views/tabs/glic",
     "//chrome/common:chrome_features",
     "//chrome/common:non_code_constants",
     "//chrome/test:test_support_ui",

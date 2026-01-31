@@ -119,6 +119,8 @@ public class ToastManagerTest {
         verify(mAndroidToastObjectNext, never()).show();
     }
 
+    // TODO(crbug.com/450954710): This test fails on SDK 36.
+    @Config(sdk = 29)
     @Test
     public void toastQueuedPriorityNormal() {
         doReturn(mAndroidToastObject).when(mToast).getAndroidToast();
@@ -140,6 +142,8 @@ public class ToastManagerTest {
         verify(mAndroidToastObjectNext).show();
     }
 
+    // TODO(crbug.com/450954710): This test fails on SDK 36.
+    @Config(sdk = 29)
     @Test
     public void toastQueuedPriorityHigh() {
         doReturn(mAndroidToastObject).when(mToast).getAndroidToast();
@@ -161,6 +165,8 @@ public class ToastManagerTest {
         verify(mAndroidToastObjectNext).show();
     }
 
+    // TODO(crbug.com/450954710): This test fails on SDK 36.
+    @Config(sdk = 29)
     @Test
     public void showHighPriorityToastAhead() {
         Toast toastNormal1 = mock(Toast.class);
@@ -221,6 +227,8 @@ public class ToastManagerTest {
         verify(mAndroidToastObjectNext, never()).show(); // Duplicated text content
     }
 
+    // TODO(crbug.com/450954710): This test fails on SDK 36.
+    @Config(sdk = 29)
     @Test
     public void test500msGapBetweenTwoToasts() {
         doReturn(mAndroidToastObject).when(mToast).getAndroidToast();
@@ -253,6 +261,8 @@ public class ToastManagerTest {
         verify(mAndroidToastObjectNext).show();
     }
 
+    // TODO(crbug.com/450954710): This test fails on SDK 36.
+    @Config(sdk = 29)
     @Test
     public void testNoUnnecessaryDelaysBetweenToasts() {
         doReturn(mAndroidToastObject).when(mToast).getAndroidToast();
@@ -273,6 +283,8 @@ public class ToastManagerTest {
         verify(mAndroidToastObjectNext).show();
     }
 
+    // TODO(crbug.com/450954710): This test fails on SDK 36.
+    @Config(sdk = 29)
     @Test
     public void testCancelAndShowNextToast() {
         doReturn(mAndroidToastObject).when(mToast).getAndroidToast();

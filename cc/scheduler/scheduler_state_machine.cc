@@ -7,9 +7,10 @@
 #include <algorithm>
 
 #include "base/check_op.h"
-#include "base/feature_list.h"
 #include "base/format_macros.h"
+#include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
+#include "base/rand_util.h"
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
 #include "base/trace_event/traced_value.h"
@@ -394,6 +395,15 @@ bool SchedulerStateMachine::ShouldBeginLayerTreeFrameSinkCreation() const {
   return layer_tree_frame_sink_state_ == LayerTreeFrameSinkState::NONE;
 }
 
+bool SchedulerStateMachine::CheckShouldDraw() const {
+  // Wait for ready to draw in full-pipeline mode or the browser compositor's
+  // commit-to-active-tree mode.
+  // When
+  return ((settings_.wait_for_all_pipeline_stages_before_draw ||
+           settings_.commit_to_active_tree) &&
+          !active_tree_is_ready_to_draw_);
+}
+
 bool SchedulerStateMachine::ShouldDraw() const {
   // If we need to abort draws, we should do so ASAP since the draw could
   // be blocking other important actions (like output surface initialization),
@@ -425,11 +435,7 @@ bool SchedulerStateMachine::ShouldDraw() const {
   if (begin_impl_frame_state_ != BeginImplFrameState::INSIDE_DEADLINE)
     return false;
 
-  // Wait for ready to draw in full-pipeline mode or the browser compositor's
-  // commit-to-active-tree mode.
-  if ((settings_.wait_for_all_pipeline_stages_before_draw ||
-       settings_.commit_to_active_tree) &&
-      !active_tree_is_ready_to_draw_) {
+  if (CheckShouldDraw()) {
     return false;
   }
 
@@ -697,7 +703,6 @@ bool SchedulerStateMachine::ShouldSendBeginMainFrame() const {
 bool SchedulerStateMachine::ShouldThrottleSendBeginMainFrame() const {
   bool result = false;
   auto throttled_interval = MainFrameThrottledInterval();
-
   if (throttled_interval.is_positive() &&
       last_begin_impl_frame_time_ - last_sent_begin_main_frame_time_ <
           throttled_interval) {
@@ -709,15 +714,6 @@ bool SchedulerStateMachine::ShouldThrottleSendBeginMainFrame() const {
   // throttle. This is more expensive, but is required to reach perceptual
   // visual parity between throttled and non-throttled scrolling.
   if (is_current_scroll_main_painted_) {
-    result = false;
-  }
-
-  // Only evaluate the condition if we would be throttling, this is important
-  // for experiment targeting (not querying the feature).
-  if (result &&
-      base::FeatureList::IsEnabled(
-          features::kBoostFrameRateForUrgentMainFrame) &&
-      (Now() - last_urgent_main_frame_request_) < kUrgentBoostDuration) {
     result = false;
   }
 
@@ -1001,6 +997,11 @@ void SchedulerStateMachine::WillNotifyBeginMainFrameNotExpectedSoon() {
   did_notify_begin_main_frame_not_expected_soon_ = true;
 }
 
+bool SchedulerStateMachine::CheckWillCommit() const {
+  return (!active_tree_needs_first_draw_ ||
+          !settings_.wait_for_all_pipeline_stages_before_draw);
+}
+
 void SchedulerStateMachine::WillCommit(bool commit_has_no_updates) {
   bool can_have_pending_tree =
       commit_has_no_updates &&
@@ -1042,11 +1043,9 @@ void SchedulerStateMachine::WillCommit(bool commit_has_no_updates) {
     has_pending_tree_ = true;
     pending_tree_needs_first_draw_on_activation_ = true;
     pending_tree_is_ready_for_activation_ = false;
-    if (!active_tree_needs_first_draw_ ||
-        !settings_.wait_for_all_pipeline_stages_before_draw) {
+    if (CheckWillCommit()) {
       // Wait for the new pending tree to become ready to draw, which may happen
-      // before or after activation (unless we're in full-pipeline mode and
-      // need first draw to come through).
+      // before or after activation.
       active_tree_is_ready_to_draw_ = false;
     }
   }
@@ -1389,6 +1388,11 @@ void SchedulerStateMachine::OnBeginImplFrame(const viz::BeginFrameArgs& args) {
   did_invalidate_layer_tree_frame_sink_ = false;
   did_perform_impl_side_invalidation_ = false;
   waiting_for_scroll_event_ = false;
+
+  if (base::ShouldRecordSubsampledMetric(0.001)) {
+    UMA_HISTOGRAM_BOOLEAN("Compositing.Scheduler.HighFramerateRequested",
+                          high_framerate_requests_count_ > 0);
+  }
 }
 
 void SchedulerStateMachine::OnBeginImplFrameDeadline() {
@@ -1522,9 +1526,13 @@ bool SchedulerStateMachine::ShouldTriggerBeginImplFrameDeadlineImmediately()
   return false;
 }
 
+bool SchedulerStateMachine::CheckShouldBlockDeadlineIndefinitely() const {
+  return (!settings_.wait_for_all_pipeline_stages_before_draw &&
+          !settings_.commit_to_active_tree);
+}
+
 bool SchedulerStateMachine::ShouldBlockDeadlineIndefinitely() const {
-  if (!settings_.wait_for_all_pipeline_stages_before_draw &&
-      !settings_.commit_to_active_tree) {
+  if (CheckShouldBlockDeadlineIndefinitely()) {
     return false;
   }
 
@@ -1730,7 +1738,6 @@ void SchedulerStateMachine::SetNeedsBeginMainFrame(bool now) {
 
   if (now) {
     last_sent_begin_main_frame_time_ = base::TimeTicks();
-    last_urgent_main_frame_request_ = Now();
   }
 }
 
@@ -1898,13 +1905,26 @@ void SchedulerStateMachine::SetShouldThrottleFrameRate(bool flag) {
   }
 }
 
-base::TimeTicks SchedulerStateMachine::Now() const {
-  return base::TimeTicks::Now();
+void SchedulerStateMachine::SetRequestHighFramerate(bool flag) {
+  TRACE_EVENT("blink", __PRETTY_FUNCTION__);
+  if (flag) {
+    high_framerate_requests_count_ += 1;
+  } else {
+    DCHECK_GE(high_framerate_requests_count_, 1u);
+    high_framerate_requests_count_ =
+        std::max(static_cast<uint64_t>(1), high_framerate_requests_count_) - 1;
+  }
 }
 
 base::TimeDelta SchedulerStateMachine::MainFrameThrottledInterval() const {
   if (!throttle_frame_rate_) {
-    return main_frame_throttled_interval_;
+    if (high_framerate_requests_count_ &&
+        base::FeatureList::IsEnabled(
+            features::kHighFramerateRequestFromClient)) {
+      return base::TimeDelta();
+    } else {
+      return main_frame_throttled_interval_;
+    }
   } else {
     auto throttled_interval =
         std::max(base::Hertz(features::kRenderThrottledFrameIntervalHz.Get()),

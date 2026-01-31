@@ -15,6 +15,7 @@
 #include "content/browser/renderer_host/input/mouse_wheel_rails_filter_mac.h"
 #include "content/common/content_export.h"
 #include "content/common/render_widget_host_ns_view.mojom.h"
+#import "content/public/browser/render_widget_host_view_mac_delegate.h"
 #include "third_party/blink/public/mojom/input/input_handler.mojom-shared.h"
 #import "ui/base/cocoa/command_dispatcher.h"
 #import "ui/base/cocoa/tool_tip_base_view.h"
@@ -37,8 +38,6 @@ namespace ui {
 enum class DomCode : uint32_t;
 struct DidOverscrollParams;
 }  // namespace ui
-
-@protocol RenderWidgetHostViewMacDelegate;
 
 @protocol RenderWidgetHostNSViewHostOwner
 - (remote_cocoa::mojom::RenderWidgetHostNSViewHost*)renderWidgetHostNSViewHost;
@@ -111,6 +110,9 @@ CONTENT_EXPORT
 // Stores a reference to the popup parent's NSView id, which we can use to
 // retrieve the associated NSView.
 - (void)setPopupParentNSViewId:(uint64_t)view_id;
+
+// Returns the policy for accepting tooltips from the delegate.
+- (AcceptTooltipEvents)acceptsTooltipEvents;
 
 // Methods previously marked as private.
 - (instancetype)

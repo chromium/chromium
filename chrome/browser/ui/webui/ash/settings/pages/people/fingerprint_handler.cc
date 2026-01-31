@@ -9,7 +9,6 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
-#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
@@ -39,10 +38,10 @@ namespace {
 // The max number of fingerprints that can be stored.
 constexpr int kMaxAllowedFingerprints = 3;
 
-base::Value::Dict GetFingerprintsInfo(
+base::DictValue GetFingerprintsInfo(
     const std::vector<std::string>& fingerprints_list) {
-  base::Value::Dict response;
-  base::Value::List fingerprints;
+  base::DictValue response;
+  base::ListValue fingerprints;
 
   DCHECK_LE(static_cast<int>(fingerprints_list.size()),
             kMaxAllowedFingerprints);
@@ -123,7 +122,7 @@ void FingerprintHandler::OnEnrollScanDone(device::mojom::ScanResult scan_result,
           << scan_result
           << ", enroll_session_complete=" << enroll_session_complete
           << ", percent_complete=" << percent_complete;
-  base::Value::Dict scan_attempt;
+  base::DictValue scan_attempt;
   scan_attempt.Set("result", static_cast<int>(scan_result));
   scan_attempt.Set("isComplete", enroll_session_complete);
   scan_attempt.Set("percentComplete", percent_complete);
@@ -148,7 +147,7 @@ void FingerprintHandler::OnSessionStateChanged() {
 }
 
 void FingerprintHandler::HandleGetFingerprintsList(
-    const base::Value::List& args) {
+    const base::ListValue& args) {
   CHECK_EQ(1U, args.size());
   const std::string& callback_id = args[0].GetString();
 
@@ -181,8 +180,7 @@ void FingerprintHandler::OnGetFingerprintsList(
                             GetFingerprintsInfo(fingerprints_labels_));
 }
 
-void FingerprintHandler::HandleGetNumFingerprints(
-    const base::Value::List& args) {
+void FingerprintHandler::HandleGetNumFingerprints(const base::ListValue& args) {
   CHECK_EQ(1U, args.size());
   const std::string& callback_id = args[0].GetString();
 
@@ -194,7 +192,7 @@ void FingerprintHandler::HandleGetNumFingerprints(
                             base::Value(fingerprints_num));
 }
 
-void FingerprintHandler::HandleStartEnroll(const base::Value::List& args) {
+void FingerprintHandler::HandleStartEnroll(const base::ListValue& args) {
   AllowJavascript();
 
   const std::string& auth_token = args[0].GetString();
@@ -210,7 +208,7 @@ void FingerprintHandler::HandleStartEnroll(const base::Value::List& args) {
     std::string fingerprint_name = l10n_util::GetStringFUTF8(
         IDS_SETTINGS_PEOPLE_LOCK_SCREEN_NEW_FINGERPRINT_DEFAULT_NAME,
         base::NumberToString16(i));
-    if (!base::Contains(fingerprints_labels_, fingerprint_name)) {
+    if (!std::ranges::contains(fingerprints_labels_, fingerprint_name)) {
       fp_service_->StartEnrollSession(user_id_, fingerprint_name);
       break;
     }
@@ -218,7 +216,7 @@ void FingerprintHandler::HandleStartEnroll(const base::Value::List& args) {
 }
 
 void FingerprintHandler::HandleCancelCurrentEnroll(
-    const base::Value::List& args) {
+    const base::ListValue& args) {
   AllowJavascript();
   fp_service_->CancelCurrentEnrollSession(
       base::BindOnce(&FingerprintHandler::OnCancelCurrentEnrollSession,
@@ -231,8 +229,7 @@ void FingerprintHandler::OnCancelCurrentEnrollSession(bool success) {
   }
 }
 
-void FingerprintHandler::HandleGetEnrollmentLabel(
-    const base::Value::List& args) {
+void FingerprintHandler::HandleGetEnrollmentLabel(const base::ListValue& args) {
   const auto& list = args;
   CHECK_EQ(2U, list.size());
   const std::string& callback_id = list[0].GetString();
@@ -252,7 +249,7 @@ void FingerprintHandler::OnRequestRecordLabel(const std::string& callback_id,
   ResolveJavascriptCallback(base::Value(callback_id), base::Value(label));
 }
 
-void FingerprintHandler::HandleRemoveEnrollment(const base::Value::List& args) {
+void FingerprintHandler::HandleRemoveEnrollment(const base::ListValue& args) {
   const auto& list = args;
   // TODO(b/261412646): add unit tests to this class
   CHECK_EQ(3U, list.size());
@@ -283,7 +280,7 @@ void FingerprintHandler::OnRemoveRecord(const std::string& callback_id,
 }
 
 void FingerprintHandler::HandleChangeEnrollmentLabel(
-    const base::Value::List& args) {
+    const base::ListValue& args) {
   const auto& list = args;
   CHECK_EQ(3U, list.size());
 

@@ -30,27 +30,27 @@
   ::policy::PolicyLogger::LogHelper(                                  \
       ::policy::PolicyLogger::LogHelper::LogType::kVLog,              \
       ::policy::PolicyLogger::Log::Severity::kVerbose, log_verbosity, \
-      log_source, std::string_view(__FILE__, std::size(__FILE__)), __LINE__)
+      log_source, std::string_view(__FILE__), __LINE__)
 #define DVLOG_POLICY(log_verbosity, log_source)                       \
   ::policy::PolicyLogger::LogHelper(                                  \
       ::policy::PolicyLogger::LogHelper::LogType::kDLog,              \
       ::policy::PolicyLogger::Log::Severity::kVerbose, log_verbosity, \
-      log_source, std::string_view(__FILE__, std::size(__FILE__)), __LINE__)
+      log_source, std::string_view(__FILE__), __LINE__)
 #define LOG_POLICY_INFO(log_type, log_source)                       \
   ::policy::PolicyLogger::LogHelper(                                \
       log_type, ::policy::PolicyLogger::Log::Severity::kInfo,       \
       ::policy::PolicyLogger::LogHelper::kNoVerboseLog, log_source, \
-      std::string_view(__FILE__, std::size(__FILE__)), __LINE__)
+      std::string_view(__FILE__), __LINE__)
 #define LOG_POLICY_WARNING(log_type, log_source)                    \
   ::policy::PolicyLogger::LogHelper(                                \
       log_type, ::policy::PolicyLogger::Log::Severity::kWarning,    \
       ::policy::PolicyLogger::LogHelper::kNoVerboseLog, log_source, \
-      std::string_view(__FILE__, std::size(__FILE__)), __LINE__)
+      std::string_view(__FILE__), __LINE__)
 #define LOG_POLICY_ERROR(log_type, log_source)                      \
   ::policy::PolicyLogger::LogHelper(                                \
       log_type, ::policy::PolicyLogger::Log::Severity::kError,      \
       ::policy::PolicyLogger::LogHelper::kNoVerboseLog, log_source, \
-      std::string_view(__FILE__, std::size(__FILE__)), __LINE__)
+      std::string_view(__FILE__), __LINE__)
 
 #define POLICY_AUTH ::policy::PolicyLogger::Log::Source::kAuthentication
 #define POLICY_PROCESSING ::policy::PolicyLogger::Log::Source::kPolicyProcessing
@@ -103,7 +103,7 @@ class POLICY_EXPORT PolicyLogger {
     int line() const { return line_; }
     base::Time timestamp() const { return timestamp_; }
 
-    base::Value::Dict GetAsDict() const;
+    base::DictValue GetAsDict() const;
 
    private:
     Severity log_severity_;
@@ -166,8 +166,8 @@ class POLICY_EXPORT PolicyLogger {
   PolicyLogger& operator=(const PolicyLogger&) = delete;
   ~PolicyLogger();
 
-  // Returns the logs list as base::Value::List to send to UI.
-  base::Value::List GetAsList();
+  // Returns the logs list as base::ListValue to send to UI.
+  base::ListValue GetAsList();
 
   // Checks if browser is running on Android.
   bool IsPolicyLoggingEnabled() const;

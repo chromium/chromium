@@ -45,23 +45,25 @@ class OSExchangeDataProviderX11Test : public testing::Test {
 
 TEST_F(OSExchangeDataProviderX11Test, MozillaURL) {
   // Check that we can get titled entries.
-  provider.SetURL(GURL(kGoogleURL), kGoogleTitle);
+  ClipboardUrlInfo url_title(GURL(kGoogleURL), kGoogleTitle);
+  provider.SetURLs(base::span_from_ref(url_title));
   {
-    std::optional<OSExchangeDataProvider::UrlInfo> url_info =
-        provider.GetURLAndTitle(FilenameToURLPolicy::DO_NOT_CONVERT_FILENAMES);
-    ASSERT_TRUE(url_info.has_value());
-    EXPECT_EQ(kGoogleTitle, url_info->title);
-    EXPECT_EQ(kGoogleURL, url_info->url);
+    const std::vector<ClipboardUrlInfo> url_infos =
+        provider.GetURLs(FilenameToURLPolicy::DO_NOT_CONVERT_FILENAMES);
+    ASSERT_FALSE(url_infos.empty());
+    EXPECT_EQ(kGoogleTitle, url_infos.front().title);
+    EXPECT_EQ(kGoogleURL, url_infos.front().url.spec());
   }
 
   // Check that we can get non-titled entries.
-  provider.SetURL(GURL(kGoogleURL), std::u16string());
+  ClipboardUrlInfo url_none_title(GURL(kGoogleURL), (std::u16string()));
+  provider.SetURLs(base::span_from_ref(url_none_title));
   {
-    std::optional<OSExchangeDataProvider::UrlInfo> url_info =
-        provider.GetURLAndTitle(FilenameToURLPolicy::DO_NOT_CONVERT_FILENAMES);
-    ASSERT_TRUE(url_info.has_value());
-    EXPECT_EQ(std::u16string(), url_info->title);
-    EXPECT_EQ(kGoogleURL, url_info->url);
+    const std::vector<ClipboardUrlInfo> url_infos =
+        provider.GetURLs(FilenameToURLPolicy::DO_NOT_CONVERT_FILENAMES);
+    ASSERT_FALSE(url_infos.empty());
+    EXPECT_EQ(std::u16string(), url_infos.front().title);
+    EXPECT_EQ(kGoogleURL, url_infos.front().url.spec());
   }
 }
 
@@ -95,11 +97,11 @@ TEST_F(OSExchangeDataProviderX11Test, URIListWithBoth) {
   EXPECT_EQ(kFileName, filenames.value()[0].path.value());
 
   // We should only receive the URL here.
-  std::optional<OSExchangeDataProvider::UrlInfo> url_info =
-      provider.GetURLAndTitle(FilenameToURLPolicy::DO_NOT_CONVERT_FILENAMES);
-  ASSERT_TRUE(url_info.has_value());
-  EXPECT_EQ(std::u16string(), url_info->title);
-  EXPECT_EQ(kGoogleURL, url_info->url);
+  const std::vector<ClipboardUrlInfo> url_infos =
+      provider.GetURLs(FilenameToURLPolicy::DO_NOT_CONVERT_FILENAMES);
+  ASSERT_FALSE(url_infos.empty());
+  EXPECT_EQ(std::u16string(), url_infos.front().title);
+  EXPECT_EQ(kGoogleURL, url_infos.front().url.spec());
 }
 
 TEST_F(OSExchangeDataProviderX11Test, OnlyStringURLIsUnfiltered) {

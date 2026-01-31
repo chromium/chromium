@@ -89,10 +89,8 @@ class WebEngineBrowserContext final : public content::BrowserContext {
   client_hints::InMemoryClientHintsControllerDelegate client_hints_delegate_;
   reduce_accept_language::InMemoryReduceAcceptLanguageService
       reduce_accept_language_delegate_;
-#ifdef WEB_ENGINE_ENABLE_PUSH_MESSAGING_API
   PushMessagingServiceImpl push_messaging_service_;
   PlatformNotificationServiceImpl platform_notification_service_;
-#endif
 };
 
 #endif  // FUCHSIA_WEB_WEBENGINE_BROWSER_WEB_ENGINE_BROWSER_CONTEXT_H_

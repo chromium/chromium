@@ -85,14 +85,14 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) HotspotStateHandler
                          const base::Value& value) override;
 
   // Callback to handle the manager properties with hotspot related properties.
-  void OnManagerProperties(std::optional<base::Value::Dict> properties);
+  void OnManagerProperties(std::optional<base::DictValue> properties);
 
   // Update the cached hotspot_state_ and active_client_count_ from hotspot
   // status in Shill.
-  void UpdateHotspotStatus(const base::Value::Dict& status);
+  void UpdateHotspotStatus(const base::DictValue& status);
 
   // Updates the reason for hotspot getting disabled and notifies observers.
-  void UpdateDisableReason(const base::Value::Dict& status);
+  void UpdateDisableReason(const base::DictValue& status);
 
   // Notify observers that hotspot state or active client count was changed.
   void NotifyHotspotStatusChanged();

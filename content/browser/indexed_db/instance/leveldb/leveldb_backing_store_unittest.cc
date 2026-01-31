@@ -1238,7 +1238,7 @@ TEST_F(LevelDbBackingStoreTest, InSessionCleanupVerification) {
 
   // Verify on first cleanup.
   backing_store()->OnCleanupStarted();
-  backing_store()->OnCleanupDone();
+  backing_store()->OnCleanupStopped(/*completed=*/true);
   histograms.ExpectBucketCount(
       "IndexedDB.LevelDB.InSessionCleanupVerificationEvent",
       level_db::BackingStore::InSessionCleanupVerificationEvent::
@@ -1248,7 +1248,7 @@ TEST_F(LevelDbBackingStoreTest, InSessionCleanupVerification) {
   // Don't verify on next few cleanups.
   for (int i = 0; i < 60; ++i) {
     backing_store()->OnCleanupStarted();
-    backing_store()->OnCleanupDone();
+    backing_store()->OnCleanupStopped(/*completed=*/true);
   }
 
   histograms.ExpectBucketCount(
@@ -1260,7 +1260,9 @@ TEST_F(LevelDbBackingStoreTest, InSessionCleanupVerification) {
   // Verify again eventually.
   for (int i = 0; i < 60; ++i) {
     backing_store()->OnCleanupStarted();
-    backing_store()->OnCleanupDone();
+    backing_store()->OnCleanupStopped(/*completed=*/false);
+    backing_store()->OnCleanupStopped(/*completed=*/false);
+    backing_store()->OnCleanupStopped(/*completed=*/true);
   }
 
   histograms.ExpectBucketCount(

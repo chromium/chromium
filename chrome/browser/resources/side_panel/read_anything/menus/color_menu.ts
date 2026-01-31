@@ -8,12 +8,13 @@ import {WebUiListenerMixinLit} from '//resources/cr_elements/web_ui_listener_mix
 import {loadTimeData} from '//resources/js/load_time_data.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 
-import type {SettingsPrefs} from '../content/read_anything_types.js';
+import {DEFAULT_SETTINGS, ToolbarEvent} from '../content/read_anything_types.js';
+import type {SettingsPrefs, ShowAtConfigPrefs} from '../content/read_anything_types.js';
 import {ReadAnythingSettingsChange} from '../shared/metrics_browser_proxy.js';
 import {ReadAnythingLogger} from '../shared/read_anything_logger.js';
 
 import {getHtml} from './color_menu.html.js';
-import type {MenuStateItem} from './menu_util.js';
+import type {MenuStateItem, ToolbarMenu} from './menu_util.js';
 import {getIndexOfSetting} from './menu_util.js';
 import type {SimpleActionMenuElement} from './simple_action_menu.js';
 
@@ -26,7 +27,8 @@ export interface ColorMenuElement {
 const ColorMenuElementBase = WebUiListenerMixinLit(CrLitElement);
 
 // Stores and propagates the data for the color theme menu.
-export class ColorMenuElement extends ColorMenuElementBase {
+export class ColorMenuElement extends ColorMenuElementBase implements
+    ToolbarMenu {
   static get is() {
     return 'color-menu';
   }
@@ -36,17 +38,15 @@ export class ColorMenuElement extends ColorMenuElementBase {
   }
 
   static override get properties() {
-    return {settingsPrefs: {type: Object}};
+    return {
+      settingsPrefs: {type: Object},
+      nonModal: {type: Boolean},
+    };
   }
 
-  accessor settingsPrefs: SettingsPrefs = {
-    letterSpacing: 0,
-    lineSpacing: 0,
-    theme: 0,
-    speechRate: 0,
-    font: '',
-    highlightGranularity: 0,
-  };
+  accessor settingsPrefs: SettingsPrefs = DEFAULT_SETTINGS;
+  accessor nonModal: boolean = false;
+
   protected options_: Array<MenuStateItem<number>> = [
     {
       title: loadTimeData.getString('defaultColorTitle'),
@@ -96,8 +96,12 @@ export class ColorMenuElement extends ColorMenuElementBase {
   ];
   private logger_: ReadAnythingLogger = ReadAnythingLogger.getInstance();
 
-  open(anchor: HTMLElement) {
-    this.$.menu.open(anchor);
+  open(anchor: HTMLElement, showAtConfig?: ShowAtConfigPrefs) {
+    this.$.menu.open(anchor, showAtConfig);
+  }
+
+  close() {
+    this.$.menu.close();
   }
 
   protected restoredThemeIndex_(): number {
@@ -107,6 +111,7 @@ export class ColorMenuElement extends ColorMenuElementBase {
   protected onThemeChange_(event: CustomEvent<{data: number}>) {
     chrome.readingMode.onThemeChange(event.detail.data);
     this.logger_.logTextSettingsChange(ReadAnythingSettingsChange.THEME_CHANGE);
+    this.fire(ToolbarEvent.CLOSE_ALL_MENUS);
   }
 }
 

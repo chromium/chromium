@@ -72,7 +72,7 @@ class ONCCertificateImporterImplTest : public testing::Test {
   void AddCertificatesFromFile(const std::string& filename,
                                bool expected_parse_success,
                                bool expected_import_success) {
-    base::Value::Dict onc =
+    base::DictValue onc =
         chromeos::onc::test_utils::ReadTestDictionary(filename);
     std::optional<base::Value> certificates_value =
         onc.Extract(::onc::toplevel_config::kCertificates);
@@ -130,7 +130,7 @@ class ONCCertificateImporterImplTest : public testing::Test {
   std::unique_ptr<base::SingleThreadTaskRunner::CurrentDefaultHandle>
       thread_task_runner_handle_;
   std::unique_ptr<net::NSSCertDatabaseChromeOS> test_nssdb_;
-  base::Value::List onc_certificates_;
+  base::ListValue onc_certificates_;
   // List of certs in the nssdb's public slot.
   net::ScopedCERTCertificateList public_list_;
   // List of certs in the nssdb's "private" slot.

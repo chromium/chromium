@@ -137,12 +137,12 @@ class Component {
 
   std::string session_id() const;
 
-  const std::vector<base::Value::Dict>& events() const { return events_; }
+  const std::vector<base::DictValue>& events() const { return events_; }
 
   // Returns a clone of the component events.
-  std::vector<base::Value::Dict> GetEvents() const;
+  std::vector<base::DictValue> GetEvents() const;
 
-  void AppendEvent(base::Value::Dict event);
+  void AppendEvent(base::DictValue event);
 
  private:
   friend class MockPingManagerImpl;
@@ -313,12 +313,12 @@ class Component {
 
   // These functions return a specific event. Each data member of the event is
   // represented as a key-value pair in a dictionary value.
-  base::Value::Dict MakeEventUpdateComplete() const;
-  base::Value::Dict MakeEventDownloadMetrics(
+  base::DictValue MakeEventUpdateComplete() const;
+  base::DictValue MakeEventDownloadMetrics(
       const CrxDownloader::DownloadMetrics& download_metrics) const;
-  base::Value::Dict MakeEventActionRun(bool succeeded,
-                                       int error_code,
-                                       int extra_code1) const;
+  base::DictValue MakeEventActionRun(bool succeeded,
+                                     int error_code,
+                                     int extra_code1) const;
 
   std::unique_ptr<CrxInstaller::InstallParams> install_params() const;
 
@@ -380,7 +380,7 @@ class Component {
   std::optional<CrxInstaller::InstallParams> install_params_;
 
   // Contains the events which are therefore serialized in the requests.
-  std::vector<base::Value::Dict> events_;
+  std::vector<base::DictValue> events_;
 
   base::OnceClosure callback_handle_complete_;
   std::unique_ptr<State> state_;

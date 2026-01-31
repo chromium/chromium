@@ -151,7 +151,8 @@ class DeviceInfo {
       const std::optional<PhoneAsASecurityKeyInfo>& paask_info,
       const std::string& fcm_registration_token,
       const DataTypeSet& interested_data_types,
-      std::optional<base::Time> auto_sign_out_last_signin_timestamp);
+      std::optional<base::Time> auto_sign_out_last_signin_timestamp,
+      bool desktop_to_ios_promo_receiving_enabled);
 
   DeviceInfo(const DeviceInfo&) = delete;
   DeviceInfo& operator=(const DeviceInfo&) = delete;
@@ -233,6 +234,11 @@ class DeviceInfo {
   // Returns the time at which this device was last signed into the device.
   std::optional<base::Time> auto_sign_out_last_signin_timestamp() const;
 
+  // Whether the receiving side of the Desktop to iOS Promo feature is enabled.
+  // TODO(crbug.com/438769954): Remove this field once kMobilePromoOnDesktop is
+  // cleaned up.
+  bool desktop_to_ios_promo_receiving_enabled() const;
+
   // Apps can set ids for a device that is meaningful to them but
   // not unique enough so the user can be tracked. Exposing |guid|
   // would lead to a stable unique id for a device which can potentially
@@ -257,6 +263,8 @@ class DeviceInfo {
   void set_interested_data_types(const DataTypeSet& data_types);
 
   void set_auto_sign_out_last_signin_timestamp(std::optional<base::Time> time);
+
+  void set_desktop_to_ios_promo_receiving_enabled(bool new_value);
 
  private:
   const std::string guid_;
@@ -306,6 +314,8 @@ class DeviceInfo {
   DataTypeSet interested_data_types_;
 
   std::optional<base::Time> auto_sign_out_last_signin_timestamp_;
+
+  bool desktop_to_ios_promo_receiving_enabled_;
 
   // NOTE: when adding a member, don't forget to update
   // |StoredDeviceInfoStillAccurate| in device_info_sync_bridge.cc or else

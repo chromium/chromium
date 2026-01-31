@@ -42,7 +42,7 @@ class PrivateKeyFactoryImpl : public PrivateKeyFactory {
   void LoadPrivateKey(
       const client_certificates_pb::PrivateKey& serialized_private_key,
       PrivateKeyCallback callback) override;
-  void LoadPrivateKeyFromDict(const base::Value::Dict& serialized_private_key,
+  void LoadPrivateKeyFromDict(const base::DictValue& serialized_private_key,
                               PrivateKeyCallback callback) override;
 
  private:
@@ -67,8 +67,9 @@ void PrivateKeyFactoryImpl::CreatePrivateKey(
   // delegate the key creation to that sub factory.
   for (size_t i = 0U; i < kKeySourcesOrderedBySecurity.size(); i++) {
     PrivateKeySource source = kKeySourcesOrderedBySecurity[i];
-    if (sub_factories_.contains(source)) {
-      sub_factories_[source]->CreatePrivateKey(base::BindOnce(
+    auto it = sub_factories_.find(source);
+    if (it != sub_factories_.end()) {
+      it->second->CreatePrivateKey(base::BindOnce(
           &PrivateKeyFactoryImpl::OnPrivateKeyCreated,
           weak_factory_.GetWeakPtr(), source, std::move(callback)));
       return;
@@ -82,18 +83,20 @@ void PrivateKeyFactoryImpl::LoadPrivateKey(
     const client_certificates_pb::PrivateKey& serialized_private_key,
     PrivateKeyCallback callback) {
   auto private_key_source = ToPrivateKeySource(serialized_private_key.source());
-  if (!private_key_source.has_value() ||
-      !sub_factories_.contains(private_key_source.value())) {
-    std::move(callback).Run(nullptr);
-    return;
+  if (private_key_source.has_value()) {
+    auto it = sub_factories_.find(*private_key_source);
+    if (it != sub_factories_.end()) {
+      it->second->LoadPrivateKey(std::move(serialized_private_key),
+                                 std::move(callback));
+      return;
+    }
   }
 
-  sub_factories_[private_key_source.value()]->LoadPrivateKey(
-      std::move(serialized_private_key), std::move(callback));
+  std::move(callback).Run(nullptr);
 }
 
 void PrivateKeyFactoryImpl::LoadPrivateKeyFromDict(
-    const base::Value::Dict& serialized_private_key,
+    const base::DictValue& serialized_private_key,
     PrivateKeyCallback callback) {
   std::optional<int> source = serialized_private_key.FindInt(kKeySource);
   if (!source.has_value()) {
@@ -102,27 +105,38 @@ void PrivateKeyFactoryImpl::LoadPrivateKeyFromDict(
   }
 
   auto private_key_source = ToPrivateKeySource(*source);
-  if (!private_key_source.has_value() ||
-      !sub_factories_.contains(private_key_source.value())) {
-    std::move(callback).Run(nullptr);
-    return;
+  if (private_key_source.has_value()) {
+    auto it = sub_factories_.find(*private_key_source);
+    if (it != sub_factories_.end()) {
+      it->second->LoadPrivateKeyFromDict(serialized_private_key,
+                                         std::move(callback));
+      return;
+    }
   }
 
-  sub_factories_[private_key_source.value()]->LoadPrivateKeyFromDict(
-      serialized_private_key, std::move(callback));
+  std::move(callback).Run(nullptr);
 }
 
 void PrivateKeyFactoryImpl::OnPrivateKeyCreated(
     PrivateKeySource source,
     PrivateKeyCallback callback,
     scoped_refptr<PrivateKey> private_key) {
-  if (!private_key && source != PrivateKeySource::kSoftwareKey &&
-      sub_factories_.contains(PrivateKeySource::kSoftwareKey)) {
-    // If a more secure key failed to be created, fallback to creating a
-    // software key (which should always succeed).
-    sub_factories_[PrivateKeySource::kSoftwareKey]->CreatePrivateKey(
-        std::move(callback));
-    return;
+  if (!private_key && source != PrivateKeySource::kSoftwareKey) {
+    for (auto fallback_source =
+             ++std::find(std::begin(kKeySourcesOrderedBySecurity),
+                         std::end(kKeySourcesOrderedBySecurity), source);
+         fallback_source != std::end(kKeySourcesOrderedBySecurity);
+         fallback_source++) {
+      auto it = sub_factories_.find(*fallback_source);
+      if (it != sub_factories_.end()) {
+        // If a more secure key failed to be created, fallback to creating a
+        // less secure key.
+        it->second->CreatePrivateKey(base::BindOnce(
+            &PrivateKeyFactoryImpl::OnPrivateKeyCreated,
+            weak_factory_.GetWeakPtr(), *fallback_source, std::move(callback)));
+        return;
+      }
+    }
   }
 
   std::move(callback).Run(std::move(private_key));

@@ -7,8 +7,7 @@
 #include "ash/quick_pair/common/log_buffer.h"
 #include "base/time/time.h"
 
-namespace ash {
-namespace quick_pair {
+namespace ash::quick_pair {
 
 namespace {
 
@@ -50,5 +49,4 @@ ScopedLogMessage::~ScopedLogMessage() {
   log_message.stream() << string_from_stream;
 }
 
-}  // namespace quick_pair
-}  // namespace ash
+}  // namespace ash::quick_pair

@@ -26,24 +26,28 @@ import * as SourcesModule from 'devtools/panels/sources/sources.js';
 
   TestRunner.addResult('Dump current');
   await new Promise(resolve => SourcesTestRunner.expandProperties([localScope, ['Return value']], resolve));
+  await new Promise(requestAnimationFrame);
   SourcesTestRunner.dumpScopeVariablesSidebarPane();
 
   TestRunner.addResult('Set return value to {a:1}');
   let returnValueElement = localScope.children().find(x => x.property.name === 'Return value');
   await returnValueElement.applyExpression('{a:1}');
   await new Promise(resolve => SourcesTestRunner.expandProperties([localScope, ['Return value']], resolve));
+  await new Promise(requestAnimationFrame);
   SourcesTestRunner.dumpScopeVariablesSidebarPane();
 
   TestRunner.addResult('Try to remove return value');
   returnValueElement = localScope.children().find(x => x.property.name === 'Return value');
   await returnValueElement.applyExpression('');
   await new Promise(resolve => SourcesTestRunner.expandProperties([localScope, ['Return value']], resolve));
+  await new Promise(requestAnimationFrame);
   SourcesTestRunner.dumpScopeVariablesSidebarPane();
 
   TestRunner.addResult('Set return value to 239');
   returnValueElement = localScope.children().find(x => x.property.name === 'Return value');
   await returnValueElement.applyExpression('239');
   await new Promise(resolve => SourcesTestRunner.expandProperties([localScope, ['Return value']], resolve));
+  await new Promise(requestAnimationFrame);
   SourcesTestRunner.dumpScopeVariablesSidebarPane();
 
   SourcesTestRunner.resumeExecution();

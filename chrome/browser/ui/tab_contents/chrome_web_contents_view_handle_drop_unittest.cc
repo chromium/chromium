@@ -44,7 +44,7 @@ class TestDragDropRequestHandler
   static std::unique_ptr<ClipboardRequestHandler> Create(
       enterprise_connectors::test::FakeContentAnalysisDelegate* delegate,
       enterprise_connectors::ContentAnalysisInfo* content_analysis_info,
-      safe_browsing::BinaryUploadService* upload_service,
+      enterprise_connectors::BinaryUploadService* upload_service,
       Profile* profile,
       GURL url,
       Type type,
@@ -195,7 +195,7 @@ class ChromeWebContentsViewDelegateHandleOnPerformingDrop
           current_requests_count_++;
           bool scan_succeeds =
               (path.empty() && text_scan_succeeds_) ||
-              (!path.empty() && !base::Contains(failing_file_scans_, path));
+              (!path.empty() && !failing_file_scans_.contains(path));
           enterprise_connectors::ContentAnalysisResponse response =
               scan_succeeds
                   ? FakeDelegate::SuccessfulResponse(std::move(dlp_tag))

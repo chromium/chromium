@@ -1007,9 +1007,9 @@ uint16_t Internals::compareTreeScopePosition(
   if (!tree_scope1 || !tree_scope2) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kInvalidAccessError,
-        String::Format(
+        UNSAFE_TODO(String::Format(
             "The %s node is neither a document node, nor a shadow root.",
-            tree_scope1 ? "second" : "first"));
+            tree_scope1 ? "second" : "first")));
     return 0;
   }
   return tree_scope1->ComparePosition(*tree_scope2);

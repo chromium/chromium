@@ -8,7 +8,7 @@
 #include <cmath>
 #include <utility>
 
-#include "base/byte_count.h"
+#include "base/byte_size.h"
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/utf_string_conversions.h"
@@ -217,8 +217,8 @@ GetTicks(int64_t min, int64_t current, int64_t max, int* out_default_index) {
   std::vector<crostini::mojom::DiskSliderTickPtr> ticks;
   ticks.reserve(values.size());
   for (const auto& val : values) {
-    std::string formatted_val =
-        base::UTF16ToUTF8(ui::FormatBytes(base::ByteCount(val)));
+    std::string formatted_val = base::UTF16ToUTF8(
+        ui::FormatBytes(base::ByteSize(base::checked_cast<uint64_t>(val))));
     ticks.emplace_back(crostini::mojom::DiskSliderTick::New(val, formatted_val,
                                                             formatted_val));
   }

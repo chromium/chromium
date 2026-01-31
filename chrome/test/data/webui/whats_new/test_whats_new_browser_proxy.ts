@@ -43,7 +43,7 @@ class TestWhatsNewPageHandler extends TestBrowserProxy implements
       'recordNextButtonClick',
     ]);
 
-    this.url_ = {url};
+    this.url_ = url;
   }
 
   getServerUrl() {
@@ -75,8 +75,8 @@ class TestWhatsNewPageHandler extends TestBrowserProxy implements
     this.methodCalled('recordScrollDepth', percent);
   }
 
-  recordTimeOnPage(time: TimeDelta) {
-    this.methodCalled('recordTimeOnPage', time);
+  recordTimeOnPage(time: TimeDelta, isHeartbeat: boolean) {
+    this.methodCalled('recordTimeOnPage', time, isHeartbeat);
   }
 
   recordModuleLinkClicked(moduleName: string, position: ModulePosition) {

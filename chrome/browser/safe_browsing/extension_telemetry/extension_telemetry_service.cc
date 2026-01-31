@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "base/command_line.h"
-#include "base/containers/contains.h"
 #include "base/containers/flat_set.h"
 #include "base/files/file_util.h"
 #include "base/i18n/time_formatting.h"
@@ -558,15 +557,12 @@ void ExtensionTelemetryService::SetEnabledForESB(bool enable) {
     }
 
     // File data for Command Line extensions.
-    if (base::FeatureList::IsEnabled(
-            kExtensionTelemetryFileDataForCommandLineExtensions)) {
-      base::ThreadPool::PostTaskAndReplyWithResult(
-          FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
-          base::BindOnce(CollectCommandLineExtensionInfo),
-          base::BindOnce(
-              &ExtensionTelemetryService::OnCommandLineExtensionsInfoCollected,
-              weak_factory_.GetWeakPtr()));
-    }
+    base::ThreadPool::PostTaskAndReplyWithResult(
+        FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
+        base::BindOnce(CollectCommandLineExtensionInfo),
+        base::BindOnce(
+            &ExtensionTelemetryService::OnCommandLineExtensionsInfoCollected,
+            weak_factory_.GetWeakPtr()));
 
     // Telemetry Configuration
     if (base::FeatureList::IsEnabled(kExtensionTelemetryConfiguration)) {
@@ -720,7 +716,7 @@ void ExtensionTelemetryService::AddSignalHelper(
     ExtensionStore& store,
     SignalSubscribers& subscribers) {
   ExtensionSignalType signal_type = signal.GetType();
-  DCHECK(base::Contains(subscribers, signal_type));
+  DCHECK(subscribers.contains(signal_type));
 
   if (!store.contains(signal.extension_id())) {
     // This is the first signal triggered by this extension since the last
@@ -1353,19 +1349,19 @@ std::optional<ExtensionTelemetryService::OffstoreExtensionFileData>
 ExtensionTelemetryService::RetrieveOffstoreFileDataForReport(
     const extensions::ExtensionId& extension_id) {
   const auto& pref_dict = GetExtensionTelemetryFileData(*pref_service_);
-  const base::Value::Dict* extension_dict = pref_dict.FindDict(extension_id);
+  const base::DictValue* extension_dict = pref_dict.FindDict(extension_id);
   if (!extension_dict) {
     return std::nullopt;
   }
 
-  const base::Value::Dict* file_data_dict =
+  const base::DictValue* file_data_dict =
       extension_dict->FindDict(kFileDataDictPref);
   if (!file_data_dict || file_data_dict->empty()) {
     return std::nullopt;
   }
 
   OffstoreExtensionFileData offstore_extension_file_data;
-  base::Value::Dict dict = file_data_dict->Clone();
+  base::DictValue dict = file_data_dict->Clone();
   std::optional<base::Value> manifest_value = dict.Extract(kManifestFile);
   if (manifest_value.has_value()) {
     offstore_extension_file_data.manifest =
@@ -1641,7 +1637,7 @@ void ExtensionTelemetryService::StartOffstoreFileDataCollection() {
   // Gather context to process offstore extensions.
   const auto& pref_dict = GetExtensionTelemetryFileData(*pref_service_);
   for (const auto& [extension_id, root_dir] : offstore_extension_dirs_) {
-    const base::Value::Dict* extension_dict = pref_dict.FindDict(extension_id);
+    const base::DictValue* extension_dict = pref_dict.FindDict(extension_id);
     if (!extension_dict) {
       offstore_extension_file_data_contexts_.emplace(extension_id, root_dir);
       continue;
@@ -1699,7 +1695,7 @@ void ExtensionTelemetryService::GetOffstoreExtensionDirs() {
 void ExtensionTelemetryService::RemoveStaleExtensionsFileDataFromPref() {
   ScopedDictPrefUpdate pref_update(pref_service_,
                                    prefs::kExtensionTelemetryFileData);
-  base::Value::Dict& pref_dict = pref_update.Get();
+  base::DictValue& pref_dict = pref_update.Get();
 
   std::vector<extensions::ExtensionId> stale_extensions;
   for (auto&& offstore : pref_dict) {
@@ -1749,9 +1745,9 @@ void ExtensionTelemetryService::CollectOffstoreFileData() {
 
 void ExtensionTelemetryService::OnOffstoreFileDataCollected(
     base::flat_set<OffstoreExtensionFileDataContext>::iterator context,
-    base::Value::Dict file_data) {
+    base::DictValue file_data) {
   // Save to Prefs
-  base::Value::Dict extension_dict;
+  base::DictValue extension_dict;
   extension_dict.Set(kFileDataProcessTimestampPref,
                      base::TimeToValue(base::Time::Now()));
   extension_dict.Set(kFileDataDictPref, std::move(file_data));

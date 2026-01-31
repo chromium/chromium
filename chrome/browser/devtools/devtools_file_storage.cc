@@ -11,6 +11,7 @@
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/render_view_host.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/common/child_process_id.h"
 #include "content/public/common/url_constants.h"
 #include "storage/browser/file_system/file_system_url.h"
 #include "storage/browser/file_system/isolated_context.h"
@@ -61,8 +62,9 @@ DevToolsFileHelper::FileSystem DevToolsFileStorage::RegisterFileSystem(
   // We only need file level access for reading FileEntries. Saving FileEntries
   // just needs the file system to have read/write access, which is granted
   // above if required.
-  if (!policy->CanReadFile(renderer_id, path)) {
-    policy->GrantReadFile(renderer_id, path);
+  content::ChildProcessId process_id = render_view_host->GetProcess()->GetID();
+  if (!policy->CanReadFile(process_id, path)) {
+    policy->GrantReadFile(process_id, path);
   }
   GURL origin = web_contents_->GetLastCommittedURL().DeprecatedGetOriginAsURL();
   std::string file_system_name =

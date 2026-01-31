@@ -11,6 +11,7 @@
 #include <string>
 #include <string_view>
 #include <utility>
+#include <variant>
 
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -40,6 +41,7 @@
 #include "components/permissions/permission_context_base.h"
 #include "components/permissions/permission_decision.h"
 #include "components/permissions/permission_decision_auto_blocker.h"
+#include "components/permissions/permission_prompt_decision.h"
 #include "components/permissions/permission_request.h"
 #include "components/permissions/permission_request_id.h"
 #include "components/permissions/permission_request_manager.h"
@@ -48,6 +50,7 @@
 #include "components/permissions/permissions_client.h"
 #include "components/permissions/request_type.h"
 #include "components/permissions/resolvers/content_setting_permission_resolver.h"
+#include "components/permissions/resolvers/permission_prompt_options.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/navigation_controller.h"
@@ -140,8 +143,11 @@ void PermissionContextBase::RequestPermission(
              << "," << request_data->embedding_origin << " (" << type_name
              << " is not supported in popups)";
     NotifyPermissionSet(*request_data, std::move(callback),
-                        /*persist=*/false, PermissionDecision::kDeny,
-                        /*is_final_decision=*/true);
+                        /*persist=*/false,
+                        permissions::PermissionPromptDecision{
+                            .overall_decision = PermissionDecision::kDeny,
+                            .prompt_options = std::monostate(),
+                            .is_final = true});
     return;
   }
 
@@ -242,11 +248,30 @@ void PermissionContextBase::RequestPermission(
         result.source == content::PermissionStatusSource::HEURISTIC_GRANT
             ? PermissionDecision::kAllowThisTime
             : PermissionDecision::kAllow;
-    NotifyPermissionSet(*request_data, std::move(callback), persist,
-                        result.status == blink::mojom::PermissionStatus::GRANTED
-                            ? allow_decision
-                            : PermissionDecision::kDeny,
-                        /*is_final_decision=*/true);
+    PromptOptions prompt_options = std::monostate();
+    if (content_settings_type_ ==
+            ContentSettingsType::GEOLOCATION_WITH_OPTIONS &&
+        result.status == blink::mojom::PermissionStatus::GRANTED &&
+        result.retrieved_permission_setting) {
+      if (GeolocationSetting* geolocation_setting =
+              std::get_if<GeolocationSetting>(
+                  &result.retrieved_permission_setting.value())) {
+        prompt_options = GeolocationPromptOptions{
+            .selected_accuracy =
+                geolocation_setting->precise == PermissionOption::kAllowed
+                    ? GeolocationAccuracy::kPrecise
+                    : GeolocationAccuracy::kApproximate};
+      }
+    }
+    NotifyPermissionSet(
+        *request_data, std::move(callback), persist,
+        permissions::PermissionPromptDecision{
+            .overall_decision =
+                result.status == blink::mojom::PermissionStatus::GRANTED
+                    ? allow_decision
+                    : PermissionDecision::kDeny,
+            .prompt_options = prompt_options,
+            .is_final = true});
     return;
   }
   PermissionUmaUtil::RecordPermissionRequestedFromFrame(content_settings_type_,
@@ -625,16 +650,16 @@ void PermissionContextBase::DecidePermission(
 }
 
 void PermissionContextBase::PermissionDecided(
-    PermissionDecision decision,
-    bool is_final_decision,
+    const permissions::PermissionPromptDecision& decision,
     const PermissionRequestData& request_data) {
   UserMadePermissionDecision(request_data.id, request_data.requesting_origin,
-                             request_data.embedding_origin, decision);
+                             request_data.embedding_origin,
+                             decision.overall_decision);
   //  If a permission request originates from an embedded element, its
   //  cancellation would be a result of a "system permission changed event."
   //  In this case, we will dispatch `OnPermissionChanged` early here.
   if (request_data.IsEmbeddedPermissionElementInitiated() &&
-      decision == PermissionDecision::kNone) {
+      decision.overall_decision == PermissionDecision::kNone) {
     content::RenderFrameHost* rfh = content::RenderFrameHost::FromID(
         request_data.id.global_render_frame_host_id());
     DCHECK(rfh);
@@ -642,7 +667,7 @@ void PermissionContextBase::PermissionDecided(
         content::WebContents::FromRenderFrameHost(rfh));
   }
 
-  bool persist = decision != PermissionDecision::kNone;
+  bool persist = decision.overall_decision != PermissionDecision::kNone;
 
   auto request = pending_requests_.find(request_data.id.ToString());
   CHECK(request->second.first);
@@ -650,13 +675,10 @@ void PermissionContextBase::PermissionDecided(
   // Check if `request` has `BrowserPermissionCallback`. The call back might be
   // missing if a permission prompt was preignored and we already notified an
   // origin about it.
-  if (request->second.second) {
-    NotifyPermissionSet(request_data, std::move(request->second.second),
-                        persist, decision, is_final_decision);
-  } else {
-    NotifyPermissionSet(request_data, base::DoNothing(), persist, decision,
-                        is_final_decision);
-  }
+  NotifyPermissionSet(request_data,
+                      request->second.second ? std::move(request->second.second)
+                                             : base::DoNothing(),
+                      persist, decision);
 }
 
 content::BrowserContext* PermissionContextBase::browser_context() const {
@@ -738,32 +760,33 @@ void PermissionContextBase::NotifyPermissionSet(
     const PermissionRequestData& request_data,
     BrowserPermissionCallback callback,
     bool persist,
-    PermissionDecision decision,
-    bool is_final_decision) {
+    const permissions::PermissionPromptDecision& decision) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-
   // Note that rfh may be null, see crbug.com/426909787.
   auto* rfh = content::RenderFrameHost::FromID(
       request_data.id.global_render_frame_host_id());
 
   // Need to reretrieve the persisted value, since the underlying permission
   // status may have changed in the meantime
-  auto previous_value = GetPermissionStatusInternal(
+  PermissionSetting previous_value = GetPermissionStatusInternal(
       rfh, request_data.requesting_origin, request_data.embedding_origin);
-  auto new_value = request_data.resolver->ComputePermissionDecisionResult(
-      previous_value, decision, request_data.prompt_options);
+  PermissionSetting new_value =
+      request_data.resolver->ComputePermissionDecisionResult(previous_value,
+                                                             decision);
 
   if (persist) {
     // Clone new value, because we need it again for the callback.
-    UpdateSetting(request_data, new_value,
-                  decision == PermissionDecision::kAllowThisTime);
+    UpdateSetting(
+        request_data, new_value,
+        decision.overall_decision == PermissionDecision::kAllowThisTime);
   }
 
-  if (is_final_decision) {
-    UpdateTabContext(request_data,
-                     decision == PermissionDecision::kAllow ||
-                         decision == PermissionDecision::kAllowThisTime);
-    if (rfh && decision == PermissionDecision::kAllow) {
+  if (decision.is_final) {
+    UpdateTabContext(
+        request_data,
+        decision.overall_decision == PermissionDecision::kAllow ||
+            decision.overall_decision == PermissionDecision::kAllowThisTime);
+    if (rfh && decision.overall_decision == PermissionDecision::kAllow) {
       PermissionUmaUtil::RecordPermissionsUsageSourceAndPolicyConfiguration(
           content_settings_type_, rfh);
     }
@@ -778,10 +801,11 @@ void PermissionContextBase::NotifyPermissionSet(
     request->second.first->set_request_finished_callback(base::BindOnce(
         &PermissionContextBase::CleanUpRequestEmbeddedPermissionElement,
         weak_factory_.GetWeakPtr(), web_contents, request_data.id,
-        std::move(callback), decision, new_value));
+        std::move(callback), decision.overall_decision, new_value));
   } else {
     std::move(callback).Run(content::PermissionResult(
-        PermissionUtil::PermissionDecisionToPermissionStatus(decision),
+        PermissionUtil::PermissionDecisionToPermissionStatus(
+            decision.overall_decision),
         content::PermissionStatusSource::UNSPECIFIED, new_value));
   }
 }

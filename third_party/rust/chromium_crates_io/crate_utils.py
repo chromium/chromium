@@ -68,6 +68,14 @@ def ConvertCrateIdToCrateName(crate_id: str) -> str:
     return crate_id[:crate_id.find("@")]
 
 
+def ConvertCrateIdToCrateNameWithEpoch(crate_id: str) -> str:
+    """ Converts a `crate_id` into a `crate_name-v123`."""
+    _AssertIsCrateId(crate_id)
+    crate_name = ConvertCrateIdToCrateName(crate_id)
+    crate_epoch = ConvertCrateIdToCrateEpoch(crate_id)
+    return f"{crate_name}-{crate_epoch}"
+
+
 def ConvertCrateIdToCrateVersion(crate_id: str) -> str:
     """ Converts a `crate_id` into a `crate_version`."""
     _AssertIsCrateId(crate_id)
@@ -93,9 +101,8 @@ def ConvertCrateIdToVendorDir(crate_id: str) -> str:
     `"<path to chromium root>\\third_party\\rust\\chromium_crates_io\\vendor\\foo-v1"`
     """
     _AssertIsCrateId(crate_id)
-    crate_name = ConvertCrateIdToCrateName(crate_id)
-    crate_epoch = ConvertCrateIdToCrateEpoch(crate_id)
-    crate_vendor_dir = os.path.join(VENDOR_DIR, f"{crate_name}-{crate_epoch}")
+    crate_name_with_epoch = ConvertCrateIdToCrateNameWithEpoch(crate_id)
+    crate_vendor_dir = os.path.join(VENDOR_DIR, f"{crate_name_with_epoch}")
     return crate_vendor_dir
 
 

@@ -850,8 +850,7 @@ void MediaDrmBridge::OnProvisioningComplete(
       FROM_HERE, base::BindOnce(std::move(provisioning_complete_cb_), success));
 }
 
-void MediaDrmBridge::OnPromiseResolved(JNIEnv* env,
-                                       jint j_promise_id) {
+void MediaDrmBridge::OnPromiseResolved(JNIEnv* env, int32_t j_promise_id) {
   task_runner_->PostTask(
       FROM_HERE, base::BindOnce(&MediaDrmBridge::ResolvePromise,
                                 weak_factory_.GetWeakPtr(), j_promise_id));
@@ -859,7 +858,7 @@ void MediaDrmBridge::OnPromiseResolved(JNIEnv* env,
 
 void MediaDrmBridge::OnPromiseResolvedWithSession(
     JNIEnv* env,
-    jint j_promise_id,
+    int32_t j_promise_id,
     const JavaRef<jbyteArray>& j_session_id) {
   std::string session_id;
   JavaByteArrayToString(env, j_session_id, &session_id);
@@ -871,11 +870,11 @@ void MediaDrmBridge::OnPromiseResolvedWithSession(
 
 void MediaDrmBridge::OnPromiseRejected(
     JNIEnv* env,
-    jint j_promise_id,
-    jint j_system_code,
+    int32_t j_promise_id,
+    int32_t j_system_code,
     const JavaRef<jstring>& j_error_message) {
-  CHECK(j_system_code >= static_cast<jint>(MediaDrmSystemCode::MIN_VALUE) &&
-        j_system_code <= static_cast<jint>(MediaDrmSystemCode::MAX_VALUE));
+  CHECK(j_system_code >= static_cast<int32_t>(MediaDrmSystemCode::MIN_VALUE) &&
+        j_system_code <= static_cast<int32_t>(MediaDrmSystemCode::MAX_VALUE));
   task_runner_->PostTask(
       FROM_HERE,
       base::BindOnce(&MediaDrmBridge::RejectPromise, weak_factory_.GetWeakPtr(),
@@ -886,7 +885,7 @@ void MediaDrmBridge::OnPromiseRejected(
 
 void MediaDrmBridge::OnSessionMessage(JNIEnv* env,
                                       const JavaRef<jbyteArray>& j_session_id,
-                                      jint j_message_type,
+                                      int32_t j_message_type,
                                       const JavaRef<jbyteArray>& j_message) {
   DVLOG(2) << __func__;
 
@@ -933,7 +932,7 @@ void MediaDrmBridge::OnSessionKeysChange(
     JavaByteArrayToByteVector(env, j_key_id, &key_id);
     DCHECK(!key_id.empty());
 
-    jint j_status_code = Java_KeyStatus_getStatusCode(env, j_key_status);
+    int32_t j_status_code = Java_KeyStatus_getStatusCode(env, j_key_status);
     CdmKeyInformation::KeyStatus key_status =
         ConvertKeyStatus(static_cast<KeyStatus>(j_status_code), is_key_release);
 
@@ -972,7 +971,7 @@ void MediaDrmBridge::OnSessionKeysChange(
 void MediaDrmBridge::OnSessionExpirationUpdate(
     JNIEnv* env,
     const JavaRef<jbyteArray>& j_session_id,
-    jlong expiry_time_ms) {
+    int64_t expiry_time_ms) {
   DVLOG(2) << __func__ << ": " << expiry_time_ms << " ms";
   std::string session_id;
   JavaByteArrayToString(env, j_session_id, &session_id);
@@ -983,9 +982,9 @@ void MediaDrmBridge::OnSessionExpirationUpdate(
           base::Time::FromMillisecondsSinceUnixEpoch(expiry_time_ms)));
 }
 
-void MediaDrmBridge::OnCreateError(JNIEnv* env, jint j_error_code) {
-  CHECK(j_error_code >= static_cast<jint>(MediaDrmCreateError::MIN_VALUE) &&
-        j_error_code <= static_cast<jint>(MediaDrmCreateError::MAX_VALUE));
+void MediaDrmBridge::OnCreateError(JNIEnv* env, int32_t j_error_code) {
+  CHECK(j_error_code >= static_cast<int32_t>(MediaDrmCreateError::MIN_VALUE) &&
+        j_error_code <= static_cast<int32_t>(MediaDrmCreateError::MAX_VALUE));
 
   last_create_error_ = static_cast<MediaDrmCreateError>(j_error_code);
 }

@@ -102,7 +102,7 @@ class PageDiscardingHelper
 
  private:
   // NodeDataDescriber implementation:
-  base::Value::Dict DescribePageNodeData(const PageNode* node) const override;
+  base::DictValue DescribePageNodeData(const PageNode* node) const override;
 
   // Helper function so DiscardMultiplePages doesn't have to return the unused
   // WebContents pointer.

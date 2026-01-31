@@ -380,7 +380,7 @@ class OAuth2ErrorCodesTest
             GetScopeLimitedUnrecoverableErrorReason(GetParam().error_code));
 
       case GoogleServiceAuthError::NONE:
-      case GoogleServiceAuthError::USER_NOT_SIGNED_UP:
+      case GoogleServiceAuthError::ACCOUNT_NOT_FOUND:
       case GoogleServiceAuthError::CONNECTION_FAILED:
       case GoogleServiceAuthError::UNEXPECTED_SERVICE_RESPONSE:
       case GoogleServiceAuthError::REQUEST_CANCELED:

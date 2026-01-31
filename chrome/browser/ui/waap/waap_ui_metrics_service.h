@@ -8,6 +8,7 @@
 #include "base/time/time.h"
 #include "base/types/pass_key.h"
 #include "chrome/browser/ui/waap/waap_ui_metrics_recorder.h"
+#include "chrome/browser/ui/waap/waap_utils.h"
 #include "components/keyed_service/core/keyed_service.h"
 
 class Profile;
@@ -29,7 +30,7 @@ class WaapUIMetricsService : public KeyedService {
 
   ~WaapUIMetricsService() override;
 
-  // Convenient method to get an instance for the given `profile`.
+  // Returns the instance of the service for the profile.
   // May return nullptr.
   static WaapUIMetricsService* Get(Profile* profile);
 
@@ -42,6 +43,24 @@ class WaapUIMetricsService : public KeyedService {
 
   // Called whenever the WaaP UI has its first contentful paint finished.
   void OnFirstContentfulPaint(base::TimeTicks time);
+
+  // Called when a new browser window (not the initial one) is first painted.
+  void OnNewWindowBrowserWindowFirstPresentation(
+      waap::NewWindowCreationSource source,
+      base::TimeTicks start_time,
+      base::TimeTicks paint_time);
+
+  // Called when the ReloadButton in a new browser window is first painted.
+  void OnNewWindowReloadButtonFirstPaint(waap::NewWindowCreationSource source,
+                                         base::TimeTicks start_time,
+                                         base::TimeTicks paint_time);
+
+  // Called when the ReloadButton in a new browser window is first contentful
+  // painted.
+  void OnNewWindowReloadButtonFirstContentfulPaint(
+      waap::NewWindowCreationSource source,
+      base::TimeTicks start_time,
+      base::TimeTicks paint_time);
 
   // Records the time duration from a mousedown event on the WaaP UI element to
   // its visual update, i.e. paint.
@@ -83,16 +102,6 @@ class WaapUIMetricsService : public KeyedService {
       base::TimeTicks start_ticks,
       base::TimeTicks end_ticks,
       WaapUIMetricsRecorder::ReloadButtonMode new_mode);
-
- private:
-  // On browser startup, whether the browser session is restored from the last
-  // session.
-  // A browser session can be restored in various scenarios, e.g. when the
-  // browser is previously crashed, or when the user manually restores the
-  // session from history, or on browser startup when the user has turned on
-  // "Continue where you left off". But only the last one involves in the
-  // browser startup process.
-  const bool is_session_restored_;
 };
 
 #endif  // CHROME_BROWSER_UI_WAAP_WAAP_UI_METRICS_SERVICE_H_

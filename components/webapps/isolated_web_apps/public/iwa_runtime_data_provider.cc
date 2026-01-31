@@ -18,7 +18,7 @@ IwaRuntimeDataProvider::KeyRotationInfo::KeyRotationInfo(
     const KeyRotationInfo&) = default;
 
 base::Value IwaRuntimeDataProvider::KeyRotationInfo::AsDebugValue() const {
-  return base::Value(base::Value::Dict().Set(
+  return base::Value(base::DictValue().Set(
       "public_key", public_key ? base::Base64Encode(*public_key) : "null"));
 }
 

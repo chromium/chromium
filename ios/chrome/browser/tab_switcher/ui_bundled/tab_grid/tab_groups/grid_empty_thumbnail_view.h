@@ -23,6 +23,9 @@ typedef NS_ENUM(NSInteger, EmptyThumbnailType) {
 // The current layout type of the view.
 @property(nonatomic, assign) EmptyThumbnailLayoutType layoutType;
 
+// The color of the bar for empty thumbnails, cannot be nil.
+@property(nonatomic) UIColor* barColor;
+
 // Initializes the view for a `type` configuration.
 - (instancetype)initWithType:(EmptyThumbnailType)type NS_DESIGNATED_INITIALIZER;
 

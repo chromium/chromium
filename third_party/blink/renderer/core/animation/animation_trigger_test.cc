@@ -80,7 +80,7 @@ TEST_P(AnimationTriggerTest, ComputeBoundariesTest) {
 
   UpdateAllLifecyclePhasesForTest();
 
-  ScrollTimeline& timeline = *To<ScrollTimeline>(trigger->timeline());
+  ScrollTimeline& timeline = *To<ScrollTimeline>(trigger->Timeline());
   Element& timeline_source = *To<Element>(timeline.ComputeResolvedSource());
 
   RangeBoundary* cover_10 =
@@ -115,67 +115,67 @@ TEST_P(AnimationTriggerTest, ComputeBoundariesTest) {
   double dummy_offset = 0;
   TriggerBoundaries boundaries = trigger->ComputeTriggerBoundariesForTest(
       dummy_offset, timeline_source, timeline);
-  ExpectRelativeErrorWithinEpsilon(boundaries.start, cover_10_px);
-  ExpectRelativeErrorWithinEpsilon(boundaries.end, cover_90_px);
-  ExpectRelativeErrorWithinEpsilon(boundaries.exit_start, cover_10_px);
-  ExpectRelativeErrorWithinEpsilon(boundaries.exit_end, cover_90_px);
+  ExpectRelativeErrorWithinEpsilon(boundaries.entry_start, cover_10_px);
+  ExpectRelativeErrorWithinEpsilon(boundaries.entry_end, cover_90_px);
+  ExpectRelativeErrorWithinEpsilon(boundaries.active_start, cover_10_px);
+  ExpectRelativeErrorWithinEpsilon(boundaries.active_end, cover_90_px);
 
   // contain 20% contain 80% auto normal.
   trigger->SetRangeBoundariesForTest(contain_20, contain_80, auto_offset,
                                      normal);
   boundaries = trigger->ComputeTriggerBoundariesForTest(
       dummy_offset, timeline_source, timeline);
-  ExpectRelativeErrorWithinEpsilon(boundaries.start, contain_20_px);
-  ExpectRelativeErrorWithinEpsilon(boundaries.end, contain_80_px);
-  ExpectRelativeErrorWithinEpsilon(boundaries.exit_start, contain_20_px);
-  ExpectRelativeErrorWithinEpsilon(boundaries.exit_end, cover_100_px);
+  ExpectRelativeErrorWithinEpsilon(boundaries.entry_start, contain_20_px);
+  ExpectRelativeErrorWithinEpsilon(boundaries.entry_end, contain_80_px);
+  ExpectRelativeErrorWithinEpsilon(boundaries.active_start, contain_20_px);
+  ExpectRelativeErrorWithinEpsilon(boundaries.active_end, cover_100_px);
 
   // cover 10% cover 90% normal auto.
   trigger->SetRangeBoundariesForTest(cover_10, cover_90, normal, auto_offset);
   boundaries = trigger->ComputeTriggerBoundariesForTest(
       dummy_offset, timeline_source, timeline);
-  ExpectRelativeErrorWithinEpsilon(boundaries.start, cover_10_px);
-  ExpectRelativeErrorWithinEpsilon(boundaries.end, cover_90_px);
-  ExpectRelativeErrorWithinEpsilon(boundaries.exit_start, cover_0_px);
-  ExpectRelativeErrorWithinEpsilon(boundaries.exit_end, cover_90_px);
+  ExpectRelativeErrorWithinEpsilon(boundaries.entry_start, cover_10_px);
+  ExpectRelativeErrorWithinEpsilon(boundaries.entry_end, cover_90_px);
+  ExpectRelativeErrorWithinEpsilon(boundaries.active_start, cover_0_px);
+  ExpectRelativeErrorWithinEpsilon(boundaries.active_end, cover_90_px);
 
   // contain 20% contain 80% normal normal.
   trigger->SetRangeBoundariesForTest(contain_20, contain_80, normal, normal);
   boundaries = trigger->ComputeTriggerBoundariesForTest(
       dummy_offset, timeline_source, timeline);
-  ExpectRelativeErrorWithinEpsilon(boundaries.start, contain_20_px);
-  ExpectRelativeErrorWithinEpsilon(boundaries.end, contain_80_px);
-  ExpectRelativeErrorWithinEpsilon(boundaries.exit_start, cover_0_px);
-  ExpectRelativeErrorWithinEpsilon(boundaries.exit_end, cover_100_px);
+  ExpectRelativeErrorWithinEpsilon(boundaries.entry_start, contain_20_px);
+  ExpectRelativeErrorWithinEpsilon(boundaries.entry_end, contain_80_px);
+  ExpectRelativeErrorWithinEpsilon(boundaries.active_start, cover_0_px);
+  ExpectRelativeErrorWithinEpsilon(boundaries.active_end, cover_100_px);
 
   // contain 20% contain 80% cover 10% normal.
   trigger->SetRangeBoundariesForTest(contain_20, contain_80, cover_10, normal);
   boundaries = trigger->ComputeTriggerBoundariesForTest(
       dummy_offset, timeline_source, timeline);
-  ExpectRelativeErrorWithinEpsilon(boundaries.start, contain_20_px);
-  ExpectRelativeErrorWithinEpsilon(boundaries.end, contain_80_px);
-  ExpectRelativeErrorWithinEpsilon(boundaries.exit_start, cover_10_px);
-  ExpectRelativeErrorWithinEpsilon(boundaries.exit_end, cover_100_px);
+  ExpectRelativeErrorWithinEpsilon(boundaries.entry_start, contain_20_px);
+  ExpectRelativeErrorWithinEpsilon(boundaries.entry_end, contain_80_px);
+  ExpectRelativeErrorWithinEpsilon(boundaries.active_start, cover_10_px);
+  ExpectRelativeErrorWithinEpsilon(boundaries.active_end, cover_100_px);
 
   // contain 20% contain 80% cover 10% auto.
   trigger->SetRangeBoundariesForTest(contain_20, contain_80, cover_10,
                                      auto_offset);
   boundaries = trigger->ComputeTriggerBoundariesForTest(
       dummy_offset, timeline_source, timeline);
-  ExpectRelativeErrorWithinEpsilon(boundaries.start, contain_20_px);
-  ExpectRelativeErrorWithinEpsilon(boundaries.end, contain_80_px);
-  ExpectRelativeErrorWithinEpsilon(boundaries.exit_start, cover_10_px);
-  ExpectRelativeErrorWithinEpsilon(boundaries.exit_end, contain_80_px);
+  ExpectRelativeErrorWithinEpsilon(boundaries.entry_start, contain_20_px);
+  ExpectRelativeErrorWithinEpsilon(boundaries.entry_end, contain_80_px);
+  ExpectRelativeErrorWithinEpsilon(boundaries.active_start, cover_10_px);
+  ExpectRelativeErrorWithinEpsilon(boundaries.active_end, contain_80_px);
 
   // contain 20% contain 80% cover 10% cover 90%.
   trigger->SetRangeBoundariesForTest(contain_20, contain_80, cover_10,
                                      cover_90);
   boundaries = trigger->ComputeTriggerBoundariesForTest(
       dummy_offset, timeline_source, timeline);
-  ExpectRelativeErrorWithinEpsilon(boundaries.start, contain_20_px);
-  ExpectRelativeErrorWithinEpsilon(boundaries.end, contain_80_px);
-  ExpectRelativeErrorWithinEpsilon(boundaries.exit_start, cover_10_px);
-  ExpectRelativeErrorWithinEpsilon(boundaries.exit_end, cover_90_px);
+  ExpectRelativeErrorWithinEpsilon(boundaries.entry_start, contain_20_px);
+  ExpectRelativeErrorWithinEpsilon(boundaries.entry_end, contain_80_px);
+  ExpectRelativeErrorWithinEpsilon(boundaries.active_start, cover_10_px);
+  ExpectRelativeErrorWithinEpsilon(boundaries.active_end, cover_90_px);
 }
 
 }  // namespace blink

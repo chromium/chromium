@@ -148,6 +148,9 @@ extern NSString* const kSettingsBlockPopupsCellId;
 // The accessibility identifier of the Show Link Preview cell.
 extern NSString* const kSettingsShowLinkPreviewCellId;
 
+// The accessibility identifier of the Show Reading Mode Available cell.
+extern NSString* const kSettingsShowReadingModeAvailableCellId;
+
 // The accessibility identifier of the Detect Addresses cell.
 extern NSString* const kSettingsDetectAddressesCellId;
 
@@ -206,9 +209,6 @@ extern NSString* const kSettingsMoveInactiveTabsCellId;
 // The accessibility identifier of the Automatically open tab groups from other
 // devices settings cell.
 extern NSString* const kSettingsAutomaticallyOpenTabGroupsCellId;
-
-// The accessibility identifier of the Privacy Guide settings cell.
-extern NSString* const kSettingsPrivacyGuideCellId;
 
 // The accessibility identifier of the Detect Units cell.
 extern NSString* const kSettingsDetectUnitsCellId;

@@ -58,7 +58,7 @@ class PromptBehavior {
                        const std::string& prompt_behavior,
                        PromptBehavior& result);
   static Status Create(bool w3c_compliant,
-                       const base::Value::Dict& prompt_behavior,
+                       const base::DictValue& prompt_behavior,
                        PromptBehavior& result);
 };
 

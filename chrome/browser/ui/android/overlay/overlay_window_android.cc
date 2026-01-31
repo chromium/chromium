@@ -124,7 +124,7 @@ OverlayWindowAndroid::~OverlayWindowAndroid() {
   Java_PictureInPictureActivity_onWindowDestroyed(env, java_ref_.get(env));
 }
 
-static jlong JNI_PictureInPictureActivity_OnActivityStart(
+static int64_t JNI_PictureInPictureActivity_OnActivityStart(
     JNIEnv* env,
     const jni_zero::JavaRef<jobject>& j_token,
     const jni_zero::JavaRef<jobject>& self,
@@ -138,7 +138,7 @@ static jlong JNI_PictureInPictureActivity_OnActivityStart(
   OverlayWindowAndroid* thiz = iter->second;
   thiz->Initialize(env, self, window);
 
-  return reinterpret_cast<jlong>(thiz);
+  return reinterpret_cast<int64_t>(thiz);
 }
 
 void OverlayWindowAndroid::Initialize(
@@ -275,8 +275,8 @@ void OverlayWindowAndroid::CompositorViewCreated(
 }
 
 void OverlayWindowAndroid::OnViewSizeChanged(JNIEnv* env,
-                                             jint width,
-                                             jint height) {
+                                             int32_t width,
+                                             int32_t height) {
   gfx::Size content_size(width, height);
   if (bounds_.size() == content_size) {
     return;

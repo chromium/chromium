@@ -527,9 +527,9 @@ suite('PeoplePageAccountSettings', function() {
     assertFalse(isChildVisible(peoplePage, '#google-services'));
     assertTrue(isChildVisible(peoplePage, '#sync-setup'));
 
-    // The other rows are shown/hidden correctly.
+    // The other rows are shown correctly.
     assertTrue(isChildVisible(peoplePage, '#edit-profile'));
-    assertFalse(isChildVisible(peoplePage, '#manage-google-account'));
+    assertTrue(isChildVisible(peoplePage, '#manage-google-account'));
     assertTrue(isChildVisible(peoplePage, '#importDataDialogTrigger'));
   });
 
@@ -630,6 +630,26 @@ suite('PeoplePageAccountSettings', function() {
         loadTimeData.substituteString(
             peoplePage.syncStatus!.statusText!, testEmail),
         accountSubtitle.textContent.trim());
+  });
+
+  test('AccountRowSubtitleUpdatedForBookmarksLimitError_AccountSettings',
+       async function() {
+         const testEmail = 'test@email.com';
+         await simulateSignedInState(SignedInState.SIGNED_IN, [{email: testEmail}]);
+
+    // First, it shows the user's email.
+    const accountSubtitle =
+        peoplePage.shadowRoot!.querySelector('#account-subtitle')!;
+    assertEquals(testEmail, accountSubtitle.textContent.trim());
+
+    const bookmarksLimitError =
+        'To save bookmarks in your account, delete your unused bookmarks';
+    simulateSyncStatus({
+      signedInState: SignedInState.SIGNED_IN,
+      statusAction: StatusAction.SHOW_BOOKMARKS_LIMIT_HELP_ARTICLE,
+      statusText: bookmarksLimitError,
+    });
+    assertEquals(bookmarksLimitError, accountSubtitle.textContent.trim());
   });
 
   test('RecordSigninPendingOfferedMetrics', async function() {

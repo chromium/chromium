@@ -100,7 +100,8 @@ public class DisplayAndroidTest {
         // Put DisplayAndroid in a known initial state.
         mDisplay.addObserver(mObserver);
         DisplayAndroid.AdaptiveRefreshRateInfo arrInfo =
-                new DisplayAndroid.AdaptiveRefreshRateInfo(true, 120.0f);
+                new DisplayAndroid.AdaptiveRefreshRateInfo(
+                        true, 120.0f, /* velocityMapping= */ null);
         updateDisplayWithSupportedModes(null, arrInfo);
 
         verify(mObserver).onAdaptiveRefreshRateInfoChanged(arrInfo);

@@ -4,11 +4,11 @@
 
 #include "components/commerce/core/shopping_service.h"
 
+#include <algorithm>
 #include <vector>
 
 #include "base/barrier_callback.h"
 #include "base/check_is_test.h"
-#include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
@@ -122,14 +122,14 @@ class ProductSpecificationsUrlObserver
     // First remove any references to URLs that are no longer in the product
     // spec set.
     for (const auto& url : before.urls()) {
-      if (!base::Contains(after.urls(), url)) {
+      if (!std::ranges::contains(after.urls(), url)) {
         cache_->RemoveRef(url);
       }
     }
 
     // Now add any URLs that weren't previously referenced.
     for (const auto& url : after.urls()) {
-      if (!base::Contains(before.urls(), url)) {
+      if (!std::ranges::contains(before.urls(), url)) {
         cache_->AddRef(url);
       }
     }
@@ -165,17 +165,10 @@ class ProductSpecificationsUrlObserver
 // This function can be deleted once the Sync feature is removed.
 signin::ConsentLevel GetConsentLevelForEndpointFetchers(
     PrefService* pref_service) {
-  if (base::FeatureList::IsEnabled(
-          syncer::kReplaceSyncPromosWithSignInPromos)) {
-#if BUILDFLAG(ENABLE_DICE_SUPPORT)
-    return pref_service->GetBoolean(prefs::kExplicitBrowserSignin)
-               ? signin::ConsentLevel::kSignin
-               : signin::ConsentLevel::kSync;
-#else
-    return signin::ConsentLevel::kSignin;
-#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
-  }
-  return signin::ConsentLevel::kSync;
+  return base::FeatureList::IsEnabled(
+             syncer::kReplaceSyncPromosWithSignInPromos)
+             ? signin::ConsentLevel::kSignin
+             : signin::ConsentLevel::kSync;
 }
 
 }  // namespace
@@ -582,7 +575,7 @@ void ShoppingService::OnProductInfoLocalExtractionResult(
 }
 
 bool ShoppingService::CheckIsPDPFromMetaOnly(
-    const base::Value::Dict& on_page_meta_map) {
+    const base::DictValue& on_page_meta_map) {
   const std::string* type = on_page_meta_map.FindString(kOgType);
 
   // If the og:type meta is present and the value is either og:product or
@@ -1112,7 +1105,7 @@ void ShoppingService::HandleOptGuideProductInfoResponse(
     if (attempt_on_demand && commerce_info_cache_.IsUrlReferenced(url) &&
         entry) {
       if (entry->run_product_info_on_demand) {
-        DCHECK(!base::Contains(on_demand_product_info_callbacks_, url));
+        DCHECK(!on_demand_product_info_callbacks_.contains(url));
         entry->run_product_info_on_demand = false;
         on_demand_product_info_callbacks_[url].push_back(std::move(callback));
 
@@ -1139,7 +1132,7 @@ void ShoppingService::HandleOptGuideProductInfoResponse(
                 AsWeakPtr(),
                 base::BindRepeating(&ShoppingService::OnGetOnDemandProductInfo,
                                     AsWeakPtr())));
-      } else if (base::Contains(on_demand_product_info_callbacks_, url)) {
+      } else if (on_demand_product_info_callbacks_.contains(url)) {
         // If there is a on demand call running, add callback to the queue.
         on_demand_product_info_callbacks_[url].push_back(std::move(callback));
       } else {
@@ -1235,7 +1228,7 @@ void ShoppingService::HandleOnDemandProductInfoResponse(
 
 void ShoppingService::MergeProductInfoData(
     ProductInfo* info,
-    const base::Value::Dict& on_page_data_map) {
+    const base::DictValue& on_page_data_map) {
   if (!info) {
     return;
   }

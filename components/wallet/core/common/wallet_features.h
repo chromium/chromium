@@ -15,6 +15,10 @@ BASE_DECLARE_FEATURE(kWalletablePassDetection);
 extern const base::FeatureParam<std::string>
     kWalletablePassDetectionCountryAllowlist;
 
+extern const base::FeatureParam<std::string> kWalletablePassSaveUrl;
+
+// This is a test only flag, and should be removed before starting the rollout.
+BASE_DECLARE_FEATURE(kWalletablePassSave);
 }  // namespace wallet
 
 #endif  // COMPONENTS_WALLET_CORE_COMMON_WALLET_FEATURES_H_

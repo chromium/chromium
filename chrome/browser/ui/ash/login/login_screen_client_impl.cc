@@ -368,14 +368,14 @@ void LoginScreenClientImpl::OnMaxIncorrectPasswordAttempted(
 void LoginScreenClientImpl::SetPublicSessionKeyboardLayout(
     const AccountId& account_id,
     const std::string& locale,
-    base::Value::List keyboard_layouts) {
+    base::ListValue keyboard_layouts) {
   std::vector<ash::InputMethodItem> result;
 
   for (const auto& i : keyboard_layouts) {
     if (!i.is_dict()) {
       continue;
     }
-    const base::Value::Dict& dict = i.GetDict();
+    const base::DictValue& dict = i.GetDict();
 
     ash::InputMethodItem input_method_item;
     const std::string* ime_id = dict.FindString("value");

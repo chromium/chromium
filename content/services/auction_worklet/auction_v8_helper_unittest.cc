@@ -736,20 +736,20 @@ TEST_F(AuctionV8HelperTest, ConsoleLog) {
         message.value.GetDict().FindStringByDottedPath("params.type");
     ASSERT_TRUE(type);
     EXPECT_EQ("debug", *type);
-    const base::Value::List* args =
+    const base::ListValue* args =
         message.value.GetDict().FindListByDottedPath("params.args");
     ASSERT_TRUE(args);
     ASSERT_EQ(1u, args->size());
-    const base::Value::Dict* args_dict = (*args)[0].GetIfDict();
+    const base::DictValue* args_dict = (*args)[0].GetIfDict();
     ASSERT_TRUE(args_dict);
     EXPECT_EQ("string", *args_dict->FindString("type"));
     EXPECT_EQ("debug is there", *args_dict->FindString("value"));
-    const base::Value::List* stack_trace =
+    const base::ListValue* stack_trace =
         message.value.GetDict().FindListByDottedPath(
             "params.stackTrace.callFrames");
     ASSERT_TRUE(stack_trace);
     ASSERT_EQ(1u, stack_trace->size());
-    const base::Value::Dict* trace_dict = (*stack_trace)[0].GetIfDict();
+    const base::DictValue* trace_dict = (*stack_trace)[0].GetIfDict();
     ASSERT_TRUE(trace_dict);
     EXPECT_EQ("", *trace_dict->FindString("functionName"));
     EXPECT_EQ("https://foo.test/", *trace_dict->FindString("url"));
@@ -763,7 +763,7 @@ TEST_F(AuctionV8HelperTest, ConsoleLog) {
         message.value.GetDict().FindStringByDottedPath("params.type");
     ASSERT_TRUE(type);
     EXPECT_EQ("log", *type);
-    const base::Value::List* args =
+    const base::ListValue* args =
         message.value.GetDict().FindListByDottedPath("params.args");
     ASSERT_TRUE(args);
     ASSERT_EQ(5u, args->size());
@@ -778,12 +778,12 @@ TEST_F(AuctionV8HelperTest, ConsoleLog) {
     EXPECT_EQ("boolean", *(*args)[4].GetDict().FindString("type"));
     EXPECT_EQ(true, (*args)[4].GetDict().FindBool("value"));
 
-    const base::Value::List* stack_trace =
+    const base::ListValue* stack_trace =
         message.value.GetDict().FindListByDottedPath(
             "params.stackTrace.callFrames");
     ASSERT_TRUE(stack_trace);
     ASSERT_EQ(1u, stack_trace->size());
-    const base::Value::Dict* stack_trace_dict = (*stack_trace)[0].GetIfDict();
+    const base::DictValue* stack_trace_dict = (*stack_trace)[0].GetIfDict();
     ASSERT_TRUE(stack_trace_dict);
     EXPECT_EQ("foo", *stack_trace_dict->FindString("functionName"));
     EXPECT_EQ("https://foo.test/", *stack_trace_dict->FindString("url"));
@@ -797,20 +797,20 @@ TEST_F(AuctionV8HelperTest, ConsoleLog) {
         message.value.GetDict().FindStringByDottedPath("params.type");
     ASSERT_TRUE(type);
     EXPECT_EQ("table", *type);
-    const base::Value::List* args =
+    const base::ListValue* args =
         message.value.GetDict().FindListByDottedPath("params.args");
     ASSERT_TRUE(args);
     ASSERT_EQ(1u, args->size());
-    const base::Value::Dict* args_dict = (*args)[0].GetIfDict();
+    const base::DictValue* args_dict = (*args)[0].GetIfDict();
     ASSERT_TRUE(args_dict);
     EXPECT_EQ("string", *args_dict->FindString("type"));
     EXPECT_EQ("even table!", *args_dict->FindString("value"));
-    const base::Value::List* stack_trace =
+    const base::ListValue* stack_trace =
         message.value.GetDict().FindListByDottedPath(
             "params.stackTrace.callFrames");
     ASSERT_TRUE(stack_trace);
     ASSERT_EQ(1u, stack_trace->size());
-    const base::Value::Dict* stack_trace_dict = (*stack_trace)[0].GetIfDict();
+    const base::DictValue* stack_trace_dict = (*stack_trace)[0].GetIfDict();
     ASSERT_TRUE(stack_trace_dict);
     EXPECT_EQ("foo", *stack_trace_dict->FindString("functionName"));
     EXPECT_EQ("https://foo.test/", *stack_trace_dict->FindString("url"));
@@ -1092,7 +1092,7 @@ TEST_F(AuctionV8HelperTest, DevToolsDebuggerBasics) {
     TestDevToolsAgentClient::Event breakpoint_hit =
         debug_client.WaitForMethodNotification("Debugger.paused");
 
-    const base::Value::List* hit_breakpoints =
+    const base::ListValue* hit_breakpoints =
         breakpoint_hit.value.GetDict().FindListByDottedPath(
             "params.hitBreakpoints");
     ASSERT_TRUE(hit_breakpoints);
@@ -1213,7 +1213,7 @@ TEST_F(AuctionV8HelperTest, DevToolsAgentDebuggerInstrumentationBreakpoint) {
         ASSERT_TRUE(reason);
         EXPECT_EQ("ambiguous", *reason);
 
-        const base::Value::List* reasons =
+        const base::ListValue* reasons =
             breakpoint_hit.value.GetDict().FindListByDottedPath(
                 "params.data.reasons");
         ASSERT_TRUE(reasons);

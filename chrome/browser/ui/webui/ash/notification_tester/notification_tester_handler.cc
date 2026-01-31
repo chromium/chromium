@@ -36,11 +36,11 @@ void NotificationTesterHandler::RegisterMessages() {
 }
 
 void NotificationTesterHandler::HandleGenerateNotificationForm(
-    const base::Value::List& args) {
+    const base::ListValue& args) {
   AllowJavascript();
 
   // Unpack JS args.
-  const base::Value::Dict* notifObj = args[0].GetIfDict();
+  const base::DictValue* notifObj = args[0].GetIfDict();
   DCHECK(notifObj);
 
   // Set notification ID to the system time (always unique) if specified.
@@ -195,7 +195,7 @@ NotificationTesterHandler::GetRichDataNotifItems(int num_items) {
 
 message_center::RichNotificationData
 NotificationTesterHandler::DictToOptionalFields(
-    const base::Value::Dict* notifObj) {
+    const base::DictValue* notifObj) {
   message_center::RichNotificationData optional_fields;
   // Unpack notification object and populate optional_fields.
   const std::string* image = notifObj->FindString("richDataImage");

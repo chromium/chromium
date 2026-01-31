@@ -79,9 +79,6 @@ class PublicIpAddressGeolocatorTest : public testing::Test {
     receiver_set_.ReportBadMessage(message);
   }
 
-  // UniqueReceiverSet to mojom::Geolocation.
-  mojo::UniqueReceiverSet<mojom::Geolocation> receiver_set_;
-
   // Test task runner.
   base::test::TaskEnvironment task_environment_;
 
@@ -100,6 +97,11 @@ class PublicIpAddressGeolocatorTest : public testing::Test {
 
   // Test URLLoaderFactory for handling requests to the geolocation API.
   network::TestURLLoaderFactory test_url_loader_factory_;
+
+  // `receiver_set_` is declared after `notifier_` so that it is destructed
+  // before `notifier_`. This destruction order aligns with the
+  // `PublicIpAddressGeolocationProvider`.
+  mojo::UniqueReceiverSet<mojom::Geolocation> receiver_set_;
 };
 
 // Basic test of a client invoking QueryNextPosition.

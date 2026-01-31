@@ -60,7 +60,7 @@ class ClearBrowsingDataHandler : public SettingsPageUIHandler,
                            UpdateSyncState_NonGoogleDseNotPrepopulated);
 
   // Clears browsing data, called by Javascript.
-  void HandleClearBrowsingData(const base::Value::List& value);
+  void HandleClearBrowsingData(const base::ListValue& value);
 
   // Called when a clearing task finished. |webui_callback_id| is provided
   // by the WebUI action that initiated it.
@@ -72,10 +72,10 @@ class ClearBrowsingDataHandler : public SettingsPageUIHandler,
       uint64_t failed_data_types);
 
   // Initializes the dialog UI. Called by JavaScript when the DOM is ready.
-  void HandleInitialize(const base::Value::List& args);
+  void HandleInitialize(const base::ListValue& args);
 
   // Returns the current sync state to the WebUI.
-  void HandleGetSyncState(const base::Value::List& args);
+  void HandleGetSyncState(const base::ListValue& args);
 
   // Called by WebUI when the user takes an action that warrants restarting
   // counters.
@@ -85,7 +85,7 @@ class ClearBrowsingDataHandler : public SettingsPageUIHandler,
   // should be reconciled with `HandleTimePeriodChanged` below which likewise
   // triggers on the dropdown change, but only after the deletion has been
   // executed and prefs updated.
-  void HandleRestartCounters(const base::Value::List& args);
+  void HandleRestartCounters(const base::ListValue& args);
 
   // Implementation of SyncServiceObserver.
   void OnStateChanged(syncer::SyncService* sync) override;
@@ -95,7 +95,7 @@ class ClearBrowsingDataHandler : public SettingsPageUIHandler,
   virtual void UpdateSyncState();
 
   // Create a SyncStateEvent containing the current sync state.
-  base::Value::Dict CreateSyncStateEvent();
+  base::DictValue CreateSyncStateEvent();
 
   // Finds out whether we should show notice about other forms of history stored
   // in user's account.

@@ -141,7 +141,7 @@ BASE_FEATURE(kThrottleMainFrameTo60HzWebView,
              base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
 
-BASE_FEATURE(kBoostFrameRateForUrgentMainFrame,
+BASE_FEATURE(kHighFramerateRequestFromClient,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 void SetIsEligibleForThrottleMainFrameTo60Hz(bool is_eligible) {
@@ -218,7 +218,7 @@ BASE_FEATURE(kOverscrollBehaviorRespectedOnAllScrollContainers,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kOverscrollEffectOnNonRootScrollers,
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kSkipFinishDuringReleaseLayerTreeFrameSink,
              base::FEATURE_ENABLED_BY_DEFAULT);
@@ -252,20 +252,29 @@ BASE_FEATURE_PARAM(double,
 BASE_FEATURE(kHandleNonDamagingInputsInScrollJankV4Metric,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE_PARAM(bool,
-                   kCountNonDamagingFramesTowardsHistogramFrameCount,
-                   &kHandleNonDamagingInputsInScrollJankV4Metric,
-                   "count_non_damaging_frames_towards_histogram_frame_count",
-                   false);
+constexpr const char kEmitForAllScrolls[] = "emit_for_all_scrolls";
+constexpr const char kEmitForDamagingScrolls[] = "emit_for_damaging_scrolls";
+const base::FeatureParam<std::string> kHistogramEmissionPolicy(
+    &kHandleNonDamagingInputsInScrollJankV4Metric,
+    "histogram_emission_policy",
+    kEmitForDamagingScrolls);
 
 BASE_FEATURE(kManualBeginFrame, base::FEATURE_DISABLED_BY_DEFAULT);
-
-BASE_FEATURE(kDropMetricsFromNonProducedFramesOnlyIfTheyHadNoDamage,
-             base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kUnlockDuringGpuImageOperations,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kMainIdleBypassScheduler, base::FEATURE_DISABLED_BY_DEFAULT);
+
+// When enabled, UKM will be reported for compositor frames.
+BASE_FEATURE(kReportUkm, base::FEATURE_ENABLED_BY_DEFAULT);
+
+BASE_FEATURE(kBrowserControlsSmoothScroll, base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kBrowserControlsHeightChangeCancelAnimations,
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
+// Killswitch for disabling Headless scheduler state machine.
+BASE_FEATURE(kHeadlessSchedulerStateMachine, base::FEATURE_ENABLED_BY_DEFAULT);
 
 }  // namespace features

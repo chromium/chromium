@@ -37,7 +37,7 @@ class PermissionUpdateRequester {
   PermissionUpdateRequester& operator=(const PermissionUpdateRequester&) =
       delete;
 
-  void OnPermissionResult(JNIEnv* env, jboolean all_permissions_granted);
+  void OnPermissionResult(JNIEnv* env, bool all_permissions_granted);
 
   void RequestPermissions();
 

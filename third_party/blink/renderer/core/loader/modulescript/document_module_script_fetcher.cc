@@ -17,6 +17,7 @@
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/weborigin/security_policy.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
+#include "third_party/perfetto/include/perfetto/tracing/track_event_args.h"
 
 namespace blink {
 
@@ -80,10 +81,10 @@ void DocumentModuleScriptFetcher::NotifyFinished(Resource* resource) {
   ScriptStreamer::RecordStreamingHistogram(ScriptSchedulingType::kAsync,
                                            streamer, not_streamed_reason);
 
-  TRACE_EVENT_WITH_FLOW1(TRACE_DISABLED_BY_DEFAULT("v8.compile"),
-                         "DocumentModuleScriptFetcher::NotifyFinished", this,
-                         TRACE_EVENT_FLAG_FLOW_IN, "not_streamed_reason",
-                         not_streamed_reason);
+  TRACE_EVENT(TRACE_DISABLED_BY_DEFAULT("v8.compile"),
+              "DocumentModuleScriptFetcher::NotifyFinished",
+              perfetto::TerminatingFlow::FromPointer(this),
+              "not_streamed_reason", not_streamed_reason);
   // TODO(crbug.com/1061857): Pass ScriptStreamer to the client here.
   const KURL& url = script_resource->GetResponse().ResponseUrl();
   // Create an external module script where base_url == source_url.

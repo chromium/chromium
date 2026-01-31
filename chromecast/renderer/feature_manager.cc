@@ -10,7 +10,6 @@
 #include <vector>
 
 #include "base/check.h"
-#include "base/containers/contains.h"
 #include "base/logging.h"
 #include "base/values.h"
 #include "chromecast/base/cast_features.h"
@@ -81,7 +80,7 @@ void FeatureManager::ConfigureFeatures(
 
 void FeatureManager::ConfigureFeaturesInternal() {
   if (FeatureEnabled(feature::kEnableDevMode)) {
-    const base::Value::Dict& dev_mode_config =
+    const base::DictValue& dev_mode_config =
         (features_map_.find(feature::kEnableDevMode)->second)->config;
     const std::string* dev_mode_origin =
         dev_mode_config.FindString(feature::kDevModeOrigin);
@@ -136,7 +135,7 @@ void FeatureManager::OnFeatureManagerRequest(
 }
 
 bool FeatureManager::FeatureEnabled(const std::string& feature) const {
-  return base::Contains(features_map_, feature);
+  return features_map_.contains(feature);
 }
 
 const chromecast::shell::mojom::FeaturePtr& FeatureManager::GetFeature(

@@ -86,10 +86,6 @@ BASE_FEATURE(kDestroyProfileOnBrowserClose,
              base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
 
-// DestroyProfileOnBrowserClose only covers deleting regular (non-System)
-// Profiles. This flags lets us destroy the System Profile, as well.
-BASE_FEATURE(kDestroySystemProfiles, base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Enables showing the email of the flex org admin that setup CBCM in the
 // management disclosures.
 BASE_FEATURE(kFlexOrgManagementDisclosure,
@@ -140,16 +136,6 @@ BASE_FEATURE(kNewTabPageTriggerForPrefetch, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kNotificationOneTapUnsubscribeOnDesktop,
              base::FEATURE_DISABLED_BY_DEFAULT);
 #endif  // !BUILDFLAG(IS_ANDROID)
-
-// Enables executing the browser commands sent by the NTP promos.
-BASE_FEATURE(kPromoBrowserCommands, base::FEATURE_ENABLED_BY_DEFAULT);
-
-// Parameter name for the promo browser command ID provided along with
-// kPromoBrowserCommands.
-// The value of this parameter should be parsable as an unsigned integer and
-// should map to one of the browser commands specified in:
-// ui/webui/resources/js/browser_command/browser_command.mojom
-const char kBrowserCommandIdParam[] = "BrowserCommandIdParam";
 
 #if BUILDFLAG(IS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
 // When this feature is enabled, Chrome will register os_update_handler with
@@ -206,24 +192,6 @@ BASE_FEATURE(kTriggerNetworkDataMigration,
              base::FEATURE_DISABLED_BY_DEFAULT
 #endif
 );
-
-#if BUILDFLAG(IS_CHROMEOS)
-// If enabled, a blue border is drawn around shared tabs on ChromeOS.
-// If disabled, the blue border is not used on ChromeOS.
-//
-// Motivation:
-//  The blue border behavior used to (still does, see below) cause problems on
-//  ChromeOS - see crbug.com/1320262 (fixed). This flag is introduced as means
-//  of disabling this feature in case of possible future regressions.
-//
-// TODO(crbug.com/40198577): Remove this flag once we confirm that blue border
-// works fine on ChromeOS.
-//
-// b/279051234: We suspect the tab sharing blue border may cause a bad issue
-// on ChromeOS where a window can not be interacted at all. Disable the feature
-// on ChromeOS.
-BASE_FEATURE(kTabCaptureBlueBorderCrOS, base::FEATURE_DISABLED_BY_DEFAULT);
-#endif
 
 // Enables runtime detection of USB devices which provide a WebUSB landing page
 // descriptor.

@@ -58,8 +58,7 @@ ValidationContext::ValidationContext(Message* message,
                         0,
                         validator_type) {}
 
-ValidationContext::~ValidationContext() {
-}
+ValidationContext::~ValidationContext() {}
 
 std::string ValidationContext::GetFullDescription() const {
   std::string full_description(description_);

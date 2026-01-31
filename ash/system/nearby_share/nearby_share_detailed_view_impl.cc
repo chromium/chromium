@@ -189,7 +189,7 @@ void NearbyShareDetailedViewImpl::CreateIsEnabledContainer() {
       std::make_unique<HoverHighlightView>(/*listener=*/this));
   toggle_row_->SetFocusBehavior(FocusBehavior::NEVER);
 
-  // TODO(brandosocarras, b/360150790): Create and use 'On'/'Off' strings.
+  // TODO(360150790): Create and use 'On'/'Off' strings.
   const bool is_qs_enabled = nearby_share_delegate_->IsEnabled();
   toggle_row_->AddLabelRow(
       is_qs_enabled ? l10n_util::GetStringUTF16(

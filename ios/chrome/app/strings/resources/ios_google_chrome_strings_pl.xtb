@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="pl">
 <translation id="1076643793026027628">Chrome automatycznie otwiera linki incognito z YouTube w trybie incognito.</translation>
+<translation id="1081114897601629648">Nie udało się zaimportować tych haseł do Menedżera haseł Google, ponieważ nie spełniają wymagań.</translation>
 <translation id="1086486568852410168">Szukaj za pomocą Obiektywu Google</translation>
 <translation id="1088490543924960890">Zacznij zapisywać klucze dostępu w Menedżerze haseł Google</translation>
 <translation id="1143896152279775643">Hasło zostanie zapisane w menedżerze haseł Google na koncie <ph name="EMAIL" />.</translation>
@@ -85,6 +86,9 @@ Odczekaj kilka minut, zanim się wylogujesz. Jeśli wylogujesz się teraz, te da
 <translation id="2767464022270041271">Brak zapisanych haseł. Menedżer haseł Google może sprawdzać Twoje hasła, gdy je zapiszesz.</translation>
 <translation id="2788811701191021538">Otwiera stronę ustawień form płatności w Chrome.</translation>
 <translation id="2876628302275096482">Dowiedz się więcej o tym, <ph name="BEGIN_LINK" />jak Chrome dba o prywatność Twoich danych<ph name="END_LINK" />.</translation>
+<translation id="288992067439702510">Osiągnięto limit <ph name="LIMIT" /> zakładek w Google Chrome, więc niektóre z Twoich zakładek nie zostały jeszcze zapisane na Twoim koncie Google.
+
+Dopóki nie usuniesz niektórych zakładek, nie będzie można zapisywać nowych na Twoim koncie. Jeśli wylogujesz się teraz, niezapisane zakładki zostaną usunięte.</translation>
 <translation id="2922914028977213693">Kliknij tutaj, aby w pełni wykorzystać możliwości Chrome na iPadzie.</translation>
 <translation id="292371311537977079">Ustawienia Chrome</translation>
 <translation id="2923827943290349720">Blokuj karty incognito po zamknięciu Chrome</translation>
@@ -115,6 +119,7 @@ Odczekaj kilka minut, zanim się wylogujesz. Jeśli wylogujesz się teraz, te da
 <translation id="3460369101684070455">Aby mieć łatwy dostęp do zapisanych haseł w innych aplikacjach, użyj autouzupełniania w Chrome</translation>
 <translation id="3472587960215700950">Chrome używa Map Google, aby podawać wskazówki dojazdu i informacje lokalne o wykrytych adresach.</translation>
 <translation id="3482807551645716768">Uruchamiaj Chrome szybciej na ekranie głównym iPada.</translation>
+<translation id="3491067552520121605">Menedżer haseł Google przechowuje już hasła lub klucze dostępu do wyświetlanych stron. Wybierz konto, aby zachować wyświetlane dane logowania i zastąpić nimi te w Menedżerze haseł Google.</translation>
 <translation id="3503014945441706099">Włącz też Ulepszone Bezpieczne przeglądanie na tym profilu Chrome</translation>
 <translation id="3522659714780527202">Aby widzieć swoje karty zawsze, kiedy korzystasz z Chrome, włącz synchronizację</translation>
 <translation id="364480321352456989">Twoja przeglądarka Chrome jest nieaktualna.</translation>
@@ -134,6 +139,7 @@ Odczekaj kilka minut, zanim się wylogujesz. Jeśli wylogujesz się teraz, te da
 <translation id="4167555379306984168">Zobacz, co nowego w Chrome</translation>
 <translation id="417201473131094001">Nieobsługiwane w Chrome Canary</translation>
 <translation id="424864128008805179">Wylogować z Chrome?</translation>
+<translation id="4409545895715116037">Nie udało się zaimportować tych kluczy dostępu do Menedżera haseł Google, ponieważ nie spełniają wymagań.</translation>
 <translation id="4430797724889237570">Otwieraj linki z Gmaila, Map, YouTube i innych aplikacji w Chrome</translation>
 <translation id="447252321002412580">Pomóż w ulepszaniu funkcji i działania Chrome</translation>
 <translation id="4523886039239821078">Niektóre dodatki mogą powodować awarie Chrome. Odinstaluj je.</translation>
@@ -272,6 +278,7 @@ W <ph name="BEGIN_LINK" />usługach Google<ph name="END_LINK" /> znajdziesz wi�
 <translation id="7284245284340063465">Jeśli zapomnisz hasło lub postanowisz zmienić to ustawienie, <ph name="BEGIN_LINK" />usuń dane Chrome na swoim koncie<ph name="END_LINK" />.</translation>
 <translation id="7296102444587051536">Chrome na iOS</translation>
 <translation id="7299681342915173313">Teraz możesz używać Chrome za każdym razem, gdy klikniesz link w e-mailach, dokumentach i w innych aplikacjach.</translation>
+<translation id="7334364820047587268">Menedżer haseł Google przechowuje już hasła do tych kont. Jeśli zechcesz zaimportować jedno z poniższych haseł, zastąpi ono dotychczasowe.</translation>
 <translation id="7344094882820374540">Korzystaj z najlepszych zabezpieczeń Chrome przed niebezpiecznymi stronami</translation>
 <translation id="7349129508108954623">Zezwalaj Chrome na używanie Map Google do podawania wskazówek i informacji lokalnych o wykrytych adresach.</translation>
 <translation id="7371674917547846460">Otrzymuj przydatne wskazówki dotyczące Chrome i inne informacje.</translation>
@@ -300,11 +307,11 @@ W <ph name="BEGIN_LINK" />usługach Google<ph name="END_LINK" /> znajdziesz wi�
 <translation id="7787205077729386167">Otwórz Ustawienia Chrome na urządzeniu z iOS, kliknij „Domyślna przeglądarka” i wybierz Chrome.</translation>
 <translation id="778855399387580014">Rozpocznij wyszukiwanie na nowej karcie Chrome.</translation>
 <translation id="7792140019572081272">Chrome dba o bezpieczeństwo Twoich danych wrażliwych za pomocą Face ID.</translation>
+<translation id="7825648984449922731">Edytuj obraz za pomocą Gemini w Chrome</translation>
 <translation id="7855730255114109580">Masz aktualną wersję Google Chrome</translation>
 <translation id="787226752901403048">Zaloguj się w Chrome, aby udostępniać grupy kart i do nich dołączać oraz wspólnie pracować nad pomysłami</translation>
 <translation id="7897703007638178753">Zobacz ostatnie karty w Chrome</translation>
 <translation id="7948283758957877064">Nowości w Chrome</translation>
-<translation id="7996707498590516621">Utwórz obraz za pomocą Gemini w Chrome</translation>
 <translation id="8000174216052461231">Wskazówka dotycząca Chrome: korzystaj z najlepszych zabezpieczeń Chrome</translation>
 <translation id="8006014511203279255">Używaj Chrome zawsze wtedy, gdy klikasz linki w wiadomościach lub w innych aplikacjach.</translation>
 <translation id="8014670471808569312">Chrome zaproponuje zapisanie hasła.</translation>

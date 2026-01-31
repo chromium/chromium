@@ -58,7 +58,7 @@ class DownloadsHandlerTest : public testing::Test {
 
   void SetUp() override {
     EXPECT_TRUE(test_web_ui_.call_data().empty());
-    handler()->HandleInitialize(base::Value::List());
+    handler()->HandleInitialize(base::ListValue());
     EXPECT_TRUE(handler()->IsJavascriptAllowed());
     VerifyAutoOpenDownloadsChangedCallback();
     test_web_ui_.ClearTrackedCalls();

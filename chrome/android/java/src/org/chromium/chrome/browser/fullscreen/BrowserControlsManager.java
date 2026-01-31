@@ -4,7 +4,6 @@
 
 package org.chromium.chrome.browser.fullscreen;
 
-import static org.chromium.build.NullUtil.assertNonNull;
 import static org.chromium.build.NullUtil.assumeNonNull;
 
 import android.animation.Animator;
@@ -22,7 +21,8 @@ import org.chromium.base.ApplicationStatus.ActivityStateListener;
 import org.chromium.base.ObserverList;
 import org.chromium.base.TraceEvent;
 import org.chromium.base.metrics.RecordHistogram;
-import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.supplier.ObservableSuppliers;
+import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.build.annotations.EnsuresNonNullIf;
@@ -79,8 +79,8 @@ public class BrowserControlsManager implements ActivityStateListener, BrowserCon
      * An observable for browser controls being at its minimum height or not. This is as good as the
      * controls being hidden when both min heights are 0.
      */
-    private final ObservableSupplierImpl<Boolean> mControlsAtMinHeight =
-            new ObservableSupplierImpl<>();
+    private final SettableNonNullObservableSupplier<Boolean> mControlsAtMinHeight =
+            ObservableSuppliers.createNonNull(false);
 
     private @Nullable TabModelSelectorTabObserver mTabControlsObserver;
     private @Nullable ControlContainer mControlContainer;
@@ -212,7 +212,6 @@ public class BrowserControlsManager implements ActivityStateListener, BrowserCon
             MultiWindowModeStateDispatcher multiWindowDispatcher) {
         mActivity = activity;
         mControlsPosition = controlsPosition;
-        mControlsAtMinHeight.set(false);
         mHtmlApiHandler =
                 FullscreenHtmlApiHandlerFactory.createInstance(
                         activity,
@@ -243,7 +242,7 @@ public class BrowserControlsManager implements ActivityStateListener, BrowserCon
         mActiveTabObserver =
                 new ActivityTabTabObserver(activityTabProvider) {
                     @Override
-                    protected void onObservingDifferentTab(@Nullable Tab tab, boolean hint) {
+                    protected void onObservingDifferentTab(@Nullable Tab tab) {
                         setTab(tab);
 
                         // The tab that's been switched away from is never going to update us that
@@ -430,7 +429,7 @@ public class BrowserControlsManager implements ActivityStateListener, BrowserCon
      */
     @VisibleForTesting
     public boolean areBrowserControlsAtMinHeight() {
-        return assertNonNull(mControlsAtMinHeight.get());
+        return mControlsAtMinHeight.get();
     }
 
     private void bottomControlsAnimationMaybeStarted(
@@ -439,7 +438,7 @@ public class BrowserControlsManager implements ActivityStateListener, BrowserCon
         if (mHasBottomControlsHeightAnimation) {
             mBottomAnimationInitialOffset = getBottomControlOffset();
         }
-        if (ChromeFeatureList.sBcivBottomControls.isEnabled() && !isVisibilityForced()) {
+        if (!isVisibilityForced()) {
             updateBottomControlsOffsetTagConstraints(
                     oldHeight, oldMinHeight, newHeight, newMinHeight);
         }
@@ -447,7 +446,7 @@ public class BrowserControlsManager implements ActivityStateListener, BrowserCon
 
     private void bottomControlsAnimationEnded() {
         mHasBottomControlsHeightAnimation = false;
-        if (ChromeFeatureList.sBcivBottomControls.isEnabled() && !isVisibilityForced()) {
+        if (!isVisibilityForced()) {
             updateBottomControlsOffsetTagConstraints(
                     mBottomControlsHeight,
                     mBottomControlsMinHeight,
@@ -509,14 +508,14 @@ public class BrowserControlsManager implements ActivityStateListener, BrowserCon
         if (mHasTopControlsHeightAnimation) {
             mTopAnimationInitialOffset = getTopControlOffset();
         }
-        if (ChromeFeatureList.sBrowserControlsInViz.isEnabled() && !isVisibilityForced()) {
+        if (!isVisibilityForced()) {
             updateTopControlsOffsetTagConstraints(oldHeight, oldMinHeight, newHeight, newMinHeight);
         }
     }
 
     private void topControlsAnimationEnded() {
         mHasTopControlsHeightAnimation = false;
-        if (ChromeFeatureList.sBrowserControlsInViz.isEnabled() && !isVisibilityForced()) {
+        if (!isVisibilityForced()) {
             updateTopControlsOffsetTagConstraints(
                     mTopControlsHeight,
                     mTopControlsMinHeight,
@@ -776,9 +775,7 @@ public class BrowserControlsManager implements ActivityStateListener, BrowserCon
             // frames because the browser submits a frame with the height update before the offsets
             // in the renderer and browser are updated.
             // When visibility is forced, BCIV doesn't apply, so offsets should still be updated.
-            if (!ChromeFeatureList.sBcivBottomControls.isEnabled()
-                    || !shouldAnimateBrowserControlsHeightChanges()
-                    || isVisibilityForced()) {
+            if (!shouldAnimateBrowserControlsHeightChanges() || isVisibilityForced()) {
                 notifyControlOffsetChanged();
             }
             notifyControlsPositionChanged();
@@ -1397,7 +1394,7 @@ public class BrowserControlsManager implements ActivityStateListener, BrowserCon
 
     private boolean doSyncMinHeightWithTotalHeight() {
         // When V2 flag is enabled, this logic is coordinated in TopControlsStacker.
-        if (BrowserControlsUtils.doSyncMinHeightWithTotalHeightV2()) return false;
+        if (BrowserControlsUtils.doSyncMinHeightWithTotalHeightV2(mActivity)) return false;
         if (mDisableSyncMinHeightWithTotalHeight) return false;
 
         return BrowserControlsUtils.doSyncMinHeightWithTotalHeight(mActivity);

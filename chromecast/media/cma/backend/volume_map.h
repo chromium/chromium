@@ -12,7 +12,7 @@
 #include "chromecast/media/cma/backend/cast_audio_json.h"
 
 namespace base {
-class Value;
+class DictValue;
 }  // namespace base
 
 namespace chromecast {
@@ -36,7 +36,7 @@ class VolumeMap {
 
   float DbFSToVolume(float db);
 
-  void LoadVolumeMap(std::optional<base::Value::Dict> cast_audio_config);
+  void LoadVolumeMap(std::optional<base::DictValue> cast_audio_config);
 
  private:
   struct LevelToDb {

@@ -622,10 +622,10 @@ Unsupported non-ascii characters will cause issues with xml presubmits.
 </enum>
 
 <enum name="JpSettingsPunctuationStyle">
-  <int value="0" label="KutenTouten"/>
+  <int value="0" label="ToutenKuten"/>
   <int value="1" label="CommaPeriod"/>
-  <int value="2" label="KutenPeriod"/>
-  <int value="3" label="CommaTouten"/>
+  <int value="2" label="ToutenPeriod"/>
+  <int value="3" label="CommaKuten"/>
 </enum>
 
 <enum name="JpSettingsSelectionShortcut">
@@ -653,7 +653,7 @@ Unsupported non-ascii characters will cause issues with xml presubmits.
   <int value="3" label="SquareBracketMiddleDot"/>
 </enum>
 
-<!--LINT.ThenChange(/chrome/browser/ash/input_method/japanese/japanese_settings.cc:jp_settings_hist_enums)-->
+<!--LINT.ThenChange(/chrome/browser/ash/input_method/japanese_settings.h:jp_settings_hist_enums)-->
 
 <enum name="KoreanAction">
   <summary>Actions that are available on the Korean IME.</summary>

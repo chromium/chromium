@@ -66,6 +66,7 @@ cr-icon-button {
       var(--color-toolbar-search-field-foreground-placeholder,
       var(--cr-secondary-text-color)));
   opacity: 0;
+  transition: opacity 200ms;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -96,10 +97,6 @@ cr-icon-button {
     --cr-spinner-color: var(
         --cr-toolbar-search-field-input-icon-color, white);
   }
-}
-
-#prompt {
-  transition: opacity 200ms;
 }
 
 /* Input field. */

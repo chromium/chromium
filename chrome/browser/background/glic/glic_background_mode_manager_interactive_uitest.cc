@@ -24,6 +24,7 @@
 #include "chrome/browser/status_icons/status_tray.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/common/chrome_features.h"
+#include "chrome/common/pref_names.h"
 #include "chrome/installer/util/auto_launch_util.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
@@ -50,7 +51,10 @@ namespace {
 class TestStartupLaunchManager : public StartupLaunchManager {
  public:
   explicit TestStartupLaunchManager(BrowserProcess* browser_process)
-      : StartupLaunchManager(browser_process) {}
+      : StartupLaunchManager(browser_process) {
+    // Release lock acquired during launch manager construction.
+    CommitLaunchOnStartupState();
+  }
 
   MOCK_METHOD1(UpdateLaunchOnStartup,
                void(std::optional<StartupLaunchMode> startup_mode));
@@ -232,6 +236,10 @@ IN_PROC_BROWSER_TEST_F(GlicBackgroundModeManagerUiTest,
 IN_PROC_BROWSER_TEST_F(GlicBackgroundModeManagerUiTest, LaunchOnStartup) {
   auto* launch_manager = static_cast<TestStartupLaunchManager*>(
       StartupLaunchManager::From(g_browser_process));
+
+  // Disable foreground launch explicitly.
+  g_browser_process->local_state()->SetBoolean(
+      ::prefs::kForegroundLaunchOnLogin, false);
 
   EXPECT_CALL(*launch_manager,
               UpdateLaunchOnStartup({StartupLaunchMode::kBackground}))

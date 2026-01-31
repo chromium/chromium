@@ -47,7 +47,6 @@ source_set("unit_tests") {
     "//chrome/browser",
     "//chrome/browser/content_settings:content_settings_factory",
     "//chrome/test:test_support",
-    "//components/privacy_sandbox:tracking_protection_prefs",
     "//content/test:test_support",
     "//testing/gtest",
     "//url",

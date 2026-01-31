@@ -21,8 +21,8 @@ constexpr const char kUserActionCancelClicked[] = "cancel";
 constexpr const char kUserActionNextClicked[] = "next";
 constexpr const char kUserActionTurnOnBluetooth[] = "turn_on_bluetooth";
 
-base::Value::List ConvertQrCode(quick_start::QRCode::PixelData qr_code) {
-  base::Value::List qr_code_list;
+base::ListValue ConvertQrCode(quick_start::QRCode::PixelData qr_code) {
+  base::ListValue qr_code_list;
   for (const auto& it : qr_code) {
     qr_code_list.Append(base::Value(static_cast<bool>(it & 1)));
   }
@@ -93,7 +93,7 @@ void QuickStartScreen::HideImpl() {
   session_refresher_.reset();
 }
 
-void QuickStartScreen::OnUserAction(const base::Value::List& args) {
+void QuickStartScreen::OnUserAction(const base::ListValue& args) {
   const std::string& action_id = args[0].GetString();
   if (action_id == kUserActionCancelClicked) {
     controller_->DetachFrontend(this);

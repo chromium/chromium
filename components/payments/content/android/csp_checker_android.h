@@ -28,11 +28,11 @@ class CSPCheckerAndroid : public CSPChecker {
   void Destroy(JNIEnv* env);
 
   // Message from Java to return the result.
-  void OnResult(JNIEnv* env, jint result_id, jboolean result);
+  void OnResult(JNIEnv* env, int32_t result_id, bool result);
 
   // Convert a Java-owned CSPCheckerAndroid* pointer into a weak pointer.
   static base::WeakPtr<CSPCheckerAndroid> GetWeakPtr(
-      jlong native_csp_checker_android);
+      int64_t native_csp_checker_android);
 
  private:
   // CSPChecker implementation.

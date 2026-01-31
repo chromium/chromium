@@ -356,8 +356,7 @@ class ContextualCueingServiceBrowserTestAllowZSSForSrp
     scoped_feature_list_.InitWithFeaturesAndParameters(
         {{kGlicZeroStateSuggestions,
           {{"ZSSAllowContextualSuggestionsForSearchResultsPages", "true"}}},
-         {features::kGlic, {}},
-         {features::kTabstripComboButton, {}}},
+         {features::kGlic, {}}},
         {});
   }
 

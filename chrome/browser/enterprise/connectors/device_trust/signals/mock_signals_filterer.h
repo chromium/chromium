@@ -15,7 +15,7 @@ class MockSignalsFilterer : public SignalsFilterer {
   MockSignalsFilterer();
   ~MockSignalsFilterer() override;
 
-  MOCK_METHOD(void, Filter, (base::Value::Dict & signals), (override));
+  MOCK_METHOD(void, Filter, (base::DictValue & signals), (override));
 };
 
 }  // namespace enterprise_connectors::test

@@ -11,7 +11,6 @@
 #include <vector>
 
 #include "base/command_line.h"
-#include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/path_service.h"
@@ -368,7 +367,7 @@ TEST_F(PreinstalledWebAppManagerTest, GoodJson) {
 
   EXPECT_EQ(test_install_options_list.size(), install_options_list.size());
   for (const auto& install_option : test_install_options_list) {
-    EXPECT_TRUE(base::Contains(install_options_list, install_option));
+    EXPECT_TRUE(std::ranges::contains(install_options_list, install_option));
   }
   ExpectHistograms(/*enabled=*/2, /*disabled=*/0, /*errors=*/0);
 }
@@ -642,7 +641,7 @@ class PreinstalledWebAppManagerBasicTest : public WebAppTest {
   static constexpr std::u16string_view kAppName = u"Example App";
 
   static ExternalInstallOptions GetInstallOptionsWithFactory(
-      webapps::ManifestId manifest_id = GURL(kManifestId),
+      webapps::ManifestId manifest_id = webapps::ManifestId(GURL(kManifestId)),
       GURL install_url = GURL(kInstallUrl),
       GURL start_url = GURL(kStartUrl),
       GURL manifest_url = GURL(kManifestUrl),
@@ -676,7 +675,7 @@ class PreinstalledWebAppManagerBasicTest : public WebAppTest {
   }
 
   PreinstalledWebAppManagerBasicTest()
-      : app_id_(GenerateAppIdFromManifestId(GURL(kManifestId))) {}
+      : app_id_(GenerateAppIdFromManifestId(webapps::ManifestId(GURL(kManifestId)))) {}
   ~PreinstalledWebAppManagerBasicTest() override = default;
 
   void SetUp() override {
@@ -694,7 +693,7 @@ class PreinstalledWebAppManagerBasicTest : public WebAppTest {
     fake_provider()
         .preinstalled_web_app_manager()
         .SetPreinstalledAppForUpdatingForTesting(
-            PreinstalledAppForUpdating{.manifest_id = GURL(kManifestId),
+            PreinstalledAppForUpdating{.manifest_id = webapps::ManifestId(GURL(kManifestId)),
                                        .install_url = GURL(kInstallUrl)});
     auto fake_extensions_manager = std::make_unique<FakeExtensionsManager>();
     fake_extensions_manager->SetExtensionsSytemReady(true);
@@ -703,7 +702,7 @@ class PreinstalledWebAppManagerBasicTest : public WebAppTest {
     SetupPageState();
   }
 
-  void SetupPageState(webapps::ManifestId manifest_id = GURL(kManifestId),
+  void SetupPageState(webapps::ManifestId manifest_id = webapps::ManifestId(GURL(kManifestId)),
                       GURL install_url = GURL(kInstallUrl),
                       GURL start_url = GURL(kStartUrl),
                       GURL manifest_url = GURL(kManifestUrl)) {
@@ -746,10 +745,10 @@ TEST_F(PreinstalledWebAppManagerBasicTest, PreinstallWorks) {
   test::AwaitStartWebAppProviderAndSubsystems(profile());
 
   EXPECT_TRUE(provider().registrar_unsafe().AppMatches(
-      GenerateAppIdFromManifestId(GURL(kManifestId)),
+      GenerateAppIdFromManifestId(webapps::ManifestId(GURL(kManifestId))),
       WebAppFilter::InstalledInChrome()));
   EXPECT_TRUE(provider().registrar_unsafe().AppMatches(
-      GenerateAppIdFromManifestId(GURL(kManifestId)),
+      GenerateAppIdFromManifestId(webapps::ManifestId(GURL(kManifestId))),
       WebAppFilter::OpensInBrowserTab()));
 
   // State matches.
@@ -759,7 +758,7 @@ TEST_F(PreinstalledWebAppManagerBasicTest, PreinstallWorks) {
   base::test::TestFuture<WebAppIconManager::WebAppBitmaps> icons;
   provider().icon_manager().ReadAllIcons(app_id_, icons.GetCallback());
   ASSERT_TRUE(icons.Wait());
-  ASSERT_TRUE(base::Contains(icons.Get().trusted_icons.any, 144));
+  ASSERT_TRUE(icons.Get().trusted_icons.any.contains(144));
   EXPECT_THAT(
       icons.Get().trusted_icons.any.at(144),
       gfx::test::EqualsBitmap(gfx::test::CreateBitmap(144, SK_ColorGREEN)));
@@ -788,7 +787,7 @@ class PreinstalledWebAppManagerChatUpdate
   }
 
   webapps::ManifestId GetChatManifestId() const {
-    return webapps::ManifestId(webapps::kMailGoogleChatManifestId);
+    return webapps::ManifestId(GURL(webapps::kMailGoogleChatManifestId));
   }
 
   GURL GetChatStartUrl() const {
@@ -802,7 +801,7 @@ class PreinstalledWebAppManagerChatUpdate
 
   webapps::AppId GetChatAppId() const {
     return GenerateAppIdFromManifestId(
-        webapps::ManifestId(webapps::kMailGoogleChatManifestId));
+        webapps::ManifestId(GURL(webapps::kMailGoogleChatManifestId)));
   }
 
  private:

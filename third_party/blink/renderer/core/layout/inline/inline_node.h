@@ -134,6 +134,10 @@ class CORE_EXPORT InlineNode : public LayoutInputNode {
   const HeapVector<SvgTextContentRange>& SvgTextPathRangeList() const;
 
   const Font& FontForTab() const;
+  // Returns the minimum font-size value, scaled by the device pixel ratio.
+  // Nothing is returned if the user preference has no minimum font-size
+  // setting.
+  std::optional<float> MinimumFontPhysicalSize() const;
 
   String ToString() const;
 

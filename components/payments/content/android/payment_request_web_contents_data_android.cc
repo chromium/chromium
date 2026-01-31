@@ -14,7 +14,7 @@ namespace payments {
 namespace android {
 
 // static
-static jboolean JNI_PaymentRequestWebContentsData_HadActivationlessShow(
+static bool JNI_PaymentRequestWebContentsData_HadActivationlessShow(
     JNIEnv* env,
     const base::android::JavaRef<jobject>& jweb_contents) {
   content::WebContents* web_contents =
@@ -39,14 +39,14 @@ static void JNI_PaymentRequestWebContentsData_RecordActivationlessShow(
 }
 
 // static
-static jint JNI_PaymentRequestWebContentsData_GetSPCTransactionMode(
+static int32_t JNI_PaymentRequestWebContentsData_GetSPCTransactionMode(
     JNIEnv* env,
     const base::android::JavaRef<jobject>& jweb_contents) {
   content::WebContents* web_contents =
       content::WebContents::FromJavaWebContents(jweb_contents);
   CHECK(web_contents);
 
-  return static_cast<jint>(
+  return static_cast<int32_t>(
       PaymentRequestWebContentsManager::GetOrCreateForWebContents(web_contents)
           ->transaction_mode());
 }

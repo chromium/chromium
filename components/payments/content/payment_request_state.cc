@@ -9,7 +9,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
@@ -351,8 +350,8 @@ void PaymentRequestState::CheckRequestedMethodsSupported(
 
   if (!are_requested_methods_supported_ &&
       get_all_payment_apps_error_.empty() &&
-      base::Contains(spec_->payment_method_identifiers_set(),
-                     methods::kGooglePlayBilling) &&
+      spec_->payment_method_identifiers_set().contains(
+          methods::kGooglePlayBilling) &&
       !IsInTwa()) {
     get_all_payment_apps_error_ = errors::kAppStoreMethodOnlySupportedInTwa;
   }

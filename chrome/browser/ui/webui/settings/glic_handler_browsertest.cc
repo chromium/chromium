@@ -11,8 +11,6 @@
 #include "chrome/browser/background/glic/glic_launcher_configuration.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/glic/glic_pref_names.h"
-#include "chrome/browser/ui/ui_features.h"
-#include "chrome/common/chrome_features.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/test_browser_window.h"
 #include "components/prefs/pref_service.h"
@@ -28,13 +26,6 @@
 namespace settings {
 class GlicHandlerBrowserTest : public InProcessBrowserTest {
  public:
-  void SetUp() override {
-    feature_list_.InitWithFeatures(
-        {features::kGlic, features::kTabstripComboButton}, {});
-
-    InProcessBrowserTest::SetUp();
-  }
-
   void SetUpOnMainThread() override {
     web_ui_ = std::make_unique<content::TestWebUI>();
     web_ui_->set_web_contents(
@@ -54,7 +45,6 @@ class GlicHandlerBrowserTest : public InProcessBrowserTest {
 
  private:
   std::unique_ptr<GlicHandler> glic_handler_;
-  base::test::ScopedFeatureList feature_list_;
   std::unique_ptr<content::TestWebUI> web_ui_;
 };
 
@@ -67,11 +57,11 @@ IN_PROC_BROWSER_TEST_F(GlicHandlerBrowserTest, UpdateShortcutSuspension) {
   EXPECT_FALSE(global_accelerator_listener->IsShortcutHandlingSuspended());
 
   glic_handler()->HandleSetShortcutSuspensionState(
-      base::Value::List().Append(true));
+      base::ListValue().Append(true));
   EXPECT_TRUE(global_accelerator_listener->IsShortcutHandlingSuspended());
 
   glic_handler()->HandleSetShortcutSuspensionState(
-      base::Value::List().Append(false));
+      base::ListValue().Append(false));
   EXPECT_FALSE(global_accelerator_listener->IsShortcutHandlingSuspended());
 }
 #endif  //  !BUILDFLAG(IS_OZONE_WAYLAND)
@@ -85,7 +75,7 @@ IN_PROC_BROWSER_TEST_F(GlicHandlerBrowserTest, UpdateShortcutSuspension) {
 IN_PROC_BROWSER_TEST_F(GlicHandlerBrowserTest, MAYBE_UpdateGlicShortcut) {
   const ui::Accelerator invalid_shortcut(ui::VKEY_A, ui::EF_NONE);
   glic_handler()->HandleSetGlicShortcut(
-      base::Value::List()
+      base::ListValue()
           .Append("callback_id")
           .Append(ui::Command::AcceleratorToString(invalid_shortcut)));
   ui::Accelerator saved_hotkey =
@@ -95,7 +85,7 @@ IN_PROC_BROWSER_TEST_F(GlicHandlerBrowserTest, MAYBE_UpdateGlicShortcut) {
 
   const ui::Accelerator valid_shortcut(ui::VKEY_A, ui::EF_CONTROL_DOWN);
   glic_handler()->HandleSetGlicShortcut(
-      base::Value::List()
+      base::ListValue()
           .Append("callback_id")
           .Append(ui::Command::AcceleratorToString(valid_shortcut)));
   saved_hotkey = glic::GlicLauncherConfiguration::GetGlobalHotkey();

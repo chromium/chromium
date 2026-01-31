@@ -83,7 +83,7 @@ void InitPrintSettingsGtk(GtkPrintSettings* settings,
   if (printer_name) {
     // Capture the system dialog settings for this printer, to be used by the
     // Print Backend service.
-    base::Value::Dict dialog_data;
+    base::DictValue dialog_data;
 
     dialog_data.Set(printing::kLinuxSystemPrintDialogDataPrinter, printer_name);
 

@@ -54,10 +54,10 @@ class AdbImpl : public Adb {
                             std::string* socket_name) override;
   Status SetPreferences(const std::string& device_serial,
                         const std::string& path,
-                        const base::Value::Dict* custom_prefs) override;
+                        const base::DictValue* custom_prefs) override;
   Status SetLocalState(const std::string& device_serial,
                        const std::string& path,
-                       const base::Value::Dict* custom_local_state) override;
+                       const base::DictValue* custom_local_state) override;
 
  private:
   Status ExecuteCommand(const std::string& command,

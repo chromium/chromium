@@ -20,6 +20,8 @@
 @property(nonatomic, readonly) BOOL hasElements;
 // Whether the data source has some read elements.
 @property(nonatomic, readonly) BOOL hasReadElements;
+// The size of the data source
+@property(nonatomic, readonly) size_t numberOfElements;
 
 // Whether the entry corresponding to the `item` is read.
 - (BOOL)isItemRead:(nonnull id<ReadingListListItem>)item;

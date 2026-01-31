@@ -65,8 +65,9 @@ zx::handle CloneHandle(const zx::handle& handle) {
 
   zx::handle dupe;
   zx_status_t result = handle.duplicate(ZX_RIGHT_SAME_RIGHTS, &dupe);
-  if (result != ZX_OK)
+  if (result != ZX_OK) {
     ZX_DLOG(ERROR, result) << "zx_duplicate_handle";
+  }
   return std::move(dupe);
 }
 #elif BUILDFLAG(IS_APPLE)
@@ -199,13 +200,15 @@ PlatformHandle PlatformHandle::FromMojoPlatformHandle(
   }
 
 #if BUILDFLAG(IS_WIN)
-  if (handle->type != MOJO_PLATFORM_HANDLE_TYPE_WINDOWS_HANDLE)
+  if (handle->type != MOJO_PLATFORM_HANDLE_TYPE_WINDOWS_HANDLE) {
     return PlatformHandle();
+  }
   return PlatformHandle(
       base::win::ScopedHandle(LongToHandle(static_cast<long>(handle->value))));
 #elif BUILDFLAG(IS_FUCHSIA)
-  if (handle->type == MOJO_PLATFORM_HANDLE_TYPE_FUCHSIA_HANDLE)
+  if (handle->type == MOJO_PLATFORM_HANDLE_TYPE_FUCHSIA_HANDLE) {
     return PlatformHandle(zx::handle(handle->value));
+  }
 #elif BUILDFLAG(IS_APPLE)
   if (handle->type == MOJO_PLATFORM_HANDLE_TYPE_MACH_SEND_RIGHT) {
     return PlatformHandle(base::apple::ScopedMachSendRight(
@@ -217,8 +220,9 @@ PlatformHandle PlatformHandle::FromMojoPlatformHandle(
 #endif
 
 #if BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
-  if (handle->type != MOJO_PLATFORM_HANDLE_TYPE_FILE_DESCRIPTOR)
+  if (handle->type != MOJO_PLATFORM_HANDLE_TYPE_FILE_DESCRIPTOR) {
     return PlatformHandle();
+  }
   return PlatformHandle(base::ScopedFD(static_cast<int>(handle->value)));
 #endif
 }
@@ -261,12 +265,14 @@ PlatformHandle PlatformHandle::Clone() const {
 #if BUILDFLAG(IS_WIN)
   return PlatformHandle(CloneHandle(handle_));
 #elif BUILDFLAG(IS_FUCHSIA)
-  if (is_valid_handle())
+  if (is_valid_handle()) {
     return PlatformHandle(CloneHandle(handle_));
+  }
   return PlatformHandle(CloneFD(fd_));
 #elif BUILDFLAG(IS_APPLE)
-  if (is_valid_mach_send())
+  if (is_valid_mach_send()) {
     return PlatformHandle(CloneMachPort(mach_send_));
+  }
   CHECK(!is_valid_mach_receive()) << "Cannot clone Mach receive rights";
   return PlatformHandle(CloneFD(fd_));
 #elif BUILDFLAG(IS_POSIX)

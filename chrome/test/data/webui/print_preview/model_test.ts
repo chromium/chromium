@@ -229,6 +229,10 @@ suite('ModelTest', function() {
     model.setSetting('vendorItems', {paperType: 0, printArea: 4});
   }
 
+  function initializeScalingTypePdf(initialScalingType: ScalingType) {
+    model.setSetting('scalingTypePdf', initialScalingType);
+  }
+
   /**
    * Tests that toggling each setting results in the expected change to the
    * print ticket.
@@ -876,5 +880,43 @@ suite('ModelTest', function() {
     } catch (e) {
       assertNotReached((e as Error).toString());
     }
+  });
+
+  /**
+   * When the value of `scalingTypePdf` is `ACTUAL_SIZE` in sticky settings,
+   * if `alignPdfDefaultPrintSettingsWithHTML` is off, print preview should
+   * show "Default" instead of "Actual size" option.
+   */
+  test('ScalingTypeActualSizeOptionIsHidden', function() {
+    // The initial value of scalingTypePdf is ACTUAL_SIZE.
+    initializeScalingTypePdf(ScalingType.ACTUAL_SIZE);
+    // Because `alignPdfDefaultPrintSettingsWithHTML` is off, the value is
+    // changed to DEFAULT.
+    model.setStickySettings(JSON.stringify({
+      version: 2,
+      scalingTypePdf: ScalingType.ACTUAL_SIZE,
+    }));
+    model.applyStickySettings();
+    assertEquals(model.getSettingValue('scalingTypePdf'), ScalingType.DEFAULT);
+  });
+
+  /**
+   * This test is the inverse of the previous one: when the value of
+   * `scalingTypePdf` is `ACTUAL_SIZE` in sticky settings and
+   * `alignPdfDefaultPrintSettingsWithHTML` is on, print preview should
+   * show the "Actual size" option.
+   */
+  test('ScalingTypeActualSizeOptionIsShown', function() {
+    // The initial value of scalingTypePdf is DEFAULT.
+    initializeScalingTypePdf(ScalingType.DEFAULT);
+    // Because `alignPdfDefaultPrintSettingsWithHTML` is on, the value could be
+    // changed to ACTUAL_SIZE.
+    model.setStickySettings(JSON.stringify({
+      version: 2,
+      scalingTypePdf: ScalingType.ACTUAL_SIZE,
+    }));
+    model.applyStickySettings();
+    assertEquals(
+        model.getSettingValue('scalingTypePdf'), ScalingType.ACTUAL_SIZE);
   });
 });

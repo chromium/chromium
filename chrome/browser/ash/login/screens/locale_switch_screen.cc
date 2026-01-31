@@ -4,10 +4,10 @@
 
 #include "chrome/browser/ash/login/screens/locale_switch_screen.h"
 
+#include <algorithm>
 #include <optional>
 #include <string>
 
-#include "base/containers/contains.h"
 #include "base/functional/callback.h"
 #include "base/json/json_reader.h"
 #include "base/time/time.h"
@@ -19,6 +19,7 @@
 #include "chrome/browser/ash/login/wizard_context.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/global_features.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
@@ -33,7 +34,6 @@
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/primary_account_access_token_fetcher.h"
-#include "components/signin/public/identity_manager/scope_set.h"
 #include "components/user_manager/user_manager.h"
 #include "google_apis/gaia/gaia_constants.h"
 #include "google_apis/gaia/google_service_auth_error.h"
@@ -74,25 +74,25 @@ class GetLocaleOAuth2PeopleAPICall : public OAuth2ApiCallFlow {
       response_body.emplace();
     }
 
-    std::optional<base::Value::Dict> value = base::JSONReader::ReadDict(
+    std::optional<base::DictValue> value = base::JSONReader::ReadDict(
         *response_body, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
     if (!value) {
       LOG(ERROR) << __func__ << " Bad response format";
       std::move(failure_callback_).Run();
       return;
     }
-    base::Value::List* locales_list = value->FindList("locales");
+    base::ListValue* locales_list = value->FindList("locales");
     if (!locales_list) {
       LOG(ERROR) << __func__ << " No locales available";
       std::move(failure_callback_).Run();
       return;
     }
     for (const auto& locale_dict : *locales_list) {
-      const base::Value::Dict* ld = locale_dict.GetIfDict();
+      const base::DictValue* ld = locale_dict.GetIfDict();
       if (!ld) {
         continue;
       }
-      const base::Value::Dict* metadata = ld->FindDict("metadata");
+      const base::DictValue* metadata = ld->FindDict("metadata");
       if (metadata->FindBool("primary")) {
         const std::string* locale = ld->FindString("value");
         std::move(success_callback_).Run(*locale);
@@ -386,7 +386,7 @@ void LocaleSwitchScreen::SwitchLocale() {
   // flow.
   if (!chrome_user_manager_util::IsManagedGuestSessionOrEphemeralLogin() &&
       context()->is_add_person_flow &&
-      base::Contains(kAddPersonUserTypes, user->GetType())) {
+      std::ranges::contains(kAddPersonUserTypes, user->GetType())) {
     VLOG(1) << "Add Person flow detected, delegating locale switch decision"
             << " to the user.";
     // Delegate language switch to the notification. User will be able to
@@ -400,11 +400,15 @@ void LocaleSwitchScreen::SwitchLocale() {
     return;
   }
 
+  // TODO(crbug.com/404133029): Avoid g_browser_process usage.
+  ApplicationLocaleStorage* application_locale_storage =
+      g_browser_process->GetFeatures()->application_locale_storage();
+
   locale_util::SwitchLanguageCallback callback(
       base::BindOnce(&LocaleSwitchScreen::OnLanguageChangedCallback,
                      weak_factory_.GetWeakPtr()));
   locale_util::SwitchLanguage(
-      locale_,
+      application_locale_storage, locale_,
       /*enable_locale_keyboard_layouts=*/false,  // The layouts will be synced
                                                  // instead. Also new user could
                                                  // enable required layouts from

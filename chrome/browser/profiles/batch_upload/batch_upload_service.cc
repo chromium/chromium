@@ -4,11 +4,11 @@
 
 #include "chrome/browser/profiles/batch_upload/batch_upload_service.h"
 
+#include <algorithm>
 #include <array>
 #include <map>
 
 #include "base/check_deref.h"
-#include "base/containers/contains.h"
 #include "base/containers/to_vector.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -88,7 +88,7 @@ syncer::LocalDataDescription GetPrimaryTypeLocalDataDescription(
     const std::map<syncer::DataType, syncer::LocalDataDescription>&
         local_data_descriptions_map,
     syncer::DataType primary_type) {
-  CHECK(base::Contains(kBatchUploadAvailableTypesOrder, primary_type));
+  CHECK(std::ranges::contains(kBatchUploadAvailableTypesOrder, primary_type));
   CHECK(local_data_descriptions_map.contains(primary_type));
   const syncer::LocalDataDescription& primary_local_data_description =
       local_data_descriptions_map.at(primary_type);

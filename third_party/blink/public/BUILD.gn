@@ -12,6 +12,7 @@ import("//third_party/blink/renderer/core/core.gni")
 import("//third_party/webrtc/webrtc.gni")
 import("//tools/grit/grit_rule.gni")
 import("//tools/grit/repack.gni")
+import("//v8/gni/v8.gni")
 
 if (is_android) {
   import("//build/config/android/config.gni")
@@ -77,6 +78,7 @@ buildflag_header("buildflags") {
   flags = [
     "USE_MINIKIN_HYPHENATION=$use_minikin_hyphenation",
     "ENABLE_UNHANDLED_TAP=$enable_unhandled_tap",
+    "VERBOSE_PERSISTENT=$cppgc_enable_object_names",
   ]
 }
 
@@ -257,6 +259,7 @@ source_set("blink_headers") {
     "platform/websocket_handshake_throttle.h",
     "platform/websocket_handshake_throttle_provider.h",
     "web/blink.h",
+    "web/extension_script_streamer.h",
     "web/modules/autofill/web_form_element_observer.h",
     "web/modules/canvas/canvas_test_utils.h",
     "web/modules/credentialmanagement/throttle_helper.h",
@@ -272,6 +275,7 @@ source_set("blink_headers") {
     "web/modules/service_worker/web_navigation_preload_request.h",
     "web/modules/service_worker/web_service_worker_context_client.h",
     "web/modules/service_worker/web_service_worker_context_proxy.h",
+    "web/web_agent_cluster_key.h",
     "web/web_array_buffer.h",
     "web/web_array_buffer_converter.h",
     "web/web_associated_url_loader.h",
@@ -377,6 +381,7 @@ source_set("blink_headers") {
     "web/web_shared_storage_worklet_thread.h",
     "web/web_shared_worker.h",
     "web/web_shared_worker_client.h",
+    "web/web_spelling_marker.h",
     "web/web_testing_support.h",
     "web/web_text_check_client.h",
     "web/web_text_checking_completion.h",

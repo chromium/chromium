@@ -75,7 +75,7 @@ DestinationSet::FromJSON(const base::Value* v) {
         return append_if_valid(
             str, SourceRegistrationError::kDestinationUntrustworthy);
       },
-      [&](const base::Value::List& list) -> AppendIfValidResult {
+      [&](const base::ListValue& list) -> AppendIfValidResult {
         if (list.empty()) {
           return base::unexpected(
               SourceRegistrationError::kDestinationWrongType);
@@ -137,7 +137,7 @@ base::Value DestinationSet::ToJson() const {
     return base::Value(destinations_.begin()->Serialize());
   }
 
-  auto list = base::Value::List::with_capacity(destinations_.size());
+  auto list = base::ListValue::with_capacity(destinations_.size());
   for (const auto& destination : destinations_) {
     list.Append(destination.Serialize());
   }

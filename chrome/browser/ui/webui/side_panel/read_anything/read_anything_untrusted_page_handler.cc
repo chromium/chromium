@@ -14,11 +14,11 @@
 #include "base/containers/flat_map.h"
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/types/cxx23_to_underlying.h"
 #include "base/values.h"
 #include "chrome/browser/accessibility/phrase_segmentation/dependency_parser_model_loader.h"
 #include "chrome/browser/accessibility/phrase_segmentation/dependency_parser_model_loader_factory.h"
 #include "chrome/browser/browser_features.h"
+#include "chrome/browser/dom_distiller/dom_distiller_service_factory.h"
 #include "chrome/browser/language/language_model_manager_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/screen_ai/screen_ai_service_router.h"
@@ -27,12 +27,20 @@
 #include "chrome/browser/translate/chrome_translate_client.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
+#include "chrome/browser/ui/read_anything/read_anything_controller.h"
 #include "chrome/browser/ui/read_anything/read_anything_prefs.h"
+#include "chrome/browser/ui/read_anything/read_anything_side_panel_controller.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
+#include "chrome/browser/ui/toolbar/pinned_toolbar/pinned_toolbar_actions_model.h"
+#include "chrome/common/chrome_isolated_world_ids.h"
 #include "chrome/common/extensions/extension_constants.h"
-#include "chrome/common/read_anything/read_anything.mojom-forward.h"
 #include "chrome/common/read_anything/read_anything.mojom.h"
 #include "chrome/common/read_anything/read_anything_util.h"
+#include "components/dom_distiller/content/browser/distiller_javascript_utils.h"
+#include "components/dom_distiller/content/browser/distiller_page_web_contents.h"
+#include "components/dom_distiller/core/distiller_page.h"
+#include "components/dom_distiller/core/dom_distiller_service.h"
+#include "components/dom_distiller/core/task_tracker.h"
 #include "components/language/core/browser/language_model.h"
 #include "components/language/core/browser/language_model_manager.h"
 #include "components/language/core/common/locale_util.h"
@@ -45,6 +53,7 @@
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/scoped_accessibility_mode.h"
 #include "content/public/browser/web_ui.h"
+#include "content/public/common/url_constants.h"
 #include "extensions/browser/extension_registry.h"
 #include "net/http/http_status_code.h"
 #include "pdf/buildflags.h"
@@ -61,6 +70,7 @@
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
 #include "url/gurl.h"
+#include "url/url_constants.h"
 
 #if BUILDFLAG(ENABLE_PDF)
 #include "chrome/browser/pdf/pdf_viewer_stream_manager.h"
@@ -80,9 +90,49 @@ using ash::language_packs::LanguagePackManager;
 using content::TtsController;
 using read_anything::mojom::ErrorCode;
 using read_anything::mojom::InstallationState;
+using read_anything::mojom::ReadAnythingDistillationState;
+using read_anything::mojom::ReadAnythingPresentationState;
 using read_anything::mojom::UntrustedPage;
 using read_anything::mojom::UntrustedPageHandler;
 using read_anything::mojom::VoicePackInstallationState;
+
+class ReadAnythingUntrustedPageHandler::DistillerDelegate
+    : public dom_distiller::ViewRequestDelegate {
+ public:
+  explicit DistillerDelegate(ReadAnythingUntrustedPageHandler* handler)
+      : handler_(handler) {}
+  ~DistillerDelegate() override = default;
+
+  void StartDistillation(dom_distiller::DomDistillerService* service,
+                         content::WebContents* contents) {
+    // If existing distillation request, cancel it. This removes delegate as
+    // observer of previous request and allow it to observe new request.
+    viewer_handle_.reset();
+    const GURL& url = contents->GetLastCommittedURL();
+    viewer_handle_ = service->ViewUrl(
+        this,
+        service->CreateDefaultDistillerPageWithHandle(
+            std::make_unique<dom_distiller::SourcePageHandleWebContents>(
+                contents, /*owned=*/false)),
+        url);
+  }
+
+  // dom_distiller::ViewRequestDelegate:
+  void OnArticleReady(
+      const dom_distiller::DistilledArticleProto* article_proto) override {
+    handler_->ProcessDistilledArticle(article_proto);
+    viewer_handle_.reset();
+  }
+
+  void OnArticleUpdated(
+      dom_distiller::ArticleDistillationUpdate article_update) override {
+    // Unused.
+  }
+
+ private:
+  raw_ptr<ReadAnythingUntrustedPageHandler> handler_;
+  std::unique_ptr<dom_distiller::ViewerHandle> viewer_handle_;
+};
 
 namespace {
 
@@ -102,6 +152,9 @@ constexpr ui::AXMode kReadAnythingAXMode =
 // receive the callback for the page before the pdf has finished loading, which
 // results in the last committed origin being invalid.
 constexpr int PDF_LOAD_DELAY_MS = 1000;
+
+// Prefix definition for logging.
+constexpr char kReadAnythingPrefix[] = "Read Anything";
 
 #if BUILDFLAG(IS_CHROMEOS)
 
@@ -235,6 +288,23 @@ void ReadAnythingWebContentsObserver::WebContentsDestroyed() {
   page_handler_->WebContentsDestroyed();
 }
 
+void ReadAnythingUntrustedPageHandler::MaybeUpdateImmersivePinStatus() {
+  if (!features::IsImmersiveReadAnythingEnabled()) {
+    return;
+  }
+  CHECK(pinned_toolbar_);
+  const bool is_pinned_in_toolbar =
+      pinned_toolbar_->Contains(kActionSidePanelShowReadAnything);
+  if (is_pinned_in_toolbar != immersive_read_anything_pin_state_) {
+    immersive_read_anything_pin_state_ = is_pinned_in_toolbar;
+    page_->OnPinStatusReceived(immersive_read_anything_pin_state_);
+  }
+}
+
+void ReadAnythingUntrustedPageHandler::OnActionsChanged() {
+  MaybeUpdateImmersivePinStatus();
+}
+
 ReadAnythingUntrustedPageHandler::ReadAnythingUntrustedPageHandler(
     mojo::PendingRemote<UntrustedPage> page,
     mojo::PendingReceiver<UntrustedPageHandler> receiver,
@@ -274,6 +344,10 @@ ReadAnythingUntrustedPageHandler::ReadAnythingUntrustedPageHandler(
     CHECK(read_anything_controller_);
     read_anything_controller_->AddObserver(this);
     tab_ = read_anything_controller_->tab();
+    pinned_toolbar_ =
+        PinnedToolbarActionsModel::Get(Profile::FromWebUI(web_ui));
+    pinned_toolbar_actions_observation_.Observe(pinned_toolbar_);
+    MaybeUpdateImmersivePinStatus();
   } else {
     side_panel_controller_ =
         ReadAnythingSidePanelControllerGlue::FromWebContents(
@@ -295,10 +369,15 @@ ReadAnythingUntrustedPageHandler::ReadAnythingUntrustedPageHandler(
                 prefs->GetDouble(
                     prefs::kAccessibilityReadAnythingHighlightGranularity))
           : read_anything::mojom::HighlightGranularity::kDefaultValue;
-  base::Value::Dict voices = base::Value::Dict();
+  base::DictValue voices = base::DictValue();
   if (features::IsReadAnythingReadAloudEnabled()) {
     voices = prefs->GetDict(prefs::kAccessibilityReadAnythingVoiceName).Clone();
   }
+  read_anything::mojom::LineFocus line_focus =
+      features::IsReadAnythingLineFocusEnabled()
+          ? static_cast<read_anything::mojom::LineFocus>(
+                prefs->GetInteger(prefs::kAccessibilityReadAnythingLineFocus))
+          : read_anything::mojom::LineFocus::kDefaultValue;
 
   page_->OnSettingsRestoredFromPrefs(
       static_cast<read_anything::mojom::LineSpacing>(
@@ -315,8 +394,8 @@ ReadAnythingUntrustedPageHandler::ReadAnythingUntrustedPageHandler(
       features::IsReadAnythingReadAloudEnabled()
           ? prefs->GetList(prefs::kAccessibilityReadAnythingLanguagesEnabled)
                 .Clone()
-          : base::Value::List(),
-      highlight_granularity);
+          : base::ListValue(),
+      highlight_granularity, line_focus);
 
   // Get user's default language to check for compatible fonts.
   language::LanguageModel* language_model =
@@ -333,6 +412,16 @@ ReadAnythingUntrustedPageHandler::ReadAnythingUntrustedPageHandler(
             base::BindOnce(
                 &ReadAnythingUntrustedPageHandler::OnScreenAIServiceInitialized,
                 weak_factory_.GetWeakPtr()));
+  }
+
+  if (features::IsReadAnythingWithReadabilityEnabled()) {
+    // Set the JavaScript world ID.
+    if (!dom_distiller::DistillerJavaScriptWorldIdIsSet()) {
+      dom_distiller::SetDistillerJavaScriptWorldId(
+          ISOLATED_WORLD_ID_CHROME_INTERNAL);
+    }
+
+    distiller_delegate_ = std::make_unique<DistillerDelegate>(this);
   }
 
   // Enable accessibility for the top level render frame and all descendants.
@@ -610,6 +699,68 @@ void ReadAnythingUntrustedPageHandler::SendNextLanguageRequest() {
 }
 #endif
 
+// Will only return a valid state if IsImmersiveReadAnythingEnabled() is true,
+// otherwise do nothing.
+// TODO(crbug.com/463728166): Remove IsImmersiveReadAnythingEnabled flag when no
+// longer flag-guarded code.
+ReadAnythingController*
+ReadAnythingUntrustedPageHandler::GetReadAnythingController() {
+  if (features::IsImmersiveReadAnythingEnabled()) {
+    content::WebContents* main_web_contents = main_observer_->web_contents();
+    CHECK(main_web_contents);
+
+    tabs::TabInterface* tab =
+        tabs::TabInterface::GetFromContents(main_web_contents);
+    CHECK(tab);
+
+    auto* ra_controller = ReadAnythingController::From(tab);
+    return ra_controller;
+  }
+  return nullptr;
+}
+
+void ReadAnythingUntrustedPageHandler::OnGetPresentationState() {
+  if (features::IsImmersiveReadAnythingEnabled()) {
+    auto* ra_controller = GetReadAnythingController();
+    CHECK(ra_controller);
+
+    page_->OnGetPresentationState(ra_controller->GetPresentationState());
+  }
+}
+
+void ReadAnythingUntrustedPageHandler::GetPresentationState() {
+  OnGetPresentationState();
+}
+
+void ReadAnythingUntrustedPageHandler::OnDistillationStateChanged(
+    read_anything::mojom::ReadAnythingDistillationState new_state) {
+  if (features::IsImmersiveReadAnythingEnabled()) {
+    // Distillation state transitions to kNotAttempted are only valid during
+    // initialization (i.e. when the current state is kUndefined).
+    if (distillation_state_ !=
+            read_anything::mojom::ReadAnythingDistillationState::kUndefined &&
+        new_state == read_anything::mojom::ReadAnythingDistillationState::
+                         kNotAttempted) {
+      mojo::ReportBadMessage("Invalid distillation state transition");
+      return;
+    }
+
+    // Distillation state transitions to kUndefined are not valid, regardless of
+    // what the current state is.
+    if (new_state ==
+        read_anything::mojom::ReadAnythingDistillationState::kUndefined) {
+      mojo::ReportBadMessage("Invalid distillation state transition");
+      return;
+    }
+
+    distillation_state_ = new_state;
+    auto* ra_controller = GetReadAnythingController();
+    CHECK(ra_controller);
+
+    ra_controller->OnDistillationStateChanged(new_state);
+  }
+}
+
 void ReadAnythingUntrustedPageHandler::OnGetVoicePackInfo(
     read_anything::mojom::VoicePackInfoPtr info) {
 #if BUILDFLAG(IS_CHROMEOS)
@@ -668,14 +819,14 @@ void ReadAnythingUntrustedPageHandler::OnCopy() {
 void ReadAnythingUntrustedPageHandler::OnLineSpaceChange(
     read_anything::mojom::LineSpacing line_spacing) {
   profile_->GetPrefs()->SetInteger(prefs::kAccessibilityReadAnythingLineSpacing,
-                                   base::to_underlying(line_spacing));
+                                   std::to_underlying(line_spacing));
 }
 
 void ReadAnythingUntrustedPageHandler::OnLetterSpaceChange(
     read_anything::mojom::LetterSpacing letter_spacing) {
   profile_->GetPrefs()->SetInteger(
       prefs::kAccessibilityReadAnythingLetterSpacing,
-      base::to_underlying(letter_spacing));
+      std::to_underlying(letter_spacing));
 }
 void ReadAnythingUntrustedPageHandler::OnFontChange(const std::string& font) {
   profile_->GetPrefs()->SetString(prefs::kAccessibilityReadAnythingFontName,
@@ -700,7 +851,7 @@ void ReadAnythingUntrustedPageHandler::OnImagesEnabledChanged(bool enabled) {
 void ReadAnythingUntrustedPageHandler::OnColorChange(
     read_anything::mojom::Colors color) {
   profile_->GetPrefs()->SetInteger(prefs::kAccessibilityReadAnythingColorInfo,
-                                   base::to_underlying(color));
+                                   std::to_underlying(color));
 }
 
 void ReadAnythingUntrustedPageHandler::OnSpeechRateChange(double rate) {
@@ -722,7 +873,7 @@ void ReadAnythingUntrustedPageHandler::OnLanguagePrefChange(
   ScopedListPrefUpdate update(
       prefs, prefs::kAccessibilityReadAnythingLanguagesEnabled);
   if (enabled) {
-    if (!base::Contains(update.Get(), lang)) {
+    if (!update.Get().contains(lang)) {
       update->Append(lang);
     }
   } else {
@@ -735,6 +886,14 @@ void ReadAnythingUntrustedPageHandler::OnHighlightGranularityChanged(
   profile_->GetPrefs()->SetInteger(
       prefs::kAccessibilityReadAnythingHighlightGranularity,
       static_cast<size_t>(granularity));
+}
+
+void ReadAnythingUntrustedPageHandler::OnLineFocusChanged(
+    read_anything::mojom::LineFocus line_focus) {
+  if (features::IsReadAnythingLineFocusEnabled()) {
+    profile_->GetPrefs()->SetInteger(prefs::kAccessibilityReadAnythingLineFocus,
+                                     static_cast<size_t>(line_focus));
+  }
 }
 
 void ReadAnythingUntrustedPageHandler::OnReadAloudAudioStateChange(
@@ -815,6 +974,44 @@ void ReadAnythingUntrustedPageHandler::ScrollToTargetNode(
   PerformActionInTargetTree(action_data);
 }
 
+void ReadAnythingUntrustedPageHandler::CloseUI() {
+  if (!features::IsImmersiveReadAnythingEnabled()) {
+    return;
+  }
+  CHECK(read_anything_controller_);
+  DCHECK(read_anything_controller_->GetPresentationState() ==
+         ReadAnythingController::PresentationState::kInImmersiveOverlay);
+  read_anything_controller_->CloseImmersiveUI();
+}
+
+void ReadAnythingUntrustedPageHandler::TogglePinState() {
+  if (!features::IsImmersiveReadAnythingEnabled()) {
+    return;
+  }
+  CHECK(pinned_toolbar_);
+  immersive_read_anything_pin_state_ = !immersive_read_anything_pin_state_;
+  pinned_toolbar_->UpdatePinnedState(kActionSidePanelShowReadAnything,
+                                     immersive_read_anything_pin_state_);
+}
+
+void ReadAnythingUntrustedPageHandler::SendPinStateRequest() {
+  page_->OnPinStatusReceived(immersive_read_anything_pin_state_);
+}
+
+void ReadAnythingUntrustedPageHandler::TogglePresentation() {
+  if (features::IsImmersiveReadAnythingEnabled()) {
+    CHECK(read_anything_controller_);
+    read_anything_controller_->TogglePresentation();
+  }
+}
+
+void ReadAnythingUntrustedPageHandler::AckReadingModeHidden() {
+  if (features::IsImmersiveReadAnythingEnabled()) {
+    ack_timed_out_for_testing_ = false;
+    reading_mode_hidden_ack_timer_.Stop();
+  }
+}
+
 void ReadAnythingUntrustedPageHandler::PerformActionInTargetTree(
     const ui::AXActionData& data) {
   ui::AXActionHandlerBase* handler =
@@ -877,8 +1074,7 @@ void ReadAnythingUntrustedPageHandler::OnDistillationStatus(
       last_open_trigger_.value() == ReadAnythingOpenTrigger::kOmniboxChip) {
     last_open_trigger_.reset();
     base::UmaHistogramEnumeration(
-        "Accessibility.ReadAnything.DistillationStatusAfterOmnibox", status,
-        read_anything::mojom::DistillationStatus::kMaxValue);
+        "Accessibility.ReadAnything.DistillationStatusAfterOmnibox", status);
     base::UmaHistogramCustomCounts(
         "Accessibility.ReadAnything.WordsDistilledAfterOmnibox", word_count, 1,
         kMaxWordsDistilled, kWordsDistilledBuckets);
@@ -901,11 +1097,43 @@ void ReadAnythingUntrustedPageHandler::Activate(
   active_ = active;
   if (active_) {
     last_open_trigger_ = open_trigger;
+    tab_will_detach_ = false;
   }
   if (features::IsReadAnythingReadAloudEnabled() && !active &&
       !tab_will_detach_) {
     page_->OnReadingModeHidden(tab_->IsActivated());
+
+    // When Reading mode is hidden (with immersive flag enabled), we need to
+    // verify that the renderer is still responsive. Waiting until the mojo
+    // disconnects is slow and would cause a crash. If the renderer is
+    // unresponsive, then notify the controller that it should recreate the
+    // WebUI wrapper, otherwise it's never torn down once it's created, and
+    // we'll be stuck in an unresponsive state. We do this when Reading mode is
+    // hidden because if the user notices a crash they will likely try to close
+    // and reopen RM. Detecting a crash programmatically is often slower than
+    // the user noticing, so this handles that case.
+    if (features::IsImmersiveReadAnythingEnabled()) {
+      reading_mode_hidden_ack_timer_.Start(
+          FROM_HERE, kReadingModeHiddenAckTimeout,
+          base::BindOnce(
+              &ReadAnythingUntrustedPageHandler::OnReadingModeHiddenAckTimeout,
+              base::Unretained(this)));
+    }
   }
+}
+
+void ReadAnythingUntrustedPageHandler::OnReadingModeHiddenAckTimeout() {
+  if (!features::IsImmersiveReadAnythingEnabled()) {
+    return;
+  }
+
+  ack_timed_out_for_testing_ = true;
+  CHECK(read_anything_controller_);
+  read_anything_controller_->RecreateWebUIWrapper();
+}
+
+void ReadAnythingUntrustedPageHandler::OnReadingModePresenterChanged() {
+  OnGetPresentationState();
 }
 
 void ReadAnythingUntrustedPageHandler::OnDestroyed() {
@@ -1027,10 +1255,83 @@ void ReadAnythingUntrustedPageHandler::OnActiveAXTreeIDChanged() {
   }
 #endif  // BUILDFLAG(ENABLE_PDF)
 
+  // When IsReadAnythingWithReadabilityEnabled is true, we still send AX tree
+  // for text selection.
   content::RenderFrameHost* rfh = contents->GetPrimaryMainFrame();
   VLOG(1) << "Sending non-pdf tree with id " << rfh->GetAXTreeID();
   page_->OnActiveAXTreeIDChanged(rfh->GetAXTreeID(), rfh->GetPageUkmSourceId(),
                                  /*is_pdf=*/false);
+
+  RequestDomDistillerDistillation(contents);
+}
+
+void ReadAnythingUntrustedPageHandler::RequestDomDistillerDistillation(
+    content::WebContents* content) {
+  // TODO(crbug.com/459156156): Work on PDF distillation in a future CL.
+  if (!features::IsReadAnythingWithReadabilityEnabled() || is_pdf_) {
+    return;
+  }
+  const GURL& url = content->GetLastCommittedURL();
+  RecordDistillationSchemeHistogram(url);
+
+  if (!url.SchemeIsHTTPOrHTTPS()) {
+    VLOG(1) << kReadAnythingPrefix << ": URL is not HTTP/HTTPS, skipping for "
+            << url.spec();
+    // Call UpdateContent with empty values so status can be updated from show
+    // loading to no content.
+    page_->UpdateContent("", "");
+    return;
+  }
+
+  dom_distiller::DomDistillerService* dom_distiller_service =
+      dom_distiller::DomDistillerServiceFactory::GetForBrowserContext(
+          content->GetBrowserContext());
+  DCHECK(dom_distiller_service);
+  distiller_delegate_->StartDistillation(dom_distiller_service, content);
+}
+
+void ReadAnythingUntrustedPageHandler::RecordDistillationSchemeHistogram(
+    const GURL& url) const {
+  ReadAnythingDistillationScheme scheme =
+      ReadAnythingDistillationScheme::kOther;
+
+  if (url.SchemeIsHTTPOrHTTPS()) {
+    scheme = ReadAnythingDistillationScheme::kHttpOrHttps;
+  } else if (url.SchemeIsFile()) {
+    scheme = ReadAnythingDistillationScheme::kFile;
+  } else if (url.SchemeIs(url::kDataScheme)) {
+    scheme = ReadAnythingDistillationScheme::kData;
+  } else if (url.SchemeIs(extensions::kExtensionScheme)) {
+    scheme = ReadAnythingDistillationScheme::kExtension;
+  } else if (url.IsAboutBlank() || url.IsAboutSrcdoc()) {
+    scheme = ReadAnythingDistillationScheme::kAbout;
+  } else if (url.SchemeIsBlob()) {
+    scheme = ReadAnythingDistillationScheme::kBlob;
+  } else if (url.SchemeIs(content::kChromeUIScheme)) {
+    scheme = ReadAnythingDistillationScheme::kInternal;
+  }
+
+  base::UmaHistogramEnumeration("Accessibility.ReadAnything.DistillationScheme",
+                                scheme);
+}
+
+void ReadAnythingUntrustedPageHandler::ProcessDistilledArticle(
+    const dom_distiller::DistilledArticleProto* article_proto) {
+  CHECK(features::IsReadAnythingWithReadabilityEnabled() && !is_pdf_);
+  if (article_proto && article_proto->pages_size() > 0) {
+    dom_distiller_title_ = article_proto->title();
+
+    std::string full_html;
+    for (const auto& page : article_proto->pages()) {
+      full_html.append(page.html());
+    }
+    dom_distiller_content_ = full_html;
+
+    if (dom_distiller_title() && dom_distiller_content()) {
+      page_->UpdateContent(dom_distiller_title().value(),
+                           dom_distiller_content().value());
+    }
+  }
 }
 
 void ReadAnythingUntrustedPageHandler::SetLanguageCode(
@@ -1111,6 +1412,12 @@ void ReadAnythingUntrustedPageHandler::LogTextStyle() {
           prefs->GetInteger(prefs::kAccessibilityReadAnythingLetterSpacing));
   base::UmaHistogramEnumeration("Accessibility.ReadAnything.LetterSpacing",
                                 letter_spacing);
+  if (features::IsReadAnythingLineFocusEnabled()) {
+    auto line_focus = static_cast<read_anything::mojom::LineFocus>(
+        prefs->GetInteger(prefs::kAccessibilityReadAnythingLineFocus));
+    base::UmaHistogramEnumeration("Accessibility.ReadAnything.LineFocus",
+                                  line_focus);
+  }
 }
 
 void ReadAnythingUntrustedPageHandler::

@@ -14,6 +14,7 @@
 #import "ios/chrome/browser/menu/ui_bundled/menu_histograms.h"
 #import "ios/chrome/browser/net/model/crurl.h"
 #import "ios/chrome/browser/shared/model/web_state_list/tab_group.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/grit/ios_branded_strings.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -365,8 +366,12 @@ TEST_F(ActionFactoryTest, CloseAllTabsAction) {
 
   UIImage* expectedImage =
       DefaultSymbolWithPointSize(kXMarkSymbol, kSymbolActionPointSize);
-  NSString* expectedTitle =
-      l10n_util::GetNSString(IDS_IOS_CONTENT_CONTEXT_CLOSEALLTABSANDGROUPS);
+
+  int titleID = base::FeatureList::IsEnabled(kTabSwitcherOverflowMenu)
+                    ? IDS_IOS_INACTIVE_TABS_CLOSE_ALL_CONFIRMATION_OPTION
+                    : IDS_IOS_CONTENT_CONTEXT_CLOSEALLTABSANDGROUPS;
+
+  NSString* expectedTitle = l10n_util::GetNSString(titleID);
 
   UIAction* action = [factory actionToCloseAllTabsWithBlock:^{
   }];

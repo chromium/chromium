@@ -19,6 +19,7 @@
 #include "content/app_shim_remote_cocoa/render_widget_host_ns_view_host_helper.h"
 #import "content/app_shim_remote_cocoa/web_menu_runner_mac.h"
 #include "content/common/mac/attributed_string_type_converters.h"
+#import "content/public/browser/render_widget_host_view_mac_delegate.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "net/base/apple/url_conversions.h"
 #import "skia/ext/skia_utils_mac.h"
@@ -185,9 +186,19 @@ void RenderWidgetHostNSViewBridge::SetTooltipText(
   // Called from the renderer to tell us what the tooltip text should be. It
   // calls us frequently so we need to cache the value to prevent doing a lot
   // of repeat work.
-  if (tooltip_text == tooltip_text_ || !cocoa_view_.window.keyWindow) {
+  if (tooltip_text == tooltip_text_) {
     return;
   }
+
+  AcceptTooltipEvents accept_option = [cocoa_view_ acceptsTooltipEvents];
+  bool accept_events = (accept_option == AcceptTooltipEvents::kWhenInActiveApp)
+                           ? NSApp.isActive
+                           : cocoa_view_.window.keyWindow;
+
+  if (!accept_events) {
+    return;
+  }
+
   tooltip_text_ = tooltip_text;
 
   // Maximum number of characters we allow in a tooltip.

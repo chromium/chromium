@@ -14,6 +14,12 @@
 #include "third_party/blink/renderer/platform/heap/thread_state.h"
 
 namespace blink {
+class ResourceTimingContext;
+class SoftNavigationContext;
+
+namespace scheduler {
+class TaskAttributionId;
+}
 
 namespace {
 
@@ -28,6 +34,18 @@ class TestTaskAttributionTaskState final : public TaskAttributionTaskState {
   }
 
   SchedulerTaskContext* GetSchedulerTaskContext() override { return nullptr; }
+
+  TaskAttributionTaskState* ForkAndSetVariable(
+      const scheduler::TaskAttributionId,
+      ResourceTimingContext*) override {
+    return nullptr;
+  }
+
+  TaskAttributionTaskState* ForkAndSetVariable(
+      const scheduler::TaskAttributionId,
+      SoftNavigationContext*) override {
+    return nullptr;
+  }
 };
 
 }  // namespace

@@ -11,7 +11,6 @@
 #include <vector>
 
 #include "base/containers/adapters.h"
-#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/location.h"
@@ -47,11 +46,11 @@
 #include "components/sessions/core/session_command.h"
 #include "components/sessions/core/session_id.h"
 #include "components/sessions/core/session_types.h"
+#include "components/split_tabs/split_tab_id.h"
+#include "components/split_tabs/split_tab_visual_data.h"
 #include "components/tab_groups/tab_group_color.h"
 #include "components/tab_groups/tab_group_id.h"
 #include "components/tab_groups/tab_group_visual_data.h"
-#include "components/tabs/public/split_tab_id.h"
-#include "components/tabs/public/split_tab_visual_data.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/web_contents_tester.h"
@@ -1253,7 +1252,7 @@ TEST_F(SessionServiceTest, TabGroupMetadataSaved) {
 
   for (int group_ndx = 0; group_ndx < kNumGroups; ++group_ndx) {
     const tab_groups::TabGroupId group_id = group_ids[group_ndx];
-    ASSERT_TRUE(base::Contains(tab_groups, group_id));
+    ASSERT_TRUE(tab_groups.contains(group_id));
     EXPECT_EQ(visual_data[group_ndx], tab_groups[group_id]->visual_data);
     if (tab_groups[group_id]->saved_guid.has_value()) {
       EXPECT_EQ(saved_guids[group_ndx],
@@ -1337,7 +1336,7 @@ TEST_F(SessionServiceTest, SplitTabDataSaved) {
 
   for (int split_ndx = 0; split_ndx < kNumSplitTabs; ++split_ndx) {
     const split_tabs::SplitTabId split_id = split_ids[split_ndx];
-    ASSERT_TRUE(base::Contains(split_tab_map, split_id));
+    ASSERT_TRUE(split_tab_map.contains(split_id));
     EXPECT_EQ(visual_data[split_ndx],
               split_tab_map[split_id]->split_visual_data_);
   }
@@ -1362,8 +1361,7 @@ TEST_F(SessionServiceTest, Workspace) {
                                                 window_workspace);
   for (const auto& command : pending_commands) {
     if (command->id() == workspace_command->id() &&
-        command->contents_as_string_piece() ==
-            workspace_command->contents_as_string_piece()) {
+        command->contents() == workspace_command->contents()) {
       found_workspace_command = true;
       break;
     }
@@ -1391,8 +1389,7 @@ TEST_F(SessionServiceTest, WorkspaceSavedOnOpened) {
                                                 workspace);
   for (const auto& command : pending_commands) {
     if (command->id() == workspace_command->id() &&
-        command->contents_as_string_piece() ==
-            workspace_command->contents_as_string_piece()) {
+        command->contents() == workspace_command->contents()) {
       found_workspace_command = true;
       break;
     }
@@ -1422,8 +1419,7 @@ TEST_F(SessionServiceTest, VisibleOnAllWorkspaces) {
           /*visible_on_all_workspaces=*/true);
   for (const auto& command : pending_commands) {
     if (command->id() == visible_on_all_workspaces_command->id() &&
-        command->contents_as_string_piece() ==
-            visible_on_all_workspaces_command->contents_as_string_piece()) {
+        command->contents() == visible_on_all_workspaces_command->contents()) {
       found_visible_on_all_workspaces_command = true;
       break;
     }
@@ -1453,8 +1449,7 @@ TEST_F(SessionServiceTest, PinnedAfterReset) {
 
   for (const auto& command : pending_commands) {
     if (command->id() == pinned_command->id() &&
-        command->contents_as_string_piece() ==
-            pinned_command->contents_as_string_piece()) {
+        command->contents() == pinned_command->contents()) {
       found_pinned_command = true;
       break;
     }

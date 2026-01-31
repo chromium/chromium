@@ -135,7 +135,7 @@ class EPKChallengeKeyTestBase : public BrowserWithTestWindowTest {
   // args.
   std::string RunFunctionAndReturnError(
       ExtensionFunction* function,
-      base::Value::List args,
+      base::ListValue args,
       content::BrowserContext* browser_context) {
     api_test_utils::RunFunction(
         function, std::move(args), browser_context,
@@ -149,7 +149,7 @@ class EPKChallengeKeyTestBase : public BrowserWithTestWindowTest {
   // list of args.
   base::Value RunFunctionAndReturnSingleResult(
       ExtensionFunction* function,
-      base::Value::List args,
+      base::ListValue args,
       content::BrowserContext* browser_context) {
     scoped_refptr<ExtensionFunction> function_owner(function);
     // Without a callback the function will not generate a result.
@@ -182,20 +182,19 @@ class EPKChallengeMachineKeyTest : public EPKChallengeKeyTestBase {
     func_->set_extension(extension_.get());
   }
 
-  base::Value::List CreateArgs() { return CreateArgsInternal(std::nullopt); }
+  base::ListValue CreateArgs() { return CreateArgsInternal(std::nullopt); }
 
-  base::Value::List CreateArgsNoRegister() {
+  base::ListValue CreateArgsNoRegister() {
     return CreateArgsInternal(base::Value(false));
   }
 
-  base::Value::List CreateArgsRegister() {
+  base::ListValue CreateArgsRegister() {
     return CreateArgsInternal(base::Value(true));
   }
 
-  base::Value::List CreateArgsInternal(
-      std::optional<base::Value> register_key) {
+  base::ListValue CreateArgsInternal(std::optional<base::Value> register_key) {
     static constexpr std::string_view kData = "challenge";
-    base::Value::List args;
+    base::ListValue args;
     args.Append(base::Value(base::as_byte_span(kData)));
     if (register_key) {
       args.Append(std::move(*register_key));
@@ -207,7 +206,7 @@ class EPKChallengeMachineKeyTest : public EPKChallengeKeyTestBase {
 };
 
 TEST_F(EPKChallengeMachineKeyTest, ExtensionNotAllowed) {
-  base::Value::List empty_allowlist;
+  base::ListValue empty_allowlist;
   prefs_->SetList(prefs::kAttestationExtensionAllowlist,
                   std::move(empty_allowlist));
 
@@ -219,7 +218,7 @@ TEST_F(EPKChallengeMachineKeyTest, ExtensionNotAllowed) {
 TEST_F(EPKChallengeMachineKeyTest, Success) {
   SetMockTpmChallenger();
 
-  base::Value::List allowlist;
+  base::ListValue allowlist;
   allowlist.Append(extension_->id());
   prefs_->SetList(prefs::kAttestationExtensionAllowlist, std::move(allowlist));
 
@@ -234,7 +233,7 @@ TEST_F(EPKChallengeMachineKeyTest, Success) {
 TEST_F(EPKChallengeMachineKeyTest, BadChallengeThenErrorMessageReturned) {
   SetMockTpmChallengerBadBase64Error();
 
-  base::Value::List allowlist;
+  base::ListValue allowlist;
   allowlist.Append(extension_->id());
   prefs_->SetList(prefs::kAttestationExtensionAllowlist, std::move(allowlist));
 
@@ -249,7 +248,7 @@ TEST_F(EPKChallengeMachineKeyTest, BadChallengeThenErrorMessageReturned) {
 TEST_F(EPKChallengeMachineKeyTest, KeyNotRegisteredByDefault) {
   SetMockTpmChallenger();
 
-  base::Value::List allowlist;
+  base::ListValue allowlist;
   allowlist.Append(extension_->id());
   prefs_->SetList(prefs::kAttestationExtensionAllowlist, std::move(allowlist));
 
@@ -269,13 +268,13 @@ class EPKChallengeUserKeyTest : public EPKChallengeKeyTestBase {
     func_->set_extension(extension_.get());
   }
 
-  base::Value::List CreateArgs() { return CreateArgsInternal(true); }
+  base::ListValue CreateArgs() { return CreateArgsInternal(true); }
 
-  base::Value::List CreateArgsNoRegister() { return CreateArgsInternal(false); }
+  base::ListValue CreateArgsNoRegister() { return CreateArgsInternal(false); }
 
-  base::Value::List CreateArgsInternal(bool register_key) {
+  base::ListValue CreateArgsInternal(bool register_key) {
     static constexpr std::string_view kData = "challenge";
-    base::Value::List args;
+    base::ListValue args;
     args.Append(base::Value(base::as_byte_span(kData)));
     args.Append(register_key);
     return args;
@@ -287,7 +286,7 @@ class EPKChallengeUserKeyTest : public EPKChallengeKeyTestBase {
 TEST_F(EPKChallengeUserKeyTest, Success) {
   SetMockTpmChallenger();
 
-  base::Value::List allowlist;
+  base::ListValue allowlist;
   allowlist.Append(extension_->id());
   prefs_->SetList(prefs::kAttestationExtensionAllowlist, std::move(allowlist));
 
@@ -302,7 +301,7 @@ TEST_F(EPKChallengeUserKeyTest, Success) {
 TEST_F(EPKChallengeUserKeyTest, BadChallengeThenErrorMessageReturned) {
   SetMockTpmChallengerBadBase64Error();
 
-  base::Value::List allowlist;
+  base::ListValue allowlist;
   allowlist.Append(extension_->id());
   prefs_->SetList(prefs::kAttestationExtensionAllowlist, std::move(allowlist));
 
@@ -315,7 +314,7 @@ TEST_F(EPKChallengeUserKeyTest, BadChallengeThenErrorMessageReturned) {
 }
 
 TEST_F(EPKChallengeUserKeyTest, ExtensionNotAllowedThenErrorMessageReturned) {
-  base::Value::List empty_allowlist;
+  base::ListValue empty_allowlist;
   prefs_->SetList(prefs::kAttestationExtensionAllowlist,
                   std::move(empty_allowlist));
 
@@ -339,13 +338,13 @@ class EPKChallengeKeyTest
   }
 
   void AllowlistExtension() {
-    base::Value::List allowlist;
+    base::ListValue allowlist;
     allowlist.Append(extension_->id());
     prefs_->SetList(prefs::kAttestationExtensionAllowlist,
                     std::move(allowlist));
   }
 
-  base::Value::List CreateArgs(
+  base::ListValue CreateArgs(
       std::optional<api::enterprise_platform_keys::RegisterKeyOptions>
           register_key,
       api::enterprise_platform_keys::Scope scope) {
@@ -357,13 +356,13 @@ class EPKChallengeKeyTest
     }
     options.scope = scope;
 
-    base::Value::List args;
+    base::ListValue args;
     args.Append(options.ToValue());
     return args;
   }
 
   scoped_refptr<EnterprisePlatformKeysChallengeKeyFunction> func_;
-  base::Value::List args_;
+  base::ListValue args_;
 };
 
 // This test ensures challengeKey propagates algorithm, scope, and registerKey
@@ -417,7 +416,7 @@ TEST_P(EPKChallengeKeyTest, Success) {
 // This test ensures challengeKey cannot be called by extensions not on the
 // allow list.
 TEST_P(EPKChallengeKeyTest, ExtensionNotAllowed) {
-  base::Value::List empty_allowlist;
+  base::ListValue empty_allowlist;
   prefs_->SetList(prefs::kAttestationExtensionAllowlist,
                   std::move(empty_allowlist));
 

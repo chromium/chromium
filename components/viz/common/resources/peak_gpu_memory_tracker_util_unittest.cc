@@ -25,7 +25,7 @@ class PeakGpuMemoryUtilTest
 // Tests that sequence numbers are generated according to SequenceLocation.
 // Extreme values are tested below in separate tests.
 TEST_P(PeakGpuMemoryUtilTest, NextSequenceNumber) {
-  uint32_t sequence_num_generator = base::RandInt(1, INT_MAX - 1);
+  uint32_t sequence_num_generator = base::RandIntInclusive(1, INT_MAX - 1);
   SequenceLocation sequence_location = GetParam();
 
   SetSequenceNumberGeneratorForTesting(sequence_num_generator,

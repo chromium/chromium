@@ -11,7 +11,6 @@
 #include <vector>
 
 #include "base/command_line.h"
-#include "base/containers/contains.h"
 #include "base/files/file_path.h"
 #include "base/functional/callback.h"
 #include "base/json/json_reader.h"
@@ -73,7 +72,7 @@ void ExtensionJSBrowserTest::SetUpOnMainThread() {
         base::BindRepeating([](content::DevToolsAgentHost* host) {
           const auto& ext_ids = GetExtensionIdsToCollectCoverage();
           for (const auto& ext_id : ext_ids) {
-            if (base::Contains(host->GetURL().GetPath(), ext_id) &&
+            if (host->GetURL().GetPath().contains(ext_id) &&
                 host->GetType() == "background_page") {
               return true;
             }
@@ -127,7 +126,7 @@ bool ExtensionJSBrowserTest::RunJavascriptTestF(bool is_async,
   }
   std::vector<std::u16string> scripts;
 
-  base::Value::Dict test_runner_params;
+  base::DictValue test_runner_params;
   if (embedded_test_server()->Started()) {
     test_runner_params.Set("testServerBaseUrl",
                            embedded_test_server()->base_url().spec());
@@ -146,7 +145,7 @@ bool ExtensionJSBrowserTest::RunJavascriptTestF(bool is_async,
 
   scripts.push_back(BuildRunTestJSCall(
       is_async, "RUN_TEST_F",
-      base::Value::List().Append(test_fixture).Append(test_name)));
+      base::ListValue().Append(test_fixture).Append(test_name)));
 
   std::u16string script_16 = base::JoinString(scripts, u"\n");
   std::string script = base::UTF16ToUTF8(script_16);
@@ -166,7 +165,7 @@ bool ExtensionJSBrowserTest::RunJavascriptTestF(bool is_async,
   std::string result_str = result.GetString();
   std::optional<base::Value> value_result =
       base::JSONReader::Read(result_str, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
-  const base::Value::Dict& dict_value = value_result->GetDict();
+  const base::DictValue& dict_value = value_result->GetDict();
 
   bool test_result = dict_value.FindBool("result").value();
   const std::string* test_result_message = dict_value.FindString("message");

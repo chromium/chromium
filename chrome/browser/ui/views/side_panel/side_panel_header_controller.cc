@@ -141,10 +141,13 @@ SidePanelHeaderController::CreatePinButton() {
   int dip_size = ChromeLayoutProvider::Get()->GetDistanceMetric(
       ChromeDistanceMetric::DISTANCE_SIDE_PANEL_HEADER_VECTOR_ICON_SIZE);
   const gfx::VectorIcon& pin_icon = kKeepIcon;
+  views::SetImageFromVectorIconWithColor(
+      button.get(), pin_icon,
+      {kColorSidePanelHeaderButtonIcon,
+       kColorSidePanelHeaderButtonIconDisabled},
+      dip_size);
+
   const gfx::VectorIcon& unpin_icon = kKeepOffIcon;
-  views::SetImageFromVectorIconWithColorId(
-      button.get(), pin_icon, kColorSidePanelHeaderButtonIcon,
-      kColorSidePanelHeaderButtonIconDisabled, dip_size);
   const ui::ImageModel& normal_image = ui::ImageModel::FromVectorIcon(
       unpin_icon, kColorSidePanelHeaderButtonIcon, dip_size);
   const ui::ImageModel& disabled_image = ui::ImageModel::FromVectorIcon(

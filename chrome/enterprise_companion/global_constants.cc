@@ -121,7 +121,7 @@ class GlobalConstantsImpl : public GlobalConstants {
       return;
     }
 
-    const base::Value::Dict& overrides = parsed_value->GetDict();
+    const base::DictValue& overrides = parsed_value->GetDict();
 
     ApplyOverride(overrides, kCrashUploadUrlKey, crash_upload_url_);
     ApplyOverride(overrides, kDMEncryptedReportingUrlKey,
@@ -140,7 +140,7 @@ class GlobalConstantsImpl : public GlobalConstants {
 #endif
   }
 
-  void ApplyOverride(const base::Value::Dict& overrides,
+  void ApplyOverride(const base::DictValue& overrides,
                      const std::string& key,
                      GURL& value) {
     const std::string* str = overrides.FindString(key);
@@ -150,7 +150,7 @@ class GlobalConstantsImpl : public GlobalConstants {
     }
   }
 
-  void ApplyOverride(const base::Value::Dict& overrides,
+  void ApplyOverride(const base::DictValue& overrides,
                      const std::string& key,
                      base::TimeDelta& value) {
     std::optional<int> override_val = overrides.FindInt(key);
@@ -161,7 +161,7 @@ class GlobalConstantsImpl : public GlobalConstants {
   }
 
 #if BUILDFLAG(IS_WIN)
-  void ApplyOverride(const base::Value::Dict& overrides,
+  void ApplyOverride(const base::DictValue& overrides,
                      const std::string& key,
                      std::wstring& value) {
     const std::string* str = overrides.FindString(key);

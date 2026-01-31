@@ -20,7 +20,6 @@
 #include "chrome/browser/ui/views/passwords/password_bubble_view_base.h"
 #include "chrome/browser/ui/views/passwords/views_utils.h"
 #include "chrome/grit/generated_resources.h"
-#include "components/password_manager/core/browser/features/password_features.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
 #include "components/password_manager/core/browser/password_ui_utils.h"
 #include "components/password_manager/core/browser/ui/credential_ui_entry.h"
@@ -240,10 +239,11 @@ std::unique_ptr<views::View> CreatePasswordLabelWithEyeIconView(
   eye_icon->SetImageVerticalAlignment(views::ImageButton::ALIGN_MIDDLE);
   eye_icon->SetID(
       static_cast<int>(ManagePasswordsViewIDs::kRevealPasswordButton));
-  views::SetImageFromVectorIconWithColorId(
-      eye_icon, views::kEyeIcon, ui::kColorIcon, ui::kColorIconDisabled);
-  views::SetToggledImageFromVectorIconWithColorId(
-      eye_icon, views::kEyeCrossedIcon, ui::kColorIcon, ui::kColorIconDisabled);
+  views::SetImageFromVectorIconWithColor(
+      eye_icon, views::kEyeIcon, {ui::kColorIcon, ui::kColorIconDisabled});
+  views::SetToggledImageFromVectorIconWithColor(
+      eye_icon, views::kEyeCrossedIcon,
+      {ui::kColorIcon, ui::kColorIconDisabled});
   views::InstallCircleHighlightPathGenerator(eye_icon);
   eye_icon->SetCallback(
       base::BindRepeating(
@@ -484,9 +484,9 @@ std::unique_ptr<RichHoverButton> CreateManagePasswordRow(
       l10n_util::GetStringUTF16(IDS_PASSWORD_MANAGER_MANAGE_PASSWORD_BUTTON),
       /*subtitle_text=*/std::u16string(),
       /*action_image_icon=*/
-      ui::ImageModel::FromVectorIcon(vector_icons::kLaunchIcon,
-                                     ui::kColorIconSecondary,
-                                     GetLayoutConstant(PAGE_INFO_ICON_SIZE)));
+      ui::ImageModel::FromVectorIcon(
+          vector_icons::kLaunchIcon, ui::kColorIconSecondary,
+          GetLayoutConstant(LayoutConstant::kPageInfoIconSize)));
   manage_password_row->SetID(static_cast<int>(
       password_manager::ManagePasswordsViewIDs::kManagePasswordButton));
   manage_password_row->SetTooltipText(
@@ -634,26 +634,15 @@ ManagePasswordsDetailsView::ManagePasswordsDetailsView(
                           base::Unretained(this))));
   edit_note_row_->SetVisible(false);
 
-  if (base::FeatureList::IsEnabled(
-          password_manager::features::kPasswordManualFallbackAvailable)) {
-    separator_row_ =
-        AddChildView(views::Builder<views::Separator>()
-                         .SetBorder(views::CreateEmptyBorder(gfx::Insets::VH(
-                             ChromeLayoutProvider::Get()->GetDistanceMetric(
-                                 DISTANCE_CONTENT_LIST_VERTICAL_SINGLE),
-                             0)))
-                         .Build());
-
-    manage_password_row_ = AddChildView(CreateManagePasswordRow(
-        std::move(on_manage_password_clicked_callback)));
-  } else {
-    // We need the bottom padding only if the "Manage password" button is not
-    // added to the layout.
-    SetInsideBorderInsets(
-        gfx::Insets().set_bottom(ChromeLayoutProvider::Get()
-                                     ->GetInsetsMetric(views::INSETS_DIALOG)
-                                     .bottom()));
-  }
+  separator_row_ =
+      AddChildView(views::Builder<views::Separator>()
+                       .SetBorder(views::CreateEmptyBorder(gfx::Insets::VH(
+                           ChromeLayoutProvider::Get()->GetDistanceMetric(
+                               DISTANCE_CONTENT_LIST_VERTICAL_SINGLE),
+                           0)))
+                       .Build());
+  manage_password_row_ = AddChildView(
+      CreateManagePasswordRow(std::move(on_manage_password_clicked_callback)));
 
   SetProperty(views::kElementIdentifierKey, kTopView);
   RequestFocus();
@@ -664,15 +653,12 @@ ManagePasswordsDetailsView::~ManagePasswordsDetailsView() = default;
 void ManagePasswordsDetailsView::SwitchToReadingMode() {
   read_note_row_->SetVisible(true);
   edit_note_row_->SetVisible(false);
-  if (base::FeatureList::IsEnabled(
-          password_manager::features::kPasswordManualFallbackAvailable)) {
-    // The "Manage password" button should be visible only in the reading mode.
-    // The bottom padding should be absent in this mode to achieve the same
-    // appearance of the button as in the `ManagerPasswordsView`.
-    separator_row_->SetVisible(true);
-    manage_password_row_->SetVisible(true);
-    SetInsideBorderInsets(gfx::Insets());
-  }
+  // The "Manage password" button should be visible only in the reading mode.
+  // The bottom padding should be absent in this mode to achieve the same
+  // appearance of the button as in the `ManagerPasswordsView`.
+  separator_row_->SetVisible(true);
+  manage_password_row_->SetVisible(true);
+  SetInsideBorderInsets(gfx::Insets());
 
   on_activity_callback_.Run();
 }
@@ -696,18 +682,15 @@ void ManagePasswordsDetailsView::SwitchToEditUsernameMode() {
   DCHECK(edit_username_row_);
   read_username_row_->SetVisible(false);
   edit_username_row_->SetVisible(true);
-  if (base::FeatureList::IsEnabled(
-          password_manager::features::kPasswordManualFallbackAvailable)) {
-    // The "Manage passwords" button should not be visible in the editor mode.
-    // The bottom padding is added to offset the dialog buttons shown by the
-    // `ManagePasswordsView`.
-    separator_row_->SetVisible(false);
-    manage_password_row_->SetVisible(false);
-    SetInsideBorderInsets(
-        gfx::Insets().set_bottom(ChromeLayoutProvider::Get()
-                                     ->GetInsetsMetric(views::INSETS_DIALOG)
-                                     .bottom()));
-  }
+  // The "Manage passwords" button should not be visible in the editor mode.
+  // The bottom padding is added to offset the dialog buttons shown by the
+  // `ManagePasswordsView`.
+  separator_row_->SetVisible(false);
+  manage_password_row_->SetVisible(false);
+  SetInsideBorderInsets(
+      gfx::Insets().set_bottom(ChromeLayoutProvider::Get()
+                                   ->GetInsetsMetric(views::INSETS_DIALOG)
+                                   .bottom()));
 
   switched_to_edit_mode_callback_.Run();
   DCHECK(username_textfield_);
@@ -720,18 +703,15 @@ void ManagePasswordsDetailsView::SwitchToEditUsernameMode() {
 void ManagePasswordsDetailsView::SwitchToEditNoteMode() {
   read_note_row_->SetVisible(false);
   edit_note_row_->SetVisible(true);
-  if (base::FeatureList::IsEnabled(
-          password_manager::features::kPasswordManualFallbackAvailable)) {
-    // The "Manage passwords" button should not be visible in the editor mode.
-    // The bottom padding is added to offset the dialog buttons shown by the
-    // `ManagePasswordsView`.
-    separator_row_->SetVisible(false);
-    manage_password_row_->SetVisible(false);
-    SetInsideBorderInsets(
-        gfx::Insets().set_bottom(ChromeLayoutProvider::Get()
-                                     ->GetInsetsMetric(views::INSETS_DIALOG)
-                                     .bottom()));
-  }
+  // The "Manage passwords" button should not be visible in the editor mode.
+  // The bottom padding is added to offset the dialog buttons shown by the
+  // `ManagePasswordsView`.
+  separator_row_->SetVisible(false);
+  manage_password_row_->SetVisible(false);
+  SetInsideBorderInsets(
+      gfx::Insets().set_bottom(ChromeLayoutProvider::Get()
+                                   ->GetInsetsMetric(views::INSETS_DIALOG)
+                                   .bottom()));
 
   switched_to_edit_mode_callback_.Run();
   DCHECK(note_textarea_);

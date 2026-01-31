@@ -318,12 +318,12 @@ export class SearchboxIconElement extends CrLitElement {
   //============================================================================
 
   private computeFaviconUrl_(scaleFactor: number): string {
-    if (!this.match?.destinationUrl.url) {
+    if (!this.match?.destinationUrl) {
       return '';
     }
 
     return getFaviconUrl(
-        /* url= */ this.match.destinationUrl.url, {
+        /* url= */ this.match.destinationUrl, {
           forceLightMode: !this.isTopChromeSearchbox_,
           forceEmptyDefaultFavicon: true,
           scaleFactor: `${scaleFactor}x`,
@@ -386,7 +386,7 @@ export class SearchboxIconElement extends CrLitElement {
 
   private computeShowIconImg_(): boolean {
     // Lens searchbox should not use icon URL.
-    return !this.isLensSearchbox_ && !!this.match && !!this.match.iconUrl.url &&
+    return !this.isLensSearchbox_ && !!this.match && !!this.match.iconUrl &&
         !this.iconLoading_;
   }
 
@@ -473,7 +473,7 @@ export class SearchboxIconElement extends CrLitElement {
   }
 
   private computeIconSrc_(): string {
-    return this.computeSrc_(this.match?.iconUrl?.url);
+    return this.computeSrc_(this.match?.iconUrl);
   }
 
   private computeShowImage_(): boolean {

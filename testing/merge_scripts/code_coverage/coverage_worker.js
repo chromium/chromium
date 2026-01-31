@@ -7,17 +7,13 @@
  * compliant coverage files.
  */
 
-// Relative path to the node modules.
-const NODE_MODULES =
-    ['..', '..', '..', 'third_party', 'js_code_coverage', 'node_modules'];
-
-const {createHash} = require('crypto');
-const {join, dirname, normalize} = require('path');
-const {readdir, readFile, writeFile} = require('fs').promises;
-const V8ToIstanbul = require(join(...NODE_MODULES, 'v8-to-istanbul'));
-const convertSourceMap = require(join(...NODE_MODULES, 'convert-source-map'));
-const sourceMap = require(join(...NODE_MODULES, 'source-map'));
-const {workerData, parentPort} = require('worker_threads');
+import {createHash} from 'node:crypto';
+import {join, dirname, normalize} from 'node:path';
+import {readdir, readFile, writeFile} from 'node:fs/promises';
+import {workerData, parentPort} from 'node:worker_threads';
+import V8ToIstanbul from '../../../third_party/js_code_coverage/node_modules/v8-to-istanbul/index.js';
+import convertSourceMap from '../../../third_party/js_code_coverage/node_modules/convert-source-map/index.js';
+import sourceMap from '../../../third_party/js_code_coverage/node_modules/source-map/source-map.js';
 
 /**
  * Validate that the mapping in the sourcemaps is valid.

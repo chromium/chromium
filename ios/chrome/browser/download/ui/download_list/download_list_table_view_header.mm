@@ -47,7 +47,6 @@ NSString* const kFilterCellIdentifier = @"DownloadFilterCell";
 @implementation DownloadListTableViewHeader {
   UICollectionView* _filterCollectionView;
   UICollectionViewFlowLayout* _layout;
-  NSLayoutConstraint* _filterCollectionViewWidthConstraint;
 
   // The currently selected filter type. Defaults to kAll.
   DownloadFilterType _selectedFilterType;
@@ -59,6 +58,14 @@ NSString* const kFilterCellIdentifier = @"DownloadFilterCell";
   // UITextView for displaying attribution text with clickable links at the
   // bottom.
   UITextView* _attributionTextView;
+
+  // Constraint to manage the bottom spacing of the collection view.
+  // Active when attribution text is hidden.
+  NSLayoutConstraint* _collectionViewBottomConstraint;
+
+  // Constraints for the attribution text view to manage its visibility and
+  // layout. Active when attribution text is shown.
+  NSArray<NSLayoutConstraint*>* _attributionTextViewConstraints;
 }
 
 - (instancetype)initWithFrame:(CGRect)frame {
@@ -87,14 +94,6 @@ NSString* const kFilterCellIdentifier = @"DownloadFilterCell";
 
 - (instancetype)init {
   return [self initWithFrame:CGRectZero];
-}
-
-- (void)layoutSubviews {
-  [super layoutSubviews];
-  CGFloat contentWidth = _filterCollectionView.collectionViewLayout
-                             .collectionViewContentSize.width;
-  CGFloat maxWidth = self.bounds.size.width;
-  _filterCollectionViewWidthConstraint.constant = MIN(contentWidth, maxWidth);
 }
 
 #pragma mark - Private Methods
@@ -162,33 +161,36 @@ NSString* const kFilterCellIdentifier = @"DownloadFilterCell";
 // Sets up Auto Layout constraints for the collection view positioning and
 // sizing.
 - (void)setupConstraints {
-  // Create a width constraint that will be updated dynamically based on content
-  // size.
-  _filterCollectionViewWidthConstraint =
-      [_filterCollectionView.widthAnchor constraintEqualToConstant:0];
+  // Collection view constraints.
+  _collectionViewBottomConstraint = [_filterCollectionView.bottomAnchor
+      constraintEqualToAnchor:self.bottomAnchor];
   [NSLayoutConstraint activateConstraints:@[
     [_filterCollectionView.topAnchor constraintEqualToAnchor:self.topAnchor],
-    [_filterCollectionView.centerXAnchor
-        constraintEqualToAnchor:self.centerXAnchor],
+    [_filterCollectionView.leadingAnchor
+        constraintEqualToAnchor:self.safeAreaLayoutGuide.leadingAnchor],
+    [_filterCollectionView.trailingAnchor
+        constraintEqualToAnchor:self.safeAreaLayoutGuide.trailingAnchor],
     // Explicit height constraint ensures consistent filter cell sizing.
     [_filterCollectionView.heightAnchor
         constraintEqualToConstant:kCollectionViewHeight],
-    _filterCollectionViewWidthConstraint,
+  ]];
 
-    // Attribution text view constraints with correct spacing.
+  // Attribution text view constraints.
+  _attributionTextViewConstraints = @[
     [_attributionTextView.topAnchor
         constraintEqualToAnchor:_filterCollectionView.bottomAnchor
                        constant:kTextToCollectionSpacing],
     [_attributionTextView.leadingAnchor
-        constraintEqualToAnchor:self.leadingAnchor
+        constraintEqualToAnchor:self.safeAreaLayoutGuide.leadingAnchor
                        constant:kContentInset],
     [_attributionTextView.trailingAnchor
-        constraintEqualToAnchor:self.trailingAnchor
+        constraintEqualToAnchor:self.safeAreaLayoutGuide.trailingAnchor
                        constant:-kContentInset],
     [_attributionTextView.bottomAnchor
         constraintEqualToAnchor:self.bottomAnchor
                        constant:-kTextToBottomSpacing]
-  ]];
+  ];
+  [NSLayoutConstraint activateConstraints:_attributionTextViewConstraints];
 }
 
 // Returns the index of the specified filter type in the available filter types
@@ -298,38 +300,15 @@ NSString* const kFilterCellIdentifier = @"DownloadFilterCell";
 
 #pragma mark - Public Methods
 
-- (CGFloat)preferredHeightForWidth:(CGFloat)width {
-  // Calculate the height needed for the attribution text view.
-  CGFloat attributionTextHeight = 0.0;
-  if (_attributionTextView.attributedText && !_attributionTextView.hidden) {
-    CGSize maxSize = CGSizeMake(width - 2 * kContentInset, CGFLOAT_MAX);
-    CGRect textRect = [_attributionTextView.attributedText
-        boundingRectWithSize:maxSize
-                     options:NSStringDrawingUsesLineFragmentOrigin
-                     context:nil];
-    attributionTextHeight = ceil(textRect.size.height);
-  }
-
-  // Total height calculation based on specific spacing requirements.
-  CGFloat totalHeight = kCollectionViewHeight;
-  if (attributionTextHeight > 0) {
-    totalHeight +=
-        kTextToCollectionSpacing + attributionTextHeight + kTextToBottomSpacing;
-  }
-
-  return totalHeight;
-}
-
 - (void)setAttributionTextShown:(BOOL)shown {
   _attributionTextView.hidden = !shown;
-  [self invalidateIntrinsicContentSize];
-}
-
-#pragma mark - UIView
-
-- (CGSize)intrinsicContentSize {
-  return CGSizeMake(UIViewNoIntrinsicMetric,
-                    [self preferredHeightForWidth:self.bounds.size.width]);
+  if (shown) {
+    _collectionViewBottomConstraint.active = NO;
+    [NSLayoutConstraint activateConstraints:_attributionTextViewConstraints];
+  } else {
+    [NSLayoutConstraint deactivateConstraints:_attributionTextViewConstraints];
+    _collectionViewBottomConstraint.active = YES;
+  }
 }
 
 @end

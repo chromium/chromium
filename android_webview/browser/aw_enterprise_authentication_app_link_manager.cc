@@ -30,7 +30,7 @@ EnterpriseAuthenticationAppLinkManager::
     ~EnterpriseAuthenticationAppLinkManager() = default;
 
 void EnterpriseAuthenticationAppLinkManager::OnPolicyUpdated() {
-  const base::Value::List& authentication_urls_policy =
+  const base::ListValue& authentication_urls_policy =
       pref_service_->GetList(prefs::kEnterpriseAuthAppLinkPolicy);
 
   url_matcher_ = std::make_unique<url_matcher::URLMatcher>();

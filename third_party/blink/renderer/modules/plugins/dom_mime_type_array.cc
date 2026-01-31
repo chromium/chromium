@@ -20,7 +20,8 @@
 
 #include "third_party/blink/renderer/modules/plugins/dom_mime_type_array.h"
 
-#include "base/containers/contains.h"
+#include <algorithm>
+
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
@@ -75,7 +76,8 @@ void DOMMimeTypeArray::NamedPropertyEnumerator(Vector<String>& property_names,
 
 bool DOMMimeTypeArray::NamedPropertyQuery(const AtomicString& property_name,
                                           ExceptionState&) const {
-  return base::Contains(dom_mime_types_, property_name, &DOMMimeType::type);
+  return std::ranges::contains(dom_mime_types_, property_name,
+                               &DOMMimeType::type);
 }
 
 }  // namespace blink

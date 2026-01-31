@@ -79,7 +79,7 @@ class WaylandScreen : public PlatformScreen, public DeviceScaleFactorObserver {
   base::TimeDelta CalculateIdleTime() const override;
   void AddObserver(display::DisplayObserver* observer) override;
   void RemoveObserver(display::DisplayObserver* observer) override;
-  base::Value::List GetGpuExtraInfo(
+  base::ListValue GetGpuExtraInfo(
       const gfx::GpuExtraInfo& gpu_extra_info) override;
   std::optional<float> GetPreferredScaleFactorForAcceleratedWidget(
       gfx::AcceleratedWidget widget) const override;

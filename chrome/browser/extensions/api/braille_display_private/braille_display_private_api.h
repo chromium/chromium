@@ -89,7 +89,7 @@ class BrailleDisplayPrivateGetDisplayStateFunction : public ExtensionFunction {
   ~BrailleDisplayPrivateGetDisplayStateFunction() override = default;
   ResponseAction Run() override;
 
-  void ReplyWithState(base::Value::Dict state);
+  void ReplyWithState(base::DictValue state);
 };
 
 class BrailleDisplayPrivateWriteDotsFunction : public ExtensionFunction {

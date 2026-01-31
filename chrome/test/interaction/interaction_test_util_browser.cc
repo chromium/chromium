@@ -9,13 +9,16 @@
 #include "base/command_line.h"
 #include "base/strings/strcat.h"
 #include "build/build_config.h"
+#include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/browser/ui/interaction/browser_elements.h"
 #include "chrome/browser/ui/test/test_browser_ui.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/views/frame/tab_strip_region_view.h"
+#include "chrome/browser/ui/views/interaction/browser_elements_views.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_view_views.h"
-#include "chrome/browser/ui/views/tabs/tab.h"
 #include "chrome/browser/ui/views/tabs/tab_strip.h"
+#include "chrome/browser/ui/views/tabs/vertical/vertical_tab_strip_view.h"
 #include "chrome/test/base/interactive_test_utils.h"
 #include "chrome/test/interaction/tracked_element_webcontents.h"
 #include "chrome/test/interaction/webcontents_interaction_test_util.h"
@@ -80,6 +83,44 @@ class PixelTestUi : public TestBrowserUi {
   std::string baseline_;
   ScreenshotOptions options_;
 };
+
+// Given a view that could have/be a tabstrip, return the tabstrip region view.
+TabStripRegionView* GetTargetTabStripRegionView(
+    views::TrackedElementViews* el) {
+  views::View* view = el->view();
+
+  // If this is a browser view, get the active tabstrip region.
+  if (auto* const browser_view = views::AsViewClass<BrowserView>(view)) {
+    return browser_view->tab_strip_view();
+  }
+
+  auto* const browser_view = views::ElementTrackerViews::GetInstance()
+                                 ->GetFirstMatchingViewAs<BrowserView>(
+                                     kBrowserViewElementId, el->context());
+  if (!browser_view) {
+    return nullptr;
+  }
+  auto* const browser_region_view = browser_view->tab_strip_view();
+
+  // If this is already a tabstrip region, return it.
+  if (auto* const region_view = views::AsViewClass<TabStripRegionView>(view)) {
+    CHECK_EQ(region_view, browser_region_view)
+        << "Attempted to select a tab in a tabstrip that was not the current "
+           "tabstrip.";
+    return region_view;
+  }
+
+  // If this is a tab strip inside the active tab strip region view, return the
+  // region.
+  if (browser_region_view->Contains(view)) {
+    if (views::IsViewClass<TabStrip>(view) ||
+        views::IsViewClass<VerticalTabStripView>(view)) {
+      return browser_region_view;
+    }
+  }
+
+  return nullptr;
+}
 
 views::View* GetScreenshotTargetView(ui::TrackedElement* element) {
   if (auto* const view_el = element->AsA<views::TrackedElementViews>()) {
@@ -299,35 +340,35 @@ class InteractionTestUtilSimulatorBrowser
     // reject any other element or View type.
     if (!tab_collection->IsA<views::TrackedElementViews>())
       return ui::test::ActionResult::kNotAttempted;
-    auto* const view =
-        tab_collection->AsA<views::TrackedElementViews>()->view();
-    TabStrip* tab_strip = nullptr;
-    if (auto* const browser_view = views::AsViewClass<BrowserView>(view)) {
-      tab_strip = browser_view->tabstrip();
-    } else {
-      tab_strip = views::AsViewClass<TabStrip>(view);
-    }
-    if (!tab_strip)
+    auto* const view_el = tab_collection->AsA<views::TrackedElementViews>();
+    TabStripRegionView* const tab_strip_region =
+        GetTargetTabStripRegionView(view_el);
+    auto* const browser =
+        InteractionTestUtilBrowser::GetBrowserFromContext(view_el->context());
+    if (!tab_strip_region || !browser) {
       return ui::test::ActionResult::kNotAttempted;
+    }
+
+    auto* const tab_strip_model = browser->GetTabStripModel();
 
     // Verify that the tab index is in range; at this point it's a fatal error
     // if it's out of bounds.
-    if (static_cast<int>(index) >= tab_strip->GetTabCount()) {
+    if (static_cast<int>(index) >= tab_strip_model->count()) {
       LOG(ERROR) << "Tabstrip index " << index
-                 << " is out of bounds, there are " << tab_strip->GetTabCount()
+                 << " is out of bounds, there are " << tab_strip_model->count()
                  << " tabs.";
       return ui::test::ActionResult::kFailed;
     }
 
     // Tabs can be selected using a default action; no special input logic is
     // needed.
-    Tab* const tab = tab_strip->tab_at(index);
+    views::View* const tab = tab_strip_region->GetTabAnchorViewAt(index);
     views::test::InteractionTestUtilSimulatorViews::DoDefaultAction(tab,
                                                                     input_type);
 
     const int expected =
         static_cast<int>(expected_index_after_selection.value_or(index));
-    if (expected != tab_strip->GetActiveIndex()) {
+    if (expected != tab_strip_model->active_index()) {
       LOG(ERROR) << "Failed to select tabstrip tab " << index;
       return ui::test::ActionResult::kFailed;
     }

@@ -67,7 +67,7 @@ class DeviceWeeklyScheduledSuspendControllerTest : public testing::Test {
     chromeos::PowerManagerClient::Shutdown();
   }
 
-  void UpdatePolicyPref(base::Value::List schedule_list) {
+  void UpdatePolicyPref(base::ListValue schedule_list) {
     TestingBrowserProcess::GetGlobal()->local_state()->SetList(
         prefs::kDeviceWeeklyScheduledSuspend, std::move(schedule_list));
   }

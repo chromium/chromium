@@ -24,6 +24,7 @@ import '../internal/icons.html.js';
 // </if>
 
 import './autofill_ai_entries_list.js';
+import './walletable_pass_detection_toggle.js';
 
 import {PrefsMixin} from '/shared/settings/prefs/prefs_mixin.js';
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
@@ -62,7 +63,7 @@ export class SettingsAutofillAiSectionElement extends
       /**
          If a user is not eligible for Autofill with Ai, but they have data
          saved, the code allows them only to edit and delete their data. They
-         are not allowed to add new data, or to opt-in or opt-out of Autofill
+         are not allowed to add new data, or to opt in or opt-out of Autofill
          with Ai using the toggle at the top of this page.
          If a user is not eligible for Autofill with Ai and they also have no
          data saved, then they cannot access this page at all.
@@ -73,6 +74,19 @@ export class SettingsAutofillAiSectionElement extends
           return !loadTimeData.getBoolean('userEligibleForAutofillAi');
         },
       },
+
+      /**
+       * Indicates whether the feature `kAutofillAiReauthRequired` is enabled.
+       */
+      // <if expr="is_win or is_macosx or is_chromeos">
+      autofillAiReauthOnViewingSensitiveDataEnabled_: {
+        type: Boolean,
+        value() {
+          return loadTimeData.getBoolean(
+              'autofillAiReauthOnViewingSensitiveDataEnabled');
+        },
+      },
+      // </if>
 
       /**
          A "fake" preference object that reflects the state of the opt-in
@@ -99,6 +113,15 @@ export class SettingsAutofillAiSectionElement extends
           return loadTimeData.getBoolean('isWalletServerStorageEnabled');
         },
       },
+
+      isUserEligibleForWalletablePassDetection_: {
+        type: Boolean,
+        value() {
+          return loadTimeData.getBoolean(
+              'isUserEligibleForWalletablePassDetection');
+        },
+      },
+
       /**
         If true, Autofill AI does not depend on whether Autofill for addresses
         is enabled.
@@ -108,6 +131,18 @@ export class SettingsAutofillAiSectionElement extends
         value() {
           return loadTimeData.getBoolean(
               'AutofillAiIgnoresWhetherAddressFillingIsEnabled');
+        },
+      },
+
+      /**
+         Whether the feature kAutofillAiAvailableByDefault is enabled. When
+         enabled, users do not need to opt-in to enhanced Autofill to use
+         Autofill AI.
+       */
+      autofillAiAvailableByDefault_: {
+        type: Boolean,
+        value() {
+          return loadTimeData.getBoolean('autofillAiAvailableByDefault');
         },
       },
     };
@@ -121,9 +156,14 @@ export class SettingsAutofillAiSectionElement extends
   }
 
   declare ineligibleUser: boolean;
+  // <if expr="is_win or is_macosx or is_chromeos">
+  declare private autofillAiReauthOnViewingSensitiveDataEnabled_: boolean;
+  // </if>
   declare private optedIn_: chrome.settingsPrivate.PrefObject;
   declare private isWalletServerStorageEnabled_: boolean;
+  declare private isUserEligibleForWalletablePassDetection_: boolean;
   declare private autofillAiIgnoresWhetherAddressFillingIsEnabled_: boolean;
+  declare private autofillAiAvailableByDefault_: boolean;
 
   private entityDataManager_: EntityDataManagerProxy =
       EntityDataManagerProxyImpl.getInstance();
@@ -160,6 +200,14 @@ export class SettingsAutofillAiSectionElement extends
     }
   }
 
+  private onChangeAuthenticationRequirementClicked_(e: Event) {
+    e.preventDefault();
+    if (this.ineligibleUser) {
+      return;
+    }
+    this.entityDataManager_.toggleAutofillAiReauthRequirement();
+  }
+
   /**
    * Whether an info bullet regarding logging is shown. Autofill Ai only shows
    * logging behaviour information for enterprise clients who have either the
@@ -181,6 +229,18 @@ export class SettingsAutofillAiSectionElement extends
     }
     const optedIn = await this.entityDataManager_.getOptInStatus();
     this.set('optedIn_.value', !this.ineligibleUser && optedIn && prefValue);
+  }
+
+  private getFirstWhenOnSectionTitle_() {
+    return this.i18n(
+        this.autofillAiAvailableByDefault_ ?
+            'autofillAiWhenOnCanFillDifficultFields' :
+            'autofillAiWhenOnUseToFill');
+  }
+
+  private getFirstWhenOnSectionIcon_() {
+    return this.autofillAiAvailableByDefault_ ? 'settings20:text-analysis' :
+                                                'settings20:sync-saved-locally';
   }
 
   // SettingsViewMixin implementation.

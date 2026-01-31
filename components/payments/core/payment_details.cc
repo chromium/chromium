@@ -57,7 +57,7 @@ bool PaymentDetails::operator==(const PaymentDetails& other) const {
          modifiers == other.modifiers && error == other.error;
 }
 
-bool PaymentDetails::FromValueDict(const base::Value::Dict& dict,
+bool PaymentDetails::FromValueDict(const base::DictValue& dict,
                                    bool requires_total) {
   display_items.clear();
   shipping_options.clear();
@@ -68,7 +68,7 @@ bool PaymentDetails::FromValueDict(const base::Value::Dict& dict,
   if (specified_id)
     id = *specified_id;
 
-  const base::Value::Dict* total_dict = dict.FindDict(kPaymentDetailsTotal);
+  const base::DictValue* total_dict = dict.FindDict(kPaymentDetailsTotal);
   if (!total_dict && requires_total) {
     return false;
   }
@@ -80,7 +80,7 @@ bool PaymentDetails::FromValueDict(const base::Value::Dict& dict,
     }
   }
 
-  const base::Value::List* display_items_list =
+  const base::ListValue* display_items_list =
       dict.FindList(kPaymentDetailsDisplayItems);
   if (display_items_list) {
     for (const base::Value& payment_item_list_entry : *display_items_list) {
@@ -93,7 +93,7 @@ bool PaymentDetails::FromValueDict(const base::Value::Dict& dict,
     }
   }
 
-  const base::Value::List* shipping_options_list =
+  const base::ListValue* shipping_options_list =
       dict.FindList(kPaymentDetailsShippingOptions);
   if (shipping_options_list) {
     for (const base::Value& shipping_option_list_entry :
@@ -108,25 +108,25 @@ bool PaymentDetails::FromValueDict(const base::Value::Dict& dict,
     }
   }
 
-  const base::Value::List* modifiers_list =
+  const base::ListValue* modifiers_list =
       dict.FindList(kPaymentDetailsModifiers);
   if (modifiers_list) {
     for (const base::Value& modifiers_list_element : *modifiers_list) {
       if (!modifiers_list_element.is_dict())
         return false;
-      const base::Value::Dict& modifier_dict = modifiers_list_element.GetDict();
+      const base::DictValue& modifier_dict = modifiers_list_element.GetDict();
       PaymentDetailsModifier modifier;
       if (!modifier.method_data.FromValueDict(modifier_dict)) {
         return false;
       }
-      const base::Value::Dict* modifier_total_dict =
+      const base::DictValue* modifier_total_dict =
           modifier_dict.FindDict(kPaymentDetailsTotal);
       if (modifier_total_dict) {
         modifier.total = std::make_unique<PaymentItem>();
         if (!modifier.total->FromValueDict(*modifier_total_dict))
           return false;
       }
-      const base::Value::List* additional_display_items_list =
+      const base::ListValue* additional_display_items_list =
           modifier_dict.FindList(kPaymentDetailsAdditionalDisplayItems);
       if (additional_display_items_list) {
         for (const base::Value& additional_display_items_list_elem :

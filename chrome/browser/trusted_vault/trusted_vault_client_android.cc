@@ -75,7 +75,7 @@ TrustedVaultClientAndroid::~TrustedVaultClientAndroid() {
 
 void TrustedVaultClientAndroid::FetchKeysCompleted(
     JNIEnv* env,
-    jint request_id,
+    int32_t request_id,
     std::string& gaia_id,
     const base::android::JavaRef<jobjectArray>& keys) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
@@ -94,8 +94,8 @@ void TrustedVaultClientAndroid::FetchKeysCompleted(
 
 void TrustedVaultClientAndroid::MarkLocalKeysAsStaleCompleted(
     JNIEnv* env,
-    jint request_id,
-    jboolean succeeded) {
+    int32_t request_id,
+    bool succeeded) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   OngoingRequest ongoing_request = GetAndUnregisterOngoingRequest(request_id);
@@ -106,8 +106,8 @@ void TrustedVaultClientAndroid::MarkLocalKeysAsStaleCompleted(
 
 void TrustedVaultClientAndroid::GetIsRecoverabilityDegradedCompleted(
     JNIEnv* env,
-    jint request_id,
-    jboolean is_degraded) {
+    int32_t request_id,
+    bool is_degraded) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   OngoingRequest ongoing_request = GetAndUnregisterOngoingRequest(request_id);
@@ -119,7 +119,7 @@ void TrustedVaultClientAndroid::GetIsRecoverabilityDegradedCompleted(
 
 void TrustedVaultClientAndroid::AddTrustedRecoveryMethodCompleted(
     JNIEnv* env,
-    jint request_id) {
+    int32_t request_id) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   OngoingRequest ongoing_request = GetAndUnregisterOngoingRequest(request_id);
@@ -128,8 +128,9 @@ void TrustedVaultClientAndroid::AddTrustedRecoveryMethodCompleted(
       .Run();
 }
 
-void TrustedVaultClientAndroid::NotifyKeysChanged(JNIEnv* env,
-                                                  std::optional<jint> trigger) {
+void TrustedVaultClientAndroid::NotifyKeysChanged(
+    JNIEnv* env,
+    std::optional<int32_t> trigger) {
   for (Observer& observer : observer_list_) {
     observer.OnTrustedVaultKeysChanged(
         trigger

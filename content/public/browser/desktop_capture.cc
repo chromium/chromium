@@ -6,6 +6,7 @@
 
 #include "base/feature_list.h"
 #include "build/build_config.h"
+#include "content/browser/media/capture/pip_screen_capture_coordinator.h"
 #include "content/browser/renderer_host/media/media_stream_manager.h"
 #include "content/browser/renderer_host/media/video_capture_manager.h"
 #include "content/common/features.h"
@@ -43,11 +44,23 @@ bool CGDisplayStreamCreateIsAvailable() {
 
 namespace content::desktop_capture {
 
+#if BUILDFLAG(IS_WIN)
+// This feature controls the rollout of a field trial experiment that enables
+// a heuristic for finding the editor window of a presentation application
+// (e.g., PowerPoint) when the user shares the slideshow window.
+// TODO(crbug.com/409473386): Remove this feature once it has been in stable for
+// at least one milestone.
+BASE_FEATURE(kUseHeuristicForFindingEditor, base::FEATURE_DISABLED_BY_DEFAULT);
+#endif
+
 webrtc::DesktopCaptureOptions CreateDesktopCaptureOptions() {
   auto options = webrtc::DesktopCaptureOptions::CreateDefault();
   // Leave desktop effects enabled during WebRTC captures.
   options.set_disable_effects(false);
 #if BUILDFLAG(IS_WIN)
+  options.full_screen_window_detector()->SetHeuristicForFindingEditor(
+      base::FeatureList::IsEnabled(kUseHeuristicForFindingEditor));
+
   // TODO(crbug.com/webrtc/15045): Possibly remove this flag. Keeping for now
   // to force fallback to GDI.
   static BASE_FEATURE(kDirectXCapturer, "DirectXCapturer",
@@ -142,6 +155,15 @@ void CloseNativeScreenCapturePicker(DesktopMediaID source_id) {
   content::MediaStreamManager::GetInstance()
       ->video_capture_manager()
       ->CloseNativeScreenCapturePicker(source_id);
+}
+
+std::optional<DesktopMediaID::Id> GetPipWindowToExcludeFromScreenCapture(
+    DesktopMediaID::Id desktop_id) {
+  if (auto* coordinator = content::PipScreenCaptureCoordinator::GetInstance()) {
+    return coordinator->GetPipWindowToExcludeFromScreenCapture(desktop_id);
+  }
+
+  return std::nullopt;
 }
 
 }  // namespace content::desktop_capture

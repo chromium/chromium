@@ -8,11 +8,11 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <variant>
 
 #include "base/auto_reset.h"
 #include "base/check_op.h"
 #include "base/command_line.h"
-#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
@@ -44,6 +44,7 @@
 #include "components/permissions/permissions_client.h"
 #include "components/permissions/prediction_service/permission_ui_selector.h"
 #include "components/permissions/request_type.h"
+#include "components/permissions/resolvers/permission_prompt_options.h"
 #include "components/permissions/switches.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/back_forward_cache.h"
@@ -98,6 +99,18 @@ constexpr char kAbusiveNotificationContentWarningMessage[] =
 constexpr char kDisruptiveNotificationBehaviorEnforcementMessage[] =
     "Chrome is blocking notification permission requests on this site because "
     "the site exhibits behaviors that may be disruptive to users.";
+
+const char kGestureGatedNotificationMessage[] =
+    "The Notification permission request was suppressed and shown as a quiet "
+    "prompt because it was requested without a user gesture. Users are more "
+    "likely to grant permissions when requested in context. See "
+    "https://developer.chrome.com/blog/permissions-chip#without_user_gesture.";
+
+const char kGestureGatedGeolocationMessage[] =
+    "The Geolocation permission request was suppressed and shown as a quiet "
+    "prompt because it was requested without a user gesture. Users are more "
+    "likely to grant permissions when requested in context. See "
+    "https://developer.chrome.com/blog/permissions-chip#without_user_gesture.";
 
 namespace {
 
@@ -283,10 +296,20 @@ void PermissionRequestManager::AddRequest(
           web_contents()->GetBrowserContext(), request->requesting_origin());
 
   if (should_auto_approve_request) {
+    // TODO(crbug.com/469397053): Investigate whether
+    // PermissionClient::GetAutoApprovalStatus() should be able to distinguish
+    // between approximate and precise location. For now, we always hardcode
+    // precise location here.
+    PromptOptions prompt_options =
+        request->GetContentSettingsType() ==
+                ContentSettingsType::GEOLOCATION_WITH_OPTIONS
+            ? PromptOptions(GeolocationPromptOptions{
+                  .selected_accuracy = GeolocationAccuracy::kPrecise})
+            : std::monostate();
     if (should_auto_approve_request == PermissionAction::GRANTED) {
-      request->PermissionGranted(/*is_one_time=*/false);
+      request->PermissionGranted(prompt_options, /*is_one_time=*/false);
     } else if (should_auto_approve_request == PermissionAction::GRANTED_ONCE) {
-      request->PermissionGranted(/*is_one_time=*/true);
+      request->PermissionGranted(prompt_options, /*is_one_time=*/true);
     }
     return;
   }
@@ -415,7 +438,8 @@ bool PermissionRequestManager::ReprioritizeCurrentRequestIfNeeded() {
     case CurrentRequestFate::kFinalize:
       // FinalizeCurrentRequests() will call ScheduleDequeueRequestIfNeeded on
       // its own.
-      CurrentRequestsDecided(PermissionAction::IGNORED);
+      CurrentRequestsDecided(PermissionAction::IGNORED,
+                             /*prompt_options=*/std::monostate());
       return false;
   }
 
@@ -607,7 +631,14 @@ GURL PermissionRequestManager::GetEmbeddingOrigin() const {
       web_contents()->GetPrimaryMainFrame());
 }
 
-void PermissionRequestManager::Accept() {
+void PermissionRequestManager::Accept(const PromptOptions& prompt_options) {
+  CHECK_EQ(std::holds_alternative<GeolocationPromptOptions>(prompt_options),
+           requests_[0]->GetContentSettingsType() ==
+               ContentSettingsType::GEOLOCATION_WITH_OPTIONS)
+      << "Accepting a geolocation permission prompt with precise/approximate "
+         "accuracy options should always include information about the "
+         "selected accuracy, and vice versa.";
+
   if (ignore_callbacks_from_prompt_) {
     return;
   }
@@ -618,7 +649,7 @@ void PermissionRequestManager::Accept() {
   for (const auto& request : requests_) {
     StorePermissionActionForUMA(request->requesting_origin(),
                                 request->request_type(), action);
-    PermissionGrantedIncludingDuplicates(request.get(),
+    PermissionGrantedIncludingDuplicates(request.get(), prompt_options,
                                          /*is_one_time=*/false);
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
@@ -634,10 +665,18 @@ void PermissionRequestManager::Accept() {
   }
 
   NotifyRequestDecided(action);
-  CurrentRequestsDecided(action);
+  CurrentRequestsDecided(action, prompt_options);
 }
 
-void PermissionRequestManager::AcceptThisTime() {
+void PermissionRequestManager::AcceptThisTime(
+    const PromptOptions& prompt_options) {
+  CHECK_EQ(std::holds_alternative<GeolocationPromptOptions>(prompt_options),
+           requests_[0]->GetContentSettingsType() ==
+               ContentSettingsType::GEOLOCATION_WITH_OPTIONS)
+      << "Accepting a geolocation permission prompt with precise/approximate "
+         "accuracy options should always include information about the "
+         "selected accuracy, and vice versa.";
+
   if (ignore_callbacks_from_prompt_) {
     return;
   }
@@ -648,15 +687,19 @@ void PermissionRequestManager::AcceptThisTime() {
   for (const auto& request : requests_) {
     StorePermissionActionForUMA(request->requesting_origin(),
                                 request->request_type(), action);
-    PermissionGrantedIncludingDuplicates(request.get(),
+    PermissionGrantedIncludingDuplicates(request.get(), prompt_options,
                                          /*is_one_time=*/true);
   }
 
   NotifyRequestDecided(action);
-  CurrentRequestsDecided(action);
+  CurrentRequestsDecided(action, prompt_options);
 }
 
-void PermissionRequestManager::Deny() {
+void PermissionRequestManager::Deny(const PromptOptions& prompt_options) {
+  CHECK(!std::holds_alternative<GeolocationPromptOptions>(prompt_options) ||
+        requests_[0]->GetContentSettingsType() ==
+            ContentSettingsType::GEOLOCATION_WITH_OPTIONS);
+
   if (ignore_callbacks_from_prompt_) {
     return;
   }
@@ -668,8 +711,8 @@ void PermissionRequestManager::Deny() {
   // trapped in request loops where the website automatically navigates
   // cross-origin (e.g. to another subdomain) to be able to prompt again after
   // a rejection.
-  if (base::Contains(requests_, ContentSettingsType::NOTIFICATIONS,
-                     &PermissionRequest::GetContentSettingsType)) {
+  if (std::ranges::contains(requests_, ContentSettingsType::NOTIFICATIONS,
+                            &PermissionRequest::GetContentSettingsType)) {
     is_notification_prompt_cooldown_active_ = true;
   }
 
@@ -681,10 +724,14 @@ void PermissionRequestManager::Deny() {
   }
 
   NotifyRequestDecided(action);
-  CurrentRequestsDecided(action);
+  CurrentRequestsDecided(action, prompt_options);
 }
 
-void PermissionRequestManager::Dismiss() {
+void PermissionRequestManager::Dismiss(const PromptOptions& prompt_options) {
+  CHECK(!std::holds_alternative<GeolocationPromptOptions>(prompt_options) ||
+        requests_[0]->GetContentSettingsType() ==
+            ContentSettingsType::GEOLOCATION_WITH_OPTIONS);
+
   if (ignore_callbacks_from_prompt_) {
     return;
   }
@@ -699,10 +746,14 @@ void PermissionRequestManager::Dismiss() {
   }
 
   NotifyRequestDecided(action);
-  CurrentRequestsDecided(action);
+  CurrentRequestsDecided(action, prompt_options);
 }
 
-void PermissionRequestManager::Ignore() {
+void PermissionRequestManager::Ignore(const PromptOptions& prompt_options) {
+  CHECK(!std::holds_alternative<GeolocationPromptOptions>(prompt_options) ||
+        requests_[0]->GetContentSettingsType() ==
+            ContentSettingsType::GEOLOCATION_WITH_OPTIONS);
+
   if (ignore_callbacks_from_prompt_) {
     return;
   }
@@ -716,7 +767,7 @@ void PermissionRequestManager::Ignore() {
   }
 
   NotifyRequestDecided(action);
-  CurrentRequestsDecided(action);
+  CurrentRequestsDecided(action, prompt_options);
 }
 
 void PermissionRequestManager::FinalizeCurrentRequests() {
@@ -837,10 +888,11 @@ bool PermissionRequestManager::RecreateView() {
     current_request_prompt_disposition_ =
         PermissionPromptDisposition::NONE_VISIBLE;
     if (ShouldDropCurrentRequestIfCannotShowQuietly()) {
-      CurrentRequestsDecided(PermissionAction::IGNORED);
+      CurrentRequestsDecided(PermissionAction::IGNORED,
+                             /*prompt_options=*/std::monostate());
     } else if (IsCurrentRequestEmbeddedPermissionElementInitiated() ||
                IsCurrentRequestExclusiveAccess()) {
-      Ignore();
+      Ignore(/*prompt_options=*/std::monostate());
     }
     NotifyPromptRecreateFailed();
     return false;
@@ -862,12 +914,6 @@ bool PermissionRequestManager::RecreateView() {
 
 const PermissionPrompt* PermissionRequestManager::GetCurrentPrompt() const {
   return view_.get();
-}
-
-void PermissionRequestManager::SetPromptOptions(PromptOptions prompt_options) {
-  for (auto& request : requests_) {
-    request->SetPromptOptions(prompt_options);
-  }
 }
 
 GeolocationAccuracy
@@ -903,8 +949,7 @@ PermissionRequestManager::GetPromptBubbleViewBoundsInScreen() const {
 }
 
 PermissionRequestManager::PermissionRequestManager(
-    content::WebContents* web_contents,
-    tabs::TabInterface* tab_interface)
+    content::WebContents* web_contents)
     : content::WebContentsObserver(web_contents),
       content::WebContentsUserData<PermissionRequestManager>(*web_contents),
       view_factory_(base::BindRepeating(&PermissionPrompt::Create)),
@@ -912,19 +957,24 @@ PermissionRequestManager::PermissionRequestManager(
       permission_ui_selectors_(
           PermissionsClient::Get()->CreatePermissionUiSelectors(
               web_contents->GetBrowserContext())) {
+  // Only register TabInterface observers on desktop to support Split View.
+  tabs::TabInterface* tab_interface =
+#if BUILDFLAG(IS_ANDROID)
+      nullptr;
+#else
+      tabs::TabInterface::MaybeGetFromContents(web_contents);
+#endif  // BUILDFLAG(IS_ANDROID)
   if (tab_interface) {
     tab_is_active_ = tab_interface->IsActivated();
-    RegisterTabSubscriptions(tab_interface);
+    // Tab helpers are attached before a tab is attached to the tab strip.
+    // Register tab listeners once the tab is attached.
+    tab_insert_subscription_ = tab_interface->RegisterDidInsert(
+        base::BindRepeating(&PermissionRequestManager::OnTabAttached,
+                            weak_factory_.GetWeakPtr()));
   } else {
     tab_is_active_ =
         web_contents->GetVisibility() != content::Visibility::HIDDEN;
   }
-}
-
-PermissionRequestManager::PermissionRequestManager(
-    content::WebContents* web_contents)
-    : PermissionRequestManager(web_contents, nullptr) {
-  ;
 }
 
 void PermissionRequestManager::DequeueRequestIfNeeded() {
@@ -977,6 +1027,37 @@ void PermissionRequestManager::DequeueRequestIfNeeded() {
     for (auto& request : request_list) {
       if (HasActiveSourceFrameOrDisallowActivationOtherwise(request.get())) {
         validated_requests_.push_back(request->GetWeakPtr());
+      }
+    }
+  }
+
+  // If the "PermissionsGestureGatedPrompts" feature is enabled, we ensure that
+  // specific permission requests (currently Notifications and Geolocation) are
+  // accompanied by a valid user gesture. If the user gesture is lacking we mute
+  // the request.
+  if (base::FeatureList::IsEnabled(
+          permissions::features::kPermissionsGestureGatedPrompts)) {
+    if (auto request = requests_.front().get()) {
+      // We explicitly don't mute requests initiated by an embedded permission
+      // element (e.g., the <permission> HTML tag). This is because interaction
+      // with such an element constitutes a specific, high-intent user signal
+      // that justifies showing the prompt.
+      if (!requests_.front()->IsEmbeddedPermissionElementInitiated() &&
+          request->GetGestureType() ==
+              PermissionRequestGestureType::NO_GESTURE) {
+        if ((request->request_type() == RequestType::kNotifications &&
+             permissions::feature_params::
+                 kPermissionsGestureGatedPromptsMuteNotifications.Get()) ||
+            (request->request_type() == RequestType::kGeolocation &&
+             permissions::feature_params::
+                 kPermissionsGestureGatedPromptsMuteGeolocation.Get())) {
+          current_request_ui_to_use_ =
+              PermissionUiSelector::Decision::UseQuietUi(
+                  QuietUiReason::kTriggeredDueToLackOfGesture,
+                  PermissionUiSelector::Decision::ShowNoWarning());
+          ShowPrompt();
+          return;
+        }
       }
     }
   }
@@ -1098,6 +1179,14 @@ void PermissionRequestManager::ShowPrompt() {
           LogWarningToConsole(
               kDisruptiveNotificationBehaviorEnforcementMessage);
           break;
+        case QuietUiReason::kTriggeredDueToLackOfGesture:
+          if (requests_[0]->request_type() == RequestType::kNotifications) {
+            LogWarningToConsole(kGestureGatedNotificationMessage);
+          } else if (requests_[0]->request_type() ==
+                     RequestType::kGeolocation) {
+            LogWarningToConsole(kGestureGatedGeolocationMessage);
+          }
+          break;
       }
       base::RecordAction(base::UserMetricsAction(
           "Notifications.Quiet.PermissionRequestShown"));
@@ -1118,7 +1207,7 @@ void PermissionRequestManager::ShowPrompt() {
         hats_shown_callback_.has_value()
             ? std::move(hats_shown_callback_.value())
             : base::DoNothing(),
-        requests_[0]->prompt_options());
+        /*prompt_options=*/std::monostate());
 
     hats_shown_callback_.reset();
   }
@@ -1179,7 +1268,8 @@ bool PermissionRequestManager::ShouldRecordUmaForCurrentPrompt() const {
 }
 
 void PermissionRequestManager::CurrentRequestsDecided(
-    PermissionAction permission_action) {
+    PermissionAction permission_action,
+    const PromptOptions& prompt_options) {
   DCHECK(IsRequestInProgress());
   base::TimeDelta time_to_decision;
   if (!current_request_first_display_time_.is_null() &&
@@ -1211,8 +1301,8 @@ void PermissionRequestManager::CurrentRequestsDecided(
 
   if (ShouldRecordUmaForCurrentPrompt()) {
     PermissionUmaUtil::PermissionPromptResolved(
-        requests_, browser_context, permission_action, time_to_decision,
-        DetermineCurrentRequestUIDisposition(),
+        requests_, browser_context, permission_action, prompt_options,
+        time_to_decision, DetermineCurrentRequestUIDisposition(),
         DetermineCurrentRequestUIDispositionReasonForUMA(),
         view_ ? std::optional(view_->GetPromptVariants()) : std::nullopt,
         prediction_grant_likelihood_, permission_request_relevance_,
@@ -1243,7 +1333,7 @@ void PermissionRequestManager::CurrentRequestsDecided(
             ? base::TimeDelta::Max()
             : base::Time::Now() - current_request_first_display_time_;
     PermissionsClient::Get()->OnPromptResolved(
-        request.get(), permission_action,
+        request.get(), permission_action, prompt_options,
         DetermineCurrentRequestUIDisposition(),
         DetermineCurrentRequestUIDispositionReasonForUMA(), quiet_ui_reason,
         time_since_shown, current_request_pepc_prompt_position_,
@@ -1268,6 +1358,8 @@ void PermissionRequestManager::CurrentRequestsDecided(
     ContentSettingsType content_settings_type =
         request->GetContentSettingsType();
     if (content_settings_type == ContentSettingsType::GEOLOCATION ||
+        content_settings_type ==
+            ContentSettingsType::GEOLOCATION_WITH_OPTIONS ||
         content_settings_type == ContentSettingsType::MEDIASTREAM_CAMERA ||
         content_settings_type == ContentSettingsType::MEDIASTREAM_MIC) {
       if (permission_action == PermissionAction::GRANTED_ONCE) {
@@ -1311,7 +1403,8 @@ void PermissionRequestManager::CleanUpRequests() {
 
     CurrentRequestsDecided(should_dismiss_current_request_
                                ? PermissionAction::DISMISSED
-                               : PermissionAction::IGNORED);
+                               : PermissionAction::IGNORED,
+                           /*prompt_options=*/std::monostate());
     should_dismiss_current_request_ = false;
   }
 }
@@ -1370,18 +1463,19 @@ PermissionRequestManager::VisitDuplicateRequests(
 
 void PermissionRequestManager::PermissionGrantedIncludingDuplicates(
     PermissionRequest* request,
+    const PromptOptions& prompt_options,
     bool is_one_time) {
   CHECK(RequestExistsExactlyOnce(request, pending_permission_requests_,
                                  requests_))
       << "Only requests in [pending_permission_]requests_ can have duplicates";
-  request->PermissionGranted(is_one_time);
+  request->PermissionGranted(prompt_options, is_one_time);
   VisitDuplicateRequests(
       base::BindRepeating(
-          [](bool is_one_time,
+          [](const PromptOptions& prompt_options, bool is_one_time,
              const std::unique_ptr<PermissionRequest>& request) {
-            request->PermissionGranted(is_one_time);
+            request->PermissionGranted(prompt_options, is_one_time);
           },
-          is_one_time),
+          prompt_options, is_one_time),
       request);
 }
 
@@ -1486,6 +1580,7 @@ bool PermissionRequestManager::ShouldDropCurrentRequestIfCannotShowQuietly()
       case QuietUiReason::kServicePredictedVeryUnlikelyGrant:
       case QuietUiReason::kOnDevicePredictedVeryUnlikelyGrant:
       case QuietUiReason::kTriggeredByCrowdDeny:
+      case QuietUiReason::kTriggeredDueToLackOfGesture:
         return false;
       case QuietUiReason::kTriggeredDueToAbusiveRequests:
       case QuietUiReason::kTriggeredDueToAbusiveContent:
@@ -1666,6 +1761,8 @@ PermissionRequestManager::DetermineCurrentRequestUIDispositionReasonForUMA() {
       return PermissionPromptDispositionReason::PREDICTION_SERVICE;
     case QuietUiReason::kOnDevicePredictedVeryUnlikelyGrant:
       return PermissionPromptDispositionReason::ON_DEVICE_PREDICTION_MODEL;
+    case QuietUiReason::kTriggeredDueToLackOfGesture:
+      return PermissionPromptDispositionReason::LACK_OF_GESTURE;
   }
 }
 
@@ -1675,7 +1772,6 @@ void PermissionRequestManager::LogWarningToConsole(const char* message) {
 }
 
 void PermissionRequestManager::DoAutoResponseForTesting() {
-  SetPromptOptions(auto_response_prompt_options_for_test_);
   // The macOS prompt has its own mechanism of auto responding.
   if (current_request_prompt_disposition_ ==
       PermissionPromptDisposition::MAC_OS_PROMPT) {
@@ -1683,16 +1779,16 @@ void PermissionRequestManager::DoAutoResponseForTesting() {
   }
   switch (auto_response_for_test_) {
     case ACCEPT_ONCE:
-      AcceptThisTime();
+      AcceptThisTime(auto_response_prompt_options_for_test_);
       break;
     case ACCEPT_ALL:
-      Accept();
+      Accept(auto_response_prompt_options_for_test_);
       break;
     case DENY_ALL:
-      Deny();
+      Deny(auto_response_prompt_options_for_test_);
       break;
     case DISMISS:
-      Dismiss();
+      Dismiss(auto_response_prompt_options_for_test_);
       break;
     case NONE:
       NOTREACHED();
@@ -1811,11 +1907,6 @@ void PermissionRequestManager::RegisterTabSubscriptions(
   tab_subscriptions_.push_back(tab_interface->RegisterWillDetach(
       base::BindRepeating(&PermissionRequestManager::OnTabDetached,
                           weak_factory_.GetWeakPtr())));
-  // Store this separately because this must not be cleared when a tab is
-  // detached.
-  tab_insert_subscription_ = tab_interface->RegisterDidInsert(
-      base::BindRepeating(&PermissionRequestManager::OnTabAttached,
-                          weak_factory_.GetWeakPtr()));
 }
 
 void PermissionRequestManager::OnTabActiveStatusChanged(
@@ -1854,7 +1945,7 @@ void PermissionRequestManager::OnTabActiveChanged() {
         }
         case PermissionPrompt::TabSwitchingBehavior::
             kDestroyPromptAndIgnoreRequest: {
-          Ignore();
+          Ignore(/*prompt_options=*/std::monostate());
           break;
         }
         case PermissionPrompt::TabSwitchingBehavior::kKeepPromptAlive: {

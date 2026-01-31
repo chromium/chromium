@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
-
 #include "base/files/file_util.h"
 
 #include <dirent.h>
@@ -17,7 +12,6 @@
 #include <stddef.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <string.h>
 #include <sys/mman.h>
 #include <sys/param.h>
 #include <sys/time.h>
@@ -36,7 +30,6 @@
 #include "base/bits.h"
 #include "base/command_line.h"
 #include "base/containers/adapters.h"
-#include "base/containers/contains.h"
 #include "base/containers/heap_array.h"
 #include "base/containers/stack.h"
 #include "base/environment.h"
@@ -111,8 +104,7 @@ bool VerifySpecificPathControlledByUser(const FilePath& path,
     return false;
   }
 
-  if ((stat_info.st_mode & S_IWGRP) &&
-      !Contains(group_gids, stat_info.st_gid)) {
+  if ((stat_info.st_mode & S_IWGRP) && !group_gids.contains(stat_info.st_gid)) {
     DLOG(ERROR) << "Path " << path.value()
                 << " is writable by an unprivileged group.";
     return false;
@@ -1055,12 +1047,13 @@ bool GetFileInfo(const FilePath& file_path, File::Info* results) {
   return true;
 }
 
-FILE* OpenFile(const FilePath& filename, const char* mode) {
+FILE* OpenFile(const FilePath& filename, base::cstring_view mode) {
   // 'e' is unconditionally added below, so be sure there is not one already
   // present before a comma in |mode|.
-  DCHECK(
-      strchr(mode, 'e') == nullptr ||
-      (strchr(mode, ',') != nullptr && strchr(mode, 'e') > strchr(mode, ',')));
+  size_t e_pos = mode.find('e');
+  size_t comma_pos = mode.find(',');
+  DCHECK(e_pos == base::cstring_view::npos ||
+         (comma_pos != base::cstring_view::npos && e_pos > comma_pos));
   ScopedBlockingCall scoped_blocking_call(FROM_HERE, BlockingType::MAY_BLOCK);
   FILE* result = nullptr;
 #if BUILDFLAG(IS_ANDROID)
@@ -1075,13 +1068,13 @@ FILE* OpenFile(const FilePath& filename, const char* mode) {
     if (fd < 0) {
       return nullptr;
     }
-    return fdopen(fd, mode);
+    return fdopen(fd, mode.c_str());
   }
 #endif
 #if BUILDFLAG(IS_APPLE)
   // macOS does not provide a mode character to set O_CLOEXEC; see
   // https://developer.apple.com/legacy/library/documentation/Darwin/Reference/ManPages/man3/fopen.3.html.
-  const char* the_mode = mode;
+  const char* the_mode = mode.c_str();
 #else
   std::string mode_with_e(AppendModeCharacter(mode, 'e'));
   const char* the_mode = mode_with_e.c_str();

@@ -11,6 +11,7 @@ import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static org.hamcrest.core.AllOf.allOf;
 
 import static org.chromium.autofill.mojom.FocusedFieldType.FILLABLE_NON_SEARCH_FIELD;
+import static org.chromium.base.test.transit.ViewFinder.waitForNoView;
 import static org.chromium.base.test.util.CriteriaHelper.pollInstrumentationThread;
 import static org.chromium.base.test.util.CriteriaHelper.pollUiThread;
 import static org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryTestHelper.accessoryStartedHiding;
@@ -18,9 +19,6 @@ import static org.chromium.chrome.browser.keyboard_accessory.bar_component.Keybo
 import static org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryTestHelper.accessoryViewFullyHidden;
 import static org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryTestHelper.checkThatAccessoryViewFullyShown;
 import static org.chromium.ui.base.LocalizationUtils.setRtlForTesting;
-import static org.chromium.ui.test.util.ViewUtils.VIEW_GONE;
-import static org.chromium.ui.test.util.ViewUtils.VIEW_INVISIBLE;
-import static org.chromium.ui.test.util.ViewUtils.VIEW_NULL;
 import static org.chromium.ui.test.util.ViewUtils.onViewWaiting;
 import static org.chromium.ui.test.util.ViewUtils.waitForView;
 
@@ -31,6 +29,7 @@ import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.TextView;
 
+import androidx.annotation.IntRange;
 import androidx.annotation.StringRes;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.test.espresso.PerformException;
@@ -48,6 +47,7 @@ import org.junit.Assert;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
+import org.chromium.base.test.transit.ViewElement;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.chrome.browser.ChromeKeyboardVisibilityDelegate;
@@ -72,7 +72,6 @@ import org.chromium.content_public.browser.test.util.TestInputMethodManagerWrapp
 import org.chromium.net.test.EmbeddedTestServer;
 import org.chromium.net.test.ServerCertificate;
 import org.chromium.ui.DropdownPopupWindowInterface;
-import org.chromium.ui.test.util.ViewUtils;
 
 import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicReference;
@@ -277,7 +276,9 @@ public class ManualFillingTestHelper {
                             mActivityTestRule
                                     .getKeyboardDelegate()
                                     .isKeyboardShowing(
-                                            mActivityTestRule.getActivity().getTabsView());
+                                            mActivityTestRule
+                                                    .getActivity()
+                                                    .getTabsViewForTesting());
                     Criteria.checkThat(isKeyboardShowing, Matchers.is(true));
                 });
     }
@@ -586,13 +587,19 @@ public class ManualFillingTestHelper {
     }
 
     /**
-     * Use like {@link androidx.test.espresso.Espresso#onView}. It waits for a view matching
-     * the given |matcher| to be displayed and allows to chain checks/performs on the result.
+     * Use like {@link androidx.test.espresso.Espresso#onView}. It waits for a view matching the
+     * given |matcher| to be displayed and allows to chain checks/performs on the result.
+     *
      * @param matcher The matcher matching exactly the view that is expected to be displayed.
      * @return An interaction on the view matching |matcher|.
      */
     public static ViewInteraction whenDisplayed(Matcher<View> matcher) {
-        return onViewWaiting(allOf(matcher, isDisplayed()));
+        return onViewWaiting(matcher);
+    }
+
+    public static ViewInteraction whenDisplayed(
+            Matcher<View> matcher, @IntRange(from = 1, to = 100) int atLeast) {
+        return onViewWaiting(matcher, ViewElement.displayingAtLeastOption(atLeast));
     }
 
     public ViewInteraction waitForViewOnRoot(View root, Matcher<View> matcher) {
@@ -607,7 +614,7 @@ public class ManualFillingTestHelper {
     }
 
     public static void waitToBeHidden(Matcher<View> matcher) {
-        ViewUtils.waitForViewCheckingState(matcher, VIEW_INVISIBLE | VIEW_NULL | VIEW_GONE);
+        waitForNoView(matcher);
     }
 
     public String getAttribute(String node, String attribute)

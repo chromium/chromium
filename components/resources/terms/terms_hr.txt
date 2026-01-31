@@ -1,0 +1,13 @@
+Dodatni uvjeti pružanja usluge za Google Chrome i ChromeOS
+
+Zadnja izmjena: 30. rujna 2025.
+
+Korištenjem Chromea ili OS Chromea prihvaćate Googleove uvjete pružanja usluge na https://policies.google.com/terms i ove Dodatne uvjete pružanja usluge za Google Chrome i OS Chrome.
+
+Ovi Dodatni uvjeti pružanja usluge za Google Chrome i OS Chrome primjenjuju se na izvršnu verziju koda Chromea i OS-a Chrome. Većina otvorenog izvornog koda za Chrome dostupna je besplatno u skladu s ugovorima o licenci za softver otvorenog izvornog koda na stranici chrome://credits.
+
+Na vašu upotrebu određenih komponenti Chromea i OS-a Chrome primjenjuju se sljedeći uvjeti:
+
+AVC
+
+OVAJ JE PROIZVOD LICENCIRAN U SKLADU S LICENCOM AVC PATENT PORTFOLIO ZA OSOBNU UPOTREBU KORISNIKA ILI SLIČNU UPOTREBU, PRI ČEMU KORISNIK NE PRIMA NADOKNADU ZA (i) KODIRANJE VIDEOZAPISA U SKLADU S VIZUALNIM STANDARDOM AVC ("AVC VIDEOZAPIS") I/ILI (ii) DEKODIRANJE AVC VIDEOZAPISA KOJE SU KODIRALI KORISNICI U OKVIRU OSOBNE AKTIVNOSTI I/ILI KOJI SU DOBIVENI OD PARTNERA LICENCIRANOG ZA PRUŽANJE AVC VIDEOZAPISA. LICENCA SE NE DAJE NITI PODRAZUMIJEVA ZA BILO KOJU DRUGU UPOTREBU. DODATNE INFORMACIJE MOGU SE DOBITI OD TVRTKE MPEG LA, L.L.C. VIDI HTTPS://WWW.VIA-LA.COM.

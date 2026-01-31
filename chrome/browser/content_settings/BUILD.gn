@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//components/guest_view/buildflags/buildflags.gni")
 import("//content/public/common/features.gni")
 import("//extensions/buildflags/buildflags.gni")
 import("//pdf/features.gni")
@@ -33,6 +34,8 @@ source_set("content_settings") {
     "//content/public/browser",
   ]
 
+  deps = []
+
   allow_circular_includes_from = []
 
   if (is_android) {
@@ -47,6 +50,8 @@ source_set("content_settings") {
       "generated_javascript_optimizer_pref.h",
       "generated_permission_prompting_behavior_pref.h",
     ]
+
+    deps += [ "//components/content_settings/browser/ui" ]
 
     if (enable_extensions) {
       public_deps += [ "//chrome/browser/extensions" ]
@@ -81,10 +86,13 @@ source_set("impl") {
     "//chrome/browser/profiles:profile",
     "//chrome/browser/search_engines",
     "//chrome/browser/site_protection",
+    "//chrome/browser/site_protection:utils",
     "//chrome/browser/ui/tabs:utils",
     "//components/content_settings/browser",
+    "//components/content_settings/browser/ui",
     "//components/content_settings/core/browser",
     "//components/content_settings/core/browser:cookie_settings",
+    "//components/guest_view/buildflags",
     "//components/pref_registry",
     "//components/supervised_user/core/browser",
     "//pdf:features",
@@ -109,10 +117,11 @@ source_set("impl") {
       "generated_permission_prompting_behavior_pref.cc",
     ]
 
-    deps += [
-      "//chrome/browser/ui/tabs",
-      "//components/guest_view/browser",
-    ]
+    deps += [ "//chrome/browser/ui/tabs" ]
+  }
+
+  if (enable_guest_view) {
+    deps += [ "//components/guest_view/browser" ]
   }
 
   if (enable_extensions_core) {
@@ -300,6 +309,7 @@ source_set("unit_tests") {
     "//chrome/test:test_support",
     "//components/client_hints/common",
     "//components/content_settings/browser",
+    "//components/content_settings/browser/ui",
     "//components/content_settings/core/browser:cookie_settings",
     "//components/content_settings/core/browser:test_support",
     "//components/content_settings/core/common:features",

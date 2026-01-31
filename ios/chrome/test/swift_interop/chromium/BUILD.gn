@@ -3,26 +3,30 @@
 # found in the LICENSE file.
 
 import("//build/config/apple/swift_source_set.gni")
-import("//build/config/ios/ios_test_runner_xcuitest.gni")
 
-# TODO(crbug.com/458741717): This is a temporary workaround.
-# This target should disappear when we move to Swift 6.3
-source_set("umbrella_header") {
-  sources = [ "chromium_umbrella.h" ]
-  public_deps = [ "//base" ]
-}
+if (enable_swift_cxx_interop) {
+  swift_modulemap("base_imports") {
+    modules = [
+      {
+        name = "BaseImports"
+        sources = [
+          "//base/system/sys_info.h",
+          "//base/time/time.h",
+        ]
+      },
+    ]
+  }
 
-swift_source_set("tests") {
-  testonly = true
-
-  sources = [
-    "sys_info_xctest.swift",
-    "time_xctest.swift",
-  ]
-  cxx_modulemaps = [ "chromium.modulemap" ]
-
-  deps = [
-    ":umbrella_header",
-    "//build/config/ios:xctest",
-  ]
+  swift_source_set("tests") {
+    testonly = true
+    sources = [
+      "sys_info_xctest.swift",
+      "time_xctest.swift",
+    ]
+    deps = [
+      ":base_imports",
+      "//base",
+      "//build/config/ios:xctest",
+    ]
+  }
 }

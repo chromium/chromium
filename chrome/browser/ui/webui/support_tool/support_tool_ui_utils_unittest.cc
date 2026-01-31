@@ -9,7 +9,6 @@
 #include <set>
 #include <string>
 
-#include "base/containers/contains.h"
 #include "base/containers/fixed_flat_map.h"
 #include "base/containers/to_vector.h"
 #include "base/strings/utf_string_conversions.h"
@@ -73,17 +72,17 @@ class SupportToolUiUtilsTest : public ::testing::Test {
   // Change included field of `included_data_collectors` in `data_collectors` as
   // true for testing.
   void MarkDataCollectorsAsIncluded(
-      base::Value::List& data_collectors,
+      base::ListValue& data_collectors,
       const std::set<support_tool::DataCollectorType>&
           included_data_collectors) {
     for (auto& data_collector : data_collectors) {
-      base::Value::Dict& data_collector_item = data_collector.GetDict();
+      base::DictValue& data_collector_item = data_collector.GetDict();
       std::optional<int> data_collector_enum =
           data_collector_item.FindInt(support_tool_ui::kDataCollectorProtoEnum);
       ASSERT_TRUE(data_collector_enum);
-      if (base::Contains(included_data_collectors,
-                         static_cast<support_tool::DataCollectorType>(
-                             data_collector_enum.value()))) {
+      if (included_data_collectors.contains(
+              static_cast<support_tool::DataCollectorType>(
+                  data_collector_enum.value()))) {
         data_collector_item.Set(support_tool_ui::kDataCollectorIncluded, true);
       }
     }
@@ -113,12 +112,12 @@ class SupportToolUiUtilsTest : public ::testing::Test {
 
 TEST_F(SupportToolUiUtilsTest, PiiItems) {
   // Get the list of detected PII items in PIIMap.
-  base::Value::List detected_pii_items = GetDetectedPIIDataItems(kPIIMap);
+  base::ListValue detected_pii_items = GetDetectedPIIDataItems(kPIIMap);
   EXPECT_EQ(detected_pii_items.size(), kPIIMap.size());
   // Check the contents of `detected_pii_items` list.
   for (const auto& detected_pii_item : detected_pii_items) {
-    const base::Value::Dict* pii_item = detected_pii_item.GetIfDict();
-    // PIIItem must be a Value::Dict.
+    const base::DictValue* pii_item = detected_pii_item.GetIfDict();
+    // PIIItem must be a base::DictValue.
     EXPECT_TRUE(pii_item);
     const redaction::PIIType pii_type = static_cast<redaction::PIIType>(
         pii_item->FindInt(support_tool_ui::kPiiItemPIITypeKey).value());
@@ -129,7 +128,7 @@ TEST_F(SupportToolUiUtilsTest, PiiItems) {
     // The definition string must equal to the expected one in
     // `kPIIStringsWithDefinition`.
     EXPECT_EQ(*description, GetExpectedPIIDefinitionString(pii_type));
-    const base::Value::List* pii_data =
+    const base::ListValue* pii_data =
         pii_item->FindList(support_tool_ui::kPiiItemDetectedDataKey);
     // Check the detected data.
     EXPECT_TRUE(pii_data);
@@ -143,7 +142,7 @@ TEST_F(SupportToolUiUtilsTest, PiiItems) {
 
   // Update all PII items to have their keep value as true.
   for (auto& detected_pii_item : detected_pii_items) {
-    base::Value::Dict& pii_item = detected_pii_item.GetDict();
+    base::DictValue& pii_item = detected_pii_item.GetDict();
     // Remove the `keep` key to update it.
     pii_item.Remove(support_tool_ui::kPiiItemKeepKey);
     pii_item.Set(support_tool_ui::kPiiItemKeepKey, true);
@@ -158,14 +157,14 @@ TEST_F(SupportToolUiUtilsTest, PiiItems) {
 TEST_F(SupportToolUiUtilsTest, CustomizedUrl) {
   const std::string test_case_id = "test_case_id_0";
   // Get list of all data collectors.
-  base::Value::List expected_data_collectors =
+  base::ListValue expected_data_collectors =
       GetAllDataCollectorItemsForDeviceForTesting();
   std::set<support_tool::DataCollectorType> included_data_collectors = {
       support_tool::DataCollectorType::CHROME_INTERNAL,
       support_tool::DataCollectorType::CRASH_IDS};
   MarkDataCollectorsAsIncluded(expected_data_collectors,
                                included_data_collectors);
-  base::Value::Dict url_generation_result =
+  base::DictValue url_generation_result =
       GenerateCustomizedURL(test_case_id, &expected_data_collectors);
   // The result must be successful.
   EXPECT_TRUE(
@@ -188,15 +187,15 @@ TEST_F(SupportToolUiUtilsTest, CustomizedUrl) {
   net::GetValueForKeyInQuery(GURL(*url_output), support_tool_ui::kModuleQuery,
                              &data_collector_module);
   EXPECT_THAT(data_collector_module, Not(IsEmpty()));
-  base::Value::List data_collector_items_result =
+  base::ListValue data_collector_items_result =
       GetDataCollectorItemsInQuery(data_collector_module);
   // Check that the output data collector list is equal to expected.
   EXPECT_EQ(data_collector_items_result.size(),
             expected_data_collectors.size());
   for (size_t i = 0; i < data_collector_items_result.size(); i++) {
-    const base::Value::Dict& actual_data_collector_item =
+    const base::DictValue& actual_data_collector_item =
         data_collector_items_result[i].GetDict();
-    const base::Value::Dict& extected_data_collector_item =
+    const base::DictValue& extected_data_collector_item =
         expected_data_collectors[i].GetDict();
     EXPECT_EQ(actual_data_collector_item
                   .FindInt(support_tool_ui::kDataCollectorProtoEnum)
@@ -219,14 +218,14 @@ TEST_F(SupportToolUiUtilsTest, CustomizedUrl) {
 
 TEST_F(SupportToolUiUtilsTest, SupportToken) {
   // Get list of all data collectors.
-  base::Value::List expected_data_collectors =
+  base::ListValue expected_data_collectors =
       GetAllDataCollectorItemsForDeviceForTesting();
   std::set<support_tool::DataCollectorType> included_data_collectors = {
       support_tool::DataCollectorType::CHROME_INTERNAL,
       support_tool::DataCollectorType::CRASH_IDS};
   MarkDataCollectorsAsIncluded(expected_data_collectors,
                                included_data_collectors);
-  base::Value::Dict support_token_generation_result =
+  base::DictValue support_token_generation_result =
       GenerateSupportToken(&expected_data_collectors);
   // The result must be successful.
   EXPECT_TRUE(
@@ -242,15 +241,15 @@ TEST_F(SupportToolUiUtilsTest, SupportToken) {
   ASSERT_TRUE(token_output);
   // Output shouldn't be empty.
   EXPECT_THAT(*token_output, Not(IsEmpty()));
-  base::Value::List data_collector_items_result =
+  base::ListValue data_collector_items_result =
       GetDataCollectorItemsInQuery(*token_output);
   // Check that the output data collector list is equal to expected.
   EXPECT_EQ(data_collector_items_result.size(),
             expected_data_collectors.size());
   for (size_t i = 0; i < data_collector_items_result.size(); i++) {
-    const base::Value::Dict& actual_data_collector_item =
+    const base::DictValue& actual_data_collector_item =
         data_collector_items_result[i].GetDict();
-    const base::Value::Dict& extected_data_collector_item =
+    const base::DictValue& extected_data_collector_item =
         expected_data_collectors[i].GetDict();
     EXPECT_EQ(actual_data_collector_item
                   .FindInt(support_tool_ui::kDataCollectorProtoEnum)

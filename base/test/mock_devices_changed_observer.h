@@ -21,8 +21,10 @@ class MockDevicesChangedObserver
 
   ~MockDevicesChangedObserver() override;
 
-  MOCK_METHOD1(OnDevicesChanged,
-               void(base::SystemMonitor::DeviceType device_type));
+  MOCK_METHOD(void,
+              OnDevicesChanged,
+              (base::SystemMonitor::DeviceType device_type),
+              (override));
 };
 
 }  // namespace base

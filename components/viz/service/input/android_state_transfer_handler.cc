@@ -32,7 +32,9 @@ enum class VizSequenceDroppedReason {
   kMaxValue = kOlderSequenceInQueue,
 };
 
-// LINT.ThenChange(//tools/metrics/histograms/metadata/android/enums.xml:VizSequenceDroppedReason)
+// LINT.ThenChange(
+//     //tools/metrics/histograms/metadata/android/enums.xml:VizSequenceDroppedReason,
+//     //base/tracing/protos/chrome_track_event.proto:VizSequenceDroppedReason)
 
 // LINT.IfChange(DroppedSequenceEventAndDownTimeDelta)
 
@@ -201,7 +203,7 @@ bool AndroidStateTransferHandler::CanStartProcessingVizEvents(
     const base::android::ScopedInputEvent& event) {
   CHECK(!state_for_curr_sequence_.has_value());
 
-  const jlong j_event_down_time =
+  const int64_t j_event_down_time =
       base::TimeTicks::FromJavaNanoTime(
           AMotionEvent_getDownTime(event.a_input_event()))
           .ToUptimeMillis();
@@ -268,9 +270,25 @@ void AndroidStateTransferHandler::MaybeDropEventsFromEarlierSequences(
         AMotionEvent_getAction(events_buffer_.front().a_input_event()) &
         AMOTION_EVENT_ACTION_MASK;
     if (action == AMOTION_EVENT_ACTION_DOWN) {
+      constexpr VizSequenceDroppedReason reason =
+          VizSequenceDroppedReason::kOlderSequenceInQueue;
+      TRACE_EVENT_INSTANT(
+          "input,input.scrolling", "SequenceDropped",
+          [&](perfetto::EventContext ctx) {
+            auto* event =
+                ctx.event<perfetto::protos::pbzero::ChromeTrackEvent>();
+            auto* transfer_handler = event->set_input_transfer_handler();
+            int dropped_reason_int = static_cast<int>(reason);
+            // Increment by 1 to convert from histogram to proto enum. The
+            // perfetto's VizSequenceDroppedReason proto enum values are
+            // incremented by 1 to leave 0 value for unknown/unset field.
+            transfer_handler->set_viz_sequence_dropped_reason(
+                static_cast<perfetto::protos::pbzero::InputTransferHandler::
+                                VizSequenceDroppedReason>(dropped_reason_int +
+                                                          1));
+          });
       base::UmaHistogramEnumeration(
-          "Android.InputOnViz.Viz.SequenceDroppedReason",
-          VizSequenceDroppedReason::kOlderSequenceInQueue);
+          "Android.InputOnViz.Viz.SequenceDroppedReason", reason);
       const int64_t event_time_nanos =
           AMotionEvent_getEventTime(events_buffer_.front().a_input_event());
       const int64_t down_time_nanos =
@@ -337,19 +355,15 @@ void AndroidStateTransferHandler::HandleTouchEvent(
   }
 
   if (!state_for_curr_sequence_->rir_support) {
+    ignore_remaining_touch_sequence_ = true;
+  }
+
+  if (ignore_remaining_touch_sequence_) {
     if (action == AMOTION_EVENT_ACTION_CANCEL ||
         action == AMOTION_EVENT_ACTION_UP) {
       state_for_curr_sequence_.reset();
       ignore_remaining_touch_sequence_ = false;
-    } else {
-      ignore_remaining_touch_sequence_ = true;
     }
-    return;
-  }
-
-  // Ignore any already queued events for the touch sequence. This can happen if
-  // we are returning the sequence back to browser.
-  if (ignore_remaining_touch_sequence_) {
     return;
   }
 

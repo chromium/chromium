@@ -175,11 +175,11 @@ class V8ValueConverterForTest final : public WebV8ValueConverter {
         NOTREACHED();
       }
 
-      v8::Local<v8::Value> operator()(const base::Value::Dict& value) {
+      v8::Local<v8::Value> operator()(const base::DictValue& value) {
         NOTREACHED();
       }
 
-      v8::Local<v8::Value> operator()(const base::Value::List& value) {
+      v8::Local<v8::Value> operator()(const base::ListValue& value) {
         NOTREACHED();
       }
     };
@@ -218,7 +218,7 @@ class V8ValueConverterForTest final : public WebV8ValueConverter {
     // to support converting ScriptObject in tests.
     if (val->IsObject()) {
       v8::Local<v8::Object> val_obj = val.As<v8::Object>();
-      base::Value::Dict result;
+      base::DictValue result;
       v8::Local<v8::Array> property_names;
       if (!val_obj->GetOwnPropertyNames(isolate->GetCurrentContext())
                .ToLocal(&property_names)) {

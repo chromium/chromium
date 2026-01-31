@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-syntax = "proto2";
+edition = "2023";
 
 option optimize_for = LITE_RUNTIME;
 option java_package = "org.chromium.components.metrics";
@@ -10,6 +10,9 @@ option java_package = "org.chromium.components.metrics";
 option java_outer_classname = "CastLogsProtos";
 
 package metrics;  // Cast-enabled device specific log data included in ChromeUserMetricsExtension.
+
+option features.enum_type = CLOSED;
+option features.utf8_validation = NONE;
 
 // Next tag: 9
 message CastLogsProto {
@@ -37,48 +40,48 @@ message CastLogsProto {
       CAST_PRODUCT_TYPE_AOSP_TV = 14;
     }
 
-    optional CastProductType type = 1;
+    CastProductType type = 1;
 
     // The hardware revision of each product.
-    optional string hardware_revision = 2;
+    string hardware_revision = 2;
 
     // The manufacturer of Cast device, this value is empty when the device
     // is manufactured by Google.
-    optional string manufacturer = 3;
+    string manufacturer = 3;
 
     // The model of the Cast device.
-    optional string model = 4;
+    string model = 4;
 
     // The serial number.
-    optional string serial_number = 5;
+    string serial_number = 5;
 
     // Hardware information stored in factory partition.
     // Next Tag: 12
     message HardwareInfo {
-      optional string color = 1;
+      string color = 1;
 
-      optional string mic = 2;
+      string mic = 2;
 
-      optional string memory = 3;
+      string memory = 3;
 
-      optional string nand = 4;
+      string nand = 4;
 
-      optional string mfg_date = 5;
+      string mfg_date = 5;
 
-      optional string build_name = 6;
+      string build_name = 6;
 
-      optional string config = 7;
+      string config = 7;
 
-      optional string emmc = 8;
+      string emmc = 8;
 
-      optional string display = 9;
+      string display = 9;
 
-      optional string amp = 10;
+      string amp = 10;
 
-      optional string board_name = 11;
+      string board_name = 11;
     }
 
-    optional HardwareInfo hardware_info = 6;
+    HardwareInfo hardware_info = 6;
 
     // The environment of the device indicates where the device is being used,
     // i.e., hotel, home, car etc. Next tag: 4
@@ -89,26 +92,26 @@ message CastLogsProto {
       DEVICE_ENVIRONMENT_AUTOMOTIVE = 3;
     }
 
-    optional DeviceEnvironment device_environment = 7;
+    DeviceEnvironment device_environment = 7;
   }
 
   // The device sends this information at least once per day.
-  optional CastDeviceInfo cast_device_info = 1;
+  CastDeviceInfo cast_device_info = 1;
 
   // Information about Cast V2 API connection between sender application and
   // Cast-enabled device.
   // Next tag: 5
   message CastConnectionInfo {
-    optional fixed32 transport_connection_id = 1;
+    fixed32 transport_connection_id = 1;
 
-    optional fixed32 virtual_connection_id = 2;
+    fixed32 virtual_connection_id = 2;
 
     // This message describes a detail sender device and sdk.
     // Next tag: 10
     message SenderInfo {
       // The identifier for the sender device, that is pseudonymous and can be
       // reset.  This id has no link to a specific user or device.
-      optional fixed64 sender_device_id = 1;
+      fixed64 sender_device_id = 1;
 
       // SDK type the sender application was using.
       // Next tag: 3
@@ -123,15 +126,15 @@ message CastLogsProto {
         SDK_CHROME_EXTENSION = 2;
       }
 
-      optional SDKType sdk_type = 2;
+      SDKType sdk_type = 2;
 
       // Version of sender sdk/extension used to connection. The format varies
       // by each platform.
-      optional string version = 3;
+      string version = 3;
 
       // Chrome browser version where the Chrome extension running.
       // Only Chrome extension sends this information.
-      optional string chrome_browser_version = 4;
+      string chrome_browser_version = 4;
 
       // Platform of sender device.
       // Next tag: 8
@@ -149,10 +152,10 @@ message CastLogsProto {
         PLATFORM_CAST = 7;
       }
 
-      optional Platform platform = 5;
+      Platform platform = 5;
 
       // Sender device system version.
-      optional string system_version = 6;
+      string system_version = 6;
 
       // What type of connection type used to establish between sender and
       // receiver.
@@ -169,18 +172,18 @@ message CastLogsProto {
         CONNECTION_TYPE_INTERNAL = 3;
       }
 
-      optional ConnectionType transport_connection_type = 7;
+      ConnectionType transport_connection_type = 7;
 
       // Sender device model.
-      optional string model = 8;
+      string model = 8;
 
       // Last 2 bytes of the sender’s local IP addresses (both IP4/IP6) when
       // the sender connected. This field stores ip fragment to last 2 bytes and
       // first 2 bytes won't be used.
-      optional int32 sender_local_ip_fragment = 9;
+      int32 sender_local_ip_fragment = 9;
     }
 
-    optional SenderInfo sender_info = 3;
+    SenderInfo sender_info = 3;
 
     enum V2ConnectionType {
       V2_CONNECTION_TYPE_STRONG = 0;
@@ -189,7 +192,7 @@ message CastLogsProto {
       V2_CONNECTION_TYPE_UNKNOWN = 3;
     }
 
-    optional V2ConnectionType v2_connection_type = 4;
+    V2ConnectionType v2_connection_type = 4;
   }
 
   // Virtual connection established between sender application and Cast device.
@@ -200,59 +203,59 @@ message CastLogsProto {
   message CastEventProto {
     // The name of the action, hashed by same logic used to hash user action
     // event and histogram.
-    optional fixed64 name_hash = 1;
+    fixed64 name_hash = 1;
 
     // The timestamp for the event, in milliseconds.
-    optional int64 time_msec = 2;
+    int64 time_msec = 2;
 
     // The Cast receiver app ID related with this event.
-    optional fixed32 app_id = 3;
+    fixed32 app_id = 3;
 
     // The app ID of a remote Cast receiver associated with this event.
-    optional fixed32 remote_app_id = 19;
+    fixed32 remote_app_id = 19;
 
     // The identifier for receiver application session.
-    optional fixed64 application_session_id = 4;
+    fixed64 application_session_id = 4;
 
     // Receiver side Cast SDK version.
-    optional fixed64 cast_receiver_version = 5;
+    fixed64 cast_receiver_version = 5;
 
     // Cast MPL version.
-    optional fixed64 cast_mpl_version = 9;
+    fixed64 cast_mpl_version = 9;
 
     // transport_connection_id related with this event.
-    optional fixed32 transport_connection_id = 6;
+    fixed32 transport_connection_id = 6;
 
     // virtual_connection_id related with this event.
-    optional fixed32 virtual_connection_id = 7;
+    fixed32 virtual_connection_id = 7;
 
     // An optional value for the associated event, often a measurement in
     // milliseconds.
-    optional int64 value = 8;
+    int64 value = 8;
 
     // Group id of Multizone Audio.
-    optional fixed64 group_uuid = 10;
+    fixed64 group_uuid = 10;
 
-    optional string conversation_key = 11;
+    string conversation_key = 11;
 
     // Request id of V2 Application Protocol
-    optional fixed32 request_id = 12;
+    fixed32 request_id = 12;
 
-    optional string event_id = 13;
+    string event_id = 13;
 
-    optional string aogh_request_id = 16;
+    string aogh_request_id = 16;
 
-    optional int64 aogh_local_device_id = 18;
+    int64 aogh_local_device_id = 18;
 
-    optional string aogh_agent_id = 21;
+    string aogh_agent_id = 21;
 
-    optional string aogh_standard_agent_id = 28;
+    string aogh_standard_agent_id = 28;
 
     // Optional value associated with the event. For example, may be used for
     // error codes.
     message Metadata {
-      optional fixed64 name_hash = 1;
-      optional int64 value = 2;
+      fixed64 name_hash = 1;
+      int64 value = 2;
     }
 
     repeated Metadata metadata = 14;
@@ -261,23 +264,23 @@ message CastLogsProto {
     repeated float feature_vector = 15;
 
     // Optional value associated with timezone update event.
-    optional string timezone_id = 17;
+    string timezone_id = 17;
 
     // Optional value to log ui version.
-    optional string ui_version = 20;
+    string ui_version = 20;
 
     // Optional field to log SELINUX audit detail.
-    optional string selinux_audit_detail = 22;
+    string selinux_audit_detail = 22;
 
     // List of event ids belonging to a particular interaction. One interaction
     // could receive multiple assistant outputs, hence multiple event ids.
     repeated string event_id_list = 23;
 
     // Duo core version.
-    optional fixed64 duo_core_version = 24;
+    fixed64 duo_core_version = 24;
 
     // Model version of hotword detector.
-    optional string hotword_model_id = 25;
+    string hotword_model_id = 25;
 
     enum LaunchFrom {
       FROM_UNKNOWN = 0;
@@ -296,7 +299,7 @@ message CastLogsProto {
       FROM_CCS = 4;
     }
 
-    optional LaunchFrom launch_from = 26;
+    LaunchFrom launch_from = 26;
 
     enum RuntimeType {
       RUNTIME_TYPE_UNKNOWN = 0;
@@ -309,14 +312,14 @@ message CastLogsProto {
     }
 
     // The Cast Core runtime type associated with this event.
-    optional RuntimeType runtime_type = 27;
+    RuntimeType runtime_type = 27;
   }
 
   repeated CastEventProto cast_event = 3;
 
   // Virtual release track for releases sent to partners, trusted beta
   // testers, developers, etc.
-  optional fixed32 virtual_release_track = 4;
+  fixed32 virtual_release_track = 4;
 
   // Cast specific device information which is expected to change over time.
   // Next tag: 13
@@ -371,18 +374,18 @@ message CastLogsProto {
       KERNEL_PANIC = 21;
     }
 
-    optional RebootType last_reboot_type = 1;
+    RebootType last_reboot_type = 1;
 
     // System version which the cast_shell is running.
-    optional fixed64 system_build_number = 2;
+    fixed64 system_build_number = 2;
 
     // An identifier that is specific to the combination of app and device, in
     // this case the one used by backdrop.
-    optional string backdrop_app_device_id = 3;
+    string backdrop_app_device_id = 3;
 
     // Chromecast release version like "1.23", "1.24". The format is "X.Y"
     // where X is major version and Y is sub major version.
-    optional fixed32 release_version = 4;
+    fixed32 release_version = 4;
 
     // IP version of the primary network interface.
     enum NetifIPVersion {
@@ -392,39 +395,39 @@ message CastLogsProto {
       IP_DUAL_STACK = 3;
     }
 
-    optional NetifIPVersion netif_ip_version = 5;
+    NetifIPVersion netif_ip_version = 5;
 
     // True if the system which cast_shell is running on, supports ip dual stack
     // sockets.
-    optional bool ip_dual_stack_supported = 6;
+    bool ip_dual_stack_supported = 6;
 
     // Current timezone which the device is using.
-    optional string timezone_id = 7;
+    string timezone_id = 7;
 
     // Optional value to log latest ui version.
-    optional string latest_ui_version = 8;
+    string latest_ui_version = 8;
 
     // Station ID of the device if connected to Google WiFi network
-    optional string google_wifi_station_shmac = 9;
+    string google_wifi_station_shmac = 9;
 
     // Optional field to log installed manifest platform version.
-    optional string installed_manifest_platform_version = 10;
+    string installed_manifest_platform_version = 10;
 
     // Optional field to log installed manifest version.
-    optional uint32 installed_manifest_version = 11;
+    uint32 installed_manifest_version = 11;
 
     // Optional field to log the system bundle version.
-    optional string system_bundle_version = 12;
+    string system_bundle_version = 12;
   }
 
   // The device sends this information at least once per day.
-  optional CastDeviceMutableInfo cast_device_mutable_info = 5;
+  CastDeviceMutableInfo cast_device_mutable_info = 5;
 
-  optional fixed64 receiver_metrics_id = 6;
+  fixed64 receiver_metrics_id = 6;
 
   // This ID is only ever recorded for Google-internal users (dogfooders). It
   // is never recorded for external users."
-  optional uint64 ephemeral_id = 7;
+  uint64 ephemeral_id = 7;
 
-  optional fixed32 source_virtual_release_track = 8;
+  fixed32 source_virtual_release_track = 8;
 }

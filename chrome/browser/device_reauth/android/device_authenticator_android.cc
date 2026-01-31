@@ -72,12 +72,6 @@ void LogAuthSource(device_reauth::DeviceAuthSource source) {
                                 source);
 }
 
-void LogCanAuthenticate(BiometricsAvailability availability) {
-  base::UmaHistogramEnumeration(
-      "Android.DeviceAuthenticator.CanAuthenticateWithBiometrics",
-      availability);
-}
-
 }  // namespace
 
 DeviceAuthenticatorAndroid::DeviceAuthenticatorAndroid(
@@ -94,7 +88,6 @@ DeviceAuthenticatorAndroid::~DeviceAuthenticatorAndroid() = default;
 
 bool DeviceAuthenticatorAndroid::CanAuthenticateWithBiometrics() {
   BiometricsAvailability availability = bridge_->CanAuthenticateWithBiometric();
-  LogCanAuthenticate(availability);
   return availability == BiometricsAvailability::kAvailable;
 }
 

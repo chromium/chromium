@@ -23,5 +23,5 @@ pub(crate) fn has_extension(path: &Path, file_type: ffi::FileType) -> bool {
         return false;
     };
 
-    path.extension().map_or(false, |actual_extension| actual_extension.eq_ignore_ascii_case(ext))
+    path.extension().is_some_and(|actual_extension| actual_extension.eq_ignore_ascii_case(ext))
 }

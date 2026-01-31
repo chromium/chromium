@@ -39,23 +39,24 @@ const char kGroupSuggestionsServiceBridgeKey[] =
 
 // TODO(crbug.com/397221723): Rethink the conversion plan. Maybe update the Java
 // API to do the conversion at call site.
-TabEventTracker::TabSelectionType ConvertIntToTabSelectionType(
-    int tab_selection_type) {
-  switch (tab_selection_type) {
+
+TabEventTracker::TabSelectionCause ConvertIntToTabSelectionCause(
+    int tab_selection_cause) {
+  switch (tab_selection_cause) {
     case 0:
-      return TabEventTracker::TabSelectionType::kFromCloseActiveTab;
+      return TabEventTracker::TabSelectionCause::kFromCloseActiveTab;
     case 1:
-      return TabEventTracker::TabSelectionType::kFromAppExit;
+      return TabEventTracker::TabSelectionCause::kFromAppExit;
     case 2:
-      return TabEventTracker::TabSelectionType::kFromNewTab;
+      return TabEventTracker::TabSelectionCause::kFromNewTab;
     case 3:
-      return TabEventTracker::TabSelectionType::kFromUser;
+      return TabEventTracker::TabSelectionCause::kFromUser;
     case 4:
-      return TabEventTracker::TabSelectionType::kFromOmnibox;
+      return TabEventTracker::TabSelectionCause::kFromOmnibox;
     case 5:
-      return TabEventTracker::TabSelectionType::kFromUndoClosure;
+      return TabEventTracker::TabSelectionCause::kFromUndoClosure;
     default:
-      return TabEventTracker::TabSelectionType::kUnknown;
+      return TabEventTracker::TabSelectionCause::kUnknown;
   }
 }
 
@@ -129,8 +130,8 @@ GroupSuggestionsServiceAndroid::FromNativeUserResponse(
     JNIEnv* env,
     const UserResponseMetadata& metadata) {
   return Java_UserResponseMetadata_create(
-      env, static_cast<jint>(metadata.suggestion_id.GetUnsafeValue()),
-      static_cast<jint>(metadata.user_response));
+      env, static_cast<int32_t>(metadata.suggestion_id.GetUnsafeValue()),
+      static_cast<int32_t>(metadata.user_response));
 }
 
 // Native counterpart of Java DelegateBridge. Observes the native service and
@@ -234,11 +235,11 @@ void GroupSuggestionsServiceAndroid::DidAddTab(JNIEnv* env,
 void GroupSuggestionsServiceAndroid::DidSelectTab(JNIEnv* env,
                                                   int tab_id,
                                                   const JavaRef<jobject>& url,
-                                                  int tab_selection_type,
+                                                  int tab_selection_cause,
                                                   int last_id) {
   group_suggestions_service_->GetTabEventTracker()->DidSelectTab(
       tab_id, url::GURLAndroid::ToNativeGURL(env, url),
-      ConvertIntToTabSelectionType(tab_selection_type), last_id);
+      ConvertIntToTabSelectionCause(tab_selection_cause), last_id);
 }
 
 void GroupSuggestionsServiceAndroid::WillCloseTab(JNIEnv* env, int tab_id) {
@@ -268,7 +269,7 @@ void GroupSuggestionsServiceAndroid::DidEnterTabSwitcher(JNIEnv* env) {
 
 base::android::ScopedJavaLocalRef<jobject>
 GroupSuggestionsServiceAndroid::GetCachedSuggestions(JNIEnv* env,
-                                                     jint window_id) {
+                                                     int32_t window_id) {
   // TODO(ssid): Correctly map window_id to Scope.
   GroupSuggestionsService::Scope scope;
   std::optional<CachedSuggestions> cpp_cached_suggestions =

@@ -27,6 +27,7 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.toolbar.top.HomeButtonDisplay;
 import org.chromium.chrome.browser.toolbar.top.ToolbarPhone.VisualState;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
+import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 
@@ -78,7 +79,8 @@ public class HomePageButtonsCoordinator implements HomeButtonDisplay {
             Callback<Context> onHomeButtonMenuClickCallback,
             Supplier<Boolean> isHomepageMenuDisabledSupplier,
             BottomSheetController bottomSheetController,
-            View.OnClickListener onHomeButtonClickListener) {
+            View.OnClickListener onHomeButtonClickListener,
+            WindowAndroid windowAndroid) {
         mModel = new PropertyModel(HomePageButtonsProperties.ALL_KEYS);
         mHomePageButtonsContainerView = (HomePageButtonsContainerView) view;
         PropertyModelChangeProcessor.create(
@@ -92,7 +94,8 @@ public class HomePageButtonsCoordinator implements HomeButtonDisplay {
                         onHomeButtonMenuClickCallback,
                         isHomepageMenuDisabledSupplier,
                         bottomSheetController,
-                        onHomeButtonClickListener);
+                        onHomeButtonClickListener,
+                        windowAndroid);
     }
 
     // {@link HomeButtonDisplay} implementation.

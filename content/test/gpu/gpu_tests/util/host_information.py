@@ -71,6 +71,17 @@ def IsWindows() -> bool:
 
 
 @functools.lru_cache(maxsize=1)
+def IsWindows11() -> bool:
+  # sys.getwindowsversion() returns 10 for the major release even on Windows 11,
+  # so instead we need to check against the build number as suggested in
+  # https://stackoverflow.com/a/69325836.
+  # pytype: disable=module-attr
+  # pylint: disable=no-member
+  return IsWindows() and sys.getwindowsversion().build >= 22000
+  # pylint: enable=no-member
+  # pytype: enable=module-attr
+
+@functools.lru_cache(maxsize=1)
 def IsLinux() -> bool:
   return sys.platform.startswith('linux')
 

@@ -37,7 +37,7 @@
 #include "chrome/browser/extensions/extension_install_prompt_show_params.h"
 #include "chrome/browser/extensions/extension_tab_util.h"
 #include "chrome/browser/extensions/extension_util.h"
-#include "chrome/browser/extensions/forced_extensions/install_stage_tracker.h"
+#include "chrome/browser/extensions/forced_extensions/install_stage_tracker_factory.h"
 #include "chrome/browser/extensions/sync/extension_sync_util.h"
 #include "chrome/browser/lifetime/browser_shutdown.h"
 #include "chrome/browser/profiles/profile.h"
@@ -67,6 +67,7 @@
 #include "extensions/browser/extension_system.h"
 #include "extensions/browser/extension_util.h"
 #include "extensions/browser/fake_safe_browsing_database_manager.h"
+#include "extensions/browser/forced_extensions/install_stage_tracker.h"
 #include "extensions/browser/install/crx_install_error.h"
 #include "extensions/browser/install/sandboxed_unpacker_failure_reason.h"
 #include "extensions/browser/install_approval.h"
@@ -222,7 +223,7 @@ class ExtensionCrxInstallerTest : public ExtensionBrowserTest {
     base::ScopedAllowBlockingForTesting allow_io;
     base::FilePath ext_path = test_data_dir_.AppendASCII(manifest_dir);
     std::string error;
-    std::optional<base::Value::Dict> parsed_manifest(
+    std::optional<base::DictValue> parsed_manifest(
         file_util::LoadManifest(ext_path, &error));
     if (!parsed_manifest || !error.empty()) {
       return result;
@@ -276,7 +277,7 @@ class ExtensionCrxInstallerTest : public ExtensionBrowserTest {
     ASSERT_TRUE(AddFileToDirectory(temp_dir.GetPath(), bar_html, "world"));
 
     ExtensionBuilder builder;
-    builder.SetManifest(base::Value::Dict()
+    builder.SetManifest(base::DictValue()
                             .Set("name", "My First Extension")
                             .Set("version", version)
                             .Set("manifest_version", 2));
@@ -680,7 +681,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionCrxInstallerTest, Blocklist) {
   EXPECT_FALSE(InstallExtension(crx_path, 0));
 
   auto installation_failure =
-      InstallStageTracker::Get(profile())->Get(extension_id);
+      InstallStageTrackerFactory::GetForBrowserContext(profile())->Get(
+          extension_id);
   EXPECT_EQ(InstallStageTracker::FailureReason::CRX_INSTALL_ERROR_DECLINED,
             installation_failure.failure_reason);
   EXPECT_EQ(CrxInstallErrorDetail::EXTENSION_IS_BLOCKLISTED,
@@ -946,7 +948,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionCrxInstallerTest,
   EXPECT_EQ("0.0", extension->VersionString());
 
   auto installation_failure =
-      InstallStageTracker::Get(profile())->Get(extension_id);
+      InstallStageTrackerFactory::GetForBrowserContext(profile())->Get(
+          extension_id);
   EXPECT_EQ(InstallStageTracker::FailureReason::
                 CRX_INSTALL_ERROR_SANDBOXED_UNPACKER_FAILURE,
             installation_failure.failure_reason);
@@ -990,7 +993,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionCrxInstallerTest,
   EXPECT_EQ("0.0", extension->VersionString());
 
   auto installation_failure =
-      InstallStageTracker::Get(profile())->Get(extension_id);
+      InstallStageTrackerFactory::GetForBrowserContext(profile())->Get(
+          extension_id);
   EXPECT_EQ(InstallStageTracker::FailureReason::CRX_INSTALL_ERROR_OTHER,
             installation_failure.failure_reason);
   EXPECT_EQ(CrxInstallErrorDetail::UNEXPECTED_ID,

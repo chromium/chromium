@@ -77,11 +77,6 @@ class AndroidBrowserWindowUnitTest : public testing::Test {
         AttachCurrentThread(), java_test_support_);
   }
 
-  void InvokeJavaSetProfileForTesting(Profile* profile) const {
-    Java_AndroidBrowserWindowNativeUnitTestSupport_setProfileForTesting(
-        AttachCurrentThread(), java_test_support_, profile->GetJavaObject());
-  }
-
  protected:
   Profile* GetLastUsedProfile() {
     return profile_manager()->GetProfile(

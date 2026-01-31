@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include <va/va.h>
 #include <va/va_drm.h>
 #include <xf86drm.h>
@@ -14,6 +9,7 @@
 #include <algorithm>
 #include <array>
 
+#include "base/compiler_specific.h"
 #include "base/environment.h"
 #include "base/files/file.h"
 #include "base/logging.h"
@@ -132,7 +128,7 @@ TEST_F(FakeDriverTest, QueryConfigAttributesForValidConfigID) {
   VAEntrypoint entrypoint = VAEntrypointProtectedContent;
   base::FixedArray<VAConfigAttrib> config_attribs(
       base::checked_cast<size_t>(vaMaxNumConfigAttributes(display_)));
-  memset(config_attribs.data(), 0, config_attribs.memsize());
+  UNSAFE_TODO(memset(config_attribs.data(), 0, config_attribs.memsize()));
   int num_attribs = 0;
   const VAStatus va_res =
       vaQueryConfigAttributes(display_, config_id, &profile, &entrypoint,
@@ -148,7 +144,7 @@ TEST_F(FakeDriverTest, QueryConfigAttributesCrashesForInvalidConfigID) {
   VAEntrypoint entrypoint;
   base::FixedArray<VAConfigAttrib> config_attribs(
       base::checked_cast<size_t>(vaMaxNumConfigAttributes(display_)));
-  memset(config_attribs.data(), 0, config_attribs.memsize());
+  UNSAFE_TODO(memset(config_attribs.data(), 0, config_attribs.memsize()));
   int num_attribs;
   EXPECT_DEATH(
       vaQueryConfigAttributes(display_, /*config_id=*/0, &profile, &entrypoint,
@@ -191,7 +187,7 @@ TEST_F(FakeDriverTest, QuerySurfaceAttributesForValidConfigID) {
   constexpr unsigned int max_num_attribs = 32;
   unsigned int num_attribs = 32;
   VASurfaceAttrib surface_attribs[max_num_attribs];
-  memset(surface_attribs, 0, sizeof(surface_attribs));
+  UNSAFE_TODO(memset(surface_attribs, 0, sizeof(surface_attribs)));
 
   const VAStatus va_res = vaQuerySurfaceAttributes(
       display_, config_id, surface_attribs, &num_attribs);

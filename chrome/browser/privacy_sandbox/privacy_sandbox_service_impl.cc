@@ -94,8 +94,7 @@ bool ShouldBlockThirdPartyOrFirstPartyCookies(
 // pre and post 3PCD.
 bool AreAllThirdPartyCookiesBlocked(
     content_settings::CookieSettings* cookie_settings,
-    PrefService* prefs,
-    privacy_sandbox::TrackingProtectionSettings* tracking_protection_settings) {
+    PrefService* prefs) {
   // Check if 1PCs are blocked.
   if (cookie_settings->GetDefaultCookieSetting() ==
       ContentSetting::CONTENT_SETTING_BLOCK) {
@@ -396,7 +395,6 @@ PromptType ToPromptType(const std::vector<PrivacySandboxNotice>& notices) {
 PrivacySandboxServiceImpl::PrivacySandboxServiceImpl(
     Profile* profile,
     privacy_sandbox::PrivacySandboxSettings* privacy_sandbox_settings,
-    privacy_sandbox::TrackingProtectionSettings* tracking_protection_settings,
     scoped_refptr<content_settings::CookieSettings> cookie_settings,
     PrefService* pref_service,
     content::InterestGroupManager* interest_group_manager,
@@ -408,7 +406,6 @@ PrivacySandboxServiceImpl::PrivacySandboxServiceImpl(
     PrivacySandboxCountries* privacy_sandbox_countries)
     : profile_(profile),
       privacy_sandbox_settings_(privacy_sandbox_settings),
-      tracking_protection_settings_(tracking_protection_settings),
       cookie_settings_(cookie_settings),
       pref_service_(pref_service),
       interest_group_manager_(interest_group_manager),
@@ -433,7 +430,6 @@ PrivacySandboxServiceImpl::PrivacySandboxServiceImpl(
   DCHECK(privacy_sandbox_settings_);
   DCHECK(pref_service_);
   DCHECK(cookie_settings_);
-  CHECK(tracking_protection_settings_);
 #if !BUILDFLAG(IS_ANDROID)
   CHECK(queue_manager_);
 #endif  // !BUILDFLAG(IS_ANDROID)
@@ -508,7 +504,6 @@ void PrivacySandboxServiceImpl::Shutdown() {
   interest_group_manager_ = nullptr;
   pref_service_ = nullptr;
   cookie_settings_ = nullptr;
-  tracking_protection_settings_ = nullptr;
   privacy_sandbox_settings_ = nullptr;
   profile_ = nullptr;
 }
@@ -532,8 +527,7 @@ bool PrivacySandboxServiceImpl::UpdateAndGetSuppressionReason() {
     return true;
   }
 
-  if (AreAllThirdPartyCookiesBlocked(cookie_settings_.get(), pref_service_,
-                                     tracking_protection_settings_)) {
+  if (AreAllThirdPartyCookiesBlocked(cookie_settings_.get(), pref_service_)) {
     SetPromptSuppressedReason(
         PromptSuppressedReason::kThirdPartyCookiesBlocked);
     return true;
@@ -841,7 +835,7 @@ void PrivacySandboxServiceImpl::GetFledgeJoiningEtldPlusOneForDisplay(
 
 std::vector<std::string>
 PrivacySandboxServiceImpl::GetBlockedFledgeJoiningTopFramesForDisplay() const {
-  const base::Value::Dict& pref_value =
+  const base::DictValue& pref_value =
       pref_service_->GetDict(prefs::kPrivacySandboxFledgeJoinBlocked);
 
   std::vector<std::string> blocked_top_frames;
@@ -875,9 +869,21 @@ void PrivacySandboxServiceImpl::SetFledgeJoiningAllowed(
   }
 }
 
-void PrivacySandboxServiceImpl::RecordFirstPartySetsStateHistogram(
-    FirstPartySetsState state) {
-  base::UmaHistogramEnumeration("Settings.FirstPartySets.State", state);
+void PrivacySandboxServiceImpl::RecordFirstPartySetsStateHistogram() {
+  auto rws_status = FirstPartySetsState::kFpsNotRelevant;
+  if (cookie_settings_->ShouldBlockThirdPartyCookies() &&
+      cookie_settings_->GetDefaultCookieSetting() != CONTENT_SETTING_BLOCK) {
+    rws_status = privacy_sandbox_settings_->AreRelatedWebsiteSetsEnabled()
+                     ? FirstPartySetsState::kFpsEnabled
+                     : FirstPartySetsState::kFpsDisabled;
+  }
+  base::UmaHistogramEnumeration("Settings.FirstPartySets.State", rws_status);
+}
+
+void PrivacySandboxServiceImpl::RecordTrackingProtectionStateHistogram() {
+  base::UmaHistogramBoolean(
+      "Settings.TrackingProtection.Enabled",
+      pref_service_->GetBoolean(prefs::kTrackingProtection3pcdEnabled));
 }
 
 void PrivacySandboxServiceImpl::RecordPrivacySandbox4StartupMetrics() {
@@ -1060,16 +1066,8 @@ void PrivacySandboxServiceImpl::LogPrivacySandboxState() {
   if (!IsRegularProfile(profile_type_)) {
     return;
   }
-
-  auto rws_status = FirstPartySetsState::kFpsNotRelevant;
-  if (cookie_settings_->ShouldBlockThirdPartyCookies() &&
-      cookie_settings_->GetDefaultCookieSetting() != CONTENT_SETTING_BLOCK) {
-    rws_status = privacy_sandbox_settings_->AreRelatedWebsiteSetsEnabled()
-                     ? FirstPartySetsState::kFpsEnabled
-                     : FirstPartySetsState::kFpsDisabled;
-  }
-  RecordFirstPartySetsStateHistogram(rws_status);
-
+  RecordFirstPartySetsStateHistogram();
+  RecordTrackingProtectionStateHistogram();
   RecordPrivacySandbox4StartupMetrics();
 }
 
@@ -1139,7 +1137,7 @@ PrivacySandboxServiceImpl::GetBlockedTopics() const {
     return {fake_blocked_topics_.begin(), fake_blocked_topics_.end()};
   }
 
-  const base::Value::List& pref_value =
+  const base::ListValue& pref_value =
       pref_service_->GetList(prefs::kPrivacySandboxBlockedTopics);
 
   std::vector<privacy_sandbox::CanonicalTopic> blocked_topics;

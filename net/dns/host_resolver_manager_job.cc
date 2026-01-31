@@ -4,6 +4,7 @@
 
 #include "net/dns/host_resolver_manager_job.h"
 
+#include <algorithm>
 #include <deque>
 #include <memory>
 #include <optional>
@@ -78,9 +79,9 @@ bool ContainsIcannNameCollisionIp(const std::vector<IPEndPoint>& endpoints) {
 }
 
 // Creates NetLog parameters for HOST_RESOLVER_MANAGER_JOB_ATTACH/DETACH events.
-base::Value::Dict NetLogJobAttachParams(const NetLogSource& source,
-                                        RequestPriority priority) {
-  base::Value::Dict dict;
+base::DictValue NetLogJobAttachParams(const NetLogSource& source,
+                                      RequestPriority priority) {
+  base::DictValue dict;
   source.AddToEventParameters(dict);
   dict.Set("priority", RequestPriorityToString(priority));
   return dict;
@@ -319,7 +320,7 @@ base::OnceClosure HostResolverManager::Job::GetAbortInsecureDnsTaskClosure(
 
 void HostResolverManager::Job::AbortInsecureDnsTask(int error,
                                                     bool fallback_only) {
-  bool has_system_fallback = base::Contains(tasks_, TaskType::SYSTEM);
+  bool has_system_fallback = std::ranges::contains(tasks_, TaskType::SYSTEM);
   if (has_system_fallback) {
     for (auto it = tasks_.begin(); it != tasks_.end();) {
       if (*it == TaskType::DNS) {
@@ -476,17 +477,17 @@ void HostResolverManager::Job::RunNextTask() {
   }
 }
 
-base::Value::Dict HostResolverManager::Job::NetLogJobCreationParams(
+base::DictValue HostResolverManager::Job::NetLogJobCreationParams(
     const NetLogSource& source) {
-  base::Value::Dict dict;
+  base::DictValue dict;
   source.AddToEventParameters(dict);
   dict.Set("host", key_.host.ToString());
-  base::Value::List query_types_list;
+  base::ListValue query_types_list;
   for (DnsQueryType query_type : key_.query_types) {
     query_types_list.Append(kDnsQueryTypes.at(query_type));
   }
   dict.Set("dns_query_types", std::move(query_types_list));
-  base::Value::List tasks_list;
+  base::ListValue tasks_list;
   for (TaskType task : tasks_) {
     tasks_list.Append(static_cast<int>(task));
   }

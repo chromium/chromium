@@ -16,6 +16,7 @@ class SubscriptionEligibilityService;
 class SubscriptionEligibilityServiceFactory
     : public ProfileKeyedServiceFactory {
  public:
+  // Always non-null.
   static SubscriptionEligibilityService* GetForProfile(Profile* profile);
   static SubscriptionEligibilityServiceFactory* GetInstance();
 

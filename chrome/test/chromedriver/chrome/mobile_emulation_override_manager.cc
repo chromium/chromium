@@ -19,7 +19,7 @@ Status OverrideDeviceMetricsIfNeeded(DevToolsClient* client,
   if (!mobile_device.device_metrics.has_value()) {
     return status;
   }
-  base::Value::Dict params;
+  base::DictValue params;
   params.Set("width", mobile_device.device_metrics->width);
   params.Set("height", mobile_device.device_metrics->height);
   params.Set("deviceScaleFactor",
@@ -31,7 +31,7 @@ Status OverrideDeviceMetricsIfNeeded(DevToolsClient* client,
   }
 
   if (mobile_device.device_metrics->touch) {
-    base::Value::Dict emulate_touch_params;
+    base::DictValue emulate_touch_params;
     emulate_touch_params.Set("enabled", true);
     status = client->SendCommand("Emulation.setTouchEmulationEnabled",
                                  emulate_touch_params);
@@ -63,7 +63,7 @@ Status OverrideClientHintsIfNeeded(DevToolsClient* client,
       return status;
     }
   }
-  base::Value::Dict ua_metadata;
+  base::DictValue ua_metadata;
   ua_metadata.Set("architecture", mobile_device.client_hints->architecture);
   ua_metadata.Set("bitness", mobile_device.client_hints->bitness);
   ua_metadata.Set("mobile", mobile_device.client_hints->mobile);
@@ -73,9 +73,9 @@ Status OverrideClientHintsIfNeeded(DevToolsClient* client,
                   mobile_device.client_hints->platform_version);
   ua_metadata.Set("wow64", mobile_device.client_hints->wow64);
   if (mobile_device.client_hints->brands.has_value()) {
-    base::Value::List brands;
+    base::ListValue brands;
     for (const BrandVersion& bv : mobile_device.client_hints->brands.value()) {
-      base::Value::Dict brand;
+      base::DictValue brand;
       brand.Set("brand", bv.brand);
       brand.Set("version", bv.version);
       brands.Append(std::move(brand));
@@ -83,17 +83,17 @@ Status OverrideClientHintsIfNeeded(DevToolsClient* client,
     ua_metadata.Set("brands", std::move(brands));
   }
   if (mobile_device.client_hints->full_version_list.has_value()) {
-    base::Value::List brands;
+    base::ListValue brands;
     for (const BrandVersion& bv :
          mobile_device.client_hints->full_version_list.value()) {
-      base::Value::Dict brand;
+      base::DictValue brand;
       brand.Set("brand", bv.brand);
       brand.Set("version", bv.version);
       brands.Append(std::move(brand));
     }
     ua_metadata.Set("fullVersionList", std::move(brands));
   }
-  base::Value::Dict params;
+  base::DictValue params;
   params.Set("userAgent", user_agent);
   params.Set("userAgentMetadata", std::move(ua_metadata));
   status =
@@ -121,10 +121,9 @@ Status MobileEmulationOverrideManager::OnConnected(DevToolsClient* client) {
   return ApplyOverrideIfNeeded();
 }
 
-Status MobileEmulationOverrideManager::OnEvent(
-    DevToolsClient* client,
-    const std::string& method,
-    const base::Value::Dict& params) {
+Status MobileEmulationOverrideManager::OnEvent(DevToolsClient* client,
+                                               const std::string& method,
+                                               const base::DictValue& params) {
   if (method == "Page.frameNavigated") {
     if (!params.FindByDottedPath("frame.parentId"))
       return ApplyOverrideIfNeeded();

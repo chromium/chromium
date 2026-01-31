@@ -61,6 +61,7 @@
 #include "components/autofill/core/common/form_data_test_api.h"
 #include "components/autofill/core/common/form_field_data.h"
 #include "components/autofill/core/common/form_field_data_predictions.h"
+#include "components/autofill/core/common/signatures.h"
 #include "components/autofill/core/common/unique_ids.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_service.h"
@@ -97,7 +98,7 @@ std::string GetRandomCardNumber() {
   std::string value;
   value.reserve(length);
   for (size_t i = 0; i < length; ++i) {
-    value.push_back(static_cast<char>(base::RandInt('0', '9')));
+    value.push_back(static_cast<char>(base::RandIntInclusive('0', '9')));
   }
   return value;
 }
@@ -310,14 +311,14 @@ void SetProfileCategory(
     case autofill_metrics::AutofillProfileRecordTypeCategory::
         kAccountNonChrome: {
       test_api(profile).set_record_type(AutofillProfile::RecordType::kAccount);
-      // Any value that is not kInitialCreatorOrModifierChrome works.
-      const int kInitialCreatorOrModifierNonChrome =
-          AutofillProfile::kInitialCreatorOrModifierChrome + 1;
+      // Any value that is not kInitialCreatorChrome works.
+      const int kInitialCreatorNonChrome =
+          AutofillProfile::kInitialCreatorChrome + 1;
       profile.set_initial_creator_id(
           category == autofill_metrics::AutofillProfileRecordTypeCategory::
                           kAccountChrome
-              ? AutofillProfile::kInitialCreatorOrModifierChrome
-              : kInitialCreatorOrModifierNonChrome);
+              ? AutofillProfile::kInitialCreatorChrome
+              : kInitialCreatorNonChrome);
       break;
     }
     case autofill_metrics::AutofillProfileRecordTypeCategory::kAccountHome:
@@ -546,11 +547,12 @@ CreditCard GetRandomCreditCard(CreditCard::RecordType record_type) {
                 base::Uuid::GenerateRandomV4().AsLowercaseString().substr(24));
   test::SetCreditCardInfo(
       &credit_card, "Justin Thyme", GetRandomCardNumber().c_str(),
-      base::StringPrintf("%d", base::RandInt(1, 12)).c_str(),
-      base::StringPrintf("%d", now.year + base::RandInt(1, 4)).c_str(), "1");
+      base::StringPrintf("%d", base::RandIntInclusive(1, 12)).c_str(),
+      base::StringPrintf("%d", now.year + base::RandIntInclusive(1, 4)).c_str(),
+      "1");
   if (record_type == CreditCard::RecordType::kMaskedServerCard) {
     credit_card.SetNetworkForMaskedCard(
-        kNetworks[base::RandInt(0, kNetworks.size() - 1)]);
+        kNetworks[base::RandIntInclusive(0, kNetworks.size() - 1)]);
   }
 
   return credit_card;
@@ -1074,9 +1076,9 @@ EntityInstance GetKnownTravelerNumberInstance(
         /*format_string=*/std::nullopt, VerificationStatus::kNoStatus);
   }
   if (options.expiration_date) {
-    attributes.emplace_back(AttributeType(kKnownTravelerNumberNumber));
+    attributes.emplace_back(AttributeType(kKnownTravelerNumberExpirationDate));
     attributes.back().SetInfo(
-        DRIVERS_LICENSE_EXPIRATION_DATE, options.expiration_date,
+        KNOWN_TRAVELER_NUMBER_EXPIRATION_DATE, options.expiration_date,
         std::string(options.app_locale),
         AutofillFormatString(u"YYYY-MM-DD", FormatString_Type_DATE),
         VerificationStatus::kNoStatus);
@@ -1291,6 +1293,24 @@ EntityInstance GetFlightReservationEntityInstanceWithRandomGuid(
   return GetFlightReservationEntityInstance(options);
 }
 
+EntityInstance GetEntityInstance(std::vector<AttributeInstance> attributes,
+                                 EntityOptions options) {
+  CHECK(!attributes.empty()) << "Attributes must be non-empty.";
+  const EntityType type = attributes[0].type().entity_type();
+  CHECK(std::ranges::all_of(attributes,
+                            [&](const AttributeInstance& attribute) {
+                              return attribute.type().entity_type() == type;
+                            }))
+      << "All attribute types must belong to the same entity type";
+  return EntityInstance(
+      type, std::move(attributes),
+      EntityInstance::EntityId(base::Uuid::ParseLowercase(options.guid)),
+      std::string(options.nickname),
+      base::Time::FromTimeT(options.date_modified.ToTimeT()), options.use_count,
+      base::Time::FromTimeT(options.use_date.ToTimeT()), options.record_type,
+      options.are_attributes_read_only, /*frecency_override=*/"");
+}
+
 void InitializePossibleTypes(std::vector<FieldTypeSet>& possible_field_types,
                              const std::vector<FieldType>& possible_types) {
   possible_field_types.emplace_back();
@@ -1376,6 +1396,12 @@ std::vector<FormSignature> GetEncodedSignatures(
     const std::vector<raw_ref<FormStructure>>& forms) {
   return base::ToVector(
       forms, [](const auto& form) { return form->form_signature(); });
+}
+
+std::vector<FormSignature> GetEncodedSignatures(
+    base::span<const FormData> forms) {
+  return base::ToVector(
+      forms, [](const auto& form) { return CalculateFormSignature(form); });
 }
 
 std::vector<FormSignature> GetEncodedAlternativeSignatures(

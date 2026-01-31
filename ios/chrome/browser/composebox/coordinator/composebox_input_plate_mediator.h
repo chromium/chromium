@@ -16,14 +16,14 @@
 #import "ios/chrome/browser/composebox/ui/composebox_input_plate_consumer.h"
 #import "ios/chrome/browser/composebox/ui/composebox_input_plate_mutator.h"
 #import "ios/chrome/browser/omnibox/ui/text_field_view_containing.h"
-#import "ios/chrome/browser/shared/public/commands/load_query_commands.h"
+#import "ios/public/provider/chrome/browser/voice_search/voice_search_controller.h"
 
 @class ComposeboxMetricsRecorder;
 @protocol ComposeboxURLLoader;
 class AimEligibilityService;
 class FaviconLoader;
-class GURL;
 class PersistTabContextBrowserAgent;
+class PrefService;
 class TemplateURLService;
 class WebStateList;
 
@@ -35,6 +35,8 @@ class ContextualSearchSessionHandle;
 @protocol ComposeboxInputPlateMediatorDelegate
 // Reloads the composebox autocomplete suggestions.
 - (void)reloadAutocompleteSuggestionsRestarting:(BOOL)restart;
+// Refines the query with the given `text`.
+- (void)refineWithText:(NSString*)text;
 // Informs the delegate that adding an attachment failed due to limit.
 - (void)showAttachmentLimitError;
 // Informs the delegate that item upload has failed.
@@ -48,8 +50,8 @@ class ContextualSearchSessionHandle;
                 ComposeboxFileUploadObserver,
                 ComposeboxModeObserver,
                 ComposeboxTabPickerSelectionDelegate,
-                LoadQueryCommands,
-                TextFieldViewContainingHeightDelegate>
+                TextFieldViewContainingHeightDelegate,
+                VoiceSearchDelegate>
 
 @property(nonatomic, weak) id<ComposeboxInputPlateConsumer> consumer;
 @property(nonatomic, weak) id<ComposeboxURLLoader> URLLoader;
@@ -70,23 +72,17 @@ class ContextualSearchSessionHandle;
                          modeHolder:(ComposeboxModeHolder*)modeHolder
                  templateURLService:(TemplateURLService*)templateURLService
               aimEligibilityService:
-                  (AimEligibilityService*)aimEligibilityService;
+                  (AimEligibilityService*)aimEligibilityService
+                        prefService:(PrefService*)prefService;
 
 - (void)disconnect;
-
-// Processes the given `itemProvider` for an image.
-- (void)processImageItemProvider:(NSItemProvider*)itemProvider
-                         assetID:(NSString*)assetID;
-
-// Processes the given `PDFFileURL` for a file.
-- (void)processPDFFileURL:(GURL)PDFFileURL;
 
 // Returns whether more attachments can be added.
 - (BOOL)canAddMoreAttachments;
 
-// Returns the maximum number of gallery items allowed based on the current
-// composebox mode.
-- (NSUInteger)maxNumberOfGalleryItemsAllowed;
+// Returns the maximum number of attachments allowed based on the current
+// composebox mode and current number of attachments.
+- (NSUInteger)maxNumberOfAttachmentsAllowed;
 
 @end
 

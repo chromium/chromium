@@ -9,7 +9,6 @@
 #include "base/auto_reset.h"
 #include "base/base64.h"
 #include "base/check_op.h"
-#include "base/containers/contains.h"
 #include "base/containers/to_vector.h"
 #include "base/feature_list.h"
 #include "base/files/file_path.h"
@@ -175,6 +174,10 @@ void SyncPrefs::RegisterProfilePrefs(PrefRegistrySimple* registry) {
                                 kNotMigrated);
   registry->RegisterBooleanPref(
       prefs::internal::kMigrateReadingListFromLocalToAccount, false);
+  registry->RegisterBooleanPref(
+      prefs::internal::kMigrateExtensionsFromLocalToAccount, false);
+  registry->RegisterBooleanPref(
+      prefs::internal::kMigrateThemeFromLocalToAccount, false);
 
   // The passphrase type, determined upon the first engine initialization.
   registry->RegisterIntegerPref(
@@ -836,7 +839,7 @@ bool SyncPrefs::MaybeMigratePrefsForSyncToSigninPart1(
       CHECK(!gaia_id.empty());
       ScopedDictPrefUpdate update_selected_types_dict(
           pref_service_, prefs::internal::kSelectedTypesPerAccount);
-      base::Value::Dict* account_settings =
+      base::DictValue* account_settings =
           update_selected_types_dict->EnsureDict(
               signin::GaiaIdHash::FromGaiaId(gaia_id).ToBase64());
 
@@ -989,7 +992,7 @@ void SyncPrefs::MigrateGlobalDataTypePrefsToAccount(PrefService* pref_service,
 
   ScopedDictPrefUpdate update_selected_types_dict(
       pref_service, prefs::internal::kSelectedTypesPerAccount);
-  base::Value::Dict* account_settings = update_selected_types_dict->EnsureDict(
+  base::DictValue* account_settings = update_selected_types_dict->EnsureDict(
       signin::GaiaIdHash::FromGaiaId(gaia_id).ToBase64());
 
   // The values of the "global" data type prefs get copied to the

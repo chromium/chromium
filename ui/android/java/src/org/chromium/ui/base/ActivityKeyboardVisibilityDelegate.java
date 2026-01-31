@@ -11,7 +11,7 @@ import android.view.View;
 
 import org.chromium.base.Callback;
 import org.chromium.base.supplier.LazyOneshotSupplier;
-import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.ui.KeyboardVisibilityDelegate;
@@ -30,7 +30,8 @@ public class ActivityKeyboardVisibilityDelegate extends KeyboardVisibilityDelega
     private final Callback<Integer> mOnKeyboardInsetChanged = this::onKeyboardInsetChanged;
 
     private final WeakReference<Activity> mActivity;
-    private @Nullable LazyOneshotSupplier<ObservableSupplier<Integer>> mLazyKeyboardInsetSupplier;
+    private @Nullable LazyOneshotSupplier<MonotonicObservableSupplier<Integer>>
+            mLazyKeyboardInsetSupplier;
     private boolean mIsKeyboardShowing;
     private @Nullable View mContentViewForTesting;
 
@@ -46,7 +47,7 @@ public class ActivityKeyboardVisibilityDelegate extends KeyboardVisibilityDelega
 
     /** Sets the keyboard inset supplier. */
     void setLazyKeyboardInsetSupplier(
-            LazyOneshotSupplier<ObservableSupplier<Integer>> lazyKeyboardInsetSupplier) {
+            LazyOneshotSupplier<MonotonicObservableSupplier<Integer>> lazyKeyboardInsetSupplier) {
         assert lazyKeyboardInsetSupplier != null;
         assert mLazyKeyboardInsetSupplier == null;
         mLazyKeyboardInsetSupplier = lazyKeyboardInsetSupplier;

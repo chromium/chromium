@@ -7,8 +7,10 @@
 
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/lens/lens_search_controller.h"
-#include "content/public/browser/web_contents.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_entry.h"
+#include "content/public/browser/web_contents.h"
+
+class Profile;
 
 namespace content {
 class WebContents;
@@ -21,7 +23,8 @@ class LensOverlaySidePanelCoordinator;
 // A router for the results panel that Lens should load results into,
 class LensResultsPanelRouter {
  public:
-  explicit LensResultsPanelRouter(LensSearchController* lens_search_controller);
+  LensResultsPanelRouter(Profile* profile,
+                         LensSearchController* lens_search_controller);
   ~LensResultsPanelRouter();
 
   // Whether the results panel entry is currently the active entry in the side
@@ -55,6 +58,9 @@ class LensResultsPanelRouter {
 
   // Owns this.
   raw_ptr<LensSearchController> lens_search_controller_;
+
+  // The profile of the associated tab.
+  raw_ptr<Profile> profile_;
 };
 
 }  // namespace lens

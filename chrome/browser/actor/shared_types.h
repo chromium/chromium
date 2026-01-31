@@ -7,13 +7,9 @@
 
 #include <variant>
 
-#include "chrome/common/actor.mojom-data-view.h"
 #include "ui/gfx/geometry/point.h"
 
 namespace actor {
-
-using MouseClickType = mojom::ClickAction_Type;
-using MouseClickCount = mojom::ClickAction_Count;
 
 // PageTarget specifies a target in the page. This must be one of (mutually
 // exclusive):
@@ -35,8 +31,6 @@ struct DomNode {
 
 using PageTarget = std::variant<gfx::Point, DomNode>;
 
-std::string DebugString(const MouseClickType& t);
-std::string DebugString(const MouseClickCount& c);
 std::string DebugString(const PageTarget& t);
 
 std::ostream& operator<<(std::ostream& os, const PageTarget& t);

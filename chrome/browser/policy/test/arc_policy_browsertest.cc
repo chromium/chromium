@@ -145,14 +145,14 @@ IN_PROC_BROWSER_TEST_F(ArcPolicyTest, ArcGoogleLocationServicesEnabled) {
 
   // Values of the ArcGoogleLocationServicesEnabled policy to be tested.
   auto test_policy_values =
-      base::Value::List()
+      base::ListValue()
           .Append(base::Value())
           .Append(static_cast<int>(ArcServicePolicyValue::kDisabled))
           .Append(static_cast<int>(ArcServicePolicyValue::kUnderUserControl))
           .Append(static_cast<int>(ArcServicePolicyValue::kEnabled));
 
   // Values of the DefaultGeolocationSetting policy to be tested.
-  auto test_default_geo_policy_values = base::Value::List()
+  auto test_default_geo_policy_values = base::ListValue()
                                             .Append(base::Value())  // unset
                                             .Append(1)   // 'AllowGeolocation'
                                             .Append(2)   // 'BlockGeolocation'

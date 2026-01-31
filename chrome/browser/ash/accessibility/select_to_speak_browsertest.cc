@@ -104,12 +104,6 @@ class SelectToSpeakTest : public AccessibilityFeatureBrowserTest {
   SelectToSpeakTest() = default;
   ~SelectToSpeakTest() override = default;
 
-  void SetUpCommandLine(base::CommandLine* command_line) override {
-    scoped_feature_list_.InitWithFeatureStates(
-        {{::features::kAccessibilityManifestV3SelectToSpeak, true}});
-    InProcessBrowserTest::SetUpCommandLine(command_line);
-  }
-
   // Note that we do not enable Select to Speak in the SetUp method because
   // tests are less flaky if we load the page URL before loading up the
   // Select to Speak extension.

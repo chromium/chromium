@@ -65,13 +65,6 @@ void CleanupLocationIfOwned(const base::FilePath& profile_dir,
                             const IsolatedWebAppStorageLocation& location,
                             base::OnceClosure closure);
 
-// Gets a web app from `registrar` for the given `iwa_id` and validates that
-// it's a valid IWA (i.e. features `isolation_data`). Returns an error if
-// there's no web app or `isolation_data` is missing.
-base::expected<std::reference_wrapper<const WebApp>, std::string>
-GetIsolatedWebAppById(const WebAppRegistrar& registrar,
-                      const webapps::AppId& iwa_id);
-
 enum class KeyRotationLookupResult { kNoKeyRotation, kKeyFound, kKeyBlocked };
 
 // Queries the `IwaKeyDistributionInfoProvider` whether there's
@@ -82,7 +75,7 @@ enum class KeyRotationLookupResult { kNoKeyRotation, kKeyFound, kKeyBlocked };
 //   * Otherwise, writes the key data into `debug_log` and returns `kKeyFound.`
 KeyRotationLookupResult LookupRotatedKey(
     const web_package::SignedWebBundleId& web_bundle_id,
-    base::optional_ref<base::Value::Dict> debug_log = std::nullopt);
+    base::optional_ref<base::DictValue> debug_log = std::nullopt);
 
 // Provides the key rotation data associated with a particular IWA.
 struct KeyRotationData {
@@ -190,7 +183,7 @@ class IsolatedWebAppInstallCommandHelper {
   IsolatedWebAppUrlInfo url_info_;
   std::unique_ptr<WebAppDataRetriever> data_retriever_;
   std::unique_ptr<ManifestToWebAppInstallInfoJob> manifest_to_install_info_job_;
-  base::Value::Dict manifest_to_info_debug_data_;
+  base::DictValue manifest_to_info_debug_data_;
 
   base::WeakPtrFactory<IsolatedWebAppInstallCommandHelper> weak_factory_{this};
 };

@@ -13,6 +13,7 @@
 #include "components/autofill/core/browser/form_types.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics_utils.h"
 #include "components/autofill/core/common/autofill_features.h"
+#include "components/autofill/core/common/html_field_types.h"
 
 namespace autofill::autofill_metrics {
 
@@ -212,7 +213,9 @@ FormGroupFillingStats GetFormFillingStatsForFormType(
   return filling_stats_for_form_type;
 }
 
-void LogFieldFillingStatsAndScore(const FormStructure& form) {
+void LogFieldFillingStatsAndScore(
+    const FormStructure& form,
+    AutocompleteUnrecognizedBehavior ac_unrecognized_behavior) {
   // Tracks how many fields are filled, unfilled or corrected.
   FormGroupFillingStats address_field_stats;
   FormGroupFillingStats postal_address_field_stats;
@@ -252,7 +255,7 @@ void LogFieldFillingStatsAndScore(const FormStructure& form) {
     if (is_address_form_field &&
         (field->filling_product() == FillingProduct::kAddress ||
          field->filling_product() == FillingProduct::kNone) &&
-        field->ShouldSuppressSuggestionsAndFillingByDefault()) {
+        field->html_type() == HtmlFieldType::kUnrecognized) {
       ac_unrecognized_address_field_stats.AddFieldFillingStatus(
           GetFieldFillingStatus(*field));
     }

@@ -40,7 +40,7 @@ void RemoveLoginDetectionData(PrefService* prefs) {
 
 void SaveSiteToOAuthSignedInList(PrefService* pref_service, const GURL& url) {
   ScopedDictPrefUpdate update(pref_service, kOAuthSignedInSitesPref);
-  base::Value::Dict& dict = update.Get();
+  base::DictValue& dict = update.Get();
   dict.Set(GetSiteNameForURL(url), base::TimeToValue(base::Time::Now()));
 
   // Try making space by removing sites having invalid sign-in time. This should

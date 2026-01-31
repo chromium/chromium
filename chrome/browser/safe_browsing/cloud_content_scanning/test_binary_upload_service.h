@@ -15,7 +15,8 @@
 
 namespace safe_browsing {
 
-class TestBinaryUploadService : public BinaryUploadService {
+class TestBinaryUploadService
+    : public enterprise_connectors::BinaryUploadService {
  public:
   TestBinaryUploadService();
   ~TestBinaryUploadService() override;
@@ -28,7 +29,8 @@ class TestBinaryUploadService : public BinaryUploadService {
   void MaybeCancelRequests(
       std::unique_ptr<enterprise_connectors::BinaryUploadCancelRequests> cancel)
       override {}
-  base::WeakPtr<BinaryUploadService> AsWeakPtr() override;
+  base::WeakPtr<enterprise_connectors::BinaryUploadService> AsWeakPtr()
+      override;
   void SetResponse(enterprise_connectors::ScanRequestUploadResult result,
                    enterprise_connectors::ContentAnalysisResponse response);
 

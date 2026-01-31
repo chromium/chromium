@@ -15,7 +15,6 @@
 #include "ash/wm/mru_window_tracker.h"
 #include "ash/wm/overview/overview_controller.h"
 #include "ash/wm/window_positioner.h"
-#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "ui/aura/client/aura_constants.h"
@@ -367,7 +366,7 @@ void UserSwitchAnimator::BuildUserToWindowsListMap() {
   auto& window_to_entry_map = owner_->window_to_entry();
   for (auto& window_entry_pair : window_to_entry_map) {
     aura::Window* parent_window = window_entry_pair.first->parent();
-    if (!base::Contains(parent_windows, parent_window)) {
+    if (!parent_windows.contains(parent_window)) {
       parent_windows.insert(parent_window);
       for (aura::Window* child_window : parent_window->children()) {
         auto itr = window_to_entry_map.find(child_window);

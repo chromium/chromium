@@ -83,7 +83,7 @@ TEST(AttributionReportingParsingUtilsTest, ParseUint64) {
 
   for (const auto& test_case : kTestCases) {
     SCOPED_TRACE(test_case.description);
-    const base::Value::Dict dict = base::test::ParseJsonDict(test_case.json);
+    const base::DictValue dict = base::test::ParseJsonDict(test_case.json);
     EXPECT_EQ(ParseUint64(dict, "key"), test_case.expected);
   }
 }
@@ -133,7 +133,7 @@ TEST(AttributionReportingParsingUtilsTest, ParseInt64) {
 
   for (const auto& test_case : kTestCases) {
     SCOPED_TRACE(test_case.description);
-    const base::Value::Dict dict = base::test::ParseJsonDict(test_case.json);
+    const base::DictValue dict = base::test::ParseJsonDict(test_case.json);
     EXPECT_EQ(ParseInt64(dict, "key"), test_case.expected);
   }
 }

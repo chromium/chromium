@@ -9,7 +9,6 @@
 #include <string>
 #include <utility>
 
-#include "base/containers/contains.h"
 #include "base/containers/flat_set.h"
 #include "base/memory/raw_ptr.h"
 #include "base/no_destructor.h"
@@ -158,7 +157,7 @@ class DeviceSyncCryptAuthGroupPrivateKeySharerImplTest
       const std::string& payload = id_payload_and_key_pair.second.payload;
       const std::string& encrypting_key = id_payload_and_key_pair.second.key;
 
-      EXPECT_TRUE(base::Contains(expected_device_ids, id));
+      EXPECT_TRUE(expected_device_ids.contains(id));
 
       // Verify that encryptor inputs agrees with ShareGroupPrivateKey() inputs.
       const auto it = id_to_encrypting_key_map_.find(id);
@@ -169,7 +168,7 @@ class DeviceSyncCryptAuthGroupPrivateKeySharerImplTest
       EXPECT_EQ(group_key_->private_key(), payload);
 
       id_to_encrypted_group_private_key_map_[id] =
-          base::Contains(device_ids_to_fail, id)
+          device_ids_to_fail.contains(id)
               ? std::nullopt
               : std::make_optional<std::string>(
                     MakeFakeEncryptedString(payload, encrypting_key));

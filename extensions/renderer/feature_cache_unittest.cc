@@ -4,7 +4,8 @@
 
 #include "extensions/renderer/feature_cache.h"
 
-#include "base/containers/contains.h"
+#include <algorithm>
+
 #include "base/memory/raw_ptr.h"
 #include "components/crx_file/id_util.h"
 #include "content/public/test/test_utils.h"
@@ -16,12 +17,11 @@
 #include "extensions/renderer/scoped_web_frame.h"
 #include "extensions/renderer/script_context.h"
 #include "extensions/test/test_context_data.h"
-#include "v8/include/v8.h"
-
 #include "third_party/blink/public/platform/web_data.h"
 #include "third_party/blink/public/platform/web_url.h"
 #include "third_party/blink/public/web/web_document.h"
 #include "third_party/blink/public/web/web_local_frame.h"
+#include "v8/include/v8.h"
 
 namespace extensions {
 
@@ -36,7 +36,7 @@ struct FakeContext {
 bool HasFeature(FeatureCache& cache,
                 const FakeContext& context,
                 const std::string& feature) {
-  return base::Contains(
+  return std::ranges::contains(
       cache.GetAvailableFeatures(context.context_type, context.extension,
                                  context.url, TestContextData()),
       feature);

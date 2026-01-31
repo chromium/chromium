@@ -28,6 +28,7 @@ import org.chromium.chrome.browser.autofill.AndroidAutofillAvailabilityStatus;
 import org.chromium.chrome.browser.autofill.AutofillClientProviderUtils;
 import org.chromium.chrome.browser.autofill.R;
 import org.chromium.chrome.browser.autofill.options.AutofillOptionsFragment.AutofillOptionsReferrer;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.prefs.PrefService;
@@ -118,6 +119,13 @@ class AutofillOptionsMediator implements ModalDialogProperties.Controller {
         return mModel != null;
     }
 
+    // TODO(crbug.com/467563819): Update the initial switch value using the Enhanced Autofill pref.
+    // TODO(crbug.com/467563819): Hide everything related to Autofill AI if the page is accessed via
+    // deep-link.
+    boolean shouldShowAutofillAi() {
+        return ChromeFeatureList.isEnabled(ChromeFeatureList.AUTOFILL_AI_WITH_DATA_SCHEMA);
+    }
+
     /**
      * Checks whether the toggle is allowed to switch states. Whenever AwG is the active provider
      * and there is no override, it should not be available to switch over. Switching away from 3P
@@ -127,7 +135,7 @@ class AutofillOptionsMediator implements ModalDialogProperties.Controller {
      * @return true if the toggle should be read-only.
      */
     boolean should3pToggleBeReadOnly() {
-        if (prefs().getBoolean(Pref.AUTOFILL_USING_VIRTUAL_VIEW_STRUCTURE)) {
+        if (prefs().getBoolean(Pref.AUTOFILL_USING_PLATFORM_AUTOFILL)) {
             return false; // Always allow to flip back to built-in password management.
         }
         switch (AutofillClientProviderUtils.getAndroidAutofillFrameworkAvailability(prefs())) {
@@ -149,7 +157,7 @@ class AutofillOptionsMediator implements ModalDialogProperties.Controller {
         assert isInitialized();
         mModel.set(
                 THIRD_PARTY_AUTOFILL_ENABLED,
-                prefs().getBoolean(Pref.AUTOFILL_USING_VIRTUAL_VIEW_STRUCTURE));
+                prefs().getBoolean(Pref.AUTOFILL_USING_PLATFORM_AUTOFILL));
         mModel.set(THIRD_PARTY_TOGGLE_IS_READ_ONLY, should3pToggleBeReadOnly());
         mModel.set(THIRD_PARTY_TOGGLE_HINT, getHintSummary());
     }
@@ -192,8 +200,10 @@ class AutofillOptionsMediator implements ModalDialogProperties.Controller {
 
     private void onConfirmWithRestart() {
         prefs().setBoolean(
-                        Pref.AUTOFILL_USING_VIRTUAL_VIEW_STRUCTURE,
+                        Pref.AUTOFILL_USING_PLATFORM_AUTOFILL,
                         mModel.get(THIRD_PARTY_AUTOFILL_ENABLED));
+        AutofillClientProviderUtils.updatePackageUsedForAutofill(
+                prefs(), mModel.get(THIRD_PARTY_AUTOFILL_ENABLED));
         RecordHistogram.recordBooleanHistogram(
                 HISTOGRAM_USE_THIRD_PARTY_FILLING, mModel.get(THIRD_PARTY_AUTOFILL_ENABLED));
         mRestartRunnable.run();

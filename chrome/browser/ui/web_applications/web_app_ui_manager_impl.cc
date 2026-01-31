@@ -6,14 +6,17 @@
 
 #include <map>
 #include <memory>
+#include <string>
 #include <type_traits>
 #include <utility>
+#include <vector>
 
 #include "base/check.h"
 #include "base/check_op.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/functional/callback_helpers.h"
 #include "base/location.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
@@ -23,7 +26,6 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/types/pass_key.h"
 #include "build/build_config.h"
-#include "chrome/browser/apps/app_service/app_launch_params.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
@@ -55,7 +57,9 @@
 #include "chrome/browser/web_applications/web_app_tab_helper.h"
 #include "chrome/browser/web_applications/web_app_ui_manager.h"
 #include "chrome/browser/web_applications/web_app_uninstall_dialog_user_options.h"
+#include "chrome/browser/web_applications/web_app_utils.h"
 #include "components/feature_engagement/public/feature_constants.h"
+#include "components/services/app_service/public/cpp/app_launch_params.h"
 #include "components/user_education/common/feature_promo/feature_promo_controller.h"
 #include "components/user_education/common/feature_promo/feature_promo_result.h"
 #include "components/user_education/common/user_education_data.h"
@@ -146,10 +150,7 @@ void UninstallWebAppWithDialogFromStartupSwitch(
     SynchronizeOsOptions synchronize_options;
     synchronize_options.force_unregister_os_integration = true;
     provider->scheduler().SynchronizeOsIntegration(
-        app_id,
-        base::BindOnce(
-            [](std::unique_ptr<ScopedKeepAlive> scoped_keep_alive) {},
-            std::move(scoped_keep_alive)),
+        app_id, base::DoNothingWithBoundArgs(std::move(scoped_keep_alive)),
         synchronize_options);
   }
 }
@@ -175,7 +176,18 @@ void WebAppUiManager::TriggerInstallNotSupportedDialog(
     content::WebContents* web_contents,
     Profile* profile,
     base::OnceClosure callback) {
-  ShowInstallNotSupportedDialog(web_contents, profile, std::move(callback));
+  NotSupportedReason reason;
+  if (profile->IsGuestSession()) {
+    reason = NotSupportedReason::kGuestMode;
+  } else if (profile->IsOffTheRecord()) {
+    reason = NotSupportedReason::kOffTheRecord;
+  } else if (!web_app::IsWebAppInstallByUserPolicyEnabled(profile)) {
+    reason = NotSupportedReason::kPolicyDisabled;
+  } else {
+    NOTREACHED();
+  }
+  ShowInstallNotSupportedDialog(web_contents, profile, reason,
+                                std::move(callback));
 }
 
 WebAppUiManagerImpl::WebAppUiManagerImpl(Profile* profile)
@@ -365,6 +377,19 @@ void WebAppUiManagerImpl::ShowWebAppIdentityUpdateDialog(
   ::web_app::ShowWebAppIdentityUpdateDialog(
       app_id, title_change, icon_change, old_title, new_title, old_icon,
       new_icon, web_contents, std::move(callback));
+}
+
+void WebAppUiManagerImpl::ShowSubAppsInstallDialog(
+    content::WebContents* initiating_web_contents,
+    const std::vector<std::unique_ptr<WebAppInstallInfo>>& sub_apps,
+    const webapps::AppId& parent_app_id,
+    base::OnceCallback<void(bool)> callback) {
+  std::string parent_app_name = WebAppProvider::GetForWebApps(profile_)
+                                    ->registrar_unsafe()
+                                    .GetAppShortName(parent_app_id);
+  web_app::ShowSubAppsInstallDialog(initiating_web_contents, sub_apps,
+                                    parent_app_name, parent_app_id,
+                                    std::move(callback));
 }
 
 void WebAppUiManagerImpl::ShowWebAppSettings(const webapps::AppId& app_id) {
@@ -666,8 +691,8 @@ void WebAppUiManagerImpl::OnBrowserRemoved(Browser* browser) {
 }
 
 #if BUILDFLAG(IS_CHROMEOS)
-void WebAppUiManagerImpl::TabCloseCancelled(
-    const content::WebContents* contents) {
+void WebAppUiManagerImpl::OnTabCloseCancelled(const tabs::TabInterface* tab) {
+  const content::WebContents* contents = tab->GetContents();
   CHECK(contents);
   const WebAppTabHelper* tab_helper =
       WebAppTabHelper::FromWebContents(contents);

@@ -38,16 +38,16 @@ class LayerTitleCache {
 
   LayerTitleCache(JNIEnv* env,
                   const jni_zero::JavaRef<jobject>& obj,
-                  jint fade_width,
-                  jint icon_start_padding,
-                  jint icon_end_padding,
-                  jint spinner_resource_id,
-                  jint spinner_incognito_resource_id,
-                  jint bubble_inner_dimension,
-                  jint bubble_outer_dimension,
-                  jint bubble_offset,
-                  jint bubble_inner_tint,
-                  jint bubble_outer_tint,
+                  int32_t fade_width,
+                  int32_t icon_start_padding,
+                  int32_t icon_end_padding,
+                  int32_t spinner_resource_id,
+                  int32_t spinner_incognito_resource_id,
+                  int32_t bubble_inner_dimension,
+                  int32_t bubble_outer_dimension,
+                  int32_t bubble_offset,
+                  int32_t bubble_inner_tint,
+                  int32_t bubble_outer_tint,
                   ui::ResourceManager* resource_manager);
 
   LayerTitleCache(const LayerTitleCache&) = delete;
@@ -58,9 +58,9 @@ class LayerTitleCache {
   // Called from Java, updates a native cc::slim::Layer based on the new texture
   // information.
   void UpdateLayer(JNIEnv* env,
-                   jint tab_id,
-                   jint title_resource_id,
-                   jint icon_resource_id,
+                   int32_t tab_id,
+                   int32_t title_resource_id,
+                   int32_t icon_resource_id,
                    bool is_incognito,
                    bool is_rtl,
                    bool show_bubble);
@@ -69,23 +69,21 @@ class LayerTitleCache {
   // information.
   void UpdateGroupLayer(JNIEnv* env,
                         const base::android::JavaRef<jobject>& group_token,
-                        jint title_resource_id,
-                        jint avatar_resource_id,
-                        jint avatar_padding,
+                        int32_t title_resource_id,
+                        int32_t avatar_resource_id,
+                        int32_t avatar_padding,
                         bool is_incognito,
                         bool is_rtl);
 
   // Called from Java, updates icon.
   void UpdateIcon(JNIEnv* env,
-                  jint tab_id,
-                  jint icon_resource_id,
+                  int32_t tab_id,
+                  int32_t icon_resource_id,
                   bool show_bubble);
 
   // Called from Java, updates tab bubble if a shared tab is updated by
   // collaborators.
-  void UpdateTabBubble(JNIEnv* env,
-                       jint tab_id,
-                       bool show_bubble);
+  void UpdateTabBubble(JNIEnv* env, int32_t tab_id, bool show_bubble);
 
   // Returns the layer that represents the title of tab of tab_id.
   // Returns NULL if no layer can be found.

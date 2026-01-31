@@ -12,7 +12,6 @@
 #include <vector>
 
 #include "base/check.h"
-#include "base/containers/contains.h"
 #include "base/containers/flat_map.h"
 #include "base/logging.h"
 #include "base/sequence_checker.h"
@@ -272,7 +271,7 @@ class ZeroconfScannerDetectorImpl final : public ZeroconfScannerDetector {
         this, discovery_client_.get(), service_type);
     lister->Start();
     lister->DiscoverNewDevices();
-    DCHECK(!base::Contains(device_listers_, service_type));
+    DCHECK(!device_listers_.contains(service_type));
     device_listers_[service_type] = std::move(lister);
   }
 

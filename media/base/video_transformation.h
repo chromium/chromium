@@ -29,7 +29,8 @@ enum VideoRotation : int {
 // a rotation matrix from a demuxer, and we only support 90 degree rotation
 // increments.
 struct MEDIA_EXPORT VideoTransformation {
-  static VideoTransformation FromFFmpegDisplayMatrix(const int32_t* matrix);
+  static VideoTransformation FromFFmpegDisplayMatrix(
+      base::span<const int32_t, 9> matrix3x3);
 
   constexpr VideoTransformation(VideoRotation rotation, bool mirrored)
       : rotation(rotation), mirrored(mirrored) {}

@@ -32,7 +32,7 @@ const uint8_t kTestData[] = {
 };
 
 // Returns a dict with some sample data in it.
-base::Value::Dict CreateTestIncidentsSentPref() {
+base::DictValue CreateTestIncidentsSentPref() {
   static const char kData[] =
       "{"
       "\"2\":{\"spam\":\"1234\",\"blorf\":\"5\"},"
@@ -45,7 +45,7 @@ base::Value::Dict CreateTestIncidentsSentPref() {
 
 // Tests that DeserializeIncidentsSent handles an empty payload properly.
 TEST(PlatformStateStoreTest, DeserializeEmpty) {
-  base::Value::Dict deserialized;
+  base::DictValue deserialized;
   PlatformStateStoreLoadResult load_result =
       DeserializeIncidentsSent(std::string(), deserialized);
   ASSERT_EQ(PlatformStateStoreLoadResult::SUCCESS, load_result);
@@ -54,7 +54,7 @@ TEST(PlatformStateStoreTest, DeserializeEmpty) {
 
 // Tests that serialize followed by deserialize doesn't lose data.
 TEST(PlatformStateStoreTest, RoundTrip) {
-  base::Value::Dict incidents_sent = CreateTestIncidentsSentPref();
+  base::DictValue incidents_sent = CreateTestIncidentsSentPref();
   std::string data;
   SerializeIncidentsSent(incidents_sent, &data);
 
@@ -62,7 +62,7 @@ TEST(PlatformStateStoreTest, RoundTrip) {
   ASSERT_EQ(std::string(reinterpret_cast<const char*>(&kTestData[0]),
                         sizeof(kTestData)), data);
 
-  base::Value::Dict deserialized;
+  base::DictValue deserialized;
   PlatformStateStoreLoadResult load_result =
       DeserializeIncidentsSent(data, deserialized);
   ASSERT_EQ(PlatformStateStoreLoadResult::SUCCESS, load_result);

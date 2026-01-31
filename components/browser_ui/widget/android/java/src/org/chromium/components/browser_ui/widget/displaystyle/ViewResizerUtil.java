@@ -38,4 +38,25 @@ public class ViewResizerUtil {
                 (int) (((screenWidthDp - UiConfig.WIDE_DISPLAY_STYLE_MIN_WIDTH_DP) / 2.f) * dpToPx);
         return Math.max(minWidePaddingPixels, padding);
     }
+
+    /**
+     * Computes the horizontal padding for a view, applying wide-display constraints if necessary.
+     *
+     * <p>If the display is narrow, it returns the {@code defaultPaddingPixels}. If the display is
+     * wide, it calculates "centering padding" to ensure the content stays within a readable maximum
+     * width, ensuring the result is at least {@code minWidePaddingPixels}.
+     *
+     * @param view The {@link View} to calculate padding for.
+     * @param uiConfig The {@link UiConfig} to check the current display style.
+     * @param defaultPaddingPixels The standard padding for narrow/phone layouts.
+     * @param minWidePaddingPixels The baseline padding for wide/tablet layouts.
+     * @return The horizontal padding in pixels.
+     * @see ViewResizerUtil#computePaddingForWideDisplay
+     */
+    public static int computePadding(
+            View view, UiConfig uiConfig, int defaultPaddingPixels, int minWidePaddingPixels) {
+        if (!uiConfig.getCurrentDisplayStyle().isWide()) return defaultPaddingPixels;
+        return ViewResizerUtil.computePaddingForWideDisplay(
+                uiConfig.getContext(), view, minWidePaddingPixels);
+    }
 }

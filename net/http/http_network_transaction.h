@@ -101,7 +101,6 @@ class NET_EXPORT_PRIVATE HttpNetworkTransaction
   void SetIsSharedDictionaryReadAllowedCallback(
       base::RepeatingCallback<bool()> callback) override;
   void CloseConnectionOnDestruction() override;
-  bool IsMdlMatchForMetrics() const override;
 
   // HttpStreamRequest::Delegate methods:
   void OnStreamReady(const ProxyInfo& used_proxy_info,
@@ -457,10 +456,6 @@ class NET_EXPORT_PRIVATE HttpNetworkTransaction
   // until |SendRequest()| is called on |stream_|, and reset for auth restarts.
   base::TimeTicks send_start_time_;
   base::TimeTicks send_end_time_;
-
-  // When the connection and request headers are reset, and the request is
-  // resent.
-  base::TimeTicks reset_connection_and_request_for_resend_start_time_;
 
   // The next state in the state machine.
   State next_state_ = STATE_NONE;

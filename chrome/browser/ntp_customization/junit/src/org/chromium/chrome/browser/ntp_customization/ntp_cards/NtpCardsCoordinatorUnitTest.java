@@ -19,16 +19,20 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.ContextUtils;
-import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.magic_stack.HomeModulesConfigManager;
+import org.chromium.chrome.browser.magic_stack.HomeModulesConfigManager.HomeModulesStateListener;
 import org.chromium.chrome.browser.ntp_customization.BottomSheetDelegate;
 import org.chromium.chrome.browser.ntp_customization.R;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -41,6 +45,10 @@ public class NtpCardsCoordinatorUnitTest {
 
     @Mock private BottomSheetDelegate mBottomSheetDelegate;
     @Mock private Profile mProfile;
+    @Mock private NtpCardsMediator mMediator;
+    @Mock private HomeModulesConfigManager mHomeModulesConfigManager;
+
+    @Captor private ArgumentCaptor<HomeModulesStateListener> mListener;
 
     private NtpCardsCoordinator mCoordinator;
     private Context mContext;
@@ -50,9 +58,35 @@ public class NtpCardsCoordinatorUnitTest {
         mContext =
                 new ContextThemeWrapper(
                         ContextUtils.getApplicationContext(), R.style.Theme_BrowserUI_DayNight);
+        HomeModulesConfigManager.setInstanceForTesting(mHomeModulesConfigManager);
         mCoordinator =
                 new NtpCardsCoordinator(
-                        mContext, mBottomSheetDelegate, new ObservableSupplierImpl<>(mProfile));
+                        mContext,
+                        mBottomSheetDelegate,
+                        ObservableSuppliers.createNonNull(mProfile));
+    }
+
+    @Test
+    @SmallTest
+    public void testAddsAndRemovesObserver() {
+        verify(mHomeModulesConfigManager).addListener(mListener.capture());
+
+        mCoordinator.destroy();
+        verify(mHomeModulesConfigManager).removeListener(mListener.getValue());
+    }
+
+    @Test
+    @SmallTest
+    public void testObserverRespondsToSignal() {
+        verify(mHomeModulesConfigManager).addListener(mListener.capture());
+
+        mCoordinator.setMediatorForTesting(mMediator);
+
+        mListener.getValue().allCardsConfigChanged(true);
+        verify(mMediator).onAllCardsConfigChanged(true);
+
+        mListener.getValue().allCardsConfigChanged(false);
+        verify(mMediator).onAllCardsConfigChanged(false);
     }
 
     @Test

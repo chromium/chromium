@@ -30,6 +30,10 @@ class WIN_WINDOW_EXPORT WinWindow : public PlatformWindow,
 
   ~WinWindow() override;
 
+  // Set an `input_method` object to handle IME-related window messages. If it
+  // is not set, the window will use the default handler function to process
+  // these messages.
+  // When `input_method` is destroyed, it will be automatically set to nullptr.
   void SetInputMethod(InputMethod* input_method);
 
  private:
@@ -108,6 +112,7 @@ class WIN_WINDOW_EXPORT WinWindow : public PlatformWindow,
     CR_MESSAGE_HANDLER_EX(WM_SYSCHAR, OnImeMessages)
     CR_MESSAGE_HANDLER_EX(WM_IME_CHAR, OnImeMessages)
     CR_MESSAGE_HANDLER_EX(WM_NCACTIVATE, OnNCActivate)
+    CR_MSG_WM_INPUTLANGCHANGE(OnInputLangChange)
 
     CR_MSG_WM_CLOSE(OnClose)
     CR_MSG_WM_CREATE(OnCreate)
@@ -119,6 +124,7 @@ class WIN_WINDOW_EXPORT WinWindow : public PlatformWindow,
   LRESULT OnMouseRange(UINT message, WPARAM w_param, LPARAM l_param);
   LRESULT OnCaptureChanged(UINT message, WPARAM w_param, LPARAM l_param);
   LRESULT OnKeyEvent(UINT message, WPARAM w_param, LPARAM l_param);
+  void OnInputLangChange(DWORD character_set, HKL input_language_id);
   LRESULT OnImeMessages(UINT message, WPARAM w_param, LPARAM l_param);
   LRESULT OnNCActivate(UINT message, WPARAM w_param, LPARAM l_param);
   void OnClose();

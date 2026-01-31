@@ -65,7 +65,7 @@ IN_PROC_BROWSER_TEST_F(PolicyTestAutomaticFullscreen, AllowedForUrls) {
   const GURL url(embedded_test_server()->GetURL("/empty.html"));
 
   PolicyMap policies;
-  base::Value::List list;
+  base::ListValue list;
   list.Append(url.spec());
   SetPolicy(&policies, key::kAutomaticFullscreenAllowedForUrls,
             base::Value(std::move(list)));
@@ -83,7 +83,7 @@ IN_PROC_BROWSER_TEST_F(PolicyTestAutomaticFullscreen, BlockedForUrls) {
   const GURL url(embedded_test_server()->GetURL("/empty.html"));
 
   PolicyMap policies;
-  base::Value::List list;
+  base::ListValue list;
   list.Append(url.spec());
   SetPolicy(&policies, key::kAutomaticFullscreenBlockedForUrls,
             base::Value(std::move(list)));

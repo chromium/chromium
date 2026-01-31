@@ -21,17 +21,15 @@
 #include "cc/paint/paint_op_reader.h"
 #include "cc/paint/paint_op_writer.h"
 #include "cc/test/transfer_cache_test_helper.h"
-#include "components/viz/test/test_context_provider.h"
-#include "components/viz/test/test_gles2_interface.h"
 #include "gpu/command_buffer/common/buffer.h"
 #include "gpu/command_buffer/service/service_font_manager.h"
-#include "gpu/skia_bindings/gl_bindings_skia_cmd_buffer.h"
 #include "third_party/skia/include/core/SkSurface.h"
 #include "third_party/skia/include/gpu/GpuTypes.h"
 #include "third_party/skia/include/gpu/ganesh/GrDirectContext.h"
 #include "third_party/skia/include/gpu/ganesh/SkSurfaceGanesh.h"
 #include "third_party/skia/include/gpu/ganesh/gl/GrGLDirectContext.h"
 #include "third_party/skia/include/gpu/ganesh/gl/GrGLInterface.h"
+#include "third_party/skia/include/gpu/ganesh/mock/GrMockTypes.h"
 
 struct Environment {
   Environment() {
@@ -163,24 +161,20 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
                               &locked_handles);
   }
 
-  auto context_provider_no_support = viz::TestContextProvider::CreateGLES();
-  context_provider_no_support->BindToCurrentSequence();
-  auto gr_context_no_support =
-      GrDirectContexts::MakeGL(skia_bindings::CreateGLES2InterfaceBindings(
-          context_provider_no_support->ContextGL(),
-          context_provider_no_support->ContextSupport()));
+  GrMockOptions options_no_support;
+  options_no_support.fShaderDerivativeSupport = false;
+  auto gr_context_no_support = GrDirectContext::MakeMock(&options_no_support);
+
   CHECK(!!gr_context_no_support);
   CHECK(!gr_context_no_support->supportsDistanceFieldText());
   Raster(gr_context_no_support.get(), font_manager->strike_client(),
          &paint_cache, raster_data, raster_size);
 
-  auto context_provider_with_support = viz::TestContextProvider::CreateGLES(
-      std::string("GL_OES_standard_derivatives"));
-  context_provider_with_support->BindToCurrentSequence();
+  GrMockOptions options_with_support;
+  options_with_support.fShaderDerivativeSupport = true;
   auto gr_context_with_support =
-      GrDirectContexts::MakeGL(skia_bindings::CreateGLES2InterfaceBindings(
-          context_provider_with_support->ContextGL(),
-          context_provider_with_support->ContextSupport()));
+      GrDirectContext::MakeMock(&options_with_support);
+
   CHECK(!!gr_context_with_support);
   CHECK(gr_context_with_support->supportsDistanceFieldText());
   Raster(gr_context_with_support.get(), font_manager->strike_client(),

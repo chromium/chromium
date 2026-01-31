@@ -380,6 +380,104 @@ TEST_F(BrowsingHistoryHandlerTest, IncludeActorVisits) {
   MockHistoryServiceCall(query, options);
   RunQueryHistory("test");
 }
-#endif
+
+class BrowsingHistoryHandlerHistorySyncPromoTest
+    : public BrowsingHistoryHandlerTest,
+      public testing::WithParamInterface<bool> {
+ public:
+  void SetUp() override {
+    BrowsingHistoryHandlerTest::SetUp();
+    SetUpIdentityState();
+  }
+
+ private:
+  // Sets up the identity state based on the test parameter.
+  // If the parameter is `true`, a primary account is set up. Otherwise, the
+  // profile is left signed out.
+  void SetUpIdentityState() {
+    if (GetParam()) {
+      signin::IdentityManager* identity_manager =
+          IdentityManagerFactory::GetForProfile(profile());
+      signin::MakePrimaryAccountAvailable(identity_manager, "test@example.com",
+                                          signin::ConsentLevel::kSignin);
+    }
+  }
+};
+
+TEST_P(BrowsingHistoryHandlerHistorySyncPromoTest,
+       ShouldShowHistoryPageHistorySyncPromoShownLessThanThreshold) {
+  for (int i = 0; i < 4; ++i) {
+    handler()->IncrementHistoryPageHistorySyncPromoShownCount();
+  }
+  base::MockCallback<
+      BrowsingHistoryHandler::ShouldShowHistoryPageHistorySyncPromoCallback>
+      callback;
+  EXPECT_CALL(callback, Run(true));
+  handler()->ShouldShowHistoryPageHistorySyncPromo(callback.Get());
+}
+
+TEST_P(BrowsingHistoryHandlerHistorySyncPromoTest,
+       ShouldShowHistoryPageHistorySyncPromoShownEqualToThreshold) {
+  for (int i = 0; i < 5; ++i) {
+    handler()->IncrementHistoryPageHistorySyncPromoShownCount();
+  }
+  base::MockCallback<
+      BrowsingHistoryHandler::ShouldShowHistoryPageHistorySyncPromoCallback>
+      callback;
+  EXPECT_CALL(callback, Run(false));
+  handler()->ShouldShowHistoryPageHistorySyncPromo(callback.Get());
+}
+
+TEST_P(BrowsingHistoryHandlerHistorySyncPromoTest,
+       ShouldShowHistoryPageHistorySyncPromoDismissedOnceCooldownPassed) {
+  handler()->RecordHistoryPageHistorySyncPromoDismissed();
+  handler()->test_clock()->Advance(base::Days(8));
+  base::MockCallback<
+      BrowsingHistoryHandler::ShouldShowHistoryPageHistorySyncPromoCallback>
+      callback;
+  EXPECT_CALL(callback, Run(true));
+  handler()->ShouldShowHistoryPageHistorySyncPromo(callback.Get());
+}
+
+TEST_P(BrowsingHistoryHandlerHistorySyncPromoTest,
+       ShouldShowHistoryPageHistorySyncPromoDismissedOnceCooldownNotPassed) {
+  handler()->RecordHistoryPageHistorySyncPromoDismissed();
+  handler()->test_clock()->Advance(base::Days(6));
+  base::MockCallback<
+      BrowsingHistoryHandler::ShouldShowHistoryPageHistorySyncPromoCallback>
+      callback;
+  EXPECT_CALL(callback, Run(false));
+  handler()->ShouldShowHistoryPageHistorySyncPromo(callback.Get());
+}
+
+TEST_P(BrowsingHistoryHandlerHistorySyncPromoTest,
+       ShouldShowHistoryPageHistorySyncPromoShownAfterDismissal) {
+  handler()->RecordHistoryPageHistorySyncPromoDismissed();
+  handler()->test_clock()->Advance(base::Days(8));
+  base::MockCallback<
+      BrowsingHistoryHandler::ShouldShowHistoryPageHistorySyncPromoCallback>
+      callback_before_shown_after_dismissal;
+  EXPECT_CALL(callback_before_shown_after_dismissal, Run(true));
+  handler()->ShouldShowHistoryPageHistorySyncPromo(
+      callback_before_shown_after_dismissal.Get());
+
+  handler()->IncrementHistoryPageHistorySyncPromoShownCount();
+
+  base::MockCallback<
+      BrowsingHistoryHandler::ShouldShowHistoryPageHistorySyncPromoCallback>
+      callback_shown_after_dismissal;
+  EXPECT_CALL(callback_shown_after_dismissal, Run(false));
+  handler()->ShouldShowHistoryPageHistorySyncPromo(
+      callback_shown_after_dismissal.Get());
+}
+
+INSTANTIATE_TEST_SUITE_P(,
+                         BrowsingHistoryHandlerHistorySyncPromoTest,
+                         testing::Bool(),
+                         [](const testing::TestParamInfo<bool>& info) {
+                           return info.param ? "SignedIn" : "SignedOut";
+                         });
+
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
 }  // namespace history

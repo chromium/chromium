@@ -48,8 +48,11 @@ enum class GetAuthnTokensResult {
 
 // A blind-signed auth token for Legion proxies.
 struct BlindSignedAuthToken {
-  // The token value, for inclusion in a header.
+  // The token value.
   std::string token;
+
+  // The token's encoded extensions.
+  std::string encoded_extensions;
 
   // The expiration time of this token.
   base::Time expiration;

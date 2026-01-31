@@ -13,17 +13,19 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
+#include "base/functional/callback.h"
+#include "base/functional/callback_helpers.h"
 #include "base/logging.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/on_device_translation/constants.h"
-#include "chrome/browser/on_device_translation/pref_names.h"
 #include "components/component_updater/component_updater_service.h"
 #include "components/crx_file/id_util.h"
+#include "components/on_device_translation/constants.h"
 #include "components/on_device_translation/features.h"
+#include "components/on_device_translation/public/paths.h"
+#include "components/on_device_translation/public/pref_names.h"
 #include "components/update_client/update_client_errors.h"
-#include "content/public/browser/browser_thread.h"
 #include "crypto/sha2.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -31,18 +33,7 @@
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 namespace component_updater {
-
 namespace {
-
-// The SHA256 of the SubjectPublicKeyInfo used to sign the component.
-// The component id is: lbimbicckdokpoicboneldipejkhjgdg
-constexpr uint8_t kTranslateKitPublicKeySHA256[32] = {
-    0xb1, 0x8c, 0x18, 0x22, 0xa3, 0xea, 0xfe, 0x82, 0x1e, 0xd4, 0xb3,
-    0x8f, 0x49, 0xa7, 0x96, 0x36, 0x55, 0xf3, 0xbc, 0x0d, 0xa5, 0x67,
-    0x48, 0x09, 0xcd, 0x7b, 0xa9, 0x5f, 0xd8, 0x7f, 0x53, 0xb4};
-
-static_assert(std::size(kTranslateKitPublicKeySHA256) == crypto::kSHA256Length,
-              "Wrong hash length");
 
 // The location of the libtranslatekit binary within the installation directory.
 #if BUILDFLAG(IS_WIN)
@@ -91,18 +82,20 @@ void SetBinaryPathInPrefs(PrefService* pref_service,
 }  // namespace
 
 TranslateKitComponentInstallerPolicy::TranslateKitComponentInstallerPolicy(
-    PrefService* pref_service)
-    : pref_service_(pref_service) {}
+    PrefService* pref_service,
+    base::RepeatingClosure on_ready_callback)
+    : pref_service_(pref_service),
+      on_ready_callback_(on_ready_callback ? std::move(on_ready_callback)
+                                           : base::DoNothing()) {}
 
 TranslateKitComponentInstallerPolicy::~TranslateKitComponentInstallerPolicy() =
     default;
 
 bool TranslateKitComponentInstallerPolicy::VerifyInstallation(
-    const base::Value::Dict& manifest,
+    const base::DictValue& manifest,
     const base::FilePath& install_dir) const {
 #if BUILDFLAG(IS_CHROMEOS)
-  bool squash_fs_found = base::PathExists(GetSquashFsImagePath(install_dir));
-  return squash_fs_found;
+  return base::PathExists(GetSquashFsImagePath(install_dir));
 #else
   return base::PathExists(GetInstalledPath(install_dir));
 #endif  // BUILDFLAG(IS_CHROMEOS)
@@ -119,7 +112,7 @@ bool TranslateKitComponentInstallerPolicy::RequiresNetworkEncryption() const {
 
 update_client::CrxInstaller::Result
 TranslateKitComponentInstallerPolicy::OnCustomInstall(
-    const base::Value::Dict& manifest,
+    const base::DictValue& manifest,
     const base::FilePath& install_dir) {
   // Nothing custom here.
   return update_client::CrxInstaller::Result(0);
@@ -130,7 +123,7 @@ void TranslateKitComponentInstallerPolicy::OnCustomUninstall() {}
 void TranslateKitComponentInstallerPolicy::ComponentReady(
     const base::Version& version,
     const base::FilePath& install_dir,
-    base::Value::Dict manifest) {
+    base::DictValue manifest) {
   VLOG(1) << "Component ready, version " << version.GetString() << " in "
           << install_dir.value();
 
@@ -148,6 +141,7 @@ void TranslateKitComponentInstallerPolicy::ComponentReady(
   }
 #else
   SetBinaryPathInPrefs(pref_service_, install_dir);
+  on_ready_callback_.Run();
 #endif  // BUILDFLAG(IS_CHROMEOS)
 }
 
@@ -160,13 +154,13 @@ void TranslateKitComponentInstallerPolicy::OnImageLoaderComponentLoaded(
     return;
   }
   SetBinaryPathInPrefs(pref_service_, *mount_path);
+  on_ready_callback_.Run();
 }
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 base::FilePath TranslateKitComponentInstallerPolicy::GetRelativeInstallDir()
     const {
-  return base::FilePath(
-      on_device_translation::kTranslateKitBinaryInstallationRelativeDir);
+  return on_device_translation::GetBinaryRelativeInstallDir();
 }
 
 void TranslateKitComponentInstallerPolicy::GetHash(
@@ -189,9 +183,10 @@ TranslateKitComponentInstallerPolicy::GetInstallerAttributes() const {
 }
 
 // static
-void TranslateKitComponentInstallerPolicy::UpdateComponentOnDemand() {
+void TranslateKitComponentInstallerPolicy::UpdateComponentOnDemand(
+    ComponentUpdateService* cus) {
   auto crx_id = GetExtensionId();
-  g_browser_process->component_updater()->GetOnDemandUpdater().OnDemandUpdate(
+  cus->GetOnDemandUpdater().OnDemandUpdate(
       crx_id, component_updater::OnDemandUpdater::Priority::FOREGROUND,
       base::BindOnce([](update_client::Error error) {
         if (error != update_client::Error::NONE &&
@@ -209,8 +204,8 @@ const std::string TranslateKitComponentInstallerPolicy::GetExtensionId() {
 void RegisterTranslateKitComponent(ComponentUpdateService* cus,
                                    PrefService* pref_service,
                                    bool force_install,
-                                   base::OnceClosure registered_callback) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+                                   base::OnceClosure registered_callback,
+                                   base::RepeatingClosure on_ready_callback) {
   VLOG(1) << "Registering TranslateKit component.";
   if (!force_install &&
       !pref_service->GetBoolean(prefs::kTranslateKitPreviouslyRegistered)) {
@@ -230,7 +225,8 @@ void RegisterTranslateKitComponent(ComponentUpdateService* cus,
   SetBinaryPathInPrefs(pref_service, base::FilePath());
 
   auto installer = base::MakeRefCounted<ComponentInstaller>(
-      std::make_unique<TranslateKitComponentInstallerPolicy>(pref_service));
+      std::make_unique<TranslateKitComponentInstallerPolicy>(
+          pref_service, std::move(on_ready_callback)));
   installer->Register(cus, std::move(registered_callback));
 }
 

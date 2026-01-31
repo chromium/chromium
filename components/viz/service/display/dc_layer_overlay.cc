@@ -12,7 +12,6 @@
 #include "base/notreached.h"
 #include "build/build_config.h"
 #include "cc/base/math_util.h"
-#include "components/viz/common/overlay_state/win/overlay_state_service.h"
 #include "components/viz/common/quads/aggregated_render_pass_draw_quad.h"
 #include "components/viz/common/quads/solid_color_draw_quad.h"
 #include "components/viz/common/quads/texture_draw_quad.h"
@@ -20,16 +19,12 @@
 #include "components/viz/service/display/display_resource_provider.h"
 #include "components/viz/service/display/overlay_processor_interface.h"
 #include "gpu/config/gpu_finch_features.h"
-#include "media/base/media_switches.h"
-#include "media/base/win/mf_feature_checks.h"
 #include "ui/gfx/color_space.h"
 #include "ui/gfx/color_space_win.h"
-#include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rect_conversions.h"
 #include "ui/gfx/overlay_layer_id.h"
 #include "ui/gfx/video_types.h"
-#include "ui/gl/gl_bindings.h"
 
 namespace viz {
 
@@ -475,7 +470,6 @@ bool IsPreviousFrameUnderlayRect(
 struct ValidateDrawQuadResult {
   DCLayerResult code = DC_LAYER_FAILED_UNSUPPORTED_QUAD;
   bool is_yuv_overlay = false;
-  gpu::Mailbox promotion_hint_mailbox;
 };
 
 ValidateDrawQuadResult ValidateDrawQuad(
@@ -485,8 +479,7 @@ ValidateDrawQuadResult ValidateDrawQuad(
     const bool has_overlay_support,
     const bool has_p010_video_processor_support,
     const int allowed_yuv_overlay_count,
-    const int processed_yuv_overlay_count,
-    const bool allow_promotion_hinting) {
+    const int processed_yuv_overlay_count) {
   if (quad_to_promote->material != DrawQuad::Material::kTextureContent) {
     return {.code = DC_LAYER_FAILED_UNSUPPORTED_QUAD};
   }
@@ -503,15 +496,6 @@ ValidateDrawQuadResult ValidateDrawQuad(
 
   ValidateDrawQuadResult result;
   result.is_yuv_overlay = quad->is_video_frame;
-
-  if (allow_promotion_hinting) {
-    // If this quad has marked itself as wanting promotion hints then get
-    // the associated mailbox.
-    ResourceId id = quad->resource_id;
-    if (resource_provider->DoesResourceWantPromotionHint(id)) {
-      result.promotion_hint_mailbox = resource_provider->GetMailbox(id);
-    }
-  }
 
   if (quad->protected_video_type ==
       gfx::ProtectedVideoType::kHardwareProtected) {
@@ -643,7 +627,6 @@ DCLayerOverlayProcessor::DCLayerOverlayProcessor(
     UpdateAutoHDRVideoProcessorSupport();
     gl::DirectCompositionOverlayCapsMonitor::GetInstance()->AddObserver(this);
   }
-  allow_promotion_hinting_ = media::SupportMediaFoundationClearPlayback();
 }
 
 DCLayerOverlayProcessor::~DCLayerOverlayProcessor() {
@@ -883,8 +866,7 @@ void DCLayerOverlayProcessor::CollectCandidates(
     ValidateDrawQuadResult result = ValidateDrawQuad(
         resource_provider, *it, backdrop_filter_rects, has_overlay_support_,
         has_p010_video_processor_support_, allowed_yuv_overlay_count_,
-        global_overlay_state.processed_yuv_overlay_count,
-        allow_promotion_hinting_);
+        global_overlay_state.processed_yuv_overlay_count);
 
     // There's copy requests, so we'll only allow quads that require overlay.
     if (render_pass->HasCapture() && !OverlayCandidate::RequiresOverlay(*it)) {
@@ -909,18 +891,6 @@ void DCLayerOverlayProcessor::CollectCandidates(
           global_overlay_state.processed_yuv_overlay_count++;
         }
       }
-    }
-
-    if (!result.promotion_hint_mailbox.IsZero()) {
-      DCHECK(allow_promotion_hinting_);
-      bool promoted = result.code == DC_LAYER_SUCCESS;
-      auto* overlay_state_service = OverlayStateService::GetInstance();
-      // The OverlayStateService should always be initialized by GpuServiceImpl
-      // at creation - DCHECK here just to assert there aren't any corner cases
-      // where this isn't true.
-      DCHECK(overlay_state_service->IsInitialized());
-      overlay_state_service->SetPromotionHint(result.promotion_hint_mailbox,
-                                              promoted);
     }
 
     if (result.code != DC_LAYER_SUCCESS) {

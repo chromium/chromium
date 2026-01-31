@@ -56,7 +56,7 @@ class NET_EXPORT DnsOverHttpsConfig {
   std::string ToString() const;
 
   // Encodes the config as a Value.  Used to produce the JSON representation.
-  base::Value::Dict ToValue() const;
+  base::DictValue ToValue() const;
 
  private:
   // Constructs a Config from URI templates of zero or more servers.

@@ -11,7 +11,7 @@ import java.util.function.Function;
 
 /**
  * A simplified version of {@link org.chromium.base.supplier.TransitiveObservableSupplier} that only
- * has one {@link ObservableSupplier}, but still needs unwrapping to get at the target value. Care
+ * has one {@link MonotonicObservableSupplier}, but still needs unwrapping to get at the target value. Care
  * should be taken to make sure null is handled in unwrap.
  *
  * <ParentT> For example, suppose we have an ObservableSupplier giving us a Car object. Car objects

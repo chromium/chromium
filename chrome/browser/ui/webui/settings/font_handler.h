@@ -33,10 +33,10 @@ class FontHandler : public SettingsPageUIHandler {
 
  private:
   // Handler for script asking for font information.
-  void HandleFetchFontsData(const base::Value::List& args);
+  void HandleFetchFontsData(const base::ListValue& args);
 
   // Callback to handle fonts loading.
-  void FontListHasLoaded(std::string callback_id, base::Value::List list);
+  void FontListHasLoaded(std::string callback_id, base::ListValue list);
 
   base::WeakPtrFactory<FontHandler> weak_ptr_factory_{this};
 };

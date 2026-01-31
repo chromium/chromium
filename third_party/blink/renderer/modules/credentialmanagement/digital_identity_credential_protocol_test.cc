@@ -258,4 +258,46 @@ TEST_F(DigitalIdentityCredentialProtocolTest,
       mojom::WebFeature::kDigitalCredentialsProtocolOpenId4VpUnsigned));
 }
 
+TEST_F(DigitalIdentityCredentialProtocolTest,
+       DiscoverProtocolUseCountersUnknownProtocol) {
+  ScopedWebIdentityDigitalCredentialsForTest scoped_digital_credentials(
+      /*enabled=*/true);
+
+  ScriptState* script_state = ToScriptStateForMainWorld(&GetFrame());
+  ScriptState::Scope scope(script_state);
+  auto* resolver =
+      MakeGarbageCollected<ScriptPromiseResolver<IDLNullable<Credential>>>(
+          script_state);
+
+  DiscoverDigitalIdentityCredentialFromExternalSource(
+      resolver, *CreateOptionsWithProtocol(script_state, "unknown-protocol"));
+
+  test::RunPendingTasks();
+
+  EXPECT_TRUE(GetDocument().IsUseCounted(
+      mojom::WebFeature::kDigitalCredentialsProtocolUnknown));
+}
+
+TEST_F(DigitalIdentityCredentialProtocolTest,
+       CreateProtocolUseCountersUnknownProtocol) {
+  ScopedWebIdentityDigitalCredentialsCreationForTest
+      scoped_digital_credentials_creation(
+          /*enabled=*/true);
+
+  ScriptState* script_state = ToScriptStateForMainWorld(&GetFrame());
+  ScriptState::Scope scope(script_state);
+  auto* resolver =
+      MakeGarbageCollected<ScriptPromiseResolver<IDLNullable<Credential>>>(
+          script_state);
+
+  CreateDigitalIdentityCredentialInExternalSource(
+      resolver,
+      *CreateCreateOptionsWithProtocol(script_state, "unknown-protocol"));
+
+  test::RunPendingTasks();
+
+  EXPECT_TRUE(GetDocument().IsUseCounted(
+      mojom::WebFeature::kDigitalCredentialsProtocolUnknown));
+}
+
 }  // namespace blink

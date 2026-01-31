@@ -17,9 +17,9 @@
 
 namespace chromeos {
 
-base::Value::Dict SerializePrintSettings(
+base::DictValue SerializePrintSettings(
     const crosapi::mojom::PrintSettingsPtr& settings) {
-  base::Value::Dict dict;
+  base::DictValue dict;
   dict.Set(::printing::kPreviewRequestID,
            static_cast<int>(settings->request_id));
   dict.Set(::printing::kPreviewUIID, static_cast<int>(settings->preview_id));
@@ -142,7 +142,7 @@ base::Value::Dict SerializePrintSettings(
   }
 
   if (settings->advanced_settings) {
-    base::Value::Dict advanced_settings;
+    base::DictValue advanced_settings;
     for (auto& setting : *settings->advanced_settings) {
       advanced_settings.Set(setting.first, setting.second.Clone());
     }
@@ -151,17 +151,17 @@ base::Value::Dict SerializePrintSettings(
   }
 
   if (settings->page_range.size() == 2) {
-    base::Value::Dict page_range;
+    base::DictValue page_range;
     page_range.Set(::printing::kSettingPageRangeFrom,
                    static_cast<int>(settings->page_range[0]));
     page_range.Set(::printing::kSettingPageRangeTo,
                    static_cast<int>(settings->page_range[1]));
-    base::Value::List page_range_list;
+    base::ListValue page_range_list;
     page_range_list.Append(std::move(page_range));
     dict.Set(::printing::kSettingPageRange, std::move(page_range_list));
   }
 
-  base::Value::Dict margins_custom;
+  base::DictValue margins_custom;
   margins_custom.Set(::printing::kSettingMarginTop,
                      static_cast<int>(settings->margins_custom->margin_top));
   margins_custom.Set(::printing::kSettingMarginRight,
@@ -172,7 +172,7 @@ base::Value::Dict SerializePrintSettings(
                      static_cast<int>(settings->margins_custom->margin_bottom));
   dict.Set(::printing::kSettingMarginsCustom, std::move(margins_custom));
 
-  base::Value::Dict media_size;
+  base::DictValue media_size;
   media_size.Set(::printing::kSettingMediaSizeHeightMicrons,
                  static_cast<int>(settings->media_size->height_microns));
   media_size.Set(::printing::kSettingMediaSizeWidthMicrons,

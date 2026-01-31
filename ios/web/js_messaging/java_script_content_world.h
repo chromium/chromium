@@ -51,9 +51,14 @@ class JavaScriptContentWorld {
 
  private:
   // Processes the response of a script message and forwards it to `handler`.
-  void ScriptMessageReceived(JavaScriptFeature::ScriptMessageHandler handler,
-                             BrowserState* browser_state,
+  void ScriptMessageReceived(base::WeakPtr<JavaScriptFeature> feature,
                              WKScriptMessage* script_message);
+
+  // Processes the response of a script message and forwards it to `handler`.
+  // Version for features that reply to messages.
+  void ScriptMessageReceivedWithReply(base::WeakPtr<JavaScriptFeature> feature,
+                                      WKScriptMessage* script_message,
+                                      ScriptMessageReplyHandler reply_handler);
 
   // The features which have already been configured for `content_world_`.
   std::set<const JavaScriptFeature*> features_;

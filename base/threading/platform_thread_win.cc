@@ -384,7 +384,7 @@ void SetThreadPriority(PlatformThreadHandle thread_handle,
     case ThreadType::kDefault:
       desired_priority = THREAD_PRIORITY_NORMAL;
       break;
-    case ThreadType::kDisplayCritical:
+    case ThreadType::kPresentation:
       desired_priority = THREAD_PRIORITY_ABOVE_NORMAL;
       break;
     case ThreadType::kInteractive:
@@ -433,7 +433,7 @@ void SetThreadQualityOfService(PlatformThreadHandle thread_handle,
       desire_ecoqos = true;
       break;
     case ThreadType::kDefault:
-    case ThreadType::kDisplayCritical:
+    case ThreadType::kPresentation:
     case ThreadType::kInteractive:
     case ThreadType::kRealtimeAudio:
       desire_ecoqos = false;
@@ -460,7 +460,8 @@ void SetThreadQualityOfService(PlatformThreadHandle thread_handle,
 namespace internal {
 
 void SetCurrentThreadTypeImpl(ThreadType thread_type,
-                              MessagePumpType pump_type_hint) {
+                              MessagePumpType pump_type_hint,
+                              bool may_change_affinity) {
   PlatformThreadHandle thread_handle = PlatformThread::CurrentHandle();
   SetThreadPriority(thread_handle, thread_type);
   SetThreadQualityOfService(thread_handle, thread_type);
@@ -474,12 +475,12 @@ PlatformPriorityOverride SetThreadTypeOverride(
   return true;
 }
 
-void RemoveThreadTypeOverrideImpl(
+void RemoveThreadTypeOverride(
+    PlatformThreadHandle thread_handle,
     const PlatformPriorityOverride& priority_override_handle,
-    ThreadType thread_type) {
-  PlatformThreadHandle thread_handle = PlatformThread::CurrentHandle();
-  SetThreadPriority(thread_handle, thread_type);
-  SetThreadQualityOfService(thread_handle, thread_type);
+    ThreadType initial_thread_type) {
+  SetThreadPriority(thread_handle, initial_thread_type);
+  SetThreadQualityOfService(thread_handle, initial_thread_type);
 }
 
 }  // namespace internal
@@ -532,7 +533,7 @@ ThreadType PlatformThread::GetCurrentEffectiveThreadTypeForTest() {
       [[fallthrough]];
     case kWinDisplayPriority2:
     case THREAD_PRIORITY_ABOVE_NORMAL:
-      return ThreadType::kDisplayCritical;
+      return ThreadType::kPresentation;
     case THREAD_PRIORITY_HIGHEST:
       return ThreadType::kInteractive;
     case THREAD_PRIORITY_TIME_CRITICAL:

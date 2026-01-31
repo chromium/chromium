@@ -101,10 +101,6 @@ bool LazyLoadImageObserver::LoadAllImagesAndBlockLoadEvent(
           ->LoadDeferredImageBlockingLoad();
       resources_have_started_loading = true;
     }
-    if (const ComputedStyle* style = element->GetComputedStyle()) {
-      style->LoadDeferredImages(element->GetDocument());
-      resources_have_started_loading = true;
-    }
     to_be_unobserved.push_back(element);
   }
   for (Element* element : to_be_unobserved)
@@ -141,10 +137,6 @@ void LazyLoadImageObserver::LoadIfNearViewport(
       continue;
     if (image_element)
       image_element->LoadDeferredImageFromMicrotask();
-
-    // Load the background image if the element has one deferred.
-    if (const ComputedStyle* style = element->GetComputedStyle())
-      style->LoadDeferredImages(element->GetDocument());
 
     lazy_load_intersection_observer_->unobserve(element);
   }

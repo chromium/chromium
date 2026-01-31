@@ -33,10 +33,11 @@ import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
-import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.toolbar.home_page_button.HomePageButtonsCoordinator.HomePageButtonsState;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
+import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modelutil.PropertyModel;
 
 /** Unit tests for {@link HomePageButtonsMediator}. */
@@ -60,12 +61,13 @@ public class HomePageButtonsMediatorUnitTest {
         mHomePageButtonsMediator =
                 new HomePageButtonsMediator(
                         mContext,
-                        mock(ObservableSupplier.class),
+                        mock(MonotonicObservableSupplier.class),
                         mModel,
                         (context) -> {},
                         () -> mIsHomeButtonMenuDisabled,
                         mBottomSheetController,
-                        (view) -> {});
+                        (view) -> {},
+                        mock(WindowAndroid.class));
         when(mHomeButton.getRootView()).thenReturn(Mockito.mock(View.class));
         when(mHomeButton.getResources()).thenReturn(mResources);
     }

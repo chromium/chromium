@@ -6,6 +6,7 @@
 
 #include <algorithm>
 #include <limits>
+#include <optional>
 #include <vector>
 
 #include "base/byte_count.h"
@@ -142,15 +143,15 @@ void TaskGroup::Refresh(const gpu::VideoMemoryUsageStats& gpu_memory_stats,
       TaskManagerObserver::IsResourceRefreshEnabled(REFRESH_TYPE_NETWORK_USAGE,
                                                     refresh_flags);
 
-  per_process_network_usage_rate_ =
-      network_usage_refresh_enabled ? base::ByteCount(0) : base::ByteCount(-1);
-  cumulative_per_process_network_usage_ = base::ByteCount(0);
+  per_process_network_usage_rate_.reset();
+  if (network_usage_refresh_enabled) {
+    per_process_network_usage_rate_ = base::ByteSize(0);
+  }
+
   for (Task* task : tasks_) {
     task->Refresh(update_interval, refresh_flags);
     if (network_usage_refresh_enabled) {
-      per_process_network_usage_rate_ += task->GetNetworkUsageRate();
-      cumulative_per_process_network_usage_ +=
-          task->GetCumulativeNetworkUsage();
+      per_process_network_usage_rate_.value() += task->GetNetworkUsageRate();
     }
   }
 
@@ -220,12 +221,12 @@ void TaskGroup::RefreshGpuMemory(
     const gpu::VideoMemoryUsageStats& gpu_memory_stats) {
   auto itr = gpu_memory_stats.process_map.find(process_id_);
   if (itr == gpu_memory_stats.process_map.end()) {
-    gpu_memory_ = base::ByteCount(-1);
+    gpu_memory_ = std::nullopt;
     gpu_memory_has_duplicates_ = false;
     return;
   }
 
-  gpu_memory_ = base::ByteCount(itr->second.video_memory);
+  gpu_memory_ = base::ByteSize(itr->second.video_memory);
   gpu_memory_has_duplicates_ = itr->second.has_duplicates;
 }
 
@@ -252,7 +253,7 @@ void TaskGroup::OnCpuRefreshDone(double cpu_usage) {
   OnBackgroundRefreshTypeFinished(REFRESH_TYPE_CPU);
 }
 
-void TaskGroup::OnSwappedMemRefreshDone(base::ByteCount swapped_mem_bytes) {
+void TaskGroup::OnSwappedMemRefreshDone(base::ByteSize swapped_mem_bytes) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   swapped_mem_ = swapped_mem_bytes;
@@ -305,7 +306,7 @@ void TaskGroup::OnSamplerRefreshDone(
 void TaskGroup::OnArcSamplerRefreshDone(
     std::optional<ArcSharedSampler::MemoryFootprintBytes> memory_footprint) {
   if (memory_footprint.has_value()) {
-    set_footprint(base::ByteCount(memory_footprint.value()));
+    set_footprint(base::ByteSize(memory_footprint.value()));
   }
 }
 #endif  // BUILDFLAG(IS_CHROMEOS)

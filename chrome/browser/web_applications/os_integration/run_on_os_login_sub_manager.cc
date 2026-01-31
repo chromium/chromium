@@ -56,7 +56,7 @@ proto::os_state::RunOnOsLogin::Mode ConvertWebAppRunOnOsLoginModeToProto(
 // more info.
 bool DoesRunOnOsLoginRequireExecution() {
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX)
-  return base::FeatureList::IsEnabled(features::kDesktopPWAsRunOnOsLogin);
+  return true;
 #else
   return false;
 #endif

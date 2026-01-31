@@ -106,10 +106,8 @@ class IsolatedWebAppUpdateManager::LocalDevModeUpdateDiscoverer {
   void DiscoverLocalUpdate(const IwaSourceDevModeWithFileOp& location,
                            const IsolatedWebAppUrlInfo& url_info,
                            Callback callback) {
-    const WebApp* installed_app =
-        provider_->registrar_unsafe().GetAppById(url_info.app_id());
-    if (!installed_app || !installed_app->isolation_data().has_value() ||
-        !installed_app->isolation_data()->location().dev_mode()) {
+    if (!provider_->registrar_unsafe().AppMatches(
+            url_info.app_id(), WebAppFilter::IsDevModeIsolatedApp())) {
       std::move(callback).Run(
           base::unexpected("Discovering a local update is only supported for "
                            "dev mode-installed apps."));
@@ -202,25 +200,19 @@ IwaBundleIdToUpdateOptionsMap GetKioskPolicyIsolatedWebApps() {
 IwaBundleIdToUpdateOptionsMap GetIsolatedWebAppsWithOnlyUserManagement(
     Profile* profile) {
   IwaBundleIdToUpdateOptionsMap result;
-  for (const WebApp& web_app : web_app::WebAppProvider::GetForWebApps(profile)
-                                   ->registrar_unsafe()
-                                   .GetApps()) {
-    if (!web_app.isolation_data() ||
-        web_app.GetSources().HasAny({web_app::WebAppManagement::kKiosk,
-                                     web_app::WebAppManagement::kIwaShimlessRma,
-                                     web_app::WebAppManagement::kIwaPolicy})) {
-      continue;
-    }
-
-    auto url_info = IsolatedWebAppUrlInfo::Create(web_app.start_url());
+  for (const WebApp& iwa :
+       web_app::WebAppProvider::GetForWebApps(profile)
+           ->registrar_unsafe()
+           .GetApps(WebAppFilter::IsIsolatedWebAppWithOnlyUserManagement())) {
+    auto url_info = IsolatedWebAppUrlInfo::Create(iwa.start_url());
     CHECK(url_info.has_value());
 
-    if (!web_app.isolation_data()->update_manifest_url()) {
+    if (!iwa.isolation_data()->update_manifest_url()) {
       continue;
     }
 
     result[url_info->web_bundle_id()] = IsolatedWebAppUpdateOptions(
-        web_app.isolation_data().value().update_manifest_url().value());
+        *iwa.isolation_data()->update_manifest_url());
   }
   return result;
 }
@@ -403,13 +395,13 @@ void IsolatedWebAppUpdateManager::Shutdown() {
 }
 
 base::Value IsolatedWebAppUpdateManager::AsDebugValue() const {
-  base::Value::List update_apply_waiters;
+  base::ListValue update_apply_waiters;
   for (const auto& [app_id, waiter] : update_apply_waiters_) {
     update_apply_waiters.Append(waiter->AsDebugValue());
   }
 
   return base::Value(
-      base::Value::Dict()
+      base::DictValue()
           .Set("automatic_updates_enabled", automatic_updates_enabled_)
           .Set("update_discovery_frequency_in_minutes",
                update_discovery_frequency_.InSecondsF() /
@@ -472,15 +464,17 @@ void IsolatedWebAppUpdateManager::OnWebAppUninstalled(
 
 bool IsolatedWebAppUpdateManager::MaybeDiscoverUpdatesForApp(
     const webapps::AppId& app_id) {
-  ASSIGN_OR_RETURN(const WebApp& iwa,
-                   GetIsolatedWebAppById(provider_->registrar_unsafe(), app_id),
-                   [](const std::string&) { return false; });
+  const WebApp* iwa = provider_->registrar_unsafe().GetAppById(
+      app_id, WebAppFilter::IsIsolatedApp());
+  if (!iwa) {
+    return false;
+  }
 
   IwaBundleIdToUpdateOptionsMap id_to_update_options_map =
       GetBundleIdToIsolatedWebAppsUpdateOptionsMap(&*profile_);
 
   bool queued_update_discovery_task =
-      MaybeQueueUpdateDiscoveryTask(iwa, id_to_update_options_map);
+      MaybeQueueUpdateDiscoveryTask(*iwa, id_to_update_options_map);
   if (queued_update_discovery_task) {
     task_queue_.MaybeStartNextTask();
   }
@@ -865,8 +859,8 @@ IsolatedWebAppUpdateManager::NextUpdateDiscoveryCheck::AsDebugValue() const {
   double next_update_check_in_minutes =
       next_update_check.InSecondsF() / base::Time::kSecondsPerMinute;
 
-  return base::Value(base::Value::Dict().Set("next_update_check_in_minutes",
-                                             next_update_check_in_minutes));
+  return base::Value(base::DictValue().Set("next_update_check_in_minutes",
+                                           next_update_check_in_minutes));
 }
 
 IsolatedWebAppUpdateManager::TaskQueue::TaskQueue(
@@ -876,18 +870,18 @@ IsolatedWebAppUpdateManager::TaskQueue::TaskQueue(
 IsolatedWebAppUpdateManager::TaskQueue::~TaskQueue() = default;
 
 base::Value IsolatedWebAppUpdateManager::TaskQueue::AsDebugValue() const {
-  base::Value::List update_discovery_tasks;
+  base::ListValue update_discovery_tasks;
   for (const auto& task : update_discovery_tasks_) {
     update_discovery_tasks.Append(task->AsDebugValue());
   }
 
-  base::Value::List update_apply_tasks;
+  base::ListValue update_apply_tasks;
   for (const auto& task : update_apply_tasks_) {
     update_apply_tasks.Append(task->AsDebugValue());
   }
 
   return base::Value(
-      base::Value::Dict()
+      base::DictValue()
           .Set("update_discovery_tasks", std::move(update_discovery_tasks))
           .Set("update_discovery_log", update_discovery_results_log_.Clone())
           .Set("update_apply_tasks", std::move(update_apply_tasks))

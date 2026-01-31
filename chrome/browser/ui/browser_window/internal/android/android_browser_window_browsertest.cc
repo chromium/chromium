@@ -14,9 +14,12 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
+#include "chrome/browser/ui/browser_window/test/android/browser_window_android_browsertest_base.h"
 #include "chrome/test/base/android/android_browser_test.h"
 #include "components/feed/feed_feature_list.h"
 #include "content/public/browser/navigation_handle.h"
+#include "content/public/browser/render_frame_host.h"
+#include "content/public/browser/render_process_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
@@ -24,44 +27,20 @@
 #include "ui/base/page_transition_types.h"
 #include "ui/base/window_open_disposition.h"
 
-class AndroidBrowserWindowBrowserTest : public AndroidBrowserTest {
+class AndroidBrowserWindowBrowserTest
+    : public BrowserWindowAndroidBrowserTestBase {
  public:
   AndroidBrowserWindowBrowserTest() {
     feature_list_.InitWithFeatures(
         /*enabled_features=*/
-        {// Disable ChromeTabbedActivity instance limit so that the total number
-         // of
-         // windows created by the entire test suite won't be limited.
-         //
-         // See MultiWindowUtils#getMaxInstances() for the reason:
-         // https://source.chromium.org/chromium/chromium/src/+/main:chrome/android/java/src/org/chromium/chrome/browser/multiwindow/MultiWindowUtils.java;l=209;drc=0bcba72c5246a910240b311def40233f7d3f15af
-         chrome::android::kDisableInstanceLimit,
-
-         // Enable incognito windows on Android.
-         feed::kAndroidOpenIncognitoAsWindow},
+        {},
         /*disabled_features=*/
         {// Disable prewarm to avoid crash when profile is shutting down.
          features::kPrewarm});
   }
 
-  void SetUpDefaultCommandLine(base::CommandLine* command_line) override {
-    AndroidBrowserTest::SetUpDefaultCommandLine(command_line);
-
-    // Disable the first-run experience (FRE) so that when a function under
-    // test launches an Intent for ChromeTabbedActivity, ChromeTabbedActivity
-    // will be shown instead of FirstRunActivity.
-    command_line->AppendSwitch("disable-fre");
-
-    // Force DeviceInfo#isDesktop() to be true so that the kDisableInstanceLimit
-    // flag in the constructor can be effective when running tests on an
-    // emulator without "--force-desktop-android".
-    //
-    // See MultiWindowUtils#getMaxInstances() for the reason:
-    // https://source.chromium.org/chromium/chromium/src/+/main:chrome/android/java/src/org/chromium/chrome/browser/multiwindow/MultiWindowUtils.java;l=213;drc=0bcba72c5246a910240b311def40233f7d3f15af
-    command_line->AppendSwitch(switches::kForceDesktopAndroid);
-  }
   void SetUpOnMainThread() override {
-    AndroidBrowserTest::SetUpOnMainThread();
+    BrowserWindowAndroidBrowserTestBase::SetUpOnMainThread();
     ASSERT_TRUE(embedded_test_server()->Start());
   }
 
@@ -171,4 +150,101 @@ IN_PROC_BROWSER_TEST_F(AndroidBrowserWindowBrowserTest,
   // The wrapper callback in OpenURL checks for a null handle and suppresses
   // the user callback if the handle is null.
   EXPECT_FALSE(future.IsReady());
+}
+
+IN_PROC_BROWSER_TEST_F(AndroidBrowserWindowBrowserTest, OpenURL_PopupBlocked) {
+  AndroidBrowserWindow* window = GetBrowserWindow();
+  GURL url = embedded_test_server()->GetURL("/title1.html");
+
+  // 1. Navigate to a page first to have a valid source.
+  content::OpenURLParams source_params(
+      embedded_test_server()->GetURL("/simple.html"), content::Referrer(),
+      WindowOpenDisposition::CURRENT_TAB, ui::PAGE_TRANSITION_TYPED, false);
+
+  base::test::TestFuture<GURL> source_future;
+  content::WebContents* source_contents = window->OpenURL(
+      source_params,
+      base::BindLambdaForTesting([&](content::NavigationHandle& handle) {
+        source_future.SetValue(handle.GetURL());
+      }));
+  ASSERT_TRUE(source_contents);
+  ASSERT_TRUE(source_future.Wait());
+
+  content::RenderFrameHost* source_rfh = source_contents->GetPrimaryMainFrame();
+
+  // 2. Create params for a popup without a user gesture.
+  content::OpenURLParams params(url, content::Referrer(),
+                                WindowOpenDisposition::NEW_POPUP,
+                                ui::PAGE_TRANSITION_LINK,
+                                /*is_renderer_initiated=*/false);
+  params.user_gesture = false;
+  params.source_render_process_id =
+      source_rfh->GetProcess()->GetID().GetUnsafeValue();
+  params.source_render_frame_id = source_rfh->GetRoutingID();
+
+  base::test::TestFuture<GURL> future;
+  content::WebContents* result = window->OpenURL(
+      params,
+      base::BindLambdaForTesting([&](content::NavigationHandle& handle) {
+        future.SetValue(handle.GetURL());
+      }));
+
+  // The popup should be blocked, so OpenURL should return nullptr.
+  EXPECT_EQ(nullptr, result);
+
+  // To verify the callback is NOT called, we need to wait to ensure no async
+  // task was posted.
+  base::RunLoop run_loop;
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, run_loop.QuitClosure());
+  run_loop.Run();
+
+  EXPECT_FALSE(future.IsReady());
+}
+
+IN_PROC_BROWSER_TEST_F(AndroidBrowserWindowBrowserTest, OpenURL_PopupAllowed) {
+  AndroidBrowserWindow* window = GetBrowserWindow();
+  GURL url = embedded_test_server()->GetURL("/title1.html");
+
+  // 1. Navigate to a page first to have a valid source.
+  content::OpenURLParams source_params(
+      embedded_test_server()->GetURL("/simple.html"), content::Referrer(),
+      WindowOpenDisposition::CURRENT_TAB, ui::PAGE_TRANSITION_TYPED, false);
+
+  base::test::TestFuture<GURL> source_future;
+  content::WebContents* source_contents = window->OpenURL(
+      source_params,
+      base::BindLambdaForTesting([&](content::NavigationHandle& handle) {
+        source_future.SetValue(handle.GetURL());
+      }));
+  ASSERT_TRUE(source_contents);
+  ASSERT_TRUE(source_future.Wait());
+
+  content::RenderFrameHost* source_rfh = source_contents->GetPrimaryMainFrame();
+
+  // 2. Create params for a popup WITH a user gesture.
+  content::OpenURLParams params(url, content::Referrer(),
+                                WindowOpenDisposition::NEW_POPUP,
+                                ui::PAGE_TRANSITION_LINK,
+                                /*is_renderer_initiated=*/false);
+  params.user_gesture = true;
+  params.source_render_process_id =
+      source_rfh->GetProcess()->GetID().GetUnsafeValue();
+  params.source_render_frame_id = source_rfh->GetRoutingID();
+
+  base::test::TestFuture<GURL> future;
+  content::WebContents* result = window->OpenURL(
+      params,
+      base::BindLambdaForTesting([&](content::NavigationHandle& handle) {
+        future.SetValue(handle.GetURL());
+      }));
+
+  // The popup should be allowed.
+  if (result) {
+    EXPECT_EQ(url, result->GetVisibleURL());
+  }
+
+  // Callback should eventually be called.
+  ASSERT_TRUE(future.Wait());
+  EXPECT_EQ(url, future.Get());
 }

@@ -19,25 +19,15 @@
 #include "base/path_service.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
+#include "net/base/registry_controlled_domains/effective_tld_names_unittest1-inc.cc"
+#include "net/base/registry_controlled_domains/effective_tld_names_unittest3-inc.cc"
+#include "net/base/registry_controlled_domains/effective_tld_names_unittest4-inc.cc"
+#include "net/base/registry_controlled_domains/effective_tld_names_unittest5-inc.cc"
+#include "net/base/registry_controlled_domains/effective_tld_names_unittest6-inc.cc"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace net {
 namespace {
-namespace test1 {
-#include "net/base/registry_controlled_domains/effective_tld_names_unittest1-inc.cc"
-}
-namespace test3 {
-#include "net/base/registry_controlled_domains/effective_tld_names_unittest3-inc.cc"
-}
-namespace test4 {
-#include "net/base/registry_controlled_domains/effective_tld_names_unittest4-inc.cc"
-}
-namespace test5 {
-#include "net/base/registry_controlled_domains/effective_tld_names_unittest5-inc.cc"
-}
-namespace test6 {
-#include "net/base/registry_controlled_domains/effective_tld_names_unittest6-inc.cc"
-}
 
 struct Expectation {
   std::string_view key;

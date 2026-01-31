@@ -16,6 +16,39 @@
   <message name="IDS_AUTOFILL_WARNING_MIXED_FORM" desc="Warning text shown when autofill is disabled due to a form on a secure site being submitted over an insecure connection.">
     This form is not secure. Autofill has been turned off.
   </message>
+  <if expr="is_chromeos">
+    <message name="IDS_AUTOFILL_AI_FILLING_REAUTH" desc="Message shown to the user when they need to authenticate to fill an Autofill AI form.">
+      Chrome browser is trying to fill your sensitive info on <ph name="APP_NAME">$1<ex>google.com</ex></ph>.
+    </message>
+    <message name="IDS_AUTOFILL_AI_VIEWING_REAUTH" desc="Message shown to the user when they need to authenticate to view Autofill AI data.">
+      Chrome browser is trying to show sensitive info
+    </message>
+    <message name="IDS_AUTOFILL_AI_UPDATE_REAUTH_REQUIREMENT" desc="Message shown to the user when they need to authenticate to update whether reauth is required when filling or viewing Autofill AI sensitive data.">
+      Chrome browser wants to verify it's you before you change settings
+    </message>
+  </if>
+  <if expr="is_win">
+    <message name="IDS_AUTOFILL_AI_FILLING_REAUTH" desc="Message shown to the user when they need to authenticate to fill an Autofill AI form.">
+      Google Chrome is trying to fill your sensitive info on <ph name="APP_NAME">$1<ex>google.com</ex></ph>.
+    </message>
+    <message name="IDS_AUTOFILL_AI_VIEWING_REAUTH" desc="Message shown to the user when they need to authenticate to view Autofill AI data.">
+      Google Chrome is trying to show sensitive info
+    </message>
+    <message name="IDS_AUTOFILL_AI_UPDATE_REAUTH_REQUIREMENT" desc="Message shown to the user when they need to authenticate to update whether reauth is required when filling or viewing Autofill AI sensitive data.">
+      Google Chrome wants to verify it's you before you change settings
+    </message>
+  </if>
+  <if expr="is_macosx">
+    <message name="IDS_AUTOFILL_AI_FILLING_REAUTH" desc="Message shown to the user when they need to authenticate to fill an Autofill AI form.">
+      fill your sensitive info on <ph name="APP_NAME">$1<ex>google.com</ex></ph>
+    </message>
+    <message name="IDS_AUTOFILL_AI_VIEWING_REAUTH" desc="Message shown to the user when they need to authenticate to view Autofill AI data.">
+      show sensitive info
+    </message>
+    <message name="IDS_AUTOFILL_AI_UPDATE_REAUTH_REQUIREMENT" desc="Message shown to the user when they need to authenticate to update whether reauth is required when filling or viewing Autofill AI sensitive data.">
+      verify it's you before you change settings
+    </message>
+  </if>
   <if expr="_google_chrome">
     <message name="IDS_AUTOFILL_DELETE_AUTOCOMPLETE_SUGGESTION_CONFIRMATION_BODY" desc="Text in a dialog to confirm that the user wants to delete an autocomplete form history suggestion.">
       Remove form suggestion from Chrome?
@@ -476,15 +509,9 @@
       Autofill using another service
     </message>
     <message name="IDS_AUTOFILL_THIRD_PARTY_FILLING_DEFAULT_DESCRIPTION" desc="Description shown on the option to use the default Chrome autofill experience." formatter_data="android_java">
-      Use Google Password Manager and Chrome Autofill to save and fill passwords, payment methods, and addresses
-    </message>
-    <message name="IDS_AUTOFILL_THIRD_PARTY_FILLING_OPT_IN_DESCRIPTION" desc="Description shown on the option enabling the use of third-party autofill in Chrome." formatter_data="android_java">
-      To use another autofill service in Chrome, turn it on in Android settings and here
-    </message>
-    <message name="IDS_AUTOFILL_THIRD_PARTY_FILLING_DEFAULT_DESCRIPTION_NEW" desc="Description shown on the option to use the default Chrome autofill experience." formatter_data="android_java">
       Use info saved in your Google Account to autofill passwords, passkeys, addresses, payment methods, and other info
     </message>
-    <message name="IDS_AUTOFILL_THIRD_PARTY_FILLING_OPT_IN_DESCRIPTION_NEW" desc="Description shown on the option enabling the use of third-party autofill in Chrome." formatter_data="android_java">
+    <message name="IDS_AUTOFILL_THIRD_PARTY_FILLING_OPT_IN_DESCRIPTION" desc="Description shown on the option enabling the use of third-party autofill in Chrome." formatter_data="android_java">
       To use another autofill service in Chrome, choose your autofill provider in Android settings
     </message>
     <message name="IDS_PAYMENT_METHODS_SETTINGS_LOYALTY_CARDS_TITLE" desc="Title for the payment methods settings page row that links the user to the Google Wallet app." formatter_data="android_java">
@@ -522,6 +549,9 @@
     </message>
     <message name="IDS_AUTOFILL_A11Y_ANNOUNCE_FILLED_ONE_TIME_PASSWORD" desc="Accessibility announcement for when a one time password is autofilled.">
       Autofilled code
+    </message>
+    <message name="IDS_AUTOFILL_LOYALTY_CARDS_ALL_YOUR_CARDS_SUGGESTION" desc="The keyboard accessory suggestion to open the loyalty cards bottom sheet containing all the user loyalty cards.">
+      Your loyalty cards
     </message>
   </if>
 
@@ -1085,24 +1115,45 @@
   <message name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" desc="The name of the Google Wallet product. This is displayed in some enhanced autofill save and update prompts as a link. Upon clicking the user is taken to a their wallet passes pages. For example the user would see 'Your info is saved to Google Wallet for elisa.beckett@gmail.com'">
     Google Wallet
   </message>
-  <message name="IDS_AUTOFILL_AI_UPDATE_ENTITY_DIALOG_SUBTITLE" desc="A description that appears beneath the Update title prompt asking users whether they want to update their data stored locally. For example, the user previously saved information related to their passport. Now, the user is filling out a new form either with additional details associated with the passport or with different values than what was previously saved. The interface shows new or modified values at the top with blue dots to indicate they’re new. Existing information associated with the passport that isn’t changing appears at the bottom without blue dots. Depending on the form and what Chrome recognizes, there might be just one or several pieces of data updated at this moment. This is a similar moment to updating a password or credit card with Chrome.">
-   Saves to your device
-  </message>
-  <message name="IDS_AUTOFILL_AI_UPDATE_ENTITY_TO_WALLET_DIALOG_SUBTITLE" desc="A description that appears beneath the Update title prompt asking users whether they want to update their data stored in Google Wallet. For example, the user previously saved information related to their passport. Now, the user is filling out a new form either with additional details associated with the passport or with different values than what was previously saved. The interface shows new or modified values at the top with blue dots to indicate they’re new. Existing information associated with the passport that isn’t changing appears at the bottom without blue dots. Depending on the form and what Chrome recognizes, there might be just one or several pieces of data updated at this moment. This is a similar moment to updating a password or credit card with Chrome.">
-    Your info is saved to <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE">$1<ex>Google Wallet</ex></ph> for <ph name="ACCOUNT">$2<ex>alexpark@gmail.com</ex></ph>
-  </message>
-  <message name="IDS_AUTOFILL_AI_SAVE_ENTITY_DIALOG_SUBTITLE" desc="A description that appears beneath the Save title prompt. This sentence essentially defines Autofill in Chrome. We prompt the user to save their information with Chrome with the promise that Chrome can then help the user fill out forms more quickly using their saved info.">
-    Save your information and fill out forms more quickly. Saves to your device.
-  </message>
-  <message name="IDS_AUTOFILL_AI_SAVE_ENTITY_TO_WALLET_DIALOG_SUBTITLE" desc="A description that appears beneath the Save title prompt asking users whether they want to save their data to Google Wallet. This sentence essentially defines Autofill in Chrome. We prompt the user to save their information with Google Wallet with the promise that Chrome can then help the user fill out forms across devices more quickly using their saved info.">
-    Save your info to get things done faster, across Google products. Your info is saved to <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE">$1<ex>Google Wallet</ex></ph> for <ph name="ACCOUNT">$2<ex>alexpark@gmail.com</ex></ph>.
-  </message>
-  <message name="IDS_AUTOFILL_AI_UPDATE_ENTITY_DIALOG_UPDATED_ATTRIBUTE_ACCESSIBLE_NAME" desc="Used in entity update dialogs, as the accessible names for rows with updated attributes">
-    <ph name="ATTRIBUTE_NAME">$1<ex>Passport number</ex></ph> updated
-  </message>
-  <message name="IDS_AUTOFILL_AI_UPDATE_ENTITY_DIALOG_NEW_ATTRIBUTE_ACCESSIBLE_NAME" desc="Used in entity update dialogs, as the accessible names for rows with new attributes">
-    <ph name="ATTRIBUTE_NAME">$1<ex>Passport number</ex></ph> added
-  </message>
+
+  <!-- Prompt strings used on Desktop -->
+  <if expr="not is_android and not is_ios">
+    <message name="IDS_AUTOFILL_AI_UPDATE_ENTITY_DIALOG_SUBTITLE" desc="A description that appears beneath the Update title prompt asking users whether they want to update their data stored locally. For example, the user previously saved information related to their passport. Now, the user is filling out a new form either with additional details associated with the passport or with different values than what was previously saved. The interface shows new or modified values at the top with blue dots to indicate they’re new. Existing information associated with the passport that isn’t changing appears at the bottom without blue dots. Depending on the form and what Chrome recognizes, there might be just one or several pieces of data updated at this moment. This is a similar moment to updating a password or credit card with Chrome.">
+      Saves to your device
+    </message>
+    <message name="IDS_AUTOFILL_AI_UPDATE_ENTITY_TO_WALLET_DIALOG_SUBTITLE" desc="A description that appears beneath the Update title prompt asking users whether they want to update their data stored in Google Wallet. For example, the user previously saved information related to their passport. Now, the user is filling out a new form either with additional details associated with the passport or with different values than what was previously saved. The interface shows new or modified values at the top with blue dots to indicate they’re new. Existing information associated with the passport that isn’t changing appears at the bottom without blue dots. Depending on the form and what Chrome recognizes, there might be just one or several pieces of data updated at this moment. This is a similar moment to updating a password or credit card with Chrome.">
+      Your info is saved to <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE">$1<ex>Google Wallet</ex></ph> for <ph name="ACCOUNT">$2<ex>alexpark@gmail.com</ex></ph>
+    </message>
+    <message name="IDS_AUTOFILL_AI_SAVE_ENTITY_DIALOG_SUBTITLE" desc="A description that appears beneath the Save title prompt. This sentence essentially defines Autofill in Chrome. We prompt the user to save their information with Chrome with the promise that Chrome can then help the user fill out forms more quickly using their saved info.">
+      Save your information and fill out forms more quickly. Saves to your device.
+    </message>
+    <message name="IDS_AUTOFILL_AI_SAVE_ENTITY_TO_WALLET_DIALOG_SUBTITLE" desc="A description that appears beneath the Save title prompt asking users whether they want to save their data to Google Wallet. This sentence essentially defines Autofill in Chrome. We prompt the user to save their information with Google Wallet with the promise that Chrome can then help the user fill out forms across devices more quickly using their saved info.">
+      Save your info to get things done faster, across Google products. Your info is saved to <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE">$1<ex>Google Wallet</ex></ph> for <ph name="ACCOUNT">$2<ex>alexpark@gmail.com</ex></ph>.
+    </message>
+    <message name="IDS_AUTOFILL_AI_UPDATE_ENTITY_DIALOG_UPDATED_ATTRIBUTE_ACCESSIBLE_NAME" desc="Used in entity update dialogs, as the accessible names for rows with updated attributes">
+      <ph name="ATTRIBUTE_NAME">$1<ex>Passport number</ex></ph> updated
+    </message>
+    <message name="IDS_AUTOFILL_AI_UPDATE_ENTITY_DIALOG_NEW_ATTRIBUTE_ACCESSIBLE_NAME" desc="Used in entity update dialogs, as the accessible names for rows with new attributes">
+      <ph name="ATTRIBUTE_NAME">$1<ex>Passport number</ex></ph> added
+    </message>
+  </if>
+
+  <!-- Prompt strings used on Android -->
+  <!-- TODO: crbug.com/460410690 - Make strings translateable. -->
+  <if expr="is_android">
+    <message name="IDS_AUTOFILL_AI_SAVE_ENTITY_MESSAGE_SUBTITLE" desc="A description that appears beneath the Save title message. This sentence notifies the user that their data will be stored locally. We prompt the user to save their information with Chrome with the promise that Chrome can then help the user fill out forms more quickly using their saved info." translateable="false">
+      Saves to your device
+    </message>
+    <message name="IDS_AUTOFILL_AI_SAVE_ENTITY_TO_WALLET_MESSAGE_SUBTITLE" desc="A description that appears beneath the Save title message prompting the user to save their data to Google Wallet. This sentence essentially defines Autofill in Chrome. We prompt the user to save their information with Google Wallet with the promise that Chrome can then help the user fill out forms across devices more quickly using their saved info." translateable="false">
+      In <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE">$1<ex>Google Wallet</ex></ph> for <ph name="ACCOUNT">$2<ex>alexpark@gmail.com</ex></ph>
+    </message>
+    <message name="IDS_AUTOFILL_AI_SAVE_OR_UPDATE_LOCAL_ENTITY_SOURCE_NOTICE" desc="A description that appears beneath the entity details notifying the user that their data is going to be stored locally on device." translateable="false">
+      Your info is saved to your device
+    </message>
+    <message name="IDS_AUTOFILL_AI_SAVE_OR_UPDATE_ENTITY_IN_WALLET_SOURCE_NOTICE" desc="A description that appears beneath the entity details notifying the user that their data is going to be stored in Google Wallet." translateable="false">
+      Save your info and get things done faster, like filling forms across Google products. You can <ph name="BEGIN_LINK">&lt;link&gt;</ph>manage your info<ph name="END_LINK">&lt;/link&gt;</ph> in <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE">$1<ex>Google Wallet</ex></ph> for <ph name="ACCOUNT">$2<ex>alexpark@gmail.com</ex></ph>
+    </message>
+  </if>
 
   <!-- FFR Dialog -->
   <message name="IDS_AUTOFILL_AI_FFR_WHEN_ON_TITLE" desc="A sub title that highlights the benefits of using ‘enhanced autofill’. ‘More fields’ is referring to values in online forms. The user can fill more fields faster because ‘enhanced autofill’ supports more data types than standard autofill, including passports, driver’s licenses, and vehicles.">
@@ -1117,4 +1168,23 @@
   <message name="IDS_AUTOFILL_AI_FFR_CONSIDER_LEARN_MORE" desc="Link for the enhanced autofill settings page to learn more about this feature.">
     learn more about enhanced autofill in settings
   </message>
+  <message name="IDS_SETTINGS_AUTOFILL_AI_PAGE_TITLE" desc="The title of the page in Settings that allows managing the enhanced autofill settings." formatter_data="android_java">
+    Enhanced autofill
+  </message>
+  <if expr="_google_chrome">
+    <message name="IDS_SETTINGS_AUTOFILL_AI_DESCRIPTION" desc="The description of the enhanced autofill button on chrome://settings/autofill." formatter_data="android_java">
+      Chrome understands forms better and can autofill them faster for you
+    </message>
+    <message name="IDS_SETTINGS_AUTOFILL_AI_TOGGLE_SUB_LABEL" desc="The description of the setting. By 'understand forms better', we mean that when a user submits a form on a website, and if they're using enhanced autofill, this feature can offer to save the user's submitted info. When Chrome saves that info, we save the submitted values and consider the page context.">
+      Chrome understands forms better and can autofill them faster for you
+    </message>
+  </if>
+  <if expr="not _google_chrome">
+    <message name="IDS_SETTINGS_AUTOFILL_AI_DESCRIPTION" desc="The description of the enhanced autofill button on chrome://settings/autofill." formatter_data="android_java">
+      Chromium understands forms better and can autofill them faster for you
+    </message>
+    <message name="IDS_SETTINGS_AUTOFILL_AI_TOGGLE_SUB_LABEL" desc="The description of the setting. By 'understand forms better', we mean that when a user submits a form on a website, and if they're using enhanced autofill, this feature can offer to save the user's submitted info. When Chromium saves that info, we save the submitted values and consider the page context.">
+      Chromium understands forms better and can autofill them faster for you
+    </message>
+  </if>
 </grit-part>

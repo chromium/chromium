@@ -17,7 +17,9 @@ source_set("ui") {
     ":controller",
     "//base",
     "//chrome/app/vector_icons",
+    "//chrome/browser/actor",
     "//chrome/browser/actor/resources:grit_grit",
+    "//chrome/browser/actor/ui",
     "//chrome/browser/ui",
     "//chrome/common",
     "//content/public/browser",
@@ -115,6 +117,7 @@ source_set("interactive_ui_tests") {
   ]
   if (enable_glic) {
     deps += [
+      "//chrome/browser/glic:interactive_ui_tests",
       "//chrome/browser/glic/test_support",
       "//chrome/browser/ui/tabs:glic",
     ]

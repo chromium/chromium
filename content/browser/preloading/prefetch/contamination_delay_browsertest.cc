@@ -228,8 +228,7 @@ IN_PROC_BROWSER_TEST_F(ContaminationDelayBrowserTest, IgnoresIfExempt) {
 #define MAYBE_IgnoresIfExempt_BrowserInitiated \
   DISABLED_IgnoresIfExempt_BrowserInitiated
 #else
-#define MAYBE_IgnoresIfExempt_BrowserInitiated \
-  IgnoresIfExempt_BrowserInitiated
+#define MAYBE_IgnoresIfExempt_BrowserInitiated IgnoresIfExempt_BrowserInitiated
 #endif
 IN_PROC_BROWSER_TEST_F(ContaminationDelayBrowserTest,
                        MAYBE_IgnoresIfExempt_BrowserInitiated) {

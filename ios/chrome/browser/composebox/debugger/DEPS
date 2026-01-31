@@ -1,0 +1,6 @@
+include_rules = [
+  # keep-sorted start
+  "+ios/chrome/browser/aim/debugger",
+  # keep-sorted end
+]
+

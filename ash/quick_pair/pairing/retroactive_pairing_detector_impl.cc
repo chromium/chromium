@@ -14,7 +14,6 @@
 #include "ash/quick_pair/repository/fast_pair_repository.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
-#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
@@ -152,8 +151,8 @@ void RetroactivePairingDetectorImpl::OnDevicePaired(
   // both events. If a device is Fast Paired, it is already inserted in the
   // |potential_retroactive_addresses_| in `DevicePairedChanged`; we need to
   // remove it to prevent a false positive.
-  if (base::Contains(potential_retroactive_addresses_,
-                     device->classic_address().value())) {
+  if (potential_retroactive_addresses_.contains(
+          device->classic_address().value())) {
     CD_LOG(VERBOSE, Feature::FP)
         << __func__
         << ": encountered a false positive for a potential retroactive pairing "
@@ -166,7 +165,7 @@ void RetroactivePairingDetectorImpl::OnDevicePaired(
   // paired with their BLE address. Check BLE address for false positives as
   // well.
   if (ash::features::IsFastPairKeyboardsEnabled() &&
-      base::Contains(potential_retroactive_addresses_, device->ble_address())) {
+      potential_retroactive_addresses_.contains(device->ble_address())) {
     CD_LOG(VERBOSE, Feature::FP)
         << __func__
         << ": encountered a false positive for a potential retroactive pairing "
@@ -221,7 +220,7 @@ void RetroactivePairingDetectorImpl::AttemptRetroactivePairing(
   // If the device is removed via `OnDevicePaired`, this indicated a Fast Pair
   // pairing event, in which case we will never show a retroactive pairing
   // notification, so we can stop the flow here for this device.
-  if (!base::Contains(potential_retroactive_addresses_, classic_address)) {
+  if (!potential_retroactive_addresses_.contains(classic_address)) {
     CD_LOG(VERBOSE, Feature::FP)
         << __func__ << ": device at " << classic_address
         << ": was removed before call to Footprints completed";
@@ -251,7 +250,7 @@ void RetroactivePairingDetectorImpl::AttemptRetroactivePairing(
   if (  // Fast Pair HID only works on Floss.
       floss::features::IsFlossEnabled() &&
       device->GetType() == device::BLUETOOTH_TRANSPORT_LE &&
-      base::Contains(device->GetUUIDs(), kFastPairBluetoothUuid)) {
+      device->GetUUIDs().contains(kFastPairBluetoothUuid)) {
     CD_LOG(VERBOSE, Feature::FP)
         << __func__
         << ": BLE fast pair device detected, creating GATT connection";
@@ -376,7 +375,7 @@ void RetroactivePairingDetectorImpl::OnMessageStreamConnected(
     return;
   }
 
-  if (!base::Contains(potential_retroactive_addresses_, device_address)) {
+  if (!potential_retroactive_addresses_.contains(device_address)) {
     return;
   }
 
@@ -408,13 +407,13 @@ void RetroactivePairingDetectorImpl::GetModelIdAndAddressFromMessageStream(
 
   // The device at |device_address| is expected to be added in
   // `AddDevicePairingInformation` once discovered.
-  DCHECK(base::Contains(device_pairing_information_, device_address));
+  DCHECK(device_pairing_information_.contains(device_address));
 
   // If the MessageStream is immediately available and |DevicePairedChanged|
   // fires before FastPair's |OnDevicePaired|, it might be possible for us to
   // find a false positive for a retroactive pairing scenario which we mitigate
   // here.
-  if (!base::Contains(potential_retroactive_addresses_, device_address)) {
+  if (!potential_retroactive_addresses_.contains(device_address)) {
     return;
   }
 
@@ -501,7 +500,7 @@ void RetroactivePairingDetectorImpl::CheckPairingInformation(
     const std::string& device_address) {
   // The device at |device_address| is expected to be added in
   // `AddDevicePairingInformation` once discovered.
-  DCHECK(base::Contains(device_pairing_information_, device_address));
+  DCHECK(device_pairing_information_.contains(device_address));
 
   // If the MessageStream is immediately available and |DevicePairedChanged|
   // fires before FastPair's |OnDevicePaired|, it might be possible for us to
@@ -509,7 +508,7 @@ void RetroactivePairingDetectorImpl::CheckPairingInformation(
   // here. Also check if the device has expired for detecting scenario, if so
   // do not continue. `CheckAndRemoveIfDeviceExpired` will remove device
   // information if it has expired.
-  if (!base::Contains(potential_retroactive_addresses_, device_address) ||
+  if (!potential_retroactive_addresses_.contains(device_address) ||
       CheckAndRemoveIfDeviceExpired(device_address)) {
     return;
   }
@@ -641,7 +640,7 @@ void RetroactivePairingDetectorImpl::RemoveDeviceInformationHelper(
   // before the MessageStreams are observed, connected, and/or added to our
   // list here if we get a false positive instance of a potential retroactive
   // pairing device.
-  if (base::Contains(message_streams_, device_address)) {
+  if (message_streams_.contains(device_address)) {
     message_streams_[device_address]->RemoveObserver(this);
     message_streams_.erase(device_address);
   }

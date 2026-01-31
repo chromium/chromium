@@ -37,11 +37,11 @@ class LanguagesHandler : public SettingsPageUIHandler {
   // Returns the prospective UI language. May not match the actual UI language,
   // depending on the user's permissions and whether the language is substituted
   // for another locale.
-  void HandleGetProspectiveUILanguage(const base::Value::List& args);
+  void HandleGetProspectiveUILanguage(const base::ListValue& args);
 
   // Changes the preferred UI language, provided the user is allowed to do so.
   // The actual UI language will not change until the next restart.
-  void HandleSetProspectiveUILanguage(const base::Value::List& args);
+  void HandleSetProspectiveUILanguage(const base::ListValue& args);
 
 #if BUILDFLAG(IS_CHROMEOS)
   raw_ptr<Profile> profile_;  // Weak pointer.

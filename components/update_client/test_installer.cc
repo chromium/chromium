@@ -93,7 +93,7 @@ void VersionedTestInstaller::Install(
     std::unique_ptr<InstallParams> /*install_params*/,
     ProgressCallback progress_callback,
     Callback callback) {
-  std::optional<base::Value::Dict> manifest =
+  std::optional<base::DictValue> manifest =
       update_client::ReadManifest(unpack_path);
   if (!manifest) {
     return;

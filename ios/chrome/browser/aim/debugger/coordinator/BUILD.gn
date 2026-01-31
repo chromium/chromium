@@ -1,0 +1,26 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("coordinator") {
+  sources = [
+    "aim_debugger_coordinator.h",
+    "aim_debugger_coordinator.mm",
+    "aim_debugger_mediator.h",
+    "aim_debugger_mediator.mm",
+  ]
+  deps = [
+    "//base",
+    "//components/omnibox/browser",
+    "//ios/chrome/browser/aim/debugger/ui",
+    "//ios/chrome/browser/aim/model:aim_availability",
+    "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
+    "//ios/chrome/browser/shared/model/browser",
+    "//ios/chrome/browser/shared/model/profile",
+    "//ios/chrome/browser/shared/public/commands",
+    "//ios/chrome/browser/shared/public/features:system_flags",
+    "//ios/chrome/browser/shared/ui/table_view",
+    "//ios/chrome/browser/shared/ui/table_view:utils",
+    "//ios/chrome/browser/shared/ui/util",
+  ]
+}

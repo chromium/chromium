@@ -129,7 +129,7 @@ public class BasicSuggestionProcessor extends BaseSuggestionViewProcessor {
             }
         } else if (
         /* !isSearchSuggestion && */ mBookmarkState.isBookmarked(suggestion.getUrl())) {
-            icon = R.drawable.star_outline_24dp;
+            icon = R.drawable.ic_star_24dp;
         }
 
         return icon == 0

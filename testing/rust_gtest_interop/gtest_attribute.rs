@@ -262,6 +262,20 @@ pub fn gtest(
             "#[gtest(...)] can only be used in targets where the GN \
             variable `is_gtest_unittests` is set to `true`.");
 
+        // TODO(crbug.com/462501862): gtest interop doesn't currently work on
+        // at least some mac ASAN builds. Just disable the tests on those
+        // configurations until we figure out why and how to fix it.
+        #[cfg(all(IS_ASAN, any(target_os = "macos", target_os = "ios")))]
+        const _ : () = {
+            // We need to keep the function's definition so that anything inside
+            // it is marked as used. We put each one in an anonymous namespace
+            // to prevent collisions, since gtest allows functions to have the
+            // same name.
+            #[allow(dead_code)]
+            #input_fn
+        };
+
+        #[cfg(not(all(IS_ASAN, any(target_os = "macos", target_os = "ios"))))]
         mod #test_mod {
             use super::*;
 

@@ -28,7 +28,7 @@ using api::activity_log_private::ExtensionActivity;
 using ActivityLogApiUnitTest = testing::Test;
 
 TEST_F(ActivityLogApiUnitTest, ConvertChromeApiAction) {
-  base::Value::List args;
+  base::ListValue args;
   args.Append("hello");
   args.Append("world");
   scoped_refptr<Action> action(new Action(kExtensionId,
@@ -46,7 +46,7 @@ TEST_F(ActivityLogApiUnitTest, ConvertChromeApiAction) {
 }
 
 TEST_F(ActivityLogApiUnitTest, ConvertDomAction) {
-  base::Value::List args;
+  base::ListValue args;
   args.Append("hello");
   args.Append("world");
   scoped_refptr<Action> action(new Action(kExtensionId,

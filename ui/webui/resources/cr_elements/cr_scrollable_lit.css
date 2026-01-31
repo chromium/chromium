@@ -22,7 +22,8 @@
 
 .cr-scrollable-top,
 .cr-scrollable-top-shadow,
-.cr-scrollable-bottom {
+.cr-scrollable-bottom,
+.cr-scrollable-bottom-shadow {
   display: none;
   position: fixed;
   position-anchor: --cr-scrollable;
@@ -53,7 +54,8 @@
   }
 }
 
-.cr-scrollable-top-shadow {
+.cr-scrollable-top-shadow,
+.cr-scrollable-bottom-shadow {
   box-shadow: inset 0 5px 6px -3px rgba(0, 0, 0, .4);
   display: block;
   height: 8px;
@@ -65,8 +67,20 @@
   &:where(.force-on) {
     opacity: 1;
   }
+}
 
+.cr-scrollable-top-shadow {
   @container scroll-state(scrollable: top) {
+    opacity: 1;
+  }
+}
+
+.cr-scrollable-bottom-shadow {
+  top: auto;
+  bottom: anchor(bottom);
+  transform: scale(-1);
+
+  @container scroll-state(scrollable: bottom) {
     opacity: 1;
   }
 }

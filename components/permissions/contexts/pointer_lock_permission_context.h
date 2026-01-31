@@ -6,9 +6,9 @@
 #define COMPONENTS_PERMISSIONS_CONTEXTS_POINTER_LOCK_PERMISSION_CONTEXT_H_
 
 #include "components/permissions/content_setting_permission_context_base.h"
-#include "components/permissions/permission_decision.h"
 
 namespace permissions {
+struct PermissionPromptDecision;
 
 // TODO(crbug.com/391651884): Remove this class since Pointer Lock Permission is
 // not needed.
@@ -23,11 +23,11 @@ class PointerLockPermissionContext
   PointerLockPermissionContext& operator=(const PointerLockPermissionContext&) =
       delete;
 
-  void NotifyPermissionSet(const PermissionRequestData& request_data,
-                           BrowserPermissionCallback callback,
-                           bool persist,
-                           PermissionDecision decision,
-                           bool is_final_decision) override;
+  void NotifyPermissionSet(
+      const PermissionRequestData& request_data,
+      BrowserPermissionCallback callback,
+      bool persist,
+      const permissions::PermissionPromptDecision& decision) override;
 
 #if !BUILDFLAG(IS_ANDROID)
  private:

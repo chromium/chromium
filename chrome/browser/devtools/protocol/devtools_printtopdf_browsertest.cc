@@ -79,10 +79,10 @@ class PrintToPdfProtocolTest : public DevToolsProtocolTest,
 
     pdf_data_.clear();
     for (;;) {
-      base::Value::Dict params;
+      base::DictValue params;
       params.Set("handle", stream);
       params.Set("offset", static_cast<int>(pdf_data_.size()));
-      const base::Value::Dict* result =
+      const base::DictValue* result =
           SendCommandSync("IO.read", std::move(params));
       std::string data = *result->FindString("data");
       if (result->FindBool("base64Encoded").value_or(false))
@@ -99,24 +99,23 @@ class PrintToPdfProtocolTest : public DevToolsProtocolTest,
     ASSERT_GE(pdf_num_pages_, 1);
   }
 
-  void PrintToPdf(base::Value::Dict params) {
+  void PrintToPdf(base::DictValue params) {
     SendCommandSync("Page.printToPDF", std::move(params));
     CreatePdfSpanFromResultData();
   }
 
-  void PrintToPdfAsStream(base::Value::Dict params) {
+  void PrintToPdfAsStream(base::DictValue params) {
     SendCommandSync("Page.printToPDF", std::move(params));
     CreatePdfSpanFromResultStream();
   }
 
-  void PrintToPdfAndRenderPage(base::Value::Dict params, int page_index) {
+  void PrintToPdfAndRenderPage(base::DictValue params, int page_index) {
     SendCommandSync("Page.printToPDF", std::move(params));
     CreatePdfSpanFromResultData();
     ASSERT_TRUE(page_bitmap.Render(pdf_span_, page_index));
   }
 
-  void PrintToPdfAsStreamAndRenderPage(base::Value::Dict params,
-                                       int page_index) {
+  void PrintToPdfAsStreamAndRenderPage(base::DictValue params, int page_index) {
     SendCommandSync("Page.printToPDF", std::move(params));
     CreatePdfSpanFromResultStream();
     ASSERT_TRUE(page_bitmap.Render(pdf_span_, page_index));
@@ -145,7 +144,7 @@ IN_PROC_BROWSER_TEST_P(PrintToPdfProtocolTest, PrintToPdfBackground) {
 
   Attach();
 
-  base::Value::Dict params;
+  base::DictValue params;
   params.Set("printBackground", true);
   params.Set("paperWidth", kPaperWidth);
   params.Set("paperHeight", kPaperHeight);
@@ -168,7 +167,7 @@ IN_PROC_BROWSER_TEST_P(PrintToPdfProtocolTest, PrintToPdfMargins) {
 
   Attach();
 
-  base::Value::Dict params;
+  base::DictValue params;
   params.Set("printBackground", true);
   params.Set("paperWidth", kPaperWidth);
   params.Set("paperHeight", kPaperHeight);
@@ -197,7 +196,7 @@ IN_PROC_BROWSER_TEST_P(PrintToPdfProtocolTest, PrintToPdfHeaderFooter) {
   constexpr double kHeaderMargin = 1.0;
   constexpr double kFooterMargin = 1.0;
 
-  base::Value::Dict params;
+  base::DictValue params;
   params.Set("printBackground", true);
   params.Set("paperWidth", kPaperWidth);
   params.Set("paperHeight", kPaperHeight);
@@ -235,7 +234,7 @@ IN_PROC_BROWSER_TEST_P(PrintToPdfProtocolTest, PrintToPdfHeaderFooter) {
 class PrintToPdfScaleTest : public PrintToPdfProtocolTest {
  protected:
   int RenderAndReturnRedSquareWidth(double scale) {
-    base::Value::Dict params;
+    base::DictValue params;
     params.Set("printBackground", true);
     params.Set("paperWidth", kPaperWidth);
     params.Set("paperHeight", kPaperHeight);
@@ -286,7 +285,7 @@ class PrintToPdfPaperOrientationTest : public PrintToPdfProtocolTest {
  protected:
   std::optional<gfx::SizeF> PrintToPdfAndReturnPageSize(
       bool landscape = false) {
-    base::Value::Dict params;
+    base::DictValue params;
     params.Set("paperWidth", kPaperWidth);
     params.Set("paperHeight", kPaperHeight);
     params.Set("landscape", landscape);
@@ -324,14 +323,14 @@ class PrintToPdfPagesTest : public PrintToPdfProtocolTest {
   void SetDocHeight() {
     std::string height_expression = "document.body.style.height = '" +
                                     base::NumberToString(kDocHeight) + "in'";
-    base::Value::Dict params;
+    base::DictValue params;
     params.Set("expression", height_expression);
 
     SendCommandSync("Runtime.evaluate", std::move(params));
   }
 
-  base::Value::Dict BuildPrintParams(const std::string& page_ranges) {
-    base::Value::Dict params;
+  base::DictValue BuildPrintParams(const std::string& page_ranges) {
+    base::DictValue params;
     params.Set("paperWidth", kPaperWidth);
     params.Set("paperHeight", kPaperHeight);
     params.Set("marginTop", 0);
@@ -397,7 +396,7 @@ IN_PROC_BROWSER_TEST_P(PrintToPdfPagesTest, PrintToPdfCssPageSize) {
   Attach();
   SetDocHeight();
 
-  base::Value::Dict params;
+  base::DictValue params;
   params.Set("paperWidth", kPaperWidth);
   params.Set("paperHeight", kPaperHeight);
   params.Set("preferCSSPageSize", true);
@@ -415,7 +414,7 @@ IN_PROC_BROWSER_TEST_P(PrintToPdfProtocolTest, PrintToPdfAsStream) {
 
   Attach();
 
-  base::Value::Dict params;
+  base::DictValue params;
   params.Set("printBackground", true);
   params.Set("paperWidth", kPaperWidth);
   params.Set("paperHeight", kPaperHeight);
@@ -440,7 +439,7 @@ IN_PROC_BROWSER_TEST_P(PrintToPdfProtocolTest, HasDocumentOutline) {
 
   Attach();
 
-  base::Value::Dict params;
+  base::DictValue params;
   // generating a document outline at the moment requires a tagged pdf
   params.Set("generateTaggedPDF", true);
   params.Set("generateDocumentOutline", true);
@@ -464,7 +463,7 @@ IN_PROC_BROWSER_TEST_P(PrintToPdfProtocolTest, Title) {
 
   Attach();
 
-  base::Value::Dict params;
+  base::DictValue params;
   params.Set("printBackground", true);
   params.Set("paperWidth", kPaperWidth);
   params.Set("paperHeight", kPaperHeight);
@@ -487,7 +486,7 @@ IN_PROC_BROWSER_TEST_P(PrintToPdfProtocolTest, PrintToPdfOOPIF) {
 
   Attach();
 
-  base::Value::Dict params;
+  base::DictValue params;
   params.Set("printBackground", true);
   params.Set("paperWidth", kPaperWidth);
   params.Set("paperHeight", kPaperHeight);
@@ -509,7 +508,7 @@ IN_PROC_BROWSER_TEST_P(PrintToPdfProtocolTest, JpegCmykIccPrintToPdf) {
 
   Attach();
 
-  base::Value::Dict params;
+  base::DictValue params;
   params.Set("printBackground", true);
   params.Set("paperWidth", kPaperWidth);
   params.Set("paperHeight", kPaperHeight);

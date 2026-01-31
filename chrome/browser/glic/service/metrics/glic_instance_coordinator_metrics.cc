@@ -64,6 +64,11 @@ void GlicInstanceCoordinatorMetrics::RecordSwitchConversationTarget(
                                 target);
 }
 
+void GlicInstanceCoordinatorMetrics::OnHighMemoryUsage(int memory_mb) {
+  base::UmaHistogramMemoryLargeMB("Glic.Instance.MemoryUsageAtThreshold",
+                                  memory_mb);
+}
+
 void GlicInstanceCoordinatorMetrics::OnMemoryPressure(
     base::MemoryPressureLevel level) {
   if (!base::FeatureList::IsEnabled(
@@ -142,8 +147,8 @@ GlicInstanceCoordinatorMetrics::GetMostRecentlyActiveConversationId(
     if (!instance->conversation_id().has_value()) {
       continue;
     }
-    if (!most_recent ||
-        instance->GetLastActiveTime() > most_recent->GetLastActiveTime()) {
+    if (!most_recent || instance->GetLastActivationTimestamp() >
+                            most_recent->GetLastActivationTimestamp()) {
       most_recent = instance;
     }
   }

@@ -101,8 +101,8 @@ class BASE_EXPORT JSONWriter {
   bool BuildJSONString(double node, size_t depth);
   bool BuildJSONString(std::string_view node, size_t depth);
   bool BuildJSONString(const Value::BlobStorage& node, size_t depth);
-  bool BuildJSONString(const Value::Dict& node, size_t depth);
-  bool BuildJSONString(const Value::List& node, size_t depth);
+  bool BuildJSONString(const DictValue& node, size_t depth);
+  bool BuildJSONString(const ListValue& node, size_t depth);
 
   // Adds space to json_string_ for the indent level.
   void IndentLine(size_t depth);

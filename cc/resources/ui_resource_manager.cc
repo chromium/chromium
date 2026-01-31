@@ -4,12 +4,12 @@
 
 #include "cc/resources/ui_resource_manager.h"
 
+#include <algorithm>
 #include <unordered_map>
 #include <utility>
 
 #include "base/check.h"
 #include "base/check_op.h"
-#include "base/containers/contains.h"
 #include "cc/resources/scoped_ui_resource.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 
@@ -23,7 +23,7 @@ UIResourceId UIResourceManager::CreateUIResource(UIResourceClient* client) {
   DCHECK(client);
 
   UIResourceId next_id = next_ui_resource_id_++;
-  DCHECK(!base::Contains(ui_resource_client_map_, next_id));
+  DCHECK(!ui_resource_client_map_.contains(next_id));
 
   bool resource_lost = false;
   UIResourceRequest request(UIResourceRequest::Type::kCreate, next_id,
@@ -54,8 +54,8 @@ void UIResourceManager::RecreateUIResources() {
     UIResourceId uid = resource.first;
     const UIResourceClientData& data = resource.second;
     bool resource_lost = true;
-    if (!base::Contains(ui_resource_request_queue_, uid,
-                        &UIResourceRequest::GetId)) {
+    if (!std::ranges::contains(ui_resource_request_queue_, uid,
+                               &UIResourceRequest::GetId)) {
       UIResourceRequest request(UIResourceRequest::Type::kCreate, uid,
                                 data.client->GetBitmap(uid, resource_lost));
       ui_resource_request_queue_.push_back(request);

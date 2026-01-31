@@ -26,9 +26,9 @@ HostDescriptionNode GetNodeWithLabel(const char* name, int label) {
 }
 
 // Returns the list of children of |arg|.
-std::optional<base::Value::List> GetChildren(const base::Value& arg) {
+std::optional<base::ListValue> GetChildren(const base::Value& arg) {
   EXPECT_TRUE(arg.is_dict());
-  const base::Value::Dict& dict = arg.GetDict();
+  const base::DictValue& dict = arg.GetDict();
 
   const base::Value* children = dict.Find("children");
   if (!children)
@@ -40,7 +40,7 @@ std::optional<base::Value::List> GetChildren(const base::Value& arg) {
 // Checks that |arg| is a description of a node with label |l|.
 bool CheckLabel(const base::Value& arg, int l) {
   EXPECT_TRUE(arg.is_dict());
-  const base::Value::Dict& dict = arg.GetDict();
+  const base::DictValue& dict = arg.GetDict();
   std::optional<int> result = dict.FindInt("label");
   if (!result)
     return false;
@@ -58,7 +58,7 @@ MATCHER_P(EmptyNode, label, "") {
 }  // namespace
 
 TEST(SerializeHostDescriptionTest, Empty) {
-  base::Value::List result =
+  base::ListValue result =
       SerializeHostDescriptions(std::vector<HostDescriptionNode>(), "123");
   EXPECT_THAT(result, ::testing::IsEmpty());
 }
@@ -69,7 +69,7 @@ TEST(SerializeHostDescriptionTest, Stubs) {
   nodes.emplace_back(GetNodeWithLabel("1", 1));
   nodes.emplace_back(GetNodeWithLabel("2", 2));
   nodes.emplace_back(GetNodeWithLabel("3", 3));
-  base::Value::List result =
+  base::ListValue result =
       SerializeHostDescriptions(std::move(nodes), "children");
   EXPECT_THAT(result,
               UnorderedElementsAre(EmptyNode(1), EmptyNode(2), EmptyNode(3)));
@@ -84,7 +84,7 @@ TEST(SerializeHostDescriptionTest, SameNames) {
   nodes.emplace_back(GetNodeWithLabel("B", 4));
   nodes.emplace_back(GetNodeWithLabel("C", 5));
 
-  base::Value::List result =
+  base::ListValue result =
       SerializeHostDescriptions(std::move(nodes), "children");
 
   // Only the first node called "A", and both nodes "B" and "C" should be
@@ -138,7 +138,7 @@ TEST(SerializeHostDescriptionTest, Forest) {
   nodes[1].parent_name = "0";
   nodes[3].parent_name = "0";
 
-  base::Value::List result =
+  base::ListValue result =
       SerializeHostDescriptions(std::move(nodes), "children");
 
   EXPECT_THAT(result, UnorderedElementsAre(Node0(), Node5()));

@@ -53,15 +53,14 @@ void CloseGlobalExtensionSidePanel(BrowserWindowInterface* browser_window,
                                    const ExtensionId& extension_id);
 
 // Closes the contextual side panel for the specified `extension_id` in
-// `browser_window` associated with `web_contents`. If no contextual panel
-// exists on this tab and `window_id` is not `nullopt`, checks for a global side
-// panel for the same extension in `browser_window` and closes it across all
-// tabs if found. No-op (and safe to call) if the panel is already closed.
-// Implemented in extension_side_panel_utils.cc in views/.
+// `browser_window` associated with `web_contents`. `web_contents` must
+// represent a tab. If `web_contents` is not the active tab, this will reset
+// that tab's contextual panel, preventing it from reopening on a future tab
+// switch. No-op (and safe to call) if the contextual panel is already closed.
+// Implemented by extension_side_panel_utils.cc in views/.
 void CloseContextualExtensionSidePanel(BrowserWindowInterface* browser_window,
                                        content::WebContents* web_contents,
-                                       const ExtensionId& extension_id,
-                                       std::optional<int> window_id);
+                                       const ExtensionId& extension_id);
 
 }  // namespace extensions::side_panel_util
 

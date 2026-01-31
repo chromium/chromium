@@ -6,8 +6,18 @@
 
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_functions.h"
+#include "chrome/browser/devtools/devtools_availability_checker.h"
+#if !BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/devtools/devtools_policy_dialog.h"
+#endif
+#include "chrome/browser/devtools/features.h"
 #include "chrome/browser/enterprise/connectors/connectors_service.h"
+#include "chrome/browser/policy/developer_tools_policy_checker.h"
+#include "chrome/browser/policy/developer_tools_policy_checker_factory.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/safe_browsing/chrome_enterprise_url_lookup_service_factory.h"
+#include "chrome/common/pref_names.h"
+#include "components/prefs/pref_service.h"
 #include "components/safe_browsing/content/browser/safe_browsing_blocking_page.h"
 #include "components/safe_browsing/content/browser/safe_browsing_blocking_page_factory.h"
 #include "components/safe_browsing/content/browser/ui_manager.h"
@@ -31,6 +41,14 @@ namespace {
 GURL GetURLWithViewSourcePrefix(content::NavigationHandle* handle) {
   return GURL(content::kViewSourceScheme + std::string(":") +
               handle->GetURL().spec());
+}
+
+bool IsViewSourceAllowedByPolicy(Profile* profile,
+                                 content::NavigationHandle* navigation_handle) {
+  // When inspecting a "view-source" page, the policy should be checked against
+  // the URL being viewed, not the "view-source:" URL itself.
+  return IsInspectionAllowed(profile->GetOriginalProfile(),
+                             navigation_handle->GetURL());
 }
 
 bool IsEnterpriseLookupEnabled(Profile* profile) {
@@ -116,16 +134,15 @@ void ViewSourceNavigationThrottle::MaybeCreateAndAdd(
 ViewSourceNavigationThrottle::ViewSourceNavigationThrottle(
     content::NavigationThrottleRegistry& registry,
     safe_browsing::SafeBrowsingUIManager* manager)
-    : content::NavigationThrottle(registry), manager_(manager) {
-  content::NavigationHandle* handle = navigation_handle();
-  content::BrowserContext* browser_context =
-      handle->GetWebContents()->GetBrowserContext();
-  Profile* profile = Profile::FromBrowserContext(browser_context);
-
-  if (IsEnterpriseLookupEnabled(profile)) {
+    : content::NavigationThrottle(registry),
+      manager_(manager),
+      profile_(Profile::FromBrowserContext(registry.GetNavigationHandle()
+                                               .GetWebContents()
+                                               ->GetBrowserContext())) {
+  if (IsEnterpriseLookupEnabled(profile_)) {
     url_lookup_service_ =
         safe_browsing::ChromeEnterpriseRealTimeUrlLookupServiceFactory::
-            GetForProfile(profile)
+            GetForProfile(profile_)
                 ->GetWeakPtr();
   }
 }
@@ -175,6 +192,16 @@ ViewSourceNavigationThrottle::WillProcessResponse() {
 
     return content::NavigationThrottle::ThrottleCheckResult(
         CANCEL, net::ERR_BLOCKED_BY_CLIENT, error_page_content);
+  }
+  if (!IsViewSourceAllowedByPolicy(profile_, navigation_handle())) {
+    if (base::FeatureList::IsEnabled(features::kDevToolsShowPolicyDialog)) {
+#if !BUILDFLAG(IS_ANDROID)
+      DevToolsPolicyDialog::Show(navigation_handle()->GetWebContents());
+#endif
+      return content::NavigationThrottle::ThrottleCheckResult(CANCEL);
+    }
+    return content::NavigationThrottle::ThrottleCheckResult(
+        CANCEL, net::ERR_BLOCKED_BY_ADMINISTRATOR);
   }
 
   return content::NavigationThrottle::PROCEED;

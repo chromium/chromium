@@ -4,6 +4,8 @@
 
 #include "chrome/renderer/accessibility/read_anything/read_aloud_traversal_utils.h"
 
+#include <string_view>
+
 #include "ui/accessibility/ax_text_utils.h"
 
 namespace a11y {
@@ -78,7 +80,8 @@ ReadAloudCurrentGranularity::GetSegmentsForRange(int start_index,
 }
 
 void ReadAloudCurrentGranularity::CalculatePlaceholderPhrases() {
-  if (text.size() == 0) {
+  std::u16string_view text_view = text;
+  if (text_view.size() == 0) {
     phrase_boundaries.clear();
     return;
   }
@@ -91,17 +94,17 @@ void ReadAloudCurrentGranularity::CalculatePlaceholderPhrases() {
     if (count % 3 == 0) {
       phrase_boundaries.push_back(start);
     }
-    int next_word = GetNextWord(text.substr(start));
+    int next_word = GetNextWord(text_view.substr(start));
     if (next_word == 0) {
       break;
     }
     start += next_word;
     ++count;
-    if (start >= text.size()) {
+    if (start >= text_view.size()) {
       break;
     }
   } while (start);
-  phrase_boundaries.push_back(text.size());
+  phrase_boundaries.push_back(text_view.size());
 }
 
 }  // namespace a11y
@@ -110,7 +113,7 @@ namespace {
 
 // Returns the index of the next granularity of the given text, such that the
 // next granularity is equivalent to text.substr(0, <returned_index>).
-int GetNextGranularity(const std::u16string& text,
+int GetNextGranularity(std::u16string_view text,
                        ax::mojom::TextBoundary boundary) {
   // TODO(crbug.com/40927698): Investigate providing correct line breaks
   // or alternatively making adjustments to ax_text_utils to return boundaries
@@ -123,11 +126,11 @@ int GetNextGranularity(const std::u16string& text,
 
 }  // namespace
 
-int GetNextSentence(const std::u16string& text) {
+int GetNextSentence(std::u16string_view text) {
   return GetNextGranularity(text, ax::mojom::TextBoundary::kSentenceStart);
 }
 
-int GetNextWord(const std::u16string& text) {
+int GetNextWord(std::u16string_view text) {
   return GetNextGranularity(text, ax::mojom::TextBoundary::kWordStart);
 }
 

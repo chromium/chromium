@@ -2928,6 +2928,7 @@ ScriptPromise<IDLSequence<IDLAny>> Observable::toArray(
                                                           options->signal()));
   }
 
+  resolver->SuppressDetachCheck();
   ToArrayInternalObserver* internal_observer =
       MakeGarbageCollected<ToArrayInternalObserver>(resolver, algorithm_handle);
 
@@ -2971,6 +2972,8 @@ ScriptPromise<IDLUndefined> Observable::forEach(ScriptState* script_state,
     resolver->Reject(internal_options->signal()->reason(script_state));
     return promise;
   }
+
+  resolver->SuppressDetachCheck();
 
   AbortSignal::AlgorithmHandle* algorithm_handle =
       internal_options->signal()->AddAlgorithm(
@@ -3020,6 +3023,8 @@ ScriptPromise<IDLAny> Observable::first(ScriptState* script_state,
     return promise;
   }
 
+  resolver->SuppressDetachCheck();
+
   AbortSignal::AlgorithmHandle* algorithm_handle =
       internal_options->signal()->AddAlgorithm(
           MakeGarbageCollected<RejectPromiseAbortAlgorithm>(
@@ -3054,6 +3059,8 @@ ScriptPromise<IDLAny> Observable::last(ScriptState* script_state,
                                                           options->signal()));
   }
 
+  resolver->SuppressDetachCheck();
+
   OperatorLastInternalObserver* internal_observer =
       MakeGarbageCollected<OperatorLastInternalObserver>(resolver,
                                                          algorithm_handle);
@@ -3086,6 +3093,8 @@ ScriptPromise<IDLBoolean> Observable::some(ScriptState* script_state,
     resolver->Reject(options->signal()->reason(script_state));
     return promise;
   }
+
+  resolver->SuppressDetachCheck();
 
   AbortSignal::AlgorithmHandle* algorithm_handle =
       internal_options->signal()->AddAlgorithm(
@@ -3124,6 +3133,8 @@ ScriptPromise<IDLBoolean> Observable::every(ScriptState* script_state,
     return promise;
   }
 
+  resolver->SuppressDetachCheck();
+
   AbortSignal::AlgorithmHandle* algorithm_handle =
       internal_options->signal()->AddAlgorithm(
           MakeGarbageCollected<RejectPromiseAbortAlgorithm>(
@@ -3160,6 +3171,8 @@ ScriptPromise<IDLAny> Observable::find(ScriptState* script_state,
     resolver->Reject(options->signal()->reason(script_state));
     return promise;
   }
+
+  resolver->SuppressDetachCheck();
 
   AbortSignal::AlgorithmHandle* algorithm_handle =
       internal_options->signal()->AddAlgorithm(
@@ -3216,6 +3229,8 @@ ScriptPromise<IDLAny> Observable::ReduceInternal(
     resolver->Reject(options->signal()->reason(script_state));
     return promise;
   }
+
+  resolver->SuppressDetachCheck();
 
   AbortSignal::AlgorithmHandle* algorithm_handle =
       internal_options->signal()->AddAlgorithm(

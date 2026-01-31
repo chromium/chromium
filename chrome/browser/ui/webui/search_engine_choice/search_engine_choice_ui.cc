@@ -35,12 +35,12 @@
 namespace {
 std::string GetChoiceListJSON(
     SearchEngineChoiceDialogService& search_engine_choice_dialog_service) {
-  base::Value::List choice_value_list;
+  base::ListValue choice_value_list;
   const TemplateURL::TemplateURLVector choices =
       search_engine_choice_dialog_service.GetSearchEngines();
 
   for (const auto& choice : choices) {
-    base::Value::Dict choice_value;
+    base::DictValue choice_value;
 
     choice_value.Set("prepopulateId", choice->prepopulate_id());
     choice_value.Set("name", choice->short_name());

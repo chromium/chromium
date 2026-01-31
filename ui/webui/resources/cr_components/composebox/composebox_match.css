@@ -32,9 +32,19 @@
   position: relative;
 }
 
-.container:hover,
-:host(:is(:focus-visible, [selected])) .container {
+.container:hover {
   background-color: var(--color-searchbox-results-background-hovered);
+}
+
+:host(:is(:focus-visible, [selected])) .container {
+  background-color: var(--color-searchbox-results-background-selected, var(--color-searchbox-results-background-hovered));
+}
+
+@media (forced-colors: active) {
+  .container:hover,
+  :host(:is(:focus-visible, [selected])) .container {
+    --color-searchbox-results-background-hovered: Highlight;
+  }
 }
 
 #focusIndicator {
@@ -77,12 +87,16 @@
   white-space: nowrap;
 }
 
+:host(:is(:focus-visible, [selected])) #textContainer {
+  color: var(--color-searchbox-results-foreground-selected, var(--color-composebox-font-light));
+}
+
 #remove {
   --cr-icon-button-fill-color:
       var(--color-searchbox-results-icon-selected);
   --cr-icon-button-icon-size: 16px;
   --cr-icon-button-hover-background-color:
-      var(--color-searchbox-results-background-hovered);
+      var(--color-searchbox-results-button-hover);
   display: none;
   position: absolute;
   top: var(--cr-composebox-match-remove-button-top, 6px);
@@ -100,19 +114,26 @@
 }
 
 :host-context([in-deep-search-mode_]) #textContainer {
-  display: block;
-  line-clamp: 2;
   overflow: hidden;
-  box-orient: vertical;
   white-space: normal;
+  line-height: 24px;
 }
 
-:host-context([in-deep-search-mode_]),
-:host-context([in-deep-search-mode_]) .container {
-  height: 68px;
+:host-context([in-deep-search-mode_]) #focusIndicator {
+  top: 0;
+  bottom: 0;
+  height: auto;
+}
+
+:host-context([in-deep-search-mode_]) {
+  height: auto;
+  min-height: var(--cr-composebox-match-height, 44px);
 }
 
 :host-context([in-deep-search-mode_]) .container {
+  height: auto;
+  min-height: 24px;
+  padding-block: 10px;
   border-start-end-radius: 24px;
   border-end-end-radius: 24px;
 }

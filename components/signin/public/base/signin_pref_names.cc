@@ -17,19 +17,6 @@ const char kAccountIdMigrationState[] = "account_id_migration_state";
 // tracked by this signin.
 const char kAccountInfo[] = "account_info";
 
-// Whether the "clear on exit" migration is complete.
-// If this preference is not true, then the user needs to be migrated.
-// If a user has set clear cookies on exit prior to the activation of explicit
-// signin which changes the behavior of signed in users, they will need to do a
-// migration. The user can be migrated in various ways:
-// - the first time they launch Chrome, if they don't use the cookie setting
-// - by changing the value of the setting when it has the new behavior
-// - by seeing a notice dialog if they close the browser while being in a state
-//   where the new cookie setting behavior makes a difference (signed in with
-//   explicit signin and non-syncing).
-const char kCookieClearOnExitMigrationNoticeComplete[] =
-    "signin.cookie_clear_on_exit_migration_notice_complete";
-
 // A hash of the GAIA accounts present in the content area. Order does not
 // affect the hash, but signed in/out status will. Stored as the Base64 string.
 const char kGaiaCookieHash[] = "gaia_cookie.hash";
@@ -88,6 +75,11 @@ const char kGoogleServicesSyncingGaiaIdMigratedToSignedIn[] =
 const char kGoogleServicesSyncingUsernameMigratedToSignedIn[] =
     "google.services.syncing_username_migrated_to_signed_in";
 
+// An integer indicating the sync-to-signin migration type of the user.
+// Possible values are defined in SyncToSigninMigrationType enum.
+const char kGoogleServicesSyncingUserMigrationType[] =
+    "google.services.syncing_user_migration_type";
+
 // Local state pref containing a string regex that restricts which accounts
 // can be used to log in to chrome (e.g. "*@google.com"). If missing or blank,
 // all accounts are allowed (no restrictions).
@@ -122,6 +114,15 @@ const char kHistorySyncLastDeclinedTimestamp[] =
 // pref to this one.
 const char kHistorySyncSuccessiveDeclineCount[] =
     "signin.history_sync.successive_decline_count";
+
+// A timestamp of the last time the history sync promo was dismissed.
+const char kHistoryPageHistorySyncPromoLastDismissedTimestamp[] =
+    "history_page.history_sync_promo_last_dismissed_timestamp";
+
+// A boolean preference to store whether the history sync promo was shown one
+// more time after the user dismissed it.
+const char kHistoryPageHistorySyncPromoShownAfterDismissal[] =
+    "history_page.history_sync_promo_shown_after_dismissal";
 
 // An integer preference to store the number of times the history sync promo
 // has been shown on the history page.

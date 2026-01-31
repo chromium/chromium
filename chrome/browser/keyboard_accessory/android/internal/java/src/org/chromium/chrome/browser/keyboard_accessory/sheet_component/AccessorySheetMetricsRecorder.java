@@ -53,6 +53,13 @@ class AccessorySheetMetricsRecorder {
                     }
                     if (propertyKey == ACTIVE_TAB_INDEX
                             || propertyKey == AccessorySheetProperties.HEIGHT
+                            || propertyKey == AccessorySheetProperties.MAX_WIDTH
+                            || propertyKey == AccessorySheetProperties.HORIZONTAL_PADDING
+                            || propertyKey == AccessorySheetProperties.GRAVITY
+                            || propertyKey == AccessorySheetProperties.ELEVATION
+                            || propertyKey == AccessorySheetProperties.TOP_OFFSET
+                            || propertyKey == AccessorySheetProperties.BACKGROUND
+                            || propertyKey == AccessorySheetProperties.BAR_SHADOW_VISIBLE
                             || propertyKey == AccessorySheetProperties.TOP_SHADOW_VISIBLE
                             || propertyKey == AccessorySheetProperties.PAGE_CHANGE_LISTENER
                             || propertyKey == AccessorySheetProperties.SHOW_KEYBOARD_CALLBACK) {

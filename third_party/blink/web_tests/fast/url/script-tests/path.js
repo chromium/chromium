@@ -5,10 +5,11 @@ cases = [
   ["/./.foo", "/.foo"],
   ["/foo/.", "/foo/"],
   ["/foo/./", "/foo/"],
-  // double dots followed by a slash or the end of the string count
+  // A double-dot URL path segment ("..") followed by a slash or end counts.
+  // https://url.spec.whatwg.org/#double-dot-path-segment
   ["/foo/bar/..", "/foo/"],
   ["/foo/bar/../", "/foo/"],
-  // don't count double dots when they aren't followed by a slash
+  // Don't count double-dot URL path segments when not followed by a slash.
   ["/foo/..bar", "/foo/..bar"],
   // some in the middle
   ["/foo/bar/../ton", "/foo/ton"],
@@ -16,10 +17,10 @@ cases = [
   // we should not be able to go above the root
   ["/foo/../../..", "/"],
   ["/foo/../../../ton", "/ton"],
-  // escaped dots should be unescaped and treated the same as dots
+  // %2E/%2e should be recognized for navigation but NOT decoded, with case preserved
   ["/foo/%2e", "/foo/"],
-  ["/foo/%2e%2", "/foo/.%2"],
-  ["/foo/%2e./%2e%2e/.%2e/%2e.bar", "/..bar"],
+  ["/foo/%2e%2", "/foo/%2e%2"],
+  ["/foo/%2e./%2e%2e/.%2e/%2e.bar", "/%2e.bar"],
   // Multiple slashes in a row should be preserved and treated like empty
   // directory names.
   ["////../..", "//"],

@@ -76,7 +76,7 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) CellularESimInstaller {
       const std::string& activation_code,
       const std::string& confirmation_code,
       const dbus::ObjectPath& euicc_path,
-      base::Value::Dict new_shill_properties,
+      base::DictValue new_shill_properties,
       InstallProfileFromActivationCodeCallback callback,
       bool is_initial_install,
       cellular_setup::mojom::ProfileInstallMethod install_method);
@@ -84,7 +84,7 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) CellularESimInstaller {
   // Attempts to create a Shill service configuration with given
   // |new_shill_properties| for eSIM with |profile_path| and |euicc_path|.
   // |callback| is called with the newly configure service path.
-  void ConfigureESimService(const base::Value::Dict& new_shill_properties,
+  void ConfigureESimService(const base::DictValue& new_shill_properties,
                             const dbus::ObjectPath& euicc_path,
                             const dbus::ObjectPath& profile_path,
                             ConfigureESimServiceCallback callback);
@@ -127,7 +127,7 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) CellularESimInstaller {
       const std::string& activation_code,
       const std::string& confirmation_code,
       const dbus::ObjectPath& euicc_path,
-      base::Value::Dict new_shill_properties,
+      base::DictValue new_shill_properties,
       bool is_initial_install,
       cellular_setup::mojom::ProfileInstallMethod install_method,
       InstallProfileFromActivationCodeCallback callback,
@@ -136,7 +136,7 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) CellularESimInstaller {
       InstallProfileFromActivationCodeCallback callback,
       std::unique_ptr<CellularInhibitor::InhibitLock> inhibit_lock,
       const dbus::ObjectPath& euicc_path,
-      const base::Value::Dict& new_shill_properties,
+      const base::DictValue& new_shill_properties,
       bool is_initial_install,
       cellular_setup::mojom::ProfileInstallMethod install_method,
       const base::Time installation_start_time,

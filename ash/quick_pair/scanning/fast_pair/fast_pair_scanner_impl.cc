@@ -10,7 +10,6 @@
 #include "ash/quick_pair/common/fast_pair/fast_pair_metrics.h"
 #include "ash/quick_pair/fast_pair_handshake/fast_pair_handshake.h"
 #include "ash/quick_pair/fast_pair_handshake/fast_pair_handshake_lookup.h"
-#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
@@ -151,8 +150,7 @@ void FastPairScannerImpl::OnDeviceFound(
     return;
   }
 
-  if (base::Contains(device_address_advertisement_data_map_,
-                     device->GetAddress())) {
+  if (device_address_advertisement_data_map_.contains(device->GetAddress())) {
     CD_LOG(INFO, Feature::FP)
         << __func__ << ": Ignoring found device because it was already found.";
     return;
@@ -187,9 +185,9 @@ void FastPairScannerImpl::DeviceChanged(device::BluetoothAdapter* adapter,
   // we have seen already from the scanner, or if the advertisement data for
   // a device we have already seen is not new, then early return and do not
   // notify observers or add data to the device address advertisement data map.
-  if (!base::Contains(device_address_advertisement_data_map_, device_address) ||
-      base::Contains(device_address_advertisement_data_map_[device_address],
-                     *service_data)) {
+  if (!device_address_advertisement_data_map_.contains(device_address) ||
+      device_address_advertisement_data_map_[device_address].contains(
+          *service_data)) {
     return;
   }
 

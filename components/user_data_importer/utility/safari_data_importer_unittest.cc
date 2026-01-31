@@ -301,7 +301,7 @@ class SafariDataImporterTest : public testing::Test {
   // Helper function for the "sync enabled" test.
   void PasswordsImportToAccountStore() {
     sync_service_.SetSignedIn(signin::ConsentLevel::kSignin);
-    ASSERT_TRUE(password_manager::features_util::IsAccountStorageEnabled(
+    ASSERT_TRUE(password_manager::features_util::IsAccountStorageActive(
         &sync_service_));
 
     constexpr char kTestCSVInput[] =
@@ -332,7 +332,7 @@ class SafariDataImporterTest : public testing::Test {
   // Helper function for the "sync disabled" test.
   void PasswordsImportToProfileStore() {
     sync_service_.SetSignedOut();
-    ASSERT_FALSE(password_manager::features_util::IsAccountStorageEnabled(
+    ASSERT_FALSE(password_manager::features_util::IsAccountStorageActive(
         &sync_service_));
 
     constexpr char kTestCSVInput[] =
@@ -1276,7 +1276,7 @@ TEST_F(SafariDataImporterTest,
        PasswordsImportLocallyWithSyncTypesListDisabled) {
   sync_service_.SetSignedIn(signin::ConsentLevel::kSignin);
   ASSERT_TRUE(
-      password_manager::features_util::IsAccountStorageEnabled(&sync_service_));
+      password_manager::features_util::IsAccountStorageActive(&sync_service_));
 
   syncer::UserSelectableTypeSet types =
       sync_service_.GetUserSettings()->GetRegisteredSelectableTypes();

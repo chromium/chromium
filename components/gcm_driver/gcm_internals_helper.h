@@ -17,10 +17,9 @@ class GCMProfileService;
 namespace gcm_driver {
 
 // Returns the GCM infos for the gcm-internals WebUI.
-base::Value::Dict SetGCMInternalsInfo(
-    const gcm::GCMClient::GCMStatistics* stats,
-    gcm::GCMProfileService* profile_service,
-    PrefService* prefs);
+base::DictValue SetGCMInternalsInfo(const gcm::GCMClient::GCMStatistics* stats,
+                                    gcm::GCMProfileService* profile_service,
+                                    PrefService* prefs);
 
 }  // namespace gcm_driver
 

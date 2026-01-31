@@ -69,7 +69,7 @@ void SetColorType(int text_type,
 }
 
 bool ParseJsonToFormattedStringFragment(
-    const base::Value::Dict& field_json,
+    const base::DictValue& field_json,
     omnibox::FormattedString* formatted_string) {
   const std::string* text = field_json.FindString(kAnswerJsonText);
   std::optional<int> type = field_json.FindInt(kAnswerJsonTextType);
@@ -95,16 +95,15 @@ bool ParseJsonToFormattedStringFragment(
   return true;
 }
 
-bool ParseJsonToFormattedString(const base::Value::Dict& line_json,
+bool ParseJsonToFormattedString(const base::DictValue& line_json,
                                 omnibox::FormattedString* formatted_string,
                                 omnibox::Image* image) {
-  const base::Value::Dict* inner_json =
-      line_json.FindDict(kAnswerJsonImageLine);
+  const base::DictValue* inner_json = line_json.FindDict(kAnswerJsonImageLine);
   if (!inner_json) {
     return false;
   }
 
-  const base::Value::List* fields_json = inner_json->FindList(kAnswerJsonText);
+  const base::ListValue* fields_json = inner_json->FindList(kAnswerJsonText);
   if (!fields_json || fields_json->empty()) {
     return false;
   }
@@ -116,7 +115,7 @@ bool ParseJsonToFormattedString(const base::Value::Dict& line_json,
     }
   }
 
-  const base::Value::Dict* additional_text_json =
+  const base::DictValue* additional_text_json =
       inner_json->FindDict(kAnswerJsonAdditionalText);
   if (additional_text_json && !ParseJsonToFormattedStringFragment(
                                   *additional_text_json, formatted_string)) {
@@ -129,14 +128,14 @@ bool ParseJsonToFormattedString(const base::Value::Dict& line_json,
     formatted_string->set_a11y_text(*accessibility_label);
   }
 
-  const base::Value::Dict* status_text_json =
+  const base::DictValue* status_text_json =
       inner_json->FindDict(kAnswerJsonStatusText);
   if (status_text_json && !ParseJsonToFormattedStringFragment(
                               *status_text_json, formatted_string)) {
     return false;
   }
 
-  const base::Value::Dict* image_json = inner_json->FindDict(kAnswerJsonImage);
+  const base::DictValue* image_json = inner_json->FindDict(kAnswerJsonImage);
   if (image_json) {
     const std::string* url_string =
         image_json->FindString(kAnswerJsonImageData);
@@ -153,15 +152,15 @@ bool ParseJsonToFormattedString(const base::Value::Dict& line_json,
   return true;
 }
 
-bool ParseJsonToAnswerData(const base::Value::Dict& answer_json,
+bool ParseJsonToAnswerData(const base::DictValue& answer_json,
                            omnibox::RichAnswerTemplate* answer_template) {
   // Ensure there are exactly two lines in the response.
-  const base::Value::List* lines_json = answer_json.FindList(kAnswerJsonLines);
+  const base::ListValue* lines_json = answer_json.FindList(kAnswerJsonLines);
   if (!lines_json || lines_json->size() != 2) {
     return false;
   }
 
-  const base::Value::Dict* first_line_dict = (*lines_json)[0].GetIfDict();
+  const base::DictValue* first_line_dict = (*lines_json)[0].GetIfDict();
   omnibox::AnswerData* answer_data = answer_template->add_answers();
   if (!first_line_dict || !ParseJsonToFormattedString(
                               *first_line_dict, answer_data->mutable_headline(),
@@ -169,7 +168,7 @@ bool ParseJsonToAnswerData(const base::Value::Dict& answer_json,
     return false;
   }
 
-  const base::Value::Dict* second_line_dict = (*lines_json)[1].GetIfDict();
+  const base::DictValue* second_line_dict = (*lines_json)[1].GetIfDict();
   if (!second_line_dict ||
       !ParseJsonToFormattedString(*second_line_dict,
                                   answer_data->mutable_subhead(),
@@ -178,7 +177,7 @@ bool ParseJsonToAnswerData(const base::Value::Dict& answer_json,
   }
 
   const std::string* image_url;
-  const base::Value::Dict* optional_image =
+  const base::DictValue* optional_image =
       answer_json.FindDict(kAnswerJsonImage);
   if (optional_image &&
       (image_url = optional_image->FindString(kAnswerJsonImageData)) &&

@@ -10,6 +10,7 @@ import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -20,7 +21,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
@@ -69,21 +69,21 @@ public class StartupHelperUnitTest {
     private Tab mTab1;
     private Tab mTab2;
 
-    private static Tab prepareTab(int tabId, int rootId) {
-        Tab tab = Mockito.mock(Tab.class);
-        Mockito.doReturn(tabId).when(tab).getId();
-        Mockito.doReturn(rootId).when(tab).getRootId();
-        Mockito.doReturn(GURL.emptyGURL()).when(tab).getUrl();
-        Mockito.doReturn(TAB_TITLE_1).when(tab).getTitle();
-        Mockito.doReturn(System.currentTimeMillis()).when(tab).getTimestampMillis();
+    private static Tab prepareTab(int tabId, Token tabGroupId) {
+        Tab tab = mock(Tab.class);
+        when(tab.getId()).thenReturn(tabId);
+        when(tab.getTabGroupId()).thenReturn(tabGroupId);
+        when(tab.getUrl()).thenReturn(GURL.emptyGURL());
+        when(tab.getTitle()).thenReturn(TAB_TITLE_1);
+        when(tab.getTimestampMillis()).thenReturn(System.currentTimeMillis());
         return tab;
     }
 
     @Before
     public void setUp() {
         mTabGroupSyncService = spy(new TestTabGroupSyncService());
-        mTab1 = prepareTab(TAB_ID_1, ROOT_ID_1);
-        mTab2 = prepareTab(TAB_ID_2, ROOT_ID_1);
+        mTab1 = prepareTab(TAB_ID_1, TOKEN_1);
+        mTab2 = prepareTab(TAB_ID_2, TOKEN_1);
 
         mTabModel = spy(new MockTabModel(mProfile, null));
         when(mTabGroupModelFilter.getTabModel()).thenReturn(mTabModel);

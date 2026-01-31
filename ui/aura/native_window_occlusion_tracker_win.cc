@@ -6,10 +6,10 @@
 
 #include <dwmapi.h>
 #include <powersetting.h>
+
 #include <memory>
 #include <string>
 
-#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/memory/scoped_refptr.h"
@@ -17,6 +17,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/task/sequenced_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "ui/aura/window_occlusion_tracker.h"
@@ -639,7 +640,7 @@ bool NativeWindowOcclusionTrackerWin::WindowOcclusionCalculator::
     DWORD pid;
     GetWindowThreadProcessId(hwnd, &pid);
     current_pids_with_visible_windows->insert(pid);
-    if (!base::Contains(process_event_hooks_, pid))
+    if (!process_event_hooks_.contains(pid))
       RegisterEventHookForProcess(pid);
   }
 

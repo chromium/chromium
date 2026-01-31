@@ -4,7 +4,6 @@
 
 #include "extensions/browser/state_store_test_observer.h"
 
-#include "base/containers/contains.h"
 #include "content/public/browser/browser_thread.h"
 #include "extensions/browser/extension_system.h"
 #include "extensions/common/extension_id.h"
@@ -25,7 +24,7 @@ void StateStoreTestObserver::WaitForExtensionAndKey(
 
   waiting_for_map_key_ = std::make_pair(extension_id, key);
   // If the key has already been reported, flush the state store.
-  if (base::Contains(ids_and_keys_with_writes_, waiting_for_map_key_)) {
+  if (ids_and_keys_with_writes_.contains(waiting_for_map_key_)) {
     state_store_->FlushForTesting(run_loop_.QuitWhenIdleClosure());
   }
   run_loop_.Run();

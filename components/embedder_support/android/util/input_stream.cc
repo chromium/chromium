@@ -128,7 +128,7 @@ bool InputStream::Read(net::IOBuffer* dest, int length, int* bytes_read) {
     // Copy the data over to the provided C++ IOBuffer.
     DCHECK_GE(remaining_length, transfer_length);
     env->GetByteArrayRegion(buffer_.obj(), 0, transfer_length,
-                            reinterpret_cast<jbyte*>(dest_write_ptr));
+                            reinterpret_cast<int8_t*>(dest_write_ptr));
     if (ClearException(env))
       return false;
 

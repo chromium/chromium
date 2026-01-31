@@ -192,7 +192,7 @@ class TabDesktopMediaListTest : public testing::Test,
     if (!extension_) {
       extension_ =
           extensions::ExtensionBuilder()
-              .SetManifest(base::Value::Dict()
+              .SetManifest(base::DictValue()
                                .Set("name", "TabListUnitTest Extension")
                                .Set("version", "1.0")
                                .Set("manifest_version", 2))

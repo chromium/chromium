@@ -188,7 +188,7 @@ void CloudPolicyClientRegistrationHelper::OnGetUserInfoFailure(
 }
 
 void CloudPolicyClientRegistrationHelper::OnGetUserInfoSuccess(
-    const base::Value::Dict& data) {
+    const base::DictValue& data) {
   user_info_fetcher_.reset();
   // TODO(crbug.com/425456152): Remove this check once management does not
   // depend on hosted domain.

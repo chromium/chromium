@@ -16,6 +16,7 @@
 #include "content/browser/preloading/prefetch/prefetch_streaming_url_loader.h"
 #include "content/browser/preloading/preloading.h"
 #include "content/browser/preloading/preloading_data_impl.h"
+#include "content/public/browser/browser_context.h"
 #include "content/public/browser/prefetch_metrics.h"
 #include "content/public/common/content_client.h"
 #include "content/public/test/mock_navigation_handle.h"
@@ -113,7 +114,8 @@ CreateStreamingURLLoaderWithoutPrefetchContainerForTests(
       on_head_received);
 
   auto response_reader = base::MakeRefCounted<PrefetchResponseReader>(
-      std::move(on_head_received_callback), std::move(on_complete_callback));
+      std::move(on_head_received_callback), std::move(on_complete_callback),
+      perfetto::Flow::ProcessScoped(0));
   return std::make_tuple(
       response_reader,
       CreateStreamingURLLoaderForTests(
@@ -178,7 +180,8 @@ base::WeakPtr<PrefetchStreamingURLLoader> CreateStreamingURLLoaderForTests(
                          : PrefetchServiceWorkerState::kDisallowed,
       /*browser_context_for_service_worker=*/nullptr,
       base::BindOnce(&PrefetchContainer::OnServiceWorkerStateDetermined,
-                     prefetch_container));
+                     prefetch_container),
+      perfetto::Flow::ProcessScoped(0));
 
   if (prefetch_container) {
     prefetch_container->SetStreamingURLLoader(streaming_loader);
@@ -292,8 +295,9 @@ void MakeServableStreamingURLLoaderWithRedirectForTest(
   prefetch_container->AddRedirectHop(redirect_info);
 
   CHECK(weak_streaming_loader);
-  weak_streaming_loader->HandleRedirect(
-      PrefetchRedirectStatus::kFollow, redirect_info, std::move(redirect_head));
+  weak_streaming_loader->HandleRedirect(PrefetchRedirectStatus::kFollow,
+                                        redirect_info, std::move(redirect_head),
+                                        /*update_headers_params=*/{});
 
   // GetResponseReaderForCurrentPrefetch() now points to a new ResponseReader
   // after `AddRedirectHop()` above.
@@ -355,7 +359,7 @@ void MakeServableStreamingURLLoadersWithNetworkTransitionRedirectForTest(
   CHECK(weak_first_streaming_loader);
   weak_first_streaming_loader->HandleRedirect(
       PrefetchRedirectStatus::kSwitchNetworkContext, redirect_info,
-      std::move(redirect_head));
+      std::move(redirect_head), /*update_headers_params=*/{});
 
   std::unique_ptr<network::ResourceRequest> redirect_request =
       std::make_unique<network::ResourceRequest>();
@@ -730,6 +734,12 @@ void PrefetchingMetricsTestBase::ExpectCorrectUkmLogs(
                                                   expected_attempts);
   // We do not test the `PreloadingPrediction` as it is added in
   // `PreloadingDecider`.
+}
+
+network::mojom::CookieManager* PrefetchingMetricsTestBase::cookie_manager() {
+  return browser_context()
+      ->GetDefaultStoragePartition()
+      ->GetCookieManagerForBrowserProcess();
 }
 
 WithPrefetchRearchParam::WithPrefetchRearchParam(PrefetchRearchParam param)

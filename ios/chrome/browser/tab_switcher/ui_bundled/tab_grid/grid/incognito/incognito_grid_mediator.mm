@@ -120,7 +120,17 @@
   [self closeAllItems];
 }
 
+- (void)closeOtherTabsButtonTapped:(id)sender {
+  RecordTabGridCloseOtherTabs(/*incognito=*/true);
+  // There is no pinned tabs in incognito.
+  RecordTabGridCloseTabsCount(self.webStateList->count() - 1);
+  int indexToKeep = self.webStateList->active_index();
+  CloseOtherWebStates(*self.webStateList, indexToKeep,
+                      WebStateList::ClosingReason::kUserAction);
+}
+
 - (void)newTabButtonTapped:(id)sender {
+  CHECK(!IsChromeNextIaEnabled());
   // Ignore the tap if the current page is disabled for some reason, by policy
   // for instance. This is to avoid situations where the tap action from an
   // enabled page can make it to a disabled page by releasing the
@@ -188,6 +198,7 @@
     toolbarsConfiguration.newTabButton = YES;
     toolbarsConfiguration.searchButton = YES;
     toolbarsConfiguration.selectTabsButton = !self.webStateList->empty();
+    toolbarsConfiguration.closeOtherTabsButton = [self canCloseOtherTabs];
   }
 
   [self.toolbarsMutator setToolbarConfiguration:toolbarsConfiguration];
@@ -278,6 +289,21 @@
 }
 
 #pragma mark - Private
+
+// Returns YES if "Close Other Tabs" should be enabled.
+- (BOOL)canCloseOtherTabs {
+  if (!IsCloseOtherTabsEnabled()) {
+    return NO;
+  }
+  if (!self.webStateList) {
+    return NO;
+  }
+  int activeIndex = self.webStateList->active_index();
+  if (activeIndex == WebStateList::kInvalidIndex) {
+    return NO;
+  }
+  return self.webStateList->count() > 1;
+}
 
 // Returns YES if incognito is disabled.
 - (BOOL)isIncognitoModeDisabled {

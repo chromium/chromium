@@ -171,6 +171,11 @@ export interface PageElementTypes {
   conversationId: HTMLInputElement;
   textmode: HTMLInputElement;
   audiomode: HTMLInputElement;
+  skillIdInput: HTMLInputElement;
+  skillPromptInput: HTMLInputElement;
+  createSkillBtn: HTMLButtonElement;
+  updateSkillBtn: HTMLButtonElement;
+  getSkillBtn: HTMLButtonElement;
 }
 
 export const $: PageElementTypes = new Proxy({}, {

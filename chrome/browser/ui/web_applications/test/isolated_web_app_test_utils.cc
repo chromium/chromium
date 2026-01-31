@@ -8,7 +8,8 @@
 #include <string>
 #include <string_view>
 
-#include "base/files/file_path.h"
+#include "base/containers/map_util.h"
+#include "base/test/bind.h"
 #include "base/test/gmock_expected_support.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
@@ -24,8 +25,7 @@
 #include "chrome/browser/web_applications/isolated_web_apps/commands/install_isolated_web_app_command.h"
 #include "chrome/browser/web_applications/isolated_web_apps/install/isolated_web_app_install_source.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
-#include "chrome/browser/web_applications/isolated_web_apps/runtime_data/chrome_iwa_runtime_data_provider.h"
-#include "chrome/browser/web_applications/isolated_web_apps/test/fake_chrome_iwa_runtime_data_provider.h"
+#include "chrome/browser/web_applications/isolated_web_apps/iwa_permissions_policy_cache.h"
 #include "chrome/browser/web_applications/isolated_web_apps/test/key_distribution/test_utils.h"
 #include "chrome/browser/web_applications/test/web_app_test_utils.h"
 #include "chrome/browser/web_applications/web_app.h"
@@ -41,10 +41,16 @@
 #include "components/web_package/signed_web_bundles/signed_web_bundle_id.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
 #include "components/webapps/common/web_app_id.h"
+#include "components/webapps/isolated_web_apps/types/iwa_origin.h"
+#include "content/public/browser/navigation_entry.h"
+#include "content/public/common/content_features.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/navigation_simulator.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
+#include "services/network/public/cpp/permissions_policy/permissions_policy_declaration.h"
+#include "services/network/public/mojom/permissions_policy/permissions_policy_feature.mojom.h"
 #include "third_party/blink/public/common/features_generated.h"
+#include "third_party/blink/public/common/permissions_policy/policy_helper_public.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkStream.h"
 #include "ui/base/page_transition_types.h"
@@ -58,8 +64,21 @@
 
 namespace web_app {
 namespace {
+// Normally this is done in the `content::IsolatedWebAppThrottle`.
+// `NavigationSimulator` however does not run throttles.
+void PopulatePermissionsPolicyCache(
+    web_app::IwaPermissionsPolicyCache* permissions_policy_cache,
+    const IwaOrigin iwa_origin) {
+  base::test::TestFuture<bool> future;
+  permissions_policy_cache->ObtainManifestAndCache(iwa_origin,
+                                                   future.GetCallback());
+  CHECK(future.Take());
+}
 
-void CommitNavigation(std::unique_ptr<content::NavigationSimulator> simulator) {
+void CommitNavigation(
+    std::unique_ptr<content::NavigationSimulator> simulator,
+    const web_app::IwaPermissionsPolicyCache::CacheEntry* permissions_policy,
+    const url::Origin& origin) {
   // We need to inject the COI headers here because they're normally injected
   // by IsolatedWebAppURLLoader, which is skipped when simulating navigations.
   simulator->SetResponseHeaders(
@@ -68,6 +87,37 @@ void CommitNavigation(std::unique_ptr<content::NavigationSimulator> simulator) {
           .AddHeader("Cross-Origin-Embedder-Policy", "require-corp")
           .AddHeader("Cross-Origin-Resource-Policy", "same-origin")
           .Build());
+
+  // Normally, parsing IWA permissions policies and combining them with headers
+  // is done in the renderer. Here however we essentially simulate the renderer
+  // without starting it, so this is a very limited reimplementation of the
+  // parsing for tests.
+  if (!!permissions_policy) {
+    const auto& permission_policy_to_feature_map =
+        blink::GetPermissionsPolicyNameToFeatureMap();
+    network::ParsedPermissionsPolicy parsed_policy;
+    for (const auto& entry : *permissions_policy) {
+      if (entry.allowed_origins.empty()) {
+        continue;
+      }
+      const auto* mapping =
+          base::FindOrNull(permission_policy_to_feature_map, entry.feature);
+      if (!mapping) {
+        continue;
+      }
+
+      // This is a very basic implementation that doesn't take headers or
+      // allowlists into consideration, just picks every policy mentioned in the
+      // manifest and sets its allowlist to *. It's good enough for the tests
+      // that use this currently, and new tests that set detailed allowlists
+      // should prioritize using normal navigation.
+      parsed_policy.emplace_back(
+          *mapping, std::vector<network::OriginWithPossibleWildcards>{}, origin,
+          true, false);
+    }
+    simulator->SetPermissionsPolicyHeader(std::move(parsed_policy));
+  }
+
   simulator->Commit();
 }
 
@@ -88,15 +138,6 @@ IsolatedWebAppBrowserTestHarness::IsolatedWebAppBrowserTestHarness() {
 
 IsolatedWebAppBrowserTestHarness::~IsolatedWebAppBrowserTestHarness() = default;
 
-void IsolatedWebAppBrowserTestHarness::CreatedBrowserMainParts(
-    content::BrowserMainParts* parts) {
-  WebAppBrowserTestBase::CreatedBrowserMainParts(parts);
-  if (auto* provider = GetRuntimeDataProvider()) {
-    static_cast<ChromeBrowserMainParts*>(parts)->AddParts(
-        std::make_unique<FakeIwaRuntimeDataProviderInitializer>(*provider));
-  }
-}
-
 std::unique_ptr<net::EmbeddedTestServer>
 IsolatedWebAppBrowserTestHarness::CreateAndStartServer(
     base::FilePath::StringViewType chrome_test_data_relative_root) {
@@ -115,11 +156,6 @@ Browser* IsolatedWebAppBrowserTestHarness::GetBrowserFromFrame(
       content::WebContents::FromRenderFrameHost(frame));
   EXPECT_TRUE(browser);
   return browser;
-}
-
-ChromeIwaRuntimeDataProvider*
-IsolatedWebAppBrowserTestHarness::GetRuntimeDataProvider() {
-  return nullptr;
 }
 
 content::RenderFrameHost* IsolatedWebAppBrowserTestHarness::OpenApp(
@@ -148,7 +184,7 @@ UpdateDiscoveryTaskResultWaiter::UpdateDiscoveryTaskResultWaiter(
     : expected_app_id_(expected_app_id),
       callback_(std::move(callback)),
       provider_(provider) {
-  observation_.Observe(&provider.iwa_update_manager());
+  observation_.Observe(&provider.isolated_web_app_update_manager());
 }
 
 UpdateDiscoveryTaskResultWaiter::~UpdateDiscoveryTaskResultWaiter() = default;
@@ -171,7 +207,7 @@ UpdateApplyTaskResultWaiter::UpdateApplyTaskResultWaiter(
     : expected_app_id_(expected_app_id),
       callback_(std::move(callback)),
       provider_(provider) {
-  observation_.Observe(&provider.iwa_update_manager());
+  observation_.Observe(&provider.isolated_web_app_update_manager());
 }
 
 UpdateApplyTaskResultWaiter::~UpdateApplyTaskResultWaiter() = default;
@@ -267,19 +303,39 @@ void CreateIframe(content::RenderFrameHost* parent_frame,
 
 void SimulateIsolatedWebAppNavigation(content::WebContents* web_contents,
                                       const GURL& url) {
+  ASSERT_TRUE(base::FeatureList::IsEnabled(features::kIsolatedWebApps))
+      << "Navigation to an IWA in a test that doesn't have IWAs enabled!";
   auto navigation =
       content::NavigationSimulator::CreateBrowserInitiated(url, web_contents);
   navigation->SetTransition(ui::PAGE_TRANSITION_TYPED);
-  CommitNavigation(std::move(navigation));
+
+  auto* permissions_policy_cache =
+      web_app::IwaPermissionsPolicyCacheFactory::GetForProfile(
+          Profile::FromBrowserContext(web_contents->GetBrowserContext()));
+  auto iwa_origin = IwaOrigin::Create(url).value();
+  PopulatePermissionsPolicyCache(permissions_policy_cache, iwa_origin);
+
+  CommitNavigation(std::move(navigation),
+                   permissions_policy_cache->GetPolicy(iwa_origin),
+                   iwa_origin.origin());
 }
 
 void CommitPendingIsolatedWebAppNavigation(content::WebContents* web_contents) {
   content::NavigationController& controller = web_contents->GetController();
-  if (!controller.GetPendingEntry()) {
+  const auto* pending_entry = controller.GetPendingEntry();
+  if (!pending_entry) {
     return;
   }
 
-  CommitNavigation(content::NavigationSimulator::CreateFromPending(controller));
+  auto* permissions_policy_cache =
+      web_app::IwaPermissionsPolicyCacheFactory::GetForProfile(
+          Profile::FromBrowserContext(web_contents->GetBrowserContext()));
+  auto iwa_origin = IwaOrigin::Create(pending_entry->GetURL()).value();
+  PopulatePermissionsPolicyCache(permissions_policy_cache, iwa_origin);
+
+  CommitNavigation(content::NavigationSimulator::CreateFromPending(controller),
+                   permissions_policy_cache->GetPolicy(iwa_origin),
+                   iwa_origin.origin());
 }
 
 }  // namespace web_app

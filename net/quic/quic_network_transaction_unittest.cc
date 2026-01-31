@@ -2751,7 +2751,7 @@ TEST_P(QuicNetworkTransactionTest,
       /*use_priority_header=*/false);
 
   int packet_num = 1;
-  if (VersionUsesHttp3(picked_version.transport_version)) {
+  if (VersionIsIetfQuic(picked_version.transport_version)) {
     mock_quic_data.AddWrite(SYNCHRONOUS,
                             ConstructInitialSettingsPacket(packet_num++));
   }

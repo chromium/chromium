@@ -42,7 +42,7 @@ TabsAndApps ASH_EXPORT
 SplitContentData(const std::vector<coral::mojom::EntityPtr>& content);
 
 // For debugging logs.
-base::Value::List EntitiesToListValue(
+base::ListValue EntitiesToListValue(
     const std::vector<coral::mojom::EntityPtr>& entities);
 std::string GroupToString(const coral::mojom::GroupPtr& group);
 

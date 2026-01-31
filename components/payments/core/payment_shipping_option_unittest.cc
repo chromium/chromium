@@ -21,10 +21,10 @@ TEST(PaymentRequestTest, PaymentShippingOptionFromValueDictSuccess) {
   expected.amount->value = "4,000.32";
   expected.selected = true;
 
-  base::Value::Dict shipping_option_dict;
+  base::DictValue shipping_option_dict;
   shipping_option_dict.Set("id", "123");
   shipping_option_dict.Set("label", "Ground Shipping");
-  base::Value::Dict amount_dict;
+  base::DictValue amount_dict;
   amount_dict.Set("currency", "BRL");
   amount_dict.Set("value", "4,000.32");
   shipping_option_dict.Set("amount", std::move(amount_dict));
@@ -48,7 +48,7 @@ TEST(PaymentRequestTest, PaymentShippingOptionFromValueDictFailure) {
 
   PaymentShippingOption actual;
 
-  base::Value::Dict shipping_option_dict;
+  base::DictValue shipping_option_dict;
 
   // Id, Label, and amount are required.
   shipping_option_dict.Set("id", "123");
@@ -58,7 +58,7 @@ TEST(PaymentRequestTest, PaymentShippingOptionFromValueDictFailure) {
   EXPECT_FALSE(actual.FromValueDict(shipping_option_dict));
 
   // Id must be a string.
-  base::Value::Dict amount_dict;
+  base::DictValue amount_dict;
   amount_dict.Set("currency", "BRL");
   amount_dict.Set("value", "4,000.32");
   shipping_option_dict.Set("amount", std::move(amount_dict));
@@ -75,7 +75,7 @@ TEST(PaymentRequestTest, PaymentShippingOptionFromValueDictFailure) {
   shipping_option_dict.Set("amount", "123.49 USD");
   EXPECT_FALSE(actual.FromValueDict(shipping_option_dict));
 
-  base::Value::Dict bad_amount_dict;
+  base::DictValue bad_amount_dict;
   shipping_option_dict.Set("amount", std::move(bad_amount_dict));
   EXPECT_FALSE(actual.FromValueDict(shipping_option_dict));
 }

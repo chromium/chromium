@@ -4,6 +4,7 @@
 
 #include <memory>
 #include <tuple>
+#include <utility>
 
 #include "ash/constants/ash_pref_names.h"
 #include "ash/shell.h"
@@ -97,16 +98,14 @@ class MagicBoostBrowserTest
   void SetUp() override {
     if (IsMagicBoostRevampEnabled()) {
       feature_list_.InitWithFeatures(
-          /*enabled_features=*/{chromeos::features::kMahi,
-                                chromeos::features::kOrca,
+          /*enabled_features=*/{chromeos::features::kOrca,
                                 chromeos::features::kFeatureManagementMahi,
                                 chromeos::features::kFeatureManagementOrca,
                                 chromeos::features::kMagicBoostRevamp},
           /*disabled_features=*/{});
     } else {
       feature_list_.InitWithFeatures(
-          /*enabled_features=*/{chromeos::features::kMahi,
-                                chromeos::features::kOrca,
+          /*enabled_features=*/{chromeos::features::kOrca,
                                 chromeos::features::kFeatureManagementMahi,
                                 chromeos::features::kFeatureManagementOrca},
           /*disabled_features=*/{chromeos::features::kMagicBoostRevamp});
@@ -160,7 +159,7 @@ class MagicBoostBrowserTest
         content::EvalJs(browser()->tab_strip_model()->GetActiveWebContents(),
                         "getTextfieldBound();");
     ASSERT_TRUE(result.is_ok());
-    const base::Value::List& bounds_as_list = result.ExtractList();
+    const base::ListValue& bounds_as_list = result.ExtractList();
     ASSERT_EQ(bounds_as_list.size(), 4u);
     const double left = bounds_as_list[0].GetDouble();
     const double top = bounds_as_list[1].GetDouble();
@@ -316,12 +315,12 @@ class MagicBoostBrowserTest
     // Sets the Orca consent status.
     browser()->profile()->GetPrefs()->SetInteger(
         prefs::kOrcaConsentStatus,
-        base::to_underlying(GetInitEditorConsentStatus()));
+        std::to_underlying(GetInitEditorConsentStatus()));
 
     // Sets the Hmr consent status.
     browser()->profile()->GetPrefs()->SetInteger(
         prefs::kHMRConsentStatus,
-        base::to_underlying(GetInitHmrConsentStatus()));
+        std::to_underlying(GetInitHmrConsentStatus()));
   }
 
   base::test::ScopedFeatureList feature_list_;
@@ -363,9 +362,9 @@ IN_PROC_BROWSER_TEST_P(MagicBoostBrowserTest, AcceptOptInFromReadOnlyContent) {
   EXPECT_TRUE(prefs->GetBoolean(prefs::kHmrEnabled));
   EXPECT_TRUE(prefs->GetBoolean(prefs::kOrcaEnabled));
   EXPECT_EQ(prefs->GetInteger(prefs::kHMRConsentStatus),
-            base::to_underlying(GetInitHmrConsentStatus()));
+            std::to_underlying(GetInitHmrConsentStatus()));
   EXPECT_EQ(prefs->GetInteger(prefs::kOrcaConsentStatus),
-            base::to_underlying(GetInitEditorConsentStatus()));
+            std::to_underlying(GetInitEditorConsentStatus()));
 
   // Right click on the web content to show the opt in card.
   NavigateAndRightClickReadOnlyWeb();
@@ -431,17 +430,17 @@ IN_PROC_BROWSER_TEST_P(MagicBoostBrowserTest, AcceptOptInFromReadOnlyContent) {
   EXPECT_TRUE(chromeos::MagicBoostState::Get()->hmr_enabled().value());
   EXPECT_TRUE(prefs->GetBoolean(prefs::kHmrEnabled));
   EXPECT_EQ(prefs->GetInteger(prefs::kHMRConsentStatus),
-            base::to_underlying(chromeos::HMRConsentStatus::kApproved));
+            std::to_underlying(chromeos::HMRConsentStatus::kApproved));
 
   if (ShouldIncludeOrca()) {
     EXPECT_TRUE(prefs->GetBoolean(prefs::kOrcaEnabled));
     EXPECT_EQ(prefs->GetInteger(prefs::kOrcaConsentStatus),
-              base::to_underlying(
+              std::to_underlying(
                   chromeos::editor_menu::EditorConsentStatus::kApproved));
   } else {
     EXPECT_TRUE(prefs->GetBoolean(prefs::kOrcaEnabled));
     EXPECT_EQ(prefs->GetInteger(prefs::kOrcaConsentStatus),
-              base::to_underlying(GetInitEditorConsentStatus()));
+              std::to_underlying(GetInitEditorConsentStatus()));
   }
 
   // Not showing the Editor Menu when opt in from read only content.
@@ -472,9 +471,9 @@ IN_PROC_BROWSER_TEST_P(MagicBoostBrowserTest,
   EXPECT_TRUE(prefs->GetBoolean(prefs::kHmrEnabled));
   EXPECT_TRUE(prefs->GetBoolean(prefs::kOrcaEnabled));
   EXPECT_EQ(prefs->GetInteger(prefs::kHMRConsentStatus),
-            base::to_underlying(GetInitHmrConsentStatus()));
+            std::to_underlying(GetInitHmrConsentStatus()));
   EXPECT_EQ(prefs->GetInteger(prefs::kOrcaConsentStatus),
-            base::to_underlying(GetInitEditorConsentStatus()));
+            std::to_underlying(GetInitEditorConsentStatus()));
 
   // Right click on the web content to show the opt in card.
   NavigateAndRightClickReadOnlyWeb();
@@ -504,17 +503,17 @@ IN_PROC_BROWSER_TEST_P(MagicBoostBrowserTest,
   EXPECT_FALSE(chromeos::MagicBoostState::Get()->hmr_enabled().value());
   EXPECT_FALSE(prefs->GetBoolean(prefs::kHmrEnabled));
   EXPECT_EQ(prefs->GetInteger(prefs::kHMRConsentStatus),
-            base::to_underlying(chromeos::HMRConsentStatus::kDeclined));
+            std::to_underlying(chromeos::HMRConsentStatus::kDeclined));
 
   if (ShouldIncludeOrca()) {
     EXPECT_FALSE(prefs->GetBoolean(prefs::kOrcaEnabled));
     EXPECT_EQ(prefs->GetInteger(prefs::kOrcaConsentStatus),
-              base::to_underlying(
+              std::to_underlying(
                   chromeos::editor_menu::EditorConsentStatus::kDeclined));
   } else {
     EXPECT_TRUE(prefs->GetBoolean(prefs::kOrcaEnabled));
     EXPECT_EQ(prefs->GetInteger(prefs::kOrcaConsentStatus),
-              base::to_underlying(GetInitEditorConsentStatus()));
+              std::to_underlying(GetInitEditorConsentStatus()));
   }
 
   // Not showing the Editor Menu when opt in from read only content.
@@ -541,9 +540,9 @@ IN_PROC_BROWSER_TEST_P(MagicBoostBrowserTest,
   EXPECT_TRUE(prefs->GetBoolean(prefs::kHmrEnabled));
   EXPECT_TRUE(prefs->GetBoolean(prefs::kOrcaEnabled));
   EXPECT_EQ(prefs->GetInteger(prefs::kHMRConsentStatus),
-            base::to_underlying(GetInitHmrConsentStatus()));
+            std::to_underlying(GetInitHmrConsentStatus()));
   EXPECT_EQ(prefs->GetInteger(prefs::kOrcaConsentStatus),
-            base::to_underlying(GetInitEditorConsentStatus()));
+            std::to_underlying(GetInitEditorConsentStatus()));
 
   // Right click on the web content to show the opt in card.
   NavigateAndRightClickReadOnlyWeb();
@@ -609,17 +608,17 @@ IN_PROC_BROWSER_TEST_P(MagicBoostBrowserTest,
   EXPECT_FALSE(chromeos::MagicBoostState::Get()->hmr_enabled().value());
   EXPECT_FALSE(prefs->GetBoolean(prefs::kHmrEnabled));
   EXPECT_EQ(prefs->GetInteger(prefs::kHMRConsentStatus),
-            base::to_underlying(chromeos::HMRConsentStatus::kDeclined));
+            std::to_underlying(chromeos::HMRConsentStatus::kDeclined));
 
   if (ShouldIncludeOrca()) {
     EXPECT_FALSE(prefs->GetBoolean(prefs::kOrcaEnabled));
     EXPECT_EQ(prefs->GetInteger(prefs::kOrcaConsentStatus),
-              base::to_underlying(
+              std::to_underlying(
                   chromeos::editor_menu::EditorConsentStatus::kDeclined));
   } else {
     EXPECT_TRUE(prefs->GetBoolean(prefs::kOrcaEnabled));
     EXPECT_EQ(prefs->GetInteger(prefs::kOrcaConsentStatus),
-              base::to_underlying(GetInitEditorConsentStatus()));
+              std::to_underlying(GetInitEditorConsentStatus()));
   }
 
   // Not showing the Editor Menu when opt in from read only content.
@@ -662,9 +661,9 @@ IN_PROC_BROWSER_TEST_P(MagicBoostBrowserTest, AcceptOptInFromInputFieldWeb) {
   EXPECT_TRUE(prefs->GetBoolean(prefs::kHmrEnabled));
   EXPECT_TRUE(prefs->GetBoolean(prefs::kOrcaEnabled));
   EXPECT_EQ(prefs->GetInteger(prefs::kHMRConsentStatus),
-            base::to_underlying(GetInitHmrConsentStatus()));
+            std::to_underlying(GetInitHmrConsentStatus()));
   EXPECT_EQ(prefs->GetInteger(prefs::kOrcaConsentStatus),
-            base::to_underlying(GetInitEditorConsentStatus()));
+            std::to_underlying(GetInitEditorConsentStatus()));
 
   // Right click on the input.
   NavigateAndRightClickInputTextWeb();
@@ -726,10 +725,10 @@ IN_PROC_BROWSER_TEST_P(MagicBoostBrowserTest, AcceptOptInFromInputFieldWeb) {
   EXPECT_TRUE(chromeos::MagicBoostState::Get()->hmr_enabled().value());
   EXPECT_TRUE(prefs->GetBoolean(prefs::kHmrEnabled));
   EXPECT_EQ(prefs->GetInteger(prefs::kHMRConsentStatus),
-            base::to_underlying(chromeos::HMRConsentStatus::kApproved));
+            std::to_underlying(chromeos::HMRConsentStatus::kApproved));
   EXPECT_TRUE(prefs->GetBoolean(prefs::kOrcaEnabled));
   EXPECT_EQ(prefs->GetInteger(prefs::kOrcaConsentStatus),
-            base::to_underlying(
+            std::to_underlying(
                 chromeos::editor_menu::EditorConsentStatus::kApproved));
 
   // Right click on the input again.
@@ -757,9 +756,9 @@ IN_PROC_BROWSER_TEST_P(MagicBoostBrowserTest,
   EXPECT_TRUE(prefs->GetBoolean(prefs::kHmrEnabled));
   EXPECT_TRUE(prefs->GetBoolean(prefs::kOrcaEnabled));
   EXPECT_EQ(prefs->GetInteger(prefs::kHMRConsentStatus),
-            base::to_underlying(GetInitHmrConsentStatus()));
+            std::to_underlying(GetInitHmrConsentStatus()));
   EXPECT_EQ(prefs->GetInteger(prefs::kOrcaConsentStatus),
-            base::to_underlying(GetInitEditorConsentStatus()));
+            std::to_underlying(GetInitEditorConsentStatus()));
 
   // Right click on the input.
   NavigateAndRightClickInputTextWeb();
@@ -795,10 +794,10 @@ IN_PROC_BROWSER_TEST_P(MagicBoostBrowserTest,
   EXPECT_FALSE(chromeos::MagicBoostState::Get()->hmr_enabled().value());
   EXPECT_FALSE(prefs->GetBoolean(prefs::kHmrEnabled));
   EXPECT_EQ(prefs->GetInteger(prefs::kHMRConsentStatus),
-            base::to_underlying(chromeos::HMRConsentStatus::kDeclined));
+            std::to_underlying(chromeos::HMRConsentStatus::kDeclined));
   EXPECT_FALSE(prefs->GetBoolean(prefs::kOrcaEnabled));
   EXPECT_EQ(prefs->GetInteger(prefs::kOrcaConsentStatus),
-            base::to_underlying(
+            std::to_underlying(
                 chromeos::editor_menu::EditorConsentStatus::kDeclined));
 
   // Not showing the Editor Menu after declined.
@@ -825,9 +824,9 @@ IN_PROC_BROWSER_TEST_P(MagicBoostBrowserTest,
   EXPECT_TRUE(prefs->GetBoolean(prefs::kHmrEnabled));
   EXPECT_TRUE(prefs->GetBoolean(prefs::kOrcaEnabled));
   EXPECT_EQ(prefs->GetInteger(prefs::kHMRConsentStatus),
-            base::to_underlying(GetInitHmrConsentStatus()));
+            std::to_underlying(GetInitHmrConsentStatus()));
   EXPECT_EQ(prefs->GetInteger(prefs::kOrcaConsentStatus),
-            base::to_underlying(GetInitEditorConsentStatus()));
+            std::to_underlying(GetInitEditorConsentStatus()));
 
   // Right click on the input.
   NavigateAndRightClickInputTextWeb();
@@ -880,10 +879,10 @@ IN_PROC_BROWSER_TEST_P(MagicBoostBrowserTest,
   EXPECT_FALSE(chromeos::MagicBoostState::Get()->hmr_enabled().value());
   EXPECT_FALSE(prefs->GetBoolean(prefs::kHmrEnabled));
   EXPECT_EQ(prefs->GetInteger(prefs::kHMRConsentStatus),
-            base::to_underlying(chromeos::HMRConsentStatus::kDeclined));
+            std::to_underlying(chromeos::HMRConsentStatus::kDeclined));
   EXPECT_FALSE(prefs->GetBoolean(prefs::kOrcaEnabled));
   EXPECT_EQ(prefs->GetInteger(prefs::kOrcaConsentStatus),
-            base::to_underlying(
+            std::to_underlying(
                 chromeos::editor_menu::EditorConsentStatus::kDeclined));
 
   // Not showing the Editor Menu after declined.
@@ -930,7 +929,7 @@ IN_PROC_BROWSER_TEST_P(MagicBoostBrowserTest, ShowDisclaimerViewOnMultiScreen) {
 
   if (IsMagicBoostRevampEnabled()) {
     browser()->profile()->GetPrefs()->SetInteger(
-        prefs::kHMRConsentStatus, base::to_underlying(init_hmr_status));
+        prefs::kHMRConsentStatus, std::to_underlying(init_hmr_status));
     if (!ShouldShowHmrMenuCard()) {
       EXPECT_FALSE(
           FindWidgetWithName(chromeos::mahi::MahiMenuView::GetWidgetName()));
@@ -960,7 +959,7 @@ IN_PROC_BROWSER_TEST_P(MagicBoostBrowserTest, ShowDisclaimerViewOnMultiScreen) {
     // Resets the Hmr consent status to continue testing showing disclaimer view
     // on the second screen.
     browser()->profile()->GetPrefs()->SetInteger(
-        prefs::kHMRConsentStatus, base::to_underlying(init_hmr_status));
+        prefs::kHMRConsentStatus, std::to_underlying(init_hmr_status));
     browser()->window()->SetBounds(displays[0].work_area());
     event_generator().SetTargetWindow(root_windows[0]);
     NavigateToReadOnlyWeb();
@@ -983,7 +982,7 @@ IN_PROC_BROWSER_TEST_P(MagicBoostBrowserTest, ShowDisclaimerViewOnMultiScreen) {
     // Resets the Hmr consent status to continue testing showing disclaimer view
     // on the third screen.
     browser()->profile()->GetPrefs()->SetInteger(
-        prefs::kHMRConsentStatus, base::to_underlying(init_hmr_status));
+        prefs::kHMRConsentStatus, std::to_underlying(init_hmr_status));
     browser()->window()->SetBounds(displays[2].work_area());
     event_generator().SetTargetWindow(root_windows[2]);
     NavigateToReadOnlyWeb();
@@ -1050,7 +1049,7 @@ IN_PROC_BROWSER_TEST_P(MagicBoostBrowserTest, ShowDisclaimerViewOnMultiScreen) {
   // Resets the Hmr consent status to continue testing showing disclaimer view
   // on the first screen.
   browser()->profile()->GetPrefs()->SetInteger(
-      prefs::kHMRConsentStatus, base::to_underlying(init_hmr_status));
+      prefs::kHMRConsentStatus, std::to_underlying(init_hmr_status));
   browser()->window()->SetBounds(displays[0].work_area());
   event_generator().SetTargetWindow(root_windows[0]);
   NavigateToReadOnlyWeb();
@@ -1071,7 +1070,7 @@ IN_PROC_BROWSER_TEST_P(MagicBoostBrowserTest, ShowDisclaimerViewOnMultiScreen) {
   // Resets the Hmr consent status to continue testing showing disclaimer view
   // on the third screen.
   browser()->profile()->GetPrefs()->SetInteger(
-      prefs::kHMRConsentStatus, base::to_underlying(init_hmr_status));
+      prefs::kHMRConsentStatus, std::to_underlying(init_hmr_status));
   browser()->window()->SetBounds(displays[2].work_area());
   event_generator().SetTargetWindow(root_windows[2]);
   NavigateToReadOnlyWeb();
@@ -1121,7 +1120,6 @@ class MahiUiWithOptInCardBrowserTest
     feature_list_.InitWithFeatures(
         /*enabled_features=*/{chromeos::features::kFeatureManagementOrca,
                               chromeos::features::kFeatureManagementMahi,
-                              chromeos::features::kMahi,
                               chromeos::features::kOrca},
         /*disabled_features=*/{chromeos::features::kMagicBoostRevamp});
 
@@ -1210,7 +1208,6 @@ class MahiUiWithMagicBoostRevampBrowserTest
     feature_list_.InitWithFeatures(
         /*enabled_features=*/{chromeos::features::kFeatureManagementOrca,
                               chromeos::features::kFeatureManagementMahi,
-                              chromeos::features::kMahi,
                               chromeos::features::kOrca,
                               chromeos::features::kMagicBoostRevamp},
         /*disabled_features=*/{});

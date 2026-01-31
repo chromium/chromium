@@ -63,7 +63,7 @@ class FakeIt2MeHost : public It2MeHost {
 
   // `It2MeHost` implementation:
   void Connect(std::unique_ptr<ChromotingHostContext> context,
-               base::Value::Dict policies,
+               base::DictValue policies,
                std::unique_ptr<It2MeConfirmationDialogFactory> dialog_factory,
                base::WeakPtr<It2MeHost::Observer> observer,
                CreateDeferredConnectContext create_context,
@@ -185,7 +185,7 @@ class InMemorySessionStorage : public SessionStorage {
   ~InMemorySessionStorage() override = default;
 
   // `SessionStorage` implementation:
-  void StoreSession(const base::Value::Dict& information,
+  void StoreSession(const base::DictValue& information,
                     base::OnceClosure on_done) override {
     session_ = information.Clone();
     std::move(on_done).Run();
@@ -194,9 +194,8 @@ class InMemorySessionStorage : public SessionStorage {
     session_.reset();
     std::move(on_done).Run();
   }
-  void RetrieveSession(
-      base::OnceCallback<void(std::optional<base::Value::Dict>)> on_done)
-      override {
+  void RetrieveSession(base::OnceCallback<void(std::optional<base::DictValue>)>
+                           on_done) override {
     if (session_.has_value()) {
       std::move(on_done).Run(session_->Clone());
     } else {
@@ -208,7 +207,7 @@ class InMemorySessionStorage : public SessionStorage {
   }
 
  private:
-  std::optional<base::Value::Dict> session_;
+  std::optional<base::DictValue> session_;
 };
 
 bool HasSession(SessionStorage& storage) {

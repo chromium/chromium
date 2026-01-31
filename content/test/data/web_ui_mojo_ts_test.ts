@@ -36,7 +36,7 @@ function assertObjectEquals(a: any, b: any, msg: string) {
 async function doTest(): Promise<boolean> {
   const cache = WebUITsMojoTestCache.getRemote();
   for (const entry of TEST_DATA) {
-    cache.put({ url: entry.url }, entry.contents);
+    cache.put(entry.url, entry.contents);
     let stringWrapper = StringWrapper.getRemote();
     stringWrapper.putString(entry.contents);
     cache.addStringWrapper(stringWrapper);
@@ -49,7 +49,7 @@ async function doTest(): Promise<boolean> {
 
   const entries: {[key: string]: string } = {};
   for (const item of items) {
-    entries[item.url.url] = item.contents;
+    entries[item.url] = item.contents;
   }
 
   for (const entry of TEST_DATA) {

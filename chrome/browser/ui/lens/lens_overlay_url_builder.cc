@@ -63,25 +63,6 @@ inline constexpr char kLensModeParameterMultimodalValue[] = "mu";
 // Parameters to trigger the Translation One-box.
 inline constexpr char kSrpStickinessSignalKey[] = "stick";
 
-// Query parameter for the invocation source.
-inline constexpr char kInvocationSourceParameterKey[] = "source";
-inline constexpr char kInvocationSourceAppMenu[] = "chrome.cr.menu";
-inline constexpr char kInvocationSourcePageSearchContextMenu[] =
-    "chrome.cr.ctxp";
-inline constexpr char kInvocationSourceImageSearchContextMenu[] =
-    "chrome.cr.ctxi";
-inline constexpr char kInvocationSourceTextSearchContextMenu[] =
-    "chrome.cr.ctxt";
-inline constexpr char kInvocationSourceVideoSearchContextMenu[] =
-    "chrome.cr.ctxv";
-inline constexpr char kInvocationSourceFindInPage[] = "chrome.cr.find";
-inline constexpr char kInvocationSourceToolbarIcon[] = "chrome.cr.tbic";
-inline constexpr char kInvocationSourceOmniboxIcon[] = "chrome.cr.obic";
-inline constexpr char kInvocationSourceOmniboxPageAction[] = "chrome.cr.obpa";
-inline constexpr char kInvocationSourceOmniboxContextualSuggestion[] =
-    "chrome.cr.obcs";
-inline constexpr char kInvocationSourceHomeworkActionChip[] = "chrome.cr.hwac";
-
 // The url query param for the viewport width and height.
 inline constexpr char kViewportWidthQueryParamKey[] = "biw";
 inline constexpr char kViewportHeightQueryParamKey[] = "bih";
@@ -146,6 +127,9 @@ inline constexpr char kVideoIdQueryParameter[] = "v";
 
 // Character denoting seconds in the "t=" query parameter of a YouTube URL.
 inline constexpr char kVideoTimestampSecondsCharacter = 's';
+
+// Query parameter for the Gen204 identifier.
+inline constexpr char kGen204IdentifierQueryParameter[] = "plla";
 
 // Appends the url params from the map to the url.
 GURL AppendUrlParamsFromMap(
@@ -216,59 +200,31 @@ void AppendStickinessSignalForFormula(
   params[kSrpStickinessSignalKey] = CompressAndEncode(serialized_proto);
 }
 
+void AppendLensOverlaySidePanelParams(
+    std::map<std::string, std::string>& params,
+    uint64_t gen204_id,
+    bool has_text,
+    bool has_image) {
+  if (!params.contains(kLensFootprintParameterKey)) {
+    params[kLensFootprintParameterKey] = kLensFootprintParameterValue;
+  }
+  if (!params.contains(kLensModeParameterKey)) {
+    if (has_text && has_image) {
+      params[kLensModeParameterKey] = kLensModeParameterMultimodalValue;
+    } else if (has_text) {
+      params[kLensModeParameterKey] = kLensModeParameterTextValue;
+    } else if (has_image) {
+      params[kLensModeParameterKey] = kLensModeParameterUnimodalValue;
+    }
+  }
+  params[kGen204IdentifierQueryParameter] =
+      base::NumberToString(gen204_id).c_str();
+}
+
 GURL AppendCommonSearchParametersToURL(const GURL& url_to_modify,
                                        bool use_dark_mode) {
   return AppendCommonSearchParametersToURL(
       url_to_modify, g_browser_process->GetApplicationLocale(), use_dark_mode);
-}
-
-GURL AppendInvocationSourceParamToURL(
-    const GURL& url_to_modify,
-    lens::LensOverlayInvocationSource invocation_source) {
-  std::string param_value = "";
-  switch (invocation_source) {
-    case lens::LensOverlayInvocationSource::kAppMenu:
-      param_value = kInvocationSourceAppMenu;
-      break;
-    case lens::LensOverlayInvocationSource::kContentAreaContextMenuPage:
-      param_value = kInvocationSourcePageSearchContextMenu;
-      break;
-    case lens::LensOverlayInvocationSource::kContentAreaContextMenuImage:
-      param_value = kInvocationSourceImageSearchContextMenu;
-      break;
-    case lens::LensOverlayInvocationSource::kContentAreaContextMenuText:
-      param_value = kInvocationSourceTextSearchContextMenu;
-      break;
-    case lens::LensOverlayInvocationSource::kContentAreaContextMenuVideo:
-      param_value = kInvocationSourceVideoSearchContextMenu;
-      break;
-    case lens::LensOverlayInvocationSource::kToolbar:
-      param_value = kInvocationSourceToolbarIcon;
-      break;
-    case lens::LensOverlayInvocationSource::kFindInPage:
-      param_value = kInvocationSourceFindInPage;
-      break;
-    case lens::LensOverlayInvocationSource::kOmnibox:
-      param_value = kInvocationSourceOmniboxIcon;
-      break;
-    case lens::LensOverlayInvocationSource::kOmniboxPageAction:
-      param_value = kInvocationSourceOmniboxPageAction;
-      break;
-    case lens::LensOverlayInvocationSource::kOmniboxContextualSuggestion:
-      param_value = kInvocationSourceOmniboxContextualSuggestion;
-      break;
-    case lens::LensOverlayInvocationSource::kHomeworkActionChip:
-      param_value = kInvocationSourceHomeworkActionChip;
-      break;
-    case lens::LensOverlayInvocationSource::kLVFShutterButton:
-    case lens::LensOverlayInvocationSource::kLVFGallery:
-    case lens::LensOverlayInvocationSource::kContextMenu:
-    case lens::LensOverlayInvocationSource::kAIHub:
-    case lens::LensOverlayInvocationSource::kFREPromo:
-      NOTREACHED() << "Invocation source not supported.";
-  }
-  return net::AppendOrReplaceQueryParameter(
-      url_to_modify, kInvocationSourceParameterKey, param_value);
 }
 
 GURL AppendQuerySubmissionTimeAndClientUploadDurationParamToURL(
@@ -299,7 +255,7 @@ GURL BuildTextOnlySearchURL(
   GURL url_with_query_params =
       GURL(lens::features::GetLensOverlayResultsSearchURL());
   url_with_query_params = AppendInvocationSourceParamToURL(
-      url_with_query_params, invocation_source);
+      url_with_query_params, invocation_source, /*is_contextual_tasks=*/false);
   url_with_query_params = AppendUrlParamsFromMap(
       url_with_query_params, additional_search_query_params);
   url_with_query_params = net::AppendOrReplaceQueryParameter(
@@ -336,9 +292,7 @@ GURL BuildLensSearchURL(
   GURL url_with_query_params =
       GURL(lens::features::GetLensOverlayResultsSearchURL());
   url_with_query_params = AppendInvocationSourceParamToURL(
-      url_with_query_params, invocation_source);
-  url_with_query_params = AppendUrlParamsFromMap(
-      url_with_query_params, additional_search_query_params);
+      url_with_query_params, invocation_source, /*is_contextual_tasks=*/false);
   url_with_query_params =
       AppendCommonSearchParametersToURL(url_with_query_params, use_dark_mode);
   url_with_query_params = net::AppendOrReplaceQueryParameter(
@@ -376,6 +330,11 @@ GURL BuildLensSearchURL(
   url_with_query_params =
       AppendQuerySubmissionTimeAndClientUploadDurationParamToURL(
           url_with_query_params, query_start_time);
+  // Additional search query params may be added from specific entrypoints that
+  // want to specify certain behavior. Append them at the end so they don't
+  // accidentally get overridden.
+  url_with_query_params = AppendUrlParamsFromMap(
+      url_with_query_params, additional_search_query_params);
   return url_with_query_params;
 }
 

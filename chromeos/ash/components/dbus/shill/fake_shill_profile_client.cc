@@ -27,9 +27,9 @@ namespace ash {
 struct FakeShillProfileClient::ProfileProperties {
   std::string profile_path;
   // Dictionary of Service Dictionaries
-  base::Value::Dict entries;
+  base::DictValue entries;
   // Dictionary of Profile properties
-  base::Value::Dict properties;
+  base::DictValue properties;
 };
 
 FakeShillProfileClient::FakeShillProfileClient() = default;
@@ -46,7 +46,7 @@ void FakeShillProfileClient::RemovePropertyChangedObserver(
 
 void FakeShillProfileClient::GetProperties(
     const dbus::ObjectPath& profile_path,
-    base::OnceCallback<void(base::Value::Dict result)> callback,
+    base::OnceCallback<void(base::DictValue result)> callback,
     ErrorCallback error_callback) {
   ProfileProperties* profile = GetProfile(profile_path);
   if (!profile) {
@@ -54,12 +54,12 @@ void FakeShillProfileClient::GetProperties(
     return;
   }
 
-  base::Value::List entry_paths;
+  base::ListValue entry_paths;
   for (const auto it : profile->entries) {
     entry_paths.Append(it.first);
   }
 
-  base::Value::Dict properties = profile->properties.Clone();
+  base::DictValue properties = profile->properties.Clone();
   properties.Set(shill::kEntriesProperty, std::move(entry_paths));
 
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
@@ -100,7 +100,7 @@ void FakeShillProfileClient::SetObjectPathProperty(
 void FakeShillProfileClient::GetEntry(
     const dbus::ObjectPath& profile_path,
     const std::string& entry_path,
-    base::OnceCallback<void(base::Value::Dict result)> callback,
+    base::OnceCallback<void(base::DictValue result)> callback,
     ErrorCallback error_callback) {
   ProfileProperties* profile = GetProfile(profile_path);
   if (!profile) {
@@ -108,7 +108,7 @@ void FakeShillProfileClient::GetEntry(
     return;
   }
 
-  const base::Value::Dict* entry = profile->entries.FindDict(entry_path);
+  const base::DictValue* entry = profile->entries.FindDict(entry_path);
   if (!entry) {
     std::move(error_callback)
         .Run("Error.InvalidProfileEntry", "Invalid profile entry");
@@ -187,7 +187,7 @@ void FakeShillProfileClient::AddProfile(const std::string& profile_path,
 
 void FakeShillProfileClient::AddEntry(const std::string& profile_path,
                                       const std::string& entry_path,
-                                      const base::Value::Dict& properties) {
+                                      const base::DictValue& properties) {
   ProfileProperties* profile = GetProfile(dbus::ObjectPath(profile_path));
   DCHECK(profile);
   profile->entries.Set(entry_path, properties.Clone());
@@ -231,7 +231,7 @@ bool FakeShillProfileClient::AddOrUpdateServiceImpl(
     ProfileProperties* profile) {
   ShillServiceClient::TestInterface* service_test =
       ShillServiceClient::Get()->GetTestInterface();
-  const base::Value::Dict* service_properties =
+  const base::DictValue* service_properties =
       service_test->GetServiceProperties(service_path);
   if (!service_properties) {
     LOG(ERROR) << "No matching service: " << service_path;
@@ -269,21 +269,21 @@ void FakeShillProfileClient::GetProfilePathsContainingService(
   }
 }
 
-base::Value::Dict FakeShillProfileClient::GetProfileProperties(
+base::DictValue FakeShillProfileClient::GetProfileProperties(
     const std::string& profile_path) {
   ProfileProperties* profile = GetProfile(dbus::ObjectPath(profile_path));
   DCHECK(profile);
   return profile->properties.Clone();
 }
 
-std::optional<base::Value::Dict> FakeShillProfileClient::GetService(
+std::optional<base::DictValue> FakeShillProfileClient::GetService(
     const std::string& service_path,
     std::string* profile_path) {
   DCHECK(profile_path);
 
   // Returns the entry added latest.
   for (const auto& profile : base::Reversed(profiles_)) {
-    const base::Value::Dict* entry = profile.entries.FindDict(service_path);
+    const base::DictValue* entry = profile.entries.FindDict(service_path);
     if (!entry) {
       continue;
     }

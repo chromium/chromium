@@ -142,6 +142,7 @@ ci/Win11 FYI arm64 Release (Qualcomm Adreno 690)
 ci/Win11 FYI arm64 Release (Qualcomm Snapdragon X Elite)
 ci/Win11 FYI x64 Experimental Release (AMD 780M)
 ci/Win11 FYI x64 Experimental Release (AMD 890M)
+ci/Win11 FYI x64 Experimental Release (AMD RX 5500XT)
 ci/Win11 FYI x64 Experimental Release (Intel Arc 140V)
 ci/Win11 FYI x64 Experimental Release (NVIDIA RTX 4070 Super)
 ci/Win11 FYI x64 Release (AMD RX 7600)
@@ -189,6 +190,7 @@ try/dawn-win10-x64-deps-rel
 try/dawn-win10-x86-deps-rel
 try/dawn-win11-arm64-deps-rel
 try/gpu-fyi-cq-android-arm64
+try/gpu-fyi-cq-mac-arm64
 try/gpu-fyi-try-android-a13-32
 try/gpu-fyi-try-android-a23-32
 try/gpu-fyi-try-android-nvidia-shield-tv
@@ -240,6 +242,7 @@ try/gpu-fyi-try-win10-nvidia-exp-64
 try/gpu-fyi-try-win10-nvidia-rel-32
 try/gpu-fyi-try-win10-nvidia-rel-64
 try/gpu-fyi-try-win11-amd-rel-64
+try/gpu-fyi-try-win11-amd-rx-5500xt-exp
 try/gpu-fyi-try-win11-nvidia-4070-exp-64
 try/gpu-fyi-try-win11-nvidia-4070-rel-64
 try/gpu-fyi-try-win11-qualcomm-rel-64

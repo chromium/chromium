@@ -68,7 +68,7 @@ bool PopulateMojoEnumValueIfValid(int possible_enum, T* valid_enum_out) {
 std::string CreatePayload(
     ash::cros_healthd::mojom::RunRoutineResponsePtr response) {
   auto root_dict =
-      base::Value::Dict()
+      base::DictValue()
           .Set(kIdFieldName, response->id)
           .Set(kStatusFieldName, static_cast<int>(response->status));
 
@@ -89,7 +89,7 @@ em::RemoteCommand_Type DeviceCommandRunRoutineJob::GetType() const {
 
 bool DeviceCommandRunRoutineJob::ParseCommandPayload(
     const std::string& command_payload) {
-  std::optional<base::Value::Dict> root = base::JSONReader::ReadDict(
+  std::optional<base::DictValue> root = base::JSONReader::ReadDict(
       command_payload, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   if (!root) {
     return false;

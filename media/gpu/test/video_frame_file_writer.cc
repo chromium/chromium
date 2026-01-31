@@ -2,20 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "media/gpu/test/video_frame_file_writer.h"
 
 #include <utility>
 #include <vector>
 
+#include "base/containers/span.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "build/build_config.h"
 #include "media/gpu/buildflags.h"
@@ -172,7 +169,7 @@ void VideoFrameFileWriter::ProcessVideoFrameTask(
   // in the end of function.
   auto frame = video_frame;
 #if BUILDFLAG(USE_LINUX_VIDEO_ACCELERATION)
-  if (frame->storage_type() == VideoFrame::STORAGE_MAPPABLE_SHARED_IMAGE) {
+  if (frame->HasMappableSharedImage()) {
     // TODO(andrescj): This is a workaround. ClientNativePixmapFactoryDmabuf
     // creates ClientNativePixmapOpaque, which cannot be mapped via MappableSI,
     // for SCANOUT_VDA_WRITE buffers. However, we need to map the contents of
@@ -290,17 +287,18 @@ void VideoFrameFileWriter::WriteVideoFrameYUV(
   const VideoPixelFormat pixel_format = out_frame->format();
   const size_t num_planes = VideoFrame::NumPlanes(pixel_format);
   for (size_t i = 0; i < num_planes; i++) {
-    const uint8_t* data = out_frame->visible_data(i);
+    const base::span<const uint8_t> plane_span = out_frame->data_span(i);
     const int stride = out_frame->stride(i);
     const size_t rows =
         VideoFrame::Rows(i, pixel_format, visible_size.height());
-    const int row_bytes =
+    const size_t row_bytes =
         VideoFrame::RowBytes(i, pixel_format, visible_size.width());
+    const size_t visible_offset = base::checked_cast<size_t>(
+        out_frame->visible_data(i) - out_frame->data(i));
     ASSERT_TRUE(stride > 0);
     for (size_t row = 0; row < rows; ++row) {
-      if (yuv_file.WriteAtCurrentPos(
-              reinterpret_cast<const char*>(data + (stride * row)),
-              row_bytes) != row_bytes) {
+      if (!yuv_file.WriteAtCurrentPosAndCheck(
+              plane_span.subspan(visible_offset + stride * row, row_bytes))) {
         LOG(ERROR) << "Failed to write plane #" << i << " to file: "
                    << base::File::ErrorToString(base::File::GetLastFileError());
       }

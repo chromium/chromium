@@ -8,10 +8,10 @@
 #include <numeric>
 #include <vector>
 
-#include "absl/container/flat_hash_map.h"
 #include "base/metrics/histogram_functions.h"
 #include "components/sync/protocol/sync_enums.pb.h"
 #include "components/sync_device_info/device_info_tracker.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 
 namespace syncer {
 

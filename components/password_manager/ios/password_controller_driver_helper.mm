@@ -8,7 +8,7 @@
 #import "components/password_manager/ios/ios_password_manager_driver_factory.h"
 
 @implementation PasswordControllerDriverHelper {
-  raw_ptr<web::WebState, DanglingUntriaged> _webState;
+  raw_ptr<web::WebState> _webState;
 }
 #pragma mark - Initialization
 

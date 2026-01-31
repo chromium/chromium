@@ -72,6 +72,9 @@ class BookmarkToolbarViewBinder {
         } else if (key == BookmarkToolbarProperties.SELECTION_MODE_SHOW_MOVE) {
             bookmarkToolbar.setSelectionShowMove(
                     model.get(BookmarkToolbarProperties.SELECTION_MODE_SHOW_MOVE));
+        } else if (key == BookmarkToolbarProperties.SELECTION_MODE_SHOW_COPY_LINK) {
+            bookmarkToolbar.setSelectionShowCopyLink(
+                    model.get(BookmarkToolbarProperties.SELECTION_MODE_SHOW_COPY_LINK));
         } else if (key == BookmarkToolbarProperties.SELECTION_MODE_SHOW_MARK_READ) {
             bookmarkToolbar.setSelectionShowMarkRead(
                     model.get(BookmarkToolbarProperties.SELECTION_MODE_SHOW_MARK_READ));

@@ -276,8 +276,7 @@ TEST_F(ChromeSigninHelperTest, FixAccountConsistencyRequestHeader) {
                                  /*should_record_metrics=*/false);
   scoped_refptr<content_settings::CookieSettings> cookie_settings =
       new content_settings::CookieSettings(
-          settings_map.get(), &prefs,
-          /*tracking_protection_settings=*/nullptr, /*is_incognito=*/false,
+          settings_map.get(), &prefs, /*is_incognito=*/false,
           content_settings::CookieSettings::NoFedCmSharingPermissionsCallback(),
           /*tpcd_metadata_manager=*/nullptr);
 

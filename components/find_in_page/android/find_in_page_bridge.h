@@ -24,16 +24,16 @@ class FindInPageBridge {
 
   void StartFinding(JNIEnv* env,
                     const base::android::JavaRef<jstring>& search_string,
-                    jboolean forward_direction,
-                    jboolean case_sensitive);
+                    bool forward_direction,
+                    bool case_sensitive);
 
-  void StopFinding(JNIEnv* env, jboolean clearSelection);
+  void StopFinding(JNIEnv* env, bool clearSelection);
 
   base::android::ScopedJavaLocalRef<jstring> GetPreviousFindText(JNIEnv* env);
 
-  void RequestFindMatchRects(JNIEnv* env, jint current_version);
+  void RequestFindMatchRects(JNIEnv* env, int32_t current_version);
 
-  void ActivateNearestFindResult(JNIEnv* env, jfloat x, jfloat y);
+  void ActivateNearestFindResult(JNIEnv* env, float x, float y);
 
   void ActivateFindInPageResultForAccessibility(JNIEnv* env);
 

@@ -40,7 +40,8 @@ class GlicAnnotationManager {
   // TODO(crbug.com//397664100): Support scrolling without highlighting.
   void ScrollTo(mojom::ScrollToParamsPtr params,
                 mojom::WebClientHandler::ScrollToCallback callback,
-                Host* host);
+                Host* host,
+                GlicWebClientAccess* access);
 
   // Removes any existing annotations.
   void RemoveAnnotation(mojom::ScrollToErrorReason reason);

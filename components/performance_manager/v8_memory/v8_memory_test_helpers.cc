@@ -227,13 +227,13 @@ int WebMemoryTestHarness::GetNextUniqueId() {
 FrameNodeImpl* WebMemoryTestHarness::AddFrameNodeImpl(
     std::optional<std::string> url,
     int browsing_instance_id,
-    std::optional<base::ByteCount> memory_usage,
+    std::optional<base::ByteSize> memory_usage,
     FrameNodeImpl* parent,
     FrameNodeImpl* opener,
     ProcessNodeImpl* process,
     std::optional<std::string> id_attribute,
     std::optional<std::string> src_attribute,
-    std::optional<base::ByteCount> canvas_memory_usage) {
+    std::optional<base::ByteSize> canvas_memory_usage) {
   // If there's an opener, the new frame is also a new page.
   auto* page = pages_.front().get();
   if (opener) {
@@ -314,7 +314,7 @@ FrameNodeImpl* WebMemoryTestHarness::AddFrameNodeImpl(
 WorkerNodeImpl* WebMemoryTestHarness::AddWorkerNode(
     WorkerNode::WorkerType worker_type,
     std::string script_url,
-    std::optional<base::ByteCount> bytes,
+    std::optional<base::ByteSize> bytes,
     FrameNodeImpl* parent) {
   auto* worker_node = AddWorkerNodeImpl(
       worker_type, parent->GetOrigin().value_or(url::Origin()), script_url,
@@ -335,7 +335,7 @@ WorkerNodeImpl* WebMemoryTestHarness::AddWorkerNodeWithoutData(
 WorkerNodeImpl* WebMemoryTestHarness::AddWorkerNode(
     WorkerNode::WorkerType worker_type,
     std::string script_url,
-    std::optional<base::ByteCount> bytes,
+    std::optional<base::ByteSize> bytes,
     WorkerNodeImpl* parent) {
   auto* worker_node =
       AddWorkerNodeImpl(worker_type, parent->GetOrigin(), script_url, bytes);
@@ -347,7 +347,7 @@ WorkerNodeImpl* WebMemoryTestHarness::AddWorkerNodeImpl(
     WorkerNode::WorkerType worker_type,
     const url::Origin& origin,
     std::string script_url,
-    std::optional<base::ByteCount> bytes) {
+    std::optional<base::ByteSize> bytes) {
   auto worker_token = [worker_type]() -> blink::WorkerToken {
     switch (worker_type) {
       case WorkerNode::WorkerType::kDedicated:
@@ -373,8 +373,7 @@ WorkerNodeImpl* WebMemoryTestHarness::AddWorkerNodeImpl(
   return workers_.back().get();
 }
 
-void WebMemoryTestHarness::SetBlinkMemory(
-    std::optional<base::ByteCount> bytes) {
+void WebMemoryTestHarness::SetBlinkMemory(std::optional<base::ByteSize> bytes) {
   V8DetailedMemoryProcessData::GetOrCreateForTesting(process_node())
       ->set_blink_memory_used(*bytes);
 }
@@ -392,7 +391,7 @@ blink::mojom::PerProcessV8MemoryUsagePtr NewPerProcessV8MemoryUsage(
 }
 
 void AddIsolateMemoryUsage(blink::ExecutionContextToken token,
-                           base::ByteCount memory_used,
+                           base::ByteSize memory_used,
                            blink::mojom::PerIsolateV8MemoryUsage* isolate) {
   for (auto& entry : isolate->contexts) {
     if (entry->token == token) {
@@ -409,7 +408,7 @@ void AddIsolateMemoryUsage(blink::ExecutionContextToken token,
 
 void AddIsolateCanvasMemoryUsage(
     blink::ExecutionContextToken token,
-    base::ByteCount memory_used,
+    base::ByteSize memory_used,
     blink::mojom::PerIsolateV8MemoryUsage* isolate) {
   for (auto& entry : isolate->canvas_contexts) {
     if (entry->token == token) {

@@ -102,16 +102,16 @@ public class PartnerBookmarksReader {
      */
     public PartnerBookmarksReader(
             Context context, Profile profile, PartnerBrowserCustomizations browserCustomizations) {
-        this(
-                context,
-                profile,
-                browserCustomizations,
-                PartnerBookmarksReaderJni.get().init(profile));
+        this(context, browserCustomizations, PartnerBookmarksReaderJni.get().init(profile));
     }
 
+    /**
+     * @param context A Context object.
+     * @param browserCustomizations Provides status of partner customizations.
+     * @param nativePartnerBookmarksReader Native counterpart to this class.
+     */
     public PartnerBookmarksReader(
             Context context,
-            Profile profile,
             PartnerBrowserCustomizations browserCustomizations,
             long nativePartnerBookmarksReader) {
         mContext = context;
@@ -158,7 +158,7 @@ public class PartnerBookmarksReader {
     /** Asynchronously read bookmarks from the partner content provider */
     public void readBookmarks(PartnerBookmark.BookmarkIterator bookmarkIterator) {
         if (mNativePartnerBookmarksReader == 0) {
-            assert false : "readBookmarks called after PartnerBookmarksReaderJni.get().destroy.";
+            Log.e(TAG, "Partner bookmarks can't be read because the native counterpart is null.");
             return;
         }
         new ReadBookmarksTask(bookmarkIterator).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);

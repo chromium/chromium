@@ -4,6 +4,7 @@
 
 #include <unistd.h>
 
+#include <algorithm>
 #include <iostream>
 #include <map>
 #include <optional>
@@ -13,7 +14,6 @@
 #include "base/at_exit.h"
 #include "base/command_line.h"
 #include "base/compiler_specific.h"
-#include "base/containers/contains.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -114,8 +114,8 @@ void KSAgentApp::ChooseServiceForApp(
          base::OnceCallback<void(UpdaterScope)> callback,
          const std::vector<updater::UpdateService::AppState>& states) {
         std::move(callback).Run(
-            base::Contains(states, base::ToLowerASCII(app_id),
-                           &updater::UpdateService::AppState::app_id)
+            std::ranges::contains(states, base::ToLowerASCII(app_id),
+                                  &updater::UpdateService::AppState::app_id)
                 ? UpdaterScope::kSystem
                 : UpdaterScope::kUser);
       },

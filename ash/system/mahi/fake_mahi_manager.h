@@ -11,7 +11,7 @@
 #include "ash/ash_export.h"
 #include "ash/system/mahi/mahi_ui_controller.h"
 #include "chromeos/components/mahi/public/cpp/mahi_manager.h"
-#include "chromeos/crosapi/mojom/mahi.mojom.h"
+#include "chromeos/components/mahi/public/cpp/mahi_types.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/views/widget/unique_widget_ptr.h"
 
@@ -48,10 +48,9 @@ class ASH_EXPORT FakeMahiManager : public chromeos::MahiManager {
                       MahiAnswerQuestionCallback callback) override;
   void GetSuggestedQuestion(
       MahiGetSuggestedQuestionCallback callback) override {}
-  void SetCurrentFocusedPageInfo(
-      crosapi::mojom::MahiPageInfoPtr info) override {}
+  void SetCurrentFocusedPageInfo(chromeos::MahiPageInfo info) override {}
   void OnContextMenuClicked(
-      crosapi::mojom::MahiContextMenuRequestPtr context_menu_request) override;
+      chromeos::MahiContextMenuRequest context_menu_request) override;
   void OpenFeedbackDialog() override {}
   void OpenMahiPanel(int64_t display_id,
                      const gfx::Rect& mahi_menu_bounds) override;

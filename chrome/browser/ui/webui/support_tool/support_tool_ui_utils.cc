@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/webui/support_tool/support_tool_ui_utils.h"
 
+#include <algorithm>
 #include <map>
 #include <optional>
 #include <set>
@@ -13,7 +14,6 @@
 
 #include "base/base64url.h"
 #include "base/check.h"
-#include "base/containers/contains.h"
 #include "base/containers/to_value_list.h"
 #include "base/strings/string_util.h"
 #include "base/values.h"
@@ -111,6 +111,8 @@ std::string GetDataCollectorName(
     case support_tool::CHROMEOS_KIOSK_APP_LEVEL_LOGS:
       return l10n_util::GetStringUTF8(
           IDS_SUPPORT_TOOL_CHROMEOS_KIOSK_APP_LEVEL_LOGS);
+    case support_tool::CHROME_UPDATER:
+      return l10n_util::GetStringUTF8(IDS_SUPPORT_TOOL_CHROME_UPDATER);
     default:
       return "Error: Undefined";
   }
@@ -131,22 +133,22 @@ void InitDataCollectionModuleFromURLQuery(
 
 // Returns data collector item for `type`. Sets isIncluded field true if
 // `module` contains `type`.
-base::Value::Dict GetDataCollectorItemForType(
+base::DictValue GetDataCollectorItemForType(
     const support_tool::DataCollectionModule& module,
     const support_tool::DataCollectorType& type) {
-  base::Value::Dict dict;
+  base::DictValue dict;
   dict.Set(support_tool_ui::kDataCollectorName, GetDataCollectorName(type));
   dict.Set(support_tool_ui::kDataCollectorProtoEnum, type);
   dict.Set(support_tool_ui::kDataCollectorIncluded,
-           base::Contains(module.included_data_collectors(), type));
+           std::ranges::contains(module.included_data_collectors(), type));
   return dict;
 }
 
 // Returns data collector item for `type`. Sets isIncluded to false for all data
 // collector items.
-base::Value::Dict GetDataCollectorItemForType(
+base::DictValue GetDataCollectorItemForType(
     const support_tool::DataCollectorType& type) {
-  base::Value::Dict dict;
+  base::DictValue dict;
   dict.Set(support_tool_ui::kDataCollectorName, GetDataCollectorName(type));
   dict.Set(support_tool_ui::kDataCollectorProtoEnum, type);
   dict.Set(support_tool_ui::kDataCollectorIncluded, false);
@@ -174,10 +176,10 @@ std::string GetDataCollectionModuleQuery(
 //   token: string,
 //   errorMessage: string,
 // }
-base::Value::Dict GetSupportTokenGenerationResult(bool success,
-                                                  std::string result,
-                                                  std::string error_message) {
-  base::Value::Dict url_generation_response;
+base::DictValue GetSupportTokenGenerationResult(bool success,
+                                                std::string result,
+                                                std::string error_message) {
+  base::DictValue url_generation_response;
   url_generation_response.Set(
       support_tool_ui::kSupportTokenGenerationResultSuccess, success);
   url_generation_response.Set(
@@ -193,6 +195,8 @@ base::Value::Dict GetSupportTokenGenerationResult(bool success,
 // Returns the human readable name corresponding to `type_enum`.
 std::string GetPIITypeDescription(redaction::PIIType type_enum) {
   switch (type_enum) {
+    case redaction::PIIType::kNone:
+      return "Error: None";
     case redaction::PIIType::kAndroidAppStoragePath:
       // App storage path is part of information about an Android app.
       return l10n_util::GetStringUTF8(IDS_SUPPORT_TOOL_ANDROID_APP_INFO);
@@ -223,8 +227,16 @@ std::string GetPIITypeDescription(redaction::PIIType type_enum) {
       return l10n_util::GetStringUTF8(IDS_SUPPORT_TOOL_REMOVABLE_STORAGE_NAMES);
     case redaction::PIIType::kEAP:
       return l10n_util::GetStringUTF8(IDS_SUPPORT_TOOL_EAP);
-    default:
-      return "Error: Undefined";
+    case redaction::PIIType::kCreditCard:
+      return l10n_util::GetStringUTF8(IDS_SUPPORT_TOOL_CREDIT_CARD);
+    case redaction::PIIType::kIBAN:
+      return l10n_util::GetStringUTF8(IDS_SUPPORT_TOOL_IBAN);
+    case redaction::PIIType::kCrashId:
+      return l10n_util::GetStringUTF8(IDS_SUPPORT_TOOL_CRASH_ID);
+    case redaction::PIIType::kMemory:
+      return l10n_util::GetStringUTF8(IDS_SUPPORT_TOOL_MEMORY);
+    case redaction::PIIType::kBluetoothHidDevice:
+      return l10n_util::GetStringUTF8(IDS_SUPPORT_TOOL_BLUETOOTH_HID_DEVICE);
   }
 }
 
@@ -235,10 +247,10 @@ std::string GetPIITypeDescription(redaction::PIIType type_enum) {
 //   count: number,
 //   keep: boolean,
 // }
-base::Value::List GetDetectedPIIDataItems(const PIIMap& detected_pii) {
+base::ListValue GetDetectedPIIDataItems(const PIIMap& detected_pii) {
   return base::ToValueList(detected_pii, [](const auto& detected_pii_entry) {
     const auto& [pii_key, pii_data] = detected_pii_entry;
-    return base::Value::Dict()
+    return base::DictValue()
         .Set(support_tool_ui::kPiiItemDescriptionKey,
              GetPIITypeDescription(pii_key))
         .Set(support_tool_ui::kPiiItemPIITypeKey, static_cast<int>(pii_key))
@@ -253,10 +265,10 @@ base::Value::List GetDetectedPIIDataItems(const PIIMap& detected_pii) {
 }
 
 std::set<redaction::PIIType> GetPIITypesToKeep(
-    const base::Value::List* pii_items) {
+    const base::ListValue* pii_items) {
   std::set<redaction::PIIType> pii_to_keep;
   for (const auto& item : *pii_items) {
-    const base::Value::Dict* item_as_dict = item.GetIfDict();
+    const base::DictValue* item_as_dict = item.GetIfDict();
     DCHECK(item_as_dict);
     std::optional<bool> keep =
         item_as_dict->FindBool(support_tool_ui::kPiiItemKeepKey);
@@ -277,8 +289,8 @@ std::string GetSupportCaseIDFromURL(const GURL& url) {
   return support_case_id;
 }
 
-base::Value::List GetDataCollectorItemsInQuery(std::string module_query) {
-  base::Value::List data_collector_list;
+base::ListValue GetDataCollectorItemsInQuery(std::string module_query) {
+  base::ListValue data_collector_list;
   support_tool::DataCollectionModule module;
   InitDataCollectionModuleFromURLQuery(&module, module_query);
   for (const auto& type : GetAllAvailableDataCollectorsOnDevice()) {
@@ -287,16 +299,16 @@ base::Value::List GetDataCollectorItemsInQuery(std::string module_query) {
   return data_collector_list;
 }
 
-base::Value::List GetAllDataCollectorItems() {
-  base::Value::List data_collector_list;
+base::ListValue GetAllDataCollectorItems() {
+  base::ListValue data_collector_list;
   for (const auto& type : GetAllDataCollectors()) {
     data_collector_list.Append(GetDataCollectorItemForType(type));
   }
   return data_collector_list;
 }
 
-base::Value::List GetAllDataCollectorItemsForDeviceForTesting() {
-  base::Value::List data_collector_list;
+base::ListValue GetAllDataCollectorItemsForDeviceForTesting() {
+  base::ListValue data_collector_list;
   for (const auto& type : GetAllAvailableDataCollectorsOnDevice()) {
     data_collector_list.Append(GetDataCollectorItemForType(type));
   }
@@ -304,10 +316,10 @@ base::Value::List GetAllDataCollectorItemsForDeviceForTesting() {
 }
 
 std::set<support_tool::DataCollectorType> GetIncludedDataCollectorTypes(
-    const base::Value::List* data_collector_items) {
+    const base::ListValue* data_collector_items) {
   std::set<support_tool::DataCollectorType> included_data_collectors;
   for (const auto& item : *data_collector_items) {
-    const base::Value::Dict* item_as_dict = item.GetIfDict();
+    const base::DictValue* item_as_dict = item.GetIfDict();
     DCHECK(item_as_dict);
     std::optional<bool> isIncluded = item_as_dict->FindBool("isIncluded");
     if (isIncluded && isIncluded.value()) {
@@ -319,18 +331,18 @@ std::set<support_tool::DataCollectorType> GetIncludedDataCollectorTypes(
   return included_data_collectors;
 }
 
-base::Value::Dict GetStartDataCollectionResult(bool success,
-                                               std::u16string error_message) {
-  base::Value::Dict result;
+base::DictValue GetStartDataCollectionResult(bool success,
+                                             std::u16string error_message) {
+  base::DictValue result;
   result.Set("success", success);
   result.Set("errorMessage", error_message);
   return result;
 }
 
-base::Value::Dict GenerateCustomizedURL(
+base::DictValue GenerateCustomizedURL(
     std::string case_id,
-    const base::Value::List* data_collector_items) {
-  base::Value::Dict url_generation_response;
+    const base::ListValue* data_collector_items) {
+  base::DictValue url_generation_response;
   std::set<support_tool::DataCollectorType> included_data_collectors =
       GetIncludedDataCollectorTypes(data_collector_items);
   if (included_data_collectors.empty()) {
@@ -352,9 +364,9 @@ base::Value::Dict GenerateCustomizedURL(
                                          /*error_message=*/std::string());
 }
 
-base::Value::Dict GenerateSupportToken(
-    const base::Value::List* data_collector_items) {
-  base::Value::Dict url_generation_response;
+base::DictValue GenerateSupportToken(
+    const base::ListValue* data_collector_items) {
+  base::DictValue url_generation_response;
   std::set<support_tool::DataCollectorType> included_data_collectors =
       GetIncludedDataCollectorTypes(data_collector_items);
   if (included_data_collectors.empty()) {

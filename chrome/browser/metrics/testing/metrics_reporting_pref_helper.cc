@@ -23,7 +23,7 @@
 namespace {
 
 void SetMetricsReportingEnabledChromeOS(bool is_enabled,
-                                        base::Value::Dict& local_state_dict) {
+                                        base::DictValue& local_state_dict) {
   namespace em = enterprise_management;
   em::ChromeDeviceSettingsProto device_settings_proto;
   device_settings_proto.mutable_metrics_enabled()->set_metrics_enabled(
@@ -42,7 +42,7 @@ void SetMetricsReportingEnabledChromeOS(bool is_enabled,
 namespace metrics {
 
 base::FilePath SetUpUserDataDirectoryForTesting(bool is_enabled) {
-  base::Value::Dict local_state_dict;
+  base::DictValue local_state_dict;
   local_state_dict.SetByDottedPath(metrics::prefs::kMetricsReportingEnabled,
                                    is_enabled);
 

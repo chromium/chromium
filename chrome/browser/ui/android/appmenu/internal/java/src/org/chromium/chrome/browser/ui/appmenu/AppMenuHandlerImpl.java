@@ -592,6 +592,8 @@ class AppMenuHandlerImpl
         registerDefaultViewBinders(adapter, iconBeforeItem);
         customSizingProviders.append(
                 AppMenuItemType.DIVIDER, DividerLineMenuItemViewBinder::getPixelHeight);
+        customSizingProviders.append(
+                AppMenuItemType.BUTTON_ROW, AppMenuItemViewBinder::getIconRowItemPixelHeight);
 
         mDelegate.registerCustomViewBinders(adapter, customSizingProviders);
     }

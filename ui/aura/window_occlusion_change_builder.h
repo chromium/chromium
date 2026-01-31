@@ -27,8 +27,10 @@ class AURA_EXPORT WindowOcclusionChangeBuilder {
                    SkRegion occluded_region) = 0;
 
   // Factory to create the default implementation that updates occlusion info
-  // on aura::Window.
-  static std::unique_ptr<WindowOcclusionChangeBuilder> Create();
+  // on aura::Window. If `disallow_unknown' is true, the state change to
+  // UNKONNWN state is not allowed and will result in CHECK failure.
+  static std::unique_ptr<WindowOcclusionChangeBuilder> Create(
+      bool disallow_unknown = true);
 };
 
 }  // namespace aura

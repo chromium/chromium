@@ -782,7 +782,7 @@ AggregationServiceStorageSql::AdjustOfflineReportTimes(
   sql::Statement statement(
       db_.GetCachedStatement(SQL_FROM_HERE, kAdjustOfflineReportTimesSql));
   statement.BindTime(0, now + min_delay);
-  statement.BindInt64(1, 1 + (max_delay - min_delay).InMicroseconds());
+  statement.BindTimeDelta(1, base::Microseconds(1) + (max_delay - min_delay));
   statement.BindTime(2, now);
 
   statement.Run();

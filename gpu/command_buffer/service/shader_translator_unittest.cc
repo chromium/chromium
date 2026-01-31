@@ -4,7 +4,6 @@
 
 #include "gpu/command_buffer/service/shader_translator.h"
 
-#include "base/containers/contains.h"
 #include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gl/gl_bindings.h"
@@ -467,7 +466,7 @@ TEST_F(ShaderTranslatorOutputVersionTest, DISABLED_CompatibilityOutput) {
         kShader, nullptr, &translated_source, &shader_version, nullptr, nullptr,
         nullptr, nullptr, nullptr));
     EXPECT_TRUE(translated_source.find("#version") == std::string::npos);
-    if (!base::Contains(translated_source, "gl_Position =")) {
+    if (!translated_source.contains("gl_Position =")) {
       ADD_FAILURE() << "Did not find gl_Position initialization.";
       LOG(ERROR) << "Generated output:\n" << translated_source;
     }
@@ -484,8 +483,8 @@ TEST_F(ShaderTranslatorOutputVersionTest, DISABLED_CompatibilityOutput) {
     EXPECT_TRUE(fragment_translator->Translate(
         kShader, nullptr, &translated_source, &shader_version, nullptr, nullptr,
         nullptr, nullptr, nullptr));
-    EXPECT_TRUE(base::Contains(translated_source, "#version 120"));
-    if (base::Contains(translated_source, "#pragma STDGL invariant(all)")) {
+    EXPECT_TRUE(translated_source.contains("#version 120"));
+    if (translated_source.contains("#pragma STDGL invariant(all)")) {
       ADD_FAILURE() << "Found forbidden pragma.";
       LOG(ERROR) << "Generated output:\n" << translated_source;
     }
@@ -522,11 +521,10 @@ TEST_P(ShaderTranslatorOutputVersionTest, HasCorrectOutputGLSLVersion) {
 
   std::string expected_version_directive = testing::get<1>(GetParam());
   if (expected_version_directive.empty()) {
-    EXPECT_TRUE(!base::Contains(translated_source, "#version"))
-        << "Translation was:\n"
-        << translated_source;
+    EXPECT_TRUE(!translated_source.contains("#version")) << "Translation was:\n"
+                                                         << translated_source;
   } else {
-    EXPECT_TRUE(base::Contains(translated_source, expected_version_directive))
+    EXPECT_TRUE(translated_source.contains(expected_version_directive))
         << "Translation was:\n"
         << translated_source;
   }

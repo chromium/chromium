@@ -240,6 +240,8 @@ class ToolbarController : public views::MenuDelegate,
 
   bool IsMenuRunning() const;
 
+  views::MenuItemView* root_menu_item() { return root_menu_item_.get(); }
+
   const views::MenuItemView* root_menu_item() const {
     return root_menu_item_.get();
   }

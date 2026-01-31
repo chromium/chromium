@@ -6,7 +6,8 @@
 
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
-#include "components/legion/client.h"
+#include "components/legion/proto/legion.pb.h"
+#include "components/legion/testing/mock_legion_client.h"
 #include "components/optimization_guide/core/model_execution/optimization_guide_model_execution_error.h"
 #include "components/optimization_guide/core/optimization_guide_proto_util.h"
 #include "components/optimization_guide/core/optimization_guide_util.h"
@@ -15,28 +16,6 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace optimization_guide {
-
-class MockLegionClient : public legion::Client {
- public:
-  MOCK_METHOD(void,
-              EstablishSession,
-              (OnEstablishSessionCompletedCallback callback),
-              (override));
-  MOCK_METHOD(void,
-              SendTextRequest,
-              (legion::proto::FeatureName feature_name,
-               const std::string& text,
-               OnTextRequestCompletedCallback callback,
-               const RequestOptions& options),
-              (override));
-  MOCK_METHOD(void,
-              SendGenerateContentRequest,
-              (legion::proto::FeatureName feature_name,
-               const legion::proto::GenerateContentRequest& request,
-               OnGenerateContentRequestCompletedCallback callback,
-               const RequestOptions& options),
-              (override));
-};
 
 class LegionModelExecutionFetcherTest : public testing::Test {
  public:
@@ -47,7 +26,7 @@ class LegionModelExecutionFetcherTest : public testing::Test {
 
  protected:
   base::test::TaskEnvironment task_environment_;
-  MockLegionClient mock_legion_client_;
+  legion::MockLegionClient mock_legion_client_;
   std::unique_ptr<LegionModelExecutionFetcher> fetcher_;
 };
 
@@ -56,26 +35,26 @@ TEST_F(LegionModelExecutionFetcherTest, ConvertsZeroStateSuggestionsRequest) {
   request.mutable_page_context()->set_url("url");
   request.mutable_page_context()->set_title("Hello");
 
-  const std::string expected_prompt =
-      "Please provide 3 short suggestions for what you could ask Gemini\n"
-      "about the content of the following list of websites.\n"
-      "Please provide each suggestion on a separate line and no other\n"
-      "content in your response. No more than 30 characters per\n"
-      "suggestion.\n"
-      "Websites:\n"
-      "url - Hello\n";
-
   EXPECT_CALL(
       mock_legion_client_,
-      SendTextRequest(
+      SendPaicRequest(
           testing::Eq(legion::proto::FEATURE_NAME_CHROME_ZERO_STATE_SUGGESTION),
-          testing::Eq(expected_prompt), testing::_,
+          testing::_, testing::_,
           testing::Field(&legion::Client::RequestOptions::timeout,
                          legion::Client::kDefaultTimeout)))
-      .WillOnce([](legion::proto::FeatureName feature_name,
-                   const std::string& request,
-                   legion::Client::OnTextRequestCompletedCallback callback,
-                   const legion::Client::RequestOptions& options) {});
+      .WillOnce(
+          [](legion::proto::FeatureName feature_name,
+             const legion::proto::PaicMessage& request,
+             legion::Client::OnPaicMessageRequestCompletedCallback callback,
+             const legion::Client::RequestOptions& options) {
+            auto execute_request = request.execute_request_ext();
+            auto zss_request =
+                ParsedAnyMetadata<proto::ZeroStateSuggestionsRequest>(
+                    execute_request.request_metadata());
+            EXPECT_EQ(zss_request->page_context().url(), "url");
+            EXPECT_EQ(zss_request->page_context().title(), "Hello");
+            std::move(callback).Run(base::ok(legion::proto::PaicMessage()));
+          });
 
   fetcher_->ExecuteModel(ModelBasedCapabilityKey::kZeroStateSuggestions,
                          /*identity_manager=*/nullptr, request,
@@ -92,27 +71,33 @@ TEST_F(LegionModelExecutionFetcherTest,
   context2->set_url("url2");
   context2->set_title("你好");
 
-  const std::string expected_prompt =
-      "Please provide 3 short suggestions for what you could ask Gemini\n"
-      "about the content of the following list of websites.\n"
-      "Please provide each suggestion on a separate line and no other\n"
-      "content in your response. No more than 30 characters per\n"
-      "suggestion.\n"
-      "Websites:\n"
-      "url1 - Привіт\n"
-      "url2 - 你好\n";
-
   EXPECT_CALL(
       mock_legion_client_,
-      SendTextRequest(
+      SendPaicRequest(
           testing::Eq(legion::proto::FEATURE_NAME_CHROME_ZERO_STATE_SUGGESTION),
-          testing::Eq(expected_prompt), testing::_,
+          testing::_, testing::_,
           testing::Field(&legion::Client::RequestOptions::timeout,
                          legion::Client::kDefaultTimeout)))
-      .WillOnce([](legion::proto::FeatureName feature_name,
-                   const std::string& request,
-                   legion::Client::OnTextRequestCompletedCallback callback,
-                   const legion::Client::RequestOptions& options) {});
+      .WillOnce(
+          [](legion::proto::FeatureName feature_name,
+             const legion::proto::PaicMessage& request,
+             legion::Client::OnPaicMessageRequestCompletedCallback callback,
+             const legion::Client::RequestOptions& options) {
+            auto execute_request = request.execute_request_ext();
+            auto zss_request =
+                ParsedAnyMetadata<proto::ZeroStateSuggestionsRequest>(
+                    execute_request.request_metadata());
+            const auto& page_context_list = zss_request->page_context_list();
+            EXPECT_EQ(page_context_list.page_contexts(0).page_context().url(),
+                      "url1");
+            EXPECT_EQ(page_context_list.page_contexts(0).page_context().title(),
+                      "Привіт");
+            EXPECT_EQ(page_context_list.page_contexts(1).page_context().url(),
+                      "url2");
+            EXPECT_EQ(page_context_list.page_contexts(1).page_context().title(),
+                      "你好");
+            std::move(callback).Run(base::ok(legion::proto::PaicMessage()));
+          });
 
   fetcher_->ExecuteModel(ModelBasedCapabilityKey::kZeroStateSuggestions,
                          /*identity_manager=*/nullptr, request,
@@ -120,21 +105,27 @@ TEST_F(LegionModelExecutionFetcherTest,
 }
 
 TEST_F(LegionModelExecutionFetcherTest, ConvertsZeroStateSuggestionsResponse) {
-  const std::string legion_response = "Hello\nПривіт\n你好";
-
   EXPECT_CALL(
       mock_legion_client_,
-      SendTextRequest(
+      SendPaicRequest(
           testing::Eq(legion::proto::FEATURE_NAME_CHROME_ZERO_STATE_SUGGESTION),
           testing::_, testing::_,
           testing::Field(&legion::Client::RequestOptions::timeout,
                          legion::Client::kDefaultTimeout)))
-      .WillOnce([&](legion::proto::FeatureName feature_name,
-                    const std::string& request,
-                    legion::Client::OnTextRequestCompletedCallback callback,
-                    const legion::Client::RequestOptions& options) {
-        std::move(callback).Run(base::ok(legion_response));
-      });
+      .WillOnce(
+          [](legion::proto::FeatureName feature_name,
+             const legion::proto::PaicMessage& request,
+             legion::Client::OnPaicMessageRequestCompletedCallback callback,
+             const legion::Client::RequestOptions& options) {
+            legion::proto::PaicMessage response;
+            proto::ZeroStateSuggestionsResponse zss_response;
+            zss_response.add_suggestions()->set_label("Hello");
+            zss_response.add_suggestions()->set_label("Привіт");
+            zss_response.add_suggestions()->set_label("你好");
+            *response.mutable_execute_response_ext()
+                 ->mutable_response_metadata() = AnyWrapProto(zss_response);
+            std::move(callback).Run(base::ok(response));
+          });
 
   base::test::TestFuture<base::expected<const proto::ExecuteResponse,
                                         OptimizationGuideModelExecutionError>>

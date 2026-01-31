@@ -47,10 +47,10 @@ base::Value Mapper::MapValue(const OncValueSignature& signature,
   }
 }
 
-base::Value::Dict Mapper::MapObject(const OncValueSignature& signature,
-                                    const base::Value::Dict& onc_object,
-                                    bool* error) {
-  base::Value::Dict result;
+base::DictValue Mapper::MapObject(const OncValueSignature& signature,
+                                  const base::DictValue& onc_object,
+                                  bool* error) {
+  base::DictValue result;
 
   bool found_unknown_field = false;
   MapFields(signature, onc_object, &found_unknown_field, error, &result);
@@ -66,10 +66,10 @@ base::Value Mapper::MapPrimitive(const OncValueSignature& signature,
 }
 
 void Mapper::MapFields(const OncValueSignature& object_signature,
-                       const base::Value::Dict& onc_object,
+                       const base::DictValue& onc_object,
                        bool* found_unknown_field,
                        bool* nested_error,
-                       base::Value::Dict* result) {
+                       base::DictValue* result) {
   for (const auto [field_name, onc_value] : onc_object) {
     bool current_field_unknown = false;
     base::Value result_value = MapField(field_name, object_signature, onc_value,
@@ -103,13 +103,13 @@ base::Value Mapper::MapField(const std::string& field_name,
   return {};
 }
 
-base::Value::List Mapper::MapArray(const OncValueSignature& array_signature,
-                                   const base::Value::List& onc_array,
-                                   bool* nested_error) {
+base::ListValue Mapper::MapArray(const OncValueSignature& array_signature,
+                                 const base::ListValue& onc_array,
+                                 bool* nested_error) {
   DCHECK(array_signature.onc_array_entry_signature != nullptr)
       << "Found missing onc_array_entry_signature.";
 
-  base::Value::List result_array;
+  base::ListValue result_array;
   int original_index = 0;
   for (const auto& entry : onc_array) {
     bool error = false;

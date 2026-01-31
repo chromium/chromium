@@ -133,16 +133,17 @@ void PrintDebugInstructions(const base::FilePath& command_file_path) {
 To proceed, you should create a named pipe:
   $ mkfifo %1$s
 and then write commands into it:
-  $ echo run     >%1$s  # unpauses execution
-  $ echo next 2  >%1$s  # executes the next 2 actions
-  $ echo next -1 >%1$s  # executes until the last action
-  $ echo skip -3 >%1$s  # jumps back 3 actions
-  $ echo skip 4  >%1$s  # skips the next 4 actions
-  $ echo where   >%1$s  # prints the current position
-  $ echo show -1 >%1$s  # prints last 1 actions
-  $ echo show 1  >%1$s  # prints next 1 actions
-  $ echo failure >%1$s  # unpauses execution until failure
-  $ echo help    >%1$s  # prints this text
+  $ echo run               >%1$s  # unpauses execution
+  $ echo run until failure >%1$s  # executes until failure
+  $ echo run until foo     >%1$s  # executes until the next action is of type foo (e.g., "autofill")
+  $ echo next 2            >%1$s  # executes the next 2 actions
+  $ echo next -1           >%1$s  # executes until the last action
+  $ echo skip -3           >%1$s  # jumps back 3 actions
+  $ echo skip 4            >%1$s  # skips the next 4 actions
+  $ echo where             >%1$s  # prints the current position
+  $ echo show -1           >%1$s  # prints last 1 actions
+  $ echo show 1            >%1$s  # prints next 1 actions
+  $ echo help              >%1$s  # prints this text
 )";
   VLOG(1) << base::StringPrintf(msg, command_file_path.AsUTF8Unsafe().c_str());
 }
@@ -167,26 +168,29 @@ std::optional<autofill::FieldType> StringToFieldType(std::string_view str) {
   return it->second;
 }
 
-// Command types to control and debug execution.
-// * The `kAbsoluteLimit` and `kRelativeLimit` commands indicate that
-//   execution shall not proceed if the next action's position is >= `param`
-//   or >= current_index + `param`, respectively.
-// * The `kSkipAction` command jumps `param` actions forward or backward.
-// * The `kShowAction` command prints the `param` previous (if < 0) or
-//   upcoming (if > 0) actions.
-// * The `kWhereAmI` command prints the current execution position.
-enum class ExecutionCommandType {
-  kAbsoluteLimit,
-  kRelativeLimit,
-  kSkipAction,
-  kShowAction,
-  kWhereAmI,
-  kRunUntilFailure
-};
-
 struct ExecutionCommand {
-  ExecutionCommandType type = ExecutionCommandType::kAbsoluteLimit;
-  int param = std::numeric_limits<int>::max();
+  enum class Type {
+    // Resumes execution and stops when the next action's index is equal to or
+    // greater than `param_int`.
+    kRunWithAbsoluteLimit,
+    // Resumes execution and stops after `param_int` actions.
+    kRunWithRelativeLimit,
+    // Resumes execution and stops when the next action's type is
+    // `param_string`.
+    kRunUntilAction,
+    // Resumes execution and stops when a failure happens.
+    kRunUntilFailure,
+    // Jumps `param_int` actions forward or backward.
+    kSkipAction,
+    // Prints the `param_int` previous (if < 0) or upcoming (if > 0) actions.
+    kShowAction,
+    // Prints the current execution position.
+    kWhereAmI,
+  };
+
+  const Type type = Type::kRunWithAbsoluteLimit;
+  const int param_int = std::numeric_limits<int>::max();
+  const std::string param_string;
 };
 
 // Blockingly reads the content of `command_file_path`, parses it into
@@ -210,23 +214,29 @@ std::vector<ExecutionCommand> ReadExecutionCommands(
         return value;
       };
 
-      if (command.starts_with("run")) {
-        commands.push_back({ExecutionCommandType::kAbsoluteLimit,
-                            std::numeric_limits<int>::max()});
+      if (command.starts_with("run until failure")) {
+        commands.emplace_back(ExecutionCommand::Type::kRunUntilFailure);
+      } else if (command.starts_with("run until ")) {
+        static constexpr size_t kOffset =
+            std::string_view("run until ").length();
+        const std::string_view param =
+            base::TrimWhitespaceASCII(command.substr(kOffset), base::TRIM_ALL);
+        commands.emplace_back(ExecutionCommand::Type::kRunUntilAction, 0,
+                              std::string(param));
+      } else if (command.starts_with("run")) {
+        commands.emplace_back(ExecutionCommand::Type::kRunWithAbsoluteLimit,
+                              std::numeric_limits<int>::max());
       } else if (command.starts_with("next")) {
-        commands.push_back(
-            {ExecutionCommandType::kRelativeLimit, GetParamOr(1)});
+        commands.emplace_back(ExecutionCommand::Type::kRunWithRelativeLimit,
+                              GetParamOr(1));
       } else if (command.starts_with("skip")) {
-        commands.push_back({ExecutionCommandType::kSkipAction, GetParamOr(1)});
+        commands.emplace_back(ExecutionCommand::Type::kSkipAction,
+                              GetParamOr(1));
       } else if (command.starts_with("show")) {
-        commands.push_back({ExecutionCommandType::kShowAction, GetParamOr(1)});
+        commands.emplace_back(ExecutionCommand::Type::kShowAction,
+                              GetParamOr(1));
       } else if (command.starts_with("where")) {
-        commands.push_back({ExecutionCommandType::kWhereAmI});
-      } else if (command.starts_with("failure")) {
-        commands.push_back({ExecutionCommandType::kRunUntilFailure});
-        // Same commands as for "run":
-        commands.push_back({ExecutionCommandType::kAbsoluteLimit,
-                            std::numeric_limits<int>::max()});
+        commands.emplace_back(ExecutionCommand::Type::kWhereAmI);
       } else if (command.starts_with("help")) {
         PrintDebugInstructions(command_file_path);
       }
@@ -238,7 +248,7 @@ std::vector<ExecutionCommand> ReadExecutionCommands(
 struct ExecutionState {
   // The position of the next action to be executed.
   int index = 0;
-  // The current bound on the execution.
+  // The current bound on the execution: execution runs only if `index < limit`.
   int limit = std::numeric_limits<int>::max();
   // The number of actions to be executed.
   int length = 0;
@@ -250,49 +260,72 @@ struct ExecutionState {
 // Execution primarily means manipulation of the `execution_state`, particularly
 // `execution_state.limit`.
 ExecutionState ProcessCommands(ExecutionState execution_state,
-                               const base::Value::List* action_list,
+                               const base::ListValue& action_list,
                                const base::FilePath& command_file_path) {
   while (execution_state.limit <= execution_state.index) {
     for (ExecutionCommand command : ReadExecutionCommands(command_file_path)) {
       switch (command.type) {
-        case ExecutionCommandType::kAbsoluteLimit: {
-          execution_state.limit = command.param;
+        case ExecutionCommand::Type::kRunWithAbsoluteLimit: {
+          execution_state.limit = command.param_int;
           break;
         }
-        case ExecutionCommandType::kRelativeLimit: {
-          if (command.param >= 0) {
-            execution_state.limit += command.param;
+        case ExecutionCommand::Type::kRunWithRelativeLimit: {
+          if (command.param_int >= 0) {
+            execution_state.limit += command.param_int;
           } else {
-            execution_state.limit = execution_state.length + command.param;
+            execution_state.limit = execution_state.length + command.param_int;
           }
           break;
         }
-        case ExecutionCommandType::kSkipAction: {
-          execution_state.index += command.param;
+        case ExecutionCommand::Type::kRunUntilAction: {
+          int offset_of_action = execution_state.index;
+          while (offset_of_action < execution_state.length) {
+            const base::DictValue* dict =
+                action_list[offset_of_action].GetIfDict();
+            if (!dict) {
+              continue;
+            }
+            const std::string* type = dict->FindString("type");
+            if (!type) {
+              continue;
+            }
+            if (*type == command.param_string) {
+              break;
+            }
+            ++offset_of_action;
+          }
+          execution_state.limit += offset_of_action;
+          break;
+        }
+        case ExecutionCommand::Type::kRunUntilFailure: {
+          VLOG(1) << "Will stop when a failure is found.";
+          execution_state.limit = command.param_int;
+          execution_state.pause_on_failure = true;
+          break;
+        }
+        case ExecutionCommand::Type::kSkipAction: {
+          execution_state.index += command.param_int;
           execution_state.index = std::min(std::max(execution_state.index, 0),
                                            execution_state.length - 1);
           break;
         }
-        case ExecutionCommandType::kShowAction: {
-          int min_index = execution_state.index + std::min(command.param, 0);
-          int max_index = execution_state.index + std::max(command.param, 0);
+        case ExecutionCommand::Type::kShowAction: {
+          int min_index =
+              execution_state.index + std::min(command.param_int, 0);
+          int max_index =
+              execution_state.index + std::max(command.param_int, 0);
           min_index = std::max(min_index, 0);
           max_index = std::min(max_index, execution_state.length);
           for (int i = min_index; i < max_index; ++i) {
             VLOG(1) << "Action " << (i - execution_state.index) << ": "
-                    << (*action_list)[i].DebugString();
+                    << action_list[i].DebugString();
           }
           break;
         }
-        case ExecutionCommandType::kWhereAmI: {
+        case ExecutionCommand::Type::kWhereAmI: {
           VLOG(1) << "Next action is at position " << execution_state.index
                   << ", limit (excl) is at " << execution_state.limit
                   << ", last (excl) is at " << execution_state.length;
-          break;
-        }
-        case ExecutionCommandType::kRunUntilFailure: {
-          VLOG(1) << "Will stop when a failure is found.";
-          execution_state.pause_on_failure = true;
           break;
         }
       }
@@ -306,7 +339,7 @@ struct AllowNull {
 };
 
 std::optional<std::string> FindPopulateString(
-    const base::Value::Dict& container,
+    const base::DictValue& container,
     std::string_view key_name,
     std::variant<std::string_view, AllowNull> key_descriptor) {
   const std::string* value = container.FindString(key_name);
@@ -323,10 +356,10 @@ std::optional<std::string> FindPopulateString(
 }
 
 std::optional<std::vector<std::string>> FindPopulateStringVector(
-    const base::Value::Dict& container,
+    const base::DictValue& container,
     std::string_view key_name,
     std::variant<std::string_view, AllowNull> key_descriptor) {
-  const base::Value::List* list = container.FindList(key_name);
+  const base::ListValue* list = container.FindList(key_name);
   if (!list) {
     if (std::holds_alternative<std::string_view>(key_descriptor)) {
       ADD_FAILURE() << "Failed to extract '"
@@ -393,8 +426,8 @@ std::vector<CapturedSiteParams> GetCapturedSites(
                  << value_with_error.error().message;
     return sites;
   }
-  base::Value::Dict root_node = std::move(*value_with_error).TakeDict();
-  const base::Value::List* list_node = root_node.FindList("tests");
+  base::DictValue root_node = std::move(*value_with_error).TakeDict();
+  const base::ListValue* list_node = root_node.FindList("tests");
   if (!list_node) {
     LOG(WARNING) << "No tests found in `testcases.json` config";
     return sites;
@@ -406,7 +439,7 @@ std::vector<CapturedSiteParams> GetCapturedSites(
     if (!item_val.is_dict()) {
       continue;
     }
-    const base::Value::Dict& item = item_val.GetDict();
+    const base::DictValue& item = item_val.GetDict();
     CapturedSiteParams param;
     param.site_name = CHECK_DEREF(item.FindString("site_name"));
 
@@ -460,7 +493,7 @@ std::vector<CapturedSiteParams> GetCapturedSites(
   return sites;
 }
 
-std::optional<base::Value::Dict> ReadRecipeFile(
+std::optional<base::DictValue> ReadRecipeFile(
     const base::FilePath& recipe_file_path) {
   // Read the text of the recipe file.
   base::ScopedAllowBlockingForTesting for_testing;
@@ -1195,7 +1228,7 @@ void TestRecipeReplayer::CleanupSiteData() {
 bool TestRecipeReplayer::ReplayRecordedActions(
     const base::FilePath& recipe_file_path,
     const std::optional<base::FilePath>& command_file_path) {
-  std::optional<base::Value::Dict> recipe = ReadRecipeFile(recipe_file_path);
+  std::optional<base::DictValue> recipe = ReadRecipeFile(recipe_file_path);
   if (!recipe) {
     return false;
   }
@@ -1204,7 +1237,7 @@ bool TestRecipeReplayer::ReplayRecordedActions(
   }
 
   // Iterate through and execute each action in the recipe.
-  base::Value::List* action_list = recipe.value().FindList("actions");
+  base::ListValue* action_list = recipe.value().FindList("actions");
   if (!action_list) {
     ADD_FAILURE() << "Failed to extract action list from the recipe!";
     return false;
@@ -1228,11 +1261,14 @@ bool TestRecipeReplayer::ReplayRecordedActions(
     }
     if (command_file_path.has_value()) {
       while (execution_state.limit <= execution_state.index) {
+        // We must call ProcessCommands() on a separate task because it is doing
+        // blocking IO. We do busy waiting to block execution until this IO is
+        // finished.
         bool thread_finished = false;
         base::ThreadPool::PostTaskAndReplyWithResult(
             FROM_HERE, {base::MayBlock()},
-            base::BindOnce(&ProcessCommands, execution_state, action_list,
-                           command_file_path.value()),
+            base::BindOnce(&ProcessCommands, execution_state,
+                           std::ref(*action_list), command_file_path.value()),
             base::BindOnce(
                 [](ExecutionState* execution_state, bool* finished,
                    ExecutionState new_execution_state) {
@@ -1258,7 +1294,7 @@ bool TestRecipeReplayer::ReplayRecordedActions(
       return false;
     }
 
-    base::Value::Dict action =
+    base::DictValue action =
         std::move((*action_list)[execution_state.index].GetDict());
     std::optional<std::string> type =
         FindPopulateString(action, "type", "action type");
@@ -1335,6 +1371,16 @@ bool TestRecipeReplayer::ReplayRecordedActions(
         return false;
     } else if (base::CompareCaseInsensitiveASCII(*type, "breakpoint") == 0) {
       execution_state.limit = execution_state.index + 1;
+    } else if (base::CompareCaseInsensitiveASCII(
+                   *type, "triggerPasswordChange") == 0) {
+      if (!ExecuteTriggerPasswordChangeAction(std::move(action))) {
+        return false;
+      }
+    } else if (base::CompareCaseInsensitiveASCII(
+                   *type, "waitForPasswordChangeState") == 0) {
+      if (!ExecuteWaitForPasswordChangeStateAction(std::move(action))) {
+        return false;
+      }
     } else {
       ADD_FAILURE() << "Unrecognized action type: " << *type;
     }
@@ -1348,7 +1394,7 @@ bool TestRecipeReplayer::ReplayRecordedActions(
 // Functions for deserializing and executing actions from the test recipe
 // JSON object.
 bool TestRecipeReplayer::InitializeBrowserToExecuteRecipe(
-    base::Value::Dict& recipe) {
+    base::DictValue& recipe) {
   // Setup any saved address and credit card at the start of the test.
   auto* autofill_profile_container = recipe.Find("autofillProfile");
 
@@ -1397,7 +1443,7 @@ bool TestRecipeReplayer::InitializeBrowserToExecuteRecipe(
   return true;
 }
 
-bool TestRecipeReplayer::ExecuteAutofillAction(base::Value::Dict action) {
+bool TestRecipeReplayer::ExecuteAutofillAction(base::DictValue action) {
   std::string xpath;
   content::RenderFrameHost* frame;
   if (!ExtractFrameAndVerifyElement(action, &xpath, &frame))
@@ -1439,7 +1485,7 @@ bool TestRecipeReplayer::ExecuteAutofillAction(base::Value::Dict action) {
   return true;
 }
 
-bool TestRecipeReplayer::ExecuteClickAction(base::Value::Dict action) {
+bool TestRecipeReplayer::ExecuteClickAction(base::DictValue action) {
   std::string xpath;
   content::RenderFrameHost* frame;
   if (!ExtractFrameAndVerifyElement(action, &xpath, &frame)) {
@@ -1467,7 +1513,7 @@ bool TestRecipeReplayer::ExecuteClickAction(base::Value::Dict action) {
   return true;
 }
 
-bool TestRecipeReplayer::ExecuteClickIfNotSeenAction(base::Value::Dict action) {
+bool TestRecipeReplayer::ExecuteClickIfNotSeenAction(base::DictValue action) {
   std::string xpath;
   content::RenderFrameHost* frame;
   if (ExtractFrameAndVerifyElement(action, &xpath, &frame, false, false,
@@ -1485,13 +1531,13 @@ bool TestRecipeReplayer::ExecuteClickIfNotSeenAction(base::Value::Dict action) {
   }
 }
 
-bool TestRecipeReplayer::ExecuteCloseTabAction(base::Value::Dict action) {
+bool TestRecipeReplayer::ExecuteCloseTabAction(base::DictValue action) {
   VLOG(1) << "Closing Active Tab";
   browser_->tab_strip_model()->CloseSelectedTabs();
   return true;
 }
 
-bool TestRecipeReplayer::ExecuteCoolOffAction(base::Value::Dict action) {
+bool TestRecipeReplayer::ExecuteCoolOffAction(base::DictValue action) {
   base::RunLoop heart_beat;
   base::TimeDelta cool_off_time = cool_off_action_timeout;
   base::Value* pause_time_container = action.Find("pauseTimeSec");
@@ -1512,7 +1558,7 @@ bool TestRecipeReplayer::ExecuteCoolOffAction(base::Value::Dict action) {
   return true;
 }
 
-bool TestRecipeReplayer::ExecuteHoverAction(base::Value::Dict action) {
+bool TestRecipeReplayer::ExecuteHoverAction(base::DictValue action) {
   std::string xpath;
   content::RenderFrameHost* frame;
   if (!ExtractFrameAndVerifyElement(action, &xpath, &frame)) {
@@ -1546,7 +1592,7 @@ bool TestRecipeReplayer::ExecuteHoverAction(base::Value::Dict action) {
   return true;
 }
 
-bool TestRecipeReplayer::ExecuteForceLoadPage(base::Value::Dict action) {
+bool TestRecipeReplayer::ExecuteForceLoadPage(base::DictValue action) {
   bool should_force = action.FindBool("force").value_or(false);
   if (!should_force) {
     return true;
@@ -1564,7 +1610,7 @@ bool TestRecipeReplayer::ExecuteForceLoadPage(base::Value::Dict action) {
   return true;
 }
 
-bool TestRecipeReplayer::ExecutePressEnterAction(base::Value::Dict action) {
+bool TestRecipeReplayer::ExecutePressEnterAction(base::DictValue action) {
   std::string xpath;
   content::RenderFrameHost* frame;
   if (!ExtractFrameAndVerifyElement(action, &xpath, &frame))
@@ -1577,14 +1623,14 @@ bool TestRecipeReplayer::ExecutePressEnterAction(base::Value::Dict action) {
   return true;
 }
 
-bool TestRecipeReplayer::ExecutePressEscapeAction(base::Value::Dict action) {
+bool TestRecipeReplayer::ExecutePressEscapeAction(base::DictValue action) {
   VLOG(1) << "Pressing 'Esc' in the current frame";
   SimulateKeyPressWrapper(GetWebContents(), ui::DomKey::ESCAPE);
   WaitTillPageIsIdle();
   return true;
 }
 
-bool TestRecipeReplayer::ExecutePressSpaceAction(base::Value::Dict action) {
+bool TestRecipeReplayer::ExecutePressSpaceAction(base::DictValue action) {
   std::string xpath;
   content::RenderFrameHost* frame;
   if (!ExtractFrameAndVerifyElement(action, &xpath, &frame, true))
@@ -1597,11 +1643,11 @@ bool TestRecipeReplayer::ExecutePressSpaceAction(base::Value::Dict action) {
   return true;
 }
 
-bool TestRecipeReplayer::ExecuteRunCommandAction(base::Value::Dict action) {
+bool TestRecipeReplayer::ExecuteRunCommandAction(base::DictValue action) {
   // Extract the list of JavaScript commands into a vector.
   std::vector<std::string> commands;
 
-  base::Value::List* list = action.FindList("commands");
+  base::ListValue* list = action.FindList("commands");
   if (!list) {
     ADD_FAILURE() << "Failed to extract commands list from action";
     return false;
@@ -1637,7 +1683,7 @@ bool TestRecipeReplayer::ExecuteRunCommandAction(base::Value::Dict action) {
   return true;
 }
 
-bool TestRecipeReplayer::ExecuteSavePasswordAction(base::Value::Dict action) {
+bool TestRecipeReplayer::ExecuteSavePasswordAction(base::DictValue action) {
   VLOG(1) << "Save password.";
 
   if (!feature_action_executor()->SavePassword())
@@ -1655,7 +1701,7 @@ bool TestRecipeReplayer::ExecuteSavePasswordAction(base::Value::Dict action) {
   return true;
 }
 
-bool TestRecipeReplayer::ExecuteSelectDropdownAction(base::Value::Dict action) {
+bool TestRecipeReplayer::ExecuteSelectDropdownAction(base::DictValue action) {
   std::optional<int> index = action.FindInt("index");
   if (!index.has_value()) {
     ADD_FAILURE() << "Failed to extract Selection Index from action";
@@ -1681,7 +1727,7 @@ bool TestRecipeReplayer::ExecuteSelectDropdownAction(base::Value::Dict action) {
   return true;
 }
 
-bool TestRecipeReplayer::ExecuteTypeAction(base::Value::Dict action) {
+bool TestRecipeReplayer::ExecuteTypeAction(base::DictValue action) {
   std::optional<std::string> value =
       FindPopulateString(action, "value", "typing value");
   if (!value)
@@ -1705,7 +1751,7 @@ bool TestRecipeReplayer::ExecuteTypeAction(base::Value::Dict action) {
   return true;
 }
 
-bool TestRecipeReplayer::ExecuteTypePasswordAction(base::Value::Dict action) {
+bool TestRecipeReplayer::ExecuteTypePasswordAction(base::DictValue action) {
   std::string xpath;
   content::RenderFrameHost* frame;
   if (!ExtractFrameAndVerifyElement(action, &xpath, &frame, true))
@@ -1735,7 +1781,7 @@ bool TestRecipeReplayer::ExecuteTypePasswordAction(base::Value::Dict action) {
   return true;
 }
 
-bool TestRecipeReplayer::ExecuteUpdatePasswordAction(base::Value::Dict action) {
+bool TestRecipeReplayer::ExecuteUpdatePasswordAction(base::DictValue action) {
   VLOG(1) << "Update password.";
 
   if (!feature_action_executor()->UpdatePassword())
@@ -1754,7 +1800,7 @@ bool TestRecipeReplayer::ExecuteUpdatePasswordAction(base::Value::Dict action) {
 }
 
 bool TestRecipeReplayer::ExecuteValidateFieldValueAction(
-    base::Value::Dict action) {
+    base::DictValue action) {
   std::string xpath;
   content::RenderFrameHost* frame;
   if (!ExtractFrameAndVerifyElement(action, &xpath, &frame, false, true))
@@ -1813,14 +1859,34 @@ bool TestRecipeReplayer::ExecuteValidateFieldValueAction(
 }
 
 bool TestRecipeReplayer::ExecuteValidateNoSavePasswordPromptAction(
-    base::Value::Dict action) {
+    base::DictValue action) {
   VLOG(1) << "Verify that the page hasn't shown a save password prompt.";
   EXPECT_FALSE(feature_action_executor()->HasChromeShownSavePasswordPrompt());
   return true;
 }
 
+bool TestRecipeReplayer::ExecuteTriggerPasswordChangeAction(
+    base::DictValue action) {
+  std::optional<std::string> url =
+      FindPopulateString(action, "change_password_url", "Change Password URL");
+  if (!url) {
+    return false;
+  }
+
+  feature_action_executor()->TriggerPasswordChange(GURL(url.value()));
+  return true;
+}
+
+bool TestRecipeReplayer::ExecuteWaitForPasswordChangeStateAction(
+    base::DictValue action) {
+  int expected_state = action.FindInt("state").value_or(0);
+
+  feature_action_executor()->WaitForPasswordChangeState(expected_state);
+  return true;
+}
+
 bool TestRecipeReplayer::ExecuteValidatePasswordGenerationPromptAction(
-    base::Value::Dict action) {
+    base::DictValue action) {
   VLOG(1) << "Verify that an element is properly displaying or not displaying "
              "the password generation prompt";
   std::string xpath;
@@ -1862,17 +1928,17 @@ void TestRecipeReplayer::ValidatePasswordGenerationPromptState(
 }
 
 bool TestRecipeReplayer::ExecuteValidateSaveFallbackAction(
-    base::Value::Dict action) {
+    base::DictValue action) {
   VLOG(1) << "Verify that Chrome shows the save fallback icon in the omnibox.";
   EXPECT_TRUE(feature_action_executor()->WaitForSaveFallback());
   return true;
 }
 
-bool TestRecipeReplayer::ExecuteWaitForStateAction(base::Value::Dict action) {
+bool TestRecipeReplayer::ExecuteWaitForStateAction(base::DictValue action) {
   // Extract the list of JavaScript assertions into a vector.
   std::vector<std::string> state_assertions;
 
-  base::Value::List* list = action.FindList("assertions");
+  base::ListValue* list = action.FindList("assertions");
   if (!list) {
     ADD_FAILURE() << "Failed to extract wait assertions list from action";
     return false;
@@ -1894,7 +1960,7 @@ bool TestRecipeReplayer::ExecuteWaitForStateAction(base::Value::Dict action) {
 }
 
 bool TestRecipeReplayer::GetTargetHTMLElementXpathFromAction(
-    const base::Value::Dict& action,
+    const base::DictValue& action,
     std::string* xpath) {
   xpath->clear();
   std::optional<std::string> xpath_text =
@@ -1906,7 +1972,7 @@ bool TestRecipeReplayer::GetTargetHTMLElementXpathFromAction(
 }
 
 bool TestRecipeReplayer::GetTargetHTMLElementVisibilityEnumFromAction(
-    const base::Value::Dict& action,
+    const base::DictValue& action,
     int* visibility_enum_val) {
   const base::Value* visibility_container = action.Find("visibility");
   if (!visibility_container) {
@@ -1927,7 +1993,7 @@ bool TestRecipeReplayer::GetTargetHTMLElementVisibilityEnumFromAction(
 }
 
 bool TestRecipeReplayer::GetTargetFrameFromAction(
-    const base::Value::Dict& action,
+    const base::DictValue& action,
     content::RenderFrameHost** frame) {
   const base::Value* iframe_container = action.Find("context");
   if (!iframe_container) {
@@ -1997,7 +2063,7 @@ bool TestRecipeReplayer::GetTargetFrameFromAction(
 }
 
 bool TestRecipeReplayer::ExtractFrameAndVerifyElement(
-    const base::Value::Dict& action,
+    const base::DictValue& action,
     std::string* xpath,
     content::RenderFrameHost** frame,
     bool set_focus,
@@ -2038,7 +2104,7 @@ bool TestRecipeReplayer::ExtractFrameAndVerifyElement(
 }
 
 bool TestRecipeReplayer::GetIFramePathFromAction(
-    const base::Value::Dict& action,
+    const base::DictValue& action,
     std::vector<std::string>* iframe_path) {
   *iframe_path = std::vector<std::string>();
 
@@ -2107,7 +2173,7 @@ bool TestRecipeReplayer::GetIFrameOffsetFromIFramePath(
 bool TestRecipeReplayer::WaitForElementToBeReady(
     const std::string& xpath,
     const int visibility_enum_val,
-    const base::Value::Dict& action,
+    const base::DictValue& action,
     content::RenderFrameHost** frame,
     bool ignore_failure) {
   std::vector<std::string> state_assertions;
@@ -2121,7 +2187,7 @@ bool TestRecipeReplayer::WaitForElementToBeReady(
 }
 
 bool TestRecipeReplayer::WaitForStateChange(
-    const base::Value::Dict& action,
+    const base::DictValue& action,
     content::RenderFrameHost** frame,
     const std::vector<std::string>& state_assertions,
     const base::TimeDelta& timeout,
@@ -2440,7 +2506,7 @@ void TestRecipeReplayer::SimulateKeyPressWrapper(
 }
 
 bool TestRecipeReplayer::HasChromeStoredCredential(
-    const base::Value::Dict& action,
+    const base::DictValue& action,
     bool* stored_cred) {
   std::optional<std::string> origin =
       FindPopulateString(action, "origin", "Origin");
@@ -2457,14 +2523,14 @@ bool TestRecipeReplayer::HasChromeStoredCredential(
 }
 
 bool TestRecipeReplayer::SetupSavedAutofillProfile(
-    base::Value::List saved_autofill_profile_container) {
+    base::ListValue saved_autofill_profile_container) {
   for (auto& list_entry : saved_autofill_profile_container) {
     if (!list_entry.is_dict()) {
       ADD_FAILURE() << "Failed to extract an entry!";
       return false;
     }
 
-    const base::Value::Dict list_entry_dict = std::move(list_entry).TakeDict();
+    const base::DictValue list_entry_dict = std::move(list_entry).TakeDict();
     std::optional<std::string> type =
         FindPopulateString(list_entry_dict, "type", "profile field type");
     std::optional<std::string> value =
@@ -2492,14 +2558,14 @@ bool TestRecipeReplayer::SetupSavedAutofillProfile(
 }
 
 bool TestRecipeReplayer::SetupSavedPasswords(
-    base::Value::List saved_password_list_container) {
+    base::ListValue saved_password_list_container) {
   for (auto& entry : saved_password_list_container) {
     if (!entry.is_dict()) {
       ADD_FAILURE() << "Failed to extract a saved password!";
       return false;
     }
 
-    const base::Value::Dict entry_dict = std::move(entry.GetDict());
+    const base::DictValue entry_dict = std::move(entry.GetDict());
 
     std::optional<std::string> origin =
         FindPopulateString(entry_dict, "website", "Website");
@@ -2589,6 +2655,20 @@ bool TestRecipeReplayChromeFeatureActionExecutor::
     HasChromeShownSavePasswordPrompt() {
   ADD_FAILURE() << "TestRecipeReplayChromeFeatureActionExecutor"
                    "::HasChromeShownSavePasswordPrompt is not implemented!";
+  return false;
+}
+
+bool TestRecipeReplayChromeFeatureActionExecutor::TriggerPasswordChange(
+    const GURL& url) {
+  ADD_FAILURE() << "TestRecipeReplayChromeFeatureActionExecutor"
+                   "::TriggerPasswordChange is not implemented!";
+  return false;
+}
+
+bool TestRecipeReplayChromeFeatureActionExecutor::WaitForPasswordChangeState(
+    int state) {
+  ADD_FAILURE() << "TestRecipeReplayChromeFeatureActionExecutor"
+                   "::WaitForPasswordChangeState is not implemented!";
   return false;
 }
 

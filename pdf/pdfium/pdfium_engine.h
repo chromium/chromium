@@ -299,7 +299,7 @@ class PDFiumEngine : public DocumentLoader::Client,
   // - "page" - an int Value.
   // - "children" - a list of Values, with each entry containing
   //   a dictionary Value of the same structure.
-  virtual base::Value::List GetBookmarks();
+  virtual base::ListValue GetBookmarks();
 
   // Gets the named destination by name.
   std::optional<NamedDestination> GetNamedDestination(
@@ -594,8 +594,7 @@ class PDFiumEngine : public DocumentLoader::Client,
 
   // Searches for a text fragment within the text of the PDF.
   void SearchForFragment(const std::u16string& term,
-                         int character_to_start_searching_from,
-                         int last_character_index_to_search,
+                         int char_to_start_searching_from,
                          int page_to_search,
                          AddSearchResultCallback add_result_callback);
 
@@ -609,6 +608,10 @@ class PDFiumEngine : public DocumentLoader::Client,
   // Sets the blink interval for the caret. No-op if the caret was never
   // initialized. Virtual to support testing.
   virtual void SetCaretBlinkInterval(base::TimeDelta interval);
+
+  base::span<const PDFiumRange> find_results_for_testing() const {
+    return find_results_;
+  }
 
  private:
   // This is a base class for shared functions and data needed for change
@@ -832,8 +835,8 @@ class PDFiumEngine : public DocumentLoader::Client,
   void SearchUsingICU(const std::u16string& term,
                       bool case_sensitive,
                       bool first_search,
-                      int character_to_start_searching_from,
-                      int last_character_index_to_search,
+                      int char_to_start_searching_from,
+                      int last_char_index_to_search,
                       int current_page,
                       int last_page_to_search,
                       AddSearchResultCallback add_result_callback);
@@ -1020,8 +1023,7 @@ class PDFiumEngine : public DocumentLoader::Client,
   // dictionaries representing the child bookmarks. If `bookmark` is null, then
   // this method traverses from the root of the bookmarks tree. Note that the
   // root bookmark contains no useful information.
-  base::Value::Dict TraverseBookmarks(FPDF_BOOKMARK bookmark,
-                                      unsigned int depth);
+  base::DictValue TraverseBookmarks(FPDF_BOOKMARK bookmark, unsigned int depth);
 
   void ScrollBasedOnScrollAlignment(
       const gfx::Rect& scroll_rect,
@@ -1206,7 +1208,7 @@ class PDFiumEngine : public DocumentLoader::Client,
   int next_page_to_search_ = -1;
   // Where to stop searching.
   int last_page_to_search_ = -1;
-  int last_character_index_to_search_ = -1;  // -1 if search until end of page.
+  int last_char_index_to_search_ = -1;  // -1 if search until end of page.
   // Which result the user has currently selected. (0-based)
   std::optional<size_t> current_find_index_;
   // Where to resume searching. (0-based)

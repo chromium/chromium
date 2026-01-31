@@ -12,7 +12,7 @@
 #include "base/files/file_path.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
-#include "content/public/browser/child_process_id.h"
+#include "content/public/common/child_process_id.h"
 #include "ipc/constants.mojom.h"
 
 class Profile;

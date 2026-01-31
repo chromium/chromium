@@ -89,13 +89,13 @@ void FrozenFrameAggregator::OnProcessNodeAdded(
   FrozenData::Create(ProcessNodeImpl::FromNode(process_node));
 }
 
-base::Value::Dict FrozenFrameAggregator::DescribePageNodeData(
+base::DictValue FrozenFrameAggregator::DescribePageNodeData(
     const PageNode* node) const {
   FrozenData& data = FrozenData::Get(PageNodeImpl::FromNode(node));
   return data.Describe();
 }
 
-base::Value::Dict FrozenFrameAggregator::DescribeProcessNodeData(
+base::DictValue FrozenFrameAggregator::DescribeProcessNodeData(
     const ProcessNode* node) const {
   FrozenData& data = FrozenData::Get(ProcessNodeImpl::FromNode(node));
   return data.Describe();

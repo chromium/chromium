@@ -57,9 +57,8 @@ TEST_F(FirstPartySetsComponentInstallerTest, NonexistentFile_OnComponentReady) {
   base::test::TestFuture<base::Version, base::File> future;
   FirstPartySetsComponentInstallerPolicy(future.GetCallback(),
                                          base::TaskPriority::USER_BLOCKING)
-      .ComponentReadyForTesting(base::Version(),
-                                component_install_dir_.GetPath(),
-                                base::Value::Dict());
+      .ComponentReadyForTesting(
+          base::Version(), component_install_dir_.GetPath(), base::DictValue());
 
   std::tuple<base::Version, base::File> got = future.Take();
   EXPECT_FALSE(std::get<0>(got).IsValid());
@@ -99,7 +98,7 @@ TEST_F(FirstPartySetsComponentInstallerTest, LoadsSets_OnComponentReady) {
       expectation));
 
   policy->ComponentReadyForTesting(version, component_install_dir_.GetPath(),
-                                   base::Value::Dict());
+                                   base::DictValue());
 
   std::tuple<base::Version, base::File> got = future.Take();
   EXPECT_TRUE(std::get<0>(got).IsValid());
@@ -130,7 +129,7 @@ TEST_F(FirstPartySetsComponentInstallerTest, IgnoreNewSets_NoInitialComponent) {
           install_dir.GetPath()),
       "first party sets content"));
   policy.ComponentReadyForTesting(base::Version("0.0.1"), install_dir.GetPath(),
-                                  base::Value::Dict());
+                                  base::DictValue());
 
   env_.RunUntilIdle();
 }
@@ -151,8 +150,7 @@ TEST_F(FirstPartySetsComponentInstallerTest, IgnoreNewSets_OnComponentReady) {
       FirstPartySetsComponentInstallerPolicy::GetInstalledPathForTesting(
           dir_v1.GetPath()),
       sets_v1));
-  policy.ComponentReadyForTesting(version, dir_v1.GetPath(),
-                                  base::Value::Dict());
+  policy.ComponentReadyForTesting(version, dir_v1.GetPath(), base::DictValue());
 
   std::tuple<base::Version, base::File> got = future.Take();
   EXPECT_TRUE(std::get<0>(got).IsValid());
@@ -171,7 +169,7 @@ TEST_F(FirstPartySetsComponentInstallerTest, IgnoreNewSets_OnComponentReady) {
           dir_v2.GetPath()),
       sets_v2));
   policy.ComponentReadyForTesting(base::Version("0.0.1"), dir_v2.GetPath(),
-                                  base::Value::Dict());
+                                  base::DictValue());
 
   env_.RunUntilIdle();
 }

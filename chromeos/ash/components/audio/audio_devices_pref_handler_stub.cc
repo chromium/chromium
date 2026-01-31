@@ -4,7 +4,6 @@
 
 #include "chromeos/ash/components/audio/audio_devices_pref_handler_stub.h"
 
-#include "base/containers/contains.h"
 #include "chromeos/ash/components/audio/audio_device.h"
 #include "chromeos/ash/components/audio/audio_device_id.h"
 
@@ -16,8 +15,8 @@ AudioDevicesPrefHandlerStub::~AudioDevicesPrefHandlerStub() = default;
 
 double AudioDevicesPrefHandlerStub::GetOutputVolumeValue(
     const AudioDevice* device) {
-  if (!device || !base::Contains(audio_device_volume_gain_map_,
-                                 device->stable_device_id)) {
+  if (!device ||
+      !audio_device_volume_gain_map_.contains(device->stable_device_id)) {
     return kDefaultOutputVolumePercent;
   }
   return audio_device_volume_gain_map_[device->stable_device_id];
@@ -26,8 +25,8 @@ double AudioDevicesPrefHandlerStub::GetOutputVolumeValue(
 double AudioDevicesPrefHandlerStub::GetInputGainValue(
     const AudioDevice* device) {
   // TODO(rkc): The default value for gain is wrong. http://crbug.com/442489
-  if (!device || !base::Contains(audio_device_volume_gain_map_,
-                                 device->stable_device_id)) {
+  if (!device ||
+      !audio_device_volume_gain_map_.contains(device->stable_device_id)) {
     if (device->is_input) {
       return 50.0;
     }
@@ -62,7 +61,7 @@ void AudioDevicesPrefHandlerStub::SetDeviceActive(const AudioDevice& device,
 bool AudioDevicesPrefHandlerStub::GetDeviceActive(const AudioDevice& device,
                                                   bool* active,
                                                   bool* activate_by_user) {
-  if (!base::Contains(audio_device_state_map_, device.stable_device_id)) {
+  if (!audio_device_state_map_.contains(device.stable_device_id)) {
     return false;
   }
   *active = audio_device_state_map_[device.stable_device_id].active;
@@ -109,7 +108,7 @@ void AudioDevicesPrefHandlerStub::SetUserPriorityHigherThan(
 }
 
 int AudioDevicesPrefHandlerStub::GetUserPriority(const AudioDevice& device) {
-  if (base::Contains(user_priority_map_, device.stable_device_id)) {
+  if (user_priority_map_.contains(device.stable_device_id)) {
     return user_priority_map_[device.stable_device_id];
   }
   return kUserPriorityNone;
@@ -219,7 +218,7 @@ AudioDevicesPrefHandlerStub::GetDevicePreferenceSetMap() {
   return device_preference_set_map_;
 }
 
-const base::Value::List&
+const base::ListValue&
 AudioDevicesPrefHandlerStub::GetMostRecentActivatedDeviceIdList(bool is_input) {
   return most_recent_activated_device_id_list;
 }

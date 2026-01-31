@@ -31,7 +31,6 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.ResettersForTesting.State;
-import org.chromium.base.ScopedFeatureListTestUtils;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.library_loader.LibraryLoader;
 import org.chromium.base.lifetime.LifetimeAssert;
@@ -46,13 +45,11 @@ import org.chromium.base.test.util.RequiresRestart;
 import org.chromium.base.test.util.RestrictionSkipCheck;
 import org.chromium.base.test.util.SkipCheck;
 import org.chromium.base.test.util.TestAnimations;
-import org.chromium.base.test.util.TestLocale;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import java.util.Locale;
 import java.util.ServiceLoader;
 
 /**
@@ -474,10 +471,6 @@ public class BaseJUnit4ClassRunner extends AndroidJUnit4ClassRunner {
         for (TestHook hook : getPreTestHooks()) {
             hook.run(targetContext, method);
         }
-
-        if (LibraryLoader.getInstance().isInitialized()) {
-            ScopedFeatureListTestUtils.initScopedFeatureList();
-        }
     }
 
     protected void onBeforeTestClass() {
@@ -499,22 +492,10 @@ public class BaseJUnit4ClassRunner extends AndroidJUnit4ClassRunner {
             hook.run(targetContext, testClass);
         }
 
-        // Allows test classes to set the locale before feature list is initialized.
-        TestLocale localeAnnotation = testClass.getAnnotation(TestLocale.class);
-        if (localeAnnotation != null) {
-            Locale prevLocale = Locale.getDefault();
-            String localeLanguageTag = localeAnnotation.value();
-            Locale.setDefault(Locale.forLanguageTag(localeLanguageTag));
-            ResettersForTesting.register(() -> Locale.setDefault(prevLocale));
-        }
-
-        if (LibraryLoader.getInstance().isInitialized()) {
-            // Allows test classes to set the command-line before feature list is initialized.
-            if (ContextUtils.sDoFeatureListInitHookForTesting != null) {
-                ThreadUtils.runOnUiThreadBlocking(ContextUtils.sDoFeatureListInitHookForTesting);
-                ContextUtils.sDoFeatureListInitHookForTesting = null;
-            }
-            ScopedFeatureListTestUtils.initScopedFeatureList();
+        // Allows test classes to set the command-line before feature list is initialized.
+        if (ContextUtils.sDoFeatureListInitHookForTesting != null) {
+            ThreadUtils.runOnUiThreadBlocking(ContextUtils.sDoFeatureListInitHookForTesting);
+            ContextUtils.sDoFeatureListInitHookForTesting = null;
         }
     }
 

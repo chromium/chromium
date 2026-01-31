@@ -210,7 +210,7 @@ class MediaDrmStorageImplTest : public content::RenderViewHostTestHarness {
   }
 
   bool MediaDrmStorageContains(const char* origin) {
-    const base::Value::Dict& storage_dict =
+    const base::DictValue& storage_dict =
         pref_service_->GetDict(prefs::kMediaDrmStorage);
     return storage_dict.contains(origin);
   }

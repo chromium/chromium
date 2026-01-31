@@ -54,7 +54,8 @@ enum class OverscrollActionType {
 enum class HomeCustomizationEntrypoint {
   kMain = 0,
   kMagicStack = 1,
-  kMaxValue = kMagicStack,
+  kPromo = 2,
+  kMaxValue = kPromo,
 };
 
 // Metrics recorder for the new tab page.

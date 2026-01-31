@@ -208,6 +208,17 @@ Length Length::Zoom(double factor) const {
   }
 }
 
+Length Length::Multiplied(float max_value, double factor) const {
+  if (GetType() == kCalculated) {
+    Length resolved = Length::Fixed(NonNanCalculatedValue(max_value, {}));
+    resolved.value_ *= factor;
+    return resolved;
+  }
+  Length copy = *this;
+  copy.value_ *= factor;
+  return copy;
+}
+
 const CalculationValue& Length::GetCalculationValue() const {
   DCHECK(IsCalculated());
   return CalcHandles().Get(CalculationHandle());

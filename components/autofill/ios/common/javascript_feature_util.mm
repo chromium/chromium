@@ -4,12 +4,6 @@
 
 #import "components/autofill/ios/common/javascript_feature_util.h"
 
-#import "base/feature_list.h"
-#import "components/autofill/ios/common/features.h"
-
 web::ContentWorld ContentWorldForAutofillJavascriptFeatures() {
-  if (base::FeatureList::IsEnabled(kAutofillIsolatedWorldForJavascriptIos)) {
-    return web::ContentWorld::kIsolatedWorld;
-  }
-  return web::ContentWorld::kPageContentWorld;
+  return web::ContentWorld::kIsolatedWorld;
 }

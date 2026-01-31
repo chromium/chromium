@@ -224,7 +224,7 @@ void NavigateToURLBlockUntilNavigationsComplete(
 // To write a test where the renderer itself blocks or cancels the navigation,
 // use `ExecJs()` or `EvalJs()`, e.g.:
 //
-//   EXPECT_THAT(ExecJs("try { location = ''; } catch (e) { e.message; }")
+//   EXPECT_THAT(EvalJs("try { location = ''; } catch (e) { e.message; }")
 //                   .ExtractString(),
 //               HasSubStr("..."));
 //
@@ -744,10 +744,10 @@ struct JsLiteralHelper {
   }
 
   static base::Value Convert(const base::Value& value) { return value.Clone(); }
-  static base::Value Convert(const base::Value::List& value) {
+  static base::Value Convert(const base::ListValue& value) {
     return base::Value(value.Clone());
   }
-  static base::Value Convert(const base::Value::Dict& value) {
+  static base::Value Convert(const base::DictValue& value) {
     return base::Value(value.Clone());
   }
 };
@@ -776,7 +776,7 @@ struct JsLiteralHelper<url::Origin> {
 // string literals. |args| can be a mix of different types.
 template <typename... Args>
 base::Value ListValueOf(Args&&... args) {
-  base::Value::List values;
+  base::ListValue values;
   (values.Append(JsLiteralHelper<std::remove_cvref_t<Args>>::Convert(
        std::forward<Args>(args))),
    ...);
@@ -815,8 +815,7 @@ base::Value ListValueOf(Args&&... args) {
 // supported by base::Value. Numbers, lists, and dicts also work.
 template <typename... Args>
 std::string JsReplace(std::string_view script_template, Args&&... args) {
-  base::Value::List values =
-      ListValueOf(std::forward<Args>(args)...).TakeList();
+  base::ListValue values = ListValueOf(std::forward<Args>(args)...).TakeList();
   std::vector<std::string> replacements(values.size());
   for (size_t i = 0; i < values.size(); ++i) {
     CHECK(base::JSONWriter::Write(values[i], &replacements[i]));
@@ -886,8 +885,8 @@ class EvalJsResult {
   [[nodiscard]] int ExtractInt() const;
   [[nodiscard]] bool ExtractBool() const;
   [[nodiscard]] double ExtractDouble() const;
-  [[nodiscard]] const base::Value::List& ExtractList() const LIFETIME_BOUND;
-  [[nodiscard]] const base::Value::Dict& ExtractDict() const LIFETIME_BOUND;
+  [[nodiscard]] const base::ListValue& ExtractList() const LIFETIME_BOUND;
+  [[nodiscard]] const base::DictValue& ExtractDict() const LIFETIME_BOUND;
   [[nodiscard]] const std::string& ExtractError() const LIFETIME_BOUND;
 
   [[nodiscard]] bool is_ok() const {
@@ -1666,7 +1665,8 @@ class InputMsgWatcher : public RenderWidgetHost::InputEventObserver {
                        const blink::WebInputEvent&) override;
 
   void OnInputEvent(const RenderWidgetHost& widget,
-                    const blink::WebInputEvent&) override;
+                    const blink::WebInputEvent& event,
+                    InputEventSource source) override;
 
   raw_ptr<RenderWidgetHost> render_widget_host_;
   blink::WebInputEvent::Type last_sent_event_type_ =

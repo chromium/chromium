@@ -25,6 +25,7 @@
 #include "components/autofill/core/browser/data_model/addresses/autofill_profile.h"
 #include "components/autofill/core/browser/data_model/payments/credit_card.h"
 #include "components/autofill/core/browser/field_types.h"
+#include "components/autofill/core/browser/filling/field_filling_skip_reason.h"
 #include "components/autofill/core/browser/filling/filling_product.h"
 #include "components/autofill/core/browser/filling/test_form_filler.h"
 #include "components/autofill/core/browser/form_structure.h"
@@ -51,7 +52,6 @@
 #include "components/autofill/core/common/form_data.h"
 #include "components/autofill/core/common/form_data_test_api.h"
 #include "components/autofill/core/common/form_field_data.h"
-#include "components/autofill/core/common/mojom/autofill_types.mojom-data-view.h"
 #include "components/autofill/core/common/mojom/autofill_types.mojom-shared.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -441,7 +441,7 @@ TEST_F(FormFillerTest, UndoSavesFormFillingDataForAutofillAi) {
   EntityInstance passport = test::GetPassportEntityInstance();
   autofill_manager().FillOrPreviewForm(
       mojom::ActionPersistence::kFill, form, form.fields().front().global_id(),
-      &passport, AutofillTriggerSource::kAutofillAi);
+      &passport, AutofillTriggerSource::kPopup);
   autofill_manager().UndoAutofill(mojom::ActionPersistence::kFill, form,
                                   form.fields().front());
 }
@@ -619,8 +619,9 @@ TEST_F(FormFillerTest, PaymentsSwappingWithPartiallyEmptyData) {
                           "4234-5678-9012-3456",  // Visa
                           "04", "", "1");
 
-  std::vector<FormFieldData> filled_fields =
-      AutofillForm(form, form.fields().front(), &credit_card_full).fields();
+  FormData filled_form =
+      AutofillForm(form, form.fields().front(), &credit_card_full);
+  std::vector<FormFieldData> filled_fields = filled_form.fields();
 
   EXPECT_THAT(filled_fields[0], AutofilledWith(credit_card_full.GetInfo(
                                     CREDIT_CARD_NAME_FULL, kAppLocale)));
@@ -628,14 +629,49 @@ TEST_F(FormFillerTest, PaymentsSwappingWithPartiallyEmptyData) {
                                     CREDIT_CARD_EXP_4_DIGIT_YEAR, kAppLocale)));
   EXPECT_TRUE(filled_fields[3].is_autofilled());
 
-  filled_fields =
-      AutofillForm(form, form.fields().front(), &credit_card_with_empty_data)
+  std::vector<FormFieldData> updated_fields =
+      AutofillForm(filled_form, filled_form.fields().front(),
+                   &credit_card_with_empty_data)
           .fields();
-  EXPECT_THAT(filled_fields[0],
+  EXPECT_THAT(updated_fields[0],
               AutofilledWith(credit_card_with_empty_data.GetInfo(
                   CREDIT_CARD_NAME_FULL, kAppLocale)));
-  EXPECT_EQ(filled_fields[3].value(), u"");
-  EXPECT_FALSE(filled_fields[3].is_autofilled());
+  EXPECT_EQ(updated_fields[3].value(), u"");
+  EXPECT_FALSE(updated_fields[3].is_autofilled());
+}
+
+// Tests that when payment form fields are autofilled and payment swapping is
+// enabled, the cached AutofillField is updated correctly.
+TEST_F(FormFillerTest, PaymentsSwappingUpdatesAutofillField) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      features::kAutofillPaymentsFieldSwapping);
+
+  FormData form = test::CreateTestCreditCardFormData(/*is_https=*/true,
+                                                     /*use_month_type=*/false);
+  FormsSeen({form});
+
+  CreditCard credit_card_full;
+  test::SetCreditCardInfo(&credit_card_full, "Elvis Presley",
+                          "4234 5678 9012 3456",  // Visa
+                          "04", "2999", "1");
+
+  CreditCard credit_card_with_empty_data;
+  test::SetCreditCardInfo(&credit_card_with_empty_data, "Elvis Presley New",
+                          "4234-5678-9012-3456",  // Visa
+                          "04", "", "1");
+
+  FormData filled_form =
+      AutofillForm(form, form.fields().front(), &credit_card_full);
+  FormStructure* filled_form_structure = GetFormStructure(filled_form);
+  EXPECT_TRUE(filled_form_structure->field(0)->is_autofilled());
+  EXPECT_TRUE(filled_form_structure->field(3)->is_autofilled());
+
+  FormData updated_form = AutofillForm(
+      filled_form, filled_form.fields().front(), &credit_card_with_empty_data);
+  FormStructure* updated_form_structure = GetFormStructure(updated_form);
+  EXPECT_TRUE(updated_form_structure->field(0)->is_autofilled());
+  EXPECT_FALSE(updated_form_structure->field(3)->is_autofilled());
 }
 
 struct PartialCreditCardDateParams {
@@ -695,7 +731,7 @@ TEST_F(FormFillerTest, FillOnlyFirstNineteenCreditCardNumberFields) {
       AutofillForm(form, form.fields().front(), &credit_card).fields();
 
   // Verify that the first 19 credit card number fields are filled.
-  for (size_t i = 0; i < 19; i++) {
+  for (size_t i = 0; i < 19; ++i) {
     EXPECT_THAT(filled_fields[i], AutofilledWith(credit_card.GetInfo(
                                       CREDIT_CARD_NUMBER, kAppLocale)))
         << i;
@@ -711,7 +747,7 @@ TEST_F(FormFillerTest, FillCreditCardNumberIntoSingleDigitFields) {
       test::GetFormData({.fields = std::vector<test::FieldDescription>(
                              20, {.autocomplete_attribute = "cc-number"})});
   // Set the size limit of the first nineteen fields to 1.
-  for (size_t i = 0; i < 19; i++) {
+  for (size_t i = 0; i < 19; ++i) {
     test_api(form).field(i).set_max_length(1);
   }
   FormsSeen({form});
@@ -723,7 +759,7 @@ TEST_F(FormFillerTest, FillCreditCardNumberIntoSingleDigitFields) {
   // Verify that the first 19 card number fields are filled.
   std::u16string card_number =
       credit_card.GetInfo(CREDIT_CARD_NUMBER, kAppLocale);
-  for (size_t i = 0; i < 19; i++) {
+  for (size_t i = 0; i < 19; ++i) {
     EXPECT_THAT(filled_fields[i], AutofilledWith(i < card_number.length()
                                                      ? card_number.substr(i, 1)
                                                      : card_number))
@@ -770,7 +806,7 @@ TEST_F(FormFillerTest, OnlyCountFilledSelectionBoxesForTypeFillingLimit) {
       {.fields = {{.role = NAME_FULL, .autocomplete_attribute = "name"}}});
   // Add 20 selection boxes that should be fillable since the correct
   // entry is present.
-  for (int i = 0; i < 20; i++) {
+  for (int i = 0; i < 20; ++i) {
     test_api(form).Append(
         test::CreateTestSelectField("State", "state", "", "address-level1",
                                     {"AA", "BB", "CA"}, {"AA", "BB", "CA"}));
@@ -2387,7 +2423,7 @@ TEST_F(FormFillerTest, MultipleUndoOperations) {
   EXPECT_FALSE(form.fields()[1].is_autofilled());
 }
 
-// Tests that Undoing a filling operation on a field discards other fields that
+// Tests that undoing a filling operation on a field discards other fields that
 // changed filling product (i.e. were autofilled afterwards using some other
 // filling product).
 TEST_F(FormFillerTest, UndoDiscardsFieldsThatChangedFillingProduct) {
@@ -2416,6 +2452,56 @@ TEST_F(FormFillerTest, UndoDiscardsFieldsThatChangedFillingProduct) {
   EXPECT_TRUE(form.fields()[0].value().empty());
   EXPECT_FALSE(form.fields()[0].is_autofilled());
   EXPECT_THAT(form.fields()[1], AutofilledWith(u"Other"));
+}
+
+// Tests that when Glic triggers a filling operation, some fields that are
+// usually skipped by regular operations are not skipped.
+TEST_F(FormFillerTest, GlicFillingDoeNotSkipSomeUsuallySkippableFields) {
+  FormData form = test::GetFormData(
+      {.fields = {
+           {.role = ADDRESS_HOME_COUNTRY, .autocomplete_attribute = "country"},
+           {.role = NAME_FIRST, .autocomplete_attribute = "given-name"},
+           {.role = NAME_MIDDLE, .autocomplete_attribute = "additional-name"},
+           // Simulate that field [3] has an invalid autocomplete attribute.
+           {.role = NAME_LAST, .autocomplete_attribute = "nope"}}});
+  // Simulate that field [2] is prefilled on page load.
+  test_api(form).field(2).set_value(u"G");
+
+  FormsSeen({form});
+  FormStructure* form_structure = GetFormStructure(form);
+  ASSERT_TRUE(form_structure);
+  ASSERT_EQ(form_structure->fields().size(), 4u);
+
+  // Simulate that the user typed into field [1].
+  test_api(form).field(1).set_value(u"Ji");
+  form_structure->field(1)->set_value(u"Ji");
+  test_api(form).field(1).set_properties_mask(kUserTyped);
+  form_structure->field(1)->set_properties_mask(kUserTyped);
+
+  base::flat_map<FieldGlobalId, DenseSet<FieldFillingSkipReason>> skip_reasons =
+      FormFiller::GetFieldFillingSkipReasons(
+          form.fields(), *form_structure, *form_structure->field(0),
+          FormFiller::RefillOptions::NotRefill(), FillingProduct::kAddress,
+          AutofillTriggerSource::kPopup, autofill_client());
+
+  ASSERT_EQ(skip_reasons[form.fields()[1].global_id()],
+            DenseSet<FieldFillingSkipReason>{
+                FieldFillingSkipReason::kUserFilledFields});
+  ASSERT_EQ(skip_reasons[form.fields()[2].global_id()],
+            DenseSet<FieldFillingSkipReason>{
+                FieldFillingSkipReason::kValuePrefilled});
+  ASSERT_EQ(skip_reasons[form.fields()[3].global_id()],
+            DenseSet<FieldFillingSkipReason>{
+                FieldFillingSkipReason::kUnrecognizedAutocompleteAttribute});
+
+  skip_reasons = FormFiller::GetFieldFillingSkipReasons(
+      form.fields(), *form_structure, *form_structure->field(0),
+      FormFiller::RefillOptions::NotRefill(), FillingProduct::kAddress,
+      AutofillTriggerSource::kGlic, autofill_client());
+
+  EXPECT_TRUE(skip_reasons[form.fields()[1].global_id()].empty());
+  EXPECT_TRUE(skip_reasons[form.fields()[2].global_id()].empty());
+  EXPECT_TRUE(skip_reasons[form.fields()[3].global_id()].empty());
 }
 
 }  // namespace autofill

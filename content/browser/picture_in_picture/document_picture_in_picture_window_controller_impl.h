@@ -47,7 +47,7 @@ class CONTENT_EXPORT DocumentPictureInPictureWindowControllerImpl
   void CloseAndFocusInitiator() override;
   void OnWindowDestroyed(bool should_pause_video) override;
   WebContents* GetWebContents() override;
-  std::optional<gfx::Rect> GetWindowBounds() override;
+  std::optional<gfx::Rect> GetWindowBoundsInScreen() override;
   WebContents* GetChildWebContents() override;
   std::optional<url::Origin> GetOrigin() override;
 

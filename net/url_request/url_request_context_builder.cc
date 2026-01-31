@@ -188,11 +188,6 @@ void URLRequestContextBuilder::set_persistent_reporting_and_nel_store(
   persistent_reporting_and_nel_store_ =
       std::move(persistent_reporting_and_nel_store);
 }
-
-void URLRequestContextBuilder::set_enterprise_reporting_endpoints(
-    const base::flat_map<std::string, GURL>& enterprise_reporting_endpoints) {
-  enterprise_reporting_endpoints_ = enterprise_reporting_endpoints;
-}
 #endif  // BUILDFLAG(ENABLE_REPORTING)
 
 void URLRequestContextBuilder::SetCookieStore(
@@ -488,8 +483,7 @@ std::unique_ptr<URLRequestContext> URLRequestContextBuilder::Build() {
   } else if (reporting_policy_) {
     context->set_reporting_service(
         ReportingService::Create(*reporting_policy_, context.get(),
-                                 persistent_reporting_and_nel_store_.get(),
-                                 enterprise_reporting_endpoints_));
+                                 persistent_reporting_and_nel_store_.get()));
   }
 
   if (network_error_logging_enabled_) {
@@ -526,10 +520,11 @@ std::unique_ptr<URLRequestContext> URLRequestContextBuilder::Build() {
       context->set_device_bound_session_store(
           device_bound_sessions::SessionStore::Create(
               device_bound_sessions_file_path_,
-              unexportable_key_service_.get()));
+              context->unexportable_key_service()));
     }
     context->set_device_bound_session_service(
-        device_bound_sessions::SessionService::Create(context.get()));
+        device_bound_sessions::SessionService::Create(
+            context.get(), device_bound_sessions_restricted_sites_));
   } else {
     if (device_bound_session_service_) {
       context->set_device_bound_session_service(

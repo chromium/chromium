@@ -21,6 +21,7 @@ using ::base::test::RunOnceCallback;
 using ::testing::_;
 using ::testing::NiceMock;
 using ::testing::Return;
+using ::testing::ReturnArg;
 using ::testing::SaveArg;
 
 // Define a mock implementation of ManifestDemuxer::Engine for testing.
@@ -47,8 +48,12 @@ class MockEngine : public ManifestDemuxer::Engine {
   MOCK_METHOD(bool, IsSeekable, (), (const override));
   MOCK_METHOD(int64_t, GetMemoryUsage, (), (const, override));
   MOCK_METHOD(void, Stop, (), (override));
-  MOCK_METHOD(void, SelectVideoVariant, (const MediaTrack::Id&), (override));
-  MOCK_METHOD(void, SelectAudioRendition, (const MediaTrack::Id&), (override));
+  MOCK_METHOD(void, SelectAudioTrack, (const MediaTrack::Id&), (override));
+  MOCK_METHOD(void, SelectVideoTrack, (const MediaTrack::Id&), (override));
+  MOCK_METHOD(std::vector<DemuxerStream*>,
+              FilterDemuxerStreams,
+              (std::vector<DemuxerStream*>&&),
+              (override));
 };
 
 // Fixture for ManifestDemuxer tests.
@@ -358,6 +363,9 @@ TEST_F(ManifestDemuxerTest, TrackChanges) {
   EXPECT_CALL(*mock_engine_, OnTimeUpdate(_, _, _))
       .WillOnce(RunOnceCallback<2>(kNoTimestamp));
 
+  EXPECT_CALL(*mock_engine_, FilterDemuxerStreams(_))
+      .WillRepeatedly(ReturnArg<0>());
+
   // Mark the engine as initialized successfully.
   EXPECT_CALL(*mock_engine_, Initialize(_, _))
       .WillOnce(RunOnceCallback<1>(media::PIPELINE_OK));
@@ -403,6 +411,65 @@ TEST_F(ManifestDemuxerTest, TrackChanges) {
 
   // Disable audio track:
   was_called = false;
+  manifest_demuxer_->OnTracksChanged(
+      DemuxerStream::AUDIO, {}, base::Seconds(0),
+      base::BindOnce(
+          [](bool* was_called, DemuxerStream* stream) {
+            ASSERT_EQ(stream, nullptr);
+            *was_called = true;
+          },
+          &was_called));
+  task_environment_.RunUntilIdle();
+  ASSERT_TRUE(was_called);
+
+  // Enable audio track:
+  was_called = false;
+  manifest_demuxer_->OnTracksChanged(
+      DemuxerStream::AUDIO, {MediaTrack::Id("audio")}, base::Seconds(0),
+      base::BindOnce(
+          [](bool* was_called, DemuxerStream* stream) {
+            ASSERT_NE(stream, nullptr);
+            *was_called = true;
+          },
+          &was_called));
+  task_environment_.RunUntilIdle();
+  ASSERT_TRUE(was_called);
+}
+
+TEST_F(ManifestDemuxerTest, DoesNotExposeTracksForAudioOnlyManifests) {
+  // Chunk demuxer won't finish initialization until content starts being
+  // added, and we don't have any mock content at this point.
+  EXPECT_CALL(*this, MockInitComplete(_)).Times(1);
+  EXPECT_CALL(*mock_engine_, OnTimeUpdate(_, _, _))
+      .WillOnce(RunOnceCallback<2>(kNoTimestamp));
+
+  EXPECT_CALL(*mock_engine_, FilterDemuxerStreams(_))
+      .WillRepeatedly([](std::vector<DemuxerStream*>&& streams) {
+        std::erase_if(streams, [](DemuxerStream* stream) {
+          return stream->type() != DemuxerStream::AUDIO;
+        });
+        return streams;
+      });
+
+  // Mark the engine as initialized successfully.
+  EXPECT_CALL(*mock_engine_, Initialize(_, _))
+      .WillOnce(RunOnceCallback<1>(media::PIPELINE_OK));
+
+  manifest_demuxer_->Initialize(
+      mock_host_.get(), base::BindOnce(&ManifestDemuxerTest::MockInitComplete,
+                                       base::Unretained(this)));
+
+  base::TimeDelta offset;
+  manifest_demuxer_->AddRole("test", RelaxedParserSupportedType::kMP2T);
+  scoped_refptr<DecoderBuffer> bear = ReadTestDataFile("bear-1280x720.ts");
+  manifest_demuxer_->AppendAndParseData("test", base::Seconds(10), &offset,
+                                        *bear);
+
+  std::vector<DemuxerStream*> streams = manifest_demuxer_->GetAllStreams();
+  ASSERT_EQ(streams.size(), 1u);
+
+  // Disable audio track:
+  bool was_called = false;
   manifest_demuxer_->OnTracksChanged(
       DemuxerStream::AUDIO, {}, base::Seconds(0),
       base::BindOnce(

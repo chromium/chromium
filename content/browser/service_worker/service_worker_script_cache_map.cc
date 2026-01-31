@@ -7,7 +7,6 @@
 #include <utility>
 
 #include "base/check_op.h"
-#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "content/browser/service_worker/service_worker_consts.h"
 #include "content/browser/service_worker/service_worker_context_core.h"
@@ -108,7 +107,7 @@ void ServiceWorkerScriptCacheMap::SetResources(
 void ServiceWorkerScriptCacheMap::UpdateSha256Checksum(
     const GURL& url,
     const std::string& sha256_checksum) {
-  DCHECK(base::Contains(resource_map_, url));
+  DCHECK(resource_map_.contains(url));
   resource_map_[url]->sha256_checksum = sha256_checksum;
 }
 
@@ -133,7 +132,7 @@ void ServiceWorkerScriptCacheMap::WriteMetadata(
   uint64_t callback_id = next_callback_id_++;
   mojo_base::BigBuffer buffer(base::as_bytes(data));
 
-  DCHECK(!base::Contains(callbacks_, callback_id));
+  DCHECK(!callbacks_.contains(callback_id));
   callbacks_[callback_id] = std::move(callback);
 
   mojo::Remote<storage::mojom::ServiceWorkerResourceMetadataWriter> writer;

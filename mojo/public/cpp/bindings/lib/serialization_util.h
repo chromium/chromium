@@ -5,6 +5,7 @@
 #ifndef MOJO_PUBLIC_CPP_BINDINGS_LIB_SERIALIZATION_UTIL_H_
 #define MOJO_PUBLIC_CPP_BINDINGS_LIB_SERIALIZATION_UTIL_H_
 
+#include <concepts>
 #include <type_traits>
 
 #include "mojo/public/cpp/bindings/lib/bindings_internal.h"
@@ -14,42 +15,27 @@
 namespace mojo {
 namespace internal {
 
-template <typename T, typename U, typename SFINAE = void>
-struct HasIsNullMethod : std::false_type {
-  static_assert(sizeof(T), "T must be a complete type.");
-};
-
-template <typename T, typename U>
-struct HasIsNullMethod<
-    T,
-    U,
-    std::void_t<decltype(T::IsNull(std::declval<const U&>()))>>
-    : std::true_type {};
-
 template <typename Traits, typename UserType>
 bool CallIsNullIfExists(const UserType& input) {
-  if constexpr (HasIsNullMethod<Traits, UserType>::value) {
+  static_assert(sizeof(Traits), "Traits must be a complete type.");
+  if constexpr (requires {
+                  { Traits::IsNull(input) } -> std::same_as<bool>;
+                }) {
     return Traits::IsNull(input);
   } else {
     return false;
   }
 }
 
-template <typename T, typename U, typename SFINAE = void>
-struct HasSetToNullMethod : std::false_type {
-  static_assert(sizeof(T), "T must be a complete type.");
-};
-
-template <typename T, typename U>
-struct HasSetToNullMethod<
-    T,
-    U,
-    std::void_t<decltype(T::SetToNull(std::declval<U*>()))>> : std::true_type {
+template <typename T, typename UserType>
+concept HasSetToNullMethod = requires(UserType* u) {
+  { T::SetToNull(u) } -> std::same_as<void>;
 };
 
 template <typename Traits, typename UserType>
 bool CallSetToNullIfExists(UserType* output) {
-  if constexpr (HasSetToNullMethod<Traits, UserType>::value) {
+  static_assert(sizeof(Traits), "Traits must be a complete type.");
+  if constexpr (HasSetToNullMethod<Traits, UserType>) {
     Traits::SetToNull(output);
   }
 
@@ -65,16 +51,14 @@ bool CallSetToNullIfExists(UserType* output) {
   return true;
 }
 
-template <typename MojomType, typename UserType, typename = void>
+template <typename MojomType, typename UserType>
 struct TraitsFinder {
   using Traits = StructTraits<MojomType, UserType>;
 };
 
 template <typename MojomType, typename UserType>
-struct TraitsFinder<
-    MojomType,
-    UserType,
-    std::enable_if_t<BelongsTo<MojomType, MojomTypeCategory::kUnion>::value>> {
+  requires(BelongsTo<MojomType, MojomTypeCategory::kUnion>::value)
+struct TraitsFinder<MojomType, UserType> {
   using Traits = UnionTraits<MojomType, UserType>;
 };
 
@@ -99,7 +83,7 @@ constexpr bool IsValidUserTypeForOptionalValue() {
     return true;
   } else {
     using Traits = typename TraitsFinder<MojomType, UserType>::Traits;
-    return HasSetToNullMethod<Traits, UserType>::value;
+    return HasSetToNullMethod<Traits, UserType>;
   }
 }
 
@@ -112,19 +96,6 @@ template <typename T, typename U>
 struct HasGetBeginMethod<T,
                          U,
                          std::void_t<decltype(T::GetBegin(std::declval<U&>()))>>
-    : std::true_type {};
-
-template <typename T, typename U, typename SFINAE = void>
-struct HasGetDataMethod : std::false_type {
-  static_assert(sizeof(T), "T must be a complete type.");
-};
-
-// TODO(dcheng): Figure out why the `&` below is load-bearing and document it or
-// improve this and remove the hack.
-template <typename T, typename U>
-struct HasGetDataMethod<T,
-                        U,
-                        std::void_t<decltype(&T::GetData(std::declval<U&>()))>>
     : std::true_type {};
 
 }  // namespace internal

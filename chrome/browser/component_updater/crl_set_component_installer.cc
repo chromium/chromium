@@ -105,7 +105,7 @@ void CRLSetData::UpdateCRLSetOnUI(const std::string& crl_set_bytes) {
 CRLSetPolicy::CRLSetPolicy() = default;
 CRLSetPolicy::~CRLSetPolicy() = default;
 
-bool CRLSetPolicy::VerifyInstallation(const base::Value::Dict& manifest,
+bool CRLSetPolicy::VerifyInstallation(const base::DictValue& manifest,
                                       const base::FilePath& install_dir) const {
   return base::PathExists(install_dir.Append(kCRLSetFile));
 }
@@ -119,7 +119,7 @@ bool CRLSetPolicy::RequiresNetworkEncryption() const {
 }
 
 update_client::CrxInstaller::Result CRLSetPolicy::OnCustomInstall(
-    const base::Value::Dict& manifest,
+    const base::DictValue& manifest,
     const base::FilePath& install_dir) {
   return update_client::CrxInstaller::Result(0);  // Nothing custom here.
 }
@@ -128,7 +128,7 @@ void CRLSetPolicy::OnCustomUninstall() {}
 
 void CRLSetPolicy::ComponentReady(const base::Version& version,
                                   const base::FilePath& install_dir,
-                                  base::Value::Dict manifest) {
+                                  base::DictValue manifest) {
   GetCRLSetData().set_crl_set_path(install_dir.Append(kCRLSetFile));
   GetCRLSetData().ConfigureCertVerifierServiceFactory();
 }

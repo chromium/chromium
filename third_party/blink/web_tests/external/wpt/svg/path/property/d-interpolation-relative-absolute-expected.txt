@@ -1,0 +1,8 @@
+This is a testharness.js-based test.
+Found 2 FAIL, 0 TIMEOUT, 0 NOTRUN.
+[FAIL] Animation between "path("m 10 20 a 10 20 30 1 0 40 50 a 110 120 30 1 1 140 50")" and "path("M 18 12 A 50 100 70 0 1 90 110 A 150 160 70 0 1 70 80")" at progress 0.125
+  assert_equals: expected "path(\\"M 11 19 A 15 30 35 1 1 55 75 A 115 125 35 1 1 175 115\\")" but got "path(\\"M 11 19 A 15 30 35 1 0 55 75 A 115 125 35 1 1 175 115\\")"
+[FAIL] Animation between "path("m 10 20 a 10 20 30 1 0 40 50 a 110 120 30 1 1 140 50")" and "path("M 18 12 A 50 100 70 0 1 90 110 A 150 160 70 0 1 70 80")" at progress 0.875
+  assert_equals: expected "path(\\"M 17 13 A 45 90 65 1 1 85 105 A 145 155 65 1 1 85 85\\")" but got "path(\\"M 17 13 A 45 90 65 0 1 85 105 A 145 155 65 0 1 85 85\\")"
+Harness: the test ran to completion.
+

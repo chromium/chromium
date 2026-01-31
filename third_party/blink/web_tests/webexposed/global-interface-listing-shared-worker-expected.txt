@@ -630,6 +630,7 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     method destroy
 [Worker]     method getMappedRange
 [Worker]     method mapAsync
+[Worker]     method mapSync
 [Worker]     method unmap
 [Worker]     setter label
 [Worker] interface GPUCanvasContext
@@ -909,6 +910,7 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     getter label
 [Worker]     getter mipLevelCount
 [Worker]     getter sampleCount
+[Worker]     getter textureBindingViewDimension
 [Worker]     getter usage
 [Worker]     getter width
 [Worker]     method constructor
@@ -3625,6 +3627,7 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     attribute RENDER_ATTACHMENT
 [Worker]     attribute STORAGE_BINDING
 [Worker]     attribute TEXTURE_BINDING
+[Worker]     attribute TRANSIENT_ATTACHMENT
 [Worker] namespace Temporal
 [Worker]     attribute @@toStringTag
 [Worker]     attribute Now

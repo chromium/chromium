@@ -53,6 +53,7 @@ class WidgetInputHandlerImpl : public mojom::blink::WidgetInputHandler {
                          const gfx::Range& range,
                          int32_t start,
                          int32_t end,
+                         mojom::blink::ImeState ime_state,
                          ImeSetCompositionCallback callback) override;
   void ImeCommitText(const String& text,
                      const Vector<ui::ImeTextSpan>& ime_text_spans,
@@ -71,6 +72,7 @@ class WidgetInputHandlerImpl : public mojom::blink::WidgetInputHandler {
   void DispatchNonBlockingEvent(
       std::unique_ptr<WebCoalescedInputEvent>) override;
   void WaitForInputProcessed(WaitForInputProcessedCallback callback) override;
+  void PingMainThread(PingMainThreadCallback callback) override;
 #if BUILDFLAG(IS_ANDROID)
   void AttachSynchronousCompositor(
       mojo::PendingRemote<mojom::blink::SynchronousCompositorControlHost>

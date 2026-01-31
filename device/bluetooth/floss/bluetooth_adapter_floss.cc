@@ -4,7 +4,6 @@
 
 #include "device/bluetooth/floss/bluetooth_adapter_floss.h"
 
-#include "base/containers/contains.h"
 #include "base/functional/callback_helpers.h"
 #include "base/location.h"
 #include "base/logging.h"
@@ -260,7 +259,7 @@ void BluetoothAdapterFloss::Init() {
 
 void BluetoothAdapterFloss::NotifyDeviceFound(uint8_t scanner_id,
                                               const std::string& address) {
-  if (!base::Contains(devices_, address)) {
+  if (!devices_.contains(address)) {
     return;
   }
 
@@ -280,7 +279,7 @@ BluetoothDeviceFloss* BluetoothAdapterFloss::CreateOrGetDeviceForUpdate(
   BluetoothDeviceFloss* device_ptr;
   std::string canonical_address = device::CanonicalizeBluetoothAddress(address);
 
-  if (base::Contains(devices_, canonical_address)) {
+  if (devices_.contains(canonical_address)) {
     device_ptr =
         static_cast<BluetoothDeviceFloss*>(devices_[canonical_address].get());
     device_ptr->UpdateTimestamp();
@@ -748,7 +747,7 @@ void BluetoothAdapterFloss::UpdateDeviceProperties(
 
   // Devices are newly found if they aren't in the devices_ map or they were
   // added via ScanResult (which doesn't trigger property reads).
-  if (!base::Contains(devices_, canonical_address)) {
+  if (!devices_.contains(canonical_address)) {
     new_device_ptr = device_floss.get();
     devices_.emplace(canonical_address, std::move(device_floss));
   } else if (DeviceNeedsToReadProperties(devices_[canonical_address].get())) {
@@ -801,7 +800,7 @@ void BluetoothAdapterFloss::AdapterClearedDevice(
   auto device_floss = CreateBluetoothDeviceFloss(device_cleared);
   std::string canonical_address =
       device::CanonicalizeBluetoothAddress(device_floss->GetAddress());
-  if (base::Contains(devices_, canonical_address)) {
+  if (devices_.contains(canonical_address)) {
     BluetoothDeviceFloss* device_ptr = device_floss.get();
     BluetoothDeviceFloss* found_ptr = static_cast<BluetoothDeviceFloss*>(
         GetDevice(device_floss->GetAddress()));
@@ -1056,7 +1055,7 @@ void BluetoothAdapterFloss::DeviceBondStateChanged(
   std::string canonical_address =
       device::CanonicalizeBluetoothAddress(remote_device.address);
 
-  if (!base::Contains(devices_, canonical_address)) {
+  if (!devices_.contains(canonical_address)) {
     LOG(WARNING) << "Received BondStateChanged for a non-existent device";
     return;
   }
@@ -1166,7 +1165,7 @@ std::optional<device::BluetoothDevice::BatteryType> variant_to_battery_type(
            device::BluetoothDevice::BatteryType::kRightBudTrueWireless},
           {"case", device::BluetoothDevice::BatteryType::kCaseTrueWireless},
       };
-  if (!base::Contains(battery_type_lookup, variant)) {
+  if (!battery_type_lookup.contains(variant)) {
     return std::nullopt;
   }
   return battery_type_lookup[variant];
@@ -1373,7 +1372,7 @@ void BluetoothAdapterFloss::ConnectDevice(
   BluetoothDeviceFloss* device_ptr;
   std::string canonical_address = device::CanonicalizeBluetoothAddress(address);
 
-  if (base::Contains(devices_, canonical_address)) {
+  if (devices_.contains(canonical_address)) {
     device_ptr =
         static_cast<BluetoothDeviceFloss*>(devices_[canonical_address].get());
   } else {
@@ -1388,7 +1387,7 @@ void BluetoothAdapterFloss::ConnectDevice(
 
 void BluetoothAdapterFloss::AddLocalGattService(
     std::unique_ptr<BluetoothLocalGattServiceFloss> service) {
-  DCHECK(!base::Contains(owned_gatt_services_, service->GetIdentifier()));
+  DCHECK(!owned_gatt_services_.contains(service->GetIdentifier()));
   owned_gatt_services_[service->GetIdentifier()] = std::move(service);
 }
 
@@ -1582,7 +1581,7 @@ void BluetoothAdapterFloss::ScannerRegistered(device::BluetoothUUID uuid,
                        << ", scanner id = " << static_cast<int>(scanner_id)
                        << ", status = " << static_cast<int>(status);
 
-  if (!base::Contains(scanners_, uuid)) {
+  if (!scanners_.contains(uuid)) {
     VLOG(1) << "ScannerRegistered but no longer exists " << uuid;
     return;
   }
@@ -1603,8 +1602,8 @@ void BluetoothAdapterFloss::ScannerRegistered(device::BluetoothUUID uuid,
 void BluetoothAdapterFloss::ScanResultReceived(ScanResult scan_result) {
   BLUETOOTH_LOG(DEBUG) << __func__ << ": " << scan_result.address;
 
-  bool already_found = base::Contains(
-      devices_, device::CanonicalizeBluetoothAddress(scan_result.address));
+  bool already_found = devices_.contains(
+      device::CanonicalizeBluetoothAddress(scan_result.address));
 
   BluetoothDeviceFloss* device_ptr =
       CreateOrGetDeviceForUpdate(scan_result.address, scan_result.name);
@@ -1674,7 +1673,7 @@ void BluetoothAdapterFloss::AdvertisementLost(uint8_t scanner_id,
       {.address = scan_result.address, .name = scan_result.name}));
   std::string canonical_address =
       device::CanonicalizeBluetoothAddress(device->GetAddress());
-  if (!base::Contains(devices_, canonical_address)) {
+  if (!devices_.contains(canonical_address)) {
     BLUETOOTH_LOG(EVENT) << __func__
                          << ": Device lost but never previously found: "
                          << scan_result.address;
@@ -1803,7 +1802,7 @@ void BluetoothAdapterFloss::OnStartScan(
     device::BluetoothUUID uuid,
     uint8_t scanner_id,
     DBusResult<FlossDBusClient::BtifStatus> ret) {
-  if (!base::Contains(scanners_, uuid)) {
+  if (!scanners_.contains(uuid)) {
     VLOG(1) << "Started scanning but scanner no longer exists " << uuid;
     return;
   }
@@ -1829,7 +1828,7 @@ void BluetoothAdapterFloss::OnLowEnergyScanSessionDestroyed(
   BLUETOOTH_LOG(EVENT) << __func__ << ": UUID = " << uuid_str;
 
   device::BluetoothUUID uuid = device::BluetoothUUID(uuid_str);
-  if (!base::Contains(scanners_, uuid)) {
+  if (!scanners_.contains(uuid)) {
     return;
   }
 

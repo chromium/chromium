@@ -5,9 +5,9 @@
 #include "components/drive/file_errors.h"
 
 #include <type_traits>
+#include <utility>
 
 #include "base/notreached.h"
-#include "base/types/cxx23_to_underlying.h"
 
 namespace drive {
 
@@ -79,7 +79,7 @@ bool IsFileErrorOk(FileError error) {
       return false;
   }
 
-  NOTREACHED() << "Unexpected FileError " << base::to_underlying(error);
+  NOTREACHED() << "Unexpected FileError " << std::to_underlying(error);
 }
 
 base::File::Error FileErrorToBaseFileError(FileError error) {

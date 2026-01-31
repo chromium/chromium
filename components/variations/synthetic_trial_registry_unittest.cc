@@ -4,9 +4,9 @@
 
 #include "components/variations/synthetic_trial_registry.h"
 
+#include <algorithm>
 #include <string>
 
-#include "base/containers/contains.h"
 #include "base/metrics/field_trial.h"
 #include "base/scoped_observation.h"
 #include "base/strings/stringprintf.h"
@@ -216,7 +216,7 @@ TEST_F(SyntheticTrialRegistryTest, RegisterExternalExperiments_WithAllowlist) {
   GetSyntheticTrials(registry, &synthetic_trials);
   EXPECT_EQ(2U, synthetic_trials.size());
   EXPECT_TRUE(HasSyntheticTrial(synthetic_trials, "A", "100"));
-  EXPECT_TRUE(HasSyntheticTrial(synthetic_trials, "C", "300"));
+  EXPECT_TRUE(HasSyntheticTrial(synthetic_trials, "C", "xyz"));
 
   // A new call that only contains 100 will clear the other ones.
   registry.RegisterExternalExperimentsForTesting({101}, override_mode);
@@ -230,21 +230,21 @@ TEST_F(SyntheticTrialRegistryTest, RegisterExternalExperiments_WithAllowlist) {
   GetSyntheticTrials(registry, &synthetic_trials);
   EXPECT_EQ(2U, synthetic_trials.size());
   EXPECT_TRUE(HasSyntheticTrial(synthetic_trials, "A", "101"));
-  EXPECT_TRUE(HasSyntheticTrial(synthetic_trials, "C", "300"));
+  EXPECT_TRUE(HasSyntheticTrial(synthetic_trials, "C", "xyz"));
 
   // Registering 100, which already has a trial A registered, shouldn't work.
   registry.RegisterExternalExperimentsForTesting({100}, dont_override);
   GetSyntheticTrials(registry, &synthetic_trials);
   EXPECT_EQ(2U, synthetic_trials.size());
   EXPECT_TRUE(HasSyntheticTrial(synthetic_trials, "A", "101"));
-  EXPECT_TRUE(HasSyntheticTrial(synthetic_trials, "C", "300"));
+  EXPECT_TRUE(HasSyntheticTrial(synthetic_trials, "C", "xyz"));
 
   // Registering an empty set should also do nothing.
   registry.RegisterExternalExperimentsForTesting({}, dont_override);
   GetSyntheticTrials(registry, &synthetic_trials);
   EXPECT_EQ(2U, synthetic_trials.size());
   EXPECT_TRUE(HasSyntheticTrial(synthetic_trials, "A", "101"));
-  EXPECT_TRUE(HasSyntheticTrial(synthetic_trials, "C", "300"));
+  EXPECT_TRUE(HasSyntheticTrial(synthetic_trials, "C", "xyz"));
 
   // Registering with an override should reset existing ones.
   registry.RegisterExternalExperimentsForTesting({100}, override_mode);
@@ -280,12 +280,12 @@ TEST_F(SyntheticTrialRegistryTest, GetSyntheticFieldTrialActiveGroups) {
   ActiveGroupId trial1_id = trial1.id();
   std::string trial1_hash =
       base::StringPrintf("%x-%x", trial1_id.name, trial1_id.group);
-  EXPECT_TRUE(base::Contains(output, trial1_hash));
+  EXPECT_TRUE(std::ranges::contains(output, trial1_hash));
 
   ActiveGroupId trial2_id = trial2.id();
   std::string trial2_hash =
       base::StringPrintf("%x-%x", trial2_id.name, trial2.id().group);
-  EXPECT_TRUE(base::Contains(output, trial2_hash));
+  EXPECT_TRUE(std::ranges::contains(output, trial2_hash));
 }
 
 TEST_F(SyntheticTrialRegistryTest, NotifyObserver) {
@@ -376,6 +376,50 @@ TEST_F(SyntheticTrialRegistryTest, NotifyObserverExternalTrials) {
   registry.RegisterExternalExperimentsForTesting({102}, mode);
 
   registry.RemoveObserver(&observer);
+}
+
+TEST_F(SyntheticTrialRegistryTest,
+       RegisterExternalExperiments_HumanReadableGroupName) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeatureWithParameters(
+      internal::kExternalExperimentAllowlist, {{"100", "StudyA,GroupA"},
+                                               {"101", "StudyB,GroupB,Param"},
+                                               {"102", "StudyC,"},
+                                               {"103", ",GroupD"},
+                                               {"104", "StudyE,GroupE,Extra"}});
+
+  const auto mode = SyntheticTrialRegistry::kOverrideExistingIds;
+  SyntheticTrialRegistry registry;
+  std::vector<ActiveGroupId> synthetic_trials;
+
+  // Case 1: Simple Study,Group
+  registry.RegisterExternalExperimentsForTesting({100}, mode);
+  GetSyntheticTrials(registry, &synthetic_trials);
+  EXPECT_EQ(1U, synthetic_trials.size());
+  EXPECT_TRUE(HasSyntheticTrial(synthetic_trials, "StudyA", "GroupA"));
+
+  // Case 2: Study,Group,Param (Param ignored)
+  registry.RegisterExternalExperimentsForTesting({101}, mode);
+  GetSyntheticTrials(registry, &synthetic_trials);
+  EXPECT_EQ(1U, synthetic_trials.size());
+  EXPECT_TRUE(HasSyntheticTrial(synthetic_trials, "StudyB", "GroupB"));
+
+  // Case 3: Empty group name (fallback to ID)
+  registry.RegisterExternalExperimentsForTesting({102}, mode);
+  GetSyntheticTrials(registry, &synthetic_trials);
+  EXPECT_EQ(1U, synthetic_trials.size());
+  EXPECT_TRUE(HasSyntheticTrial(synthetic_trials, "StudyC", "102"));
+
+  // Case 4: Empty study name (skipped)
+  registry.RegisterExternalExperimentsForTesting({103}, mode);
+  GetSyntheticTrials(registry, &synthetic_trials);
+  EXPECT_EQ(0U, synthetic_trials.size());
+
+  // Case 5: Multiple commas (everything after second comma ignored)
+  registry.RegisterExternalExperimentsForTesting({104}, mode);
+  GetSyntheticTrials(registry, &synthetic_trials);
+  EXPECT_EQ(1U, synthetic_trials.size());
+  EXPECT_TRUE(HasSyntheticTrial(synthetic_trials, "StudyE", "GroupE"));
 }
 
 }  // namespace variations

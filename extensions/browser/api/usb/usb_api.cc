@@ -215,9 +215,9 @@ const char* ConvertTransferStatusToApi(const UsbTransferStatus status) {
   }
 }
 
-base::Value::Dict PopulateConnectionHandle(int handle,
-                                           int vendor_id,
-                                           int product_id) {
+base::DictValue PopulateConnectionHandle(int handle,
+                                         int vendor_id,
+                                         int product_id) {
   ConnectionHandle result;
   result.handle = handle;
   result.vendor_id = vendor_id;
@@ -477,11 +477,11 @@ UsbTransferFunction::UsbTransferFunction() = default;
 UsbTransferFunction::~UsbTransferFunction() = default;
 
 void UsbTransferFunction::OnCompleted(UsbTransferStatus status,
-                                      base::Value::Dict transfer_info) {
+                                      base::DictValue transfer_info) {
   if (status == UsbTransferStatus::COMPLETED) {
     Respond(WithArguments(std::move(transfer_info)));
   } else {
-    base::Value::List error_args;
+    base::ListValue error_args;
     error_args.Append(std::move(transfer_info));
     // Using ErrorWithArguments is discouraged but required to provide the
     // detailed transfer info as the transfer may have partially succeeded.
@@ -493,7 +493,7 @@ void UsbTransferFunction::OnCompleted(UsbTransferStatus status,
 void UsbTransferFunction::OnTransferInCompleted(
     UsbTransferStatus status,
     base::span<const uint8_t> data) {
-  base::Value::Dict transfer_info;
+  base::DictValue transfer_info;
   transfer_info.Set(kResultCodeKey, static_cast<int>(status));
   transfer_info.Set(kDataKey, base::Value(data));
 
@@ -501,7 +501,7 @@ void UsbTransferFunction::OnTransferInCompleted(
 }
 
 void UsbTransferFunction::OnTransferOutCompleted(UsbTransferStatus status) {
-  base::Value::Dict transfer_info;
+  base::DictValue transfer_info;
   transfer_info.Set(kResultCodeKey, static_cast<int>(status));
   transfer_info.Set(kDataKey, base::Value(base::Value::Type::BINARY));
 
@@ -510,7 +510,7 @@ void UsbTransferFunction::OnTransferOutCompleted(UsbTransferStatus status) {
 
 void UsbTransferFunction::OnDisconnect() {
   const auto status = UsbTransferStatus::DISCONNECT;
-  base::Value::Dict transfer_info;
+  base::DictValue transfer_info;
   transfer_info.Set(kResultCodeKey, static_cast<int>(status));
   OnCompleted(status, std::move(transfer_info));
 }
@@ -705,7 +705,7 @@ ExtensionFunction::ResponseAction UsbGetDevicesFunction::Run() {
 
 void UsbGetDevicesFunction::OnGetDevicesComplete(
     std::vector<device::mojom::UsbDeviceInfoPtr> devices) {
-  base::Value::List result;
+  base::ListValue result;
   for (const auto& device : devices) {
     if (device::UsbDeviceFilterMatchesAny(filters_, *device) &&
         HasDevicePermission(*device)) {
@@ -729,7 +729,7 @@ ExtensionFunction::ResponseAction UsbGetUserSelectedDevicesFunction::Run() {
   EXTENSION_FUNCTION_VALIDATE(parameters);
 
   if (!user_gesture()) {
-    return RespondNow(WithArguments(base::Value::List()));
+    return RespondNow(WithArguments(base::ListValue()));
   }
 
   bool multiple = false;
@@ -765,7 +765,7 @@ ExtensionFunction::ResponseAction UsbGetUserSelectedDevicesFunction::Run() {
 
 void UsbGetUserSelectedDevicesFunction::OnDevicesChosen(
     std::vector<device::mojom::UsbDeviceInfoPtr> devices) {
-  base::Value::List result;
+  base::ListValue result;
   auto* device_manager = usb_device_manager();
   DCHECK(device_manager);
 
@@ -807,7 +807,7 @@ ExtensionFunction::ResponseAction UsbGetConfigurationsFunction::Run() {
     return RespondNow(Error(kErrorNoDevice));
   }
 
-  base::Value::List configs;
+  base::ListValue configs;
   uint8_t active_config_value = device_info->active_configuration;
   for (const auto& config : device_info->configurations) {
     DCHECK(config);
@@ -990,7 +990,7 @@ ExtensionFunction::ResponseAction UsbListInterfacesFunction::Run() {
     DCHECK(config);
     if (config->configuration_value == active_config_value) {
       ConfigDescriptor api_config = ConvertConfigDescriptor(*config);
-      base::Value::List result;
+      base::ListValue result;
       for (const auto& interface : api_config.interfaces) {
         result.Append(interface.ToValue());
       }
@@ -1297,7 +1297,7 @@ void UsbIsochronousTransferFunction::OnTransferInCompleted(
     index += packet->transferred_length;
   }
 
-  base::Value::Dict transfer_info;
+  base::DictValue transfer_info;
   transfer_info.Set(kResultCodeKey, base::Value(static_cast<int>(status)));
   transfer_info.Set(kDataKey, base::Value(std::move(buffer)));
   OnCompleted(status, std::move(transfer_info));
@@ -1313,7 +1313,7 @@ void UsbIsochronousTransferFunction::OnTransferOutCompleted(
       status = packet->status;
     }
   }
-  base::Value::Dict transfer_info;
+  base::DictValue transfer_info;
   transfer_info.Set(kResultCodeKey, base::Value(static_cast<int>(status)));
   OnCompleted(status, std::move(transfer_info));
 }
@@ -1341,7 +1341,7 @@ void UsbResetDeviceFunction::OnComplete(bool success) {
   } else {
     ReleaseDeviceResource(parameters_->handle);
 
-    base::Value::List error_args;
+    base::ListValue error_args;
     error_args.Append(false);
     // Using ErrorWithArguments is discouraged but required to maintain
     // compatibility with existing applications.

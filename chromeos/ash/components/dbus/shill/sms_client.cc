@@ -63,7 +63,7 @@ class SMSReceiveHandler {
       return;
 
     if (number_.is_valid() && text_.is_valid() && timestamp_.is_valid()) {
-      base::Value::Dict sms;
+      base::DictValue sms;
       sms.Set(SMSClient::kSMSPropertyNumber, number_.value());
       sms.Set(SMSClient::kSMSPropertyText, text_.value());
       sms.Set(SMSClient::kSMSPropertyTimestamp, timestamp_.value());
@@ -125,7 +125,7 @@ class SMSClientImpl : public SMSClient {
  private:
   void OnSMSReceived(const dbus::ObjectPath& object_path,
                      GetAllCallback callback,
-                     const base::Value::Dict& sms) {
+                     const base::DictValue& sms) {
     sms_receive_handlers_.erase(object_path);
     std::move(callback).Run(sms);
   }

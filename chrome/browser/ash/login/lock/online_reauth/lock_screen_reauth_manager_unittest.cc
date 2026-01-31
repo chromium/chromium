@@ -6,13 +6,17 @@
 
 #include <memory>
 
+#include "ash/constants/ash_features.h"
+#include "ash/constants/ash_pref_names.h"
 #include "ash/login/mock_login_screen_client.h"
 #include "ash/public/cpp/reauth_reason.h"
 #include "ash/test/ash_test_helper.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/test_future.h"
 #include "base/time/time.h"
+#include "base/values.h"
 #include "chrome/browser/ash/login/login_pref_names.h"
 #include "chrome/browser/ash/login/saml/mock_lock_handler.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
@@ -22,8 +26,12 @@
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
+#include "chromeos/ash/components/dbus/userdataauth/fake_userdataauth_client.h"
 #include "chromeos/ash/components/dbus/userdataauth/userdataauth_client.h"
+#include "chromeos/ash/components/login/auth/public/cryptohome_key_constants.h"
 #include "chromeos/ash/components/login/auth/public/user_context.h"
+#include "chromeos/ash/components/osauth/public/auth_parts.h"
+#include "components/account_id/account_id.h"
 #include "components/session_manager/core/session_manager.h"
 #include "components/user_manager/known_user.h"
 #include "components/user_manager/scoped_user_manager.h"
@@ -43,6 +51,8 @@ constexpr base::TimeDelta kSamlOnlineShortDelay = base::Seconds(10);
 
 constexpr char kLockScreenReauthHistogram[] =
     "ChromeOS.LockScreenReauth.LockScreenReauthReason";
+constexpr char kFakePassword[] = "p4ssw07d";
+constexpr char kFakePIN[] = "7008";
 }  // namespace
 
 class LockScreenReauthManagerTest : public testing::Test {
@@ -60,6 +70,11 @@ class LockScreenReauthManagerTest : public testing::Test {
   void SetReauthRequiredBySamlTokenMismatch();
   bool IsReauthRequiredBySamlTokenMismatch();
   bool IsReauthRequiredBySamlTimeLimitPolicy();
+  void MaybeForceReauthOnLockScreen(ReauthReason reason);
+
+  void SetCryptohomePassword(AccountId user, std::string type);
+  void SetCryptohomePin(AccountId user);
+  void ClearAuthFactors(AccountId user);
 
   void LockScreen();
 
@@ -83,6 +98,7 @@ class LockScreenReauthManagerTest : public testing::Test {
   base::test::ScopedFeatureList feature_list_;
   std::unique_ptr<user_manager::KnownUser> known_user_;
   const base::HistogramTester histogram_tester_;
+  base::test::TestFuture<void> auth_configuration_exit_future;
   // `AshTestHelper` makes sure that `SessionManager` is set up in these tests.
   ash::AshTestHelper ash_test_helper_;
 };
@@ -91,6 +107,7 @@ LockScreenReauthManagerTest::LockScreenReauthManagerTest() : manager_(nullptr) {
   UserDataAuthClient::InitializeFake();
   known_user_ = std::make_unique<user_manager::KnownUser>(
       g_browser_process->local_state());
+  feature_list_.InitAndEnableFeature({features::kManagedLocalPinAndPassword});
 }
 
 LockScreenReauthManagerTest::~LockScreenReauthManagerTest() {
@@ -114,6 +131,12 @@ void LockScreenReauthManagerTest::SetUp() {
   // ActiveUser in FakeChromeUserManager needs to be set explicitly.
   fake_user_manager_->SwitchActiveUser(saml_login_account_id1_);
   ASSERT_TRUE(fake_user_manager_->GetActiveUser());
+  FakeUserDataAuthClient::TestApi::Get()->CreatePostponedDirectories();
+  auto account_id =
+      cryptohome::CreateAccountIdentifierFromAccountId(saml_login_account_id1_);
+  FakeUserDataAuthClient::TestApi::Get()->AddExistingUser(
+      std::move(account_id));
+  SetCryptohomePassword(saml_login_account_id1_, kCryptohomeGaiaKeyLabel);
   ash_test_helper_.SetUp();
 }
 
@@ -126,6 +149,8 @@ void LockScreenReauthManagerTest::CreateLockScreenReauthManager() {
   DestroyLockScreenReauthManager();
   manager_ = std::make_unique<LockScreenReauthManager>(primary_profile_);
   manager_->SetClockForTesting(test_environment_.GetMockClock());
+  manager_->SetGetAuthfactorsConfigurationCallbackForTesting(
+      auth_configuration_exit_future.GetRepeatingCallback());
 }
 
 void LockScreenReauthManagerTest::DestroyLockScreenReauthManager() {
@@ -153,11 +178,59 @@ bool LockScreenReauthManagerTest::IsReauthRequiredBySamlTimeLimitPolicy() {
   return manager_->is_reauth_required_by_saml_time_limit_policy_;
 }
 
+void LockScreenReauthManagerTest::SetCryptohomePassword(AccountId user,
+                                                        std::string label) {
+  Key key(kFakePassword);
+  user_data_auth::AuthFactor auth_factor;
+  user_data_auth::AuthInput auth_input;
+
+  auth_factor.set_label(label);
+  auth_factor.set_type(user_data_auth::AUTH_FACTOR_TYPE_PASSWORD);
+
+  auth_input.mutable_password_input()->set_secret(key.GetSecret());
+
+  // Add the password key to the user.
+  FakeUserDataAuthClient::TestApi::Get()->AddAuthFactor(
+      cryptohome::CreateAccountIdentifierFromAccountId(user), auth_factor,
+      auth_input);
+}
+
+void LockScreenReauthManagerTest::SetCryptohomePin(AccountId user) {
+  Key key(kFakePIN);
+
+  user_data_auth::AuthFactor auth_factor;
+  user_data_auth::AuthInput auth_input;
+
+  auth_factor.set_label(ash::kCryptohomePinLabel);
+  auth_factor.set_type(user_data_auth::AUTH_FACTOR_TYPE_PIN);
+
+  auth_input.mutable_pin_input()->set_secret(key.GetSecret());
+
+  // Add the pin to the user.
+  FakeUserDataAuthClient::TestApi::Get()->AddAuthFactor(
+      cryptohome::CreateAccountIdentifierFromAccountId(user), auth_factor,
+      auth_input);
+}
+
+void LockScreenReauthManagerTest::ClearAuthFactors(AccountId user) {
+  FakeUserDataAuthClient::TestApi::Get()->ClearAuthFactors(
+      cryptohome::CreateAccountIdentifierFromAccountId(user));
+}
+
+void LockScreenReauthManagerTest::MaybeForceReauthOnLockScreen(
+    ReauthReason reason) {
+  manager_->MaybeForceReauthOnLockScreen(reason);
+  if (features::IsManagedLocalPinAndPasswordEnabled()) {
+    ASSERT_TRUE(auth_configuration_exit_future.Wait())
+        << "Failed to wait for the auth confiugration exit callback";
+    auth_configuration_exit_future.Clear();
+  }
+}
+
 TEST_F(LockScreenReauthManagerTest, ReauthenticateRequiredByTimelimitPolicy) {
   CreateLockScreenReauthManager();
   fake_user_manager_->SaveForceOnlineSignin(saml_login_account_id1_, true);
-  manager_->MaybeForceReauthOnLockScreen(
-      ReauthReason::kSamlLockScreenReauthPolicy);
+  MaybeForceReauthOnLockScreen(ReauthReason::kSamlLockScreenReauthPolicy);
   EXPECT_TRUE(IsReauthRequiredBySamlTimeLimitPolicy());
 }
 
@@ -166,7 +239,7 @@ TEST_F(LockScreenReauthManagerTest, ReauthenticateResetByToken) {
       prefs::kLockScreenReauthenticationEnabled, true);
   CreateLockScreenReauthManager();
   fake_user_manager_->SaveForceOnlineSignin(saml_login_account_id1_, true);
-  manager_->MaybeForceReauthOnLockScreen(
+  MaybeForceReauthOnLockScreen(
       ReauthReason::kSamlPasswordSyncTokenValidationFailed);
   EXPECT_TRUE(IsReauthRequiredBySamlTokenMismatch());
 }
@@ -182,8 +255,7 @@ TEST_F(LockScreenReauthManagerTest, ReauthenticateSetOnLock) {
       .Times(1);
   LockScreen();
   fake_user_manager_->SaveForceOnlineSignin(saml_login_account_id1_, true);
-  manager_->MaybeForceReauthOnLockScreen(
-      ReauthReason::kSamlLockScreenReauthPolicy);
+  MaybeForceReauthOnLockScreen(ReauthReason::kSamlLockScreenReauthPolicy);
   EXPECT_TRUE(IsReauthRequiredBySamlTimeLimitPolicy());
 }
 
@@ -201,8 +273,7 @@ TEST_F(LockScreenReauthManagerTest, AuthenticateWithIncorrectUser) {
   LockScreen();
   EXPECT_CALL(lock_handler_, Unlock(saml_login_account_id1_)).Times(0);
   fake_user_manager_->SaveForceOnlineSignin(saml_login_account_id1_, true);
-  manager_->MaybeForceReauthOnLockScreen(
-      ReauthReason::kSamlLockScreenReauthPolicy);
+  MaybeForceReauthOnLockScreen(ReauthReason::kSamlLockScreenReauthPolicy);
   EXPECT_TRUE(IsReauthRequiredBySamlTimeLimitPolicy());
   UserContext user_context(user_manager::UserType::kRegular,
                            saml_login_account_id2_);
@@ -236,8 +307,7 @@ TEST_F(LockScreenReauthManagerTest, AuthenticateWithCorrectUser) {
   LockScreen();
   fake_user_manager_->SaveForceOnlineSignin(saml_login_account_id1_, true);
   test_environment_.FastForwardBy(kSamlOnlineShortDelay);
-  manager_->MaybeForceReauthOnLockScreen(
-      ReauthReason::kSamlLockScreenReauthPolicy);
+  MaybeForceReauthOnLockScreen(ReauthReason::kSamlLockScreenReauthPolicy);
   EXPECT_TRUE(IsReauthRequiredBySamlTimeLimitPolicy());
   UserContext user_context(user_manager::UserType::kRegular,
                            saml_login_account_id1_);
@@ -272,8 +342,7 @@ TEST_F(LockScreenReauthManagerTest, FlowTriggeredByPolicyAndInvalidToken) {
   fake_user_manager_->SaveForceOnlineSignin(saml_login_account_id1_, true);
   SetReauthRequiredBySamlTokenMismatch();
   test_environment_.FastForwardBy(kSamlOnlineShortDelay);
-  manager_->MaybeForceReauthOnLockScreen(
-      ReauthReason::kSamlLockScreenReauthPolicy);
+  MaybeForceReauthOnLockScreen(ReauthReason::kSamlLockScreenReauthPolicy);
   EXPECT_TRUE(IsReauthRequiredBySamlTimeLimitPolicy());
   UserContext user_context(user_manager::UserType::kRegular,
                            saml_login_account_id1_);
@@ -302,6 +371,60 @@ TEST_F(LockScreenReauthManagerTest, PolicyNotSet) {
   EXPECT_FALSE(manager_->ShouldPasswordSyncTriggerReauth());
 }
 
+TEST_F(LockScreenReauthManagerTest, ReauthWithLocalPasswordEnabled) {
+  primary_profile_->GetPrefs()->SetBoolean(
+      prefs::kLockScreenReauthenticationEnabled, true);
+  // Remove the online password as an auth factor to test local password only.
+  ClearAuthFactors(saml_login_account_id1_);
+  SetCryptohomePassword(saml_login_account_id1_,
+                        kCryptohomeLocalPasswordKeyLabel);
+  CreateLockScreenReauthManager();
+  LockScreen();
+
+  MaybeForceReauthOnLockScreen(ReauthReason::kSamlLockScreenReauthPolicy);
+
+  EXPECT_FALSE(IsReauthRequiredBySamlTimeLimitPolicy());
+}
+
+TEST_F(LockScreenReauthManagerTest, ReauthWithGaiaPasswordEnabled) {
+  primary_profile_->GetPrefs()->SetBoolean(
+      prefs::kLockScreenReauthenticationEnabled, true);
+  // Online Password is already added as a factor.
+  CreateLockScreenReauthManager();
+  LockScreen();
+
+  MaybeForceReauthOnLockScreen(ReauthReason::kSamlLockScreenReauthPolicy);
+
+  EXPECT_TRUE(IsReauthRequiredBySamlTimeLimitPolicy());
+}
+
+TEST_F(LockScreenReauthManagerTest, ReauthWithPinAndGaiaPasswordEnabled) {
+  primary_profile_->GetPrefs()->SetBoolean(
+      prefs::kLockScreenReauthenticationEnabled, true);
+  // Online Password is already added as a factor.
+  SetCryptohomePin(saml_login_account_id1_);
+  CreateLockScreenReauthManager();
+  LockScreen();
+
+  MaybeForceReauthOnLockScreen(ReauthReason::kSamlLockScreenReauthPolicy);
+
+  EXPECT_TRUE(IsReauthRequiredBySamlTimeLimitPolicy());
+}
+
+TEST_F(LockScreenReauthManagerTest, ReauthWithPinEnabled) {
+  primary_profile_->GetPrefs()->SetBoolean(
+      prefs::kLockScreenReauthenticationEnabled, true);
+  // Remove the online password as an auth factor to test pin only.
+  ClearAuthFactors(saml_login_account_id1_);
+  SetCryptohomePin(saml_login_account_id1_);
+  CreateLockScreenReauthManager();
+  LockScreen();
+
+  MaybeForceReauthOnLockScreen(ReauthReason::kSamlLockScreenReauthPolicy);
+
+  EXPECT_FALSE(IsReauthRequiredBySamlTimeLimitPolicy());
+}
+
 class AutoStartLockScreenReauthManagerTest
     : public LockScreenReauthManagerTest,
       public testing::WithParamInterface<bool> {
@@ -327,8 +450,7 @@ TEST_P(AutoStartLockScreenReauthManagerTest,
   primary_profile_->GetPrefs()->SetBoolean(
       ::prefs::kLockScreenAutoStartOnlineReauth, is_auto_start_enabled);
   CreateLockScreenReauthManager();
-  manager_->MaybeForceReauthOnLockScreen(
-      ReauthReason::kSamlLockScreenReauthPolicy);
+  MaybeForceReauthOnLockScreen(ReauthReason::kSamlLockScreenReauthPolicy);
   EXPECT_CALL(lock_handler_,
               SetAuthType(saml_login_account_id1_,
                           proximity_auth::mojom::AuthType::ONLINE_SIGN_IN,

@@ -59,7 +59,8 @@ AwNetLogsConnection* GetInstance() {
   return instance;
 }
 
-static void JNI_AwNetLogsConnection_StartNetLogs(JNIEnv* env, const jint j_fd) {
+static void JNI_AwNetLogsConnection_StartNetLogs(JNIEnv* env,
+                                                 const int32_t j_fd) {
   GetInstance()->startNetLogBounded(j_fd);
 }
 

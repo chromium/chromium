@@ -86,7 +86,7 @@ class CloudExternalDataManagerBaseTest : public testing::Test {
 
   base::Value ConstructMetadata(const std::string& url,
                                 const std::string& hash);
-  void AddMetadataToWebAppPolicyList(base::Value::List& value,
+  void AddMetadataToWebAppPolicyList(base::ListValue& value,
                                      const std::string& app_url,
                                      const std::string& image_url,
                                      const std::string& image_hash);
@@ -174,18 +174,18 @@ void CloudExternalDataManagerBaseTest::SetUpExternalDataManager() {
 base::Value CloudExternalDataManagerBaseTest::ConstructMetadata(
     const std::string& url,
     const std::string& hash) {
-  base::Value::Dict metadata;
+  base::DictValue metadata;
   metadata.Set("url", url);
   metadata.Set("hash", base::HexEncode(hash));
   return base::Value(std::move(metadata));
 }
 
 void CloudExternalDataManagerBaseTest::AddMetadataToWebAppPolicyList(
-    base::Value::List& list,
+    base::ListValue& list,
     const std::string& app_url,
     const std::string& image_url,
     const std::string& image_hash) {
-  base::Value::Dict app;
+  base::DictValue app;
   app.Set("url", app_url);
   app.Set("custom_icon", ConstructMetadata(image_url, image_hash));
   list.Append(std::move(app));
@@ -777,7 +777,7 @@ TEST_F(CloudExternalDataManagerBaseTest, PolicyChangeWhileDownloadPending) {
 // external data files (every installed app can include one icon).
 TEST_F(CloudExternalDataManagerBaseTest, DownloadMultipleFilesFromPolicy) {
   // Set up the policy value with 2 apps, one icon each:
-  base::Value::List web_app_value;
+  base::ListValue web_app_value;
   AddMetadataToWebAppPolicyList(web_app_value, k10ByteAppURL, k10BytePolicyURL,
                                 crypto::SHA256HashString(k10ByteData));
   AddMetadataToWebAppPolicyList(web_app_value, k20ByteAppURL, k20BytePolicyURL,

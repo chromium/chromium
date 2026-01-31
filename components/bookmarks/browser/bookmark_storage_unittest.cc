@@ -36,8 +36,7 @@ std::unique_ptr<BookmarkModel> CreateModelWithOneBookmark() {
   return model;
 }
 
-std::optional<base::Value::Dict> ReadFileToDict(
-    const base::FilePath& file_path) {
+std::optional<base::DictValue> ReadFileToDict(const base::FilePath& file_path) {
   std::string file_content;
   if (!base::ReadFileToString(file_path, &file_content)) {
     return std::nullopt;
@@ -204,7 +203,7 @@ TEST(BookmarkStorageTest, ShouldSaveAccountNodes) {
   EXPECT_TRUE(base::PathExists(bookmarks_file_path));
   EXPECT_FALSE(base::PathExists(backup_file_path));
 
-  std::optional<base::Value::Dict> file_content =
+  std::optional<base::DictValue> file_content =
       ReadFileToDict(bookmarks_file_path);
   ASSERT_TRUE(file_content.has_value());
   EXPECT_FALSE(file_content->empty());
@@ -230,7 +229,7 @@ TEST(BookmarkStorageTest, ShouldSaveDespiteAccountBookmarksEmpty) {
   storage.ScheduleSave();
   task_environment.FastForwardUntilNoTasksRemain();
 
-  std::optional<base::Value::Dict> file_content =
+  std::optional<base::DictValue> file_content =
       ReadFileToDict(bookmarks_file_path);
   ASSERT_TRUE(file_content.has_value());
   EXPECT_FALSE(file_content->empty());

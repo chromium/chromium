@@ -1,7 +1,7 @@
 Name: io.grpc:grpc-protobuf-lite
 Short Name: grpc-protobuf-lite
-URL: https://repo.maven.apache.org/maven2/io/grpc/grpc-protobuf-lite/1.77.0/grpc-protobuf-lite-1.77.0.jar
-Version: 1.77.0
+URL: https://repo.maven.apache.org/maven2/io/grpc/grpc-protobuf-lite/1.78.0/grpc-protobuf-lite-1.78.0.jar
+Version: 1.78.0
 Update Mechanism: Autoroll
 License: Apache-2.0
 License File: LICENSE

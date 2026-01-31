@@ -44,6 +44,8 @@ source_set("omnibox") {
       "//components/omnibox/browser:mojo_bindings_shared",
       "//components/omnibox/browser:mojo_bindings_shared_cpp_sources",
       "//components/omnibox/common",
+      "//components/page_content_annotations/content",
+      "//components/page_content_annotations/core",
       "//components/search_engines",
       "//content/public/browser",
       "//services/network/public/mojom:url_loader_base",
@@ -183,7 +185,7 @@ source_set("test_support") {
 
   public_deps = [
     "//components/prefs:test_support",
-    "//ui/gfx:native_widget_types",
+    "//ui/gfx:native_ui_types",
     "//ui/gfx/range",
   ]
 
@@ -200,6 +202,7 @@ if (!is_android) {
     sources = [
       "chrome_omnibox_navigation_observer_unittest.cc",
       "clipboard_utils_unittest.cc",
+      "omnibox_context_menu_controller_unittest.cc",
       "omnibox_controller_unittest.cc",
       "omnibox_edit_model_unittest.cc",
       "omnibox_next_features_unittest.cc",

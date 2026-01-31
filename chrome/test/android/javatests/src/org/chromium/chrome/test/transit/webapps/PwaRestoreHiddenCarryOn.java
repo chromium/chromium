@@ -6,11 +6,11 @@ package org.chromium.chrome.test.transit.webapps;
 
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
-import org.chromium.base.test.transit.CarryOn;
+import org.chromium.base.test.transit.State;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 
 /** Ensures the PwaRestore dialog is hidden. */
-public class PwaRestoreHiddenCarryOn extends CarryOn {
+public class PwaRestoreHiddenCarryOn extends State {
     public PwaRestoreHiddenCarryOn() {
         declareActivity(ChromeTabbedActivity.class);
         declareNoView(withText(PwaRestoreCarryOn.RESTORE_YOUR_WEB_APPS));

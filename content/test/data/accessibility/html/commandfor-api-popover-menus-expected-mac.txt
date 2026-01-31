@@ -13,3 +13,5 @@ AXWebArea
 ++++AXGroup AXSubrole=AXApplicationGroup
 ++++++AXMenuItem AXTitle='Submenu1 first item'
 ++++++AXMenuItem AXExpanded=0 AXTitle='Submenu1 second item'
+++++AXMenuBar
+++++++AXMenuItem AXExpanded=0 AXTitle='First item'

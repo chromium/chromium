@@ -135,14 +135,10 @@ SharedQuadState* CreateTestSharedQuadState(
 }
 
 void DeleteSharedImage(
-    scoped_refptr<RasterContextProvider> context_provider,
     scoped_refptr<gpu::ClientSharedImage> client_shared_image,
     const gpu::SyncToken& sync_token,
     bool is_lost) {
-  DCHECK(context_provider);
-  gpu::SharedImageInterface* sii = context_provider->SharedImageInterface();
-  DCHECK(sii);
-  sii->DestroySharedImage(sync_token, std::move(client_shared_image));
+  client_shared_image->UpdateDestructionSyncToken(sync_token);
 }
 
 TransferableResource CreateTestTexture(
@@ -169,8 +165,7 @@ TransferableResource CreateTestTexture(
       client_shared_image, TransferableResource::ResourceSource::kTest,
       sync_token);
   auto release_callback =
-      base::BindOnce(&DeleteSharedImage, std::move(child_context_provider),
-                     std::move(client_shared_image));
+      base::BindOnce(&DeleteSharedImage, std::move(client_shared_image));
   gl_resource.id = child_resource_provider->ImportResource(
       gl_resource, std::move(release_callback));
   return gl_resource;
@@ -178,18 +173,21 @@ TransferableResource CreateTestTexture(
 
 void CreateTestTextureDrawQuad(ResourceId resource_id,
                                const gfx::Rect& rect,
+                               const gfx::Size& resource_size,
                                SkColor4f background_color,
                                const SharedQuadState* shared_state,
                                CompositorRenderPass* render_pass) {
   const bool needs_blending = true;
   const gfx::PointF uv_top_left(0.0f, 0.0f);
-  const gfx::PointF uv_bottom_right(1.0f, 1.0f);
+  const gfx::PointF uv_bottom_right(resource_size.width(),
+                                    resource_size.height());
   const bool nearest_neighbor = false;
   auto* quad = render_pass->CreateAndAppendDrawQuad<TextureDrawQuad>();
 
   quad->SetNew(shared_state, rect, rect, needs_blending, resource_id,
                uv_top_left, uv_bottom_right, background_color, nearest_neighbor,
-               /*secure_output=*/false, gfx::ProtectedVideoType::kClear);
+               /*secure_output=*/false, gfx::ProtectedVideoType::kClear,
+               /*is_tex_coords_normalized=*/false);
 }
 
 void CreateTestTileDrawQuad(ResourceId resource_id,
@@ -388,6 +386,7 @@ class RendererPerfTest : public VizPerfTest {
           gfx::Transform(), kSurfaceRect, pass.get(), gfx::MaskFilterInfo());
 
       CreateTestTextureDrawQuad(resource_list_.back().id, kSurfaceRect,
+                                resource_list_.back().GetSize(),
                                 /*background_color=*/SkColors::kTransparent,
                                 shared_state, pass.get());
 
@@ -426,6 +425,7 @@ class RendererPerfTest : public VizPerfTest {
               resource_ids[i][j],
               gfx::Rect(i * kTextureSize.width(), j * kTextureSize.height(),
                         kTextureSize.width(), kTextureSize.height()),
+              kTextureSize,
               /*background_color=*/SkColors::kTransparent, shared_state,
               pass.get());
         }
@@ -462,6 +462,7 @@ class RendererPerfTest : public VizPerfTest {
               resource_id,
               gfx::Rect(i * kTextureSize.width(), j * kTextureSize.height(),
                         kTextureSize.width(), kTextureSize.height()),
+              kTextureSize,
               /*background_color=*/SkColors::kTransparent, shared_state,
               pass.get());
         }

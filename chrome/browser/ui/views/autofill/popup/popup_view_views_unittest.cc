@@ -4,13 +4,13 @@
 
 #include "chrome/browser/ui/views/autofill/popup/popup_view_views.h"
 
+#include <algorithm>
 #include <memory>
 #include <optional>
 #include <string>
 #include <variant>
 #include <vector>
 
-#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/memory/weak_ptr.h"
 #include "base/strings/string_util.h"
@@ -115,9 +115,9 @@ const std::vector<SuggestionType> kUnclickableSuggestionTypes{
 };
 
 bool IsClickable(SuggestionType id) {
-  DCHECK(base::Contains(kClickableSuggestionTypes, id) ^
-         base::Contains(kUnclickableSuggestionTypes, id));
-  return base::Contains(kClickableSuggestionTypes, id);
+  DCHECK(std::ranges::contains(kClickableSuggestionTypes, id) ^
+         std::ranges::contains(kUnclickableSuggestionTypes, id));
+  return std::ranges::contains(kClickableSuggestionTypes, id);
 }
 
 Suggestion CreateSuggestionWithChildren(
@@ -1389,25 +1389,34 @@ TEST_F(PopupViewViewsTest, RemoveLine) {
                      SuggestionType::kAddressEntry,
                      SuggestionType::kManageAddress});
 
+  MockFunction<void(std::string_view)> check;
+  {
+    InSequence s;
+    EXPECT_CALL(controller(), RemoveSuggestion).Times(0);
+    EXPECT_CALL(check, Call("1: verify no RemoveSuggestion calls"));
+
+    EXPECT_CALL(controller(), RemoveSuggestion).Times(0);
+    EXPECT_CALL(check, Call("2: verify no RemoveSuggestion calls"));
+
+    EXPECT_CALL(controller(),
+                RemoveSuggestion(1, AutofillMetrics::SingleEntryRemovalMethod::
+                                        kKeyboardShiftDeletePressed));
+  }
+
   // If no cell is selected, pressing delete has no effect.
   EXPECT_FALSE(view().GetSelectedCell().has_value());
-  EXPECT_CALL(controller(), RemoveSuggestion).Times(0);
   SimulateKeyPress(ui::VKEY_DELETE, /*shift_modifier_pressed=*/true);
-  Mock::VerifyAndClearExpectations(&controller());
+  check.Call("1: verify no RemoveSuggestion calls");
 
   view().SetSelectedCell(CellIndex{1u, CellType::kContent},
                          PopupCellSelectionSource::kNonUserInput);
   EXPECT_EQ(view().GetSelectedCell(),
             std::make_optional<CellIndex>(1u, CellType::kContent));
 
-  EXPECT_CALL(controller(), RemoveSuggestion).Times(0);
   // If no shift key is pressed, no suggestion is removed.
   SimulateKeyPress(ui::VKEY_DELETE, /*shift_modifier_pressed=*/false);
-  Mock::VerifyAndClearExpectations(&controller());
+  check.Call("2: verify no RemoveSuggestion calls");
 
-  EXPECT_CALL(controller(),
-              RemoveSuggestion(1, AutofillMetrics::SingleEntryRemovalMethod::
-                                      kKeyboardShiftDeletePressed));
   SimulateKeyPress(ui::VKEY_DELETE, /*shift_modifier_pressed=*/true);
 }
 

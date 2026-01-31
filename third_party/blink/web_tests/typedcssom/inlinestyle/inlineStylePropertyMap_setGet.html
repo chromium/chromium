@@ -52,8 +52,8 @@ test(function() {
 }, "Attempting to set an invalid property throws");
 
 test(function() {
-  assert_equals(testElement.attributeStyleMap.get('height'), null);
-}, "Getting a property that isn't set returns null");
+  assert_equals(testElement.attributeStyleMap.get('height'), undefined);
+}, "Getting a property that isn't set returns undefined");
 
 test(function() {
   assert_throws_js(TypeError, function() {

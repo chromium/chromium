@@ -86,12 +86,12 @@ HttpStreamPool::JobController::PendingStream::operator=(PendingStream&&) =
 std::optional<HttpStreamPool::JobController::Alternative>
 HttpStreamPool::JobController::CalculateAlternative(
     HttpStreamPool* pool,
-    const HttpStreamKey& origin_stream_key,
     const HttpStreamPoolRequestInfo& request_info,
     bool enable_alternative_services) {
   const NextProto protocol = request_info.alternative_service_info.protocol();
 
-  if (!enable_alternative_services || protocol == NextProto::kProtoUnknown) {
+  if (!enable_alternative_services || protocol == NextProto::kProtoUnknown ||
+      !request_info.allowed_alpns.Has(protocol)) {
     return std::nullopt;
   }
 
@@ -119,17 +119,17 @@ HttpStreamPool::JobController::CalculateAlternative(
   }
 
   HttpStreamKey stream_key(
-      destination, request_info.privacy_mode, request_info.socket_tag,
-      request_info.network_anonymization_key, request_info.secure_dns_policy,
-      request_info.disable_cert_network_fetches);
+      request_info.destination, request_info.privacy_mode,
+      request_info.socket_tag, request_info.network_anonymization_key,
+      request_info.secure_dns_policy, request_info.disable_cert_network_fetches,
+      request_info.alternative_service_info.alternative_service());
 
   quic::ParsedQuicVersion quic_version = quic::ParsedQuicVersion::Unsupported();
   std::optional<QuicSessionAliasKey> quic_key;
   if (protocol == NextProto::kProtoQUIC) {
     quic_version =
         pool->SelectQuicVersion(request_info.alternative_service_info);
-    quic_key =
-        origin_stream_key.CalculateQuicSessionAliasKey(std::move(destination));
+    quic_key = stream_key.CalculateQuicSessionAliasKey();
   }
 
   return Alternative(std::move(stream_key), protocol, quic_version,
@@ -163,7 +163,6 @@ HttpStreamPool::JobController::JobController(
                          request_info.disable_cert_network_fetches),
       origin_quic_key_(origin_stream_key_.CalculateQuicSessionAliasKey()),
       alternative_(CalculateAlternative(pool,
-                                        origin_stream_key_,
                                         request_info,
                                         enable_alternative_services_)),
       net_log_(request_info.factory_job_controller_net_log),
@@ -173,7 +172,7 @@ HttpStreamPool::JobController::JobController(
               "destination", request_info.destination.Serialize());
   net_log_.BeginEvent(
       NetLogEventType::HTTP_STREAM_POOL_JOB_CONTROLLER_ALIVE, [&] {
-        base::Value::Dict dict;
+        base::DictValue dict;
         dict.Set("origin_destination",
                  origin_stream_key_.destination().Serialize());
         if (alternative_.has_value()) {
@@ -253,7 +252,7 @@ void HttpStreamPool::JobController::HandleStreamRequest(
                                          *alternative_job_result_ == OK;
   if (!alternative_job_succeeded) {
     origin_job_ =
-        pool_->GetOrCreateGroup(origin_stream_key_, origin_quic_key_)
+        pool_->GetOrCreateGroup(origin_stream_key_)
             .CreateJob(this, origin_quic_version_, NextProto::kProtoUnknown,
                        stream_request_->net_log());
     origin_job_->Start();
@@ -298,7 +297,7 @@ int HttpStreamPool::JobController::Preconnect(
     return OK;
   }
 
-  Group& group = pool_->GetOrCreateGroup(origin_stream_key_, origin_quic_key_);
+  Group& group = pool_->GetOrCreateGroup(origin_stream_key_);
   if (group.ActiveStreamSocketCount() >= num_streams) {
     return OK;
   }
@@ -494,8 +493,8 @@ void HttpStreamPool::JobController::SetPriority(RequestPriority priority) {
   }
 }
 
-base::Value::Dict HttpStreamPool::JobController::GetInfoAsValue() const {
-  base::Value::Dict dict;
+base::DictValue HttpStreamPool::JobController::GetInfoAsValue() const {
+  base::DictValue dict;
   dict.Set("origin_stream_key", origin_stream_key_.ToValue());
   if (alternative_.has_value()) {
     dict.Set("alternative_stream_key", alternative_->stream_key.ToValue());
@@ -546,8 +545,7 @@ HttpStreamPool::JobController::MaybeCreateStreamFromExistingSession() {
   }
 
   // Check idle HTTP/1.1 stream.
-  Group& origin_group =
-      pool_->GetOrCreateGroup(origin_stream_key_, origin_quic_key_);
+  Group& origin_group = pool_->GetOrCreateGroup(origin_stream_key_);
   std::unique_ptr<StreamSocket> idle_stream_socket =
       origin_group.GetIdleStreamSocket();
   if (idle_stream_socket) {
@@ -611,8 +609,7 @@ bool HttpStreamPool::JobController::MaybeStartAlternativeJob() {
     return false;
   }
 
-  Group& alternative_group =
-      pool_->GetOrCreateGroup(alternative_->stream_key, alternative_->quic_key);
+  Group& alternative_group = pool_->GetOrCreateGroup(alternative_->stream_key);
 
   // We never put streams that are negotiated to use HTTP/2 as idle streams.
   // Don't start alternative job if there is an idle stream. See
@@ -635,7 +632,7 @@ bool HttpStreamPool::JobController::CanUseExistingQuicSession() {
 }
 
 void HttpStreamPool::JobController::StartAltSvcQuicPreconnect() {
-  Group& group = pool_->GetOrCreateGroup(origin_stream_key_, origin_quic_key_);
+  Group& group = pool_->GetOrCreateGroup(origin_stream_key_);
   if (preconnect_callback_.is_null()) {
     preconnect_callback_ = pool_->GetAltSvcQuicPreconnectCallback();
   }

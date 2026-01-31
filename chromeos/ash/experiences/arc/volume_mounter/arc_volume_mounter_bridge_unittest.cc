@@ -78,7 +78,7 @@ class FakeArcVolumeMounterBridgeDelegate
   }
 
   bool is_watching(const std::string& mount_path) {
-    return base::Contains(watched_removable_media_, mount_path);
+    return watched_removable_media_.contains(mount_path);
   }
 
  private:
@@ -340,7 +340,7 @@ TEST_F(ArcVolumeMounterBridgeTest, OnMountEvent_VisibleToAndroidApps) {
                                            .Build());
 
   // Add the disk to the set of visible external storages from Android apps.
-  base::Value::List visible_external_storages;
+  base::ListValue visible_external_storages;
   visible_external_storages.Append(kFsUUID);
   prefs()->SetList(prefs::kArcVisibleExternalStorages,
                    std::move(visible_external_storages));

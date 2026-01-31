@@ -155,6 +155,10 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC)
 
     // The bitset stores the allocation state of the address pool. 1 bit per
     // super-page: 1 = allocated, 0 = free.
+    // Note that we should not use bitset::set, bitset::reset(size_t), or
+    // bitset::test. These methods can throw std::out_of_range, which can cause
+    // unexpected dependencies and lead to symbol duplication errors during
+    // linking.
     std::bitset<kMaxSuperPagesInPool> alloc_bitset_ PA_GUARDED_BY(lock_);
 
     // An index of a bit in the bitset before which we know for sure there all

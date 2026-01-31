@@ -9,8 +9,8 @@ import android.os.Build;
 import android.os.Build.VERSION_CODES;
 import android.view.View;
 
+import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.base.supplier.NullableObservableSupplier;
-import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.NullUnmarked;
 import org.chromium.build.annotations.Nullable;
@@ -35,7 +35,7 @@ public class EdgeToEdgeControllerFactory {
 
     /**
      * Creates an {@link EdgeToEdgeController} instance using the given activity and {@link
-     * ObservableSupplier} for a Tab.
+     * MonotonicObservableSupplier} for a Tab.
      *
      * @param activity The Android {@link Activity} to allow drawing under System Bars.
      * @param windowAndroid The current {@link WindowAndroid} to allow drawing under System Bars.
@@ -57,7 +57,7 @@ public class EdgeToEdgeControllerFactory {
             NullableObservableSupplier<Tab> tabObservableSupplier,
             EdgeToEdgeManager edgeToEdgeManager,
             BrowserControlsStateProvider browserControlsStateProvider,
-            ObservableSupplier<LayoutManager> layoutManagerSupplier,
+            MonotonicObservableSupplier<LayoutManager> layoutManagerSupplier,
             FullscreenManager fullscreenManager) {
         if (Build.VERSION.SDK_INT < VERSION_CODES.R) return null;
         assert EdgeToEdgeUtils.isEdgeToEdgeBottomChinEnabled(activity);
@@ -144,7 +144,8 @@ public class EdgeToEdgeControllerFactory {
      */
     public static EdgeToEdgePadAdjuster createForViewAndObserveSupplier(
             View view,
-            @Nullable ObservableSupplier<EdgeToEdgeController> edgeToEdgeControllerSupplier) {
+            @Nullable MonotonicObservableSupplier<EdgeToEdgeController>
+                    edgeToEdgeControllerSupplier) {
         return new SimpleEdgeToEdgePadAdjuster(
                 view, edgeToEdgeControllerSupplier, /* enableClipToPadding= */ true);
     }

@@ -4,9 +4,15 @@
 
 #include "net/quic/mock_crypto_client_stream_factory.h"
 
+#include <optional>
+
+#include "base/check.h"
 #include "base/lazy_instance.h"
+#include "base/memory/raw_ptr.h"
+#include "base/run_loop.h"
 #include "net/quic/quic_chromium_client_session.h"
 #include "net/third_party/quiche/src/quiche/quic/core/quic_crypto_client_stream.h"
+#include "testing/gtest/include/gtest/gtest.h"
 
 using std::string;
 
@@ -16,6 +22,21 @@ MockCryptoClientStreamFactory::~MockCryptoClientStreamFactory() = default;
 
 MockCryptoClientStreamFactory::MockCryptoClientStreamFactory()
     : config_(std::make_unique<quic::QuicConfig>()) {}
+
+void MockCryptoClientStreamFactory::WaitForStreams(size_t count) {
+  CHECK(!wait_for_stream_run_loop_);
+  CHECK(!wait_for_stream_count_);
+  if (streams_.size() < count) {
+    base::RunLoop run_loop;
+    wait_for_stream_count_ = count;
+    wait_for_stream_run_loop_ = &run_loop;
+    run_loop.Run();
+    wait_for_stream_count_ = std::nullopt;
+    wait_for_stream_run_loop_ = nullptr;
+  }
+
+  EXPECT_EQ(streams_.size(), count);
+}
 
 void MockCryptoClientStreamFactory::SetConfig(const quic::QuicConfig& config) {
   config_ = std::make_unique<quic::QuicConfig>(config);
@@ -50,6 +71,9 @@ MockCryptoClientStreamFactory::CreateQuicCryptoClientStream(
           server_id, session, nullptr, *config, crypto_config, handshake_mode_,
           proof_verify_details, use_mock_crypter_);
   streams_.push_back(stream->GetWeakPtr());
+  if (streams_.size() == wait_for_stream_count_) {
+    wait_for_stream_run_loop_->Quit();
+  }
   return stream;
 }
 

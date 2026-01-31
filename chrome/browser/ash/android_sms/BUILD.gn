@@ -37,7 +37,6 @@ static_library("android_sms") {
   deps = [
     "//ash/constants",
     "//base",
-    "//chrome/browser/apps/app_service:constants",
     "//chrome/browser/ash/app_list",
     "//chrome/browser/ash/profiles",
     "//chrome/browser/content_settings:content_settings_factory",
@@ -54,6 +53,7 @@ static_library("android_sms") {
     "//components/keyed_service/core",
     "//components/pref_registry",
     "//components/prefs",
+    "//components/services/app_service",
     "//components/services/app_service/public/cpp:app_types",
     "//components/session_manager/core",
     "//components/webapps/browser",

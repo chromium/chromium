@@ -45,6 +45,8 @@ class CSSBorderImageSliceValue : public CSSValue {
 
   bool Equals(const CSSBorderImageSliceValue&) const;
 
+  bool HasRandomFunctions() const;
+
   void TraceAfterDispatch(blink::Visitor*) const;
 
  private:

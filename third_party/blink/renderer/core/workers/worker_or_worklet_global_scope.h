@@ -17,6 +17,7 @@
 #include "third_party/blink/public/platform/cross_variant_mojo_util.h"
 #include "third_party/blink/public/platform/web_content_settings_client.h"
 #include "third_party/blink/public/platform/web_url_request.h"
+#include "third_party/blink/renderer/bindings/core/v8/active_script_wrappable.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/dom/events/event_target.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
@@ -53,7 +54,8 @@ class CORE_EXPORT WorkerOrWorkletGlobalScope
     : public EventTarget,
       public ExecutionContext,
       public scheduler::WorkerScheduler::Delegate,
-      public BackForwardCacheLoaderHelperImpl::Delegate {
+      public BackForwardCacheLoaderHelperImpl::Delegate,
+      public ActiveScriptWrappable<WorkerOrWorkletGlobalScope> {
  public:
   WorkerOrWorkletGlobalScope(
       v8::Isolate*,
@@ -115,6 +117,8 @@ class CORE_EXPORT WorkerOrWorkletGlobalScope
   void CountUse(WebFeature feature) final;
   void CountDeprecation(WebFeature feature) final;
   void CountWebDXFeature(WebDXFeature feature) final;
+
+  bool HasPendingActivity() const override;
 
   // May return nullptr if this global scope is not threaded (i.e.,
   // WorkletGlobalScope for the main thread) or after Dispose() is called.

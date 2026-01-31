@@ -20,7 +20,6 @@
 #include "ash/system/privacy_hub/sensor_disabled_notification_delegate.h"
 #include "base/check_op.h"
 #include "base/command_line.h"
-#include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
@@ -484,8 +483,7 @@ void MediaClientImpl::EnableCustomMediaKeyHandler(
     ui::MediaKeysListener::Delegate* delegate) {
   auto it = media_key_delegates_.find(context);
 
-  DCHECK(!base::Contains(media_key_delegates_, context) ||
-         it->second == delegate);
+  DCHECK(!media_key_delegates_.contains(context) || it->second == delegate);
 
   media_key_delegates_.emplace(context, delegate);
 
@@ -495,7 +493,7 @@ void MediaClientImpl::EnableCustomMediaKeyHandler(
 void MediaClientImpl::DisableCustomMediaKeyHandler(
     content::BrowserContext* context,
     ui::MediaKeysListener::Delegate* delegate) {
-  if (!base::Contains(media_key_delegates_, context)) {
+  if (!media_key_delegates_.contains(context)) {
     return;
   }
 

@@ -58,7 +58,7 @@ TEST_F(CanOfferSigninTest, NoProfile) {
       CanOfferSignin(nullptr, GaiaId("12345"), "user@gmail.com",
                      /*allow_account_from_other_profile=*/false);
   EXPECT_FALSE(error.IsOk());
-  EXPECT_EQ(error, SigninUIError::Other("user@gmail.com"));
+  EXPECT_EQ(error, SigninUIError::NoProfile("user@gmail.com"));
 }
 
 TEST_F(CanOfferSigninTest, Default) {
@@ -104,7 +104,7 @@ TEST_F(CanOfferSigninTest, NoSigninCookies) {
       CanOfferSignin(profile(), GaiaId("12345"), "user@gmail.com",
                      /*allow_account_from_other_profile=*/false);
   EXPECT_FALSE(error.IsOk());
-  EXPECT_EQ(error, SigninUIError::Other("user@gmail.com"));
+  EXPECT_EQ(error, SigninUIError::SigninCookiesDisallowed("user@gmail.com"));
 }
 
 class CanOfferSigninWithSigninToSyncFeatureTest

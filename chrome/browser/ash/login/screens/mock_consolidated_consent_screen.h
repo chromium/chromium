@@ -32,7 +32,7 @@ class MockConsolidatedConsentScreenView final
   MockConsolidatedConsentScreenView();
   ~MockConsolidatedConsentScreenView() override;
 
-  MOCK_METHOD(void, Show, (base::Value::Dict data));
+  MOCK_METHOD(void, Show, (base::DictValue data));
   MOCK_METHOD(void, Hide, ());
   MOCK_METHOD(void, SetUsageMode, (bool enabled, bool managed));
   MOCK_METHOD(void, SetBackupMode, (bool enabled, bool managed));

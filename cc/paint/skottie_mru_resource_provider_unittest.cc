@@ -25,7 +25,6 @@
 namespace cc {
 namespace {
 
-using ::testing::Contains;
 using ::testing::Eq;
 using ::testing::FieldsAre;
 using ::testing::Key;
@@ -56,12 +55,15 @@ class FrameDataStub {
       float t,
       sk_sp<SkImage>& image_out,
       SkSamplingOptions& sampling_out) const {
-    if (asset_to_frame_data_.contains(asset_id)) {
-      image_out = asset_to_frame_data_.at(asset_id).image;
-      sampling_out = asset_to_frame_data_.at(asset_id).sampling;
+    if (auto it = asset_to_frame_data_.find(asset_id);
+        it != asset_to_frame_data_.end()) {
+      image_out = it->second.image;
+      sampling_out = it->second.sampling;
     }
-    return asset_to_result_.contains(asset_id)
-               ? asset_to_result_.at(asset_id)
+
+    auto it = asset_to_result_.find(asset_id);
+    return it != asset_to_result_.end()
+               ? it->second
                : SkottieWrapper::FrameDataFetchResult::kNoUpdate;
   }
 

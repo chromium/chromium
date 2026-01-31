@@ -83,6 +83,9 @@ class ExtensionServiceTestBase : public testing::Test {
     bool profile_is_guest = false;
     bool enable_bookmark_model = false;
     bool enable_install_limiter = false;
+    // If true, a TestSyncService is created and used instead of a
+    // default SyncService.
+    bool use_test_sync_service = false;
 
     TestingProfile::TestingFactories testing_factories;
 

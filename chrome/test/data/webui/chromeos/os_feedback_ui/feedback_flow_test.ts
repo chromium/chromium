@@ -914,7 +914,7 @@ suite('FeedbackFlowTestSuite', () => {
         const descriptionElement = getDescriptionElement();
 
         const feedbackContext = getFeedbackContext();
-        assertEquals(page_url, feedbackContext.pageUrl!.url);
+        assertEquals(page_url, feedbackContext.pageUrl!);
         assertEquals(fakeFeedbackContext.email, feedbackContext.email);
         assertEquals(
             decodeURIComponent(extra_diagnostics),
@@ -930,7 +930,7 @@ suite('FeedbackFlowTestSuite', () => {
 
         // Set the pageUrl in fake feedback context back to its origin value
         // because it's overwritten by the page_url passed from the app.
-        fakeFeedbackContext.pageUrl = {url: 'chrome://tab/'};
+        fakeFeedbackContext.pageUrl = 'chrome://tab/';
       });
 
   // Test that the extra diagnostics gets set, and pageUrl uses the one passed
@@ -1210,7 +1210,7 @@ suite('FeedbackFlowTestSuite', () => {
     const feedbackContext = getFeedbackContext();
     assertEquals('Login', feedbackContext.categoryTag);
     assertEquals('fake extra log data', feedbackContext.extraDiagnostics);
-    assertEquals('chrome://flags/', feedbackContext.pageUrl!.url);
+    assertEquals('chrome://flags/', feedbackContext.pageUrl!);
     assertEquals(
         '{"fake key1":"fake value1"}', feedbackContext.autofillMetadata);
     assertTrue(feedbackContext.fromAutofill);
@@ -1248,7 +1248,7 @@ suite('FeedbackFlowTestSuite', () => {
         const feedbackContext = getFeedbackContext();
         assertEquals('', feedbackContext.categoryTag);
         assertEquals('', feedbackContext.extraDiagnostics);
-        assertEquals('', feedbackContext.pageUrl!.url);
+        assertEquals('', feedbackContext.pageUrl!);
         assertEquals('{}', feedbackContext.autofillMetadata);
         assertFalse(feedbackContext.fromAutofill);
         assertFalse(feedbackContext.settingsSearchDoNotRecordMetrics);

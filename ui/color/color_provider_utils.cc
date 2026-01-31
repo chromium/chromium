@@ -7,7 +7,6 @@
 #include <memory>
 #include <string_view>
 
-#include "base/containers/contains.h"
 #include "base/containers/fixed_flat_map.h"
 #include "base/no_destructor.h"
 #include "base/strings/string_util.h"
@@ -793,7 +792,7 @@ bool IsRendererColorMappingEquivalent(
 
   for (const auto& table : kRendererColorIdMap) {
     // The `renderer_color_map_` should map the full set of renderer color ids.
-    DCHECK(base::Contains(renderer_color_map, table.renderer_color_id));
+    DCHECK(renderer_color_map.contains(table.renderer_color_id));
     if (color_provider->GetColor(table.color_id) !=
         renderer_color_map.at(table.renderer_color_id)) {
       return false;

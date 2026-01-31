@@ -60,13 +60,14 @@ enum EvalResult {
   EVAL_FALSE,  // Opcode condition evaluated false.
   EVAL_ERROR,  // Opcode condition generated an error while evaluating.
   // Action opcode values:
-  ASK_BROKER,   // The target must generate an IPC to the broker. On the broker
-                // side, this means grant access to the resource.
-  DENY_ACCESS,  // No access granted to the resource.
-  SIGNAL_ALARM,    // Unusual activity. Generate an alarm.
-  FAKE_SUCCESS,    // Do not call original function. Just return 'success'.
+  ASK_BROKER,    // The target must generate an IPC to the broker. On the broker
+                 // side, this means grant access to the resource.
+  DENY_ACCESS,   // No access granted to the resource.
+  SIGNAL_ALARM,  // Unusual activity. Generate an alarm.
+  FAKE_SUCCESS,  // Do not call original function. Just return 'success'.
   FAKE_ACCESS_DENIED,  // Do not call original function. Just return 'denied'
                        // and do not do IPC.
+  RETURN_CONST,        // Return a constant value.
 };
 
 // The following are the implemented opcodes. uint16_t purely to pack nicely.
@@ -289,7 +290,8 @@ class OpcodeFactory {
 
   // Creates an OpAction opcode.
   // action: The action to return when Evaluate() is called.
-  PolicyOpcode* MakeOpAction(EvalResult action, uint32_t options);
+  // constant: The constant to return if action is RETURN_CONST.
+  PolicyOpcode* MakeOpAction(EvalResult action, uintptr_t constant);
 
   // Creates an OpNumberMatch opcode.
   // selected_param: index of the input argument. It must be a uint32_t or the

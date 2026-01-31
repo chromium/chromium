@@ -30,7 +30,6 @@
 
 #include "third_party/blink/public/platform/web_string.h"
 
-#include "base/strings/latin1_string_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/string_view_util.h"
 #include "third_party/blink/renderer/platform/wtf/assertions.h"

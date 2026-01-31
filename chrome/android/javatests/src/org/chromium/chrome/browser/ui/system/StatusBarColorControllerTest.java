@@ -9,6 +9,7 @@ import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
+import static org.chromium.chrome.browser.url_constants.UrlConstantResolver.getOriginalNativeNtpUrl;
 import static org.chromium.ui.test.util.ViewUtils.onViewWaiting;
 
 import android.app.Activity;
@@ -59,8 +60,6 @@ import org.chromium.chrome.test.util.NewTabPageTestUtils;
 import org.chromium.chrome.test.util.OmniboxTestUtils;
 import org.chromium.chrome.test.util.browser.ThemeTestUtils;
 import org.chromium.components.browser_ui.styles.ChromeColors;
-import org.chromium.components.browser_ui.widget.scrim.ScrimProperties;
-import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.content_public.browser.test.util.TestTouchUtils;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.test.util.DeviceRestriction;
@@ -176,7 +175,7 @@ public class StatusBarColorControllerTest {
         final @ColorInt int expectedColor =
                 ContextCompat.getColor(activity, R.color.home_surface_background_color);
 
-        mActivityTestRule.loadUrlInNewTab(UrlConstants.NTP_URL, false);
+        mActivityTestRule.loadUrlInNewTab(getOriginalNativeNtpUrl(), false);
         NewTabPageTestUtils.waitForNtpLoaded(activity.getActivityTab());
 
         // Scroll the toolbar up and let it pinned on top.
@@ -471,9 +470,7 @@ public class StatusBarColorControllerTest {
         // Simulate transition completion by resetting the transition overlay state in
         // StatusBarColorController.
         ThreadUtils.runOnUiThreadBlocking(
-                () ->
-                        statusBarColorController.setTabStripColorOverlay(
-                                ScrimProperties.INVALID_COLOR, 0f));
+                () -> statusBarColorController.setTabStripColorOverlay(Color.TRANSPARENT, 0f));
         assertEquals(
                 "Status bar color on tablet should match the default tab strip background when the"
                         + " tab strip is visible.",
@@ -566,6 +563,6 @@ public class StatusBarColorControllerTest {
             StatusBarColorController statusBarColorController, float fraction) {
         @ColorInt int compositeScrimColor = ColorUtils.applyAlphaFloat(mScrimColor, fraction);
         ThreadUtils.runOnUiThreadBlocking(
-                () -> statusBarColorController.setScrimColor(compositeScrimColor));
+                () -> statusBarColorController.onScrimColorChanged(compositeScrimColor));
     }
 }

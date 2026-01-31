@@ -51,7 +51,7 @@ class StatsEventSubscriber final : public RawEventSubscriber {
   // The inner dictionary consists of string - double entries, where the string
   // describes the name of the stat, and the double describes
   // the value of the stat. See CastStat and StatsMap below.
-  base::Value::Dict GetStats() const;
+  base::DictValue GetStats() const;
 
   // Resets stats in this object.
   void Reset();
@@ -185,7 +185,7 @@ class StatsEventSubscriber final : public RawEventSubscriber {
 
     void Reset();
 
-    base::Value::List GetHistogram() const;
+    base::ListValue GetHistogram() const;
 
    private:
     int64_t min_;

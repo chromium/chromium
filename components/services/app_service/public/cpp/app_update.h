@@ -226,7 +226,7 @@ class COMPONENT_EXPORT(APP_UPDATE) AppUpdate {
   std::optional<std::string> SelectedLocale() const;
   bool SelectedLocaleChanged() const;
 
-  std::optional<base::Value::Dict> Extra() const;
+  std::optional<base::DictValue> Extra() const;
   bool ExtraChanged() const;
 
   const App* State() const { return state_.get(); }

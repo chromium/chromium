@@ -4,17 +4,15 @@
 
 #include "third_party/blink/renderer/modules/clipboard/clipboard_change_event_controller.h"
 
-#include <string_view>
-
-#include "base/containers/fixed_flat_set.h"
-#include "third_party/blink/renderer/core/dom/events/event.h"
+#include "third_party/blink/public/mojom/permissions/permission.mojom-blink.h"
+#include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
+#include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/navigator.h"
 #include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/modules/clipboard/clipboard_change_event.h"
-#include "third_party/blink/renderer/platform/bindings/bigint.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
-#include "ui/base/clipboard/clipboard_constants.h"
+#include "third_party/blink/renderer/platform/wtf/functional.h"
 
 namespace blink {
 
@@ -27,17 +25,11 @@ ClipboardChangeEventController::ClipboardChangeEventController(
       event_target_(event_target) {}
 
 void ClipboardChangeEventController::FocusedFrameChanged() {
-  ExecutionContext* context = GetExecutionContext();
-  if (!context) {
-    return;
-  }
-  LocalDOMWindow& window = *To<LocalDOMWindow>(context);
-  if (window.document()->hasFocus()) {
-    if (fire_clipboardchange_on_focus_) {
-      UseCounter::Count(GetExecutionContext(),
-                        WebFeature::kClipboardChangeEventFiredAfterFocusGain);
-      OnClipboardChanged();
-    }
+  if (fire_clipboardchange_on_focus_) {
+    UseCounter::Count(GetExecutionContext(),
+                      WebFeature::kClipboardChangeEventFiredAfterFocusGain);
+    fire_clipboardchange_on_focus_ = false;
+    MaybeDispatchClipboardChangeEvent();
   }
 }
 
@@ -69,9 +61,6 @@ void ClipboardChangeEventController::UnregisterWithDispatcher() {
 
 SystemClipboard* ClipboardChangeEventController::GetSystemClipboard() const {
   ExecutionContext* context = GetExecutionContext();
-  if (!context) {
-    return nullptr;
-  }
   LocalFrame* local_frame = To<LocalDOMWindow>(context)->GetFrame();
   return local_frame->GetSystemClipboard();
 }
@@ -85,29 +74,79 @@ void ClipboardChangeEventController::Trace(Visitor* visitor) const {
 
 void ClipboardChangeEventController::OnClipboardChanged() {
   ExecutionContext* context = GetExecutionContext();
+  // TODO(roraja): revisit if this null check is really required
   if (!context) {
     return;
   }
   LocalDOMWindow& window = *To<LocalDOMWindow>(context);
   CHECK(window.IsSecureContext());  // [SecureContext] in IDL
 
-  if (window.document()->hasFocus()) {
-    fire_clipboardchange_on_focus_ = false;
-    if (event_target_) {
-      const auto& clipboardchange_data =
-          GetSystemClipboard()->GetClipboardChangeEventData();
-      // This notification should never be received if the data is not
-      // available.
-      event_target_->DispatchEvent(*ClipboardChangeEvent::Create(
-          clipboardchange_data.types, clipboardchange_data.change_id));
+  MaybeDispatchClipboardChangeEvent();
+}
 
-      UseCounter::Count(GetExecutionContext(),
-                        WebFeature::kClipboardChangeEventFired);
-    }
-  } else {
+void ClipboardChangeEventController::OnPermissionResult(
+    mojom::blink::PermissionStatus status) {
+  if (status == mojom::blink::PermissionStatus::GRANTED) {
+    // Note: There's a benign race condition where if the clipboard changes
+    // again while waiting for permission, and the window gains sticky
+    // activation, two events may fire (one from activation, one from this
+    // callback). This is acceptable because:
+    // 1. Both events are valid (clipboard changed + user has access)
+    // 2. The race window is very small in practice
+    // 3. Apps already handle multiple clipboard change events
+    // 4. Event data is fetched on-demand, so no stale types/changeID
+    DispatchClipboardChangeEvent();
+  }
+}
+
+void ClipboardChangeEventController::MaybeDispatchClipboardChangeEvent() {
+  ExecutionContext* context = GetExecutionContext();
+  LocalDOMWindow& window = *To<LocalDOMWindow>(context);
+
+  // Check if document has focus
+  if (!window.document()->hasFocus()) {
     // Schedule a clipboardchange event when the page regains focus
     fire_clipboardchange_on_focus_ = true;
+    return;
   }
+
+  fire_clipboardchange_on_focus_ = false;
+
+  // Check for sticky activation first
+  LocalFrame* frame = window.GetFrame();
+  if (frame->HasStickyUserActivation()) {
+    DispatchClipboardChangeEvent();
+    return;
+  }
+
+  // No sticky activation - check clipboard-read permission
+  auto* permission_service = window.document()->GetPermissionService(context);
+  if (!permission_service) {
+    return;
+  }
+
+  auto permission_descriptor = mojom::blink::PermissionDescriptor::New();
+  permission_descriptor->name = mojom::blink::PermissionName::CLIPBOARD_READ;
+
+  permission_service->HasPermission(
+      std::move(permission_descriptor),
+      BindOnce(&ClipboardChangeEventController::OnPermissionResult,
+               WrapWeakPersistent(this)));
+}
+
+void ClipboardChangeEventController::DispatchClipboardChangeEvent() {
+  SystemClipboard* clipboard = GetSystemClipboard();
+  // TODO(roraja): revisit if this null check
+  if (!clipboard) {
+    return;
+  }
+  const auto& clipboardchange_data = clipboard->GetClipboardChangeEventData();
+  // This notification should never be received if the data is not
+  // available.
+  event_target_->DispatchEvent(*ClipboardChangeEvent::Create(
+      clipboardchange_data.types, clipboardchange_data.change_id));
+  UseCounter::Count(GetExecutionContext(),
+                    WebFeature::kClipboardChangeEventFired);
 }
 
 }  // namespace blink

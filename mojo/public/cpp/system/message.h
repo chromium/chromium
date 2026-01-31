@@ -56,8 +56,9 @@ inline MojoResult CreateMessage(ScopedMessageHandle* handle,
   options.flags = flags;
   MojoMessageHandle raw_handle;
   MojoResult rv = MojoCreateMessage(&options, &raw_handle);
-  if (rv != MOJO_RESULT_OK)
+  if (rv != MOJO_RESULT_OK) {
     return rv;
+  }
 
   handle->reset(MessageHandle(raw_handle));
   return MOJO_RESULT_OK;
@@ -79,8 +80,9 @@ inline MojoResult GetMessageData(MessageHandle message,
   MojoResult rv = MojoGetMessageData(message.value(), &options, buffer,
                                      num_bytes, nullptr, &num_handles);
   if (rv != MOJO_RESULT_RESOURCE_EXHAUSTED) {
-    if (handles)
+    if (handles) {
       handles->clear();
+    }
     return rv;
   }
 

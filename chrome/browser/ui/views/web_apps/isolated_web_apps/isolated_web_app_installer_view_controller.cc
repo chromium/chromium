@@ -12,22 +12,23 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/logging.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "base/uuid.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/ash/shelf/isolated_web_app_installer_shelf_item_controller.h"
 #include "chrome/browser/ui/views/web_apps/isolated_web_apps/callback_delayer.h"
 #include "chrome/browser/ui/views/web_apps/isolated_web_apps/isolated_web_app_installer_model.h"
 #include "chrome/browser/ui/views/web_apps/isolated_web_apps/isolated_web_app_installer_view.h"
-#include "chrome/browser/ui/views/web_apps/isolated_web_apps/pref_observer.h"
 #include "chrome/browser/web_applications/icons/icon_masker.h"
 #include "chrome/browser/web_applications/isolated_web_apps/commands/install_isolated_web_app_command.h"
 #include "chrome/browser/web_applications/isolated_web_apps/install/isolated_web_app_install_source.h"
+#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_features.h"
 #include "chrome/browser/web_applications/isolated_web_apps/signed_web_bundle_metadata.h"
 #include "chrome/browser/web_applications/web_app_command_scheduler.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/prefs/pref_service.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/webapps/common/web_app_id.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -42,6 +43,7 @@
 #include "ui/views/window/dialog_delegate.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
+#include "ash/constants/ash_pref_names.h"
 #include "ash/public/cpp/shelf_item.h"
 #include "ash/public/cpp/shelf_model.h"
 #include "ash/public/cpp/shelf_types.h"
@@ -86,6 +88,18 @@ class OnCompleteDialogDelegate : public views::DialogDelegate {
 std::string CreateRandomInstanceId() {
   base::Uuid uuid = base::Uuid::GenerateRandomV4();
   return uuid.AsLowercaseString();
+}
+
+bool IsUserInstallEnabledForProfile(Profile* profile) {
+  if (!web_app::IsIwaUnmanagedInstallEnabled(profile)) {
+    return false;
+  }
+#if BUILDFLAG(IS_CHROMEOS)
+  if (!profile->GetPrefs()->GetBoolean(ash::prefs::kIsolatedWebAppsEnabled)) {
+    return false;
+  }
+#endif  // BUILDFLAG(IS_CHROMEOS)
+  return true;
 }
 
 }  // namespace
@@ -144,26 +158,21 @@ struct IsolatedWebAppInstallerViewController::InstallabilityCheckedVisitor {
 IsolatedWebAppInstallerViewController::IsolatedWebAppInstallerViewController(
     Profile* profile,
     WebAppProvider* web_app_provider,
-    IsolatedWebAppInstallerModel* model,
-    std::unique_ptr<IsolatedWebAppsEnabledPrefObserver> pref_observer)
+    IsolatedWebAppInstallerModel* model)
     : instance_id_(CreateRandomInstanceId()),
       profile_(profile),
       web_app_provider_(web_app_provider),
-      model_(model),
-      view_(nullptr),
-      dialog_delegate_(nullptr),
-      pref_observer_(std::move(pref_observer)) {
+      model_(model) {
   CHECK(profile_);
   CHECK(model_);
   CHECK(web_app_provider_);
-  CHECK(pref_observer_);
-  model_->AddObserver(this);
+
+  pref_change_registrar_.Init(profile_->GetPrefs());
+  model_observation_.Observe(model_);
 }
 
 IsolatedWebAppInstallerViewController::
-    ~IsolatedWebAppInstallerViewController() {
-  model_->RemoveObserver(this);
-}
+    ~IsolatedWebAppInstallerViewController() = default;
 
 void IsolatedWebAppInstallerViewController::Start(
     base::OnceClosure initialized_callback,
@@ -174,15 +183,18 @@ void IsolatedWebAppInstallerViewController::Start(
   CHECK(completion_callback);
   completion_callback_ = std::move(completion_callback);
 
-  // This callback will be posted asynchronously by the |pref_observer_|:
-  // - Once on `Start()` of `pref_observer_`.
-  // - Every time the pref value is changed.
-  IsolatedWebAppsEnabledPrefObserver::PrefChangedCallback
-      pref_changed_callback = base::BindRepeating(
-          &IsolatedWebAppInstallerViewController::OnPrefChanged,
-          weak_ptr_factory_.GetWeakPtr());
+#if BUILDFLAG(IS_CHROMEOS)
+  pref_change_registrar_.Add(
+      ash::prefs::kIsolatedWebAppsEnabled,
+      base::BindRepeating(&IsolatedWebAppInstallerViewController::
+                              OnUserInstallPreconditionsMaybeChanged,
+                          weak_ptr_factory_.GetWeakPtr()));
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
-  pref_observer_->Start(pref_changed_callback);
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, base::BindOnce(&IsolatedWebAppInstallerViewController::
+                                    OnUserInstallPreconditionsMaybeChanged,
+                                weak_ptr_factory_.GetWeakPtr()));
 }
 
 void IsolatedWebAppInstallerViewController::AddOrUpdateWindowToShelf() {
@@ -288,12 +300,9 @@ void IsolatedWebAppInstallerViewController::Show() {
 }
 
 void IsolatedWebAppInstallerViewController::FocusWindow() {
-  if (!window_) {
-    return;
+  if (window_) {
+    views::Widget::GetWidgetForNativeWindow(window_)->Activate();
   }
-
-  auto* widget = views::Widget::GetWidgetForNativeWindow(window_);
-  widget->Activate();
 }
 
 // static
@@ -308,13 +317,12 @@ bool IsolatedWebAppInstallerViewController::OnAcceptWrapper(
 // Returns true if the dialog should be closed.
 bool IsolatedWebAppInstallerViewController::OnAccept() {
   switch (model_->step()) {
-    case IsolatedWebAppInstallerModel::Step::kShowMetadata: {
+    case IsolatedWebAppInstallerModel::Step::kShowMetadata:
       model_->SetDialog(IsolatedWebAppInstallerModel::ConfirmInstallationDialog{
           base::BindRepeating(&IsolatedWebAppInstallerViewController::
                                   OnShowMetadataLearnMoreClicked,
                               base::Unretained(this))});
       return false;
-    }
 
     case IsolatedWebAppInstallerModel::Step::kInstallSuccess: {
       webapps::AppId app_id = model_->bundle_metadata().app_id();
@@ -341,9 +349,8 @@ bool IsolatedWebAppInstallerViewController::OnAccept() {
 void IsolatedWebAppInstallerViewController::OnComplete() {
 #if BUILDFLAG(IS_CHROMEOS)
   ash::ShelfModel* shelf_model = ash::ShelfModel::Get();
-  ash::ShelfID shelf_id = ash::ShelfID(instance_id_);
-  int index = shelf_model->ItemIndexByID(shelf_id);
-  if (-1 != index) {
+  int index = shelf_model->ItemIndexByID(ash::ShelfID(instance_id_));
+  if (index != -1) {
     shelf_model->RemoveItemAt(index);
   }
 #endif  // BUILDFLAG(IS_CHROMEOS)
@@ -360,16 +367,23 @@ void IsolatedWebAppInstallerViewController::Close() {
   }
 }
 
-void IsolatedWebAppInstallerViewController::OnPrefChanged(bool enabled) {
-  if (enabled) {
-    model_->SetStep(IsolatedWebAppInstallerModel::Step::kGetMetadata);
-    model_->SetDialog(std::nullopt);
+void IsolatedWebAppInstallerViewController::
+    OnUserInstallPreconditionsMaybeChanged() {
+  if (IsUserInstallEnabledForProfile(profile_)) {
+    if (model_->step() == IsolatedWebAppInstallerModel::Step::kNone ||
+        model_->step() == IsolatedWebAppInstallerModel::Step::kDisabled ||
+        model_->step() == IsolatedWebAppInstallerModel::Step::kInstall) {
+      model_->SetStep(IsolatedWebAppInstallerModel::Step::kGetMetadata);
+      model_->SetDialog(std::nullopt);
+    }
+
     if (!installability_checker_) {
       callback_delayer_ = std::make_unique<CallbackDelayer>(
           kGetMetadataMinimumDelay, kProgressBarPausePercentage,
           base::BindRepeating(&IsolatedWebAppInstallerViewController::
                                   OnGetMetadataProgressUpdated,
                               weak_ptr_factory_.GetWeakPtr()));
+
       installability_checker_ = InstallabilityChecker::CreateAndStart(
           profile_, web_app_provider_, model_->source(),
           callback_delayer_->StartDelayingCallback(base::BindOnce(
@@ -386,9 +400,12 @@ void IsolatedWebAppInstallerViewController::OnPrefChanged(bool enabled) {
       installability_checker_.reset();
     }
   }
+
   if (!is_initialized_) {
     is_initialized_ = true;
-    std::move(initialized_callback_).Run();
+    if (initialized_callback_) {
+      std::move(initialized_callback_).Run();
+    }
   }
 }
 
@@ -454,6 +471,7 @@ void IsolatedWebAppInstallerViewController::OnChildDialogAccepted() {
           base::BindRepeating(
               &IsolatedWebAppInstallerViewController::OnInstallProgressUpdated,
               weak_ptr_factory_.GetWeakPtr()));
+
       const SignedWebBundleMetadata& metadata = model_->bundle_metadata();
       web_app_provider_->scheduler().InstallIsolatedWebApp(
           metadata.url_info(),
@@ -469,13 +487,13 @@ void IsolatedWebAppInstallerViewController::OnChildDialogAccepted() {
       break;
     }
 
-    case IsolatedWebAppInstallerModel::Step::kInstall:
+    case IsolatedWebAppInstallerModel::Step::kInstall: {
       // A child dialog on the install screen means the installation failed.
       // Accepting the dialog corresponds to the Retry button.
       installability_checker_.reset();
-      pref_observer_->Reset();
-      Start(base::DoNothing(), std::move(completion_callback_));
+      OnUserInstallPreconditionsMaybeChanged();
       break;
+    }
 
     default:
       NOTREACHED();

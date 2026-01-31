@@ -1,0 +1,41 @@
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module gpu.mojom;
+
+// See gpu/command_buffer/common/constants.h
+enum CommandBufferNamespace {
+  INVALID = -1,
+
+  GPU_IO,
+  IN_PROCESS,
+  VIZ_SKIA_OUTPUT_SURFACE,
+  VIZ_SKIA_OUTPUT_SURFACE_NON_DDL,
+  GPU_CHANNEL_SHARED_IMAGE_INTERFACE,
+  WEBNN_CONTEXT_INTERFACE
+};
+
+// See gpu/command_buffer/common/constants.h
+enum Error {
+  kNoError,
+  kInvalidSize,
+  kOutOfBounds,
+  kUnknownCommand,
+  kInvalidArguments,
+  kLostContext,
+  kGenericError,
+  kDeferCommandUntilLater,
+  kDeferLaterCommands,
+};
+
+// See gpu/command_buffer/common/constants.h
+enum ContextLostReason {
+  kGuilty,
+  kInnocent,
+  kUnknown,
+  kOutOfMemory,
+  kMakeCurrentFailed,
+  kGpuChannelLost,
+  kInvalidGpuMessage,
+};

@@ -36,7 +36,7 @@ CreateEventForLegacyFinishedVolumeButtonRoutine(
   return std::make_unique<extensions::Event>(
       extensions::events::OS_DIAGNOSTICS_ON_VOLUME_BUTTON_ROUTINE_FINISHED,
       cx_diag::OnVolumeButtonRoutineFinished::kEventName,
-      base::Value::List().Append(finished_info.ToValue()), browser_context);
+      base::ListValue().Append(finished_info.ToValue()), browser_context);
 }
 
 std::unique_ptr<extensions::Event> GetEventForLegacyFinishedRoutine(
@@ -67,7 +67,7 @@ std::unique_ptr<extensions::Event> GetEventForLegacyFinishedRoutine(
       return std::make_unique<extensions::Event>(
           extensions::events::OS_DIAGNOSTICS_ON_MEMORY_ROUTINE_FINISHED,
           cx_diag::OnMemoryRoutineFinished::kEventName,
-          base::Value::List().Append(finished_info.ToValue()), browser_context);
+          base::ListValue().Append(finished_info.ToValue()), browser_context);
     }
     case crosapi::TelemetryDiagnosticRoutineDetail::Tag::kVolumeButton: {
       // Though unexpected, we should handle it gracefully because the input is
@@ -82,7 +82,7 @@ std::unique_ptr<extensions::Event> GetEventForLegacyFinishedRoutine(
       return std::make_unique<extensions::Event>(
           extensions::events::OS_DIAGNOSTICS_ON_FAN_ROUTINE_FINISHED,
           cx_diag::OnFanRoutineFinished::kEventName,
-          base::Value::List().Append(finished_info.ToValue()), browser_context);
+          base::ListValue().Append(finished_info.ToValue()), browser_context);
     }
     case crosapi::TelemetryDiagnosticRoutineDetail::Tag::kNetworkBandwidth:
     case crosapi::TelemetryDiagnosticRoutineDetail::Tag::kCameraFrameAnalysis:
@@ -102,7 +102,7 @@ std::unique_ptr<extensions::Event> GetEventForFinishedRoutine(
   return std::make_unique<extensions::Event>(
       extensions::events::OS_DIAGNOSTICS_ON_ROUTINE_FINISHED,
       cx_diag::OnRoutineFinished::kEventName,
-      base::Value::List().Append(finished_info.ToValue()), browser_context);
+      base::ListValue().Append(finished_info.ToValue()), browser_context);
 }
 
 }  // namespace
@@ -133,8 +133,7 @@ void DiagnosticRoutineObservation::OnRoutineStateChange(
       event = std::make_unique<extensions::Event>(
           extensions::events::OS_DIAGNOSTICS_ON_ROUTINE_INITIALIZED,
           cx_diag::OnRoutineInitialized::kEventName,
-          base::Value::List().Append(init_info.ToValue()),
-          info_.browser_context);
+          base::ListValue().Append(init_info.ToValue()), info_.browser_context);
       break;
     }
     case crosapi::TelemetryDiagnosticRoutineStateUnion::Tag::kRunning: {
@@ -144,7 +143,7 @@ void DiagnosticRoutineObservation::OnRoutineStateChange(
       event = std::make_unique<extensions::Event>(
           extensions::events::OS_DIAGNOSTICS_ON_ROUTINE_RUNNING,
           cx_diag::OnRoutineRunning::kEventName,
-          base::Value::List().Append(running_info.ToValue()),
+          base::ListValue().Append(running_info.ToValue()),
           info_.browser_context);
       break;
     }
@@ -155,7 +154,7 @@ void DiagnosticRoutineObservation::OnRoutineStateChange(
       event = std::make_unique<extensions::Event>(
           extensions::events::OS_DIAGNOSTICS_ON_ROUTINE_WAITING,
           cx_diag::OnRoutineWaiting::kEventName,
-          base::Value::List().Append(running_info.ToValue()),
+          base::ListValue().Append(running_info.ToValue()),
           info_.browser_context);
       break;
     }

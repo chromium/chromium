@@ -1,0 +1,6 @@
+include_rules = [
+  # keep-sorted start
+  "+components/data_sharing/public",
+  "+components/data_sharing/test_support",
+  # keep-sorted end
+]

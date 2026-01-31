@@ -44,6 +44,15 @@ void MockConfigurationPolicyProvider::UpdateExtensionPolicy(
   WaitForPoliciesUpdated(POLICY_DOMAIN_EXTENSIONS);
 }
 
+void MockConfigurationPolicyProvider::UpdateExtensionInstallPolicy(
+    const PolicyMap& policy) {
+  PolicyBundle bundle;
+  bundle.Get(PolicyNamespace(POLICY_DOMAIN_EXTENSION_INSTALL, std::string())) =
+      policy.Clone();
+  UpdatePolicy(std::move(bundle));
+  WaitForPoliciesUpdated(POLICY_DOMAIN_EXTENSION_INSTALL);
+}
+
 void MockConfigurationPolicyProvider::SetAutoRefresh() {
   EXPECT_CALL(*this, RefreshPolicies(testing::_))
       .WillRepeatedly(Invoke(

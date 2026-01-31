@@ -5,7 +5,6 @@
 #include "chrome/browser/media_galleries/media_galleries_permission_controller.h"
 
 #include "base/base_paths.h"
-#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/path_service.h"
@@ -179,8 +178,8 @@ MediaGalleriesPermissionController::GetSectionEntries(size_t index) const {
   for (auto iter = known_galleries_.begin(); iter != known_galleries_.end();
        ++iter) {
     MediaGalleryPrefId pref_id = GetPrefId(iter->first);
-    if (!base::Contains(forgotten_galleries_, iter->first) &&
-        existing == base::Contains(pref_permitted_galleries_, pref_id)) {
+    if (!forgotten_galleries_.contains(iter->first) &&
+        existing == pref_permitted_galleries_.contains(pref_id)) {
       result.push_back(iter->second);
     }
   }
@@ -245,7 +244,7 @@ void MediaGalleriesPermissionController::DidToggleEntry(
 void MediaGalleriesPermissionController::DidForgetEntry(
     GalleryDialogId gallery_id) {
   if (!new_galleries_.erase(gallery_id)) {
-    DCHECK(base::Contains(known_galleries_, gallery_id));
+    DCHECK(known_galleries_.contains(gallery_id));
     forgotten_galleries_.insert(gallery_id);
   }
   dialog_->UpdateGalleries();
@@ -400,7 +399,7 @@ void MediaGalleriesPermissionController::InitializePermissions() {
   for (auto iter = pref_permitted_galleries_.begin();
        iter != pref_permitted_galleries_.end(); ++iter) {
     GalleryDialogId gallery_id = GetDialogId(*iter);
-    DCHECK(base::Contains(known_galleries_, gallery_id));
+    DCHECK(known_galleries_.contains(gallery_id));
     known_galleries_[gallery_id].selected = true;
   }
 
@@ -417,7 +416,7 @@ void MediaGalleriesPermissionController::SavePermissions() {
   for (GalleryPermissionsMap::const_iterator iter = known_galleries_.begin();
        iter != known_galleries_.end(); ++iter) {
     MediaGalleryPrefId pref_id = GetPrefId(iter->first);
-    if (base::Contains(forgotten_galleries_, iter->first)) {
+    if (forgotten_galleries_.contains(iter->first)) {
       preferences_->ForgetGalleryById(pref_id);
     } else {
       preferences_->SetGalleryPermissionForExtension(*extension_, pref_id,

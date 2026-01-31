@@ -8,18 +8,22 @@
 #include <memory>
 #include <vector>
 
+#include "base/callback_list.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "base/timer/elapsed_timer.h"
+#include "build/build_config.h"
 #include "chrome/browser/glic/fre/glic_fre.mojom.h"
 #include "chrome/browser/glic/host/auth_controller.h"
 #include "chrome/browser/glic/host/glic.mojom.h"
 #include "chrome/browser/shell_integration.h"
 #include "components/tabs/public/tab_interface.h"
-#include "ui/views/widget/widget.h"
 
-class Browser;
+#if !BUILDFLAG(IS_ANDROID)
+#include "ui/views/widget/widget.h"
+#endif
+
 class Profile;
 
 namespace content {
@@ -72,6 +76,10 @@ enum class GlicFreWidgetClosedReason {
 
 // This class owns and manages the glic FRE modal dialog, and is owned by a
 // GlicWindowController.
+//
+// Warning: This class is used both for the FRE dialog and for the Unified
+// FRE which has no dialog. Parts of this class which relate to the dialog
+// are removed on Android.
 class GlicFreController {
  public:
   GlicFreController(const GlicFreController&) = delete;
@@ -79,7 +87,7 @@ class GlicFreController {
 
   GlicFreController(Profile* profile,
                     signin::IdentityManager* identity_manager);
-  ~GlicFreController();
+  virtual ~GlicFreController();
 
   mojom::FreWebUiState GetWebUiState() const { return webui_state_; }
   void WebUiStateChanged(mojom::FreWebUiState new_state);
@@ -87,8 +95,9 @@ class GlicFreController {
   using WebUiStateChangedCallback =
       base::RepeatingCallback<void(mojom::FreWebUiState new_state)>;
 
-  // Registers |callback| to be called whenever the WebUi state changes.
-  base::CallbackListSubscription AddWebUiStateChangedCallback(
+  // Registers |callback| to be called whenever the WebUi state changes. Virtual
+  // for testing.
+  virtual base::CallbackListSubscription AddWebUiStateChangedCallback(
       WebUiStateChangedCallback callback);
 
   // Close any windows and destroy web contents.
@@ -97,10 +106,12 @@ class GlicFreController {
   // Returns whether the FRE dialog should be shown.
   bool ShouldShowFreDialog();
 
+#if !BUILDFLAG(IS_ANDROID)
+
   // Returns whether the FRE dialog can be shown. This function also checks
   // `TabInterface::CanShowModalUI`, which is a mandatory precondition to
   // showing the dialog.
-  bool CanShowFreDialog(Browser* browser);
+  bool CanShowFreDialog(BrowserWindowInterface* bwi);
 
   // Open the new tab page in the browser and show the FRE in that tab if
   // possible.
@@ -109,10 +120,12 @@ class GlicFreController {
 
   // Shows the FRE dialog. This should only be called if `ShouldShowFreDialog`
   // and `CanShowFreDialog` are both satisfied.
-  void ShowFreDialog(Browser* browser, mojom::InvocationSource source);
+  void ShowFreDialog(BrowserWindowInterface* browser,
+                     mojom::InvocationSource source);
 
   // Closes the FRE dialog if it is open on the active tab of `browser`.
-  void DismissFreIfOpenOnActiveTab(Browser* browser);
+  void DismissFreIfOpenOnActiveTab(BrowserWindowInterface* browser);
+#endif
 
   // Closes the FRE dialog and immediately opens a glic window attached to
   // the same browser.
@@ -125,8 +138,7 @@ class GlicFreController {
   // Closes the FRE dialog.
   void DismissFre(mojom::FreWebUiState panel);
 
-  // Used when the native window is closed directly.
-  void CloseWithReason(views::Widget::ClosedReason reason);
+  void CloseWithFreReason(GlicFreWidgetClosedReason reason);
 
   // Re-sync cookies to FRE webview.
   void PrepareForClient(base::OnceCallback<void(bool)> callback);
@@ -193,31 +205,36 @@ class GlicFreController {
   void MarkSidepanelFreShown();
 
  private:
-  FRIEND_TEST_ALL_PREFIXES(GlicFreControllerTest,
-                           UpdateLauncherOnFreCompletion);
-  void ShowFreDialogAfterAuthCheck(base::WeakPtr<Browser> browser,
+#if !BUILDFLAG(IS_ANDROID)
+  // Used when the native window is closed directly.
+  void CloseWithReason(views::Widget::ClosedReason reason);
+  void ShowFreDialogAfterAuthCheck(BrowserWindowInterface* browser,
                                    mojom::InvocationSource source);
-  static void OnCheckIsDefaultBrowserFinished(
-      version_info::Channel channel,
-      shell_integration::DefaultWebClientState state);
+#endif
 
   // Called when the tab showing the FRE dialog is detached.
   void OnTabShowingModalWillDetach(tabs::TabInterface* tab,
                                    tabs::TabInterface::DetachReason reason);
 
+#if !BUILDFLAG(IS_ANDROID)
   void CreateView();
+#endif
 
   raw_ptr<Profile> const profile_;
+#if !BUILDFLAG(IS_ANDROID)
   std::unique_ptr<views::Widget> fre_widget_;
   std::unique_ptr<GlicFreDialogView> fre_view_;
+#endif
   // This is owned by the GlicFreDialogView but we retain a pointer to it so
   // that we can continue to reference it even after `fre_view_` relinquishes
   // ownership to the widget.
   raw_ptr<content::WebContents> web_contents_ = nullptr;
   AuthController auth_controller_;
 
+#if !BUILDFLAG(IS_ANDROID)
   // The invocation source browser.
-  raw_ptr<Browser> source_browser_ = nullptr;
+  raw_ptr<BrowserWindowInterface> source_browser_ = nullptr;
+#endif
 
   // Tracks the tab that the FRE dialog is shown on.
   raw_ptr<tabs::TabInterface> tab_showing_modal_;

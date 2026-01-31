@@ -4,7 +4,6 @@
 
 #import "ios/chrome/browser/home_customization/utils/home_customization_metrics_recorder.h"
 
-#import "base/containers/contains.h"
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"
 #import "components/commerce/core/commerce_feature_list.h"

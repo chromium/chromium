@@ -40,7 +40,6 @@
 #include "ash/wm/wm_constants.h"
 #include "ash/wm/wm_event.h"
 #include "base/containers/adapters.h"
-#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "chromeos/ui/base/app_types.h"
@@ -67,6 +66,7 @@
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
 #include "ui/events/event.h"
+#include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/gfx/geometry/transform_util.h"
@@ -387,10 +387,13 @@ void CloseWidgetForWindow(aura::Window* window) {
   widget->Close();
 }
 
-void InstallResizeHandleWindowTargeterForWindow(aura::Window* window) {
+void InstallResizeHandleWindowTargeterForWindow(
+    aura::Window* window,
+    chromeos::ResizeBorderInsets border_insets) {
+  window->SetProperty(chromeos::kResizeBorderInsets, border_insets);
   window->SetEventTargeter(
       std::make_unique<chromeos::InteriorResizeHandleTargeter>(
-          base::BindRepeating([](const aura::Window* window) {
+          border_insets, base::BindRepeating([](const aura::Window* window) {
             const WindowState* window_state = WindowState::Get(window);
             return window_state ? window_state->GetStateType()
                                 : chromeos::WindowStateType::kDefault;
@@ -483,7 +486,7 @@ void EnsureTransientRoots(
   for (auto it = out_window_list->begin(); it != out_window_list->end();) {
     aura::Window* transient_root = ::wm::GetTransientRoot(*it);
     if (*it != transient_root) {
-      if (base::Contains(*out_window_list, transient_root)) {
+      if (std::ranges::contains(*out_window_list, transient_root)) {
         it = out_window_list->erase(it);
       } else {
         *it = transient_root;

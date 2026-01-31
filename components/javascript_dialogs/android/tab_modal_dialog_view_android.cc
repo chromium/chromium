@@ -75,8 +75,7 @@ void TabModalDialogViewAndroid::Accept(JNIEnv* env,
   delete this;
 }
 
-void TabModalDialogViewAndroid::Cancel(JNIEnv* env,
-                                       jboolean button_clicked) {
+void TabModalDialogViewAndroid::Cancel(JNIEnv* env, bool button_clicked) {
   if (button_clicked) {
     if (callback_on_button_clicked_) {
       std::move(callback_on_button_clicked_).Run(false, std::u16string());

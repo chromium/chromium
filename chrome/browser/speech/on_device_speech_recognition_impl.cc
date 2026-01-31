@@ -4,6 +4,8 @@
 
 #include "chrome/browser/speech/on_device_speech_recognition_impl.h"
 
+#include <algorithm>
+
 #include "base/strings/string_util.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
@@ -28,7 +30,7 @@
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/speech/on_device_speech_recognition_util.h"
 #include "components/optimization_guide/core/model_execution/model_broker_client.h"
-#include "components/optimization_guide/public/mojom/model_broker.mojom-data-view.h"
+#include "components/optimization_guide/public/mojom/model_broker.mojom-shared.h"
 #include "components/soda/soda_util.h"
 
 namespace {
@@ -38,7 +40,7 @@ const char kEnglishLanguageCodeKey[] = "en-US";
 // Returns a boolean indicating whether the language is enabled.
 bool IsLanguageInstallable(std::string_view language_code,
                            bool is_soda_binary_installed) {
-  return base::Contains(
+  return std::ranges::contains(
       speech::SodaInstaller::GetInstance()->GetLiveCaptionEnabledLanguages(),
       language_code);
 }
@@ -164,10 +166,9 @@ void OnDeviceSpeechRecognitionImpl::Install(
 
     // Call `GetSubscriber()` to trigger the download and installation of
     // the model.
-    // TODO(crbug.com/446260680): Use
-    // OnDeviceFeature::kOnDeviceSpeechRecognition.
     model_broker_client_
-        ->GetSubscriber(optimization_guide::mojom::OnDeviceFeature::kPromptApi)
+        ->GetSubscriber(optimization_guide::mojom::OnDeviceFeature::
+                            kOnDeviceSpeechRecognition)
         .WaitForClient(base::BindOnce(
             &OnDeviceSpeechRecognitionImpl::OnModelClientAvailable,
             weak_ptr_factory_.GetWeakPtr()));
@@ -349,11 +350,11 @@ void OnDeviceSpeechRecognitionImpl::SetOnDeviceLanguageDownloaded(
 
   // Initialize a list to store data, if none exists.
   if (!on_device_languages_downloaded_value.is_dict()) {
-    on_device_languages_downloaded_value = base::Value(base::Value::Dict());
+    on_device_languages_downloaded_value = base::Value(base::DictValue());
   }
 
   // Update or initialize the list of targets for the source language.
-  base::Value::List* on_device_languages_downloaded_list =
+  base::ListValue* on_device_languages_downloaded_list =
       on_device_languages_downloaded_value.GetDict().EnsureList(
           kOnDeviceLanguagesDownloadedKey);
   if (!on_device_languages_downloaded_list->contains(language)) {

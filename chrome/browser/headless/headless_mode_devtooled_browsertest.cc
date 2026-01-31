@@ -98,7 +98,7 @@ class HeadlessModeDevToolsClientNavigationTest
         Param("url", embedded_test_server()->GetURL("/hello.html").spec()));
   }
 
-  void OnLoadEventFired(const base::Value::Dict& params) {
+  void OnLoadEventFired(const base::DictValue& params) {
     devtools_client_.SendCommand("Page.disable");
 
     FinishAsyncTest();

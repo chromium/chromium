@@ -12,7 +12,6 @@
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
 #include "chrome/browser/app_mode/app_mode_utils.h"
-#include "chrome/browser/apps/app_service/app_launch_params.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/apps/app_service/browser_app_launcher.h"
@@ -41,6 +40,7 @@
 #include "chromeos/ash/components/network/network_state_handler.h"
 #include "chromeos/ash/components/settings/cros_settings.h"
 #include "chromeos/dbus/power/power_manager_client.h"
+#include "components/services/app_service/public/cpp/app_launch_params.h"
 #include "components/user_manager/user_manager.h"
 #include "components/user_manager/user_names.h"
 #include "components/web_modal/web_contents_modal_dialog_manager.h"
@@ -313,7 +313,7 @@ void ErrorScreen::HideImpl() {
   }
 }
 
-void ErrorScreen::OnUserAction(const base::Value::List& args) {
+void ErrorScreen::OnUserAction(const base::ListValue& args) {
   const std::string& action_id = args[0].GetString();
   if (action_id == kUserActionShowCaptivePortalClicked) {
     ShowCaptivePortal();

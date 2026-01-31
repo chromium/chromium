@@ -128,6 +128,8 @@ class TabDataObserver : public content::WebContentsObserver,
 
   // Subscription to TabInterface detach callback.
   base::CallbackListSubscription tab_detach_subscription_;
+
+  raw_ptr<tabs::TabInterface> tab_ = nullptr;
 };
 
 // Either a focused tab, or an error string.
@@ -170,9 +172,8 @@ int GetTabId(content::WebContents* web_contents);
 // Helper function to extract the Tab url from the current web contents.
 const GURL& GetTabUrl(content::WebContents* web_contents);
 
-// Populates and returns a TabDataPtr from a given WebContents, or null if
-// web_contents is null.
-glic::mojom::TabDataPtr CreateTabData(content::WebContents* web_contents);
+// Populates and returns a TabDataPtr from a given Tab, or null if tab is null.
+glic::mojom::TabDataPtr CreateTabData(tabs::TabInterface* tab);
 
 // Populates and returns a FocusedTabDataPtr from a given FocusedTabData.
 glic::mojom::FocusedTabDataPtr CreateFocusedTabData(

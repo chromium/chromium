@@ -5,7 +5,7 @@
 namespace blink {
 
 struct Op {
-  bool operator==(const Op&) { return true; }
+  bool operator==(const Op&) const { return true; }
 };
 
 struct Op2 {};
@@ -14,7 +14,7 @@ inline bool operator==(const Op2&, const Op2) {
   return true;
 }
 
-}  // namespace
+}  // namespace blink
 
 void G() {
   blink::Op a, b;

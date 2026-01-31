@@ -12,10 +12,12 @@ import compile_java
 from util import server_utils
 
 # Add a check here to cause the suggested fix to be applied while compiling.
-# Use this when trying to enable more checks.
 ERRORPRONE_CHECKS_TO_APPLY = [
     # Be sure to first update "android/errorprone" within
     # build/config/siso/android.star to set "remote": False.
+
+    # Build all targets with:
+    # tools/android/build_all_errorprone.sh
 ]
 
 # Checks to disable in tests.

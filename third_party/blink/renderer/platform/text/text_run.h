@@ -79,11 +79,6 @@ class PLATFORM_EXPORT TextRun final {
   bool Ltr() const { return Direction() == TextDirection::kLtr; }
   bool DirectionalOverride() const { return directional_override_; }
 
-  // Up-converts to UTF-16 as needed and normalizes spaces and Unicode control
-  // characters as per the CSS Text Module Level 3 specification.
-  // https://drafts.csswg.org/css-text-3/#white-space-processing
-  String NormalizedUTF16() const;
-
  private:
   const StringView text_;
 

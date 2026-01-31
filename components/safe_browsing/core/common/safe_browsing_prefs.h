@@ -27,6 +27,10 @@ namespace prefs {
 inline constexpr char kSafeBrowsingCsdPingTimestamps[] =
     "safebrowsing.csd_ping_timestamps";
 
+// A list of times at which intelligent scans were sent.
+inline constexpr char kSafeBrowsingCsdIntelligentScanTimestamps[] =
+    "safebrowsing.csd_intelligent_scan_timestamps";
+
 // Boolean that is true when deep scanning is allowed.
 inline constexpr char kSafeBrowsingDeepScanningEnabled[] =
     "safebrowsing.deep_scanning_enabled";
@@ -203,6 +207,12 @@ inline constexpr char kTailoredSecuritySyncFlowObservedOutcomeUnsetTimestamp[] =
 inline constexpr char kAccountTailoredSecurityShownNotification[] =
     "safebrowsing.aesb_shown_notification";
 
+// Whether a profile has been checked as to whether it should be migrated to
+// the enhanced security bundle. The migration checking is triggered by the
+// kMigrateEnhancedSbUserToEnhancedBundle experiment.
+inline constexpr char kBundledSettingsCheckedMigrateUserToEnhancedBundle[] =
+    "safebrowsing.bundled_settings.checked_migrate_user_to_enhanced_bundle";
+
 // A boolean indicating if Enhanced Protection was enabled in sync with
 // account tailored security. This value will only ever be true if Enhanced
 // Protection is enabled and it was enabled through the Tailored Security flow.
@@ -288,12 +298,26 @@ inline constexpr char kExternalAppRedirectTimestamps[] =
 // the user is in.
 inline constexpr char kSecuritySettingsBundle[] = "safebrowsing.bundle";
 
+// An enum indicating the state of the security settings bundling migration
+// toast. We show this toast to ESB users when migrated to the Enhanced group.
+// See SecuritySettingsBundleToastState for values.
+inline constexpr char kSecuritySettingsBundleMigrationToastState[] =
+    "safebrowsing.bundled_settings.migration_toast_state";
+
 // A boolean indicating whether the user selected on chrome://settings to
 // disable the JavaScript optimizer on unfamiliar sites for improved security.
 // The site-familiarity computation is done locally based on the user's
 // browsing habits.
 inline constexpr char kJavascriptOptimizerBlockedForUnfamiliarSites[] =
     "safebrowsing.javascript_optimizer_blocked_for_unfamiliar_sites";
+
+// A boolean indicating whether this profile had the automatic JavaScript
+// optimizer control enabled by the kMigrateToBlockV8OptimizerOnUnfamiliarSites
+// feature. This preference value is used to ensure that a profile is only
+// migrated one time.
+inline constexpr char
+    kMigratedToJavascriptOptimizerBlockedForUnfamiliarSites[] =
+        "safebrowsing.javascript_optimizer_setting_migration_complete";
 
 }  // namespace prefs
 
@@ -335,6 +359,15 @@ enum TailoredSecurityRetryState {
   NO_RETRY_NEEDED = 3
 };
 
+// Enumerates the state of the toast shown to users migrated to the Enhanced
+// Security Bundle.
+enum class SecuritySettingsBundleToastState {
+  kNone = 0,
+  kPending = 1,
+  kShown = 2,
+  kMaxValue = kShown,
+};
+
 // Enumerates all the places where the Safe Browsing Extended Reporting
 // preference can be changed.
 // These values are written to logs.  New enum values can be added, but
@@ -372,7 +405,8 @@ enum PasswordProtectionTrigger {
 //
 // Must be kept in sync with the SafeBrowsingSetting enum located in
 // chrome/browser/resources/settings/privacy_page/security/security_page.ts
-// and chrome/browser/resources/settings/privacy_page/safe_browsing_types.ts
+// and
+// chrome/browser/resources/settings/privacy_page/security/safe_browsing_types.ts
 // LINT.IfChange(SafeBrowsingState)
 enum class SafeBrowsingState {
   // The user is not opted into Safe Browsing.
@@ -385,7 +419,7 @@ enum class SafeBrowsingState {
   kMaxValue = ENHANCED_PROTECTION,
 };
 
-// LINT.ThenChange(/chrome/browser/resources/settings/privacy_page/safe_browsing_types.ts:SafeBrowsingSetting)
+// LINT.ThenChange(/chrome/browser/resources/settings/privacy_page/security/safe_browsing_types.ts:SafeBrowsingSetting)
 
 // Must be kept in sync with the SecuritySettingsBundle enum located in
 // chrome/browser/resources/settings/privacy_page/security/security_page_v2.js.
@@ -395,6 +429,7 @@ enum class SecuritySettingsBundleSetting {
   STANDARD = 0,
   // Enhanced bundle with most secure settings selected.
   ENHANCED = 1,
+  kMaxValue = ENHANCED,
 };
 // LINT.ThenChange(/chrome/browser/resources/settings/privacy_page/security/security_page_v2.ts:SecuritySettingsBundleSetting)
 
@@ -402,6 +437,10 @@ enum class SecuritySettingsBundleSetting {
 // settings controlled by the bundle from the bundle defaults.
 SecuritySettingsBundleSetting GetSecurityBundleSetting(
     const PrefService& prefs);
+
+// Set the user's security-settings-bundle.
+void SetSecurityBundleSetting(PrefService& prefs,
+                              SecuritySettingsBundleSetting bundle);
 
 SafeBrowsingState GetSafeBrowsingState(const PrefService& prefs);
 
@@ -485,15 +524,14 @@ void SetExtendedReportingPrefForTests(PrefService* prefs, bool value);
 
 // Set the current configuration being used by the Extension Telemetry Service
 void SetExtensionTelemetryConfig(PrefService& prefs,
-                                 const base::Value::Dict& config);
+                                 const base::DictValue& config);
 
 // Get the current configuration being used by the Extension Telemetry Service
-const base::Value::Dict& GetExtensionTelemetryConfig(const PrefService& prefs);
+const base::DictValue& GetExtensionTelemetryConfig(const PrefService& prefs);
 
 // Get the current processed file data stored in the Extension Telemetry
 // Service.
-const base::Value::Dict& GetExtensionTelemetryFileData(
-    const PrefService& prefs);
+const base::DictValue& GetExtensionTelemetryFileData(const PrefService& prefs);
 
 // Sets the last time the Extension Telemetry Service successfully uploaded
 // its data.
@@ -521,12 +559,12 @@ void UpdatePrefsBeforeSecurityInterstitial(PrefService* prefs);
 // Returns a list of preferences to be shown in chrome://safe-browsing. The
 // preferences are passed as an alternating sequence of preference names and
 // values represented as strings.
-base::Value::List GetSafeBrowsingPreferencesList(PrefService* prefs);
+base::ListValue GetSafeBrowsingPreferencesList(PrefService* prefs);
 
 // Returns a list of policies to be shown in chrome://safe-browsing. The
 // policies are passed as an alternating sequence of policy names and
 // values represented as strings.
-base::Value::List GetSafeBrowsingPoliciesList(PrefService* prefs);
+base::ListValue GetSafeBrowsingPoliciesList(PrefService* prefs);
 
 // Returns a list of valid domains that Safe Browsing service trusts.
 void GetSafeBrowsingAllowlistDomainsPref(
@@ -535,7 +573,7 @@ void GetSafeBrowsingAllowlistDomainsPref(
 
 // Helper function to validate and canonicalize a list of domain strings.
 void CanonicalizeDomainList(
-    const base::Value::List& raw_domain_list,
+    const base::ListValue& raw_domain_list,
     std::vector<std::string>* out_canonicalized_domain_list);
 
 // Helper function to determine if |url| matches Safe Browsing allowlist domains

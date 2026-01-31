@@ -5,7 +5,6 @@
 #include "components/password_manager/core/browser/sync/password_sync_bridge.h"
 
 #include <optional>
-#include <unordered_set>
 #include <utility>
 #include <vector>
 
@@ -28,7 +27,6 @@
 #include "components/password_manager/core/common/password_manager_features.h"
 #include "components/sync/base/data_type_histogram.h"
 #include "components/sync/base/deletion_origin.h"
-#include "components/sync/base/features.h"
 #include "components/sync/model/data_type_local_change_processor.h"
 #include "components/sync/model/in_memory_metadata_change_list.h"
 #include "components/sync/model/metadata_batch.h"
@@ -37,10 +35,10 @@
 #include "components/sync/model/mutable_data_batch.h"
 #include "components/sync/model/sync_metadata_store_change_list.h"
 #include "components/sync/protocol/data_type_state_helper.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
 #include "url/gurl.h"
 
 namespace password_manager {
-
 namespace {
 
 // Error values for reading sync metadata.
@@ -69,9 +67,7 @@ enum class SyncMetadataReadError {
   // notes on the server that has been ignored by earlier version of the
   // browser.
   kPasswordsRequireRedownloadForPotentialNotesOnTheServer = 5,
-  // Reading successful, but suspicious bulk deletions were detected. To err on
-  // the side of safety, drop all password sync metadata and start again.
-  kPasswordsCleanupAccidentalBatchDeletions = 6,
+  // kPasswordsCleanupAccidentalBatchDeletions = 6, // Deprecated.
   // Reading successful, but undecryptable passwords were detected. This is
   // logged when the password sync metadata is cleared to force resync in such
   // case.
@@ -225,63 +221,6 @@ bool WereUndecryptablePasswordsDeleted(PasswordStoreSync* password_store_sync) {
          were_undecryptable_logins_deleted.value();
 }
 
-bool DoesPasswordStoreContainAccidentalBatchDeletions(
-    bool is_account_store,
-    const syncer::EntityMetadataMap& metadata_map) {
-  // Accidental batch deletions only ever affected the account store.
-  if (!is_account_store) {
-    return false;
-  }
-  if (!base::FeatureList::IsEnabled(
-          syncer::kSyncPasswordCleanUpAccidentalBatchDeletions)) {
-    return false;
-  }
-
-  std::vector<const sync_pb::EntityMetadata*> deleted_metadata_without_version;
-  for (const auto& metadata_entry : metadata_map) {
-    const auto& metadata = metadata_entry.second;
-    if (metadata->is_deleted() && !metadata->has_deleted_by_version()) {
-      deleted_metadata_without_version.push_back(metadata.get());
-    }
-  }
-  std::sort(deleted_metadata_without_version.begin(),
-            deleted_metadata_without_version.end(),
-            [](const auto& lhs, const auto& rhs) {
-              return lhs->modification_time() < rhs->modification_time();
-            });
-
-  int count_threshold =
-      syncer::kSyncPasswordCleanUpAccidentalBatchDeletionsCountThreshold.Get();
-  CHECK_GT(count_threshold, 0);
-  base::TimeDelta time_threshold =
-      syncer::kSyncPasswordCleanUpAccidentalBatchDeletionsTimeThreshold.Get();
-  CHECK_GT(time_threshold, base::Milliseconds(0));
-
-  // Finds the first window where:
-  // 1) Deletions are within `time_threshold` of each other.
-  // 2) At least `count_threshold` of such deletions.
-  auto batch_deletions_first = deleted_metadata_without_version.begin();
-  auto batch_deletions_last = deleted_metadata_without_version.begin();
-  while (batch_deletions_last != deleted_metadata_without_version.end()) {
-    base::TimeDelta time_delta =
-        base::Milliseconds((*batch_deletions_last)->modification_time() -
-                           (*batch_deletions_first)->modification_time());
-    CHECK_GE(time_delta, base::Milliseconds(0));
-    auto count = std::distance(batch_deletions_first, batch_deletions_last) + 1;
-    CHECK_GT(count, 0);
-    if (time_delta < time_threshold && count >= count_threshold) {
-      return true;
-    } else if (time_delta < time_threshold) {
-      ++batch_deletions_last;
-    } else if (batch_deletions_first !=
-               deleted_metadata_without_version.end()) {
-      ++batch_deletions_first;
-    }
-  }
-
-  return false;
-}
-
 // Returns true if the password store contains undecryptable passwords either
 // because the encryption service failed or failed with partial data.
 bool DoesPasswordStoreContainUndecryptablePasswords(
@@ -360,11 +299,7 @@ void PasswordSyncBridge::Init(
           syncer::PASSWORDS);
       batch = std::make_unique<syncer::MetadataBatch>();
       sync_metadata_read_error = SyncMetadataReadError::kReadFailed;
-    } else if (
-        base::FeatureList::IsEnabled(
-            features::
-                kTriggerPasswordResyncAfterDeletingUndecryptablePasswords) &&
-        WereUndecryptablePasswordsDeleted(password_store_sync_)) {
+    } else if (WereUndecryptablePasswordsDeleted(password_store_sync_)) {
       // Some locally undecryptable credentials were deleted, force initial sync
       // by dropping the sync metadata.
       password_store_sync_->GetMetadataStore()->DeleteAllSyncMetadata(
@@ -398,14 +333,6 @@ void PasswordSyncBridge::Init(
       batch = std::make_unique<syncer::MetadataBatch>();
       sync_metadata_read_error = SyncMetadataReadError::
           kPasswordsRequireRedownloadForPotentialNotesOnTheServer;
-    } else if (DoesPasswordStoreContainAccidentalBatchDeletions(
-                   password_store_sync_->IsAccountStore(),
-                   batch->GetAllMetadata())) {
-      password_store_sync_->GetMetadataStore()->DeleteAllSyncMetadata(
-          syncer::PASSWORDS);
-      batch = std::make_unique<syncer::MetadataBatch>();
-      sync_metadata_read_error =
-          SyncMetadataReadError::kPasswordsCleanupAccidentalBatchDeletions;
     } else if (
         DoesPasswordStoreContainUndecryptablePasswords(password_store_sync_) &&
         ShouldRecoverPasswordsDuringMerge() &&
@@ -570,7 +497,8 @@ std::optional<syncer::ModelError> PasswordSyncBridge::MergeFullSyncData(
     // remote passwords, both should be merged by picking the most recently
     // created version. Password comparison is done by comparing the client
     // tags. In addition, collect the client tags of local passwords.
-    std::unordered_set<std::string> client_tags_of_local_passwords;
+    absl::flat_hash_set<std::string> client_tags_of_local_passwords;
+    client_tags_of_local_passwords.reserve(key_to_local_specifics_map.size());
     for (const auto& [primary_key, local_password_specifics] :
          key_to_local_specifics_map) {
       const std::string storage_key = base::NumberToString(primary_key.value());
@@ -668,8 +596,8 @@ std::optional<syncer::ModelError> PasswordSyncBridge::MergeFullSyncData(
          entity_data) {
       const std::string client_tag_of_remote_password =
           GetClientTag(entity_change->data());
-      if (client_tags_of_local_passwords.count(client_tag_of_remote_password) !=
-          0) {
+      if (client_tags_of_local_passwords.contains(
+              client_tag_of_remote_password)) {
         // Passwords in both local and remote models have been processed
         // already.
         continue;

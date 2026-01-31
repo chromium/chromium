@@ -34,7 +34,7 @@ class DeviceLocalAccountExternalCache : public ExternalCacheDelegate {
   // Callback invoked when the list of cached extensions is updated.
   using ExtensionListCallback =
       base::RepeatingCallback<void(const std::string& user_id,
-                                   base::Value::Dict cached_extensions)>;
+                                   base::DictValue cached_extensions)>;
 
   DeviceLocalAccountExternalCache(ExtensionListCallback ash_loader,
                                   ExtensionListCallback lacros_loader,
@@ -56,21 +56,21 @@ class DeviceLocalAccountExternalCache : public ExternalCacheDelegate {
   // Then when the extensions are downloaded by the cache only the extensions
   // from `ash_extensions` will be sent to the `ash_loader`, and only the
   // extensions from `lacros_extensions` will be sent to the `lacros_loader`.
-  void UpdateExtensionsList(base::Value::Dict ash_extensions,
-                            base::Value::Dict lacros_extensions);
+  void UpdateExtensionsList(base::DictValue ash_extensions,
+                            base::DictValue lacros_extensions);
 
   scoped_refptr<extensions::ExternalLoader> GetExtensionLoader();
 
   // Returns all cached extensions, both the ones meant for Ash and for Lacros.
-  base::Value::Dict GetCachedExtensionsForTesting() const;
+  base::DictValue GetCachedExtensionsForTesting() const;
 
   // Pretends the external cache responded to `OnExtensionListUpdated` with the
   // given list of cached/downloaded extensions.
-  void SetCacheResponseForTesting(const base::Value::Dict& cached_extensions);
+  void SetCacheResponseForTesting(const base::DictValue& cached_extensions);
 
  private:
   // `ExternalCacheDelegate`:
-  void OnExtensionListsUpdated(const base::Value::Dict& prefs) override;
+  void OnExtensionListsUpdated(const base::DictValue& prefs) override;
   bool IsRollbackAllowed() const override;
   bool CanRollbackNow() const override;
 

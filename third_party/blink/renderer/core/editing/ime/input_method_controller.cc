@@ -33,6 +33,7 @@
 #include "third_party/blink/public/mojom/input/focus_type.mojom-blink.h"
 #include "third_party/blink/public/web/web_frame_widget.h"
 #include "third_party/blink/public/web/web_local_frame.h"
+#include "third_party/blink/renderer/core/accessibility/ax_object_cache.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/dom_node_ids.h"
 #include "third_party/blink/renderer/core/dom/element.h"
@@ -482,8 +483,10 @@ void InputMethodController::InsertTextDuringCompositionWithEvents(
       if (text.empty())
         TypingCommand::DeleteSelection(*frame.GetDocument(), 0);
       frame.GetDocument()->UpdateStyleAndLayout(DocumentUpdateReason::kEditing);
-      TypingCommand::InsertText(*frame.GetDocument(), text, options,
-                                composition_type, is_incremental_insertion);
+      TypingCommand::InsertText(
+          *frame.GetDocument(), text, options,
+          EditCommand::PasswordEchoBehavior::kEchoIfPasswordEchoTouchEnabled,
+          composition_type, is_incremental_insertion);
       break;
     case TypingCommand::TextCompositionType::kTextCompositionCancel:
       // TODO(editing-dev): Use TypingCommand::insertText after TextEvent was
@@ -689,12 +692,25 @@ bool InputMethodController::CommitText(
     const String& text,
     const Vector<ImeTextSpan>& ime_text_spans,
     int relative_caret_position) {
+  bool result;
   if (HasComposition()) {
-    return ReplaceCompositionAndMoveCaret(text, relative_caret_position,
-                                          ime_text_spans);
+    result = ReplaceCompositionAndMoveCaret(text, relative_caret_position,
+                                            ime_text_spans);
+  } else {
+    result =
+        InsertTextAndMoveCaret(text, relative_caret_position, ime_text_spans);
   }
 
-  return InsertTextAndMoveCaret(text, relative_caret_position, ime_text_spans);
+  // 'compositionend' event handler could remove current frame.
+  if (result && IsAvailable()) {
+    if (Node* focused_element = GetDocument().FocusedElement()) {
+      if (AXObjectCache* cache = GetDocument().ExistingAXObjectCache()) {
+        cache->HandleCommitText(focused_element, text.length());
+      }
+    }
+  }
+
+  return result;
 }
 
 bool InputMethodController::ReplaceTextAndKeepSelection(const String& text,
@@ -850,6 +866,8 @@ void InputMethodController::AddImeTextSpans(
                 .SetBackgroundColor(ime_text_span.BackgroundColor())
                 .SetRemoveOnFinishComposing(
                     ime_text_span.NeedsRemovalOnFinishComposing())
+                .SetShouldHideSuggestionMenu(
+                    ime_text_span.ShouldHideSuggestionMenu())
                 .Build());
         break;
     }
@@ -981,7 +999,8 @@ void InputMethodController::SetComposition(
     const String& text,
     const Vector<ImeTextSpan>& ime_text_spans,
     int selection_start,
-    int selection_end) {
+    int selection_end,
+    mojom::blink::ImeState ime_state) {
   RevealSelectionScope reveal_selection_scope(GetFrame());
 
   // Updates styles before setting selection for composition to prevent
@@ -1104,6 +1123,11 @@ void InputMethodController::SetComposition(
     composition_range_ = Range::Create(GetDocument());
   composition_range_->setStart(anchor_node, anchor_offset);
   composition_range_->setEnd(focus_node, focus_offset);
+  if (Node* focused_element = GetDocument().FocusedElement()) {
+    if (AXObjectCache* cache = GetDocument().ExistingAXObjectCache()) {
+      cache->HandleSetComposition(focused_element, ime_state);
+    }
+  }
 
   if (anchor_node->GetLayoutObject()) {
     anchor_node->GetLayoutObject()->SetShouldDoFullPaintInvalidation();
@@ -1210,6 +1234,12 @@ void InputMethodController::SetCompositionFromExistingText(
     composition_range_ = Range::Create(GetDocument());
   composition_range_->setStart(range.StartPosition());
   composition_range_->setEnd(range.EndPosition());
+  if (Node* focused_element = GetDocument().FocusedElement()) {
+    if (AXObjectCache* cache = GetDocument().ExistingAXObjectCache()) {
+      cache->HandleSetComposition(focused_element,
+                                  mojom::blink::ImeState::kNone);
+    }
+  }
 
   DispatchCompositionUpdateEvent(GetFrame(), ComposingText());
 }

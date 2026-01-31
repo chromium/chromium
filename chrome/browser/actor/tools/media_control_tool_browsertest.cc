@@ -75,8 +75,14 @@ IN_PROC_BROWSER_TEST_F(ActorMediaControlToolBrowserTest, SeekMedia) {
   // Seek the media.
   ActResultFuture result;
   std::unique_ptr<ToolRequest> request =
-      MakeMediaControlRequest(*active_tab(), SeekMedia(1000000));
-  actor_task().Act(ToRequestList(request), result.GetCallback());
+      MakeMediaControlRequest(*active_tab(), SeekMedia(1000));
+  std::unique_ptr<ToolRequest> request_negative_time =
+      MakeMediaControlRequest(*active_tab(), SeekMedia(-1000));
+  std::unique_ptr<ToolRequest> request_unreachable_time =
+      MakeMediaControlRequest(*active_tab(), SeekMedia(10000));
+  actor_task().Act(
+      ToRequestList(request, request_negative_time, request_unreachable_time),
+      result.GetCallback());
   ExpectOkResult(result);
   EXPECT_EQ("seek 1", content::EvalJs(web_contents(), "event_log.join(',')"));
 }

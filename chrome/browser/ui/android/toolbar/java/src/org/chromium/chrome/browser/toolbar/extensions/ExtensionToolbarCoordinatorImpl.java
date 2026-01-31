@@ -19,6 +19,7 @@ import org.chromium.chrome.browser.tabmodel.TabCreator;
 import org.chromium.chrome.browser.theme.ThemeColorProvider;
 import org.chromium.chrome.browser.ui.browser_window.ChromeAndroidTask;
 import org.chromium.chrome.browser.ui.extensions.ExtensionActionsBridge;
+import org.chromium.chrome.browser.ui.extensions.ExtensionsToolbarBridge;
 import org.chromium.chrome.browser.ui.extensions.R;
 import org.chromium.ui.base.WindowAndroid;
 
@@ -28,7 +29,10 @@ import org.chromium.ui.base.WindowAndroid;
 public class ExtensionToolbarCoordinatorImpl implements ExtensionToolbarCoordinator {
     private final @Nullable LifetimeAssert mLifetimeAssert = LifetimeAssert.create(this);
 
-    private ChromeAndroidTask mTask;
+    // TODO(crbug.com/473396591): Remove once {link ExtensionActionsBridge} is deprecated.
+    private ExtensionActionsBridge mBridge;
+
+    private ExtensionsToolbarBridge mExtensionsToolbarBridge;
     private ExtensionActionListCoordinator mExtensionActionListCoordinator;
     private ExtensionsMenuCoordinator mExtensionsMenuCoordinator;
 
@@ -41,16 +45,21 @@ public class ExtensionToolbarCoordinatorImpl implements ExtensionToolbarCoordina
             NullableObservableSupplier<Tab> currentTabSupplier,
             TabCreator tabCreator,
             ThemeColorProvider themeColorProvider) {
-        mTask = task;
+        mBridge = new ExtensionActionsBridge(task);
+
         extensionToolbarStub.setLayoutResource(R.layout.extension_toolbar_container);
         LinearLayout container = (LinearLayout) extensionToolbarStub.inflate();
+
+        mExtensionsToolbarBridge = new ExtensionsToolbarBridge(task);
+
         mExtensionActionListCoordinator =
                 new ExtensionActionListCoordinator(
                         context,
                         container.findViewById(R.id.extension_action_list),
                         windowAndroid,
                         task,
-                        currentTabSupplier);
+                        currentTabSupplier,
+                        mExtensionsToolbarBridge);
         mExtensionsMenuCoordinator =
                 new ExtensionsMenuCoordinator(
                         context,
@@ -65,6 +74,8 @@ public class ExtensionToolbarCoordinatorImpl implements ExtensionToolbarCoordina
     public void destroy() {
         mExtensionsMenuCoordinator.destroy();
         mExtensionActionListCoordinator.destroy();
+        mExtensionsToolbarBridge.destroy();
+        mBridge.destroy();
         LifetimeAssert.setSafeToGc(mLifetimeAssert, true);
     }
 
@@ -75,12 +86,7 @@ public class ExtensionToolbarCoordinatorImpl implements ExtensionToolbarCoordina
             return false;
         }
 
-        ExtensionActionsBridge bridge = ExtensionActionsBridge.get(mTask);
-        if (bridge == null) {
-            return false;
-        }
-
-        ExtensionActionsBridge.HandleKeyEventResult result = bridge.handleKeyDownEvent(event);
+        ExtensionActionsBridge.HandleKeyEventResult result = mBridge.handleKeyDownEvent(event);
         if (result.handled) {
             return true;
         }

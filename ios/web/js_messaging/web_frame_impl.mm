@@ -35,9 +35,8 @@ namespace {
 // Creates a JavaScript string for executing the function
 // __gCrWeb.callFunctionInGcrWeb with parameters api_name, func_or_prop_name and
 // args.
-NSString* CreateFunctionCallWithParameters(
-    const std::string& name,
-    const base::Value::List& parameters) {
+NSString* CreateFunctionCallWithParameters(const std::string& name,
+                                           const base::ListValue& parameters) {
   NSMutableArray* parameter_strings = [[NSMutableArray alloc] init];
 
   for (const auto& value : parameters) {
@@ -132,7 +131,7 @@ BrowserState* WebFrameImpl::GetBrowserState() {
 
 bool WebFrameImpl::CallJavaScriptFunctionInContentWorld(
     const std::string& name,
-    const base::Value::List& parameters,
+    const base::ListValue& parameters,
     JavaScriptContentWorld* content_world,
     bool reply_with_result) {
   int message_id = next_message_id_;
@@ -147,7 +146,7 @@ bool WebFrameImpl::CallJavaScriptFunctionInContentWorld(
 }
 
 bool WebFrameImpl::CallJavaScriptFunction(const std::string& name,
-                                          const base::Value::List& parameters) {
+                                          const base::ListValue& parameters) {
   JavaScriptContentWorld* content_world =
       JavaScriptFeatureManager::GetContentWorldForBrowserState(
           content_world_, GetBrowserState());
@@ -158,7 +157,7 @@ bool WebFrameImpl::CallJavaScriptFunction(const std::string& name,
 
 bool WebFrameImpl::CallJavaScriptFunctionInContentWorld(
     const std::string& name,
-    const base::Value::List& parameters,
+    const base::ListValue& parameters,
     JavaScriptContentWorld* content_world) {
   return CallJavaScriptFunctionInContentWorld(name, parameters, content_world,
                                               /*reply_with_result=*/false);
@@ -166,7 +165,7 @@ bool WebFrameImpl::CallJavaScriptFunctionInContentWorld(
 
 bool WebFrameImpl::CallJavaScriptFunction(
     const std::string& name,
-    const base::Value::List& parameters,
+    const base::ListValue& parameters,
     base::OnceCallback<void(const base::Value*)> callback,
     base::TimeDelta timeout) {
   JavaScriptContentWorld* content_world =
@@ -178,7 +177,7 @@ bool WebFrameImpl::CallJavaScriptFunction(
 
 bool WebFrameImpl::CallJavaScriptFunctionInContentWorld(
     const std::string& name,
-    const base::Value::List& parameters,
+    const base::ListValue& parameters,
     JavaScriptContentWorld* content_world,
     base::OnceCallback<void(const base::Value*)> callback,
     base::TimeDelta timeout) {
@@ -290,19 +289,13 @@ void WebFrameImpl::LogScriptWarning(NSString* script, NSError* error) {
         << "JavaScript error occurred with kAssertOnJavaScriptErrors enabled.";
   }
 
-  UMA_HISTOGRAM_BOOLEAN("IOS.JavaScript.ScriptExecutionFailed", true);
-
-  if (!base::FeatureList::IsEnabled(features::kLogJavaScriptErrors) &&
-      !base::FeatureList::IsEnabled(features::kLogCrWebJavaScriptErrors)) {
-    return;
-  }
-
   // Do not log invalid target frame errors. This error means that the frame is
   // no longer valid. This is an expected failure state as native code only has
   // an outdated view of the web frames (updated asyncronously via JS messages
   // or navigation callbacks).
   if (error.domain == WKErrorDomain &&
       error.code == WKErrorJavaScriptInvalidFrameTarget) {
+    UMA_HISTOGRAM_BOOLEAN("IOS.JavaScript.InterestingScriptError", false);
     return;
   }
 
@@ -310,6 +303,13 @@ void WebFrameImpl::LogScriptWarning(NSString* script, NSError* error) {
   // this as an error as it is an expected case.
   if (error.domain == WKErrorDomain &&
       [kCannotExecuteJSInDocumentErrorMessage isEqualToString:ns_exception]) {
+    UMA_HISTOGRAM_BOOLEAN("IOS.JavaScript.InterestingScriptError", false);
+    return;
+  }
+
+  UMA_HISTOGRAM_BOOLEAN("IOS.JavaScript.InterestingScriptError", true);
+
+  if (!base::FeatureList::IsEnabled(features::kLogCrWebJavaScriptErrors)) {
     return;
   }
 
@@ -325,7 +325,7 @@ void WebFrameImpl::LogScriptWarning(NSString* script, NSError* error) {
 bool WebFrameImpl::ExecuteJavaScriptFunction(
     JavaScriptContentWorld* content_world,
     const std::string& name,
-    const base::Value::List& parameters,
+    const base::ListValue& parameters,
     int message_id,
     bool reply_with_result) {
   DCHECK(content_world);

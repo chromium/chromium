@@ -21,8 +21,8 @@ import androidx.annotation.VisibleForTesting;
 import org.chromium.base.Callback;
 import org.chromium.base.CallbackController;
 import org.chromium.base.ObserverList;
+import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.base.supplier.NullableObservableSupplier;
-import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.build.annotations.EnsuresNonNullIf;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -48,7 +48,6 @@ import org.chromium.chrome.browser.tabmodel.TabModelSelectorObserver;
 import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeController;
 import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeUtils;
 import org.chromium.chrome.browser.ui.edge_to_edge.NavigationBarColorProvider;
-import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.ui.edge_to_edge.EdgeToEdgeSupplier.ChangeObserver;
@@ -56,8 +55,6 @@ import org.chromium.ui.edge_to_edge.EdgeToEdgeSystemBarColorHelper;
 import org.chromium.ui.insets.InsetObserver;
 import org.chromium.ui.interpolators.Interpolators;
 import org.chromium.ui.util.ColorUtils;
-
-import java.util.function.Supplier;
 
 /** Controls the bottom system navigation bar color for the provided {@link Window}. */
 @NullMarked
@@ -74,8 +71,8 @@ class TabbedNavigationBarColorController
     private final @Nullable TabModelSelectorObserver mTabModelSelectorObserver;
     private final Callback<TabModel> mCurrentTabModelObserver;
     private final FullscreenManager.@Nullable Observer mFullscreenObserver;
-    private final ObservableSupplier<EdgeToEdgeController> mEdgeToEdgeControllerSupplier;
-    private final ObservableSupplier<Integer> mOverviewColorSupplier;
+    private final MonotonicObservableSupplier<EdgeToEdgeController> mEdgeToEdgeControllerSupplier;
+    private final MonotonicObservableSupplier<Integer> mOverviewColorSupplier;
     private final Callback<Integer> mOnOverviewColorChanged = color -> updateNavigationBarColor();
     private final Callback<EdgeToEdgeController> mEdgeToEdgeRegisterChangeObserverCallback;
     private EdgeToEdgeSystemBarColorHelper mEdgeToEdgeSystemBarColorHelper;
@@ -118,7 +115,7 @@ class TabbedNavigationBarColorController
      * @param context Used to load resources.
      * @param tabModelSelector The {@link TabModelSelector} used to determine which tab model is
      *     selected.
-     * @param layoutManagerSupplier An {@link ObservableSupplier} for the {@link LayoutManager}
+     * @param layoutManagerSupplier An {@link MonotonicObservableSupplier} for the {@link LayoutManager}
      *     associated with the containing activity.
      * @param fullscreenManager The {@link FullscreenManager} used to determine if fullscreen is
      *     enabled.
@@ -129,8 +126,6 @@ class TabbedNavigationBarColorController
      *     checking the state of the bottom browser controls.
      * @param browserControlsStateProvider A {@link BrowserControlsStateProvider} to watch for
      *     changes to the browser controls.
-     * @param snackbarManagerSupplier Supplies a {@link SnackbarManager} to watch for snackbars
-     *     being shown.
      * @param contextualSearchManagerSupplier Supplies a {@link ContextualSearchManager} to watch
      *     for changes to contextual search and the overlay panel.
      * @param bottomSheetController A {@link BottomSheetController} to interact with and watch for
@@ -146,17 +141,16 @@ class TabbedNavigationBarColorController
     TabbedNavigationBarColorController(
             Context context,
             TabModelSelector tabModelSelector,
-            ObservableSupplier<LayoutManager> layoutManagerSupplier,
+            MonotonicObservableSupplier<LayoutManager> layoutManagerSupplier,
             FullscreenManager fullscreenManager,
-            ObservableSupplier<EdgeToEdgeController> edgeToEdgeControllerSupplier,
+            MonotonicObservableSupplier<EdgeToEdgeController> edgeToEdgeControllerSupplier,
             BottomControlsStacker bottomControlsStacker,
             BrowserControlsStateProvider browserControlsStateProvider,
-            Supplier<SnackbarManager> snackbarManagerSupplier,
             NullableObservableSupplier<ContextualSearchManager> contextualSearchManagerSupplier,
             BottomSheetController bottomSheetController,
             @Nullable OmniboxSuggestionsVisualState omniboxSuggestionsVisualState,
             @Nullable ManualFillingComponent manualFillingComponent,
-            ObservableSupplier<Integer> overviewColorSupplier,
+            MonotonicObservableSupplier<Integer> overviewColorSupplier,
             InsetObserver insetObserver,
             EdgeToEdgeSystemBarColorHelper edgeToEdgeSystemBarColorHelper) {
         this(
@@ -170,7 +164,6 @@ class TabbedNavigationBarColorController
                 new BottomAttachedUiObserver(
                         bottomControlsStacker,
                         browserControlsStateProvider,
-                        snackbarManagerSupplier.get(),
                         contextualSearchManagerSupplier,
                         bottomSheetController,
                         omniboxSuggestionsVisualState,
@@ -182,10 +175,10 @@ class TabbedNavigationBarColorController
     TabbedNavigationBarColorController(
             Context context,
             TabModelSelector tabModelSelector,
-            ObservableSupplier<LayoutManager> layoutManagerSupplier,
+            MonotonicObservableSupplier<LayoutManager> layoutManagerSupplier,
             FullscreenManager fullscreenManager,
-            ObservableSupplier<EdgeToEdgeController> edgeToEdgeControllerSupplier,
-            ObservableSupplier<Integer> overviewColorSupplier,
+            MonotonicObservableSupplier<EdgeToEdgeController> edgeToEdgeControllerSupplier,
+            MonotonicObservableSupplier<Integer> overviewColorSupplier,
             EdgeToEdgeSystemBarColorHelper edgeToEdgeSystemBarColorHelper,
             BottomAttachedUiObserver bottomAttachedUiObserver) {
         mContext = context;

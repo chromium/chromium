@@ -13,10 +13,8 @@
 namespace version_info {
 
 // Returns the product name and reduced version information for the User-Agent
-// header, in the format: Chrome/<major_version>.0.build_version.0, where
-// `build_version` is a frozen BUILD number.
-std::string GetProductNameAndVersionForReducedUserAgent(
-    const std::string& build_version);
+// header, in the format: Chrome/<major_version>.0.0.0
+std::string GetProductNameAndVersionForReducedUserAgent();
 
 // Returns the product name and version information for the User-Agent header,
 // in the format: Chrome/<major_version>.<minor_version>.<build>.<patch>.

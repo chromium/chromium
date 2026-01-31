@@ -18,16 +18,16 @@
 #import "ios/web/public/test/element_selector.h"
 
 @interface AutomationAction () {
-  base::Value::Dict _actionDictionary;
+  base::DictValue _actionDictionary;
 }
 
-@property(nonatomic, readonly) const base::Value::Dict& actionDictionary;
+@property(nonatomic, readonly) const base::DictValue& actionDictionary;
 
 // Selects the proper subclass in the class cluster for the given type. Called
 // from the class method creating the actions.
 + (Class)classForType:(NSString*)type;
 
-- (instancetype)initWithValueDict:(base::Value::Dict)actionDictionary
+- (instancetype)initWithValueDict:(base::DictValue)actionDictionary
     NS_DESIGNATED_INITIALIZER;
 @end
 
@@ -136,7 +136,7 @@
 
 @implementation AutomationAction
 
-+ (instancetype)actionWithValueDict:(base::Value::Dict)actionDictionary {
++ (instancetype)actionWithValueDict:(base::DictValue)actionDictionary {
   const std::string* type = actionDictionary.FindString("type");
   GREYAssert(type, @"Type is missing in action.");
   GREYAssert(!type->empty(), @"Type is an empty value.");
@@ -162,7 +162,7 @@
   return classForType[type] ?: [AutomationActionUnrecognized class];
 }
 
-- (instancetype)initWithValueDict:(base::Value::Dict)actionDictionary {
+- (instancetype)initWithValueDict:(base::DictValue)actionDictionary {
   self = [super init];
   if (self) {
     _actionDictionary = std::move(actionDictionary);
@@ -174,7 +174,7 @@
   GREYAssert(NO, @"Should not be called!");
 }
 
-- (const base::Value::Dict&)actionDictionary {
+- (const base::DictValue&)actionDictionary {
   return _actionDictionary;
 }
 
@@ -274,7 +274,7 @@
 @implementation AutomationActionWaitFor
 
 - (void)execute {
-  const base::Value::List* assertionsValues =
+  const base::ListValue* assertionsValues =
       self.actionDictionary.FindList("assertions");
   GREYAssert(assertionsValues, @"Assertions key is missing in action.");
   GREYAssert(assertionsValues->size(), @"Assertions list is empty.");

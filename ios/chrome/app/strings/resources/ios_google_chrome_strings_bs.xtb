@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="bs">
 <translation id="1076643793026027628">Chrome automatski otvara anonimne linkove YouTubea u anonimnom načinu rada.</translation>
+<translation id="1081114897601629648">Sljedeće lozinke nisu uvezene na Google upravitelj lozinki jer se ne podudaraju sa zahtjevima.</translation>
 <translation id="1086486568852410168">Pretraži putem Google Objektiva</translation>
 <translation id="1088490543924960890">Počnite pohranjivati pristupne ključeve pomoću Google upravitelja lozinki</translation>
 <translation id="1143896152279775643">Vaša lozinka će se sačuvati u Googleov Upravitelj lozinki za račun <ph name="EMAIL" />.</translation>
@@ -85,6 +86,9 @@ Pričekajte nekoliko minuta prije odjave. Ako se sada odjavite, ovi podaci će s
 <translation id="2767464022270041271">Nije sačuvana nijedna lozinka. Google upravitelj lozinki može provjeriti vaše lozinke kada ih sačuvate.</translation>
 <translation id="2788811701191021538">Otvara stranicu s postavkama načina plaćanja u Chromeu.</translation>
 <translation id="2876628302275096482">Saznajte više o tome <ph name="BEGIN_LINK" />kako Chrome štiti privatnost vaših podataka<ph name="END_LINK" /></translation>
+<translation id="288992067439702510">Dosegnuli ste ograničenje Google Chromea od <ph name="LIMIT" /> oznake/a, pa određene oznake još uvijek nisu sačuvane na Google računu.
+
+Nove oznake se ne mogu sačuvati na računu dok ne izbrišete neke. Ako se sada odjavite, nesačuvane oznake će se izbrisati.</translation>
 <translation id="2922914028977213693">Dodirnite ovdje da iskoristite sve prednosti Chromea na iPadu.</translation>
 <translation id="292371311537977079">Postavke Chromea</translation>
 <translation id="2923827943290349720">Zaključaj anonimne kartice pri zatvaranju Chromea</translation>
@@ -115,6 +119,7 @@ Pričekajte nekoliko minuta prije odjave. Ako se sada odjavite, ovi podaci će s
 <translation id="3460369101684070455">Da lako dobijete sačuvane lozinke u drugim aplikacijama, odaberite Chrome za automatsko popunjavanje</translation>
 <translation id="3472587960215700950">Chrome koristi Google Mape da vam dâ upute i lokalne informacije o otkrivenim adresama.</translation>
 <translation id="3482807551645716768">Brže pristupajte Chromeu s početnog ekrana iPada.</translation>
+<translation id="3491067552520121605">Već imate lozinke ili pristupne ključeve na Google upravitelju lozinki za prikazane web lokacije. Odaberite račun da zadržite prikazane podatke za prijavu, čime ćete zamijeniti podatke na Google upravitelju lozinki.</translation>
 <translation id="3503014945441706099">Preuzmite i poboljšano Sigurno pregledanje za ovaj Chrome profil</translation>
 <translation id="3522659714780527202">Da vidite kartice s bilo kojeg uređaja na kojem koristite Chrome, uključite sinhronizaciju</translation>
 <translation id="364480321352456989">Chrome je zastario.</translation>
@@ -134,6 +139,7 @@ Pričekajte nekoliko minuta prije odjave. Ako se sada odjavite, ovi podaci će s
 <translation id="4167555379306984168">Pogledajte šta je novo u Chromeu</translation>
 <translation id="417201473131094001">Nije podržano na Chrome Canaryju</translation>
 <translation id="424864128008805179">Odjaviti se iz Chromea?</translation>
+<translation id="4409545895715116037">Sljedeći pristupni ključevi nisu uvezeni na Google upravitelj lozinki jer se ne podudaraju sa zahtjevima.</translation>
 <translation id="4430797724889237570">Otvarajte linkove s Gmaila, Mapa, YouTubea i iz drugih aplikacija u Chromeu</translation>
 <translation id="447252321002412580">Pomozite nam da poboljšamo funkcije i performanse Chromea</translation>
 <translation id="4523886039239821078">Zbog nekih dodataka Chrome može prestati da radi. Deinstalirajte:</translation>
@@ -272,6 +278,7 @@ Za više postavki koje koriste podatke radi poboljšanja iskustva u Chromeu idit
 <translation id="7284245284340063465">Ako ste zaboravili pristupni izraz ili želite promijeniti ovu postavku, <ph name="BEGIN_LINK" />izbrišite podatke Chromea na računu<ph name="END_LINK" />.</translation>
 <translation id="7296102444587051536">Chrome za iOS</translation>
 <translation id="7299681342915173313">Sada možete koristiti Chrome svaki put kada dodirnete linkove u e-porukama, dokumentima i drugim aplikacijama.</translation>
+<translation id="7334364820047587268">Već imate lozinke za ove račune na Google upravitelju lozinki. Ako uvezete jednu od lozinki u nastavku, ona će zamijeniti postojeću.</translation>
 <translation id="7344094882820374540">Dobijte Chromeovu najjaču zaštitu od opasnih web lokacija</translation>
 <translation id="7349129508108954623">Dozvolite Chromeu da koristi Google Mape da vam dâ upute i lokalne informacije o otkrivenim adresama.</translation>
 <translation id="7371674917547846460">Pratite korisne savjete za Chrome i drugo.</translation>
@@ -300,11 +307,11 @@ Za više postavki koje koriste podatke radi poboljšanja iskustva u Chromeu idit
 <translation id="7787205077729386167">Otvorite postavke Chromea u iOS-u, a zatim dodirnite "Zadana aplikacija preglednika" i odaberite Chrome.</translation>
 <translation id="778855399387580014">Započni pretraživanje na novoj Chrome kartici.</translation>
 <translation id="7792140019572081272">Chrome štiti vaše osjetljive podatke putem Face ID-a.</translation>
+<translation id="7825648984449922731">Uredite sliku putem Geminija u Chromeu</translation>
 <translation id="7855730255114109580">Google Chrome je ažuriran</translation>
 <translation id="787226752901403048">Prijavite se u Chrome da dijelite grupe kartica, pridružujete im se i sarađujete na idejama</translation>
 <translation id="7897703007638178753">Pogledajte nedavne kartice u Chromeu</translation>
 <translation id="7948283758957877064">Šta je novo u Chromeu</translation>
-<translation id="7996707498590516621">Kreirajte sliku putem Geminija u Chromeu</translation>
 <translation id="8000174216052461231">Savjet za Chrome: dobijte Chromeovu najjaču zaštitu</translation>
 <translation id="8006014511203279255">Koristite Chrome svaki put kada dodirnete linkove u porukama ili drugim aplikacijama.</translation>
 <translation id="8014670471808569312">Chrome će ponuditi opciju da sačuva lozinku.</translation>

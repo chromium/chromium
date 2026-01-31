@@ -5,7 +5,12 @@
 #ifndef CHROME_BROWSER_SESSIONS_SESSION_RESTORE_OBSERVER_H_
 #define CHROME_BROWSER_SESSIONS_SESSION_RESTORE_OBSERVER_H_
 
+#include <vector>
+
 class Profile;
+namespace sessions {
+struct SessionWindow;
+}  // namespace sessions
 
 // Observer of events during session restore. This observer does not cover
 // SessionRestoreImpl::RestoreForeignTab() which restores a single foreign tab.
@@ -29,7 +34,10 @@ class SessionRestoreObserver {
   // restore file. If windows are read by AppSessionService for app windows,
   // `for_app` is true. Otherwise, `for_app` is false. This function is used
   // for debug only.
-  virtual void OnGotSession(Profile* profile, bool for_app, int window_count) {}
+  virtual void OnGotSession(
+      Profile* profile,
+      bool for_app,
+      const std::vector<const sessions::SessionWindow*>& windows) {}
 };
 
 #endif  // CHROME_BROWSER_SESSIONS_SESSION_RESTORE_OBSERVER_H_

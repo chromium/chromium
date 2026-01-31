@@ -15,19 +15,13 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
 #include "base/task/bind_post_task.h"
-#include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/resource_coordinator/session_restore_policy.h"
 #include "components/performance_manager/public/decorators/site_data_recorder.h"
 #include "components/performance_manager/public/features.h"
 #include "components/performance_manager/public/graph/page_node.h"
 #include "components/performance_manager/public/performance_manager.h"
 #include "components/performance_manager/public/persistence/site_data/feature_usage.h"
 #include "components/performance_manager/public/persistence/site_data/site_data_reader.h"
-#include "components/site_engagement/content/site_engagement_service.h"
-#include "components/site_engagement/core/mojom/site_engagement_details.mojom.h"
 #include "content/public/browser/browser_context.h"
-#include "content/public/browser/navigation_controller.h"
-#include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/permission_controller.h"
 #include "content/public/browser/permission_descriptor_util.h"
 #include "content/public/browser/render_widget_host_view.h"
@@ -55,44 +49,6 @@ RenderWidgetHost* GetRenderWidgetHost(WebContents* web_contents) {
   if (render_widget_host_view)
     return render_widget_host_view->GetRenderWidgetHost();
   return nullptr;
-}
-
-// Returns the site engagement score of a WebContents. Copied from
-// chrome/browser/resource_coordinator/session_restore_policy.cc.
-size_t GetSiteEngagementScore(content::WebContents* contents) {
-  // Get the active navigation entry. Restored tabs should always have one.
-  auto& controller = contents->GetController();
-  auto* nav_entry =
-      controller.GetEntryAtIndex(controller.GetCurrentEntryIndex());
-  DCHECK(nav_entry);
-
-  auto* engagement_svc = site_engagement::SiteEngagementService::Get(
-      Profile::FromBrowserContext(contents->GetBrowserContext()));
-  double engagement =
-      engagement_svc->GetDetails(nav_entry->GetURL()).total_score;
-
-  // Return the engagement as an integer.
-  return engagement;
-}
-
-bool HasLowSiteEngagement(content::WebContents* contents) {
-  // There are 2 ways to handle session restore:
-  //
-  // Case 1: kBackgroundTabLoadingFromPerformanceManager is disabled.
-  //
-  // The algorithm uses SessionRestorePolicy::kMinSiteEngagementToRestore.
-  // SessionRestore.TabCount.LowSiteEngagement counts tabs that are less than
-  // this.
-  //
-  // Case 2: kBackgroundTabLoadingFromPerformanceManager is enabled.
-  //
-  // The session restore algorithm ignores site engagement.
-  // SessionRestore.TabCount.LowSiteEngagement counts tabs that are less than
-  // SessionRestorePolicy::kMinSiteEngagementToRestore, to see what data the PM
-  // algorithm is ignoring.
-  return GetSiteEngagementScore(contents) <
-         resource_coordinator::SessionRestorePolicy::
-             kMinSiteEngagementToRestore;
 }
 
 bool HasNotificationPermission(content::WebContents* contents) {
@@ -168,7 +124,7 @@ void SessionRestoreStatsCollector::TrackTabs(
 
     // Look up background feature use in `site_data_reader` on the PM sequence,
     // and post the result to OnTabUpdatesInBackground() on the current
-    // sequence, along with site engagement and permissions info.
+    // sequence, along with permissions info.
     base::OnceCallback<bool(const SiteDataReader&)> on_site_data_ready =
         base::BindOnce([](const SiteDataReader& site_data_reader) {
           return site_data_reader.UpdatesFaviconInBackground() ==
@@ -180,7 +136,6 @@ void SessionRestoreStatsCollector::TrackTabs(
     base::OnceCallback<void(bool)> on_tab_updates_in_background =
         base::BindOnce(&SessionRestoreStatsCollector::OnTabUpdatesInBackground,
                        weak_factory_.GetWeakPtr(),
-                       HasLowSiteEngagement(tab.contents()),
                        HasNotificationPermission(tab.contents()));
 
     performance_manager::WaitForSiteDataReader(
@@ -280,7 +235,6 @@ void SessionRestoreStatsCollector::ReportStatsAndSelfDestroy() {
 }
 
 void SessionRestoreStatsCollector::OnTabUpdatesInBackground(
-    bool low_site_engagement,
     bool background_notification_permission,
     bool updates_in_background) {
   if (background_notification_permission) {
@@ -288,13 +242,6 @@ void SessionRestoreStatsCollector::OnTabUpdatesInBackground(
   }
   if (updates_in_background) {
     tab_loader_stats_.updates_in_background_tab_count++;
-  }
-  if (low_site_engagement) {
-    tab_loader_stats_.low_site_engagement_tab_count++;
-    if (background_notification_permission || updates_in_background) {
-      tab_loader_stats_
-          .low_site_engagement_with_background_communication_tab_count++;
-    }
   }
 }
 
@@ -339,12 +286,6 @@ void SessionRestoreStatsCollector::UmaStatsReportingDelegate::
                               tab_loader_stats.pinned_tab_count);
   base::UmaHistogramCounts100("SessionRestore.TabCount.Grouped",
                               tab_loader_stats.grouped_tab_count);
-  base::UmaHistogramCounts100("SessionRestore.TabCount.LowSiteEngagement",
-                              tab_loader_stats.low_site_engagement_tab_count);
-  base::UmaHistogramCounts100(
-      "SessionRestore.TabCount.LowSiteEngagementWithBackgroundCommunication",
-      tab_loader_stats
-          .low_site_engagement_with_background_communication_tab_count);
   base::UmaHistogramCounts100(
       "SessionRestore.TabCount.BackgroundNotificationPermission",
       tab_loader_stats.notification_permission_tab_count);

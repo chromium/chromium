@@ -70,32 +70,31 @@ class DownloadInternalsUIMessageHandler : public web::WebUIIOSMessageHandler,
   }
 
   // download::Logger::Observer implementation.
-  void OnServiceStatusChanged(
-      const base::Value::Dict& service_status) override {
+  void OnServiceStatusChanged(const base::DictValue& service_status) override {
     web_ui()->FireWebUIListener("service-status-changed", service_status);
   }
 
   void OnServiceDownloadsAvailable(
-      const base::Value::List& service_downloads) override {
+      const base::ListValue& service_downloads) override {
     web_ui()->FireWebUIListener("service-downloads-available",
                                 service_downloads);
   }
 
   void OnServiceDownloadChanged(
-      const base::Value::Dict& service_download) override {
+      const base::DictValue& service_download) override {
     web_ui()->FireWebUIListener("service-download-changed", service_download);
   }
 
   void OnServiceDownloadFailed(
-      const base::Value::Dict& service_download) override {
+      const base::DictValue& service_download) override {
     web_ui()->FireWebUIListener("service-download-failed", service_download);
   }
 
-  void OnServiceRequestMade(const base::Value::Dict& service_request) override {
+  void OnServiceRequestMade(const base::DictValue& service_request) override {
     web_ui()->FireWebUIListener("service-request-made", service_request);
   }
 
-  void HandleGetServiceStatus(const base::Value::List& args) {
+  void HandleGetServiceStatus(const base::ListValue& args) {
     if (!download_service_) {
       return;
     }
@@ -104,7 +103,7 @@ class DownloadInternalsUIMessageHandler : public web::WebUIIOSMessageHandler,
         args[0], download_service_->GetLogger()->GetServiceStatus());
   }
 
-  void HandleGetServiceDownloads(const base::Value::List& args) {
+  void HandleGetServiceDownloads(const base::ListValue& args) {
     if (!download_service_) {
       return;
     }
@@ -113,7 +112,7 @@ class DownloadInternalsUIMessageHandler : public web::WebUIIOSMessageHandler,
         args[0], download_service_->GetLogger()->GetServiceDownloads());
   }
 
-  void HandleStartDownload(const base::Value::List& args) {
+  void HandleStartDownload(const base::ListValue& args) {
     if (!download_service_) {
       return;
     }

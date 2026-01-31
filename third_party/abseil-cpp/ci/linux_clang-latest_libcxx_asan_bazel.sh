@@ -93,6 +93,7 @@ for std in ${STD}; do
           --keep_going \
           --linkopt=\"-fsanitize=address\" \
           --linkopt=\"-fsanitize-link-c++-runtime\" \
+          --per_file_copt=external/.*@-w \
           --show_timestamps \
           --test_env=\"ASAN_SYMBOLIZER_PATH=/opt/llvm/clang/bin/llvm-symbolizer\" \
           --test_env=\"TZDIR=/abseil-cpp/absl/time/internal/cctz/testdata/zoneinfo\" \

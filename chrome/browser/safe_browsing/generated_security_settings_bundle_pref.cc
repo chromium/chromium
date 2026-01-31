@@ -4,10 +4,13 @@
 
 #include "chrome/browser/safe_browsing/generated_security_settings_bundle_pref.h"
 
-#include "base/types/cxx23_to_underlying.h"
+#include "chrome/browser/browser_process.h"
+#include "chrome/browser/net/secure_dns_config.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/extensions/api/settings_private.h"
+#include "chrome/common/pref_names.h"
 #include "components/prefs/pref_service.h"
+#include "components/safe_browsing/core/common/features.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 
 namespace settings_api = extensions::api::settings_private;
@@ -42,7 +45,40 @@ GeneratedSecuritySettingsBundlePref::SetPref(const base::Value* value) {
   }
 
   // Update Security Settings Bundle preference to match selection.
-  profile_->GetPrefs()->SetInteger(prefs::kSecuritySettingsBundle, selection);
+  SetSecurityBundleSetting(
+      *(profile_->GetPrefs()),
+      static_cast<SecuritySettingsBundleSetting>(selection));
+
+  PrefService* local_state = g_browser_process->local_state();
+
+  // This is how the bundle controls each security setting.
+  if (selection == static_cast<int>(SecuritySettingsBundleSetting::ENHANCED)) {
+    // Keep this section sorted by feature name and label each section with
+    // the feature.
+
+    // TODO(crbug.com/478023158): Extract Secure DNS pref logic to a helper
+    // function.
+    if (base::FeatureList::IsEnabled(
+            safe_browsing::kBundledSecuritySettingsSecureDnsV2)) {
+      // Secure DNS Setting
+      // TODO(crbug.com/460180440): migrate to a per-profile setting.
+      local_state->SetString(prefs::kDnsOverHttpsMode,
+                             SecureDnsConfig::kModeAutomatic);
+      local_state->SetString(prefs::kDnsOverHttpsTemplates, "");
+      local_state->SetBoolean(prefs::kDnsOverHttpsAutomaticModeFallbackToDoh,
+                              true);
+    }
+  } else {
+    if (base::FeatureList::IsEnabled(
+            safe_browsing::kBundledSecuritySettingsSecureDnsV2)) {
+      // Secure DNS Setting
+      local_state->SetString(prefs::kDnsOverHttpsMode,
+                             SecureDnsConfig::kModeAutomatic);
+      local_state->SetString(prefs::kDnsOverHttpsTemplates, "");
+      local_state->SetBoolean(prefs::kDnsOverHttpsAutomaticModeFallbackToDoh,
+                              false);
+    }
+  }
 
   return extensions::settings_private::SetPrefResult::SUCCESS;
 }

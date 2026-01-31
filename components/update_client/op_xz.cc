@@ -28,10 +28,10 @@ namespace {
 
 void Done(base::OnceCallback<
               void(base::expected<base::FilePath, CategorizedError>)> callback,
-          base::RepeatingCallback<void(base::Value::Dict)> event_adder,
+          base::RepeatingCallback<void(base::DictValue)> event_adder,
           const base::FilePath& out_file,
           bool success) {
-  base::Value::Dict event;
+  base::DictValue event;
   event.Set("eventtype", protocol_request::kEventXz);
   event.Set("eventresult",
             static_cast<int>(success ? protocol_request::kEventResultSuccess
@@ -56,7 +56,7 @@ void Done(base::OnceCallback<
 
 base::OnceClosure XzOperation(
     std::unique_ptr<Unzipper> unzipper,
-    base::RepeatingCallback<void(base::Value::Dict)> event_adder,
+    base::RepeatingCallback<void(base::DictValue)> event_adder,
     base::RepeatingCallback<void(ComponentState)> state_tracker,
     const base::FilePath& in_file,
     base::OnceCallback<void(base::expected<base::FilePath, CategorizedError>)>

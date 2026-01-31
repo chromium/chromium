@@ -135,6 +135,7 @@ class MEDIA_GPU_EXPORT MediaFoundationVideoEncodeAccelerator
     uint32_t frame_id;
     base::TimeDelta timestamp;
     base::TimeTicks frame_encode_start_time;
+    bool keyframe_request = false;
   };
 
   // Encoder state.

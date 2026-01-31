@@ -27,25 +27,23 @@ class ContextMenuNativeDelegateImpl {
       JNIEnv* env,
       content::RenderFrameHost* render_frame_host,
       const base::android::JavaRef<jobject>& jcallback,
-      jint max_width_px,
-      jint max_height_px);
+      int32_t max_width_px,
+      int32_t max_height_px);
   void RetrieveImageForShare(JNIEnv* env,
                              content::RenderFrameHost* render_frame_host,
                              const base::android::JavaRef<jobject>& jcallback,
-                             jint max_width_px,
-                             jint max_height_px,
-                             jint j_image_type);
-  void StartDownload(JNIEnv* env,
-                     const GURL& gurl,
-                     jboolean jis_media);
+                             int32_t max_width_px,
+                             int32_t max_height_px,
+                             int32_t j_image_type);
+  void StartDownload(JNIEnv* env, const GURL& gurl, bool jis_media);
   void SearchForImage(JNIEnv* env, content::RenderFrameHost* render_frame_host);
   void InspectElement(JNIEnv* env,
                       content::RenderFrameHost* render_frame_host,
-                      jint x,
-                      jint y);
+                      int32_t x,
+                      int32_t y);
   void SetPictureInPicture(JNIEnv* env,
                            content::RenderFrameHost* render_frame_host,
-                           jboolean enter_pip);
+                           bool enter_pip);
 
  protected:
   using ImageRetrieveCallback = base::OnceCallback<void(
@@ -63,8 +61,8 @@ class ContextMenuNativeDelegateImpl {
                              ImageRetrieveCallback retrieve_callback,
                              content::RenderFrameHost* render_frame_host,
                              const base::android::JavaRef<jobject>& jcallback,
-                             jint max_width_px,
-                             jint max_height_px,
+                             int32_t max_width_px,
+                             int32_t max_height_px,
                              chrome::mojom::ImageFormat image_format);
 
   const raw_ptr<content::WebContents> web_contents_;

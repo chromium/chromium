@@ -1,4 +1,6 @@
 include_rules = [
-  "+ios/chrome/browser/browser_container/model/edit_menu_builder.h",
-  "+ios/chrome/browser/browser_container/ui_bundled/edit_menu_alert_delegate.h",
+  # keep-sorted start
+  "+ios/chrome/browser/browser_content/model/edit_menu_builder.h",
+  "+ios/chrome/browser/browser_content/ui_bundled/edit_menu_alert_delegate.h",
+  # keep-sorted end
 ]

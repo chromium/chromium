@@ -10,7 +10,7 @@ import android.os.Bundle;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 
-import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -28,7 +28,6 @@ import org.chromium.chrome.browser.page_info.SiteSettingsHelper;
 import org.chromium.chrome.browser.password_manager.PasswordManagerHelper;
 import org.chromium.chrome.browser.password_manager.PasswordStoreBridge;
 import org.chromium.chrome.browser.privacy_guide.PrivacyGuideFragment;
-import org.chromium.chrome.browser.privacy_sandbox.ChromeTrackingProtectionDelegate;
 import org.chromium.chrome.browser.privacy_sandbox.PrivacySandboxSettingsBaseFragment;
 import org.chromium.chrome.browser.privacy_sandbox.TopicsManageFragment;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -40,6 +39,7 @@ import org.chromium.chrome.browser.safety_hub.SafetyHubBaseFragment;
 import org.chromium.chrome.browser.safety_hub.SafetyHubFragment;
 import org.chromium.chrome.browser.safety_hub.SafetyHubModuleDelegateImpl;
 import org.chromium.chrome.browser.search_engines.settings.SearchEngineSettings;
+import org.chromium.chrome.browser.settings.search.SettingsSearchCoordinator;
 import org.chromium.chrome.browser.signin.SigninAndHistorySyncActivityLauncherImpl;
 import org.chromium.chrome.browser.site_settings.ChromeSiteSettingsDelegate;
 import org.chromium.chrome.browser.sync.SyncServiceFactory;
@@ -50,10 +50,10 @@ import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.components.browser_ui.accessibility.AccessibilitySettings;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.settings.FragmentSettingsNavigation;
+import org.chromium.components.browser_ui.settings.SearchViewProvider;
 import org.chromium.components.browser_ui.settings.SettingsCustomTabLauncher;
 import org.chromium.components.browser_ui.site_settings.BaseSiteSettingsFragment;
 import org.chromium.components.browser_ui.site_settings.SiteSettingsCategory;
-import org.chromium.components.privacy_sandbox.TrackingProtectionSettings;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 
 import java.util.function.Supplier;
@@ -69,19 +69,22 @@ public class FragmentDependencyProvider extends FragmentManager.FragmentLifecycl
     // Therefore we use suppliers to provide them once they become available.
     private final OneshotSupplier<SnackbarManager> mSnackbarManagerSupplier;
     private final OneshotSupplier<BottomSheetController> mBottomSheetControllerSupplier;
-    private final ObservableSupplier<ModalDialogManager> mModalDialogManagerSupplier;
+    private final MonotonicObservableSupplier<ModalDialogManager> mModalDialogManagerSupplier;
+    private final Supplier<SettingsSearchCoordinator> mSearchCoordinator;
 
     public FragmentDependencyProvider(
             Context context,
             Profile profile,
             OneshotSupplier<SnackbarManager> snackbarManagerSupplier,
             OneshotSupplier<BottomSheetController> bottomSheetControllerSupplier,
-            ObservableSupplier<ModalDialogManager> modalDialogManagerSupplier) {
+            MonotonicObservableSupplier<ModalDialogManager> modalDialogManagerSupplier,
+            Supplier<SettingsSearchCoordinator> searchCoordinator) {
         mContext = context;
         mProfile = profile;
         mSnackbarManagerSupplier = snackbarManagerSupplier;
         mBottomSheetControllerSupplier = bottomSheetControllerSupplier;
         mModalDialogManagerSupplier = modalDialogManagerSupplier;
+        mSearchCoordinator = searchCoordinator;
     }
 
     @Override
@@ -100,6 +103,15 @@ public class FragmentDependencyProvider extends FragmentManager.FragmentLifecycl
         if (fragment instanceof SettingsCustomTabLauncher.SettingsCustomTabLauncherClient) {
             ((SettingsCustomTabLauncher.SettingsCustomTabLauncherClient) fragment)
                     .setCustomTabLauncher(new SettingsCustomTabLauncherImpl());
+        }
+
+        if (fragment instanceof SearchViewProvider f) {
+            f.setSearchViewObserver(
+                    (open) -> {
+                        if (mSearchCoordinator != null && mSearchCoordinator.get() != null) {
+                            mSearchCoordinator.get().showSearchBar(!open);
+                        }
+                    });
         }
 
         // Settings screen specific attachments.
@@ -151,7 +163,9 @@ public class FragmentDependencyProvider extends FragmentManager.FragmentLifecycl
             sandboxFragment.setCookieSettingsIntentHelper(
                     (Context context) -> {
                         SiteSettingsHelper.showCategorySettings(
-                                context, SiteSettingsCategory.Type.THIRD_PARTY_COOKIES);
+                                context,
+                                SiteSettingsCategory.Type.THIRD_PARTY_COOKIES,
+                                /* addToBackStack= */ true);
                     });
         }
         if (fragment instanceof LanguageSettings) {
@@ -174,11 +188,6 @@ public class FragmentDependencyProvider extends FragmentManager.FragmentLifecycl
                     (AutofillOptionsFragment) fragment,
                     (Supplier<@Nullable ModalDialogManager>) mModalDialogManagerSupplier,
                     () -> ApplicationLifetime.terminate(true));
-        }
-        if (fragment instanceof TrackingProtectionSettings) {
-            TrackingProtectionSettings tpFragment = ((TrackingProtectionSettings) fragment);
-            tpFragment.setTrackingProtectionDelegate(
-                    new ChromeTrackingProtectionDelegate(mProfile));
         }
         if (fragment instanceof AutofillCreditCardEditor) {
             ((AutofillCreditCardEditor) fragment)

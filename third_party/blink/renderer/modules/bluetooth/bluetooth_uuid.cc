@@ -247,7 +247,7 @@ NameToAssignedNumberMap* GetAssignedNumberForCharacteristicNameMap() {
           {"latitude", 0x2AAE},
           {"longitude", 0x2AAF},
           {"local_north_coordinate", 0x2AB0},
-          {"local_east_coordinate.xml", 0x2AB1},
+          {"local_east_coordinate", 0x2AB1},
           {"floor_number", 0x2AB2},
           {"altitude", 0x2AB3},
           {"uncertainty", 0x2AB4},

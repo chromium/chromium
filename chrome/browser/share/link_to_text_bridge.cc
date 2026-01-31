@@ -28,14 +28,14 @@ ukm::SourceId GetSourceId(
 // TODO(gayane): Update the name whenever
 // |ShouldOfferLinkToText| updated to more descriptive
 // name.
-static jboolean JNI_LinkToTextBridge_ShouldOfferLinkToText(
+static bool JNI_LinkToTextBridge_ShouldOfferLinkToText(
     JNIEnv* env,
     const base::android::JavaRef<jobject>& j_url) {
   GURL url = url::GURLAndroid::ToNativeGURL(env, j_url);
   return shared_highlighting::ShouldOfferLinkToText(url);
 }
 
-static jboolean JNI_LinkToTextBridge_SupportsLinkGenerationInIframe(
+static bool JNI_LinkToTextBridge_SupportsLinkGenerationInIframe(
     JNIEnv* env,
     const base::android::JavaRef<jobject>& j_url) {
   GURL url = url::GURLAndroid::ToNativeGURL(env, j_url);
@@ -45,7 +45,7 @@ static jboolean JNI_LinkToTextBridge_SupportsLinkGenerationInIframe(
 static void JNI_LinkToTextBridge_LogFailureMetrics(
     JNIEnv* env,
     const base::android::JavaRef<jobject>& j_web_contents,
-    jint error) {
+    int32_t error) {
   shared_highlighting::LogRequestedFailureMetrics(
       GetSourceId(j_web_contents),
       static_cast<shared_highlighting::LinkGenerationError>(error));
@@ -59,15 +59,15 @@ static void JNI_LinkToTextBridge_LogSuccessMetrics(
 
 static void JNI_LinkToTextBridge_LogLinkRequestedBeforeStatus(
     JNIEnv* env,
-    jint status,
-    jint ready_status) {
+    int32_t status,
+    int32_t ready_status) {
   shared_highlighting::LogLinkRequestedBeforeStatus(
       static_cast<LinkGenerationStatus>(status),
       static_cast<LinkGenerationReadyStatus>(ready_status));
 }
 
 static void JNI_LinkToTextBridge_LogLinkToTextReshareStatus(JNIEnv* env,
-                                                            jint status) {
+                                                            int32_t status) {
   shared_highlighting::LogLinkToTextReshareStatus(
       static_cast<shared_highlighting::LinkToTextReshareStatus>(status));
 }

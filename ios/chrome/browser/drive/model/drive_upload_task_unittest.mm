@@ -534,4 +534,46 @@ TEST_P(DriveUploadTaskTest, TaskFailedDestructorRecordsMetrics) {
       std::string(kDriveUploadTaskFileSize) + ".Failed", 0 /* MB */, 1);
 }
 
+// Tests that if GetResponseLink fails, the failure is correctly reported in
+// histograms.
+TEST_P(DriveUploadTaskTest, ReportsGetResponseLinkFailure) {
+  base::HistogramTester histogram_tester;
+  // Set up the uploader to simulate successful upload but with missing file
+  // link.
+  uploader_->SetFolderSearchResult(
+      {.folder_identifier = @"test_folder_identifier", .error = nil});
+  const std::vector<DriveFileUploadProgress> progress_elements{
+      {100, 100},
+  };
+  uploader_->SetFileUploadProgressElements(progress_elements);
+
+  // Case 1: missing result.
+  // Set up the task.
+  task_->SetDestinationFolderName("test_folder_name");
+  task_->SetFileToUpload(base::FilePath("/test/path"), base::FilePath("name"),
+                         "test_mime_type", 42);
+
+  task_->Start();
+  uploader_->SetFileUploadResult({.file_link = nil, .error = nil});
+  uploader_->SetUploadFileCompletionQuitClosure(
+      task_environment_.QuitClosure());
+  task_environment_.RunUntilQuit();
+
+  // Case 1: The upload succeeds but the file link is missing.
+  // `kMissingFileLink` should be recorded.
+  EXPECT_EQ(std::nullopt, task_->GetResponseLink());
+  histogram_tester.ExpectBucketCount(
+      "IOS.SaveToDrive.UploadTask.GetResponseLinkFailure",
+      GetResponseLinkFailure::kMissingFileLink, 1);
+
+  // Case 2: The upload result is missing (task is reset).
+  // `kMissingResult` should be recorded.
+  task_ = std::make_unique<DriveUploadTask>(
+      std::make_unique<TestDriveFileUploader>(uploading_identity_));
+  EXPECT_EQ(std::nullopt, task_->GetResponseLink());
+  histogram_tester.ExpectBucketCount(
+      "IOS.SaveToDrive.UploadTask.GetResponseLinkFailure",
+      GetResponseLinkFailure::kMissingResult, 1);
+}
+
 INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(DriveUploadTaskTest);

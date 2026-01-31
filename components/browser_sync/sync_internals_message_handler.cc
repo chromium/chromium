@@ -34,7 +34,7 @@ namespace browser_sync {
 namespace {
 
 // Converts the string at |index| in |list| to an int, defaulting to 0 on error.
-int64_t StringAtIndexToInt64(const base::Value::List& list, size_t index) {
+int64_t StringAtIndexToInt64(const base::ListValue& list, size_t index) {
   if (list.size() > index && list[index].is_string()) {
     int64_t integer = 0;
     if (base::StringToInt64(list[index].GetString(), &integer)) {
@@ -45,7 +45,7 @@ int64_t StringAtIndexToInt64(const base::Value::List& list, size_t index) {
 }
 
 // Returns whether the there is any value at the given |index|.
-bool HasSomethingAtIndex(const base::Value::List& list, size_t index) {
+bool HasSomethingAtIndex(const base::ListValue& list, size_t index) {
   if (list.size() > index && list[index].is_string()) {
     return !list[index].GetString().empty();
   }
@@ -146,7 +146,7 @@ SyncInternalsMessageHandler::GetMessageHandlerMap() {
 }
 
 void SyncInternalsMessageHandler::HandleRequestDataAndRegisterForUpdates(
-    const base::Value::List& args) {
+    const base::ListValue& args) {
   CHECK(args.empty());
 
   // Checking IsObserving() protects us from double-registering.  This could
@@ -167,11 +167,11 @@ void SyncInternalsMessageHandler::HandleRequestDataAndRegisterForUpdates(
 }
 
 void SyncInternalsMessageHandler::HandleRequestListOfTypes(
-    const base::Value::List& args) {
+    const base::ListValue& args) {
   CHECK(args.empty());
 
-  base::Value::Dict event_details;
-  base::Value::List type_list;
+  base::DictValue event_details;
+  base::ListValue type_list;
   syncer::DataTypeSet protocol_types = syncer::ProtocolTypes();
   for (syncer::DataType type : protocol_types) {
     type_list.Append(DataTypeToDebugString(type));
@@ -183,10 +183,10 @@ void SyncInternalsMessageHandler::HandleRequestListOfTypes(
 }
 
 void SyncInternalsMessageHandler::HandleRequestIncludeSpecificsInitialState(
-    const base::Value::List& args) {
+    const base::ListValue& args) {
   CHECK(args.empty());
 
-  base::Value::Dict value;
+  base::DictValue value;
   value.Set(syncer::sync_ui_util::kIncludeSpecifics,
             GetIncludeSpecificsInitialState());
 
@@ -197,7 +197,7 @@ void SyncInternalsMessageHandler::HandleRequestIncludeSpecificsInitialState(
 }
 
 void SyncInternalsMessageHandler::HandleGetAllNodes(
-    const base::Value::List& args) {
+    const base::ListValue& args) {
   CHECK_EQ(1U, args.size());
 
   const std::string& callback_id = args[0].GetString();
@@ -214,13 +214,13 @@ void SyncInternalsMessageHandler::HandleGetAllNodes(
 }
 
 void SyncInternalsMessageHandler::HandleSetIncludeSpecifics(
-    const base::Value::List& args) {
+    const base::ListValue& args) {
   CHECK_EQ(1U, args.size());
   include_specifics_ = args[0].GetBool();
 }
 
 void SyncInternalsMessageHandler::HandleWriteUserEvent(
-    const base::Value::List& args) {
+    const base::ListValue& args) {
   CHECK_EQ(2U, args.size());
 
   sync_pb::UserEventSpecifics event_specifics;
@@ -241,7 +241,7 @@ void SyncInternalsMessageHandler::HandleWriteUserEvent(
 }
 
 void SyncInternalsMessageHandler::HandleRequestStart(
-    const base::Value::List& args) {
+    const base::ListValue& args) {
 #if !BUILDFLAG(IS_CHROMEOS)
   CHECK_EQ(0U, args.size());
 
@@ -265,7 +265,7 @@ void SyncInternalsMessageHandler::HandleRequestStart(
 }
 
 void SyncInternalsMessageHandler::HandleTriggerRefresh(
-    const base::Value::List& args) {
+    const base::ListValue& args) {
   if (!sync_service_) {
     return;
   }
@@ -277,7 +277,7 @@ void SyncInternalsMessageHandler::HandleTriggerRefresh(
 
 void SyncInternalsMessageHandler::OnReceivedAllNodes(
     const std::string& callback_id,
-    base::Value::List nodes) {
+    base::ListValue nodes) {
   delegate_->ResolvePageCallback(callback_id, nodes);
 }
 
@@ -293,7 +293,7 @@ void SyncInternalsMessageHandler::OnSyncShutdown(syncer::SyncService* sync) {
 
 void SyncInternalsMessageHandler::OnProtocolEvent(
     const syncer::ProtocolEvent& event) {
-  base::Value::Dict dict = event.ToValue(include_specifics_);
+  base::DictValue dict = event.ToValue(include_specifics_);
   base::ValueView event_args[] = {dict};
   delegate_->SendEventToPage(syncer::sync_ui_util::kOnProtocolEvent,
                              event_args);
@@ -306,7 +306,7 @@ void SyncInternalsMessageHandler::OnInvalidationReceived(
     return;
   }
 
-  base::Value::List data_types_list;
+  base::ListValue data_types_list;
   for (const auto& data_type_invalidation :
        payload_message.data_type_invalidations()) {
     const int field_number = data_type_invalidation.data_type_id();
@@ -323,8 +323,7 @@ void SyncInternalsMessageHandler::OnInvalidationReceived(
 }
 
 void SyncInternalsMessageHandler::SendAboutInfoAndEntityCounts() {
-  base::Value::Dict value =
-      get_about_sync_data_cb_.Run(sync_service_, channel_);
+  base::DictValue value = get_about_sync_data_cb_.Run(sync_service_, channel_);
   base::ValueView event_args[] = {value};
   delegate_->SendEventToPage(syncer::sync_ui_util::kOnAboutInfoUpdated,
                              event_args);
@@ -338,14 +337,14 @@ void SyncInternalsMessageHandler::SendAboutInfoAndEntityCounts() {
 
 void SyncInternalsMessageHandler::OnGotEntityCounts(
     const syncer::TypeEntitiesCount& entity_counts) {
-  base::Value::Dict count_dictionary;
+  base::DictValue count_dictionary;
   count_dictionary.Set(syncer::sync_ui_util::kDataType,
                        DataTypeToDebugString(entity_counts.type));
   count_dictionary.Set(syncer::sync_ui_util::kEntities, entity_counts.entities);
   count_dictionary.Set(syncer::sync_ui_util::kNonTombstoneEntities,
                        entity_counts.non_tombstone_entities);
 
-  base::Value::Dict event_details;
+  base::DictValue event_details;
   event_details.Set(syncer::sync_ui_util::kEntityCounts,
                     std::move(count_dictionary));
   base::ValueView event_args[] = {event_details};

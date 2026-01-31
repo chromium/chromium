@@ -1,5 +1,7 @@
 include_rules = [
+  # keep-sorted start
   "+components/saved_tab_groups/messaging",
   "+ios/chrome/browser/collaboration/model/features.h",
   "+ios/chrome/browser/data_sharing/model",
+  # keep-sorted end
 ]

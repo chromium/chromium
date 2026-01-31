@@ -301,7 +301,7 @@ void SavedDeskGridView::AnimateGridItems(
     // This is a new grid_item, so do the scale up to identity and fade in
     // animation. The animation is delayed to sync up with the
     // `bounds_animator_` animation.
-    if (base::Contains(new_grid_items, grid_item)) {
+    if (std::ranges::contains(new_grid_items, grid_item)) {
       grid_item->SetBoundsRect(target_bounds);
 
       ui::Layer* layer = grid_item->layer();

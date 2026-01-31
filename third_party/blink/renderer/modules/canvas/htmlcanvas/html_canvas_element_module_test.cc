@@ -27,7 +27,7 @@
 #include "third_party/blink/renderer/core/offscreencanvas/offscreen_canvas.h"
 #include "third_party/blink/renderer/modules/canvas/offscreencanvas2d/offscreen_canvas_rendering_context_2d.h"
 #include "third_party/blink/renderer/platform/graphics/gpu/shared_gpu_context.h"
-#include "third_party/blink/renderer/platform/graphics/test/gpu_memory_buffer_test_platform.h"
+#include "third_party/blink/renderer/platform/graphics/test/gpu_compositing_test_platform.h"
 #include "third_party/blink/renderer/platform/graphics/test/gpu_test_utils.h"
 #include "third_party/blink/renderer/platform/graphics/test/mock_compositor_frame_sink.h"
 #include "third_party/blink/renderer/platform/graphics/test/mock_embedded_frame_sink_provider.h"
@@ -48,9 +48,8 @@ namespace {
 
 // This class allows for overriding GenerateFrameSinkId() so that the
 // HTMLCanvasElement's SurfaceLayerBridge will get a syntactically correct
-// FrameSinkId.  It also returns a valid GpuMemoryBufferManager so that low
-// latency mode is enabled.
-class LowLatencyTestPlatform : public GpuMemoryBufferTestPlatform {
+// FrameSinkId.
+class LowLatencyTestPlatform : public GpuCompositingTestPlatform {
  public:
   viz::FrameSinkId GenerateFrameSinkId() override {
     // Doesn't matter what we return as long as is not zero.
@@ -157,13 +156,13 @@ TEST_P(HTMLCanvasElementModuleTest, LowLatencyCanvasCompositorFrameOpacity) {
 
   auto context_provider = viz::TestContextProvider::CreateRaster();
 #if SK_PMCOLOR_BYTE_ORDER(B, G, R, A)
-  constexpr auto buffer_format = gfx::BufferFormat::BGRA_8888;
+  constexpr auto format = viz::SinglePlaneFormat::kBGRA_8888;
 #elif SK_PMCOLOR_BYTE_ORDER(R, G, B, A)
-  constexpr auto buffer_format = gfx::BufferFormat::RGBA_8888;
+  constexpr auto format = viz::SinglePlaneFormat::kRGBA_8888;
 #endif
 
-  context_provider->UnboundTestRasterInterface()
-      ->set_supports_gpu_memory_buffer_format(buffer_format, true);
+  context_provider->UnboundTestRasterInterface()->set_supports_mappable_format(
+      format, true);
   InitializeSharedGpuContextRaster(context_provider.get());
 
   // To intercept SubmitCompositorFrame messages sent by a canvas's

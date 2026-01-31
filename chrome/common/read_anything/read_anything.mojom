@@ -35,6 +35,37 @@ enum ErrorCode {
   [MinVersion=2] kNotReached = 6,
 };
 
+// Represents who owns the Reading Mode WebUI
+enum ReadAnythingPresentationState {
+    kUndefined = 0, // The WebUI doesn't exist yet.
+    kInactive = 1,  // The WebUI exists but is hosted by the
+                    // ReadAnythingController, not by a view.
+    kInSidePanel = 2, // The WebUI is hosted by the Side Panel. Does not mean
+                      // that it's necessarily showing yet in the Side Panel.
+    kInImmersiveOverlay = 3, // The WebUI is hosted by the ImmersiveOverlay.
+                             // Does not mean that it's necessarily showing yet
+                             // in the overlay.
+};
+
+// Represents the content returned by the distiller. Doesn't include a state for
+// pending distillation. During distillation, the ReadAnythingController will
+// keep the distillation_state_ in the previous state, and
+// OnDistillationStateChanged will update the state once the distillaion has
+// finished.
+// TODO(crbug.com/475910793): Rename ReadAnythingDistillationState to prevent
+// confusion with the DistillationStatus enum.
+enum ReadAnythingDistillationState {
+  kUndefined = 0, // The distillation state has not been initialized.
+  kNotAttempted = 1, // The distillation state has been initialized, but
+                     // distillation has not been attempted.
+  kDistillationInProgress = 2, // Waiting for the distiller to finish
+                               // processing the content.
+  kDistillationEmpty = 3, // The distiller failed to process the content in the
+                          // page (returned no content).
+  kDistillationWithContent = 4, // The distiller successfully processed the
+                                // content in the page.
+};
+
 union VoicePackInstallationState {
   InstallationState installation_state;
   ErrorCode error_code;
@@ -112,6 +143,33 @@ enum HighlightGranularity {
   [MinVersion=1] kSentence = 4
 };
 
+[Extensible]
+// LINT.IfChange(LineFocus)
+// Line focus options.
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum LineFocus {
+  [Default]kOff = 0,
+  // These values are removed and replaced with the static and cursor window
+  // options below.
+  // kWindow1 = 1,
+  // kWindow3 = 2,
+  // kWindow5 = 3,
+  kLineStatic = 4,
+  kLineCursor = 5,
+  // Line focus window modes of different line heights that stay static in the
+  // center of the page.
+  [MinVersion=3] kSmallStaticWindow = 6,
+  [MinVersion=3] kMediumStaticWindow = 7,
+  [MinVersion=3] kLargeStaticWindow = 8,
+  // Line focus window modes of different line heights that move with the
+  // cursor.
+  [MinVersion=3] kSmallCursorWindow = 9,
+  [MinVersion=3] kMediumCursorWindow = 10,
+  [MinVersion=3] kLargeCursorWindow = 11,
+};
+// LINT.ThenChange(/tools/metrics/histograms/metadata/accessibility/enums.xml:ReadAnythingLineFocus)
+
 // LINT.IfChange(DistillationStatus)
 // Distillation status after a page has been opened with reading mode. Used for
 // metrics logging.
@@ -129,6 +187,11 @@ interface UntrustedPageHandler {
   // phrase-based highlighting. May be null if the model file could not be
   // loaded.
   GetDependencyParserModel() => (mojo_base.mojom.File? model_file);
+
+  // Called by the renderer to get the current ReadingMode state from
+  // ReadAnythingController. The response for this call comes via
+  // UntrustedPage::OnGetPresentationState.
+  GetPresentationState();
 
   // Called by the renderer to see if a voice is installed, or being installed.
   // The response for this call comes via UntrustedPage::OnGetVoicePackInfo.
@@ -198,6 +261,10 @@ interface UntrustedPageHandler {
   // the highlight that follows along with speech via the webui toolbar.
   OnHighlightGranularityChanged(read_anything.mojom.HighlightGranularity granularity);
 
+  // Informs the browser controller that the user updated the granularity of
+  // the highlight that follows along with speech via the webui toolbar.
+  OnLineFocusChanged(read_anything.mojom.LineFocus granularity);
+
   // Informs the browser controller whether audio for read aloud is currently
   // playing.
   OnReadAloudAudioStateChange(bool playing);
@@ -237,6 +304,9 @@ interface UntrustedPageHandler {
   OnDistillationStatus(read_anything.mojom.DistillationStatus status,
                        int32 word_count);
 
+  // Informs the browser of the content returned by the distiller.
+  OnDistillationStateChanged(read_anything.mojom.ReadAnythingDistillationState state);
+
   // Informs the browser controller that the side page was scrolled to the end.
   // The browser controller responds by scrolling the main page to show the
   // last line of text on the side page. target_node_id should be the last
@@ -244,6 +314,28 @@ interface UntrustedPageHandler {
   // TODO (b/358169090): Create a cpp typemap to use the ui::AXNodeID type
   // instead of int32
   ScrollToTargetNode(ax.mojom.AXTreeID target_tree_id, int32 target_node_id);
+
+  // Informs the browser that the user clicked the close button. This is
+  // only used by the immersive reading mode, because the Side Panel
+  // has its own close button that handles closing itself.
+  CloseUI();
+
+  // Informs the browser that a user clicked on the pin button in
+  // immersive mode. This is only used in immersive reading mode as the
+  // side panel has its own pin button handled by itself.
+  TogglePinState();
+
+  // Sends a request to the browser for the pin state. The request
+  // is returned via OnPinStatusReceived;
+  SendPinStateRequest();
+
+  // Informs the browser that the user clicked the toggle presentation button.
+  TogglePresentation();
+
+  // Informs the browser that it received the OnReadingModeHidden signal. Used
+  // to determine whether the browser and renderer are still connected when RM
+  // is closed before the actual connection timeout.
+  AckReadingModeHidden();
 };
 
 // Untrusted WebUI-side handler for requests from the browser.
@@ -254,6 +346,10 @@ interface UntrustedPage {
   AccessibilityEventReceived(ax.mojom.AXTreeID tree_id,
                              array<ax.mojom.AXTreeUpdate> updates,
                              array<ax.mojom.AXEvent> events);
+
+  // Send ReadAnything Presentation state to the WebUI. We can then adjust the
+  // UI based on received presentation state.
+  OnGetPresentationState(ReadAnythingPresentationState presentation_state);
 
   // Send a voice pack status change notification to the WebUI. The WebUI can
   // then show informational or error messages depending on the status.
@@ -310,7 +406,8 @@ interface UntrustedPage {
                            double speech_rate,
                            mojo_base.mojom.DictionaryValue voices,
                            mojo_base.mojom.ListValue languages_enabled_in_pref,
-                           read_anything.mojom.HighlightGranularity granularity);
+                           read_anything.mojom.HighlightGranularity granularity,
+                           read_anything.mojom.LineFocus line_focus);
 
   // Notifies the WebUI that the ScreenAI service is ready on this device.
   ScreenAIServiceReady();
@@ -335,4 +432,12 @@ interface UntrustedPage {
     int32 node_id,
     skia.mojom.BitmapN32 image
   );
+
+  // Lets the renderer process know that the browser has sent a new pin state.
+  OnPinStatusReceived(bool new_pin_state);
+
+  // Sets the distilled title and content from DOM distiller to be available in
+  // the WebUI and notifies the WebUI that DOM distiller has processed a
+  // distillation request.
+  UpdateContent(string title, string content);
 };

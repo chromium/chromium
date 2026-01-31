@@ -24,7 +24,7 @@ class Uuid;
 class ContextualTasksUI;
 
 namespace contextual_tasks {
-class ContextualTasksContextController;
+class ContextualTasksService;
 class ContextualTasksUiService;
 }  // namespace contextual_tasks
 
@@ -36,7 +36,7 @@ class ContextualTasksPageHandler
       mojo::PendingReceiver<contextual_tasks::mojom::PageHandler> receiver,
       ContextualTasksUI* web_ui_controller,
       contextual_tasks::ContextualTasksUiService* ui_service,
-      contextual_tasks::ContextualTasksContextController* context_controller);
+      contextual_tasks::ContextualTasksService* contextual_tasks_service);
   ~ContextualTasksPageHandler() override;
 
   // contextual_tasks::mojom::PageHandler:
@@ -45,18 +45,23 @@ class ContextualTasksPageHandler
                      GetUrlForTaskCallback callback) override;
   void SetTaskId(const base::Uuid& uuid) override;
   void SetThreadTitle(const std::string& title) override;
-
+  void IsZeroState(const GURL& url, IsZeroStateCallback callback) override;
+  void IsAiPage(const GURL& url, IsAiPageCallback callback) override;
   void CloseSidePanel() override;
   void ShowThreadHistory() override;
   void IsShownInTab(IsShownInTabCallback callback) override;
   void OpenMyActivityUi() override;
   void OpenHelpUi() override;
+  void OpenOnboardingHelpUi() override;
   void MoveTaskUiToNewTab() override;
   void OnTabClickedFromSourcesMenu(int32_t tab_id, const GURL& url) override;
+  void OnFileClickedFromSourcesMenu(const GURL& url) override;
+  void OnImageClickedFromSourcesMenu(const GURL& url) override;
   void OnWebviewMessage(const std::vector<uint8_t>& message) override;
   void GetCommonSearchParams(bool is_dark_mode,
                              bool is_side_panel,
                              GetCommonSearchParamsCallback callback) override;
+  void OnboardingTooltipDismissed() override;
   void PostMessageToWebview(const lens::ClientToAimMessage& message);
 
   // contextual_tasks::ContextualTasksService::Observer:
@@ -72,12 +77,11 @@ class ContextualTasksPageHandler
   mojo::Receiver<contextual_tasks::mojom::PageHandler> receiver_;
   raw_ptr<ContextualTasksUI> web_ui_controller_;
   raw_ptr<contextual_tasks::ContextualTasksUiService> ui_service_;
-  raw_ptr<contextual_tasks::ContextualTasksContextController>
-      context_controller_;
+  raw_ptr<contextual_tasks::ContextualTasksService> contextual_tasks_service_;
 
   base::ScopedObservation<contextual_tasks::ContextualTasksService,
                           contextual_tasks::ContextualTasksService::Observer>
-      context_controller_observation_{this};
+      contextual_tasks_service_observation_{this};
 
   base::WeakPtrFactory<ContextualTasksPageHandler> weak_ptr_factory_{this};
 };

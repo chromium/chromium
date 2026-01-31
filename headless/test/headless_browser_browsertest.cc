@@ -466,7 +466,7 @@ class CrashReporterTest : public HeadlessBrowserTest,
                             base::Unretained(this)));
   }
 
-  void OnTargetCrashed(const base::Value::Dict&) { FinishAsynchronousTest(); }
+  void OnTargetCrashed(const base::DictValue&) { FinishAsynchronousTest(); }
 
  protected:
   raw_ptr<content::WebContents> web_contents_ = nullptr;
@@ -581,12 +581,12 @@ class BrowserTargetTracingTest : public HeadlessBrowserTest {
   }
 
  private:
-  void OnTracingStarted(base::Value::Dict) {
+  void OnTracingStarted(base::DictValue) {
     browser_devtools_client_.SendCommand("Tracing.end");
   }
 
-  void OnDataCollected(const base::Value::Dict& params) {
-    const base::Value::List* value_list =
+  void OnDataCollected(const base::DictValue& params) {
+    const base::ListValue* value_list =
         params.FindListByDottedPath("params.value");
     ASSERT_NE(value_list, nullptr);
     for (const auto& value : *value_list) {
@@ -594,7 +594,7 @@ class BrowserTargetTracingTest : public HeadlessBrowserTest {
     }
   }
 
-  void OnTracingComplete(const base::Value::Dict&) {
+  void OnTracingComplete(const base::DictValue&) {
     EXPECT_LT(0u, tracing_data_.size());
 
     FinishAsynchronousTest();
@@ -602,7 +602,7 @@ class BrowserTargetTracingTest : public HeadlessBrowserTest {
 
   SimpleDevToolsProtocolClient browser_devtools_client_;
 
-  base::Value::List tracing_data_;
+  base::ListValue tracing_data_;
 };
 
 // Flaky, http://crbug.com/1269261.

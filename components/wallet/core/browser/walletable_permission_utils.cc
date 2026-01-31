@@ -8,7 +8,6 @@
 #include <optional>
 #include <string>
 
-#include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/no_destructor.h"
 #include "base/strings/string_split.h"
@@ -74,7 +73,7 @@ bool IsWalletSupportedCountry(const GeoIpCountryCode& country_code) {
   }
 
   // Returns whether the allowlist contains `country_code` (case-insensitive).
-  return base::Contains(GetAllowedCountries(), country_code.value());
+  return GetAllowedCountries().contains(country_code.value());
 }
 
 }  // namespace

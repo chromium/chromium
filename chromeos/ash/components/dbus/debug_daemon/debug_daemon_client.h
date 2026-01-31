@@ -14,6 +14,7 @@
 #include <vector>
 
 #include "base/component_export.h"
+#include "base/containers/flat_map.h"
 #include "base/files/file.h"
 #include "base/functional/callback.h"
 #include "base/memory/ref_counted_memory.h"
@@ -199,6 +200,21 @@ class COMPONENT_EXPORT(DEBUG_DAEMON) DebugDaemonClient
       const std::map<std::string, std::string>& options,
       TestICMPCallback callback) = 0;
 
+  // A callback to handle the result of TestHostsConnectivity. Contains result
+  // encapsulated as protobuf.
+  using TestHostsConnectivityCallback =
+      base::OnceCallback<void(const std::vector<uint8_t>& connectivity_result)>;
+
+  // Tests connectivity to multiple hosts. The `hosts` parameter contains
+  // hostnames or URLs to test. The `options` parameter contains optional
+  // configuration passed to debugd's TestConnectivity method; see
+  // platform2/debugd for supported keys. On error, callback receives an empty
+  // vector.
+  virtual void TestHostsConnectivity(
+      const std::vector<std::string>& hosts,
+      const base::flat_map<std::string, std::string>& options,
+      TestHostsConnectivityCallback callback) = 0;
+
   // Called once EnableDebuggingFeatures() is complete. |succeeded| will be true
   // if debugging features have been successfully enabled.
   using EnableDebuggingCallback = base::OnceCallback<void(bool succeeded)>;
@@ -246,60 +262,6 @@ class COMPONENT_EXPORT(DEBUG_DAEMON) DebugDaemonClient
   virtual void SetOomScoreAdj(
       const std::map<pid_t, int32_t>& pid_to_oom_score_adj,
       SetOomScoreAdjCallback callback) = 0;
-
-  // A callback to handle the result of CupsAdd[Auto|Manually]ConfiguredPrinter.
-  // A negative value denotes a D-Bus library error while non-negative values
-  // denote a response from debugd.
-  using CupsAddPrinterCallback = base::OnceCallback<void(int32_t)>;
-
-  // Calls CupsAddManuallyConfiguredPrinter.  |name| is the printer
-  // name. |uri| is the device.  |language| is the locale code for the
-  // user's language, e.g., "en-us" or "jp".  |ppd_contents| is the
-  // contents of the PPD file used to drive the device.  |callback| is
-  // called with true if adding the printer to CUPS was successful and
-  // false if there was an error.  |error_callback| will be called if
-  // there was an error in communicating with debugd.
-  virtual void CupsAddManuallyConfiguredPrinter(
-      const std::string& name,
-      const std::string& uri,
-      const std::string& language,
-      const std::string& ppd_contents,
-      CupsAddPrinterCallback callback) = 0;
-
-  // Calls CupsAddAutoConfiguredPrinter.  |name| is the printer
-  // name. |uri| is the device.  |language| is the locale code for the
-  // user's language, e.g., "en-us" or "jp".  |callback| is called with
-  // true if adding the printer to CUPS was successful and false if there
-  // was an error.  |error_callback| will be called if there was an error
-  // in communicating with debugd.
-  virtual void CupsAddAutoConfiguredPrinter(
-      const std::string& name,
-      const std::string& uri,
-      const std::string& language,
-      CupsAddPrinterCallback callback) = 0;
-
-  // A callback to handle the result of CupsRemovePrinter.
-  using CupsRemovePrinterCallback = base::OnceCallback<void(bool success)>;
-
-  // Calls CupsRemovePrinter.  |name| is the printer name as registered in
-  // CUPS.  |callback| is called with true if removing the printer from CUPS was
-  // successful and false if there was an error.  |error_callback| will be
-  // called if there was an error in communicating with debugd.
-  virtual void CupsRemovePrinter(const std::string& name,
-                                 CupsRemovePrinterCallback callback,
-                                 base::OnceClosure error_callback) = 0;
-
-  // A callback to handle the result of CupsRetrievePrinterPpd.
-  using CupsRetrievePrinterPpdCallback =
-      base::OnceCallback<void(const std::vector<uint8_t>& ppd)>;
-
-  // Calls the debugd method to retrieve a PPD.  |name| is the printer name as
-  // registered in CUPS. |callback| is called with a string containing the PPD
-  // data. |error_callback| will be called if there was an error retrieving the
-  // PPD.
-  virtual void CupsRetrievePrinterPpd(const std::string& name,
-                                      CupsRetrievePrinterPpdCallback callback,
-                                      base::OnceClosure error_callback) = 0;
 
   // A callback to handle the result of
   // StartPluginVmDispatcher/StopPluginVmDispatcher.

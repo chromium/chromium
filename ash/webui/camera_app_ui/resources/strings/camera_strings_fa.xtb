@@ -48,6 +48,7 @@
 <translation id="2761536921376153655">نوع اسکن</translation>
 <translation id="28682968802727151">پیش‌نمایش قرینه‌سازی</translation>
 <translation id="2879583609344924966"><ph name="CAMERA" /> متصل شد.</translation>
+<translation id="3063987824612038785">‏همه فایل‌های «دوربین» در Google Drive ذخیره خواهد شد.</translation>
 <translation id="3067436040345934772">حرکت دادن به راست</translation>
 <translation id="3081586908890909590">رفتن به حالت فیلم‌برداری</translation>
 <translation id="3091480460059548935">تشخیص نوشتار در پیش‌نما</translation>
@@ -67,6 +68,7 @@
 <translation id="3642192109456033823">درحال پردازش ویدیو…</translation>
 <translation id="3789724198583203151">چرخش ۹۰ درجه پادساعت‌گرد</translation>
 <translation id="3810838688059735925">فیلم</translation>
+<translation id="386366972082231038">‏همه فایل‌های «دوربین» در OneDrive ذخیره خواهد شد.</translation>
 <translation id="4060608699153044055">نمی‌توانید ضبط کنید چون فضای ذخیره‌سازی دستگاه کافی نیست. برای شروع ضبط، باید فضای دستگاهتان را خالی کنید.</translation>
 <translation id="4061162772429051350"><ph name="MAGAPIXELS_AMOUNT" /> مگاپیکسل</translation>
 <translation id="4118525110028899586">توقف موقت ضبط</translation>
@@ -100,6 +102,7 @@
 <translation id="5634947914995388399">ازهم بازکردن کادر گفتگو و متوقف کردن اسکن</translation>
 <translation id="5662366948659129155">درحال اسکن کردن صفحه <ph name="COUNT" /></translation>
 <translation id="5671277269877808209">مربع</translation>
+<translation id="5725797473946373607">دفعه بعد این کادر گفتگو نشان داده نشود</translation>
 <translation id="574392208103952083">متوسط</translation>
 <translation id="5746169159649715125">‏ذخیره به‌عنوان PDF</translation>
 <translation id="5753488212459587150">فعال کردن حالت کارشناس</translation>
@@ -119,7 +122,7 @@
 
 اگر بازخوردتان درباره کیفیت تصویر یا ویدیو است، لطفاً نمونه‌ای از عکس یا ویدیو را ضمیمه کنید و مشکل را توضیح دهید. (برای مثال، عکس خیلی تیره است یا روی سوژه موردنظر فوکوس نشده است.)</translation>
 <translation id="6519884562954018934">پیوستن به <ph name="WIFINAME" /></translation>
-<translation id="6527303717912515753">اشتراک‌گذاری</translation>
+<translation id="6527303717912515753">هم‌رسانی</translation>
 <translation id="659539649712855529"><ph name="CONTENT" /> کپی شد</translation>
 <translation id="6617916774429601017">نمایش همه وضوح‌ها</translation>
 <translation id="6631515515009660915">قرینه‌سازی خاموش</translation>
@@ -156,6 +159,7 @@
 <translation id="7983668134180549431">نوشتار شناسایی شد.</translation>
 <translation id="8079255378695216066">نمی‌توان ضبط را شروع کرد</translation>
 <translation id="8120146556401698679">حرکت دادن، کج کردن، بزرگ‌نمایی</translation>
+<translation id="8127459436205030819">فایل‌هایتان ممکن است برای سرپرستتان قابل‌مشاهده باشد.</translation>
 <translation id="8131740175452115882">تأیید کردن</translation>
 <translation id="8145038249676204903">رفتن به حالت عکس‌برداری</translation>
 <translation id="8167081290930651932">ذخیره به‌عنوان عکس</translation>
@@ -165,6 +169,7 @@
 <translation id="8609951387004618906">باز کردن <ph name="URL" /></translation>
 <translation id="8629662593426079630">۳۶۰ پیکسل</translation>
 <translation id="8711011893539266636">وضعیت صامت بودن میکروفون را تغییر دهید. میکروفون صامت است</translation>
+<translation id="8712637175834984815">متوجه شدم</translation>
 <translation id="8730621377337864115">تمام</translation>
 <translation id="8732462232047530626">پیش‌نمایش فراداده</translation>
 <translation id="874854738381978209">‏شبکه Wi-Fi شناسایی شد.</translation>

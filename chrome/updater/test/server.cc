@@ -52,16 +52,16 @@ std::string SerializeRequest(HttpRequest& request) {
 
 }  // namespace
 
-ScopedServer::ScopedServer() {
-  test_server_->RegisterRequestHandler(base::BindRepeating(
+ScopedServer::ScopedServer(scoped_refptr<IntegrationTestCommands> commands) {
+  test_server_.RegisterRequestHandler(base::BindRepeating(
       &ScopedServer::HandleRequest, base::Unretained(this)));
-  EXPECT_TRUE((test_server_handle_ = test_server_->StartAndReturnHandle()));
-}
-
-ScopedServer::ScopedServer(
-    scoped_refptr<IntegrationTestCommands> integration_test_commands)
-    : ScopedServer() {
-  ConfigureTestMode(integration_test_commands.get());
+  EXPECT_TRUE((test_server_handle_ = test_server_.StartAndReturnHandle()));
+  CHECK(commands);
+  commands->EnterTestMode(update_url(), crash_upload_url(),
+                          /*app_logo_url=*/{},
+                          /*event_logging_url=*/{}, base::Minutes(5),
+                          base::Seconds(2), base::Seconds(10),
+                          /*event_logging_permission_provider=*/std::nullopt);
 }
 
 ScopedServer::~ScopedServer() {
@@ -73,14 +73,6 @@ ScopedServer::~ScopedServer() {
       matcher.Run(HttpRequest());
     });
   }
-}
-
-void ScopedServer::ConfigureTestMode(IntegrationTestCommands* commands) {
-  CHECK(commands);
-  commands->EnterTestMode(update_url(), crash_upload_url(), /*app_logo_url=*/{},
-                          /*event_logging_url=*/{}, base::Minutes(5),
-                          base::Seconds(2), base::Seconds(10),
-                          /*event_logging_permission_provider=*/std::nullopt);
 }
 
 void ScopedServer::ExpectOnce(request::MatcherGroup request_matcher_group,

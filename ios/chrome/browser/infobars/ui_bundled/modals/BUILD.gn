@@ -36,7 +36,6 @@ source_set("modals") {
     "//components/translate/core/common",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/autofill/model/message",
-    "//ios/chrome/browser/autofill/ui_bundled:autofill_metrics",
     "//ios/chrome/browser/autofill/ui_bundled/cells",
     "//ios/chrome/browser/infobars/model:public",
     "//ios/chrome/browser/infobars/ui_bundled/coordinators:translate_public",

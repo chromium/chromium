@@ -2,7 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//components/services/on_device_translation/buildflags/features.gni")
+import("//components/on_device_translation/buildflags/features.gni")
 import("//components/signin/features.gni")
 import("//extensions/buildflags/buildflags.gni")
 
@@ -196,9 +196,12 @@ source_set("test_support") {
 
   if (enable_extensions_core) {
     sources += [
+      "cloud/mock_extension_install_policy_service.cc",
+      "cloud/mock_extension_install_policy_service.h",
       "extension_policy_test_base.cc",
       "extension_policy_test_base.h",
     ]
+    deps += [ "//extensions/common" ]
   }
 
   if (!is_android) {
@@ -271,6 +274,7 @@ source_set("policy_specific_browser_tests") {
     "//chrome/browser/ui/autofill",
     "//chrome/common",
     "//chrome/test:test_support",
+    "//components/heap_profiling/in_process",
     "//components/policy/core/common",
     "//components/prefs",
     "//components/proxy_config",
@@ -438,6 +442,7 @@ source_set("browser_tests") {
     deps += [
       "//chrome/browser/extensions",
       "//chrome/browser/extensions:test_support",
+      "//extensions/browser/forced_extensions",
     ]
 
     if (enable_extensions) {

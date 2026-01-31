@@ -29,7 +29,7 @@ class UsbDeviceAndroid : public UsbDevice {
   bool permission_granted() const override;
   void Open(OpenCallback callback) override;
 
-  jint device_id() const { return device_id_; }
+  int32_t device_id() const { return device_id_; }
   void PermissionGranted(JNIEnv* env, bool granted);
 
  private:
@@ -56,7 +56,7 @@ class UsbDeviceAndroid : public UsbDevice {
   void OnReadWebUsbDescriptors(scoped_refptr<UsbDeviceHandle> device_handle,
                                const GURL& landing_page);
 
-  const jint device_id_;
+  const int32_t device_id_;
   bool permission_granted_ = false;
   std::list<ResultCallback> request_permission_callbacks_;
   base::WeakPtr<UsbServiceAndroid> service_;

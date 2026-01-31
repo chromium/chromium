@@ -28,7 +28,6 @@ Als <ph name="SERVICE_SCRIPT_NAME" /> al is aangevinkt, vink je dit eerst uit en
 <translation id="2329392777730037872">Kan <ph name="URL" /> niet openen op de client.</translation>
 <translation id="2359808026110333948">Doorgaan</translation>
 <translation id="2366718077645204424">Kan de host niet bereiken. Dit komt waarschijnlijk door de configuratie van het netwerk dat je gebruikt.</translation>
-<translation id="242591256144136845">Copyright 2025 Google LLC. Alle rechten voorbehouden.</translation>
 <translation id="2504109125669302160">Toegangsrechten verlenen aan <ph name="PRODUCT_NAME" /></translation>
 <translation id="2509394361235492552">Verbonden met <ph name="HOSTNAME" /></translation>
 <translation id="2540992418118313681">Wil je deze computer delen zodat een andere gebruiker deze kan bekijken en bedienen?</translation>
@@ -47,6 +46,7 @@ Als <ph name="SERVICE_SCRIPT_NAME" /> al is aangevinkt, vink je dit eerst uit en
 <translation id="3150823315463303127">Host kan het beleid niet lezen.</translation>
 <translation id="3171922709365450819">Dit apparaat wordt niet ondersteund door deze klant, omdat hiervoor verificatie van derden is vereist.</translation>
 <translation id="3197730452537982411">Remote Desktop</translation>
+<translation id="3236334139428307578">Copyright 2026 De auteurs van Chromium. Alle rechten voorbehouden.</translation>
 <translation id="324272851072175193">Deze instructies e-mailen</translation>
 <translation id="3305934114213025800"><ph name="PRODUCT_NAME" /> wil wijzigingen aanbrengen.</translation>
 <translation id="3339299787263251426">Krijg beveiligd toegang tot je computer via internet</translation>
@@ -111,6 +111,7 @@ Als <ph name="SERVICE_SCRIPT_NAME" /> al is aangevinkt, vink je dit eerst uit en
 <translation id="5823554426827907568"><ph name="CLIENT_USERNAME" /> heeft toegang gevraagd om je scherm te zien en je toetsenbord en muis te bedienen. Druk op <ph name="IDS_SHARE_CONFIRM_DIALOG_DECLINE" /> als je dit verzoek niet verwacht. Selecteer anders <ph name="IDS_SHARE_CONFIRM_DIALOG_CONFIRM" /> om de verbinding toe te staan als je zover bent.</translation>
 <translation id="5823658491130719298">Ga naar de computer waarvoor je externe toegang wilt hebben. Open Chrome en ga naar <ph name="INSTALLATION_LINK" /></translation>
 <translation id="5841343754884244200">Weergaveopties</translation>
+<translation id="5965133372831030509">Copyright 2026 Google LLC. Alle rechten voorbehouden.</translation>
 <translation id="6033507038939587647">Toetsenbordopties</translation>
 <translation id="6040143037577758943">Sluiten</translation>
 <translation id="6062854958530969723">Initialisatie van host mislukt.</translation>
@@ -138,7 +139,6 @@ Als <ph name="SERVICE_SCRIPT_NAME" /> al is aangevinkt, vink je dit eerst uit en
 <translation id="7067321367069083429">Scherm werkt als een touchscreen</translation>
 <translation id="7116737094673640201">Welkom bij Chrome Remote Desktop</translation>
 <translation id="7144878232160441200">Opnieuw proberen</translation>
-<translation id="7298392173540380852">Copyright 2025 De auteurs van Chromium. Alle rechten voorbehouden.</translation>
 <translation id="7312846573060934304">Host is offline.</translation>
 <translation id="7319983568955948908">Delen stoppen</translation>
 <translation id="7359298090707901886">De gekozen browser kan niet worden gebruikt om URL's op de lokale machine te openen.</translation>

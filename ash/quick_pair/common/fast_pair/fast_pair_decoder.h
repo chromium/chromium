@@ -12,9 +12,7 @@
 
 #include "base/component_export.h"
 
-namespace ash {
-namespace quick_pair {
-namespace fast_pair_decoder {
+namespace ash::quick_pair::fast_pair_decoder {
 
 COMPONENT_EXPORT(QUICK_PAIR_COMMON)
 int GetVersion(const std::vector<uint8_t>* service_data);
@@ -44,8 +42,6 @@ std::optional<std::string> GetExtraField(
 int GetExtraFieldLength(const std::vector<uint8_t>* service_data, int index);
 int GetExtraFieldType(const std::vector<uint8_t>* service_data, int index);
 
-}  // namespace fast_pair_decoder
-}  // namespace quick_pair
-}  // namespace ash
+}  // namespace ash::quick_pair::fast_pair_decoder
 
 #endif  // ASH_QUICK_PAIR_COMMON_FAST_PAIR_FAST_PAIR_DECODER_H_

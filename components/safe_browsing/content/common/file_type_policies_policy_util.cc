@@ -44,19 +44,19 @@ FileTypePoliciesOverrideResult ShouldOverrideFileTypePolicies(
               kExemptDomainFileTypePairsFromFileTypeDownloadWarnings)) {
     return FileTypePoliciesOverrideResult::kDoNotOverride;
   }
-  const base::Value::List& heuristic_overrides = prefs->GetList(
+  const base::ListValue& heuristic_overrides = prefs->GetList(
       file_type::prefs::kExemptDomainFileTypePairsFromFileTypeDownloadWarnings);
 
   const std::string lower_extension = base::ToLowerASCII(extension);
 
-  base::Value::List domains_for_extension;
+  base::ListValue domains_for_extension;
   for (const base::Value& entry : heuristic_overrides) {
-    const base::Value::Dict& extension_domain_patterns_dict = entry.GetDict();
+    const base::DictValue& extension_domain_patterns_dict = entry.GetDict();
     const std::string* extension_for_this_entry =
         extension_domain_patterns_dict.FindString(kFileExtensionNameKey);
     if (extension_for_this_entry &&
         base::ToLowerASCII(*extension_for_this_entry) == lower_extension) {
-      const base::Value::List* domains_for_this_entry =
+      const base::ListValue* domains_for_this_entry =
           extension_domain_patterns_dict.FindList(kDomainListKey);
       if (domains_for_this_entry) {
         for (const base::Value& domain : *domains_for_this_entry) {

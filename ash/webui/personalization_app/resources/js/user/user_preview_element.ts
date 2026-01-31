@@ -173,7 +173,7 @@ export class UserPreviewElement extends WithPersonalizationStore {
   private shouldShowDeprecatedImageSourceInfo_(image: UserImage|null): boolean {
     return !!image && !!image.defaultImage && !!image.defaultImage.sourceInfo &&
         isNonEmptyString(image.defaultImage.sourceInfo.author) &&
-        isNonEmptyString(image.defaultImage.sourceInfo.website.url);
+        isNonEmptyString(image.defaultImage.sourceInfo.website);
   }
 
   private getDeprecatedAuthor_(image: UserImage): string {
@@ -187,7 +187,7 @@ export class UserPreviewElement extends WithPersonalizationStore {
     assert(
         image && image.defaultImage && image.defaultImage.sourceInfo,
         'only called for deprecated default images with sourceInfo');
-    return image.defaultImage.sourceInfo.website.url;
+    return image.defaultImage.sourceInfo.website;
   }
 }
 

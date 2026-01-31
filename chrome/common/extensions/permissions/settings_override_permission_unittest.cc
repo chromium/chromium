@@ -48,21 +48,21 @@ class SettingsOverridePermissionTest : public ChromeManifestTest {
   };
 
   scoped_refptr<Extension> GetPermissionSet(uint32_t flags) {
-    base::Value::Dict ext_manifest;
+    base::DictValue ext_manifest;
     ext_manifest.Set(manifest_keys::kName, "test");
     ext_manifest.Set(manifest_keys::kVersion, "0.1");
     ext_manifest.Set(manifest_keys::kManifestVersion, 2);
 
-    base::Value::Dict settings_override;
+    base::DictValue settings_override;
     if (flags & kHomepage)
       settings_override.Set("homepage", "http://www.google.com/home");
     if (flags & kStartupPages) {
-      base::Value::List startup_pages;
+      base::ListValue startup_pages;
       startup_pages.Append("http://startup.com/startup.html");
       settings_override.Set("startup_pages", std::move(startup_pages));
     }
     if (flags & kSearchProvider) {
-      base::Value::Dict search_provider;
+      base::DictValue search_provider;
       search_provider.Set("search_url", "http://google.com/search.html");
       search_provider.Set("name", "test");
       search_provider.Set("keyword", "lock");

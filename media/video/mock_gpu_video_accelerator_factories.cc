@@ -38,8 +38,8 @@ MockGpuVideoAcceleratorFactories::CreateVideoEncodeAccelerator() {
   return base::WrapUnique(DoCreateVideoEncodeAccelerator());
 }
 
-bool MockGpuVideoAcceleratorFactories::ShouldUseGpuMemoryBuffersForVideoFrames(
-    bool for_media_stream) const {
+bool MockGpuVideoAcceleratorFactories::
+    ShouldUseMappableSharedImagesForVideoFrames(bool for_media_stream) const {
   return false;
 }
 

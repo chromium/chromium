@@ -8,8 +8,8 @@
 #import "components/data_sharing/public/features.h"
 #import "ios/chrome/browser/net/model/crurl.h"
 #import "ios/chrome/browser/share_kit/model/share_kit_avatar_primitive.h"
-#import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/open_new_tab_command.h"
+#import "ios/chrome/browser/shared/public/commands/scene_commands.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_text_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_favicon_data_source.h"
@@ -178,7 +178,7 @@ NSString* RecentActivityLogCellAccessibilityIdentifier(NSUInteger index) {
   GURL activityLogsURL = GURL(data_sharing::features::kActivityLogsURL.Get());
   OpenNewTabCommand* command =
       [OpenNewTabCommand commandWithURLFromChrome:activityLogsURL];
-  [self.applicationHandler closePresentedViewsAndOpenURL:command];
+  [self.sceneHandler closePresentedViewsAndOpenURL:command];
 }
 
 // Configures and returns a cell.

@@ -107,8 +107,8 @@ void DispatchOnCommitted(events::HistogramValue histogram_value,
       navigation_handle->GetRenderFrameHost();
   ui::PageTransition transition_type = navigation_handle->GetPageTransition();
 
-  base::Value::List args;
-  base::Value::Dict dict;
+  base::ListValue args;
+  base::DictValue dict;
   dict.Set(web_navigation_api_constants::kTabIdKey,
            ExtensionTabUtil::GetTabId(web_contents));
   dict.Set(web_navigation_api_constants::kUrlKey, url.spec());
@@ -146,7 +146,7 @@ void DispatchOnCommitted(events::HistogramValue histogram_value,
     transition_type_string = "start_page";
   dict.Set(web_navigation_api_constants::kTransitionTypeKey,
            transition_type_string);
-  base::Value::List qualifiers;
+  base::ListValue qualifiers;
   if (transition_type & ui::PAGE_TRANSITION_CLIENT_REDIRECT)
     qualifiers.Append("client_redirect");
   if (transition_type & ui::PAGE_TRANSITION_SERVER_REDIRECT)

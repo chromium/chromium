@@ -1,0 +1,28 @@
+[package]
+name = "antlr4rust"
+version = "0.5.2"
+authors = ["Konstantin Anisimov <rrevenantt@gmail.com>", "Alex Snaps <alex@wcgw.dev>"]
+homepage = "https://github.com/antlr4rust/antlr4"
+repository = "https://github.com/antlr4rust/antlr4"
+documentation = "https://docs.rs/antlr4rust"
+description = "ANTLR4 runtime for Rust"
+readme = "README.md"
+edition = "2021"
+license = "BSD-3-Clause"
+keywords = ["ANTLR","ANTLR4","parsing","runtime"]
+categories = ["parsing"]
+exclude = ["/build.rs","/grammars","/templates"]
+
+[features]
+debug = []
+
+[dependencies]
+lazy_static = "^1.4"
+uuid = "1.16.0"
+byteorder = "^1"
+murmur3 = "=0.4" # 0.5 is incompatible currently
+bit-set = "0.8.0"
+once_cell = "^1.2"
+typed-arena = "^2.0"
+better_any = "0.2.0"
+parking_lot = "0.12"

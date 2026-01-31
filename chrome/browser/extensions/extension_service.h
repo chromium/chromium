@@ -167,7 +167,7 @@ class ExtensionService : public ExtensionServiceInterface,
 
   // Performs action based on Omaha attributes for the extension.
   void PerformActionBasedOnOmahaAttributes(const std::string& extension_id,
-                                           const base::Value::Dict& attributes);
+                                           const base::DictValue& attributes);
 
   // Performs action based on verdicts received from the Extension Telemetry
   // server. Currently, these verdicts are limited to off-store extensions.

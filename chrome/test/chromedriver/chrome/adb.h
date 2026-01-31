@@ -45,10 +45,10 @@ class Adb {
                                     std::string* socket_name) = 0;
   virtual Status SetPreferences(const std::string& device_serial,
                                 const std::string& path,
-                                const base::Value::Dict* custom_prefs) = 0;
+                                const base::DictValue* custom_prefs) = 0;
   virtual Status SetLocalState(const std::string& device_serial,
                                const std::string& path,
-                               const base::Value::Dict* custom_local_state) = 0;
+                               const base::DictValue* custom_local_state) = 0;
 };
 
 #endif  // CHROME_TEST_CHROMEDRIVER_CHROME_ADB_H_

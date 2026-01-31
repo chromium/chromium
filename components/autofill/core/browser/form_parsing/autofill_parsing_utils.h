@@ -64,7 +64,9 @@ enum class RegexFeature : uint8_t {
   kAutofillSupportSplitZipCode = 5,
   kAutofillDisallowMoreHyphenLikeLabels = 6,
   kAutofillFixStateCountryMisclassification = 7,
-  kMaxValue = kAutofillFixStateCountryMisclassification,
+  kAutofillFixCivilStateMisclassificationForESPT = 8,
+  kAutofillAddressImproveBuildingNumberRegex = 9,
+  kMaxValue = kAutofillAddressImproveBuildingNumberRegex,
 };
 
 // Returns a `DenseSet` containing all `RegexFeature`s whose corresponding

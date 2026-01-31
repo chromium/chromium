@@ -17,7 +17,7 @@
 #include "base/time/time.h"
 #include "base/unguessable_token.h"
 #include "base/version_info/channel.h"
-#include "chrome/browser/contextual_search/contextual_search_web_contents_helper.h"
+#include "chrome/browser/contextual_search/contextual_search_service_factory.h"
 #include "chrome/browser/ui/webui/searchbox/contextual_searchbox_test_utils.h"
 #include "chrome/browser/ui/webui/searchbox/searchbox_test_utils.h"
 #include "components/contextual_search/contextual_search_service.h"
@@ -89,8 +89,7 @@ class ComposeboxHandlerTest : public ContextualSearchboxHandlerTestHarness {
   ~ComposeboxHandlerTest() override = default;
 
   void SetUp() override {
-    ContextualSearchboxHandlerTestHarness::SetUp();
-
+    ASSERT_NO_FATAL_FAILURE(ContextualSearchboxHandlerTestHarness::SetUp());
     auto query_controller_config_params = std::make_unique<
         contextual_search::ContextualSearchContextController::ConfigParams>();
     query_controller_config_params->send_lns_surface = false;
@@ -99,28 +98,30 @@ class ComposeboxHandlerTest : public ContextualSearchboxHandlerTestHarness {
     auto query_controller_ptr = std::make_unique<MockQueryController>(
         /*identity_manager=*/nullptr, url_loader_factory(),
         version_info::Channel::UNKNOWN, "en-US", template_url_service(),
-        fake_variations_client(), std::move(query_controller_config_params));
+        /*variations_client=*/nullptr,
+        std::move(query_controller_config_params));
     query_controller_ = query_controller_ptr.get();
 
     auto metrics_recorder_ptr =
         std::make_unique<MockContextualSearchMetricsRecorder>();
     metrics_recorder_ = metrics_recorder_ptr.get();
 
-    service_ = std::make_unique<contextual_search::ContextualSearchService>(
-        /*identity_manager=*/nullptr, url_loader_factory(),
-        template_url_service(), fake_variations_client(),
-        version_info::Channel::UNKNOWN, "en-US");
-    auto contextual_session_handle = service_->CreateSessionForTesting(
+    service_ = ContextualSearchServiceFactory::GetForProfile(profile());
+    contextual_session_handle_ = service_->CreateSessionForTesting(
         std::move(query_controller_ptr), std::move(metrics_recorder_ptr));
-    ContextualSearchWebContentsHelper::GetOrCreateForWebContents(web_contents())
-        ->set_session_handle(std::move(contextual_session_handle));
+    // Check the search content sharing settings to notify the session handle
+    // that the client is properly checking the pref value.
+    contextual_session_handle_->CheckSearchContentSharingSettings(
+        profile()->GetPrefs());
 
     web_contents()->SetDelegate(&delegate_);
     handler_ = std::make_unique<ComposeboxHandler>(
         mojo::PendingReceiver<composebox::mojom::PageHandler>(),
         mock_page_.BindAndGetRemote(),
         mojo::PendingReceiver<searchbox::mojom::PageHandler>(), profile(),
-        web_contents());
+        web_contents(), base::BindLambdaForTesting([&]() {
+          return contextual_session_handle_.get();
+        }));
 
     handler_->SetPage(mock_searchbox_page_.BindAndGetRemote());
     embedder_ = std::make_unique<TestEmbedder>();
@@ -148,7 +149,10 @@ class ComposeboxHandlerTest : public ContextualSearchboxHandlerTestHarness {
     query_controller_ = nullptr;
     metrics_recorder_ = nullptr;
     handler_.reset();
-    service_.reset();
+    contextual_session_handle_.reset();
+    // Service is owned by the profile, so we don't need to reset it here,
+    // but we should clear the pointer.
+    service_ = nullptr;
     ContextualSearchboxHandlerTestHarness::TearDown();
   }
 
@@ -176,8 +180,10 @@ class ComposeboxHandlerTest : public ContextualSearchboxHandlerTestHarness {
  private:
   TestWebContentsDelegate delegate_;
   raw_ptr<MockQueryController> query_controller_;
-  std::unique_ptr<contextual_search::ContextualSearchService> service_;
+  raw_ptr<contextual_search::ContextualSearchService> service_;
   raw_ptr<MockContextualSearchMetricsRecorder> metrics_recorder_;
+  std::unique_ptr<contextual_search::ContextualSearchSessionHandle>
+      contextual_session_handle_;
   std::unique_ptr<TestEmbedder> embedder_;
   std::unique_ptr<ComposeboxHandler> handler_;
 };
@@ -215,10 +221,6 @@ TEST_F(ComposeboxHandlerTest, SetDeepSearchMode) {
       "ContextualSearch.Tools.DeepSearch.NewTabPage",
       contextual_search::AimToolState::kEnabled, 1);
   SubmitQueryAndWaitForNavigation();
-  GURL query_url_dr =
-      web_contents()->GetController().GetLastCommittedEntry()->GetURL();
-  EXPECT_TRUE(net::GetValueForKeyInQuery(query_url_dr, "dr", &dr_param));
-  EXPECT_EQ("1", dr_param);
 
   // Submitting after disabling deep search.
   handler().SetDeepSearchMode(false);
@@ -231,10 +233,6 @@ TEST_F(ComposeboxHandlerTest, SetDeepSearchMode) {
       "ContextualSearch.Tools.DeepSearch.NewTabPage",
       contextual_search::AimToolState::kDisabled, 1);
   SubmitQueryAndWaitForNavigation();
-  GURL query_url_disabled_dr =
-      web_contents()->GetController().GetLastCommittedEntry()->GetURL();
-  EXPECT_FALSE(
-      net::GetValueForKeyInQuery(query_url_disabled_dr, "dr", &dr_param));
 }
 
 TEST_F(ComposeboxHandlerTest, SetCreateImageMode) {
@@ -263,12 +261,6 @@ TEST_F(ComposeboxHandlerTest, SetCreateImageMode) {
       "ContextualSearch.Tools.CreateImages.NewTabPage",
       contextual_search::AimToolState::kEnabled, 1);
   SubmitQueryAndWaitForNavigation();
-  GURL query_url_create_image =
-      web_contents()->GetController().GetLastCommittedEntry()->GetURL();
-  std::string imgn_param;
-  EXPECT_TRUE(
-      net::GetValueForKeyInQuery(query_url_create_image, "imgn", &imgn_param));
-  EXPECT_EQ("1", imgn_param);
 
   // Submitting with create image mode disabled.
   handler().SetCreateImageMode(false, /*image_present= */ false);
@@ -281,10 +273,6 @@ TEST_F(ComposeboxHandlerTest, SetCreateImageMode) {
       "ContextualSearch.Tools.CreateImages.NewTabPage",
       contextual_search::AimToolState::kDisabled, 1);
   SubmitQueryAndWaitForNavigation();
-  GURL query_url_disabled_create_image =
-      web_contents()->GetController().GetLastCommittedEntry()->GetURL();
-  EXPECT_FALSE(net::GetValueForKeyInQuery(query_url_disabled_create_image,
-                                          "imgn", &imgn_param));
 }
 
 TEST_F(ComposeboxHandlerTest, DeleteFileAndSubmitQuery) {
@@ -294,18 +282,20 @@ TEST_F(ComposeboxHandlerTest, DeleteFileAndSubmitQuery) {
       std::make_unique<contextual_search::FileInfo>();
   file_info->file_name = "test.png";
   file_info->mime_type = lens::MimeType::kImage;
+  file_info->upload_status = contextual_search::FileUploadStatus::kNotUploaded;
+  file_info->tab_session_id = SessionID::FromSerializedValue(123);
   base::UnguessableToken delete_file_token = base::UnguessableToken::Create();
   base::UnguessableToken token_arg;
-  EXPECT_CALL(query_controller(), DeleteFile)
+  EXPECT_CALL(query_controller(), GetFileInfo(delete_file_token))
+      .Times(1)
+      .WillRepeatedly(testing::Return(file_info.get()));
+  EXPECT_CALL(query_controller(), DeleteFile(delete_file_token))
       .WillOnce([&token_arg](const base::UnguessableToken& token) {
         token_arg = token;
         return true;
       });
 
-  EXPECT_CALL(query_controller(), GetFileInfo)
-      .WillOnce(testing::Return(file_info.get()));
-
-  handler().DeleteContext(delete_file_token, /*from_suggested_chip=*/false);
+  handler().DeleteContext(delete_file_token, /*from_automatic_chip=*/false);
 
   SubmitQueryAndWaitForNavigation();
 

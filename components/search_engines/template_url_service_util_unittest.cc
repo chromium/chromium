@@ -56,7 +56,7 @@ std::unique_ptr<TemplateURLData> CreatePrepopulateTemplateURLData(
       "" /* image_translate_target_language_param_key */,
       std::vector<std::string>() /* search_intent_params */,
       "" /* favicon_url */, "UTF-8", u"" /* image_search_branding_label */,
-      base::Value::List() /* alternate_urls_list */,
+      base::ListValue() /* alternate_urls_list */,
       false /* preconnect_to_search_url */,
       false /* prefetch_likely_navigations */, prepopulate_id,
       /* regulatory extensions */

@@ -25,8 +25,10 @@ VideoDecodeStatsReporter::VideoDecodeStatsReporter(
     std::optional<media::CdmConfig> cdm_config,
     scoped_refptr<base::SingleThreadTaskRunner> task_runner,
     const base::TickClock* tick_clock)
-    : kRecordingInterval(base::Milliseconds(kRecordingIntervalMs)),
-      kTinyFpsWindowDuration(base::Milliseconds(kTinyFpsWindowMs)),
+    : kRecordingInterval(
+          base::Milliseconds(std::to_underlying(kRecordingIntervalMs))),
+      kTinyFpsWindowDuration(
+          base::Milliseconds(std::to_underlying(kTinyFpsWindowMs))),
       recorder_remote_(std::move(recorder_remote)),
       get_pipeline_stats_cb_(std::move(get_pipeline_stats_cb)),
       codec_profile_(codec_profile),

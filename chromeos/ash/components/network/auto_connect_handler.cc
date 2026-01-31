@@ -4,8 +4,9 @@
 
 #include "chromeos/ash/components/network/auto_connect_handler.h"
 
+#include <algorithm>
+
 #include "ash/constants/ash_features.h"
-#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/location.h"
@@ -428,8 +429,9 @@ void AutoConnectHandler::DisconnectAndRemoveConfigOrDisableAutoConnect(
       // managed network is out of range.)
       bool network_config_allowed =
           available_only &&
-          !base::Contains(managed_configuration_handler_->GetBlockedHexSSIDs(),
-                          network->GetHexSsid());
+          !std::ranges::contains(
+              managed_configuration_handler_->GetBlockedHexSSIDs(),
+              network->GetHexSsid());
       bool shouldRemoveWifiConfig =
           (HasTypeWifi(network) && network->IsInProfile()) &&
           !network_config_allowed;
@@ -474,7 +476,7 @@ void AutoConnectHandler::DisableAutoconnectForNetwork(
     const std::string& network_type) {
   NET_LOG(EVENT) << "Disable auto-connect forced by policy: "
                  << NetworkPathId(service_path);
-  base::Value::Dict properties;
+  base::DictValue properties;
 
   std::string autoconnect_path;
   if (network_type == ::onc::network_config::kWiFi) {

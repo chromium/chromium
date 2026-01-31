@@ -33,6 +33,7 @@ ready.then(async function() {
           `http://a.test:${port}/extensions/api_test/webnavigation/prerendering/`;
       const prerenderTargetUrl = urlPrefix + 'a.html';
       const initiatorUrl = urlPrefix + 'prerender.html';
+
       let expectedEvents = [
         // events
         {

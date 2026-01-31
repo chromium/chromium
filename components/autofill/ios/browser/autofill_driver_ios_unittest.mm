@@ -6,7 +6,9 @@
 
 #import <memory>
 #import <optional>
+#import <string>
 
+#import "base/test/bind.h"
 #import "base/test/mock_callback.h"
 #import "base/test/test_future.h"
 #import "components/autofill/core/browser/test_utils/autofill_form_test_utils.h"
@@ -15,9 +17,11 @@
 #import "components/autofill/core/common/form_data.h"
 #import "components/autofill/core/common/form_field_data.h"
 #import "components/autofill/core/common/unique_ids.h"
+#import "components/autofill/ios/browser/autofill_driver_ios_bridge.h"
 #import "components/autofill/ios/browser/autofill_driver_ios_factory.h"
 #import "components/autofill/ios/browser/autofill_java_script_feature.h"
 #import "components/autofill/ios/browser/test_autofill_client_ios.h"
+#import "components/autofill/ios/common/features.h"
 #import "components/autofill/ios/form_util/child_frame_registrar.h"
 #import "ios/web/public/test/fakes/fake_web_frame.h"
 #import "ios/web/public/test/fakes/fake_web_frames_manager.h"
@@ -33,11 +37,14 @@
 
 - (instancetype)init;
 - (void)setForms:(std::vector<autofill::FormData>)forms;
+- (void)setFetchFormsCompletionHandler:
+    (base::RepeatingCallback<void(FormFetchCompletion)>)handler;
 
 @end
 
 @implementation FakeAutofillDriverIOSBridge {
   std::vector<autofill::FormData> _forms;
+  base::RepeatingCallback<void(FormFetchCompletion)> _fetchHandler;
 }
 
 - (instancetype)init {
@@ -51,9 +58,15 @@
   _forms = std::move(forms);
 }
 
+- (void)setFetchFormsCompletionHandler:
+    (base::RepeatingCallback<void(FormFetchCompletion)>)handler {
+  _fetchHandler = std::move(handler);
+}
+
 - (void)fillData:(const std::vector<autofill::FormFieldData::FillData>&)fields
-         section:(const autofill::Section&)section
-         inFrame:(web::WebFrame*)frame {
+           section:(const autofill::Section&)section
+           inFrame:(web::WebFrame*)frame
+    withActionType:(autofill::mojom::FormActionType)actionType {
 }
 - (void)fillSpecificFormField:(const autofill::FieldRendererId&)field
                     withValue:(const std::u16string)value
@@ -73,11 +86,14 @@
 - (void)notifyFormsSeen:(const std::vector<autofill::FormData>&)updatedForms
                 inFrame:(web::WebFrame*)frame {
 }
-- (void)fetchFormsFiltered:(BOOL)filtered
-                  withName:(const std::u16string&)formName
+- (void)fetchFormsFiltered:(std::optional<std::u16string>)formNameFilter
                    inFrame:(web::WebFrame*)frame
          completionHandler:(FormFetchCompletion)completionHandler {
-  std::move(completionHandler).Run(_forms);
+  if (_fetchHandler) {
+    _fetchHandler.Run(std::move(completionHandler));
+  } else {
+    std::move(completionHandler).Run(_forms);
+  }
 }
 
 @end
@@ -261,6 +277,30 @@ TEST_F(AutofillDriverIOSTest, ExtractFormWithField_FormNotFound) {
       final_callback;
   EXPECT_CALL(final_callback, Run(nullptr, Eq(std::nullopt)));
   main_frame_driver()->ExtractFormWithField(field_id, final_callback.Get());
+}
+
+// Tests that ScanForms works with scan throttling.
+TEST_F(AutofillDriverIOSTest, ScanForms_Throttling) {
+  // Use a custom completion handler to track calls.
+  int fetch_calls = 0;
+  auto callback =
+      base::BindLambdaForTesting([&](FormFetchCompletion completion) {
+        fetch_calls++;
+        std::move(completion).Run({});
+      });
+  [bridge() setFetchFormsCompletionHandler:std::move(callback)];
+
+  // Trigger a throttled scan.
+  main_frame_driver()->ScanForms(/*immediately=*/false);
+
+  // Verify that the fetch was NOT executed immediately.
+  EXPECT_EQ(0, fetch_calls);
+
+  // Trigger an immediate scan (forcing first scan behavior).
+  main_frame_driver()->ScanForms(/*immediately=*/true);
+
+  // Verify that the fetch WAS executed immediately.
+  EXPECT_EQ(1, fetch_calls);
 }
 
 }  // namespace

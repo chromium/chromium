@@ -8,7 +8,9 @@ import android.graphics.Point;
 
 import org.chromium.base.UserData;
 import org.chromium.base.UserDataHost;
-import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.supplier.NonNullObservableSupplier;
+import org.chromium.base.supplier.ObservableSuppliers;
+import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 
@@ -16,8 +18,8 @@ import org.chromium.build.annotations.Nullable;
 @NullMarked
 public class TabContextMenuData implements UserData {
     private @Nullable Point mLastTriggeringTouchPositionDp;
-    private final ObservableSupplierImpl<Boolean> mTabContextMenuVisibility =
-            new ObservableSupplierImpl<>(false);
+    private final SettableNonNullObservableSupplier<Boolean> mTabContextMenuVisibility =
+            ObservableSuppliers.createNonNull(false);
 
     private TabContextMenuData() {}
 
@@ -60,7 +62,7 @@ public class TabContextMenuData implements UserData {
     }
 
     /** Returns the supplier for the context menu visibility. */
-    public ObservableSupplierImpl<Boolean> getTabContextMenuVisibilitySupplier() {
+    public NonNullObservableSupplier<Boolean> getTabContextMenuVisibilitySupplier() {
         return mTabContextMenuVisibility;
     }
 }

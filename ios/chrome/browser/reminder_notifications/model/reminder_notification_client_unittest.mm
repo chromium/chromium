@@ -27,9 +27,9 @@
 #import "ios/chrome/browser/shared/model/prefs/browser_prefs.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
-#import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/open_new_tab_command.h"
+#import "ios/chrome/browser/shared/public/commands/scene_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
@@ -131,7 +131,7 @@ class ReminderNotificationClientTest : public PlatformTest {
   }
 
   // Helper to set reminder prefs.
-  void SetReminderPrefs(const base::Value::Dict& reminders) {
+  void SetReminderPrefs(const base::DictValue& reminders) {
     profile_->GetPrefs()->SetDict(prefs::kReminderNotifications,
                                   reminders.Clone());
   }
@@ -185,10 +185,10 @@ TEST_F(ReminderNotificationClientTest, OneReminderInPrefs) {
   SetReminderPermission(true);
   GURL url("http://example.com/page1");
   base::Time reminder_time = base::Time::Now() + base::Minutes(10);
-  base::Value::Dict reminder_details;
+  base::DictValue reminder_details;
   reminder_details.Set(kReminderNotificationsTimeKey,
                        base::TimeToValue(reminder_time));
-  base::Value::Dict reminders;
+  base::DictValue reminders;
   reminders.Set(url.spec(), std::move(reminder_details));
 
   StubGetPendingRequests(nil);
@@ -207,14 +207,14 @@ TEST_F(ReminderNotificationClientTest, DISABLED_MultipleRemindersInPrefs) {
   base::Time reminder_time1 = base::Time::Now() + base::Minutes(10);
   base::Time reminder_time2 = base::Time::Now() + base::Minutes(20);
 
-  base::Value::Dict details1;
+  base::DictValue details1;
   details1.Set(kReminderNotificationsTimeKey,
                base::TimeToValue(reminder_time1));
-  base::Value::Dict details2;
+  base::DictValue details2;
   details2.Set(kReminderNotificationsTimeKey,
                base::TimeToValue(reminder_time2));
 
-  base::Value::Dict reminders;
+  base::DictValue reminders;
   reminders.Set(url1.spec(), std::move(details1));
   reminders.Set(url2.spec(), std::move(details2));
 
@@ -232,10 +232,10 @@ TEST_F(ReminderNotificationClientTest, NoScheduleWhenNotPermitted) {
   SetReminderPermission(false);
   GURL url("http://example.com/page1");
   base::Time reminder_time = base::Time::Now() + base::Minutes(10);
-  base::Value::Dict reminder_details;
+  base::DictValue reminder_details;
   reminder_details.Set(kReminderNotificationsTimeKey,
                        base::TimeToValue(reminder_time));
-  base::Value::Dict reminders;
+  base::DictValue reminders;
   reminders.Set(url.spec(), std::move(reminder_details));
 
   StubGetPendingRequests(nil);
@@ -250,7 +250,7 @@ TEST_F(ReminderNotificationClientTest, NoScheduleWhenNotPermitted) {
 TEST_F(ReminderNotificationClientTest, HandleInteractionOpensUrlInNewTab) {
   GURL url_to_open("https://www.chromium.org/reminders");
 
-  id mock_application_handler = MockHandler(@protocol(ApplicationCommands));
+  id mock_application_handler = MockHandler(@protocol(SceneCommands));
 
   OCMExpect([mock_application_handler
       openURLInNewTab:[OCMArg checkWithBlock:^BOOL(OpenNewTabCommand* command) {
@@ -289,10 +289,10 @@ TEST_F(ReminderNotificationClientTest, OneReminderInPrefsHasPrefRemoved) {
   SetReminderPermission(true);
   GURL url("http://example.com/page1");
   base::Time reminder_time = base::Time::Now() + base::Minutes(10);
-  base::Value::Dict reminder_details;
+  base::DictValue reminder_details;
   reminder_details.Set(kReminderNotificationsTimeKey,
                        base::TimeToValue(reminder_time));
-  base::Value::Dict reminders;
+  base::DictValue reminders;
   reminders.Set(url.spec(), std::move(reminder_details));
 
   StubGetPendingRequests(nil);
@@ -312,7 +312,7 @@ TEST_F(ReminderNotificationClientTest, OneReminderInPrefsHasPrefRemoved) {
 
   // Verify the mock and that the pref has been removed.
   EXPECT_OCMOCK_VERIFY(mock_notification_center_);
-  const base::Value::Dict& final_reminders =
+  const base::DictValue& final_reminders =
       profile_->GetPrefs()->GetDict(prefs::kReminderNotifications);
   EXPECT_FALSE(final_reminders.contains(url.spec()));
   EXPECT_TRUE(final_reminders.empty());
@@ -328,14 +328,14 @@ TEST_F(ReminderNotificationClientTest,
   base::Time reminder_time1 = base::Time::Now() + base::Minutes(10);
   base::Time reminder_time2 = base::Time::Now() + base::Minutes(20);
 
-  base::Value::Dict details1;
+  base::DictValue details1;
   details1.Set(kReminderNotificationsTimeKey,
                base::TimeToValue(reminder_time1));
-  base::Value::Dict details2;
+  base::DictValue details2;
   details2.Set(kReminderNotificationsTimeKey,
                base::TimeToValue(reminder_time2));
 
-  base::Value::Dict reminders;
+  base::DictValue reminders;
   reminders.Set(url1.spec(), std::move(details1));
   reminders.Set(url2.spec(), std::move(details2));
 
@@ -359,7 +359,7 @@ TEST_F(ReminderNotificationClientTest,
 
   // Verify mocks and pref removal.
   EXPECT_OCMOCK_VERIFY(mock_notification_center_);
-  const base::Value::Dict& final_reminders =
+  const base::DictValue& final_reminders =
       profile_->GetPrefs()->GetDict(prefs::kReminderNotifications);
   EXPECT_FALSE(final_reminders.contains(url1.spec()));
   EXPECT_FALSE(final_reminders.contains(url2.spec()));
@@ -383,10 +383,10 @@ TEST_F(ReminderNotificationClientTest, DoesNotReschedulePendingReminder) {
                                            trigger:nil];
   StubGetPendingRequests(@[ pending_request ]);
 
-  base::Value::Dict reminder_details;
+  base::DictValue reminder_details;
   reminder_details.Set(kReminderNotificationsTimeKey,
                        base::TimeToValue(reminder_time));
-  base::Value::Dict reminders;
+  base::DictValue reminders;
   reminders.Set(url.spec(), std::move(reminder_details));
   SetReminderPrefs(reminders);
 

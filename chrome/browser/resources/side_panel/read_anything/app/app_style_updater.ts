@@ -36,15 +36,19 @@ const HIGHLIGHT_PREVIOUS_CUSTOM =
 // Link colors.
 const LINK_DEFAULT = 'var(--color-read-anything-link-default';
 const LINK_VISITED = 'var(--color-read-anything-link-visited';
+// Read aloud player colors.
+const AUDIO_PLAYER_BACKGROUND =
+    'var(--color-read-anything-audio-player-background';
+const AUDIO_PLAYER_ICON = 'var(--color-read-anything-audio-player-icon';
 // Line focus styles.
 // Determined by experimentation to balance visibility without risking
 // obstructing any text.
 const LINE_FOCUS_LINE_HEIGHT_SCALE = 2;
 const LINE_FOCUS_BOX_SHADOW_LINE = 'none';
-const LINE_FOCUS_BOX_SHADOW_WINDOW = '0 0 0 9999px rgba(0, 0, 0, 0.9)';
-// TODO(crbug.com/447427066): Get the finalized line color from UXD. Use the
-// same color as the text for now.
-const LINE_FOCUS_BG_LINE = 'var(--foreground-color)';
+const LINE_FOCUS_BOX_SHADOW_WINDOW =
+    '0 0 0 9999px var(--color-read-anything-line-focus-scrim)';
+const LINE_FOCUS_BG_LINE_DEFAULT = 'var(--color-sys-state-focus-ring)';
+const LINE_FOCUS_BG_LINE_CUSTOM = 'var(--color-read-anything-line-focus';
 const LINE_FOCUS_BG_WINDOW = 'none';
 
 // Suffixes used in combination with the color vars above to get the color
@@ -73,6 +77,14 @@ export class AppStyleUpdater {
     this.setStyle_('--max-width', `${chrome.readingMode.maxLineWidth}ch`);
   }
 
+  setPaddingForLineFocus(padding: number) {
+    if (!chrome.readingMode.isLineFocusEnabled) {
+      return;
+    }
+
+    this.setStyle_('--line-focus-padding', `${padding}px`);
+  }
+
   setLineFocusPos(y: number, height: number|null, container: HTMLElement) {
     const containerTop = container.offsetTop;
     const containerHeight = container.offsetHeight;
@@ -86,20 +98,24 @@ export class AppStyleUpdater {
     }
   }
 
-  setLineFocusStyle(type: LineFocusType) {
-    if (type === LineFocusType.NONE) {
+  setLineFocusStyle(type?: LineFocusType) {
+    if (type === undefined || !chrome.readingMode.isLineFocusEnabled ||
+        type === LineFocusType.NONE) {
       this.setStyle_('--line-focus-display', 'none');
       return;
     }
 
     const isWindow = type === LineFocusType.WINDOW;
-    this.setLineFocusHeight();
+    if (!isWindow) {
+      this.setLineFocusHeight();
+    }
     this.setStyle_(
         '--line-focus-shadow',
         isWindow ? LINE_FOCUS_BOX_SHADOW_WINDOW : LINE_FOCUS_BOX_SHADOW_LINE);
+    const lineFocusBgLine =
+        this.getLineFocusColor_(this.getCurrentColorSuffix_());
     this.setStyle_(
-        '--line-focus-bg',
-        isWindow ? LINE_FOCUS_BG_WINDOW : LINE_FOCUS_BG_LINE);
+        '--line-focus-bg', isWindow ? LINE_FOCUS_BG_WINDOW : lineFocusBgLine);
     this.setStyle_('--line-focus-display', 'block');
   }
 
@@ -179,12 +195,22 @@ export class AppStyleUpdater {
         this.getPreviousHighlightColor_(colorSuffix));
     this.setStyle_(
         '--sp-empty-state-heading-color',
-        EMPTY_STATE_HEADING + `${colorSuffix})`);
+        `${EMPTY_STATE_HEADING}${colorSuffix})`);
     this.setStyle_(
         '--sp-empty-state-body-color',
         this.getEmptyStateBodyColor_(colorSuffix));
-    this.setStyle_('--link-color', LINK_DEFAULT + `${colorSuffix})`);
-    this.setStyle_('--visited-link-color', LINK_VISITED + `${colorSuffix})`);
+    this.setStyle_('--link-color', `${LINK_DEFAULT}${colorSuffix})`);
+    this.setStyle_('--visited-link-color', `${LINK_VISITED}${colorSuffix})`);
+    this.setStyle_(
+        '--audio-player-background-color',
+        this.getAudioPlayerBackgroundColor_(colorSuffix));
+    this.setStyle_(
+        '--audio-player-icon-color',
+        this.getAudioPlayerIconColor_(colorSuffix));
+    const lineFocusBg = this.app_.style.getPropertyValue('--line-focus-bg');
+    if (lineFocusBg !== LINE_FOCUS_BG_WINDOW) {
+      this.setStyle_('--line-focus-bg', this.getLineFocusColor_(colorSuffix));
+    }
 
     document.documentElement.style.setProperty(
         '--selection-color', this.getSelectionColor_(colorSuffix));
@@ -270,5 +296,23 @@ export class AppStyleUpdater {
     return (window.matchMedia('(prefers-color-scheme: dark)').matches) ?
         SELECTION_FOREGROUND_DARK :
         SELECTION_FOREGROUND_LIGHT;
+  }
+
+  private getLineFocusColor_(colorSuffix: ColorSuffix): string {
+    return (colorSuffix === ColorSuffix.DEFAULT) ?
+        LINE_FOCUS_BG_LINE_DEFAULT :
+        (LINE_FOCUS_BG_LINE_CUSTOM + `${colorSuffix})`);
+  }
+
+  private getAudioPlayerBackgroundColor_(colorSuffix: ColorSuffix): string {
+    return (colorSuffix === ColorSuffix.DEFAULT) ?
+        AUDIO_PLAYER_BACKGROUND :
+        (AUDIO_PLAYER_BACKGROUND + `${colorSuffix})`);
+  }
+
+  private getAudioPlayerIconColor_(colorSuffix: ColorSuffix): string {
+    return (colorSuffix === ColorSuffix.DEFAULT) ?
+        AUDIO_PLAYER_ICON :
+        (AUDIO_PLAYER_ICON + `${colorSuffix})`);
   }
 }

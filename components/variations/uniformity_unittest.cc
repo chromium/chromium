@@ -4,13 +4,17 @@
 
 #include <stdint.h>
 
+#include <array>
+#include <functional>
 #include <initializer_list>
 #include <map>
 #include <memory>
 #include <optional>
+#include <string_view>
 
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
+#include "base/no_destructor.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/scoped_feature_list.h"
 #include "components/variations/entropy_provider.h"
@@ -88,50 +92,53 @@ VariationsSeed LayerStudySeed(const LayerStudySeedOptions& options) {
   return seed;
 }
 
-// A vector of 20 empty strings representing 20 clients each with an empty
+// An array of 20 empty strings representing 20 clients each with an empty
 // assignment.
-const std::vector<std::string> kNoAssignments(20, "");
+constexpr std::array<std::string_view, 20> kNoAssignments{};
 
 // When assigned directly from low entropy, the following assignments are used
 // for the study.
-const std::vector<std::string> kExpectedLowEntropyAssignments = {
+constexpr std::array<std::string_view, 20> kExpectedLowEntropyAssignments = {{
     "C", "A", "B", "C", "A", "B", "C", "A", "B", "B",  // 10
     "B", "A", "C", "C", "C", "A", "B", "B", "A", "A",  // 20
-};
+}};
 
 // LayeredStudySeed should give the following assignment using the test LES.
 // All 3 arms get 6/20 values, with 2/20 not in the study.
-const std::vector<std::string> kExpectedRemainderEntropyAssignments = {
-    "A", "",  "B", "B", "C", "A", "B", "B", "C", "C",  // 10
-    "C", "A", "",  "A", "C", "A", "C", "B", "A", "B",  // 20
-};
+constexpr std::array<std::string_view, 20>
+    kExpectedRemainderEntropyAssignments = {{
+        "A", "",  "B", "B", "C", "A", "B", "B", "C", "C",  // 10
+        "C", "A", "",  "A", "C", "A", "C", "B", "A", "B",  // 20
+    }};
 
 // The assignment results using the limited entropy provider. The setup in
 // LayerStudySeed() implies 10% of the client will not have an active layer
 // member, and thus will not receive an assignment. In the simulation, 1/20
 // comes out to be empty (the one at index 11), which is a likely event (p=0.27)
 // given the setup.
-const std::vector<std::string> kExpectedLimitedEntropyAssignments = {
-    "B", "C", "B", "B", "B", "C", "C", "A", "A", "C",  // 10
-    "B", "",  "A", "A", "C", "A", "B", "A", "C", "A",  // 20
-};
+constexpr std::array<std::string_view, 20> kExpectedLimitedEntropyAssignments =
+    {{
+        "B", "C", "B", "B", "B", "C", "C", "A", "A", "C",  // 10
+        "B", "",  "A", "A", "C", "A", "B", "A", "C", "A",  // 20
+    }};
 
 // The expected group assignments for the study based on high entropy.
 // This does not take into account any layer exclusions.
 // This is only a small sample of the entropy space, so we don't expect
 // precised uniformity, just a reasonable mixture.
-const std::vector<std::string> kExpectedHighEntropyStudyAssignments = {
-    "C", "B", "A", "B", "A", "B", "A", "A", "B", "C",  // 10
-    "B", "A", "A", "C", "C", "A", "A", "B", "B", "C",  // 20
-    "C", "A", "C", "A", "C", "A", "B", "B", "A", "B",  // 30
-    "A", "B", "C", "B", "B", "C", "C", "C", "B", "B",  // 40
-    "C", "B", "B", "C", "C", "B", "A", "B", "C", "C",  // 50
-    "C", "B", "C", "C", "B", "B", "C", "B", "A", "A",  // 60
-    "B", "C", "A", "C", "A", "B", "B", "C", "B", "A",  // 70
-    "B", "B", "A", "B", "A", "C", "B", "A", "B", "B",  // 80
-    "B", "A", "B", "C", "C", "B", "A", "A", "C", "A",  // 90
-    "A", "A", "C", "B", "B", "C", "B", "C", "A", "C",  // 100
-};
+constexpr std::array<std::string_view, 100>
+    kExpectedHighEntropyStudyAssignments = {{
+        "C", "B", "A", "B", "A", "B", "A", "A", "B", "C",  // 10
+        "B", "A", "A", "C", "C", "A", "A", "B", "B", "C",  // 20
+        "C", "A", "C", "A", "C", "A", "B", "B", "A", "B",  // 30
+        "A", "B", "C", "B", "B", "C", "C", "C", "B", "B",  // 40
+        "C", "B", "B", "C", "C", "B", "A", "B", "C", "C",  // 50
+        "C", "B", "C", "C", "B", "B", "C", "B", "A", "A",  // 60
+        "B", "C", "A", "C", "A", "B", "B", "C", "B", "A",  // 70
+        "B", "B", "A", "B", "A", "C", "B", "A", "B", "B",  // 80
+        "B", "A", "B", "C", "C", "B", "A", "A", "C", "A",  // 90
+        "A", "A", "C", "B", "B", "C", "B", "C", "A", "C",  // 100
+    }};
 
 // Process the seed and return which group the user is assigned for Uniformity.
 // From the setup in LayerStudySeed(), the group (i.e., the return value) can be
@@ -148,7 +155,6 @@ std::string GetUniformityAssignment(const VariationsSeed& seed,
   StickyActivationManager sticky_activation_manager(/*local_state=*/nullptr);
   VariationsSeedProcessor(sticky_activation_manager)
       .CreateTrialsFromSeed(seed, *client_state,
-                            base::BindRepeating(NoopUIStringOverrideCallback),
                             entropy_providers, layers, &feature_list);
   test::ClearAllVariationIDs();
   return base::FieldTrialList::FindFullName(kStudyName);
@@ -213,12 +219,12 @@ std::vector<std::string> GetUniformityAssignmentsWithVaryingLimitedSource(
   return result;
 }
 
-std::vector<std::string> Concat(
-    std::initializer_list<const std::vector<std::string>*> vectors) {
+template <typename... R>
+std::vector<std::string> Concat(const R&... ranges) {
   std::vector<std::string> result;
-  for (auto* const vector : vectors) {
-    result.insert(result.end(), vector->begin(), vector->end());
-  }
+  size_t total_size = (ranges.size() + ...);
+  result.reserve(total_size);
+  (result.insert(result.end(), ranges.begin(), ranges.end()), ...);
   return result;
 }
 
@@ -246,13 +252,12 @@ TEST(VariationsUniformityTest, UnlayeredDefaultEntropyStudy) {
   auto assignments = GetUniformityAssignments(
       LayerStudySeed({.layer_constrain_study = false}));
 
-  std::vector<std::string> expected = Concat({
+  std::vector<std::string> expected = Concat(
       // Low entropy clients assign based on low entropy.
-      &kExpectedLowEntropyAssignments,
+      kExpectedLowEntropyAssignments,
       // High entropy clients assign based on high entropy.
       // No exclusions by layer.
-      &kExpectedHighEntropyStudyAssignments,
-  });
+      kExpectedHighEntropyStudyAssignments);
   EXPECT_THAT(assignments, ::testing::ElementsAreArray(expected));
 }
 
@@ -262,30 +267,27 @@ TEST(VariationsUniformityTest, UnlayeredLowEntropyStudy) {
   auto assignments = GetUniformityAssignments(LayerStudySeed(
       {.layer_constrain_study = false, .add_google_web_experiment_id = true}));
 
-  std::vector<std::string> expected = Concat({
+  std::vector<std::string> expected = Concat(
       // Low entropy clients assign based on low entropy.
-      &kExpectedLowEntropyAssignments,
+      kExpectedLowEntropyAssignments,
       // High entropy clients assign based on low entropy.
       // No exclusions by layer.
-      &kExpectedLowEntropyAssignments,
-      &kExpectedLowEntropyAssignments,
-      &kExpectedLowEntropyAssignments,
-      &kExpectedLowEntropyAssignments,
-      &kExpectedLowEntropyAssignments,
-  });
+      kExpectedLowEntropyAssignments, kExpectedLowEntropyAssignments,
+      kExpectedLowEntropyAssignments, kExpectedLowEntropyAssignments,
+      kExpectedLowEntropyAssignments);
   EXPECT_THAT(assignments, ::testing::ElementsAreArray(expected));
 }
 
 TEST(VariationsUniformityTest, LowEntropyLayerDefaultEntropyStudy) {
   auto assignments = GetUniformityAssignments(LayerStudySeed({}));
 
-  std::vector<std::string> expected = Concat({
+  std::vector<std::string> expected = Concat(
       // Low entropy clients assign based on remainder entropy.
-      &kExpectedRemainderEntropyAssignments,
+      kExpectedRemainderEntropyAssignments,
       // High entropy clients assign based on high entropy.
       // Exclusions by layer below.
-      &kExpectedHighEntropyStudyAssignments,
-  });
+      kExpectedHighEntropyStudyAssignments);
+
   // Some high entropy clients are excluded from the layer by low entropy.
   for (int i = 1; i < 6; i++) {
     for (int les_value : {1, 12}) {
@@ -301,14 +303,13 @@ TEST(VariationsUniformityTest, LowEntropyLayerLowEntropyStudy) {
       LayerStudySeed({.add_google_web_experiment_id = true}));
 
   // Both high and low entropy clients should use remainder entropy.
-  std::vector<std::string> expected = Concat({
-      &kExpectedRemainderEntropyAssignments,
-      &kExpectedRemainderEntropyAssignments,
-      &kExpectedRemainderEntropyAssignments,
-      &kExpectedRemainderEntropyAssignments,
-      &kExpectedRemainderEntropyAssignments,
-      &kExpectedRemainderEntropyAssignments,
-  });
+  std::vector<std::string> expected =
+      Concat(kExpectedRemainderEntropyAssignments,
+             kExpectedRemainderEntropyAssignments,
+             kExpectedRemainderEntropyAssignments,
+             kExpectedRemainderEntropyAssignments,
+             kExpectedRemainderEntropyAssignments,
+             kExpectedRemainderEntropyAssignments);
   EXPECT_THAT(assignments, ::testing::ElementsAreArray(expected));
 }
 
@@ -318,13 +319,13 @@ TEST(VariationsUniformityTest, DefaultEntropyLayerDefaultEntropyStudy) {
   auto assignments = GetUniformityAssignments(
       LayerStudySeed({.layer_entropy_mode = std::nullopt}));
 
-  std::vector<std::string> expected = Concat({
+  std::vector<std::string> expected = Concat(
       // Low entropy clients assign based on remainder entropy.
-      &kExpectedRemainderEntropyAssignments,
+      kExpectedRemainderEntropyAssignments,
       // High entropy clients assign based on high entropy.
       // Exclusions by layer below.
-      &kExpectedHighEntropyStudyAssignments,
-  });
+      kExpectedHighEntropyStudyAssignments);
+
   // The following clients are excluded from the layer by high entropy.
   // This is derived from a sample of the high entropy space, and 18/100
   // exclusions is a likely (p>0.01) result at 10% exclusions.
@@ -345,15 +346,15 @@ TEST(VariationsUniformityTest, LimitedEntropyLayerLimitedEntropyStudy) {
   auto assignments = GetUniformityAssignmentsWithVaryingLimitedSource(
       LayerStudySeed({.layer_entropy_mode = Layer::LIMITED,
                       .add_google_web_experiment_id = true}));
-  std::vector<std::string> expected = Concat({
+
+  std::vector<std::string> expected = Concat(
       // Clients without the limited entropy randomization source should not be
       // assigned.
-      &kNoAssignments,
+      kNoAssignments,
       // Otherwise, the client should receive an assignment, unless the layer
       // member is not active (see doc string of
       // `kExpectedLimitedEntropyAssignments`).
-      &kExpectedLimitedEntropyAssignments,
-  });
+      kExpectedLimitedEntropyAssignments);
   EXPECT_THAT(assignments, ::testing::ElementsAreArray(expected));
 }
 
@@ -364,10 +365,8 @@ TEST(VariationsUniformityTest, LimitedEntropyLayerDefaultEntropyStudy) {
   // Expected assignments should be the same as the case when
   // `add_google_web_experiment_id = true` since the limited entropy provider
   // should be used whenever the study is constrained to a limited layer.
-  std::vector<std::string> expected = Concat({
-      &kNoAssignments,
-      &kExpectedLimitedEntropyAssignments,
-  });
+  std::vector<std::string> expected =
+      Concat(kNoAssignments, kExpectedLimitedEntropyAssignments);
   EXPECT_THAT(assignments, ::testing::ElementsAreArray(expected));
 }
 

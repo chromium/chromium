@@ -20,12 +20,11 @@ static_library("users_private") {
 
   deps = [
     "//base",
-    "//chrome/browser:browser_process",
     "//chrome/browser/ash/ownership",
-    "//chrome/browser/ash/policy/core",
     "//chrome/browser/ash/profiles",
     "//chrome/browser/profiles:profile",
     "//chrome/common",
+    "//chromeos/ash/components/install_attributes",
     "//chromeos/ash/components/settings",
     "//components/keyed_service/core",
     "//components/session_manager/core",

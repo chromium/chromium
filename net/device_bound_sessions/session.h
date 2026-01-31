@@ -26,6 +26,7 @@ class FirstPartySetMetadata;
 }  // namespace net
 
 namespace net::device_bound_sessions {
+struct SessionDisplay;
 
 namespace proto {
 class Session;
@@ -51,6 +52,9 @@ class NET_EXPORT Session {
   static std::unique_ptr<Session> CreateFromProto(const proto::Session& proto);
   proto::Session ToProto() const;
 
+  // Returns a display-friendly version of this Session. Used for DevTools.
+  SessionDisplay ToDisplay() const;
+
   // Used to set the unexportable session binding key associated with this
   // session. This method can be called when a session is first bound with
   // a brand new key. It can also be called when restoring a session after
@@ -70,7 +74,8 @@ class NET_EXPORT Session {
   // will be `base::TimeDelta::Max()`
   base::TimeDelta MinimumBoundCookieLifetime(
       DbscRequest& request,
-      const FirstPartySetMetadata& first_party_set_metadata);
+      const FirstPartySetMetadata& first_party_set_metadata,
+      const SessionKey& session_key);
 
   const Id& id() const { return id_; }
 

@@ -21,7 +21,6 @@
 #include "ash/test/ash_test_base.h"
 #include "ash/test/ash_test_helper.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller_test_api.h"
-#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
@@ -183,7 +182,7 @@ class KeyboardControllerImplTest : public AshTestBase {
   }
 
   void SetKeyboardConfigToPref(const base::Value& value) {
-    auto features = base::Value::Dict()
+    auto features = base::DictValue()
                         .Set("auto_complete_enabled", value.Clone())
                         .Set("auto_correct_enabled", value.Clone())
                         .Set("handwriting_enabled", value.Clone())
@@ -300,28 +299,23 @@ TEST_F(KeyboardControllerImplTest, EnableFlags) {
   keyboard_controller()->SetEnableFlag(KeyboardEnableFlag::kExtensionEnabled);
   std::set<keyboard::KeyboardEnableFlag> enable_flags =
       keyboard_controller()->GetEnableFlags();
-  EXPECT_TRUE(
-      base::Contains(enable_flags, KeyboardEnableFlag::kExtensionEnabled));
+  EXPECT_TRUE(enable_flags.contains(KeyboardEnableFlag::kExtensionEnabled));
   EXPECT_EQ(enable_flags, test_observer()->enable_flags());
   EXPECT_TRUE(keyboard_controller()->IsKeyboardEnabled());
 
   // Set the enable override to disable the keyboard.
   keyboard_controller()->SetEnableFlag(KeyboardEnableFlag::kPolicyDisabled);
   enable_flags = keyboard_controller()->GetEnableFlags();
-  EXPECT_TRUE(
-      base::Contains(enable_flags, KeyboardEnableFlag::kExtensionEnabled));
-  EXPECT_TRUE(
-      base::Contains(enable_flags, KeyboardEnableFlag::kPolicyDisabled));
+  EXPECT_TRUE(enable_flags.contains(KeyboardEnableFlag::kExtensionEnabled));
+  EXPECT_TRUE(enable_flags.contains(KeyboardEnableFlag::kPolicyDisabled));
   EXPECT_EQ(enable_flags, test_observer()->enable_flags());
   EXPECT_FALSE(keyboard_controller()->IsKeyboardEnabled());
 
   // Clear the enable override; should enable the keyboard.
   keyboard_controller()->ClearEnableFlag(KeyboardEnableFlag::kPolicyDisabled);
   enable_flags = keyboard_controller()->GetEnableFlags();
-  EXPECT_TRUE(
-      base::Contains(enable_flags, KeyboardEnableFlag::kExtensionEnabled));
-  EXPECT_FALSE(
-      base::Contains(enable_flags, KeyboardEnableFlag::kPolicyDisabled));
+  EXPECT_TRUE(enable_flags.contains(KeyboardEnableFlag::kExtensionEnabled));
+  EXPECT_FALSE(enable_flags.contains(KeyboardEnableFlag::kPolicyDisabled));
   EXPECT_EQ(enable_flags, test_observer()->enable_flags());
   EXPECT_TRUE(keyboard_controller()->IsKeyboardEnabled());
 }

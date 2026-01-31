@@ -4,9 +4,9 @@
 
 #include "content/test/mock_clipboard_host.h"
 
+#include <algorithm>
 #include <vector>
 
-#include "base/containers/contains.h"
 #include "base/notreached.h"
 #include "base/numerics/byte_conversions.h"
 #include "base/strings/strcat.h"
@@ -63,7 +63,7 @@ std::vector<std::u16string> MockClipboardHost::ReadStandardFormatNames() {
     types.push_back(ui::kMimeTypePng16);
   }
   for (auto& it : custom_data_) {
-    CHECK(!base::Contains(types, it.first));
+    CHECK(!std::ranges::contains(types, it.first));
     types.push_back(it.first);
   }
   return types;

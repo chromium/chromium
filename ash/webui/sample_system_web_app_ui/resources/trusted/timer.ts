@@ -2,10 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-const workerUrlPolicy = window.trustedTypes!.createPolicy('worker-js-static', {
-  createScriptURL: (_ignored: string) =>
-      'chrome://sample-system-web-app/worker.js',
-});
+const workerUrlPolicy: TrustedTypePolicy =
+    window.trustedTypes!.createPolicy('worker-js-static', {
+      createHTML: () => '',
+      createScriptURL: (_ignored: string) => {
+        return 'chrome://sample-system-web-app/worker.js';
+      },
+      createScript: () => '',
+    });
 
 // Currently TypeScript doesn't support trusted types so cast TrustedScriptURL
 // to URL. See https://github.com/microsoft/TypeScript/issues/30024.

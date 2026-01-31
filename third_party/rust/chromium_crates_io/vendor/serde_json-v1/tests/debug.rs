@@ -30,7 +30,7 @@ fn value_number() {
     assert_eq!(format!("{:?}", json!(-1)), "Number(-1)");
     assert_eq!(format!("{:?}", json!(1.0)), "Number(1.0)");
     assert_eq!(Number::from_f64(1.0).unwrap().to_string(), "1.0"); // not just "1"
-    assert_eq!(Number::from_f64(12e40).unwrap().to_string(), "1.2e41");
+    assert_eq!(Number::from_f64(12e40).unwrap().to_string(), "1.2e+41");
 }
 
 #[test]

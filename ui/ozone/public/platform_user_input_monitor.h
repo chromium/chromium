@@ -5,10 +5,9 @@
 #ifndef UI_OZONE_PUBLIC_PLATFORM_USER_INPUT_MONITOR_H_
 #define UI_OZONE_PUBLIC_PLATFORM_USER_INPUT_MONITOR_H_
 
-
 #include "base/component_export.h"
+#include "base/functional/callback.h"
 #include "base/memory/shared_memory_mapping.h"
-#include "base/task/single_thread_task_runner.h"
 
 namespace ui {
 

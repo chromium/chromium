@@ -44,7 +44,7 @@ void DataSharingNetworkLoaderAndroid::LoadUrl(
     JNIEnv* env,
     const JavaRef<jobject>& j_url,
     const JavaRef<jbyteArray>& j_post_data,
-    jint j_data_sharing_request_type,
+    int32_t j_data_sharing_request_type,
     const JavaRef<jobject>& j_callback) {
   if (!data_sharing_network_loader_) {
     OnResponseAvailable(ScopedJavaGlobalRef<jobject>(j_callback), nullptr);

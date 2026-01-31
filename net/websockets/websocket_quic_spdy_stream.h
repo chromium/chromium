@@ -50,6 +50,7 @@ class NET_EXPORT_PRIVATE WebSocketQuicSpdyStream : public quic::QuicSpdyStream {
   WebSocketQuicSpdyStream& operator=(const WebSocketQuicSpdyStream&) = delete;
   ~WebSocketQuicSpdyStream() override;
 
+  // Sets the delegate to receive stream events.
   void set_delegate(Delegate* delegate) { delegate_ = delegate; }
 
   void OnInitialHeadersComplete(
@@ -61,6 +62,12 @@ class NET_EXPORT_PRIVATE WebSocketQuicSpdyStream : public quic::QuicSpdyStream {
   int Read(IOBuffer* buf, int buf_len);
 
   void OnCanWriteNewData() override;
+
+  // Decouples the delegate from this stream and cancels the underlying QUIC
+  // stream. This allows the delegate to be destroyed independently while
+  // ensuring the stream is properly terminated. The stream is reset with
+  // QUIC_STREAM_CANCELLED to signal intentional closure to the peer.
+  void DetachDelegate();
 
  private:
   // Maps QUIC connection and stream errors to net error codes.

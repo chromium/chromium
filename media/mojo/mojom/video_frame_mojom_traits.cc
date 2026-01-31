@@ -11,6 +11,7 @@
 #include "base/logging.h"
 #include "base/memory/unsafe_shared_memory_region.h"
 #include "base/time/time.h"
+#include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
 #include "components/viz/common/resources/shared_image_format_utils.h"
 #include "media/base/color_plane_layout.h"
@@ -39,6 +40,7 @@ namespace {
 base::ReadOnlySharedMemoryRegion CreateRegion(const media::VideoFrame& frame,
                                               std::vector<uint32_t>& offsets,
                                               std::vector<int32_t>& strides) {
+  TRACE_EVENT0("media", "VideoFrameDataPtr::CreateRegion");
   size_t num_planes = media::VideoFrame::NumPlanes(frame.format());
   DCHECK_LE(num_planes, 3u);
   offsets.resize(num_planes);
@@ -116,8 +118,6 @@ media::mojom::VideoFrameDataPtr MakeVideoFrameData(
   }
 
   if (input->HasMappableSharedImage()) {
-    auto gpu_memory_buffer_handle = input->GetGpuMemoryBufferHandle();
-
     // STORAGE_MAPPABLE_SHARED_IMAGE may carry meaningful or dummy shared_image.
     std::optional<gpu::ExportedSharedImage> shared_image;
     gpu::SyncToken sync_token;

@@ -109,11 +109,11 @@ class ExtensionRequestReportGeneratorTest : public ::testing::Test {
                        const std::string& pref_name,
                        const std::string& timestamp_name,
                        TestingProfile* profile) {
-    base::Value::Dict id_values;
+    base::DictValue id_values;
     for (const auto& id : ids) {
       id_values.Set(
           id,
-          base::Value::Dict()
+          base::DictValue()
               .Set(timestamp_name,
                    ::base::TimeToValue(
                        base::Time::FromMillisecondsSinceUnixEpoch(kTimeStamp)))

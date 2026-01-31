@@ -211,7 +211,7 @@ class CellularPolicyHandlerTest : public testing::Test {
     base::RunLoop().RunUntilIdle();
   }
 
-  void InstallProfile(const base::Value::Dict& onc_config) {
+  void InstallProfile(const base::DictValue& onc_config) {
     cellular_policy_handler()->InstallESim(onc_config);
     base::RunLoop().RunUntilIdle();
 
@@ -243,7 +243,7 @@ class CellularPolicyHandlerTest : public testing::Test {
     return nullptr;
   }
 
-  bool IsProfileInstalled(const base::Value::Dict& onc_config,
+  bool IsProfileInstalled(const base::DictValue& onc_config,
                           const std::string& activation_code_value,
                           bool check_for_service) {
     HermesProfileClient::Properties* profile_properties =
@@ -275,7 +275,7 @@ class CellularPolicyHandlerTest : public testing::Test {
     const std::string shill_service_path =
         ShillServiceClient::Get()->GetTestInterface()->FindServiceMatchingGUID(
             guid);
-    const base::Value::Dict* properties =
+    const base::DictValue* properties =
         ShillServiceClient::Get()->GetTestInterface()->GetServiceProperties(
             shill_service_path);
 
@@ -375,7 +375,7 @@ class CellularPolicyHandlerTest : public testing::Test {
   // multiple tests involve attempting, and failing, to install an eSIM profile.
   // By separating the installation and auto-connect logic we can simply call
   // this method specifically when we expect the installation to succeed.
-  void CompleteShillServiceAutoConnect(const base::Value::Dict& onc_config) {
+  void CompleteShillServiceAutoConnect(const base::DictValue& onc_config) {
     const std::string* shill_guid = onc_config.FindString(shill::kGuidProperty);
     ASSERT_TRUE(shill_guid);
 
@@ -457,7 +457,7 @@ TEST_F(CellularPolicyHandlerTest, InstallSuccess_SMDP) {
       HermesEuiccClient::Get()
           ->GetTestInterface()
           ->GenerateFakeActivationCode());
-  std::optional<base::Value::Dict> onc_config =
+  std::optional<base::DictValue> onc_config =
       chromeos::onc::ReadDictionaryFromJson(
           GenerateCellularPolicy(activation_code));
   ASSERT_TRUE(onc_config.has_value());
@@ -520,7 +520,7 @@ TEST_F(CellularPolicyHandlerTest, InstallSuccess_SMDS) {
           ->GetTestInterface()
           ->GenerateFakeActivationCode());
 
-  std::optional<base::Value::Dict> onc_config =
+  std::optional<base::DictValue> onc_config =
       chromeos::onc::ReadDictionaryFromJson(
           GenerateCellularPolicy(activation_code));
   ASSERT_TRUE(onc_config.has_value());
@@ -564,7 +564,7 @@ TEST_F(CellularPolicyHandlerTest, InstallSuccess_DespiteHermesErrors) {
           ->GetTestInterface()
           ->GenerateFakeActivationCode());
 
-  std::optional<base::Value::Dict> onc_config =
+  std::optional<base::DictValue> onc_config =
       chromeos::onc::ReadDictionaryFromJson(
           GenerateCellularPolicy(activation_code));
   ASSERT_TRUE(onc_config.has_value());
@@ -603,7 +603,7 @@ TEST_F(CellularPolicyHandlerTest, InstalledButFailedToEnable) {
           ->GetTestInterface()
           ->GenerateFakeActivationCode());
 
-  std::optional<base::Value::Dict> onc_config =
+  std::optional<base::DictValue> onc_config =
       chromeos::onc::ReadDictionaryFromJson(
           GenerateCellularPolicy(activation_code));
   ASSERT_TRUE(onc_config.has_value());
@@ -718,7 +718,7 @@ TEST_F(CellularPolicyHandlerTest, InstallSuccess_SMDSMultipleProfiles) {
           ->GetTestInterface()
           ->GenerateFakeActivationCode());
 
-  std::optional<base::Value::Dict> onc_config =
+  std::optional<base::DictValue> onc_config =
       chromeos::onc::ReadDictionaryFromJson(
           GenerateCellularPolicy(activation_code));
   ASSERT_TRUE(onc_config.has_value());
@@ -757,7 +757,7 @@ TEST_F(CellularPolicyHandlerTest, InstallSuccess_RequireCellularDevice) {
           ->GetTestInterface()
           ->GenerateFakeActivationCode());
 
-  std::optional<base::Value::Dict> onc_config =
+  std::optional<base::DictValue> onc_config =
       chromeos::onc::ReadDictionaryFromJson(
           GenerateCellularPolicy(activation_code));
   ASSERT_TRUE(onc_config.has_value());
@@ -796,7 +796,7 @@ TEST_F(CellularPolicyHandlerTest, InstallSuccess_RequireEuicc) {
           ->GetTestInterface()
           ->GenerateFakeActivationCode());
 
-  std::optional<base::Value::Dict> onc_config =
+  std::optional<base::DictValue> onc_config =
       chromeos::onc::ReadDictionaryFromJson(
           GenerateCellularPolicy(activation_code));
   ASSERT_TRUE(onc_config.has_value());
@@ -835,7 +835,7 @@ TEST_F(CellularPolicyHandlerTest, InstallSuccess_RequireNonCellularConnection) {
           ->GetTestInterface()
           ->GenerateFakeActivationCode());
 
-  std::optional<base::Value::Dict> onc_config =
+  std::optional<base::DictValue> onc_config =
       chromeos::onc::ReadDictionaryFromJson(
           GenerateCellularPolicy(activation_code));
   ASSERT_TRUE(onc_config.has_value());
@@ -882,7 +882,7 @@ TEST_F(CellularPolicyHandlerTest, InstallSuccess_ExistingIccid) {
       HermesEuiccClient::Get()
           ->GetTestInterface()
           ->GenerateFakeActivationCode());
-  std::optional<base::Value::Dict> onc_config =
+  std::optional<base::DictValue> onc_config =
       chromeos::onc::ReadDictionaryFromJson(
           GenerateCellularPolicy(activation_code, kTestProfileIccid0));
   ASSERT_TRUE(onc_config.has_value());
@@ -902,7 +902,7 @@ TEST_F(CellularPolicyHandlerTest, InstallSuccess_ExistingIccid) {
                                  /*check_for_service=*/false));
   EXPECT_FALSE(HasESimMetadata(activation_code.value()));
 
-  const base::Value::Dict* properties =
+  const base::DictValue* properties =
       network_handler_test_helper()->service_test()->GetServiceProperties(
           kTestProfileServicePath0);
   ASSERT_TRUE(properties);
@@ -947,7 +947,7 @@ TEST_F(CellularPolicyHandlerTest, InstallSuccess_WaitForProfileProperties) {
       HermesEuiccClient::Get()
           ->GetTestInterface()
           ->GenerateFakeActivationCode());
-  std::optional<base::Value::Dict> onc_config =
+  std::optional<base::DictValue> onc_config =
       chromeos::onc::ReadDictionaryFromJson(
           GenerateCellularPolicy(activation_code));
   ASSERT_TRUE(onc_config.has_value());
@@ -998,7 +998,7 @@ TEST_F(CellularPolicyHandlerTest, InstallFailure_NoActivationCodeProvided) {
   ExpectedHistogramState expected_state;
   CheckHistogramState(expected_state);
 
-  std::optional<base::Value::Dict> onc_config =
+  std::optional<base::DictValue> onc_config =
       chromeos::onc::ReadDictionaryFromJson(
           base::StringPrintf(kCellularPolicyPattern, base::RandUint64(), "{}"));
   ASSERT_TRUE(onc_config.has_value());
@@ -1035,7 +1035,7 @@ TEST_F(CellularPolicyHandlerTest, InstallFailure_ProfileMissingActivationCode) {
           ->GetTestInterface()
           ->GenerateFakeActivationCode());
 
-  std::optional<base::Value::Dict> onc_config =
+  std::optional<base::DictValue> onc_config =
       chromeos::onc::ReadDictionaryFromJson(
           GenerateCellularPolicy(activation_code));
   ASSERT_TRUE(onc_config.has_value());
@@ -1067,7 +1067,7 @@ TEST_F(CellularPolicyHandlerTest, InstallFailure_InternalErrorRetry) {
           ->GetTestInterface()
           ->GenerateFakeActivationCode());
 
-  std::optional<base::Value::Dict> onc_config =
+  std::optional<base::DictValue> onc_config =
       chromeos::onc::ReadDictionaryFromJson(
           GenerateCellularPolicy(activation_code));
   ASSERT_TRUE(onc_config.has_value());
@@ -1145,7 +1145,7 @@ TEST_F(CellularPolicyHandlerTest, InstallFailure_OtherErrorRetry) {
           ->GetTestInterface()
           ->GenerateFakeActivationCode());
 
-  std::optional<base::Value::Dict> onc_config =
+  std::optional<base::DictValue> onc_config =
       chromeos::onc::ReadDictionaryFromJson(
           GenerateCellularPolicy(activation_code));
   ASSERT_TRUE(onc_config.has_value());
@@ -1224,7 +1224,7 @@ TEST_F(CellularPolicyHandlerTest, InstallFailure_UserError) {
           ->GetTestInterface()
           ->GenerateFakeActivationCode());
 
-  std::optional<base::Value::Dict> onc_config =
+  std::optional<base::DictValue> onc_config =
       chromeos::onc::ReadDictionaryFromJson(
           GenerateCellularPolicy(activation_code));
   ASSERT_TRUE(onc_config.has_value());
@@ -1269,7 +1269,7 @@ TEST_F(CellularPolicyHandlerTest, InstallSuccess_SecondEuicc) {
           ->GetTestInterface()
           ->GenerateFakeActivationCode());
 
-  std::optional<base::Value::Dict> onc_config =
+  std::optional<base::DictValue> onc_config =
       chromeos::onc::ReadDictionaryFromJson(
           GenerateCellularPolicy(activation_code));
   ASSERT_TRUE(onc_config.has_value());
@@ -1297,7 +1297,7 @@ TEST_F(CellularPolicyHandlerTest, NoAvailableProfiles_SMDP) {
       HermesEuiccClient::Get()
           ->GetTestInterface()
           ->GenerateFakeActivationCode());
-  std::optional<base::Value::Dict> onc_config =
+  std::optional<base::DictValue> onc_config =
       chromeos::onc::ReadDictionaryFromJson(
           GenerateCellularPolicy(activation_code));
   ASSERT_TRUE(onc_config.has_value());
@@ -1325,7 +1325,7 @@ TEST_F(CellularPolicyHandlerTest, NoAvailableProfiles_SMDS) {
       HermesEuiccClient::Get()
           ->GetTestInterface()
           ->GenerateFakeActivationCode());
-  std::optional<base::Value::Dict> onc_config =
+  std::optional<base::DictValue> onc_config =
       chromeos::onc::ReadDictionaryFromJson(
           GenerateCellularPolicy(activation_code));
   ASSERT_TRUE(onc_config.has_value());

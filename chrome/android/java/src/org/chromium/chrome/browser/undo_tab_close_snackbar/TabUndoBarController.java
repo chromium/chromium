@@ -180,10 +180,7 @@ public class TabUndoBarController extends UndoBarController {
         assert !closedTabs.get(0).isIncognito();
 
         TabGroupModelFilter filter =
-                assumeNonNull(
-                        mTabModelSelector
-                                .getTabGroupModelFilterProvider()
-                                .getTabGroupModelFilter(/* isIncognito= */ false));
+                assumeNonNull(mTabModelSelector.getTabGroupModelFilter(/* isIncognito= */ false));
         Profile profile = filter.getTabModel().getProfile();
         boolean tabGroupSyncEnabled =
                 profile != null
@@ -257,10 +254,7 @@ public class TabUndoBarController extends UndoBarController {
                 }
                 assert groupedTab != null;
                 TabGroupModelFilter filter =
-                        assumeNonNull(
-                                mTabModelSelector
-                                        .getTabGroupModelFilterProvider()
-                                        .getTabGroupModelFilter(false));
+                        assumeNonNull(mTabModelSelector.getTabGroupModelFilter(false));
                 @Nullable String tabGroupTitle = filter.getTabGroupTitle(groupedTab);
                 if (TextUtils.isEmpty(tabGroupTitle)) {
                     tabGroupTitle =

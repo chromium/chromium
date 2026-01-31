@@ -48,7 +48,6 @@ NSString* InjectedErrorPageFilePath() {
 @property(nonatomic, strong) NSError* error;
 // The error page HTML to be injected into existing page.
 @property(nonatomic, copy) NSString* automaticReloadJavaScript;
-@property(nonatomic, copy, readonly) NSString* failedNavigationURLString;
 @end
 
 @implementation CRWErrorPageHelper
@@ -67,20 +66,17 @@ NSString* InjectedErrorPageFilePath() {
 
 - (NSURL*)failedNavigationURL {
   if (!_failedNavigationURL) {
-    _failedNavigationURL = [NSURL URLWithString:self.failedNavigationURLString];
+    _failedNavigationURL = self.error.userInfo[NSURLErrorFailingURLErrorKey];
   }
   return _failedNavigationURL;
-}
-
-- (NSString*)failedNavigationURLString {
-  return self.error.userInfo[NSURLErrorFailingURLStringErrorKey];
 }
 
 - (NSURL*)errorPageFileURL {
   if (!_errorPageFileURL) {
     NSURLQueryItem* itemURL = [NSURLQueryItem
         queryItemWithName:base::SysUTF8ToNSString(kOriginalUrlKey)
-                    value:EscapeHTMLCharacters(self.failedNavigationURLString)];
+                    value:EscapeHTMLCharacters(
+                              self.failedNavigationURL.absoluteString)];
     NSURLQueryItem* itemDontLoad = [NSURLQueryItem queryItemWithName:@"dontLoad"
                                                                value:@"true"];
     NSURLComponents* URL = [[NSURLComponents alloc] initWithString:@"file:///"];
@@ -100,7 +96,7 @@ NSString* InjectedErrorPageFilePath() {
                                   encoding:NSUTF8StringEncoding
                                      error:nil];
     NSString* failedNavigationURLString =
-        EscapeHTMLCharacters(self.failedNavigationURLString);
+        EscapeHTMLCharacters(self.failedNavigationURL.absoluteString);
     _automaticReloadJavaScript =
         [NSString stringWithFormat:HTMLTemplate, failedNavigationURLString];
   }

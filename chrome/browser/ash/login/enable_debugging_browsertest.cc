@@ -393,7 +393,7 @@ class EnableDebuggingRequestedTest : public EnableDebuggingDevTest {
 
   // EnableDebuggingDevTest overrides:
   bool SetUpUserDataDirectory() override {
-    base::Value::Dict local_state_dict;
+    base::DictValue local_state_dict;
     local_state_dict.Set(prefs::kDebuggingFeaturesRequested, true);
 
     base::FilePath user_data_dir;

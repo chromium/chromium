@@ -15,12 +15,12 @@
 
 namespace prefetch {
 
-static jint JNI_PreloadPagesSettingsBridge_GetState(JNIEnv* env,
-                                                    Profile* profile) {
+static int32_t JNI_PreloadPagesSettingsBridge_GetState(JNIEnv* env,
+                                                       Profile* profile) {
   return static_cast<int>(prefetch::GetPreloadPagesState(*profile->GetPrefs()));
 }
 
-static jboolean JNI_PreloadPagesSettingsBridge_IsNetworkPredictionManaged(
+static bool JNI_PreloadPagesSettingsBridge_IsNetworkPredictionManaged(
     JNIEnv* env,
     Profile* profile) {
   return profile->GetPrefs()->IsManagedPreference(
@@ -29,7 +29,7 @@ static jboolean JNI_PreloadPagesSettingsBridge_IsNetworkPredictionManaged(
 
 static void JNI_PreloadPagesSettingsBridge_SetState(JNIEnv* env,
                                                     Profile* profile,
-                                                    jint state) {
+                                                    int32_t state) {
   prefetch::SetPreloadPagesState(
       profile->GetPrefs(), static_cast<prefetch::PreloadPagesState>(state));
 }

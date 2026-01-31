@@ -11,11 +11,14 @@
 #include "third_party/blink/renderer/platform/heap/member.h"
 
 namespace blink::scheduler {
+class TaskAttributionId;
 class TaskAttributionInfo;
 }  // namespace blink::scheduler
 
 namespace blink {
 class SchedulerTaskContext;
+class ResourceTimingContext;
+class SoftNavigationContext;
 
 class CORE_EXPORT WebSchedulingTaskState final
     : public TaskAttributionTaskState {
@@ -26,6 +29,13 @@ class CORE_EXPORT WebSchedulingTaskState final
   // `TaskAttributionTaskState` implementation:
   scheduler::TaskAttributionInfo* GetTaskAttributionInfo() override;
   SchedulerTaskContext* GetSchedulerTaskContext() override;
+  TaskAttributionTaskState* ForkAndSetVariable(
+      const scheduler::TaskAttributionId,
+      ResourceTimingContext*) override;
+  TaskAttributionTaskState* ForkAndSetVariable(
+      const scheduler::TaskAttributionId,
+      SoftNavigationContext*) override;
+
   void Trace(Visitor*) const override;
 
  private:

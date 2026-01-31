@@ -65,7 +65,7 @@ IN_PROC_BROWSER_TEST_F(GlicActorMediaControlToolUiTest, SeekMedia) {
       InitializeWithOpenGlicWindow(),
       StartActorTaskInNewTab(url, kNewActorTabId),
       ExecuteJs(kNewActorTabId, "play"),
-      MediaControlAction(actor::SeekMedia(1000000)),
+      MediaControlAction(actor::SeekMedia{.seek_time_milliseconds = 1000}),
       WaitForJsResult(kNewActorTabId, "() => { return event_log.join(','); }",
                       "seek 1"));
 }

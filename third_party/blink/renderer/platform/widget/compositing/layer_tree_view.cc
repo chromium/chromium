@@ -146,7 +146,7 @@ void LayerTreeView::ClearPreviousDelegateAndReattachIfNeeded(
     // `LayerTreeHost::DetachInputDelegateAndRenderFrameObserver()` to avoid
     // having a gap in time in the compositor where the LayerTreeHost is already
     // detached but is still marked as visible. This is done to stop the compositor from producing frames which require an input delegate. See also
-    // https://crbug,com/41496745 for more details.
+    // https://crbug.com/41496745 for more details.
     layer_tree_host_->SetVisible(false);
   }
   layer_tree_host_->DetachInputDelegateAndRenderFrameObserver();

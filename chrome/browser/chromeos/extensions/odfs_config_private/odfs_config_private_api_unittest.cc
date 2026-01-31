@@ -18,8 +18,8 @@ namespace extensions {
 
 namespace {
 
-base::Value::List ToList(const std::vector<std::string>& values) {
-  base::Value::List list;
+base::ListValue ToList(const std::vector<std::string>& values) {
+  base::ListValue list;
   for (const auto& value : values) {
     list.Append(value);
   }

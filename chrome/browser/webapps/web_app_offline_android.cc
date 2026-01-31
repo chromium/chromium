@@ -64,7 +64,7 @@ content::mojom::AlternativeErrorPageOverrideInfoPtr GetOfflinePageInfo(
   auto alternative_error_page_info =
       content::mojom::AlternativeErrorPageOverrideInfo::New();
 
-  base::Value::Dict dict;
+  base::DictValue dict;
   for (size_t i = 0; i < resource_strings.size(); ++i) {
     WebApkDetailsForDefaultOfflinePage field_id =
         (WebApkDetailsForDefaultOfflinePage)fields[i];

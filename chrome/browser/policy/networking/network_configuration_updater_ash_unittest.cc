@@ -242,16 +242,16 @@ std::string ValueToString(const T& value) {
 // certificates contained in |toplevel_onc|. Appends the selected certificate
 // into |out_parsed_client_certificates|.
 void SelectSingleClientCertificateFromOnc(
-    base::Value::Dict& toplevel_onc,
+    base::DictValue& toplevel_onc,
     size_t client_certificate_index,
     std::vector<chromeos::onc::OncParsedCertificates::ClientCertificate>*
         out_parsed_client_certificates) {
-  const base::Value::List* certs =
+  const base::ListValue* certs =
       toplevel_onc.FindList(onc::toplevel_config::kCertificates);
   ASSERT_TRUE(certs);
   ASSERT_TRUE(certs->size() > client_certificate_index);
 
-  base::Value::List selected_certs;
+  base::ListValue selected_certs;
   selected_certs.Append((*certs)[client_certificate_index].Clone());
 
   chromeos::onc::OncParsedCertificates parsed_selected_certs(selected_certs);
@@ -262,7 +262,7 @@ void SelectSingleClientCertificateFromOnc(
 }
 
 // Matcher to match `base::Value` with a compatible type (string, `base::Value`,
-// `base::Value::Dict`, `base::Value::List` etc.). See the `==` operator
+// `base::DictValue`, `base::ListValue` etc.). See the `==` operator
 // overrides in `base/values.h` and the definition of `ValueToString()` for
 // the restrictions on allowed types for `value`.
 MATCHER_P(IsEqualTo,
@@ -312,15 +312,15 @@ class NetworkConfigurationUpdaterAshTest : public testing::Test {
     providers.push_back(&provider_);
     policy_service_ = std::make_unique<PolicyServiceImpl>(std::move(providers));
 
-    std::optional<base::Value::Dict> fake_toplevel_onc =
+    std::optional<base::DictValue> fake_toplevel_onc =
         chromeos::onc::ReadDictionaryFromJson(kFakeONC);
     ASSERT_TRUE(fake_toplevel_onc.has_value());
 
-    base::Value::Dict* global_config = fake_toplevel_onc->FindDict(
+    base::DictValue* global_config = fake_toplevel_onc->FindDict(
         onc::toplevel_config::kGlobalNetworkConfiguration);
     fake_global_network_config_.Merge(global_config->Clone());
 
-    base::Value::List* certs =
+    base::ListValue* certs =
         fake_toplevel_onc->FindList(onc::toplevel_config::kCertificates);
     ASSERT_TRUE(certs);
 
@@ -334,8 +334,8 @@ class NetworkConfigurationUpdaterAshTest : public testing::Test {
         .Times(AnyNumber());
   }
 
-  base::Value::List* GetExpectedFakeNetworkConfigs(::onc::ONCSource source) {
-    std::optional<base::Value::Dict> fake_toplevel_onc =
+  base::ListValue* GetExpectedFakeNetworkConfigs(::onc::ONCSource source) {
+    std::optional<base::DictValue> fake_toplevel_onc =
         chromeos::onc::ReadDictionaryFromJson(kFakeONC);
     if (!fake_toplevel_onc.has_value()) {
       return nullptr;
@@ -347,7 +347,7 @@ class NetworkConfigurationUpdaterAshTest : public testing::Test {
     return &fake_network_configs_;
   }
 
-  base::Value::Dict* GetExpectedFakeGlobalNetworkConfig() {
+  base::DictValue* GetExpectedFakeGlobalNetworkConfig() {
     return &fake_global_network_config_;
   }
 
@@ -430,8 +430,8 @@ class NetworkConfigurationUpdaterAshTest : public testing::Test {
   std::unique_ptr<NetworkConfigurationUpdater> network_configuration_updater_;
 
  private:
-  base::Value::List fake_network_configs_;
-  base::Value::Dict fake_global_network_config_;
+  base::ListValue fake_network_configs_;
+  base::DictValue fake_global_network_config_;
   ash::ScopedFakeSessionManagerClient scoped_session_manager_client_;
 };
 
@@ -485,15 +485,14 @@ TEST_F(NetworkConfigurationUpdaterAshTest,
 }
 
 TEST_F(NetworkConfigurationUpdaterAshTest, PolicyIsValidatedAndRepaired) {
-  base::Value::Dict onc_repaired =
-      chromeos::onc::test_utils::ReadTestDictionary(
-          "repaired_toplevel_partially_invalid.onc");
+  base::DictValue onc_repaired = chromeos::onc::test_utils::ReadTestDictionary(
+      "repaired_toplevel_partially_invalid.onc");
 
-  base::Value::List* network_configs_repaired =
+  base::ListValue* network_configs_repaired =
       onc_repaired.FindList(onc::toplevel_config::kNetworkConfigurations);
   ASSERT_TRUE(network_configs_repaired);
 
-  base::Value::Dict* global_config_repaired =
+  base::DictValue* global_config_repaired =
       onc_repaired.FindDict(onc::toplevel_config::kGlobalNetworkConfiguration);
   ASSERT_TRUE(global_config_repaired);
 

@@ -28,7 +28,7 @@ class CryptAuthKey {
   enum Status { kActive, kInactive };
 
   static std::optional<CryptAuthKey> FromDictionary(
-      const base::Value::Dict& value);
+      const base::DictValue& value);
 
   // Constructor for symmetric keys.
   CryptAuthKey(const std::string& symmetric_key,
@@ -69,16 +69,16 @@ class CryptAuthKey {
 
   void set_status(Status status) { status_ = status; }
 
-  // Converts CryptAuthKey to a Value::Dict of the form
+  // Converts CryptAuthKey to a base::DictValue of the form
   //   {
   //     "handle": <handle_>
   //     "status": <status_ as int>
   //     "symmetric_key": <symmetric_key_>
   //     "type": <type_ as int>
   //   }
-  base::Value::Dict AsSymmetricKeyDictionary() const;
+  base::DictValue AsSymmetricKeyDictionary() const;
 
-  // Converts CryptAuthKey to a Value::Dict of the form
+  // Converts CryptAuthKey to a base::DictValue of the form
   //   {
   //     "handle": <handle_>
   //     "private_key" : <private_key_>
@@ -86,7 +86,7 @@ class CryptAuthKey {
   //     "status": <status_ as int>
   //     "type": <type_ as int>
   //   }
-  base::Value::Dict AsAsymmetricKeyDictionary() const;
+  base::DictValue AsAsymmetricKeyDictionary() const;
 
   bool operator==(const CryptAuthKey& other) const;
   bool operator!=(const CryptAuthKey& other) const;

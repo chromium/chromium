@@ -24,7 +24,7 @@
 #include "components/supervised_user/core/browser/proto_fetcher.h"
 #include "components/supervised_user/core/browser/supervised_user_service.h"
 #include "components/supervised_user/core/browser/supervised_user_service_observer.h"
-#include "components/supervised_user/core/browser/supervised_user_url_filter.h"
+#include "components/supervised_user/core/browser/supervised_user_url_filtering_service.h"
 
 namespace supervised_user {
 
@@ -56,9 +56,13 @@ class FamilyLinkSettingsState {
   // Groups services that might be used to verify if seeding is successful.
   struct Services {
     Services(const SupervisedUserService& supervised_user_service,
+             const SupervisedUserUrlFilteringService&
+                 supervised_user_url_filtering_service,
              const PrefService& pref_service,
              const HostContentSettingsMap& host_content_settings_map);
     raw_ref<const SupervisedUserService> supervised_user_service;
+    raw_ref<const SupervisedUserUrlFilteringService>
+        supervised_user_url_filtering_service;
     raw_ref<const PrefService> pref_service;
     raw_ref<const HostContentSettingsMap> host_content_settings_map;
   };

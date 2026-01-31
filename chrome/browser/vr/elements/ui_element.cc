@@ -99,7 +99,7 @@ void UiElement::Render(UiElementRenderer* renderer,
   NOTREACHED() << "element: " << DebugName();
 }
 
-void UiElement::Initialize(SkiaSurfaceProvider* provider) {}
+void UiElement::Initialize() {}
 
 bool UiElement::DoBeginFrame(const gfx::Transform& head_pose,
                              bool force_animations_to_completion) {

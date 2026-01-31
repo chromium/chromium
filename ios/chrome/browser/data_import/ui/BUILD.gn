@@ -9,19 +9,20 @@ source_set("ui") {
     "data_import_credential_conflict_resolution_view_controller.mm",
     "data_import_credential_conflict_resolution_view_controller_delegate.h",
     "data_import_import_stage_transition_handler.h",
-    "data_import_invalid_passwords_view_controller.h",
-    "data_import_invalid_passwords_view_controller.mm",
+    "data_import_invalid_credentials_view_controller.h",
+    "data_import_invalid_credentials_view_controller.mm",
     "import_data_item_table_view.h",
     "import_data_item_table_view.mm",
   ]
   deps = [
-    ":password_import_cell_configuration",
+    ":credential_import_cell_configuration",
     ":ui_utils",
     "//base",
     "//components/strings",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/data_import/public",
     "//ios/chrome/browser/data_import/public:metrics",
+    "//ios/chrome/browser/passwords/coordinator",
     "//ios/chrome/browser/settings/ui_bundled/utils",
     "//ios/chrome/browser/shared/ui/elements",
     "//ios/chrome/browser/shared/ui/symbols",
@@ -38,12 +39,12 @@ source_set("ui") {
   frameworks = [ "UIKit.framework" ]
 }
 
-source_set("password_import_cell_configuration") {
+source_set("credential_import_cell_configuration") {
   sources = [
-    "password_import_item_cell_content_configuration.h",
-    "password_import_item_cell_content_configuration.mm",
-    "password_import_item_cell_content_view.h",
-    "password_import_item_cell_content_view.mm",
+    "credential_import_item_cell_content_configuration.h",
+    "credential_import_item_cell_content_configuration.mm",
+    "credential_import_item_cell_content_view.h",
+    "credential_import_item_cell_content_view.mm",
   ]
   deps = [
     "//base",

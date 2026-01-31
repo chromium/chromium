@@ -55,6 +55,12 @@ std::string InvocationSourceToString(
       return "ContentAreaContextMenuText";
     case LensOverlayInvocationSource::kContentAreaContextMenuVideo:
       return "ContentAreaContextMenuVideo";
+    case LensOverlayInvocationSource::kNtpContextualQuery:
+      return "NtpContextualQuery";
+    case LensOverlayInvocationSource::kOmniboxContextualQuery:
+      return "OmniboxContextualQuery";
+    case LensOverlayInvocationSource::kContextualTasksComposebox:
+      return "ContextualTasksComposebox";
   }
 }
 
@@ -478,6 +484,15 @@ void RecordTimeToFirstInteraction(
       // Not recorded since the video context menu entry point results in a
       // search without the user having to interact with the overlay. Time to
       // first interaction in this case is essentially zero.
+      break;
+    case lens::LensOverlayInvocationSource::kNtpContextualQuery:
+    case lens::LensOverlayInvocationSource::kOmniboxContextualQuery:
+      // Not recorded since the ntp and omnibox contextual query flows do not
+      // use the Lens Overlay Controller.
+      break;
+    case LensOverlayInvocationSource::kContextualTasksComposebox:
+      // TODO(crbug.com/469460311): Add metrics for Contextual Tasks lens
+      // button.
       break;
   }
   event.SetFirstInteractionType(static_cast<int64_t>(first_interaction_type))

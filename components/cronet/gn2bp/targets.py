@@ -6,7 +6,8 @@ DEFAULT_TARGETS = [
     "//components/cronet/android:cronet_api_java",
     '//components/cronet/android:cronet',
     '//components/cronet/android:cronet_impl_native_java',
-    '//components/cronet/android:cronet_build_config_and_jni_registration_java',
+    '//components/cronet/android:cronet_build_config_java',
+    '//components/cronet/android:cronet_jni_registration_java',
 ]
 
 DEFAULT_TESTS = [
@@ -15,7 +16,8 @@ DEFAULT_TESTS = [
     '//components/cronet/android:cronet_tests',
     '//components/cronet/android:cronet',
     '//components/cronet/android:cronet_javatests',
-    '//components/cronet/android:cronet_build_config_and_jni_registration_java',
+    '//components/cronet/android:cronet_build_config_java',
+    '//components/cronet/android:cronet_jni_registration_java',
     '//components/cronet/android:cronet_tests_jni_registration_java',
     '//testing/android/native_test:native_test_java',
     '//net/android:net_test_support_provider_java',

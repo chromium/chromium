@@ -7,12 +7,12 @@
 // language policy. If a language is both blocked and forced, forced wins. It is
 // only practical to test this interaction in a single unit test covering both
 // header files.
+#include <algorithm>
 #include <optional>
 #include <ostream>
 #include <string>
 #include <vector>
 
-#include "base/containers/contains.h"
 #include "base/strings/string_util.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/values.h"
@@ -92,7 +92,7 @@ class SpellcheckLanguagePolicyHandlersTest
 
       for (const auto& language : languages_list->GetList()) {
         EXPECT_TRUE(language.is_string());
-        EXPECT_TRUE(base::Contains(expected, language.GetString()));
+        EXPECT_TRUE(std::ranges::contains(expected, language.GetString()));
       }
     } else {
       EXPECT_FALSE(is_spellcheck_enabled_pref_set);
@@ -115,12 +115,12 @@ TEST_P(SpellcheckLanguagePolicyHandlersTest, ApplyPolicySettings) {
   PrefValueMap prefs;
   policy::PolicyMap policy;
 
-  base::Value::List blocked_languages_list;
+  base::ListValue blocked_languages_list;
   for (const auto& blocked_language : GetParam().blocked_languages) {
     blocked_languages_list.Append(std::move(blocked_language));
   }
 
-  base::Value::List forced_languages_list;
+  base::ListValue forced_languages_list;
   for (const auto& forced_language : GetParam().forced_languages) {
     forced_languages_list.Append(std::move(forced_language));
   }

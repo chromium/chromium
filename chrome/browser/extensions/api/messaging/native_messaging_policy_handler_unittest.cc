@@ -17,7 +17,7 @@ namespace extensions {
 const char kTestPref[] = "unit_test.test_pref";
 
 TEST(NativeMessagingHostListPolicyHandlerTest, CheckPolicySettings) {
-  base::Value::List list;
+  base::ListValue list;
   policy::PolicyMap policy_map;
   NativeMessagingHostListPolicyHandler handler(
       policy::key::kNativeMessagingBlocklist, kTestPref, true);
@@ -69,8 +69,8 @@ TEST(NativeMessagingHostListPolicyHandlerTest, CheckPolicySettings) {
 }
 
 TEST(NativeMessagingHostListPolicyHandlerTest, ApplyPolicySettings) {
-  base::Value::List policy;
-  base::Value::List expected;
+  base::ListValue policy;
+  base::ListValue expected;
   policy::PolicyMap policy_map;
   PrefValueMap prefs;
   base::Value* value = nullptr;

@@ -134,6 +134,8 @@ public class Snackbar {
     public static final int UMA_TAB_PICKER_LIMIT_REACHED = 77;
     public static final int UMA_FUSEBOX_MAX_ATTACHMENTS = 78;
     public static final int UMA_FUSEBOX_UPLOAD_FAILED = 79;
+    public static final int UMA_BOOKMARK_LINK_COPIED = 80;
+    public static final int UMA_BOOKMARK_LINK_COPIED_NON_SELECTION = 81;
 
     private final @Nullable SnackbarController mController;
     private final CharSequence mText;

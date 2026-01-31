@@ -11,8 +11,6 @@
 
 namespace blink {
 
-class StaticBitmapImage;
-
 // Supports copying an Image to a native buffer, returning a handle to the
 // native buffer.
 class PLATFORM_EXPORT ImageToBufferCopier {
@@ -25,7 +23,7 @@ class PLATFORM_EXPORT ImageToBufferCopier {
   // SyncToken will be completed after access to the buffer is finished by
   // GPU process.
   std::pair<gfx::GpuMemoryBufferHandle, gpu::SyncToken> CopyImage(
-      StaticBitmapImage*);
+      const scoped_refptr<gpu::ClientSharedImage>& source_shared_image);
 
  private:
   bool EnsureDestImage(const gfx::Size&);

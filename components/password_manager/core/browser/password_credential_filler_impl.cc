@@ -67,7 +67,7 @@ SubmissionReadinessState CalculateSubmissionReadiness(
   }
 
   auto ShouldIgnoreField = [](const autofill::FormFieldData& field) {
-    if (!field.IsFocusable()) {
+    if (!field.is_focusable()) {
       return true;
     }
     // Don't treat a checkbox (e.g. "remember me") as an input field that may

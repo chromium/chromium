@@ -39,6 +39,8 @@
 namespace {
 /// Constants for cancel button styling.
 static const CGFloat kCancelButtonIconSize = 30;
+/// Constants for the default header height.
+static const CGFloat kHeaderDefaultHeight = 48;
 
 /// Constants for timer update intervals.
 static constexpr base::TimeDelta kNormalUpdateInterval =
@@ -126,9 +128,10 @@ typedef NSDiffableDataSourceSnapshot<DownloadListGroupItem*, DownloadListItem*>
 #pragma mark - Private
 
 - (void)setupFilterHeaderView {
-  self.filterHeaderView = [[DownloadListTableViewHeader alloc] init];
+  self.filterHeaderView = [[DownloadListTableViewHeader alloc]
+      initWithFrame:CGRectMake(0, 0, self.tableView.bounds.size.width,
+                               kHeaderDefaultHeight)];
   self.filterHeaderView.mutator = self.mutator;
-  [self updateTableHeaderViewFrame];
 }
 
 - (void)updateTableHeaderViewFrame {
@@ -136,10 +139,12 @@ typedef NSDiffableDataSourceSnapshot<DownloadListGroupItem*, DownloadListItem*>
     return;
   }
 
-  [self.filterHeaderView setNeedsLayout];
-  [self.filterHeaderView layoutIfNeeded];
-
+  // Ensure view is loaded before accessing tableView.
+  if (!self.viewLoaded) {
+    return;
+  }
   CGFloat width = self.tableView.bounds.size.width;
+
   CGSize fittingSize = [self.filterHeaderView
       systemLayoutSizeFittingSize:CGSizeMake(
                                       width,
@@ -575,8 +580,8 @@ typedef NSDiffableDataSourceSnapshot<DownloadListGroupItem*, DownloadListItem*>
 
 #pragma mark - UIAdaptivePresentationControllerDelegate
 
-/// Called before the presentation controller will dismiss.
-- (void)presentationControllerWillDismiss:
+/// Called after the presentation controller did dismiss.
+- (void)presentationControllerDidDismiss:
     (UIPresentationController*)presentationController {
   [self.downloadListHandler hideDownloadList];
 }

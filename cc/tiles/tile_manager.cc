@@ -12,7 +12,6 @@
 #include <optional>
 #include <string>
 
-#include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/json/json_writer.h"
@@ -253,7 +252,7 @@ void InsertNodeForTask(TaskGraph* graph,
                        bool has_external_dependency = false) {
   TRACE_EVENT("cc", __PRETTY_FUNCTION__, "category", category, "deps",
               dependencies);
-  DCHECK(!base::Contains(graph->nodes, task, &TaskGraph::Node::task));
+  DCHECK(!std::ranges::contains(graph->nodes, task, &TaskGraph::Node::task));
   graph->nodes.emplace_back(task, category, priority, dependencies,
                             has_external_dependency);
 }
@@ -1741,7 +1740,7 @@ std::unique_ptr<Tile> TileManager::CreateTile(const Tile::CreateInfo& info,
   DCHECK(tile_task_manager_);
   std::unique_ptr<Tile> tile(
       new Tile(this, info, layer_id, source_frame_number, flags));
-  DCHECK(!base::Contains(tiles_, tile->id()));
+  DCHECK(!tiles_.contains(tile->id()));
 
   tiles_[tile->id()] = tile.get();
   return tile;

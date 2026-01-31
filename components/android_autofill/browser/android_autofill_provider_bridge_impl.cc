@@ -233,7 +233,7 @@ void AndroidAutofillProviderBridgeImpl::DetachFromJavaAutofillProvider(
   java_ref_.reset();
 }
 
-jboolean AndroidAutofillProviderBridgeImpl::HasPasskeyRequest(JNIEnv* env) {
+bool AndroidAutofillProviderBridgeImpl::HasPasskeyRequest(JNIEnv* env) {
   return delegate_->HasPasskeyRequest();
 }
 
@@ -250,18 +250,18 @@ void AndroidAutofillProviderBridgeImpl::OnAcceptDataListSuggestion(
 void AndroidAutofillProviderBridgeImpl::SetAnchorViewRect(
     JNIEnv* env,
     const base::android::JavaRef<jobject>& anchor_view,
-    jfloat x,
-    jfloat y,
-    jfloat width,
-    jfloat height) {
+    float x,
+    float y,
+    float width,
+    float height) {
   delegate_->SetAnchorViewRect(ScopedJavaLocalRef<jobject>(env, anchor_view),
                                gfx::RectF(x, y, width, height));
 }
 
 void AndroidAutofillProviderBridgeImpl::OnShowBottomSheetResult(
     JNIEnv* env,
-    jboolean is_shown,
-    jboolean provided_autofill_structure) {
+    bool is_shown,
+    bool provided_autofill_structure) {
   delegate_->OnShowBottomSheetResult(is_shown, provided_autofill_structure);
 }
 

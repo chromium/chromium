@@ -4,7 +4,6 @@
 
 #import "components/optimization_guide/core/delivery/prediction_manager.h"
 
-#import "base/containers/contains.h"
 #import "base/files/file_util.h"
 #import "base/task/thread_pool.h"
 #import "base/test/metrics/histogram_tester.h"
@@ -395,8 +394,8 @@ class PredictionManagerModelDownloadingBrowserTest
                model_info->GetAdditionalFiles()) {
             EXPECT_TRUE(add_file.IsAbsolute());
             EXPECT_TRUE(base::PathExists(add_file));
-            EXPECT_TRUE(base::Contains(expected_additional_files,
-                                       add_file.BaseName().value()));
+            EXPECT_TRUE(expected_additional_files.contains(
+                add_file.BaseName().value()));
           }
           run_loop->Quit();
         },

@@ -43,10 +43,6 @@ class BrowserFrameViewMac : public BrowserFrameView,
   // BrowserFrameView:
   void OnFullscreenStateChanged() override;
   bool CaptionButtonsOnLeadingEdge() const override;
-  gfx::Rect GetBoundsForTabStripRegion(
-      const gfx::Size& tabstrip_minimum_size) const override;
-  gfx::Rect GetBoundsForWebAppFrameToolbar(
-      const gfx::Size& toolbar_preferred_size) const override;
   BrowserLayoutParams GetBrowserLayoutParams() const override;
   int GetTopInset(bool restored) const override;
   void UpdateFullscreenTopUI() override;
@@ -54,8 +50,7 @@ class BrowserFrameViewMac : public BrowserFrameView,
   void UpdateThrobber(bool running) override;
   void PaintAsActiveChanged() override;
   void OnThemeChanged() override;
-  void LayoutWebAppWindowTitle(const gfx::Rect& available_space,
-                               views::Label& window_title_label) const override;
+  views::LayoutAlignment GetWindowTitleAlignment() const override;
 
   // views::FrameView:
   gfx::Rect GetBoundsForClientView() const override;
@@ -89,20 +84,6 @@ class BrowserFrameViewMac : public BrowserFrameView,
   FRIEND_TEST_ALL_PREFIXES(BrowserFrameViewMacTest, GetCenteredTitleBounds);
   FRIEND_TEST_ALL_PREFIXES(BrowserFrameViewMacTest,
                            GetCaptionButtonPlaceholderBounds);
-
-  // Creates an inset from the caption button size which controls for which edge
-  // the captions buttons exists on. Used to position elements like the tabstrip
-  // that are adjacent to the caption buttons.
-  //
-  // The `visual_overlap` parameter specifies how much - if any - the adjacent
-  // View overlaps the caption button region; the insets will be reduced by that
-  // amount. For example, the tabstrip overlaps by the size of the bottom curve
-  // of the first tab. In most cases this will be zero.
-  gfx::Insets GetCaptionButtonInsets(int visual_overlap = 0) const;
-
-  static gfx::Rect GetCenteredTitleBounds(gfx::Rect frame,
-                                          gfx::Rect available_space,
-                                          int preferred_title_width);
 
   // Calculate the y offset the top UI needs to shift down due to showing the
   // slide down menu bar at the very top in full screen.

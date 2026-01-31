@@ -79,6 +79,7 @@ found in the LICENSE file.
     <!-- SelectableListLayout dimensions -->
     <dimen name="selectable_list_action_bar_end_padding">6dp</dimen>
     <dimen name="toolbar_wide_display_start_offset">13dp</dimen>
+    <dimen name="selectable_list_inline_search_bar_start_padding">24dp</dimen>
     <dimen name="search_toolbar_modern_bg_vertical_inset">8dp</dimen>
     <dimen name="search_toolbar_modern_bg_horizontal_inset">8dp</dimen>
     <dimen name="selectable_list_toolbar_nav_button_start_offset">4dp</dimen>
@@ -91,12 +92,14 @@ found in the LICENSE file.
     <!-- Sometimes the modern toolbar is shown at 48dp so a corner radius of
          24dp is needed to completely round the corners. -->
     <dimen name="modern_toolbar_background_corner_radius">24dp</dimen>
+    <dimen name="modern_toolbar_background_inner_corner_radius">16dp</dimen>
     <!-- The offset is required for the background drawable used by the
          location bar on tablets. -->
     <dimen name="modern_toolbar_background_vertical_offset">4dp</dimen>
     <dimen name="search_box_icon_background_width">36dp</dimen>
     <dimen name="search_box_icon_background_height">36dp</dimen>
     <dimen name="search_box_nav_button_background_inset">12dp</dimen>
+    <dimen name="search_box_embedder_margin_horizontal">14dp</dimen>
 
     <!-- Promo cards dimensions -->
     <dimen name="promo_image_size">24dp</dimen>

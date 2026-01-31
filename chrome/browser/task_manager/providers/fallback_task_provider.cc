@@ -4,9 +4,9 @@
 
 #include "chrome/browser/task_manager/providers/fallback_task_provider.h"
 
+#include <algorithm>
 #include <vector>
 
-#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
@@ -199,7 +199,7 @@ void FallbackTaskProvider::OnTaskRemovedBySource(Task* task,
 
 void FallbackTaskProvider::OnTaskUnresponsive(Task* task) {
   DCHECK(task);
-  if (base::Contains(shown_tasks_, task)) {
+  if (std::ranges::contains(shown_tasks_, task)) {
     NotifyObserverTaskUnresponsive(task);
   }
 }

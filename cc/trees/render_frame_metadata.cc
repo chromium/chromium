@@ -50,6 +50,7 @@ bool RenderFrameMetadata::operator==(const RenderFrameMetadata& other) const {
          root_layer_size == other.root_layer_size &&
          has_transparent_background == other.has_transparent_background &&
 #endif
+         tracked_element_bounds == other.tracked_element_bounds &&
          local_surface_id == other.local_surface_id &&
          new_vertical_scroll_direction == other.new_vertical_scroll_direction &&
          primary_main_frame_item_sequence_number ==

@@ -38,7 +38,7 @@ class LanguageSettingsPrivateGetLanguageListFunction
 #endif  // BUILDFLAG(IS_WIN)
 
  private:
-  base::Value::List language_list_;
+  base::ListValue language_list_;
 };
 
 // Implements the languageSettingsPrivate.enableLanguage method.
@@ -252,7 +252,7 @@ class LanguageSettingsPrivateGetSpellcheckWordsFunction
       const SpellcheckCustomDictionary::Change& dictionary_change) override;
 
   // Returns the list of words from the loaded custom dictionary.
-  base::Value::List GetSpellcheckWords() const;
+  base::ListValue GetSpellcheckWords() const;
 };
 
 // Implements the languageSettingsPrivate.addSpellcheckWord method.

@@ -158,8 +158,8 @@ public class TestAwNavigationListener implements AwNavigationListener {
     }
 
     @Override
-    public void onFirstContentfulPaint(AwPage page, long loadTimeUs) {
-        mFirstContentfulPaintLoadTimes.add(loadTimeUs);
+    public void onFirstContentfulPaint(AwPage page, long durationMs) {
+        mFirstContentfulPaintLoadTimes.add(durationMs);
         mCallbackHelper.notifyCalled();
     }
 

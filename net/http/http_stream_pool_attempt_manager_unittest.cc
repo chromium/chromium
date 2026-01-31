@@ -3781,7 +3781,8 @@ TEST_F(HttpStreamPoolAttemptManagerTest, PreconnectSlow) {
   socket_factory()->AddSocketDataProvider(&data1);
   // Second attempt succeeds.
   SequencedSocketData data2;
-  data2.set_connect_data(MockConnect(ASYNC, OK));
+  MockConnectCompleter connect_completer2;
+  data2.set_connect_data(MockConnect(&connect_completer2));
   socket_factory()->AddSocketDataProvider(&data2);
 
   int rv = preconnector.Preconnect(pool());
@@ -3793,7 +3794,20 @@ TEST_F(HttpStreamPoolAttemptManagerTest, PreconnectSlow) {
                          .add_v4("192.0.2.1")
                          .endpoint())
       .CallOnServiceEndpointRequestFinished(OK);
+  ASSERT_EQ(pool()
+                .GetGroupForTesting(preconnector.GetStreamKey())
+                ->attempt_manager()
+                ->TotalTcpBasedAttemptCount(),
+            1u);
 
+  FastForwardBy(HttpStreamPool::GetConnectionAttemptDelay());
+  ASSERT_EQ(pool()
+                .GetGroupForTesting(preconnector.GetStreamKey())
+                ->attempt_manager()
+                ->TotalTcpBasedAttemptCount(),
+            2u);
+
+  connect_completer2.Complete(OK);
   preconnector.WaitForResult();
   EXPECT_THAT(*preconnector.result(), IsOk());
 }
@@ -4642,6 +4656,38 @@ TEST_F(HttpStreamPoolAttemptManagerTest, HavingSpdySessionIsNotStalled) {
                    .has_value());
 }
 
+// Tests that when an AttemptManager only allows QUIC, it's not treated as being
+// stalled on the TCP limit, even after the slow timer triggers.
+TEST_F(HttpStreamPoolAttemptManagerTest, QuicOnlyIsNotStalled) {
+  // Requests gets an IP address instantly, but stalls waiting for the HTTPS
+  // record.
+  resolver()->AddFakeRequest()->add_endpoint(
+      ServiceEndpointBuilder().add_v4("192.0.2.1").endpoint());
+
+  StreamRequester requester;
+  requester.set_destination(kDefaultDestination)
+      .set_allowed_alpns(HttpStreamPool::kQuicBasedProtocols)
+      .set_quic_version(quic_version())
+      .RequestStream(pool());
+
+  // Stream should not be considered stalled after starting.
+  EXPECT_FALSE(requester.result());
+  EXPECT_FALSE(pool()
+                   .GetGroupForTesting(requester.GetStreamKey())
+                   ->GetPriorityIfStalledByPoolLimit()
+                   .has_value());
+
+  // Group is should still not be considered stalled after the TCP/IP timer
+  // expires, though the timer shouldn't actually even be started, in this case.
+  FastForwardBy(quic_session_pool()->GetTimeDelayForWaitingJob(
+      requester.GetStreamKey().CalculateQuicSessionAliasKey().session_key()));
+  EXPECT_FALSE(requester.result());
+  EXPECT_FALSE(pool()
+                   .GetGroupForTesting(requester.GetStreamKey())
+                   ->GetPriorityIfStalledByPoolLimit()
+                   .has_value());
+}
+
 // Tests that when an AttemptManager has a QUIC session, it's not treated as
 // stalled.
 TEST_F(HttpStreamPoolAttemptManagerTest, HavingQuicSessionIsNotStalled) {
@@ -5177,12 +5223,12 @@ TEST_F(HttpStreamPoolAttemptManagerTest, AlternativeSerivcesDisabled) {
       .set_enable_alternative_services(false)
       .RequestStream(pool());
   base::RunLoop on_complete_loop;
-  // Make sure that QUIC was never attempted.
+  // Make sure that QUIC was never attempted and the result sets aborted.
   requester.associated_attempt_manager()->SetOnCompleteCallbackForTesting(
       base::BindLambdaForTesting([&]() {
-        EXPECT_FALSE(requester.associated_attempt_manager()
-                         ->GetQuicAttemptResultForTesting()
-                         .has_value());
+        EXPECT_THAT(requester.associated_attempt_manager()
+                        ->GetQuicAttemptResultForTesting(),
+                    Optional(IsError(ERR_ABORTED)));
         on_complete_loop.Quit();
       }));
   requester.WaitForResult();
@@ -6252,7 +6298,7 @@ TEST_F(HttpStreamPoolAttemptManagerTest, GetInfoAsValue) {
 
   requester_b.RequestStream(pool());
 
-  base::Value::Dict info = pool().GetInfoAsValue();
+  base::DictValue info = pool().GetInfoAsValue();
   EXPECT_THAT(info.FindInt("idle_socket_count"), Optional(1));
   EXPECT_THAT(info.FindInt("connecting_socket_count"), Optional(1));
   EXPECT_THAT(info.FindInt("max_socket_count"),
@@ -6260,16 +6306,16 @@ TEST_F(HttpStreamPoolAttemptManagerTest, GetInfoAsValue) {
   EXPECT_THAT(info.FindInt("max_sockets_per_group"),
               Optional(pool().max_stream_sockets_per_group()));
 
-  base::Value::Dict* groups_info = info.FindDict("groups");
+  base::DictValue* groups_info = info.FindDict("groups");
   ASSERT_TRUE(groups_info);
 
-  base::Value::Dict* info_a =
+  base::DictValue* info_a =
       groups_info->FindDict(requester_a.GetStreamKey().ToString());
   ASSERT_TRUE(info_a);
   EXPECT_THAT(info_a->FindInt("active_socket_count"), Optional(1));
   EXPECT_THAT(info_a->FindInt("idle_socket_count"), Optional(1));
 
-  base::Value::Dict* info_b =
+  base::DictValue* info_b =
       groups_info->FindDict(requester_b.GetStreamKey().ToString());
   ASSERT_TRUE(info_b);
   EXPECT_THAT(info_b->FindInt("active_socket_count"), Optional(1));
@@ -6542,11 +6588,10 @@ TEST_F(HttpStreamPoolAttemptManagerTest, AltSvcSetPriority) {
   ASSERT_TRUE(origin_manager);
   EXPECT_EQ(origin_manager->GetPriority(), RequestPriority::LOW);
 
-  HttpStreamKey alt_stream_key =
-      StreamKeyBuilder()
-          .set_destination(url::SchemeHostPort(
-              url::kHttpsScheme, kAlternative.host(), kAlternative.port()))
-          .Build();
+  HttpStreamKey alt_stream_key = StreamKeyBuilder()
+                                     .set_destination(kOrigin)
+                                     .set_alt_service(alternative_service)
+                                     .Build();
   AttemptManager* alt_manager =
       pool().GetOrCreateGroupForTesting(alt_stream_key).attempt_manager();
   ASSERT_TRUE(alt_manager);

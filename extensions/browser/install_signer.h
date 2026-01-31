@@ -51,11 +51,11 @@ struct InstallSignature {
   InstallSignature(const InstallSignature& other);
   ~InstallSignature();
 
-  // Helper methods for serialization to/from a base::Value::Dict.
-  [[nodiscard]] base::Value::Dict ToDict() const;
+  // Helper methods for serialization to/from a base::DictValue.
+  [[nodiscard]] base::DictValue ToDict() const;
 
   static std::unique_ptr<InstallSignature> FromDict(
-      const base::Value::Dict& dict);
+      const base::DictValue& dict);
 };
 
 // Objects of this class encapsulate an operation to get a signature proving

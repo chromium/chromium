@@ -9,7 +9,6 @@
 #include <set>
 #include <utility>
 
-#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/notreached.h"
@@ -388,8 +387,7 @@ void ExtensionMessagePort::RemoveCommonFrames(const MessagePort& port) {
 
 bool ExtensionMessagePort::HasFrame(
     const content::GlobalRenderFrameHostToken& frame_token) const {
-  return base::Contains(frames_, frame_token) ||
-         base::Contains(pending_frames_, frame_token);
+  return frames_.contains(frame_token) || pending_frames_.contains(frame_token);
 }
 
 bool ExtensionMessagePort::IsValidPort() {
@@ -430,7 +428,7 @@ void ExtensionMessagePort::RevalidatePort() {
 void ExtensionMessagePort::DispatchOnConnect(
     mojom::ChannelType channel_type,
     const std::string& channel_name,
-    std::optional<base::Value::Dict> source_tab,
+    std::optional<base::DictValue> source_tab,
     const ExtensionApiFrameIdMap::FrameData& source_frame,
     int guest_process_id,
     int guest_render_frame_routing_id,

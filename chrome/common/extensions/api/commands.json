@@ -6,6 +6,9 @@
   {
     "namespace": "commands",
     "description": "Use the commands API to add keyboard shortcuts that trigger actions in your extension, for example, an action to open the browser action or send a command to the extension.",
+    "compiler_options": {
+      "implemented_in": "chrome/browser/extensions/api/commands/commands.h"
+    },
     "types": [
       {
         "id": "Command",
@@ -55,7 +58,7 @@
         "parameters": [],
         "returns_async": {
           "name": "callback",
-          "description": "Called to return the registered commands.",
+          "description": "Resolves with a list of the registered commands.",
           "optional": true,
           "parameters": [
             {

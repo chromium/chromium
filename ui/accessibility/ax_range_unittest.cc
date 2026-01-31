@@ -1551,6 +1551,7 @@ TEST_F(AXRangeTest, GetRects) {
   TestPositionRange line1_line2_whole_range(line1_start->Clone(),
                                             line2_end->Clone());
   expected_screen_rects = {gfx::Rect(20, 50, 30, 30),
+                           gfx::Rect(50, 50, 1, 30),
                            gfx::Rect(20, 80, 42, 30)};
   EXPECT_THAT(line1_line2_whole_range.GetRects(&delegate),
               ::testing::ContainerEq(expected_screen_rects));
@@ -1562,6 +1563,7 @@ TEST_F(AXRangeTest, GetRects) {
   TestPositionRange line1_line2_mid_range(line1_middle->Clone(),
                                           line2_middle->Clone());
   expected_screen_rects = {gfx::Rect(35, 50, 15, 30),
+                           gfx::Rect(50, 50, 1, 30),
                            gfx::Rect(20, 80, 21, 30)};
   EXPECT_THAT(line1_line2_mid_range.GetRects(&delegate),
               ::testing::ContainerEq(expected_screen_rects));
@@ -1574,6 +1576,7 @@ TEST_F(AXRangeTest, GetRects) {
                                                line2_middle->Clone());
   expected_screen_rects = {gfx::Rect(150, 20, 30, 30),
                            gfx::Rect(20, 50, 30, 30),
+                           gfx::Rect(50, 50, 1, 30),
                            gfx::Rect(20, 80, 21, 30)};
   EXPECT_THAT(check_box2_line2_mid_range.GetRects(&delegate),
               ::testing::ContainerEq(expected_screen_rects));
@@ -1586,7 +1589,8 @@ TEST_F(AXRangeTest, GetRects) {
   expected_screen_rects = {
       gfx::Rect(20, 20, 100, 30), gfx::Rect(120, 20, 30, 30),
       gfx::Rect(150, 20, 30, 30), gfx::Rect(20, 50, 30, 30),
-      gfx::Rect(20, 80, 42, 30),  gfx::Rect(20, 110, 50, 30)};
+      gfx::Rect(50, 50, 1, 30),   gfx::Rect(20, 80, 42, 30),
+      gfx::Rect(62, 80, 1, 30),   gfx::Rect(20, 110, 50, 30)};
   EXPECT_THAT(entire_test_range.GetRects(&delegate),
               ::testing::ContainerEq(expected_screen_rects));
 }
@@ -1612,10 +1616,10 @@ TEST_F(AXRangeTest, GetRectsOffscreen) {
   // {20, 20, 100x30},  {120, 20, 30x30}     {150, 20, 30x30}
   //                                              ---
   // [Line 1]           [\n]                      |
-  // {20, 50, 30x30}                              | view port, onscreen
+  // {20, 50, 30x30}    {50, 50, 1x30}            | view port, onscreen
   //                                              | {0, 50, 800x60}
   // [Line 2]           [\n]                      |
-  // {20, 80, 42x30}                              |
+  // {20, 80, 42x30}    {62, 80, 1x30}            |
   //                                              ---
   // [After]
   // {20, 110, 50x30}
@@ -1627,8 +1631,9 @@ TEST_F(AXRangeTest, GetRectsOffscreen) {
   // |-------------------------------------------------------------------------|
   TestPositionRange entire_test_range(button->Clone(),
                                       empty_paragraph_end->Clone());
-  std::vector<gfx::Rect> expected_screen_rects = {gfx::Rect(20, 50, 30, 30),
-                                                  gfx::Rect(20, 80, 42, 30)};
+  std::vector<gfx::Rect> expected_screen_rects = {
+      gfx::Rect(20, 50, 30, 30), gfx::Rect(50, 50, 1, 30),
+      gfx::Rect(20, 80, 42, 30), gfx::Rect(62, 80, 1, 30)};
   EXPECT_THAT(entire_test_range.GetRects(&delegate),
               ::testing::ContainerEq(expected_screen_rects));
 
@@ -1638,7 +1643,8 @@ TEST_F(AXRangeTest, GetRectsOffscreen) {
   expected_screen_rects = {
       gfx::Rect(20, 20, 100, 30), gfx::Rect(120, 20, 30, 30),
       gfx::Rect(150, 20, 30, 30), gfx::Rect(20, 50, 30, 30),
-      gfx::Rect(20, 80, 42, 30),  gfx::Rect(20, 110, 50, 30)};
+      gfx::Rect(50, 50, 1, 30),   gfx::Rect(20, 80, 42, 30),
+      gfx::Rect(62, 80, 1, 30),   gfx::Rect(20, 110, 50, 30)};
   EXPECT_THAT(entire_test_range.GetRects(&delegate),
               ::testing::ContainerEq(expected_screen_rects));
 }

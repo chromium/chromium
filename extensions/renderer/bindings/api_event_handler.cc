@@ -11,7 +11,6 @@
 #include <vector>
 
 #include "base/check.h"
-#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
@@ -242,7 +241,7 @@ void APIEventHandler::InvalidateCustomEvent(v8::Local<v8::Context> context,
 
 void APIEventHandler::FireEventInContext(const std::string& event_name,
                                          v8::Local<v8::Context> context,
-                                         const base::Value::List& args,
+                                         const base::ListValue& args,
                                          mojom::EventFilteringInfoPtr filter) {
   // Don't bother converting arguments if there are no listeners.
   // NOTE(devlin): This causes a double data and EventEmitter lookup, since
@@ -359,7 +358,7 @@ void APIEventHandler::RegisterArgumentMassager(
     v8::Local<v8::Function> massager) {
   APIEventPerContextData* data = APIEventPerContextData::GetFrom(
       context, CreatePerContextData::kCreateIfMissing);
-  DCHECK(!base::Contains(data->massagers, event_name));
+  DCHECK(!data->massagers.contains(event_name));
   data->massagers[event_name].Reset(v8::Isolate::GetCurrent(), massager);
 }
 

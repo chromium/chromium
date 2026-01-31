@@ -1823,7 +1823,7 @@ IN_PROC_BROWSER_TEST_F(ChromeNavigationBrowserTestWithMobileEmulation,
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), initial_url));
 
   Attach();
-  base::Value::Dict params;
+  base::DictValue params;
   params.Set("width", 400);
   params.Set("height", 800);
   params.Set("deviceScaleFactor", 1.0);

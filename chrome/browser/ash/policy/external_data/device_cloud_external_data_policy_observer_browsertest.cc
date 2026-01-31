@@ -91,7 +91,7 @@ class DeviceCloudExternalDataPolicyObserverTest
     DevicePolicyCrosBrowserTest::TearDownOnMainThread();
   }
 
-  void SetDevicePrintersExternalData(const base::Value::Dict& policy_dict) {
+  void SetDevicePrintersExternalData(const base::DictValue& policy_dict) {
     std::string policy;
     EXPECT_TRUE(base::JSONWriter::Write(policy_dict, &policy));
     device_policy()->payload().mutable_device_printers()->set_external_policy(

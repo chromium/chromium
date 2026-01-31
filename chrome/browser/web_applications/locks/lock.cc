@@ -54,8 +54,8 @@ bool LockDescription::IncludesSharedWebContents() const {
   }
 }
 base::Value LockDescription::AsDebugValue() const {
-  base::Value::Dict result;
-  base::Value::List ids;
+  base::DictValue result;
+  base::ListValue ids;
   ids.reserve(app_ids_.size());
   for (const auto& id : app_ids_) {
     ids.Append(id);

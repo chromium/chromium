@@ -465,11 +465,16 @@ class SurfaceAggregatorTest : public testing::Test, public DisplayTimeSource {
     auto* quad = pass->CreateAndAppendDrawQuad<TextureDrawQuad>();
     const gfx::PointF kUVTopLeft(0.1f, 0.2f);
     const gfx::PointF kUVBottomRight(1.0f, 1.0f);
+
+    gfx::RectF tex_coord_rect = gfx::BoundingRect(kUVTopLeft, kUVBottomRight);
+    tex_coord_rect.Scale(output_rect.width(), output_rect.height());
+
     quad->SetNew(shared_state, output_rect, output_rect,
-                 false /*needs_blending*/, ResourceId(1), kUVTopLeft,
-                 kUVBottomRight, SkColors::kTransparent,
-                 false /*nearest_neighbor*/, false /*secure_output_only*/,
-                 gfx::ProtectedVideoType::kClear);
+                 false /*needs_blending*/, ResourceId(1),
+                 tex_coord_rect.origin(), tex_coord_rect.bottom_right(),
+                 SkColors::kTransparent, false /*nearest_neighbor*/,
+                 false /*secure_output_only*/, gfx::ProtectedVideoType::kClear,
+                 /*is_tex_coords_normalized=*/false);
 
     if (per_quad_damage_output) {
       quad->damage_rect = output_rect;
@@ -1211,8 +1216,8 @@ class TestVizClient {
   CopyOutputRequest* RequestCopyOfOutput() {
     auto copy_request = CopyOutputRequest::CreateStubForTesting();
     auto* copy_request_ptr = copy_request.get();
-    root_sink_->RequestCopyOfOutput(PendingCopyOutputRequest{
-        local_surface_id(), SubtreeCaptureId(), std::move(copy_request)});
+    root_sink_->RequestCopyOfOutput(std::make_unique<PendingCopyOutputRequest>(
+        local_surface_id(), SubtreeCaptureId(), std::move(copy_request)));
     return copy_request_ptr;
   }
 
@@ -2009,9 +2014,10 @@ TEST_F(SurfaceAggregatorValidSurfaceTest, CopyRequest) {
 
   auto copy_request = CopyOutputRequest::CreateStubForTesting();
   auto* copy_request_ptr = copy_request.get();
-  embedded_support->RequestCopyOfOutput({embedded_surface_id.local_surface_id(),
-                                         SubtreeCaptureId(),
-                                         std::move(copy_request)});
+  embedded_support->RequestCopyOfOutput(
+      std::make_unique<PendingCopyOutputRequest>(
+          embedded_surface_id.local_surface_id(), SubtreeCaptureId(),
+          std::move(copy_request)));
 
   CompositorFrame root_frame =
       CompositorFrameBuilder()
@@ -2066,9 +2072,10 @@ TEST_F(SurfaceAggregatorValidSurfaceTest,
       embedded_surface_id.local_surface_id(), std::move(embedded_frame));
 
   auto copy_request = CopyOutputRequest::CreateStubForTesting();
-  embedded_support->RequestCopyOfOutput({embedded_surface_id.local_surface_id(),
-                                         SubtreeCaptureId(),
-                                         std::move(copy_request)});
+  embedded_support->RequestCopyOfOutput(
+      std::make_unique<PendingCopyOutputRequest>(
+          embedded_surface_id.local_surface_id(), SubtreeCaptureId(),
+          std::move(copy_request)));
 
   CompositorFrame root_frame =
       CompositorFrameBuilder()
@@ -2119,8 +2126,9 @@ TEST_F(SurfaceAggregatorValidSurfaceTest,
 
     auto copy_request = CopyOutputRequest::CreateStubForTesting();
     embedded_support->RequestCopyOfOutput(
-        {embedded_surface_id.local_surface_id(), SubtreeCaptureId(),
-         std::move(copy_request)});
+        std::make_unique<PendingCopyOutputRequest>(
+            embedded_surface_id.local_surface_id(), SubtreeCaptureId(),
+            std::move(copy_request)));
   }
 
   {
@@ -2217,8 +2225,9 @@ TEST_F(SurfaceAggregatorValidSurfaceTest,
 
     auto copy_request = CopyOutputRequest::CreateStubForTesting();
     embedded_support->RequestCopyOfOutput(
-        {embedded_surface_id.local_surface_id(), SubtreeCaptureId(),
-         std::move(copy_request)});
+        std::make_unique<PendingCopyOutputRequest>(
+            embedded_surface_id.local_surface_id(), SubtreeCaptureId(),
+            std::move(copy_request)));
   }
 
   {
@@ -2361,9 +2370,9 @@ TEST_F(SurfaceAggregatorValidSurfaceTest,
 
   auto copy_request = CopyOutputRequest::CreateStubForTesting();
   auto* copy_request_ptr = copy_request.get();
-  root_sink_->RequestCopyOfOutput({root_surface_id_.local_surface_id(),
-                                   SubtreeCaptureId(),
-                                   std::move(copy_request)});
+  root_sink_->RequestCopyOfOutput(std::make_unique<PendingCopyOutputRequest>(
+      root_surface_id_.local_surface_id(), SubtreeCaptureId(),
+      std::move(copy_request)));
 
   aggregator_.set_take_copy_requests(false);
   auto aggregated_frame = AggregateFrame(root_surface_id_);
@@ -2417,8 +2426,9 @@ TEST_F(SurfaceAggregatorValidSurfaceTest, VideoCapturePreventsMerge) {
     auto copy_request = CopyOutputRequest::CreateStubForTesting();
     auto* copy_request_ptr = copy_request.get();
     embedded_support->RequestCopyOfOutput(
-        {embedded_surface_id.local_surface_id(), SubtreeCaptureId(),
-         std::move(copy_request)});
+        std::make_unique<PendingCopyOutputRequest>(
+            embedded_surface_id.local_surface_id(), SubtreeCaptureId(),
+            std::move(copy_request)));
 
     auto aggregated_frame = AggregateFrame(root_surface_id_);
 
@@ -2482,9 +2492,10 @@ TEST_F(SurfaceAggregatorValidSurfaceTest, UnreferencedSurface) {
                         device_scale_factor);
   auto copy_request(CopyOutputRequest::CreateStubForTesting());
   auto* copy_request_ptr = copy_request.get();
-  embedded_support->RequestCopyOfOutput({embedded_surface_id.local_surface_id(),
-                                         SubtreeCaptureId(),
-                                         std::move(copy_request)});
+  embedded_support->RequestCopyOfOutput(
+      std::make_unique<PendingCopyOutputRequest>(
+          embedded_surface_id.local_surface_id(), SubtreeCaptureId(),
+          std::move(copy_request)));
 
   TestSurfaceIdAllocator parent_surface_id(parent_support->frame_sink_id());
 
@@ -5888,7 +5899,8 @@ CompositorFrame BuildCompositorFrameWithResources(
         gfx::ProtectedVideoType::kClear;
     quad->SetAll(sqs, rect, visible_rect, needs_blending, resource_id,
                  uv_top_left, uv_bottom_right, background_color,
-                 nearest_neighbor, secure_output_only, protected_video_type);
+                 nearest_neighbor, secure_output_only, protected_video_type,
+                 /*is_tex_coords_normalized=*/false);
   }
   frame.render_pass_list.push_back(std::move(pass));
   return frame;
@@ -7852,11 +7864,17 @@ TEST_F(SurfaceAggregatorValidSurfaceTest, PerQuadDamageSameSharedQuadState) {
 
     const gfx::PointF kUVTopLeft(0.1f, 0.2f);
     const gfx::PointF kUVBottomRight(1.0f, 1.0f);
+
+    gfx::RectF tex_coord_rect = gfx::BoundingRect(kUVTopLeft, kUVBottomRight);
+    tex_coord_rect.Scale(quad_rects[i].size().width(),
+                         quad_rects[i].size().height());
+
     texure_quad->SetNew(
         sqs, quad_rects[i], quad_rects[i], false /*needs_blending*/,
-        ResourceId(1), kUVTopLeft, kUVBottomRight, SkColors::kTransparent,
-        false /*nearest_neighbor*/, false /*secure_output_only*/,
-        gfx::ProtectedVideoType::kClear);
+        ResourceId(1), tex_coord_rect.origin(), tex_coord_rect.bottom_right(),
+        SkColors::kTransparent, false /*nearest_neighbor*/,
+        false /*secure_output_only*/, gfx::ProtectedVideoType::kClear,
+        /*is_tex_coords_normalized=*/false);
 
     texure_quad->damage_rect = damage_rects[i];
   }
@@ -9752,9 +9770,9 @@ TEST_F(SurfaceAggregatorValidSurfaceTest,
   // Now add a CopyOutputRequest on the child surface, so that the delegated
   // ink metadata does get populated on the aggregated frame.
   auto copy_request = CopyOutputRequest::CreateStubForTesting();
-  child_sink_->RequestCopyOfOutput({child_surface_id.local_surface_id(),
-                                    SubtreeCaptureId(),
-                                    std::move(copy_request)});
+  child_sink_->RequestCopyOfOutput(std::make_unique<PendingCopyOutputRequest>(
+      child_surface_id.local_surface_id(), SubtreeCaptureId(),
+      std::move(copy_request)));
 
   aggregated_frame = AggregateFrame(root_surface_id_);
 

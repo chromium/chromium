@@ -221,7 +221,7 @@ class ProcessManagerBrowserTest : public ExtensionBrowserTest {
     TestExtensionDir dir;
 
     auto manifest =
-        base::Value::Dict()
+        base::DictValue()
             .Set("name", name)
             .Set("version", "1")
             .Set("manifest_version", 2)
@@ -229,13 +229,13 @@ class ProcessManagerBrowserTest : public ExtensionBrowserTest {
             .Set("content_security_policy",
                  "script-src 'self' 'unsafe-eval'; object-src 'self'")
             .Set("sandbox",
-                 base::Value::Dict().Set(
-                     "pages", base::Value::List().Append("sandboxed.html")))
+                 base::DictValue().Set(
+                     "pages", base::ListValue().Append("sandboxed.html")))
             .Set("web_accessible_resources",
-                 base::Value::List().Append("*.html"));
+                 base::ListValue().Append("*.html"));
 
     if (has_background_process) {
-      manifest.Set("background", base::Value::Dict().Set("page", "bg.html"));
+      manifest.Set("background", base::DictValue().Set("page", "bg.html"));
       dir.WriteFile(FILE_PATH_LITERAL("bg.html"),
                     "<iframe id='bgframe' src='empty.html'></iframe>");
     }

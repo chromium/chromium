@@ -25,7 +25,7 @@ import org.chromium.base.ApplicationStatus.ActivityStateListener;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
-import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.build.BuildConfig;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -42,14 +42,12 @@ import org.chromium.chrome.browser.lifecycle.PauseResumeWithNativeObserver;
 import org.chromium.chrome.browser.lifecycle.RecreateObserver;
 import org.chromium.chrome.browser.lifecycle.StartStopWithNativeObserver;
 import org.chromium.chrome.browser.lifecycle.TopResumedActivityChangedObserver;
-import org.chromium.chrome.browser.multiwindow.MultiInstanceManager.InstanceAllocationType;
-import org.chromium.chrome.browser.multiwindow.MultiInstanceManager.NewWindowAppSource;
-import org.chromium.chrome.browser.multiwindow.MultiInstanceManager.PersistedInstanceType;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncFeatures;
 import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncServiceFactory;
 import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncUtils;
+import org.chromium.chrome.browser.tabmodel.SupportedProfileType;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorTabModelObserver;
@@ -90,7 +88,7 @@ public class MultiInstanceManagerImpl extends MultiInstanceManager
     private @Nullable ActivityStateListener mOtherCTAStateObserver;
 
     protected final Activity mActivity;
-    protected final ObservableSupplier<TabModelOrchestrator> mTabModelOrchestratorSupplier;
+    protected final MonotonicObservableSupplier<TabModelOrchestrator> mTabModelOrchestratorSupplier;
     protected final MultiWindowModeStateDispatcher mMultiWindowModeStateDispatcher;
     private final ActivityLifecycleDispatcher mActivityLifecycleDispatcher;
     private final MenuOrKeyboardActionController mMenuOrKeyboardActionController;
@@ -108,7 +106,7 @@ public class MultiInstanceManagerImpl extends MultiInstanceManager
 
     /* package */ MultiInstanceManagerImpl(
             Activity activity,
-            ObservableSupplier<TabModelOrchestrator> tabModelOrchestratorSupplier,
+            MonotonicObservableSupplier<TabModelOrchestrator> tabModelOrchestratorSupplier,
             MultiWindowModeStateDispatcher multiWindowModeStateDispatcher,
             ActivityLifecycleDispatcher activityLifecycleDispatcher,
             MenuOrKeyboardActionController menuOrKeyboardActionController) {
@@ -354,7 +352,7 @@ public class MultiInstanceManagerImpl extends MultiInstanceManager
             }
             return true;
         } else if (id == R.id.new_window_menu_id) {
-            openNewWindow("MobileMenuNewWindow", /* incognito= */ false, appSource);
+            openNewWindow(/* incognito= */ false, appSource);
             return true;
         } else if (id == R.id.new_incognito_window_menu_id) {
             TabModelOrchestrator tabModelOrchestrator = mTabModelOrchestratorSupplier.get();
@@ -363,7 +361,7 @@ public class MultiInstanceManagerImpl extends MultiInstanceManager
             if (tabModelSelector == null) return true;
             Profile profile = tabModelSelector.getCurrentModel().getProfile();
             if (profile != null && IncognitoUtils.isIncognitoModeEnabled(profile)) {
-                openNewWindow("MobileMenuNewIncognitoWindow", /* incognito= */ true, appSource);
+                openNewWindow(/* incognito= */ true, appSource);
             }
             return true;
         }
@@ -499,9 +497,7 @@ public class MultiInstanceManagerImpl extends MultiInstanceManager
 
         return intent;
     }
-    // TODO(crbug.com/455922432): Clean up the umaAction param.
-    protected void openNewWindow(
-            String umaAction, boolean incognito, @NewWindowAppSource int source) {
+    protected void openNewWindow(boolean incognito, @NewWindowAppSource int source) {
         Intent intent = createNewWindowIntent(incognito);
         if (intent == null) {
             return;
@@ -513,7 +509,6 @@ public class MultiInstanceManagerImpl extends MultiInstanceManager
                 MultiInstanceManager.NEW_WINDOW_APP_SOURCE_HISTOGRAM,
                 source,
                 NewWindowAppSource.NUM_ENTRIES);
-        RecordUserAction.record(umaAction);
     }
 
     @Override
@@ -568,8 +563,7 @@ public class MultiInstanceManagerImpl extends MultiInstanceManager
     }
 
     protected void cleanupSyncedTabGroups(TabModelSelector selector) {
-        TabGroupModelFilter filter =
-                selector.getTabGroupModelFilterProvider().getTabGroupModelFilter(false);
+        TabGroupModelFilter filter = selector.getTabGroupModelFilter(false);
 
         // Skip if there is no regular/normal windows.
         if (filter == null) return;

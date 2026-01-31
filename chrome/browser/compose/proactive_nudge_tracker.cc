@@ -5,6 +5,7 @@
 #include "chrome/browser/compose/proactive_nudge_tracker.h"
 
 #include <memory>
+#include <utility>
 
 #include "base/functional/callback_helpers.h"
 #include "base/memory/scoped_refptr.h"
@@ -13,7 +14,6 @@
 #include "base/rand_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
-#include "base/types/cxx23_to_underlying.h"
 #include "chrome/browser/compose/proto/compose_optimization_guide.pb.h"
 #include "components/autofill/content/browser/content_autofill_client.h"
 #include "components/autofill/core/common/signatures.h"
@@ -46,7 +46,7 @@ scoped_refptr<segmentation_platform::InputContext> PopulateInputContextForField(
       "field_height_pixels",
       ProcessedValue::FromFloat(signals.field.bounds().height()));
   input_context->metadata_args.emplace(
-      "field_form_control_type", ProcessedValue::FromFloat(base::to_underlying(
+      "field_form_control_type", ProcessedValue::FromFloat(std::to_underlying(
                                      signals.field.form_control_type())));
   input_context->metadata_args.emplace(
       "total_field_count",

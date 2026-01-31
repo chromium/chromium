@@ -4,7 +4,6 @@
 
 #include "base/containers/variant_map.h"
 
-#include "base/containers/contains.h"
 #include "base/test/gtest_util.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -81,6 +80,14 @@ TEST_P(VariantMapTest, Find) {
 
   EXPECT_NE(map.find(kTestKey), map.end());
   EXPECT_EQ(map.find(kUnusedKey), map.end());
+}
+
+TEST_P(VariantMapTest, Contains) {
+  VariantMap<KeyType, ValueType> map(GetParam());
+  map[kTestKey] = kTestValue;
+
+  EXPECT_TRUE(map.contains(kTestKey));
+  EXPECT_FALSE(map.contains(kUnusedKey));
 }
 
 TEST_P(VariantMapTest, Iteration) {

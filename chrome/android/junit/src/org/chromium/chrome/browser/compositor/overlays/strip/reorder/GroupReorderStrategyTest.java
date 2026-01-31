@@ -75,8 +75,8 @@ public class GroupReorderStrategyTest extends ReorderStrategyTestBase {
     @Override
     public void setup() {
         super.setup();
-        mockTabGroup(GROUP_ID1, TAB_ID2, mModel.getTabById(TAB_ID2));
-        mockTabGroup(GROUP_ID2, TAB_ID3, mModel.getTabById(TAB_ID3));
+        mockTabGroup(GROUP_ID1, mModel.getTabById(TAB_ID2));
+        mockTabGroup(GROUP_ID2, mModel.getTabById(TAB_ID3));
 
         mStrategy =
                 new GroupReorderStrategy(

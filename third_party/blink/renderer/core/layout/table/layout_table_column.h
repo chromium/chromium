@@ -84,6 +84,16 @@ class CORE_EXPORT LayoutTableColumn : public LayoutBox {
     return true;
   }
 
+  bool IsEligibleForPaintOrLayoutContainment() const final {
+    NOT_DESTROYED();
+    return false;
+  }
+
+  bool IsEligibleForSizeContainment() const final {
+    NOT_DESTROYED();
+    return false;
+  }
+
   // Table row doesn't paint background by itself.
   bool ComputeCanCompositeBackgroundAttachmentFixed() const override {
     NOT_DESTROYED();

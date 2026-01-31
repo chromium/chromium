@@ -46,16 +46,16 @@ std::string ContentCaptureReceiver::ToJSON(
     const std::vector<blink::mojom::FaviconURLPtr>& candidates) {
   if (candidates.empty())
     return std::string();
-  base::Value::List favicon_array;
+  base::ListValue favicon_array;
   for (const auto& favicon_url : candidates) {
-    base::Value::Dict favicon;
+    base::DictValue favicon;
     favicon.Set("url", favicon_url->icon_url.spec());
     favicon.Set("type", ToFaviconTypeString(favicon_url->icon_type));
 
     if (!favicon_url->icon_sizes.empty()) {
-      base::Value::List sizes;
+      base::ListValue sizes;
       for (auto icon_size : favicon_url->icon_sizes) {
-        base::Value::Dict size;
+        base::DictValue size;
         size.Set("width", icon_size.width());
         size.Set("height", icon_size.height());
         sizes.Append(std::move(size));

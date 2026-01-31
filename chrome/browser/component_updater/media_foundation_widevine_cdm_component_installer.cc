@@ -80,7 +80,7 @@ bool MediaFoundationWidevineCdmComponentInstallerPolicy::
 // Set permission on `install_dir` so the CDM can be loaded in the LPAC process.
 update_client::CrxInstaller::Result
 MediaFoundationWidevineCdmComponentInstallerPolicy::OnCustomInstall(
-    const base::Value::Dict& manifest,
+    const base::DictValue& manifest,
     const base::FilePath& install_dir) {
   DVLOG(1) << __func__ << ": Set permission on " << install_dir;
 
@@ -101,7 +101,7 @@ void MediaFoundationWidevineCdmComponentInstallerPolicy::OnCustomUninstall() {}
 void MediaFoundationWidevineCdmComponentInstallerPolicy::ComponentReady(
     const base::Version& version,
     const base::FilePath& install_dir,
-    base::Value::Dict manifest) {
+    base::DictValue manifest) {
   VLOG(1) << "Component ready, version " << version.GetString() << " in "
           << install_dir.value();
 
@@ -132,7 +132,7 @@ void MediaFoundationWidevineCdmComponentInstallerPolicy::ComponentReady(
 
 // Called during startup and installation before ComponentReady().
 bool MediaFoundationWidevineCdmComponentInstallerPolicy::VerifyInstallation(
-    const base::Value::Dict& manifest,
+    const base::DictValue& manifest,
     const base::FilePath& install_dir) const {
   return base::PathExists(GetCdmPath(install_dir));
 }

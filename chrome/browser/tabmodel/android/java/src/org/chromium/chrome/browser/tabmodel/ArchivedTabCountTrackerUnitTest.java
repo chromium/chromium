@@ -18,7 +18,8 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
-import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.supplier.ObservableSuppliers;
+import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.components.tab_group_sync.SavedTabGroup;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
@@ -38,8 +39,8 @@ public class ArchivedTabCountTrackerUnitTest {
 
     @Captor ArgumentCaptor<Observer> mTabGroupSyncServiceObserverCaptor;
 
-    private final ObservableSupplierImpl<Integer> mArchivedTabModelTabCountSupplier =
-            new ObservableSupplierImpl<>(INITIAL_TAB_COUNT);
+    private final SettableNonNullObservableSupplier<Integer> mArchivedTabModelTabCountSupplier =
+            ObservableSuppliers.createNonNull(INITIAL_TAB_COUNT);
     private ArchivedTabCountTracker mArchivedTabCountTracker;
 
     @Before

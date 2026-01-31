@@ -112,9 +112,9 @@ class WebFrameTestProxy : public RenderFrameImpl,
   void SetupRendererProcessForNonTestWindow() override;
   void TestFinishedFromSecondaryRenderer() override;
   void ProcessWorkItem(mojom::WorkItemPtr work_item) override;
-  void ReplicateWorkQueueStates(base::Value::Dict work_queue_states) override;
+  void ReplicateWorkQueueStates(base::DictValue work_queue_states) override;
   void ReplicateWebTestRuntimeFlagsChanges(
-      base::Value::Dict changed_layout_test_runtime_flags) override;
+      base::DictValue changed_layout_test_runtime_flags) override;
   void ResetRendererAfterWebTest() override;
 
   mojom::WebTestControlHost* GetWebTestControlHostRemote();

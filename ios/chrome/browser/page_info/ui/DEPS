@@ -1,0 +1,7 @@
+include_rules = [
+  # keep-sorted start
+  "+components/page_info/core/page_info_history_data_source.h",
+  "+ios/chrome/browser/net/model/crurl.h",
+  "+ios/chrome/browser/permissions",
+  # keep-sorted end
+]

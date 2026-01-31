@@ -178,6 +178,23 @@ public class ModalDialogViewRenderTest {
     @Test
     @MediumTest
     @Feature({"ModalDialog", "RenderTest"})
+    public void testRender_TitleAndTitleEndIcon() throws IOException {
+        setUpViews(
+                R.style.ThemeOverlay_BrowserUI_ModalDialog_TextPrimaryButton,
+                /* forceWrapContentHeight= */ true);
+        final Drawable icon =
+                UiUtils.getTintedDrawable(
+                        sActivity, R.drawable.ic_add_24dp, R.color.default_icon_color_tint_list);
+        createModel(
+                mModelBuilder
+                        .with(ModalDialogProperties.TITLE, mResources, R.string.title)
+                        .with(ModalDialogProperties.TITLE_END_ICON, icon));
+        mRenderTestRule.render(mModalDialogView, "title_and_title_end_icon");
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"ModalDialog", "RenderTest"})
     public void testRender_MultiLineTitle() throws IOException {
         setUpViews(
                 R.style.ThemeOverlay_BrowserUI_ModalDialog_TextPrimaryButton,
@@ -472,9 +489,7 @@ public class ModalDialogViewRenderTest {
                         sActivity, R.drawable.ic_globe_24dp, R.color.default_icon_color_tint_list);
         final Drawable icon3 =
                 UiUtils.getTintedDrawable(
-                        sActivity,
-                        R.drawable.ic_info_outline_grey_24dp,
-                        R.color.default_icon_color_tint_list);
+                        sActivity, R.drawable.ic_info_24dp, R.color.default_icon_color_tint_list);
 
         final var menuItems = new ArrayList<ModalDialogProperties.ModalDialogMenuItem>();
         menuItems.add(new ModalDialogProperties.ModalDialogMenuItem(icon1, "First menu item"));
@@ -572,6 +587,98 @@ public class ModalDialogViewRenderTest {
                                 ModalDialogProperties.DIALOG_STYLES,
                                 ModalDialogProperties.DialogStyles.DIALOG_WHEN_LARGE));
         mRenderTestRule.render(mModalDialogView, "dialog_when_large");
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"ModalDialog", "RenderTest"})
+    public void testRender_TitleMaxLines() throws IOException {
+        setUpViews(
+                R.style.ThemeOverlay_BrowserUI_ModalDialog_TextPrimaryButton,
+                /* forceWrapContentHeight= */ true);
+        String longTitle =
+                "This is a significantly long title designed to test how the ModalDialogView"
+                        + " handles text wrapping across multiple lines when the title exceeds the"
+                        + " available width.";
+        createModel(
+                mModelBuilder
+                        .with(ModalDialogProperties.TITLE, longTitle)
+                        .with(ModalDialogProperties.TITLE_MAX_LINES, 1)
+                        .with(ModalDialogProperties.POSITIVE_BUTTON_TEXT, mResources, R.string.ok)
+                        .with(
+                                ModalDialogProperties.NEGATIVE_BUTTON_TEXT,
+                                mResources,
+                                R.string.cancel));
+        waitForViewToBeRendered(mModalDialogView);
+        mRenderTestRule.render(mModalDialogView, "title_max_lines_1");
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"ModalDialog", "RenderTest"})
+    public void testRender_TitleButtons() throws IOException {
+        setUpViews(
+                R.style.ThemeOverlay_BrowserUI_ModalDialog_TextPrimaryButton,
+                /* forceWrapContentHeight= */ true);
+        createModel(
+                mModelBuilder
+                        .with(ModalDialogProperties.TITLE, mResources, R.string.title)
+                        .with(ModalDialogProperties.TITLE_BACK_BUTTON_VISIBLE, true)
+                        .with(ModalDialogProperties.TITLE_MORE_BUTTON_VISIBLE, true)
+                        .with(ModalDialogProperties.POSITIVE_BUTTON_TEXT, mResources, R.string.ok)
+                        .with(
+                                ModalDialogProperties.NEGATIVE_BUTTON_TEXT,
+                                mResources,
+                                R.string.cancel));
+        waitForViewToBeRendered(mModalDialogView);
+        mRenderTestRule.render(mModalDialogView, "title_with_back_and_more_buttons");
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"ModalDialog", "RenderTest"})
+    public void testRender_Margins() throws IOException {
+        setUpViews(
+                R.style.ThemeOverlay_BrowserUI_ModalDialog_TextPrimaryButton,
+                /* forceWrapContentHeight= */ true);
+        final var paragraphs = new java.util.ArrayList<CharSequence>();
+        paragraphs.add(TextUtils.join("\n", Collections.nCopies(10, "Message")));
+        createModel(
+                mModelBuilder
+                        .with(ModalDialogProperties.TITLE, mResources, R.string.title)
+                        .with(ModalDialogProperties.MESSAGE_PARAGRAPHS, paragraphs)
+                        .with(ModalDialogProperties.HORIZONTAL_MARGIN, 100)
+                        .with(ModalDialogProperties.VERTICAL_MARGIN, 100)
+                        .with(ModalDialogProperties.POSITIVE_BUTTON_TEXT, mResources, R.string.ok)
+                        .with(
+                                ModalDialogProperties.NEGATIVE_BUTTON_TEXT,
+                                mResources,
+                                R.string.cancel));
+        waitForViewToBeRendered(mModalDialogView);
+        mRenderTestRule.render(mModalDialogView, "margins_set");
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"ModalDialog", "RenderTest"})
+    public void testRender_MaxHeight() throws IOException {
+        setUpViews(
+                R.style.ThemeOverlay_BrowserUI_ModalDialog_TextPrimaryButton,
+                /* forceWrapContentHeight= */ false);
+        final var paragraphs = new java.util.ArrayList<CharSequence>();
+        paragraphs.add(TextUtils.join("\n", Collections.nCopies(50, "Message")));
+        createModel(
+                mModelBuilder
+                        .with(ModalDialogProperties.TITLE, mResources, R.string.title)
+                        .with(ModalDialogProperties.MESSAGE_PARAGRAPHS, paragraphs)
+                        .with(ModalDialogProperties.MAX_HEIGHT, 500) // Set a small max height
+                        .with(ModalDialogProperties.POSITIVE_BUTTON_TEXT, mResources, R.string.ok)
+                        .with(
+                                ModalDialogProperties.NEGATIVE_BUTTON_TEXT,
+                                mResources,
+                                R.string.cancel));
+        waitForViewToBeRendered(mModalDialogView);
+        mRenderTestRule.render(mModalDialogView, "max_height_constrained");
     }
 
     private PropertyModel createModel(PropertyModel.Builder modelBuilder) {

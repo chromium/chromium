@@ -74,7 +74,7 @@ class IsolatedWebAppUpdateApplyTask {
   raw_ref<WebAppCommandScheduler> command_scheduler_;
   raw_ref<Profile> profile_;
 
-  base::Value::Dict debug_log_;
+  base::DictValue debug_log_;
   bool has_started_ = false;
   CompletionCallback callback_;
 

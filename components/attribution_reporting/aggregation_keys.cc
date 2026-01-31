@@ -53,7 +53,7 @@ AggregationKeys::FromJSON(const base::Value* value) {
     return AggregationKeys();
   }
 
-  const base::Value::Dict* dict = value->GetIfDict();
+  const base::DictValue* dict = value->GetIfDict();
   if (!dict) {
     return base::unexpected(
         SourceRegistrationError::kAggregationKeysDictInvalid);
@@ -103,8 +103,8 @@ AggregationKeys& AggregationKeys::operator=(const AggregationKeys&) = default;
 
 AggregationKeys& AggregationKeys::operator=(AggregationKeys&&) = default;
 
-base::Value::Dict AggregationKeys::ToJson() const {
-  base::Value::Dict dict;
+base::DictValue AggregationKeys::ToJson() const {
+  base::DictValue dict;
   for (const auto& [key, value] : keys_) {
     dict.Set(key, HexEncodeAggregationKey(value));
   }

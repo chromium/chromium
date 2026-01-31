@@ -50,7 +50,7 @@ QuickInsertEmojiHistoryModel::QuickInsertEmojiHistoryModel(PrefService* prefs,
 std::vector<QuickInsertEmojiHistoryModel::EmojiHistoryItem>
 QuickInsertEmojiHistoryModel::GetRecentEmojis(
     ui::EmojiPickerCategory category) const {
-  const base::Value::List* history =
+  const base::ListValue* history =
       prefs_->GetDict(prefs::kEmojiPickerHistory)
           .FindList(ConvertEmojiCategoryToString(category));
   if (history == nullptr) {
@@ -58,7 +58,7 @@ QuickInsertEmojiHistoryModel::GetRecentEmojis(
   }
   std::vector<EmojiHistoryItem> results;
   for (const base::Value& it : *history) {
-    const base::Value::Dict* value_dict = it.GetIfDict();
+    const base::DictValue* value_dict = it.GetIfDict();
     if (value_dict == nullptr) {
       continue;
     }
@@ -81,8 +81,8 @@ void QuickInsertEmojiHistoryModel::UpdateRecentEmoji(
     ui::EmojiPickerCategory category,
     std::string_view latest_emoji) {
   std::vector<EmojiHistoryItem> history = GetRecentEmojis(category);
-  base::Value::List history_value;
-  history_value.Append(base::Value::Dict()
+  base::ListValue history_value;
+  history_value.Append(base::DictValue()
                            .Set(kEmojiHistoryValueFieldName, latest_emoji)
                            .Set(kEmojiHistoryTimestampFieldName,
                                 base::TimeToValue(clock_->Now())));
@@ -90,7 +90,7 @@ void QuickInsertEmojiHistoryModel::UpdateRecentEmoji(
     if (item.text == latest_emoji) {
       continue;
     }
-    history_value.Append(base::Value::Dict()
+    history_value.Append(base::DictValue()
                              .Set(kEmojiHistoryValueFieldName, item.text)
                              .Set(kEmojiHistoryTimestampFieldName,
                                   base::TimeToValue(item.timestamp)));

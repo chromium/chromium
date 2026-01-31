@@ -16,6 +16,7 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.omnibox.OmniboxMetrics;
 import org.chromium.chrome.browser.omnibox.fusebox.ComposeBoxQueryControllerBridge;
 import org.chromium.chrome.browser.omnibox.voice.VoiceRecognitionHandler.VoiceResult;
+import org.chromium.chrome.browser.preloading.PreloadingFeatureMap;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.omnibox.AutocompleteInput;
 import org.chromium.components.omnibox.AutocompleteMatch;
@@ -122,6 +123,16 @@ public class AutocompleteController {
     }
 
     /**
+     * Kicks off loading a prewarm page.
+     *
+     * @param webContents The {@link WebContents} for the current tab.
+     */
+    public void startPrewarm(@Nullable WebContents webContents) {
+        if (mNativeController == 0) return;
+        AutocompleteControllerJni.get().startPrewarm(mNativeController, webContents);
+    }
+
+    /**
      * Issue a prefetch request for zero prefix suggestions. Prefetch is a fire-and-forget operation
      * that yields no results.
      *
@@ -130,6 +141,9 @@ public class AutocompleteController {
      */
     public void startPrefetch(AutocompleteInput input, @Nullable WebContents webContents) {
         if (mNativeController == 0) return;
+        if (PreloadingFeatureMap.getInstance().shouldPrewarmOnZeroSuggest()) {
+            startPrewarm(webContents);
+        }
         AutocompleteControllerJni.get()
                 .startPrefetch(
                         mNativeController,
@@ -415,7 +429,7 @@ public class AutocompleteController {
                 @Nullable String desiredTld,
                 String currentUrl,
                 @JniType("metrics::OmniboxEventProto::PageClassification") int pageClassification,
-                @JniType("omnibox::ChromeAimToolsAndModels") int toolMode,
+                @JniType("omnibox::ToolMode") int toolMode,
                 boolean preventInlineAutocomplete,
                 boolean preferKeyword,
                 boolean allowExactKeywordMatch,
@@ -450,7 +464,7 @@ public class AutocompleteController {
                 String omniboxText,
                 String currentUrl,
                 @JniType("metrics::OmniboxEventProto::PageClassification") int pageClassification,
-                @JniType("omnibox::ChromeAimToolsAndModels") int toolMode,
+                @JniType("omnibox::ToolMode") int toolMode,
                 String currentTitle);
 
         void deleteMatchElement(
@@ -493,6 +507,10 @@ public class AutocompleteController {
                 long nativeAutocompleteControllerAndroid,
                 @Px int dropdownHeightWithKeyboardActive,
                 @Px int suggestionHeight);
+
+        // Start prewarming a tab.
+        void startPrewarm(
+                long nativeAutocompleteControllerAndroid, @Nullable WebContents webContents);
 
         /** Acquire an instance of AutocompleteController associated with the supplied profile. */
         AutocompleteController getForProfile(@JniType("Profile*") Profile profile);

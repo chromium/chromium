@@ -21,6 +21,7 @@
 #include "base/path_service.h"
 #include "base/rand_util.h"
 #include "base/run_loop.h"
+#include "base/scoped_observation.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
@@ -71,6 +72,7 @@
 #include "components/prefs/scoped_user_pref_update.h"
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/base/signin_switches.h"
+#include "components/skills/features.h"
 #include "components/sync/base/command_line_switches.h"
 #include "components/sync/base/data_type.h"
 #include "components/sync/base/features.h"
@@ -80,12 +82,14 @@
 #include "components/sync/service/glue/sync_transport_data_prefs.h"
 #include "components/sync/service/sync_service_impl.h"
 #include "components/sync/service/sync_user_settings.h"
-#include "components/sync/test/fake_server_network_resources.h"
+#include "components/sync/test/embedded_fake_server_adapter.h"
+#include "components/sync/test/fake_server.h"
 #include "content/public/browser/browser_main_parts.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/network_service_instance.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/test/url_loader_interceptor.h"
 #include "extensions/buildflags/buildflags.h"
 #include "google_apis/gaia/fake_oauth2_token_response.h"
 #include "google_apis/gaia/gaia_urls.h"
@@ -93,6 +97,7 @@
 #include "net/dns/mock_host_resolver.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
 #include "services/network/public/cpp/features.h"
+#include "services/network/public/cpp/url_loader_completion_status.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "url/gurl.h"
@@ -116,8 +121,9 @@
 #else  // BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
-#include "chrome/browser/ui/browser_list.h"
-#include "chrome/browser/ui/browser_list_observer.h"
+#include "chrome/browser/ui/browser_window/public/browser_collection_observer.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/webui/signin/login_ui_service.h"
 #include "chrome/browser/ui/webui/signin/login_ui_service_factory.h"
@@ -161,24 +167,25 @@ int GetNumClients(SyncTest::TestType test_type) {
 }  // namespace
 
 #if !BUILDFLAG(IS_ANDROID)
-class SyncTest::ClosedBrowserObserver : public BrowserListObserver {
+class SyncTest::ClosedBrowserObserver : public BrowserCollectionObserver {
  public:
   using OnBrowserRemovedCallback =
       base::RepeatingCallback<void(Browser* browser)>;
 
   explicit ClosedBrowserObserver(OnBrowserRemovedCallback callback)
       : browser_remove_callback_(std::move(callback)) {
-    BrowserList::AddObserver(this);
+    observation_.Observe(GlobalBrowserCollection::GetInstance());
   }
 
-  ~ClosedBrowserObserver() override { BrowserList::RemoveObserver(this); }
+  ~ClosedBrowserObserver() override = default;
 
-  // BrowserListObserver overrides.
-  void OnBrowserRemoved(Browser* browser) override {
-    browser_remove_callback_.Run(browser);
+  void OnBrowserClosed(BrowserWindowInterface* browser) override {
+    browser_remove_callback_.Run(browser->GetBrowserForMigrationOnly());
   }
 
  private:
+  base::ScopedObservation<GlobalBrowserCollection, BrowserCollectionObserver>
+      observation_{this};
   OnBrowserRemovedCallback browser_remove_callback_;
 };
 #endif
@@ -197,24 +204,26 @@ SyncTest::SyncTest(TestType test_type)
   sync_run_loop_timeout.SetAddGTestFailureOnTimeout();
 
   sync_datatype_helper::AssociateWithTest(this);
-
-#if !BUILDFLAG(IS_ANDROID)
-  browser_list_observer_ = std::make_unique<ClosedBrowserObserver>(
-      base::BindRepeating(&SyncTest::OnBrowserRemoved, base::Unretained(this)));
-#endif
 }
 
 SyncTest::~SyncTest() = default;
 
 void SyncTest::SetUp() {
-#if BUILDFLAG(IS_ANDROID)
-  if (server_type_ == IN_PROCESS_FAKE_SERVER) {
-    sync_test_utils_android::SetUpFakeAuthForTesting();
-  }
-#endif
-
   // Mock the Mac Keychain service.  The real Keychain can block on user input.
   OSCryptMocker::SetUp();
+
+  switch (server_type_) {
+    case EXTERNAL_LIVE_SERVER: {
+      break;
+    }
+    case IN_PROCESS_FAKE_SERVER: {
+      ASSERT_TRUE(embedded_test_server()->InitializeAndListen());
+#if BUILDFLAG(IS_ANDROID)
+      sync_test_utils_android::SetUpFakeAuthForTesting();
+#endif
+      break;
+    }
+  }
 
   // Yield control back to the PlatformBrowserTest framework.
   PlatformBrowserTest::SetUp();
@@ -235,6 +244,9 @@ void SyncTest::TearDown() {
 }
 
 void SyncTest::PostRunTestOnMainThread() {
+  // Needs to be destroyed before the task environment is shut down.
+  url_loader_interceptor_.reset();
+
   PlatformBrowserTest::PostRunTestOnMainThread();
 
 #if BUILDFLAG(IS_ANDROID)
@@ -277,12 +289,25 @@ void SyncTest::SetUpCommandLine(base::CommandLine* cl) {
     cl->AppendSwitch(switches::kBypassAccountAlreadyUsedByAnotherProfileCheck);
   }
 
-  if (server_type_ == EXTERNAL_LIVE_SERVER &&
-      !cl->HasSwitch(switches::kDisableSyncInvalidationOptimizations)) {
-    // This flag is required because multiple devices in tests become active at
-    // the same time, and they may populate a single client optimization flag
-    // incorrectly resulting in missed invalidations.
-    cl->AppendSwitch(switches::kDisableSyncInvalidationOptimizations);
+  switch (server_type_) {
+    case EXTERNAL_LIVE_SERVER: {
+      if (!cl->HasSwitch(switches::kDisableSyncInvalidationOptimizations)) {
+        // This flag is required because multiple devices in tests become active
+        // at the same time, and they may populate a single client optimization
+        // flag incorrectly resulting in missed invalidations.
+        cl->AppendSwitch(switches::kDisableSyncInvalidationOptimizations);
+      }
+      break;
+    }
+    case IN_PROCESS_FAKE_SERVER: {
+      CHECK(!cl->HasSwitch(syncer::kSyncServiceURL));
+      cl->AppendSwitchASCII(
+          syncer::kSyncServiceURL,
+          embedded_test_server()
+              ->GetURL(fake_server::EmbeddedFakeServerAdapter::kPath)
+              .spec());
+      break;
+    }
   }
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -333,11 +358,17 @@ void SyncTest::PostCreateThreads() {
       base::PathService::Get(chrome::DIR_USER_DATA, &user_data_dir);
       fake_server_ = std::make_unique<fake_server::FakeServer>(
           user_data_dir.AppendASCII("FakeServer"));
+      embedded_fake_server_adapter_ =
+          std::make_unique<fake_server::EmbeddedFakeServerAdapter>(
+              fake_server_->AsWeakPtr());
       fake_server_sync_invalidation_sender_ =
           std::make_unique<fake_server::FakeServerSyncInvalidationSender>(
               fake_server_.get());
 
       SetupMockGaiaResponses();
+
+      embedded_fake_server_adapter_->RegisterRequestHandler(
+          *embedded_test_server());
       break;
     }
   }
@@ -517,6 +548,14 @@ bool SyncTest::SetupClients() {
   }
   bool has_any_browser = false;
 #if !BUILDFLAG(IS_ANDROID)
+  // Create the browser observer now that GlobalBrowserCollection is available.
+  // This cannot be done in the constructor because it runs before browser
+  // process initialization.
+  if (!browser_list_observer_) {
+    browser_list_observer_ =
+        std::make_unique<ClosedBrowserObserver>(base::BindRepeating(
+            &SyncTest::OnBrowserRemoved, base::Unretained(this)));
+  }
   has_any_browser = !browsers_.empty();
 #endif
   if (!profiles_.empty() || has_any_browser || !clients_.empty()) {
@@ -782,6 +821,17 @@ bool SyncTest::SetupSyncWithMode(SetupSyncMode setup_mode,
   return true;
 }
 
+void SyncTest::SetUpOnMainThread() {
+  switch (server_type_) {
+    case EXTERNAL_LIVE_SERVER:
+      break;
+    case IN_PROCESS_FAKE_SERVER:
+      embedded_test_server_handle_ =
+          embedded_test_server()->StartAcceptingConnectionsAndReturnHandle();
+      break;
+  }
+}
+
 void SyncTest::TearDownOnMainThread() {
   // Verify that there are no data type failures after the test.
   for (size_t client_index = 0; client_index < clients_.size();
@@ -806,6 +856,7 @@ void SyncTest::TearDownOnMainThread() {
 
   if (fake_server_.get()) {
     fake_server_sync_invalidation_sender_.reset();
+    embedded_fake_server_adapter_.reset();
     fake_server_.reset();
   }
 
@@ -851,6 +902,11 @@ void SyncTest::TearDownOnMainThread() {
     }
   }
   browsers_.clear();
+#endif
+
+// Clean up the browser observer.
+#if !BUILDFLAG(IS_ANDROID)
+  browser_list_observer_.reset();
 #endif
 
   PlatformBrowserTest::TearDownOnMainThread();
@@ -912,10 +968,6 @@ void SyncTest::OnProfileCreationStarted(Profile* profile) {
   gcm::GCMProfileServiceFactory::GetInstance()->SetTestingFactory(
       profile, base::BindRepeating(&SyncTest::CreateGCMProfileService,
                                    base::Unretained(this)));
-  SyncServiceFactory::GetInstance()->SetTestingFactory(
-      profile, SyncServiceFactory::GetDefaultFactory(
-                   fake_server::CreateFakeServerHttpPostProviderFactory(
-                       GetFakeServer()->AsWeakPtr())));
   ChromeSigninClientFactory::GetInstance()->SetTestingFactory(
       profile, base::BindRepeating(&BuildChromeSigninClientWithURLLoader,
                                    &test_url_loader_factory_));
@@ -1035,6 +1087,26 @@ fake_server::FakeServer* SyncTest::GetFakeServer() const {
   return fake_server_.get();
 }
 
+void SyncTest::DisableNetwork() {
+  // Prevent communication with EmbeddedTestServer or any other server.
+  url_loader_interceptor_ =
+      std::make_unique<content::URLLoaderInterceptor>(base::BindRepeating(
+          [](content::URLLoaderInterceptor::RequestParams* params) -> bool {
+            params->client->OnComplete(network::URLLoaderCompletionStatus(
+                net::ERR_INTERNET_DISCONNECTED));
+            return true;
+          }));
+
+  connection_change_simulator_.SetConnectionType(
+      network::mojom::ConnectionType::CONNECTION_NONE);
+}
+
+void SyncTest::EnableNetwork() {
+  url_loader_interceptor_.reset();
+  connection_change_simulator_.SetConnectionType(
+      network::mojom::ConnectionType::CONNECTION_ETHERNET);
+}
+
 void SyncTest::TriggerSyncForDataTypes(int index,
                                        syncer::DataTypeSet data_types) {
   GetSyncService(index)->TriggerRefresh(
@@ -1136,7 +1208,7 @@ std::string SetupSyncModeAsString(SyncTest::SetupSyncMode sync_test_mode) {
 // enabled by default, e.g. HISTORY requires a dedicated opt-in via
 // SyncUserSettings::SetSelectedTypes().
 syncer::DataTypeSet AllowedTypesInStandaloneTransportMode() {
-  static_assert(59 == syncer::GetNumDataTypes(),
+  static_assert(61 == syncer::GetNumDataTypes(),
                 "Add new types below if they can run in transport mode");
 
 #if BUILDFLAG(IS_ANDROID)
@@ -1229,6 +1301,14 @@ syncer::DataTypeSet AllowedTypesInStandaloneTransportMode() {
 
   if (base::FeatureList::IsEnabled(syncer::kSyncAutofillValuableMetadata)) {
     allowed_types.Put(syncer::AUTOFILL_VALUABLE_METADATA);
+  }
+
+  if (base::FeatureList::IsEnabled(features::kSkillsEnabled)) {
+    allowed_types.Put(syncer::SKILL);
+  }
+
+  if (base::FeatureList::IsEnabled(syncer::kSyncGeminiThread)) {
+    allowed_types.Put(syncer::GEMINI_THREAD);
   }
 
   if (base::FeatureList::IsEnabled(syncer::kSyncAccountSettings)) {

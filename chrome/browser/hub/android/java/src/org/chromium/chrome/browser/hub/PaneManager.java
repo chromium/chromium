@@ -4,7 +4,7 @@
 
 package org.chromium.chrome.browser.hub;
 
-import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 
 /** Interface for managing {@link Pane}s. */
@@ -14,7 +14,7 @@ public interface PaneManager extends PaneLookup {
     PaneOrderController getPaneOrderController();
 
     /** Returns an observable version of the current pane. */
-    ObservableSupplier<Pane> getFocusedPaneSupplier();
+    MonotonicObservableSupplier<Pane> getFocusedPaneSupplier();
 
     /**
      * Brings the specified {@link Pane} for {@link PaneId} into focus and returns whether focus

@@ -29,9 +29,7 @@ suite('ProgressTest', function() {
       id: {high: 0, low: 0},
       name: 'Default Device Name',
       type: ShareTargetType.kPhone,
-      imageUrl: {
-        url: 'http://google.com/image',
-      },
+      imageUrl: 'http://google.com/image',
     });
   }
 
@@ -60,7 +58,7 @@ suite('ProgressTest', function() {
 
   test('renders blank target image', function() {
     const shareTarget = getDefaultShareTarget();
-    shareTarget.imageUrl.url = '';
+    shareTarget.imageUrl = '';
     progressElement.shareTarget = shareTarget;
 
     const renderedSource =

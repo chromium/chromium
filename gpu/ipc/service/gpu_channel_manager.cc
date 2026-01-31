@@ -310,9 +310,9 @@ void GpuChannelManager::GpuPeakMemoryMonitor::OnMemoryAllocatedChange(
       if (current_memory_ > seq.second.total_memory_) {
         seq.second.total_memory_ = current_memory_;
         for (auto& sequence : sequence_trackers_) {
-          TRACE_EVENT_ASYNC_STEP_INTO1("gpu", "PeakMemoryTracking",
-                                       sequence.first, "Peak", "peak",
-                                       current_memory_);
+          TRACE_EVENT_INSTANT("gpu", "PeakMemoryTracking",
+                              perfetto::Track(sequence.first), "peak",
+                              current_memory_);
         }
         for (auto& memory_per_source : current_memory_per_source_) {
           seq.second.peak_memory_per_source_[memory_per_source.first] =
@@ -830,18 +830,12 @@ void GpuChannelManager::OnMemoryPressure(
     return;
   }
 
-  if (program_cache_)
-    program_cache_->HandleMemoryPressure(memory_pressure_level);
-
   // SharedContextState requires a current context for cleanup.
   if (shared_context_state_ &&
       shared_context_state_->MakeCurrent(nullptr, true /* needs_gl */)) {
     shared_context_state_->PurgeMemory(memory_pressure_level);
   }
 
-  if (gr_shader_cache_) {
-    gr_shader_cache_->PurgeMemory(memory_pressure_level);
-  }
 #if BUILDFLAG(USE_DAWN) || BUILDFLAG(SKIA_USE_DAWN)
   if (dawn_caching_interface_factory()) {
     dawn_caching_interface_factory()->PurgeMemory(memory_pressure_level);

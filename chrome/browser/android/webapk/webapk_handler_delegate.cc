@@ -37,24 +37,24 @@ void WebApkHandlerDelegate::OnWebApkInfoRetrieved(
     const std::string& jshort_name,
     const std::string& jpackage_name,
     const std::string& jid,
-    const jint jshell_apk_version,
-    const jint jversion_code,
+    const int32_t jshell_apk_version,
+    const int32_t jversion_code,
     const std::string& juri,
     const std::string& jscope,
     const std::string& jmanifest_url,
     const std::string& jmanifest_start_url,
     const base::android::JavaRef<jstring>& jmanifest_id,
-    const jint jdisplay_mode,
-    const jint jorientation,
-    const jlong jtheme_color,
-    const jlong jbackground_color,
-    const jlong jdark_theme_color,
-    const jlong jdark_background_color,
-    const jlong jlast_update_check_time_ms,
-    const jlong jlast_update_completion_time_ms,
-    const jboolean jrelax_updates,
+    const int32_t jdisplay_mode,
+    const int32_t jorientation,
+    const int64_t jtheme_color,
+    const int64_t jbackground_color,
+    const int64_t jdark_theme_color,
+    const int64_t jdark_background_color,
+    const int64_t jlast_update_check_time_ms,
+    const int64_t jlast_update_completion_time_ms,
+    const bool jrelax_updates,
     const base::android::JavaRef<jstring>& jbacking_browser_package_name,
-    const jboolean jis_backing_browser,
+    const bool jis_backing_browser,
     const std::string& jupdate_status) {
   std::string backing_browser_package_name;
   if (jbacking_browser_package_name) {
@@ -80,8 +80,8 @@ void WebApkHandlerDelegate::OnWebApkInfoRetrieved(
       base::Time::FromMillisecondsSinceUnixEpoch(jlast_update_check_time_ms),
       base::Time::FromMillisecondsSinceUnixEpoch(
           jlast_update_completion_time_ms),
-      static_cast<bool>(jrelax_updates), backing_browser_package_name,
-      static_cast<bool>(jis_backing_browser), jupdate_status));
+      jrelax_updates, backing_browser_package_name, jis_backing_browser,
+      jupdate_status));
 }
 
 DEFINE_JNI(WebApkHandlerDelegate)

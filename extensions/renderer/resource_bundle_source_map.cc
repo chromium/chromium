@@ -7,7 +7,6 @@
 #include <ostream>
 #include <string_view>
 
-#include "base/containers/contains.h"
 #include "base/notreached.h"
 #include "extensions/renderer/static_v8_external_one_byte_string_resource.h"
 #include "third_party/zlib/google/compression_utils.h"
@@ -93,7 +92,7 @@ v8::Local<v8::String> ResourceBundleSourceMap::GetSource(
 
 bool ResourceBundleSourceMap::Contains(const std::string& name) const {
   base::AutoLock lock(lock_);
-  return base::Contains(resource_map_, name);
+  return resource_map_.contains(name);
 }
 
 }  // namespace extensions

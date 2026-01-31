@@ -6,6 +6,10 @@
   #expandedContent {
     border-top: var(--cr-separator-line);
   }
+
+  #optInAuthenticationToggle {
+    border-top: var(--cr-separator-line);
+  }
 </style>
 
 <cr-expand-button class="cr-row first" expanded="{{expanded_}}">
@@ -30,19 +34,22 @@
       <h3 class="description-header">$i18n{columnHeadingWhenOn}</h3>
       <ul class="icon-bulleted-list">
         <li>
-          <cr-icon icon="settings20:sync-saved-locally" aria-hidden="true">
+          <cr-icon icon="[[getFirstWhenOnSectionIcon_()]]" aria-hidden="true">
           </cr-icon>
           <div class="cr-secondary-text">
-            $i18n{autofillAiWhenOnSavedInfo}
+            [[getFirstWhenOnSectionTitle_()]]
           </div>
         </li>
-        <li>
-          <cr-icon icon="settings20:text-analysis" aria-hidden="true">
-          </cr-icon>
-          <div class="cr-secondary-text">
-            $i18n{autofillAiWhenOnUseToFill}
-          </div>
-        </li>
+        <template is="dom-if" if="[[!autofillAiAvailableByDefault_]]" restamp>
+          <li>
+            <cr-icon icon="settings20:text-analysis"
+                aria-hidden="true">
+            </cr-icon>
+            <div class="cr-secondary-text">
+                $i18n{autofillAiWhenOnUseToFill}
+            </div>
+          </li>
+        </template>
       </ul>
     </div>
     <div class="column">
@@ -68,4 +75,26 @@
       </ul>
     </div>
   </div>
+
+  <template is="dom-if" if="[[autofillAiReauthOnViewingSensitiveDataEnabled_]]"
+      restamp>
+  <settings-toggle-button id="optInAuthenticationToggle"
+      disabled="[[!enhancedAutofillEligibleUser_]]"
+      pref="{{prefs.autofill.autofill_ai.reauth_before_viewing_sensitive_data}}"
+      no-extension-indicator
+      label="$i18n{autofillAiAuthenticationToggleTitle}"
+      sub-label="$i18n{autofillAiAuthenticationToggleSubtitle}"
+      no-toggle-on-host-click
+      on-click="onChangeAuthenticationRequirementClicked_"
+      on-change="onChangeAuthenticationRequirementClicked_">
+  </settings-toggle-button>
+  </template>
+
+  <template is="dom-if" if="[[isUserEligibleForWalletablePassDetection_]]"
+      restamp>
+    <div class="hr"></div>
+    <settings-walletable-pass-detection-toggle
+        id="walletablePassDetectionToggle">
+    </settings-walletable-pass-detection-toggle>
+  </template>
 </cr-collapse>

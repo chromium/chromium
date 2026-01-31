@@ -246,7 +246,7 @@ void ResetAuthentication() {
   }
   _executedTestMethodSetUp = YES;
 
-  if (![[self class] loadMinimalAppUI]) {
+  if (![self loadMinimalAppUI]) {
     [ChromeTestCaseAppInterface blockSigninIPH];
   }
 }
@@ -293,7 +293,7 @@ void ResetAuthentication() {
       [ChromeEarlGreyUI dismissContextMenuIfPresent];
       [[self class] removeAnyOpenMenusAndInfoBars];
     }
-    if (![[self class] loadMinimalAppUI]) {
+    if (![self loadMinimalAppUI]) {
       [[self class] closeAllTabs];
     }
 
@@ -479,7 +479,7 @@ void ResetAuthentication() {
 // Resets the application state.
 // Called at the start of a test and when the app is relaunched.
 - (void)resetAppState {
-  if (![[self class] loadMinimalAppUI]) {
+  if (![self loadMinimalAppUI]) {
     [[self class] disableMockAuthentication];
     [[self class] enableMockAuthentication];
     ResetAuthentication();
@@ -495,10 +495,10 @@ void ResetAuthentication() {
 // running. The name is extracted from the string for the test's name property,
 // e.g. "-[DemographicsTestCase testSomething]".
 - (NSString*)currentTestMethodName {
-  int testNameStart = [self.name rangeOfString:@"test"].location;
-  return [self.name
-      substringWithRange:NSMakeRange(testNameStart,
-                                     self.name.length - testNameStart - 1)];
+  NSCharacterSet* set =
+      [NSCharacterSet characterSetWithCharactersInString:@" ]"];
+  NSArray* parts = [self.name componentsSeparatedByCharactersInSet:set];
+  return (parts.count >= 2) ? parts[1] : self.name;
 }
 
 #pragma mark - Handling system alerts

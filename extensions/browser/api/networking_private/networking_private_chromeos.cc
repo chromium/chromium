@@ -6,7 +6,6 @@
 
 #include <memory>
 
-#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/logging.h"
@@ -176,27 +175,26 @@ void NetworkHandlerFailureCallback(
 // Returns the string corresponding to |key|. If the property is a managed
 // dictionary, returns the active value. If the property does not exist or
 // has no active value, returns an empty string.
-std::string GetStringFromDictionary(const base::Value::Dict& dictionary,
+std::string GetStringFromDictionary(const base::DictValue& dictionary,
                                     const std::string& key) {
   const std::string* result = dictionary.FindString(key);
   if (result) {
     return *result;
   }
-  const base::Value::Dict* managed = dictionary.FindDict(key);
+  const base::DictValue* managed = dictionary.FindDict(key);
   if (managed) {
     result = managed->FindString(::onc::kAugmentationActiveSetting);
   }
   return result ? *result : std::string();
 }
 
-base::Value::Dict* GetThirdPartyVPNDictionary(base::Value::Dict* dictionary) {
+base::DictValue* GetThirdPartyVPNDictionary(base::DictValue* dictionary) {
   const std::string type =
       GetStringFromDictionary(*dictionary, ::onc::network_config::kType);
   if (type != ::onc::network_config::kVPN) {
     return nullptr;
   }
-  base::Value::Dict* vpn_dict =
-      dictionary->FindDict(::onc::network_config::kVPN);
+  base::DictValue* vpn_dict = dictionary->FindDict(::onc::network_config::kVPN);
   if (!vpn_dict) {
     return nullptr;
   }
@@ -204,7 +202,7 @@ base::Value::Dict* GetThirdPartyVPNDictionary(base::Value::Dict* dictionary) {
       ::onc::vpn::kThirdPartyVpn) {
     return nullptr;
   }
-  base::Value::Dict* third_party_vpn =
+  base::DictValue* third_party_vpn =
       dictionary->FindDict(::onc::vpn::kThirdPartyVpn);
   return third_party_vpn;
 }
@@ -344,7 +342,7 @@ void NetworkingPrivateChromeOS::GetState(const std::string& guid,
     return;
   }
 
-  base::Value::Dict network_properties =
+  base::DictValue network_properties =
       ash::network_util::TranslateNetworkStateToONC(network_state);
   AppendThirdPartyProviderName(&network_properties);
 
@@ -353,7 +351,7 @@ void NetworkingPrivateChromeOS::GetState(const std::string& guid,
 
 void NetworkingPrivateChromeOS::SetProperties(
     const std::string& guid,
-    base::Value::Dict properties,
+    base::DictValue properties,
     bool allow_set_shared_config,
     VoidCallback success_callback,
     FailureCallback failure_callback) {
@@ -402,7 +400,7 @@ void NetworkHandlerCreateCallback(
 
 void NetworkingPrivateChromeOS::CreateNetwork(
     bool shared,
-    base::Value::Dict properties,
+    base::DictValue properties,
     StringCallback success_callback,
     FailureCallback failure_callback) {
   std::string user_id_hash, error;
@@ -498,12 +496,12 @@ void NetworkingPrivateChromeOS::GetNetworks(
       (!visible_only && network_type == ::onc::network_type::kEthernet)
           ? NetworkTypePattern::EthernetOrEthernetEAP()
           : ash::onc::NetworkTypePatternFromOncType(network_type);
-  base::Value::List network_properties_list =
+  base::ListValue network_properties_list =
       ash::network_util::TranslateNetworkListToONC(pattern, configured_only,
                                                    visible_only, limit);
 
   for (auto& value : network_properties_list) {
-    base::Value::Dict& value_dict = value.GetDict();
+    base::DictValue& value_dict = value.GetDict();
     if (GetThirdPartyVPNDictionary(&value_dict)) {
       AppendThirdPartyProviderName(&value_dict);
     }
@@ -684,7 +682,7 @@ void NetworkingPrivateChromeOS::GetEnabledNetworkTypes(
     EnabledNetworkTypesCallback callback) {
   NetworkStateHandler* state_handler = GetStateHandler();
 
-  base::Value::List network_list;
+  base::ListValue network_list;
 
   if (state_handler->IsTechnologyEnabled(NetworkTypePattern::Ethernet())) {
     network_list.Append(::onc::network_type::kEthernet);
@@ -719,7 +717,7 @@ void NetworkingPrivateChromeOS::GetDeviceStateList(
                                     ::onc::network_type::kWiFi,
                                     ::onc::network_type::kCellular};
   for (const char* technology : technology_types) {
-    if (base::Contains(technologies_found, technology)) {
+    if (technologies_found.contains(technology)) {
       continue;
     }
     AppendDeviceState(technology, nullptr /* device */, device_state_list);
@@ -729,8 +727,8 @@ void NetworkingPrivateChromeOS::GetDeviceStateList(
 
 void NetworkingPrivateChromeOS::GetGlobalPolicy(
     GetGlobalPolicyCallback callback) {
-  base::Value::Dict result;
-  const base::Value::Dict* global_network_config =
+  base::DictValue result;
+  const base::DictValue* global_network_config =
       GetManagedConfigurationHandler()->GetGlobalConfigFromPolicy(
           std::string() /* no username hash, device policy */);
 
@@ -799,7 +797,7 @@ void NetworkingPrivateChromeOS::GetPropertiesCallback(
     const std::string& guid,
     PropertiesCallback callback,
     const std::string& service_path,
-    std::optional<base::Value::Dict> dictionary,
+    std::optional<base::DictValue> dictionary,
     std::optional<std::string> error) {
   if (dictionary) {
     AppendThirdPartyProviderName(&dictionary.value());
@@ -808,8 +806,8 @@ void NetworkingPrivateChromeOS::GetPropertiesCallback(
 }
 
 void NetworkingPrivateChromeOS::AppendThirdPartyProviderName(
-    base::Value::Dict* dictionary) {
-  base::Value::Dict* third_party_vpn = GetThirdPartyVPNDictionary(dictionary);
+    base::DictValue* dictionary) {
+  base::DictValue* third_party_vpn = GetThirdPartyVPNDictionary(dictionary);
   if (!third_party_vpn) {
     return;
   }

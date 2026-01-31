@@ -40,7 +40,7 @@ std::vector<int> GetThrottlerRequestCounts(PrefService& pref_service) {
 
 void SetThrottlerRequestCounts(std::vector<int> request_counts,
                                PrefService& pref_service) {
-  base::Value::List value_list;
+  base::ListValue value_list;
   for (int count : request_counts) {
     value_list.Append(count);
   }

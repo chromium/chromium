@@ -59,6 +59,7 @@ class CAPTURE_EXPORT VideoCaptureBufferTracker {
 
   virtual base::UnsafeSharedMemoryRegion DuplicateAsUnsafeRegion() = 0;
   virtual gfx::GpuMemoryBufferHandle GetGpuMemoryBufferHandle() = 0;
+  virtual media::mojom::VideoBufferHandlePtr GetVideoBufferHandle();
 
   // Returns buffer type of the underlying resource. If the result of calling
   // this method is `kGpuMemoryBuffer`, attempting to call

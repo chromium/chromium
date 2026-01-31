@@ -706,21 +706,15 @@ void XRFrameProvider::SubmitLayer(device::LayerId layer_id,
         << "WebGPU layers only support shared buffer submission modes";
   }
 
-  scoped_refptr<StaticBitmapImage> image_ref =
-      client->TransferToStaticBitmapImage();
+  std::unique_ptr<SharedImageHolder> image_ref =
+      client->TransferToSharedImageHolder();
 
   if (!image_ref) {
     return;
   }
 
-  // Hardware-accelerated rendering should always be texture backed. Ensure this
-  // is the case, don't attempt to render if using an unexpected drawing path.
-  if (!image_ref->IsTextureBacked()) {
-    NOTREACHED() << "WebXR requires hardware-accelerated rendering to texture";
-  }
-
   any_layer_changed_ = true;
-  current_frame_images_.push_back(image_ref);
+  current_frame_images_.push_back(std::move(image_ref));
   layer_ids_.push_back(layer_id);
 }
 
@@ -739,6 +733,10 @@ void XRFrameProvider::UpdateWebGLLayerViewports(XRWebGLLayer* layer) {
 
   // We may only have one eye view, i.e. in smartphone immersive AR mode.
   // Use all-zero bounds for unused views.
+  // TODO(crbug.com/451876192): Investigate sending unnormalized coordinates
+  // from here. We create TextureDrawQuads with unnormalized coordinates, so
+  // removing this redundant normalization/unnormalization step would reduce
+  // floating-point precision issues.
   gfx::RectF left_coords =
       left ? gfx::RectF(
                  static_cast<float>(left->x()) / width,

@@ -6,10 +6,8 @@
 
 #include "device/bluetooth/public/cpp/bluetooth_uuid.h"
 
-namespace ash {
-namespace quick_pair {
+namespace ash::quick_pair {
 
 const device::BluetoothUUID kFastPairBluetoothUuid("0xFE2C");
 
-}
-}  // namespace ash
+}  // namespace ash::quick_pair

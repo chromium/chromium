@@ -12,6 +12,7 @@
 #import "components/optimization_guide/optimization_guide_buildflags.h"
 #import "components/optimization_guide/proto/features/bling_prototyping.pb.h"
 #import "components/optimization_guide/proto/string_value.pb.h"
+#import "ios/chrome/browser/ai_prototyping/features.h"
 #import "ios/chrome/browser/ai_prototyping/ui/ai_prototyping_mutator.h"
 #import "ios/chrome/browser/ai_prototyping/utils/ai_prototyping_constants.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
@@ -102,7 +103,14 @@ using optimization_guide::proto::BlingPrototypingRequest_ModelEnum_Name;
   // MQLS upload switch.
   _uploadMQLSSwitch = [[UISwitch alloc] init];
   _uploadMQLSSwitch.translatesAutoresizingMaskIntoConstraints = NO;
-  _uploadMQLSSwitch.on = NO;
+  // Tester must set flag to enable upload to MQLS.
+  if (IsUploadBlingAIPrototypingDataEnabled()) {
+    _uploadMQLSSwitch.enabled = YES;
+    _uploadMQLSSwitch.on = YES;
+  } else {
+    _uploadMQLSSwitch.enabled = NO;
+    _uploadMQLSSwitch.on = NO;
+  }
 
   UILabel* uploadMQLSSwitchLabel = [[UILabel alloc] init];
   uploadMQLSSwitchLabel.translatesAutoresizingMaskIntoConstraints = NO;
@@ -120,7 +128,14 @@ using optimization_guide::proto::BlingPrototypingRequest_ModelEnum_Name;
   // Store page context on device switch.
   _storePageContextSwitch = [[UISwitch alloc] init];
   _storePageContextSwitch.translatesAutoresizingMaskIntoConstraints = NO;
-  _storePageContextSwitch.on = NO;
+  // Tester must set flag to enable storing page context locally.
+  if (IsStoreBlingAIPrototypingPageContextLocallyEnabled()) {
+    _storePageContextSwitch.enabled = YES;
+    _storePageContextSwitch.on = YES;
+  } else {
+    _storePageContextSwitch.enabled = NO;
+    _storePageContextSwitch.on = NO;
+  }
 
   UILabel* storePageContextSwitchLabel = [[UILabel alloc] init];
   storePageContextSwitchLabel.translatesAutoresizingMaskIntoConstraints = NO;

@@ -468,6 +468,14 @@
   },
   {
     "type": "hosted",
+    "icon": "gproject",
+    "translationKey": "GPROJECT_DOCUMENT_FILE_TYPE",
+    "subtype": "project",
+    "extensions": [".gprj"],
+    "mime": "application/vnd.google-apps.project"
+  },
+  {
+    "type": "hosted",
     "icon": "gsite",
     "translationKey": "GSITE_DOCUMENT_FILE_TYPE",
     "subtype": "site",

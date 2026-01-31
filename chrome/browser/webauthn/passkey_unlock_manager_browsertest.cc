@@ -9,6 +9,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/sync/test/integration/sync_service_impl_harness.h"
+#include "chrome/browser/trusted_vault/trusted_vault_encryption_keys_tab_helper.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/webauthn/enclave_authenticator_browsertest_base.h"
@@ -63,7 +64,7 @@ HandleEncryptionUnlockPageRequest(
 
 class MockPasskeyUnlockManagerObserver : public PasskeyUnlockManager::Observer {
  public:
-  MOCK_METHOD(void, OnPasskeyUnlockManagerStateChanged, (), (override));
+  MOCK_METHOD(void, OnPasskeyErrorUiStateChanged, (), (override));
   MOCK_METHOD(void, OnPasskeyUnlockManagerShuttingDown, (), (override));
   MOCK_METHOD(void, OnPasskeyUnlockManagerIsReady, (), (override));
 };
@@ -101,13 +102,13 @@ class PasskeyUnlockManagerBrowserTest : public EnclaveAuthenticatorTestBase {
 
  protected:
   void SetUpOnMainThread() override {
-    EnclaveAuthenticatorTestBase::SetUpOnMainThread();
     // Make the browser's network stack route requests to the
     // embedded_test_server.
     host_resolver()->AddRule("*", "127.0.0.1");
     embedded_test_server()->RegisterRequestHandler(
         base::BindRepeating(&HandleEncryptionUnlockPageRequest));
-    ASSERT_TRUE(embedded_test_server()->Start());
+
+    EnclaveAuthenticatorTestBase::SetUpOnMainThread();
 
     base::test::TestFuture<void> load_future;
     EnclaveManager* enclave_manager =
@@ -134,7 +135,9 @@ IN_PROC_BROWSER_TEST_F(PasskeyUnlockManagerBrowserTest,
   TabStripModel* tab_strip_model = browser()->tab_strip_model();
   int initial_tab_count = tab_strip_model->count();
 
-  PasskeyUnlockManager::OpenTabWithPasskeyUnlockChallenge(browser());
+  PasskeyUnlockManager::OpenTabWithPasskeyUnlockChallenge(
+      browser(), trusted_vault::TrustedVaultUserActionTriggerForUMA::
+                     kPasskeyUnlockProfileMenu);
 
   // Ensure that a new tab with an expected URL has been added.
   EXPECT_EQ(initial_tab_count + 1, tab_strip_model->count());
@@ -149,6 +152,12 @@ IN_PROC_BROWSER_TEST_F(PasskeyUnlockManagerBrowserTest,
                  "desktop?kdi=CAESDgoMaHdfcHJvdGVjdGVk"),
             new_contents->GetVisibleURL());
 #endif
+  TrustedVaultEncryptionKeysTabHelper* tab_helper =
+      TrustedVaultEncryptionKeysTabHelper::FromWebContents(new_contents);
+  ASSERT_TRUE(tab_helper);
+  EXPECT_EQ(tab_helper->user_action_trigger(),
+            trusted_vault::TrustedVaultUserActionTriggerForUMA::
+                kPasskeyUnlockProfileMenu);
 }
 
 IN_PROC_BROWSER_TEST_F(PasskeyUnlockManagerBrowserTest,
@@ -158,9 +167,9 @@ IN_PROC_BROWSER_TEST_F(PasskeyUnlockManagerBrowserTest,
   passkey_unlock_manager()->AddObserver(&observer);
 
   base::test::TestFuture<void> event_future;
-  EXPECT_CALL(observer, OnPasskeyUnlockManagerStateChanged())
+  EXPECT_CALL(observer, OnPasskeyErrorUiStateChanged())
       .WillOnce([&event_future]() {
-        // Signal the TestFuture when OnPasskeyUnlockManagerStateChanged is
+        // Signal the TestFuture when OnPasskeyErrorUiStateChanged is
         // called.
         event_future.SetValue();
       });

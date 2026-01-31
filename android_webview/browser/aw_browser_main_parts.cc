@@ -235,6 +235,15 @@ AwBrowserMainParts::AwBrowserMainParts(AwContentBrowserClient* browser_client)
 AwBrowserMainParts::~AwBrowserMainParts() {
 }
 
+void AwBrowserMainParts::PreCreateMainMessageLoop() {
+  // WebView should not override the main thread name.
+  // This switch is set here instead of
+  // `android_webview/lib/aw_main_delegate.cc` because it must be available in
+  // `BrowserMainLoop::CreateMainMessageLoop`.
+  base::CommandLine::ForCurrentProcess()->AppendSwitch(
+      switches::kDisableMainThreadNameOverride);
+}
+
 int AwBrowserMainParts::PreEarlyInitialization() {
   // Network change notifier factory must be singleton, only set factory
   // instance while it is not been created.
@@ -499,23 +508,17 @@ void AwBrowserMainParts::PostCreateThreads() {
 
 bool AwBrowserMainParts::isWebViewStartupTasksExperimentEnabled() {
   return Java_AwBrowserMainParts_isWebViewStartupTasksLogicEnabled(
-             base::android::AttachCurrentThread()) ||
-         base::CommandLine::ForCurrentProcess()->HasSwitch(
-             switches::kWebViewUseStartupTasksLogic);
+      base::android::AttachCurrentThread());
 }
 
 bool AwBrowserMainParts::isWebViewStartupTasksExperimentEnabledP2() {
   return Java_AwBrowserMainParts_isWebViewStartupTasksExperimentEnabledP2(
-             base::android::AttachCurrentThread()) ||
-         base::CommandLine::ForCurrentProcess()->HasSwitch(
-             switches::kWebViewUseStartupTasksLogicP2);
+      base::android::AttachCurrentThread());
 }
 
 bool AwBrowserMainParts::isStartupTaskYieldToNativeExperimentEnabled() {
   return Java_AwBrowserMainParts_isWebViewStartupTasksYieldToNativeExperimentEnabled(
-             base::android::AttachCurrentThread()) ||
-         base::CommandLine::ForCurrentProcess()->HasSwitch(
-             switches::kWebViewStartupTasksYieldToNative);
+      base::android::AttachCurrentThread());
 }
 
 }  // namespace android_webview

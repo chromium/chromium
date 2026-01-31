@@ -53,6 +53,12 @@ bssl::CertificateTrust ThreadSafeTrustStoreInMemory::GetTrust(
   return impl_.GetTrust(cert);
 }
 
+std::shared_ptr<const bssl::MTCAnchor>
+ThreadSafeTrustStoreInMemory::GetTrustedMTCIssuerOf(
+    const bssl::ParsedCertificate* cert) {
+  base::AutoLock lock(lock_);
+  return impl_.GetTrustedMTCIssuerOf(cert);
+}
 // static
 TestRootCerts* TestRootCerts::GetInstance() {
   static base::NoDestructor<TestRootCerts> test_root_certs;

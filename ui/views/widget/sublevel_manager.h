@@ -54,6 +54,10 @@ class VIEWS_EXPORT SublevelManager : public WidgetObserver {
   // Check if a child widget is being tracked.
   bool IsTrackingChildWidget(Widget* child);
 
+  // Returns true if `child` is already in a position that satisfies the
+  // sublevel ordering constraints relative to its siblings.
+  bool IsChildWidgetOrderValid(Widget* child);
+
   // Returns the position in `children_` before which `child` should be inserted
   // to maintain the sublevel ordering. This methods assumes that `child` is not
   // in `children_`.

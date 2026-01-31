@@ -105,6 +105,11 @@ void SessionManager::SessionStarted() {
   bool is_primary = sessions_.size() == 1;
   for (auto& observer : observers_)
     observer.OnUserSessionStarted(is_primary);
+
+  SetSessionState(session_manager::SessionState::ACTIVE);
+
+  // Notifies UserManager so that it can update login state.
+  user_manager_->OnSessionStarted();
 }
 
 bool SessionManager::HasSessionForAccountId(const AccountId& account_id) const {
@@ -234,7 +239,6 @@ void SessionManager::CreateSessionInternal(const AccountId& user_account_id,
   for (size_t i = 0; i < sessions_.size(); ++i) {
     CHECK_EQ(sessions_[i]->account_id(), logged_in_users[i]->GetAccountId());
   }
-  OnSessionCreated(browser_restart);
   observers_.Notify(&SessionManagerObserver::OnSessionCreated, user_account_id);
 }
 

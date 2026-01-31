@@ -13,7 +13,6 @@
 #include "base/metrics/field_trial_params.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
-#include "media/media_buildflags.h"
 #include "third_party/blink/public/common/buildflags.h"
 #include "third_party/blink/public/common/common_export.h"
 #include "third_party/blink/public/common/features_generated.h"
@@ -136,6 +135,7 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kBFCacheWithSharedWorker);
 
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(
     kBackForwardCacheDWCOnJavaScriptExecution);
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kBackForwardCachePauseMicrotasks);
 
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kBackgroundResourceFetch);
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(
@@ -483,6 +483,9 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kFledgeOriginScopedKeys);
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(std::string,
                                                kFledgeOriginScopedKeyConfig);
 
+// Block partial responses (206, 416) for requests without a Range header.
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kBlockPartialResponseWithoutRange);
+
 // Configures FLEDGE to consider k-anonymity. If both
 // kFledgeConsiderKAnonymity and kFledgeEnforceKAnonymity are on it will be
 // enforced; if only kFledgeConsiderKAnonymity is on it will be simulated.
@@ -725,6 +728,12 @@ enum class IsolateSandboxedIframesGrouping {
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(
     IsolateSandboxedIframesGrouping,
     kIsolateSandboxedIframesGroupingParam);
+
+#if BUILDFLAG(ENABLE_JXL_DECODER)
+// Flag to enable JXL (JPEG XL) image format support.
+// If disabled, JXL images will not be decoded even if the decoder is built.
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kJXLImageFormat);
+#endif
 
 // Kill-switch for the fetch keepalive request infra migration.
 // If enabled, all keepalive requests will be proxied via the browser process.
@@ -1369,6 +1378,8 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kDedicatedWorkerAblationStudyEnabled);
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(int,
                                                kDedicatedWorkerStartDelayInMs);
 
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kUpdatedDeviceMemoryLimitsFor2026);
+
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kUseAncestorRenderFrameForWorker);
 
 // Whether first-party to third-party different-bucket same-origin post messages
@@ -1547,17 +1558,7 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kLocalCompileHints);
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(
     kQuoteEmptySecChUaStringHeadersConsistently);
 
-// A parameter for kReduceUserAgentMinorVersion;
-BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(std::string,
-                                               kUserAgentFrozenBuildVersion);
-
-// Parameters for kReduceUserAgentPlatformOsCpu;
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kReducedReferrerGranularity);
-
-// Refactor CompositorThreadEventQueue to separate event queuing and coalescing.
-// When disabled, CompositorThreadEventQueue coalesces input events in
-// CompositorThreadEventQueue::Queue itself.
-BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kRefactorCompositorThreadEventQueue);
 
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(
     kReleaseResourceDecodedDataOnMemoryPressure);
@@ -1595,29 +1596,11 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kResamplingInputEvents);
 // feature param.
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kResamplingScrollEvents);
 
-// This experiment evaluates various restrictions on the application of
-// spelling/grammar highlights to prevent user dictionary leaks.
-// For more see:
+// This bypasses restrictions on selection sources and allows the spelling and
+// grammar checks to proceed for testing purposes.
 // https://explainers-by-googlers.github.io/user-dictionary-leaks/
-BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kRestrictSpellingAndGrammarHighlights);
-
-// If true, this disables spelling/grammar highlights performed on script
-// edit (requiring user input to invoke).
-BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(
-    bool,
-    kRestrictSpellingAndGrammarHighlightsChangedContents);
-
-// If true, this disables spelling/grammar highlights performed on script
-// enablement (requiring contents or selection change).
-BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(
-    bool,
-    kRestrictSpellingAndGrammarHighlightsChangedEnablement);
-
-// If true, this disables spelling/grammar highlights performed on script
-// focus (requiring user gesture to invoke).
-BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(
-    bool,
-    kRestrictSpellingAndGrammarHighlightsChangedSelection);
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(
+    kUnrestrictSpellingAndGrammarForTesting);
 
 // Aggregated flag for the restriction on HTTP Link headers on subresource
 // responses. See crbug.com/417529151 for details.
@@ -1744,7 +1727,15 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(
 
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(
     bool,
+    kServiceWorkerSyntheticResponseOffMainThread);
+
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(
+    bool,
     kServiceWorkerSyntheticResponseReportInconsistentHeader);
+
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(
+    bool,
+    kServiceWorkerSyntheticResponseSkipUnnecessaryBuffering);
 
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(
     bool,
@@ -1863,6 +1854,10 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kWebRtcUseCaptureBeginTimestamp);
 // capture timestamps. This is disabled by default.
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kWebRtcAudioSinkUseTimestampAligner);
 
+// Enables the use of specific thread types (kPresentation for video,
+// kInteractive for audio processing) for media tasks.
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kWebRtcUseMediaThreadTypes);
+
 // This feature enables using Post-Quantum Crypto(PQC) for DTLS to improve
 // WebRTC's security.
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kWebRtcPqcForDtls);
@@ -1870,7 +1865,12 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kWebRtcPqcForDtls);
 // TODO(crbug.com/466441366): Stop accepting 'borderless'.
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kWebAppBorderless);
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kWebAppEnableScopeExtensionsBySite);
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(
+    kWebAppEnableScopeExtensionsForIsolatedWebApps);
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kWebAppManifestLocalization);
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kWebAppManifestLockScreen);
+
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kWebAppMigrationApi);
 
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kWebAudioAllowDenormalInProcessing);
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kWebAudioDeferPullStatusUpdate);

@@ -9,6 +9,7 @@
     "optimize_for_fuzzing": true,
     "pdf_enable_xfa": true,
     "proprietary_codecs": true,
+    "sanitizer_coverage_skip_stdlib_and_absl": true,
     "symbol_level": 1,
     "target_cpu": "x64",
     "target_os": "linux",

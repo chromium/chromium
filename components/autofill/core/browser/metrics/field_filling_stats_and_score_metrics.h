@@ -90,7 +90,9 @@ FormGroupFillingStats GetFormFillingStatsForFormType(
 // `filling_stats` of ac=unrecognized fields. The filling status
 // consistent of the number of accepted, corrected or and unfilled fields. See
 // the .cc file for details.
-void LogFieldFillingStatsAndScore(const FormStructure& form);
+void LogFieldFillingStatsAndScore(
+    const FormStructure& form,
+    AutocompleteUnrecognizedBehavior ac_unrecognized_behavior);
 
 }  // namespace autofill::autofill_metrics
 

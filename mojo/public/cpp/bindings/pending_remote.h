@@ -5,8 +5,8 @@
 #ifndef MOJO_PUBLIC_CPP_BINDINGS_PENDING_REMOTE_H_
 #define MOJO_PUBLIC_CPP_BINDINGS_PENDING_REMOTE_H_
 
+#include <concepts>
 #include <cstdint>
-#include <type_traits>
 #include <utility>
 
 #include "base/check.h"
@@ -67,13 +67,13 @@ class PendingRemote {
 
   // Move conversion operator for custom remote types. Only participates in
   // overload resolution if a typesafe conversion is supported.
-  template <typename T,
-            std::enable_if_t<std::is_same<
-                PendingRemote<Interface>,
-                std::invoke_result_t<decltype(&PendingRemoteConverter<
-                                              T>::template To<Interface>),
-                                     T&&>>::value>* = nullptr>
-  PendingRemote(T&& other)
+  template <typename T>
+    requires requires(T t) {
+      {
+        PendingRemoteConverter<T>::template To<Interface>(std::move(t))
+      } -> std::same_as<PendingRemote>;
+    }
+  PendingRemote(T other)
       : PendingRemote(PendingRemoteConverter<T>::template To<Interface>(
             std::move(other))) {}
 

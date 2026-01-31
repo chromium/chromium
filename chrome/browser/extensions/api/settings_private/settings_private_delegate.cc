@@ -29,7 +29,7 @@ SettingsPrivateDelegate::SettingsPrivateDelegate(Profile* profile)
 
 SettingsPrivateDelegate::~SettingsPrivateDelegate() = default;
 
-std::optional<base::Value::Dict> SettingsPrivateDelegate::GetPref(
+std::optional<base::DictValue> SettingsPrivateDelegate::GetPref(
     const std::string& name) {
   std::optional<api::settings_private::PrefObject> pref =
       prefs_util_->GetPref(name);
@@ -38,12 +38,12 @@ std::optional<base::Value::Dict> SettingsPrivateDelegate::GetPref(
   return pref->ToValue();
 }
 
-base::Value::List SettingsPrivateDelegate::GetAllPrefs() {
-  base::Value::List prefs;
+base::ListValue SettingsPrivateDelegate::GetAllPrefs() {
+  base::ListValue prefs;
 
   const TypedPrefMap& keys = prefs_util_->GetAllowlistedKeys();
   for (const auto& it : keys) {
-    if (std::optional<base::Value::Dict> pref = GetPref(it.first); pref) {
+    if (std::optional<base::DictValue> pref = GetPref(it.first); pref) {
       prefs.Append(std::move(*pref));
     }
   }

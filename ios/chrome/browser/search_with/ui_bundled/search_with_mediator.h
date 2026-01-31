@@ -7,9 +7,9 @@
 
 #import <UIKit/UIKit.h>
 
-#import "ios/chrome/browser/browser_container/model/edit_menu_builder.h"
+#import "ios/chrome/browser/browser_content/model/edit_menu_builder.h"
 
-@protocol ApplicationCommands;
+@protocol SceneCommands;
 class TemplateURLService;
 
 // Mediator that mediates between the browser container views and the
@@ -26,8 +26,8 @@ class TemplateURLService;
 // Disconnects the mediator.
 - (void)shutdown;
 
-// The handler for ApplicationCommands commands.
-@property(nonatomic, weak) id<ApplicationCommands> applicationCommandHandler;
+// The handler for SceneCommands commands.
+@property(nonatomic, weak) id<SceneCommands> sceneHandler;
 
 @end
 

@@ -4,6 +4,7 @@
 
 #include "content/browser/renderer_host/mojo_render_input_router_delegate_impl.h"
 
+#include "components/input/input_event_source.h"
 #include "components/viz/host/host_frame_sink_manager.h"
 #include "content/browser/compositor/surface_utils.h"
 #include "content/browser/renderer_host/render_widget_host_impl.h"
@@ -38,7 +39,8 @@ MojoRenderInputRouterDelegateImpl::GetRenderInputRouterDelegateRemote() {
 void MojoRenderInputRouterDelegateImpl::NotifyObserversOfInputEvent(
     std::unique_ptr<blink::WebCoalescedInputEvent> event,
     bool dispatched_to_renderer) {
-  host_->NotifyObserversOfInputEvent(event->Event(), dispatched_to_renderer);
+  host_->NotifyObserversOfInputEventWithSource(
+      event->Event(), input::InputEventSource::kViz, dispatched_to_renderer);
 }
 
 void MojoRenderInputRouterDelegateImpl::NotifyObserversOfInputEventAcks(

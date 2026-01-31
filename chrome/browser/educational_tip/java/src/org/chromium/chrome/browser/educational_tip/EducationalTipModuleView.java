@@ -116,4 +116,27 @@ public class EducationalTipModuleView extends LinearLayout {
     boolean getIsTitleSingleLineForTesting() {
         return mIsTitleSingleLine;
     }
+
+    void setCompleted(boolean isCompleted) {
+        if (!isCompleted) {
+            return;
+        }
+
+        int disabledColor = getContext().getColor(R.color.default_text_color_disabled_list);
+
+        // Title
+        mContentTitleView.setTextColor(disabledColor);
+        mContentTitleView.setPaintFlags(
+                mContentTitleView.getPaintFlags() | android.graphics.Paint.STRIKE_THRU_TEXT_FLAG);
+
+        // Description
+        mContentDescriptionView.setTextColor(disabledColor);
+        mContentDescriptionView.setPaintFlags(
+                mContentDescriptionView.getPaintFlags()
+                        | android.graphics.Paint.STRIKE_THRU_TEXT_FLAG);
+
+        // Button
+        mModuleButtonView.setEnabled(false);
+        mModuleButtonView.setTextColor(disabledColor);
+    }
 }

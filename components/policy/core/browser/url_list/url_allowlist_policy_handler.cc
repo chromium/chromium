@@ -99,7 +99,7 @@ void URLAllowlistPolicyHandler::ApplyPolicySettings(const PolicyMap& policies,
     return;
   }
 
-  base::Value::List filtered_url_allowlist;
+  base::ListValue filtered_url_allowlist;
   for (const auto& entry : url_allowlist->GetList()) {
     if (entry.is_string()) {
       filtered_url_allowlist.Append(entry.Clone());

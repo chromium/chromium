@@ -63,54 +63,70 @@ URLPatternParseResult ParseURLPattern(CSSParserTokenStream& stream,
 
 // https://drafts.csswg.org/css-navigation-1/#typedef-navigation-test
 //
-// <navigation-test> = <navigation-location> | <navigation-keyword> :
-// <navigation-location> <navigation-keyword> = at | from | to
+// <navigation-test> = <navigation-location-test> | <navigation-type-test>
+//
+// <navigation-location-test> =
+//   <navigation-location-keyword> : <navigation-location>
+// <navigation-location-keyword> = at | from | to
 // <navigation-location> = <route-name> | <url-pattern()>
 // <route-name> = <dashed-ident>
+//
+// <navigation-type-test> = history : <navigation-type-keyword>
+// <navigation-type-keyword> = traverse | back | forward | reload
 NavigationTestExpression* ParseNavigationTest(CSSParserTokenStream& stream,
                                               const Document& document) {
-  AtomicString route_name;
-  auto preposition = NavigationPreposition::kAt;
-  URLPatternParseResult url_pattern_result;
-
-  bool header_valid = [&]() {
-    if (stream.Peek().GetType() == kIdentToken) {
-      AtomicString first_string(
-          stream.ConsumeIncludingWhitespace().Value().ToString());
-      if (stream.Peek().GetType() == kColonToken) {
-        if (first_string == "at") {
-          preposition = NavigationPreposition::kAt;
-        } else if (first_string == "from") {
-          preposition = NavigationPreposition::kFrom;
-        } else if (first_string == "to") {
-          preposition = NavigationPreposition::kTo;
-        } else {
-          return false;
-        }
-        stream.ConsumeIncludingWhitespace();
-        if (stream.Peek().GetType() == kIdentToken) {
-          route_name = AtomicString(
-              stream.ConsumeIncludingWhitespace().Value().ToString());
-        } else {
-          url_pattern_result = ParseURLPattern(stream, document);
-          if (!url_pattern_result.IsSuccess()) {
-            return false;
-          }
-        }
-        return stream.AtEnd();
-      }
-      if (stream.AtEnd()) {
-        route_name = first_string;
-        return true;
-      }
-    } else {
-      url_pattern_result = ParseURLPattern(stream, document);
-      return url_pattern_result.IsSuccess() && stream.AtEnd();
+  if (stream.Peek().GetType() != kIdentToken) {
+    return nullptr;
+  }
+  AtomicString ident(stream.ConsumeIncludingWhitespace().Value().ToString());
+  if (stream.Peek().GetType() != kColonToken) {
+    return nullptr;
+  }
+  stream.ConsumeIncludingWhitespace();
+  NavigationPreposition preposition;
+  if (ident == "at") {
+    preposition = NavigationPreposition::kAt;
+  } else if (ident == "from") {
+    preposition = NavigationPreposition::kFrom;
+  } else if (ident == "to") {
+    preposition = NavigationPreposition::kTo;
+  } else if (ident == "history") {
+    // <navigation-type-test>
+    if (stream.Peek().GetType() != kIdentToken) {
+      return nullptr;
     }
-    return false;
-  }();
+    AtomicString argument(
+        stream.ConsumeIncludingWhitespace().Value().ToString());
+    NavigationTypeTestExpression::Type type;
+    if (argument == "traverse") {
+      type = NavigationTypeTestExpression::kTraverse;
+    } else if (argument == "back") {
+      type = NavigationTypeTestExpression::kBack;
+    } else if (argument == "forward") {
+      type = NavigationTypeTestExpression::kForward;
+    } else if (argument == "reload") {
+      // TODO(crbug.com/436805487): Support "reload".
+      return nullptr;
+    } else {
+      return nullptr;
+    }
+    return MakeGarbageCollected<NavigationTypeTestExpression>(type);
+  } else {
+    return nullptr;
+  }
 
-  if (!header_valid) {
+  AtomicString route_name;
+  URLPatternParseResult url_pattern_result;
+  if (stream.Peek().GetType() == kIdentToken) {
+    route_name =
+        AtomicString(stream.ConsumeIncludingWhitespace().Value().ToString());
+  } else {
+    url_pattern_result = ParseURLPattern(stream, document);
+    if (!url_pattern_result.IsSuccess()) {
+      return nullptr;
+    }
+  }
+  if (!stream.AtEnd()) {
     return nullptr;
   }
 
@@ -123,8 +139,8 @@ NavigationTestExpression* ParseNavigationTest(CSSParserTokenStream& stream,
     navigation_location = MakeGarbageCollected<NavigationLocation>(route_name);
   }
 
-  return MakeGarbageCollected<NavigationTestExpression>(*navigation_location,
-                                                        preposition);
+  return MakeGarbageCollected<NavigationLocationTestExpression>(
+      *navigation_location, preposition);
 }
 
 }  // anonymous namespace
@@ -145,18 +161,12 @@ NavigationLocation* NavigationParser::ParseLocation(
   if (stream.Peek().GetType() == kIdentToken) {
     AtomicString route_name(
         stream.ConsumeIncludingWhitespace().Value().ToString());
-    if (stream.AtEnd()) {
-      return MakeGarbageCollected<NavigationLocation>(route_name);
-    }
-  } else {
-    URLPatternParseResult result = ParseURLPattern(stream, document);
-    if (result.IsSuccess()) {
-      stream.ConsumeWhitespace();
-      if (stream.AtEnd()) {
-        return MakeGarbageCollected<NavigationLocation>(result.url_pattern,
-                                                        result.original_string);
-      }
-    }
+    return MakeGarbageCollected<NavigationLocation>(route_name);
+  }
+  URLPatternParseResult result = ParseURLPattern(stream, document);
+  if (result.IsSuccess()) {
+    return MakeGarbageCollected<NavigationLocation>(result.url_pattern,
+                                                    result.original_string);
   }
   return nullptr;
 }

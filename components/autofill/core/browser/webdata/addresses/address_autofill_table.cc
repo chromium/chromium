@@ -43,7 +43,6 @@ constexpr std::string_view kDateModified = "date_modified";
 constexpr std::string_view kLanguageCode = "language_code";
 constexpr std::string_view kLabel = "label";
 constexpr std::string_view kInitialCreatorId = "initial_creator_id";
-constexpr std::string_view kLastModifierId = "last_modifier_id";
 
 constexpr std::string_view kAddressTypeTokensTable = "address_type_tokens";
 // kGuid = "guid"
@@ -369,7 +368,7 @@ bool AddProfileMetadataToTable(sql::Database* db,
   sql::Statement s;
   InsertBuilder(db, s, kAddressesTable,
                 {kGuid, kRecordType, kUseCount, kUseDate, kDateModified,
-                 kLanguageCode, kLabel, kInitialCreatorId, kLastModifierId});
+                 kLanguageCode, kLabel, kInitialCreatorId});
   int index = 0;
   s.BindString(index++, profile.guid());
   s.BindInt(index++, static_cast<int>(profile.record_type()));
@@ -379,7 +378,6 @@ bool AddProfileMetadataToTable(sql::Database* db,
   s.BindString(index++, profile.language_code());
   s.BindString(index++, profile.profile_label());
   s.BindInt(index++, profile.initial_creator_id());
-  s.BindInt(index++, profile.last_modifier_id());
   return s.Run();
 }
 
@@ -437,7 +435,7 @@ bool AddAutofillProfileToTableVersion113(sql::Database* db,
   sql::Statement s;
   InsertBuilder(db, s, GetLegacyProfileMetadataTable(profile.record_type()),
                 {kGuid, kUseCount, kUseDate, kDateModified, kLanguageCode,
-                 kLabel, kInitialCreatorId, kLastModifierId});
+                 kLabel, kInitialCreatorId, "last_modifier_id"});
   int index = 0;
   s.BindString(index++, profile.guid());
   s.BindInt64(index++, profile.usage_history().use_count());
@@ -446,7 +444,8 @@ bool AddAutofillProfileToTableVersion113(sql::Database* db,
   s.BindString(index++, profile.language_code());
   s.BindString(index++, profile.profile_label());
   s.BindInt(index++, profile.initial_creator_id());
-  s.BindInt(index++, profile.last_modifier_id());
+  // The last_modifier_id was removed in version 149.
+  s.BindInt(index++, 0);
   if (!s.Run()) {
     return false;
   }
@@ -524,7 +523,7 @@ std::optional<AutofillProfile> GetProfileFromMetadataTable(
   sql::Statement s;
   if (!SelectByGuid(db, s, kAddressesTable,
                     {kRecordType, kUseCount, kUseDate, kDateModified,
-                     kLanguageCode, kLabel, kInitialCreatorId, kLastModifierId},
+                     kLanguageCode, kLabel, kInitialCreatorId},
                     guid)) {
     return std::nullopt;
   }
@@ -561,7 +560,6 @@ std::optional<AutofillProfile> GetProfileFromMetadataTable(
   profile.set_language_code(s.ColumnString(index++));
   profile.set_profile_label(s.ColumnString(index++));
   profile.set_initial_creator_id(s.ColumnInt(index++));
-  profile.set_last_modifier_id(s.ColumnInt(index++));
   return profile;
 }
 
@@ -645,6 +643,9 @@ bool AddressAutofillTable::MigrateToVersion(int version,
     case 145:
       *update_compatible_version = true;
       return MigrateToVersion145DropMultipleUseDates();
+    case 149:
+      *update_compatible_version = true;
+      return MigrateToVersion149DropLastModifierId();
   }
   return true;
 }
@@ -992,7 +993,7 @@ bool AddressAutofillTable::
   return transaction.Begin() &&
          AddColumnIfNotExists(db(), kContactInfoTable, kInitialCreatorId,
                               "INTEGER DEFAULT 0") &&
-         AddColumnIfNotExists(db(), kContactInfoTable, kLastModifierId,
+         AddColumnIfNotExists(db(), kContactInfoTable, "last_modifier_id",
                               "INTEGER DEFAULT 0") &&
          transaction.Commit();
 }
@@ -1009,7 +1010,7 @@ bool AddressAutofillTable::
                                {kLanguageCode, "VARCHAR"},
                                {kLabel, "VARCHAR"},
                                {kInitialCreatorId, "INTEGER DEFAULT 0"},
-                               {kLastModifierId, "INTEGER DEFAULT 0"}}) ||
+                               {"last_modifier_id", "INTEGER DEFAULT 0"}}) ||
       !CreateTableIfNotExists(db(), kLocalAddressesTypeTokensTable,
                               {{kGuid, "VARCHAR"},
                                {kType, "INTEGER"},
@@ -1141,6 +1142,10 @@ bool AddressAutofillTable::MigrateToVersion145DropMultipleUseDates() {
          DropColumn(db(), kAddressesTable, "use_date3") && transaction.Commit();
 }
 
+bool AddressAutofillTable::MigrateToVersion149DropLastModifierId() {
+  return DropColumn(db(), kAddressesTable, "last_modifier_id");
+}
+
 bool AddressAutofillTable::InitLegacyProfileAddressesTable() {
   // The default value of 0 corresponds to the verification status
   // |kNoStatus|.
@@ -1186,7 +1191,6 @@ bool AddressAutofillTable::InitAddressesTable() {
                                  {kLanguageCode, "VARCHAR"},
                                  {kLabel, "VARCHAR"},
                                  {kInitialCreatorId, "INTEGER DEFAULT 0"},
-                                 {kLastModifierId, "INTEGER DEFAULT 0"},
                                  {kRecordType, "INTEGER"}});
 }
 

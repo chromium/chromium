@@ -9,7 +9,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/containers/contains.h"
 #include "base/strings/string_number_conversions.h"
 #include "content/browser/devtools/devtools_agent_host_impl.h"
 #include "content/browser/renderer_host/back_forward_cache_disable.h"
@@ -130,7 +129,7 @@ Response SecurityHandler::Disable() {
 
 Response SecurityHandler::HandleCertificateError(int event_id,
                                                  const String& action) {
-  if (!base::Contains(cert_error_callbacks_, event_id)) {
+  if (!cert_error_callbacks_.contains(event_id)) {
     return Response::ServerError(
         String("Unknown event id: " + base::NumberToString(event_id)));
   }

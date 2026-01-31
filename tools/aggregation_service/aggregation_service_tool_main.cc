@@ -8,7 +8,6 @@
 #include <string_view>
 
 #include "base/command_line.h"
-#include "base/containers/contains.h"
 #include "base/files/file_path.h"
 #include "base/logging.h"
 #include "base/strings/string_number_conversions.h"
@@ -152,7 +151,7 @@ int main(int argc, char* argv[]) {
       kSwitchApiVersion,
       kSwitchApi};
   for (const auto& provided_switch : command_line.GetSwitches()) {
-    if (!base::Contains(kAllowedSwitches, provided_switch.first)) {
+    if (!std::ranges::contains(kAllowedSwitches, provided_switch.first)) {
       LOG(ERROR) << "aggregation_service_tool did not expect "
                  << provided_switch.first << " to be specified.";
       PrintHelp();
@@ -241,7 +240,7 @@ int main(int argc, char* argv[]) {
 
   bool is_debug_mode_enabled = command_line.HasSwitch(kSwitchEnableDebugMode);
 
-  base::Value::Dict additional_shared_info_fields;
+  base::DictValue additional_shared_info_fields;
   if (command_line.HasSwitch(kSwitchAdditionalSharedInfoFields)) {
     std::string additional_shared_info_fields_str =
         command_line.GetSwitchValueASCII(kSwitchAdditionalSharedInfoFields);
@@ -267,7 +266,7 @@ int main(int argc, char* argv[]) {
           ? command_line.GetSwitchValueASCII(kSwitchApi)
           : "attribution-reporting";
 
-  base::Value::Dict report_dict = tool.AssembleReport(
+  base::DictValue report_dict = tool.AssembleReport(
       std::move(operation), command_line.GetSwitchValueASCII(kSwitchBucket),
       command_line.GetSwitchValueASCII(kSwitchValue),
       std::move(reporting_origin), std::move(processing_url),

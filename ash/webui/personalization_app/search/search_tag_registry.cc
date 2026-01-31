@@ -7,6 +7,7 @@
 #include <iterator>
 #include <map>
 #include <string>
+#include <utility>
 #include <vector>
 
 #include "ash/constants/ash_features.h"
@@ -19,7 +20,6 @@
 #include "ash/shell.h"
 #include "ash/wallpaper/wallpaper_constants.h"
 #include "ash/webui/personalization_app/personalization_app_url_constants.h"
-#include "ash/webui/personalization_app/search/search.mojom-shared.h"
 #include "ash/webui/personalization_app/search/search.mojom.h"
 #include "ash/webui/personalization_app/search/search_concept.h"
 #include "base/functional/bind.h"
@@ -28,7 +28,6 @@
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/types/cxx23_to_underlying.h"
 #include "chromeos/ash/components/local_search_service/public/cpp/local_search_service_proxy.h"
 #include "chromeos/ash/components/local_search_service/shared_structs.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
@@ -45,7 +44,7 @@ bool IsAmbientModeAllowed() {
 }
 
 std::string SearchConceptToId(const SearchConcept& search_concept) {
-  return base::NumberToString(base::to_underlying(search_concept.id));
+  return base::NumberToString(std::to_underlying(search_concept.id));
 }
 
 std::vector<int> GetMessageIds(const SearchConcept& search_concept) {

@@ -369,9 +369,6 @@ public abstract class org.chromium.net.NetworkQualityThroughputListener {
   public java.util.concurrent.Executor getExecutor();
   public org.chromium.net.NetworkQualityThroughputListener(java.util.concurrent.Executor);
 }
-public abstract class org.chromium.net.Proxy$Callback extends org.chromium.net.Proxy$HttpConnectCallback {
-  public org.chromium.net.Proxy$Callback();
-}
 public interface org.chromium.net.Proxy$HttpConnectCallback$OnResponseReceivedAction extends java.lang.annotation.Annotation {
 }
 public abstract class org.chromium.net.Proxy$HttpConnectCallback$Request implements java.lang.AutoCloseable {
@@ -380,37 +377,28 @@ public abstract class org.chromium.net.Proxy$HttpConnectCallback$Request impleme
   public org.chromium.net.Proxy$HttpConnectCallback$Request();
 }
 public abstract class org.chromium.net.Proxy$HttpConnectCallback {
-  public boolean onTunnelHeadersReceived(java.util.List<java.util.Map$Entry<java.lang.String, java.lang.String>>, int);
-  public int onResponseReceived(java.util.List<android.util.Pair<java.lang.String, java.lang.String>>, int);
-  public java.util.List<java.util.Map$Entry<java.lang.String, java.lang.String>> onBeforeTunnelRequest();
+  public abstract int onResponseReceived(java.util.List<android.util.Pair<java.lang.String, java.lang.String>>, int);
+  public abstract void onBeforeRequest(org.chromium.net.Proxy$HttpConnectCallback$Request);
   public org.chromium.net.Proxy$HttpConnectCallback();
   public static final int RESPONSE_ACTION_CLOSE;
   public static final int RESPONSE_ACTION_PROCEED;
-  public void onBeforeRequest(org.chromium.net.Proxy$HttpConnectCallback$Request);
-  public void onBeforeTunnelRequest(org.chromium.net.Proxy$HttpConnectCallback$Request);
 }
 public interface org.chromium.net.Proxy$Scheme extends java.lang.annotation.Annotation {
 }
 public final class org.chromium.net.Proxy {
-  public int getPort();
-  public int getScheme();
-  public java.lang.String getHost();
-  public java.util.concurrent.Executor getExecutor();
-  public org.chromium.net.Proxy$HttpConnectCallback getCallback();
-  public org.chromium.net.Proxy(int, java.lang.String, int, java.util.concurrent.Executor, org.chromium.net.Proxy$HttpConnectCallback);
-  public org.chromium.net.Proxy(int, java.lang.String, int, org.chromium.net.Proxy$HttpConnectCallback);
-  public static final int HTTP;
-  public static final int HTTPS;
   public static final int SCHEME_HTTP;
   public static final int SCHEME_HTTPS;
   public static org.chromium.net.Proxy createHttpProxy(int, java.lang.String, int, java.util.concurrent.Executor, org.chromium.net.Proxy$HttpConnectCallback);
 }
+public interface org.chromium.net.ProxyOptions$AllProxiesFailedBehavior extends java.lang.annotation.Annotation {
+}
 public interface org.chromium.net.ProxyOptions$Experimental extends java.lang.annotation.Annotation {
 }
 public final class org.chromium.net.ProxyOptions {
-  public java.util.List<org.chromium.net.Proxy> getProxyList();
-  public org.chromium.net.ProxyOptions(java.util.List<org.chromium.net.Proxy>);
+  public static final int ALL_PROXIES_FAILED_BEHAVIOR_ALLOW_DIRECT;
+  public static final int ALL_PROXIES_FAILED_BEHAVIOR_DISALLOW_DIRECT;
   public static org.chromium.net.ProxyOptions fromProxyList(java.util.List<org.chromium.net.Proxy>);
+  public static org.chromium.net.ProxyOptions fromProxyList(java.util.List<org.chromium.net.Proxy>, int);
 }
 public abstract class org.chromium.net.QuicException extends org.chromium.net.NetworkException {
   protected org.chromium.net.QuicException(java.lang.String, java.lang.Throwable);
@@ -686,4 +674,4 @@ public class org.chromium.net.apihelpers.UrlRequestCallbacks {
   public static org.chromium.net.apihelpers.UrlRequestCallbacks$CallbackAndResponseFuturePair<java.lang.String, org.chromium.net.apihelpers.StringCronetCallback> forStringBody(org.chromium.net.apihelpers.RedirectHandler);
   public static org.chromium.net.apihelpers.UrlRequestCallbacks$CallbackAndResponseFuturePair<org.json.JSONObject, org.chromium.net.apihelpers.JsonCronetCallback> forJsonBody(org.chromium.net.apihelpers.RedirectHandler);
 }
-Stamp: 12558b61a9bb199457f6c5b7de8c9a82
+Stamp: cc31941b1c764e823d95f9d2aa01530d

@@ -4,12 +4,12 @@
 
 #include "extensions/browser/api/management/management_api.h"
 
+#include <algorithm>
 #include <memory>
 #include <string>
 #include <utility>
 #include <vector>
 
-#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/json/json_writer.h"
 #include "base/lazy_instance.h"
@@ -383,7 +383,7 @@ void ManagementGetPermissionWarningsByManifestFunction::OnParse(
         base::Value value, std::move(result),
         [&](std::string error) { return Error(std::move(error)); });
 
-    const base::Value::Dict* parsed_manifest = value.GetIfDict();
+    const base::DictValue* parsed_manifest = value.GetIfDict();
     if (!parsed_manifest) {
       return Error(keys::kManifestParseError);
     }
@@ -1000,7 +1000,7 @@ ExtensionFunction::ResponseAction ManagementSetLaunchTypeFunction::Run() {
       GetAvailableLaunchTypes(*extension);
 
   management::LaunchType app_launch_type = params->launch_type;
-  if (!base::Contains(available_launch_types, app_launch_type)) {
+  if (!std::ranges::contains(available_launch_types, app_launch_type)) {
     return RespondNow(Error(keys::kLaunchTypeNotAvailableError));
   }
 
@@ -1195,7 +1195,7 @@ void ManagementEventRouter::BroadcastEvent(
   if (!ShouldExposeViaManagementAPI(*extension)) {
     return;
   }
-  base::Value::List args;
+  base::ListValue args;
   if (event_name == management::OnUninstalled::kEventName) {
     args.Append(extension->id());
   } else {

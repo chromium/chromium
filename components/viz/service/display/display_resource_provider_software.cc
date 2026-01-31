@@ -83,12 +83,12 @@ void DisplayResourceProviderSoftware::UnlockForRead(ResourceId id,
   TryReleaseResource(id, resource);
 }
 
-std::vector<ReturnedResource>
+std::vector<ReturnedResourceViz>
 DisplayResourceProviderSoftware::DeleteAndReturnUnusedResourcesToChildImpl(
     Child& child_info,
     DeleteStyle style,
     const std::vector<ResourceId>& unused) {
-  std::vector<ReturnedResource> to_return;
+  std::vector<ReturnedResourceViz> to_return;
   // Reserve enough space to avoid re-allocating, so we can keep item pointers
   // for later using.
   to_return.reserve(unused.size());

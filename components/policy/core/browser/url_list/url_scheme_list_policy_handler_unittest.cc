@@ -53,7 +53,7 @@ class URLSchemeListPolicyHandlerTest : public testing::Test {
   }
   void ApplyPolicies() { handler_->ApplyPolicySettings(policies_, &prefs_); }
   base::Value GetPolicyValueWithEntries(size_t len) {
-    base::Value::List blocklist;
+    base::ListValue blocklist;
     for (size_t i = 0; i < len; ++i) {
       blocklist.Append(kTestUrl);
     }
@@ -89,7 +89,7 @@ TEST_F(URLSchemeListPolicyHandlerTest, CheckPolicySettings_NoPolicy) {
 
 TEST_F(URLSchemeListPolicyHandlerTest, CheckPolicySettings_OneBadValue) {
   // The policy expects a list. Give it a boolean.
-  base::Value::List in;
+  base::ListValue in;
   in.Append(kNotAUrl);
   in.Append(kTestUrl);
   EXPECT_TRUE(CheckPolicy(kTestPolicyName, base::Value(std::move(in))));
@@ -98,7 +98,7 @@ TEST_F(URLSchemeListPolicyHandlerTest, CheckPolicySettings_OneBadValue) {
 
 TEST_F(URLSchemeListPolicyHandlerTest, CheckPolicySettings_SingleBadValue) {
   // The policy expects a list. Give it a boolean.
-  base::Value::List in;
+  base::ListValue in;
   in.Append(kNotAUrl);
   EXPECT_FALSE(CheckPolicy(kTestPolicyName, base::Value(std::move(in))));
   EXPECT_EQ(1U, errors_.size());
@@ -127,7 +127,7 @@ TEST_F(URLSchemeListPolicyHandlerTest, ApplyPolicySettings_Empty) {
 
 TEST_F(URLSchemeListPolicyHandlerTest, ApplyPolicySettings_WrongElementType) {
   // The policy expects string-valued elements. Give it booleans.
-  base::Value::List in;
+  base::ListValue in;
   in.Append(kNotAUrl);
   in.Append(kTestUrl);
   SetPolicy(kTestPolicyName, base::Value(std::move(in)));
@@ -146,7 +146,7 @@ TEST_F(URLSchemeListPolicyHandlerTest, ApplyPolicySettings_WrongElementType) {
 
 TEST_F(URLSchemeListPolicyHandlerTest, ApplyPolicySettings_BadUrl) {
   // The policy expects a gvalid url schema.
-  base::Value::List in;
+  base::ListValue in;
   in.Append(false);
   in.Append(kTestUrl);
   SetPolicy(kTestPolicyName, base::Value(std::move(in)));
@@ -164,7 +164,7 @@ TEST_F(URLSchemeListPolicyHandlerTest, ApplyPolicySettings_BadUrl) {
 }
 
 TEST_F(URLSchemeListPolicyHandlerTest, ApplyPolicySettings_Successful) {
-  base::Value::List in_url_blocklist;
+  base::ListValue in_url_blocklist;
   in_url_blocklist.Append(kTestUrl);
   SetPolicy(kTestPolicyName, base::Value(std::move(in_url_blocklist)));
   ApplyPolicies();

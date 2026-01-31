@@ -55,7 +55,7 @@ struct CORE_EXPORT MatchedProperties {
     // not used at all for the UA origin. Hence, it is not possible to compare
     // tree_orders from two different origins.
     //
-    // https://drafts.csswg.org/css-scoping/#shadow-cascading
+    // https://drafts.csswg.org/css-shadow/#shadow-cascading
     uint16_t tree_order = 0;
     uint8_t link_match_type : 2 = CSSSelector::kMatchAll;
     uint8_t valid_property_filter : 4 =
@@ -76,7 +76,7 @@ struct CORE_EXPORT MatchedProperties {
     uint8_t padding = 0;
 
     bool operator==(const Data& other) const {
-      return UNSAFE_TODO(memcmp(this, &other, sizeof(*this))) == 0;
+      return UNSAFE_BUFFERS(memcmp(this, &other, sizeof(*this))) == 0;
     }
   };
 

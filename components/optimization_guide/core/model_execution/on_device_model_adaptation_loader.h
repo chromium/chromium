@@ -19,7 +19,7 @@
 #include "components/optimization_guide/core/model_execution/usage_tracker.h"
 #include "components/optimization_guide/proto/models.pb.h"
 #include "components/optimization_guide/proto/on_device_model_execution_config.pb.h"
-#include "components/optimization_guide/public/mojom/model_broker.mojom-data-view.h"
+#include "components/optimization_guide/public/mojom/model_broker.mojom-forward.h"
 #include "services/on_device_model/public/cpp/model_assets.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 

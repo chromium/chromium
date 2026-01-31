@@ -70,9 +70,9 @@ class ExternalCacheImpl : public ExternalCache,
   ~ExternalCacheImpl() override;
 
   // Implementation of ExternalCache:
-  const base::Value::Dict& GetCachedExtensions() override;
+  const base::DictValue& GetCachedExtensions() override;
   void Shutdown(base::OnceClosure callback) override;
-  void UpdateExtensionsList(base::Value::Dict prefs) override;
+  void UpdateExtensionsList(base::DictValue prefs) override;
   void OnDamagedFileDetected(const base::FilePath& path) override;
   void RemoveExtensions(
       const std::vector<extensions::ExtensionId>& ids) override;
@@ -167,11 +167,11 @@ class ExternalCacheImpl : public ExternalCache,
   bool flush_on_put_ = false;
 
   // This is the list of extensions currently configured.
-  base::Value::Dict extensions_;
+  base::DictValue extensions_;
 
   // This contains extensions that are both currently configured
   // and that have a valid crx in the cache.
-  base::Value::Dict cached_extensions_;
+  base::DictValue cached_extensions_;
 
   // Used to download the extensions and to check for updates.
   std::unique_ptr<extensions::ExtensionDownloader> downloader_;

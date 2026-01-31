@@ -102,7 +102,7 @@ bool BoundSessionParamsPrefsStorage::SaveParams(
   }
 
   ScopedDictPrefUpdate update(&pref_service_.get(), kBoundSessionParamsPref);
-  base::Value::Dict* site_dict = update->EnsureDict(params.site());
+  base::DictValue* site_dict = update->EnsureDict(params.site());
   CHECK(site_dict);
   site_dict->Set(params.session_id(), base::Base64Encode(serialized_params));
   RecordWriteError(WriteError::kNone);
@@ -111,13 +111,12 @@ bool BoundSessionParamsPrefsStorage::SaveParams(
 
 std::vector<bound_session_credentials::BoundSessionParams>
 BoundSessionParamsPrefsStorage::ReadAllParamsAndCleanStorageIfNecessary() {
-  const base::Value::Dict& root =
-      pref_service_->GetDict(kBoundSessionParamsPref);
+  const base::DictValue& root = pref_service_->GetDict(kBoundSessionParamsPref);
 
   std::vector<bound_session_credentials::BoundSessionParams> result;
   bool clean_up_needed = false;
   for (const auto [site, sessions] : root) {
-    const base::Value::Dict* sessions_dict = sessions.GetIfDict();
+    const base::DictValue* sessions_dict = sessions.GetIfDict();
     if (!sessions_dict) {
       RecordReadError(ReadError::kNoSessionsDict);
       clean_up_needed = true;
@@ -194,7 +193,7 @@ BoundSessionParamsPrefsStorage::ReadAllParamsAndCleanStorageIfNecessary() {
         continue;
       }
 
-      base::Value::Dict* site_dict = update->EnsureDict(params.site());
+      base::DictValue* site_dict = update->EnsureDict(params.site());
       CHECK(site_dict);
       site_dict->Set(params.session_id(),
                      base::Base64Encode(serialized_params));
@@ -208,7 +207,7 @@ BoundSessionParamsPrefsStorage::ReadAllParamsAndCleanStorageIfNecessary() {
 bool BoundSessionParamsPrefsStorage::ClearParams(const GURL& site,
                                                  std::string_view session_id) {
   ScopedDictPrefUpdate update(&pref_service_.get(), kBoundSessionParamsPref);
-  base::Value::Dict* site_dict = update->FindDict(site.spec());
+  base::DictValue* site_dict = update->FindDict(site.spec());
   if (!site_dict) {
     return false;
   }

@@ -10,6 +10,7 @@
 #include "ui/aura/window_targeter.h"
 
 namespace chromeos {
+struct ResizeBorderInsets;
 
 // This window targeter reserves space for the portion of the resize handles
 // that extend within a top level window. This targeter is should only be
@@ -19,11 +20,13 @@ class InteriorResizeHandleTargeter : public aura::WindowTargeter {
   using WindowStateTypeCallback =
       base::RepeatingCallback<WindowStateType(const aura::Window*)>;
 
-  explicit InteriorResizeHandleTargeter(
-      WindowStateTypeCallback window_state_type_cb);
+  InteriorResizeHandleTargeter(const ResizeBorderInsets& border_insets,
+                               WindowStateTypeCallback window_state_type_cb);
+
   InteriorResizeHandleTargeter(const InteriorResizeHandleTargeter&) = delete;
   InteriorResizeHandleTargeter& operator=(const InteriorResizeHandleTargeter&) =
       delete;
+
   ~InteriorResizeHandleTargeter() override;
 
   // aura::WindowTargeter:

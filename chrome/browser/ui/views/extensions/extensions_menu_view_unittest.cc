@@ -25,7 +25,7 @@
 #include "chrome/browser/ui/views/extensions/extensions_menu_button.h"
 #include "chrome/browser/ui/views/extensions/extensions_menu_item_view.h"
 #include "chrome/browser/ui/views/extensions/extensions_toolbar_button.h"
-#include "chrome/browser/ui/views/extensions/extensions_toolbar_container.h"
+#include "chrome/browser/ui/views/extensions/extensions_toolbar_desktop.h"
 #include "chrome/browser/ui/views/extensions/extensions_toolbar_unittest.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
@@ -89,8 +89,9 @@ class ExtensionsMenuViewUnitTest : public ExtensionsToolbarUnitTest {
 void ExtensionsMenuViewUnitTest::SetUp() {
   ExtensionsToolbarUnitTest::SetUp();
 
-  ExtensionsMenuView::ShowBubble(extensions_container()->GetExtensionsButton(),
-                                 browser(), extensions_container());
+  ExtensionsMenuView::ShowBubble(
+      extensions_container()->GetExtensionsButton(), browser(),
+      extensions_container()->GetToolbarViewModel(), extensions_container());
 }
 
 scoped_refptr<const extensions::Extension>
@@ -419,7 +420,7 @@ TEST_F(ExtensionsMenuViewUnitTest, WindowTitle) {
 }
 
 // TODO(crbug.com/40636292): When supported, add a test to verify the
-// ExtensionsToolbarContainer shrinks when the window is too small to show all
+// ExtensionsToolbarDesktop shrinks when the window is too small to show all
 // pinned extensions.
 // TODO(crbug.com/40636292): When supported, add a test to verify an extension
 // is shown when a bubble pops up and needs to draw attention to it.

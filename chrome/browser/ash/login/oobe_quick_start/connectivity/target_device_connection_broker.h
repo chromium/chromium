@@ -13,7 +13,6 @@
 #include "base/values.h"
 #include "chrome/browser/ash/login/oobe_quick_start/connectivity/session_context.h"
 #include "chromeos/ash/components/quick_start/types.h"
-#include "chromeos/ash/services/nearby/public/mojom/quick_start_decoder_types.mojom-shared.h"
 #include "chromeos/ash/services/nearby/public/mojom/quick_start_decoder_types.mojom.h"
 
 namespace ash::quick_start {
@@ -100,7 +99,7 @@ class TargetDeviceConnectionBroker {
 
     // Exposes SessionContext::GetPrepareForUpdateInfo() to the
     // AuthenticatedConnection caller.
-    virtual base::Value::Dict GetPrepareForUpdateInfo() = 0;
+    virtual base::DictValue GetPrepareForUpdateInfo() = 0;
 
     virtual void NotifyPhoneSetupComplete() = 0;
 

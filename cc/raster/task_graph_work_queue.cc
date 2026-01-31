@@ -12,7 +12,6 @@
 #include <unordered_map>
 #include <utility>
 
-#include "base/containers/contains.h"
 #include "base/memory/raw_ptr_exclusion.h"
 #include "base/trace_event/trace_event.h"
 #include "base/trace_event/trace_id_helper.h"
@@ -146,7 +145,7 @@ TaskGraphWorkQueue::PrioritizedTask::~PrioritizedTask() = default;
 
 NamespaceToken TaskGraphWorkQueue::GenerateNamespaceToken() {
   NamespaceToken token(next_namespace_id_++);
-  DCHECK(!base::Contains(namespaces_, token));
+  DCHECK(!namespaces_.contains(token));
   return token;
 }
 
@@ -202,8 +201,8 @@ void TaskGraphWorkQueue::ScheduleTasks(NamespaceToken token, TaskGraph* graph) {
       continue;
 
     // Skip if already running.
-    if (base::Contains(task_namespace.running_tasks, node.task.get(),
-                       &CategorizedTask::second)) {
+    if (std::ranges::contains(task_namespace.running_tasks, node.task.get(),
+                              &CategorizedTask::second)) {
       continue;
     }
 
@@ -232,12 +231,13 @@ void TaskGraphWorkQueue::ScheduleTasks(NamespaceToken token, TaskGraph* graph) {
       continue;
 
     // Skip if already running.
-    if (base::Contains(task_namespace.running_tasks, node.task.get(),
-                       &CategorizedTask::second)) {
+    if (std::ranges::contains(task_namespace.running_tasks, node.task.get(),
+                              &CategorizedTask::second)) {
       continue;
     }
 
-    DCHECK(!base::Contains(task_namespace.completed_tasks, node.task.get()));
+    DCHECK(!std::ranges::contains(task_namespace.completed_tasks,
+                                  node.task.get()));
     node.task->state().DidCancel();
     task_namespace.completed_tasks.push_back(node.task);
   }
@@ -343,7 +343,7 @@ bool TaskGraphWorkQueue::DecrementNodeDependencies(
       TaskNamespace::Vector& ready_to_run_namespaces =
           ready_to_run_namespaces_[node.category];
 
-      DCHECK(!base::Contains(ready_to_run_namespaces, task_namespace));
+      DCHECK(!std::ranges::contains(ready_to_run_namespaces, task_namespace));
       // TODO(paint-dev): The following line could be:
       //   if (rebuild_heap) {
       //     ready_to_run_namspaces.push_heap();

@@ -111,7 +111,7 @@ class PolicyProcessor {
 
   // This constructor is just a variant of the previous constructor.
   explicit PolicyProcessor(PolicyBuffer* policy) : policy_(policy) {
-    SetInternalState(0, EVAL_FALSE);
+    SetInternalState(0, EVAL_FALSE, 0U);
   }
 
   PolicyProcessor(const PolicyProcessor&) = delete;
@@ -128,14 +128,19 @@ class PolicyProcessor {
   // the recommended policy action.
   EvalResult GetAction() const;
 
+  // If the result of Evaluate() was POLICY_MATCH, calling this function returns
+  // the policy action constant value.
+  uintptr_t GetConstant() const;
+
  private:
   struct {
     size_t current_index_;
     EvalResult current_result_;
+    uintptr_t current_constant_;
   } state_;
 
   // Sets the currently matching action result.
-  void SetInternalState(size_t index, EvalResult result);
+  void SetInternalState(size_t index, EvalResult result, uintptr_t constant);
 
   raw_ptr<PolicyBuffer, DanglingUntriaged> policy_;
 };

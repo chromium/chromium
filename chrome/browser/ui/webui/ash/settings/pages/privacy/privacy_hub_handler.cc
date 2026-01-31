@@ -114,21 +114,21 @@ void PrivacyHubHandler::OnActiveUserSessionChanged(
 }
 
 void PrivacyHubHandler::HandleInitialMicrophoneSwitchState(
-    const base::Value::List& args) {
+    const base::ListValue& args) {
   const auto callback_id = ValidateArgs(args);
   const auto value = base::Value(privacy_hub_util::MicrophoneSwitchState());
   ResolveJavascriptCallback(callback_id, value);
 }
 
 void PrivacyHubHandler::HandleInitialMicrophoneMutedBySecurityCurtainState(
-    const base::Value::List& args) {
+    const base::ListValue& args) {
   const auto callback_id = ValidateArgs(args);
   const auto value = base::Value(mic_muted_by_security_curtain_);
   ResolveJavascriptCallback(callback_id, value);
 }
 
 void PrivacyHubHandler::HandleInitialCameraSwitchForceDisabledState(
-    const base::Value::List& args) {
+    const base::ListValue& args) {
   const auto callback_id = ValidateArgs(args);
   const auto is_disabled =
       base::Value(privacy_hub_util::ShouldForceDisableCameraSwitch());
@@ -136,14 +136,14 @@ void PrivacyHubHandler::HandleInitialCameraSwitchForceDisabledState(
 }
 
 void PrivacyHubHandler::HandleInitialCameraLedFallbackState(
-    const base::Value::List& args) {
+    const base::ListValue& args) {
   const auto callback_id = ValidateArgs(args);
   const auto value = base::Value(privacy_hub_util::UsingCameraLEDFallback());
   ResolveJavascriptCallback(callback_id, value);
 }
 
 void PrivacyHubHandler::HandleInitialPrimaryUserLocationState(
-    const base::Value::List& args) {
+    const base::ListValue& args) {
   const auto callback_id = ValidateArgs(args);
   const auto value = base::Value(
       static_cast<int>(privacy_hub_util::GetSystemGeolocationAccessLevel()));
@@ -151,14 +151,14 @@ void PrivacyHubHandler::HandleInitialPrimaryUserLocationState(
 }
 
 void PrivacyHubHandler::HandleGetCurrentTimezoneName(
-    const base::Value::List& args) {
+    const base::ListValue& args) {
   const auto callback_id = ValidateArgs(args);
   const auto value = base::Value(system::GetCurrentTimezoneName());
   ResolveJavascriptCallback(callback_id, value);
 }
 
 void PrivacyHubHandler::HandleGetCurrentSunRiseTime(
-    const base::Value::List& args) {
+    const base::ListValue& args) {
   const auto callback_id = ValidateArgs(args);
   const auto value = base::Value(base::TimeFormatTimeOfDay(
       ash::privacy_hub_util::SunriseSunsetSchedule().first));
@@ -166,7 +166,7 @@ void PrivacyHubHandler::HandleGetCurrentSunRiseTime(
 }
 
 void PrivacyHubHandler::HandleGetCurrentSunSetTime(
-    const base::Value::List& args) {
+    const base::ListValue& args) {
   const auto callback_id = ValidateArgs(args);
   const auto value = base::Value(base::TimeFormatTimeOfDay(
       ash::privacy_hub_util::SunriseSunsetSchedule().second));
@@ -174,7 +174,7 @@ void PrivacyHubHandler::HandleGetCurrentSunSetTime(
 }
 
 const base::ValueView PrivacyHubHandler::ValidateArgs(
-    const base::Value::List& args) {
+    const base::ListValue& args) {
   // TODO(b/290646585): Replace with a CHECK().
   AllowJavascript();
 

@@ -44,14 +44,14 @@ class MetricsInternalsHandler : public content::WebUIMessageHandler,
   // owned by the WebUI page (|uma_log_observer_|).
   metrics::MetricsServiceObserver* GetUmaObserver();
 
-  void HandleFetchVariationsSummary(const base::Value::List& args);
+  void HandleFetchVariationsSummary(const base::ListValue& args);
   void HandleFetchStoredSeedInfo(
       variations::VariationsSeedStore::SeedType seed_type,
-      const base::Value::List& args);
-  void HandleFetchUmaSummary(const base::Value::List& args);
-  void HandleFetchUmaLogsData(const base::Value::List& args);
-  void HandleFetchEncryptionPublicKey(const base::Value::List& args);
-  void HandleIsUsingMetricsServiceObserver(const base::Value::List& args);
+      const base::ListValue& args);
+  void HandleFetchUmaSummary(const base::ListValue& args);
+  void HandleFetchUmaLogsData(const base::ListValue& args);
+  void HandleFetchEncryptionPublicKey(const base::ListValue& args);
+  void HandleIsUsingMetricsServiceObserver(const base::ListValue& args);
 
   void OnUmaLogCreatedOrEvent();
 

@@ -67,6 +67,7 @@
 #include "net/http/http_util.h"
 #include "net/http/no_vary_search_cache.h"
 #include "net/log/net_log_event_type.h"
+#include "net/log/net_log_util.h"
 #include "net/ssl/ssl_cert_request_info.h"
 #include "net/ssl/ssl_config_service.h"
 
@@ -187,6 +188,8 @@ int HttpCache::Transaction::Start(const HttpRequestInfo* request,
   DCHECK(request);
   DCHECK(request->IsConsistent());
   DCHECK(!callback.is_null());
+  TRACE_EVENT("net", "HttpCache::Transaction::Start",
+              NetLogWithSourceToFlow(net_log));
   TRACE_EVENT_BEGIN(TRACE_DISABLED_BY_DEFAULT("net"),
                     "HttpCacheTransactionState", track_for_state_change_, "url",
                     request->url.spec());
@@ -616,18 +619,6 @@ void HttpCache::Transaction::CloseConnectionOnDestruction() {
     network_trans_->CloseConnectionOnDestruction();
   } else if (InWriters()) {
     entry_->writers()->CloseConnectionOnDestruction();
-  }
-}
-
-bool HttpCache::Transaction::IsMdlMatchForMetrics() const {
-  if (network_transaction_info_.previous_mdl_match_for_metrics) {
-    return true;
-  }
-  const HttpTransaction* transaction = GetOwnedOrMovedNetworkTransaction();
-  if (transaction) {
-    return transaction->IsMdlMatchForMetrics();
-  } else {
-    return false;
   }
 }
 
@@ -1274,7 +1265,7 @@ int HttpCache::Transaction::DoOpenOrCreateEntryComplete(int result) {
   // OK, otherwise the cache will end up with an active entry without any
   // transaction attached.
   net_log_.EndEvent(NetLogEventType::HTTP_CACHE_OPEN_OR_CREATE_ENTRY, [&] {
-    base::Value::Dict params;
+    base::DictValue params;
     if (result == OK) {
       params.Set("result", new_entry_->opened() ? "opened" : "created");
     } else {
@@ -1886,6 +1877,8 @@ int HttpCache::Transaction::DoCacheUpdateStaleWhileRevalidateTimeoutComplete(
 }
 
 int HttpCache::Transaction::DoSendRequest() {
+  TRACE_EVENT("net", "HttpCache::Transaction::DoSendRequest",
+              NetLogWithSourceToFlow(net_log_));
   TRACE_EVENT_INSTANT(TRACE_DISABLED_BY_DEFAULT("net"), "DoSendRequest",
                       track_for_state_change_);
   DCHECK(mode_ & WRITE || mode_ == NONE);
@@ -4054,10 +4047,6 @@ void HttpCache::Transaction::SaveNetworkTransactionInfo(
       connection_attempts.begin(), connection_attempts.end());
   network_transaction_info_.old_remote_endpoint = IPEndPoint();
   transaction.GetRemoteEndpoint(&network_transaction_info_.old_remote_endpoint);
-
-  if (transaction.IsMdlMatchForMetrics()) {
-    network_transaction_info_.previous_mdl_match_for_metrics = true;
-  }
 }
 
 void HttpCache::Transaction::OnIOComplete(int result) {
@@ -4246,7 +4235,7 @@ HttpCache::Transaction::LookupRequestInNoVarySearchCache() {
   NoVarySearchCache::LookupResult result = std::move(maybe_result).value();
   net_log_.BeginEvent(
       NetLogEventType::HTTP_CACHE_USING_NO_VARY_SEARCH_CACHE_URL, [&] {
-        return base::Value::Dict()
+        return base::DictValue()
             .Set("request_url", request_->url.spec())
             .Set("cached_url", result.original_url.spec());
       });
@@ -4272,7 +4261,7 @@ int HttpCache::Transaction::RestartWithoutNoVarySearchCache(
   no_vary_search_use_result_ = restart_reason;
   net_log_.EndEvent(
       NetLogEventType::HTTP_CACHE_USING_NO_VARY_SEARCH_CACHE_URL, [&] {
-        return base::Value::Dict().Set(
+        return base::DictValue().Set(
             "restart_reason", NoVarySearchUseResultToString(restart_reason));
       });
   if (entry_action == RestartCacheEntryAction::kErase) {

@@ -4,11 +4,11 @@
 
 #include "components/component_updater/component_updater_command_line_config_policy.h"
 
+#include <algorithm>
 #include <string>
 #include <vector>
 
 #include "base/command_line.h"
-#include "base/containers/contains.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/strings/sys_string_conversions.h"
@@ -77,15 +77,16 @@ ComponentUpdaterCommandLineConfigPolicy::
 
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
   background_downloads_enabled_ =
-      !base::Contains(switch_values, kSwitchDisableBackgroundDownloads);
+      !std::ranges::contains(switch_values, kSwitchDisableBackgroundDownloads);
 #else
   background_downloads_enabled_ = false;
 #endif
 
-  deltas_enabled_ = !base::Contains(switch_values, kSwitchDisableDeltaUpdates);
-  fast_update_ = base::Contains(switch_values, kSwitchFastUpdate);
-  pings_enabled_ = !base::Contains(switch_values, kSwitchDisablePings);
-  test_request_ = base::Contains(switch_values, kSwitchTestRequestParam);
+  deltas_enabled_ =
+      !std::ranges::contains(switch_values, kSwitchDisableDeltaUpdates);
+  fast_update_ = std::ranges::contains(switch_values, kSwitchFastUpdate);
+  pings_enabled_ = !std::ranges::contains(switch_values, kSwitchDisablePings);
+  test_request_ = std::ranges::contains(switch_values, kSwitchTestRequestParam);
 
   const std::string switch_url_source =
       GetSwitchArgument(switch_values, kSwitchUrlSource);

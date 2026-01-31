@@ -69,6 +69,16 @@ extern const char kAbusiveNotificationContentEnforcementMessage[];
 // the warning list for showing abusive notification content.
 extern const char kAbusiveNotificationContentWarningMessage[];
 
+// The message to be printed in the Developer Tools console when the
+// Notification permission request was suppressed and shown as a quiet prompt
+// because it was not initiated with a user gesture.
+extern const char kGestureGatedNotificationMessage[];
+
+// The message to be printed in the Developer Tools console when the
+// Geolocation permission request was suppressed and shown as a quiet prompt
+// because it was not initiated with a user gesture.
+extern const char kGestureGatedGeolocationMessage[];
+
 // Provides access to permissions bubbles. Allows clients to add a request
 // callback interface to the existing permission bubble configuration.
 // Depending on the situation and policy, that may add new UI to an existing
@@ -174,11 +184,11 @@ class PermissionRequestManager
   const std::vector<std::unique_ptr<PermissionRequest>>& Requests() override;
   GURL GetRequestingOrigin() const override;
   GURL GetEmbeddingOrigin() const override;
-  void Accept() override;
-  void AcceptThisTime() override;
-  void Deny() override;
-  void Dismiss() override;
-  void Ignore() override;
+  void Accept(const PromptOptions& prompt_options) override;
+  void AcceptThisTime(const PromptOptions& prompt_options) override;
+  void Deny(const PromptOptions& prompt_options) override;
+  void Dismiss(const PromptOptions& prompt_options) override;
+  void Ignore(const PromptOptions& prompt_options) override;
   void FinalizeCurrentRequests() override;
   void OpenHelpCenterLink(const ui::Event& event) override;
   void PreIgnoreQuietPrompt() override;
@@ -308,8 +318,6 @@ class PermissionRequestManager
   // PromptResolved metrics, for ask prompts.
   bool ShouldRecordUmaForCurrentPrompt() const;
 
-  void SetPromptOptions(PromptOptions prompt_options) override;
-
  private:
   friend class test::PermissionRequestManagerTestApi;
   friend class test::MockPermissionRequestManager;
@@ -318,10 +326,6 @@ class PermissionRequestManager
   FRIEND_TEST_ALL_PREFIXES(PermissionRequestManagerTest,
                            WeakDuplicateRequestsAccept);
 
-  // TODO(crbug.com/443780638): Remove this once the TabInterface can be fetched
-  // from WebContents.
-  PermissionRequestManager(content::WebContents* web_contents,
-                           tabs::TabInterface* tab_interface);
   explicit PermissionRequestManager(content::WebContents* web_contents);
 
   // Defines how to handle the current request, when new requests arrive
@@ -407,7 +411,8 @@ class PermissionRequestManager
   // being decided. Based on |view_->ShouldFinalizeRequestAfterDecided()| it
   // will also call |FinalizeCurrentRequests()|. Otherwise a separate
   // |FinalizeCurrentRequests()| call must be made to release the |view_|.
-  void CurrentRequestsDecided(PermissionAction permission_action);
+  void CurrentRequestsDecided(PermissionAction permission_action,
+                              const PromptOptions& prompt_options);
 
   // Cancel all pending or active requests and destroy the PermissionPrompt if
   // one exists. This is called if the WebContents is destroyed or navigates its
@@ -441,6 +446,7 @@ class PermissionRequestManager
 
   // Calls PermissionGranted on a request and all its duplicates.
   void PermissionGrantedIncludingDuplicates(PermissionRequest* request,
+                                            const PromptOptions& prompt_options,
                                             bool is_one_time);
   // Calls PermissionDenied on a request and all its duplicates.
   void PermissionDeniedIncludingDuplicates(PermissionRequest* request);

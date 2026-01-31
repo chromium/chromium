@@ -29,7 +29,8 @@ import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.ThreadUtils;
-import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.supplier.ObservableSuppliers;
+import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.base.task.test.ShadowPostTask;
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -54,7 +55,7 @@ import java.util.Map;
 public class SurveyClientUnitTest {
     private static final String TEST_SURVEY_TRIGGER = "test_survey_trigger";
     private static final String TEST_TRIGGER_ID = "triggerId1234";
-    private ObservableSupplierImpl<Boolean> mCrashUploadPermissionSupplier;
+    private SettableNonNullObservableSupplier<Boolean> mCrashUploadPermissionSupplier;
     private TestSurveyUtils.TestSurveyUiDelegate mSurveyUiDelegate;
     private TestSurveyUtils.TestSurveyController mSurveyController;
 
@@ -76,7 +77,7 @@ public class SurveyClientUnitTest {
         when(mUserPrefsJniMock.get(mProfile)).thenReturn(mPrefServiceMock);
         when(mPrefServiceMock.getBoolean(Pref.FEEDBACK_SURVEYS_ENABLED)).thenReturn(true);
 
-        mCrashUploadPermissionSupplier = new ObservableSupplierImpl<>(true);
+        mCrashUploadPermissionSupplier = ObservableSuppliers.createNonNull(true);
         doReturn(mCrashUploadPermissionSupplier)
                 .when(mPrivacyPreferencesManager)
                 .getUsageAndCrashReportingPermittedObservableSupplier();

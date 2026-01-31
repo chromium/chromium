@@ -31,8 +31,9 @@ MessageQueue::MessageQueue(uint64_t next_sequence_num)
 MessageQueue::~MessageQueue() {
 #if DCHECK_IS_ON()
   size_t num_leaked_ports = 0;
-  for (const auto& message : heap_)
+  for (const auto& message : heap_) {
     num_leaked_ports += message->num_ports();
+  }
   DVLOG_IF(1, num_leaked_ports > 0)
       << "Leaking " << num_leaked_ports << " ports in unreceived messages";
 #endif

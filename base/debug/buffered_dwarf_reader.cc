@@ -2,12 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "base/debug/buffered_dwarf_reader.h"
+
+#include "base/compiler_specific.h"
 
 #ifdef USE_SYMBOLIZE
 
@@ -33,12 +30,12 @@ size_t BufferedDwarfReader::ReadCString(uint64_t max_position,
     }
 
     if (out && bytes_written < out_size) {
-      out[bytes_written++] = character;
+      UNSAFE_TODO(out[bytes_written++]) = character;
     }
   } while (character != '\0' && position() < max_position);
 
   if (out) {
-    out[std::min(bytes_written, out_size - 1)] = '\0';
+    UNSAFE_TODO(out[std::min(bytes_written, out_size - 1)]) = '\0';
   }
 
   return bytes_written;
@@ -204,7 +201,7 @@ bool BufferedDwarfReader::BufferedRead(void* out, const size_t bytes) {
     }
 
     size_t to_copy = std::min(bytes_left, unconsumed_amount_);
-    memcpy(out, &buf_[cursor_in_buffer_], to_copy);
+    UNSAFE_TODO(memcpy(out, &buf_[cursor_in_buffer_], to_copy));
     unconsumed_amount_ -= to_copy;
     cursor_in_buffer_ += to_copy;
     bytes_left -= to_copy;

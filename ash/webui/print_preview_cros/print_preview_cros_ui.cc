@@ -39,7 +39,6 @@ void ConfigureResources(content::WebUIDataSource* source,
                         int default_resource) {
   source->AddResourcePaths(kAshPrintPreviewCrosAppResources);
   source->SetDefaultResource(default_resource);
-  source->AddResourcePath("", default_resource);
 }
 
 // Setup common test resources used in browser tests.

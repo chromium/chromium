@@ -144,7 +144,8 @@ ReadResponseHeadResult ReadResponseHead(
     mojo::Remote<storage::mojom::ServiceWorkerStorageControl>& storage,
     int64_t id) {
   mojo::Remote<storage::mojom::ServiceWorkerResourceReader> reader;
-  storage->CreateResourceReader(id, reader.BindNewPipeAndPassReceiver());
+  storage->CreateResourceReader(id, /*sha256_checksum=*/std::nullopt,
+                                reader.BindNewPipeAndPassReceiver());
 
   ReadResponseHeadResult out;
   base::RunLoop loop;
@@ -172,7 +173,8 @@ bool VerifyBasicResponse(
     return false;
 
   mojo::Remote<storage::mojom::ServiceWorkerResourceReader> reader;
-  storage->CreateResourceReader(id, reader.BindNewPipeAndPassReceiver());
+  storage->CreateResourceReader(id, /*sha256_checksum=*/std::nullopt,
+                                reader.BindNewPipeAndPassReceiver());
 
   const int kBigEnough = 512;
   mojo::ScopedDataPipeConsumerHandle data_consumer;
@@ -251,7 +253,8 @@ bool VerifyResponseMetadata(
     int64_t id,
     const std::string& expected_metadata) {
   mojo::Remote<storage::mojom::ServiceWorkerResourceReader> reader;
-  storage->CreateResourceReader(id, reader.BindNewPipeAndPassReceiver());
+  storage->CreateResourceReader(id, /*sha256_checksum=*/std::nullopt,
+                                reader.BindNewPipeAndPassReceiver());
   ReadResponseHeadResult out = ReadResponseHead(storage, id);
   if (!out.metadata.has_value())
     return false;

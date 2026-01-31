@@ -45,6 +45,8 @@ import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DoNotBatch;
+import org.chromium.base.test.util.Features.DisableFeatures;
+import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.profiles.ProfileManager;
@@ -53,6 +55,7 @@ import org.chromium.chrome.browser.ui.signin.MinorModeHelper;
 import org.chromium.chrome.browser.ui.signin.R;
 import org.chromium.chrome.test.util.ActivityTestUtils;
 import org.chromium.chrome.test.util.browser.signin.SigninTestRule;
+import org.chromium.components.signin.SigninFeatures;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
 import org.chromium.components.signin.metrics.SyncButtonsType;
@@ -126,7 +129,8 @@ public class HistorySyncTest {
 
     @Test
     @MediumTest
-    public void testFooterStringWithEmail() {
+    @DisableFeatures(SigninFeatures.ENABLE_SEAMLESS_SIGNIN)
+    public void testDeclineButtonAndFooterStringWithEmail_NoSeamlessSignin() {
         mSigninTestRule.addAccountThenSignin(TestAccounts.AADC_ADULT_ACCOUNT);
         String expectedFooter =
                 mActivityTestRule
@@ -135,11 +139,72 @@ public class HistorySyncTest {
                                 R.string.history_sync_footer_with_email,
                                 mSigninTestRule.getPrimaryAccount(ConsentLevel.SIGNIN).getEmail());
 
+        String expectedDeclineText =
+                mActivityTestRule
+                        .getActivity()
+                        .getString(
+                                R.string.history_sync_secondary_action,
+                                mSigninTestRule.getPrimaryAccount(ConsentLevel.SIGNIN).getEmail());
+
         buildHistorySyncCoordinator(
                 /* showEmailInFooter= */ true, /* shouldSignOutOnDecline= */ false);
 
         onView(allOf(withId(R.id.history_sync_footer), withText(expectedFooter)))
                 .check(matches(isDisplayed()));
+        onView(allOf(withId(R.id.button_secondary), withText(expectedDeclineText)))
+                .check(matches(isDisplayed()));
+    }
+
+    @Test
+    @MediumTest
+    @EnableFeatures(SigninFeatures.ENABLE_SEAMLESS_SIGNIN)
+    public void testDeclineButtonAndFooterStringWithEmail_SeamlessSignin_NoRecentTabs() {
+        mSigninTestRule.addAccountThenSignin(TestAccounts.AADC_ADULT_ACCOUNT);
+        String expectedFooter =
+                mActivityTestRule
+                        .getActivity()
+                        .getString(
+                                R.string.history_sync_footer_with_email,
+                                mSigninTestRule.getPrimaryAccount(ConsentLevel.SIGNIN).getEmail());
+
+        String expectedDeclineText =
+                mActivityTestRule
+                        .getActivity()
+                        .getString(
+                                R.string.history_sync_secondary_action,
+                                mSigninTestRule.getPrimaryAccount(ConsentLevel.SIGNIN).getEmail());
+
+        buildHistorySyncCoordinator(
+                /* showEmailInFooter= */ true, /* shouldSignOutOnDecline= */ false);
+
+        onView(allOf(withId(R.id.history_sync_footer), withText(expectedFooter)))
+                .check(matches(isDisplayed()));
+        onView(allOf(withId(R.id.button_secondary), withText(expectedDeclineText)))
+                .check(matches(isDisplayed()));
+    }
+
+    @Test
+    @MediumTest
+    @EnableFeatures(SigninFeatures.ENABLE_SEAMLESS_SIGNIN)
+    public void testDeclineButtonAndFooterStrings_SeamlessSignin_RecentTabs() {
+        mSigninTestRule.addAccountThenSignin(TestAccounts.AADC_ADULT_ACCOUNT);
+        Activity activity = mActivityTestRule.getActivity();
+
+        buildHistorySyncCoordinator(
+                SigninAccessPoint.RECENT_TABS,
+                /* showEmailInFooter= */ true,
+                /* shouldSignOutOnDecline= */ false);
+
+        String expectedFooter =
+                activity.getString(
+                        R.string.history_sync_footer_with_email,
+                        mSigninTestRule.getPrimaryAccount(ConsentLevel.SIGNIN).getEmail());
+        String expectedDeclineText =
+                activity.getString(
+                        R.string.history_sync_recent_tabs_secondary_action,
+                        mSigninTestRule.getPrimaryAccount(ConsentLevel.SIGNIN).getEmail());
+        onView(withId(R.id.history_sync_footer)).check(matches(withText(expectedFooter)));
+        onView(withId(R.id.button_secondary)).check(matches(withText(expectedDeclineText)));
     }
 
     @Test
@@ -601,6 +666,13 @@ public class HistorySyncTest {
 
     private void buildHistorySyncCoordinator(
             boolean showEmailInFooter, boolean shouldSignOutOnDecline) {
+        buildHistorySyncCoordinator(SIGNIN_ACCESS_POINT, showEmailInFooter, shouldSignOutOnDecline);
+    }
+
+    private void buildHistorySyncCoordinator(
+            @SigninAccessPoint int accessPoint,
+            boolean showEmailInFooter,
+            boolean shouldSignOutOnDecline) {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mHistorySyncCoordinator =
@@ -609,7 +681,7 @@ public class HistorySyncTest {
                                     mHistorySyncDelegateMock,
                                     ProfileManager.getLastUsedRegularProfile(),
                                     CONFIG,
-                                    SIGNIN_ACCESS_POINT,
+                                    accessPoint,
                                     showEmailInFooter,
                                     shouldSignOutOnDecline,
                                     null);

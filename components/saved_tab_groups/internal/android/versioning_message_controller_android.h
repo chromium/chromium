@@ -27,17 +27,17 @@ class VersioningMessageControllerAndroid {
   bool IsInitialized(JNIEnv* env, const JavaRef<jobject>& j_caller);
   bool ShouldShowMessageUi(JNIEnv* env,
                            const JavaRef<jobject>& j_caller,
-                           jint j_message_type);
+                           int32_t j_message_type);
   void ShouldShowMessageUiAsync(JNIEnv* env,
                                 const JavaRef<jobject>& j_caller,
-                                jint j_message_type,
+                                int32_t j_message_type,
                                 const JavaRef<jobject>& j_callback);
   void OnMessageUiShown(JNIEnv* env,
                         const JavaRef<jobject>& j_caller,
-                        jint j_message_type);
+                        int32_t j_message_type);
   void OnMessageUiDismissed(JNIEnv* env,
                             const JavaRef<jobject>& j_caller,
-                            jint j_message_type);
+                            int32_t j_message_type);
 
  private:
   // A reference to the Java counterpart of this class.  See

@@ -13,7 +13,6 @@
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
-#include "chrome/browser/enterprise/encryption/cache_encryption_provider_impl.h"
 #include "chrome/browser/net/cert_verifier_service_time_updater.h"
 #include "chrome/browser/net/proxy_config_monitor.h"
 #include "chrome/browser/net/stub_resolver_config_reader.h"
@@ -130,11 +129,6 @@ class SystemNetworkContextManager {
   void AddCookieEncryptionManagerToNetworkContextParams(
       network::mojom::NetworkContextParams* network_context_params);
 
-  // Adds a CacheEncryptionProvider mojo remote to the specified
-  // `network_context_params`.
-  void AddCacheEncryptionProviderToNetworkContextParams(
-      network::mojom::NetworkContextParams* network_context_params);
-
   // Populates |initial_ssl_config| and |ssl_config_client_receiver| members of
   // |network_context_params|. As long as the SystemNetworkContextManager
   // exists, any NetworkContext created with the params will continue to get
@@ -164,7 +158,8 @@ class SystemNetworkContextManager {
   // representation).
   void UpdateTrustAnchorIDs(
       std::vector<std::vector<uint8_t>> trust_anchor_ids,
-      std::vector<std::vector<uint8_t>> mtc_trust_anchor_ids);
+      std::vector<std::vector<uint8_t>> mtc_trust_anchor_ids,
+      int64_t mtc_update_time_seconds);
 
   // Returns whether the network sandbox is enabled. This depends on policy but
   // also feature status from sandbox. Called before there is an instance of
@@ -309,9 +304,6 @@ class SystemNetworkContextManager {
 #endif  // BUILDFLAG(IS_LINUX)
 
   std::unique_ptr<CookieEncryptionProviderImpl> cookie_encryption_provider_;
-
-  std::unique_ptr<enterprise_encryption::CacheEncryptionProviderImpl>
-      cache_encryption_provider_;
 
   std::unique_ptr<CertVerifierServiceTimeUpdater> cert_verifier_time_updater_;
 };

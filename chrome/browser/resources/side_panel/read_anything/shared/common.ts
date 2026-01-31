@@ -5,6 +5,7 @@
 import type {CrActionMenuElement} from '//resources/cr_elements/cr_action_menu/cr_action_menu.js';
 import {AnchorAlignment} from '//resources/cr_elements/cr_action_menu/cr_action_menu.js';
 
+import type {ShowAtConfigPrefs} from '../content/read_anything_types.js';
 import {TextSegmenter} from '../read_aloud/text_segmenter.js';
 
 // Determined by experimentation - can be adjusted to fine tune for different
@@ -25,7 +26,7 @@ export const MOSTLY_VISIBLE_PERCENT = 0.8;
 
 export function openMenu(
     menuToOpen: CrActionMenuElement, target: HTMLElement,
-    showAtConfig?: {minX: number, maxX: number}, onShow?: () => void) {
+    showAtConfig?: ShowAtConfigPrefs, onShow?: () => void) {
   // The button should stay active while the menu is open and deactivate when
   // the menu closes.
   menuToOpen.addEventListener('close', () => {
@@ -63,6 +64,7 @@ export function getWordCount(text: string): number {
   return TextSegmenter.getInstance().getWordCount(text);
 }
 
+// TODO(crbug.com/447427066): Move these visibility functions to dom_queries.ts.
 // Returns true if the given rect is mostly within the visible window.
 export function isRectMostlyVisible(rect: DOMRect): boolean {
   if (rect.height <= 0) {

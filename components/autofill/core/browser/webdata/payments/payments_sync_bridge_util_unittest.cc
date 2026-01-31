@@ -4,6 +4,7 @@
 
 #include "components/autofill/core/browser/webdata/payments/payments_sync_bridge_util.h"
 
+#include <utility>
 #include <variant>
 #include <vector>
 
@@ -710,7 +711,7 @@ TEST_F(PaymentsSyncBridgeUtilTest, OfferSpecificsFromOfferData) {
             (offer_data.GetExpiry() - base::Time::UnixEpoch()).InSeconds());
   EXPECT_EQ(offer_specifics.merchant_domain().size(),
             (int)offer_data.GetMerchantOrigins().size());
-  for (int i = 0; i < offer_specifics.merchant_domain().size(); i++) {
+  for (int i = 0; i < offer_specifics.merchant_domain().size(); ++i) {
     EXPECT_EQ(offer_specifics.merchant_domain(i),
               offer_data.GetMerchantOrigins()[i].spec());
   }
@@ -744,7 +745,7 @@ TEST_F(PaymentsSyncBridgeUtilTest, OfferSpecificsFromCardLinkedOfferData) {
             (int)offer_data.GetEligibleInstrumentIds().size());
   for (int i = 0;
        i < offer_specifics.card_linked_offer_data().instrument_id().size();
-       i++) {
+       ++i) {
     EXPECT_EQ(offer_specifics.card_linked_offer_data().instrument_id(i),
               offer_data.GetEligibleInstrumentIds()[i]);
   }
@@ -992,9 +993,9 @@ TEST_F(PaymentsSyncBridgeUtilTest, SetAutofillWalletSpecificsFromCardBenefit) {
     } else if (benefit_specifics.has_category_benefit()) {
       // Check category benefit specific field is set correctly.
       EXPECT_EQ(
-          base::to_underlying(
+          std::to_underlying(
               benefit_specifics.category_benefit().category_benefit_type()),
-          base::to_underlying(category_benefit.benefit_category()));
+          std::to_underlying(category_benefit.benefit_category()));
 
       target_benefit = category_benefit;
     } else {

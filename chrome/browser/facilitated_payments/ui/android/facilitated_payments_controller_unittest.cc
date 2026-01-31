@@ -231,7 +231,7 @@ TEST_P(FacilitatedPaymentsControllerTestForUiEvents, OnUiEvent) {
     EXPECT_CALL(*mock_view_, OnDismissed).Times(2);
   }
 
-  controller_->OnUiEvent(nullptr, static_cast<jint>(ui_event()));
+  controller_->OnUiEvent(nullptr, static_cast<int32_t>(ui_event()));
 }
 
 // Test controller forwards call for showing the payment link FOP selector to

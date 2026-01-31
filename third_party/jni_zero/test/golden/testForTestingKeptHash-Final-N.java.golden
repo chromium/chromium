@@ -4,6 +4,9 @@
 
 package J;
 
+import javax.annotation.processing.Generated;
+
+@Generated("JNI Zero")
 public class N {
   // Original name: org.jni_zero.SampleProxyEdgeCases#addStructB
   public static native int MYplquli(Object caller, Object b);

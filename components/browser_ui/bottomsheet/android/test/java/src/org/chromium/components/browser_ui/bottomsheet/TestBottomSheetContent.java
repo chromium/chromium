@@ -15,7 +15,9 @@ import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 
 import org.chromium.base.ThreadUtils;
-import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.supplier.NonNullObservableSupplier;
+import org.chromium.base.supplier.ObservableSuppliers;
+import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.base.test.util.CallbackHelper;
 
 /** A simple sheet content to test with. This only displays two empty white views. */
@@ -25,6 +27,9 @@ public class TestBottomSheetContent implements BottomSheetContent {
 
     /** {@link CallbackHelper} to ensure the destroy method is called. */
     public final CallbackHelper destroyCallbackHelper = new CallbackHelper();
+
+    private final SettableNonNullObservableSupplier<Boolean> mBackPressStateChangedSupplier =
+            ObservableSuppliers.createNonNull(false);
 
     /** Empty view that represents the toolbar. */
     private View mToolbarView;
@@ -52,11 +57,6 @@ public class TestBottomSheetContent implements BottomSheetContent {
 
     /** If set to true, the half state will be skipped when scrolling down the FULL sheet. */
     private boolean mSkipHalfStateScrollingDown;
-
-    /** Whether this content intercepts back button presses. */
-    private boolean mHandleBackPress;
-
-    private ObservableSupplierImpl<Boolean> mBackPressStateChangedSupplier;
 
     /**
      * Whether this content can be immediately replaced by higher-priority content even while the
@@ -202,20 +202,15 @@ public class TestBottomSheetContent implements BottomSheetContent {
 
     @Override
     public boolean handleBackPress() {
-        return mHandleBackPress;
+        return mBackPressStateChangedSupplier.get();
     }
 
     public void setHandleBackPress(boolean handleBackPress) {
-        getBackPressStateChangedSupplier().set(handleBackPress);
-        mHandleBackPress = handleBackPress;
+        mBackPressStateChangedSupplier.set(handleBackPress);
     }
 
     @Override
-    public ObservableSupplierImpl<Boolean> getBackPressStateChangedSupplier() {
-        if (mBackPressStateChangedSupplier == null) {
-            mBackPressStateChangedSupplier = new ObservableSupplierImpl<>();
-            mBackPressStateChangedSupplier.set(false);
-        }
+    public NonNullObservableSupplier<Boolean> getBackPressStateChangedSupplier() {
         return mBackPressStateChangedSupplier;
     }
 

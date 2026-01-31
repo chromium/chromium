@@ -26,12 +26,12 @@
 #include "content/public/browser/desktop_media_id.h"
 #include "content/public/browser/media_stream_request.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/common/content_features.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/navigation_simulator.h"
 #include "media/audio/audio_features.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/mediastream/media_stream_request.h"
-#include "third_party/blink/public/mojom/mediastream/media_stream.mojom-shared.h"
 #include "third_party/blink/public/mojom/mediastream/media_stream.mojom.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -340,9 +340,6 @@ TEST_F(DisplayMediaAccessHandlerTest, PermissionDenied) {
 }
 
 TEST_F(DisplayMediaAccessHandlerTest, MaxLengthDomainAccepted) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(kDisplayMediaRejectLongDomains);
-
   std::unique_ptr<content::NavigationSimulator> navigation =
       content::NavigationSimulator::CreateBrowserInitiated(
           GURL("https://" + std::string(255, 'a')), web_contents());
@@ -365,9 +362,6 @@ TEST_F(DisplayMediaAccessHandlerTest, MaxLengthDomainAccepted) {
 }
 
 TEST_F(DisplayMediaAccessHandlerTest, OverMaxLengthDomainRejected) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(kDisplayMediaRejectLongDomains);
-
   std::unique_ptr<content::NavigationSimulator> navigation =
       content::NavigationSimulator::CreateBrowserInitiated(
           GURL("https://" + std::string(256, 'a')), web_contents());
@@ -639,6 +633,7 @@ TEST_F(DisplayMediaAccessHandlerTest, CorrectHostAsksForPermissionsNormalURLs) {
 #if !BUILDFLAG(IS_ANDROID)
 
 TEST_F(DisplayMediaAccessHandlerTest, IsolatedWebAppNameAsksForPermissions) {
+  base::test::ScopedFeatureList scoped_feature_list{features::kIsolatedWebApps};
   data_decoder::test::InProcessDataDecoder in_process_data_decoder;
   web_app::test::AwaitStartWebAppProviderAndSubsystems(profile());
 

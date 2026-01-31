@@ -14,6 +14,7 @@
 
 namespace permissions {
 enum class RequestType;
+struct PermissionPromptDecision;
 
 class MockPermissionRequest : public PermissionRequest {
  public:
@@ -68,8 +69,7 @@ class MockPermissionRequest : public PermissionRequest {
   void RegisterOnPermissionDecidedCallback(base::OnceClosure callback);
 
   void PermissionDecided(
-      PermissionDecision decision,
-      bool is_final_decision,
+      const permissions::PermissionPromptDecision& decision,
       const permissions::PermissionRequestData& request_data);
 
   const std::vector<std::string>& GetRequestedAudioCaptureDeviceIds()

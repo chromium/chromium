@@ -151,7 +151,7 @@ s! {
         pub mxcr_mask: c_uint,
         pub st_space: [c_uint; 32],
         pub xmm_space: [c_uint; 64],
-        padding: [c_uint; 24],
+        padding: Padding<[c_uint; 24]>,
     }
 }
 

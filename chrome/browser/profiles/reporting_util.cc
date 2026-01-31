@@ -97,8 +97,8 @@ std::string GetDeviceDmToken(Profile* profile) {
 
 namespace reporting {
 
-base::Value::Dict GetContext(Profile* profile) {
-  base::Value::Dict context;
+base::DictValue GetContext(Profile* profile) {
+  base::DictValue context;
   context.SetByDottedPath("browser.userAgent",
                           embedder_support::GetUserAgent());
 

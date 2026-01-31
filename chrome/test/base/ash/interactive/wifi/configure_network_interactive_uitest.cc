@@ -25,7 +25,7 @@ DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kOSSettingsId);
 class ConfigureNetworkInteractiveUITest : public InteractiveAshTest {
  public:
   std::optional<bool> ServiceIsShared(const std::string& ssid) {
-    const base::Value::Dict* properties = GetServicePropertiesUsingName(ssid);
+    const base::DictValue* properties = GetServicePropertiesUsingName(ssid);
     if (!properties) {
       return std::nullopt;
     }
@@ -54,7 +54,7 @@ class ConfigureNetworkInteractiveUITest : public InteractiveAshTest {
   }
 
  private:
-  const base::Value::Dict* GetServicePropertiesUsingName(
+  const base::DictValue* GetServicePropertiesUsingName(
       const std::string& name) {
     ShillServiceClient::TestInterface* service_test =
         ShillServiceClient::Get()->GetTestInterface();

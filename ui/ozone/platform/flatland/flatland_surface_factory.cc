@@ -9,7 +9,6 @@
 
 #include <memory>
 
-#include "base/containers/contains.h"
 #include "base/fuchsia/fuchsia_logging.h"
 #include "base/fuchsia/process_context.h"
 #include "base/functional/bind.h"
@@ -204,23 +203,22 @@ FlatlandSurfaceFactory::CreateVulkanImplementation(
       allow_protected_memory);
 }
 
-std::vector<gfx::BufferFormat>
-FlatlandSurfaceFactory::GetSupportedFormatsForTexturing() const {
-  return {
-      gfx::BufferFormat::R_8,
-      gfx::BufferFormat::RG_88,
-      gfx::BufferFormat::RGBA_8888,
-      gfx::BufferFormat::RGBX_8888,
-      gfx::BufferFormat::BGRA_8888,
-      gfx::BufferFormat::BGRX_8888,
-      gfx::BufferFormat::YUV_420_BIPLANAR,
-  };
+bool FlatlandSurfaceFactory::IsFormatSupportedForTexturing(
+    viz::SharedImageFormat format) const {
+  base::flat_set<viz::SharedImageFormat> kSupportedFormats =
+      base::MakeFlatSet<viz::SharedImageFormat>(std::vector(
+          {viz::SinglePlaneFormat::kR_8, viz::SinglePlaneFormat::kRG_88,
+           viz::SinglePlaneFormat::kRGBA_8888,
+           viz::SinglePlaneFormat::kBGRA_8888,
+           viz::SinglePlaneFormat::kRGBX_8888,
+           viz::SinglePlaneFormat::kBGRX_8888, viz::MultiPlaneFormat::kNV12}));
+  return kSupportedFormats.contains(format);
 }
 
 void FlatlandSurfaceFactory::AddSurface(gfx::AcceleratedWidget widget,
                                         FlatlandSurface* surface) {
   base::AutoLock lock(surface_lock_);
-  DCHECK(!base::Contains(surface_map_, widget));
+  DCHECK(!surface_map_.contains(widget));
   surface->AssertBelongsToCurrentThread();
   surface_map_.emplace(widget, surface);
 }

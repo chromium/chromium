@@ -233,7 +233,6 @@ class USER_MANAGER_EXPORT UserManagerImpl : public UserManager {
   void NotifyUserProfileImageUpdated(
       const User& user,
       const gfx::ImageSkia& profile_image) override;
-  void NotifyUsersSignInConstraintsChanged() override;
   void NotifyUserAffiliationUpdated(const User& user) override;
   void NotifyUserToBeRemoved(const AccountId& account_id) override;
   void NotifyUserRemoved(const AccountId& account_id,
@@ -259,7 +258,7 @@ class USER_MANAGER_EXPORT UserManagerImpl : public UserManager {
   // Helper function that converts users from |users_list| to |users_vector| and
   // |users_set|. Duplicates and users already present in |existing_users| are
   // skipped.
-  void ParseUserList(const base::Value::List& users_list,
+  void ParseUserList(const base::ListValue& users_list,
                      const std::set<AccountId>& existing_users,
                      std::vector<AccountId>* users_vector,
                      std::set<AccountId>* users_set);
@@ -354,7 +353,7 @@ class USER_MANAGER_EXPORT UserManagerImpl : public UserManager {
   void RegularUserLoggedInAsEphemeral(const AccountId& account_id,
                                       const UserType user_type);
 
-  base::ObserverList<UserManager::Observer>::Unchecked observer_list_;
+  base::ObserverList<UserManager::Observer> observer_list_;
 
   // A list of User instances taking their ownership.
   // Following members can refer User instances in this vector.
@@ -496,7 +495,7 @@ class USER_MANAGER_EXPORT UserManagerImpl : public UserManager {
       pending_owner_callbacks_;
 
   // TODO(nkostylev): Merge with session state refactoring CL.
-  base::ObserverList<UserManager::UserSessionStateObserver>::Unchecked
+  base::ObserverList<UserManager::UserSessionStateObserver>
       session_state_observer_list_;
 
   // Time at which this object was created.

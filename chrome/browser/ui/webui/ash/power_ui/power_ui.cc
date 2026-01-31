@@ -47,13 +47,13 @@ class PowerMessageHandler : public content::WebUIMessageHandler {
   void RegisterMessages() override;
 
  private:
-  void OnGetBatteryChargeData(const base::Value::List& value);
-  void OnGetCpuIdleData(const base::Value::List& value);
-  void OnGetCpuFreqData(const base::Value::List& value);
-  base::Value::List GetJsStateOccupancyData(
+  void OnGetBatteryChargeData(const base::ListValue& value);
+  void OnGetCpuIdleData(const base::ListValue& value);
+  void OnGetCpuFreqData(const base::ListValue& value);
+  base::ListValue GetJsStateOccupancyData(
       const std::vector<CpuDataCollector::StateOccupancySampleDeque>& data,
       const std::vector<std::string>& state_names);
-  base::Value::List GetJsSystemResumedData();
+  base::ListValue GetJsSystemResumedData();
 };
 
 PowerMessageHandler::PowerMessageHandler() = default;
@@ -75,18 +75,17 @@ void PowerMessageHandler::RegisterMessages() {
                           base::Unretained(this)));
 }
 
-void PowerMessageHandler::OnGetBatteryChargeData(
-    const base::Value::List& args) {
+void PowerMessageHandler::OnGetBatteryChargeData(const base::ListValue& args) {
   CHECK_EQ(1u, args.size());
 
   AllowJavascript();
 
   const base::circular_deque<PowerDataCollector::PowerSupplySample>&
       power_supply = PowerDataCollector::Get()->power_supply_data();
-  base::Value::List js_power_supply_data;
+  base::ListValue js_power_supply_data;
   for (size_t i = 0; i < power_supply.size(); ++i) {
     const PowerDataCollector::PowerSupplySample& sample = power_supply[i];
-    base::Value::Dict element;
+    base::DictValue element;
     element.Set("batteryPercent", sample.battery_percent);
     element.Set("batteryDischargeRate", sample.battery_discharge_rate);
     element.Set("externalPower", sample.external_power);
@@ -95,16 +94,16 @@ void PowerMessageHandler::OnGetBatteryChargeData(
     js_power_supply_data.Append(std::move(element));
   }
 
-  base::Value::List js_system_resumed_data = GetJsSystemResumedData();
+  base::ListValue js_system_resumed_data = GetJsSystemResumedData();
 
-  base::Value::Dict data;
+  base::DictValue data;
   data.Set("powerSupplyData", std::move(js_power_supply_data));
   data.Set("systemResumedData", std::move(js_system_resumed_data));
   const base::Value& callback_id = args[0];
   ResolveJavascriptCallback(callback_id, data);
 }
 
-void PowerMessageHandler::OnGetCpuIdleData(const base::Value::List& args) {
+void PowerMessageHandler::OnGetCpuIdleData(const base::ListValue& args) {
   CHECK_EQ(1u, args.size());
 
   AllowJavascript();
@@ -116,19 +115,19 @@ void PowerMessageHandler::OnGetCpuIdleData(const base::Value::List& args) {
       cpu_data_collector.cpu_idle_state_data();
   const std::vector<std::string>& idle_state_names =
       cpu_data_collector.cpu_idle_state_names();
-  base::Value::List js_idle_data =
+  base::ListValue js_idle_data =
       GetJsStateOccupancyData(idle_data, idle_state_names);
 
-  base::Value::List js_system_resumed_data = GetJsSystemResumedData();
+  base::ListValue js_system_resumed_data = GetJsSystemResumedData();
 
-  base::Value::Dict data;
+  base::DictValue data;
   data.Set("idleStateData", std::move(js_idle_data));
   data.Set("systemResumedData", std::move(js_system_resumed_data));
   const base::Value& callback_id = args[0];
   ResolveJavascriptCallback(callback_id, data);
 }
 
-void PowerMessageHandler::OnGetCpuFreqData(const base::Value::List& args) {
+void PowerMessageHandler::OnGetCpuFreqData(const base::ListValue& args) {
   CHECK_EQ(1u, args.size());
 
   AllowJavascript();
@@ -140,26 +139,26 @@ void PowerMessageHandler::OnGetCpuFreqData(const base::Value::List& args) {
       cpu_data_collector.cpu_freq_state_data();
   const std::vector<std::string>& freq_state_names =
       cpu_data_collector.cpu_freq_state_names();
-  base::Value::List js_freq_data =
+  base::ListValue js_freq_data =
       GetJsStateOccupancyData(freq_data, freq_state_names);
 
-  base::Value::List js_system_resumed_data = GetJsSystemResumedData();
+  base::ListValue js_system_resumed_data = GetJsSystemResumedData();
 
-  base::Value::Dict data;
+  base::DictValue data;
   data.Set("freqStateData", std::move(js_freq_data));
   data.Set("systemResumedData", std::move(js_system_resumed_data));
   const base::Value& callback_id = args[0];
   ResolveJavascriptCallback(callback_id, data);
 }
 
-base::Value::List PowerMessageHandler::GetJsSystemResumedData() {
-  base::Value::List data;
+base::ListValue PowerMessageHandler::GetJsSystemResumedData() {
+  base::ListValue data;
 
   const base::circular_deque<PowerDataCollector::SystemResumedSample>&
       system_resumed = PowerDataCollector::Get()->system_resumed_data();
   for (size_t i = 0; i < system_resumed.size(); ++i) {
     const PowerDataCollector::SystemResumedSample& sample = system_resumed[i];
-    base::Value::Dict element;
+    base::DictValue element;
     element.Set("sleepDuration", sample.sleep_duration.InMillisecondsF());
     element.Set("time", sample.time.InMillisecondsFSinceUnixEpoch());
 
@@ -168,20 +167,20 @@ base::Value::List PowerMessageHandler::GetJsSystemResumedData() {
   return data;
 }
 
-base::Value::List PowerMessageHandler::GetJsStateOccupancyData(
+base::ListValue PowerMessageHandler::GetJsStateOccupancyData(
     const std::vector<CpuDataCollector::StateOccupancySampleDeque>& data,
     const std::vector<std::string>& state_names) {
-  base::Value::List js_data;
+  base::ListValue js_data;
   for (unsigned int cpu = 0; cpu < data.size(); ++cpu) {
     const CpuDataCollector::StateOccupancySampleDeque& sample_deque = data[cpu];
-    base::Value::List js_sample_list;
+    base::ListValue js_sample_list;
     for (unsigned int i = 0; i < sample_deque.size(); ++i) {
       const CpuDataCollector::StateOccupancySample& sample = sample_deque[i];
-      base::Value::Dict js_sample;
+      base::DictValue js_sample;
       js_sample.Set("time", sample.time.InMillisecondsFSinceUnixEpoch());
       js_sample.Set("cpuOnline", sample.cpu_online);
 
-      base::Value::Dict state_dict;
+      base::DictValue state_dict;
       for (size_t index = 0; index < sample.time_in_state.size(); ++index) {
         state_dict.Set(state_names[index],
                        sample.time_in_state[index].InMillisecondsF());

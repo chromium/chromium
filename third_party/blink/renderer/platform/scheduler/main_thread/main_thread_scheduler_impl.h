@@ -27,11 +27,12 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
-#include "base/trace_event/trace_log.h"
 #include "build/build_config.h"
+#include "components/performance_manager/scenario_api/performance_scenario_observer.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/platform/scheduler/web_thread_scheduler.h"
 #include "third_party/blink/renderer/platform/allow_discouraged_type.h"
+#include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/scheduler/common/features.h"
 #include "third_party/blink/renderer/platform/scheduler/common/idle_helper.h"
@@ -60,6 +61,11 @@
 #include "third_party/blink/renderer/platform/wtf/hash_set.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 #include "third_party/perfetto/include/perfetto/tracing/traced_value_forward.h"
+
+#if BUILDFLAG(IS_ANDROID)
+#include "base/functional/callback_forward.h"
+#include "base/threading/platform_thread.h"
+#endif
 
 namespace base {
 class LazyNow;
@@ -91,13 +97,46 @@ class PageSchedulerImpl;
 class WebRenderWidgetSchedulingState;
 class WidgetSchedulerImpl;
 
+#if BUILDFLAG(IS_ANDROID)
+PLATFORM_EXPORT BASE_DECLARE_FEATURE(kRestrictMainThreadBigCoreAffinity);
+
+// Must be created on the main thread, can be deleted from any thread.
+class PLATFORM_EXPORT ThreadAffinityBoost {
+ public:
+  ThreadAffinityBoost();
+  ~ThreadAffinityBoost();
+  static void StopDelayed(std::unique_ptr<ThreadAffinityBoost> boost,
+                          base::TimeDelta delay);
+
+  using SetCanRunOnBigCoreFn =
+      base::RepeatingCallback<void(base::PlatformThreadId, bool)>;
+
+  static void SetTaskRunnerForTesting(base::TaskRunner* task_runner) {
+    task_runner_for_testing_ = task_runner;
+  }
+
+  static void SetCanRunOnBigCoreOverrideForTesting(SetCanRunOnBigCoreFn* cb) {
+    set_can_run_on_big_core_override_ = cb;
+  }
+
+ private:
+  static base::Lock& lock();
+
+  const base::PlatformThreadId thread_id_;
+  static uint64_t depth_ GUARDED_BY(lock());
+  static base::TaskRunner* task_runner_for_testing_;
+  static SetCanRunOnBigCoreFn* set_can_run_on_big_core_override_;
+};
+#endif  // BUILDFLAG(IS_ANDROID)
+
 class PLATFORM_EXPORT MainThreadSchedulerImpl
     : public ThreadSchedulerBase,
       public MainThreadScheduler,
       public WebThreadScheduler,
       public IdleHelper::Delegate,
       public RenderWidgetSignals::Observer,
-      public base::trace_event::TraceLog::AsyncEnabledStateObserver {
+      public trace_event::TraceSessionObserver,
+      public performance_scenarios::PerformanceScenarioObserver {
  public:
   // Duration after which rendering is considered starved, in which case the
   // compositor task queues will have an increased priority until the next
@@ -170,6 +209,17 @@ class PLATFORM_EXPORT MainThreadSchedulerImpl
   MainThreadSchedulerImpl& operator=(const MainThreadSchedulerImpl&) = delete;
 
   ~MainThreadSchedulerImpl() override;
+
+  // PerformanceScenarioObserver implementation:
+  void OnInputScenarioChanged(
+      performance_scenarios::ScenarioScope scope,
+      performance_scenarios::InputScenario old_scenario,
+      performance_scenarios::InputScenario new_scenario) override;
+
+  void OnLoadingScenarioChanged(
+      performance_scenarios::ScenarioScope scope,
+      performance_scenarios::LoadingScenario old_scenario,
+      performance_scenarios::LoadingScenario new_scenario) override;
 
   // WebThreadScheduler implementation:
   scoped_refptr<base::SingleThreadTaskRunner> DeprecatedDefaultTaskRunner()
@@ -348,9 +398,8 @@ class PLATFORM_EXPORT MainThreadSchedulerImpl
 
   bool IsAudioPlaying() const;
 
-  // base::trace_event::TraceLog::EnabledStateObserver implementation:
-  void OnTraceLogEnabled() override;
-  void OnTraceLogDisabled() override;
+  // base::trace_event::TraceSessionObserver implementation:
+  void OnStart(const perfetto::DataSourceBase::StartArgs&) override;
 
   UseCase current_use_case() const;
 
@@ -384,12 +433,6 @@ class PLATFORM_EXPORT MainThreadSchedulerImpl
   scoped_refptr<MainThreadTaskQueue> ControlTaskQueue();
   scoped_refptr<MainThreadTaskQueue> DefaultTaskQueue();
   scoped_refptr<MainThreadTaskQueue> V8TaskQueue();
-
-  // `current_use_case` will be overwritten by the next call to UpdatePolicy.
-  // Thus, this function should be only used for testing purposes.
-  void SetCurrentUseCaseForTest(UseCase use_case) {
-    main_thread_only().current_use_case = use_case;
-  }
 
   virtual void PerformMicrotaskCheckpoint();
 
@@ -559,9 +602,18 @@ class PLATFORM_EXPORT MainThreadSchedulerImpl
   // again. If the duration is zero, a new use case update should not be
   // scheduled. Must be called with |any_thread_lock_| held. Can be called from
   // any thread.
-  UseCase ComputeCurrentUseCase(base::TimeTicks now,
-                                base::TimeDelta* expected_use_case_duration)
-      const EXCLUSIVE_LOCKS_REQUIRED(any_thread_lock_);
+  //
+  // Virtual for testing.
+  virtual UseCase ComputeCurrentUseCase(
+      base::TimeTicks now,
+      base::TimeDelta* expected_use_case_duration) const
+      EXCLUSIVE_LOCKS_REQUIRED(any_thread_lock_);
+
+  bool ComputeIsInputHandlingFromUseCase(UseCase) const;
+  bool ComputeIsInputHandlingFromPerformanceScenario(
+      performance_scenarios::InputScenario) const;
+  bool ComputeIsLoadingFromPerformanceScenario(
+      performance_scenarios::LoadingScenario) const;
 
   // Helper for computing the RAILMode based on the given UseCase and current
   // scheduler state.
@@ -785,6 +837,12 @@ class PLATFORM_EXPORT MainThreadSchedulerImpl
     // `WidgetScheduler`s that have not been shut down.
     HashSet<scoped_refptr<WidgetSchedulerImpl>> widget_schedulers;
     raw_ptr<base::MessagePump> message_pump;
+
+#if BUILDFLAG(IS_ANDROID)
+    // Used to change thread affinity when KRestrictMainThreadAffinity is
+    // enabled.
+    std::unique_ptr<ThreadAffinityBoost> affinity_boost = nullptr;
+#endif  // BUILDFLAG(IS_ANDROID)
   };
 
   struct AnyThread {

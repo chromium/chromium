@@ -54,8 +54,9 @@ TEST(BindingsMessageTest, ConstructFromPayload) {
   WriteMessageRaw(pipe.handle0.get(), in_bytes1.data(), in_bytes1.size(),
                   reinterpret_cast<const MojoHandle*>(in_handles1.data()),
                   in_handles1.size(), MOJO_WRITE_MESSAGE_FLAG_NONE);
-  for (auto& handle : in_handles1)
+  for (auto& handle : in_handles1) {
     std::ignore = handle.release();
+  }
 
   // Now construct a Message object from the same payload and feed that into the
   // pipe.

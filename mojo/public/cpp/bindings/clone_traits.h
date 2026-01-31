@@ -16,23 +16,16 @@
 
 namespace mojo {
 
-template <typename T, typename SFINAE = void>
-struct HasCloneMethod : std ::false_type {
-  static_assert(sizeof(T), "T must be a complete type.");
-};
-
-template <typename T>
-struct HasCloneMethod<T,
-                      std::void_t<decltype(std::declval<const T&>().Clone())>>
-    : std::true_type {};
-
 template <typename T>
 T Clone(const T& input);
 
 template <typename T>
 struct CloneTraits {
+  static_assert(sizeof(T), "T must be a complete type.");
   static T Clone(const T& input) {
-    if constexpr (HasCloneMethod<T>::value) {
+    if constexpr (requires {
+                    { input.Clone() } -> std::same_as<T>;
+                  }) {
       return input.Clone();
     } else if constexpr (std::copyable<T>) {
       return input;
@@ -49,8 +42,9 @@ struct CloneTraits {
 template <typename T>
 struct CloneTraits<std::optional<T>> {
   static std::optional<T> Clone(const std::optional<T>& input) {
-    if (!input)
+    if (!input) {
       return std::nullopt;
+    }
 
     return std::optional<T>(mojo::Clone(*input));
   }
@@ -61,8 +55,9 @@ struct CloneTraits<std::vector<T>> {
   static std::vector<T> Clone(const std::vector<T>& input) {
     std::vector<T> result;
     result.reserve(input.size());
-    for (const auto& element : input)
+    for (const auto& element : input) {
       result.push_back(mojo::Clone(element));
+    }
 
     return result;
   }

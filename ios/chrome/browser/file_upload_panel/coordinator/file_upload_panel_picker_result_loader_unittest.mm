@@ -11,11 +11,11 @@
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/metrics/histogram_tester.h"
 #import "base/test/mock_callback.h"
-#import "ios/chrome/browser/file_upload_panel/coordinator/file_upload_panel_media_item.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "testing/gmock/include/gmock/gmock.h"
 #import "testing/gtest/include/gtest/gtest.h"
+#import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
 #import "third_party/ocmock/gtest_support.h"
@@ -68,12 +68,13 @@ TEST_F(FileUploadPanelPickerResultLoaderTest, LoadSuccess) {
       base::MockCallback<FileUploadPanelPickerResultLoader::LoadResultCallback>>
       callback;
   base::RepeatingClosure quit_run_loop = task_environment_.QuitClosure();
-  EXPECT_CALL(callback, Run(testing::_))
-      .WillOnce([&](NSArray<FileUploadPanelMediaItem*>* items) {
-        ASSERT_EQ(1u, items.count);
-        EXPECT_FALSE(items[0].isVideo);
-        quit_run_loop.Run();
-      });
+  EXPECT_CALL(callback, Run(testing::_)).WillOnce([&](NSArray<NSURL*>* items) {
+    ASSERT_EQ(1u, items.count);
+    EXPECT_TRUE([items[0] isKindOfClass:[NSURL class]]);
+    EXPECT_NSNE(items[0], file_url);
+    EXPECT_NSEQ(items[0].lastPathComponent, file_url.lastPathComponent);
+    quit_run_loop.Run();
+  });
 
   loader.Load(callback.Get());
   task_environment_.RunUntilQuit();
@@ -165,13 +166,16 @@ TEST_F(FileUploadPanelPickerResultLoaderTest, LoadMultipleSuccess) {
       base::MockCallback<FileUploadPanelPickerResultLoader::LoadResultCallback>>
       callback;
   base::RepeatingClosure quit_run_loop = task_environment_.QuitClosure();
-  EXPECT_CALL(callback, Run(testing::_))
-      .WillOnce([&](NSArray<FileUploadPanelMediaItem*>* items) {
-        ASSERT_EQ(2u, items.count);
-        EXPECT_FALSE(items[0].isVideo);
-        EXPECT_TRUE(items[1].isVideo);
-        quit_run_loop.Run();
-      });
+  EXPECT_CALL(callback, Run(testing::_)).WillOnce([&](NSArray<NSURL*>* items) {
+    ASSERT_EQ(2u, items.count);
+    EXPECT_TRUE([items[0] isKindOfClass:[NSURL class]]);
+    EXPECT_NSNE(items[0], file_url1);
+    EXPECT_NSEQ(items[0].lastPathComponent, file_url1.lastPathComponent);
+    EXPECT_TRUE([items[1] isKindOfClass:[NSURL class]]);
+    EXPECT_NSNE(items[1], file_url2);
+    EXPECT_NSEQ(items[1].lastPathComponent, file_url2.lastPathComponent);
+    quit_run_loop.Run();
+  });
 
   loader.Load(callback.Get());
   task_environment_.RunUntilQuit();

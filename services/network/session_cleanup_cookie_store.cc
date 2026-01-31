@@ -24,14 +24,13 @@ namespace network {
 
 namespace {
 
-base::Value::Dict CookieStoreOriginFiltered(
-    const std::string& origin,
-    bool is_https,
-    net::NetLogCaptureMode capture_mode) {
+base::DictValue CookieStoreOriginFiltered(const std::string& origin,
+                                          bool is_https,
+                                          net::NetLogCaptureMode capture_mode) {
   if (!net::NetLogCaptureIncludesSensitive(capture_mode)) {
-    return base::Value::Dict();
+    return base::DictValue();
   }
-  return base::Value::Dict().Set("origin", origin).Set("is_https", is_https);
+  return base::DictValue().Set("origin", origin).Set("is_https", is_https);
 }
 
 }  // namespace

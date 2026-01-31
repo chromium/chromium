@@ -18,6 +18,7 @@
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/message_loop/message_pump_type.h"
+#include "base/no_destructor.h"
 #include "base/process/launch.h"
 #include "base/process/memory.h"
 #include "base/process/process.h"
@@ -31,7 +32,8 @@
 #include "base/threading/platform_thread.h"
 #include "base/threading/thread.h"
 #include "base/trace_event/trace_config.h"
-#include "base/trace_event/trace_log.h"
+#include "base/trace_event/trace_event.h"
+#include "base/trace_event/trace_session_observer.h"
 #include "build/build_config.h"
 #include "components/embedder_support/switches.h"
 #include "content/app/content_main_runner_impl.h"
@@ -165,15 +167,26 @@ void InitTimeTicksAtUnixEpoch() {
 // Apply metadata to samples collected by the StackSamplingProfiler when tracing
 // is enabled. This helps distinguish profiles with tracing overhead, e.g. due
 // to background tracing, from those without.
-class TracingEnabledStateObserver
-    : public base::trace_event::TraceLog::EnabledStateObserver {
+class TracingEnabledStateObserver : public perfetto::TrackEventSessionObserver {
  public:
-  void OnTraceLogEnabled() override {
+  TracingEnabledStateObserver() {
+    base::TrackEvent::AddSessionObserver(this);
+    if (base::TrackEvent::IsEnabled()) {
+      apply_sample_metadata_.emplace("TracingEnabled", 1,
+                                     base::SampleMetadataScope::kProcess);
+    }
+  }
+
+  void OnStart(const perfetto::DataSourceBase::StartArgs&) override {
     apply_sample_metadata_.emplace("TracingEnabled", 1,
                                    base::SampleMetadataScope::kProcess);
   }
 
-  void OnTraceLogDisabled() override { apply_sample_metadata_.reset(); }
+  void OnStop(const perfetto::DataSourceBase::StopArgs& args) override {
+    if (!base::trace_event::IsEnabledOnStop(args)) {
+      apply_sample_metadata_.reset();
+    }
+  }
 
  private:
   std::optional<base::ScopedSampleMetadata> apply_sample_metadata_;
@@ -337,8 +350,7 @@ NO_STACK_PROTECTOR int RunContentProcess(
     }
 #endif
 
-    base::trace_event::TraceLog::GetInstance()->AddOwnedEnabledStateObserver(
-        base::WrapUnique(new TracingEnabledStateObserver));
+    static base::NoDestructor<TracingEnabledStateObserver> tracing_observer;
   }
 
   if (IsSubprocess())

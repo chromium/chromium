@@ -5,7 +5,7 @@
 // clang-format off
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import type {DefaultBrowserBrowserProxy, DefaultBrowserInfo, SettingsDefaultBrowserPageElement} from 'chrome://settings/settings.js';
-import {DefaultBrowserBrowserProxyImpl, loadTimeData} from 'chrome://settings/settings.js';
+import {DefaultBrowserBrowserProxyImpl, loadTimeData, Router, routes} from 'chrome://settings/settings.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 // clang-format on
@@ -91,6 +91,16 @@ suite('DefaultBrowserPageTest', function() {
     await browserProxy.whenCalled('requestDefaultBrowserState');
   }
 
+  /**
+   * Simulates navigation to the Default Browser page and waits
+   * for the experiment activation call.
+   */
+  function navigateToDefaultBrowserPage() {
+    browserProxy.resetResolver('requestUserValueStringsFeatureState');
+    Router.getInstance().navigateTo(routes.DEFAULT_BROWSER);
+    return browserProxy.whenCalled('requestUserValueStringsFeatureState');
+  }
+
   test('default-browser-test-can-be-default-featureOff', async function() {
     browserProxy.setUserValueStringsFeatureState(false);
 
@@ -103,6 +113,7 @@ suite('DefaultBrowserPageTest', function() {
     });
 
     await initPage();
+    await navigateToDefaultBrowserPage();
     flush();
     assertTrue(
         !!page.shadowRoot!.querySelector<HTMLElement>('#canBeDefaultBrowser'));
@@ -131,6 +142,7 @@ suite('DefaultBrowserPageTest', function() {
     });
 
     await initPage();
+    await navigateToDefaultBrowserPage();  // Triggers currentRouteChanged
     flush();
     assertTrue(
         !!page.shadowRoot!.querySelector<HTMLElement>('#canBeDefaultBrowser'));
@@ -188,6 +200,7 @@ suite('DefaultBrowserPageTest', function() {
     });
 
     await initPage();
+    await navigateToDefaultBrowserPage();
     flush();
     assertFalse(
         !!page.shadowRoot!.querySelector<HTMLElement>('#canBeDefaultBrowser'));
@@ -225,6 +238,7 @@ suite('DefaultBrowserPageTest', function() {
     });
 
     await initPage();
+    await navigateToDefaultBrowserPage();
     flush();
     assertFalse(
         !!page.shadowRoot!.querySelector<HTMLElement>('#canBeDefaultBrowser'));

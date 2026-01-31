@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/execution_context/security_context_init.h"
 
+#include <algorithm>
 #include <optional>
 
 #include "base/metrics/histogram_macros.h"
@@ -11,6 +12,7 @@
 #include "services/network/public/cpp/permissions_policy/permissions_policy.h"
 #include "services/network/public/cpp/web_sandbox_flags.h"
 #include "third_party/blink/public/mojom/devtools/console_message.mojom-blink.h"
+#include "third_party/blink/public/web/web_navigation_params.h"
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/execution_context/agent.h"
 #include "third_party/blink/renderer/core/frame/csp/content_security_policy.h"
@@ -107,7 +109,8 @@ void SecurityContextInit::ApplyPermissionsPolicy(
     LocalFrame& frame,
     const ResourceResponse& response,
     const FramePolicy& frame_policy,
-    const std::optional<network::ParsedPermissionsPolicy>& isolated_app_policy,
+    const base::optional_ref<const Vector<IsolatedAppPermissionPolicyEntry>>
+        isolated_app_policy,
     const base::optional_ref<const FencedFrame::RedactedFencedFrameProperties>
         fenced_frame_properties,
     const KURL& document_url) {
@@ -147,7 +150,7 @@ void SecurityContextInit::ApplyPermissionsPolicy(
 
   permissions_policy_header_ = PermissionsPolicyParser::ParseHeader(
       feature_policy_header, permissions_policy_header,
-      execution_context_->GetSecurityOrigin(), feature_policy_logger,
+      *execution_context_->GetSecurityOrigin(), feature_policy_logger,
       permissions_policy_logger, execution_context_);
 
   network::ParsedPermissionsPolicy
@@ -155,7 +158,7 @@ void SecurityContextInit::ApplyPermissionsPolicy(
           PermissionsPolicyParser::ParseHeader(
               response.HttpHeaderField(http_names::kFeaturePolicyReportOnly),
               report_only_permissions_policy_header,
-              execution_context_->GetSecurityOrigin(),
+              *execution_context_->GetSecurityOrigin(),
               report_only_feature_policy_logger,
               report_only_permissions_policy_logger, execution_context_);
 
@@ -197,10 +200,12 @@ void SecurityContextInit::ApplyPermissionsPolicy(
   }
 
   if (isolated_app_policy) {
+    permissions_policy_header_ =
+        ParseIsolatedAppPermissionsPolicy(*isolated_app_policy);
     DCHECK(frame.IsOutermostMainFrame());
     std::unique_ptr<network::PermissionsPolicy> permissions_policy =
         network::PermissionsPolicy::CreateFromParsedPolicy(
-            permissions_policy_header_, isolated_app_policy, origin);
+            permissions_policy_header_, /*base_policy=*/std::nullopt, origin);
     execution_context_->GetSecurityContext().SetPermissionsPolicy(
         std::move(permissions_policy));
   } else {
@@ -233,8 +238,8 @@ void SecurityContextInit::ApplyPermissionsPolicy(
 
         // Warn if a disallowed permissions policy is attempted to be enabled.
         for (const auto& policy : container_policy) {
-          if (!base::Contains(network::kFencedFrameAllowedFeatures,
-                              policy.feature)) {
+          if (!std::ranges::contains(network::kFencedFrameAllowedFeatures,
+                                     policy.feature)) {
             bool is_isolated_context =
                 execution_context_ && execution_context_->IsIsolatedContext();
             execution_context_->AddConsoleMessage(
@@ -316,4 +321,23 @@ void SecurityContextInit::InitDocumentPolicyFrom(const SecurityContext& other) {
   security_context.SetReportOnlyDocumentPolicy(
       DocumentPolicy::CopyStateFrom(other.GetReportOnlyDocumentPolicy()));
 }
+
+network::ParsedPermissionsPolicy
+SecurityContextInit::ParseIsolatedAppPermissionsPolicy(
+    const Vector<IsolatedAppPermissionPolicyEntry>& isolated_app_policy) {
+  PolicyParserMessageBuffer iwa_policy_logger(
+      "Error with IWA Permissions-Policy: ");
+  auto base_policy = PermissionsPolicyParser::ParseIsolatedAppPermissionsPolicy(
+      isolated_app_policy, permissions_policy_header_,
+      *execution_context_->GetSecurityOrigin(), iwa_policy_logger,
+      execution_context_);
+
+  for (const auto& message : iwa_policy_logger.GetMessages()) {
+    execution_context_->AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
+        mojom::blink::ConsoleMessageSource::kSecurity, message.level,
+        message.content));
+  }
+  return base_policy;
+}
+
 }  // namespace blink

@@ -15,6 +15,8 @@ import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
+import static org.chromium.components.browser_ui.widget.ListItemBuilder.buildSimpleMenuItem;
+
 import android.app.Activity;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
@@ -44,18 +46,23 @@ import org.robolectric.shadows.ShadowLooper;
 import org.chromium.base.Callback;
 import org.chromium.base.supplier.LazyOneshotSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.bookmarks.ImprovedBookmarkRowProperties.ImageVisibility;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.components.browser_ui.widget.BrowserUiListMenuUtils;
 import org.chromium.ui.base.TestActivity;
+import org.chromium.ui.listmenu.BasicListMenu;
+import org.chromium.ui.listmenu.ListMenu;
 import org.chromium.ui.listmenu.ListMenuDelegate;
+import org.chromium.ui.listmenu.ListMenuItemProperties;
+import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
+import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
+import org.chromium.ui.modelutil.ModelListAdapter;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 
 /** Unit tests for {@link ImprovedBookmarkRow}. */
-@Batch(Batch.UNIT_TESTS)
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class ImprovedBookmarkRowTest {
@@ -135,6 +142,18 @@ public class ImprovedBookmarkRowTest {
         mModel.set(ImprovedBookmarkRowProperties.SELECTION_ACTIVE, true);
         mModel.set(ImprovedBookmarkRowProperties.SELECTED, false);
         mModel.set(ImprovedBookmarkRowProperties.SELECTION_ACTIVE, false);
+    }
+
+    private ListMenu buildListMenu() {
+        ModelList listItems = new ModelList();
+        listItems.add(buildSimpleMenuItem(R.string.bookmark_item_select));
+        listItems.add(buildSimpleMenuItem(R.string.bookmark_item_delete));
+        listItems.add(buildSimpleMenuItem(R.string.bookmark_item_edit));
+        listItems.add(buildSimpleMenuItem(R.string.bookmark_item_copy_link));
+        listItems.add(buildSimpleMenuItem(R.string.bookmark_item_move));
+
+        ListMenu.Delegate delegate = (item, view) -> {};
+        return BrowserUiListMenuUtils.getBasicListMenu(mActivity, listItems, delegate);
     }
 
     @Test
@@ -231,6 +250,23 @@ public class ImprovedBookmarkRowTest {
         // Setting the delegate shouldn't affect visibility.
         Assert.assertEquals(
                 visibility, mImprovedBookmarkRow.findViewById(R.id.more).getVisibility());
+    }
+
+    @Test
+    public void testListMenuIncludesCopyLink() {
+        ListMenu menu = buildListMenu();
+        assertTrue(menu instanceof BasicListMenu);
+        ModelListAdapter adapter = ((BasicListMenu) menu).getContentAdapter();
+        boolean found = false;
+        for (int i = 0; i < adapter.getCount(); i++) {
+            ListItem item = (ListItem) adapter.getItem(i);
+            if (item.model.get(ListMenuItemProperties.TITLE_ID)
+                    == R.string.bookmark_item_copy_link) {
+                found = true;
+                break;
+            }
+        }
+        assertTrue(found);
     }
 
     @Test
@@ -366,5 +402,36 @@ public class ImprovedBookmarkRowTest {
 
         assertFalse("Compact rows should also allow shadow drawing.", row.getClipToOutline());
         assertNotNull("Compact rows should have an outline provider.", row.getOutlineProvider());
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.ANDROID_BOOKMARK_BAR_FAST_FOLLOW)
+    public void testDragHandleVisibility() {
+        // Create a new View object to re-run onFinishInflate when the flag is enabled.
+        mImprovedBookmarkRow = ImprovedBookmarkRow.buildView(mActivity, /* isVisual= */ true);
+
+        // Re-bind the binder to use the new View object.
+        PropertyModelChangeProcessor.create(
+                mModel, mImprovedBookmarkRow, ImprovedBookmarkRowViewBinder::bind);
+
+        View dragHandle = mImprovedBookmarkRow.findViewById(R.id.drag_handle);
+
+        assertNotNull("Drag handle should be inflated.", dragHandle);
+
+        mModel.set(ImprovedBookmarkRowProperties.SELECTED, false);
+        // There is an item that is selected in the list but this item is not selected.
+        mModel.set(ImprovedBookmarkRowProperties.SELECTION_ACTIVE, true);
+
+        assertEquals(
+                "Drag handle should be GONE when the item is unselected.",
+                View.GONE,
+                dragHandle.getVisibility());
+
+        mModel.set(ImprovedBookmarkRowProperties.IS_DRAG_ENABLED, true);
+        mModel.set(ImprovedBookmarkRowProperties.SELECTED, true);
+        assertEquals(
+                "Drag handle should be VISIBLE when the item is selected and drag is enabled.",
+                View.VISIBLE,
+                dragHandle.getVisibility());
     }
 }

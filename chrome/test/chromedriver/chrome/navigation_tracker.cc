@@ -65,7 +65,7 @@ class ObjectGroup {
   }
 
   ~ObjectGroup() {
-    base::Value::Dict params;
+    base::DictValue params;
     params.Set("objectGroup", object_group_name_);
     client_->SendCommandAndIgnoreResponse("Runtime.releaseObjectGroup", params);
   }
@@ -137,9 +137,9 @@ Status NavigationTracker::IsPendingNavigation(const Timeout* timeout,
   // navigation. We need to call Runtime.evaluate to force a roundtrip to the
   // renderer process, and make sure that we notice any pending navigations
   // (see crbug.com/524079).
-  base::Value::Dict params;
+  base::DictValue params;
   params.Set("expression", "1");
-  base::Value::Dict result;
+  base::DictValue result;
   Status status = client_->SendCommandAndGetResultWithTimeout(
       "Runtime.evaluate", params, timeout, &result);
   if (status.code() == kDisconnected) {
@@ -183,7 +183,7 @@ Status NavigationTracker::IsPendingNavigation(const Timeout* timeout,
       // Scope for object_group
       ObjectGroup object_group(client_);
 
-      base::Value::Dict eval_params;
+      base::DictValue eval_params;
       eval_params.Set("expression", "document");
       eval_params.Set("objectGroup", object_group.name());
       status = client_->SendCommandAndGetResultWithTimeout(
@@ -196,7 +196,7 @@ Status NavigationTracker::IsPendingNavigation(const Timeout* timeout,
         return MakeNavigationCheckFailedStatus(status);
       }
 
-      base::Value::Dict describe_node_params;
+      base::DictValue describe_node_params;
       describe_node_params.Set("objectId", std::move(*object_id));
       status = client_->SendCommandAndGetResultWithTimeout(
           "DOM.describeNode", describe_node_params, timeout, &result);
@@ -245,9 +245,9 @@ Status NavigationTracker::IsPendingNavigation(const Timeout* timeout,
 
 Status NavigationTracker::CheckFunctionExists(const Timeout* timeout,
                                               bool* exists) {
-  base::Value::Dict params;
+  base::DictValue params;
   params.Set("expression", "typeof(getWindowInfo)");
-  base::Value::Dict result;
+  base::DictValue result;
   Status status = client_->SendCommandAndGetResultWithTimeout(
       "Runtime.evaluate", params, timeout, &result);
   if (status.IsError())
@@ -275,7 +275,7 @@ Status NavigationTracker::OnConnected(DevToolsClient* client) {
 
 Status NavigationTracker::OnEvent(DevToolsClient* client,
                                   const std::string& method,
-                                  const base::Value::Dict& params) {
+                                  const base::DictValue& params) {
   if (client->IsMainPage() &&
       (method == "Page.loadEventFired" ||
        (is_eager_ && method == "Page.domContentEventFired"))) {
@@ -321,7 +321,7 @@ Status NavigationTracker::OnEvent(DevToolsClient* client,
 
 Status NavigationTracker::OnCommandSuccess(DevToolsClient* client,
                                            const std::string& method,
-                                           const base::Value::Dict* result,
+                                           const base::DictValue* result,
                                            const Timeout& command_timeout) {
   // Check if Page.navigate has any error from top frame
   if (method == "Page.navigate" && result) {
@@ -362,9 +362,9 @@ Status NavigationTracker::OnCommandSuccess(DevToolsClient* client,
     // If case #3, the URL will be blank if the navigation hasn't been started
     // yet. In that case, expect a load to happen in the future.
     *loading_state_ = kUnknown;
-    base::Value::Dict params;
+    base::DictValue params;
     params.Set("expression", "document.URL");
-    base::Value::Dict result_dict;
+    base::DictValue result_dict;
     Status status(kOk);
     for (int attempt = 0; attempt < 3; attempt++) {
       status = client_->SendCommandAndGetResultWithTimeout(

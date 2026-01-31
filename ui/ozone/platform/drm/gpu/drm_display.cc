@@ -197,10 +197,19 @@ DrmDisplay::DrmDisplay(const scoped_refptr<DrmDevice>& drm,
   // gfx::DisplayUtil::GetColorSpaceFromEdid
   if (display_snapshot.color_space() == gfx::ColorSpace::CreateHDR10()) {
     output_primaries = SkNamedPrimaries::kRec2020;
-    SetColorspaceProperty(display_snapshot.color_space());
+    SetColorspaceProperty(kColorSpaceBT2020RGBEnumName);
     SetHdrOutputMetadata(display_snapshot.color_space());
   } else {
-    SetColorspaceProperty(gfx::ColorSpace::CreateSRGB());
+    // The interpretation of kColorSpaceDefaultEnumName is left up to the
+    // driver. For some devices, this is assumed to be Rec709. For others,
+    // (especially wide color gamut devices), this is assumed to be P3.
+    // TODO(https://crbug.com/471224089): Remove this feature flag, and
+    // more robustly signal colorimetry.
+    if (base::FeatureList::IsEnabled(
+            display::features::kDrmColorSpaceDefaultIsRec709)) {
+      output_primaries = SkNamedPrimaries::kRec709;
+    }
+    SetColorspaceProperty(kColorSpaceDefaultEnumName);
     ClearHdrOutputMetadata();
   }
   for (const auto& crtc_connector_pair : crtc_connector_pairs_) {
@@ -574,7 +583,7 @@ bool DrmDisplay::SetHdrOutputMetadata(const gfx::ColorSpace color_space) {
   return true;
 }
 
-bool DrmDisplay::SetColorspaceProperty(const gfx::ColorSpace color_space) {
+bool DrmDisplay::SetColorspaceProperty(const char* color_space) {
   for (const auto& crtc_connector_pair : crtc_connector_pairs_) {
     DCHECK(crtc_connector_pair.connector);
 
@@ -596,8 +605,7 @@ bool DrmDisplay::SetColorspaceProperty(const gfx::ColorSpace color_space) {
     }
 
     const uint64_t enum_value_for_colorspace =
-        GetEnumValueForName(*drm_, color_space_property->prop_id,
-                            GetNameForColorspace(color_space));
+        GetEnumValueForName(*drm_, color_space_property->prop_id, color_space);
     if (prop_value == enum_value_for_colorspace) {
       // The connector color space is already set to the desired value
       return true;
@@ -609,8 +617,8 @@ bool DrmDisplay::SetColorspaceProperty(const gfx::ColorSpace color_space) {
     if (!drm_->SetProperty(crtc_connector_pair.connector->connector_id,
                            color_space_property->prop_id,
                            enum_value_for_colorspace)) {
-      PLOG(ERROR) << "Cannot set '" << GetNameForColorspace(color_space)
-                  << "' to '" << kColorSpace << "' property for connector "
+      PLOG(ERROR) << "Cannot set '" << color_space << "' to '" << kColorSpace
+                  << "' property for connector "
                   << crtc_connector_pair.connector->connector_id;
       return false;
     }

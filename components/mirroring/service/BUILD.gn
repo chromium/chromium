@@ -74,8 +74,7 @@ component("mirroring_service") {
   # //third_party/openscreen/src/third_party/protobuf. direct include_dirs
   # takes precedence over those pulled in from configs.
   include_dirs = [ "//third_party/protobuf/src" ]
-  configs +=
-      [ "//third_party/openscreen/src/build_overrides:openscreen_include_dirs" ]
+  configs += [ "//third_party/openscreen/src:include_dirs" ]
   defines = [ "IS_MIRRORING_SERVICE_IMPL" ]
 }
 
@@ -133,8 +132,7 @@ source_set("unittests") {
   # //third_party/openscreen/src/third_party/protobuf. direct include_dirs
   # takes precedence over those pulled in from configs.
   include_dirs = [ "//third_party/protobuf/src" ]
-  configs +=
-      [ "//third_party/openscreen/src/build_overrides:openscreen_include_dirs" ]
+  configs += [ "//third_party/openscreen/src:include_dirs" ]
 
   # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
   # enable the diagnostic by removing this line.

@@ -106,17 +106,17 @@ class ExtensionManagementPrefUpdaterBase {
   void UnsetMinimumVersionRequired(const std::string& id);
 
   // Expose a read-only preference to user.
-  const base::Value::Dict* GetPref();
+  const base::DictValue* GetPref();
 
  protected:
   // Set the preference with `pref`, pass the ownership of it as well.
   // This function must be called before accessing publicly exposed functions,
   // for example in constructor of subclass.
-  void SetPref(base::Value::Dict pref);
+  void SetPref(base::DictValue pref);
 
   // Take the preference. This function must be called after accessing publicly
   // exposed functions, for example in destructor of subclass.
-  base::Value::Dict TakePref();
+  base::DictValue TakePref();
 
  private:
   // Helper functions for manipulating sub properties like list of strings.
@@ -124,7 +124,7 @@ class ExtensionManagementPrefUpdaterBase {
   void AddStringToList(const std::string& path, const std::string& str);
   void RemoveStringFromList(const std::string& path, const std::string& str);
 
-  base::Value::Dict pref_;
+  base::DictValue pref_;
 };
 
 // A helper class to manipulate the extension management preference in unit
@@ -137,7 +137,7 @@ class ExtensionManagementPrefUpdater
       : service_(service) {
     const base::Value* pref_value =
         service_->GetManagedPref(pref_names::kExtensionManagement);
-    base::Value::Dict dict;
+    base::DictValue dict;
     if (pref_value && pref_value->is_dict()) {
       dict = pref_value->GetDict().Clone();
     }

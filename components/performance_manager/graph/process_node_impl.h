@@ -9,7 +9,7 @@
 #include <string>
 #include <variant>
 
-#include "base/byte_count.h"
+#include "base/byte_size.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/process/process.h"
@@ -80,7 +80,8 @@ class ProcessNodeImpl
   explicit ProcessNodeImpl(BrowserProcessNodeTag tag);
 
   // Constructor for a renderer process.
-  ProcessNodeImpl(RenderProcessHostProxy proxy, base::TaskPriority priority);
+  ProcessNodeImpl(RenderProcessHostProxy proxy,
+                  base::Process::Priority priority);
 
   // Constructor for a non-renderer child process.
   ProcessNodeImpl(content::ProcessType process_type,
@@ -126,14 +127,14 @@ class ProcessNodeImpl
   std::optional<int32_t> GetExitStatus() const override;
   const std::string& GetMetricsName() const override;
   bool GetMainThreadTaskLoadIsLow() const override;
-  base::ByteCount GetPrivateFootprint() const override;
-  base::ByteCount GetResidentSet() const override;
-  base::ByteCount GetPrivateSwap() const override;
+  base::ByteSize GetPrivateFootprint() const override;
+  base::ByteSize GetResidentSet() const override;
+  base::ByteSize GetPrivateSwap() const override;
   RenderProcessHostId GetRenderProcessHostId() const override;
   const RenderProcessHostProxy& GetRenderProcessHostProxy() const override;
   const BrowserChildProcessHostProxy& GetBrowserChildProcessHostProxy()
       const override;
-  base::TaskPriority GetPriority() const override;
+  base::Process::Priority GetPriority() const override;
   ContentTypes GetHostedContentTypes() const override;
 
   // Private implementation properties.
@@ -145,15 +146,15 @@ class ProcessNodeImpl
   void SetProcessMetricsName(const std::string& metrics_name);
   void SetProcess(base::Process process, base::TimeTicks launch_time);
 
-  void set_private_footprint(base::ByteCount private_footprint) {
+  void set_private_footprint(base::ByteSize private_footprint) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     private_footprint_ = private_footprint;
   }
-  void set_resident_set(base::ByteCount resident_set) {
+  void set_resident_set(base::ByteSize resident_set) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     resident_set_ = resident_set;
   }
-  void set_private_swap(base::ByteCount private_swap) {
+  void set_private_swap(base::ByteSize private_swap) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     private_swap_ = private_swap;
   }
@@ -170,7 +171,7 @@ class ProcessNodeImpl
   // Invoked when the worker is removed from the graph.
   void RemoveWorker(WorkerNodeImpl* worker_node);
 
-  void set_priority(base::TaskPriority priority);
+  void set_priority(base::Process::Priority priority);
 
   // Adds a new type of hosted content to the |hosted_content_types| bit field.
   void add_hosted_content_type(ContentType content_type);
@@ -202,7 +203,7 @@ class ProcessNodeImpl
   // Shared constructor for all process types.
   ProcessNodeImpl(content::ProcessType process_type,
                   AnyChildProcessHostProxy proxy,
-                  base::TaskPriority priority);
+                  base::Process::Priority priority);
 
   // Rest of ProcessNode implementation. These are private so that users of the
   // impl use the private getters rather than the public interface.
@@ -224,9 +225,9 @@ class ProcessNodeImpl
   mojo::Receiver<mojom::ChildProcessCoordinationUnit> child_process_receiver_
       GUARDED_BY_CONTEXT(sequence_checker_){this};
 
-  base::ByteCount private_footprint_ GUARDED_BY_CONTEXT(sequence_checker_);
-  base::ByteCount resident_set_ GUARDED_BY_CONTEXT(sequence_checker_);
-  base::ByteCount private_swap_ GUARDED_BY_CONTEXT(sequence_checker_);
+  base::ByteSize private_footprint_ GUARDED_BY_CONTEXT(sequence_checker_);
+  base::ByteSize resident_set_ GUARDED_BY_CONTEXT(sequence_checker_);
+  base::ByteSize private_swap_ GUARDED_BY_CONTEXT(sequence_checker_);
 
   base::ProcessId process_id_ GUARDED_BY_CONTEXT(sequence_checker_) =
       base::kNullProcessId;
@@ -261,9 +262,9 @@ class ProcessNodeImpl
   // Initially high priority until the first execution context it hosts
   // determine the right priority.
   ObservedProperty::NotifiesOnlyOnChangesWithPreviousValue<
-      base::TaskPriority,
+      base::Process::Priority,
       &ProcessNodeObserver::OnPriorityChanged,
-      TracedWrapper<base::TaskPriority>>
+      TracedWrapper<base::Process::Priority>>
       priority_ GUARDED_BY_CONTEXT(sequence_checker_);
 
   // A bit field that indicates which type of content this process has hosted,

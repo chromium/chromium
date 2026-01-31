@@ -28,7 +28,6 @@ import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 import org.robolectric.RuntimeEnvironment;
 import org.robolectric.annotation.Config;
-import org.robolectric.shadows.ShadowLog;
 
 import org.chromium.android_webview.AwDisplayModeController;
 import org.chromium.base.Log;
@@ -65,9 +64,7 @@ public class AwDisplayModeControllerTest {
 
     private AwDisplayModeController mController;
 
-    public AwDisplayModeControllerTest() {
-        if (DEBUG) ShadowLog.stream = System.out; // allows logging
-    }
+    public AwDisplayModeControllerTest() {}
 
     @Before
     public void setUp() {

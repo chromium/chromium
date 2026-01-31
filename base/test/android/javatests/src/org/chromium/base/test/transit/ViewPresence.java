@@ -1,0 +1,87 @@
+// Copyright 2025 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+package org.chromium.base.test.transit;
+
+import static org.chromium.base.test.transit.ViewSpec.viewSpec;
+
+import android.view.View;
+
+import androidx.test.espresso.ViewAction;
+import androidx.test.espresso.ViewAssertion;
+import androidx.test.espresso.ViewInteraction;
+
+import org.hamcrest.Matcher;
+
+import org.chromium.build.annotations.NullMarked;
+
+/**
+ * A {@link State} that contains a single {@link ViewElement}.
+ *
+ * @param <ViewT> the type of the View.
+ */
+@NullMarked
+public class ViewPresence<ViewT extends View> extends State implements ViewInterface {
+    public final ViewElement<ViewT> viewElement;
+
+    /**
+     * Constructor. Optionally, use the convenience #create() methods.
+     *
+     * @param viewSpec the {@link ViewSpec} with class and matcher that specify the View.
+     * @param options the {@link ViewElement.Options} for the ViewElement.
+     */
+    public ViewPresence(ViewSpec<ViewT> viewSpec, ViewElement.Options options) {
+        super();
+        viewElement = declareView(viewSpec.getViewClass(), viewSpec.getViewMatcher(), options);
+    }
+
+    /**
+     * Convenience method to create a {@link ViewPresence} from Class + Matcher instead of ViewSpec.
+     */
+    public static <ViewT extends View> ViewPresence<ViewT> create(
+            Class<ViewT> viewClass, Matcher<View> viewMatcher, ViewElement.Options options) {
+        return new ViewPresence<>(viewSpec(viewClass, viewMatcher), options);
+    }
+
+    /**
+     * Returns the View associated with this {@link ViewPresence}.
+     *
+     * <p>Ensures the View has been found previously (by transitioning into this {@link
+     * ViewPresence}).
+     */
+    public ViewT getView() {
+        return viewElement.value();
+    }
+
+    @Override
+    public TripBuilder clickTo() {
+        return viewElement.clickTo();
+    }
+
+    @Override
+    public TripBuilder longPressTo() {
+        return viewElement.longPressTo();
+    }
+
+    @Override
+    public TripBuilder typeTextTo(String text) {
+        return viewElement.typeTextTo(text);
+    }
+
+    @Override
+    public TripBuilder performViewActionTo(ViewAction action) {
+        return viewElement.performViewActionTo(action);
+    }
+
+    @Override
+    public void check(ViewAssertion assertion) {
+        viewElement.check(assertion);
+    }
+
+    @Deprecated
+    @Override
+    public ViewInteraction onView() {
+        return viewElement.onView();
+    }
+}

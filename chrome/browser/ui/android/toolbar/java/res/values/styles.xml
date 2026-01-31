@@ -29,7 +29,7 @@ found in the LICENSE file.
     <style name="LocationBarActionButtonForFakeSearchBox" parent="LocationBarActionButton">
         <item name="android:layout_height">@dimen/location_bar_action_icon_width</item>
         <item name="android:layout_width">@dimen/location_bar_action_icon_width</item>
-        <item name="android:background">@drawable/single_tab_card_ripple</item>
+        <item name="android:background">@drawable/fake_search_box_action_button_background</item>
     </style>
     <style name="ToolbarButton">
         <item name="android:background">?attr/selectableItemBackground</item>

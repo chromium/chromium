@@ -94,7 +94,7 @@ public class ChromeActionModeHandler {
 
         new ActivityTabProvider.ActivityTabTabObserver(activityTabProvider) {
             @Override
-            public void onObservingDifferentTab(@Nullable Tab tab, boolean hint) {
+            public void onObservingDifferentTab(@Nullable Tab tab) {
                 // ActivityTabProvider will null out the tab passed to onObservingDifferentTab when
                 // the tab is non-interactive (e.g. when entering the TabSwitcher), but in those
                 // cases we actually still want to use the most recently selected tab.

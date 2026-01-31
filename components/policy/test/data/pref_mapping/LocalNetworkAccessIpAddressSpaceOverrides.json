@@ -1,0 +1,24 @@
+[
+  {
+    "os": [
+      "win",
+      "linux",
+      "mac",
+      "chromeos",
+      "android"
+    ],
+    "simple_policy_pref_mapping_test": {
+      "pref_name": "managed_local_network_access_ip_address_space_overrides",
+      "pref_location": "local_state",
+      "default_value": [],
+      "values_to_test": [
+        [
+            "100.64.0.0/10=public",
+            "[2001:db8::]/32=local",
+            "192.168.0.1:8000=public",
+            "[2001:DB8::8:800:200C:417A]:8080=local"
+        ]
+      ]
+    }
+  }
+]

@@ -152,6 +152,15 @@ class PLATFORM_EXPORT GeometryMapper {
       FloatClipRect& mapping_rect,
       OverlayScrollbarClipBehavior = kIgnoreOverlayScrollbarSize,
       VisualRectFlags flags = kDefaultVisualRectFlags);
+  // Maps |local_state| to the local root's viewport using the GeometryMapper
+  // fast path. This stops at the remote boundary; callers must perform any
+  // remote-frame mapping (e.g. MapToVisualRectInRemoteRootFrame) to reach the
+  // embedder's viewport.
+  static bool LocalToLocalRootViewportRect(
+      const PropertyTreeState& local_state,
+      FloatClipRect& mapping_rect,
+      OverlayScrollbarClipBehavior = kIgnoreOverlayScrollbarSize,
+      VisualRectFlags flags = kDefaultVisualRectFlags);
 
   static bool MightOverlapForCompositing(const gfx::RectF& rect1,
                                          const PropertyTreeState& state1,

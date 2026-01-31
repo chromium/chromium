@@ -7,16 +7,17 @@
 #include <jni.h>
 
 #include "base/android/jni_string.h"
-#include "base/byte_count.h"
+#include "base/byte_size.h"
+#include "base/numerics/safe_conversions.h"
 #include "ui/android/ui_android_jni_headers/BytesFormatting_jni.h"
 
 namespace ui {
 
 static jni_zero::ScopedJavaLocalRef<jstring> JNI_BytesFormatting_FormatSpeed(
     JNIEnv* env,
-    jlong speed) {
+    int64_t speed) {
   return base::android::ConvertUTF16ToJavaString(
-      env, FormatSpeed(base::ByteCount(speed)));
+      env, FormatSpeed(base::ByteSize(base::checked_cast<uint64_t>(speed))));
 }
 
 }  // namespace ui

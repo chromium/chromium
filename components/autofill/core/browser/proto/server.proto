@@ -240,8 +240,7 @@ message ThreeBitHashedFieldMetadata {
   // Input field placeholder attribute hash.
   optional int32 placeholder = 7;
 
-  // Input field initial value hash.
-  optional int32 initial_value = 8;
+  reserved 8;
 
   // Input field autocomplete attribute hash.
   optional int32 autocomplete = 9;
@@ -258,8 +257,7 @@ message ThreeBitHashedFormMetadata {
   // Form element name attribute hash.
   optional int32 name = 2;
 
-  // Form element action attribute hash.
-  optional int32 action = 3;
+  reserved 3;
 
   // Hash of all button titles in the form.
   optional int32 button_titles_concatenated = 4;

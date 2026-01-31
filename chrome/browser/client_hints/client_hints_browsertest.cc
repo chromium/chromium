@@ -11,7 +11,6 @@
 
 #include "base/base_switches.h"
 #include "base/command_line.h"
-#include "base/containers/contains.h"
 #include "base/containers/fixed_flat_set.h"
 #include "base/dcheck_is_on.h"
 #include "base/feature_list.h"
@@ -245,9 +244,7 @@ bool IsSimilarToIntABNF(const std::string& header_value) {
   return true;
 }
 
-// User agent minor version matches "0.X.0" which depends on reduced UA
-// through kReduceUserAgentMinorVersion experiment, currently the reduced minor
-// version is "0.0.0".
+// Checks that the user agent minor version matches "0.0.0"
 void CheckUserAgentMinorVersion(const std::string& user_agent_value,
                                 const bool expected_ua_reduced) {
   // A regular expression that matches Chrome/{major_version}.{minor_version}
@@ -256,19 +253,13 @@ void CheckUserAgentMinorVersion(const std::string& user_agent_value,
       "Chrome/[0-9]+\\.([0-9]+\\.[0-9]+\\.[0-9]+)";
   // The minor version in the reduced UA string is always "0.0.0".
   static constexpr char kReducedMinorVersion[] = "0.0.0";
-  // The minor version in the ReduceUserAgentMinorVersion experiment is always
-  // "0.X.0", where X is the frozen build version.
-  const std::string kReduceUserAgentMinorVersion =
-      "0." +
-      std::string(blink::features::kUserAgentFrozenBuildVersion.Get().data()) +
-      ".0";
 
   std::string minor_version;
   EXPECT_TRUE(re2::RE2::PartialMatch(user_agent_value, kChromeVersionRegex,
                                      &minor_version));
 
   if (expected_ua_reduced) {
-    EXPECT_EQ(minor_version, kReduceUserAgentMinorVersion);
+    EXPECT_EQ(minor_version, kReducedMinorVersion);
   } else {
     EXPECT_NE(minor_version, kReducedMinorVersion);
   }
@@ -1205,7 +1196,7 @@ class ClientHintsBrowserTest : public policy::PolicyTest {
 
     for (const auto& elem : network::GetClientHintToNameMap()) {
       const auto& header = elem.second;
-      if (base::Contains(request.headers, header)) {
+      if (request.headers.contains(header)) {
         base::AutoLock lock(count_headers_lock_);
         // The user agent hint is special:
         if (header == "sec-ch-ua") {
@@ -1241,7 +1232,7 @@ class ClientHintsBrowserTest : public policy::PolicyTest {
         continue;
       }
 
-      EXPECT_EQ(expect_client_hints, base::Contains(request.headers, header));
+      EXPECT_EQ(expect_client_hints, request.headers.contains(header));
     }
   }
 
@@ -2959,9 +2950,9 @@ IN_PROC_BROWSER_TEST_F(ClientHintsBrowserTest,
       HostContentSettingsMapFactory::GetForProfile(browser()->profile());
 
   // Add setting for the host.
-  base::Value::List client_hints_list;
+  base::ListValue client_hints_list;
   client_hints_list.Append(42 /* client hint value */);
-  base::Value::Dict client_hints_dictionary;
+  base::DictValue client_hints_dictionary;
   client_hints_dictionary.Set(client_hints::kClientHintsSettingKey,
                               base::Value(std::move(client_hints_list)));
   host_content_settings_map->SetWebsiteSettingDefaultScope(
@@ -3740,14 +3731,14 @@ IN_PROC_BROWSER_TEST_F(CriticalClientHintsBrowserTest,
       ->GetClientHintsControllerDelegate()
       ->ForceEmptyViewportSizeForTesting(true);
   // Add setting for the host.
-  base::Value::List client_hints_list;
+  base::ListValue client_hints_list;
   client_hints_list.Append(
       static_cast<int>(network::mojom::WebClientHintsType::kViewportHeight));
   client_hints_list.Append(
       static_cast<int>(network::mojom::WebClientHintsType::kViewportWidth));
   client_hints_list.Append(static_cast<int>(
       network::mojom::WebClientHintsType::kViewportWidth_DEPRECATED));
-  base::Value::Dict client_hints_dictionary;
+  base::DictValue client_hints_dictionary;
   client_hints_dictionary.Set(client_hints::kClientHintsSettingKey,
                               base::Value(std::move(client_hints_list)));
   HostContentSettingsMap* host_content_settings_map =
@@ -4052,16 +4043,15 @@ class ClientHintsBrowserTestWithEmulatedMedia
   ~ClientHintsBrowserTestWithEmulatedMedia() override = default;
 
   void MonitorResourceRequest(const net::test_server::HttpRequest& request) {
-    if (base::Contains(request.headers, "sec-ch-prefers-color-scheme")) {
+    if (request.headers.contains("sec-ch-prefers-color-scheme")) {
       prefers_color_scheme_observed_ =
           request.headers.at("sec-ch-prefers-color-scheme");
     }
-    if (base::Contains(request.headers, "sec-ch-prefers-reduced-motion")) {
+    if (request.headers.contains("sec-ch-prefers-reduced-motion")) {
       prefers_reduced_motion_observed_ =
           request.headers.at("sec-ch-prefers-reduced-motion");
     }
-    if (base::Contains(request.headers,
-                       "sec-ch-prefers-reduced-transparency")) {
+    if (request.headers.contains("sec-ch-prefers-reduced-transparency")) {
       prefers_reduced_transparency_observed_ =
           request.headers.at("sec-ch-prefers-reduced-transparency");
     }
@@ -4084,7 +4074,7 @@ class ClientHintsBrowserTestWithEmulatedMedia
   void EmulateMedia(std::string_view string) {
     base::Value features = base::test::ParseJson(string);
     DCHECK(features.is_list());
-    base::Value::Dict params;
+    base::DictValue params;
     params.Set("features", std::move(features));
     SendCommandSync("Emulation.setEmulatedMedia", std::move(params));
   }
@@ -4224,27 +4214,27 @@ IN_PROC_BROWSER_TEST_F(ClientHintsUserAgentOverrideDevTools,
 
   Attach();
 
-  base::Value::Dict params;
+  base::DictValue params;
   params.Set("userAgent", "MyTestAgent/2.0");
 
-  base::Value::Dict metadata;
-  base::Value::List brands;
-  base::Value::Dict brand1;
+  base::DictValue metadata;
+  base::ListValue brands;
+  base::DictValue brand1;
   brand1.Set("brand", "My Fake Browser");
   brand1.Set("version", "101");
   brands.Append(std::move(brand1));
-  base::Value::Dict brand2;
+  base::DictValue brand2;
   brand2.Set("brand", "Chromium");
   brand2.Set("version", "101");
   brands.Append(std::move(brand2));
   metadata.Set("brands", std::move(brands));
 
-  base::Value::List full_version_list;
-  base::Value::Dict fv_brand1;
+  base::ListValue full_version_list;
+  base::DictValue fv_brand1;
   fv_brand1.Set("brand", "My Fake Browser");
   fv_brand1.Set("version", "101.0.1234.0");
   full_version_list.Append(std::move(fv_brand1));
-  base::Value::Dict fv_brand2;
+  base::DictValue fv_brand2;
   fv_brand2.Set("brand", "Chromium");
   fv_brand2.Set("version", "101.0.5555.0");
   full_version_list.Append(std::move(fv_brand2));
@@ -4259,7 +4249,7 @@ IN_PROC_BROWSER_TEST_F(ClientHintsUserAgentOverrideDevTools,
   metadata.Set("bitness", "64");
   metadata.Set("wow64", false);
 
-  base::Value::List form_factors;
+  base::ListValue form_factors;
   form_factors.Append(blink::kDesktopFormFactor);
   form_factors.Append(blink::kEInkFormFactor);
 
@@ -4295,9 +4285,9 @@ IN_PROC_BROWSER_TEST_F(ClientHintsUserAgentOverrideDevTools,
 
   Attach();
 
-  base::Value::Dict params;
-  base::Value::Dict metadata;
-  base::Value::List form_factors;
+  base::DictValue params;
+  base::DictValue metadata;
+  base::ListValue form_factors;
   form_factors.Append("InvalidFormfactor");
 
   metadata.Set("formFactors", std::move(form_factors));

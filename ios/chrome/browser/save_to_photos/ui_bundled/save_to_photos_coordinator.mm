@@ -20,11 +20,11 @@
 #import "ios/chrome/browser/shared/coordinator/alert/alert_coordinator.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
-#import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/google_one_commands.h"
 #import "ios/chrome/browser/shared/public/commands/manage_storage_alert_commands.h"
 #import "ios/chrome/browser/shared/public/commands/save_to_photos_commands.h"
+#import "ios/chrome/browser/shared/public/commands/scene_commands.h"
 #import "ios/chrome/browser/shared/public/commands/show_signin_command.h"
 #import "ios/chrome/browser/shared/public/commands/snackbar_commands.h"
 #import "ios/chrome/browser/signin/model/chrome_account_manager_service.h"
@@ -79,8 +79,8 @@
                            forProtocol:@protocol(ManageStorageAlertCommands)];
   id<ManageStorageAlertCommands> manageStorageAlertHandler =
       HandlerForProtocol(dispatcher, ManageStorageAlertCommands);
-  id<ApplicationCommands> applicationHandler =
-      HandlerForProtocol(dispatcher, ApplicationCommands);
+  id<SceneCommands> sceneHandler =
+      HandlerForProtocol(dispatcher, SceneCommands);
   id<GoogleOneCommands> googleOneHandler =
       HandlerForProtocol(dispatcher, GoogleOneCommands);
   ProfileIOS* profile = self.profile;
@@ -96,7 +96,7 @@
           accountManagerService:accountManagerService
                 identityManager:identityManager
       manageStorageAlertHandler:manageStorageAlertHandler
-             applicationHandler:applicationHandler
+                   sceneHandler:sceneHandler
                googleOneHandler:googleOneHandler];
   _mediator.delegate = self;
   [_mediator startWithImageURL:_imageURL

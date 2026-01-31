@@ -4,6 +4,7 @@
 
 #include "extensions/browser/process_map.h"
 
+#include <algorithm>
 #include <memory>
 #include <string_view>
 #include <vector>
@@ -23,6 +24,7 @@
 #include "content/public/test/test_navigation_observer.h"
 #include "extensions/browser/app_window/app_window.h"
 #include "extensions/browser/app_window/app_window_registry.h"
+#include "extensions/browser/browsertest_util.h"
 #include "extensions/browser/guest_view/web_view/web_view_guest.h"
 #include "extensions/common/constants.h"
 #include "extensions/common/mojom/context_type.mojom.h"
@@ -102,31 +104,9 @@ class ProcessMapBrowserTest : public ExtensionBrowserTest {
   }
 
   void ExecuteUserScriptInActiveTab(const ExtensionId& extension_id) {
-    base::RunLoop run_loop;
     content::WebContents* web_contents = GetActiveWebContents();
-    // TODO(crbug.com/40262660): Add a utility method for user script
-    // injection in browser tests.
-    ScriptExecutor script_executor(web_contents);
-    std::vector<mojom::JSSourcePtr> sources;
-    sources.push_back(
-        mojom::JSSource::New("document.title = 'injected';", GURL()));
-    script_executor.ExecuteScript(
-        mojom::HostID(mojom::HostID::HostType::kExtensions, extension_id),
-        mojom::CodeInjection::NewJs(mojom::JSInjection::New(
-            std::move(sources), mojom::ExecutionWorld::kUserScript,
-            /*world_id=*/std::nullopt,
-            blink::mojom::WantResultOption::kWantResult,
-            blink::mojom::UserActivationOption::kDoNotActivate,
-            blink::mojom::PromiseResultOption::kAwait)),
-        ScriptExecutor::SPECIFIED_FRAMES, {ExtensionApiFrameIdMap::kTopFrameId},
-        mojom::MatchOriginAsFallbackBehavior::kNever,
-        mojom::RunLocation::kDocumentIdle, ScriptExecutor::DEFAULT_PROCESS,
-        GURL() /* webview_src */,
-        base::IgnoreArgs<std::vector<ScriptExecutor::FrameResult>>(
-            run_loop.QuitWhenIdleClosure()));
-
-    run_loop.Run();
-
+    browsertest_util::ExecuteUserScript(web_contents, extension_id,
+                                        "document.title = 'injected';");
     EXPECT_EQ(u"injected", web_contents->GetTitle());
   }
 
@@ -513,7 +493,7 @@ class ProcessMapBrowserTest : public ExtensionBrowserTest {
                    << (extension ? extension->name() : "<no extension>")
                    << ", Debug String: " << debug_string);
       bool expected_to_be_allowed =
-          base::Contains(allowed_contexts, context_type);
+          std::ranges::contains(allowed_contexts, context_type);
       EXPECT_EQ(expected_to_be_allowed,
                 process_map()->CanProcessHostContextType(extension, process,
                                                          context_type));

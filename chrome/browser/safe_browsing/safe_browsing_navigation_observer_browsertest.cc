@@ -3113,7 +3113,7 @@ IN_PROC_BROWSER_TEST_F(SBNavigationObserverBrowserTest,
   std::string test_server_ip(embedded_test_server()->host_port_pair().host());
 
   // Add URLs to the Safe Browsing allowlist.
-  base::Value::List allowlist;
+  base::ListValue allowlist;
   allowlist.Append(initial_url.GetHost());
   allowlist.Append(multi_frame_test_url.GetHost());
   allowlist.Append(iframe_url.GetHost());
@@ -3187,7 +3187,7 @@ IN_PROC_BROWSER_TEST_F(SBNavigationObserverBrowserTest,
   std::string test_server_ip(embedded_test_server()->host_port_pair().host());
 
   // Add URLs to the Safe Browsing allowlist.
-  base::Value::List allowlist;
+  base::ListValue allowlist;
   allowlist.Append(initial_url.GetHost());
   allowlist.Append(download_url.GetHost());
   allowlist.Append(request_url.GetHost());
@@ -3221,7 +3221,7 @@ IN_PROC_BROWSER_TEST_F(SBNavigationObserverBrowserTest,
   std::string test_server_ip(embedded_test_server()->host_port_pair().host());
 
   // Add URLs to the Safe Browsing allowlist.
-  base::Value::List allowlist;
+  base::ListValue allowlist;
   allowlist.Append(initial_url.GetHost());
   allowlist.Append(download_url.GetHost());
   browser()->profile()->GetPrefs()->SetList(

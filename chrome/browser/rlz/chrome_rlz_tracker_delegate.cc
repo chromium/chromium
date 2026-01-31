@@ -4,9 +4,10 @@
 
 #include "chrome/browser/rlz/chrome_rlz_tracker_delegate.h"
 
+#include <algorithm>
+
 #include "base/check.h"
 #include "base/command_line.h"
-#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/notreached.h"
 #include "base/strings/string_number_conversions.h"
@@ -99,8 +100,8 @@ bool ChromeRLZTrackerDelegate::IsGoogleInStartpages(Profile* profile) {
       StartupBrowserCreator::GetSessionStartupPref(
           *base::CommandLine::ForCurrentProcess(), profile);
   if (session_startup_prefs.type == SessionStartupPref::URLS) {
-    is_google_in_startpages = base::Contains(session_startup_prefs.urls, true,
-                                             google_util::IsGoogleHomePageUrl);
+    is_google_in_startpages = std::ranges::contains(
+        session_startup_prefs.urls, true, google_util::IsGoogleHomePageUrl);
   }
   return is_google_in_startpages;
 }

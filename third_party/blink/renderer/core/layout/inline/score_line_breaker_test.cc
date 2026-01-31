@@ -174,7 +174,7 @@ TEST_P(BlockInInlineTest, BeforeAfter) {
   const int test_index = GetParam();
   const bool has_before = test_index & 1;
   const bool has_after = test_index & 2;
-  SetBodyInnerHTML(String::Format(
+  SetBodyInnerHTML(UNSAFE_TODO(String::Format(
       R"HTML(
     <!DOCTYPE html>
     <style>
@@ -191,7 +191,7 @@ TEST_P(BlockInInlineTest, BeforeAfter) {
     </div>
   )HTML",
       has_before ? "Before 89 1234 6789 1234 6789 1234 6789 12" : "",
-      has_after ? "After 789 1234 6789 1234 6789 1234 6789 12" : ""));
+      has_after ? "After 789 1234 6789 1234 6789 1234 6789 12" : "")));
   const InlineNode node = GetInlineNodeByElementId("target");
   const LayoutUnit width = FragmentWidth(node);
   ConstraintSpace space = ConstraintSpaceForAvailableSize(width);

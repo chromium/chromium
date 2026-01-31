@@ -32,9 +32,9 @@ void TabBrowserControlsConstraintsHelper::OnDestroyed(JNIEnv* env) {
 void TabBrowserControlsConstraintsHelper::UpdateState(
     JNIEnv* env,
     const JavaRef<jobject>& jweb_contents,
-    jint constraints,
-    jint current,
-    jboolean animate,
+    int32_t constraints,
+    int32_t current,
+    bool animate,
     const JavaRef<jobject>& joffset_tag_modifications) {
   cc::BrowserControlsState constraints_state =
       static_cast<cc::BrowserControlsState>(constraints);
@@ -53,7 +53,7 @@ void TabBrowserControlsConstraintsHelper::UpdateState(
                                            animate, offset_tag_modifications);
 }
 
-static jlong JNI_TabBrowserControlsConstraintsHelper_Init(
+static int64_t JNI_TabBrowserControlsConstraintsHelper_Init(
     JNIEnv* env,
     const JavaRef<jobject>& obj) {
   return reinterpret_cast<intptr_t>(

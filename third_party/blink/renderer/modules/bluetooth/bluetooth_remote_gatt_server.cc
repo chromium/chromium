@@ -85,9 +85,6 @@ void BluetoothRemoteGATTServer::Trace(Visitor* visitor) const {
 void BluetoothRemoteGATTServer::ConnectCallback(
     ScriptPromiseResolver<BluetoothRemoteGATTServer>* resolver,
     mojom::blink::WebBluetoothResult result) {
-  if (!resolver->GetExecutionContext() ||
-      resolver->GetExecutionContext()->IsContextDestroyed())
-    return;
 
   if (base::FeatureList::IsEnabled(
           blink::features::kWebBluetoothCancelConnect)) {

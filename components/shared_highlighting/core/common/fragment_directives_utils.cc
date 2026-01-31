@@ -28,7 +28,7 @@ base::Value ParseTextFragments(const GURL& url) {
   if (fragments.empty())
     return {};
 
-  base::Value::List parsed;
+  base::ListValue parsed;
   for (const std::string& fragment : fragments) {
     std::optional<TextFragment> opt_frag =
         TextFragment::FromEscapedString(fragment);

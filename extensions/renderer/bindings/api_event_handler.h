@@ -77,7 +77,7 @@ class APIEventHandler {
   // after this!
   void FireEventInContext(const std::string& event_name,
                           v8::Local<v8::Context> context,
-                          const base::Value::List& arguments,
+                          const base::ListValue& arguments,
                           mojom::EventFilteringInfoPtr filter);
   void FireEventInContext(const std::string& event_name,
                           v8::Local<v8::Context> context,

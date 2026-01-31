@@ -936,24 +936,6 @@ TEST_F(BtmBounceDetectorTest, Histograms_UMA) {
       .Finish(true);
   EndPendingRedirectChain();
 
-  base::HistogramTester::CountsMap expected_counts;
-  expected_counts["Privacy.DIPS.BounceCategoryClient.Block3PC"] = 1;
-  expected_counts["Privacy.DIPS.BounceCategoryServer.Block3PC"] = 1;
-  EXPECT_THAT(histograms.GetTotalCountsForPrefix("Privacy.DIPS.BounceCategory"),
-              testing::ContainerEq(expected_counts));
-  // Verify the proper values were recorded. b.test has user engagement and read
-  // cookies, while c.test has no user engagement and wrote cookies.
-  EXPECT_THAT(
-      histograms.GetAllSamples("Privacy.DIPS.BounceCategoryClient.Block3PC"),
-      testing::ElementsAre(
-          // b.test
-          Bucket((int)BtmRedirectCategory::kReadCookies_HasEngagement, 1)));
-  EXPECT_THAT(
-      histograms.GetAllSamples("Privacy.DIPS.BounceCategoryServer.Block3PC"),
-      testing::ElementsAre(
-          // c.test
-          Bucket((int)BtmRedirectCategory::kWriteCookies_NoEngagement, 1)));
-
   // Verify the time-to-bounce metric was recorded for the client bounce.
   histograms.ExpectBucketCount(
       "Privacy.DIPS.TimeFromNavigationCommitToClientBounce",

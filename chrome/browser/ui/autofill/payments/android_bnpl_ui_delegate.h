@@ -30,8 +30,6 @@ class PaymentsAutofillClient;
 struct BnplIssuerTosDetail {
  public:
   BnplIssuerTosDetail(BnplIssuer::IssuerId issuer_id,
-                      int header_icon_id,
-                      int header_icon_id_dark,
                       bool is_linked_issuer,
                       std::u16string issuer_name,
                       std::vector<LegalMessageLine> legal_message_lines);
@@ -44,12 +42,6 @@ struct BnplIssuerTosDetail {
 
   // Issuer that the ToS screen is being shown for.
   BnplIssuer::IssuerId issuer_id;
-
-  // Icon shown in the screen title.
-  int header_icon_id;
-
-  // Icon shown in the screen title in dark mode.
-  int header_icon_id_dark;
 
   // True if the selected issuer is a linked issuer.
   bool is_linked_issuer;
@@ -74,7 +66,8 @@ class AndroidBnplUiDelegate : public BnplUiDelegate {
   void ShowSelectBnplIssuerUi(
       std::vector<BnplIssuerContext> bnpl_issuer_context,
       std::string app_locale,
-      base::OnceCallback<void(autofill::BnplIssuer)> selected_issuer_callback,
+      base::RepeatingCallback<void(autofill::BnplIssuer)>
+          selected_issuer_callback,
       base::OnceClosure cancel_callback,
       bool has_seen_ai_terms) override;
   void UpdateBnplIssuerDialogUi(
@@ -88,11 +81,6 @@ class AndroidBnplUiDelegate : public BnplUiDelegate {
                       base::OnceClosure cancel_callback) override;
   void CloseProgressUi(bool credit_card_fetched_successfully) override;
   void ShowAutofillErrorUi(AutofillErrorDialogContext context) override;
-
-  // Returns icons for showing BNPL issuer ToS screen based on the selected
-  // issuer.
-  static int GetDuoBrandedIconForBnplIssuer(BnplIssuer::IssuerId issuer_id,
-                                            bool is_dark_mode);
 
  private:
   const raw_ref<PaymentsAutofillClient> client_;

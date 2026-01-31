@@ -1,10 +1,12 @@
 include_rules = [
+  # keep-sorted start
 "+ios/chrome/browser/bubble/model/utils.h",
 "+ios/chrome/browser/content_settings/model",
 "+ios/chrome/browser/discover_feed/model",
 "+ios/chrome/browser/discover_feed/model/discover_feed_service_factory.h",
 "+ios/chrome/browser/feature_engagement/model/tracker_factory.h",
 "+ios/chrome/browser/fullscreen/ui_bundled",
+"+ios/chrome/browser/intelligence/bwg/utils/bwg_constants.h",
 "+ios/chrome/browser/intelligence/features",
 "+ios/chrome/browser/metrics/model/metrics_app_interface.h",
 "+ios/chrome/browser/ntp/shared/metrics",
@@ -12,4 +14,5 @@ include_rules = [
 "+ios/chrome/browser/overlays/model",
 "+ios/chrome/browser/reader_mode/model/features.h",
 "+ios/chrome/browser/segmentation_platform/model/segmentation_platform_service_factory.h",
+  # keep-sorted end
 ]

@@ -7,11 +7,11 @@
 
 #include "base/no_destructor.h"
 #include "base/scoped_observation.h"
-#include "chrome/browser/extensions/forced_extensions/install_stage_tracker.h"
 #include "components/keyed_service/content/browser_context_keyed_service_factory.h"
 #include "content/public/browser/browser_context.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_registry_observer.h"
+#include "extensions/browser/forced_extensions/install_stage_tracker.h"
 #include "extensions/buildflags/buildflags.h"
 
 static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));

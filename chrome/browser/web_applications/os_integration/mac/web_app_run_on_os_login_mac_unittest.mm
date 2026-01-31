@@ -34,7 +34,6 @@ namespace web_app {
 
 namespace {
 
-constexpr char kFakeChromeBundleId[] = "fake.cfbundleidentifier";
 constexpr char16_t kAppTitle[] = u"app";
 
 class WebAppAutoLoginUtilMock : public WebAppAutoLoginUtil {
@@ -79,7 +78,6 @@ class WebAppRunOnOsLoginMacTest : public WebAppTest {
  public:
   void SetUp() override {
     WebAppTest::SetUp();
-    base::apple::SetBaseBundleIDOverride(kFakeChromeBundleId);
 
     override_registration_ =
         OsIntegrationTestOverrideImpl::OverrideForTesting();

@@ -10,28 +10,70 @@ build_webui("build") {
   grd_prefix = "updater"
 
   static_files = [
-    "updater.html",
     "updater.css",
+    "updater.html",
   ]
 
+  ts_definitions = [ "//tools/typescript/definitions/pending.d.ts" ]
   ts_files = [
     "app.html.ts",
     "app.ts",
+    "browser_proxy.ts",
     "event_history.ts",
+    "event_list/event_list.html.ts",
+    "event_list/event_list.ts",
+    "event_list/event_list_item.html.ts",
+    "event_list/event_list_item.ts",
     "event_list/filter_bar.html.ts",
     "event_list/filter_bar.ts",
-    "event_list/filter_dialog.html.ts",
-    "event_list/filter_dialog.ts",
+    "event_list/filter_dialog/app_dialog.html.ts",
+    "event_list/filter_dialog/app_dialog.ts",
+    "event_list/filter_dialog/date_dialog.html.ts",
+    "event_list/filter_dialog/date_dialog.ts",
+    "event_list/filter_dialog/event_dialog.html.ts",
+    "event_list/filter_dialog/event_dialog.ts",
+    "event_list/filter_dialog/filter_dialog.html.ts",
+    "event_list/filter_dialog/filter_dialog.ts",
+    "event_list/filter_dialog/filter_dialog_footer.html.ts",
+    "event_list/filter_dialog/filter_dialog_footer.ts",
+    "event_list/filter_dialog/outcome_dialog.html.ts",
+    "event_list/filter_dialog/outcome_dialog.ts",
+    "event_list/filter_dialog/scope_dialog.html.ts",
+    "event_list/filter_dialog/scope_dialog.ts",
+    "event_list/filter_dialog/type_dialog.html.ts",
+    "event_list/filter_dialog/type_dialog.ts",
+    "event_list/filter_settings.ts",
     "event_list/raw_event_details.html.ts",
     "event_list/raw_event_details.ts",
+    "i18n_setup.ts",
     "icons.html.ts",
     "known_apps.ts",
+    "scope_icon.html.ts",
+    "scope_icon.ts",
+    "tools.ts",
+    "updater_state/updater_state.html.ts",
+    "updater_state/updater_state.ts",
+    "updater_state/updater_state_card.html.ts",
+    "updater_state/updater_state_card.ts",
   ]
   css_files = [
     "app.css",
+    "event_list/event_list.css",
+    "event_list/event_list_item.css",
     "event_list/filter_bar.css",
-    "event_list/filter_dialog.css",
+    "event_list/filter_dialog/app_dialog.css",
+    "event_list/filter_dialog/date_dialog.css",
+    "event_list/filter_dialog/event_dialog.css",
+    "event_list/filter_dialog/filter_dialog.css",
+    "event_list/filter_dialog/filter_dialog_footer.css",
+    "event_list/filter_dialog/filter_dialog_shared.css",
+    "event_list/filter_dialog/outcome_dialog.css",
+    "event_list/filter_dialog/scope_dialog.css",
+    "event_list/filter_dialog/type_dialog.css",
     "event_list/raw_event_details.css",
+    "updater_shared.css",
+    "updater_state/updater_state.css",
+    "updater_state/updater_state_card.css",
   ]
 
   webui_context_type = "trusted"
@@ -40,6 +82,13 @@ build_webui("build") {
     "//third_party/lit/v3_0:build_ts",
     "//ui/webui/resources/cr_elements:build_ts",
     "//ui/webui/resources/js:build_ts",
+    "//ui/webui/resources/mojo:build_ts",
   ]
   ts_composite = true
+
+  mojo_files_deps =
+      [ "//chrome/browser/ui/webui/updater:mojo_bindings_ts__generator" ]
+  mojo_files = [
+    "$root_gen_dir/chrome/browser/ui/webui/updater/updater_ui.mojom-webui.ts",
+  ]
 }

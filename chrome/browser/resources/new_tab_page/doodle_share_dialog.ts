@@ -10,7 +10,6 @@ import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import type {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
 import type {CrInputElement} from 'chrome://resources/cr_elements/cr_input/cr_input.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
-import type {Url} from 'chrome://resources/mojo/url/mojom/url.mojom-webui.js';
 
 import {getCss} from './doodle_share_dialog.css.js';
 import {getHtml} from './doodle_share_dialog.html.js';
@@ -58,12 +57,12 @@ export class DoodleShareDialogElement extends CrLitElement {
   }
 
   override accessor title: string = '';
-  accessor url: Url = {url: ''};
+  accessor url = '';
 
   protected onFacebookClick_() {
     const url = 'https://www.facebook.com/dialog/share' +
         `?app_id=${FACEBOOK_APP_ID}` +
-        `&href=${encodeURIComponent(this.url.url)}` +
+        `&href=${encodeURIComponent(this.url)}` +
         `&hashtag=${encodeURIComponent('#GoogleDoodle')}`;
     WindowProxy.getInstance().open(url);
     this.notifyShare_(DoodleShareChannel.kFacebook);
@@ -71,21 +70,21 @@ export class DoodleShareDialogElement extends CrLitElement {
 
   protected onTwitterClick_() {
     const url = 'https://twitter.com/intent/tweet' +
-        `?text=${encodeURIComponent(`${this.title}\n${this.url.url}`)}`;
+        `?text=${encodeURIComponent(`${this.title}\n${this.url}`)}`;
     WindowProxy.getInstance().open(url);
     this.notifyShare_(DoodleShareChannel.kTwitter);
   }
 
   protected onEmailClick_() {
     const url = `mailto:?subject=${encodeURIComponent(this.title)}` +
-        `&body=${encodeURIComponent(this.url.url)}`;
+        `&body=${encodeURIComponent(this.url)}`;
     WindowProxy.getInstance().navigate(url);
     this.notifyShare_(DoodleShareChannel.kEmail);
   }
 
   protected onCopyClick_() {
     this.$.url.select();
-    navigator.clipboard.writeText(this.url.url);
+    navigator.clipboard.writeText(this.url);
     this.notifyShare_(DoodleShareChannel.kLinkCopy);
   }
 

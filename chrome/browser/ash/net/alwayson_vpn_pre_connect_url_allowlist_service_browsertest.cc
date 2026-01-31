@@ -109,7 +109,7 @@ class AlwaysOnVpnPreConnectUrlAllowlistServiceTest
         ash::NetworkHandler::Get()->network_state_handler()->DefaultNetwork();
     EXPECT_NE(network->GetNetworkTechnologyType(),
               ash::NetworkState::NetworkTechnologyType::kVPN);
-    base::Value::List list;
+    base::ListValue list;
     list.Append(kTestUrl);
     browser()->profile()->GetPrefs()->SetList(
         policy::policy_prefs::kAlwaysOnVpnPreConnectUrlAllowlist,
@@ -185,7 +185,7 @@ IN_PROC_BROWSER_TEST_F(AlwaysOnVpnPreConnectUrlAllowlistServiceTest,
   EXPECT_TRUE(IsPreConnectListEnforced());
 
   // Create and set an empty list.
-  base::Value::List list;
+  base::ListValue list;
   browser()->profile()->GetPrefs()->SetList(
       policy::policy_prefs::kAlwaysOnVpnPreConnectUrlAllowlist, list.Clone());
   EXPECT_FALSE(IsPreConnectListEnforced());

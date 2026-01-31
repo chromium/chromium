@@ -80,10 +80,10 @@ bool CanShowBatchUploadPromo(Profile* profile) {
           kBatchUploadBookmarkPromoMinimumDelayToShowAfterDismiss);
 }
 
-base::Value::Dict GetBatchUploadPromoData(bool can_show,
-                                          int local_bookmark_count,
-                                          bool has_non_bookmark_local_data) {
-  base::Value::Dict promo_data;
+base::DictValue GetBatchUploadPromoData(bool can_show,
+                                        int local_bookmark_count,
+                                        bool has_non_bookmark_local_data) {
+  base::DictValue promo_data;
   promo_data.Set("canShow", can_show);
 #if !BUILDFLAG(IS_CHROMEOS)
   promo_data.Set("promoSubtitle",
@@ -97,13 +97,13 @@ base::Value::Dict GetBatchUploadPromoData(bool can_show,
 }
 
 // Return an empty result; should not show the promo.
-base::Value::Dict GetEmptyBatchUploadPromoData() {
+base::DictValue GetEmptyBatchUploadPromoData() {
   return GetBatchUploadPromoData(/*can_show=*/false,
                                  /*local_bookmark_count=*/0,
                                  /*has_non_bookmark_local_data=*/false);
 }
 
-base::Value::Dict GetBatchUploadDataFromProfileAndLocalData(
+base::DictValue GetBatchUploadDataFromProfileAndLocalData(
     Profile* profile,
     const std::map<syncer::DataType, syncer::LocalDataDescription>&
         local_data) {
@@ -205,7 +205,7 @@ int BookmarksMessageHandler::GetIncognitoAvailability() {
 }
 
 void BookmarksMessageHandler::HandleGetIncognitoAvailability(
-    const base::Value::List& args) {
+    const base::ListValue& args) {
   CHECK_EQ(1U, args.size());
   const base::Value& callback_id = args[0];
 
@@ -226,7 +226,7 @@ bool BookmarksMessageHandler::CanEditBookmarks() {
 }
 
 void BookmarksMessageHandler::HandleGetCanEditBookmarks(
-    const base::Value::List& args) {
+    const base::ListValue& args) {
   CHECK_EQ(1U, args.size());
   const base::Value& callback_id = args[0];
 
@@ -300,7 +300,7 @@ bool BookmarksMessageHandler::CanUploadBookmarkToAccountStorage(
 }
 
 void BookmarksMessageHandler::HandleGetCanUploadBookmarkToAccountStorage(
-    const base::Value::List& args) {
+    const base::ListValue& args) {
   CHECK_EQ(2U, args.size());
   const base::Value& callback_id = args[0];
   const std::string& id = args[1].GetString();
@@ -312,7 +312,7 @@ void BookmarksMessageHandler::HandleGetCanUploadBookmarkToAccountStorage(
 }
 
 void BookmarksMessageHandler::HandleSingleUploadClicked(
-    const base::Value::List& args) {
+    const base::ListValue& args) {
   CHECK_EQ(1U, args.size());
   const std::string& id_string = args[0].GetString();
   int64_t id;
@@ -347,7 +347,7 @@ void BookmarksMessageHandler::UpdateCanEditBookmarks() {
 }
 
 void BookmarksMessageHandler::HandleGetBatchUploadPromoData(
-    const base::Value::List& args) {
+    const base::ListValue& args) {
   AllowJavascript();
   CHECK_EQ(1U, args.size());
   const base::Value& callback_id = args[0];
@@ -403,7 +403,7 @@ void BookmarksMessageHandler::RequestLocalDataDescriptionsUpdate() {
 }
 
 void BookmarksMessageHandler::HandleOnBatchUploadPromoClicked(
-    const base::Value::List& args) {
+    const base::ListValue& args) {
 #if !BUILDFLAG(IS_CHROMEOS)
   Profile* profile = Profile::FromWebUI(web_ui());
   CHECK(CanEditBookmarks());
@@ -420,7 +420,7 @@ void BookmarksMessageHandler::HandleOnBatchUploadPromoClicked(
 }
 
 void BookmarksMessageHandler::HandleOnBatchUploadPromoDismissed(
-    const base::Value::List& args) {
+    const base::ListValue& args) {
   Profile* profile = Profile::FromWebUI(web_ui());
   GaiaId gaia_id = GetPrimaryAccountGaiaId(profile);
   CHECK(!gaia_id.empty());

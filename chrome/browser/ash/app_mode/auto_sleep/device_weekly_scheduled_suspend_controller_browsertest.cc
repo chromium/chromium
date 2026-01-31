@@ -47,7 +47,7 @@ base::TimeDelta GetDuration(const base::Time& start,
 
 // Sets `schedule_list` as prefs for `kDeviceWeeklyScheduledSuspend` in local
 // state, simulating a policy change.
-void SetPrefInLocalState(base::Value::List schedule_list) {
+void SetPrefInLocalState(base::ListValue schedule_list) {
   g_browser_process->local_state()->SetList(
       prefs::kDeviceWeeklyScheduledSuspend, std::move(schedule_list));
 }

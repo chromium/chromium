@@ -9,7 +9,6 @@
 #include <set>
 #include <utility>
 
-#include "base/containers/contains.h"
 #include "components/password_manager/core/browser/hash_password_manager.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_hash_data.h"
@@ -73,6 +72,12 @@ PasswordReuseDetectorImpl::PasswordLengthAndMatchingCredentials::
     PasswordLengthAndMatchingCredentials() = default;
 PasswordReuseDetectorImpl::PasswordLengthAndMatchingCredentials::
     ~PasswordLengthAndMatchingCredentials() = default;
+PasswordReuseDetectorImpl::PasswordLengthAndMatchingCredentials::
+    PasswordLengthAndMatchingCredentials(
+        const PasswordLengthAndMatchingCredentials&) = default;
+PasswordReuseDetectorImpl::PasswordLengthAndMatchingCredentials&
+PasswordReuseDetectorImpl::PasswordLengthAndMatchingCredentials::operator=(
+    const PasswordLengthAndMatchingCredentials&) = default;
 
 PasswordReuseDetectorImpl::PasswordReuseDetectorImpl()
     : salt_(CreateRandomSalt()) {
@@ -273,7 +278,7 @@ PasswordReuseDetectorImpl::CheckSavedPasswordReuseBasedOnHash(
     }
     // If the page's URL matches a saved domain for this password,
     // this isn't password-reuse.
-    if (base::Contains(domains, registry_controlled_domain)) {
+    if (domains.contains(registry_controlled_domain)) {
       continue;
     }
 

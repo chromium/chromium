@@ -4,7 +4,6 @@
 
 #include "ios/chrome/browser/overlays/model/public/overlay_request_callback_installer.h"
 
-#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "ios/chrome/browser/overlays/model/public/overlay_callback_manager.h"
 #include "ios/chrome/browser/overlays/model/public/overlay_request.h"
@@ -19,7 +18,7 @@ void OverlayRequestCallbackInstaller::InstallCallbacks(
   // Early return if `request` is unsupported or if callbacks have already been
   // installed.
   if (!GetRequestSupport()->IsRequestSupported(request) ||
-      base::Contains(requests_, request)) {
+      requests_.contains(request)) {
     return;
   }
   requests_.insert(request);

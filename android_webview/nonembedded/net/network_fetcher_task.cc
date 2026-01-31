@@ -71,9 +71,9 @@ void InvokeDownload(TaskWeakPtr weak_ptr,
 
 // static
 static void JNI_NetworkFetcherTask_CallProgressCallback(JNIEnv* env,
-                                                        jlong weak_ptr,
-                                                        jlong task_runner,
-                                                        jlong current) {
+                                                        int64_t weak_ptr,
+                                                        int64_t task_runner,
+                                                        int64_t current) {
   auto* native_task_runner =
       reinterpret_cast<base::SequencedTaskRunner*>(task_runner);
   DCHECK(native_task_runner);
@@ -87,10 +87,10 @@ static void JNI_NetworkFetcherTask_CallProgressCallback(JNIEnv* env,
 // static
 static void JNI_NetworkFetcherTask_CallResponseStartedCallback(
     JNIEnv* env,
-    jlong weak_ptr,
-    jlong task_runner,
-    jint response_code,
-    jlong content_length) {
+    int64_t weak_ptr,
+    int64_t task_runner,
+    int32_t response_code,
+    int64_t content_length) {
   auto* native_task_runner =
       reinterpret_cast<base::SequencedTaskRunner*>(task_runner);
   DCHECK(native_task_runner);
@@ -105,10 +105,10 @@ static void JNI_NetworkFetcherTask_CallResponseStartedCallback(
 // static
 static void JNI_NetworkFetcherTask_CallDownloadToFileCompleteCallback(
     JNIEnv* env,
-    jlong weak_ptr,
-    jlong task_runner,
-    jint network_error,
-    jlong content_size) {
+    int64_t weak_ptr,
+    int64_t task_runner,
+    int32_t network_error,
+    int64_t content_size) {
   auto* native_task_runner =
       reinterpret_cast<base::SequencedTaskRunner*>(task_runner);
   DCHECK(native_task_runner);
@@ -123,13 +123,13 @@ static void JNI_NetworkFetcherTask_CallDownloadToFileCompleteCallback(
 // static
 static void JNI_NetworkFetcherTask_CallPostRequestCompleteCallback(
     JNIEnv* env,
-    jlong weak_ptr,
-    jlong task_runner,
+    int64_t weak_ptr,
+    int64_t task_runner,
     const base::android::JavaRef<jbyteArray>& response_body,
-    jint network_error,
+    int32_t network_error,
     std::string& header_e_tag,
     std::string& header_x_cup_server_proof,
-    jlong x_header_retry_after_sec) {
+    int64_t x_header_retry_after_sec) {
   auto* native_task_runner =
       reinterpret_cast<base::SequencedTaskRunner*>(task_runner);
   DCHECK(native_task_runner);

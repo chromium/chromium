@@ -228,15 +228,9 @@ inline constexpr char kEnhancedNetworkTtsExtensionPath[] =
 // The manifest filename of the Enhanced network TTS engine extension.
 inline constexpr char kEnhancedNetworkTtsManifestFilename[] =
     "enhanced_network_tts_manifest.json";
-// The manifest v3 filename of the Enhanced network TTS engine extension.
-inline constexpr char kEnhancedNetworkTtsManifestV3Filename[] =
-    "enhanced_network_tts_manifest_v3.json";
 // The guest manifest filename of the Enhanced network TTS engine extension.
 inline constexpr char kEnhancedNetworkTtsGuestManifestFilename[] =
     "enhanced_network_tts_manifest_guest.json";
-// The guest manifest v3 filename of the Enhanced network TTS engine extension.
-inline constexpr char kEnhancedNetworkTtsGuestManifestV3Filename[] =
-    "enhanced_network_tts_manifest_guest_v3.json";
 // The extension id of the Select-to-speak extension.
 inline constexpr char kSelectToSpeakExtensionId[] =
     "klbcgckkldhdhonijdbnhhaiedfkllef";
@@ -246,15 +240,9 @@ inline constexpr char kSelectToSpeakExtensionPath[] = "chromeos/accessibility";
 // The manifest filename of the Select to Speak extension.
 inline constexpr char kSelectToSpeakManifestFilename[] =
     "select_to_speak_manifest.json";
-// The manifest v3 filename of the Select to Speak extension.
-inline constexpr char kSelectToSpeakManifestV3Filename[] =
-    "select_to_speak_manifest_v3.json";
 // The guest manifest filename of the Select to Speak extension.
 inline constexpr char kSelectToSpeakGuestManifestFilename[] =
     "select_to_speak_manifest_guest.json";
-// The guest manifest v3 filename of the Select to Speak extension.
-inline constexpr char kSelectToSpeakGuestManifestV3Filename[] =
-    "select_to_speak_manifest_v3_guest.json";
 // The extension id of the Switch Access extension.
 inline constexpr char kSwitchAccessExtensionId[] =
     "pmehocpgjmkenlokgjfkaichfjdhpeol";

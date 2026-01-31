@@ -33,14 +33,14 @@ class FakeDeviceAccountsProvider : public DeviceAccountsProvider {
                       const std::string& client_id,
                       const std::set<std::string>& scopes,
                       AccessTokenCallback callback) override;
-  std::vector<AccountInfo> GetAccountsForProfile() const override;
-  std::vector<AccountInfo> GetAccountsOnDevice() const override;
+  std::vector<DeviceAccountInfo> GetAccountsForProfile() const override;
+  std::vector<DeviceAccountInfo> GetAccountsOnDevice() const override;
 
   // Methods to configure this fake provider.
-  AccountInfo AddAccount(const GaiaId& gaia, const std::string& email);
+  DeviceAccountInfo AddAccount(const GaiaId& gaia, const std::string& email);
   // An account with this `gaia` must have previously been added via
   // `AddAccount`.
-  AccountInfo UpdateAccount(const GaiaId& gaia, const std::string& email);
+  DeviceAccountInfo UpdateAccount(const GaiaId& gaia, const std::string& email);
   void ClearAccounts();
 
   // Issues access token responses.
@@ -51,10 +51,10 @@ class FakeDeviceAccountsProvider : public DeviceAccountsProvider {
   using AccessTokenRequest = std::pair<GaiaId, AccessTokenCallback>;
 
   void FireOnAccountsOnDeviceChanged();
-  void FireAccountOnDeviceUpdated(const AccountInfo& account);
+  void FireAccountOnDeviceUpdated(const DeviceAccountInfo& account);
 
   base::ObserverList<Observer, true> observer_list_;
-  std::vector<AccountInfo> accounts_;
+  std::vector<DeviceAccountInfo> accounts_;
   std::vector<AccessTokenRequest> requests_;
 };
 

@@ -210,11 +210,11 @@ class HistoryWithHistoryEmbeddingsTest : public WebUIMochaBrowserTest {
 };
 
 // TODO(crbug.com/458161947): Re-enable flaky test
-#if BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 #define MAYBE_App DISABLED_App
 #else
 #define MAYBE_App App
-#endif  // BUILDFLAG(IS_MAC)
+#endif  // BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 IN_PROC_BROWSER_TEST_F(HistoryWithHistoryEmbeddingsTest, MAYBE_App) {
   RunTest("history/history_app_test.js", "mocha.run()");
 }

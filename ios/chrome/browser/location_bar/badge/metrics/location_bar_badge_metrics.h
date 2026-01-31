@@ -31,6 +31,12 @@
     (std::optional<ContextualPanelTabHelper::EntrypointMetricsData>&)
         metricsData;
 
+// Logs any metrics fired the first time a given entrypoint is opened via
+// tapping.
++ (void)logContextualPanelEntrypointDismissMetrics:
+    (std::optional<ContextualPanelTabHelper::EntrypointMetricsData>&)
+        metricsData;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_LOCATION_BAR_BADGE_METRICS_LOCATION_BAR_BADGE_METRICS_H_

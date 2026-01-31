@@ -16,7 +16,6 @@
 #include "base/check.h"
 #include "base/check_deref.h"
 #include "base/compiler_specific.h"
-#include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/hash/hash.h"
@@ -294,7 +293,7 @@ void InputMethodManagerImpl::StateImpl::EnableLoginLayouts(
   for (const auto& candidate : candidates) {
     // Not efficient, but should be fine, as the two vectors are very
     // short (2-5 items).
-    if (!base::Contains(layouts, candidate) &&
+    if (!std::ranges::contains(layouts, candidate) &&
         manager_->IsLoginKeyboard(candidate) &&
         IsInputMethodAllowed(candidate)) {
       layouts.push_back(candidate);
@@ -340,7 +339,7 @@ void InputMethodManagerImpl::StateImpl::EnableOobeInputMethods(
   for (const auto& candidate : candidates) {
     // Not efficient, but should be fine, as the two vectors are very
     // short (2-5 items).
-    if (!base::Contains(resulting_input_methods, candidate) &&
+    if (!std::ranges::contains(resulting_input_methods, candidate) &&
         manager_->util_.IsOobeAllowlisted(candidate) &&
         IsInputMethodAllowed(candidate)) {
       resulting_input_methods.push_back(candidate);
@@ -424,7 +423,7 @@ bool InputMethodManagerImpl::StateImpl::EnableInputMethodImpl(
     return false;
   }
 
-  if (!base::Contains(*new_enabled_input_method_ids, input_method_id)) {
+  if (!std::ranges::contains(*new_enabled_input_method_ids, input_method_id)) {
     new_enabled_input_method_ids->push_back(input_method_id);
   }
 
@@ -524,9 +523,9 @@ bool InputMethodManagerImpl::StateImpl::IsInputMethodAllowed(
     return true;
   }
 
-  return base::Contains(allowed_keyboard_layout_input_method_ids_,
-                        input_method_id) ||
-         base::Contains(
+  return std::ranges::contains(allowed_keyboard_layout_input_method_ids_,
+                               input_method_id) ||
+         std::ranges::contains(
              allowed_keyboard_layout_input_method_ids_,
              manager_->util_.GetMigratedInputMethod(input_method_id));
 }
@@ -628,8 +627,8 @@ void InputMethodManagerImpl::StateImpl::AddInputMethodExtension(
   for (const auto& descriptor : descriptors) {
     const std::string& id = descriptor.id();
     available_input_methods_[id] = descriptor;
-    if (base::Contains(enabled_extension_imes_, id)) {
-      if (!base::Contains(enabled_input_method_ids_, id)) {
+    if (std::ranges::contains(enabled_extension_imes_, id)) {
+      if (!std::ranges::contains(enabled_input_method_ids_, id)) {
         enabled_input_method_ids_.push_back(id);
       } else {
         DVLOG(1) << "AddInputMethodExtension: already added: " << id << ", "
@@ -727,7 +726,7 @@ void InputMethodManagerImpl::StateImpl::SetEnabledExtensionImes(
 
     bool currently_enabled =
         currently_enabled_iter != enabled_input_method_ids_.end();
-    bool enabled = base::Contains(enabled_extension_imes_, entry.first);
+    bool enabled = std::ranges::contains(enabled_extension_imes_, entry.first);
 
     if (currently_enabled && !enabled) {
       enabled_input_method_ids_.erase(currently_enabled_iter);
@@ -891,7 +890,7 @@ InputMethodDescriptor InputMethodManagerImpl::StateImpl::GetCurrentInputMethod()
 
 bool InputMethodManagerImpl::StateImpl::InputMethodIsEnabled(
     const std::string& input_method_id) const {
-  return base::Contains(enabled_input_method_ids_, input_method_id);
+  return std::ranges::contains(enabled_input_method_ids_, input_method_id);
 }
 
 void InputMethodManagerImpl::StateImpl::EnableInputView() {

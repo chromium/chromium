@@ -18,6 +18,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
 #include "base/time/time.h"
+#include "base/types/zip.h"
 #include "build/build_config.h"
 #include "media/base/audio_parameters.h"
 #include "media/base/audio_sample_types.h"
@@ -27,13 +28,45 @@
 
 namespace media {
 
+namespace {
 using AlignedFloatArray = base::AlignedHeapArray<float>;
 
-static const int kChannels = 6;
+static constexpr int kDefaultChannels = 6;
 static constexpr ChannelLayout kChannelLayout = CHANNEL_LAYOUT_5_1;
 // Use a buffer size which is intentionally not a multiple of kChannelAlignment.
-static const size_t kFrameCount = media::AudioBus::kChannelAlignment * 32 - 1;
-static const int kSampleRate = 48000;
+static constexpr size_t kFrameCount =
+    media::AudioBus::kChannelAlignment * 32 - 1;
+static constexpr int kSampleRate = 48000;
+static constexpr float kGuardValue = 123.456f;
+
+// Verify values for each channel in |result| are within |epsilon| of
+// |expected|.  If |epsilon| exactly equals 0, uses FLOAT_EQ macro.
+void VerifyAreEqualWithEpsilon(const AudioBus* result,
+                               const AudioBus* expected,
+                               float epsilon) {
+  EXPECT_EQ(expected->channels(), result->channels());
+  EXPECT_EQ(expected->frames(), result->frames());
+  EXPECT_EQ(expected->is_bitstream_format(), result->is_bitstream_format());
+
+  if (expected->is_bitstream_format()) {
+    EXPECT_EQ(expected->GetBitstreamFrames(), result->GetBitstreamFrames());
+    EXPECT_EQ(expected->bitstream_data(), result->bitstream_data());
+    return;
+  }
+
+  for (int ch = 0; ch < result->channels(); ++ch) {
+    for (int i = 0; i < result->frames(); ++i) {
+      SCOPED_TRACE(base::StringPrintf("ch=%d, i=%d", ch, i));
+
+      if (epsilon == 0) {
+        ASSERT_FLOAT_EQ(expected->channel(ch)[i], result->channel(ch)[i]);
+      } else {
+        ASSERT_NEAR(expected->channel(ch)[i], result->channel(ch)[i], epsilon);
+      }
+    }
+  }
+}
+}  // namespace
 
 class AudioBusTest : public testing::Test {
  public:
@@ -45,7 +78,7 @@ class AudioBusTest : public testing::Test {
   ~AudioBusTest() override = default;
 
   void VerifyChannelAndFrameCount(AudioBus* bus) {
-    EXPECT_EQ(kChannels, bus->channels());
+    EXPECT_EQ(kDefaultChannels, bus->channels());
     EXPECT_EQ(static_cast<int>(kFrameCount), bus->frames());
   }
 
@@ -55,43 +88,15 @@ class AudioBusTest : public testing::Test {
     }
   }
 
-  // Verify values for each channel in |result| are within |epsilon| of
-  // |expected|.  If |epsilon| exactly equals 0, uses FLOAT_EQ macro.
-  void VerifyAreEqualWithEpsilon(const AudioBus* result,
-                                 const AudioBus* expected,
-                                 float epsilon) {
-    ASSERT_EQ(expected->channels(), result->channels());
-    ASSERT_EQ(expected->frames(), result->frames());
-    ASSERT_EQ(expected->is_bitstream_format(), result->is_bitstream_format());
-
-    if (expected->is_bitstream_format()) {
-      ASSERT_EQ(expected->GetBitstreamFrames(), result->GetBitstreamFrames());
-      ASSERT_EQ(expected->bitstream_data(), result->bitstream_data());
-      return;
-    }
-
-    for (int ch = 0; ch < result->channels(); ++ch) {
-      for (int i = 0; i < result->frames(); ++i) {
-        SCOPED_TRACE(base::StringPrintf("ch=%d, i=%d", ch, i));
-
-        if (epsilon == 0) {
-          ASSERT_FLOAT_EQ(expected->channel(ch)[i], result->channel(ch)[i]);
-        } else {
-          ASSERT_NEAR(expected->channel(ch)[i], result->channel(ch)[i],
-                      epsilon);
-        }
-      }
-    }
-  }
-
   // Verify values for each channel in |result| against |expected|.
   void VerifyAreEqual(const AudioBus* result, const AudioBus* expected) {
     VerifyAreEqualWithEpsilon(result, expected, 0);
   }
 
-  // Read and write to the full extent of the allocated channel data.  Also test
-  // the Zero() method and verify it does as advertised.  Also test data if data
-  // is 16-byte aligned as advertised (see kChannelAlignment in audio_bus.h).
+  // Read and write to the full extent of the allocated channel data.  Also
+  // test the Zero() method and verify it does as advertised.  Also test data
+  // if data is 16-byte aligned as advertised (see kChannelAlignment in
+  // audio_bus.h).
   void VerifyReadWriteAndAlignment(AudioBus* bus) {
     int channel_count = 0;
     for (auto channel : bus->AllChannels()) {
@@ -139,8 +144,8 @@ class AudioBusTest : public testing::Test {
 
  protected:
   void AllocateDataPerChannel() {
-    data_.reserve(kChannels);
-    for (int i = 0; i < kChannels; ++i) {
+    data_.reserve(kDefaultChannels);
+    for (int i = 0; i < kDefaultChannels; ++i) {
       data_.push_back(
           base::AlignedUninit<float>(kFrameCount, AudioBus::kChannelAlignment));
     }
@@ -151,7 +156,8 @@ class AudioBusTest : public testing::Test {
 
 // Verify basic Create(...) method works as advertised.
 TEST_F(AudioBusTest, Create) {
-  std::unique_ptr<AudioBus> bus = AudioBus::Create(kChannels, kFrameCount);
+  std::unique_ptr<AudioBus> bus =
+      AudioBus::Create(kDefaultChannels, kFrameCount);
   VerifyChannelAndFrameCount(bus.get());
   VerifyReadWriteAndAlignment(bus.get());
 }
@@ -170,7 +176,7 @@ TEST_F(AudioBusTest, CreateUsingAudioParameters) {
 TEST_F(AudioBusTest, CreateWrapper) {
   AllocateDataPerChannel();
 
-  std::unique_ptr<AudioBus> bus = AudioBus::CreateWrapper(kChannels);
+  std::unique_ptr<AudioBus> bus = AudioBus::CreateWrapper(kDefaultChannels);
   bus->set_frames(kFrameCount);
   for (int i = 0; i < bus->channels(); ++i) {
     bus->SetChannelData(i, data_[i].as_span());
@@ -191,7 +197,7 @@ TEST_F(AudioBusTest, CreateWrapper) {
 TEST_F(AudioBusTest, AllChannels) {
   AllocateDataPerChannel();
 
-  std::unique_ptr<AudioBus> bus = AudioBus::CreateWrapper(kChannels);
+  std::unique_ptr<AudioBus> bus = AudioBus::CreateWrapper(kDefaultChannels);
   bus->set_frames(kFrameCount);
   AudioBus::ChannelVector channels;
   int value = 1;
@@ -214,13 +220,13 @@ TEST_F(AudioBusTest, AllChannels) {
     EXPECT_EQ(channel, bus->channel(current_channel++));
   }
 
-  EXPECT_EQ(current_channel, kChannels);
+  EXPECT_EQ(current_channel, kDefaultChannels);
 }
 
 TEST_F(AudioBusTest, AllChannelsSubspan) {
   AllocateDataPerChannel();
 
-  std::unique_ptr<AudioBus> bus = AudioBus::CreateWrapper(kChannels);
+  std::unique_ptr<AudioBus> bus = AudioBus::CreateWrapper(kDefaultChannels);
   bus->set_frames(kFrameCount);
   AudioBus::ChannelVector channels;
   int value = 1;
@@ -247,7 +253,7 @@ TEST_F(AudioBusTest, AllChannelsSubspan) {
               bus->channel(current_channel++).subspan(kOffset, kCount));
   }
 
-  EXPECT_EQ(current_channel, kChannels);
+  EXPECT_EQ(current_channel, kDefaultChannels);
 }
 
 // Verify an AudioBus created via wrapping a memory block works as advertised.
@@ -310,7 +316,8 @@ TEST_F(AudioBusTest, CopyTo) {
   AudioParameters params(AudioParameters::AUDIO_PCM_LINEAR,
                          ChannelLayoutConfig::FromLayout<kChannelLayout>(),
                          kSampleRate, kFrameCount);
-  std::unique_ptr<AudioBus> bus1 = AudioBus::Create(kChannels, kFrameCount);
+  std::unique_ptr<AudioBus> bus1 =
+      AudioBus::Create(kDefaultChannels, kFrameCount);
   std::unique_ptr<AudioBus> bus2 = AudioBus::Create(params);
 
   const size_t memory_size = AudioBus::CalculateMemorySize(params);
@@ -341,7 +348,8 @@ TEST_F(AudioBusTest, CopyTo) {
 
 // Verify Zero() and ZeroFrames(...) utility methods work as advertised.
 TEST_F(AudioBusTest, Zero) {
-  std::unique_ptr<AudioBus> bus = AudioBus::Create(kChannels, kFrameCount);
+  std::unique_ptr<AudioBus> bus =
+      AudioBus::Create(kDefaultChannels, kFrameCount);
 
   // Fill the bus with dummy data.
   int value = 1;
@@ -397,24 +405,26 @@ TEST_F(AudioBusTest, Zero) {
 
 // Each test vector represents two channels of data in the following arbitrary
 // layout: <min, zero, max, min, max / 2, min / 2, zero, max, zero, zero>.
-static constexpr int kTestVectorSize = 10;
-static const uint8_t kTestVectorUint8[kTestVectorSize] = {
+static constexpr size_t kFrames = 5;
+static constexpr size_t kChannels = 2;
+static constexpr size_t kTotalFrames = kFrames * kChannels;
+static const std::array<uint8_t, kTotalFrames> kTestVectorUint8 = {
     0,         -INT8_MIN,          UINT8_MAX,
     0,         INT8_MAX / 2 + 128, INT8_MIN / 2 + 128,
     -INT8_MIN, UINT8_MAX,          -INT8_MIN,
     -INT8_MIN};
-static const int16_t kTestVectorInt16[kTestVectorSize] = {
+static const std::array<int16_t, kTotalFrames> kTestVectorInt16 = {
     INT16_MIN,     0, INT16_MAX, INT16_MIN, INT16_MAX / 2,
     INT16_MIN / 2, 0, INT16_MAX, 0,         0};
-static const int32_t kTestVectorInt32[kTestVectorSize] = {
+static const std::array<int32_t, kTotalFrames> kTestVectorInt32 = {
     INT32_MIN,     0, INT32_MAX, INT32_MIN, INT32_MAX / 2,
     INT32_MIN / 2, 0, INT32_MAX, 0,         0};
-static const float kTestVectorFloat32[kTestVectorSize] = {
+static const std::array<float, kTotalFrames> kTestVectorFloat32 = {
     -1.0f, 0.0f, 1.0f, -1.0f, 0.5f, -0.5f, 0.0f, 1.0f, 0.0f, 0.0f};
 
 // This is based on kTestVectorFloat32, but has some of the values outside of
 // sanity.
-static const float kTestVectorFloat32Invalid[kTestVectorSize] = {
+static const std::array<float, kTotalFrames> kTestVectorFloat32Invalid = {
     -5.0f,
     0.0f,
     5.0f,
@@ -426,188 +436,409 @@ static const float kTestVectorFloat32Invalid[kTestVectorSize] = {
     std::numeric_limits<float>::signaling_NaN(),
     std::numeric_limits<float>::quiet_NaN()};
 
-static const float kTestVectorFloat32Sanitized[kTestVectorSize] = {
+static const std::array<float, kTotalFrames> kTestVectorFloat32Sanitized = {
     -1.0f, 0.0f, 1.0f, -1.0f, 0.5f, -0.5f, 0.0f, 1.0f, 0.0f, 0.0f};
 
 // Expected results.
-static constexpr size_t kTestVectorFrameCount = kTestVectorSize / 2;
-static const auto kTestVectorResult =
-    std::to_array<std::array<const float, kTestVectorFrameCount>>(
+static const auto kExpectedPlanarData =
+    std::to_array<std::array<const float, kFrames>>(
         {{-1.0f, 1.0f, 0.5f, 0.0f, 0.0f}, {0.0f, -1.0f, -0.5f, 1.0f, 0.0f}});
-static const int kTestVectorChannelCount = std::size(kTestVectorResult);
+
+template <class SampleTypeTraits>
+class TypedAudioBusTest : public testing::Test {
+ public:
+  using SampleType = typename SampleTypeTraits::ValueType;
+  using InterleavedArray = std::array<SampleType, kTotalFrames>;
+
+  auto GetInterleavedSpan() {
+    if constexpr (std::is_same_v<SampleType, uint8_t>) {
+      return base::span(kTestVectorUint8);
+    } else if constexpr (std::is_same_v<SampleType, int16_t>) {
+      return base::span(kTestVectorInt16);
+    } else if constexpr (std::is_same_v<SampleType, int32_t>) {
+      return base::span(kTestVectorInt32);
+    } else if constexpr (std::is_same_v<SampleType, float>) {
+      return base::span(kTestVectorFloat32);
+    }
+  }
+
+  // Some compilers get better precision than others on the half-max test, so
+  // let the test pass with an off by one check on the half-max.
+  auto GetAlternateValidResult() {
+    if constexpr (std::is_same_v<SampleType, int32_t>) {
+      InterleavedArray array;
+      base::span(array).copy_from_nonoverlapping(kTestVectorInt32);
+      EXPECT_EQ(array[4], std::numeric_limits<int32_t>::max() / 2);
+      array[4] = std::numeric_limits<int32_t>::max() / 2 + 1;
+      return array;
+    } else {
+      NOTREACHED();
+    }
+  }
+
+  std::unique_ptr<AudioBus> GetPlanarDataBus() {
+    auto bus = AudioBus::Create(kChannels, kFrames);
+    auto channels = bus->AllChannels();
+    for (auto [channel, expected] : base::zip(channels, kExpectedPlanarData)) {
+      channel.copy_from_nonoverlapping(expected);
+    }
+    return bus;
+  }
+
+  std::unique_ptr<AudioBus> GetTestBus(float fill_value = 0) {
+    auto bus = AudioBus::Create(kChannels, kFrames);
+    if (fill_value == 0) {
+      bus->Zero();
+    } else {
+      for (auto channel : bus->AllChannels()) {
+        std::ranges::fill(channel, fill_value);
+      }
+    }
+    return bus;
+  }
+
+  constexpr base::span<uint8_t> as_writable_bytes(base::span<SampleType> span) {
+    if constexpr (std::is_same_v<SampleType, float>) {
+      return base::as_writable_bytes(base::allow_nonunique_obj, span);
+    } else {
+      return base::as_writable_bytes(span);
+    }
+  }
+
+  constexpr base::span<const uint8_t> as_bytes(
+      base::span<const SampleType> span) {
+    if constexpr (std::is_same_v<SampleType, float>) {
+      return base::as_bytes(base::allow_nonunique_obj, span);
+    } else {
+      return base::as_bytes(span);
+    }
+  }
+
+  constexpr float GetEpsilon() {
+    if constexpr (std::is_same_v<SampleType, uint8_t>) {
+      // Biased uint8_t calculations have poor precision, so the epsilon here is
+      // slightly more permissive than int16_t and int32_t calculations.
+      return 1.0f / (std::numeric_limits<uint8_t>::max() - 1);
+    } else if constexpr (std::is_same_v<SampleType, int16_t>) {
+      return 1.0f /
+             (static_cast<float>(std::numeric_limits<uint16_t>::max()) + 1.0f);
+    } else if constexpr (std::is_same_v<SampleType, int32_t>) {
+      return 1.0f / static_cast<float>(std::numeric_limits<uint32_t>::max());
+    } else if constexpr (std::is_same_v<SampleType, float>) {
+      return 0;
+    }
+  }
+};
+
+class TypedTestNameGenerator {
+ public:
+  template <typename T>
+  static std::string GetName(int) {
+    if constexpr (std::is_same_v<T, UnsignedInt8SampleTypeTraits>) {
+      return "U8";
+    }
+    if constexpr (std::is_same_v<T, SignedInt16SampleTypeTraits>) {
+      return "S16";
+    }
+    if constexpr (std::is_same_v<T, SignedInt32SampleTypeTraits>) {
+      return "S32";
+    }
+    if constexpr (std::is_same_v<T, Float32SampleTypeTraits>) {
+      return "F32";
+    }
+  }
+};
+
+using SampleTypes = testing::Types<UnsignedInt8SampleTypeTraits,
+                                   SignedInt16SampleTypeTraits,
+                                   SignedInt32SampleTypeTraits,
+                                   Float32SampleTypeTraits>;
+TYPED_TEST_SUITE(TypedAudioBusTest, SampleTypes, TypedTestNameGenerator);
 
 // Verify FromInterleaved() deinterleaves audio in supported formats correctly.
-TEST_F(AudioBusTest, FromInterleaved) {
-  std::unique_ptr<AudioBus> bus =
-      AudioBus::Create(kTestVectorChannelCount, kTestVectorFrameCount);
-  std::unique_ptr<AudioBus> expected =
-      AudioBus::Create(kTestVectorChannelCount, kTestVectorFrameCount);
-  for (int ch = 0; ch < kTestVectorChannelCount; ++ch) {
-    expected->channel(ch).copy_from(base::span(kTestVectorResult[ch]));
-  }
-
+TYPED_TEST(TypedAudioBusTest, FromInterleaved) {
+  using SampleTypeTraits = TypeParam;
+  const std::unique_ptr<AudioBus> expected = this->GetPlanarDataBus();
   {
-    SCOPED_TRACE("UnsignedInt8SampleTypeTraits");
-    bus->Zero();
-    bus->FromInterleaved<UnsignedInt8SampleTypeTraits>(kTestVectorUint8,
-                                                       kTestVectorFrameCount);
-    // Biased uint8_t calculations have poor precision, so the epsilon here is
-    // slightly more permissive than int16_t and int32_t calculations.
-    VerifyAreEqualWithEpsilon(bus.get(), expected.get(),
-                              1.0f / (std::numeric_limits<uint8_t>::max() - 1));
+    SCOPED_TRACE("Safe");
+    std::unique_ptr<AudioBus> bus = this->GetTestBus();
+    bus->template FromInterleaved<SampleTypeTraits>(this->GetInterleavedSpan());
+    VerifyAreEqualWithEpsilon(bus.get(), expected.get(), this->GetEpsilon());
   }
   {
-    SCOPED_TRACE("SignedInt16SampleTypeTraits");
-    bus->Zero();
-    bus->FromInterleaved<SignedInt16SampleTypeTraits>(kTestVectorInt16,
-                                                      kTestVectorFrameCount);
-    VerifyAreEqualWithEpsilon(
-        bus.get(), expected.get(),
-        1.0f /
-            (static_cast<float>(std::numeric_limits<uint16_t>::max()) + 1.0f));
+    SCOPED_TRACE("FromBytes");
+    std::unique_ptr<AudioBus> bus = this->GetTestBus();
+    bus->template FromInterleavedBytes<SampleTypeTraits>(
+        this->as_bytes(this->GetInterleavedSpan()));
+    VerifyAreEqualWithEpsilon(bus.get(), expected.get(), this->GetEpsilon());
   }
   {
-    SCOPED_TRACE("SignedInt32SampleTypeTraits");
-    bus->Zero();
-    bus->FromInterleaved<SignedInt32SampleTypeTraits>(kTestVectorInt32,
-                                                      kTestVectorFrameCount);
-    VerifyAreEqualWithEpsilon(
-        bus.get(), expected.get(),
-        1.0f / static_cast<float>(std::numeric_limits<uint32_t>::max()));
-  }
-  {
-    SCOPED_TRACE("Float32SampleTypeTraits");
-    bus->Zero();
-    bus->FromInterleaved<Float32SampleTypeTraits>(kTestVectorFloat32,
-                                                  kTestVectorFrameCount);
-    VerifyAreEqual(bus.get(), expected.get());
+    SCOPED_TRACE("Unsafe");
+    std::unique_ptr<AudioBus> bus = this->GetTestBus();
+    bus->template FromInterleaved<SampleTypeTraits>(
+        this->GetInterleavedSpan().data(), kFrames);
+    VerifyAreEqualWithEpsilon(bus.get(), expected.get(), this->GetEpsilon());
   }
 }
 
-// Verify FromInterleavedPartial() deinterleaves audio correctly.
-TEST_F(AudioBusTest, FromInterleavedPartial) {
-  // Only deinterleave the middle two frames in each channel.
-  static constexpr size_t kPartialStart = 1;
-  static constexpr size_t kPartialFrames = 2;
-  ASSERT_LE(kPartialStart + kPartialFrames, kTestVectorFrameCount);
+// Verify FromInterleaved() properly zeros remaining frames when
+// `zero_remaining_frames` is set.
+TYPED_TEST(TypedAudioBusTest, FromInterleaved_Zero) {
+  using SampleTypeTraits = TypeParam;
 
-  std::unique_ptr<AudioBus> bus =
-      AudioBus::Create(kTestVectorChannelCount, kTestVectorFrameCount);
-  std::unique_ptr<AudioBus> expected =
-      AudioBus::Create(kTestVectorChannelCount, kTestVectorFrameCount);
-  expected->Zero();
-  int current_channel = 0;
-  for (auto partial_channel :
-       expected->AllChannelsSubspan(kPartialStart, kPartialFrames)) {
-    partial_channel.copy_from(base::span(kTestVectorResult[current_channel++])
-                                  .subspan(kPartialStart, kPartialFrames));
+  // Zero out the end of the expected values.
+  const size_t kPartialFrames = 3;
+  std::unique_ptr<AudioBus> expected = this->GetPlanarDataBus();
+  for (auto channel : expected->AllChannels()) {
+    auto [data, zero] = channel.template split_at<kPartialFrames>();
+    std::ranges::fill(zero, 0);
   }
 
+  auto interleaved_subspan =
+      this->GetInterleavedSpan().first(kChannels * kPartialFrames);
+
   {
-    SCOPED_TRACE("SignedInt32SampleTypeTraits");
-    bus->Zero();
-    bus->FromInterleavedPartial<SignedInt32SampleTypeTraits>(
-        UNSAFE_TODO(kTestVectorInt32 + kPartialStart * bus->channels()),
-        kPartialStart, kPartialFrames);
-    VerifyAreEqual(bus.get(), expected.get());
+    SCOPED_TRACE("Safe");
+    // Fill with guard values that should be zero'ed out.
+    std::unique_ptr<AudioBus> bus =
+        this->GetTestBus(/*fill_value=*/kGuardValue);
+    bus->template FromInterleaved<SampleTypeTraits>(
+        interleaved_subspan,
+        /*zero_remaining_frames=*/true);
+    VerifyAreEqualWithEpsilon(bus.get(), expected.get(), this->GetEpsilon());
+  }
+  {
+    SCOPED_TRACE("FromBytes");
+    // Fill with guard values that should be zero'ed out.
+    std::unique_ptr<AudioBus> bus =
+        this->GetTestBus(/*fill_value=*/kGuardValue);
+    bus->template FromInterleavedBytes<SampleTypeTraits>(
+        this->as_bytes(interleaved_subspan),
+        /*zero_remaining_frames=*/true);
+    VerifyAreEqualWithEpsilon(bus.get(), expected.get(), this->GetEpsilon());
+  }
+  {
+    SCOPED_TRACE("Unsafe");
+    // Fill with guard values that should be zero'ed out.
+    std::unique_ptr<AudioBus> bus =
+        this->GetTestBus(/*fill_value=*/kGuardValue);
+    bus->template FromInterleaved<SampleTypeTraits>(interleaved_subspan.data(),
+                                                    kPartialFrames);
+    VerifyAreEqualWithEpsilon(bus.get(), expected.get(), this->GetEpsilon());
+  }
+}
+
+// Verify FromInterleaved() deinterleaves audio in supported formats correctly.
+TYPED_TEST(TypedAudioBusTest, FromInterleavedPartial) {
+  using SampleTypeTraits = TypeParam;
+  using SampleType = SampleTypeTraits::ValueType;
+
+  static constexpr size_t kOffset = 1;
+  static constexpr size_t kCount = 2;
+  static constexpr size_t kTotalOffset = kChannels * kOffset;
+  static constexpr size_t kTotalCount = kChannels * kCount;
+
+  // Fill every span but `data` with guard values, as these shouldn't be
+  // overwritten by FromInterleavedPartial().
+  std::unique_ptr<AudioBus> expected = this->GetPlanarDataBus();
+  for (auto channel : expected->AllChannels()) {
+    auto [head, rem] = channel.template split_at<kOffset>();
+    auto [data, tail] = rem.template split_at<kCount>();
+    std::ranges::fill(head, kGuardValue);
+    std::ranges::fill(tail, kGuardValue);
+  }
+
+  base::span<const SampleType> interleaved_data =
+      this->GetInterleavedSpan().subspan(kTotalOffset, kTotalCount);
+
+  {
+    SCOPED_TRACE("Safe");
+    // Fill with guard values that should untouched.
+    std::unique_ptr<AudioBus> bus =
+        this->GetTestBus(/*fill_value=*/kGuardValue);
+    bus->template FromInterleavedPartial<SampleTypeTraits>(interleaved_data,
+                                                           kOffset);
+
+    VerifyAreEqualWithEpsilon(bus.get(), expected.get(), this->GetEpsilon());
+  }
+  {
+    SCOPED_TRACE("FromBytes");
+    // Fill with guard values that should untouched.
+    std::unique_ptr<AudioBus> bus =
+        this->GetTestBus(/*fill_value=*/kGuardValue);
+    bus->template FromInterleavedBytesPartial<SampleTypeTraits>(
+        this->as_bytes(interleaved_data), kOffset);
+
+    VerifyAreEqualWithEpsilon(bus.get(), expected.get(), this->GetEpsilon());
+  }
+  {
+    SCOPED_TRACE("Unsafe");
+    // Fill with guard values that should untouched.
+    std::unique_ptr<AudioBus> bus =
+        this->GetTestBus(/*fill_value=*/kGuardValue);
+    bus->template FromInterleavedPartial<SampleTypeTraits>(
+        interleaved_data.data(), kOffset, kCount);
+
+    VerifyAreEqualWithEpsilon(bus.get(), expected.get(), this->GetEpsilon());
   }
 }
 
 // Verify ToInterleaved() interleaves audio in supported formats correctly.
-TEST_F(AudioBusTest, ToInterleaved) {
-  std::unique_ptr<AudioBus> bus =
-      AudioBus::Create(kTestVectorChannelCount, kTestVectorFrameCount);
-  // Fill the bus with our test vector.
-  for (int ch = 0; ch < bus->channels(); ++ch) {
-    bus->channel(ch).copy_from(base::span(kTestVectorResult[ch]));
-  }
+TYPED_TEST(TypedAudioBusTest, ToInterleaved) {
+  using SampleTypeTraits = TypeParam;
+  using ValueType = typename SampleTypeTraits::ValueType;
+  using TestArray = TypedAudioBusTest<SampleTypeTraits>::InterleavedArray;
 
-  {
-    SCOPED_TRACE("UnsignedInt8SampleTypeTraits");
-    uint8_t test_array[std::size(kTestVectorUint8)];
-    bus->ToInterleaved<UnsignedInt8SampleTypeTraits>(bus->frames(), test_array);
-    UNSAFE_TODO(ASSERT_EQ(
-        0, memcmp(test_array, kTestVectorUint8, sizeof(kTestVectorUint8))));
-  }
-  {
-    SCOPED_TRACE("SignedInt16SampleTypeTraits");
-    int16_t test_array[std::size(kTestVectorInt16)];
-    bus->ToInterleaved<SignedInt16SampleTypeTraits>(bus->frames(), test_array);
-    UNSAFE_TODO(ASSERT_EQ(
-        0, memcmp(test_array, kTestVectorInt16, sizeof(kTestVectorInt16))));
-  }
-  {
-    SCOPED_TRACE("SignedInt32SampleTypeTraits");
-    int32_t test_array[std::size(kTestVectorInt32)];
-    bus->ToInterleaved<SignedInt32SampleTypeTraits>(bus->frames(), test_array);
+  base::span<const ValueType> expected_span = this->GetInterleavedSpan();
+  auto verify_array = [&](const TestArray& dest_array) {
+    if constexpr (std::is_same_v<ValueType, int32_t>) {
+      ASSERT_TRUE(base::span(dest_array) == expected_span ||
+                  base::span(dest_array) == this->GetAlternateValidResult());
+    } else {
+      ASSERT_EQ(base::span(dest_array), expected_span);
+    }
+  };
 
-    // Some compilers get better precision than others on the half-max test, so
-    // let the test pass with an off by one check on the half-max.
-    int32_t alternative_acceptable_result[std::size(kTestVectorInt32)];
-    UNSAFE_TODO(memcpy(alternative_acceptable_result, kTestVectorInt32,
-                       sizeof(kTestVectorInt32)));
-    ASSERT_EQ(alternative_acceptable_result[4],
-              std::numeric_limits<int32_t>::max() / 2);
-    alternative_acceptable_result[4]++;
-
-    UNSAFE_TODO(ASSERT_TRUE(
-        memcmp(test_array, kTestVectorInt32, sizeof(kTestVectorInt32)) == 0 ||
-        memcmp(test_array, alternative_acceptable_result,
-               sizeof(alternative_acceptable_result)) == 0));
+  std::unique_ptr<AudioBus> source_bus = this->GetPlanarDataBus();
+  {
+    SCOPED_TRACE("Safe");
+    TestArray dest_array;
+    source_bus->template ToInterleaved<SampleTypeTraits>(dest_array);
+    verify_array(dest_array);
   }
   {
-    SCOPED_TRACE("Float32SampleTypeTraits");
-    float test_array[std::size(kTestVectorFloat32)];
-    bus->ToInterleaved<Float32SampleTypeTraits>(bus->frames(), test_array);
-    UNSAFE_TODO(ASSERT_EQ(
-        0, memcmp(test_array, kTestVectorFloat32, sizeof(kTestVectorFloat32))));
+    SCOPED_TRACE("ToBytes");
+    TestArray dest_array;
+    source_bus->template ToInterleavedBytes<SampleTypeTraits>(
+        this->as_writable_bytes(dest_array));
+    verify_array(dest_array);
+  }
+  {
+    SCOPED_TRACE("Unsafe");
+    TestArray dest_array;
+    source_bus->template ToInterleaved<SampleTypeTraits>(kFrames,
+                                                         dest_array.data());
+    verify_array(dest_array);
+  }
+}
+
+// Verify ToInterleaved() interleaves audio in supported formats correctly.
+TYPED_TEST(TypedAudioBusTest, ToInterleavedPartial) {
+  using SampleTypeTraits = TypeParam;
+  using ValueType = typename SampleTypeTraits::ValueType;
+  static constexpr size_t kOffset = 1;
+  static constexpr size_t kCount = 2;
+  static constexpr size_t kTotalOffset = kChannels * kOffset;
+  static constexpr size_t kTotalCount = kChannels * kCount;
+  using TestArray = std::array<ValueType, kTotalCount>;
+  base::span<const ValueType> expected_span =
+      this->GetInterleavedSpan().subspan(kTotalOffset, kTotalCount);
+
+  auto verify_array = [&](const TestArray& dest_array) {
+    if constexpr (std::is_same_v<ValueType, int32_t>) {
+      auto alternate_valid_data = this->GetAlternateValidResult();
+      auto alternate_span =
+          base::span(alternate_valid_data).subspan(kTotalOffset, kTotalCount);
+      ASSERT_TRUE(base::span(dest_array) == expected_span ||
+                  base::span(dest_array) == alternate_span);
+    } else {
+      ASSERT_EQ(base::span(dest_array), expected_span);
+    }
+  };
+
+  std::unique_ptr<AudioBus> source_bus = this->GetPlanarDataBus();
+  {
+    SCOPED_TRACE("Safe");
+    TestArray dest_array;
+    source_bus->template ToInterleavedPartial<SampleTypeTraits>(kOffset,
+                                                                dest_array);
+    verify_array(dest_array);
+  }
+  {
+    SCOPED_TRACE("ToBytes");
+    TestArray dest_array;
+    source_bus->template ToInterleavedBytesPartial<SampleTypeTraits>(
+        kOffset, this->as_writable_bytes(dest_array));
+    verify_array(dest_array);
+  }
+  {
+    SCOPED_TRACE("Unsafe");
+    TestArray dest_array;
+    source_bus->template ToInterleavedPartial<SampleTypeTraits>(
+        kOffset, kCount, dest_array.data());
+    verify_array(dest_array);
   }
 }
 
 TEST_F(AudioBusTest, ToInterleavedSanitized) {
-  std::unique_ptr<AudioBus> bus =
-      AudioBus::Create(kTestVectorChannelCount, kTestVectorFrameCount);
+  std::unique_ptr<AudioBus> bus = AudioBus::Create(kChannels, kFrames);
   bus->FromInterleaved<Float32SampleTypeTraits>(kTestVectorFloat32Invalid,
                                                 bus->frames());
+  // Verify FromInterleaved applied no sanitization, for test setup.
+  ASSERT_EQ(bus->channel(0)[0], kTestVectorFloat32Invalid[0]);
+
+  // VerifyToInterleaved applied sanitization.
+  std::array<float, std::size(kTestVectorFloat32Sanitized)> test_array;
+  bus->ToInterleaved<Float32SampleTypeTraits>(test_array);
+  ASSERT_EQ(kTestVectorFloat32Sanitized, test_array);
+
+  // Verify that Float32SampleTypeTraitsNoClip applied no sanity. Note: We don't
+  // use memcmp() here since the NaN type may change on x86 platforms in certain
+  // circumstances, see https://gcc.gnu.org/bugzilla/show_bug.cgi?id=57484
+  bus->ToInterleaved<Float32SampleTypeTraitsNoClip>(test_array);
+  for (size_t i = 0; i < kTotalFrames; ++i) {
+    if (std::isnan(test_array[i])) {
+      EXPECT_TRUE(std::isnan(kTestVectorFloat32Invalid[i]));
+    } else {
+      EXPECT_FLOAT_EQ(test_array[i], kTestVectorFloat32Invalid[i]);
+    }
+  }
+}
+
+TEST_F(AudioBusTest, ToInterleavedSanitized_Unsafe) {
+  std::unique_ptr<AudioBus> bus = AudioBus::Create(kChannels, kFrames);
+  bus->FromInterleaved<Float32SampleTypeTraits>(
+      kTestVectorFloat32Invalid.data(), bus->frames());
   // Verify FromInterleaved applied no sanity.
   ASSERT_EQ(bus->channel(0)[0], kTestVectorFloat32Invalid[0]);
   std::array<float, std::size(kTestVectorFloat32Sanitized)> test_array;
   bus->ToInterleaved<Float32SampleTypeTraits>(bus->frames(), test_array.data());
-  for (size_t i = 0; i < std::size(kTestVectorFloat32Sanitized); ++i)
-    UNSAFE_TODO(ASSERT_EQ(kTestVectorFloat32Sanitized[i], test_array[i]));
+  for (size_t i = 0; i < std::size(kTestVectorFloat32Sanitized); ++i) {
+    ASSERT_EQ(kTestVectorFloat32Sanitized[i], test_array[i]);
+  }
 
   // Verify that Float32SampleTypeTraitsNoClip applied no sanity. Note: We don't
   // use memcmp() here since the NaN type may change on x86 platforms in certain
   // circumstances, see https://gcc.gnu.org/bugzilla/show_bug.cgi?id=57484
   bus->ToInterleaved<Float32SampleTypeTraitsNoClip>(bus->frames(),
                                                     test_array.data());
-  for (int i = 0; i < kTestVectorSize; ++i) {
-    if (std::isnan(test_array[i]))
-      UNSAFE_TODO(EXPECT_TRUE(std::isnan(kTestVectorFloat32Invalid[i])));
-    else
-      UNSAFE_TODO(EXPECT_FLOAT_EQ(test_array[i], kTestVectorFloat32Invalid[i]));
+  for (size_t i = 0; i < kTotalFrames; ++i) {
+    if (std::isnan(test_array[i])) {
+      EXPECT_TRUE(std::isnan(kTestVectorFloat32Invalid[i]));
+    } else {
+      EXPECT_FLOAT_EQ(test_array[i], kTestVectorFloat32Invalid[i]);
+    }
   }
 }
 
 TEST_F(AudioBusTest, CopyAndClipTo) {
-  auto bus = AudioBus::Create(kTestVectorChannelCount, kTestVectorFrameCount);
+  auto bus = AudioBus::Create(kChannels, kFrames);
   bus->FromInterleaved<Float32SampleTypeTraits>(kTestVectorFloat32Invalid,
                                                 bus->frames());
-  auto expected =
-      AudioBus::Create(kTestVectorChannelCount, kTestVectorFrameCount);
+  auto expected = AudioBus::Create(kChannels, kFrames);
   expected->FromInterleaved<Float32SampleTypeTraits>(
       kTestVectorFloat32Sanitized, bus->frames());
 
   // Verify FromInterleaved applied no sanity.
   ASSERT_EQ(bus->channel(0)[0], kTestVectorFloat32Invalid[0]);
 
-  std::unique_ptr<AudioBus> copy_to_bus =
-      AudioBus::Create(kTestVectorChannelCount, kTestVectorFrameCount);
+  std::unique_ptr<AudioBus> copy_to_bus = AudioBus::Create(kChannels, kFrames);
   bus->CopyAndClipTo(copy_to_bus.get());
 
   for (int ch = 0; ch < expected->channels(); ++ch) {
-    for (int i = 0; i < expected->frames(); ++i)
+    for (int i = 0; i < expected->frames(); ++i) {
       ASSERT_EQ(copy_to_bus->channel(ch)[i], expected->channel(ch)[i]);
+    }
   }
 
   ASSERT_EQ(expected->channels(), copy_to_bus->channels());
@@ -616,136 +847,9 @@ TEST_F(AudioBusTest, CopyAndClipTo) {
             copy_to_bus->is_bitstream_format());
 }
 
-// Verify ToInterleavedPartial() interleaves audio correctly.
-TEST_F(AudioBusTest, ToInterleavedPartial) {
-  // Only interleave the middle two frames in each channel.
-  static constexpr size_t kPartialStart = 1;
-  static constexpr size_t kPartialFrames = 2;
-  ASSERT_LE(kPartialStart + kPartialFrames, kTestVectorFrameCount);
-
-  std::unique_ptr<AudioBus> expected =
-      AudioBus::Create(kTestVectorChannelCount, kTestVectorFrameCount);
-  for (int ch = 0; ch < kTestVectorChannelCount; ++ch) {
-    expected->channel(ch).copy_from(base::span(kTestVectorResult[ch]));
-  }
-
-  {
-    SCOPED_TRACE("Float32SampleTypeTraits");
-    float test_array[std::size(kTestVectorFloat32)];
-    expected->ToInterleavedPartial<Float32SampleTypeTraits>(
-        kPartialStart, kPartialFrames, test_array);
-    UNSAFE_TODO(ASSERT_EQ(
-        0, memcmp(test_array,
-                  kTestVectorFloat32 + kPartialStart * kTestVectorChannelCount,
-                  kPartialFrames * sizeof(*kTestVectorFloat32) *
-                      kTestVectorChannelCount)));
-  }
-}
-
-struct ZeroingOutTestData {
-  static constexpr int kChannelCount = 2;
-  static constexpr int kFrameCount = 10;
-  static constexpr int kInterleavedFrameCount = 3;
-
-  std::unique_ptr<AudioBus> bus_under_test;
-  std::vector<float> interleaved_dummy_frames;
-
-  ZeroingOutTestData() {
-    // Create a bus and fill each channel with a test pattern of form
-    // [1.0, 2.0, 3.0, ...]
-    bus_under_test = AudioBus::Create(kChannelCount, kFrameCount);
-    for (auto channel : bus_under_test->AllChannels()) {
-      int value = 1;
-      for (float& sample : channel) {
-        sample = value++;
-      }
-    }
-
-    // Create a vector containing dummy interleaved samples.
-    static const float kDummySampleValue = 0.123f;
-    interleaved_dummy_frames.resize(kChannelCount * kInterleavedFrameCount);
-    std::fill(interleaved_dummy_frames.begin(), interleaved_dummy_frames.end(),
-              kDummySampleValue);
-  }
-};
-
-TEST_F(AudioBusTest, FromInterleavedZerosOutUntouchedFrames) {
-  ZeroingOutTestData test_data;
-
-  // Exercise
-  test_data.bus_under_test->FromInterleaved<Float32SampleTypeTraits>(
-      &test_data.interleaved_dummy_frames[0], test_data.kInterleavedFrameCount);
-
-  const size_t untouched_frame_count =
-      test_data.kFrameCount - test_data.kInterleavedFrameCount;
-
-  // Verification
-  for (auto partial_channel : test_data.bus_under_test->AllChannelsSubspan(
-           test_data.kInterleavedFrameCount, untouched_frame_count)) {
-    for (auto sample : partial_channel) {
-      ASSERT_EQ(0.0f, sample);
-    }
-  }
-}
-
-TEST_F(AudioBusTest, FromInterleavedPartialDoesNotZeroOutUntouchedFrames) {
-  {
-    SCOPED_TRACE("Zero write offset");
-
-    ZeroingOutTestData test_data;
-    static const int kWriteOffsetInFrames = 0;
-
-    // Exercise
-    test_data.bus_under_test->FromInterleavedPartial<Float32SampleTypeTraits>(
-        &test_data.interleaved_dummy_frames[0], kWriteOffsetInFrames,
-        test_data.kInterleavedFrameCount);
-
-    // Verification
-    for (int ch = 0; ch < test_data.kChannelCount; ++ch) {
-      auto sample_array_for_current_channel =
-          test_data.bus_under_test->channel(ch);
-      for (int frame_index =
-               test_data.kInterleavedFrameCount + kWriteOffsetInFrames;
-           frame_index < test_data.kFrameCount; frame_index++) {
-        ASSERT_EQ(frame_index + 1,
-                  sample_array_for_current_channel[frame_index]);
-      }
-    }
-  }
-  {
-    SCOPED_TRACE("Positive write offset");
-
-    ZeroingOutTestData test_data;
-    static const int kWriteOffsetInFrames = 2;
-
-    // Exercise
-    test_data.bus_under_test->FromInterleavedPartial<Float32SampleTypeTraits>(
-        &test_data.interleaved_dummy_frames[0], kWriteOffsetInFrames,
-        test_data.kInterleavedFrameCount);
-
-    // Verification
-    for (int ch = 0; ch < test_data.kChannelCount; ++ch) {
-      auto sample_array_for_current_channel =
-          test_data.bus_under_test->channel(ch);
-      // Check untouched frames before write offset
-      for (int frame_index = 0; frame_index < kWriteOffsetInFrames;
-           frame_index++) {
-        ASSERT_EQ(frame_index + 1,
-                  sample_array_for_current_channel[frame_index]);
-      }
-      // Check untouched frames after write
-      for (int frame_index =
-               test_data.kInterleavedFrameCount + kWriteOffsetInFrames;
-           frame_index < test_data.kFrameCount; frame_index++) {
-        ASSERT_EQ(frame_index + 1,
-                  sample_array_for_current_channel[frame_index]);
-      }
-    }
-  }
-}
-
 TEST_F(AudioBusTest, Scale) {
-  std::unique_ptr<AudioBus> bus = AudioBus::Create(kChannels, kFrameCount);
+  std::unique_ptr<AudioBus> bus =
+      AudioBus::Create(kDefaultChannels, kFrameCount);
 
   // Fill the bus with dummy data.
   static constexpr float kFillValue = 1;

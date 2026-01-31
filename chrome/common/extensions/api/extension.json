@@ -51,7 +51,7 @@
             {
               "name": "response",
               "type": "any",
-              "description": "The JSON response object sent by the handler of the request. If an error occurs while connecting to the extension, the callback will be called with no arguments and $(ref:runtime.lastError) will be set to the error message."
+              "description": "The JSON response object sent by the handler of the request. If an error occurs while connecting to the extension, the promise will be rejected."
             }
           ]
         }

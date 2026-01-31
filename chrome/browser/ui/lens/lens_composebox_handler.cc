@@ -10,7 +10,6 @@
 #include <string>
 
 #include "base/memory/raw_ptr.h"
-#include "base/notreached.h"
 #include "base/time/time.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/lens/lens_composebox_controller.h"
@@ -97,8 +96,12 @@ void LensComposeboxOmniboxClient::OnAutocompleteAccept(
     const AutocompleteMatch& alternative_nav_match) {
   std::string query_text;
   net::GetValueForKeyInQuery(destination_url, "q", &query_text);
+  std::map<std::string, std::string> additional_query_params =
+      lens::GetParametersMapWithoutQuery(destination_url);
+
   /* TODO(crbug.com/465154864): Add `aep` param value in lens AIM queries. */
-  lens_composebox_controller_->IssueComposeboxQuery(query_text);
+  lens_composebox_controller_->IssueComposeboxQuery(query_text,
+                                                    additional_query_params);
 }
 
 std::optional<lens::proto::LensOverlaySuggestInputs>
@@ -142,7 +145,9 @@ void LensComposeboxHandler::SubmitQuery(const std::string& query_text,
                                         bool ctrl_key,
                                         bool meta_key,
                                         bool shift_key) {
-  lens_composebox_controller_->IssueComposeboxQuery(query_text);
+  lens_composebox_controller_->IssueComposeboxQuery(
+      query_text,
+      /*additional_query_params=*/{});
 }
 
 void LensComposeboxHandler::FocusChanged(bool focused) {
@@ -150,16 +155,12 @@ void LensComposeboxHandler::FocusChanged(bool focused) {
 }
 
 void LensComposeboxHandler::SetDeepSearchMode(bool enabled) {
-  // Intentionally unimplemented for Lens. Deep search not yet implemented
-  // in Lens.
-  NOTREACHED();
+  mojo::ReportBadMessage("Deep search not implemented for lens");
 }
 
 void LensComposeboxHandler::SetCreateImageMode(bool enabled,
                                                bool image_present) {
-  // Intentionally unimplemented for Lens. Create image not yet implemented
-  // in Lens.
-  NOTREACHED();
+  mojo::ReportBadMessage("Create image not implemented for lens");
 }
 
 void LensComposeboxHandler::HandleLensButtonClick() {
@@ -167,14 +168,18 @@ void LensComposeboxHandler::HandleLensButtonClick() {
 }
 
 void LensComposeboxHandler::HandleFileUpload(bool is_image) {
-  // Intentionally unimplemented for Lens, file upload is not yet
+  mojo::ReportBadMessage("File upload is not implemented in Lens");
+}
+
+void LensComposeboxHandler::NavigateUrl(const GURL& url) {
+  // Intentionally unimplemented for Lens, URL navigation is not yet
   // implemented in Lens.
-  NOTREACHED();
+  mojo::ReportBadMessage("URL navigation is not implemented in Lens");
 }
 
 void LensComposeboxHandler::DeleteAutocompleteMatch(uint8_t line,
                                                     const GURL& url) {
-  NOTREACHED();
+  mojo::ReportBadMessage("Delete autocomplete match not implemented in lens");
 }
 
 void LensComposeboxHandler::ExecuteAction(
@@ -187,11 +192,11 @@ void LensComposeboxHandler::ExecuteAction(
     bool ctrl_key,
     bool meta_key,
     bool shift_key) {
-  NOTREACHED();
+  mojo::ReportBadMessage("No actions in lens composebox");
 }
 
 void LensComposeboxHandler::OnThumbnailRemoved() {
-  NOTREACHED();
+  mojo::ReportBadMessage("No thumbnails in lens composebox input");
 }
 
 void LensComposeboxHandler::DeleteContext(

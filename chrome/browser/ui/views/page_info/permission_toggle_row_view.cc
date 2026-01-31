@@ -220,7 +220,7 @@ void PermissionToggleRowView::InitForUserSource(
       views::DISTANCE_RELATED_LABEL_HORIZONTAL);
   AddToggleButton(toggle_accessible_name, icon_label_spacing);
 
-  const int icon_size = GetLayoutConstant(PAGE_INFO_ICON_SIZE);
+  const int icon_size = GetLayoutConstant(LayoutConstant::kPageInfoIconSize);
 
   if (permission_.is_one_time ||
       permissions::PermissionUtil::DoesSupportTemporaryGrants(

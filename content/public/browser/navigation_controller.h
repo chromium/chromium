@@ -337,6 +337,10 @@ class NavigationController {
     // preserved, via rel="opener".
     bool has_rel_opener = false;
 
+    // If true, any extra headers provided will be removed on a cross-origin
+    // redirect.
+    bool remove_extra_headers_on_cross_origin_redirect = false;
+
     // True if the navigation should not be upgraded to HTTPS. This should only
     // be set in very specific circumstances like navigations to captive portal
     // login URLs which may be broken by HTTPS Upgrades due to the portal's

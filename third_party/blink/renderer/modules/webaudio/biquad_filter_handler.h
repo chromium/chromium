@@ -11,12 +11,13 @@
 #include "base/task/single_thread_task_runner.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_biquad_filter_type.h"
 #include "third_party/blink/renderer/modules/webaudio/audio_handler.h"
+#include "third_party/blink/renderer/platform/audio/audio_array.h"
 
 namespace blink {
 
 class AudioNode;
 class AudioParamHandler;
-class BiquadProcessor;
+class Biquad;
 
 class BiquadFilterHandler final : public AudioHandler {
  public:
@@ -30,7 +31,7 @@ class BiquadFilterHandler final : public AudioHandler {
   BiquadFilterHandler(const BiquadFilterHandler&) = delete;
   BiquadFilterHandler& operator=(const BiquadFilterHandler&) = delete;
 
-  ~BiquadFilterHandler() override = default;
+  ~BiquadFilterHandler() override;
 
   // AudioHandler
   void Process(uint32_t frames_to_process) override;
@@ -76,7 +77,40 @@ class BiquadFilterHandler final : public AudioHandler {
 
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
 
-  std::unique_ptr<BiquadProcessor> processor_;
+  V8BiquadFilterType::Enum type_ = V8BiquadFilterType::Enum::kLowpass;
+
+  scoped_refptr<AudioParamHandler> parameter_cutoff_frequency_;
+  scoped_refptr<AudioParamHandler> parameter_q_;
+  scoped_refptr<AudioParamHandler> parameter_gain_;
+  scoped_refptr<AudioParamHandler> parameter_detune_;
+
+  bool has_just_reset_ GUARDED_BY(process_lock_) = true;
+
+  // Cache previous parameter values to allow us to skip recomputing filter
+  // coefficients when parameters are not changing
+  float previous_parameter_cutoff_frequency_ =
+      std::numeric_limits<float>::quiet_NaN();
+  float previous_parameter_q_ = std::numeric_limits<float>::quiet_NaN();
+  float previous_parameter_gain_ = std::numeric_limits<float>::quiet_NaN();
+  float previous_parameter_detune_ = std::numeric_limits<float>::quiet_NaN();
+
+  const double sample_rate_;
+  const double nyquist_;
+  const unsigned render_quantum_frames_;
+
+  double tail_time_ GUARDED_BY(process_lock_) =
+      std::numeric_limits<double>::infinity();
+
+  Vector<std::unique_ptr<Biquad>> biquads_ GUARDED_BY(process_lock_);
+
+  // Temporary storage for parameter calculations.
+  AudioFloatArray cutoff_frequency_sample_accurate_values_;
+  AudioFloatArray q_sample_accurate_values_;
+  AudioFloatArray gain_sample_accurate_values_;
+  AudioFloatArray detune_sample_accurate_values_;
+
+  // Synchronize process() with getting and setting the filter coefficients.
+  mutable base::Lock process_lock_;
 
   base::WeakPtrFactory<BiquadFilterHandler> weak_ptr_factory_{this};
 };

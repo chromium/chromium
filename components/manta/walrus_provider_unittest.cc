@@ -91,7 +91,7 @@ TEST_F(WalrusProviderTest, CaptureUnexcpetedStatusCode) {
       text_prompt, images,
       base::BindLambdaForTesting(
           [quit_closure = task_environment_.QuitClosure()](
-              base::Value::Dict response, MantaStatus manta_status) {
+              base::DictValue response, MantaStatus manta_status) {
             EXPECT_EQ(manta_status.status_code,
                       MantaStatusCode::kBackendFailure);
             quit_closure.Run();
@@ -112,7 +112,7 @@ TEST_F(WalrusProviderTest, CaptureNetError) {
       text_prompt, images,
       base::BindLambdaForTesting(
           [quit_closure = task_environment_.QuitClosure()](
-              base::Value::Dict response, MantaStatus manta_status) {
+              base::DictValue response, MantaStatus manta_status) {
             EXPECT_EQ(manta_status.status_code,
                       MantaStatusCode::kNoInternetConnection);
             quit_closure.Run();
@@ -134,7 +134,7 @@ TEST_F(WalrusProviderTest, InvalidInput) {
       text_prompt, images,
       base::BindLambdaForTesting(
           [quit_closure = task_environment_.QuitClosure()](
-              base::Value::Dict response, MantaStatus manta_status) {
+              base::DictValue response, MantaStatus manta_status) {
             EXPECT_EQ(manta_status.status_code, MantaStatusCode::kInvalidInput);
             quit_closure.Run();
           }));
@@ -164,14 +164,14 @@ TEST_F(WalrusProviderTest, SuccessfulResponse) {
 
   walrus_provider->Filter(
       text_prompt, images,
-      base::BindLambdaForTesting([&quit_closure](base::Value::Dict response,
-                                                 MantaStatus manta_status) {
-        // Even though the response has text and image, walrus just
-        // returns the status code
-        ASSERT_EQ(MantaStatusCode::kOk, manta_status.status_code);
-        ASSERT_TRUE(response.empty());
-        quit_closure.Run();
-      }));
+      base::BindLambdaForTesting(
+          [&quit_closure](base::DictValue response, MantaStatus manta_status) {
+            // Even though the response has text and image, walrus just
+            // returns the status code
+            ASSERT_EQ(MantaStatusCode::kOk, manta_status.status_code);
+            ASSERT_TRUE(response.empty());
+            quit_closure.Run();
+          }));
   task_environment_.RunUntilQuit();
 
   // Metric is logged when response is successfully parsed.
@@ -199,7 +199,7 @@ TEST_F(WalrusProviderTest, TextBlocked) {
 
   walrus_provider->Filter(
       text_prompt, images,
-      base::BindLambdaForTesting([&quit_closure](base::Value::Dict response,
+      base::BindLambdaForTesting([&quit_closure](base::DictValue response,
                                                  MantaStatus manta_status) {
         // Even though the response has text and image, walrus just
         // returns the status code.
@@ -240,7 +240,7 @@ TEST_F(WalrusProviderTest, TextImageBothBlocked) {
 
   walrus_provider->Filter(
       text_prompt, images,
-      base::BindLambdaForTesting([&quit_closure](base::Value::Dict response,
+      base::BindLambdaForTesting([&quit_closure](base::DictValue response,
                                                  MantaStatus manta_status) {
         // Even though the response has text and image, walrus just
         // returns the status code
@@ -267,7 +267,7 @@ TEST_F(WalrusProviderTest, EmptyResponseAfterIdentityManagerShutdown) {
   walrus_provider->Filter(
       text_prompt, base::BindLambdaForTesting(
                        [quit_closure = task_environment_.QuitClosure()](
-                           base::Value::Dict dict, MantaStatus manta_status) {
+                           base::DictValue dict, MantaStatus manta_status) {
                          ASSERT_TRUE(dict.empty());
                          ASSERT_EQ(MantaStatusCode::kNoIdentityManager,
                                    manta_status.status_code);
@@ -346,14 +346,14 @@ TEST_F(WalrusProviderTest, GeneratedRegion) {
 
   walrus_provider->Filter(
       text_prompt, images, image_types,
-      base::BindLambdaForTesting([&quit_closure](base::Value::Dict response,
-                                                 MantaStatus manta_status) {
-        // Even though the response has text and image, walrus just
-        // returns the status code
-        ASSERT_EQ(MantaStatusCode::kOk, manta_status.status_code);
-        ASSERT_TRUE(response.empty());
-        quit_closure.Run();
-      }));
+      base::BindLambdaForTesting(
+          [&quit_closure](base::DictValue response, MantaStatus manta_status) {
+            // Even though the response has text and image, walrus just
+            // returns the status code
+            ASSERT_EQ(MantaStatusCode::kOk, manta_status.status_code);
+            ASSERT_TRUE(response.empty());
+            quit_closure.Run();
+          }));
   task_environment_.RunUntilQuit();
 }
 
@@ -386,11 +386,11 @@ TEST_F(WalrusProviderTest, ImageTypeSizeMismatch) {
 
   walrus_provider->Filter(
       text_prompt, images, image_types,
-      base::BindLambdaForTesting([&quit_closure](base::Value::Dict response,
-                                                 MantaStatus manta_status) {
-        EXPECT_EQ(manta_status.status_code, MantaStatusCode::kInvalidInput);
-        quit_closure.Run();
-      }));
+      base::BindLambdaForTesting(
+          [&quit_closure](base::DictValue response, MantaStatus manta_status) {
+            EXPECT_EQ(manta_status.status_code, MantaStatusCode::kInvalidInput);
+            quit_closure.Run();
+          }));
   task_environment_.RunUntilQuit();
 }
 

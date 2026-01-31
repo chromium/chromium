@@ -38,7 +38,7 @@ int64_t GenerateAndStoreClientId(PrefService* pref_service) {
   client_id = number;
   if (client_id == 0) {
     // Reassign client_id to a non-zero number.
-    client_id = base::RandInt(1, 10000);
+    client_id = base::RandIntInclusive(1, 10000);
   }
 
   pref_service->SetInt64(optimization_guide::model_execution::prefs::

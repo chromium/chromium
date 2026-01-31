@@ -7,9 +7,9 @@
 
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
+#include "chrome/browser/glic/public/glic_side_panel_coordinator.h"
 #include "chrome/browser/glic/service/glic_ui_embedder.h"
 #include "chrome/browser/glic/widget/inactive_view_controller.h"
-#include "chrome/browser/ui/views/side_panel/glic/glic_side_panel_coordinator.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/views/view_observer.h"
 
@@ -37,7 +37,7 @@ class GlicInactiveSidePanelUi : public GlicUiEmbedder,
   Host::EmbedderDelegate* GetHostEmbedderDelegate() override;
   void Show(const ShowOptions& options) override;
   bool IsShowing() const override;
-  void Close() override;
+  void Close(const CloseOptions& options) override;
   std::unique_ptr<GlicUiEmbedder> CreateInactiveEmbedder() const override;
   void Focus() override;
   bool HasFocus() override;

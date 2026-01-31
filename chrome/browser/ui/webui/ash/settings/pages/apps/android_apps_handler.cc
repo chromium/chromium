@@ -79,8 +79,8 @@ void AndroidAppsHandler::OnArcPlayStoreEnabledChanged(bool enabled) {
   SendAndroidAppsInfo();
 }
 
-base::Value::Dict AndroidAppsHandler::BuildAndroidAppsInfo() {
-  base::Value::Dict info;
+base::DictValue AndroidAppsHandler::BuildAndroidAppsInfo() {
+  base::DictValue info;
   info.Set("playStoreEnabled", arc::IsArcPlayStoreEnabledForProfile(profile_));
   const ArcAppListPrefs* arc_apps_pref = ArcAppListPrefs::Get(profile_);
   // TODO(khmel): Inverstigate why in some browser tests
@@ -91,7 +91,7 @@ base::Value::Dict AndroidAppsHandler::BuildAndroidAppsInfo() {
 }
 
 void AndroidAppsHandler::HandleRequestAndroidAppsInfo(
-    const base::Value::List& args) {
+    const base::ListValue& args) {
   AllowJavascript();
   SendAndroidAppsInfo();
 }
@@ -100,8 +100,7 @@ void AndroidAppsHandler::SendAndroidAppsInfo() {
   FireWebUIListener("android-apps-info-update", BuildAndroidAppsInfo());
 }
 
-void AndroidAppsHandler::ShowAndroidAppsSettings(
-    const base::Value::List& args) {
+void AndroidAppsHandler::ShowAndroidAppsSettings(const base::ListValue& args) {
   CHECK_EQ(1U, args.size());
   bool activated_from_keyboard = false;
   if (args[0].is_bool()) {

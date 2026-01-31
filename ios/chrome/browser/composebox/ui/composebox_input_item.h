@@ -9,7 +9,7 @@
 
 namespace base {
 class UnguessableToken;
-}
+}  // namespace base
 
 // Enum for the loading state of an item.
 enum class ComposeboxInputItemState {
@@ -46,6 +46,8 @@ enum class ComposeboxInputItemType {
 @property(nonatomic, strong) UIImage* leadingIconImage;
 // The title for this item.
 @property(nonatomic, copy) NSString* title;
+// The local upload index for this item.
+@property(nonatomic, assign) NSInteger uploadIndex;
 // The current state of the item.
 @property(nonatomic, assign) ComposeboxInputItemState state;
 // The type of the input item.

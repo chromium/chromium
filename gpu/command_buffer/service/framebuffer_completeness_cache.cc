@@ -4,7 +4,6 @@
 
 #include "gpu/command_buffer/service/framebuffer_completeness_cache.h"
 
-#include "base/containers/contains.h"
 
 namespace gpu::gles2 {
 
@@ -14,7 +13,7 @@ FramebufferCompletenessCache::~FramebufferCompletenessCache() = default;
 
 bool FramebufferCompletenessCache::IsComplete(
     const std::string& signature) const {
-  return base::Contains(cache_, signature);
+  return cache_.contains(signature);
 }
 
 void FramebufferCompletenessCache::SetComplete(const std::string& signature) {

@@ -24,7 +24,12 @@ BrowserRenderer::BrowserRenderer(
       ui_processing_time_(sliding_time_size),
       ui_(std::move(ui)) {}
 
-BrowserRenderer::~BrowserRenderer() = default;
+BrowserRenderer::~BrowserRenderer() {
+  // Ui destructor might access context to free the resources.
+  graphics_delegate_->BindContext();
+  ui_.reset();
+  graphics_delegate_->ClearContext();
+}
 
 void BrowserRenderer::DrawBrowserFrame(base::TimeTicks current_time,
                                        const gfx::Transform& head_pose) {

@@ -41,9 +41,9 @@ using ::testing::InSequence;
 using ::testing::Mock;
 using ::testing::StrictMock;
 
-constexpr base::ByteCount kDetachedBytes = base::ByteCount(0xDEED);
-constexpr base::ByteCount kSharedBytes = base::ByteCount(0xABBA);
-constexpr base::ByteCount kBlinkBytes = base::ByteCount(0x1001);
+constexpr base::ByteSize kDetachedBytes = base::ByteSize(0xDEED);
+constexpr base::ByteSize kSharedBytes = base::ByteSize(0xABBA);
+constexpr base::ByteSize kBlinkBytes = base::ByteSize(0x1001);
 
 namespace {
 
@@ -57,7 +57,7 @@ class LenientMockV8DetailedMemoryObserver : public V8DetailedMemoryObserver {
 
   void ExpectObservationOnProcess(
       const ProcessNode* process_node,
-      base::ByteCount expected_shared_v8_memory_used) {
+      base::ByteSize expected_shared_v8_memory_used) {
     using ::testing::Eq;
     using ::testing::Property;
     EXPECT_CALL(
@@ -244,13 +244,13 @@ TEST_F(V8DetailedMemoryDecoratorTest, OneShot) {
   MockV8DetailedMemoryReporter mock_reporter1;
   {
     auto data = NewPerProcessV8MemoryUsage(1);
-    data->isolates[0]->shared_memory_used = base::ByteCount(1);
+    data->isolates[0]->shared_memory_used = base::ByteSize(1);
     ExpectBindAndRespondToQuery(&mock_reporter1, std::move(data), kProcessId1);
   }
   MockV8DetailedMemoryReporter mock_reporter2;
   {
     auto data = NewPerProcessV8MemoryUsage(1);
-    data->isolates[0]->shared_memory_used = base::ByteCount(2);
+    data->isolates[0]->shared_memory_used = base::ByteSize(2);
     ExpectBindAndRespondToQuery(&mock_reporter2, std::move(data), kProcessId2);
   }
 
@@ -262,11 +262,11 @@ TEST_F(V8DetailedMemoryDecoratorTest, OneShot) {
   // called only for that process.
   {
     auto data = NewPerProcessV8MemoryUsage(1);
-    data->isolates[0]->shared_memory_used = base::ByteCount(3);
+    data->isolates[0]->shared_memory_used = base::ByteSize(3);
     ExpectQueryAndReply(&mock_reporter1, std::move(data));
   }
 
-  base::ByteCount shared_v8_memory_used;
+  base::ByteSize shared_v8_memory_used;
   V8DetailedMemoryRequestOneShot process1_request;
   process1_request.StartMeasurement(
       process1.get(), base::BindLambdaForTesting(
@@ -281,7 +281,7 @@ TEST_F(V8DetailedMemoryDecoratorTest, OneShot) {
   task_env().RunUntilIdle();
   Mock::VerifyAndClearExpectations(&mock_reporter1);
   Mock::VerifyAndClearExpectations(&mock_reporter2);
-  EXPECT_EQ(shared_v8_memory_used, base::ByteCount(3));
+  EXPECT_EQ(shared_v8_memory_used, base::ByteSize(3));
 }
 
 TEST_F(V8DetailedMemoryDecoratorTest, OneShotLifetime) {
@@ -294,7 +294,7 @@ TEST_F(V8DetailedMemoryDecoratorTest, OneShotLifetime) {
     ExpectBindReceiver(&mock_reporter);
 
     auto data = NewPerProcessV8MemoryUsage(1);
-    data->isolates[0]->shared_memory_used = base::ByteCount(1);
+    data->isolates[0]->shared_memory_used = base::ByteSize(1);
     ExpectQueryAndDelayReply(&mock_reporter, base::Seconds(10),
                              std::move(data));
   }
@@ -318,10 +318,10 @@ TEST_F(V8DetailedMemoryDecoratorTest, OneShotLifetime) {
   // sure nothing explodes.
   {
     auto data = NewPerProcessV8MemoryUsage(1);
-    data->isolates[0]->shared_memory_used = base::ByteCount(2);
+    data->isolates[0]->shared_memory_used = base::ByteSize(2);
     ExpectQueryAndReply(&mock_reporter, std::move(data));
   }
-  base::ByteCount shared_v8_memory_used;
+  base::ByteSize shared_v8_memory_used;
   doomed_request = std::make_unique<V8DetailedMemoryRequestOneShot>(
       process.get(), base::BindLambdaForTesting(
                          [&](const ProcessNode* process_node,
@@ -333,13 +333,13 @@ TEST_F(V8DetailedMemoryDecoratorTest, OneShotLifetime) {
                          }));
   task_env().RunUntilIdle();
   Mock::VerifyAndClearExpectations(&mock_reporter);
-  EXPECT_EQ(shared_v8_memory_used, base::ByteCount(2));
+  EXPECT_EQ(shared_v8_memory_used, base::ByteSize(2));
 
   // Ensure that resource-owning callbacks are freed when there is no response
   // because the process dies.
   {
     auto data = NewPerProcessV8MemoryUsage(1);
-    data->isolates[0]->shared_memory_used = base::ByteCount(3);
+    data->isolates[0]->shared_memory_used = base::ByteSize(3);
     ExpectQueryAndDelayReply(&mock_reporter, base::Seconds(10),
                              std::move(data));
   }
@@ -379,7 +379,7 @@ TEST_F(V8DetailedMemoryDecoratorTest, OneShotLifetimeAtExit) {
     ExpectBindReceiver(&mock_reporter);
 
     auto data = NewPerProcessV8MemoryUsage(1);
-    data->isolates[0]->shared_memory_used = base::ByteCount(1);
+    data->isolates[0]->shared_memory_used = base::ByteSize(1);
     ExpectQueryAndDelayReply(&mock_reporter, base::Seconds(10),
                              std::move(data));
   }
@@ -416,7 +416,7 @@ TEST_F(V8DetailedMemoryDecoratorTest, QueryRateIsLimited) {
   {
     auto data = NewPerProcessV8MemoryUsage(1);
     // Response to request 1.
-    data->isolates[0]->shared_memory_used = base::ByteCount(1);
+    data->isolates[0]->shared_memory_used = base::ByteSize(1);
     ExpectBindAndRespondToQuery(&mock_reporter, std::move(data));
   }
 
@@ -426,7 +426,7 @@ TEST_F(V8DetailedMemoryDecoratorTest, QueryRateIsLimited) {
   task_env().RunUntilIdle();
 
   EXPECT_TRUE(V8DetailedMemoryProcessData::ForProcessNode(process.get()));
-  EXPECT_EQ(base::ByteCount(1),
+  EXPECT_EQ(base::ByteSize(1),
             V8DetailedMemoryProcessData::ForProcessNode(process.get())
                 ->shared_v8_memory_used());
 
@@ -454,7 +454,7 @@ TEST_F(V8DetailedMemoryDecoratorTest, QueryRateIsLimited) {
   Mock::VerifyAndClearExpectations(&mock_reporter);
 
   EXPECT_TRUE(V8DetailedMemoryProcessData::ForProcessNode(process.get()));
-  EXPECT_EQ(base::ByteCount(1),
+  EXPECT_EQ(base::ByteSize(1),
             V8DetailedMemoryProcessData::ForProcessNode(process.get())
                 ->shared_v8_memory_used());
 
@@ -462,7 +462,7 @@ TEST_F(V8DetailedMemoryDecoratorTest, QueryRateIsLimited) {
   {
     auto data = NewPerProcessV8MemoryUsage(1);
     // Response to request 3.
-    data->isolates[0]->shared_memory_used = base::ByteCount(3);
+    data->isolates[0]->shared_memory_used = base::ByteSize(3);
     ExpectQueryAndReply(&mock_reporter, std::move(data));
   }
 
@@ -470,7 +470,7 @@ TEST_F(V8DetailedMemoryDecoratorTest, QueryRateIsLimited) {
   {
     auto data = NewPerProcessV8MemoryUsage(1);
     // Response to request 2.
-    data->isolates[0]->shared_memory_used = base::ByteCount(2);
+    data->isolates[0]->shared_memory_used = base::ByteSize(2);
     std::move(callback).Run(std::move(data));
   }
 
@@ -478,7 +478,7 @@ TEST_F(V8DetailedMemoryDecoratorTest, QueryRateIsLimited) {
 
   // This should have updated all the way to the third response.
   EXPECT_TRUE(V8DetailedMemoryProcessData::ForProcessNode(process.get()));
-  EXPECT_EQ(base::ByteCount(3),
+  EXPECT_EQ(base::ByteSize(3),
             V8DetailedMemoryProcessData::ForProcessNode(process.get())
                 ->shared_v8_memory_used());
 
@@ -495,7 +495,7 @@ TEST_F(V8DetailedMemoryDecoratorTest, MultipleProcessesHaveDistinctSchedules) {
   MockV8DetailedMemoryReporter reporter1;
   {
     auto data = NewPerProcessV8MemoryUsage(1);
-    data->isolates[0]->shared_memory_used = base::ByteCount(1);
+    data->isolates[0]->shared_memory_used = base::ByteSize(1);
     ExpectBindAndRespondToQuery(&reporter1, std::move(data));
   }
 
@@ -509,7 +509,7 @@ TEST_F(V8DetailedMemoryDecoratorTest, MultipleProcessesHaveDistinctSchedules) {
   MockV8DetailedMemoryReporter reporter2;
   {
     auto data = NewPerProcessV8MemoryUsage(1);
-    data->isolates[0]->shared_memory_used = base::ByteCount(2);
+    data->isolates[0]->shared_memory_used = base::ByteSize(2);
     ExpectBindAndRespondToQuery(&reporter2, std::move(data));
   }
 
@@ -520,11 +520,11 @@ TEST_F(V8DetailedMemoryDecoratorTest, MultipleProcessesHaveDistinctSchedules) {
   Mock::VerifyAndClearExpectations(&reporter2);
 
   EXPECT_TRUE(V8DetailedMemoryProcessData::ForProcessNode(process1.get()));
-  EXPECT_EQ(base::ByteCount(1),
+  EXPECT_EQ(base::ByteSize(1),
             V8DetailedMemoryProcessData::ForProcessNode(process1.get())
                 ->shared_v8_memory_used());
   EXPECT_TRUE(V8DetailedMemoryProcessData::ForProcessNode(process2.get()));
-  EXPECT_EQ(base::ByteCount(2),
+  EXPECT_EQ(base::ByteSize(2),
             V8DetailedMemoryProcessData::ForProcessNode(process2.get())
                 ->shared_v8_memory_used());
 
@@ -578,9 +578,9 @@ TEST_F(V8DetailedMemoryDecoratorTest, MultipleIsolatesInRenderer) {
       /*render_frame_id=*/2, frame2_id);
   {
     auto data = NewPerProcessV8MemoryUsage(2);
-    AddIsolateMemoryUsage(frame1_id, base::ByteCount(1001),
+    AddIsolateMemoryUsage(frame1_id, base::ByteSize(1001),
                           data->isolates[0].get());
-    AddIsolateMemoryUsage(frame2_id, base::ByteCount(1002),
+    AddIsolateMemoryUsage(frame2_id, base::ByteSize(1002),
                           data->isolates[1].get());
     ExpectBindAndRespondToQuery(&reporter, std::move(data));
   }
@@ -589,11 +589,11 @@ TEST_F(V8DetailedMemoryDecoratorTest, MultipleIsolatesInRenderer) {
   Mock::VerifyAndClearExpectations(&reporter);
 
   ASSERT_TRUE(V8DetailedMemoryExecutionContextData::ForFrameNode(frame1.get()));
-  EXPECT_EQ(base::ByteCount(1001),
+  EXPECT_EQ(base::ByteSize(1001),
             V8DetailedMemoryExecutionContextData::ForFrameNode(frame1.get())
                 ->v8_memory_used());
   ASSERT_TRUE(V8DetailedMemoryExecutionContextData::ForFrameNode(frame2.get()));
-  EXPECT_EQ(base::ByteCount(1002),
+  EXPECT_EQ(base::ByteSize(1002),
             V8DetailedMemoryExecutionContextData::ForFrameNode(frame2.get())
                 ->v8_memory_used());
 }
@@ -605,7 +605,7 @@ TEST_F(V8DetailedMemoryDecoratorTest, DataIsDistributed) {
   {
     auto data = NewPerProcessV8MemoryUsage(1);
     // Add data for an unknown frame.
-    AddIsolateMemoryUsage(blink::LocalFrameToken(), base::KiB(1),
+    AddIsolateMemoryUsage(blink::LocalFrameToken(), base::KiBU(1),
                           data->isolates[0].get());
 
     ExpectBindAndRespondToQuery(&reporter, std::move(data));
@@ -619,7 +619,7 @@ TEST_F(V8DetailedMemoryDecoratorTest, DataIsDistributed) {
 
   // Since the frame was unknown, the usage should have accrued to detached.
   EXPECT_TRUE(V8DetailedMemoryProcessData::ForProcessNode(process.get()));
-  EXPECT_EQ(base::KiB(1),
+  EXPECT_EQ(base::KiBU(1),
             V8DetailedMemoryProcessData::ForProcessNode(process.get())
                 ->detached_v8_memory_used());
 
@@ -639,9 +639,9 @@ TEST_F(V8DetailedMemoryDecoratorTest, DataIsDistributed) {
       /*render_frame_id=*/2, frame2_id);
   {
     auto data = NewPerProcessV8MemoryUsage(1);
-    AddIsolateMemoryUsage(frame1_id, base::ByteCount(1001),
+    AddIsolateMemoryUsage(frame1_id, base::ByteSize(1001),
                           data->isolates[0].get());
-    AddIsolateMemoryUsage(frame2_id, base::ByteCount(1002),
+    AddIsolateMemoryUsage(frame2_id, base::ByteSize(1002),
                           data->isolates[0].get());
     ExpectQueryAndReply(&reporter, std::move(data));
   }
@@ -650,11 +650,11 @@ TEST_F(V8DetailedMemoryDecoratorTest, DataIsDistributed) {
   Mock::VerifyAndClearExpectations(&reporter);
 
   ASSERT_TRUE(V8DetailedMemoryExecutionContextData::ForFrameNode(frame1.get()));
-  EXPECT_EQ(base::ByteCount(1001),
+  EXPECT_EQ(base::ByteSize(1001),
             V8DetailedMemoryExecutionContextData::ForFrameNode(frame1.get())
                 ->v8_memory_used());
   ASSERT_TRUE(V8DetailedMemoryExecutionContextData::ForFrameNode(frame2.get()));
-  EXPECT_EQ(base::ByteCount(1002),
+  EXPECT_EQ(base::ByteSize(1002),
             V8DetailedMemoryExecutionContextData::ForFrameNode(frame2.get())
                 ->v8_memory_used());
 
@@ -662,9 +662,9 @@ TEST_F(V8DetailedMemoryDecoratorTest, DataIsDistributed) {
   // plus verify that unknown frame data goes to detached bytes.
   {
     auto data = NewPerProcessV8MemoryUsage(1);
-    AddIsolateMemoryUsage(frame1_id, base::ByteCount(1003),
+    AddIsolateMemoryUsage(frame1_id, base::ByteSize(1003),
                           data->isolates[0].get());
-    AddIsolateMemoryUsage(blink::LocalFrameToken(), base::ByteCount(2233),
+    AddIsolateMemoryUsage(blink::LocalFrameToken(), base::ByteSize(2233),
                           data->isolates[0].get());
     ExpectQueryAndReply(&reporter, std::move(data));
   }
@@ -672,13 +672,13 @@ TEST_F(V8DetailedMemoryDecoratorTest, DataIsDistributed) {
   Mock::VerifyAndClearExpectations(&reporter);
 
   ASSERT_TRUE(V8DetailedMemoryExecutionContextData::ForFrameNode(frame1.get()));
-  EXPECT_EQ(base::ByteCount(1003),
+  EXPECT_EQ(base::ByteSize(1003),
             V8DetailedMemoryExecutionContextData::ForFrameNode(frame1.get())
                 ->v8_memory_used());
   EXPECT_FALSE(
       V8DetailedMemoryExecutionContextData::ForFrameNode(frame2.get()));
   ASSERT_TRUE(V8DetailedMemoryProcessData::ForProcessNode(process.get()));
-  EXPECT_EQ(base::ByteCount(2233),
+  EXPECT_EQ(base::ByteSize(2233),
             V8DetailedMemoryProcessData::ForProcessNode(process.get())
                 ->detached_v8_memory_used());
 }
@@ -717,7 +717,7 @@ TEST_P(V8DetailedMemoryDecoratorModeTest, LazyRequests) {
     // until reply arrives. kLongBoundedRequestLength > 40 sec so the reply
     // should arrive in time to prevent upgrading the request.
     auto data = NewPerProcessV8MemoryUsage(1);
-    data->isolates[0]->shared_memory_used = base::ByteCount(1);
+    data->isolates[0]->shared_memory_used = base::ByteSize(1);
     ExpectQueryAndDelayReply(&reporter, base::Seconds(10), std::move(data),
                              ExpectedMode::LAZY);
   }
@@ -741,12 +741,12 @@ TEST_P(V8DetailedMemoryDecoratorModeTest, LazyRequests) {
     // Again, 40 sec total until reply arrives. kUpgradeRequestLength <= 40 sec
     // so a second upgraded request should be sent.
     auto data = NewPerProcessV8MemoryUsage(1);
-    data->isolates[0]->shared_memory_used = base::ByteCount(2);
+    data->isolates[0]->shared_memory_used = base::ByteSize(2);
     ExpectQueryAndDelayReply(&reporter, base::Seconds(10), std::move(data),
                              ExpectedMode::LAZY);
 
     auto data2 = NewPerProcessV8MemoryUsage(1);
-    data2->isolates[0]->shared_memory_used = base::ByteCount(3);
+    data2->isolates[0]->shared_memory_used = base::ByteSize(3);
     ExpectQueryAndReply(&reporter, std::move(data2), expected_bounded_mode_);
   }
 
@@ -755,7 +755,7 @@ TEST_P(V8DetailedMemoryDecoratorModeTest, LazyRequests) {
   Mock::VerifyAndClearExpectations(&reporter);
 
   EXPECT_TRUE(V8DetailedMemoryProcessData::ForProcessNode(process.get()));
-  EXPECT_EQ(base::ByteCount(3),
+  EXPECT_EQ(base::ByteSize(3),
             V8DetailedMemoryProcessData::ForProcessNode(process.get())
                 ->shared_v8_memory_used());
 
@@ -801,7 +801,7 @@ TEST_F(V8DetailedMemoryDecoratorTest, MeasurementRequestsSorted) {
   MockV8DetailedMemoryReporter mock_reporter;
   {
     auto data = NewPerProcessV8MemoryUsage(1);
-    data->isolates[0]->shared_memory_used = base::ByteCount(1);
+    data->isolates[0]->shared_memory_used = base::ByteSize(1);
     ExpectBindAndRespondToQuery(&mock_reporter, std::move(data));
   }
 
@@ -814,7 +814,7 @@ TEST_F(V8DetailedMemoryDecoratorTest, MeasurementRequestsSorted) {
   // measurement is expected.
 
   ASSERT_TRUE(V8DetailedMemoryProcessData::ForProcessNode(process.get()));
-  EXPECT_EQ(base::ByteCount(1),
+  EXPECT_EQ(base::ByteSize(1),
             V8DetailedMemoryProcessData::ForProcessNode(process.get())
                 ->shared_v8_memory_used());
 
@@ -824,11 +824,11 @@ TEST_F(V8DetailedMemoryDecoratorTest, MeasurementRequestsSorted) {
             decorator->GetNextRequest()->min_time_between_requests());
   {
     auto data = NewPerProcessV8MemoryUsage(1);
-    data->isolates[0]->shared_memory_used = base::ByteCount(2);
+    data->isolates[0]->shared_memory_used = base::ByteSize(2);
     ExpectQueryAndReply(&mock_reporter, std::move(data));
 
     task_env().FastForwardBy(kShortInterval);
-    EXPECT_EQ(base::ByteCount(2),
+    EXPECT_EQ(base::ByteSize(2),
               V8DetailedMemoryProcessData::ForProcessNode(process.get())
                   ->shared_v8_memory_used());
   }
@@ -841,15 +841,15 @@ TEST_F(V8DetailedMemoryDecoratorTest, MeasurementRequestsSorted) {
             decorator->GetNextRequest()->min_time_between_requests());
   {
     auto data = NewPerProcessV8MemoryUsage(1);
-    data->isolates[0]->shared_memory_used = base::ByteCount(3);
+    data->isolates[0]->shared_memory_used = base::ByteSize(3);
     ExpectQueryAndReply(&mock_reporter, std::move(data));
 
     task_env().FastForwardBy(kShortInterval);
-    EXPECT_EQ(base::ByteCount(2),
+    EXPECT_EQ(base::ByteSize(2),
               V8DetailedMemoryProcessData::ForProcessNode(process.get())
                   ->shared_v8_memory_used());
     task_env().FastForwardBy(kShortInterval);
-    EXPECT_EQ(base::ByteCount(3),
+    EXPECT_EQ(base::ByteSize(3),
               V8DetailedMemoryProcessData::ForProcessNode(process.get())
                   ->shared_v8_memory_used());
   }
@@ -862,11 +862,11 @@ TEST_F(V8DetailedMemoryDecoratorTest, MeasurementRequestsSorted) {
             decorator->GetNextRequest()->min_time_between_requests());
   {
     auto data = NewPerProcessV8MemoryUsage(1);
-    data->isolates[0]->shared_memory_used = base::ByteCount(4);
+    data->isolates[0]->shared_memory_used = base::ByteSize(4);
     ExpectQueryAndReply(&mock_reporter, std::move(data));
 
     task_env().FastForwardBy(kMediumInterval);
-    EXPECT_EQ(base::ByteCount(4),
+    EXPECT_EQ(base::ByteSize(4),
               V8DetailedMemoryProcessData::ForProcessNode(process.get())
                   ->shared_v8_memory_used());
   }
@@ -876,11 +876,11 @@ TEST_F(V8DetailedMemoryDecoratorTest, MeasurementRequestsSorted) {
   EXPECT_FALSE(decorator->GetNextRequest());
   {
     auto data = NewPerProcessV8MemoryUsage(1);
-    data->isolates[0]->shared_memory_used = base::ByteCount(5);
+    data->isolates[0]->shared_memory_used = base::ByteSize(5);
     ExpectQueryAndReply(&mock_reporter, std::move(data));
 
     task_env().FastForwardBy(kLongInterval);
-    EXPECT_EQ(base::ByteCount(4),
+    EXPECT_EQ(base::ByteSize(4),
               V8DetailedMemoryProcessData::ForProcessNode(process.get())
                   ->shared_v8_memory_used());
   }
@@ -894,17 +894,17 @@ TEST_F(V8DetailedMemoryDecoratorTest, MeasurementRequestsSorted) {
             decorator->GetNextRequest()->min_time_between_requests());
 
   task_env().FastForwardBy(base::Seconds(1));
-  EXPECT_EQ(base::ByteCount(5),
+  EXPECT_EQ(base::ByteSize(5),
             V8DetailedMemoryProcessData::ForProcessNode(process.get())
                 ->shared_v8_memory_used());
 
   {
     auto data = NewPerProcessV8MemoryUsage(1);
-    data->isolates[0]->shared_memory_used = base::ByteCount(6);
+    data->isolates[0]->shared_memory_used = base::ByteSize(6);
     ExpectQueryAndReply(&mock_reporter, std::move(data));
 
     task_env().FastForwardBy(kLongInterval);
-    EXPECT_EQ(base::ByteCount(6),
+    EXPECT_EQ(base::ByteSize(6),
               V8DetailedMemoryProcessData::ForProcessNode(process.get())
                   ->shared_v8_memory_used());
   }
@@ -920,29 +920,29 @@ TEST_F(V8DetailedMemoryDecoratorTest, MeasurementRequestsSorted) {
 
   {
     auto data = NewPerProcessV8MemoryUsage(1);
-    data->isolates[0]->shared_memory_used = base::ByteCount(7);
+    data->isolates[0]->shared_memory_used = base::ByteSize(7);
     ExpectQueryAndReply(&mock_reporter, std::move(data));
 
     task_env().FastForwardBy(kMediumInterval);
-    EXPECT_EQ(base::ByteCount(7),
+    EXPECT_EQ(base::ByteSize(7),
               V8DetailedMemoryProcessData::ForProcessNode(process.get())
                   ->shared_v8_memory_used());
   }
 
   {
     auto data = NewPerProcessV8MemoryUsage(1);
-    data->isolates[0]->shared_memory_used = base::ByteCount(8);
+    data->isolates[0]->shared_memory_used = base::ByteSize(8);
     ExpectQueryAndReply(&mock_reporter, std::move(data));
 
     constexpr base::TimeDelta kRestOfLongInterval =
         kLongInterval - kMediumInterval;
     task_env().FastForwardBy(kRestOfLongInterval);
-    EXPECT_EQ(base::ByteCount(7),
+    EXPECT_EQ(base::ByteSize(7),
               V8DetailedMemoryProcessData::ForProcessNode(process.get())
                   ->shared_v8_memory_used());
 
     task_env().FastForwardBy(kMediumInterval - kRestOfLongInterval);
-    EXPECT_EQ(base::ByteCount(8),
+    EXPECT_EQ(base::ByteSize(8),
               V8DetailedMemoryProcessData::ForProcessNode(process.get())
                   ->shared_v8_memory_used());
   }
@@ -961,11 +961,11 @@ TEST_F(V8DetailedMemoryDecoratorTest, MeasurementRequestsSorted) {
 
   {
     auto data = NewPerProcessV8MemoryUsage(1);
-    data->isolates[0]->shared_memory_used = base::ByteCount(9);
+    data->isolates[0]->shared_memory_used = base::ByteSize(9);
     ExpectQueryAndReply(&mock_reporter, std::move(data));
 
     task_env().FastForwardBy(kMediumInterval);
-    EXPECT_EQ(base::ByteCount(9),
+    EXPECT_EQ(base::ByteSize(9),
               V8DetailedMemoryProcessData::ForProcessNode(process.get())
                   ->shared_v8_memory_used());
   }
@@ -980,11 +980,11 @@ TEST_F(V8DetailedMemoryDecoratorTest, MeasurementRequestsSorted) {
 
   {
     auto data = NewPerProcessV8MemoryUsage(1);
-    data->isolates[0]->shared_memory_used = base::ByteCount(10);
+    data->isolates[0]->shared_memory_used = base::ByteSize(10);
     ExpectQueryAndReply(&mock_reporter, std::move(data));
 
     task_env().FastForwardBy(kMediumInterval);
-    EXPECT_EQ(base::ByteCount(10),
+    EXPECT_EQ(base::ByteSize(10),
               V8DetailedMemoryProcessData::ForProcessNode(process.get())
                   ->shared_v8_memory_used());
   }
@@ -998,11 +998,11 @@ TEST_F(V8DetailedMemoryDecoratorTest, MeasurementRequestsSorted) {
 
   {
     auto data = NewPerProcessV8MemoryUsage(1);
-    data->isolates[0]->shared_memory_used = base::ByteCount(11);
+    data->isolates[0]->shared_memory_used = base::ByteSize(11);
     ExpectQueryAndReply(&mock_reporter, std::move(data));
 
     task_env().FastForwardBy(kLongInterval);
-    EXPECT_EQ(base::ByteCount(11),
+    EXPECT_EQ(base::ByteSize(11),
               V8DetailedMemoryProcessData::ForProcessNode(process.get())
                   ->shared_v8_memory_used());
   }
@@ -1015,11 +1015,11 @@ TEST_F(V8DetailedMemoryDecoratorTest, MeasurementRequestsSorted) {
 
   {
     auto data = NewPerProcessV8MemoryUsage(1);
-    data->isolates[0]->shared_memory_used = base::ByteCount(12);
+    data->isolates[0]->shared_memory_used = base::ByteSize(12);
     ExpectQueryAndReply(&mock_reporter, std::move(data));
 
     task_env().FastForwardBy(kLongInterval);
-    EXPECT_EQ(base::ByteCount(12),
+    EXPECT_EQ(base::ByteSize(12),
               V8DetailedMemoryProcessData::ForProcessNode(process.get())
                   ->shared_v8_memory_used());
   }
@@ -1046,7 +1046,7 @@ TEST_F(V8DetailedMemoryDecoratorTest, MeasurementRequestsWithDelay) {
   MockV8DetailedMemoryReporter mock_reporter;
   {
     auto data = NewPerProcessV8MemoryUsage(1);
-    data->isolates[0]->shared_memory_used = base::ByteCount(0);
+    data->isolates[0]->shared_memory_used = base::ByteSize(0);
     ExpectBindAndRespondToQuery(&mock_reporter, std::move(data));
   }
   auto process = CreateNode<ProcessNodeImpl>(
@@ -1060,14 +1060,14 @@ TEST_F(V8DetailedMemoryDecoratorTest, MeasurementRequestsWithDelay) {
   // existing measurement finishes.
   {
     auto data = NewPerProcessV8MemoryUsage(1);
-    data->isolates[0]->shared_memory_used = base::ByteCount(1);
+    data->isolates[0]->shared_memory_used = base::ByteSize(1);
     ExpectQueryAndDelayReply(&mock_reporter, kMeasurementLength,
                              std::move(data));
   }
   task_env().FastForwardBy(kLongInterval);
   EXPECT_EQ(last_query_time(), task_env().NowTicks() - kOneSecond)
       << "Measurement didn't start when expected";
-  EXPECT_EQ(base::ByteCount(0),
+  EXPECT_EQ(base::ByteSize(0),
             V8DetailedMemoryProcessData::ForProcessNode(process.get())
                 ->shared_v8_memory_used())
       << "Measurement ended early";
@@ -1079,7 +1079,7 @@ TEST_F(V8DetailedMemoryDecoratorTest, MeasurementRequestsWithDelay) {
   EXPECT_EQ(kMediumInterval,
             decorator->GetNextRequest()->min_time_between_requests());
   task_env().FastForwardBy(kMeasurementLength);
-  ASSERT_EQ(base::ByteCount(1),
+  ASSERT_EQ(base::ByteSize(1),
             V8DetailedMemoryProcessData::ForProcessNode(process.get())
                 ->shared_v8_memory_used())
       << "Measurement didn't end when expected";
@@ -1089,21 +1089,21 @@ TEST_F(V8DetailedMemoryDecoratorTest, MeasurementRequestsWithDelay) {
   // last measurement.
   {
     auto data = NewPerProcessV8MemoryUsage(1);
-    data->isolates[0]->shared_memory_used = base::ByteCount(2);
+    data->isolates[0]->shared_memory_used = base::ByteSize(2);
     ExpectQueryAndDelayReply(&mock_reporter, kMeasurementLength,
                              std::move(data));
   }
   task_env().FastForwardBy(kMediumInterval - kMeasurementLength);
   EXPECT_EQ(last_query_time(), task_env().NowTicks() - kOneSecond)
       << "Measurement didn't start when expected";
-  EXPECT_EQ(base::ByteCount(1),
+  EXPECT_EQ(base::ByteSize(1),
             V8DetailedMemoryProcessData::ForProcessNode(process.get())
                 ->shared_v8_memory_used())
       << "Measurement ended early";
   measurement_start_time = last_query_time();
 
   task_env().FastForwardBy(kMeasurementLength);
-  EXPECT_EQ(base::ByteCount(2),
+  EXPECT_EQ(base::ByteSize(2),
             V8DetailedMemoryProcessData::ForProcessNode(process.get())
                 ->shared_v8_memory_used())
       << "Measurement didn't end when expected";
@@ -1113,14 +1113,14 @@ TEST_F(V8DetailedMemoryDecoratorTest, MeasurementRequestsWithDelay) {
   // should start immediately after the measurement finishes.
   {
     auto data = NewPerProcessV8MemoryUsage(1);
-    data->isolates[0]->shared_memory_used = base::ByteCount(3);
+    data->isolates[0]->shared_memory_used = base::ByteSize(3);
     ExpectQueryAndDelayReply(&mock_reporter, kMeasurementLength,
                              std::move(data));
   }
   task_env().FastForwardBy(kMediumInterval - kMeasurementLength);
   EXPECT_EQ(last_query_time(), task_env().NowTicks() - kOneSecond)
       << "Measurement didn't start when expected";
-  EXPECT_EQ(base::ByteCount(2),
+  EXPECT_EQ(base::ByteSize(2),
             V8DetailedMemoryProcessData::ForProcessNode(process.get())
                 ->shared_v8_memory_used())
       << "Measurement ended early";
@@ -1135,14 +1135,14 @@ TEST_F(V8DetailedMemoryDecoratorTest, MeasurementRequestsWithDelay) {
 
   {
     auto data = NewPerProcessV8MemoryUsage(1);
-    data->isolates[0]->shared_memory_used = base::ByteCount(4);
+    data->isolates[0]->shared_memory_used = base::ByteSize(4);
     ExpectQueryAndDelayReply(&mock_reporter, kMeasurementLength,
                              std::move(data));
   }
   task_env().FastForwardBy(kMeasurementLength);
   EXPECT_EQ(last_query_time(), task_env().NowTicks() - kOneSecond)
       << "Measurement didn't start when expected";
-  EXPECT_EQ(base::ByteCount(3),
+  EXPECT_EQ(base::ByteSize(3),
             V8DetailedMemoryProcessData::ForProcessNode(process.get())
                 ->shared_v8_memory_used())
       << "Measurement ended early";
@@ -1155,7 +1155,7 @@ TEST_F(V8DetailedMemoryDecoratorTest, MeasurementRequestsWithDelay) {
   EXPECT_EQ(kMediumInterval,
             decorator->GetNextRequest()->min_time_between_requests());
   task_env().FastForwardBy(kMeasurementLength);
-  EXPECT_EQ(base::ByteCount(4),
+  EXPECT_EQ(base::ByteSize(4),
             V8DetailedMemoryProcessData::ForProcessNode(process.get())
                 ->shared_v8_memory_used())
       << "Measurement didn't end when expected";
@@ -1165,14 +1165,14 @@ TEST_F(V8DetailedMemoryDecoratorTest, MeasurementRequestsWithDelay) {
   // measurement should finish successfully but no more should be sent.
   {
     auto data = NewPerProcessV8MemoryUsage(1);
-    data->isolates[0]->shared_memory_used = base::ByteCount(5);
+    data->isolates[0]->shared_memory_used = base::ByteSize(5);
     ExpectQueryAndDelayReply(&mock_reporter, kMeasurementLength,
                              std::move(data));
   }
   task_env().FastForwardBy(kMediumInterval - kMeasurementLength);
   EXPECT_EQ(last_query_time(), task_env().NowTicks() - kOneSecond)
       << "Measurement didn't start when expected";
-  EXPECT_EQ(base::ByteCount(4),
+  EXPECT_EQ(base::ByteSize(4),
             V8DetailedMemoryProcessData::ForProcessNode(process.get())
                 ->shared_v8_memory_used())
       << "Measurement ended early";
@@ -1182,7 +1182,7 @@ TEST_F(V8DetailedMemoryDecoratorTest, MeasurementRequestsWithDelay) {
   long_memory_request.reset();
   EXPECT_FALSE(decorator->GetNextRequest());
   task_env().FastForwardBy(kMeasurementLength);
-  EXPECT_EQ(base::ByteCount(5),
+  EXPECT_EQ(base::ByteSize(5),
             V8DetailedMemoryProcessData::ForProcessNode(process.get())
                 ->shared_v8_memory_used())
       << "Measurement didn't end when expected";
@@ -1202,13 +1202,13 @@ TEST_F(V8DetailedMemoryDecoratorTest, MeasurementRequestOutlivesDecorator) {
   MockV8DetailedMemoryReporter mock_reporter;
   {
     auto data = NewPerProcessV8MemoryUsage(1);
-    data->isolates[0]->shared_memory_used = base::ByteCount(1);
+    data->isolates[0]->shared_memory_used = base::ByteSize(1);
     ExpectBindAndRespondToQuery(&mock_reporter, std::move(data));
   }
   auto process = CreateNode<ProcessNodeImpl>(
       RenderProcessHostProxy::CreateForTesting(kTestProcessID));
   task_env().FastForwardBy(base::Seconds(1));
-  ASSERT_EQ(base::ByteCount(1),
+  ASSERT_EQ(base::ByteSize(1),
             V8DetailedMemoryProcessData::ForProcessNode(process.get())
                 ->shared_v8_memory_used())
       << "First measurement didn't happen when expected";
@@ -1233,15 +1233,15 @@ TEST_F(V8DetailedMemoryDecoratorTest, NotifyObservers) {
   MockV8DetailedMemoryReporter reporter1;
   {
     auto data = NewPerProcessV8MemoryUsage(1);
-    data->isolates[0]->shared_memory_used = base::ByteCount(1);
+    data->isolates[0]->shared_memory_used = base::ByteSize(1);
     ExpectBindAndRespondToQuery(&reporter1, std::move(data));
   }
 
   auto process1 = CreateNode<ProcessNodeImpl>(
       RenderProcessHostProxy::CreateForTesting(kTestProcessID));
 
-  observer1.ExpectObservationOnProcess(process1.get(), base::ByteCount(1));
-  observer2.ExpectObservationOnProcess(process1.get(), base::ByteCount(1));
+  observer1.ExpectObservationOnProcess(process1.get(), base::ByteSize(1));
+  observer2.ExpectObservationOnProcess(process1.get(), base::ByteSize(1));
 
   task_env().FastForwardBy(kMinTimeBetweenRequests / 2);
   Mock::VerifyAndClearExpectations(&reporter1);
@@ -1254,22 +1254,22 @@ TEST_F(V8DetailedMemoryDecoratorTest, NotifyObservers) {
   MockV8DetailedMemoryReporter reporter2;
   {
     auto data = NewPerProcessV8MemoryUsage(1);
-    data->isolates[0]->shared_memory_used = base::ByteCount(2);
+    data->isolates[0]->shared_memory_used = base::ByteSize(2);
     ExpectBindAndRespondToQuery(&reporter2, std::move(data));
   }
   {
     auto data = NewPerProcessV8MemoryUsage(1);
-    data->isolates[0]->shared_memory_used = base::ByteCount(3);
+    data->isolates[0]->shared_memory_used = base::ByteSize(3);
     ExpectQueryAndReply(&reporter1, std::move(data));
   }
 
   auto process2 = CreateNode<ProcessNodeImpl>(
       RenderProcessHostProxy::CreateForTesting(kTestProcessID));
 
-  observer1.ExpectObservationOnProcess(process2.get(), base::ByteCount(2));
-  observer2.ExpectObservationOnProcess(process2.get(), base::ByteCount(2));
-  observer1.ExpectObservationOnProcess(process1.get(), base::ByteCount(3));
-  observer2.ExpectObservationOnProcess(process1.get(), base::ByteCount(3));
+  observer1.ExpectObservationOnProcess(process2.get(), base::ByteSize(2));
+  observer2.ExpectObservationOnProcess(process2.get(), base::ByteSize(2));
+  observer1.ExpectObservationOnProcess(process1.get(), base::ByteSize(3));
+  observer2.ExpectObservationOnProcess(process1.get(), base::ByteSize(3));
 
   task_env().FastForwardBy(kMinTimeBetweenRequests / 2);
   Mock::VerifyAndClearExpectations(&reporter1);
@@ -1281,19 +1281,19 @@ TEST_F(V8DetailedMemoryDecoratorTest, NotifyObservers) {
   // next measurement.
   {
     auto data = NewPerProcessV8MemoryUsage(1);
-    data->isolates[0]->shared_memory_used = base::ByteCount(4);
+    data->isolates[0]->shared_memory_used = base::ByteSize(4);
     ExpectQueryAndReply(&reporter1, std::move(data));
   }
   {
     auto data = NewPerProcessV8MemoryUsage(1);
-    data->isolates[0]->shared_memory_used = base::ByteCount(5);
+    data->isolates[0]->shared_memory_used = base::ByteSize(5);
     ExpectQueryAndReply(&reporter2, std::move(data));
   }
 
   memory_request.RemoveObserver(&observer1);
 
-  observer2.ExpectObservationOnProcess(process1.get(), base::ByteCount(4));
-  observer2.ExpectObservationOnProcess(process2.get(), base::ByteCount(5));
+  observer2.ExpectObservationOnProcess(process1.get(), base::ByteSize(4));
+  observer2.ExpectObservationOnProcess(process2.get(), base::ByteSize(5));
 
   task_env().FastForwardBy(kMinTimeBetweenRequests);
   Mock::VerifyAndClearExpectations(&reporter1);
@@ -1316,13 +1316,13 @@ TEST_F(V8DetailedMemoryDecoratorTest, ObserverOutlivesDecorator) {
   MockV8DetailedMemoryReporter reporter;
   {
     auto data = NewPerProcessV8MemoryUsage(1);
-    data->isolates[0]->shared_memory_used = base::ByteCount(1);
+    data->isolates[0]->shared_memory_used = base::ByteSize(1);
     ExpectBindAndRespondToQuery(&reporter, std::move(data));
   }
 
   auto process = CreateNode<ProcessNodeImpl>(
       RenderProcessHostProxy::CreateForTesting(kTestProcessID));
-  observer.ExpectObservationOnProcess(process.get(), base::ByteCount(1));
+  observer.ExpectObservationOnProcess(process.get(), base::ByteSize(1));
 
   task_env().FastForwardBy(base::Seconds(1));
 
@@ -1332,7 +1332,7 @@ TEST_F(V8DetailedMemoryDecoratorTest, ObserverOutlivesDecorator) {
   // Start the next measurement.
   {
     auto data = NewPerProcessV8MemoryUsage(1);
-    data->isolates[0]->shared_memory_used = base::ByteCount(2);
+    data->isolates[0]->shared_memory_used = base::ByteSize(2);
     ExpectQueryAndDelayReply(&reporter, kMinTimeBetweenRequests,
                              std::move(data));
   }
@@ -1374,12 +1374,12 @@ TEST_F(V8DetailedMemoryDecoratorTest, SingleProcessRequest) {
   {
     // Response to initial request in process 1.
     auto data = NewPerProcessV8MemoryUsage(1);
-    data->isolates[0]->shared_memory_used = base::ByteCount(1);
+    data->isolates[0]->shared_memory_used = base::ByteSize(1);
     ExpectBindAndRespondToQuery(&mock_reporter1, std::move(data), kProcessId1);
 
     // Response to initial request in process 2.
     data = NewPerProcessV8MemoryUsage(1);
-    data->isolates[0]->shared_memory_used = base::ByteCount(2);
+    data->isolates[0]->shared_memory_used = base::ByteSize(2);
     ExpectBindAndRespondToQuery(&mock_reporter2, std::move(data), kProcessId2);
   }
 
@@ -1390,12 +1390,12 @@ TEST_F(V8DetailedMemoryDecoratorTest, SingleProcessRequest) {
   testing::Mock::VerifyAndClearExpectations(&mock_reporter2);
 
   ASSERT_TRUE(V8DetailedMemoryProcessData::ForProcessNode(process1.get()));
-  EXPECT_EQ(base::ByteCount(1),
+  EXPECT_EQ(base::ByteSize(1),
             V8DetailedMemoryProcessData::ForProcessNode(process1.get())
                 ->shared_v8_memory_used());
 
   ASSERT_TRUE(V8DetailedMemoryProcessData::ForProcessNode(process2.get()));
-  EXPECT_EQ(base::ByteCount(2),
+  EXPECT_EQ(base::ByteSize(2),
             V8DetailedMemoryProcessData::ForProcessNode(process2.get())
                 ->shared_v8_memory_used());
 
@@ -1403,7 +1403,7 @@ TEST_F(V8DetailedMemoryDecoratorTest, SingleProcessRequest) {
   // but not process2.
   {
     auto data = NewPerProcessV8MemoryUsage(1);
-    data->isolates[0]->shared_memory_used = base::ByteCount(3);
+    data->isolates[0]->shared_memory_used = base::ByteSize(3);
     ExpectQueryAndDelayReply(&mock_reporter1, kMinTimeBetweenRequests,
                              std::move(data));
   }
@@ -1419,7 +1419,7 @@ TEST_F(V8DetailedMemoryDecoratorTest, SingleProcessRequest) {
   testing::Mock::VerifyAndClearExpectations(&mock_reporter2);
 
   ASSERT_TRUE(V8DetailedMemoryProcessData::ForProcessNode(process1.get()));
-  EXPECT_EQ(base::ByteCount(3),
+  EXPECT_EQ(base::ByteSize(3),
             V8DetailedMemoryProcessData::ForProcessNode(process1.get())
                 ->shared_v8_memory_used());
 
@@ -1427,7 +1427,7 @@ TEST_F(V8DetailedMemoryDecoratorTest, SingleProcessRequest) {
   // enough time has passed since the last request.
   {
     auto data = NewPerProcessV8MemoryUsage(1);
-    data->isolates[0]->shared_memory_used = base::ByteCount(4);
+    data->isolates[0]->shared_memory_used = base::ByteSize(4);
     ExpectQueryAndReply(&mock_reporter1, std::move(data));
   }
 
@@ -1438,7 +1438,7 @@ TEST_F(V8DetailedMemoryDecoratorTest, SingleProcessRequest) {
   // Test observers of single-process requests.
   MockV8DetailedMemoryObserver mock_observer;
   process1_request->AddObserver(&mock_observer);
-  mock_observer.ExpectObservationOnProcess(process1.get(), base::ByteCount(4));
+  mock_observer.ExpectObservationOnProcess(process1.get(), base::ByteSize(4));
 
   task_env().FastForwardBy(base::Seconds(1));
   testing::Mock::VerifyAndClearExpectations(&mock_reporter1);
@@ -1446,7 +1446,7 @@ TEST_F(V8DetailedMemoryDecoratorTest, SingleProcessRequest) {
   testing::Mock::VerifyAndClearExpectations(&mock_observer);
 
   ASSERT_TRUE(V8DetailedMemoryProcessData::ForProcessNode(process1.get()));
-  EXPECT_EQ(base::ByteCount(4),
+  EXPECT_EQ(base::ByteSize(4),
             V8DetailedMemoryProcessData::ForProcessNode(process1.get())
                 ->shared_v8_memory_used());
 
@@ -1489,7 +1489,7 @@ TEST_P(V8DetailedMemoryDecoratorSingleProcessModeTest,
     // Response to initial request which is sent immediately. This will use the
     // LAZY mode from |lazy_request| because it has a lower frequency.
     auto data = NewPerProcessV8MemoryUsage(1);
-    data->isolates[0]->shared_memory_used = base::ByteCount(1);
+    data->isolates[0]->shared_memory_used = base::ByteSize(1);
     ExpectBindAndRespondToQuery(&mock_reporter, std::move(data), kTestProcessID,
                                 ExpectedMode::LAZY);
   }
@@ -1503,7 +1503,7 @@ TEST_P(V8DetailedMemoryDecoratorSingleProcessModeTest,
   // waiting.
   {
     auto data = NewPerProcessV8MemoryUsage(1);
-    data->isolates[0]->shared_memory_used = base::ByteCount(3);
+    data->isolates[0]->shared_memory_used = base::ByteSize(3);
     ExpectQueryAndDelayReply(&mock_reporter, 2 * kMinTimeBetweenRequests,
                              std::move(data), ExpectedMode::LAZY);
   }
@@ -1516,7 +1516,7 @@ TEST_P(V8DetailedMemoryDecoratorSingleProcessModeTest,
   // should send |bounded_request| to both processes.
   {
     auto data = NewPerProcessV8MemoryUsage(1);
-    data->isolates[0]->shared_memory_used = base::ByteCount(4);
+    data->isolates[0]->shared_memory_used = base::ByteSize(4);
     ExpectQueryAndReply(&mock_reporter, std::move(data), ExpectedMode::DEFAULT);
   }
 
@@ -1524,7 +1524,7 @@ TEST_P(V8DetailedMemoryDecoratorSingleProcessModeTest,
   testing::Mock::VerifyAndClearExpectations(&mock_reporter);
 
   ASSERT_TRUE(V8DetailedMemoryProcessData::ForProcessNode(process.get()));
-  EXPECT_EQ(base::ByteCount(4),
+  EXPECT_EQ(base::ByteSize(4),
             V8DetailedMemoryProcessData::ForProcessNode(process.get())
                 ->shared_v8_memory_used());
 }
@@ -1617,9 +1617,9 @@ TEST_F(V8DetailedMemoryDecoratorTest, DedicatedWorkers) {
   worker->AddClientFrame(frame.get());
   {
     auto data = NewPerProcessV8MemoryUsage(2);
-    AddIsolateMemoryUsage(frame_id, base::ByteCount(1001),
+    AddIsolateMemoryUsage(frame_id, base::ByteSize(1001),
                           data->isolates[0].get());
-    AddIsolateMemoryUsage(worker_id, base::ByteCount(1002),
+    AddIsolateMemoryUsage(worker_id, base::ByteSize(1002),
                           data->isolates[1].get());
     ExpectBindAndRespondToQuery(&reporter, std::move(data));
   }
@@ -1628,12 +1628,12 @@ TEST_F(V8DetailedMemoryDecoratorTest, DedicatedWorkers) {
   Mock::VerifyAndClearExpectations(&reporter);
 
   ASSERT_TRUE(V8DetailedMemoryExecutionContextData::ForFrameNode(frame.get()));
-  EXPECT_EQ(base::ByteCount(1001),
+  EXPECT_EQ(base::ByteSize(1001),
             V8DetailedMemoryExecutionContextData::ForFrameNode(frame.get())
                 ->v8_memory_used());
   ASSERT_TRUE(
       V8DetailedMemoryExecutionContextData::ForWorkerNode(worker.get()));
-  EXPECT_EQ(base::ByteCount(1002),
+  EXPECT_EQ(base::ByteSize(1002),
             V8DetailedMemoryExecutionContextData::ForWorkerNode(worker.get())
                 ->v8_memory_used());
   worker->RemoveClientFrame(frame.get());
@@ -1658,9 +1658,9 @@ TEST_F(V8DetailedMemoryDecoratorTest, CanvasMemory) {
 
   {
     auto data = NewPerProcessV8MemoryUsage(1);
-    AddIsolateMemoryUsage(frame_id, base::ByteCount(1001),
+    AddIsolateMemoryUsage(frame_id, base::ByteSize(1001),
                           data->isolates[0].get());
-    AddIsolateCanvasMemoryUsage(frame_id, base::ByteCount(2002),
+    AddIsolateCanvasMemoryUsage(frame_id, base::ByteSize(2002),
                                 data->isolates[0].get());
 
     ExpectBindAndRespondToQuery(&reporter, std::move(data));
@@ -1670,10 +1670,10 @@ TEST_F(V8DetailedMemoryDecoratorTest, CanvasMemory) {
   Mock::VerifyAndClearExpectations(&reporter);
 
   ASSERT_TRUE(V8DetailedMemoryExecutionContextData::ForFrameNode(frame.get()));
-  EXPECT_EQ(base::ByteCount(1001),
+  EXPECT_EQ(base::ByteSize(1001),
             V8DetailedMemoryExecutionContextData::ForFrameNode(frame.get())
                 ->v8_memory_used());
-  EXPECT_EQ(base::ByteCount(2002),
+  EXPECT_EQ(base::ByteSize(2002),
             V8DetailedMemoryExecutionContextData::ForFrameNode(frame.get())
                 ->canvas_memory_used()
                 .value());

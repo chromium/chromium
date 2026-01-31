@@ -5,14 +5,17 @@
 // clang-format off
 import 'chrome://settings/settings.js';
 
-import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
-import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
-import {CrSettingsPrefs, loadTimeData, ModelExecutionEnterprisePolicyValue} from 'chrome://settings/settings.js';
-import type {SettingsAiLoggingInfoBullet, SettingsPrefsElement, SettingsToggleButtonElement} from 'chrome://settings/settings.js';
-import type {SettingsAutofillAiSectionElement} from 'chrome://settings/lazy_load.js';
-import {AiEnterpriseFeaturePrefName, EntityDataManagerProxyImpl} from 'chrome://settings/lazy_load.js';
+import { flushTasks } from 'chrome://webui-test/polymer_test_util.js';
+import { assertEquals, assertFalse, assertTrue } from 'chrome://webui-test/chai_assert.js';
+// <if expr="is_win or is_macosx or is_chromeos">
+import { isVisible } from 'chrome://webui-test/test_util.js';
+// </if>
+import { CrSettingsPrefs, loadTimeData, ModelExecutionEnterprisePolicyValue } from 'chrome://settings/settings.js';
+import type { SettingsAiLoggingInfoBullet, SettingsPrefsElement, SettingsToggleButtonElement } from 'chrome://settings/settings.js';
+import type { SettingsAutofillAiSectionElement } from 'chrome://settings/lazy_load.js';
+import { AiEnterpriseFeaturePrefName, EntityDataManagerProxyImpl } from 'chrome://settings/lazy_load.js';
 
-import {TestEntityDataManagerProxy} from './test_entity_data_manager_proxy.js';
+import { TestEntityDataManagerProxy } from './test_entity_data_manager_proxy.js';
 // clang-format on
 
 const AttributeTypeDataType = chrome.autofillPrivate.AttributeTypeDataType;
@@ -190,6 +193,11 @@ suite('AutofillAiSectionUiTest', function() {
   let testEntityInstance: chrome.autofillPrivate.EntityInstance;
   let testEntityTypes: chrome.autofillPrivate.EntityType[];
   let settingsPrefs: SettingsPrefsElement;
+  // Note that authentication is not available on linux.
+  // <if expr="is_win or is_macosx or is_chromeos">
+  const authenticationPref =
+      'prefs.autofill.autofill_ai.reauth_before_viewing_sensitive_data';
+  // </if>
 
   suiteSetup(function() {
     settingsPrefs = document.createElement('settings-prefs');
@@ -231,6 +239,7 @@ suite('AutofillAiSectionUiTest', function() {
       ],
       guid: 'd70b5bb7-49a6-4276-b4b7-b014dacdc9e6',
       nickname: 'My license',
+      shouldAuthenticateToView: false,
     };
     // Initially not sorted alphabetically. The production code should sort them
     // alphabetically.
@@ -292,20 +301,71 @@ suite('AutofillAiSectionUiTest', function() {
     settingsPrefs.set(
         `prefs.${AiEnterpriseFeaturePrefName.AUTOFILL_AI}.value`,
         ModelExecutionEnterprisePolicyValue.ALLOW);
-
   });
 
   teardown(function() {
     CrSettingsPrefs.resetForTesting();
   });
 
-  async function createSection() {
-    loadTimeData.overrideValues({userEligibleForAutofillAi: true});
+  async function createSection(autofillAiAvailableByDefault: boolean = false) {
+    loadTimeData.overrideValues({
+      userEligibleForAutofillAi: true,
+      autofillAiAvailableByDefault: autofillAiAvailableByDefault,
+    });
     section = document.createElement('settings-autofill-ai-section');
     section.prefs = settingsPrefs.prefs;
     document.body.appendChild(section);
     await flushTasks();
   }
+
+  test('AutofillAiAvailableByDefaultFalseRendersExpectedUI', async function() {
+    await createSection(/*autofillAiAvailableByDefault=*/ false);
+
+    const firstColumn = section.shadowRoot!.querySelector('.column');
+    assertTrue(!!firstColumn);
+    const bulletsInFirstColumn = firstColumn.querySelectorAll('li');
+    assertEquals(2, bulletsInFirstColumn.length);
+
+    const firstBullet = bulletsInFirstColumn.item(0);
+    assertTrue(firstBullet !== null);
+    const firstBulletIcon = firstBullet.querySelector('cr-icon');
+    assertTrue(!!firstBulletIcon);
+    assertEquals('settings20:sync-saved-locally', firstBulletIcon.icon);
+    const firstBulletText =
+        firstBullet.querySelector('.cr-secondary-text')!.textContent.trim();
+    assertEquals(
+        loadTimeData.getString('autofillAiWhenOnUseToFill'), firstBulletText);
+
+    const secondBullet = bulletsInFirstColumn.item(1);
+    assertTrue(secondBullet !== null);
+    const secondBulletIcon = secondBullet.querySelector('cr-icon');
+    assertTrue(!!secondBulletIcon);
+    assertEquals('settings20:text-analysis', secondBulletIcon.icon);
+    const secondBulletText =
+        secondBullet.querySelector('.cr-secondary-text')!.textContent.trim();
+    assertEquals(
+        loadTimeData.getString('autofillAiWhenOnUseToFill'), secondBulletText);
+  });
+
+  test('AutofillAiAvailableByDefaultTrue', async function() {
+    await createSection(/*autofillAiAvailableByDefault=*/ true);
+
+    const firstColumn = section.shadowRoot!.querySelector('.column');
+    assertTrue(!!firstColumn);
+    const bulletsInFirstColumn = firstColumn.querySelectorAll('li');
+    assertEquals(1, bulletsInFirstColumn.length);
+
+    const firstBullet = bulletsInFirstColumn.item(0);
+    assertTrue(firstBullet !== null);
+    const firstBulletIcon = firstBullet.querySelector('cr-icon');
+    assertTrue(!!firstBulletIcon);
+    assertEquals('settings20:text-analysis', firstBulletIcon.icon);
+    const firstBulletText =
+        firstBullet.querySelector('.cr-secondary-text')!.textContent.trim();
+    assertEquals(
+        loadTimeData.getString('autofillAiWhenOnCanFillDifficultFields'),
+        firstBulletText);
+  });
 
   test(
       'AutofillAiEnterpriseUserLoggingAllowedAndNonEnterpriseUserHaveNoLoggingInfoBullet',
@@ -380,4 +440,90 @@ suite('AutofillAiSectionUiTest', function() {
     assertTrue(toggle.disabled);
     assertFalse(toggle.checked);
   });
+
+  test('WalletablePassDetectionToggleVisibleWhenEligible', async function() {
+    loadTimeData.overrideValues(
+        {isUserEligibleForWalletablePassDetection: true});
+    await createSection();
+    const component = section.shadowRoot!.querySelector<HTMLElement>(
+        '#walletablePassDetectionToggle');
+    assertTrue(!!component);
+  });
+
+  test('WalletablePassDetectionToggleHiddenWhenNotEligible', async function() {
+    loadTimeData.overrideValues(
+        {isUserEligibleForWalletablePassDetection: false});
+    await createSection();
+    const component = section.shadowRoot!.querySelector<HTMLElement>(
+        '#walletablePassDetectionToggle');
+    assertFalse(!!component);
+  });
+
+  // <if expr="is_win or is_macosx or is_chromeos">
+  test('AutofillAiReauthToggleHiddenWhenFeatureDisabled', async function() {
+    loadTimeData.overrideValues(
+        {autofillAiReauthOnViewingSensitiveDataEnabled: false});
+    await createSection();
+    const toggle =
+        section.shadowRoot!.querySelector<SettingsToggleButtonElement>(
+            '#optInAuthenticationToggle');
+    assertFalse(isVisible(toggle));
+  });
+
+  test('AutofillAiReauthToggleVisibleWhenFeatureEnabled', async function() {
+    loadTimeData.overrideValues(
+        {autofillAiReauthOnViewingSensitiveDataEnabled: true});
+    await createSection();
+    await flushTasks();
+
+    const toggle =
+        section.shadowRoot!.querySelector<SettingsToggleButtonElement>(
+            '#optInAuthenticationToggle');
+    assertTrue(isVisible(toggle));
+  });
+
+  test('AutofillAiReauthToggleCallsUpdatePrefMethod', async function() {
+    loadTimeData.overrideValues(
+        {autofillAiReauthOnViewingSensitiveDataEnabled: true});
+    await createSection();
+    await flushTasks();
+
+    const toggle =
+        section.shadowRoot!.querySelector<SettingsToggleButtonElement>(
+            '#optInAuthenticationToggle');
+    assertTrue(!!toggle);
+
+    section.set(authenticationPref, {
+      type: chrome.settingsPrivate.PrefType.BOOLEAN,
+      value: false,
+    });
+    await flushTasks();
+    assertFalse(toggle.checked);
+
+    toggle.click();
+    await flushTasks();
+    await entityDataManager.whenCalled('toggleAutofillAiReauthRequirement');
+  });
+
+  test('AutofillAiReauthToggleDisabledWhenUserIneligible', async function() {
+    loadTimeData.overrideValues({
+      autofillAiReauthOnViewingSensitiveDataEnabled: true,
+      userEligibleForAutofillAi: false,
+    });
+    await createSection();
+    section.set('ineligibleUser', true);
+    await flushTasks();
+
+    const toggle =
+        section.shadowRoot!.querySelector<SettingsToggleButtonElement>(
+            '#optInAuthenticationToggle');
+    assertTrue(!!toggle);
+    assertTrue(toggle.disabled);
+
+    toggle.click();
+    await flushTasks();
+    assertEquals(
+        0, entityDataManager.getCallCount('toggleAutofillAiReauthRequirement'));
+  });
+  // </if>
 });

@@ -1,0 +1,83 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/apple/swift_source_set.gni")
+
+swift_source_set("ui_swift") {
+  bridge_header = "overflow_menu_swift_bridge.h"
+  sources = [
+    "Color+overflow_menu.swift",
+    "action_customization_model.swift",
+    "destination_customization_model.swift",
+    "destination_drag_handler.swift",
+    "destination_edit_button.swift",
+    "menu_customization_animation_id.swift",
+    "menu_customization_view.swift",
+    "overflow_menu_action.swift",
+    "overflow_menu_action_group.swift",
+    "overflow_menu_action_list.swift",
+    "overflow_menu_action_row.swift",
+    "overflow_menu_action_section.swift",
+    "overflow_menu_container_view.swift",
+    "overflow_menu_destination.swift",
+    "overflow_menu_destination_list.swift",
+    "overflow_menu_destination_view.swift",
+    "overflow_menu_footer.swift",
+    "overflow_menu_footer_row.swift",
+    "overflow_menu_hosting_controller.swift",
+    "overflow_menu_item.swift",
+    "overflow_menu_list_style.swift",
+    "overflow_menu_model.swift",
+    "overflow_menu_row_icon.swift",
+    "overflow_menu_ui_configuration.swift",
+    "overflow_menu_view.swift",
+    "overflow_menu_view_provider.swift",
+  ]
+
+  deps = [
+    "//base",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/popup_menu/public",
+    "//ios/chrome/browser/popup_menu/public:metrics_protocols",
+    "//ios/chrome/browser/shared/ui/symbols",
+    "//ios/chrome/browser/shared/ui/util:util_swiftui",
+    "//ios/chrome/common:timing",
+    "//ios/chrome/common/ui/colors:swift",
+    "//ui/base",
+  ]
+
+  frameworks = [
+    "Foundation.framework",
+    "SwiftUI.framework",
+    "Combine.framework",
+  ]
+}
+
+source_set("overflow_menu_metrics") {
+  sources = [
+    "overflow_menu_metrics.h",
+    "overflow_menu_metrics.mm",
+  ]
+  deps = [
+    "//base",
+    "//ios/chrome/browser/popup_menu/overflow_menu/public:overflow_menu_constants",
+    "//ios/chrome/browser/popup_menu/overflow_menu/ui:ui_swift",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [
+    "action_customization_model_unittest.mm",
+    "overflow_menu_metrics_unittest.mm",
+  ]
+  deps = [
+    ":overflow_menu_metrics",
+    ":ui_swift",
+    "//base",
+    "//ios/chrome/browser/popup_menu/overflow_menu/public:overflow_menu_constants",
+    "//ios/chrome/browser/shared/ui/symbols",
+    "//testing/gtest",
+  ]
+}

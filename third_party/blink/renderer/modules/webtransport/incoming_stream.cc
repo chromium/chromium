@@ -81,7 +81,7 @@ class IncomingStream::UnderlyingByteSource final
 
 IncomingStream::IncomingStream(
     ScriptState* script_state,
-    base::OnceCallback<void(std::optional<uint8_t>)> on_abort,
+    base::OnceCallback<void(std::optional<uint8_t>, bool)> on_abort,
     mojo::ScopedDataPipeConsumerHandle handle)
     : script_state_(script_state),
       on_abort_(std::move(on_abort)),
@@ -323,7 +323,8 @@ void IncomingStream::AbortAndReset(std::optional<uint8_t> code) {
 
   if (on_abort_) {
     // Cause WebTransport to drop its reference to us.
-    std::move(on_abort_).Run(code);
+    // Pass whether OnIncomingStreamClosed() was called (fin_received_ is set).
+    std::move(on_abort_).Run(code, fin_received_.has_value());
   }
 
   ResetPipe();

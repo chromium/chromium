@@ -22,6 +22,7 @@ source_set("ui") {
     "//components/optimization_guide:optimization_guide_buildflags",
     "//components/optimization_guide/proto:optimization_guide_proto",
     "//ios/chrome/app/strings:ios_strings_grit",
+    "//ios/chrome/browser/ai_prototyping:features",
     "//ios/chrome/browser/ai_prototyping/model",
     "//ios/chrome/browser/ai_prototyping/utils",
     "//ios/chrome/browser/shared/model/profile",

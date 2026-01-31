@@ -95,7 +95,7 @@ using shared_highlighting::TextFragment;
                                                        latency:latency];
   }
 
-  const base::Value::Dict& dict = value->GetDict();
+  const base::DictValue& dict = value->GetDict();
   std::optional<LinkGenerationOutcome> outcome =
       link_to_text::ParseStatus(dict.FindDouble("status"));
   if (!outcome.has_value()) {

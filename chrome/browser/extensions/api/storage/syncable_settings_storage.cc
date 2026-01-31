@@ -105,7 +105,7 @@ ValueStore::WriteResult SyncableSettingsStorage::Set(
 
 ValueStore::WriteResult SyncableSettingsStorage::Set(
     WriteOptions options,
-    const base::Value::Dict& values) {
+    const base::DictValue& values) {
   DCHECK(IsOnBackendSequence());
   WriteResult result = HandleResult(delegate_->Set(options, values));
   if (!result.status().ok())
@@ -164,7 +164,7 @@ void SyncableSettingsStorage::SyncResultIfEnabled(
 // Sync-related methods.
 
 std::optional<syncer::ModelError> SyncableSettingsStorage::StartSyncing(
-    base::Value::Dict sync_state,
+    base::DictValue sync_state,
     std::unique_ptr<SettingsSyncProcessor> sync_processor) {
   DCHECK(IsOnBackendSequence());
   DCHECK(!sync_processor_.get());
@@ -178,7 +178,7 @@ std::optional<syncer::ModelError> SyncableSettingsStorage::StartSyncing(
         FROM_HERE, syncer::ModelError::Type::kSettingsFailedToGetLocalSettings);
   }
 
-  base::Value::Dict current_settings = maybe_settings.PassSettings();
+  base::DictValue current_settings = maybe_settings.PassSettings();
   return sync_state.empty()
              ? SendLocalSettingsToSync(std::move(current_settings))
              : OverwriteLocalSettingsWithSync(std::move(sync_state),
@@ -186,8 +186,7 @@ std::optional<syncer::ModelError> SyncableSettingsStorage::StartSyncing(
 }
 
 std::optional<syncer::ModelError>
-SyncableSettingsStorage::SendLocalSettingsToSync(
-    base::Value::Dict local_state) {
+SyncableSettingsStorage::SendLocalSettingsToSync(base::DictValue local_state) {
   DCHECK(IsOnBackendSequence());
 
   if (local_state.empty())
@@ -209,8 +208,8 @@ SyncableSettingsStorage::SendLocalSettingsToSync(
 
 std::optional<syncer::ModelError>
 SyncableSettingsStorage::OverwriteLocalSettingsWithSync(
-    base::Value::Dict sync_state,
-    base::Value::Dict local_state) {
+    base::DictValue sync_state,
+    base::DictValue local_state) {
   DCHECK(IsOnBackendSequence());
   // This is implemented by building up a list of sync changes then sending
   // those to ProcessSyncChanges. This generates events like onStorageChanged.
@@ -229,7 +228,7 @@ SyncableSettingsStorage::OverwriteLocalSettingsWithSync(
       // Not synced, delete local setting.
       changes->push_back(std::make_unique<SettingSyncData>(
           syncer::SyncChange::ACTION_DELETE, extension_id_, it.first,
-          base::Value(base::Value::Dict())));
+          base::Value(base::DictValue())));
     }
   }
 

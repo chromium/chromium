@@ -55,16 +55,16 @@ class ExtensionApiUnittest : public BrowserWithTestWindowTest {
       scoped_refptr<ExtensionFunction> function,
       const std::string& args);
 
-  // Return the function result as a base::Value::Dict, if successful, or
+  // Return the function result as a base::DictValue, if successful, or
   // nullopt on failure. This will EXPECT-fail if the result is not a
-  // base::Value::Dict.
-  std::optional<base::Value::Dict> RunFunctionAndReturnDictionary(
+  // base::DictValue.
+  std::optional<base::DictValue> RunFunctionAndReturnDictionary(
       scoped_refptr<ExtensionFunction> function,
       const std::string& args);
 
-  // Return the function result as a base::Value::List, if successful, or
+  // Return the function result as a base::ListValue, if successful, or
   // nullopt on failure. This will EXPECT-fail if the result is not a list.
-  std::optional<base::Value::List> RunFunctionAndReturnList(
+  std::optional<base::ListValue> RunFunctionAndReturnList(
       scoped_refptr<ExtensionFunction> function,
       const std::string& args);
 

@@ -15,6 +15,8 @@ use crate::reader::lexer::{Lexer, Token};
 use std::collections::HashMap;
 use std::io::Read;
 
+static STRING_RESERVE_CAPACITY: usize = 20;
+
 macro_rules! gen_takes(
     ($($field:ident -> $method:ident, $t:ty, $def:expr);+) => (
         $(
@@ -31,8 +33,8 @@ macro_rules! gen_takes(
 );
 
 gen_takes!(
-    name         -> take_name, String, String::new();
-    ref_data     -> take_ref_data, String, String::new();
+    name         -> take_name, String, String::with_capacity(STRING_RESERVE_CAPACITY);
+    ref_data     -> take_ref_data, String, String::with_capacity(STRING_RESERVE_CAPACITY);
 
     encoding     -> take_encoding, Option<String>, None;
 
@@ -61,6 +63,7 @@ type ElementStack = Vec<OwnedName>;
 pub type Result = super::Result<XmlEvent>;
 
 /// Pull-based XML parser.
+#[derive(Clone)]
 pub(crate) struct PullParser {
     config: ParserConfig,
     lexer: Lexer,
@@ -118,7 +121,7 @@ impl PullParser {
             lexer,
             st: State::DocumentStart,
             state_after_reference: State::OutsideTag,
-            buf: String::new(),
+            buf: String::with_capacity(STRING_RESERVE_CAPACITY),
             entities: HashMap::new(),
             nst: NamespaceStack::default(),
 
@@ -340,6 +343,7 @@ impl QuoteToken {
     }
 }
 
+#[derive(Clone)]
 struct MarkupData {
     name: String,     // used for processing instruction name
     ref_data: String,  // used for reference content
@@ -500,7 +504,7 @@ impl PullParser {
 
     #[inline]
     fn take_buf(&mut self) -> String {
-        std::mem::take(&mut self.buf)
+        std::mem::replace(&mut self.buf, String::with_capacity(STRING_RESERVE_CAPACITY))
     }
 
     #[inline]

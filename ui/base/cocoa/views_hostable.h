@@ -60,7 +60,8 @@ class ViewsHostableView {
   virtual void ViewsHostableDetach() = 0;
 
   // Resize the WebContentsView's NSView.
-  virtual void ViewsHostableSetBounds(const gfx::Rect& bounds_in_superview) = 0;
+  virtual void ViewsHostableSetBounds(const gfx::Rect& bounds_in_superview,
+                                      int superview_height) = 0;
 
   // Show or hide the WebContentsView's NSView.
   virtual void ViewsHostableSetVisible(bool visible) = 0;

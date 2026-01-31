@@ -7,20 +7,45 @@
 
 #include <cstddef>
 
+#include "partition_alloc/partition_alloc_base/types/strong_alias.h"
 #include "partition_alloc/partition_alloc_check.h"
+
+using AllocToken =
+    partition_alloc::internal::base::StrongAlias<class AllocTokenTag, size_t>;
+#if PA_BUILDFLAG(SHIM_SUPPORTS_ALLOC_TOKEN)
+inline static constexpr AllocToken kMaxAllocToken = AllocToken(1);
+#else
+inline static constexpr AllocToken kMaxAllocToken = AllocToken(0);
+#endif
+inline static constexpr AllocToken kDefaultAllocToken = AllocToken(0);
 
 namespace allocator_shim {
 
 struct AllocatorDispatch {
-  using AllocFn = void*(size_t size, void* context);
-  using AllocUncheckedFn = void*(size_t size, void* context);
-  using AllocZeroInitializedFn = void*(size_t n, size_t size, void* context);
+  using AllocFn = void*(size_t size, AllocToken alloc_token, void* context);
+  using AllocUncheckedFn = void*(size_t size,
+                                 AllocToken alloc_token,
+                                 void* context);
+  using AllocZeroInitializedFn = void*(size_t n,
+                                       size_t size,
+                                       AllocToken alloc_token,
+                                       void* context);
   using AllocZeroInitializedUncheckedFn = void*(size_t n,
                                                 size_t size,
+                                                AllocToken alloc_token,
                                                 void* context);
-  using AllocAlignedFn = void*(size_t alignment, size_t size, void* context);
-  using ReallocFn = void*(void* address, size_t size, void* context);
-  using ReallocUncheckedFn = void*(void* ptr, size_t size, void* context);
+  using AllocAlignedFn = void*(size_t alignment,
+                               size_t size,
+                               AllocToken alloc_token,
+                               void* context);
+  using ReallocFn = void*(void* address,
+                          size_t size,
+                          AllocToken alloc_token,
+                          void* context);
+  using ReallocUncheckedFn = void*(void* ptr,
+                                   size_t size,
+                                   AllocToken alloc_token,
+                                   void* context);
   using FreeFn = void(void* address, void* context);
   // Returns the allocated size of user data (not including heap overhead).
   // Can be larger than the requested size.
@@ -41,17 +66,23 @@ struct AllocatorDispatch {
                                           size_t alignment,
                                           void* context);
   using TryFreeDefaultFn = void(void* ptr, void* context);
-  using AlignedMallocFn = void*(size_t size, size_t alignment, void* context);
+  using AlignedMallocFn = void*(size_t size,
+                                size_t alignment,
+                                AllocToken alloc_token,
+                                void* context);
   using AlignedMallocUncheckedFn = void*(size_t size,
                                          size_t alignment,
+                                         AllocToken alloc_token,
                                          void* context);
   using AlignedReallocFn = void*(void* address,
                                  size_t size,
                                  size_t alignment,
+                                 AllocToken alloc_token,
                                  void* context);
   using AlignedReallocUncheckedFn = void*(void* address,
                                           size_t size,
                                           size_t alignment,
+                                          AllocToken alloc_token,
                                           void* context);
   using AlignedFreeFn = void(void* address, void* context);
 

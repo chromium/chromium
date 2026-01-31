@@ -87,7 +87,7 @@ class AndroidGranularityMovementBrowserTest : public ContentBrowserTest {
         static_cast<BrowserAccessibilityAndroid*>(node);
     BrowserAccessibilityManagerAndroid* manager =
         static_cast<BrowserAccessibilityManagerAndroid*>(node->manager());
-    std::u16string text = android_node->GetAccessibleNameUTF16();
+    std::u16string text = android_node->GetTextContentUTF16();
     std::u16string concatenated;
     int previous_end_index = -1;
     while (manager->NextAtGranularity(granularity, end_index, android_node,
@@ -175,10 +175,10 @@ IN_PROC_BROWSER_TEST_F(AndroidGranularityMovementBrowserTest,
       u"'O', 'n', 'e', ',', ' ', 't', 'w', 'o', "
       u"',', ' ', 't', 'h', 'r', 'e', 'e', '!'",
       TraverseNodeAtGranularity(para, GRANULARITY_CHARACTER));
-  EXPECT_EQ(
-      u"'S', 'e', 'v', 'e', 'n', ',', ' ', 'e', 'i', 'g', "
-      u"'h', 't', ',', ' ', 'n', 'i', 'n', 'e', '!'",
-      TraverseNodeAtGranularity(button, GRANULARITY_CHARACTER));
+
+  // The aria-label overrides the text content, so there's no rendered text to
+  // traverse.
+  EXPECT_EQ(u"", TraverseNodeAtGranularity(button, GRANULARITY_CHARACTER));
 }
 
 IN_PROC_BROWSER_TEST_F(AndroidGranularityMovementBrowserTest, NavigateByWords) {
@@ -187,7 +187,7 @@ IN_PROC_BROWSER_TEST_F(AndroidGranularityMovementBrowserTest, NavigateByWords) {
       "<body>"
       "<p>One, two, three!</p>"
       "<p>"
-      "<button aria-label='Seven, eight, nine!'>Four, five, six!</button>"
+      "<button>Four, five, six!</button>"
       "</p>"
       "</body></html>");
   ui::BrowserAccessibility* root = LoadUrlAndGetAccessibilityRoot(url);
@@ -201,7 +201,7 @@ IN_PROC_BROWSER_TEST_F(AndroidGranularityMovementBrowserTest, NavigateByWords) {
 
   EXPECT_EQ(u"'One', ',', 'two', ',', 'three', '!'",
             TraverseNodeAtGranularity(para, GRANULARITY_WORD));
-  EXPECT_EQ(u"'Seven', 'eight', 'nine'",
+  EXPECT_EQ(u"'Four', ',', 'five', ',', 'six', '!'",
             TraverseNodeAtGranularity(button, GRANULARITY_WORD));
 }
 

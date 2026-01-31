@@ -41,10 +41,10 @@ ScrollingBottomViewSceneLayer::~ScrollingBottomViewSceneLayer() = default;
 void ScrollingBottomViewSceneLayer::UpdateScrollingBottomViewLayer(
     JNIEnv* env,
     const JavaRef<jobject>& jresource_manager,
-    jint view_resource_id,
-    jint shadow_height,
-    jfloat x_offset,
-    jfloat y_offset,
+    int32_t view_resource_id,
+    int32_t shadow_height,
+    float x_offset,
+    float y_offset,
     bool show_shadow,
     const JavaRef<jobject>& joffset_tag) {
   ui::ResourceManager* resource_manager =
@@ -108,7 +108,7 @@ bool ScrollingBottomViewSceneLayer::ShouldShowBackground() {
   return should_show_background_;
 }
 
-static jlong JNI_ScrollingBottomViewSceneLayer_Init(
+static int64_t JNI_ScrollingBottomViewSceneLayer_Init(
     JNIEnv* env,
     const JavaRef<jobject>& jobj) {
   // This will automatically bind to the Java object and pass ownership there.

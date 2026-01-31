@@ -36,7 +36,6 @@
 #include "third_party/blink/public/mojom/loader/code_cache.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/script/script_type.mojom-blink-forward.h"
 #include "third_party/blink/public/platform/browser_interface_broker_proxy.h"
-#include "third_party/blink/renderer/bindings/core/v8/active_script_wrappable.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/dom/frame_request_callback_collection.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
@@ -81,7 +80,6 @@ class CORE_EXPORT WorkerGlobalScope
     : public WorkerOrWorkletGlobalScope,
       public WindowOrWorkerGlobalScope,
       public UniversalGlobalScope,
-      public ActiveScriptWrappable<WorkerGlobalScope>,
       public Supplementable<WorkerGlobalScope>,
       public DOMOriginUtils {
   DEFINE_WRAPPERTYPEINFO();
@@ -230,9 +228,6 @@ class CORE_EXPORT WorkerGlobalScope
   WorkerSettings* GetWorkerSettings() const { return worker_settings_.get(); }
 
   void Trace(Visitor*) const override;
-
-  // ActiveScriptWrappable.
-  bool HasPendingActivity() const override;
 
   virtual InstalledScriptsManager* GetInstalledScriptsManager() {
     return nullptr;

@@ -4,8 +4,9 @@
 
 #include "content/browser/websockets/websocket_connector_impl.h"
 
+#include <algorithm>
+
 #include "base/command_line.h"
-#include "base/containers/contains.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/render_frame_host.h"
@@ -22,7 +23,7 @@ namespace content {
 namespace {
 
 url::Origin MaybeTreatLocalOriginAsOpaque(const url::Origin& origin) {
-  if (base::Contains(url::GetLocalSchemes(), origin.scheme()) &&
+  if (std::ranges::contains(url::GetLocalSchemes(), origin.scheme()) &&
       !base::CommandLine::ForCurrentProcess()->HasSwitch(
           switches::kAllowFileAccessFromFiles)) {
     // For local origins we should use an opaque origin unless

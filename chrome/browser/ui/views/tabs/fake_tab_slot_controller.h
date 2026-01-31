@@ -6,13 +6,13 @@
 #define CHROME_BROWSER_UI_VIEWS_TABS_FAKE_TAB_SLOT_CONTROLLER_H_
 
 #include "base/memory/raw_ptr.h"
-#include "chrome/browser/ui/tabs/tab_strip_model_selection_adapter.h"
 #include "chrome/browser/ui/views/tabs/tab.h"
 #include "chrome/browser/ui/views/tabs/tab_slot_controller.h"
 #include "ui/base/models/list_selection_model.h"
 #include "ui/base/mojom/menu_source_type.mojom-forward.h"
 #include "ui/gfx/color_palette.h"
 
+class BrowserWindowInterface;
 class TabContainer;
 class TabStripController;
 
@@ -55,8 +55,6 @@ class FakeTabSlotController : public TabSlotController {
                              ui::mojom::MenuSourceType source_type) override {}
   bool IsActiveTab(const TabSlotView* tab) const override;
   bool IsTabSelected(const TabSlotView* tab) const override;
-  bool IsTabPinned(const TabSlotView* tab) const override;
-  bool IsTabFirst(const TabSlotView* tab) const override;
   bool IsFocusInTabs() const override;
   bool ShouldCompactLeadingEdge() const override;
   void MaybeStartDrag(TabSlotView* source,
@@ -76,10 +74,7 @@ class FakeTabSlotController : public TabSlotController {
   void HideHover(Tab* tab, TabStyle::HideHoverStyle style) override {}
   int GetStrokeThickness() const override;
   bool CanPaintThrobberToLayer() const override;
-  bool HasVisibleBackgroundTabShapes() const override;
   SkColor GetTabSeparatorColor() const override;
-  std::optional<int> GetCustomBackgroundId(
-      BrowserFrameActiveState active_state) const override;
   std::u16string GetAccessibleTabName(const Tab* tab) const override;
   float GetHoverOpacityForTab(float range_parameter) const override;
   float GetHoverOpacityForRadialHighlight() const override;
@@ -96,7 +91,7 @@ class FakeTabSlotController : public TabSlotController {
   void ShiftGroupLeft(const tab_groups::TabGroupId& group) override {}
   void ShiftGroupRight(const tab_groups::TabGroupId& group) override {}
   Browser* GetBrowser() override;
-  bool IsFrameCondensed() const override;
+  BrowserWindowInterface* GetBrowserWindowInterface() override;
   TabGroup* GetTabGroup(const tab_groups::TabGroupId& group_id) const override;
 
 #if BUILDFLAG(IS_CHROMEOS)

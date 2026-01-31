@@ -6,6 +6,7 @@
 #define EXTENSIONS_BROWSER_PERMISSIONS_PERMISSIONS_UPDATER_H_
 
 #include <memory>
+#include <utility>
 
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
@@ -29,31 +30,42 @@ class URLPatternSet;
 // and notifies interested parties of the changes.
 class PermissionsUpdater {
  public:
-  // If INIT_FLAG_TRANSIENT is specified, this updater is being used for an
+  // If kTransient is specified, this updater is being used for an
   // extension that is not actually installed (and instead is just being
   // initialized e.g. to display the permission warnings in an install prompt).
   // In these cases, this updater should follow all rules below.
   //   a) don't check prefs for stored permissions.
   //   b) don't send notifications of permission changes, because there is no
   //      installed extension that would be affected.
-  enum InitFlag {
-    INIT_FLAG_NONE = 0,
-    INIT_FLAG_TRANSIENT = 1 << 0,
+  enum class InitFlag : int32_t {
+    kNone = 0,
+    kTransient = 1 << 0,
   };
 
-  enum RemoveType {
+  // Enable enum class bitmasking.
+  friend constexpr int operator|(InitFlag lhs, InitFlag rhs) {
+    return std::to_underlying(lhs) | std::to_underlying(rhs);
+  }
+  friend constexpr int operator|(int lhs, InitFlag rhs) {
+    return lhs | std::to_underlying(rhs);
+  }
+  friend constexpr bool operator&(InitFlag lhs, InitFlag rhs) {
+    return std::to_underlying(lhs) & std::to_underlying(rhs);
+  }
+
+  enum class RemoveType {
     // Permissions will be removed from the active set of permissions, but not
     // the stored granted permissions. This allows the extension to re-add the
     // permissions without further prompting.
-    REMOVE_SOFT,
+    kSoft,
     // Permissions will be removed from the active set of permissions and the
     // stored granted permissions. The extension will need to re-prompt the
     // user to re-add the permissions.
-    // TODO(devlin): REMOVE_HARD is only exercised in unit tests, but we have
+    // TODO(devlin): kHard is only exercised in unit tests, but we have
     // the desire to be able to able to surface revoking optional permissions to
     // the user. We should either a) pursue it in earnest or b) remove support
     // (and potentially add it back at a later date).
-    REMOVE_HARD,
+    kHard,
   };
 
   explicit PermissionsUpdater(content::BrowserContext* browser_context);
@@ -109,7 +121,7 @@ class PermissionsUpdater {
                                 base::OnceClosure completion_callback);
 
   // Removes the `permissions` from `extension` and makes no effort to determine
-  // if doing so is safe in the slightlest. This method shouldn't be used,
+  // if doing so is safe in the slightest. This method shouldn't be used,
   // except for removing permissions totally blocklisted by management.
   void RemovePermissionsUnsafe(const Extension* extension,
                                const PermissionSet& permissions);
@@ -158,19 +170,30 @@ class PermissionsUpdater {
  private:
   class NetworkPermissionsUpdateHelper;
 
-  enum EventType {
-    ADDED,
-    REMOVED,
-    POLICY,
+  enum class EventType {
+    kAdded,
+    kRemoved,
+    kPolicy,
   };
 
   // A bit mask of the permission set to be updated in ExtensionPrefs.
-  enum PermissionsStore {
+  enum class PermissionsStore : int32_t {
     kNone = 0,
     kGrantedPermissions = 1 << 0,
     kRuntimeGrantedPermissions = 1 << 1,
     kActivePermissions = 1 << 2,
   };
+
+  // Enable enum class bitmasking.
+  friend constexpr int operator|(PermissionsStore lhs, PermissionsStore rhs) {
+    return std::to_underlying(lhs) | std::to_underlying(rhs);
+  }
+  friend constexpr int operator|(int lhs, PermissionsStore rhs) {
+    return lhs | std::to_underlying(rhs);
+  }
+  friend constexpr bool operator&(int lhs, PermissionsStore rhs) {
+    return lhs & std::to_underlying(rhs);
+  }
 
   // Issues the relevant events, messages and notifications when the
   // `extension`'s permissions have `changed` (`changed` is the delta).

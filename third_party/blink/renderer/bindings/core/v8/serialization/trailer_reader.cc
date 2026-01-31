@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/serialization/trailer_reader.h"
 
 #include <algorithm>
+#include <bit>
 
 #include "base/numerics/byte_conversions.h"
 #include "base/numerics/clamped_math.h"
@@ -104,10 +105,11 @@ base::expected<void, TrailerReader::Error> TrailerReader::Read() {
       return base::unexpected(Error::kInvalidTrailer);
 
     uint32_t num_exposed = 0;
-    if (auto num_exposed_raw = iterator_.CopyObject<uint32_t>())
-      num_exposed = base::ByteSwap(*num_exposed_raw);  // Big-endian.
-    else
+    if (auto num_exposed_raw = iterator_.CopyObject<uint32_t>()) {
+      num_exposed = std::byteswap(*num_exposed_raw);  // Big-endian.
+    } else {
       return base::unexpected(Error::kInvalidTrailer);
+    }
 
     auto exposed_raw = iterator_.Span<uint8_t>(num_exposed);
     if (exposed_raw.size() != num_exposed)

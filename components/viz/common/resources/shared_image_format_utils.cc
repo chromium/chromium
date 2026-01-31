@@ -14,7 +14,6 @@
 #include "base/notreached.h"
 #include "components/viz/common/resources/shared_image_format.h"
 #include "third_party/skia/include/core/SkColorType.h"
-#include "ui/gfx/buffer_types.h"
 
 namespace viz {
 namespace {
@@ -31,6 +30,106 @@ constexpr auto kMappableSharedImageFormats = std::to_array<SharedImageFormat>(
      MultiPlaneFormat::kP010});
 
 }  // namespace
+
+SharedImageFormatUMA GetSharedImageFormatUMA(SharedImageFormat format) {
+  if (format.is_single_plane()) {
+    if (format == SinglePlaneFormat::kRGBA_8888) {
+      return SharedImageFormatUMA::kRGBA_8888;
+    } else if (format == SinglePlaneFormat::kRGBA_4444) {
+      return SharedImageFormatUMA::kRGBA_4444;
+    } else if (format == SinglePlaneFormat::kBGRA_8888) {
+      return SharedImageFormatUMA::kBGRA_8888;
+    } else if (format == SinglePlaneFormat::kALPHA_8) {
+      return SharedImageFormatUMA::kALPHA_8;
+    } else if (format == SinglePlaneFormat::kBGR_565) {
+      return SharedImageFormatUMA::kBGR_565;
+    } else if (format == SinglePlaneFormat::kETC1) {
+      return SharedImageFormatUMA::kETC1;
+    } else if (format == SinglePlaneFormat::kR_8) {
+      return SharedImageFormatUMA::kR_8;
+    } else if (format == SinglePlaneFormat::kRG_88) {
+      return SharedImageFormatUMA::kRG_88;
+    } else if (format == SinglePlaneFormat::kLUMINANCE_F16) {
+      return SharedImageFormatUMA::kLUMINANCE_F16;
+    } else if (format == SinglePlaneFormat::kRGBA_F16) {
+      return SharedImageFormatUMA::kRGBA_F16;
+    } else if (format == SinglePlaneFormat::kR_16) {
+      return SharedImageFormatUMA::kR_16;
+    } else if (format == SinglePlaneFormat::kRG_1616) {
+      return SharedImageFormatUMA::kRG_1616;
+    } else if (format == SinglePlaneFormat::kRGBX_8888) {
+      return SharedImageFormatUMA::kRGBX_8888;
+    } else if (format == SinglePlaneFormat::kBGRX_8888) {
+      return SharedImageFormatUMA::kBGRX_8888;
+    } else if (format == SinglePlaneFormat::kRGBA_1010102) {
+      return SharedImageFormatUMA::kRGBA_1010102;
+    } else if (format == SinglePlaneFormat::kBGRA_1010102) {
+      return SharedImageFormatUMA::kBGRA_1010102;
+    } else {
+      DCHECK_EQ(format, SinglePlaneFormat::kR_F16);
+      return SharedImageFormatUMA::kR_F16;
+    }
+  }
+
+  using PlaneConfig = SharedImageFormat::PlaneConfig;
+  using Subsampling = SharedImageFormat::Subsampling;
+  using ChannelFormat = SharedImageFormat::ChannelFormat;
+
+  if (format == MultiPlaneFormat::kYV12) {
+    return SharedImageFormatUMA::kYV12;
+  } else if (format == MultiPlaneFormat::kNV12) {
+    return SharedImageFormatUMA::kNV12;
+  } else if (format == MultiPlaneFormat::kNV12A) {
+    return SharedImageFormatUMA::kNV12A;
+  } else if (format == MultiPlaneFormat::kP010) {
+    return SharedImageFormatUMA::kP010;
+  } else if (format == MultiPlaneFormat::kNV16) {
+    return SharedImageFormatUMA::kNV16;
+  } else if (format == MultiPlaneFormat::kNV24) {
+    return SharedImageFormatUMA::kNV24;
+  } else if (format == MultiPlaneFormat::kP210) {
+    return SharedImageFormatUMA::kP210;
+  } else if (format == MultiPlaneFormat::kP410) {
+    return SharedImageFormatUMA::kP410;
+  } else if (format == MultiPlaneFormat::kI420A) {
+    return SharedImageFormatUMA::kI420A;
+  } else if (format.is_multi_plane() &&
+             format.plane_config() == PlaneConfig::kY_U_V) {
+    // Y_U_V planar formats are usually used by software video frames.
+    switch (format.channel_format()) {
+      case ChannelFormat::k8:
+        switch (format.subsampling()) {
+          case Subsampling::k420:
+            return SharedImageFormatUMA::kI420;
+          case Subsampling::k422:
+            return SharedImageFormatUMA::kI422;
+          case Subsampling::k444:
+            return SharedImageFormatUMA::kI444;
+        }
+      case ChannelFormat::k10:
+        switch (format.subsampling()) {
+          case Subsampling::k420:
+            return SharedImageFormatUMA::kYUV420P10;
+          case Subsampling::k422:
+            return SharedImageFormatUMA::kYUV422P10;
+          case Subsampling::k444:
+            return SharedImageFormatUMA::kYUV444P10;
+        }
+      case ChannelFormat::k16:
+      case ChannelFormat::k16F:
+        switch (format.subsampling()) {
+          case Subsampling::k420:
+            return SharedImageFormatUMA::kYUV420P16;
+          case Subsampling::k422:
+            return SharedImageFormatUMA::kYUV422P16;
+          case Subsampling::k444:
+            return SharedImageFormatUMA::kYUV444P16;
+        }
+    }
+  } else {
+    return SharedImageFormatUMA::kOther;
+  }
+}
 
 SkColorType ToClosestSkColorType(SharedImageFormat format) {
   CHECK(format.is_single_plane());
@@ -182,82 +281,6 @@ bool HasEquivalentBufferFormat(SharedImageFormat format) {
          format == MultiPlaneFormat::kP010;
 }
 
-gfx::BufferFormat SinglePlaneSharedImageFormatToBufferFormat(
-    SharedImageFormat format) {
-  CHECK(format.is_single_plane());
-  if (format == SinglePlaneFormat::kBGRA_8888) {
-    return gfx::BufferFormat::BGRA_8888;
-  } else if (format == SinglePlaneFormat::kR_8) {
-    return gfx::BufferFormat::R_8;
-  } else if (format == SinglePlaneFormat::kR_16) {
-    return gfx::BufferFormat::R_16;
-  } else if (format == SinglePlaneFormat::kRG_1616) {
-    return gfx::BufferFormat::RG_1616;
-  } else if (format == SinglePlaneFormat::kRGBA_4444) {
-    return gfx::BufferFormat::RGBA_4444;
-  } else if (format == SinglePlaneFormat::kRGBA_8888) {
-    return gfx::BufferFormat::RGBA_8888;
-  } else if (format == SinglePlaneFormat::kRGBA_F16) {
-    return gfx::BufferFormat::RGBA_F16;
-  } else if (format == SinglePlaneFormat::kBGR_565) {
-    return gfx::BufferFormat::BGR_565;
-  } else if (format == SinglePlaneFormat::kRG_88) {
-    return gfx::BufferFormat::RG_88;
-  } else if (format == SinglePlaneFormat::kRGBX_8888) {
-    return gfx::BufferFormat::RGBX_8888;
-  } else if (format == SinglePlaneFormat::kBGRX_8888) {
-    return gfx::BufferFormat::BGRX_8888;
-  } else if (format == SinglePlaneFormat::kRGBA_1010102) {
-    return gfx::BufferFormat::RGBA_1010102;
-  } else if (format == SinglePlaneFormat::kBGRA_1010102) {
-    return gfx::BufferFormat::BGRA_1010102;
-  } else {
-    // CanCreateGpuMemoryBufferForSinglePlaneSharedImageFormat() returns
-    // false for all other types, so give a default value that will not be used.
-    return gfx::BufferFormat::RGBA_8888;
-  }
-}
-
-SharedImageFormat GetSharedImageFormat(gfx::BufferFormat buffer_format) {
-  switch (buffer_format) {
-    case gfx::BufferFormat::BGRA_8888:
-      return SinglePlaneFormat::kBGRA_8888;
-    case gfx::BufferFormat::R_8:
-      return SinglePlaneFormat::kR_8;
-    case gfx::BufferFormat::R_16:
-      return SinglePlaneFormat::kR_16;
-    case gfx::BufferFormat::RG_1616:
-      return SinglePlaneFormat::kRG_1616;
-    case gfx::BufferFormat::RGBA_4444:
-      return SinglePlaneFormat::kRGBA_4444;
-    case gfx::BufferFormat::RGBA_8888:
-      return SinglePlaneFormat::kRGBA_8888;
-    case gfx::BufferFormat::RGBA_F16:
-      return SinglePlaneFormat::kRGBA_F16;
-    case gfx::BufferFormat::BGR_565:
-      return SinglePlaneFormat::kBGR_565;
-    case gfx::BufferFormat::RG_88:
-      return SinglePlaneFormat::kRG_88;
-    case gfx::BufferFormat::RGBX_8888:
-      return SinglePlaneFormat::kRGBX_8888;
-    case gfx::BufferFormat::BGRX_8888:
-      return SinglePlaneFormat::kBGRX_8888;
-    case gfx::BufferFormat::RGBA_1010102:
-      return SinglePlaneFormat::kRGBA_1010102;
-    case gfx::BufferFormat::BGRA_1010102:
-      return SinglePlaneFormat::kBGRA_1010102;
-    case gfx::BufferFormat::YVU_420:
-      return MultiPlaneFormat::kYV12;
-    case gfx::BufferFormat::YUV_420_BIPLANAR:
-      return MultiPlaneFormat::kNV12;
-    case gfx::BufferFormat::YUVA_420_TRIPLANAR:
-      return MultiPlaneFormat::kNV12A;
-    case gfx::BufferFormat::P010:
-      return MultiPlaneFormat::kP010;
-  }
-  NOTREACHED();
-}
-
 size_t SharedMemoryOffsetForSharedImageFormat(SharedImageFormat format,
                                               int plane_index,
                                               const gfx::Size& size) {
@@ -366,29 +389,6 @@ bool IsOddSizeMultiPlanarBuffersAllowed() {
 
 base::span<const SharedImageFormat> GetMappableSharedImageFormatForTesting() {
   return kMappableSharedImageFormats;
-}
-
-gfx::BufferFormat SharedImageFormatToBufferFormat(SharedImageFormat format) {
-  if (!HasEquivalentBufferFormat(format)) {
-    DUMP_WILL_BE_NOTREACHED() << "format=" << format.ToString();
-    return gfx::BufferFormat::RGBA_8888;
-  }
-
-  if (format.is_single_plane()) {
-    return SinglePlaneSharedImageFormatToBufferFormat(format);
-  }
-
-  if (format == MultiPlaneFormat::kYV12) {
-    return gfx::BufferFormat::YVU_420;
-  } else if (format == MultiPlaneFormat::kNV12) {
-    return gfx::BufferFormat::YUV_420_BIPLANAR;
-  } else if (format == MultiPlaneFormat::kNV12A) {
-    return gfx::BufferFormat::YUVA_420_TRIPLANAR;
-  } else if (format == MultiPlaneFormat::kP010) {
-    return gfx::BufferFormat::P010;
-  }
-  DUMP_WILL_BE_NOTREACHED() << "format=" << format.ToString();
-  return gfx::BufferFormat::RGBA_8888;
 }
 
 }  // namespace viz

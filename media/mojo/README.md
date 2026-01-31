@@ -1,4 +1,4 @@
-# media/mojo
+# //media/mojo
 
 This folder contains mojo interfaces, clients and implementations that extend
 the core "media" target to support most out-of-process use cases, including

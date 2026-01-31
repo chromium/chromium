@@ -140,7 +140,7 @@ final class AndroidBaseWindow {
 
     @CalledByNative
     private @Nullable WindowAndroid getWindowAndroid() {
-        return mChromeAndroidTask.getActivityWindowAndroid();
+        return mChromeAndroidTask.getTopActivityWindowAndroid();
     }
 
     long getNativePtrForTesting() {

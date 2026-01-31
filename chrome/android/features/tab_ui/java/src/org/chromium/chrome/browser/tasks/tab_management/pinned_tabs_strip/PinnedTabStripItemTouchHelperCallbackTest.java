@@ -33,7 +33,7 @@ import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowLooper;
 
-import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tasks.tab_management.TabGridItemLongPressOrchestrator.OnLongPressTabItemEventListener;
@@ -70,7 +70,7 @@ public class PinnedTabStripItemTouchHelperCallbackTest {
     @Mock private RecyclerView mRecyclerView;
     @Mock private OnLongPressTabItemEventListener mOnLongPressListener;
     @Mock private Canvas mCanvas;
-    @Mock private ObservableSupplier<TabGroupModelFilter> mTabGroupModelFilterSupplier;
+    @Mock private MonotonicObservableSupplier<TabGroupModelFilter> mTabGroupModelFilterSupplier;
     @Mock private TabGroupModelFilter mTabGroupModelFilter;
     @Mock private View mItemView1;
     @Mock private View mItemView2;

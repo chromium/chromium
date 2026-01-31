@@ -664,8 +664,8 @@ TEST(SchemaTest, Validate) {
   const auto schema = Schema::Parse(kTestSchema);
   ASSERT_TRUE(schema.has_value()) << schema.error();
 
-  base::Value bundle((base::Value::Dict()));
-  base::Value::Dict& dict = bundle.GetDict();
+  base::Value bundle((base::DictValue()));
+  base::DictValue& dict = bundle.GetDict();
   TestSchemaValidation(*schema, bundle, SCHEMA_STRICT, true);
 
   // Wrong type, expected integer.
@@ -675,7 +675,7 @@ TEST(SchemaTest, Validate) {
   // Wrong type, expected list of strings.
   {
     dict.clear();
-    base::Value::List list;
+    base::ListValue list;
     list.Append(1);
     dict.Set("Array", std::move(list));
     TestSchemaValidation(*schema, bundle, SCHEMA_STRICT, false);
@@ -684,7 +684,7 @@ TEST(SchemaTest, Validate) {
   // Wrong type in a sub-object.
   {
     dict.clear();
-    base::Value::Dict subdict;
+    base::DictValue subdict;
     subdict.Set("one", "one");
     dict.Set("Object", std::move(subdict));
     TestSchemaValidation(*schema, bundle, SCHEMA_STRICT, false);
@@ -703,34 +703,34 @@ TEST(SchemaTest, Validate) {
   dict.Set("String", "omg");
 
   {
-    base::Value::List list;
+    base::ListValue list;
     list.Append("a string");
     list.Append("another string");
     dict.Set("Array", std::move(list));
   }
 
   {
-    base::Value::Dict subdict;
+    base::DictValue subdict;
     subdict.Set("one", "string");
     subdict.Set("two", 2);
-    base::Value::List list;
+    base::ListValue list;
     list.Append(subdict.Clone());
     list.Append(std::move(subdict));
     dict.Set("ArrayOfObjects", std::move(list));
   }
 
   {
-    base::Value::List list;
+    base::ListValue list;
     list.Append("a string");
     list.Append("another string");
-    base::Value::List listlist;
+    base::ListValue listlist;
     listlist.Append(list.Clone());
     listlist.Append(std::move(list));
     dict.Set("ArrayOfArray", std::move(listlist));
   }
 
   {
-    base::Value::Dict subdict;
+    base::DictValue subdict;
     subdict.Set("one", true);
     subdict.Set("two", 2);
     subdict.Set("additionally", "a string");
@@ -739,7 +739,7 @@ TEST(SchemaTest, Validate) {
   }
 
   {
-    base::Value::Dict subdict;
+    base::DictValue subdict;
     subdict.Set("Integer", 1);
     subdict.Set("String", "a string");
     subdict.Set("Number", 3.14);
@@ -813,8 +813,8 @@ TEST(SchemaTest, Validate) {
   {
     Schema subschema = schema->GetProperty("ObjectOfObject");
     ASSERT_TRUE(subschema.valid());
-    base::Value root((base::Value::Dict()));
-    base::Value::Dict& root_dict = root.GetDict();
+    base::Value root((base::DictValue()));
+    base::DictValue& root_dict = root.GetDict();
 
     // Unknown property.
     root_dict.SetByDottedPath("Object.three", false);
@@ -844,10 +844,10 @@ TEST(SchemaTest, Validate) {
     Schema subschema = schema->GetProperty("ArrayOfObjects");
     ASSERT_TRUE(subschema.valid());
     base::Value root(base::Value::Type::LIST);
-    base::Value::List& root_list = root.GetList();
+    base::ListValue& root_list = root.GetList();
 
     // Unknown property.
-    base::Value::Dict dict1;
+    base::DictValue dict1;
     dict1.Set("three", true);
     root_list.Append(std::move(dict1));
     TestSchemaValidation(subschema, root, SCHEMA_STRICT, false);
@@ -860,7 +860,7 @@ TEST(SchemaTest, Validate) {
     root_list.erase(root_list.end() - 1);
 
     // Invalid property.
-    base::Value::Dict dict2;
+    base::DictValue dict2;
     dict2.Set("two", true);
     root_list.Append(std::move(dict2));
     TestSchemaValidation(subschema, root, SCHEMA_STRICT, false);
@@ -876,10 +876,10 @@ TEST(SchemaTest, Validate) {
   {
     Schema subschema = schema->GetProperty("ObjectOfArray");
     ASSERT_TRUE(subschema.valid());
-    base::Value root((base::Value::Dict()));
+    base::Value root((base::DictValue()));
 
-    base::Value::List& list_value =
-        root.GetDict().Set("List", base::Value::List())->GetList();
+    base::ListValue& list_value =
+        root.GetDict().Set("List", base::ListValue())->GetList();
 
     // Test that there are not errors here.
     list_value.Append(12345);
@@ -905,10 +905,10 @@ TEST(SchemaTest, Validate) {
   {
     Schema subschema = schema->GetProperty("ArrayOfObjectOfArray");
     ASSERT_TRUE(subschema.valid());
-    base::Value root{base::Value::List()};
+    base::Value root{base::ListValue()};
 
-    base::Value::Dict dict_value;
-    base::Value* list_value = dict_value.Set("List", base::Value::List());
+    base::DictValue dict_value;
+    base::Value* list_value = dict_value.Set("List", base::ListValue());
     root.GetList().Append(std::move(dict_value));
 
     // Test that there are not errors here.
@@ -949,8 +949,8 @@ TEST(SchemaTest, Validate) {
   {
     Schema subschema = schema->GetProperty("ObjectWithPatternProperties");
     ASSERT_TRUE(subschema.valid());
-    base::Value root((base::Value::Dict()));
-    base::Value::Dict& root_dict = root.GetDict();
+    base::Value root((base::DictValue()));
+    base::DictValue& root_dict = root.GetDict();
 
     ASSERT_EQ(1u, subschema.GetPatternProperties("fooo").size());
     ASSERT_EQ(1u, subschema.GetPatternProperties("foo").size());
@@ -1004,8 +1004,8 @@ TEST(SchemaTest, Validate) {
   {
     Schema subschema = schema->GetProperty("ObjectWithRequiredProperties");
     ASSERT_TRUE(subschema.valid());
-    base::Value root((base::Value::Dict()));
-    base::Value::Dict& root_dict = root.GetDict();
+    base::Value root((base::DictValue()));
+    base::DictValue& root_dict = root.GetDict();
 
     // Required property missing.
     root_dict.Set("Integer", 1);
@@ -1344,13 +1344,13 @@ TEST(SchemaTest, SchemaNodeSensitiveValues) {
   EXPECT_FALSE(sensitive_number.HasSensitiveChildren());
 
   // Run |MaskSensitiveValues| on the top-level schema
-  base::Value::Dict object;
+  base::DictValue object;
   object.Set("objectProperty", true);
-  base::Value::List array;
+  base::ListValue array;
   array.Append(true);
 
-  base::Value value((base::Value::Dict()));
-  base::Value::Dict& value_dict = value.GetDict();
+  base::Value value((base::DictValue()));
+  base::DictValue& value_dict = value.GetDict();
   value_dict.Set(kNormalBooleanSchema, true);
   value_dict.Set(kSensitiveBooleanSchema, true);
   value_dict.Set(kSensitiveStringSchema, "testvalue");
@@ -1361,7 +1361,7 @@ TEST(SchemaTest, SchemaNodeSensitiveValues) {
   schema->MaskSensitiveValues(&value);
 
   base::Value value_masked("********");
-  base::Value::Dict value_expected;
+  base::DictValue value_expected;
   value_expected.Set(kNormalBooleanSchema, true);
   value_expected.Set(kSensitiveBooleanSchema, value_masked.Clone());
   value_expected.Set(kSensitiveStringSchema, value_masked.Clone());

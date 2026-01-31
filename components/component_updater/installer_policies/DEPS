@@ -12,7 +12,6 @@ include_rules = [
   "+components/plus_addresses/core/browser",
   "+components/plus_addresses/core/common",
   "+components/prefs",
-  "+components/tpcd",
   "+mojo/public/cpp/base",
   "+net/base",
   "+services/network/public",

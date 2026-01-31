@@ -15,7 +15,7 @@ import org.chromium.base.ApplicationStatus;
 import org.chromium.base.ApplicationStatus.ActivityStateListener;
 import org.chromium.base.Log;
 import org.chromium.base.metrics.RecordUserAction;
-import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.build.annotations.EnsuresNonNull;
 import org.chromium.build.annotations.MonotonicNonNull;
 import org.chromium.build.annotations.NullMarked;
@@ -93,7 +93,7 @@ public class OfflinePageTabObserver extends EmptyTabObserver
         Activity activity = windowAndroid.getActivity().get();
         OfflinePageTabObserver observer = sObservers.get(activity);
         if (observer == null) {
-            ObservableSupplier<TabModelSelector> tabModelSelectorSupplier =
+            MonotonicObservableSupplier<TabModelSelector> tabModelSelectorSupplier =
                     TabModelSelectorSupplier.from(windowAndroid);
             SnackbarManager snackbarManager = SnackbarManagerProvider.from(windowAndroid);
             assert tabModelSelectorSupplier != null;

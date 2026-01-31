@@ -13,7 +13,8 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.ThreadUtils;
-import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.supplier.ObservableSuppliers;
+import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CallbackHelper;
@@ -67,9 +68,8 @@ public class ArchivePersistedTabDataTest {
                     ArchivePersistedTabData archivePersistedTabData =
                             ArchivePersistedTabData.from(
                                     mActivityTestRule.getActivity().getActivityTab());
-                    ObservableSupplierImpl<Boolean> observableSupplier =
-                            new ObservableSupplierImpl<>();
-                    observableSupplier.set(true);
+                    SettableNonNullObservableSupplier<Boolean> observableSupplier =
+                            ObservableSuppliers.createNonNull(true);
                     archivePersistedTabData.registerIsTabSaveEnabledSupplier(observableSupplier);
                     archivePersistedTabData.setArchivedTimeMs(42L);
                     helpers[0].notifyCalled();

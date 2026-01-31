@@ -101,6 +101,7 @@ class AlertIndicatorButton : public views::ImageButton,
 
  protected:
   // views::View:
+  void OnThemeChanged() override;
   View* GetTooltipHandlerForPoint(const gfx::Point& point) override;
   bool OnMousePressed(const ui::MouseEvent& event) override;
   void OnBoundsChanged(const gfx::Rect& previous_bounds) override;
@@ -135,6 +136,9 @@ class AlertIndicatorButton : public views::ImageButton,
   // Resets the images to display on the button to reflect `state` and the
   // parent tab's button color.  Should be called when either of these changes.
   void UpdateIconForAlertState(tabs::TabAlert state);
+
+  // Reloads the spinner and reapplies color and sizing when the theme changes.
+  void UpdateSpinnerTheme();
 
   // Loads the resources needed for the actor_indicator_spinner, if not already
   // loaded.

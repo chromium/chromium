@@ -63,8 +63,8 @@ void SetPolicy(PolicyMap* map,
 }
 
 template <class T>
-base::Value::List GetList(const std::vector<T>& entry) {
-  base::Value::List result;
+base::ListValue GetList(const std::vector<T>& entry) {
+  base::ListValue result;
   for (const auto& it : entry)
     result.Append(it);
   return result;
@@ -507,32 +507,32 @@ TEST_F(PolicyMapTest, MergeFrom_CloudMetapolicies) {
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 TEST_F(PolicyMapTest, MergeValuesList) {
-  base::Value::List abcd = GetList<std::string>({"a", "b", "c", "d"});
-  base::Value::List abc = GetList<std::string>({"a", "b", "c"});
-  base::Value::List ab = GetList<std::string>({"a", "b"});
-  base::Value::List cd = GetList<std::string>({"c", "d"});
-  base::Value::List ef = GetList<std::string>({"e", "f"});
+  base::ListValue abcd = GetList<std::string>({"a", "b", "c", "d"});
+  base::ListValue abc = GetList<std::string>({"a", "b", "c"});
+  base::ListValue ab = GetList<std::string>({"a", "b"});
+  base::ListValue cd = GetList<std::string>({"c", "d"});
+  base::ListValue ef = GetList<std::string>({"e", "f"});
 
-  base::Value::List int12 = GetList<int>({1, 2});
-  base::Value::List int34 = GetList<int>({3, 4});
-  base::Value::List int56 = GetList<int>({5, 6});
-  base::Value::List int1234 = GetList<int>({1, 2, 3, 4});
+  base::ListValue int12 = GetList<int>({1, 2});
+  base::ListValue int34 = GetList<int>({3, 4});
+  base::ListValue int56 = GetList<int>({5, 6});
+  base::ListValue int1234 = GetList<int>({1, 2, 3, 4});
 
-  base::Value::Dict dict_ab;
+  base::DictValue dict_ab;
   dict_ab.Set("a", true);
   dict_ab.Set("b", false);
-  base::Value::Dict dict_c;
+  base::DictValue dict_c;
   dict_c.Set("c", false);
-  base::Value::Dict dict_d;
+  base::DictValue dict_d;
   dict_d.Set("d", false);
 
-  base::Value::List list_dict_abd;
+  base::ListValue list_dict_abd;
   list_dict_abd.Append(dict_ab.Clone());
   list_dict_abd.Append(dict_d.Clone());
-  base::Value::List list_dict_c;
+  base::ListValue list_dict_c;
   list_dict_c.Append(dict_c.Clone());
 
-  base::Value::List list_dict_abcd;
+  base::ListValue list_dict_abcd;
   list_dict_abcd.Append(dict_ab.Clone());
   list_dict_abcd.Append(dict_d.Clone());
   list_dict_abcd.Append(dict_c.Clone());
@@ -721,29 +721,29 @@ TEST_F(PolicyMapTest, MergeValuesList) {
 }
 
 TEST_F(PolicyMapTest, MergeValuesDictionary) {
-  base::Value::Dict dict_a;
+  base::DictValue dict_a;
   dict_a.Set("keyA", true);
 
-  base::Value::Dict dict_b;
+  base::DictValue dict_b;
   dict_b.Set("keyB", "ValueB2");
   dict_b.Set("keyC", "ValueC2");
   dict_b.Set("keyD", "ValueD2");
 
-  base::Value::Dict dict_c;
+  base::DictValue dict_c;
   dict_c.Set("keyA", "ValueA");
   dict_c.Set("keyB", "ValueB");
   dict_c.Set("keyC", "ValueC");
   dict_c.Set("keyD", "ValueD");
   dict_c.Set("keyZ", "ValueZ");
 
-  base::Value::Dict dict_d;
+  base::DictValue dict_d;
   dict_d.Set("keyC", "ValueC3");
 
-  base::Value::Dict dict_e;
+  base::DictValue dict_e;
   dict_e.Set("keyD", "ValueD4");
   dict_e.Set("keyE", 123);
 
-  base::Value::Dict dict_f;
+  base::DictValue dict_f;
   dict_f.Set("keyX", "ValueX");
   dict_f.Set("keyE", "ValueE5");
 
@@ -759,7 +759,7 @@ TEST_F(PolicyMapTest, MergeValuesDictionary) {
       POLICY_LEVEL_MANDATORY, POLICY_SCOPE_MACHINE, POLICY_SOURCE_COMMAND_LINE,
       base::Value(dict_c.Clone()), nullptr));
 
-  base::Value::Dict merged_dict_case1;
+  base::DictValue merged_dict_case1;
   merged_dict_case1.Merge(dict_c.Clone());
   merged_dict_case1.Merge(dict_b.Clone());
   merged_dict_case1.Merge(dict_a.Clone());
@@ -784,7 +784,7 @@ TEST_F(PolicyMapTest, MergeValuesDictionary) {
       POLICY_LEVEL_RECOMMENDED, POLICY_SCOPE_USER, POLICY_SOURCE_PLATFORM,
       base::Value(dict_a.Clone()), nullptr));
 
-  base::Value::Dict merged_dict_case2;
+  base::DictValue merged_dict_case2;
   merged_dict_case2.Merge(dict_f.Clone());
   merged_dict_case2.Merge(dict_e.Clone());
 
@@ -811,7 +811,7 @@ TEST_F(PolicyMapTest, MergeValuesDictionary) {
       POLICY_LEVEL_RECOMMENDED, POLICY_SCOPE_MACHINE,
       POLICY_SOURCE_ENTERPRISE_DEFAULT, base::Value(dict_f.Clone()), nullptr));
 
-  base::Value::Dict merged_dict_case3;
+  base::DictValue merged_dict_case3;
   merged_dict_case3.Merge(dict_b.Clone());
   merged_dict_case3.Merge(dict_a.Clone());
 
@@ -946,10 +946,10 @@ TEST_F(PolicyMapTest, MergeValuesDictionary) {
 }
 
 TEST_F(PolicyMapTest, MergeValuesGroup) {
-  base::Value::List abc = GetList<std::string>({"a", "b", "c"});
-  base::Value::List ab = GetList<std::string>({"a", "b"});
-  base::Value::List cd = GetList<std::string>({"c", "d"});
-  base::Value::List ef = GetList<std::string>({"e", "f"});
+  base::ListValue abc = GetList<std::string>({"a", "b", "c"});
+  base::ListValue ab = GetList<std::string>({"a", "b"});
+  base::ListValue cd = GetList<std::string>({"c", "d"});
+  base::ListValue ef = GetList<std::string>({"e", "f"});
 
   // Case 1 - kTestPolicyName1
   // Should not be affected by the atomic groups
@@ -1024,7 +1024,7 @@ TEST_F(PolicyMapTest, MergeValuesGroup) {
 }
 
 TEST_F(PolicyMapTest, LoadFromSetsLevelScopeAndSource) {
-  base::Value::Dict policies;
+  base::DictValue policies;
   policies.Set("TestPolicy1", "google.com");
   policies.Set("TestPolicy2", true);
   policies.Set("TestPolicy3", -12321);
@@ -1044,7 +1044,7 @@ TEST_F(PolicyMapTest, LoadFromSetsLevelScopeAndSource) {
 }
 
 TEST_F(PolicyMapTest, LoadFromCheckForExternalPolicy) {
-  base::Value::Dict policies;
+  base::DictValue policies;
   policies.Set("TestPolicy1", "google.com");
 
   PolicyMap loaded;
@@ -1082,10 +1082,10 @@ TEST_F(PolicyMapTest, CloneIf) {
 }
 
 TEST_F(PolicyMapTest, EntryAddConflict) {
-  base::Value::List ab = GetList<std::string>({"a", "b"});
-  base::Value::List cd = GetList<std::string>({"c", "d"});
-  base::Value::List ef = GetList<std::string>({"e", "f"});
-  base::Value::List gh = GetList<std::string>({"g", "h"});
+  base::ListValue ab = GetList<std::string>({"a", "b"});
+  base::ListValue cd = GetList<std::string>({"c", "d"});
+  base::ListValue ef = GetList<std::string>({"e", "f"});
+  base::ListValue gh = GetList<std::string>({"g", "h"});
 
   // Case 1: Non-nested conflicts
   PolicyMap::Entry case1(POLICY_LEVEL_MANDATORY, POLICY_SCOPE_USER,
@@ -1494,8 +1494,8 @@ class PolicyMapMergeTest
   void PopulateExpectedMetapolicyMap(PolicyMap& policy_map_expected,
                                      const PolicyMap& policy_map_1,
                                      const PolicyMap& policy_map_2,
-                                     base::Value::List merge_list_1,
-                                     base::Value::List merge_list_2) {
+                                     base::ListValue merge_list_1,
+                                     base::ListValue merge_list_2) {
     // Platform machine overrides cloud machine because modified priorities
     // don't apply to precedence metapolicies.
     policy_map_expected.Set(
@@ -1655,9 +1655,9 @@ TEST_P(PolicyMapMergeTest, MergeFrom) {
 
 TEST_P(PolicyMapMergeTest, MergeFrom_Metapolicies) {
   // Define the lists of policies that will be used by the merging metapolicies.
-  base::Value::List merge_list_1;
+  base::ListValue merge_list_1;
   merge_list_1.Append(kTestPolicyName1);
-  base::Value::List merge_list_2;
+  base::ListValue merge_list_2;
   merge_list_2.Append(kTestPolicyName2);
 
   PolicyMap policy_map_1;

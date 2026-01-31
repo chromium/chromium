@@ -30,7 +30,7 @@ class RemoveWebAppJob : public UninstallJob {
   // external management and will be treated as a user uninstall.
   RemoveWebAppJob(webapps::WebappUninstallSource uninstall_source,
                   Profile& profile,
-                  base::Value::Dict& debug_value,
+                  base::DictValue& debug_value,
                   webapps::AppId app_id);
   ~RemoveWebAppJob() override;
 
@@ -52,7 +52,7 @@ class RemoveWebAppJob : public UninstallJob {
   const webapps::WebappUninstallSource uninstall_source_;
   // `this` must be owned by `profile_`.
   const raw_ref<Profile> profile_;
-  const raw_ref<base::Value::Dict> debug_value_;
+  const raw_ref<base::DictValue> debug_value_;
   const webapps::AppId app_id_;
 
   // `this` must be started and run within the scope of a WebAppCommand's

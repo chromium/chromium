@@ -26,7 +26,6 @@
 #include "components/signin/public/identity_manager/access_token_info.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
-#include "components/signin/public/identity_manager/scope_set.h"
 #include "google_apis/gaia/gaia_constants.h"
 #include "net/base/load_flags.h"
 #include "net/base/net_errors.h"
@@ -106,7 +105,7 @@ void LogLatency(base::TimeDelta latency) {
 // JSON response parsing
 //----------------------
 
-std::optional<std::string> GetString(const base::Value::Dict& value,
+std::optional<std::string> GetString(const base::DictValue& value,
                                      const std::string& key) {
   const auto* field = value.FindString(key);
   if (!field) {

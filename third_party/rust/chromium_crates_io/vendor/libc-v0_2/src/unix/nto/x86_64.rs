@@ -64,7 +64,7 @@ s! {
         pub mxcsr_mask: u32,
         pub st_regs: [u8; 128],
         pub xmm_regs: [u8; 128],
-        reserved2: [u8; 224],
+        reserved2: Padding<[u8; 224]>,
     }
 
     pub struct fpu_extention_savearea_64 {

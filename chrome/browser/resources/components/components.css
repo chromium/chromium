@@ -72,7 +72,7 @@ h1 {
 
 .section-header > table {
   width: 100%;
-  border-collapse:collapse
+  border-collapse:collapse;
 }
 
 .section-header-title {
@@ -145,7 +145,7 @@ body.show-tmi-mode .show-in-tmi-mode {
 
 .component > table {
   width: 100%;
-  border-collapse:collapse
+  border-collapse:collapse;
 }
 
 .plugin-file {
@@ -188,7 +188,7 @@ body.show-tmi-mode .show-in-tmi-mode {
 
 /* Separate the inital line, Description, Location, and MIME Types lines. */
 .plugin-details > div {
-  padding-top: 0.1em
+  padding-top: 0.1em;
 }
 
 /* Align rows of tables along the top. */

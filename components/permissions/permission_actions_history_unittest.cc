@@ -16,7 +16,10 @@
 #include "base/test/gtest_util.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/with_feature_override.h"
 #include "base/time/time.h"
+#include "components/content_settings/core/common/content_settings_utils.h"
+#include "components/content_settings/core/common/features.h"
 #include "components/content_settings/core/common/pref_names.h"
 #include "components/permissions/permission_request_enums.h"
 #include "components/permissions/permission_uma_util.h"
@@ -98,10 +101,10 @@ class MockPermissionActionsHistoryObserver
 };
 }  // namespace
 
-class PermissionActionHistoryTest : public testing::Test {
+class PermissionActionHistoryTestBase : public testing::Test {
  public:
-  PermissionActionHistoryTest() = default;
-  ~PermissionActionHistoryTest() override = default;
+  PermissionActionHistoryTestBase() = default;
+  ~PermissionActionHistoryTestBase() override = default;
 
   PermissionActionsHistory* GetPermissionActionsHistory() {
     return PermissionsClient::Get()->GetPermissionActionsHistory(
@@ -112,9 +115,10 @@ class PermissionActionHistoryTest : public testing::Test {
     RecordSetUpActions();
   }
 
-  PermissionActionHistoryTest(const PermissionActionHistoryTest&) = delete;
-  PermissionActionHistoryTest& operator=(const PermissionActionHistoryTest&) =
+  PermissionActionHistoryTestBase(const PermissionActionHistoryTestBase&) =
       delete;
+  PermissionActionHistoryTestBase& operator=(
+      const PermissionActionHistoryTestBase&) = delete;
 
   std::vector<PermissionActionsHistory::Entry> GetHistory(
       std::optional<RequestType> type,
@@ -168,7 +172,17 @@ class PermissionActionHistoryTest : public testing::Test {
   TestPermissionsClient permissions_client_;
 };
 
-TEST_F(PermissionActionHistoryTest, GetHistorySortedOrder) {
+class PermissionActionHistoryTest : public base::test::WithFeatureOverride,
+                                    public PermissionActionHistoryTestBase {
+ public:
+  PermissionActionHistoryTest()
+      : base::test::WithFeatureOverride(
+            content_settings::features::kApproximateGeolocationPermission) {}
+};
+
+INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(PermissionActionHistoryTest);
+
+TEST_P(PermissionActionHistoryTest, GetHistorySortedOrder) {
   auto all_entries = GetHistory(std::nullopt);
 
   EXPECT_EQ(10u, all_entries.size());
@@ -202,7 +216,7 @@ TEST_F(PermissionActionHistoryTest, GetHistorySortedOrder) {
                          all_entries.begin() + 5, all_entries.end())));
 }
 
-TEST_F(PermissionActionHistoryTest, NotificationRecordAction) {
+TEST_P(PermissionActionHistoryTest, NotificationRecordAction) {
   size_t general_count = GetHistory(std::nullopt).size();
   size_t notification_count = GetHistory(RequestType::kNotifications).size();
 
@@ -223,7 +237,7 @@ TEST_F(PermissionActionHistoryTest, NotificationRecordAction) {
             GetHistory(RequestType::kNotifications).size());
 }
 
-TEST_F(PermissionActionHistoryTest, ClearHistory) {
+TEST_P(PermissionActionHistoryTest, ClearHistory) {
   struct {
     base::Time begin;
     base::Time end;
@@ -298,7 +312,7 @@ TEST_F(PermissionActionHistoryTest, ClearHistory) {
   }
 }
 
-TEST_F(PermissionActionHistoryTest, EntryFilterTest) {
+TEST_P(PermissionActionHistoryTest, EntryFilterTest) {
   auto loud_entries =
       GetHistory(std::nullopt,
                  PermissionActionsHistory::EntryFilter::WANT_LOUD_PROMPTS_ONLY);
@@ -320,7 +334,7 @@ TEST_F(PermissionActionHistoryTest, EntryFilterTest) {
   EXPECT_EQ(2u, quiet_entries_in_last_two_days.size());
 }
 
-TEST_F(PermissionActionHistoryTest, FillInActionCountsTest) {
+TEST_P(PermissionActionHistoryTest, FillInActionCountsTest) {
   auto all_entries =
       GetHistory(RequestType::kNotifications,
                  PermissionActionsHistory::EntryFilter::WANT_ALL_PROMPTS);
@@ -363,9 +377,13 @@ class PermissionActionHistoryHeuristicGrantTest
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-TEST_F(PermissionActionHistoryHeuristicGrantTest, HeuristicGrant) {
+INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(
+    PermissionActionHistoryHeuristicGrantTest);
+
+TEST_P(PermissionActionHistoryHeuristicGrantTest, HeuristicGrant) {
   GURL url("https://www.example.com");
-  ContentSettingsType permission = ContentSettingsType::GEOLOCATION;
+  ContentSettingsType permission =
+      content_settings::GeolocationContentSettingsType();
   auto* history = GetPermissionActionsHistory();
 
   MockPermissionActionsHistoryObserver observer;
@@ -390,9 +408,10 @@ TEST_F(PermissionActionHistoryHeuristicGrantTest, HeuristicGrant) {
   history->RemoveObserver(&observer);
 }
 
-TEST_F(PermissionActionHistoryHeuristicGrantTest, HeuristicGrantReset) {
+TEST_P(PermissionActionHistoryHeuristicGrantTest, HeuristicGrantReset) {
   GURL url("https://www.example.com");
-  ContentSettingsType permission = ContentSettingsType::GEOLOCATION;
+  ContentSettingsType permission =
+      content_settings::GeolocationContentSettingsType();
   auto* history = GetPermissionActionsHistory();
 
   // Grant twice.
@@ -410,11 +429,12 @@ TEST_F(PermissionActionHistoryHeuristicGrantTest, HeuristicGrantReset) {
   EXPECT_TRUE(history->RecordTemporaryGrant(url, permission));
 }
 
-TEST_F(PermissionActionHistoryHeuristicGrantTest,
+TEST_P(PermissionActionHistoryHeuristicGrantTest,
        HeuristicGrantMultipleOriginsAndPermissions) {
   GURL url1("https://www.example.com");
   GURL url2("https://www.google.com");
-  ContentSettingsType permission1 = ContentSettingsType::GEOLOCATION;
+  ContentSettingsType permission1 =
+      content_settings::GeolocationContentSettingsType();
   auto* history = GetPermissionActionsHistory();
 
   for (int i = 0; i < kHeuristicGrantThreshold - 1; ++i) {
@@ -436,14 +456,14 @@ TEST_F(PermissionActionHistoryHeuristicGrantTest,
   EXPECT_TRUE(history->RecordTemporaryGrant(url2, permission1));
 }
 
-TEST_F(PermissionActionHistoryHeuristicGrantTest,
+TEST_P(PermissionActionHistoryHeuristicGrantTest,
        HeuristicGrantGeolocationOnly) {
   GURL url("https://www.example.com");
   auto* history = GetPermissionActionsHistory();
 
   // GEOLOCATION should work.
-  EXPECT_FALSE(
-      history->RecordTemporaryGrant(url, ContentSettingsType::GEOLOCATION));
+  EXPECT_FALSE(history->RecordTemporaryGrant(
+      url, content_settings::GeolocationContentSettingsType()));
 
   // NOTIFICATIONS should crash.
   EXPECT_DEATH_IF_SUPPORTED(
@@ -454,10 +474,11 @@ TEST_F(PermissionActionHistoryHeuristicGrantTest,
                             "");
 }
 
-TEST_F(PermissionActionHistoryHeuristicGrantTest,
+TEST_P(PermissionActionHistoryHeuristicGrantTest,
        CheckHeuristicallyAutoGranted) {
   GURL url("https://www.example.com");
-  ContentSettingsType permission = ContentSettingsType::GEOLOCATION;
+  ContentSettingsType permission =
+      content_settings::GeolocationContentSettingsType();
   auto* history = GetPermissionActionsHistory();
 
   EXPECT_FALSE(history->CheckHeuristicallyAutoGranted(url, permission,
@@ -478,10 +499,11 @@ TEST_F(PermissionActionHistoryHeuristicGrantTest,
                                                       /*needs_update*/ false));
 }
 
-TEST_F(PermissionActionHistoryHeuristicGrantTest,
+TEST_P(PermissionActionHistoryHeuristicGrantTest,
        CheckHeuristicallyAutoGrantedNeedsUpdate) {
   GURL url("https://www.example.com");
-  ContentSettingsType permission = ContentSettingsType::GEOLOCATION;
+  ContentSettingsType permission =
+      content_settings::GeolocationContentSettingsType();
   auto* history = GetPermissionActionsHistory();
 
   // Ensure it's not auto-granted initially.
@@ -508,10 +530,11 @@ TEST_F(PermissionActionHistoryHeuristicGrantTest,
                                                       /*needs_update*/ false));
 }
 
-TEST_F(PermissionActionHistoryHeuristicGrantTest,
+TEST_P(PermissionActionHistoryHeuristicGrantTest,
        HeuristicGrantExpirationDecaysCount) {
   GURL url("https://www.example.com");
-  ContentSettingsType permission = ContentSettingsType::GEOLOCATION;
+  ContentSettingsType permission =
+      content_settings::GeolocationContentSettingsType();
   auto* history = GetPermissionActionsHistory();
 
   // Grant up to the threshold to enable auto-granting.
@@ -559,11 +582,12 @@ TEST_F(PermissionActionHistoryHeuristicGrantTest,
   EXPECT_EQ(4, history->GetTemporaryGrantCountForTesting(url, permission));
 }
 
-TEST_F(PermissionActionHistoryHeuristicGrantTest,
+TEST_P(PermissionActionHistoryHeuristicGrantTest,
        HeuristicGrantResetWithFilter) {
   GURL url1("https://www.example.com");
   GURL url2("https://www.google.com");
-  ContentSettingsType permission = ContentSettingsType::GEOLOCATION;
+  ContentSettingsType permission =
+      content_settings::GeolocationContentSettingsType();
   auto* history = GetPermissionActionsHistory();
 
   // Grant url1 and url2 twice.
@@ -591,20 +615,23 @@ TEST_F(PermissionActionHistoryHeuristicGrantTest,
   EXPECT_TRUE(history->RecordTemporaryGrant(url2, permission));
 }
 
-TEST_F(PermissionActionHistoryTest, RecordOneTimeGrant) {
+TEST_P(PermissionActionHistoryTest, RecordOneTimeGrant) {
   GURL url1("https://www.example.com");
   GURL url2("https://www.google.com");
   auto* history = GetPermissionActionsHistory();
   base::HistogramTester histogram_tester;
 
   // Geolocation
-  history->RecordOneTimeGrant(url1, ContentSettingsType::GEOLOCATION);
+  history->RecordOneTimeGrant(
+      url1, content_settings::GeolocationContentSettingsType());
   histogram_tester.ExpectBucketCount(
       "Permissions.OneTimePermission.Geolocation.OneTimeGrant", 1, 1);
-  history->RecordOneTimeGrant(url1, ContentSettingsType::GEOLOCATION);
+  history->RecordOneTimeGrant(
+      url1, content_settings::GeolocationContentSettingsType());
   histogram_tester.ExpectBucketCount(
       "Permissions.OneTimePermission.Geolocation.OneTimeGrant", 2, 1);
-  history->RecordOneTimeGrant(url2, ContentSettingsType::GEOLOCATION);
+  history->RecordOneTimeGrant(
+      url2, content_settings::GeolocationContentSettingsType());
   histogram_tester.ExpectBucketCount(
       "Permissions.OneTimePermission.Geolocation.OneTimeGrant", 1, 2);
 
@@ -641,11 +668,22 @@ struct PermissionActionsHistoryTestParams {
   std::string permission_name;
   PermissionAction action;
   std::string suffix;
+  bool approximate_geolocation_enabled = false;
 };
 
 class PermissionActionHistoryParameterizedTest
-    : public PermissionActionHistoryTest,
-      public testing::WithParamInterface<PermissionActionsHistoryTestParams> {};
+    : public PermissionActionHistoryTestBase,
+      public testing::WithParamInterface<PermissionActionsHistoryTestParams> {
+ public:
+  PermissionActionHistoryParameterizedTest() {
+    scoped_feature_list_.InitWithFeatureState(
+        content_settings::features::kApproximateGeolocationPermission,
+        GetParam().approximate_geolocation_enabled);
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
 
 TEST_P(PermissionActionHistoryParameterizedTest, RecordOTPCountForAction) {
   auto* history = GetPermissionActionsHistory();
@@ -681,6 +719,18 @@ INSTANTIATE_TEST_SUITE_P(
         PermissionActionsHistoryTestParams{
             ContentSettingsType::GEOLOCATION, "Geolocation",
             PermissionAction::IGNORED, "IgnoreOTPCount"},
+        PermissionActionsHistoryTestParams{
+            ContentSettingsType::GEOLOCATION_WITH_OPTIONS, "Geolocation",
+            PermissionAction::GRANTED, "GrantOTPCount", true},
+        PermissionActionsHistoryTestParams{
+            ContentSettingsType::GEOLOCATION_WITH_OPTIONS, "Geolocation",
+            PermissionAction::DENIED, "DenyOTPCount", true},
+        PermissionActionsHistoryTestParams{
+            ContentSettingsType::GEOLOCATION_WITH_OPTIONS, "Geolocation",
+            PermissionAction::DISMISSED, "DismissOTPCount", true},
+        PermissionActionsHistoryTestParams{
+            ContentSettingsType::GEOLOCATION_WITH_OPTIONS, "Geolocation",
+            PermissionAction::IGNORED, "IgnoreOTPCount", true},
         // Mic
         PermissionActionsHistoryTestParams{
             ContentSettingsType::MEDIASTREAM_MIC, "AudioCapture",
@@ -708,10 +758,13 @@ INSTANTIATE_TEST_SUITE_P(
             ContentSettingsType::MEDIASTREAM_CAMERA, "VideoCapture",
             PermissionAction::IGNORED, "IgnoreOTPCount"}),
     [](const testing::TestParamInfo<PermissionActionsHistoryTestParams>& info) {
-      return info.param.permission_name + "_" + info.param.suffix;
+      return info.param.permission_name + "_" + info.param.suffix +
+             (info.param.approximate_geolocation_enabled
+                  ? "_withApproximateLocation"
+                  : "");
     });
 
-TEST_F(PermissionActionHistoryTest, RecordOTPCountForAction_UnsupportedType) {
+TEST_P(PermissionActionHistoryTest, RecordOTPCountForAction_UnsupportedType) {
   auto* history = GetPermissionActionsHistory();
   base::HistogramTester histogram_tester;
 
@@ -757,7 +810,7 @@ TEST_P(PermissionActionHistoryParameterizedTest, GetOneTimeGrantCount) {
 
   // Non-one-time grant actions should not affect the count
   RequestType request_type =
-      GetParam().type == ContentSettingsType::GEOLOCATION
+      GetParam().type == content_settings::GeolocationContentSettingsType()
           ? RequestType::kGeolocation
           : (GetParam().type == ContentSettingsType::MEDIASTREAM_MIC
                  ? RequestType::kMicStream
@@ -767,7 +820,7 @@ TEST_P(PermissionActionHistoryParameterizedTest, GetOneTimeGrantCount) {
   EXPECT_EQ(2, history->GetOneTimeGrantCount(url1, GetParam().type));
 }
 
-TEST_F(PermissionActionHistoryTest, GetOneTimeGrantCount_UnsupportedType) {
+TEST_P(PermissionActionHistoryTest, GetOneTimeGrantCount_UnsupportedType) {
   GURL url1("https://www.example.com");
   auto* history = GetPermissionActionsHistory();
 

@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_PERFORMANCE_MANAGER_DECORATORS_PROCESS_PRIORITY_AGGREGATOR_DATA_H_
 #define COMPONENTS_PERFORMANCE_MANAGER_DECORATORS_PROCESS_PRIORITY_AGGREGATOR_DATA_H_
 
+#include "base/process/process.h"
 #include "base/task/task_traits.h"
 #include "base/values.h"
 #include "components/performance_manager/graph/node_inline_data.h"
@@ -18,14 +19,14 @@ class ProcessPriorityAggregatorData
   ProcessPriorityAggregatorData();
 
   // Decrements/increments the appropriate count variable.
-  void Decrement(base::TaskPriority priority);
-  void Increment(base::TaskPriority priority);
+  void Decrement(base::Process::Priority priority);
+  void Increment(base::Process::Priority priority);
 
   // Returns true if the various priority counts are all zero.
   bool IsEmpty() const;
 
   // Calculates the priority that should be upstreamed given the counts.
-  base::TaskPriority GetPriority() const;
+  base::Process::Priority GetPriority() const;
 
   uint32_t user_visible_count_for_testing() const {
     return user_visible_count_;
@@ -35,7 +36,7 @@ class ProcessPriorityAggregatorData
     return user_blocking_count_;
   }
 
-  base::Value::Dict Describe() const;
+  base::DictValue Describe() const;
 
  private:
   // The number of frames at the given priority levels. The lowest priority

@@ -7,12 +7,12 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <algorithm>
 #include <cstdint>
 #include <functional>
 #include <set>
 #include <string_view>
 
-#include "base/containers/contains.h"
 #include "base/logging.h"
 #include "base/strings/string_util.h"
 #include "components/variations/variations_layers.h"
@@ -26,7 +26,7 @@ base::Time ConvertStudyDateToBaseTime(int64_t date_time) {
   return base::Time::UnixEpoch() + base::Seconds(date_time);
 }
 
-// Similar to base::Contains(), but specifically for ASCII strings and
+// Similar to std::ranges::contains(), but specifically for ASCII strings and
 // case-insensitive comparison.
 template <typename Collection>
 bool ContainsStringIgnoreCaseASCII(const Collection& collection,
@@ -46,7 +46,7 @@ bool CheckStudyChannel(const Study::Filter& filter, Study::Channel channel) {
     return true;
   }
 
-  return base::Contains(filter.channel(), channel);
+  return std::ranges::contains(filter.channel(), channel);
 }
 
 bool CheckStudyFormFactor(const Study::Filter& filter,
@@ -61,11 +61,11 @@ bool CheckStudyFormFactor(const Study::Filter& filter,
   // Note if both are specified, the excludelist is ignored. We do not expect
   // both to be present for Chrome due to server-side checks.
   if (filter.form_factor_size() > 0) {
-    return base::Contains(filter.form_factor(), form_factor);
+    return std::ranges::contains(filter.form_factor(), form_factor);
   }
 
   // Omit if there is a matching excludelist entry.
-  return !base::Contains(filter.exclude_form_factor(), form_factor);
+  return !std::ranges::contains(filter.exclude_form_factor(), form_factor);
 }
 
 bool CheckStudyCpuArchitecture(const Study::Filter& filter,
@@ -80,11 +80,12 @@ bool CheckStudyCpuArchitecture(const Study::Filter& filter,
   // Note if both are specified, the excludelist is ignored. We do not expect
   // both to be present for Chrome due to server-side checks.
   if (filter.cpu_architecture_size() > 0) {
-    return base::Contains(filter.cpu_architecture(), cpu_architecture);
+    return std::ranges::contains(filter.cpu_architecture(), cpu_architecture);
   }
 
   // Omit if there is a matching excludelist entry.
-  return !base::Contains(filter.exclude_cpu_architecture(), cpu_architecture);
+  return !std::ranges::contains(filter.exclude_cpu_architecture(),
+                                cpu_architecture);
 }
 
 bool CheckStudyHardwareClass(const Study::Filter& filter,
@@ -122,11 +123,11 @@ bool CheckStudyLocale(const Study::Filter& filter, const std::string& locale) {
   // Note if both are specified, the excludelist is ignored. We do not expect
   // both to be present for Chrome due to server-side checks.
   if (filter.locale_size() > 0) {
-    return base::Contains(filter.locale(), locale);
+    return std::ranges::contains(filter.locale(), locale);
   }
 
   // Omit if there is a matching excludelist entry.
-  return !base::Contains(filter.exclude_locale(), locale);
+  return !std::ranges::contains(filter.exclude_locale(), locale);
 }
 
 bool CheckStudyCountry(const Study::Filter& filter,
@@ -140,15 +141,15 @@ bool CheckStudyCountry(const Study::Filter& filter,
   // Note if both are specified, the excludelist is ignored. We do not expect
   // both to be present for Chrome due to server-side checks.
   if (filter.country_size() > 0) {
-    return base::Contains(filter.country(), country);
+    return std::ranges::contains(filter.country(), country);
   }
 
   // Omit if there is a matching excludelist entry.
-  return !base::Contains(filter.exclude_country(), country);
+  return !std::ranges::contains(filter.exclude_country(), country);
 }
 
 bool CheckStudyPlatform(const Study::Filter& filter, Study::Platform platform) {
-  return base::Contains(filter.platform(), platform);
+  return std::ranges::contains(filter.platform(), platform);
 }
 
 bool CheckStudyLowEndDevice(const Study::Filter& filter,
@@ -252,7 +253,7 @@ bool CheckStudyGoogleGroup(const Study::Filter& filter,
   if (filter.google_group_size() > 0) {
     if (std::ranges::none_of(filter.google_group(),
                              [&client_groups](int64_t group) {
-                               return base::Contains(client_groups, group);
+                               return client_groups.contains(group);
                              })) {
       // A google_group filter was specified, and the client is not a member of
       // any of the groups.
@@ -263,7 +264,7 @@ bool CheckStudyGoogleGroup(const Study::Filter& filter,
   if (filter.exclude_google_group_size() > 0) {
     if (std::ranges::any_of(filter.exclude_google_group(),
                             [&client_groups](int64_t group) {
-                              return base::Contains(client_groups, group);
+                              return client_groups.contains(group);
                             })) {
       // An exclude_google_group filter was specified, and the client is a
       // member of at least one of the groups.

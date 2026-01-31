@@ -7,6 +7,7 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <utility>
 
 #include "base/containers/to_vector.h"
 #include "base/memory/raw_ptr.h"
@@ -16,7 +17,6 @@
 #include "base/test/bind.h"
 #include "base/test/gmock_expected_support.h"
 #include "base/test/run_until.h"
-#include "base/types/cxx23_to_underlying.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/ash/app_list/arc/arc_app_icon.h"
@@ -325,7 +325,7 @@ class IsolatedWebAppsUninstallDialogViewBrowserTest
       AppUninstallDialogView::DialogViewID view_type) {
     std::vector<raw_ptr<views::View, VectorExperimental>> views_group;
 
-    view->GetViewsInGroup(base::to_underlying(view_type), &views_group);
+    view->GetViewsInGroup(std::to_underlying(view_type), &views_group);
     return base::ToVector(views_group, [](auto item) { return item.get(); });
   }
 };

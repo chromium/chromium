@@ -145,6 +145,7 @@ const wchar_t* GetBrowserProgIdPrefix();
 const wchar_t* GetBrowserProgIdDescription();
 
 // Returns the URL scheme for direct launches.
+// Returns an empty string if direct launch isn't supported for a specific mode.
 const char* GetDirectLaunchUrlScheme();
 
 // Returns the browser's PDF viewer ProgID prefix (e.g., ChromePDF or

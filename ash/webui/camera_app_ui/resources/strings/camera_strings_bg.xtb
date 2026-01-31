@@ -48,6 +48,7 @@
 <translation id="2761536921376153655">Тип сканиране</translation>
 <translation id="28682968802727151">Визуализация на огледалното обръщане</translation>
 <translation id="2879583609344924966">Устройството <ph name="CAMERA" /> е свързано.</translation>
+<translation id="3063987824612038785">Всички файлове от камерата ще се запазват в Google Диск</translation>
 <translation id="3067436040345934772">Панорамно придвижване надясно</translation>
 <translation id="3081586908890909590">Превключване към режима за запис на видеоклипове</translation>
 <translation id="3091480460059548935">Разпознаване на текст във визуализацията</translation>
@@ -67,6 +68,7 @@
 <translation id="3642192109456033823">Видеоклипът се обработва...</translation>
 <translation id="3789724198583203151">Завъртане на 90 градуса обратно на часовниковата стрелка</translation>
 <translation id="3810838688059735925">Видео</translation>
+<translation id="386366972082231038">Всички файлове от камерата ще се запазват в OneDrive</translation>
 <translation id="4060608699153044055">Не можете да записвате поради недостатъчно място в хранилището на устройството. За целта трябва да освободите място.</translation>
 <translation id="4061162772429051350"><ph name="MAGAPIXELS_AMOUNT" /> мегапиксела</translation>
 <translation id="4118525110028899586">Пауза на записа</translation>
@@ -100,6 +102,7 @@
 <translation id="5634947914995388399">Разгъване на диалоговия прозорец и спиране на сканирането</translation>
 <translation id="5662366948659129155">Сканира се страница <ph name="COUNT" /></translation>
 <translation id="5671277269877808209">Квадрат</translation>
+<translation id="5725797473946373607">Този диалогов прозорец да не се показва следващия път</translation>
 <translation id="574392208103952083">Среден</translation>
 <translation id="5746169159649715125">Запазване като PDF файл</translation>
 <translation id="5753488212459587150">Активиране на експертния режим</translation>
@@ -156,6 +159,7 @@
 <translation id="7983668134180549431">Разпознат е текст.</translation>
 <translation id="8079255378695216066">Записването не може да се стартира</translation>
 <translation id="8120146556401698679">Панорамно придвижване, накланяне и промяна на мащаба</translation>
+<translation id="8127459436205030819">Файловете ви може да са видими за администратора ви</translation>
 <translation id="8131740175452115882">Потвърждаване</translation>
 <translation id="8145038249676204903">Превключване към режима за правене на снимки</translation>
 <translation id="8167081290930651932">Запазване като снимка</translation>
@@ -165,6 +169,7 @@
 <translation id="8609951387004618906">Отваряне на <ph name="URL" /></translation>
 <translation id="8629662593426079630">360p</translation>
 <translation id="8711011893539266636">Превключване на спирането на звука на микрофона. Функцията за спиране на звука е включена</translation>
+<translation id="8712637175834984815">Разбрах</translation>
 <translation id="8730621377337864115">Готово</translation>
 <translation id="8732462232047530626">Преглед на метаданните</translation>
 <translation id="874854738381978209">Открита е Wi-Fi мрежа.</translation>

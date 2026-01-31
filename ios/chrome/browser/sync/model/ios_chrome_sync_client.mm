@@ -12,7 +12,7 @@
 #import "components/browser_sync/sync_engine_factory_impl.h"
 #import "components/keyed_service/core/service_access_type.h"
 #import "components/password_manager/core/browser/password_store/password_store_interface.h"
-#import "components/supervised_user/core/browser/supervised_user_settings_service.h"
+#import "components/supervised_user/core/browser/family_link_settings_service.h"
 #import "components/sync/base/sync_util.h"
 #import "components/sync/model/data_type_store_service.h"
 #import "components/sync/service/trusted_vault_synthetic_field_trial.h"
@@ -38,13 +38,13 @@ IOSChromeSyncClient::IOSChromeSyncClient(
     syncer::SyncInvalidationsService* sync_invalidations_service,
     syncer::DeviceInfoSyncService* device_info_sync_service,
     syncer::DataTypeStoreService* data_type_store_service,
-    supervised_user::SupervisedUserSettingsService*
-        supervised_user_settings_service)
+    supervised_user::FamilyLinkSettingsService*
+        family_link_settings_service)
     : pref_service_(pref_service),
       identity_manager_(identity_manager),
       trusted_vault_service_(trusted_vault_service),
       sync_invalidations_service_(sync_invalidations_service),
-      supervised_user_settings_service_(supervised_user_settings_service),
+      family_link_settings_service_(family_link_settings_service),
       engine_factory_(this,
                       device_info_sync_service->GetDeviceInfoTracker(),
                       data_type_store_service->GetSyncDataPath()) {}
@@ -86,8 +86,8 @@ syncer::SyncEngineFactory* IOSChromeSyncClient::GetSyncEngineFactory() {
 }
 
 bool IOSChromeSyncClient::IsCustomPassphraseAllowed() {
-  if (supervised_user_settings_service_) {
-    return supervised_user_settings_service_->IsCustomPassphraseAllowed();
+  if (family_link_settings_service_) {
+    return family_link_settings_service_->IsCustomPassphraseAllowed();
   }
   return true;
 }
@@ -111,4 +111,8 @@ void IOSChromeSyncClient::RegisterTrustedVaultAutoUpgradeSyntheticFieldTrial(
   IOSChromeMetricsServiceAccessor::RegisterSyntheticFieldTrial(
       syncer::kTrustedVaultAutoUpgradeSyntheticFieldTrialName, group_name,
       variations::SyntheticTrialAnnotationMode::kCurrentLog);
+}
+
+bool IOSChromeSyncClient::IsMetricsAndCrashReportingEnabled() {
+  return IOSChromeMetricsServiceAccessor::IsMetricsAndCrashReportingEnabled();
 }

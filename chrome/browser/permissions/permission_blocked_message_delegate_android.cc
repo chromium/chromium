@@ -4,6 +4,8 @@
 
 #include "chrome/browser/permissions/permission_blocked_message_delegate_android.h"
 
+#include <variant>
+
 #include "base/metrics/histogram_functions.h"
 #include "chrome/browser/android/android_theme_resources.h"
 #include "chrome/browser/android/resource_mapper.h"
@@ -18,6 +20,7 @@
 #include "components/permissions/permission_request_manager.h"
 #include "components/permissions/permission_util.h"
 #include "components/permissions/prediction_service/permission_ui_selector.h"
+#include "components/permissions/resolvers/permission_prompt_options.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/url_formatter/elide_url.h"
 #include "content/public/browser/web_contents.h"
@@ -85,8 +88,8 @@ void PermissionBlockedMessageDelegate::OnDialogDismissed() {
   // If |has_interacted_with_dialog_| is true, |Allow| or |Deny| should be
   // recorded instead.
   if (!has_interacted_with_dialog_) {
-    // call Closing destroys the current object.
-    delegate_->Closing();
+    // Calling Dismiss destroys the current object.
+    delegate_->Dismiss();
   }
 }
 
@@ -212,10 +215,15 @@ void PermissionBlockedMessageDelegate::HandleQuietDismissCallback(
   dialog_controller_.reset();
 
   if (reason == messages::DismissReason::GESTURE) {
-    delegate_->Closing();
+    delegate_->Dismiss();
   }
-  // Other un-tracked actions will be recorded as "Ignored" by
-  // |permission_prompt_|.
+
+  if (reason == messages::DismissReason::TIMER) {
+    delegate_->Ignore();
+  }
+
+  // TODO(crbug.com/474574239): Investigate if we should manager other
+  // DismissReasons as well.
 }
 
 void PermissionBlockedMessageDelegate::HandleLoudPrimaryActionClick() {
@@ -256,8 +264,12 @@ void PermissionBlockedMessageDelegate::HandleLoudDismissCallback(
     delegate_->Deny();
   }
 
-  // Other un-tracked actions will be recorded as "Ignored" by
-  // |permission_prompt_|.
+  if (reason == messages::DismissReason::TIMER) {
+    delegate_->Ignore();
+  }
+
+  // TODO(crbug.com/474574239): Investigate if we should manager other
+  // DismissReasons as well.
 }
 
 void PermissionBlockedMessageDelegate::DismissInternal() {
@@ -271,21 +283,38 @@ void PermissionBlockedMessageDelegate::Delegate::Accept() {
   if (!permission_prompt_) {
     return;
   }
-  permission_prompt_->Accept();
+
+  // TODO(crbug.com/465377277): The quiet prompt does not support choosing
+  // geolocation accuracy yet, so we hardcode precise geolocation in case of a
+  // geolocation request.
+  PromptOptions prompt_options =
+      (GetContentSettingsType() ==
+       ContentSettingsType::GEOLOCATION_WITH_OPTIONS)
+          ? PromptOptions(GeolocationPromptOptions{
+                .selected_accuracy = GeolocationAccuracy::kPrecise})
+          : std::monostate();
+  permission_prompt_->Accept(prompt_options);
 }
 
 void PermissionBlockedMessageDelegate::Delegate::Deny() {
   if (!permission_prompt_) {
     return;
   }
-  permission_prompt_->Deny();
+  permission_prompt_->Deny(/*prompt_options=*/std::monostate());
 }
 
-void PermissionBlockedMessageDelegate::Delegate::Closing() {
+void PermissionBlockedMessageDelegate::Delegate::Dismiss() {
   if (!permission_prompt_) {
     return;
   }
-  permission_prompt_->Closing();
+  permission_prompt_->Dismiss(/*prompt_options=*/std::monostate());
+}
+
+void PermissionBlockedMessageDelegate::Delegate::Ignore() {
+  if (!permission_prompt_) {
+    return;
+  }
+  permission_prompt_->Ignore(/*prompt_options=*/std::monostate());
 }
 
 void PermissionBlockedMessageDelegate::Delegate::SetManageClicked() {
@@ -318,7 +347,7 @@ PermissionBlockedMessageDelegate::Delegate::GetContentSettingsType() {
   return permission_prompt_->GetContentSettingType(0);
 }
 PermissionBlockedMessageDelegate::Delegate::~Delegate() {
-  Closing();
+  Dismiss();
 }
 
 PermissionBlockedMessageDelegate::Delegate::Delegate() = default;

@@ -4,11 +4,11 @@
 
 #include "device/bluetooth/adapter.h"
 
+#include <algorithm>
 #include <string>
 #include <utility>
 #include <vector>
 
-#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/ptr_util.h"
@@ -230,7 +230,7 @@ void Adapter::ConnectToServiceInsecurely(
     const device::BluetoothUUID& service_uuid,
     bool should_unbond_on_error,
     ConnectToServiceInsecurelyCallback callback) {
-  if (!base::Contains(allowed_uuids_, service_uuid)) {
+  if (!allowed_uuids_.contains(service_uuid)) {
     std::move(callback).Run(/*result=*/nullptr);
     return;
   }
@@ -266,7 +266,7 @@ void Adapter::CreateRfcommServiceInsecurely(
     const std::string& service_name,
     const device::BluetoothUUID& service_uuid,
     CreateRfcommServiceInsecurelyCallback callback) {
-  if (!base::Contains(allowed_uuids_, service_uuid)) {
+  if (!allowed_uuids_.contains(service_uuid)) {
     std::move(callback).Run(/*server_socket=*/mojo::NullRemote());
     return;
   }
@@ -294,7 +294,7 @@ void Adapter::CreateLocalGattService(
   // method when creating a new GATT service that corresponds to |service_id|.
   // See more details in //device/bluetooth/public/mojom/adapter.mojom method
   // documentation.
-  CHECK(!base::Contains(uuid_to_local_gatt_service_map_, service_id));
+  CHECK(!uuid_to_local_gatt_service_map_.contains(service_id));
 
   mojo::PendingReceiver<mojom::GattService> pending_gatt_service_receiver;
   mojo::PendingRemote<mojom::GattService> pending_gatt_service_remote =
@@ -314,7 +314,7 @@ void Adapter::CreateLocalGattService(
 void Adapter::IsLeScatternetDualRoleSupported(
     IsLeScatternetDualRoleSupportedCallback callback) {
 #if BUILDFLAG(IS_CHROMEOS)
-  std::move(callback).Run(base::Contains(
+  std::move(callback).Run(std::ranges::contains(
       adapter_->GetSupportedRoles(),
       device::BluetoothAdapter::BluetoothRole::kCentralPeripheral));
 #else

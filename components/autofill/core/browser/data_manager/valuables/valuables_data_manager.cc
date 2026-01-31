@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "base/metrics/histogram_macros.h"
+#include "base/time/time.h"
 #include "components/autofill/core/browser/data_model/valuables/loyalty_card.h"
 #include "components/autofill/core/browser/ui/autofill_image_fetcher_base.h"
 #include "components/autofill/core/browser/webdata/autofill_change.h"
@@ -67,12 +68,21 @@ std::optional<LoyaltyCard> ValuablesDataManager::GetLoyaltyCardById(
   if (!IsAutofillPaymentMethodsEnabled()) {
     return std::nullopt;
   }
-  auto it = std::ranges::find(
-      loyalty_cards_, id, [](const LoyaltyCard& card) { return card.id(); });
+  auto it = std::ranges::find(loyalty_cards_, id, &LoyaltyCard::id);
   if (it != loyalty_cards_.end()) {
     return *it;
   }
   return std::nullopt;
+}
+
+void ValuablesDataManager::RecordLoyaltyCardUsed(const ValuableId& id,
+                                                 base::Time use_date) {
+  base::optional_ref<LoyaltyCard> loyalty_card = GetMutableLoyaltyCardById(id);
+  if (!loyalty_card) {
+    return;
+  }
+  loyalty_card->RecordLoyaltyCardUsed(use_date);
+  webdata_service_->UpdateValuableMetadata(loyalty_card->metadata());
 }
 
 const gfx::Image* ValuablesDataManager::GetCachedValuableImageForUrl(
@@ -89,6 +99,18 @@ const gfx::Image* ValuablesDataManager::GetCachedValuableImageForUrl(
 
 bool ValuablesDataManager::IsAutofillPaymentMethodsEnabled() const {
   return prefs::IsAutofillPaymentMethodsEnabled(pref_service_);
+}
+
+base::optional_ref<LoyaltyCard> ValuablesDataManager::GetMutableLoyaltyCardById(
+    const ValuableId& id) {
+  if (!IsAutofillPaymentMethodsEnabled()) {
+    return std::nullopt;
+  }
+  auto it = std::ranges::find(loyalty_cards_, id, &LoyaltyCard::id);
+  if (it != loyalty_cards_.end()) {
+    return *it;
+  }
+  return std::nullopt;
 }
 
 void ValuablesDataManager::OnDataRetrieved(

@@ -7,7 +7,6 @@
 
 #include <unordered_map>
 
-#include "base/containers/contains.h"
 #include "build/build_config.h"
 #include "components/sessions/content/navigation_task_id.h"
 #include "content/public/browser/navigation_details.h"
@@ -37,7 +36,7 @@ class TaskTabHelper : public content::WebContentsObserver,
       content::WebContents* web_contents);
   const sessions::NavigationTaskId* get_task_id_for_navigation(
       int nav_id) const {
-    if (!base::Contains(local_navigation_task_id_map_, nav_id)) {
+    if (!local_navigation_task_id_map_.contains(nav_id)) {
       return nullptr;
     }
     return &local_navigation_task_id_map_.find(nav_id)->second;

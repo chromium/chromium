@@ -22,6 +22,7 @@
 #include "content/browser/storage_partition_impl_map.h"            // nogncheck
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
+#include "content/public/common/child_process_id.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_browser_context.h"
 #include "content/public/test/test_content_client_initializer.h"
@@ -174,8 +175,10 @@ void FileSystemManagerTestcase::SetUpOnUIThread(
   // other methods are expected to be called on the IO thread - see comments in
   // content/browser/file_system/file_system_manager_impl.h
   for (size_t i = 0; i < kNumRenderers; i++) {
+    // TODO(crbug.com/379869738) Remove FromUnsafeValue.
     file_system_manager_impls_[i] = std::make_unique<FileSystemManagerImpl>(
-        i, file_system_context_, blob_storage_context_);
+        ChildProcessId::FromUnsafeValue(i), file_system_context_,
+        blob_storage_context_);
     p->Add(i, &browser_context_);
   }
 

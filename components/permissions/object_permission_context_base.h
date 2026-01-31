@@ -39,11 +39,11 @@ class ObjectPermissionContextBase : public KeyedService {
  public:
   struct Object {
     Object(const url::Origin& origin,
-           base::Value::Dict value,
+           base::DictValue value,
            content_settings::SettingSource source,
            bool incognito);
     // DEPRECATED.
-    // TODO(crbug.com/40172729): Migrate value to base::Value::Dict.
+    // TODO(crbug.com/40172729): Migrate value to base::DictValue.
     Object(const url::Origin& origin,
            base::Value value,
            content_settings::SettingSource source,
@@ -52,7 +52,7 @@ class ObjectPermissionContextBase : public KeyedService {
     std::unique_ptr<Object> Clone();
 
     GURL origin;
-    base::Value::Dict value;
+    base::DictValue value;
     content_settings::SettingSource source;
     bool incognito;
   };
@@ -122,14 +122,13 @@ class ObjectPermissionContextBase : public KeyedService {
   // TODO(crbug.com/40755589): Combine GrantObjectPermission and
   // UpdateObjectPermission methods into key-based GrantOrUpdateObjectPermission
   // once backend is updated to make key-based methods more efficient.
-  void GrantObjectPermission(const url::Origin& origin,
-                             base::Value::Dict object);
+  void GrantObjectPermission(const url::Origin& origin, base::DictValue object);
 
   // Updates |old_object| with |new_object| for |origin|, and writes the value
   // into |host_content_settings_map_|.
   void UpdateObjectPermission(const url::Origin& origin,
-                              const base::Value::Dict& old_object,
-                              base::Value::Dict new_object);
+                              const base::DictValue& old_object,
+                              base::DictValue new_object);
 
   // Revokes |origin|'s permission to access |object|.
   //
@@ -139,7 +138,7 @@ class ObjectPermissionContextBase : public KeyedService {
   // TODO(crbug.com/40755589): Remove this method once backend is updated
   // to make key-based methods more efficient.
   virtual void RevokeObjectPermission(const url::Origin& origin,
-                                      const base::Value::Dict& object);
+                                      const base::DictValue& object);
 
   // Revokes |origin|'s permission to access the object corresponding to |key|.
   // This method should only be called if |GetKeyForObject()| is overridden to
@@ -160,15 +159,15 @@ class ObjectPermissionContextBase : public KeyedService {
   virtual bool RevokeObjectPermissions(const url::Origin& origin);
 
   // Returns a string which is used to uniquely identify this object.
-  virtual std::string GetKeyForObject(const base::Value::Dict& object) = 0;
+  virtual std::string GetKeyForObject(const base::DictValue& object) = 0;
 
   // Validates the structure of an object read from
   // |host_content_settings_map_|.
-  virtual bool IsValidObject(const base::Value::Dict& object) = 0;
+  virtual bool IsValidObject(const base::DictValue& object) = 0;
 
   // Gets the human-readable name for a given object.
   virtual std::u16string GetObjectDisplayName(
-      const base::Value::Dict& object) = 0;
+      const base::DictValue& object) = 0;
 
   // Triggers the immediate flushing of all scheduled save setting operations.
   // To be called when the host_content_settings_map_ is about to become
@@ -187,8 +186,8 @@ class ObjectPermissionContextBase : public KeyedService {
   base::ObserverList<PermissionObserver> permission_observer_list_;
 
  private:
-  base::Value::Dict GetWebsiteSetting(const url::Origin& origin,
-                                      content_settings::SettingInfo* info);
+  base::DictValue GetWebsiteSetting(const url::Origin& origin,
+                                    content_settings::SettingInfo* info);
   void SaveWebsiteSetting(const url::Origin& origin);
   void ScheduleSaveWebsiteSetting(const url::Origin& origin);
   virtual std::vector<std::unique_ptr<Object>> GetWebsiteSettingObjects();

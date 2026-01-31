@@ -60,7 +60,7 @@ class WebViewPermissionHelper {
   using RequestMap = std::map<int, PermissionResponseInfo>;
 
   void RequestPermission(WebViewPermissionType permission_type,
-                         base::Value::Dict request_info,
+                         base::DictValue request_info,
                          PermissionResponseCallback callback,
                          bool allowed_by_default);
 

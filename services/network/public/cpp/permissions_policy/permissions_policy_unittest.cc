@@ -7,7 +7,6 @@
 #include <optional>
 #include <unordered_set>
 
-#include "base/containers/contains.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/gtest_util.h"
 #include "base/test/scoped_feature_list.h"
@@ -66,6 +65,12 @@ class PermissionsPolicyTest : public testing::Test {
              {network::mojom::PermissionsPolicyFeature::kSharedStorageSelectUrl,
               network::PermissionsPolicyFeatureDefault::EnableForSelf},
              {network::mojom::PermissionsPolicyFeature::kPrivateAggregation,
+              network::PermissionsPolicyFeatureDefault::EnableForSelf},
+             {network::mojom::PermissionsPolicyFeature::kLocalNetworkAccess,
+              network::PermissionsPolicyFeatureDefault::EnableForSelf},
+             {network::mojom::PermissionsPolicyFeature::kLocalNetwork,
+              network::PermissionsPolicyFeatureDefault::EnableForSelf},
+             {network::mojom::PermissionsPolicyFeature::kLoopbackNetwork,
               network::PermissionsPolicyFeatureDefault::EnableForSelf}}) {}
 
   ~PermissionsPolicyTest() override = default;
@@ -1765,6 +1770,311 @@ TEST_F(PermissionsPolicyTest, TestFeatureDelegatedAndAllowed) {
       policy3->IsFeatureEnabledForOrigin(kDefaultSelfFeature, origin_b_));
   EXPECT_TRUE(
       policy4->IsFeatureEnabledForOrigin(kDefaultSelfFeature, origin_b_));
+}
+
+TEST_F(PermissionsPolicyTest,
+       TestLocalNetworkAccessFeatureDefaultAllowedSplit) {
+  base::test::ScopedFeatureList scoped_feature_list(
+      features::kLocalNetworkAccessChecksSplitPermissions);
+
+  // When the old "local-network-access" feature is allowed by default,
+  // both new features "local-network" and "loopback-network" should be
+  // enabled.
+  std::unique_ptr<PermissionsPolicy> policy1 =
+      CreateFromParentPolicy(nullptr, {}, origin_a_);
+  EXPECT_TRUE(policy1->IsFeatureEnabled(
+      network::mojom::PermissionsPolicyFeature::kLocalNetworkAccess));
+  EXPECT_TRUE(policy1->IsFeatureEnabled(
+      network::mojom::PermissionsPolicyFeature::kLocalNetwork));
+  EXPECT_TRUE(policy1->IsFeatureEnabled(
+      network::mojom::PermissionsPolicyFeature::kLoopbackNetwork));
+}
+
+TEST_F(PermissionsPolicyTest, TestLocalNetworkAccessFeatureDisallowedSplit) {
+  base::test::ScopedFeatureList scoped_feature_list(
+      features::kLocalNetworkAccessChecksSplitPermissions);
+
+  // When the old "local-network-access" feature is disallowed,
+  // none of the LNA features should be enabled.
+  std::unique_ptr<PermissionsPolicy> policy1 = CreateFromParentPolicy(
+      nullptr,
+      {{{network::mojom::PermissionsPolicyFeature::kLocalNetworkAccess,
+         /*allowed_origins=*/{},
+         /*self_if_matches=*/std::nullopt,
+         /*matches_all_origins=*/false,
+         /*matches_opaque_src=*/false}}},
+      origin_a_);
+  EXPECT_FALSE(policy1->IsFeatureEnabled(
+      network::mojom::PermissionsPolicyFeature::kLocalNetworkAccess));
+  EXPECT_FALSE(policy1->IsFeatureEnabled(
+      network::mojom::PermissionsPolicyFeature::kLocalNetwork));
+  EXPECT_FALSE(policy1->IsFeatureEnabled(
+      network::mojom::PermissionsPolicyFeature::kLoopbackNetwork));
+}
+
+TEST_F(PermissionsPolicyTest,
+       TestLocalNetworkAccessFeatureDelegatedSplitAllowed) {
+  // +--------------------------------------------------+
+  // |(1)Origin A                                       |
+  // |No Policy                                         |
+  // |                                                  |
+  // |<iframe allow="local-network-access OriginA">     |
+  // | +-------------------------------------+          |
+  // | |(2)Origin B                          |          |
+  // | |No Policy                            |          |
+  // | +-------------------------------------+          |
+  // |                                                  |
+  // |<iframe allow="local-network-access OriginB">     |
+  // | +-------------------------------------+          |
+  // | |(3)Origin B                          |          |
+  // | |local-network-access, local-nework,  |          |
+  // | | loopback-network                    |          |
+  // | +-------------------------------------+          |
+  // |                                                  |
+  // |<iframe allow="local-network-access *">           |
+  // | +-------------------------------------+          |
+  // | |local-network-access, local-nework,  |          |
+  // | | loopback-network                    |          |
+  // | +-------------------------------------+          |
+  // +--------------------------------------------------+
+  // All LNA features should be disabled in frame 2, as the origin does not
+  // match. All LNA features should be enabled in the remaining frames.
+
+  base::test::ScopedFeatureList scoped_feature_list(
+      features::kLocalNetworkAccessChecksSplitPermissions);
+
+  // Frame 1 just has defaults, no header.
+  std::unique_ptr<PermissionsPolicy> policy1 =
+      CreateFromParentPolicy(nullptr, {},  // default, no header
+                             origin_a_);
+
+  // Frame 2 has allowlist policy for OriginA.
+  network::ParsedPermissionsPolicy frame_policy1 = {
+      {{network::mojom::PermissionsPolicyFeature::
+            kLocalNetworkAccess, /*allowed_origins=*/
+        {*network::OriginWithPossibleWildcards::FromOriginAndWildcardsForTest(
+            origin_a_,
+            /*has_subdomain_wildcard=*/false)},
+        /*self_if_matches=*/std::nullopt,
+        /*matches_all_origins=*/false,
+        /*matches_opaque_src=*/false}}};
+  std::unique_ptr<PermissionsPolicy> policy2 = CreateFromParentWithFramePolicy(
+      policy1.get(), /*header_policy=*/{}, frame_policy1, origin_b_);
+
+  // Frame 3 has allowlist policy for OriginB.
+  network::ParsedPermissionsPolicy frame_policy2 = {
+      {{network::mojom::PermissionsPolicyFeature::
+            kLocalNetworkAccess, /*allowed_origins=*/
+        {*network::OriginWithPossibleWildcards::FromOriginAndWildcardsForTest(
+            origin_b_,
+            /*has_subdomain_wildcard=*/false)},
+        /*self_if_matches=*/std::nullopt,
+        /*matches_all_origins=*/false,
+        /*matches_opaque_src=*/false}}};
+  std::unique_ptr<PermissionsPolicy> policy3 = CreateFromParentWithFramePolicy(
+      policy1.get(), /*header_policy=*/{}, frame_policy2, origin_b_);
+
+  // Frame 4 has allowlist policy with wildcard.
+  network::ParsedPermissionsPolicy frame_policy3 = {
+      {{network::mojom::PermissionsPolicyFeature::kLocalNetworkAccess,
+        /*allowed_origins=*/{},
+        /*self_if_matches=*/std::nullopt,
+        /*matches_all_origins=*/true,
+        /*matches_opaque_src=*/false}}};
+  std::unique_ptr<PermissionsPolicy> policy4 = CreateFromParentWithFramePolicy(
+      policy1.get(), /*header_policy=*/{}, frame_policy3, origin_b_);
+
+  // Frame 1: all three default enabled.
+  EXPECT_TRUE(policy1->IsFeatureEnabledForOrigin(
+      network::mojom::PermissionsPolicyFeature::kLocalNetworkAccess,
+      origin_a_));
+  EXPECT_TRUE(policy1->IsFeatureEnabledForOrigin(
+      network::mojom::PermissionsPolicyFeature::kLocalNetwork, origin_a_));
+  EXPECT_TRUE(policy1->IsFeatureEnabledForOrigin(
+      network::mojom::PermissionsPolicyFeature::kLoopbackNetwork, origin_a_));
+
+  // Frame 2: none enabled, regardless of origin queried.
+  EXPECT_FALSE(policy2->IsFeatureEnabledForOrigin(
+      network::mojom::PermissionsPolicyFeature::kLocalNetworkAccess,
+      origin_a_));
+  EXPECT_FALSE(policy2->IsFeatureEnabledForOrigin(
+      network::mojom::PermissionsPolicyFeature::kLocalNetwork, origin_a_));
+  EXPECT_FALSE(policy2->IsFeatureEnabledForOrigin(
+      network::mojom::PermissionsPolicyFeature::kLoopbackNetwork, origin_a_));
+
+  EXPECT_FALSE(policy1->IsFeatureEnabledForOrigin(
+      network::mojom::PermissionsPolicyFeature::kLocalNetworkAccess,
+      origin_b_));
+  EXPECT_FALSE(policy2->IsFeatureEnabledForOrigin(
+      network::mojom::PermissionsPolicyFeature::kLocalNetwork, origin_b_));
+  EXPECT_FALSE(policy2->IsFeatureEnabledForOrigin(
+      network::mojom::PermissionsPolicyFeature::kLoopbackNetwork, origin_b_));
+
+  // Frame 3: delegated and all enabled.
+  EXPECT_TRUE(policy3->IsFeatureEnabledForOrigin(
+      network::mojom::PermissionsPolicyFeature::kLocalNetworkAccess,
+      origin_b_));
+  EXPECT_TRUE(policy3->IsFeatureEnabledForOrigin(
+      network::mojom::PermissionsPolicyFeature::kLocalNetwork, origin_b_));
+  EXPECT_TRUE(policy3->IsFeatureEnabledForOrigin(
+      network::mojom::PermissionsPolicyFeature::kLoopbackNetwork, origin_b_));
+
+  // Frame 4: delegated and all enabled.
+  EXPECT_TRUE(policy4->IsFeatureEnabledForOrigin(
+      network::mojom::PermissionsPolicyFeature::kLocalNetworkAccess,
+      origin_b_));
+  EXPECT_TRUE(policy4->IsFeatureEnabledForOrigin(
+      network::mojom::PermissionsPolicyFeature::kLocalNetwork, origin_b_));
+  EXPECT_TRUE(policy4->IsFeatureEnabledForOrigin(
+      network::mojom::PermissionsPolicyFeature::kLoopbackNetwork, origin_b_));
+}
+
+TEST_F(PermissionsPolicyTest,
+       TestLocalNetworkAccessFeatureDelegateSpecificSubfeature) {
+  // +--------------------------------------------------+
+  // |(1)Origin A                                       |
+  // |No Policy (default allow all)                     |
+  // |                                                  |
+  // |<iframe allow="local-network OriginB">                    |
+  // | +-------------------------------------+          |
+  // | |(2)Origin B                          |          |
+  // | |local-network                        |          |
+  // | +-------------------------------------+          |
+  // +--------------------------------------------------+
+  // Only "local-network" should be enabled in frame 2.
+
+  base::test::ScopedFeatureList scoped_feature_list(
+      features::kLocalNetworkAccessChecksSplitPermissions);
+
+  // Main frame just has defaults, no header.
+  std::unique_ptr<PermissionsPolicy> policy1 =
+      CreateFromParentPolicy(nullptr, {},  // default, no header
+                             origin_a_);
+
+  // Frame 2 has allowlist policy for "local-network".
+  network::ParsedPermissionsPolicy frame_policy1 = {
+      {{network::mojom::PermissionsPolicyFeature::
+            kLocalNetwork, /*allowed_origins=*/
+        {*network::OriginWithPossibleWildcards::FromOriginAndWildcardsForTest(
+            origin_b_,
+            /*has_subdomain_wildcard=*/false)},
+        /*self_if_matches=*/std::nullopt,
+        /*matches_all_origins=*/false,
+        /*matches_opaque_src=*/false}}};
+  std::unique_ptr<PermissionsPolicy> policy2 = CreateFromParentWithFramePolicy(
+      policy1.get(), /*header_policy=*/{}, frame_policy1, origin_b_);
+
+  // Frame 2: only "local-network" enabled.
+  EXPECT_FALSE(policy2->IsFeatureEnabledForOrigin(
+      network::mojom::PermissionsPolicyFeature::kLocalNetworkAccess,
+      origin_b_));
+  EXPECT_TRUE(policy2->IsFeatureEnabledForOrigin(
+      network::mojom::PermissionsPolicyFeature::kLocalNetwork, origin_b_));
+  EXPECT_FALSE(policy2->IsFeatureEnabledForOrigin(
+      network::mojom::PermissionsPolicyFeature::kLoopbackNetwork, origin_b_));
+}
+
+TEST_F(PermissionsPolicyTest, TestLocalNetworkAccessOldFeatureOverrides) {
+  // +---------------------------------------------------------------------+
+  // |(1)Origin A                                                          |
+  // |No Policy (default allow all)                                        |
+  // |                                                                     |
+  // |<iframe allow="local-network-access OriginB; local-network 'none';"> |
+  // | +------------------------------------+                              |
+  // | |(2)Origin B                         |                              |
+  // | |local-network-access, local-network |                              |
+  // | |loopback-network                    |                              |
+  // | +------------------------------------+                              |
+  // +---------------------------------------------------------------------+
+  // "local-network" will be enabled in frame 2 despite the allowlist
+  // exclusion, since the old "local-network-access" feature takes precedence.
+
+  base::test::ScopedFeatureList scoped_feature_list(
+      features::kLocalNetworkAccessChecksSplitPermissions);
+
+  // Main frame just has defaults, no header.
+  std::unique_ptr<PermissionsPolicy> policy1 =
+      CreateFromParentPolicy(nullptr, {},  // default, no header
+                             origin_a_);
+
+  // Frame 2 has allowlist policy for "local-network-access" but an empty
+  // allowlist for the more specific "local-network" feature.
+  network::ParsedPermissionsPolicy frame_policy1 = {
+      {{network::mojom::PermissionsPolicyFeature::kLocalNetworkAccess,
+        /*allowed_origins=*/
+        {*network::OriginWithPossibleWildcards::FromOriginAndWildcardsForTest(
+            origin_b_,
+            /*has_subdomain_wildcard=*/false)},
+        /*self_if_matches=*/std::nullopt,
+        /*matches_all_origins=*/false,
+        /*matches_opaque_src=*/false},
+       {network::mojom::PermissionsPolicyFeature::kLocalNetwork,
+        /*allowed_origins=*/{},
+        /*self_if_matches=*/std::nullopt,
+        /*matches_all_origins=*/false,
+        /*matches_opaque_src=*/false}}};
+  std::unique_ptr<PermissionsPolicy> policy2 = CreateFromParentWithFramePolicy(
+      policy1.get(), /*header_policy=*/{}, frame_policy1, origin_b_);
+
+  // Frame 2: All three features are propagated into the subframe.
+  EXPECT_TRUE(policy2->IsFeatureEnabledForOrigin(
+      network::mojom::PermissionsPolicyFeature::kLocalNetworkAccess,
+      origin_b_));
+  EXPECT_TRUE(policy2->IsFeatureEnabledForOrigin(
+      network::mojom::PermissionsPolicyFeature::kLocalNetwork, origin_b_));
+  EXPECT_TRUE(policy2->IsFeatureEnabledForOrigin(
+      network::mojom::PermissionsPolicyFeature::kLoopbackNetwork, origin_b_));
+}
+
+TEST_F(PermissionsPolicyTest, TestLocalNetworkAccessNewFeatureAdditive) {
+  // +---------------------------------------------------------------------+
+  // |(1)Origin A                                                          |
+  // |No Policy (default allow all)                                        |
+  // |                                                                     |
+  // |<iframe allow="local-network-access 'none'; local-network OriginB;"> |
+  // | +------------------------------------+                              |
+  // | |(2)Origin B                         |                              |
+  // | |local-network                       |                              |
+  // | +------------------------------------+                              |
+  // +---------------------------------------------------------------------+
+  // "local-network" will be enabled in frame 2 despite "local-network-access"
+  // being set to 'none', as the iframe allowlist bitset is additive.
+
+  base::test::ScopedFeatureList scoped_feature_list(
+      features::kLocalNetworkAccessChecksSplitPermissions);
+
+  // Main frame just has defaults, no header.
+  std::unique_ptr<PermissionsPolicy> policy1 =
+      CreateFromParentPolicy(nullptr, {},  // default, no header
+                             origin_a_);
+
+  // Frame 2 has an empty allowlist policy for "local-network-access" but an
+  // allowlist for OriginB the more specific "local-network" feature.
+  network::ParsedPermissionsPolicy frame_policy1 = {
+      {{network::mojom::PermissionsPolicyFeature::kLocalNetworkAccess,
+        /*allowed_origins=*/{},
+        /*self_if_matches=*/std::nullopt,
+        /*matches_all_origins=*/false,
+        /*matches_opaque_src=*/false},
+       {network::mojom::PermissionsPolicyFeature::kLocalNetwork,
+        /*allowed_origins=*/
+        {*network::OriginWithPossibleWildcards::FromOriginAndWildcardsForTest(
+            origin_b_,
+            /*has_subdomain_wildcard=*/false)},
+        /*self_if_matches=*/std::nullopt,
+        /*matches_all_origins=*/false,
+        /*matches_opaque_src=*/false}}};
+  std::unique_ptr<PermissionsPolicy> policy2 = CreateFromParentWithFramePolicy(
+      policy1.get(), /*header_policy=*/{}, frame_policy1, origin_b_);
+
+  // Frame 2: "local-network" is propagated into the subframe.
+  EXPECT_FALSE(policy2->IsFeatureEnabledForOrigin(
+      network::mojom::PermissionsPolicyFeature::kLocalNetworkAccess,
+      origin_b_));
+  EXPECT_TRUE(policy2->IsFeatureEnabledForOrigin(
+      network::mojom::PermissionsPolicyFeature::kLocalNetwork, origin_b_));
+  EXPECT_FALSE(policy2->IsFeatureEnabledForOrigin(
+      network::mojom::PermissionsPolicyFeature::kLoopbackNetwork, origin_b_));
 }
 
 TEST_F(PermissionsPolicyTest, TestDefaultSandboxedFramePolicy) {

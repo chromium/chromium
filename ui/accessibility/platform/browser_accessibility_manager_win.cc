@@ -11,7 +11,6 @@
 #include <vector>
 
 #include "base/command_line.h"
-#include "base/containers/contains.h"
 #include "base/containers/heap_array.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
@@ -19,6 +18,7 @@
 #include "base/win/scoped_bstr.h"
 #include "base/win/scoped_variant.h"
 #include "base/win/windows_version.h"
+#include "ui/accessibility/accessibility_features.h"
 #include "ui/accessibility/ax_role_properties.h"
 #include "ui/accessibility/platform/ax_fragment_root_win.h"
 #include "ui/accessibility/platform/ax_platform.h"
@@ -87,6 +87,12 @@ BrowserAccessibilityManagerWin::BrowserAccessibilityManagerWin(
     AXPlatformTreeManagerDelegate* delegate)
     : BrowserAccessibilityManager(node_id_delegate, delegate) {
   win::CreateATLModuleIfNeeded();
+  // Hydrate the custom property registry if MathML support is enabled.
+  // Since we don't fire any events that call into the registrar like the other
+  // custom properties, we need to ensure it's initialized here.
+  if (features::IsUiaMathMlSupportEnabled()) {
+    ui::UiaRegistrarWin::GetInstance();
+  }
   Initialize(initial_tree);
 }
 
@@ -254,13 +260,14 @@ void BrowserAccessibilityManagerWin::FireFocusEvent(AXNode* node) {
   FireUiaAccessibilityEvent(UIA_AutomationFocusChangedEventId, wrapper);
 }
 
-void BrowserAccessibilityManagerWin::FireBlinkEvent(ax::mojom::Event event_type,
-                                                    BrowserAccessibility* node,
-                                                    int action_request_id) {
+void BrowserAccessibilityManagerWin::FireSourceEvent(
+    ax::mojom::Event event_type,
+    BrowserAccessibility* node,
+    int action_request_id) {
   DCHECK(CanFireEvents());
 
-  BrowserAccessibilityManager::FireBlinkEvent(event_type, node,
-                                              action_request_id);
+  BrowserAccessibilityManager::FireSourceEvent(event_type, node,
+                                               action_request_id);
 
   switch (event_type) {
     case ax::mojom::Event::kClicked:
@@ -670,8 +677,8 @@ void BrowserAccessibilityManagerWin::FireWinAccessibilityEvent(
 
 bool BrowserAccessibilityManagerWin::IsIgnoredChangedNode(
     const BrowserAccessibility* node) const {
-  return base::Contains(ignored_changed_nodes_,
-                        const_cast<BrowserAccessibility*>(node));
+  return ignored_changed_nodes_.contains(
+      const_cast<BrowserAccessibility*>(node));
 }
 
 void BrowserAccessibilityManagerWin::FireUiaAccessibilityEvent(
@@ -854,9 +861,16 @@ void BrowserAccessibilityManagerWin::FireUiaActiveTextPositionChangedEvent(
 }
 
 bool BrowserAccessibilityManagerWin::CanFireEvents() const {
-  return BrowserAccessibilityManager::CanFireEvents() &&
-         GetDelegateFromRootManager() &&
-         GetDelegateFromRootManager()->AccessibilityGetAcceleratedWidget();
+  if (!BrowserAccessibilityManager::CanFireEvents()) {
+    return false;
+  }
+
+  if (delegate()->AccessibilityIsWebContentSource()) {
+    return GetDelegateFromRootManager() &&
+           GetDelegateFromRootManager()->AccessibilityGetAcceleratedWidget();
+  }
+
+  return delegate()->AccessibilityGetAcceleratedWidget();
 }
 
 void BrowserAccessibilityManagerWin::OnSubtreeWillBeDeleted(AXTree* tree,

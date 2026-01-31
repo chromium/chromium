@@ -66,9 +66,8 @@ bool DoCanonicalizeStandardUrl(const Replacements<CHAR>& source,
 
     // Port: the port canonicalizer will handle the colon.
     if (scheme_supports_ports) {
-      int default_port = DefaultPortForScheme(std::string_view(
-          &UNSAFE_TODO(output->data()[new_parsed->scheme.begin]),
-          new_parsed->scheme.len));
+      int default_port =
+          DefaultPortForScheme(new_parsed->scheme.AsViewOn(output->view()));
       success &= CanonicalizePort(source.MaybePort(), default_port, output,
                                   &new_parsed->port);
     } else {

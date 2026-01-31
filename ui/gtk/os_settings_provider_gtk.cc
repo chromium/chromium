@@ -9,7 +9,6 @@
 
 #include <string>
 
-#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/strings/string_util.h"
 #include "base/time/time.h"
@@ -49,8 +48,8 @@ ui::NativeTheme::PreferredContrast OsSettingsProviderGtk::PreferredContrast()
   const std::string theme_name =
       base::ToLowerASCII(GetGtkSettingsStringProperty(
           gtk_settings_get_default(), "gtk-theme-name"));
-  const bool high_contrast = base::Contains(theme_name, "high") &&
-                             base::Contains(theme_name, "contrast");
+  const bool high_contrast =
+      theme_name.contains("high") && theme_name.contains("contrast");
   return high_contrast ? ui::NativeTheme::PreferredContrast::kMore
                        : ui::NativeTheme::PreferredContrast::kNoPreference;
 }

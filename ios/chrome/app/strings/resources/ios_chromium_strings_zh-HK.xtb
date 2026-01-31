@@ -34,11 +34,16 @@
 <translation id="159029779861043703">Chromium 會使用 Face ID 保護你的敏感資料安全。</translation>
 <translation id="1591119736686995611">開啟 Chromium 分頁網格。</translation>
 <translation id="16001233025397167">「安全檢查」能確保系統安全，避免發生資料外洩或瀏覽不安全網站等問題。你可以在 Chromium 偵測到任何私隱或安全問題時接收快訊。</translation>
+<translation id="1614362805233822594">「密碼管理工具」中已有所顯示網站的密碼或密鑰。請選取帳戶以保留所顯示的登入資料，並覆寫「密碼管理工具」中的資料。</translation>
 <translation id="1617663976202781617">來自 Chromium Sync 的資料</translation>
 <translation id="164952285225495380">你已使用 Chromium 追蹤此包裹。</translation>
+<translation id="1703338211136118534">以下密碼不符合要求，因此並未匯入到「密碼管理工具」。</translation>
 <translation id="1707458603865303524">隨時使用 Chromium 開啟訊息或其他應用程式中的連結。</translation>
 <translation id="1722370509450468186">密碼將會儲存在您的帳戶 (<ph name="EMAIL" />) 中。</translation>
 <translation id="1747088204252710672">為你而設的自訂動態消息</translation>
+<translation id="1761196287436320018">Chromium 的書籤數量已達上限 (<ph name="LIMIT" /> 個)，因此部分書籤未能儲存至 Google 帳戶。
+
+你必須刪除部分書籤，才能將新書籤儲存至帳戶。如果你現在登出，未儲存的書籤將會刪除。</translation>
 <translation id="1811860791247653035">如要取得個人化和其他功能，請將 Chromium 加入「<ph name="FEATURE_NAME_1" />」以及「<ph name="FEATURE_NAME_2" />」</translation>
 <translation id="1838412507805038478">Chromium 驗證到由「<ph name="ISSUER" />」發出的網站憑證。</translation>
 <translation id="1839447949248872139">預設在 Chromium 中開啟連結</translation>
@@ -47,6 +52,7 @@
 <translation id="1847960401032164406">Chromium 的地圖</translation>
 <translation id="1867772173333403444">4. 選取 [Chromium]</translation>
 <translation id="1965068424387304464">Chromium 提示：儲存密碼</translation>
+<translation id="1992653360331625459">你的「密碼管理工具」中已有這些帳戶的密碼。如果選擇匯入以下其中一個密碼，將會取代現有密碼。</translation>
 <translation id="2006345422933397527">Chromium 無法檢查更新，請檢查互聯網連線。</translation>
 <translation id="2042889939382983733">查看 Chromium 記錄</translation>
 <translation id="2052320862053429062">Chromium 會定期將您的密碼與網上發佈的清單互相核對。核對時，您的密碼和使用者名稱將會加密，任何人 (包括 Google) 均無法讀取。</translation>
@@ -65,6 +71,7 @@
 <translation id="2326738825692478496">部分 Chromium 資料尚未儲存至 Google 帳戶。
 
 請等待幾分鐘後再嘗試登出。如果你現在登出，系統將刪除此資料。</translation>
+<translation id="2334943301233020675">以下密鑰不符合要求，因此並未匯入到「密碼管理工具」。</translation>
 <translation id="2337722506862731008">分享 Chromium</translation>
 <translation id="2340423701577464731">將閱讀清單項目新增至 Chromium</translation>
 <translation id="2374627437126809292">偵測到地址後，Chromium 會使用「Google 地圖」規劃路線及提供當地資訊。</translation>
@@ -125,6 +132,7 @@
 <translation id="3728124580182886854">連結 Chromium 和其他 Google 服務，用於個人化和其他用途</translation>
 <translation id="377649297473651452">打開咗 Chromium 自動填入檢視畫面</translation>
 <translation id="3780779443901618967">此防護機制分析的網站資料比標準保護多，因此即使是 Google 不知道的網站，此防護機制亦能提供危險網站警告。你可選擇略過 Chromium 警告。</translation>
+<translation id="3793136096560888222">使用 Chromium 版 Gemini 編輯圖片</translation>
 <translation id="3805899903892079518">Chromium 沒有存取相片或影片的權限。請前往「iOS 設定」&gt;「私隱」&gt;「相片」開放權限。</translation>
 <translation id="3816686541346279443">Chromium 會詢問你是否要儲存密碼。</translation>
 <translation id="3827545470516145620">此裝置即將啟用標準安全保護功能保護</translation>
@@ -292,7 +300,6 @@
 <translation id="7554983317097061001">Chromium 提示：將 Chromium 移至捷徑列</translation>
 <translation id="7576863740961052505">管理 Chromium 設定</translation>
 <translation id="7674213385180944843">開啟 [設定] &gt; [私隱權] &gt; [相機] &gt; [Chromium]，然後開啟相機。</translation>
-<translation id="7685160423563372998">使用 Chromium 版 Gemini 製作圖片</translation>
 <translation id="7733418656985455268">Chromium 提示：使用「智能鏡頭」搜尋</translation>
 <translation id="7747820849741499258">在 Chromium 中搜尋</translation>
 <translation id="7753923083404296545">已在 Chromium 無痕模式中開啟</translation>

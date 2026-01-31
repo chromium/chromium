@@ -31,7 +31,6 @@
 #include <utility>
 
 #include "base/command_line.h"
-#include "base/containers/contains.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/trace_event/trace_id_helper.h"
@@ -91,7 +90,7 @@
 #include "third_party/blink/renderer/core/execution_context/window_agent.h"
 #include "third_party/blink/renderer/core/frame/attribution_src_loader.h"
 #include "third_party/blink/renderer/core/frame/bar_prop.h"
-#include "third_party/blink/renderer/core/frame/crash_report_storage.h"
+#include "third_party/blink/renderer/core/frame/crash_report_context.h"
 #include "third_party/blink/renderer/core/frame/csp/content_security_policy.h"
 #include "third_party/blink/renderer/core/frame/document_policy_violation_report_body.h"
 #include "third_party/blink/renderer/core/frame/dom_viewport.h"
@@ -2084,7 +2083,7 @@ void LocalDOMWindow::cancelAnimationFrame(int id) {
 }
 
 bool LocalDOMWindow::originAgentCluster() const {
-  return GetAgent()->IsOriginKeyed();
+  return GetAgent()->GetAgentClusterKey().IsOriginKeyed();
 }
 
 CustomElementRegistry* LocalDOMWindow::customElements(
@@ -2555,7 +2554,7 @@ bool LocalDOMWindow::CrossOriginIsolatedCapability() const {
       IsFeatureEnabled(
           network::mojom::PermissionsPolicyFeature::kCrossOriginIsolated) ||
       GetPolicyContainer()->GetPolicies().cross_origin_isolation_enabled_by_dip;
-  return Agent::IsCrossOriginIsolated() && permission_policy_allows_coi;
+  return GetAgent()->IsCrossOriginIsolated() && permission_policy_allows_coi;
 }
 
 bool LocalDOMWindow::IsIsolatedContext() const {
@@ -2653,14 +2652,14 @@ Fence* LocalDOMWindow::fence() {
   return fence_.Get();
 }
 
-CrashReportStorage* LocalDOMWindow::crashReport() {
+CrashReportContext* LocalDOMWindow::crashReport() {
   // TODO(domfarolino): Maybe document this.
   if (!GetFrame()) {
     return nullptr;
   }
 
   if (!crash_report_storage_) {
-    crash_report_storage_ = MakeGarbageCollected<CrashReportStorage>(*this);
+    crash_report_storage_ = MakeGarbageCollected<CrashReportContext>(*this);
   }
 
   return crash_report_storage_.Get();
@@ -2676,6 +2675,69 @@ void LocalDOMWindow::SetIsPictureInPictureWindow() {
 
 net::StorageAccessApiStatus LocalDOMWindow::GetStorageAccessApiStatus() const {
   return storage_access_api_status_;
+}
+
+std::optional<mojom::blink::PolicyDisposition>
+LocalDOMWindow::GetGuardrailsPolicyState() const {
+  // Probe the policy lists to set disposition accordingly. IsFeatureEnabled
+  // assumes a value of |false| is stricter than |true|, but that's reversed for
+  // this configuration point.
+  const DocumentPolicy* enforced_policy =
+      GetSecurityContext().GetDocumentPolicy();
+  bool has_enforced_policy =
+      enforced_policy &&
+      enforced_policy
+          ->GetFeatureValue(
+              mojom::blink::DocumentPolicyFeature::kNetworkEfficiencyGuardrails)
+          .BoolValue();
+
+  const DocumentPolicy* report_only_policy =
+      GetSecurityContext().GetReportOnlyDocumentPolicy();
+  bool has_report_only_policy =
+      report_only_policy &&
+      report_only_policy
+          ->GetFeatureValue(
+              mojom::blink::DocumentPolicyFeature::kNetworkEfficiencyGuardrails)
+          .BoolValue();
+
+  if (!has_enforced_policy && !has_report_only_policy) {
+    return std::nullopt;
+  }
+
+  return has_enforced_policy ? mojom::blink::PolicyDisposition::kEnforce
+                             : mojom::blink::PolicyDisposition::kReport;
+}
+
+bool LocalDOMWindow::CheckGuardrailsPolicyForAssetSize(
+    GuardrailPolicyAssetType asset_type,
+    size_t bytes,
+    const KURL& url) const {
+  String message;
+  switch (asset_type) {
+    case GuardrailPolicyAssetType::kData:
+      if (bytes <= kGuardrailsLargeDataThresholdBytes) {
+        return false;
+      }
+      message = "large data URLs are disallowed by policy";
+      break;
+    case GuardrailPolicyAssetType::kImage:
+      if (bytes <= kGuardrailsLargeImageThresholdBytes) {
+        return false;
+      }
+      message = "large media is disallowed by policy";
+      break;
+  }
+
+  std::optional<mojom::blink::PolicyDisposition> disposition =
+      GetGuardrailsPolicyState();
+  if (disposition.has_value()) {
+    ReportDocumentPolicyViolation(
+        mojom::blink::DocumentPolicyFeature::kNetworkEfficiencyGuardrails,
+        disposition.value(), message, url);
+    return true;
+  }
+
+  return false;
 }
 
 void LocalDOMWindow::SetStorageAccessApiStatus(

@@ -11,6 +11,7 @@
 
 #include "base/compiler_specific.h"
 #include "base/containers/heap_array.h"
+#include "base/containers/span.h"
 #include "build/build_config.h"
 #include "gpu/command_buffer/common/gles2_cmd_copy_texture_chromium_utils.h"
 #include "gpu/command_buffer/service/context_state.h"
@@ -637,34 +638,32 @@ void DoCopyTexSubImage2D(
 }
 
 // Convert RGBA/UNSIGNED_BYTE source to RGB/UNSIGNED_BYTE destination.
-void convertToRGB(const uint8_t* source,
-                  uint8_t* destination,
-                  unsigned length) {
-  for (unsigned i = 0; i < length; ++i) {
-    destination[0] = source[0];
-    UNSAFE_TODO(destination[1]) = UNSAFE_TODO(source[1]);
-    UNSAFE_TODO(destination[2]) = UNSAFE_TODO(source[2]);
-    UNSAFE_TODO(source += 4);
-    UNSAFE_TODO(destination += 3);
+void convertToRGB(base::span<const uint8_t> source,
+                  base::span<uint8_t> destination, size_t length) {
+  for (size_t i = 0; i < length; ++i) {
+    size_t src_idx = i * 4;
+    size_t dest_idx = i * 3;
+    destination[dest_idx] = source[src_idx];
+    destination[dest_idx + 1] = source[src_idx + 1];
+    destination[dest_idx + 2] = source[src_idx + 2];
   }
 }
 
 // Convert RGBA/UNSIGNED_BYTE source to RGB/FLOAT destination.
-void convertToRGBFloat(const uint8_t* source,
-                       float* destination,
-                       unsigned length) {
+void convertToRGBFloat(base::span<const uint8_t> source,
+                       base::span<float> destination, size_t length) {
   const float scaleFactor = 1.0f / 255.0f;
-  for (unsigned i = 0; i < length; ++i) {
-    destination[0] = source[0] * scaleFactor;
-    UNSAFE_TODO(destination[1]) = UNSAFE_TODO(source[1]) * scaleFactor;
-    UNSAFE_TODO(destination[2]) = UNSAFE_TODO(source[2]) * scaleFactor;
-    UNSAFE_TODO(source += 4);
-    UNSAFE_TODO(destination += 3);
+  for (size_t i = 0; i < length; ++i) {
+    size_t src_idx = i * 4;
+    size_t dest_idx = i * 3;
+    destination[dest_idx] = source[src_idx] * scaleFactor;
+    destination[dest_idx + 1] = source[src_idx + 1] * scaleFactor;
+    destination[dest_idx + 2] = source[src_idx + 2] * scaleFactor;
   }
 }
 
 // Prepare the image data to be uploaded to a texture in pixel unpack buffer.
-void PrepareUnpackBuffer(GLuint buffer[2],
+void PrepareUnpackBuffer(base::span<const GLuint> buffer,
                          GLenum format,
                          GLenum type,
                          GLsizei width,
@@ -672,7 +671,7 @@ void PrepareUnpackBuffer(GLuint buffer[2],
   uint32_t pixel_num = width * height;
 
   // Result of glReadPixels with format == GL_RGB and type == GL_UNSIGNED_BYTE
-  // from read framebuffer in RGBA fromat is not correct on desktop core
+  // from read framebuffer in RGBA format is not correct on desktop core
   // profile on both Linux Mesa and Linux NVIDIA. This may be a driver bug.
   if (format == GL_RGBA && type == GL_UNSIGNED_BYTE) {
     uint32_t bytes_per_group =
@@ -695,14 +694,14 @@ void PrepareUnpackBuffer(GLuint buffer[2],
     // GLCopyTextureCHROMIUMES3Test.FormatCombinations in gl_tests. This is seen
     // on Nexus 5 but not Nexus 4. Read pixels to client memory, then upload to
     // pixel unpack buffer with glBufferData.
-    auto pixels = base::HeapArray<uint8_t>::Uninit(width * height * 4);
+    auto pixels = base::HeapArray<uint8_t>::Uninit(pixel_num * 4);
     glReadPixels(0, 0, width, height, GL_RGBA, GL_UNSIGNED_BYTE, pixels.data());
-    auto data = base::HeapArray<float>::Uninit(width * height * 3);
-    convertToRGBFloat(pixels.data(), data.data(), pixel_num);
+    auto data = base::HeapArray<float>::Uninit(pixel_num * 3);
+    convertToRGBFloat(pixels, data, pixel_num);
     bytes_per_group =
         gpu::gles2::GLES2Util::ComputeImageGroupSize(format, type);
     buf_size = pixel_num * bytes_per_group;
-    glBindBuffer(GL_PIXEL_UNPACK_BUFFER, UNSAFE_TODO(buffer[1]));
+    glBindBuffer(GL_PIXEL_UNPACK_BUFFER, buffer[1]);
     glBufferData(GL_PIXEL_UNPACK_BUFFER, buf_size, data.data(), GL_STATIC_DRAW);
 #else
     glBindBuffer(GL_PIXEL_PACK_BUFFER, buffer[0]);
@@ -711,15 +710,16 @@ void PrepareUnpackBuffer(GLuint buffer[2],
     void* pixels =
         glMapBufferRange(GL_PIXEL_PACK_BUFFER, 0, buf_size, GL_MAP_READ_BIT);
 
-    glBindBuffer(GL_PIXEL_UNPACK_BUFFER, UNSAFE_TODO(buffer[1]));
+    glBindBuffer(GL_PIXEL_UNPACK_BUFFER, buffer[1]);
     bytes_per_group =
         gpu::gles2::GLES2Util::ComputeImageGroupSize(format, type);
     buf_size = pixel_num * bytes_per_group;
     glBufferData(GL_PIXEL_UNPACK_BUFFER, buf_size, 0, GL_STATIC_DRAW);
     void* data =
         glMapBufferRange(GL_PIXEL_UNPACK_BUFFER, 0, buf_size, GL_MAP_WRITE_BIT);
-    convertToRGBFloat(static_cast<uint8_t*>(pixels), static_cast<float*>(data),
-                      pixel_num);
+    convertToRGBFloat(UNSAFE_BUFFERS(
+        base::span(static_cast<const uint8_t*>(pixels), pixel_num * 4),
+        base::span(static_cast<float*>(data), pixel_num * 3)), pixel_num);
     glUnmapBuffer(GL_PIXEL_PACK_BUFFER);
     glUnmapBuffer(GL_PIXEL_UNPACK_BUFFER);
 #endif
@@ -733,7 +733,9 @@ void PrepareUnpackBuffer(GLuint buffer[2],
     void* pixels = glMapBufferRange(GL_PIXEL_PACK_BUFFER, 0, buf_size,
                                     GL_MAP_READ_BIT | GL_MAP_WRITE_BIT);
     void* data = pixels;
-    convertToRGB((uint8_t*)pixels, (uint8_t*)data, pixel_num);
+    convertToRGB(UNSAFE_BUFFERS(
+        base::span(static_cast<const uint8_t*>(pixels), pixel_num * 4),
+        base::span(static_cast<uint8_t*>(data), pixel_num * 3)), pixel_num);
     glUnmapBuffer(GL_PIXEL_PACK_BUFFER);
     glBindBuffer(GL_PIXEL_UNPACK_BUFFER, buffer[0]);
     return;

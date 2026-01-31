@@ -115,7 +115,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_REPORT) TwentyEightDayImpl
   std::unique_ptr<network::SimpleURLLoader> url_loader_;
 
   // Pref to store the rolling history of 28 day actives.
-  base::Value::Dict actives_cache_;
+  base::DictValue actives_cache_;
 
   // Automatically cancels callbacks when the referent of weakptr gets
   // destroyed.

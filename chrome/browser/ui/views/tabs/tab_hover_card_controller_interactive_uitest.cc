@@ -4,7 +4,7 @@
 
 #include <memory>
 
-#include "base/byte_count.h"
+#include "base/byte_size.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
@@ -568,7 +568,7 @@ IN_PROC_BROWSER_TEST_P(TabHoverCardFadeFooterWithDiscardInteractiveUiTest,
   EXPECT_TRUE(alert_row->icon()->GetImageModel().IsEmpty());
 
   // Show discard status with memory savings
-  tab_renderer_data.discarded_memory_savings = base::ByteCount(1000);
+  tab_renderer_data.discarded_memory_savings = base::ByteSize(1000);
   tab_strip->SetTabData(1, tab_renderer_data);
   SimulateHoverTab(browser(), 1);
   EXPECT_EQ(
@@ -591,7 +591,7 @@ IN_PROC_BROWSER_TEST_F(TabHoverCardFadeFooterInteractiveUiTest,
   ASSERT_TRUE(
       AddTabAtIndex(1, GURL(url::kAboutBlankURL), ui::PAGE_TRANSITION_TYPED));
 
-  base::ByteCount memory_usage = base::ByteCount(1000);
+  base::ByteSize memory_usage = base::ByteSize(1000);
   auto* const tab_resource_usage_tab_helper = GetResourceUsageAt(1);
   tab_resource_usage_tab_helper->SetMemoryUsage(memory_usage);
 
@@ -606,7 +606,7 @@ IN_PROC_BROWSER_TEST_F(TabHoverCardFadeFooterInteractiveUiTest,
 
   // Hover card updates and shows high memory usage when card is still open.
   memory_usage =
-      TabResourceUsage::kHighMemoryUsageThreshold + base::ByteCount(100);
+      TabResourceUsage::kHighMemoryUsageThreshold + base::ByteSize(100);
   tab_resource_usage_tab_helper->SetMemoryUsage(memory_usage);
   GetTabStrip(browser())
       ->hover_card_controller_for_testing()
@@ -628,7 +628,7 @@ IN_PROC_BROWSER_TEST_F(TabHoverCardFadeFooterInteractiveUiTest,
   ASSERT_TRUE(
       AddTabAtIndex(1, GURL(url::kAboutBlankURL), ui::PAGE_TRANSITION_TYPED));
 
-  base::ByteCount memory_usage = base::ByteCount(1000);
+  base::ByteSize memory_usage = base::ByteSize(1000);
   auto* const tab_resource_usage_tab_helper = GetResourceUsageAt(1);
   tab_resource_usage_tab_helper->SetMemoryUsage(memory_usage);
 
@@ -640,7 +640,7 @@ IN_PROC_BROWSER_TEST_F(TabHoverCardFadeFooterInteractiveUiTest,
 
   // Hover card updates and shows high memory usage when card is still open
   memory_usage =
-      TabResourceUsage::kHighMemoryUsageThreshold + base::ByteCount(100);
+      TabResourceUsage::kHighMemoryUsageThreshold + base::ByteSize(100);
   tab_resource_usage_tab_helper->SetMemoryUsage(memory_usage);
   GetTabStrip(browser())
       ->hover_card_controller_for_testing()
@@ -653,7 +653,7 @@ IN_PROC_BROWSER_TEST_F(TabHoverCardFadeFooterInteractiveUiTest,
 
 IN_PROC_BROWSER_TEST_F(TabHoverCardFadeFooterInteractiveUiTest,
                        ActiveMemoryUsageHidesOnDiscard) {
-  const base::ByteCount memory_usage = base::ByteCount(1);
+  const base::ByteSize memory_usage = base::ByteSize(1);
   GetResourceUsageAt(0)->SetMemoryUsage(memory_usage);
 
   RunTestSequence(InstrumentTab(kFirstTabContents, 0),
@@ -704,7 +704,7 @@ IN_PROC_BROWSER_TEST_P(TabHoverCardFadeFooterWithDiscardInteractiveUiTest,
 // another site since the data is now out of date
 IN_PROC_BROWSER_TEST_F(TabHoverCardFadeFooterInteractiveUiTest,
                        MemoryUpdatesOnNavigation) {
-  const base::ByteCount memory_usage = base::ByteCount(1);
+  const base::ByteSize memory_usage = base::ByteSize(1);
   GetResourceUsageAt(0)->SetMemoryUsage(memory_usage);
 
   RunTestSequence(
@@ -734,7 +734,7 @@ IN_PROC_BROWSER_TEST_F(TabHoverCardFadeFooterInteractiveUiTest,
   ASSERT_TRUE(
       AddTabAtIndex(1, GURL(url::kAboutBlankURL), ui::PAGE_TRANSITION_TYPED));
 
-  GetResourceUsageAt(0)->SetMemoryUsage(base::ByteCount(1000));
+  GetResourceUsageAt(0)->SetMemoryUsage(base::ByteSize(1000));
 
   // Footer should show when hovering over tab with memory usage
   views::View* const footer_view =
@@ -742,7 +742,7 @@ IN_PROC_BROWSER_TEST_F(TabHoverCardFadeFooterInteractiveUiTest,
   EXPECT_TRUE(footer_view->GetVisible());
 
   // Hover over a tab without memory usage
-  GetResourceUsageAt(1)->SetMemoryUsage(base::ByteCount(0));
+  GetResourceUsageAt(1)->SetMemoryUsage(base::ByteSize(0));
   SimulateHoverTab(browser(), 1);
 
   // Footer should no longer be visible because there is no memory data

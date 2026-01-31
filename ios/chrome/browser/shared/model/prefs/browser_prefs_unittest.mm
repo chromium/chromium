@@ -14,7 +14,7 @@
 #import "components/safety_check/safety_check_pref_names.h"
 #import "components/signin/public/identity_manager/identity_manager.h"
 #import "components/sync_preferences/testing_pref_service_syncable.h"
-#import "ios/chrome/browser/content_suggestions/ui_bundled/safety_check/model/safety_check_prefs.h"
+#import "ios/chrome/browser/content_suggestions/safety_check/model/safety_check_prefs.h"
 #import "ios/chrome/browser/ntp_tiles/model/tab_resumption/tab_resumption_prefs.h"
 #import "ios/chrome/browser/safety_check/model/ios_chrome_safety_check_manager_constants.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
@@ -40,7 +40,7 @@ class BrowserPrefsTest : public PlatformTest {
   BrowserPrefsTest() {
     RegisterProfilePrefs(pref_service_.registry());
 
-    // TODO(crbug.com/40282890): Remove this line ~one year after full launch.
+    // TODO(crbug.com/369296278): Remove this line ~one year after full launch.
     // Manually register IdentityManagerFactory preferences as ProfilePrefs do
     // not register KeyedService factories prefs.
     signin::IdentityManager::RegisterProfilePrefs(pref_service_.registry());
@@ -61,134 +61,6 @@ class BrowserPrefsTest : public PlatformTest {
 
 // [1] Local-state to Profile pref migrations (triggered by
 // `MigrateObsoleteProfilePrefs()`).
-
-TEST_F(BrowserPrefsTest, MigrateMVTImpressionsFromLocalToProfile) {
-  const int test_value = 5;
-
-  local_state()->SetInteger(
-      prefs::kIosMagicStackSegmentationMVTImpressionsSinceFreshness,
-      test_value);
-
-  ASSERT_EQ(local_state()->GetInteger(
-                prefs::kIosMagicStackSegmentationMVTImpressionsSinceFreshness),
-            test_value);
-  ASSERT_TRUE(
-      profile_prefs()
-          ->FindPreference(
-              prefs::kIosMagicStackSegmentationMVTImpressionsSinceFreshness)
-          ->IsDefaultValue());
-
-  MigrateObsoleteProfilePrefs(profile_prefs());
-
-  EXPECT_TRUE(
-      local_state()
-          ->FindPreference(
-              prefs::kIosMagicStackSegmentationMVTImpressionsSinceFreshness)
-          ->IsDefaultValue());
-  EXPECT_EQ(profile_prefs()->GetInteger(
-                prefs::kIosMagicStackSegmentationMVTImpressionsSinceFreshness),
-            test_value);
-}
-
-TEST_F(BrowserPrefsTest, MigrateShortcutsImpressionsFromLocalToProfile) {
-  const int test_value = 3;
-
-  local_state()->SetInteger(
-      prefs::kIosMagicStackSegmentationShortcutsImpressionsSinceFreshness,
-      test_value);
-
-  ASSERT_EQ(
-      local_state()->GetInteger(
-          prefs::kIosMagicStackSegmentationShortcutsImpressionsSinceFreshness),
-      test_value);
-  ASSERT_TRUE(
-      profile_prefs()
-          ->FindPreference(
-              prefs::
-                  kIosMagicStackSegmentationShortcutsImpressionsSinceFreshness)
-          ->IsDefaultValue());
-
-  MigrateObsoleteProfilePrefs(profile_prefs());
-
-  EXPECT_TRUE(
-      local_state()
-          ->FindPreference(
-              prefs::
-                  kIosMagicStackSegmentationShortcutsImpressionsSinceFreshness)
-          ->IsDefaultValue());
-  EXPECT_EQ(
-      profile_prefs()->GetInteger(
-          prefs::kIosMagicStackSegmentationShortcutsImpressionsSinceFreshness),
-      test_value);
-}
-
-TEST_F(BrowserPrefsTest, MigrateSafetyCheckImpressionsFromLocalToProfile) {
-  const int test_value = 7;
-
-  local_state()->SetInteger(
-      prefs::kIosMagicStackSegmentationSafetyCheckImpressionsSinceFreshness,
-      test_value);
-
-  ASSERT_EQ(
-      local_state()->GetInteger(
-          prefs::
-              kIosMagicStackSegmentationSafetyCheckImpressionsSinceFreshness),
-      test_value);
-  ASSERT_TRUE(
-      profile_prefs()
-          ->FindPreference(
-              prefs::
-                  kIosMagicStackSegmentationSafetyCheckImpressionsSinceFreshness)
-          ->IsDefaultValue());
-
-  MigrateObsoleteProfilePrefs(profile_prefs());
-
-  EXPECT_TRUE(
-      local_state()
-          ->FindPreference(
-              prefs::
-                  kIosMagicStackSegmentationSafetyCheckImpressionsSinceFreshness)
-          ->IsDefaultValue());
-  EXPECT_EQ(
-      profile_prefs()->GetInteger(
-          prefs::
-              kIosMagicStackSegmentationSafetyCheckImpressionsSinceFreshness),
-      test_value);
-}
-
-TEST_F(BrowserPrefsTest, MigrateTabResumptionImpressionsFromLocalToProfile) {
-  const int test_value = 2;
-
-  local_state()->SetInteger(
-      prefs::kIosMagicStackSegmentationTabResumptionImpressionsSinceFreshness,
-      test_value);
-
-  ASSERT_EQ(
-      local_state()->GetInteger(
-          prefs::
-              kIosMagicStackSegmentationTabResumptionImpressionsSinceFreshness),
-      test_value);
-  ASSERT_TRUE(
-      profile_prefs()
-          ->FindPreference(
-              prefs::
-                  kIosMagicStackSegmentationTabResumptionImpressionsSinceFreshness)
-          ->IsDefaultValue());
-
-  MigrateObsoleteProfilePrefs(profile_prefs());
-
-  EXPECT_TRUE(
-      local_state()
-          ->FindPreference(
-              prefs::
-                  kIosMagicStackSegmentationTabResumptionImpressionsSinceFreshness)
-          ->IsDefaultValue());
-  EXPECT_EQ(
-      profile_prefs()->GetInteger(
-          prefs::
-              kIosMagicStackSegmentationTabResumptionImpressionsSinceFreshness),
-      test_value);
-}
 
 TEST_F(BrowserPrefsTest, MigrateSafetyCheckIssuesCountFromLocalToProfile) {
   const int test_value = 6;
@@ -215,59 +87,7 @@ TEST_F(BrowserPrefsTest, MigrateSafetyCheckIssuesCountFromLocalToProfile) {
             test_value);
 }
 
-// [2] Profile to local-state pref migrations (triggered by
-// `MigrateObsoleteProfilePrefs()`).
-
-TEST_F(BrowserPrefsTest, MigrateNTPLensBadgeCountFromProfileToLocal) {
-  const int test_value = 3;
-
-  profile_prefs()->SetInteger(prefs::kNTPLensEntryPointNewBadgeShownCount,
-                              test_value);
-
-  ASSERT_EQ(
-      profile_prefs()->GetInteger(prefs::kNTPLensEntryPointNewBadgeShownCount),
-      test_value);
-  ASSERT_TRUE(local_state()
-                  ->FindPreference(prefs::kNTPLensEntryPointNewBadgeShownCount)
-                  ->IsDefaultValue());
-
-  MigrateObsoleteProfilePrefs(profile_prefs());
-
-  EXPECT_TRUE(profile_prefs()
-                  ->FindPreference(prefs::kNTPLensEntryPointNewBadgeShownCount)
-                  ->IsDefaultValue());
-  EXPECT_EQ(
-      local_state()->GetInteger(prefs::kNTPLensEntryPointNewBadgeShownCount),
-      test_value);
-}
-
-TEST_F(BrowserPrefsTest,
-       MigrateNTPHomeCustomizationBadgeCountFromProfileToLocal) {
-  const int test_value = 99;
-
-  profile_prefs()->SetInteger(
-      prefs::kNTPHomeCustomizationNewBadgeImpressionCount, test_value);
-
-  ASSERT_EQ(profile_prefs()->GetInteger(
-                prefs::kNTPHomeCustomizationNewBadgeImpressionCount),
-            test_value);
-  ASSERT_TRUE(
-      local_state()
-          ->FindPreference(prefs::kNTPHomeCustomizationNewBadgeImpressionCount)
-          ->IsDefaultValue());
-
-  MigrateObsoleteProfilePrefs(profile_prefs());
-
-  EXPECT_TRUE(
-      profile_prefs()
-          ->FindPreference(prefs::kNTPHomeCustomizationNewBadgeImpressionCount)
-          ->IsDefaultValue());
-  EXPECT_EQ(local_state()->GetInteger(
-                prefs::kNTPHomeCustomizationNewBadgeImpressionCount),
-            test_value);
-}
-
-// [3] Profile pref renaming (triggered by `MigrateObsoleteProfilePrefs()`).
+// [2] Profile pref renaming (triggered by `MigrateObsoleteProfilePrefs()`).
 
 TEST_F(BrowserPrefsTest, RenameSafetyCheckModuleEnabledProfilePref) {
   const bool test_value = false;  // Default is true
@@ -418,7 +238,7 @@ TEST_F(BrowserPrefsTest, RenameMostVisitedModuleEnabledProfilePref) {
             test_value);
 }
 
-// [4] `NSUserDefaults` migrations (triggered by
+// [3] `NSUserDefaults` migrations (triggered by
 // `MigrateObsoleteProfilePrefs()`).
 
 TEST_F(BrowserPrefsTest, MigrateSyncDisabledAlertShownFromUserDefaults) {
@@ -448,7 +268,7 @@ TEST_F(BrowserPrefsTest, MigrateSyncDisabledAlertShownFromUserDefaults) {
   EXPECT_EQ([defaults objectForKey:kSyncDisabledAlertShownKey], nil);
 }
 
-// [5] Local-state pref migrations and cleanup (triggered by
+// [4] Local-state pref migrations and cleanup (triggered by
 // `MigrateObsoleteLocalStatePrefs()`).
 
 TEST_F(BrowserPrefsTest, RenameBottomOmniboxLocalStatePref) {

@@ -28,23 +28,17 @@ constexpr std::basic_string_view<CharT> MakeStringViewWithNulChars(
 // std:: has no direct equivalent for this; however, it eases span adoption in
 // Chromium, which uses `string`s and `string_view`s in many cases that
 // rightfully should be containers of `uint8_t`.
-//
-// TODO(C++23): Replace with direct use of the `std::string_view` range
-// constructor to avoid marking UNSAFE_BUFFERS.
 constexpr auto as_string_view(span<const char> s) {
-  // SAFETY: legitimate spans are valid from `begin()` to `end()`.
-  return UNSAFE_BUFFERS(std::string_view(s.begin(), s.end()));
+  return std::string_view(s);
 }
 constexpr auto as_string_view(span<const unsigned char> s) {
   return as_string_view(as_chars(s));
 }
 constexpr auto as_string_view(span<const char16_t> s) {
-  // SAFETY: legitimate spans are valid from `begin()` to `end()`.
-  return UNSAFE_BUFFERS(std::u16string_view(s.begin(), s.end()));
+  return std::u16string_view(s);
 }
 constexpr auto as_string_view(span<const wchar_t> s) {
-  // SAFETY: legitimate spans are valid from `begin()` to `end()`.
-  return UNSAFE_BUFFERS(std::wstring_view(s.begin(), s.end()));
+  return std::wstring_view(s);
 }
 
 }  // namespace base

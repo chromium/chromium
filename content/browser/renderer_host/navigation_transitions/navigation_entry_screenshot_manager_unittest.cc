@@ -36,7 +36,7 @@ class NavigationEntryScreenshotManagerTest
   NavigationEntryScreenshotManagerTest()
       : task_environment_(std::make_unique<content::BrowserTaskEnvironment>(
             base::test::TaskEnvironment::MainThreadType::IO)),
-        memory_(base::MiB(GetParam().ram_mb)),
+        memory_(base::MiBU(GetParam().ram_mb)),
         min_required_physical_rm_mb_auto_reset_(
             NavigationTransitionConfig::SetMinRequiredPhysicalRamMbForTesting(
                 0)) {}

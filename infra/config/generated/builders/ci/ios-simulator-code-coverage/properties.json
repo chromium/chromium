@@ -48,8 +48,7 @@
           "group": "tryserver.chromium.mac"
         }
       ],
-      "targets_spec_directory": "infra/config/generated/builders/ci/ios-simulator-code-coverage/targets",
-      "targets_spec_directory_relative_to_source_dir": true
+      "targets_spec_directory": "infra/config/generated/builders/ci/ios-simulator-code-coverage/targets"
     }
   },
   "$build/code_coverage": {
@@ -66,10 +65,9 @@
       "builder"
     ],
     "enable_cloud_monitoring": true,
-    "enable_cloud_profiler": true,
     "enable_cloud_trace": true,
     "experiments": [],
-    "metrics_project": "chromium-reclient-metrics",
+    "profile_mode": "cloud",
     "project": "rbe-chromium-trusted",
     "remote_jobs": 250
   },

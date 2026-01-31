@@ -201,7 +201,7 @@ TEST_F(WebHidDevicePolicyHandlerTest, ApplyPolicySettingsWithDevicePolicy) {
   ASSERT_EQ(2ul, list.size());
 
   // Check the first item's devices list.
-  const base::Value::List* first_devices_list =
+  const base::ListValue* first_devices_list =
       list[0].GetDict().FindList(kDevicesKey);
   ASSERT_TRUE(first_devices_list);
 
@@ -225,14 +225,14 @@ TEST_F(WebHidDevicePolicyHandlerTest, ApplyPolicySettingsWithDevicePolicy) {
   EXPECT_FALSE(product_id);
 
   // Check the first item's urls list.
-  const base::Value::List* urls = list[0].GetDict().FindList(kUrlsKey);
+  const base::ListValue* urls = list[0].GetDict().FindList(kUrlsKey);
   ASSERT_TRUE(urls);
   ASSERT_EQ(2ul, urls->size());
   EXPECT_EQ(base::Value("https://origin1"), (*urls)[0]);
   EXPECT_EQ(base::Value("https://origin2"), (*urls)[1]);
 
   // Check the second item's devices list.
-  const base::Value::List* second_devices_list =
+  const base::ListValue* second_devices_list =
       list[1].GetDict().FindList(kDevicesKey);
   ASSERT_TRUE(second_devices_list);
 
@@ -278,7 +278,7 @@ TEST_F(WebHidDevicePolicyHandlerTest, ApplyPolicySettingsWithUsagePolicy) {
   ASSERT_EQ(2ul, list.size());
 
   // Check the first item's usages list.
-  const base::Value::List* first_usages_list =
+  const base::ListValue* first_usages_list =
       list[0].GetDict().FindList(kUsagesKey);
   ASSERT_TRUE(first_usages_list);
 
@@ -301,14 +301,14 @@ TEST_F(WebHidDevicePolicyHandlerTest, ApplyPolicySettingsWithUsagePolicy) {
   EXPECT_FALSE(usage);
 
   // Check the first item's urls list.
-  const base::Value::List* urls = list[0].GetDict().FindList(kUrlsKey);
+  const base::ListValue* urls = list[0].GetDict().FindList(kUrlsKey);
   ASSERT_TRUE(urls);
   ASSERT_EQ(2ul, urls->size());
   EXPECT_EQ(base::Value("https://origin1"), (*urls)[0]);
   EXPECT_EQ(base::Value("https://origin2"), (*urls)[1]);
 
   // Check the second item's usages list.
-  const base::Value::List* second_usages_list =
+  const base::ListValue* second_usages_list =
       list[1].GetDict().FindList(kUsagesKey);
   ASSERT_TRUE(second_usages_list);
 

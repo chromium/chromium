@@ -20,9 +20,12 @@ namespace internal {
 
 extern const char kHistogramGWSNavigationStartToFinalRequestStart[];
 extern const char kHistogramGWSNavigationStartToFinalResponseStart[];
+extern const char kHistogramGWSFinalRequestStartToFinalResponseStart[];
 extern const char kHistogramGWSNavigationStartToFinalLoaderCallback[];
 extern const char kHistogramGWSNavigationStartToFirstRequestStart[];
 extern const char kHistogramGWSNavigationStartToFirstResponseStart[];
+extern const char kHistogramGWSFirstRequestStartToFirstResponseStart[];
+extern const char kHistogramGWSFirstRequestStartToFinalResponseStart[];
 extern const char kHistogramGWSNavigationStartToFirstLoaderCallback[];
 extern const char kHistogramGWSNavigationStartToOnComplete[];
 
@@ -55,7 +58,12 @@ extern const char
 extern const char kHistogramNoServiceWorkerDomContentLoadedSearch[];
 extern const char kHistogramNoServiceWorkerLoadSearch[];
 
+extern const char kTraverseNavigation[];
+extern const char kRestoreNavigation[];
+extern const char kNonRestoreNavigation[];
+
 extern const char kHistogramPrerenderHostReused[];
+extern const char kHistogramPrerenderPrewarmNavigationStatus[];
 extern const char kHistogramGWSPrerenderNavigationToActivation[];
 extern const char kHistogramGWSActivationToFirstContentfulPaint[];
 extern const char kHistogramGWSActivationToLargestContentfulPaint[];
@@ -113,6 +121,8 @@ class GWSPageLoadMetricsObserver
   ObservePolicy OnStart(content::NavigationHandle* navigation_handle,
                         const GURL& currently_committed_url,
                         bool started_in_foreground) override;
+  ObservePolicy OnRedirect(
+      content::NavigationHandle* navigation_handle) override;
   ObservePolicy OnCommit(content::NavigationHandle* navigation_handle) override;
 
   ObservePolicy OnPrerenderStart(content::NavigationHandle* navigation_handle,
@@ -189,12 +199,15 @@ class GWSPageLoadMetricsObserver
   bool is_prerendered_ = false;
   bool is_header_from_synthetic_response_ = false;
 
+  // NavigationActivation.navigationType is traverse.
+  bool is_traverse_navigation_ = false;
+  // Indicates if it is session restore navigation, a subset of traverse
+  // navigation. Restore navigation might be slower than a regular navigation.
+  bool is_restore_navigation_ = false;
+
   NavigationSourceType source_type_ = kUnknown;
   net::HttpConnectionInfoCoarse http_connection_info_ =
       net::HttpConnectionInfoCoarse::kOTHER;
-  std::optional<page_load_metrics::PrerenderPrewarmNavigationData::
-                    PrerenderPrewarmNavigationStatus>
-      prerender_prewarm_navigation_status_;
 
   std::optional<base::TimeDelta> aft_start_time_;
   std::optional<base::TimeDelta> aft_end_time_;

@@ -5,7 +5,7 @@
 #include "components/spellcheck/common/spellcheck_result.h"
 #include <vector>
 
-SpellCheckResult::SpellCheckResult(Decoration d,
+SpellCheckResult::SpellCheckResult(spellcheck::Decoration d,
                                    int loc,
                                    int len,
                                    const std::vector<std::u16string>& rep,
@@ -16,7 +16,7 @@ SpellCheckResult::SpellCheckResult(Decoration d,
       replacements(rep),
       should_hide_suggestion_menu(should_hide_suggestion_menu) {}
 
-SpellCheckResult::SpellCheckResult(Decoration d,
+SpellCheckResult::SpellCheckResult(spellcheck::Decoration d,
                                    int loc,
                                    int len,
                                    const std::u16string& rep,

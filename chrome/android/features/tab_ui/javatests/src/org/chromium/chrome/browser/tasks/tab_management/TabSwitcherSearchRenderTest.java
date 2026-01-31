@@ -85,7 +85,7 @@ public class TabSwitcherSearchRenderTest {
     @Rule
     public ChromeRenderTestRule mRenderTestRule =
             ChromeRenderTestRule.Builder.withPublicCorpus()
-                    .setRevision(14)
+                    .setRevision(15)
                     .setBugComponent(Component.UI_BROWSER_MOBILE_TAB_SWITCHER)
                     .build();
 
@@ -154,6 +154,7 @@ public class TabSwitcherSearchRenderTest {
     @MediumTest
     @Feature({"RenderTest"})
     @Restriction(PHONE)
+    @DisabledTest(message="Flaky. See crbug.com/476144003")
     @EnableFeatures({OmniboxFeatureList.ANDROID_HUB_SEARCH_TAB_GROUPS})
     public void testHubSearchBox_PhoneLandscape() throws IOException {
         ChromeTabbedActivity cta = mCtaTestRule.getActivity();

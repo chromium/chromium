@@ -7,7 +7,6 @@
 #include <algorithm>
 
 #include "base/compiler_specific.h"
-#include "base/containers/contains.h"
 #include "base/logging.h"
 #include "base/notreached.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
@@ -377,7 +376,7 @@ bool ScriptRunIterator::MergeSets() {
 
   // Neither is common or inherited. If current is a singleton,
   // just see if it exists in the next set. This is the common case.
-  bool have_priority = base::Contains(*next_set_, priority_script);
+  bool have_priority = std::ranges::contains(*next_set_, priority_script);
   if (current_set_it == current_end) {
     return have_priority;
   }

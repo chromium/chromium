@@ -46,7 +46,7 @@ class COMPONENT_EXPORT(SHILL_CLIENT) ShillProfileClient {
     // kServicesProperty (which represents 'visible' services).
     virtual void AddEntry(const std::string& profile_path,
                           const std::string& entry_path,
-                          const base::Value::Dict& properties) = 0;
+                          const base::DictValue& properties) = 0;
 
     // Adds a service to the profile, copying properties from the
     // ShillServiceClient entry matching |service_path|. Returns false if no
@@ -71,14 +71,14 @@ class COMPONENT_EXPORT(SHILL_CLIENT) ShillProfileClient {
         std::vector<std::string>* profiles) = 0;
 
     // Returns the properties contained in the profile matching |profile_path|.
-    virtual base::Value::Dict GetProfileProperties(
+    virtual base::DictValue GetProfileProperties(
         const std::string& profile_path) = 0;
 
     // Returns the entry for |service_path| if it exists in any profile and sets
     // |profile_path| to the path of the profile the service was found in.
     // Profiles are searched starting with the most recently added profile.
     // If the service does not exist in any profile, nullopt is returned.
-    virtual std::optional<base::Value::Dict> GetService(
+    virtual std::optional<base::DictValue> GetService(
         const std::string& service_path,
         std::string* profile_path) = 0;
 
@@ -130,7 +130,7 @@ class COMPONENT_EXPORT(SHILL_CLIENT) ShillProfileClient {
   // Value containing the Profile properties.
   virtual void GetProperties(
       const dbus::ObjectPath& profile_path,
-      base::OnceCallback<void(base::Value::Dict result)> callback,
+      base::OnceCallback<void(base::DictValue result)> callback,
       ErrorCallback error_callback) = 0;
 
   // Calls the SetProperty DBus method to set a property on |profile_path|
@@ -155,7 +155,7 @@ class COMPONENT_EXPORT(SHILL_CLIENT) ShillProfileClient {
   virtual void GetEntry(
       const dbus::ObjectPath& profile_path,
       const std::string& entry_path,
-      base::OnceCallback<void(base::Value::Dict result)> callback,
+      base::OnceCallback<void(base::DictValue result)> callback,
       ErrorCallback error_callback) = 0;
 
   // Calls DeleteEntry method.

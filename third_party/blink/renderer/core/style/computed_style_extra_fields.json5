@@ -461,6 +461,18 @@
       computed_style_custom_functions: ["getter"],
       invalidate: ["layout", "paint"],
     },
+    {
+      name: "TextIndentFlags",
+      inherited: true,
+      field_template: "primitive",
+      type_name: "TextIndentFlags",
+      field_size: 2,
+      include_paths: ["third_party/blink/renderer/core/style/text_indent_flags.h"],
+      default_value: "TextIndentFlags::kDefault",
+      keywords: ["hanging", "each-line"],
+      field_group: "*",
+      invalidate: ["layout", "paint"],
+    },
     // Though will-change is not itself an inherited property, the intent
     // expressed by 'will-change: contents' includes descendants.
     {
@@ -762,9 +774,6 @@
       field_template: "primitive",
       type_name: "bool",
       field_group: "*",
-      // This field just affects how changes of animatable values are handled,
-      // so it doesn't contribute to style differences.
-      custom_compare: true,
       default_value: "false",
     },
     {
@@ -772,9 +781,6 @@
       field_template: "primitive",
       type_name: "bool",
       field_group: "*",
-      // This field just affects how changes of animatable values are handled,
-      // so it doesn't contribute to style differences.
-      custom_compare: true,
       default_value: "false",
     },
     {
@@ -782,9 +788,6 @@
       field_template: "primitive",
       type_name: "bool",
       field_group: "*",
-      // This field just affects how changes of animatable values are handled,
-      // so it doesn't contribute to style differences.
-      custom_compare: true,
       default_value: "false",
     },
     {
@@ -792,9 +795,6 @@
       field_template: "primitive",
       type_name: "bool",
       field_group: "*",
-      // This field just affects how changes of animatable values are handled,
-      // so it doesn't contribute to style differences.
-      custom_compare: true,
       default_value: "false",
     },
     {
@@ -1338,6 +1338,13 @@
       name: "HasAnchorEvaluator",
       field_template: "monotonic_flag",
       field_group: "surround",
+      default_value: "false",
+      custom_compare: true,
+    },
+    {
+      name: "HasElementDependentRandomFunctions",
+      field_template: "monotonic_flag",
+      field_group: "*",
       default_value: "false",
       custom_compare: true,
     },

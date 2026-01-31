@@ -57,6 +57,7 @@ class TabStateStorageService : public KeyedService,
   using ScopedBatch = base::ScopedClosureRunner;
 
   TabStateStorageService(const base::FilePath& profile_path,
+                         bool support_off_the_record_data,
                          std::unique_ptr<TabStoragePackager> packager,
                          TabCanonicalizer tab_canonicalizer,
                          RestoreEntityTrackerFactory builder_factory);
@@ -92,13 +93,30 @@ class TabStateStorageService : public KeyedService,
   void Remove(const TabInterface* tab);
   void Remove(const TabCollection* collection);
 
-  void LoadAllNodes(const std::string& window_tag,
+  void LoadAllNodes(std::string_view window_tag,
                     bool is_off_the_record,
                     LoadDataCallback callback);
 
   void ClearState();
 
-  void ClearWindow(const std::string& window_tag);
+  void ClearWindow(std::string_view window_tag);
+
+  void ClearNodesForWindowExcept(std::string_view window_tag,
+                                 bool is_off_the_record,
+                                 std::vector<StorageId> ids);
+
+  // Sets the key for encryption.
+  void SetKey(std::string_view window_tag, std::vector<uint8_t> key);
+
+  // Removes the key for encryption.
+  void RemoveKey(std::string_view window_tag);
+
+  // Generates a new key for encryption.
+  std::vector<uint8_t> GenerateKey(std::string_view window_tag);
+
+#if defined(NDEBUG)
+  void PrintAll();
+#endif
 
   // Returns a Java object of the type TabStateStorageService. This is
   // implemented in tab_state_storage_service_android.cc

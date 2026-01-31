@@ -40,9 +40,11 @@ import org.chromium.base.DeviceInfo;
 import org.chromium.base.Log;
 import org.chromium.base.MathUtils;
 import org.chromium.base.ThreadUtils;
-import org.chromium.base.supplier.ObservableSupplier;
-import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.supplier.MonotonicObservableSupplier;
+import org.chromium.base.supplier.NonNullObservableSupplier;
+import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.OneshotSupplierImpl;
+import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
@@ -60,7 +62,6 @@ import org.chromium.chrome.browser.layouts.LayoutStateProvider;
 import org.chromium.chrome.browser.layouts.LayoutTestUtils;
 import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.layouts.animation.CompositorAnimationHandler;
-import org.chromium.chrome.browser.ntp_customization.edge_to_edge.TopInsetCoordinator;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.tab.MockTab;
@@ -75,6 +76,7 @@ import org.chromium.chrome.browser.tabmodel.TabModelUtils;
 import org.chromium.chrome.browser.tabwindow.TabWindowManager;
 import org.chromium.chrome.browser.theme.TopUiThemeColorProvider;
 import org.chromium.chrome.browser.toolbar.ToolbarManager;
+import org.chromium.chrome.browser.ui.edge_to_edge.TopInsetProvider;
 import org.chromium.chrome.browser.util.ChromeAccessibilityUtil;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.R;
@@ -104,12 +106,11 @@ public class LayoutManagerTest implements MockTabModelDelegate {
     @Mock private TopUiThemeColorProvider mTopUiThemeColorProvider;
     @Mock private HubLayoutDependencyHolder mHubLayoutDependencyHolder;
     @Mock private TabWindowManager mTabWindowManager;
-    @Mock private ObservableSupplier<CompositorViewHolder> mCompositorViewHolderSupplier;
-    @Mock private ObservableSupplier<TopInsetCoordinator> mTopInsetCoordinatorSupplier;
-    @Mock private ObservableSupplier<Boolean> mScrimVisibilitySupplier;
     @Mock private ToolbarManager mToolbarManager;
     @Mock private ViewGroup mContentView;
+    @Mock private CompositorViewHolder mCompositorViewHolder;
 
+    private NonNullObservableSupplier<CompositorViewHolder> mCompositorViewHolderSupplier;
     private TabModelSelector mTabModelSelector;
     private OneshotSupplierImpl<TabSwitcher> mTabSwitcherSupplier;
     private Supplier<TabModelSelector> mTabModelSelectorSupplier;
@@ -118,6 +119,9 @@ public class LayoutManagerTest implements MockTabModelDelegate {
 
     private final PointerProperties[] mProperties = new PointerProperties[2];
     private final PointerCoords[] mPointerCoords = new PointerCoords[2];
+    private final MonotonicObservableSupplier<TopInsetProvider> mTopInsetProviderSupplier =
+            ObservableSuppliers.alwaysNull();
+    private NonNullObservableSupplier<Boolean> mScrimVisibilitySupplier;
 
     private float mDpToPx;
 
@@ -186,6 +190,7 @@ public class LayoutManagerTest implements MockTabModelDelegate {
             int standardIndexSelected,
             int incognitoIndexSelected,
             boolean incognitoSelected) {
+        mCompositorViewHolderSupplier = ObservableSuppliers.createNonNull(mCompositorViewHolder);
         Context context =
                 new ContextThemeWrapper(
                         ApplicationProvider.getApplicationContext(),
@@ -207,8 +212,7 @@ public class LayoutManagerTest implements MockTabModelDelegate {
             TabModelUtils.setIndex(mTabModelSelector.getModel(true), incognitoIndexSelected);
         }
         mTabModelSelector.selectModel(incognitoSelected);
-        Assert.assertNotNull(
-                mTabModelSelector.getTabGroupModelFilterProvider().getCurrentTabGroupModelFilter());
+        Assert.assertNotNull(mTabModelSelector.getCurrentTabGroupModelFilter());
 
         LayoutManagerHost layoutManagerHost = new MockLayoutHost(context);
         TabContentManager tabContentManager =
@@ -220,8 +224,8 @@ public class LayoutManagerTest implements MockTabModelDelegate {
         FrameLayout container = new FrameLayout(context);
         parentContainer.addView(container);
 
-        ObservableSupplierImpl<TabContentManager> tabContentManagerSupplier =
-                new ObservableSupplierImpl<>();
+        SettableMonotonicObservableSupplier<TabContentManager> tabContentManagerSupplier =
+                ObservableSuppliers.createMonotonic();
 
         mTabSwitcherSupplier = new OneshotSupplierImpl();
         mManagerPhone =
@@ -237,7 +241,7 @@ public class LayoutManagerTest implements MockTabModelDelegate {
                         mContentView,
                         mToolbarManager,
                         mScrimVisibilitySupplier,
-                        mTopInsetCoordinatorSupplier);
+                        mTopInsetProviderSupplier);
 
         tabContentManagerSupplier.set(tabContentManager);
         mManager = mManagerPhone;
@@ -248,7 +252,7 @@ public class LayoutManagerTest implements MockTabModelDelegate {
                 null,
                 null,
                 mTopUiThemeColorProvider,
-                new ObservableSupplierImpl<>(0));
+                ObservableSuppliers.alwaysZero());
         initializeMotionEvent();
     }
 
@@ -279,8 +283,7 @@ public class LayoutManagerTest implements MockTabModelDelegate {
             TabModelUtils.setIndex(mTabModelSelector.getModel(true), incognitoIndexSelected);
         }
         mTabModelSelector.selectModel(incognitoSelected);
-        Assert.assertNotNull(
-                mTabModelSelector.getTabGroupModelFilterProvider().getCurrentTabGroupModelFilter());
+        Assert.assertNotNull(mTabModelSelector.getCurrentTabGroupModelFilter());
 
         LayoutManagerHost layoutManagerHost = new MockLayoutHost(context);
         TabContentManager tabContentManager =
@@ -292,8 +295,8 @@ public class LayoutManagerTest implements MockTabModelDelegate {
         FrameLayout container = new FrameLayout(context);
         parentContainer.addView(container);
 
-        ObservableSupplierImpl<TabContentManager> tabContentManagerSupplier =
-                new ObservableSupplierImpl<>();
+        SettableMonotonicObservableSupplier<TabContentManager> tabContentManagerSupplier =
+                ObservableSuppliers.createMonotonic();
 
         mTabSwitcherSupplier = new OneshotSupplierImpl();
         mManager =
@@ -315,7 +318,7 @@ public class LayoutManagerTest implements MockTabModelDelegate {
                 null,
                 null,
                 mTopUiThemeColorProvider,
-                new ObservableSupplierImpl<>(0));
+                ObservableSuppliers.alwaysZero());
         initializeMotionEvent();
     }
 
@@ -787,6 +790,7 @@ public class LayoutManagerTest implements MockTabModelDelegate {
         // Load the browser process.
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
+                    mScrimVisibilitySupplier = ObservableSuppliers.alwaysFalse();
                     ChromeBrowserInitializer.getInstance().handleSynchronousStartup();
                 });
 

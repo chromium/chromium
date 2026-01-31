@@ -14,11 +14,14 @@
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/contextual_search/contextual_search_metrics_recorder.h"
+#include "components/contextual_search/contextual_search_service.h"
 #include "components/omnibox/browser/aim_eligibility_service.h"
+#include "components/omnibox/browser/omnibox_field_trial.h"
 #include "ui/base/l10n/l10n_util.h"
 
 namespace {
 constexpr base::FeatureState DISABLED = base::FEATURE_DISABLED_BY_DEFAULT;
+constexpr base::FeatureState ENABLED = base::FEATURE_ENABLED_BY_DEFAULT;
 }  // namespace
 
 namespace omnibox {
@@ -43,6 +46,15 @@ const base::FeatureParam<AddContextButtonVariant>
     kWebUIOmniboxAimPopupAddContextButtonVariantParam{
         &internal::kWebUIOmniboxAimPopup, "AddContextButtonVariant",
         AddContextButtonVariant::kNone, &kAddContextButtonVariantOptions};
+// When enabled, clicking aim button in omnibox always navigates directly to
+// g.com/aimode, e.g. instead of opening the AI Mode popup
+// (`omnibox::internal::kWebUIOmniboxAimPopup`).
+BASE_FEATURE(kAiModeEntryPointAlwaysNavigates, DISABLED);
+// If enabled, disables caret color animation for the WebUI Omnibox AIM popup.
+BASE_FEATURE(kWebUIOmniboxDisableCaretColorAnimation, ENABLED);
+// If enabled, there will no longer be animation when opening the WebUI Omnibox
+// AIM popup.
+BASE_FEATURE(kWebUIOmniboxAimPopupDisableAnimation, DISABLED);
 // If enabled, removes the cutout for the location bar and fills the entire
 // popup content with the WebUI WebView.
 BASE_FEATURE(kWebUIOmniboxFullPopup, DISABLED);
@@ -92,7 +104,9 @@ omnibox::NTPComposeboxConfig GetNTPComposeboxConfig() {
   image_upload->set_downscale_max_image_width(1600);
   image_upload->set_downscale_max_image_height(1600);
   image_upload->set_image_compression_quality(40);
-  image_upload->set_mime_types_allowed("image/*");
+  image_upload->set_mime_types_allowed(
+      "image/avif,image/bmp,image/jpeg,image/png,image/webp,image/heif,image/"
+      "heic");
 
   auto* attachment_upload = composebox->mutable_attachment_upload();
   attachment_upload->set_max_size_bytes(200000000);
@@ -157,6 +171,24 @@ omnibox::NTPComposeboxConfig GetNTPComposeboxConfig() {
   return default_config;
 }
 
+bool ShouldShowAimContextMenuOption(Profile* profile) {
+  const auto* aim_eligibility_service =
+      AimEligibilityServiceFactory::GetForProfile(profile);
+  const bool is_aim_entrypoint_enabled =
+      OmniboxFieldTrial::IsAimOmniboxEntrypointEnabled(aim_eligibility_service);
+
+  if (is_aim_entrypoint_enabled) {
+    return true;
+  }
+
+  const bool is_aim_context_entrypoint_enabled =
+      omnibox::IsAimPopupEnabled(profile) &&
+      (omnibox::kWebUIOmniboxAimPopupAddContextButtonVariantParam.Get() !=
+       omnibox::AddContextButtonVariant::kNone);
+
+  return is_aim_context_entrypoint_enabled;
+}
+
 bool IsAimPopupFeatureEnabled() {
   return base::FeatureList::IsEnabled(internal::kWebUIOmniboxAimPopup);
 }
@@ -171,7 +203,13 @@ bool IsAimPopupEnabled(Profile* profile) {
   }
 
   auto* aim_service = AimEligibilityServiceFactory::GetForProfile(profile);
-  return aim_service && aim_service->IsAimEligible();
+  // TODO(b/469148777): Implement more granular enterprise policy checks.
+  //   As noted in b/469148777#comment2, gating the entire AIM popup by the
+  //   "context sharing" enterprise policy pref is a stopgap measure, until
+  //   we're able to implement more granular checks in M145.
+  return aim_service && aim_service->IsAimEligible() &&
+         contextual_search::ContextualSearchService::IsContextSharingEnabled(
+             profile->GetPrefs());
 }
 
 bool IsCreateImagesEnabled(Profile* profile) {
@@ -183,15 +221,13 @@ bool IsCreateImagesEnabled(Profile* profile) {
     return false;
   }
 
-  if (kShowToolsAndModels.Get() && kShowCreateImageTool.Get() &&
-      kForceToolsAndModels.Get()) {
+  if (kShowToolsAndModels.Get()) {
     return true;
   }
 
   AimEligibilityService* aim_eligibility_service =
       AimEligibilityServiceFactory::GetForProfile(profile);
-  return kShowToolsAndModels.Get() && kShowCreateImageTool.Get() &&
-         aim_eligibility_service &&
+  return kShowToolsAndModels.Get() && aim_eligibility_service &&
          aim_eligibility_service->IsCreateImagesEligible();
 }
 
@@ -204,7 +240,7 @@ bool IsDeepSearchEnabled(Profile* profile) {
     return false;
   }
 
-  if (kShowToolsAndModels.Get() && kForceToolsAndModels.Get()) {
+  if (kShowToolsAndModels.Get()) {
     return true;
   }
 
@@ -219,13 +255,13 @@ std::unique_ptr<
 CreateQueryControllerConfigParams() {
   auto config_params = std::make_unique<
       contextual_search::ContextualSearchContextController::ConfigParams>();
-  config_params->send_lns_surface = kSendLnsSurfaceParam.Get();
-  config_params->suppress_lns_surface_param_if_no_image =
-      kSuppressLnsSurfaceParamIfNoImage.Get();
+  config_params->send_lns_surface = true;
   config_params->enable_multi_context_input_flow = kMaxNumFiles.Get() > 1;
   config_params->enable_viewport_images = kEnableViewportImages.Get();
   config_params->use_separate_request_ids_for_multi_context_viewport_images =
       kUseSeparateRequestIdsForMultiContextViewportImages.Get();
+  config_params->attach_page_title_and_url_to_suggest_requests =
+      kAttachPageTitleAndUrlToSuggestRequest.Get();
   return config_params;
 }
 
@@ -251,21 +287,13 @@ const base::FeatureParam<bool> kEnableViewportImages(
     &internal::kWebUIOmniboxAimPopup,
     "EnableViewportImages",
     true);
-const base::FeatureParam<bool> kForceToolsAndModels(
-    &internal::kWebUIOmniboxAimPopup,
-    "ForceToolsAndModels",
-    false);
 const base::FeatureParam<int> kMaxNumFiles(&internal::kWebUIOmniboxAimPopup,
                                            "MaxNumFiles",
-                                           1);
-const base::FeatureParam<bool> kSendLnsSurfaceParam(
-    &internal::kWebUIOmniboxAimPopup,
-    "SendLnsSurfaceParam",
-    true);
+                                           10);
 const base::FeatureParam<bool> kShowComposeboxImageSuggestions(
     &internal::kWebUIOmniboxAimPopup,
     "ShowComposeboxImageSuggestions",
-    false);
+    true);
 const base::FeatureParam<bool> kShowComposeboxTypedSuggest(
     &internal::kWebUIOmniboxAimPopup,
     "ShowComposeboxTypedSuggest",
@@ -284,23 +312,18 @@ const base::FeatureParam<bool> kShowContextMenuTabPreviews(
     &internal::kWebUIOmniboxAimPopup,
     "ShowContextMenuTabPreviews",
     true);
-const base::FeatureParam<bool> kShowCreateImageTool(
-    &internal::kWebUIOmniboxAimPopup,
-    "ShowCreateImageTool",
-    false);
-// TODO(crbug.com/462739330): Enable lens chip.
 const base::FeatureParam<bool> kShowLensSearchChip(
     &internal::kWebUIOmniboxAimPopup,
     "ShowLensSearchChip",
-    false);
+    true);
 const base::FeatureParam<bool> kAddTabUploadDelayOnRecentTabChipClick(
     &internal::kWebUIOmniboxAimPopup,
     "AddTabUploadDelayOnRecentTabChipClick",
-    false);
+    true);
 const base::FeatureParam<bool> kShowRecentTabChip(
     &internal::kWebUIOmniboxAimPopup,
     "ShowRecentTabChip",
-    false);
+    true);
 const base::FeatureParam<bool> kShowSmartCompose(
     &internal::kWebUIOmniboxAimPopup,
     "ShowSmartCompose",
@@ -311,24 +334,39 @@ const base::FeatureParam<bool> kShowSubmit(&internal::kWebUIOmniboxAimPopup,
 const base::FeatureParam<bool> kShowToolsAndModels(
     &internal::kWebUIOmniboxAimPopup,
     "ShowToolsAndModels",
+    true);
+const base::FeatureParam<bool> kShowCanvas(&internal::kWebUIOmniboxAimPopup,
+                                           "ShowCanvas",
+                                           false);
+const base::FeatureParam<bool> kShowModelPicker(
+    &internal::kWebUIOmniboxAimPopup,
+    "ShowModelPicker",
     false);
 const base::FeatureParam<bool> kShowVoiceSearchInSteadyComposebox(
     &internal::kWebUIOmniboxAimPopup,
     "ShowVoiceSearchInSteadyComposebox",
-    false);
+    true);
 const base::FeatureParam<bool> kShowVoiceSearchInExpandedComposebox(
     &internal::kWebUIOmniboxAimPopup,
     "ShowVoiceSearchInExpandedComposebox",
-    false);
-const base::FeatureParam<bool> kSuppressLnsSurfaceParamIfNoImage(
+    true);
+const base::FeatureParam<bool> kAutoSubmitVoiceSearchQuery(
     &internal::kWebUIOmniboxAimPopup,
-    "SuppressLnsSurfaceParamIfNoImage",
+    "AutoSubmitVoiceSearchQuery",
+    false);
+const base::FeatureParam<bool> kEnableContextDragAndDrop(
+    &internal::kWebUIOmniboxAimPopup,
+    "EnableContextDragAndDrop",
     true);
 const base::FeatureParam<bool>
     kUseSeparateRequestIdsForMultiContextViewportImages(
         &internal::kWebUIOmniboxAimPopup,
         "UseSeparateRequestIdsForMultiContextViewportImages",
         false);
+const base::FeatureParam<bool> kAttachPageTitleAndUrlToSuggestRequest(
+    &internal::kWebUIOmniboxAimPopup,
+    "AttachPageTitleAndUrlToSuggestRequest",
+    false);
 
 FeatureConfig::FeatureConfig() : config(GetNTPComposeboxConfig()) {}
 

@@ -62,7 +62,7 @@ ManagedProfileRequiredPage::GetTypeForTesting() {
 }
 
 void ManagedProfileRequiredPage::PopulateInterstitialStrings(
-    base::Value::Dict& load_time_data) {
+    base::DictValue& load_time_data) {
   PopulateStringsForSharedHTML(load_time_data);
   load_time_data.Set(
       "tabTitle",
@@ -133,14 +133,14 @@ void ManagedProfileRequiredPage::CommandReceived(const std::string& command) {
   }
 }
 
-base::Value::Dict ManagedProfileRequiredPage::GetLoadTimeDataForTesting() {
-  base::Value::Dict load_time_data;
+base::DictValue ManagedProfileRequiredPage::GetLoadTimeDataForTesting() {
+  base::DictValue load_time_data;
   PopulateInterstitialStrings(load_time_data);
   return load_time_data;
 }
 
 void ManagedProfileRequiredPage::PopulateStringsForSharedHTML(
-    base::Value::Dict& load_time_data) {
+    base::DictValue& load_time_data) {
   load_time_data.Set("managed-profile-required", true);
   load_time_data.Set("overridable", false);
   load_time_data.Set("hide_primary_button", false);

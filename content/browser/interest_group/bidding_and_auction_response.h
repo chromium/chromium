@@ -92,25 +92,25 @@ struct CONTENT_EXPORT BiddingAndAuctionResponse {
           group_pagg_coordinators);
 
   static std::optional<KAnonJoinCandidate> TryParseKAnonWinnerJoinCandidate(
-      base::Value::Dict& k_anon_join_candidate);
+      base::DictValue& k_anon_join_candidate);
 
   static std::optional<KAnonGhostWinner> TryParseKAnonGhostWinner(
-      base::Value::List& k_anon_ghost_winners,
+      base::ListValue& k_anon_ghost_winners,
       const base::flat_map<url::Origin, std::vector<std::string>>& group_names);
 
   static std::optional<GhostWinnerForTopLevelAuction>
   TryParseGhostWinnerForTopLevelAuction(
-      base::Value::Dict& ghost_winner_for_top_level_auction);
+      base::DictValue& ghost_winner_for_top_level_auction);
 
   static void TryParsePAggResponse(
-      const base::Value::List& pagg_response,
+      const base::ListValue& pagg_response,
       const base::flat_map<url::Origin, std::vector<std::string>>& group_names,
       const base::flat_map<blink::InterestGroupKey, url::Origin>&
           group_pagg_coordinators,
       BiddingAndAuctionResponse& output);
 
   static void TryParsePAggIgContributions(
-      const base::Value::List& ig_contributions,
+      const base::ListValue& ig_contributions,
       const url::Origin& reporting_origin,
       const base::flat_map<blink::InterestGroupKey, url::Origin>&
           group_pagg_coordinators,
@@ -118,14 +118,14 @@ struct CONTENT_EXPORT BiddingAndAuctionResponse {
       BiddingAndAuctionResponse& output);
 
   static void TryParsePAggEventContributions(
-      const base::Value::List& event_contributions,
+      const base::ListValue& event_contributions,
       const url::Origin& reporting_origin,
       const std::optional<url::Origin>& aggregation_coordinator_origin,
       bool component_win,
       BiddingAndAuctionResponse& output);
 
   static void TryParsePAggContributions(
-      const base::Value::List& contributions,
+      const base::ListValue& contributions,
       bool component_win,
       const std::string& event,
       const PrivateAggregationPhaseKey& agg_phase_key,
@@ -133,11 +133,11 @@ struct CONTENT_EXPORT BiddingAndAuctionResponse {
       BiddingAndAuctionResponse& output);
 
   static void TryParseForDebuggingOnlyReports(
-      const base::Value::List& for_debugging_only_reporting,
+      const base::ListValue& for_debugging_only_reporting,
       BiddingAndAuctionResponse& output);
 
   static void TryParseSingleDebugReport(const url::Origin& ad_tech_origin,
-                                        const base::Value::Dict& report_dict,
+                                        const base::DictValue& report_dict,
                                         BiddingAndAuctionResponse& output);
 
   struct CONTENT_EXPORT ReportingURLs {
@@ -147,7 +147,7 @@ struct CONTENT_EXPORT BiddingAndAuctionResponse {
     ReportingURLs(ReportingURLs&& other);
     ReportingURLs& operator=(ReportingURLs&& other);
 
-    static std::optional<ReportingURLs> TryParse(base::Value::Dict* input_dict);
+    static std::optional<ReportingURLs> TryParse(base::DictValue* input_dict);
 
     std::optional<GURL> reporting_url;
     base::flat_map<std::string, GURL> beacon_urls;

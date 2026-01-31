@@ -77,7 +77,7 @@ bool GlicPanelHotkeyDelegate::AcceleratorPressed(
 
   switch (hotkey) {
     case LocalHotkeyManager::Hotkey::kClose:
-      panel_->Close();
+      panel_->Close(CloseOptions());
       return true;
     case glic::LocalHotkeyManager::Hotkey::kFocusToggle:
       if (panel_->ActivateBrowser()) {

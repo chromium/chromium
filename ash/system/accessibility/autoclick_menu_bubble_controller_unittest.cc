@@ -14,6 +14,7 @@
 #include "base/command_line.h"
 #include "base/functional/callback_helpers.h"
 #include "base/i18n/rtl.h"
+#include "ui/gfx/geometry/rect.h"
 #include "ui/views/accessibility/view_accessibility.h"
 
 namespace ash {
@@ -524,6 +525,42 @@ TEST_F(AutoclickMenuBubbleControllerTest, BubbleViewAccessibleName) {
   bubble_view->GetViewAccessibility().GetAccessibleNodeData(&node_data);
   EXPECT_EQ(node_data.GetString16Attribute(ax::mojom::StringAttribute::kName),
             GetBubbleController()->GetAccessibleNameForBubble());
+}
+
+TEST_F(AutoclickMenuBubbleControllerTest, BubbleFollowsCursor) {
+  UpdateDisplay("800x600,600x400");
+
+  const gfx::Rect bounds1(800, 600);
+  EXPECT_TRUE(gfx::Rect(bounds1).Contains(
+      GetBubbleView()->GetBoundsInScreen().CenterPoint()));
+
+  const gfx::Rect bounds2(800, 0, 600, 400);
+  auto* event_generator = GetEventGenerator();
+  event_generator->MoveMouseTo(bounds2.CenterPoint());
+  EXPECT_TRUE(
+      bounds2.Contains(GetBubbleView()->GetBoundsInScreen().CenterPoint()));
+
+  event_generator->MoveMouseTo(bounds1.CenterPoint());
+  EXPECT_TRUE(
+      bounds1.Contains(GetBubbleView()->GetBoundsInScreen().CenterPoint()));
+}
+
+TEST_F(AutoclickMenuBubbleControllerTest, BubbleRecreatedAfterDisplayRemoval) {
+  UpdateDisplay("800x600,600x400");
+
+  const gfx::Rect bounds2(800, 0, 600, 400);
+  auto* event_generator = GetEventGenerator();
+  event_generator->MoveMouseTo(bounds2.CenterPoint());
+  EXPECT_TRUE(
+      bounds2.Contains(GetBubbleView()->GetBoundsInScreen().CenterPoint()));
+
+  UpdateDisplay("800x600");
+  EXPECT_FALSE(GetBubbleController()->bubble_widget());
+
+  const gfx::Rect bounds1(800, 600);
+  event_generator->MoveMouseTo(bounds1.CenterPoint());
+  EXPECT_TRUE(
+      bounds1.Contains(GetBubbleView()->GetBoundsInScreen().CenterPoint()));
 }
 
 }  // namespace ash

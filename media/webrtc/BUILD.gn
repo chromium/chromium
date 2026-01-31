@@ -48,6 +48,6 @@ source_set("unit_tests") {
   ]
   sources = [
     "audio_processor_test.cc",
-    "helpers_unittests.cc",
+    "helpers_unittest.cc",
   ]
 }

@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/aim/model/ios_chrome_aim_eligibility_service_factory.h"
 
 #import "components/keyed_service/core/keyed_service.h"
+#import "ios/chrome/app/tests_hook.h"
 #import "ios/chrome/browser/aim/model/ios_chrome_aim_eligibility_service.h"
 #import "ios/chrome/browser/search_engines/model/template_url_service_factory.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
@@ -47,6 +48,9 @@ IOSChromeAimEligibilityServiceFactory::
 std::unique_ptr<KeyedService>
 IOSChromeAimEligibilityServiceFactory::BuildServiceInstanceFor(
     ProfileIOS* profile) const {
+  if (auto service = tests_hook::CreateAimEligibilityService(profile)) {
+    return service;
+  }
   return std::make_unique<IOSChromeAimEligibilityService>(
       profile->GetPrefs(),
       ios::TemplateURLServiceFactory::GetForProfile(profile),

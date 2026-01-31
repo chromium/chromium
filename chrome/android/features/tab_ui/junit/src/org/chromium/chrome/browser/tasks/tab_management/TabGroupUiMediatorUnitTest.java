@@ -51,13 +51,15 @@ import org.mockito.Mock;
 import org.mockito.Spy;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
-import org.robolectric.annotation.LooperMode;
 
 import org.chromium.base.Callback;
 import org.chromium.base.Token;
 import org.chromium.base.supplier.LazyOneshotSupplier;
-import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.OneshotSupplierImpl;
+import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
+import org.chromium.base.supplier.SettableNonNullObservableSupplier;
+import org.chromium.base.test.BaseRobolectricTestRule;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
@@ -83,7 +85,6 @@ import org.chromium.chrome.browser.tabmodel.TabCreator;
 import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilterObserver;
-import org.chromium.chrome.browser.tabmodel.TabGroupModelFilterProvider;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorImpl;
@@ -112,7 +113,6 @@ import java.util.List;
 /** Tests for {@link TabGroupUiMediator}. */
 @SuppressWarnings({"ResultOfMethodCallIgnored", "ArraysAsListWithZeroOrOneArgument", "unchecked"})
 @RunWith(BaseRobolectricTestRunner.class)
-@LooperMode(LooperMode.Mode.LEGACY)
 @EnableFeatures(ChromeFeatureList.DATA_SHARING)
 public class TabGroupUiMediatorUnitTest {
     private static final int TAB1_ID = 456;
@@ -146,18 +146,15 @@ public class TabGroupUiMediatorUnitTest {
     @Mock private LayoutStateProvider mLayoutManager;
     @Spy private TabModel mTabModel;
     @Mock private View mView;
-    @Mock private TabGroupModelFilterProvider mTabGroupModelFilterProvider;
     @Mock private TabGroupModelFilter mTabGroupModelFilter;
     @Mock private TabGridDialogMediator.DialogController mTabGridDialogController;
     @Mock private SharedImageTilesCoordinator mSharedImageTilesCoordinator;
     @Mock private SharedImageTilesConfig.Builder mSharedImageTilesConfigBuilder;
-    @Mock private ObservableSupplierImpl<TabModel> mTabModelSupplier;
     @Mock private ThemeColorProvider mThemeColorProvider;
     @Mock private ColorStateList mTintList1;
     @Mock private ColorStateList mTintList2;
     @Mock private Callback<Object> mOnSnapshotTokenChange;
 
-    @Captor private ArgumentCaptor<Callback<TabModel>> mTabModelSupplierObserverCaptor;
     @Captor private ArgumentCaptor<TabModelObserver> mTabModelObserverArgumentCaptor;
     @Captor private ArgumentCaptor<LayoutStateObserver> mLayoutStateObserverCaptor;
 
@@ -170,18 +167,20 @@ public class TabGroupUiMediatorUnitTest {
     @Captor private ArgumentCaptor<ThemeColorObserver> mThemeColorObserverCaptor;
     @Captor private ArgumentCaptor<TintObserver> mTintObserverCaptor;
 
-    private final ObservableSupplierImpl<Boolean> mOmniboxFocusStateSupplier =
-            new ObservableSupplierImpl<>();
-    private final ObservableSupplierImpl<Boolean> mHandleBackPressChangedSupplier =
-            new ObservableSupplierImpl<>();
-    private final ObservableSupplierImpl<Boolean> mTabGridDialogBackPressSupplier =
-            new ObservableSupplierImpl<>();
-    private final ObservableSupplierImpl<Boolean> mTabGridDialogShowingOrAnimationSupplier =
-            new ObservableSupplierImpl<>();
+    private final SettableMonotonicObservableSupplier<TabModel> mTabModelSupplier =
+            ObservableSuppliers.createMonotonic();
+    private final SettableNonNullObservableSupplier<Boolean> mOmniboxFocusStateSupplier =
+            ObservableSuppliers.createNonNull(false);
+    private final SettableNonNullObservableSupplier<Boolean> mHandleBackPressChangedSupplier =
+            ObservableSuppliers.createNonNull(false);
+    private final SettableNonNullObservableSupplier<Boolean> mTabGridDialogBackPressSupplier =
+            ObservableSuppliers.createNonNull(false);
+    private final SettableNonNullObservableSupplier<Boolean>
+            mTabGridDialogShowingOrAnimationSupplier = ObservableSuppliers.createNonNull(false);
     private final OneshotSupplierImpl<LayoutStateProvider> mLayoutStateProviderSupplier =
             new OneshotSupplierImpl<>();
-    private final ObservableSupplierImpl<Object> mChildTokenSupplier =
-            new ObservableSupplierImpl<>();
+    private final SettableMonotonicObservableSupplier<Object> mChildTokenSupplier =
+            ObservableSuppliers.createMonotonic();
 
     private Tab mTab1;
     private Tab mTab2;
@@ -262,14 +261,14 @@ public class TabGroupUiMediatorUnitTest {
                         mThemeColorProvider,
                         mOnSnapshotTokenChange,
                         mChildTokenSupplier);
+        BaseRobolectricTestRule.runAllBackgroundAndUi();
 
         if (currentTab == null) {
             verifyNeverReset();
             return;
         }
 
-        verify(mTabModelSupplier).addObserver(mTabModelSupplierObserverCaptor.capture());
-
+        assertTrue(mTabModelSupplier.hasObservers());
         // Verify strip initial reset.
         List<Tab> tabs = mTabGroupModelFilter.getRelatedTabList(currentTab.getId());
         if (mTabGroupModelFilter.isTabInTabGroup(currentTab)) {
@@ -346,20 +345,14 @@ public class TabGroupUiMediatorUnitTest {
         doReturn(true).when(mTabGroupModelFilter).isTabInTabGroup(mTab2);
         doReturn(true).when(mTabGroupModelFilter).isTabInTabGroup(mTab3);
 
-        doReturn(mTabGroupModelFilter)
-                .when(mTabGroupModelFilterProvider)
-                .getCurrentTabGroupModelFilter();
-        doReturn(mTabGroupModelFilter)
-                .when(mTabGroupModelFilterProvider)
-                .getTabGroupModelFilter(true);
-        doReturn(mTabGroupModelFilter)
-                .when(mTabGroupModelFilterProvider)
-                .getTabGroupModelFilter(false);
+        doReturn(mTabGroupModelFilter).when(mTabModelSelector).getCurrentTabGroupModelFilter();
+        doReturn(mTabGroupModelFilter).when(mTabModelSelector).getTabGroupModelFilter(true);
+        doReturn(mTabGroupModelFilter).when(mTabModelSelector).getTabGroupModelFilter(false);
         doNothing()
                 .when(mTabGroupModelFilter)
                 .addTabGroupObserver(mTabGroupModelFilterObserverArgumentCaptor.capture());
 
-        // Set up TabModelSelector and TabGroupModelFilterProvider.
+        // Set up TabModelSelector.
         List<TabModel> tabModelList = new ArrayList<>();
         tabModelList.add(mTabModel);
         doReturn(mTabModel).when(mTabModelSelector).getCurrentModel();
@@ -368,11 +361,8 @@ public class TabGroupUiMediatorUnitTest {
         doReturn(tabModelList).when(mTabModelSelector).getModels();
         when(mTabModelSelector.getCurrentTabModelSupplier()).thenReturn(mTabModelSupplier);
 
-        doReturn(mTabGroupModelFilterProvider)
-                .when(mTabModelSelector)
-                .getTabGroupModelFilterProvider();
         doNothing()
-                .when(mTabGroupModelFilterProvider)
+                .when(mTabModelSelector)
                 .addTabGroupModelFilterObserver(mTabModelObserverArgumentCaptor.capture());
 
         // Set up OverviewModeBehavior.
@@ -569,6 +559,7 @@ public class TabGroupUiMediatorUnitTest {
 
         // Strip should be showing since we are selecting a group, and it should scroll to the index
         // of currently selected tab.
+        BaseRobolectricTestRule.runAllBackgroundAndUi();
         verifyResetStrip(true, tabGroup);
         assertThat(mModel.get(TabGroupUiProperties.INITIAL_SCROLL_INDEX), equalTo(1));
     }
@@ -731,6 +722,7 @@ public class TabGroupUiMediatorUnitTest {
                         TabLaunchType.FROM_TAB_GROUP_UI,
                         TabCreationState.LIVE_IN_FOREGROUND,
                         false);
+        BaseRobolectricTestRule.runAllBackgroundAndUi();
 
         // Strip should be not be reset through adding tab from UI.
         verifyNeverReset();
@@ -923,10 +915,10 @@ public class TabGroupUiMediatorUnitTest {
 
         mTabGroupUiMediator.destroy();
 
-        verify(mTabGroupModelFilterProvider)
+        verify(mTabModelSelector)
                 .removeTabGroupModelFilterObserver(mTabModelObserverArgumentCaptor.capture());
         verify(mLayoutManager).removeObserver(mLayoutStateObserverCaptor.capture());
-        verify(mTabModelSupplier).removeObserver(mTabModelSupplierObserverCaptor.capture());
+        assertFalse(mTabModelSupplier.hasObservers());
         verify(mTabGroupModelFilter, times(2))
                 .removeTabGroupObserver(mTabGroupModelFilterObserverArgumentCaptor.capture());
         verify(mThemeColorProvider).removeThemeColorObserver(mThemeColorObserverCaptor.getValue());
@@ -990,6 +982,7 @@ public class TabGroupUiMediatorUnitTest {
         mDialogControllerSupplier.get();
         doReturn(true).when(mTabGridDialogController).handleBackPressed();
         mTabGridDialogBackPressSupplier.set(true);
+        BaseRobolectricTestRule.runAllBackgroundAndUi();
 
         var groupUiBackPressSupplier = mTabGroupUiMediator.getHandleBackPressChangedSupplier();
         Assert.assertEquals(true, groupUiBackPressSupplier.get());
@@ -1004,6 +997,7 @@ public class TabGroupUiMediatorUnitTest {
         mDialogControllerSupplier.get();
         doReturn(false).when(mTabGridDialogController).handleBackPressed();
         mTabGridDialogBackPressSupplier.set(false);
+        BaseRobolectricTestRule.runAllBackgroundAndUi();
         var groupUiBackPressSupplier = mTabGroupUiMediator.getHandleBackPressChangedSupplier();
 
         assertNotEquals(true, groupUiBackPressSupplier.get());
@@ -1024,10 +1018,12 @@ public class TabGroupUiMediatorUnitTest {
         mDialogControllerSupplier.get();
         doReturn(false).when(mTabGridDialogController).handleBackPressed();
         mTabGridDialogBackPressSupplier.set(false);
+        BaseRobolectricTestRule.runAllBackgroundAndUi();
 
         Assert.assertFalse(groupUiBackPressSupplier.get());
 
         mTabGridDialogBackPressSupplier.set(true);
+        BaseRobolectricTestRule.runAllBackgroundAndUi();
         doReturn(true).when(mTabGridDialogController).handleBackPressed();
         Assert.assertTrue(groupUiBackPressSupplier.get());
     }
@@ -1039,7 +1035,7 @@ public class TabGroupUiMediatorUnitTest {
 
         // Mock that tab2 is selected after tab model switch, and tab2 is in a group.
         when(mTabModelSelector.getCurrentTab()).thenReturn(mTab2);
-        mTabModelSupplierObserverCaptor.getValue().onResult(mTabModel);
+        mTabModelSupplier.set(mTabModel);
 
         verifyResetStrip(true, mTabGroup2);
     }
@@ -1051,7 +1047,7 @@ public class TabGroupUiMediatorUnitTest {
 
         // Mock that tab1 is selected after tab model switch, and tab1 is a single tab.
         when(mTabModelSelector.getCurrentTab()).thenReturn(mTab1);
-        mTabModelSupplierObserverCaptor.getValue().onResult(mTabModel);
+        mTabModelSupplier.set(mTabModel);
 
         verifyResetStrip(false, null);
     }

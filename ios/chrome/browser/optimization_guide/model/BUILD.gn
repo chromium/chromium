@@ -148,10 +148,6 @@ source_set("eg_app_support+eg2") {
     "//ios/chrome/browser/optimization_guide/model",
     "//ios/chrome/test/app:test_support",
   ]
-
-  # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
-  # enable the diagnostic by removing this line.
-  configs += [ "//build/config/compiler:no_exit_time_destructors" ]
 }
 
 source_set("eg_test_support+eg2") {

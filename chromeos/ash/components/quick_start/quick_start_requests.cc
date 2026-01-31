@@ -126,7 +126,7 @@ std::unique_ptr<QuickStartMessage> BuildBootstrapOptionsRequest() {
 
   // TODO(b/332603236): Remove postTransferAction payload when new device info
   // exchange is implemented.
-  base::Value::Dict post_transfer_action;
+  base::DictValue post_transfer_action;
   post_transfer_action.Set(kPostTransferActionURIKey,
                            kPostTransferActionURIValue);
 
@@ -227,7 +227,7 @@ std::unique_ptr<QuickStartMessage> BuildBootstrapStateCompleteMessage() {
 
   // TODO(b/332603236): Remove postTransferAction payload when new device info
   // exchange is implemented.
-  base::Value::Dict post_transfer_action;
+  base::DictValue post_transfer_action;
   post_transfer_action.Set(kPostTransferActionURIKey,
                            kPostTransferActionURIValue);
   message->GetPayload()->Set(kPostTransferActionKey,

@@ -9,7 +9,6 @@
 
 #include "base/functional/callback_forward.h"
 #include "content/common/content_export.h"
-#include "mojo/public/cpp/bindings/receiver.h"
 #include "services/network/public/mojom/proxy_lookup_client.mojom.h"
 
 class GURL;
@@ -21,8 +20,9 @@ class NetworkContext;
 namespace content {
 
 // This class looks up if there is a proxy set up for the given URL in the given
-// NetworkContext. Instances of this class must be deleted immediately after the
-// callback is invoked.
+// NetworkContext. Instances of this class are owned by
+// `mojo::SelfOwnedReceiver` and are deleted immediately after the callback is
+// invoked.
 class CONTENT_EXPORT ProxyLookupClientImpl
     : public network::mojom::ProxyLookupClient {
  public:
@@ -30,27 +30,26 @@ class CONTENT_EXPORT ProxyLookupClientImpl
 
   // Starts the proxy lookup for |url| in |network_context|. Once the lookup is
   // completed, |callback| will be invoked.
-  ProxyLookupClientImpl(const GURL& url,
-                        ProxyLookupCallback callback,
-                        network::mojom::NetworkContext* network_context);
-  ProxyLookupClientImpl(
+  static void CreateAndStart(
       const GURL& url,
-      const net::NetworkAnonymizationKey network_anonymization_key,
+      const net::NetworkAnonymizationKey& network_anonymization_key,
       ProxyLookupCallback callback,
       network::mojom::NetworkContext* network_context);
 
+  explicit ProxyLookupClientImpl(ProxyLookupCallback callback);
   ~ProxyLookupClientImpl() override;
 
   ProxyLookupClientImpl(const ProxyLookupClientImpl&) = delete;
   ProxyLookupClientImpl& operator=(const ProxyLookupClientImpl&) = delete;
 
+ private:
   // network::mojom::ProxyLookupClient
   void OnProxyLookupComplete(
       int32_t net_error,
       const std::optional<net::ProxyInfo>& proxy_info) override;
 
- private:
-  mojo::Receiver<network::mojom::ProxyLookupClient> receiver_{this};
+  void OnDisconnect();
+
   ProxyLookupCallback callback_;
 };
 

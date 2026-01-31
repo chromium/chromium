@@ -68,7 +68,7 @@ class PrinterQueryOop : public PrinterQuery {
                          bool has_selection,
                          bool is_scripted,
                          SettingsCallback callback) override;
-  void UpdatePrintSettings(base::Value::Dict new_settings,
+  void UpdatePrintSettings(base::DictValue new_settings,
                            SettingsCallback callback) override;
 
   // Mojo support to send messages from UI thread.
@@ -76,7 +76,7 @@ class PrinterQueryOop : public PrinterQuery {
       PrintBackendServiceManager::ClientId client_id,
       const std::string& printer_name);
   void SendUpdatePrintSettings(const std::string& printer_name,
-                               base::Value::Dict new_settings,
+                               base::DictValue new_settings,
                                SettingsCallback callback);
   void SendUseDefaultSettings(SettingsCallback callback);
 #if BUILDFLAG(ENABLE_OOP_BASIC_PRINT_DIALOG)

@@ -4,8 +4,7 @@
 
 #include "components/commerce/core/commerce_feature_list.h"
 
-#include <unordered_map>
-#include <unordered_set>
+#include <string_view>
 
 #include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
@@ -18,6 +17,8 @@
 #endif  // !BUILDFLAG(IS_ANDROID)
 #include "components/commerce/core/commerce_heuristics_data_metrics_helper.h"
 #include "components/commerce/core/pref_names.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
 #include "third_party/re2/src/re2/re2.h"
 
 namespace commerce {
@@ -26,7 +27,8 @@ namespace {
 
 typedef std::unordered_map<
     const base::Feature*,
-    std::unordered_map<std::string, std::unordered_set<std::string>>>
+    absl::flat_hash_map<std::string_view,
+                        absl::flat_hash_set<std::string_view>>>
     CountryLocaleMap;
 
 // Get a map of enabled countries to the set of allowed locales for that
@@ -313,8 +315,8 @@ bool IsShoppingListAllowedForEnterprise(PrefService* prefs) {
 }
 
 bool IsEnabledForCountryAndLocale(const base::Feature& feature,
-                                  std::string country,
-                                  std::string locale) {
+                                  std::string_view country,
+                                  std::string_view locale) {
   const CountryLocaleMap& allowedCountryLocales =
       GetAllowedCountryToLocaleMap();
 

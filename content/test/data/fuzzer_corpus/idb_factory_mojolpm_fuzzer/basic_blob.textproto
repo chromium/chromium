@@ -1,0 +1,262 @@
+actions {
+  new_idb_factory {
+    id: 0
+  }
+}
+actions {
+  new_blob {
+    id: 42
+    content: "test blob content"
+  }
+}
+actions {
+  idb_factory_remote_action {
+    id: 0
+    m_open {
+      m_client: 0
+      m_database_callbacks: 0
+      m_name {
+        new {
+          id: 0
+          m_data {
+            values { value: 116 }  # 't'
+            values { value: 101 }  # 'e'
+            values { value: 115 }  # 's'
+            values { value: 116 }  # 't'
+          }
+        }
+      }
+      m_version: -1
+      m_version_change_transaction_receiver: 0
+      m_transaction_id: 1
+      m_priority: 0
+    }
+  }
+}
+actions {
+  idb_transaction_associated_remote_action {
+    id: 0
+    m_create_object_store {
+      m_object_store_id: 1
+      m_name {
+        new {
+          id: 0
+          m_data {
+            values { value: 115 }  # 's'
+            values { value: 116 }  # 't'
+            values { value: 111 }  # 'o'
+            values { value: 114 }  # 'r'
+            values { value: 101 }  # 'e'
+          }
+        }
+      }
+      m_key_path {
+      }
+      m_auto_increment: true
+    }
+  }
+}
+actions {
+  idb_transaction_associated_remote_action {
+    id: 0
+    m_commit {
+      m_num_errors_handled: 0
+    }
+  }
+}
+actions {
+  run_thread {
+    id: Bucket
+  }
+}
+actions {
+  idb_database_associated_remote_action {
+    id: 0
+    m_create_transaction {
+      m_transaction_receiver: 0
+      m_transaction_id: 1
+      m_object_store_ids {
+        values { value: 1 }
+      }
+      m_mode: MojoLPM_IDBTransactionMode_ReadOnly
+      m_durability: MojoLPM_IDBTransactionDurability_Default
+    }
+  }
+}
+actions {
+  idb_transaction_associated_remote_action {
+    id: 0
+    m_put {
+      m_object_store_id: 1
+      m_value {
+        new {
+          id: 0
+          m_bits {
+            new {
+              id: 0
+              m_bytes {
+                values { value: 1 }
+              }
+            }
+          }
+          m_external_objects {
+            values {
+              value {
+                new {
+                  id: 0
+                  m_blob_or_file {
+                    new {
+                      id: 0
+                      m_blob: 42
+                      m_mime_type {
+                        new {
+                          id: 0
+                          m_data {
+                            values { value: 116 } # 't'
+                            values { value: 101 } # 'e'
+                            values { value: 120 } # 'x'
+                            values { value: 116 } # 't'
+                          }
+                        }
+                      }
+                      m_size: 17
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+      m_key {
+        new {
+          id: 0
+          m_binary { values { value: 0xdeadbeef } }
+        }
+      }
+      m_mode: MojoLPM_IDBPutMode_AddOrUpdate
+      m_index_keys {
+      }
+    }
+  }
+}
+actions {
+  idb_database_associated_remote_action {
+    id: 0
+    m_get {
+      m_transaction_id: 1
+      m_object_store_id: 1
+      m_index_id: -1
+      m_key_range {
+        new {
+          id: 0
+          m_lower {
+            new {
+              id: 0
+              m_binary { values { value: 0xdeadbeef } }
+            }
+          }
+          m_upper {
+            new {
+              id: 0
+              m_binary { values { value: 0xdeadbeef } }
+            }
+          }
+          m_lower_open: false
+          m_upper_open: false
+        }
+      }
+      m_key_only: false
+    }
+  }
+}
+actions {
+  idb_database_associated_remote_action {
+    id: 0
+    reset {
+    }
+  }
+}
+actions {
+  run_thread {
+    id: IO
+  }
+}
+actions {
+  blob_remote_action {
+    id: 1
+    m_read_all {
+      m_pipe {
+        new {
+          flags: 0
+          element_num_bytes: 1
+          capacity_num_bytes: 1024
+        }
+      }
+    }
+  }
+}
+actions {
+  blob_remote_action {
+    id: 2
+    m_read_all {
+      m_pipe {
+        new {
+          flags: 0
+          element_num_bytes: 1
+          capacity_num_bytes: 1024
+        }
+      }
+    }
+  }
+}
+
+# Create IDBFactory and blob
+sequences {
+  action_indexes: [0, 1]
+}
+# Open the database connection
+sequences {
+  action_indexes: [2, 5, 5]
+}
+# Create object store and put the blob
+sequences {
+  action_indexes: [3, 5, 7, 5]
+}
+# Get the blob
+sequences {
+  action_indexes: [8, 5, 5]
+}
+# Read the returned blob
+sequences {
+  action_indexes: [11, 10, 5]
+}
+# Commit the transaction
+sequences {
+  action_indexes: 4
+  # These ensure that we continue only after the blob is written to the disk.
+  action_indexes: [5, 5, 5, 5, 5, 5, 5, 5]
+  action_indexes: [5, 5, 5, 5, 5, 5, 5, 5]
+  action_indexes: [5, 5, 5, 5, 5, 5, 5, 5]
+  action_indexes: [5, 5, 5, 5, 5, 5, 5, 5]
+}
+# Close the connection
+sequences {
+  action_indexes: [9, 5]
+}
+# Create a transaction
+sequences {
+  action_indexes: [6, 5]
+}
+# Read the newly returned blob
+sequences {
+  action_indexes: [12, 10, 5]
+}
+
+# Store a blob and read it as an "active" blob
+sequence_indexes: [0, 1, 2, 3, 4, 5, 6]
+# Reopen the connection to read the blob from the db
+sequence_indexes: [1, 7, 3, 8, 5, 6]
+
+in_memory: false
+use_sqlite: false

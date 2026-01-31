@@ -26,6 +26,13 @@ class TensorImplOrt final : public WebNNTensorImpl {
                 bool can_access_on_cpu,
                 scoped_refptr<DeviceAllocator> device_allocator);
 
+  TensorImplOrt(mojo::PendingAssociatedReceiver<mojom::WebNNTensor> receiver,
+                base::WeakPtr<WebNNContextImpl> context,
+                mojom::TensorInfoPtr tensor_info,
+                RepresentationPtr representation,
+                size_t size,
+                ScopedOrtValue tensor);
+
   TensorImplOrt(const TensorImplOrt&) = delete;
   TensorImplOrt& operator=(const TensorImplOrt&) = delete;
 

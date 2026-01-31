@@ -151,9 +151,9 @@ void TabFavicon::OnFaviconUpdated(favicon::FaviconDriver* favicon_driver,
   }
 }
 
-static jlong JNI_TabFavicon_Init(JNIEnv* env,
-                                 const JavaRef<jobject>& obj,
-                                 int navigation_transition_favicon_size) {
+static int64_t JNI_TabFavicon_Init(JNIEnv* env,
+                                   const JavaRef<jobject>& obj,
+                                   int navigation_transition_favicon_size) {
   return reinterpret_cast<intptr_t>(
       new TabFavicon(env, obj, navigation_transition_favicon_size));
 }

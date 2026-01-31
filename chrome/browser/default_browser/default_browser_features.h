@@ -12,11 +12,20 @@ namespace default_browser {
 // Returns whether the default browser framework feature flag is enabled.
 bool IsDefaultBrowserFrameworkEnabled();
 
+// Returns whether the default browser changed os notification feature flag is
+// enabled.
+bool IsDefaultBrowserChangedOsNotificationEnabled();
+
 BASE_DECLARE_FEATURE(kDefaultBrowserFramework);
 
 // Enables the framework to perform additional checks when detecting default
 // browser.
 BASE_DECLARE_FEATURE(kPerformDefaultBrowserCheckValidations);
+
+// Enables the framework to show Os Notification when Chrome is no longer the
+// default browser.
+// NOTE: This flag expect that `kDefaultBrowserFramework` is enabled first.
+BASE_DECLARE_FEATURE(kDefaultBrowserChangedOsNotification);
 
 }  // namespace default_browser
 

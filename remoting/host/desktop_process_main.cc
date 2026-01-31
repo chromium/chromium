@@ -116,9 +116,3 @@ int DesktopProcessMain() {
 }
 
 }  // namespace remoting
-
-#if !BUILDFLAG(IS_WIN)
-int main(int argc, char** argv) {
-  return remoting::HostMain(argc, argv);
-}
-#endif  // !BUILDFLAG(IS_WIN)

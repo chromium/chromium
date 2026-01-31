@@ -13,6 +13,7 @@ import android.app.Activity;
 import android.graphics.Rect;
 import android.os.Build.VERSION_CODES;
 import android.os.Bundle;
+import android.os.PersistableBundle;
 import android.view.View;
 import android.view.WindowInsetsController;
 
@@ -25,15 +26,18 @@ import org.chromium.base.Log;
 import org.chromium.base.ObserverList;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.metrics.RecordHistogram;
-import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.supplier.NonNullObservableSupplier;
+import org.chromium.base.supplier.ObservableSuppliers;
+import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.browser_controls.BrowserStateBrowserControlsVisibilityDelegate;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.SaveInstanceStateObserver;
 import org.chromium.chrome.browser.lifecycle.TopResumedActivityChangedObserver;
+import org.chromium.chrome.browser.multiwindow.MultiWindowMetricsUtils;
+import org.chromium.chrome.browser.multiwindow.MultiWindowMetricsUtils.WindowingMode;
 import org.chromium.chrome.browser.ui.desktop_windowing.AppHeaderUtils.DesktopWindowHeuristicResult;
-import org.chromium.chrome.browser.ui.desktop_windowing.AppHeaderUtils.WindowingMode;
 import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeUtils;
 import org.chromium.components.browser_ui.desktop_windowing.AppHeaderState;
 import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateManager;
@@ -81,7 +85,8 @@ public class AppHeaderCoordinator
     private int mBrowserControlsToken = TokenHolder.INVALID_TOKEN;
     private @Nullable AppHeaderState mAppHeaderState;
     private boolean mIsInUnfocusedDesktopWindow;
-    private final ObservableSupplierImpl<Boolean> mDesktopWindowTopResumedActivitySupplier;
+    private final SettableNonNullObservableSupplier<Boolean>
+            mDesktopWindowTopResumedActivitySupplier;
     private @DesktopWindowHeuristicResult int mHeuristicResult =
             DesktopWindowHeuristicResult.UNKNOWN;
     private @WindowingMode int mWindowingMode = WindowingMode.UNKNOWN;
@@ -102,6 +107,8 @@ public class AppHeaderCoordinator
      *     SaveInstanceStateObserver#onSaveInstanceState(Bundle)} events observed by this class.
      * @param savedInstanceState The saved instance state {@link Bundle} holding UI state
      *     information for restoration on startup.
+     * @param persistentState The persistent state {@link PersistableBundle} holding UI state
+     *     information for restoration after a device reboot or app update.
      * @param edgeToEdgeStateProvider The {@link EdgeToEdgeStateProvider} to determine the
      *     edge-to-edge state.
      */
@@ -111,7 +118,8 @@ public class AppHeaderCoordinator
             BrowserStateBrowserControlsVisibilityDelegate browserControlsVisibilityDelegate,
             InsetObserver insetObserver,
             ActivityLifecycleDispatcher activityLifecycleDispatcher,
-            Bundle savedInstanceState,
+            @Nullable Bundle savedInstanceState,
+            @Nullable PersistableBundle persistentState,
             EdgeToEdgeStateProvider edgeToEdgeStateProvider) {
         mActivity = activity;
         mEdgeToEdgeStateProvider = edgeToEdgeStateProvider;
@@ -123,13 +131,19 @@ public class AppHeaderCoordinator
         mActivityLifecycleDispatcher.register(this);
         // Whether the app started in an unfocused desktop window, so that relevant UI state can be
         // restored.
-        mIsInUnfocusedDesktopWindow =
+        boolean savedUnfocusedDesktopWindowState =
                 savedInstanceState != null
                         && savedInstanceState.getBoolean(
                                 INSTANCE_STATE_KEY_IS_APP_IN_UNFOCUSED_DW, false);
+        boolean persistedUnfocusedDesktopWindowState =
+                persistentState != null
+                        && persistentState.getBoolean(
+                                INSTANCE_STATE_KEY_IS_APP_IN_UNFOCUSED_DW, false);
+        mIsInUnfocusedDesktopWindow =
+                savedUnfocusedDesktopWindowState || persistedUnfocusedDesktopWindowState;
 
         mDesktopWindowTopResumedActivitySupplier =
-                new ObservableSupplierImpl<Boolean>(!mIsInUnfocusedDesktopWindow);
+                ObservableSuppliers.createNonNull(!mIsInUnfocusedDesktopWindow);
         mDesktopWindowTopResumedActivitySupplier.addObserver(
                 (isFocused) -> {
                     mObservers.forEach(
@@ -208,6 +222,12 @@ public class AppHeaderCoordinator
         outState.putBoolean(INSTANCE_STATE_KEY_IS_APP_IN_UNFOCUSED_DW, mIsInUnfocusedDesktopWindow);
     }
 
+    @Override
+    public void onSaveInstanceState(Bundle outState, PersistableBundle outPersistentState) {
+        outPersistentState.putBoolean(
+                INSTANCE_STATE_KEY_IS_APP_IN_UNFOCUSED_DW, mIsInUnfocusedDesktopWindow);
+    }
+
     /* Returns true if app header is customized. */
     private boolean onInsetsRectsUpdated(Rect widestUnoccludedRect) {
         // mActivity is only set to null in destroy().
@@ -229,7 +249,7 @@ public class AppHeaderCoordinator
                 : "Attempt to read the insets too early.";
         if (mInsetObserver.getLastRawWindowInsets().hasInsets()) {
             int prevWindowingMode = mWindowingMode;
-            mWindowingMode = AppHeaderUtils.getWindowingMode(mActivity, isInDesktopWindow);
+            mWindowingMode = MultiWindowMetricsUtils.getWindowingMode(mActivity, isInDesktopWindow);
             if (prevWindowingMode != mWindowingMode) {
                 // Record this histogram every time the windowing mode changes.
                 RecordHistogram.recordEnumeratedHistogram(
@@ -237,10 +257,12 @@ public class AppHeaderCoordinator
                         mWindowingMode,
                         WindowingMode.NUM_ENTRIES);
                 // Record windowing mode changes if not going from/to UNKNOWN.
-                if (prevWindowingMode != AppHeaderUtils.WindowingMode.UNKNOWN
-                        && mWindowingMode != AppHeaderUtils.WindowingMode.UNKNOWN) {
-                    AppHeaderUtils.recordWindowingMode(prevWindowingMode, /* isStarted= */ false);
-                    AppHeaderUtils.recordWindowingMode(mWindowingMode, /* isStarted= */ true);
+                if (prevWindowingMode != WindowingMode.UNKNOWN
+                        && mWindowingMode != WindowingMode.UNKNOWN) {
+                    MultiWindowMetricsUtils.recordWindowingMode(
+                            prevWindowingMode, /* isStarted= */ false);
+                    MultiWindowMetricsUtils.recordWindowingMode(
+                            mWindowingMode, /* isStarted= */ true);
                 }
             }
         }
@@ -388,7 +410,7 @@ public class AppHeaderCoordinator
                 .build();
     }
 
-    /* package */ ObservableSupplierImpl<Boolean> getTopResumedActivitySupplierForTesting() {
+    /* package */ NonNullObservableSupplier<Boolean> getTopResumedActivitySupplierForTesting() {
         return mDesktopWindowTopResumedActivitySupplier;
     }
 }

@@ -116,7 +116,7 @@ public class BottomSheetUnitTest {
 
     @Test
     public void testBackgroundColorAtFullHeightScrimmed_Light() {
-        doTestBackgroundColorFullHeightScrimmed(SemanticColorUtils.getSheetBgColor(mActivity));
+        doTestBackgroundColorFullHeightScrimmed(SemanticColorUtils.getColorSurface(mActivity));
     }
 
     private void doTestBackgroundColorFullHeightScrimmed(int expectedColor) {
@@ -150,7 +150,7 @@ public class BottomSheetUnitTest {
         mBottomSheet.showContent(mSheetContent);
         assertEquals(
                 "Unscrimmed sheet bg color is wrong.",
-                SemanticColorUtils.getSheetBgColor(mActivity),
+                SemanticColorUtils.getColorSurface(mActivity),
                 mBottomSheet.getSheetBackgroundColor());
     }
 
@@ -172,7 +172,7 @@ public class BottomSheetUnitTest {
         mBottomSheet.showContent(mSheetContent);
         assertEquals(
                 "PEEK state sheet bg color is wrong.",
-                SemanticColorUtils.getSheetBgColor(mActivity),
+                SemanticColorUtils.getColorSurface(mActivity),
                 mBottomSheet.getSheetBackgroundColor());
     }
 
@@ -182,7 +182,7 @@ public class BottomSheetUnitTest {
         int offset = 130;
         int expectedColor =
                 ColorUtils.overlayColor(
-                        SemanticColorUtils.getSheetBgColor(mActivity),
+                        SemanticColorUtils.getColorSurface(mActivity),
                         SemanticColorUtils.getColorSurfaceContainerHigh(mActivity),
                         0.5f // fraction = (130 - 60) / (200 - 60) = 0.5
                         );
@@ -193,7 +193,7 @@ public class BottomSheetUnitTest {
     public void testBackgroundColorNoTransitionInLight() {
         // Sheet color does not transition in light mode.
         showSheetThenScrollToHalfOffsetAndVerifyColor(
-                130, SemanticColorUtils.getSheetBgColor(mActivity));
+                130, SemanticColorUtils.getColorSurface(mActivity));
     }
 
     private void showSheetThenScrollToHalfOffsetAndVerifyColor(int offset, int expectedColor) {
@@ -231,7 +231,7 @@ public class BottomSheetUnitTest {
 
         assertEquals(
                 "Sheet bg color should be the override color.",
-                SemanticColorUtils.getSheetBgColor(mActivity),
+                SemanticColorUtils.getColorSurface(mActivity),
                 mBottomSheet.getSheetBackgroundColor());
     }
 }

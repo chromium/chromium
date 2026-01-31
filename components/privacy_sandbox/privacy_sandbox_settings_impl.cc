@@ -9,7 +9,6 @@
 #include <cstdint>
 #include <vector>
 
-#include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/json/values_util.h"
 #include "base/metrics/field_trial_params.h"
@@ -36,7 +35,6 @@
 #include "components/privacy_sandbox/privacy_sandbox_features.h"
 #include "components/privacy_sandbox/privacy_sandbox_prefs.h"
 #include "components/privacy_sandbox/privacy_sandbox_settings.h"
-#include "components/privacy_sandbox/tpcd_experiment_eligibility.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/common/content_features.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
@@ -105,10 +103,10 @@ std::vector<ContentSettingsPattern> FledgeBlockToContentSettingsPatterns(
           ContentSettingsPattern::FromString(entry)};
 }
 
-// Returns a base::Value::Dict for storage in prefs that represents |topic|
+// Returns a base::DictValue for storage in prefs that represents |topic|
 // blocked at the current time.
-base::Value::Dict CreateBlockedTopicEntry(const CanonicalTopic& topic) {
-  return base::Value::Dict()
+base::DictValue CreateBlockedTopicEntry(const CanonicalTopic& topic) {
+  return base::DictValue()
       .Set(kBlockedTopicsTopicKey, topic.ToValue())
       .Set(kBlockedTopicsBlockTimeKey, base::TimeToValue(base::Time::Now()));
 }
@@ -294,14 +292,14 @@ bool PrivacySandboxSettingsImpl::IsTopicAllowed(const CanonicalTopic& topic) {
     }
 
     if ((topic.topic_id() == blocked_topic->topic_id()) ||
-        (base::Contains(ancestor_topics, blocked_topic->topic_id()))) {
+        (std::ranges::contains(ancestor_topics, blocked_topic->topic_id()))) {
       return false;
     }
   }
 
   for (browsing_topics::Topic blocked_topic_id : GetFinchDisabledTopics()) {
     if ((topic.topic_id() == blocked_topic_id) ||
-        (base::Contains(ancestor_topics, blocked_topic_id))) {
+        (std::ranges::contains(ancestor_topics, blocked_topic_id))) {
       return false;
     }
   }
@@ -467,8 +465,7 @@ bool PrivacySandboxSettingsImpl::MaySendAttributionReport(
 bool PrivacySandboxSettingsImpl::
     IsAttributionReportingTransitionalDebuggingAllowed(
         const url::Origin& top_frame_origin,
-        const url::Origin& reporting_origin,
-        bool& can_bypass) const {
+        const url::Origin& reporting_origin) const {
   content_settings::CookieSettingsBase::CookieSettingWithMetadata
       cookie_setting_with_metadata;
   // With what is available here, we can create a cookie_partition_key for the
@@ -490,14 +487,6 @@ bool PrivacySandboxSettingsImpl::
       net::CookieSettingOverrides(), cookie_partition_key,
       &cookie_setting_with_metadata);
 
-  if (base::FeatureList::IsEnabled(
-          kAttributionDebugReportingCookieDeprecationTesting)) {
-    can_bypass =
-        cookie_setting_with_metadata.BlockedByThirdPartyCookieBlocking() &&
-        delegate_->AreThirdPartyCookiesBlockedByCookieDeprecationExperiment();
-  } else {
-    can_bypass = false;
-  }
   return allowed;
 }
 
@@ -858,13 +847,7 @@ bool PrivacySandboxSettingsImpl::IsPrivateAggregationDebugModeAllowed(
     return true;
   }
 
-  // Third-party cookie access is disabled, but we may still allow Private
-  // Aggregation's debug mode in this context if it was only blocked due to the
-  // 3PCD experiment.
-  return base::FeatureList::IsEnabled(
-             kPrivateAggregationDebugReportingCookieDeprecationTesting) &&
-         cookie_setting_with_metadata.BlockedByThirdPartyCookieBlocking() &&
-         delegate_->AreThirdPartyCookiesBlockedByCookieDeprecationExperiment();
+  return false;
 }
 
 void PrivacySandboxSettingsImpl::SetAllPrivacySandboxAllowedForTesting() {
@@ -960,10 +943,6 @@ PrivacySandboxSettingsImpl::GetM1PrivacySandboxApiEnabledStatus(
   DCHECK(pref_name == prefs::kPrivacySandboxM1TopicsEnabled ||
          pref_name == prefs::kPrivacySandboxM1FledgeEnabled ||
          pref_name == prefs::kPrivacySandboxM1AdMeasurementEnabled);
-  if (delegate_->IsCookieDeprecationExperimentEligible() &&
-      features::kCookieDeprecationTestingDisableAdsAPIs.Get()) {
-    return Status::kBlockedBy3pcdExperiment;
-  }
 
   bool should_ignore_restriction =
       pref_name == prefs::kPrivacySandboxM1AdMeasurementEnabled &&
@@ -985,12 +964,6 @@ PrivacySandboxSettingsImpl::GetM1PrivacySandboxApiEnabledStatus(
   status = (pref_service_->GetBoolean(pref_name)) ? Status::kAllowed
                                                   : Status::kApisDisabled;
   return status;
-}
-
-TpcdExperimentEligibility
-PrivacySandboxSettingsImpl::GetCookieDeprecationExperimentCurrentEligibility()
-    const {
-  return delegate_->GetCookieDeprecationExperimentCurrentEligibility();
 }
 
 bool PrivacySandboxSettingsImpl::AreRelatedWebsiteSetsEnabled() const {

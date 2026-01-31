@@ -46,8 +46,9 @@ constexpr int kAndroidClientHandleDescriptor =
 bool IsTargetDescriptorUsed(const base::FileHandleMappingVector& mapping,
                             int target_fd) {
   for (auto& [i, fd] : mapping) {
-    if (fd == target_fd)
+    if (fd == target_fd) {
       return true;
+    }
   }
   return false;
 }

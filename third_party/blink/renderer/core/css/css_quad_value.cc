@@ -39,6 +39,13 @@ String CSSQuadValue::CustomCSSText() const {
   return result.ReleaseString();
 }
 
+bool CSSQuadValue::HasRandomFunctions() const {
+  return (top_ && top_->HasRandomFunctions()) ||
+         (right_ && right_->HasRandomFunctions()) ||
+         (bottom_ && bottom_->HasRandomFunctions()) ||
+         (left_ && left_->HasRandomFunctions());
+}
+
 void CSSQuadValue::TraceAfterDispatch(blink::Visitor* visitor) const {
   visitor->Trace(top_);
   visitor->Trace(right_);

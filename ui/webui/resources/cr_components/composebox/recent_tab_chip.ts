@@ -9,10 +9,11 @@ import {ComposeboxContextAddedMethod} from '//resources/cr_components/search/con
 import {I18nMixinLit} from '//resources/cr_elements/i18n_mixin_lit.js';
 import {assert} from '//resources/js/assert.js';
 import {loadTimeData} from '//resources/js/load_time_data.js';
+import {htmlEscape} from '//resources/js/util.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 import type {TabInfo} from '//resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 
-import {recordContextAdditionMethod} from './common.js';
+import {recordContextAdditionMethod, TabUploadOrigin} from './common.js';
 import {getCss} from './recent_tab_chip.css.js';
 import {getHtml} from './recent_tab_chip.html.js';
 
@@ -47,6 +48,19 @@ export class RecentTabChipElement extends RecentTabChipBase {
   private composeboxSource_: string =
       loadTimeData.getString('composeboxSource');
 
+  protected get recentTabChipTitle_(): string {
+    if (!this.recentTab) {
+      return '';
+    }
+    const url = new URL(this.recentTab.url);
+    const domain = url.hostname.replace(/^www\./, '');
+    // Escape the title and domain as they are passed as arguments to i18n(),
+    // which uses `parseHtmlSubset` to sanitize the localized string. If the
+    // title contains restricted HTML tags (like <style>), parseHtmlSubset will
+    // throw an error.
+    return `${htmlEscape(this.recentTab.title)} - ${htmlEscape(domain)}`;
+  }
+
   protected addTabContext_(e: Event) {
     e.stopPropagation();
     assert(this.recentTab);
@@ -56,6 +70,7 @@ export class RecentTabChipElement extends RecentTabChipBase {
       title: this.recentTab.title,
       url: this.recentTab.url,
       delayUpload: this.delayTabUploads_,
+      origin: TabUploadOrigin.RECENT_TAB_CHIP,
     });
     recordContextAdditionMethod(
         ComposeboxContextAddedMethod.RECENT_TAB_CHIP, this.composeboxSource_);

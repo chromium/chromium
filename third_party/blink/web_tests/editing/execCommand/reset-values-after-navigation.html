@@ -5,12 +5,10 @@
 <script>
     window.jsTestIsAsync = true;
     window.onmessage = function (e) {
-        if (e.origin == location.protocol + "//" + location.host) {
-            queryCommandValues = JSON.parse(e.data);
-            shouldBeEqualToString('queryCommandValues["DefaultParagraphSeparator"]', "div");
-            shouldBeEqualToString('queryCommandValues["StyleWithCSS"]', "");
-            finishJSTest();
-        }
+        queryCommandValues = JSON.parse(e.data);
+        shouldBeEqualToString('queryCommandValues["DefaultParagraphSeparator"]', "div");
+        shouldBeEqualToString('queryCommandValues["StyleWithCSS"]', "");
+        finishJSTest();
     }
 </script>
 </head>

@@ -6,7 +6,6 @@
 
 #include <memory>
 
-#include "base/containers/contains.h"
 #include "chrome/browser/about_flags.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/flag_descriptions.h"
@@ -48,7 +47,7 @@ TabOrganizationService::TabOrganizationService(
 TabOrganizationService::~TabOrganizationService() = default;
 
 void TabOrganizationService::OnTriggerOccured(const Browser* browser) {
-  if (base::Contains(browser_session_map_, browser)) {
+  if (browser_session_map_.contains(browser)) {
     // If the organizations havent been fully accepted or rejected, then it does
     // not need to be reset.
     if (!GetSessionForBrowser(browser)->IsComplete()) {
@@ -65,7 +64,7 @@ void TabOrganizationService::OnTriggerOccured(const Browser* browser) {
 
 const TabOrganizationSession* TabOrganizationService::GetSessionForBrowser(
     const Browser* browser) const {
-  if (base::Contains(browser_session_map_, browser)) {
+  if (browser_session_map_.contains(browser)) {
     return browser_session_map_.at(browser).get();
   }
   return nullptr;
@@ -73,7 +72,7 @@ const TabOrganizationSession* TabOrganizationService::GetSessionForBrowser(
 
 TabOrganizationSession* TabOrganizationService::GetSessionForBrowser(
     const Browser* browser) {
-  if (base::Contains(browser_session_map_, browser)) {
+  if (browser_session_map_.contains(browser)) {
     return browser_session_map_.at(browser).get();
   }
   return nullptr;
@@ -81,14 +80,13 @@ TabOrganizationSession* TabOrganizationService::GetSessionForBrowser(
 
 TabOrganizationSession* TabOrganizationService::CreateSessionForBrowser(
     const Browser* browser,
-    const TabOrganizationEntryPoint entrypoint,
     const tabs::TabInterface* base_session_tab) {
-  CHECK(!base::Contains(browser_session_map_, browser));
+  CHECK(!browser_session_map_.contains(browser));
   CHECK(browser->tab_strip_model()->SupportsTabGroups());
   std::pair<BrowserSessionMap::iterator, bool> pair =
       browser_session_map_.emplace(
           browser, TabOrganizationSession::CreateSessionForBrowser(
-                       browser, entrypoint, base_session_tab));
+                       browser, base_session_tab));
   browser->tab_strip_model()->AddObserver(this);
 
   for (TabOrganizationObserver& observer : observers_) {
@@ -100,22 +98,20 @@ TabOrganizationSession* TabOrganizationService::CreateSessionForBrowser(
 
 TabOrganizationSession* TabOrganizationService::ResetSessionForBrowser(
     const Browser* browser,
-    const TabOrganizationEntryPoint entrypoint,
     const tabs::TabInterface* base_session_tab) {
   browser->tab_strip_model()->RemoveObserver(this);
-  if (base::Contains(browser_session_map_, browser)) {
+  if (browser_session_map_.contains(browser)) {
     RemoveBrowserFromSessionMap(browser);
   }
 
-  return CreateSessionForBrowser(browser, entrypoint, base_session_tab);
+  return CreateSessionForBrowser(browser, base_session_tab);
 }
 
 void TabOrganizationService::RestartSessionAndShowUI(
     const Browser* browser,
-    const TabOrganizationEntryPoint entrypoint,
     const tabs::TabInterface* base_session_tab) {
-  ResetSessionForBrowser(browser, entrypoint, base_session_tab);
-  StartRequestIfNotFRE(browser, entrypoint);
+  ResetSessionForBrowser(browser, base_session_tab);
+  StartRequestIfNotFRE(browser);
   OnUserInvokedFeature(browser);
 }
 
@@ -139,27 +135,23 @@ bool TabOrganizationService::CanStartRequest() const {
 #endif  // !BUILDFLAG(IS_CHROMEOS)
 }
 
-void TabOrganizationService::StartRequestIfNotFRE(
-    const Browser* browser,
-    const TabOrganizationEntryPoint entrypoint) {
+void TabOrganizationService::StartRequestIfNotFRE(const Browser* browser) {
   const PrefService* pref_service = browser->profile()->GetPrefs();
   bool show_fre =
       pref_service->GetBoolean(tab_search_prefs::kTabOrganizationShowFRE);
   if (!show_fre) {
-    StartRequest(browser, entrypoint);
+    StartRequest(browser);
   }
 }
 
-void TabOrganizationService::StartRequest(
-    const Browser* browser,
-    const TabOrganizationEntryPoint entrypoint) {
+void TabOrganizationService::StartRequest(const Browser* browser) {
   if (!CanStartRequest()) {
     return;
   }
 
   TabOrganizationSession* session = GetSessionForBrowser(browser);
   if (!session || session->IsComplete()) {
-    session = ResetSessionForBrowser(browser, entrypoint);
+    session = ResetSessionForBrowser(browser);
   }
   if (session->request()->state() ==
       TabOrganizationRequest::State::NOT_STARTED) {
@@ -290,7 +282,7 @@ void TabOrganizationService::AcceptTabOrganization(
 }
 
 void TabOrganizationService::OnActionUIAccepted(const Browser* browser) {
-  StartRequestIfNotFRE(browser, TabOrganizationEntryPoint::kProactive);
+  StartRequestIfNotFRE(browser);
   OnUserInvokedFeature(browser);
   trigger_backoff_->Decrement();
 }
@@ -301,7 +293,7 @@ void TabOrganizationService::OnActionUIDismissed(const Browser* browser) {
 
 void TabOrganizationService::RemoveBrowserFromSessionMap(
     const Browser* browser) {
-  CHECK(base::Contains(browser_session_map_, browser));
+  CHECK(browser_session_map_.contains(browser));
   browser->tab_strip_model()->RemoveObserver(this);
   browser_session_map_.erase(browser);
 }

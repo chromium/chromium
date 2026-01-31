@@ -130,13 +130,13 @@ std::string GetVariationDirectory() {
                                        "directory");
 }
 
-PopularSites::SitesVector ParseSiteList(const base::Value::List& list) {
+PopularSites::SitesVector ParseSiteList(const base::ListValue& list) {
   PopularSites::SitesVector sites;
   for (const base::Value& item_value : list) {
     if (!item_value.is_dict()) {
       continue;
     }
-    const base::Value::Dict& item = item_value.GetDict();
+    const base::DictValue& item = item_value.GetDict();
     std::u16string title;
     if (const std::string* ptr = item.FindString("title")) {
       title = base::UTF8ToUTF16(*ptr);
@@ -184,22 +184,22 @@ PopularSites::SitesVector ParseSiteList(const base::Value::List& list) {
 }
 
 std::map<SectionType, PopularSites::SitesVector> ParseSimple(
-    const base::Value::List& list) {
+    const base::ListValue& list) {
   return {{SectionType::PERSONALIZED, ParseSiteList(list)}};
 }
 
-bool IsSectioned(const base::Value::List& list) {
+bool IsSectioned(const base::ListValue& list) {
   return !list.empty() && list[0].is_dict() &&
          list[0].GetDict().contains("section");
 }
 
 std::map<SectionType, PopularSites::SitesVector> ParseSectioned(
-    const base::Value::List& list) {
+    const base::ListValue& list) {
   // Valid lists would have contained at least the PERSONALIZED section.
   std::map<SectionType, PopularSites::SitesVector> sections = {
       std::make_pair(SectionType::PERSONALIZED, PopularSites::SitesVector{})};
   for (size_t i = 0; i < list.size(); i++) {
-    const base::Value::Dict* item_dict = list[i].GetIfDict();
+    const base::DictValue* item_dict = list[i].GetIfDict();
     if (!item_dict) {
       LOG(WARNING) << "Parsed SitesExploration list contained an invalid "
                    << "section at position " << i << ".";
@@ -217,7 +217,7 @@ std::map<SectionType, PopularSites::SitesVector> ParseSectioned(
     if (section_type != SectionType::PERSONALIZED) {
       continue;
     }
-    const base::Value::List* sites_list = item_dict->FindList("sites");
+    const base::ListValue* sites_list = item_dict->FindList("sites");
     if (!sites_list) {
       continue;
     }
@@ -227,7 +227,7 @@ std::map<SectionType, PopularSites::SitesVector> ParseSectioned(
 }
 
 std::map<SectionType, PopularSites::SitesVector> ParseSites(
-    const base::Value::List& list,
+    const base::ListValue& list,
     int version) {
   if (version < kSitesExplorationStartVersion) {
     return ParseSimple(list);
@@ -240,7 +240,7 @@ std::map<SectionType, PopularSites::SitesVector> ParseSites(
     (BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS))
 void SetDefaultResourceForSite(size_t index,
                                int resource_id,
-                               base::Value::List& sites) {
+                               base::ListValue& sites) {
   if (index >= sites.size() || !sites[index].is_dict()) {
     return;
   }
@@ -250,12 +250,12 @@ void SetDefaultResourceForSite(size_t index,
 #endif
 
 // Creates the list of popular sites based on a snapshot available for mobile.
-base::Value::List DefaultPopularSites(std::optional<std::string> country) {
+base::ListValue DefaultPopularSites(std::optional<std::string> country) {
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
-  return base::Value::List();
+  return base::ListValue();
 #else
   if (!base::FeatureList::IsEnabled(kPopularSitesBakedInContentFeature)) {
-    return base::Value::List();
+    return base::ListValue();
   }
 
   int popular_sites_json = IDR_DEFAULT_POPULAR_SITES_JSON;
@@ -270,7 +270,7 @@ base::Value::List DefaultPopularSites(std::optional<std::string> country) {
       ui::ResourceBundle::GetSharedInstance().LoadDataResourceString(
           popular_sites_json),
       base::JSON_PARSE_CHROMIUM_EXTENSIONS);
-  base::Value::List& sites_list = sites->GetList();
+  base::ListValue& sites_list = sites->GetList();
   for (base::Value& site : sites_list) {
     site.GetDict().Set("baked_in", true);
   }
@@ -469,7 +469,7 @@ std::string PopularSitesImpl::GetVersionToFetch() {
   return version;
 }
 
-const base::Value::List& PopularSitesImpl::GetCachedJson() {
+const base::ListValue& PopularSitesImpl::GetCachedJson() {
   return prefs_->GetList(prefs::kPopularSitesJsonPref);
 }
 

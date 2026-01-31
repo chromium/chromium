@@ -59,8 +59,10 @@ export function getCss() {
   return instance || (instance = [...[%(deps)s], css`%(content)s`]);
 }"""
 
-# TODO(crbug.com/384446045): Remove when the oldest supported iOS version is
+# TODO(dpapad): Remove when the oldest supported iOS version is
 # 16.4 or above. CSSStyleSheet constructor is not supported before that.
+# See https://chromium.googlesource.com/chromium/src/+/HEAD/ios/web/README.md#minimum-deployment-version
+# for what is the currently minimum supported version.
 _LIT_VARS_IOS_TEMPLATE = """%(imports)s
 export {};
 

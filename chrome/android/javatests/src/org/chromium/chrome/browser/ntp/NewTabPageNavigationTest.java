@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.ntp;
 
+import static org.chromium.chrome.browser.url_constants.UrlConstantResolver.getOriginalNativeNtpUrl;
 
 import androidx.test.filters.LargeTest;
 import androidx.test.filters.MediumTest;
@@ -26,7 +27,6 @@ import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
 import org.chromium.chrome.test.transit.hub.RegularTabSwitcherStation;
 import org.chromium.chrome.test.transit.ntp.RegularNewTabPageStation;
 import org.chromium.chrome.test.transit.page.WebPageStation;
-import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.net.test.EmbeddedTestServer;
 
 /** Tests loading the NTP and navigating between it and other pages. */
@@ -68,7 +68,8 @@ public class NewTabPageNavigationTest {
     public void testNavigateBackToNtpViaUrl() {
         String url = mTestServer.getURL("/chrome/test/data/android/google.html");
         WebPageStation page = mNtp.loadWebPageProgrammatically(url);
-        page.loadPageProgrammatically(UrlConstants.NTP_URL, RegularNewTabPageStation.newBuilder());
+        page.loadPageProgrammatically(
+                getOriginalNativeNtpUrl(), RegularNewTabPageStation.newBuilder());
     }
 
     /** Tests navigating to the tab switcher from the NTP. */

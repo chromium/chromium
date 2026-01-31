@@ -253,20 +253,8 @@ union LayerExtra {
   NinePatchLayerExtra nine_patch_layer_extra;
 };
 
-// Details about a cc::LayerImpl that has been added to a tree or modified in
-// some interesting way since a prior tree update.
-struct Layer {
-  // The layer's assigned ID. This is an arbitrary integer value which is
-  // guaranteed to be (a) unique across all layers currently in the tree and
-  // (b) consistent for the lifetime of each layer. When a LayerTreeUpdate
-  // contains a Layer with a previously unseen ID, the Layer is being added to
-  // the tree; otherwise an existing layer's properties are changing.
-  int64 id;
-
-  // The type of this layer. If this structure is updating an existing layer,
-  // the type here must match that of the existing layer.
-  cc.mojom.LayerType type;
-
+// General properties, common to all Layer types.
+struct LayerGeneralProperties {
   // Bounds of the layer, generally in layer space. If this is the root layer,
   // bounds are in viewport space, including device scale factor.
   gfx.mojom.Size bounds;
@@ -304,6 +292,28 @@ struct Layer {
   // The post-transform position of this layer.
   gfx.mojom.Vector2dF offset_to_transform_parent;
 
+  bool should_check_backface_visibility;
+
+  RareProperties? rare_properties;
+
+  // Extra properties that are specific to a layerImpl type.
+  LayerExtra? layer_extra;
+};
+
+// Details about a cc::LayerImpl that has been added to a tree or modified in
+// some interesting way since a prior tree update.
+struct Layer {
+  // The layer's assigned ID. This is an arbitrary integer value which is
+  // guaranteed to be (a) unique across all layers currently in the tree and
+  // (b) consistent for the lifetime of each layer. When a LayerTreeUpdate
+  // contains a Layer with a previously unseen ID, the Layer is being added to
+  // the tree; otherwise an existing layer's properties are changing.
+  int64 id;
+
+  // The type of this layer. If this structure is updating an existing layer,
+  // the type here must match that of the existing layer.
+  cc.mojom.LayerType type;
+
   // Property tree node IDs. Each of these IDs is bound to the range [0, N) for
   // a property tree with N nodes.
   int32 transform_tree_index;
@@ -311,12 +321,7 @@ struct Layer {
   int32 effect_tree_index;
   int32 scroll_tree_index;
 
-  bool should_check_backface_visibility;
-
-  RareProperties? rare_properties;
-
-  // Extra properties that are specific to a layerImpl type.
-  LayerExtra? layer_extra;
+  LayerGeneralProperties? general_properties;
 };
 
 // See blink::AnchorPositionScrollData, from which the fields here are derived.

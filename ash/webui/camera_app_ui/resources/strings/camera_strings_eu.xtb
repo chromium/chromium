@@ -48,6 +48,7 @@
 <translation id="2761536921376153655">Bilaketa mota</translation>
 <translation id="28682968802727151">Ispilu moduaren aurrebista</translation>
 <translation id="2879583609344924966"><ph name="CAMERA" /> konektatuta dago.</translation>
+<translation id="3063987824612038785">Kamerako fitxategi guztiak Google Drive-n gordeko dira</translation>
 <translation id="3067436040345934772">Mugitu eskuinera</translation>
 <translation id="3081586908890909590">Aldatu bideoak grabatzeko modura</translation>
 <translation id="3091480460059548935">Aurrebistan testua hautematea</translation>
@@ -67,6 +68,7 @@
 <translation id="3642192109456033823">Bideoa prozesatzen…</translation>
 <translation id="3789724198583203151">Biratu 90 gradu ezkerretara</translation>
 <translation id="3810838688059735925">Bideoa</translation>
+<translation id="386366972082231038">Kamerako fitxategi guztiak OneDrive-n gordeko dira</translation>
 <translation id="4060608699153044055">Ezin duzu grabatu gailuak biltegiratzeko toki gutxi duelako. Grabatzen hasteko, tokia egin behar duzu gailuan.</translation>
 <translation id="4061162772429051350"><ph name="MAGAPIXELS_AMOUNT" /> MP</translation>
 <translation id="4118525110028899586">Pausatu grabaketa</translation>
@@ -100,6 +102,7 @@
 <translation id="5634947914995388399">Zabaldu leihoa eta utzi eskaneatzeari</translation>
 <translation id="5662366948659129155"><ph name="COUNT" />. orria eskaneatzen</translation>
 <translation id="5671277269877808209">Karratua</translation>
+<translation id="5725797473946373607">Ez erakutsi leiho hau hurrengoan</translation>
 <translation id="574392208103952083">Ertaina</translation>
 <translation id="5746169159649715125">Gorde PDF gisa</translation>
 <translation id="5753488212459587150">Gaitu adituen modua</translation>
@@ -156,6 +159,7 @@ Irudi edo bideoaren kalitateari buruzko iritzia eman nahi baduzu, erantsi argazk
 <translation id="7983668134180549431">Testua hauteman da.</translation>
 <translation id="8079255378695216066">Ezin da hasi grabatzen</translation>
 <translation id="8120146556401698679">Mugitu, okertu, zooma</translation>
+<translation id="8127459436205030819">Baliteke fitxategiak administratzailearentzat ikusgai egotea</translation>
 <translation id="8131740175452115882">Berretsi</translation>
 <translation id="8145038249676204903">Aldatu argazkiak ateratzeko modura</translation>
 <translation id="8167081290930651932">Gorde argazki gisa</translation>
@@ -165,6 +169,7 @@ Irudi edo bideoaren kalitateari buruzko iritzia eman nahi baduzu, erantsi argazk
 <translation id="8609951387004618906">Ireki <ph name="URL" /></translation>
 <translation id="8629662593426079630">360p</translation>
 <translation id="8711011893539266636">Aktibatu edo desaktibatu mikrofonoa. Mikrofonoa desaktibatuta dago.</translation>
+<translation id="8712637175834984815">Ados</translation>
 <translation id="8730621377337864115">Eginda</translation>
 <translation id="8732462232047530626">Aurreikusi metadatuak</translation>
 <translation id="874854738381978209">Wifi-sare bat hauteman da.</translation>

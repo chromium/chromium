@@ -47,6 +47,26 @@ public class SettingsIntentUtil {
             @Nullable String fragmentName,
             @Nullable Bundle fragmentArgs,
             boolean addToBackStack) {
+        return createIntent(context, fragmentName, fragmentArgs, addToBackStack, /* tag= */ null);
+    }
+
+    /**
+     * Creates an {@link Intent} that launches the settings activity.
+     *
+     * @param context The context from which the settings activity is being launched.
+     * @param fragmentName The name of the main fragment shown in the settings activity. null means
+     *     the default fragment.
+     * @param fragmentArgs A bundle of extra arguments given to the main fragment. Can be null.
+     * @param addToBackStack if true, the fragment will be added to fragment manager's back stack.
+     * @param tag A tag used to identify the fragment transaction.
+     * @return An intent ready to launch the settings activity.
+     */
+    public static Intent createIntent(
+            Context context,
+            @Nullable String fragmentName,
+            @Nullable Bundle fragmentArgs,
+            boolean addToBackStack,
+            @Nullable String tag) {
         Intent intent = new Intent();
         intent.setClass(context, SettingsActivity.class);
         if (isStandaloneFragment(context, fragmentName)) {
@@ -70,6 +90,7 @@ public class SettingsIntentUtil {
         }
         if (addToBackStack) {
             intent.putExtra(SettingsActivity.EXTRA_ADD_TO_BACK_STACK, addToBackStack);
+            if (tag != null) intent.putExtra(SettingsActivity.EXTRA_FRAGMENT_TAG, tag);
         }
         return intent;
     }

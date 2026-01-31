@@ -7,7 +7,6 @@
 #include <tuple>
 #include <utility>
 
-#include "base/containers/contains.h"
 #include "base/memory/ptr_util.h"
 #include "build/build_config.h"
 #include "components/crash/core/common/crash_key.h"
@@ -131,7 +130,7 @@ GuestViewBase* GuestViewManager::GetGuestByInstanceIDSafely(
 void GuestViewManager::AttachGuest(content::ChildProcessId embedder_process_id,
                                    int element_instance_id,
                                    int guest_instance_id,
-                                   const base::Value::Dict& attach_params) {
+                                   const base::DictValue& attach_params) {
   auto* guest_view =
       GuestViewBase::FromInstanceID(embedder_process_id, guest_instance_id);
   if (!guest_view)
@@ -141,7 +140,7 @@ void GuestViewManager::AttachGuest(content::ChildProcessId embedder_process_id,
 
   // If there is an existing guest attached to the element, then the embedder is
   // misbehaving.
-  if (base::Contains(instance_id_map_, key)) {
+  if (instance_id_map_.contains(key)) {
     bad_message::ReceivedBadMessage(embedder_process_id,
                                     bad_message::GVM_INVALID_ATTACH);
     return;
@@ -155,7 +154,7 @@ void GuestViewManager::AttachGuest(content::ChildProcessId embedder_process_id,
 void GuestViewManager::AttachGuest(int embedder_process_id,
                                    int element_instance_id,
                                    int guest_instance_id,
-                                   const base::Value::Dict& attach_params) {
+                                   const base::DictValue& attach_params) {
   GuestViewManager::AttachGuest(content::ChildProcessId(embedder_process_id),
                                 element_instance_id, guest_instance_id,
                                 attach_params);
@@ -180,7 +179,7 @@ base::WeakPtr<GuestViewManager> GuestViewManager::AsWeakPtr() {
 
 void GuestViewManager::CreateGuest(const std::string& view_type,
                                    content::RenderFrameHost* owner_rfh,
-                                   const base::Value::Dict& create_params,
+                                   const base::DictValue& create_params,
                                    UnownedGuestCreatedCallback callback) {
   OwnedGuestCreatedCallback ownership_transferring_callback = base::BindOnce(
       [](UnownedGuestCreatedCallback callback,
@@ -200,7 +199,7 @@ int GuestViewManager::CreateGuestAndTransferOwnership(
     const std::string& view_type,
     content::RenderFrameHost* owner_rfh,
     scoped_refptr<content::SiteInstance> site_instance,
-    const base::Value::Dict& create_params,
+    const base::DictValue& create_params,
     OwnedGuestCreatedCallback callback) {
   std::unique_ptr<GuestViewBase> guest =
       CreateGuestInternal(owner_rfh, view_type);
@@ -252,7 +251,7 @@ GuestViewManager::CreateGuestWithWebContentsParams(
 
   std::unique_ptr<content::WebContents> guest_web_contents =
       WebContents::Create(guest_create_params);
-  const base::Value::Dict guest_params = base::Value::Dict();
+  const base::DictValue guest_params = base::DictValue();
   guest->SetCreateParams(guest_params, guest_create_params);
   guest->InitWithWebContents(guest_params, guest_web_contents.get());
   ManageOwnership(std::move(guest));
@@ -568,7 +567,7 @@ void GuestViewManager::RegisterGuestViewType(
   // if it was registered elsewhere, then we do not want to overwrite it. Note
   // that it is possible for tests to have special test factory methods
   // registered here.
-  if (base::Contains(guest_view_registry_, type))
+  if (guest_view_registry_.contains(type))
     return;
 
   guest_view_registry_.insert({type, {create_function, cleanup_function}});
@@ -606,7 +605,7 @@ bool GuestViewManager::IsGuestAvailableToContext(GuestViewBase* guest) {
 }
 
 void GuestViewManager::DispatchEvent(const std::string& event_name,
-                                     base::Value::Dict args,
+                                     base::DictValue args,
                                      GuestViewBase* guest,
                                      int instance_id) {
   // TODO(fsamuel): GuestViewManager should probably do something more useful
@@ -636,7 +635,7 @@ bool GuestViewManager::CanEmbedderAccessInstanceIDMaybeKill(
 bool GuestViewManager::CanUseGuestInstanceID(int guest_instance_id) {
   if (guest_instance_id <= last_instance_id_removed_)
     return false;
-  return !base::Contains(removed_instance_ids_, guest_instance_id);
+  return !removed_instance_ids_.contains(guest_instance_id);
 }
 
 bool GuestViewManager::CanEmbedderAccessInstanceID(

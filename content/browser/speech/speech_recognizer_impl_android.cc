@@ -176,7 +176,7 @@ void SpeechRecognizerImplAndroid::OnRecognitionResults(
     JNIEnv* env,
     const JavaRef<jobjectArray>& strings,
     const JavaRef<jfloatArray>& floats,
-    jboolean provisional) {
+    bool provisional) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   std::vector<std::u16string> options;
   AppendJavaStringArrayToStringVector(env, strings, &options);
@@ -206,7 +206,8 @@ void SpeechRecognizerImplAndroid::OnRecognitionResultsOnIOThread(
   listener()->OnRecognitionResults(session_id(), results);
 }
 
-void SpeechRecognizerImplAndroid::OnRecognitionError(JNIEnv* env, jint error) {
+void SpeechRecognizerImplAndroid::OnRecognitionError(JNIEnv* env,
+                                                     int32_t error) {
   if (BrowserThread::CurrentlyOn(BrowserThread::UI)) {
     GetIOThreadTaskRunner({})->PostTask(
         FROM_HERE,

@@ -67,6 +67,7 @@
 #include "third_party/blink/public/web/modules/service_worker/web_service_worker_context_client.h"
 #include "third_party/blink/public/web/modules/service_worker/web_service_worker_context_proxy.h"
 #include "third_party/perfetto/include/perfetto/tracing/track.h"
+#include "third_party/perfetto/include/perfetto/tracing/track_event_args.h"
 
 using blink::WebURLRequest;
 using blink::MessagePortChannel;
@@ -466,12 +467,10 @@ void ServiceWorkerContextClient::OnNavigationPreloadResponse(
     std::unique_ptr<blink::WebURLResponse> response,
     mojo::ScopedDataPipeConsumerHandle data_pipe) {
   DCHECK(worker_task_runner_->RunsTasksInCurrentSequence());
-  TRACE_EVENT_WITH_FLOW0(
-      "ServiceWorker",
-      "ServiceWorkerContextClient::OnNavigationPreloadResponse",
-      TRACE_ID_WITH_SCOPE(kServiceWorkerContextClientScope,
-                          TRACE_ID_LOCAL(fetch_event_id)),
-      TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT);
+  TRACE_EVENT("ServiceWorker",
+              "ServiceWorkerContextClient::OnNavigationPreloadResponse",
+              perfetto::Flow::ProcessScoped(fetch_event_id,
+                                            kServiceWorkerContextClientScope));
   proxy_->OnNavigationPreloadResponse(fetch_event_id, std::move(response),
                                       std::move(data_pipe));
 }
@@ -482,11 +481,10 @@ void ServiceWorkerContextClient::OnNavigationPreloadError(
   DCHECK(worker_task_runner_->RunsTasksInCurrentSequence());
   // |context_| owns WebNavigationPreloadRequest which calls this.
   DCHECK(context_);
-  TRACE_EVENT_WITH_FLOW0("ServiceWorker",
-                         "ServiceWorkerContextClient::OnNavigationPreloadError",
-                         TRACE_ID_WITH_SCOPE(kServiceWorkerContextClientScope,
-                                             TRACE_ID_LOCAL(fetch_event_id)),
-                         TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT);
+  TRACE_EVENT("ServiceWorker",
+              "ServiceWorkerContextClient::OnNavigationPreloadError",
+              perfetto::Flow::ProcessScoped(fetch_event_id,
+                                            kServiceWorkerContextClientScope));
   proxy_->OnNavigationPreloadError(fetch_event_id, std::move(error));
   context_->preload_requests.Remove(fetch_event_id);
 }
@@ -500,12 +498,10 @@ void ServiceWorkerContextClient::OnNavigationPreloadComplete(
   DCHECK(worker_task_runner_->RunsTasksInCurrentSequence());
   // |context_| owns WebNavigationPreloadRequest which calls this.
   DCHECK(context_);
-  TRACE_EVENT_WITH_FLOW0(
-      "ServiceWorker",
-      "ServiceWorkerContextClient::OnNavigationPreloadComplete",
-      TRACE_ID_WITH_SCOPE(kServiceWorkerContextClientScope,
-                          TRACE_ID_LOCAL(fetch_event_id)),
-      TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT);
+  TRACE_EVENT("ServiceWorker",
+              "ServiceWorkerContextClient::OnNavigationPreloadComplete",
+              perfetto::Flow::ProcessScoped(fetch_event_id,
+                                            kServiceWorkerContextClientScope));
   proxy_->OnNavigationPreloadComplete(fetch_event_id, completion_time,
                                       encoded_data_length, encoded_body_length,
                                       decoded_body_length);

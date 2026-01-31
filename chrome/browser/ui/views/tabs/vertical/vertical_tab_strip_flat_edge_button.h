@@ -1,0 +1,52 @@
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#ifndef CHROME_BROWSER_UI_VIEWS_TABS_VERTICAL_VERTICAL_TAB_STRIP_FLAT_EDGE_BUTTON_H_
+#define CHROME_BROWSER_UI_VIEWS_TABS_VERTICAL_VERTICAL_TAB_STRIP_FLAT_EDGE_BUTTON_H_
+
+#include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/views/controls/button/label_button.h"
+#include "ui/views/masked_targeter_delegate.h"
+
+// Button class that maintains the custom styling based on the vertical tab
+// strip's collapsed state.
+class VerticalTabStripFlatEdgeButton : public views::LabelButton,
+                                       public views::MaskedTargeterDelegate {
+  METADATA_HEADER(VerticalTabStripFlatEdgeButton, views::LabelButton)
+ public:
+  enum class FlatEdge {
+    kNone,
+    kTop,
+    kLeft,
+    kBottom,
+    kRight,
+  };
+  VerticalTabStripFlatEdgeButton();
+  ~VerticalTabStripFlatEdgeButton() override = default;
+
+  // views::LabelButton:
+  std::unique_ptr<views::ActionViewInterface> GetActionViewInterface() override;
+  void OnPaintBackground(gfx::Canvas* canvas) override;
+
+  // views::MaskedTargeterDelegate
+  bool GetHitTestMask(SkPath* mask) const override;
+
+  void SetFlatEdge(FlatEdge flat_edge);
+  void UpdateIcon(const ui::ImageModel& icon_image);
+  void SetInsets(const gfx::Insets& insets);
+
+ private:
+  // views::View:
+  void AddedToWidget() override;
+  void RemovedFromWidget() override;
+
+  ui::ColorId GetForegroundColor() const;
+  SkRRect GetButtonShape() const;
+  gfx::RoundedCornersF GetButtonCornerRadii() const;
+
+  FlatEdge flat_edge_ = FlatEdge::kNone;
+  base::CallbackListSubscription paint_as_active_subscription_;
+};
+
+#endif  // CHROME_BROWSER_UI_VIEWS_TABS_VERTICAL_VERTICAL_TAB_STRIP_FLAT_EDGE_BUTTON_H_

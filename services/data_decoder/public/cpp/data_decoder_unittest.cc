@@ -140,7 +140,7 @@ TEST_F(DataDecoderMultiThreadTest, JSONDecode) {
                                      1);
   ASSERT_TRUE(result.has_value());
   ASSERT_TRUE(result->is_list());
-  base::Value::List& list = result->GetList();
+  base::ListValue& list = result->GetList();
   ASSERT_EQ(1u, list.size());
   EXPECT_TRUE(list[0].is_double());
   EXPECT_EQ(122.416294033786585, list[0].GetDouble());

@@ -6,41 +6,7 @@
 
 #include <ostream>
 
-#include "base/notreached.h"
-
 namespace media {
-
-int SampleFormatToBytesPerChannel(SampleFormat sample_format) {
-  switch (sample_format) {
-    case kUnknownSampleFormat:
-      return 0;
-    case kSampleFormatU8:
-    case kSampleFormatPlanarU8:
-    case kSampleFormatAc3:
-    case kSampleFormatEac3:
-    case kSampleFormatMpegHAudio:
-    case kSampleFormatDts:
-    case kSampleFormatDtsxP2:
-    case kSampleFormatDtse:
-      return 1;
-    case kSampleFormatS16:
-    case kSampleFormatPlanarS16:
-      return 2;
-    case kSampleFormatS24:
-    case kSampleFormatS32:
-    case kSampleFormatF32:
-    case kSampleFormatPlanarF32:
-    case kSampleFormatPlanarS32:
-    case kSampleFormatIECDts:
-      return 4;
-  }
-
-  NOTREACHED() << "Invalid sample format provided: " << sample_format;
-}
-
-int SampleFormatToBitsPerChannel(SampleFormat sample_format) {
-  return SampleFormatToBytesPerChannel(sample_format) * 8;
-}
 
 const char* SampleFormatToString(SampleFormat sample_format) {
   switch(sample_format) {

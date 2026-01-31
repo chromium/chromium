@@ -71,13 +71,38 @@ class BASE_EXPORT SysInfo {
   // LITTLE cores on ARM bit.LITTLE architecture.
   // Returns 0 on symmetric architecture or when it failed to recognize.
   // This function will cache the result value in its implementation.
+  //
+  // Note that due to caching, this is not expected to be accurate in case of
+  // CPU unplug, which can happen, in particular in VMs. More specifically, the
+  // returned value is only expected to be valid at the time where this was
+  // first called. Subsequent calls may return a stable value, which can be an
+  // under/overestimate in case of CPU hotplug.
   static int NumberOfEfficientProcessors();
+
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
+  // Returns the maximum frequency of all the processors in Hz, if
+  // available. The data may not be available in virtual machines for
+  // instance. In this case, the returned value is empty.
+  //
+  // Also note that due to caching, this is not expected to be accurate in case
+  // of CPU unplug, which can happen, in particular in VMs. More specifically,
+  // the returned value is only expected to be valid at the time where this was
+  // first called. Subsequent calls may return a stable value, which can be an
+  // under/overestimate in case of CPU hotplug.
+  static const std::vector<uint64_t>& MaxFrequencyPerProcessor();
+#endif
 
   // Return the number of bytes of physical memory on the current machine.
   // If low-end device mode is manually enabled via command line flag, this
   // will return the lesser of the actual physical memory, or 512MB.
-  // TODO(crbug.com/448661443): Switch to ByteSize as ByteCount is deprecated.
-  static ByteCount AmountOfPhysicalMemory();
+  static ByteSize AmountOfTotalPhysicalMemory();
+
+  // Deprecated: Prefer AmountOfTotalPhysicalMemory(), which returns a ByteSize.
+  // ByteCount is deprecated.
+  // TODO(crbug.com/448661443): Migrate all callers and remove this.
+  static ByteCount AmountOfPhysicalMemory() {
+    return AmountOfTotalPhysicalMemory().AsDeprecatedByteCount();
+  }
 
   // Return the number of bytes of current available physical memory on the
   // machine.
@@ -315,7 +340,7 @@ class BASE_EXPORT SysInfo {
 
   // Returns true for low-end devices that may require extreme tradeoffs,
   // including user-visible changes, for acceptable performance.
-  // For general memory optimizations, consider |AmountOfPhysicalMemoryMB|.
+  // For general memory optimizations, consider |AmountOfTotalPhysicalMemory|.
   //
   // On Android this returns true when memory <= 1GB on Android O and later.
   // This is not the same as "low-memory".
@@ -362,7 +387,7 @@ class BASE_EXPORT SysInfo {
   FRIEND_TEST_ALL_PREFIXES(debug::SystemMetricsTest, ParseMeminfo);
 
   static int NumberOfEfficientProcessorsImpl();
-  static ByteCount AmountOfPhysicalMemoryImpl();
+  static ByteSize AmountOfTotalPhysicalMemoryImpl();
   static ByteSize AmountOfAvailablePhysicalMemoryImpl();
   static bool IsLowEndDeviceImpl();
   static HardwareInfo GetHardwareInfoSync();
@@ -375,8 +400,8 @@ class BASE_EXPORT SysInfo {
 
   // Sets the amount of physical memory for testing, thus allowing tests to run
   // irrespective of the host machine's configuration.
-  static std::optional<ByteCount> SetAmountOfPhysicalMemoryForTesting(
-      ByteCount amount_of_memory);
+  static std::optional<ByteSize> SetAmountOfPhysicalMemoryForTesting(
+      ByteSize amount_of_memory);
   static void ClearAmountOfPhysicalMemoryForTesting();
 };
 

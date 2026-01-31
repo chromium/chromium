@@ -93,7 +93,7 @@ class MediaEngagementScore final {
   // Only used by the Media Engagement service when bulk loading data.
   MediaEngagementScore(base::Clock* clock,
                        const url::Origin& origin,
-                       base::Value::Dict score_dict,
+                       base::DictValue score_dict,
                        HostContentSettingsMap* settings);
 
   static const char kScoreMinVisitsParamName[];
@@ -140,7 +140,7 @@ class MediaEngagementScore final {
   raw_ptr<base::Clock> clock_;
 
   // The dictionary that represents this engagement score.
-  base::Value::Dict score_dict_;
+  base::DictValue score_dict_;
 
   // The content settings map that will persist the score,
   // has a lifetime of the Profile like the service which owns |this|.

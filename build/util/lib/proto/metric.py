@@ -30,8 +30,8 @@ class Metric:
     self._tags.clear()
 
   def tag(self, *args: str) -> None:
-    # Tags the metrics, the tags will be suffixed to the name of each metric for
-    # easy selection.
+    # Tags the metrics, the tags will be merged and split by '|' and set to each
+    # metric for easy selection.
     # This is an easy and hacky solution before adding output properties from
     # test script becomes possible. Currently adding output properties is
     # limited to the scope of the recipe, so any runtime tags are pretty much
@@ -40,10 +40,13 @@ class Metric:
 
   def dump(self) -> TestScriptMetrics:
     result = TestScriptMetrics()
-    result.metrics.extend([m.dump() for m in self._metrics])
-    for tag in sorted(self._tags):
-      for metric in self._metrics:
-        m = metric.dump()
-        m.name = m.name + '@' + tag
-        result.metrics.append(m)
+    merged_tag = ''
+    if self._tags:
+      merged_tag = '|'
+      for tag in sorted(self._tags):
+        merged_tag += tag + '|'
+    for m in self._metrics:
+      metric = m.dump()
+      metric.tag = merged_tag
+      result.metrics.append(metric)
     return result

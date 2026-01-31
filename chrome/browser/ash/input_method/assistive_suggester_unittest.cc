@@ -94,7 +94,7 @@ ui::KeyEvent CreateRepeatKeyEvent(const ui::DomCode& code) {
 void SetInputMethodOptions(Profile& profile,
                            bool predictive_writing_enabled,
                            bool diacritics_on_longpress_enabled) {
-  base::Value::Dict input_method_setting;
+  base::DictValue input_method_setting;
   input_method_setting.SetByDottedPath(
       std::string(kUsEnglishEngineId) +
           ".physicalKeyboardEnablePredictiveWriting",

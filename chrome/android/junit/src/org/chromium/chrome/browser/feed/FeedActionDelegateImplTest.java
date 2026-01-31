@@ -97,7 +97,6 @@ public final class FeedActionDelegateImplTest {
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.FEED_SHOW_SIGN_IN_COMMAND)
     public void testStartSigninFlow_shownWhenFlagEnabled() {
         when(mActivity.getString(anyInt())).thenReturn("string");
         when(mMockSigninAndHistorySyncActivityLauncher.createBottomSheetSigninIntentOrShowError(
@@ -121,15 +120,6 @@ public final class FeedActionDelegateImplTest {
         assertEquals(HistorySyncConfig.OptInMode.NONE, config.historyOptInMode);
         assertNull(config.selectedCoreAccountId);
         verify(mActivity).startActivity(mSigninIntent);
-    }
-
-    @Test
-    @DisableFeatures(ChromeFeatureList.FEED_SHOW_SIGN_IN_COMMAND)
-    public void testStartSigninFlow_dontShowWhenFlagDisabled() {
-        mFeedActionDelegateImpl.startSigninFlow(SigninAccessPoint.NTP_FEED_TOP_PROMO);
-        verify(mMockSigninAndHistorySyncActivityLauncher, never())
-                .createBottomSheetSigninIntentOrShowError(
-                        any(), any(), any(), eq(SigninAccessPoint.NTP_FEED_TOP_PROMO));
     }
 
     @Test

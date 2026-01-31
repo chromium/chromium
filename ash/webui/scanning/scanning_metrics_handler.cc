@@ -54,7 +54,7 @@ void ScanningMetricsHandler::RegisterMessages() {
 }
 
 void ScanningMetricsHandler::HandleRecordNumScanSettingChanges(
-    const base::Value::List& args) {
+    const base::ListValue& args) {
   AllowJavascript();
 
   CHECK_EQ(1U, args.size());
@@ -63,7 +63,7 @@ void ScanningMetricsHandler::HandleRecordNumScanSettingChanges(
 }
 
 void ScanningMetricsHandler::HandleRecordScanCompleteAction(
-    const base::Value::List& args) {
+    const base::ListValue& args) {
   AllowJavascript();
 
   CHECK_EQ(1U, args.size());
@@ -73,11 +73,11 @@ void ScanningMetricsHandler::HandleRecordScanCompleteAction(
 }
 
 void ScanningMetricsHandler::HandleRecordScanJobSettings(
-    const base::Value::List& args) {
+    const base::ListValue& args) {
   AllowJavascript();
 
   CHECK_EQ(1U, args.size());
-  const base::Value::Dict& scan_job_settings = args[0].GetDict();
+  const base::DictValue& scan_job_settings = args[0].GetDict();
 
   base::UmaHistogramEnumeration(
       "Scanning.ScanJobSettings.Source",
@@ -105,7 +105,7 @@ void ScanningMetricsHandler::HandleRecordScanJobSettings(
 }
 
 void ScanningMetricsHandler::HandleRecordNumCompletedScans(
-    const base::Value::List& args) {
+    const base::ListValue& args) {
   AllowJavascript();
 
   CHECK_EQ(1U, args.size());

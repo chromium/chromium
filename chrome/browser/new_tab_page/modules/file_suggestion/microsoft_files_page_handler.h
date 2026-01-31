@@ -73,15 +73,15 @@ class MicrosoftFilesPageHandler
 
  private:
   std::vector<file_suggestion::mojom::FilePtr> GetTrendingFiles(
-      base::Value::Dict result);
+      base::DictValue result);
   std::vector<file_suggestion::mojom::FilePtr> GetRecentlyUsedAndSharedFiles(
-      base::Value::Dict result);
+      base::DictValue result);
   std::vector<file_suggestion::mojom::FilePtr> GetAggregatedFileSuggestions(
-      base::Value::Dict result);
+      base::DictValue result);
   // Returns non-insight files with the time that will be used to sort the
   // files. Note that non-insight files refers to used or shared files.
   std::vector<std::pair<base::Time, file_suggestion::mojom::FilePtr>>
-  GetNonInsightFiles(const base::Value::List* values, std::string response_id);
+  GetNonInsightFiles(const base::ListValue* values, std::string response_id);
   // Retrieves files based on the variation type enabled.
   void RequestFiles(GetFilesCallback callback,
                     std::string request_url,

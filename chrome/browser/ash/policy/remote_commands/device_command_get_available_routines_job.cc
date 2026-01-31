@@ -28,12 +28,12 @@ constexpr char kRoutinesFieldName[] = "routines";
 std::string CreatePayload(
     const std::vector<ash::cros_healthd::mojom::DiagnosticRoutineEnum>&
         available_routines) {
-  base::Value::List routine_list;
+  base::ListValue routine_list;
   for (const auto& routine : available_routines) {
     routine_list.Append(static_cast<int>(routine));
   }
   auto root_dict =
-      base::Value::Dict().Set(kRoutinesFieldName, std::move(routine_list));
+      base::DictValue().Set(kRoutinesFieldName, std::move(routine_list));
 
   return base::WriteJson(root_dict).value_or("");
 }

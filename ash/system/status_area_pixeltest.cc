@@ -137,7 +137,8 @@ INSTANTIATE_TEST_SUITE_P(
                      testing::Bool() /*IsActive()*/,
                      testing::Bool() /*IsSystemBlurEnabled()*/));
 
-TEST_P(StatusAreaParameterizedPixelTest, SystemTrayTest) {
+// TODO(crbug.com/443463885): Enable this test once the flakiness is fixed.
+TEST_P(StatusAreaParameterizedPixelTest, DISABLED_SystemTrayTest) {
   GetPrimaryShelf()->SetAlignment(GetShelfAlignment());
   ShellTestApi().SetTabletModeEnabledForTest(IsTabletMode());
   base::i18n::SetRTLForTesting(IsRTL());
@@ -151,7 +152,8 @@ TEST_P(StatusAreaParameterizedPixelTest, SystemTrayTest) {
       system_tray));
 }
 
-TEST_P(StatusAreaParameterizedPixelTest, DateTrayTest) {
+// TODO(crbug.com/443463885): Enable this test once the flakiness is fixed.
+TEST_P(StatusAreaParameterizedPixelTest, DISABLED_DateTrayTest) {
   GetPrimaryShelf()->SetAlignment(GetShelfAlignment());
   ShellTestApi().SetTabletModeEnabledForTest(IsTabletMode());
   base::i18n::SetRTLForTesting(IsRTL());

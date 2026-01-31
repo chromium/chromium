@@ -5,7 +5,6 @@
 #include "chromeos/ash/components/nearby/presence/credentials/local_device_data_provider_impl.h"
 
 #include "base/base64url.h"
-#include "base/containers/contains.h"
 #include "base/rand_util.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
@@ -50,7 +49,7 @@ LocalDeviceDataProviderImpl::~LocalDeviceDataProviderImpl() = default;
 void LocalDeviceDataProviderImpl::UpdatePersistedSharedCredentials(
     const std::vector<::nearby::internal::SharedCredential>&
         new_shared_credentials) {
-  base::Value::List list;
+  base::ListValue list;
   for (const auto& credential : new_shared_credentials) {
     list.Append(base::NumberToString(credential.id()));
   }
@@ -62,7 +61,7 @@ bool LocalDeviceDataProviderImpl::HaveSharedCredentialsChanged(
     const std::vector<::nearby::internal::SharedCredential>&
         new_shared_credentials) {
   std::set<std::string> persisted_shared_credential_ids;
-  const base::Value::List& list = pref_service_->GetList(
+  const base::ListValue& list = pref_service_->GetList(
       prefs::kNearbyPresenceSharedCredentialIdListPrefName);
   for (const auto& id : list) {
     persisted_shared_credential_ids.insert(id.GetString());

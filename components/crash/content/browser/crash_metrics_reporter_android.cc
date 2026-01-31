@@ -195,9 +195,9 @@ void CrashMetricsReporter::ChildProcessExited(
   const bool renderer_subframe = info.renderer_was_subframe;
   const bool renderer_allocation_failed =
       info.blink_oom_metrics.allocation_failed;
-  const base::ByteCount available_memory =
+  const base::ByteSize available_memory =
       info.blink_oom_metrics.current_available_memory;
-  const base::ByteCount swap_free = info.blink_oom_metrics.current_swap_free;
+  const base::ByteSize swap_free = info.blink_oom_metrics.current_swap_free;
 
   RecordSpareRendererAvailability(android_oom_kill, intentional_kill,
                                   info.is_spare_renderer,

@@ -29,7 +29,6 @@ class BluetoothTestAndroid : public BluetoothTestBase {
   void TearDown() override;
 
   // BluetoothTestBase overrides:
-  bool PlatformSupportsLowEnergy() override;
   void InitWithDefaultAdapter() override;
   void InitWithoutDefaultAdapter() override;
   void InitWithFakeAdapter() override;
@@ -207,7 +206,7 @@ class BluetoothTestAndroid : public BluetoothTestBase {
   // Posts a delayed task to be run on the current message loop.
   void PostDelayedTaskFromJava(JNIEnv* env,
                                const base::android::JavaRef<jobject>& runnable,
-                               jlong delayMillis);
+                               int64_t delayMillis);
 
   base::android::ScopedJavaGlobalRef<jobject> j_default_bluetooth_adapter_;
   base::android::ScopedJavaGlobalRef<jobject> j_fake_bluetooth_adapter_;

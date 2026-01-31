@@ -4,8 +4,7 @@
 
 var newTabUrls = [
   'chrome://newtab/',
-  // The tab URL for to the Local New Tab Page.
-  'chrome-search://local-ntp/local-ntp.html',
+  'chrome-native://newtab/',
 ];
 
 var firstWindowId;
@@ -19,8 +18,8 @@ function clickLink(id) {
   document.querySelector('#' + id).dispatchEvent(clickEvent);
 }
 
-chrome.test.runTests([
 
+const tests = [
   function getFirstWindowId() {
     chrome.windows.getCurrent(pass(function(window) {
       firstWindowId = window.id;
@@ -56,7 +55,8 @@ chrome.test.runTests([
         assertEq((i == 0), tabs[i].active && tabs[i].selected);
       }
       assertEq("about:blank", tabs[0].url);
-      assertTrue(newTabUrls.includes(tabs[1].url));
+      assertTrue(newTabUrls.includes(tabs[1].url),
+                 'Unexpected URL: ' + tabs[1].url);
       assertEq(pageUrl("a"), tabs[2].url);
     }));
 
@@ -236,5 +236,30 @@ chrome.test.runTests([
       }));
     }));
   }
+];
 
-]);
+// The following tests don't work on desktop android (yet).
+// TODO(https://crbug.com/371432155): Enable these on desktop android.
+const skipForAndroid = [
+    'openerTabId',
+    'testRedirectingToAnotherWindow',
+    'testOpenWindowInEmptyPopup',
+    'testOpenEmptyPopup',
+    'testCreatePopupAndMoveTab',
+    'detectLanguage',
+    'getCurrentWindow',
+];
+
+(async function() {
+  const os = await new Promise((resolve) => {
+    chrome.runtime.getPlatformInfo(info => resolve(info.os));
+  });
+  const isAndroid = os === 'android';
+  let testsToRun = tests;
+  if (isAndroid) {
+    testsToRun =
+        tests.filter((t) => { return !skipForAndroid.includes(t.name); });
+  }
+
+  chrome.test.runTests(testsToRun);
+})();

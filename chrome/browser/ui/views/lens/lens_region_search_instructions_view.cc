@@ -97,6 +97,8 @@ void LensRegionSearchInstructionsView::Init() {
           0, layout_params_.label_horizontal_distance, 0,
           layout_params_.label_horizontal_distance - kCloseButtonExtraMargin));
   label_ = AddChildView(std::move(label));
+  label_->SetBackgroundColor(kColorFeatureLensPromoBubbleBackground);
+  label_->SetEnabledColor(kColorFeatureLensPromoBubbleForeground);
 
   close_button_->SetImageHorizontalAlignment(views::ImageButton::ALIGN_CENTER);
   close_button_->SetProperty(
@@ -105,21 +107,10 @@ void LensRegionSearchInstructionsView::Init() {
   // rounded square.
   views::InstallCircleHighlightPathGenerator(close_button_.get());
   constructed_close_button_ = AddChildView(std::move(close_button_));
-}
-
-void LensRegionSearchInstructionsView::OnThemeChanged() {
-  BubbleDialogDelegateView::OnThemeChanged();
-  const auto* const color_provider = GetColorProvider();
-  auto foreground_color =
-      color_provider->GetColor(kColorFeatureLensPromoBubbleForeground);
-  auto background_color =
-      color_provider->GetColor(kColorFeatureLensPromoBubbleBackground);
-
-  label_->SetBackgroundColor(background_color);
-  label_->SetEnabledColor(foreground_color);
-  views::SetImageFromVectorIconWithColor(constructed_close_button_,
-                                         views::kIcCloseIcon, kCloseButtonSize,
-                                         foreground_color, foreground_color);
+  views::SetImageFromVectorIconWithColor(
+      constructed_close_button_, views::kIcCloseIcon, kCloseButtonSize,
+      {kColorFeatureLensPromoBubbleForeground,
+       kColorFeatureLensPromoBubbleForeground});
 }
 
 gfx::Rect LensRegionSearchInstructionsView::GetBubbleBounds() {

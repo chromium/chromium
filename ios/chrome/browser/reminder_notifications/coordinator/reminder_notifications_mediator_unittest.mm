@@ -55,12 +55,11 @@ TEST_F(ReminderNotificationsMediatorTest, SetReminderValidURL) {
 
   [mediator_ setReminderForURL:test_url time:reminder_time];
 
-  const base::Value::Dict& reminders =
+  const base::DictValue& reminders =
       pref_service_.GetDict(prefs::kReminderNotifications);
   ASSERT_EQ(reminders.size(), 1u);
 
-  const base::Value::Dict* reminder_details =
-      reminders.FindDict(test_url.spec());
+  const base::DictValue* reminder_details = reminders.FindDict(test_url.spec());
   ASSERT_TRUE(reminder_details);
 
   std::optional<base::Time> stored_reminder_time =
@@ -82,7 +81,7 @@ TEST_F(ReminderNotificationsMediatorTest, SetReminderInvalidURL) {
 
   [mediator_ setReminderForURL:invalid_url time:reminder_time];
 
-  const base::Value::Dict& reminders =
+  const base::DictValue& reminders =
       pref_service_.GetDict(prefs::kReminderNotifications);
   EXPECT_TRUE(reminders.empty());
 }
@@ -96,7 +95,7 @@ TEST_F(ReminderNotificationsMediatorTest, SetReminderEmptyURL) {
 
   [mediator_ setReminderForURL:empty_url time:reminder_time];
 
-  const base::Value::Dict& reminders =
+  const base::DictValue& reminders =
       pref_service_.GetDict(prefs::kReminderNotifications);
   EXPECT_TRUE(reminders.empty());
 }
@@ -119,12 +118,11 @@ TEST_F(ReminderNotificationsMediatorTest, SetReminderOverwrite) {
   // Set the second reminder.
   [mediator_ setReminderForURL:test_url time:second_reminder_time];
 
-  const base::Value::Dict& reminders =
+  const base::DictValue& reminders =
       pref_service_.GetDict(prefs::kReminderNotifications);
   ASSERT_EQ(reminders.size(), 1u);
 
-  const base::Value::Dict* reminder_details =
-      reminders.FindDict(test_url.spec());
+  const base::DictValue* reminder_details = reminders.FindDict(test_url.spec());
   ASSERT_TRUE(reminder_details);
 
   // Check that the reminder time is the second one.
@@ -155,12 +153,12 @@ TEST_F(ReminderNotificationsMediatorTest, SetMultipleReminders) {
   [mediator_ setReminderForURL:url2 time:time2];
   base::Time creation_time2 = base::Time::Now();
 
-  const base::Value::Dict& reminders =
+  const base::DictValue& reminders =
       pref_service_.GetDict(prefs::kReminderNotifications);
   ASSERT_EQ(reminders.size(), 2u);
 
   // Check first reminder
-  const base::Value::Dict* details1 = reminders.FindDict(url1.spec());
+  const base::DictValue* details1 = reminders.FindDict(url1.spec());
   ASSERT_TRUE(details1);
   std::optional<base::Time> stored_time1 =
       base::ValueToTime(details1->Find(kReminderNotificationsTimeKey));
@@ -172,7 +170,7 @@ TEST_F(ReminderNotificationsMediatorTest, SetMultipleReminders) {
   EXPECT_EQ(creation_time1, stored_creation_time1.value());
 
   // Check second reminder
-  const base::Value::Dict* details2 = reminders.FindDict(url2.spec());
+  const base::DictValue* details2 = reminders.FindDict(url2.spec());
   ASSERT_TRUE(details2);
   std::optional<base::Time> stored_time2 =
       base::ValueToTime(details2->Find(kReminderNotificationsTimeKey));

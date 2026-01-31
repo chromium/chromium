@@ -46,32 +46,30 @@ class UI_ANDROID_EXPORT DisplayAndroidManager : public display::ScreenBase {
   // Methods called from Java.
 
   void UpdateDisplay(JNIEnv* env,
-                     jint sdkDisplayId,
+                     int32_t sdkDisplayId,
                      const base::android::JavaRef<jstring>& label,
                      const base::android::JavaRef<jintArray>& jBounds,
                      const base::android::JavaRef<jintArray>& jWorkArea,
-                     jint width,
-                     jint height,
-                     jfloat dipScale,
-                     jfloat pixelsPerInchX,
-                     jfloat pixelsPerInchY,
-                     jint rotationDegrees,
-                     jint bitsPerPixel,
-                     jint bitsPerComponent,
-                     jboolean isWideColorGamut,
-                     jboolean isHdr,
-                     jfloat hdrMaxLuminanceRatio,
-                     jboolean isInternal);
-  void RemoveDisplay(JNIEnv* env,
-                     jint sdkDisplayId);
-  void SetPrimaryDisplayId(JNIEnv* env,
-                           jint sdkDisplayId);
+                     int32_t width,
+                     int32_t height,
+                     float dipScale,
+                     float pixelsPerInchX,
+                     float pixelsPerInchY,
+                     int32_t rotationDegrees,
+                     int32_t bitsPerPixel,
+                     int32_t bitsPerComponent,
+                     bool isWideColorGamut,
+                     bool isHdr,
+                     float hdrMaxLuminanceRatio,
+                     bool isInternal);
+  void RemoveDisplay(JNIEnv* env, int32_t sdkDisplayId);
+  void SetPrimaryDisplayId(JNIEnv* env, int32_t sdkDisplayId);
 
-  jint GetDisplaySdkMatching(JNIEnv* env,
-                             jint x,
-                             jint y,
-                             jint width,
-                             jint height);
+  int32_t GetDisplaySdkMatching(JNIEnv* env,
+                                int32_t x,
+                                int32_t y,
+                                int32_t width,
+                                int32_t height);
 
  private:
   friend class WindowAndroid;
@@ -94,7 +92,7 @@ class UI_ANDROID_EXPORT DisplayAndroidManager : public display::ScreenBase {
                               int bits_per_component,
                               bool is_wide_color_gamut,
                               bool is_hdr,
-                              jfloat hdr_max_luminance_ratio);
+                              float hdr_max_luminance_ratio);
 
   const bool use_display_wide_color_gamut_;
   int primary_display_id_ = 0;

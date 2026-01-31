@@ -4,10 +4,10 @@
 
 #include "chrome/browser/ui/webui/side_panel/customize_chrome/customize_chrome_page_handler.h"
 
+#include <algorithm>
 #include <utility>
 #include <vector>
 
-#include "base/containers/contains.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
@@ -481,26 +481,24 @@ void CustomizeChromePageHandler::SetMostVisitedSettings(
 
   // Disable shortcuts auto-removal upon user interaction.
   DisableShortcutsAutoRemoval(profile_);
-  if ((base::Contains(current_tile_types, ntp_tiles::TileType::kCustomLinks) !=
-           base::Contains(types_set, ntp_tiles::TileType::kCustomLinks) ||
-       (base::Contains(current_tile_types, ntp_tiles::TileType::kTopSites) !=
-        base::Contains(types_set, ntp_tiles::TileType::kTopSites)))) {
-    UpdatePrefAndLogEvent(
-        ntp_prefs::kNtpCustomLinksVisible,
-        base::Contains(types_set, ntp_tiles::TileType::kCustomLinks),
-        NTP_CUSTOMIZE_SHORTCUT_TOGGLE_TYPE);
+  if ((current_tile_types.contains(ntp_tiles::TileType::kCustomLinks) !=
+           types_set.contains(ntp_tiles::TileType::kCustomLinks) ||
+       (current_tile_types.contains(ntp_tiles::TileType::kTopSites) !=
+        types_set.contains(ntp_tiles::TileType::kTopSites)))) {
+    UpdatePrefAndLogEvent(ntp_prefs::kNtpCustomLinksVisible,
+                          types_set.contains(ntp_tiles::TileType::kCustomLinks),
+                          NTP_CUSTOMIZE_SHORTCUT_TOGGLE_TYPE);
   }
 
-  if (base::Contains(current_tile_types,
-                     ntp_tiles::TileType::kEnterpriseShortcuts) !=
-      base::Contains(types_set, ntp_tiles::TileType::kEnterpriseShortcuts)) {
+  if (current_tile_types.contains(ntp_tiles::TileType::kEnterpriseShortcuts) !=
+      types_set.contains(ntp_tiles::TileType::kEnterpriseShortcuts)) {
     // If enterprise shortcuts are disabled or the policy is not set, skip this
     // update.
     if (base::FeatureList::IsEnabled(ntp_tiles::kNtpEnterpriseShortcuts) &&
         !IsEnterpriseShortcutsEmpty()) {
       UpdatePrefAndLogEvent(
           ntp_prefs::kNtpEnterpriseShortcutsVisible,
-          base::Contains(types_set, ntp_tiles::TileType::kEnterpriseShortcuts),
+          types_set.contains(ntp_tiles::TileType::kEnterpriseShortcuts),
           NTP_CUSTOMIZE_ENTERPRISE_SHORTCUT_TOGGLE_VISIBILITY);
     }
   }
@@ -608,14 +606,13 @@ void CustomizeChromePageHandler::SetModuleDisabled(const std::string& module_id,
                                                    bool disabled) {
   DisableModuleAutoRemoval(profile_, module_id);
   ScopedListPrefUpdate update(profile_->GetPrefs(), prefs::kNtpDisabledModules);
-  base::Value::List& list = update.Get();
-  base::Value module_id_value(module_id);
+  base::ListValue& list = update.Get();
   if (disabled) {
-    if (!base::Contains(list, module_id_value)) {
-      list.Append(std::move(module_id_value));
+    if (!list.contains(module_id)) {
+      list.Append(module_id);
     }
   } else {
-    list.EraseValue(module_id_value);
+    list.EraseValue(base::Value(module_id));
   }
 }
 
@@ -644,9 +641,9 @@ void CustomizeChromePageHandler::UpdateModulesSettings() {
           l10n_util::GetStringUTF8(description_message_id.value());
     }
     module_settings->enabled =
-        !base::Contains(disabled_module_ids, module_settings->id);
+        !std::ranges::contains(disabled_module_ids, module_settings->id);
     module_settings->visible =
-        !base::Contains(hidden_module_ids, module_settings->id);
+        !std::ranges::contains(hidden_module_ids, module_settings->id);
     modules_settings.push_back(std::move(module_settings));
   }
   page_->SetModulesSettings(

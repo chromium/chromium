@@ -14,8 +14,8 @@
 
 namespace ui {
 
-base::Value::List GetDesktopEnvironmentInfo() {
-  base::Value::List result;
+base::ListValue GetDesktopEnvironmentInfo() {
+  base::ListValue result;
   auto env(base::Environment::Create());
 
   std::optional<std::string> value =

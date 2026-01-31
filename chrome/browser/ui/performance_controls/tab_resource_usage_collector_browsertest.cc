@@ -1,9 +1,10 @@
 // Copyright 2024 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
+
 #include "chrome/browser/ui/performance_controls/tab_resource_usage_collector.h"
 
-#include "base/byte_count.h"
+#include "base/byte_size.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/performance_controls/tab_resource_usage_tab_helper.h"
 #include "chrome/browser/ui/performance_controls/test_support/resource_usage_collector_observer.h"
@@ -37,7 +38,8 @@ class TabResourceUsageCollectorBrowserTest : public InProcessBrowserTest {
 };
 
 // TODO(crbug.com/368862390): This test fails on ChromeOS and Mac builds.
-#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC)
+// TODO(crbug.com/477852868): This test is also flaky on Win builds.
+#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
 #define MAYBE_RefreshAllTabMemory DISABLED_RefreshAllTabMemory
 #else
 #define MAYBE_RefreshAllTabMemory RefreshAllTabMemory
@@ -47,7 +49,7 @@ IN_PROC_BROWSER_TEST_F(TabResourceUsageCollectorBrowserTest,
   AddAndWaitForTabReady();
   AddAndWaitForTabReady();
   TabStripModel* const model = GetTabStripModel();
-  base::ByteCount bytes_used = base::ByteCount(100);
+  base::ByteSize bytes_used = base::ByteSize(100);
   TabResourceUsageTabHelper* const first_tab_helper =
       TabResourceUsageTabHelper::From(model->GetTabAtIndex(0));
   first_tab_helper->SetMemoryUsage(bytes_used);
@@ -77,7 +79,7 @@ IN_PROC_BROWSER_TEST_F(TabResourceUsageCollectorBrowserTest,
   AddAndWaitForTabReady();
   AddAndWaitForTabReady();
   TabStripModel* const model = GetTabStripModel();
-  base::ByteCount bytes_used = base::ByteCount(100);
+  base::ByteSize bytes_used = base::ByteSize(100);
   TabResourceUsageTabHelper* const first_tab_helper =
       TabResourceUsageTabHelper::From(model->GetTabAtIndex(0));
   first_tab_helper->SetMemoryUsage(bytes_used);

@@ -1,0 +1,11 @@
+Name: windows-link
+URL: https://crates.io/crates/windows-link
+Version: 0.2.1
+Revision: d468916ac27a36fb8a12bafc1bf5c0ec2fe92238
+Update Mechanism: Manual (https://crbug.com/449898466)
+License: Apache-2.0
+License File: //third_party/rust/chromium_crates_io/vendor/windows-link-v0_2/license-apache-2.0
+Shipped: yes
+Security Critical: yes
+
+Description: Linking for Windows

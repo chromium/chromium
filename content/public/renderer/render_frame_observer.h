@@ -263,6 +263,11 @@ class CONTENT_EXPORT RenderFrameObserver {
   virtual void DidObserveSoftNavigation(
       blink::SoftNavigationMetricsForReporting metrics) {}
 
+  // A new largest contentful paint candidate relating to the most recent
+  // soft navigation was observed. Also see DidObserveSoftNavigation().
+  virtual void DidObserveSoftLargestContentfulPaint(
+      const blink::LargestContentfulPaintDetailsForReporting& lcp) {}
+
   // Reports that visible elements in the frame shifted (bit.ly/lsm-explainer).
   // This is called once for each animation frame containing any layout shift,
   // and receives the layout shift (LS) score for that frame.  The cumulative

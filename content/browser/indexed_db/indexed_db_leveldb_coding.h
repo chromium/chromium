@@ -185,7 +185,7 @@ class KeyPrefix {
 
   static bool Decode(std::string_view* slice, KeyPrefix* result);
   std::string Encode() const;
-  static std::string EncodeEmpty();
+  CONTENT_EXPORT static std::string EncodeEmpty();
   int Compare(const KeyPrefix& other) const;
 
   CONTENT_EXPORT static bool IsValidDatabaseId(int64_t database_id);
@@ -211,15 +211,17 @@ class KeyPrefix {
   int64_t index_id_;
 
  private:
+  FRIEND_TEST_ALL_PREFIXES(IndexedDBLevelDBCodingTest, Empty);
+
   // Special constructor for CreateWithSpecialIndex()
   KeyPrefix(enum Type,
             int64_t database_id,
             int64_t object_store_id,
             int64_t index_id);
 
-  static std::string EncodeInternal(int64_t database_id,
-                                    int64_t object_store_id,
-                                    int64_t index_id);
+  CONTENT_EXPORT static std::string EncodeInternal(int64_t database_id,
+                                                   int64_t object_store_id,
+                                                   int64_t index_id);
 };
 
 class SchemaVersionKey {

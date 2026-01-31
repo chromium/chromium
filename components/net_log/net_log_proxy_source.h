@@ -53,7 +53,7 @@ class NetLogProxySource : public net::NetLog::ThreadSafeObserver,
                        const net::NetLogSource& net_log_source,
                        net::NetLogEventPhase phase,
                        base::TimeTicks time,
-                       base::Value::Dict params);
+                       base::DictValue params);
 
   mojo::Receiver<network::mojom::NetLogProxySource> proxy_source_receiver_;
   mojo::Remote<network::mojom::NetLogProxySink> proxy_sink_remote_;

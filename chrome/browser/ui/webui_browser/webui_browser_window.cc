@@ -135,6 +135,9 @@ WebUIBrowserWindow::WebUIBrowserWindow(Browser* browser) : browser_(browser) {
   modal_dialog_host_ = std::make_unique<WebUIBrowserModalDialogHost>(this);
   extensions_container_ =
       std::make_unique<WebUIBrowserExtensionsContainer>(*browser_, *this);
+  scoped_extensions_container_user_data_ =
+      std::make_unique<ui::ScopedUnownedUserData<ExtensionsContainer>>(
+          browser_->GetUnownedUserDataHost(), *extensions_container_);
 
   web_view->LoadInitialURL(GURL(chrome::kChromeUIWebuiBrowserURL));
   web_view_ = widget_->SetClientContentsView(std::move(web_view));
@@ -157,6 +160,7 @@ WebUIBrowserWindow::~WebUIBrowserWindow() {
   web_view_ = nullptr;
   // We want to destroy the extensions container before the `widget_` since
   // it wants to de-register itself for focus stuff.
+  scoped_extensions_container_user_data_.reset();
   extensions_container_.reset();
   widget_->RemoveObserver(this);
   widget_.reset();
@@ -198,24 +202,24 @@ WebUIBrowserWindow* WebUIBrowserWindow::FromNativeWindow(
 }
 
 void WebUIBrowserWindow::Show() {
-  NOTIMPLEMENTED();
+  NOTIMPLEMENTED_LOG_ONCE();
 }
 
 void WebUIBrowserWindow::ShowInactive() {
-  NOTIMPLEMENTED();
+  NOTIMPLEMENTED_LOG_ONCE();
 }
 
 void WebUIBrowserWindow::Hide() {
-  NOTIMPLEMENTED();
+  NOTIMPLEMENTED_LOG_ONCE();
 }
 
 bool WebUIBrowserWindow::IsVisible() const {
-  NOTIMPLEMENTED();
+  NOTIMPLEMENTED_LOG_ONCE();
   return false;
 }
 
 void WebUIBrowserWindow::SetBounds(const gfx::Rect& bounds) {
-  NOTIMPLEMENTED();
+  NOTIMPLEMENTED_LOG_ONCE();
 }
 
 void WebUIBrowserWindow::Close() {
@@ -231,29 +235,29 @@ void WebUIBrowserWindow::Close() {
 }
 
 void WebUIBrowserWindow::Activate() {
-  NOTIMPLEMENTED();
+  NOTIMPLEMENTED_LOG_ONCE();
 }
 
 void WebUIBrowserWindow::Deactivate() {
-  NOTIMPLEMENTED();
+  NOTIMPLEMENTED_LOG_ONCE();
 }
 
 bool WebUIBrowserWindow::IsActive() const {
-  NOTIMPLEMENTED();
+  NOTIMPLEMENTED_LOG_ONCE();
   return false;
 }
 
 void WebUIBrowserWindow::FlashFrame(bool flash) {
-  NOTIMPLEMENTED();
+  NOTIMPLEMENTED_LOG_ONCE();
 }
 
 ui::ZOrderLevel WebUIBrowserWindow::GetZOrderLevel() const {
-  NOTIMPLEMENTED();
+  NOTIMPLEMENTED_LOG_ONCE();
   return ui::ZOrderLevel::kNormal;
 }
 
 void WebUIBrowserWindow::SetZOrderLevel(ui::ZOrderLevel order) {
-  NOTIMPLEMENTED();
+  NOTIMPLEMENTED_LOG_ONCE();
 }
 
 gfx::NativeWindow WebUIBrowserWindow::GetNativeWindow() const {
@@ -270,24 +274,24 @@ gfx::NativeWindow WebUIBrowserWindow::GetNativeWindow() const {
 }
 
 bool WebUIBrowserWindow::IsOnCurrentWorkspace() const {
-  NOTIMPLEMENTED();
+  NOTIMPLEMENTED_LOG_ONCE();
   return false;
 }
 
 bool WebUIBrowserWindow::IsVisibleOnScreen() const {
-  NOTIMPLEMENTED();
+  NOTIMPLEMENTED_LOG_ONCE();
   return false;
 }
 
 void WebUIBrowserWindow::SetTopControlsShownRatio(
     content::WebContents* web_contents,
     float ratio) {
-  NOTIMPLEMENTED();
+  NOTIMPLEMENTED_LOG_ONCE();
 }
 
 bool WebUIBrowserWindow::DoBrowserControlsShrinkRendererSize(
     const content::WebContents* contents) const {
-  NOTIMPLEMENTED();
+  NOTIMPLEMENTED_LOG_ONCE();
   return false;
 }
 
@@ -452,7 +456,7 @@ gfx::Rect WebUIBrowserWindow::GetContentsBoundsInScreen() const {
       ui::ElementTracker::GetElementTracker()->GetFirstMatchingElement(
           kContentsContainerViewElementId,
           views::ElementTrackerViews::GetContextForWidget(widget_.get()));
-  return content_region->GetScreenBounds();
+  return content_region ? content_region->GetScreenBounds() : gfx::Rect();
 }
 
 ui::TrackedElement* WebUIBrowserWindow::GetExtensionsMenuButtonAnchor() const {
@@ -568,17 +572,17 @@ bool WebUIBrowserWindow::CanHandleAccelerators() const {
 }
 
 int WebUIBrowserWindow::GetTopControlsHeight() const {
-  NOTIMPLEMENTED();
+  NOTIMPLEMENTED_LOG_ONCE();
   return 0;
 }
 
 void WebUIBrowserWindow::SetTopControlsGestureScrollInProgress(
     bool in_progress) {
-  NOTIMPLEMENTED();
+  NOTIMPLEMENTED_LOG_ONCE();
 }
 
 std::vector<StatusBubble*> WebUIBrowserWindow::GetStatusBubbles() {
-  NOTIMPLEMENTED();
+  NOTIMPLEMENTED_LOG_ONCE();
   return {};
 }
 
@@ -593,12 +597,12 @@ void WebUIBrowserWindow::BookmarkBarStateChanged(
 }
 
 void WebUIBrowserWindow::TemporarilyShowBookmarkBar(base::TimeDelta duration) {
-  NOTIMPLEMENTED();
+  NOTIMPLEMENTED_LOG_ONCE();
 }
 
 void WebUIBrowserWindow::UpdateDevTools(
     content::WebContents* inspected_web_contents) {
-  NOTIMPLEMENTED();
+  NOTIMPLEMENTED_LOG_ONCE();
 }
 
 bool WebUIBrowserWindow::CanDockDevTools() const {
@@ -609,21 +613,21 @@ bool WebUIBrowserWindow::CanDockDevTools() const {
 }
 
 void WebUIBrowserWindow::UpdateLoadingAnimations(bool is_visible) {
-  NOTIMPLEMENTED();
+  NOTIMPLEMENTED_LOG_ONCE();
 }
 
 void WebUIBrowserWindow::SetStarredState(bool is_starred) {
-  NOTIMPLEMENTED();
+  NOTIMPLEMENTED_LOG_ONCE();
 }
 
 bool WebUIBrowserWindow::IsTabModalPopupDeprecated() const {
-  NOTIMPLEMENTED();
+  NOTIMPLEMENTED_LOG_ONCE();
   return false;
 }
 
 void WebUIBrowserWindow::SetIsTabModalPopupDeprecated(
     bool is_tab_modal_popup_deprecated) {
-  NOTIMPLEMENTED();
+  NOTIMPLEMENTED_LOG_ONCE();
 }
 
 void WebUIBrowserWindow::OnActiveTabChanged(content::WebContents* old_contents,
@@ -639,59 +643,58 @@ void WebUIBrowserWindow::OnActiveTabChanged(content::WebContents* old_contents,
   // on some URLs.
   extensions_container_->NotifyOfAllActions();
 
-  NOTIMPLEMENTED();
+  NOTIMPLEMENTED_LOG_ONCE();
 }
 
 void WebUIBrowserWindow::OnTabDetached(content::WebContents* contents,
                                        bool was_active) {
-  NOTIMPLEMENTED();
+  NOTIMPLEMENTED_LOG_ONCE();
 }
 
 void WebUIBrowserWindow::ZoomChangedForActiveTab(bool can_show_bubble) {
-  NOTIMPLEMENTED();
+  NOTIMPLEMENTED_LOG_ONCE();
 }
 
 bool WebUIBrowserWindow::ShouldHideUIForFullscreen() const {
-  NOTIMPLEMENTED();
+  NOTIMPLEMENTED_LOG_ONCE();
   return false;
 }
 
 bool WebUIBrowserWindow::IsFullscreenBubbleVisible() const {
-  NOTIMPLEMENTED();
+  NOTIMPLEMENTED_LOG_ONCE();
   return false;
 }
 
 bool WebUIBrowserWindow::IsForceFullscreen() const {
-  NOTIMPLEMENTED();
+  NOTIMPLEMENTED_LOG_ONCE();
   return false;
 }
 
 void WebUIBrowserWindow::SetForceFullscreen(bool force_fullscreen) {
-  NOTIMPLEMENTED();
+  NOTIMPLEMENTED_LOG_ONCE();
 }
 
 gfx::Size WebUIBrowserWindow::GetContentsSize() const {
-  NOTIMPLEMENTED();
-  return gfx::Size();
+  return GetContentsBoundsInScreen().size();
 }
 
 void WebUIBrowserWindow::SetContentsSize(const gfx::Size& size) {
-  NOTIMPLEMENTED();
+  NOTIMPLEMENTED_LOG_ONCE();
 }
 
 void WebUIBrowserWindow::UpdatePageActionIcon(PageActionIconType type) {
-  NOTIMPLEMENTED();
+  NOTIMPLEMENTED_LOG_ONCE();
 }
 
 autofill::AutofillBubbleHandler*
 WebUIBrowserWindow::GetAutofillBubbleHandler() {
-  NOTIMPLEMENTED();
+  NOTIMPLEMENTED_LOG_ONCE();
   return nullptr;
 }
 
 void WebUIBrowserWindow::ExecutePageActionIconForTesting(
     PageActionIconType type) {
-  NOTIMPLEMENTED();
+  NOTIMPLEMENTED_LOG_ONCE();
 }
 
 LocationBar* WebUIBrowserWindow::GetLocationBar() const {
@@ -711,75 +714,71 @@ void WebUIBrowserWindow::UpdateReloadStopState(bool is_loading, bool force) {
 }
 
 void WebUIBrowserWindow::UpdateToolbar(content::WebContents* contents) {
-  NOTIMPLEMENTED();
+  NOTIMPLEMENTED_LOG_ONCE();
 }
 
 bool WebUIBrowserWindow::UpdateToolbarSecurityState() {
-  NOTIMPLEMENTED();
+  NOTIMPLEMENTED_LOG_ONCE();
   return false;
 }
 
 void WebUIBrowserWindow::UpdateCustomTabBarVisibility(bool visible,
                                                       bool animate) {
-  NOTIMPLEMENTED();
+  NOTIMPLEMENTED_LOG_ONCE();
 }
 
 void WebUIBrowserWindow::SetDevToolsScrimVisibility(bool visible) {
-  NOTIMPLEMENTED();
+  NOTIMPLEMENTED_LOG_ONCE();
 }
 
 void WebUIBrowserWindow::ResetToolbarTabState(content::WebContents* contents) {
-  NOTIMPLEMENTED();
+  NOTIMPLEMENTED_LOG_ONCE();
 }
 
 void WebUIBrowserWindow::FocusToolbar() {
-  NOTIMPLEMENTED();
-}
-
-ExtensionsContainer* WebUIBrowserWindow::GetExtensionsContainer() {
-  return extensions_container_.get();
+  NOTIMPLEMENTED_LOG_ONCE();
 }
 
 void WebUIBrowserWindow::ToolbarSizeChanged(bool is_animating) {
-  NOTIMPLEMENTED();
+  NOTIMPLEMENTED_LOG_ONCE();
 }
 
 void WebUIBrowserWindow::TabDraggingStatusChanged(bool is_dragging) {
-  NOTIMPLEMENTED();
+  NOTIMPLEMENTED_LOG_ONCE();
 }
 
 void WebUIBrowserWindow::LinkOpeningFromGesture(
     WindowOpenDisposition disposition) {
-  NOTIMPLEMENTED();
+  NOTIMPLEMENTED_LOG_ONCE();
 }
 
 void WebUIBrowserWindow::FocusAppMenu() {
-  NOTIMPLEMENTED();
+  NOTIMPLEMENTED_LOG_ONCE();
 }
 
 void WebUIBrowserWindow::FocusBookmarksToolbar() {
-  NOTIMPLEMENTED();
+  NOTIMPLEMENTED_LOG_ONCE();
 }
 
 void WebUIBrowserWindow::FocusInactivePopupForAccessibility() {
-  NOTIMPLEMENTED();
+  NOTIMPLEMENTED_LOG_ONCE();
 }
 
 void WebUIBrowserWindow::RotatePaneFocus(bool forwards) {
-  NOTIMPLEMENTED();
+  NOTIMPLEMENTED_LOG_ONCE();
 }
 
 void WebUIBrowserWindow::FocusWebContentsPane() {
-  NOTIMPLEMENTED();
+  NOTIMPLEMENTED_LOG_ONCE();
 }
 
 bool WebUIBrowserWindow::IsBookmarkBarVisible() const {
-  NOTIMPLEMENTED();
+  NOTIMPLEMENTED_LOG_ONCE();
   return false;
 }
 
 bool WebUIBrowserWindow::IsBookmarkBarAnimating() const {
-  NOTIMPLEMENTED();
+  NOTIMPLEMENTED_LOG_ONCE();
   return false;
 }
 
@@ -787,17 +786,17 @@ bool WebUIBrowserWindow::IsTabStripEditable() const {
   return true;
 }
 
-void WebUIBrowserWindow::SetTabStripNotEditableForTesting() {
-  NOTIMPLEMENTED();
+void WebUIBrowserWindow::DisableTabStripEditingForTesting() {
+  NOTIMPLEMENTED_LOG_ONCE();
 }
 
 bool WebUIBrowserWindow::IsToolbarVisible() const {
-  NOTIMPLEMENTED();
+  NOTIMPLEMENTED_LOG_ONCE();
   return false;
 }
 
 bool WebUIBrowserWindow::IsToolbarShowing() const {
-  NOTIMPLEMENTED();
+  NOTIMPLEMENTED_LOG_ONCE();
   return false;
 }
 
@@ -808,12 +807,12 @@ bool WebUIBrowserWindow::IsLocationBarVisible() const {
 SharingDialog* WebUIBrowserWindow::ShowSharingDialog(
     content::WebContents* contents,
     SharingDialogData data) {
-  NOTIMPLEMENTED();
+  NOTIMPLEMENTED_LOG_ONCE();
   return nullptr;
 }
 
 void WebUIBrowserWindow::ShowUpdateChromeDialog() {
-  NOTIMPLEMENTED();
+  NOTIMPLEMENTED_LOG_ONCE();
 }
 
 void WebUIBrowserWindow::ShowIntentPickerBubble(
@@ -823,18 +822,18 @@ void WebUIBrowserWindow::ShowIntentPickerBubble(
     apps::IntentPickerBubbleType bubble_type,
     const std::optional<url::Origin>& initiating_origin,
     IntentPickerResponse callback) {
-  NOTIMPLEMENTED();
+  NOTIMPLEMENTED_LOG_ONCE();
 }
 
 void WebUIBrowserWindow::ShowBookmarkBubble(const GURL& url,
                                             bool already_bookmarked) {
-  NOTIMPLEMENTED();
+  NOTIMPLEMENTED_LOG_ONCE();
 }
 
 sharing_hub::ScreenshotCapturedBubble*
 WebUIBrowserWindow::ShowScreenshotCapturedBubble(content::WebContents* contents,
                                                  const gfx::Image& image) {
-  NOTIMPLEMENTED();
+  NOTIMPLEMENTED_LOG_ONCE();
   return nullptr;
 }
 
@@ -842,32 +841,32 @@ qrcode_generator::QRCodeGeneratorBubbleView*
 WebUIBrowserWindow::ShowQRCodeGeneratorBubble(content::WebContents* contents,
                                               const GURL& url,
                                               bool show_back_button) {
-  NOTIMPLEMENTED();
+  NOTIMPLEMENTED_LOG_ONCE();
   return nullptr;
 }
 
 send_tab_to_self::SendTabToSelfBubbleView*
 WebUIBrowserWindow::ShowSendTabToSelfDevicePickerBubble(
     content::WebContents* contents) {
-  NOTIMPLEMENTED();
+  NOTIMPLEMENTED_LOG_ONCE();
   return nullptr;
 }
 
 send_tab_to_self::SendTabToSelfBubbleView*
 WebUIBrowserWindow::ShowSendTabToSelfPromoBubble(content::WebContents* contents,
                                                  bool show_signin_button) {
-  NOTIMPLEMENTED();
+  NOTIMPLEMENTED_LOG_ONCE();
   return nullptr;
 }
 
 #if BUILDFLAG(IS_CHROMEOS)
 void WebUIBrowserWindow::ToggleMultitaskMenu() {
-  NOTIMPLEMENTED();
+  NOTIMPLEMENTED_LOG_ONCE();
 }
 #else
 sharing_hub::SharingHubBubbleView* WebUIBrowserWindow::ShowSharingHubBubble(
     share::ShareAttempt attempt) {
-  NOTIMPLEMENTED();
+  NOTIMPLEMENTED_LOG_ONCE();
   return nullptr;
 }
 #endif  // BUILDFLAG(IS_CHROMEOS)
@@ -879,7 +878,7 @@ ShowTranslateBubbleResult WebUIBrowserWindow::ShowTranslateBubble(
     const std::string& target_language,
     translate::TranslateErrors error_type,
     bool is_user_gesture) {
-  NOTIMPLEMENTED();
+  NOTIMPLEMENTED_LOG_ONCE();
   return ShowTranslateBubbleResult::kBrowserWindowNotValid;
 }
 
@@ -887,18 +886,12 @@ void WebUIBrowserWindow::StartPartialTranslate(
     const std::string& source_language,
     const std::string& target_language,
     const std::u16string& text_selection) {
-  NOTIMPLEMENTED();
-}
-
-void WebUIBrowserWindow::ShowOneClickSigninConfirmation(
-    const std::u16string& email,
-    base::OnceCallback<void(bool)> confirmed_callback) {
-  NOTIMPLEMENTED();
+  NOTIMPLEMENTED_LOG_ONCE();
 }
 
 DownloadBubbleUIController*
 WebUIBrowserWindow::GetDownloadBubbleUIController() {
-  NOTIMPLEMENTED();
+  NOTIMPLEMENTED_LOG_ONCE();
   return nullptr;
 }
 
@@ -906,7 +899,7 @@ void WebUIBrowserWindow::ConfirmBrowserCloseWithPendingDownloads(
     int download_count,
     Browser::DownloadCloseType dialog_type,
     base::OnceCallback<void(bool)> callback) {
-  NOTIMPLEMENTED();
+  NOTIMPLEMENTED_LOG_ONCE();
 }
 
 void WebUIBrowserWindow::UserChangedTheme(
@@ -916,20 +909,20 @@ void WebUIBrowserWindow::UserChangedTheme(
 }
 
 void WebUIBrowserWindow::ShowAppMenu() {
-  NOTIMPLEMENTED();
+  NOTIMPLEMENTED_LOG_ONCE();
 }
 
 void WebUIBrowserWindow::PreHandleDragUpdate(const content::DropData& drop_data,
                                              const gfx::PointF& point) {
-  NOTIMPLEMENTED();
+  NOTIMPLEMENTED_LOG_ONCE();
 }
 
 void WebUIBrowserWindow::PreHandleDragExit() {
-  NOTIMPLEMENTED();
+  NOTIMPLEMENTED_LOG_ONCE();
 }
 
 void WebUIBrowserWindow::HandleDragEnded() {
-  NOTIMPLEMENTED();
+  NOTIMPLEMENTED_LOG_ONCE();
 }
 
 content::KeyboardEventProcessingResult
@@ -1014,15 +1007,15 @@ WebUIBrowserWindow::GetWebContentsModalDialogHostFor(
 
 void WebUIBrowserWindow::ShowAvatarBubbleFromAvatarButton(
     bool is_source_accelerator) {
-  NOTIMPLEMENTED();
+  NOTIMPLEMENTED_LOG_ONCE();
 }
 
 void WebUIBrowserWindow::MaybeShowProfileSwitchIPH() {
-  NOTIMPLEMENTED();
+  NOTIMPLEMENTED_LOG_ONCE();
 }
 
 void WebUIBrowserWindow::MaybeShowSupervisedUserProfileSignInIPH() {
-  NOTIMPLEMENTED();
+  NOTIMPLEMENTED_LOG_ONCE();
 }
 
 void WebUIBrowserWindow::ShowHatsDialog(
@@ -1033,7 +1026,7 @@ void WebUIBrowserWindow::ShowHatsDialog(
     base::OnceClosure failure_callback,
     const SurveyBitsData& product_specific_bits_data,
     const SurveyStringData& product_specific_string_data) {
-  NOTIMPLEMENTED();
+  NOTIMPLEMENTED_LOG_ONCE();
 }
 
 ExclusiveAccessContext* WebUIBrowserWindow::GetExclusiveAccessContext() {
@@ -1041,55 +1034,55 @@ ExclusiveAccessContext* WebUIBrowserWindow::GetExclusiveAccessContext() {
 }
 
 std::string WebUIBrowserWindow::GetWorkspace() const {
-  NOTIMPLEMENTED();
+  NOTIMPLEMENTED_LOG_ONCE();
   return std::string();
 }
 
 bool WebUIBrowserWindow::IsVisibleOnAllWorkspaces() const {
-  NOTIMPLEMENTED();
+  NOTIMPLEMENTED_LOG_ONCE();
   return false;
 }
 
 void WebUIBrowserWindow::ShowEmojiPanel() {
-  NOTIMPLEMENTED();
+  NOTIMPLEMENTED_LOG_ONCE();
 }
 
 std::unique_ptr<content::EyeDropper> WebUIBrowserWindow::OpenEyeDropper(
     content::RenderFrameHost* frame,
     content::EyeDropperListener* listener) {
-  NOTIMPLEMENTED();
+  NOTIMPLEMENTED_LOG_ONCE();
   return nullptr;
 }
 
 void WebUIBrowserWindow::ShowCaretBrowsingDialog() {
-  NOTIMPLEMENTED();
+  NOTIMPLEMENTED_LOG_ONCE();
 }
 
 void WebUIBrowserWindow::CreateTabSearchBubble(
     tab_search::mojom::TabSearchSection section,
     tab_search::mojom::TabOrganizationFeature organization_feature) {
-  NOTIMPLEMENTED();
+  NOTIMPLEMENTED_LOG_ONCE();
 }
 
 void WebUIBrowserWindow::CloseTabSearchBubble() {
-  NOTIMPLEMENTED();
+  NOTIMPLEMENTED_LOG_ONCE();
 }
 
 void WebUIBrowserWindow::ShowIncognitoClearBrowsingDataDialog() {
-  NOTIMPLEMENTED();
+  NOTIMPLEMENTED_LOG_ONCE();
 }
 
 void WebUIBrowserWindow::ShowIncognitoHistoryDisclaimerDialog() {
-  NOTIMPLEMENTED();
+  NOTIMPLEMENTED_LOG_ONCE();
 }
 
 bool WebUIBrowserWindow::IsBorderlessModeEnabled() const {
-  NOTIMPLEMENTED();
+  NOTIMPLEMENTED_LOG_ONCE();
   return false;
 }
 
 void WebUIBrowserWindow::OnWebApiWindowResizableChanged() {
-  NOTIMPLEMENTED();
+  NOTIMPLEMENTED_LOG_ONCE();
 }
 
 bool WebUIBrowserWindow::GetCanResize() {
@@ -1109,11 +1102,11 @@ ui::mojom::WindowShowState WebUIBrowserWindow::GetWindowShowState() const {
 }
 
 void WebUIBrowserWindow::ShowChromeLabs() {
-  NOTIMPLEMENTED();
+  NOTIMPLEMENTED_LOG_ONCE();
 }
 
 BrowserView* WebUIBrowserWindow::AsBrowserView() {
-  NOTIMPLEMENTED();
+  NOTIMPLEMENTED_LOG_ONCE();
   return nullptr;
 }
 
@@ -1134,12 +1127,12 @@ bool WebUIBrowserWindow::IsFullscreen() const {
 }
 
 gfx::Rect WebUIBrowserWindow::GetRestoredBounds() const {
-  NOTIMPLEMENTED();
+  NOTIMPLEMENTED_LOG_ONCE();
   return gfx::Rect();
 }
 
 ui::mojom::WindowShowState WebUIBrowserWindow::GetRestoredState() const {
-  NOTIMPLEMENTED();
+  NOTIMPLEMENTED_LOG_ONCE();
   return ui::mojom::WindowShowState::kDefault;
 }
 

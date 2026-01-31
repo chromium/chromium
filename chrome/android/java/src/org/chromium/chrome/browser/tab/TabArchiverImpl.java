@@ -17,7 +17,7 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.Token;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
-import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.build.annotations.Contract;
@@ -122,9 +122,7 @@ public class TabArchiverImpl implements TabArchiver {
                 });
 
         TabGroupModelFilter regularTabGroupModelFilter =
-                selectorToArchive
-                        .getTabGroupModelFilterProvider()
-                        .getTabGroupModelFilter(/* isIncognito= */ false);
+                selectorToArchive.getTabGroupModelFilter(/* isIncognito= */ false);
         assert regularTabGroupModelFilter != null;
         TabModel model = regularTabGroupModelFilter.getTabModel();
 
@@ -389,7 +387,7 @@ public class TabArchiverImpl implements TabArchiver {
                         // Persisted tab data requires a true supplier before saving to
                         // disk.
                         archivePersistedTabData.registerIsTabSaveEnabledSupplier(
-                                new ObservableSupplierImpl<>(true));
+                                ObservableSuppliers.alwaysTrue());
                         archivePersistedTabData.setArchivedTimeMs(mClock.currentTimeMillis());
                     }
 

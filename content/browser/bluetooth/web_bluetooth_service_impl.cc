@@ -15,7 +15,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/containers/contains.h"
 #include "base/containers/queue.h"
 #include "base/containers/to_vector.h"
 #include "base/functional/bind.h"
@@ -564,7 +563,7 @@ void WebBluetoothServiceImpl::OnPermissionRevoked(const url::Origin& origin) {
 
   std::erase_if(watch_advertisements_clients_,
                 [&](const std::unique_ptr<WatchAdvertisementsClient>& client) {
-                  return !base::Contains(permitted_ids, client->device_id());
+                  return !permitted_ids.contains(client->device_id());
                 });
 
   MaybeStopDiscovery();
@@ -722,8 +721,8 @@ void WebBluetoothServiceImpl::GattCharacteristicValueChanged(
     BluetoothRemoteGattCharacteristic* characteristic,
     const std::vector<uint8_t>& value) {
   // Don't notify of characteristics that we haven't returned.
-  if (!base::Contains(characteristic_id_to_service_id_,
-                      characteristic->GetIdentifier())) {
+  if (!characteristic_id_to_service_id_.contains(
+          characteristic->GetIdentifier())) {
     return;
   }
 
@@ -2308,7 +2307,7 @@ void WebBluetoothServiceImpl::RunPendingPrimaryServicesRequests(
   }
 
   // Sending get-service responses unexpectedly queued another request.
-  DCHECK(!base::Contains(pending_primary_services_requests_, device_address));
+  DCHECK(!pending_primary_services_requests_.contains(device_address));
 }
 
 RenderProcessHost* WebBluetoothServiceImpl::GetRenderProcessHost() {

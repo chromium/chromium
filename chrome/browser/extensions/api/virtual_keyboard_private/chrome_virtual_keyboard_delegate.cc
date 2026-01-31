@@ -27,8 +27,8 @@
 #include "chrome/browser/ui/ash/login/user_adding_screen.h"
 #include "chrome/browser/ui/settings_window_manager_chromeos.h"
 #include "chromeos/constants/chromeos_features.h"
-#include "chromeos/crosapi/mojom/clipboard_history.mojom.h"
 #include "chromeos/services/machine_learning/public/cpp/ml_switches.h"
+#include "chromeos/ui/clipboard_history/clipboard_history_types.h"
 #include "components/user_manager/user_manager.h"
 #include "content/public/browser/audio_service.h"
 #include "content/public/browser/browser_thread.h"
@@ -395,7 +395,7 @@ bool ChromeVirtualKeyboardDelegate::PasteClipboardItem(
 
   return clipboard_history_controller->PasteClipboardItemById(
       clipboard_item_id, ui::EF_NONE,
-      crosapi::mojom::ClipboardHistoryControllerShowSource::kVirtualKeyboard);
+      chromeos::clipboard_history::ShowSource::kVirtualKeyboard);
 }
 
 bool ChromeVirtualKeyboardDelegate::DeleteClipboardItem(
@@ -485,7 +485,7 @@ void ChromeVirtualKeyboardDelegate::OnHasInputDevices(
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   auto* keyboard_client = ChromeKeyboardControllerClient::Get();
 
-  base::Value::Dict results;
+  base::DictValue results;
   results.Set("layout", GetKeyboardLayout());
 
   // TODO(bshe): Consolidate a11y, hotrod and normal mode into a mode enum. See
@@ -494,7 +494,7 @@ void ChromeVirtualKeyboardDelegate::OnHasInputDevices(
               keyboard_client->IsEnableFlagSet(
                   keyboard::KeyboardEnableFlag::kAccessibilityEnabled));
   results.Set("hotrodmode", g_hotrod_keyboard_enabled);
-  base::Value::List features;
+  base::ListValue features;
 
   keyboard::KeyboardConfig config = keyboard_client->GetKeyboardConfig();
   // TODO(oka): Change this to use config.voice_input.
@@ -528,7 +528,7 @@ void ChromeVirtualKeyboardDelegate::OnHasInputDevices(
 }
 
 void ChromeVirtualKeyboardDelegate::DispatchConfigChangeEvent(
-    std::optional<base::Value::Dict> settings) {
+    std::optional<base::DictValue> settings) {
   DCHECK(settings);
 
   EventRouter* router = GetRouterForEventName(
@@ -536,7 +536,7 @@ void ChromeVirtualKeyboardDelegate::DispatchConfigChangeEvent(
   if (!router)
     return;
 
-  base::Value::List event_args;
+  base::ListValue event_args;
   event_args.Append(std::move(*settings));
 
   auto event = std::make_unique<extensions::Event>(

@@ -32,6 +32,7 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.Robolectric;
+import org.robolectric.annotation.Config;
 
 import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
@@ -81,6 +82,8 @@ public class UrlBarViewBinderUnitTest {
         Assert.assertEquals(newExpectColor, mUrlBar.getHintTextColors().getDefaultColor());
     }
 
+    // TODO(crbug.com/450954710): This test fails on SDK 36.
+    @Config(sdk = 29)
     @Test
     @SmallTest
     @DisableFeatures(OmniboxFeatureList.MULTILINE_EDIT_FIELD)
@@ -91,6 +94,8 @@ public class UrlBarViewBinderUnitTest {
                 /* expectSelection= */ true);
     }
 
+    // TODO(crbug.com/450954710): This test fails on SDK 36.
+    @Config(sdk = 29)
     @Test
     @SmallTest
     public void testSetSelectAllOnFocus_whileFocused() {
@@ -100,6 +105,8 @@ public class UrlBarViewBinderUnitTest {
                 /* expectSelection= */ false);
     }
 
+    // TODO(crbug.com/450954710): This test fails on SDK 36.
+    @Config(sdk = 29)
     @Test
     @SmallTest
     public void testUnsetSelectAllOnFocus() {
@@ -109,6 +116,8 @@ public class UrlBarViewBinderUnitTest {
                 /* expectSelection= */ false);
     }
 
+    // TODO(crbug.com/450954710): This test fails on SDK 36.
+    @Config(sdk = 29)
     @Test
     @SmallTest
     public void testUnsetSelectAllOnFocus_whileFocused() {

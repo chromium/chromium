@@ -270,7 +270,7 @@ void LoginProfilePolicyProvider::UpdateFromDevicePolicy() {
   const base::Value* value = device_policy_map.GetValue(
       key::kDeviceLoginScreenPowerManagement, base::Value::Type::DICT);
   if (value) {
-    base::Value::Dict policy_dict = value->GetDict().Clone();
+    base::DictValue policy_dict = value->GetDict().Clone();
     const std::string* lid_close_action =
         policy_dict.FindString(kLidCloseAction);
 

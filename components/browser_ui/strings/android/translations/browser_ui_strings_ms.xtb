@@ -3,6 +3,7 @@
 <translationbundle lang="ms">
 <translation id="1006017844123154345">Buka Dalam Talian</translation>
 <translation id="1036348656032585052">Matikan</translation>
+<translation id="1046742265332833834">Tema biru</translation>
 <translation id="1070329623210597193">Fail yang boleh dilihat atau diedit oleh laman ini</translation>
 <translation id="1073417869336441572">Bantu kami meningkatkan Chrome dengan memberitahu kami sebab anda membenarkan kuki pihak ketiga. <ph name="BEGIN_LINK" />Hantar maklum balas<ph name="END_LINK" /></translation>
 <translation id="1074758928858737435">Anda boleh meminta untuk melihat versi desktop laman</translation>
@@ -12,6 +13,7 @@
 <translation id="1178581264944972037">Jeda</translation>
 <translation id="1181037720776840403">Alih keluar</translation>
 <translation id="1192844206376121885">Tindakan ini akan memadamkan semua data dan kuki yang disimpan oleh <ph name="ORIGIN" />.</translation>
+<translation id="1199963004393929848">Tema hijau</translation>
 <translation id="1201402288615127009">Seterusnya</translation>
 <translation id="1240190568154816272">Petua Chrome</translation>
 <translation id="1242008676835033345">Dibenamkan pada <ph name="WEBSITE_URL" /></translation>
@@ -64,6 +66,7 @@
 <translation id="1717996979683942279">Apabila dihidupkan, laman boleh meminta untuk mengurus tetingkap pada semua paparan anda. Apabila dimatikan, laman tidak dapat mengurus tetingkap pada semua paparan anda.</translation>
 <translation id="1738912554587725807">Helaian bawah koleksi tema penampilan halaman tab baharu</translation>
 <translation id="1743802530341753419">Tanya sebelum membenarkan tapak menyambung ke peranti (disyorkan)</translation>
+<translation id="1766455884659449403">Dapatkan pemberitahuan petua Chrome</translation>
 <translation id="1777815584158991902">Temukan helaian bawah suapan</translation>
 <translation id="1779089405699405702">Penyahkod imej</translation>
 <translation id="1785415724048343560">Disyorkan untuk pengalaman terbaik</translation>
@@ -71,6 +74,7 @@
 <translation id="1799920918471566157">Petua Chrome</translation>
 <translation id="1816835383954230954">Apabila dihidupkan, Chrome berfungsi dengan lebih pantas dan ciri yang menggunakan JavaScript sepatutnya berfungsi seperti spesifikasinya. Apabila dimatikan, prestasi akan berkurang tetapi menjadikan V8 lebih tahan terhadap serangan.</translation>
 <translation id="1818308510395330587">Untuk membolehkan <ph name="APP_NAME" /> menggunakan AR, hidupkan juga kamera dalam <ph name="BEGIN_LINK" />Tetapan Android<ph name="END_LINK" />.</translation>
+<translation id="1822318649925991542">Tukar kedudukan untuk menyesuaikan pengalaman penyemakan imbas anda</translation>
 <translation id="1848033246551405023">Fon Sans Serif</translation>
 <translation id="1861262398884155592">Folder ini kosong</translation>
 <translation id="1881806992065048905">Helaian bawah penampilan halaman tab baharu</translation>
@@ -87,6 +91,7 @@
 <translation id="1985716030964443178">Tindakan ini akan menetapkan semula semua laman dalam senarai anda kepada zum lalai</translation>
 <translation id="1989112275319619282">Semak Imbas</translation>
 <translation id="1994173015038366702">URL tapak</translation>
+<translation id="1994558116414798016">Fon Lexend</translation>
 <translation id="2004697686368036666">Ciri pada sesetengah laman mungkin tidak berfungsi</translation>
 <translation id="2025115093177348061">Realiti tambahan</translation>
 <translation id="2028449514182362831">Ciri yang memerlukan penderia gerakan tidak akan berfungsi</translation>
@@ -97,6 +102,7 @@
 <translation id="2094208275686143364">Tema warna cerah</translation>
 <translation id="2096716221239095980">Padamkan semua data</translation>
 <translation id="2102396546234652240">Jangan benarkan laman menggunakan mikrofon anda</translation>
+<translation id="2115808389282428160">Jangan benarkan laman mengakses apl dan perkhidmatan lain pada peranti ini</translation>
 <translation id="2117655453726830283">Slaid seterusnya</translation>
 <translation id="2146263598007866206">Tapak mungkin memuat turun beberapa fail yang berkaitan bersama-sama secara automatik untuk menjimatkan masa anda</translation>
 <translation id="2148716181193084225">Hari ini</translation>
@@ -131,7 +137,6 @@
 <translation id="2411116727035790889">Hidupkan pintasan</translation>
 <translation id="2433507940547922241">Tampilan</translation>
 <translation id="2434158240863470628">Muat turun selesai: <ph name="SEPARATOR" /><ph name="BYTES_DOWNLOADED" /></translation>
-<translation id="2438120137003069591">Anda membenarkan laman ini menggunakan kuki pihak ketiga secara sementara, bermakna kurang perlindungan penyemakan imbas tetapi ciri laman berkemungkinan besar berfungsi seperti yang dijangkakan. <ph name="BEGIN_LINK" />Hantar maklum balas<ph name="END_LINK" /></translation>
 <translation id="2442870161001914531">Sentiasa minta laman desktop</translation>
 <translation id="2445311670906052406">Kini Chrome berkongsi tab terbaharu anda dengan peranti anda. Anda akan melihat tab tersebut dalam senarai apl dan hasil carian peranti anda. Anda boleh mematikan ciri ini dalam tetapan Chrome pada bila-bila masa.</translation>
 <translation id="245322989586167203">Laman biasanya menyambung kepada port bersiri untuk ciri pemindahan data, seperti menyediakan rangkaian anda</translation>
@@ -145,6 +150,7 @@
 <translation id="2536779053640817375">Dibenarkan pada masa ini • Tepat</translation>
 <translation id="2544997614631598250">Tema warna gelap</translation>
 <translation id="2546283357679194313">Kuki dan data tapak</translation>
+<translation id="2553552004849639664">Dapatkan perlindungan Chrome yang paling kukuh terhadap ancaman dalam talian</translation>
 <translation id="2570922361219980984">Akses lokasi turut dimatikan untuk peranti ini. Hidupkannya dalam <ph name="BEGIN_LINK" />Tetapan Android<ph name="END_LINK" />.</translation>
 <translation id="257931822824936280">Dikembangkan - klik untuk meruntuhkan.</translation>
 <translation id="2586657967955657006">Papan Keratan</translation>
@@ -159,6 +165,7 @@ Perlindungan Lanjutan mengawal tetapan Chrome ini:
 <translation id="2621115761605608342">Benarkan JavaScript untuk tapak tertentu.</translation>
 <translation id="2626708220538466178">Helaian bawah penyemak imbas lalai ditutup</translation>
 <translation id="2653659639078652383">Serah</translation>
+<translation id="2665056444046933274">Laman boleh menggunakan ciri ini untuk mengakses apl dan perkhidmatan lain pada peranti ini</translation>
 <translation id="2670403088701171361">Jangan benarkan laman melihat teks atau imej pada papan keratan anda</translation>
 <translation id="2677748264148917807">Tinggalkan</translation>
 <translation id="2682367912565197520">Padamkan tahap zum yang disimpan</translation>
@@ -184,11 +191,9 @@ Perlindungan Lanjutan mengawal tetapan Chrome ini:
 <translation id="2903493209154104877">Alamat</translation>
 <translation id="2910701580606108292">Tanya sebelum membenarkan tapak memainkan kandungan yang dilindungi</translation>
 <translation id="2918484639460781603">Pergi ke tetapan</translation>
-<translation id="293060180538644702">Dapatkan pemberitahuan Petua Chrome</translation>
 <translation id="2932883381142163287">Laporkan penyalahgunaan</translation>
 <translation id="2939338015096024043">Apabila dihidupkan, laman dapat meminta untuk menjejaki kedudukan kamera anda dan mengetahui tentang persekitaran anda. Apabila dimatikan, laman tidak dapat menjejaki kedudukan kamera anda dan mengetahui tentang persekitaran anda.</translation>
 <translation id="2968755619301702150">Pemapar sijil</translation>
-<translation id="2979365474350987274">Kuki pihak ketiga adalah terhad</translation>
 <translation id="2990583317361835189">Jangan benarkan laman menggunakan penderia gerakan</translation>
 <translation id="3004438526346162184">Laman boleh menggunakan ciri ini untuk mengurus tetingkap pada semua paparan anda</translation>
 <translation id="3008272652534848354">Tetapkan semula kebenaran</translation>
@@ -202,14 +207,17 @@ Perlindungan Lanjutan mengawal tetapan Chrome ini:
 <translation id="311394601889664316">Jangan benarkan laman mengedit fail atau folder pada peranti anda</translation>
 <translation id="3114012059975132928">Pemain video</translation>
 <translation id="3115898365077584848">Tunjukkan Maklumat</translation>
+<translation id="3120204271988747891">Laman boleh meminta untuk mengakses peranti lain pada rangkaian setempat anda</translation>
 <translation id="3123473560110926937">Disekat di sesetengah tapak</translation>
 <translation id="3132996321662585180">Muat semula setiap hari</translation>
+<translation id="3134859781443140237">Rangkaian setempat</translation>
 <translation id="3143754809889689516">Mainkan dari permulaan</translation>
 <translation id="3164169438034704658">Anda boleh menghidupkan lokasi tepat dalam <ph name="BEGIN_LINK" />Tetapan Android<ph name="END_LINK" />.</translation>
 <translation id="3165022941318558018">Benarkan laman menggunakan kuki pihak ketiga</translation>
 <translation id="3167868116600277716">Temukan suapan</translation>
 <translation id="3198916472715691905"><ph name="STORAGE_AMOUNT" /> data disimpan</translation>
 <translation id="3199078925536734975">Dibenarkan pada masa ini • Anggaran</translation>
+<translation id="3208584281581115441">Semak sekarang</translation>
 <translation id="321187648315454507">Untuk membolehkan <ph name="APP_NAME" /> menghantar pemberitahuan kepada anda, hidupkan juga pemberitahuan dalam <ph name="BEGIN_LINK" />Tetapan Android<ph name="END_LINK" />.</translation>
 <translation id="3223425961342298674">Lokasi tidak dibenarkan</translation>
 <translation id="3227137524299004712">Mikrofon</translation>
@@ -217,7 +225,6 @@ Perlindungan Lanjutan mengawal tetapan Chrome ini:
 <translation id="3242646949159196181">Apabila dihidupkan, laman dapat memainkan bunyi. Apabila dimatikan, laman tidak dapat memainkan bunyi.</translation>
 <translation id="3273479183583863618">Penurunan harga pada tab</translation>
 <translation id="3277252321222022663">Benarkan tapak mengakses penderia (disyorkan)</translation>
-<translation id="327891165872793509">Chrome mengehadkan kebanyakan laman daripada menggunakan kuki pihak ketiga untuk menjejaki anda semasa anda menyemak imbas. Lawati tetapan untuk <ph name="BEGIN_LINK" />mengurus akses kepada kuki pihak ketiga<ph name="END_LINK" />.</translation>
 <translation id="3285500645985761267">Benarkan laman berkaitan melihat aktiviti anda dalam kumpulan</translation>
 <translation id="3295019059349372795">Bab 11: Oz, Kota Zamrud yang Menakjubkan</translation>
 <translation id="3295602654194328831">Sembunyikan Maklumat</translation>
@@ -260,6 +267,7 @@ Perlindungan Lanjutan mengawal tetapan Chrome ini:
 <translation id="3721953990244350188">Ketepikan dan tunjukkan tindakan seterusnya yang tersedia</translation>
 <translation id="3744111561329211289">Penyegerakan latar belakang</translation>
 <translation id="3746834924069123416">Lihat lebih banyak tab terbaharu</translation>
+<translation id="3753618528540214374">Tema viridian</translation>
 <translation id="3763247130972274048">Dwiketik video di sebelah kiri atau kanan untuk melangkau 10s</translation>
 <translation id="3776508619697147021">Laman boleh meminta untuk memuat turun berbilang fail secara automatik</translation>
 <translation id="3779154269823594982">Tukar kata laluan</translation>
@@ -269,6 +277,7 @@ Perlindungan Lanjutan mengawal tetapan Chrome ini:
 <translation id="381841723434055211">Nombor telefon</translation>
 <translation id="3823453485268218808">Fon Mono</translation>
 <translation id="3826050100957962900">Log masuk pihak ketiga</translation>
+<translation id="3831065134033923230">Semak kata laluan anda yang disimpan</translation>
 <translation id="3835233591525155343">Penggunaan peranti anda</translation>
 <translation id="3843916486309149084">Chrome akan menyekat kuki lagi hari ini</translation>
 <translation id="385051799172605136">Kembali</translation>
@@ -315,14 +324,12 @@ Perlindungan Lanjutan mengawal tetapan Chrome ini:
 <translation id="429312253194641664">Tapak sedang memainkan media</translation>
 <translation id="42981349822642051">Kembangkan</translation>
 <translation id="4336219115486912529">{COUNT,plural, =1{Tamat tempoh esok}other{Tamat tempoh dalam masa # hari}}</translation>
-<translation id="4336566011000459927">Chrome akan mengehadkan kuki lagi hari ini</translation>
 <translation id="4338831206024587507">Semua laman di bawah <ph name="DOMAIN" /></translation>
 <translation id="4340799661701629185">Jangan benarkan laman menghantar pemberitahuan</translation>
 <translation id="4341577178275615435">Untuk menghidupkan atau mematikan semak imbas karet, gunakan pintasan F7</translation>
 <translation id="4402755511846832236">Sekat tapak daripada mengetahui waktu anda menggunakan peranti ini dengan aktif</translation>
 <translation id="4412683424767388419">Helaian bawah warna Chrome dibuka pada ketinggian separuh</translation>
 <translation id="4412992751769744546">Benarkan kuki pihak ketiga</translation>
-<translation id="4419929467120297501">Chrome menyekat laman daripada menggunakan kuki pihak ketiga untuk menjejaki anda ketika anda menyemak imbas. Lawati tetapan untuk <ph name="BEGIN_LINK" />mengurus akses kepada kuki pihak ketiga<ph name="END_LINK" />.</translation>
 <translation id="4425416282877905577">Fon Serif</translation>
 <translation id="443121186588148776">Port siri</translation>
 <translation id="4434045419905280838">Tetingkap timbul dan ubah hala</translation>
@@ -399,7 +406,7 @@ Perlindungan Lanjutan mengawal tetapan Chrome ini:
 <translation id="5246825184569358663">Tindakan ini akan memadamkan semua data setempat, termasuk kuki, dan menetapkan semula semua kebenaran untuk <ph name="DOMAIN" /> serta semua laman dalam bahagian domain ini</translation>
 <translation id="5264323282659631142">Alih keluar '<ph name="CHIP_LABEL" />'</translation>
 <translation id="528192093759286357">Seret dari atas dan sentuh butang kembali untuk keluar daripada skrin penuh.</translation>
-<translation id="5292915569214461965">Anda menyekat laman daripada menggunakan kuki pihak ketiga untuk menjejaki anda semasa anda menyemak imbas. Lawati tetapan untuk <ph name="BEGIN_LINK" />mengurus akses kepada kuki pihak ketiga<ph name="END_LINK" />.</translation>
+<translation id="5286194356314741248">Mengimbas</translation>
 <translation id="5300589172476337783">Paparkan</translation>
 <translation id="5301954838959518834">OK, faham</translation>
 <translation id="5317780077021120954">Simpan</translation>
@@ -409,6 +416,8 @@ Perlindungan Lanjutan mengawal tetapan Chrome ini:
 <translation id="5373874281522292782">Kumpulan tab anda disimpan</translation>
 <translation id="5394307150471348411">{DETAIL_COUNT,plural, =1{(+ 1 lagi)}other{(+ # lagi)}}</translation>
 <translation id="5403592356182871684">Nama</translation>
+<translation id="5407203562970638234">Tingkatkan keselamatan anda</translation>
+<translation id="5436307623797390637">Apl pada peranti</translation>
 <translation id="5438097262470833822">Pilihan ini akan menetapkan semula kebenaran untuk <ph name="WEBSITE" /></translation>
 <translation id="5459413148890178711">Apabila dihidupkan, laman dapat meminta lokasi anda. Apabila dimatikan, laman tidak dapat melihat lokasi anda.</translation>
 <translation id="5489227211564503167"><ph name="ELAPSED_TIME" /> masa berlalu daripada <ph name="TOTAL_TIME" /></translation>
@@ -423,6 +432,7 @@ Perlindungan Lanjutan mengawal tetapan Chrome ini:
 <translation id="5591840828808741583"><ph name="SITE_NAME" /> disekat</translation>
 <translation id="560980142378233747">Perkara ini bermakna ciri laman harus berfungsi seperti yang dijangkakan tetapi mungkin perlindungan penyemakan imbas anda berkurangan. <ph name="BEGIN_LINK" />Hantar maklum balas<ph name="END_LINK" /></translation>
 <translation id="5617702678271228680">Helaian bawah kad halaman tab baharu</translation>
+<translation id="5621413808884657932">Apabila dihidupkan, laman boleh meminta untuk mengakses apl dan perkhidmatan lain pada peranti ini. Apabila dimatikan, laman tidak boleh mengakses apl dan perkhidmatan lain pada peranti ini.</translation>
 <translation id="5632485077360054581">Tunjukkan caranya</translation>
 <translation id="5649053991847567735">Muat turun automatik</translation>
 <translation id="5668404140385795438">Mengatasi permintaan laman web untuk menghalang zum masuk</translation>
@@ -470,6 +480,7 @@ Perlindungan Lanjutan mengawal tetapan Chrome ini:
 <translation id="5998071268779572583">Hidupkan suapan Discover</translation>
 <translation id="6012967556075291653">Pintasan yang disematkan</translation>
 <translation id="6015775454662021376">Kawal akses tapak ini kepada peranti anda</translation>
+<translation id="6022659036123304283">Peribadikan Chrome anda</translation>
 <translation id="6040143037577758943">Tutup</translation>
 <translation id="6042308850641462728">Lagi</translation>
 <translation id="6064125863973209585">Muat turun yang telah selesai</translation>
@@ -484,17 +495,16 @@ Perlindungan Lanjutan mengawal tetapan Chrome ini:
 <translation id="6181444274883918285">Tambah pengecualian tapak</translation>
 <translation id="6192792657125177640">Pengecualian</translation>
 <translation id="6194967801833346599">{DAYS,plural, =1{Chrome akan menyekat kuki lagi esok}other{# hari sehingga kuki disekat lagi}}</translation>
-<translation id="6195163219142236913">Kuki pihak ketiga terhad</translation>
 <translation id="6196640612572343990">Sekat kuki pihak ketiga</translation>
 <translation id="6205314730813004066">Privasi iklan</translation>
 <translation id="6207207788774442484">Padamkan data &amp; tetapkan semula kebenaran</translation>
+<translation id="6218508144653756827">Tema fuchsia</translation>
 <translation id="6231752747840485235">Nyahpasang '<ph name="APP_NAME" />'?</translation>
 <translation id="6234351944623978659">Ketik Apl penyemak imbas &gt; Chrome</translation>
 <translation id="6260830281887654268">Helaian bawah koleksi tema penampilan halaman tab baharu dibuka pada ketinggian separuh</translation>
 <translation id="6262191102408817757">Berdasarkan tab terakhir anda</translation>
 <translation id="6262279340360821358"><ph name="PERMISSION_1" /> dan <ph name="PERMISSION_2" /> disekat</translation>
 <translation id="6270391203985052864">Tapak boleh membuat permintaan untuk menghantar pemberitahuan</translation>
-<translation id="6278428485366576908">Tema</translation>
 <translation id="6295158916970320988">Semua tapak</translation>
 <translation id="6320088164292336938">Getar</translation>
 <translation id="6367753977865761591">Sekat log masuk pihak ketiga untuk laman tertentu.</translation>
@@ -521,6 +531,7 @@ Perlindungan Lanjutan mengawal tetapan Chrome ini:
 <translation id="659938948789980540">{COUNT,plural, =1{Kuki dibenarkan untuk <ph name="RWS_MEMBERS_COUNT" /> laman <ph name="RWS_OWNER" />}other{Kuki dibenarkan untuk <ph name="RWS_MEMBERS_COUNT" /> laman <ph name="RWS_OWNER" />}}</translation>
 <translation id="6608650720463149374"><ph name="GIGABYTES" /> GB</translation>
 <translation id="6612358246767739896">Kandungan yang dilindungi</translation>
+<translation id="6619015782482868078">Tema aqua</translation>
 <translation id="662080504995468778">Kekal di sini</translation>
 <translation id="6630443592285535486">Taip heks di sini</translation>
 <translation id="6635327442719709864">Apabila dihidupkan, laman dapat meminta untuk menggunakan port bersiri. Apabila dimatikan, laman tidak dapat menggunakan port bersiri.</translation>
@@ -543,11 +554,13 @@ Perlindungan Lanjutan mengawal tetapan Chrome ini:
 <translation id="6842868554183332230">Lazimnya, laman mengesan waktu anda aktif menggunakan peranti untuk menetapkan ketersediaan anda pada apl sembang</translation>
 <translation id="6864395892908308021">Peranti ini tidak dapat membaca NFC</translation>
 <translation id="6870169401250095575">Sembunyikan kad Pemeriksaan Keselamatan</translation>
+<translation id="6882736949427544336">Jangan benarkan laman mengakses peranti lain pada rangkaian setempat anda</translation>
 <translation id="6900883974539674431">Buat kumpulan tab yang disimpan dan dikemaskinikan secara automatik merentas semua peranti anda</translation>
 <translation id="6912998170423641340">Sekat tapak daripada membaca teks dan imej daripada papan keratan</translation>
 <translation id="6945221475159498467">Pilih</translation>
 <translation id="6950072572526089586">Laman yang anda lawati boleh menyimpan maklumat tentang perkara yang anda lakukan agar laman tersebut berfungsi seperti yang dijangkakan — contohnya, untuk memastikan anda terus dilog masuk ke laman atau untuk menyimpan item dalam troli beli-belah anda. Selalunya laman menyimpan maklumat ini pada peranti anda buat sementara waktu.</translation>
 <translation id="6965382102122355670">OK</translation>
+<translation id="6980507581230208647">Tema ros</translation>
 <translation id="6980861169612950611">Padamkan data laman? <ph name="SITE_NAME" /></translation>
 <translation id="6981982820502123353">Kebolehcapaian</translation>
 <translation id="6991142177939282156">Dibenarkan • Menggunakan anggaran</translation>
@@ -560,6 +573,7 @@ Perlindungan Lanjutan mengawal tetapan Chrome ini:
 <translation id="7055552182600664515">Untuk memainkan kandungan yang dilindungi oleh hak cipta, laman mungkin perlu menggunakan perkhidmatan perlindungan kandungan. <ph name="BEGIN_LINK" />Ketahui lebih lanjut<ph name="END_LINK" /></translation>
 <translation id="7066151586745993502">{NUM_SELECTED,plural, =1{1 dipilih}other{# dipilih}}</translation>
 <translation id="708014373017851679">'<ph name="APP_NAME" />' sudah lapuk. Sila kemas kinikan apl.</translation>
+<translation id="7084115944294706056">Pilih kedudukan bar alamat</translation>
 <translation id="7087918508125750058"><ph name="ITEM_COUNT" /> dipilih. Pilihan tersedia berhampiran bahagian atas skrin</translation>
 <translation id="7141896414559753902">Sekat tapak daripada memaparkan tetingkap timbul dan ubah hala (disyorkan)</translation>
 <translation id="7176368934862295254"><ph name="KILOBYTES" /> KB</translation>
@@ -575,6 +589,7 @@ Perlindungan Lanjutan mengawal tetapan Chrome ini:
 <translation id="7250468141469952378"><ph name="ITEM_COUNT" /> dipilih</translation>
 <translation id="7260727271532453612"><ph name="PERMISSION_1" /> dan <ph name="PERMISSION_2" /> dibenarkan</translation>
 <translation id="7276071417425470385">Apabila dihidupkan, laman dapat meminta untuk menggunakan peranti realiti maya. Apabila dimatikan, laman tidak dapat menggunakan peranti realiti maya.</translation>
+<translation id="7282197670900591579">Tema kuning sitron</translation>
 <translation id="728412880473384942">Laman lebih pantas tetapi kurang selamat</translation>
 <translation id="7366415735885268578">Tambahkan tapak</translation>
 <translation id="7368695150573390554">Mana-mana data luar talian akan dipadamkan</translation>
@@ -603,6 +618,8 @@ Perlindungan Lanjutan mengawal tetapan Chrome ini:
 <translation id="7586676035079382730">Pemberitahuan tidak dibenarkan</translation>
 <translation id="7594634374516752650">Disambungkan ke peranti Bluetooth</translation>
 <translation id="7617547684249261169">Anda boleh padamkan beberapa atau semua sejarah, kuki dan data laman anda serta pelbagai lagi</translation>
+<translation id="762200934554267613">Laman boleh meminta untuk mengakses apl dan perkhidmatan lain pada peranti ini</translation>
+<translation id="7627749368210392160">Laman boleh menggunakan ciri ini untuk mengakses peranti lain pada rangkaian setempat anda</translation>
 <translation id="7649070708921625228">Bantuan</translation>
 <translation id="7655411746932645568">Laman boleh meminta untuk menyambung kepada port bersiri</translation>
 <translation id="7658239707568436148">Batal</translation>
@@ -611,6 +628,7 @@ Perlindungan Lanjutan mengawal tetapan Chrome ini:
 <translation id="7688240020069572972">Sembunyikan kad petua Chrome</translation>
 <translation id="7719367874908701697">Zum halaman</translation>
 <translation id="775043444390799886">Batalkan kebenaran</translation>
+<translation id="7758789811447313947">Tema ungu lembayung</translation>
 <translation id="7759147511335618829">Kawalan &amp; pengaturcaraan semula peranti MIDI</translation>
 <translation id="7781829728241885113">Semalam</translation>
 <translation id="7791543448312431591">Tambah</translation>
@@ -623,13 +641,13 @@ Perlindungan Lanjutan mengawal tetapan Chrome ini:
 <translation id="7835852323729233924">Memainkan media</translation>
 <translation id="783819812427904514">Nyahredam video</translation>
 <translation id="7846076177841592234">Batalkan pilihan</translation>
-<translation id="7881140103901777395">Chrome mengehadkan kebanyakan laman daripada menggunakan kuki pihak ketiga. Namun, kuki pihak ketiga dibenarkan pada laman ini kerana kuki tersebut bergantung pada Chrome untuk memberikan perkhidmatan asas.\n\nLawati tetapan untuk <ph name="BEGIN_LINK" />mengurus akses kepada kuki pihak ketiga<ph name="END_LINK" />.</translation>
 <translation id="7882806643839505685">Benarkan bunyi untuk tapak tertentu.</translation>
 <translation id="7891547341794213004">Sembunyikan kad teruskan dengan tab ini</translation>
 <translation id="789722939441020330">Jangan benarkan laman memuat turun berbilang fail secara automatik</translation>
 <translation id="7940722705963108451">Ingatkan saya</translation>
 <translation id="7948081750384205628">Ketahui <ph name="SETTING_TITLE" /> dengan lebih lanjut</translation>
 <translation id="7952708427581814389">Tapak boleh meminta untuk melihat teks dan imej pada papan keratan anda</translation>
+<translation id="798299424881500862">Tema jingga</translation>
 <translation id="7986741934819883144">Pilih kenalan</translation>
 <translation id="7990211076305263060">Apabila dihidupkan, laman dapat meminta untuk menggunakan mikrofon anda. Apabila dimatikan, laman tidak dapat menggunakan mikrofon anda.</translation>
 <translation id="8007176423574883786">Dimatikan untuk peranti ini</translation>
@@ -645,7 +663,6 @@ Perlindungan Lanjutan mengawal tetapan Chrome ini:
 <translation id="8087000398470557479">Kandungan ini adalah daripada <ph name="DOMAIN_NAME" />, disampaikan oleh Google.</translation>
 <translation id="8088603949666785339">Lagi pilihan dalam <ph name="BANNER_TITLE" /></translation>
 <translation id="8112925981674547014">Lihat tab dalam senarai apl anda</translation>
-<translation id="8113501330600751161">{DAYS,plural, =1{Chrome akan mengehadkan kuki lagi esok}other{# hari sehingga Chrome mengehadkan kuki lagi}}</translation>
 <translation id="8116925261070264013">Diredam</translation>
 <translation id="8117244575099414087">Apabila dihidupkan, laman dapat menggunakan penderia peranti anda. Apabila dimatikan, laman tidak dapat menggunakan penderia.</translation>
 <translation id="813082847718468539">Lihat maklumat tapak</translation>
@@ -658,6 +675,7 @@ Perlindungan Lanjutan mengawal tetapan Chrome ini:
 <translation id="8200772114523450471">Sambung semula</translation>
 <translation id="8211406090763984747">Sambungan selamat</translation>
 <translation id="822964464349305906"><ph name="TYPE_1" />, <ph name="TYPE_2" /></translation>
+<translation id="823874716226307142">Apabila dihidupkan, laman boleh meminta untuk mengakses peranti lain pada rangkaian setempat anda. Apabila dimatikan, laman tidak boleh mengakses peranti lain pada rangkaian setempat anda.</translation>
 <translation id="8249310407154411074">Alihkan ke atas</translation>
 <translation id="8261506727792406068">Padam</translation>
 <translation id="8284326494547611709">Kapsyen</translation>
@@ -711,6 +729,7 @@ Perlindungan Lanjutan mengawal tetapan Chrome ini:
 <translation id="8725066075913043281">Cuba lagi</translation>
 <translation id="8730621377337864115">Selesai</translation>
 <translation id="8737426583868847403">Laman yang anda simpan tahap zum tersuai akan dipaparkan di sini</translation>
+<translation id="8748714929822124637">Jangan benarkan laman mengakses peranti lain pada rangkaian setempat anda</translation>
 <translation id="8751914237388039244">Pilih imej</translation>
 <translation id="8775741625735357092">Anda boleh menghidupkan bar penanda halaman dalam Tetapan &gt; Penampilan</translation>
 <translation id="8800034312320686233">Tapak tidak berfungsi?</translation>
@@ -728,7 +747,6 @@ Perlindungan Lanjutan mengawal tetapan Chrome ini:
 <translation id="8926389886865778422">Jangan tanya lagi</translation>
 <translation id="8926666909099850184">NFC dimatikan untuk peranti ini. Hidupkan dalam <ph name="BEGIN_LINK" />Tetapan Android<ph name="END_LINK" />.</translation>
 <translation id="8928445016601307354">Sekat laman daripada melihat dan menukar maklumat pada peranti NFC</translation>
-<translation id="8944485226638699751">Terhad</translation>
 <translation id="895054485242522631">Tapak boleh menggunakan penderia gerakan</translation>
 <translation id="8959122750345127698">Tidak dapat mencapai navigasi: <ph name="URL" /></translation>
 <translation id="8990043154272859344">Anda akan dilog keluar daripada semua laman</translation>

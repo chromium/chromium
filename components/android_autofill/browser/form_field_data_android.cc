@@ -77,8 +77,8 @@ void FormFieldDataAndroid::OnFormFieldVisibilityDidChange(
     const FormFieldData& field) {
   field_->set_is_focusable(field.is_focusable());
   field_->set_role(field.role());
-  CHECK_EQ(field_->IsFocusable(), field.IsFocusable());
-  bridge_->UpdateFocusable(field_->IsFocusable());
+  CHECK_EQ(field_->is_focusable(), field.is_focusable());
+  bridge_->UpdateFocusable(field_->is_focusable());
 }
 
 bool FormFieldDataAndroid::SimilarFieldAs(const FormFieldData& field) const {

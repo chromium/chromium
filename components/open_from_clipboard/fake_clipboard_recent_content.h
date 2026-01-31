@@ -22,13 +22,15 @@ class FakeClipboardRecentContent : public ClipboardRecentContent {
 
   ~FakeClipboardRecentContent() override;
 
+  // Synchronous accessors for tests.
+  std::optional<GURL> GetRecentURLFromClipboard();
+  std::optional<std::u16string> GetRecentTextFromClipboard();
+  bool HasRecentImageFromClipboard();
+
   // ClipboardRecentContent implementation.
-  std::optional<GURL> GetRecentURLFromClipboard() override;
-  std::optional<std::u16string> GetRecentTextFromClipboard() override;
   void GetRecentImageFromClipboard(GetRecentImageCallback callback) override;
   std::optional<std::set<ClipboardContentType>> GetCachedClipboardContentTypes()
       override;
-  bool HasRecentImageFromClipboard() override;
   void HasRecentContentFromClipboard(std::set<ClipboardContentType> types,
                                      HasDataCallback callback) override;
   void GetRecentURLFromClipboard(GetRecentURLCallback callback) override;

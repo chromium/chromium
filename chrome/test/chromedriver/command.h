@@ -18,7 +18,7 @@ typedef base::RepeatingCallback<
     CommandCallback;
 
 typedef base::RepeatingCallback<
-    void(const base::Value::Dict&, const std::string&, const CommandCallback&)>
+    void(const base::DictValue&, const std::string&, const CommandCallback&)>
     Command;
 
 #endif  // CHROME_TEST_CHROMEDRIVER_COMMAND_H_

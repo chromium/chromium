@@ -13,6 +13,7 @@
 #include "chrome/browser/profiles/keep_alive/scoped_profile_keep_alive.h"
 #include "chrome/browser/web_applications/locks/app_lock.h"
 #include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
+#include "chrome/browser/web_applications/scheduler/apply_pending_manifest_update_result.h"
 #include "chrome/browser/web_applications/web_app_icon_manager.h"
 #include "chrome/browser/web_applications/web_app_install_manager.h"
 #include "chrome/browser/web_applications/web_app_proto_utils.h"
@@ -80,34 +81,11 @@ std::ostream& operator<<(std::ostream& os,
   }
 }
 
-std::ostream& operator<<(std::ostream& os,
-                         ApplyPendingManifestUpdateResult stage) {
-  switch (stage) {
-    case ApplyPendingManifestUpdateResult::kSystemShutdown:
-      return os << "kSystemShutdown";
-    case ApplyPendingManifestUpdateResult::kAppNotInstalled:
-      return os << "kAppNotInstalled";
-    case ApplyPendingManifestUpdateResult::kIconChangeAppliedSuccessfully:
-      return os << "kIconChangeAppliedSuccessfully";
-    case ApplyPendingManifestUpdateResult::
-        kFailedToOverwriteIconsFromPendingIcons:
-      return os << "kFailedToOverwriteIconsFromPendingIcons";
-    case ApplyPendingManifestUpdateResult::kNoPendingUpdate:
-      return os << "kNoPendingUpdate";
-    case ApplyPendingManifestUpdateResult::kFailedToRemovePendingIconsFromDisk:
-      return os << "kFailedToRemovePendingIconsFromDisk";
-    case ApplyPendingManifestUpdateResult::kAppNameUpdatedSuccessfully:
-      return os << "kAppNameUpdatedSuccessfully";
-    case ApplyPendingManifestUpdateResult::kAppNameAndIconsUpdatedSuccessfully:
-      return os << "kAppNameAndIconsUpdatedSuccessfully";
-  }
-}
-
 ApplyPendingManifestUpdateCommand::ApplyPendingManifestUpdateCommand(
     const webapps::AppId& app_id,
     std::unique_ptr<ScopedKeepAlive> keep_alive,
     std::unique_ptr<ScopedProfileKeepAlive> profile_keep_alive,
-    CompletedCallback callback)
+    ApplyPendingManifestUpdateCompletedCallback callback)
     : WebAppCommand<AppLock, ApplyPendingManifestUpdateResult>(
           "ApplyPendingManifestUpdateCommand",
           AppLockDescription(app_id),
@@ -138,7 +116,8 @@ void ApplyPendingManifestUpdateCommand::StartWithLock(
   CHECK_EQ(stage_, ApplyPendingManifestUpdateCommandStage::kNotStarted);
   SetStage(ApplyPendingManifestUpdateCommandStage::kAquiringAppLock);
   lock_ = std::move(lock);
-  if (!lock_->registrar().IsInRegistrar(app_id_)) {
+  if (!lock_->registrar().AppMatches(app_id_,
+                                     WebAppFilter::IsAppSurfaceableToUser())) {
     CompleteCommandAndSelfDestruct(
         ApplyPendingManifestUpdateResult::kAppNotInstalled);
     return;
@@ -296,7 +275,7 @@ void ApplyPendingManifestUpdateCommand::DeletePendingUpdateInfoThenComplete(
   lock_->install_manager().NotifyWebAppManifestUpdated(app_id_);
   lock_->registrar().NotifyPendingUpdateInfoChanged(
       app_id_, /*pending_update_available=*/false,
-      WebAppRegistrar::PendingUpdateInfoChangePassKey());
+      base::PassKey<ApplyPendingManifestUpdateCommand>());
   CompleteCommandAndSelfDestruct(expected_result);
 }
 

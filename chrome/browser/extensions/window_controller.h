@@ -73,7 +73,7 @@ class WindowController {
       const std::vector<api::windows::WindowType>& types);
 
   static TypeFilter GetFilterFromWindowTypesValues(
-      const base::Value::List* types);
+      const base::ListValue* types);
 
   WindowController(ui::BaseWindow* window, Profile* profile);
   WindowController(const WindowController&) = delete;
@@ -158,21 +158,21 @@ class WindowController {
   // TODO(http://crbug.com/446925633): Use this API on non-Android OSes.
   void NotifyWindowFocusChanged(bool has_focus);
 
-  // Creates a base::Value::Dict representing the window for the browser and
+  // Creates a base::DictValue representing the window for the browser and
   // scrubs any privacy-sensitive data that `extension` does not have access to.
   // `populate_tab_behavior` determines whether tabs will be populated in the
   // result. `context` is used to determine the ScrubTabBehavior for the
   // populated tabs data.
   // TODO(devlin): Convert this to a api::Windows::Window object.
-  virtual base::Value::Dict CreateWindowValueForExtension(
+  virtual base::DictValue CreateWindowValueForExtension(
       const Extension* extension,
       PopulateTabBehavior populate_tab_behavior,
       mojom::ContextType context) const = 0;
 
   // Returns the JSON tab information for all tabs in this window. See the
   // chrome.tabs.getAllInWindow() extensions API.
-  virtual base::Value::List CreateTabList(const Extension* extension,
-                                          mojom::ContextType context) const = 0;
+  virtual base::ListValue CreateTabList(const Extension* extension,
+                                        mojom::ContextType context) const = 0;
 
   // Open the extension's options page as instructed. Returns true if an options
   // page was successfully opened (though it may not necessarily *load*, e.g. if

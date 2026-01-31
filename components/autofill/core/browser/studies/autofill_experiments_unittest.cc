@@ -482,7 +482,7 @@ TEST_F(AutofillExperimentsTest,
   EXPECT_FALSE(
       pref_service_.GetDict(prefs::kAutofillSyncTransportOptIn).empty());
 
-  const base::Value::Dict& dictionary =
+  const base::DictValue& dictionary =
       pref_service_.GetDict(prefs::kAutofillSyncTransportOptIn);
 
   std::string output_js;

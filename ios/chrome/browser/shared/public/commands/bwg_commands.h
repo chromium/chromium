@@ -9,19 +9,23 @@
 
 #import "base/ios/block_types.h"
 
-namespace bwg {
+namespace gemini {
 enum class EntryPoint;
-}
+}  // namespace gemini
+
+namespace web {
+class WebState;
+}  // namespace web
 
 // Commands relating to the BWG flow.
-@protocol BWGCommands
+@protocol BWGCommands <NSObject>
 
 // Starts the Gemini flow with an entry point.
-- (void)startGeminiFlowWithEntryPoint:(bwg::EntryPoint)entryPoint;
+- (void)startGeminiFlowWithEntryPoint:(gemini::EntryPoint)entryPoint;
 
 // Starts the Gemini flow with a provided image as attachment.
 - (void)startGeminiFlowWithImageAttachment:(UIImage*)image
-                                entryPoint:(bwg::EntryPoint)entryPoint;
+                                entryPoint:(gemini::EntryPoint)entryPoint;
 
 // Dismiss the Gemini flow with a completion block.
 - (void)dismissGeminiFlowWithCompletion:(ProceduralBlock)completion;
@@ -29,6 +33,22 @@ enum class EntryPoint;
 // Attempts to display the automatic BWG promo depending on whether the active
 // web state is eligible. If the page is ineligible, does nothing.
 - (void)showBWGPromoIfPageIsEligible;
+
+// Hide Gemini floaty. When in a hidden state, the floaty still persists in
+// memory and needs to be properly cleaned up.
+- (void)hideFloatyIfInvokedAnimated:(BOOL)animated;
+
+// Show Gemini floaty. Used to re-show an invoked Gemini floaty.
+- (void)showFloatyIfInvokedAnimated:(BOOL)animated;
+
+// Updates floaty visibility when persisting across WebStates.
+- (void)updateFloatyVisibilityForWebState:(web::WebState*)webState;
+
+- (void)updateFloatyWithTraitCollection:(UITraitCollection*)traitCollection;
+
+// Starts the FRE flow with a completion block.
+- (void)startGeminiFREWithCompletion:(void (^)(BOOL success))completion
+                      fromEntryPoint:(gemini::EntryPoint)entryPoint;
 
 @end
 

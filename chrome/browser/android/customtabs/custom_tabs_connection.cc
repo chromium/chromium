@@ -82,8 +82,8 @@ static void JNI_CustomTabsConnection_CreateAndStartDetachedResourceRequest(
     std::string& package_name,
     std::string& url,
     std::string& origin,
-    jint referrer_policy,
-    jint motivation) {
+    int32_t referrer_policy,
+    int32_t motivation) {
   DCHECK(native_profile);
 
   GURL native_url(url);

@@ -383,7 +383,7 @@
         "returns_async": {
           "name": "callback",
           "optional": true,
-          "description": "Called when the uninstall URL is set. If the given URL is invalid, $(ref:runtime.lastError) will be set.",
+          "description": "Promise that resolves when the uninstall URL is set. If the given URL is invalid, the promise will be rejected.",
           "parameters": []
         }
       },
@@ -439,7 +439,7 @@
         ],
         "returns_async": {
           "name": "callback",
-          "description": "A callback to be invoked when a restart request was successfully rescheduled.",
+          "description": "Promise that resolves when a restart request was successfully rescheduled.",
           "parameters": [],
           "optional": true
         }
@@ -503,6 +503,7 @@
         "returns_async": {
           "name": "callback",
           "optional": true,
+          "description": "Promise support was added for extension contexts in Chrome 99. When communicating from a web page to an extension, promises are available from Chrome 118.",
           "parameters": [
             {
               "name": "response",
@@ -554,7 +555,7 @@
         "parameters": [],
         "returns_async": {
           "name": "callback",
-          "description": "Called with results",
+          "description": "Promise that resolves with information about the current platform.",
           "parameters": [
             {
               "name": "platformInfo",
@@ -593,7 +594,7 @@
         ],
         "returns_async": {
           "name": "callback",
-          "description": "Invoked with the matching contexts, if any.",
+          "description": "Promise that resolves with the matching contexts, if any.",
           "parameters": [
             {
               "name": "contexts",
@@ -727,12 +728,22 @@
         "parameters": [
           {"name": "message", "type": "any", "optional": true, "description": "The message sent by the calling script."},
           {"name": "sender", "$ref": "MessageSender" },
-          {"name": "sendResponse", "type": "function", "description": "Function to call (at most once) when you have a response. The argument should be any JSON-ifiable object. If you have more than one <code>onMessage</code> listener in the same document, then only one may send a response. This function becomes invalid when the event listener returns, <strong>unless you return true</strong> from the event listener to indicate you wish to send a response asynchronously (this will keep the message channel open to the other end until <code>sendResponse</code> is called)." }
+          {
+            "name": "sendResponse",
+            "type": "function",
+            "description": "Function to call (at most once) when you have a response. The argument should be any JSON-ifiable object. If you have more than one <code>onMessage</code> listener in the same document, then only one may send a response. This function becomes invalid when the event listener returns, <strong>unless you return true</strong> from the event listener to indicate you wish to send a response asynchronously (this will keep the message channel open to the other end until <code>sendResponse</code> is called).",
+            "parameters": [
+              {"name": "response", "type": "any", "optional": true, "description": "The response to return to the message sender."}
+            ]
+          }
         ],
         "returns": {
-          "type": "boolean",
+          "choices": [
+            {"type": "boolean"},
+            {"type": "object", "isInstanceOf": "Promise"}
+          ],
           "optional": true,
-          "description": "Return true from the event listener if you wish to call <code>sendResponse</code> after the event listener returns."
+          "description": "Return true (or a Promise) from the event listener if you wish to call <code>sendResponse</code> after the event listener returns."
         }
       },
       {
@@ -744,12 +755,22 @@
         "parameters": [
           {"name": "message", "type": "any", "optional": true, "description": "The message sent by the calling script."},
           {"name": "sender", "$ref": "MessageSender" },
-          {"name": "sendResponse", "type": "function", "description": "Function to call (at most once) when you have a response. The argument should be any JSON-ifiable object. If you have more than one <code>onMessage</code> listener in the same document, then only one may send a response. This function becomes invalid when the event listener returns, <strong>unless you return true</strong> from the event listener to indicate you wish to send a response asynchronously (this will keep the message channel open to the other end until <code>sendResponse</code> is called)." }
+          {
+            "name": "sendResponse",
+            "type": "function",
+            "description": "Function to call (at most once) when you have a response. The argument should be any JSON-ifiable object. If you have more than one <code>onMessage</code> listener in the same document, then only one may send a response. This function becomes invalid when the event listener returns, <strong>unless you return true</strong> from the event listener to indicate you wish to send a response asynchronously (this will keep the message channel open to the other end until <code>sendResponse</code> is called).",
+            "parameters": [
+              {"name": "response", "type": "any", "optional": true, "description": "The response to return to the message sender."}
+            ]
+          }
         ],
         "returns": {
-          "type": "boolean",
+          "choices": [
+            {"type": "boolean"},
+            {"type": "object", "isInstanceOf": "Promise"}
+          ],
           "optional": true,
-          "description": "Return true from the event listener if you wish to call <code>sendResponse</code> after the event listener returns."
+          "description": "Return true (or a Promise) from the event listener if you wish to call <code>sendResponse</code> after the event listener returns."
         }
       },
       {
@@ -761,7 +782,14 @@
         "parameters": [
           {"name": "message", "type": "any", "optional": true, "description": "The message sent by the user script."},
           {"name": "sender", "$ref": "MessageSender" },
-          {"name": "sendResponse", "type": "function", "description": "Function to call (at most once) when you have a response. The argument should be any JSON-ifiable object. If you have more than one <code>onMessage</code> listener in the same document, then only one may send a response. This function becomes invalid when the event listener returns, <strong>unless you return true</strong> from the event listener to indicate you wish to send a response asynchronously (this will keep the message channel open to the other end until <code>sendResponse</code> is called)." }
+          {
+            "name": "sendResponse",
+            "type": "function",
+            "description": "Function to call (at most once) when you have a response. The argument should be any JSON-ifiable object. If you have more than one <code>onMessage</code> listener in the same document, then only one may send a response. This function becomes invalid when the event listener returns, <strong>unless you return true</strong> from the event listener to indicate you wish to send a response asynchronously (this will keep the message channel open to the other end until <code>sendResponse</code> is called).",
+            "parameters": [
+              {"name": "response", "type": "any", "optional": true, "description": "The response to return to the message sender."}
+            ]
+          }
         ],
         "returns": {
           "type": "boolean",

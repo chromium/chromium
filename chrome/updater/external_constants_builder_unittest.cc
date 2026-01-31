@@ -62,7 +62,7 @@ TEST_F(ExternalConstantsBuilderTests, TestOverridingNothing) {
 }
 
 TEST_F(ExternalConstantsBuilderTests, TestOverridingEverything) {
-  base::Value::Dict dict_policies;
+  base::DictValue dict_policies;
   dict_policies.Set("a", 1);
   dict_policies.Set("b", 2);
 
@@ -168,7 +168,7 @@ TEST_F(ExternalConstantsBuilderTests, TestClearedEverything) {
 }
 
 TEST_F(ExternalConstantsBuilderTests, TestOverSet) {
-  base::Value::Dict dict_policies;
+  base::DictValue dict_policies;
   dict_policies.Set("a", 1);
 
   EXPECT_TRUE(
@@ -214,7 +214,7 @@ TEST_F(ExternalConstantsBuilderTests, TestOverSet) {
 TEST_F(ExternalConstantsBuilderTests, TestReuseBuilder) {
   ExternalConstantsBuilder builder;
 
-  base::Value::Dict dict_policies;
+  base::DictValue dict_policies;
   dict_policies.Set("a", 1);
   dict_policies.Set("b", 2);
 
@@ -250,7 +250,7 @@ TEST_F(ExternalConstantsBuilderTests, TestReuseBuilder) {
   EXPECT_TRUE(verifier->IsMachineManaged().value());
   EXPECT_EQ(verifier->CecaConnectionTimeout(), base::Seconds(5));
 
-  base::Value::Dict dict_policies2;
+  base::DictValue dict_policies2;
   dict_policies2.Set("b", 2);
 
   // But now we can use the builder again:
@@ -288,7 +288,7 @@ TEST_F(ExternalConstantsBuilderTests, TestReuseBuilder) {
 TEST_F(ExternalConstantsBuilderTests, TestModify) {
   ExternalConstantsBuilder builder;
 
-  base::Value::Dict dict_policies;
+  base::DictValue dict_policies;
   dict_policies.Set("a", 1);
   dict_policies.Set("b", 2);
 
@@ -329,7 +329,7 @@ TEST_F(ExternalConstantsBuilderTests, TestModify) {
   // Now we use a new builder to modify just the group policies.
   ExternalConstantsBuilder builder2;
 
-  base::Value::Dict dict_policies2;
+  base::DictValue dict_policies2;
   dict_policies2.Set("b", 2);
 
   EXPECT_TRUE(builder2.SetDictPolicies(dict_policies2).Modify());

@@ -43,8 +43,11 @@ void SetUserDisplayModeCommand::StartWithLock(
     std::unique_ptr<AppLock> app_lock) {
   app_lock_ = std::move(app_lock);
 
-  if (!app_lock_->registrar().IsInRegistrar(app_id_)) {
-    CompleteAndSelfDestruct(CommandResult::kFailure);
+  // Users shouldn't be able to interact with apps that should not be in the web
+  // app registry, so prevent setting a display mode on them.
+  if (!app_lock_->registrar().AppMatches(
+          app_id_, WebAppFilter::IsAppSurfaceableToUser())) {
+    CompleteAndSelfDestruct(CommandResult::kSuccess);
     return;
   }
 

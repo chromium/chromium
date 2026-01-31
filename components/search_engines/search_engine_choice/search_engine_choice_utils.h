@@ -175,9 +175,9 @@ struct ChoiceScreenDisplayState {
   ChoiceScreenDisplayState(const ChoiceScreenDisplayState& other);
   ~ChoiceScreenDisplayState();
 
-  base::Value::Dict ToDict() const;
+  base::DictValue ToDict() const;
   static std::optional<ChoiceScreenDisplayState> FromDict(
-      const base::Value::Dict& dict);
+      const base::DictValue& dict);
 
   // `SearchEngineType`s of the search engines displayed on the choice screen,
   // listed in an order matching their display order.

@@ -530,7 +530,7 @@ SystemNetworkContextManager::GetURLLoaderFactory() {
 
   network::mojom::URLLoaderFactoryParamsPtr params =
       network::mojom::URLLoaderFactoryParams::New();
-  params->process_id = network::mojom::kBrowserProcessId;
+  params->process_id = network::OriginatingProcess::browser();
   params->is_orb_enabled = false;
   params->is_trusted = true;
 
@@ -876,6 +876,8 @@ void SystemNetworkContextManager::OnNetworkServiceCreated(
 
   UpdateIPv6ReachabilityOverrideEnabled();
 
+  UpdateTLS13EarlyDataEnabled();
+
 #if BUILDFLAG(IS_CHROMEOS)
   if (base::FeatureList::IsEnabled(features::kNetworkAnnotationMonitoring)) {
     // Create NetworkAnnotationMonitor.
@@ -924,23 +926,6 @@ void SystemNetworkContextManager::
   }
   network_context_params->cookie_encryption_provider =
       cookie_encryption_provider_->BindNewRemote();
-}
-
-void SystemNetworkContextManager::
-    AddCacheEncryptionProviderToNetworkContextParams(
-        network::mojom::NetworkContextParams* network_context_params) {
-  if (!cache_encryption_provider_) {
-    cache_encryption_provider_ =
-        std::make_unique<enterprise_encryption::CacheEncryptionProviderImpl>(
-            g_browser_process->os_crypt_async());
-  }
-
-  mojo::PendingRemote<network::mojom::CacheEncryptionProvider>
-      cache_encryption_provider_remote =
-          cache_encryption_provider_->BindNewRemote();
-
-  network_context_params->encryption_provider =
-      std::move(cache_encryption_provider_remote);
 }
 
 void SystemNetworkContextManager::AddSSLConfigToNetworkContextParams(
@@ -1037,9 +1022,11 @@ SystemNetworkContextManager::GetNetExportFileWriter() {
 
 void SystemNetworkContextManager::UpdateTrustAnchorIDs(
     std::vector<std::vector<uint8_t>> trust_anchor_ids,
-    std::vector<std::vector<uint8_t>> mtc_trust_anchor_ids) {
+    std::vector<std::vector<uint8_t>> mtc_trust_anchor_ids,
+    int64_t mtc_update_time_seconds) {
   ssl_config_service_manager_.UpdateTrustAnchorIDs(
-      std::move(trust_anchor_ids), std::move(mtc_trust_anchor_ids));
+      std::move(trust_anchor_ids), std::move(mtc_trust_anchor_ids),
+      mtc_update_time_seconds);
 }
 
 // static

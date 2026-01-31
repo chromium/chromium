@@ -69,7 +69,9 @@ class FileSystemSignalsCollectorTest
     ON_CALL(service_host_, GetService()).WillByDefault(Return(&service_));
     if (is_system_signals_collection_improvement_enabled()) {
       EXPECT_CALL(service_host_, AddObserver(_)).WillOnce(Return());
+      EXPECT_CALL(service_host_, RemoveObserver(_)).WillOnce(Return());
     }
+
     signal_collector_ =
         std::make_unique<FileSystemSignalsCollector>(&service_host_);
   }
@@ -78,10 +80,10 @@ class FileSystemSignalsCollectorTest
 
   base::test::TaskEnvironment task_environment_;
 
+  base::test::ScopedFeatureList scoped_feature_list_;
   StrictMock<MockSystemSignalsServiceHost> service_host_;
   StrictMock<MockSystemSignalsService> service_;
   std::unique_ptr<FileSystemSignalsCollector> signal_collector_;
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 // Test that runs a sanity check on the set of signals supported by this

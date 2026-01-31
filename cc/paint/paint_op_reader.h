@@ -19,7 +19,7 @@
 #include "cc/paint/paint_op_writer.h"
 #include "cc/paint/transfer_cache_deserialize_helper.h"
 #include "third_party/skia/include/core/SkPathTypes.h"
-#include "third_party/skia/include/effects/SkGradientShader.h"
+#include "third_party/skia/include/effects/SkGradient.h"
 
 struct SkGainmapInfo;
 struct SkHighContrastConfig;
@@ -106,7 +106,7 @@ class CC_PAINT_EXPORT PaintOpReader {
   void Read(gpu::Mailbox* mailbox);
   void Read(SkHighContrastConfig* config);
   void Read(gfx::HDRMetadata* hdr_metadata);
-  void Read(SkGradientShader::Interpolation* interpolation);
+  void Read(SkGradient::Interpolation* interpolation);
   void Read(scoped_refptr<SkottieWrapper>* skottie);
   void Read(SkString* sk_string);
   void Read(std::vector<PaintShader::FloatUniform>* uniforms);

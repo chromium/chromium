@@ -251,14 +251,14 @@ TEST_F(PersistentNotificationHandlerTest, DisableNotifications) {
       ContentSettingsPattern::FromURLNoWildcard(origin_),
       ContentSettingsPattern::Wildcard(),
       ContentSettingsType::ARE_SUSPICIOUS_NOTIFICATIONS_ALLOWLISTED_BY_USER,
-      base::Value(base::Value::Dict().Set(
-          safe_browsing::kIsAllowlistedByUserKey, true)));
+      base::Value(
+          base::DictValue().Set(safe_browsing::kIsAllowlistedByUserKey, true)));
 
   // Set non-null `SUSPICIOUS_NOTIFICATION_IDS` value.
-  base::Value::List suspicious_notification_ids;
+  base::ListValue suspicious_notification_ids;
   suspicious_notification_ids.Append("1");
   suspicious_notification_ids.Append("2");
-  base::Value::Dict suspicious_notification_id_dict;
+  base::DictValue suspicious_notification_id_dict;
   suspicious_notification_id_dict.Set("suspicious-notification-ids",
                                       std::move(suspicious_notification_ids));
   hcsm->SetWebsiteSettingDefaultScope(
@@ -339,9 +339,9 @@ TEST_F(PersistentNotificationHandlerTest,
 
   // Set `SUSPICIOUS_NOTIFICATION_IDS` value.
   std::string suspicious_id = "suspicious_id";
-  base::Value::List suspicious_notification_ids;
+  base::ListValue suspicious_notification_ids;
   suspicious_notification_ids.Append(suspicious_id);
-  base::Value::Dict suspicious_notification_id_dict;
+  base::DictValue suspicious_notification_id_dict;
   suspicious_notification_id_dict.Set("suspicious-notification-ids",
                                       std::move(suspicious_notification_ids));
   auto* hcsm = HostContentSettingsMapFactory::GetForProfile(profile_.get());
@@ -763,7 +763,7 @@ TEST_F(PersistentNotificationHandlerWithAutoRevokeSuspiciousNotificationTest,
 
   HostContentSettingsMap* hcsm =
       HostContentSettingsMapFactory::GetForProfile(profile_.get());
-  base::Value::Dict show_original_setting =
+  base::DictValue show_original_setting =
       hcsm->GetWebsiteSetting(
               origin, GURL(),
               ContentSettingsType::SUSPICIOUS_NOTIFICATION_SHOW_ORIGINAL)

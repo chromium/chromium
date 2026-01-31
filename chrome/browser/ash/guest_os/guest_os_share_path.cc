@@ -9,7 +9,6 @@
 #include <variant>
 
 #include "base/barrier_callback.h"
-#include "base/containers/contains.h"
 #include "base/files/file_util.h"
 #include "base/logging.h"
 #include "base/task/thread_pool.h"
@@ -116,12 +115,12 @@ void OnGotSharePathResponses(guest_os::SuccessCallback callback,
   std::move(callback).Run(/*success=*/true, /*failure_reason=*/"");
 }
 
-void RemovePersistedPathFromPrefs(base::Value::Dict& shared_paths,
+void RemovePersistedPathFromPrefs(base::DictValue& shared_paths,
                                   const std::string& vm_name,
                                   const base::FilePath& path) {
   // |shared_paths| format is {'path': ['vm1', vm2']}.
   // If |path| exists, remove |vm_name| from list of VMs.
-  base::Value::List* found = shared_paths.FindList(path.value());
+  base::ListValue* found = shared_paths.FindList(path.value());
   if (!found) {
     LOG(WARNING) << "Path not in prefs to unshare path " << path.value()
                  << " for VM " << vm_name;
@@ -489,7 +488,7 @@ std::vector<base::FilePath> GuestOsSharePath::GetPersistedSharedPaths(
   CHECK(profile_);
   CHECK(profile_->GetPrefs());
   // |shared_paths| format is {'path': ['vm1', vm2']}.
-  const base::Value::Dict& shared_paths =
+  const base::DictValue& shared_paths =
       profile_->GetPrefs()->GetDict(prefs::kGuestOSPathsSharedToVms);
   for (const auto it : shared_paths) {
     base::FilePath path(it.first);
@@ -518,7 +517,7 @@ void GuestOsSharePath::RegisterPersistedPaths(
     const std::vector<base::FilePath>& paths) {
   PrefService* pref_service = profile_->GetPrefs();
   ScopedDictPrefUpdate update(pref_service, prefs::kGuestOSPathsSharedToVms);
-  base::Value::Dict& shared_paths = *update;
+  base::DictValue& shared_paths = *update;
   for (const auto& path : paths) {
     // Check if path is already shared so we know whether we need to add it.
     bool already_shared = false;
@@ -529,7 +528,7 @@ void GuestOsSharePath::RegisterPersistedPaths(
     for (const auto it : shared_paths) {
       base::FilePath shared(it.first);
       auto& vms = it.second;
-      auto vm_matches = base::Contains(vms.GetList(), base::Value(vm_name));
+      auto vm_matches = vms.GetList().contains(vm_name);
       if (path == shared) {
         already_shared = true;
         if (!vm_matches) {
@@ -543,7 +542,7 @@ void GuestOsSharePath::RegisterPersistedPaths(
       RemovePersistedPathFromPrefs(shared_paths, vm_name, child);
     }
     if (!already_shared) {
-      base::Value::List vms;
+      base::ListValue vms;
       vms.Append(vm_name);
       shared_paths.Set(path.value(), std::move(vms));
     }
@@ -607,7 +606,7 @@ void GuestOsSharePath::OnVolumeMounted(ash::MountError error_code,
 
   // Check if any persisted paths match volume.mount_path() or are children
   // of it then share them with any running VMs.
-  const base::Value::Dict& shared_paths =
+  const base::DictValue& shared_paths =
       profile_->GetPrefs()->GetDict(prefs::kGuestOSPathsSharedToVms);
   for (const auto it : shared_paths) {
     base::FilePath path(it.first);

@@ -7,7 +7,6 @@
 #include <optional>
 #include <string>
 
-#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
@@ -223,8 +222,8 @@ class DeviceSyncCryptAuthEciesEncryptorImplTest : public testing::Test {
     ASSERT_TRUE(batch_encrypted_payloads_);
 
     for (const auto& id_output_pair : *batch_encrypted_payloads_) {
-      EXPECT_TRUE(base::Contains(input_id_to_unencrypted_payload_map,
-                                 id_output_pair.first));
+      EXPECT_TRUE(
+          input_id_to_unencrypted_payload_map.contains(id_output_pair.first));
       VerifyEncryptedPayload(expected_session_public_key,
                              id_output_pair.second);
     }

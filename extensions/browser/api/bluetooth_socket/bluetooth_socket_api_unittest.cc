@@ -39,14 +39,14 @@ TEST_F(BluetoothSocketApiUnittest, CreateThenClose) {
   scoped_refptr<const Extension> extension_with_socket_permitted =
       ExtensionBuilder()
           .SetManifest(
-              base::Value::Dict()
+              base::DictValue()
                   .Set("name", "bluetooth app")
                   .Set("version", "1.0")
-                  .Set("bluetooth", base::Value::Dict().Set("socket", true))
-                  .Set("app", base::Value::Dict().Set(
+                  .Set("bluetooth", base::DictValue().Set("socket", true))
+                  .Set("app", base::DictValue().Set(
                                   "background",
-                                  base::Value::Dict().Set(
-                                      "scripts", base::Value::List().Append(
+                                  base::DictValue().Set(
+                                      "scripts", base::ListValue().Append(
                                                      "background.js")))))
           .SetLocation(mojom::ManifestLocation::kComponent)
           .Build();

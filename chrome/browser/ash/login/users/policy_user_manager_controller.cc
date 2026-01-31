@@ -10,12 +10,14 @@
 #include "base/check_is_test.h"
 #include "base/functional/bind.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/syslog_logging.h"
 #include "base/task/single_thread_task_runner.h"
 #include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
 #include "chrome/browser/ash/policy/core/device_local_account.h"
 #include "chrome/browser/ash/policy/core/device_local_account_policy_broker.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
+#include "chrome/browser/lifetime/application_lifetime.h"
 #include "chromeos/ash/components/settings/cros_settings.h"
 #include "chromeos/ash/components/settings/cros_settings_names.h"
 #include "chromeos/ash/components/settings/cros_settings_provider.h"
@@ -95,13 +97,13 @@ PolicyUserManagerController::PolicyUserManagerController(
   cros_settings_subscriptions_.push_back(cros_settings_->AddSettingsObserver(
       kAccountsPrefUsers,
       base::BindRepeating(
-          &user_manager::UserManager::NotifyUsersSignInConstraintsChanged,
-          base::Unretained(user_manager_.get()))));
+          &PolicyUserManagerController::OnUsersSignInConstraintsUpdated,
+          weak_factory_.GetWeakPtr())));
   cros_settings_subscriptions_.push_back(cros_settings_->AddSettingsObserver(
       kAccountsPrefFamilyLinkAccountsAllowed,
       base::BindRepeating(
-          &user_manager::UserManager::NotifyUsersSignInConstraintsChanged,
-          base::Unretained(user_manager_.get()))));
+          &PolicyUserManagerController::OnUsersSignInConstraintsUpdated,
+          weak_factory_.GetWeakPtr())));
 
   cros_settings_subscriptions_.push_back(cros_settings_->AddSettingsObserver(
       kAccountsPrefEphemeralUsersEnabled,
@@ -153,7 +155,7 @@ void PolicyUserManagerController::OwnershipStatusChanged() {
 }
 
 void PolicyUserManagerController::OnMinimumVersionStateChanged() {
-  user_manager_->NotifyUsersSignInConstraintsChanged();
+  OnUsersSignInConstraintsUpdated();
 }
 
 void PolicyUserManagerController::OnPolicyUpdated(const std::string& user_id) {
@@ -248,11 +250,26 @@ void PolicyUserManagerController::UpdateShowUsersOnSignIn() {
 
 void PolicyUserManagerController::OnAccountsPrefAllowGuestUpdated() {
   UpdateGuestSessionAllowed();
-  user_manager_->NotifyUsersSignInConstraintsChanged();
+  OnUsersSignInConstraintsUpdated();
 }
 
 void PolicyUserManagerController::OnAccountsPrefShowUserNamesOnSignInUpdated() {
   UpdateShowUsersOnSignIn();
+}
+
+void PolicyUserManagerController::OnUsersSignInConstraintsUpdated() {
+  const user_manager::UserList& logged_in_users =
+      user_manager_->GetLoggedInUsers();
+  for (user_manager::User* user : logged_in_users) {
+    if (user->IsDeviceLocalAccount()) {
+      continue;
+    }
+    if (!user_manager_->IsUserAllowed(*user)) {
+      SYSLOG(ERROR)
+          << "The current user is not allowed, terminating the session.";
+      chrome::AttemptUserExit();
+    }
+  }
 }
 
 std::optional<std::u16string> PolicyUserManagerController::GetDisplayName(

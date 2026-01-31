@@ -100,7 +100,8 @@ BruschettaNetworkContext::GetURLLoaderFactory() {
     url_loader_observers_.Clear();
     network::mojom::URLLoaderFactoryParamsPtr url_loader_factory_params =
         network::mojom::URLLoaderFactoryParams::New();
-    url_loader_factory_params->process_id = network::mojom::kBrowserProcessId;
+    url_loader_factory_params->process_id =
+        network::OriginatingProcess::browser();
     url_loader_factory_params->is_orb_enabled = false;
     url_loader_factory_params->is_trusted = true;
     url_loader_observers_.Add(
@@ -234,6 +235,7 @@ void BruschettaNetworkContext::OnAuthRequired(
 
 void BruschettaNetworkContext::OnLocalNetworkAccessPermissionRequired(
     network::mojom::TransportType type,
+    network::mojom::IPAddressSpace ip_address_space,
     OnLocalNetworkAccessPermissionRequiredCallback callback) {
   std::move(callback).Run(network::mojom::LocalNetworkAccessResult::kDenied);
 }
@@ -256,8 +258,8 @@ void BruschettaNetworkContext::OnLoadingStateUpdate(
 
 void BruschettaNetworkContext::OnDataUseUpdate(
     int32_t network_traffic_annotation_id_hash,
-    int64_t recv_bytes,
-    int64_t sent_bytes) {}
+    base::ByteSize recv_bytes,
+    base::ByteSize sent_bytes) {}
 
 void BruschettaNetworkContext::OnSharedStorageHeaderReceived(
     const url::Origin& request_origin,

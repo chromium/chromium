@@ -10,11 +10,14 @@
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"
 #import "components/signin/public/base/signin_metrics.h"
+#import "components/signin/public/base/signin_switches.h"
+#import "components/signin/public/identity_manager/identity_manager.h"
 #import "components/sync/service/sync_service.h"
 #import "ios/chrome/browser/authentication/history_sync/coordinator/history_sync_coordinator.h"
 #import "ios/chrome/browser/authentication/history_sync/coordinator/history_sync_popup_coordinator.h"
 #import "ios/chrome/browser/authentication/history_sync/model/history_sync_utils.h"
 #import "ios/chrome/browser/authentication/ui_bundled/continuation.h"
+#import "ios/chrome/browser/authentication/ui_bundled/signin/reauth/signin_reauth_coordinator.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_context_style.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_coordinator.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_utils.h"
@@ -35,8 +38,8 @@
 #import "ios/chrome/browser/shared/model/browser/browser_provider.h"
 #import "ios/chrome/browser/shared/model/browser/browser_provider_interface.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
-#import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
+#import "ios/chrome/browser/shared/public/commands/scene_commands.h"
 #import "ios/chrome/browser/shared/public/commands/settings_commands.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_url_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_navigation_controller.h"
@@ -54,6 +57,7 @@
 
 @interface RecentTabsCoordinator () <HistorySyncPopupCoordinatorDelegate,
                                      RecentTabsPresentationDelegate,
+                                     SigninReauthCoordinatorDelegate,
                                      TabContextMenuDelegate>
 // Completion block called once the recentTabsViewController is dismissed.
 @property(nonatomic, copy) ProceduralBlock completion;
@@ -75,7 +79,9 @@
   HistorySyncPopupCoordinator* _historySyncPopupCoordinator;
   raw_ptr<AuthenticationService> _authenticationService;
   raw_ptr<syncer::SyncService> _syncService;
-  // The coordinator to sign-in from recent tabs.
+  SigninReauthCoordinator* _reauthCoordinator;
+  // TODO(crbug.com/471207686): Remove after kIdentityInAuthErrorFollowUps is
+  // launched.
   SigninCoordinator* _signinCoordinator;
 }
 
@@ -86,6 +92,7 @@
   CHECK(!self.sharingCoordinator, base::NotFatalUntil::M150);
   CHECK(!_authenticationService, base::NotFatalUntil::M150);
   CHECK(!_syncService, base::NotFatalUntil::M150);
+  CHECK(!_reauthCoordinator, base::NotFatalUntil::M150);
   CHECK(!_signinCoordinator, base::NotFatalUntil::M150);
 }
 
@@ -98,9 +105,9 @@
   self.recentTabsTableViewController.browser = self.browser;
   self.recentTabsTableViewController.loadStrategy = self.loadStrategy;
   CommandDispatcher* dispatcher = self.browser->GetCommandDispatcher();
-  id<ApplicationCommands> applicationHandler =
-      HandlerForProtocol(dispatcher, ApplicationCommands);
-  self.recentTabsTableViewController.applicationHandler = applicationHandler;
+  id<SceneCommands> sceneHandler =
+      HandlerForProtocol(dispatcher, SceneCommands);
+  self.recentTabsTableViewController.sceneHandler = sceneHandler;
   id<SettingsCommands> settingsHandler =
       HandlerForProtocol(dispatcher, SettingsCommands);
   self.recentTabsTableViewController.settingsHandler = settingsHandler;
@@ -115,13 +122,12 @@
   self.recentTabsTableViewController.session =
       self.baseViewController.view.window.windowScene.session;
 
-  // Adds the "Done" button and hooks it up to `stop`.
+  // Adds the dismiss button to the navigation bar and hooks it up to `-stop`.
   UIBarButtonItem* dismissButton = [[UIBarButtonItem alloc]
-      initWithBarButtonSystemItem:UIBarButtonSystemItemDone
+      initWithBarButtonSystemItem:UIBarButtonSystemItemClose
                            target:self
                            action:@selector(dismissButtonTapped)];
-  [dismissButton
-      setAccessibilityIdentifier:kTableViewNavigationDismissButtonId];
+  dismissButton.accessibilityIdentifier = kTableViewNavigationDismissButtonId;
   self.recentTabsTableViewController.navigationItem.rightBarButtonItem =
       dismissButton;
 
@@ -184,6 +190,7 @@
       dismissViewControllerAnimated:YES
                          completion:self.completion];
   [self stopSigninCoordinator];
+  [self stopReauthCoordinator];
   self.recentTabsNavigationController = nil;
   self.recentTabsContextMenuHelper = nil;
   [self.sharingCoordinator stop];
@@ -197,6 +204,34 @@
 #pragma mark - RecentTabsPresentationDelegate
 
 - (void)showPrimaryAccountReauth {
+  if (!base::FeatureList::IsEnabled(switches::kIdentityInAuthErrorFollowUps)) {
+    [self showPrimaryAccountReauthLegacy];
+    return;
+  }
+  if (_reauthCoordinator.viewWillPersist) {
+    return;
+  }
+  [self stopReauthCoordinator];
+
+  signin::IdentityManager* identityManager =
+      IdentityManagerFactory::GetForProfile(self.profile);
+  CoreAccountInfo account =
+      identityManager->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin);
+  if (account.IsEmpty()) {
+    // A sign-out was triggered in the meantime, don't do anything.
+    return;
+  }
+  _reauthCoordinator = [[SigninReauthCoordinator alloc]
+      initWithBaseViewController:self.recentTabsTableViewController
+                         browser:self.browser
+                         account:account
+               reauthAccessPoint:signin_metrics::ReauthAccessPoint::
+                                     kRecentTabs];
+  _reauthCoordinator.delegate = self;
+  [_reauthCoordinator start];
+}
+
+- (void)showPrimaryAccountReauthLegacy {
   if (_signinCoordinator.viewWillPersist) {
     return;
   }
@@ -251,8 +286,7 @@
 - (void)showHistoryFromRecentTabs {
   // Dismiss recent tabs before presenting history.
   CommandDispatcher* dispatcher = self.browser->GetCommandDispatcher();
-  id<ApplicationCommands> handler =
-      HandlerForProtocol(dispatcher, ApplicationCommands);
+  id<SceneCommands> handler = HandlerForProtocol(dispatcher, SceneCommands);
   __weak RecentTabsCoordinator* weakSelf = self;
   self.completion = ^{
     [handler showHistory];
@@ -323,6 +357,13 @@
   [self.mediator refreshSessionsView];
 }
 
+#pragma mark - SigninReauthCoordinatorDelegate
+
+- (void)reauthFinishedWithResult:(ReauthResult)result
+                          gaiaID:(const GaiaId*)gaiaID {
+  [self stopReauthCoordinator];
+}
+
 #pragma mark - Private
 
 - (void)signinCoordinatorCompletedWithCoordinator:
@@ -340,6 +381,12 @@
   [_historySyncPopupCoordinator stop];
   _historySyncPopupCoordinator.delegate = nil;
   _historySyncPopupCoordinator = nil;
+}
+
+- (void)stopReauthCoordinator {
+  _reauthCoordinator.delegate = nil;
+  [_reauthCoordinator stop];
+  _reauthCoordinator = nil;
 }
 
 - (void)stopSigninCoordinator {

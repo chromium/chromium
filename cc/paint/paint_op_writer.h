@@ -25,7 +25,7 @@
 #include "third_party/skia/include/core/SkPathTypes.h"
 #include "third_party/skia/include/core/SkRefCnt.h"
 #include "third_party/skia/include/core/SkYUVAInfo.h"
-#include "third_party/skia/include/effects/SkGradientShader.h"
+#include "third_party/skia/include/effects/SkGradient.h"
 
 struct SkGainmapInfo;
 struct SkHighContrastConfig;
@@ -267,7 +267,7 @@ class CC_PAINT_EXPORT PaintOpWriter {
   void Write(SkYUVAInfo::Subsampling subsampling);
   void Write(const gpu::Mailbox& mailbox);
   void Write(const SkHighContrastConfig& config);
-  void Write(const SkGradientShader::Interpolation& interpolation);
+  void Write(const SkGradient::Interpolation& interpolation);
 
   // Shaders and filters need to know the current transform in order to lock in
   // the scale factor they will be evaluated at after deserialization. This is

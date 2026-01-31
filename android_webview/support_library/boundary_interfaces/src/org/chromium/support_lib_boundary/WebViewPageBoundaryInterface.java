@@ -9,5 +9,5 @@ import org.jspecify.annotations.NullMarked;
 /** Boundary interface for WebViewPage. */
 @NullMarked
 public interface WebViewPageBoundaryInterface extends IsomorphicObjectBoundaryInterface {
-    boolean isPrerendering();
+    String getUrl();
 }

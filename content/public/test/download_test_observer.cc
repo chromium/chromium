@@ -8,7 +8,6 @@
 #include <vector>
 
 #include "base/check_op.h"
-#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/notreached.h"
 #include "base/run_loop.h"
@@ -124,7 +123,7 @@ void DownloadTestObserver::OnDownloadCreated(DownloadManager* manager,
   // existed before |this| was created.
   OnDownloadUpdated(item);
   // If it isn't finished, start observing it.
-  if (!base::Contains(finished_downloads_, item)) {
+  if (!finished_downloads_.contains(item)) {
     item->AddObserver(this);
     downloads_observed_.insert(item);
   }
@@ -133,7 +132,7 @@ void DownloadTestObserver::OnDownloadCreated(DownloadManager* manager,
 void DownloadTestObserver::OnDownloadDestroyed(
     download::DownloadItem* download) {
   // Stop observing. Do not do anything with it, as it is about to be gone.
-  CHECK(base::Contains(downloads_observed_, download));
+  CHECK(downloads_observed_.contains(download));
   downloads_observed_.erase(download);
   download->RemoveObserver(this);
 }
@@ -141,7 +140,7 @@ void DownloadTestObserver::OnDownloadDestroyed(
 void DownloadTestObserver::OnDownloadUpdated(download::DownloadItem* download) {
   // Real UI code gets the user's response after returning from the observer.
   if (download->IsDangerous() &&
-      !base::Contains(dangerous_downloads_seen_, download->GetId())) {
+      !dangerous_downloads_seen_.contains(download->GetId())) {
     dangerous_downloads_seen_.insert(download->GetId());
 
     // Calling ValidateDangerousDownload() at this point will
@@ -202,7 +201,7 @@ size_t DownloadTestObserver::NumDownloadsSeenInState(
 
 void DownloadTestObserver::DownloadInFinalState(
     download::DownloadItem* download) {
-  if (base::Contains(finished_downloads_, download)) {
+  if (finished_downloads_.contains(download)) {
     // We've already seen the final state on this download.
     return;
   }
@@ -357,7 +356,7 @@ void DownloadTestFlushObserver::ManagerGoingDown(DownloadManager* manager) {
 void DownloadTestFlushObserver::OnDownloadDestroyed(
     download::DownloadItem* download) {
   // Stop observing. Do not do anything with it, as it is about to be gone.
-  CHECK(base::Contains(downloads_observed_, download));
+  CHECK(downloads_observed_.contains(download));
   downloads_observed_.erase(download);
   download->RemoveObserver(this);
 }
@@ -396,7 +395,7 @@ void DownloadTestFlushObserver::CheckDownloadsInProgress(
       if ((*it)->GetState() == download::DownloadItem::IN_PROGRESS)
         count++;
       if (observe_downloads) {
-        if (!base::Contains(downloads_observed_, *it)) {
+        if (!downloads_observed_.contains(*it)) {
           (*it)->AddObserver(this);
           downloads_observed_.insert(*it);
         }

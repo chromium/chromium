@@ -108,6 +108,15 @@ void SignoutConfirmationUI::CreateSignoutConfirmationHandler(
       .Run(std::move(page), std::move(receiver));
 }
 
+void SignoutConfirmationUI::AddObserver(Observer* observer) {
+  CHECK(observer);
+  observers_.AddObserver(observer);
+}
+
+void SignoutConfirmationUI::RemoveObserver(Observer* observer) {
+  observers_.RemoveObserver(observer);
+}
+
 void SignoutConfirmationUI::OnMojoHandlersReady(
     Browser* browser,
     ChromeSignoutConfirmationPromptVariant variant,
@@ -119,4 +128,8 @@ void SignoutConfirmationUI::OnMojoHandlersReady(
   handler_ = std::make_unique<SignoutConfirmationHandler>(
       std::move(receiver), std::move(page), browser, variant,
       unsynced_data_count, std::move(callback));
+
+  for (Observer& observer : observers_) {
+    observer.OnSignoutConfirmationUIHandlerReady();
+  }
 }

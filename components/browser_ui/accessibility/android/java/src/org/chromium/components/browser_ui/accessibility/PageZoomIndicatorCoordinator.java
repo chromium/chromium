@@ -16,7 +16,10 @@ import androidx.core.view.accessibility.AccessibilityEventCompat;
 import org.chromium.base.Callback;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.content_public.browser.HostZoomMap;
+import org.chromium.content_public.browser.NavigationHandle;
 import org.chromium.content_public.browser.WebContents;
+import org.chromium.content_public.browser.WebContentsObserver;
 import org.chromium.ui.accessibility.AccessibilityState;
 
 import java.util.function.Supplier;
@@ -30,7 +33,6 @@ public class PageZoomIndicatorCoordinator {
     private final PageZoomManager mManager;
     private final PageZoomIndicatorMediator mMediator;
     private final Supplier<@Nullable View> mZoomIndicatorViewSupplier;
-
     private @Nullable ZoomEventsObserver mZoomEventsObserver;
     private @Nullable Runnable mOnDismissCallback;
     private @Nullable Callback<Double> mOnZoomLevelChangedCallback;
@@ -51,9 +53,7 @@ public class PageZoomIndicatorCoordinator {
                 new ZoomEventsObserver() {
                     @Override
                     public void onZoomLevelChanged(String host, double newZoomLevel) {
-                        if (mOnZoomLevelChangedCallback != null) {
-                            mOnZoomLevelChangedCallback.onResult(newZoomLevel);
-                        }
+                        setTooltip();
                     }
                 };
     }
@@ -66,10 +66,7 @@ public class PageZoomIndicatorCoordinator {
     public void onNativeInitialized() {
         assert mZoomEventsObserver != null;
         mManager.addZoomEventsObserver(mZoomEventsObserver);
-        // Set initial zoom level.
-        if (mOnZoomLevelChangedCallback != null) {
-            mOnZoomLevelChangedCallback.onResult(mManager.getZoomLevel());
-        }
+        setTooltip();
     }
 
     /**
@@ -143,12 +140,7 @@ public class PageZoomIndicatorCoordinator {
         }
     }
 
-    /**
-     * Returns true if the given zoom level is the default zoom level for the current Profile.
-     *
-     * @return True if the given zoom level is the default zoom level for the current Profile, false
-     *     otherwise.
-     */
+    /** Returns true if the given zoom level is the default zoom level for the current Profile. */
     public boolean isZoomLevelDefault() {
         if (mMediator.isCurrentTabNull()) return true;
         return mMediator.isZoomLevelDefault();
@@ -157,6 +149,36 @@ public class PageZoomIndicatorCoordinator {
     /** Returns true if the popup window is showing. */
     public boolean isPopupWindowShowing() {
         return mPopupWindow != null && mPopupWindow.isShowing();
+    }
+
+    /** Sets the tooltip to the current zoom level. */
+    public void setTooltip() {
+        if (mOnZoomLevelChangedCallback != null) {
+            WebContents webContents = mManager.getWebContents();
+            // Depending on when getZoomLevel is called, the web contents may be transitioning
+            // between pages, and the final url may not have been posted. In such cases, return
+            // zoom level would be 0.0 or default. Instead we wait until this transition is
+            // complete, and then return the correct zoom level.
+            if (webContents != null
+                    && webContents.getNavigationController().isInitialNavigation()) {
+                new WebContentsObserver(webContents) {
+                    @Override
+                    public void didFinishNavigationInPrimaryMainFrame(
+                            NavigationHandle navigationHandle) {
+                        WebContents webContents = getWebContents();
+                        if (webContents != null && mOnZoomLevelChangedCallback != null) {
+                            if (!webContents.isDestroyed()) {
+                                mOnZoomLevelChangedCallback.onResult(
+                                        HostZoomMap.getZoomLevel(webContents));
+                            }
+                        }
+                        observe(null);
+                    }
+                };
+            } else {
+                mOnZoomLevelChangedCallback.onResult(mManager.getZoomLevel());
+            }
+        }
     }
 
     /**

@@ -1,0 +1,5 @@
+include_rules = [
+  # keep-sorted start
+  "+components/page_info/core/features.h",
+  # keep-sorted end
+]

@@ -28,6 +28,7 @@ class AccountCapabilities;
 class AccountCapabilitiesFetcher;
 class AccountCapabilitiesFetcherFactory;
 class AccountInfoFetcher;
+class GaiaAccountInfoFetcher;
 class AccountTrackerService;
 class ProfileOAuth2TokenService;
 class PrefRegistrySimple;
@@ -119,7 +120,7 @@ class AccountFetcherService : public ProfileOAuth2TokenServiceObserver {
   void OnRefreshTokensLoaded() override;
 
  private:
-  friend class AccountInfoFetcher;
+  friend class GaiaAccountInfoFetcher;
 
   void RefreshAllAccountInfo(bool only_fetch_if_invalid);
 
@@ -150,9 +151,9 @@ class AccountFetcherService : public ProfileOAuth2TokenServiceObserver {
   void RefreshAccountInfo(const CoreAccountId& account_id,
                           bool only_fetch_if_invalid);
 
-  // Called by AccountInfoFetcher.
+  // Called by GaiaAccountInfoFetcher.
   void OnUserInfoFetchSuccess(const CoreAccountId& account_id,
-                              const base::Value::Dict& user_info);
+                              const base::DictValue& user_info);
   void OnUserInfoFetchFailure(const CoreAccountId& account_id);
 
   // Called by AccountCapabilitiesFetcher.

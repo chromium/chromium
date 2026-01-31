@@ -7,6 +7,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <algorithm>
 #include <type_traits>
 #include <utility>
 #include <vector>
@@ -14,7 +15,6 @@
 #include "base/android/jni_android.h"
 #include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
-#include "base/containers/contains.h"
 #include "base/containers/heap_array.h"
 #include "base/debug/dump_without_crashing.h"
 #include "base/logging.h"
@@ -51,7 +51,7 @@ class BridgeImpl : public TranslateMessage::Bridge {
   bool CreateTranslateMessage(JNIEnv* env,
                               content::WebContents* web_contents,
                               TranslateMessage* native_translate_message,
-                              jint dismissal_duration_seconds) override {
+                              int32_t dismissal_duration_seconds) override {
     DCHECK(!java_translate_message_);
     java_translate_message_ = Java_TranslateMessage_create(
         env, web_contents->GetJavaWebContents(),
@@ -71,7 +71,7 @@ class BridgeImpl : public TranslateMessage::Bridge {
       base::android::ScopedJavaLocalRef<jstring> title,
       base::android::ScopedJavaLocalRef<jstring> description,
       base::android::ScopedJavaLocalRef<jstring> primary_button_text,
-      jboolean has_overflow_menu) override {
+      bool has_overflow_menu) override {
     Java_TranslateMessage_showMessage(
         env, java_translate_message_, std::move(title), std::move(description),
         std::move(primary_button_text), has_overflow_menu);
@@ -341,7 +341,7 @@ void TranslateMessage::HandlePrimaryAction(JNIEnv* env) {
   }
 }
 
-void TranslateMessage::HandleDismiss(JNIEnv* env, jint dismiss_reason) {
+void TranslateMessage::HandleDismiss(JNIEnv* env, int32_t dismiss_reason) {
   switch (static_cast<messages::DismissReason>(dismiss_reason)) {
     case messages::DismissReason::GESTURE:
       ui_delegate_->OnUIClosedByUser();
@@ -513,9 +513,9 @@ TranslateMessage::BuildOverflowMenu(JNIEnv* env) {
 base::android::ScopedJavaLocalRef<jobjectArray>
 TranslateMessage::HandleSecondaryMenuItemClicked(
     JNIEnv* env,
-    jint overflow_menu_item_id,
+    int32_t overflow_menu_item_id,
     const base::android::JavaRef<jstring>& language_code,
-    jboolean had_checkmark) {
+    bool had_checkmark) {
   has_been_interacted_with_ = true;
 
   // Interacting with the secondary menu can cause the page to be translated or
@@ -648,7 +648,7 @@ TranslateMessage::ConstructLanguagePickerMenu(
 
   // Add the content languages to the menu.
   for (const std::string& content_language_code : content_language_codes) {
-    if (base::Contains(skip_language_codes, content_language_code)) {
+    if (std::ranges::contains(skip_language_codes, content_language_code)) {
       continue;
     }
 
@@ -676,7 +676,7 @@ TranslateMessage::ConstructLanguagePickerMenu(
   // Add the full list of languages to the menu.
   for (size_t i = 0U; i < ui_languages_manager_->GetNumberOfLanguages(); ++i) {
     std::string code = ui_languages_manager_->GetLanguageCodeAt(i);
-    if (base::Contains(skip_language_codes, code)) {
+    if (std::ranges::contains(skip_language_codes, code)) {
       continue;
     }
 

@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/printing/cups_printers_manager.h"
 
+#include <algorithm>
 #include <map>
 #include <optional>
 #include <utility>
@@ -534,7 +535,7 @@ class CupsPrintersManagerImpl
       // Query every printer that is either saved or recently used.
       if (printers_.IsPrinterInClass(chromeos::PrinterClass::kSaved,
                                      printer.id()) ||
-          base::Contains(recently_used_printers, printer.id())) {
+          std::ranges::contains(recently_used_printers, printer.id())) {
         FetchPrinterStatus(printer.id(),
                            /*PrinterStatusCallback=*/base::DoNothing());
         ++printers_queried;

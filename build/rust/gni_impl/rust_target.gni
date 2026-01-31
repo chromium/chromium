@@ -2,7 +2,9 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/cronet/config.gni")
 import("//build/config/rust.gni")
+import("//build/rust/gni_impl/cpp_api_from_rust.gni")
 import("//build/rust/rust_unit_test.gni")
 
 # The //build directory is re-used for non-Chromium projects. Do not support
@@ -47,31 +49,8 @@ template("rust_target") {
   if (defined(invoker.crate_name)) {
     _crate_name = invoker.crate_name
   } else {
-    # Not using `get_label_info(..., "label_no_toolchain")` to consistently
-    # use `//foo/bar:baz` instead of the alternative shorter `//foo/bar` form.
-    _dir = get_label_info(":${_target_name}", "dir")
-    _dir = string_replace(_dir, "//", "")
-    _crate_name = "${_dir}:${_target_name}"
-
-    # The `string_replace` calls below replicate the escaping algorithm
-    # from the `escape_non_identifier_chars` function in
-    # //build/rust/chromium_prelude/import_attribute.rs.  Note that the
-    # ordering of `match` branches within the Rust function doesn't matter,
-    # but the ordering of `string_replace` calls *does* matter - the escape
-    # character `_` needs to be handled first to meet the injectivity
-    # requirement (otherwise we would get `/` => `_s` => `_us` and the same
-    # result for `_s` => `_us`).
-    _crate_name = string_replace(_crate_name, "_", "_u")
-    _crate_name = string_replace(_crate_name, "/", "_s")
-    _crate_name = string_replace(_crate_name, ":", "_c")
-    _crate_name = string_replace(_crate_name, "-", "_d")
-
-    # The string replacements below are introduced to decrease the number
-    # of characters in the crate name. This is particularly important while
-    # building Chromium with lld_emit_indexes_and_imports=True, since it
-    # will potentially need to generate huge filenames, and the build will
-    # fail in some filesystems.
-    _crate_name = string_replace(_crate_name, "third_uparty_srust_s", "_tpr")
+    _dir_hash = string_hash(get_label_info(":${_target_name}", "dir"))
+    _crate_name = "${_target_name}_${_dir_hash}"
   }
   _generate_crate_root =
       defined(invoker.generate_crate_root) && invoker.generate_crate_root
@@ -88,6 +67,21 @@ template("rust_target") {
   _allow_unsafe = false
   if (defined(invoker.allow_unsafe)) {
     _allow_unsafe = invoker.allow_unsafe
+  }
+
+  # Default to the `args.gn`-wide setting, but allow individual targets to
+  # opt-out by setting `no_clippy = true`.
+  _enable_clippy_for_this_target = enable_rust_clippy
+  if (defined(invoker.no_clippy) && invoker.no_clippy) {
+    _enable_clippy_for_this_target = false
+  }
+
+  _enable_cpp_api_from_rust_for_this_target = false
+  if (enable_cpp_api_from_rust && defined(invoker.cpp_api_from_rust)) {
+    _enable_cpp_api_from_rust_for_this_target = true
+    _cpp_api_from_rust_attributes = invoker.cpp_api_from_rust
+    assert(defined(_cpp_api_from_rust_attributes.target_name))
+    _cpp_api_from_rust_target_name = _cpp_api_from_rust_attributes.target_name
   }
 
   if (_generate_crate_root) {
@@ -145,19 +139,18 @@ template("rust_target") {
     }
   }
 
-  # Default to the 2024 edition of the Rust language, but allow the `invoker`
-  # to override this.  See also doc comments for `edition` at the top of
+  assert(!defined(configs))
+  _configs = []
+
+  # Allow the `invoker` to override Rust language edition.  See also doc
+  # comments for `edition` at the top of
   # `//build/rust/rust_static_library.gni`.
-  _edition = "2024"
-  if (!rustc_nightly_capability) {
-    _edition = "2021"
-  }
   if (defined(invoker.edition)) {
-    _edition = invoker.edition
+    _configs += [ "//build/rust:edition_${invoker.edition}" ]
+  } else {
+    _configs += [ "//build/rust:default_edition" ]
   }
 
-  assert(!defined(configs))
-  _configs = [ "//build/rust:edition_${_edition}" ]
   _test_configs = []
   if (invoker.target_type == "executable") {
     _configs += invoker.executable_configs
@@ -173,10 +166,11 @@ template("rust_target") {
   if (invoker.target_type == "rust_proc_macro") {
     _main_target_suffix = "__proc_macro"
   } else if (invoker.target_type == "shared_library") {
-    _main_target_suffix = "__proc_macro"
+    _main_target_suffix = "__shared_library"
   } else {
     _main_target_suffix = ""
   }
+  _main_target_name = "${_target_name}${_main_target_suffix}"
 
   _deps = []
   if (defined(invoker.deps)) {
@@ -263,8 +257,7 @@ template("rust_target") {
       if (defined(_visibility)) {
         visibility = _visibility
       }
-      public_deps =
-          [ ":${_target_name}${_main_target_suffix}($rust_macro_toolchain)" ]
+      public_deps = [ ":${_main_target_name}($rust_macro_toolchain)" ]
     }
 
     not_needed(invoker, "*")
@@ -276,6 +269,8 @@ template("rust_target") {
                  "_crate_name",
                  "_cxx_bindings",
                  "_deps",
+                 "_enable_clippy_for_this_target",
+                 "_enable_cpp_api_from_rust_for_this_target",
                  "_rustc_metadata",
                  "_out_dir",
                  "_public_deps",
@@ -323,7 +318,7 @@ template("rust_target") {
         if (defined(_visibility)) {
           visibility = _visibility
         }
-        public_deps = [ ":${_target_name}${_main_target_suffix}" ]
+        public_deps = [ ":${_main_target_name}" ]
         public_deps += _cxx_generated_deps_for_cpp
       }
     }
@@ -357,7 +352,17 @@ template("rust_target") {
       _rust_deps += [ "//build/rust/std" ]
     }
 
-    if (!defined(invoker.no_allocator_crate) || !invoker.no_allocator_crate) {
+    # When Cronet is built in the Android repo, it builds differently (e.g., it
+    # uses stdlib from Android, which includes its own allocator. If we depend
+    # on Chromium's allocator crate, its shims, and libstd's will conflict on
+    # each other and fail the build (see https://crbug.com/469501106 for more
+    # details).
+    # Ideally, we should do the same when building Cronet within Chromium, for
+    # consistency. However, this is currently incompatible with how Chromium
+    # builds rust dependencies (https://crbug.com/469501106 documents the errors
+    # encountered when trying this).
+    if ((!defined(invoker.no_allocator_crate) || !invoker.no_allocator_crate) &&
+        !is_cronet_for_aosp_build) {
       _rust_deps += [ "//build/rust/allocator" ]
     }
 
@@ -414,20 +419,41 @@ template("rust_target") {
       not_needed(invoker, [ "executable_configs" ])
     }
 
-    target(invoker.target_type, "${_target_name}${_main_target_suffix}") {
+    if (_enable_clippy_for_this_target) {
+      _clippy_target_name = "${_target_name}_clippy"
+    }
+
+    _rust_sources = invoker.sources
+    if (_generate_crate_root) {
+      _rust_deps += [ ":${_target_name}_crate_root" ]
+      _rust_sources += [ _crate_root ]
+    }
+
+    _rust_inputs = []
+    if (defined(invoker.inputs)) {
+      _rust_inputs += invoker.inputs
+    }
+    if (defined(_bindgen_inputs)) {
+      _rust_inputs += _bindgen_inputs
+    }
+
+    target(invoker.target_type, "${_main_target_name}") {
       forward_variables_from(invoker,
                              "*",
                              TESTONLY_AND_VISIBILITY + [
-                                   "features",
-                                   "deps",
                                    "aliased_deps",
-                                   "public_deps",
-                                   "rustflags",
-                                   "rustenv",
                                    "configs",
+                                   "deps",
+                                   "features",
+                                   "inputs",
+                                   "no_clippy",
+                                   "public_deps",
+                                   "rustenv",
+                                   "rustflags",
+                                   "sources",
+                                   "test_inputs",
                                    "unit_test_output_dir",
                                    "unit_test_target",
-                                   "test_inputs",
                                  ])
 
       if (_main_target_suffix != "") {
@@ -437,6 +463,9 @@ template("rust_target") {
         not_needed([ "_visibility" ])
       } else if (defined(_visibility)) {
         visibility = _visibility
+      }
+      if (_enable_clippy_for_this_target && defined(visibility)) {
+        visibility += [ ":${_clippy_target_name}" ]
       }
 
       testonly = _testonly
@@ -458,18 +487,8 @@ template("rust_target") {
       }
       rustenv = _rustenv
 
-      if (_generate_crate_root) {
-        deps += [ ":${_target_name}_crate_root" ]
-        sources += [ _crate_root ]
-      }
-
-      if (!defined(inputs)) {
-        inputs = []
-      }
-
-      if (defined(_bindgen_inputs)) {
-        inputs += _bindgen_inputs
-      }
+      sources = _rust_sources
+      inputs = _rust_inputs
 
       if (!defined(output_name)) {
         # Note that file names of libraries must start with the crate name in
@@ -507,12 +526,86 @@ template("rust_target") {
         deps = _cxx_deps + _public_deps
         configs = _configs
 
+        forward_variables_from(invoker, [ "allow_circular_includes_from" ])
+
         # In a component_build the cxx bindings may be linked into a shared
         # library at any point up the dependency tree, so always export.
         export_symbols = is_component_build
       }
     } else {
       not_needed([ "_cxx_deps" ])
+    }
+
+    if (_enable_clippy_for_this_target ||
+        _enable_cpp_api_from_rust_for_this_target) {
+      # Using `filter_include(get_target_outputs(..., ["*.rustflags.json"]))`
+      # would have been cleaner, but `get_target_outputs` doesn't work for
+      # library nor executable targets...
+      _rustc_env_and_flags =
+          "${target_out_dir}/${_main_target_name}.rustflags.json"
+      _rustc_rsp = "${target_out_dir}/${_main_target_name}.rsp.rust"
+
+      # All targets (e.g. Clippy and Crubit) that act as a secondary Rust
+      # compiler (i.e. consume `.rustflags.json` generated by
+      # `rustc_wrapper.py`) require the same set of shared, baseline
+      # attributes.  These attributes are gathered below to support reuse.
+      _SECONDARY_RUST_COMPILER_ATTR_NAMES = [
+        "sources",
+        "deps",
+        "testonly",
+      ]
+      _secondary_rust_compiler_attrs = {
+        # Consumed by the "compiler-like" tool:
+        sources = _rust_sources + _rust_inputs
+
+        # Consumed by the `..._wrapper.py` script:
+        sources += [
+          _rustc_env_and_flags,
+          _rustc_rsp,
+        ]
+
+        # For `_rustc_env_and_flags` and `_rustc_rsp`
+        # (both produced as a side-effect of running `rustc_wrapper.py`).
+        deps = [ ":${_main_target_name}" ]
+
+        # For `.rlib`s, build-script-generated files, etc.
+        deps += _rust_deps
+
+        testonly = _testonly
+      }
+
+      if (_enable_clippy_for_this_target) {
+        _clippy_stamp_file = "${target_out_dir}/${_target_name}.clippy"
+        action("${_clippy_target_name}") {
+          forward_variables_from(_secondary_rust_compiler_attrs,
+                                 _SECONDARY_RUST_COMPILER_ATTR_NAMES)
+
+          script = "//build/rust/gni_impl/clippy_wrapper.py"
+
+          # `import`ed for `LoadRustEnvAndFlags`, etc.
+          inputs = [ "//build/rust/gni_impl/rustc_wrapper.py" ]
+
+          args = [
+            "--clippy-driver",
+            rebase_path("//third_party/rust-toolchain/bin/clippy-driver",
+                        root_build_dir),
+            "--rustc-env-and-flags",
+            rebase_path(_rustc_env_and_flags, root_build_dir),
+            "--build-stamp-file",
+            rebase_path(_clippy_stamp_file, root_build_dir),
+          ]
+          outputs = [ _clippy_stamp_file ]
+        }
+      }
+
+      if (_enable_cpp_api_from_rust_for_this_target) {
+        cpp_api_from_rust(_cpp_api_from_rust_target_name) {
+          forward_variables_from(_secondary_rust_compiler_attrs,
+                                 _SECONDARY_RUST_COMPILER_ATTR_NAMES)
+          rust_target = ":${_main_target_name}"
+          rustc_env_and_flags = _rustc_env_and_flags
+        }
+      }
     }
   }
 }

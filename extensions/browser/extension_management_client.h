@@ -43,6 +43,11 @@ class ExtensionManagementClient {
   // Returns false if an individual scoped setting isn't defined.
   virtual bool UsesDefaultPolicyHostRestrictions(
       const Extension* extension) = 0;
+
+  // Checks if extensions are blocklisted by default, by policy. When true,
+  // this means that even extensions without an ID should be blocklisted (e.g.
+  // from the command line, or when loaded as an unpacked extension).
+  virtual bool BlocklistedByDefault() const = 0;
 };
 
 }  // namespace extensions

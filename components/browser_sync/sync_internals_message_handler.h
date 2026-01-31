@@ -60,11 +60,11 @@ class SyncInternalsMessageHandler : public syncer::SyncServiceObserver,
 
   // Handler for a message from the page.
   using PageMessageHandler =
-      base::RepeatingCallback<void(const base::Value::List&)>;
+      base::RepeatingCallback<void(const base::ListValue&)>;
 
   using GetAboutSyncDataCb =
-      base::RepeatingCallback<base::Value::Dict(syncer::SyncService* service,
-                                                const std::string& channel)>;
+      base::RepeatingCallback<base::DictValue(syncer::SyncService* service,
+                                              const std::string& channel)>;
 
   // `delegate` must be non-null and outlive this object.
   SyncInternalsMessageHandler(
@@ -112,33 +112,33 @@ class SyncInternalsMessageHandler : public syncer::SyncServiceObserver,
 
   // Fires an event to send updated data to the About page and registers
   // observers to notify the page upon updates.
-  void HandleRequestDataAndRegisterForUpdates(const base::Value::List& args);
+  void HandleRequestDataAndRegisterForUpdates(const base::ListValue& args);
 
   // Fires an event to send the list of types back to the page.
-  void HandleRequestListOfTypes(const base::Value::List& args);
+  void HandleRequestListOfTypes(const base::ListValue& args);
 
   // Fires an event to send the initial state of the "include specifics" flag.
-  void HandleRequestIncludeSpecificsInitialState(const base::Value::List& args);
+  void HandleRequestIncludeSpecificsInitialState(const base::ListValue& args);
 
   // Handler for getAllNodes message.  Needs a |request_id| argument.
-  void HandleGetAllNodes(const base::Value::List& args);
+  void HandleGetAllNodes(const base::ListValue& args);
 
   // Handler for setting internal state of if specifics should be included in
   // protocol events when sent to be displayed.
-  void HandleSetIncludeSpecifics(const base::Value::List& args);
+  void HandleSetIncludeSpecifics(const base::ListValue& args);
 
   // Handler for writeUserEvent message.
-  void HandleWriteUserEvent(const base::Value::List& args);
+  void HandleWriteUserEvent(const base::ListValue& args);
 
   // Handler for requestStart message.
-  void HandleRequestStart(const base::Value::List& args);
+  void HandleRequestStart(const base::ListValue& args);
 
   // Handler for triggerRefresh message.
-  void HandleTriggerRefresh(const base::Value::List& args);
+  void HandleTriggerRefresh(const base::ListValue& args);
 
   // Callback used in GetAllNodes.
   void OnReceivedAllNodes(const std::string& callback_id,
-                          base::Value::List nodes);
+                          base::ListValue nodes);
 
   // syncer::SyncServiceObserver implementation.
   void OnStateChanged(syncer::SyncService* sync) override;

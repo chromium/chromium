@@ -100,7 +100,7 @@ class PrintBackendServiceTestImpl : public PrintBackendServiceImpl {
       mojom::PrintBackendService::FetchCapabilitiesCallback callback) override;
   void UpdatePrintSettings(
       uint32_t context_id,
-      base::Value::Dict job_settings,
+      base::DictValue job_settings,
       mojom::PrintBackendService::UpdatePrintSettingsCallback callback)
       override;
 #if BUILDFLAG(IS_WIN)

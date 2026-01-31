@@ -96,7 +96,7 @@ void RecordUMAHelper(DeclarativeAPIFunctionType type) {
   base::UmaHistogramEnumeration("Extensions.DeclarativeAPIFunctionCalls", type);
 }
 
-void ConvertBinaryDictValuesToBase64(base::Value::Dict& dict);
+void ConvertBinaryDictValuesToBase64(base::DictValue& dict);
 
 // Encodes |binary| as base64 and returns a new string value populated with the
 // encoded string.
@@ -107,7 +107,7 @@ base::Value ConvertBinaryToBase64(const base::Value& binary) {
 // Parses through |args| replacing any binary values with base64 encoded
 // string values. Recurses over any nested List values, and calls
 // ConvertBinaryDictValuesToBase64 for any nested Dict values.
-void ConvertBinaryListElementsToBase64(base::Value::List& args) {
+void ConvertBinaryListElementsToBase64(base::ListValue& args) {
   for (auto& value : args) {
     if (value.is_blob()) {
       value = ConvertBinaryToBase64(value);
@@ -122,7 +122,7 @@ void ConvertBinaryListElementsToBase64(base::Value::List& args) {
 // Parses through |dict| replacing any BinaryValues with base64 encoded
 // string values. Recurses over any nested Dict values, and calls
 // ConvertBinaryListElementsToBase64 for any nested List values.
-void ConvertBinaryDictValuesToBase64(base::Value::Dict& dict) {
+void ConvertBinaryDictValuesToBase64(base::DictValue& dict) {
   for (auto it : dict) {
     auto& value = it.second;
     if (value.is_blob()) {
@@ -215,7 +215,7 @@ ExtensionFunction::ResponseValue EventsEventAddRulesFunction::RunInternal() {
     return Error(error);
   }
 
-  base::Value::List rules_value;
+  base::ListValue rules_value;
   rules_value.reserve(rules_out.size());
   for (const auto* rule : rules_out)
     rules_value.Append(rule->ToValue());
@@ -300,7 +300,7 @@ ExtensionFunction::ResponseValue EventsEventGetRulesFunction::RunInternal() {
     rules_registry_->GetAllRules(extension_id(), &rules);
   }
 
-  base::Value::List rules_value;
+  base::ListValue rules_value;
   rules_value.reserve(rules.size());
   for (const auto* rule : rules)
     rules_value.Append(rule->ToValue());

@@ -201,7 +201,7 @@ bool AcceleratedStaticBitmapImage::CopyToTexture(
 }
 
 bool AcceleratedStaticBitmapImage::CopyToResourceProvider(
-    CanvasResourceProviderSharedImage* resource_provider,
+    CanvasResourceProviderSharedImageNon2D* resource_provider,
     const gfx::Rect& copy_rect) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   DCHECK(resource_provider);
@@ -325,15 +325,6 @@ void AcceleratedStaticBitmapImage::EnsureSyncTokenVerified() {
   ContextProvider()->InterfaceBase()->VerifySyncTokensCHROMIUM(&token_data, 1);
   sync_token.SetVerifyFlush();
   mailbox_ref_->set_sync_token(sync_token);
-}
-
-gpu::MailboxHolder AcceleratedStaticBitmapImage::GetMailboxHolder() const {
-  if (!IsValid()) {
-    return gpu::MailboxHolder();
-  }
-  return gpu::MailboxHolder(shared_image_->mailbox(),
-                            mailbox_ref_->sync_token(),
-                            shared_image_->GetTextureTarget());
 }
 
 scoped_refptr<gpu::ClientSharedImage>

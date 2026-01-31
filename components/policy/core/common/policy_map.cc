@@ -8,7 +8,6 @@
 #include <optional>
 #include <utility>
 
-#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/strings/strcat.h"
@@ -533,7 +532,8 @@ void PolicyMap::MergeFrom(const PolicyMap& other) {
 #if !BUILDFLAG(IS_CHROMEOS)
     // Skip precedence metapolicies since they have already been merged into the
     // current PolicyMap.
-    if (base::Contains(metapolicy::kPrecedence, policy_and_entry.first)) {
+    if (std::ranges::contains(metapolicy::kPrecedence,
+                              policy_and_entry.first)) {
       continue;
     }
 #endif
@@ -567,7 +567,7 @@ const PolicyDetails* PolicyMap::GetPolicyDetails(
   return details_callback_.Run(policy);
 }
 
-void PolicyMap::LoadFrom(const base::Value::Dict& policies,
+void PolicyMap::LoadFrom(const base::DictValue& policies,
                          PolicyLevel level,
                          PolicyScope scope,
                          PolicySource source) {

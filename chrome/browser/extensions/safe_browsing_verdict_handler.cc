@@ -84,7 +84,7 @@ void SafeBrowsingVerdictHandler::ManageBlocklist(
   for (const auto& it : state_map) {
     // It is possible that an extension is uninstalled when the blocklist is
     // fetching asynchronously. In this case, we should ignore this extension.
-    if (!base::Contains(installed_ids, it.first)) {
+    if (!installed_ids.contains(it.first)) {
       continue;
     }
     switch (it.second) {

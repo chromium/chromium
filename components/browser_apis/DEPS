@@ -4,6 +4,7 @@ include_rules = [
     "+skia/ext",
     "+third_party/skia",
     "+ui/gfx",
+    "+components/split_tabs",
     "+components/tab_groups",
     "+components/tabs",
 ]

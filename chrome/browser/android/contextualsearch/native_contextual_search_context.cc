@@ -53,20 +53,20 @@ NativeContextualSearchContext::FromJavaContextualSearchContext(
 void NativeContextualSearchContext::SetResolveProperties(
     JNIEnv* env,
     std::string& home_country,
-    jboolean j_may_send_base_page_url) {
+    bool j_may_send_base_page_url) {
   ContextualSearchContext::SetResolveProperties(home_country,
                                                 j_may_send_base_page_url);
 }
 
 void NativeContextualSearchContext::AdjustSelection(JNIEnv* env,
-                                                    jint j_start_adjust,
-                                                    jint j_end_adjust) {
+                                                    int32_t j_start_adjust,
+                                                    int32_t j_end_adjust) {
   ContextualSearchContext::AdjustSelection(j_start_adjust, j_end_adjust);
 }
 
 void NativeContextualSearchContext::PrepareToResolve(
     JNIEnv* env,
-    jboolean j_is_exact_resolve,
+    bool j_is_exact_resolve,
     std::string& related_searches_stamp) {
   ContextualSearchContext::PrepareToResolve(j_is_exact_resolve,
                                             related_searches_stamp);
@@ -92,7 +92,7 @@ void NativeContextualSearchContext::Destroy(JNIEnv* env) {
   delete this;
 }
 
-static jlong JNI_ContextualSearchContext_Init(
+static int64_t JNI_ContextualSearchContext_Init(
     JNIEnv* env,
     const base::android::JavaRef<jobject>& obj) {
   NativeContextualSearchContext* context =

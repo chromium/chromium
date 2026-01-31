@@ -57,7 +57,7 @@ class CryptAuthDeviceRegistryImpl : public CryptAuthDeviceRegistry {
   void OnDeviceRegistryUpdated() override;
 
   // Converts the registry to a dictionary value in a form suitable for a pref.
-  base::Value::Dict AsDictionary() const;
+  base::DictValue AsDictionary() const;
 
   // Contains preferences that outlive the lifetime of this object and across
   // process restarts. Not owned and must outlive this instance.

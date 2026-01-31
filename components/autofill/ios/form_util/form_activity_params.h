@@ -36,7 +36,7 @@ struct BaseFormActivityParams {
   // It is expected that the input message contains the fields:
   // "frameID": ID of the associated WebFrame object (maps to frame_id)
   static bool FromMessage(const web::ScriptMessage& message,
-                          const base::Value::Dict** message_body,
+                          const base::DictValue** message_body,
                           BaseFormActivityParams* params);
   std::string frame_id;
 

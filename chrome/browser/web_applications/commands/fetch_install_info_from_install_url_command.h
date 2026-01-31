@@ -9,6 +9,7 @@
 #include "chrome/browser/web_applications/commands/web_app_command.h"
 #include "chrome/browser/web_applications/jobs/manifest_to_web_app_install_info_job.h"
 #include "chrome/browser/web_applications/locks/shared_web_contents_lock.h"
+#include "chrome/browser/web_applications/scheduler/fetch_install_info_from_install_url_result.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/browser/web_applications/web_app_logging.h"
@@ -21,31 +22,6 @@ class WebAppUrlLoader;
 namespace web_app {
 
 class WebAppDataRetriever;
-
-// The result of fetching the `WebAppInstallInfo` from an `install_url`.
-// These values are persisted to logs. Entries should not be renumbered and
-// numeric values should never be reused.
-// LINT.IfChange(FetchInstallInfoResult)
-enum class FetchInstallInfoResult {
-  // Successfully fetched the `WebAppInstallInfo`.
-  kAppInfoObtained = 0,
-  // The web contents was destroyed before the command could complete.
-  kWebContentsDestroyed = 1,
-  // The given `install_url` failed to load.
-  kUrlLoadingFailure = 2,
-  // The site did not have a valid web app manifest.
-  kNoValidManifest = 3,
-  // The manifest ID of the fetched manifest did not match the expected ID.
-  kWrongManifestId = 4,
-  // A generic failure occurred.
-  kFailure = 5,
-  // The system was shut down.
-  kShutdown = 6,
-  kMaxValue = kShutdown
-};
-// LINT.ThenChange(//tools/metrics/histograms/metadata/webapps/enums.xml:FetchInstallInfoResult)
-
-std::ostream& operator<<(std::ostream& os, FetchInstallInfoResult result);
 
 // Fetches the WebAppInstallInfo for a given install URL. This is used for
 // installing sub-apps, where the manifest ID and parent manifest ID are known,

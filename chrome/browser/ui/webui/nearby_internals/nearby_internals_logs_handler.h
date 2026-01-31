@@ -36,10 +36,10 @@ class NearbyInternalsLogsHandler : public content::WebUIMessageHandler,
   void OnCrossDeviceLogBufferCleared() override;
 
   // Message handler callback that returns the Log Buffer in dictionary form.
-  void HandleGetLogMessages(const base::Value::List& args);
+  void HandleGetLogMessages(const base::ListValue& args);
 
   // Message handler callback that clears the Log Buffer.
-  void ClearCrossDeviceLogBuffer(const base::Value::List& args);
+  void ClearCrossDeviceLogBuffer(const base::ListValue& args);
 
   base::ScopedObservation<CrossDeviceLogBuffer, CrossDeviceLogBuffer::Observer>
       observation_{this};

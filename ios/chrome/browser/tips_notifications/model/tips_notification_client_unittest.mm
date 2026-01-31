@@ -16,7 +16,7 @@
 #import "components/prefs/scoped_user_pref_update.h"
 #import "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin_presenter.h"
-#import "ios/chrome/browser/content_suggestions/ui_bundled/content_suggestions_commands.h"
+#import "ios/chrome/browser/content_suggestions/ui/content_suggestions_commands.h"
 #import "ios/chrome/browser/default_browser/model/promo_source.h"
 #import "ios/chrome/browser/default_browser/model/utils.h"
 #import "ios/chrome/browser/default_browser/model/utils_test_support.h"
@@ -32,11 +32,11 @@
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_manager_ios.h"
-#import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/browser_coordinator_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/credential_provider_promo_commands.h"
 #import "ios/chrome/browser/shared/public/commands/docking_promo_commands.h"
+#import "ios/chrome/browser/shared/public/commands/scene_commands.h"
 #import "ios/chrome/browser/shared/public/commands/settings_commands.h"
 #import "ios/chrome/browser/shared/public/commands/whats_new_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
@@ -220,12 +220,12 @@ class TipsNotificationClientTest : public PlatformTest {
   }
 
   // Stubs the `-prepareToPresentModalWithSnackbarDismissal:` method from
-  // `ApplicationCommands` so that it immediately calls the completion block.
+  // `SceneCommands` so that it immediately calls the completion block.
   void StubPrepareToPresentModal() {
     prepare_to_present_modal_stub_ = [[PrepareToPresentModalStub alloc] init];
     [browser_->GetCommandDispatcher()
         startDispatchingToTarget:prepare_to_present_modal_stub_
-                     forProtocol:@protocol(ApplicationCommands)];
+                     forProtocol:@protocol(SceneCommands)];
   }
 
   // Sets up an OCMock expectation that a notification will be requested.

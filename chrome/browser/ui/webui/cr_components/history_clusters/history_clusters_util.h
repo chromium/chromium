@@ -7,8 +7,6 @@
 
 inline constexpr char kIsHistoryClustersVisibleKey[] =
     "isHistoryClustersVisible";
-inline constexpr char kIsHistoryClustersVisibleManagedByPolicyKey[] =
-    "isHistoryClustersVisibleManagedByPolicy";
 inline constexpr char kRenameJourneysKey[] = "renameJourneys";
 
 class Profile;

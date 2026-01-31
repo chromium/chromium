@@ -4,11 +4,11 @@
 
 #include "content/browser/renderer_host/spare_render_process_host_manager_impl.h"
 
+#include <algorithm>
 #include <optional>
 
 #include "base/check.h"
 #include "base/debug/dump_without_crashing.h"
-#include "base/memory/memory_pressure_monitor.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/no_destructor.h"
@@ -222,18 +222,6 @@ std::string GetNoSpareRendererAllocationForCOOPUMAName(
                        GetNoSpareRendererReasonName(reason)});
 }
 
-bool IsCurrentlyUnderMemoryPressure() {
-  base::MemoryPressureMonitor* memory_pressure_monitor =
-      base::MemoryPressureMonitor::Get();
-  if (!memory_pressure_monitor) {
-    return false;
-  }
-
-  return memory_pressure_monitor->GetCurrentPressureLevel(
-             base::MemoryPressureMonitorTag::kSpareRendererHostManager) !=
-         base::MEMORY_PRESSURE_LEVEL_NONE;
-}
-
 // Returns the number of spare hosts that should be created. Ensures the field
 // trial is not activated on excluded machines.
 size_t GetSpareRPHCount() {
@@ -341,12 +329,6 @@ SpareRenderProcessHostManagerImpl::SpareRenderProcessHostManagerImpl()
           FROM_HERE,
           base::MemoryPressureListenerTag::kSpareRenderProcessHostManagerImpl,
           this),
-      check_memory_pressure_timer_(
-          FROM_HERE,
-          base::Minutes(5),
-          base::BindRepeating(
-              &SpareRenderProcessHostManagerImpl::CheckIfMemoryPressureEnded,
-              base::Unretained(this))),
       metrics_heartbeat_timer_(
           FROM_HERE,
           base::Minutes(2),
@@ -362,11 +344,6 @@ SpareRenderProcessHostManagerImpl::SpareRenderProcessHostManagerImpl()
 #endif
 {
   metrics_heartbeat_timer_.Reset();
-
-  // Immediately start the timer if the system is already under memory pressure.
-  if (IsCurrentlyUnderMemoryPressure()) {
-    check_memory_pressure_timer_.Reset();
-  }
 
   // Need to register first before checking the state to make sure we don't miss
   // a notification.
@@ -524,11 +501,7 @@ RenderProcessHost* SpareRenderProcessHostManagerImpl::WarmupSpare(
   // Don't create a spare renderer when the system is under load.  This is
   // currently approximated by only looking at the memory pressure.  See also
   // https://crbug.com/852905.
-  auto* memory_monitor = base::MemoryPressureMonitor::Get();
-  if (memory_monitor &&
-      memory_monitor->GetCurrentPressureLevel(
-          base::MemoryPressureMonitorTag::kSpareRendererHostManager) >=
-          GetMemoryPressureLevelThreshold()) {
+  if (memory_pressure_level() >= GetMemoryPressureLevelThreshold()) {
     no_spare_renderer_reason_ = NoSpareRendererReason::kMemoryPressure;
     return nullptr;
   }
@@ -922,7 +895,7 @@ void SpareRenderProcessHostManagerImpl::ReleaseSpare(
 
 void SpareRenderProcessHostManagerImpl::RenderProcessReady(
     RenderProcessHost* host) {
-  CHECK(base::Contains(spare_rphs_, host));
+  CHECK(std::ranges::contains(spare_rphs_, host));
 
   CHECK(process_startup_timer_);
   UMA_HISTOGRAM_TIMES("BrowserRenderProcessHost.SpareProcessStartupTime",
@@ -979,13 +952,18 @@ void SpareRenderProcessHostManagerImpl::SetIsBrowserIdle(bool is_browser_idle) {
 
 void SpareRenderProcessHostManagerImpl::OnMemoryPressure(
     base::MemoryPressureLevel memory_pressure_level) {
+  if (memory_pressure_level == base::MEMORY_PRESSURE_LEVEL_NONE) {
+    // Now that the system is no longer under memory pressure, check if we need
+    // to start another spare.
+    MaybeCreateExtraSpare();
+    return;
+  }
+
   if (memory_pressure_level < GetMemoryPressureLevelThreshold()) {
     return;
   }
 
-  CHECK_NE(memory_pressure_level, base::MEMORY_PRESSURE_LEVEL_NONE);
-  if (check_memory_pressure_timer_.IsRunning() ||
-      !base::FeatureList::IsEnabled(kKillSpareRenderOnMemoryPressure)) {
+  if (!base::FeatureList::IsEnabled(kKillSpareRenderOnMemoryPressure)) {
     return;
   }
 
@@ -995,21 +973,6 @@ void SpareRenderProcessHostManagerImpl::OnMemoryPressure(
     CleanupSpares(SpareRendererDispatchResult::kMemoryPressure);
     CHECK(no_spare_renderer_reason_ == NoSpareRendererReason::kMemoryPressure);
   }
-
-  // `reset()` will start the timer.
-  check_memory_pressure_timer_.Reset();
-}
-
-void SpareRenderProcessHostManagerImpl::CheckIfMemoryPressureEnded() {
-  if (IsCurrentlyUnderMemoryPressure()) {
-    return;
-  }
-
-  check_memory_pressure_timer_.Stop();
-
-  // Now that the system is no longer under memory pressure, check if we need
-  // to start another spare.
-  MaybeCreateExtraSpare();
 }
 
 bool SpareRenderProcessHostManagerImpl::ShouldCreateExtraSpare() const {
@@ -1046,7 +1009,7 @@ bool SpareRenderProcessHostManagerImpl::ShouldCreateExtraSpare() const {
   }
 
   // Don't create spares when under memory pressure.
-  if (check_memory_pressure_timer_.IsRunning()) {
+  if (memory_pressure_level() != base::MEMORY_PRESSURE_LEVEL_NONE) {
     return false;
   }
 

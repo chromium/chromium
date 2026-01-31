@@ -10,6 +10,7 @@
 #include <stdint.h>
 
 #include "base/android/scoped_java_ref.h"
+#include "base/containers/span.h"
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 
@@ -21,8 +22,7 @@ class MidiInputPortAndroid final {
    public:
     virtual ~Delegate() {}
     virtual void OnReceivedData(MidiInputPortAndroid* port,
-                                const uint8_t* data,
-                                size_t size,
+                                base::span<const uint8_t> data,
                                 base::TimeTicks time) = 0;
   };
   MidiInputPortAndroid(JNIEnv* env,
@@ -37,9 +37,9 @@ class MidiInputPortAndroid final {
   // Called by the Java world.
   void OnData(JNIEnv* env,
               const base::android::JavaRef<jbyteArray>& data,
-              jint offset,
-              jint size,
-              jlong timestamp);
+              int32_t offset,
+              int32_t size,
+              int64_t timestamp);
 
  private:
   base::android::ScopedJavaGlobalRef<jobject> raw_port_;

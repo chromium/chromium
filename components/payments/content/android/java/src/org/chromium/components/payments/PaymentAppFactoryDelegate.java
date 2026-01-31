@@ -5,7 +5,6 @@
 package org.chromium.components.payments;
 
 import org.chromium.build.annotations.NullMarked;
-import org.chromium.build.annotations.Nullable;
 
 /**
  * Interface for providing information to a payment app factory and receiving the list of payment
@@ -35,17 +34,12 @@ public interface PaymentAppFactoryDelegate {
      * Called when a payment app factory has failed to create a payment app.
      *
      * @param errorMessage The error message for the web developer, e.g., "Failed to download the
-     * web app manifest file."
+     *     web app manifest file."
      * @param errorReason The reason for the error, used internally to decide on specific failure
-     * handling behavior.
+     *     handling behavior.
      */
     default void onPaymentAppCreationError(
             String errorMessage, @AppCreationFailureReason int errorReason) {}
-
-    /**
-     * @return Whether the "can make payment" preference is enabled.
-     */
-    boolean prefsCanMakePayment();
 
     /**
      * Called when the factory has finished creating all payment apps. A factory should call this
@@ -65,35 +59,14 @@ public interface PaymentAppFactoryDelegate {
     default void setOptOutOffered() {}
 
     /**
-     * @return The Content-Security-Policy (CSP) checker.
-     */
-    CSPChecker getCSPChecker();
-
-    /**
-     * @return An instance of a dialog for displaying informational or warning messages.
-     */
-    default @Nullable DialogController getDialogController() {
-        return null;
-    }
-
-    /**
-     * @return The launcher for Android intent-based payment app.
-     */
-    default @Nullable AndroidIntentLauncher getAndroidIntentLauncher() {
-        return null;
-    }
-
-    /**
-     * Used to check whether payment apps are required to handle shipping address and contact
-     * information, when merchant websites request that information. This information can be
-     * returned either from payment apps or from Chrome's autofill. Result of this method does not
-     * guarantee the payment. Even if this method returns true, there could be no payment apps to
-     * support providing shipping address or contact information.
+     * Returns true if an internal payment app factory has been registered.
      *
-     * @return Whether payment apps are required to provide shipping address and contact
-     *     information.
+     * <p>Note that this is not part of {@link PaymentAppFactoryParams} because the layer that
+     * provides that information does not know if an internal factory has been registered.
+     *
+     * <p>TODO(crbug.com/400531531): Stop special-casing internal payment apps in Chrome.
      */
-    default boolean isFullDelegationRequired() {
+    default boolean internalPaymentAppFactoryPresent() {
         return false;
     }
 }

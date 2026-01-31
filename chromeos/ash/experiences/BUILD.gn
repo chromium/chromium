@@ -22,6 +22,7 @@ test("ash_components_unittests") {
     "//chromeos/ash/components/chaps_util:unit_tests",
     "//chromeos/ash/experiences/arc:unit_tests",
     "//chromeos/ash/experiences/arc/mojom:unit_tests",
+    "//chromeos/ash/experiences/camera:unit_tests",
     "//mojo/core/embedder",
 
     # TODO(crbug.com/386148857): Temporarily refer chromeos/ash/experiences

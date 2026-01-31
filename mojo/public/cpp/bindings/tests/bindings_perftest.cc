@@ -120,10 +120,9 @@ TEST_F(MojoBindingsPerftest, InProcessPingPong) {
     const MojoTimeTicks start_time = MojoGetTimeTicksNow();
     test.Run(kIterations);
     const MojoTimeTicks end_time = MojoGetTimeTicksNow();
-    test::LogPerfResult(
-        "InProcessPingPong", "0_Inactive",
-        kIterations / MojoTicksToSeconds(end_time - start_time),
-        "pings/second");
+    test::LogPerfResult("InProcessPingPong", "0_Inactive",
+                        kIterations / MojoTicksToSeconds(end_time - start_time),
+                        "pings/second");
   }
 
   {
@@ -135,10 +134,9 @@ TEST_F(MojoBindingsPerftest, InProcessPingPong) {
     const MojoTimeTicks start_time = MojoGetTimeTicksNow();
     test.Run(kIterations);
     const MojoTimeTicks end_time = MojoGetTimeTicksNow();
-    test::LogPerfResult(
-        "InProcessPingPong", "1000_Inactive",
-        kIterations / MojoTicksToSeconds(end_time - start_time),
-        "pings/second");
+    test::LogPerfResult("InProcessPingPong", "1000_Inactive",
+                        kIterations / MojoTicksToSeconds(end_time - start_time),
+                        "pings/second");
 
     delete[] inactive_services;
   }

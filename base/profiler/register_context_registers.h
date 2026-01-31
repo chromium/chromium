@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 // This file provides functions that provide access to key registers in the
 // native register context.
 
@@ -103,7 +98,7 @@ inline uintptr_t& RegisterContextFramePointer(mcontext_t* context) {
 #elif defined(ARCH_CPU_X86_FAMILY) && defined(ARCH_CPU_64_BITS)
   return AsUintPtr(&context->gregs[REG_RBP]);
 #else
-  return *(reinterpret_cast<uintptr_t*>(context) + 1);
+  return *(UNSAFE_TODO(reinterpret_cast<uintptr_t*>(context) + 1));
 #endif
 }
 
@@ -117,7 +112,7 @@ inline uintptr_t& RegisterContextInstructionPointer(mcontext_t* context) {
 #elif defined(ARCH_CPU_X86_FAMILY) && defined(ARCH_CPU_64_BITS)
   return AsUintPtr(&context->gregs[REG_RIP]);
 #else
-  return *(reinterpret_cast<uintptr_t*>(context) + 2);
+  return *(UNSAFE_TODO(reinterpret_cast<uintptr_t*>(context) + 2));
 #endif
 }
 

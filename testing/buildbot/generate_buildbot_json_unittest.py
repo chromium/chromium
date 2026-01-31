@@ -117,6 +117,8 @@ class FakeBBGen(generate_buildbot_json.BBJSONGenerator):
         variants_pyl_path: variants,
         os.path.join(pyl_files_dir, 'gn_isolate_map2.pyl'):
         GPU_TELEMETRY_GN_ISOLATE_MAP,
+        os.path.join(pyl_files_dir, 'gn_isolate_map_prefix.pyl'):
+        GN_ISOLATE_MAP_PREFIX,
         os.path.join(infra_config_dir, 'generated/project.pyl'): project_pyl,
         os.path.join(infra_config_dir, 'generated/luci/luci-milo.cfg'):
         luci_milo_cfg,
@@ -1717,6 +1719,17 @@ GN_ISOLATE_MAP_MODULE_SCHEME = """\
 }
 """
 
+GN_ISOLATE_MAP_PREFIX = """\
+{
+  'foo_test_prefix': {
+    'label': '//chrome/test:foo_test_prefix',
+    'type': 'windowed_test_launcher',
+    'module_scheme': 'gtest',
+    'test_prefix': 'ninja://chrome/test:foo_test_prefix'
+  }
+}
+"""
+
 GPU_TELEMETRY_GN_ISOLATE_MAP="""\
 {
   'telemetry_gpu_integration_test': {
@@ -1936,6 +1949,24 @@ class UnitTest(TestCase):
     isolate_dict.update(isolate_map_1)
     isolate_dict.update(isolate_map_2)
     self.assertEqual(isolate_dict, fbb.gn_isolate_map)
+
+  def test_exclude_test_prefix_from_isolate_map(self):
+    self.args.isolate_map_files = ['gn_isolate_map_prefix.pyl']
+    self.args.prefix_exclude_map_files = ['gn_isolate_map_prefix.pyl']
+    fbb = FakeBBGen(self.args,
+                    FOO_GTESTS_WATERFALL,
+                    REUSING_TEST_WITH_DIFFERENT_NAME,
+                    LUCI_MILO_CFG,
+                    gn_isolate_map=GN_ISOLATE_MAP)
+    fbb.load_configuration_files()
+    isolate_dict = {}
+    isolate_map_1 = fbb.load_pyl_file(self.args.gn_isolate_map_pyl.actual_path)
+    isolate_map_2 = fbb.load_pyl_file('gn_isolate_map_prefix.pyl')
+    isolate_dict.update(isolate_map_1)
+    isolate_dict.update(isolate_map_2)
+    self.assertEqual(isolate_dict, fbb.gn_isolate_map)
+    fbb.check_input_file_consistency(verbose=True)
+    self.assertFalse(fbb.printed_lines)
 
   def test_gn_isolate_map_with_label_mismatch(self):
     fbb = FakeBBGen(self.args,

@@ -3,6 +3,8 @@
 # found in the LICENSE file.
 
 include_rules = [
+  # keep-sorted start
+    "+ios/chrome/browser/browser_content/model/edit_menu_builder.h",
     "+ios/components/enterprise/data_controls",
-    "+ios/chrome/browser/browser_container/model/edit_menu_builder.h",
+  # keep-sorted end
 ]

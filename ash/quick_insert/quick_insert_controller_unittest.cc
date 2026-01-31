@@ -910,9 +910,9 @@ TEST_F(QuickInsertControllerTest, SuggestedEmojiReturnsDefaultEmojisWhenEmpty) {
 
 TEST_F(QuickInsertControllerTest,
        SuggestedEmojiReturnsRecentEmojiFollowedByDefaultEmojis) {
-  base::Value::List history_value;
-  history_value.Append(base::Value::Dict().Set("text", "abc"));
-  history_value.Append(base::Value::Dict().Set("text", "xyz"));
+  base::ListValue history_value;
+  history_value.Append(base::DictValue().Set("text", "abc"));
+  history_value.Append(base::DictValue().Set("text", "xyz"));
   ScopedDictPrefUpdate update(prefs(), prefs::kEmojiPickerHistory);
   update->Set("emoji", std::move(history_value));
 
@@ -928,9 +928,9 @@ TEST_F(QuickInsertControllerTest,
 }
 
 TEST_F(QuickInsertControllerTest, AddsNewRecentEmoji) {
-  base::Value::List history_value;
-  history_value.Append(base::Value::Dict().Set("text", "abc"));
-  history_value.Append(base::Value::Dict().Set("text", "xyz"));
+  base::ListValue history_value;
+  history_value.Append(base::DictValue().Set("text", "abc"));
+  history_value.Append(base::DictValue().Set("text", "xyz"));
   ScopedDictPrefUpdate update(prefs(), prefs::kEmojiPickerHistory);
   update->Set("emoji", std::move(history_value));
 
@@ -948,9 +948,9 @@ TEST_F(QuickInsertControllerTest, AddsNewRecentEmoji) {
 }
 
 TEST_F(QuickInsertControllerTest, AddsExistingRecentEmoji) {
-  base::Value::List history_value;
-  history_value.Append(base::Value::Dict().Set("text", "abc"));
-  history_value.Append(base::Value::Dict().Set("text", "xyz"));
+  base::ListValue history_value;
+  history_value.Append(base::DictValue().Set("text", "abc"));
+  history_value.Append(base::DictValue().Set("text", "xyz"));
   ScopedDictPrefUpdate update(prefs(), prefs::kEmojiPickerHistory);
   update->Set("emoji", std::move(history_value));
 
@@ -1042,21 +1042,21 @@ TEST_F(QuickInsertControllerTest, DoesNotAddRecentEmojiWithFocusIfIncognito) {
 
 TEST_F(QuickInsertControllerTest,
        SuggestedEmojiReturnsRecentEmojiEmoticonAndSymbol) {
-  base::Value::List emoji_history_value;
+  base::ListValue emoji_history_value;
   emoji_history_value.Append(
-      base::Value::Dict().Set("text", "emoji1").Set("timestamp", "10"));
+      base::DictValue().Set("text", "emoji1").Set("timestamp", "10"));
   emoji_history_value.Append(
-      base::Value::Dict().Set("text", "emoji2").Set("timestamp", "5"));
-  base::Value::List emoticon_history_value;
+      base::DictValue().Set("text", "emoji2").Set("timestamp", "5"));
+  base::ListValue emoticon_history_value;
   emoticon_history_value.Append(
-      base::Value::Dict().Set("text", "emoticon1").Set("timestamp", "12"));
+      base::DictValue().Set("text", "emoticon1").Set("timestamp", "12"));
   emoticon_history_value.Append(
-      base::Value::Dict().Set("text", "emoticon2").Set("timestamp", "2"));
-  base::Value::List symbol_history_value;
+      base::DictValue().Set("text", "emoticon2").Set("timestamp", "2"));
+  base::ListValue symbol_history_value;
   symbol_history_value.Append(
-      base::Value::Dict().Set("text", "symbol1").Set("timestamp", "15"));
+      base::DictValue().Set("text", "symbol1").Set("timestamp", "15"));
   symbol_history_value.Append(
-      base::Value::Dict().Set("text", "symbol2").Set("timestamp", "8"));
+      base::DictValue().Set("text", "symbol2").Set("timestamp", "8"));
   ScopedDictPrefUpdate update(prefs(), prefs::kEmojiPickerHistory);
   update->Set("emoji", std::move(emoji_history_value));
   update->Set("emoticon", std::move(emoticon_history_value));

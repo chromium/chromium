@@ -4,7 +4,6 @@
 
 #include "device/bluetooth/dbus/fake_bluetooth_admin_policy_client.h"
 
-#include "base/containers/contains.h"
 #include "base/logging.h"
 #include "base/observer_list.h"
 #include "device/bluetooth/dbus/fake_bluetooth_adapter_client.h"
@@ -74,7 +73,7 @@ FakeBluetoothAdminPolicyClient::GetProperties(
 void FakeBluetoothAdminPolicyClient::CreateAdminPolicy(
     const dbus::ObjectPath& path,
     bool is_blocked_by_policy) {
-  DCHECK(!base::Contains(properties_map_, path));
+  DCHECK(!properties_map_.contains(path));
 
   auto properties = std::make_unique<Properties>(
       base::BindRepeating(&FakeBluetoothAdminPolicyClient::OnPropertyChanged,
@@ -92,7 +91,7 @@ void FakeBluetoothAdminPolicyClient::CreateAdminPolicy(
 void FakeBluetoothAdminPolicyClient::ChangeAdminPolicy(
     const dbus::ObjectPath& path,
     bool is_blocked_by_policy) {
-  DCHECK(base::Contains(properties_map_, path));
+  DCHECK(properties_map_.contains(path));
 
   properties_map_[path]->is_blocked_by_policy.ReplaceValue(
       is_blocked_by_policy);
@@ -105,7 +104,7 @@ void FakeBluetoothAdminPolicyClient::ChangeAdminPolicy(
 
 void FakeBluetoothAdminPolicyClient::RemoveAdminPolicy(
     const dbus::ObjectPath& path) {
-  DCHECK(base::Contains(properties_map_, path));
+  DCHECK(properties_map_.contains(path));
   properties_map_.erase(path);
 
   for (auto& observer : observers_) {

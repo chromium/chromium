@@ -12,6 +12,11 @@
 #include "base/containers/flat_set.h"
 #include "components/autofill/core/browser/data_model/payments/payment_instrument.h"
 
+#if BUILDFLAG(IS_ANDROID)
+#include "base/android/jni_string.h"
+#include "base/android/scoped_java_ref.h"
+#endif
+
 class GURL;
 
 namespace autofill {
@@ -77,6 +82,36 @@ class Ewallet {
   PaymentInstrument payment_instrument_;
 };
 
+#if BUILDFLAG(IS_ANDROID)
+base::android::ScopedJavaLocalRef<jobject> CreateJavaEwalletFromNative(
+    JNIEnv* env,
+    const Ewallet& ewallet);
+
+Ewallet CreateNativeEwalletFromJava(
+    JNIEnv* env,
+    const base::android::JavaRef<jobject>& jewallet);
+#endif
+
 }  // namespace autofill
+
+#if BUILDFLAG(IS_ANDROID)
+namespace jni_zero {
+
+template <>
+inline ScopedJavaLocalRef<jobject> ToJniType<autofill::Ewallet>(
+    JNIEnv* env,
+    const autofill::Ewallet& input) {
+  return autofill::CreateJavaEwalletFromNative(env, input);
+}
+
+template <>
+inline autofill::Ewallet FromJniType<autofill::Ewallet>(
+    JNIEnv* env,
+    const JavaRef<jobject>& input) {
+  return autofill::CreateNativeEwalletFromJava(env, input);
+}
+
+}  // namespace jni_zero
+#endif
 
 #endif  // COMPONENTS_AUTOFILL_CORE_BROWSER_DATA_MODEL_PAYMENTS_EWALLET_H_

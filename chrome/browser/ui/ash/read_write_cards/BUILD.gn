@@ -33,6 +33,7 @@ source_set("read_write_cards_manager") {
   deps = [
     ":read_write_cards",
     "//base",
+    "//chrome/browser/ash/magic_boost",
     "//chrome/browser/ui/ash/editor_menu",
     "//chrome/browser/ui/ash/editor_menu:utils",
     "//chrome/browser/ui/ash/magic_boost",
@@ -44,7 +45,6 @@ source_set("read_write_cards_manager") {
     "//chromeos/components/quick_answers/public/cpp",
     "//chromeos/components/quick_answers/public/cpp:prefs",
     "//chromeos/constants",
-    "//chromeos/crosapi/mojom",
     "//content/public/browser",
   ]
 }
@@ -61,10 +61,6 @@ source_set("unit_tests") {
     "//ash:test_support",
     "//base/test:test_support",
     "//chrome/browser:global_features",
-
-    # TODO(crbug.com/374896328): Remove crosapi use.
-    "//chrome/browser/ash/crosapi",
-    "//chrome/browser/ash/crosapi:test_support",
     "//chrome/browser/ash/magic_boost",
     "//chrome/browser/ui/ash/editor_menu",
     "//chrome/browser/ui/ash/editor_menu:utils",

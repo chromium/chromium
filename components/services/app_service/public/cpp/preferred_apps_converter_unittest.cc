@@ -37,19 +37,19 @@ TEST_F(PreferredAppsConverterTest, ConvertSimpleEntry) {
   // Check that each entry is correct.
   ASSERT_EQ(1u, converted_preferred_apps->GetList().size());
   const base::Value& entry_val = converted_preferred_apps->GetList()[0];
-  const base::Value::Dict& entry = entry_val.GetDict();
+  const base::DictValue& entry = entry_val.GetDict();
   EXPECT_EQ(kAppId1, *entry.FindString(apps::kAppIdKey));
 
-  const base::Value::List* converted_intent_filter =
+  const base::ListValue* converted_intent_filter =
       entry.FindList(apps::kIntentFilterKey);
   ASSERT_EQ(intent_filter->conditions.size(), converted_intent_filter->size());
 
   for (size_t i = 0; i < intent_filter->conditions.size(); i++) {
     auto& condition = intent_filter->conditions[i];
-    const base::Value::Dict& converted_condition =
+    const base::DictValue& converted_condition =
         (*converted_intent_filter)[i].GetDict();
     auto& condition_values = condition->condition_values;
-    const base::Value::List* converted_condition_values =
+    const base::ListValue* converted_condition_values =
         converted_condition.FindList(apps_util::kConditionValuesKey);
 
     EXPECT_EQ(static_cast<int>(condition->condition_type),

@@ -38,7 +38,7 @@ class BruschettaPolicyHandler
   bool CheckDownloadableObject(policy::PolicyErrorMap* errors,
                                const std::string& id,
                                const std::string& key,
-                               const base::Value::Dict& dict);
+                               const base::DictValue& dict);
 
   // The set of configurations that have been downgraded from installable to
   // runnable due to an error in their config. Filled by CheckPolicySettings and

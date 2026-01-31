@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/intelligence/bwg/model/bwg_session_handler.h"
 
 #import "base/test/metrics/histogram_tester.h"
+#import "base/test/metrics/user_action_tester.h"
 #import "base/test/scoped_feature_list.h"
 #import "ios/chrome/browser/intelligence/bwg/metrics/gemini_metrics.h"
 #import "ios/chrome/browser/intelligence/bwg/model/bwg_tab_helper.h"
@@ -82,6 +83,7 @@ class BWGSessionHandlerTest : public PlatformTest {
   std::unique_ptr<Browser> browser_;
   raw_ptr<WebStateList> web_state_list_;
   base::HistogramTester histogram_tester_;
+  base::UserActionTester user_action_tester_;
   BWGSessionHandler* session_handler_;
   raw_ptr<OptimizationGuideService> optimization_guide_service_;
   id mock_bwg_handler_;
@@ -108,10 +110,15 @@ TEST_F(BWGSessionHandlerTest, TestResponseLatencyRecorded) {
 
   [session_handler_ UIDidAppearWithClientID:client_id serverID:kTestServerID];
   [session_handler_ didSendQueryWithInputType:BWGInputTypeText
+                     isNanoBananaToolSelected:NO
+                          imagesAttachedCount:0
+                               longPressImage:NO
                           pageContextAttached:NO];
   task_environment_.FastForwardBy(kTestResponseLatency);
   [session_handler_ responseReceivedWithClientID:client_id
-                                        serverID:kTestServerID];
+                                        serverID:kTestServerID
+                        isNanoBananaToolSelected:NO
+                                isImageGenerated:NO];
 
   histogram_tester_.ExpectTotalCount(kResponseLatencyWithoutContextHistogram,
                                      1);
@@ -122,12 +129,67 @@ TEST_F(BWGSessionHandlerTest, TestResponseLatencyRecorded) {
 // Tests that didSendQueryWithInputType records the correct metrics.
 TEST_F(BWGSessionHandlerTest, TestQueryMetricsRecorded) {
   [session_handler_ didSendQueryWithInputType:BWGInputTypeText
+                     isNanoBananaToolSelected:NO
+                          imagesAttachedCount:0
+                               longPressImage:NO
                           pageContextAttached:YES];
 
   histogram_tester_.ExpectUniqueSample(
       kFirstPromptSubmissionMethodHistogram,
       IOSGeminiFirstPromptSubmissionMethod::kText, 1);
+  histogram_tester_.ExpectUniqueSample(kPromptImageRemixEnabledHistogram, false,
+                                       1);
+  histogram_tester_.ExpectUniqueSample(kPromptImagesAttachedCountHistogram, 0,
+                                       1);
+  histogram_tester_.ExpectUniqueSample(kPromptLongPressImageIncludedHistogram,
+                                       false, 1);
   histogram_tester_.ExpectUniqueSample(kPromptContextAttachmentHistogram, true,
+                                       1);
+}
+
+// Tests that Nano Banana metrics are recorded correctly.
+TEST_F(BWGSessionHandlerTest, TestQueryMetricsRecorded_WithNanoBanana) {
+  // Use a Nano Banana input type.
+  [session_handler_ didSendQueryWithInputType:
+                        BWGInputTypeNanoBananaTurnThisPageIntoAComicStrip
+                     isNanoBananaToolSelected:YES
+                          imagesAttachedCount:1
+                               longPressImage:YES
+                          pageContextAttached:NO];
+
+  histogram_tester_.ExpectUniqueSample(
+      kFirstPromptSubmissionMethodHistogram,
+      IOSGeminiFirstPromptSubmissionMethod::
+          kNanoBananaTurnThisPageIntoAComicStrip,
+      1);
+
+  // Check prompt metrics.
+  histogram_tester_.ExpectUniqueSample(kPromptImageRemixEnabledHistogram, true,
+                                       1);
+  histogram_tester_.ExpectUniqueSample(kPromptImagesAttachedCountHistogram, 1,
+                                       1);
+  histogram_tester_.ExpectUniqueSample(kPromptLongPressImageIncludedHistogram,
+                                       true, 1);
+  histogram_tester_.ExpectUniqueSample(kPromptContextAttachmentHistogram, false,
+                                       1);
+}
+
+// Tests that generated image included in response is recorded.
+TEST_F(BWGSessionHandlerTest, TestResponseGeneratedImageRecorded) {
+  NSString* client_id = GetClientID();
+  [session_handler_ UIDidAppearWithClientID:client_id serverID:kTestServerID];
+  [session_handler_ didSendQueryWithInputType:BWGInputTypeText
+                     isNanoBananaToolSelected:NO
+                          imagesAttachedCount:0
+                               longPressImage:NO
+                          pageContextAttached:NO];
+
+  [session_handler_ responseReceivedWithClientID:client_id
+                                        serverID:kTestServerID
+                        isNanoBananaToolSelected:NO
+                                isImageGenerated:YES];
+
+  histogram_tester_.ExpectUniqueSample(kResponseGeneratedImageIncluded, true,
                                        1);
 }
 
@@ -142,6 +204,9 @@ TEST_F(BWGSessionHandlerTest, TestFirstRunFlag) {
 
   [session_handler_ UIDidAppearWithClientID:client_id serverID:kTestServerID];
   [session_handler_ didSendQueryWithInputType:BWGInputTypeText
+                     isNanoBananaToolSelected:NO
+                          imagesAttachedCount:0
+                               longPressImage:NO
                           pageContextAttached:NO];
   task_environment_.FastForwardBy(kTestSessionDuration);
   [session_handler_ UIDidDisappearWithClientID:client_id
@@ -160,7 +225,6 @@ TEST_F(BWGSessionHandlerTest, TestUnrealizedWebStates) {
   auto unrealized_web_state = std::make_unique<web::FakeWebState>();
   unrealized_web_state->SetBrowserState(profile_.get());
   unrealized_web_state->SetIsRealized(false);
-  BwgTabHelper::CreateForWebState(unrealized_web_state.get());
   web_state_list_->InsertWebState(std::move(unrealized_web_state),
                                   WebStateList::InsertionParams::Automatic());
 
@@ -183,6 +247,9 @@ TEST_F(BWGSessionHandlerTest, TestDifferentInputTypes) {
   BWGSessionHandler* handler1 =
       [[BWGSessionHandler alloc] initWithWebStateList:web_state_list_];
   [handler1 didSendQueryWithInputType:BWGInputTypeSummarize
+             isNanoBananaToolSelected:NO
+                  imagesAttachedCount:0
+                       longPressImage:NO
                   pageContextAttached:NO];
   histogram_tester_.ExpectBucketCount(
       kFirstPromptSubmissionMethodHistogram,
@@ -192,6 +259,9 @@ TEST_F(BWGSessionHandlerTest, TestDifferentInputTypes) {
   BWGSessionHandler* handler2 =
       [[BWGSessionHandler alloc] initWithWebStateList:web_state_list_];
   [handler2 didSendQueryWithInputType:BWGInputTypeCheckThisSite
+             isNanoBananaToolSelected:NO
+                  imagesAttachedCount:0
+                       longPressImage:NO
                   pageContextAttached:NO];
   histogram_tester_.ExpectBucketCount(
       kFirstPromptSubmissionMethodHistogram,
@@ -201,6 +271,9 @@ TEST_F(BWGSessionHandlerTest, TestDifferentInputTypes) {
   BWGSessionHandler* handler3 =
       [[BWGSessionHandler alloc] initWithWebStateList:web_state_list_];
   [handler3 didSendQueryWithInputType:BWGInputTypeFindRelatedSites
+             isNanoBananaToolSelected:NO
+                  imagesAttachedCount:0
+                       longPressImage:NO
                   pageContextAttached:NO];
   histogram_tester_.ExpectBucketCount(
       kFirstPromptSubmissionMethodHistogram,
@@ -210,6 +283,9 @@ TEST_F(BWGSessionHandlerTest, TestDifferentInputTypes) {
   BWGSessionHandler* handler4 =
       [[BWGSessionHandler alloc] initWithWebStateList:web_state_list_];
   [handler4 didSendQueryWithInputType:BWGInputTypeAskAboutPage
+             isNanoBananaToolSelected:NO
+                  imagesAttachedCount:0
+                       longPressImage:NO
                   pageContextAttached:NO];
   histogram_tester_.ExpectBucketCount(
       kFirstPromptSubmissionMethodHistogram,
@@ -219,6 +295,9 @@ TEST_F(BWGSessionHandlerTest, TestDifferentInputTypes) {
   BWGSessionHandler* handler5 =
       [[BWGSessionHandler alloc] initWithWebStateList:web_state_list_];
   [handler5 didSendQueryWithInputType:BWGInputTypeCreateFaq
+             isNanoBananaToolSelected:NO
+                  imagesAttachedCount:0
+                       longPressImage:NO
                   pageContextAttached:NO];
   histogram_tester_.ExpectBucketCount(
       kFirstPromptSubmissionMethodHistogram,
@@ -228,6 +307,9 @@ TEST_F(BWGSessionHandlerTest, TestDifferentInputTypes) {
   BWGSessionHandler* handler6 =
       [[BWGSessionHandler alloc] initWithWebStateList:web_state_list_];
   [handler6 didSendQueryWithInputType:BWGInputTypeUnknown
+             isNanoBananaToolSelected:NO
+                  imagesAttachedCount:0
+                       longPressImage:NO
                   pageContextAttached:NO];
   histogram_tester_.ExpectBucketCount(
       kFirstPromptSubmissionMethodHistogram,
@@ -271,7 +353,9 @@ TEST_F(BWGSessionHandlerTest, TestWebStateWithClientIDNotFound) {
                         serverID:kTestServerID]);
   EXPECT_NO_FATAL_FAILURE([session_handler_
       responseReceivedWithClientID:non_existent_id
-                          serverID:kTestServerID]);
+                          serverID:kTestServerID
+          isNanoBananaToolSelected:NO
+                  isImageGenerated:NO]);
 }
 
 // Tests that updateSessionWithClientID creates/updates the session in storage.
@@ -322,4 +406,25 @@ TEST_F(BWGSessionHandlerTest, TestNewChatButtonTapped) {
   // Verify client ID remains unchanged after new chat.
   std::string post_delete_client_id = tab_helper->GetClientId();
   EXPECT_EQ(initial_client_id, post_delete_client_id);
+}
+
+// Tests that didTapFeedbackButton records the correct metrics.
+TEST_F(BWGSessionHandlerTest, TestFeedbackMetricsRecorded) {
+  // Test Thumbs Up.
+  [session_handler_ didTapFeedbackButton:GeminiFeedbackType::kThumbsUp
+                               sessionID:kTestServerID
+                          conversationID:kTestServerID];
+  histogram_tester_.ExpectBucketCount(kFeedbackHistogram,
+                                      IOSGeminiFeedback::kThumbsUp, 1);
+  EXPECT_EQ(1,
+            user_action_tester_.GetActionCount("MobileGeminiFeedbackThumbsUp"));
+
+  // Test Thumbs Down.
+  [session_handler_ didTapFeedbackButton:GeminiFeedbackType::kThumbsDown
+                               sessionID:kTestServerID
+                          conversationID:kTestServerID];
+  histogram_tester_.ExpectBucketCount(kFeedbackHistogram,
+                                      IOSGeminiFeedback::kThumbsDown, 1);
+  EXPECT_EQ(
+      1, user_action_tester_.GetActionCount("MobileGeminiFeedbackThumbsDown"));
 }

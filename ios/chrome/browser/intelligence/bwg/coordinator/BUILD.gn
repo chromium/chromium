@@ -9,8 +9,13 @@ source_set("coordinator") {
     "bwg_mediator.h",
     "bwg_mediator.mm",
     "bwg_mediator_delegate.h",
-    "bwg_promo_scene_agent.h",
-    "bwg_promo_scene_agent.mm",
+    "gemini_first_run_coordinator.h",
+    "gemini_first_run_coordinator.mm",
+    "gemini_first_run_mediator.h",
+    "gemini_first_run_mediator.mm",
+    "gemini_first_run_mediator_delegate.h",
+    "gemini_promo_scene_agent.h",
+    "gemini_promo_scene_agent.mm",
   ]
   deps = [
     "//base",
@@ -27,14 +32,15 @@ source_set("coordinator") {
     "//ios/chrome/browser/intelligence/bwg/utils:constants",
     "//ios/chrome/browser/intelligence/features",
     "//ios/chrome/browser/intelligence/proto_wrappers",
+    "//ios/chrome/browser/promos_manager/coordinator:promos",
     "//ios/chrome/browser/promos_manager/model",
     "//ios/chrome/browser/promos_manager/model:constants",
-    "//ios/chrome/browser/promos_manager/ui_bundled:promos",
     "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
     "//ios/chrome/browser/shared/coordinator/scene:observing_scene_agent",
     "//ios/chrome/browser/shared/model/application_context",
     "//ios/chrome/browser/shared/model/prefs:pref_names",
     "//ios/chrome/browser/shared/model/profile",
+    "//ios/chrome/browser/shared/public/commands",
     "//ios/chrome/browser/signin/model",
     "//ios/chrome/browser/signin/model:authentication_service",
     "//ios/chrome/browser/signin/model:authentication_service_factory",
@@ -46,8 +52,9 @@ source_set("coordinator") {
 source_set("unit_tests") {
   testonly = true
   sources = [
-    "bwg_promo_scene_agent_unittest.mm",
     "gemini_coordinator_unittest.mm",
+    "gemini_first_run_coordinator_unittest.mm",
+    "gemini_promo_scene_agent_unittest.mm",
   ]
 
   deps = [
@@ -62,6 +69,7 @@ source_set("unit_tests") {
     "//ios/chrome/app/application_delegate:test_support",
     "//ios/chrome/browser/feature_engagement/model",
     "//ios/chrome/browser/fullscreen/ui_bundled/test",
+    "//ios/chrome/browser/intelligence/bwg/model:browser_agent",
     "//ios/chrome/browser/intelligence/bwg/utils:constants",
     "//ios/chrome/browser/intelligence/features",
     "//ios/chrome/browser/optimization_guide/model",
@@ -76,6 +84,7 @@ source_set("unit_tests") {
     "//ios/chrome/browser/shared/model/prefs:browser_prefs",
     "//ios/chrome/browser/shared/model/prefs:pref_names",
     "//ios/chrome/browser/shared/model/profile/test",
+    "//ios/chrome/browser/shared/public/commands",
     "//ios/chrome/browser/signin/model:authentication_service_factory",
     "//ios/chrome/browser/signin/model:test_support",
     "//ios/chrome/test:test_support",

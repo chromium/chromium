@@ -59,8 +59,7 @@ TEST_F(AutofillFormInjectorTest, InjectFlagsWebFrames) {
   ScopedFeatureList features;
   features.InitWithFeatures(
       /* enabled_features= */
-      {kAutofillIsolatedWorldForJavascriptIos,
-       autofill::features::kAutofillAcrossIframesIosThrottling,
+      {autofill::features::kAutofillAcrossIframesIosThrottling,
        autofill::features::kAutofillIgnoreCheckableElements,
        autofill::features::kAutofillDisallowMoreHyphenLikeLabels,
        kAutofillCorrectUserEditedBitInParsedField,
@@ -86,8 +85,6 @@ TEST_F(AutofillFormInjectorTest, InjectFlagsWebFrames) {
                     u"'setAutofillIgnoreCheckableElements', [true]);",
                     u"__gCrWeb.callFunctionInGcrWeb('autofill_form_features', "
                     u"'setAutofillDisallowMoreHyphenLikeLabels', [true]);",
-                    u"__gCrWeb.callFunctionInGcrWeb('autofill_form_features', "
-                    u"'setAutofillIsolatedContentWorld', [true]);",
                     u"__gCrWeb.callFunctionInGcrWeb('autofill_form_features', "
                     u"'setAutofillCorrectUserEditedBitInParsedField', [true]);",
                     u"__gCrWeb.callFunctionInGcrWeb('autofill_form_features', "

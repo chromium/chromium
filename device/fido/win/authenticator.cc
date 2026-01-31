@@ -72,8 +72,8 @@ bool MayHaveWindowsHelloCredentials(
   return allow_list.empty() ||
          std::ranges::any_of(allow_list, [](const auto& credential) {
            return credential.transports.empty() ||
-                  base::Contains(credential.transports,
-                                 FidoTransportProtocol::kInternal);
+                  credential.transports.contains(
+                      FidoTransportProtocol::kInternal);
          });
 }
 

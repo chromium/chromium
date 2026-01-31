@@ -32,8 +32,8 @@ class ManagedConfigurationStore {
 
   // Returns |true| if the new policy is different from the previously set
   // policy.
-  bool SetCurrentPolicy(const base::Value::Dict& current_configuration);
-  std::optional<base::Value::Dict> Get(const std::vector<std::string>& keys);
+  bool SetCurrentPolicy(const base::DictValue& current_configuration);
+  std::optional<base::DictValue> Get(const std::vector<std::string>& keys);
 
  private:
   // Initializes connection to the database.

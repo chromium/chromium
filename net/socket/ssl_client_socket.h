@@ -48,6 +48,7 @@ class NET_EXPORT SSLClientSocket : public SSLSocket {
       const std::optional<std::vector<uint8_t>>& ech_retry_configs,
       bool trust_anchor_ids_from_dns,
       bool retried_with_trust_anchor_ids,
+      bool trust_anchor_retry_used_mtc_fallback,
       const LoadTimingInfo::ConnectTiming& connect_timing);
 
   // These values are persisted to logs. Entries should not be renumbered
@@ -77,7 +78,19 @@ class NET_EXPORT SSLClientSocket : public SSLSocket {
     // There was no DNS hint, and the connection failed after retrying with
     // fresh Trust Anchor IDs.
     kNoDnsErrorRetry = 7,
-    kMaxValue = kNoDnsErrorRetry,
+    // There was a DNS hint, and the connection succeeded after retrying with
+    // the MTC fallback.
+    kDnsSuccessRetryMtcFallback = 8,
+    // There was a DNS hint, and the connection failed after retrying with
+    // the MTC fallback.
+    kDnsErrorRetryMtcFallback = 9,
+    // There was no DNS hint, and the connection succeeded after retrying with
+    // the MTC fallback.
+    kNoDnsSuccessRetryMtcFallback = 10,
+    // There was no DNS hint, and the connection failed after retrying with
+    // the MTC fallback.
+    kNoDnsErrorRetryMtcFallback = 11,
+    kMaxValue = kNoDnsErrorRetryMtcFallback,
   };
 
   SSLClientSocket();

@@ -9,7 +9,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
@@ -30,6 +29,7 @@
 #include "device/fido/large_blob.h"
 #include "device/fido/make_credential_task.h"
 #include "device/fido/pin.h"
+#include "device/fido/public/features.h"
 #include "device/fido/public/fido_constants.h"
 #include "device/fido/public/fido_transport_protocol.h"
 #include "device/fido/public/fido_types.h"
@@ -183,9 +183,11 @@ void FidoDeviceAuthenticator::InitializeAuthenticatorDone(
         chosen_pin_uv_auth_protocol_ =
             *(device_->device_info()->pin_protocols->end() - 1);
       }
-      // The hmac-secret extension involves encrypting the values passed back
-      // and forth, thus there must be a valid PIN protocol.
+      // The hmac-secret and hmac-secret-mc extensions involve encrypting the
+      // values passed back and forth, thus there must be a valid PIN protocol.
       options_.supports_hmac_secret &= chosen_pin_uv_auth_protocol_.has_value();
+      options_.supports_hmac_secret_mc &=
+          chosen_pin_uv_auth_protocol_.has_value();
       break;
     case ProtocolVersion::kUnknown:
       NOTREACHED() << "uninitialized device";
@@ -227,8 +229,8 @@ void FidoDeviceAuthenticator::MakeCredential(
   CtapMakeCredentialCallback ctap_callback =
       base::BindOnce(&FidoDeviceAuthenticator::OnMakeCredentialResponse,
                      weak_factory_.GetWeakPtr(), std::move(callback));
-  MakeCredentialInternal(std::move(request), std::move(request_options),
-                         std::move(ctap_callback));
+  MaybeGetEphemeralKeyForMakeCredential(
+      std::move(request), std::move(request_options), std::move(ctap_callback));
 }
 
 void FidoDeviceAuthenticator::MakeCredentialInternal(
@@ -326,6 +328,44 @@ void FidoDeviceAuthenticator::OnHaveCompressedLargeBlobForGetAssertion(
 
   MaybeGetEphemeralKeyForGetAssertion(std::move(request), std::move(options),
                                       std::move(callback));
+}
+
+void FidoDeviceAuthenticator::MaybeGetEphemeralKeyForMakeCredential(
+    CtapMakeCredentialRequest request,
+    MakeCredentialOptions options,
+    CtapMakeCredentialCallback callback) {
+  if (request.prf_input && options_.supports_hmac_secret_mc &&
+      base::FeatureList::IsEnabled(device::kWebAuthnHmacSecretMcExtension)) {
+    GetEphemeralKey(base::BindOnce(
+        &FidoDeviceAuthenticator::OnHaveEphemeralKeyForMakeCredential,
+        weak_factory_.GetWeakPtr(), std::move(request), std::move(options),
+        std::move(callback)));
+    return;
+  }
+
+  MakeCredentialInternal(std::move(request), std::move(options),
+                         std::move(callback));
+}
+
+void FidoDeviceAuthenticator::OnHaveEphemeralKeyForMakeCredential(
+    CtapMakeCredentialRequest request,
+    MakeCredentialOptions options,
+    CtapMakeCredentialCallback callback,
+    CtapDeviceResponseCode status,
+    std::optional<pin::KeyAgreementResponse> key) {
+  if (status != CtapDeviceResponseCode::kSuccess) {
+    std::move(callback).Run(status, {});
+    return;
+  }
+  request.pin_key_agreement = std::move(*key);
+  if (!request.pin_protocol) {
+    // If `chosen_pin_uv_auth_protocol_` is `nullopt` then hmac_secret_mc
+    // support isn't advertised and the caller should never have requested it.
+    DCHECK(chosen_pin_uv_auth_protocol_);
+    request.pin_protocol = chosen_pin_uv_auth_protocol_;
+  }
+  MakeCredentialInternal(std::move(request), std::move(options),
+                         std::move(callback));
 }
 
 void FidoDeviceAuthenticator::MaybeGetEphemeralKeyForGetAssertion(
@@ -548,9 +588,11 @@ void FidoDeviceAuthenticator::GetPINToken(
   DCHECK(options_.client_pin_availability !=
          ClientPinAvailability::kNotSupported);
   DCHECK_NE(permissions.size(), 0u);
-  DCHECK(!((base::Contains(permissions, pin::Permissions::kMakeCredential)) ||
-           base::Contains(permissions, pin::Permissions::kGetAssertion)) ||
-         rp_id);
+  DCHECK(
+      !((std::ranges::contains(permissions,
+                               pin::Permissions::kMakeCredential)) ||
+        std::ranges::contains(permissions, pin::Permissions::kGetAssertion)) ||
+      rp_id);
 
   GetEphemeralKey(base::BindOnce(
       &FidoDeviceAuthenticator::OnHaveEphemeralKeyForGetPINToken,

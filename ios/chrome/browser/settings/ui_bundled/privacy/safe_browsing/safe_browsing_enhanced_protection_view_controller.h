@@ -7,8 +7,8 @@
 
 #import <UIKit/UIKit.h>
 
-@protocol ApplicationCommands;
 @class SafeBrowsingEnhancedProtectionViewController;
+@protocol SceneCommands;
 
 // Delegate for presentation events related to
 // Safe Browsing Enhanced Protection View Controller.
@@ -30,8 +30,8 @@
     id<SafeBrowsingEnhancedProtectionViewControllerPresentationDelegate>
         presentationDelegate;
 
-// Handler for the Application commands.
-@property(nonatomic, weak) id<ApplicationCommands> applicationHandler;
+// Handler for the Scene commands.
+@property(nonatomic, weak) id<SceneCommands> sceneHandler;
 
 @end
 

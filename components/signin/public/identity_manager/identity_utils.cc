@@ -24,8 +24,6 @@
 
 namespace signin {
 
-namespace {
-
 bool IsUsernameAllowedByPattern(std::string_view username,
                                 std::string_view pattern) {
   if (pattern.empty()) {
@@ -62,31 +60,10 @@ bool IsUsernameAllowedByPattern(std::string_view username,
   return !!match;  // !! == convert from UBool to bool.
 }
 
-}  // namespace
-
 bool IsUsernameAllowedByPatternFromPrefs(const PrefService* prefs,
                                          const std::string& username) {
   return IsUsernameAllowedByPattern(
       username, prefs->GetString(prefs::kGoogleServicesUsernamePattern));
-}
-
-bool IsImplicitBrowserSigninOrExplicitDisabled(
-    const IdentityManager* identity_manager,
-    const PrefService* prefs) {
-#if BUILDFLAG(ENABLE_DICE_SUPPORT)
-  // Check if the user is implicitly signed in.
-  // Signed out users or signed in explicitly should return false.
-  return identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSignin) &&
-         !prefs->GetBoolean(prefs::kExplicitBrowserSignin);
-#else
-  return true;
-#endif
-}
-
-bool AreGoogleCookiesRebuiltAfterClearingWhenSignedIn(
-    signin::IdentityManager& manager,
-    PrefService& prefs) {
-  return !signin::IsImplicitBrowserSigninOrExplicitDisabled(&manager, &prefs);
 }
 
 base::flat_set<GaiaId> GetAllGaiaIdsForKeyedPreferences(

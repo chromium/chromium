@@ -6,9 +6,9 @@
 
 #include <stddef.h>
 
+#include <algorithm>
 #include <array>
 
-#include "base/containers/contains.h"
 #include "base/files/file_util.h"
 #include "base/format_macros.h"
 #include "base/path_service.h"
@@ -104,7 +104,7 @@ TEST(ExtensionTest, LocationPriorityTest) {
 
 TEST(ExtensionTest, EnsureNewLinesInExtensionNameAreCollapsed) {
   std::string unsanitized_name = "Test\n\n\n\n\n\n\n\n\n\n\n\nNew lines\u0085";
-  auto manifest = base::Value::Dict()
+  auto manifest = base::DictValue()
                       .Set("name", unsanitized_name)
                       .Set("manifest_version", 2)
                       .Set("description", "some description")
@@ -119,7 +119,7 @@ TEST(ExtensionTest, EnsureNewLinesInExtensionNameAreCollapsed) {
 
 TEST(ExtensionTest, EnsureWhitespacesInExtensionNameAreCollapsed) {
   std::string unsanitized_name = "Test                        Whitespace";
-  auto manifest = base::Value::Dict()
+  auto manifest = base::DictValue()
                       .Set("name", unsanitized_name)
                       .Set("manifest_version", 2)
                       .Set("description", "some description")
@@ -137,7 +137,7 @@ TEST(ExtensionTest, RTLNameInLTRLocale) {
   auto run_rtl_test = [](const wchar_t* name, const wchar_t* expected) {
     SCOPED_TRACE(
         base::StringPrintf("Name: %ls, Expected: %ls", name, expected));
-    auto manifest = base::Value::Dict()
+    auto manifest = base::DictValue()
                         .Set("name", base::WideToUTF8(name))
                         .Set("manifest_version", 2)
                         .Set("description", "some description")
@@ -273,7 +273,7 @@ TEST(ExtensionTest, GetAbsolutePathNoError) {
   scoped_refptr<Extension> extension = LoadManifestStrict("absolute_path",
       "absolute.json");
   EXPECT_TRUE(extension.get());
-  std::string err;
+  std::u16string err;
   std::vector<InstallWarning> warnings;
   EXPECT_TRUE(file_util::ValidateExtension(extension.get(), &err, &warnings));
   EXPECT_EQ(0U, warnings.size());
@@ -440,7 +440,8 @@ TEST(ExtensionTest, IgnoredUnrecognizedKeysAreNotManifestFeatures) {
   ASSERT_TRUE(manifest_features);
 
   for (const auto& [key, value] : manifest_features->GetAllFeatures()) {
-    EXPECT_FALSE(base::Contains(manifest_keys::kIgnoredUnrecognizedKeys, key));
+    EXPECT_FALSE(
+        std::ranges::contains(manifest_keys::kIgnoredUnrecognizedKeys, key));
   }
 }
 

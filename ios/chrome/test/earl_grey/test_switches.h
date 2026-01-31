@@ -39,6 +39,9 @@ extern const char kMockShoppingService[];
 // Switch used to indicate that the test will run with minimal UI.
 extern const char kLoadMinimalAppUI[];
 
+// Switch to use the default infobar duration instead a longer one for EGTests.
+extern const char kUseDefaultInfobarDuration[];
+
 }  // namespace test_switches
 
 #endif  // IOS_CHROME_TEST_EARL_GREY_TEST_SWITCHES_H_

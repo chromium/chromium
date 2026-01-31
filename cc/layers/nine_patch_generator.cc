@@ -401,6 +401,9 @@ void NinePatchGenerator::AppendQuadsForCc(
 
   const bool opaque =
       layer_impl->layer_tree_impl()->IsUIResourceOpaque(ui_resource_id);
+  const gfx::Size resource_size =
+      layer_impl->layer_tree_impl()->GetUIResourceSize(ui_resource_id);
+
   AppendQuads(
       resource, opaque,
       [layer_impl](const gfx::Rect& rect) {
@@ -408,7 +411,7 @@ void NinePatchGenerator::AppendQuadsForCc(
             .occlusion_in_content_space.GetUnoccludedContentRect(rect);
       },
       layer_impl->layer_tree_impl()->resource_provider(), render_pass,
-      shared_quad_state, patches, offset);
+      shared_quad_state, patches, resource_size, offset);
 }
 
 void NinePatchGenerator::AppendQuads(
@@ -419,6 +422,7 @@ void NinePatchGenerator::AppendQuads(
     viz::CompositorRenderPass* render_pass,
     viz::SharedQuadState* shared_quad_state,
     const std::vector<Patch>& patches,
+    const gfx::Size& resource_size,
     const gfx::Vector2d& offset) {
   if (!resource) {
     return;
@@ -432,12 +436,19 @@ void NinePatchGenerator::AppendQuads(
     gfx::Rect visible_rect = clip_visible_rect(output_rect);
     bool needs_blending = !opaque;
     if (!visible_rect.IsEmpty()) {
-      gfx::RectF image_rect = patch.normalized_image_rect;
+      // `image_rect` is in the original image's coordinate space, while
+      // `resource_size` is the actual (potentially clamped) size of the
+      // uploaded texture. We scale `image_rect` by `resource_size` to get
+      // correct texture coordinates.
+      gfx::RectF tex_coord_rect = patch.normalized_image_rect;
+      tex_coord_rect.Scale(resource_size.width(), resource_size.height());
       auto* quad = render_pass->CreateAndAppendDrawQuad<viz::TextureDrawQuad>();
       quad->SetNew(shared_quad_state, output_rect, visible_rect, needs_blending,
-                   resource, image_rect.origin(), image_rect.bottom_right(),
-                   SkColors::kTransparent, nearest_neighbor_,
-                   /*secure_output=*/false, gfx::ProtectedVideoType::kClear);
+                   resource, tex_coord_rect.origin(),
+                   tex_coord_rect.bottom_right(), SkColors::kTransparent,
+                   nearest_neighbor_,
+                   /*secure_output=*/false, gfx::ProtectedVideoType::kClear,
+                   /*is_tex_coords_normalized=*/false);
     }
   }
 }

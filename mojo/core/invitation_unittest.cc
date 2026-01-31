@@ -15,7 +15,6 @@
 #include "base/check_op.h"
 #include "base/command_line.h"
 #include "base/compiler_specific.h"
-#include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
@@ -579,7 +578,7 @@ class RemoteProcessState {
   void NotifyError(const std::string& error_message, bool disconnected) {
     base::AutoLock lock(lock_);
     CHECK(!disconnected_);
-    EXPECT_TRUE(base::Contains(error_message, expected_error_message_));
+    EXPECT_TRUE(error_message.contains(expected_error_message_));
     disconnected_ = disconnected;
     ++call_count_;
     if (error_callback_) {

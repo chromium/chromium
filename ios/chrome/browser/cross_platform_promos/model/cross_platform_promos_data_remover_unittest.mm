@@ -37,7 +37,7 @@ TEST_F(CrossPlatformPromosDataRemoverTest, Remove_ClearsPrefs) {
   // Set some dummy values for the prefs.
   prefs_->SetTime(prefs::kCrossPlatformPromosIOS16thActiveDay,
                   base::Time::Now());
-  base::Value::List active_days;
+  base::ListValue active_days;
   active_days.Append(base::Value("test"));
   prefs_->SetList(prefs::kCrossPlatformPromosActiveDays,
                   std::move(active_days));

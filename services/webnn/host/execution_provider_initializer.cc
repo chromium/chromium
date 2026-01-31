@@ -29,6 +29,7 @@
 #include "base/task/thread_pool.h"
 #include "base/threading/scoped_blocking_call.h"
 #include "base/win/core_winrt_util.h"
+#include "base/win/hstring_reference.h"
 #include "base/win/scoped_co_mem.h"
 #include "base/win/scoped_hstring.h"
 #include "services/webnn/public/cpp/execution_providers_info.h"
@@ -132,13 +133,14 @@ ActivateCatalogAndGetAvailableEps() {
         FROM_HERE, base::BlockingType::MAY_BLOCK);
 
     hr = base::win::RoGetActivationFactory(
-        base::win::ScopedHString::Create(
+        base::win::HStringReference(
             RuntimeClass_Microsoft_Windows_AI_MachineLearning_ExecutionProviderCatalog)
-            .get(),
+            .Get(),
         IID_PPV_ARGS(&catalog_statics));
   }
   if (FAILED(hr)) {
-    PLOG(WARNING) << "[WebNN] RoGetActivationFactory() failed.";
+    LOG(WARNING) << "[WebNN] RoGetActivationFactory() failed. Error: "
+                 << logging::SystemErrorCodeToString(hr);
     return {};
   }
 
@@ -146,7 +148,8 @@ ActivateCatalogAndGetAvailableEps() {
   Microsoft::WRL::ComPtr<abi_winml::IExecutionProviderCatalog> catalog;
   hr = catalog_statics->GetDefault(&catalog);
   if (FAILED(hr)) {
-    PLOG(WARNING) << "[WebNN] catalog_statics->GetDefault() failed.";
+    LOG(WARNING) << "[WebNN] catalog_statics->GetDefault() failed. Error: "
+                 << logging::SystemErrorCodeToString(hr);
     return {};
   }
 
@@ -154,7 +157,8 @@ ActivateCatalogAndGetAvailableEps() {
   uint32_t providers_count = 0;
   hr = catalog->FindAllProviders(&providers_count, &comem_providers);
   if (FAILED(hr)) {
-    PLOG(WARNING) << "[WebNN] catalog->FindAllProviders() failed.";
+    LOG(WARNING) << "[WebNN] catalog->FindAllProviders() failed. Error: "
+                 << logging::SystemErrorCodeToString(hr);
     return {};
   }
   // SAFETY: `comem_providers` is allocated by WinRT and guaranteed to be
@@ -198,7 +202,6 @@ QueryPackageInfoFromProvider(abi_winml::IExecutionProvider* provider,
   CHECK_EQ(hr, S_OK);
   if (status != AsyncStatus::Completed) {
     RecordEpStatus(ep_name, ExecutionProviderStatusUma::kUnknown);
-
     LOG(WARNING) << "[WebNN] EnsureReadyAsync() didn't complete for "
                  << ep_name;
     return std::nullopt;
@@ -218,7 +221,7 @@ QueryPackageInfoFromProvider(abi_winml::IExecutionProvider* provider,
       CHECK_EQ(hr, S_OK);
       CHECK(ep_path.is_valid());
 
-      Microsoft::WRL::ComPtr<ABI::Windows::ApplicationModel::IPackageId>
+      Microsoft::WRL::ComPtr<::ABI::Windows::ApplicationModel::IPackageId>
           package_id;
       hr = provider->get_PackageId(&package_id);
       CHECK_EQ(hr, S_OK);
@@ -229,7 +232,7 @@ QueryPackageInfoFromProvider(abi_winml::IExecutionProvider* provider,
       CHECK_EQ(hr, S_OK);
       CHECK(family_name.is_valid());
 
-      ABI::Windows::ApplicationModel::PackageVersion abi_package_version;
+      ::ABI::Windows::ApplicationModel::PackageVersion abi_package_version;
       hr = package_id->get_Version(&abi_package_version);
       CHECK_EQ(hr, S_OK);
 
@@ -244,7 +247,6 @@ QueryPackageInfoFromProvider(abi_winml::IExecutionProvider* provider,
           kKnownEPs.find(ep_name)->second.min_package_version;
       if (package_version < min_package_version) {
         RecordEpStatus(ep_name, ExecutionProviderStatusUma::kEpVersionTooLow);
-
         LOG(WARNING) << "[WebNN] Found [" << ep_name << "] package version: "
                      << VersionToString(package_version)
                      << " is lower than the minimum required version: "
@@ -294,8 +296,9 @@ void EnsureExecutionProviderReadyAsync(
   Microsoft::WRL::ComPtr<EnsureReadyAsyncOp> ensure_op;
   HRESULT hr = provider->EnsureReadyAsync(&ensure_op);
   if (FAILED(hr)) {
-    PLOG(WARNING) << "[WebNN] EnsureReadyAsync() failed for "
-                  << GetProviderName(provider.Get());
+    LOG(WARNING) << "[WebNN] EnsureReadyAsync() failed for "
+                 << GetProviderName(provider.Get())
+                 << ". Error: " << logging::SystemErrorCodeToString(hr);
     std::move(callback).Run(std::nullopt);
     return;
   }
@@ -333,9 +336,9 @@ class ExecutionProviderInitializer {
 
     switch (state_) {
       case State::kEpCatalogNotActivated: {
-        // Tries to activate the EP Catalog, if succeeded, queues the callback
-        // to wait for the EPs to get ready, otherwise invokes the callback with
-        // an empty map immediately.
+        // Try to activate the EP Catalog, if succeeded, queue the callback to
+        // wait for the EPs to get ready, otherwise invoke the callback with an
+        // empty map immediately.
         if (TryActivateEPCatalog()) {
           state_ = State::kEpCatalogActivated;
           pending_callbacks_.push(std::move(callback));
@@ -358,15 +361,13 @@ class ExecutionProviderInitializer {
  private:
   friend class base::NoDestructor<ExecutionProviderInitializer>;
 
-  ExecutionProviderInitializer() {
-    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  }
+  ExecutionProviderInitializer() = default;
 
   // Activates the EP Catalog if not already activated.
   bool TryActivateEPCatalog() {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-    // Initializes the dependency on the runtime package to ensure the EP
+    // Initialize the dependency on the runtime package to ensure the EP
     // Catalog can be used.
     if (InitializePackageDependencyForProcess(kWinAppRuntimePackageFamilyName,
                                               kWinAppRuntimePackageMinVersion)
@@ -392,7 +393,7 @@ class ExecutionProviderInitializer {
           providers) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-    // Checks the ready state of each provider and ensures they reach the ready
+    // Check the ready state of each provider and ensure they reach the ready
     // state.
     //
     // Providers in the "not ready" state are already installed, so
@@ -439,7 +440,6 @@ class ExecutionProviderInitializer {
         }
         case abi_winml::ExecutionProviderReadyState_NotPresent: {
           RecordEpStatus(ep_name, ExecutionProviderStatusUma::kNotInstalled);
-
           EnsureExecutionProviderReadyAsync(
               provider, base::BindOnce(
                             [](std::optional<

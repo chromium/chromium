@@ -8,11 +8,13 @@
 
 #include <utility>
 
+#include "base/byte_size.h"
 #include "base/compiler_specific.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
+#include "base/types/expected.h"
 #include "net/base/address_list.h"
 #include "net/base/completion_once_callback.h"
 #include "net/base/io_buffer.h"
@@ -23,8 +25,9 @@
 using remoting::protocol::PseudoTcp;
 
 namespace {
-const int kReadBufferSize = 65536;  // Maximum size of a packet.
-const uint16_t kDefaultMtu = 1280;
+constexpr base::ByteSize kReadBufferSize =
+    base::KiBU(64);  // Maximum size of a packet.
+constexpr uint16_t kDefaultMtu = 1280;
 
 // Maps PseudoTcp logical error states to Chromium net errors.
 // PseudoTcp is a simulated socket, not a real system socket, so we can't
@@ -95,13 +98,13 @@ class PseudoTcpAdapter::Core : public IPseudoTcpNotify,
 
   // These are invoked by the underlying Socket, and may trigger callbacks.
   // They hold a reference to |this| while running, to protect from deletion.
-  void OnRead(int result);
-  void OnWritten(int result);
+  void OnRead(base::expected<base::ByteSize, net::Error> result);
+  void OnWritten(base::expected<base::ByteSize, net::Error> result);
 
   // These may trigger callbacks, so the holder must hold a reference on
   // the stack while calling them.
   void DoReadFromSocket();
-  void HandleReadResults(int result);
+  void HandleReadResults(base::expected<base::ByteSize, net::Error> result);
   void HandleTcpClock();
 
   // Checks if current write has completed in the write-waits-for-send
@@ -124,29 +127,25 @@ class PseudoTcpAdapter::Core : public IPseudoTcpNotify,
   int write_buffer_size_;
 
   // Whether we need to wait for data to be sent before completing write.
-  bool write_waits_for_send_;
+  bool write_waits_for_send_ = false;
 
-  // Set to true in the write-waits-for-send mode when we've
-  // successfully writtend data to the send buffer and waiting for the
-  // data to be sent to the remote end.
-  bool waiting_write_position_;
+  // Set to true in the write-waits-for-send mode when we've successfully
+  // written data to the send buffer and are waiting for the data to be sent to
+  // the remote end.
+  bool waiting_write_position_ = false;
 
   // Number of the bytes written by the last write stored while we wait
   // for the data to be sent (i.e. when waiting_write_position_ = true).
   int last_write_result_;
 
-  bool socket_write_pending_;
+  bool socket_write_pending_ = false;
   scoped_refptr<net::IOBuffer> socket_read_buffer_;
 
   base::OneShotTimer timer_;
 };
 
 PseudoTcpAdapter::Core::Core(std::unique_ptr<P2PDatagramSocket> socket)
-    : pseudo_tcp_(this, 0),
-      socket_(std::move(socket)),
-      write_waits_for_send_(false),
-      waiting_write_position_(false),
-      socket_write_pending_(false) {
+    : pseudo_tcp_(this, 0), socket_(std::move(socket)) {
   // Doesn't trigger callbacks.
   pseudo_tcp_.NotifyMTU(kDefaultMtu);
 }
@@ -373,74 +372,80 @@ IPseudoTcpNotify::WriteResult PseudoTcpAdapter::Core::TcpWritePacket(
 
   // Our underlying socket is datagram-oriented, which means it should either
   // send exactly as many bytes as we requested, or fail.
-  int result;
+  base::expected<base::ByteSize, net::Error> result;
   if (socket_) {
     result =
-        socket_->Send(write_buffer.get(), len,
+        socket_->Send(write_buffer.get(), base::ByteSize(len),
                       base::BindRepeating(&PseudoTcpAdapter::Core::OnWritten,
                                           base::Unretained(this)));
   } else {
-    result = net::ERR_CONNECTION_CLOSED;
+    result = base::unexpected(net::ERR_CONNECTION_CLOSED);
   }
-  if (result == net::ERR_IO_PENDING) {
+
+  if (result.has_value()) {
+    return IPseudoTcpNotify::WR_SUCCESS;
+  }
+
+  if (result.error() == net::ERR_IO_PENDING) {
     socket_write_pending_ = true;
     return IPseudoTcpNotify::WR_SUCCESS;
-  } else if (result == net::ERR_MSG_TOO_BIG) {
+  } else if (result.error() == net::ERR_MSG_TOO_BIG) {
     return IPseudoTcpNotify::WR_TOO_LARGE;
-  } else if (result < 0) {
-    return IPseudoTcpNotify::WR_FAIL;
   } else {
-    return IPseudoTcpNotify::WR_SUCCESS;
+    return IPseudoTcpNotify::WR_FAIL;
   }
 }
 
 void PseudoTcpAdapter::Core::DoReadFromSocket() {
   if (!socket_read_buffer_.get()) {
     socket_read_buffer_ =
-        base::MakeRefCounted<net::IOBufferWithSize>(kReadBufferSize);
+        base::MakeRefCounted<net::IOBufferWithSize>(kReadBufferSize.InBytes());
   }
 
-  int result = 1;
-  while (socket_ && result > 0) {
+  base::expected<base::ByteSize, net::Error> result;
+  while (socket_ && result.has_value()) {
     result = socket_->Recv(socket_read_buffer_.get(), kReadBufferSize,
                            base::BindRepeating(&PseudoTcpAdapter::Core::OnRead,
                                                base::Unretained(this)));
-    if (result != net::ERR_IO_PENDING) {
+    if (result.has_value() || result.error() != net::ERR_IO_PENDING) {
       HandleReadResults(result);
     }
   }
 }
 
-void PseudoTcpAdapter::Core::HandleReadResults(int result) {
-  if (result <= 0) {
-    LOG(ERROR) << "Read returned " << result;
+void PseudoTcpAdapter::Core::HandleReadResults(
+    base::expected<base::ByteSize, net::Error> result) {
+  if (!result.has_value()) {
+    LOG(ERROR) << "Read returned " << result.error();
     return;
   }
 
   // TODO(wez): Disconnect on failure of NotifyPacket?
-  pseudo_tcp_.NotifyPacket(socket_read_buffer_->data(), result);
+  pseudo_tcp_.NotifyPacket(socket_read_buffer_->data(), result->InBytes());
   AdjustClock();
 
   CheckWriteComplete();
 }
 
-void PseudoTcpAdapter::Core::OnRead(int result) {
+void PseudoTcpAdapter::Core::OnRead(
+    base::expected<base::ByteSize, net::Error> result) {
   // Reference the Core in case a callback deletes the adapter.
   scoped_refptr<Core> core(this);
 
   HandleReadResults(result);
-  if (result >= 0) {
+  if (result.has_value()) {
     DoReadFromSocket();
   }
 }
 
-void PseudoTcpAdapter::Core::OnWritten(int result) {
+void PseudoTcpAdapter::Core::OnWritten(
+    base::expected<base::ByteSize, net::Error> result) {
   // Reference the Core in case a callback deletes the adapter.
   scoped_refptr<Core> core(this);
 
   socket_write_pending_ = false;
-  if (result < 0) {
-    LOG(WARNING) << "Write failed. Error code: " << result;
+  if (!result.has_value()) {
+    LOG(WARNING) << "Write failed. Error code: " << result.error();
   }
 }
 

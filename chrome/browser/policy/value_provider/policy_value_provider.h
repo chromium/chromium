@@ -26,10 +26,10 @@ class PolicyValueProvider {
   virtual ~PolicyValueProvider();
 
   // Returns the dictionary containing policy values.
-  virtual base::Value::Dict GetValues() = 0;
+  virtual base::DictValue GetValues() = 0;
 
   // Returns the dictionary containing the policy names.
-  virtual base::Value::Dict GetNames() = 0;
+  virtual base::DictValue GetNames() = 0;
 
   // Refreshes the policy values and notifies the observers.
   virtual void Refresh();

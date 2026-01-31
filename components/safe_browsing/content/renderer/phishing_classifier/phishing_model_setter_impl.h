@@ -34,10 +34,24 @@ class PhishingModelSetterImpl : public mojom::PhishingModelSetter,
       base::ReadOnlySharedMemoryRegion flatbuffer_region,
       base::File tflite_visual_model,
       base::File image_embedding_model) override;
+  void SetImageEmbeddingAndPhishingTfLiteModel(
+      int classification_input_width,
+      int classification_input_height,
+      base::File tflite_visual_model,
+      int image_embedding_input_width,
+      int image_embedding_input_height,
+      base::File image_embedding_model) override;
   void SetPhishingFlatBufferModel(
       base::ReadOnlySharedMemoryRegion flatbuffer_region,
       base::File tflite_visual_model) override;
+  void SetPhishingTfLiteModel(int classification_input_width,
+                              int classification_input_height,
+                              base::File tflite_visual_model) override;
   void AttachImageEmbeddingModel(base::File image_embedding_model) override;
+  void AttachImageEmbeddingModelAndDimensions(
+      int image_embedding_input_width,
+      int image_embedding_input_height,
+      base::File image_embedding_model) override;
   void ClearScorer() override;
   void SetTestObserver(
       mojo::PendingRemote<mojom::PhishingModelSetterTestObserver> observer,

@@ -59,6 +59,7 @@ import org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType;
 import org.chromium.chrome.browser.ntp_customization.BottomSheetDelegate;
 import org.chromium.chrome.browser.ntp_customization.ListContainerViewDelegate;
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationViewProperties;
+import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -227,6 +228,18 @@ public class NtpCardsMediatorUnitTest {
     }
 
     @Test
+    public void updateUserPrefsTest_allCards() {
+        // Set a preference value for "all cards" switch.
+        SharedPreferencesManager sharedPreferencesManager = ChromeSharedPreferences.getInstance();
+        sharedPreferencesManager.writeBoolean(ChromePreferenceKeys.HOME_MODULE_CARDS_ENABLED, true);
+
+        mNtpCardsMediator.updateUserPrefs();
+
+        // Verify that UserPrefs.setBoolean is called for the "all cards" switch.
+        verify(mPrefService).setBoolean(Pref.MAGIC_STACK_HOME_MODULE_ENABLED, true);
+    }
+
+    @Test
     @DisableFeatures(ChromeFeatureList.HOME_MODULE_PREF_REFACTOR)
     public void updateUserPrefsTest_FeatureDisabled() {
         mNtpCardsMediator.updateUserPrefs();
@@ -253,5 +266,34 @@ public class NtpCardsMediatorUnitTest {
         mNtpCardsMediator.onAllCardsConfigChanged(false);
         verify(mNtpCardsPropertyModel)
                 .set(eq(NtpCustomizationViewProperties.ARE_CARD_SWITCHES_ENABLED), eq(false));
+    }
+
+    @Test
+    public void testAllCardsSwitchToggled() {
+        ArgumentCaptor<CompoundButton.OnCheckedChangeListener> captor =
+                ArgumentCaptor.forClass(CompoundButton.OnCheckedChangeListener.class);
+        verify(mNtpCardsPropertyModel)
+                .set(
+                        eq(
+                                NtpCustomizationViewProperties
+                                        .ALL_NTP_CARDS_SWITCH_ON_CHECKED_CHANGE_LISTENER),
+                        captor.capture());
+        CompoundButton.OnCheckedChangeListener listener = captor.getValue();
+
+        HistogramWatcher watcher =
+                HistogramWatcher.newBuilder()
+                        .expectBooleanRecord("NewTabPage.Customization.AllCardsEnabled", true)
+                        .build();
+        listener.onCheckedChanged(mCompoundButton, true);
+        verify(mHomeModulesConfigManager).setPrefAllCardsEnabled(true);
+        watcher.assertExpected();
+
+        watcher =
+                HistogramWatcher.newBuilder()
+                        .expectBooleanRecord("NewTabPage.Customization.AllCardsEnabled", false)
+                        .build();
+        listener.onCheckedChanged(mCompoundButton, false);
+        verify(mHomeModulesConfigManager).setPrefAllCardsEnabled(false);
+        watcher.assertExpected();
     }
 }

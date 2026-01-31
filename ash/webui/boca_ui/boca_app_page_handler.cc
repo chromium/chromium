@@ -15,7 +15,6 @@
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/webui/boca_ui/boca_util.h"
-#include "ash/webui/boca_ui/mojom/boca.mojom-data-view.h"
 #include "ash/webui/boca_ui/mojom/boca.mojom.h"
 #include "ash/webui/boca_ui/provider/classroom_page_handler_impl.h"
 #include "ash/webui/boca_ui/provider/content_settings_handler.h"
@@ -66,6 +65,7 @@
 #include "content/public/browser/web_ui.h"
 #include "google_apis/gaia/gaia_id.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "third_party/re2/src/re2/re2.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_frame.h"
 #include "ui/base/webui/web_ui_util.h"
@@ -76,6 +76,11 @@ namespace {
 // Special filter value for `ListCoursesRequest` to request courses with access
 // limited to the requesting user.
 constexpr char kOwnCoursesFilterValue[] = "me";
+
+// This must be kept in sync with `MAX_STUDENTS_EXCEEDED_ERROR_MESSAGE` in
+// CreateSessionRequestValidator.kt.
+constexpr LazyRE2 kMaxStudentsExceededErrorMsgRegex = {
+    "session\\.roster may not contain more than \\d+ students"};
 
 std::string GetReceiverName(std::string receiver_id,
                             PrefService* pref_service) {
@@ -1210,11 +1215,19 @@ void BocaAppHandler::OnAccessCodeSubmitted(
 
 void BocaAppHandler::OnCreateSessionResponse(
     CreateSessionCallback callback,
-    base::expected<std::unique_ptr<::boca::Session>, google_apis::ApiErrorCode>
-        result) {
+    base::expected<std::unique_ptr<::boca::Session>,
+                   std::pair<google_apis::ApiErrorCode, std::string>> result) {
   if (!result.has_value()) {
-    boca::RecordCreateSessionErrorCode(result.error());
-    std::move(callback).Run(mojom::CreateSessionError::kHTTPError);
+    const google_apis::ApiErrorCode errorCode = result.error().first;
+    const std::string error_msg = result.error().second;
+
+    boca::RecordCreateSessionErrorCode(errorCode);
+    if (errorCode == google_apis::ApiErrorCode::HTTP_BAD_REQUEST &&
+        RE2::FullMatch(error_msg, *kMaxStudentsExceededErrorMsgRegex)) {
+      std::move(callback).Run(mojom::CreateSessionError::kMaxStudentsExceeded);
+    } else {
+      std::move(callback).Run(mojom::CreateSessionError::kHTTPError);
+    }
     return;
   }
   // Load current session into memory;

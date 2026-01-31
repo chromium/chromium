@@ -17,7 +17,6 @@
 #include <vector>
 
 #include "base/containers/circular_deque.h"
-#include "base/containers/contains.h"
 #include "base/files/file_util.h"
 #include "base/files/safe_base_name.h"
 #include "base/functional/bind.h"
@@ -845,7 +844,7 @@ void MTPDeviceDelegateImpl::AddWatcher(
   const auto it = subscribers_.find(file_path);
   if (it != subscribers_.end()) {
     // Adds to existing origin callback map.
-    if (base::Contains(it->second, origin)) {
+    if (it->second.contains(origin)) {
       std::move(callback).Run(base::File::FILE_ERROR_EXISTS);
       return;
     }

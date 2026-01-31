@@ -36,6 +36,7 @@
 #include "components/bookmarks/browser/bookmark_utils.h"
 #include "components/bookmarks/common/bookmark_metrics.h"
 #include "components/bookmarks/managed/managed_bookmark_service.h"
+#include "components/url_formatter/url_fixer.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/web_contents.h"
@@ -51,6 +52,22 @@ using bookmarks::BookmarkPermanentNode;
 using bookmarks::ManagedBookmarkService;
 
 namespace extensions {
+
+namespace {
+
+// Bookmarks are created or updated via `chrome.bookmarks` extension API on the
+// bookmarks webui page.
+// However, the URLs specified by users may contain certain content that we
+// intend to fix. For example, replacing the scheme `about://` with `chrome://`.
+// After these URLs are fixed, their behavior will be fully consistent with that
+// of the bookmark bar, and this prevents `DCHECK` assertion failure caused by
+// parsing the `about://` scheme.
+// See https://crbug.com/402056130
+GURL FixupURL(const std::string& url_string) {
+  return url_formatter::FixupURL(url_string);
+}
+
+}  // namespace
 
 using api::bookmarks::BookmarkTreeNode;
 using api::bookmarks::CreateDetails;
@@ -73,7 +90,7 @@ BookmarkEventRouter::~BookmarkEventRouter() {
 
 void BookmarkEventRouter::DispatchEvent(events::HistogramValue histogram_value,
                                         const std::string& event_name,
-                                        base::Value::List event_args) {
+                                        base::ListValue event_args) {
   EventRouter* event_router = EventRouter::Get(browser_context_);
   if (event_router) {
     event_router->BroadcastEvent(std::make_unique<extensions::Event>(
@@ -611,7 +628,7 @@ const BookmarkNode* BookmarksCreateFunction::CreateBookmarkNode(
 
   const BookmarkNode* node;
   if (url_string.length()) {
-    node = model->AddNewURL(parent, index, title, url);
+    node = model->AddNewURL(parent, index, title, FixupURL(url_string));
   } else {
     node = model->AddFolder(parent, index, title);
     model->SetDateFolderModified(parent, base::Time::Now());
@@ -751,7 +768,7 @@ ExtensionFunction::ResponseValue BookmarksUpdateFunction::RunOnReady() {
                     bookmarks::metrics::BookmarkEditSource::kExtension);
   }
   if (!url.is_empty()) {
-    model->SetURL(node, url,
+    model->SetURL(node, FixupURL(url_string),
                   bookmarks::metrics::BookmarkEditSource::kExtension);
   }
 

@@ -150,14 +150,6 @@ COMPONENT_EXPORT(URL)
 bool FindAndCompareScheme(std::string_view str,
                           const char* compare,
                           Component* found_scheme);
-inline bool FindAndCompareScheme(const char* str,
-                                 int str_len,
-                                 const char* compare,
-                                 Component* found_scheme) {
-  return FindAndCompareScheme(
-      std::string_view(str, static_cast<size_t>(str_len)), compare,
-      found_scheme);
-}
 COMPONENT_EXPORT(URL)
 bool FindAndCompareScheme(std::u16string_view str,
                           const char* compare,
@@ -167,8 +159,8 @@ bool FindAndCompareScheme(std::u16string_view str,
 // the list of known standard-format schemes (see AddStandardScheme).
 // TODO(crbug.com/351564777): Delete this after //third_party/openscreen
 // transition is complete.
-COMPONENT_EXPORT(URL)
-bool IsStandard(const char* spec, const Component& scheme);
+UNSAFE_BUFFER_USAGE COMPONENT_EXPORT(
+    URL) bool IsStandard(const char* spec, const Component& scheme);
 COMPONENT_EXPORT(URL)
 bool IsStandard(std::optional<std::string_view> scheme);
 COMPONENT_EXPORT(URL)

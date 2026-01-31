@@ -231,7 +231,7 @@ suite('WallpaperFullscreenElementTest', function() {
   },
    {
      pendingSelectedImage: {
-       url: {url: ''},
+       url: '',
        attribution: [],
        assetId: 0n,
        unitId: 0n,
@@ -244,7 +244,7 @@ suite('WallpaperFullscreenElementTest', function() {
        id: 'test_id',
        name: 'asdf',
        date: 'February',
-       url: {url: ''},
+       url: '',
      } as GooglePhotosPhoto,
      shouldShow: true,
    },

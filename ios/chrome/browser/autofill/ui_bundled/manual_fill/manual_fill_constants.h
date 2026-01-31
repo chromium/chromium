@@ -23,9 +23,6 @@ extern NSString* const kExpandedManualFillPasswordFaviconID;
 // Accessibility Identifier for the done button in the select password sheet.
 extern NSString* const kPasswordDoneButtonAccessibilityIdentifier;
 
-// Accessibility Identifier for the search bar in the select password sheet.
-extern NSString* const kPasswordSearchBarAccessibilityIdentifier;
-
 // Accessibility Identifier for select password sheet and the password manual
 // fill view.
 extern NSString* const kPasswordTableViewAccessibilityIdentifier;

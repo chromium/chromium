@@ -206,8 +206,9 @@ void GPU::OnRequestAdapterCallback(
 
   // wgpu::RequestAdapterStatus is part of the stable API, so is safe to log to histograms.
   // The macro + `to_underlying` converts the enum to an int to calculate the max range.
-  UMA_HISTOGRAM_ENUMERATION("GPU.RequestAdapterStatus.WebGPU", status,
-                            base::to_underlying(wgpu::RequestAdapterStatus::Error) + 1);
+  UMA_HISTOGRAM_ENUMERATION(
+      "GPU.RequestAdapterStatus.WebGPU", status,
+      std::to_underlying(wgpu::RequestAdapterStatus::Error) + 1);
 
   switch (status) {
     case wgpu::RequestAdapterStatus::Success:
@@ -305,8 +306,12 @@ void GPU::RequestAdapterImpl(
       return;
     }
 
+    Platform::WebGPUReplyThread reply_thread(
+        IsWebGPUMultithreadedWorker(execution_context)
+            ? Platform::WebGPUReplyThread::kIOThread
+            : Platform::WebGPUReplyThread::kMainThread);
     CreateWebGPUGraphicsContext3DProviderAsync(
-        execution_context->Url(),
+        execution_context->Url(), reply_thread,
         execution_context->GetTaskRunner(TaskType::kWebGPU),
         CrossThreadBindOnce(
             [](CrossThreadHandle<GPU> gpu_handle,
@@ -376,17 +381,17 @@ void GPU::RequestAdapterImpl(
 
   wgpu::RequestAdapterOptions dawn_options =
       AsDawnType(options, execution_context);
-  auto* callback = MakeWGPUOnceCallback(resolver->WrapCallbackInScriptScope(
-      BindOnce(&GPU::OnRequestAdapterCallback, WrapPersistent(this),
-               WrapPersistent(script_state), WrapPersistent(options))));
 
   if (dawn_options.featureLevel == wgpu::FeatureLevel::Compatibility) {
     UseCounter::Count(execution_context,
                       WebFeature::kWebGPUFeatureLevelCompatibility);
   }
 
+  auto* callback = MakeWGPUOnceCallback(resolver->WrapCallbackInScriptScope(
+      BindOnce(&GPU::OnRequestAdapterCallback, WrapPersistent(this),
+               WrapPersistent(script_state), WrapPersistent(options))));
   dawn_control_client_->GetWGPUInstance().RequestAdapter(
-      &dawn_options, wgpu::CallbackMode::AllowSpontaneous,
+      &dawn_options, wgpu::CallbackMode::AllowProcessEvents,
       callback->UnboundCallback(), callback->AsUserdata());
   dawn_control_client_->EnsureFlush(
       *execution_context->GetAgent()->event_loop());

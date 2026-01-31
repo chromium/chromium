@@ -49,24 +49,24 @@ std::optional<std::string> ExtractTimezoneFromProto(
   return std::make_optional(container.timezone());
 }
 
-std::optional<base::Value::Dict> ConvertOffHoursProtoToValue(
+std::optional<base::DictValue> ConvertOffHoursProtoToValue(
     const em::DeviceOffHoursProto& container) {
   std::optional<std::string> timezone = ExtractTimezoneFromProto(container);
   if (!timezone) {
     return std::nullopt;
   }
-  auto off_hours = base::Value::Dict().Set("timezone", *timezone);
+  auto off_hours = base::DictValue().Set("timezone", *timezone);
   std::vector<WeeklyTimeInterval> intervals =
       ExtractWeeklyTimeIntervalsFromProto(container, *timezone,
                                           base::DefaultClock::GetInstance());
-  base::Value::List intervals_value;
+  base::ListValue intervals_value;
   for (const auto& interval : intervals) {
     intervals_value.Append(interval.ToValue());
   }
   off_hours.Set("intervals", std::move(intervals_value));
   std::vector<int> ignored_policy_proto_tags =
       ExtractIgnoredPolicyProtoTagsFromProto(container);
-  base::Value::List ignored_policies_value;
+  base::ListValue ignored_policies_value;
   for (const auto& policy : ignored_policy_proto_tags) {
     ignored_policies_value.Append(policy);
   }

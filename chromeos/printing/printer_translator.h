@@ -21,13 +21,13 @@ COMPONENT_EXPORT(CHROMEOS_PRINTING) extern const char kPrinterId[];
 // policy.
 COMPONENT_EXPORT(CHROMEOS_PRINTING)
 std::unique_ptr<Printer> RecommendedPrinterToPrinter(
-    const base::Value::Dict& pref);
+    const base::DictValue& pref);
 
 // Returns a JSON representation of |printer| as a CupsPrinterInfo. If the
 // printer uri cannot be parsed, the relevant fields are populated with default
 // values. CupsPrinterInfo is defined in cups_printers_browser_proxy.js.
 COMPONENT_EXPORT(CHROMEOS_PRINTING)
-base::Value::Dict GetCupsPrinterInfo(const Printer& printer);
+base::DictValue GetCupsPrinterInfo(const Printer& printer);
 
 }  // namespace chromeos
 

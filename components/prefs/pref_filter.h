@@ -27,7 +27,7 @@ class COMPONENTS_PREFS_EXPORT PrefFilter {
   // builder. |schedule_write| indicates whether a write should be immediately
   // scheduled (typically because the |prefs| were pre-modified).
   using PostFilterOnLoadCallback =
-      base::OnceCallback<void(base::Value::Dict prefs, bool schedule_write)>;
+      base::OnceCallback<void(base::DictValue prefs, bool schedule_write)>;
 
   virtual ~PrefFilter() = default;
 
@@ -40,7 +40,7 @@ class COMPONENTS_PREFS_EXPORT PrefFilter {
   // to external users (see SegregatedPrefStore::ReadPrefs() for an example).
   virtual void FilterOnLoad(
       PostFilterOnLoadCallback post_filter_on_load_callback,
-      base::Value::Dict pref_store_contents) = 0;
+      base::DictValue pref_store_contents) = 0;
 
   // Receives notification when a pref store value is changed, before Observers
   // are notified.
@@ -54,7 +54,7 @@ class COMPONENTS_PREFS_EXPORT PrefFilter {
   // invoked synchronously after the next write (from the I/O TaskRunner so they
   // must not be bound to thread-unsafe member state).
   virtual OnWriteCallbackPair FilterSerializeData(
-      base::Value::Dict& pref_store_contents) = 0;
+      base::DictValue& pref_store_contents) = 0;
 
   // Cleans preference data that may have been saved outside of the store.
   virtual void OnStoreDeletionFromDisk() = 0;

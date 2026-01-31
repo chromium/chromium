@@ -12,9 +12,7 @@
 #include "components/sync/base/features.h"
 #include "components/sync/engine/polling_constants.h"
 #include "components/sync/service/sync_service_impl.h"
-#include "components/sync/test/fake_server_http_post_provider.h"
 #include "content/public/test/browser_test.h"
-#include "content/public/test/network_connection_change_simulator.h"
 #include "net/base/network_change_notifier.h"
 
 namespace {
@@ -79,7 +77,7 @@ IN_PROC_BROWSER_TEST_P(SyncExponentialBackoffTest, OfflineToOnline) {
                                              /*cryptographer=*/nullptr)
                   .Wait());
 
-  fake_server::FakeServerHttpPostProvider::DisableNetwork();
+  DisableNetwork();
 
   // Add a new item to trigger another sync cycle.
   ASSERT_TRUE(AddFolder(0, 0, kFolderTitle2, GetBookmarksStoreType()));
@@ -96,10 +94,7 @@ IN_PROC_BROWSER_TEST_P(SyncExponentialBackoffTest, OfflineToOnline) {
 
   // Trigger network change notification and remember time when it happened.
   // Ensure that scheduler runs canary job immediately.
-  fake_server::FakeServerHttpPostProvider::EnableNetwork();
-  content::NetworkConnectionChangeSimulator connection_change_simulator;
-  connection_change_simulator.SetConnectionType(
-      network::mojom::ConnectionType::CONNECTION_ETHERNET);
+  EnableNetwork();
 
   base::Time network_notification_time = base::Time::Now();
 

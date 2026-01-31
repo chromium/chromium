@@ -73,13 +73,12 @@ void StabilityMetricsManager::RecordMetricsToUMA() {
 
 void StabilityMetricsManager::ResetMetrics() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  local_state_->SetDict(prefs::kStabilityMetrics, base::Value::Dict());
+  local_state_->SetDict(prefs::kStabilityMetrics, base::DictValue());
 }
 
 std::optional<bool> StabilityMetricsManager::GetArcEnabledState() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  const base::Value::Dict& dict =
-      local_state_->GetDict(prefs::kStabilityMetrics);
+  const base::DictValue& dict = local_state_->GetDict(prefs::kStabilityMetrics);
   return dict.FindBool(kArcEnabledStateKey);
 }
 
@@ -92,8 +91,7 @@ void StabilityMetricsManager::SetArcEnabledState(bool enabled) {
 std::optional<NativeBridgeType>
 StabilityMetricsManager::GetArcNativeBridgeType() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  const base::Value::Dict& dict =
-      local_state_->GetDict(prefs::kStabilityMetrics);
+  const base::DictValue& dict = local_state_->GetDict(prefs::kStabilityMetrics);
   std::optional<int> native_bridge_type = dict.FindInt(kArcNativeBridgeTypeKey);
   if (native_bridge_type) {
     return std::make_optional(

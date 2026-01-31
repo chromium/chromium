@@ -186,7 +186,7 @@ void DevToolsHost::sendMessageToEmbedder(const String& message) {
   }
 }
 
-void DevToolsHost::sendMessageToEmbedder(base::Value::Dict message) {
+void DevToolsHost::sendMessageToEmbedder(base::DictValue message) {
   if (client_)
     client_->SendMessageToEmbedder(std::move(message));
 }

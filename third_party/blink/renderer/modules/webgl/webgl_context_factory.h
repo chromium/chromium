@@ -43,6 +43,7 @@ class WebGLContextFactory : public CanvasRenderingContextFactory {
       CanvasRenderingContextHost*,
       const CanvasContextCreationAttributesCore&);
   CanvasRenderingContext* CreateInternalWebGPU(
+      ExecutionContext*,
       CanvasRenderingContextHost*,
       const CanvasContextCreationAttributesCore&);
 

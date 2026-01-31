@@ -165,7 +165,6 @@ public class TabGroupRowMediatorUnitTest {
         for (SavedTabGroupTab syncTab : mSyncGroup.savedTabs) {
             Tab tab = mock(Tab.class);
             when(tab.getId()).thenReturn(syncTab.localId);
-            when(tab.getRootId()).thenReturn(mRootId);
             when(tab.getTabGroupId()).thenReturn(GROUP_ID1);
             tabList.add(tab);
         }

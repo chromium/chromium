@@ -106,25 +106,24 @@ IN_PROC_BROWSER_TEST_P(SharedArrayBufferTest, TransferToWorker) {
   bool is_platform_app;
   std::tie(is_cross_origin_isolated, is_platform_app) = GetParam();
 
-  auto builder = base::Value::Dict()
+  auto builder = base::DictValue()
                      .Set("manifest_version", 2)
                      .Set("name", "SharedArrayBuffer")
                      .Set("version", "1.1");
 
   if (is_cross_origin_isolated) {
     builder.Set("cross_origin_opener_policy",
-                base::Value::Dict().Set("value", "same-origin"));
+                base::DictValue().Set("value", "same-origin"));
     builder.Set("cross_origin_embedder_policy",
-                base::Value::Dict().Set("value", "require-corp"));
+                base::DictValue().Set("value", "require-corp"));
   }
 
-  base::Value::Dict background_builder;
-  background_builder.Set("scripts",
-                         base::Value::List().Append("background.js"));
+  base::DictValue background_builder;
+  background_builder.Set("scripts", base::ListValue().Append("background.js"));
 
   if (is_platform_app) {
-    builder.Set("app", base::Value::Dict().Set("background",
-                                               std::move(background_builder)));
+    builder.Set("app", base::DictValue().Set("background",
+                                             std::move(background_builder)));
   } else {
     builder.Set("background", std::move(background_builder));
   }

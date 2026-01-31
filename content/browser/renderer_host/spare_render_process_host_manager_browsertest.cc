@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <algorithm>
 #include <utility>
 
 #include "base/callback_list.h"
@@ -509,7 +510,7 @@ class SpareRendererContentBrowserClient
                       const GURL& site_url) override {
     const auto& spares = SpareRenderProcessHostManagerImpl::Get().GetSpares();
     if (!spares.empty()) {
-      return base::Contains(spares, process_host);
+      return std::ranges::contains(spares, process_host);
     }
     return true;
   }
@@ -947,7 +948,7 @@ IN_PROC_BROWSER_TEST_F(SpareRenderProcessHostManagerMemoryThresholdBrowserTest,
 
   {
     base::test::ScopedAmountOfPhysicalMemoryOverride memory_override(
-        base::MiB(2048));
+        base::MiBU(2048));
     EXPECT_FALSE(
         spare_manager.ShouldCreateSpareRendererWithAvailableMemory(50));
     EXPECT_TRUE(
@@ -956,7 +957,7 @@ IN_PROC_BROWSER_TEST_F(SpareRenderProcessHostManagerMemoryThresholdBrowserTest,
 
   {
     base::test::ScopedAmountOfPhysicalMemoryOverride memory_override(
-        base::MiB(8192));
+        base::MiBU(8192));
     EXPECT_FALSE(
         spare_manager.ShouldCreateSpareRendererWithAvailableMemory(120));
     EXPECT_TRUE(
@@ -1091,7 +1092,7 @@ class ExtraSpareRenderProcessHostManagerTest
   base::test::ScopedFeatureList scoped_feature_list_;
 
   base::test::ScopedAmountOfPhysicalMemoryOverride
-      scoped_amount_of_physical_memory_override_{base::GiB(8)};
+      scoped_amount_of_physical_memory_override_{base::GiBU(8)};
 };
 
 IN_PROC_BROWSER_TEST_F(ExtraSpareRenderProcessHostManagerTest, ExtraSpares) {
@@ -1174,7 +1175,7 @@ class LowMemoryExtraSpareRenderProcessHostManagerTest
 
  private:
   base::test::ScopedAmountOfPhysicalMemoryOverride
-      scoped_amount_of_physical_memory_override_{base::GiB(2)};
+      scoped_amount_of_physical_memory_override_{base::GiBU(2)};
 };
 
 IN_PROC_BROWSER_TEST_F(LowMemoryExtraSpareRenderProcessHostManagerTest,

@@ -56,7 +56,7 @@ class DeviceLogMessageHandler : public content::WebUIMessageHandler {
   }
 
  private:
-  void GetLog(const base::Value::List& value) {
+  void GetLog(const base::ListValue& value) {
     AllowJavascript();
     std::string callback_id = value[0].GetString();
     base::Value data(device_event_log::GetAsString(
@@ -65,7 +65,7 @@ class DeviceLogMessageHandler : public content::WebUIMessageHandler {
     ResolveJavascriptCallback(base::Value(callback_id), data);
   }
 
-  void ClearLog(const base::Value::List& value) const {
+  void ClearLog(const base::ListValue& value) const {
     device_event_log::ClearAll();
   }
 };
@@ -79,43 +79,42 @@ DeviceLogUI::DeviceLogUI(content::WebUI* web_ui)
   content::WebUIDataSource* html = content::WebUIDataSource::CreateAndAdd(
       web_ui->GetWebContents()->GetBrowserContext(),
       chrome::kChromeUIDeviceLogHost);
+  webui::SetupWebUIDataSource(html, kDeviceLogResources,
+                              IDR_DEVICE_LOG_DEVICE_LOG_UI_HTML);
 
   static constexpr webui::LocalizedString kStrings[] = {
-      {"titleText", IDS_DEVICE_LOG_TITLE},
       {"autoRefreshText", IDS_DEVICE_AUTO_REFRESH},
       {"autoSelectTypes", IDS_DEVICE_SELECT_TYPES},
-      {"logRefreshText", IDS_DEVICE_LOG_REFRESH},
       {"logClearText", IDS_DEVICE_LOG_CLEAR},
       {"logClearTypesText", IDS_DEVICE_LOG_CLEAR_TYPES},
-      {"logNoEntriesText", IDS_DEVICE_LOG_NO_ENTRIES},
-      {"logLevelLabel", IDS_DEVICE_LOG_LEVEL_LABEL},
-      {"logLevelErrorText", IDS_DEVICE_LOG_LEVEL_ERROR},
-      {"logLevelUserText", IDS_DEVICE_LOG_LEVEL_USER},
-      {"logLevelEventText", IDS_DEVICE_LOG_LEVEL_EVENT},
+      {"logEntryFormat", IDS_DEVICE_LOG_ENTRY},
       {"logLevelDebugText", IDS_DEVICE_LOG_LEVEL_DEBUG},
+      {"logLevelErrorText", IDS_DEVICE_LOG_LEVEL_ERROR},
+      {"logLevelEventText", IDS_DEVICE_LOG_LEVEL_EVENT},
       {"logLevelFileinfoText", IDS_DEVICE_LOG_FILEINFO},
+      {"logLevelLabel", IDS_DEVICE_LOG_LEVEL_LABEL},
       {"logLevelTimeDetailText", IDS_DEVICE_LOG_TIME_DETAIL},
+      {"logLevelUserText", IDS_DEVICE_LOG_LEVEL_USER},
+      {"logNoEntriesText", IDS_DEVICE_LOG_NO_ENTRIES},
+      {"logRefreshText", IDS_DEVICE_LOG_REFRESH},
+      {"logTypeBluetoothText", IDS_DEVICE_LOG_TYPE_BLUETOOTH},
+      {"logTypeCameraText", IDS_DEVICE_LOG_TYPE_CAMERA},
+      {"logTypeDisplayText", IDS_DEVICE_LOG_TYPE_DISPLAY},
+      {"logTypeExtensionsText", IDS_DEVICE_LOG_TYPE_EXTENSIONS},
+      {"logTypeFidoText", IDS_DEVICE_LOG_TYPE_FIDO},
+      {"logTypeFirmwareText", IDS_DEVICE_LOG_TYPE_FIRMWARE},
+      {"logTypeGeolocationText", IDS_DEVICE_LOG_TYPE_GEOLOCATION},
+      {"logTypeHidText", IDS_DEVICE_LOG_TYPE_HID},
       {"logTypeLoginText", IDS_DEVICE_LOG_TYPE_LOGIN},
+      {"logTypeMemoryText", IDS_DEVICE_LOG_TYPE_MEMORY},
       {"logTypeNetworkText", IDS_DEVICE_LOG_TYPE_NETWORK},
       {"logTypePowerText", IDS_DEVICE_LOG_TYPE_POWER},
-      {"logTypeBluetoothText", IDS_DEVICE_LOG_TYPE_BLUETOOTH},
-      {"logTypeUsbText", IDS_DEVICE_LOG_TYPE_USB},
-      {"logTypeHidText", IDS_DEVICE_LOG_TYPE_HID},
       {"logTypePrinterText", IDS_DEVICE_LOG_TYPE_PRINTER},
-      {"logTypeFidoText", IDS_DEVICE_LOG_TYPE_FIDO},
       {"logTypeSerialText", IDS_DEVICE_LOG_TYPE_SERIAL},
-      {"logTypeCameraText", IDS_DEVICE_LOG_TYPE_CAMERA},
-      {"logTypeGeolocationText", IDS_DEVICE_LOG_TYPE_GEOLOCATION},
-      {"logTypeExtensionsText", IDS_DEVICE_LOG_TYPE_EXTENSIONS},
-      {"logTypeDisplayText", IDS_DEVICE_LOG_TYPE_DISPLAY},
-      {"logTypeFirmwareText", IDS_DEVICE_LOG_TYPE_FIRMWARE},
-      {"logEntryFormat", IDS_DEVICE_LOG_ENTRY},
+      {"logTypeUsbText", IDS_DEVICE_LOG_TYPE_USB},
+      {"titleText", IDS_DEVICE_LOG_TITLE},
   };
   html->AddLocalizedStrings(kStrings);
-
-  html->UseStringsJs();
-  html->AddResourcePaths(kDeviceLogResources);
-  html->SetDefaultResource(IDR_DEVICE_LOG_DEVICE_LOG_UI_HTML);
 }
 
 DeviceLogUI::~DeviceLogUI() = default;

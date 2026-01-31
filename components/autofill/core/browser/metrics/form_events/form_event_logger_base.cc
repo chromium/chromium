@@ -26,6 +26,7 @@
 #include "components/autofill/core/browser/logging/log_manager.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics_utils.h"
 #include "components/autofill/core/browser/metrics/form_interactions_ukm_logger.h"
+#include "components/autofill/core/browser/suggestions/suggestion_util.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_internals/log_message.h"
 #include "components/autofill/core/common/autofill_internals/logging_scope.h"
@@ -50,12 +51,14 @@ const char* AblationGroupToString(AblationGroup ablation_group) {
   return nullptr;
 }
 
-bool DetermineHeuristicOnlyEmailFormStatus(const FormStructure& form) {
+bool DetermineHeuristicOnlyEmailFormStatus(const FormStructure& form,
+                                           bool ignore_small_forms) {
   // First, check the prerequisites. The forms for which this classification is
   // applicable  must not run heuristics normally (i.e., their field count is
   // below `kMinRequiredFieldsForHeuristics`), but must be eligible for single
   // field form heuristics.
-  if (ShouldRunHeuristics(form) || !ShouldRunHeuristicsForSingleFields(form)) {
+  if (ShouldRunHeuristics(form, ignore_small_forms) ||
+      !ShouldRunHeuristicsForSingleFields(form)) {
     return false;
   }
   // Having met the prerequisites, now determine if there's a field whose
@@ -100,7 +103,8 @@ void FormEventLoggerBase::OnDidInteractWithAutofillableForm(
 void FormEventLoggerBase::OnDidIdentifyForm(
     const FormStructure& form,
     FormIdentificationTime identification_time) {
-  DenseSet<FormTypeNameForLogging> form_types = GetFormTypesForLogging(form);
+  DenseSet<FormTypeNameForLogging> form_types =
+      GetFormTypesForLogging(form, GetAcUnrecognizedBehavior(owner_->client()));
   CHECK(!form_types.empty());
   switch (identification_time) {
     case FormIdentificationTime::kAfterLocalHeuristics:
@@ -175,11 +179,14 @@ void FormEventLoggerBase::OnWillSubmitForm(const FormStructure& form) {
   if (has_logged_will_submit_)
     return;
   has_logged_will_submit_ = true;
-  submitted_form_types_ = GetFormTypesForLogging(form);
+  submitted_form_types_ =
+      GetFormTypesForLogging(form, GetAcUnrecognizedBehavior(owner_->client()));
 
   // Determine whether logging of email-heuristic only metrics is required.
-  is_heuristic_only_email_form_ = (is_heuristic_only_email_form_ ||
-                                   DetermineHeuristicOnlyEmailFormStatus(form));
+  is_heuristic_only_email_form_ =
+      (is_heuristic_only_email_form_ ||
+       DetermineHeuristicOnlyEmailFormStatus(
+           form, /*ignore_small_forms=*/!owner_->client().IsTabInActorMode()));
 
   LogWillSubmitForm(form);
 
@@ -243,7 +250,8 @@ void FormEventLoggerBase::
 void FormEventLoggerBase::Log(FormEvent event, const FormStructure& form) {
   DCHECK_LT(event, NUM_FORM_EVENTS);
   form_events_set_[form.global_id()].insert(event);
-  for (FormTypeNameForLogging form_type : GetFormTypesForLogging(form)) {
+  for (FormTypeNameForLogging form_type : GetFormTypesForLogging(
+           form, GetAcUnrecognizedBehavior(owner_->client()))) {
     std::string name(
         base::StrCat({"Autofill.FormEvents.",
                       FormTypeNameForLoggingToStringView(form_type)}));
@@ -257,7 +265,9 @@ void FormEventLoggerBase::Log(FormEvent event, const FormStructure& form) {
   // Log UKM metrics for only autofillable form events.
   if (IsAutofillable(form)) {
     client().GetFormInteractionsUkmLogger().LogFormEvent(
-        driver().GetPageUkmSourceId(), event, GetFormTypesForLogging(form),
+        driver().GetPageUkmSourceId(), event,
+        GetFormTypesForLogging(form,
+                               GetAcUnrecognizedBehavior(owner_->client())),
         form.form_parsed_timestamp());
   }
 }
@@ -381,8 +391,7 @@ void FormEventLoggerBase::RecordKeyMetrics() {
         driver().GetPageUkmSourceId(), submitted_form_types_,
         HasLoggedDataToFillAvailable(), has_logged_suggestions_shown_,
         has_logged_edited_autofilled_field_,
-        has_logged_form_filling_suggestion_filled_, form_interaction_counts_,
-        flow_id_, fast_checkout_run_id_);
+        has_logged_form_filling_suggestion_filled_, form_interaction_counts_);
   }
   if (has_logged_edited_non_filled_field_ ||
       has_logged_form_filling_suggestion_filled_) {
@@ -538,12 +547,7 @@ void FormEventLoggerBase::OnEditedField(FieldGlobalId field_id) {
   if (field_id != last_field_global_id_modified_by_user_) {
     ++form_interaction_counts_.form_element_user_modifications;
     last_field_global_id_modified_by_user_ = field_id;
-    UpdateFlowId();
   }
-}
-
-void FormEventLoggerBase::UpdateFlowId() {
-  flow_id_ = client().GetCurrentFormInteractionsFlowId();
 }
 
 FormInteractionsUkmLogger::FormEventSet FormEventLoggerBase::GetFormEvents(

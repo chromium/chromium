@@ -4,10 +4,12 @@
 
 #include "content/browser/webui/web_ui_impl.h"
 
+#include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "content/browser/webui/url_data_manager_backend.h"
 #include "content/browser/webui/web_ui_data_source_impl.h"
 #include "content/public/browser/url_data_source.h"
+#include "content/public/browser/web_ui_controller.h"
 #include "content/public/common/content_features.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_renderer_host.h"
@@ -16,6 +18,34 @@
 #include "url/origin.h"
 
 namespace content {
+namespace {
+
+class MockWebUIController : public WebUIController {
+ public:
+  explicit MockWebUIController(WebUI* web_ui) : WebUIController(web_ui) {}
+  ~MockWebUIController() override = default;
+
+  void PopulateLocalResourceLoaderConfig(
+      blink::mojom::LocalResourceLoaderConfig* config,
+      const url::Origin& current_origin) override {
+    if (populate_callback_) {
+      populate_callback_.Run(config, current_origin);
+    }
+  }
+
+  void SetPopulateCallback(
+      base::RepeatingCallback<void(blink::mojom::LocalResourceLoaderConfig*,
+                                   const url::Origin&)> callback) {
+    populate_callback_ = std::move(callback);
+  }
+
+ private:
+  base::RepeatingCallback<void(blink::mojom::LocalResourceLoaderConfig*,
+                               const url::Origin&)>
+      populate_callback_;
+};
+
+}  // namespace
 
 class WebUIImplTestBase {
  protected:
@@ -38,7 +68,8 @@ TEST_F(WebUIImplLocalResourceLoaderConfigTest,
   URLDataManagerBackend data_backend;
 
   auto config = WebUIImpl::GetLocalResourceLoaderConfigForTesting(
-      &data_backend, url::Origin::Create(GURL("chrome://resources/")));
+      &data_backend, url::Origin::Create(GURL("chrome://resources/")),
+      /*controller=*/nullptr);
 
   url::Origin origin = url::Origin::Create(GURL("chrome://resources/"));
   const auto& config_source = config->sources[origin];
@@ -64,7 +95,8 @@ TEST_F(WebUIImplLocalResourceLoaderConfigTest,
   data_backend.AddDataSource(data_source);
 
   auto config = WebUIImpl::GetLocalResourceLoaderConfigForTesting(
-      &data_backend, url::Origin::Create(GURL("chrome://my-data-source")));
+      &data_backend, url::Origin::Create(GURL("chrome://my-data-source")),
+      /*controller=*/nullptr);
 
   url::Origin origin = url::Origin::Create(GURL("chrome://my-data-source"));
   const auto& config_source = config->sources[origin];
@@ -92,7 +124,8 @@ TEST_F(WebUIImplLocalResourceLoaderConfigTest,
   data_backend.AddDataSource(data_source);
 
   auto config = WebUIImpl::GetLocalResourceLoaderConfigForTesting(
-      &data_backend, url::Origin::Create(GURL("chrome://my-data-source")));
+      &data_backend, url::Origin::Create(GURL("chrome://my-data-source")),
+      /*controller=*/nullptr);
 
   url::Origin origin = url::Origin::Create(GURL("chrome://my-data-source"));
   const auto& config_source = config->sources[origin];
@@ -125,7 +158,8 @@ TEST_F(WebUIImplLocalResourceLoaderConfigTest,
   data_backend.AddDataSource(data_source);
 
   auto config = WebUIImpl::GetLocalResourceLoaderConfigForTesting(
-      &data_backend, url::Origin::Create(GURL("chrome://my-data-source")));
+      &data_backend, url::Origin::Create(GURL("chrome://my-data-source")),
+      /*controller=*/nullptr);
 
   url::Origin origin = url::Origin::Create(GURL("chrome://my-data-source"));
   const auto& config_source = config->sources[origin];
@@ -157,7 +191,8 @@ TEST_F(WebUIImplLocalResourceLoaderConfigTest, ResourcesIsolatedPerWebUI) {
   // Test for host1
   {
     auto config = WebUIImpl::GetLocalResourceLoaderConfigForTesting(
-        &data_backend, url::Origin::Create(GURL("chrome://host1")));
+        &data_backend, url::Origin::Create(GURL("chrome://host1")),
+        /*controller=*/nullptr);
 
     // Check that config contains source for host1.
     EXPECT_TRUE(
@@ -179,7 +214,8 @@ TEST_F(WebUIImplLocalResourceLoaderConfigTest, ResourcesIsolatedPerWebUI) {
   // Test for host2
   {
     auto config = WebUIImpl::GetLocalResourceLoaderConfigForTesting(
-        &data_backend, url::Origin::Create(GURL("chrome://host2")));
+        &data_backend, url::Origin::Create(GURL("chrome://host2")),
+        /*controller=*/nullptr);
 
     // Check that config contains source for host2.
     EXPECT_TRUE(
@@ -229,7 +265,8 @@ TEST_F(WebUIImplRenderViewHostTest,
   auto origin = url::Origin::Create(GURL("chrome://my-data-source"));
 
   auto config = web_ui->GetLocalResourceLoaderConfigForTesting(
-      URLDataManagerBackend::GetForBrowserContext(browser_context()), origin);
+      URLDataManagerBackend::GetForBrowserContext(browser_context()), origin,
+      /*controller=*/nullptr);
 
   EXPECT_TRUE(config->sources.contains(origin));
 }
@@ -245,9 +282,46 @@ TEST_F(WebUIImplRenderViewHostTest,
 
   auto config = web_ui->GetLocalResourceLoaderConfigForTesting(
       URLDataManagerBackend::GetForBrowserContext(browser_context()),
-      other_origin);
+      other_origin, /*controller=*/nullptr);
 
   EXPECT_FALSE(config->sources.contains(origin));
+}
+
+TEST_F(WebUIImplRenderViewHostTest,
+       LocalResourceLoaderConfigWithSharedDataSource) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      features::kWebUIInProcessResourceLoadingV2);
+  std::unique_ptr<WebUIImpl> web_ui =
+      std::make_unique<WebUIImpl>(web_contents());
+  web_ui->SetRenderFrameHost(main_rfh());
+
+  auto controller = std::make_unique<MockWebUIController>(web_ui.get());
+  auto* controller_ptr = controller.get();
+  web_ui->SetController(std::move(controller));
+
+  // Add a shared data source via callback.
+  controller_ptr->SetPopulateCallback(base::BindLambdaForTesting(
+      [&](blink::mojom::LocalResourceLoaderConfig* config,
+          const url::Origin& current_origin) {
+        EXPECT_EQ(current_origin,
+                  url::Origin::Create(GURL("chrome://main-ui")));
+        auto source = blink::mojom::LocalResourceSource::New();
+        source->replacement_strings["key"] = "value";
+        config->sources[url::Origin::Create(GURL("chrome://theme"))] =
+            std::move(source);
+      }));
+
+  auto origin = url::Origin::Create(GURL("chrome://theme"));
+
+  // The shared source should be included in the config.
+  auto config = WebUIImpl::GetLocalResourceLoaderConfigForTesting(
+      URLDataManagerBackend::GetForBrowserContext(browser_context()),
+      url::Origin::Create(GURL("chrome://main-ui")), controller_ptr);
+
+  EXPECT_TRUE(config->sources.contains(origin));
+  const auto& config_source = config->sources[origin];
+  EXPECT_EQ(config_source->replacement_strings["key"], "value");
 }
 
 }  // namespace content

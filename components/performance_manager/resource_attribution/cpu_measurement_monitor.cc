@@ -13,7 +13,6 @@
 #include <vector>
 
 #include "base/check_op.h"
-#include "base/containers/contains.h"
 #include "base/containers/variant_map.h"
 #include "base/debug/crash_logging.h"
 #include "base/debug/dump_without_crashing.h"
@@ -230,7 +229,7 @@ void CPUMeasurementMonitor::RepeatingQueryStopped(internal::QueryId query_id) {
 bool CPUMeasurementMonitor::IsTrackingQueryForTesting(
     internal::QueryId query_id) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return base::Contains(dead_context_results_, query_id);
+  return dead_context_results_.contains(query_id);
 }
 
 size_t CPUMeasurementMonitor::GetDeadContextCountForTesting() const {
@@ -294,7 +293,7 @@ QueryResultMap CPUMeasurementMonitor::UpdateAndGetCPUMeasurements(
     const OriginInBrowsingInstanceContext& origin_context = it->first;
     scoped_refptr<ScopedCPUTimeResult>& result_ptr = it->second;
     CHECK(result_ptr);
-    if (base::Contains(live_origin_contexts, origin_context)) {
+    if (live_origin_contexts.contains(origin_context)) {
       save_result(ResourceContext(origin_context), result_ptr);
       ++it;
     } else {
@@ -555,7 +554,7 @@ void CPUMeasurementMonitor::OnBeforeProcessNodeRemoved(
 
 void CPUMeasurementMonitor::OnPriorityChanged(
     const ProcessNode* process_node,
-    base::TaskPriority previous_value) {
+    base::Process::Priority previous_value) {
   UpdateCPUMeasurements(process_node, GraphChangeUpdateProcessPriority(
                                           process_node, previous_value));
 }
@@ -620,23 +619,23 @@ void CPUMeasurementMonitor::OnBeforeClientWorkerRemoved(
   UpdateCPUMeasurements(worker_node->GetProcessNode());
 }
 
-base::Value::Dict CPUMeasurementMonitor::DescribeFrameNodeData(
+base::DictValue CPUMeasurementMonitor::DescribeFrameNodeData(
     const FrameNode* node) const {
   return SharedCPUTimeResultData::Get(FrameNodeImpl::FromNode(node)).Describe();
 }
 
-base::Value::Dict CPUMeasurementMonitor::DescribePageNodeData(
+base::DictValue CPUMeasurementMonitor::DescribePageNodeData(
     const PageNode* node) const {
   return SharedCPUTimeResultData::Get(PageNodeImpl::FromNode(node)).Describe();
 }
 
-base::Value::Dict CPUMeasurementMonitor::DescribeProcessNodeData(
+base::DictValue CPUMeasurementMonitor::DescribeProcessNodeData(
     const ProcessNode* node) const {
   return SharedCPUTimeResultData::Get(ProcessNodeImpl::FromNode(node))
       .Describe();
 }
 
-base::Value::Dict CPUMeasurementMonitor::DescribeWorkerNodeData(
+base::DictValue CPUMeasurementMonitor::DescribeWorkerNodeData(
     const WorkerNode* node) const {
   return SharedCPUTimeResultData::Get(WorkerNodeImpl::FromNode(node))
       .Describe();
@@ -1038,7 +1037,7 @@ void CPUMeasurementMonitor::MeasureAndDistributeCPUUsage(
   // Determine the process priority during the measurement interval. If the
   // process' priority just changed, used the previous priority. Otherwise, use
   // the current priority.
-  base::TaskPriority process_priority;
+  base::Process::Priority process_priority;
   GraphChangeUpdateProcessPriority* priority_change =
       std::get_if<GraphChangeUpdateProcessPriority>(&graph_change);
   if (priority_change && priority_change->process_node == process_node) {
@@ -1068,7 +1067,7 @@ void CPUMeasurementMonitor::MeasureAndDistributeCPUUsage(
             // `cumulative_background_cpu` accumulates CPU consumed while the
             // process' priority is `BEST_EFFORT`.
             .cumulative_background_cpu =
-                (process_priority == base::TaskPriority::BEST_EFFORT)
+                (process_priority == base::Process::Priority::kBestEffort)
                     ? cpu_delta
                     : base::TimeDelta()});
     CHECK(inserted);

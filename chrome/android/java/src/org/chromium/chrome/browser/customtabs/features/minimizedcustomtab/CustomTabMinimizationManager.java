@@ -16,6 +16,7 @@ import android.app.PictureInPictureParams;
 import android.os.Build.VERSION;
 import android.os.Build.VERSION_CODES;
 import android.os.Bundle;
+import android.os.PersistableBundle;
 import android.text.TextUtils;
 import android.util.Rational;
 
@@ -152,6 +153,9 @@ public class CustomTabMinimizationManager
             putIntoBundleFromModel(outState, mModel);
         }
     }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState, PersistableBundle outPersistentState) {}
 
     /** Minimize the Custom Tab into picture-in-picture. */
     @Override

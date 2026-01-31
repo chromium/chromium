@@ -133,10 +133,10 @@ std::vector<TestParams> GetTestParams() {
 // entry is a list of strings, which when interpreted as colon-separated
 // key-value pairs has exactly one entry with |key| and that entry has value
 // |expected_value|.
-bool CheckHeader(const base::Value::Dict& params,
+bool CheckHeader(const base::DictValue& params,
                  std::string_view key,
                  std::string_view expected_value) {
-  const base::Value::List* headers = params.FindList("headers");
+  const base::ListValue* headers = params.FindList("headers");
   if (!headers) {
     return false;
   }

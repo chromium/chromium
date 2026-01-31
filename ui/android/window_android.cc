@@ -227,12 +227,21 @@ void WindowAndroid::OnSupportedRefreshRatesUpdated(
 
 void WindowAndroid::OnAdaptiveRefreshRateInfoChanged(
     JNIEnv* env,
-    jboolean supports_adaptive_refresh_rate,
-    jfloat suggested_frame_rate_high) {
+    bool supports_adaptive_refresh_rate,
+    float suggested_frame_rate_high,
+    const std::vector<float> frame_per_second,
+    const std::vector<float> dp_per_second) {
   adaptive_refresh_rate_info_.supports_adaptive_refresh_rate =
       supports_adaptive_refresh_rate;
   adaptive_refresh_rate_info_.suggested_frame_rate_high =
       suggested_frame_rate_high;
+
+  adaptive_refresh_rate_info_.velocity_mapping.clear();
+  CHECK_EQ(frame_per_second.size(), dp_per_second.size());
+  for (size_t i = 0; i < frame_per_second.size(); ++i) {
+    adaptive_refresh_rate_info_.velocity_mapping.push_back(
+        {frame_per_second[i], dp_per_second[i]});
+  }
 }
 
 void WindowAndroid::OnOverlayTransformUpdated(JNIEnv* env) {
@@ -241,7 +250,7 @@ void WindowAndroid::OnOverlayTransformUpdated(JNIEnv* env) {
 }
 
 void WindowAndroid::SendUnfoldLatencyBeginTimestamp(JNIEnv* env,
-                                                    jlong begin_time) {
+                                                    int64_t begin_time) {
   base::TimeTicks begin_timestamp =
       base::TimeTicks::FromUptimeMillis(begin_time);
   observer_list_.Notify(&WindowAndroidObserver::OnUnfoldStarted,
@@ -413,11 +422,11 @@ void WindowAndroid::SetTestHooks(TestHooks* hooks) {
 // Native JNI methods
 // ----------------------------------------------------------------------------
 
-static jlong JNI_WindowAndroid_Init(JNIEnv* env,
-                                    const JavaRef<jobject>& obj,
-                                    jint sdk_display_id,
-                                    jfloat scroll_factor,
-                                    jboolean window_is_wide_color_gamut) {
+static int64_t JNI_WindowAndroid_Init(JNIEnv* env,
+                                      const JavaRef<jobject>& obj,
+                                      int32_t sdk_display_id,
+                                      float scroll_factor,
+                                      bool window_is_wide_color_gamut) {
   WindowAndroid* window = new WindowAndroid(
       env, obj, sdk_display_id, scroll_factor, window_is_wide_color_gamut);
   return reinterpret_cast<intptr_t>(window);

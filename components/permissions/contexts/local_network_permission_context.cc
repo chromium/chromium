@@ -15,8 +15,7 @@ LocalNetworkPermissionContext::LocalNetworkPermissionContext(
     : ContentSettingPermissionContextBase(
           browser_context,
           ContentSettingsType::LOCAL_NETWORK,
-          // TODO(crbug.com/465491626): change when adding permission policy
-          network::mojom::PermissionsPolicyFeature::kNotFound) {}
+          network::mojom::PermissionsPolicyFeature::kLocalNetwork) {}
 
 LocalNetworkPermissionContext::~LocalNetworkPermissionContext() = default;
 

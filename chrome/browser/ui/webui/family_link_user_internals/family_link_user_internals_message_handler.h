@@ -10,10 +10,11 @@
 #include "base/scoped_observation.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
+#include "components/supervised_user/core/browser/family_link_url_filter.h"
 #include "components/supervised_user/core/browser/supervised_user_error_page.h"
 #include "components/supervised_user/core/browser/supervised_user_service.h"
 #include "components/supervised_user/core/browser/supervised_user_service_observer.h"
-#include "components/supervised_user/core/browser/supervised_user_url_filter.h"
+#include "components/supervised_user/core/browser/supervised_user_url_filtering_service.h"
 #include "components/supervised_user/core/browser/supervised_user_utils.h"
 #include "content/public/browser/web_ui_message_handler.h"
 
@@ -21,7 +22,7 @@
 class FamilyLinkUserInternalsMessageHandler
     : public content::WebUIMessageHandler,
       public SupervisedUserServiceObserver,
-      public supervised_user::SupervisedUserURLFilter::Observer,
+      public supervised_user::FamilyLinkUrlFilter::Observer,
       public signin::IdentityManager::Observer {
  public:
   enum class WebContentFilters : bool {
@@ -65,21 +66,22 @@ class FamilyLinkUserInternalsMessageHandler
   void OnAccountChanged();
 
   supervised_user::SupervisedUserService* GetSupervisedUserService();
+  const supervised_user::SupervisedUserUrlFilteringService*
+  GetSupervisedUserUrlFilteringService();
 
-  void HandleRegisterForEvents(const base::Value::List& args);
-  void HandleGetBasicInfo(const base::Value::List& args);
-  void HandleTryURL(const base::Value::List& args);
+  void HandleRegisterForEvents(const base::ListValue& args);
+  void HandleGetBasicInfo(const base::ListValue& args);
+  void HandleTryURL(const base::ListValue& args);
 
   void SendBasicInfo();
-  void SendFamilyLinkUserSettings(const base::Value::Dict& settings);
+  void SendFamilyLinkUserSettings(const base::DictValue& settings);
   void SendWebContentFiltersInfo();
 
-  void OnTryURLResult(
-      const std::string& callback_id,
-      supervised_user::SupervisedUserURLFilter::Result filtering_result);
+  void OnTryURLResult(const std::string& callback_id,
+                      supervised_user::WebFilteringResult filtering_result);
 
-  void OnURLChecked(supervised_user::SupervisedUserURLFilter::Result
-                        filtering_result) override;
+  void OnURLChecked(
+      supervised_user::WebFilteringResult filtering_result) override;
 
   // Emulates device-level setting that manipulates search or browser content
   // filtering. Available only to non-supervised profiles. Note: if multiple
@@ -92,8 +94,8 @@ class FamilyLinkUserInternalsMessageHandler
 
   base::CallbackListSubscription user_settings_subscription_;
 
-  base::ScopedObservation<supervised_user::SupervisedUserURLFilter,
-                          supervised_user::SupervisedUserURLFilter::Observer>
+  base::ScopedObservation<supervised_user::FamilyLinkUrlFilter,
+                          supervised_user::FamilyLinkUrlFilter::Observer>
       url_filter_observation_{this};
 
   base::ScopedObservation<signin::IdentityManager,

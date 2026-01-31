@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "base/functional/callback.h"
-#include "base/memory/memory_pressure_listener.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/sequenced_task_runner.h"
@@ -43,7 +42,7 @@ namespace media {
 // to managing playback state.
 class MEDIA_EXPORT DemuxerManager {
  public:
-  class Client {
+  class Client : public TrackManager {
    public:
     virtual void OnEncryptedMediaInitData(
         EmeInitDataType init_data_type,
@@ -61,12 +60,6 @@ class MEDIA_EXPORT DemuxerManager {
     // Used for controlling the client when a demuxer swap happens.
     virtual void StopForDemuxerReset() = 0;
     virtual void RestartForHls() = 0;
-
-#if BUILDFLAG(ENABLE_FFMPEG) || BUILDFLAG(ENABLE_HLS_DEMUXER)
-    virtual void AddTrack(const MediaTrack&) = 0;
-    virtual void RemoveTrack(const MediaTrack&) = 0;
-    virtual void SetTrackState(const MediaTrack&, MediaTrack::State) = 0;
-#endif  // BUILDFLAG(ENABLE_FFMPEG) || BUILDFLAG(ENABLE_HLS_DEMUXER)
 
 #if BUILDFLAG(ENABLE_HLS_DEMUXER)
     virtual base::SequenceBound<HlsDataSourceProvider>
@@ -156,17 +149,17 @@ class MEDIA_EXPORT DemuxerManager {
 
 #if BUILDFLAG(ENABLE_FFMPEG)
   std::unique_ptr<Demuxer> CreateFFmpegDemuxer();
+  void OnFFmpegMediaTracksUpdated(std::unique_ptr<MediaTracks> tracks);
 #endif  // BUILDFLAG(ENABLE_FFMPEG)
 
 #if BUILDFLAG(ENABLE_HLS_DEMUXER)
   std::tuple<raw_ptr<DataSourceInfo>, std::unique_ptr<Demuxer>>
   CreateHlsDemuxer();
-#endif
 
-#if BUILDFLAG(ENABLE_FFMPEG) || BUILDFLAG(ENABLE_HLS_DEMUXER)
   void AddTrack(const MediaTrack&);
   void RemoveTrack(const MediaTrack&);
-#endif  // BUILDFLAG(ENABLE_FFMPEG) || BUILDFLAG(ENABLE_HLS_DEMUXER)
+  void SetTrackState(const MediaTrack&, MediaTrack::State);
+#endif  // BUILDFLAG(ENABLE_HLS_DEMUXER)
 
   void SetDemuxer(std::unique_ptr<Demuxer> demuxer);
 
@@ -177,10 +170,6 @@ class MEDIA_EXPORT DemuxerManager {
   void OnProgress();
   void RestartClientForHLS();
   void FreeResourcesAfterMediaThreadWait(base::OnceClosure cb);
-
-#if BUILDFLAG(ENABLE_FFMPEG)
-  void OnFFmpegMediaTracksUpdated(std::unique_ptr<MediaTracks> tracks);
-#endif  // BUILDFLAG(ENABLE_FFMPEG)
 
   void DemuxerRequestsSeek(base::TimeDelta time);
 
@@ -214,7 +203,9 @@ class MEDIA_EXPORT DemuxerManager {
   // which becomes the default demuxer to use.
   std::unique_ptr<Demuxer> demuxer_override_;
 
+#if BUILDFLAG(ENABLE_HLS_DEMUXER)
   bool hls_fallback_ = false;
+#endif  // BUILDFLAG(ENABLE_HLS_DEMUXER)
 
   // Are we allowed to switch demuxer mid-stream when fallback error codes
   // are encountered

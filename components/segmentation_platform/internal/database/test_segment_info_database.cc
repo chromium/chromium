@@ -7,7 +7,6 @@
 #include <optional>
 
 #include "base/compiler_specific.h"
-#include "base/containers/contains.h"
 #include "components/segmentation_platform/internal/metadata/metadata_writer.h"
 #include "components/segmentation_platform/internal/proto/model_prediction.pb.h"
 #include "components/segmentation_platform/public/proto/types.pb.h"
@@ -29,7 +28,7 @@ void TestSegmentInfoDatabase::GetSegmentInfoForSegments(
   auto result = std::make_unique<SegmentInfoDatabase::SegmentInfoList>();
   for (const auto& pair : segment_infos_) {
     if (pair.second.model_source() != ModelSource::DEFAULT_MODEL_SOURCE &&
-        base::Contains(segment_ids, pair.first)) {
+        segment_ids.contains(pair.first)) {
       result->emplace_back(pair.first, &pair.second);
     }
   }
@@ -41,7 +40,7 @@ TestSegmentInfoDatabase::GetSegmentInfoForBothModels(
     const base::flat_set<SegmentId>& segment_ids) {
   auto result = std::make_unique<SegmentInfoDatabase::SegmentInfoList>();
   for (const auto& pair : segment_infos_) {
-    if (base::Contains(segment_ids, pair.first)) {
+    if (segment_ids.contains(pair.first)) {
       result->emplace_back(pair.first, &pair.second);
     }
   }

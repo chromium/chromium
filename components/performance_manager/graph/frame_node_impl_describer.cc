@@ -46,15 +46,15 @@ void FrameNodeImplDescriber::OnTakenFromGraph(Graph* graph) {
   graph->GetNodeDataDescriberRegistry()->UnregisterDescriber(this);
 }
 
-base::Value::Dict FrameNodeImplDescriber::DescribeFrameNodeData(
+base::DictValue FrameNodeImplDescriber::DescribeFrameNodeData(
     const FrameNode* node) const {
   const FrameNodeImpl* impl = FrameNodeImpl::FromNode(node);
 
-  base::Value::Dict ret;
+  base::DictValue ret;
 
   // Document specific properties. These are emitted in a nested dictionary, as
   // a frame node can be reused for different documents.
-  base::Value::Dict doc;
+  base::DictValue doc;
   doc.Set("url", impl->document_.url.possibly_invalid_spec());
   doc.Set("origin", impl->document_.origin.has_value()
                         ? impl->document_.origin->GetDebugString()
@@ -91,7 +91,7 @@ base::Value::Dict FrameNodeImplDescriber::DescribeFrameNodeData(
   ret.Set("is_important", impl->is_important_.value());
   ret.Set("resource_context", impl->GetResourceContext().ToString());
 
-  base::Value::Dict metrics;
+  base::DictValue metrics;
   metrics.Set("resident_set",
               base::NumberToString(impl->GetResidentSetEstimate().InKiB()));
   metrics.Set(

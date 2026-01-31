@@ -553,6 +553,14 @@ class CONTENT_EXPORT NavigationEntryImpl : public NavigationEntry {
     return navigation_transition_data_;
   }
 
+  void set_remove_extra_headers_on_cross_origin_redirect(bool value) {
+    remove_extra_headers_on_cross_origin_redirect_ = value;
+  }
+
+  bool remove_extra_headers_on_cross_origin_redirect() const {
+    return remove_extra_headers_on_cross_origin_redirect_;
+  }
+
  private:
   std::unique_ptr<NavigationEntryImpl> CloneAndReplaceInternal(
       scoped_refptr<FrameNavigationEntry> frame_entry,
@@ -604,6 +612,10 @@ class CONTENT_EXPORT NavigationEntryImpl : public NavigationEntry {
 
   // This member is not persisted with session restore.
   std::string extra_headers_;
+
+  // If true, any extra headers provided will be removed on a cross-origin
+  // redirect.
+  bool remove_extra_headers_on_cross_origin_redirect_ = false;
 
   // Used for specifying base URL for pages loaded via data URLs. Only used and
   // persisted by Android WebView.

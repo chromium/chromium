@@ -895,6 +895,8 @@ NavigationEntryImpl::CloneAndReplaceInternal(
   copy->is_entry_created_by_ad_ = is_entry_created_by_ad_;
   copy->is_ad_entry_creator_ = is_ad_entry_creator_;
   copy->initial_navigation_entry_state_ = initial_navigation_entry_state_;
+  copy->remove_extra_headers_on_cross_origin_redirect_ =
+      remove_extra_headers_on_cross_origin_redirect_;
 
   if (navigation_transition_data().cache_hit_or_miss_reason() ==
       NavigationTransitionData::CacheHitOrMissReason::kCacheHit) {
@@ -933,6 +935,7 @@ NavigationEntryImpl::ConstructCommonNavigationParams(
       (dest_url.IsAboutBlank() || dest_url.IsAboutSrcdoc())
           ? frame_entry.initiator_base_url()
           : std::nullopt;
+
   return blink::mojom::CommonNavigationParams::New(
       dest_url, frame_entry.initiator_origin(), initiator_base_url,
       std::move(dest_referrer), GetTransitionType(), navigation_type,
@@ -1013,8 +1016,7 @@ NavigationEntryImpl::ConstructCommitNavigationParams(
           false /* is_browser_initiated */, false /*has_ua_visual_transition*/,
           ukm::kInvalidSourceId /* document_ukm_source_id */, frame_policy,
           std::vector<std::string>() /* force_enabled_origin_trials */,
-          false /* origin_agent_cluster */,
-          true /* origin_agent_cluster_left_as_default */,
+          blink::mojom::AgentClusterKey::NewSiteKey(GURL()),
           std::vector<
               network::mojom::WebClientHintsType>() /* enabled_client_hints */,
           false /* is_cross_site_cross_browsing_context_group */,
@@ -1044,7 +1046,14 @@ NavigationEntryImpl::ConstructCommitNavigationParams(
           /*should_skip_screenshot*/ false,
           /*force_new_document_sequence_number=*/false,
           /*navigation_metrics_token=*/base::UnguessableToken::Create(),
-          /*commit_target_frame_token=*/std::nullopt);
+          /*commit_target_frame_token=*/std::nullopt,
+  /*is_initial_webui=*/
+#if !BUILDFLAG(IS_ANDROID)
+          GetContentClient()->browser()->IsInitialWebUIURL(frame_entry.url()),
+#else
+          false,
+#endif
+          /*permissions_policy_override=*/std::nullopt);
 #if BUILDFLAG(IS_ANDROID)
   // `data_url_as_string` is saved in NavigationEntry but should only be used by
   // main frames, because loadData* navigations can only happen on the main

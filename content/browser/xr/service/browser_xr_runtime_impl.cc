@@ -8,7 +8,6 @@
 #include <memory>
 #include <utility>
 
-#include "base/containers/contains.h"
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
 #include "base/observer_list.h"
@@ -168,7 +167,7 @@ bool BrowserXRRuntimeImpl::SupportsFeature(
      id_ == device::mojom::XRDeviceId::FAKE_DEVICE_ID)
       return true;
 
-  return base::Contains(device_data_->supported_features, feature);
+  return std::ranges::contains(device_data_->supported_features, feature);
 }
 
 bool BrowserXRRuntimeImpl::SupportsAllFeatures(
@@ -362,10 +361,10 @@ void BrowserXRRuntimeImpl::OnRequestSessionResult(
         }
 
         // The overlay code requires the left and right views to render.
-        if (!base::Contains(views, device::mojom::XREye::kLeft,
-                            &device::mojom::XRView::eye) ||
-            !base::Contains(views, device::mojom::XREye::kRight,
-                            &device::mojom::XRView::eye)) {
+        if (!std::ranges::contains(views, device::mojom::XREye::kLeft,
+                                   &device::mojom::XRView::eye) ||
+            !std::ranges::contains(views, device::mojom::XREye::kRight,
+                                   &device::mojom::XRView::eye)) {
           // Notify the service to cleanup any session that it's started to
           // setup, and when that and our corresponding runtime shutdown have
           // finished, notify the page that the session request failed.
@@ -382,8 +381,8 @@ void BrowserXRRuntimeImpl::OnRequestSessionResult(
       }
 
       immersive_session_has_camera_access_ =
-          base::Contains(session_result->session->enabled_features,
-                         device::mojom::XRSessionFeature::CAMERA_ACCESS);
+          std::ranges::contains(session_result->session->enabled_features,
+                                device::mojom::XRSessionFeature::CAMERA_ACCESS);
       if (immersive_session_has_camera_access_) {
         for (Observer& observer : observers_) {
           observer.WebXRCameraInUseChanged(web_contents, true);

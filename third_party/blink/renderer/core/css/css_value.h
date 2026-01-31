@@ -88,6 +88,9 @@ class CORE_EXPORT CSSValue : public GarbageCollected<CSSValue> {
   }
   bool IsColorValue() const { return class_type_ == kColorClass; }
   bool IsColorMixValue() const { return class_type_ == kColorMixClass; }
+  bool IsContrastColorValue() const {
+    return class_type_ == kContrastColorClass;
+  }
   bool IsCounterValue() const { return class_type_ == kCounterClass; }
   bool IsCounterContentValue() const {
     return class_type_ == kCounterContentClass;
@@ -158,6 +161,7 @@ class CORE_EXPORT CSSValue : public GarbageCollected<CSSValue> {
   bool IsStringValue() const { return class_type_ == kStringClass; }
   bool IsSuperellipseValue() const { return class_type_ == kSuperellipseClass; }
   bool IsURIValue() const { return class_type_ == kURIClass; }
+  bool IsURLPatternValue() const { return class_type_ == kURLPatternClass; }
   bool IsLinearTimingFunctionValue() const {
     return class_type_ == kLinearTimingFunctionClass;
   }
@@ -257,6 +261,9 @@ class CORE_EXPORT CSSValue : public GarbageCollected<CSSValue> {
   String ClassTypeToString() const;
 #endif
 
+  // Checks if a CSS random() function is present in the value.
+  bool HasRandomFunctions() const;
+
   void TraceAfterDispatch(blink::Visitor* visitor) const {}
   void Trace(Visitor*) const;
 
@@ -272,12 +279,14 @@ class CORE_EXPORT CSSValue : public GarbageCollected<CSSValue> {
     kColorClass,
     kUnresolvedColorClass,
     kColorMixClass,
+    kContrastColorClass,
     kCounterClass,
     kCounterContentClass,
     kQuadClass,
     kCustomIdentClass,
     kStringClass,
     kURIClass,
+    kURLPatternClass,
     kValuePairClass,
     kLightDarkValuePairClass,
     kScrollClass,

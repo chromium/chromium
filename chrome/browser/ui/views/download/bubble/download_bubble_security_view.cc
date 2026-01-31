@@ -226,7 +226,7 @@ void DownloadBubbleSecurityView::AddHeader() {
           base::BindRepeating(&DownloadBubbleSecurityView::BackButtonPressed,
                               base::Unretained(this)),
           vector_icons::kArrowBackChromeRefreshIcon,
-          GetLayoutConstant(DOWNLOAD_ICON_SIZE)));
+          GetLayoutConstant(LayoutConstant::kDownloadIconSize)));
   views::InstallCircleHighlightPathGenerator(back_button_);
   back_button_->SetTooltipText(
       l10n_util::GetStringUTF16(IDS_DOWNLOAD_BUBBLE_BACK_RECENT_DOWNLOADS));
@@ -253,7 +253,7 @@ void DownloadBubbleSecurityView::AddHeader() {
           base::BindRepeating(&DownloadBubbleSecurityView::CloseBubble,
                               base::Unretained(this)),
           vector_icons::kCloseChromeRefreshIcon,
-          GetLayoutConstant(DOWNLOAD_ICON_SIZE)));
+          GetLayoutConstant(LayoutConstant::kDownloadIconSize)));
   close_button->SetTooltipText(l10n_util::GetStringUTF16(IDS_APP_CLOSE));
   InstallCircleHighlightPathGenerator(close_button);
   close_button->SetProperty(views::kCrossAxisAlignmentKey,
@@ -294,7 +294,7 @@ void DownloadBubbleSecurityView::CloseBubble() {
 void DownloadBubbleSecurityView::UpdateIconAndText() {
   icon_->SetImage(ui::ImageModel::FromVectorIcon(
       *(info_->icon_model_override()), info_->secondary_color(),
-      GetLayoutConstant(DOWNLOAD_ICON_SIZE)));
+      GetLayoutConstant(LayoutConstant::kDownloadIconSize)));
 
   paragraphs_->SetText(info_->warning_summary());
 
@@ -337,7 +337,7 @@ void DownloadBubbleSecurityView::UpdateSecondaryIconAndText() {
 
   secondary_icon_->SetImage(ui::ImageModel::FromVectorIcon(
       *info_->warning_secondary_icon(), ui::kColorSecondaryForeground,
-      GetLayoutConstant(DOWNLOAD_ICON_SIZE)));
+      GetLayoutConstant(LayoutConstant::kDownloadIconSize)));
 
   secondary_styled_label_->SetText(info_->warning_secondary_text());
   // The label defaults to a single line, which would force the dialog wider;
@@ -362,7 +362,7 @@ void DownloadBubbleSecurityView::AddIconAndContents() {
 
   icon_ = icon_text_row->AddChildView(std::make_unique<views::ImageView>());
   icon_->SetProperty(views::kMarginsKey, GetLayoutInsets(DOWNLOAD_ICON));
-  const int icon_size = GetLayoutConstant(DOWNLOAD_ICON_SIZE);
+  const int icon_size = GetLayoutConstant(LayoutConstant::kDownloadIconSize);
   icon_->SetImageSize({icon_size, icon_size});
 
   auto* wrapper = icon_text_row->AddChildView(std::make_unique<views::View>());
@@ -737,7 +737,8 @@ int DownloadBubbleSecurityView::GetMinimumTitleWidth() const {
   // narrower to accommodate the close button.
   const int icon_label_spacing = ChromeLayoutProvider::Get()->GetDistanceMetric(
       views::DISTANCE_RELATED_LABEL_HORIZONTAL);
-  return GetMinimumLabelWidth() - GetLayoutConstant(DOWNLOAD_ICON_SIZE) -
+  return GetMinimumLabelWidth() -
+         GetLayoutConstant(LayoutConstant::kDownloadIconSize) -
          icon_label_spacing;
 }
 
@@ -746,7 +747,7 @@ int DownloadBubbleSecurityView::GetMinimumLabelWidth() const {
   const int icon_label_spacing = ChromeLayoutProvider::Get()->GetDistanceMetric(
       views::DISTANCE_RELATED_LABEL_HORIZONTAL);
   return GetMinimumBubbleWidth() - side_margin -
-         GetLayoutConstant(DOWNLOAD_ICON_SIZE) -
+         GetLayoutConstant(LayoutConstant::kDownloadIconSize) -
          GetLayoutInsets(DOWNLOAD_ICON).width() - icon_label_spacing;
 }
 

@@ -28,8 +28,8 @@ class MultideviceSetupHandler : public content::WebUIMessageHandler {
   // content::WebUIMessageHandler:
   void RegisterMessages() override;
 
-  void HandleGetProfileInfo(const base::Value::List& args);
-  void HandleOpenMultiDeviceSettings(const base::Value::List& args);
+  void HandleGetProfileInfo(const base::ListValue& args);
+  void HandleOpenMultiDeviceSettings(const base::ListValue& args);
 
   void OnGetAuthFactorsConfiguration(std::unique_ptr<UserContext> user_context,
                                      std::optional<AuthenticationError> error);

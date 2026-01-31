@@ -48,9 +48,6 @@ COMPONENT_EXPORT(PERMISSIONS_COMMON)
 BASE_DECLARE_FEATURE(kPermissionsAIP92);
 
 COMPONENT_EXPORT(PERMISSIONS_COMMON)
-BASE_DECLARE_FEATURE(kPermissionPromiseLifetimeModulation);
-
-COMPONENT_EXPORT(PERMISSIONS_COMMON)
 BASE_DECLARE_FEATURE(kPermissionsPromptSurvey);
 
 COMPONENT_EXPORT(PERMISSIONS_COMMON)
@@ -107,6 +104,9 @@ BASE_DECLARE_FEATURE(kReturnDeniedForNotificationsWhenNoAppLevelSettings);
 
 COMPONENT_EXPORT(PERMISSIONS_COMMON)
 BASE_DECLARE_FEATURE(kPermissionPredictionsGeolocationAccuracy);
+
+COMPONENT_EXPORT(PERMISSIONS_COMMON)
+BASE_DECLARE_FEATURE(kPermissionsGestureGatedPrompts);
 
 }  // namespace features
 
@@ -182,6 +182,14 @@ extern const base::FeatureParam<std::string>
 COMPONENT_EXPORT(PERMISSIONS_COMMON)
 extern const base::FeatureParam<std::string>
     kWebKioskBrowserPermissionsAllowlist;
+
+COMPONENT_EXPORT(PERMISSIONS_COMMON)
+extern const base::FeatureParam<bool>
+    kPermissionsGestureGatedPromptsMuteNotifications;
+
+COMPONENT_EXPORT(PERMISSIONS_COMMON)
+extern const base::FeatureParam<bool>
+    kPermissionsGestureGatedPromptsMuteGeolocation;
 
 #if !BUILDFLAG(IS_ANDROID)
 COMPONENT_EXPORT(PERMISSIONS_COMMON)

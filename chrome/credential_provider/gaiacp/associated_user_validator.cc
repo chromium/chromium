@@ -81,7 +81,7 @@ unsigned __stdcall CheckReauthStatus(void* param) {
     }
 
     std::string_view response_string(response.data(), response.size());
-    std::optional<base::Value::Dict> properties = base::JSONReader::ReadDict(
+    std::optional<base::DictValue> properties = base::JSONReader::ReadDict(
         response_string, base::JSON_ALLOW_TRAILING_COMMAS);
     if (!properties) {
       LOGFN(ERROR) << "base::JSONReader::ReadDict failed forcing reauth";

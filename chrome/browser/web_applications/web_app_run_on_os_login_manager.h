@@ -41,7 +41,7 @@ class WebAppRunOnOsLoginManager
   void SetCompletedClosureForTesting(base::OnceClosure completed_closure);
 
  private:
-  void RunAppsOnOsLogin(AllAppsLock& lock, base::Value::Dict& debug_value);
+  void RunAppsOnOsLogin(AllAppsLock& lock, base::DictValue& debug_value);
 
   void OnInitialConnectionTypeReceived(network::mojom::ConnectionType type);
 

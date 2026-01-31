@@ -49,14 +49,14 @@ void VolumeMap::LoadFromFile() {
 }
 
 void VolumeMap::LoadVolumeMap(
-    std::optional<base::Value::Dict> cast_audio_config) {
+    std::optional<base::DictValue> cast_audio_config) {
   if (!cast_audio_config) {
     LOG(WARNING) << "No cast audio config found; using default volume map.";
     UseDefaultVolumeMap();
     return;
   }
 
-  const base::Value::List* volume_map_list =
+  const base::ListValue* volume_map_list =
       cast_audio_config->FindList(kKeyVolumeMap);
   if (!volume_map_list) {
     LOG(WARNING) << "No volume map found; using default volume map.";
@@ -68,7 +68,7 @@ void VolumeMap::LoadVolumeMap(
   std::vector<LevelToDb> new_map;
 
   for (const auto& value : *volume_map_list) {
-    const base::Value::Dict& volume_map_entry = value.GetDict();
+    const base::DictValue& volume_map_entry = value.GetDict();
 
     std::optional<double> level = volume_map_entry.FindDouble(kKeyLevel);
     CHECK(level);

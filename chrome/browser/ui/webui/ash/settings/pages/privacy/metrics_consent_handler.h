@@ -41,12 +41,12 @@ class MetricsConsentHandler : public ::settings::SettingsPageUIHandler {
   friend class TestMetricsConsentHandler;
 
   // Handles updating metrics consent for the user.
-  void HandleUpdateMetricsConsent(const base::Value::List& args);
+  void HandleUpdateMetricsConsent(const base::ListValue& args);
 
   // Handles fetching metrics consent state. The callback will return two
   // values: a string pref name and a boolean indicating whether the current
   // user may change that pref.
-  void HandleGetMetricsConsentState(const base::Value::List& args);
+  void HandleGetMetricsConsentState(const base::ListValue& args);
 
   // Returns true if user with |profile_| has permissions to change the metrics
   // consent pref.

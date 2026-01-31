@@ -41,49 +41,49 @@ base::TimeDelta CreateTime(int hour, int minute);
 
 // Creates a time object with the correct format that is used in the Time Limit
 // policy.
-base::Value::Dict CreatePolicyTime(base::TimeDelta time);
+base::DictValue CreatePolicyTime(base::TimeDelta time);
 
 // Creates a time window limit dictionary used in the Time Limit policy.
-base::Value::Dict CreateTimeWindow(const std::string& day,
-                                   base::TimeDelta start_time,
-                                   base::TimeDelta end_time,
-                                   base::Time last_updated);
+base::DictValue CreateTimeWindow(const std::string& day,
+                                 base::TimeDelta start_time,
+                                 base::TimeDelta end_time,
+                                 base::Time last_updated);
 
 // Creates a time usage limit dictionary used in the Time Limit policy.
-base::Value::Dict CreateTimeUsage(base::TimeDelta usage_quota,
-                                  base::Time last_updated);
+base::DictValue CreateTimeUsage(base::TimeDelta usage_quota,
+                                base::Time last_updated);
 
 // Creates dictionary with a minimalist Time Limit policy, containing only the
 // time usage limit reset time.
-base::Value::Dict CreateTimeLimitPolicy(base::TimeDelta reset_time);
+base::DictValue CreateTimeLimitPolicy(base::TimeDelta reset_time);
 
 // Adds a time usage limit dictionary to the provided Time Limit policy.
-void AddTimeUsageLimit(base::Value::Dict* policy,
+void AddTimeUsageLimit(base::DictValue* policy,
                        std::string day,
                        base::TimeDelta quota,
                        base::Time last_updated);
 
 // Adds a time window limit dictionary to the provided Time Limit policy.
-void AddTimeWindowLimit(base::Value::Dict* policy,
+void AddTimeWindowLimit(base::DictValue* policy,
                         const std::string& day,
                         base::TimeDelta start_time,
                         base::TimeDelta end_time,
                         base::Time last_updated);
 
 // Adds a time limit override dictionary to the provided Time Limit policy.
-void AddOverride(base::Value::Dict* policy,
+void AddOverride(base::DictValue* policy,
                  usage_time_limit::TimeLimitOverride::Action action,
                  base::Time created_at);
 
 // Adds a time limit override with duration dictionary to the provided
 // Time Limit policy.
-void AddOverrideWithDuration(base::Value::Dict* policy,
+void AddOverrideWithDuration(base::DictValue* policy,
                              usage_time_limit::TimeLimitOverride::Action action,
                              base::Time created_at,
                              base::TimeDelta duration);
 
 // Converts the Time Limit policy to a string.
-std::string PolicyToString(const base::Value::Dict& policy);
+std::string PolicyToString(const base::DictValue& policy);
 
 }  // namespace time_limit_test_utils
 }  // namespace ash

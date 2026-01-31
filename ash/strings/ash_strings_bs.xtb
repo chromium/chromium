@@ -342,6 +342,7 @@
 <translation id="2201071101391734388"><ph name="INDEX" />. nedavna fotografija od <ph name="TOTAL_COUNT" />.</translation>
 <translation id="2201687081523799384">Sužavanje Google Zadataka</translation>
 <translation id="2208323208084708176">Unificirani način rada na računaru</translation>
+<translation id="2210311543574621570">Međumemoriju možete vidjeti kada pritisnete i zadržite Ctrl + V. Možete isključiti tu prečicu onemogućavanjem oznake #clipboard-history-longpress na chrome://flags.</translation>
 <translation id="2215920961700443347">Nema internetske veze. Povežite se s internetom i pokušajte ponovo.</translation>
 <translation id="2222841058024245321">Radna površina 7</translation>
 <translation id="2223384056430485343">Na podijeljenom ekranu</translation>
@@ -1236,7 +1237,7 @@ Također možete upotrijebiti prečicu na tastaturi. Prvo istaknite tekst, a zat
 <translation id="509790653408515442">Kada emitirate aplikacije s telefona, one će se prikazati ovdje</translation>
 <translation id="5098537242461068432">Radna površina i prozori su ponovo otvoreni</translation>
 <translation id="5103975065730779239">Do <ph name="END_TIME_EXPRESSION" /></translation>
-<translation id="5104236669533825617">Nije moguće kreirati snimanje ekrana</translation>
+<translation id="5104236669533825617">Nije moguće kreirati video snimak ekrana</translation>
 <translation id="5107522548814527560">Web</translation>
 <translation id="5111318697104479778"><ph name="DESC" />, <ph name="STRENGTH" /></translation>
 <translation id="5117590920725113268">Prikaz sljedećeg mjeseca</translation>
@@ -1546,7 +1547,7 @@ Nije povezan nijedan uređaj.</translation>
 <translation id="6095425951508823973">Dodavanje veze s pružaocem <ph name="PROVIDER" /></translation>
 <translation id="6099678161144790572">Uređeno u proteklom mjesecu</translation>
 <translation id="6103838137565245112">sistem</translation>
-<translation id="6108952804512516814">Kreiraj pomoću AI-ja</translation>
+<translation id="6108952804512516814">Kreiranje uz AI</translation>
 <translation id="6114505516289286752">Fajlovi govora na jeziku <ph name="LANGUAGE" /> su preuzeti</translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />. <ph name="BATTERY_SAVER_STATE" /></translation>
 <translation id="6119972796024789243">Ispravka boja</translation>
@@ -2056,7 +2057,7 @@ Da isključite uređaj, ponovo pritisnite i zadržite dugme za uključivanje na 
 <translation id="7842569679327885685">Upozorenje: Eksperimentalna funkcija</translation>
 <translation id="7846634333498149051">Tastatura</translation>
 <translation id="7848989271541991537">Premješteno je na <ph name="PAGE_NUMBER" />. stranicu, <ph name="ROW_NUMBER" />. red, <ph name="COLUMN_NUMBER" />. kolonu.</translation>
-<translation id="7850320739366109486">Ne ometaj</translation>
+<translation id="7850320739366109486">Ne uznemiravaj</translation>
 <translation id="7851039877802112575">Prebacite fokus na skočne prozore i dijaloške okvire</translation>
 <translation id="7851768487828137624">Canary</translation>
 <translation id="7862292329216937261">Da koristite uređaj kao gost, trebate se odjaviti, a zatim odabrati Pregledajte kao gost u donjem dijelu ekrana.</translation>

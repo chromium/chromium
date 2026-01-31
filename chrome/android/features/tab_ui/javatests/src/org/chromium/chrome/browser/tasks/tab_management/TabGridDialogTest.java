@@ -177,6 +177,7 @@ import java.util.concurrent.TimeoutException;
 @Restriction({Restriction.RESTRICTION_TYPE_NON_LOW_END_DEVICE})
 @EnableFeatures({DATA_SHARING, DATA_SHARING_JOIN_ONLY})
 @Batch(Batch.PER_CLASS)
+@DisableIf.Device(DeviceFormFactor.DESKTOP) // crbug.com/394671175
 public class TabGridDialogTest {
     private static final String CUSTOMIZED_TITLE1 = "wfh tips";
     private static final String CUSTOMIZED_TITLE2 = "wfh funs";
@@ -1038,6 +1039,40 @@ public class TabGridDialogTest {
 
     @Test
     @MediumTest
+    public void testDialogSelectionEditor_CloseFromPeripherals_NoUndo() throws ExecutionException {
+        final ChromeTabbedActivity cta = mActivityTestRule.getActivity();
+        createTabs(cta, false, 4);
+        enterTabSwitcher(cta);
+        verifyTabSwitcherCardCount(cta, 4);
+
+        // Create a tab group.
+        mergeAllNormalTabsToAGroup(cta);
+        verifyTabSwitcherCardCount(cta, 1);
+
+        // Open the selection editor.
+        openDialogFromTabSwitcherAndVerify(cta, 4, null);
+        openSelectionEditorAndVerify(cta, 4);
+
+        // Close two tabs.
+        mSelectionEditorRobot
+                .actionRobot
+                .clickItemAtAdapterPosition(0)
+                .clickItemAtAdapterPosition(2)
+                .clickToolbarMenuButton()
+                .mouseClickToolbarMenuItem("Close tabs");
+        mSelectionEditorRobot.resultRobot.verifyTabListEditorIsHidden();
+        // Verify that the undo bar is not shown.
+        onView(
+                        allOf(
+                                withId(R.id.snackbar_button),
+                                isDescendantOfA(withId(R.id.dialog_snack_bar_container_view))))
+                .check(doesNotExist());
+
+        verifyTabSwitcherCardCount(cta, 1);
+    }
+
+    @Test
+    @MediumTest
     public void testDialogSelectionEditor_UndoCloseAll() {
         // This test relies on the undo bar, which is only present when the confirmation dialog is
         // not shown.
@@ -1591,8 +1626,7 @@ public class TabGridDialogTest {
         // Set title programmatically as doing this through the UI is flaky due to the keyboard
         // state not being particularly reliable.
         TabModelSelector selector = cta.getTabModelSelector();
-        TabGroupModelFilter filter =
-                selector.getTabGroupModelFilterProvider().getTabGroupModelFilter(false);
+        TabGroupModelFilter filter = selector.getTabGroupModelFilter(false);
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     Token tabGroupId = filter.getTabModel().getTabAt(0).getTabGroupId();
@@ -1719,6 +1753,7 @@ public class TabGridDialogTest {
     @Test
     @MediumTest
     @Restriction(DeviceFormFactor.PHONE)
+    @DisabledTest(message = "TODO(crbug.com/468062507)")
     public void testStripDialog_TabListEditorCloseAll_CustomHomepage() {
         GURL url =
                 new GURL(
@@ -1784,8 +1819,7 @@ public class TabGridDialogTest {
                             mActivityTestRule.getActivity().getTabModelSelector();
                     TabModel model = selector.getCurrentModel();
                     Tab tab = model.getTabAt(0);
-                    TabGroupModelFilter filter =
-                            selector.getTabGroupModelFilterProvider().getTabGroupModelFilter(false);
+                    TabGroupModelFilter filter = selector.getTabGroupModelFilter(false);
                     filter.createSingleTabGroup(tab);
                 });
 

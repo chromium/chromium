@@ -83,8 +83,8 @@ namespace {
 // URL in |ContentSettingsType::AUTO_SELECT_CERTIFICATE| content setting. The
 // format of the returned filters corresponds to the "filter" property of the
 // AutoSelectCertificateForUrls policy as documented at policy_templates.json.
-base::Value::List GetCertAutoSelectionFilters(Profile* profile,
-                                              const GURL& requesting_url) {
+base::ListValue GetCertAutoSelectionFilters(Profile* profile,
+                                            const GURL& requesting_url) {
   HostContentSettingsMap* host_content_settings_map =
       HostContentSettingsMapFactory::GetForProfile(profile);
   base::Value setting = host_content_settings_map->GetWebsiteSetting(
@@ -94,7 +94,7 @@ base::Value::List GetCertAutoSelectionFilters(Profile* profile,
   if (!setting.is_dict())
     return {};
 
-  base::Value::List* filters = setting.GetDict().FindList("filters");
+  base::ListValue* filters = setting.GetDict().FindList("filters");
   if (!filters) {
     // |setting_dict| has the wrong format (e.g. single filter instead of a
     // list of filters). This content setting is only provided by
@@ -112,7 +112,7 @@ base::Value::List GetCertAutoSelectionFilters(Profile* profile,
 // filters. Returns false when there's no valid filter.
 bool CertMatchesSelectionFilters(
     const net::ClientCertIdentity& client_cert,
-    const base::Value::List& auto_selection_filters) {
+    const base::ListValue& auto_selection_filters) {
   for (const auto& filter : auto_selection_filters) {
     if (!filter.is_dict()) {
       // The filter has a wrong format, so ignore it. Note that reporting of
@@ -274,7 +274,7 @@ void AutoSelectCertificates(
     net::ClientCertIdentityList* nonmatching_client_certs) {
   matching_client_certs->clear();
   nonmatching_client_certs->clear();
-  const base::Value::List auto_selection_filters =
+  const base::ListValue auto_selection_filters =
       GetCertAutoSelectionFilters(profile, requesting_url);
   for (auto& client_cert : client_certs) {
     if (CertMatchesSelectionFilters(*client_cert, auto_selection_filters))
@@ -489,15 +489,15 @@ bool IsKnownConsumerDomain(const std::string& email_domain) {
 #if BUILDFLAG(IS_ANDROID)
 
 // static
-static jboolean JNI_ManagedBrowserUtils_IsBrowserManaged(JNIEnv* env,
-                                                         Profile* profile) {
+static bool JNI_ManagedBrowserUtils_IsBrowserManaged(JNIEnv* env,
+                                                     Profile* profile) {
   return policy::ManagementServiceFactory::GetForProfile(profile)
       ->IsBrowserManaged();
 }
 
 // static
-static jboolean JNI_ManagedBrowserUtils_IsProfileManaged(JNIEnv* env,
-                                                         Profile* profile) {
+static bool JNI_ManagedBrowserUtils_IsProfileManaged(JNIEnv* env,
+                                                     Profile* profile) {
   return policy::ManagementServiceFactory::GetForProfile(profile)
       ->IsAccountManaged();
 }
@@ -509,13 +509,13 @@ static std::u16string JNI_ManagedBrowserUtils_GetTitle(JNIEnv* env,
 }
 
 // static
-static jboolean JNI_ManagedBrowserUtils_IsBrowserReportingEnabled(JNIEnv* env) {
+static bool JNI_ManagedBrowserUtils_IsBrowserReportingEnabled(JNIEnv* env) {
   return g_browser_process->local_state()->GetBoolean(
       enterprise_reporting::kCloudReportingEnabled);
 }
 
 // static
-static jboolean JNI_ManagedBrowserUtils_IsProfileReportingEnabled(
+static bool JNI_ManagedBrowserUtils_IsProfileReportingEnabled(
     JNIEnv* env,
     Profile* profile) {
   return profile->GetPrefs()->GetBoolean(
@@ -523,8 +523,7 @@ static jboolean JNI_ManagedBrowserUtils_IsProfileReportingEnabled(
 }
 
 // static
-static jboolean
-JNI_ManagedBrowserUtils_IsOnSecurityEventEnterpriseConnectorEnabled(
+static bool JNI_ManagedBrowserUtils_IsOnSecurityEventEnterpriseConnectorEnabled(
     JNIEnv* env,
     Profile* profile) {
   DCHECK(profile);
@@ -540,7 +539,7 @@ JNI_ManagedBrowserUtils_IsOnSecurityEventEnterpriseConnectorEnabled(
 }
 
 // static
-static jboolean JNI_ManagedBrowserUtils_IsEnterpriseRealTimeUrlCheckModeEnabled(
+static bool JNI_ManagedBrowserUtils_IsEnterpriseRealTimeUrlCheckModeEnabled(
     JNIEnv* env,
     Profile* profile) {
   DCHECK(profile);

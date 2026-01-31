@@ -41,6 +41,7 @@ source_set("test") {
 }
 
 source_set("meta_info") {
+  testonly = true
   sources = [
     "test_meta_info.cc",
     "test_meta_info.h",
@@ -48,6 +49,7 @@ source_set("meta_info") {
 
   deps = [
     "//base",
+    "//base/test:test_support",
     "//third_party/re2",
   ]
 
@@ -57,6 +59,7 @@ source_set("meta_info") {
 }
 
 source_set("shared_test") {
+  testonly = true
   sources = [
     "shared_test_util.cc",
     "shared_test_util.h",

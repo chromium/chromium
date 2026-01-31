@@ -22,11 +22,11 @@ std::string ReplaceSingleQuotes(std::string_view str);
 // Returns a base::Value parsed from `str`. Will ADD_FAILURE on error.
 base::Value ValueFromString(std::string_view str);
 
-// As above, but returning a Value::List.
-base::Value::List ListValueFromString(std::string_view str);
+// As above, but returning a base::ListValue.
+base::ListValue ListValueFromString(std::string_view str);
 
-// As above, but returning a Value::Dict.
-base::Value::Dict DictValueFromString(std::string_view str);
+// As above, but returning a base::DictValue.
+base::DictValue DictValueFromString(std::string_view str);
 
 // Converts the given `value` to a JSON string. EXPECTs the conversion to
 // succeed.

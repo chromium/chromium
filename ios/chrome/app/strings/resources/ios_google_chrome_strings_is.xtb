@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="is">
 <translation id="1076643793026027628">Chrome opnar YouTube-huliðstengla sjálfkrafa í huliðsstillingu.</translation>
+<translation id="1081114897601629648">Eftirfarandi aðgangsorð voru ekki flutt inn í Google-aðgangsorðastjórnun því þau uppfylla ekki skilyrðin.</translation>
 <translation id="1086486568852410168">Leita með Google linsu</translation>
 <translation id="1088490543924960890">Byrjaðu að vista aðgangslykla með Google-aðgangsorðastjórnun</translation>
 <translation id="1143896152279775643">Aðgangsorðið verður vistað í aðgangsorðastjórnun Google fyrir <ph name="EMAIL" />.</translation>
@@ -85,6 +86,9 @@ Prófaðu að bíða í nokkrar mínútur áður en þú skráir þig út. Ef þ
 <translation id="2767464022270041271">Engin vistuð aðgangsorð. Google-aðgangsorðastjórnun getur athugað aðgangsorðin þín þegar þú vistar þau.</translation>
 <translation id="2788811701191021538">Opnar stillingasíðu greiðslumáta í Chrome.</translation>
 <translation id="2876628302275096482">Nánar um <ph name="BEGIN_LINK" />hvernig Chrome heldur gögnunum þínum leyndum<ph name="END_LINK" /></translation>
+<translation id="288992067439702510">Þú náðir hámarksfjölda bókamerkja í Chrome (<ph name="LIMIT" />) og því hafa sum bókamerkin þín ekki verið vistuð á Google-reikningnum enn sem komið er.
+
+Ekki er hægt að vista ný bókamerki á reikningnum þínum fyrr en þú eyðir einhverjum. Ef þú skráir þig út núna verður óvistuðum bókamerkjum eytt.</translation>
 <translation id="2922914028977213693">Ýttu hér til að fá sem mest út úr Chrome í iPad.</translation>
 <translation id="292371311537977079">Stillingar Chrome</translation>
 <translation id="2923827943290349720">Læsa huliðsflipum um leið og þú lokar Chrome</translation>
@@ -115,6 +119,7 @@ Prófaðu að bíða í nokkrar mínútur áður en þú skráir þig út. Ef þ
 <translation id="3460369101684070455">Veldu Chrome fyrir sjálfvirka útfyllingu til að fá aðgang að vistuðum aðgangsorðum í öðrum forritum á einfaldan hátt</translation>
 <translation id="3472587960215700950">Chrome notar Google-kort til að sýna þér leiðarlýsingu og staðbundnar upplýsingar um heimilisföng sem greinast.</translation>
 <translation id="3482807551645716768">Hafðu greiðan aðgang að Chrome af heimaskjánum í iPad.</translation>
+<translation id="3491067552520121605">Þú ert þegar með aðgangsorð eða aðgangslykla í Google-aðgangsorðastjórnun fyrir skráðu vefsvæðin. Veldu á hvaða reikningi þú vilt geyma birtu innskráningarupplýsingarnar og skrifa yfir það sem er í Google-aðgangsorðastjórnun.</translation>
 <translation id="3503014945441706099">Fáðu „Enn öruggari vefskoðun“ fyrir þennan Chrome-prófíl líka</translation>
 <translation id="3522659714780527202">Kveiktu á samstillingu til að sjá flipana þína hvar sem þú notar Chrome</translation>
 <translation id="364480321352456989">Chrome er úrelt</translation>
@@ -134,6 +139,7 @@ Prófaðu að bíða í nokkrar mínútur áður en þú skráir þig út. Ef þ
 <translation id="4167555379306984168">Skoðaðu nýjungar í Chrome</translation>
 <translation id="417201473131094001">Ekki stutt í Chrome Canary</translation>
 <translation id="424864128008805179">Viltu skrá þig út úr Chrome?</translation>
+<translation id="4409545895715116037">Eftirfarandi aðgangslyklar voru ekki fluttir inn í Google-aðgangsorðastjórnun því þeir uppfylla ekki skilyrðin.</translation>
 <translation id="4430797724889237570">Opna tengla frá Gmail, Kortum, YouTube og öðrum forritum í Chrome</translation>
 <translation id="447252321002412580">Hjálpaðu til við að bæta eiginleika og afköst Chrome</translation>
 <translation id="4523886039239821078">Einhverjar viðbætur valda því að Chrome hrynur. Fjarlægðu þær.</translation>
@@ -272,6 +278,7 @@ Til að skoða fleiri stillingar sem nota gögn til að bæta Chrome-upplifunina
 <translation id="7284245284340063465">Ef þú gleymdir aðgangsorðinu eða vilt breyta þessari stillingu skaltu <ph name="BEGIN_LINK" />eyða Chrome-gögnunum á reikningnum þínum<ph name="END_LINK" />.</translation>
 <translation id="7296102444587051536">Chrome fyrir iOS</translation>
 <translation id="7299681342915173313">Núna geturðu notað Chrome hvenær sem þú ýtir á tengil í tölvupóstum, skjölum og öðrum forritum.</translation>
+<translation id="7334364820047587268">Þú ert þegar með aðgangsorð fyrir þessa reikninga í Google-aðgangsorðastjórnun. Ef þú velur að flytja inn eitthvert aðgangsorðanna hér að neðan mun það koma í stað fyrirliggjandi aðgangsorðs.</translation>
 <translation id="7344094882820374540">Njóttu hámarksöryggis Chrome gegn hættulegum vefsvæðum</translation>
 <translation id="7349129508108954623">Veittu Chrome heimild til að nota Google-kort til að sýna þér leiðarlýsingu og staðbundnar upplýsingar um heimilisföng sem greinast.</translation>
 <translation id="7371674917547846460">Fáðu gagnlegar ábendingar frá Chrome og fleira til að vera með á nótunum.</translation>
@@ -300,11 +307,11 @@ Til að skoða fleiri stillingar sem nota gögn til að bæta Chrome-upplifunina
 <translation id="7787205077729386167">Opnaðu stillingar Chrome í iOS, ýttu síðan á „Sjálfgefið vafraforrit“ og veldu Chrome.</translation>
 <translation id="778855399387580014">Hefja leit í nýjum flipa í Chrome.</translation>
 <translation id="7792140019572081272">Chrome notar andlitskennsl til að halda viðkvæmu upplýsingunum þínum öruggum.</translation>
+<translation id="7825648984449922731">Breyttu mynd með Gemini í Chrome</translation>
 <translation id="7855730255114109580">Google Chrome er uppfært</translation>
 <translation id="787226752901403048">Skráðu þig inn í Chrome til að deila og taka þátt í flipahópum og vinna að hugmyndum ásamt öðrum</translation>
 <translation id="7897703007638178753">Sjá nýlega flipa Chrome</translation>
 <translation id="7948283758957877064">Nýjungar í Chrome</translation>
-<translation id="7996707498590516621">Búðu til mynd með Gemini í Chrome</translation>
 <translation id="8000174216052461231">Ábending frá Chrome: Fáðu hámarksöryggi Chrome</translation>
 <translation id="8006014511203279255">Notaðu Chrome þegar þú ýtir á tengla í skilaboðum eða öðrum forritum.</translation>
 <translation id="8014670471808569312">Chrome býðst til að vista aðgangsorðið þitt.</translation>

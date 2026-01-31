@@ -48,9 +48,9 @@ bool UrlIsNotHttps(const std::string& policy_name,
 // Converts a search aggregator policy value `policy_dict` into a dictionary to
 // be saved to prefs, with fields corresponding to `TemplateURLData`.
 base::Value SearchAggregatorDictFromPolicyValue(
-    const base::Value::Dict& policy_dict,
+    const base::DictValue& policy_dict,
     bool featured) {
-  base::Value::Dict dict;
+  base::DictValue dict;
 
   const std::string* name =
       policy_dict.FindString(SearchAggregatorPolicyHandler::kName);
@@ -129,7 +129,7 @@ bool SearchAggregatorPolicyHandler::CheckPolicySettings(
     return false;
   }
 
-  const base::Value::Dict& search_aggregator =
+  const base::DictValue& search_aggregator =
       policies.GetValue(policy_name(), base::Value::Type::DICT)->GetDict();
 
   // Shortcut validation.
@@ -194,11 +194,11 @@ void SearchAggregatorPolicyHandler::ApplyPolicySettings(
     // Reset search aggregator if policy was reset.
     prefs->SetValue(
         EnterpriseSearchManager::kEnterpriseSearchAggregatorSettingsPrefName,
-        base::Value(base::Value::List()));
+        base::Value(base::ListValue()));
     return;
   }
 
-  base::Value::List providers;
+  base::ListValue providers;
   providers.Append(SearchAggregatorDictFromPolicyValue(policy_value->GetDict(),
                                                        /*featured=*/false));
   providers.Append(SearchAggregatorDictFromPolicyValue(policy_value->GetDict(),

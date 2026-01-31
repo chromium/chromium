@@ -6,12 +6,17 @@
 
 #include "base/check_op.h"
 #include "base/notimplemented.h"
+#include "chrome/browser/resource_coordinator/tab_lifecycle_unit_external.h"
+#include "chrome/browser/tab_group_sync/tab_group_sync_service_factory.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
+#include "chrome/browser/ui/tabs/tab_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_delegate.h"
+#include "components/saved_tab_groups/public/tab_group_sync_service.h"
+#include "components/tab_groups/tab_group_visual_data.h"
 #include "components/tabs/public/tab_group.h"
 #include "components/tabs/public/tab_interface.h"
 
@@ -44,6 +49,54 @@ bool IsInMiddleOfTabGroup(TabStripModel& tab_strip_model, int index) {
   return target_group.has_value() && target_group == adjacent_group;
 }
 
+// Returns the closest valid index to `initial_index` that is not in the middle
+// of a tab group in the provided `tab_strip` based on `index_to_check`.
+// Note that `index_to_check` may be different from `initial_index` to
+// compensate for a tab group within `tab_strip` moving to the right.
+int GetClosestValidIndexBetweenTabGroups(TabStripModel& tab_strip,
+                                         int initial_index,
+                                         int index_to_check) {
+  size_t closest_valid_index = initial_index;
+
+  if (IsInMiddleOfTabGroup(tab_strip, index_to_check)) {
+    std::optional<tab_groups::TabGroupId> target_group_id =
+        tab_strip.GetTabGroupForTab(index_to_check);
+    CHECK(target_group_id.has_value());
+    gfx::Range target_tabs =
+        tab_strip.group_model()->GetTabGroup(*target_group_id)->ListTabs();
+    int target_start = target_tabs.start();
+    int target_end = target_tabs.end();
+
+    // Check that `index_to_check` is fully within the tab group.
+    CHECK_GT(index_to_check, target_start);
+    CHECK_GT(target_end, index_to_check);
+
+    // Check that `target_start` and `target_end` are not in the middle of any
+    // group.
+    DCHECK(!IsInMiddleOfTabGroup(tab_strip, target_start));
+    DCHECK(!IsInMiddleOfTabGroup(tab_strip, target_end));
+
+    // Find the offset between `index_to_check` and `target_start` and
+    // `target_end` and apply the lesser of the offsets to
+    // `closest_valid_index`. Note that `index_to_check` compensates for the
+    // displacement of tabs and groups to the right of `group_id` whereas
+    // `closest_valid_index`.
+    int start_offset = index_to_check - target_start;
+    int end_offset = target_end - index_to_check;
+    if (end_offset < start_offset) {
+      // Increment `closest_valid_index` so it points to the end of the tab
+      // group.
+      closest_valid_index += end_offset;
+    } else {
+      // Decrement `closest_valid_index` so it points to the start of the tab
+      // group.
+      closest_valid_index -= start_offset;
+    }
+  }
+
+  return closest_valid_index;
+}
+
 }  // namespace
 
 DEFINE_USER_DATA(TabListBridge);
@@ -57,7 +110,11 @@ TabListBridge::TabListBridge(TabStripModel& tab_strip_model,
 
 // Note: TabStripObserver already implements RemoveObserver() calls; no need to
 // remove this object as an observer here.
-TabListBridge::~TabListBridge() = default;
+TabListBridge::~TabListBridge() {
+  for (auto& observer : observers_) {
+    observer.OnTabListDestroyed(*this);
+  }
+}
 
 void TabListBridge::AddTabListInterfaceObserver(
     TabListInterfaceObserver* observer) {
@@ -81,22 +138,67 @@ tabs::TabInterface* TabListBridge::GetActiveTab() {
   return tab_strip_->GetActiveTab();
 }
 
-tabs::TabInterface* TabListBridge::OpenTab(const GURL& url, int index) {
-  NOTIMPLEMENTED();
-  return nullptr;
+void TabListBridge::ActivateTab(tabs::TabHandle tab) {
+  const int index = GetIndexOfTab(tab);
+  CHECK_NE(index, TabStripModel::kNoTab);
+  tab_strip_->ActivateTabAt(index);
 }
 
-void TabListBridge::DiscardTab(tabs::TabHandle tab) {}
+tabs::TabInterface* TabListBridge::OpenTab(const GURL& url, int index) {
+  // If `index` is specified as `TabStripModel::kNoTab`, then the tab is added
+  // to the end of the tab strip.
+  CHECK(index == TabStripModel::kNoTab || tab_strip_->ContainsIndex(index));
 
-tabs::TabInterface* TabListBridge::DuplicateTab(tabs::TabHandle tab) {
-  // TODO(dpenning): It's a bit of a code smell to reach in and grab the
-  // delegate from TabStripModel, but it avoids introducing new dependencies
+  // TODO(crbug.com/460650221): It's a bit of a code smell to reach in and grab
+  // the delegate from TabStripModel, but it avoids introducing new dependencies
   // here.
   TabStripModelDelegate* delegate = tab_strip_->delegate();
+  delegate->AddTabAt(url, index, /*foreground=*/true);
+  int index_to_retrieve =
+      index == TabStripModel::kNoTab ? tab_strip_->count() - 1 : index;
+  return tab_strip_->GetTabAtIndex(index_to_retrieve);
+}
 
+void TabListBridge::SetOpenerForTab(tabs::TabHandle target,
+                                    tabs::TabHandle opener) {
+  const int target_index = GetIndexOfTab(target);
+  CHECK_NE(target_index, TabStripModel::kNoTab);
+  CHECK_NE(GetIndexOfTab(opener), TabStripModel::kNoTab);
+
+  content::WebContents* opener_contents = opener.Get()->GetContents();
+  if (!opener_contents) {
+    return;
+  }
+  tab_strip_->SetOpenerOfWebContentsAt(target_index, opener_contents);
+}
+
+tabs::TabInterface* TabListBridge::GetOpenerForTab(tabs::TabHandle target) {
+  const int target_index = GetIndexOfTab(target);
+  CHECK_NE(target_index, TabStripModel::kNoTab);
+  return tab_strip_->GetOpenerOfTabAt(target_index);
+}
+
+void TabListBridge::DiscardTab(tabs::TabHandle tab) {
+  content::WebContents* contents = tab.Get()->GetContents();
+  if (contents) {
+    resource_coordinator::TabLifecycleUnitExternal*
+        tab_lifecycle_unit_external =
+            resource_coordinator::TabLifecycleUnitExternal::FromWebContents(
+                contents);
+    CHECK(tab_lifecycle_unit_external);
+    tab_lifecycle_unit_external->DiscardTab(
+        mojom::LifecycleUnitDiscardReason::EXTERNAL);
+  }
+}
+
+tabs::TabInterface* TabListBridge::DuplicateTab(tabs::TabHandle tab) {
   const int index = GetIndexOfTab(tab);
   CHECK_NE(index, TabStripModel::kNoTab);
 
+  // TODO(crbug.com/460650221): It's a bit of a code smell to reach in and grab
+  // the delegate from TabStripModel, but it avoids introducing new dependencies
+  // here.
+  TabStripModelDelegate* delegate = tab_strip_->delegate();
   if (!delegate->CanDuplicateContentsAt(index)) {
     return nullptr;
   }
@@ -122,18 +224,24 @@ void TabListBridge::HighlightTabs(tabs::TabHandle tab_to_activate,
   CHECK(tabs.contains(tab_to_activate))
       << "Tab to activate is not included in tabs to highlight.";
 
-  ui::ListSelectionModel selected_tabs =
-      tab_strip_->selection_model().ToListSelectionModel();
+  tabs::TabStripModelSelectionState selection_state =
+      tab_strip_->selection_model();
+
   for (const auto& tab_handle : tabs) {
     auto index = tab_strip_->GetIndexOfTab(tab_handle.Get());
     CHECK_NE(index, TabStripModel::kNoTab)
         << "Trying to highlight a non-existent tab.";
 
-    selected_tabs.AddIndexToSelection(index);
+    selection_state.AddTabToSelection(tab_handle.Get());
   }
 
-  selected_tabs.set_active(tab_strip_->GetIndexOfTab(tab_to_activate.Get()));
-  tab_strip_->SetSelectionFromModel(std::move(selected_tabs));
+  tabs::TabInterface* active_tab = tab_to_activate.Get();
+  selection_state.SetActiveTab(active_tab);
+  if (!selection_state.anchor_tab()) {
+    selection_state.SetAnchorTab(active_tab);
+  }
+
+  tab_strip_->SetSelectionFromModel(selection_state);
 }
 
 void TabListBridge::MoveTab(tabs::TabHandle tab, int index) {
@@ -173,6 +281,83 @@ void TabListBridge::UnpinTab(tabs::TabHandle tab) {
   CHECK_NE(index, TabStripModel::kNoTab)
       << "Trying to unpin a tab that doesn't exist in this tab list.";
   tab_strip_->SetTabPinned(index, false);
+}
+
+bool TabListBridge::ContainsTabGroup(tab_groups::TabGroupId group_id) {
+  // Not all browsers support tab groups.
+  if (!tab_strip_->group_model()) {
+    return false;
+  }
+  return tab_strip_->group_model()->ContainsTabGroup(group_id);
+}
+
+std::vector<tab_groups::TabGroupId> TabListBridge::ListTabGroups() {
+  // Not all browsers support tab groups.
+  if (!tab_strip_->group_model()) {
+    return {};
+  }
+  return tab_strip_->group_model()->ListTabGroups();
+}
+
+std::optional<tab_groups::TabGroupVisualData>
+TabListBridge::GetTabGroupVisualData(tab_groups::TabGroupId group_id) {
+  // Not all browsers support tab groups.
+  if (!tab_strip_->group_model()) {
+    return std::nullopt;
+  }
+  TabGroup* tab_group = tab_strip_->group_model()->GetTabGroup(group_id);
+  if (!tab_group) {
+    return std::nullopt;
+  }
+  const tab_groups::TabGroupVisualData* visual_data = tab_group->visual_data();
+  if (!visual_data) {
+    return std::nullopt;
+  }
+  return *visual_data;
+}
+
+gfx::Range TabListBridge::GetTabGroupTabIndices(
+    tab_groups::TabGroupId group_id) {
+  // Not all browsers support tab groups.
+  if (!tab_strip_->group_model()) {
+    return {};
+  }
+  TabGroup* tab_group = tab_strip_->group_model()->GetTabGroup(group_id);
+  if (!tab_group) {
+    return {};
+  }
+  return tab_group->ListTabs();
+}
+
+std::optional<tab_groups::TabGroupId> TabListBridge::CreateTabGroup(
+    const std::vector<tabs::TabHandle>& tabs) {
+  // Not all browsers support tab groups.
+  if (!tab_strip_->group_model()) {
+    return std::nullopt;
+  }
+
+  // TabStripModel::AddToNewGroup() operates on indices.
+  std::vector<int> tab_indices;
+  tab_indices.reserve(tabs.size());
+  for (const auto& tab_handle : tabs) {
+    int index = GetIndexOfTab(tab_handle);
+    if (index != TabStripModel::kNoTab) {
+      tab_indices.push_back(index);
+    }
+  }
+
+  return tab_strip_->AddToNewGroup(std::move(tab_indices));
+}
+
+void TabListBridge::SetTabGroupVisualData(
+    tab_groups::TabGroupId group_id,
+    const tab_groups::TabGroupVisualData& visual_data) {
+  // Not all browsers support tab groups.
+  if (!tab_strip_->group_model()) {
+    return;
+  }
+  // Use ChangeTabGroupsVisuals() to ensure observers are notified.
+  tab_strip_->ChangeTabGroupVisuals(group_id, visual_data);
 }
 
 std::optional<tab_groups::TabGroupId> TabListBridge::AddTabsToGroup(
@@ -220,7 +405,6 @@ void TabListBridge::Ungroup(const std::set<tabs::TabHandle>& tabs) {
 }
 
 void TabListBridge::MoveGroupTo(tab_groups::TabGroupId group_id, int index) {
-  // We don't know the group size because all we have here is a group id...
   TabGroup* tab_group = tab_strip_->group_model()->GetTabGroup(group_id);
   CHECK(tab_group) << "Tab group does not exist";
 
@@ -257,45 +441,14 @@ void TabListBridge::MoveGroupTo(tab_groups::TabGroupId group_id, int index) {
       target_index > tabs.start() ? target_index + tabs.length() : target_index;
 
   // If `index_to_check` is in the middle of a tab group, then find the closest
-  // valid index to move to. This would either be the start or end of the tab
-  // group.
-  if (IsInMiddleOfTabGroup(tab_strip_.get(), index_to_check)) {
-    std::optional<tab_groups::TabGroupId> target_group_id =
-        tab_strip_->GetTabGroupForTab(index_to_check);
-    CHECK(target_group_id.has_value());
-    gfx::Range target_tabs =
-        tab_strip_->group_model()->GetTabGroup(*target_group_id)->ListTabs();
-    int target_start = target_tabs.start();
-    int target_end = target_tabs.end();
+  // valid index to move to.
+  target_index = GetClosestValidIndexBetweenTabGroups(
+      tab_strip_.get(), target_index, index_to_check);
 
-    // Check that `index_to_check` is fully within the tab group.
-    CHECK_GT(index_to_check, target_start);
-    CHECK_GT(target_end, index_to_check);
-
-    // Check that `target_start` and `target_end` are not in the middle of any
-    // group.
-    DCHECK(!IsInMiddleOfTabGroup(tab_strip_.get(), target_start));
-    DCHECK(!IsInMiddleOfTabGroup(tab_strip_.get(), target_end));
-
-    // Find the offset between `index_to_check` and `target_start` and
-    // `target_end` and apply the lesser of the offsets to `target_index`.
-    // Note that `index_to_check` compensates for the displacement of tabs and
-    // groups to the right of `group_id` whereas `target_index`.
-    int start_offset = index_to_check - target_start;
-    int end_offset = target_end - index_to_check;
-    if (end_offset < start_offset) {
-      // Increment `target_index` so it points to the end of the tab group.
-      target_index += end_offset;
-    } else {
-      // Decrement `target_index` so it points to the start of the tab group.
-      target_index -= start_offset;
-    }
-
-    // Check that `target_index` is still within bounds.
-    CHECK_GE(static_cast<int>(target_index),
-             tab_strip_->IndexOfFirstNonPinnedTab());
-    CHECK_GE(tab_strip_->count() - tabs.length(), target_index);
-  }
+  // Check that `target_index` is still within bounds.
+  CHECK_GE(static_cast<int>(target_index),
+           tab_strip_->IndexOfFirstNonPinnedTab());
+  CHECK_GE(tab_strip_->count() - tabs.length(), target_index);
 
   tab_strip_->MoveGroupTo(group_id, target_index);
 }
@@ -328,7 +481,64 @@ void TabListBridge::MoveTabToWindow(tabs::TabHandle tab,
 
 void TabListBridge::MoveTabGroupToWindow(tab_groups::TabGroupId group_id,
                                          SessionID destination_window_id,
-                                         int destination_index) {}
+                                         int destination_index) {
+  BrowserWindowInterface* target_window =
+      GetBrowserWithSessionId(destination_window_id, tab_strip_->profile());
+  CHECK(target_window);
+  TabListInterface* target_list_interface =
+      TabListInterface::From(target_window);
+  CHECK(target_list_interface);
+  // This is the only implementation on these platforms, so this cast is safe.
+  TabListBridge* target_bridge =
+      static_cast<TabListBridge*>(target_list_interface);
+  auto target_tab_strip = target_bridge->tab_strip_;
+  if (!target_tab_strip->SupportsTabGroups()) {
+    return;
+  }
+
+  // Handle the case where `destination_window_id` points to the same window.
+  if (this == target_bridge) {
+    MoveGroupTo(group_id, destination_index);
+    return;
+  }
+
+  TabGroup* tab_group = tab_strip_->group_model()->GetTabGroup(group_id);
+  CHECK(tab_group) << "Tab group does not exist";
+  CHECK_GT(tab_group->ListTabs().length(), 0u) << "Tab group is empty";
+
+  // Clamp the index for the destination window so that the tab group will be
+  // after the pinned tabs.
+  int target_index = std::clamp(destination_index,
+                                target_tab_strip->IndexOfFirstNonPinnedTab(),
+                                target_tab_strip->count());
+
+  // If `target_index` is in the middle of a tab group, then find the closest
+  // valid index to move to.
+  target_index = GetClosestValidIndexBetweenTabGroups(
+      target_tab_strip.get(), target_index, /*index_to_check=*/target_index);
+
+  // Check that `target_index` is still within bounds.
+  CHECK_GE(static_cast<int>(target_index),
+           target_tab_strip->IndexOfFirstNonPinnedTab());
+  CHECK_GE(target_tab_strip->count(), target_index);
+
+  // When moving a group between windows, Saved Tab Groups must pause listening
+  // since the group is in an invalid state.
+  tab_groups::TabGroupSyncService* tab_group_sync_service =
+      tab_groups::TabGroupSyncServiceFactory::GetForProfile(
+          target_tab_strip->profile());
+  std::unique_ptr<tab_groups::ScopedLocalObservationPauser>
+      tab_groups_sync_movement_observation;
+  if (tab_group_sync_service) {
+    tab_groups_sync_movement_observation =
+        tab_group_sync_service->CreateScopedLocalObserverPauser();
+  }
+
+  std::unique_ptr<DetachedTabCollection> detached_group =
+      tab_strip_->DetachTabGroupForInsertion(group_id);
+  target_tab_strip->InsertDetachedTabGroupAt(std::move(detached_group),
+                                             target_index);
+}
 
 void TabListBridge::OnTabStripModelChanged(
     TabStripModel* tab_strip_model,
@@ -351,7 +561,20 @@ void TabListBridge::OnTabStripModelChanged(
       break;
     }
     case TabStripModelChange::kRemoved:
+      for (const auto& removed_tab : change.GetRemove()->contents) {
+        tabs::TabInterface* tab = removed_tab.tab.get();
+        for (auto& observer : observers_) {
+          observer.OnTabRemoved(tab);
+        }
+      }
+      break;
     case TabStripModelChange::kMoved:
+      for (auto& observer : observers_) {
+        observer.OnTabMoved(change.GetMove()->tab.get(),
+                            change.GetMove()->from_index,
+                            change.GetMove()->to_index);
+      }
+      break;
     case TabStripModelChange::kReplaced:
     case TabStripModelChange::kSelectionOnly:
       break;

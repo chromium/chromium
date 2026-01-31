@@ -6,10 +6,10 @@
 
 #include <stddef.h>
 
+#include <algorithm>
 #include <memory>
 #include <vector>
 
-#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/no_destructor.h"
@@ -135,7 +135,7 @@ bool URLDataManagerIOS::IsScheduledForDeletion(
   if (!data_sources_) {
     return false;
   }
-  return base::Contains(*data_sources_, data_source);
+  return std::ranges::contains(*data_sources_, data_source);
 }
 
 }  // namespace web

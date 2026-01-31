@@ -9,7 +9,6 @@
 
 #include "base/barrier_closure.h"
 #include "base/compiler_specific.h"
-#include "base/containers/contains.h"
 #include "base/dcheck_is_on.h"
 #include "base/files/file_util.h"
 #include "base/strings/string_number_conversions.h"

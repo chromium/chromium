@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_SUGGESTIONS_SUGGESTION_GENERATOR_H_
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_SUGGESTIONS_SUGGESTION_GENERATOR_H_
 
+#include <array>
 #include <variant>
 
 #include "base/containers/flat_map.h"
@@ -76,6 +77,77 @@ class SuggestionGenerator {
     kAddressOnTyping,
     kMaxValue = kAddressOnTyping
   };
+
+  // Priority order for cases, when we have suggestion data from multiple
+  // SuggestionGenerators.
+  // clang-format off
+  constexpr static auto kOrderedPrioritizedSources =
+      std::to_array<SuggestionDataSource>({
+          SuggestionDataSource::kAutofillAi,
+          SuggestionDataSource::kCreditCard,
+          SuggestionDataSource::kVirtualStandaloneCvc,
+          SuggestionDataSource::kSaveAndFillPromo,
+          SuggestionDataSource::kOneTimePassword,
+          SuggestionDataSource::kAddress,
+          SuggestionDataSource::kPlusAddress,
+          SuggestionDataSource::kIdentityCredential,
+          SuggestionDataSource::kLoyaltyCard,
+          SuggestionDataSource::kCompose,
+          SuggestionDataSource::kMerchantPromoCode,
+          SuggestionDataSource::kIban,
+          SuggestionDataSource::kAutocomplete,
+          SuggestionDataSource::kAddressOnTyping,
+          SuggestionDataSource::kPasskey,
+          // kPlusAddressForAddress is a data patch for the Address data
+          // sources. It doesn't create its own suggestion popups, so it
+          // shouldn't outprioritize other data sources.
+          SuggestionDataSource::kPlusAddressForAddress,
+      });
+  // clang-format on
+
+  static_assert(kOrderedPrioritizedSources.size() ==
+                static_cast<size_t>(SuggestionDataSource::kMaxValue) + 1);
+
+  // Defines which lower-priority sources can be merged into a higher-priority
+  // source (see `kOrderedPrioritizedSources` for more info about priorities).
+  static constexpr auto kSupportedMerges = base::MakeFixedFlatMap<
+      SuggestionDataSource,
+      DenseSet<SuggestionDataSource>>(
+      {{SuggestionDataSource::kAutofillAi, {SuggestionDataSource::kPasskey}},
+       {SuggestionDataSource::kCreditCard, {SuggestionDataSource::kPasskey}},
+       {SuggestionDataSource::kVirtualStandaloneCvc,
+        {SuggestionDataSource::kPasskey}},
+       {SuggestionDataSource::kSaveAndFillPromo,
+        {SuggestionDataSource::kPasskey}},
+       {SuggestionDataSource::kOneTimePassword,
+        {SuggestionDataSource::kPasskey}},
+       // Address can merge with:
+       // - Plus Addresses: To replace GAIA emails or show inline.
+       // - Verified Identity: To show verified details alongside profiles.
+       // - Loyalty Cards: To extend email suggestions.
+       // - Passkeys: Every SuggestionDataSource can be merged with passkeys.
+       {SuggestionDataSource::kAddress,
+        {SuggestionDataSource::kPlusAddress,
+         SuggestionDataSource::kPlusAddressForAddress,
+         SuggestionDataSource::kIdentityCredential,
+         SuggestionDataSource::kLoyaltyCard, SuggestionDataSource::kPasskey}},
+       // Plus Addresses can merge with:
+       // - Verified Identity: To show verified details along plus addresses.
+       // - Autocomplete.
+       // - Passkeys: Every SuggestionDataSource can be merged with passkeys.
+       {SuggestionDataSource::kPlusAddress,
+        {SuggestionDataSource::kIdentityCredential,
+         SuggestionDataSource::kAutocomplete, SuggestionDataSource::kPasskey}},
+       {SuggestionDataSource::kIdentityCredential,
+        {SuggestionDataSource::kPasskey}},
+       {SuggestionDataSource::kLoyaltyCard, {SuggestionDataSource::kPasskey}},
+       {SuggestionDataSource::kCompose, {SuggestionDataSource::kPasskey}},
+       {SuggestionDataSource::kMerchantPromoCode,
+        {SuggestionDataSource::kPasskey}},
+       {SuggestionDataSource::kIban, {SuggestionDataSource::kPasskey}},
+       {SuggestionDataSource::kAutocomplete, {SuggestionDataSource::kPasskey}},
+       {SuggestionDataSource::kAddressOnTyping,
+        {SuggestionDataSource::kPasskey}}});
 
   SuggestionGenerator() = default;
   virtual ~SuggestionGenerator() = default;

@@ -203,9 +203,6 @@ TEST_F(ModelExecutionFetcherImplTest, TestSuccessfulResponseNoTimeout) {
                 ->test());
   EXPECT_TRUE(last_server_timeout_header_.empty());
 
-  histogram_tester_.ExpectTotalCount(
-      "OptimizationGuide.ModelExecutionFetcher.FetchLatency.WallpaperSearch",
-      1);
   histogram_tester_.ExpectUniqueSample(
       "OptimizationGuide.ModelExecutionFetcher.NetErrorCode", -net::OK, 1);
   histogram_tester_.ExpectTotalCount(
@@ -244,9 +241,6 @@ TEST_F(ModelExecutionFetcherImplTest, TestSuccessfulResponseWithTimeout) {
                 ->test());
   EXPECT_EQ("600", last_server_timeout_header_);
 
-  histogram_tester_.ExpectTotalCount(
-      "OptimizationGuide.ModelExecutionFetcher.FetchLatency.WallpaperSearch",
-      1);
   histogram_tester_.ExpectUniqueSample(
       "OptimizationGuide.ModelExecutionFetcher.NetErrorCode", -net::OK, 1);
   histogram_tester_.ExpectTotalCount(
@@ -277,9 +271,6 @@ TEST_F(ModelExecutionFetcherImplTest, TestNetErrorResponse) {
       "OptimizationGuide.ModelExecutionFetcher.RequestStatus."
       "WallpaperSearch",
       FetcherRequestStatus::kResponseError, 1);
-  histogram_tester_.ExpectTotalCount(
-      "OptimizationGuide.ModelExecutionFetcher.FetchLatency.WallpaperSearch",
-      0);
   EXPECT_EQ(ModelExecutionError::kGenericFailure,
             last_execute_response_->error().error());
 }
@@ -304,9 +295,6 @@ TEST_F(ModelExecutionFetcherImplTest, TestBadResponse) {
       "OptimizationGuide.ModelExecutionFetcher.RequestStatus."
       "WallpaperSearch",
       FetcherRequestStatus::kResponseError, 1);
-  histogram_tester_.ExpectTotalCount(
-      "OptimizationGuide.ModelExecutionFetcher.FetchLatency.WallpaperSearch",
-      0);
   EXPECT_EQ(ModelExecutionError::kGenericFailure,
             last_execute_response_->error().error());
 }
@@ -358,9 +346,6 @@ TEST_F(ModelExecutionFetcherImplTest, TestMultipleParallelRequests) {
       FetcherRequestStatus::kSuccess, 1);
   histogram_tester_.ExpectUniqueSample(
       "OptimizationGuide.ModelExecutionFetcher.Status", net::HTTP_OK, 1);
-  histogram_tester_.ExpectTotalCount(
-      "OptimizationGuide.ModelExecutionFetcher.FetchLatency.WallpaperSearch",
-      1);
 }
 
 TEST_F(ModelExecutionFetcherImplTest, TestSuccessfulResponseWithLogin) {
@@ -391,9 +376,6 @@ TEST_F(ModelExecutionFetcherImplTest, TestSuccessfulResponseWithLogin) {
                 last_execute_response_->value().response_metadata())
                 ->test());
 
-  histogram_tester_.ExpectTotalCount(
-      "OptimizationGuide.ModelExecutionFetcher.FetchLatency.WallpaperSearch",
-      1);
   histogram_tester_.ExpectUniqueSample(
       "OptimizationGuide.ModelExecutionFetcher.NetErrorCode", -net::OK, 1);
   histogram_tester_.ExpectTotalCount(

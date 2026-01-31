@@ -6,7 +6,6 @@
 
 #include "base/base_switches.h"
 #include "base/command_line.h"
-#include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -28,7 +27,6 @@
 #include "chrome/browser/resource_coordinator/tab_lifecycle_unit_external.h"
 #include "chrome/browser/resource_coordinator/tab_lifecycle_unit_source.h"
 #include "chrome/browser/resource_coordinator/tab_load_tracker.h"
-#include "chrome/browser/resource_coordinator/tab_manager_features.h"
 #include "chrome/browser/resource_coordinator/time.h"
 #include "chrome/browser/resource_coordinator/utils.h"
 #include "chrome/browser/ui/browser.h"
@@ -113,7 +111,7 @@ class ExpectStateTransitionObserver : public LifecycleUnitObserver {
     } else {
       LOG(ERROR) << "transition to state "
                  << static_cast<int>(lifecycle_unit_->GetState());
-      EXPECT_TRUE(base::Contains(allowed_states_, lifecycle_unit_->GetState()));
+      EXPECT_TRUE(allowed_states_.contains(lifecycle_unit_->GetState()));
     }
   }
 

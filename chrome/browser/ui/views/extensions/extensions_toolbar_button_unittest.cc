@@ -25,10 +25,11 @@ class ExtensionsToolbarButtonUnitTest : public ExtensionsToolbarUnitTest {
 
   // ExtensionsToolbarUnitTest:
   void SetUp() override;
+  void TearDown() override;
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
-  raw_ptr<content::WebContentsTester, DanglingUntriaged> web_contents_tester_;
+  raw_ptr<content::WebContentsTester> web_contents_tester_;
   std::unique_ptr<ExtensionsMenuCoordinator> test_extensions_coordinator_;
 };
 
@@ -61,6 +62,11 @@ void ExtensionsToolbarButtonUnitTest::SetUp() {
   web_contents_tester_ = AddWebContentsAndGetTester();
 }
 
+void ExtensionsToolbarButtonUnitTest::TearDown() {
+  web_contents_tester_ = nullptr;
+  ExtensionsToolbarUnitTest::TearDown();
+}
+
 TEST_F(ExtensionsToolbarButtonUnitTest, ButtonOpensMenu) {
   InstallExtension("Extension");
 
@@ -81,14 +87,16 @@ TEST_F(ExtensionsToolbarButtonUnitTest, ButtonOpensMenu) {
 TEST_F(ExtensionsToolbarButtonUnitTest, UpdateState) {
   InstallExtension("Extension");
 
-  extensions_button()->UpdateState(ExtensionsToolbarButton::State::kDefault);
+  extensions_button()->UpdateState(
+      ExtensionsToolbarViewModel::ExtensionsToolbarButtonState::kDefault);
   EXPECT_EQ(extensions_button()->GetRenderedTooltipText({}),
             l10n_util::GetStringUTF16(IDS_TOOLTIP_EXTENSIONS_BUTTON));
   EXPECT_EQ(extensions_button()->GetViewAccessibility().GetCachedName(),
             l10n_util::GetStringUTF16(IDS_ACC_NAME_EXTENSIONS_BUTTON));
 
   extensions_button()->UpdateState(
-      ExtensionsToolbarButton::State::kAllExtensionsBlocked);
+      ExtensionsToolbarViewModel::ExtensionsToolbarButtonState::
+          kAllExtensionsBlocked);
   EXPECT_EQ(extensions_button()->GetRenderedTooltipText({}),
             l10n_util::GetStringUTF16(
                 IDS_TOOLTIP_EXTENSIONS_BUTTON_ALL_EXTENSIONS_BLOCKED));
@@ -97,7 +105,8 @@ TEST_F(ExtensionsToolbarButtonUnitTest, UpdateState) {
                 IDS_ACC_NAME_EXTENSIONS_BUTTON_ALL_EXTENSIONS_BLOCKED));
 
   extensions_button()->UpdateState(
-      ExtensionsToolbarButton::State::kAnyExtensionHasAccess);
+      ExtensionsToolbarViewModel::ExtensionsToolbarButtonState::
+          kAnyExtensionHasAccess);
   EXPECT_EQ(extensions_button()->GetRenderedTooltipText({}),
             l10n_util::GetStringUTF16(
                 IDS_TOOLTIP_EXTENSIONS_BUTTON_ANY_EXTENSION_HAS_ACCESS));

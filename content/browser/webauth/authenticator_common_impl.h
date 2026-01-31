@@ -354,6 +354,12 @@ class CONTENT_EXPORT AuthenticatorCommonImpl : public AuthenticatorCommon {
       blink::mojom::WebAuthnDOMExceptionDetailsPtr error,
       blink::mojom::GetAssertionAuthenticatorResponsePtr response);
 
+  void GetPasswordOnlyCredential(
+      url::Origin caller_origin,
+      blink::mojom::GetCredentialOptionsPtr options,
+      blink::mojom::PaymentOptionsPtr payment_options,
+      blink::mojom::Authenticator::GetCredentialCallback callback);
+
   void UpdateChallengeFromUrl(
       webauthn::ClientDataJsonParams params,
       blink::mojom::PaymentOptionsPtr payment_options,

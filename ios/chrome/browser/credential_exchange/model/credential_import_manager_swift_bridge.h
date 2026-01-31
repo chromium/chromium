@@ -10,5 +10,6 @@
 
 #import "ios/chrome/browser/credential_exchange/model/credential_exchange_passkey.h"
 #import "ios/chrome/browser/credential_exchange/model/credential_exchange_password.h"
+#import "ios/chrome/browser/credential_exchange/model/import_stats.h"
 
 #endif  // IOS_CHROME_BROWSER_CREDENTIAL_EXCHANGE_MODEL_CREDENTIAL_IMPORT_MANAGER_SWIFT_BRIDGE_H_

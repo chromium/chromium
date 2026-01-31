@@ -9,8 +9,9 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.View;
 
-import org.chromium.base.supplier.ObservableSupplier;
-import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.supplier.MonotonicObservableSupplier;
+import org.chromium.base.supplier.ObservableSuppliers;
+import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.settings.search.ChromeBaseSearchIndexProvider;
@@ -27,7 +28,8 @@ public class FledgeLearnMoreFragment extends PrivacySandboxSettingsBaseFragment 
             "fledge_learn_more_bullet_3";
 
     private TextMessagePreference mFledgeLearnMoreBullet3Preference;
-    private final ObservableSupplierImpl<String> mPageTitle = new ObservableSupplierImpl<>();
+    private final SettableMonotonicObservableSupplier<String> mPageTitle =
+            ObservableSuppliers.createMonotonic();
 
     /** Initializes all the objects related to the preferences page. */
     @Override
@@ -50,7 +52,7 @@ public class FledgeLearnMoreFragment extends PrivacySandboxSettingsBaseFragment 
     }
 
     @Override
-    public ObservableSupplier<String> getPageTitle() {
+    public MonotonicObservableSupplier<String> getPageTitle() {
         return mPageTitle;
     }
 

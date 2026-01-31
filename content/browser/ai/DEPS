@@ -1,4 +1,5 @@
 include_rules = [
   "+components/language/core/common/locale_util.h",
   "+components/optimization_guide/core/optimization_guide_features.h",
+  "+services/on_device_ai/public/mojom/download_observer.mojom.h",
 ]

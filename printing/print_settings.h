@@ -45,7 +45,7 @@ inline constexpr char kMacSystemPrintDialogDataDestinationType[] =
     "destination_type";
 inline constexpr char kMacSystemPrintDialogDataDestinationFormat[] =
     "destination_format";
-inline constexpr char kMacSystemPrintDialogDataDestinationLocation[] =
+inline constexpr char kMacSystemPrintDialogDataDestinationFileUrl[] =
     "destination_location";
 inline constexpr char kMacSystemPrintDialogDataPageFormat[] = "page_format";
 inline constexpr char kMacSystemPrintDialogDataPrintSettings[] =
@@ -53,10 +53,20 @@ inline constexpr char kMacSystemPrintDialogDataPrintSettings[] =
 #endif  // BUILDFLAG(IS_MAC)
 
 #if BUILDFLAG(IS_LINUX)
+// Used by PrintDialogGtk
 inline constexpr char kLinuxSystemPrintDialogDataPrinter[] = "printer_name";
 inline constexpr char kLinuxSystemPrintDialogDataPrintSettings[] =
     "print_settings";
 inline constexpr char kLinuxSystemPrintDialogDataPageSetup[] = "page_setup";
+
+// Used by PrintDialogLinuxPortal.
+inline constexpr char kLinuxSystemPrintDialogDataPrintSettingsBin[] =
+    "print_settings_bin";
+inline constexpr char kLinuxSystemPrintDialogDataPageSetupBin[] =
+    "page_setup_bin";
+inline constexpr char kLinuxSystemPrintDialogDataPrintToken[] = "print_token";
+inline constexpr char kLinuxSystemPrintDialogDataParentHandle[] =
+    "parent_handle";
 #endif  // BUILDFLAG(IS_LINUX)
 
 #endif  // BUILDFLAG(ENABLE_OOP_PRINTING_NO_OOP_BASIC_PRINT_DIALOG)
@@ -345,10 +355,10 @@ class COMPONENT_EXPORT(PRINTING_SETTINGS) PrintSettings {
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(ENABLE_OOP_PRINTING_NO_OOP_BASIC_PRINT_DIALOG)
-  void set_system_print_dialog_data(base::Value::Dict data) {
+  void set_system_print_dialog_data(base::DictValue data) {
     system_print_dialog_data_ = std::move(data);
   }
-  const base::Value::Dict& system_print_dialog_data() const {
+  const base::DictValue& system_print_dialog_data() const {
     return system_print_dialog_data_;
   }
 #endif
@@ -405,7 +415,7 @@ class COMPONENT_EXPORT(PRINTING_SETTINGS) PrintSettings {
   // Platform-specific print settings captured from a system print dialog.
   // The settings are captured in the browser process for transmission to
   // the Print Backend service for OOP printing.
-  base::Value::Dict system_print_dialog_data_;
+  base::DictValue system_print_dialog_data_;
 #endif
 
   // Media requested by the user.

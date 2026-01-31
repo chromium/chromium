@@ -670,7 +670,7 @@ void X11Window::SetFullscreen(bool fullscreen, int64_t target_display_id) {
                                    ui::GuessWindowManager() == ui::WM_METACITY;
 
   if (unmaximize_and_remaximize) {
-    Restore();
+    SetWMStateMaximize(false);
   }
 
   // Fullscreen state changes have to be handled manually and then checked
@@ -688,10 +688,13 @@ void X11Window::SetFullscreen(bool fullscreen, int64_t target_display_id) {
 
   bool was_fullscreen = IsFullscreen();
   state_ = new_state;
-  SetFullscreen(fullscreen);
+  SetWMStateFullscreen(fullscreen);
 
   if (unmaximize_and_remaximize) {
-    Maximize();
+    // Setting the should_maximize_after_map_ same way as it is done in
+    // X11Window::Maximize().
+    should_maximize_after_map_ = !window_mapped_in_client_;
+    SetWMStateMaximize(true);
   }
 
   // Try to guess the size we will have after the switch to/from fullscreen:
@@ -756,8 +759,7 @@ void X11Window::Maximize() {
   // save this one for later too.
   should_maximize_after_map_ = !window_mapped_in_client_;
 
-  SetWMSpecState(true, x11::GetAtom("_NET_WM_STATE_MAXIMIZED_VERT"),
-                 x11::GetAtom("_NET_WM_STATE_MAXIMIZED_HORZ"));
+  SetWMStateMaximize(true);
 }
 
 void X11Window::Minimize() {
@@ -777,8 +779,7 @@ void X11Window::Restore() {
     SetFullscreen(false, display::kInvalidDisplayId);
   } else if (IsMaximized()) {
     should_maximize_after_map_ = false;
-    SetWMSpecState(false, x11::GetAtom("_NET_WM_STATE_MAXIMIZED_VERT"),
-                   x11::GetAtom("_NET_WM_STATE_MAXIMIZED_HORZ"));
+    SetWMStateMaximize(false);
   }
 }
 
@@ -1964,9 +1965,14 @@ void X11Window::Map(bool inactive) {
   connection_->Flush();
 }
 
-void X11Window::SetFullscreen(bool fullscreen) {
+void X11Window::SetWMStateFullscreen(bool fullscreen) {
   SetWMSpecState(fullscreen, x11::GetAtom("_NET_WM_STATE_FULLSCREEN"),
                  x11::Atom::None);
+}
+
+void X11Window::SetWMStateMaximize(bool maximize) {
+  SetWMSpecState(maximize, x11::GetAtom("_NET_WM_STATE_MAXIMIZED_VERT"),
+                 x11::GetAtom("_NET_WM_STATE_MAXIMIZED_HORZ"));
 }
 
 bool X11Window::IsActive() const {

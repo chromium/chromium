@@ -35,14 +35,29 @@ class GlicActorWithScriptToolsTest : public GlicActorUiTest {
     return ExecuteAction(std::move(script_provider), {});
   }
 
-  auto CheckValidResult(const std::string& expected_result) {
-    return Steps(Do([&]() {
+  auto CheckValidResult(const std::string& name,
+                        const std::string& input_arguments,
+                        const std::string& expected_result) {
+    return Steps(Do([=, this]() {
       ASSERT_TRUE(last_execution_result());
       ASSERT_EQ(last_execution_result()->script_tool_results().size(), 1);
 
       const auto& result = last_execution_result()->script_tool_results().at(0);
       EXPECT_EQ(result.index_of_script_tool_action(), 0);
       EXPECT_EQ(result.result(), expected_result);
+      EXPECT_EQ(result.tool_name(), name);
+      EXPECT_EQ(result.input_arguments(), input_arguments);
+
+      ASSERT_EQ(last_execution_result()->tabs().size(), 1);
+      const auto& apc =
+          last_execution_result()->tabs().at(0).annotated_page_content();
+      const auto& main_frame_data = apc.main_frame_data();
+      ASSERT_EQ(main_frame_data.script_tool_results().size(), 1);
+
+      const auto& apc_result = main_frame_data.script_tool_results().at(0);
+      EXPECT_EQ(apc_result.result(), expected_result);
+      EXPECT_EQ(apc_result.tool_name(), name);
+      EXPECT_EQ(apc_result.input_arguments(), input_arguments);
     }));
   }
 
@@ -62,7 +77,7 @@ IN_PROC_BROWSER_TEST_F(GlicActorWithScriptToolsTest, Basic) {
   RunTestSequence(InitializeWithOpenGlicWindow(),
                   StartActorTaskInNewTab(task_url, kNewActorTabId),
                   ScriptAction("echo", input_arguments),
-                  CheckValidResult(expected_result));
+                  CheckValidResult("echo", input_arguments, expected_result));
 }
 
 }  //  namespace

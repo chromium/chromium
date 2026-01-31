@@ -34,7 +34,9 @@ std::unique_ptr<SerialDeviceEnumerator> SerialDeviceEnumerator::Create(
 #elif BUILDFLAG(IS_WIN)
   return std::make_unique<SerialDeviceEnumeratorWin>(std::move(ui_task_runner));
 #elif BUILDFLAG(IS_ANDROID)
-  return std::make_unique<SerialDeviceEnumeratorAndroid>();
+  auto instance = std::make_unique<SerialDeviceEnumeratorAndroid>();
+  instance->Initialize();
+  return instance;
 #else
 #error "No implementation of SerialDeviceEnumerator on this platform."
 #endif
@@ -127,6 +129,12 @@ void SerialDeviceEnumerator::UpdatePortConnectedState(
   for (auto& observer : observer_list_) {
     observer.OnPortConnectedStateChanged(*port);
   }
+}
+
+scoped_refptr<SerialIoHandler> SerialDeviceEnumerator::CreateIoHandler(
+    const base::FilePath& path,
+    scoped_refptr<base::SingleThreadTaskRunner> ui_task_runner) {
+  return SerialIoHandler::Create(path, std::move(ui_task_runner));
 }
 
 }  // namespace device

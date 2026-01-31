@@ -60,6 +60,7 @@ class VideoAcceleratorUtil {
             Set.of(
                     "c2.qti.avc.encoder",
                     "c2.exynos.h264.encoder",
+                    "c2.cros-codecs.vaapi.av1.encoder",
                     "c2.cros-codecs.vaapi.avc.encoder",
                     "c2.cros-codecs.vaapi.vp9.encoder");
 

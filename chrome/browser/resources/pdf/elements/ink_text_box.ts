@@ -103,7 +103,7 @@ export class InkTextBoxElement extends InkTextBoxElementBase {
   private existing_: boolean = false;
   private id_: number = -1;
   private keyDownCount_: number = -1;
-  private pageNumber_: number = -1;
+  private pageIndex_: number = -1;
   private pageHeight_: number = 0;
   private pageWidth_: number = 0;
   private pageX_: number = 0;
@@ -311,7 +311,7 @@ export class InkTextBoxElement extends InkTextBoxElementBase {
         {
           text: this.textValue_,
           id: this.id_,
-          pageNumber: this.pageNumber_,
+          pageIndex: this.pageIndex_,
           textAttributes: this.attributes_,
           textBoxRect: {
             height: this.height_,
@@ -348,7 +348,7 @@ export class InkTextBoxElement extends InkTextBoxElementBase {
     this.existing_ = data.annotation.text !== '';
     this.textValue_ = data.annotation.text;
     this.id_ = data.annotation.id;
-    this.pageNumber_ = data.annotation.pageNumber;
+    this.pageIndex_ = data.annotation.pageIndex;
     this.textOrientation_ = data.annotation.textOrientation;
     this.updateTextAttributes_(data.annotation.textAttributes);
 

@@ -14,8 +14,10 @@
   --aim-header-height: 66px;
   --cancel-button-inline-end: 16px;
   --cancel-button-top: 12px;
+  --composebox-border-radius: 24px;
   --composebox-collapsed-height: 90px;
   --composebox-margin-bottom: 30px;
+  --composebox-start-indent: 15px;
   --context-carousel-inline-end-spacing: 24px;
   --context-carousel-inline-start-spacing: 24px;
   --composebox-container-height:
@@ -23,7 +25,7 @@
       + var(--composebox-margin-bottom)
     );
   /* Max width for tab and side-panel mode (from Figma) */
-  --composebox-max-width: 691px;
+  --composebox-max-width: 692px;
   /* Shared sizing between voice cancel and regular cancel buttons. */
   --composebox-cancel-button-size: 40px;
   --composebox-icon-menu-bottom: 12px;
@@ -38,6 +40,13 @@
   --icon-menu-spacing: 6px;
   --icon-menu-icon-size: 24px;
   --icon-menu-button-size: 40px;
+  /* TODO(crbug.com/467758241): Change
+   * pdf icon to one without outline just for contextual tasks.
+   * Border-radius is temporary fix to hide
+   * most of outline.
+   */
+  --pdf-icon-border-radius: 12px;
+  --pdf-icon-size: 16px;
 }
 
 /* Composebox default colors are for light mode on AIM results. */
@@ -48,18 +57,18 @@
     + var(--composebox-margin-bottom));
 
   align-items: center;
-  background: linear-gradient(to top,
-    rgba(var(--search-background-color-rgb), 1)
-    var(--composebox-container-height), transparent);
-  height: calc(var(--composebox-container-height) + 36px);
-  inset-block-end: 0;
+  height: auto;
   justify-content: flex-end;
   min-height: var(--composebox-collapsed-height);
-  position: fixed;
+  position: relative;
   /* Do not set pointer-events to none; is inherited by
    * whole composebox + buttons. Width var taken from parent.
    */
   width: 100%;
+}
+
+:host(:not([is-zero-state])) #composeboxContainer {
+  margin-bottom: var(--composebox-margin-bottom);
 }
 
 /* When the composebox is focused, make the background color
@@ -78,39 +87,88 @@
 }
 
 #composebox {
-  --composebox-thumbnail-img-chip-size: 52px;
+  --composebox-thumbnail-img-chip-size: 44px;
   --composebox-width: calc(100% - 30px); /* 15px on each side */
-  --expanded-border-radius: 24px;
+  --expanded-border-radius: var(--composebox-border-radius);
   --input-bottom-spacing: 16px;
-  --inset-start-indent_: 20px;
+  --inset-start-indent_: 15px;
   --text-input-left-spacing: 24px;
   --text-input-top-spacing: 16px;
+  --composebox-context-menu-entrypoint-button-color: var(--color-composebox-voice-lens-button);
 
   box-shadow: none;
+  box-sizing: border-box;
+  display: block;
   inset-inline-start: var(--inset-start-indent_);
-  bottom: var(--composebox-margin-bottom);
-  position: absolute;
-  /* 100% - (24px right indent + left indent), up to max width. */
-  width: calc(100% - (24px + var(--inset-start-indent_)));
+  max-width: var(--composebox-max-width);
+  position: relative;
+  /* Fast out (start), slow in (end) box shadow transition. */
+  transition: box-shadow 600ms cubic-bezier(0.4, 0.0, 0.2, 1);
+  /* 100% - (right indent + left indent), up to max width. */
+  width: calc(100% - (15px + var(--inset-start-indent_)));
+  z-index: 1;
 }
 
-/* TODO(crbug.com/466201452): Check this logic
+:host([is-side-panel]) #composebox {
+  inset-inline-start: var(--composebox-start-indent);
+  max-width: var(--composebox-max-width);
+  min-width: 200px;
+  /* 15px on each side -> 30px. */
+  width: calc(100% - 30px);
+}
+
+:host(:not([is-zero-state])) #composebox::before {
+  background: var(--search-background-color);
+  border-radius: var(--composebox-border-radius);
+  content: '';
+  display: block;
+  height: 40vh;
+  position: absolute;
+  width: 100%;
+  z-index: 0;
+}
+
+/* Add border in ::after instead of '#composebox' so it
+ * is on top of ::before.
+ */
+#composebox::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border: 1px solid var(--color-composebox-input-plate-outline);
+  border-radius: var(--composebox-border-radius);
+  box-sizing: border-box;
+  pointer-events: none;
+  z-index: 2;
+}
+
+/* TODO(crbug.com/466201452): Check this relayout logic
  * once Google.com AIM is RTL that this matches AIM.
  */
 
-/* Make room for the side AIM menu panel. */
-@media (min-width: 480px) {
-  #composebox {
-    /* Google.com uses 96px for indent column, and 5px left padding.
-     * Aligns the input text of the composebox with the AIM thread.
-     */
-    --inset-start-indent_: 101px;
+@media (min-width: 789px) {
+  :host(:not([is-zero-state])[is-side-panel]) #composeboxContainer {
+    /* 96px gutter + 5px for text indentation in thread. */
+    --composebox-start-indent: 101px;
   }
 }
 
-/* W/more space, indent further to match AIM. */
-@media (min-width: 1420px) {
+@media (min-width: 480px) {
+  :host(:not([is-zero-state]):not([is-side-panel])) #composeboxContainer {
+    /* Google.com uses 96px for indent column, and 5px left padding.
+     * Aligns the input text of the composebox with the AIM thread.
+     */
+    --composebox-start-indent: 101px;
+  }
   #composebox {
+    --inset-start-indent_: var(--composebox-start-indent);
+  }
+}
+
+/* W/more space, indent further to match AIM for both side panel and full tab.*/
+@media (min-width: 1420px) {
+  :host(:not([is-zero-state]):not([is-side-panel])) #composeboxContainer,
+  :host([is-side-panel]:not([is-zero-state])) #composeboxContainer {
     /* At this width, indent column should be 280px + 5px left padding.
      * Google.com AIM has 20 other 36px columns as "inset end space",
      * with 20px gaps, which = 720px of cols, 21 * 20px = 420px of gaps.
@@ -122,14 +180,43 @@
      * the AIM thread, we do not start growing until flexible
      * indentation space > 280px of minimum left indentation.
      */
-    --inset-start-indent_: max(285px, calc(50% - 570px));
+    --composebox-start-indent: max(285px, calc(50% - 570px));
+  }
+
+  #composebox {
+    --inset-start-indent_: var(--composebox-start-indent);
   }
 }
 
-@media (min-width: 800px) {
-  #composebox {
-    max-width: var(--composebox-max-width);
-  }
+:host(:not([is-zero-state])) #composebox::before {
+  background: var(--search-background-color);
+  border-radius: 24px;
+  content: '';
+  display: block;
+  /* Expand past the bottom of the composebox.
+   * Requires parent to have overflow hidden.
+   */
+  height: 40vh;
+  position: absolute;
+  width: 100%;
+}
+
+#composebox::part(thumbnail) {
+  --thumbnail-size_: 28px;
+  height: var(--thumbnail-size_);
+  padding: 0;
+  width: var(--thumbnail-size_);
+}
+
+:host([is-zero-state]) #composebox {
+  --inset-start-indent_: 0px;
+  bottom: auto;
+}
+
+:host([is-zero-state]) #composeboxContainer {
+  background: transparent;
+  display: block;
+  position: relative;
 }
 
 #composebox::part(error-scrim) {
@@ -163,6 +250,11 @@
   transition: var(--icon-entry-transition);
 }
 
+#composebox[show-file-carousel_]::part(carousel-container) {
+  /* Give room for the close button in the top right. */
+  --context-carousel-inline-end-spacing: 62px;
+}
+
 #composebox:not([expanding_])[show-file-carousel_]::part(cr-composebox-file-carousel) {
   pointer-events: none;
 }
@@ -177,6 +269,10 @@
 
 #composebox::part(input) {
   color: var(--color-composebox-font);
+}
+
+#composebox::part(input),
+#composebox::part(smart-compose) {
   padding-inline-start: var(--g-input-left-spacing);
 }
 
@@ -186,6 +282,10 @@
 
 #composebox::part(upload-container) {
   display: none;
+}
+
+#composebox::part(context-menu-entrypoint-icon) {
+  --cr-icon-button-fill-color: var(--composebox-context-menu-entrypoint-button-color);
 }
 
 /* Controls cancel and submit buttons. */
@@ -214,17 +314,19 @@
   --cr-icon-button-fill-color: var(--color-composebox-voice-lens-button);
   --cr-icon-button-icon-size: var(--icon-menu-icon-size);
   --cr-icon-button-size: var(--icon-menu-button-size);
+  /* Override the expanding fade in animation to make the icon appear instantly. */
+  animation: none;
   bottom: var(--composebox-icon-menu-bottom);
   display: block;
   inset-inline-end: var(--composebox-last-icon-inline-end);
   position: absolute;
+  transition: ease-out 100ms;
 }
 
 #composebox[show-submit_][submit-enabled_]::part(lens-icon) {
   inset-inline-end: calc(var(--composebox-submit-container-size)
       + var(--icon-menu-spacing)
       + var(--composebox-submit-container-inline-end));
-  transition: ease-out 100ms;
 }
 
 #composebox:not([expanding_])::part(cancel),
@@ -287,10 +389,6 @@
   transition-delay: 0ms;
 }
 
-#composebox::part(label) {
-  display: none;
-}
-
 #composebox::part(dropdown) {
   --cr-composebox-match-height: 54px;
 
@@ -314,10 +412,16 @@
 
 #composebox[show-submit_][submit-enabled_]::part(voice-icon) {
   inset-inline-end: calc(var(--composebox-submit-container-size)
+      + var(--icon-menu-spacing)
+      + var(--composebox-submit-container-inline-end));
+}
+
+/* Lens is only shown in side panel, so adjust spacing. */
+:host([is-side-panel]) #composebox[show-submit_][submit-enabled_]::part(voice-icon) {
+  inset-inline-end: calc(var(--composebox-submit-container-size)
       + var(--icon-menu-button-size)
       + 2 * var(--icon-menu-spacing)
       + var(--composebox-submit-container-inline-end));
-  transition: ease-out 100ms;
 }
 
 #composebox::part(voice-icon) {
@@ -325,13 +429,18 @@
   --cr-icon-button-icon-size: var(--icon-menu-icon-size);
   --cr-icon-button-size: var(--icon-menu-button-size);
   bottom: var(--composebox-icon-menu-bottom);
+  inset-inline-end: var(--composebox-last-icon-inline-end);
+  position: absolute;
+  top: auto;
+  transition: ease-out 100ms;
+}
+
+/* Lens is only shown in side panel, so adjust spacing. */
+:host([is-side-panel]) #composebox::part(voice-icon) {
   inset-inline-end: calc(
       var(--icon-menu-button-size)
       + var(--icon-menu-spacing)
       + var(--composebox-last-icon-inline-end));
-  position: absolute;
-  top: auto;
-  transition: ease-out 100ms;
 }
 
 #composebox::part(voice-close-button) {
@@ -346,11 +455,6 @@
 
 #composebox::part(composebox-background)::before {
  transition: background-color 400ms ease-in-out;
-}
-
-#composebox {
- /* Fast out (start), slow in (end) box shadow transition. */
- transition: box-shadow 600ms cubic-bezier(0.4, 0.0, 0.2, 1);
 }
 
 #composebox[in-voice-search-mode_] {

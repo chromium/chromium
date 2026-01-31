@@ -7,16 +7,22 @@
 #include <memory>
 
 #include "base/functional/bind.h"
+#include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/interaction/browser_elements.h"
+#include "chrome/browser/ui/tabs/features.h"
 #include "chrome/browser/ui/toolbar/app_menu_model.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/views/frame/vertical_tab_strip_region_view.h"
 #include "chrome/browser/ui/views/tabs/tab_strip.h"
+#include "chrome/common/pref_names.h"
 #include "chrome/test/interaction/feature_engagement_initialized_observer.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
 #include "chrome/test/interaction/webcontents_interaction_test_util.h"
+#include "components/prefs/pref_service.h"
 #include "components/user_education/common/new_badge/new_badge_controller.h"
 #include "content/public/test/browser_test.h"
 #include "ui/base/interaction/element_identifier.h"
@@ -201,14 +207,27 @@ class InteractionTestUtilBrowserSelectTabTest
       public testing::WithParamInterface<
           ui::test::InteractionTestUtil::InputType> {
  public:
-  InteractionTestUtilBrowserSelectTabTest() = default;
+  InteractionTestUtilBrowserSelectTabTest() {
+    feature_list_.InitAndEnableFeature(tabs::kVerticalTabs);
+  }
   ~InteractionTestUtilBrowserSelectTabTest() override = default;
+
+  void SetVerticalTabsEnabled(bool enabled) {
+    browser()->profile()->GetPrefs()->SetBoolean(prefs::kVerticalTabsEnabled,
+                                                 enabled);
+    RunScheduledLayouts();
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
 };
 
-IN_PROC_BROWSER_TEST_P(InteractionTestUtilBrowserSelectTabTest, SelectTab) {
+IN_PROC_BROWSER_TEST_P(InteractionTestUtilBrowserSelectTabTest,
+                       SelectTab_HorizontalTabstrip) {
+  SetVerticalTabsEnabled(false);
   BrowserView* const browser_view =
       BrowserView::GetBrowserViewForBrowser(browser());
-  TabStrip* const tab_strip = browser_view->tabstrip();
+  TabStrip* const tab_strip = browser_view->horizontal_tab_strip_for_testing();
   auto* const browser_el =
       views::ElementTrackerViews::GetInstance()->GetElementForView(browser_view,
                                                                    true);
@@ -246,6 +265,55 @@ IN_PROC_BROWSER_TEST_P(InteractionTestUtilBrowserSelectTabTest, SelectTab) {
   EXPECT_EQ(ui::test::ActionResult::kSucceeded,
             test_util.SelectTab(browser_el, 3));
   EXPECT_EQ(3, tab_strip->GetActiveIndex());
+}
+
+IN_PROC_BROWSER_TEST_P(InteractionTestUtilBrowserSelectTabTest,
+                       SelectTab_VerticalTabstrip) {
+  SetVerticalTabsEnabled(true);
+  BrowserView* const browser_view =
+      BrowserView::GetBrowserViewForBrowser(browser());
+  auto* const tab_strip =
+      browser_view->vertical_tab_strip_region_view_for_testing();
+  CHECK(tab_strip);
+  CHECK_EQ(tab_strip, browser_view->tab_strip_view());
+  auto* const browser_el =
+      views::ElementTrackerViews::GetInstance()->GetElementForView(browser_view,
+                                                                   true);
+  auto* const tabstrip_el =
+      views::ElementTrackerViews::GetInstance()->GetElementForView(tab_strip,
+                                                                   true);
+  auto* const model = browser()->GetTabStripModel();
+
+  // Add up to a total of four tabs.
+  CHECK(AddTabAtIndex(-1, GURL("about:blank"), ui::PAGE_TRANSITION_LINK));
+  CHECK(AddTabAtIndex(-1, GURL("about:blank"), ui::PAGE_TRANSITION_LINK));
+  CHECK(AddTabAtIndex(-1, GURL("about:blank"), ui::PAGE_TRANSITION_LINK));
+
+  // Select a few different tabs using both the browser and tabstrip as targets.
+  ui::test::InteractionTestUtil test_util;
+  test_util.AddSimulator(
+      std::make_unique<views::test::InteractionTestUtilSimulatorViews>());
+  InteractionTestUtilBrowser::PopulateSimulators(test_util);
+  EXPECT_EQ(ui::test::ActionResult::kSucceeded,
+            test_util.SelectTab(browser_el, 2));
+  EXPECT_EQ(2, model->active_index());
+  EXPECT_EQ(ui::test::ActionResult::kSucceeded,
+            test_util.SelectTab(tabstrip_el, 1));
+  EXPECT_EQ(1, model->active_index());
+  EXPECT_EQ(ui::test::ActionResult::kSucceeded,
+            test_util.SelectTab(tabstrip_el, 0));
+  EXPECT_EQ(0, model->active_index());
+  EXPECT_EQ(ui::test::ActionResult::kSucceeded,
+            test_util.SelectTab(browser_el, 3));
+  EXPECT_EQ(3, model->active_index());
+
+  // Re-selecting the same tab shouldn't break anything.
+  EXPECT_EQ(ui::test::ActionResult::kSucceeded,
+            test_util.SelectTab(tabstrip_el, 3));
+  EXPECT_EQ(3, model->active_index());
+  EXPECT_EQ(ui::test::ActionResult::kSucceeded,
+            test_util.SelectTab(browser_el, 3));
+  EXPECT_EQ(3, model->active_index());
 }
 
 INSTANTIATE_TEST_SUITE_P(

@@ -141,6 +141,20 @@ class CONTENT_EXPORT IdpNetworkRequestManager : public NetworkRequestManager {
     std::optional<IdentityCredentialTokenError> error;
   };
 
+  struct CONTENT_EXPORT AccountsResponse {
+    AccountsResponse();
+    ~AccountsResponse();
+    AccountsResponse(const AccountsResponse&);
+    AccountsResponse(AccountsResponse&&);
+    AccountsResponse& operator=(const AccountsResponse&);
+
+    std::vector<IdentityRequestAccountPtr> PotentialAccountsForOrigin(
+        const url::Origin& origin) const;
+
+    std::vector<IdentityRequestAccountPtr> accounts;
+    std::string origin_salt;
+  };
+
   enum class DisconnectResponse {
     kSuccess,
     kError,
@@ -205,10 +219,9 @@ class CONTENT_EXPORT IdpNetworkRequestManager : public NetworkRequestManager {
   // LINT.ThenChange(//tools/metrics/histograms/metadata/blink/enums.xml:FedCmErrorUrlType)
 
   using AccountsRequestCallback =
-      base::OnceCallback<void(FetchStatus,
-                              std::vector<IdentityRequestAccountPtr>)>;
+      base::OnceCallback<void(FetchStatus, AccountsResponse)>;
   using FetchAccountPicturesAndBrandIconsCallback =
-      base::OnceCallback<void(std::vector<IdentityRequestAccountPtr>,
+      base::OnceCallback<void(AccountsResponse,
                               std::unique_ptr<IdentityProviderInfo>,
                               const gfx::Image&)>;
   using FetchIdpBrandIconCallback =
@@ -225,6 +238,7 @@ class CONTENT_EXPORT IdpNetworkRequestManager : public NetworkRequestManager {
   using TokenRequestCallback =
       base::OnceCallback<void(FetchStatus, TokenResult&&)>;
   using ContinueOnCallback = base::OnceCallback<void(FetchStatus, const GURL&)>;
+  using RedirectToCallback = base::OnceCallback<void(FetchStatus, const GURL&)>;
   using RecordErrorMetricsCallback =
       base::OnceCallback<void(FedCmTokenResponseType,
                               std::optional<FedCmErrorDialogType>,
@@ -254,7 +268,6 @@ class CONTENT_EXPORT IdpNetworkRequestManager : public NetworkRequestManager {
 
   // Attempt to fetch the IDP's FedCM parameters from the config file.
   virtual void FetchConfig(const GURL& provider,
-                           blink::mojom::RpMode rp_mode,
                            int idp_brand_icon_ideal_size,
                            int idp_brand_icon_minimum_size,
                            FetchConfigCallback);
@@ -285,6 +298,7 @@ class CONTENT_EXPORT IdpNetworkRequestManager : public NetworkRequestManager {
       bool idp_blindness,
       TokenRequestCallback callback,
       ContinueOnCallback continue_on,
+      RedirectToCallback redirect_to,
       RecordErrorMetricsCallback record_error_metrics_callback);
 
   // Sends metrics to metrics endpoint after a token was successfully generated.
@@ -314,7 +328,7 @@ class CONTENT_EXPORT IdpNetworkRequestManager : public NetworkRequestManager {
   virtual void DownloadAndDecodeImage(const GURL& url, ImageCallback callback);
 
   void FetchAccountPicturesAndBrandIcons(
-      const std::vector<IdentityRequestAccountPtr>& accounts,
+      const AccountsResponse& accounts,
       std::unique_ptr<IdentityProviderInfo> idp_info,
       const GURL& rp_brand_icon_url,
       FetchAccountPicturesAndBrandIconsCallback callback);
@@ -350,7 +364,7 @@ class CONTENT_EXPORT IdpNetworkRequestManager : public NetworkRequestManager {
   void OnAllAccountPicturesAndBrandIconUrlReceived(
       FetchAccountPicturesAndBrandIconsCallback callback,
       std::unique_ptr<IdentityProviderInfo> idp_info,
-      std::vector<IdentityRequestAccountPtr>&& accounts,
+      AccountsResponse&& accounts,
       const GURL& rp_brand_icon_url);
   void OnIdpBrandIconReceived(std::unique_ptr<IdentityProviderInfo> idp_info,
                               FetchIdpBrandIconCallback callback);

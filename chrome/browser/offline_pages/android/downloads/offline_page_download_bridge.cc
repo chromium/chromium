@@ -348,14 +348,14 @@ static void JNI_OfflinePageDownloadBridge_StartDownload(
                      origin));
 }
 
-static jlong JNI_OfflinePageDownloadBridge_Init(
+static int64_t JNI_OfflinePageDownloadBridge_Init(
     JNIEnv* env,
     const base::android::JavaRef<jobject>& obj) {
   ProfileKey* key = ::android::GetLastUsedRegularProfileKey();
   FullBrowserTransitionManager::Get()->RegisterCallbackOnProfileCreation(
       key, base::BindOnce(&InitializeBackendOnProfileCreated));
 
-  return reinterpret_cast<jlong>(new OfflinePageDownloadBridge(env, obj));
+  return reinterpret_cast<int64_t>(new OfflinePageDownloadBridge(env, obj));
 }
 
 // static

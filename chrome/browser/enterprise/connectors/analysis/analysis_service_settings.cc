@@ -4,7 +4,6 @@
 
 #include "chrome/browser/enterprise/connectors/analysis/analysis_service_settings.h"
 
-#include "base/containers/contains.h"
 #include "build/build_config.h"
 #include "components/enterprise/buildflags/buildflags.h"
 #include "components/enterprise/connectors/core/common.h"
@@ -50,7 +49,7 @@ AnalysisServiceSettings::AnalysisServiceSettings(
 
 #if BUILDFLAG(ENTERPRISE_LOCAL_CONTENT_ANALYSIS)
 void AnalysisServiceSettings::ParseVerificationSignatures(
-    const base::Value::Dict& settings_dict) {
+    const base::DictValue& settings_dict) {
 #if BUILDFLAG(IS_WIN)
   const char* verification_key = kKeyWindowsVerification;
 #elif BUILDFLAG(IS_MAC)
@@ -59,7 +58,7 @@ void AnalysisServiceSettings::ParseVerificationSignatures(
   const char* verification_key = kKeyLinuxVerification;
 #endif
 
-  const base::Value::List* signatures =
+  const base::ListValue* signatures =
       settings_dict.FindListByDottedPath(verification_key);
   if (!signatures) {
     return;
@@ -142,14 +141,14 @@ std::optional<AnalysisSettings> AnalysisServiceSettings::GetAnalysisSettings(
 }
 
 void AnalysisServiceSettings::ParseSourceDestinationPatternSettings(
-    const base::Value::List* pattern_settings_list,
+    const base::ListValue* pattern_settings_list,
     bool is_enabled_pattern) {
   if (!pattern_settings_list || pattern_settings_list->empty()) {
     return;
   }
 
   for (const base::Value& pattern_setting : *pattern_settings_list) {
-    const base::Value::Dict* pattern_dict = pattern_setting.GetIfDict();
+    const base::DictValue* pattern_dict = pattern_setting.GetIfDict();
     if (!pattern_dict) {
       continue;
     }
@@ -168,7 +167,7 @@ void AnalysisServiceSettings::ParseSourceDestinationPatternSettings(
 }
 
 void AnalysisServiceSettings::AddSourceDestinationSettings(
-    const base::Value::Dict& source_destination_settings_value,
+    const base::DictValue& source_destination_settings_value,
     bool enabled) {
   CHECK(analysis_config_);
   CHECK(source_destination_matcher_);
@@ -180,7 +179,7 @@ void AnalysisServiceSettings::AddSourceDestinationSettings(
 
   URLPatternSettings setting;
 
-  const base::Value::List* tags =
+  const base::ListValue* tags =
       source_destination_settings_value.FindList(kKeyTags);
   if (!tags) {
     return;
@@ -198,7 +197,7 @@ void AnalysisServiceSettings::AddSourceDestinationSettings(
 
   // Add the source destination rules to the source_destination_matcher and
   // store the condition set IDs.
-  const base::Value::List* source_destination_list =
+  const base::ListValue* source_destination_list =
       source_destination_settings_value.FindList(kKeySourceDestinationList);
   if (!source_destination_list) {
     return;

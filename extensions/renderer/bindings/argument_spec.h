@@ -41,7 +41,7 @@ class ArgumentSpec {
   // Reads the description from `dict` and sets associated fields.
   // TODO(devlin): We should strongly think about generating these instead of
   // populating them at runtime.
-  explicit ArgumentSpec(const base::Value::Dict& dict);
+  explicit ArgumentSpec(const base::DictValue& dict);
   explicit ArgumentSpec(ArgumentType type);
 
   ArgumentSpec(const ArgumentSpec&) = delete;
@@ -112,7 +112,7 @@ class ArgumentSpec {
 
  private:
   // Initializes this object according to `type_string` and `dict`.
-  void InitializeType(const base::Value::Dict& dict);
+  void InitializeType(const base::DictValue& dict);
 
   // Conversion functions. These should only be used if the spec is of the given
   // type (otherwise, they will DCHECK).

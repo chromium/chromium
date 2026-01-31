@@ -1,5 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] document.createElement()'s second argument is to be ignored when it's a string
-  assert_false: expected false got true
-Harness: the test ran to completion.
-

@@ -19,6 +19,7 @@
 
 #include "base/bits.h"
 #include "base/debug/crash_logging.h"
+#include "base/debug/dump_without_crashing.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
@@ -361,7 +362,7 @@ scoped_refptr<VideoFrame> VideoFrame::WrapSharedImage(
     VideoPixelFormat format,
     scoped_refptr<gpu::ClientSharedImage> shared_image,
     gpu::SyncToken sync_token,
-    ReleaseMailboxCB mailbox_holder_release_cb,
+    ReleaseMailboxCB shared_image_release_cb,
     const gfx::Size& coded_size,
     const gfx::Rect& visible_rect,
     const gfx::Size& natural_size,
@@ -380,7 +381,7 @@ scoped_refptr<VideoFrame> VideoFrame::WrapSharedImage(
         << ") does not match shared_image size ("
         << shared_image->size().ToString() << ")";
   }
-  frame->mailbox_holder_release_cb_ = std::move(mailbox_holder_release_cb);
+  frame->shared_image_release_cb_ = std::move(shared_image_release_cb);
 
   DCHECK(frame->HasSharedImage());
 
@@ -390,7 +391,7 @@ scoped_refptr<VideoFrame> VideoFrame::WrapSharedImage(
 scoped_refptr<VideoFrame> VideoFrame::WrapMappableSharedImage(
     scoped_refptr<gpu::ClientSharedImage> shared_image,
     gpu::SyncToken sync_token,
-    ReleaseMailboxCB mailbox_holder_release_cb,
+    ReleaseMailboxCB shared_image_release_cb,
     const gfx::Rect& visible_rect,
     const gfx::Size& natural_size,
     base::TimeDelta timestamp) {
@@ -463,7 +464,7 @@ scoped_refptr<VideoFrame> VideoFrame::WrapMappableSharedImage(
     DLOG(ERROR) << __func__ << " Couldn't create VideoFrame instance";
     return nullptr;
   }
-  frame->mailbox_holder_release_cb_ = std::move(mailbox_holder_release_cb);
+  frame->shared_image_release_cb_ = std::move(shared_image_release_cb);
   frame->acquire_sync_token_ = sync_token;
 
   // Note that we can not use |shared_image|->MakeUnOwned() here since that
@@ -727,7 +728,7 @@ scoped_refptr<VideoFrame> VideoFrame::WrapExternalDmabufs(
     return nullptr;
   }
 
-  frame->mailbox_holder_release_cb_ = ReleaseMailboxCB();
+  frame->shared_image_release_cb_ = ReleaseMailboxCB();
   frame->dmabuf_fds_ = std::move(dmabuf_fds);
   DCHECK(frame->HasDmaBufs());
 
@@ -1171,13 +1172,16 @@ bool VideoFrame::HasMappableSharedImage() const {
   return storage_type_ == STORAGE_MAPPABLE_SHARED_IMAGE;
 }
 
-bool VideoFrame::HasNativeGpuMemoryBuffer() const {
+bool VideoFrame::HasNativeMappableSharedImage() const {
   if (wrapped_frame_) {
-    return wrapped_frame_->HasNativeGpuMemoryBuffer();
-  } else if (HasMappableSharedImage()) {
+    return wrapped_frame_->HasNativeMappableSharedImage();
+  }
+
+  if (HasMappableSharedImage()) {
     CHECK(shared_image_);
     return !shared_image_->IsSharedMemoryForVideoFrame();
   }
+
   return false;
 }
 
@@ -1361,17 +1365,17 @@ int VideoFrame::GetDmabufFd(size_t i) const {
 
 void VideoFrame::SetReleaseMailboxCB(ReleaseMailboxCB release_mailbox_cb) {
   DCHECK(release_mailbox_cb);
-  DCHECK(!mailbox_holder_release_cb_);
+  DCHECK(!shared_image_release_cb_);
   // We don't relay SetReleaseMailboxCB to |wrapped_frame_| because the method
   // is not thread safe.  This method should only be called by the owner of
   // |wrapped_frame_| directly.
   DCHECK(!wrapped_frame_);
-  mailbox_holder_release_cb_ = std::move(release_mailbox_cb);
+  shared_image_release_cb_ = std::move(release_mailbox_cb);
 }
 
 bool VideoFrame::HasReleaseMailboxCB() const {
   return wrapped_frame_ ? wrapped_frame_->HasReleaseMailboxCB()
-                        : !!mailbox_holder_release_cb_;
+                        : !!shared_image_release_cb_;
 }
 
 void VideoFrame::AddDestructionObserver(base::OnceClosure callback) {
@@ -1387,7 +1391,7 @@ gpu::SyncToken VideoFrame::UpdateReleaseSyncToken(SyncTokenClient* client) {
   }
   base::AutoLock locker(release_sync_token_lock_);
   // Must wait on the previous sync point before inserting a new sync point so
-  // that |mailbox_holder_release_cb_| guarantees the previous sync
+  // that |shared_image_release_cb_| guarantees the previous sync
   // point occurred when it waits on |release_sync_token_|.
   if (release_sync_token_.HasData())
     client->WaitSyncToken(release_sync_token_);
@@ -1449,7 +1453,7 @@ VideoFrame::VideoFrame(base::PassKey<VideoFrame>,
 }
 
 VideoFrame::~VideoFrame() {
-  if (mailbox_holder_release_cb_) {
+  if (shared_image_release_cb_) {
     gpu::SyncToken release_sync_token;
     {
       // To ensure that changes to |release_sync_token_| are visible on this
@@ -1457,7 +1461,7 @@ VideoFrame::~VideoFrame() {
       base::AutoLock locker(release_sync_token_lock_);
       release_sync_token = release_sync_token_;
     }
-    std::move(mailbox_holder_release_cb_).Run(release_sync_token);
+    std::move(shared_image_release_cb_).Run(release_sync_token);
   }
 
   // Prevents dangling raw ptr, see https://docs.google.com/document/d/156O7kBZqIhe1dUcqTMcN5T-6YEAcg0yNnj5QlnZu9xU/edit?usp=sharing.

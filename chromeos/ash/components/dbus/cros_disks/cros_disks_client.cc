@@ -16,7 +16,6 @@
 #include <utility>
 
 #include "base/command_line.h"
-#include "base/containers/contains.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
@@ -105,7 +104,7 @@ bool ReadMountProgressFromDbus(dbus::MessageReader* reader, MountPoint* entry) {
   return true;
 }
 
-void MaybeGetStringFromDictionaryValue(const base::Value::Dict& dict,
+void MaybeGetStringFromDictionaryValue(const base::DictValue& dict,
                                        const char* key,
                                        std::string* result) {
   const std::string* value = dict.FindString(key);
@@ -492,7 +491,7 @@ class CrosDisksClientImpl : public CrosDisksClient {
       return;
     }
 
-    if (base::Contains(format_start_time_, device_path)) {
+    if (format_start_time_.contains(device_path)) {
       base::UmaHistogramMediumTimes(
           "CrosDisksClient.FormatTime",
           base::TimeTicks::Now() - format_start_time_[device_path]);
@@ -751,7 +750,7 @@ bool DiskInfo::InitializeFromResponse(dbus::Response* response) {
     return false;
   }
 
-  const base::Value::Dict& dict = value.GetDict();
+  const base::DictValue& dict = value.GetDict();
   is_drive_ = dict.FindBool(cros_disks::kDeviceIsDrive).value_or(is_drive_);
   is_read_only_ =
       dict.FindBool(cros_disks::kDeviceIsReadOnly).value_or(is_read_only_);
@@ -804,7 +803,7 @@ bool DiskInfo::InitializeFromResponse(dbus::Response* response) {
     device_type_ = ToDeviceType(media_type_double.value());
   }
 
-  if (const base::Value::List* const mount_paths =
+  if (const base::ListValue* const mount_paths =
           dict.FindList(cros_disks::kDeviceMountPaths);
       mount_paths) {
     if (!mount_paths->empty()) {

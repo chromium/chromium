@@ -14,6 +14,7 @@
 
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
+#include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "chrome/common/read_anything/read_anything.mojom.h"
 #include "chrome/common/read_anything/read_anything_util.h"
@@ -98,7 +99,7 @@ class ReadAnythingAppModel {
   // rather than just a single vector containing all updates from multiple
   // accessibility events. This is so that Unserialize can be called in
   // batches on the group of Updates received from each call to
-  // AccessibilityEventReceived. Otherwise, intermediary updates might
+  // ApplyAccessibilityUpdates. Otherwise, intermediary updates might
   // cause tree inconsistency issues with the final update.
   using PendingUpdates = std::map<ui::AXTreeID, std::vector<Updates>>;
 
@@ -157,6 +158,30 @@ class ReadAnythingAppModel {
     words_distilled_ = words_distilled;
   }
 
+  std::optional<base::TimeTicks> line_focus_session_start_time() const {
+    return line_focus_session_start_time_;
+  }
+  void set_line_focus_session_start_time(const base::TimeTicks time) {
+    line_focus_session_start_time_ = time;
+  }
+  int line_focus_mouse_distance() const { return line_focus_mouse_distance_; }
+  void set_line_focus_mouse_distance(const int distance) {
+    line_focus_mouse_distance_ = distance;
+  }
+  int line_focus_scroll_distance() const { return line_focus_scroll_distance_; }
+  void set_line_focus_scroll_distance(const int distance) {
+    line_focus_scroll_distance_ = distance;
+  }
+  int line_focus_keyboard_lines() const { return line_focus_keyboard_lines_; }
+  void set_line_focus_keyboard_lines(const int lines) {
+    line_focus_keyboard_lines_ = lines;
+  }
+  int line_focus_speech_lines() const { return line_focus_speech_lines_; }
+  void set_line_focus_speech_lines(const int lines) {
+    line_focus_speech_lines_ = lines;
+  }
+  void ResetLineFocusSession();
+
   const std::string& base_language_code() const { return base_language_code_; }
   void SetBaseLanguageCode(std::string base_language_code);
 
@@ -196,6 +221,11 @@ class ReadAnythingAppModel {
   read_anything::mojom::Colors color_theme() const { return color_theme_; }
   void set_color_theme(read_anything::mojom::Colors color_theme) {
     color_theme_ = color_theme;
+  }
+
+  read_anything::mojom::LineFocus line_focus() const { return line_focus_; }
+  void set_line_focus(read_anything::mojom::LineFocus line_focus) {
+    line_focus_ = line_focus;
   }
 
   // Sometimes iframes can return selection objects that have a valid id but
@@ -287,7 +317,8 @@ class ReadAnythingAppModel {
       double font_size,
       bool links_enabled,
       bool images_enabled,
-      read_anything::mojom::Colors color);
+      read_anything::mojom::Colors color,
+      read_anything::mojom::LineFocus line_focus);
 
   void OnScroll(bool on_selection, bool from_reading_mode) const;
 
@@ -319,10 +350,25 @@ class ReadAnythingAppModel {
 
   void ClearPendingUpdates();
 
-  void AccessibilityEventReceived(const ui::AXTreeID& tree_id,
-                                  Updates& updates,
-                                  std::vector<ui::AXEvent>& events,
-                                  bool speech_playing);
+  // Applies accessibility updates to the AXTree with the given tree_id.
+  // Unserializes the updates, processes generated events, and updates the
+  // model's state.
+  void ApplyAccessibilityUpdates(const ui::AXTreeID& tree_id,
+                                 Updates& updates,
+                                 std::vector<ui::AXEvent>& events);
+
+  // Queues accessibility updates to be processed later. This is used when
+  // the controller decides to not process the updates immediately to avoid
+  // interrupting the user experience. The updates are stored in
+  // pending_updates_.
+  void QueueAccessibilityUpdates(const ui::AXTreeID& tree_id,
+                                 Updates& updates,
+                                 std::vector<ui::AXEvent>& events);
+
+  // Ensures that the AXTree with the given tree_id exists in the model's
+  // tree_infos_ map. If the tree does not exist, a new one is created.
+  // Also updates the active tree ID if necessary.
+  void PrepareForAXTreeUpdates(const ui::AXTreeID& tree_id);
 
   void OnAXTreeDestroyed(const ui::AXTreeID& tree_id);
 
@@ -355,6 +401,25 @@ class ReadAnythingAppModel {
   void AllowChildTreeForActiveTree(bool use_child_tree);
 
   bool SelectionNodesContainedInDistilledContent() const;
+
+  read_anything::mojom::ReadAnythingPresentationState
+  active_presentation_state() const {
+    return active_presentation_state_;
+  }
+  void set_active_presentation_state(
+      read_anything::mojom::ReadAnythingPresentationState
+          active_presentation_state) {
+    active_presentation_state_ = active_presentation_state;
+  }
+
+  read_anything::mojom::ReadAnythingDistillationState distillation_state()
+      const {
+    return distillation_state_;
+  }
+  void set_distillation_state(
+      read_anything::mojom::ReadAnythingDistillationState distillation_state) {
+    distillation_state_ = distillation_state;
+  }
 
  private:
   struct SelectionEndpoint {
@@ -391,6 +456,12 @@ class ReadAnythingAppModel {
   void ProcessGeneratedEvents(const ui::AXEventGenerator& event_generator,
                               size_t prev_tree_size,
                               size_t tree_size);
+
+  void EnsureAXTreeExists(const ui::AXTreeID& tree_id);
+
+  void UpdateActiveTreeIfNeeded(const ui::AXTreeID& tree_id);
+
+  void HandleScreen2xDataCollection(const Updates& updates);
 
   // Runs the data collection for screen2x pipeline, provided in the form of a
   // callback from the ReadAnythingAppController. This should only be called
@@ -479,6 +550,9 @@ class ReadAnythingAppModel {
   read_anything::mojom::Colors color_theme_ =
       read_anything::mojom::Colors::kDefaultValue;
 
+  read_anything::mojom::LineFocus line_focus_ =
+      read_anything::mojom::LineFocus::kDefaultValue;
+
   // Invariant: Either both endpoints are `!is_valid()`, or they are both valid
   // and non-equal.
   SelectionEndpoint start_;
@@ -491,6 +565,13 @@ class ReadAnythingAppModel {
   int words_seen_ = 0;
   int words_heard_ = 0;
   int words_distilled_ = 0;
+
+  // Line focus session information. Used for logging.
+  std::optional<base::TimeTicks> line_focus_session_start_time_;
+  int line_focus_mouse_distance_ = 0;
+  int line_focus_scroll_distance_ = 0;
+  int line_focus_keyboard_lines_ = 0;
+  int line_focus_speech_lines_ = 0;
 
   // For screen2x data collection, Chrome is launched from the CLI to open one
   // webpage. We record the result of the distill() call for this entire
@@ -524,6 +605,12 @@ class ReadAnythingAppModel {
   // If reading mode should attempt to use child trees to distill content. This
   // should only be true if the root tree has no distillable content.
   bool may_use_child_for_active_tree_ = false;
+
+  read_anything::mojom::ReadAnythingPresentationState
+      active_presentation_state_ =
+          read_anything::mojom::ReadAnythingPresentationState::kUndefined;
+  read_anything::mojom::ReadAnythingDistillationState distillation_state_ =
+      read_anything::mojom::ReadAnythingDistillationState::kNotAttempted;
 
   // List of observers of model state changes.
   base::ObserverList<ModelObserver, /*check_empty=*/true> observers_;

@@ -71,7 +71,6 @@ void SharingBrowserTest::Init(
     sync_pb::SharingSpecificFields_EnabledFeatures second_device_feature) {
   ASSERT_TRUE(SetupSync());
 
-  ASSERT_TRUE(embedded_test_server()->Start());
   GURL url = embedded_test_server()->GetURL("mock.http", GetTestPageURL());
   ASSERT_TRUE(sessions_helper::OpenTab(0, url));
 
@@ -156,7 +155,8 @@ void SharingBrowserTest::AddDeviceInfo(
           original_device.sharing_info(), original_device.paask_info(),
           original_device.fcm_registration_token(),
           original_device.interested_data_types(),
-          original_device.auto_sign_out_last_signin_timestamp());
+          original_device.auto_sign_out_last_signin_timestamp(),
+          original_device.desktop_to_ios_promo_receiving_enabled());
   fake_device_info_tracker_.Add(fake_device.get());
   device_infos_.push_back(std::move(fake_device));
 }

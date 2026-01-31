@@ -149,18 +149,18 @@ const char PowerPolicyController::kPrefsReason[] = "Prefs";
 
 // static
 bool PowerPolicyController::GetPeakShiftDayConfigs(
-    const base::Value::Dict& value,
+    const base::DictValue& value,
     std::vector<PeakShiftDayConfig>* configs_out) {
   DCHECK(configs_out);
   configs_out->clear();
 
-  const base::Value::List* entries = value.FindList("entries");
+  const base::ListValue* entries = value.FindList("entries");
   if (!entries) {
     return false;
   }
 
   for (const base::Value& item : *entries) {
-    const base::Value::Dict* item_dict = item.GetIfDict();
+    const base::DictValue* item_dict = item.GetIfDict();
     if (!item_dict) {
       return false;
     }
@@ -208,18 +208,18 @@ bool PowerPolicyController::GetPeakShiftDayConfigs(
 
 // static
 bool PowerPolicyController::GetAdvancedBatteryChargeModeDayConfigs(
-    const base::Value::Dict& value,
+    const base::DictValue& value,
     std::vector<AdvancedBatteryChargeModeDayConfig>* configs_out) {
   DCHECK(configs_out);
   configs_out->clear();
 
-  const base::Value::List* entries = value.FindList("entries");
+  const base::ListValue* entries = value.FindList("entries");
   if (!entries) {
     return false;
   }
 
   for (const base::Value& item : *entries) {
-    const base::Value::Dict* item_dict = item.GetIfDict();
+    const base::DictValue* item_dict = item.GetIfDict();
     if (!item_dict) {
       return false;
     }

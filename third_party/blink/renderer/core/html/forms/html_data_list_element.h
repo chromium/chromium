@@ -50,6 +50,9 @@ class CORE_EXPORT HTMLDataListElement final : public HTMLElement {
 
   void OptionElementChildrenChanged();
 
+ protected:
+  bool SupportsBaseAppearanceInternal(BaseAppearanceValue) const override;
+
  private:
   void ChildrenChanged(const ChildrenChange&) override;
   void FinishParsingChildren() override;

@@ -26,7 +26,6 @@
 #include "components/autofill/content/renderer/synchronous_form_cache.h"
 #include "components/autofill/core/common/field_data_manager.h"
 #include "components/autofill/core/common/form_field_data.h"
-#include "components/autofill/core/common/mojom/autofill_types.mojom-shared.h"
 #include "components/autofill/core/common/mojom/autofill_types.mojom.h"
 #include "components/autofill/core/common/password_form_fill_data.h"
 #include "components/autofill/core/common/unique_ids.h"

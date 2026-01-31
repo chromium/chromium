@@ -477,8 +477,17 @@ void NavigateEvent::Abort(ScriptState* script_state, ScriptValue error) {
   controller_->abort(script_state, error);
   navigation->ongoing_navigate_event_ = nullptr;
   delayed_load_start_task_handle_.Cancel();
-  if (!defaultPrevented() && intercept_state_ == InterceptState::kIntercepted) {
-    DomWindow()->GetFrame()->Client()->DidFailAsyncSameDocumentCommit();
+  if (!defaultPrevented()) {
+    switch (intercept_state_) {
+      case InterceptState::kIntercepted:
+        DomWindow()->GetFrame()->Client()->DidFailAsyncSameDocumentCommit();
+        break;
+      case InterceptState::kCommitted:
+        DomWindow()->GetFrame()->Loader().Progress().ProgressCompleted();
+        break;
+      default:
+        break;
+    }
   }
   navigation->DidAbort(error);
 }

@@ -65,7 +65,7 @@ TEST_F(BlockedAppStoreTest, TestBlockedApp) {
 
   const BlockedAppMap apps_out = store()->GetFromPref();
   EXPECT_EQ(1UL, apps_out.size());
-  ASSERT_TRUE(base::Contains(apps_out, app_id));
+  ASSERT_TRUE(apps_out.contains(app_id));
   EXPECT_EQ(timestamp, apps_out.at(app_id).block_timestamp());
   EXPECT_EQ(std::nullopt, apps_out.at(app_id).uninstall_timestamp());
 }
@@ -83,7 +83,7 @@ TEST_F(BlockedAppStoreTest, TestUninstalledApp) {
 
   const BlockedAppMap apps_out = store()->GetFromPref();
   EXPECT_EQ(1UL, apps_out.size());
-  ASSERT_TRUE(base::Contains(apps_out, app_id));
+  ASSERT_TRUE(apps_out.contains(app_id));
   EXPECT_EQ(block_timestamp, apps_out.at(app_id).block_timestamp());
   EXPECT_EQ(uninstall_timestamp, *apps_out.at(app_id).uninstall_timestamp());
 }
@@ -114,7 +114,7 @@ TEST_F(BlockedAppStoreTest, TestMultipleApps) {
   for (size_t i = 0; i < apps_count; ++i) {
     const std::string app_id =
         base::StrCat({base_app_id, base::NumberToString(i)});
-    ASSERT_TRUE(base::Contains(apps_out, app_id));
+    ASSERT_TRUE(apps_out.contains(app_id));
 
     const BlockedAppDetails& details = apps_out.at(app_id);
 

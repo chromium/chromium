@@ -346,13 +346,17 @@ void CandidateWindowView::UpdateCandidates(
         candidate_view->SetEnabled(false);
         candidate_view->SetInfolistIcon(false);
       }
+      int shortcut_width = 0;
+      int candidate_width = 0;
+      candidate_views_[i]->GetPreferredWidths(&shortcut_width,
+                                              &candidate_width);
       if (new_candidate_window.orientation() == ui::CandidateWindow::VERTICAL) {
-        int shortcut_width = 0;
-        int candidate_width = 0;
-        candidate_views_[i]->GetPreferredWidths(&shortcut_width,
-                                                &candidate_width);
         max_shortcut_width = std::max(max_shortcut_width, shortcut_width);
         max_candidate_width = std::max(max_candidate_width, candidate_width);
+      } else {
+        // For horizontal mode, each candidate uses its natural width instead of
+        // max width
+        candidate_views_[i]->SetWidths(shortcut_width, candidate_width);
       }
     }
     if (new_candidate_window.orientation() == ui::CandidateWindow::VERTICAL) {

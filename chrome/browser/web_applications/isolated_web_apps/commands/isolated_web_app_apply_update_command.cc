@@ -30,7 +30,7 @@
 #include "chrome/browser/web_applications/callback_utils.h"
 #include "chrome/browser/web_applications/commands/web_app_command.h"
 #include "chrome/browser/web_applications/isolated_web_apps/commands/isolated_web_app_install_command_helper.h"
-#include "chrome/browser/web_applications/isolated_web_apps/install/pending_install_info.h"
+#include "chrome/browser/web_applications/isolated_web_apps/install/non_installed_bundle_inspection_context.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolation_data.h"
 #include "chrome/browser/web_applications/isolated_web_apps/jobs/prepare_install_info_job.h"
 #include "chrome/browser/web_applications/isolated_web_apps/remove_isolated_web_app_data.h"
@@ -110,17 +110,19 @@ void IsolatedWebAppApplyUpdateCommand::StartWithLock(
 
 void IsolatedWebAppApplyUpdateCommand::CheckIfUpdateIsStillPending(
     base::OnceClosure next_step_callback) {
-  ASSIGN_OR_RETURN(
-      const WebApp& iwa,
-      GetIsolatedWebAppById(lock_->registrar(), url_info_.app_id()),
-      [&](const std::string& error) { ReportFailure(error); });
+  const WebApp* iwa = lock_->registrar().GetAppById(
+      url_info_.app_id(), WebAppFilter::IsIsolatedApp());
+  if (!iwa) {
+    ReportFailure("App is not installed.");
+    return;
+  }
 
-  if (!iwa.isolation_data()->pending_update_info().has_value()) {
+  if (!iwa->isolation_data()->pending_update_info().has_value()) {
     ReportFailure("Installed app does not have a pending update.");
     return;
   }
 
-  isolation_data_ = *iwa.isolation_data();
+  isolation_data_ = *iwa->isolation_data();
 
   GetMutableDebugValue().Set("pending_update_info",
                              pending_update_info().AsDebugValue());

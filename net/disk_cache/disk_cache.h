@@ -19,8 +19,8 @@
 #include "base/memory/ref_counted.h"
 #include "base/sequence_checker.h"
 #include "base/strings/string_split.h"
-#include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
+#include "base/types/expected.h"
 #include "build/build_config.h"
 #include "net/base/cache_type.h"
 #include "net/base/completion_once_callback.h"
@@ -31,6 +31,7 @@
 
 namespace base {
 class FilePath;
+class SequencedTaskRunner;
 
 namespace android {
 class ApplicationStatusListener;
@@ -211,9 +212,12 @@ class NET_EXPORT Backend {
   net::CacheType GetCacheType() const { return cache_type_; }
 
   // Returns the entry count synchronously if available, or
-  // net::ERR_IO_PENDING for asynchronous completion via `callback`.
-  virtual int32_t GetEntryCount(
-      net::Int32CompletionOnceCallback callback) const = 0;
+  // net::ERR_IO_PENDING for asynchronous completion via `callback`. The only
+  // error that might be returned is ERR_IO_PENDING; all other returns will
+  // indicate synchronous success.
+  using GetEntryCountCallback = base::OnceCallback<void(int32_t)>;
+  virtual base::expected<int32_t, net::Error> GetEntryCount(
+      GetEntryCountCallback callback) const = 0;
 
   // Atomically attempts to open an existing entry based on |key| or, if none
   // already exists, to create a new entry. Returns an EntryResult object,

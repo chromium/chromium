@@ -59,6 +59,7 @@
 #include "ui/base/window_open_disposition.h"
 #include "ui/base/window_open_disposition_utils.h"
 #include "ui/color/color_id.h"
+#include "ui/gfx/image/image_skia_operations.h"
 #include "ui/menus/simple_menu_model.h"
 #include "ui/resources/grit/ui_resources.h"
 #include "ui/views/accessibility/view_accessibility.h"
@@ -67,6 +68,7 @@
 #include "ui/views/controls/menu/menu_item_view.h"
 #include "ui/views/controls/menu/menu_separator.h"
 #include "ui/views/controls/menu/submenu_view.h"
+#include "ui/views/view_class_properties.h"
 #include "ui/views/widget/tooltip_manager.h"
 #include "ui/views/widget/widget.h"
 
@@ -97,8 +99,27 @@ size_t SubmenuIndexOf(const MenuItemView* parent, const views::View* child) {
 ui::ImageModel GetFaviconForNode(BookmarkModel* model,
                                  const BookmarkNode* node) {
   const gfx::Image& image = model->GetFavicon(node);
-  return image.IsEmpty() ? favicon::GetDefaultFaviconModel()
-                         : ui::ImageModel::FromImage(image);
+  if (image.IsEmpty()) {
+    return favicon::GetDefaultFaviconModel();
+  }
+
+  // Only URL nodes reach here. Folders would have returned empty above.
+  DCHECK(node->is_url());
+  if (favicon::ShouldThemifyFavicon(node->url())) {
+    gfx::ImageSkia favicon_skia = *image.ToImageSkia();
+    return ui::ImageModel::FromImageGenerator(
+        base::BindRepeating(
+            [](const gfx::ImageSkia& favicon,
+               const ui::ColorProvider* provider) {
+              SkColor favicon_color = provider->GetColor(ui::kColorMenuIcon);
+              return gfx::ImageSkiaOperations::CreateColorMask(favicon,
+                                                               favicon_color);
+            },
+            favicon_skia),
+        image.Size());
+  }
+
+  return ui::ImageModel::FromImage(image);
 }
 
 // The current behavior is that the menu gets closed (see MenuController) after
@@ -188,6 +209,31 @@ class BookmarkModelDropObserver : public BookmarkMergedSurfaceServiceObserver {
       bookmark_merged_service_observation_{this};
 };
 
+int IsInvalidDragOrDropCommand(int command_id) {
+  std::unordered_set<int> invalid_command_ids = {
+      IDC_SHOW_BOOKMARK_SIDE_PANEL, IDC_BOOKMARK_BAR_OPEN_ALL,
+      IDC_BOOKMARK_BAR_OPEN_ALL_NEW_TAB_GROUP};
+  return invalid_command_ids.contains(command_id);
+}
+
+DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kOpenAllCommandSeperator);
+
+int GetOpenAllCommandsOffset(MenuItemView* menu) {
+  if (!menu->HasSubmenu()) {
+    return 0;
+  }
+
+  views::View* child =
+      menu->GetSubmenu()->GetViewByElementId(kOpenAllCommandSeperator);
+  if (child) {
+    const std::optional<size_t> index = menu->GetSubmenu()->GetIndexOf(child);
+    if (index.has_value()) {
+      return index.value() + 1;
+    }
+  }
+
+  return 0;
+}
 }  // namespace
 
 BookmarkMenuDelegate::BookmarkFolderOrURL::BookmarkFolderOrURL(
@@ -526,11 +572,7 @@ ui::mojom::DragOperation BookmarkMenuDelegate::GetDropOperation(
   // Should only get here if we have drop data.
   DCHECK(drop_data_.is_valid());
 
-  std::unordered_set<int> non_droppable_command_ids = {
-      IDC_SHOW_BOOKMARK_SIDE_PANEL, IDC_BOOKMARK_BAR_OPEN_ALL,
-      IDC_BOOKMARK_BAR_OPEN_ALL_NEW_TAB_GROUP};
-
-  if (non_droppable_command_ids.contains(item->GetCommand())) {
+  if (IsInvalidDragOrDropCommand(item->GetCommand())) {
     return ui::mojom::DragOperation::kNone;
   }
 
@@ -589,7 +631,7 @@ bool BookmarkMenuDelegate::ShowContextMenu(
 }
 
 bool BookmarkMenuDelegate::CanDrag(MenuItemView* menu) {
-  if (menu->GetCommand() == IDC_SHOW_BOOKMARK_SIDE_PANEL) {
+  if (IsInvalidDragOrDropCommand(menu->GetCommand())) {
     return false;
   }
   // Don't let users drag permanent nodes (managed, other or mobile folder).
@@ -653,6 +695,9 @@ void BookmarkMenuDelegate::BookmarkNodeMoved(
     MenuItemView* moved_menu = node_to_menu->second;
     old_parent_menu = moved_menu->GetParentMenuItem();
     RemoveBookmarkNode(moved_node.GetIfNonPermanentNode(), moved_menu);
+    if (old_parent_menu) {
+      UpdateOpenAllCommands(old_parent_menu, old_parent);
+    }
   }
 
   GetAndUpdateStaleMenuArtifacts();
@@ -674,6 +719,8 @@ void BookmarkMenuDelegate::BookmarkNodeMoved(
       AddBookmarkNode(moved_node.GetIfNonPermanentNode(), new_parent_menu,
                       new_index);
     }
+
+    UpdateOpenAllCommands(new_parent_menu, new_parent);
   }
 
   if (old_parent_menu) {
@@ -825,6 +872,9 @@ void BookmarkMenuDelegate::AddBookmarkNode(const bookmarks::BookmarkNode* node,
         SubmenuIndexOf(new_parent_menu, other_node_menu_separator_) + 1;
   }
 
+  // The menu may start with 'open all' and 'open all as tab group' items
+  // and we insert the |node| relative to these.
+  insertion_idx += GetOpenAllCommandsOffset(new_parent_menu);
   BuildNodeMenuItemAt(node, new_parent_menu, insertion_idx);
 }
 
@@ -1004,30 +1054,6 @@ MenuItemView* BookmarkMenuDelegate::CreateMenu(
   AddMenuToMaps(menu, BookmarkFolderOrURL(folder));
   node_start_child_idx_map_[folder] = start_child_index;
 
-  if (base::FeatureList::IsEnabled(features::kTabGroupMenuImprovements)) {
-    const bookmarks::BookmarkNode* node =
-        GetBookmarkMergedSurfaceService()->GetUnderlyingNodes(folder)[0];
-    int count = bookmarks::OpenCount(node);
-
-    if (count > 0) {
-      menu->AppendMenuItem(IDC_BOOKMARK_BAR_OPEN_ALL,
-                           l10n_util::GetPluralStringFUTF16(
-                               IDS_BOOKMARK_BAR_OPEN_ALL_COUNT, count));
-
-      menu->AppendMenuItem(
-          IDC_BOOKMARK_BAR_OPEN_ALL_NEW_TAB_GROUP,
-          l10n_util::GetPluralStringFUTF16(
-              IDS_BOOKMARK_BAR_OPEN_ALL_COUNT_NEW_TAB_GROUP, count));
-
-      menu_id_to_node_map_.insert_or_assign(IDC_BOOKMARK_BAR_OPEN_ALL,
-                                            BookmarkFolderOrURL(folder));
-      menu_id_to_node_map_.insert_or_assign(
-          IDC_BOOKMARK_BAR_OPEN_ALL_NEW_TAB_GROUP, BookmarkFolderOrURL(folder));
-
-      menu->AppendSeparator();
-    }
-  }
-
   BuildMenu(folder, start_child_index, menu);
   return menu;
 }
@@ -1134,6 +1160,15 @@ void BookmarkMenuDelegate::BuildMenu(const BookmarkParentFolder& folder,
   if (folder.as_permanent_folder() ==
       BookmarkParentFolder::PermanentFolderType::kOtherNode) {
     BuildOtherNodeMenuHeader(menu);
+  } else if (base::FeatureList::IsEnabled(
+                 features::kTabGroupMenuImprovements)) {
+    const BookmarkNode* node = folder.as_non_permanent_folder();
+    if (node && node->parent() &&
+        node->parent()->type() == BookmarkNode::Type::BOOKMARK_BAR) {
+      if (parent_menu_item_ == nullptr) {
+        MaybeAppendOpenAllCommandItems(menu, folder);
+      }
+    }
   }
   const ui::ImageModel folder_icon = chrome::GetBookmarkFolderIcon(
       chrome::BookmarkFolderIconType::kNormal, ui::kColorMenuIcon);
@@ -1290,5 +1325,58 @@ void BookmarkMenuDelegate::BuildOtherNodeMenuHeader(MenuItemView* menu) {
   if (other_folder_children_count) {
     menu->AppendSeparator();
     other_node_menu_separator_ = menu->GetSubmenu()->children().back().get();
+  }
+}
+
+void BookmarkMenuDelegate::MaybeAppendOpenAllCommandItems(
+    views::MenuItemView* menu,
+    const BookmarkParentFolder& folder) {
+  CHECK_EQ(GetSubmenuChildCount(menu), 0u);
+  const bookmarks::BookmarkNode* node =
+      GetBookmarkMergedSurfaceService()->GetUnderlyingNodes(folder)[0];
+  int count = bookmarks::OpenCount(node);
+
+  if (count > 0) {
+    menu->AppendMenuItem(IDC_BOOKMARK_BAR_OPEN_ALL,
+                         l10n_util::GetPluralStringFUTF16(
+                             IDS_BOOKMARK_BAR_OPEN_ALL_COUNT, count));
+
+    menu->AppendMenuItem(
+        IDC_BOOKMARK_BAR_OPEN_ALL_NEW_TAB_GROUP,
+        l10n_util::GetPluralStringFUTF16(
+            IDS_BOOKMARK_BAR_OPEN_ALL_COUNT_NEW_TAB_GROUP, count));
+
+    menu_id_to_node_map_.insert_or_assign(IDC_BOOKMARK_BAR_OPEN_ALL,
+                                          BookmarkFolderOrURL(folder));
+    menu_id_to_node_map_.insert_or_assign(
+        IDC_BOOKMARK_BAR_OPEN_ALL_NEW_TAB_GROUP, BookmarkFolderOrURL(folder));
+
+    menu->AppendSeparator();
+
+    menu->GetSubmenu()->children().back()->SetProperty(
+        views::kElementIdentifierKey, kOpenAllCommandSeperator);
+  }
+}
+
+void BookmarkMenuDelegate::UpdateOpenAllCommands(
+    MenuItemView* menu,
+    const BookmarkParentFolder& folder) {
+  if (GetOpenAllCommandsOffset(menu) > 0) {
+    const bookmarks::BookmarkNode* node =
+        GetBookmarkMergedSurfaceService()->GetUnderlyingNodes(folder)[0];
+    int open_count = bookmarks::OpenCount(node);
+    std::vector<MenuItemView*> menu_items = menu->GetSubmenu()->GetMenuItems();
+    bool enable_items = open_count > 0;
+
+    // Update the first two items
+    if (enable_items) {
+      menu_items[0]->SetTitle(l10n_util::GetPluralStringFUTF16(
+          IDS_BOOKMARK_BAR_OPEN_ALL_COUNT, open_count));
+      menu_items[1]->SetTitle(l10n_util::GetPluralStringFUTF16(
+          IDS_BOOKMARK_BAR_OPEN_ALL_COUNT_NEW_TAB_GROUP, open_count));
+    }
+
+    menu_items[0]->SetEnabled(enable_items);
+    menu_items[1]->SetEnabled(enable_items);
   }
 }

@@ -112,7 +112,8 @@ GREYElementInteraction* GetInteractionForSearchEngineSettingButton() {
   return [[EarlGrey
       selectElementWithMatcher:grey_allOf(searchEngineCellMatcher,
                                           grey_sufficientlyVisible(), nil)]
-         usingSearchAction:grey_scrollInDirection(kGREYDirectionDown, 100)
+         usingSearchAction:grey_scrollInDirectionWithStartPoint(
+                               kGREYDirectionDown, 200, 0.5, 0.5)
       onElementWithMatcher:grey_accessibilityID(
                                kSearchEngineTableViewControllerId)];
 }

@@ -167,6 +167,9 @@ class VIZ_COMMON_EXPORT CopyOutputRequest {
   // implementation, usually a DirectRenderer.
   void SendResult(std::unique_ptr<CopyOutputResult> result);
 
+  // Sends the result with an error code from executing this request.
+  void SendError(CopyOutputResult::Error error);
+
   // Returns true if SendResult() will deliver the CopyOutputResult using the
   // same TaskRunner as that to which the current task was posted.
   bool SendsResultsInCurrentSequence() const;

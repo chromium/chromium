@@ -35,12 +35,14 @@ void PrerenderSubframeNavigationThrottle::MaybeCreateAndAdd(
 PrerenderSubframeNavigationThrottle::PrerenderSubframeNavigationThrottle(
     NavigationThrottleRegistry& registry)
     : NavigationThrottle(registry),
-      prerender_root_ftn_id_(
+      prerender_host_id_(
           NavigationRequest::From(&registry.GetNavigationHandle())
               ->frame_tree_node()
               ->frame_tree()
-              .root()
-              ->frame_tree_node_id()) {}
+              .delegate()
+              ->GetPrerenderHostId()) {
+  CHECK(prerender_host_id_);
+}
 
 PrerenderSubframeNavigationThrottle::~PrerenderSubframeNavigationThrottle() =
     default;
@@ -74,9 +76,13 @@ PrerenderSubframeNavigationThrottle::WillProcessResponse() {
         frame_tree_node->current_frame_host()
             ->delegate()
             ->GetPrerenderHostRegistry();
-    prerender_host_registry->CancelHost(
-        frame_tree_node->frame_tree().root()->frame_tree_node_id(),
-        PrerenderFinalStatus::kDownload);
+    PrerenderHost* prerender_host =
+        prerender_host_registry->FindNonReservedHostById(
+            frame_tree_node->frame_tree().root()->frame_tree_node_id());
+    if (prerender_host) {
+      prerender_host_registry->CancelHost(prerender_host->prerender_host_id(),
+                                          PrerenderFinalStatus::kDownload);
+    }
     return CANCEL;
   }
 
@@ -126,8 +132,8 @@ void PrerenderSubframeNavigationThrottle::DidFinishNavigation(
   // Ignore finished navigations that are not the activation navigation for the
   // prerendering frame tree that this subframe navigation started in.
   auto* finished_navigation = NavigationRequest::From(nav_handle);
-  if (finished_navigation->prerender_frame_tree_node_id() !=
-      prerender_root_ftn_id_) {
+  if (finished_navigation->activating_prerender_host_id() !=
+      prerender_host_id_) {
     return;
   }
 
@@ -176,7 +182,7 @@ NavigationThrottle::ThrottleCheckResult PrerenderSubframeNavigationThrottle::
                                         ->delegate()
                                         ->GetPrerenderHostRegistry();
   PrerenderHost* prerender_host =
-      registry->FindNonReservedHostById(prerender_root_ftn_id_);
+      registry->FindNonReservedHostById(prerender_host_id_);
   if (!prerender_host) {
     // The PrerenderHostRegistry removed the PrerenderHost and scheduled to
     // destroy it asynchronously.

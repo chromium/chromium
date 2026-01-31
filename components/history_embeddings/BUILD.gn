@@ -40,7 +40,7 @@ static_library("history_embeddings") {
     "//components/optimization_guide/public/mojom",
     "//components/os_crypt/async/browser",
     "//components/page_content_annotations/core",
-    "//components/passage_embeddings",
+    "//components/passage_embeddings/core",
     "//services/passage_embeddings/public/mojom",
     "//sql",
     "//third_party/farmhash",
@@ -59,7 +59,7 @@ source_set("test_support") {
     ":history_embeddings",
     "//base/test:test_support",
     "//components/history/core/browser",
-    "//components/passage_embeddings",
+    "//components/passage_embeddings/core",
   ]
 }
 
@@ -91,8 +91,8 @@ source_set("unit_tests") {
     "//components/optimization_guide/proto:optimization_guide_proto",
     "//components/os_crypt/async/browser:test_support",
     "//components/page_content_annotations/core:test_support",
-    "//components/passage_embeddings",
-    "//components/passage_embeddings:test_support",
+    "//components/passage_embeddings/core",
+    "//components/passage_embeddings/core:test_support",
     "//components/prefs:test_support",
     "//mojo/public/cpp/bindings",
     "//services/passage_embeddings/public/mojom",

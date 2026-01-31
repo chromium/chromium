@@ -152,6 +152,14 @@ enum class TaskIds {
   // team_email: cbe-device-trust-eng@google.com
   // owner:xzonghan@chromium.org
   CHROME_SIGNALS_REPORTING_JOB_ID = 114,
+  // component: Internals>Metrics
+  // team_email: chrome-metrics-team@google.com
+  // owner: asvitkine@google.com, rkaplow@google.com, lucnguyen@google.com
+  UMA_UPLOAD_JOB_ID = 115,
+  UKM_UPLOAD_JOB_ID = 116,
+  DWA_UPLOAD_JOB_ID = 117,
+  PUMA_UPLOAD_JOB_ID = 118,
+  STRUCTURED_METRICS_UPLOAD_JOB_ID = 119,
 };
 
 }  // namespace background_task

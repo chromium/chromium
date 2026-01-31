@@ -196,6 +196,15 @@ MATCHER_P6(IsPaintChunk,
   return CheckChunk(arg, begin, end, id, properties, hit_test_data, &bounds);
 }
 
+MATCHER_P3(IsPaintChunkWithTrackedElementData,
+           begin,
+           end,
+           tracked_element_data,
+           "") {
+  return CheckChunk(arg, begin, end) &&
+         *arg.tracked_element_data == *tracked_element_data;
+}
+
 // Shorter names for frequently used display item types in tests.
 const DisplayItem::Type kBackgroundType = DisplayItem::kBoxDecorationBackground;
 const DisplayItem::Type kForegroundType =

@@ -7,6 +7,7 @@
 #import <CoreSpotlight/CoreSpotlight.h>
 
 #import <memory>
+#import <utility>
 
 #import "base/memory/ptr_util.h"
 #import "base/memory/raw_ptr.h"
@@ -14,7 +15,6 @@
 #import "base/test/scoped_command_line.h"
 #import "base/test/task_environment.h"
 #import "base/test/with_feature_override.h"
-#import "base/types/cxx23_to_underlying.h"
 #import "base/values.h"
 #import "components/handoff/handoff_utility.h"
 #import "components/policy/core/common/policy_pref_names.h"
@@ -194,17 +194,18 @@ class UserActivityBrowserAgentTest : public PlatformTest {
     EXPECT_TRUE(IsIncognitoModeDisabled(pref_service));
   }
 
-  raw_ptr<UserActivityBrowserAgent, DanglingUntriaged>
-      user_activity_browser_agent_;
   ProfileState* profile_state_;
   FakeSceneState* scene_state_;
   FakeSceneController* scene_controller_;
   id<ConnectionInformation> connection_information_;
 
  private:
-  std::unique_ptr<TestBrowser> browser_;
   web::WebTaskEnvironment task_environment_;
   std::unique_ptr<TestProfileIOS> profile_;
+  std::unique_ptr<TestBrowser> browser_;
+
+ protected:
+  raw_ptr<UserActivityBrowserAgent> user_activity_browser_agent_;
 };
 
 #pragma mark - Tests.
@@ -754,7 +755,7 @@ TEST_F(UserActivityBrowserAgentTest,
        PerformActionForShortcutItemWithFirstRunUI) {
   // Setup.
   InstallMockProfileState(static_cast<ProfileInitStage>(
-      base::to_underlying(ProfileInitStage::kFinal) - 1));
+      std::to_underlying(ProfileInitStage::kFinal) - 1));
   UIApplicationShortcutItem* shortcut =
       [[UIApplicationShortcutItem alloc] initWithType:kShortcutNewSearch
                                        localizedTitle:kShortcutNewSearch];
@@ -793,7 +794,7 @@ TEST_F(UserActivityBrowserAgentTest, ContinueUserActivityBookmarks) {
 TEST_F(UserActivityBrowserAgentTest,
        ContinueUserActivityBookmarksFailsFirstRun) {
   InstallMockProfileState(static_cast<ProfileInitStage>(
-      base::to_underlying(ProfileInitStage::kFinal) - 1));
+      std::to_underlying(ProfileInitStage::kFinal) - 1));
   NSUserActivity* user_activity = [[NSUserActivity alloc]
       initWithActivityType:kSiriShortcutAddBookmarkToChrome];
 
@@ -886,7 +887,7 @@ TEST_F(UserActivityBrowserAgentTest, ContinueUserActivityAddToReadingList) {
 TEST_F(UserActivityBrowserAgentTest,
        ContinueUserActivityAddToReadingListFailsFirstRun) {
   InstallMockProfileState(static_cast<ProfileInitStage>(
-      base::to_underlying(ProfileInitStage::kFinal) - 1));
+      std::to_underlying(ProfileInitStage::kFinal) - 1));
   NSUserActivity* user_activity = [[NSUserActivity alloc]
       initWithActivityType:kSiriShortcutAddReadingListItemToChrome];
 

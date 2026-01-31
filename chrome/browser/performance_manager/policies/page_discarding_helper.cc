@@ -8,7 +8,7 @@
 #include <memory>
 #include <utility>
 
-#include "base/byte_count.h"
+#include "base/byte_size.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
 #include "base/feature_list.h"
@@ -42,7 +42,7 @@ const char kDescriberName[] = "PageDiscardingHelper";
 static const uint64_t kSwapFootprintDiscount = 4;
 #endif
 
-using NodeFootprintMap = base::flat_map<const PageNode*, base::ByteCount>;
+using NodeFootprintMap = base::flat_map<const PageNode*, base::ByteSize>;
 
 // Returns the mapping from page_node to its memory footprint estimation.
 NodeFootprintMap GetPageNodeFootprintEstimate(
@@ -52,7 +52,7 @@ NodeFootprintMap GetPageNodeFootprintEstimate(
   result_container.reserve(candidates.size());
   for (const auto& candidate : candidates) {
     result_container.emplace_back(candidate.page_node().get(),
-                                  base::ByteCount(0));
+                                  base::ByteSize(0));
   }
   NodeFootprintMap result(std::move(result_container));
 
@@ -77,7 +77,7 @@ NodeFootprintMap GetPageNodeFootprintEstimate(
     }
     // Get the footprint of the process and split it equally across its
     // frames.
-    base::ByteCount footprint = process_node->GetResidentSet();
+    base::ByteSize footprint = process_node->GetResidentSet();
 #if BUILDFLAG(IS_CHROMEOS)
     footprint += process_node->GetPrivateSwap() / kSwapFootprintDiscount;
 #endif
@@ -187,12 +187,13 @@ PageDiscardingHelper::DiscardMultiplePagesImpl(
     page_node_footprint = GetPageNodeFootprintEstimate(candidates);
   }
 
-  base::ByteCount total_reclaim;
+  base::ByteSize total_reclaim;
   DiscardResult result;
 
   // Note: If `reclaim_target->target` is zero, this loop is not entered.
   while (!candidates.empty() &&
-         (!reclaim_target || total_reclaim < reclaim_target->target)) {
+         (!reclaim_target ||
+          total_reclaim.AsDeprecatedByteCount() < reclaim_target->target)) {
     const PageNodeSortProxy candidate = std::move(candidates.back());
     candidates.pop_back();
 
@@ -203,7 +204,7 @@ PageDiscardingHelper::DiscardMultiplePagesImpl(
 
     const PageNode* node = candidate.page_node().get();
 
-    std::optional<base::ByteCount> node_reclaim;
+    std::optional<base::ByteSize> node_reclaim;
     if (reclaim_target) {
       // TODO(crbug.com/40755583): Use the `estimated_memory_freed` obtained
       // from `DiscardPageNode()` below to avoid the need to build
@@ -215,7 +216,7 @@ PageDiscardingHelper::DiscardMultiplePagesImpl(
       // the average Memory.Renderer.PrivateMemoryFootprint histogram value on
       // Windows in August 2021.
       node_reclaim = page_node_footprint[node].is_zero()
-                         ? base::MiB(80)
+                         ? base::MiBU(80)
                          : page_node_footprint[node];
 
       LOG(WARNING) << "Queueing discard attempt, type="
@@ -240,15 +241,15 @@ PageDiscardingHelper::DiscardMultiplePagesImpl(
     }
 
     // Do the discard.
-    std::optional<base::ByteCount> estimated_memory_freed =
+    std::optional<base::ByteSize> estimated_memory_freed =
         page_discarder_->DiscardPageNode(node, discard_reason);
 
     // If discard is successful:
     if (estimated_memory_freed.has_value()) {
       const base::TimeTicks discard_time = base::TimeTicks::Now();
 
-      unnecessary_discard_monitor_.OnDiscard(estimated_memory_freed.value(),
-                                             discard_time);
+      unnecessary_discard_monitor_.OnDiscard(
+          estimated_memory_freed.value().AsDeprecatedByteCount(), discard_time);
 
       RecordDiscardedTabMetrics(candidate);
 
@@ -331,9 +332,9 @@ void PageDiscardingHelper::OnTakenFromGraph(Graph* graph) {
   graph->RemovePageNodeObserver(this);
 }
 
-base::Value::Dict PageDiscardingHelper::DescribePageNodeData(
+base::DictValue PageDiscardingHelper::DescribePageNodeData(
     const PageNode* node) const {
-  base::Value::Dict ret;
+  base::DictValue ret;
   TabPageDecorator::TabHandle* tab_handle =
       TabPageDecorator::FromPageNode(node);
   if (tab_handle) {

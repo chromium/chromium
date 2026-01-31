@@ -4,7 +4,6 @@
 
 #include "chrome/browser/predictors/lcp_critical_path_predictor/lcp_critical_path_predictor_util.h"
 
-#include "base/containers/contains.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
 #include "base/strings/string_split.h"
@@ -712,7 +711,7 @@ bool IsLCPPFontPrefetchExcludedHost(const GURL& url) {
       base::SplitString(
           blink::features::kLCPPFontURLPredictorExcludedHosts.Get(), ",",
           base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY));
-  return base::Contains(*excluded_hosts, url.GetHost());
+  return excluded_hosts->contains(url.GetHost());
 }
 
 template <typename T>

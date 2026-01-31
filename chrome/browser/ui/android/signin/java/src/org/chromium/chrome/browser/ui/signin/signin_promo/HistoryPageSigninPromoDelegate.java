@@ -98,7 +98,7 @@ public class HistoryPageSigninPromoDelegate extends SigninPromoDelegate {
     }
 
     @Override
-    void onDismissButtonClicked() {
+    void permanentlyDismissPromo() {
         ChromeSharedPreferences.getInstance()
                 .writeBoolean(ChromePreferenceKeys.SIGNIN_PROMO_HISTORY_PAGE_DECLINED, true);
     }
@@ -134,11 +134,6 @@ public class HistoryPageSigninPromoDelegate extends SigninPromoDelegate {
     @Override
     boolean shouldHideSecondaryButton() {
         return true;
-    }
-
-    @Override
-    boolean shouldHideDismissButton() {
-        return false;
     }
 
     @Override

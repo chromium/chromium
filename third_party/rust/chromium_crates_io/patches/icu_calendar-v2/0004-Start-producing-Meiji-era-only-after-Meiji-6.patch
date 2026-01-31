@@ -1,0 +1,57 @@
+From fd387a66d01753f4942ca39c40d9eec839fd02f6 Mon Sep 17 00:00:00 2001
+From: Manish Goregaokar <manishearth@google.com>
+Date: Mon, 26 Jan 2026 16:41:08 +0000
+Subject: [PATCH] Start producing Meiji era only after Meiji 6
+
+Backport of https://github.com/unicode-org/icu4x/pull/7503/ (manually
+done due to upstream having heavy refactorings, the code is pretty
+different, but it does the same thing)
+
+There was a recent spec change around this, this updates the code to
+handle it.
+
+Change-Id: Ief814dabb92e743c3b63ce1ab3b49be50e86090d
+---
+ .../icu_calendar-v2/src/cal/japanese.rs       | 19 ++++++++++++++-----
+ 1 file changed, 14 insertions(+), 5 deletions(-)
+
+diff --git a/third_party/rust/chromium_crates_io/vendor/icu_calendar-v2/src/cal/japanese.rs b/third_party/rust/chromium_crates_io/vendor/icu_calendar-v2/src/cal/japanese.rs
+index 37ad427b9dd33..2bc809c07728b 100644
+--- a/third_party/rust/chromium_crates_io/vendor/icu_calendar-v2/src/cal/japanese.rs
++++ b/third_party/rust/chromium_crates_io/vendor/icu_calendar-v2/src/cal/japanese.rs
+@@ -243,6 +243,19 @@ impl GregorianYears for &'_ Japanese {
+             } else if date >= TAISHO_START {
+                 (TAISHO_START, tinystr!(16, "taisho"))
+             } else {
++                // Special case: Meiji 1 to 5 are treated as CE.
++                //
++                // This calendar was adopted in Meiji 6 (1873), but Meiji started
++                // on 1868-10-23, so for Meiji 1 - 5 the lunisolar calendar was still
++                // in use. In order to not produce incorrect pre-Meiji 6
++                // dates, we force the Gregorian calendar there.
++                //
++                // https://tc39.es/proposal-intl-era-monthcode/#table-calendar-types
++                // https://github.com/tc39/proposal-intl-era-monthcode/issues/86
++                if year < 1873 {
++                    return CeBce.era_year_from_extended(year, month, day);
++                }
++
+                 (MEIJI_START, tinystr!(16, "meiji"))
+             }
+         } else {
+@@ -250,11 +263,7 @@ impl GregorianYears for &'_ Japanese {
+             #[allow(clippy::unwrap_used)] // binary search
+             match data.binary_search_by(|(d, _)| d.cmp(&date)) {
+                 Err(0) => {
+-                    return types::EraYear {
+-                        // TODO: return era indices?
+-                        era_index: None,
+-                        ..CeBce.era_year_from_extended(year, month, day)
+-                    };
++                    return CeBce.era_year_from_extended(year, month, day);
+                 }
+                 Ok(index) => data.get(index).unwrap(),
+                 Err(index) => data.get(index - 1).unwrap(),
+-- 
+2.52.0.457.g6b5491de43-goog
+

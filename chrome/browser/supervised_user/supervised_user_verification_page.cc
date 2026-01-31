@@ -136,7 +136,7 @@ int SupervisedUserVerificationPage::GetHTMLTemplateId() {
 }
 
 void SupervisedUserVerificationPage::PopulateCommonStrings(
-    base::Value::Dict& load_time_data) {
+    base::DictValue& load_time_data) {
   load_time_data.Set("overridable", false);
   load_time_data.Set("hide_primary_button", false);
   load_time_data.Set("openDetails", "");

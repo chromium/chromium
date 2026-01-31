@@ -100,6 +100,43 @@ class StructTraitsTest : public testing::Test, public mojom::TraitsTestService {
   mojo::ReceiverSet<TraitsTestService> traits_test_receivers_;
 };
 
+sk_sp<SkData> GetTestAgtm() {
+  skhdr::AdaptiveGlobalToneMap::HeadroomAdaptiveToneMap hatm;
+  hatm.fBaselineHdrHeadroom = 0.1f,
+  hatm.fGainApplicationSpacePrimaries = SkNamedPrimaries::kRec2020;
+  hatm.fAlternateImages = {
+      {
+          .fHdrHeadroom = 0.2,
+          .fColorGainFunction =
+              {
+                  .fComponentMixing =
+                      {
+                          .fRed = 0.1f,
+                          .fGreen = 0.2f,
+                          .fBlue = 0.3f,
+                          .fMax = 0.4f,
+                          .fMin = 0.5f,
+                          .fComponent = 0.6f,
+                      },
+                  .fGainCurve =
+                      {
+                          .fControlPoints =
+                              {
+                                  {.fX = 0.7f, .fY = 0.8f, .fM = 0.9f},
+                              },
+                      },
+              },
+      },
+  };
+  skhdr::AdaptiveGlobalToneMap agtm = {
+      .fHdrReferenceWhite = 100.0f,
+      .fHeadroomAdaptiveToneMap = {hatm},
+  };
+  auto result = agtm.serialize();
+  EXPECT_TRUE(result);
+  return result;
+}
+
 }  // namespace
 
 TEST_F(StructTraitsTest, SelectionBound) {
@@ -302,18 +339,6 @@ TEST_F(StructTraitsTest, NullGpuMemoryBufferHandle) {
   EXPECT_TRUE(output.is_null());
 }
 
-TEST_F(StructTraitsTest, BufferFormat) {
-  using BufferFormatTraits =
-      mojo::EnumTraits<gfx::mojom::BufferFormat, gfx::BufferFormat>;
-  BufferFormat output;
-  mojo::Remote<mojom::TraitsTestService> remote = GetTraitsTestRemote();
-  for (int i = 0; i <= static_cast<int>(BufferFormat::LAST); ++i) {
-    BufferFormat input = static_cast<BufferFormat>(i);
-    BufferFormatTraits::FromMojom(BufferFormatTraits::ToMojom(input), &output);
-    EXPECT_EQ(output, input);
-  }
-}
-
 TEST_F(StructTraitsTest, BufferUsage) {
   using BufferUsageTraits =
       mojo::EnumTraits<gfx::mojom::BufferUsage, gfx::BufferUsage>;
@@ -423,9 +448,7 @@ TEST_F(StructTraitsTest, HDRMetadata) {
   EXPECT_EQ(input, output);
 
   // Include agtm.
-  const size_t agtm_size = 4;
-  const uint8_t agtm_data[agtm_size] = {0xde, 0xad, 0xbe, 0xef};
-  input.setSerializedAgtm(SkData::MakeWithCopy(agtm_data, agtm_size));
+  input.setSerializedAgtm(GetTestAgtm());
   EXPECT_NE(input, output);
   mojo::test::SerializeAndDeserialize<gfx::mojom::HDRMetadata>(input, output);
   EXPECT_EQ(input, output);

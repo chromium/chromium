@@ -27,6 +27,7 @@
 #include "base/threading/thread_restrictions.h"
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
+#include "input_controller.h"
 #include "media/audio/audio_io.h"
 #include "media/audio/audio_manager.h"
 #include "media/base/audio_bus.h"
@@ -50,6 +51,7 @@ using OpenOutcome = media::AudioInputStream::OpenOutcome;
 
 const int kMaxInputChannels = 3;
 constexpr base::TimeDelta kCheckMutedStateInterval = base::Seconds(1);
+constexpr base::TimeDelta kPeriodicLogInterval = base::Seconds(15);
 
 #if BUILDFLAG(CHROME_WIDE_ECHO_CANCELLATION)
 using ReferenceOpenOutcome = ReferenceSignalProvider::ReferenceOpenOutcome;
@@ -164,7 +166,7 @@ void LogLoopbackAECDelay(base::TimeDelta delay) {
 }  // namespace
 
 // A helper class to report capture delay UMA stats from the InputController.
-class InputController::DelayReporter {
+class InputController::StatsReporter {
  public:
   enum class AECType {
     kNoAudioServiceAEC,
@@ -174,18 +176,44 @@ class InputController::DelayReporter {
 
   using OnReportCallback = base::RepeatingCallback<void(base::TimeDelta)>;
 
-  explicit DelayReporter(
-      const ReferenceSignalProvider* reference_signal_provider)
-      : aec_type_(GetAecTypeFromReferenceSignal(reference_signal_provider)),
-        report_cb_(GetOnReportCallback(aec_type_)) {}
+  explicit StatsReporter(
+      const ReferenceSignalProvider* reference_signal_provider,
+      InputController* controller)
+      : start_time_(base::TimeTicks::Now()),
+        last_periodic_log_time_(start_time_),
+        aec_type_(GetAecTypeFromReferenceSignal(reference_signal_provider)),
+        report_cb_(GetOnReportCallback(aec_type_)),
+        controller_(controller) {}
 
-  DelayReporter(const DelayReporter&) = delete;
-  DelayReporter& operator=(const DelayReporter&) = delete;
+  ~StatsReporter() { LogStats("Dtor", base::TimeTicks::Now()); }
+
+  StatsReporter(const StatsReporter&) = delete;
+  StatsReporter& operator=(const StatsReporter&) = delete;
 
   // Calculates and records the capture delay to a UMA histogram based on the
   // active AEC type.
-  void ReportDelay(base::TimeTicks audio_capture_time) {
-    report_cb_.Run(base::TimeTicks::Now() - audio_capture_time);
+  void ReportDelayAndGlitches(base::TimeTicks audio_capture_time,
+                              media::AudioGlitchInfo glitch_info) {
+    base::TimeTicks now = base::TimeTicks::Now();
+    report_cb_.Run(now - audio_capture_time);
+    glitch_info_ += glitch_info;
+    if (now - last_periodic_log_time_ > kPeriodicLogInterval) {
+      last_periodic_log_time_ = now;
+      LogStats("OnData", now);
+    }
+  }
+
+  void LogStats(const std::string& call_name, base::TimeTicks now) {
+    const base::TimeDelta total_duration = now - start_time_;
+    const double glitch_percentage =
+        total_duration.is_zero()
+            ? 0
+            : glitch_info_.duration.InSecondsF() / total_duration.InSecondsF();
+    controller_->SendLogMessage("%s => (duration=%" PRId64 " sec)",
+                                call_name.c_str(), total_duration.InSeconds());
+    controller_->SendLogMessage(
+        "%s => (glitches=[%s], glitch_percentage=%.3f%%)", call_name.c_str(),
+        glitch_info_.ToString().c_str(), glitch_percentage * 100);
   }
 
   AECType GetAecType() const { return aec_type_; }
@@ -230,8 +258,18 @@ class InputController::DelayReporter {
     }
   }
 
+  const base::TimeTicks start_time_;
+  base::TimeTicks last_periodic_log_time_;
+
   const AECType aec_type_;
   const OnReportCallback report_cb_;
+
+  // Accumulates AudioGlitchInfo provided in OnData callbacks.
+  media::AudioGlitchInfo glitch_info_;
+
+  // RAW_PTR_EXCLUSION: InputController object will outlive the
+  // StatsReporter object.
+  RAW_PTR_EXCLUSION InputController* const controller_;
 };
 
 // This class implements the AudioInputCallback interface in place of the
@@ -308,14 +346,15 @@ InputController::InputController(
       stream_(nullptr),
       sync_writer_(sync_writer),
       type_(type),
-      delay_reporter_(
-          std::make_unique<DelayReporter>(reference_signal_provider.get())) {
+      stats_reporter_(
+          std::make_unique<StatsReporter>(reference_signal_provider.get(),
+                                          this)) {
   DCHECK(task_runner_->BelongsToCurrentThread());
   DCHECK(event_handler_);
   DCHECK(sync_writer_);
   weak_this_ = weak_ptr_factory_.GetWeakPtr();
-  SendLogMessage("%s => (delay reporter uses %s as AEC type)", __func__,
-                 delay_reporter_->GetAECTypeAsString());
+  UNSAFE_TODO(SendLogMessage("%s => (delay reporter uses %s as AEC type)",
+                             __func__, stats_reporter_->GetAECTypeAsString()));
 
 #if BUILDFLAG(CHROME_WIDE_ECHO_CANCELLATION)
   MaybeSetUpAudioProcessing(std::move(processing_config), output_params,
@@ -332,14 +371,14 @@ void InputController::MaybeSetUpAudioProcessing(
     std::unique_ptr<ReferenceSignalProvider> reference_signal_provider,
     media::AecdumpRecordingManager* aecdump_recording_manager,
     raw_ptr<MlModelManager> ml_model_manager) {
-  SendLogMessage(
+  UNSAFE_TODO(SendLogMessage(
       "%s({processing_config=[%s]}, {processing_output_params=[%s]}, "
       "{device_params=[%s]})",
       __func__,
       processing_config ? processing_config->settings.ToString().c_str()
                         : "nullptr",
       processing_output_params.AsHumanReadableString().c_str(),
-      device_params.AsHumanReadableString().c_str());
+      device_params.AsHumanReadableString().c_str()));
   if (!processing_config) {
     SendLogMessage("%s => (WARNING: undefined audio processing config)",
                    __func__);
@@ -350,8 +389,9 @@ void InputController::MaybeSetUpAudioProcessing(
   CHECK(reference_signal_provider);
   const bool needs_webrtc_audio_processing =
       processing_config->settings.NeedWebrtcAudioProcessing();
-  SendLogMessage("%s => (needs WebRTC audio processing: %s)", __func__,
-                 needs_webrtc_audio_processing ? "true" : "false");
+  UNSAFE_TODO(SendLogMessage("%s => (needs WebRTC audio processing: %s)",
+                             __func__,
+                             needs_webrtc_audio_processing ? "true" : "false"));
   if (!needs_webrtc_audio_processing) {
     return;
   }
@@ -389,8 +429,9 @@ void InputController::MaybeSetUpAudioProcessing(
   // there is no need to offload work to a new thread.
   const bool echo_cancellation_is_enabled =
       audio_processor_handler_->needs_playout_reference();
-  SendLogMessage("%s => (echo cancellation is: %s)", __func__,
-                 (echo_cancellation_is_enabled ? "enabled" : "disabled"));
+  UNSAFE_TODO(
+      SendLogMessage("%s => (echo cancellation is: %s)", __func__,
+                     (echo_cancellation_is_enabled ? "enabled" : "disabled")));
   if (!echo_cancellation_is_enabled) {
     return;
   }
@@ -557,11 +598,11 @@ void InputController::Close() {
                    : CAPTURE_STARTUP_NEVER_GOT_DATA);
     LogCaptureStartupResult(capture_startup_result);
     LogCallbackError();
-    SendLogMessage("%s => (stream duration=%" PRId64 " seconds%s", __func__,
-                   duration.InSeconds(),
-                   audio_callback_->received_callback()
-                       ? ")"
-                       : " - no callbacks received)");
+    UNSAFE_TODO(SendLogMessage("%s => (stream duration=%" PRId64 " seconds%s",
+                               __func__, duration.InSeconds(),
+                               audio_callback_->received_callback()
+                                   ? ")"
+                                   : " - no callbacks received)"));
     if (type_ == LOW_LATENCY) {
       if (audio_callback_->received_callback()) {
         UMA_HISTOGRAM_LONG_TIMES("Media.InputStreamDuration", duration);
@@ -585,8 +626,8 @@ void InputController::Close() {
 #if defined(AUDIO_POWER_MONITORING)
   // Send stats if enabled.
   if (power_measurement_is_enabled_) {
-    SendLogMessage("%s => (silence_state=%s)", __func__,
-                   SilenceStateToString(silence_state_));
+    UNSAFE_TODO(SendLogMessage("%s => (silence_state=%s)", __func__,
+                               SilenceStateToString(silence_state_)));
   }
 #endif
 
@@ -739,18 +780,18 @@ void InputController::DoLogAudioLevels(float level_dbfs,
   }
 
   static const float kSilenceThresholdDBFS = -72.24719896f;
-  SendLogMessage(
+  UNSAFE_TODO(SendLogMessage(
       "%s => (average audio level=%.2f dBFS%s)", __func__, level_dbfs,
-      level_dbfs < kSilenceThresholdDBFS ? " <=> low audio input level" : "");
+      level_dbfs < kSilenceThresholdDBFS ? " <=> low audio input level" : ""));
 
   if (!microphone_is_muted) {
     UpdateSilenceState(level_dbfs < kSilenceThresholdDBFS);
   }
-  SendLogMessage("%s => (microphone volume=%d%%%s)", __func__,
-                 microphone_volume_percent,
-                 microphone_volume_percent < kLowLevelMicrophoneLevelPercent
-                     ? " <=> low microphone level"
-                     : "");
+  UNSAFE_TODO(SendLogMessage(
+      "%s => (microphone volume=%d%%%s)", __func__, microphone_volume_percent,
+      microphone_volume_percent < kLowLevelMicrophoneLevelPercent
+          ? " <=> low microphone level"
+          : ""));
 #endif
 }
 
@@ -803,7 +844,7 @@ void InputController::SendLogMessage(const char* format, ...) {
   va_list args;
   va_start(args, format);
   event_handler_->OnLog(
-      base::StrCat({"AIC::", base::StringPrintV(format, args)}));
+      base::StrCat({"AIC::", UNSAFE_TODO(base::StringPrintV(format, args))}));
   va_end(args);
 }
 
@@ -842,8 +883,8 @@ void InputController::CheckMutedState() {
   if (new_state != is_muted_) {
     is_muted_ = new_state;
     event_handler_->OnMuted(is_muted_);
-    SendLogMessage("%s => (is_muted=%s)", __func__,
-                   is_muted_ ? "true" : "false");
+    UNSAFE_TODO(SendLogMessage("%s => (is_muted=%s)", __func__,
+                               is_muted_ ? "true" : "false"));
   }
 }
 
@@ -873,7 +914,7 @@ void InputController::OnData(const media::AudioBus* source,
   } else
 #endif
   {
-    delay_reporter_->ReportDelay(capture_time);
+    stats_reporter_->ReportDelayAndGlitches(capture_time, glitch_info);
     sync_writer_->Write(source, volume, capture_time, glitch_info);
   }
 
@@ -896,7 +937,7 @@ void InputController::DeliverProcessedAudio(
     base::TimeTicks audio_capture_time,
     std::optional<double> new_volume,
     const media::AudioGlitchInfo& glitch_info) {
-  delay_reporter_->ReportDelay(audio_capture_time);
+  stats_reporter_->ReportDelayAndGlitches(audio_capture_time, glitch_info);
   // When processing is performed in the audio service, the consumer is not
   // expected to use the input volume and keypress information.
   sync_writer_->Write(&audio_bus, /*volume=*/1.0, audio_capture_time,

@@ -582,7 +582,8 @@ bool ApplyProcessMitigationsToSuspendedProcess(HANDLE process,
     char* ptr = 0;
     const size_t kMask64k = 0xFFFF;
     // Random range (512k-16.5mb) in 64k steps.
-    auto limit = static_cast<unsigned int>(base::RandInt(512, 512 + 16384 - 1));
+    auto limit =
+        static_cast<unsigned int>(base::RandIntInclusive(512, 512 + 16384 - 1));
     const char* end = ptr + ((limit * 1024) & ~kMask64k);
     while (ptr < end) {
       MEMORY_BASIC_INFORMATION memory_info;

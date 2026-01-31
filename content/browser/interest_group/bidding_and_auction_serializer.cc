@@ -110,11 +110,6 @@ struct SerializedBiddersMap {
 };
 
 bool KAnonIsEnabled() {
-  // K-anonymity enforcement is always disabled for the testing population.
-  if (base::FeatureList::IsEnabled(
-          features::kCookieDeprecationFacilitatedTesting)) {
-    return false;
-  }
   return base::FeatureList::IsEnabled(
              blink::features::kFledgeConsiderKAnonymity) &&
          base::FeatureList::IsEnabled(
@@ -384,7 +379,7 @@ ValueAndSizeAndPrevWinsSize SerializeInterestGroup(
     // Currently it's probably not worth it to deserialize this at the same time
     // we load the interest group from the database. We will want to revisit
     // this in the future.
-    std::optional<base::Value::Dict> ad = base::JSONReader::ReadDict(
+    std::optional<base::DictValue> ad = base::JSONReader::ReadDict(
         prev_win->ad_json, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
     if (!ad) {
       // This should not happen unless the DB is corrupted.

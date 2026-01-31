@@ -7,7 +7,6 @@
       "cronet_smoketests_missing_native_library_instrumentation_apk",
       "cronet_smoketests_platform_only_instrumentation_apk",
       "cronet_test_instrumentation_apk",
-      "cronet_tests_android",
       "cronet_unittests_android",
       "net_unittests"
     ],
@@ -279,53 +278,6 @@
         },
         "test": "cronet_test_instrumentation_apk",
         "test_id_prefix": "ninja://components/cronet/android:cronet_test_instrumentation_apk/"
-      },
-      {
-        "args": [
-          "--avd-config=../../tools/android/avd/proto/generic_android23.textpb",
-          "--gs-results-bucket=chromium-result-details",
-          "--recover-devices"
-        ],
-        "merge": {
-          "args": [
-            "--bucket",
-            "chromium-result-details",
-            "--test-name",
-            "cronet_tests_android"
-          ],
-          "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
-        },
-        "module_name": "//components/cronet/android:cronet_tests_android",
-        "module_scheme": "gtest",
-        "name": "cronet_tests_android",
-        "resultdb": {
-          "enable": true,
-          "has_native_resultdb_integration": true
-        },
-        "swarming": {
-          "dimensions": {
-            "cores": "4",
-            "cpu": "x86-64",
-            "device_os": null,
-            "device_type": null,
-            "os": "Ubuntu-22.04",
-            "pool": "chromium.tests.avd"
-          },
-          "named_caches": [
-            {
-              "name": "generic_android23",
-              "path": ".android_emulator/generic_android23"
-            }
-          ],
-          "optional_dimensions": {
-            "60": {
-              "caches": "generic_android23"
-            }
-          },
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
-        },
-        "test": "cronet_tests_android",
-        "test_id_prefix": "ninja://components/cronet/android:cronet_tests_android/"
       },
       {
         "args": [

@@ -23,8 +23,8 @@ class EmptyLogger : public Logger {
   // Logger implementation.
   void AddObserver(Observer* observer) override;
   void RemoveObserver(Observer* observer) override;
-  base::Value::Dict GetServiceStatus() override;
-  base::Value::List GetServiceDownloads() override;
+  base::DictValue GetServiceStatus() override;
+  base::ListValue GetServiceDownloads() override;
 };
 
 }  // namespace test

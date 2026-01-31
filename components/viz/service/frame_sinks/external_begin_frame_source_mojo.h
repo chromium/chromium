@@ -51,6 +51,12 @@ class VIZ_SERVICE_EXPORT ExternalBeginFrameSourceMojo
       bool force,
       base::OnceCallback<void(const BeginFrameAck&)> callback) override;
 
+#if BUILDFLAG(IS_MAC)
+  void IssueExternalVSync(const CADisplayLinkParams& params) override;
+  void SetSupportedDisplayLinkId(int64_t display_id,
+                                 bool is_supported) override;
+#endif
+
   void SetDisplay(Display* display);
 
  private:

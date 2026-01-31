@@ -155,7 +155,7 @@ ParseValueByRegularExpression(const std::string& value, const RE2* regex) {
 
   // Note, the capturing group for the full match is not counted by
   // |NumberOfCapturingGroups|.
-  for (size_t i = 0; i < number_of_capturing_groups; i++) {
+  for (size_t i = 0; i < number_of_capturing_groups; ++i) {
     match_results[i] = &results[i];
     match_results_ptr[i] = &match_results[i];
   }
@@ -450,7 +450,7 @@ std::vector<AddressToken> TokenizeValue(std::u16string_view value) {
     }
     tokens.reserve(value.size());
     for (const std::u16string& part : parts.value()) {
-      for (size_t j = 0; j < part.size(); j++) {
+      for (size_t j = 0; j < part.size(); ++j) {
         tokens.emplace_back(AddressToken{
             .value = part.substr(j, 1),
             .normalized_value =

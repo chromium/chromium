@@ -16,7 +16,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace enterprise_encryption {
+namespace network::enterprise_encryption {
 
 namespace {
 
@@ -56,6 +56,12 @@ class MockCacheEncryptionProvider
     } else {
       get_encryptor_callback_ = std::move(callback);
     }
+  }
+
+  // Returns a dummy key, which is not encrypted.
+  void GetEncryptedCacheEncryptionKey(
+      GetEncryptedCacheEncryptionKeyCallback callback) override {
+    std::move(callback).Run(std::vector<uint8_t>(32, 2));
   }
 
   void DoGetEncryptor(
@@ -244,4 +250,4 @@ TEST_F(OSCryptCacheEncryptionDelegateTest, InitEncryptorNotAvailable) {
   }
 }
 
-}  // namespace enterprise_encryption
+}  // namespace network::enterprise_encryption

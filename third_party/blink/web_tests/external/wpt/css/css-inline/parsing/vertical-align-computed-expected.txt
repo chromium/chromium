@@ -1,0 +1,25 @@
+This is a testharness.js-based test.
+[FAIL] Property vertical-align value '0'
+  assert_equals: expected "baseline" but got "0px"
+[FAIL] Property vertical-align value '0px'
+  assert_equals: expected "baseline" but got "0px"
+[FAIL] Property vertical-align value 'baseline 0'
+  assert_true: 'baseline 0' is a supported value for vertical-align. expected true got false
+[FAIL] Property vertical-align value '0px baseline'
+  assert_true: '0px baseline' is a supported value for vertical-align. expected true got false
+[FAIL] Property vertical-align value 'first'
+  assert_true: 'first' is a supported value for vertical-align. expected true got false
+[FAIL] Property vertical-align value 'last'
+  assert_true: 'last' is a supported value for vertical-align. expected true got false
+[FAIL] Property vertical-align value 'alphabetic'
+  assert_true: 'alphabetic' is a supported value for vertical-align. expected true got false
+[FAIL] Property vertical-align value 'ideographic'
+  assert_true: 'ideographic' is a supported value for vertical-align. expected true got false
+[FAIL] Property vertical-align value 'central'
+  assert_true: 'central' is a supported value for vertical-align. expected true got false
+[FAIL] Property vertical-align value 'mathematical'
+  assert_true: 'mathematical' is a supported value for vertical-align. expected true got false
+[FAIL] Property vertical-align value 'center'
+  assert_true: 'center' is a supported value for vertical-align. expected true got false
+Harness: the test ran to completion.
+

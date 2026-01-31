@@ -7,15 +7,16 @@
 #import <memory>
 #import <string>
 
+#import "base/metrics/puma_histogram_functions.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/ios/wait_util.h"
 #import "base/test/metrics/user_action_tester.h"
-#import "components/country_codes/country_codes.h"
 #import "components/metrics/demographics/demographic_metrics_test_utils.h"
 #import "components/metrics/dwa/dwa_entry_builder.h"
 #import "components/metrics/dwa/dwa_recorder.h"
 #import "components/metrics/dwa/dwa_service.h"
 #import "components/metrics/metrics_service.h"
+#import "components/metrics/private_metrics/private_metrics_reporting_service.h"
 #import "components/metrics/private_metrics/puma_service.h"
 #import "components/metrics_services_manager/metrics_services_manager.h"
 #import "components/network_time/network_time_tracker.h"
@@ -27,7 +28,10 @@
 #import "ios/chrome/test/app/histogram_test_util.h"
 #import "ios/testing/nserror_util.h"
 #import "third_party/metrics_proto/chrome_user_metrics_extension.pb.h"
+#import "third_party/metrics_proto/private_metrics/private_metrics.pb.h"
+#import "third_party/metrics_proto/private_metrics/system_profiles/rc_coarse_system_profile.pb.h"
 #import "third_party/metrics_proto/ukm/report.pb.h"
+#import "third_party/zlib/google/compression_utils.h"
 
 namespace {
 
@@ -35,6 +39,17 @@ bool g_metrics_enabled = false;
 
 chrome_test_util::HistogramTester* g_histogram_tester = nullptr;
 base::UserActionTester* g_user_action_tester = nullptr;
+
+constexpr char kTestBooleanHistogram[] =
+    "PUMA.PumaServiceTestHistogram.Boolean";
+constexpr char kTestLinearHistogram[] = "PUMA.PumaServiceTestHistogram.Linear";
+constexpr char kTestEnumHistogram[] = "PUMA.PumaServiceTestHistogram.Enum";
+
+enum class TestEnum {
+  kValueA = 0,
+  kValueB = 1,
+  kMaxValue = kValueB,
+};
 
 PrefService* GetLocalState() {
   return GetApplicationContext()->GetLocalState();
@@ -229,11 +244,72 @@ metrics::MetricsService* GetMetricsService() {
   metrics::dwa::DwaRecorder::Get()->Purge();
 }
 
-+ (NSString*)pumaCountryIdForTesting {
-  return base::SysUTF8ToNSString(GetPumaService()
-                                     ->GetCountryIdHolderForTesting()
-                                     .GetForTesting()
-                                     .CountryCode());
++ (BOOL)isPumaReportingEnabled {
+  return GetPumaService()->reporting_service()->reporting_active();
+}
+
++ (BOOL)hasUnsentPumaLogs {
+  return GetPumaService()
+      ->reporting_service()
+      ->unsent_log_store()
+      ->has_unsent_logs();
+}
+
++ (void)purgePumaLogs {
+  GetPumaService()->reporting_service()->unsent_log_store()->Purge();
+}
+
++ (void)recordTestPumaMetric {
+  base::PumaHistogramBoolean(base::PumaType::kRc, kTestBooleanHistogram, true);
+  base::PumaHistogramExactLinear(base::PumaType::kRc, kTestLinearHistogram, 50,
+                                 101);
+  base::PumaHistogramEnumeration(base::PumaType::kRc, kTestEnumHistogram,
+                                 TestEnum::kValueA);
+}
+
++ (void)flushPumaService {
+  GetPumaService()->Flush(
+      metrics::MetricsLogsEventManager::CreateReason::kPeriodic);
+}
+
++ (NSDictionary*)lastPumaRcProfile {
+  metrics::private_metrics::PrivateMetricsReportingService* reporting_service =
+      GetPumaService()->reporting_service();
+  if (!reporting_service) {
+    return nil;
+  }
+
+  metrics::UnsentLogStore* log_store = reporting_service->unsent_log_store();
+  log_store->StageNextLog();
+
+  if (log_store->staged_log().empty()) {
+    return nil;
+  }
+
+  std::string uncompressed_log_data;
+  if (!compression::GzipUncompress(log_store->staged_log(),
+                                   &uncompressed_log_data)) {
+    return nil;
+  }
+
+  private_metrics::PrivateMetricEndpointPayload payload;
+  if (!payload.ParseFromString(uncompressed_log_data)) {
+    return nil;
+  }
+
+  if (!payload.has_private_uma_report() ||
+      !payload.private_uma_report().has_rc_profile()) {
+    return nil;
+  }
+
+  const auto& rc_profile = payload.private_uma_report().rc_profile();
+
+  return @{
+    @"platform" : @(rc_profile.platform()),
+    @"milestone" : @(rc_profile.milestone()),
+    @"profile_country_id" : @(rc_profile.profile_country_id()),
+    @"channel" : @(rc_profile.channel()),
+  };
 }
 
 + (NSError*)setupHistogramTester {

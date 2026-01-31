@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="bn">
 <translation id="1076643793026027628">Chrome ছদ্মবেশী মোডে, অটোমেটিক YouTube ছদ্মবেশী লিঙ্ক খোলে।</translation>
+<translation id="1081114897601629648">এইসব পাসওয়ার্ড Google Password Manager-এ ইমপোর্ট করা হয়নি কারণ তা প্রয়োজনীয়তার সাথে মেলেনি।</translation>
 <translation id="1086486568852410168">Google Lens ব্যবহার করে সার্চ করুন</translation>
 <translation id="1088490543924960890">Google Password Manager-এর সাহায্যে পাসকী সেভ করা শুরু করুন</translation>
 <translation id="1143896152279775643"><ph name="EMAIL" />-এর জন্য Google পাসওয়ার্ড ম্যানেজারে আপনার পাসওয়ার্ড সেভ হয়ে যাবে।</translation>
@@ -85,6 +86,9 @@
 <translation id="2767464022270041271">কোনও সেভ করা পাসওয়ার্ড নেই। আপনি পাসওয়ার্ড সেভ করলে Google Password Manager সেটি চেক করতে পারবে।</translation>
 <translation id="2788811701191021538">Chrome-এ পেমেন্ট পদ্ধতি সেটিং পৃষ্ঠা খোলে।</translation>
 <translation id="2876628302275096482"><ph name="BEGIN_LINK" />Chrome কীভাবে আপনার ডেটা ব্যক্তিগত রাখে<ph name="END_LINK" /> সেই সম্পর্কে আরও জানুন</translation>
+<translation id="288992067439702510">আপনি Google Chrome-এর <ph name="LIMIT" />টি বুকমার্কের সীমায় পৌঁছে গেছেন, তাই আপনার কিছু বুকমার্ক এখনও Google অ্যাকাউন্টে সেভ করা হয়নি।
+
+আপনি কিছু বুকমার্ক না মোছা পর্যন্ত আপনার অ্যাকাউন্টে নতুন বুকমার্ক সেভ করা যাবে না। আপনি এখন সাইন-আউট করলে, সেভ না করা বুকমার্ক মুছে যাবে।</translation>
 <translation id="2922914028977213693">আপনার iPad-এ Chrome-এর সবচেয়ে বেশি সুবিধা পেতে, এখানে ট্যাপ করুন।</translation>
 <translation id="292371311537977079">Chrome সেটিংস</translation>
 <translation id="2923827943290349720">আপনি Chrome বন্ধ করলে, ছদ্মবেশী ট্যাব লক হয়ে যায়</translation>
@@ -115,6 +119,7 @@
 <translation id="3460369101684070455">অন্য অ্যাপে সেভ করা পাসওয়ার্ড পেতে অটোফিলের জন্য Chrome বেছে নিন</translation>
 <translation id="3472587960215700950">Chrome আপনাকে দিকনির্দেশ এবং শনাক্ত করা ঠিকানায় স্থানীয় তথ্য যাতে দেওয়া যায় তার জন্য Google Maps ব্যবহার করে।</translation>
 <translation id="3482807551645716768">আপনার iPad-এর হোম স্ক্রিন থেকে আরও দ্রুত Chrome অ্যাক্সেস করুন।</translation>
+<translation id="3491067552520121605">দেখানো সাইটগুলির জন্য আপনার Google Password Manager-এ আগে থেকেই পাসওয়ার্ড বা পাসকী রয়েছে। দেখানো সাইন-ইন সংক্রান্ত তথ্য সেভ করতে একটি অ্যাকাউন্ট বেছে নিন, যা Google Password Manager-এ থাকা তথ্য ওভাররাইট করবে।</translation>
 <translation id="3503014945441706099">এছাড়াও, এই Chrome প্রোফাইলের জন্য উন্নত Safe Browsing-এর সুবিধা পান</translation>
 <translation id="3522659714780527202">সিঙ্ক চালু করে রাখুন, যাতে আপনি যেখান থেকেই Chrome ব্যবহার করুন না কেন, সেখানেই আপনি নিজের ট্যাবগুলি দেখতে পারেন</translation>
 <translation id="364480321352456989">আপনার Chrome পুরনো হয়ে গেছে।</translation>
@@ -134,6 +139,7 @@
 <translation id="4167555379306984168">Chrome-এ নতুন কী আছে তা দেখুন</translation>
 <translation id="417201473131094001">'Chrome ক্যানারি'তে এই সুবিধা পাওয়া যাবে না</translation>
 <translation id="424864128008805179">Chrome থেকে সাইন-আউট করবেন?</translation>
+<translation id="4409545895715116037">এইসব পাসকী Google Password Manager-এ ইমপোর্ট করা হয়নি, কারণ এগুলি প্রয়োজনীয় শর্তাবলী পূরণ করে না।</translation>
 <translation id="4430797724889237570">Gmail, Maps, YouTube থেকে লিঙ্ক ও Chrome-এ অন্যান্য অ্যাপ খুলুন</translation>
 <translation id="447252321002412580">Chrome-এর বৈশিষ্ট্য এবং পারফরম্যান্স আরও ভালো করতে সাহায্য করুন</translation>
 <translation id="4523886039239821078">কিছু অ্যাড-অনের কারণে Chrome ক্র্যাশ করতে পারে৷ দয়া করে আনইনস্টল করুন:</translation>
@@ -272,6 +278,7 @@
 <translation id="7284245284340063465">আপনি নিজের পাসফ্রেজ ভুলে গেলে অথবা এই সেটিং পরিবর্তন করতে চাইলে, <ph name="BEGIN_LINK" />আপনার অ্যাকাউন্টে থাকা Chrome ডেটা মুছে দিন<ph name="END_LINK" />।</translation>
 <translation id="7296102444587051536">iOS-এর জন্য Chrome</translation>
 <translation id="7299681342915173313">ইমেল, ডকুমেন্ট ও অন্যান্য অ্যাপের লিঙ্কে ট্যাপ করে এখন থেকে আপনি যেকোনও সময় Chrome ব্যবহার করতে পারেন।</translation>
+<translation id="7334364820047587268">আপনার Google Password Manager-এ আগে থেকেই এইসব অ্যাকাউন্টের পাসওয়ার্ড আছে। ইমপোর্ট করার জন্য আপনি নিচের যেকোনও একটি পাসওয়ার্ড বেছে নিলে, সেটি আগে থাকা পাসওয়ার্ড পরিবর্তন করে দেবে।</translation>
 <translation id="7344094882820374540">বিপজ্জনক সাইট থেকে বাঁচতে Chrome সবচেয়ে শক্তিশালী সুরক্ষা প্রদান করে</translation>
 <translation id="7349129508108954623">Chrome-কে Google Maps ব্যবহার করার অনুমতি দিন যাতে শনাক্ত করা ঠিকানা সম্পর্কে আপনাকে দিকনির্দেশ ও স্থানীয় তথ্য দিতে পারে।</translation>
 <translation id="7371674917547846460">Chrome সম্পর্কিত সহায়ক টিপস ও আরও অনেক কিছু সম্পর্কে আপডেট থাকুন।</translation>
@@ -300,11 +307,11 @@
 <translation id="7787205077729386167">iOS-এ Chrome সেটিংস খুলুন, তারপর "ডিফল্ট ব্রাউজার অ্যাপ" বিকল্পে ট্যাপ করে Chrome বেছে নিন।</translation>
 <translation id="778855399387580014">নতুন Chrome ট্যাবে সার্চ করা শুরু করুন।</translation>
 <translation id="7792140019572081272">Chrome, ফেস আইডির মাধ্যমে আপনার সংবেদনশীল ব্যক্তিগত তথ্য সুরক্ষিত রাখে।</translation>
+<translation id="7825648984449922731">Chrome-এ Gemini ব্যবহার করে ছবি এডিট করুন</translation>
 <translation id="7855730255114109580">Google Chrome আপ টু ডেট আছে</translation>
 <translation id="787226752901403048">ট্যাব গ্রুপে শেয়ার করতে ও যোগ দিতে এবং আইডিয়ার উপরে একসাথে কাজ করতে, Chrome-এ সাইন-ইন করুন</translation>
 <translation id="7897703007638178753">Chrome-এর সাম্প্রতিক ট্যাব দেখুন</translation>
 <translation id="7948283758957877064">Chrome-এ নতুন কী কী রয়েছে</translation>
-<translation id="7996707498590516621">Chrome-এ Gemini ব্যবহার করে ছবি তৈরি করুন</translation>
 <translation id="8000174216052461231">Chrome সম্পর্কিত পরামর্শ: Chrome-এর সবচেয়ে শক্তিশালী সুরক্ষা পান</translation>
 <translation id="8006014511203279255">মেসেজে বা অন্যান্য অ্যাপে থাকা লিঙ্ক যখনই খুলবেন তা Chrome-এ খুলুন।</translation>
 <translation id="8014670471808569312">Chrome আপনার পাসওয়ার্ড সেভ করার সুবিধা প্রদান করবে।</translation>

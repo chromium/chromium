@@ -17,9 +17,6 @@
 // animations, given `isIncognito`.
 - (TabGridTransitionLayout*)transitionLayoutForIsIncognito:(BOOL)isIncognito;
 
-// Asks the provider if the selected cell is visible.
-- (BOOL)isSelectedCellVisible;
-
 @end
 
 #endif  // IOS_CHROME_BROWSER_TAB_SWITCHER_UI_BUNDLED_TAB_GRID_TRANSITIONS_TAB_GRID_TRANSITION_LAYOUT_PROVIDING_H_

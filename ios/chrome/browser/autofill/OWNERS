@@ -1,0 +1,6 @@
+# For refactoring, large-scale/mechanical changes, etc. For most changes,
+# please prefer subdirectory OWNERS files.
+
+sugoi@chromium.org
+tmartino@chromium.org
+vincb@google.com

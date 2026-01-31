@@ -12,7 +12,9 @@ import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.test.util.UrlUtils;
+import org.chromium.net.test.ResponseType;
 import org.chromium.net.test.ServerCertificate;
+import org.chromium.net.test.Type;
 
 import java.util.List;
 import java.util.Map;
@@ -26,25 +28,67 @@ public final class NativeTestServer implements AutoCloseable {
 
     private Long mEmbeddedTestServerAdapter;
 
-    private NativeTestServer(
-            Context context, boolean useHttps, @ServerCertificate int serverCertificate) {
+    public NativeTestServer(Context context, @Type int type) {
         TestFilesInstaller.installIfNeeded(context);
         mEmbeddedTestServerAdapter =
                 NativeTestServerJni.get()
                         .create(
                                 TestFilesInstaller.getInstalledPath(context),
                                 UrlUtils.getIsolatedTestRoot(),
-                                useHttps,
-                                serverCertificate);
+                                type);
     }
 
+    /**
+     * @deprecated Call new NativeTestServer(context, Type.HTTP) instead.
+     */
+    @Deprecated
     public static NativeTestServer createNativeTestServer(Context context) {
-        return new NativeTestServer(context, false /*  useHttps */, ServerCertificate.CERT_OK);
+        return new NativeTestServer(context, Type.HTTP);
     }
 
+    /**
+     * @deprecated Call new NativeTestServer(context, Type.HTTPS) followed by setSSLConfig()
+     *     instead.
+     */
+    @Deprecated
     public static NativeTestServer createNativeTestServerWithHTTPS(
             Context context, @ServerCertificate int serverCertificate) {
-        return new NativeTestServer(context, true /*  useHttps */, serverCertificate);
+        var nativeTestServer = new NativeTestServer(context, Type.HTTPS);
+        nativeTestServer.setSSLConfig(serverCertificate);
+        return nativeTestServer;
+    }
+
+    /**
+     * See native net::test_server::EmbeddedTestServer::SetSSLConfig().
+     *
+     * <p>Must be called before {@link #start}.
+     */
+    public void setSSLConfig(@ServerCertificate int serverCertificate) {
+        NativeTestServerJni.get()
+                .setSSLConfigWithServerCertificate(mEmbeddedTestServerAdapter, serverCertificate);
+    }
+
+    /** See native net::test_server::EmbeddedTestServer::OCSPConfig. */
+    public static final class OCSPConfig {
+        /**
+         * Note: if this is set to SUCCESSFUL, NativeTestServer will automatically add a default
+         * SingleResponse for you. This is to avoid having to expose an API for the
+         * `single_responses` field, which would involve quite a lot of JNI boilerplate. We don't
+         * need the extra flexibility (for now).
+         */
+        public @ResponseType int responseType = ResponseType.OFF;
+    }
+
+    /** See native net::test_server::EmbeddedTestServer::ServerCertificateConfig. */
+    public static final class ServerCertificateConfig {
+        public OCSPConfig stapledOCSPConfig = new OCSPConfig();
+    }
+
+    /** Must be called before {@link #start}. */
+    public void setSSLConfig(ServerCertificateConfig serverCertificateConfig) {
+        NativeTestServerJni.get()
+                .setSSLConfigWithServerCertificateConfig(
+                        mEmbeddedTestServerAdapter, serverCertificateConfig);
     }
 
     public void start() {
@@ -203,10 +247,10 @@ public final class NativeTestServer implements AutoCloseable {
     }
 
     /** Java counterpart of native net::test_server::EmbeddedTestServer::HandleRequestCallback. */
-    public static interface HandleRequestCallback {
+    public interface HandleRequestCallback {
         // Note currently we only support RawHttpResponse. We could add support for more flexible
         // response generation if need be.
-        public RawHttpResponse handleRequest(HttpRequest httpRequest);
+        RawHttpResponse handleRequest(HttpRequest httpRequest);
     }
 
     // The following indirecting methods are needed because jni_zero doesn't support @CalledByNative
@@ -243,15 +287,37 @@ public final class NativeTestServer implements AutoCloseable {
         return rawHttpResponse.getContents();
     }
 
+    @CalledByNative
+    private static @JniType("net::EmbeddedTestServer::OCSPConfig::ResponseType") @ResponseType int
+            getOCSPConfigResponseType(OCSPConfig ocspConfig) {
+        return ocspConfig.responseType;
+    }
+
+    @CalledByNative
+    private static @JniType("cronet::NativeTestServerOCSPConfig") OCSPConfig
+            getServerCertificateConfigStapledOCSPConfig(
+                    ServerCertificateConfig serverCertificateConfig) {
+        return serverCertificateConfig.stapledOCSPConfig;
+    }
+
     @NativeMethods("cronet_tests")
     interface Natives {
         @JniType("long")
         long create(
                 @JniType("std::string") String filePath,
                 @JniType("std::string") String testDataDir,
-                @JniType("bool") boolean useHttps,
+                @JniType("net::EmbeddedTestServer::Type") int type);
+
+        // Note: using different method names because jni_zero does not support overloading.
+        void setSSLConfigWithServerCertificate(
+                long nativeEmbeddedTestServerAdapter,
                 @JniType("net::EmbeddedTestServer::ServerCertificate") @ServerCertificate
                         int certificate);
+
+        void setSSLConfigWithServerCertificateConfig(
+                long nativeEmbeddedTestServerAdapter,
+                @JniType("cronet::NativeTestServerServerCertificateConfig")
+                        ServerCertificateConfig serverCertificateConfig);
 
         void destroy(long nativeEmbeddedTestServerAdapter);
 

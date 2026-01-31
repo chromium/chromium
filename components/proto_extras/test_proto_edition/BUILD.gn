@@ -8,16 +8,26 @@ import("//third_party/protobuf/proto_library.gni")
 proto_library("test_proto_edition") {
   proto_in_dir = "//"
   sources = [ "test_proto_edition.proto" ]
+  proto_deps = [ "//components/proto_extras:proto_extras_options" ]
 }
 
 proto_extras("test_proto_edition_extras") {
   sources = [ "test_proto_edition.proto" ]
 
   deps = [ ":test_proto_edition" ]
+  custom_serialization_deps = [ ":custom_message_serialization" ]
 }
 
 proto_test_extras("test_proto_edition_test_extras") {
   sources = [ "test_proto_edition.proto" ]
   deps = [ ":test_proto_edition" ]
   extras_deps = [ ":test_proto_edition_extras" ]
+}
+
+source_set("custom_message_serialization") {
+  sources = [ "custom_message_serialization.cc" ]
+  deps = [
+    ":test_proto_edition",
+    "//base",
+  ]
 }

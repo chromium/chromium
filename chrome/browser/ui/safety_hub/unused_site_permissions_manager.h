@@ -97,7 +97,7 @@ class UnusedSitePermissionsManager {
   // Stores revoked permissions data on HCSM.
   void StorePermissionInUnusedSitePermissionSetting(
       const std::set<ContentSettingsType>& permissions,
-      const base::Value::Dict& chooser_permissions_data,
+      const base::DictValue& chooser_permissions_data,
       const std::optional<content_settings::ContentSettingConstraints>
           constraint,
       const ContentSettingsPattern& primary_pattern,

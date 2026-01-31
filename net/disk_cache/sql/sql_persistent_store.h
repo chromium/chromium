@@ -266,8 +266,12 @@ class NET_EXPORT_PRIVATE SqlPersistentStore {
   // immediately removed from the cache's entry count and total size, but its
   // data remains on disk until `DeleteDoomedEntry()` is called. The `res_id`
   // ensures that only the correct instance of an entry is doomed.
+  // `accept_index_mismatch` should be set to true if the entry might have
+  // already been removed from the in-memory index by a concurrent operation
+  // (e.g., a previous Doom call).
   void DoomEntry(const CacheEntryKey& key,
                  ResId res_id,
+                 bool accept_index_mismatch,
                  ErrorCallback callback);
 
   // Physically deletes an entry that has been previously marked as doomed. This

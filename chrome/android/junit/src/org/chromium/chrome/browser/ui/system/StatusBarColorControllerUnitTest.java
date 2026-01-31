@@ -28,13 +28,12 @@ import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowLooper;
 
-import org.chromium.base.supplier.ObservableSupplier;
-import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.supplier.MonotonicObservableSupplier;
+import org.chromium.base.supplier.ObservableSuppliers;
+import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.Features;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ActivityTabProvider;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.layouts.LayoutManager;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationConfigManager;
@@ -61,15 +60,15 @@ public class StatusBarColorControllerUnitTest {
             new ActivityScenarioRule<>(TestActivity.class);
 
     @Mock private StatusBarColorProvider mStatusBarColorProvider;
-    @Mock private ObservableSupplier<LayoutManager> mLayoutManagerSupplier;
+    @Mock private MonotonicObservableSupplier<LayoutManager> mLayoutManagerSupplier;
     @Mock private ActivityLifecycleDispatcher mActivityLifecycleDispatcher;
     @Mock private TopUiThemeColorProvider mTopUiThemeColorProvider;
     @Mock private EdgeToEdgeSystemBarColorHelper mSystemBarColorHelper;
     @Mock private DesktopWindowStateManager mDesktopWindowStateManager;
 
     private final ActivityTabProvider mActivityTabProvider = new ActivityTabProvider();
-    private final ObservableSupplierImpl<Integer> mOverviewColorSupplier =
-            new ObservableSupplierImpl<>(Color.TRANSPARENT);
+    private final SettableNonNullObservableSupplier<Integer> mOverviewColorSupplier =
+            ObservableSuppliers.createNonNull(Color.TRANSPARENT);
     private StatusBarColorController mStatusBarColorController;
     private Activity mActivity;
 
@@ -83,7 +82,6 @@ public class StatusBarColorControllerUnitTest {
     }
 
     @Test
-    @Features.EnableFeatures({ChromeFeatureList.EDGE_TO_EDGE_EVERYWHERE})
     @Config(sdk = 30) // Min version needed for e2e everywhere
     public void testSetStatusBarColor_EdgeToEdgeEnabled() {
         StatusBarColorController.setStatusBarColor(mSystemBarColorHelper, mActivity, Color.BLUE);
@@ -94,7 +92,6 @@ public class StatusBarColorControllerUnitTest {
     }
 
     @Test
-    @Features.EnableFeatures({ChromeFeatureList.EDGE_TO_EDGE_EVERYWHERE})
     @Config(sdk = 30) // Min version needed for e2e everywhere
     public void testSetStatusBarColor_EdgeToEdgeEnabled_UseLightIconColor() {
         StatusBarColorController.setStatusBarColor(
@@ -165,7 +162,7 @@ public class StatusBarColorControllerUnitTest {
     public void testOverviewModeOverlay() {
         initialize(/* isTablet= */ false, /* isInDesktopWindow= */ false);
         mStatusBarColorController.updateStatusBarColor();
-        mStatusBarColorController.setScrimColor(Color.TRANSPARENT);
+        mStatusBarColorController.onScrimColorChanged(Color.TRANSPARENT);
 
         @ColorInt int expectedColor = ColorUtils.setAlphaComponentWithFloat(Color.RED, 0.5f);
         mOverviewColorSupplier.set(expectedColor);
@@ -294,7 +291,7 @@ public class StatusBarColorControllerUnitTest {
                 defaultNtpBackground,
                 mStatusBarColorController.getBackgroundColorForNtpForTesting());
 
-        mStatusBarColorController.onBackgroundImageChangedImpl();
+        mStatusBarColorController.updateForceLightIconColorForNtp();
         assertTrue(mStatusBarColorController.getForceLightIconColorForNtpForTesting());
     }
 

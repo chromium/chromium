@@ -21,13 +21,9 @@ MenuButton::MenuButton(PressedCallback callback,
                        int button_context)
     : LabelButton(PressedCallback(), text, button_context) {
   SetHorizontalAlignment(gfx::ALIGN_LEFT);
-  std::unique_ptr<MenuButtonController> menu_button_controller =
-      std::make_unique<MenuButtonController>(
-          this, std::move(callback),
-          std::make_unique<Button::DefaultButtonControllerDelegate>(this));
-  menu_button_controller_ = menu_button_controller.get();
-  SetButtonController(std::move(menu_button_controller));
-
+  SetMenuButtonController(std::make_unique<MenuButtonController>(
+      this, std::move(callback),
+      std::make_unique<Button::DefaultButtonControllerDelegate>(this)));
   SetFocusBehavior(FocusBehavior::ACCESSIBLE_ONLY);
 }
 
@@ -35,6 +31,13 @@ MenuButton::~MenuButton() = default;
 
 bool MenuButton::Activate(const ui::Event* event) {
   return button_controller()->Activate(event);
+}
+
+void MenuButton::SetMenuButtonController(
+    std::unique_ptr<MenuButtonController> menu_button_controller) {
+  CHECK(menu_button_controller);
+  menu_button_controller_ = menu_button_controller.get();
+  LabelButton::SetButtonController(std::move(menu_button_controller));
 }
 
 void MenuButton::SetCallback(PressedCallback callback) {

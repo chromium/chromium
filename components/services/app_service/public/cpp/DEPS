@@ -1,0 +1,6 @@
+specific_include_rules = {
+  "app_launch_params\.h": [
+    "+ui/base/window_open_disposition.h",
+    "+ui/display/types/display_constants.h",
+  ]
+}

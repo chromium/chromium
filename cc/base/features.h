@@ -159,9 +159,11 @@ CC_BASE_EXPORT BASE_DECLARE_FEATURE(kThrottleMainFrameTo60Hz);
 CC_BASE_EXPORT BASE_DECLARE_FEATURE(kThrottleMainFrameTo60HzWebView);
 #endif
 
-// When main frame production is throttled, whether the throttling should be
-// paused for some duration after an urgent main frame request is processed.
-CC_BASE_EXPORT BASE_DECLARE_FEATURE(kBoostFrameRateForUrgentMainFrame);
+// When enabled, clients can request a high framerate, which disables
+// throttling. This is intended to be used when the client knows that the
+// current use case likely warrants higher framerates. Examples include gaming
+// and VR experiences.
+CC_BASE_EXPORT BASE_DECLARE_FEATURE(kHighFramerateRequestFromClient);
 
 // We only want to test the feature value if the client satisfies an eligibility
 // criteria, as testing the value enters the client into an experimental group,
@@ -261,35 +263,24 @@ CC_BASE_EXPORT BASE_DECLARE_FEATURE_PARAM(
 CC_BASE_EXPORT BASE_DECLARE_FEATURE(
     kHandleNonDamagingInputsInScrollJankV4Metric);
 
-// Whether non-damaging frames should count towards scroll jank v4 UMA
-// histograms' fixed window frame count.
+// `ScrollJankV4HistogramEmitter`'s histogram emission policy with regards to
+// non-damaging frames and scrolls.
 //
-// When disabled, `ScrollJankV4HistogramEmitter` will emit fixed window UMA
-// histograms after each window of 64 damaging frames. Missed VSyncs of
-// non-damaging frames will count towards the next damaging frame as long as
-// it's within the same scroll.
+// `kEmitForAllScrolls`: all frames in ALL scrolls (regardless of damage, even
+// if the scroll is completely non-damaging) count towards the UMA histograms.
 //
-// When enabled, `ScrollJankV4HistogramEmitter` will emit fixed window UMA
-// histograms after each window of 64 frames (both damaging and non-damaging).
-CC_BASE_EXPORT BASE_DECLARE_FEATURE_PARAM(
-    bool,
-    kCountNonDamagingFramesTowardsHistogramFrameCount);
+// `kEmitForDamagingScrolls`: all frames in DAMAGING scrolls (containing at
+// least one damaging frame) count towards the UMA histograms. Jank identified
+// in frames in a non-damaging scroll (containing only non-damaging frames)
+// won't be reported in the UMA histograms.
+CC_BASE_EXPORT extern const base::FeatureParam<std::string>
+    kHistogramEmissionPolicy;
+CC_BASE_EXPORT extern const char kEmitForAllScrolls[];
+CC_BASE_EXPORT extern const char kEmitForDamagingScrolls[];
 
 // When enabled, AsyncLayerTreeFrameSink will generate its own BeginFrameArgs
 // when auto_needs_begin_frame_ is enabled.
 CC_BASE_EXPORT BASE_DECLARE_FEATURE(kManualBeginFrame);
-
-// Controls when `LayerTreeHostImpl::DidNotProduceFrame()` drops saved event
-// metrics.
-//
-// When disabled, `LayerTreeHostImpl::DidNotProduceFrame()` ALWAYS drops saved
-// event metrics (regardless of the reason why the frame wasn't produced).
-//
-// When enabled, `LayerTreeHostImpl::DidNotProduceFrame()` only drops saved
-// event metrics if the frame wasn't produced due to NO DAMAGE. In all other
-// cases, it preserves the saved event metrics.
-CC_BASE_EXPORT BASE_DECLARE_FEATURE(
-    kDropMetricsFromNonProducedFramesOnlyIfTheyHadNoDamage);
 
 // When enabled, GpuImageDecodeCache will release its lock during the expensive
 // transfer cache entry serialization and upload steps, as well as during
@@ -302,6 +293,19 @@ CC_BASE_EXPORT BASE_DECLARE_FEATURE(kUnlockDuringGpuImageOperations);
 // own state. When disabled, ProxyMain will rely on state change callbacks from
 // the scheduler.
 CC_BASE_EXPORT BASE_DECLARE_FEATURE(kMainIdleBypassScheduler);
+
+// When enabled, UKM will be reported for compositor frames.
+CC_BASE_EXPORT BASE_DECLARE_FEATURE(kReportUkm);
+
+CC_BASE_EXPORT BASE_DECLARE_FEATURE(kBrowserControlsSmoothScroll);
+
+// When enabled, browser controls height changed that does not request animation
+// will cancel the ongoing animation.
+CC_BASE_EXPORT BASE_DECLARE_FEATURE(
+    kBrowserControlsHeightChangeCancelAnimations);
+
+// When enabled uses derived state machine for Headless mode.
+CC_BASE_EXPORT BASE_DECLARE_FEATURE(kHeadlessSchedulerStateMachine);
 
 }  // namespace features
 

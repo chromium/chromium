@@ -4,8 +4,9 @@
 
 #include "gpu/command_buffer/service/drm_modifiers_filter_dawn.h"
 
+#include <algorithm>
+
 #include "base/check.h"
-#include "base/containers/contains.h"
 #include "base/containers/fixed_flat_set.h"
 #include "base/containers/flat_map.h"
 #include "components/viz/common/resources/shared_image_format_utils.h"
@@ -35,9 +36,7 @@ base::flat_map<viz::SharedImageFormat, std::vector<uint64_t>>
 GetDawnModifierMap(wgpu::Adapter adapter) {
   base::flat_map<viz::SharedImageFormat, std::vector<uint64_t>> modifier_map;
 
-  for (int i = 0; i <= static_cast<int>(gfx::BufferFormat::LAST); i++) {
-    gfx::BufferFormat buffer_format = static_cast<gfx::BufferFormat>(i);
-    auto si_format = viz::GetSharedImageFormat(buffer_format);
+  for (auto si_format : ui::kDrmSharedImageFormats) {
     auto wgpu_format = ToDawnFormat(si_format);
     if (wgpu_format == wgpu::TextureFormat::Undefined) {
       modifier_map.emplace(si_format, std::vector<uint64_t>());
@@ -57,8 +56,8 @@ GetDawnModifierMap(wgpu::Adapter adapter) {
     std::vector<uint64_t> modifiers;
     modifiers.reserve(drmCapabilities.propertiesCount);
     for (size_t j = 0; j < drmCapabilities.propertiesCount; j++) {
-      if (!base::Contains(kModifierBlocklist,
-                          drmCapabilities.properties[j].modifier)) {
+      if (!std::ranges::contains(kModifierBlocklist,
+                                 drmCapabilities.properties[j].modifier)) {
         modifiers.push_back(drmCapabilities.properties[j].modifier);
       }
     }
@@ -97,7 +96,7 @@ std::vector<uint64_t> DrmModifiersFilterDawn::Filter(
 
   std::vector<uint64_t> intersection;
   for (const auto& modifier : modifiers) {
-    if (base::Contains(modifier_set, modifier)) {
+    if (std::ranges::contains(modifier_set, modifier)) {
       intersection.push_back(modifier);
     }
   }

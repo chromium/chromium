@@ -15,11 +15,13 @@
 #include "base/types/strong_alias.h"
 #include "services/device/public/mojom/screen_orientation_lock_types.mojom-blink-forward.h"
 #include "services/network/public/cpp/permissions_policy/permissions_policy_declaration.h"
+#include "third_party/blink/public/common/manifest/manifest.h"
 #include "third_party/blink/public/common/safe_url_pattern.h"
 #include "third_party/blink/public/mojom/manifest/display_mode.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/manifest/manifest.mojom-blink.h"
 #include "third_party/blink/public/mojom/manifest/manifest_launch_handler.mojom-blink-forward.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
+#include "third_party/blink/renderer/modules/manifest/icu_locale_hash_traits.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/graphics/color.h"
 #include "third_party/blink/renderer/platform/json/json_values.h"
@@ -27,6 +29,7 @@
 #include "third_party/blink/renderer/platform/wtf/hash_map.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
+#include "third_party/icu/source/common/unicode/locid.h"
 
 namespace gfx {
 class Size;
@@ -157,6 +160,11 @@ class MODULES_EXPORT ManifestParser {
   // present or is not a valid color.
   std::optional<RGBA32> ParseColor(const JSONObject* object, const String& key);
 
+  // Helper function to validate a BCP 47 locale string and return the parsed
+  // icu::Locale. Returns a null optional if the locale string is invalid or
+  // represents the root/undetermined locale.
+  std::optional<icu::Locale> ParseLocaleKey(const String& locale_str);
+
   // Helper function to parse URLs present on a given |dictionary| in a given
   // field identified by its |key|. The URL is first parsed as a string then
   // resolved using |base_url|. |enforce_document_origin| specified whether to
@@ -237,7 +245,7 @@ class MODULES_EXPORT ManifestParser {
   // https://github.com/WICG/display-override/blob/master/explainer.md
   // Returns a vector of the parsed DisplayMode if any, an empty vector if
   // the field was not present or empty.
-  Vector<mojom::blink::DisplayMode> ParseDisplayOverride(
+  Vector<blink::Manifest::DisplayOverride> ParseDisplayOverride(
       const JSONObject* object);
 
   // Parses the 'orientation' field of the manifest, as defined in:
@@ -281,10 +289,10 @@ class MODULES_EXPORT ManifestParser {
 
   // Parses the 'icons_localized' field of a Manifest, as defined in:
   // https://w3c.github.io/manifest/#dfn-process-a-_localized-image-resource-member
-  // Returns a map of locale strings to vectors of ManifestImageResourcePtr with
+  // Returns a map of Locale to vectors of ManifestImageResourcePtr with
   // the successfully parsed localized icons, if any. An empty map is returned
   // if the field was not present or empty.
-  HashMap<String, Vector<mojom::blink::ManifestImageResourcePtr>>
+  HashMap<icu::Locale, Vector<mojom::blink::ManifestImageResourcePtr>>
   ParseIconsLocalized(const JSONObject* object);
 
   // Parses the 'screenshots' field of a Manifest, as defined in:
@@ -514,6 +522,18 @@ class MODULES_EXPORT ManifestParser {
   // returns true iff the field could be parsed as the boolean true.
   bool ParsePreferRelatedApplications(const JSONObject* object);
 
+  // Parses the 'migrate_from' field of the manifest, as defined in:
+  // https://github.com/WICG/manifest-incubations/blob/gh-pages/pwa-migration-explainer.md
+  // Returns a vector of ManifestMigrateFromPtr.
+  Vector<mojom::blink::ManifestMigrateFromPtr> ParseMigrateFrom(
+      const JSONObject* object);
+
+  // Parses the 'migrate_to' field of the manifest, as defined in:
+  // https://github.com/WICG/manifest-incubations/blob/gh-pages/pwa-migration-explainer.md
+  // Returns a ManifestMigrateToPtr, or nullptr if not present or parsing
+  // failed.
+  mojom::blink::ManifestMigrateToPtr ParseMigrateTo(const JSONObject* object);
+
   // Parses the 'theme_color' field of the manifest, as defined in:
   // https://w3c.github.io/manifest/#dfn-steps-for-processing-the-theme_color-member
   // Returns the parsed theme color if any, or a null optional otherwise.
@@ -569,16 +589,16 @@ class MODULES_EXPORT ManifestParser {
                                                 const PatternInit& init,
                                                 const KURL& base_url);
 
-  HashMap<String, mojom::blink::ManifestLocalizedTextObjectPtr>
+  HashMap<icu::Locale, mojom::blink::ManifestLocalizedTextObjectPtr>
   ParseLocalizedField(const JSONObject* object, const String& field_name);
 
-  HashMap<String, mojom::blink::ManifestLocalizedTextObjectPtr>
+  HashMap<icu::Locale, mojom::blink::ManifestLocalizedTextObjectPtr>
   ParseNameLocalized(const JSONObject* object);
 
-  HashMap<String, mojom::blink::ManifestLocalizedTextObjectPtr>
+  HashMap<icu::Locale, mojom::blink::ManifestLocalizedTextObjectPtr>
   ParseShortNameLocalized(const JSONObject* object);
 
-  HashMap<String, mojom::blink::ManifestLocalizedTextObjectPtr>
+  HashMap<icu::Locale, mojom::blink::ManifestLocalizedTextObjectPtr>
   ParseDescriptionLocalized(const JSONObject* object);
 
   std::optional<PatternInit> MaybeCreatePatternInit(

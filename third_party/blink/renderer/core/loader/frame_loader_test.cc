@@ -101,7 +101,11 @@ TEST_F(FrameLoaderSimTest, LoadEventProgressBeforeUnloadCanceled) {
     // beforeunload event is dispatched from content's RenderFrameImpl, Blink
     // tests mock this out using a WebFrameTestProxy which doesn't check
     // beforeunload before navigating.
-    ASSERT_FALSE(frame_a->Loader().ShouldClose());
+    base::TimeTicks before_unload_dialog_opened_time;
+    base::TimeTicks before_unload_dialog_closed_time;
+    ASSERT_FALSE(frame_a->Loader().ShouldClose(
+        /*is_reload=*/false, before_unload_dialog_opened_time,
+        before_unload_dialog_closed_time));
 
     EXPECT_FALSE(main_frame->GetDocument()->BeforeUnloadStarted());
     EXPECT_FALSE(frame_a->GetDocument()->BeforeUnloadStarted());
@@ -112,7 +116,11 @@ TEST_F(FrameLoaderSimTest, LoadEventProgressBeforeUnloadCanceled) {
   // Now test the opposite, the user allowing the navigation away.
   {
     chrome_client.SetBeforeUnloadConfirmPanelResultForTesting(true);
-    ASSERT_TRUE(frame_a->Loader().ShouldClose());
+    base::TimeTicks before_unload_dialog_opened_time;
+    base::TimeTicks before_unload_dialog_closed_time;
+    ASSERT_TRUE(frame_a->Loader().ShouldClose(
+        /*is_reload=*/false, before_unload_dialog_opened_time,
+        before_unload_dialog_closed_time));
 
     // The navigation was in frame a so it shouldn't affect the parent.
     EXPECT_FALSE(main_frame->GetDocument()->BeforeUnloadStarted());

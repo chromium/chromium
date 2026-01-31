@@ -8,7 +8,6 @@
 
 #include <utility>
 
-#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/json/values_util.h"
 #include "base/observer_list.h"
@@ -58,7 +57,7 @@ void AppWindowGeometryCache::SaveGeometry(
   if (extension_data[window_id].bounds == bounds &&
       extension_data[window_id].window_state == window_state &&
       extension_data[window_id].screen_bounds == screen_bounds &&
-      !base::Contains(unsynced_extensions_, extension_id))
+      !unsynced_extensions_.contains(extension_id))
     return;
 
   base::Time now = base::Time::Now();
@@ -104,11 +103,11 @@ void AppWindowGeometryCache::SyncToStorage() {
     const ExtensionId& extension_id = *sync_it;
     const ExtensionData& extension_data = cache_[extension_id];
 
-    base::Value::Dict dict;
+    base::DictValue dict;
     for (auto data_it = extension_data.cbegin(),
               data_eit = extension_data.cend();
          data_it != data_eit; ++data_it) {
-      base::Value::Dict value;
+      base::DictValue value;
       const gfx::Rect& bounds = data_it->second.bounds;
       const gfx::Rect& screen_bounds = data_it->second.screen_bounds;
       DCHECK(!bounds.IsEmpty());
@@ -206,7 +205,7 @@ void AppWindowGeometryCache::LoadGeometryFromStorage(
     const ExtensionId& extension_id) {
   ExtensionData& extension_data = cache_[extension_id];
 
-  const base::Value::Dict* stored_windows =
+  const base::DictValue* stored_windows =
       prefs_->GetGeometryCache(extension_id);
   if (!stored_windows)
     return;
@@ -219,7 +218,7 @@ void AppWindowGeometryCache::LoadGeometryFromStorage(
     if (extension_data.find(window_id) != extension_data.end())
       continue;
 
-    const base::Value::Dict* stored_window = item.second.GetIfDict();
+    const base::DictValue* stored_window = item.second.GetIfDict();
     if (!stored_window)
       continue;
 

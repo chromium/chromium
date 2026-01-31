@@ -54,8 +54,8 @@ CSSSelectorList* CSSSelectorList::Copy() const {
       AdditionalBytes(sizeof(CSSSelector) * (length - 1)),
       base::PassKey<CSSSelectorList>());
   for (unsigned i = 0; i < length; ++i) {
-    UNSAFE_TODO(new (&list->first_selector_[i])
-                    CSSSelector(first_selector_[i]));
+    UNSAFE_BUFFERS(new (&list->first_selector_[i])
+                       CSSSelector(first_selector_[i]));
   }
 
   return list;
@@ -67,7 +67,7 @@ HeapVector<CSSSelector> CSSSelectorList::Copy(
   for (const CSSSelector* selector = selector_list; selector;
        selector = selector->IsLastInSelectorList()
                       ? nullptr
-                      : UNSAFE_TODO(selector + 1)) {
+                      : UNSAFE_BUFFERS(selector + 1)) {
     selectors.push_back(*selector);
   }
   return selectors;
@@ -78,7 +78,7 @@ void CSSSelectorList::AdoptSelectorVector(
     CSSSelector* selector_array) {
   std::uninitialized_move(selector_vector.begin(), selector_vector.end(),
                           selector_array);
-  UNSAFE_TODO(selector_array[selector_vector.size() - 1])
+  UNSAFE_BUFFERS(selector_array[selector_vector.size() - 1])
       .SetLastInSelectorList(true);
 }
 
@@ -101,7 +101,7 @@ unsigned CSSSelectorList::ComputeLength() const {
   }
   const CSSSelector* current = First();
   while (!current->IsLastInSelectorList()) {
-    UNSAFE_TODO(++current);
+    UNSAFE_BUFFERS(++current);
   }
   return SelectorIndex(*current) + 1;
 }
@@ -122,7 +122,7 @@ bool CSSSelectorList::Renest(const CSSSelector* selector_list,
   bool renested_any = false;
   for (const CSSSelector* current = selector_list; current;
        current = current->IsLastInSelectorList() ? nullptr
-                                                 : UNSAFE_TODO(++current)) {
+                                                 : UNSAFE_BUFFERS(++current)) {
     std::optional<CSSSelector> renested = current->Renest(new_parent);
     renested_any |= renested.has_value();
     result.push_back(renested.value_or(*current));
@@ -165,8 +165,8 @@ void CSSSelectorList::Trace(Visitor* visitor) const {
   }
 
   for (int i = 0;; ++i) {
-    visitor->Trace(UNSAFE_TODO(first_selector_[i]));
-    if (UNSAFE_TODO(first_selector_[i].IsLastInSelectorList())) {
+    visitor->Trace(UNSAFE_BUFFERS(first_selector_[i]));
+    if (UNSAFE_BUFFERS(first_selector_[i].IsLastInSelectorList())) {
       break;
     }
   }

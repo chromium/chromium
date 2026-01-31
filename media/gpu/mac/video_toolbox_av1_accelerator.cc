@@ -2,13 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "media/gpu/mac/video_toolbox_av1_accelerator.h"
 
+#include "base/compiler_specific.h"
 #include "base/numerics/safe_conversions.h"
 #include "media/base/media_log.h"
 #include "media/base/video_types.h"
@@ -215,7 +211,8 @@ bool VideoToolboxAV1Accelerator::ProcessFormat(
     std::unique_ptr<uint8_t[]> av1c =
         libgav1::ObuParser::GetAV1CodecConfigurationBox(
             data.data(), data.size(), &av1c_size);
-    base::span<const uint8_t> av1c_span(av1c.get(), av1c_size);
+    auto av1c_span =
+        UNSAFE_TODO(base::span<const uint8_t>(av1c.get(), av1c_size));
 
     // Build a format configuration with AV1 extensions.
     base::apple::ScopedCFTypeRef<CFDictionaryRef> format_config =

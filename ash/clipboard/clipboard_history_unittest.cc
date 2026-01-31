@@ -22,7 +22,7 @@
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "base/time/time.h"
-#include "chromeos/crosapi/mojom/clipboard_history.mojom.h"
+#include "chromeos/ui/clipboard_history/clipboard_history_types.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/base/clipboard/clipboard.h"
 #include "ui/base/clipboard/clipboard_buffer.h"
@@ -53,6 +53,13 @@ class ClipboardHistoryTest : public AshTestBase {
         Shell::Get()->clipboard_history_controller()->history());
     event_generator_ = std::make_unique<ui::test::EventGenerator>(
         ash::Shell::GetPrimaryRootWindow());
+  }
+
+  // AshTestBase:
+  void TearDown() override {
+    event_generator_.reset();
+    clipboard_history_ = nullptr;
+    AshTestBase::TearDown();
   }
 
   const std::list<ClipboardHistoryItem>& GetClipboardHistoryItems() {
@@ -159,7 +166,7 @@ class ClipboardHistoryTest : public AshTestBase {
  private:
   std::unique_ptr<ui::test::EventGenerator> event_generator_;
   // Owned by ClipboardHistoryControllerImpl.
-  raw_ptr<ClipboardHistory, DanglingUntriaged> clipboard_history_ = nullptr;
+  raw_ptr<ClipboardHistory> clipboard_history_ = nullptr;
 };
 
 // Tests that with nothing copied, nothing is shown.
@@ -537,11 +544,11 @@ TEST_F(ClipboardHistoryTest, DisplayFormatForPlainHTML) {
   ui::ClipboardData data;
   data.set_markup_data("plain html with no img or table tags");
   EXPECT_EQ(ClipboardHistoryItem(data).display_format(),
-            crosapi::mojom::ClipboardHistoryDisplayFormat::kText);
+            chromeos::clipboard_history::DisplayFormat::kText);
 
   data.set_markup_data("<img> </img>");
   EXPECT_EQ(ClipboardHistoryItem(data).display_format(),
-            crosapi::mojom::ClipboardHistoryDisplayFormat::kHtml);
+            chromeos::clipboard_history::DisplayFormat::kHtml);
 }
 
 // Tests that exactly one Ash.ClipboardHistory.ControlToVDelayV2 histogram entry

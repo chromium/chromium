@@ -101,7 +101,7 @@ const AtomicString& GetEventTypeName(WebNode::EventType event_type) {
 
 }  // namespace
 
-WebNode::WebNode() = default;
+WebNode::WebNode(cppgc::SourceLocation loc) : private_(loc) {}
 
 WebNode::WebNode(const WebNode& n) {
   Assign(n);

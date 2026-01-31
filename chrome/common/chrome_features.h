@@ -26,17 +26,6 @@ namespace features {
 // All features in alphabetical order. The features should be documented
 // alongside the definition of their values in the .cc file.
 
-enum class ActorPaintStabilityMode {
-  // Paint stability tracking is not enabled at all.
-  kDisabled,
-  // Paint stability tracking is only added to the journal.
-  kLogOnly,
-  // Paint stability tracking is used as a page stability heuristic.
-  kEnabled,
-};
-COMPONENT_EXPORT(CHROME_FEATURES)
-extern const base::FeatureParam<ActorPaintStabilityMode>
-    kActorPaintStabilityMode;
 COMPONENT_EXPORT(CHROME_FEATURES)
 extern const base::FeatureParam<base::TimeDelta>(
     kActorPaintStabilityIntialPaintTimeout);
@@ -59,15 +48,20 @@ BASE_DECLARE_FEATURE(kAppSpecificNotifications);
 // primitives.
 COMPONENT_EXPORT(CHROME_FEATURES)
 BASE_DECLARE_FEATURE(kDisableBoostPriority);
-enum class DisableBoostPriorityMode {
-  // In renderer processes: wait until after the first load completes before
-  // disabling the boost. In all other processes, disable boost at startup.
-  kAfterLoading,
-  // Priority boosting is disabled for all processes at startup.
-  kAtStartup,
+enum class DisableBoostPriorityExemption {
+  // Priority boosting is disabled for all processes except Browser and Network.
+  kBrowserNetwork,
+  // Priority boosting is disabled for all processes except GPU, Browser, and
+  // Network.
+  kGpuBrowserNetwork,
+  // Priority boosting is disabled for all processes except Browser, Renderers
+  // that are currently loading, and Network while there is at least one
+  // renderer loading.
+  kLoadingBrowserNetwork,
 };
 COMPONENT_EXPORT(CHROME_FEATURES)
-BASE_DECLARE_FEATURE_PARAM(DisableBoostPriorityMode, kDisableBoostPriorityMode);
+BASE_DECLARE_FEATURE_PARAM(DisableBoostPriorityExemption,
+                           kDisableBoostPriorityExemption);
 #endif  // BUILDFLAG(IS_WIN)
 
 #if BUILDFLAG(IS_MAC)
@@ -162,9 +156,6 @@ COMPONENT_EXPORT(CHROME_FEATURES)
 BASE_DECLARE_FEATURE(kPwaNavigationCapturingWithScopeExtensions);
 
 COMPONENT_EXPORT(CHROME_FEATURES)
-BASE_DECLARE_FEATURE(kDesktopPWAsRunOnOsLogin);
-
-COMPONENT_EXPORT(CHROME_FEATURES)
 BASE_DECLARE_FEATURE(kDesktopPWAsPreventClose);
 
 COMPONENT_EXPORT(CHROME_FEATURES)
@@ -228,15 +219,21 @@ COMPONENT_EXPORT(CHROME_FEATURES) BASE_DECLARE_FEATURE(kGlicActorUi);
 COMPONENT_EXPORT(CHROME_FEATURES)
 BASE_DECLARE_FEATURE(kGlicActorUiTaskIconV2);
 COMPONENT_EXPORT(CHROME_FEATURES)
+BASE_DECLARE_FEATURE(kGlicActorUiTaskNudgeUiFix);
+COMPONENT_EXPORT(CHROME_FEATURES)
+BASE_DECLARE_FEATURE(kGlicActorUiGlobalTaskIndicator);
+COMPONENT_EXPORT(CHROME_FEATURES)
 BASE_DECLARE_FEATURE(kGlicActorUiTabIndicatorSpinnerIgnoreReducedMotion);
 COMPONENT_EXPORT(CHROME_FEATURES)
 BASE_DECLARE_FEATURE(kActorUiThemed);
 COMPONENT_EXPORT(CHROME_FEATURES)
-BASE_DECLARE_FEATURE(kGlicHandoffButtonHiddenClientControl);
+BASE_DECLARE_FEATURE(kGlicActorPostTaskUiUpdateEnabled);
 COMPONENT_EXPORT(CHROME_FEATURES)
 BASE_DECLARE_FEATURE(kGlicHandoffButtonShowInImmersiveMode);
 COMPONENT_EXPORT(CHROME_FEATURES)
 BASE_DECLARE_FEATURE(kGlicHandoffButtonResetFocusAndHoverStatus);
+COMPONENT_EXPORT(CHROME_FEATURES)
+BASE_DECLARE_FEATURE(kGlicHandoffButtonHideWhenOmniboxPopupOpened);
 COMPONENT_EXPORT(CHROME_FEATURES)
 BASE_DECLARE_FEATURE(kGlicActorUiOverlayMagicCursor);
 
@@ -271,6 +268,9 @@ COMPONENT_EXPORT(CHROME_FEATURES)
 extern const base::FeatureParam<bool>(kGlicActorUiStandaloneBorderGlow);
 COMPONENT_EXPORT(CHROME_FEATURES)
 extern const base::FeatureParam<base::TimeDelta>(kGlicActorUiDebounceTimer);
+COMPONENT_EXPORT(CHROME_FEATURES)
+extern const base::FeatureParam<int>(
+    kGlicActorUiCompletedTaskExpiryDelaySeconds);
 
 COMPONENT_EXPORT(CHROME_FEATURES)
 extern const base::FeatureParam<base::TimeDelta>(
@@ -316,6 +316,10 @@ extern const base::FeatureParam<size_t>
     kGlicActorIncrementalTypingLongTextThreshold;
 COMPONENT_EXPORT(CHROME_FEATURES)
 extern const base::FeatureParam<base::TimeDelta> kGlicActorTypeToolEnterDelay;
+// Configures which tiers of users are eligible for Actor. It should be a
+// comma-separated list of tier ints ("1,2,3").
+COMPONENT_EXPORT(CHROME_FEATURES)
+extern const base::FeatureParam<std::string> kGlicActorEligibleTiers;
 COMPONENT_EXPORT(CHROME_FEATURES)
 extern const base::FeatureParam<size_t>
     kGlicActorIncrementalTypingLongTextPasteThreshold;
@@ -344,6 +348,11 @@ extern const base::FeatureParam<base::TimeDelta> kGlicActorMoveBeforeClickDelay;
 
 COMPONENT_EXPORT(CHROME_FEATURES)
 BASE_DECLARE_FEATURE(kGlicActOnWebCapabilityForManagedTrials);
+
+COMPONENT_EXPORT(CHROME_FEATURES)
+BASE_DECLARE_FEATURE(kGlicCountryFiltering);
+COMPONENT_EXPORT(CHROME_FEATURES)
+BASE_DECLARE_FEATURE(kGlicLocaleFiltering);
 
 COMPONENT_EXPORT(CHROME_FEATURES)
 BASE_DECLARE_FEATURE(kGlicUnifiedFreScreen);
@@ -546,8 +555,6 @@ BASE_DECLARE_FEATURE(kGlicDefaultTabContextSetting);
 COMPONENT_EXPORT(CHROME_FEATURES)
 BASE_DECLARE_FEATURE(kGlicDefaultContextPinOnBind);
 
-COMPONENT_EXPORT(CHROME_FEATURES) BASE_DECLARE_FEATURE(kGlicClosedCaptioning);
-
 COMPONENT_EXPORT(CHROME_FEATURES)
 BASE_DECLARE_FEATURE(kGlicUnloadOnClose);
 
@@ -579,6 +586,8 @@ COMPONENT_EXPORT(CHROME_FEATURES)
 BASE_DECLARE_FEATURE(kGlicPanelResetSizeAndLocationOnOpen);
 COMPONENT_EXPORT(CHROME_FEATURES)
 BASE_DECLARE_FEATURE(kGlicPersonalContext);
+COMPONENT_EXPORT(CHROME_FEATURES)
+BASE_DECLARE_FEATURE(kGlicGeminiInstructions);
 COMPONENT_EXPORT(CHROME_FEATURES)
 BASE_DECLARE_FEATURE(kGlicPopupWindowsEnabled);
 COMPONENT_EXPORT(CHROME_FEATURES)
@@ -667,14 +676,27 @@ COMPONENT_EXPORT(CHROME_FEATURES)
 BASE_DECLARE_FEATURE(kGlicButtonPressedState);
 
 COMPONENT_EXPORT(CHROME_FEATURES)
+extern const base::FeatureParam<bool> kGlicButtonContainerBackground;
+COMPONENT_EXPORT(CHROME_FEATURES)
+extern const base::FeatureParam<bool> kGlicButtonPressedForceSolidIcon;
+
+COMPONENT_EXPORT(CHROME_FEATURES)
 BASE_DECLARE_FEATURE(kGlicLiveModeOnlyGlow);
 
 COMPONENT_EXPORT(CHROME_FEATURES)
 BASE_DECLARE_FEATURE(kGlicPrintMenuItem);
+
+COMPONENT_EXPORT(CHROME_FEATURES)
+BASE_DECLARE_FEATURE(kGlicMITabContextMenu);
+
 COMPONENT_EXPORT(CHROME_FEATURES)
 extern const base::FeatureParam<int> kGlicCompositeViewWidth;
 COMPONENT_EXPORT(CHROME_FEATURES)
 extern const base::FeatureParam<int> kGlicCompositeViewHeight;
+
+COMPONENT_EXPORT(CHROME_FEATURES)
+BASE_DECLARE_FEATURE(kGlicArchiveConversation);
+
 #endif  // BUILDFLAG(ENABLE_GLIC)
 
 COMPONENT_EXPORT(CHROME_FEATURES) BASE_DECLARE_FEATURE(kGlicExtensions);
@@ -695,6 +717,9 @@ COMPONENT_EXPORT(CHROME_FEATURES)
 BASE_DECLARE_FEATURE_PARAM(base::TimeDelta, kGlicActorAutofillMaximumTimeout);
 
 COMPONENT_EXPORT(CHROME_FEATURES)
+BASE_DECLARE_FEATURE(kGlicDisableUnderlineAnimations);
+
+COMPONENT_EXPORT(CHROME_FEATURES)
 BASE_DECLARE_FEATURE(kActorFormFillingServiceEnableAddress);
 
 COMPONENT_EXPORT(CHROME_FEATURES)
@@ -706,6 +731,8 @@ COMPONENT_EXPORT(CHROME_FEATURES)
 BASE_DECLARE_FEATURE(kGlicWebActuationSetting);
 COMPONENT_EXPORT(CHROME_FEATURES)
 extern const base::FeatureParam<std::string> kGlicWebActuationAllowedTiers;
+COMPONENT_EXPORT(CHROME_FEATURES)
+BASE_DECLARE_FEATURE(kGlicWebActuationSettingsToggle);
 
 COMPONENT_EXPORT(CHROME_FEATURES)
 BASE_DECLARE_FEATURE(kPrivacyGuideForceAvailable);
@@ -724,6 +751,11 @@ extern const base::FeatureParam<base::TimeDelta>
 COMPONENT_EXPORT(CHROME_FEATURES)
 extern const base::FeatureParam<base::TimeDelta>
     kGlicMetricsSessionStartTimeout;
+
+COMPONENT_EXPORT(CHROME_FEATURES)
+BASE_DECLARE_FEATURE(kGlicGuestUrlPresets);
+COMPONENT_EXPORT(CHROME_FEATURES)
+extern const base::FeatureParam<int> kGlicGuestUrlPresetType;
 
 #if !BUILDFLAG(IS_ANDROID)
 COMPONENT_EXPORT(CHROME_FEATURES)
@@ -797,6 +829,10 @@ BASE_DECLARE_FEATURE(kHaTSDesktopDevToolsIssuesCSP);
 
 COMPONENT_EXPORT(CHROME_FEATURES)
 BASE_DECLARE_FEATURE(kHappinessTrackingSurveysForSecurityPage);
+
+COMPONENT_EXPORT(CHROME_FEATURES)
+BASE_DECLARE_FEATURE(kHappinessTrackingSurveysForDesktopSEHijacking);
+
 COMPONENT_EXPORT(CHROME_FEATURES)
 extern const base::FeatureParam<base::TimeDelta>
     kHappinessTrackingSurveysForSecurityPageTime;
@@ -924,46 +960,6 @@ BASE_DECLARE_FEATURE(kIsolatedWebAppManagedGuestSessionInstall);
 COMPONENT_EXPORT(CHROME_FEATURES)
 BASE_DECLARE_FEATURE(kIsolatedWebAppBundleCache);
 #endif
-
-COMPONENT_EXPORT(CHROME_FEATURES) BASE_DECLARE_FEATURE(kKAnonymityService);
-COMPONENT_EXPORT(CHROME_FEATURES)
-extern const base::FeatureParam<std::string> kKAnonymityServiceAuthServer;
-COMPONENT_EXPORT(CHROME_FEATURES)
-extern const base::FeatureParam<std::string> kKAnonymityServiceJoinRelayServer;
-COMPONENT_EXPORT(CHROME_FEATURES)
-extern const base::FeatureParam<std::string> kKAnonymityServiceJoinServer;
-COMPONENT_EXPORT(CHROME_FEATURES)
-extern const base::FeatureParam<base::TimeDelta> kKAnonymityServiceJoinInterval;
-COMPONENT_EXPORT(CHROME_FEATURES)
-extern const base::FeatureParam<std::string> kKAnonymityServiceQueryServer;
-COMPONENT_EXPORT(CHROME_FEATURES)
-extern const base::FeatureParam<std::string> kKAnonymityServiceQueryRelayServer;
-COMPONENT_EXPORT(CHROME_FEATURES)
-extern const base::FeatureParam<base::TimeDelta>
-    kKAnonymityServiceQueryInterval;
-
-COMPONENT_EXPORT(CHROME_FEATURES) BASE_DECLARE_FEATURE(kKAnonymityService);
-COMPONENT_EXPORT(CHROME_FEATURES)
-extern const base::FeatureParam<std::string> kKAnonymityServiceAuthServer;
-COMPONENT_EXPORT(CHROME_FEATURES)
-extern const base::FeatureParam<std::string> kKAnonymityServiceJoinRelayServer;
-COMPONENT_EXPORT(CHROME_FEATURES)
-extern const base::FeatureParam<std::string> kKAnonymityServiceJoinServer;
-COMPONENT_EXPORT(CHROME_FEATURES)
-extern const base::FeatureParam<base::TimeDelta> kKAnonymityServiceJoinInterval;
-COMPONENT_EXPORT(CHROME_FEATURES)
-extern const base::FeatureParam<std::string> kKAnonymityServiceQueryServer;
-COMPONENT_EXPORT(CHROME_FEATURES)
-extern const base::FeatureParam<std::string> kKAnonymityServiceQueryRelayServer;
-COMPONENT_EXPORT(CHROME_FEATURES)
-extern const base::FeatureParam<base::TimeDelta>
-    kKAnonymityServiceQueryInterval;
-
-COMPONENT_EXPORT(CHROME_FEATURES)
-BASE_DECLARE_FEATURE(kKAnonymityServiceOHTTPRequests);
-
-COMPONENT_EXPORT(CHROME_FEATURES)
-BASE_DECLARE_FEATURE(kKAnonymityServiceStorage);
 
 #if BUILDFLAG(IS_LINUX) && !BUILDFLAG(IS_CHROMEOS)
 COMPONENT_EXPORT(CHROME_FEATURES) BASE_DECLARE_FEATURE(kLinuxLowMemoryMonitor);
@@ -1338,19 +1334,14 @@ BASE_DECLARE_FEATURE(kWebAppPeriodicPreinstallUpdate);
 
 COMPONENT_EXPORT(CHROME_FEATURES)
 BASE_DECLARE_FEATURE(kWebAppMigratePreinstalledChat);
-
-COMPONENT_EXPORT(CHROME_FEATURES)
-BASE_DECLARE_FEATURE(kWebAppMigrationApi);
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 COMPONENT_EXPORT(CHROME_FEATURES)
-BASE_DECLARE_FEATURE(kWebAppManifestPolicyAppIdentityUpdate);
+BASE_DECLARE_FEATURE(kWebAppUpgradeToDatabaseVersion6);
 
 #if !BUILDFLAG(IS_ANDROID)
 COMPONENT_EXPORT(CHROME_FEATURES)
 BASE_DECLARE_FEATURE(kWebium);
-COMPONENT_EXPORT(CHROME_FEATURES)
-BASE_DECLARE_FEATURE(kInitialWebUI);
 COMPONENT_EXPORT(CHROME_FEATURES)
 BASE_DECLARE_FEATURE(kInitialWebUIMetrics);
 // TODO(crbug.com/444358999): after the experiment to collect metrics, either
@@ -1358,6 +1349,22 @@ BASE_DECLARE_FEATURE(kInitialWebUIMetrics);
 // components.
 COMPONENT_EXPORT(CHROME_FEATURES)
 BASE_DECLARE_FEATURE(kWebUIReloadButton);
+COMPONENT_EXPORT(CHROME_FEATURES)
+extern const base::FeatureParam<int> kWebUIReloadButtonMaxCrashRecoveryTimes;
+COMPONENT_EXPORT(CHROME_FEATURES)
+extern const base::FeatureParam<base::TimeDelta>
+    kWebUIReloadButtonCrashRecoverResetInterval;
+COMPONENT_EXPORT(CHROME_FEATURES)
+extern const base::FeatureParam<bool> kWebUIReloadButtonRestartUnresponsive;
+COMPONENT_EXPORT(CHROME_FEATURES)
+extern const base::FeatureParam<base::TimeDelta>
+    kWebUIReloadButtonRestartUnresponsiveRenderersTimeout;
+COMPONENT_EXPORT(CHROME_FEATURES)
+extern const base::FeatureParam<bool> kWebUIReloadButtonDeferBrowserViewShow;
+COMPONENT_EXPORT(CHROME_FEATURES)
+BASE_DECLARE_FEATURE(kWebUISplitTabsButton);
+COMPONENT_EXPORT(CHROME_FEATURES)
+BASE_DECLARE_FEATURE(kWebUILocationBar);
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 COMPONENT_EXPORT(CHROME_FEATURES)

@@ -63,6 +63,18 @@ class OptionalButtonMediator {
                 onBeforeHideTransitionCallback);
     }
 
+    public void setOnBeforeShowTransitionCallback(Runnable onBeforeShowTransitionCallback) {
+        mModel.set(
+                OptionalButtonProperties.ON_BEFORE_SHOW_TRANSITION_CALLBACK,
+                onBeforeShowTransitionCallback);
+    }
+
+    public void setOnBeforeDelayedTransitionCallback(Runnable onBeforeDelayedTransitionCallback) {
+        mModel.set(
+                OptionalButtonProperties.ON_BEFORE_DELAYED_TRANSITION_CALLBACK,
+                onBeforeDelayedTransitionCallback);
+    }
+
     public void setPaddingStart(int paddingStart) {
         mModel.set(OptionalButtonProperties.PADDING_START, paddingStart);
     }

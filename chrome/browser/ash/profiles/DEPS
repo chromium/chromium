@@ -20,7 +20,7 @@ include_rules = [
   "+chrome/browser/browsing_data",
   "+chrome/browser/extensions/component_loader.h",
   "+chrome/browser/profiles",
-  "+chrome/browser/ui/browser_list.h",
+  "+chrome/browser/ui/browser_finder.h",
   "+chrome/common/chrome_constants.h",
   "+chrome/common/chrome_switches.h",
 ]

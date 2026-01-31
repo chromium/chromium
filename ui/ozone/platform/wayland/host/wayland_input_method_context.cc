@@ -4,12 +4,12 @@
 
 #include "ui/ozone/platform/wayland/host/wayland_input_method_context.h"
 
+#include <algorithm>
 #include <optional>
 #include <string>
 #include <string_view>
 
 #include "base/command_line.h"
-#include "base/containers/contains.h"
 #include "base/debug/dump_without_crashing.h"
 #include "base/environment.h"
 #include "base/feature_list.h"
@@ -745,7 +745,7 @@ void WaylandInputMethodContext::OnDeleteSurroundingText(int32_t index,
   };
   base::UTF8ToUTF16AndAdjustOffsets(base::UTF16ToUTF8(surrounding_text),
                                     &offsets_for_adjustment);
-  if (base::Contains(offsets_for_adjustment, std::u16string::npos)) {
+  if (std::ranges::contains(offsets_for_adjustment, std::u16string::npos)) {
     LOG(DFATAL) << "The selection range for surrounding text is invalid.";
     return;
   }

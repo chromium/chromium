@@ -31,22 +31,14 @@ class CORE_EXPORT LargestTextPaintManager final {
   DISALLOW_NEW();
 
  public:
-  LargestTextPaintManager(LocalFrameView*, PaintTimingDetector*);
+  explicit LargestTextPaintManager(LocalFrameView*);
   LargestTextPaintManager(const LargestTextPaintManager&) = delete;
   LargestTextPaintManager& operator=(const LargestTextPaintManager&) = delete;
 
-  inline TextRecord* LargestText() {
-    DCHECK(!largest_text_ || largest_text_->HasPaintTime());
-    return largest_text_.Get();
-  }
-  void MaybeUpdateLargestText(TextRecord* record);
   void MaybeUpdateLargestIgnoredText(const LayoutObject&,
                                      const uint64_t&,
                                      const gfx::Rect& frame_visual_rect,
                                      const gfx::RectF& root_visual_rect);
-
-  // Return the text LCP candidate and whether the candidate has changed.
-  std::pair<TextRecord*, bool> UpdateMetricsCandidate();
 
   TextRecord* TakeLargestIgnoredText() {
     return std::exchange(largest_ignored_text_, nullptr);
@@ -59,9 +51,6 @@ class CORE_EXPORT LargestTextPaintManager final {
   friend class LargestContentfulPaintCalculatorTest;
   friend class TextPaintTimingDetectorTest;
 
-  // The current largest text.
-  Member<TextRecord> largest_text_;
-
   unsigned count_candidates_ = 0;
 
   // Text paints are ignored when they (or an ancestor) have opacity 0. This can
@@ -73,7 +62,6 @@ class CORE_EXPORT LargestTextPaintManager final {
   Member<TextRecord> largest_ignored_text_;
 
   Member<const LocalFrameView> frame_view_;
-  Member<PaintTimingDetector> paint_timing_detector_;
 };
 
 // TextPaintTimingDetector contains Largest Text Paint and support for Text
@@ -92,7 +80,7 @@ class CORE_EXPORT TextPaintTimingDetector final
   friend class TextPaintTimingDetectorTest;
 
  public:
-  explicit TextPaintTimingDetector(LocalFrameView*, PaintTimingDetector*);
+  TextPaintTimingDetector(LocalFrameView*, PaintTimingDetector*);
   TextPaintTimingDetector(const TextPaintTimingDetector&) = delete;
   TextPaintTimingDetector& operator=(const TextPaintTimingDetector&) = delete;
 
@@ -118,9 +106,7 @@ class CORE_EXPORT TextPaintTimingDetector final
   inline bool IsRecordingLargestTextPaint() const {
     return recording_largest_text_paint_;
   }
-  inline std::pair<TextRecord*, bool> UpdateMetricsCandidate() {
-    return ltp_manager_.UpdateMetricsCandidate();
-  }
+
   void ReportLargestIgnoredText();
   void Trace(Visitor*) const;
 
@@ -144,13 +130,14 @@ class CORE_EXPORT TextPaintTimingDetector final
 
   inline void QueueToMeasurePaintTime(const LayoutObject& object,
                                       TextRecord* record) {
+    record->SetFrameIndex(frame_index_);
     texts_queued_for_paint_time_.insert(&object, record);
     added_entry_in_latest_frame_ = true;
   }
 
   // LayoutObjects for which text has been aggregated.
-  HeapHashMap<Member<const LayoutObject>, TextPaintStatus> recorded_set_;
-  HeapHashSet<Member<const LayoutObject>> rewalkable_set_;
+  HeapHashMap<WeakMember<const LayoutObject>, TextPaintStatus> recorded_set_;
+  HeapHashSet<WeakMember<const LayoutObject>> rewalkable_set_;
 
   // Text records queued for paint time. Indexed by LayoutObject to make removal
   // easy.
@@ -159,6 +146,7 @@ class CORE_EXPORT TextPaintTimingDetector final
 
   Member<PaintTimingCallbackManager> callback_manager_;
   Member<const LocalFrameView> frame_view_;
+  Member<PaintTimingDetector> paint_timing_detector_;
   // Set lazily because we may not have the correct Window when first
   // initializing this class.
   Member<TextElementTiming> text_element_timing_;

@@ -7,6 +7,7 @@
 #include <string>
 
 #include "chrome/browser/extensions/extension_tab_util.h"
+#include "chrome/browser/extensions/open_tab_helper.h"
 #include "chrome/common/apps/platform_apps/api/browser.h"
 
 namespace chrome_apps {
@@ -19,12 +20,25 @@ ExtensionFunction::ResponseAction BrowserOpenTabFunction::Run() {
       browser::OpenTab::Params::Create(args()));
   EXTENSION_FUNCTION_VALIDATE(params.has_value());
 
-  extensions::ExtensionTabUtil::OpenTabParams options;
-  options.create_browser_if_needed = true;
-  options.url = params->options.url;
+  base::expected<GURL, std::string> maybe_url =
+      extensions::ExtensionTabUtil::PrepareURLForNavigation(
+          params->options.url, extension(), browser_context());
+  if (!maybe_url.has_value()) {
+    return RespondNow(Error(maybe_url.error()));
+  }
+  GURL validated_url = std::move(maybe_url.value());
 
-  const auto result =
-      extensions::ExtensionTabUtil::OpenTab(this, options, user_gesture());
+  base::expected<BrowserWindowInterface*, std::string> maybe_browser =
+      extensions::OpenTabHelper::FindOrCreateBrowser(validated_url, *this,
+                                                     /*create_if_needed=*/true);
+  if (!maybe_browser.has_value()) {
+    return RespondNow(Error(std::move(maybe_browser.error())));
+  }
+
+  base::expected<content::WebContents*, std::string> result =
+      extensions::OpenTabHelper::OpenTab(validated_url, *maybe_browser.value(),
+                                         *this,
+                                         extensions::OpenTabHelper::Params());
   return RespondNow(result.has_value() ? NoArguments() : Error(result.error()));
 }
 

@@ -104,7 +104,7 @@ inline uintptr_t PageEnd(size_t page_size, uintptr_t x) {
 
 // Returns true iff casting a java-side |address| to uintptr_t does not lose
 // bits.
-bool IsValidAddress(jlong address);
+bool IsValidAddress(int64_t address);
 
 // Find the jclass JNI reference corresponding to a given |class_name|.
 // |env| is the current JNI environment handle.
@@ -185,7 +185,8 @@ struct LibInfo_class {
                    uintptr_t* load_address,
                    size_t* load_size) {
     if (load_address) {
-      jlong java_address = env->GetLongField(library_info_obj, load_address_id);
+      int64_t java_address =
+          env->GetLongField(library_info_obj, load_address_id);
       if (!IsValidAddress(java_address)) {
         return false;
       }

@@ -37,6 +37,7 @@ include_rules = [
     "+third_party/blink/common",
     "+third_party/blink/public/common",
     "+third_party/blink/public/mojom",
+    "+third_party/icu/source/common/unicode/locid.h",
     "+third_party/icu/source/common/unicode/unistr.h",
     "+ui/base/page_transition_types.h",
     "+ui/base/ui_base_switches_util.h",

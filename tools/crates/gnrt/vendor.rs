@@ -25,7 +25,7 @@ use guppy::graph::PackageMetadata;
 use itertools::Itertools;
 
 use std::collections::{HashMap, HashSet};
-use std::ffi::OsString;
+use std::ffi::{OsStr, OsString};
 use std::fs::File;
 use std::io::Write;
 use std::path::{Path, PathBuf};
@@ -140,19 +140,13 @@ fn download_crates(args: &VendorCommandArgs, paths: &paths::ChromiumPaths) -> Re
             let msg = format!("Downloading {}", crate_dirname.display());
             println!("{msg}");
             download_crate(p.name(), p.version(), paths).context(msg)?;
-            let skip_patches = match &args.no_patches {
-                Some(v) => v.is_empty() || v.iter().any(|x| *x == p.name()),
-                None => false,
-            };
-            if skip_patches {
-                log::warn!("Skipped applying patches for {}", crate_dirname.display());
-            } else {
-                apply_patches(p.name(), p.version(), paths).context(
-                    "Applying patches failed - hopefully \
-                     `third_party/rust/chromium_crates_io/patches/README.md` \
-                     provides some useful guidance for the next steps...",
-                )?;
-            }
+
+            apply_patches(p.name(), p.version(), &args.no_patches, paths).context(
+                "Applying patches failed - hopefully \
+                 `third_party/rust/chromium_crates_io/patches/README.md` \
+                 provides some useful guidance for the next steps...",
+            )?;
+
             forward_to_owners_file_in_build_dir(paths, p)?;
         }
     }
@@ -463,13 +457,24 @@ fn download_crate(
 fn apply_patches(
     name: &str,
     version: &semver::Version,
+    no_patches_arg: &Option<Vec<String>>,
     paths: &paths::ChromiumPaths,
 ) -> Result<()> {
-    let crate_dir = get_vendor_dir_for_package(paths, name, version);
+    let crate_vendor_dir = get_vendor_dir_for_package(paths, name, version);
+    let crate_dirname = crate_vendor_dir.file_name().unwrap();
+
+    let skip_patches = match no_patches_arg {
+        Some(v) => v.is_empty() || v.iter().map(OsStr::new).any(|x| *x == *crate_dirname),
+        None => false,
+    };
+    if skip_patches {
+        log::warn!("Skipped applying patches for {}", crate_dirname.display());
+        return Ok(());
+    }
 
     let mut patches = Vec::new();
-    let Ok(patch_dir) = std::fs::read_dir(paths.third_party_cargo_root.join("patches").join(name))
-    else {
+    let crate_patches_dir = paths.third_party_cargo_root.join("patches").join(crate_dirname);
+    let Ok(patch_dir) = std::fs::read_dir(crate_patches_dir) else {
         // No patches for this crate.
         return Ok(());
     };
@@ -488,8 +493,8 @@ fn apply_patches(
         let args = vec![
             "apply".to_string(),
             // We need to rebase from the old versioned directory to the new one.
-            format!("-p{}", crate_dir.ancestors().count()),
-            format!("--directory={}", crate_dir.display()),
+            format!("-p{}", crate_vendor_dir.ancestors().count()),
+            format!("--directory={}", crate_vendor_dir.display()),
         ];
         let mut c = std::process::Command::new("git");
         c.args(args.clone());
@@ -506,9 +511,9 @@ fn apply_patches(
 
             log::error!(
                 "Applying patches failed - cleaning up: Removing the {} directory.",
-                crate_dir.display(),
+                crate_vendor_dir.display(),
             );
-            if let Err(rm_err) = std::fs::remove_dir_all(&crate_dir) {
+            if let Err(rm_err) = std::fs::remove_dir_all(&crate_vendor_dir) {
                 Err(rm_err).context(e)?
             } else {
                 Err(e)?

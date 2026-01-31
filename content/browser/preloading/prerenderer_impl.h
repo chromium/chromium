@@ -47,7 +47,7 @@ class CONTENT_EXPORT PrerendererImpl : public Prerenderer,
       PrerenderCancellationCallback callback) override;
 
   // PrerenderHostRegistry::Observer implementations:
-  void OnCancel(FrameTreeNodeId host_frame_tree_node_id,
+  void OnCancel(PrerenderHostId host_id,
                 const PrerenderCancellationReason& reason) override;
   void OnRegistryDestroyed() override;
 

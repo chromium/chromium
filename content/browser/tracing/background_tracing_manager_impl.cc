@@ -4,6 +4,7 @@
 
 #include "content/browser/tracing/background_tracing_manager_impl.h"
 
+#include <algorithm>
 #include <optional>
 #include <utility>
 
@@ -633,7 +634,8 @@ BackgroundTracingManagerImpl::GetAllScenarios() const {
     new_scenario->scenario_name = scenario->scenario_name();
     new_scenario->description = scenario->description();
     new_scenario->is_local_scenario = scenario->is_local_scenario();
-    new_scenario->is_enabled = base::Contains(enabled_scenarios_, scenario);
+    new_scenario->is_enabled =
+        std::ranges::contains(enabled_scenarios_, scenario);
     new_scenario->current_state = scenario->current_state();
     return new_scenario;
   };

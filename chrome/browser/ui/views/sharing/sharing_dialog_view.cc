@@ -106,10 +106,10 @@ const gfx::VectorIcon& GetIconType(
 
 }  // namespace
 
-SharingDialogView::SharingDialogView(views::View* anchor_view,
+SharingDialogView::SharingDialogView(views::BubbleAnchor anchor,
                                      content::WebContents* web_contents,
                                      SharingDialogData data)
-    : LocationBarBubbleDelegateView(anchor_view,
+    : LocationBarBubbleDelegateView(anchor,
                                     web_contents,
                                     /*autosize=*/true),
       data_(std::move(data)) {

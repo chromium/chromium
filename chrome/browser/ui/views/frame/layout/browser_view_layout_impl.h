@@ -5,17 +5,16 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_FRAME_LAYOUT_BROWSER_VIEW_LAYOUT_IMPL_H_
 #define CHROME_BROWSER_UI_VIEWS_FRAME_LAYOUT_BROWSER_VIEW_LAYOUT_IMPL_H_
 
+#include "chrome/browser/ui/views/frame/custom_corners_background.h"
 #include "chrome/browser/ui/views/frame/layout/browser_view_layout.h"
+#include "chrome/browser/ui/views/frame/layout/browser_view_layout_delegate.h"
 #include "chrome/browser/ui/views/frame/layout/browser_view_layout_params.h"
 #include "ui/views/controls/separator.h"
 #include "ui/views/layout/flex_layout_types.h"
 #include "ui/views/view.h"
 
-// Represents common functionality between browser layouts when one or more of
-// the following flags are enabled:
-//  - `features::kAppBrowserUseNewLayout`
-//  - `features::kPopupBrowserUseNewLayout`
-//  - `features::kTabbedBrowserUseNewLayout`
+// Represents common functionality between different browser layout
+// implementations.
 //
 // Contains a number of common layout and utility methods, as well as constants
 // and structures used across these layouts.
@@ -32,13 +31,8 @@ class BrowserViewLayoutImpl : public BrowserViewLayout {
   // BrowserViewLayout:
   void Layout(views::View* host) override;
 
-  // BrowserViewLayout overrides:
-  int GetMinWebContentsWidthForTesting() const override;
-
  protected:
-  // The minimum width of the contents area itself. Applies even when side
-  // panels are open and prevents zero or negative contents sizes.
-  static constexpr int kContentsContainerMinimumWidth = 200;
+  using WindowState = BrowserViewLayoutDelegate::WindowState;
 
   // The overlap between a constrained dialog and the toolbar.
   static constexpr int kDialogToolbarOverlap = 3;
@@ -141,10 +135,17 @@ class BrowserViewLayoutImpl : public BrowserViewLayout {
                                                 BrowserLayoutParams params,
                                                 bool needs_exclusion) const = 0;
 
+  // Configures the background of the top container as appropriate for the
+  // window. Since all browsers have a top container, common logic is here.
+  virtual void ConfigureTopContainerBackground(
+      const BrowserLayoutParams& params,
+      CustomCornersBackground* background);
+
   // Applies additional visual adjustments to UI elements that are not handled
   // by the traditional layout process. This could include clipping, text
   // rendering, overlay configuration, etc.
-  virtual void DoPostLayoutVisualAdjustments() {}
+  virtual void DoPostLayoutVisualAdjustments(
+      const BrowserLayoutParams& params) {}
 
  private:
   // Retrieve dimensions of modal dialogs.

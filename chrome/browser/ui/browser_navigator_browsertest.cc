@@ -1482,7 +1482,15 @@ IN_PROC_BROWSER_TEST_F(BrowserNavigatorTest,
 }
 
 // This test makes sure a crashed singleton tab reloads from a new navigation.
-IN_PROC_BROWSER_TEST_F(BrowserNavigatorTest, NavigateToCrashedSingletonTab) {
+#if BUILDFLAG(IS_WIN)
+// TODO(crbug.com/477008551): Investigate this Windows timeout.
+#define MAYBE_NavigateToCrashedSingletonTab \
+  DISABLED_NavigateToCrashedSingletonTab
+#else
+#define MAYBE_NavigateToCrashedSingletonTab NavigateToCrashedSingletonTab
+#endif
+IN_PROC_BROWSER_TEST_F(BrowserNavigatorTest,
+                       MAYBE_NavigateToCrashedSingletonTab) {
   const GURL singleton_url(GetContentSettingsURL());
   WebContents* web_contents = chrome::AddSelectedTabWithURL(
       browser(), singleton_url, ui::PAGE_TRANSITION_LINK);

@@ -1,5 +1,7 @@
 include_rules = [
-  "+ios/chrome/browser/incognito_interstitial/ui_bundled/incognito_interstitial_constants.h",
+  # keep-sorted start
   "+ios/chrome/browser/first_run/public/best_features_item.h",
+  "+ios/chrome/browser/incognito_interstitial/ui_bundled/incognito_interstitial_constants.h",
   "+ios/chrome/browser/welcome_back/model/features.h",
+  # keep-sorted end
 ]

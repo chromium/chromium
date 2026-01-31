@@ -4,11 +4,11 @@
 
 #include "chrome/updater/handle_inconsistent_apps_task.h"
 
+#include <algorithm>
 #include <string>
 #include <utility>
 #include <vector>
 
-#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
@@ -96,18 +96,18 @@ void HandleInconsistentAppsTask::FindUnregisteredApps(
     base::OnceClosure callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   MigrateLegacyUpdaters(
-      scope_, base::BindRepeating(
-                  [](scoped_refptr<PersistedData> persisted_data,
-                     const RegistrationRequest& req) {
-                    if (!base::Contains(persisted_data->GetAppIds(),
-                                        base::ToLowerASCII(req.app_id)) &&
-                        !req.app_id.empty()) {
-                      VLOG(1) << "Registering app from legacy updater: "
-                              << req.app_id;
-                      persisted_data->RegisterApp(req);
-                    }
-                  },
-                  config_->GetUpdaterPersistedData()));
+      scope_,
+      base::BindRepeating(
+          [](scoped_refptr<PersistedData> persisted_data,
+             const RegistrationRequest& req) {
+            if (!std::ranges::contains(persisted_data->GetAppIds(),
+                                       base::ToLowerASCII(req.app_id)) &&
+                !req.app_id.empty()) {
+              VLOG(1) << "Registering app from legacy updater: " << req.app_id;
+              persisted_data->RegisterApp(req);
+            }
+          },
+          config_->GetUpdaterPersistedData()));
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(FROM_HERE,
                                                            std::move(callback));
 }

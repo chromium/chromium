@@ -48,6 +48,7 @@
 <translation id="2761536921376153655">Tipus de cerca</translation>
 <translation id="28682968802727151">Previsualització del mirall</translation>
 <translation id="2879583609344924966"><ph name="CAMERA" /> està endollada.</translation>
+<translation id="3063987824612038785">Tots els fitxers de la càmera es desaran a Google Drive</translation>
 <translation id="3067436040345934772">Desplaça cap a la dreta</translation>
 <translation id="3081586908890909590">Canvia al mode per gravar vídeo</translation>
 <translation id="3091480460059548935">Detecció de text a la previsualització</translation>
@@ -67,6 +68,7 @@
 <translation id="3642192109456033823">S'està processant el vídeo...</translation>
 <translation id="3789724198583203151">Gira 90 graus en sentit antihorari</translation>
 <translation id="3810838688059735925">Vídeo</translation>
+<translation id="386366972082231038">Tots els fitxers de la càmera es desaran a OneDrive</translation>
 <translation id="4060608699153044055">No pots gravar perquè queda poc espai d'emmagatzematge al dispositiu. Per començar a gravar, has d'alliberar espai al dispositiu.</translation>
 <translation id="4061162772429051350"><ph name="MAGAPIXELS_AMOUNT" /> Mpx</translation>
 <translation id="4118525110028899586">Posa en pausa la gravació</translation>
@@ -100,6 +102,7 @@
 <translation id="5634947914995388399">Desplega el quadre de diàleg i atura l'escaneig</translation>
 <translation id="5662366948659129155">S'està escanejant la pàgina <ph name="COUNT" /></translation>
 <translation id="5671277269877808209">Quadrat</translation>
+<translation id="5725797473946373607">No mostris aquest quadre de diàleg la propera vegada</translation>
 <translation id="574392208103952083">Mitja</translation>
 <translation id="5746169159649715125">Desa com a PDF</translation>
 <translation id="5753488212459587150">Activa el mode expert</translation>
@@ -156,6 +159,7 @@ Si els teus suggeriments fan referència a la qualitat d'imatge o de vídeo, adj
 <translation id="7983668134180549431">Text detectat.</translation>
 <translation id="8079255378695216066">No es pot iniciar la gravació</translation>
 <translation id="8120146556401698679">Panoràmica, inclinació i zoom</translation>
+<translation id="8127459436205030819">És possible que els teus fitxers siguin visibles per al teu administrador</translation>
 <translation id="8131740175452115882">Confirma</translation>
 <translation id="8145038249676204903">Canvia al mode per fer fotos</translation>
 <translation id="8167081290930651932">Desa com a foto</translation>
@@ -165,6 +169,7 @@ Si els teus suggeriments fan referència a la qualitat d'imatge o de vídeo, adj
 <translation id="8609951387004618906">Obre <ph name="URL" /></translation>
 <translation id="8629662593426079630">360p</translation>
 <translation id="8711011893539266636">Deixa de silenciar el micròfon. La funció Silencia està activada.</translation>
+<translation id="8712637175834984815">Entesos</translation>
 <translation id="8730621377337864115">Fet</translation>
 <translation id="8732462232047530626">Previsualitza les metadades</translation>
 <translation id="874854738381978209">S'ha detectat una xarxa Wi-Fi.</translation>

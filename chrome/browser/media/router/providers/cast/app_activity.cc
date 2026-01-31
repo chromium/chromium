@@ -9,7 +9,6 @@
 #include <optional>
 #include <vector>
 
-#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "chrome/browser/media/router/providers/cast/cast_activity_manager.h"
 #include "chrome/browser/media/router/providers/cast/cast_session_client.h"
@@ -79,7 +78,7 @@ cast_channel::Result AppActivity::SendAppMessageToReceiver(
     return cast_channel::Result::kFailed;
   }
   const std::string& message_namespace = cast_message.app_message_namespace();
-  if (!base::Contains(session->message_namespaces(), message_namespace)) {
+  if (!session->message_namespaces().contains(message_namespace)) {
     DLOG(ERROR) << "Disallowed message namespace: " << message_namespace;
     if (client && cast_message.sequence_number()) {
       client->SendErrorCodeToClient(
@@ -115,9 +114,8 @@ void AppActivity::SendSetVolumeRequestToReceiver(
       cast_message.client_id(), std::move(callback));
 }
 
-void AppActivity::SendMediaStatusToClients(
-    const base::Value::Dict& media_status,
-    std::optional<int> request_id) {
+void AppActivity::SendMediaStatusToClients(const base::DictValue& media_status,
+                                           std::optional<int> request_id) {
   CastActivity::SendMediaStatusToClients(media_status, request_id);
   if (media_controller_) {
     media_controller_->SetMediaStatus(media_status);
@@ -137,7 +135,7 @@ void AppActivity::BindMediaController(
     CastSession* session = GetSession();
     if (session) {
       media_controller_->SetSession(*session);
-      base::Value::Dict status_request;
+      base::DictValue status_request;
       status_request.Set("type",
                          cast_util::EnumToString<
                              cast_channel::V2MessageType,
@@ -189,7 +187,7 @@ bool AppActivity::CanJoinSession(const CastMediaSource& cast_source) const {
     return false;
   }
 
-  if (base::Contains(connected_clients_, cast_source.client_id())) {
+  if (connected_clients_.contains(cast_source.client_id())) {
     return false;
   }
 

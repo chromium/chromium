@@ -101,8 +101,8 @@ enum MetricEnrollment {
   kMetricEnrollmentRegisterPolicyHttpError = 39,
   // Registration / policy fetch failed: can't decode DM server response.
   kMetricEnrollmentRegisterPolicyResponseInvalid = 40,
-  // OAuth token fetch failed: account not signed up.
-  kMetricEnrollmentAccountNotSignedUp = 41,
+  // OAuth token fetch failed: account not found.
+  kMetricEnrollmentAccountNotFound = 41,
   /* kMetricEnrollmentAccountDeleted = 42 REMOVED */
   /* kMetricEnrollmentAccountDisabled = 43 REMOVED */
   // Re-enrollment pre-check failed: domain does not match install attributes.

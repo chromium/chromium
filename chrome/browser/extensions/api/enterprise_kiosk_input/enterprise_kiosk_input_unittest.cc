@@ -136,10 +136,10 @@ class EnterpriseKioskInputTest : public ExtensionApiUnittest {
   }
 
  protected:
-  base::Value::List CreateArgs(const std::string& input_method_id) {
+  base::ListValue CreateArgs(const std::string& input_method_id) {
     api::enterprise_kiosk_input::SetCurrentInputMethodOptions options;
     options.input_method_id = input_method_id;
-    base::Value::List args;
+    base::ListValue args;
     args.Append(options.ToValue());
     return args;
   }

@@ -57,7 +57,7 @@ void RecordFileSizeHistogram(const base::FilePath& path_to_database) {
   if (size_bytes.has_value()) {
     base::UmaHistogramCounts1M(
         "PrivacySandbox.PrivateAggregation.BudgetStorage.DbSize",
-        base::MakeClampedNum(size_bytes.value() / 1024));
+        base::ClampedNumeric(size_bytes.value() / 1024));
   }
 }
 

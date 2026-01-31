@@ -297,10 +297,19 @@ TEST(PolicyEngineTest, ActionOpcodes) {
   void* dummy = nullptr;
   ParameterSet ppb1 = ParamPickerMake(dummy);
 
-  PolicyOpcode* op1 = opcode_maker.MakeOpAction(ASK_BROKER, kPolNone);
+  PolicyOpcode* op1 = opcode_maker.MakeOpAction(ASK_BROKER, 0U);
   ASSERT_NE(nullptr, op1);
   EXPECT_TRUE(op1->IsAction());
   EXPECT_EQ(ASK_BROKER, op1->Evaluate(&ppb1, 1, &mc1));
+
+  PolicyOpcode* op2 = opcode_maker.MakeOpAction(RETURN_CONST, 123456789U);
+  ASSERT_NE(nullptr, op2);
+  EXPECT_TRUE(op2->IsAction());
+  MatchContext mc2;
+  EXPECT_EQ(RETURN_CONST, op2->Evaluate(&ppb1, 1, &mc2));
+  uintptr_t constant;
+  op2->GetArgument(1, &constant);
+  EXPECT_EQ(123456789U, constant);
 }
 
 }  // namespace sandbox

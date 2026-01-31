@@ -808,7 +808,7 @@ export function createTextBox() {
               width: DEFAULT_TEXTBOX_WIDTH,
             },
             id: 0,
-            pageNumber: 0,
+            pageIndex: 0,
           },
           pageDimensions: {x: 10, y: 3, width: 390, height: 490},
         },

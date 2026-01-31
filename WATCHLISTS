@@ -89,6 +89,8 @@
                   'AccessibilitySettings' \
                   'PageZoom' \
                   '|components/browser_ui/accessibility/android/' \
+                  '|ui/accessibility/android/java/src/org/chromium/ui/accessibility/' \
+                  '|ui/accessibility/android/' \
     },
     'android_accessibility_web': {
       'filepath': 'WebContentsAccessibility' \
@@ -1315,6 +1317,9 @@
                   'chrome/browser/resources/glic',
 
     },
+    'glic_api': {
+      'filepath': 'chrome/browser/resources/glic/glic_api',
+    },
     'global_media_controls': {
       'filepath': 'chrome/browser/ui/global_media_controls|'\
                   'chrome/browser/ui/views/global_media_controls|'\
@@ -2141,6 +2146,9 @@
     'splitview': {
       'filepath': 'ash/wm/splitview/'
     },
+    'sql': {
+      'filepath': '^components/persistent_cache/|^sql/|^third_party/sqlite/',
+    },
     'startup': {
       'filepath': 'chrome/browser/ui/startup/',
     },
@@ -2419,7 +2427,8 @@
                   '|third_party/wayland-protocols/',
     },
     'web_applications': {
-      'filepath': 'chrome/browser/web_applications'\
+      'filepath': 'components/webapps'\
+                  '|chrome/browser/web_applications'\
                   '|chrome/browser/ui/web_applications',
     },
     'web_package': {
@@ -3021,6 +3030,8 @@
     'gfx_geometry': ['cc-bugs@chromium.org'],
     'gfx_image': ['rsesek+watch@chromium.org'],
     'glic': ['dewittj+watch@chromium.org'],
+    'glic_api': ['zewenli@google.com', 'anuragsimgeker@google.com',
+                 'thorstenk@google.com'],
     'global_media_controls': ['steimel+watch-gmc@chromium.org'],
     'gn': ['agrieve+watch@chromium.org',
            'dpranke@chromium.org'],
@@ -3068,7 +3079,6 @@
     'ios_widget_kit': ['rkgibson+watch@chromium.org'],
     'ipcz': ['andreaorru+watch@chromium.org'],
     'isolated_web_apps_apis': ['greengrape@google.com',
-                               'rmcelrath+watch@chromium.org',
                                'simonha@google.com'],
     'isolated_web_apps_core': ['greengrape@google.com',
                                'rmcelrath+watch@chromium.org',
@@ -3265,7 +3275,7 @@
     'sampling_profiler': ['thiabaud@google.com', 'spvm@chromium.org'],
     'scanning': ['gavinwill+scanning-watch@chromium.org'],
     'screen_ai': ['rhalavati+watch@chromium.org'],
-    'search_engine_choice_screen': ['chrome-waffle-eng+watch@google.com'],
+    'search_engine_choice_screen': ['chrome-regionalcapabilities+watch@google.com'],
     'search_prefetch': ['lingqi+watch@chromium.org'],
     'security': ['security-watchlist@chromium.org'],
     'security_interstitials': ['drubery+watch@chromium.org'],
@@ -3309,6 +3319,7 @@
                                 'web-devrel-vitals-team@google.com',
                                 'sullivan@chromium.org'],
     'splitview': ['toshikikikuchi+watch-splitview@chromium.org'],
+    'sql': ['grt+watch@chromium.org'],
     'startup': ['nicolaso+watch@chromium.org',
                 'ydago+watch@chromium.org'],
     'storage': ['storage-reviews@chromium.org'],
@@ -3409,10 +3420,13 @@
     'wallpapers': ['croissant-eng+reviews@chromium.org'],
     'wayland': ['max+watch-wayland@igalia.com',
                 'nickdiego+watch-chromium@igalia.com'],
-    'web_applications': ['dibyapal+watch-webapps@chromium.org',
+    'web_applications': ['aixba+watch-webapps@chromium.org',
+                         'dibyapal+watch-webapps@chromium.org',
                          'dmurph+watching-webapps@chromium.org',
                          'kuragin+web-applications-cls@chromium.org',
                          'loyso+watch@chromium.org',
+                         'japhet+webapps@chromium.org',
+                         'mek+webapps@chromium.org',
                          'mgiuca+watch@chromium.org',
                          'phillis+watch@chromium.org',
                          'webappwatch@microsoft.com',
@@ -3427,7 +3441,6 @@
                'kainino+watch@chromium.org'],
     'webid': ['yigu+watch@chromium.org',
               'cbiesinger@chromium.org',
-              'icer@chromium.org',
               'npm+watch@chromium.org'],
     'webnn': ['qjw@chromium.org', 'ningxin.hu@intel.com'],
     'webotp': ['yigu+watch@chromium.org'],

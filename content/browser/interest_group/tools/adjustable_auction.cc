@@ -262,8 +262,7 @@ class AdjustableAuction : public ContentBrowserTest {
          blink::features::kAllowURNsInIframes,
          blink::features::kFledgeDirectFromSellerSignalsHeaderAdSlot},
         /*disabled_features=*/
-        {blink::features::kFledgeEnforceKAnonymity,
-         features::kCookieDeprecationFacilitatedTesting});
+        {blink::features::kFledgeEnforceKAnonymity});
   }
 
   ~AdjustableAuction() override { content_browser_client_.reset(); }
@@ -383,7 +382,7 @@ IN_PROC_BROWSER_TEST_F(AdjustableAuction, RunAdjustableAuction) {
   // Join interest groups before running any auctions.
   // Keep the buyers in a Value so that we can put this directly into the
   // auction config.
-  base::Value::List buyers_for_auction;
+  base::ListValue buyers_for_auction;
   for (size_t owner_i = 0; owner_i < kOwners; ++owner_i) {
     std::string owner_str =
         base::StrCat({"origin", base::NumberToString(owner_i), ".b.test"});

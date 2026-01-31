@@ -555,6 +555,11 @@ class PaymentsAutofillClient : public RiskDataLoader {
   // by the user, if applicable.
   virtual bool IsMandatoryReauthEnabled() = 0;
 
+#if BUILDFLAG(IS_IOS)
+  // Returns true if the feature to use custom card icons is enabled.
+  virtual bool IsUsingCustomCardIconEnabled() const = 0;
+#endif
+
   // Prompt the user to enable mandatory reauthentication for payment method
   // autofill. When enabled, the user will be asked to authenticate using
   // biometrics or device unlock before filling in payment method information.
@@ -630,11 +635,19 @@ class PaymentsAutofillClient : public RiskDataLoader {
   virtual bool ShowTouchToFillIban(base::WeakPtr<TouchToFillDelegate> delegate,
                                    base::span<const Iban> ibans_to_suggest) = 0;
 
+  // Shows the Touch To Fill surface for filling Wallet affiliated loyalty card
+  // information, if possible, returning `true` on success. `delegate` will be
+  // notified of events. This function is not implemented on iOS and iOS
+  // WebView, and should not be used on those platforms.
+  virtual bool ShowTouchToFillAffiliatedLoyaltyCard(
+      base::WeakPtr<TouchToFillDelegate> delegate,
+      std::vector<LoyaltyCard> loyalty_cards_to_suggest) = 0;
+
   // Shows the Touch To Fill surface for filling Wallet loyalty card
   // information, if possible, returning `true` on success. `delegate` will be
   // notified of events. This function is not implemented on iOS and iOS
   // WebView, and should not be used on those platforms.
-  virtual bool ShowTouchToFillLoyaltyCard(
+  virtual bool ShowTouchToFillForAllLoyaltyCards(
       base::WeakPtr<TouchToFillDelegate> delegate,
       std::vector<LoyaltyCard> loyalty_cards_to_suggest) = 0;
 
@@ -740,8 +753,11 @@ class PaymentsAutofillClient : public RiskDataLoader {
   // response is being fetched. This pending state is a precursor to either the
   // local or upload Save and Fill dialog. If the preflight call fails, the
   // dialog transitions to the local version. If it succeeds, the dialog
-  // transitions to the server version.
-  virtual void ShowCreditCardSaveAndFillPendingDialog() = 0;
+  // transitions to the server version. The `callback` is executed when the user
+  // closes the pending dialog. This allows the caller to be notified of the
+  // cancellation and abort any pending operations.
+  virtual void ShowCreditCardSaveAndFillPendingDialog(
+      CardSaveAndFillDialogCallback callback) = 0;
 
   // Hides the Save and Fill dialog upon receivng response from the CreateCard
   // server call.

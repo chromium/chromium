@@ -34,7 +34,10 @@ class Text;
 
 class InsertIntoTextNodeCommand final : public SimpleEditCommand {
  public:
-  InsertIntoTextNodeCommand(Text* node, unsigned offset, const String& text);
+  InsertIntoTextNodeCommand(Text* node,
+                            unsigned offset,
+                            const String& text,
+                            PasswordEchoBehavior);
 
   void Trace(Visitor*) const override;
 
@@ -42,10 +45,12 @@ class InsertIntoTextNodeCommand final : public SimpleEditCommand {
   void DoApply(EditingState*) override;
   void DoUnapply() override;
   String ToString() const override;
+  bool ShouldEchoPassword() const;
 
   Member<Text> node_;
   unsigned offset_;
   String text_;
+  PasswordEchoBehavior password_echo_behavior_;
 };
 
 }  // namespace blink

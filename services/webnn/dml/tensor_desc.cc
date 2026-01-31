@@ -167,7 +167,7 @@ bool TensorDesc::RightAlignedFlattenTo(size_t flattened_rank) {
   CHECK_LT(flattened_rank, original_rank);
   CHECK_NE(flattened_rank, 0u);
 
-  auto flattened_size = base::MakeCheckedNum<uint32_t>(1);
+  auto flattened_size = base::CheckedNumeric<uint32_t>(1);
   for (size_t i = 0; i < original_rank - flattened_rank + 1; ++i) {
     flattened_size *= flattened_dimensions[i];
   }

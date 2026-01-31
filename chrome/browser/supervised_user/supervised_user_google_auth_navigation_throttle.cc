@@ -38,16 +38,21 @@
 #include "chrome/browser/supervised_user/supervised_user_verification_page.h"
 #endif
 
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
 namespace {
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+
 bool IsYouTubeInfrastructureSubframe(content::NavigationHandle* handle) {
   if (handle->GetNavigatingFrameType() != content::FrameType::kSubframe) {
     return false;
   }
   return handle->GetURL().DomainIs("accounts.youtube.com");
 }
-}  // namespace
 #endif
+
+// If set, the throttle will pass the navigation without deferring or blocking.
+bool g_pass_throttle_for_testing = false;
+
+}  // namespace
 
 // static
 void SupervisedUserGoogleAuthNavigationThrottle::MaybeCreateAndAdd(
@@ -58,9 +63,13 @@ void SupervisedUserGoogleAuthNavigationThrottle::MaybeCreateAndAdd(
     return;
   }
 
-  registry.AddThrottle(
-      base::WrapUnique(new SupervisedUserGoogleAuthNavigationThrottle(
-      profile, registry)));
+  registry.AddThrottle(base::WrapUnique(
+      new SupervisedUserGoogleAuthNavigationThrottle(profile, registry)));
+}
+
+// static
+void SupervisedUserGoogleAuthNavigationThrottle::SetPassThrottleForTesting() {
+  g_pass_throttle_for_testing = true;
 }
 
 SupervisedUserGoogleAuthNavigationThrottle::
@@ -95,6 +104,10 @@ const char* SupervisedUserGoogleAuthNavigationThrottle::GetNameForLogging() {
 
 content::NavigationThrottle::ThrottleCheckResult
 SupervisedUserGoogleAuthNavigationThrottle::WillStartOrRedirectRequest() {
+  if (g_pass_throttle_for_testing) {
+    return content::NavigationThrottle::PROCEED;
+  }
+
   // We do not yet support prerendering for supervised users.
   if (navigation_handle()->IsInPrerenderedMainFrame()) {
     return content::NavigationThrottle::CANCEL;

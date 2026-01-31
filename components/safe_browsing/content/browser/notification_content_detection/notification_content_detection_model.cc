@@ -52,7 +52,7 @@ std::string NotificationContentDetectionModel::GetSerializedMetadata(
     bool is_allowlisted_by_user,
     std::optional<double> suspicious_score) {
   auto metadata_dict =
-      base::Value::Dict()
+      base::DictValue()
           .Set(kMetadataIsOriginOnGlobalCacheListKey, is_on_global_cache_list)
           .Set(kMetadataIsOriginAllowlistedByUserKey, is_allowlisted_by_user);
   if (suspicious_score.has_value()) {

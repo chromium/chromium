@@ -43,7 +43,7 @@
         "parameters": [],
         "returns_async": {
           "name": "callback",
-          "description": "Called with the result.",
+          "description": "Resolves with the result.",
           "parameters": [
             {
               "name": "value",

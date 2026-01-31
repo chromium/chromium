@@ -12,10 +12,8 @@
 #include "ash/host/ash_window_tree_host_delegate.h"
 #include "ash/host/root_window_transformer.h"
 #include "base/check.h"
-#include "base/containers/contains.h"
 #include "base/memory/raw_ptr.h"
 #include "base/notreached.h"
-#include "base/types/cxx23_to_underlying.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_event_dispatcher.h"
 #include "ui/aura/window_targeter.h"
@@ -45,7 +43,7 @@ class UnifiedEventTargeter : public aura::WindowTargeter {
     if (root == src_root_ && !event->target()) {
       return root;
     } else {
-      NOTREACHED() << "event type:" << base::to_underlying(event->type());
+      NOTREACHED() << "event type:" << std::to_underlying(event->type());
     }
   }
   ui::EventSink* GetNewEventSinkForEvent(const ui::EventTarget* current_root,
@@ -102,7 +100,7 @@ void AshWindowTreeHostUnified::RegisterMirroringHost(
   aura::Window* src_root = mirroring_ash_host->AsWindowTreeHost()->window();
   src_root->SetEventTargeter(
       std::make_unique<UnifiedEventTargeter>(src_root, window(), delegate_));
-  DCHECK(!base::Contains(mirroring_hosts_, mirroring_ash_host));
+  DCHECK(!std::ranges::contains(mirroring_hosts_, mirroring_ash_host));
   mirroring_hosts_.push_back(mirroring_ash_host);
   src_root->AddObserver(this);
   mirroring_ash_host->UpdateCursorConfig();

@@ -44,7 +44,7 @@ using ::testing::IsEmpty;
 using ::testing::UnorderedElementsAreArray;
 
 static void ExpectEqualLanguageLists(
-    const base::Value::List& pref_values,
+    const base::ListValue& pref_values,
     const std::vector<std::string>& expected_languages) {
   const int input_size = expected_languages.size();
   ASSERT_EQ(input_size, static_cast<int>(pref_values.size()));
@@ -80,7 +80,7 @@ class TranslatePrefsTest : public testing::Test {
 
   void ExpectBlockedLanguageListContent(
       const std::vector<std::string>& expected_languages) const {
-    const base::Value::List& never_prompt_list =
+    const base::ListValue& never_prompt_list =
         prefs_.GetList(prefs::kBlockedLanguages);
     ExpectEqualLanguageLists(never_prompt_list, expected_languages);
   }
@@ -960,7 +960,7 @@ TEST_F(TranslatePrefsTest, MigrateNeverPromptSites) {
   // Also put one of those sites on the new pref but migrated incorrectly.
   ScopedDictPrefUpdate never_prompt_list_update(
       &prefs_, prefs::kPrefNeverPromptSitesWithTime);
-  base::Value::Dict& never_prompt_list = never_prompt_list_update.Get();
+  base::DictValue& never_prompt_list = never_prompt_list_update.Get();
   never_prompt_list.Set("migratedWrong.com", 0);
 
   // Now migrate and fix the prefs.
@@ -978,7 +978,7 @@ TEST_F(TranslatePrefsTest, InvalidNeverPromptSites) {
   // Add sites with invalid times.
   ScopedDictPrefUpdate never_prompt_list_update(
       &prefs_, prefs::kPrefNeverPromptSitesWithTime);
-  base::Value::Dict& never_prompt_list = never_prompt_list_update.Get();
+  base::DictValue& never_prompt_list = never_prompt_list_update.Get();
   never_prompt_list.Set("not-a-string.com", 0);
   never_prompt_list.Set("not-a-valid-time.com", "foo");
   // Add the null time (valid time).
@@ -993,7 +993,7 @@ TEST_F(TranslatePrefsTest, InvalidNeverPromptSites) {
 TEST_F(TranslatePrefsTest, MigrateInvalidNeverPromptSites) {
   ScopedListPrefUpdate update(&prefs_,
                               TranslatePrefs::kPrefNeverPromptSitesDeprecated);
-  base::Value::List& never_prompt_list = update.Get();
+  base::ListValue& never_prompt_list = update.Get();
   never_prompt_list.Append(1);
   never_prompt_list.Append("unmigrated.com");
   translate_prefs_->MigrateNeverPromptSites();
@@ -1011,7 +1011,7 @@ TEST_F(TranslatePrefsTest, ShouldNotifyUponMigrateNeverPromptSites) {
 
   ScopedListPrefUpdate update(&prefs_,
                               TranslatePrefs::kPrefNeverPromptSitesDeprecated);
-  base::Value::List& never_prompt_list = update.Get();
+  base::ListValue& never_prompt_list = update.Get();
   never_prompt_list.Append("unmigrated.com");
 
   EXPECT_CALL(observer, OnPreferenceChanged);
@@ -1024,7 +1024,7 @@ TEST_F(TranslatePrefsTest,
     // Add initial values to kPrefNeverPromptSitesWithTime.
     ScopedDictPrefUpdate never_prompt_list_update(
         &prefs_, prefs::kPrefNeverPromptSitesWithTime);
-    base::Value::Dict& never_prompt_list = never_prompt_list_update.Get();
+    base::DictValue& never_prompt_list = never_prompt_list_update.Get();
     never_prompt_list.Set("migrated.com", base::TimeToValue(base::Time::Now()));
   }
 
@@ -1036,7 +1036,7 @@ TEST_F(TranslatePrefsTest,
 
   ScopedListPrefUpdate update(&prefs_,
                               TranslatePrefs::kPrefNeverPromptSitesDeprecated);
-  base::Value::List& never_prompt_list = update.Get();
+  base::ListValue& never_prompt_list = update.Get();
   never_prompt_list.Append("unmigrated.com");
 
   EXPECT_CALL(observer, OnPreferenceChanged);
@@ -1055,7 +1055,7 @@ TEST_F(TranslatePrefsTest, ShouldNotNotifyUponMigrateInvalidNeverPromptSites) {
 
   ScopedListPrefUpdate update(&prefs_,
                               TranslatePrefs::kPrefNeverPromptSitesDeprecated);
-  base::Value::List& never_prompt_list = update.Get();
+  base::ListValue& never_prompt_list = update.Get();
   never_prompt_list.Append(1);
 
   EXPECT_CALL(observer, OnPreferenceChanged).Times(0);
@@ -1294,13 +1294,13 @@ TEST_F(TranslatePrefsMigrationTest,
   scoped_feature_list.InitAndDisableFeature(
       kMigrateAlwaysTranslateLanguagesFix);
 
-  base::Value::List never_translate_list;
+  base::ListValue never_translate_list;
   never_translate_list.Append("en");
 
-  base::Value::Dict old_always_translate_map;
+  base::DictValue old_always_translate_map;
   old_always_translate_map.Set("fr", "en");
 
-  base::Value::Dict new_always_translate_map;
+  base::DictValue new_always_translate_map;
   new_always_translate_map.Set("ru", "en");
 
   prefs_.SetList(prefs::kBlockedLanguages, never_translate_list.Clone());
@@ -1324,12 +1324,12 @@ TEST_F(TranslatePrefsMigrationTest,
   base::test::ScopedFeatureList scoped_feature_list(
       kMigrateAlwaysTranslateLanguagesFix);
 
-  base::Value::List never_translate_list;
+  base::ListValue never_translate_list;
   never_translate_list.Append("en");
   never_translate_list.Append("es");
   prefs_.SetList(prefs::kBlockedLanguages, std::move(never_translate_list));
 
-  base::Value::Dict old_always_translate_map;
+  base::DictValue old_always_translate_map;
   // A non-conflicting language pair that should be merged.
   old_always_translate_map.Set("fr", "en");
   // Conflicts with a new language pair with the same source language.
@@ -1342,7 +1342,7 @@ TEST_F(TranslatePrefsMigrationTest,
   prefs_.SetDict(TranslatePrefs::kPrefAlwaysTranslateListDeprecated,
                  std::move(old_always_translate_map));
 
-  base::Value::Dict new_always_translate_map;
+  base::DictValue new_always_translate_map;
   new_always_translate_map.Set("ru", "en");
   new_always_translate_map.Set("id", "jp");
   new_always_translate_map.Set("hi", "en");
@@ -1355,7 +1355,7 @@ TEST_F(TranslatePrefsMigrationTest,
   EXPECT_FALSE(prefs_.GetUserPrefValue(
       TranslatePrefs::kPrefAlwaysTranslateListDeprecated));
 
-  base::Value::Dict expected_always_translate_map;
+  base::DictValue expected_always_translate_map;
   expected_always_translate_map.Set("ru", "en");
   expected_always_translate_map.Set("id", "jp");
   expected_always_translate_map.Set("hi", "en");

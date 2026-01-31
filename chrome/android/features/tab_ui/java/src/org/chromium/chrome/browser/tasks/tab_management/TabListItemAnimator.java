@@ -22,7 +22,7 @@ import androidx.annotation.VisibleForTesting;
 import androidx.recyclerview.widget.RecyclerView.ViewHolder;
 import androidx.recyclerview.widget.SimpleItemAnimator;
 
-import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.ui.interpolators.Interpolators;
 import org.chromium.ui.modelutil.SimpleRecyclerViewAdapter;
@@ -142,9 +142,9 @@ public class TabListItemAnimator extends SimpleItemAnimator {
     private final AnimatorHolder mChanges = new AnimatorHolder("Change");
     private final AnimatorHolder mMoves = new AnimatorHolder("Move");
     private final AnimatorHolder mRemovals = new AnimatorHolder("Removal");
-    private final ObservableSupplierImpl<Boolean> mIsAnimatorRunningSupplier;
+    private final SettableNonNullObservableSupplier<Boolean> mIsAnimatorRunningSupplier;
 
-    TabListItemAnimator(ObservableSupplierImpl<Boolean> isAnimatorRunningSupplier) {
+    TabListItemAnimator(SettableNonNullObservableSupplier<Boolean> isAnimatorRunningSupplier) {
         setRemoveDuration(DEFAULT_REMOVE_DURATION);
         mIsAnimatorRunningSupplier = isAnimatorRunningSupplier;
     }

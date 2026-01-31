@@ -73,7 +73,7 @@ void BruschettaInstallerPolicyHandler::ApplyPolicySettings(
     return;
   }
 
-  base::Value::Dict pref;
+  base::DictValue pref;
   auto& dict = value->GetDict();
   const auto* display_name = dict.FindString(prefs::kPolicyDisplayNameKey);
   if (display_name) {

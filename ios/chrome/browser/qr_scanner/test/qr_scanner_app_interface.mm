@@ -8,6 +8,7 @@
 #import "base/strings/sys_string_conversions.h"
 #import "base/strings/utf_string_conversions.h"
 #import "components/version_info/version_info.h"
+#import "ios/chrome/browser/composebox/coordinator/composebox_entrypoint.h"
 #import "ios/chrome/browser/location_bar/ui_bundled/location_bar_url_loader.h"
 #import "ios/chrome/browser/qr_scanner/ui/qr_scanner_camera_controller.h"
 #import "ios/chrome/browser/qr_scanner/ui/qr_scanner_view_controller.h"
@@ -18,8 +19,6 @@
 #import "ios/chrome/browser/shared/model/browser/browser_provider.h"
 #import "ios/chrome/browser/shared/model/browser/browser_provider_interface.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
-#import "ios/chrome/browser/shared/public/commands/load_query_commands.h"
-#import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_browser_agent.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_params.h"
 #import "ios/chrome/grit/ios_branded_strings.h"
@@ -33,22 +32,15 @@
 
 using scanner::CameraState;
 
-// A stubbed handler of the `LoadQueryCommands` protocol, which stores a copy
-// of the last query.
-@interface StubLoadQueryHandler : NSObject <LoadQueryCommands>
+// Store a copy of the last query.
+@interface LoadQueryResultHandler : NSObject
 
 // Stores the last query.
 @property(nonatomic, copy) NSString* lastQuery;
-@property(nonatomic, assign) BOOL lastImmediately;
 
 @end
 
-@implementation StubLoadQueryHandler
-
-- (void)loadQuery:(NSString*)query immediately:(BOOL)immediately {
-  self.lastQuery = query;
-  self.lastImmediately = immediately;
-}
+@implementation LoadQueryResultHandler
 
 @end
 
@@ -219,33 +211,49 @@ using scanner::CameraState;
 
 #pragma mark LoadQueryCommands assertions
 
-// Returns the handler of LoadQueryCommands.
-+ (StubLoadQueryHandler*)loadQueryHandler {
-  static StubLoadQueryHandler* handler;
+// Returns the handler of results of the load query.
++ (LoadQueryResultHandler*)resultHandler {
+  static LoadQueryResultHandler* resultHandler;
   static dispatch_once_t onceToken;
   dispatch_once(&onceToken, ^{
-    handler = [[StubLoadQueryHandler alloc] init];
+    resultHandler = [[LoadQueryResultHandler alloc] init];
   });
-  return handler;
+  return resultHandler;
+}
+
+// Returns a mock handler for BrowserCoordinatorCommands.
++ (id<BrowserCoordinatorCommands>)browserCoordinatorHandler {
+  static id mockHandler;
+  static dispatch_once_t onceToken;
+  dispatch_once(&onceToken, ^{
+    mockHandler = OCMProtocolMock(@protocol(BrowserCoordinatorCommands));
+  });
+  return mockHandler;
 }
 
 + (void)startLoadQueryHandler {
+  id handler = [self browserCoordinatorHandler];
+  LoadQueryResultHandler* resultHandler = [self resultHandler];
   [chrome_test_util::GetMainBrowser()->GetCommandDispatcher()
-      startDispatchingToTarget:[self loadQueryHandler]
-                   forProtocol:@protocol(LoadQueryCommands)];
+      startDispatchingToTarget:handler
+                   forProtocol:@protocol(BrowserCoordinatorCommands)];
+  OCMStub([handler showComposeboxFromEntrypoint:ComposeboxEntrypoint::kOther
+                                      withQuery:[OCMArg any]])
+      .andDo(^(NSInvocation* inv) {
+        NSString* query;
+        [inv getArgument:&query atIndex:3];
+        resultHandler.lastQuery = query;
+      });
 }
 
-+ (NSError*)assertQueryLoaded:(NSString*)query immediately:(BOOL)immediately {
-  StubLoadQueryHandler* handler = [self loadQueryHandler];
-  BOOL condition = [query isEqualToString:handler.lastQuery] &&
-                   immediately == handler.lastImmediately;
++ (NSError*)assertQueryLoaded:(NSString*)query {
+  LoadQueryResultHandler* resultHandler = [self resultHandler];
+  BOOL condition = [query isEqualToString:resultHandler.lastQuery];
   if (!condition) {
     NSString* errorString = [NSString
-        stringWithFormat:
-            @"A query was loaded (query=\"%@\", immediately=%@), "
-            @"that didn't match the expectation (query=\"%@\" immediately=%@)",
-            handler.lastQuery, handler.lastImmediately ? @"YES" : @"NO", query,
-            immediately ? @"YES" : @"NO"];
+        stringWithFormat:@"A query was loaded (query=\"%@\"), "
+                         @"that didn't match the expectation (query=\"%@\")",
+                         resultHandler.lastQuery, query];
     return testing::NSErrorWithLocalizedDescription(errorString);
   }
   return nil;

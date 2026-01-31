@@ -98,11 +98,6 @@ class OverlayPresentationContextImplTest : public PlatformTest {
   }
   ~OverlayPresentationContextImplTest() override {
     context_->RemoveObserver(&observer_);
-    // The browser needs to be destroyed before `context_` so that observers
-    // can be unhooked due to BrowserDestroyed().  This is not a problem for
-    // non-test OverlayPresentationContextImpls since they're owned by the
-    // Browser and get destroyed after BrowserDestroyed() is called.
-    browser_.reset();
   }
 
   // Setter for whether the presentation context should support overlay UI

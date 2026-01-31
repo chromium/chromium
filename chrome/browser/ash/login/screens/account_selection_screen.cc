@@ -70,7 +70,7 @@ void AccountSelectionScreen::ShowImpl() {
 
 void AccountSelectionScreen::HideImpl() {}
 
-void AccountSelectionScreen::OnUserAction(const base::Value::List& args) {
+void AccountSelectionScreen::OnUserAction(const base::ListValue& args) {
   const std::string& action_id = args[0].GetString();
   if (action_id == kUserActionReuseAccount) {
     if (!MaybeLoginWithCachedCredentials()) {

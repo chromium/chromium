@@ -89,8 +89,9 @@ inline void EncodePointer(const void* ptr, uint64_t* offset) {
 
 // Note: This function doesn't validate the encoded pointer value.
 inline const void* DecodePointer(const uint64_t* offset) {
-  if (!*offset)
+  if (!*offset) {
     return nullptr;
+  }
   return UNSAFE_TODO(reinterpret_cast<const char*>(offset) + *offset);
 }
 
@@ -350,21 +351,16 @@ T ConvertEnumValue(MojomType input) {
   return output;
 }
 
-template <typename MojomType, typename SFINAE = void>
-struct EnumKnownValueTraits {
-  static MojomType ToKnownValue(MojomType in) { return in; }
-};
-
-template <typename MojomType>
-struct EnumKnownValueTraits<
-    MojomType,
-    std::void_t<decltype(ToKnownEnumValue(std::declval<MojomType>()))>> {
-  static MojomType ToKnownValue(MojomType in) { return ToKnownEnumValue(in); }
-};
-
 template <typename MojomType>
 MojomType ToKnownEnumValueHelper(MojomType in) {
-  return EnumKnownValueTraits<MojomType>::ToKnownValue(in);
+  if constexpr (requires {
+                  {
+                    ToKnownEnumValue(std::declval<MojomType>())
+                  } -> std::same_as<MojomType>;
+                }) {
+    return ToKnownEnumValue(in);
+  }
+  return in;
 }
 
 }  // namespace internal

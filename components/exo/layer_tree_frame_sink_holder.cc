@@ -4,7 +4,8 @@
 
 #include "components/exo/layer_tree_frame_sink_holder.h"
 
-#include "base/containers/contains.h"
+#include <algorithm>
+
 #include "base/task/single_thread_task_runner.h"
 #include "base/trace_event/typed_macros.h"
 #include "cc/mojo_embedder/async_layer_tree_frame_sink.h"
@@ -162,17 +163,17 @@ void LayerTreeFrameSinkHolder::ReclaimResources(
     // TODO(crbug.com/40269434): if viz reclaims the resources b/c the
     // viz::Surface never gets embedded, this prevents clients from receiving
     // release callbacks. This needs to be addressed.
-    if (base::Contains(last_frame_resources_, resource.id)) {
+    if (std::ranges::contains(last_frame_resources_, resource.id)) {
       continue;
     }
     in_use_resources_.erase(resource.id);
 
     // Skip resources that are also in the cached frame.
     if (cached_frame_ &&
-        base::Contains(cached_frame_->resource_list, resource.id,
-                       [](const viz::TransferableResource& resource) {
-                         return resource.id;
-                       })) {
+        std::ranges::contains(cached_frame_->resource_list, resource.id,
+                              [](const viz::TransferableResource& resource) {
+                                return resource.id;
+                              })) {
       continue;
     }
 
@@ -343,10 +344,10 @@ void LayerTreeFrameSinkHolder::DiscardCachedFrame(
 
     // Skip if the resource is also in `new_frame`.
     if (new_frame &&
-        base::Contains(new_frame->resource_list, resource.id,
-                       [](const viz::TransferableResource& resource) {
-                         return resource.id;
-                       })) {
+        std::ranges::contains(new_frame->resource_list, resource.id,
+                              [](const viz::TransferableResource& resource) {
+                                return resource.id;
+                              })) {
       continue;
     }
     resource_manager_.ReclaimResource(resource.ToReturnedResource());

@@ -13,7 +13,6 @@
 #include "base/types/expected_macros.h"
 #include "components/web_package/mojom/web_bundle_parser.mojom-forward.h"
 #include "components/web_package/signed_web_bundles/signed_web_bundle_id.h"
-#include "components/webapps/isolated_web_apps/client.h"
 #include "components/webapps/isolated_web_apps/reading/signed_web_bundle_reader.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "url/gurl.h"
@@ -34,13 +33,8 @@ network::ResourceRequest RemoveQuery(
 
 IsolatedWebAppResponseReaderImpl::IsolatedWebAppResponseReaderImpl(
     std::unique_ptr<SignedWebBundleReader> reader,
-    content::BrowserContext* browser_context,
-    const web_package::SignedWebBundleId& web_bundle_id,
-    bool dev_mode)
-    : reader_(std::move(reader)),
-      browser_context_(*browser_context),
-      web_bundle_id_(web_bundle_id),
-      dev_mode_(dev_mode) {}
+    content::BrowserContext* browser_context)
+    : reader_(std::move(reader)), browser_context_(*browser_context) {}
 
 IsolatedWebAppResponseReaderImpl::~IsolatedWebAppResponseReaderImpl() = default;
 
@@ -52,13 +46,6 @@ IsolatedWebAppResponseReaderImpl::GetIntegrityBlock() {
 void IsolatedWebAppResponseReaderImpl::ReadResponse(
     const network::ResourceRequest& resource_request,
     ReadResponseCallback callback) {
-  RETURN_IF_ERROR(Error::FromTrustCheckerResult(
-                      web_app::IwaClient::GetInstance()->ValidateTrust(
-                          &browser_context_.get(), web_bundle_id_, dev_mode_)),
-                  [&callback](Error error) {
-                    std::move(callback).Run(base::unexpected(std::move(error)));
-                  });
-
   // Remove query parameters from the request URL, if it has any. Resources
   // within Signed Web Bundles used for Isolated Web Apps never have username,
   // password, or fragment, just like resources within Signed Web Bundles and
@@ -143,15 +130,6 @@ IsolatedWebAppResponseReader::Error::FromSignedWebBundleReaderError(
     case Type::kResponseNotFound:
       return Error(Error::Type::kResponseNotFound, error.message);
   }
-}
-
-// static
-base::expected<void, IsolatedWebAppResponseReader::Error>
-IsolatedWebAppResponseReader::Error::FromTrustCheckerResult(
-    base::expected<void, std::string> result) {
-  return result.transform_error([](const std::string& error) {
-    return Error(Error::Type::kNotTrusted, error);
-  });
 }
 
 }  // namespace web_app

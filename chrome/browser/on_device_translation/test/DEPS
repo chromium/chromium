@@ -1,5 +1,5 @@
 specific_include_rules = {
   "test_util\.cc": [
-    "+components/services/on_device_translation/test/test_util.h",
+    "+components/on_device_translation/service/test/test_util.h",
   ],
 }

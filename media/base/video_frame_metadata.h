@@ -205,7 +205,7 @@ struct MEDIA_EXPORT VideoFrameMetadata {
   std::optional<base::TimeDelta> processing_time;
 
   // The RTP timestamp associated with this video frame. Stored as a double
-  // since base::Value::Dict doesn't have a uint32_t type.
+  // since base::DictValue doesn't have a uint32_t type.
   //
   // https://w3c.github.io/webrtc-pc/#dom-rtcrtpcontributingsource-rtptimestamp
   std::optional<double> rtp_timestamp;

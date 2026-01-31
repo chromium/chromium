@@ -151,8 +151,13 @@ public class RecentTabsSigninPromoDelegate extends SigninPromoDelegate {
     }
 
     @Override
-    void onDismissButtonClicked() {
-        throw new IllegalStateException("Recent tabs promos shouldn't have a dismiss button");
+    boolean canBeDismissedPermanently() {
+        return false;
+    }
+
+    @Override
+    void permanentlyDismissPromo() {
+        throw new IllegalStateException("Does not support being dismissed permanently.");
     }
 
     @Override
@@ -169,20 +174,10 @@ public class RecentTabsSigninPromoDelegate extends SigninPromoDelegate {
     }
 
     @Override
-    boolean isSeamlessSigninAllowed() {
-        return SigninFeatureMap.isEnabled(SigninFeatures.ENABLE_SEAMLESS_SIGNIN);
-    }
-
-    @Override
     boolean shouldHideSecondaryButton() {
         if (SigninFeatureMap.isEnabled(SigninFeatures.ENABLE_SEAMLESS_SIGNIN)) {
             return mPromoState != PromoState.SIGNIN;
         }
-        return true;
-    }
-
-    @Override
-    boolean shouldHideDismissButton() {
         return true;
     }
 
@@ -221,6 +216,22 @@ public class RecentTabsSigninPromoDelegate extends SigninPromoDelegate {
     @Override
     boolean shouldDisplaySignedInLayout() {
         return mPromoState == PromoState.HISTORY_SYNC;
+    }
+
+    @Override
+    String getHistorySyncOptInTitle() {
+        if (SigninFeatureMap.isEnabled(SigninFeatures.ENABLE_SEAMLESS_SIGNIN)) {
+            return mContext.getString(R.string.history_sync_recent_tabs_title);
+        }
+        return super.getHistorySyncOptInTitle();
+    }
+
+    @Override
+    String getHistorySyncOptInSubtitle() {
+        if (SigninFeatureMap.isEnabled(SigninFeatures.ENABLE_SEAMLESS_SIGNIN)) {
+            return mContext.getString(R.string.history_sync_recent_tabs_subtitle);
+        }
+        return super.getHistorySyncOptInSubtitle();
     }
 
     private @PromoState int computePromoState() {

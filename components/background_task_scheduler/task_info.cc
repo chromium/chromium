@@ -18,10 +18,10 @@ OneOffInfo::OneOffInfo()
 
 OneOffInfo::~OneOffInfo() = default;
 
-TaskInfo::TaskInfo(int task_id, const PeriodicInfo& timing_info)
+TaskInfo::TaskInfo(TaskIds task_id, const PeriodicInfo& timing_info)
     : task_id(task_id), periodic_info(timing_info) {}
 
-TaskInfo::TaskInfo(int task_id, const OneOffInfo& timing_info)
+TaskInfo::TaskInfo(TaskIds task_id, const OneOffInfo& timing_info)
     : task_id(task_id), one_off_info(timing_info) {}
 
 TaskInfo::~TaskInfo() = default;

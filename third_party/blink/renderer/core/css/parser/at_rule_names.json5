@@ -24,6 +24,9 @@
       name: "base-palette",
     },
     {
+      name: "base-url",
+    },
+    {
       name: "descent-override",
     },
     {
@@ -55,6 +58,12 @@
       name: "font-weight",
     },
     {
+      name: "hash",
+    },
+    {
+      name: "hostname",
+    },
+    {
       name: "inherits"
     },
     {
@@ -76,13 +85,28 @@
       name: "pad",
     },
     {
+      name: "pathname",
+    },
+    {
+      name: "pattern",
+    },
+    {
+      name: "port",
+    },
+    {
       name: "prefix",
+    },
+    {
+      name: "protocol",
     },
     {
       name: "range",
     },
     {
       name: "result",
+    },
+    {
+      name: "search",
     },
     {
       name: "size-adjust",

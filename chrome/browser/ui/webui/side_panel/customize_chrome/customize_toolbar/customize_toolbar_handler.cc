@@ -14,7 +14,6 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
-#include "chrome/browser/ui/webui/side_panel/customize_chrome/customize_toolbar/customize_toolbar.mojom-data-view.h"
 #include "chrome/browser/ui/webui/side_panel/customize_chrome/customize_toolbar/customize_toolbar.mojom.h"
 #include "chrome/browser/ui/webui/util/image_util.h"
 #include "chrome/browser/ui/webui/webui_embedding_context.h"
@@ -23,6 +22,7 @@
 #include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/contextual_tasks/public/features.h"
+#include "components/prefs/pref_service.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/vector_icons/vector_icons.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -32,6 +32,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/image_model.h"
 #include "ui/display/screen.h"
+#include "ui/gfx/vector_icon_types.h"
 
 namespace {
 std::optional<side_panel::customize_chrome::mojom::ActionId>
@@ -252,6 +253,11 @@ void CustomizeToolbarHandler::ListActions(ListActionsCallback callback) {
   if (base::FeatureList::IsEnabled(contextual_tasks::kContextualTasks) &&
       (contextual_tasks::kShowEntryPoint.Get() ==
        contextual_tasks::EntryPointOption::kToolbarPermanent)) {
+    PrefService* const pref_service = bwi->GetProfile()->GetPrefs();
+    const gfx::VectorIcon& contextual_tasks_icon =
+        pref_service->GetBoolean(prefs::kSidePanelHorizontalAlignment)
+            ? kDockToRightSparkIcon
+            : kDockToLeftSparkIcon;
     auto contextual_task_action =
         side_panel::customize_chrome::mojom::Action::New(
             MojoActionForChromeAction(kActionSidePanelShowContextualTasks)
@@ -261,7 +267,7 @@ void CustomizeToolbarHandler::ListActions(ListActionsCallback callback) {
             prefs()->GetBoolean(prefs::kPinContextualTaskButton), false,
             side_panel::customize_chrome::mojom::CategoryId::kNavigation,
             GURL(webui::EncodePNGAndMakeDataURI(
-                ui::ImageModel::FromVectorIcon(kDockToRightSparkIcon,
+                ui::ImageModel::FromVectorIcon(contextual_tasks_icon,
                                                icon_color_id)
                     .Rasterize(&provider),
                 scale_factor)));

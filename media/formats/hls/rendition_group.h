@@ -92,6 +92,7 @@ class MEDIA_EXPORT RenditionGroup : public base::RefCounted<RenditionGroup> {
       base::PassKey<MultivariantPlaylist>,
       XMediaTag tag,
       const GURL& playlist_uri,
+      std::optional<GURL> resolved_playlist_uri,
       RenditionTrackId unique_id);
 
   std::unique_ptr<View> MakeImplicitView(base::PassKey<MultivariantPlaylist>,

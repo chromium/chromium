@@ -15,12 +15,12 @@
 
 #include "base/base64.h"
 #include "base/command_line.h"
-#include "base/containers/contains.h"
 #include "base/containers/fixed_flat_map.h"
 #include "base/containers/fixed_flat_set.h"
 #include "base/containers/flat_map.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
+#include "base/hash/hash.h"
 #include "base/i18n/rtl.h"
 #include "base/json/json_reader.h"
 #include "base/json/json_string_value_serializer.h"
@@ -65,6 +65,7 @@
 #include "chrome/browser/ui/views/new_tab_footer/footer_controller.h"
 #include "chrome/browser/ui/views/side_panel/customize_chrome/customize_chrome_utils.h"
 #include "chrome/browser/ui/webui/new_tab_footer/new_tab_footer_helper.h"
+#include "chrome/browser/ui/webui/new_tab_page/new_tab_page_ui.h"
 #include "chrome/browser/ui/webui/new_tab_page/ntp_pref_names.h"
 #include "chrome/browser/ui/webui/webui_embedding_context.h"
 #include "chrome/browser/ui/webui/webui_util_desktop.h"
@@ -94,11 +95,13 @@
 #include "components/user_education/common/feature_promo/feature_promo_controller.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/browser/web_contents.h"
+#include "mojo/public/cpp/bindings/callback_helpers.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/simple_url_loader.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/actions/actions.h"
+#include "ui/base/interaction/element_tracker.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/theme_provider.h"
 #include "ui/color/color_provider.h"
@@ -152,7 +155,7 @@ bool ShouldForceDarkForegroundColorsForLogo(const ThemeService* theme_service) {
       });
 
   const std::string& extension_id = theme_supplier->extension_id();
-  return base::Contains(kPrideThemeExtensionIdsDarkForeground, extension_id);
+  return kPrideThemeExtensionIdsDarkForeground.contains(extension_id);
 }
 
 new_tab_page::mojom::ThemePtr MakeTheme(
@@ -172,6 +175,11 @@ new_tab_page::mojom::ThemePtr MakeTheme(
           : std::nullopt;
   theme->background_color = color_provider.GetColor(kColorNewTabPageBackground);
   theme->is_baseline = theme_service->GetIsBaseline();
+  // Theme is GM3 if there is a GM3 color set or the theme is baseline and no
+  // CWS theme is set.
+  theme->is_gm3 =
+      (theme_service->GetUserColor().has_value() || theme->is_baseline) &&
+      !theme_service->UsingExtensionTheme();
   const bool theme_has_custom_image =
       theme_provider->HasCustomImage(IDR_THEME_NTP_BACKGROUND);
   SkColor text_color;
@@ -360,7 +368,7 @@ new_tab_page::mojom::PromoPtr MakePromo(const PromoData& data) {
     return nullptr;
   }
 
-  base::Value::Dict& middle_slot_dict = middle_slot->GetDict();
+  base::DictValue& middle_slot_dict = middle_slot->GetDict();
   if (middle_slot_dict.FindBoolByDottedPath("hidden").value_or(false)) {
     return nullptr;
   }
@@ -371,7 +379,7 @@ new_tab_page::mojom::PromoPtr MakePromo(const PromoData& data) {
   if (parts) {
     std::vector<new_tab_page::mojom::PromoPartPtr> mojom_parts;
     for (const base::Value& part : *parts) {
-      const base::Value::Dict& part_dict = part.GetDict();
+      const base::DictValue& part_dict = part.GetDict();
       if (part_dict.Find("image")) {
         auto mojom_image = new_tab_page::mojom::PromoImagePart::New();
         auto* image_url = part_dict.FindStringByDottedPath("image.image_url");
@@ -416,12 +424,12 @@ new_tab_page::mojom::PromoPtr MakePromo(const PromoData& data) {
   return promo;
 }
 
-base::Value::Dict MakeModuleInteractionTriggerIdDictionary() {
+base::DictValue MakeModuleInteractionTriggerIdDictionary() {
   const auto data = base::GetFieldTrialParamValueByFeature(
       features::kHappinessTrackingSurveysForDesktopNtpModules,
       ntp_features::kNtpModulesInteractionBasedSurveyEligibleIdsParam);
   if (data.empty()) {
-    return base::Value::Dict();
+    return base::DictValue();
   }
 
   auto value_with_error = base::JSONReader::ReadAndReturnValueWithError(
@@ -433,14 +441,14 @@ base::Value::Dict MakeModuleInteractionTriggerIdDictionary() {
         << value_with_error.error().message << ") on line "
         << value_with_error.error().line << " at position "
         << value_with_error.error().column;
-    return base::Value::Dict();
+    return base::DictValue();
   }
 
   if (!value_with_error->is_dict()) {
     LOG(WARNING)
         << "ntp_features::kNtpModulesInteractionBasedSurveyEligibleIdsParam "
            "data skipped. Not a dictionary.";
-    return base::Value::Dict();
+    return base::DictValue();
   }
 
   return std::move(*value_with_error).TakeDict();
@@ -553,6 +561,17 @@ NewTabPageHandler::NewTabPageHandler(
       prefs::kNtpToolChipsVisible,
       base::BindRepeating(&NewTabPageHandler::UpdateActionChipsVisibility,
                           base::Unretained(this)));
+
+  if (base::FeatureList::IsEnabled(
+          feature_engagement::kIPHDesktopRealboxContextualSearchFeature)) {
+    searchbox_shown_subscription_ =
+        ui::ElementTracker::GetElementTracker()
+            ->AddElementShownInAnyContextCallback(
+                NewTabPageUI::kRealboxContextualEntrypointElementId,
+                base::BindRepeating(
+                    &NewTabPageHandler::TryShowRealboxContextualMenuIPH,
+                    weak_ptr_factory_.GetWeakPtr()));
+  }
 }
 
 NewTabPageHandler::~NewTabPageHandler() {
@@ -661,21 +680,37 @@ void NewTabPageHandler::SetModulesVisible(bool visible) {
   profile_->GetPrefs()->SetBoolean(prefs::kNtpModulesVisible, visible);
 }
 
-void NewTabPageHandler::SetModuleDisabled(const std::string& module_id,
-                                          bool disabled) {
-  ScopedListPrefUpdate update(profile_->GetPrefs(), prefs::kNtpDisabledModules);
-  base::Value::List& list = update.Get();
-  base::Value module_id_value(module_id);
-  if (disabled) {
-    if (!base::Contains(list, module_id_value)) {
-      list.Append(std::move(module_id_value));
-    }
-  } else {
-    list.EraseValue(module_id_value);
+void NewTabPageHandler::SetModulesDisabled(
+    const std::vector<std::string>& module_ids,
+    bool disabled,
+    bool is_user_action) {
+  if (module_ids.empty()) {
+    return;
   }
 
-  RecordModuleInteraction(module_id);
-  MaybeLaunchInteractionSurvey(kDisableInteraction, module_id);
+  ScopedListPrefUpdate update(profile_->GetPrefs(), prefs::kNtpDisabledModules);
+  base::ListValue& list = update.Get();
+  for (const auto& module_id : module_ids) {
+    if (disabled) {
+      if (!list.contains(module_id)) {
+        list.Append(module_id);
+      }
+    } else {
+      list.EraseValue(base::Value(module_id));
+    }
+  }
+
+  DisableModuleListAutoRemoval(profile_, module_ids);
+
+  // We're not recording a user interaction if the modules were disabled due to
+  // feature optimization auto removal.
+  if (is_user_action) {
+    for (const auto& module_id : module_ids) {
+      IncrementDictPrefKeyCount(prefs::kNtpModulesInteractedCountDict,
+                                module_id);
+      MaybeLaunchInteractionSurvey(kDisableInteraction, module_id);
+    }
+  }
 }
 
 void NewTabPageHandler::UpdateDisabledModules() {
@@ -718,7 +753,8 @@ void NewTabPageHandler::OnModulesLoadedWithData(
       GetSurveyEligibleModuleIds();
   if (std::any_of(module_ids.begin(), module_ids.end(),
                   [&survey_eligible_module_ids](std::string id) {
-                    return base::Contains(survey_eligible_module_ids, id);
+                    return std::ranges::contains(survey_eligible_module_ids,
+                                                 id);
                   })) {
     HatsService* hats_service = HatsServiceFactory::GetForProfile(
         profile_, /*create_if_necessary=*/true);
@@ -733,7 +769,7 @@ void NewTabPageHandler::OnModulesLoadedWithData(
           features::kHappinessTrackingSurveysForDesktopNtpModules,
           ntp_features::kNtpModuleIgnoredCriteriaThreshold, 25);
   for (const auto& module_id : module_ids) {
-    const base::Value::Dict& interacted_counts_dict =
+    const base::DictValue& interacted_counts_dict =
         profile_->GetPrefs()->GetDict(prefs::kNtpModulesInteractedCountDict);
     std::optional<int> interacted_count =
         interacted_counts_dict.FindInt(module_id);
@@ -741,7 +777,7 @@ void NewTabPageHandler::OnModulesLoadedWithData(
       continue;
     }
 
-    const base::Value::Dict& loaded_counts_dict =
+    const base::DictValue& loaded_counts_dict =
         profile_->GetPrefs()->GetDict(prefs::kNtpModulesLoadedCountDict);
     std::optional<int> loaded_count = loaded_counts_dict.FindInt(module_id);
     if (loaded_count.value_or(0) >= module_ignored_criteria_threshold) {
@@ -773,9 +809,60 @@ void NewTabPageHandler::GetModulesIdNames(GetModulesIdNamesCallback callback) {
   std::move(callback).Run(std::move(modules_details));
 }
 
+void NewTabPageHandler::GetModulesEligibleForRemoval(
+    GetModulesEligibleForRemovalCallback callback) {
+  callback = mojo::WrapCallbackWithDefaultInvokeIfNotRun(
+      std::move(callback), std::vector<std::string>());
+
+  // (1) Skip modules removal if the feature flag is not enabled.
+  std::vector<std::string> removal_eligible_module_ids;
+  if (!base::FeatureList::IsEnabled(
+          ntp_features::kNtpFeatureOptimizationModuleRemoval)) {
+    return;
+  }
+
+  // (2) Skip modules removal if it's a managed preference.
+  if (profile_->GetPrefs()->IsManagedPreference(prefs::kNtpModulesVisible)) {
+    return;
+  }
+
+  // (3) Skip modules removal if it's force disabled for all modules.
+  const base::DictValue& module_removal_disabled_dict =
+      profile_->GetPrefs()->GetDict(
+          ntp_prefs::kNtpModulesAutoRemovalDisabledDict);
+  const bool is_all_module_removal_disabled =
+      module_removal_disabled_dict.FindBool(ntp_modules::kAllModulesId)
+          .value_or(false);
+
+  if (is_all_module_removal_disabled) {
+    return;
+  }
+
+  // (4) Otherwise, we check for each module if the module auto removal is not
+  // force disabled and if the staleness count is above the threshold.
+  const int staleness_threshold =
+      ntp_features::kStaleModulesCountThreshold.Get();
+  const base::DictValue& staleness_counts_dict =
+      profile_->GetPrefs()->GetDict(ntp_prefs::kNtpModuleStalenessCountDict);
+
+  for (const auto& module_id_detail : *module_id_details_) {
+    const bool is_module_removal_disabled =
+        module_removal_disabled_dict.FindBool(module_id_detail.id_)
+            .value_or(false);
+    const int staleness_count =
+        staleness_counts_dict.FindInt(module_id_detail.id_).value_or(0);
+    const bool is_above_threshold = staleness_count >= staleness_threshold;
+    if (!is_module_removal_disabled && is_above_threshold) {
+      removal_eligible_module_ids.push_back(module_id_detail.id_);
+    }
+  }
+
+  return std::move(callback).Run(std::move(removal_eligible_module_ids));
+}
+
 void NewTabPageHandler::SetModulesOrder(
     const std::vector<std::string>& module_ids) {
-  base::Value::List module_ids_value;
+  base::ListValue module_ids_value;
   for (const auto& module_id : module_ids) {
     module_ids_value.Append(module_id);
   }
@@ -799,7 +886,7 @@ void NewTabPageHandler::GetModulesOrder(GetModulesOrderCallback callback) {
   std::ranges::copy_if(ntp_features::GetModulesOrder(),
                        std::back_inserter(module_ids),
                        [&module_ids](const std::string& id) {
-                         return !base::Contains(module_ids, id);
+                         return !std::ranges::contains(module_ids, id);
                        });
 
   // Third, append default module order for any modules not ordered by
@@ -807,7 +894,7 @@ void NewTabPageHandler::GetModulesOrder(GetModulesOrderCallback callback) {
   std::ranges::copy_if(ntp_modules::kOrderedModuleIds,
                        std::back_inserter(module_ids),
                        [&module_ids](const std::string& id) {
-                         return !base::Contains(module_ids, id);
+                         return !std::ranges::contains(module_ids, id);
                        });
 
   std::move(callback).Run(std::move(module_ids));
@@ -1157,6 +1244,13 @@ void NewTabPageHandler::MaybeTriggerAutomaticCustomizeChromePromo() {
       web_contents_);
 }
 
+void NewTabPageHandler::RecordContextMenuClick() {
+  int current_count =
+      profile_->GetPrefs()->GetInteger(ntp_prefs::kNtpContextMenuClickCount);
+  profile_->GetPrefs()->SetInteger(ntp_prefs::kNtpContextMenuClickCount,
+                                   current_count + 1);
+}
+
 void NewTabPageHandler::LogEvent(NTPLoggingEventType event) {
   logger_.LogEvent(event, base::TimeDelta() /* unused */);
 }
@@ -1230,7 +1324,7 @@ void NewTabPageHandler::OnLogFetchResult(OnDoodleImageRenderedCallback callback,
     return;
   }
 
-  base::Value::Dict& dict = value->GetDict();
+  base::DictValue& dict = value->GetDict();
   auto* target_url_params_value =
       dict.FindStringByDottedPath("ddllog.target_url_params");
   auto target_url_params =
@@ -1302,8 +1396,7 @@ void NewTabPageHandler::RecordModuleInteraction(const std::string& module_id) {
 
 void NewTabPageHandler::IncrementDictPrefKeyCount(const std::string& pref_name,
                                                   const std::string& key) {
-  const base::Value::Dict& counts_dict =
-      profile_->GetPrefs()->GetDict(pref_name);
+  const base::DictValue& counts_dict = profile_->GetPrefs()->GetDict(pref_name);
   std::optional<int> count = counts_dict.FindInt(key);
   ScopedDictPrefUpdate update(profile_->GetPrefs(), pref_name);
   update->Set(key,
@@ -1318,7 +1411,7 @@ const std::string& NewTabPageHandler::GetSurveyTriggerIdForModuleAndInteraction(
   static const std::string kNoTriggerId;
   DCHECK(kModuleInteractionNames.find(interaction) !=
          kModuleInteractionNames.end());
-  const base::Value::Dict* module_id_trigger_dict =
+  const base::DictValue* module_id_trigger_dict =
       interaction_module_id_trigger_dict_.FindDict(interaction);
   if (module_id_trigger_dict) {
     auto* trigger_id = module_id_trigger_dict->FindString(module_id);
@@ -1333,14 +1426,13 @@ const std::string& NewTabPageHandler::GetSurveyTriggerIdForModuleAndInteraction(
 void NewTabPageHandler::SetModuleHidden(const std::string& module_id,
                                         bool hidden) {
   ScopedListPrefUpdate update(profile_->GetPrefs(), prefs::kNtpHiddenModules);
-  base::Value::List& list = update.Get();
-  base::Value module_id_value(module_id);
+  base::ListValue& list = update.Get();
   if (hidden) {
-    if (!base::Contains(list, module_id_value)) {
-      list.Append(std::move(module_id_value));
+    if (!list.contains(module_id)) {
+      list.Append(module_id);
     }
   } else {
-    list.EraseValue(module_id_value);
+    list.EraseValue(base::Value(module_id));
   }
 }
 
@@ -1377,6 +1469,32 @@ bool NewTabPageHandler::SyncMicrosoftModulesWithAuth() {
   }
 
   return state != MicrosoftAuthService::AuthState::kNone;
+}
+
+void NewTabPageHandler::TryShowRealboxContextualMenuIPH(
+    ui::TrackedElement* element) {
+  if (!element) {
+    return;
+  }
+
+  // TODO(crbug.com/378475391): NTP should always load into a WebContents.
+  auto* browser = webui::GetBrowserWindowInterface(web_contents_);
+  if (!browser) {
+    return;
+  }
+
+  // If a sign-in dialog is being currently displayed, the promo should not be
+  // shown to avoid conflict. The sign-in dialog would be shown as soon as the
+  // browser is opened, before the promo.
+  bool is_signin_modal_dialog_open =
+      feature_promo_helper_->IsSigninModalDialogOpen(web_contents_.get());
+  if (is_signin_modal_dialog_open) {
+    return;
+  }
+
+  feature_promo_helper_->MaybeShowFeaturePromo(
+      feature_engagement::kIPHDesktopRealboxContextualSearchFeature,
+      web_contents_.get());
 }
 
 void NewTabPageHandler::ConnectToParentDocument(

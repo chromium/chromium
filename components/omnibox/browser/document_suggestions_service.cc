@@ -19,7 +19,6 @@
 #include "components/signin/public/identity_manager/account_capabilities.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/primary_account_access_token_fetcher.h"
-#include "components/signin/public/identity_manager/scope_set.h"
 #include "components/variations/net/variations_http_headers.h"
 #include "google_apis/gaia/gaia_constants.h"
 #include "net/base/load_flags.h"
@@ -48,14 +47,14 @@ constexpr int chromeOmniboxClientId = 6;
 //       }
 //     }
 std::string BuildDocumentSuggestionRequest(const std::u16string& query) {
-  base::Value::Dict root;
+  base::DictValue root;
   root.Set("query", base::Value(query));
   // The API supports pagination. We're always concerned with the first N
   // results on the first page.
   root.Set("start", base::Value(0));
   root.Set("pageSize", base::Value(10));
 
-  base::Value::Dict request_options;
+  base::DictValue request_options;
   request_options.Set("searchApplicationId",
                       base::Value("searchapplications/chrome"));
   // While the searchApplicationId is a specific config being used by a client

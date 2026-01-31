@@ -26,8 +26,7 @@ VulkanOzoneImageRepresentation::VulkanOzoneImageRepresentation(
 
 VulkanOzoneImageRepresentation::~VulkanOzoneImageRepresentation() = default;
 
-std::unique_ptr<VulkanImageRepresentation::ScopedAccess>
-VulkanOzoneImageRepresentation::BeginScopedAccess(
+bool VulkanOzoneImageRepresentation::BeginAccess(
     AccessMode access_mode,
     std::vector<VkSemaphore>& begin_semaphores,
     std::vector<VkSemaphore>& end_semaphores) {
@@ -36,12 +35,11 @@ VulkanOzoneImageRepresentation::BeginScopedAccess(
   if (!ozone_backing()->BeginAccess(access_mode == AccessMode::kRead,
                                     OzoneImageBacking::AccessStream::kVulkan,
                                     &fences, need_end_fence)) {
-    return nullptr;
+    return false;
   }
 
-  VkSemaphore end_semaphore = VK_NULL_HANDLE;
   if (need_end_fence) {
-    end_semaphore = vulkan_impl_->CreateExternalSemaphore(
+    VkSemaphore end_semaphore = vulkan_impl_->CreateExternalSemaphore(
         vulkan_device_queue_->GetVulkanDevice());
     end_semaphores.emplace_back(end_semaphore);
   }
@@ -52,13 +50,11 @@ VulkanOzoneImageRepresentation::BeginScopedAccess(
         SemaphoreHandle(std::move(fence))));
   }
 
-  return std::make_unique<VulkanImageRepresentation::ScopedAccess>(
-      this, access_mode, begin_semaphores, end_semaphore);
+  return true;
 }
 
-void VulkanOzoneImageRepresentation::EndScopedAccess(
-    bool is_read_only,
-    VkSemaphore end_semaphore) {
+void VulkanOzoneImageRepresentation::EndAccess(bool is_read_only,
+                                               VkSemaphore end_semaphore) {
   if (end_semaphore != VK_NULL_HANDLE) {
     ozone_backing()->EndAccess(
         is_read_only, OzoneImageBacking::AccessStream::kVulkan,

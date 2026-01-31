@@ -217,7 +217,7 @@
 <translation id="1703117532528082099">Janela ativa fixada à esquerda.</translation>
 <translation id="1708345662127501511">Espaço de trabalho: <ph name="DESK_NAME" /></translation>
 <translation id="1709762881904163296">Configurações de rede</translation>
-<translation id="1719094688023114093">O recurso Legenda instantânea está ativado.</translation>
+<translation id="1719094688023114093">O recurso de legenda instantânea está ativado.</translation>
 <translation id="1720011244392820496">Ativar o Sincronizar Wi-Fi</translation>
 <translation id="1720230731642245863">O ponto de acesso está desativado</translation>
 <translation id="1731815243805539470">Mudar para o usuário anterior</translation>
@@ -342,6 +342,7 @@
 <translation id="2201071101391734388">Foto recente <ph name="INDEX" /> de <ph name="TOTAL_COUNT" />.</translation>
 <translation id="2201687081523799384">Fechar o Google Tarefas</translation>
 <translation id="2208323208084708176">Modo de área de trabalho unificada.</translation>
+<translation id="2210311543574621570">A área de transferência será mostrada quando você pressionar e segurar Ctrl + V. Para remover esse atalho, desative a flag #clipboard-history-longpress em chrome://flags.</translation>
 <translation id="2215920961700443347">Sem Internet. Conecte-se à Internet e tente de novo.</translation>
 <translation id="2222841058024245321">Espaço de trabalho 7</translation>
 <translation id="2223384056430485343">Em uma tela dividida</translation>
@@ -1710,7 +1711,7 @@ Nova instalação</translation>
 <translation id="6627638273713273709">Pesquisar+Shift+K</translation>
 <translation id="662830937908749204">Mover o foco para o próximo painel</translation>
 <translation id="6637729079642709226">Alterar horário</translation>
-<translation id="6641720045729354415">Alternar Legenda instantânea. <ph name="STATE_TEXT" /></translation>
+<translation id="6641720045729354415">Ativar ou desativar legenda instantânea. <ph name="STATE_TEXT" /></translation>
 <translation id="6643169293433369663">Desfazer ordem de classificação por nome</translation>
 <translation id="664793810957802384">Itens no grupo sugerido</translation>
 <translation id="6649641931981131786">Ajuste a câmera que você fique no centro da tela.</translation>
@@ -1888,7 +1889,7 @@ Nova instalação</translation>
 <translation id="7278787617901301220"><ph name="LAUNCHER_KEY_NAME" /> + backspace</translation>
 <translation id="7285232777292757180">Use a ferramenta de captura de tela nas Configurações Rápidas para fazer capturas de tela</translation>
 <translation id="7301826272005790482">Dispensar sugestões de janela</translation>
-<translation id="7302889331339392448">O recurso Legenda instantânea está desativado.</translation>
+<translation id="7302889331339392448">O recurso de legenda instantânea está desativado.</translation>
 <translation id="7305884605064981971">EDGE</translation>
 <translation id="7311244614769792472">Nenhum resultado encontrado</translation>
 <translation id="7312210124139670355">O administrador está redefinindo o eSIM. Pode levar alguns minutos..</translation>
@@ -2477,7 +2478,7 @@ Para desligar o dispositivo, toque no botão liga/desliga novamente e pressione.
 <translation id="954052413789300507">Não há espaço suficiente para o arquivo <ph name="FILENAME" />. Libere espaço.</translation>
 <translation id="954520015070501466">30min</translation>
 <translation id="956452277966142925">Configurações do Painel de jogo</translation>
-<translation id="961856697154696964">Excluir histórico</translation>
+<translation id="961856697154696964">Excluir dados</translation>
 <translation id="974545358917229949">Exibindo <ph name="RESULT_COUNT" /> resultados para <ph name="QUERY" /></translation>
 <translation id="981011780479609956">Sem data de entrega</translation>
 <translation id="98120814841227350">Ir para o final do documento</translation>

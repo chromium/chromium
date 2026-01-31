@@ -47,6 +47,10 @@
   return [_formSuggestion.icon copy];
 }
 
+- (BOOL)hasCustomCardArtImage {
+  return _formSuggestion.hasCustomCardArtImage;
+}
+
 - (BOOL)isPasswordSuggestion {
   return _isPasswordSuggestion;
 }

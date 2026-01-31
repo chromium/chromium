@@ -22,6 +22,7 @@ class XREquirectLayer : public XRShapedLayer {
 
  public:
   XREquirectLayer(const XREquirectLayerInit* init,
+                  V8XRLayerLayout::Enum final_layout,
                   XRGraphicsBinding* binding,
                   XRLayerDrawingContext* drawing_context);
   ~XREquirectLayer() override = default;

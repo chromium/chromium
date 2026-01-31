@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/platform/wtf/text/ignoring_ascii_case_hash.h"
 
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/renderer/platform/wtf/hash_set.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string_hash.h"
 #include "third_party/blink/renderer/platform/wtf/text/character_names.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
@@ -76,6 +77,7 @@ TEST(IgnoringAsciiCaseHashTest, StringKeyHash) {
   const auto not_found = map.end();
   EXPECT_NE(not_found, map.find("k"));
   EXPECT_NE(not_found, map.find("K"));
+  EXPECT_NE(not_found, map.find(u"K"));
   EXPECT_NE(not_found, map.find(AtomicString("K")));
   // U+212A Kelvin sign should not match to ASCII "k" because of no FoldCase().
   EXPECT_EQ(not_found, map.find(u"\u212A"));
@@ -92,6 +94,29 @@ TEST(IgnoringAsciiCaseHashTest, AtomicStringKeyHash) {
   EXPECT_NE(not_found, map.find(AtomicString("K")));
   // U+212A Kelvin sign should not match to ASCII "k" because of no FoldCase().
   EXPECT_EQ(not_found, map.find(AtomicString(u"\u212A")));
+}
+
+TEST(IgnoringAsciiCaseHashTest, Translator) {
+  using Translator = IgnoringAsciiCaseHashTranslator;
+  HashMap<String, int, IgnoringAsciiCaseHashTraits<String>> map;
+  map.insert("k", 42);
+  EXPECT_EQ(1u, map.size());
+  auto it = map.Find<Translator, StringView>("k");
+  EXPECT_NE(map.end(), it);
+  it = map.Find<Translator, StringView>(u"k");
+  EXPECT_NE(map.end(), it);
+  it = map.Find<Translator, StringView>(u"\u212A");
+  EXPECT_EQ(map.end(), it);
+
+  HashSet<AtomicString, IgnoringAsciiCaseHashTraits<AtomicString>> set;
+  set.insert(AtomicString("k"));
+  EXPECT_EQ(1u, set.size());
+  auto set_it = set.Find<Translator, StringView>("k");
+  EXPECT_NE(set.end(), set_it);
+  set_it = set.Find<Translator, StringView>(u"k");
+  EXPECT_NE(set.end(), set_it);
+  set_it = set.Find<Translator, StringView>(u"\u212A");
+  EXPECT_EQ(set.end(), set_it);
 }
 
 }  // namespace blink

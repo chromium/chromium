@@ -318,6 +318,17 @@
       },
     },
   },
+  'gpu_linux_gce_stable': {
+    'fail_if_unused': False,
+    'swarming': {
+      'dimensions': {
+        'cpu': 'x86-64',
+        'gpu': 'none',
+        'os': 'Ubuntu-22.04',
+        'pool': 'chromium.tests.gpu',
+      },
+    },
+  },
   'gpu_nvidia_shield_tv_stable': {
     'fail_if_unused': False,
     'swarming': {
@@ -613,7 +624,7 @@
         'cpu': 'arm64',
         'gpu': 'apple:m1',
         'mac_model': 'Macmini9,1',
-        'os': 'Mac-14.5',
+        'os': 'Mac-15.7',
         'pool': 'chromium.tests',
         'display_attached': '1',
       },
@@ -980,6 +991,17 @@
         'os': 'Windows-11-26100',
         'display_attached': '1',
         'pool': 'chromium.tests.gpu.experimental',
+      },
+    },
+  },
+  'win11_amd_rx_5500_xt_experimental': {
+    'fail_if_unused': False,
+    'swarming': {
+      'dimensions': {
+        'display_attached': '1',
+        'gpu': '1002:7340-32.0.21037.1004',
+        'os': 'Windows-11-26100',
+        'pool': 'chromium.tests.gpu',
       },
     },
   },

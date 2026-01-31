@@ -148,16 +148,13 @@ bool IsFunctionAServiceWow64(HANDLE process, void* target, void* local_thunk) {
 namespace sandbox {
 
 NTSTATUS ServiceResolverThunk::Setup(const void* target_module,
-                                     const void* interceptor_module,
                                      const char* target_name,
-                                     const char* interceptor_name,
                                      const void* interceptor_entry_point,
                                      void* thunk_storage,
                                      size_t storage_bytes,
                                      size_t* storage_used) {
-  NTSTATUS ret =
-      Init(target_module, interceptor_module, target_name, interceptor_name,
-           interceptor_entry_point, thunk_storage, storage_bytes);
+  NTSTATUS ret = Init(target_module, target_name, interceptor_entry_point,
+                      thunk_storage, storage_bytes);
   if (!NT_SUCCESS(ret))
     return ret;
 

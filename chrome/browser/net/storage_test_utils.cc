@@ -31,8 +31,7 @@ constexpr std::string_view kRequestAndCheckStorageAccess =
 
 constexpr std::string_view kRequestStorageAccessBeyondCookies =
     "document.requestStorageAccess({estimate: true})"
-    ".then((handle) => handle.estimate())"
-    ".then(() => true, () => false)";
+    ".then((handle) => handle.estimate())";
 
 constexpr std::string_view kRequestStorageAccessFor =
     "document.requestStorageAccessFor($1)";
@@ -167,8 +166,7 @@ bool RequestAndCheckStorageAccessForFrame(content::RenderFrameHost* frame,
 
 bool RequestAndCheckStorageAccessBeyondCookiesForFrame(
     content::RenderFrameHost* frame) {
-  return content::EvalJs(frame, kRequestStorageAccessBeyondCookies)
-      .ExtractBool();
+  return content::ExecJs(frame, kRequestStorageAccessBeyondCookies);
 }
 
 bool RequestStorageAccessForOrigin(content::RenderFrameHost* frame,

@@ -6,7 +6,7 @@
 #define CONTENT_PUBLIC_BROWSER_TRACING_SUPPORT_H_
 
 #include "content/common/content_export.h"
-#include "content/public/browser/child_process_id.h"
+#include "content/public/common/child_process_id.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/perfetto/include/perfetto/tracing/track.h"
 

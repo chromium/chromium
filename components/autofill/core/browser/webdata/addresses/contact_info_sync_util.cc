@@ -227,7 +227,6 @@ sync_pb::ContactInfoSpecifics ContactInfoSpecificsFromAutofillProfile(
   specifics.set_profile_label(profile.profile_label());
 
   specifics.set_initial_creator_id(profile.initial_creator_id());
-  specifics.set_last_modifier_id(profile.last_modifier_id());
 
   ContactInfoEntryDataSetter s(profile);
   // Set name-related values and statuses.
@@ -359,7 +358,6 @@ AutofillProfile CreateAutofillProfileFromContactInfoSpecifics(
   profile.set_language_code(specifics.language_code());
   profile.set_profile_label(specifics.profile_label());
   profile.set_initial_creator_id(specifics.initial_creator_id());
-  profile.set_last_modifier_id(specifics.last_modifier_id());
 
   ContactInfoProfileSetter s(profile);
   // Set name-related values and statuses.
@@ -448,6 +446,9 @@ sync_pb::ContactInfoSpecifics TrimContactInfoSpecificsDataForCaching(
   trimmed_specifics.clear_language_code();
   trimmed_specifics.clear_profile_label();
   trimmed_specifics.clear_initial_creator_id();
+  // This field is no longer used. Leaving it here as it should still be treated
+  // as supported for the purpose of trimming to ensure it is properly handled
+  // for older clients.
   trimmed_specifics.clear_last_modifier_id();
 
   EntryTokenDeleter d;

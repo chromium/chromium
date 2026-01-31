@@ -23,10 +23,10 @@ class CONTENT_EXPORT AccessibilityTreeFormatterBlink
   explicit AccessibilityTreeFormatterBlink();
   ~AccessibilityTreeFormatterBlink() override;
 
-  base::Value::Dict BuildTree(ui::AXPlatformNodeDelegate* root) const override;
-  base::Value::Dict BuildTreeForSelector(
+  base::DictValue BuildTree(ui::AXPlatformNodeDelegate* root) const override;
+  base::DictValue BuildTreeForSelector(
       const AXTreeSelector& selector) const override;
-  base::Value::Dict BuildTreeForNode(ui::AXNode* node) const override;
+  base::DictValue BuildTreeForNode(ui::AXNode* node) const override;
   std::string DumpInternalAccessibilityTree(
       ui::AXTreeID tree_id,
       const std::vector<AXPropertyFilter>& property_filters) override;
@@ -37,20 +37,18 @@ class CONTENT_EXPORT AccessibilityTreeFormatterBlink
 
  private:
   void RecursiveBuildTree(const ui::BrowserAccessibility& node,
-                          base::Value::Dict* dict) const;
+                          base::DictValue* dict) const;
 
-  void RecursiveBuildTree(const ui::AXNode& node,
-                          base::Value::Dict* dict) const;
+  void RecursiveBuildTree(const ui::AXNode& node, base::DictValue* dict) const;
 
-  base::Value::Dict BuildNode(ui::AXPlatformNodeDelegate* node) const override;
+  base::DictValue BuildNode(ui::AXPlatformNodeDelegate* node) const override;
 
   void AddProperties(const ui::BrowserAccessibility& node,
-                     base::Value::Dict* dict) const;
+                     base::DictValue* dict) const;
 
-  void AddProperties(const ui::AXNode& node, base::Value::Dict* dict) const;
+  void AddProperties(const ui::AXNode& node, base::DictValue* dict) const;
 
-  std::string ProcessTreeForOutput(
-      const base::Value::Dict& node) const override;
+  std::string ProcessTreeForOutput(const base::DictValue& node) const override;
 };
 
 }  // namespace content

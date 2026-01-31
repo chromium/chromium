@@ -1,0 +1,11 @@
+Name: typed-arena
+URL: https://crates.io/crates/typed-arena
+Version: 2.0.2
+Revision: 239d236e6dd756b15d50c1d6eef5703b7f28bc61
+Update Mechanism: Manual (https://crbug.com/449898466)
+License: MIT
+License File: //third_party/rust/chromium_crates_io/vendor/typed-arena-v2/LICENSE
+Shipped: yes
+Security Critical: yes
+
+Description: The arena, a fast but limited type of allocator

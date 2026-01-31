@@ -44,9 +44,9 @@
 #include "components/sessions/content/content_live_tab.h"
 #include "components/sessions/core/session_id.h"
 #include "components/sessions/core/tab_restore_service.h"
+#include "components/split_tabs/split_tab_id.h"
+#include "components/split_tabs/split_tab_visual_data.h"
 #include "components/tab_groups/tab_group_id.h"
-#include "components/tabs/public/split_tab_id.h"
-#include "components/tabs/public/split_tab_visual_data.h"
 #include "components/tabs/public/tab_group.h"
 #include "content/public/browser/site_instance.h"
 #include "content/public/browser/web_contents.h"
@@ -100,6 +100,14 @@ void BrowserTabStripModelDelegate::OpenGlicWindowFromSharedTab() {
     service->ToggleUI(/*bwi=*/nullptr, /*prevent_close=*/true,
                       glic::mojom::InvocationSource::kSharedTab);
   }
+}
+
+void BrowserTabStripModelDelegate::GlicUnpinTabsFromAllConversations(
+    base::span<const tabs::TabHandle> tab_handles) {
+  auto* service =
+      glic::GlicKeyedServiceFactory::GetGlicKeyedService(browser_->profile());
+  service->UnpinTabsFromAllInstances(tab_handles,
+                                     glic::GlicUnpinTrigger::kContextMenu);
 }
 #endif
 
@@ -233,7 +241,7 @@ std::optional<SessionID> BrowserTabStripModelDelegate::CreateHistoricalTab(
   if (service && browser_->CanSupportWindowFeature(
                      Browser::WindowFeature::kFeatureTabStrip)) {
     return service->CreateHistoricalTab(
-        sessions::ContentLiveTab::GetForWebContents(contents),
+        sessions::ContentLiveTab::GetOrCreateForWebContents(contents),
         browser_->tab_strip_model()->GetIndexOfWebContents(contents));
   }
   return std::nullopt;
@@ -281,7 +289,6 @@ bool BrowserTabStripModelDelegate::ShouldRunUnloadListenerBeforeClosing(
     content::WebContents* contents) {
   return browser_->ShouldRunUnloadListenerBeforeClosing(contents);
 }
-
 
 bool BrowserTabStripModelDelegate::CanReload() const {
   return chrome::CanReload(browser_);

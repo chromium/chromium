@@ -10,7 +10,6 @@
 
 #include "base/base64.h"
 #include "base/check.h"
-#include "base/containers/contains.h"
 #include "base/containers/span.h"
 #include "base/strings/to_string.h"
 #include "components/cbor/reader.h"

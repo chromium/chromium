@@ -76,8 +76,8 @@ dbus::ObjectPath PopPendingProfileWithActivationCode(
   return dbus::ObjectPath();
 }
 
-base::Value::List ExtractPSimSlotInfo(const base::Value* sim_slot_info_list) {
-  base::Value::List psim_slot_info_list;
+base::ListValue ExtractPSimSlotInfo(const base::Value* sim_slot_info_list) {
+  base::ListValue psim_slot_info_list;
 
   if (!sim_slot_info_list || !sim_slot_info_list->is_list()) {
     return psim_slot_info_list;
@@ -287,7 +287,7 @@ void FakeHermesEuiccClient::UpdateShillDeviceSimSlotInfo() {
 
   // Check if there is already an entry for SIM slot information and copy the
   // pSIM information if it is available.
-  base::Value::List sim_slot_info_list = ExtractPSimSlotInfo(
+  base::ListValue sim_slot_info_list = ExtractPSimSlotInfo(
       device_test->GetDeviceProperty(device_path, shill::kSIMSlotInfoProperty));
 
   for (auto [physical_slot, euicc_properties] : physical_slot_to_properties) {
@@ -305,7 +305,7 @@ void FakeHermesEuiccClient::UpdateShillDeviceSimSlotInfo() {
       }
     }
 
-    base::Value::Dict sim_slot_info;
+    base::DictValue sim_slot_info;
     sim_slot_info.Set(shill::kSIMSlotInfoEID, euicc_properties->eid().value());
     sim_slot_info.Set(shill::kSIMSlotInfoICCID, iccid);
     sim_slot_info.Set(shill::kSIMSlotInfoPrimary,
@@ -741,7 +741,7 @@ void FakeHermesEuiccClient::CreateDefaultModbApn(
   service_test->SetServiceProperty(
       service_path, shill::kCellularApnProperty,
       base::Value(service_test->GetFakeDefaultModbApnDict()));
-  base::Value::List apn_list;
+  base::ListValue apn_list;
   apn_list.Append(service_test->GetFakeDefaultModbApnDict());
   ShillDeviceClient::TestInterface* device_test =
       ShillDeviceClient::Get()->GetTestInterface();

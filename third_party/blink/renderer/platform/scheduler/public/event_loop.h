@@ -15,11 +15,8 @@
 #include "third_party/blink/renderer/platform/wtf/deque.h"
 #include "third_party/blink/renderer/platform/wtf/hash_set.h"
 #include "third_party/blink/renderer/platform/wtf/ref_counted.h"
-
-namespace v8 {
-class Isolate;
-class MicrotaskQueue;
-}  // namespace v8
+#include "v8/include/v8-isolate.h"
+#include "v8/include/v8-microtask-queue.h"
 
 namespace blink {
 
@@ -100,6 +97,22 @@ class PLATFORM_EXPORT EventLoop final : public RefCounted<EventLoop> {
   v8::MicrotaskQueue* microtask_queue() const { return microtask_queue_.get(); }
 
   bool IsSchedulerAttachedForTest(FrameOrWorkerScheduler*);
+
+  class PauseMicrotasksHandle {
+   public:
+    ~PauseMicrotasksHandle() = default;
+
+   private:
+    friend class EventLoop;
+    PauseMicrotasksHandle(v8::Isolate* isolate, v8::MicrotaskQueue* queue);
+
+    v8::Isolate::SuppressMicrotaskExecutionScope scope_;
+  };
+
+  // Suppresses microtask execution for the lifetime of the returned handle.
+  // Pending microtasks would be executed as soon as all issued handles go
+  // out of scope.
+  [[nodiscard]] std::unique_ptr<PauseMicrotasksHandle> PauseMicrotasks();
 
  private:
   friend class RefCounted<EventLoop>;

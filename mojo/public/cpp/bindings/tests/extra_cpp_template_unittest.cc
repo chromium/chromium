@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include <iostream>
+
 #include "mojo/public/cpp/bindings/tests/extra_cpp_template_unittest.test-mojom-extra_cpp_template_unittest.h"
 #include "testing/gtest/include/gtest/gtest.h"
 

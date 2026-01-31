@@ -4,6 +4,7 @@
 
 import typing
 
+from . import comments
 from . import pyl
 from . import starlark_conversions
 from . import values
@@ -48,8 +49,10 @@ def convert_basic_suite(
           pass
 
         case 'ci_only' | 'experiment_percentage' | 'use_isolated_scripts_api':
-          anonymous_mixin_builder[key.value] = (
-              starlark_conversions.convert_direct(value))
+          converted_value = starlark_conversions.convert_direct(value)
+          converted_value = comments.ensure_no_comments(
+              value, converted_value, message=f'on value for "{key.value}"')
+          anonymous_mixin_builder[key.value] = converted_value
 
         case ('android_args' | 'chromeos_args' | 'desktop_args' | 'args'
               | 'lacros_args' | 'linux_args'):
@@ -144,12 +147,19 @@ def convert_matrix_compound_suite(
     else:
       bundle_builder = values.CallValueBuilder(
           'targets.bundle',
-          {'targets': starlark_conversions.convert_direct(suite_name)})
+          {
+              comments.comment(suite_name, 'targets'):
+              starlark_conversions.convert_direct(suite_name,
+                                                  include_comments=False)
+          },
+      )
       for key, value in matrix_config.items:
         match key.value:
           case 'mixins' | 'variants':
-            bundle_builder[key.value] = (
-                starlark_conversions.convert_direct(value))
+            converted_value = starlark_conversions.convert_direct(value)
+            converted_value = comments.ensure_no_comments(
+                value, converted_value, message=f'on value for "{key.value}')
+            bundle_builder[key.value] = converted_value
 
           case _:
             raise Exception(

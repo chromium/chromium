@@ -65,7 +65,7 @@ AutofillSaveCardInfoBar::CreateRenderInfoBar(
               env, GetTextFor(ConfirmInfoBarDelegate::BUTTON_OK)),
           base::android::ConvertUTF16ToJavaString(
               env, GetTextFor(ConfirmInfoBarDelegate::BUTTON_CANCEL)),
-          delegate->IsGooglePayBrandingEnabled(),
+          delegate->IsChromeBrandingEnabled(),
           delegate->displayed_target_account_email().empty()
               ? nullptr
               : base::android::ConvertUTF16ToJavaString(

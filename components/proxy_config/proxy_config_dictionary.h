@@ -28,7 +28,7 @@ class ProxyServer;
 class PROXY_CONFIG_EXPORT ProxyConfigDictionary {
  public:
   // Takes ownership of |dict| (|dict| will be moved to |dict_|).
-  explicit ProxyConfigDictionary(base::Value::Dict dict);
+  explicit ProxyConfigDictionary(base::DictValue dict);
   ProxyConfigDictionary(ProxyConfigDictionary&& other);
 
   ProxyConfigDictionary(const ProxyConfigDictionary&) = delete;
@@ -43,15 +43,15 @@ class PROXY_CONFIG_EXPORT ProxyConfigDictionary {
   bool GetBypassList(std::string* out) const;
   bool HasBypassList() const;
 
-  const base::Value::Dict& GetDictionary() const;
+  const base::DictValue& GetDictionary() const;
 
-  static base::Value::Dict CreateDirect();
-  static base::Value::Dict CreateAutoDetect();
-  static base::Value::Dict CreatePacScript(const std::string& pac_url,
-                                           bool pac_mandatory);
-  static base::Value::Dict CreateFixedServers(const std::string& proxy_server,
-                                              const std::string& bypass_list);
-  static base::Value::Dict CreateSystem();
+  static base::DictValue CreateDirect();
+  static base::DictValue CreateAutoDetect();
+  static base::DictValue CreatePacScript(const std::string& pac_url,
+                                         bool pac_mandatory);
+  static base::DictValue CreateFixedServers(const std::string& proxy_server,
+                                            const std::string& bypass_list);
+  static base::DictValue CreateSystem();
 
   // Encodes the proxy server as "<url-scheme>=<proxy-scheme>://<proxy>".
   // Used to generate the |proxy_server| arg for CreateFixedServers().
@@ -62,13 +62,13 @@ class PROXY_CONFIG_EXPORT ProxyConfigDictionary {
  private:
   bool GetString(const char* key, std::string* out) const;
 
-  static base::Value::Dict CreateDictionary(ProxyPrefs::ProxyMode mode,
-                                            const std::string& pac_url,
-                                            bool pac_mandatory,
-                                            const std::string& proxy_server,
-                                            const std::string& bypass_list);
+  static base::DictValue CreateDictionary(ProxyPrefs::ProxyMode mode,
+                                          const std::string& pac_url,
+                                          bool pac_mandatory,
+                                          const std::string& proxy_server,
+                                          const std::string& bypass_list);
 
-  base::Value::Dict dict_;
+  base::DictValue dict_;
 };
 
 #endif  // COMPONENTS_PROXY_CONFIG_PROXY_CONFIG_DICTIONARY_H_

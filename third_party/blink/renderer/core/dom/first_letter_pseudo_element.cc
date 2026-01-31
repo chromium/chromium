@@ -303,8 +303,7 @@ LayoutText* FirstLetterPseudoElement::FirstLetterTextLayoutObject(
           // typographic character unit for ::first-letter.
           return nullptr;
         }
-      } else if (inline_child->IsAtomicInlineLevel() ||
-                 inline_child->IsMenuList()) {
+      } else if (inline_child->IsAtomicInline() || inline_child->IsMenuList()) {
         return nullptr;
       }
       inline_child = inline_child->NextInPreOrder(stay_inside);

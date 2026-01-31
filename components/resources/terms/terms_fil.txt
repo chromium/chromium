@@ -1,0 +1,13 @@
+Mga Karagdagang Tuntunin ng Serbisyo ng Google Chrome at ChromeOS
+
+Huling binago: Setyembre 30, 2025
+
+Sa paggamit sa Chrome o ChromeOS, sumasang-ayon ka sa Mga Tuntunin ng Serbisyo ng Google na makikita sa https://policies.google.com/terms at sa Mga Karagdagang Tuntunin ng Serbisyo ng Google Chrome at ChromeOS na ito.
+
+Nalalapat ang Mga Karagdagang Tuntunin ng Serbisyong ito ng Google Chrome at ChromeOS sa naipapatupad na bersyon ng code ng Chrome at ChromeOS. Available ang karamihan ng source code para sa Google Chrome nang libre sa ilalim ng mga kasunduan sa lisensya ng open source na software sa chrome://credits.
+
+Ang paggamit mo sa ilang partikular na bahagi ng Chrome at ChromeOS ay napapailalim sa mga sumusunod na tuntunin:
+
+AVC
+
+BINIGYAN NG LISENSYA ANG PRODUKTONG ITO SA ILALIM NG AVC PATENT PORTFOLIO LICENSE PARA SA PERSONAL NA PAGGAMIT NG ISANG CONSUMER O IBA PANG PAGGAMIT KUNG SAAN HINDI ITO NAKAKATANGGAP NG BAYAD PARA (i) I-ENCODE ANG VIDEO ALINSUNOD SA AVC STANDARD (“AVC VIDEO”) AT/O (ii) I-DECODE ANG AVC VIDEO NA NA-ENCODE NG ISANG CONSUMER NA KASAMA SA ISANG PERSONAL NA AKTIBIDAD AT/O NAKUHA MULA SA ISANG VIDEO PROVIDER NA MAY LISENSYA PARA MAGBIGAY NG AVC VIDEO. WALANG LISENSYANG IBINIGAY O ILALAPAT PARA SA ANUPAMANG PAGGAMIT. PUWEDENG MAKAKUHA NG KARAGDAGANG IMPORMASYON MULA SA MPEG LA, L.L.C. TINGNAN ANG HTTPS://WWW.VIA-LA.COM.

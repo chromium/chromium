@@ -90,7 +90,7 @@ RendererTask::RendererTask(const std::u16string& title,
           CreateRendererResourcesSampler(render_process_host_)),
       render_process_id_(render_process_host_->GetDeprecatedID()),
       profile_name_(GetRendererProfileName(render_process_host_)) {
-  OnNetworkBytesRead(base::ByteCount(0));
+  OnNetworkBytesRead(base::ByteSize(0));
 
   // Tag the web_contents with a |ContentFaviconDriver| (if needed) so that
   // we can use it to observe favicons changes.
@@ -145,9 +145,9 @@ void RendererTask::Refresh(const base::TimeDelta& update_interval,
   renderer_resources_sampler_->Refresh(base::DoNothing());
 
   v8_memory_allocated_ =
-      base::ByteCount(renderer_resources_sampler_->GetV8MemoryAllocated());
+      base::ByteSize(renderer_resources_sampler_->GetV8MemoryAllocated());
   v8_memory_used_ =
-      base::ByteCount(renderer_resources_sampler_->GetV8MemoryUsed());
+      base::ByteSize(renderer_resources_sampler_->GetV8MemoryUsed());
   webcache_stats_ = renderer_resources_sampler_->GetBlinkMemoryCacheStats();
 }
 
@@ -176,11 +176,11 @@ SessionID RendererTask::GetTabId() const {
   return sessions::SessionTabHelper::IdForTab(web_contents_);
 }
 
-base::ByteCount RendererTask::GetV8MemoryAllocated() const {
+std::optional<base::ByteSize> RendererTask::GetV8MemoryAllocated() const {
   return v8_memory_allocated_;
 }
 
-base::ByteCount RendererTask::GetV8MemoryUsed() const {
+std::optional<base::ByteSize> RendererTask::GetV8MemoryUsed() const {
   return v8_memory_used_;
 }
 

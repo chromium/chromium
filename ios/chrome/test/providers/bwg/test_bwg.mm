@@ -45,4 +45,20 @@ NSArray<GeminiSettingsMetadata*>* GetEligibleSettings(
   return nil;
 }
 
+GeminiSettingsAction* ActionForSettingsContext(GeminiSettingsContext context) {
+  return nil;
+}
+
+void UpdateOverlayOffsetWithOpacity(CGFloat offset, CGFloat opacity) {}
+
+void UpdateGeminiViewState(GeminiViewState view_state) {}
+
+void UpdateGeminiViewState(GeminiViewState view_state, bool animated) {}
+
+GeminiViewState GetCurrentGeminiViewState() {
+  return GeminiViewState::kUnknown;
+}
+
+void RequestUIChange(GeminiUIElementType ui_element_type) {}
+
 }  // namespace ios::provider

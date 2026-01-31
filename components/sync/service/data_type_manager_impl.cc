@@ -9,7 +9,6 @@
 #include <utility>
 
 #include "base/barrier_callback.h"
-#include "base/containers/contains.h"
 #include "base/containers/enum_set.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
@@ -365,7 +364,7 @@ TypeStatusMapForDebugging DataTypeManagerImpl::GetTypeStatusMapForDebugging(
     TypeStatusForDebugging& type_status = result[type];
     type_status.state = DataTypeController::StateToString(controller->state());
 
-    if (base::Contains(data_type_error_map, type)) {
+    if (data_type_error_map.contains(type)) {
       const SyncError& error = data_type_error_map.at(type);
       switch (error.error_type()) {
         case SyncError::MODEL_ERROR:
@@ -422,13 +421,13 @@ TypeStatusMapForDebugging DataTypeManagerImpl::GetTypeStatusMapForDebugging(
 }
 
 void DataTypeManagerImpl::GetAllNodesForDebugging(
-    base::OnceCallback<void(base::Value::List)> callback) const {
+    base::OnceCallback<void(base::ListValue)> callback) const {
   const DataTypeSet active_types = GetActiveDataTypes();
   if (active_types.empty() || state_ != CONFIGURED) {
     // `GetAllNodesRequestBarrier` only supports waiting for a non-empty set of
     // types, so return empty here if there are no active types. This can happen
     // if no data types have been successfully configured yet.
-    std::move(callback).Run(base::Value::List());
+    std::move(callback).Run(base::ListValue());
     return;
   }
 
@@ -446,7 +445,7 @@ void DataTypeManagerImpl::GetAllNodesForDebugging(
       continue;
     }
 
-    CHECK(base::Contains(controllers_, type));
+    CHECK(controllers_.contains(type));
     const std::unique_ptr<DataTypeController>& controller =
         controllers_.at(type);
 
@@ -468,7 +467,7 @@ void DataTypeManagerImpl::GetEntityCountsForDebugging(
 }
 
 DataTypeController* DataTypeManagerImpl::GetControllerForTest(DataType type) {
-  CHECK(base::Contains(controllers_, type));
+  CHECK(controllers_.contains(type));
   return controllers_.at(type).get();
 }
 
@@ -1029,7 +1028,7 @@ void DataTypeManagerImpl::RecordMemoryUsageAndCountsHistograms() {
       continue;
     }
 
-    CHECK(base::Contains(controllers_, type));
+    CHECK(controllers_.contains(type));
     controllers_.at(type)->RecordMemoryUsageAndCountsHistograms();
   }
 }

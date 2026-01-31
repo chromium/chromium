@@ -1029,10 +1029,6 @@ bool OverlayProcessorWebView::IsFrameSinkOverlayed(
   return overlays_.contains(frame_sink_id);
 }
 
-bool OverlayProcessorWebView::ShouldCreatePrimaryPlane() const {
-  return false;
-}
-
 OverlayProcessorWebView::ScopedSurfaceControlAvailable::
     ScopedSurfaceControlAvailable(OverlayProcessorWebView* processor,
                                   GetSurfaceControlFn surface_getter)

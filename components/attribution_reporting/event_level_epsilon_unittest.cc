@@ -70,7 +70,7 @@ TEST(EventLevelEpsilonTest, Parse) {
   for (const auto& test_case : kTestCases) {
     SCOPED_TRACE(test_case.desc);
 
-    const base::Value::Dict dict = base::test::ParseJsonDict(test_case.json);
+    const base::DictValue dict = base::test::ParseJsonDict(test_case.json);
 
     EXPECT_THAT(EventLevelEpsilon::Parse(dict), test_case.matches);
   }
@@ -79,9 +79,9 @@ TEST(EventLevelEpsilonTest, Parse) {
 TEST(EventLevelEpsilonTest, Serialize) {
   const EventLevelEpsilon kEpsilon(8.2);
 
-  base::Value::Dict dict;
+  base::DictValue dict;
   kEpsilon.Serialize(dict);
-  EXPECT_EQ(dict, base::Value::Dict().Set("event_level_epsilon", 8.2));
+  EXPECT_EQ(dict, base::DictValue().Set("event_level_epsilon", 8.2));
 }
 
 }  // namespace

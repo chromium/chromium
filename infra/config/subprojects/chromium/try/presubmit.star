@@ -182,6 +182,9 @@ try_.presubmit_builder(
     executable = "recipe:presubmit",
     contact_team_email = "chrome-browser-infra-team@google.com",
     execution_timeout = 40 * time.minute,
+    experiments = {
+        "presubmit.resultdb_module": 100,
+    },
     properties = {
         "$depot_tools/presubmit": {
             "runhooks": True,
@@ -199,6 +202,9 @@ try_.presubmit_builder(
     os = os.WINDOWS_DEFAULT,
     ssd = True,
     execution_timeout = 40 * time.minute,
+    experiments = {
+        "presubmit.resultdb_module": 100,
+    },
     properties = {
         "$depot_tools/presubmit": {
             "runhooks": True,

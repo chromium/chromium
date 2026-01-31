@@ -84,3 +84,7 @@ IN_PROC_BROWSER_TEST_F(WebUiJsTest, MockTimer) {
 IN_PROC_BROWSER_TEST_F(WebUiJsTest, MojoTypeUtil) {
   RunTest("js/mojo_type_util_test.js", "mocha.run();");
 }
+
+IN_PROC_BROWSER_TEST_F(WebUiJsTest, TestMock) {
+  RunTest("test_mock_test.js", "mocha.run();");
+}

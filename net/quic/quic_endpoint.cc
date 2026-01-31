@@ -17,8 +17,8 @@ QuicEndpoint::QuicEndpoint(quic::ParsedQuicVersion quic_version,
 
 QuicEndpoint::~QuicEndpoint() = default;
 
-base::Value::Dict QuicEndpoint::ToValue() const {
-  base::Value::Dict dict;
+base::DictValue QuicEndpoint::ToValue() const {
+  base::DictValue dict;
   dict.Set("quic_version", quic::ParsedQuicVersionToString(quic_version));
   dict.Set("ip_endpoint", ip_endpoint.ToString());
   dict.Set("metadata", metadata.ToValue());

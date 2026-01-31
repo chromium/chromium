@@ -56,7 +56,7 @@ export class LocalWebApprovalsAfter extends LocalWebApprovalsAfterBase {
    */
   private renderDetails(params: WebApprovalsParams) {
     this.childName = params.childDisplayName;
-    this.url = params.url.url;
+    this.url = params.url;
     this.favicon = getBase64EncodedSrcForPng(params.faviconPngBytes);
   }
 }

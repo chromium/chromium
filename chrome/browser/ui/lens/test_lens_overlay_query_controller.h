@@ -8,6 +8,7 @@
 #include "chrome/browser/ui/lens/lens_overlay_gen204_controller.h"
 #include "chrome/browser/ui/lens/lens_overlay_query_controller.h"
 #include "components/endpoint_fetcher/endpoint_fetcher.h"
+#include "components/lens/proto/server/lens_overlay_response.pb.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
 namespace lens {
@@ -22,6 +23,8 @@ class MockLensOverlayQueryController : public LensOverlayQueryController {
   explicit MockLensOverlayQueryController(
       lens::LensOverlayGen204Controller* gen204_controller);
   ~MockLensOverlayQueryController() override;
+
+  MOCK_METHOD(bool, IsOff, (), (override));
 
   MOCK_METHOD(void,
               StartQueryFlow,
@@ -70,6 +73,29 @@ class MockLensOverlayQueryController : public LensOverlayQueryController {
                AdditionalQueryParamsMap,
                std::optional<SkBitmap>),
               (override));
+
+  MOCK_METHOD(const lens::proto::LensOverlaySuggestInputs&,
+              GetLensSuggestInputs,
+              (),
+              (const));
+
+  MOCK_METHOD(void,
+              SetSuggestInputsReadyCallback,
+              (base::RepeatingClosure),
+              ());
+
+  MOCK_METHOD(void,
+              SendTaskCompletionGen204IfEnabled,
+              (std::string,
+               lens::mojom::UserAction,
+               lens::LensOverlayRequestId),
+              (override));
+
+  MOCK_METHOD(void,
+              SendSemanticEventGen204IfEnabled,
+              (lens::mojom::SemanticEvent,
+               std::optional<lens::LensOverlayRequestId>),
+              (override));
 };
 
 class FakeEndpointFetcher : public endpoint_fetcher::EndpointFetcher {
@@ -94,7 +120,6 @@ class TestLensOverlayQueryController : public LensOverlayQueryController {
       LensOverlayFullImageResponseCallback full_image_callback,
       LensOverlayUrlResponseCallback url_callback,
       LensOverlayInteractionResponseCallback interaction_callback,
-      LensOverlaySuggestInputsCallback interaction_data_callback,
       LensOverlayThumbnailCreatedCallback thumbnail_created_callback,
       UploadProgressCallback upload_progress_callback,
       variations::VariationsClient* variations_client,

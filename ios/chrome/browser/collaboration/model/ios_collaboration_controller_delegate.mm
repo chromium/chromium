@@ -45,8 +45,8 @@
 #import "ios/chrome/browser/shared/model/browser/browser_provider.h"
 #import "ios/chrome/browser/shared/model/browser/browser_provider_interface.h"
 #import "ios/chrome/browser/shared/model/web_state_list/tab_group.h"
-#import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
+#import "ios/chrome/browser/shared/public/commands/scene_commands.h"
 #import "ios/chrome/browser/shared/public/commands/settings_commands.h"
 #import "ios/chrome/browser/shared/public/commands/show_signin_command.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
@@ -656,8 +656,8 @@ void IOSCollaborationControllerDelegate::ErrorAccepted(ResultCallback result) {
 
 void IOSCollaborationControllerDelegate::Update(ResultCallback result) {
   CommandDispatcher* dispatcher = browser_->GetCommandDispatcher();
-  id<ApplicationCommands> application_handler =
-      HandlerForProtocol(dispatcher, ApplicationCommands);
+  id<SceneCommands> application_handler =
+      HandlerForProtocol(dispatcher, SceneCommands);
   [application_handler showAppStorePage];
   std::move(result).Run(CollaborationControllerDelegate::Outcome::kSuccess);
 }
@@ -757,8 +757,8 @@ void IOSCollaborationControllerDelegate::ConfigureAndJoinTabGroup(
           : l10n_util::GetPluralNSStringF(IDS_IOS_TAB_GROUP_TABS_NUMBER,
                                           preview_items.count);
   config.displayName = group_title_objc;
-  config.applicationHandler =
-      HandlerForProtocol(browser_->GetCommandDispatcher(), ApplicationCommands);
+  config.sceneHandler =
+      HandlerForProtocol(browser_->GetCommandDispatcher(), SceneCommands);
   config.previewItems = preview_items;
   config.previewImage = JoinGroupImage(preview_items);
 
@@ -802,8 +802,8 @@ void IOSCollaborationControllerDelegate::ConfigureAndShareTabGroup(
   config.tabGroup = tab_group;
   config.groupImage = faviconsGridImage;
   config.baseViewController = base_view_controller_;
-  config.applicationHandler =
-      HandlerForProtocol(browser_->GetCommandDispatcher(), ApplicationCommands);
+  config.sceneHandler =
+      HandlerForProtocol(browser_->GetCommandDispatcher(), SceneCommands);
   config.completion = base::CallbackToBlock(
       base::BindOnce(&IOSCollaborationControllerDelegate::OnShareFlowComplete,
                      weak_ptr_factory_.GetWeakPtr()));
@@ -845,8 +845,8 @@ void IOSCollaborationControllerDelegate::ConfigureAndManageTabGroup(
   config.enterpriseSharingDisabled =
       collaboration_service_->GetServiceStatus().collaboration_status ==
       CollaborationStatus::kDisabledForPolicy;
-  config.applicationHandler =
-      HandlerForProtocol(browser_->GetCommandDispatcher(), ApplicationCommands);
+  config.sceneHandler =
+      HandlerForProtocol(browser_->GetCommandDispatcher(), SceneCommands);
   auto completion_block = base::CallbackToBlock(std::move(result));
   config.completion = ^(ShareKitFlowOutcome outcome) {
     completion_block(ConvertShareKitFlowOutcome(outcome));

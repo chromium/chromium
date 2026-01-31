@@ -20,7 +20,6 @@
 #include "ash/glanceables/glanceables_metrics.h"
 #include "base/barrier_closure.h"
 #include "base/check.h"
-#include "base/containers/contains.h"
 #include "base/containers/flat_map.h"
 #include "base/functional/bind.h"
 #include "base/memory/weak_ptr.h"
@@ -220,9 +219,8 @@ GlanceablesClassroomClientImpl::~GlanceablesClassroomClientImpl() = default;
 bool GlanceablesClassroomClientImpl::IsDisabledByAdmin() const {
   // 1) Check the pref.
   if (!pref_service_ ||
-      !base::Contains(pref_service_->GetList(
-                          prefs::kContextualGoogleIntegrationsConfiguration),
-                      prefs::kGoogleClassroomIntegrationName)) {
+      !pref_service_->GetList(prefs::kContextualGoogleIntegrationsConfiguration)
+           .contains(prefs::kGoogleClassroomIntegrationName)) {
     RecordContextualGoogleIntegrationStatus(
         prefs::kGoogleClassroomIntegrationName,
         ContextualGoogleIntegrationStatus::kDisabledByPolicy);

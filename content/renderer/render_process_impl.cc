@@ -163,9 +163,16 @@ RenderProcessImpl::RenderProcessImpl()
                           "--wasm-dynamic-tiering",
                           "--no-wasm-dynamic-tiering");
 
+    SetV8FlagIfOverridden(features::kWebAssemblyStackSwitching,
+                          "--experimental-wasm-wasmfx",
+                          "--no-experimental-wasm-wasmfx");
+
     SetV8FlagIfOverridden(blink::features::kJavaScriptSourcePhaseImports,
                           "--js-source-phase-imports",
                           "--no-js-source-phase-imports");
+
+    SetV8FlagIfOverridden(features::kDevToolsLiveEdit, "--inspector-live-edit",
+                          "--no-inspector-live-edit");
   }
 
   bool enable_shared_array_buffer_unconditionally =

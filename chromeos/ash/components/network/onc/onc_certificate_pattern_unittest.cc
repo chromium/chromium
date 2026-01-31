@@ -113,7 +113,7 @@ TEST_F(OncCertificatePatternTest, PatternMatchingIssuer) {
   }
 
   {
-    base::Value::Dict* issuer = parsed_json->GetDict().FindDict("Issuer");
+    base::DictValue* issuer = parsed_json->GetDict().FindDict("Issuer");
     ASSERT_TRUE(issuer);
     issuer->Set("CommonName", "SomeOtherCA");
 
@@ -148,7 +148,7 @@ TEST_F(OncCertificatePatternTest, PatternMatchingSubject) {
   }
 
   {
-    base::Value::Dict* issuer = parsed_json->GetDict().FindDict("Subject");
+    base::DictValue* issuer = parsed_json->GetDict().FindDict("Subject");
     ASSERT_TRUE(issuer);
     issuer->Set("CommonName", "B CA");
 

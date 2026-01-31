@@ -7,55 +7,12 @@
 
 #import <UIKit/UIKit.h>
 
-#import "ios/chrome/browser/composebox/public/composebox_theme.h"
-#import "ios/chrome/browser/composebox/ui/composebox_animation_context.h"
 #import "ios/chrome/browser/composebox/ui/composebox_input_plate_consumer.h"
-#import "ios/chrome/browser/composebox/ui/composebox_input_plate_mutator.h"
-#import "ios/chrome/browser/composebox/ui/composebox_metrics_recorder.h"
 
 @protocol ComposeboxInputPlateMutator;
-@class ComposeboxMetricsRecorder;
-@class ComposeboxInputPlateViewController;
+@protocol ComposeboxInputPlateViewControllerDelegate;
+@class ComposeboxTheme;
 @protocol TextFieldViewContaining;
-
-/// Delegate for the composebox input plate view controller.
-@protocol ComposeboxInputPlateViewControllerDelegate
-/// Informs the delegate that a user did tap on the gallery button.
-- (void)composeboxViewControllerDidTapGalleryButton:
-    (ComposeboxInputPlateViewController*)composeboxViewController;
-/// Informs the delegate that a user did tap on the mic button.
-- (void)composeboxViewController:
-            (ComposeboxInputPlateViewController*)composeboxViewController
-                 didTapMicButton:(UIButton*)button;
-/// Informs the delegate that a user did tap on the lens button.
-- (void)composeboxViewController:
-            (ComposeboxInputPlateViewController*)composeboxViewController
-                didTapLensButton:(UIButton*)button;
-/// Informs the delegate that a user did tap on the camera button.
-- (void)composeboxViewControllerDidTapCameraButton:
-    (ComposeboxInputPlateViewController*)composeboxViewController;
-/// Informs the delegate that a user did tap on the gallery button.
-- (void)composeboxViewControllerMayShowGalleryPicker:
-    (ComposeboxInputPlateViewController*)composeboxViewController;
-/// Informs the delegate that a user did tap on the file button.
-- (void)composeboxViewControllerDidTapFileButton:
-    (ComposeboxInputPlateViewController*)composeboxViewController;
-/// Informs the delegate that a user did tap on the attach tabs button.
-- (void)composeboxViewControllerDidTapAttachTabsButton:
-    (ComposeboxInputPlateViewController*)composeboxViewController;
-/// Informs the delegate that a user did tap on the AI button.
-- (void)composeboxViewControllerDidTapAIMButton:
-            (ComposeboxInputPlateViewController*)composeboxViewController
-                               activationSource:
-                                   (AiModeActivationSource)activationSource;
-/// Informs the delegate that a user did tap on the image generation button.
-- (void)composeboxViewControllerDidTapImageGenerationButton:
-    (ComposeboxInputPlateViewController*)composeboxViewController;
-/// Informs the delegate that a user did tap on the lens button.
-- (void)composeboxViewController:
-            (ComposeboxInputPlateViewController*)composeboxViewController
-                didTapSendButton:(UIButton*)button;
-@end
 
 /// View controller for the composebox composebox.
 @interface ComposeboxInputPlateViewController
@@ -82,7 +39,12 @@
 @property(nonatomic, strong) UIButton* imageGenerationButton;
 
 // Initializes a new instance with a given theme.
-- (instancetype)initWithTheme:(ComposeboxTheme*)theme;
+- (instancetype)initWithTheme:(ComposeboxTheme*)theme NS_DESIGNATED_INITIALIZER;
+
+- (instancetype)init NS_UNAVAILABLE;
+- (instancetype)initWithCoder:(NSCoder*)coder NS_UNAVAILABLE;
+- (instancetype)initWithNibName:(NSString*)nibNameOrNil
+                         bundle:(NSBundle*)nibBundleOrNil NS_UNAVAILABLE;
 
 /// Sets the omnibox edit view.
 - (void)setEditView:(UIView<TextFieldViewContaining>*)editView;

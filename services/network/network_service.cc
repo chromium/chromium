@@ -26,7 +26,6 @@
 #include "base/functional/callback_helpers.h"
 #include "base/location.h"
 #include "base/logging.h"
-#include "base/memory/memory_pressure_listener_registry.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
@@ -617,6 +616,11 @@ void NetworkService::RegisterNetworkContext(NetworkContext* network_context) {
       ->transport_security_state()
       ->SetCTEmergencyDisabled(!ct_enforcement_enabled_);
 #endif  // BUILDFLAG(IS_CT_SUPPORTED)
+
+  if (tls_13_early_data_enabled_.has_value()) {
+    network_context->SetTLS13EarlyDataEnabled(
+        tls_13_early_data_enabled_.value());
+  }
 }
 
 void NetworkService::DeregisterNetworkContext(NetworkContext* network_context) {
@@ -656,7 +660,7 @@ void NetworkService::SetSystemDnsResolver(
 void NetworkService::StartNetLog(base::File file,
                                  uint64_t max_total_size,
                                  net::NetLogCaptureMode capture_mode,
-                                 base::Value::Dict constants,
+                                 base::DictValue constants,
                                  std::optional<base::TimeDelta> duration) {
   if (max_total_size == net::FileNetLogObserver::kNoLimit) {
     StartNetLogUnbounded(std::move(file), capture_mode, std::move(constants));
@@ -679,7 +683,7 @@ void NetworkService::StopNetLog() {
 
   for (const auto& context_ptr : owned_network_contexts_) {
     NetworkContext* context = context_ptr.get();
-    base::Value::Dict context_info =
+    base::DictValue context_info =
         net::GetNetInfo(context->url_request_context());
     CHECK(!context_info.empty());
     net_log_polled_data_list_.Append(std::move(context_info));
@@ -862,16 +866,6 @@ void NetworkService::OnClientCertStoreChanged() {
 
 void NetworkService::SetEncryptionKey(const std::string& encryption_key) {
   OSCrypt::SetRawEncryptionKey(encryption_key);
-}
-
-void NetworkService::OnMemoryPressure(
-    base::MemoryPressureLevel memory_pressure_level) {
-  // Forward the notification to the registry of MemoryPressureListeners.
-  base::SingleThreadTaskRunner::GetMainThreadDefault()->PostTask(
-      FROM_HERE,
-      base::BindOnce(
-          &base::MemoryPressureListenerRegistry::NotifyMemoryPressure,
-          memory_pressure_level));
 }
 
 void NetworkService::OnPeerToPeerConnectionsCountChange(uint32_t count) {
@@ -1074,6 +1068,7 @@ void NetworkService::DecodeContentEncoding(
 }
 
 void NetworkService::SetTLS13EarlyDataEnabled(bool enabled) {
+  tls_13_early_data_enabled_ = enabled;
   for (NetworkContext* network_context : network_contexts_) {
     network_context->SetTLS13EarlyDataEnabled(enabled);
   }
@@ -1082,8 +1077,8 @@ void NetworkService::SetTLS13EarlyDataEnabled(bool enabled) {
 void NetworkService::StartNetLogBounded(base::File file,
                                         uint64_t max_total_size,
                                         net::NetLogCaptureMode capture_mode,
-                                        base::Value::Dict client_constants) {
-  base::Value::Dict constants = net::GetNetConstants();
+                                        base::DictValue client_constants) {
+  base::DictValue constants = net::GetNetConstants();
   constants.Merge(std::move(client_constants));
 
   base::ThreadPool::PostTaskAndReplyWithResult(
@@ -1102,7 +1097,7 @@ void NetworkService::OnStartNetLogBoundedScratchDirectoryCreated(
     base::File file,
     uint64_t max_total_size,
     net::NetLogCaptureMode capture_mode,
-    base::Value::Dict constants,
+    base::DictValue constants,
     const base::FilePath& in_progress_dir_path) {
   if (in_progress_dir_path.empty()) {
     LOG(ERROR) << "Unable to create scratch directory for net-log.";
@@ -1111,19 +1106,19 @@ void NetworkService::OnStartNetLogBoundedScratchDirectoryCreated(
 
   file_net_log_observer_ = net::FileNetLogObserver::CreateBoundedPreExisting(
       in_progress_dir_path, std::move(file), max_total_size, capture_mode,
-      std::make_unique<base::Value::Dict>(std::move(constants)));
+      std::make_unique<base::DictValue>(std::move(constants)));
   file_net_log_observer_->StartObserving(net_log_);
 }
 
 void NetworkService::StartNetLogUnbounded(base::File file,
                                           net::NetLogCaptureMode capture_mode,
-                                          base::Value::Dict client_constants) {
-  base::Value::Dict constants = net::GetNetConstants();
+                                          base::DictValue client_constants) {
+  base::DictValue constants = net::GetNetConstants();
   constants.Merge(std::move(client_constants));
 
   file_net_log_observer_ = net::FileNetLogObserver::CreateUnboundedPreExisting(
       std::move(file), capture_mode,
-      std::make_unique<base::Value::Dict>(std::move(constants)));
+      std::make_unique<base::DictValue>(std::move(constants)));
   file_net_log_observer_->StartObserving(net_log_);
 }
 
@@ -1219,19 +1214,34 @@ void NetworkService::AddDurableMessageCollector(
   durable_message_collector_manager_->AddCollector(std::move(receiver));
 }
 
-std::vector<base::WeakPtr<DevtoolsDurableMessageCollector>>
-NetworkService::GetDurableMessageCollectorsEnabledForProfile(
-    const base::UnguessableToken& devtools_profile) {
-  if (!durable_message_collector_manager_) {
-    return {};
+std::unique_ptr<DevtoolsDurableMessageWriter>
+NetworkService::MaybeCreateDurableMessageWriter(
+    const base::UnguessableToken& throttling_profile_id,
+    const std::string& devtools_request_id) {
+  if (!throttling_profile_id || devtools_request_id.empty()) {
+    return nullptr;
   }
 
-  return base::ToVector(
+  if (!durable_message_collector_manager_) {
+    return nullptr;
+  }
+
+  std::vector<DevtoolsDurableMessageCollector*> collectors =
       durable_message_collector_manager_->GetCollectorsEnabledForProfile(
-          devtools_profile),
-      [](DevtoolsDurableMessageCollector* collector) {
-        return collector->GetWeakPtr();
-      });
+          throttling_profile_id);
+  if (collectors.empty()) {
+    return nullptr;
+  }
+
+  std::vector<base::WeakPtr<DevtoolsDurableMessage>> messages;
+  for (auto* collector : collectors) {
+    if (!collector) {
+      continue;
+    }
+    messages.push_back(collector->CreateDurableMessage(devtools_request_id));
+  }
+  return std::make_unique<MultipleDurableMessageWriterImpl>(
+      std::move(messages));
 }
 
 }  // namespace network

@@ -371,8 +371,8 @@ IN_PROC_BROWSER_TEST_F(
   content::ServiceWorkerContext* sw_context =
       GetServiceWorkerContext(profile());
   ASSERT_TRUE(sw_context);
-  ASSERT_TRUE(base::Contains(sw_context->GetRunningServiceWorkerInfos(),
-                             previous_service_worker_id->version_id));
+  ASSERT_TRUE(sw_context->GetRunningServiceWorkerInfos().contains(
+      previous_service_worker_id->version_id));
   const content::ServiceWorkerRunningInfo& sw_info =
       sw_context->GetRunningServiceWorkerInfos().at(
           previous_service_worker_id->version_id);
@@ -574,8 +574,8 @@ IN_PROC_BROWSER_TEST_P(
   content::ServiceWorkerContext* sw_context =
       GetServiceWorkerContext(profile());
   ASSERT_TRUE(sw_context);
-  ASSERT_TRUE(base::Contains(sw_context->GetRunningServiceWorkerInfos(),
-                             stopped_service_worker_id->version_id));
+  ASSERT_TRUE(sw_context->GetRunningServiceWorkerInfos().contains(
+      stopped_service_worker_id->version_id));
   const content::ServiceWorkerRunningInfo& sw_info =
       sw_context->GetRunningServiceWorkerInfos().at(
           stopped_service_worker_id->version_id);
@@ -641,8 +641,8 @@ IN_PROC_BROWSER_TEST_P(
   content::ServiceWorkerContext* sw_context =
       GetServiceWorkerContext(profile());
   ASSERT_TRUE(sw_context);
-  ASSERT_TRUE(base::Contains(sw_context->GetRunningServiceWorkerInfos(),
-                             deactivated_service_worker_id->version_id));
+  ASSERT_TRUE(sw_context->GetRunningServiceWorkerInfos().contains(
+      deactivated_service_worker_id->version_id));
 
   // Confirm the worker is browser state ready.
   ASSERT_EQ(worker_state->browser_state(), kExpectedBrowserState);
@@ -682,8 +682,8 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerStopTrackingBrowserTest,
   content::ServiceWorkerContext* sw_context =
       GetServiceWorkerContext(profile());
   ASSERT_TRUE(sw_context);
-  ASSERT_TRUE(base::Contains(sw_context->GetRunningServiceWorkerInfos(),
-                             worker_id->version_id));
+  ASSERT_TRUE(sw_context->GetRunningServiceWorkerInfos().contains(
+      worker_id->version_id));
 
   ServiceWorkerTaskQueue* task_queue = ServiceWorkerTaskQueue::Get(profile());
   ASSERT_TRUE(task_queue);

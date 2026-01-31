@@ -88,7 +88,9 @@ class ActorPageToolTimeoutBrowserTest : public ActorPageToolBrowserTest {
   ActorPageToolTimeoutBrowserTest() {
     feature_list_.InitWithFeaturesAndParameters(
         /*enabled_features=*/
-        {{features::kGlicActor, {{"glic-actor-page-tool-timeout", "2s"}}},
+        {{features::kGlicActor,
+          {{"glic-actor-page-tool-timeout", "2s"},
+           {features::kGlicActorPolicyControlExemption.name, "true"}}},
          {features::kGlicActorIncrementalTyping,
           {{"glic-actor-long-text-paste-threshold", "1000000000"},
            {"glic-actor-incremental-typing-long-text-threshold",
@@ -102,7 +104,13 @@ class ActorPageToolTimeoutBrowserTest : public ActorPageToolBrowserTest {
 
 // Type so much text that a timeout occurs. Then, try again typing a single
 // character, which should succeed.
-IN_PROC_BROWSER_TEST_F(ActorPageToolTimeoutBrowserTest, Timeout) {
+// TODO(crbug.com/475288640): Fix and re-enable test.
+#if defined(ADDRESS_SANITIZER) || defined(MEMORY_SANITIZER)
+#define MAYBE_Timeout DISABLED_Timeout
+#else
+#define MAYBE_Timeout Timeout
+#endif
+IN_PROC_BROWSER_TEST_F(ActorPageToolTimeoutBrowserTest, MAYBE_Timeout) {
   const GURL url = embedded_test_server()->GetURL("/actor/cancel_typing.html");
   ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
 
@@ -147,7 +155,8 @@ class ActorPageToolLongClickDelayBrowserTest
         {features::kGlicActor,
          // Delay holding the mouse down before mouse up.
          {{"glic-actor-click-delay", "2d"},
-          {"glic-actor-page-tool-timeout", "2d"}}});
+          {"glic-actor-page-tool-timeout", "2d"},
+          {features::kGlicActorPolicyControlExemption.name, "true"}}});
 
     if (GetParam()) {
       enabled_features_and_params.push_back(
@@ -226,7 +235,10 @@ class ActorPageToolLongMouseMoveDelayBrowserTest
  public:
   ActorPageToolLongMouseMoveDelayBrowserTest() {
     feature_list_.InitWithFeaturesAndParameters(
-        /*enabled_features=*/{{features::kGlicActor, {}},
+        /*enabled_features=*/{{features::kGlicActor,
+                               {{features::kGlicActorPolicyControlExemption
+                                     .name,
+                                 "true"}}},
                               {features::kGlicActorMoveBeforeClick,
                                // Delay after mouse move to target and before
                                // mouse down.
@@ -287,7 +299,8 @@ class ActorPageToolLongKeyDownDelayBrowserTest
         {{features::kGlicActor,
           // Delay holding down the keyboard key.
           {{"glic-actor-incremental-typing-key-down-duration", "2d"},
-           {"glic-actor-page-tool-timeout", "2d"}}}},
+           {"glic-actor-page-tool-timeout", "2d"},
+           {features::kGlicActorPolicyControlExemption.name, "true"}}}},
         /*disabled_features=*/{});
   }
 

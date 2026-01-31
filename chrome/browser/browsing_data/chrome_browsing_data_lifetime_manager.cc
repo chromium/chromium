@@ -149,7 +149,7 @@ class BrowsingDataRemoverObserver
 #endif
 };
 
-uint64_t GetOriginTypeMask(const base::Value::List& data_types) {
+uint64_t GetOriginTypeMask(const base::ListValue& data_types) {
   uint64_t result = 0;
   for (const auto& data_type : data_types) {
     std::optional<browsing_data::PolicyDataType> policy_data_type =
@@ -171,7 +171,7 @@ uint64_t GetOriginTypeMask(const base::Value::List& data_types) {
   return result;
 }
 
-uint64_t GetRemoveMask(const base::Value::List& data_types) {
+uint64_t GetRemoveMask(const base::ListValue& data_types) {
   uint64_t result = 0;
   for (const auto& data_type : data_types) {
     std::optional<browsing_data::PolicyDataType> policy_data_type =
@@ -212,7 +212,7 @@ uint64_t GetRemoveMask(const base::Value::List& data_types) {
 }
 
 std::vector<ScheduledRemovalSettings> ConvertToScheduledRemovalSettings(
-    const base::Value::List& browsing_data_settings) {
+    const base::ListValue& browsing_data_settings) {
   std::vector<ScheduledRemovalSettings> scheduled_removals_settings;
   for (const auto& setting : browsing_data_settings) {
     const auto* data_types =
@@ -327,7 +327,7 @@ void ChromeBrowsingDataLifetimeManager::Shutdown() {
 
 void ChromeBrowsingDataLifetimeManager::ClearBrowsingDataForOnExitPolicy(
     bool keep_browser_alive) {
-  const base::Value::List& data_types = profile_->GetPrefs()->GetList(
+  const base::ListValue& data_types = profile_->GetPrefs()->GetList(
       browsing_data::prefs::kClearBrowsingDataOnExitList);
 
   if (!data_types.empty() &&

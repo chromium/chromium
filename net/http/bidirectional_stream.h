@@ -68,8 +68,15 @@ class NET_EXPORT BidirectionalStream : public BidirectionalStreamImpl::Delegate,
     // The delegate may call BidirectionalStream::ReadData to start reading,
     // call BidirectionalStream::SendData to send data,
     // or call BidirectionalStream::Cancel to cancel the stream.
+    // Note: one could argue that `proxy_info` should be exposed within
+    // Delegate::OnStreamReady() instead, as that is the first callback that
+    // could have access to that information. Having said that, the only
+    // consumer of this information requires it within
+    // Delegate::OnHeadersReceived. This decision can be revisited if in the
+    // future a new consumer comes up.
     virtual void OnHeadersReceived(
-        const quiche::HttpHeaderBlock& response_headers) = 0;
+        const quiche::HttpHeaderBlock& response_headers,
+        const net::ProxyInfo& used_proxy_info) = 0;
 
     // Called when a pending read is completed asynchronously.
     // |bytes_read| specifies how much data is read.
@@ -253,6 +260,8 @@ class NET_EXPORT BidirectionalStream : public BidirectionalStreamImpl::Delegate,
   // Load timing info of this stream. |connect_timing| is obtained when headers
   // are received. Other fields are populated at different stages of the request
   LoadTimingInfo load_timing_info_;
+
+  ProxyInfo used_proxy_info_;
 
   base::WeakPtrFactory<BidirectionalStream> weak_factory_{this};
 };

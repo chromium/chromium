@@ -7,7 +7,6 @@
 #include "ash/constants/ash_pref_names.h"
 #include "base/check_deref.h"
 #include "base/check_op.h"
-#include "base/containers/contains.h"
 #include "base/memory/raw_ref.h"
 #include "chrome/browser/ash/login/users/chrome_user_manager_util.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
@@ -27,7 +26,7 @@ constexpr char kFactorsOptionPin[] = "PIN";
 bool HasPolicyValue(const PrefService& pref_service,
                     CryptohomePinEngine::Purpose purpose,
                     const char* value) {
-  const base::Value::List* factors = nullptr;
+  const base::ListValue* factors = nullptr;
   switch (purpose) {
     case CryptohomePinEngine::Purpose::kUnlock:
       factors = &pref_service.GetList(prefs::kQuickUnlockModeAllowlist);
@@ -38,7 +37,7 @@ bool HasPolicyValue(const PrefService& pref_service,
     default:
       return false;
   }
-  return base::Contains(*factors, base::Value(value));
+  return factors->contains(value);
 }
 
 // Check if pin is disabled for a specific purpose (so not including

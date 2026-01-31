@@ -35,21 +35,22 @@ final class ExtensionWindowControllerBridgeNativeUnitTestSupport {
         // Create a real ChromeAndroidTask with mock dependencies, but don't mock @NativeMethods.
         // This way we can have real ChromeAndroidTask internals, such as the native
         // BrowserWindowInterface pointer that ExtensionWindowControllerBridge depends on.
-        mChromeAndroidTask =
+        var chromeAndroidTaskWithMockDeps =
                 ChromeAndroidTaskUnitTestSupport.createChromeAndroidTaskWithMockDeps(
-                                FAKE_CHROME_ANDROID_TASK_ID,
-                                /* mockNatives= */ false,
-                                /* isPendingTask= */ false,
-                                /* isDesktopMode= */ true)
-                        .mChromeAndroidTask;
+                        FAKE_CHROME_ANDROID_TASK_ID,
+                        /* mockNatives= */ false,
+                        /* isPendingTask= */ false,
+                        /* isDesktopMode= */ true);
+        mChromeAndroidTask = chromeAndroidTaskWithMockDeps.mChromeAndroidTask;
 
         mExtensionWindowControllerBridge =
-                new ExtensionWindowControllerBridgeImpl(mChromeAndroidTask);
+                new ExtensionWindowControllerBridgeImpl(
+                        mChromeAndroidTask, chromeAndroidTaskWithMockDeps.mMockProfile);
     }
 
     @CalledByNative
     private void tearDown() {
-        mExtensionWindowControllerBridge.onTaskRemoved();
+        mExtensionWindowControllerBridge.onFeatureRemoved();
         mChromeAndroidTask.destroy();
     }
 
@@ -59,8 +60,8 @@ final class ExtensionWindowControllerBridgeNativeUnitTestSupport {
     }
 
     @CalledByNative
-    private void invokeOnTaskRemoved() {
-        mExtensionWindowControllerBridge.onTaskRemoved();
+    private void invokeOnFeatureRemoved() {
+        mExtensionWindowControllerBridge.onFeatureRemoved();
     }
 
     @CalledByNative

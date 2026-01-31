@@ -29,7 +29,7 @@ export function getHtml(this: DownloadsItemElement) {
       <div id="title-area" role="gridcell"><!--
         Can't have any line breaks.
         --><a is="action-link" id="file-link"
-            href="${this.data?.url?.url || ''}"
+            href="${this.data?.url || ''}"
             @click="${this.onFileLinkClick_}" focus-row-control
             focus-type="fileLink"
             title="${this.data?.fileName || ''}"
@@ -45,12 +45,9 @@ export function getHtml(this: DownloadsItemElement) {
       </div>
 
       <div role="gridcell">
-        <div id="initiator-origin" ?hidden="${!this.showInitiatorOrigin_}">
+        <div id="initiator-origin">
           ${this.computeInitiatorOriginText_()}
         </div>
-        <a id="url" ?hidden="${this.showInitiatorOrigin_}" target="_blank"
-          @click="${this.onUrlClick_}" focus-row-control
-          focus-type="url">${this.getDisplayUrlStr_()}</a>
       </div>
 
       <div class="description" role="gridcell"

@@ -7,12 +7,12 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <algorithm>
 #include <optional>
 #include <string>
 #include <utility>
 #include <vector>
 
-#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
@@ -25,10 +25,10 @@
 #include "chrome/browser/chromeos/platform_keys/extension_key_permissions_service.h"
 #include "chrome/browser/chromeos/platform_keys/extension_key_permissions_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chromeos/ash/components/platform_keys/keystore_types.h"
 #include "chromeos/ash/components/platform_keys/platform_keys.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "chromeos/crosapi/cpp/keystore_service_util.h"
-#include "chromeos/crosapi/mojom/keystore_error.mojom-shared.h"
 #include "chromeos/crosapi/mojom/keystore_error.mojom.h"
 #include "chromeos/crosapi/mojom/keystore_service.mojom.h"
 #include "content/public/browser/browser_context.h"
@@ -43,6 +43,8 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "net/cert/x509_certificate.h"
 
+using chromeos::KeystoreKeyAttributeType;
+using chromeos::KeystoreSigningScheme;
 using content::BrowserThread;
 using crosapi::keystore_service_util::MakeEcdsaKeystoreAlgorithm;
 using crosapi::keystore_service_util::MakeRsaOaepKeystoreAlgorithm;
@@ -51,11 +53,8 @@ using crosapi::mojom::KeystoreAlgorithmPtr;
 using crosapi::mojom::KeystoreBinaryResult;
 using crosapi::mojom::KeystoreBinaryResultPtr;
 using crosapi::mojom::KeystoreError;
-using crosapi::mojom::KeystoreKeyAttributeType;
 using crosapi::mojom::KeystoreSelectClientCertificatesResult;
 using crosapi::mojom::KeystoreSelectClientCertificatesResultPtr;
-using crosapi::mojom::KeystoreService;
-using crosapi::mojom::KeystoreSigningScheme;
 using crosapi::mojom::KeystoreType;
 
 namespace chromeos {
@@ -143,7 +142,7 @@ bool IsKeyUsedForSigning(platform_keys::KeyType key_type) {
 // * or an appropriate keyed service that will always exist
 // during ExtensionPlatformKeysService lifetime (because of KeyedService
 // dependencies).
-crosapi::mojom::KeystoreService* GetKeystoreService(
+crosapi::KeystoreServiceAsh* GetKeystoreService(
     content::BrowserContext* browser_context) {
   return crosapi::KeystoreServiceFactoryAsh::GetForBrowserContext(
       browser_context);
@@ -194,7 +193,8 @@ class ExtensionPlatformKeysService::GenerateKeyTask : public Task {
   bool IsDone() override { return next_step_ == Step::DONE; }
 
  protected:
-  virtual void GenerateKey(KeystoreService::GenerateKeyCallback callback) = 0;
+  virtual void GenerateKey(
+      crosapi::KeystoreServiceAsh::GenerateKeyCallback callback) = 0;
 
   platform_keys::TokenId token_id_;
   platform_keys::KeyType key_type_;
@@ -343,7 +343,8 @@ class ExtensionPlatformKeysService::GenerateRSAKeyTask
 
  private:
   // Generates the RSA key.
-  void GenerateKey(KeystoreService::GenerateKeyCallback callback) override {
+  void GenerateKey(
+      crosapi::KeystoreServiceAsh::GenerateKeyCallback callback) override {
     CHECK(key_type_ == platform_keys::KeyType::kRsassaPkcs1V15 ||
           key_type_ == platform_keys::KeyType::kRsaOaep);
 
@@ -382,7 +383,8 @@ class ExtensionPlatformKeysService::GenerateECKeyTask : public GenerateKeyTask {
 
  private:
   // Generates the EC key.
-  void GenerateKey(KeystoreService::GenerateKeyCallback callback) override {
+  void GenerateKey(
+      crosapi::KeystoreServiceAsh::GenerateKeyCallback callback) override {
     CHECK(key_type_ == platform_keys::KeyType::kEcdsa);
 
     service_->keystore_service_->GenerateKey(
@@ -851,7 +853,7 @@ class ExtensionPlatformKeysService::SelectTask : public Task {
             certificate->cert_buffer(), &unused_key_size, &actual_key_type);
         const std::vector<net::X509Certificate::PublicKeyType>& accepted_types =
             request_.certificate_key_types;
-        if (!base::Contains(accepted_types, actual_key_type)) {
+        if (!std::ranges::contains(accepted_types, actual_key_type)) {
           continue;
         }
       }

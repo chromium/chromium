@@ -4,7 +4,7 @@
 
 package org.chromium.chrome.browser.tasks.tab_management;
 
-import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 
 /** Interface for the color picker related UI. */
@@ -22,5 +22,5 @@ public interface ColorPicker {
     void setSelectedColorItem(int selectedColor);
 
     /** Return the selected color item supplier from the color palette. */
-    ObservableSupplier<Integer> getSelectedColorSupplier();
+    MonotonicObservableSupplier<Integer> getSelectedColorSupplier();
 }

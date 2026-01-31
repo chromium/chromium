@@ -16,7 +16,6 @@
 #include <utility>
 
 #include "base/command_line.h"
-#include "base/containers/contains.h"
 #include "base/debug/crash_logging.h"
 #include "base/debug/dump_without_crashing.h"
 #include "base/debug/stack_trace.h"
@@ -74,6 +73,7 @@
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/unified_consent/unified_consent_service_factory.h"
 #include "chrome/common/buildflags.h"
+#include "chrome/common/channel_info.h"
 #include "chrome/common/chrome_constants.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/logging_chrome.h"
@@ -437,6 +437,9 @@ bool ShouldGoOffTheRecord(Profile* profile) {
 
 }  // namespace
 
+BASE_FEATURE(kProfileManagerDeferAsyncLoading,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 ProfileManager::ProfileManager(const base::FilePath& user_data_dir)
     : user_data_dir_(user_data_dir)
 #if !BUILDFLAG(IS_ANDROID)
@@ -583,7 +586,7 @@ std::vector<Profile*> ProfileManager::GetLastOpenedProfiles() {
   std::vector<Profile*> to_return;
   if (local_state->HasPrefPath(prefs::kProfilesLastActive)) {
     // Make a copy because the list might change in the calls to GetProfile.
-    const base::Value::List profile_list =
+    const base::ListValue profile_list =
         local_state->GetList(prefs::kProfilesLastActive).Clone();
     for (const auto& entry : profile_list) {
       const std::string* profile_base_name = entry.GetIfString();
@@ -826,6 +829,15 @@ void ProfileManager::CreateProfileAsync(
   TRACE_EVENT1("browser,startup", "ProfileManager::CreateProfileAsync",
                "profile_path", profile_path.AsUTF8Unsafe());
 
+  if (defer_async_loading_ &&
+      base::FeatureList::IsEnabled(kProfileManagerDeferAsyncLoading)) {
+    deferred_asynchronous_loads_.push_back(base::BindOnce(
+        &ProfileManager::CreateProfileAsync, base::Unretained(this),
+        profile_path, std::move(initialized_callback),
+        std::move(created_callback)));
+    return;
+  }
+
   if (!CanCreateProfileAtPath(profile_path)) {
     if (!initialized_callback.is_null())
       std::move(initialized_callback).Run(nullptr);
@@ -879,7 +891,7 @@ bool ProfileManager::IsValidProfile(const void* profile) {
       return true;
     std::vector<Profile*> otr_profiles =
         candidate->GetAllOffTheRecordProfiles();
-    if (base::Contains(otr_profiles, profile)) {
+    if (std::ranges::contains(otr_profiles, profile)) {
       return true;
     }
   }
@@ -1367,9 +1379,7 @@ bool ProfileManager::AddKeepAlive(Profile* profile,
   if (origin == ProfileKeepAliveOrigin::kBrowserWindow ||
       origin == ProfileKeepAliveOrigin::kProfileCreationFlow ||
       origin == ProfileKeepAliveOrigin::kProfileStatistics ||
-      origin == ProfileKeepAliveOrigin::kWaitingForGlicView ||
-      (origin == ProfileKeepAliveOrigin::kProfilePickerView &&
-       base::FeatureList::IsEnabled(features::kDestroySystemProfiles))) {
+      origin == ProfileKeepAliveOrigin::kWaitingForGlicView) {
     ClearFirstBrowserWindowKeepAlive(profile);
   }
 
@@ -1391,9 +1401,9 @@ void ProfileManager::RemoveKeepAlive(Profile* profile,
     VLOG(1) << "RemoveKeepAlive(" << profile->GetDebugName() << ", " << origin
             << ") called before the Profile was added to the "
             << "ProfileManager. The keepalive was not removed.";
-    // DumpWithoutCrashing turned off for a couple milestones until we fix the
+    // DumpWithoutCrashing turned off for the Stable channel until we fix the
     // root cause, due to the high volume of reports. See crbug.com/368360956.
-    if (version_info::GetMajorVersionNumberAsInt() >= 144) {
+    if (chrome::GetChannel() != version_info::Channel::STABLE) {
       // TODO(crbug.com/368360956): Not incrementing the refcount will cause
       // `profile` to get destroyed too early. Remove or convert to a CHECK()
       // once the root cause is fixed.
@@ -1404,7 +1414,7 @@ void ProfileManager::RemoveKeepAlive(Profile* profile,
     return;
   }
 
-  DCHECK(base::Contains(info->keep_alives, origin));
+  DCHECK(info->keep_alives.contains(origin));
 
 #if !BUILDFLAG(IS_ANDROID)
   // When removing the last keep alive of an ephemeral profile, schedule the
@@ -1734,7 +1744,7 @@ Profile* ProfileManager::GetActiveUserOrOffTheRecordProfile() {
 void ProfileManager::UnloadProfile(const base::FilePath& profile_dir) {
   TRACE_EVENT0("browser", "ProfileManager::UnloadProfile");
 
-  DCHECK(base::Contains(profiles_info_, profile_dir));
+  DCHECK(profiles_info_.contains(profile_dir));
 
   bool ephemeral =
       IsRegisteredAsEphemeral(&GetProfileAttributesStorage(), profile_dir);
@@ -2061,7 +2071,7 @@ void ProfileManager::SaveActiveProfiles() {
   PrefService* local_state = g_browser_process->local_state();
   DCHECK(local_state);
   ScopedListPrefUpdate update(local_state, prefs::kProfilesLastActive);
-  base::Value::List& profile_list = update.Get();
+  base::ListValue& profile_list = update.Get();
 
   profile_list.clear();
   has_updated_last_opened_profiles_ = true;
@@ -2145,6 +2155,18 @@ void ProfileManager::SetProfileAsLastUsed(Profile* last_active) {
     if (entry) {
       entry->SetActiveTimeToNow();
     }
+  }
+}
+
+void ProfileManager::UnblockAsyncLoading() {
+  if (!defer_async_loading_) {
+    return;
+  }
+  defer_async_loading_ = false;
+  std::vector<base::OnceClosure> deferred_tasks;
+  deferred_tasks.swap(deferred_asynchronous_loads_);
+  for (auto& closure : deferred_tasks) {
+    std::move(closure).Run();
   }
 }
 

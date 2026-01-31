@@ -39,13 +39,21 @@ class IsolatedWebAppValidator {
   static base::expected<void, UnusableSwbnFileError> ValidateIntegrityBlock(
       content::BrowserContext* browser_context,
       const web_package::SignedWebBundleId& expected_web_bundle_id,
-      const web_package::SignedWebBundleIntegrityBlock& integrity_block,
-      bool dev_mode);
+      const web_package::SignedWebBundleIntegrityBlock& integrity_block);
 
   // Validates that the metadata of the Isolated Web App is valid given the
   // `web_bundle_id`.
   static base::expected<void, UnusableSwbnFileError> ValidateMetadata(
       const web_package::SignedWebBundleId& web_bundle_id,
+      const std::optional<GURL>& primary_url,
+      const std::vector<GURL>& entries);
+
+  // Shorthand for the two functions above.
+  static base::expected<void, UnusableSwbnFileError>
+  ValidateIntegrityBlockAndMetadata(
+      content::BrowserContext* browser_context,
+      const web_package::SignedWebBundleId& expected_web_bundle_id,
+      const web_package::SignedWebBundleIntegrityBlock& integrity_block,
       const std::optional<GURL>& primary_url,
       const std::vector<GURL>& entries);
 };

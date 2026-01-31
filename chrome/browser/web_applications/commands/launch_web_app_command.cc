@@ -8,7 +8,6 @@
 #include "base/functional/callback_helpers.h"
 #include "base/functional/concurrent_closures.h"
 #include "base/memory/weak_ptr.h"
-#include "chrome/browser/apps/app_service/app_launch_params.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/commands/web_app_command.h"
 #include "chrome/browser/web_applications/locks/app_lock.h"
@@ -20,6 +19,7 @@
 #include "chrome/browser/web_applications/web_app_registry_update.h"
 #include "chrome/browser/web_applications/web_app_sync_bridge.h"
 #include "chrome/browser/web_applications/web_app_ui_manager.h"
+#include "components/services/app_service/public/cpp/app_launch_params.h"
 #include "components/services/app_service/public/cpp/app_launch_util.h"
 
 namespace web_app {
@@ -38,8 +38,8 @@ LaunchWebAppCommand::LaunchWebAppCommand(
           AppLockDescription(params.app_id),
           std::move(callback),
           /*args_for_shutdown=*/
-          std::make_tuple(nullptr,
-                          nullptr,
+          std::make_tuple(/*browser=*/nullptr,
+                          /*web_contents=*/nullptr,
                           apps::LaunchContainer::kLaunchContainerNone)),
       params_(std::move(params)),
       launch_setting_(launch_setting),
@@ -52,9 +52,12 @@ LaunchWebAppCommand::~LaunchWebAppCommand() = default;
 
 void LaunchWebAppCommand::StartWithLock(std::unique_ptr<AppLock> lock) {
   lock_ = std::move(lock);
-  if (!lock_->registrar().IsInRegistrar(params_.app_id)) {
-    GetMutableDebugValue().Set("error", "not_installed");
-    CompleteAndSelfDestruct(CommandResult::kFailure, nullptr, nullptr,
+  if (!lock_->registrar().AppMatches(params_.app_id,
+                                     WebAppFilter::IsAppSurfaceableToUser())) {
+    GetMutableDebugValue().Set("error",
+                               "suggested_from_migration_or_not_installed");
+    CompleteAndSelfDestruct(CommandResult::kFailure, /*browser=*/nullptr,
+                            /*web_contents=*/nullptr,
                             apps::LaunchContainer::kLaunchContainerNone);
     return;
   }

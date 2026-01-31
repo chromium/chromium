@@ -25,12 +25,28 @@ interface ExternalBeginFrameController {
   // don't care about BeginFrameAcks for frame throttling unlike headless.
   [EnableIf=is_ios]
   IssueExternalBeginFrameNoAck(BeginFrameArgs args);
+
+  // Issue a Vsync event to Viz compositor. This is only used for external
+  // CADisplayLink originated in the browser process. It's not for the Headless
+  // mode where IssueExternalBeginFrame() is called instead. The CoreAnimation
+  // CADisplayLink callback parameters are forwarded to
+  // ExternalBeginFrameSourceMac in Viz and ImageTransportSurfaceOverlayMacEGL
+  // in GPU.
+  [EnableIf=is_mac]
+  IssueExternalVSync(CADisplayLinkParams params);
+
+  // Whether the CADisplayLink in the Browser process is created successfully.
+  [EnableIf=is_mac]
+  SetSupportedDisplayLinkId(int64 display_id, bool is_supported);
 };
 
 // Exposes a way to control when external BeginFrames are issued.
 interface ExternalBeginFrameControllerClient {
   // Indicate we need begin frames or not.
   SetNeedsBeginFrame(bool needs_begin_frames);
+
+  // Indicate we need begin frames or not for this display id.
+  NeedsBeginFrameWithId(int64 display_id, bool needs_begin_frames);
 
   // Update the preferred interval.
   SetPreferredInterval(mojo_base.mojom.TimeDelta interval);

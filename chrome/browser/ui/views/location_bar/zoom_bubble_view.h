@@ -40,7 +40,7 @@ class ZoomBubbleView : public LocationBarBubbleDelegateView,
   // |immersive_mode_controller_| is present, the bubble will auto-close when
   // the top-of-window views are revealed.
   ZoomBubbleView(Browser* browser,
-                 views::View* anchor_view,
+                 views::BubbleAnchor anchor,
                  content::WebContents* web_contents,
                  DisplayReason reason);
   ~ZoomBubbleView() override;

@@ -36,7 +36,7 @@ class ONCValidatorTest : public ::testing::Test {
   // validation is stored, so that expectations can be checked afterwards using
   // one of the Expect* functions below.
   void Validate(bool strict,
-                base::Value::Dict onc_object,
+                base::DictValue onc_object,
                 const OncValueSignature* signature,
                 bool managed_onc,
                 ::onc::ONCSource onc_source) {
@@ -70,7 +70,7 @@ class ONCValidatorTest : public ::testing::Test {
         test_utils::Equals(&original_object_, &repaired_object_.value()));
   }
 
-  void ExpectRepairWithWarnings(const base::Value::Dict& expected_repaired) {
+  void ExpectRepairWithWarnings(const base::DictValue& expected_repaired) {
     EXPECT_EQ(Validator::VALID_WITH_WARNINGS, validation_result_);
     EXPECT_TRUE(
         test_utils::Equals(&expected_repaired, &repaired_object_.value()));
@@ -83,8 +83,8 @@ class ONCValidatorTest : public ::testing::Test {
 
  private:
   Validator::Result validation_result_;
-  base::Value::Dict original_object_;
-  std::optional<base::Value::Dict> repaired_object_;
+  base::DictValue original_object_;
+  std::optional<base::DictValue> repaired_object_;
 };
 
 namespace {
@@ -118,7 +118,7 @@ struct OncParams {
 // Ensure that the constant |kEmptyUnencryptedConfiguration| describes a valid
 // ONC toplevel object.
 TEST_F(ONCValidatorTest, EmptyUnencryptedConfiguration) {
-  std::optional<base::Value::Dict> dict =
+  std::optional<base::DictValue> dict =
       ReadDictionaryFromJson(kEmptyUnencryptedConfiguration);
   EXPECT_TRUE(dict.has_value());
   Validate(true, std::move(dict.value()), &kToplevelConfigurationSignature,
@@ -352,12 +352,12 @@ class ONCValidatorTestRepairable
  public:
   // Load the common test data and return the dictionary at the field with
   // name |name|.
-  base::Value::Dict GetDictionaryFromTestFile(const std::string& name) {
-    base::Value::Dict dict =
+  base::DictValue GetDictionaryFromTestFile(const std::string& name) {
+    base::DictValue dict =
         test_utils::ReadTestDictionary("invalid_settings_with_repairs.json");
-    base::Value::Dict* result = dict.FindDict(name);
+    base::DictValue* result = dict.FindDict(name);
     EXPECT_TRUE(result);
-    return result ? std::move(*result) : base::Value::Dict();
+    return result ? std::move(*result) : base::DictValue();
   }
 };
 

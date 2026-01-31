@@ -4,7 +4,6 @@
 
 #include "extensions/browser/test_blocklist_state_fetcher.h"
 
-#include "base/containers/contains.h"
 #include "components/safe_browsing/core/browser/db/v4_test_util.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -82,7 +81,7 @@ bool TestBlocklistStateFetcher::HandleFetcher(const std::string& id) {
   }
 
   ClientCRXListInfoResponse response;
-  if (base::Contains(verdicts_, id)) {
+  if (verdicts_.contains(id)) {
     response.set_verdict(verdicts_[id]);
   } else {
     response.set_verdict(ClientCRXListInfoResponse::NOT_IN_BLOCKLIST);

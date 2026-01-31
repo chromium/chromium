@@ -29,7 +29,7 @@ void OnDnsResponseParsed(DnsRequest::DnsRequestCallback callback,
     return;
   }
 
-  const base::Value::Dict* response = result->GetIfDict();
+  const base::DictValue* response = result->GetIfDict();
   if (!response) {
     fetch_status.parse_status = ParseStatus::kInvalidResponseError;
     std::move(callback).Run(std::nullopt);
@@ -43,7 +43,7 @@ void OnDnsResponseParsed(DnsRequest::DnsRequestCallback callback,
     return;
   }
 
-  const base::Value::List* answers = response->FindList("Answer");
+  const base::ListValue* answers = response->FindList("Answer");
   if (!answers) {
     fetch_status.parse_status = ParseStatus::kInvalidResponseError;
     std::move(callback).Run(std::nullopt);
@@ -51,7 +51,7 @@ void OnDnsResponseParsed(DnsRequest::DnsRequestCallback callback,
   }
 
   for (const auto& answer : *answers) {
-    const base::Value::Dict* answer_dict = answer.GetIfDict();
+    const base::DictValue* answer_dict = answer.GetIfDict();
     if (!answer_dict) {
       continue;
     }

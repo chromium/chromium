@@ -49,8 +49,6 @@
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/browser/web_package/signed_exchange_envelope.h"
 #include "content/public/browser/browser_context.h"
-#include "content/public/browser/cookie_insight_list_data.h"
-#include "content/public/browser/cookie_insight_list_handler.h"
 #include "devtools_agent_host_impl.h"
 #include "devtools_instrumentation.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -1741,7 +1739,7 @@ void OnInterestGroupAuctionEventOccurred(
     InterestGroupAuctionEventType type,
     const std::string& unique_auction_id,
     base::optional_ref<const std::string> parent_auction_id,
-    const base::Value::Dict& auction_config) {
+    const base::DictValue& auction_config) {
   DispatchToAgents(
       frame_tree_node_id,
       &protocol::StorageHandler::NotifyInterestGroupAuctionEventOccurred,
@@ -2056,34 +2054,6 @@ BuildCookieDeprecationMetadataIssue(
   return issue;
 }
 
-std::unique_ptr<protocol::Audits::CookieIssueInsight> BuildCookieIssueInsight(
-    std::string_view cookie_domain,
-    const net::CookieInclusionStatus& status) {
-  std::optional<CookieIssueInsight> insight =
-      CookieInsightListHandler::GetInstance().GetInsight(cookie_domain, status);
-  if (!insight.has_value()) {
-    return nullptr;
-  }
-
-  switch (insight->type) {
-    case InsightType::kGitHubResource:
-      return protocol::Audits::CookieIssueInsight::Create()
-          .SetType(protocol::Audits::InsightTypeEnum::GitHubResource)
-          .SetTableEntryUrl(insight->domain_info.entry_url)
-          .Build();
-    case InsightType::kGracePeriod:
-      return protocol::Audits::CookieIssueInsight::Create()
-          .SetType(protocol::Audits::InsightTypeEnum::GracePeriod)
-          .Build();
-    case InsightType::kHeuristics:
-      return protocol::Audits::CookieIssueInsight::Create()
-          .SetType(protocol::Audits::InsightTypeEnum::Heuristics)
-          .Build();
-    default:
-      NOTREACHED();
-  }
-}
-
 }  // namespace
 
 void ReportCookieIssue(
@@ -2130,9 +2100,6 @@ void ReportCookieIssue(
                                .SetDomain(cookie.Domain())
                                .Build();
     cookie_issue_details->SetCookie(std::move(affected_cookie));
-
-    cookie_issue_details->SetInsight(BuildCookieIssueInsight(
-        cookie.DomainWithoutDot(), excluded_cookie->access_result.status));
   } else {
     CHECK(excluded_cookie->cookie_or_line->is_cookie_string());
     cookie_issue_details->SetRawCookieLine(

@@ -14,9 +14,10 @@ class Profile;
 namespace tabs {
 
 enum class TabSearchPosition {
-  kLeadingTabstrip,
-  kTrailingTabstrip,
+  kLeadingHorizontalTabstrip,
+  kTrailingHorizontalTabstrip,
   kToolbarButton,
+  kVerticalTabstrip,
 };
 
 // Returns the default behavior per platform for tab search position.

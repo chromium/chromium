@@ -52,7 +52,8 @@ class CORE_EXPORT ClassicScript final : public Script {
       SanitizeScriptErrors = SanitizeScriptErrors::kSanitize);
   static ClassicScript* CreateUnspecifiedScript(
       const WebScriptSource&,
-      SanitizeScriptErrors = SanitizeScriptErrors::kSanitize);
+      SanitizeScriptErrors = SanitizeScriptErrors::kSanitize,
+      ScriptStreamer* = nullptr);
 
   // Use Create*() helpers above.
   ClassicScript(

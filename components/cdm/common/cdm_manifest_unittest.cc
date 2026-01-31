@@ -5,11 +5,12 @@
 #include "components/cdm/common/cdm_manifest.h"
 
 #include <stdint.h>
+
+#include <algorithm>
 #include <memory>
 #include <string>
 #include <vector>
 
-#include "base/containers/contains.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
@@ -63,22 +64,22 @@ std::string MakeStringList(int item) {
   return base::JoinString(parts, ",");
 }
 
-base::Value::List MakeList(const std::string& item) {
-  base::Value::List list;
+base::ListValue MakeList(const std::string& item) {
+  base::ListValue list;
   list.Append(item);
   return list;
 }
 
-base::Value::List MakeList(const std::string& item1, const std::string& item2) {
-  base::Value::List list;
+base::ListValue MakeList(const std::string& item1, const std::string& item2) {
+  base::ListValue list;
   list.Append(item1);
   list.Append(item2);
   return list;
 }
 
 // Create a default manifest with valid values for all entries.
-base::Value::Dict DefaultManifest() {
-  base::Value::Dict dict;
+base::DictValue DefaultManifest() {
+  base::DictValue dict;
   dict.Set(kCdmCodecsListName, "vp8,vp09,av01");
   dict.Set(kCdmPersistentLicenseSupportName, true);
   dict.Set(kCdmSupportedEncryptionSchemesName, MakeList("cenc", "cbcs"));
@@ -102,7 +103,7 @@ void CheckVideoCodecs(const media::CdmCapability::VideoCodecMap& actual,
                       const std::vector<media::VideoCodec>& expected) {
   EXPECT_EQ(expected.size(), actual.size());
   for (const auto& [video_codec, video_codec_info] : actual) {
-    EXPECT_TRUE(base::Contains(expected, video_codec));
+    EXPECT_TRUE(std::ranges::contains(expected, video_codec));
 
     // As the manifest only specifies codecs and not profiles, the list of
     // profiles should be empty to indicate that all profiles are supported.
@@ -137,7 +138,7 @@ void WriteManifestToFile(const base::ValueView manifest,
 }  // namespace
 
 TEST(CdmManifestTest, IsCompatibleWithChrome) {
-  base::Value::Dict manifest(DefaultManifest());
+  base::DictValue manifest(DefaultManifest());
   EXPECT_TRUE(IsCdmManifestCompatibleWithChrome(manifest));
 }
 
@@ -215,7 +216,7 @@ TEST(CdmManifestTest, ValidManifest) {
 }
 
 TEST(CdmManifestTest, EmptyManifest) {
-  base::Value::Dict manifest;
+  base::DictValue manifest;
   CdmCapability capability;
   EXPECT_FALSE(ParseCdmManifest(manifest, &capability));
 
@@ -481,7 +482,7 @@ TEST(CdmManifestTest, FileManifestEmpty) {
   ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
   auto manifest_path = temp_dir.GetPath().AppendASCII("manifest.json");
 
-  base::Value::Dict manifest;
+  base::DictValue manifest;
   WriteManifestToFile(manifest, manifest_path);
 
   CdmCapability capability;
@@ -495,7 +496,7 @@ TEST(CdmManifestTest, FileManifestLite) {
 
   // Only a version plus fields to satisfy compatibility are required in the
   // manifest to parse correctly.
-  base::Value::Dict manifest;
+  base::DictValue manifest;
   manifest.Set(kCdmVersion, "1.2.3.4");
   manifest.Set(kCdmModuleVersionsName,
                base::NumberToString(kSupportedCdmModuleVersion));

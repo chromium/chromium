@@ -28,12 +28,17 @@ chromium-metrics-reviews@google.com.
 </variants>
 
 <variants name="ModuleType">
+  <variant name="AddressBarPlacementPromo"/>
   <variant name="AuxiliarySearch"/>
   <variant name="DefaultBrowserPromo"/>
+  <variant name="EnhancedSafeBrowsingPromo"/>
   <variant name="HistorySyncPromo"/>
+  <variant name="PasswordCheckupPromo"/>
   <variant name="PriceChange"/>
   <variant name="QuickDeletePromo"/>
   <variant name="SafetyHub"/>
+  <variant name="SavePasswordsPromo"/>
+  <variant name="SignInPromo"/>
   <variant name="SingleTab"/>
   <variant name="TabGroupPromo"/>
   <variant name="TabGroupSyncPromo"/>
@@ -144,7 +149,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="MagicStack.Clank.NewTabPage.Module.FirstModuleShownDurationMs"
-    units="ms" expires_after="2026-04-12">
+    units="ms" expires_after="2026-06-21">
   <owner>hanxi@chromium.org</owner>
   <owner>xinyiji@chromium.org</owner>
   <summary>
@@ -167,7 +172,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="MagicStack.Clank.NewTabPage.Module.TopImpressionV2"
-    enum="ModuleType" expires_after="2026-05-03">
+    enum="ModuleType" expires_after="2026-07-05">
   <owner>hanxi@chromium.org</owner>
   <owner>xinyiji@chromium.org</owner>
   <summary>
@@ -188,7 +193,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="MagicStack.Clank.NewTabPage.Scrollable.{ScrollState}"
-    units="count" expires_after="2026-05-26">
+    units="count" expires_after="2026-07-26">
   <owner>hanxi@chromium.org</owner>
   <owner>xinyiji@chromium.org</owner>
   <summary>
@@ -201,7 +206,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="MagicStack.Clank.NewTabPage.Segmentation.FetchRankingResultsDurationMs"
-    units="ms" expires_after="2026-04-26">
+    units="ms" expires_after="2026-06-28">
   <owner>hanxi@chromium.org</owner>
   <owner>xinyiji@chromium.org</owner>
   <summary>
@@ -213,7 +218,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="MagicStack.Clank.NewTabPage.{HostSurfaceState}.Module.{ModuleType}.Build"
-    enum="ModulePosition" expires_after="2026-04-26">
+    enum="ModulePosition" expires_after="2026-06-28">
   <owner>hanxi@chromium.org</owner>
   <owner>xinyiji@chromium.org</owner>
   <summary>
@@ -227,7 +232,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="MagicStack.Clank.NewTabPage.{HostSurfaceState}.Module.{ModuleType}.Click"
-    enum="ModulePosition" expires_after="2026-04-26">
+    enum="ModulePosition" expires_after="2026-06-28">
   <owner>hanxi@chromium.org</owner>
   <owner>xinyiji@chromium.org</owner>
   <summary>
@@ -242,7 +247,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="MagicStack.Clank.NewTabPage.{HostSurfaceState}.Module.{ModuleType}.Impression"
-    enum="ModulePosition" expires_after="2026-04-12">
+    enum="ModulePosition" expires_after="2026-06-21">
   <owner>hanxi@chromium.org</owner>
   <owner>xinyiji@chromium.org</owner>
   <summary>
@@ -257,7 +262,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="MagicStack.Clank.NewTabPage.{HostSurfaceState}.Module.{ModuleType}.ImpressionCountBeforeInteraction"
-    units="count" expires_after="2026-04-12">
+    units="count" expires_after="2026-06-21">
   <owner>hanxi@chromium.org</owner>
   <owner>xinyiji@chromium.org</owner>
   <summary>

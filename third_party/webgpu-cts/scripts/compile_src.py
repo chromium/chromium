@@ -84,6 +84,11 @@ if __name__ == '__main__':
 
     # Run gen_listings.js to overwrite the dummy src/webgpu/listings.js created
     # from transpiling src/
+    # Note: Need to copy the package.json file so that the NodeJS invocation
+    # below correctly parses gen_listings.js as CommonJS.
+    shutil.copyfile(
+        os.path.join(webgpu_cts_dir, 'package.json'),
+        os.path.join(gen_dir, 'src-node', 'package.json'))
     RunNode([
         os.path.join(gen_dir, 'src-node', 'common', 'tools',
                      'gen_listings.js'),

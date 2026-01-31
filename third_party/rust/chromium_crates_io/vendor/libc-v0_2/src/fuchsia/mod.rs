@@ -483,7 +483,7 @@ s! {
         #[cfg(target_endian = "little")]
         pub f_fsid: c_ulong,
         #[cfg(all(target_pointer_width = "32", not(target_arch = "x86_64")))]
-        __f_unused: c_int,
+        __f_unused: Padding<c_int>,
         #[cfg(target_endian = "big")]
         pub f_fsid: c_ulong,
         pub f_flag: c_ulong,
@@ -525,7 +525,7 @@ s! {
         pub ssi_syscall: i32,
         pub ssi_call_addr: u64,
         pub ssi_arch: u32,
-        _pad: [u8; 28],
+        _pad: Padding<[u8; 28]>,
     }
 
     pub struct itimerspec {
@@ -946,7 +946,7 @@ s! {
         #[cfg(all(target_arch = "x86_64", target_pointer_width = "32"))]
         pub mq_curmsgs: i64,
         #[cfg(all(target_arch = "x86_64", target_pointer_width = "32"))]
-        pad: [i64; 4],
+        pad: Padding<[i64; 4]>,
 
         #[cfg(not(all(target_arch = "x86_64", target_pointer_width = "32")))]
         pub mq_flags: c_long,
@@ -957,7 +957,7 @@ s! {
         #[cfg(not(all(target_arch = "x86_64", target_pointer_width = "32")))]
         pub mq_curmsgs: c_long,
         #[cfg(not(all(target_arch = "x86_64", target_pointer_width = "32")))]
-        pad: [c_long; 4],
+        pad: Padding<[c_long; 4]>,
     }
 
     pub struct sockaddr_nl {

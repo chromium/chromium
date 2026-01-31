@@ -14,7 +14,6 @@ class Rect;
 
 namespace blink {
 
-class XRCompositionLayer;
 class XRProjectionLayer;
 class XRSession;
 class XRViewData;
@@ -32,8 +31,6 @@ class XRGraphicsBinding : public GarbageCollectedMixin {
   XRSession* session() const { return session_.Get(); }
 
   double nativeProjectionScaleFactor() const;
-
-  bool OwnsLayer(XRCompositionLayer*);
 
   virtual gfx::Rect GetViewportForView(XRProjectionLayer* layer,
                                        XRViewData* view) = 0;

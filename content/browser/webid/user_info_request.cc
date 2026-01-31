@@ -144,7 +144,7 @@ void UserInfoRequest::SetCallbackAndStart(
   }
 
   if (ShouldFailAccountsEndpointRequestBecauseNotSignedInWithIdp(
-          *render_frame_host_, idp_config_url_, permission_delegate_)) {
+          idp_config_url_, permission_delegate_)) {
     CompleteWithError(UserInfoRequestResult::kNotSignedInWithIdp);
     return;
   }
@@ -169,7 +169,7 @@ void UserInfoRequest::SetCallbackAndStart(
   // case.
   config_fetcher_->Start(
       {{idp_config_url_, webid::IsIdPRegistrationEnabled()}},
-      blink::mojom::RpMode::kPassive, /*icon_ideal_size=*/0,
+      /*icon_ideal_size=*/0,
       /*icon_minimum_size=*/0,
       base::BindOnce(&UserInfoRequest::OnAllConfigAndWellKnownFetched,
                      weak_ptr_factory_.GetWeakPtr()));
@@ -195,7 +195,7 @@ void UserInfoRequest::OnAllConfigAndWellKnownFetched(
   // false during the API call. e.g. by the login/logout HEADER.
   does_idp_have_failing_signin_status_ =
       ShouldFailAccountsEndpointRequestBecauseNotSignedInWithIdp(
-          *render_frame_host_, idp_config_url_, permission_delegate_);
+          idp_config_url_, permission_delegate_);
   if (does_idp_have_failing_signin_status_) {
     CompleteWithError(UserInfoRequestResult::kNotSignedInWithIdp);
     return;
@@ -210,10 +210,10 @@ void UserInfoRequest::OnAllConfigAndWellKnownFetched(
 
 void UserInfoRequest::OnAccountsResponseReceived(
     FetchStatus fetch_status,
-    std::vector<IdentityRequestAccountPtr> accounts) {
+    IdpNetworkRequestManager::AccountsResponse accounts) {
   UpdateIdpSigninStatusForAccountsEndpointResponse(
-      *render_frame_host_, idp_config_url_, fetch_status,
-      does_idp_have_failing_signin_status_, permission_delegate_);
+      idp_config_url_, fetch_status, does_idp_have_failing_signin_status_,
+      permission_delegate_);
 
   if (fetch_status.parse_status != ParseStatus::kSuccess) {
     CompleteWithError(UserInfoRequestResult::kInvalidAccountsResponse);
@@ -226,7 +226,7 @@ void UserInfoRequest::OnAccountsResponseReceived(
 
   // Populate the accounts' login state based on browser stored permission
   // grants.
-  for (auto& account : accounts) {
+  for (auto& account : accounts.accounts) {
     LoginState login_state = LoginState::kSignUp;
     // Consider this a sign-in if we have seen a successful sign-up for
     // this account before.
@@ -237,8 +237,7 @@ void UserInfoRequest::OnAccountsResponseReceived(
     }
     account->browser_trusted_login_state = login_state;
   }
-
-  MaybeReturnAccounts(std::move(accounts));
+  MaybeReturnAccounts(std::move(accounts.accounts));
 }
 
 void UserInfoRequest::MaybeReturnAccounts(

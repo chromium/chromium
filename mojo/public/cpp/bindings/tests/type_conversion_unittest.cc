@@ -25,8 +25,9 @@ struct RedmondNamedRegion {
 
 bool AreEqualRectArrays(const std::vector<test::RectPtr>& rects1,
                         const std::vector<test::RectPtr>& rects2) {
-  if (rects1.size() != rects2.size())
+  if (rects1.size() != rects2.size()) {
     return false;
+  }
 
   for (size_t i = 0; i < rects1.size(); ++i) {
     if (rects1[i]->x != rects2[i]->x || rects1[i]->y != rects2[i]->y ||
@@ -73,12 +74,14 @@ template <>
 struct TypeConverter<RedmondNamedRegion, test::NamedRegionPtr> {
   static RedmondNamedRegion Convert(const test::NamedRegionPtr& input) {
     RedmondNamedRegion region;
-    if (input->name)
+    if (input->name) {
       region.name = input->name.value();
+    }
     if (input->rects) {
       region.rects.reserve(input->rects->size());
-      for (const auto& element : *input->rects)
+      for (const auto& element : *input->rects) {
         region.rects.push_back(element.To<RedmondRect>());
+      }
     }
     return region;
   }

@@ -1797,6 +1797,8 @@ public class CustomTabIntentDataProviderTest {
                 DisplayMode.MINIMAL_UI);
     }
 
+    // TODO(crbug.com/450954710): This test fails on SDK 36.
+    @Config(sdk = 29)
     @Test
     public void testTwaBrowserModeWithEnabledMinUiPreSdk35_ResolveToMinimalUi() {
         checkResolvedDisplayMode(

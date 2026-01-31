@@ -9,6 +9,7 @@ import android.accounts.Account;
 import com.google.errorprone.annotations.DoNotMock;
 
 import org.jni_zero.CalledByNative;
+import org.jni_zero.JNINamespace;
 import org.jni_zero.JniType;
 
 import org.chromium.build.annotations.Contract;
@@ -27,6 +28,7 @@ import org.chromium.google_apis.gaia.GaiaId;
  */
 @NullMarked
 @DoNotMock("Use TestAccounts or create a real instance.")
+@JNINamespace("signin")
 public class CoreAccountInfo {
     private final CoreAccountId mId;
     private final String mEmail;

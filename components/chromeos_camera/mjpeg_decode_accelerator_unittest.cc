@@ -257,7 +257,7 @@ class MjpegDecodeAcceleratorTestEnvironment : public ::testing::Environment {
   const base::FilePath::CharType* user_jpeg_filenames_;
   const base::FilePath::CharType* test_data_path_;
   const base::FilePath::CharType* perf_output_path_;
-  base::Value::Dict metrics_;
+  base::DictValue metrics_;
 
   std::unique_ptr<media::TestGbmBufferManager> gbm_buffer_manager_;
 };

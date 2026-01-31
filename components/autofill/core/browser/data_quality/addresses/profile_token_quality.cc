@@ -6,16 +6,15 @@
 
 #include <algorithm>
 #include <set>
+#include <utility>
 
 #include "base/check.h"
 #include "base/check_deref.h"
 #include "base/containers/circular_deque.h"
-#include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/rand_util.h"
 #include "base/strings/levenshtein_distance.h"
 #include "base/strings/string_util.h"
-#include "base/types/cxx23_to_underlying.h"
 #include "components/autofill/core/browser/data_manager/addresses/address_data_manager.h"
 #include "components/autofill/core/browser/data_manager/personal_data_manager.h"
 #include "components/autofill/core/browser/data_model/addresses/autofill_profile.h"
@@ -130,7 +129,7 @@ bool ProfileTokenQuality::AddObservationsForFilledForm(
 
   const FieldTypeSet supported_types = profile_->GetSupportedTypes();
   std::vector<std::pair<FieldType, Observation>> possible_observations;
-  for (size_t i = 0; i < form_structure.field_count(); i++) {
+  for (size_t i = 0; i < form_structure.field_count(); ++i) {
     const AutofillField& field = *form_structure.field(i);
     if (field.autofill_source_profile_guid() != profile_->guid()) {
       // The field was not autofilled or autofilled with a different profile.
@@ -154,8 +153,9 @@ bool ProfileTokenQuality::AddObservationsForFilledForm(
         GetFormSignatureHash(form_structure.form_signature());
     if (auto observations = observations_.find(stored_type);
         observations != observations_.end() &&
-        base::Contains(observations->second, hash,
-                       [](const Observation& o) { return o.form_hash; })) {
+        std::ranges::contains(
+            observations->second, hash,
+            [](const Observation& o) { return o.form_hash; })) {
       // An observation for the `stored_type` and `hash` was already collected.
       continue;
     }
@@ -169,7 +169,7 @@ bool ProfileTokenQuality::AddObservationsForFilledForm(
         selected_option ? selected_option->text : form_data.fields()[i].value();
     possible_observations.emplace_back(
         stored_type,
-        Observation{.type = base::to_underlying(GetObservationTypeFromField(
+        Observation{.type = std::to_underlying(GetObservationTypeFromField(
                         field, value, other_profiles, adm.app_locale())),
                     .form_hash = hash});
   }
@@ -213,7 +213,7 @@ ProfileTokenQuality::GetObservationTypesForFieldType(FieldType type) const {
   std::vector<ObservationType> types;
   types.reserve(it->second.size());
   for (const Observation& observation : it->second) {
-    if (observation.type <= base::to_underlying(ObservationType::kMaxValue)) {
+    if (observation.type <= std::to_underlying(ObservationType::kMaxValue)) {
       types.push_back(static_cast<ObservationType>(observation.type));
     } else {
       // This is possible if the `observation.type` was synced from a newer
@@ -227,7 +227,7 @@ ProfileTokenQuality::GetObservationTypesForFieldType(FieldType type) const {
 
 void ProfileTokenQuality::AddObservation(FieldType type,
                                          Observation observation) {
-  CHECK_NE(observation.type, base::to_underlying(ObservationType::kUnknown));
+  CHECK_NE(observation.type, std::to_underlying(ObservationType::kUnknown));
   base::circular_deque<Observation>& observations =
       observations_[profile_->GetStorableTypeOf(type)];
   CHECK_LE(observations.size(), kMaxObservationsPerToken);
@@ -263,8 +263,9 @@ ObservationType ProfileTokenQuality::GetObservationTypeFromField(
     const std::vector<const AutofillProfile*>& other_profiles,
     const std::string& app_locale) const {
   CHECK(field.autofill_source_profile_guid() == profile_->guid());
-  DCHECK(!base::Contains(other_profiles, profile_->guid(),
-                         [](const AutofillProfile* p) { return p->guid(); }));
+  DCHECK(!std::ranges::contains(
+      other_profiles, profile_->guid(),
+      [](const AutofillProfile* p) { return p->guid(); }));
 
   const FieldType type = field.Type().GetAddressType();
   if (field.is_autofilled()) {
@@ -306,9 +307,9 @@ void ProfileTokenQuality::LoadSerializedObservationsForStoredType(
   for (size_t i = 0; i + 1 < serialized_data.size() &&
                      observations_.size() < kMaxObservationsPerToken;
        i += 2) {
-    static_assert(base::to_underlying(ObservationType::kUnknown) == 0);
+    static_assert(std::to_underlying(ObservationType::kUnknown) == 0);
     if (serialized_data[i] == 0 ||
-        serialized_data[i] > base::to_underlying(ObservationType::kMaxValue)) {
+        serialized_data[i] > std::to_underlying(ObservationType::kMaxValue)) {
       // Invalid data read from disk.
       continue;
     }

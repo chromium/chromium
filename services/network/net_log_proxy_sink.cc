@@ -53,7 +53,7 @@ void NetLogProxySink::AddEntry(uint32_t type,
                                const net::NetLogSource& net_log_source,
                                net::NetLogEventPhase phase,
                                base::TimeTicks time,
-                               base::Value::Dict params) {
+                               base::DictValue params) {
   // Note: There is a possible race condition, where the NetLog capture mode
   // changes, but the other process is still sending events for the old capture
   // mode, and thus might log events with a higher than expected capture mode.

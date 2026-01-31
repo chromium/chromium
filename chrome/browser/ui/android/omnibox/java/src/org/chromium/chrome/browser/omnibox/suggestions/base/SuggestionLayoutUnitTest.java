@@ -196,7 +196,7 @@ public class SuggestionLayoutUnitTest {
                 MeasureSpec.makeMeasureSpec(48, MeasureSpec.AT_MOST));
         mLayout.layout(0, 0, 200, 48);
         assertEquals(
-                mContext.getResources().getDimensionPixelSize(R.dimen.omnibox_simple_card_leadin),
+                mContext.getResources().getDimensionPixelSize(R.dimen.omnibox_simple_card_lead_in),
                 mContentView.getLeft());
     }
 

@@ -60,6 +60,7 @@
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/self_deleting_url_loader_factory.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
+#include "services/network/public/cpp/url_loader_completion_status.h"
 #include "services/network/public/mojom/early_hints.mojom.h"
 #include "services/network/public/mojom/network_service.mojom.h"
 #include "services/network/public/mojom/url_loader.mojom.h"
@@ -333,9 +334,10 @@ class IsolatedWebAppURLLoaderFactoryImpl
  private:
   void LogErrorAndFail(
       const std::string& error_message,
-      mojo::PendingRemote<network::mojom::URLLoaderClient> client) {
+      mojo::PendingRemote<network::mojom::URLLoaderClient> client,
+      net::Error err = net::ERR_FAILED) {
     ::web_app::LogErrorAndFail(error_message, frame_tree_node_id_,
-                               std::move(client));
+                               std::move(client), err);
   }
 
   // network::mojom::URLLoaderFactory:
@@ -426,12 +428,14 @@ class IsolatedWebAppURLLoaderFactoryImpl
       const net::MutableNetworkTrafficAnnotationTag& traffic_annotation,
       base::WeakPtr<HeaderInjectionURLLoaderClient>
           weak_header_injection_client,
-      base::expected<IwaSourceWithModeOrGeneratedResponse, std::string>
-          result) {
-    ASSIGN_OR_RETURN(IwaSourceWithModeOrGeneratedResponse source_or_response,
-                     std::move(result), [&](const std::string& error) {
-                       LogErrorAndFail(error, std::move(loader_client));
-                     });
+      base::expected<IwaSourceWithModeOrGeneratedResponse,
+                     IwaClient::SourceRequestError> result) {
+    ASSIGN_OR_RETURN(
+        IwaSourceWithModeOrGeneratedResponse source_or_response,
+        std::move(result), [&](const IwaClient::SourceRequestError& error) {
+          LogErrorAndFail(error.error_description, std::move(loader_client),
+                          error.net_error);
+        });
 
     if (!IsSupportedHttpMethod(resource_request.method)) {
       CompleteWithGeneratedResponse(
@@ -470,23 +474,22 @@ class IsolatedWebAppURLLoaderFactoryImpl
       mojo::PendingReceiver<network::mojom::URLLoader> loader_receiver,
       mojo::PendingRemote<network::mojom::URLLoaderClient> loader_client,
       const net::MutableNetworkTrafficAnnotationTag& traffic_annotation) {
-    std::visit(
-        absl::Overload{[&](const IwaSourceBundleWithMode& bundle) {
-                         CHECK(!web_bundle_id.is_for_proxy_mode());
-                         IsolatedWebAppURLLoader::CreateAndStart(
-                             browser_context_, bundle.path(), bundle.dev_mode(),
-                             web_bundle_id, std::move(loader_receiver),
-                             std::move(loader_client), resource_request,
-                             frame_tree_node_id_);
-                       },
-                       [&](const IwaSourceProxy& proxy) {
-                         CHECK(web_bundle_id.is_for_proxy_mode());
-                         HandleProxy(browser_context_, web_bundle_id, proxy,
-                                     std::move(loader_receiver),
-                                     std::move(loader_client), resource_request,
-                                     traffic_annotation, frame_tree_node_id_);
-                       }},
-        source.variant());
+    std::visit(absl::Overload{
+                   [&](const IwaSourceBundleWithMode& bundle) {
+                     CHECK(!web_bundle_id.is_for_proxy_mode());
+                     IsolatedWebAppURLLoader::CreateAndStart(
+                         browser_context_, bundle.path(), web_bundle_id,
+                         std::move(loader_receiver), std::move(loader_client),
+                         resource_request, frame_tree_node_id_);
+                   },
+                   [&](const IwaSourceProxy& proxy) {
+                     CHECK(web_bundle_id.is_for_proxy_mode());
+                     HandleProxy(browser_context_, web_bundle_id, proxy,
+                                 std::move(loader_receiver),
+                                 std::move(loader_client), resource_request,
+                                 traffic_annotation, frame_tree_node_id_);
+                   }},
+               source.variant());
   }
 
   bool CanRequestUrl(const GURL& url) const {

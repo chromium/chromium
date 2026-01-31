@@ -27,10 +27,10 @@
 #import "components/password_manager/ios/account_select_fill_data.h"
 #import "components/password_manager/ios/ios_password_manager_driver_factory.h"
 #import "components/password_manager/ios/shared_password_controller.h"
+#import "ios/chrome/browser/autofill/form_input_accessory/public/scoped_form_input_accessory_reauth_module_override.h"
 #import "ios/chrome/browser/autofill/model/features.h"
 #import "ios/chrome/browser/autofill/model/form_input_accessory_view_handler.h"
 #import "ios/chrome/browser/autofill/model/form_suggestion_client.h"
-#import "ios/chrome/browser/autofill/ui_bundled/form_input_accessory/scoped_form_input_accessory_reauth_module_override.h"
 #import "ios/chrome/browser/autofill/ui_bundled/manual_fill/form_observer_helper.h"
 #import "ios/chrome/browser/autofill/ui_bundled/manual_fill/manual_fill_credential.h"
 #import "ios/chrome/browser/passwords/model/password_tab_helper.h"
@@ -305,7 +305,7 @@ bool IsSupportedSuggestion(FormSuggestion* suggestion) {
     return;
   }
 
-  base::Value::Dict data;
+  base::DictValue data;
   data.Set("renderer_id",
            static_cast<int>([self lastFocusedElementUniqueID].value()));
   data.Set("value", base::SysNSStringToUTF16(string));

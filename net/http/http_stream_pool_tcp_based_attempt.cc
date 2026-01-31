@@ -182,7 +182,7 @@ void HttpStreamPool::TcpBasedAttempt::Start() {
                                           weak_ptr_factory_.GetWeakPtr()));
   manager_->net_log().AddEvent(
       NetLogEventType::HTTP_STREAM_POOL_TCP_BASED_ATTEMPT_START, [&] {
-        base::Value::Dict dict = manager_->GetStatesAsNetLogParams();
+        base::DictValue dict = manager_->GetStatesAsNetLogParams();
         dict.Set("ip_endpoint", ip_endpoint().ToString());
         attempt()->net_log().source().AddToEventParameters(dict);
         return dict;
@@ -257,8 +257,8 @@ HttpStreamPool::TcpBasedAttempt::MaybeTakeSSLConfigWaitingCallback() {
   return std::move(service_endpoint_waiting_callback_);
 }
 
-base::Value::Dict HttpStreamPool::TcpBasedAttempt::GetInfoAsValue() const {
-  base::Value::Dict dict;
+base::DictValue HttpStreamPool::TcpBasedAttempt::GetInfoAsValue() const {
+  base::DictValue dict;
   if (attempt_) {
     dict.Set("attempt_state", attempt_->GetInfoAsValue());
     dict.Set("ip_endpoint", attempt_->ip_endpoint().ToString());
@@ -300,7 +300,7 @@ void HttpStreamPool::TcpBasedAttempt::OnAttemptSlow() {
 void HttpStreamPool::TcpBasedAttempt::OnAttemptComplete(int rv) {
   manager_->net_log().AddEvent(
       NetLogEventType::HTTP_STREAM_POOL_TCP_BASED_ATTEMPT_END, [&] {
-        base::Value::Dict dict = manager_->GetStatesAsNetLogParams();
+        base::DictValue dict = manager_->GetStatesAsNetLogParams();
         dict.Set("ip_endpoint", ip_endpoint().ToString());
         dict.Set("net_error", rv);
         attempt()->net_log().source().AddToEventParameters(dict);
@@ -424,8 +424,8 @@ void HttpStreamPool::TcpBasedAttemptSlot::SetCancelReason(
   }
 }
 
-base::Value::Dict HttpStreamPool::TcpBasedAttemptSlot::GetInfoAsValue() const {
-  base::Value::Dict dict;
+base::DictValue HttpStreamPool::TcpBasedAttemptSlot::GetInfoAsValue() const {
+  base::DictValue dict;
   if (ipv4_attempt_) {
     dict.Set("ipv4_attempt", ipv4_attempt_->GetInfoAsValue());
   }

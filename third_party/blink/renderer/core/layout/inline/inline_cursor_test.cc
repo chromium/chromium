@@ -429,9 +429,7 @@ TEST_F(InlineCursorTest, MoveToEndOfLineWithNoCharsLtr) {
   // Preparing the InlineCursor to start from beginning of the second line
   // (Empty Line).
   const LayoutBlockFlow* second_anonymous =
-      RuntimeEnabledFeatures::TextareaMultipleIfcsEnabled()
-          ? To<LayoutBlockFlow>(block_flow.FirstChild()->NextSibling())
-          : nullptr;
+      To<LayoutBlockFlow>(block_flow.FirstChild()->NextSibling());
   InlineCursor move_to_end_of_line(second_anonymous ? *second_anonymous
                                                     : block_flow);
   if (!second_anonymous) {
@@ -448,11 +446,7 @@ TEST_F(InlineCursorTest, MoveToEndOfLineWithNoCharsLtr) {
   }
   const PositionWithAffinity end_position =
       move_to_end_of_line.PositionForEndOfLine();
-  if (RuntimeEnabledFeatures::TextareaLineEndingsAsBrEnabled()) {
-    EXPECT_TRUE(end_position.AnchorNode()->HasTagName(html_names::kBrTag));
-  } else {
-    EXPECT_EQ(4, end_position.GetPosition().OffsetInContainerNode());
-  }
+  EXPECT_TRUE(end_position.AnchorNode()->HasTagName(html_names::kBrTag));
 }
 
 TEST_F(InlineCursorTest, MoveToEndOfLineWithNoCharsRtl) {
@@ -467,9 +461,7 @@ TEST_F(InlineCursorTest, MoveToEndOfLineWithNoCharsRtl) {
   // Preparing the InlineCursor to start from beginning of the second line
   // (Empty Line).
   const LayoutBlockFlow* second_anonymous =
-      RuntimeEnabledFeatures::TextareaMultipleIfcsEnabled()
-          ? To<LayoutBlockFlow>(block_flow.FirstChild()->NextSibling())
-          : nullptr;
+      To<LayoutBlockFlow>(block_flow.FirstChild()->NextSibling());
   InlineCursor move_to_end_of_line(second_anonymous ? *second_anonymous
                                                     : block_flow);
   if (!second_anonymous) {
@@ -486,11 +478,7 @@ TEST_F(InlineCursorTest, MoveToEndOfLineWithNoCharsRtl) {
   }
   const PositionWithAffinity end_position =
       move_to_end_of_line.PositionForEndOfLine();
-  if (RuntimeEnabledFeatures::TextareaLineEndingsAsBrEnabled()) {
-    EXPECT_TRUE(end_position.AnchorNode()->HasTagName(html_names::kBrTag));
-  } else {
-    EXPECT_EQ(4, end_position.GetPosition().OffsetInContainerNode());
-  }
+  EXPECT_TRUE(end_position.AnchorNode()->HasTagName(html_names::kBrTag));
 }
 
 TEST_F(InlineCursorTest, FirstLastLogicalLeafWithInlineBlock) {

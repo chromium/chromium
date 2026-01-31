@@ -21,6 +21,8 @@ source_set("views") {
     "new_badge_label.h",
     "toggle_tracked_element_attention_utils.cc",
     "toggle_tracked_element_attention_utils.h",
+    "view_subregion_anchor.cc",
+    "view_subregion_anchor.h",
   ]
 
   if (is_mac) {

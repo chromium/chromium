@@ -13,7 +13,8 @@ import org.chromium.base.Callback;
 import org.chromium.base.CallbackController;
 import org.chromium.base.Token;
 import org.chromium.base.ValueChangedCallback;
-import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.MonotonicObservableSupplier;
+import org.chromium.base.supplier.NonNullObservableSupplier;
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.task.PostTask;
@@ -99,9 +100,7 @@ public class TabGroupUiOneshotSupplier extends OneshotSupplierImpl<TabGroupUi> {
             if (tab == null || tab.isClosing() || tab.isDestroyed()) return;
 
             TabGroupModelFilter filter =
-                    mTabModelSelector
-                            .getTabGroupModelFilterProvider()
-                            .getTabGroupModelFilter(tab.isIncognito());
+                    mTabModelSelector.getTabGroupModelFilter(tab.isIncognito());
             assumeNonNull(filter);
             if (!filter.isTabInTabGroup(tab)) return;
 
@@ -154,7 +153,7 @@ public class TabGroupUiOneshotSupplier extends OneshotSupplierImpl<TabGroupUi> {
             ViewGroup parentView,
             BrowserControlsStateProvider browserControlsStateProvider,
             ScrimManager scrimManager,
-            ObservableSupplier<Boolean> omniboxFocusStateSupplier,
+            NonNullObservableSupplier<Boolean> omniboxFocusStateSupplier,
             BottomSheetController bottomSheetController,
             DataSharingTabManager dataSharingTabManager,
             TabContentManager tabContentManager,
@@ -163,7 +162,7 @@ public class TabGroupUiOneshotSupplier extends OneshotSupplierImpl<TabGroupUi> {
             ModalDialogManager modalDialogManager,
             ThemeColorProvider themeColorProvider,
             UndoBarThrottle undoBarThrottle,
-            ObservableSupplier<TabBookmarker> tabBookmarkerSupplier,
+            MonotonicObservableSupplier<TabBookmarker> tabBookmarkerSupplier,
             Supplier<ShareDelegate> shareDelegateSupplier) {
         Runnable setter =
                 () -> {

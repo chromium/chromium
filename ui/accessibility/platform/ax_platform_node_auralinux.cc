@@ -2749,9 +2749,14 @@ AtkRole AXPlatformNodeAuraLinux::GetAtkRole() const {
     case ax::mojom::Role::kEmbeddedObject:
       return ATK_ROLE_EMBEDDED;
     case ax::mojom::Role::kForm:
-      // TODO(accessibility) Forms which lack an accessible name are no longer
-      // exposed as forms. http://crbug.com/874384. Forms which have accessible
-      // names should be exposed as ATK_ROLE_LANDMARK according to Core AAM.
+      // Per Core AAM, named forms should be exposed as landmarks.
+      // TODO(crbug.com/468317749): Blink currently maps unnamed <form> to
+      // kSection instead of kForm. Once fixed, platforms will handle the
+      // mapping. For now, explicit role="form" without a name still reaches
+      // here and should remain ATK_ROLE_FORM.
+      if (HasStringAttribute(ax::mojom::StringAttribute::kName)) {
+        return ATK_ROLE_LANDMARK;
+      }
       return ATK_ROLE_FORM;
     case ax::mojom::Role::kFigure:
     case ax::mojom::Role::kFeed:
@@ -4635,7 +4640,7 @@ void AXPlatformNodeAuraLinux::GetFloatAttributeInGValue(
     GValue* value) {
   float float_val;
   if (GetFloatAttribute(attr, &float_val)) {
-    UNSAFE_TODO(memset(value, 0, sizeof(*value)));
+    *value = {};
     g_value_init(value, G_TYPE_FLOAT);
     g_value_set_float(value, float_val);
   }

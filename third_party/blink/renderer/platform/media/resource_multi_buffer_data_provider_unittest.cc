@@ -12,7 +12,6 @@
 #include <string>
 #include <utility>
 
-#include "base/containers/contains.h"
 #include "base/containers/heap_array.h"
 #include "base/format_macros.h"
 #include "base/memory/raw_ptr.h"
@@ -64,8 +63,7 @@ static bool CorrectAcceptEncoding(const WebURLRequest& request) {
                           .HttpHeaderField(WebString::FromUTF8(
                               net::HttpRequestHeaders::kAcceptEncoding))
                           .Utf8();
-  return (base::Contains(value, "identity;q=1")) &&
-         (base::Contains(value, "*;q=0"));
+  return (value.contains("identity;q=1")) && (value.contains("*;q=0"));
 }
 
 class ResourceMultiBufferDataProviderTest : public testing::Test {

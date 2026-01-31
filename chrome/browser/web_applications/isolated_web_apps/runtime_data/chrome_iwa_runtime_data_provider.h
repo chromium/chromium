@@ -10,8 +10,12 @@
 #include <string_view>
 #include <vector>
 
+#include "base/types/pass_key.h"
 #include "base/values.h"
 #include "components/webapps/isolated_web_apps/public/iwa_runtime_data_provider.h"
+
+class BrowserProcessImpl;
+class TestingBrowserProcess;
 
 namespace web_app {
 
@@ -38,7 +42,9 @@ class ChromeIwaRuntimeDataProvider : public IwaRuntimeDataProvider {
 
   // Note that these methods do not take ownership of `instance`; the lifetime
   // management remains the caller's responsibility.
-  static void SetInstance(ChromeIwaRuntimeDataProvider* instance);
+  static void SetInstance(
+      base::PassKey<BrowserProcessImpl, TestingBrowserProcess>,
+      ChromeIwaRuntimeDataProvider* instance);
   static base::AutoReset<ChromeIwaRuntimeDataProvider*> SetInstanceForTesting(
       ChromeIwaRuntimeDataProvider* instance);
 
@@ -57,7 +63,7 @@ class ChromeIwaRuntimeDataProvider : public IwaRuntimeDataProvider {
   virtual const UserInstallAllowlistItemData* GetUserInstallAllowlistData(
       const std::string& web_bundle_id) const = 0;
 
-  virtual void WriteDebugMetadata(base::Value::Dict& log) const = 0;
+  virtual void WriteDebugMetadata(base::DictValue& log) const = 0;
 };
 
 }  // namespace web_app

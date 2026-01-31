@@ -462,13 +462,13 @@ IN_PROC_BROWSER_TEST_F(CommandServiceTest,
 
   ScopedDictPrefUpdate updater(profile()->GetPrefs(),
                                prefs::kExtensionCommands);
-  base::Value::Dict& bindings = updater.Get();
+  base::DictValue& bindings = updater.Get();
 
   // Simulate command |toggle-feature| has been assigned with a shortcut on
   // another platform.
   std::string anotherPlatformKey = GetAnotherCommandPlatform() + ":Alt+G";
   const char kNamedCommandName[] = "toggle-feature";
-  base::Value::Dict keybinding;
+  base::DictValue keybinding;
   keybinding.Set("extension", extension->id());
   keybinding.Set("command_name", kNamedCommandName);
   keybinding.Set("global", false);

@@ -117,6 +117,10 @@ Tests DOMSnapshot.getSnapshot method returning input values.
                     name : aria-hidden
                     value : true
                 }
+                [1] : {
+                    name : pseudo
+                    value : -internal-select-inner-element
+                }
             ]
             backendNodeId : <number>
             childNodeIndexes : [
@@ -139,8 +143,8 @@ Tests DOMSnapshot.getSnapshot method returning input values.
         [10] : {
             attributes : [
                 [0] : {
-                    name : id
-                    value : select-button
+                    name : pseudo
+                    value : -internal-select-button-slot
                 }
             ]
             backendNodeId : <number>

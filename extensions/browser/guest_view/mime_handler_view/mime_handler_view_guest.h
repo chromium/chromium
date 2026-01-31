@@ -139,10 +139,10 @@ class MimeHandlerViewGuest
   int GetTaskPrefix() const final;
   void CreateInnerPage(std::unique_ptr<GuestViewBase> owned_this,
                        scoped_refptr<content::SiteInstance> site_instance,
-                       const base::Value::Dict& create_params,
+                       const base::DictValue& create_params,
                        GuestPageCreatedCallback callback) override;
   void DidAttachToEmbedder() override;
-  void DidInitialize(const base::Value::Dict& create_params) final;
+  void DidInitialize(const base::DictValue& create_params) final;
   void MaybeRecreateGuestContents(
       content::RenderFrameHost* outer_contents_frame) final;
   void EmbedderFullscreenToggled(bool entered_fullscreen) final;

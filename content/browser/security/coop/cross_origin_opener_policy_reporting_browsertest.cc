@@ -188,7 +188,7 @@ class SendTestReportsAtNavigationFinishObserver : public WebContentsObserver {
       network_context->QueueReport(
           "type", "default", url_, reporting_source,
           net::NetworkAnonymizationKey::CreateSameSite(site),
-          base::Value::Dict());
+          base::DictValue());
     }
   }
 

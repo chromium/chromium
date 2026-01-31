@@ -31,7 +31,7 @@ import org.chromium.base.DeviceInfo;
 import org.chromium.base.Log;
 import org.chromium.base.Token;
 import org.chromium.base.metrics.RecordUserAction;
-import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
@@ -72,11 +72,11 @@ public class TabStripDragHandler extends TabDragHandlerBase {
 
     private final Supplier<StripLayoutHelper> mStripLayoutHelperSupplier;
     private final Supplier<Boolean> mStripLayoutVisibilitySupplier;
-    private final ObservableSupplier<TabContentManager> mTabContentManagerSupplier;
-    private final ObservableSupplier<LayerTitleCache> mLayerTitleCacheSupplier;
+    private final MonotonicObservableSupplier<TabContentManager> mTabContentManagerSupplier;
+    private final MonotonicObservableSupplier<LayerTitleCache> mLayerTitleCacheSupplier;
     private final BrowserControlsStateProvider mBrowserControlStateProvider;
     private final float mPxToDp;
-    private final ObservableSupplier<Integer> mTabStripHeightSupplier;
+    private final Supplier<Integer> mTabStripHeightSupplier;
 
     /** Handler and runnable to post/cancel an #onDragExit when the drag starts. */
     private final Handler mHandler = new Handler(Looper.getMainLooper());
@@ -95,6 +95,8 @@ public class TabStripDragHandler extends TabDragHandlerBase {
 
     // Tracks whether the current drag has ever left the source strip.
     private boolean mDragEverLeftStrip;
+
+    private boolean mWasCancelled;
 
     /**
      * Prepares the toolbar view to listen to the drag events and data drop after the drag is
@@ -117,13 +119,13 @@ public class TabStripDragHandler extends TabDragHandlerBase {
             Context context,
             Supplier<StripLayoutHelper> stripLayoutHelperSupplier,
             Supplier<Boolean> stripLayoutVisibilitySupplier,
-            ObservableSupplier<TabContentManager> tabContentManagerSupplier,
-            ObservableSupplier<LayerTitleCache> layerTitleCacheSupplier,
+            MonotonicObservableSupplier<TabContentManager> tabContentManagerSupplier,
+            MonotonicObservableSupplier<LayerTitleCache> layerTitleCacheSupplier,
             MultiInstanceManager multiInstanceManager,
             DragAndDropDelegate dragAndDropDelegate,
             BrowserControlsStateProvider browserControlStateProvider,
             Supplier<@Nullable Activity> activitySupplier,
-            ObservableSupplier<Integer> tabStripHeightSupplier,
+            Supplier<Integer> tabStripHeightSupplier,
             Supplier<Boolean> isAppInDesktopWindowSupplier) {
         super(
                 activitySupplier,
@@ -369,6 +371,7 @@ public class TabStripDragHandler extends TabDragHandlerBase {
         mHandler.postDelayed(mOnDragExitRunnable, /* delayMillis= */ 50L);
 
         mLastXDp = xPx * mPxToDp;
+        mWasCancelled = false;
         return true;
     }
 
@@ -396,7 +399,7 @@ public class TabStripDragHandler extends TabDragHandlerBase {
 
     private boolean onDrop(DragEvent dropEvent) {
         StripLayoutHelper helper = mStripLayoutHelperSupplier.get();
-        helper.stopReorderMode();
+        helper.stopReorderMode(false);
         if (isDragSource()) {
             DragDropMetricUtils.recordReorderStripWithDragDrop(
                     mDragEverLeftStrip, isTabGroupDrop(), isMultiTabDrop());
@@ -554,7 +557,8 @@ public class TabStripDragHandler extends TabDragHandlerBase {
             return false;
         }
 
-        mStripLayoutHelperSupplier.get().stopReorderMode();
+        mStripLayoutHelperSupplier.get().stopReorderMode(mWasCancelled);
+
         mHandler.removeCallbacks(mOnDragExitRunnable);
         if (mShadowView != null) {
             mShadowView.clear();
@@ -661,6 +665,12 @@ public class TabStripDragHandler extends TabDragHandlerBase {
                 /* isTabGroup= */ true,
                 /* isMultiTab= */ false);
         return true;
+    }
+
+    @Override
+    protected @BackPressResult int cancelDrag() {
+        mWasCancelled = true;
+        return super.cancelDrag();
     }
 
     @VisibleForTesting

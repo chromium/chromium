@@ -2,10 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <algorithm>
 #include <memory>
 
 #include "base/command_line.h"
-#include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/location.h"
 #include "base/memory/raw_ptr.h"
@@ -292,9 +292,9 @@ IN_PROC_BROWSER_TEST_F(TabCaptureApiTest, TabIndicator) {
       browser_->tab_strip_model()->AddObserver(this);
     }
 
-    void TabChangedAt(content::WebContents* contents,
-                      int index,
-                      TabChangeType change_type) override {
+    void OnTabChangedAt(tabs::TabInterface* tab,
+                        int index,
+                        TabChangeType change_type) override {
       std::move(on_tab_changed_).Run();
     }
 
@@ -321,8 +321,8 @@ IN_PROC_BROWSER_TEST_F(TabCaptureApiTest, TabIndicator) {
   // Run the browser until the indicator turns on.
   const base::TimeTicks start_time = base::TimeTicks::Now();
   IndicatorChangeObserver observer(browser());
-  while (!base::Contains(GetTabAlertStatesForContents(contents),
-                         tabs::TabAlert::kTabCapturing)) {
+  while (!std::ranges::contains(GetTabAlertStatesForContents(contents),
+                                tabs::TabAlert::kTabCapturing)) {
     if (base::TimeTicks::Now() - start_time >
             TestTimeouts::action_max_timeout()) {
       EXPECT_THAT(GetTabAlertStatesForContents(contents),

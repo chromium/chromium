@@ -15,12 +15,21 @@
 // Coordinator to display the identity chooser view controller.
 @interface IdentityChooserCoordinator : ChromeCoordinator
 
-// Selected identity.
-@property(nonatomic, strong) id<SystemIdentity> selectedIdentity;
 // Delegate.
 @property(nonatomic, weak) id<IdentityChooserCoordinatorDelegate> delegate;
 // Origin of the animation for the IdentityChooser.
 @property(nonatomic, assign) CGPoint origin;
+
+// Creates a coordinator that displays by default `defaultIdentity` if it is
+// non-nil.
+- (instancetype)initWithBaseViewController:(UIViewController*)viewController
+                                   browser:(Browser*)browser
+                           defaultIdentity:(id<SystemIdentity>)defaultIdentity
+    NS_DESIGNATED_INITIALIZER;
+
+// Creates a coordinator that uses `viewController` and `browser`.
+- (instancetype)initWithBaseViewController:(UIViewController*)viewController
+                                   browser:(Browser*)browser NS_UNAVAILABLE;
 
 @end
 

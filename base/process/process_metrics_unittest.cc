@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
-
 #include "base/process/process_metrics.h"
 
 #include <stddef.h>
@@ -22,6 +17,7 @@
 
 #include "base/byte_size.h"
 #include "base/command_line.h"
+#include "base/compiler_specific.h"
 #include "base/files/file.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -47,6 +43,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/multiprocess_func_list.h"
+#include "third_party/abseil-cpp/absl/strings/str_format.h"
 
 #if BUILDFLAG(IS_APPLE)
 #include <sys/mman.h>
@@ -341,6 +338,8 @@ TEST_F(SystemMetricsTest, IsValidDiskName) {
 }
 
 TEST_F(SystemMetricsTest, ParseMeminfo) {
+  constexpr uint64_t kOutOfRangeKB = ByteSize::Max().InKiB() + 1;
+
   SystemMemoryInfo meminfo;
   const char invalid_input1[] = "abc";
   const char invalid_input2[] = "MemTotal:";
@@ -354,9 +353,15 @@ TEST_F(SystemMetricsTest, ParseMeminfo) {
       "Inactive:       21221496 kB\n"
       "Active(anon):    5674352 kB\n"
       "Inactive(anon):   633992 kB\n";
+  // Files with out-of-range MemTotal
+  const char invalid_input4[] = "MemTotal: -4 kB\n";
+  const std::string invalid_input5 =
+      absl::StrFormat("MemTotal: %u kb\n", kOutOfRangeKB);
   EXPECT_FALSE(ParseProcMeminfo(invalid_input1, &meminfo));
   EXPECT_FALSE(ParseProcMeminfo(invalid_input2, &meminfo));
   EXPECT_FALSE(ParseProcMeminfo(invalid_input3, &meminfo));
+  EXPECT_FALSE(ParseProcMeminfo(invalid_input4, &meminfo));
+  EXPECT_FALSE(ParseProcMeminfo(invalid_input5, &meminfo));
 
   const char valid_input1[] =
       "MemTotal:        3981504 kB\n"
@@ -514,6 +519,22 @@ TEST_F(SystemMetricsTest, ParseMeminfo) {
   EXPECT_EQ(meminfo.buffers.InKiB(), 1524852);
   EXPECT_EQ(meminfo.cached.InKiB(), 12645260);
   EXPECT_EQ(GetSystemCommitChargeFromMeminfo(meminfo), 0u);
+
+  // output from a system that reports a valid MemTotal but out-of-range values
+  // for other entries.
+  const std::string out_of_range_input = absl::StrFormat(
+      "MemTotal:       18025572 kB\n"
+      "MemFree:              %u kB\n"
+      "MemAvailable:         -1 kB\n"
+      "Buffers:         1524852 kB\n",
+      kOutOfRangeKB);
+
+  meminfo = {};
+  EXPECT_TRUE(ParseProcMeminfo(out_of_range_input, &meminfo));
+  EXPECT_EQ(meminfo.total.InKiB(), 18025572);
+  EXPECT_EQ(meminfo.free, ByteSize());
+  EXPECT_EQ(meminfo.available, ByteSize());
+  EXPECT_EQ(meminfo.buffers.InKiB(), 1524852);
 }
 
 TEST_F(SystemMetricsTest, ParseVmstat) {
@@ -1048,7 +1069,7 @@ TEST(ProcessMetricsTestLinux, GetPageFaultCounts) {
     WritableSharedMemoryMapping mapping = region.Map();
     ASSERT_TRUE(mapping.IsValid());
 
-    memset(mapping.memory(), 42, kMappedSize);
+    UNSAFE_TODO(memset(mapping.memory(), 42, kMappedSize));
   }
 
   PageFaultCounts counts_after;

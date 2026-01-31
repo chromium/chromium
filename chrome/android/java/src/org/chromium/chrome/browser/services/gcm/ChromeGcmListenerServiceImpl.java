@@ -134,7 +134,6 @@ public class ChromeGcmListenerServiceImpl extends SplitCompatGcmListenerService.
 
         boolean isSubscriptionLazy = LazySubscriptionsManager.isSubscriptionLazy(subscriptionId);
         boolean isHighPriority = message.getOriginalPriority() == GCMMessage.Priority.HIGH;
-        // TODO(crbug.com/40619931): Add metrics for the new high priority message logic.
         boolean shouldPersistMessage = isSubscriptionLazy && !isHighPriority;
         if (shouldPersistMessage) {
             LazySubscriptionsManager.persistMessage(subscriptionId, message);

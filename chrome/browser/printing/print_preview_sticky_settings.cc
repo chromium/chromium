@@ -40,14 +40,14 @@ void PrintPreviewStickySettings::StoreAppState(const std::string& data) {
 }
 
 void PrintPreviewStickySettings::SaveInPrefs(PrefService* prefs) const {
-  base::Value::Dict dict;
+  base::DictValue dict;
   if (printer_app_state_)
     dict.Set(kSettingAppState, *printer_app_state_);
   prefs->SetDict(prefs::kPrintPreviewStickySettings, std::move(dict));
 }
 
 void PrintPreviewStickySettings::RestoreFromPrefs(PrefService* prefs) {
-  const base::Value::Dict& value =
+  const base::DictValue& value =
       prefs->GetDict(prefs::kPrintPreviewStickySettings);
   const std::string* app_state = value.FindString(kSettingAppState);
   if (app_state)
@@ -70,14 +70,14 @@ std::vector<std::string> PrintPreviewStickySettings::GetRecentlyUsedPrinters() {
   if (!sticky_settings_state)
     return {};
 
-  std::optional<base::Value::Dict> sticky_settings_state_value =
+  std::optional<base::DictValue> sticky_settings_state_value =
       base::JSONReader::ReadDict(*sticky_settings_state,
                                  base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   if (!sticky_settings_state_value) {
     return {};
   }
 
-  base::Value::List* recent_destinations =
+  base::ListValue* recent_destinations =
       sticky_settings_state_value->FindList(kRecentDestinations);
   if (!recent_destinations)
     return {};

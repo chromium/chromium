@@ -110,7 +110,7 @@ class UpdateService : public KeyedService {
   void HandleComponentUpdateErrorEvent(const ExtensionId& extension_id) const;
 
   // Get the extension Omaha attributes sent from update config.
-  base::Value::Dict GetExtensionOmahaAttributes(
+  base::DictValue GetExtensionOmahaAttributes(
       const update_client::CrxUpdateItem& update_item);
 
  private:

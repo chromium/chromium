@@ -39,8 +39,9 @@ import org.chromium.base.CallbackUtils;
 import org.chromium.base.CollectionUtil;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
-import org.chromium.base.supplier.ObservableSupplier;
-import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.supplier.MonotonicObservableSupplier;
+import org.chromium.base.supplier.ObservableSuppliers;
+import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
@@ -50,6 +51,7 @@ import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncherFactory;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager.PersistedInstanceType;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.chrome.browser.preferences.Pref;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.searchwidget.SearchActivity;
 import org.chromium.chrome.browser.settings.ChromeBaseSettingsFragment;
 import org.chromium.chrome.browser.settings.SettingsNavigationFactory;
@@ -63,6 +65,7 @@ import org.chromium.components.browser_ui.settings.ClickableSpansTextMessagePref
 import org.chromium.components.browser_ui.settings.CustomDividerFragment;
 import org.chromium.components.browser_ui.settings.SettingsUtils;
 import org.chromium.components.browser_ui.settings.SpinnerPreference;
+import org.chromium.components.browser_ui.settings.search.SettingsIndexData;
 import org.chromium.components.browser_ui.util.TraceEventVectorDrawableCompat;
 import org.chromium.components.browsing_data.DeleteBrowsingDataAction;
 import org.chromium.components.signin.metrics.SignoutReason;
@@ -246,7 +249,8 @@ public class ClearBrowsingDataFragment extends ChromeBaseSettingsFragment
     private @TimePeriod int mLastSelectedTimePeriod;
     private boolean mShouldShowPostDeleteFeedback;
 
-    private final ObservableSupplierImpl<String> mPageTitle = new ObservableSupplierImpl<>();
+    private final SettableMonotonicObservableSupplier<String> mPageTitle =
+            ObservableSuppliers.createMonotonic();
 
     /**
      * @return All available {@link DialogOption} entries.
@@ -306,17 +310,17 @@ public class ClearBrowsingDataFragment extends ChromeBaseSettingsFragment
     static @DrawableRes int getIcon(@DialogOption int type) {
         switch (type) {
             case DialogOption.CLEAR_CACHE:
-                return R.drawable.ic_collections_grey;
+                return R.drawable.ic_photo_library_fill_24dp;
             case DialogOption.CLEAR_COOKIES_AND_SITE_DATA:
                 return R.drawable.permission_cookie;
             case DialogOption.CLEAR_FORM_DATA:
                 return R.drawable.ic_edit_24dp;
             case DialogOption.CLEAR_HISTORY:
-                return R.drawable.ic_watch_later_24dp;
+                return R.drawable.ic_schedule_fill_24dp;
             case DialogOption.CLEAR_PASSWORDS:
                 return R.drawable.ic_password_manager_key;
             case DialogOption.CLEAR_SITE_SETTINGS:
-                return R.drawable.ic_tv_options_input_settings_rotated_grey;
+                return R.drawable.ic_settings_applications_24dp;
             case DialogOption.CLEAR_TABS:
                 return R.drawable.ic_tab_icon_24dp;
             default:
@@ -446,7 +450,7 @@ public class ClearBrowsingDataFragment extends ChromeBaseSettingsFragment
     }
 
     /** Returns the list of supported {@link DialogOption}. */
-    private List<Integer> getDialogOptions(Bundle fragmentArgs) {
+    private static List<Integer> getDialogOptions(Bundle fragmentArgs) {
         String referrer =
                 fragmentArgs.getString(
                         ClearBrowsingDataFragment.CLEAR_BROWSING_DATA_REFERRER, null);
@@ -687,7 +691,7 @@ public class ClearBrowsingDataFragment extends ChromeBaseSettingsFragment
     }
 
     @Override
-    public ObservableSupplier<String> getPageTitle() {
+    public MonotonicObservableSupplier<String> getPageTitle() {
         return mPageTitle;
     }
 
@@ -899,7 +903,7 @@ public class ClearBrowsingDataFragment extends ChromeBaseSettingsFragment
                 menu.add(Menu.NONE, R.id.menu_id_targeted_help, Menu.NONE, R.string.menu_help);
         help.setIcon(
                 TraceEventVectorDrawableCompat.create(
-                        getResources(), R.drawable.ic_help_and_feedback, getActivity().getTheme()));
+                        getResources(), R.drawable.ic_help_24dp, getActivity().getTheme()));
         help.setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM);
     }
 
@@ -972,9 +976,29 @@ public class ClearBrowsingDataFragment extends ChromeBaseSettingsFragment
         return AnimationType.PROPERTY;
     }
 
-    // TODO(crbug.com/444470792): Determine what pieces of logic are dynamic and need handling.
     public static final ChromeBaseSearchIndexProvider SEARCH_INDEX_DATA_PROVIDER =
             new ChromeBaseSearchIndexProvider(
                     ClearBrowsingDataFragment.class.getName(),
-                    R.xml.clear_browsing_data_preferences);
+                    R.xml.clear_browsing_data_preferences) {
+                @Override
+                public Bundle getExtras(Context context) {
+                    return createFragmentArgs(context.getClass().getName());
+                }
+
+                @Override
+                public void updateDynamicPreferences(
+                        Context context, SettingsIndexData indexData, Profile profile) {
+                    Bundle args = createFragmentArgs(context.getClass().getName());
+                    List<Integer> options = getDialogOptions(args);
+                    // Not all checkboxes defined in the layout are necessarily handled by this
+                    // class or a particular subclass. Hide those that are not.
+                    Set<Integer> unboundOptions = getAllOptions();
+                    unboundOptions.removeAll(options);
+                    for (@DialogOption Integer option : unboundOptions) {
+                        indexData.removeEntry(getUniqueId(getPreferenceKey(option)));
+                    }
+
+                    indexData.removeEntry(getUniqueId(PREF_SIGN_OUT_OF_CHROME_TEXT));
+                }
+            };
 }

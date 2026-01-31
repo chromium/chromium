@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "base/test/launcher/test_results_tracker.h"
 
 #include <stddef.h>
@@ -17,6 +12,7 @@
 #include "base/base64.h"
 #include "base/check.h"
 #include "base/command_line.h"
+#include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/files/file.h"
 #include "base/files/file_path.h"
@@ -90,8 +86,8 @@ struct TestSuiteResultsAggregator {
 };
 
 // Create value for `TestResultPart`.
-Value::Dict CreateTestResultPartValue(const TestResultPart& part) {
-  Value::Dict value;
+DictValue CreateTestResultPartValue(const TestResultPart& part) {
+  DictValue value;
 
   value.Set("type", part.TypeAsString());
   value.Set("file", part.file_name);
@@ -121,8 +117,8 @@ Value::Dict CreateTestResultPartValue(const TestResultPart& part) {
 }
 
 // Create value for `TestResult`.
-Value::Dict CreateTestResultValue(const TestResult& test_result) {
-  Value::Dict value;
+DictValue CreateTestResultValue(const TestResult& test_result) {
+  DictValue value;
   value.Set("status", test_result.StatusAsString());
   value.Set("elapsed_time_ms",
             static_cast<int>(test_result.elapsed_time.InMilliseconds()));
@@ -175,40 +171,40 @@ Value::Dict CreateTestResultValue(const TestResult& test_result) {
       base::Base64Encode(test_result.output_snippet);
   value.Set("output_snippet_base64", base64_output_snippet);
   if (!test_result.links.empty()) {
-    Value::Dict links;
+    DictValue links;
     for (const auto& link : test_result.links) {
-      Value::Dict link_info;
+      DictValue link_info;
       link_info.Set("content", link.second);
       links.SetByDottedPath(link.first, std::move(link_info));
     }
     value.Set("links", std::move(links));
   }
   if (!test_result.tags.empty()) {
-    Value::Dict tags;
+    DictValue tags;
     for (const auto& tag : test_result.tags) {
-      Value::List tag_values;
+      ListValue tag_values;
       for (const auto& tag_value : tag.second) {
         tag_values.Append(tag_value);
       }
-      Value::Dict tag_info;
+      DictValue tag_info;
       tag_info.Set("values", std::move(tag_values));
       tags.SetByDottedPath(tag.first, std::move(tag_info));
     }
     value.Set("tags", std::move(tags));
   }
   if (!test_result.properties.empty()) {
-    Value::Dict properties;
+    DictValue properties;
     for (const auto& property : test_result.properties) {
-      Value::Dict property_info;
+      DictValue property_info;
       property_info.Set("value", property.second);
       properties.SetByDottedPath(property.first, std::move(property_info));
     }
     value.Set("properties", std::move(properties));
   }
 
-  Value::List test_result_parts;
+  ListValue test_result_parts;
   for (const TestResultPart& result_part : test_result.test_result_parts) {
-    Value::Dict result_part_value = CreateTestResultPartValue(result_part);
+    DictValue result_part_value = CreateTestResultPartValue(result_part);
     test_result_parts.Append(std::move(result_part_value));
   }
   value.Set("result_parts", std::move(test_result_parts));
@@ -217,8 +213,8 @@ Value::Dict CreateTestResultValue(const TestResult& test_result) {
 }
 
 // Create value for `SubTestResult`.
-Value::Dict CreateSubTestResultValue(const TestResult& primary_test_result,
-                                     const SubTestResult& sub_test_result) {
+DictValue CreateSubTestResultValue(const TestResult& primary_test_result,
+                                   const SubTestResult& sub_test_result) {
   // Partially copy the primary TestResult.
   TestResult test_result;
   test_result.elapsed_time = primary_test_result.elapsed_time;
@@ -296,16 +292,17 @@ TestResultsTracker::~TestResultsTracker() {
             FormatTimeAsIso8601(Time::Now()).c_str());
 
     for (const TestResult& result : results) {
-      fprintf(out_.get(),
-              "    <testcase name=\"%s\" status=\"run\" time=\"%.3f\""
-              "%s classname=\"%s\">\n",
-              result.GetTestName().c_str(), result.elapsed_time.InSecondsF(),
-              (result.timestamp
-                   ? StrCat({" timestamp=\"",
-                             FormatTimeAsIso8601(*result.timestamp), "\""})
-                         .c_str()
-                   : ""),
-              result.GetTestCaseName().c_str());
+      UNSAFE_TODO(fprintf(
+          out_.get(),
+          "    <testcase name=\"%s\" status=\"run\" time=\"%.3f\""
+          "%s classname=\"%s\">\n",
+          result.GetTestName().c_str(), result.elapsed_time.InSecondsF(),
+          (result.timestamp
+               ? StrCat({" timestamp=\"",
+                         FormatTimeAsIso8601(*result.timestamp), "\""})
+                     .c_str()
+               : ""),
+          result.GetTestCaseName().c_str()));
       if (result.status != TestResult::TEST_SUCCESS) {
         // The actual failure message is not propagated up to here, as it's too
         // much work to escape it properly, and in case of failure, almost
@@ -565,9 +562,9 @@ void TestResultsTracker::AddGlobalTag(const std::string& tag) {
 bool TestResultsTracker::SaveSummaryAsJSON(
     const FilePath& path,
     const std::vector<std::string>& additional_tags) const {
-  Value::Dict summary_root;
+  DictValue summary_root;
 
-  Value::List global_tags;
+  ListValue global_tags;
   for (const auto& global_tag : global_tags_) {
     global_tags.Append(global_tag);
   }
@@ -576,29 +573,29 @@ bool TestResultsTracker::SaveSummaryAsJSON(
   }
   summary_root.Set("global_tags", std::move(global_tags));
 
-  Value::List all_tests;
+  ListValue all_tests;
   for (const auto& test : all_tests_) {
     all_tests.Append(test);
   }
   summary_root.Set("all_tests", std::move(all_tests));
 
-  Value::List disabled_tests;
+  ListValue disabled_tests;
   for (const auto& disabled_test : disabled_tests_) {
     disabled_tests.Append(disabled_test);
   }
   summary_root.Set("disabled_tests", std::move(disabled_tests));
 
-  Value::List per_iteration_data;
+  ListValue per_iteration_data;
 
   // Even if we haven't run any tests, we still have the dummy iteration.
   int max_iteration = iteration_ < 0 ? 0 : iteration_;
 
   for (int i = 0; i <= max_iteration; i++) {
-    Value::Dict current_iteration_data;
+    DictValue current_iteration_data;
 
     for (const auto& j : per_iteration_data_[i].results) {
-      Value::List test_results;
-      std::map<std::string, Value::List> name_to_test_results;
+      ListValue test_results;
+      std::map<std::string, ListValue> name_to_test_results;
 
       for (const TestResult& test_result : j.second.test_results) {
         name_to_test_results[j.first].Append(
@@ -620,11 +617,11 @@ bool TestResultsTracker::SaveSummaryAsJSON(
   }
   summary_root.Set("per_iteration_data", std::move(per_iteration_data));
 
-  Value::Dict test_locations;
+  DictValue test_locations;
   for (const auto& item : test_locations_) {
     std::string test_name = item.first;
     CodeLocation location = item.second;
-    Value::Dict location_value;
+    DictValue location_value;
     location_value.Set("file", location.file);
     location_value.Set("line", location.line);
     test_locations.Set(test_name, std::move(location_value));
@@ -705,8 +702,8 @@ void TestResultsTracker::PrintTests(InputIterator first,
     return;
   }
 
-  fprintf(stdout, "%" PRIuS " test%s %s:\n", count, count != 1 ? "s" : "",
-          description.c_str());
+  UNSAFE_TODO(fprintf(stdout, "%" PRIuS " test%s %s:\n", count,
+                      count != 1 ? "s" : "", description.c_str()));
   for (InputIterator it = first; it != last; ++it) {
     const std::string& test_name = *it;
     const auto location_it = test_locations_.find(test_name);

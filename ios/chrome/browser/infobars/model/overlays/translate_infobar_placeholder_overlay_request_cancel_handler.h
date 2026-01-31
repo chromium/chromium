@@ -47,7 +47,7 @@ class PlaceholderRequestCancelHandler
     void TranslateOverlayTabHelperDestroyed(
         TranslateOverlayTabHelper* tab_helper) override;
 
-    raw_ptr<PlaceholderRequestCancelHandler, DanglingUntriaged> cancel_handler_;
+    raw_ptr<PlaceholderRequestCancelHandler> cancel_handler_;
 
     base::ScopedObservation<TranslateOverlayTabHelper,
                             TranslateOverlayTabHelper::Observer>

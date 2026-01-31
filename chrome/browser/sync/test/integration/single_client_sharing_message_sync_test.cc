@@ -18,7 +18,6 @@
 #include "components/sharing_message/sharing_message_bridge.h"
 #include "components/sync/base/features.h"
 #include "components/sync/service/sync_token_status.h"
-#include "components/sync/test/fake_server_http_post_provider.h"
 #include "content/public/test/browser_test.h"
 #include "google_apis/gaia/fake_oauth2_token_response.h"
 

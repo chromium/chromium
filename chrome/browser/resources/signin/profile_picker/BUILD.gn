@@ -33,6 +33,8 @@ build_webui("build") {
     "profile_picker_util.ts",
     "profile_switch.html.ts",
     "profile_switch.ts",
+    "signin_error_dialog.html.ts",
+    "signin_error_dialog.ts",
   ]
 
   icons_html_files = [ "icons.html" ]
@@ -45,6 +47,7 @@ build_webui("build") {
     "profile_picker_main_view.css",
     "profile_picker_shared.css",
     "profile_switch.css",
+    "signin_error_dialog.css",
   ]
 
   ts_composite = true

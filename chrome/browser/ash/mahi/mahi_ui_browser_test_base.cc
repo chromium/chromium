@@ -59,12 +59,11 @@ class MockMahiProvider : public manta::MahiProvider {
                           manta::MantaGenericCallback done_callback) {
           base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
               FROM_HERE,
-              base::BindOnce(
-                  std::move(done_callback),
-                  base::Value::Dict().Set(/*key=*/"outputData",
-                                          GetMahiDefaultTestSummary()),
-                  manta::MantaStatus{.status_code =
-                                         manta::MantaStatusCode::kOk}));
+              base::BindOnce(std::move(done_callback),
+                             base::DictValue().Set(/*key=*/"outputData",
+                                                   GetMahiDefaultTestSummary()),
+                             manta::MantaStatus{
+                                 .status_code = manta::MantaStatusCode::kOk}));
         });
 
     ON_CALL(*this, QuestionAndAnswer)
@@ -78,8 +77,8 @@ class MockMahiProvider : public manta::MahiProvider {
                   FROM_HERE,
                   base::BindOnce(
                       std::move(done_callback),
-                      base::Value::Dict().Set(/*key=*/"outputData",
-                                              GetMahiDefaultTestAnswer()),
+                      base::DictValue().Set(/*key=*/"outputData",
+                                            GetMahiDefaultTestAnswer()),
                       manta::MantaStatus{.status_code =
                                              manta::MantaStatusCode::kOk}));
             });
@@ -140,9 +139,8 @@ std::unique_ptr<KeyedService> CreateMockMantaService(
 }  // namespace
 
 MahiUiBrowserTestBase::MahiUiBrowserTestBase() {
-  feature_list_.InitWithFeatures(
-      {chromeos::features::kMahi, chromeos::features::kFeatureManagementMahi},
-      {});
+  feature_list_.InitWithFeatures({chromeos::features::kFeatureManagementMahi},
+                                 {});
 }
 
 MahiUiBrowserTestBase::~MahiUiBrowserTestBase() = default;

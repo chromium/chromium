@@ -19,7 +19,6 @@
 #import "ios/chrome/browser/passwords/model/password_check_observer_bridge.h"
 #import "ios/chrome/browser/passwords/model/password_checkup_utils.h"
 #import "ios/chrome/browser/passwords/model/password_manager_util_ios.h"
-#import "ios/chrome/browser/passwords/model/save_passwords_consumer.h"
 #import "ios/chrome/browser/settings/ui_bundled/password/account_storage_utils.h"
 #import "ios/chrome/browser/settings/ui_bundled/password/password_manager_ui_features.h"
 #import "ios/chrome/browser/settings/ui_bundled/password/passwords_consumer.h"
@@ -357,7 +356,7 @@ struct PasswordManagerActiveWidgetPromoData
 
 // Compute whether user is capable to run password check in Google Account.
 - (BOOL)canUseAccountPasswordCheckup {
-  return password_manager::features_util::IsAccountStorageEnabled(
+  return password_manager::features_util::IsAccountStorageActive(
              _syncService) &&
          !_syncService->GetUserSettings()->IsEncryptEverythingEnabled();
 }
@@ -417,7 +416,7 @@ struct PasswordManagerActiveWidgetPromoData
   return _syncService->GetUserSettings()
       ->IsTrustedVaultKeyRequiredForPreferredDataTypes();
 }
-// LINT.ThenChange(/ios/chrome/browser/popup_menu/ui_bundled/overflow_menu/overflow_menu_mediator.mm:IsTrustedVaultKeyRequiredForPreferredDataTypes)
+// LINT.ThenChange(ios/chrome/browser/popup_menu/overflow_menu/coordinator/overflow_menu_mediator.mm:IsTrustedVaultKeyRequiredForPreferredDataTypes)
 
 // Decides whether the Trusted Vault widget promo should be displayed and asks
 // consumer to do so. This code should be in sync with the code that decides

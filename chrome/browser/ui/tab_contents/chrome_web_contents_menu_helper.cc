@@ -4,11 +4,12 @@
 
 #include "chrome/browser/ui/tab_contents/chrome_web_contents_menu_helper.h"
 
+#include "build/build_config.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/browser_window.h"
 #include "components/prefs/pref_service.h"
 #include "components/search_engines/search_engines_pref_names.h"
 #include "content/public/browser/context_menu_params.h"
+#include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_view_delegate.h"
 
 content::ContextMenuParams AddContextMenuParamsPropertiesFromPreferences(

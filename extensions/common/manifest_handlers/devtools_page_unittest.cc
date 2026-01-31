@@ -43,8 +43,8 @@ class ManifestDevToolsPageHandlerTest : public ManifestTest {
   ManifestDevToolsPageHandlerTest() = default;
 
  protected:
-  base::Value::Dict CreateManifest(const std::string& devtools_page) {
-    return base::Value::Dict()
+  base::DictValue CreateManifest(const std::string& devtools_page) {
+    return base::DictValue()
         .Set("name", "DevTools")
         .Set("version", "1")
         .Set("manifest_version", 3)
@@ -56,7 +56,7 @@ class ManifestDevToolsPageHandlerTest : public ManifestTest {
                             const std::string& parsed_devtools_page) {
     base::ScopedTempDir dir;
     std::u16string error;
-    base::Value::Dict manifest = CreateManifest(devtools_page);
+    base::DictValue manifest = CreateManifest(devtools_page);
     ASSERT_TRUE(dir.CreateUniqueTempDir());
     scoped_refptr<Extension> extension =
         Extension::Create(dir.GetPath(), mojom::ManifestLocation::kInternal,
@@ -77,7 +77,7 @@ class ManifestDevToolsPageHandlerTest : public ManifestTest {
                           const std::u16string& expected_error) {
     base::ScopedTempDir dir;
     std::u16string error;
-    base::Value::Dict manifest = CreateManifest(devtools_page);
+    base::DictValue manifest = CreateManifest(devtools_page);
     ASSERT_TRUE(dir.CreateUniqueTempDir());
     scoped_refptr<Extension> extension =
         Extension::Create(dir.GetPath(), mojom::ManifestLocation::kInternal,
@@ -98,7 +98,7 @@ class ManifestDevToolsPageHandlerTest : public ManifestTest {
     std::string error;
     std::u16string utf16_error;
     std::vector<InstallWarning> warnings;
-    base::Value::Dict manifest = CreateManifest(devtools_page);
+    base::DictValue manifest = CreateManifest(devtools_page);
     ASSERT_TRUE(dir.CreateUniqueTempDir());
     scoped_refptr<Extension> extension =
         Extension::Create(dir.GetPath(), mojom::ManifestLocation::kInternal,

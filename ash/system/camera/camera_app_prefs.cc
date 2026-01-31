@@ -18,6 +18,7 @@ PrefService* GetPrimaryUserPrefService() {
 
 void RegisterProfilePrefs(PrefRegistrySimple* registry) {
   registry->RegisterBooleanPref(prefs::kCameraAppDevToolsOpen, false);
+  registry->RegisterBooleanPref(prefs::kCameraAppSkipCancelUploadDialog, false);
 }
 
 bool ShouldDevToolsOpen() {
@@ -27,6 +28,16 @@ bool ShouldDevToolsOpen() {
 void SetDevToolsOpenState(bool is_opened) {
   GetPrimaryUserPrefService()->SetBoolean(prefs::kCameraAppDevToolsOpen,
                                           is_opened);
+}
+
+ASH_EXPORT bool ShouldSkipCancelUploadDialog() {
+  return GetPrimaryUserPrefService()->GetBoolean(
+      prefs::kCameraAppSkipCancelUploadDialog);
+}
+
+ASH_EXPORT void SetSkipCancelUploadDialog() {
+  GetPrimaryUserPrefService()->SetBoolean(
+      prefs::kCameraAppSkipCancelUploadDialog, true);
 }
 
 }  // namespace ash::camera_app_prefs

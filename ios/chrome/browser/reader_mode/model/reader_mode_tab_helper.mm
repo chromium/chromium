@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/reader_mode/model/reader_mode_tab_helper.h"
 
+#import "base/command_line.h"
 #import "base/functional/callback_helpers.h"
 #import "base/ios/block_types.h"
 #import "base/time/time.h"
@@ -16,13 +17,17 @@
 #import "components/translate/core/browser/translate_manager.h"
 #import "components/translate/core/browser/translate_prefs.h"
 #import "ios/chrome/browser/dom_distiller/model/offline_page_distiller_viewer.h"
+#import "ios/chrome/browser/flags/chrome_switches.h"
+#import "ios/chrome/browser/infobars/model/infobar_ios.h"
 #import "ios/chrome/browser/infobars/model/infobar_manager_impl.h"
 #import "ios/chrome/browser/infobars/model/overlays/infobar_overlay_request_inserter.h"
+#import "ios/chrome/browser/intelligence/features/features.h"
 #import "ios/chrome/browser/language/model/language_model_manager_factory.h"
 #import "ios/chrome/browser/reader_mode/model/features.h"
 #import "ios/chrome/browser/reader_mode/model/reader_mode_content_tab_helper.h"
 #import "ios/chrome/browser/reader_mode/model/reader_mode_distiller_page.h"
 #import "ios/chrome/browser/reader_mode/model/reader_mode_distiller_viewer.h"
+#import "ios/chrome/browser/reader_mode/model/reader_mode_infobar_delegate.h"
 #import "ios/chrome/browser/reader_mode/model/reader_mode_metrics_helper.h"
 #import "ios/chrome/browser/reader_mode/model/reader_mode_scroll_anchor_java_script_feature.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
@@ -39,6 +44,13 @@
 #import "net/base/apple/url_conversions.h"
 
 namespace {
+
+base::TimeDelta ReaderModeDistillationTimeout() {
+  return base::CommandLine::ForCurrentProcess()->HasSwitch(
+             switches::kForceReaderModeDistillationTimeout)
+             ? base::Seconds(0)
+             : kReaderModeDistillationTimeout;
+}
 
 bool IsTranslateEnabled(ChromeIOSTranslateClient* translate_client) {
   return translate_client && translate_client->GetTranslateManager()
@@ -248,33 +260,54 @@ void ReaderModeTabHelper::WebStateDestroyed(web::WebState* web_state) {
 
 void ReaderModeTabHelper::ReaderModeContentDidLoadData(
     ReaderModeContentTabHelper* reader_mode_content_tab_helper) {
+  // The blur overlay will be removed on Reading Mode animation completion,
+  // remove the precautionary timeout.
+  reader_mode_blur_timer_.Stop();
+
+  if (!active_) {
+    return;
+  }
+  metrics_helper_.RecordDataLoadCompleted();
+
   reader_mode_web_state_content_loaded_ = true;
   for (auto& observer : observers_) {
     observer.ReaderModeWebStateDidLoadContent(this,
                                               reader_mode_web_state_.get());
   }
 
-  infobars::InfoBarManager* manager =
-      InfoBarManagerImpl::FromWebState(web_state_.get());
-  if (manager) {
-    manager->RemoveAllInfoBars(/*animate=*/false);
+  // Create the Reader Mode infobar.
+  infobars::InfoBarManager* info_bar_manager =
+      InfoBarManagerImpl::FromWebState(web_state_);
+  if (info_bar_manager) {
+    std::unique_ptr<ReaderModeInfobarDelegate> delegate =
+        std::make_unique<ReaderModeInfobarDelegate>();
+    auto reader_mode_infobar = std::make_unique<InfoBarIOS>(
+        InfobarType::kInfobarTypeReaderMode, std::move(delegate),
+        /* skip_banner= */ true);
+    reader_mode_infobar->set_accepted(true);
+    info_bar_manager->AddInfoBar(std::move(reader_mode_infobar));
   }
 
+  // Ensure that any infobars created outside Reading Mode state are removed
+  // prior to creating new ones attached to the Reader mode web page.
+  RemoveTranslateInfobarIfExists(web_state_.get());
+
   // Apply translation to the page if it was applied on the original page.
-  if (IsReaderModeTranslationAvailable()) {
-    InfobarOverlayRequestInserter::FromWebState(web_state_.get())
-        ->SuppressNextInfobarOfType(InfobarType::kInfobarTypeTranslate);
-    if (source_translation_state_.is_original_source_translated) {
-      reader_mode_content_tab_helper->ActivateTranslateOnPage(
-          source_translation_state_.source_code,
-          source_translation_state_.target_code);
-    } else if (IsReaderModeBadgeSupportEnabled()) {
-      // TODO(crbug.com/463917509): Do not support auto-translate in Reading
-      // Mode if the user has explicitly disabled the setting.
-      language::IOSLanguageDetectionTabHelper::FromWebState(
-          reader_mode_web_state_.get())
-          ->StartLanguageDetection();
-    }
+  InfobarOverlayRequestInserter* infobar_overlay_request_inserter =
+      InfobarOverlayRequestInserter::FromWebState(web_state_.get());
+  if (infobar_overlay_request_inserter) {
+    infobar_overlay_request_inserter->SuppressNextInfobarOfType(
+        InfobarType::kInfobarTypeTranslate);
+  }
+
+  if (source_translation_state_.is_original_source_translated) {
+    reader_mode_content_tab_helper->ActivateTranslateOnPage(
+        source_translation_state_.source_code,
+        source_translation_state_.target_code);
+  } else {
+    language::IOSLanguageDetectionTabHelper::FromWebState(
+        reader_mode_web_state_.get())
+        ->StartLanguageDetection();
   }
 
   WebViewProxyTabHelper* tab_helper =
@@ -363,6 +396,7 @@ void ReaderModeTabHelper::PageDistillationCompleted(
       // Load the Reader mode content in the Reader mode content WebState.
       NSData* content_data = [NSData dataWithBytes:html.data()
                                             length:html.length()];
+      metrics_helper_.RecordDataLoadTriggered();
       ReaderModeContentTabHelper::FromWebState(reader_mode_web_state_.get())
           ->LoadContent(page_url, content_data);
     } else {
@@ -411,6 +445,12 @@ void ReaderModeTabHelper::CreateReaderModeContent(
             base::CallbackToBlock(
                 base::BindOnce(&ReaderModeTabHelper::CompleteDistillation,
                                weak_ptr_factory_.GetWeakPtr(), access_point))];
+    // If Reading Mode distillation has not completed by the expected timeout,
+    // remove the blur overlay to avoid blocking the app UI.
+    reader_mode_blur_timer_.Start(
+        FROM_HERE, base::Seconds(0),
+        base::BindOnce(&ReaderModeTabHelper::HideBlurOverlay,
+                       weak_ptr_factory_.GetWeakPtr()));
   } else {
     CompleteDistillation(access_point);
   }
@@ -435,30 +475,48 @@ void ReaderModeTabHelper::DestroyReaderModeContent(
   distiller_viewer_.reset();
 
   // Remove blur effect on the web page if available.
+  reader_mode_blur_timer_.Stop();
   [reader_mode_handler_ hideReaderModeBlurOverlay];
+
+  // Remove the Reader Mode infobar if it exists.
+  infobars::InfoBarManager* infobar_manager =
+      InfoBarManagerImpl::FromWebState(web_state_);
+  if (infobar_manager) {
+    for (infobars::InfoBar* infobar : infobar_manager->infobars()) {
+      if (infobar->delegate()->GetIdentifier() ==
+          infobars::InfoBarDelegate::READER_MODE_INFOBAR_DELEGATE_IOS) {
+        infobar_manager->RemoveInfoBar(infobar);
+        break;
+      }
+    }
+  }
 
   // Ensure that any infobars created in Reading Mode state are removed prior
   // to creating new ones attached to the original web page.
   RemoveTranslateInfobarIfExists(web_state_.get());
 
-  // Display translation badge if a translation was applied before or
-  // during Reading Mode activation for active tabs.
-  if (IsReaderModeTranslationAvailable()) {
-    switch (reason) {
-      case ReaderModeDeactivationReason::kNavigationDeactivated:
-      case ReaderModeDeactivationReason::kUserDeactivated: {
-        ChromeIOSTranslateClient* translate_client =
-            ChromeIOSTranslateClient::FromWebState(web_state_.get());
-        ApplyLanguageSettingsFromClient(translate_client);
-        break;
-      }
-      case ReaderModeDeactivationReason::kDistillationFailureDeactivated: {
-        ApplyLanguageSettingsFromSource();
-        break;
-      }
-      case ReaderModeDeactivationReason::kHostTabDestructionDeactivated: {
-        break;
-      }
+  switch (reason) {
+    case ReaderModeDeactivationReason::kNavigationDeactivated: {
+      // Do not apply Reading Mode translation to user navigations. In the case
+      // where the navigation URL is the same as the Reading Mode URL this will
+      // reset the translation to the default state.
+      break;
+    }
+    case ReaderModeDeactivationReason::kUserDeactivated: {
+      // Display translation badge if a translation was applied before or
+      // during Reading Mode activation.
+      ChromeIOSTranslateClient* translate_client =
+          ChromeIOSTranslateClient::FromWebState(web_state_.get());
+      ApplyLanguageSettingsFromClient(translate_client);
+      break;
+    }
+    case ReaderModeDeactivationReason::kDistillationFailureDeactivated: {
+      // Keep the settings the same as the original page.
+      ApplyLanguageSettingsFromSource();
+      break;
+    }
+    case ReaderModeDeactivationReason::kHostTabDestructionDeactivated: {
+      break;
     }
   }
   source_translation_state_ = {};
@@ -523,26 +581,27 @@ void ReaderModeTabHelper::ApplyLanguageSettingsFromSource() {
   }
 }
 
+void ReaderModeTabHelper::HideBlurOverlay() {
+  [reader_mode_handler_ hideReaderModeBlurOverlay];
+}
+
 void ReaderModeTabHelper::CompleteDistillation(
     ReaderModeAccessPoint access_point) {
-  if (IsReaderModeTranslationAvailable()) {
-    ChromeIOSTranslateClient* translate_client =
-        ChromeIOSTranslateClient::FromWebState(web_state_.get());
-    TranslationState source_translation_state;
-    source_translation_state.is_original_source_translated =
-        IsTranslateEnabled(translate_client);
-    if (source_translation_state.is_original_source_translated) {
-      source_translation_state.source_code =
-          GetSourceLanguageCode(translate_client);
-      source_translation_state.target_code =
-          GetTargetLanguageCode(translate_client, web_state_.get());
-      if (base::FeatureList::IsEnabled(
-              kEnableReaderModeTranslationWithInfobar)) {
-        translate_client->GetTranslateManager()->RevertTranslation();
-      }
+  ChromeIOSTranslateClient* translate_client =
+      ChromeIOSTranslateClient::FromWebState(web_state_.get());
+  TranslationState source_translation_state;
+  source_translation_state.is_original_source_translated =
+      IsTranslateEnabled(translate_client);
+  if (source_translation_state.is_original_source_translated) {
+    source_translation_state.source_code =
+        GetSourceLanguageCode(translate_client);
+    source_translation_state.target_code =
+        GetTargetLanguageCode(translate_client, web_state_.get());
+    if (base::FeatureList::IsEnabled(kEnableReaderModeTranslationWithInfobar)) {
+      translate_client->GetTranslateManager()->RevertTranslation();
     }
-    source_translation_state_ = source_translation_state;
   }
+  source_translation_state_ = source_translation_state;
 
   std::unique_ptr<ReaderModeDistillerPage> distiller_page =
       std::make_unique<ReaderModeDistillerPage>(web_state_);

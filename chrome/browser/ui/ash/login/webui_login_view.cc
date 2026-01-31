@@ -45,7 +45,6 @@
 #include "content/public/browser/web_ui.h"
 #include "extensions/browser/view_type_utils.h"
 #include "extensions/common/mojom/view_type.mojom.h"
-#include "third_party/blink/public/common/input/web_input_event.h"
 #include "third_party/blink/public/common/renderer_preferences/renderer_preferences.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -71,7 +70,6 @@ using ::web_modal::WebContentsModalDialogManager;
 
 void InitializeWebView(views::WebView* web_view) {
   WebContents* web_contents = web_view->GetWebContents();
-
   views::WebContentsSetBackgroundColor::CreateForWebContentsWithColor(
       web_contents, SK_ColorTRANSPARENT);
 
@@ -84,6 +82,9 @@ void InitializeWebView(views::WebView* web_view) {
   BrowserController::GetInstance()->CreateAutofillClientForWebContents(
       web_contents);
   ChromePasswordManagerClient::CreateForWebContents(web_contents);
+
+  // Disable pinch zooming.
+  web_contents->SetIgnoreZoomGestures(true);
 
 #if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
   // Create the password reuse detection manager.
@@ -347,13 +348,6 @@ bool WebUILoginView::CheckMediaAccessPermission(
     blink::mojom::MediaStreamType type) {
   return MediaCaptureDevicesDispatcher::GetInstance()
       ->CheckMediaAccessPermission(render_frame_host, security_origin, type);
-}
-
-bool WebUILoginView::PreHandleGestureEvent(
-    content::WebContents* source,
-    const blink::WebGestureEvent& event) {
-  // Disable pinch zooming.
-  return blink::WebInputEvent::IsPinchGestureEventType(event.GetType());
 }
 
 void WebUILoginView::OnFocusLeavingSystemTray(bool reverse) {

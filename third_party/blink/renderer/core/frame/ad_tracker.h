@@ -50,6 +50,8 @@ class CORE_EXPORT AdTracker : public GarbageCollected<AdTracker> {
 
     // history.pushState
     kHistoryPushState,
+    // Node.prototype.appendChild
+    kNodeAppendChild
   };
 
   struct NoProvenance {};
@@ -64,7 +66,11 @@ class CORE_EXPORT AdTracker : public GarbageCollected<AdTracker> {
   using AdProvenance =
       std::variant<NoProvenance, subresource_filter::ScopedRule, int>;
 
-  enum class StackType { kBottomOnly, kBottomAndTop };
+  // Stack scans of `kBottomOnly` will only scan the bottom frame of the sync
+  // stack and also include async frames. `kTopOnly` will scan the top
+  // frame, and fall back on the async stack if there is no top frame (e.g.,
+  // executing a continuation in blink).
+  enum class StackType { kBottomOnly, kTopOnly };
 
   struct AdScriptAncestry {
     // A chain of `AdScriptIdentifier`s representing the ancestry of an ad
@@ -85,7 +91,7 @@ class CORE_EXPORT AdTracker : public GarbageCollected<AdTracker> {
 
   static bool IsAdScriptExecutingInDocument(
       Document* document,
-      StackType stack_type = StackType::kBottomAndTop);
+      StackType stack_type = StackType::kTopOnly);
 
   // Instrumenting methods.
   // Called when a script module or script gets executed from native code.
@@ -126,9 +132,9 @@ class CORE_EXPORT AdTracker : public GarbageCollected<AdTracker> {
   // identified as an ad resource, if the current ExecutionContext is a known ad
   // execution context, or if the script at the top of isolate's
   // stack is ad script. Whether to look at just the bottom of the
-  // stack or the top and bottom is indicated by `stack_type`. kBottomAndTop is
-  // generally best as it catches more ads, but if you're calling very
-  // frequently then consider just the bottom of the stack for performance sake.
+  // stack or the top and bottom is indicated by `stack_type`. `kTopOnly` is
+  // generally best as it catches more ads but you may want to call
+  // `kBottomOnly` if you truly only care about that frame.
   //
   // When `ignore_monkey_patch` is specified, a heuristic is enabled to prevent
   // false positives from monkey patching. If the script at the top of the stack
@@ -224,9 +230,12 @@ class CORE_EXPORT AdTracker : public GarbageCollected<AdTracker> {
   // `std::nullopt` if there isn't one.
   std::optional<int> bottom_most_ad_script_;
 
-  // Indicates the bottom-most ad script on the async stack or `std::nullopt`
-  // if there isn't one.
-  std::optional<AdScriptIdentifier> bottom_most_async_ad_script_;
+  // The current async script stack. The optional is set for ad-related async
+  // events and nullopt otherwise. We prefer to calculate ad relatedness from
+  // the synchronous stack, but if there is no synchronous stack to speak of
+  // (e.g., the native code is run asynchronously) then fall back on the last
+  // async stack frame's status.
+  Vector<std::optional<AdScriptIdentifier>> async_script_stack_;
 
   // Maps the URL of a detected ad script to its AdProvenance.
   //
@@ -248,9 +257,6 @@ class CORE_EXPORT AdTracker : public GarbageCollected<AdTracker> {
   // cleared when the task completes. Used by the `ignore_monkey_patch`
   // heuristic.
   HashSet<MonkeyPatchableApi> ad_monkey_patch_calls_in_scope_;
-
-  // The number of ad-related async tasks currently running in the stack.
-  int running_ad_async_tasks_ = 0;
 
   // The number of sync tasks currently running in the stack.
   int running_sync_tasks_ = 0;

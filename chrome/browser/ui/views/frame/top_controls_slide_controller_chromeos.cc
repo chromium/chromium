@@ -36,8 +36,22 @@
 #include "ui/display/screen.h"
 #include "ui/display/tablet_state.h"
 #include "ui/views/controls/native/native_view_host.h"
+#include "ui/views/widget/widget.h"
 
 namespace {
+
+// Handles the case where the layer may be in a transitional state during
+// layout. See crbug.com/470873053.
+void MaybeSetMasksToBounds(views::Widget* widget, bool masks_to_bounds) {
+  if (!widget) {
+    return;
+  }
+  ui::Layer* layer = widget->GetLayer();
+  if (!layer || !layer->GetCompositor()) {
+    return;
+  }
+  layer->SetMasksToBounds(masks_to_bounds);
+}
 
 bool IsSpokenFeedbackEnabled() {
   auto* accessibility_manager = ash::AccessibilityManager::Get();
@@ -510,10 +524,13 @@ void TopControlsSlideControllerChromeOS::OnTabStripModelChanged(
   UpdateBrowserControlsStateShown(new_active_contents, /*animate=*/true);
 }
 
-void TopControlsSlideControllerChromeOS::SetTabNeedsAttentionAt(
+void TopControlsSlideControllerChromeOS::OnTabChangedAt(
+    tabs::TabInterface* tab,
     int index,
-    bool attention) {
-  UpdateBrowserControlsStateShown(/*web_contents=*/nullptr, /*animate=*/true);
+    TabChangeType change_type) {
+  if (change_type == TabChangeType::kAttentionOnly) {
+    UpdateBrowserControlsStateShown(/*web_contents=*/nullptr, /*animate=*/true);
+  }
 }
 
 void TopControlsSlideControllerChromeOS::OnDisplayMetricsChanged(
@@ -777,10 +794,8 @@ void TopControlsSlideControllerChromeOS::OnBeginSliding() {
   // deal with layout being performed during the slide.
   root_view->GetWidget()->LayoutRootViewIfNecessary();
 
-  // We don't want anything to show outside the browser window's bounds. Do not
-  // reuse the pointer to the layer of the widget as the layer may be
-  // recreated. (crbug.com/443811562)
-  browser_widget->GetLayer()->SetMasksToBounds(true);
+  // We don't want anything to show outside the browser window's bounds.
+  MaybeSetMasksToBounds(browser_widget, true);
 }
 
 void TopControlsSlideControllerChromeOS::OnEndSliding() {
@@ -846,9 +861,8 @@ void TopControlsSlideControllerChromeOS::OnEndSliding() {
 
   // If the top controls are fully hidden, then the top container is laid out
   // such that its bounds are outside the window. The window should continue to
-  // mask anything outside its bounds. Do not reuse the pointer to the layer of
-  // the widget as the layer may be recreated. (crbug.com/443811562)
-  browser_widget->GetLayer()->SetMasksToBounds(shown_ratio_ < 1.f);
+  // mask anything outside its bounds.
+  MaybeSetMasksToBounds(browser_widget, shown_ratio_ < 1.f);
 }
 
 void TopControlsSlideControllerChromeOS::

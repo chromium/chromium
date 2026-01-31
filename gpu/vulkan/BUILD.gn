@@ -132,6 +132,7 @@ if (enable_vulkan) {
       "//base",
       "//components/crash/core/common:crash_key",
       "//components/viz/common/resources:shared_image_format",
+      "//third_party/re2",
       "//third_party/vulkan_memory_allocator",
       "//ui/base:ozone_buildflags",
       "//ui/gfx",
@@ -200,7 +201,7 @@ if (enable_vulkan) {
     deps = [
       "//ui/base:features",
       "//ui/gfx",
-      "//ui/gfx:native_widget_types",
+      "//ui/gfx:native_ui_types",
     ]
 
     if (use_ozone) {
@@ -255,7 +256,7 @@ if (enable_vulkan) {
         "//testing/gtest",
         "//ui/events/platform",
         "//ui/gfx",
-        "//ui/gfx:native_widget_types",
+        "//ui/gfx:native_ui_types",
         "//ui/gfx:test_support",
         "//ui/gfx/geometry",
       ]

@@ -21,8 +21,7 @@ using base::android::JavaRef;
 
 namespace picture_in_picture {
 
-jboolean
-JNI_AutoPictureInPicturePermissionController_IsAutoPictureInPictureInUse(
+bool JNI_AutoPictureInPicturePermissionController_IsAutoPictureInPictureInUse(
     JNIEnv* env,
     content::WebContents* web_contents) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
@@ -40,7 +39,7 @@ JNI_AutoPictureInPicturePermissionController_IsAutoPictureInPictureInUse(
          tab_helper->IsInAutoPictureInPicture();
 }
 
-jint JNI_AutoPictureInPicturePermissionController_GetPermissionStatus(
+int32_t JNI_AutoPictureInPicturePermissionController_GetPermissionStatus(
     JNIEnv* env,
     content::WebContents* web_contents) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
@@ -61,7 +60,7 @@ jint JNI_AutoPictureInPicturePermissionController_GetPermissionStatus(
 void JNI_AutoPictureInPicturePermissionController_SetPermissionStatus(
     JNIEnv* env,
     content::WebContents* web_contents,
-    jint status) {
+    int32_t status) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   if (!web_contents) {
     // If the WebContents is gone, we cannot get the Profile to save the

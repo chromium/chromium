@@ -717,7 +717,7 @@ JNI_AppBannerManager_GetInstallableWebAppManifestId(
 }
 
 // static
-static jboolean JNI_AppBannerManager_IsProbablyPromotable(
+static bool JNI_AppBannerManager_IsProbablyPromotable(
     JNIEnv* env,
     const base::android::JavaRef<jobject>& java_web_contents) {
   auto* manager =
@@ -737,15 +737,15 @@ static void JNI_AppBannerManager_IgnoreChromeChannelForTesting(JNIEnv*) {
 // static
 static void JNI_AppBannerManager_SetDaysAfterDismissAndIgnoreToTrigger(
     JNIEnv* env,
-    jint dismiss_days,
-    jint ignore_days) {
+    int32_t dismiss_days,
+    int32_t ignore_days) {
   AppBannerSettingsHelper::SetDaysAfterDismissAndIgnoreToTrigger(dismiss_days,
                                                                  ignore_days);
 }
 
 // static
 static void JNI_AppBannerManager_SetTimeDeltaForTesting(JNIEnv* env,
-                                                        jint days) {
+                                                        int32_t days) {
   AppBannerManager::SetTimeDeltaForTesting(days);
 }
 
@@ -753,7 +753,7 @@ static void JNI_AppBannerManager_SetTimeDeltaForTesting(JNIEnv* env,
 static void
 JNI_AppBannerManager_SetOverrideSegmentationResultForTesting(  // IN-TEST
     JNIEnv* env,
-    jboolean show) {
+    bool show) {
   AmbientBadgeManager::SetOverrideSegmentationResultForTesting(show);
 }
 

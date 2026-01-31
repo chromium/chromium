@@ -35,13 +35,13 @@ std::string OptChangeRequest::GetRequestContentType() {
 }
 
 std::string OptChangeRequest::GetRequestContent() {
-  base::Value::Dict request_dict;
-  base::Value::Dict context;
+  base::DictValue request_dict;
+  base::DictValue context;
   context.Set("language_code", request_details_.app_locale);
   context.Set("billable_service", kUnmaskPaymentMethodBillableServiceNumber);
   request_dict.Set("context", std::move(context));
 
-  base::Value::Dict chrome_user_context;
+  base::DictValue chrome_user_context;
   chrome_user_context.Set("full_sync_enabled", full_sync_enabled_);
   request_dict.Set("chrome_user_context", std::move(chrome_user_context));
 
@@ -62,7 +62,7 @@ std::string OptChangeRequest::GetRequestContent() {
   request_dict.Set("reason", std::move(reason));
 
   if (request_details_.fido_authenticator_response.has_value()) {
-    base::Value::Dict fido_authentication_info;
+    base::DictValue fido_authentication_info;
 
     fido_authentication_info.Set(
         "fido_authenticator_response",
@@ -82,7 +82,7 @@ std::string OptChangeRequest::GetRequestContent() {
   return request_content;
 }
 
-void OptChangeRequest::ParseResponse(const base::Value::Dict& response) {
+void OptChangeRequest::ParseResponse(const base::DictValue& response) {
   const auto* fido_authentication_info =
       response.FindDict("fido_authentication_info");
   if (!fido_authentication_info)

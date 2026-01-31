@@ -674,6 +674,7 @@ export class InfoViewElement extends CustomElement {
       'skia_graphite': 'Skia Graphite',
       'webnn': 'WebNN',
       'trees_in_viz': 'TreesInViz',
+      'webgpu_on_vk_via_gl_interop': 'WebGPU interop',
     };
 
     const statusMap: Record<string, {label: string, class: string}> = {

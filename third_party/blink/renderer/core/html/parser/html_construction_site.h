@@ -101,6 +101,7 @@ class Element;
 class HTMLFormElement;
 class HTMLParserReentryPermit;
 class PartRoot;
+class StreamingSanitizer;
 
 class HTMLConstructionSite final {
   DISALLOW_NEW();
@@ -113,7 +114,8 @@ class HTMLConstructionSite final {
                        ParserContentPolicy,
                        ContainerNode*,
                        Element*,
-                       CustomElementRegistry*);
+                       CustomElementRegistry*,
+                       StreamingSanitizer*);
   HTMLConstructionSite(const HTMLConstructionSite&) = delete;
   HTMLConstructionSite& operator=(const HTMLConstructionSite&) = delete;
   ~HTMLConstructionSite();
@@ -225,7 +227,7 @@ class HTMLConstructionSite final {
   }
 
   void FinishedTemplateElement(DocumentFragment* content_fragment);
-  void PreprocessInsertionTask(HTMLConstructionSiteTask&);
+  bool PreprocessInsertionTask(HTMLConstructionSiteTask&);
 
   static CustomElementDefinition* LookUpCustomElementDefinition(
       Document&,
@@ -393,6 +395,8 @@ class HTMLConstructionSite final {
   // The custom element registry used to parse html and grab definition from
   // when custom elements are encountered.
   Member<CustomElementRegistry> custom_element_registry_;
+
+  Member<StreamingSanitizer> sanitizer_;
 };
 
 }  // namespace blink

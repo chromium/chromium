@@ -10,7 +10,8 @@ import android.view.View.OnAttachStateChangeListener;
 import android.widget.FrameLayout.LayoutParams;
 
 import org.chromium.base.lifetime.Destroyable;
-import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.supplier.ObservableSuppliers;
+import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -31,8 +32,8 @@ public abstract class BasicNativePage implements NativePage, OnAttachStateChange
     private final int mBackgroundColor;
     private @Nullable BackPressHandler mBackPressHandler;
     private @Nullable BackPressHandlerRegistry mRegistry;
-    private final ObservableSupplierImpl<Rect> mBrowserControlsMarginsSupplier =
-            new ObservableSupplierImpl<>();
+    private final SettableMonotonicObservableSupplier<Rect> mBrowserControlsMarginsSupplier =
+            ObservableSuppliers.createMonotonic();
     private @Nullable Destroyable mMarginsAdapter;
 
     private @Nullable View mView;

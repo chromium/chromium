@@ -243,6 +243,17 @@ chromium-metrics-reviews@google.com.
              is system apps and dialogs"/>
 </enum>
 
+<!-- LINT.IfChange(DragAndDropSurface) -->
+
+<enum name="DragAndDropSurface">
+  <summary>The surface in which a drag and drop started and finished.</summary>
+  <int value="0" label="kDragBrowserDropSamePage"/>
+  <int value="1" label="kDragBrowserDropOutOfPage"/>
+  <int value="2" label="kDragSystemDropBrowser"/>
+</enum>
+
+<!-- LINT.ThenChange(//content/browser/web_contents/web_contents_view_aura.cc:DragAndDropSurface) -->
+
 <!-- LINT.IfChange(DragAndDropToolType) -->
 
 <enum name="DragAndDropToolType">

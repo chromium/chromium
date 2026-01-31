@@ -44,7 +44,7 @@ void PasswordManagerErrorMessageHelperBridgeImpl::
 
   Java_PasswordManagerErrorMessageHelperBridge_startTrustedVaultKeyRetrievalFlow(
       base::android::AttachCurrentThread(), window_android->GetJavaObject(),
-      profile->GetJavaObject(), static_cast<jint>(user_action_trigger));
+      profile->GetJavaObject(), static_cast<int32_t>(user_action_trigger));
 }
 
 bool PasswordManagerErrorMessageHelperBridgeImpl::ShouldShowSignInErrorUI(

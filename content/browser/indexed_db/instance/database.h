@@ -43,7 +43,6 @@ struct IndexedDBDataLossInfo;
 class Connection;
 class DatabaseCallbacks;
 class Transaction;
-enum class CursorType;
 
 // This class maps to a single IDB database:
 // https://www.w3.org/TR/IndexedDB/#database
@@ -134,7 +133,7 @@ class CONTENT_EXPORT Database {
   Status GetOperation(int64_t object_store_id,
                       int64_t index_id,
                       blink::IndexedDBKeyRange key_range,
-                      indexed_db::CursorType cursor_type,
+                      bool key_only,
                       blink::mojom::IDBDatabase::GetCallback callback,
                       Transaction* transaction);
 
@@ -150,7 +149,7 @@ class CONTENT_EXPORT Database {
     int64_t index_id;
     blink::IndexedDBKeyRange key_range;
     blink::mojom::IDBCursorDirection direction;
-    indexed_db::CursorType cursor_type;
+    bool key_only;
     blink::mojom::IDBTaskType task_type;
     blink::mojom::IDBDatabase::OpenCursorCallback callback;
   };
@@ -316,6 +315,10 @@ class CONTENT_EXPORT Database {
       Transaction* current_transaction,
       std::vector<PartitionedLockManager::PartitionedLockRequest>&
           lock_requests);
+
+  // Returns `nullptr` if the object store does not exist.
+  const blink::IndexedDBObjectStoreMetadata* GetObjectStoreMetadataIfExists(
+      int64_t object_store_id) const;
 
   // Gets metadata for the given object store ID, asserting that the object
   // store exists.

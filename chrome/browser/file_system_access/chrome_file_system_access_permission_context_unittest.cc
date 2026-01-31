@@ -1597,7 +1597,7 @@ TEST_F(ChromeFileSystemAccessPermissionContextTest,
   // Create a placeholder grant for testing, containing a
   // 'kDeprecatedPermissionLastUsedTimeKey' key, which should render the
   // permission object invalid.
-  base::Value::Dict grant;
+  base::DictValue grant;
   grant.Set(ChromeFileSystemAccessPermissionContext::kPermissionPathKey,
             FilePathToValue(kTestPathInfo.path));
   grant.Set(kPermissionIsDirectoryKey, true);

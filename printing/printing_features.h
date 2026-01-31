@@ -18,9 +18,6 @@ namespace printing::features {
 
 #if BUILDFLAG(IS_CHROMEOS)
 COMPONENT_EXPORT(PRINTING_BASE)
-BASE_DECLARE_FEATURE(kAddPrinterViaPrintscanmgr);
-
-COMPONENT_EXPORT(PRINTING_BASE)
 BASE_DECLARE_FEATURE(kApiPrintingMarginsAndScale);
 #endif  // BUILDFLAG(IS_CHROMEOS)
 

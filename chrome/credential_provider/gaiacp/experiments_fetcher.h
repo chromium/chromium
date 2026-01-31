@@ -50,7 +50,7 @@ class ExperimentsFetcher {
   HRESULT FetchAndStoreExperimentsInternal(
       const std::wstring& sid,
       const std::string& access_token,
-      std::unique_ptr<base::Value::Dict> request_dict);
+      std::unique_ptr<base::DictValue> request_dict);
 };
 
 }  // namespace credential_provider

@@ -14,7 +14,6 @@ import 'chrome://resources/ash/common/cr_elements/policy/cr_tooltip_icon.js';
 import '../settings_shared.css.js';
 import './channel_switcher_dialog.js';
 import './consumer_auto_update_toggle_dialog.js';
-import './edit_hostname_dialog.js';
 
 import {PrefsMixin} from '/shared/settings/prefs/prefs_mixin.js';
 import {getInstance as getAnnouncerInstance} from 'chrome://resources/ash/common/cr_elements/cr_a11y_announcer/cr_a11y_announcer.js';
@@ -35,9 +34,6 @@ import {routes} from '../router.js';
 import type {AboutPageBrowserProxy, ChannelInfo, VersionInfo} from './about_page_browser_proxy.js';
 import {AboutPageBrowserProxyImpl, browserChannelToI18nId} from './about_page_browser_proxy.js';
 import {getTemplate} from './detailed_build_info_subpage.html.js';
-import type {DeviceNameBrowserProxy, DeviceNameMetadata} from './device_name_browser_proxy.js';
-import {DeviceNameBrowserProxyImpl} from './device_name_browser_proxy.js';
-import {DeviceNameState} from './device_name_util.js';
 
 declare global {
   interface HTMLElementEventMap {
@@ -65,13 +61,9 @@ export class SettingsDetailedBuildInfoSubpageElement extends
 
       channelInfo_: Object,
 
-      deviceNameMetadata_: Object,
-
       currentlyOnChannelText_: String,
 
       showChannelSwitcherDialog_: Boolean,
-
-      showEditHostnameDialog_: Boolean,
 
       canChangeChannel_: Boolean,
 
@@ -87,14 +79,6 @@ export class SettingsDetailedBuildInfoSubpageElement extends
       shouldHideEolInfo_: {
         type: Boolean,
         computed: 'computeShouldHideEolInfo_(eolMessageWithMonthAndYear)',
-      },
-
-      isHostnameSettingEnabled_: {
-        type: Boolean,
-        value() {
-          return loadTimeData.getBoolean('isHostnameSettingEnabled');
-        },
-        readOnly: true,
       },
 
       /**
@@ -149,35 +133,29 @@ export class SettingsDetailedBuildInfoSubpageElement extends
   // DeepLinkingMixin override
   override supportedSettingIds = new Set<Setting>([
     Setting.kChangeChromeChannel,
-    Setting.kChangeDeviceName,
     Setting.kCopyDetailedBuildInfo,
   ]);
 
   private versionInfo_: VersionInfo;
   private channelInfo_: ChannelInfo;
-  private deviceNameMetadata_: DeviceNameMetadata;
   private currentlyOnChannelText_: string;
   private showChannelSwitcherDialog_: boolean;
-  private showEditHostnameDialog_: boolean;
   private canChangeChannel_: boolean;
   private isManagedAutoUpdateEnabled_: boolean;
   private showConsumerAutoUpdateToggleDialog_: boolean;
   private eolMessageWithMonthAndYear: string;
   private shouldHideEolInfo_: boolean;
-  private isHostnameSettingEnabled_: boolean;
   private isManaged_: boolean;
   private isConsumerAutoUpdateTogglingAllowed_: boolean;
   private showConsumerAutoUpdateToggle_: boolean;
   private showManagedAutoUpdateToggle_: boolean;
 
   private aboutPageBrowserProxy_: AboutPageBrowserProxy;
-  private deviceNameBrowserProxy_: DeviceNameBrowserProxy;
 
   constructor() {
     super();
 
     this.aboutPageBrowserProxy_ = AboutPageBrowserProxyImpl.getInstance();
-    this.deviceNameBrowserProxy_ = DeviceNameBrowserProxyImpl.getInstance();
   }
 
   override ready(): void {
@@ -204,13 +182,6 @@ export class SettingsDetailedBuildInfoSubpageElement extends
     });
 
     this.updateChannelInfo_();
-
-    if (this.isHostnameSettingEnabled_) {
-      this.addWebUiListener(
-          'settings.updateDeviceNameMetadata',
-          (data: DeviceNameMetadata) => this.updateDeviceNameMetadata_(data));
-      this.deviceNameBrowserProxy_.notifyReadyForDeviceName();
-    }
   }
 
   override currentRouteChanged(route: Route, _oldRoute?: Route): void {
@@ -257,58 +228,6 @@ export class SettingsDetailedBuildInfoSubpageElement extends
     });
   }
 
-  private updateDeviceNameMetadata_(data: DeviceNameMetadata): void {
-    this.deviceNameMetadata_ = data;
-  }
-
-  private getDeviceNameText_(): string {
-    if (!this.deviceNameMetadata_) {
-      return '';
-    }
-
-    return this.deviceNameMetadata_.deviceName;
-  }
-
-  private getDeviceNameEditButtonA11yDescription_(): string {
-    if (!this.deviceNameMetadata_) {
-      return '';
-    }
-
-    return this.i18n(
-        'aboutDeviceNameEditBtnA11yDescription', this.getDeviceNameText_());
-  }
-
-  private canEditDeviceName_(): boolean {
-    if (!this.deviceNameMetadata_) {
-      return false;
-    }
-
-    return this.deviceNameMetadata_.deviceNameState ===
-        DeviceNameState.CAN_BE_MODIFIED;
-  }
-
-  private shouldShowPolicyIndicator_(): boolean {
-    return this.getDeviceNameIndicatorType_() !== CrPolicyIndicatorType.NONE;
-  }
-
-  private getDeviceNameIndicatorType_(): string {
-    if (!this.deviceNameMetadata_) {
-      return CrPolicyIndicatorType.NONE;
-    }
-
-    if (this.deviceNameMetadata_.deviceNameState ===
-        DeviceNameState.CANNOT_BE_MODIFIED_BECAUSE_OF_POLICIES) {
-      return CrPolicyIndicatorType.DEVICE_POLICY;
-    }
-
-    if (this.deviceNameMetadata_.deviceNameState ===
-        DeviceNameState.CANNOT_BE_MODIFIED_BECAUSE_NOT_DEVICE_OWNER) {
-      return CrPolicyIndicatorType.OWNER;
-    }
-
-    return CrPolicyIndicatorType.NONE;
-  }
-
   private getChangeChannelIndicatorSourceName_(canChangeChannel: boolean):
       string {
     if (canChangeChannel) {
@@ -338,11 +257,6 @@ export class SettingsDetailedBuildInfoSubpageElement extends
   private onChangeChannelClick_(e: Event): void {
     e.preventDefault();
     this.showChannelSwitcherDialog_ = true;
-  }
-
-  private onEditHostnameClick_(e: Event): void {
-    e.preventDefault();
-    this.showEditHostnameDialog_ = true;
   }
 
   private copyToClipBoardEnabled_(): boolean {
@@ -416,12 +330,6 @@ export class SettingsDetailedBuildInfoSubpageElement extends
     const button = castExists(this.shadowRoot!.querySelector('cr-button'));
     focusWithoutInk(button);
     this.updateChannelInfo_();
-  }
-
-  private onEditHostnameDialogClosed_(): void {
-    this.showEditHostnameDialog_ = false;
-    const button = castExists(this.shadowRoot!.querySelector('cr-button'));
-    focusWithoutInk(button);
   }
 }
 

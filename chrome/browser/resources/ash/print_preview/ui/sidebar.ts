@@ -4,6 +4,7 @@
 
 import 'chrome://resources/cr_elements/cr_collapse/cr_collapse.js';
 import 'chrome://resources/cr_elements/cr_hidden_style.css.js';
+import 'chrome://resources/cr_elements/cr_scrollable.css.js';
 import 'chrome://resources/cr_elements/cr_shared_style.css.js';
 import 'chrome://resources/cr_elements/cr_shared_vars.css.js';
 import './advanced_options_settings.js';
@@ -26,13 +27,10 @@ import './print_preview_vars.css.js';
 import './scaling_settings.js';
 import '/strings.m.js';
 
-
-import {CrContainerShadowMixin} from 'chrome://resources/cr_elements/cr_container_shadow_mixin.js';
 import {WebUiListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {DarkModeMixin} from '../dark_mode_mixin.js';
-
 import type {Destination} from '../data/destination_cros.js';
 import type {Settings} from '../data/model.js';
 import type {Error} from '../data/state.js';
@@ -54,8 +52,8 @@ export interface PrintPreviewSidebarElement {
   };
 }
 
-const PrintPreviewSidebarElementBase = CrContainerShadowMixin(
-    WebUiListenerMixin(SettingsMixin(DarkModeMixin(PolymerElement))));
+const PrintPreviewSidebarElementBase =
+    WebUiListenerMixin(SettingsMixin(DarkModeMixin(PolymerElement)));
 
 export class PrintPreviewSidebarElement extends PrintPreviewSidebarElementBase {
   static get is() {

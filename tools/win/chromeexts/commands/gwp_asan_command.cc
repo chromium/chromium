@@ -316,12 +316,12 @@ HRESULT GwpAsanCommand::SymbolizeStackTrace(
     return E_FAIL;
   }
 
-  base::Value::List& address_list = symbolized_json->GetList();
+  base::ListValue& address_list = symbolized_json->GetList();
   if (address_list.empty()) {
     return E_FAIL;
   }
 
-  std::map<std::string, base::Value::List*> address_symbol_map;
+  std::map<std::string, base::ListValue*> address_symbol_map;
   for (size_t i = 0; i < address_list.size(); i++) {
     address_symbol_map[address_list[i].GetDict().Find("Address")->GetString()] =
         address_list[i].GetDict().FindList("Symbol");
@@ -334,7 +334,7 @@ HRESULT GwpAsanCommand::SymbolizeStackTrace(
       continue;
     }
 
-    base::Value::List& symbol_list =
+    base::ListValue& symbol_list =
         *(address_symbol_map[stack_offset_addresses[i]]);
     base::Value& symbol = symbol_list[symbol_list.size() - 1];
     const char* function_name =

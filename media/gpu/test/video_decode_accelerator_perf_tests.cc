@@ -2,17 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include <algorithm>
 #include <numeric>
 #include <vector>
 
 #include "base/base_switches.h"
 #include "base/command_line.h"
+#include "base/containers/span.h"
 #include "base/files/file_util.h"
 #include "base/json/json_writer.h"
 #include "base/memory/raw_ptr.h"
@@ -267,7 +263,7 @@ void PerformanceEvaluator::WriteMetricsToFile() const {
   output_folder_path = base::MakeAbsoluteFilePath(output_folder_path);
 
   // Write performance metrics to json.
-  base::Value::Dict metrics;
+  base::DictValue metrics;
   metrics.Set("FramesDecoded",
               base::checked_cast<int>(perf_metrics_.frames_decoded_));
   metrics.Set("TotalDurationMs",
@@ -295,14 +291,14 @@ void PerformanceEvaluator::WriteMetricsToFile() const {
               perf_metrics_.decode_time_stats_.percentile_75_ms_);
 
   // Write frame delivery times to json.
-  base::Value::List delivery_times;
+  base::ListValue delivery_times;
   for (double frame_delivery_time : frame_delivery_times_) {
     delivery_times.Append(frame_delivery_time);
   }
   metrics.Set("FrameDeliveryTimes", std::move(delivery_times));
 
   // Write frame decodes times to json.
-  base::Value::List decode_times;
+  base::ListValue decode_times;
   for (double frame_decode_time : frame_decode_times_) {
     decode_times.Append(frame_decode_time);
   }
@@ -319,9 +315,8 @@ void PerformanceEvaluator::WriteMetricsToFile() const {
   base::File metrics_output_file(
       base::FilePath(metrics_file_path),
       base::File::FLAG_CREATE_ALWAYS | base::File::FLAG_WRITE);
-  int bytes_written = metrics_output_file.WriteAtCurrentPos(
-      metrics_str.data(), metrics_str.length());
-  ASSERT_EQ(bytes_written, static_cast<int>(metrics_str.length()));
+  ASSERT_TRUE(metrics_output_file.WriteAtCurrentPosAndCheck(
+      base::as_byte_span(metrics_str)));
   VLOG(0) << "Wrote performance metrics to: " << metrics_file_path;
 }
 

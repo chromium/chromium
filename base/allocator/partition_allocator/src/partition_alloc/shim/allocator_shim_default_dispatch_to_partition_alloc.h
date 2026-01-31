@@ -23,44 +23,71 @@ class PA_COMPONENT_EXPORT(ALLOCATOR_SHIM) PartitionAllocMalloc {
   // allocators are effectively set in stone.
   static bool AllocatorConfigurationFinalized();
 
-  static partition_alloc::PartitionRoot* Allocator();
-  // May return |nullptr|, will never return the same pointer as |Allocator()|.
-  static partition_alloc::PartitionRoot* OriginalAllocator();
+  // TODO(crbug.com/477186304): Remove default value for `alloc_token`, once all
+  // callers are updated and verified to make configuration for all roots.
+  static partition_alloc::PartitionRoot* Allocator(
+      AllocToken alloc_token = kDefaultAllocToken);
+  // May return |nullptr|, will never return the same pointer as  |Allocator()|.
+  static partition_alloc::PartitionRoot* OriginalAllocator(
+      AllocToken alloc_token = kDefaultAllocToken);
 };
 
 template <partition_alloc::AllocFlags base_alloc_flags,
           partition_alloc::FreeFlags base_free_flags>
 class PartitionAllocFunctionsInternal {
  public:
-  static void* Malloc(size_t size, void* context);
+  static void* Malloc(size_t size, AllocToken alloc_token, void* context);
 
-  static void* MallocUnchecked(size_t size, void* context);
+  static void* MallocUnchecked(size_t size,
+                               AllocToken alloc_token,
+                               void* context);
 
-  static void* Calloc(size_t n, size_t size, void* context);
+  static void* Calloc(size_t n,
+                      size_t size,
+                      AllocToken alloc_token,
+                      void* context);
 
-  static void* CallocUnchecked(size_t n, size_t size, void* context);
+  static void* CallocUnchecked(size_t n,
+                               size_t size,
+                               AllocToken alloc_token,
+                               void* context);
 
-  static void* Memalign(size_t alignment, size_t size, void* context);
+  static void* Memalign(size_t alignment,
+                        size_t size,
+                        AllocToken alloc_token,
+                        void* context);
 
-  static void* AlignedAlloc(size_t size, size_t alignment, void* context);
+  static void* AlignedAlloc(size_t size,
+                            size_t alignment,
+                            AllocToken alloc_token,
+                            void* context);
 
   static void* AlignedAllocUnchecked(size_t size,
                                      size_t alignment,
+                                     AllocToken alloc_token,
                                      void* context);
 
   static void* AlignedRealloc(void* address,
                               size_t size,
                               size_t alignment,
+                              AllocToken alloc_token,
                               void* context);
 
   static void* AlignedReallocUnchecked(void* address,
                                        size_t size,
                                        size_t alignment,
+                                       AllocToken alloc_token,
                                        void* context);
 
-  static void* Realloc(void* address, size_t size, void* context);
+  static void* Realloc(void* address,
+                       size_t size,
+                       AllocToken alloc_token,
+                       void* context);
 
-  static void* ReallocUnchecked(void* address, size_t size, void* context);
+  static void* ReallocUnchecked(void* address,
+                                size_t size,
+                                AllocToken alloc_token,
+                                void* context);
 
   static void Free(void* object, void* context);
 

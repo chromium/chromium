@@ -112,7 +112,7 @@ class FakeContentAnalysisDelegate : public ContentAnalysisDelegate {
   // ContentAnalysisDelegate overrides.
   bool ShowFinalResultInDialog() override;
   bool CancelDialog() override;
-  safe_browsing::BinaryUploadService* GetBinaryUploadService() override;
+  BinaryUploadService* GetBinaryUploadService() override;
 
   // Fake upload callback for deep scanning. Virtual to be overridden by other
   // fakes.

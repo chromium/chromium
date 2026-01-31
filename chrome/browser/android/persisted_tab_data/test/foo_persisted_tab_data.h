@@ -22,8 +22,7 @@ class FooPersistedTabDataAndroid : public PersistedTabDataAndroid {
   // explicit definition, PersistedTabDataAndroid::UserDataKey() would be used,
   // which would lead to key collisions for all subclasses.
   static const void* UserDataKey() {
-    static const int id_marker = 2;
-    return &id_marker;
+    return &FooPersistedTabDataAndroid::kUserDataKey;
   }
 
   void SetValue(int32_t foo_value);

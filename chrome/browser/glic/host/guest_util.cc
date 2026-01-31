@@ -6,17 +6,20 @@
 
 #include "base/command_line.h"
 #include "base/metrics/histogram_functions.h"
+#include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/glic/glic_pref_names.h"
 #include "chrome/browser/glic/public/glic_keyed_service.h"
 #include "chrome/browser/glic/public/glic_keyed_service_factory.h"
 #include "chrome/browser/glic/widget/glic_window_controller.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/webui_url_constants.h"
-#include "components/guest_view/browser/guest_view_base.h"
+#include "components/guest_view/buildflags/buildflags.h"
 #include "components/language/core/common/language_util.h"
+#include "components/prefs/pref_service.h"
 #include "content/public/browser/navigation_handle.h"
-#include "extensions/browser/guest_view/web_view/web_view_guest.h"
+#include "content/public/browser/render_frame_host.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "net/base/url_util.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
@@ -26,6 +29,15 @@
 #include "third_party/skia/include/core/SkRegion.h"
 #include "ui/gfx/geometry/skia_conversions.h"
 #include "url/gurl.h"
+
+// Note: guest_view isn't available on android mobile yet. Once it is, we can
+// include these unconditionally.
+#if BUILDFLAG(ENABLE_GUEST_VIEW)
+#include "components/guest_view/browser/guest_view_base.h"
+#endif
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
+#include "extensions/browser/guest_view/web_view/web_view_guest.h"
+#endif
 
 namespace glic {
 
@@ -54,9 +66,11 @@ class WebviewWebContentsObserver : public content::WebContentsObserver,
     content::RenderFrameHost* frame = handle->GetRenderFrameHost();
     mojo::AssociatedRemote<blink::mojom::AutoplayConfigurationClient> client;
     frame->GetRemoteAssociatedInterfaces()->GetInterface(&client);
-    client->AddAutoplayFlags(GetGuestOrigin(),
+    Profile* profile =
+        Profile::FromBrowserContext(web_contents()->GetBrowserContext());
+    client->AddAutoplayFlags(GetGuestOrigin(profile),
                              blink::mojom::kAutoplayFlagForceAllow);
-    VLOG(1) << "Granted Glic AutoPlay for origin=\"" << GetGuestOrigin()
+    VLOG(1) << "Granted Glic AutoPlay for origin=\"" << GetGuestOrigin(profile)
             << "\" at " << (handle->IsInPrimaryMainFrame() ? "main " : "")
             << "RFH with url=\"" << handle->GetURL() << "\"";
     base::UmaHistogramEnumeration(
@@ -67,44 +81,19 @@ class WebviewWebContentsObserver : public content::WebContentsObserver,
   }
 };
 
-class WebviewWebContentsDelegate : public content::WebContentsDelegate,
-                                   public base::SupportsUserData::Data {
- public:
-  WebviewWebContentsDelegate(content::WebContents* contents,
-                             GlicWindowController* window_controller)
-      : contents_(contents), window_controller_(window_controller) {
-    contents_->SetDelegate(this);
-  }
-  ~WebviewWebContentsDelegate() override = default;
-
-  void DraggableRegionsChanged(
-      const std::vector<blink::mojom::DraggableRegionPtr>& regions,
-      content::WebContents* contents) override {
-    SkRegion sk_region;
-    for (const auto& region : regions) {
-      sk_region.op(
-          SkIRect::MakeLTRB(region->bounds.x(), region->bounds.y(),
-                            region->bounds.right(), region->bounds.bottom()),
-          region->draggable ? SkRegion::kUnion_Op : SkRegion::kDifference_Op);
-    }
-
-    window_controller_->SetDraggableRegion(sk_region);
-  }
-
- private:
-  raw_ptr<content::WebContents> contents_;
-  raw_ptr<GlicWindowController> window_controller_;
-};
-
 }  // namespace
 
-GURL GetGuestURL() {
+GURL GetGuestURL(Profile* profile) {
   auto* command_line = base::CommandLine::ForCurrentProcess();
   bool has_glic_guest_url = command_line->HasSwitch(::switches::kGlicGuestURL);
   GURL url =
       GURL(has_glic_guest_url
                ? command_line->GetSwitchValueASCII(::switches::kGlicGuestURL)
                : features::kGlicGuestURL.Get());
+
+  // If a preset url is enabled, use it instead.
+  MaybeApplyPresetGuestUrl(&url, profile);
+
   if (url.is_empty()) {
     LOG(ERROR) << "No glic guest url";
     return GURL();
@@ -115,8 +104,29 @@ GURL GetGuestURL() {
   return GetLocalizedGuestURL(url);
 }
 
-url::Origin GetGuestOrigin() {
-  return url::Origin::Create(GetGuestURL());
+url::Origin GetGuestOrigin(Profile* profile) {
+  return url::Origin::Create(GetGuestURL(profile));
+}
+
+void MaybeApplyPresetGuestUrl(GURL* guest_url, Profile* profile) {
+  if (base::FeatureList::IsEnabled(features::kGlicGuestUrlPresets)) {
+    switch (features::kGlicGuestUrlPresetType.Get()) {
+      case 0:
+        *guest_url = GURL(
+            profile->GetPrefs()->GetString(prefs::kGlicGuestUrlPresetAutopush));
+        break;
+      case 1:
+        *guest_url = GURL(
+            profile->GetPrefs()->GetString(prefs::kGlicGuestUrlPresetPreprod));
+        break;
+      case 2:
+        *guest_url = GURL(
+            profile->GetPrefs()->GetString(prefs::kGlicGuestUrlPresetProd));
+        break;
+      default:
+        break;
+    }
+  }
 }
 
 GURL GetLocalizedGuestURL(const GURL& guest_url) {
@@ -143,6 +153,12 @@ bool IsGlicWebUI(const content::WebContents* web_contents) {
 }
 
 bool OnGuestAdded(content::WebContents* guest_contents) {
+#if !BUILDFLAG(ENABLE_GUEST_VIEW) || !BUILDFLAG(ENABLE_EXTENSIONS_CORE)
+  // NEEDS_MOBILE_ANDROID_IMPL: Guest view is not yet enabled on mobile android.
+  // Also, we're using extensions::WebViewGuest, which will need refactored
+  // when we have a guest_view that doesn't use extensions.
+  return false;
+#else
   // Only handle the glic webview. Explicitly check the guest type here in case
   // glic's web content happens to load a mime handler.
   if (!extensions::WebViewGuest::FromWebContents(guest_contents)) {
@@ -160,13 +176,12 @@ bool OnGuestAdded(content::WebContents* guest_contents) {
   if (!service) {
     return false;
   }
+
+#if !BUILDFLAG(IS_ANDROID)
   if (base::FeatureList::IsEnabled(features::kGlicWindowDragRegions)) {
-    guest_contents->SetUserData(
-        "glic::WebviewWebContentsDelegate",
-        std::make_unique<WebviewWebContentsDelegate>(
-            guest_contents, &service->window_controller()));
     guest_contents->SetSupportsDraggableRegions(true);
   }
+#endif
 
   service->GuestAdded(guest_contents);
 
@@ -180,6 +195,7 @@ bool OnGuestAdded(content::WebContents* guest_contents) {
       "Glic.Host.WebView.AutoPlay",
       WebViewAutoPlayProgress::kWebContentsObserverRegistered);
   return true;
+#endif
 }
 
 }  // namespace glic

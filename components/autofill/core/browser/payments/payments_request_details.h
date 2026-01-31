@@ -42,7 +42,7 @@ struct UnmaskDetails {
   bool server_denotes_fido_eligible_but_not_opted_in = false;
   // Public Key Credential Request Options required for authentication.
   // https://www.w3.org/TR/webauthn/#dictdef-publickeycredentialrequestoptions
-  base::Value::Dict fido_request_options;
+  base::DictValue fido_request_options;
   // Set of credit cards ids that are eligible for FIDO Authentication.
   std::set<std::string> fido_eligible_card_ids;
 };
@@ -61,7 +61,7 @@ struct UnmaskRequestDetails {
   CreditCard card;
   std::string risk_data;
   CardUnmaskDelegate::UserProvidedUnmaskDetails user_response;
-  std::optional<base::Value::Dict> fido_assertion_info;
+  std::optional<base::DictValue> fido_assertion_info;
   std::u16string otp;
   // An opaque token used to chain consecutive payments requests together.
   std::string context_token;
@@ -111,7 +111,7 @@ struct UnmaskResponseDetails {
   std::string expiration_year;
   // Challenge required for authorizing user for FIDO authentication for
   // future card unmasking.
-  base::Value::Dict fido_request_options;
+  base::DictValue fido_request_options;
   // An opaque token used to logically chain consecutive UnmaskCard and
   // OptChange calls together.
   std::string card_authorization_token;
@@ -171,7 +171,7 @@ struct OptChangeRequestDetails {
   Reason reason;
   // Signature required for enrolling user into FIDO authentication for future
   // card unmasking.
-  std::optional<base::Value::Dict> fido_authenticator_response;
+  std::optional<base::DictValue> fido_authenticator_response;
   // An opaque token used to logically chain consecutive UnmaskCard and
   // OptChange calls together.
   std::string card_authorization_token;
@@ -188,10 +188,10 @@ struct OptChangeResponseDetails {
   std::optional<bool> user_is_opted_in;
   // Challenge required for enrolling user into FIDO authentication for future
   // card unmasking.
-  std::optional<base::Value::Dict> fido_creation_options;
+  std::optional<base::DictValue> fido_creation_options;
   // Challenge required for authorizing user for FIDO authentication for
   // future card unmasking.
-  std::optional<base::Value::Dict> fido_request_options;
+  std::optional<base::DictValue> fido_request_options;
 };
 
 // A collection of the information required to make local credit cards
@@ -508,7 +508,7 @@ struct GetBnplPaymentInstrumentForFetchingUrlRequestDetails {
   // The number for the Google Payments account this request is sent to.
   int64_t billing_customer_number = 0;
   // The instrument ID is used by the server to identify a specific BNPL issuer.
-  std::string_view instrument_id;
+  std::string instrument_id;
   // The fingerprint data for the user and the device.
   std::string_view risk_data;
   // The merchant domain (including the scheme).
@@ -574,7 +574,7 @@ struct GetDetailsForUpdateBnplPaymentInstrumentRequestDetails {
   // server.
   std::vector<ClientBehaviorConstants> client_behavior_signals;
   // The platform identifier for the instrument being updated.
-  int64_t instrument_id = 0;
+  std::string instrument_id;
   // The type of the GetDetailsForUpdateBnplPaymentInstrument request.
   GetDetailsForUpdateBnplPaymentInstrumentType type =
       GetDetailsForUpdateBnplPaymentInstrumentType::kUnknown;
@@ -613,7 +613,7 @@ struct UpdateBnplPaymentInstrumentRequestDetails {
   // The ID of the BNPL partner to be linked. i.e. Affirm
   std::string issuer_id;
   // The platform identifier for the instrument being updated.
-  int64_t instrument_id = 0;
+  std::string instrument_id;
   // An opaque token used to chain consecutive payments requests together.
   std::string context_token;
   // Client encoded risk data.

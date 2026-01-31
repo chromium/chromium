@@ -6,9 +6,11 @@
 
 #include "base/functional/callback_helpers.h"
 #include "base/no_destructor.h"
+#include "base/pickle.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
+#include "ui/base/clipboard/clipboard.h"
 
 namespace content {
 
@@ -112,6 +114,63 @@ const ui::ClipboardFormatType& SourceRFHTokenType() {
   static base::NoDestructor<ui::ClipboardFormatType> type(
       ui::ClipboardFormatType::CustomPlatformType(kTypeName));
   return *type;
+}
+
+ClipboardEndpoint GetSourceClipboardEndpoint(
+    const ui::DataTransferEndpoint* data_dst,
+    ui::ClipboardBuffer clipboard_buffer) {
+  auto* clipboard = ui::Clipboard::GetForCurrentThread();
+  std::string pickled_rfh_token;
+  clipboard->ReadData(SourceRFHTokenType(), data_dst, &pickled_rfh_token);
+
+  auto rfh_token = GlobalRenderFrameHostToken::FromPickle(
+      base::Pickle::WithData(base::as_byte_span(pickled_rfh_token)));
+
+  RenderFrameHost* rfh = nullptr;
+  if (rfh_token) {
+    rfh = RenderFrameHost::FromFrameToken(*rfh_token);
+  }
+
+  if (!rfh) {
+    // Fall back to the clipboard source if there is no `seqno` match or RFH, as
+    // `ui::DataTransferEndpoint` can be populated differently based on
+    // platform.
+    return ClipboardEndpoint(clipboard->GetSource(clipboard_buffer));
+  }
+
+  std::optional<ui::DataTransferEndpoint> source_dte;
+  auto clipboard_source_dte = clipboard->GetSource(clipboard_buffer);
+  if (clipboard_source_dte) {
+    if (clipboard_source_dte->IsUrlType()) {
+      source_dte = std::make_optional<ui::DataTransferEndpoint>(
+          *clipboard_source_dte->GetURL(),
+          ui::DataTransferEndpointOptions{
+              .off_the_record = rfh->GetBrowserContext()->IsOffTheRecord()});
+    } else {
+      source_dte = std::move(clipboard_source_dte);
+    }
+  }
+
+  return ClipboardEndpoint(
+      std::move(source_dte),
+      base::BindRepeating(
+          [](GlobalRenderFrameHostToken rfh_token) -> BrowserContext* {
+            auto* rfh = RenderFrameHost::FromFrameToken(rfh_token);
+            if (!rfh) {
+              return nullptr;
+            }
+            return rfh->GetBrowserContext();
+          },
+          rfh->GetGlobalFrameToken()),
+      *rfh);
+}
+
+void AddSourceDataToClipboardWriter(ui::ScopedClipboardWriter& clipboard_writer,
+                                    content::RenderFrameHost& rfh) {
+  clipboard_writer.SetDataSourceURL(rfh.GetMainFrame()->GetLastCommittedURL(),
+                                    rfh.GetLastCommittedURL());
+  clipboard_writer.WritePickledData(rfh.GetGlobalFrameToken().ToPickle(),
+                                    SourceRFHTokenType());
 }
 
 }  // namespace content

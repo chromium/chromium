@@ -109,7 +109,10 @@ enum class InstallResultCode {
   // trusted icon architecture is enabled.
   kFallbackInstallUsingTrustedIcons = 35,
 
-  kMaxValue = kFallbackInstallUsingTrustedIcons,
+  // No valid migration source was found for an app that requires one.
+  kNoValidMigrationSource = 36,
+
+  kMaxValue = kNoValidMigrationSource,
 };
 // LINT.ThenChange(//tools/metrics/histograms/enums.xml:WebAppInstallResultCode)
 

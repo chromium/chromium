@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/command_line.h"
+#include "base/containers/flat_map.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -240,6 +241,14 @@ class UpdaterIPCTestCase : public testing::Test {
                  base::RepeatingCallback<void(const UpdateState&)> state_update,
                  base::OnceCallback<void(Result)> callback),
                 (override));
+    MOCK_METHOD(void,
+                GetUpdaterState,
+                (base::OnceCallback<void(const UpdaterState&)> callback),
+                (override));
+    MOCK_METHOD(void,
+                GetPoliciesJson,
+                (base::OnceCallback<void(const std::string&)> callback),
+                (override));
 
    protected:
     ~MockUpdateService() override = default;
@@ -383,6 +392,17 @@ TEST_F(UpdaterIPCTestCase, AllRpcsComplete) {
             std::move(callback).Run(UpdateService::Result::kInstallFailed);
           });
 
+  EXPECT_CALL(*mock_service, GetUpdaterState)
+      .WillOnce([](base::OnceCallback<void(const UpdateService::UpdaterState&)>
+                       callback) {
+        std::move(callback).Run(UpdateService::UpdaterState("9", {}, {}, {}));
+      });
+
+  EXPECT_CALL(*mock_service, GetPoliciesJson)
+      .WillOnce([](base::OnceCallback<void(const std::string&)> callback) {
+        std::move(callback).Run("json");
+      });
+
 #if BUILDFLAG(IS_WIN)
   ASSERT_HRESULT_SUCCEEDED(
       Microsoft::WRL::Module<Microsoft::WRL::OutOfProc>::GetModule()
@@ -510,6 +530,22 @@ MULTIPROCESS_TEST_MAIN(UpdateServiceClient) {
         "install_args", "install_data", "install_settings", "en-us",
         UpdaterIPCTestCase::ExpectUpdateStatesCallback(),
         UpdaterIPCTestCase::ExpectResultCallback(run_loop));
+    run_loop.Run();
+  }
+  {
+    base::RunLoop run_loop;
+    client_proxy->GetUpdaterState(
+        base::BindOnce([](const UpdateService::UpdaterState& updater_state) {
+          EXPECT_EQ(updater_state.active_version, "9");
+        }).Then(run_loop.QuitClosure()));
+    run_loop.Run();
+  }
+  {
+    base::RunLoop run_loop;
+    client_proxy->GetPoliciesJson(
+        base::BindOnce([](const std::string& policies_json) {
+          EXPECT_EQ(policies_json, "json");
+        }).Then(run_loop.QuitClosure()));
     run_loop.Run();
   }
 

@@ -136,11 +136,13 @@ std::unique_ptr<GeneratePredictionsRequest> GetPredictionRequestProto(
       proto_request->mutable_permission_features()->Add();
   FillInStatsFeatures(entity.requested_permission_counts,
                       permission_features->mutable_permission_stats());
+  // LINT.IfChange(PermissionsAiSetRelevance)
   if (base::FeatureList::IsEnabled(permissions::features::kPermissionsAIv3) ||
       base::FeatureList::IsEnabled(permissions::features::kPermissionsAIv4)) {
     permission_features->set_permission_relevance(
         ConvertToProtoRelevance(entity.permission_relevance));
   }
+  // LINT.ThenChange(//components/permissions/permission_request_enums.h:PermissionAiRelevanceModel)
   switch (entity.type) {
     case RequestType::kNotifications:
       permission_features->mutable_notification_permission()->Clear();

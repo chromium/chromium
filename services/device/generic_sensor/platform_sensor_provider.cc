@@ -7,7 +7,6 @@
 
 #include <utility>
 
-#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "build/build_config.h"
 #include "services/device/public/cpp/generic_sensor/sensor_reading_shared_buffer.h"
@@ -171,8 +170,8 @@ void PlatformSensorProvider::NotifySensorCreated(
     mojom::SensorType type,
     scoped_refptr<PlatformSensor> sensor) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  DCHECK(!base::Contains(sensor_map_, type));
-  DCHECK(base::Contains(requests_map_, type));
+  DCHECK(!sensor_map_.contains(type));
+  DCHECK(requests_map_.contains(type));
 
   if (sensor) {
     sensor_map_[type] = sensor.get();

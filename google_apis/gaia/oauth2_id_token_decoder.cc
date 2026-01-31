@@ -4,12 +4,12 @@
 
 #include "google_apis/gaia/oauth2_id_token_decoder.h"
 
+#include <algorithm>
 #include <memory>
 #include <optional>
 #include <string_view>
 
 #include "base/base64url.h"
-#include "base/containers/contains.h"
 #include "base/json/json_reader.h"
 #include "base/logging.h"
 #include "base/strings/string_split.h"
@@ -29,7 +29,7 @@ const char kServicesKey[] = "services";
 
 // Decodes the JWT ID token to a dictionary. Returns whether the decoding was
 // successful.
-std::optional<base::Value::Dict> DecodeIdToken(std::string_view id_token) {
+std::optional<base::DictValue> DecodeIdToken(std::string_view id_token) {
   const std::vector<std::string_view> token_pieces = base::SplitStringPiece(
       id_token, ".", base::KEEP_WHITESPACE, base::SPLIT_WANT_ALL);
   if (token_pieces.size() != 3) {
@@ -62,12 +62,12 @@ bool GetServiceFlags(std::string_view id_token,
                      std::vector<std::string>* out_service_flags) {
   DCHECK(out_service_flags->empty());
 
-  std::optional<base::Value::Dict> decoded_payload = DecodeIdToken(id_token);
+  std::optional<base::DictValue> decoded_payload = DecodeIdToken(id_token);
   if (!decoded_payload.has_value()) {
     VLOG(1) << "Failed to decode the id_token";
     return false;
   }
-  const base::Value::List* service_flags_value_raw =
+  const base::ListValue* service_flags_value_raw =
       decoded_payload->FindList(kServicesKey);
   if (service_flags_value_raw == nullptr) {
     VLOG(1) << "Missing service flags in the id_token";
@@ -98,9 +98,9 @@ TokenServiceFlags ParseServiceFlags(const std::string& id_token) {
   }
 
   token_service_flags.is_child_account =
-      base::Contains(service_flags, kChildAccountServiceFlag);
-  token_service_flags.is_under_advanced_protection =
-      base::Contains(service_flags, kAdvancedProtectionAccountServiceFlag);
+      std::ranges::contains(service_flags, kChildAccountServiceFlag);
+  token_service_flags.is_under_advanced_protection = std::ranges::contains(
+      service_flags, kAdvancedProtectionAccountServiceFlag);
   return token_service_flags;
 }
 

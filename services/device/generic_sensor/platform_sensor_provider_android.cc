@@ -138,7 +138,7 @@ void PlatformSensorProviderAndroid::CreateAbsoluteOrientationEulerAnglesSensor(
     CreateSensorCallback callback) {
   if (static_cast<bool>(Java_PlatformSensorProvider_hasSensorType(
           env, j_object_,
-          static_cast<jint>(
+          static_cast<int32_t>(
               mojom::SensorType::ABSOLUTE_ORIENTATION_QUATERNION)))) {
     auto sensor_fusion_algorithm =
         std::make_unique<OrientationEulerAnglesFusionAlgorithmUsingQuaternion>(
@@ -194,7 +194,7 @@ void PlatformSensorProviderAndroid::CreateRelativeOrientationEulerAnglesSensor(
     CreateSensorCallback callback) {
   if (static_cast<bool>(Java_PlatformSensorProvider_hasSensorType(
           env, j_object_,
-          static_cast<jint>(
+          static_cast<int32_t>(
               mojom::SensorType::RELATIVE_ORIENTATION_QUATERNION)))) {
     auto sensor_fusion_algorithm =
         std::make_unique<OrientationEulerAnglesFusionAlgorithmUsingQuaternion>(

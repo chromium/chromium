@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "media/gpu/test/video_encoder/video_encoder_test_environment.h"
 
 #include <algorithm>
@@ -14,6 +9,7 @@
 #include <iterator>
 #include <utility>
 
+#include "base/compiler_specific.h"
 #include "base/containers/flat_set.h"
 #include "base/strings/pattern.h"
 #include "base/strings/string_number_conversions.h"
@@ -118,10 +114,10 @@ uint32_t GetDefaultTargetBitrate(const VideoCodec codec,
   }
   const int low_area = kBitrateTable[index - 1].area;
   const double low_bitrate =
-      kBitrateTable[index - 1].bitrate[validation][codec_index];
+      UNSAFE_TODO(kBitrateTable[index - 1].bitrate[validation][codec_index]);
   const int up_area = kBitrateTable[index].area;
   const double up_bitrate =
-      kBitrateTable[index].bitrate[validation][codec_index];
+      UNSAFE_TODO(kBitrateTable[index].bitrate[validation][codec_index]);
 
   const double bitrate_in_30fps_in_kbps =
       (up_bitrate - low_bitrate) / (up_area - low_area) * (area - low_area) +

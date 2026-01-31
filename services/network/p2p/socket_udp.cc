@@ -6,7 +6,6 @@
 
 #include <tuple>
 
-#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_functions.h"
@@ -361,7 +360,7 @@ bool P2PSocketUdp::HandleReadResult(int result) {
   if (result > 0) {
     auto data = recv_buffer_->first(static_cast<size_t>(result));
 
-    if (!base::Contains(connected_peers_, recv_address_)) {
+    if (!connected_peers_.contains(recv_address_)) {
       P2PSocket::StunMessageType type;
       bool stun = GetStunPacketType(data, &type);
       if ((stun && IsRequestOrResponse(type))) {
@@ -426,7 +425,7 @@ bool P2PSocketUdp::DoSend(const P2PPendingPacket& packet) {
   // messages to that peer and they are throttled using the |throttler_|. This
   // has to be done here instead of Send() to ensure P2PMsg_OnSendComplete
   // messages are sent in correct order.
-  if (!base::Contains(connected_peers_, packet.to)) {
+  if (!connected_peers_.contains(packet.to)) {
     P2PSocket::StunMessageType type = P2PSocket::StunMessageType();
     bool stun = GetStunPacketType(packet.data->first(packet.size), &type);
     if (!stun || type == STUN_DATA_INDICATION) {

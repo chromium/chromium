@@ -268,7 +268,7 @@ void ChromeKeyboardWebContents::OnColorProviderChanged() {
       extensions::events::VIRTUAL_KEYBOARD_PRIVATE_ON_COLOR_PROVIDER_CHANGED,
       extensions::api::virtual_keyboard_private::OnColorProviderChanged::
           kEventName,
-      base::Value::List(), browser_context);
+      base::ListValue(), browser_context);
 
   router->BroadcastEvent(std::move(event));
 }

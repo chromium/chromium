@@ -189,13 +189,15 @@ sk_sp<SkTypeface> WebFontDecoder::Decode(SegmentedBuffer* buffer) {
 
   // Most web fonts are compressed, so the result can be much larger than
   // the original.
-  ots::ExpandingMemoryStream output(buffer->size(), kMaxDecompressedSize);
+  std::unique_ptr<ots::ExpandingMemoryStream> output =
+      std::make_unique<ots::ExpandingMemoryStream>(buffer->size(),
+                                                   kMaxDecompressedSize);
   BlinkOTSContext ots_context;
   SegmentedBuffer::DeprecatedFlatData flattened_buffer(buffer);
 
   TRACE_EVENT_BEGIN0("blink", "DecodeFont");
   bool ok = ots_context.Process(
-      &output, reinterpret_cast<const uint8_t*>(flattened_buffer.data()),
+      output.get(), reinterpret_cast<const uint8_t*>(flattened_buffer.data()),
       buffer->size());
   TRACE_EVENT_END0("blink", "DecodeFont");
 
@@ -204,8 +206,14 @@ sk_sp<SkTypeface> WebFontDecoder::Decode(SegmentedBuffer* buffer) {
     return nullptr;
   }
 
-  const size_t decoded_length = base::checked_cast<size_t>(output.Tell());
-  sk_sp<SkData> sk_data = SkData::MakeWithCopy(output.get(), decoded_length);
+  const void* decoded_data = output->get();
+  const size_t decoded_length = base::checked_cast<size_t>(output->Tell());
+  sk_sp<SkData> sk_data = SkData::MakeWithProc(
+      decoded_data, decoded_length,
+      [](const void*, void* output) {
+        delete static_cast<const ots::ExpandingMemoryStream*>(output);
+      },
+      output.release());
 
   sk_sp<SkTypeface> new_typeface;
 

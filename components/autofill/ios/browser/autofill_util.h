@@ -7,9 +7,10 @@
 
 #import <optional>
 #import <set>
-#import <variant>
 
 #import "base/strings/string_number_conversions.h"
+#import "base/types/expected.h"
+#import "base/types/optional_ref.h"
 #import "base/unguessable_token.h"
 #import "base/values.h"
 #import "components/autofill/core/common/unique_ids.h"
@@ -76,56 +77,33 @@ std::unique_ptr<base::Value> ParseJson(NSString* json_string);
 std::optional<base::UnguessableToken> DeserializeJavaScriptFrameId(
     const std::string& frame_id);
 
-// Processes the JSON form data extracted from the page into the format expected
-// by BrowserAutofillManager.
-// `filtered` and `form_name` limit the field that will be returned.
-// `host_frame` is the isolated world frame corresponding to the page content
-// world frame where the forms were extracted. For forms extracted in the
-// isolated world pass a null `host_frame` as the frame token is derived from
-// `frame_id`. Returns an std::optional that contains the extracted vector of
-// FormData or nullopt if the data was invalid.
+// Processes the JSON form data extracted into `FormData`s.
+// See `ExtractFormData` for details on the function parameters.
 std::optional<std::vector<FormData>> ExtractFormsData(
     NSString* form_json,
-    bool filtered,
-    const std::u16string& form_name,
+    base::optional_ref<const std::u16string> form_name_filter,
     const GURL& main_frame_url,
     const url::Origin& frame_origin,
+    const GURL& form_frame_url,
     const FieldDataManager& field_data_manager,
     const std::string& frame_id,
     LocalFrameToken host_frame = LocalFrameToken());
 
-// Converts |form| into FormData.
-// `host_frame` is the isolated world frame corresponding to the page content
-// world frame where the forms were extracted. For forms extracted in the
-// isolated world pass a null `host_frame` as the frame token is derived from
-// `frame_id`. Returns nullopt if a form can not be extracted. Returns nullopt
-// if |filtered| == true and |form["name"]| != |formName|. Returns false if
-// |form["origin"]| != |form_frame_origin|. Returns an std::optional that
-// contains a FormData if the conversion succeeds. Use ExtractFormDataOrFailure
-// instead if you need to know the reason for failure.
-std::optional<FormData> ExtractFormData(
-    const base::Value::Dict& form,
-    bool filtered,
-    const std::u16string& form_name,
+// Converts `form` into FormData.
+// - `form_name_filter` limits the forms that will be returned: if not nullopt,
+//    then only forms with `form_data.name == *form_name_filter` are returned.
+// - If a form's origin does not match `frame_origin`, the form is dropped.
+// - `host_frame` is the isolated world frame corresponding to the page content
+//   world frame where the forms were extracted. For forms extracted in the
+//   isolated world, pass a null `host_frame`, and the frame token is derived
+//   from `frame_id`.
+// - Returns std::nullopt if the data was invalid.
+base::expected<FormData, ExtractFormDataFailure> ExtractFormData(
+    const base::DictValue& form,
+    base::optional_ref<const std::u16string> form_name_filter,
     const GURL& main_frame_url,
     const url::Origin& form_frame_origin,
-    const FieldDataManager& field_data_manager,
-    const std::string& frame_id,
-    LocalFrameToken host_frame = LocalFrameToken());
-
-// Converts |form| into FormData.
-// `host_frame` is the isolated world frame corresponding to the page content
-// world frame where the forms were extracted. For forms extracted in the
-// isolated world pass a null `host_frame` as the frame token is derived from
-// `frame_id`. Returns a std::variant containing either a FormData if the
-// conversion succeeds, or an ExtractFormDataFailure enum indicating the reason
-// for failure.
-std::variant<FormData, ExtractFormDataFailure> ExtractFormDataOrFailure(
-    const base::Value::Dict& form,
-    bool filtered,
-    const std::u16string& form_name,
-    const GURL& main_frame_url,
-    const url::Origin& form_frame_origin,
+    const GURL& form_frame_url,
     const FieldDataManager& field_data_manager,
     const std::string& frame_id,
     LocalFrameToken host_frame = LocalFrameToken());
@@ -133,14 +111,14 @@ std::variant<FormData, ExtractFormDataFailure> ExtractFormDataOrFailure(
 // Extracts a single form field from the JSON dictionary into a FormFieldData
 // object.
 // Returns false if the field could not be extracted.
-bool ExtractFormFieldData(const base::Value::Dict& field,
+bool ExtractFormFieldData(const base::DictValue& field,
                           const FieldDataManager& field_data_manager,
                           FormFieldData* field_data);
 
 // Extracts a single child frame's data from the JSON dictionary into a
 // FrameTokenWithPredecessor object. Returns false if the data could not be
 // extracted.
-bool ExtractRemoteFrameToken(const base::Value::Dict& frame_data,
+bool ExtractRemoteFrameToken(const base::DictValue& frame_data,
                              FrameTokenWithPredecessor* token_with_predecessor);
 
 typedef base::OnceCallback<void(const base::Value*)> JavaScriptResultCallback;
@@ -159,7 +137,7 @@ JavaScriptResultCallback CreateBoolCallback(base::OnceCallback<void(BOOL)>);
 // If |callback| is not null, it will be called when the result of the
 // command is received, or immediately if the command cannot be executed.
 void ExecuteJavaScriptFunction(const std::string& name,
-                               const base::Value::List& parameters,
+                               const base::ListValue& parameters,
                                web::WebFrame* frame,
                                JavaScriptResultCallback callback);
 

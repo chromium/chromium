@@ -49,10 +49,10 @@ class ContentWebFrame : public WebFrame,
   base::WeakPtr<WebFrame> AsWeakPtr() override;
 
   bool CallJavaScriptFunction(const std::string& name,
-                              const base::Value::List& parameters) override;
+                              const base::ListValue& parameters) override;
   bool CallJavaScriptFunction(
       const std::string& name,
-      const base::Value::List& parameters,
+      const base::ListValue& parameters,
       base::OnceCallback<void(const base::Value*)> callback,
       base::TimeDelta timeout) override;
 
@@ -66,11 +66,11 @@ class ContentWebFrame : public WebFrame,
   // WebFrameInternal:
   bool CallJavaScriptFunctionInContentWorld(
       const std::string& name,
-      const base::Value::List& parameters,
+      const base::ListValue& parameters,
       JavaScriptContentWorld* content_world) override;
   bool CallJavaScriptFunctionInContentWorld(
       const std::string& name,
-      const base::Value::List& parameters,
+      const base::ListValue& parameters,
       JavaScriptContentWorld* content_world,
       base::OnceCallback<void(const base::Value*)> callback,
       base::TimeDelta timeout) override;

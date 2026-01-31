@@ -113,7 +113,7 @@ public class TabCardLabelView extends LinearLayout {
             mIconView.setWaitingDrawable(insetDrawable);
         } else if (labelType == TabCardLabelType.PRICE_DROP) {
             DrawableCompat.wrap(getBackground())
-                    .setTint(context.getColor(R.color.price_drop_annotation_bg_color));
+                    .setTint(context.getColor(R.color.price_indicator_bg_color));
             mIconView.setUnavailableDrawable(null);
             mIconView.setWaitingDrawable(null);
         } else {

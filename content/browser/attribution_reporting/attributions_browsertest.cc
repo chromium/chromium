@@ -13,7 +13,6 @@
 #include <vector>
 
 #include "base/command_line.h"
-#include "base/containers/contains.h"
 #include "base/containers/span.h"
 #include "base/location.h"
 #include "base/memory/scoped_refptr.h"
@@ -192,9 +191,7 @@ struct ExpectedReportWaiter {
                        std::string source_type,
                        std::string trigger_data,
                        net::EmbeddedTestServer* server)
-      : ExpectedReportWaiter(std::move(report_url),
-                             base::Value::Dict(),
-                             server) {
+      : ExpectedReportWaiter(std::move(report_url), base::DictValue(), server) {
     expected_body.Set("attribution_destination",
                       std::move(attribution_destination));
     expected_body.Set("source_event_id", std::move(source_event_id));
@@ -205,7 +202,7 @@ struct ExpectedReportWaiter {
   // ControllableHTTPResponses can only wait for relative urls, so only supply
   // the path.
   ExpectedReportWaiter(GURL report_url,
-                       base::Value::Dict body,
+                       base::DictValue body,
                        net::EmbeddedTestServer* server)
       : expected_url(std::move(report_url)),
         expected_body(std::move(body)),
@@ -214,7 +211,7 @@ struct ExpectedReportWaiter {
             expected_url.GetPath())) {}
 
   GURL expected_url;
-  base::Value::Dict expected_body;
+  base::DictValue expected_body;
   std::unique_ptr<net::test_server::ControllableHttpResponse> response;
 
   bool HasRequest() { return !!response->http_request(); }
@@ -229,14 +226,14 @@ struct ExpectedReportWaiter {
     // The embedded test server resolves all urls to 127.0.0.1, so get the real
     // request host from the request headers.
     const net::test_server::HttpRequest& request = *response->http_request();
-    DCHECK(base::Contains(request.headers, "Host"));
+    DCHECK(request.headers.contains("Host"));
     const GURL& request_url = request.GetURL();
     GURL header_url = GURL("https://" + request.headers.at("Host"));
     std::string host = header_url.GetHost();
     GURL::Replacements replace_host;
     replace_host.SetHostStr(host);
 
-    base::Value::Dict body = base::test::ParseJsonDict(request.content);
+    base::DictValue body = base::test::ParseJsonDict(request.content);
     EXPECT_THAT(body, base::test::DictionaryHasValues(expected_body));
 
     // The report ID is random, so just test that the field exists here and is a
@@ -259,7 +256,7 @@ struct ExpectedReportWaiter {
     // for report url was not set properly.
     EXPECT_EQ(expected_url, request_url.ReplaceComponents(replace_host));
 
-    EXPECT_TRUE(base::Contains(request.headers, "User-Agent"));
+    EXPECT_TRUE(request.headers.contains("User-Agent"));
     EXPECT_EQ(request.headers.at("Content-Type"), "application/json");
   }
 };
@@ -667,10 +664,10 @@ IN_PROC_BROWSER_TEST_P(AttributionsBrowserTest,
 
   // Verify the navigation request does not contain the eligibility header.
   register_response1->WaitForRequest();
-  EXPECT_FALSE(base::Contains(register_response1->http_request()->headers,
-                              "Attribution-Reporting-Eligible"));
-  EXPECT_FALSE(base::Contains(register_response1->http_request()->headers,
-                              "Attribution-Reporting-Support"));
+  EXPECT_FALSE(register_response1->http_request()->headers.contains(
+      "Attribution-Reporting-Eligible"));
+  EXPECT_FALSE(register_response1->http_request()->headers.contains(
+      "Attribution-Reporting-Support"));
 
   auto http_response = std::make_unique<net::test_server::BasicHttpResponse>();
   http_response->set_code(net::HTTP_OK);
@@ -1138,7 +1135,7 @@ ATTRIBUTION_PRERENDER_BROWSER_TEST(NoConversionsOnPrerender) {
     // Pre-render the conversion url.
     const GURL kConversionUrl = https_server->GetURL(
         "d.test", "/attribution_reporting/page_with_conversion_redirect.html");
-    FrameTreeNodeId host_id = prerender_helper_.AddPrerender(kConversionUrl);
+    PrerenderHostId host_id = prerender_helper_.AddPrerender(kConversionUrl);
     content::test::PrerenderHostObserver host_observer(*web_contents(),
                                                        host_id);
 
@@ -1188,7 +1185,7 @@ ATTRIBUTION_PRERENDER_BROWSER_TEST(ConversionsRegisteredOnActivatedPrerender) {
     // Pre-render the conversion url.
     const GURL kConversionUrl = https_server()->GetURL(
         "d.test", "/attribution_reporting/page_with_conversion_redirect.html");
-    FrameTreeNodeId host_id = prerender_helper_.AddPrerender(kConversionUrl);
+    PrerenderHostId host_id = prerender_helper_.AddPrerender(kConversionUrl);
     content::test::PrerenderHostObserver host_observer(*web_contents(),
                                                        host_id);
 
@@ -1253,7 +1250,7 @@ ATTRIBUTION_PRERENDER_BROWSER_TEST(NoConversionsInSubframeOnPrerender) {
     const GURL kConversionUrl = https_server()->GetURL(
         "d.test",
         "/attribution_reporting/page_with_conversion_redirect_in_iframe.html");
-    FrameTreeNodeId host_id = prerender_helper_.AddPrerender(kConversionUrl);
+    PrerenderHostId host_id = prerender_helper_.AddPrerender(kConversionUrl);
     content::test::PrerenderHostObserver host_observer(*web_contents(),
                                                        host_id);
 
@@ -1301,7 +1298,7 @@ ATTRIBUTION_PRERENDER_BROWSER_TEST(
     const GURL kConversionUrl = https_server()->GetURL(
         "d.test",
         "/attribution_reporting/page_with_conversion_redirect_in_iframe.html");
-    FrameTreeNodeId host_id = prerender_helper_.AddPrerender(kConversionUrl);
+    PrerenderHostId host_id = prerender_helper_.AddPrerender(kConversionUrl);
     content::test::PrerenderHostObserver host_observer(*web_contents(),
                                                        host_id);
 
@@ -1371,7 +1368,7 @@ ATTRIBUTION_PRERENDER_BROWSER_TEST(
     const GURL kConversionUrl = https_server()->GetURL(
         "d.test",
         "/attribution_reporting/page_with_conversion_redirect_in_iframe.html");
-    FrameTreeNodeId host_id = prerender_helper_.AddPrerender(kConversionUrl);
+    PrerenderHostId host_id = prerender_helper_.AddPrerender(kConversionUrl);
     content::test::PrerenderHostObserver host_observer(*web_contents(),
                                                        host_id);
 
@@ -1939,10 +1936,10 @@ void TestServiceWorker(const char* registration_js,
                     "a.test", "/attribution_reporting/register_source"))));
 
   register_response->WaitForRequest();
-  EXPECT_TRUE(base::Contains(register_response->http_request()->headers,
-                             "Attribution-Reporting-Eligible"));
-  EXPECT_TRUE(base::Contains(register_response->http_request()->headers,
-                             "Attribution-Reporting-Support"));
+  EXPECT_TRUE(register_response->http_request()->headers.contains(
+      "Attribution-Reporting-Eligible"));
+  EXPECT_TRUE(register_response->http_request()->headers.contains(
+      "Attribution-Reporting-Support"));
 }
 
 IN_PROC_BROWSER_TEST_P(

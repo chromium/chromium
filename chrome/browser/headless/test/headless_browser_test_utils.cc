@@ -12,24 +12,24 @@ using simple_devtools_protocol_client::SimpleDevToolsProtocolClient;
 
 namespace headless {
 
-base::Value::Dict SendCommandSync(SimpleDevToolsProtocolClient& devtools_client,
-                                  const std::string& command) {
-  return SendCommandSync(devtools_client, command, base::Value::Dict());
+base::DictValue SendCommandSync(SimpleDevToolsProtocolClient& devtools_client,
+                                const std::string& command) {
+  return SendCommandSync(devtools_client, command, base::DictValue());
 }
 
-base::Value::Dict SendCommandSync(
+base::DictValue SendCommandSync(
     simple_devtools_protocol_client::SimpleDevToolsProtocolClient&
         devtools_client,
     const std::string& command,
-    base::Value::Dict params) {
-  base::Value::Dict command_result;
+    base::DictValue params) {
+  base::DictValue command_result;
 
   base::RunLoop run_loop(base::RunLoop::Type::kNestableTasksAllowed);
   devtools_client.SendCommand(
       command, std::move(params),
       base::BindOnce(
-          [](base::RunLoop* run_loop, base::Value::Dict* command_result,
-             base::Value::Dict result) {
+          [](base::RunLoop* run_loop, base::DictValue* command_result,
+             base::DictValue result) {
             *command_result = std::move(result);
             run_loop->Quit();
           },

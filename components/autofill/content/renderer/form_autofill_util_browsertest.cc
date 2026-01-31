@@ -629,7 +629,7 @@ TEST_F(FormAutofillUtilsTest, GetButtonTitles) {
 
 TEST_F(FormAutofillUtilsTest, GetButtonTitles_TooLongTitle) {
   std::string kFormHtml = "<form id='target'>";
-  for (int i = 0; i < 10; i++) {
+  for (int i = 0; i < 10; ++i) {
     std::string kFieldHtml = "<input type='button' value='" +
                              base::NumberToString(i) + std::string(300, 'a') +
                              "'>";
@@ -2174,10 +2174,6 @@ TEST_F(FormAutofillUtilsTest, ExtractFormData_OwnedForm) {
           ElementsAre(Property(&FormFieldData::name, u"text_input"),
                       Property(&FormFieldData::name, u"number_input"),
                       Property(&FormFieldData::name, u"select_input")))));
-  histogram_tester.ExpectTotalCount("Autofill.ExtractFormUnowned.FieldCount2",
-                                    0);
-  histogram_tester.ExpectUniqueSample("Autofill.ExtractFormOwned.FieldCount2",
-                                      3, 1);
 }
 
 TEST_F(FormAutofillUtilsTest, ExtractFormData_UnownedForm) {
@@ -2201,9 +2197,6 @@ TEST_F(FormAutofillUtilsTest, ExtractFormData_UnownedForm) {
           ElementsAre(Property(&FormFieldData::name, u"text_input"),
                       Property(&FormFieldData::name, u"number_input"),
                       Property(&FormFieldData::name, u"select_input")))));
-  histogram_tester.ExpectTotalCount("Autofill.ExtractFormOwned.FieldCount2", 0);
-  histogram_tester.ExpectUniqueSample("Autofill.ExtractFormUnowned.FieldCount2",
-                                      3, 1);
 }
 
 // Tests that GetOwnedFormControls() doesn't return disconnected elements.

@@ -74,7 +74,7 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
   FormStructure form_structure(form_data);
   const RegexPredictions regex_predictions = DetermineRegexTypes(
       GenerateGeoIpCountryCode(data_provider), LanguageCode(""), form_data,
-      /*log_manager=*/nullptr);
+      /*log_manager=*/nullptr, /*ignore_small_forms=*/true);
   regex_predictions.ApplyTo(form_structure.fields());
   form_structure.RationalizeAndAssignSections(
       GenerateGeoIpCountryCode(data_provider), LanguageCode(""),
@@ -86,7 +86,8 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
   std::ignore = form_structure.IsCompleteCreditCardForm(
       FormStructure::CreditCardFormCompleteness::kCompleteCreditCardForm);
   std::ignore = ShouldBeParsed(form_structure, /*log_manager=*/nullptr);
-  std::ignore = ShouldRunHeuristics(form_structure);
+  std::ignore =
+      ShouldRunHeuristics(form_structure, /*ignore_small_forms=*/true);
   std::ignore = ShouldRunHeuristicsForSingleFields(form_structure);
   std::ignore = ShouldBeQueried(form_structure);
   std::ignore = ShouldBeUploaded(form_structure);

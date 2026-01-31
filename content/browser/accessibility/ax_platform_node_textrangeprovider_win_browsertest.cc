@@ -3970,7 +3970,8 @@ IN_PROC_BROWSER_TEST_F(AXPlatformNodeTextRangeProviderWinBrowserTest,
                   /*count*/ 1,
                   /*expected_text*/ L"\n",
                   /*expected_count*/ 1);
-  expected_values = {};
+  expected_values = {total_left_offset + 6 * bounding_box_char_width,
+                     total_top_offset, 1, bounding_box_char_height};
   EXPECT_HRESULT_SUCCEEDED(
       text_range_provider->GetBoundingRectangles(rectangles.Receive()));
   UNSAFE_TODO(
@@ -4292,6 +4293,98 @@ IN_PROC_BROWSER_TEST_F(AXPlatformNodeTextRangeProviderWinBrowserTest,
                                    /*count*/ 4,
                                    /*expected_text*/ L"blue",
                                    /*expected_count*/ 4);
+}
+
+IN_PROC_BROWSER_TEST_F(AXPlatformNodeTextRangeProviderWinBrowserTest,
+                       GetBoundingRectanglesOnTrailingWhitespace) {
+  LoadInitialAccessibilityTreeFromHtml(R"HTML(
+      <p style="width:30ch">
+        Hello World, this is a longer
+        paragraph that has trailing
+        whitespace in between lines.
+      </p>
+      )HTML");
+
+  ui::BrowserAccessibility* root = GetManager()->GetBrowserAccessibilityRoot();
+  ASSERT_NE(nullptr, root);
+
+  ui::BrowserAccessibility* paragraph = root->PlatformGetChild(0);
+  ASSERT_NE(nullptr, paragraph);
+
+  ui::BrowserAccessibility* text_node = paragraph->PlatformGetChild(0);
+  ASSERT_NE(nullptr, text_node);
+
+  ComPtr<ITextRangeProvider> text_range_provider;
+  GetTextRangeProviderFromTextNode(*text_node, &text_range_provider);
+  ASSERT_NE(nullptr, text_range_provider.Get());
+
+  base::win::ScopedBstr full_text;
+  EXPECT_HRESULT_SUCCEEDED(
+      text_range_provider->GetText(-1, full_text.Receive()));
+
+  int units_moved = 0;
+  EXPECT_HRESULT_SUCCEEDED(text_range_provider->MoveEndpointByUnit(
+      TextPatternRangeEndpoint_Start, TextUnit_Line, 1, &units_moved));
+  EXPECT_EQ(1, units_moved);
+
+  EXPECT_HRESULT_SUCCEEDED(text_range_provider->MoveEndpointByUnit(
+      TextPatternRangeEndpoint_End, TextUnit_Line, -1, &units_moved));
+  EXPECT_EQ(-1, units_moved);
+
+  EXPECT_HRESULT_SUCCEEDED(text_range_provider->MoveEndpointByUnit(
+      TextPatternRangeEndpoint_Start, TextUnit_Character, -1, &units_moved));
+  EXPECT_EQ(-1, units_moved);
+
+  {
+    base::win::ScopedBstr text;
+    EXPECT_HRESULT_SUCCEEDED(text_range_provider->GetText(-1, text.Receive()));
+    // Non-breaking space is \xA0
+    EXPECT_STREQ(L" paragraph that has trailing ", text.Get());
+  }
+
+  EXPECT_HRESULT_SUCCEEDED(text_range_provider->MoveEndpointByUnit(
+      TextPatternRangeEndpoint_End, TextUnit_Line, -1, &units_moved));
+  EXPECT_EQ(-1, units_moved);
+
+  {
+    base::win::ScopedBstr text;
+    EXPECT_HRESULT_SUCCEEDED(text_range_provider->GetText(-1, text.Receive()));
+    // Non-breaking space is \xA0
+    EXPECT_STREQ(L" ", text.Get());
+  }
+
+  base::win::ScopedSafearray rectangles;
+  EXPECT_HRESULT_SUCCEEDED(
+      text_range_provider->GetBoundingRectangles(rectangles.Receive()));
+
+  // We expect at least one rectangle.
+  ASSERT_EQ(1u, SafeArrayGetDim(rectangles.Get()));
+  LONG array_lower_bound;
+  ASSERT_HRESULT_SUCCEEDED(
+      SafeArrayGetLBound(rectangles.Get(), 1, &array_lower_bound));
+  LONG array_upper_bound;
+  ASSERT_HRESULT_SUCCEEDED(
+      SafeArrayGetUBound(rectangles.Get(), 1, &array_upper_bound));
+
+  // Each rectangle has 4 doubles (x, y, w, h).
+  // So the number of elements should be a multiple of 4.
+  size_t count = array_upper_bound - array_lower_bound + 1;
+  ASSERT_GT(count, 0u);
+  ASSERT_EQ(0u, count % 4);
+
+  double* array_data;
+  ASSERT_HRESULT_SUCCEEDED(::SafeArrayAccessData(
+      rectangles.Get(), reinterpret_cast<void**>(&array_data)));
+
+  // Check that the rectangle has non-zero width and height.
+  // x, y, w, h
+  double width = UNSAFE_TODO(array_data[2]);
+  double height = UNSAFE_TODO(array_data[3]);
+
+  EXPECT_GT(width, 0);
+  EXPECT_GT(height, 0);
+
+  ASSERT_HRESULT_SUCCEEDED(::SafeArrayUnaccessData(rectangles.Get()));
 }
 
 }  // namespace content

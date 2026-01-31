@@ -592,7 +592,7 @@ Range* DOMSelection::getRangeAt(unsigned index,
   if (index >= rangeCount()) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kIndexSizeError,
-        String::Number(index) + " is not a valid index.");
+        StrCat({String::Number(index), " is not a valid index."}));
     return nullptr;
   }
 

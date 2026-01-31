@@ -242,6 +242,9 @@ class StreamingSearchPrefetchURLLoader
   // on mojo channels closing or other errors occurring.
   void ClearOwnerPointer();
 
+  // Returns whether the resource response is available.
+  bool HasResourceResponse() const { return !!resource_response_; }
+
   void set_on_destruction_callback_for_testing(
       base::OnceClosure on_destruction_callback_for_testing) {
     on_destruction_callback_for_testing_ =

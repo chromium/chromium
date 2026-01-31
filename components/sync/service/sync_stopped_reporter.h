@@ -6,9 +6,9 @@
 #define COMPONENTS_SYNC_SERVICE_SYNC_STOPPED_REPORTER_H_
 
 #include <memory>
-#include <optional>
 #include <string>
 
+#include "base/memory/scoped_refptr.h"
 #include "base/timer/timer.h"
 #include "url/gurl.h"
 
@@ -16,6 +16,10 @@ namespace network {
 class SharedURLLoaderFactory;
 class SimpleURLLoader;
 }  // namespace network
+
+namespace net {
+class HttpResponseHeaders;
+}  // namespace net
 
 namespace syncer {
 
@@ -46,7 +50,7 @@ class SyncStoppedReporter {
   // Callback for a request timing out.
   void OnTimeout();
 
-  void OnSimpleLoaderComplete(std::optional<std::string> response_body);
+  void OnSimpleLoaderComplete(scoped_refptr<net::HttpResponseHeaders> headers);
 
   // Handles timing out requests.
   base::OneShotTimer timer_;

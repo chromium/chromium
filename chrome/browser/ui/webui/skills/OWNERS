@@ -1,0 +1,11 @@
+howardcha@google.com
+marissashen@google.com
+phu@google.com
+rushans@google.com
+uwyiming@google.com
+chrstne@google.com
+boujane@google.com
+michelleabreo@google.com
+
+per-file *.mojom=set noparent
+per-file *.mojom=file://ipc/SECURITY_OWNERS

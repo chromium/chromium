@@ -56,10 +56,6 @@
 #include "ui/views/view_class_properties.h"
 #include "url/gurl.h"
 
-#if BUILDFLAG(IS_CHROMEOS)
-#include "chromeos/ui/base/chromeos_ui_constants.h"
-#endif
-
 namespace {
 
 bool ShouldDisplayUrl(content::WebContents* contents) {
@@ -96,31 +92,6 @@ ui::ColorId GetSecurityChipColorId(
       return kColorPwaSecurityChipForeground;
   }
 }
-
-#if BUILDFLAG(IS_CHROMEOS)
-// The CustomTabBarView uses a WebAppMenuButton with a custom color. This class
-// overrides the GetForegroundColor method to achieve this effect.
-class CustomTabBarAppMenuButton : public WebAppMenuButton {
-  METADATA_HEADER(CustomTabBarAppMenuButton, WebAppMenuButton)
-
- public:
-  using WebAppMenuButton::WebAppMenuButton;
-
- protected:
-  SkColor GetForegroundColor(ButtonState state) const override {
-    return GetColorProvider()->GetColor(kColorPwaMenuButtonIcon);
-  }
-
-  std::optional<std::u16string> GetAccessibleNameOverride() const override {
-    return l10n_util::GetStringUTF16(
-        IDS_CUSTOM_TABS_ACTION_MENU_ACCESSIBLE_NAME);
-  }
-};
-
-BEGIN_METADATA(CustomTabBarAppMenuButton)
-END_METADATA
-
-#endif
 
 }  // namespace
 
@@ -248,8 +219,8 @@ CustomTabBarView::CustomTabBarView(BrowserView* browser_view,
       AddChildView(views::CreateVectorImageButton(base::BindRepeating(
           &CustomTabBarView::GoBackToApp, base::Unretained(this))));
   close_button_->SetTooltipText(l10n_util::GetStringUTF16(IDS_APP_CLOSE));
-  close_button_->SetBorder(views::CreateEmptyBorder(
-      gfx::Insets(GetLayoutConstant(LOCATION_BAR_CHILD_INTERIOR_PADDING))));
+  close_button_->SetBorder(views::CreateEmptyBorder(gfx::Insets(
+      GetLayoutConstant(LayoutConstant::kLocationBarChildInteriorPadding))));
   close_button_->SizeToPreferredSize();
   close_button_->SetFocusBehavior(views::View::FocusBehavior::ACCESSIBLE_ONLY);
   views::InstallCircleHighlightPathGenerator(close_button_);
@@ -269,18 +240,6 @@ CustomTabBarView::CustomTabBarView(BrowserView* browser_view,
   // mode. Find a better place to set it.
   gfx::Insets interior_margin =
       GetLayoutInsets(LayoutInset::TOOLBAR_INTERIOR_MARGIN);
-#if BUILDFLAG(IS_CHROMEOS)
-  if (browser_->is_type_custom_tab()) {
-    web_app_menu_button_ =
-        AddChildView(std::make_unique<CustomTabBarAppMenuButton>(browser_view));
-
-    // Remove the vertical portion of the interior margin here to avoid
-    // increasing the height of the toolbar when |web_app_menu_button_| is drawn
-    // while maintaining its touch area.
-    interior_margin.set_top(0);
-    interior_margin.set_bottom(0);
-  }
-#endif
 
   layout_manager_ = SetLayoutManager(std::make_unique<views::FlexLayout>());
   layout_manager_->SetOrientation(views::LayoutOrientation::kHorizontal)
@@ -360,10 +319,10 @@ void CustomTabBarView::OnThemeChanged() {
       color_provider->GetColor(kColorPwaToolbarButtonIcon);
   const SkColor foreground_disabled_color =
       color_provider->GetColor(kColorPwaToolbarButtonIconDisabled);
-  SetImageFromVectorIconWithColor(close_button_,
-                                  vector_icons::kCloseRoundedIcon,
-                                  GetLayoutConstant(LOCATION_BAR_ICON_SIZE),
-                                  foreground_color, foreground_disabled_color);
+  SetImageFromVectorIconWithColor(
+      close_button_, vector_icons::kCloseRoundedIcon,
+      GetLayoutConstant(LayoutConstant::kLocationBarIconSize),
+      {foreground_color, foreground_disabled_color});
 
   background_color_ = color_provider->GetColor(kColorPwaToolbarBackground);
   SetBackground(views::CreateSolidBackground(background_color_));
@@ -371,10 +330,10 @@ void CustomTabBarView::OnThemeChanged() {
   title_origin_view_->SetColors(background_color_);
 }
 
-void CustomTabBarView::TabChangedAt(content::WebContents* contents,
-                                    int index,
-                                    TabChangeType change_type) {
-  if (delegate_->GetWebContents() == contents) {
+void CustomTabBarView::OnTabChangedAt(tabs::TabInterface* tab,
+                                      int index,
+                                      TabChangeType change_type) {
+  if (delegate_->GetWebContents() == tab->GetContents()) {
     UpdateContents();
   }
 }
@@ -470,7 +429,7 @@ ui::ImageModel CustomTabBarView::GetLocationIcon(
   return ui::ImageModel::FromVectorIcon(
       delegate_->GetLocationBarModel()->GetVectorIcon(),
       GetSecurityChipColor(GetLocationBarModel()->GetSecurityLevel()),
-      GetLayoutConstant(LOCATION_BAR_ICON_SIZE));
+      GetLayoutConstant(LayoutConstant::kLocationBarIconSize));
 }
 
 void CustomTabBarView::GoBackToAppForTesting() {

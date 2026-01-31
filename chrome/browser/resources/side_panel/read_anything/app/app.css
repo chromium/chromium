@@ -10,6 +10,17 @@
  * #include=sp-shared-style-lit cr-hidden-style-lit
  * #scheme=relative
  * #css_wrapper_metadata_end */
+:host {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+:host #appFlexParent {
+  flex: 1;
+  height: auto;
+  min-height: 0;
+}
 
 #lineFocus {
   position: absolute;
@@ -34,7 +45,7 @@
   margin: 0 8px;
   margin-bottom: var(--sp-card-block-padding);
   min-width: var(--container-min-width);
-  overflow: hidden;
+  overflow: auto;
   padding: 20px;
 }
 
@@ -52,6 +63,10 @@
   height: 100%;
   overflow-x: var(--app-overflow-x);
   width: 100%;
+}
+
+#appFlexParent.immersive {
+  background-color: var(--background-color);
 }
 
 #appFlexParent #containerParent {
@@ -113,13 +128,14 @@
   color: var(--foreground-color);
   font-family: var(--font-family);
   font-size: var(--font-size);
-  height:100%; /* Keeps content within containerParent */
   letter-spacing: var(--letter-spacing);
   line-height: var(--line-height);
   margin: 0 auto;
   max-width: var(--max-width);
   overflow-wrap: break-word;
   padding-left: 20px;
+  padding-top: var(--line-focus-padding);
+  padding-bottom: var(--line-focus-padding);
   width: 100%; /* Wrap text to width even with horizontal scroll bar */
 }
 
@@ -135,6 +151,7 @@
   display: flex;
   margin: 0 auto 16px auto;
   font-family: var(--font-family);
+  letter-spacing: var(--letter-spacing);
   --sp-empty-state-heading-font-size: calc(var(--font-size) * 1.2);
   --sp-empty-state-body-font-size: var(--font-size);
 
@@ -178,4 +195,16 @@
   color: var(--cr-primary-text-color);
   display: flex;
   justify-content: center;
+}
+
+img.distilled-inline-img {
+  display: inline;
+  vertical-align: middle;
+  width: auto;
+}
+
+img.distilled-full-width-img {
+  display: block;
+  width: 100%;
+  height: auto;
 }

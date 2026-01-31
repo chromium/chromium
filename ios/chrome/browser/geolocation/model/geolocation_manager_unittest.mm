@@ -89,7 +89,7 @@ TEST_F(GeolocationManagerTest, AuthorizationStatusCacheUtilSetAndRetrieve) {
 
 // Tests that the internal CLLocationManager calls its delegate after creation.
 // TODO(crbug.com/460739169): Test is flaky.
-TEST_F(GeolocationManagerTest, FLAKY_LocationUpdatesOnCreation) {
+TEST_F(GeolocationManagerTest, DISABLED_LocationUpdatesOnCreation) {
   FakeCLLocationManagerDelegate* delegate =
       [[FakeCLLocationManagerDelegate alloc] init];
   ASSERT_EQ(delegate.delegateCallbackCount, 0);
@@ -106,7 +106,7 @@ TEST_F(GeolocationManagerTest, FLAKY_LocationUpdatesOnCreation) {
 // Tests that GeolocationManager caches its value correctly and prefers to
 // return recent authorization status values over the cached status.
 // TODO(crbug.com/460738390): Test is flaky.
-TEST_F(GeolocationManagerTest, FLAKY_GeolocationManagerCache) {
+TEST_F(GeolocationManagerTest, DISABLED_GeolocationManagerCache) {
   ASSERT_FALSE(authorization_status_cache_util::GetAuthorizationStatus());
 
   // Create GeolocationManager so that it will update the cached value.

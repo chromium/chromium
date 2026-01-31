@@ -23,7 +23,7 @@ class SafetyHubResult {
  public:
   virtual ~SafetyHubResult() = default;
 
-  virtual base::Value::Dict ToDictValue() const = 0;
+  virtual base::DictValue ToDictValue() const = 0;
 
   // Determines whether the current result meets the bar for showing a
   // notification to the user in the Chrome menu.
@@ -34,7 +34,7 @@ class SafetyHubResult {
   // just based on the comparison of the two results, and thus irrelevant to
   // how frequently a menu notification has already been shown.
   virtual bool WarrantsNewMenuNotification(
-      const base::Value::Dict& previous_result_dict) const = 0;
+      const base::DictValue& previous_result_dict) const = 0;
 
   // Returns the string for the notification that will be shown in the
   // three-dot menu.
@@ -57,7 +57,7 @@ class SafetyHubResult {
 
   // Returns a dictionary representation of a base Result which consists of only
   // a timestamp.
-  base::Value::Dict BaseToDictValue() const;
+  base::DictValue BaseToDictValue() const;
 
  private:
   base::Time timestamp_;

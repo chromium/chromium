@@ -9,7 +9,7 @@
 #include "components/policy/proto/device_management_backend.pb.h"
 
 namespace base {
-class Value;
+class DictValue;
 }
 
 namespace policy {
@@ -21,11 +21,11 @@ class CloudPolicyManager;
 namespace enterprise_reporting {
 
 void AppendChromePolicyInfoIntoProfileReport(
-    const base::Value::Dict& policies,
+    const base::DictValue& policies,
     enterprise_management::ChromeUserProfileInfo* profile_info);
 
 void AppendExtensionPolicyInfoIntoProfileReport(
-    const base::Value::Dict& policies,
+    const base::DictValue& policies,
     enterprise_management::ChromeUserProfileInfo* profile_info);
 
 void AppendCloudPolicyFetchTimestamp(

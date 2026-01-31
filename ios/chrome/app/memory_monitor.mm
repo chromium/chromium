@@ -4,7 +4,7 @@
 
 #import "ios/chrome/app/memory_monitor.h"
 
-#import <Foundation/NSPathUtilities.h>
+#import <Foundation/Foundation.h>
 #import <dispatch/dispatch.h>
 
 #import "base/apple/foundation_util.h"

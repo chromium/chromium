@@ -163,7 +163,6 @@ class CORE_EXPORT WebSettingsImpl final : public WebSettings {
                              UScriptCode = USCRIPT_COMMON) override;
   void SetStrictMixedContentChecking(bool) override;
   void SetStrictMixedContentCheckingForPlugin(bool) override;
-  void SetStrictPowerfulFeatureRestrictions(bool) override;
   void SetStrictlyBlockBlockableMixedContent(bool) override;
   void SetSupportDeprecatedTargetDensityDPI(bool) override;
   void SetSupportsMultipleWindows(bool) override;
@@ -201,6 +200,7 @@ class CORE_EXPORT WebSettingsImpl final : public WebSettings {
   void SetWebGLErrorsToConsoleEnabled(bool) override;
   void SetWebSecurityEnabled(bool) override;
   void SetWideViewportQuirkEnabled(bool) override;
+  void SetScaleAllFontsIfNoMetaTextScaleTag(bool) override;
   void SetMediaControlsEnabled(bool) override;
   void SetDoNotUpdateSelectionOnMutatingSelectionRange(bool) override;
   void SetLowPriorityIframesThreshold(WebEffectiveConnectionType) override;

@@ -52,7 +52,8 @@ base::android::ScopedJavaLocalRef<jobject> CreateJavaObject(
       NOTREACHED() << "Converting TimestampedPrefValue with List value is not "
                       "yet supported";
     case base::Value::Type::NONE:
-      NOTREACHED() << "Value Type should not be NONE";
+      return Java_TimestampedPrefValue_createNullPrefValue(
+          env, last_observed_change_time_ms, input.device_sync_cache_guid);
   }
 }
 

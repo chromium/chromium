@@ -15,6 +15,9 @@ constexpr int kDefaultMaxRequests = 10;
 constexpr int kDefaultWindowSeconds = 60;
 // Default timeout for immediate mediation requests (in milliseconds).
 constexpr int kDefaultImmediateMediationTimeoutMs = 500;
+// Default ttl (in seconds) for keeping the cached opportunistically retrieved
+// key in case its Gaia Id doesn't match to primary signed-in account.
+constexpr int kDefaultOpportunisticRetrievalTimeToKeepCachedKeySeconds = 300;
 
 }  // namespace
 
@@ -138,21 +141,10 @@ BASE_FEATURE(kWebAuthnAndroidSignal,
 BASE_FEATURE(kDigitalCredentialsHybridLinking,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Default enabled on Desktop in M136 and Android in M142. Remove in or after
-// M145.
-BASE_FEATURE(kWebAuthnPasskeyUpgrade,
-             "WebAuthenticationPasskeyUpgrade",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Disabled by default.
 BASE_FEATURE(kWebAuthnEnclaveAttestation,
              "WebAuthenticationEnclaveAttestation",
              base::FEATURE_DISABLED_BY_DEFAULT);
-
-// Default enabled in M135. Remove in or after M138.
-BASE_FEATURE(kWebAuthnMicrosoftSoftwareUnexportableKeyProvider,
-             "WebAuthenticationMicrosoftSoftwareUnexportableKeyProvider",
-             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Default enabled in M144. Remove in or after M147.
 BASE_FEATURE(kWebAuthnSignalApiHidePasskeys,
@@ -176,15 +168,10 @@ BASE_FEATURE_PARAM(int,
                    "window_seconds",
                    kDefaultWindowSeconds);
 
-// Enabled by default on Desktop for the Origin Trial. Do not remove until the
-// Origin Trial expires.
+// Not yet enabled by default.
 BASE_FEATURE(kWebAuthnImmediateGet,
              "WebAuthenticationImmediateGet",
-#if BUILDFLAG(IS_ANDROID)
              base::FEATURE_DISABLED_BY_DEFAULT);
-#else
-             base::FEATURE_ENABLED_BY_DEFAULT);
-#endif  // BUILDFLAG(IS_ANDROID)
 
 BASE_FEATURE_PARAM(int,
                    kWebAuthnImmediateMediationTimeoutMilliseconds,
@@ -203,9 +190,9 @@ BASE_FEATURE(kWebAuthnSendPinGeneration,
              "WebAuthenticationSendPinGeneration",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Not yet enabled by default.
+// Enabled by default in M145. Remove in or after M148.
 BASE_FEATURE(kAuthenticatorPasswordsOnlyImmediateRequests,
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Not yet enabled by default.
 BASE_FEATURE(kWebAuthnNewRefreshFlow,
@@ -219,11 +206,20 @@ BASE_FEATURE(kWebAuthenticationHashClientDataJsonForEnclave,
 // Enabled by default in M143. Remove in or after M146.
 BASE_FEATURE(kWebAuthnOpportunisticRetrieval, base::FEATURE_ENABLED_BY_DEFAULT);
 
+BASE_FEATURE_PARAM(int,
+                   kWebAuthnOpportunisticRetrievalTimeToKeepCachedKeySeconds,
+                   &kWebAuthnOpportunisticRetrieval,
+                   "cached_key_ttl",
+                   kDefaultOpportunisticRetrievalTimeToKeepCachedKeySeconds);
+
 // Enabled by default in M143. Remove in or after M146.
 BASE_FEATURE(kWebAuthenticationWindowsHints, base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enabled by default in M144. Remove in or after M147.
 BASE_FEATURE(kWebAuthnEnableRefreshingStateOfGpmEnclaveController,
              base::FEATURE_ENABLED_BY_DEFAULT);
+
+// Enabled by default in M146. Remove in or after M149.
+BASE_FEATURE(kWebAuthnHmacSecretMcExtension, base::FEATURE_ENABLED_BY_DEFAULT);
 
 }  // namespace device

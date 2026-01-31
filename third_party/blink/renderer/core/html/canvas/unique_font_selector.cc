@@ -8,7 +8,6 @@
 #include "third_party/blink/renderer/platform/fonts/font.h"
 #include "third_party/blink/renderer/platform/fonts/font_selector.h"
 #include "third_party/blink/renderer/platform/heap/visitor.h"
-#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 
 namespace blink {
 
@@ -49,22 +48,9 @@ const Font* UniqueFontSelector::FindOrCreateFont(
     add_result.stored_value->value.list_index = lru_list_.begin().GetIndex();
   }
 
-  wtf_size_t max_size = CanvasFontCache::MaxFonts();
-  while (lru_list_.size() > max_size) {
-    auto& value = lru_list_.back();
-    // Allow the cache size to exceed MaxFonts() within the same frame.
-    if (value.generation == frame_generation_) {
-      // However, it should not exceed MaxFonts() * 2.
-      if (!RuntimeEnabledFeatures::CanvasTextTexImage2DFixEnabled() ||
-          lru_list_.size() <= max_size * 2) {
-        break;
-      }
-    }
-    font_cache_.erase(value.description);
-    lru_list_.pop_back();
-  }
+  // We might have exceeded the size limit of the cache.
+  EvictExcessEntries();
 
-  DCHECK_EQ(font_cache_.size(), lru_list_.size());
   return font;
 }
 
@@ -81,10 +67,31 @@ void UniqueFontSelector::RegisterForInvalidationCallbacks(
 
 void UniqueFontSelector::OnMemoryPressure(
     base::MemoryPressureLevel memory_pressure_level) {
-  if (memory_pressure_level == base::MEMORY_PRESSURE_LEVEL_CRITICAL) {
-    font_cache_.clear();
-    lru_list_.clear();
+  // Memory pressure has changed, so the max number of fonts may have been
+  // updated. Evict excess entries to match the new limit.
+  EvictExcessEntries();
+}
+
+unsigned UniqueFontSelector::GetCurrentMaxFonts() const {
+  return CanvasFontCache::MaxFonts() * GetMemoryLimitRatio();
+}
+
+void UniqueFontSelector::EvictExcessEntries() {
+  wtf_size_t max_size = GetCurrentMaxFonts();
+  while (lru_list_.size() > max_size) {
+    auto& value = lru_list_.back();
+    // Allow the cache size to exceed `max_size` within the same frame.
+    if (value.generation == frame_generation_) {
+      // However, it should not exceed `max_size` * 2.
+      if (lru_list_.size() <= max_size * 2) {
+        break;
+      }
+    }
+    font_cache_.erase(value.description);
+    lru_list_.pop_back();
   }
+
+  DCHECK_EQ(font_cache_.size(), lru_list_.size());
 }
 
 void UniqueFontSelector::CacheValue::Trace(Visitor* visitor) const {

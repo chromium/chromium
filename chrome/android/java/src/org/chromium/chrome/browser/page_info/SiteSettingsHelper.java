@@ -52,6 +52,12 @@ public class SiteSettingsHelper {
     /** Show the single category settings page for given category and type. */
     public static void showCategorySettings(
             Context context, @SiteSettingsCategory.Type int category) {
+        showCategorySettings(context, category, /* addToBackStack= */ false);
+    }
+
+    /** Show the single category settings page for given category and type. */
+    public static void showCategorySettings(
+            Context context, @SiteSettingsCategory.Type int category, boolean addToBackStack) {
         SettingsNavigation settingsNavigation =
                 SettingsNavigationFactory.createSettingsNavigation();
         Bundle extras = new Bundle();
@@ -63,7 +69,7 @@ public class SiteSettingsHelper {
                 context.getString(ContentSettingsResources.getTitleForCategory(category)));
         Intent preferencesIntent =
                 settingsNavigation.createSettingsIntent(
-                        context, SingleCategorySettings.class, extras);
+                        context, SingleCategorySettings.class, extras, addToBackStack);
         launchIntent(context, preferencesIntent);
     }
 

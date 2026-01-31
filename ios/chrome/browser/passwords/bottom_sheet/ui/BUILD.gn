@@ -1,0 +1,65 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("ui") {
+  sources = [
+    "credential_suggestion_bottom_sheet_consumer.h",
+    "credential_suggestion_bottom_sheet_delegate.h",
+    "credential_suggestion_bottom_sheet_handler.h",
+    "credential_suggestion_bottom_sheet_presenter.h",
+    "credential_suggestion_bottom_sheet_view_controller.h",
+    "credential_suggestion_bottom_sheet_view_controller.mm",
+    "passkey_creation_bottom_sheet_consumer.h",
+    "passkey_creation_bottom_sheet_view_controller.h",
+    "passkey_creation_bottom_sheet_view_controller.mm",
+  ]
+  deps = [
+    "//base",
+    "//components/autofill/ios/browser",
+    "//components/password_manager/core/browser",
+    "//components/password_manager/core/browser/features:password_features",
+    "//components/password_manager/ios",
+    "//components/url_formatter",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/favicon/model",
+    "//ios/chrome/browser/settings/ui_bundled/password:title_view",
+    "//ios/chrome/browser/shared/public/commands",
+    "//ios/chrome/browser/shared/ui/bottom_sheet:bottom_sheet_view_controller",
+    "//ios/chrome/browser/shared/ui/bottom_sheet:table_view_bottom_sheet_view_controller",
+    "//ios/chrome/browser/shared/ui/symbols",
+    "//ios/chrome/browser/shared/ui/table_view/cells",
+    "//ios/chrome/browser/shared/ui/table_view/content_configuration",
+    "//ios/chrome/common:string_util",
+    "//ios/chrome/common/credential_provider/ui/resources",
+    "//ios/chrome/common/ui/button_stack",
+    "//ios/chrome/common/ui/colors",
+    "//ios/chrome/common/ui/confirmation_alert",
+    "//ios/chrome/common/ui/elements:branded_navigation_item_title_view",
+    "//ios/chrome/common/ui/favicon",
+    "//ios/chrome/common/ui/util",
+    "//ui/base",
+    "//url",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "passkey_creation_bottom_sheet_view_controller_unittest.mm" ]
+  deps = [
+    ":ui",
+    "//base",
+    "//base/test:test_support",
+    "//components/password_manager/core/browser/features:password_features",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/favicon/model:test_support",
+    "//ios/chrome/browser/shared/public/commands",
+    "//ios/chrome/browser/shared/ui/bottom_sheet:table_view_bottom_sheet_view_controller",
+    "//ios/chrome/common/ui/button_stack",
+    "//ios/chrome/common/ui/confirmation_alert",
+    "//testing/gtest",
+    "//third_party/ocmock",
+    "//ui/base",
+    "//url",
+  ]
+}

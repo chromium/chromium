@@ -18,7 +18,6 @@ import '/strings.m.js';
 /** Subpages */
 import './crostini_page/bruschetta_subpage.js';
 import './crostini_page/crostini_export_import.js';
-import './crostini_page/crostini_extra_containers.js';
 import './crostini_page/crostini_port_forwarding.js';
 import './crostini_page/crostini_shared_usb_devices.js';
 import './crostini_page/crostini_subpage.js';
@@ -123,8 +122,6 @@ export type {CrostiniBrowserProxy, CrostiniDiskInfo, CrostiniPortActiveSetting, 
 export {CrostiniBrowserProxyImpl, CrostiniPortProtocol, VmType} from './crostini_page/crostini_browser_proxy.js';
 export {SettingsCrostiniDiskResizeDialogElement} from './crostini_page/crostini_disk_resize_dialog.js';
 export {SettingsCrostiniExportImportElement} from './crostini_page/crostini_export_import.js';
-export {ExtraContainersElement} from './crostini_page/crostini_extra_containers.js';
-export {ExtraContainersCreateDialog} from './crostini_page/crostini_extra_containers_create_dialog.js';
 export {CrostiniPortForwardingElement} from './crostini_page/crostini_port_forwarding.js';
 export {CrostiniSettingsCardElement} from './crostini_page/crostini_settings_card.js';
 export {CrostiniSharedUsbDevicesElement} from './crostini_page/crostini_shared_usb_devices.js';
@@ -241,7 +238,6 @@ export {SettingsTtsVoiceSubpageElement} from './os_a11y_page/tts_voice_subpage.j
 export {SettingsChannelSwitcherDialogElement} from './os_about_page/channel_switcher_dialog.js';
 export {SettingsConsumerAutoUpdateToggleDialogElement} from './os_about_page/consumer_auto_update_toggle_dialog.js';
 export {SettingsDetailedBuildInfoSubpageElement} from './os_about_page/detailed_build_info_subpage.js';
-export {EditHostnameDialogElement} from './os_about_page/edit_hostname_dialog.js';
 export {SettingsAndroidAppsSubpageElement} from './os_apps_page/android_apps_subpage.js';
 export {AppManagementAppDetailViewElement} from './os_apps_page/app_management_page/app_detail_view.js';
 export {AppManagementAppDetailsItem} from './os_apps_page/app_management_page/app_details_item.js';

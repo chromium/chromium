@@ -25,7 +25,7 @@ namespace {
 
 constexpr base::TimeDelta kRecentVisitThreshold = base::Days(30);
 
-// Keys in base::Value::Dict cannot contain periods.
+// Keys in base::DictValue cannot contain periods.
 std::string SanitizeAppName(std::string_view app_name) {
   std::string sanitized;
   sanitized.reserve(app_name.size());
@@ -41,7 +41,7 @@ std::string SanitizeAppName(std::string_view app_name) {
 }
 
 bool HasRecentAppVisit(PrefService& prefs, std::string_view app_name) {
-  const base::Value::Dict& timestamps =
+  const base::DictValue& timestamps =
       prefs.GetDict(prefs::kExternalAppRedirectTimestamps);
   std::optional<base::Time> app_timestamp =
       base::ValueToTime(timestamps.Find(SanitizeAppName(app_name)));

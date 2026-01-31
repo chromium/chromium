@@ -1,6 +1,6 @@
 [document web]
 ++[page tab list] horizontal multiselectable
-++++[page tab] name='tab1' selectable
+++++[page tab] name='tab1'
 ++++[page tab] name='tab2' selectable selected
-++++[page tab] name='tab3' selectable
+++++[page tab] name='tab3'
 ++[static] name='Done'

@@ -26,6 +26,8 @@ ReaderModeFontFamily ConvertMojomFontFamily(
       return ReaderModeFontFamily::kSerif;
     case dom_distiller::mojom::FontFamily::kMonospace:
       return ReaderModeFontFamily::kMonospace;
+    case dom_distiller::mojom::FontFamily::kLexend:
+      return ReaderModeFontFamily::kLexend;
   }
 }
 
@@ -159,6 +161,18 @@ void ReaderModeMetricsHelper::RecordReaderDistillerCompleted(
   RecordDistillationTime(result);
   base::UmaHistogramEnumeration(kReaderModeDistillerResultHistogram,
                                 GetDistillerOutcome(access_point, result));
+}
+
+void ReaderModeMetricsHelper::RecordDataLoadTriggered() {
+  data_load_timer_ = std::make_unique<base::ElapsedTimer>();
+}
+
+void ReaderModeMetricsHelper::RecordDataLoadCompleted() {
+  if (data_load_timer_) {
+    base::TimeDelta elapsed = data_load_timer_->Elapsed();
+    base::UmaHistogramTimes(kReaderModeDataLoadLatencyHistogram, elapsed);
+    data_load_timer_.reset();
+  }
 }
 
 void ReaderModeMetricsHelper::RecordReaderShown() {

@@ -2,29 +2,91 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//components/services/on_device_translation/buildflags/features.gni")
+import("//components/on_device_translation/buildflags/features.gni")
 
 assert(enable_on_device_translation)
 
-source_set("on_device_translation") {
+source_set("features") {
   sources = [
+    "constants.cc",
+    "constants.h",
     "features.cc",
     "features.h",
   ]
   deps = [
     "//base",
+    "//crypto",
     "//third_party/blink/public/common:headers",
   ]
 }
 
+source_set("on_device_translation") {
+  sources = [
+    "installer.cc",
+    "installer.h",
+    "metrics.cc",
+    "metrics.h",
+    "translation_manager_util.cc",
+    "translation_manager_util.h",
+    "translator.cc",
+    "translator.h",
+  ]
+  public_deps = [ ":features" ]
+  deps = [
+    ":public",
+    "//base",
+    "//components/language/core/browser",
+    "//components/on_device_translation/public/mojom",
+    "//components/prefs",
+    "//components/user_prefs",
+    "//content/public/browser",
+    "//ui/base",
+  ]
+}
+
+source_set("public") {
+  sources = [
+    "public/language_pack.cc",
+    "public/language_pack.h",
+    "public/paths.cc",
+    "public/paths.h",
+    "public/pref_names.cc",
+    "public/pref_names.h",
+    "public/supported_languages.cc",
+    "public/supported_languages.h",
+  ]
+  public_deps = [ "//base" ]
+  deps = [ "//components/prefs" ]
+}
+
 source_set("unit_tests") {
   testonly = true
-
-  sources = [ "features_unittest.cc" ]
+  sources = [
+    "features_unittest.cc",
+    "metrics_unittest.cc",
+    "public/language_pack_unittest.cc",
+    "translation_manager_util_unittest.cc",
+  ]
   deps = [
+    ":on_device_translation",
+    ":public",
     "//base/test:test_support",
-    "//components/on_device_translation",
     "//testing/gmock",
     "//testing/gtest",
+  ]
+}
+
+static_library("test_support") {
+  testonly = true
+  sources = [
+    "test/fake_installer.cc",
+    "test/fake_installer.h",
+  ]
+  deps = [
+    ":on_device_translation",
+    ":public",
+    "//base",
+    "//base/test:test_support",
+    "//components/prefs",
   ]
 }

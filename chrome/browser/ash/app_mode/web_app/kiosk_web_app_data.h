@@ -90,11 +90,11 @@ class KioskWebAppData : public KioskAppDataBase {
   void OnDidDownloadIcon(SkBitmap result);
   void OnIconLoadDone(std::optional<gfx::ImageSkia> icon);
 
-  bool LoadLaunchUrlFromDictionary(const base::Value::Dict& dict);
+  bool LoadLaunchUrlFromDictionary(const base::DictValue& dict);
 
   // Returns the icon url of the icon that was being provided during previous
   // session.
-  GURL GetLastIconUrl(const base::Value::Dict& dict) const;
+  GURL GetLastIconUrl(const base::DictValue& dict) const;
 
   const scoped_refptr<network::SharedURLLoaderFactory>
       shared_url_loader_factory_;

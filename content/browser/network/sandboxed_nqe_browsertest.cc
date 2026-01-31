@@ -2,9 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <algorithm>
 #include <vector>
 
-#include "base/containers/contains.h"
 #include "base/run_loop.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
@@ -58,7 +58,7 @@ class TestNetworkQualityObserver
   }
 
   void WaitForNotification(net::EffectiveConnectionType run_loop_wait_type) {
-    if (base::Contains(received_types_, run_loop_wait_type)) {
+    if (std::ranges::contains(received_types_, run_loop_wait_type)) {
       received_types_.clear();
       return;
     }

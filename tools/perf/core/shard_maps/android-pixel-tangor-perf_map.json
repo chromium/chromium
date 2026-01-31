@@ -23,7 +23,7 @@
                 "abridged": false
             },
             "blink_perf.layout": {
-                "end": 73,
+                "end": 75,
                 "abridged": false
             }
         }
@@ -31,7 +31,7 @@
     "1": {
         "benchmarks": {
             "blink_perf.layout": {
-                "begin": 73,
+                "begin": 75,
                 "abridged": false
             },
             "blink_perf.owp_storage": {
@@ -193,13 +193,13 @@
         }
     },
     "extra_infos": {
-        "num_stories": 1121,
+        "num_stories": 1125,
         "predicted_min_shard_time": 3797.0,
         "predicted_min_shard_index": 7,
-        "predicted_max_shard_time": 5699.0,
+        "predicted_max_shard_time": 5752.0,
         "predicted_max_shard_index": 1,
-        "shard #0": 4129.0,
-        "shard #1": 5699.0,
+        "shard #0": 4116.0,
+        "shard #1": 5752.0,
         "shard #2": 3860.0,
         "shard #3": 3837.0,
         "shard #4": 3826.0,

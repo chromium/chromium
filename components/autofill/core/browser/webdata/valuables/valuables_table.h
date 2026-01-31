@@ -41,6 +41,15 @@ namespace autofill {
 //   merchant_domain    List of full origins for merchant websites on which
 //                      this card would apply.
 // -----------------------------------------------------------------------------
+// valuables_metadata   Contains the metadata for loyalty cards.
+//
+//   valuable_id        Identifies the relevant valuable. Matches the
+//                      `valuable_id` in the corresponding table.
+//   use_count          The number of times that this valuable has been used to
+//                      fill a form.
+//   use_date           The last time that this valuable was used to fill a
+//                      form.
+// -----------------------------------------------------------------------------
 class ValuablesTable : public WebDatabaseTable {
  public:
   ValuablesTable();
@@ -79,15 +88,32 @@ class ValuablesTable : public WebDatabaseTable {
   // unique identifier. Returns `true` if the operation succeeded.
   bool RemoveLoyaltyCard(ValuableId loyalty_card_id);
 
+  // Adds or updates a valuable metadata. Returns true on success.
+  bool AddOrUpdateValuableMetadata(const ValuableMetadata& metadata);
+
+  // Removes the valuable metadata with a given valuable id if exists. Returns
+  // true on success.
+  bool RemoveValuableMetadata(ValuableId valuable_id);
+
+  // Returns the valuable metadata for the given valuable id.
+  std::optional<ValuableMetadata> GetValuableMetadata(
+      ValuableId valuable_id) const;
+
  private:
   bool InitLoyaltyCardsTable();
   bool InitLoyaltyCardMerchantDomainTable();
+  bool InitValuablesMetadataTable();
+
+  bool AddValuableMetadata(const ValuableMetadata& metadata) const;
 
   // Renames the database table from `loyalty_card` to `loyalty_cards` and
   // renames the following columns:
   //   * `guid` to `loyalty_card_id`.
   //   * `unmasked_loyalty_card_suffix` to `loyalty_card_number`.
   bool MigrateToVersion138();
+
+  // Adds `valuables_metadata` table.
+  bool MigrateToVersion148AddMetadataTable();
 };
 
 }  // namespace autofill

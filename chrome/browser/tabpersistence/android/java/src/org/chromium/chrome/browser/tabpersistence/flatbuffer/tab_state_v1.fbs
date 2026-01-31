@@ -51,5 +51,8 @@ table TabStateFlatBufferV1 {
 
     // Tab is in pinned state.
     is_pinned:bool;
+
+    // Represents the current URL of the tab.
+    url:string;
 }
 

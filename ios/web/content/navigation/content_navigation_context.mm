@@ -4,15 +4,13 @@
 
 #import "ios/web/content/navigation/content_navigation_context.h"
 
-#import <optional>
-
 #import "base/notreached.h"
 #import "content/public/browser/navigation_handle.h"
 #import "net/base/net_errors.h"
 
 namespace web {
 
-std::optional<NSInteger> GetIOSErrorForNetError(int net_error_code) {
+NSInteger GetIOSErrorForNetError(int net_error_code) {
   switch (net_error_code) {
     case net::ERR_ACCESS_DENIED:
       // TODO(crbug.com/40257932): no analog for
@@ -78,6 +76,7 @@ std::optional<NSInteger> GetIOSErrorForNetError(int net_error_code) {
       // kCFURLErrorServerCertificateNotYetValid.
       return kCFURLErrorServerCertificateHasBadDate;
     case net::ERR_CERT_AUTHORITY_INVALID:
+    case net::ERR_CERT_INVALID:
       // TODO(crbug.com/40257932): no analog for
       // kCFURLErrorServerCertificateHasUnknownRoot.
       return kCFURLErrorServerCertificateUntrusted;
@@ -86,9 +85,12 @@ std::optional<NSInteger> GetIOSErrorForNetError(int net_error_code) {
     case net::ERR_SSL_CLIENT_AUTH_CERT_NEEDED:
       return kCFURLErrorClientCertificateRequired;
     default:
-      break;
+      // There are 200+ net error codes but only ~40 iOS error codes.
+      // Following Android WebView's pattern (ErrorCodeConversionHelper.java),
+      // we return a generic error for unmapped codes rather than maintaining
+      // an exhaustive mapping.
+      return kCFURLErrorUnknown;
   }
-  return std::nullopt;
 }
 
 NavigationContext* ContentNavigationContext::GetOrCreate(
@@ -146,10 +148,9 @@ NSError* ContentNavigationContext::GetError() const {
     error_ = nil;
   } else {
     auto ios_error_code = GetIOSErrorForNetError(net_error_code);
-    CHECK(ios_error_code);
     error_ = [[NSError alloc]
         initWithDomain:NSURLErrorDomain
-                  code:*ios_error_code
+                  code:ios_error_code
               userInfo:@{
                 @"url" : [NSString stringWithUTF8String:GetUrl().spec().c_str()]
               }];

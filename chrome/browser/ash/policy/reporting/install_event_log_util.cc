@@ -67,8 +67,8 @@ constexpr char kFetchTries[] = "fetchTries";
 // Serializes |event| and |context| as JSON and returns the MD5 hash of the two JSON strings
 // concatenated together. Returns std::nullopt if either |event| or |context| cannot be
 // serialized.
-std::optional<std::string> GetHash(const base::Value::Dict& event,
-                                   const base::Value::Dict& context) {
+std::optional<std::string> GetHash(const base::DictValue& event,
+                                   const base::DictValue& context) {
   std::optional<std::string> event_json = base::WriteJson(event);
   std::optional<std::string> context_json = base::WriteJson(context);
 
@@ -90,12 +90,12 @@ std::string GetSerialNumber() {
           ""));
 }
 
-base::Value::List ConvertExtensionProtoToValue(
+base::ListValue ConvertExtensionProtoToValue(
     const em::ExtensionInstallReportRequest* extension_install_report_request,
-    const base::Value::Dict& context) {
+    const base::DictValue& context) {
   DCHECK(extension_install_report_request);
 
-  base::Value::List event_list;
+  base::ListValue event_list;
   std::set<extensions::ExtensionId> seen_ids;
 
   for (const em::ExtensionInstallReport& extension_install_report :
@@ -103,7 +103,7 @@ base::Value::List ConvertExtensionProtoToValue(
     for (const em::ExtensionInstallReportLogEvent&
              extension_install_report_log_event :
          extension_install_report.logs()) {
-      base::Value::Dict wrapper = ConvertExtensionEventToValue(
+      base::DictValue wrapper = ConvertExtensionEventToValue(
           extension_install_report.has_extension_id()
               ? extension_install_report.extension_id()
               : "",
@@ -124,12 +124,12 @@ base::Value::List ConvertExtensionProtoToValue(
   return event_list;
 }
 
-base::Value::Dict ConvertExtensionEventToValue(
+base::DictValue ConvertExtensionEventToValue(
     const extensions::ExtensionId& extension_id,
     const em::ExtensionInstallReportLogEvent&
         extension_install_report_log_event,
-    const base::Value::Dict& context) {
-  base::Value::Dict event;
+    const base::DictValue& context) {
+  base::DictValue event;
   if (!extension_id.empty()) {
     event.Set(kExtensionId, extension_id);
   }
@@ -229,7 +229,7 @@ base::Value::Dict ConvertExtensionEventToValue(
   }
 
   auto wrapper =
-      base::Value::Dict().Set(kExtensionInstallEvent, std::move(event));
+      base::DictValue().Set(kExtensionInstallEvent, std::move(event));
 
   if (extension_install_report_log_event.has_timestamp()) {
     // Format the current time (UTC) in RFC3339 format
@@ -246,19 +246,19 @@ base::Value::Dict ConvertExtensionEventToValue(
   return wrapper;
 }
 
-base::Value::List ConvertArcAppProtoToValue(
+base::ListValue ConvertArcAppProtoToValue(
     const em::AppInstallReportRequest* app_install_report_request,
-    const base::Value::Dict& context) {
+    const base::DictValue& context) {
   DCHECK(app_install_report_request);
 
-  base::Value::List event_list;
+  base::ListValue event_list;
   std::set<std::string> seen_ids;
 
   for (const em::AppInstallReport& app_install_report :
        app_install_report_request->app_install_reports()) {
     for (const em::AppInstallReportLogEvent& app_install_report_log_event :
          app_install_report.logs()) {
-      base::Value::Dict wrapper = ConvertArcAppEventToValue(
+      base::DictValue wrapper = ConvertArcAppEventToValue(
           app_install_report.has_package() ? app_install_report.package() : "",
           app_install_report_log_event, context);
       auto* id = wrapper.FindString(kEventId);
@@ -277,11 +277,11 @@ base::Value::List ConvertArcAppProtoToValue(
   return event_list;
 }
 
-base::Value::Dict ConvertArcAppEventToValue(
+base::DictValue ConvertArcAppEventToValue(
     const std::string& package,
     const em::AppInstallReportLogEvent& app_install_report_log_event,
-    const base::Value::Dict& context) {
-  base::Value::Dict event;
+    const base::DictValue& context) {
+  base::DictValue event;
 
   if (!package.empty()) {
     event.Set(kAppPackage, package);
@@ -327,7 +327,7 @@ base::Value::Dict ConvertArcAppEventToValue(
   event.Set(kSerialNumber, GetSerialNumber());
 
   auto wrapper =
-      base::Value::Dict().Set(kAndroidAppInstallEvent, std::move(event));
+      base::DictValue().Set(kAndroidAppInstallEvent, std::move(event));
 
   if (app_install_report_log_event.has_timestamp()) {
     // Format the current time (UTC) in RFC3339 format

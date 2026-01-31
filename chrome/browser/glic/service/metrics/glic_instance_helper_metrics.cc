@@ -6,6 +6,7 @@
 
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/user_metrics.h"
+#include "base/strings/strcat.h"
 
 namespace glic {
 
@@ -35,11 +36,12 @@ void GlicInstanceHelperMetrics::OnPinnedByInstance(
   pinned_by_instances_.insert(instance_id);
 }
 
-void GlicInstanceHelperMetrics::SetIsDaisyChained() {
+void GlicInstanceHelperMetrics::SetIsDaisyChained(DaisyChainSource source) {
   if (is_daisy_chained_) {
     return;
   }
   is_daisy_chained_ = true;
+  daisy_chain_source_ = source;
   metric_finalized_ = false;
   current_metric_action_ = DaisyChainFirstAction::kNoAction;
   flush_timer_.Stop();
@@ -48,6 +50,12 @@ void GlicInstanceHelperMetrics::SetIsDaisyChained() {
 void GlicInstanceHelperMetrics::OnDaisyChainAction(
     DaisyChainFirstAction action) {
   if (!is_daisy_chained_ || metric_finalized_) {
+    return;
+  }
+
+  // kNoAction should not overwrite any other action.
+  if (action == DaisyChainFirstAction::kNoAction &&
+      current_metric_action_ != DaisyChainFirstAction::kNoAction) {
     return;
   }
 
@@ -67,8 +75,10 @@ void GlicInstanceHelperMetrics::FlushMetric() {
   if (metric_finalized_) {
     return;
   }
-  base::UmaHistogramEnumeration("Glic.Instance.FirstActionInDaisyChainPanel",
-                                current_metric_action_);
+  std::string source_str = GetDaisyChainSourceString(daisy_chain_source_);
+  base::UmaHistogramEnumeration(
+      base::StrCat({"Glic.Instance.FirstActionInDaisyChainPanel.", source_str}),
+      current_metric_action_);
   metric_finalized_ = true;
   flush_timer_.Stop();
 }

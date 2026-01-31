@@ -108,7 +108,7 @@ TEST_F(PolicyLoggerTest, MaxSizeExceededDeletesOldestLog) {
   AddLogs("Last log added and size is exceeded.", policy_logger);
 
   size_t current_size = policy_logger->GetPolicyLogsSizeForTesting();
-  base::Value::List current_logs = policy_logger->GetAsList();
+  base::ListValue current_logs = policy_logger->GetAsList();
 
   EXPECT_EQ(current_size, policy::PolicyLogger::kMaxLogsSize);
 

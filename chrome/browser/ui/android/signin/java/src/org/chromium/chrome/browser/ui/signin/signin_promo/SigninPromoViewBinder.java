@@ -59,6 +59,15 @@ final class SigninPromoViewBinder {
                     TextView accountTextPrimary = view.findViewById(R.id.account_text_primary);
                     TextView accountTextSecondary = view.findViewById(R.id.account_text_secondary);
                     accountTextPrimary.setText(profileData.getFullName());
+                    String fullName = profileData.getFullName();
+                    // If no displayable name is available, we hide it to make the email address
+                    // vertically centered.
+                    if (fullName != null && !fullName.isEmpty()) {
+                        accountTextPrimary.setText(fullName);
+                        accountTextPrimary.setVisibility(View.VISIBLE);
+                    } else {
+                        accountTextPrimary.setVisibility(View.GONE);
+                    }
                     accountTextSecondary.setText(profileData.getAccountEmail());
                     view.getSignedInPromoProfileImage().setImageDrawable(accountImage);
                 }

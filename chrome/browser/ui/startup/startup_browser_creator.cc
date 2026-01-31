@@ -13,7 +13,6 @@
 
 #include "apps/switches.h"
 #include "base/command_line.h"
-#include "base/containers/contains.h"
 #include "base/debug/dump_without_crashing.h"
 #include "base/feature_list.h"
 #include "base/files/file_path.h"
@@ -141,7 +140,7 @@
 #endif
 
 #if !BUILDFLAG(IS_CHROMEOS)
-#include "chrome/browser/web_applications/isolated_web_apps/install/isolated_web_app_installation_manager.h"
+#include "chrome/browser/web_applications/isolated_web_apps/install/isolated_web_app_dev_install_manager.h"
 #endif
 
 #if !BUILDFLAG(IS_ANDROID)
@@ -184,8 +183,8 @@ class ProfileLaunchObserver : public ProfileObserver,
   // Returns true if `profile` has been launched by
   // StartupBrowserCreator::LaunchBrowser() and has at least one open window.
   bool HasBeenLaunchedAndBrowserOpen(const Profile* profile) const {
-    return base::Contains(opened_profiles_, profile) &&
-           base::Contains(launched_profiles_, profile);
+    return opened_profiles_.contains(profile) &&
+           launched_profiles_.contains(profile);
   }
 
   void AddLaunched(Profile* profile) {
@@ -1235,7 +1234,7 @@ bool StartupBrowserCreator::ProcessCmdLineImpl(
     }
   }
 
-  if (web_app::IsolatedWebAppInstallationManager::HasIwaInstallSwitch(
+  if (web_app::IsolatedWebAppDevInstallManager::HasIwaInstallSwitch(
           command_line)) {
     if (profile_info.mode == StartupProfileMode::kProfilePicker) {
       auto* profile_manager = g_browser_process->profile_manager();
@@ -1250,8 +1249,8 @@ bool StartupBrowserCreator::ProcessCmdLineImpl(
                  << "').";
       return false;
     } else {
-      web_app::IsolatedWebAppInstallationManager::
-          MaybeInstallIwaFromCommandLine(command_line, *privacy_safe_profile);
+      web_app::IsolatedWebAppDevInstallManager::MaybeInstallIwaFromCommandLine(
+          command_line, *privacy_safe_profile);
     }
   }
 #endif  //  !BUILDFLAG(IS_CHROMEOS)

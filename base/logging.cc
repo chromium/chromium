@@ -834,8 +834,8 @@ void LogMessage::Flush() {
             return OS_LOG_TYPE_DEFAULT;
         }
       }(severity_);
-      os_log_with_type(log.get(), os_log_type, "%{public}s",
-                       str_newline.c_str());
+      UNSAFE_TODO(os_log_with_type(log.get(), os_log_type, "%{public}s",
+                                   str_newline.c_str()));
     }
 #elif BUILDFLAG(IS_ANDROID)
     android_LogPriority priority =
@@ -1008,8 +1008,8 @@ void LogMessage::Init(const char* file, int line) {
 void LogMessage::HandleFatal(size_t stack_start,
                              const std::string& str_newline) const {
   char str_stack[1024];
-  UNSAFE_TODO(
-      base::strlcpy(str_stack, str_newline.data(), std::size(str_stack)));
+
+  base::strlcpy(str_stack, str_newline.data(), std::size(str_stack));
   base::debug::Alias(&str_stack);
 
   if (!GetLogAssertHandlerStack().empty()) {

@@ -11,7 +11,6 @@
 
 #include "base/check_op.h"
 #include "base/command_line.h"
-#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
@@ -43,6 +42,9 @@ namespace {
 namespace flat_rule = url_pattern_index::flat;
 namespace dnr_api = api::declarative_net_request;
 using PageAccess = PermissionsData::PageAccess;
+
+constexpr char kAllowWebViewDeclarativeNetRequest[] =
+    "allow-webview-declarative-net-request";
 
 void NotifyRequestWithheld(const ExtensionId& extension_id,
                            const WebRequestInfo& request) {
@@ -228,8 +230,8 @@ bool RulesetManager::HasExtraHeadersMatcherForRequest(
   // request would potentially match any onHeadersReceived rules based on
   // non-header parameters.
   return HasRulesets(RulesetMatchingStage::kOnHeadersReceived) ||
-         base::Contains(actions, RequestAction::Type::MODIFY_HEADERS,
-                        &RequestAction::type);
+         std::ranges::contains(actions, RequestAction::Type::MODIFY_HEADERS,
+                               &RequestAction::type);
 }
 
 void RulesetManager::OnRenderFrameCreated(content::RenderFrameHost* host) {
@@ -519,6 +521,14 @@ bool RulesetManager::ShouldEvaluateRequest(
   // other extension origins anyway).
   if (request.url.SchemeIs(kExtensionScheme)) {
     return false;
+  }
+
+  // Declarative Net Request rules should not be matched against requests
+  // originating from WebViews, unless explicitly allowed.
+  // TODO(b/476261948): Replace the flag with a better solution.
+  if (request.is_web_view) {
+    return base::CommandLine::ForCurrentProcess()->HasSwitch(
+        kAllowWebViewDeclarativeNetRequest);
   }
 
   return true;

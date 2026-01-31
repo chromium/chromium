@@ -143,6 +143,23 @@ class DiscoverTestcaseFilesUnittest(fake_filesystem_unittest.TestCase):
         self.assertCountEqual([str(c.test_file) for c in found_files],
                               [str(p) for p in expected_files])
 
+    @mock.patch('eval_prompts.constants.CHROMIUM_SRC',
+                pathlib.Path('/chromium/src'))
+    def test_discover_testcase_files_extra_path(self):
+        """Tests test files are discovered when not under the default paths."""
+        file_path = '/chromium/src/some/path/ext1/tests/test1.promptfoo.yaml'
+        self.fs.create_file(file_path, contents='tests: [{}]')
+
+        # First ensure that they are not discovered when extra_test_path
+        # is not provided.
+        found_files = eval_prompts._discover_testcase_files()
+        self.assertEqual(len(found_files), 0)
+
+        # Now let's provide the extra tests path.
+        found_files = eval_prompts._discover_testcase_files(['some/path'])
+        self.assertEqual(len(found_files), 1)
+        expectedPath = pathlib.Path(file_path)
+        self.assertEqual(str(found_files[0].test_file), str(expectedPath))
 
 
 class DetermineShardValuesUnittest(unittest.TestCase):

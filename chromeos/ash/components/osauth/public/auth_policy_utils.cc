@@ -19,10 +19,10 @@ constexpr auto kAuthFactorPolicyMap =
           {AshAuthFactor::kLocalPassword, AshAuthFactor::kCryptohomePin}},
          {"LOCAL_PASSWORD", {AshAuthFactor::kLocalPassword}},
          {"PIN", {AshAuthFactor::kCryptohomePin}}});
-// LINT.ThenChange(//components/policy/resources/templates/policy_definitions/Signin/LocalAuthFactors.yaml:LocalAuthFactorsPolicySchema)
+// LINT.ThenChange(//components/policy/resources/templates/policy_definitions/Signin/AllowedLocalAuthFactors.yaml:LocalAuthFactorsPolicySchema)
 
 std::optional<AuthFactorsSet> GetAuthFactorsSetFromPolicyList(
-    const base::Value::List* policy_allowed_auth_factors) {
+    const base::ListValue* policy_allowed_auth_factors) {
   AuthFactorsSet result;
   if (policy_allowed_auth_factors == nullptr) {
     return std::nullopt;

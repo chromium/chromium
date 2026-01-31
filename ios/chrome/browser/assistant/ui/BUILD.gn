@@ -1,0 +1,27 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("ui") {
+  sources = [
+    "assistant_bar_configuration.h",
+    "assistant_bar_configuration.mm",
+    "assistant_bar_item.h",
+    "assistant_bar_item.mm",
+    "assistant_sheet_animator.h",
+    "assistant_sheet_animator.mm",
+    "assistant_sheet_consumer.h",
+    "assistant_sheet_view.h",
+    "assistant_sheet_view.mm",
+    "assistant_sheet_view_controller.h",
+    "assistant_sheet_view_controller.mm",
+    "assistant_sheet_view_controller_delegate.h",
+  ]
+  deps = [
+    "//base",
+    "//ios/chrome/browser/shared/ui/symbols",
+    "//ios/chrome/common/ui/colors",
+    "//ios/chrome/common/ui/util",
+    "//ui/base",
+  ]
+}

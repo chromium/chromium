@@ -4,6 +4,9 @@
 
 package org.jni_zero;
 
+import javax.annotation.processing.Generated;
+
+@Generated("JNI Zero")
 public class GEN_JNI {
   public static Object org_jni_1zero_SampleForAnnotationProcessor_bar(Object sample) {
     return J.N.M$zHpGqF(sample);

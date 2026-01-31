@@ -9,6 +9,7 @@
 #include <optional>
 #include <utility>
 
+#include "base/feature_list.h"
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "base/types/optional_ref.h"
@@ -160,6 +161,8 @@ class CC_EXPORT BrowserControlsOffsetManager {
 
   void ResetAnimations();
 
+  float MaximumShownRatioDeltaPerFrame(float min_ratio) const;
+
  protected:
   BrowserControlsOffsetManager(BrowserControlsOffsetManagerClient* client,
                                float controls_show_threshold,
@@ -179,6 +182,7 @@ class CC_EXPORT BrowserControlsOffsetManager {
                                     float stop_ratio);
   void SetTopMinHeightOffsetAnimationRange(float from, float to);
   void SetBottomMinHeightOffsetAnimationRange(float from, float to);
+  bool IsAnimatingHeightChange();
 
   // The client manages the lifecycle of this.
   raw_ptr<BrowserControlsOffsetManagerClient> client_;
@@ -187,6 +191,11 @@ class CC_EXPORT BrowserControlsOffsetManager {
 
   // Accumulated scroll delta since last baseline reset
   float accumulated_scroll_delta_;
+
+  // When the amount by which the browser controls can scroll is limited by
+  // the BrowserControlsSmoothScroll feature, this tracks the remaining delta
+  // that has been accumulated but not applied.
+  float unapplied_scroll_delta_;
 
   // Content offset when last baseline reset occurred.
   float baseline_top_content_offset_;
@@ -268,6 +277,8 @@ class CC_EXPORT BrowserControlsOffsetManager {
     // Return the bounds.
     float min_value() { return min_value_; }
     float max_value() { return max_value_; }
+
+    bool jump_to_end_on_reset() { return jump_to_end_on_reset_; }
 
    private:
     bool IsComplete(float value);

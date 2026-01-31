@@ -7,7 +7,6 @@
 #include <optional>
 
 #include "base/barrier_callback.h"
-#include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/i18n/file_util_icu.h"

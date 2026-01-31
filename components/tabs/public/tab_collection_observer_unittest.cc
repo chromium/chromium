@@ -968,8 +968,8 @@ TEST_F(TabCollectionObserverTest, MoveTabAndGroup) {
         .Times(1)
         .RetiresOnSaturation();
 
-    const std::set<tabs::TabCollection::Type> retain_collection_types =
-        std::set<tabs::TabCollection::Type>({tabs::TabCollection::Type::GROUP});
+    const tabs::TabCollection::TypeEnumSet retain_collection_types = {
+        tabs::TabCollection::Type::GROUP};
     collection->MoveTabsRecursive({0, 1}, 1, std::nullopt, false,
                                   retain_collection_types);
   }

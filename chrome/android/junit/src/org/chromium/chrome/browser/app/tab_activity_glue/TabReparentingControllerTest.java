@@ -8,6 +8,9 @@ import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
+import static org.chromium.chrome.browser.url_constants.UrlConstantResolver.getOriginalNativeNtpUrl;
+import static org.chromium.chrome.browser.url_constants.UrlConstantResolver.getOriginalNonNativeNtpUrl;
+
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -33,7 +36,6 @@ import org.chromium.chrome.browser.tabmodel.AsyncTabParamsManagerFactory;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabReparentingParams;
 import org.chromium.chrome.test.util.browser.tabmodel.MockTabModel;
-import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.content_public.browser.NavigationController;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.url.GURL;
@@ -64,8 +66,8 @@ public class TabReparentingControllerTest {
 
         @Override
         public boolean isNtpUrl(GURL url) {
-            return UrlConstants.NTP_NON_NATIVE_URL.equals(url.getSpec())
-                    || UrlConstants.NTP_URL.equals(url.getSpec());
+            return getOriginalNonNativeNtpUrl().equals(url.getSpec())
+                    || getOriginalNativeNtpUrl().equals(url.getSpec());
         }
     }
 

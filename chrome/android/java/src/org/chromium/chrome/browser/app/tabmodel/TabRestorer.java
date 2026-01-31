@@ -5,9 +5,11 @@
 package org.chromium.chrome.browser.app.tabmodel;
 
 import static org.chromium.build.NullUtil.assumeNonNull;
+import static org.chromium.chrome.browser.tabmodel.TabPersistenceUtils.shouldSkipTab;
 
 import androidx.annotation.IntDef;
 
+import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.build.annotations.NullMarked;
@@ -18,6 +20,7 @@ import org.chromium.chrome.browser.tab.StorageLoadedData.LoadedTabState;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabId;
 import org.chromium.chrome.browser.tab.TabState;
+import org.chromium.chrome.browser.tab.WebContentsState;
 import org.chromium.chrome.browser.tabmodel.TabCreator;
 import org.chromium.chrome.browser.tabmodel.TabGroupVisualDataStore;
 
@@ -110,6 +113,7 @@ class TabRestorer {
     private @State int mState = State.EMPTY;
     private @Nullable StorageLoadedData mData;
     private boolean mRestoreActiveTabImmediately;
+    private int mRestoreFilteredTabCount;
 
     /**
      * Track the index we are restoring the next tab from. This is done globally so that {@link
@@ -267,6 +271,9 @@ class TabRestorer {
         mState = State.FINISHED;
         cleanupStorageLoadedData();
         mDelegate.onFinished(mIncognito);
+
+        RecordHistogram.recordCount1000Histogram(
+                "Tabs.TabStateStore.FilteredTabCount", mRestoreFilteredTabCount);
     }
 
     /** Cleans up the {@link StorageLoadedData}. */
@@ -341,7 +348,11 @@ class TabRestorer {
         assert mState == State.RESTORING;
         @TabId int tabId = loadedTabState.tabId;
         Tab tab = resolveTab(loadedTabState.tabState, tabId, index);
-        if (tab == null) return;
+        if (tab == null) {
+            WebContentsState state = loadedTabState.tabState.contentsState;
+            if (state != null) state.destroy();
+            return;
+        }
 
         boolean isIncognito = mIncognito;
         mDelegate.onDetailsRead(
@@ -386,10 +397,11 @@ class TabRestorer {
     }
 
     private @Nullable Tab resolveTab(TabState tabState, @TabId int tabId, int index) {
-        if (tabState.contentsState == null || tabState.contentsState.buffer().limit() <= 0) {
+        assert mData != null;
+        if (mData.getActiveTabIndex() != index && shouldSkipTab(tabState)) {
+            mRestoreFilteredTabCount++;
             return null;
         }
-
         return mTabCreator.createFrozenTab(tabState, tabId, index);
     }
 }

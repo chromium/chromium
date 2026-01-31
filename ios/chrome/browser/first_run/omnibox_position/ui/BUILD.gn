@@ -1,0 +1,33 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("ui") {
+  sources = [
+    "omnibox_position_choice_consumer.h",
+    "omnibox_position_choice_mutator.h",
+    "omnibox_position_choice_view_controller.h",
+    "omnibox_position_choice_view_controller.mm",
+  ]
+  deps = [
+    "//components/prefs",
+    "//components/search_engines",
+    "//components/segmentation_platform/embedder/default_model",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/first_run/model",
+    "//ios/chrome/browser/first_run/public:constants",
+    "//ios/chrome/browser/search_engines/model",
+    "//ios/chrome/browser/settings/ui_bundled/address_bar_preference/cells",
+    "//ios/chrome/browser/shared/model/application_context",
+    "//ios/chrome/browser/shared/model/prefs:pref_names",
+    "//ios/chrome/browser/shared/model/utils",
+    "//ios/chrome/browser/shared/public/features",
+    "//ios/chrome/browser/shared/public/features:system_flags",
+    "//ios/chrome/browser/shared/ui/symbols",
+    "//ios/chrome/browser/toolbar/legacy/ui_bundled/public",
+    "//ios/chrome/common/ui/button_stack",
+    "//ios/chrome/common/ui/promo_style",
+    "//ios/chrome/common/ui/util",
+    "//ui/base",
+  ]
+}

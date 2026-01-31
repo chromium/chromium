@@ -38,11 +38,11 @@ const std::vector<gfx::Size> kPrinterCapabilitiesDefaultDpis{
 const PrinterBasicInfoOptions kPrintInfoOptions{{"opt1", "123"},
                                                 {"opt2", "456"}};
 
-base::Value::Dict GetPrintTicket(mojom::PrinterType type) {
-  base::Value::Dict ticket;
+base::DictValue GetPrintTicket(mojom::PrinterType type) {
+  base::DictValue ticket;
 
   // Letter
-  base::Value::Dict media_size;
+  base::DictValue media_size;
   media_size.Set(kSettingMediaSizeIsDefault, true);
   media_size.Set(kSettingMediaSizeWidthMicrons, 215900);
   media_size.Set(kSettingMediaSizeHeightMicrons, 279400);
@@ -73,11 +73,11 @@ base::Value::Dict GetPrintTicket(mojom::PrinterType type) {
   ticket.Set(kSettingShowSystemDialog, false);
 
   if (type == mojom::PrinterType::kExtension) {
-    base::Value::Dict capabilities;
+    base::DictValue capabilities;
     capabilities.Set("duplex", true);  // non-empty
     ticket.Set(kSettingCapabilities,
                base::WriteJson(capabilities).value_or(""));
-    base::Value::Dict print_ticket;
+    base::DictValue print_ticket;
     print_ticket.Set("version", "1.0");
     print_ticket.Set("print", base::Value());
     ticket.Set(kSettingTicket, base::WriteJson(print_ticket).value_or(""));
@@ -121,7 +121,7 @@ std::unique_ptr<PrintSettings> MakeUserModifiedPrintSettings(
     // Supply fake data to mimic what might be collected from the system print
     // dialog.  Platform-specific since the fake data still has to be able to
     // pass mojom data validation.
-    base::Value::Dict data;
+    base::DictValue data;
 
 #if BUILDFLAG(IS_MAC)
     data.Set(kMacSystemPrintDialogDataDestinationType, 2);

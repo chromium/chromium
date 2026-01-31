@@ -37,7 +37,7 @@ class ExternalComponentLoader : public ExternalLoader {
   ~ExternalComponentLoader() override;
 
   void AddExternalExtension(const std::string& extension_id,
-                            base::Value::Dict& prefs);
+                            base::DictValue& prefs);
 
   // The profile that this loader is associated with. It listens for
   // preference changes for that profile.

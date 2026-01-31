@@ -331,8 +331,7 @@ IN_PROC_BROWSER_TEST_F(AppBannerManagerDesktopBrowserTest,
                     std::map<GURL /*install_url*/, webapps::UninstallResultCode>
                         uninstall_results) {
                   EXPECT_TRUE(install_results.empty());
-                  ASSERT_TRUE(
-                      base::Contains(uninstall_results, GetBannerURL()));
+                  ASSERT_TRUE(uninstall_results.contains(GetBannerURL()));
                   EXPECT_EQ(webapps::UninstallResultCode::kAppRemoved,
                             uninstall_results[GetBannerURL()]);
                   run_loop.Quit();

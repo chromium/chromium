@@ -12,8 +12,9 @@ namespace internal {
 scoped_refptr<base::SequencedTaskRunner>
 GetTaskRunnerToUseFromUserProvidedTaskRunner(
     scoped_refptr<base::SequencedTaskRunner> runner) {
-  if (runner)
+  if (runner) {
     return runner;
+  }
   return base::SequencedTaskRunner::GetCurrentDefault();
 }
 

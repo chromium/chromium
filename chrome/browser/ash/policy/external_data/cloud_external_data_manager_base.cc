@@ -15,7 +15,6 @@
 
 #include "base/callback_list.h"
 #include "base/check_op.h"
-#include "base/containers/contains.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -46,7 +45,7 @@ const int kMaxParallelFetches = 2;
 // external data even if no |max_size| was specified in policy_templates.json.
 int g_max_external_data_size_for_testing = 0;
 
-// Keys for 'Value::Dict' objects
+// Keys for 'base::DictValue' objects
 const char kUrlKey[] = "url";
 const char kHashKey[] = "hash";
 const char kCustomIconKey[] = "custom_icon";
@@ -270,7 +269,7 @@ void CloudExternalDataManagerBase::Backend::Fetch(
     return;
   }
 
-  const bool has_pending_download = base::Contains(pending_downloads_, key);
+  const bool has_pending_download = pending_downloads_.contains(key);
   if (!has_pending_download && external_data_store_) {
     auto data = std::make_unique<std::string>();
     const base::FilePath file_path =
@@ -308,7 +307,7 @@ void CloudExternalDataManagerBase::Backend::FetchAll() {
   for (const auto& it : metadata_) {
     const MetadataKey& key = it.first;
     std::unique_ptr<std::string> data(new std::string);
-    if (base::Contains(pending_downloads_, key) ||
+    if (pending_downloads_.contains(key) ||
         (external_data_store_ &&
          !external_data_store_
               ->Load(key.ToString(), it.second.hash,
@@ -356,7 +355,7 @@ void CloudExternalDataManagerBase::Backend::RunCallback(
 void CloudExternalDataManagerBase::Backend::StartDownload(
     const MetadataKey& key) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(base::Contains(pending_downloads_, key));
+  DCHECK(pending_downloads_.contains(key));
   if (!updater_)
     return;
 
@@ -425,7 +424,7 @@ void CloudExternalDataManagerBase::SetPolicyStore(
 void AddMetadataFromValue(CloudExternalDataManagerBase::Metadata* metadata,
                           const std::string& policy_name,
                           const std::string& field_name,
-                          const base::Value::Dict& value_dict) {
+                          const base::DictValue& value_dict) {
   const std::string* url = value_dict.FindString(kUrlKey);
   const std::string* hex_hash = value_dict.FindString(kHashKey);
   std::string hash;
@@ -462,8 +461,8 @@ void CloudExternalDataManagerBase::OnPolicyStoreLoaded() {
       for (const auto& app :
            it.second.value(base::Value::Type::LIST)->GetList()) {
         if (app.is_dict()) {
-          const base::Value::Dict& dict = app.GetDict();
-          const base::Value::Dict* const icon = dict.FindDict(kCustomIconKey);
+          const base::DictValue& dict = app.GetDict();
+          const base::DictValue* const icon = dict.FindDict(kCustomIconKey);
           const std::string* const url = dict.FindString(kUrlKey);
           if (icon && url) {
             AddMetadataFromValue(metadata.get(), it.first, *url, *icon);

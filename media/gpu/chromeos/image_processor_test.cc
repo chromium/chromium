@@ -327,9 +327,9 @@ scoped_refptr<VideoFrame> CreateRandomMM21Frame(const gfx::Size& size,
       mapped_ret->GetWritableVisiblePlaneData(VideoFrame::Plane::kUV);
   for (int row = 0; row < size.height(); row++) {
     for (int col = 0; col < size.width(); col++) {
-      y_plane[col] = base::RandInt(/*min=*/0, /*max=*/255);
+      y_plane[col] = base::RandIntInclusive(/*min=*/0, /*max=*/255);
       if (row % 2 == 0) {
-        uv_plane[col] = base::RandInt(/*min=*/0, /*max=*/255);
+        uv_plane[col] = base::RandIntInclusive(/*min=*/0, /*max=*/255);
       }
     }
     y_plane = y_plane.subspan(mapped_ret->stride(VideoFrame::Plane::kY));

@@ -476,6 +476,20 @@ NET_EXPORT BASE_DECLARE_FEATURE_PARAM(
 // quota, and has associated signing caching for refreshes.
 NET_EXPORT BASE_DECLARE_FEATURE(kDeviceBoundSessionSigningQuotaAndCaching);
 
+// This feature controls whether DBSC is allowed to register sessions on
+// a certain list of sites, as specified in
+// `device_bound_sessions_restricted_sites` in the
+// `NetworkContextParams`.
+NET_EXPORT BASE_DECLARE_FEATURE(kDeviceBoundSessionsForRestrictedSites);
+
+// This feature controls whether we add a query param to registration on
+// restricted sites.
+NET_EXPORT BASE_DECLARE_FEATURE(
+    kDeviceBoundSessionsForRestrictedSitesExperimentId);
+NET_EXPORT BASE_DECLARE_FEATURE_PARAM(
+    std::string,
+    kDeviceBoundSessionsForRestrictedSitesExperimentIdParam);
+
 // Enables more checks when creating a SpdySession for proxy. These checks are
 // already applied to non-proxy SpdySession creations.
 // TODO(crbug.com/343519247): Remove this once we are sure that these checks are
@@ -497,6 +511,12 @@ NET_EXPORT BASE_DECLARE_FEATURE(kSimdutfBase64Support);
 
 // Further optimize parsing data: URLs.
 NET_EXPORT BASE_DECLARE_FEATURE(kFurtherOptimizeParsingDataUrls);
+
+// Preserve MIME type parameters in data: URLs for WPT compliance.
+// When enabled, non-charset parameters (e.g., "boundary=xxx") are preserved
+// in the Content-Type header, and quoted parameter values are properly
+// normalized. See https://fetch.spec.whatwg.org/#data-url-processor
+NET_EXPORT BASE_DECLARE_FEATURE(kDataUrlMimeTypeParameterPreservation);
 
 // If enabled, unrecognized keys in a No-Vary-Search header will be ignored.
 // Otherwise, unrecognized keys are treated as if the header was invalid.
@@ -733,6 +753,20 @@ NET_EXPORT BASE_DECLARE_FEATURE(kAddAutomaticWithDohFallbackMode);
 // If true, a CONNECT-UDP response is not needed to start sending datagrams.
 NET_EXPORT BASE_DECLARE_FEATURE(
     kUseQuicProxiesWithoutWaitingForConnectResponse);
+
+// If enabled, the configured bootstrap IP addresses of DoH providers will
+// be randomized for better load balancing of the initial DoH URL lookups.
+NET_EXPORT BASE_DECLARE_FEATURE(kEnableBootstrapIPRandomizationForDoh);
+
+// Controls whether X509Util on Android (Cronet, and WebView only) should use
+// lock-free certificate verification mechanism.
+NET_EXPORT BASE_DECLARE_FEATURE(kUseLockFreeX509Verification);
+
+#if BUILDFLAG(IS_APPLE)
+// If enabled, the GURL conversion for NSURLs will use the data representation
+// of the URL if it differs from the absolute string.
+NET_EXPORT BASE_DECLARE_FEATURE(kUseNSURLDataForGURLConversion);
+#endif  // BUILDFLAG(IS_APPLE)
 
 }  // namespace net::features
 

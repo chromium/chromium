@@ -8,14 +8,25 @@
 
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/values.h"
 #include "build/build_config.h"
+#include "chrome/browser/content_settings/generated_javascript_optimizer_pref.h"
+#include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/download/download_item_warning_data.h"
 #include "chrome/browser/prefs/browser_prefs.h"
 #include "chrome/browser/safe_browsing/chrome_ping_manager_factory.h"
 #include "chrome/browser/safe_browsing/download_protection/download_protection_service.h"
 #include "chrome/browser/safe_browsing/safe_browsing_pref_change_handler.h"
+#include "chrome/browser/site_protection/site_familiarity_utils.h"
+#include "chrome/browser/ui/toasts/api/toast_id.h"
+#include "chrome/browser/ui/toasts/toast_controller.h"
+#include "chrome/test/base/browser_with_test_window_test.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
+#include "components/content_settings/core/browser/host_content_settings_map.h"
+#include "components/content_settings/core/common/content_settings.h"
+#include "components/content_settings/core/common/content_settings_types.h"
+#include "components/content_settings/core/common/features.h"
 #include "components/download/public/common/download_danger_type.h"
 #include "components/download/public/common/mock_download_item.h"
 #include "components/prefs/testing_pref_service.h"
@@ -810,6 +821,364 @@ TEST_F(SendNotificationsAcceptedTest, DontSendReportWhenUserIsIncognito) {
   EXPECT_FALSE(sb_service_->MaybeSendNotificationsAcceptedReport(
       nullptr, otr_profile_.get(), notification_url1, notification_url2,
       notification_url3, display_duration));
+}
+
+class SafeBrowsingServiceMigrationTest : public testing::Test {
+ public:
+  void SetUp() override {
+    browser_process_ = TestingBrowserProcess::GetGlobal();
+
+    safe_browsing::SafeBrowsingServiceInterface::RegisterFactory(
+        GetSafeBrowsingServiceFactory());
+    // TODO(crbug.com/41437292): Port consumers of the |sb_service_| to use
+    // the interface in components/safe_browsing, and remove this cast.
+    sb_service_ = static_cast<SafeBrowsingService*>(
+        safe_browsing::SafeBrowsingService::CreateSafeBrowsingService());
+    auto ref_counted_url_loader_factory =
+        base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
+            &test_url_loader_factory_);
+    sb_service_->SetURLLoaderFactoryForTesting(ref_counted_url_loader_factory);
+    browser_process_->SetSafeBrowsingService(sb_service_.get());
+    sb_service_->Initialize();
+    base::RunLoop().RunUntilIdle();
+  }
+
+  void TearDown() override {
+    sb_service_->SetURLLoaderFactoryForTesting(nullptr);
+    browser_process_->safe_browsing_service()->ShutDown();
+    browser_process_->SetSafeBrowsingService(nullptr);
+    safe_browsing::SafeBrowsingServiceInterface::RegisterFactory(nullptr);
+    base::RunLoop().RunUntilIdle();
+  }
+
+  void MigrateUserToEnhancedBundleIfNeeded(Profile* profile) {
+    // MigrateUserToEnhancedBundle will be queued by OnProfileAdded.
+    RunOnProfileAddedAndWaitForTasks(profile);
+  }
+
+  void MigrateUserToAutomaticJavaScriptBlockingIfNeeded(Profile* profile) {
+    // MigrateUserToAutomaticJavaScriptBlocking will be queued by
+    // OnProfileAdded.
+    RunOnProfileAddedAndWaitForTasks(profile);
+  }
+
+  void RunOnProfileAddedAndWaitForTasks(Profile* profile) {
+    base::RunLoop run_loop;
+    sb_service_->SetAddProfileTasksCompletedClosureForTesting(
+        run_loop.QuitClosure());
+    sb_service_->OnProfileAdded(profile);
+    // Call OnProfileWillBeDestroyed() so that the migration functions can be
+    // called for the same profile multiple times in a single test.
+    sb_service_->OnProfileWillBeDestroyed(profile);
+    run_loop.Run();
+  }
+
+  content::BrowserTaskEnvironment task_environment_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
+  raw_ptr<TestingBrowserProcess> browser_process_;
+
+  scoped_refptr<SafeBrowsingService> sb_service_;
+
+ private:
+  network::TestURLLoaderFactory test_url_loader_factory_;
+};
+
+class SafeBrowsingServiceEnhancedSecurityBundleMigrationTest
+    : public SafeBrowsingServiceMigrationTest {
+ public:
+  SafeBrowsingServiceEnhancedSecurityBundleMigrationTest() {
+    feature_list_.InitAndEnableFeature(kMigrateEnhancedSbUserToEnhancedBundle);
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+TEST_F(SafeBrowsingServiceEnhancedSecurityBundleMigrationTest,
+       MigrationOccursOnce) {
+  auto profile = std::make_unique<TestingProfile>();
+  PrefService* prefs = profile->GetPrefs();
+
+  {
+    SetSecurityBundleSetting(*prefs, SecuritySettingsBundleSetting::STANDARD);
+    SetSafeBrowsingState(prefs, SafeBrowsingState::ENHANCED_PROTECTION);
+    MigrateUserToEnhancedBundleIfNeeded(profile.get());
+    EXPECT_EQ(SecuritySettingsBundleSetting::ENHANCED,
+              GetSecurityBundleSetting(*prefs));
+  }
+
+  {
+    SetSecurityBundleSetting(*prefs, SecuritySettingsBundleSetting::STANDARD);
+    SetSafeBrowsingState(prefs, SafeBrowsingState::ENHANCED_PROTECTION);
+    MigrateUserToEnhancedBundleIfNeeded(profile.get());
+    EXPECT_EQ(SecuritySettingsBundleSetting::STANDARD,
+              GetSecurityBundleSetting(*prefs));
+  }
+}
+
+TEST_F(SafeBrowsingServiceEnhancedSecurityBundleMigrationTest,
+       SetsMigrationToastStateToPending) {
+  auto profile = std::make_unique<TestingProfile>();
+  PrefService* prefs = profile->GetPrefs();
+
+  SetSecurityBundleSetting(*prefs, SecuritySettingsBundleSetting::STANDARD);
+  SetSafeBrowsingState(prefs, SafeBrowsingState::ENHANCED_PROTECTION);
+  MigrateUserToEnhancedBundleIfNeeded(profile.get());
+  EXPECT_EQ(
+      static_cast<int>(SecuritySettingsBundleToastState::kPending),
+      prefs->GetInteger(prefs::kSecuritySettingsBundleMigrationToastState));
+}
+
+TEST_F(SafeBrowsingServiceEnhancedSecurityBundleMigrationTest,
+       MigrateOnlyOnLaunchAfterFeatureEnabled) {
+  auto profile = std::make_unique<TestingProfile>();
+  PrefService* prefs = profile->GetPrefs();
+  {
+    // Migration should not occur because the user has standard safe-browsing.
+    SetSecurityBundleSetting(*prefs, SecuritySettingsBundleSetting::STANDARD);
+    SetSafeBrowsingState(prefs, SafeBrowsingState::STANDARD_PROTECTION);
+    MigrateUserToEnhancedBundleIfNeeded(profile.get());
+    EXPECT_EQ(SecuritySettingsBundleSetting::STANDARD,
+              GetSecurityBundleSetting(*prefs));
+  }
+
+  {
+    // Migration should not occur because this is not the first browser-launch
+    // after the migration-feature was enabled.
+    SetSecurityBundleSetting(*prefs, SecuritySettingsBundleSetting::STANDARD);
+    SetSafeBrowsingState(prefs, SafeBrowsingState::ENHANCED_PROTECTION);
+    MigrateUserToEnhancedBundleIfNeeded(profile.get());
+    EXPECT_EQ(SecuritySettingsBundleSetting::STANDARD,
+              GetSecurityBundleSetting(*prefs));
+  }
+}
+
+TEST_F(SafeBrowsingServiceEnhancedSecurityBundleMigrationTest,
+       DontMigrateIfUsingStandardSafeBrowsing) {
+  auto profile = std::make_unique<TestingProfile>();
+  PrefService* prefs = profile->GetPrefs();
+  SetSecurityBundleSetting(*prefs, SecuritySettingsBundleSetting::STANDARD);
+  SetSafeBrowsingState(prefs, SafeBrowsingState::STANDARD_PROTECTION);
+  MigrateUserToEnhancedBundleIfNeeded(profile.get());
+  EXPECT_EQ(SecuritySettingsBundleSetting::STANDARD,
+            GetSecurityBundleSetting(*prefs));
+}
+
+class SafeBrowsingServiceEnhancedSecurityBundleMigrationDisabledTest
+    : public SafeBrowsingServiceEnhancedSecurityBundleMigrationTest {
+ public:
+  SafeBrowsingServiceEnhancedSecurityBundleMigrationDisabledTest() = default;
+  ~SafeBrowsingServiceEnhancedSecurityBundleMigrationDisabledTest() override =
+      default;
+
+  void SetUp() override {
+    SafeBrowsingServiceEnhancedSecurityBundleMigrationTest::SetUp();
+    scoped_feature_list_.InitAndDisableFeature(
+        kMigrateEnhancedSbUserToEnhancedBundle);
+  }
+
+ protected:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+TEST_F(SafeBrowsingServiceEnhancedSecurityBundleMigrationDisabledTest,
+       DontMigrateIfFeatureIsDisabled) {
+  auto profile = std::make_unique<TestingProfile>();
+  PrefService* prefs = profile->GetPrefs();
+  SetSecurityBundleSetting(*prefs, SecuritySettingsBundleSetting::STANDARD);
+  SetSafeBrowsingState(prefs, SafeBrowsingState::ENHANCED_PROTECTION);
+  MigrateUserToEnhancedBundleIfNeeded(profile.get());
+  EXPECT_EQ(SecuritySettingsBundleSetting::STANDARD,
+            GetSecurityBundleSetting(*prefs));
+}
+
+// Base test fixture for JsOptimizerSettingMigration tests. Provides
+// convenience functions for setting and checking the state of the JavaScript
+// optimizer setting.
+class JsOptimizerSettingMigrationBaseTest
+    : public SafeBrowsingServiceMigrationTest {
+ public:
+  void SetUp() override {
+    SafeBrowsingServiceMigrationTest::SetUp();
+    profile_ = std::make_unique<TestingProfile>();
+    SetJsOptimizerSetting(
+        content_settings::JavascriptOptimizerSetting::kAllowed);
+    profile()->GetPrefs()->SetBoolean(
+        prefs::kMigratedToJavascriptOptimizerBlockedForUnfamiliarSites, false);
+  }
+
+  TestingProfile* profile() { return profile_.get(); }
+
+  void SetJsOptimizerSetting(
+      content_settings::JavascriptOptimizerSetting setting) {
+    content_settings::GeneratedJavascriptOptimizerPref pref(profile());
+    base::Value value(static_cast<int>(setting));
+    pref.SetPref(&value);
+  }
+
+  void ExpectJsOptimizerSetting(
+      content_settings::JavascriptOptimizerSetting expected_setting) {
+    EXPECT_EQ(
+        site_protection::ComputeDefaultJavascriptOptimizerSetting(profile()),
+        expected_setting);
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+  std::unique_ptr<TestingProfile> profile_;
+};
+
+class JsOptimizerSettingMigrationEnabledTest
+    : public JsOptimizerSettingMigrationBaseTest {
+ public:
+  JsOptimizerSettingMigrationEnabledTest() {
+    feature_list_.InitWithFeatures(
+        /*enabled_features=*/
+        {content_settings::features::kBlockV8OptimizerOnUnfamiliarSitesSetting,
+         /*disabled_features=*/kMigrateToBlockV8OptimizerOnUnfamiliarSites},
+        {});
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+TEST_F(JsOptimizerSettingMigrationEnabledTest,
+       WhenUserHasDefaultSetting_UpdatesJsOptimizerSetting) {
+  MigrateUserToAutomaticJavaScriptBlockingIfNeeded(profile());
+  ExpectJsOptimizerSetting(
+      content_settings::JavascriptOptimizerSetting::kBlockedForUnfamiliarSites);
+}
+
+TEST_F(JsOptimizerSettingMigrationEnabledTest,
+       WhenUserHasDefaultSetting_RecordsThatMigrationHappened) {
+  MigrateUserToAutomaticJavaScriptBlockingIfNeeded(profile());
+  EXPECT_TRUE(profile()->GetPrefs()->GetBoolean(
+      prefs::kMigratedToJavascriptOptimizerBlockedForUnfamiliarSites));
+}
+
+TEST_F(JsOptimizerSettingMigrationEnabledTest,
+       WhenUserHasDisabledSafeBrowsing_MigrationDoesNotHappen) {
+  safe_browsing::SetSafeBrowsingState(profile()->GetPrefs(),
+                                      SafeBrowsingState::NO_SAFE_BROWSING);
+  MigrateUserToAutomaticJavaScriptBlockingIfNeeded(profile());
+  ExpectJsOptimizerSetting(
+      content_settings::JavascriptOptimizerSetting::kAllowed);
+  EXPECT_FALSE(profile()->GetPrefs()->GetBoolean(
+      prefs::kMigratedToJavascriptOptimizerBlockedForUnfamiliarSites));
+}
+
+TEST_F(
+    JsOptimizerSettingMigrationEnabledTest,
+    WhenUserHasDisabledSafeBrowsingThenEnablesSafeBrowsing_MigrationHappens) {
+  safe_browsing::SetSafeBrowsingState(profile()->GetPrefs(),
+                                      SafeBrowsingState::NO_SAFE_BROWSING);
+  MigrateUserToAutomaticJavaScriptBlockingIfNeeded(profile());
+  // Unfamiliar sites blocking will not be enabled.
+  ExpectJsOptimizerSetting(
+      content_settings::JavascriptOptimizerSetting::kAllowed);
+  EXPECT_FALSE(profile()->GetPrefs()->GetBoolean(
+      prefs::kMigratedToJavascriptOptimizerBlockedForUnfamiliarSites));
+
+  // Now the user enables Safe Browsing, then restarts Chrome.
+  safe_browsing::SetSafeBrowsingState(profile()->GetPrefs(),
+                                      SafeBrowsingState::STANDARD_PROTECTION);
+  // Simulate restart by re-running the migration code.
+  MigrateUserToAutomaticJavaScriptBlockingIfNeeded(profile());
+
+  // Ensure that the profile is migrated.
+  ExpectJsOptimizerSetting(
+      content_settings::JavascriptOptimizerSetting::kBlockedForUnfamiliarSites);
+  EXPECT_TRUE(profile()->GetPrefs()->GetBoolean(
+      prefs::kMigratedToJavascriptOptimizerBlockedForUnfamiliarSites));
+}
+
+TEST_F(JsOptimizerSettingMigrationEnabledTest, MigrationHappensOnlyOnce) {
+  MigrateUserToAutomaticJavaScriptBlockingIfNeeded(profile());
+  // Expect that the user was migrated.
+  ExpectJsOptimizerSetting(
+      content_settings::JavascriptOptimizerSetting::kBlockedForUnfamiliarSites);
+  EXPECT_TRUE(profile()->GetPrefs()->GetBoolean(
+      prefs::kMigratedToJavascriptOptimizerBlockedForUnfamiliarSites));
+
+  // Simulate the user setting "allow always".
+  SetJsOptimizerSetting(content_settings::JavascriptOptimizerSetting::kAllowed);
+
+  // Attempt migration again.
+  MigrateUserToAutomaticJavaScriptBlockingIfNeeded(profile());
+
+  // But this time, setting is not changed.
+  ExpectJsOptimizerSetting(
+      content_settings::JavascriptOptimizerSetting::kAllowed);
+  // But the profile is still marked as migrated.
+  EXPECT_TRUE(profile()->GetPrefs()->GetBoolean(
+      prefs::kMigratedToJavascriptOptimizerBlockedForUnfamiliarSites));
+}
+
+TEST_F(JsOptimizerSettingMigrationEnabledTest,
+       WhenUserHasBlockSetting_DoesNotMigrateUser) {
+  SetJsOptimizerSetting(content_settings::JavascriptOptimizerSetting::kBlocked);
+
+  MigrateUserToAutomaticJavaScriptBlockingIfNeeded(profile());
+  ExpectJsOptimizerSetting(
+      content_settings::JavascriptOptimizerSetting::kBlocked);
+
+  // Verify that this profile was not migrated.
+  EXPECT_FALSE(profile()->GetPrefs()->GetBoolean(
+      prefs::kMigratedToJavascriptOptimizerBlockedForUnfamiliarSites));
+}
+
+class JsOptimizerSettingMigrationDisabledTest
+    : public JsOptimizerSettingMigrationBaseTest {
+ public:
+  JsOptimizerSettingMigrationDisabledTest() {
+    feature_list_.InitWithFeatures(
+        /*enabled_features=*/
+        {
+            content_settings::features::
+                kBlockV8OptimizerOnUnfamiliarSitesSetting,
+        },
+        /*disabled_features=*/
+        {kMigrateToBlockV8OptimizerOnUnfamiliarSites});
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+TEST_F(JsOptimizerSettingMigrationDisabledTest,
+       WhenUserHasDefaultSetting_DoesNotMigrate) {
+  MigrateUserToAutomaticJavaScriptBlockingIfNeeded(profile());
+  ExpectJsOptimizerSetting(
+      content_settings::JavascriptOptimizerSetting::kAllowed);
+  EXPECT_FALSE(profile()->GetPrefs()->GetBoolean(
+      prefs::kMigratedToJavascriptOptimizerBlockedForUnfamiliarSites));
+}
+
+class JsOptimizerSettingUnavailableMigrationTest
+    : public JsOptimizerSettingMigrationBaseTest {
+ public:
+  JsOptimizerSettingUnavailableMigrationTest() {
+    feature_list_.InitWithFeatures(
+        /*enabled_features=*/
+        {kMigrateToBlockV8OptimizerOnUnfamiliarSites},
+        /*disabled_features=*/
+        {
+            content_settings::features::
+                kBlockV8OptimizerOnUnfamiliarSitesSetting,
+        });
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+TEST_F(JsOptimizerSettingUnavailableMigrationTest, DoesNotMigrate) {
+  MigrateUserToAutomaticJavaScriptBlockingIfNeeded(profile());
+  ExpectJsOptimizerSetting(
+      content_settings::JavascriptOptimizerSetting::kAllowed);
+  EXPECT_FALSE(profile()->GetPrefs()->GetBoolean(
+      prefs::kMigratedToJavascriptOptimizerBlockedForUnfamiliarSites));
 }
 
 }  // namespace safe_browsing

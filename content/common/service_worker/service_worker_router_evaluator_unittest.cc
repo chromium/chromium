@@ -1325,7 +1325,7 @@ TEST(ServiceWorkerRouterEvaluator, ToValueEmptyRule) {
   blink::ServiceWorkerRouterRules rules;
   ServiceWorkerRouterEvaluator evaluator(rules);
   EXPECT_EQ(0U, evaluator.rules().rules.size());
-  base::Value::List v;
+  base::ListValue v;
   EXPECT_EQ(v, evaluator.ToValue());
 }
 
@@ -1409,15 +1409,15 @@ TEST(ServiceWorkerRouterEvaluator, ToValueBasicSimpleRule) {
   ServiceWorkerRouterEvaluator evaluator(rules);
   ASSERT_EQ(1U, evaluator.rules().rules.size());
   EXPECT_TRUE(evaluator.IsValid());
-  base::Value::List expected_rules;
+  base::ListValue expected_rules;
   {
-    base::Value::Dict rule;
+    base::DictValue rule;
     {
       rule.Set("id", 1);
       {
-        base::Value::Dict condition;
+        base::DictValue condition;
         {
-          base::Value::Dict url_pattern;
+          base::DictValue url_pattern;
           url_pattern.Set("protocol", "*");
           url_pattern.Set("username", "*");
           url_pattern.Set("password", "*");
@@ -1429,7 +1429,7 @@ TEST(ServiceWorkerRouterEvaluator, ToValueBasicSimpleRule) {
           condition.Set("urlPattern", std::move(url_pattern));
         }
         {
-          base::Value::Dict request;
+          base::DictValue request;
           request.Set("method", "GET");
           request.Set("mode", "cors");
           request.Set("destination", "frame");
@@ -1440,19 +1440,19 @@ TEST(ServiceWorkerRouterEvaluator, ToValueBasicSimpleRule) {
         rule.Set("condition", std::move(condition));
       }
       {
-        base::Value::List sources;
+        base::ListValue sources;
         sources.Append("network");
         sources.Append("race-network-and-fetch-handler");
         sources.Append("fetch-event");
         sources.Append("cache");
         {
-          base::Value::Dict source;
+          base::DictValue source;
           source.Set("cache_name", "example_cache_name");
           sources.Append(std::move(source));
         }
         sources.Append("race-network-and-cache");
         {
-          base::Value::Dict source;
+          base::DictValue source;
           source.Set("race_network_and_cache_cache_name", "example_cache_name");
           sources.Append(std::move(source));
         }
@@ -1484,19 +1484,19 @@ TEST(ServiceWorkerRouterEvaluator, ToValueEmptyOrCondition) {
   ServiceWorkerRouterEvaluator evaluator(rules);
   ASSERT_EQ(1U, evaluator.rules().rules.size());
   EXPECT_TRUE(evaluator.IsValid());
-  base::Value::List expected_rules;
+  base::ListValue expected_rules;
   {
-    base::Value::Dict rule;
+    base::DictValue rule;
     {
       rule.Set("id", 1);
       {
-        base::Value::Dict condition;
-        condition.Set("or", base::Value::List());
+        base::DictValue condition;
+        condition.Set("or", base::ListValue());
 
         rule.Set("condition", std::move(condition));
       }
       {
-        base::Value::List sources;
+        base::ListValue sources;
         sources.Append("network");
         rule.Set("source", std::move(sources));
       }
@@ -1539,19 +1539,19 @@ TEST(ServiceWorkerRouterEvaluator, ToValueNestedOrCondition) {
   ServiceWorkerRouterEvaluator evaluator(rules);
   ASSERT_EQ(1U, evaluator.rules().rules.size());
   EXPECT_TRUE(evaluator.IsValid());
-  base::Value::List expected_rules;
+  base::ListValue expected_rules;
   {
-    base::Value::Dict rule;
+    base::DictValue rule;
     rule.Set("id", 1);
     {
-      base::Value::Dict outer;
+      base::DictValue outer;
       {
-        base::Value::List outer_conditions;
+        base::ListValue outer_conditions;
         {
-          base::Value::Dict inner;
-          base::Value::List inner_conditions;
+          base::DictValue inner;
+          base::ListValue inner_conditions;
           {
-            base::Value::Dict condition;
+            base::DictValue condition;
             condition.Set("running_status", "running");
             inner_conditions.Append(std::move(condition));
           }
@@ -1563,7 +1563,7 @@ TEST(ServiceWorkerRouterEvaluator, ToValueNestedOrCondition) {
       rule.Set("condition", std::move(outer));
     }
     {
-      base::Value::List sources;
+      base::ListValue sources;
       sources.Append("network");
       rule.Set("source", std::move(sources));
     }
@@ -1602,21 +1602,21 @@ TEST(ServiceWorkerRouterEvaluator, ToValueNotCondition) {
   ServiceWorkerRouterEvaluator evaluator(rules);
   ASSERT_EQ(1U, evaluator.rules().rules.size());
   EXPECT_TRUE(evaluator.IsValid());
-  base::Value::List expected_rules;
+  base::ListValue expected_rules;
   {
-    base::Value::Dict rule;
+    base::DictValue rule;
     rule.Set("id", 1);
     {
-      base::Value::Dict condition;
+      base::DictValue condition;
       {
-        base::Value::Dict running_status;
+        base::DictValue running_status;
         running_status.Set("running_status", "running");
         condition.Set("not", std::move(running_status));
       }
       rule.Set("condition", std::move(condition));
     }
     {
-      base::Value::List sources;
+      base::ListValue sources;
       sources.Append("network");
       rule.Set("source", std::move(sources));
     }
@@ -1690,14 +1690,14 @@ TEST(ServiceWorkerRouterEvaluator, ToValueUrlPatternWithFields) {
   ServiceWorkerRouterEvaluator evaluator(rules);
   ASSERT_EQ(1U, evaluator.rules().rules.size());
   EXPECT_TRUE(evaluator.IsValid());
-  base::Value::List expected_rules;
+  base::ListValue expected_rules;
   {
-    base::Value::Dict rule;
+    base::DictValue rule;
     rule.Set("id", 1);
     {
-      base::Value::Dict condition;
+      base::DictValue condition;
       {
-        base::Value::Dict url_pattern;
+        base::DictValue url_pattern;
         url_pattern.Set("protocol", "https");
         url_pattern.Set("username", "user*");
         url_pattern.Set("password", "pass*");
@@ -1711,7 +1711,7 @@ TEST(ServiceWorkerRouterEvaluator, ToValueUrlPatternWithFields) {
       rule.Set("condition", std::move(condition));
     }
     {
-      base::Value::List sources;
+      base::ListValue sources;
       sources.Append("network");
       rule.Set("source", std::move(sources));
     }
@@ -1740,14 +1740,14 @@ TEST(ServiceWorkerRouterEvaluator, ToValueUrlPatternWithoutFields) {
   ServiceWorkerRouterEvaluator evaluator(rules);
   ASSERT_EQ(1U, evaluator.rules().rules.size());
   EXPECT_TRUE(evaluator.IsValid());
-  base::Value::List expected_rules;
+  base::ListValue expected_rules;
   {
-    base::Value::Dict rule;
+    base::DictValue rule;
     rule.Set("id", 1);
     {
-      base::Value::Dict condition;
+      base::DictValue condition;
       {
-        base::Value::Dict url_pattern;
+        base::DictValue url_pattern;
         url_pattern.Set("protocol", "");
         url_pattern.Set("username", "");
         url_pattern.Set("password", "");
@@ -1761,7 +1761,7 @@ TEST(ServiceWorkerRouterEvaluator, ToValueUrlPatternWithoutFields) {
       rule.Set("condition", std::move(condition));
     }
     {
-      base::Value::List sources;
+      base::ListValue sources;
       sources.Append("network");
       rule.Set("source", std::move(sources));
     }

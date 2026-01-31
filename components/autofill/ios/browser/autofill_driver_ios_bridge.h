@@ -7,11 +7,14 @@
 
 #import <stdint.h>
 
+#import <optional>
+#import <string>
 #import <vector>
 
 #import "components/autofill/core/common/form_data.h"
 #import "components/autofill/core/common/form_data_predictions.h"
 #import "components/autofill/core/common/form_field_data.h"
+#import "components/autofill/core/common/mojom/autofill_types.mojom-shared.h"
 #import "components/autofill/core/common/unique_ids.h"
 
 namespace autofill {
@@ -38,8 +41,9 @@ using FormFetchCompletion =
 // TODO(crbug.com/338201947): Remove `section` when iOS replaces "Clear Form"
 // with "Undo Autofill".
 - (void)fillData:(const std::vector<autofill::FormFieldData::FillData>&)fields
-         section:(const autofill::Section&)section
-         inFrame:(web::WebFrame*)frame;
+           section:(const autofill::Section&)section
+           inFrame:(web::WebFrame*)frame
+    withActionType:(autofill::mojom::FormActionType)actionType;
 
 - (void)fillSpecificFormField:(const autofill::FieldRendererId&)field
                     withValue:(const std::u16string)value
@@ -53,10 +57,10 @@ using FormFetchCompletion =
             (const std::vector<autofill::FormDataPredictions>&)forms
                         inFrame:(web::WebFrame*)frame;
 
-// Fetches autofill forms in the `frame`'s document. Only provides the first
-// form matching `formName` if `filtered` is true.
-- (void)fetchFormsFiltered:(BOOL)filtered
-                  withName:(const std::u16string&)formName
+// Fetches autofill forms in the `frame`'s document. If `formNameFilter` is not
+// `std::nullopt`, then it only provides forms whose name matches
+// `*form_name_filter`.
+- (void)fetchFormsFiltered:(std::optional<std::u16string>)formNameFilter
                    inFrame:(web::WebFrame*)frame
          completionHandler:(FormFetchCompletion)completionHandler;
 

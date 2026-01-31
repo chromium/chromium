@@ -76,12 +76,12 @@ class IPCMessageSender {
   // Sends a message to add/remove a filtered listener.
   virtual void SendAddFilteredEventListenerIPC(ScriptContext* context,
                                                const std::string& event_name,
-                                               const base::Value::Dict& filter,
+                                               const base::DictValue& filter,
                                                bool is_lazy) = 0;
   virtual void SendRemoveFilteredEventListenerIPC(
       ScriptContext* context,
       const std::string& event_name,
-      const base::Value::Dict& filter,
+      const base::DictValue& filter,
       bool remove_lazy_listener) = 0;
 
   // Sends a message to bind a pipe for the Automation API.
@@ -104,7 +104,7 @@ class IPCMessageSender {
                                   const ExtensionId& extension_id,
                                   ActivityLogCallType call_type,
                                   const std::string& call_name,
-                                  base::Value::List args,
+                                  base::ListValue args,
                                   const std::string& extra) = 0;
 
   // Creates an IPCMessageSender for use on the main thread.

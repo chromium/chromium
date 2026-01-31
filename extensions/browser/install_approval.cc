@@ -19,18 +19,18 @@ namespace extensions {
 InstallApproval::InstallApproval() = default;
 
 std::unique_ptr<InstallApproval> InstallApproval::CreateWithInstallPrompt(
-    Profile* profile) {
+    content::BrowserContext* browser_context) {
   // Use `new` due to private constructor.
   std::unique_ptr<InstallApproval> result(new InstallApproval());
-  result->profile = profile;
+  result->browser_context = browser_context;
   return result;
 }
 
 std::unique_ptr<InstallApproval> InstallApproval::CreateForSharedModule(
-    Profile* profile) {
+    content::BrowserContext* browser_context) {
   // Use `new` due to private constructor.
   std::unique_ptr<InstallApproval> result(new InstallApproval());
-  result->profile = profile;
+  result->browser_context = browser_context;
   result->skip_install_dialog = true;
   result->skip_post_install_ui = true;
   result->manifest_check_level = ManifestCheckLevel::kNone;
@@ -38,14 +38,14 @@ std::unique_ptr<InstallApproval> InstallApproval::CreateForSharedModule(
 }
 
 std::unique_ptr<InstallApproval> InstallApproval::CreateWithNoInstallPrompt(
-    Profile* profile,
+    content::BrowserContext* browser_context,
     const ExtensionId& extension_id,
-    base::Value::Dict parsed_manifest,
+    base::DictValue parsed_manifest,
     bool strict_manifest_check) {
   // Use `new` due to private constructor.
   std::unique_ptr<InstallApproval> result(new InstallApproval());
   result->extension_id = extension_id;
-  result->profile = profile;
+  result->browser_context = browser_context;
   result->manifest =
       std::make_unique<Manifest>(mojom::ManifestLocation::kInvalidLocation,
                                  std::move(parsed_manifest), extension_id);

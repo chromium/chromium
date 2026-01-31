@@ -4,12 +4,12 @@
 
 #include "remoting/protocol/negotiating_host_authenticator.h"
 
+#include <algorithm>
 #include <memory>
 #include <sstream>
 #include <utility>
 
 #include "base/check_op.h"
-#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
@@ -71,7 +71,7 @@ void NegotiatingHostAuthenticator::ProcessMessage(
   // unknown or unsupported method, then select the first known method from
   // the supported-methods attribute.
   if (method == AuthenticationMethod::INVALID ||
-      !base::Contains(methods_, method)) {
+      !std::ranges::contains(methods_, method)) {
     method = AuthenticationMethod::INVALID;
 
     std::string supported_methods_attr =
@@ -93,7 +93,7 @@ void NegotiatingHostAuthenticator::ProcessMessage(
              base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL)) {
       AuthenticationMethod value = ParseAuthenticationMethodString(method_str);
       if (value != AuthenticationMethod::INVALID &&
-          base::Contains(methods_, value)) {
+          std::ranges::contains(methods_, value)) {
         // Found common method.
         method = value;
         break;

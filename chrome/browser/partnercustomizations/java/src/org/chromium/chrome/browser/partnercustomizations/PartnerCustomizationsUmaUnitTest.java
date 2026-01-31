@@ -20,6 +20,7 @@ import static org.chromium.chrome.browser.partnercustomizations.PartnerCustomiza
 import static org.chromium.chrome.browser.partnercustomizations.PartnerCustomizationsUma.TaskCompletion.COMPLETED_IN_TIME;
 import static org.chromium.chrome.browser.partnercustomizations.PartnerCustomizationsUma.TaskCompletion.COMPLETED_TOO_LATE;
 import static org.chromium.chrome.browser.partnercustomizations.PartnerCustomizationsUma.delegateName;
+import static org.chromium.chrome.browser.url_constants.UrlConstantResolver.getOriginalNativeNtpUrl;
 
 import android.os.SystemClock;
 
@@ -47,7 +48,6 @@ import org.chromium.chrome.browser.partnercustomizations.PartnerCustomizationsTe
 import org.chromium.chrome.browser.partnercustomizations.PartnerCustomizationsUma.CustomizationProviderDelegateType;
 import org.chromium.chrome.browser.partnercustomizations.PartnerCustomizationsUma.PartnerCustomizationsHomepageEnum;
 import org.chromium.chrome.browser.partnercustomizations.PartnerCustomizationsUma.TaskCompletion;
-import org.chromium.components.embedder_support.util.UrlConstants;
 
 import java.util.function.Supplier;
 
@@ -75,7 +75,7 @@ public class PartnerCustomizationsUmaUnitTest {
     private static final boolean NOT_CACHED = false;
     private static final boolean CACHED = true;
 
-    private static final String NTP_URL = UrlConstants.NTP_URL;
+    private static final String NTP_URL = getOriginalNativeNtpUrl();
     private static final String NON_NTP_URL = "https://www.google.com/";
 
     private static final Supplier<HomepageCharacterizationHelper> HELPER_FOR_NTP =

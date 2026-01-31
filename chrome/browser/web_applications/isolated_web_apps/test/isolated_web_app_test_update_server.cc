@@ -46,7 +46,7 @@ GURL IsolatedWebAppTestUpdateServer::GetUpdateManifestUrl(
   return storage_.GetUpdateManifestUrl(web_bundle_id);
 }
 
-base::Value::Dict IsolatedWebAppTestUpdateServer::CreateForceInstallPolicyEntry(
+base::DictValue IsolatedWebAppTestUpdateServer::CreateForceInstallPolicyEntry(
     const web_package::SignedWebBundleId& web_bundle_id,
     const std::optional<UpdateChannel>& update_channel,
     const std::optional<IwaVersion>& pinned_version,
@@ -56,7 +56,7 @@ base::Value::Dict IsolatedWebAppTestUpdateServer::CreateForceInstallPolicyEntry(
       pinned_version, allow_downgrades);
 }
 
-base::Value::Dict IsolatedWebAppTestUpdateServer::GetUpdateManifest(
+base::DictValue IsolatedWebAppTestUpdateServer::GetUpdateManifest(
     const web_package::SignedWebBundleId& web_bundle_id) const {
   return storage_.GetUpdateManifest(web_bundle_id);
 }
@@ -92,7 +92,7 @@ IsolatedWebAppTestUpdateServer::HandleRequest(
             response->set_content(bundle->GetBundleData());
             return response;
           },
-          [](base::Value::Dict& update_manifest)
+          [](base::DictValue& update_manifest)
               -> std::unique_ptr<net::test_server::HttpResponse> {
             auto response =
                 std::make_unique<net::test_server::BasicHttpResponse>();

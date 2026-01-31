@@ -277,11 +277,11 @@ v8::Local<v8::Value> V8ValueConverterImpl::ToV8ValueImpl(
       return converter->ToArrayBuffer(isolate, creation_context, value);
     }
 
-    v8::Local<v8::Value> operator()(const base::Value::Dict& value) {
+    v8::Local<v8::Value> operator()(const base::DictValue& value) {
       return converter->ToV8Object(isolate, creation_context, value);
     }
 
-    v8::Local<v8::Value> operator()(const base::Value::List& value) {
+    v8::Local<v8::Value> operator()(const base::ListValue& value) {
       return converter->ToV8Array(isolate, creation_context, value);
     }
   };
@@ -294,7 +294,7 @@ v8::Local<v8::Value> V8ValueConverterImpl::ToV8ValueImpl(
 v8::Local<v8::Value> V8ValueConverterImpl::ToV8Array(
     v8::Isolate* isolate,
     v8::Local<v8::Object> creation_context,
-    const base::Value::List& val) const {
+    const base::ListValue& val) const {
   v8::Local<v8::Array> result(v8::Array::New(isolate, val.size()));
 
   // TODO(robwu): Callers should pass in the context.
@@ -319,7 +319,7 @@ v8::Local<v8::Value> V8ValueConverterImpl::ToV8Array(
 v8::Local<v8::Value> V8ValueConverterImpl::ToV8Object(
     v8::Isolate* isolate,
     v8::Local<v8::Object> creation_context,
-    const base::Value::Dict& val) const {
+    const base::DictValue& val) const {
   v8::Local<v8::Object> result(v8::Object::New(isolate));
 
   // TODO(robwu): Callers should pass in the context.
@@ -472,7 +472,7 @@ std::unique_ptr<base::Value> V8ValueConverterImpl::FromV8Array(
       return out;
   }
 
-  base::Value::List result;
+  base::ListValue result;
 
   // Only fields with integer keys are carried over to the ListValue.
   for (uint32_t i = 0; i < val->Length(); ++i) {
@@ -567,7 +567,7 @@ std::unique_ptr<base::Value> V8ValueConverterImpl::FromV8Object(
   //
   // ANOTHER NOTE: returning an empty dictionary here to minimise surprise.
   // See also http://crbug.com/330559.
-  base::Value::Dict result;
+  base::DictValue result;
 
   if (val->IsApiWrapper())
     return std::make_unique<base::Value>(std::move(result));

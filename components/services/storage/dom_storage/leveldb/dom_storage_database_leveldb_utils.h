@@ -48,6 +48,11 @@ DbStatus ForEachWithPrefix(leveldb::DB* db,
   return FromLevelDBStatus(iter->status());
 }
 
+// Returns `prefix` + `key`.
+DomStorageDatabase::Key CreatePrefixedKey(
+    const DomStorageDatabase::KeyView& prefix,
+    const DomStorageDatabase::KeyView& key);
+
 }  // namespace storage
 
 #endif  // COMPONENTS_SERVICES_STORAGE_DOM_STORAGE_LEVELDB_DOM_STORAGE_DATABASE_LEVELDB_UTILS_H_

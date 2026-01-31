@@ -1,6 +1,5 @@
 This directory contains NoStatePrefetch implementation.
 
-Currently NoStatePrefetch can be triggered by `<link rel="prerender">` and
-Speculation Rules with `prefetch_with_subresources`. These features call
-`StartPrefetchingFromLinkRelPrerender()` and `AddSameOriginSpeculation()` on
-`NoStatePrefetchManager` respectively to start prefetching.
+Currently NoStatePrefetch can only be triggered by `<link rel="prerender">`.
+This feature call `StartPrefetchingFromLinkRelPrerender()` on
+`NoStatePrefetchManager` to start prefetching.

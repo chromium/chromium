@@ -238,6 +238,17 @@ base::win::ScopedGDIObject<HICON> IconUtil::CreateHICONFromSkBitmap(
   return icon;
 }
 
+base::win::ScopedGDIObject<HICON> IconUtil::CreateHICONFromSkBitmapSizedTo(
+    const SkBitmap& bitmap,
+    int width,
+    int height) {
+  return IconUtil::CreateHICONFromSkBitmap(
+      width == bitmap.width() && height == bitmap.height()
+          ? bitmap
+          : skia::ImageOperations::Resize(
+                bitmap, skia::ImageOperations::RESIZE_BEST, width, height));
+}
+
 SkBitmap IconUtil::CreateSkBitmapFromHICON(HICON icon, const gfx::Size& s) {
   // We start with validating parameters.
   if (!icon || s.IsEmpty())

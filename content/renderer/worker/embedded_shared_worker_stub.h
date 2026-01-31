@@ -88,7 +88,8 @@ class EmbeddedSharedWorkerStub : public blink::WebSharedWorkerClient,
           coep_reporting_observer,
       mojo::PendingReceiver<blink::mojom::ReportingObserver>
           dip_reporting_observer,
-      const std::vector<std::string>& cors_exempt_header_list);
+      const std::vector<std::string>& cors_exempt_header_list,
+      bool cross_origin_isolated);
 
   EmbeddedSharedWorkerStub(const EmbeddedSharedWorkerStub&) = delete;
   EmbeddedSharedWorkerStub& operator=(const EmbeddedSharedWorkerStub&) = delete;
@@ -104,6 +105,8 @@ class EmbeddedSharedWorkerStub : public blink::WebSharedWorkerClient,
   void Connect(int connection_request_id,
                blink::MessagePortDescriptor port) override;
   void Terminate() override;
+  void Freeze() override;
+  void Resume() override;
 
   scoped_refptr<blink::WebWorkerFetchContext> CreateWorkerFetchContext(
       const blink::StorageKey& constructor_key,

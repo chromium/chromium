@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <algorithm>
 #include <array>
 #include <memory>
 #include <string_view>
@@ -10,7 +11,6 @@
 #include "base/base64.h"
 #include "base/base_switches.h"
 #include "base/command_line.h"
-#include "base/containers/contains.h"
 #include "base/containers/span.h"
 #include "base/feature_list.h"
 #include "base/files/file_util.h"
@@ -1689,11 +1689,11 @@ IN_PROC_BROWSER_TEST_F(SSLUITestWithClientCert, DISABLED_TestWSSClientCert) {
   // cert selection.
   Profile* profile = Profile::FromBrowserContext(tab->GetBrowserContext());
   DCHECK(profile);
-  base::Value::Dict filter;
+  base::DictValue filter;
   filter.SetByDottedPath("ISSUER.CN", "Test Root CA");
-  base::Value::List filters;
+  base::ListValue filters;
   filters.Append(std::move(filter));
-  base::Value::Dict setting;
+  base::DictValue setting;
   setting.Set("filters", std::move(filters));
   HostContentSettingsMapFactory::GetForProfile(profile)
       ->SetWebsiteSettingDefaultScope(
@@ -1799,9 +1799,9 @@ IN_PROC_BROWSER_TEST_F(SSLUITest, TestBrowserUseClientCertStore) {
   // of JSON dictionaries, each containing optional filters. An empty filter
   // dictionary means “allow any matching certificate”, which is enough for the
   // test to auto-select the single certificate offered by the stub store.
-  base::Value::List filters;
-  filters.Append(base::Value::Dict());
-  base::Value::Dict setting;
+  base::ListValue filters;
+  filters.Append(base::DictValue());
+  base::DictValue setting;
   setting.Set("filters", std::move(filters));
   HostContentSettingsMapFactory::GetForProfile(profile)
       ->SetWebsiteSettingDefaultScope(
@@ -1854,9 +1854,9 @@ IN_PROC_BROWSER_TEST_F(SSLUITest, TestBrowserUseClientCertStoreDynamicUpdate) {
   EXPECT_NE("pass", tab->GetLastCommittedURL().GetRef());
 
   // 3. Set AutoSelect Policy.
-  base::Value::List filters;
-  filters.Append(base::Value::Dict());
-  base::Value::Dict setting;
+  base::ListValue filters;
+  filters.Append(base::DictValue());
+  base::DictValue setting;
   setting.Set("filters", std::move(filters));
   HostContentSettingsMapFactory::GetForProfile(profile)
       ->SetWebsiteSettingDefaultScope(
@@ -1913,9 +1913,9 @@ IN_PROC_BROWSER_TEST_F(SSLUITest, TestServiceWorkerRequestsUseClientCertStore) {
   WebContents* tab = browser()->tab_strip_model()->GetActiveWebContents();
   Profile* profile = Profile::FromBrowserContext(tab->GetBrowserContext());
   DCHECK(profile);
-  base::Value::List filters;
-  filters.Append(base::Value::Dict());
-  base::Value::Dict setting;
+  base::ListValue filters;
+  filters.Append(base::DictValue());
+  base::DictValue setting;
   setting.Set("filters", std::move(filters));
   HostContentSettingsMapFactory::GetForProfile(profile)
       ->SetWebsiteSettingDefaultScope(
@@ -2042,9 +2042,9 @@ IN_PROC_BROWSER_TEST_F(SSLUITest, TestClientAuthSigningFails) {
   WebContents* tab = browser()->tab_strip_model()->GetActiveWebContents();
   Profile* profile = Profile::FromBrowserContext(tab->GetBrowserContext());
   DCHECK(profile);
-  base::Value::List filters;
-  filters.Append(base::Value::Dict());
-  base::Value::Dict setting;
+  base::ListValue filters;
+  filters.Append(base::DictValue());
+  base::DictValue setting;
   setting.Set("filters", std::move(filters));
   HostContentSettingsMapFactory::GetForProfile(profile)
       ->SetWebsiteSettingDefaultScope(
@@ -2105,9 +2105,9 @@ IN_PROC_BROWSER_TEST_F(SSLUITest, TestCertDBChangedFlushesClientAuthCache) {
   WebContents* tab = browser()->tab_strip_model()->GetActiveWebContents();
   Profile* profile = Profile::FromBrowserContext(tab->GetBrowserContext());
   DCHECK(profile);
-  base::Value::List filters;
-  filters.Append(base::Value::Dict());
-  base::Value::Dict setting;
+  base::ListValue filters;
+  filters.Append(base::DictValue());
+  base::DictValue setting;
   setting.Set("filters", std::move(filters));
   HostContentSettingsMapFactory::GetForProfile(profile)
       ->SetWebsiteSettingDefaultScope(
@@ -2299,16 +2299,16 @@ IN_PROC_BROWSER_TEST_F(SSLUITest, TestExtensionEvents) {
       tab, net::CERT_STATUS_DATE_INVALID, AuthState::SHOWING_INTERSTITIAL);
 
   // Verifies that security interstitial shown event is observed.
-  EXPECT_TRUE(base::Contains(observer.event_names(),
-                             extensions::api::safe_browsing_private::
-                                 OnSecurityInterstitialShown::kEventName));
+  EXPECT_TRUE(std::ranges::contains(
+      observer.event_names(), extensions::api::safe_browsing_private::
+                                  OnSecurityInterstitialShown::kEventName));
 
   ProceedThroughInterstitial(tab);
 
   // Verifies that security interstitial proceeded event is observed.
-  EXPECT_TRUE(base::Contains(observer.event_names(),
-                             extensions::api::safe_browsing_private::
-                                 OnSecurityInterstitialProceeded::kEventName));
+  EXPECT_TRUE(std::ranges::contains(
+      observer.event_names(), extensions::api::safe_browsing_private::
+                                  OnSecurityInterstitialProceeded::kEventName));
 
   extensions::EventRouter::Get(browser()->profile())
       ->RemoveObserverForTesting(&observer);

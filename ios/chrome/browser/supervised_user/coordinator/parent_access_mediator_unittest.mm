@@ -110,7 +110,13 @@ class ParentAccessMediatorTest : public PlatformTest {
     server_.RegisterDefaultHandler(base::BindRepeating(&HandleRequest));
   }
 
-  ~ParentAccessMediatorTest() override { [mediator_ disconnect]; }
+  ~ParentAccessMediatorTest() override = default;
+
+  void TearDown() override {
+    delegate_ = nil;
+    [mediator_ disconnect];
+    PlatformTest::TearDown();
+  }
 
   // Initializes the ParentAccessMediator with a WebState and its dependencies.
   // Returns a pointer to the WebState owned by the mediator.

@@ -6,6 +6,7 @@
 
 #include <deque>
 
+#include "chrome/browser/android/persisted_tab_data/persisted_tab_data_config_android.h"
 #include "chrome/browser/android/persisted_tab_data/test/bar_persisted_tab_data.h"
 #include "chrome/browser/android/persisted_tab_data/test/foo_persisted_tab_data.h"
 #include "chrome/browser/profiles/profile.h"
@@ -23,6 +24,8 @@
 namespace {
 const int32_t INITIAL_VALUE = 42;
 const int32_t CHANGED_VALUE = 52;
+const char kBarId[] = "barId";
+const char kFooId[] = "fooId";
 }  // namespace
 
 class PersistedTabDataAndroidBrowserTest : public AndroidBrowserTest {
@@ -40,9 +43,15 @@ class PersistedTabDataAndroidBrowserTest : public AndroidBrowserTest {
     std::unique_ptr<content::WebContents> contents =
         content::WebContents::Create(
             content::WebContents::CreateParams(profile()));
-    content::WebContents* second_web_contents = contents.release();
-    tab_model->CreateTab(tab_android(), second_web_contents, /*select=*/true);
+    tab_model->CreateTab(tab_android(), std::move(contents),
+                         TabModel::kInvalidIndex,
+                         TabModel::TabLaunchType::FROM_RECENT_TABS_FOREGROUND,
+                         /*should_pin=*/false);
     ASSERT_EQ(2, tab_model->GetTabCount());
+    PersistedTabDataConfigAndroid::AddConfigForTesting(
+        FooPersistedTabDataAndroid::UserDataKey(), kFooId);
+    PersistedTabDataConfigAndroid::AddConfigForTesting(
+        BarPersistedTabDataAndroid::UserDataKey(), kBarId);
   }
 
   TabAndroid* tab_android() {

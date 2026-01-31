@@ -59,31 +59,31 @@ size_t IntentFilterUrlMatchLength(const apps::IntentFilterPtr& intent_filter,
 std::set<std::string> GetSupportedLinksForAppManagement(
     const apps::IntentFilterPtr& intent_filter);
 
-// Converts `condition_value` to base::Value::Dict, e.g.:
+// Converts `condition_value` to base::DictValue, e.g.:
 // {
 //    "value": "xx",
 //    "match_type": 2,
 // }
-base::Value::Dict ConvertConditionValueToDict(
+base::DictValue ConvertConditionValueToDict(
     const apps::ConditionValuePtr& condition_value);
 
-// Converts base::Value::Dict to ConditionValue.
+// Converts base::DictValue to ConditionValue.
 apps::ConditionValuePtr ConvertDictToConditionValue(
-    const base::Value::Dict& dict);
+    const base::DictValue& dict);
 
-// Converts `condition` to base::Value::Dict, e.g.:
+// Converts `condition` to base::DictValue, e.g.:
 // {
 //    "condition_type": 3,
 //    "condition_values":
 //      {{"value": "xx", "match_type": 2},
 //       {"value": "yy", "match_type": 3}},
 // }
-base::Value::Dict ConvertConditionToDict(const apps::ConditionPtr& condition);
+base::DictValue ConvertConditionToDict(const apps::ConditionPtr& condition);
 
-// Converts base::Value::Dict to Condition.
-apps::ConditionPtr ConvertDictToCondition(const base::Value::Dict& dict);
+// Converts base::DictValue to Condition.
+apps::ConditionPtr ConvertDictToCondition(const base::DictValue& dict);
 
-// Converts `IntentFilter` to base::Value::List, e.g.:
+// Converts `IntentFilter` to base::ListValue, e.g.:
 // {
 //   {
 //    "condition_type": 3,
@@ -98,14 +98,14 @@ apps::ConditionPtr ConvertDictToCondition(const base::Value::Dict& dict);
 //       {"value": "bb", "match_type": 3}},
 //   },
 // }
-base::Value::List ConvertIntentFilterConditionsToList(
+base::ListValue ConvertIntentFilterConditionsToList(
     const apps::IntentFilterPtr& intent_filter);
 
-// Converts base::Value::List to IntentFilter.
+// Converts base::ListValue to IntentFilter.
 apps::IntentFilterPtr ConvertListToIntentFilterConditions(
-    const base::Value::List* value);
+    const base::ListValue* value);
 
-// Converts `IntentFilter` to base::Value::Dict, e.g.:
+// Converts `IntentFilter` to base::DictValue, e.g.:
 // {
 //   "conditions":
 //     {
@@ -124,11 +124,11 @@ apps::IntentFilterPtr ConvertListToIntentFilterConditions(
 //   "activity_name": "name",
 //   "activity_label": "label",
 // }
-base::Value::Dict ConvertIntentFilterToDict(
+base::DictValue ConvertIntentFilterToDict(
     const apps::IntentFilterPtr& intent_filter);
 
-// Converts base::Value::Dict to IntentFilter.
-apps::IntentFilterPtr ConvertDictToIntentFilter(const base::Value::Dict* dict);
+// Converts base::DictValue to IntentFilter.
+apps::IntentFilterPtr ConvertDictToIntentFilter(const base::DictValue* dict);
 
 }  // namespace apps_util
 

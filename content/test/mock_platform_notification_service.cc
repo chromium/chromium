@@ -7,7 +7,6 @@
 #include <set>
 #include <utility>
 
-#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/strings/utf_string_conversions.h"
@@ -65,7 +64,7 @@ void MockPlatformNotificationService::CloseNotification(
     const std::string& notification_id) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
-  if (!base::Contains(non_persistent_notifications_, notification_id)) {
+  if (!non_persistent_notifications_.contains(notification_id)) {
     return;
   }
 

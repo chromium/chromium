@@ -4,7 +4,6 @@
 
 #include "components/collaboration/internal/collaboration_finder_impl.h"
 
-#include "base/containers/contains.h"
 #include "components/data_sharing/public/data_sharing_service.h"
 #include "components/data_sharing/public/group_data.h"
 #include "components/sync/base/collaboration_id.h"
@@ -32,7 +31,7 @@ void CollaborationFinderImpl::SetClient(Client* client) {
 
 bool CollaborationFinderImpl::IsCollaborationAvailable(
     const syncer::CollaborationId& collaboration_id) {
-  if (base::Contains(collaborations_available_for_testing_, collaboration_id)) {
+  if (collaborations_available_for_testing_.contains(collaboration_id)) {
     return true;
   }
 

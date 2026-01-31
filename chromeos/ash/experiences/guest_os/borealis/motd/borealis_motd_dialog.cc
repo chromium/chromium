@@ -4,30 +4,23 @@
 
 #include "chromeos/ash/experiences/guest_os/borealis/motd/borealis_motd_dialog.h"
 
+#include "ash/constants/url_constants.h"
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/shell.h"
-#include "ash/strings/grit/ash_strings.h"
-#include "base/strings/stringprintf.h"
-#include "base/version.h"
+#include "base/feature_list.h"
 #include "chromeos/ash/experiences/guest_os/borealis/borealis_features.h"
-#include "chromeos/ash/grit/borealis_motd_resources.h"
-#include "chromeos/ash/grit/borealis_motd_resources_map.h"
-#include "components/version_info/version_info.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/file_select_listener.h"
 #include "content/public/browser/web_contents.h"
-#include "content/public/browser/web_ui.h"
-#include "content/public/browser/web_ui_data_source.h"
-#include "services/network/public/mojom/content_security_policy.mojom.h"
 #include "third_party/blink/public/mojom/window_features/window_features.mojom.h"
 #include "ui/base/ui_base_types.h"
+#include "ui/gfx/geometry/size.h"
 #include "ui/views/controls/webview/web_dialog_view.h"
 #include "ui/views/layout/layout_provider.h"
 #include "ui/views/widget/widget.h"
-#include "ui/web_dialogs/web_dialog_ui.h"
 #include "ui/web_dialogs/web_dialog_web_contents_delegate.h"
-#include "ui/webui/webui_util.h"
+#include "url/gurl.h"
 
 namespace borealis {
 
@@ -65,14 +58,6 @@ class MOTDWebContentsHandler
   }
 };
 
-constexpr const char kClientActionDismiss[] = "dismiss";
-constexpr const char kBorealisMessageURL[] =
-    "https://www.gstatic.com/chromeos-borealis-motd/%d/index.html";
-
-int GetMilestone() {
-  return version_info::GetVersion().components()[0];
-}
-
 }  // namespace
 
 void MaybeShowBorealisMOTDDialog(base::OnceCallback<void()> cb,
@@ -84,38 +69,6 @@ void MaybeShowBorealisMOTDDialog(base::OnceCallback<void()> cb,
 
   BorealisMOTDDialog::Show(std::move(cb), context);
 }
-
-BorealisMOTDUI::BorealisMOTDUI(content::WebUI* web_ui)
-    : content::WebUIController(web_ui) {
-  // Set up the chrome://borealis-motd source.
-  content::WebUIDataSource* source = content::WebUIDataSource::CreateAndAdd(
-      web_ui->GetWebContents()->GetBrowserContext(),
-      chrome::kChromeUIBorealisMOTDHost);
-
-  // Add required resources.
-  webui::SetupWebUIDataSource(source, base::span(kBorealisMotdResources),
-                              IDR_BOREALIS_MOTD_INDEX_HTML);
-  source->OverrideContentSecurityPolicy(
-      network::mojom::CSPDirectiveName::ObjectSrc, "object-src *;");
-  source->OverrideContentSecurityPolicy(
-      network::mojom::CSPDirectiveName::FrameSrc, "frame-src *;");
-  source->OverrideContentSecurityPolicy(
-      network::mojom::CSPDirectiveName::ScriptSrc,
-      "script-src 'self' 'unsafe-inline';");
-
-  static constexpr webui::LocalizedString kStrings[] = {
-      // Localized strings (alphabetical order).
-      {"dismissText", IDS_ASH_BOREALIS_MOTD_DISMISS_TEXT},
-      {"placeholderText", IDS_ASH_BOREALIS_MOTD_PLACEHOLDER_TEXT},
-      {"titleText", IDS_ASH_BOREALIS_MOTD_TITLE_TEXT},
-  };
-  source->AddLocalizedStrings(kStrings);
-
-  source->AddString("motdUrl",
-                    base::StringPrintf(kBorealisMessageURL, GetMilestone()));
-}
-
-BorealisMOTDUI::~BorealisMOTDUI() = default;
 
 BorealisMOTDDialog::BorealisMOTDDialog(base::OnceCallback<void()> cb,
                                        content::BrowserContext* context)
@@ -178,12 +131,6 @@ void BorealisMOTDDialog::Show(base::OnceCallback<void()> cb,
 void BorealisMOTDDialog::OnDialogClosed(const std::string& json_retval) {
   std::move(close_callback_).Run();
   delete this;
-}
-
-void BorealisMOTDDialog::OnLoadingStateChanged(content::WebContents* source) {
-  if (source->GetURL().GetRef() == kClientActionDismiss) {
-    source->ClosePage();
-  }
 }
 
 }  // namespace borealis

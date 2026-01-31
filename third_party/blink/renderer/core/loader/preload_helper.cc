@@ -4,11 +4,12 @@
 
 #include "third_party/blink/renderer/core/loader/preload_helper.h"
 
+#include <utility>
+
 #include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/rand_util.h"
 #include "base/timer/elapsed_timer.h"
-#include "base/types/cxx23_to_underlying.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-blink.h"
@@ -870,7 +871,7 @@ void PreloadHelper::LoadLinksFromHeader(
       const OriginStatusOnSubresource origin_status =
           GetOriginStatus(from_same_origin, to_same_origin);
       ukm::builders::Blink_Preloading_ByLinkHeader(document->UkmSourceID())
-          .SetOriginStatusOnSubresource(base::to_underlying(origin_status))
+          .SetOriginStatusOnSubresource(std::to_underlying(origin_status))
           .Record(document->UkmRecorder());
     }
     if (is_subresource_load && !from_same_origin &&

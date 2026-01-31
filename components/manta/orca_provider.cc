@@ -87,29 +87,29 @@ void OnServerResponseOrErrorReceived(
     MantaStatus manta_status) {
   if (manta_status.status_code != MantaStatusCode::kOk) {
     DCHECK(manta_response == nullptr);
-    std::move(callback).Run(base::Value::Dict(), std::move(manta_status));
+    std::move(callback).Run(base::DictValue(), std::move(manta_status));
     return;
   }
 
   DCHECK(manta_response != nullptr);
 
-  auto output_data_list = base::Value::List();
+  auto output_data_list = base::ListValue();
   for (const auto& output_data : manta_response->output_data()) {
     if (output_data.has_text()) {
       output_data_list.Append(
-          base::Value::Dict().Set("text", output_data.text()));
+          base::DictValue().Set("text", output_data.text()));
     }
   }
 
   if (output_data_list.size() == 0) {
     std::move(callback).Run(
-        base::Value::Dict(),
+        base::DictValue(),
         {MantaStatusCode::kBlockedOutputs, /*message=*/std::string()});
     return;
   }
 
   std::move(callback).Run(
-      base::Value::Dict().Set("outputData", std::move(output_data_list)),
+      base::DictValue().Set("outputData", std::move(output_data_list)),
       std::move(manta_status));
 }
 
@@ -128,7 +128,7 @@ void OrcaProvider::Call(const std::map<std::string, std::string>& input,
   std::optional<proto::Request> request = ComposeRequest(input);
   if (request == std::nullopt) {
     std::move(done_callback)
-        .Run(base::Value::Dict(),
+        .Run(base::DictValue(),
              {MantaStatusCode::kInvalidInput, /*message=*/std::string()});
     return;
   }

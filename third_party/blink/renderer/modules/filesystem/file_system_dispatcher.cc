@@ -6,7 +6,6 @@
 
 #include <utility>
 
-#include "base/containers/contains.h"
 #include "base/task/sequenced_task_runner.h"
 #include "build/build_config.h"
 #include "components/services/filesystem/public/mojom/types.mojom-blink.h"
@@ -424,7 +423,7 @@ void FileSystemDispatcher::WriteSync(const KURL& path,
 
 void FileSystemDispatcher::Cancel(int request_id_to_cancel,
                                   StatusCallback callback) {
-  if (!base::Contains(cancellable_operations_, request_id_to_cancel)) {
+  if (!cancellable_operations_.Contains(request_id_to_cancel)) {
     std::move(callback).Run(base::File::FILE_ERROR_INVALID_OPERATION);
     return;
   }

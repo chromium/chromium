@@ -138,8 +138,10 @@ constexpr int kNotifyAutoSigninDuration = 3;  // seconds
 @end
 
 @implementation PasswordController {
-  std::unique_ptr<PasswordManager> _passwordManager;
   std::unique_ptr<PasswordManagerClient> _passwordManagerClient;
+  // `PasswordManager` holds a raw_ptr to `PasswordManagerClient`, therefore
+  // `_passwordManagerClient` has to outlive `_passwordManager`.
+  std::unique_ptr<PasswordManager> _passwordManager;
   std::unique_ptr<PasswordReuseDetectionManagerClient>
       _passwordReuseDetectionManagerClient;
 

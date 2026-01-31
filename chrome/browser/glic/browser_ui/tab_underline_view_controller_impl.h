@@ -22,7 +22,7 @@
 #include "components/tabs/public/tab_interface.h"
 #include "ui/views/view_observer.h"
 
-class Browser;
+class BrowserWindowInterface;
 
 namespace content {
 class WebContents;
@@ -45,7 +45,8 @@ class TabUnderlineViewControllerImpl
   ~TabUnderlineViewControllerImpl() override;
 
   // TabUnderlineViewController overrides:
-  void Initialize(TabUnderlineView* underline_view, Browser* browser) override;
+  void Initialize(TabUnderlineView* underline_view,
+                  BrowserWindowInterface* browser_window_interface) override;
 
   // contextual_tasks::ActiveTaskContextProvider::Observer overrides:
   // Handles updates from the contextual Tasks backend.
@@ -104,11 +105,22 @@ class TabUnderlineViewControllerImpl
     kUserInputSubmitted,
   };
 
+  // Bitmask representing the features that are currently sourcing (requesting)
+  // the tab underline to be shown.
+  enum UnderlineSource {
+    kNone = 0,
+    kGlic = 1 << 0,
+    kContextualTasks = 1 << 1,
+  };
+
+  void AddSource(UnderlineSource source);
+  void RemoveSource(UnderlineSource source);
+
   GlicKeyedService* GetGlicKeyedService();
 
   // Returns the TabInterface corresponding to `underline_view_`, if it is
   // valid.
-  base::WeakPtr<tabs::TabInterface> GetTabInterface();
+  tabs::TabInterface* GetTabInterface();
 
   bool IsUnderlineTabPinned();
 
@@ -121,14 +133,14 @@ class TabUnderlineViewControllerImpl
 
   // Off to On. Throw away everything we have and start the animation from
   // the beginning.
-  void ShowAndAnimateUnderline();
+  void ShowAndAnimateUnderline(bool triggered_by_glic);
 
-  void HideUnderline();
+  void HideUnderline(bool triggered_by_glic);
 
   // Replay the animation without hiding and re-showing the view.
   void AnimateUnderline();
 
-  void ShowOrAnimatePinnedUnderline();
+  void ShowOrAnimatePinnedUnderline(bool triggered_by_glic);
 
   bool IsGlicWindowShowing() const;
 
@@ -149,7 +161,7 @@ class TabUnderlineViewControllerImpl
 
   // The pointer to the browser in which the underline view lives. Outlives the
   // underline view.
-  raw_ptr<Browser> browser_;
+  raw_ptr<BrowserWindowInterface> browser_window_interface_;
 
   // The Glic keyed service. This is only assigned if
   // ShouldUseSignalsForGlicUnderlines() returns true. Otherwise, it will stay
@@ -171,6 +183,10 @@ class TabUnderlineViewControllerImpl
 
   static constexpr size_t kNumReasonsToKeep = 10u;
   std::list<std::string> underline_update_reasons_;
+
+  // The current set of active sources for the underline. The underline is
+  // hidden only when this bitmask is UnderlineSource::kNone.
+  int active_sources_ = UnderlineSource::kNone;
 };
 
 }  // namespace glic

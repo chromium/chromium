@@ -10,8 +10,8 @@ s! {
     // FIXME(1.0): This should not implement `PartialEq`
     #[allow(unpredictable_function_pointer_comparisons)]
     pub struct malloc_zone_t {
-        _reserved1: *mut c_void,
-        _reserved2: *mut c_void,
+        _reserved1: Padding<*mut c_void>,
+        _reserved2: Padding<*mut c_void>,
         pub size:
             Option<unsafe extern "C" fn(zone: *mut malloc_zone_t, ptr: *const c_void) -> size_t>,
         pub malloc:

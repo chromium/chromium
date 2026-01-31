@@ -21,7 +21,7 @@
 
 namespace {
 
-std::string ToString(const base::Value::Dict& node) {
+std::string ToString(const base::DictValue& node) {
   return base::WriteJson(node).value_or("");
 }
 
@@ -60,8 +60,8 @@ TEST_F(DevToolsClientImplTest, DeleteGlobalJSON) {
   status = page_client_impl->AttachTo(browser_client_impl);
   ASSERT_TRUE(StatusOk(status));
 
-  base::Value::Dict params;
-  base::Value::Dict result;
+  base::DictValue params;
+  base::DictValue result;
   params.Set(
       "expression",
       "window.page_label_for_test = \"starting\"; window.page_label_for_test");

@@ -23,8 +23,8 @@
 #include "chrome/browser/chrome_content_browser_client.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
-#include "chrome/browser/ui/browser_dialogs.h"
 #include "chrome/browser/ui/chooser_bubble_testapi.h"
+#include "chrome/browser/ui/dialogs/browser_dialogs.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -421,7 +421,7 @@ IN_PROC_BROWSER_TEST_F(WebBluetoothTest, NotificationStartValueChangeRead) {
       return Promise.all([readPromise, notifyPromise]);
     })())");
 
-  const base::Value::List& promise_values = js_values.ExtractList();
+  const base::ListValue& promise_values = js_values.ExtractList();
   EXPECT_EQ(2U, promise_values.size());
   EXPECT_EQ(content::ListValueOf(1, 1), js_values);
 }
@@ -550,7 +550,7 @@ IN_PROC_BROWSER_TEST_P(WebBluetoothPermissionsPolicyTest,
   content::EvalJsResult inner_device_id_after_navigation =
       InvokeGetDevices(web_contents_.get());
   // Expect an empty list.
-  EXPECT_EQ(base::Value(base::Value::List()), inner_device_id_after_navigation);
+  EXPECT_EQ(base::Value(base::ListValue()), inner_device_id_after_navigation);
 }
 
 IN_PROC_BROWSER_TEST_P(WebBluetoothPermissionsPolicyTest,
@@ -1125,7 +1125,7 @@ IN_PROC_BROWSER_TEST_F(
   // Loads a page in the prerender.
   auto prerender_url = embedded_test_server()->GetURL("/simple.html");
   // The prerendering doesn't affect the current scanning.
-  content::FrameTreeNodeId host_id =
+  content::PrerenderHostId host_id =
       prerender_helper()->AddPrerender(prerender_url);
   content::test::PrerenderHostObserver host_observer(*GetWebContents(),
                                                      host_id);

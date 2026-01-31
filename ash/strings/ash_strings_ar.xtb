@@ -96,7 +96,7 @@
 <translation id="1290331692326790741">إشارة ضعيفة</translation>
 <translation id="1290982764014248209">نقل <ph name="DRAGGED_APP" /> إلى مجلد <ph name="FOLDER_NAME" />.</translation>
 <translation id="1293264513303784526">‏جهاز USB-C (المنفذ الأيسر)</translation>
-<translation id="1293556467332435079">ملفات</translation>
+<translation id="1293556467332435079">الملفات</translation>
 <translation id="1293699935367580298">Esc</translation>
 <translation id="1294046132466831888">فتح تطبيق "استكشاف"</translation>
 <translation id="129469256578833241">الرجوع إلى الملخّص</translation>
@@ -343,6 +343,7 @@
 <translation id="2201071101391734388">الصورة الحديثة رقم <ph name="INDEX" /> من إجمالي <ph name="TOTAL_COUNT" /></translation>
 <translation id="2201687081523799384">‏تصغير "مهام Google"</translation>
 <translation id="2208323208084708176">وضع سطح المكتب الموحد</translation>
+<translation id="2210311543574621570">‏ستظهر لك الحافظة عند الضغط مع الاستمرار على ‎Ctrl + V. ويمكنك إيقاف هذا الاختصار عن طريق إيقاف الميزة التجريبية ‎#clipboard-history-longpress في ‎chrome://flags.</translation>
 <translation id="2215920961700443347">لا يتوفر اتصال بالإنترنت. يُرجى الاتصال بالإنترنت وإعادة المحاولة.</translation>
 <translation id="2222841058024245321">سطح المكتب 7</translation>
 <translation id="2223384056430485343">في "وضع تقسيم الشاشة"</translation>
@@ -2078,7 +2079,7 @@
         <ph name="IME" />،
         <ph name="LOCALE" /></translation>
 <translation id="7899977217122813285">يتم كتم صوت الإشعارات حتى <ph name="TIME" /> أثناء استخدام "وضع التركيز"</translation>
-<translation id="7901010467630324625">الأجهزة التي تم تسجيل الدخول إلى <ph name="EMAIL" /> عليها فقط</translation>
+<translation id="7901010467630324625">الأجهزة التي سجّلت الدخول إلى <ph name="EMAIL" /> عليها فقط</translation>
 <translation id="7901190436359881020">تبديل النوافذ</translation>
 <translation id="7901405293566323524">Phone Hub</translation>
 <translation id="7902625623987030061">المس أداة استشعار بصمات الإصبع.</translation>

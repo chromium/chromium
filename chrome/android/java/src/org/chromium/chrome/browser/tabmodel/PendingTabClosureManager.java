@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.tabmodel;
 
 import org.chromium.base.ThreadUtils.ThreadChecker;
+import org.chromium.base.TimeUtils;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.tab.Tab;
@@ -65,6 +66,7 @@ public class PendingTabClosureManager {
         private final List<Tab> mClosingTabs;
         private final HashSet<Tab> mUnhandledTabs;
         private final @Nullable Runnable mUndoRunnable;
+        private final long mTimestamp;
 
         /**
          * @param tabs The list of closing tabs.
@@ -74,6 +76,7 @@ public class PendingTabClosureManager {
             mClosingTabs = new ArrayList<>(tabs);
             mUnhandledTabs = new HashSet<>(mClosingTabs);
             mUndoRunnable = undoRunnable;
+            mTimestamp = TimeUtils.currentTimeMillis();
         }
 
         /**
@@ -109,6 +112,11 @@ public class PendingTabClosureManager {
         /** Returns the undo runnable. */
         public @Nullable Runnable getUndoRunnable() {
             return mUndoRunnable;
+        }
+
+        /** Returns the timestamp (in millis) of the tab closure event. */
+        public long getTimestamp() {
+            return mTimestamp;
         }
     }
 
@@ -201,6 +209,16 @@ public class PendingTabClosureManager {
         }
 
         /**
+         * Adds a {@link Tab} to this internal list.
+         *
+         * @param tab The {@link Tab} to add.
+         * @param index The index to add the tab at.
+         */
+        public void addTab(Tab tab, int index) {
+            mRewoundTabs.add(index, tab);
+        }
+
+        /**
          * Removes a {@link Tab} from this internal list.
          *
          * @param tab The {@link Tab} to remove.
@@ -286,6 +304,22 @@ public class PendingTabClosureManager {
 
         assert mTabClosureEvents.isEmpty();
         mRewoundList.resetRewoundState();
+    }
+
+    /**
+     * Notifies the manager that a tab was added to the model, so the rewound list can be updated.
+     * This is an optimization to avoid a full reset of the rewound list.
+     *
+     * @param tab The tab that was added.
+     * @param index The index where the tab was added.
+     */
+    public void notifyTabAdded(Tab tab, int index) {
+        mThreadChecker.assertOnValidThread();
+        assert !mIsCommittingAllTabClosures
+                : "Modifying mTabClosureEvents while committing all tab closures.";
+
+        assert mTabClosureEvents.isEmpty();
+        mRewoundList.addTab(tab, index);
     }
 
     /**
@@ -424,6 +458,14 @@ public class PendingTabClosureManager {
             cancelClosureInternal(tab);
         }
         return true;
+    }
+
+    long getMostRecentClosureTime() {
+        mThreadChecker.assertOnValidThread();
+        if (mTabClosureEvents.isEmpty()) return TabModel.INVALID_TIMESTAMP;
+
+        TabClosureEvent event = mTabClosureEvents.get(mTabClosureEvents.size() - 1);
+        return event.getTimestamp();
     }
 
     private void commitClosuresInternal(List<Tab> tabs) {

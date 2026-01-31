@@ -6,8 +6,8 @@
 
 #include <memory>
 
+#include "components/split_tabs/split_tab_visual_data.h"
 #include "components/tabs/public/split_tab_collection.h"
-#include "components/tabs/public/split_tab_visual_data.h"
 #include "components/tabs/public/tab_collection.h"
 #include "components/tabs/public/tab_interface.h"
 #include "components/tabs/public/tab_strip_collection.h"

@@ -10,8 +10,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace ash {
-namespace quick_pair {
+namespace ash::quick_pair {
 
 class DeviceTest : public testing::Test {
  protected:
@@ -54,5 +53,4 @@ TEST_F(DeviceTest, GetAndSetName) {
   EXPECT_TRUE(name.has_value());
   EXPECT_EQ(name.value(), new_test_name);
 }
-}  // namespace quick_pair
-}  // namespace ash
+}  // namespace ash::quick_pair

@@ -342,6 +342,7 @@
 <translation id="2201071101391734388">Скорошна снимка <ph name="INDEX" /> от <ph name="TOTAL_COUNT" />.</translation>
 <translation id="2201687081523799384">Свиване на Google Tasks</translation>
 <translation id="2208323208084708176">Режим на обединен работен плот</translation>
+<translation id="2210311543574621570">Буферната памет ще се показва при натискане и задържане на Ctrl + V. Можете да изключите клавишната комбинация, като деактивирате флага #clipboard-history-longpress в chrome://flags.</translation>
 <translation id="2215920961700443347">Не сте онлайн. Свържете се с интернет и опитайте отново.</translation>
 <translation id="2222841058024245321">Работен кът 7</translation>
 <translation id="2223384056430485343">При разделен екран</translation>

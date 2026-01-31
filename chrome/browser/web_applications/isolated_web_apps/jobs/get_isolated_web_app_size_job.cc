@@ -119,7 +119,7 @@ class StoragePartitionSizeEstimator : private ProfileObserver {
 GetIsolatedWebAppSizeJob::GetIsolatedWebAppSizeJob(
     Profile* profile,
     const webapps::AppId& app_id,
-    base::Value::Dict& debug_value,
+    base::DictValue& debug_value,
     ResultCallback result_callback)
     : app_id_(app_id),
       profile_(profile),
@@ -138,8 +138,8 @@ void GetIsolatedWebAppSizeJob::Start(
 
   const WebAppRegistrar& web_app_registrar =
       lock_with_app_resources_->registrar();
-  const WebApp iwa = CHECK_DEREF(web_app_registrar.GetAppById(app_id_));
-  CHECK(iwa.isolation_data());
+  const WebApp iwa = CHECK_DEREF(
+      web_app_registrar.GetAppById(app_id_, WebAppFilter::IsIsolatedApp()));
 
   iwa_origin_ = url::Origin::Create(iwa.scope());
 
@@ -188,7 +188,7 @@ void GetIsolatedWebAppSizeJob::OnGetIconStorageUsage(uint64_t icon_size) {
 
 void GetIsolatedWebAppSizeJob::StoragePartitionSizeFetched(int64_t size) {
   browsing_data_size_ += size;
-  // Store the size as a double because Value::Dict doesn't support 64-bit
+  // Store the size as a double because base::DictValue doesn't support 64-bit
   // integers. This should only lead to data loss when size is >2^54.
   debug_value_->EnsureDict(kDebugOriginKey)
       ->Set(iwa_origin_.Serialize(), base::ToString(size));

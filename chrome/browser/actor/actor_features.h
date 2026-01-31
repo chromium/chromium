@@ -15,13 +15,14 @@ namespace actor {
 
 BASE_DECLARE_FEATURE(kGlicActionAllowlist);
 
+BASE_DECLARE_FEATURE(kActorEnableAndroid);
+
 BASE_DECLARE_FEATURE_PARAM(std::string, kAllowlist);
 BASE_DECLARE_FEATURE_PARAM(std::string, kAllowlistExact);
 BASE_DECLARE_FEATURE_PARAM(bool, kAllowlistOnly);
 
 BASE_DECLARE_FEATURE(kGlicActionUseOptimizationGuide);
 BASE_DECLARE_FEATURE(kActorBypassTOUValidationForGuestView);
-BASE_DECLARE_FEATURE(kActorLoginPermissionsUseStrongAffiliations);
 
 BASE_DECLARE_FEATURE(kGlicExternalProtocolActionResultCode);
 
@@ -71,9 +72,16 @@ BASE_DECLARE_FEATURE(kGlicTabScreenshotPaintPreviewBackend);
 
 BASE_DECLARE_FEATURE(kGlicNavigateUsingLoadURL);
 
+BASE_DECLARE_FEATURE(kGlicNavigateToolUseOpaqueInitiator);
+
 BASE_DECLARE_FEATURE(kGlicNavigateWithoutUserGesture);
 
 BASE_DECLARE_FEATURE(kGlicPerformActionsReturnsBeforeStateChange);
+
+BASE_DECLARE_FEATURE(kGlicDeferActUntilUninterrupted);
+
+// Kill switch for adding tabs to an ActorTask earlier during action handling.
+BASE_DECLARE_FEATURE(kGlicEarlyAddTaskTabs);
 
 // Enables a full page screenshot to be taken rather than only the viewport.
 extern const base::FeatureParam<bool> kFullPageScreenshot;
@@ -91,6 +99,10 @@ extern const base::FeatureParam<
 BASE_DECLARE_FEATURE(kActorBindCreatedTabToTask);
 
 BASE_DECLARE_FEATURE(kActorRestartObservationDelayControllerOnNavigate);
+
+// Kill switch to disable sending a browser signal (which is used for user
+// interaction) before sending action to renderer.
+BASE_DECLARE_FEATURE(kActorSendBrowserSignalForAction);
 
 }  // namespace actor
 

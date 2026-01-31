@@ -173,7 +173,7 @@ class NET_EXPORT HostResolverManager
   // Creates a service endpoint resolution request.
   std::unique_ptr<HostResolver::ServiceEndpointRequest>
   CreateServiceEndpointRequest(
-      url::SchemeHostPort scheme_host_port,
+      HostResolver::Host host,
       NetworkAnonymizationKey network_anonymization_key,
       NetLogWithSource net_log,
       ResolveHostParameters parameters,
@@ -190,7 +190,7 @@ class NET_EXPORT HostResolverManager
   virtual void SetInsecureDnsClientEnabled(bool enabled,
                                            bool additional_dns_types_enabled);
 
-  base::Value::Dict GetDnsConfigAsValue() const;
+  base::DictValue GetDnsConfigAsValue() const;
 
   // Sets overriding configuration that will replace or add to configuration
   // read from the system for DnsClient resolution.

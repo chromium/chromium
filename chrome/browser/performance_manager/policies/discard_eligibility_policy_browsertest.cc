@@ -4,11 +4,12 @@
 
 #include "chrome/browser/performance_manager/policies/discard_eligibility_policy.h"
 
+#include <algorithm>
 #include <string>
 #include <string_view>
 #include <vector>
 
-#include "base/containers/contains.h"
+#include "base/base_switches.h"
 #include "base/memory/weak_ptr.h"
 #include "base/types/expected.h"
 #include "chrome/browser/apps/link_capturing/link_capturing_feature_test_support.h"
@@ -30,7 +31,9 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "content/public/test/no_renderer_crashes_assertion.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/chrome_debug_urls.h"
 #include "url/gurl.h"
 
 namespace performance_manager::policies {
@@ -38,6 +41,7 @@ namespace performance_manager::policies {
 using DiscardReason = DiscardEligibilityPolicy::DiscardReason;
 using CanDiscardResult::kEligible;
 using CanDiscardResult::kProtected;
+using performance_manager::testing::ExpectCanDiscardDisallowedAllReasons;
 using performance_manager::testing::ExpectCanDiscardEligibleAllReasons;
 using performance_manager::testing::ExpectCanDiscardProtected;
 
@@ -164,17 +168,64 @@ IN_PROC_BROWSER_TEST_F(DiscardEligibilityPolicyWebAppBrowserTest,
   std::vector<CannotDiscardReason> reasons_vec;
   EXPECT_EQ(kProtected,
             CanDiscard(page_node.get(), DiscardReason::URGENT, &reasons_vec));
-  EXPECT_TRUE(base::Contains(reasons_vec, CannotDiscardReason::kWebApp));
+  EXPECT_TRUE(std::ranges::contains(reasons_vec, CannotDiscardReason::kWebApp));
 
   reasons_vec.clear();
   EXPECT_EQ(kProtected, CanDiscard(page_node.get(), DiscardReason::PROACTIVE,
                                    &reasons_vec));
-  EXPECT_TRUE(base::Contains(reasons_vec, CannotDiscardReason::kWebApp));
+  EXPECT_TRUE(std::ranges::contains(reasons_vec, CannotDiscardReason::kWebApp));
 
   reasons_vec.clear();
   EXPECT_EQ(kEligible,
             CanDiscard(page_node.get(), DiscardReason::EXTERNAL, &reasons_vec));
   EXPECT_TRUE(reasons_vec.empty());
+}
+
+void SimulateRendererCrash(content::WebContents* contents) {
+  content::RenderProcessHostWatcher crash_observer(
+      contents, content::RenderProcessHostWatcher::WATCH_FOR_PROCESS_EXIT);
+  contents->GetController().LoadURL(GURL(blink::kChromeUICrashURL),
+                                    content::Referrer(),
+                                    ui::PAGE_TRANSITION_TYPED, std::string());
+  crash_observer.Wait();
+}
+
+class DiscardEligibilityPolicyCrashBrowserTest
+    : public DiscardEligibilityPolicyBrowserTest {
+ private:
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    command_line->AppendSwitch(switches::kDisableBreakpad);
+  }
+
+  content::ScopedAllowRendererCrashes scoped_allow_renderer_crashes_;
+};
+
+// Verify a crashed tab cannot be discarded.
+IN_PROC_BROWSER_TEST_F(DiscardEligibilityPolicyCrashBrowserTest,
+                       CannotDiscardCrashed) {
+  // Open tabs for testing.
+  const int index1 = 1, index2 = 2;
+  ASSERT_TRUE(
+      AddTabAtIndex(index1, GetTestingURL(), ui::PAGE_TRANSITION_TYPED));
+  ASSERT_TRUE(
+      AddTabAtIndex(index2, GetTestingURL(), ui::PAGE_TRANSITION_TYPED));
+
+  TabStripModel* tab_strip_model = browser()->tab_strip_model();
+  content::WebContents* contents1 = tab_strip_model->GetWebContentsAt(index1);
+  PageNode* page_node1 =
+      PerformanceManager::GetPrimaryPageNodeForWebContents(contents1).get();
+  ASSERT_TRUE(page_node1);
+
+  ExpectCanDiscardEligibleAllReasons(page_node1, base::TimeDelta());
+
+  SimulateRendererCrash(contents1);
+
+  ExpectCanDiscardDisallowedAllReasons(page_node1,
+                                       CannotDiscardReason::kNoMainFrame);
+
+  contents1->GetController().Reload(content::ReloadType::NORMAL, false);
+
+  ExpectCanDiscardEligibleAllReasons(page_node1, base::TimeDelta());
 }
 
 }  // namespace

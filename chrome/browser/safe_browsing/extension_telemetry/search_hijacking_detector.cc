@@ -98,7 +98,7 @@ void SearchHijackingDetector::MaybeCheckForHeuristicMatch() {
   bool heuristic_match = false;
   if (search_count - serp_count >= heuristic_threshold_) {
     heuristic_match = true;
-    base::Value::Dict signal_data;
+    base::DictValue signal_data;
     signal_data.Set(
         "detection_timestamp",
         base::NumberToString(base::Time::Now().InMillisecondsSinceUnixEpoch()));
@@ -125,7 +125,7 @@ SearchHijackingDetector::GetSignalForReport() {
     return nullptr;
   }
 
-  const base::Value::Dict& signal_data = pref_service_->GetDict(
+  const base::DictValue& signal_data = pref_service_->GetDict(
       prefs::kExtensionTelemetrySearchHijackingSignalData);
   auto signal = std::make_unique<
       ExtensionTelemetryReportRequest::SearchHijackingSignal>();

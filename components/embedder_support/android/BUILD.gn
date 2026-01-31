@@ -66,6 +66,7 @@ android_library("util_java") {
 
   deps = [
     "//base:base_java",
+    "//base:flagged_apis_java",
     "//build/android:build_java",
     "//components/url_formatter/android:url_formatter_java",
     "//content/public/android:content_main_dex_java",
@@ -202,8 +203,6 @@ static_library("web_contents_delegate") {
   sources = [
     "delegate/color_picker_bridge.cc",
     "delegate/color_picker_bridge.h",
-    "delegate/screenshot_result.cc",
-    "delegate/screenshot_result.h",
     "delegate/web_contents_delegate_android.cc",
     "delegate/web_contents_delegate_android.h",
   ]
@@ -274,7 +273,6 @@ android_library("web_contents_delegate_java") {
     "java/src/org/chromium/components/embedder_support/delegate/ColorPickerViewBinder.java",
     "java/src/org/chromium/components/embedder_support/delegate/ColorSuggestion.java",
     "java/src/org/chromium/components/embedder_support/delegate/OnColorChangedListener.java",
-    "java/src/org/chromium/components/embedder_support/delegate/ScreenshotResult.java",
     "java/src/org/chromium/components/embedder_support/delegate/WebContentsDelegateAndroid.java",
   ]
 }
@@ -282,7 +280,6 @@ android_library("web_contents_delegate_java") {
 generate_jni("web_contents_delegate_jni_headers") {
   sources = [
     "java/src/org/chromium/components/embedder_support/delegate/ColorPickerBridge.java",
-    "java/src/org/chromium/components/embedder_support/delegate/ScreenshotResult.java",
     "java/src/org/chromium/components/embedder_support/delegate/WebContentsDelegateAndroid.java",
   ]
 }
@@ -406,7 +403,6 @@ android_library("unit_device_javatests") {
   sources = [
     "javatests/src/org/chromium/components/embedder_support/delegate/ColorPickerDialogRenderTest.java",
     "javatests/src/org/chromium/components/embedder_support/util/ExtensionUrlUtilTest.java",
-    "javatests/src/org/chromium/components/embedder_support/util/UrlConstantsTest.java",
     "javatests/src/org/chromium/components/embedder_support/util/UrlUtilitiesUnitTest.java",
   ]
   deps = [

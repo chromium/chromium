@@ -13,7 +13,6 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/app_list/internal_app_id_constants.h"
-#include "base/containers/contains.h"
 #include "base/i18n/rtl.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
@@ -111,10 +110,152 @@ class AppSearchProviderTest : public AppSearchProviderTestBase {
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-TEST_F(AppSearchProviderTest, Basic) {
-  // TODO(crbug.com/454468678): This should be called before profile is created.
-  arc_app_test().PreProfileSetUp();
-  arc_app_test().PostProfileSetUp(profile());
+TEST_F(AppSearchProviderTest, DisableAndEnable) {
+  InitializeSearchProvider();
+
+  EXPECT_EQ("Hosted App", RunQuery("host"));
+
+  registrar()->DisableExtension(
+      kHostedAppId, {extensions::disable_reason::DISABLE_USER_ACTION});
+  EXPECT_EQ("Hosted App", RunQuery("host"));
+
+  registrar()->EnableExtension(kHostedAppId);
+  EXPECT_EQ("Hosted App", RunQuery("host"));
+}
+
+TEST_F(AppSearchProviderTest, UninstallExtension) {
+  InitializeSearchProvider();
+
+  EXPECT_EQ("Packaged App 1", RunQuery("app 1 p"));
+  registrar()->UninstallExtension(
+      kPackagedApp1Id, extensions::UNINSTALL_REASON_FOR_TESTING, nullptr);
+
+  // Allow async callbacks to run.
+  base::RunLoop().RunUntilIdle();
+
+  // Uninstalling an app should update the result list without needing to start
+  // a new search.
+  EXPECT_EQ("", GetSortedResultsString());
+
+  // Rerunning the query also should return no results.
+  EXPECT_EQ("", RunQuery("pa1"));
+
+  // Let uninstall code to clean up.
+  base::RunLoop().RunUntilIdle();
+}
+
+TEST_F(AppSearchProviderTest, NoResultsAfterClearingSearch) {
+  InitializeSearchProvider();
+
+  EXPECT_EQ("", RunQuery("Gmail"));
+  ClearSearch();
+
+  AddExtension(extension_misc::kGmailAppId, kGmailExtensionName,
+               ManifestLocation::kExternalPrefDownload,
+               extensions::Extension::NO_FLAGS);
+  // Allow async callbacks to run.
+  base::RunLoop().RunUntilIdle();
+
+  // If matching extension is installed after the user has cleared search, the
+  // query results should not get updated.
+  EXPECT_EQ("", GetSortedResultsString());
+}
+
+TEST_F(AppSearchProviderTest, WebApp) {
+  const webapps::AppId app_id = web_app::test::InstallDummyWebApp(
+      profile(), kWebAppName, GURL(kWebAppUrl));
+
+  // Allow async callbacks to run.
+  base::RunLoop().RunUntilIdle();
+
+  InitializeSearchProvider();
+  EXPECT_EQ("WebApp1", RunQuery("WebA"));
+}
+
+TEST_F(AppSearchProviderTest, AppServiceIconCache) {
+  apps::AppServiceProxy* proxy =
+      apps::AppServiceProxyFactory::GetForProfile(profile());
+  ASSERT_NE(proxy, nullptr);
+
+  apps::StubIconLoader stub_icon_loader;
+  apps::IconLoader* old_icon_loader =
+      proxy->OverrideInnerIconLoaderForTesting(&stub_icon_loader);
+
+  // Insert dummy map values so that the stub_icon_loader knows of these apps.
+  stub_icon_loader.update_version_by_app_id_[kPackagedApp1Id] = 1;
+  stub_icon_loader.update_version_by_app_id_[kPackagedApp2Id] = 2;
+
+  // The stub_icon_loader should start with no LoadIconFromIconKey calls.
+  InitializeSearchProvider();
+  EXPECT_EQ(0, stub_icon_loader.NumLoadIconFromIconKeyCalls());
+
+  // Running the "pa" query should get two hits (for "Packaged App #"), which
+  // should lead to 2 LoadIconFromIconKey calls on the stub_icon_loader.
+  RunQuery("pa");
+  EXPECT_EQ(2, stub_icon_loader.NumLoadIconFromIconKeyCalls());
+
+  // Issuing the same "pa" query should hit the AppServiceDataSource's icon
+  // cache, with no further calls to the wrapped stub_icon_loader.
+  RunQuery("pa");
+  EXPECT_EQ(2, stub_icon_loader.NumLoadIconFromIconKeyCalls());
+
+  // The number of LoadIconFromIconKey calls should not change, when hiding the
+  // UI (i.e. calling ViewClosing).
+  CallViewClosing();
+
+  EXPECT_NE("", GetSortedResultsString());
+  // Allow async callbacks to run.
+  base::RunLoop().RunUntilIdle();
+  EXPECT_EQ(2, stub_icon_loader.NumLoadIconFromIconKeyCalls());
+
+  // The icon has been added to the map, so issuing the same "pa" query should
+  // not call the wrapped stub_icon_loader.
+  RunQuery("pa");
+  EXPECT_EQ(2, stub_icon_loader.NumLoadIconFromIconKeyCalls());
+
+  // Update the icon key to remove the app icon from cache.
+  UpdateIconKey(*proxy, kPackagedApp2Id);
+
+  // The icon has been removed from the cache, so issuing the same "pa" query
+  // should call the wrapped stub_icon_loader.
+  RunQuery("pa");
+  EXPECT_EQ(3, stub_icon_loader.NumLoadIconFromIconKeyCalls());
+
+  proxy->OverrideInnerIconLoaderForTesting(old_icon_loader);
+}
+
+TEST_F(AppSearchProviderTest, FuzzyAppSearchTest) {
+  InitializeSearchProvider();
+  EXPECT_EQ("Packaged App 1,Packaged App 2", RunQuery("pa"));
+  std::string result = RunQuery("ackaged");
+  EXPECT_TRUE(result == "Packaged App 1,Packaged App 2" ||
+              result == "Packaged App 2,Packaged App 1");
+}
+
+class AppSearchProviderWithArcAppsTest : public AppSearchProviderTestBase {
+ public:
+  AppSearchProviderWithArcAppsTest()
+      : AppSearchProviderTestBase(/*zero_state_provider=*/false) {}
+  AppSearchProviderWithArcAppsTest(const AppSearchProviderWithArcAppsTest&) =
+      delete;
+  AppSearchProviderWithArcAppsTest& operator=(
+      const AppSearchProviderWithArcAppsTest&) = delete;
+  ~AppSearchProviderWithArcAppsTest() override = default;
+
+  void SetUp() override {
+    arc_app_test().PreProfileSetUp();
+    AppSearchProviderTestBase::SetUp();
+    arc_app_test().PostProfileSetUp(profile());
+  }
+
+  void TearDown() override {
+    arc_app_test().PreProfileTearDown();
+    AppSearchProviderTestBase::TearDown();
+    arc_app_test().PostProfileTearDown();
+  }
+};
+
+TEST_F(AppSearchProviderWithArcAppsTest, Basic) {
   std::vector<arc::mojom::AppInfoPtr> arc_apps;
   for (int i = 0; i < 2; i++)
     arc_apps.emplace_back(arc_app_test().fake_apps()[i]->Clone());
@@ -147,17 +288,10 @@ TEST_F(AppSearchProviderTest, Basic) {
   result = RunQuery("app2");
   EXPECT_TRUE(result == "Packaged App 2,Fake App 2" ||
               result == "Fake App 2,Packaged App 2");
-  arc_app_test().PreProfileTearDown();
-  // TODO(crbug.com/454468678): This should be called after profile is deleted.
-  arc_app_test().PostProfileTearDown();
 }
 
-TEST_F(AppSearchProviderTest, NonLatinLocale) {
+TEST_F(AppSearchProviderWithArcAppsTest, NonLatinLocale) {
   base::i18n::SetICUDefaultLocale("sr");
-
-  // TODO(crbug.com/454468678): This should be called before profile is created.
-  arc_app_test().PreProfileSetUp();
-  arc_app_test().PostProfileSetUp(profile());
 
   const std::string test_app_id_1 = "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa";
   AddExtension(test_app_id_1, "Тестна апликација 1",
@@ -199,51 +333,11 @@ TEST_F(AppSearchProviderTest, NonLatinLocale) {
   result = RunQuery("апликација 1");
   EXPECT_TRUE(result == "Тестна апликација 1,Лажна апликација 1" ||
               result == "Лажна апликација 1,Тестна апликација 1");
-  arc_app_test().PreProfileTearDown();
-  // TODO(crbug.com/454468678): This should be called after profile is deleted.
-  arc_app_test().PostProfileTearDown();
 
   base::i18n::SetICUDefaultLocale("en");
 }
 
-TEST_F(AppSearchProviderTest, DisableAndEnable) {
-  InitializeSearchProvider();
-
-  EXPECT_EQ("Hosted App", RunQuery("host"));
-
-  registrar()->DisableExtension(
-      kHostedAppId, {extensions::disable_reason::DISABLE_USER_ACTION});
-  EXPECT_EQ("Hosted App", RunQuery("host"));
-
-  registrar()->EnableExtension(kHostedAppId);
-  EXPECT_EQ("Hosted App", RunQuery("host"));
-}
-
-TEST_F(AppSearchProviderTest, UninstallExtension) {
-  InitializeSearchProvider();
-
-  EXPECT_EQ("Packaged App 1", RunQuery("app 1 p"));
-  registrar()->UninstallExtension(
-      kPackagedApp1Id, extensions::UNINSTALL_REASON_FOR_TESTING, nullptr);
-
-  // Allow async callbacks to run.
-  base::RunLoop().RunUntilIdle();
-
-  // Uninstalling an app should update the result list without needing to start
-  // a new search.
-  EXPECT_EQ("", GetSortedResultsString());
-
-  // Rerunning the query also should return no results.
-  EXPECT_EQ("", RunQuery("pa1"));
-
-  // Let uninstall code to clean up.
-  base::RunLoop().RunUntilIdle();
-}
-
-TEST_F(AppSearchProviderTest, InstallUninstallArc) {
-  // TODO(crbug.com/454468678): This should be called before profile is created.
-  arc_app_test().PreProfileSetUp();
-  arc_app_test().PostProfileSetUp(profile());
+TEST_F(AppSearchProviderWithArcAppsTest, InstallUninstallArc) {
   std::vector<arc::mojom::AppInfoPtr> arc_apps;
   arc_app_test().app_instance()->SendRefreshAppList(arc_apps);
 
@@ -274,34 +368,9 @@ TEST_F(AppSearchProviderTest, InstallUninstallArc) {
 
   // Let uninstall code to clean up.
   base::RunLoop().RunUntilIdle();
-
-  arc_app_test().PreProfileTearDown();
-  // TODO(crbug.com/454468678): This should be called after profile is deleted.
-  arc_app_test().PostProfileTearDown();
 }
 
-TEST_F(AppSearchProviderTest, NoResultsAfterClearingSearch) {
-  InitializeSearchProvider();
-
-  EXPECT_EQ("", RunQuery("Gmail"));
-  ClearSearch();
-
-  AddExtension(extension_misc::kGmailAppId, kGmailExtensionName,
-               ManifestLocation::kExternalPrefDownload,
-               extensions::Extension::NO_FLAGS);
-  // Allow async callbacks to run.
-  base::RunLoop().RunUntilIdle();
-
-  // If matching extension is installed after the user has cleared search, the
-  // query results should not get updated.
-  EXPECT_EQ("", GetSortedResultsString());
-}
-
-TEST_F(AppSearchProviderTest, FilterDuplicate) {
-  // TODO(crbug.com/454468678): This should be called before profile is created.
-  arc_app_test().PreProfileSetUp();
-  arc_app_test().PostProfileSetUp(profile());
-
+TEST_F(AppSearchProviderWithArcAppsTest, FilterDuplicate) {
   extensions::ExtensionPrefs* extension_prefs =
       extensions::ExtensionPrefs::Get(profile());
   ASSERT_TRUE(extension_prefs);
@@ -340,24 +409,17 @@ TEST_F(AppSearchProviderTest, FilterDuplicate) {
 
   InitializeSearchProvider();
   EXPECT_EQ(kGmailExtensionName, RunQuery(kGmailQuery));
-  arc_app_test().PreProfileTearDown();
-  // TODO(crbug.com/454468678): This should be called after profile is deleted.
-  arc_app_test().PostProfileTearDown();
 }
 
-TEST_F(AppSearchProviderTest, WebApp) {
-  const webapps::AppId app_id = web_app::test::InstallDummyWebApp(
-      profile(), kWebAppName, GURL(kWebAppUrl));
-
-  // Allow async callbacks to run.
-  base::RunLoop().RunUntilIdle();
-
-  InitializeSearchProvider();
-  EXPECT_EQ("WebApp1", RunQuery("WebA"));
-}
-
-class AppSearchProviderCrostiniTest : public AppSearchProviderTest {
+class AppSearchProviderCrostiniTest : public AppSearchProviderTestBase {
  public:
+  AppSearchProviderCrostiniTest()
+      : AppSearchProviderTestBase(/*zero_state_provider*/ false) {}
+  AppSearchProviderCrostiniTest(const AppSearchProviderCrostiniTest&) = delete;
+  AppSearchProviderCrostiniTest& operator=(
+      const AppSearchProviderCrostiniTest&) = delete;
+  ~AppSearchProviderCrostiniTest() override = default;
+
   void SetUp() override {
     ash::ChunneldClient::InitializeFake();
     ash::CiceroneClient::InitializeFake();
@@ -375,12 +437,12 @@ class AppSearchProviderCrostiniTest : public AppSearchProviderTest {
     user_manager_->UserLoggedIn(
         account_id, user_manager::TestHelper::GetFakeUsernameHash(account_id));
 
-    AppSearchProviderTest::SetUp();
+    AppSearchProviderTestBase::SetUp();
     ash::AnnotatedAccountId::Set(profile(), account_id);
   }
 
   void TearDown() override {
-    AppSearchProviderTest::TearDown();
+    AppSearchProviderTestBase::TearDown();
 
     // |profile_| is initialized in AppListTestBase::SetUp but not destroyed in
     // the ::TearDown method, but we need it to go away before shutting down
@@ -454,66 +516,6 @@ TEST_F(AppSearchProviderCrostiniTest, CrostiniAppWithExactMathing) {
   base::i18n::SetICUDefaultLocale("en");
 }
 
-TEST_F(AppSearchProviderTest, AppServiceIconCache) {
-  apps::AppServiceProxy* proxy =
-      apps::AppServiceProxyFactory::GetForProfile(profile());
-  ASSERT_NE(proxy, nullptr);
-
-  apps::StubIconLoader stub_icon_loader;
-  apps::IconLoader* old_icon_loader =
-      proxy->OverrideInnerIconLoaderForTesting(&stub_icon_loader);
-
-  // Insert dummy map values so that the stub_icon_loader knows of these apps.
-  stub_icon_loader.update_version_by_app_id_[kPackagedApp1Id] = 1;
-  stub_icon_loader.update_version_by_app_id_[kPackagedApp2Id] = 2;
-
-  // The stub_icon_loader should start with no LoadIconFromIconKey calls.
-  InitializeSearchProvider();
-  EXPECT_EQ(0, stub_icon_loader.NumLoadIconFromIconKeyCalls());
-
-  // Running the "pa" query should get two hits (for "Packaged App #"), which
-  // should lead to 2 LoadIconFromIconKey calls on the stub_icon_loader.
-  RunQuery("pa");
-  EXPECT_EQ(2, stub_icon_loader.NumLoadIconFromIconKeyCalls());
-
-  // Issuing the same "pa" query should hit the AppServiceDataSource's icon
-  // cache, with no further calls to the wrapped stub_icon_loader.
-  RunQuery("pa");
-  EXPECT_EQ(2, stub_icon_loader.NumLoadIconFromIconKeyCalls());
-
-  // The number of LoadIconFromIconKey calls should not change, when hiding the
-  // UI (i.e. calling ViewClosing).
-  CallViewClosing();
-
-  EXPECT_NE("", GetSortedResultsString());
-  // Allow async callbacks to run.
-  base::RunLoop().RunUntilIdle();
-  EXPECT_EQ(2, stub_icon_loader.NumLoadIconFromIconKeyCalls());
-
-  // The icon has been added to the map, so issuing the same "pa" query should
-  // not call the wrapped stub_icon_loader.
-  RunQuery("pa");
-  EXPECT_EQ(2, stub_icon_loader.NumLoadIconFromIconKeyCalls());
-
-  // Update the icon key to remove the app icon from cache.
-  UpdateIconKey(*proxy, kPackagedApp2Id);
-
-  // The icon has been removed from the cache, so issuing the same "pa" query
-  // should call the wrapped stub_icon_loader.
-  RunQuery("pa");
-  EXPECT_EQ(3, stub_icon_loader.NumLoadIconFromIconKeyCalls());
-
-  proxy->OverrideInnerIconLoaderForTesting(old_icon_loader);
-}
-
-TEST_F(AppSearchProviderTest, FuzzyAppSearchTest) {
-  InitializeSearchProvider();
-  EXPECT_EQ("Packaged App 1,Packaged App 2", RunQuery("pa"));
-  std::string result = RunQuery("ackaged");
-  EXPECT_TRUE(result == "Packaged App 1,Packaged App 2" ||
-              result == "Packaged App 2,Packaged App 1");
-}
-
 class AppSearchProviderOemAppTest
     : public AppSearchProviderTestBase,
       public ::testing::WithParamInterface</*test_zero_state_search=*/bool> {
@@ -576,7 +578,7 @@ TEST_P(AppSearchProviderOemAppTest, OemResultsOnFirstBoot) {
       results_string, ",", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
 
   for (auto* app : kOemAppNames) {
-    EXPECT_TRUE(base::Contains(results, app));
+    EXPECT_TRUE(std::ranges::contains(results, app));
   }
 }
 
@@ -586,32 +588,28 @@ enum class TestArcAppInstallType {
 };
 
 class AppSearchProviderWithArcAppInstallType
-    : public AppSearchProviderTest,
+    : public AppSearchProviderWithArcAppsTest,
       public ::testing::WithParamInterface<TestArcAppInstallType> {
  public:
   AppSearchProviderWithArcAppInstallType() = default;
-
   AppSearchProviderWithArcAppInstallType(
       const AppSearchProviderWithArcAppInstallType&) = delete;
   AppSearchProviderWithArcAppInstallType& operator=(
       const AppSearchProviderWithArcAppInstallType&) = delete;
-
   ~AppSearchProviderWithArcAppInstallType() override = default;
+
+  void SetUp() override {
+    if (GetParam() == TestArcAppInstallType::INSTALLED_BY_DEFAULT) {
+      ArcDefaultAppList::UseTestAppsDirectory();
+      arc_app_test().set_wait_default_apps(true);
+    }
+    AppSearchProviderWithArcAppsTest::SetUp();
+  }
 };
 
 // TODO (879413): Enable this after resolving flakiness.
 TEST_P(AppSearchProviderWithArcAppInstallType,
        DISABLED_InstallInternallyRanking) {
-  const bool default_app =
-      GetParam() == TestArcAppInstallType::INSTALLED_BY_DEFAULT;
-  if (default_app) {
-    ArcDefaultAppList::UseTestAppsDirectory();
-    arc_app_test().set_wait_default_apps(true);
-  }
-  // TODO(crbug.com/454468678): This should be called before profile is created.
-  arc_app_test().PreProfileSetUp();
-  arc_app_test().PostProfileSetUp(profile());
-
   ArcAppListPrefs* const prefs = arc_app_test().arc_app_list_prefs();
   ASSERT_TRUE(prefs);
 
@@ -633,7 +631,7 @@ TEST_P(AppSearchProviderWithArcAppInstallType,
   }
 
   // Reinstall default app to make install time after normall app install time.
-  if (default_app) {
+  if (GetParam() == TestArcAppInstallType::INSTALLED_BY_DEFAULT) {
     static_cast<arc::mojom::AppHost*>(prefs)->OnPackageAppListRefreshed(
         kRankingInternalAppPackageName, {} /* apps */);
   }
@@ -642,7 +640,8 @@ TEST_P(AppSearchProviderWithArcAppInstallType,
       AddArcApp(kRankingInternalAppName, kRankingInternalAppPackageName,
                 kRankingInternalAppActivity);
 
-  EXPECT_EQ(default_app, prefs->IsDefault(internal_app_id));
+  EXPECT_EQ(GetParam() == TestArcAppInstallType::INSTALLED_BY_DEFAULT,
+            prefs->IsDefault(internal_app_id));
 
   std::unique_ptr<ArcAppListPrefs::AppInfo> normal_app =
       prefs->GetApp(normal_app_id);
@@ -666,9 +665,6 @@ TEST_P(AppSearchProviderWithArcAppInstallType,
   EXPECT_EQ(std::string(kRankingInternalAppName) + "," +
                 std::string(kRankingNormalAppName),
             RunQuery(kRankingAppQuery));
-  arc_app_test().PreProfileTearDown();
-  // TODO(crbug.com/454468678): This should be called after profile is deleted.
-  arc_app_test().PostProfileTearDown();
 }
 
 INSTANTIATE_TEST_SUITE_P(All, AppSearchProviderOemAppTest, ::testing::Bool());

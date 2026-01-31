@@ -149,7 +149,7 @@ IN_PROC_BROWSER_TEST_F(CustomTabsHeaderPrendering, Prerender) {
 
   const GURL prerender_url = CreateURL();
   // Loads a page in the prerender.
-  content::FrameTreeNodeId host_id =
+  content::PrerenderHostId host_id =
       prerender_helper()->AddPrerender(prerender_url);
   content::RenderFrameHost* prerender_rfh =
       prerender_helper()->GetPrerenderedMainFrameHost(host_id);

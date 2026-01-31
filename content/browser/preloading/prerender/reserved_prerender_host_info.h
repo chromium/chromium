@@ -4,8 +4,8 @@
 #ifndef CONTENT_BROWSER_PRELOADING_PRERENDER_RESERVED_PRERENDER_HOST_INFO_H_
 #define CONTENT_BROWSER_PRELOADING_PRERENDER_RESERVED_PRERENDER_HOST_INFO_H_
 
-#include "content/public/browser/frame_tree_node_id.h"
 #include "content/public/browser/preloading_trigger_type.h"
+#include "content/public/browser/prerender_host_id.h"
 
 namespace content {
 
@@ -13,12 +13,12 @@ namespace content {
 // about the reserved host including information required for metrics
 // collection.
 struct ReservedPrerenderHostInfo {
-  ReservedPrerenderHostInfo(FrameTreeNodeId frame_tree_node_id,
+  ReservedPrerenderHostInfo(PrerenderHostId prerender_host_id,
                             PreloadingTriggerType trigger_type,
                             std::string embedder_histogram_suffix,
                             bool is_prerender_host_reused);
 
-  FrameTreeNodeId frame_tree_node_id;
+  PrerenderHostId prerender_host_id;
   PreloadingTriggerType trigger_type;
   std::string embedder_histogram_suffix;
   bool is_prerender_host_reused;

@@ -23,7 +23,7 @@ using variations::HashNameAsHexString;
 using TrialGroup = std::pair<std::string, std::string>;
 
 // Returns a `Group` from components/metrics/debug/browser_proxy.ts.
-base::Value::Dict ToGroupValue(
+base::DictValue ToGroupValue(
     bool show_names,
     const base::flat_map<std::string, std::string>& overrides,
     std::string_view study_name,
@@ -41,7 +41,7 @@ base::Value::Dict ToGroupValue(
   auto iter = overrides.find(trial_hash);
   bool force_enabled = (iter != overrides.end() && iter->second == group_hash);
 
-  auto result = base::Value::Dict()
+  auto result = base::DictValue()
                     .Set("hash", group_hash)
                     .Set("forceEnabled", force_enabled)
                     .Set("enabled", currently_enabled);
@@ -53,16 +53,16 @@ base::Value::Dict ToGroupValue(
 }
 
 // Returns a `Trial` from components/metrics/debug/browser_proxy.ts.
-base::Value::Dict ToTrialValue(
+base::DictValue ToTrialValue(
     bool show_names,
     const base::flat_map<std::string, std::string>& overrides,
     const variations::StudyGroupNames& study) {
-  base::Value::Dict result =
-      base::Value::Dict().Set("hash", HashNameAsHexString(study.name));
+  base::DictValue result =
+      base::DictValue().Set("hash", HashNameAsHexString(study.name));
   if (show_names) {
     result.Set("name", study.name);
   }
-  base::Value::List groups_value;
+  base::ListValue groups_value;
   for (const auto& group : study.groups) {
     groups_value.Append(ToGroupValue(show_names, overrides, study.name, group));
   }
@@ -161,18 +161,18 @@ void FieldTrialsHandler::RefreshFieldTrialOverrides(
   std::move(done_callback).Run(GetFieldTrialStateValue());
 }
 
-base::Value::Dict FieldTrialsHandler::GetFieldTrialStateValue() {
+base::DictValue FieldTrialsHandler::GetFieldTrialStateValue() {
   CHECK(studies_.has_value()) << "Field trials not initialized.";
-  base::Value::List trials;
+  base::ListValue trials;
   for (const auto& study : studies_.value()) {
     trials.Append(ToTrialValue(show_names_, overrides_, study));
   }
-  return base::Value::Dict()
+  return base::DictValue()
       .Set("trials", std::move(trials))
       .Set("restartRequired", restart_required_);
 }
 
-void FieldTrialsHandler::HandleFetchState(const base::Value::List& args) {
+void FieldTrialsHandler::HandleFetchState(const base::ListValue& args) {
   if (args.size() != 1) {
     DLOG(ERROR) << "Wrong number of args: " << args.size();
     return;
@@ -186,7 +186,7 @@ void FieldTrialsHandler::HandleFetchState(const base::Value::List& args) {
   InitializeFieldTrials(std::move(resolve_js_callback));
 }
 
-void FieldTrialsHandler::HandleSetEnrollState(const base::Value::List& args) {
+void FieldTrialsHandler::HandleSetEnrollState(const base::ListValue& args) {
   if (args.size() != 4) {
     DLOG(ERROR) << "Wrong number of args: " << args.size();
     return;
@@ -229,19 +229,19 @@ bool FieldTrialsHandler::SetOverride(const ExperimentOverride& override,
   return true;
 }
 
-void FieldTrialsHandler::HandleRestart(const base::Value::List& args) {
+void FieldTrialsHandler::HandleRestart(const base::ListValue& args) {
   chrome::AttemptRestart();
 }
 
 void FieldTrialsHandler::HandleLookupTrialOrGroupName(
-    const base::Value::List& args) {
+    const base::ListValue& args) {
   CHECK(studies_.has_value()) << "Field trials not initialized.";
   if (args.size() != 2) {
     DLOG(ERROR) << "Wrong number of arguments";
     return;
   }
 
-  base::Value::Dict name_hashes;
+  base::DictValue name_hashes;
   std::vector<std::string> names = {args[1].GetString()};
   // Note: the user may have typed in a single study or group name, or a study
   // and group name with a separator. Frequently we use '.' or '-' as a

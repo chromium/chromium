@@ -13,23 +13,24 @@
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/time/time.h"
+#include "build/build_config.h"
 #include "chrome/browser/devtools/devtools_contents_resizing_strategy.h"
 #include "chrome/browser/devtools/devtools_toggle_action.h"
 #include "chrome/browser/devtools/devtools_ui_bindings.h"
 #include "components/policy/core/common/policy_service.h"
+#include "components/sessions/core/session_id.h"
 #include "content/public/browser/child_process_host.h"
 #include "content/public/browser/devtools_manager_delegate.h"
 #include "content/public/browser/web_contents_delegate.h"
 #include "content/public/browser/web_contents_observer.h"
 
 #if !BUILDFLAG(IS_ANDROID)
-#include "chrome/browser/ui/browser_list.h"
-#include "chrome/browser/ui/browser_list_observer.h"
+#include "chrome/browser/ui/browser_window/public/browser_collection_observer.h"  // nogncheck crbug.com/40147906
+#include "chrome/browser/ui/browser_window/public/global_browser_collection.h"  // nogncheck crbug.com/40147906
 #endif
 
 class Browser;
 class BrowserWindowInterface;
-class BrowserList;
 class BrowserWindow;
 class DevToolsWindowTesting;
 class DevToolsEventForwarder;
@@ -95,7 +96,7 @@ class DevToolsWindow : public DevToolsUIBindings::Delegate,
                        public content::WebContentsDelegate,
                        public content::WebContentsObserver,
 #if !BUILDFLAG(IS_ANDROID)
-                       public BrowserListObserver,
+                       public BrowserCollectionObserver,
 #endif
                        public infobars::InfoBarManager::Observer,
                        public policy::PolicyService::Observer {
@@ -370,7 +371,8 @@ class DevToolsWindow : public DevToolsUIBindings::Delegate,
                  DevToolsUIBindings* bindings,
                  content::WebContents* inspected_web_contents,
                  bool can_dock,
-                 DevToolsOpenedByAction opened_by);
+                 DevToolsOpenedByAction opened_by,
+                 [[maybe_unused]] SessionID inspected_browser_session_id);
 
   // External frontend is always undocked.
   static void OpenExternalFrontend(
@@ -454,8 +456,6 @@ class DevToolsWindow : public DevToolsUIBindings::Delegate,
   void RunFileChooser(content::RenderFrameHost* render_frame_host,
                       scoped_refptr<content::FileSelectListener> listener,
                       const blink::mojom::FileChooserParams& params) override;
-  bool PreHandleGestureEvent(content::WebContents* source,
-                             const blink::WebGestureEvent& event) override;
   void Close(DevToolsClosedByAction closed_by);
 
   // content::DevToolsUIBindings::Delegate overrides
@@ -491,8 +491,8 @@ class DevToolsWindow : public DevToolsUIBindings::Delegate,
       content::NavigationHandle* navigation_handle) override;
 
 #if !BUILDFLAG(IS_ANDROID)
-  // BrowserListObserver:
-  void OnBrowserRemoved(Browser* browser) override;
+  // BrowserCollectionObserver:
+  void OnBrowserClosed(BrowserWindowInterface* browser) override;
 #endif
 
   // infobars::InfoBarManager::Observer
@@ -600,9 +600,19 @@ class DevToolsWindow : public DevToolsUIBindings::Delegate,
   int checked_sharing_process_id_ = content::ChildProcessHost::kInvalidUniqueID;
 
 #if !BUILDFLAG(IS_ANDROID)
-  base::ScopedObservation<BrowserList, BrowserListObserver>
-      browser_list_observation_{this};
+  base::ScopedObservation<GlobalBrowserCollection, BrowserCollectionObserver>
+      browser_collection_observation_{this};
 #endif
+
+#if BUILDFLAG(IS_MAC)
+  // Session ID of the browser that was inspected when the DevTools window was
+  // opened. Used to activate the inspected browser when DevTools closes.
+  // This is macOS-specific because on macOS, when a window closes, the system
+  // activates another window in the app, which may not be the window that
+  // originally opened DevTools (e.g., a PWA window). On Windows/Linux, focus
+  // typically returns to the previously focused window automatically.
+  SessionID inspected_browser_session_id_{SessionID::InvalidValue()};
+#endif  // BUILDFLAG(IS_MAC)
 
   PrefChangeRegistrar pref_change_registrar_;
 

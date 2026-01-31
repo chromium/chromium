@@ -1,8 +1,10 @@
 include_rules = [
+  # keep-sorted start
   "+components/policy/core/browser",
   "+ios/chrome/browser/mailto_handler/model",
   "+ios/chrome/browser/overlays/model/public",
   "+ios/chrome/browser/policy_url_blocking/model",
   "+ios/chrome/browser/reading_list/model",
   "+ios/chrome/browser/tabs/model/tabs_dependency_installer.h",
+  # keep-sorted end
 ]

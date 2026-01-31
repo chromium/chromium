@@ -6,7 +6,8 @@
 
 #include <sys/stat.h>
 
-#include "base/containers/contains.h"
+#include <algorithm>
+
 #include "content/browser/file_system_access/file_path_watcher/file_path_watcher.h"
 
 namespace content {
@@ -122,7 +123,7 @@ void FilePathWatcherFSEventsChangeTracker::DispatchEvents(
     const auto& [event_flags, event_path, event_inode] = it->second;
 
     // Skip coalesced events.
-    if (base::Contains(coalesced_event_ids, event_id)) {
+    if (std::ranges::contains(coalesced_event_ids, event_id)) {
       continue;
     }
 

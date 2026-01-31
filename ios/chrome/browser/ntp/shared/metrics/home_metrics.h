@@ -5,7 +5,7 @@
 #ifndef IOS_CHROME_BROWSER_NTP_SHARED_METRICS_HOME_METRICS_H_
 #define IOS_CHROME_BROWSER_NTP_SHARED_METRICS_HOME_METRICS_H_
 
-#import "ios/chrome/browser/content_suggestions/ui_bundled/content_suggestions_constants.h"
+#import "ios/chrome/browser/content_suggestions/public/content_suggestions_constants.h"
 
 class PrefService;
 

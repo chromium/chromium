@@ -33,8 +33,8 @@ suite('ShoppingInsightsAppTest', () => {
     title: 'Product Foo',
     clusterTitle: 'Product Cluster Foo',
     domain: 'foo.com',
-    imageUrl: {url: 'https://foo.com/image'},
-    productUrl: {url: 'https://foo.com/product'},
+    imageUrl: 'https://foo.com/image',
+    productUrl: 'https://foo.com/product',
     currentPrice: '$12',
     previousPrice: '$34',
     clusterId: BigInt(12345),
@@ -46,7 +46,7 @@ suite('ShoppingInsightsAppTest', () => {
     typicalLowPrice: '$100',
     typicalHighPrice: '$200',
     catalogAttributes: 'Unlocked, 4GB',
-    jackpot: {url: 'https://foo.com/jackpot'},
+    jackpot: 'https://foo.com/jackpot',
     bucket: PriceInsightsInfo_PriceBucket.kLow,
     hasMultipleCatalogs: true,
     history: [{
@@ -62,7 +62,7 @@ suite('ShoppingInsightsAppTest', () => {
     typicalLowPrice: '$100',
     typicalHighPrice: '$100',
     catalogAttributes: 'Unlocked, 4GB',
-    jackpot: {url: 'https://foo.com/jackpot'},
+    jackpot: 'https://foo.com/jackpot',
     bucket: PriceInsightsInfo_PriceBucket.kLow,
     hasMultipleCatalogs: false,
     history: [],
@@ -74,7 +74,7 @@ suite('ShoppingInsightsAppTest', () => {
     typicalLowPrice: '',
     typicalHighPrice: '',
     catalogAttributes: 'Unlocked, 4GB',
-    jackpot: {url: 'https://foo.com/jackpot'},
+    jackpot: 'https://foo.com/jackpot',
     bucket: PriceInsightsInfo_PriceBucket.kHigh,
     hasMultipleCatalogs: false,
     history: [{
@@ -90,7 +90,7 @@ suite('ShoppingInsightsAppTest', () => {
     typicalLowPrice: '',
     typicalHighPrice: '',
     catalogAttributes: 'Unlocked, 4GB',
-    jackpot: {url: ''},
+    jackpot: '',
     bucket: PriceInsightsInfo_PriceBucket.kHigh,
     hasMultipleCatalogs: false,
     history: [{
@@ -187,7 +187,7 @@ suite('ShoppingInsightsAppTest', () => {
     assertTrue(!!button);
     button.click();
     const url = await shoppingServiceApi.whenCalled('openUrlInNewTab');
-    assertEquals('https://foo.com/jackpot', url.url);
+    assertEquals('https://foo.com/jackpot', url);
     assertEquals(
         1,
         metrics.count(
@@ -284,7 +284,7 @@ suite('ShoppingInsightsAppTest', () => {
         loadTimeData.getString('buyOptions'), buyOption.textContent.trim());
     buyOption.click();
     const url = await shoppingServiceApi.whenCalled('openUrlInNewTab');
-    assertEquals('https://foo.com/jackpot', url.url);
+    assertEquals('https://foo.com/jackpot', url);
     assertEquals(
         1,
         metrics.count(

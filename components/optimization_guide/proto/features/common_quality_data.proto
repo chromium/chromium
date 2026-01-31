@@ -276,8 +276,8 @@ message ContentAttributes {
     // Only set if attribute_type is CONTENT_ATTRIBUTE_IMAGE.
     ImageInfo image_data = 11;
 
-    // Only set if attribute_type is CONTENT_ATTRIBUTE_SVG.
-    SVGData svg_data = 23;
+    // Only set if attribute_type is CONTENT_ATTRIBUTE_SVG_ROOT.
+    SVGRootData svg_root_data = 23;
 
     // Only set if attribute_type is CONTENT_ATTRIBUTE_CANVAS.
     CanvasData canvas_data = 24;
@@ -587,7 +587,7 @@ message SecurityOrigin {
   string value = 2 [features = { field_presence: EXPLICIT }];
 }
 
-message SVGData {
+message SVGRootData {
   // The inner text for the SVG subtree.
   string inner_text = 1 [features = { field_presence: EXPLICIT }];
 }
@@ -877,7 +877,7 @@ message ScriptToolAnnotations {
 }
 
 // Result of executing a script tool.
-// Next ID: 3
+// Next ID: 5
 // TODO(khushalsagar): Move this to actions_data.proto.
 message ScriptToolResult {
   // The index of the ScriptToolAction in the Actions proto. This is used to
@@ -886,6 +886,12 @@ message ScriptToolResult {
 
   // The result from executing the tool, if the execution was successful.
   string result = 2 [features = { field_presence: EXPLICIT }];
+
+  // Provides the name and arguments the tool was invoked with. This is
+  // populated to provide context for the result.
+  string tool_name = 3 [features = { field_presence: EXPLICIT }];
+
+  string input_arguments = 4 [features = { field_presence: EXPLICIT }];
 }
 
 message TableRowData {
@@ -1701,7 +1707,7 @@ enum AXStringAttribute {
 }
 
 // AX Int attribute enum.
-// Next ID: 69
+// Next ID: 70
 enum AXIntAttribute {
   AX_IA_NONE = 0;
 
@@ -1840,6 +1846,8 @@ enum AXIntAttribute {
   AX_IA_MAXLENGTH = 67;
 
   AX_IA_PAINTORDER = 68;
+
+  AX_IA_COMMITTEDTEXTLENGTH = 69;
 }
 
 // AX Float attribute enum.
@@ -1865,7 +1873,7 @@ enum AXFloatAttribute {
 }
 
 // AX Bool attribute enum.
-// Next ID: 23
+// Next ID: 26
 enum AXBoolAttribute {
   AX_BA_NONE = 0;
 
@@ -1912,6 +1920,12 @@ enum AXBoolAttribute {
   AX_BA_LONGCLICKABLE = 21;
 
   AX_BA_HASHIDDENOFFSCREENNODES = 22;
+
+  AX_BA_HASCOMPOSITION = 23;
+
+  AX_BA_COMMITTEDBYIME = 24;
+
+  AX_BA_TEXTSUGGESTIONSELECTEDBYIME = 25;
 }
 
 // AX IntList attribute enum.
@@ -2047,7 +2061,7 @@ enum ContentAttributeType {
   CONTENT_ATTRIBUTE_IMAGE = 9;
 
   // Root SVG nodes.
-  CONTENT_ATTRIBUTE_SVG = 25;
+  CONTENT_ATTRIBUTE_SVG_ROOT = 25;
 
   CONTENT_ATTRIBUTE_CANVAS = 26;
 

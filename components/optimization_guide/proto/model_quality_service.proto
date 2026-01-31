@@ -14,6 +14,7 @@ import "components/optimization_guide/proto/features/contextual_tasks_context.pr
 import "components/optimization_guide/proto/features/default.proto";
 import "components/optimization_guide/proto/features/enhanced_calendar.proto";
 import "components/optimization_guide/proto/features/forms_classifications.proto";
+import "components/optimization_guide/proto/features/gemini_antiscam_protection.proto";
 import "components/optimization_guide/proto/features/history_answer.proto";
 import "components/optimization_guide/proto/features/history_query.proto";
 import "components/optimization_guide/proto/features/history_query_intent.proto";
@@ -25,6 +26,7 @@ import "components/optimization_guide/proto/features/product_specifications.prot
 import "components/optimization_guide/proto/features/prompt_api.proto";
 import "components/optimization_guide/proto/features/proofreader_api.proto";
 import "components/optimization_guide/proto/features/scam_detection.proto";
+import "components/optimization_guide/proto/features/skills.proto";
 import "components/optimization_guide/proto/features/summarize.proto";
 import "components/optimization_guide/proto/features/tab_organization.proto";
 import "components/optimization_guide/proto/features/walletable_pass_extraction.proto";
@@ -102,6 +104,10 @@ message LogAiDataRequest {
     ActorLoginLoggingData actor_login = 31;
 
     ContextualTasksContextLoggingData contextual_tasks_context = 32;
+
+    SkillsLoggingData skills = 33;
+
+    GeminiAntiscamProtectionLoggingData gemini_antiscam_protection = 34;
 
     DefaultLoggingData default = 1000;
   }

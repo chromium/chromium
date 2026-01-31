@@ -308,7 +308,7 @@ TEST_F(PrintServersProviderTest, Allowlist) {
   EXPECT_TRUE(obs.GetCalls().back().complete);
   EXPECT_TRUE(obs.GetCalls().back().servers.empty());
   // Apply allowlist.
-  base::Value::List value;
+  base::ListValue value;
   for (std::string id : {"id3", "idX", "id1"})
     value.Append(std::move(id));
   pref_service_.SetManagedPref(kAllowlistPrefName,

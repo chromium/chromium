@@ -33,7 +33,7 @@ class PriceTrackingEmailDialogViewBrowserTest : public InProcessBrowserTest {
 
     signin::MakePrimaryAccountAvailable(
         IdentityManagerFactory::GetForProfile(GetProfile()), "test@example.com",
-        signin::ConsentLevel::kSync);
+        signin::ConsentLevel::kSignin);
   }
 
   void TearDownOnMainThread() override {

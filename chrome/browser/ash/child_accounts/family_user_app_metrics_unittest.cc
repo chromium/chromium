@@ -125,6 +125,7 @@ class FamilyUserAppMetricsTest
                 content::BrowserTaskEnvironment::TimeSource::MOCK_TIME)) {}
 
   void SetUp() override {
+    extensions::ExtensionServiceTestWithInstall::SetUp();
     base::Time start_time;
     EXPECT_TRUE(base::Time::FromString(kStartTime, &start_time));
     base::TimeDelta forward_by = start_time - base::Time::Now();
@@ -147,6 +148,13 @@ class FamilyUserAppMetricsTest
 
     family_user_app_metrics_ =
         std::make_unique<FamilyUserAppMetricsDerivedForTest>(profile());
+  }
+
+  void TearDown() override {
+    window_.reset();
+    family_user_app_metrics_.reset();
+    supervised_user_extensions_delegate_.reset();
+    extensions::ExtensionServiceTestWithInstall::TearDown();
   }
 
   void InstallExtensions() {
@@ -242,10 +250,10 @@ class FamilyUserAppMetricsTest
 
   bool IsFamilyLink() const { return GetParam(); }
 
-  std::unique_ptr<FamilyUserAppMetricsDerivedForTest> family_user_app_metrics_;
-  std::unique_ptr<aura::Window> window_;
   std::unique_ptr<extensions::SupervisedUserExtensionsDelegate>
       supervised_user_extensions_delegate_;
+  std::unique_ptr<FamilyUserAppMetricsDerivedForTest> family_user_app_metrics_;
+  std::unique_ptr<aura::Window> window_;
 
   // TODO(https://crbug.com/40804030): Migrate this to only rely on MV3
   // extensions.

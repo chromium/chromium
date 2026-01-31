@@ -1,0 +1,13 @@
+A Google Chrome és a ChromeOS Kiegészítő Általános Szerződési Feltételei
+
+Legutóbbi módosítás: 2025. szeptember 30.
+
+A Chrome vagy a ChromeOS használatával Ön elfogadja a https://policies.google.com/terms oldalon hozzáférhető Google Általános Szerződési Feltételeket, továbbá a Google Chrome és a ChromeOS jelen Kiegészítő Általános Szerződési Feltételeit.
+
+Ezek a Google Chrome és ChromeOS Kiegészítő Általános Szerződési Feltételek vonatkoznak a Chrome és a ChromeOS futtatható kódú verziójára. A Chrome forráskódjának legnagyobb része nyílt forráskódú szoftverekre vonatkozó licencszerződések keretében díjmentesen rendelkezésre áll a következő címen: chrome://credits.
+
+A Chrome és a ChromeOS egyes összetevőinek használatára a következő feltételek vonatkoznak:
+
+AVC
+
+JELEN TERMÉK AZ AVC SZABADALOMPORTFÓLIÓJÁRA VONATKOZÓ LICENC ÉRTELMÉBEN KAPOTT ENGEDÉLYT EGY SZEMÉLY ÁLTALI FELHASZNÁLÁSRA, ILLETVE MÁS EGYÉB, DÍJAZÁSSAL NEM JÁRÓ FELHASZNÁLÁSRA (i) VIDEÓK AVC SZABVÁNYNAK MEGFELELŐ KÓDOLÁSA CÉLJÁBÓL (A TOVÁBBIAKBAN „AVC-VIDEÓ”) ÉS/VAGY (ii) OLYAN AVC-VIDEÓ DEKÓDOLÁSA CÉLJÁBÓL, AMELYET SZEMÉLYES TEVÉKENYSÉG KERETÉBEN KÓDOLT VALAMELY MÁS FELHASZNÁLÓ, ILLETVE AMELY OLYAN VIDEÓSZOLGÁLTATÓTÓL SZÁRMAZIK, AMELY RENDELKEZIK AVC-VIDEÓK SZOLGÁLTATÁSÁRA VONATKOZÓ ENGEDÉLLYEL. BÁRMILYEN ETTŐL ELTÉRŐ FELHASZNÁLÁS ESETÉN A LICENC NEM ÉRVÉNYES ÉS NEM HASZNÁLHATÓ FEL. TOVÁBBI INFORMÁCIÓT AZ MPEG LA, LLC VÁLLALAT BIZTOSÍTHAT ÖNNEK. LÁSD: HTTPS://WWW.VIA-LA.COM.

@@ -8,6 +8,7 @@ import './number_settings_section.js';
 import './print_preview_shared.css.js';
 import './settings_section.js';
 
+import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import type {Settings} from '../data/model.js';
@@ -107,6 +108,12 @@ export class PrintPreviewScalingSettingsElement extends
    * auto-focus the custom input.
    */
   private userSelectedCustomScaling_: boolean = false;
+
+  /**
+   * Whether the Finch flag `alignPdfDefaultPrintSettingsWithHTML` is on.
+   */
+  private alignPdfDefaultPrintSettingsWithHTML_: boolean =
+      loadTimeData.getBoolean('alignPdfDefaultPrintSettingsWithHTML');
 
   override onProcessSelectChange(value: string) {
     const isCustom = value === ScalingType.CUSTOM.toString();
@@ -210,6 +217,13 @@ export class PrintPreviewScalingSettingsElement extends
     }
     this.customScalingSettingSet_ = false;
     this.userSelectedCustomScaling_ = false;
+  }
+
+  /**
+   * @return Whether the actual size option should be enabled.
+   */
+  private computeOptionActualSizeEnabled_(): boolean {
+    return this.isPdf && this.alignPdfDefaultPrintSettingsWithHTML_;
   }
 }
 

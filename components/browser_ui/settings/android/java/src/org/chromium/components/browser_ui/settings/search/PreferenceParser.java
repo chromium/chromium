@@ -17,6 +17,7 @@ import org.xmlpull.v1.XmlPullParserException;
 
 import org.chromium.base.Log;
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.components.browser_ui.settings.TextMessagePreference;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -38,6 +39,8 @@ public class PreferenceParser {
 
     private static final String TAG = "PreferenceParser";
     private static final String ID_DELIMITER = "#";
+    private static final String TEXT_MESSAGE_PREFERENCE_CLASS =
+            TextMessagePreference.class.getName();
 
     /**
      * Parses a {@link androidx.preference.PreferenceScreen} XML resource to extract key attributes
@@ -70,7 +73,9 @@ public class PreferenceParser {
         String header = null;
         while (eventType != XmlPullParser.END_DOCUMENT) {
             String tagName = parser.getName();
-            if (eventType == XmlPullParser.START_TAG && !"PreferenceScreen".equals(tagName)) {
+            if (eventType == XmlPullParser.START_TAG
+                    && !"PreferenceScreen".equals(tagName)
+                    && !tagName.equals(TEXT_MESSAGE_PREFERENCE_CLASS)) {
                 AttributeSet attrs = Xml.asAttributeSet(parser);
                 int[] androidAttrIds =
                         new int[] {
@@ -126,6 +131,10 @@ public class PreferenceParser {
             String prefFragment,
             Bundle extras,
             Map<String, SearchIndexProvider> providerMap) {
+        if (xmlRes == 0 || xmlRes == BaseSearchIndexProvider.INDEX_OPT_OUT) {
+            return;
+        }
+
         List<Bundle> metadata;
 
         try {
@@ -143,7 +152,7 @@ public class PreferenceParser {
             Bundle finalExtras = new Bundle();
             String childFragmentClass = bundle.getString(METADATA_FRAGMENT);
             if (childFragmentClass != null && providerMap.containsKey(childFragmentClass)) {
-                Bundle childDefaults = providerMap.get(childFragmentClass).getExtras();
+                Bundle childDefaults = providerMap.get(childFragmentClass).getExtras(context);
                 if (childDefaults != null) {
                     finalExtras.putAll(childDefaults);
                 }
@@ -181,7 +190,9 @@ public class PreferenceParser {
             SettingsIndexData indexData,
             Map<String, SearchIndexProvider> providerMap,
             Set<String> processedFragments) {
-        if (xmlRes == 0 || processedFragments.contains(parentFragmentName)) {
+        if (xmlRes == 0
+                || xmlRes == BaseSearchIndexProvider.INDEX_OPT_OUT
+                || processedFragments.contains(parentFragmentName)) {
             return;
         }
 

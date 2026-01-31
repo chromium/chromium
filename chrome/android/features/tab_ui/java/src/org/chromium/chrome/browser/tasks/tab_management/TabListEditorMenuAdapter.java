@@ -186,6 +186,8 @@ public class TabListEditorMenuAdapter
             if (colorStateList != null) {
                 ImageViewCompat.setImageTintList(startIcon, colorStateList);
             }
+        } else if (propertyKey == TabListEditorActionProperties.CLICK_LISTENER) {
+            view.setOnClickListener(model.get(TabListEditorActionProperties.CLICK_LISTENER));
         }
     }
 }

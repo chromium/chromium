@@ -142,7 +142,7 @@ void ConsolidatedConsentScreenHandler::DeclareLocalizedValues(
                IDS_CONSOLIDATED_CONSENT_PRIVACY_POLICY_TITLE);
 }
 
-void ConsolidatedConsentScreenHandler::Show(base::Value::Dict data) {
+void ConsolidatedConsentScreenHandler::Show(base::DictValue data) {
   ShowInWebUI(std::move(data));
 }
 

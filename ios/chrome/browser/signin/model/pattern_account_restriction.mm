@@ -100,7 +100,7 @@ bool ArePatternsValid(const base::Value* value) {
 }
 
 PatternAccountRestriction PatternAccountRestrictionFromValue(
-    const base::Value::List& list) {
+    const base::ListValue& list) {
   std::vector<Pattern> patterns;
   patterns.reserve(list.size());
   for (const base::Value& item : list) {

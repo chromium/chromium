@@ -44,7 +44,7 @@ using MantaProtoResponseCallback =
 // Manta service uses this callback to return the parsed result / error messages
 // to the caller.
 using MantaGenericCallback =
-    base::OnceCallback<void(base::Value::Dict, MantaStatus)>;
+    base::OnceCallback<void(base::DictValue, MantaStatus)>;
 
 COMPONENT_EXPORT(MANTA)
 void OnEndpointFetcherComplete(

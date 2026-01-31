@@ -8,12 +8,16 @@
 namespace desktop_to_mobile_promos {
 
 // Promo type (eature being highlighted) for the desktop-to-mobile promos.
+// These values are persisted to sync protos. Entries should not be renumbered
+// and numeric values should never be reused. See
+// components/sync/protocol/unencrypted_sharing_message.proto.
 enum class PromoType {
-  kPassword,
-  kAddress,
-  kPayment,
-  kEnhancedBrowsing,
-  kLens
+  kPassword = 1,
+  kAddress = 2,
+  kPayment = 3,
+  kEnhancedBrowsing = 4,
+  kLens = 5,
+  kMaxValue = kLens
 };
 
 // Bubble type for the desktop-to-mobile promos. A promo bubble can either

@@ -9,6 +9,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/functional/callback_helpers.h"
 #include "base/strings/string_util.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/password_manager/password_store_utils.h"
@@ -180,9 +181,10 @@ PasswordSaveUpdateView::PasswordSaveUpdateView(
       extra_view_->SetStyle(
           GetDialogButtonStyle(ui::mojom::DialogButton::kCancel));
 
-      // The third button will usually stretch the bubble beyond its intended
-      // width. Permit the bubble to use vertical buttons if this happens.
-      set_allow_vertical_buttons(true);
+      // Use "Medium" dialog width, per UX preference for 3-button dialogs.
+      set_fixed_width(views::LayoutProvider::Get()->GetDistanceMetric(
+          views::DISTANCE_MODAL_DIALOG_PREFERRED_WIDTH));
+
     } else {
       // 2-button save dialog variant.
       SetCancelCallback(base::BindOnce(button_clicked, base::Unretained(this),
@@ -228,16 +230,19 @@ bool PasswordSaveUpdateView::CloseOrReplaceWithPromo() {
   password_dropdown_ = nullptr;
   accessibility_alert_ = nullptr;
   RemoveAllChildViews();
-  SetLayoutManager(std::make_unique<views::FillLayout>());
   SetShowIcon(false);
   SetButtons(static_cast<int>(ui::mojom::DialogButton::kNone));
+  GetBubbleFrameView()->SetFootnoteView(nullptr);
   // SetExtraView is not designed to be called multiple times, so hide the
-  // extra button if it exists.
+  // extra button if it exists. Note that we're intentionally keeping the width
+  // of the previous dialog, even if it's the wider 3-button width.
   if (extra_view_) {
     extra_view_->SetVisible(false);
   }
 
-  GetBubbleFrameView()->SetFootnoteView(nullptr);
+  SetLayoutManager(std::make_unique<views::FillLayout>());
+  set_margins(BubbleSignInPromoView::GetBubbleSigninPromoMargins());
+
   SetTitle(IDS_AUTOFILL_SIGNIN_PROMO_TITLE_PASSWORD);
 
   // Add the accessibility alert view first so that it does not overlap with
@@ -297,6 +302,8 @@ void PasswordSaveUpdateView::AddedToWidget() {
   static_cast<views::Label*>(GetBubbleFrameView()->title())
       ->SetAllowCharacterBreak(true);
   SetBubbleHeaderLottie(IDR_AUTOFILL_SAVE_PASSWORD_LOTTIE);
+  GetBubbleFrameView()->SetProperty(views::kElementIdentifierKey,
+                                    kPasswordBubbleElementId);
   if (BrowserUserEducationInterface* user_ed =
           BrowserUserEducationInterface::MaybeGetForWebContentsInTab(
               controller_.GetWebContents())) {
@@ -463,9 +470,7 @@ void PasswordSaveUpdateView::TogglePasswordRevealed() {
         // bubble remains open till the OS closes the authentication
         // dialog and reactivates the bubble.
         base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
-            FROM_HERE,
-            base::BindOnce([](std::unique_ptr<CloseOnDeactivatePin> pin) {},
-                           std::move(pin)),
+            FROM_HERE, base::DoNothingWithBoundArgs(std::move(pin)),
             base::Seconds(1));
       },
       base::Unretained(this)));

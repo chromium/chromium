@@ -200,7 +200,7 @@ public class HierarchicalMenuTest {
     public void testHoverCreatesAnchoredFlyout() {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    mController.setDrillDownOverrideValueForTesting(false);
+                    HierarchicalMenuController.setDrillDownOverrideValueForTesting(false);
                 });
 
         // Hover on Item 1.
@@ -238,7 +238,7 @@ public class HierarchicalMenuTest {
     public void testDrillDownInteraction() {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    mController.setDrillDownOverrideValueForTesting(true);
+                    HierarchicalMenuController.setDrillDownOverrideValueForTesting(true);
                 });
 
         // Initially, Item 1 and Item 2 should be visible, but Item 1-1 should not.
@@ -284,7 +284,7 @@ public class HierarchicalMenuTest {
     public void testFlyoutTerminalItemClick() {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    mController.setDrillDownOverrideValueForTesting(false);
+                    HierarchicalMenuController.setDrillDownOverrideValueForTesting(false);
                 });
 
         // Hover on Item 1 to open first flyout.
@@ -314,7 +314,7 @@ public class HierarchicalMenuTest {
     public void testDrillDownTerminalItemClick() {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    mController.setDrillDownOverrideValueForTesting(true);
+                    HierarchicalMenuController.setDrillDownOverrideValueForTesting(true);
                 });
 
         // Click on "Item 1" to drill down.

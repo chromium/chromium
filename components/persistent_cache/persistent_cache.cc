@@ -13,40 +13,36 @@
 #include "base/check_op.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
-#include "base/strings/strcat.h"
 #include "base/synchronization/lock.h"
 #include "base/timer/elapsed_timer.h"
 #include "base/types/expected.h"
 #include "components/persistent_cache/backend.h"
 #include "components/persistent_cache/backend_type.h"
+#include "components/persistent_cache/metrics_util.h"
 #include "components/persistent_cache/pending_backend.h"
 #include "components/persistent_cache/sqlite/sqlite_backend_impl.h"
 #include "components/persistent_cache/transaction_error.h"
 
 namespace persistent_cache {
 
-const char* GetBackendTypeName(BackendType backend_type) {
-  switch (backend_type) {
-    case BackendType::kSqlite:
-      return "SQLite";
-  }
-}
-
 // static
 std::unique_ptr<PersistentCache> PersistentCache::Bind(
+    Client client,
     PendingBackend pending_backend) {
   // If there is ever occasion to have more than one type, branch on the type
   // here.
-  if (auto backend = SqliteBackendImpl::Bind(std::move(pending_backend));
+  if (auto backend =
+          SqliteBackendImpl::Bind(std::move(pending_backend), client);
       backend) {
-    return std::make_unique<PersistentCache>(std::move(backend));
+    return std::make_unique<PersistentCache>(client, std::move(backend));
   }
 
   return nullptr;
 }
 
-PersistentCache::PersistentCache(std::unique_ptr<Backend> backend)
-    : backend_(std::move(backend)) {
+PersistentCache::PersistentCache(Client client,
+                                 std::unique_ptr<Backend> backend)
+    : client_(client), backend_(std::move(backend)) {
   CHECK(backend_);
 }
 
@@ -59,8 +55,9 @@ PersistentCache::Find(std::string_view key, BufferProvider buffer_provider) {
   auto entry_metadata = backend_->Find(key, buffer_provider);
 
   if (timer.has_value()) {
-    base::UmaHistogramMicrosecondsTimes(GetFullHistogramName("Find"),
-                                        timer->Elapsed());
+    base::UmaHistogramMicrosecondsTimes(
+        GetHistogramName(client_, "Find", !backend_->IsReadOnly()),
+        timer->Elapsed());
   }
 
   return entry_metadata;
@@ -74,7 +71,7 @@ base::expected<void, TransactionError> PersistentCache::Insert(
 
   auto result = backend_->Insert(key, content, metadata);
   if (timer.has_value()) {
-    base::UmaHistogramMicrosecondsTimes(GetFullHistogramName("Insert"),
+    base::UmaHistogramMicrosecondsTimes(GetHistogramName(client_, "Insert"),
                                         timer->Elapsed());
   }
 
@@ -98,14 +95,6 @@ std::optional<base::ElapsedTimer> PersistentCache::MaybeGetTimerForHistogram() {
   }
 
   return timer;
-}
-
-std::string PersistentCache::GetFullHistogramName(std::string_view name) const {
-  const char* file_access_suffix =
-      backend_->IsReadOnly() ? ".ReadOnly" : ".ReadWrite";
-  return base::StrCat({"PersistentCache.", name, ".",
-                       GetBackendTypeName(backend_->GetType()),
-                       file_access_suffix});
 }
 
 }  // namespace persistent_cache

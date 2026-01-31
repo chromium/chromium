@@ -92,12 +92,7 @@ const int kDefaultListBoxSize = 4;
 
 HTMLSelectElement::HTMLSelectElement(Document& document)
     : HTMLFormControlElementWithState(html_names::kSelectTag, document),
-      type_ahead_(this),
-      size_(0),
-      last_on_change_option_(nullptr),
-      is_multiple_(false),
-      should_recalc_list_items_(false),
-      index_to_select_on_cancel_(-1) {
+      type_ahead_(this) {
   // Make sure SelectType is created after initializing |uses_menu_list_|.
   select_type_ = SelectType::Create(*this);
   SetHasCustomStyleCallbacks();
@@ -451,6 +446,8 @@ bool HTMLSelectElement::CanSelectAll() const {
   return !UsesMenuList();
 }
 
+// This method returns hard-coded layout object types in order to enforce flex
+// layout despite the standardized inline-block display property.
 LayoutObject* HTMLSelectElement::CreateLayoutObject(
     const ComputedStyle& style) {
   if (style.IsVerticalWritingMode()) {
@@ -458,6 +455,12 @@ LayoutObject* HTMLSelectElement::CreateLayoutObject(
   }
 
   if (UsesMenuList()) {
+    if (SupportsBaseAppearance(style.EffectiveAppearance())) {
+      // Don't hard code the layout object type for customizable select. The UA
+      // stylesheet has flex in it and authors should be able to change it if
+      // they want.
+      return HTMLFormControlElementWithState::CreateLayoutObject(style);
+    }
     return MakeGarbageCollected<LayoutFlexibleBox>(this);
   }
   return MakeGarbageCollected<LayoutBlockFlow>(this);
@@ -956,7 +959,14 @@ void HTMLSelectElement::SelectOption(HTMLOptionElement* element,
   if (element) {
     if (!element->Selected())
       should_update_popup = true;
-    element->SetSelectedState(true);
+    // skip_mutation_observer_update is set to true here because
+    // last_on_change_option_ isn't set to the new option element yet, which
+    // results in a DCHECK being hit in MenuListSelectType::OptionToBeShown when
+    // copying the option's text content to this select element's InnerElement
+    // which requires that SelectedOption() matches last_on_change_option_.
+    // Instead, UpdateMutationObserver is explicitly called after
+    // DidSelectOption later in this method.
+    element->SetSelectedState(true, /*skip_mutation_observer_update=*/true);
     if (flags & kMakeOptionDirtyFlag)
       element->SetDirty(true);
   }
@@ -972,6 +982,13 @@ void HTMLSelectElement::SelectOption(HTMLOptionElement* element,
   // Note that DidSelectOption fires change events, which can invoke script
   // and then change the selected option again.
   select_type_->DidSelectOption(element, flags, should_update_popup);
+
+  if (element) {
+    // Now that last_on_change_option_ has been updated by DidSelectOption, we
+    // can update the select's MutationObserver and update text.
+    element->UpdateMutationObserver(/*in_style_recalc=*/false);
+  }
+
   NotifyFormStateChanged();
   if (GetDocument().IsActive()) {
     GetDocument()
@@ -1183,7 +1200,9 @@ void HTMLSelectElement::ParseMultipleAttribute(const AtomicString& value) {
 }
 
 void HTMLSelectElement::UpdateMutationObserver() {
-  if (UsesMenuList() && isConnected() && IsAppearanceBase()) {
+  if ((UsesMenuList() ||
+       RuntimeEnabledFeatures::CustomizableSelectListboxEnabled()) &&
+      isConnected() && IsAppearanceBase()) {
     if (!descendants_observer_) {
       descendants_observer_ =
           MakeGarbageCollected<SelectMutationObserver>(*this);
@@ -1281,21 +1300,45 @@ void HTMLSelectElement::DefaultEventHandler(Event& event) {
 
 void HTMLSelectElement::ChildrenChanged(const ChildrenChange& change) {
   HTMLFormControlElementWithState::ChildrenChanged(change);
-  if (RuntimeEnabledFeatures::SelectChildrenRemovedFixEnabled()) {
-    // OptionRemoved is normally called in HTMLOptionElement::RemovedFrom, but
-    // as a direct child we call OptionRemoved here in order to avoid
-    // https://issues.chromium.org/issues/444330901
-    if (change.type == ChildrenChangeType::kAllChildrenRemoved) {
-      for (Node* node : change.removed_nodes) {
-        if (auto* option = DynamicTo<HTMLOptionElement>(node)) {
-          OptionRemoved(*option);
-        }
+  bool button_changed = false;
+  if (change.type ==
+      ChildrenChangeType::kFinishedBuildingDocumentFragmentTree) {
+    for (Node& node : NodeTraversal::ChildrenOf(*this)) {
+      if (IsA<HTMLButtonElement>(node)) {
+        button_changed = true;
       }
-    } else if (change.type == ChildrenChangeType::kElementRemoved) {
-      if (auto* option = DynamicTo<HTMLOptionElement>(change.sibling_changed)) {
+    }
+  } else if (change.type == ChildrenChangeType::kElementInserted) {
+    if (IsA<HTMLButtonElement>(change.sibling_changed)) {
+      button_changed = true;
+    }
+  } else if (change.type == ChildrenChangeType::kElementRemoved) {
+    if (IsA<HTMLButtonElement>(change.sibling_changed)) {
+      button_changed = true;
+    } else if (auto* option =
+                   DynamicTo<HTMLOptionElement>(change.sibling_changed)) {
+      if (RuntimeEnabledFeatures::SelectChildrenRemovedFixEnabled()) {
+        // OptionRemoved is normally called in HTMLOptionElement::RemovedFrom,
+        // but as a direct child we call OptionRemoved here in order to avoid
+        // https://issues.chromium.org/issues/444330901
         OptionRemoved(*option);
       }
     }
+  } else if (change.type == ChildrenChangeType::kAllChildrenRemoved) {
+    for (Node* node : change.removed_nodes) {
+      if (IsA<HTMLButtonElement>(node)) {
+        button_changed = true;
+      } else if (auto* option = DynamicTo<HTMLOptionElement>(node)) {
+        if (RuntimeEnabledFeatures::SelectChildrenRemovedFixEnabled()) {
+          // See comment in kElementRemoved case.
+          OptionRemoved(*option);
+        }
+      }
+    }
+  }
+
+  if (button_changed) {
+    PseudoStateChanged(CSSSelector::kPseudoSelectHasSlottedButton);
   }
 }
 
@@ -1339,7 +1382,7 @@ void HTMLSelectElement::TypeAheadFind(const KeyboardEvent& event) {
   const bool customizable_select_popup =
       select_type_->IsAppearanceBasePicker() && select_type_->PopupIsVisible();
   const bool customizable_select_in_page =
-      RuntimeEnabledFeatures::CustomizableSelectInPageEnabled() &&
+      RuntimeEnabledFeatures::CustomizableSelectListboxEnabled() &&
       !UsesMenuList() && IsAppearanceBase();
 
   if (customizable_select_popup || customizable_select_in_page) {
@@ -1956,7 +1999,7 @@ FocusableState HTMLSelectElement::SupportsFocus(
   // if appropriate, which we will make use of here.
   FocusableState superclass_focusable =
       HTMLFormControlElementWithState::SupportsFocus(update_behavior);
-  if (RuntimeEnabledFeatures::CustomizableSelectInPageEnabled() &&
+  if (RuntimeEnabledFeatures::CustomizableSelectListboxEnabled() &&
       !UsesMenuList() && IsAppearanceBase()) {
     // In this case, the child option elements are focusable and keyboard
     // navigating to this element should just go straight to the options. Call
@@ -1989,7 +2032,7 @@ bool HTMLSelectElement::SupportsBaseAppearanceInternal(
   if (RuntimeEnabledFeatures::CustomizableSelectMultiplePopupEnabled()) {
     return true;
   }
-  if (RuntimeEnabledFeatures::CustomizableSelectInPageEnabled()) {
+  if (RuntimeEnabledFeatures::CustomizableSelectListboxEnabled()) {
     if (UsesMenuList() && IsMultiple()) {
       return false;
     }
@@ -2009,6 +2052,12 @@ bool HTMLSelectElement::ShouldIgnoreDescendantsForOptionTraversals(
   }
   return IsA<HTMLSelectElement>(element) || IsA<HTMLOptionElement>(element) ||
          IsA<HTMLHRElement>(element);
+}
+
+void HTMLSelectElement::FillWebMCPData(JSONValue& data) {
+  CHECK(RuntimeEnabledFeatures::WebMCPEnabled());
+  String selected_value = GetMCPJSONValue(data);
+  SetValue(selected_value, /*send_events*/ true, WebAutofillState::kNotFilled);
 }
 
 }  // namespace blink

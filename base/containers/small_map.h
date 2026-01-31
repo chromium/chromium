@@ -371,6 +371,30 @@ class small_map {
     return const_iterator(it);
   }
 
+  constexpr bool contains(const key_type& key) const {
+    return find(key) != end();
+  }
+
+  // TODO(crbug.com/470391351): Add heterogenous lookup to find() and call it
+  // here.
+  template <typename T>
+  constexpr bool contains(const T& key) const {
+    key_equal compare;
+
+    if (UsingFullMap()) {
+      return map()->contains(key);
+    }
+
+    span<const ArrayElement> r = sized_array_span();
+    auto it = r.begin();
+    for (; it != r.end(); ++it) {
+      if (compare(it->value.first, key)) {
+        return true;
+      }
+    }
+    return false;
+  }
+
   // Invalidates iterators.
   constexpr data_type& operator[](const key_type& key)
     requires(std::is_default_constructible_v<data_type>)
@@ -428,6 +452,7 @@ class small_map {
 
   // Invalidates iterators.
   template <class InputIterator>
+    requires(std::input_iterator<InputIterator>)
   constexpr void insert(InputIterator f, InputIterator l) {
     while (f != l) {
       insert(*f);

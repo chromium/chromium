@@ -21,7 +21,6 @@
 #include "ash/public/cpp/accelerators.h"
 #include "ash/public/cpp/accelerators_util.h"
 #include "ash/public/mojom/accelerator_configuration.mojom.h"
-#include "ash/public/mojom/accelerator_info.mojom-shared.h"
 #include "ash/public/mojom/accelerator_info.mojom.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
@@ -29,7 +28,6 @@
 #include "ash/system/input_device_settings/input_device_settings_controller_impl.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/webui/shortcut_customization_ui/backend/accelerator_layout_table.h"
-#include "ash/webui/shortcut_customization_ui/mojom/shortcut_customization.mojom-forward.h"
 #include "ash/webui/shortcut_customization_ui/mojom/shortcut_customization.mojom-test-utils.h"
 #include "ash/webui/shortcut_customization_ui/mojom/shortcut_customization.mojom.h"
 #include "base/memory/raw_ptr.h"
@@ -1192,7 +1190,7 @@ TEST_F(AcceleratorConfigurationProviderTest, NonConfigurableReverseLookup) {
         std::vector<uint32_t> found_ids =
             GetNonConfigurableIdFromAccelerator(accelerator);
         ASSERT_FALSE(found_ids.empty());
-        EXPECT_TRUE(base::Contains(found_ids, ambient_action_id));
+        EXPECT_TRUE(std::ranges::contains(found_ids, ambient_action_id));
       }
     }
   }

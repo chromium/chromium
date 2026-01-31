@@ -25,7 +25,7 @@
 #include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/tabs/tab_model.h"
 #include "chrome/browser/ui/toolbar/toolbar_action_view_model.h"
-#include "chrome/browser/ui/views/extensions/extensions_toolbar_container.h"
+#include "chrome/browser/ui/views/extensions/extensions_toolbar_desktop.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/side_panel/extensions/extension_side_panel_coordinator.h"
 #include "chrome/browser/ui/views/side_panel/extensions/extension_side_panel_manager.h"
@@ -250,12 +250,12 @@ class ExtensionSidePanelBrowserTest : public ExtensionBrowserTest {
     return action_item;
   }
 
-  ExtensionsToolbarContainer* GetExtensionsToolbarContainer() const {
+  ExtensionsToolbarDesktop* GetExtensionsToolbarDesktop() const {
     return browser()->GetBrowserView().toolbar()->extensions_container();
   }
 
   void WaitForSidePanelToolbarCloseButtonVisibility(bool visible) {
-    auto* container = GetExtensionsToolbarContainer();
+    auto* container = GetExtensionsToolbarDesktop();
     auto* button = container->GetCloseSidePanelButtonForTesting();
     if (visible == false && !container->GetVisible()) {
       return;
@@ -287,7 +287,8 @@ class ExtensionSidePanelBrowserTest : public ExtensionBrowserTest {
   extensions::ExtensionContextMenuModel* GetContextMenuForExtension(
       const ExtensionId& extension_id) {
     return static_cast<extensions::ExtensionContextMenuModel*>(
-        GetExtensionsToolbarContainer()
+        GetExtensionsToolbarDesktop()
+            ->GetToolbarViewModel()
             ->GetActionForId(extension_id)
             ->GetContextMenu(extensions::ExtensionContextMenuModel::
                                  ContextMenuSource::kMenuItem));
@@ -1250,7 +1251,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionSidePanelBrowserTest,
   // The key for the extension should be registered, but the side panel isn't
   // shown yet and the close side panel button is not visible.
   EXPECT_FALSE(side_panel_ui->IsSidePanelShowing(extension_entry->type()));
-  EXPECT_FALSE(GetExtensionsToolbarContainer()
+  EXPECT_FALSE(GetExtensionsToolbarDesktop()
                    ->GetCloseSidePanelButtonForTesting()
                    ->GetVisible());
 
@@ -1261,7 +1262,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionSidePanelBrowserTest,
   // visible.
   ASSERT_TRUE(default_path_listener.WaitUntilSatisfied());
   EXPECT_TRUE(side_panel_ui->IsSidePanelEntryShowing(extension_key));
-  EXPECT_TRUE(GetExtensionsToolbarContainer()
+  EXPECT_TRUE(GetExtensionsToolbarDesktop()
                   ->GetCloseSidePanelButtonForTesting()
                   ->GetVisible());
 
@@ -1397,7 +1398,7 @@ class ExtensionOpenSidePanelBrowserTest : public ExtensionSidePanelBrowserTest {
     auto function = base::MakeRefCounted<SidePanelOpenFunction>();
     function->set_extension(&extension);
 
-    base::Value::Dict options;
+    base::DictValue options;
     if (tab_id) {
       options.Set("tabId", *tab_id);
     }
@@ -1405,7 +1406,7 @@ class ExtensionOpenSidePanelBrowserTest : public ExtensionSidePanelBrowserTest {
       options.Set("windowId", *window_id);
     }
     std::string args_str =
-        base::WriteJson(base::Value::List().Append(std::move(options)))
+        base::WriteJson(base::ListValue().Append(std::move(options)))
             .value_or("");
     function->set_user_gesture(true);
     EXPECT_TRUE(api_test_utils::RunFunction(function.get(), args_str, profile))
@@ -1909,6 +1910,43 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_TRUE(side_panel_ui->IsSidePanelEntryShowing(extension2_key));
 }
 
+// Tests calling `sidePanel.open()` with `kCurrentWindowId` opens the side panel
+// in the current window.
+IN_PROC_BROWSER_TEST_F(ExtensionOpenSidePanelBrowserTest,
+                       OpenSidePanel_CurrentWindow) {
+  const Extension* extension = LoadSidePanelExtension();
+  ASSERT_TRUE(extension);
+
+  // Register a global side panel.
+  RunSetOptions(*extension, /*tab_id=*/std::nullopt, "panel.html",
+                /*enabled=*/true);
+
+  // Open a second browser window.
+  Browser* second_browser = CreateBrowser(browser()->profile());
+  ASSERT_TRUE(second_browser);
+  ui_test_utils::BrowserDidBecomeActiveWaiter(second_browser).Wait();
+
+  SidePanelUI* const first_side_panel_ui =
+      browser()->GetFeatures().side_panel_ui();
+  SidePanelUI* const second_side_panel_ui =
+      second_browser->GetFeatures().side_panel_ui();
+
+  EXPECT_FALSE(
+      first_side_panel_ui->IsSidePanelEntryShowing(GetKey(extension->id())));
+  EXPECT_FALSE(
+      second_side_panel_ui->IsSidePanelEntryShowing(GetKey(extension->id())));
+
+  // Run `sidePanel.open()` with `kCurrentWindowId`.
+  // Since this test runs the function manually with no specific window,
+  // `WINDOW_ID_CURRENT` should fall back to the foremost one.
+  RunOpenPanelForWindow(*extension, extension_misc::kCurrentWindowId);
+
+  EXPECT_FALSE(
+      first_side_panel_ui->IsSidePanelEntryShowing(GetKey(extension->id())));
+  EXPECT_TRUE(
+      second_side_panel_ui->IsSidePanelEntryShowing(GetKey(extension->id())));
+}
+
 // Tests that extension context menus show the "(Open / Close) side panel" menu
 // item when appropriate, and that the menu item toggles the global side panel.
 IN_PROC_BROWSER_TEST_F(
@@ -2156,7 +2194,7 @@ class ExtensionCloseSidePanelBrowserTest
     auto function = base::MakeRefCounted<SidePanelCloseFunction>();
     function->set_extension(&extension);
 
-    base::Value::Dict options;
+    base::DictValue options;
     if (tab_id) {
       options.Set("tabId", *tab_id);
     }
@@ -2165,7 +2203,7 @@ class ExtensionCloseSidePanelBrowserTest
     }
 
     std::string args_str =
-        base::WriteJson(base::Value::List().Append(std::move(options)))
+        base::WriteJson(base::ListValue().Append(std::move(options)))
             .value_or("");
     EXPECT_TRUE(
         api_test_utils::RunFunction(function.get(), args_str, profile()))
@@ -2192,31 +2230,6 @@ IN_PROC_BROWSER_TEST_F(ExtensionCloseSidePanelBrowserTest,
   // Close the panel by calling the API with only the `windowId` specified.
   RunClosePanel(*extension, /*tab_id=*/std::nullopt, GetCurrentWindowId());
 
-  WaitForSidePanelClose();
-  EXPECT_FALSE(side_panel_ui->IsSidePanelEntryShowing(extension_key));
-}
-
-// Tests closing the global side panel using both tabId and windowId when no
-// contextual panel is present.
-IN_PROC_BROWSER_TEST_F(ExtensionCloseSidePanelBrowserTest,
-                       CloseGlobalSidePanel_WithTabAndWindowId) {
-  // Load an extension with a global panel.
-  scoped_refptr<const Extension> extension = LoadExtension(
-      test_data_dir_.AppendASCII("api_test/side_panel/simple_default"));
-  ASSERT_TRUE(extension);
-  SidePanelEntry::Key extension_key = GetKey(extension->id());
-  SidePanelUI* const side_panel_ui = browser()->GetFeatures().side_panel_ui();
-  ASSERT_TRUE(
-      SidePanelRegistry::From(browser())->GetEntryForKey(extension_key));
-
-  // Show the global panel and verify it is visible.
-  side_panel_ui->Show(extension_key);
-  ASSERT_TRUE(side_panel_ui->IsSidePanelEntryShowing(extension_key));
-
-  // Call close() with both the current tabId and windowId.
-  RunClosePanel(*extension, GetCurrentTabId(), GetCurrentWindowId());
-
-  // The panel should close successfully.
   WaitForSidePanelClose();
   EXPECT_FALSE(side_panel_ui->IsSidePanelEntryShowing(extension_key));
 }
@@ -2468,7 +2481,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionOnOpenedEventSidePanelBrowserTest,
       opened_listener.message(), base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   ASSERT_TRUE(value);
   ASSERT_TRUE(value->is_dict());
-  const base::Value::Dict& open_info = value->GetDict();
+  const base::DictValue& open_info = value->GetDict();
 
   // Verify that the `tabId` from the event payload matches where the panel was
   // opened.
@@ -2715,13 +2728,13 @@ IN_PROC_BROWSER_TEST_F(ExtensionOnClosedEventSidePanelBrowserTest,
 
   // Move the first tab (at index 0) to a new window. This action correctly
   // simulates the user dragging the tab out.
+  ui_test_utils::BrowserCreatedObserver observer;
   chrome::MoveTabsToNewWindow(browser(), {0});
 
   // Get the new browser window.
-  BrowserWindowInterface* const new_browser =
-      GetLastActiveBrowserWindowInterfaceWithAnyProfile();
+  Browser* new_browser = observer.Wait();
   ASSERT_TRUE(new_browser);
-  EXPECT_NE(browser()->window(), new_browser->GetWindow());
+  EXPECT_NE(browser()->window(), new_browser->window());
 
   // Get the session IDs for the new window and its active tab.
   const int new_window_id = new_browser->GetSessionID().id();

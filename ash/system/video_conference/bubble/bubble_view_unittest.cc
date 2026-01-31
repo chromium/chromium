@@ -31,7 +31,6 @@
 #include "base/command_line.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/unguessable_token.h"
-#include "chromeos/crosapi/mojom/video_conference.mojom-shared.h"
 #include "chromeos/crosapi/mojom/video_conference.mojom.h"
 
 namespace ash::video_conference {

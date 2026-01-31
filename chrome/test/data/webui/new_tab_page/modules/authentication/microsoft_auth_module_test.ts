@@ -24,8 +24,10 @@ suite('MicrosoftAuthModule', () => {
 
   setup(() => {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
-    loadTimeData.overrideValues(
-        {modulesMicrosoftAuthName: modulesMicrosoftAuthName});
+    loadTimeData.overrideValues({
+      modulesMicrosoftAuthName: modulesMicrosoftAuthName,
+      hideDismissModules: false,
+    });
 
     handler = installMock(
         MicrosoftAuthPageHandlerRemote,
@@ -40,7 +42,7 @@ suite('MicrosoftAuthModule', () => {
   });
 
   async function createMicrosoftAuthElement() {
-    handler.setResultFor('shouldShowModule', Promise.resolve({show: true}));
+    handler.setPromiseResolveFor('shouldShowModule', {show: true});
     microsoftAuthModule = await microsoftAuthModuleDescriptor.initialize(0) as
         MicrosoftAuthModuleElement;
     assertTrue(!!microsoftAuthModule);
@@ -105,7 +107,7 @@ suite('MicrosoftAuthModule', () => {
 
   test('does not populate module if handler says not to', async () => {
     // Arrange/Act.
-    handler.setResultFor('shouldShowModule', Promise.resolve({show: false}));
+    handler.setPromiseResolveFor('shouldShowModule', {show: false});
     microsoftAuthModule = await microsoftAuthModuleDescriptor.initialize(0) as
         MicrosoftAuthModuleElement;
 

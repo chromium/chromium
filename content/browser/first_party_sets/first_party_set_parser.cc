@@ -14,7 +14,6 @@
 #include <vector>
 
 #include "base/check_op.h"
-#include "base/containers/contains.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
 #include "base/containers/map_util.h"
@@ -235,7 +234,7 @@ class ParseContext {
       return base::unexpected(ParseError(ParseErrorType::kInvalidType, {}));
     }
 
-    const base::Value::Dict& set_declaration = value.GetDict();
+    const base::DictValue& set_declaration = value.GetDict();
 
     // Confirm that the set has a primary, and the primary is a string.
     const base::Value* primary_item =
@@ -291,7 +290,7 @@ class ParseContext {
 
   // Returns the parsed sets if successful; otherwise returns the first error.
   base::expected<ParsedPolicySetsInfoForField, ParseError>
-  GetPolicySetsFromList(const base::Value::List* policy_sets,
+  GetPolicySetsFromList(const base::ListValue* policy_sets,
                         PolicySetType set_type) {
     if (!policy_sets) {
       return {};
@@ -439,7 +438,7 @@ class ParseContext {
   // subsets in this set, and from all other sets that have previously been
   // parsed.
   base::expected<void, ParseError> ParseSubset(
-      const base::Value::Dict& set_declaration,
+      const base::DictValue& set_declaration,
       const net::SchemefulSite& primary,
       const SubsetDescriptor& descriptor,
       std::vector<std::pair<net::SchemefulSite, net::FirstPartySetEntry>>&
@@ -490,11 +489,10 @@ class ParseContext {
   // Ignores any aliases provided for a representative site that is not in the
   // First-Party Set we're currently parsing/validating.
   base::expected<Aliases, ParseError> ParseCctlds(
-      const base::Value::Dict& set_declaration,
+      const base::DictValue& set_declaration,
       const std::vector<std::pair<net::SchemefulSite, net::FirstPartySetEntry>>&
           set_entries) const {
-    const base::Value::Dict* cctld_dict =
-        set_declaration.FindDict(kCCTLDsField);
+    const base::DictValue* cctld_dict = set_declaration.FindDict(kCCTLDsField);
     if (!cctld_dict) {
       return {};
     }
@@ -502,10 +500,10 @@ class ParseContext {
     std::vector<std::pair<net::SchemefulSite, net::SchemefulSite>> aliases;
     for (const auto [site, site_alias_list] : *cctld_dict) {
       net::SchemefulSite site_as_schemeful_site((GURL(site)));
-      if (!base::Contains(set_entries, site_as_schemeful_site,
-                          [](const auto& site_and_entry) {
-                            return site_and_entry.first;
-                          })) {
+      if (!std::ranges::contains(set_entries, site_as_schemeful_site,
+                                 [](const auto& site_and_entry) {
+                                   return site_and_entry.first;
+                                 })) {
         warnings_.push_back(ParseWarning(
             ParseWarningType::kCctldKeyNotCanonical, {kCCTLDsField, site}));
         continue;
@@ -521,7 +519,7 @@ class ParseContext {
         continue;
       }
 
-      const base::Value::List& site_aliases = site_alias_list.GetList();
+      const base::ListValue& site_aliases = site_alias_list.GetList();
       for (size_t i = 0; i < site_aliases.size(); ++i) {
         const ValidateSiteResult alias_result =
             ParseSiteAndValidate(site_aliases[i], set_entries);
@@ -568,7 +566,7 @@ class ParseContext {
 
     if (result.has_site()) {
       const net::SchemefulSite& site = result.site();
-      if (base::Contains(
+      if (std::ranges::contains(
               set_entries, site,
               &std::pair<net::SchemefulSite, net::FirstPartySetEntry>::first)) {
         if (result.modified_host()) {
@@ -730,7 +728,7 @@ net::GlobalFirstPartySets FirstPartySetParser::ParseSetsFromStream(
 
 FirstPartySetParser::PolicyParseResult
 FirstPartySetParser::ParseSetsFromEnterprisePolicy(
-    const base::Value::Dict& policy) {
+    const base::DictValue& policy) {
   ParseContext context(/*emit_errors=*/false, /*exempt_from_limits=*/true);
   auto set_lists = [&]() -> base::expected<MergedPolicySetLists,
                                            FirstPartySetsHandler::ParseError> {

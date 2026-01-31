@@ -52,7 +52,7 @@ bool IsPrimaryGaiaAccount(const GaiaId& gaia_id) {
 }
 
 bool IsPrefInitialized(PrefService* prefs) {
-  const base::Value::Dict& accounts =
+  const base::DictValue& accounts =
       prefs->GetDict(account_manager::prefs::kAccountAppsAvailability);
   return accounts.size() > 0;
 }
@@ -98,7 +98,7 @@ void CompleteGetAccountsAvailableInArc(
 
 base::flat_set<std::string> GetGaiaIdsAvailableInArc(PrefService* prefs) {
   base::flat_set<std::string> result;
-  const base::Value::Dict& accounts =
+  const base::DictValue& accounts =
       prefs->GetDict(account_manager::prefs::kAccountAppsAvailability);
 
   // See structure of `accounts` at the top of the file.
@@ -120,12 +120,11 @@ base::flat_set<std::string> GetGaiaIdsAvailableInArc(PrefService* prefs) {
 // `SetIsAccountAvailableInArc` wasn't called for this account yet).
 std::optional<bool> IsAccountAvailableInArc(PrefService* prefs,
                                             const GaiaId& gaia_id) {
-  const base::Value::Dict& accounts =
+  const base::DictValue& accounts =
       prefs->GetDict(account_manager::prefs::kAccountAppsAvailability);
 
   // See structure of `accounts` at the top of the file.
-  const base::Value::Dict* account_entry =
-      accounts.FindDict(gaia_id.ToString());
+  const base::DictValue* account_entry = accounts.FindDict(gaia_id.ToString());
   if (!account_entry)
     return std::nullopt;
 
@@ -154,7 +153,7 @@ void AddAccountToPrefs(PrefService* prefs,
   // Account shouldn't already exist.
   DCHECK(!IsAccountAvailableInArc(prefs, gaia_id).has_value());
 
-  base::Value::Dict account_entry;
+  base::DictValue account_entry;
   account_entry.Set(account_manager::prefs::kIsAvailableInArcKey,
                     base::Value(is_available_in_arc));
 
@@ -168,7 +167,7 @@ void UpdateAccountInPrefs(PrefService* prefs,
                           bool is_available_in_arc) {
   ScopedDictPrefUpdate update(prefs,
                               account_manager::prefs::kAccountAppsAvailability);
-  base::Value::Dict* account_entry = update->FindDict(gaia_id.ToString());
+  base::DictValue* account_entry = update->FindDict(gaia_id.ToString());
   DCHECK(account_entry);
 
   account_entry->Set(account_manager::prefs::kIsAvailableInArcKey,
@@ -388,7 +387,7 @@ void AccountAppsAvailability::InitAccountsAvailableInArcPref(
     if (account.key.account_type() != account_manager::AccountType::kGaia)
       continue;
 
-    base::Value::Dict account_entry;
+    base::DictValue account_entry;
     account_entry.Set(account_manager::prefs::kIsAvailableInArcKey, true);
 
     // Key: `account.key.id()` = Gaia ID

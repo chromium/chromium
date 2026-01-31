@@ -48,8 +48,9 @@ import org.chromium.base.InputHintChecker;
 import org.chromium.base.ObserverList;
 import org.chromium.base.TraceEvent;
 import org.chromium.base.metrics.RecordHistogram;
-import org.chromium.base.supplier.ObservableSupplier;
-import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.supplier.NonNullObservableSupplier;
+import org.chromium.base.supplier.ObservableSuppliers;
+import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.build.annotations.EnsuresNonNullIf;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -157,8 +158,8 @@ public class CompositorViewHolder extends FrameLayout
 
     // Tracks current aggregated state of if the compositor is in motion. This could be an ongoing
     // touch by the user, or a scroll that's in progress.
-    private final ObservableSupplierImpl<Boolean> mInMotionSupplier =
-            new ObservableSupplierImpl<>();
+    private final SettableNonNullObservableSupplier<Boolean> mInMotionSupplier =
+            ObservableSuppliers.createNonNull(false);
 
     private boolean mIsKeyboardShowing;
     private boolean mNativeInitialized;
@@ -368,8 +369,26 @@ public class CompositorViewHolder extends FrameLayout
 
     private PrefService mPrefService;
 
+    /**
+     * A method Android calls every time the mouse moves.
+     *
+     * @param event contains type (Down, Move, Hover), coordinates, and input device (Mouse, finger)
+     * @param pointerIndex index 0 = mouse (or first finger), index 1 = (second finger)
+     */
     @Override
     public @Nullable PointerIcon onResolvePointerIcon(MotionEvent event, int pointerIndex) {
+
+        if (mView != null
+                && mView.getVisibility() == View.VISIBLE
+                && ChromeFeatureList.sAndroidBookmarkBarFastFollow.isEnabled()) {
+
+            // Delegate to standard Android behavior (View Group). This internally loops through the
+            // children of the CompositorViewHolder and calculates the correct offsets.
+            PointerIcon icon = super.onResolvePointerIcon(event, pointerIndex);
+            if (icon != null) return icon;
+        }
+
+        // Fallback: check the current tab's web contents (the actual website being rendered).
         View activeView = getContentView();
         if (activeView == null || !ViewCompat.isAttachedToWindow(activeView)) return null;
         return activeView.onResolvePointerIcon(event, pointerIndex);
@@ -656,6 +675,14 @@ public class CompositorViewHolder extends FrameLayout
 
     /** Should be called for cleanup when the CompositorView instance is no longer used. */
     public void shutDown() {
+        if (mSystemUiFullscreenResizeRunnable != null) {
+            assumeNonNull(getHandler()).removeCallbacks(mSystemUiFullscreenResizeRunnable);
+        }
+
+        if (mBrowserControlsManager != null) {
+            mBrowserControlsManager.removeObserver(this);
+        }
+
         setTab(null);
         if (mApplicationBottomInsetSupplier != null) {
             assert mOnViewportInsetsChanged != null;
@@ -801,7 +828,7 @@ public class CompositorViewHolder extends FrameLayout
      * and clients that have expensive operations may consider deferring until after the motion is
      * over.
      */
-    public ObservableSupplier<Boolean> getInMotionSupplier() {
+    public NonNullObservableSupplier<Boolean> getInMotionSupplier() {
         return mInMotionSupplier;
     }
 
@@ -962,8 +989,7 @@ public class CompositorViewHolder extends FrameLayout
 
         int keyboardInset =
                 mApplicationBottomInsetSupplier != null
-                        ? assumeNonNull(mApplicationBottomInsetSupplier.getInsets())
-                                .webContentsHeightInset
+                        ? mApplicationBottomInsetSupplier.getInsets().webContentsHeightInset
                         : 0;
 
         int viewportInsets = controlsInsets + keyboardInset;
@@ -1075,13 +1101,18 @@ public class CompositorViewHolder extends FrameLayout
 
     /** Called whenever the host activity is started. */
     public void onStart() {
-        if (mBrowserControlsManager != null) mBrowserControlsManager.addObserver(this);
+        if (mBrowserControlsManager != null) {
+            mBrowserControlsManager.addObserver(this);
+        }
         requestRender();
     }
 
     /** Called whenever the host activity is stopped. */
     public void onStop() {
-        if (mBrowserControlsManager != null) mBrowserControlsManager.removeObserver(this);
+        if (mBrowserControlsManager != null
+                && !ChromeFeatureList.sBrowserControlsPersistsOnCvh.isEnabled()) {
+            mBrowserControlsManager.removeObserver(this);
+        }
     }
 
     @Override
@@ -1103,9 +1134,7 @@ public class CompositorViewHolder extends FrameLayout
 
         // TODO(crbug.com/415825206): Revisit when requestNewFrame is set to true, it currently
         // depends on the controls' hidden ratio, but I don't think that's right.
-        boolean scrollingWithBciv =
-                ChromeFeatureList.sBrowserControlsInViz.isEnabled()
-                        && (mInGesture || mContentViewScrolling);
+        boolean scrollingWithBciv = mInGesture || mContentViewScrolling;
         if ((requestNewFrame || topControlsMinHeightChanged || bottomControlsMinHeightChanged)
                 && !scrollingWithBciv) {
             requestRender();
@@ -1255,9 +1284,7 @@ public class CompositorViewHolder extends FrameLayout
         getWindowViewport(outRect);
 
         if (mApplicationBottomInsetSupplier != null) {
-            outRect.bottom -=
-                    assumeNonNull(mApplicationBottomInsetSupplier.getInsets())
-                            .viewVisibleHeightInset;
+            outRect.bottom -= mApplicationBottomInsetSupplier.getInsets().viewVisibleHeightInset;
         }
 
         // mApplicationBottomInsetSupplier doesn't include browser controls.
@@ -1274,9 +1301,7 @@ public class CompositorViewHolder extends FrameLayout
         getWindowViewport(outRect);
 
         if (mApplicationBottomInsetSupplier != null) {
-            outRect.bottom -=
-                    assumeNonNull(mApplicationBottomInsetSupplier.getInsets())
-                            .viewVisibleHeightInset;
+            outRect.bottom -= mApplicationBottomInsetSupplier.getInsets().viewVisibleHeightInset;
         }
 
         // mApplicationBottomInsetSupplier doesn't include browser controls.
@@ -1452,7 +1477,7 @@ public class CompositorViewHolder extends FrameLayout
     public void onFinishNativeInitialization(
             TabModelSelector tabModelSelector,
             TabCreatorManager tabCreatorManager,
-            ObservableSupplier<Integer> bottomControlsOffsetSupplier) {
+            NonNullObservableSupplier<Integer> bottomControlsOffsetSupplier) {
         assert mLayoutManager != null;
         assert mTopUiThemeColorProvider != null;
         mLayoutManager.init(

@@ -4,7 +4,6 @@
 
 #include "chrome/browser/web_applications/jobs/uninstall/remove_install_url_job.h"
 
-#include "base/containers/contains.h"
 #include "base/strings/to_string.h"
 #include "base/values.h"
 #include "chrome/browser/web_applications/jobs/uninstall/remove_install_source_job.h"
@@ -43,7 +42,7 @@ MatchingWebAppResult FindMatchingWebApp(
     }
 
     const base::flat_set<GURL>& install_urls = map_it->second.install_urls;
-    if (!base::Contains(install_urls, install_url)) {
+    if (!install_urls.contains(install_url)) {
       return {};
     }
 
@@ -59,7 +58,7 @@ MatchingWebAppResult FindMatchingWebApp(
     auto it = config_map.find(install_source);
     if (it != config_map.end()) {
       const base::flat_set<GURL>& install_urls = it->second.install_urls;
-      if (base::Contains(install_urls, install_url)) {
+      if (install_urls.contains(install_url)) {
         return {
             .app = &candidate_app,
             .is_only_install_url = install_urls.size() == 1u,
@@ -76,7 +75,7 @@ MatchingWebAppResult FindMatchingWebApp(
 RemoveInstallUrlJob::RemoveInstallUrlJob(
     webapps::WebappUninstallSource uninstall_source,
     Profile& profile,
-    base::Value::Dict& debug_value,
+    base::DictValue& debug_value,
     std::optional<webapps::AppId> app_id,
     WebAppManagement::Type install_source,
     GURL install_url)

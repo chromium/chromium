@@ -142,7 +142,7 @@ class CONTENT_EXPORT TrustedSignalsKVv2RequestHelperBuilder {
 
     // Valid keys are "experimentGroupId", "slotSize", and
     // "allSlotsRequestedSizes".
-    base::Value::Dict additional_params;
+    base::DictValue additional_params;
   };
 
   // A map of partition IDs to partition to indicate a compression group.

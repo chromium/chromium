@@ -138,10 +138,10 @@ float HDRMetadata::GetContentMaxLuminance(const HDRMetadata& metadata) {
 float HDRMetadata::GetWaylandReferenceLuminance(
     const ColorSpace& color_space,
     const HDRMetadata& hdr_metadata) {
-  if (HdrMetadataAgtm::IsEnabled()) {
-    if (auto agtm_parsed =
-            skhdr::Agtm::Make(hdr_metadata.getSerializedAgtm())) {
-      return agtm_parsed->getHdrReferenceWhite();
+  if (HdrMetadataAgtm::IsEnabled() && hdr_metadata.agtm_) {
+    skhdr::AdaptiveGlobalToneMap agtm;
+    if (agtm.parse(hdr_metadata.agtm_.get())) {
+      return agtm.fHdrReferenceWhite;
     }
   }
 

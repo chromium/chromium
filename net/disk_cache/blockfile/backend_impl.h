@@ -15,6 +15,8 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/timer/timer.h"
+#include "base/types/expected.h"
+#include "net/base/net_errors.h"
 #include "net/base/net_export.h"
 #include "net/disk_cache/blockfile/block_files.h"
 #include "net/disk_cache/blockfile/disk_format.h"
@@ -273,8 +275,8 @@ class NET_EXPORT_PRIVATE BackendImpl : public Backend {
   static void FlushAsynchronouslyForTesting(base::OnceClosure callback);
 
   // Backend implementation.
-  int32_t GetEntryCount(
-      net::Int32CompletionOnceCallback callback) const override;
+  base::expected<int32_t, net::Error> GetEntryCount(
+      GetEntryCountCallback callback) const override;
   EntryResult OpenOrCreateEntry(const std::string& key,
                                 net::RequestPriority request_priority,
                                 EntryResultCallback callback) override;

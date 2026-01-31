@@ -4,12 +4,12 @@
 
 #include "components/viz/host/host_frame_sink_manager.h"
 
+#include <algorithm>
 #include <cstddef>
 #include <optional>
 #include <utility>
 #include <vector>
 
-#include "base/containers/contains.h"
 #include "base/debug/crash_logging.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
@@ -211,6 +211,13 @@ void HostFrameSinkManager::CreateRootCompositorFrameSink(
       std::make_unique<HitTestQuery>(std::nullopt);
 }
 
+#if BUILDFLAG(IS_MAC)
+void HostFrameSinkManager::CreateCompositorDisplayLink(
+    mojom::CompositorDisplayLinkParamsPtr params) {
+  frame_sink_manager_->CreateCompositorDisplayLink(std::move(params));
+}
+#endif
+
 void HostFrameSinkManager::CreateCompositorFrameSink(
     const FrameSinkId& frame_sink_id,
     mojo::PendingReceiver<mojom::CompositorFrameSink> receiver,
@@ -290,7 +297,7 @@ bool HostFrameSinkManager::RegisterFrameSinkHierarchy(
   }
 
   FrameSinkData& parent_data = iter->second;
-  CHECK(!base::Contains(parent_data.children, child_frame_sink_id));
+  CHECK(!std::ranges::contains(parent_data.children, child_frame_sink_id));
   parent_data.children.push_back(child_frame_sink_id);
 
   // Register and store the parent.
@@ -347,9 +354,10 @@ void HostFrameSinkManager::EvictSurfaces(
 void HostFrameSinkManager::RequestCopyOfOutput(
     const SurfaceId& surface_id,
     std::unique_ptr<CopyOutputRequest> request,
-    bool capture_exact_surface_id) {
+    bool capture_exact_surface_id,
+    base::TimeDelta timeout) {
   frame_sink_manager_->RequestCopyOfOutput(surface_id, std::move(request),
-                                           capture_exact_surface_id);
+                                           capture_exact_surface_id, timeout);
 }
 
 void HostFrameSinkManager::SetupRenderInputRouterDelegateConnection(

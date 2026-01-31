@@ -13,7 +13,7 @@
 #include "components/autofill/core/browser/payments/payments_requests/payments_request.h"
 
 namespace base {
-class Value;
+class DictValue;
 }  // namespace base
 
 namespace autofill::payments {
@@ -33,7 +33,7 @@ class OptChangeRequest : public PaymentsRequest {
   std::string GetRequestUrlPath() override;
   std::string GetRequestContentType() override;
   std::string GetRequestContent() override;
-  void ParseResponse(const base::Value::Dict& response) override;
+  void ParseResponse(const base::DictValue& response) override;
   bool IsResponseComplete() override;
   void RespondToDelegate(
       PaymentsAutofillClient::PaymentsRpcResult result) override;

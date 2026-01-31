@@ -204,7 +204,7 @@ class VIZ_HOST_EXPORT GpuHostImpl : public mojom::GpuHost,
 #if BUILDFLAG(USE_VIZ_DEBUGGER)
   // Command as a Json string that the visual debugging instance interprets as
   // stream filtering.
-  void FilterVisualDebugStream(base::Value::Dict filter_data);
+  void FilterVisualDebugStream(base::DictValue filter_data);
 
   // Establishes the connection between the visual debugging instance and the
   // output stream.
@@ -293,6 +293,7 @@ class VIZ_HOST_EXPORT GpuHostImpl : public mojom::GpuHost,
   void EnsureWebNNExecutionProvidersReady(
       EnsureWebNNExecutionProvidersReadyCallback cb) override;
 #endif
+  void CreateWebNNWeightsFile(CreateWebNNWeightsFileCallback cb) override;
 
   // mojom::GpuLogging:
   void RecordLogMessage(int32_t severity,

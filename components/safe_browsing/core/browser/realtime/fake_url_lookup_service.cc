@@ -19,7 +19,8 @@ FakeRealTimeUrlLookupService::FakeRealTimeUrlLookupService()
           /*referrer_chain_provider=*/nullptr,
           /*token_fetcher=*/nullptr,
           /*pref_service=*/nullptr,
-          /*webui_delegate=*/nullptr) {}
+          /*webui_delegate=*/nullptr,
+          /*intelligent_scan_delegate=*/nullptr) {}
 
 bool FakeRealTimeUrlLookupService::CanPerformFullURLLookup() const {
   return true;

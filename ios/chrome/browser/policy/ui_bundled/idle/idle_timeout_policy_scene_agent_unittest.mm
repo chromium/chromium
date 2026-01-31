@@ -19,8 +19,8 @@
 #import "ios/chrome/browser/shared/model/browser/browser_provider.h"
 #import "ios/chrome/browser/shared/model/browser/browser_provider_interface.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
-#import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
+#import "ios/chrome/browser/shared/public/commands/scene_commands.h"
 #import "ios/chrome/browser/shared/public/commands/settings_commands.h"
 #import "ios/chrome/browser/shared/public/commands/snackbar_commands.h"
 #import "ios/web/public/test/web_task_environment.h"
@@ -73,7 +73,7 @@ class IdleTimeoutPolicySceneAgentTest : public PlatformTest {
     // Setyp idle timeout policies.
     PrefService* prefs = profile_->GetPrefs();
     prefs->SetTimeDelta(enterprise_idle::prefs::kIdleTimeout, base::Minutes(1));
-    base::Value::List actions;
+    base::ListValue actions;
     actions.Append(
         static_cast<int>(enterprise_idle::ActionType::kClearBrowsingHistory));
     // Set the `IdleTimeoutActions` policy. This is needed for the snackbar
@@ -117,7 +117,7 @@ class IdleTimeoutPolicySceneAgentTest : public PlatformTest {
     // Create mock command handlers. These are just for initializing the view
     // controller; because the handlers are local to this methdd, they will not
     // exist during tests, so if the tests call any commands they will fail.
-    mock_application_handler_ = OCMProtocolMock(@protocol(ApplicationCommands));
+    mock_application_handler_ = OCMProtocolMock(@protocol(SceneCommands));
     mock_settings_handler_ = OCMProtocolMock(@protocol(SettingsCommands));
     mock_snackbar_handler_ = OCMProtocolMock(@protocol(SnackbarCommands));
 
@@ -125,18 +125,16 @@ class IdleTimeoutPolicySceneAgentTest : public PlatformTest {
     [dispatcher startDispatchingToTarget:mock_snackbar_handler_
                              forProtocol:@protocol(SnackbarCommands)];
     [dispatcher startDispatchingToTarget:mock_application_handler_
-                             forProtocol:@protocol(ApplicationCommands)];
+                             forProtocol:@protocol(SceneCommands)];
     [dispatcher startDispatchingToTarget:mock_settings_handler_
                              forProtocol:@protocol(SettingsCommands)];
 
     agent_ = [[IdleTimeoutPolicySceneAgent alloc]
-           initWithSceneUIProvider:fake_provider
-        applicationCommandsHandler:HandlerForProtocol(dispatcher,
-                                                      ApplicationCommands)
-           snackbarCommandsHandler:HandlerForProtocol(dispatcher,
-                                                      SnackbarCommands)
-                       idleService:idle_service_.get()
-                       mainBrowser:browser];
+        initWithSceneUIProvider:fake_provider
+                   sceneHandler:HandlerForProtocol(dispatcher, SceneCommands)
+        snackbarCommandsHandler:HandlerForProtocol(dispatcher, SnackbarCommands)
+                    idleService:idle_service_.get()
+                    mainBrowser:browser];
 
     agent_.sceneState = scene_state_;
     [agent_ sceneStateDidEnableUI:scene_state_];

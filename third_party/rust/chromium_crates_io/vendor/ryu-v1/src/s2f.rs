@@ -57,7 +57,7 @@ pub fn s2f(buffer: &[u8]) -> Result<f32, Error> {
         i += 1;
     }
 
-    if let Some(b'e') | Some(b'E') = buffer.get(i) {
+    if let Some(b'e' | b'E') = buffer.get(i) {
         e_index = i;
         i += 1;
         match buffer.get(i) {

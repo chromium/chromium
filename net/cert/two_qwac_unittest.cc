@@ -33,7 +33,7 @@ TEST(ParseTlsCertificateBinding, MaximalValidBinding) {
   // Set all of the optional fields in the header.
   binding_builder.SetHeaderOverrides(
       base::DictValue()
-          .Set("kid", base::Value::Dict()
+          .Set("kid", base::DictValue()
                           .Set("random key", "random value")
                           .Set("kids can have", "whatever they want"))
           .Set("x5t#S256", "base64urlhashA")
@@ -41,7 +41,7 @@ TEST(ParseTlsCertificateBinding, MaximalValidBinding) {
           .Set("exp", 67.89)
           .Set("crit", base::ListValue().Append("sigD"))
           .Set("sigD",
-               base::DictValue().Set("ctys", base::Value::List()
+               base::DictValue().Set("ctys", base::ListValue()
                                                  .Append("content-type1")
                                                  .Append("content-type2"))));
   std::string jws = binding_builder.GetJWS();

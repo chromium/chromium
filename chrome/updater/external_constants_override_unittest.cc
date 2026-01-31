@@ -23,7 +23,7 @@ class ExternalConstantsOverriderTest : public ::testing::Test {};
 
 TEST_F(ExternalConstantsOverriderTest, TestEmptyDictValue) {
   auto overrider = base::MakeRefCounted<ExternalConstantsOverrider>(
-      base::Value::Dict(), CreateDefaultExternalConstants());
+      base::DictValue(), CreateDefaultExternalConstants());
 
   EXPECT_TRUE(overrider->UseCUP());
 
@@ -44,11 +44,11 @@ TEST_F(ExternalConstantsOverriderTest, TestEmptyDictValue) {
 }
 
 TEST_F(ExternalConstantsOverriderTest, TestFullOverrides) {
-  base::Value::Dict overrides;
-  base::Value::List url_list;
+  base::DictValue overrides;
+  base::ListValue url_list;
   url_list.Append("https://localhost/1/www");
   url_list.Append("https://localhost/2/www");
-  base::Value::Dict dict_policies;
+  base::DictValue dict_policies;
   dict_policies.Set("a", 1);
   dict_policies.Set("b", 2);
 
@@ -90,7 +90,7 @@ TEST_F(ExternalConstantsOverriderTest, TestFullOverrides) {
 }
 
 TEST_F(ExternalConstantsOverriderTest, TestOverrideUnwrappedURL) {
-  base::Value::Dict overrides;
+  base::DictValue overrides;
   overrides.Set(kDevOverrideKeyUrl, "https://localhost/1/www");
   auto overrider = base::MakeRefCounted<ExternalConstantsOverrider>(
       std::move(overrides), CreateDefaultExternalConstants());

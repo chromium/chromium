@@ -21,15 +21,15 @@ void NetLogSocketError(const NetLogWithSource& net_log,
                        int os_error);
 
 // Creates a NetLog parameters for a HostPortPair.
-base::Value::Dict CreateNetLogHostPortPairParams(
+base::DictValue CreateNetLogHostPortPairParams(
     const HostPortPair* host_and_port);
 
 // Creates a NetLog parameters for an IPEndPoint.
-base::Value::Dict CreateNetLogIPEndPointParams(const IPEndPoint* address);
+base::DictValue CreateNetLogIPEndPointParams(const IPEndPoint* address);
 
 // Creates a NetLog parameters for the local and remote IPEndPoints on connect
 // events.
-base::Value::Dict CreateNetLogAddressPairParams(
+base::DictValue CreateNetLogAddressPairParams(
     const net::IPEndPoint& local_address,
     const net::IPEndPoint& remote_address);
 

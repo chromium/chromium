@@ -84,9 +84,9 @@ void MultipartDriveUploader::OnContentRead(mojo_base::BigBuffer buffer) {
   const GURL url = net::AppendOrReplaceQueryParameter(
       GURL(kDriveUploadUrl), kUploadTypeQueryParameterKey,
       kMultiPartUploadType);
-  base::Value::Dict metadata_dict;
+  base::DictValue metadata_dict;
   metadata_dict.Set("name", title_);
-  metadata_dict.Set("parents", base::Value::List().Append(parent_folder_->id));
+  metadata_dict.Set("parents", base::ListValue().Append(parent_folder_->id));
 
   const std::string boundary = net::GenerateMimeMultipartBoundary();
   const std::string request_body =

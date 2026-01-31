@@ -82,8 +82,8 @@ class GinJavaBridgeDispatcherHost
   void OnInvokeMethod(const GlobalRenderFrameHostId& routing_id,
                       GinJavaBoundObject::ObjectID object_id,
                       const std::string& method_name,
-                      const base::Value::List& arguments,
-                      base::Value::List* result,
+                      const base::ListValue& arguments,
+                      base::ListValue* result,
                       mojom::GinJavaBridgeError* error_code);
   void OnObjectWrapperDeleted(const GlobalRenderFrameHostId& routing_id,
                               GinJavaBoundObject::ObjectID object_id);
@@ -99,7 +99,7 @@ class GinJavaBridgeDispatcherHost
   void HasMethod(const std::string& method_name,
                  HasMethodCallback callback) override;
   void InvokeMethod(const std::string& method_name,
-                    base::Value::List arguments,
+                    base::ListValue arguments,
                     InvokeMethodCallback callback) override;
 
  private:

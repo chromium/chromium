@@ -12,8 +12,8 @@
 
 namespace performance_manager::execution_context_priority {
 
-// This voter casts a TaskPriority::USER_BLOCKING vote to all frames that are
-// part of a loading page. This makes switching to a loading tab faster.
+// This voter casts a Process::Priority::kUserBlocking vote to all frames that
+// are part of a loading page. This makes switching to a loading tab faster.
 // Note: This FrameNodeObserver can affect the initial priority of a frame and
 // thus uses `OnBeforeFrameNodeAdded`.
 class LoadingPageVoter : public PriorityVoter,

@@ -60,7 +60,9 @@ class MockVisitor : public WebTransportClientVisitor {
   MOCK_METHOD(void, OnConnectionFailed, (const WebTransportError&), (override));
   MOCK_METHOD(void,
               OnLocalNetworkAccessCheck,
-              (const IPEndPoint&, CompletionOnceCallback callback),
+              (const IPEndPoint&,
+               const NetLogWithSource&,
+               CompletionOnceCallback callback),
               (override));
   MOCK_METHOD(void, OnBeforeConnect, (const IPEndPoint&), (override));
   MOCK_METHOD(void,
@@ -142,8 +144,8 @@ class DedicatedWebTransportHttp3Test : public TestWithTaskEnvironment {
             run_loop_->Quit();
           }
         });
-    ON_CALL(visitor_, OnLocalNetworkAccessCheck(_, _))
-        .WillByDefault(InvokeCallbackArgument<1, CompletionOnceCallback>(OK));
+    ON_CALL(visitor_, OnLocalNetworkAccessCheck(_, _, _))
+        .WillByDefault(InvokeCallbackArgument<2, CompletionOnceCallback>(OK));
   }
 
   // Use a URLRequestContextBuilder to set `context_`.
@@ -247,7 +249,7 @@ TEST_F(DedicatedWebTransportHttp3Test, ConnectLocalNetworkAccessCheckFail) {
       WebTransportParameters());
 
   EXPECT_CALL(visitor_, OnLocalNetworkAccessCheck)
-      .WillOnce(InvokeCallbackArgument<1, CompletionOnceCallback>(
+      .WillOnce(InvokeCallbackArgument<2, CompletionOnceCallback>(
           ERR_BLOCKED_BY_LOCAL_NETWORK_ACCESS_CHECKS));
 
   WebTransportError error;

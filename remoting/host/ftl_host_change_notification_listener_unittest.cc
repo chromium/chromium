@@ -52,7 +52,7 @@ class FtlHostChangeNotificationListenerTest : public testing::Test {
   FtlHostChangeNotificationListenerTest()
       : signal_strategy_(SignalingAddress(kTestJid)),
         system_sender_address_(
-            SignalingAddress::CreateSystemAddress(kSystemSenderId)),
+            SignalingAddress::CreateFtlSystemAddress(kSystemSenderId)),
         peer_sender_address_(SignalingAddress::CreateFtlSignalingAddress(
             kPeerSenderId,
             "fake_registration_id")) {}

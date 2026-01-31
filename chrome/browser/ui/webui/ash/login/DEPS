@@ -51,7 +51,6 @@ include_rules = [
   "+chrome/browser/ui/webui/ash/multidevice_setup",
   "+chrome/browser/ui/webui/metrics_handler.h",
   "+chrome/browser/ui/webui/signin",
-  "+chrome/browser/ui/webui/test_files_request_filter.h",
   "+chrome/browser/ui/webui/theme_source.h",
   "+chrome/common",
   "+chrome/grit",

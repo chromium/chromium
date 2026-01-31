@@ -5,7 +5,6 @@
 package org.chromium.chrome.browser.ntp_customization;
 
 import static org.chromium.build.NullUtil.assumeNonNull;
-import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationCoordinator.BottomSheetType.CHROME_COLORS;
 import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationCoordinator.BottomSheetType.SINGLE_THEME_COLLECTION;
 import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationCoordinator.BottomSheetType.THEME_COLLECTIONS;
 
@@ -14,7 +13,9 @@ import android.view.View;
 
 import androidx.recyclerview.widget.RecyclerView;
 
-import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.supplier.NonNullObservableSupplier;
+import org.chromium.base.supplier.ObservableSuppliers;
+import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
@@ -30,7 +31,8 @@ public class NtpCustomizationBottomSheetContent implements BottomSheetContent {
     private final View mContentView;
     private final Runnable mBackPressRunnable;
     private final Runnable mOnDestroyRunnable;
-    private ObservableSupplierImpl<Boolean> mBackPressStateChangedSupplier;
+    private final SettableNonNullObservableSupplier<Boolean> mBackPressStateChangedSupplier =
+            ObservableSuppliers.createNonNull(false);
     private Supplier<@Nullable Integer> mCurrentBottomSheetTypeSupplier;
     private final Supplier<Integer> mContainerHeightSupplier;
     private final Supplier<Integer> mMaxSheetWidthSupplier;
@@ -47,7 +49,6 @@ public class NtpCustomizationBottomSheetContent implements BottomSheetContent {
         mContainerHeightSupplier = containerHeightSupplier;
         mMaxSheetWidthSupplier = maxSheetWidthSupplier;
         mBackPressRunnable = backPressRunnable;
-        mBackPressStateChangedSupplier = new ObservableSupplierImpl<>();
         mOnDestroyRunnable = onDestroy;
         mCurrentBottomSheetTypeSupplier = currentBottomSheetTypeSupplier;
         mNtpCustomizationBottomSheetBottomPadding =
@@ -144,7 +145,7 @@ public class NtpCustomizationBottomSheetContent implements BottomSheetContent {
     }
 
     @Override
-    public ObservableSupplierImpl<Boolean> getBackPressStateChangedSupplier() {
+    public NonNullObservableSupplier<Boolean> getBackPressStateChangedSupplier() {
         return mBackPressStateChangedSupplier;
     }
 
@@ -172,14 +173,14 @@ public class NtpCustomizationBottomSheetContent implements BottomSheetContent {
         return R.string.ntp_customization_main_bottom_sheet_closed;
     }
 
-    /** Sets up ObservableSupplierImpl<Boolean> when opening the bottom sheet. */
+    /** Sets up the supplier when opening the bottom sheet. */
     void onSheetOpened() {
         // Sets the value in the supplier to true to indicate that back press should be handled by
         // the bottom sheet.
         mBackPressStateChangedSupplier.set(true);
     }
 
-    /** Sets up ObservableSupplierImpl<Boolean> when closing the bottom sheet. */
+    /** Sets up the supplier when closing the bottom sheet. */
     void onSheetClosed() {
         // Sets the value in the supplier to false to indicate that back press should not be handled
         // by the bottom sheet.
@@ -206,13 +207,7 @@ public class NtpCustomizationBottomSheetContent implements BottomSheetContent {
                         View.MeasureSpec.AT_MOST);
         mContentView.measure(widthSpec, heightSpec);
 
-        Integer bottomSheetType = mCurrentBottomSheetTypeSupplier.get();
-        View viewToPad = recyclerView;
-        if (bottomSheetType != null && bottomSheetType == CHROME_COLORS) {
-            viewToPad = mContentView.findViewById(R.id.chrome_colors_recycler_view_container);
-        }
-
-        float viewBottom = viewToPad.getBottom();
+        float viewBottom = recyclerView.getBottom();
         if (viewBottom == 0) {
             return RECYCLER_VIEW_INVALID_HEIGHT;
         }
@@ -222,10 +217,10 @@ public class NtpCustomizationBottomSheetContent implements BottomSheetContent {
         if (viewBottom > maxHeight) {
             viewBottomPadding = (int) Math.ceil(viewBottom - maxHeight);
         }
-        viewToPad.setPaddingRelative(
-                viewToPad.getPaddingStart(),
-                viewToPad.getPaddingTop(),
-                viewToPad.getPaddingEnd(),
+        recyclerView.setPaddingRelative(
+                recyclerView.getPaddingStart(),
+                recyclerView.getPaddingTop(),
+                recyclerView.getPaddingEnd(),
                 viewBottomPadding);
 
         mContentView.measure(widthSpec, heightSpec);
@@ -255,14 +250,8 @@ public class NtpCustomizationBottomSheetContent implements BottomSheetContent {
             return mContentView.findViewById(R.id.theme_collections_recycler_view);
         } else if (bottomSheetType == SINGLE_THEME_COLLECTION) {
             return mContentView.findViewById(R.id.single_theme_collection_recycler_view);
-        } else if (bottomSheetType == CHROME_COLORS) {
-            return mContentView.findViewById(R.id.chrome_colors_recycler_view);
         }
         return null;
-    }
-
-    void setBackPressStateChangedSupplierForTesting(ObservableSupplierImpl<Boolean> supplier) {
-        mBackPressStateChangedSupplier = supplier;
     }
 
     void setCurrentBottomSheetTypeSupplierForTesting(Supplier<@Nullable Integer> supplier) {

@@ -9,19 +9,17 @@ found in the LICENSE file.
   xmlns:app="http://schemas.android.com/apk/res-auto"
   xmlns:tools="http://schemas.android.com/tools"
   android:id="@+id/download_search_bar"
+  android:orientation="vertical"
   android:layout_width="match_parent"
-  android:layout_height="wrap_content"
-  android:orientation="horizontal"
-  android:gravity="center_vertical"
-  android:background="@drawable/download_search_bar_background">
+  android:layout_height="40dp"
+  android:layout_marginStart="@dimen/search_box_embedder_margin_horizontal"
+  android:layout_marginBottom="2dp"
+  android:paddingStart="16dp"
+  android:background="@drawable/search_row_modern_bg">
 
-  <Space
-    android:layout_width="16dp"
-    android:layout_height="wrap_content" />
-
-  <include layout="@layout/search_toolbar"
-    android:layout_width="0dp"
-    android:layout_height="wrap_content"
-    android:layout_weight="1"
+  <include
+    layout="@layout/search_toolbar"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
     android:visibility="visible" />
 </LinearLayout>

@@ -9,7 +9,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
@@ -147,7 +146,7 @@ void FakeUsbDevice::ClaimInterface(uint8_t interface_number,
   }
 
   for (const auto& alternate : (*interface_it)->alternates) {
-    if (base::Contains(blocked_interface_classes_, alternate->class_code)) {
+    if (blocked_interface_classes_.contains(alternate->class_code)) {
       std::move(callback).Run(mojom::UsbClaimInterfaceResult::kProtectedClass);
       return;
     }

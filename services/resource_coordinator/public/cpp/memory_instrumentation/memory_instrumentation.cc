@@ -7,7 +7,7 @@
 #include <atomic>
 
 #include "base/functional/bind.h"
-#include "services/resource_coordinator/public/mojom/memory_instrumentation/memory_instrumentation.mojom-data-view.h"
+#include "services/resource_coordinator/public/mojom/memory_instrumentation/memory_instrumentation.mojom-shared.h"
 
 namespace memory_instrumentation {
 namespace {

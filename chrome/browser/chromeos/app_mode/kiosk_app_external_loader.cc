@@ -45,7 +45,7 @@ void KioskAppExternalLoader::SetPrefsChangedHandler(
   }
 }
 
-void KioskAppExternalLoader::SendPrefs(base::Value::Dict prefs) {
+void KioskAppExternalLoader::SendPrefs(base::DictValue prefs) {
   const bool initial_load = state_ == State::kLoading;
   state_ = State::kLoaded;
 

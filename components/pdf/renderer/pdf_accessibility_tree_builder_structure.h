@@ -5,11 +5,13 @@
 #ifndef COMPONENTS_PDF_RENDERER_PDF_ACCESSIBILITY_TREE_BUILDER_STRUCTURE_H_
 #define COMPONENTS_PDF_RENDERER_PDF_ACCESSIBILITY_TREE_BUILDER_STRUCTURE_H_
 
+#include <optional>
+
 #include "base/containers/span.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
 #include "pdf/accessibility_structs.h"
-#include "ui/accessibility/ax_enums.mojom-data-view.h"
+#include "ui/accessibility/ax_enums.mojom-shared.h"
 
 namespace chrome_pdf {
 struct AccessibilityStructureElement;
@@ -75,6 +77,18 @@ class PdfAccessibilityTreeBuilderStructure {
   ui::AXNodeData* CreateNodeWithImageContent(
       ui::AXNodeData* parent_node,
       const chrome_pdf::AccessibilityImageInfo& image_info);
+
+  // If there are any unassociated text runs (those not linked to any structure
+  // element) at the beginning of the document (before any structured content),
+  // create a single paragraph node containing the unassociated text runs.
+  void InsertUnassociatedTextRunsAtStart();
+
+  // Given an index into the `builder_->text_runs()` array, return an
+  // unassociated text range that begins in that index, if it exists. This is
+  // used to interleave unassociated text ranges with text ranges associated
+  // with structure tree content.
+  std::optional<chrome_pdf::UnassociatedTextRunRange>
+  FindUnassociatedTextRunRangeAtIndex(size_t range_start);
 
   raw_ref<PdfAccessibilityTreeBuilder> builder_;
   const raw_ptr<const chrome_pdf::AccessibilityStructureElement>

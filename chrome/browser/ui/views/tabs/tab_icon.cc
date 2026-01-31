@@ -25,6 +25,8 @@
 #include "chrome/common/webui_url_constants.h"
 #include "components/feature_engagement/public/feature_constants.h"
 #include "components/grit/components_scaled_resources.h"
+#include "components/performance_manager/public/user_tuning/prefs.h"
+#include "components/prefs/pref_service.h"
 #include "content/public/common/url_constants.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/resource/resource_bundle.h"
@@ -100,9 +102,8 @@ TabIcon::TabIcon()
   SetCanProcessEventsWithinSubtree(false);
 
   // Add padding to avoid clipping the attention indicator and the increased
-  // discard ring radius when kDiscardRingImprovements is enabled. Padding must
-  // be symmetric on each side so that elements will anchor to the center of the
-  // favicon.
+  // discard ring radius. Padding must be symmetric on each side so that
+  // elements will anchor to the center of the favicon.
   SetBorder(views::CreateEmptyBorder(kAttentionIndicatorRadius));
 
   const int preferred_width = gfx::kFaviconSize + GetInsets().width();
@@ -112,6 +113,13 @@ TabIcon::TabIcon()
   DCHECK(!GetShowingLoadingAnimation());
 
   SetProperty(views::kElementIdentifierKey, kTabIconElementId);
+
+  local_state_registrar_.Init(g_browser_process->local_state());
+  local_state_registrar_.Add(
+      performance_manager::user_tuning::prefs::kDiscardRingTreatmentEnabled,
+      base::BindRepeating(&TabIcon::OnDiscardRingTreatmentEnabledChanged,
+                          base::Unretained(this)));
+  OnDiscardRingTreatmentEnabledChanged();
 }
 
 TabIcon::~TabIcon() = default;
@@ -123,7 +131,7 @@ void TabIcon::SetData(const TabRendererData& data) {
   is_monochrome_favicon_ = data.is_monochrome_favicon;
   SetIcon(data.favicon, data.should_themify_favicon);
   SetNetworkState(data.network_state);
-  SetCrashed(data.IsCrashed());
+  SetCrashed(data.is_crashed);
   SetDiscarded(data.should_show_discard_status);
   has_tab_renderer_data_ = true;
 
@@ -192,14 +200,20 @@ void TabIcon::StepLoadingAnimation(const base::TimeDelta& elapsed_time) {
   }
 }
 
-void TabIcon::EnlargeDiscardIndicatorRadius(int radius) {
-  CHECK(radius <= GetInsets().left());
-  increased_discard_indicator_radius_ = radius;
+void TabIcon::ResizeDiscardIndicatorRadiusForWidth(int width) {
+  increased_discard_indicator_radius_ =
+      width >= gfx::kFaviconSize + 2 * kIncreasedDiscardIndicatorRadiusDp
+          ? kIncreasedDiscardIndicatorRadiusDp
+          : 0;
 }
 
-void TabIcon::SetShouldShowDiscardIndicator(bool enabled) {
-  should_show_discard_indicator_ = enabled;
-  bool show_discard_indicator = is_discarded_ && should_show_discard_indicator_;
+void TabIcon::OnDiscardRingTreatmentEnabledChanged() {
+  discard_ring_treatment_enabled_ =
+      g_browser_process->local_state()->GetBoolean(
+          performance_manager::user_tuning::prefs::
+              kDiscardRingTreatmentEnabled);
+  bool show_discard_indicator =
+      is_discarded_ && discard_ring_treatment_enabled_;
   if (was_discard_indicator_shown_ != show_discard_indicator) {
     was_discard_indicator_shown_ = show_discard_indicator;
 
@@ -304,11 +318,10 @@ void TabIcon::PaintDiscardRingAndIcon(gfx::Canvas* canvas,
   // Fades in the discard ring and smaller favicon
   MaybePaintFavicon(canvas, icon, icon_bounds);
 
-  // Increase the bounds of the discard ring beyond the icon bounds if
-  // kDiscardRingImprovements is enabled. This is safe because in the
-  // constructor, we have already added insets so that the larger discard ring
-  // can expand into them and won't be clipped, and the icon bounds will be
-  // inside those insets.
+  // Increase the bounds of the discard ring beyond the icon bounds if there is
+  // enough space in the tab. This is safe because in the constructor, we have
+  // already added insets so that the larger discard ring can expand into them
+  // and won't be clipped, and the icon bounds will be inside those insets.
   gfx::Rect discard_ring_bounds = icon_bounds;
   discard_ring_bounds.Outset(increased_discard_indicator_radius_);
 
@@ -454,7 +467,8 @@ void TabIcon::SetIcon(const ui::ImageModel& icon, bool should_themify_favicon) {
 
 void TabIcon::SetDiscarded(bool discarded) {
   is_discarded_ = discarded;
-  bool show_discard_indicator = is_discarded_ && should_show_discard_indicator_;
+  bool show_discard_indicator =
+      is_discarded_ && discard_ring_treatment_enabled_;
   if (was_discard_indicator_shown_ != show_discard_indicator) {
     was_discard_indicator_shown_ = show_discard_indicator;
     favicon_size_animation_.SetSlideDuration(

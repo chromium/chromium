@@ -15,7 +15,6 @@
 #include "chrome/browser/ash/policy/test_support/embedded_policy_test_server_mixin.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/ui/browser_finder.h"
-#include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -131,11 +130,8 @@ IN_PROC_BROWSER_TEST_F(BrowserCleanupHandlerTest, CleanupWhenBrowsersClosed) {
   ASSERT_TRUE(embedded_test_server()->Start());
 
   OpenNewBrowserPage("/simple.html", WindowOpenDisposition::CURRENT_TAB);
-  BrowserList::CloseAllBrowsersWithProfile(
-      GetActiveUserProfile(),
-      /*on_close_success=*/BrowserList::CloseCallback(),
-      /*on_close_aborted=*/BrowserList::CloseCallback(),
-      /*skip_beforeunload=*/true);
+  chrome::CloseAllBrowsersWithProfile(GetActiveUserProfile(),
+                                      /*skip_beforeunload=*/true);
   ui_test_utils::WaitForBrowserToClose();
 
   ASSERT_TRUE(GlobalBrowserCollection::GetInstance()->IsEmpty());

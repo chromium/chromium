@@ -111,15 +111,13 @@ class DiceMigrationServiceBrowserTest : public InProcessBrowserTest {
   bool IsImplicitlySignedIn() {
     return GetIdentityManager()->HasPrimaryAccount(
                signin::ConsentLevel::kSignin) &&
-           signin::IsImplicitBrowserSigninOrExplicitDisabled(
-               GetIdentityManager(), GetPrefs());
+           !GetPrefs()->GetBoolean(prefs::kExplicitBrowserSignin);
   }
 
   bool IsExplicitlySignedIn() {
     return GetIdentityManager()->HasPrimaryAccount(
                signin::ConsentLevel::kSignin) &&
-           !signin::IsImplicitBrowserSigninOrExplicitDisabled(
-               GetIdentityManager(), GetPrefs());
+           GetPrefs()->GetBoolean(prefs::kExplicitBrowserSignin);
   }
 
   void FireDialogTriggerTimer() {
@@ -212,8 +210,6 @@ IN_PROC_BROWSER_TEST_F(DiceMigrationServiceBrowserTest, ExplicitlySignedIn) {
   // The user is explicitly signed in.
   ASSERT_TRUE(
       GetIdentityManager()->HasPrimaryAccount(signin::ConsentLevel::kSignin));
-  ASSERT_FALSE(signin::IsImplicitBrowserSigninOrExplicitDisabled(
-      GetIdentityManager(), GetPrefs()));
 
   EXPECT_FALSE(
       GetDiceMigrationService()->GetDialogTriggerTimerForTesting().IsRunning());
@@ -606,74 +602,6 @@ DICE_MIGRATION_TEST_F(DiceMigrationServiceBrowserTest,
 
   // The dialog is now shown.
   EXPECT_TRUE(GetDiceMigrationService()->GetDialogWidgetForTesting());
-}
-
-DICE_MIGRATION_TEST_F(DiceMigrationServiceBrowserTest,
-                      StopTimerUponPersistentAuthError) {
-  // The timer has started.
-  ASSERT_TRUE(
-      GetDiceMigrationService()->GetDialogTriggerTimerForTesting().IsRunning());
-
-  // Simulate a persistent auth error.
-  signin::SetInvalidRefreshTokenForPrimaryAccount(GetIdentityManager());
-
-  // The timer is stopped.
-  EXPECT_FALSE(
-      GetDiceMigrationService()->GetDialogTriggerTimerForTesting().IsRunning());
-  ASSERT_FALSE(GetDiceMigrationService()->GetDialogWidgetForTesting());
-
-  histogram_tester_.ExpectUniqueSample(
-      kDialogNotShownReasonHistogram,
-      DiceMigrationService::DialogNotShownReason::kPrimaryAccountCleared, 1);
-}
-
-DICE_MIGRATION_TEST_F(DiceMigrationServiceBrowserTest,
-                      CloseDialogUponPersistentAuthError) {
-  // Show the migration bubble.
-  FireDialogTriggerTimer();
-
-  views::Widget* dialog_widget =
-      GetDiceMigrationService()->GetDialogWidgetForTesting();
-  ASSERT_TRUE(dialog_widget);
-
-  views::test::WidgetDestroyedWaiter waiter(dialog_widget);
-  // Simulate a persistent auth error. This should cause the implicitly
-  // signed-in account to be removed, thereby becoming similar to the case of
-  // the user signing out.
-  signin::SetInvalidRefreshTokenForPrimaryAccount(GetIdentityManager());
-  waiter.Wait();
-
-  ASSERT_FALSE(GetDiceMigrationService()->GetDialogWidgetForTesting());
-  histogram_tester_.ExpectUniqueSample(
-      kDialogCloseReasonHistogram,
-      DiceMigrationService::DialogCloseReason::kPrimaryAccountCleared, 1);
-}
-
-// This can happen due to race condition between the timer firing and the dialog
-// being closed.
-DICE_MIGRATION_TEST_F(DiceMigrationServiceBrowserTest,
-                      AcceptDialogAfterPersistentAuthError) {
-  // Show the migration bubble.
-  FireDialogTriggerTimer();
-
-  ASSERT_TRUE(GetDiceMigrationService()->GetDialogWidgetForTesting());
-
-  // Simulate a persistent auth error.
-  signin::SetInvalidRefreshTokenForPrimaryAccount(GetIdentityManager());
-
-  // The dialog is not destroyed yet due to the race condition.
-  views::Widget* dialog_widget =
-      GetDiceMigrationService()->GetDialogWidgetForTesting();
-  ASSERT_TRUE(dialog_widget);
-
-  views::test::WidgetDestroyedWaiter waiter(dialog_widget);
-  // Simulate clicking on accept button.
-  dialog_widget->CloseWithReason(
-      views::Widget::ClosedReason::kAcceptButtonClicked);
-  waiter.Wait();
-
-  // No migration is performed.
-  EXPECT_FALSE(GetPrefs()->GetBoolean(prefs::kExplicitBrowserSignin));
 }
 
 DICE_MIGRATION_TEST_F(DiceMigrationServiceBrowserTest, StopTimerUponSignout) {
@@ -1155,7 +1083,7 @@ DICE_MIGRATION_TEST_F(
   ASSERT_TRUE(value->is_dict());
   EXPECT_EQ(
       value->GetDict(),
-      base::Value::Dict()
+      base::DictValue()
           .SetByDottedPath(prefs::kExplicitBrowserSignin, false)
           .SetByDottedPath(
               prefs::kPrefsThemesSearchEnginesAccountStorageEnabled, false));
@@ -1242,7 +1170,7 @@ IN_PROC_BROWSER_TEST_F(
   ASSERT_TRUE(value->is_dict());
   ASSERT_EQ(
       value->GetDict(),
-      base::Value::Dict()
+      base::DictValue()
           .SetByDottedPath(prefs::kExplicitBrowserSignin, false)
           .SetByDottedPath(
               prefs::kPrefsThemesSearchEnginesAccountStorageEnabled, false));
@@ -1356,7 +1284,7 @@ IN_PROC_BROWSER_TEST_F(
   ASSERT_TRUE(value->is_dict());
   ASSERT_EQ(
       value->GetDict(),
-      base::Value::Dict()
+      base::DictValue()
           .SetByDottedPath(prefs::kExplicitBrowserSignin, false)
           .SetByDottedPath(
               prefs::kPrefsThemesSearchEnginesAccountStorageEnabled, false));

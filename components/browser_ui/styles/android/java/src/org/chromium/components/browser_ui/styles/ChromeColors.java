@@ -147,6 +147,21 @@ public class ChromeColors {
     }
 
     /**
+     * Get the inverse background color based on the incognito status.
+     *
+     * @param context The {@link Context} used to retrieve colors.
+     * @param isIncognito When true, returns the baseline light tint color; otherwise returns
+     *     baseline dark background tint color.
+     * @return The {@link ColorRes} for the background.
+     */
+    public static @ColorInt int getInverseBgColor(Context context, boolean isIncognito) {
+        if (isIncognito) {
+            return context.getColor(R.color.default_bg_color_light);
+        }
+        return SemanticColorUtils.getColorSurfaceInverse(context);
+    }
+
+    /**
      * Calculates the surface color using theme colors.
      *
      * @param context The {@link Context} used to retrieve attrs, colors, and dimens.

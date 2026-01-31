@@ -28,7 +28,7 @@ TEST(PermissionTypeHelpersTest, AllPermissionTypesSmokeTest) {
               Contains(blink::PermissionType::GEOLOCATION));
   EXPECT_THAT(all_permission_types, Contains(blink::PermissionType::SENSORS));
   EXPECT_THAT(all_permission_types,
-              Contains(blink::PermissionType::DURABLE_STORAGE));
+              Contains(blink::PermissionType::PERSISTENT_STORAGE));
 
   // PUSH_MESSAGING has been removed, and was =2.
   EXPECT_THAT(all_permission_types,

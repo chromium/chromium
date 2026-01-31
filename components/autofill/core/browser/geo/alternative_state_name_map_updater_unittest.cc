@@ -84,7 +84,7 @@ TEST_F(AlternativeStateNameMapUpdaterTest, EntryAddedToStateMap) {
   AlternativeStateNameMap* alternative_state_name_map =
       AlternativeStateNameMap::GetInstance();
   DCHECK(!alternative_state_name_map->IsLocalisedStateNamesMapEmpty());
-  for (size_t i = 0; i < test_strings.size(); i++) {
+  for (size_t i = 0; i < test_strings.size(); ++i) {
     SCOPED_TRACE(test_strings[i]);
     EXPECT_EQ(AlternativeStateNameMap::GetCanonicalStateName(
                   "DE", test_strings[i].value()) != std::nullopt,
@@ -333,9 +333,9 @@ TEST_F(AlternativeStateNameMapUpdaterTest, AssertCorrectStateNameMapConstant) {
   for (size_t i = 0; i < kCountriesWithAlternativeStateNames.length(); i += 2) {
     std::string country =
         std::string(kCountriesWithAlternativeStateNames.substr(i, 2));
-    int32_t resourceId = GetResourceIdForCountryFromGeneratedMap(country);
-    ASSERT_NE(resourceId, -1);
-    EXPECT_EQ(resourceId, FindResourceIdForCountry(country));
+    int32_t resource_id = GetResourceIdForCountryFromGeneratedMap(country);
+    ASSERT_NE(resource_id, -1);
+    EXPECT_EQ(resource_id, FindResourceIdForCountry(country));
   }
 }
 

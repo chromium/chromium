@@ -35,7 +35,7 @@ void SelectBnplIssuerDialogControllerImpl::ShowDialog(
         create_and_show_dialog_callback,
     std::vector<BnplIssuerContext> issuer_contexts,
     std::string app_locale,
-    base::OnceCallback<void(BnplIssuer)> selected_issuer_callback,
+    base::RepeatingCallback<void(BnplIssuer)> selected_issuer_callback,
     base::OnceClosure cancel_callback) {
   issuer_contexts_ = std::move(issuer_contexts);
   app_locale_ = std::move(app_locale);
@@ -58,7 +58,7 @@ void SelectBnplIssuerDialogControllerImpl::OnIssuerSelected(BnplIssuer issuer) {
   LogBnplIssuerSelection(issuer.issuer_id());
 
   if (selected_issuer_callback_) {
-    std::move(selected_issuer_callback_).Run(std::move(issuer));
+    selected_issuer_callback_.Run(std::move(issuer));
   }
 }
 

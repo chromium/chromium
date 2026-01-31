@@ -1,4 +1,6 @@
 include_rules = [
+  # keep-sorted start
   "+mojo/public",
   "+ui/resources/grit",
+  # keep-sorted end
 ]

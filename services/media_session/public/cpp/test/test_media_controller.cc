@@ -40,7 +40,7 @@ void TestMediaControllerImageObserver::MediaControllerChapterImageChanged(
     const SkBitmap& bitmap) {
   current_chapter_images_[chapter_index] = bitmap.isNull();
 
-  if (!base::Contains(expected_chapter_images_, chapter_index) ||
+  if (!expected_chapter_images_.contains(chapter_index) ||
       expected_chapter_images_[chapter_index] !=
           current_chapter_images_[chapter_index]) {
     return;

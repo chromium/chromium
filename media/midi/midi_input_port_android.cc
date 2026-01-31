@@ -27,7 +27,7 @@ MidiInputPortAndroid::~MidiInputPortAndroid() {
 bool MidiInputPortAndroid::Open() {
   JNIEnv* env = jni_zero::AttachCurrentThread();
   return Java_MidiInputPortAndroid_open(env, raw_port_,
-                                        reinterpret_cast<jlong>(this));
+                                        reinterpret_cast<int64_t>(this));
 }
 
 void MidiInputPortAndroid::Close() {
@@ -37,9 +37,9 @@ void MidiInputPortAndroid::Close() {
 
 void MidiInputPortAndroid::OnData(JNIEnv* env,
                                   const JavaRef<jbyteArray>& data,
-                                  jint offset,
-                                  jint size,
-                                  jlong timestamp) {
+                                  int32_t offset,
+                                  int32_t size,
+                                  int64_t timestamp) {
   std::vector<uint8_t> bytes;
   base::android::JavaByteArrayToByteVector(env, data, &bytes);
 
@@ -51,7 +51,11 @@ void MidiInputPortAndroid::OnData(JNIEnv* env,
   // nanoseconds. Both are monotonic.
   base::TimeTicks timestamp_to_pass = base::TimeTicks::FromInternalValue(
       timestamp / base::TimeTicks::kNanosecondsPerMicrosecond);
-  delegate_->OnReceivedData(this, &bytes[offset], size, timestamp_to_pass);
+  delegate_->OnReceivedData(
+      this,
+      base::span(bytes).subspan(base::checked_cast<size_t>(offset),
+                                base::checked_cast<size_t>(size)),
+      timestamp_to_pass);
 }
 
 }  // namespace midi

@@ -171,7 +171,18 @@ public class ChromeSiteSettingsDelegate implements SiteSettingsDelegate {
                 // Desktop Android always requests desktop sites, so hide the category.
                 return !DeviceInfo.isDesktop();
             case SiteSettingsCategory.Type.LOCAL_NETWORK_ACCESS:
-                return ChromeFeatureList.isEnabled(ChromeFeatureList.LOCAL_NETWORK_ACCESS);
+                // Use LOCAL_NETWORK_ACCESS if LNA is enabled, but LNA Split permissions is not
+                // enabled.
+                return ChromeFeatureList.isEnabled(ChromeFeatureList.LOCAL_NETWORK_ACCESS)
+                        && !ChromeFeatureList.isEnabled(
+                                ChromeFeatureList.LOCAL_NETWORK_ACCESS_SPLIT_PERMISSIONS);
+            case SiteSettingsCategory.Type.LOCAL_NETWORK:
+            case SiteSettingsCategory.Type.LOOPBACK_NETWORK:
+                // Use LOCAL_NETWORK and LOOPBACK_NETWORK if LNA is enabled and LNA Split
+                // permissions are enabled.
+                return ChromeFeatureList.isEnabled(ChromeFeatureList.LOCAL_NETWORK_ACCESS)
+                        && ChromeFeatureList.isEnabled(
+                                ChromeFeatureList.LOCAL_NETWORK_ACCESS_SPLIT_PERMISSIONS);
             case SiteSettingsCategory.Type.WINDOW_MANAGEMENT:
                 return ChromeFeatureList.sAndroidWindowManagementWebApi.isEnabled()
                         && DisplayAndroidManager.isDisplayTopologyAvailable();
@@ -353,16 +364,6 @@ public class ChromeSiteSettingsDelegate implements SiteSettingsDelegate {
     @Override
     public boolean isPartOfManagedRelatedWebsiteSet(String origin) {
         return mPrivacySandboxBridge.isPartOfManagedRelatedWebsiteSet(origin);
-    }
-
-    @Override
-    public boolean shouldShowTrackingProtectionUi() {
-        return ChromeFeatureList.isEnabled(ChromeFeatureList.TRACKING_PROTECTION_3PCD);
-    }
-
-    @Override
-    public boolean isBlockAll3pcEnabledInTrackingProtection() {
-        return UserPrefs.get(mProfile).getBoolean(Pref.BLOCK_ALL3PC_TOGGLE_ENABLED);
     }
 
     @Override

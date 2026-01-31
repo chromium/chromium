@@ -15,6 +15,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_features.h"
 #include "chrome/browser/web_applications/isolated_web_apps/policy/isolated_web_app_external_install_options.h"
+#include "chrome/browser/web_applications/isolated_web_apps/runtime_data/chrome_iwa_runtime_data_provider.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
 #include "components/prefs/pref_service.h"
@@ -59,6 +60,17 @@ bool IsTrustedViaPolicy(Profile& profile,
       });
 }
 
+bool IsTrustedForUserInstall(
+    const web_package::SignedWebBundleId& web_bundle_id) {
+  return ChromeIwaRuntimeDataProvider::GetInstance()
+      .GetUserInstallAllowlistData(web_bundle_id.id());
+}
+
+bool IsBlocklisted(const web_package::SignedWebBundleId& web_bundle_id) {
+  return ChromeIwaRuntimeDataProvider::GetInstance().IsBundleBlocklisted(
+      web_bundle_id.id());
+}
+
 }  // namespace
 
 // static
@@ -66,6 +78,10 @@ base::expected<void, std::string> IsolatedWebAppTrustChecker::IsTrusted(
     Profile& profile,
     const web_package::SignedWebBundleId& web_bundle_id,
     bool is_dev_mode_bundle) {
+  if (IsBlocklisted(web_bundle_id)) {
+    return base::unexpected("Web Bundle is blocklisted.");
+  }
+
   if (web_bundle_id.is_for_proxy_mode()) {
     return base::unexpected(
         "Web Bundle IDs of type ProxyMode are not supported.");
@@ -87,6 +103,10 @@ base::expected<void, std::string> IsolatedWebAppTrustChecker::IsTrusted(
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
   if (is_dev_mode_bundle && IsIwaDevModeEnabled(&profile)) {
+    return base::ok();
+  }
+
+  if (IsTrustedForUserInstall(web_bundle_id)) {
     return base::ok();
   }
 

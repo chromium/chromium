@@ -107,7 +107,8 @@ void ExecJsSetSyncEncryptionKeys(content::RenderFrameHost* render_frame_host,
 void ExecJsSetClientEncryptionKeysForSecurityDomain(
     content::RenderFrameHost* render_frame_host,
     const char* security_domain_name,
-    const std::vector<uint8_t>& key) {
+    const std::vector<uint8_t>& key,
+    std::string gaia_id = kFakeGaiaId.ToString()) {
   // To simplify the test, it limits the size of `key` to 1.
   DCHECK_EQ(key.size(), 1u);
   const std::string script = base::StringPrintf(
@@ -124,8 +125,8 @@ void ExecJsSetClientEncryptionKeysForSecurityDomain(
             new Map([['%s', [{epoch: 0, key}]]]));
       }
     )",
-      kConsoleFailureMessage, key[0], kConsoleSuccessMessage,
-      kFakeGaiaId.ToString(), security_domain_name);
+      kConsoleFailureMessage, key[0], kConsoleSuccessMessage, gaia_id,
+      security_domain_name);
 
   std::ignore = content::ExecJs(render_frame_host, script);
 }
@@ -299,7 +300,8 @@ class TrustedVaultEncryptionKeysTabHelperBrowserTest
          // required for being able to store the opportunistically retrieved
          // passkey secret. For the testing purposes we enable this flag to
          // simulate the presence of the system UV for ensuring that the passkey
-         // secret can be stored in the test `SetPasskeysKeyInEnclaveManager`.
+         // secret can be stored in the test
+         // `SetPasskeysKeyInEnclaveManagerWhileSignedIn`.
          device::kWebAuthnUseInsecureSoftwareUnexportableKeys},
         /*disabled_features=*/{});
 #else
@@ -573,7 +575,11 @@ IN_PROC_BROWSER_TEST_F(TrustedVaultEncryptionKeysTabHelperBrowserTest,
 
 #if !BUILDFLAG(IS_CHROMEOS)
 IN_PROC_BROWSER_TEST_F(TrustedVaultEncryptionKeysTabHelperBrowserTest,
-                       SetPasskeysKeyInEnclaveManager) {
+                       SetPasskeysKeyInEnclaveManagerWhileSignedIn) {
+  signin::MakePrimaryAccountAvailable(
+      IdentityManagerFactory::GetForProfile(browser()->profile()),
+      "testusername", signin::ConsentLevel::kSignin);
+
   const GURL initial_url =
       https_server()->GetURL("accounts.google.com", "/title1.html");
   ASSERT_TRUE(content::NavigateToURL(web_contents(), initial_url));
@@ -597,7 +603,8 @@ IN_PROC_BROWSER_TEST_F(TrustedVaultEncryptionKeysTabHelperBrowserTest,
   // flag `kWebAuthnUseInsecureSoftwareUnexportableKeys` is enabled:
   ExecJsSetClientEncryptionKeysForSecurityDomain(
       web_contents()->GetPrimaryMainFrame(),
-      trusted_vault::kPasskeysSecurityDomainName, kEncryptionKey);
+      trusted_vault::kPasskeysSecurityDomainName, kEncryptionKey,
+      "gaia_id_for_testusername");
   ASSERT_TRUE(console_observer.Wait());
   EXPECT_EQ(console_observer.messages().size(), 1u);
 
@@ -1106,7 +1113,7 @@ IN_PROC_BROWSER_TEST_F(TrustedVaultEncryptionKeysTabHelperBrowserTest,
   const GURL prerendering_url =
       https_server()->GetURL("accounts.google.com", "/simple.html");
 
-  content::FrameTreeNodeId host_id =
+  content::PrerenderHostId host_id =
       prerender_helper().AddPrerender(prerendering_url);
   content::RenderFrameHostWrapper prerendered_frame_host(
       prerender_helper().GetPrerenderedMainFrameHost(host_id));

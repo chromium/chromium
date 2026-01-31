@@ -36,6 +36,7 @@
 #include "chrome/common/chrome_paths.h"
 #include "chrome/test/base/testing_browser_process_platform_part.h"
 #include "chrome/test/base/testing_profile_manager.h"
+#include "components/activity_reporter/activity_reporter.h"
 #include "components/application_locale_storage/application_locale_storage.h"
 #include "components/embedder_support/origin_trials/origin_trials_settings_storage.h"
 #include "components/metrics/metrics_service.h"
@@ -46,6 +47,8 @@
 #include "components/prefs/pref_service.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/subresource_filter/content/browser/ruleset_service.h"
+#include "components/supervised_user/core/browser/device_parental_controls.h"
+#include "components/supervised_user/core/browser/device_parental_controls_noop_impl.h"
 #include "content/public/browser/network_service_instance.h"
 #include "extensions/buildflags/buildflags.h"
 #include "media/media_buildflags.h"
@@ -107,6 +110,22 @@
 #include "chrome/browser/notifications/notification_ui_manager.h"
 #endif
 
+#if BUILDFLAG(IS_ANDROID)
+#include "components/supervised_user/core/browser/android/android_parental_controls.h"
+#endif  // BUILDFLAG(IS_ANDROID)
+
+namespace {
+
+class TestActivityReporter : public activity_reporter::ActivityReporter {
+ public:
+  TestActivityReporter() = default;
+  void ReportActive() override {
+    // Do nothing.
+  }
+};
+
+}  // namespace
+
 // static
 TestingBrowserProcess* TestingBrowserProcess::GetGlobal() {
   return static_cast<TestingBrowserProcess*>(g_browser_process);
@@ -149,6 +168,13 @@ void TestingBrowserProcess::TearDownAndDeleteInstance() {
 
 TestingBrowserProcess::TestingBrowserProcess()
     : testing_local_state_(std::make_unique<TestingPrefServiceSimple>()),
+#if BUILDFLAG(IS_ANDROID)
+      device_parental_controls_(
+          std::make_unique<supervised_user::AndroidParentalControls>()),
+#else
+      device_parental_controls_(
+          std::make_unique<supervised_user::DeviceParentalControlsNoOpImpl>()),
+#endif
       platform_part_(std::make_unique<TestingBrowserProcessPlatformPart>()),
       os_crypt_async_(os_crypt_async::GetTestOSCryptAsyncForTesting()) {
   RegisterLocalState(testing_local_state_->registry());
@@ -185,15 +211,16 @@ TestingBrowserProcess::~TestingBrowserProcess() {
   DCHECK_EQ(static_cast<BrowserProcess*>(nullptr), g_browser_process);
 }
 
-std::unique_ptr<TestingProfileManager>
+raw_ptr<TestingProfileManager>
 TestingBrowserProcess::SetUpGlobalFeaturesForTesting(bool profile_manager) {
   CreateGlobalFeaturesPreProfileManager();
 
-  std::unique_ptr<TestingProfileManager> testing_profile_manager;
+  raw_ptr<TestingProfileManager> testing_profile_manager = nullptr;
   if (profile_manager) {
-    testing_profile_manager = std::make_unique<TestingProfileManager>(
+    testing_profile_manager_ = std::make_unique<TestingProfileManager>(
         TestingBrowserProcess::GetGlobal());
-    CHECK(testing_profile_manager->SetUp());
+    CHECK(testing_profile_manager_->SetUp());
+    testing_profile_manager = testing_profile_manager_.get();
   }
 
   CreateGlobalFeaturesPostProfileManager();
@@ -201,12 +228,11 @@ TestingBrowserProcess::SetUpGlobalFeaturesForTesting(bool profile_manager) {
   return testing_profile_manager;
 }
 
-void TestingBrowserProcess::TearDownGlobalFeaturesForTesting(
-    std::unique_ptr<TestingProfileManager> profile_manager) {
+void TestingBrowserProcess::TearDownGlobalFeaturesForTesting() {
   CHECK(features_);
   features_->PostMainMessageLoopRun();
 
-  profile_manager.reset();
+  testing_profile_manager_.reset();
 
   // ResourceCoordinatorParts owns TabLifecycleUnitSource, which depends on a
   // Global Feature (GlobalBrowserCollection). Thus, we need to make sure
@@ -262,7 +288,8 @@ void TestingBrowserProcess::Init() {
   ChromePermissionsClient::GetInstance();
 
 #if !BUILDFLAG(IS_ANDROID)
-  web_app::InitializeIsolatedWebAppRuntime();
+  web_app::InitializeIsolatedWebAppRuntime(
+      base::PassKey<TestingBrowserProcess>());
   KeepAliveRegistry::GetInstance()->SetIsShuttingDown(false);
 #if BUILDFLAG(IS_CHROMEOS)
   hid_system_tray_icon_ = std::make_unique<HidPinnedNotification>();
@@ -515,6 +542,18 @@ TestingBrowserProcess::background_printing_manager() {
 #endif
 }
 
+#if BUILDFLAG(IS_ANDROID)
+supervised_user::AndroidParentalControls&
+TestingBrowserProcess::android_parental_controls() {
+  return *device_parental_controls_;
+}
+#endif  // BUILDFLAG(IS_ANDROID)
+
+supervised_user::DeviceParentalControls&
+TestingBrowserProcess::device_parental_controls() {
+  return *device_parental_controls_;
+}
+
 const std::string& TestingBrowserProcess::GetApplicationLocale() {
   CHECK(features_);
   CHECK(features_->application_locale_storage());
@@ -537,6 +576,14 @@ DownloadRequestLimiter* TestingBrowserProcess::download_request_limiter() {
     download_request_limiter_ = base::MakeRefCounted<DownloadRequestLimiter>();
   }
   return download_request_limiter_.get();
+}
+
+activity_reporter::ActivityReporter*
+TestingBrowserProcess::activity_reporter() {
+  if (!activity_reporter_) {
+    activity_reporter_ = std::make_unique<TestActivityReporter>();
+  }
+  return activity_reporter_.get();
 }
 
 component_updater::ComponentUpdateService*
@@ -623,11 +670,6 @@ BuildState* TestingBrowserProcess::GetBuildState() {
 
 GlobalFeatures* TestingBrowserProcess::GetFeatures() {
   return features_.get();
-}
-
-void TestingBrowserProcess::CreateGlobalFeaturesForTesting() {
-  CreateGlobalFeaturesPreProfileManager();
-  CreateGlobalFeaturesPostProfileManager();
 }
 
 void TestingBrowserProcess::CreateGlobalFeaturesPreProfileManager() {

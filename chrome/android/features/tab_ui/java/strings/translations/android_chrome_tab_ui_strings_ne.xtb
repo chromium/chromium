@@ -20,6 +20,7 @@
 <translation id="1499635324672558517">सबै इन्कोग्निटो ट्याबहरू बन्द गर्ने हो?</translation>
 <translation id="1501480321619201731">समूह मेट्नुहोस्</translation>
 <translation id="1553638665176794706">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> निष्क्रिय आइटम}other{<ph name="TABS_COUNT_MANY" /> वटा निष्क्रिय आइटम}}</translation>
+<translation id="1568067597247500137">साइट म्युट गर्नुहोस्</translation>
 <translation id="1645759014353344461"><ph name="TABS_COUNT_MANY" /> वटा ट्याब समूहबद्ध गरिएका छन्</translation>
 <translation id="1657719826150349398">ट्याब सारेर तल लैजानुहोस्</translation>
 <translation id="1670942869417022142">अडियो म्युट गरिएको छ</translation>
@@ -55,7 +56,7 @@
 <translation id="2660792762186871190">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" /> ट्याब र <ph name="COLOR_NAME" /> रङ भएको ट्याब समूह रिस्टोर गर्नुहोस् र खोल्नुहोस्।}other{<ph name="TABS_COUNT_MANY" /> वटा ट्याब र <ph name="COLOR_NAME" /> रङ भएको ट्याब समूह रिस्टोर गर्नुहोस् र खोल्नुहोस्।}}</translation>
 <translation id="2662028055331606429"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /> मूल्याङ्कन</translation>
 <translation id="266935134738038806">साइटमा जानुहोस्</translation>
-<translation id="2671423594960767771">समूहमा आदान प्रदान गर्नु</translation>
+<translation id="2671423594960767771">समूहमा सेयर गर्नु</translation>
 <translation id="2734252994837336591">{NUM_WEEKS,plural, =1{<ph name="NUM_WEEKS_ONE" /> हप्ताअघि अपडेट गरिएको}other{<ph name="NUM_WEEKS_MANY" /> हप्ताअघि अपडेट गरिएको}}</translation>
 <translation id="2753877351161418426">{NUM_HOURS,plural, =1{<ph name="NUM_HOURS_ONE" /> घण्टाअघि अपडेट गरिएको}other{<ph name="NUM_HOURS_MANY" /> घण्टाअघि अपडेट गरिएको}}</translation>
 <translation id="2755485474385016903">कुनै परिवर्तन गरिएका खण्डमा समूहमा सामेल सबै जना उक्त परिवर्तन देख्न सक्छन्</translation>
@@ -82,13 +83,13 @@
 <translation id="3619255692378312441">एक्सेस व्यवस्थापन गर्नुहोस्</translation>
 <translation id="3649471731638882002">{TAB_COUNT,plural, =1{आइटम बन्द गर्नुहोस्}other{आइटमहरू बन्द गर्नुहोस्}}</translation>
 <translation id="3652027618765638838"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
+<translation id="3714430408451673233">ट्याबको पुछारको पाना आधा स्क्रिनमा खोलिएको छ।</translation>
 <translation id="374923079891132274">सेयर सिटको प्रिभ्यूको थम्बनेल।</translation>
 <translation id="3776329373944672717">ट्याब समूहको शीर्षक <ph name="TITLE_OF_GROUP" /></translation>
 <translation id="3810973564298564668">व्यवस्थित गर्नुहोस्</translation>
 <translation id="3849789634341518784">{TAB_COUNT,plural, =1{ट्याब अनपिन गर्नुहोस्}other{ट्याबहरू अनपिन गर्नुहोस्}}</translation>
 <translation id="3940195383040445971">ट्याबहरूमा मूल्य ट्र्याक गर्नुहोस्</translation>
 <translation id="3940717704786481856">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> नयाँ ट्याब, <ph name="ANY_CLOSED" /> ट्याब बन्द गरियो}other{<ph name="MANY_ADDED" /> वटा नयाँ ट्याब, <ph name="ANY_CLOSED" /> वटा ट्याब बन्द गरिए}}</translation>
-<translation id="3954615705217314756">{TABS_COUNT,plural, =1{ट्याब समूहबद्ध गर्नुहोस्}other{ट्याबहरू समूहबद्ध गर्नुहोस्}}</translation>
 <translation id="3962134438902735041">{TABS_COUNT,plural, =1{चयन गरिएको <ph name="TABS_COUNT_ONE" /> ट्याब अनपिन गर्नुहोस्}other{चयन गरिएका <ph name="TABS_COUNT_MANY" /> वटा ट्याब अनपिन गर्नुहोस्}}</translation>
 <translation id="4009732926939031387">{NUM_DAYS,plural, =1{<ph name="NUM_DAYS_ONE" /> दिनअघि बनाइएको}other{<ph name="NUM_DAYS_MANY" /> दिनअघि बनाइएको}}</translation>
 <translation id="4076226664360336092">ट्याब समूहको सूची, पूरै स्क्रिनमा खोलिएको छ</translation>
@@ -126,8 +127,10 @@
 <translation id="5339733443032484186">तपाईंको अन्तिम ट्याब</translation>
 <translation id="5380159289133845234">दोहोरिएका ट्याबहरू अर्काइभमा राख्नुहोस्</translation>
 <translation id="5446043142172831860">ट्याब हटाउनुहोस् र समूह छाड्नुहोस्</translation>
+<translation id="5465437530117042974">ट्याबको पुछारको पानामा गरिएका परिवर्तनसम्बन्धी जानकारी बन्द गरिएको छ।</translation>
 <translation id="5490235265819901748">ट्याब समूह विस्तृत गरियो</translation>
 <translation id="5494920125229734069">सबै चयन गर्नुहोस्</translation>
+<translation id="5505998972479309757">{LIMIT_COUNT,plural, =1{बढीमा <ph name="LIMIT_COUNT_ONE" /> फाइल, ट्याब वा फोटो हाल्नुहोस्}other{बढीमा <ph name="LIMIT_COUNT_MANY" /> वटा फाइल, ट्याब वा फोटो हाल्नुहोस्}}</translation>
 <translation id="5551694449008560081">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" /> ट्याब भएको <ph name="COLOR_NAME" /> रङको ट्याब समूह बन्द गर्नुहोस्।}other{<ph name="TABS_COUNT_MANY" /> वटा ट्याब भएको <ph name="COLOR_NAME" /> रङको ट्याब समूह बन्द गर्नुहोस्।}}</translation>
 <translation id="5556417849629758491">स्क्रिनको सिरानको नजिक रहेको 'स्टोरसम्बन्धी जानकारी हेर्नुहोस्' नामक विकल्प</translation>
 <translation id="5627941783489838464">ट्याबसम्बन्धी कुनै पनि नयाँ जानकारी छैन</translation>
@@ -140,7 +143,9 @@
 <translation id="6040143037577758943">बन्द गर्नुहोस्</translation>
 <translation id="6051432659151380973">तपाईंका ट्याब समूहहरू स्वतः सेभ हुन्छन्</translation>
 <translation id="6054741997831917303">यो वस्तुको मूल्य हालसालै घटेर <ph name="PREVIOUS_PRICE" /> बाट <ph name="NEW_PRICE" /> भएको छ</translation>
+<translation id="606985262342505139">ट्याबको पुछारको पाना पूरै स्क्रिनमा खोलिएको छ</translation>
 <translation id="6109251075362363230">सबैभन्दा हालसालै प्रयोग गरिएको दोहोरिएको ट्याबबाहेक दोहोरिएका सबै ट्याबहरू अब अभिलेखमा राखिने छन्।</translation>
+<translation id="612596694132302162">साइट अनम्युट गर्नुहोस्</translation>
 <translation id="6149218574440723463">{TABS_COUNT,plural, =1{चयन गरिएको <ph name="TABS_COUNT_ONE" /> ट्याब बन्द गर्नुहोस्}other{चयन गरिएका <ph name="TABS_COUNT_MANY" /> वटा ट्याब बन्द गर्नुहोस्}}</translation>
 <translation id="61924696525243173">{WINDOW_COUNT,plural, =1{समूह सारेर नयाँ विन्डोमा लैजानुहोस्}other{समूह सारेर अर्को विन्डोमा लैजानुहोस्}}</translation>
 <translation id="6212374449852603982">{TAB_COUNT,plural, =1{ट्याब दायाँतिर सार्नुहोस्}other{ट्याबहरू दायाँतिर सार्नुहोस्}}</translation>
@@ -195,7 +200,6 @@
 <translation id="7792771145871471484">सुझावहरूको समीक्षा गर्नुहोस्।</translation>
 <translation id="7792860826279960128">साझा ट्याब समूहमा गरिने परिवर्तनसम्बन्धी सूचना आधा स्क्रिनमा खोलिएको छ</translation>
 <translation id="7825973332242257878">ट्याब समूहहरू</translation>
-<translation id="7838146321400849846">{TABS_COUNT,plural, =1{चयन गरिएको <ph name="TABS_COUNT_ONE" /> ट्याब कुनै समूहमा थप्नुहोस्}other{चयन गरिएका <ph name="TABS_COUNT_MANY" /> ट्याबहरू कुनै समूहमा थप्नुहोस्}}</translation>
 <translation id="7853202427316060426">गतिविधि</translation>
 <translation id="7854360405711302755">{REVIEWS,plural, =1{ <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /> मूल्याङ्कन, <ph name="REVIEWS_COUNT_ONE" /> समीक्षा}other{<ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /> मूल्याङ्कन, <ph name="REVIEWS_COUNT_MANY" /> वटा समीक्षा}}</translation>
 <translation id="7885132941432959125">ट्याब सारेर दायाँतिर लैजानुहोस्</translation>
@@ -223,7 +227,6 @@
 <translation id="8428213095426709021">सेटिङहरू</translation>
 <translation id="855081842937141170">ट्याबलाई पिन गर्नुहोस्</translation>
 <translation id="8633025649649592204">हालसालैको क्रियाकलाप</translation>
-<translation id="8635822281281406185">बढीमा १० वटा फाइल, ट्याब वा फोटो हाल्नुहोस्</translation>
 <translation id="8712637175834984815">भयो</translation>
 <translation id="8714939927607906138">अझ कम मूल्य</translation>
 <translation id="8730621377337864115">गरियो</translation>

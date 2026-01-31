@@ -10,7 +10,6 @@
 #include <vector>
 
 #include "base/check_deref.h"
-#include "base/containers/contains.h"
 #include "base/containers/flat_set.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/bind.h"
@@ -60,6 +59,7 @@
 #include "chrome/browser/web_applications/test/web_app_test_observers.h"
 #include "chrome/browser/web_applications/web_app_command_scheduler.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
+#include "chrome/browser/web_applications/web_app_filter.h"
 #include "chrome/browser/web_applications/web_app_management_type.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
@@ -84,11 +84,22 @@ namespace web_app {
 
 namespace {
 
-using testing::_;
+constexpr std::string_view kIwaKeyDistributionComponentId =
+    "iebhnlpddlcpcfpfalldikcoeakpeoah";
+
+using Component = component_updater::IwaKeyDistributionComponentInstallerPolicy;
+using ComponentRegistration = component_updater::ComponentRegistration;
+
+using ::testing::_;
+using ::testing::DoAll;
 using ::testing::Eq;
+using ::testing::Field;
 using ::testing::IsNull;
 using ::testing::NotNull;
+using ::testing::Return;
+using ::testing::ReturnRef;
 using ::testing::UnorderedElementsAre;
+using ::testing::WithoutArgs;
 
 class TestOrphanedCleanupWebAppCommandScheduler
     : public WebAppCommandScheduler {
@@ -113,6 +124,111 @@ class TestOrphanedCleanupWebAppCommandScheduler
  private:
   base::RepeatingClosure command_done_closure_;
   size_t number_of_calls_ = 0;
+};
+
+class MockOnDemandUpdater : public component_updater::OnDemandUpdater {
+ public:
+  MOCK_METHOD(void,
+              OnDemandUpdate,
+              (const std::string&,
+               component_updater::OnDemandUpdater::Priority,
+               component_updater::Callback),
+              (override));
+};
+
+std::unique_ptr<base::ScopedTempDir> CreateIwaComponentDir(
+    const base::Version& version,
+    const IwaKeyDistribution& component_data,
+    bool is_preloaded) {
+  base::ScopedAllowBlockingForTesting allow_blocking;
+  auto dir = std::make_unique<base::ScopedTempDir>();
+  CHECK(dir->CreateUniqueTempDir());
+
+  auto manifest = base::DictValue()
+                      .Set("manifest_version", 1)
+                      .Set("name", Component::kManifestName)
+                      .Set("version", version.GetString());
+  if (is_preloaded) {
+    manifest.Set("is_preloaded", true);
+  }
+
+  CHECK(
+      base::WriteFile(dir->GetPath().Append(FILE_PATH_LITERAL("manifest.json")),
+                      *base::WriteJson(manifest)));
+  CHECK(base::WriteFile(dir->GetPath().Append(Component::kDataFileName),
+                        component_data.SerializeAsString()));
+
+  return dir;
+}
+
+class IwaComponentWrapper {
+ public:
+  IwaComponentWrapper() {
+    auto cus = std::make_unique<
+        testing::NiceMock<component_updater::MockComponentUpdateService>>();
+    cus_ = cus.get();
+    TestingBrowserProcess::GetGlobal()->SetComponentUpdater(std::move(cus));
+
+    ON_CALL(*cus_, GetOnDemandUpdater)
+        .WillByDefault(ReturnRef(on_demand_updater()));
+    ON_CALL(*cus_, RegisterComponent(Field(&ComponentRegistration::app_id,
+                                           Eq(kIwaKeyDistributionComponentId))))
+        .WillByDefault(DoAll(
+            [&](const ComponentRegistration& component) {
+              CHECK(!on_component_registered_.is_signaled())
+                  << " Component registration is supposed to only happen once.";
+              installer_ = component.installer;
+              on_component_registered_.Signal();
+            },
+            Return(true)));
+    component_updater::RegisterIwaKeyDistributionComponent(cus_);
+  }
+
+  void InstallComponentAsync(const base::Version& version,
+                             const IwaKeyDistribution& component_data,
+                             bool is_preloaded) {
+    auto component_dir_path =
+        WriteIwaComponentData(version, component_data, is_preloaded);
+    on_component_registered_.Post(
+        FROM_HERE, base::BindLambdaForTesting([&, component_dir_path] {
+          base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+              FROM_HERE,
+              base::BindOnce(&update_client::CrxInstaller::Install, installer_,
+                             component_dir_path,
+                             /*public_key=*/"", /*install_params=*/nullptr,
+                             base::DoNothing(), base::DoNothing()));
+        }));
+  }
+
+  MockOnDemandUpdater& on_demand_updater() { return on_demand_updater_; }
+
+ private:
+  base::FilePath WriteIwaComponentData(const base::Version& version,
+                                       const IwaKeyDistribution& component_data,
+                                       bool is_preloaded) {
+    CHECK(!component_dirs_.contains(version))
+        << " There's already an installed component with version " << version;
+    std::unique_ptr<base::ScopedTempDir> dir =
+        CreateIwaComponentDir(version, component_data, is_preloaded);
+    auto path = dir->GetPath();
+    component_dirs_[version] = std::move(dir);
+    return path;
+  }
+
+  // Owned by `g_browser_process`.
+  raw_ptr<component_updater::MockComponentUpdateService> cus_ = nullptr;
+
+  // `on_demand_updater_` is defined as StrictMock to prevent situations where
+  // `OnDemandUpdate()` is dispatched to an empty implementation; this is only a
+  // likely case if the initial component data is marked as preloaded by the
+  // inheriting test suite.
+  testing::StrictMock<MockOnDemandUpdater> on_demand_updater_;
+
+  base::OneShotEvent on_component_registered_;
+  scoped_refptr<update_client::CrxInstaller> installer_;
+
+  base::flat_map<base::Version, std::unique_ptr<base::ScopedTempDir>>
+      component_dirs_;
 };
 
 }  // namespace
@@ -154,6 +270,9 @@ class IsolatedWebAppPolicyManagerTestBase : public IsolatedWebAppTest {
   }
 
   void SetUp() override {
+    IwaKeyDistributionInfoProvider::GetInstanceForTesting()
+        .SkipManagedAllowlistChecksForTesting(true);
+
     IsolatedWebAppTest::SetUp();
     SetCommandScheduler();
 
@@ -171,6 +290,12 @@ class IsolatedWebAppPolicyManagerTestBase : public IsolatedWebAppTest {
     // Suppress -Wunused-private-field warning.
     (void)is_user_session_;
 #endif  // BUILDFLAG(IS_CHROMEOS)
+  }
+
+  void TearDown() override {
+    IwaKeyDistributionInfoProvider::GetInstanceForTesting()
+        .SkipManagedAllowlistChecksForTesting(false);
+    IsolatedWebAppTest::TearDown();
   }
 
   virtual void SetCommandScheduler() = 0;
@@ -291,9 +416,8 @@ TEST_F(IsolatedWebAppPolicyManagerTest, AppNotInstalledIncorrectPinnedVersion) {
           /*pinned_version=*/pinned_version));
 
   task_environment().RunUntilIdle();
-
-  ASSERT_NE(provider().registrar_unsafe().GetInstallState(url_info.app_id()),
-            proto::InstallState::INSTALLED_WITH_OS_INTEGRATION);
+  EXPECT_FALSE(provider().registrar_unsafe().AppMatches(
+      url_info.app_id(), WebAppFilter::PolicyInstalledIsolatedWebApp()));
 }
 
 TEST_F(IsolatedWebAppPolicyManagerTest,
@@ -509,7 +633,7 @@ class IsolatedWebAppManagedAllowlistTest
 
   void SetUp() override {
     IsolatedWebAppPolicyManagerTestBase::SetUp();
-    IwaKeyDistributionInfoProvider::GetInstance()
+    IwaKeyDistributionInfoProvider::GetInstanceForTesting()
         .SkipManagedAllowlistChecksForTesting(false);
   }
 };
@@ -534,9 +658,8 @@ TEST_F(IsolatedWebAppManagedAllowlistTest, AllowedAppInstalled) {
                 .Build()
                 .UploadFromComponentFolder());
 
-  EXPECT_TRUE(
-      IwaKeyDistributionInfoProvider::GetInstance().IsManagedInstallPermitted(
-          web_bundle_id_1().id()));
+  EXPECT_TRUE(IwaKeyDistributionInfoProvider::GetInstanceForTesting()
+                  .IsManagedInstallPermitted(web_bundle_id_1().id()));
 
   test::AddForceInstalledIwaToPolicy(
       profile()->GetPrefs(),
@@ -576,9 +699,8 @@ TEST_F(IsolatedWebAppManagedAllowlistTest, NotAllowedAppInstallationRefused) {
                 .Build()
                 .UploadFromComponentFolder());
 
-  EXPECT_FALSE(
-      IwaKeyDistributionInfoProvider::GetInstance().IsManagedInstallPermitted(
-          web_bundle_id_1().id()));
+  EXPECT_FALSE(IwaKeyDistributionInfoProvider::GetInstanceForTesting()
+                   .IsManagedInstallPermitted(web_bundle_id_1().id()));
 
   test::AddForceInstalledIwaToPolicy(
       profile()->GetPrefs(),
@@ -697,7 +819,7 @@ TEST_F(IsolatedWebAppPolicyManagerPolicyRaceTest,
   {
     profile()->GetPrefs()->SetList(
         prefs::kIsolatedWebAppInstallForceList,
-        base::Value::List()
+        base::ListValue()
             .Append(IwaTestServerConfigurator::CreateForceInstallPolicyEntry(
                 web_bundle_id_1()))
             .Append(IwaTestServerConfigurator::CreateForceInstallPolicyEntry(
@@ -738,7 +860,7 @@ class UninstallWebAppCommandScheduler : public WebAppCommandScheduler {
       UninstallCallback callback,
       const base::Location& location) override {
     tried_to_uninstall_ = true;
-    EXPECT_TRUE(base::Contains(expected_apps_to_remove_, app_id));
+    EXPECT_TRUE(expected_apps_to_remove_.contains(app_id));
     EXPECT_EQ(management_type, expected_management_type_to_remove_.value_or(
                                    WebAppManagement::Type::kIwaPolicy));
     EXPECT_EQ(uninstall_source,
@@ -783,7 +905,7 @@ TEST_F(IsolatedWebAppPolicyManagerUninstallTest, OneAppUninstalled) {
   {
     profile()->GetPrefs()->SetList(
         prefs::kIsolatedWebAppInstallForceList,
-        base::Value::List()
+        base::ListValue()
             .Append(IwaTestServerConfigurator::CreateForceInstallPolicyEntry(
                 web_bundle_id_1()))
             .Append(IwaTestServerConfigurator::CreateForceInstallPolicyEntry(
@@ -807,7 +929,7 @@ TEST_F(IsolatedWebAppPolicyManagerUninstallTest, OneAppUninstalled) {
 
     profile()->GetPrefs()->SetList(
         prefs::kIsolatedWebAppInstallForceList,
-        base::Value::List().Append(
+        base::ListValue().Append(
             IwaTestServerConfigurator::CreateForceInstallPolicyEntry(
                 web_bundle_id_1())));
 
@@ -823,7 +945,7 @@ TEST_F(IsolatedWebAppPolicyManagerUninstallTest, BothAppUninstalled) {
   {
     profile()->GetPrefs()->SetList(
         prefs::kIsolatedWebAppInstallForceList,
-        base::Value::List()
+        base::ListValue()
             .Append(IwaTestServerConfigurator::CreateForceInstallPolicyEntry(
                 web_bundle_id_1()))
             .Append(IwaTestServerConfigurator::CreateForceInstallPolicyEntry(
@@ -854,7 +976,7 @@ TEST_F(IsolatedWebAppPolicyManagerUninstallTest, BothAppUninstalled) {
               2U);
 
     profile()->GetPrefs()->SetList(prefs::kIsolatedWebAppInstallForceList,
-                                   base::Value::List());
+                                   base::ListValue());
 
     uninstall_observer.Wait();
 
@@ -893,7 +1015,7 @@ TEST_F(IsolatedWebAppPolicyManagerUninstallTest,
 
     profile()->GetPrefs()->SetList(
         prefs::kIsolatedWebAppInstallForceList,
-        base::Value::List().Append(
+        base::ListValue().Append(
             IwaTestServerConfigurator::CreateForceInstallPolicyEntry(
                 web_bundle_id_1())));
 
@@ -1138,7 +1260,7 @@ TEST_F(IsolatedWebAppRetryTest, RetryTriggeredWhenAllTasksDone) {
 
   profile()->GetPrefs()->SetList(
       prefs::kIsolatedWebAppInstallForceList,
-      base::Value::List()
+      base::ListValue()
           .Append(IwaTestServerConfigurator::CreateForceInstallPolicyEntry(
               web_bundle_id_1()))
           .Append(IwaTestServerConfigurator::CreateForceInstallPolicyEntry(
@@ -1275,19 +1397,37 @@ TEST_F(CleanupOrphanedBundlesTest, CleanUpCalledOnSessionStart) {
 class IsolatedWebAppPolicyManagerOnDemandUpdateDownloadedTest
     : public IsolatedWebAppTest {
  public:
-  using Component =
-      component_updater::IwaKeyDistributionComponentInstallerPolicy;
-  using Priority = component_updater::OnDemandUpdater::Priority;
-  using ComponentRegistration = component_updater::ComponentRegistration;
-
-  static constexpr std::string_view kIwaKeyDistributionComponentId =
-      "iebhnlpddlcpcfpfalldikcoeakpeoah";
-
   IsolatedWebAppPolicyManagerOnDemandUpdateDownloadedTest()
       : IsolatedWebAppTest(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {
   }
 
+  MockOnDemandUpdater& on_demand_updater() {
+    return component_wrapper_->on_demand_updater();
+  }
+
+  void InstallComponentAsync(const base::Version& version,
+                             const IwaKeyDistribution& component_data) {
+    component_wrapper_->InstallComponentAsync(version, component_data,
+                                              /*is_preloaded=*/false);
+  }
+
  protected:
+  void SetUp() override {
+    IsolatedWebAppTest::SetUp();
+    IwaKeyDistributionInfoProvider::GetInstanceForTesting()
+        .SkipManagedAllowlistChecksForTesting(true);
+    component_wrapper_ = std::make_unique<IwaComponentWrapper>();
+    component_wrapper_->InstallComponentAsync(base::Version("1.0.0"),
+                                              /*component_data=*/{},
+                                              IsIwaComponentPreloaded());
+  }
+
+  void TearDown() override {
+    IwaKeyDistributionInfoProvider::GetInstanceForTesting()
+        .SkipManagedAllowlistChecksForTesting(false);
+    IsolatedWebAppTest::TearDown();
+  }
+
   IsolatedWebAppUrlInfo url_info() const {
     return IsolatedWebAppUrlInfo::CreateFromSignedWebBundleId(
         test::GetDefaultEd25519WebBundleId());
@@ -1299,10 +1439,17 @@ class IsolatedWebAppPolicyManagerOnDemandUpdateDownloadedTest
         IwaTestServerConfigurator::CreateForceInstallPolicyEntry(
             url_info().web_bundle_id()));
   }
-};
 
-using testing::Field;
-using testing::WithoutArgs;
+ private:
+  virtual bool IsIwaComponentPreloaded() const { return false; }
+
+  std::unique_ptr<IwaComponentWrapper> component_wrapper_;
+
+  base::ScopedPathOverride preinstalled_dir_override_{
+      component_updater::DIR_COMPONENT_PREINSTALLED};
+  base::ScopedPathOverride preinstalled_alt_dir_override_{
+      component_updater::DIR_COMPONENT_PREINSTALLED_ALT};
+};
 
 class IsolatedWebAppPolicyManagerOnDemandUpdatePreloadedTest
     : public IsolatedWebAppPolicyManagerOnDemandUpdateDownloadedTest {

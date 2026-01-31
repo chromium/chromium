@@ -36,6 +36,7 @@
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_opener.h"
 #import "ios/chrome/browser/shared/public/commands/browser_coordinator_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
+#import "ios/chrome/browser/shared/public/commands/download_list_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/util/file_size_util.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -439,6 +440,11 @@ TEST_F(DownloadManagerCoordinatorTest, OpenIn) {
   [browser_->GetCommandDispatcher()
       startDispatchingToTarget:dispatcher_mock
                    forProtocol:@protocol(BrowserCoordinatorCommands)];
+  id download_list_dispatcher_mock =
+      OCMProtocolMock(@protocol(DownloadListCommands));
+  [browser_->GetCommandDispatcher()
+      startDispatchingToTarget:download_list_dispatcher_mock
+                   forProtocol:@protocol(DownloadListCommands)];
 
   // Start the download.
   base::FilePath path;

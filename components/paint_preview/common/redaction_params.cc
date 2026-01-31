@@ -4,7 +4,6 @@
 
 #include "components/paint_preview/common/redaction_params.h"
 
-#include "base/containers/contains.h"
 #include "net/base/schemeful_site.h"
 
 namespace paint_preview {
@@ -48,13 +47,13 @@ bool RedactionParams::ShouldRedactSubframe(
 
 bool RedactionParams::State::AllowlistContainsOrigin(
     const url::Origin& origin) const {
-  return base::Contains(allowed_origins, origin);
+  return allowed_origins.contains(origin);
 }
 
 bool RedactionParams::State::AllowlistContainsSite(
     const url::Origin& origin) const {
   return !allowed_sites.empty() &&
-         base::Contains(allowed_sites, net::SchemefulSite(origin));
+         allowed_sites.contains(net::SchemefulSite(origin));
 }
 
 }  // namespace paint_preview

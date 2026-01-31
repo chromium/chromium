@@ -29,7 +29,7 @@ ExtensionsMenuButton::ExtensionsMenuButton(Browser* browser,
                   std::u16string()),
       browser_(browser),
       model_(model),
-      model_subscription_(model_->RegisterUpdateObserver(
+      model_subscription_(model_->RegisterIconUpdateObserver(
           base::BindRepeating(&ExtensionsMenuButton::UpdateState,
                               base::Unretained(this)))) {}
 

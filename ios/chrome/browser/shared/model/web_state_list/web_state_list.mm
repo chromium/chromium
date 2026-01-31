@@ -11,7 +11,6 @@
 #import "base/check.h"
 #import "base/check_op.h"
 #import "base/containers/adapters.h"
-#import "base/containers/contains.h"
 #import "base/functional/bind.h"
 #import "base/memory/raw_ptr.h"
 #import "components/tab_groups/tab_group_id.h"
@@ -713,7 +712,7 @@ std::unique_ptr<web::WebState> WebStateList::DetachWebStateAtImpl(
     // and `web_state` are still valid.
     detached_wrapper = std::move(web_state_wrappers_[index]);
     web_state_wrappers_.erase(web_state_wrappers_.begin() + index);
-    CHECK(!base::Contains(web_state_wrappers_, detached_wrapper));
+    CHECK(!std::ranges::contains(web_state_wrappers_, detached_wrapper));
     CHECK_EQ(detached_wrapper->web_state(), web_state);
     CHECK_EQ(detached_wrapper.get(), wrapper);
 
@@ -764,7 +763,7 @@ std::unique_ptr<web::WebState> WebStateList::DetachWebStateAtImpl(
     DeleteGroupIfEmpty(group);
   }
 
-  CHECK(!base::Contains(web_state_wrappers_, detached_wrapper));
+  CHECK(!std::ranges::contains(web_state_wrappers_, detached_wrapper));
   return WebStateWrapper::ReleaseWebState(std::move(detached_wrapper));
 }
 

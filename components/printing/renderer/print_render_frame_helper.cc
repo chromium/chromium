@@ -331,8 +331,8 @@ blink::WebPrintParams ComputeWebKitPrintParamsInDesiredDpi(
   if (source_is_pdf) {
 #if BUILDFLAG(IS_APPLE)
     // For Mac, GetDPI() returns a value that avoids DPI-based scaling. This is
-    // correct except when rastering PDFs, which uses |printer_dpi|, and the
-    // value for |printer_dpi| is too low. Adjust that here.
+    // correct except when rastering PDFs, which uses `printer_dpi`, and the
+    // value for `printer_dpi` is too low. Adjust that here.
     // See https://crbug.com/943462
     webkit_print_params.printer_dpi = kDefaultPdfDpi;
 #endif
@@ -367,7 +367,7 @@ bool IsPrintingPdfFrame(blink::WebLocalFrame* frame,
 }
 
 #if BUILDFLAG(ENABLE_PRINT_PREVIEW)
-bool IsPrintToPdfRequested(const base::Value::Dict& job_settings) {
+bool IsPrintToPdfRequested(const base::DictValue& job_settings) {
   mojom::PrinterType type = static_cast<mojom::PrinterType>(
       job_settings.FindInt(kSettingPrinterType).value());
   return type == mojom::PrinterType::kPdf;
@@ -409,7 +409,7 @@ void GetPageSizeAndOrientationInfo(blink::WebLocalFrame* frame,
 // Disable scaling when either:
 // - The PDF specifies disabling scaling.
 // - All the pages in the PDF are the same size,
-// - |ignore_page_size| is false and the uniform size is the same as the paper
+// - `ignore_page_size` is false and the uniform size is the same as the paper
 //   size.
 bool PDFShouldDisableScalingBasedOnPreset(
     const blink::WebPrintPresetOptions& options,
@@ -423,7 +423,7 @@ bool PDFShouldDisableScalingBasedOnPreset(
 
   int dpi = GetDPI(params);
   if (!dpi) {
-    // Likely |params| is invalid, in which case the return result does not
+    // Likely `params` is invalid, in which case the return result does not
     // matter. Check for this so ConvertUnit() does not divide by zero.
     return true;
   }
@@ -464,7 +464,7 @@ gfx::SizeF GetPdfPageSize(const gfx::SizeF& page_size, int dpi) {
                     ConvertUnitFloat(page_size.height(), dpi, kPointsPerInch));
 }
 
-ScalingType ScalingTypeFromJobSettings(const base::Value::Dict& job_settings) {
+ScalingType ScalingTypeFromJobSettings(const base::DictValue& job_settings) {
   return static_cast<ScalingType>(
       job_settings.FindInt(kSettingScalingType).value());
 }
@@ -478,7 +478,7 @@ ScalingType ScalingTypeFromJobSettings(const base::Value::Dict& job_settings) {
 // We crop the source page size to fit the printable area or we print only the
 // left top page contents when
 // (1) Source is PDF and the user has requested to customize the scaling
-// via |job_settings|.
+// via `job_settings`.
 // (2) Source is PDF. This is the first preview request and print scaling
 // option is disabled for initiator renderer plugin.
 //
@@ -487,7 +487,7 @@ mojom::PrintScalingOption GetPrintScalingOption(
     blink::WebLocalFrame* frame,
     const blink::WebNode& node,
     bool source_is_html,
-    const base::Value::Dict& job_settings,
+    const base::DictValue& job_settings,
     const mojom::PrintParams& params) {
   if (params.print_to_pdf)
     return mojom::PrintScalingOption::kSourceSize;
@@ -496,7 +496,7 @@ mojom::PrintScalingOption GetPrintScalingOption(
     ScalingType scaling_type = ScalingTypeFromJobSettings(job_settings);
     // The following conditions are ordered for an optimization that avoids
     // calling PDFShouldDisableScaling(), which has to make a call using PPAPI.
-    if (scaling_type == CUSTOM) {
+    if (scaling_type == CUSTOM || scaling_type == ACTUAL_SIZE) {
       return mojom::PrintScalingOption::kNone;
     }
 
@@ -590,7 +590,7 @@ void PrintHeaderAndFooter(cc::PaintCanvas* canvas,
       page_layout.margin_top + page_layout.margin_bottom +
           page_layout.content_height);
 
-  base::Value::Dict options;
+  base::DictValue options;
   options.Set(kSettingHeaderFooterDate,
               base::Time::Now().InMillisecondsFSinceUnixEpoch());
   options.Set("width", static_cast<double>(page_size.width()));
@@ -739,7 +739,7 @@ FrameReference::~FrameReference() = default;
 void FrameReference::Reset(blink::WebLocalFrame* frame) {
   if (frame) {
     view_ = frame->View();
-    // Make sure this isn't called too early in the |frame| lifecycle... i.e.
+    // Make sure this isn't called too early in the `frame` lifecycle... i.e.
     // calling this in WebLocalFrameClient::BindToFrame() doesn't work.
     // TODO(dcheng): It's a bit awkward that lifetime details like this leak out
     // of Blink. Fixing https://crbug.com/727166 should allow this to be
@@ -830,7 +830,7 @@ class PrepareFrameAndViewForPrint : public blink::WebViewClient,
   void FinishPrinting();
 
   bool IsLoadingSelection() {
-    // It's not selection if not |owns_web_view_|.
+    // It's not selection if not `owns_web_view_`.
     return owns_web_view_ && frame() && frame()->IsLoading();
   }
 
@@ -1166,7 +1166,7 @@ PrintRenderFrameHelper::GetPrintManagerHost() {
     render_frame()->GetRemoteAssociatedInterfaces()->GetInterface(
         &print_manager_host_);
     // Makes sure that it quits the runloop that runs while a Mojo call waits
-    // for a reply if |print_manager_host_| is disconnected before the reply.
+    // for a reply if `print_manager_host_` is disconnected before the reply.
     print_manager_host_.set_disconnect_handler(
         base::BindOnce(&PrintRenderFrameHelper::QuitScriptedPrintPreviewRunLoop,
                        weak_ptr_factory_.GetWeakPtr()));
@@ -1220,6 +1220,11 @@ void PrintRenderFrameHelper::DidFinishLoadForPrinting() {
 }
 
 void PrintRenderFrameHelper::ScriptedPrint(bool user_initiated) {
+  // This method is a known source of high input latency. Emit an event in the
+  // "latency" category so it can easily be identified in traces captured to
+  // diagnose latency.
+  TRACE_EVENT("latency", "PrintRenderFrameHelper::ScriptedPrint");
+
   blink::WebLocalFrame* web_frame = render_frame()->GetWebFrame();
   if (!IsScriptInitiatedPrintAllowed(web_frame, user_initiated))
     return;
@@ -1473,7 +1478,7 @@ void PrintRenderFrameHelper::InitiatePrintPreview(
   // Print Preview resets `print_in_progress_` when the dialog closes.
 }
 
-void PrintRenderFrameHelper::PrintPreview(base::Value::Dict settings) {
+void PrintRenderFrameHelper::PrintPreview(base::DictValue settings) {
   ScopedIPC scoped_ipc(weak_ptr_factory_.GetWeakPtr());
   if (ipc_nesting_level_ > kAllowedIpcDepthForPrint)
     return;
@@ -1637,7 +1642,7 @@ void PrintRenderFrameHelper::PrintNodeUnderContextMenu() {
 }
 
 void PrintRenderFrameHelper::UpdateFrameMarginsCssInfo(
-    const base::Value::Dict& settings) {
+    const base::DictValue& settings) {
   constexpr int kDefault = static_cast<int>(mojom::MarginType::kDefaultMargins);
   int margins_type = settings.FindInt(kSettingMarginsType).value_or(kDefault);
   ignore_css_margins_ = margins_type != kDefault;
@@ -1654,7 +1659,7 @@ void PrintRenderFrameHelper::PrepareFrameForPreviewDocument() {
   }
 
   if (CheckForCancel()) {
-    // No need to set an error, since |notify_browser_of_print_failure_| is
+    // No need to set an error, since `notify_browser_of_print_failure_` is
     // false.
     DidFinishPrinting(PrintingResult::kFailPreview);
     return;
@@ -2064,7 +2069,7 @@ void PrintRenderFrameHelper::PrintNode(const blink::WebNode& node) {
   print_in_progress_ = true;
 
   // Make a copy of the node, in case RenderView::OnContextMenuClosed() resets
-  // its |context_menu_node_|.
+  // its `context_menu_node_`.
   blink::WebNode duplicate_node(node);
 
   auto weak_this = weak_ptr_factory_.GetWeakPtr();
@@ -2116,7 +2121,7 @@ void PrintRenderFrameHelper::Print(blink::WebLocalFrame* frame,
   // Ask the browser to show UI to retrieve the final print settings.
   {
     // ScriptedPrint() in GetPrintSettingsFromUser() will reset
-    // |print_scaling_option|, so save the value here and restore it afterwards.
+    // `print_scaling_option`, so save the value here and restore it afterwards.
     mojom::PrintScalingOption scaling_option =
         print_pages_params_->params->print_scaling_option;
 
@@ -2128,7 +2133,7 @@ void PrintRenderFrameHelper::Print(blink::WebLocalFrame* frame,
       return;
 
     // GetPrintSettingsFromUser() could return nullptr when
-    // |print_manager_host_| is closed, or when the user cancels.
+    // `print_manager_host_` is closed, or when the user cancels.
     if (!print_settings) {
       if (print_manager_host_) {
         // Release resources and fail silently if the user cancels.
@@ -2446,11 +2451,11 @@ PrintRenderFrameHelper::SetOptionsFromPdfDocument() {
 bool PrintRenderFrameHelper::UpdatePrintSettings(
     blink::WebLocalFrame* frame,
     const blink::WebNode& node,
-    base::Value::Dict passed_job_settings) {
+    base::DictValue passed_job_settings) {
   CHECK(!passed_job_settings.empty());
 
-  base::Value::Dict modified_job_settings;
-  const base::Value::Dict* job_settings;
+  base::DictValue modified_job_settings;
+  const base::DictValue* job_settings;
   bool source_is_html = !IsPrintingPdfFrame(frame, node);
   if (source_is_html) {
     job_settings = &passed_job_settings;
@@ -2574,12 +2579,9 @@ PrintRenderFrameHelper::PrintPageInternal(
     gfx::Size page_size_in_points =
         gfx::ToRoundedSize(gfx::SizeF(page_width, page_height));
 
-    constexpr double kScaleFactorInPoints =
-        static_cast<double>(kPointsPerInch) /
-        static_cast<double>(kPixelsPerInch);
     canvas = metafile->GetVectorCanvasForNewPage(
         page_size_in_points, gfx::Rect(page_size_in_points),
-        kScaleFactorInPoints, layout.page_orientation);
+        kUnitConversionFactorPixelsToPoints, layout.page_orientation);
   }
   if (!canvas) {
     return PrintPageInternalResult::kNoCanvas;
@@ -2711,7 +2713,7 @@ void PrintRenderFrameHelper::RequestPrintPreview(PrintPreviewRequestType type,
         is_scripted_preview_delayed_ = false;
 
         if (do_deferred_print_for_system_dialog_) {
-          // PrintForSystemDialog() quit the |loop| to avoid running 2 levels of
+          // PrintForSystemDialog() quit the `loop` to avoid running 2 levels of
           // nested loops. Resume PrintForSystemDialog().
           do_deferred_print_for_system_dialog_ = false;
           PrintForSystemDialog();

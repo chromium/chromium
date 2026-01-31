@@ -7,6 +7,7 @@ import android.graphics.Rect;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import javax.annotation.processing.Generated;
 import org.jni_zero.CheckDiscard;
 import org.jni_zero.GEN_JNI;
 import org.jni_zero.JniTestInstanceHolder;
@@ -16,6 +17,7 @@ import org.jni_zero.internal.NullUnmarked;
 import org.jni_zero.internal.Nullable;
 
 @CheckDiscard("crbug.com/993421")
+@Generated("JNI Zero")
 @NullUnmarked
 public class SampleForTestsJni implements SampleForTests.Natives {
   private static @Nullable JniTestInstanceHolder sOverride;

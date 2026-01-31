@@ -93,12 +93,30 @@ mojom::blink::SharedStorageDataOriginType SharedStorageDataOriginToMojom(
 
 // static
 SharedStorageWorklet* SharedStorageWorklet::Create(ScriptState* script_state) {
-  return MakeGarbageCollected<SharedStorageWorklet>();
+  return MakeGarbageCollected<SharedStorageWorklet>(
+      ExecutionContext::From(script_state));
 }
+
+SharedStorageWorklet::SharedStorageWorklet(ExecutionContext* context)
+    : ExecutionContextLifecycleObserver(context), worklet_host_(context) {}
 
 void SharedStorageWorklet::Trace(Visitor* visitor) const {
   visitor->Trace(worklet_host_);
+  visitor->Trace(pending_resolvers_);
   ScriptWrappable::Trace(visitor);
+  ExecutionContextLifecycleObserver::Trace(visitor);
+}
+
+void SharedStorageWorklet::ContextDestroyed() {
+  for (const auto& resolver : pending_resolvers_) {
+    resolver->Detach();
+  }
+  pending_resolvers_.clear();
+}
+
+void SharedStorageWorklet::FinishOperation(
+    ScriptPromiseResolverBase* resolver) {
+  pending_resolvers_.erase(resolver);
 }
 
 ScriptPromise<IDLUndefined> SharedStorageWorklet::addModule(
@@ -268,6 +286,8 @@ void SharedStorageWorklet::AddModuleOnLocalDomWindow(
     bool resolve_to_worklet,
     base::TimeTicks start_time,
     ScriptPromiseResolverBase* resolver) {
+  pending_resolvers_.insert(resolver);
+
   std::unique_ptr<Vector<mojom::blink::OriginTrialFeature>>
       origin_trial_features =
           OriginTrialContext::GetInheritedTrialFeatures(dom_window);
@@ -289,12 +309,14 @@ void SharedStorageWorklet::AddModuleOnLocalDomWindow(
                  base::TimeTicks start_time, bool resolve_to_worklet,
                  bool success, const String& error_message) {
                 DCHECK(resolver);
+
                 ScriptState* script_state = resolver->GetScriptState();
 
                 if (!success) {
                   if (IsInParallelAlgorithmRunnable(
                           resolver->GetExecutionContext(), script_state)) {
                     ScriptState::Scope scope(script_state);
+                    shared_storage_worklet->FinishOperation(resolver);
                     resolver->Reject(V8ThrowDOMException::CreateOrEmpty(
                         script_state->GetIsolate(),
                         DOMExceptionCode::kOperationError, error_message));
@@ -309,6 +331,7 @@ void SharedStorageWorklet::AddModuleOnLocalDomWindow(
                     "Storage.SharedStorage.Document.Timing.AddModule",
                     base::TimeTicks::Now() - start_time);
 
+                shared_storage_worklet->FinishOperation(resolver);
                 if (resolve_to_worklet) {
                   resolver->DowncastTo<SharedStorageWorklet>()->Resolve(
                       shared_storage_worklet);
@@ -601,6 +624,9 @@ void SharedStorageWorklet::SelectUrlInternal(
         SharedStorageWorkletErrorType::kSelectURLWebVisible);
     return;
   }
+
+  pending_resolvers_.insert(resolver);
+
   worklet_host_->SelectURL(
       name, std::move(converted_urls), std::move(serialized_data), keep_alive,
       std::move(private_aggregation_config), resolve_to_config,
@@ -618,6 +644,7 @@ void SharedStorageWorklet::SelectUrlInternal(
               if (IsInParallelAlgorithmRunnable(resolver->GetExecutionContext(),
                                                 script_state)) {
                 ScriptState::Scope scope(script_state);
+                shared_storage_worklet->FinishOperation(resolver);
                 resolver->Reject(V8ThrowDOMException::CreateOrEmpty(
                     script_state->GetIsolate(),
                     DOMExceptionCode::kOperationError, error_message));
@@ -633,6 +660,7 @@ void SharedStorageWorklet::SelectUrlInternal(
             // `result_config` must have value. Otherwise `success` should
             // be false and program should not reach here.
             DCHECK(result_config.has_value());
+            shared_storage_worklet->FinishOperation(resolver);
             if (resolve_to_config) {
               resolver->Resolve(FencedFrameConfig::From(result_config.value()));
             } else {
@@ -752,6 +780,8 @@ void SharedStorageWorklet::RunInternal(
     return;
   }
 
+  pending_resolvers_.insert(resolver);
+
   worklet_host_->Run(
       name, std::move(serialized_data), keep_alive,
       std::move(private_aggregation_config), start_time,
@@ -761,12 +791,14 @@ void SharedStorageWorklet::RunInternal(
              base::TimeTicks start_time, bool success,
              const String& error_message) {
             DCHECK(resolver);
+
             ScriptState* script_state = resolver->GetScriptState();
 
             if (!success) {
               if (IsInParallelAlgorithmRunnable(resolver->GetExecutionContext(),
                                                 script_state)) {
                 ScriptState::Scope scope(script_state);
+                shared_storage_worklet->FinishOperation(resolver);
                 resolver->Reject(V8ThrowDOMException::CreateOrEmpty(
                     script_state->GetIsolate(),
                     DOMExceptionCode::kOperationError, error_message));
@@ -780,6 +812,7 @@ void SharedStorageWorklet::RunInternal(
             base::UmaHistogramMediumTimes(
                 "Storage.SharedStorage.Document.Timing.Run",
                 base::TimeTicks::Now() - start_time);
+            shared_storage_worklet->FinishOperation(resolver);
             resolver->Resolve();
 
             // `SharedStorageWorkletErrorType::kSuccess` is logged in the

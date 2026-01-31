@@ -77,16 +77,18 @@ void XInputDataFetcherWin::EnumerateDevices() {
   TRACE_EVENT0("GAMEPAD", "EnumerateDevices");
 
   if (xinput_available_) {
+    auto xinput_connected_span = base::span(xinput_connected_);
+    auto haptics_span = base::span(haptics_);
     for (size_t i = 0; i < XUSER_MAX_COUNT; ++i) {
       // Check to see if the xinput device is connected
       XINPUT_CAPABILITIES caps;
       DWORD res = xinput_get_capabilities_(i, XINPUT_FLAG_GAMEPAD, &caps);
-      UNSAFE_TODO(xinput_connected_[i]) = (res == ERROR_SUCCESS);
-      if (!UNSAFE_TODO(xinput_connected_[i])) {
-        if (UNSAFE_TODO(haptics_[i])) {
-          UNSAFE_TODO(haptics_[i]->Shutdown());
+      xinput_connected_span[i] = (res == ERROR_SUCCESS);
+      if (!xinput_connected_span[i]) {
+        if (haptics_span[i]) {
+          haptics_span[i]->Shutdown();
         }
-        UNSAFE_TODO(haptics_[i]) = nullptr;
+        haptics_span[i] = nullptr;
         continue;
       }
 
@@ -98,8 +100,8 @@ void XInputDataFetcherWin::EnumerateDevices() {
 
       if (!state->is_initialized) {
         state->is_initialized = true;
-        if (!UNSAFE_TODO(haptics_[i])) {
-          UNSAFE_TODO(haptics_[i]) =
+        if (!haptics_span[i]) {
+          haptics_span[i] =
               std::make_unique<XInputHapticGamepadWin>(i, xinput_set_state_);
         }
 
@@ -151,8 +153,9 @@ void XInputDataFetcherWin::GetGamepadData(bool devices_changed_hint) {
   if (devices_changed_hint)
     EnumerateDevices();
 
+  auto xinput_connected_span = base::span(xinput_connected_);
   for (size_t i = 0; i < XUSER_MAX_COUNT; ++i) {
-    if (UNSAFE_TODO(xinput_connected_[i])) {
+    if (xinput_connected_span[i]) {
       GetXInputPadData(i);
     }
   }
@@ -169,8 +172,7 @@ void XInputDataFetcherWin::GetXInputPadData(int i) {
   // XInputGetState. We can use the same struct for both since XInputStateEx
   // has identical layout to XINPUT_STATE except for an extra padding member at
   // the end.
-  XInputStateEx state;
-  UNSAFE_TODO(memset(&state, 0, sizeof(XInputStateEx)));
+  XInputStateEx state = {};
   TRACE_EVENT_BEGIN1("GAMEPAD", "XInputGetState", "id", i);
   DWORD dwResult;
   if (xinput_get_state_ex_)
@@ -269,16 +271,18 @@ void XInputDataFetcherWin::ResetVibration(
     return;
   }
 
-  if (!xinput_available_ || !UNSAFE_TODO(xinput_connected_[pad_id]) ||
-      UNSAFE_TODO(haptics_[pad_id]) == nullptr) {
+  auto xinput_connected_span = base::span(xinput_connected_);
+  auto haptics_span = base::span(haptics_);
+  if (!xinput_available_ || !xinput_connected_span[pad_id] ||
+      haptics_span[pad_id] == nullptr) {
     RunVibrationCallback(
         std::move(callback), std::move(callback_runner),
         mojom::GamepadHapticsResult::GamepadHapticsResultNotSupported);
     return;
   }
 
-  UNSAFE_TODO(haptics_[pad_id]->ResetVibration(std::move(callback),
-                                               std::move(callback_runner)));
+  haptics_span[pad_id]->ResetVibration(std::move(callback),
+                                       std::move(callback_runner));
 }
 
 bool XInputDataFetcherWin::GetXInputDllFunctions() {

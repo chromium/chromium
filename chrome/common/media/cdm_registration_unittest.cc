@@ -85,7 +85,7 @@ void CreateFakeComponentUpdatedWidevine(
 
     // Create a manifest. This is the minimum needed so that
     // ParseCdmManifestFromPath() will be happy with it.
-    base::Value::Dict manifest;
+    base::DictValue manifest;
     manifest.Set("version", version.GetString());
     manifest.Set("x-cdm-codecs", "vp8,vp09,av01");
     manifest.Set("x-cdm-module-versions", "4");

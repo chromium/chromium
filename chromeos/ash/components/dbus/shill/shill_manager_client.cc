@@ -83,14 +83,14 @@ class ShillManagerClientImpl : public ShillManagerClient {
   }
 
   void GetProperties(
-      chromeos::DBusMethodCallback<base::Value::Dict> callback) override {
+      chromeos::DBusMethodCallback<base::DictValue> callback) override {
     dbus::MethodCall method_call(shill::kFlimflamManagerInterface,
                                  shill::kGetPropertiesFunction);
     helper_->CallDictValueMethod(&method_call, std::move(callback));
   }
 
   void GetNetworksForGeolocation(
-      chromeos::DBusMethodCallback<base::Value::Dict> callback) override {
+      chromeos::DBusMethodCallback<base::DictValue> callback) override {
     dbus::MethodCall method_call(shill::kFlimflamManagerInterface,
                                  shill::kGetNetworksForGeolocation);
     helper_->CallDictValueMethod(&method_call, std::move(callback));
@@ -163,7 +163,7 @@ class ShillManagerClientImpl : public ShillManagerClient {
                                              std::move(error_callback));
   }
 
-  void ConfigureService(const base::Value::Dict& properties,
+  void ConfigureService(const base::DictValue& properties,
                         chromeos::ObjectPathCallback callback,
                         ErrorCallback error_callback) override {
     dbus::MethodCall method_call(shill::kFlimflamManagerInterface,
@@ -175,7 +175,7 @@ class ShillManagerClientImpl : public ShillManagerClient {
   }
 
   void ConfigureServiceForProfile(const dbus::ObjectPath& profile_path,
-                                  const base::Value::Dict& properties,
+                                  const base::DictValue& properties,
                                   chromeos::ObjectPathCallback callback,
                                   ErrorCallback error_callback) override {
     dbus::MethodCall method_call(shill::kFlimflamManagerInterface,
@@ -187,7 +187,7 @@ class ShillManagerClientImpl : public ShillManagerClient {
         &method_call, std::move(callback), std::move(error_callback));
   }
 
-  void GetService(const base::Value::Dict& properties,
+  void GetService(const base::DictValue& properties,
                   chromeos::ObjectPathCallback callback,
                   ErrorCallback error_callback) override {
     dbus::MethodCall method_call(shill::kFlimflamManagerInterface,
@@ -207,7 +207,7 @@ class ShillManagerClientImpl : public ShillManagerClient {
   }
 
   void AddPasspointCredentials(const dbus::ObjectPath& profile_path,
-                               const base::Value::Dict& properties,
+                               const base::DictValue& properties,
                                base::OnceClosure callback,
                                ErrorCallback error_callback) override {
     dbus::MethodCall method_call(shill::kFlimflamManagerInterface,
@@ -220,7 +220,7 @@ class ShillManagerClientImpl : public ShillManagerClient {
   }
 
   void RemovePasspointCredentials(const dbus::ObjectPath& profile_path,
-                                  const base::Value::Dict& properties,
+                                  const base::DictValue& properties,
                                   base::OnceClosure callback,
                                   ErrorCallback error_callback) override {
     dbus::MethodCall method_call(shill::kFlimflamManagerInterface,
@@ -281,15 +281,14 @@ class ShillManagerClientImpl : public ShillManagerClient {
                                              std::move(error_callback));
   }
 
-  void CreateP2PGroup(
-      const CreateP2PGroupParameter& create_group_argument,
-      base::OnceCallback<void(base::Value::Dict result)> callback,
-      ErrorCallback error_callback) override {
+  void CreateP2PGroup(const CreateP2PGroupParameter& create_group_argument,
+                      base::OnceCallback<void(base::DictValue result)> callback,
+                      ErrorCallback error_callback) override {
     dbus::MethodCall method_call(shill::kFlimflamManagerInterface,
                                  shill::kCreateP2PGroupFunction);
     dbus::MessageWriter writer(&method_call);
 
-    base::Value::Dict properties;
+    base::DictValue properties;
     const shill::WiFiInterfacePriority priority =
         create_group_argument.priority.has_value()
             ? create_group_argument.priority.value()
@@ -316,13 +315,13 @@ class ShillManagerClientImpl : public ShillManagerClient {
 
   void ConnectToP2PGroup(
       const ConnectP2PGroupParameter& connect_group_argument,
-      base::OnceCallback<void(base::Value::Dict result)> callback,
+      base::OnceCallback<void(base::DictValue result)> callback,
       ErrorCallback error_callback) override {
     dbus::MethodCall method_call(shill::kFlimflamManagerInterface,
                                  shill::kConnectToP2PGroupFunction);
     dbus::MessageWriter writer(&method_call);
 
-    base::Value::Dict properties;
+    base::DictValue properties;
     properties.Set(shill::kP2PDeviceSSID, connect_group_argument.ssid);
     properties.Set(shill::kP2PDevicePassphrase,
                    connect_group_argument.passphrase);
@@ -344,7 +343,7 @@ class ShillManagerClientImpl : public ShillManagerClient {
 
   void DestroyP2PGroup(
       const int shill_id,
-      base::OnceCallback<void(base::Value::Dict result)> callback,
+      base::OnceCallback<void(base::DictValue result)> callback,
       ErrorCallback error_callback) override {
     dbus::MethodCall method_call(shill::kFlimflamManagerInterface,
                                  shill::kDestroyP2PGroupFunction);
@@ -356,7 +355,7 @@ class ShillManagerClientImpl : public ShillManagerClient {
 
   void DisconnectFromP2PGroup(
       const int shill_id,
-      base::OnceCallback<void(base::Value::Dict result)> callback,
+      base::OnceCallback<void(base::DictValue result)> callback,
       ErrorCallback error_callback) override {
     dbus::MethodCall method_call(shill::kFlimflamManagerInterface,
                                  shill::kDisconnectFromP2PGroupFunction);
@@ -378,7 +377,7 @@ class ShillManagerClientImpl : public ShillManagerClient {
  private:
   // Used by SetProperty call to reroute kDNSProxyDOHProviders to the underlying
   // specialized method in the DBus API.
-  void SetDNSProxyDOHProviders(const base::Value::Dict& providers,
+  void SetDNSProxyDOHProviders(const base::DictValue& providers,
                                base::OnceClosure callback,
                                ErrorCallback error_callback) {
     dbus::MethodCall method_call(shill::kFlimflamManagerInterface,

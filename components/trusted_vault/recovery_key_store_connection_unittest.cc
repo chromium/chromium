@@ -239,7 +239,8 @@ TEST_F(RecoveryKeyStoreConnectionImplTest, ShouldListVaults) {
   trusted_vault_pb::Vault* vault = response.add_vaults();
   vault->mutable_vault_parameters()->set_backend_public_key(kBackendPublicKey1);
   vault->mutable_vault_parameters()->set_vault_handle(kVaultHandle1);
-  network::ResourceRequest url_request = GetPendingHTTPRequest()->request;
+  const network::ResourceRequest& url_request =
+      GetPendingHTTPRequest()->request;
   EXPECT_EQ(url_request.method, "GET");
   EXPECT_THAT(url_request.url.GetQuery(), Not(HasSubstr("page_token")));
   EXPECT_THAT(url_request.url.GetQuery(), HasSubstr("use_case=13"));

@@ -73,6 +73,10 @@ bool CSSImageSetOptionValue::Equals(const CSSImageSetOptionValue& other) const {
          base::ValuesEquivalent(type_, other.type_);
 }
 
+bool CSSImageSetOptionValue::HasRandomFunctions() const {
+  return resolution_ && resolution_->HasRandomFunctions();
+}
+
 void CSSImageSetOptionValue::TraceAfterDispatch(blink::Visitor* visitor) const {
   visitor->Trace(image_);
   visitor->Trace(resolution_);

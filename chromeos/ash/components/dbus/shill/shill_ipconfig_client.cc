@@ -52,7 +52,7 @@ class ShillIPConfigClientImpl : public ShillIPConfigClient {
   }
   void GetProperties(
       const dbus::ObjectPath& ipconfig_path,
-      chromeos::DBusMethodCallback<base::Value::Dict> callback) override;
+      chromeos::DBusMethodCallback<base::DictValue> callback) override;
   void SetProperty(const dbus::ObjectPath& ipconfig_path,
                    const std::string& name,
                    const base::Value& value,
@@ -90,7 +90,7 @@ class ShillIPConfigClientImpl : public ShillIPConfigClient {
 
 void ShillIPConfigClientImpl::GetProperties(
     const dbus::ObjectPath& ipconfig_path,
-    chromeos::DBusMethodCallback<base::Value::Dict> callback) {
+    chromeos::DBusMethodCallback<base::DictValue> callback) {
   dbus::MethodCall method_call(shill::kFlimflamIPConfigInterface,
                                shill::kGetPropertiesFunction);
   GetHelper(ipconfig_path)

@@ -618,11 +618,18 @@ public class CronetBidirectionalStream extends ExperimentalBidirectionalStream {
             int httpStatusCode,
             String negotiatedProtocol,
             String[] headers,
-            long receivedByteCount) {
+            long receivedByteCount,
+            @JniType("std::string") String proxyServer,
+            @JniType("bool") boolean isProxied) {
         try {
             mResponseInfo =
                     prepareResponseInfoOnNetworkThread(
-                            httpStatusCode, negotiatedProtocol, headers, receivedByteCount);
+                            httpStatusCode,
+                            negotiatedProtocol,
+                            headers,
+                            receivedByteCount,
+                            proxyServer,
+                            isProxied);
         } catch (Exception e) {
             failWithException(new CronetExceptionImpl("Cannot prepare ResponseInfo", null));
             return;
@@ -948,6 +955,7 @@ public class CronetBidirectionalStream extends ExperimentalBidirectionalStream {
         final String negotiatedProtocol;
         final int httpStatusCode;
         final boolean wasCached;
+        final Boolean isProxied = mResponseInfo != null ? mResponseInfo.isProxied() : null;
         if (mResponseInfo != null) {
             responseHeaders = mResponseInfo.getAllHeaders();
             negotiatedProtocol = mResponseInfo.getNegotiatedProtocol();
@@ -994,16 +1002,6 @@ public class CronetBidirectionalStream extends ExperimentalBidirectionalStream {
             responseBodySizeInBytes = max(0, responseTotalSizeInBytes - responseHeaderSizeInBytes);
         }
 
-        final Duration headersLatency;
-        if (mMetrics.getRequestStart() != null && mMetrics.getResponseStart() != null) {
-            headersLatency =
-                    Duration.ofMillis(
-                            mMetrics.getResponseStart().getTime()
-                                    - mMetrics.getRequestStart().getTime());
-        } else {
-            headersLatency = Duration.ofSeconds(0);
-        }
-
         final Duration totalLatency;
         if (mMetrics.getRequestStart() != null && mMetrics.getRequestEnd() != null) {
             totalLatency =
@@ -1044,7 +1042,6 @@ public class CronetBidirectionalStream extends ExperimentalBidirectionalStream {
                 responseHeaderSizeInBytes,
                 responseBodySizeInBytes,
                 httpStatusCode,
-                headersLatency,
                 totalLatency,
                 negotiatedProtocol,
                 quicConnectionMigrationAttempted,
@@ -1067,7 +1064,9 @@ public class CronetBidirectionalStream extends ExperimentalBidirectionalStream {
                 mMetrics.getDnsDurationInMicroseconds(),
                 mMetrics.getSSLDurationInMicroseconds(),
                 mMetrics.getConnectDurationInMicroseconds(),
-                mMetrics.getTimeToWriteFirstByteInMicroseconds());
+                mMetrics.getTimeToWriteFirstByteInMicroseconds(),
+                mMetrics.getTimeToReceiveHeaderLastByteMicroseconds(),
+                isProxied);
     }
 
     public void setOnDestroyedCallbackForTesting(Runnable onDestroyedCallbackForTesting) {
@@ -1151,7 +1150,9 @@ public class CronetBidirectionalStream extends ExperimentalBidirectionalStream {
             int httpStatusCode,
             String negotiatedProtocol,
             String[] headers,
-            long receivedByteCount) {
+            long receivedByteCount,
+            String proxyServer,
+            boolean isProxied) {
         UrlResponseInfoImpl responseInfo =
                 new UrlResponseInfoImpl(
                         Arrays.asList(mInitialUrl),
@@ -1160,8 +1161,9 @@ public class CronetBidirectionalStream extends ExperimentalBidirectionalStream {
                         headersListFromStrings(headers),
                         false,
                         negotiatedProtocol,
-                        null,
-                        receivedByteCount);
+                        proxyServer,
+                        receivedByteCount,
+                        isProxied);
         return responseInfo;
     }
 

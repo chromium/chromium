@@ -48,6 +48,7 @@
 <translation id="2761536921376153655">Lloji i skanimit</translation>
 <translation id="28682968802727151">Pamja paraprake e pasqyrës</translation>
 <translation id="2879583609344924966"><ph name="CAMERA" /> është lidhur.</translation>
+<translation id="3063987824612038785">Të gjithë skedarët e "Kamerës" do të ruhen te "Disku i Google"</translation>
 <translation id="3067436040345934772">Zgjero djathtas</translation>
 <translation id="3081586908890909590">Kalo te regjistrimi i videos</translation>
 <translation id="3091480460059548935">Zbulimi i tekstit në pamjen paraprake</translation>
@@ -67,6 +68,7 @@
 <translation id="3642192109456033823">Videoja po përpunohet...</translation>
 <translation id="3789724198583203151">Rrotulloje 90 gradë në drejtim të kundërt të akrepave të orës</translation>
 <translation id="3810838688059735925">Video</translation>
+<translation id="386366972082231038">Të gjithë skedarët e "Kamerës" do të ruhen te OneDrive</translation>
 <translation id="4060608699153044055">Nuk mund të regjistrosh për shkak të nivelit të ulët të hapësirës ruajtëse të pajisjes. Që të fillosh të regjistrosh, duhet të lirosh hapësirën në pajisjen tënde.</translation>
 <translation id="4061162772429051350"><ph name="MAGAPIXELS_AMOUNT" /> MP</translation>
 <translation id="4118525110028899586">Vendose në pauzë regjistrimin</translation>
@@ -100,6 +102,7 @@
 <translation id="5634947914995388399">Zgjero dialogun dhe ndalo skanimin</translation>
 <translation id="5662366948659129155">Po skanohet faqja <ph name="COUNT" /></translation>
 <translation id="5671277269877808209">Katror</translation>
+<translation id="5725797473946373607">Mos e shfaq këtë dialog herën tjetër</translation>
 <translation id="574392208103952083">Mesatar</translation>
 <translation id="5746169159649715125">Ruaj si PDF</translation>
 <translation id="5753488212459587150">Aktivizo modalitetin e ekspertit</translation>
@@ -156,6 +159,7 @@ Nëse komentet e tua janë për cilësinë e imazhit ose të videos, bashkëngji
 <translation id="7983668134180549431">U zbulua një tekst.</translation>
 <translation id="8079255378695216066">Regjistrimi nuk mund të fillojë</translation>
 <translation id="8120146556401698679">Zmadhim me anim të zgjerimit</translation>
+<translation id="8127459436205030819">Skedarët e tu mund të jenë të dukshëm për administratorin tënd</translation>
 <translation id="8131740175452115882">Konfirmo</translation>
 <translation id="8145038249676204903">Kalo te nxjerrja e fotografive</translation>
 <translation id="8167081290930651932">Ruaje si fotografi</translation>
@@ -165,6 +169,7 @@ Nëse komentet e tua janë për cilësinë e imazhit ose të videos, bashkëngji
 <translation id="8609951387004618906">Hap <ph name="URL" /></translation>
 <translation id="8629662593426079630">360p</translation>
 <translation id="8711011893539266636">Aktivizo/çaktivizo audion e mikrofonit. Opsioni i çaktivizimit të zërit është aktiv</translation>
+<translation id="8712637175834984815">E kuptova</translation>
 <translation id="8730621377337864115">U krye</translation>
 <translation id="8732462232047530626">Shiko paraprakisht metadatat</translation>
 <translation id="874854738381978209">U zbulua një rrjet Wi-Fi.</translation>

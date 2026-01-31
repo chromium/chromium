@@ -73,11 +73,11 @@ TEST_F(LoadingPageVoterTest, VoteIfLoading) {
   EXPECT_EQ(observer().GetVoteCount(), 2u);
   EXPECT_TRUE(observer().HasVote(voter_id(),
                                  GetExecutionContext(frame_node.get()),
-                                 base::TaskPriority::USER_VISIBLE,
+                                 base::Process::Priority::kUserVisible,
                                  LoadingPageVoter::kPageIsLoadingReason));
   EXPECT_TRUE(observer().HasVote(voter_id(),
                                  GetExecutionContext(child_frame_node.get()),
-                                 base::TaskPriority::USER_VISIBLE,
+                                 base::Process::Priority::kUserVisible,
                                  LoadingPageVoter::kPageIsLoadingReason));
 
   // Still voting when the page is in the state kLoadedBusy.
@@ -86,11 +86,11 @@ TEST_F(LoadingPageVoterTest, VoteIfLoading) {
   EXPECT_EQ(observer().GetVoteCount(), 2u);
   EXPECT_TRUE(observer().HasVote(voter_id(),
                                  GetExecutionContext(frame_node.get()),
-                                 base::TaskPriority::USER_VISIBLE,
+                                 base::Process::Priority::kUserVisible,
                                  LoadingPageVoter::kPageIsLoadingReason));
   EXPECT_TRUE(observer().HasVote(voter_id(),
                                  GetExecutionContext(child_frame_node.get()),
-                                 base::TaskPriority::USER_VISIBLE,
+                                 base::Process::Priority::kUserVisible,
                                  LoadingPageVoter::kPageIsLoadingReason));
 
   // Add a frame while the page is loading.
@@ -100,15 +100,15 @@ TEST_F(LoadingPageVoterTest, VoteIfLoading) {
   EXPECT_EQ(observer().GetVoteCount(), 3u);
   EXPECT_TRUE(observer().HasVote(voter_id(),
                                  GetExecutionContext(frame_node.get()),
-                                 base::TaskPriority::USER_VISIBLE,
+                                 base::Process::Priority::kUserVisible,
                                  LoadingPageVoter::kPageIsLoadingReason));
   EXPECT_TRUE(observer().HasVote(voter_id(),
                                  GetExecutionContext(child_frame_node.get()),
-                                 base::TaskPriority::USER_VISIBLE,
+                                 base::Process::Priority::kUserVisible,
                                  LoadingPageVoter::kPageIsLoadingReason));
   EXPECT_TRUE(observer().HasVote(
       voter_id(), GetExecutionContext(other_child_frame_node.get()),
-      base::TaskPriority::USER_VISIBLE,
+      base::Process::Priority::kUserVisible,
       LoadingPageVoter::kPageIsLoadingReason));
 
   // Remove a frame while the page is loading.
@@ -117,11 +117,11 @@ TEST_F(LoadingPageVoterTest, VoteIfLoading) {
   EXPECT_EQ(observer().GetVoteCount(), 2u);
   EXPECT_TRUE(observer().HasVote(voter_id(),
                                  GetExecutionContext(frame_node.get()),
-                                 base::TaskPriority::USER_VISIBLE,
+                                 base::Process::Priority::kUserVisible,
                                  LoadingPageVoter::kPageIsLoadingReason));
   EXPECT_TRUE(observer().HasVote(voter_id(),
                                  GetExecutionContext(child_frame_node.get()),
-                                 base::TaskPriority::USER_VISIBLE,
+                                 base::Process::Priority::kUserVisible,
                                  LoadingPageVoter::kPageIsLoadingReason));
 
   // Finish loading.

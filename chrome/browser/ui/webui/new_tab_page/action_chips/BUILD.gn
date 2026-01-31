@@ -12,6 +12,8 @@ source_set("action_chips") {
     "action_chips_generator.h",
     "action_chips_handler.cc",
     "action_chips_handler.h",
+    "action_chips_metrics.cc",
+    "action_chips_metrics.h",
     "remote_suggestions_service_simple.cc",
     "remote_suggestions_service_simple.h",
     "tab_id_generator.cc",
@@ -20,8 +22,10 @@ source_set("action_chips") {
   public_deps = [ ":mojo_bindings" ]
   deps = [
     "//base",
+    "//chrome/browser:browser_process",
     "//chrome/browser/autocomplete",
     "//chrome/browser/autocomplete:aim_eligibility_service",
+    "//chrome/browser/history",
     "//chrome/browser/optimization_guide",
     "//chrome/browser/profiles",
     "//chrome/browser/search_engines",
@@ -34,6 +38,8 @@ source_set("action_chips") {
     "//content/public/browser",
     "//content/public/common",
     "//mojo/public/cpp/bindings",
+    "//third_party/abseil-cpp:absl",
+    "//third_party/omnibox_proto",
     "//url",
   ]
 }
@@ -61,6 +67,7 @@ source_set("unit_tests") {
   deps = [
     ":action_chips",
     "//base/test:test_support",
+    "//chrome/browser/history",
     "//chrome/browser/optimization_guide:test_support",
     "//chrome/browser/search_engines",
     "//chrome/browser/sessions",

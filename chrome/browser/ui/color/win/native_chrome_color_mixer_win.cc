@@ -132,6 +132,9 @@ ui::ColorTransform GetCaptionForegroundColor(
   const auto generator = [](ui::ColorTransform input_transform,
                             SkColor input_color, const ui::ColorMixer& mixer) {
     const SkColor background_color = input_transform.Run(input_color, mixer);
+    // color_utils::GetColorWithMaxContrast()/IsDark() aren't used here because
+    // they switch based on the Chrome light/dark endpoints, while we want to
+    // use the system native behavior below.
     const float windows_luma = 0.25f * SkColorGetR(background_color) +
                                0.625f * SkColorGetG(background_color) +
                                0.125f * SkColorGetB(background_color);

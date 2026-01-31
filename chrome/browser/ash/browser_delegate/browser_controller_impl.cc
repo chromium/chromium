@@ -33,8 +33,7 @@
 namespace {
 
 bool BrowserMatchesURL(BrowserWindowInterface* browser, const GURL& url) {
-  return browser->GetFeatures()
-      .tab_strip_model()
+  return browser->GetTabStripModel()
       ->GetActiveWebContents()
       ->GetVisibleURL()
       .EqualsIgnoringRef(url);
@@ -241,27 +240,6 @@ BrowserDelegate* BrowserControllerImpl::CreateWebApp(
   cparams.can_fullscreen = params.allow_fullscreen;
   return GetDelegate(
       web_app::CreateWebAppWindowMaybeWithHomeTab(app_id, cparams));
-}
-
-BrowserDelegate* BrowserControllerImpl::CreateCustomTab(
-    const AccountId& account_id,
-    std::unique_ptr<content::WebContents> contents) {
-  Profile* profile = Profile::FromBrowserContext(
-      BrowserContextHelper::Get()->GetBrowserContextByAccountId(account_id));
-  CHECK(profile);
-
-  if (Browser::GetCreationStatusForProfile(profile) !=
-      Browser::CreationStatus::kOk) {
-    return nullptr;
-  }
-
-  Browser::CreateParams params(Browser::TYPE_CUSTOM_TAB, profile,
-                               /*user_gesture=*/true);
-  params.omit_from_session_restore = true;
-  Browser* browser = Browser::Create(params);
-  browser->tab_strip_model()->AppendWebContents(std::move(contents),
-                                                /*foreground=*/true);
-  return GetDelegate(browser);
 }
 
 void BrowserControllerImpl::AddObserver(Observer* observer) {

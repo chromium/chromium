@@ -17,8 +17,6 @@ Prefetcher::Prefetcher(RenderFrameHost& render_frame_host)
       render_frame_host_impl_(
           static_cast<RenderFrameHostImpl*>(&render_frame_host)) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  delegate_ = GetContentClient()->browser()->CreateSpeculationHostDelegate(
-      render_frame_host);
 }
 Prefetcher::~Prefetcher() = default;
 
@@ -37,10 +35,6 @@ void Prefetcher::ProcessCandidatesForPrefetch(
           &render_frame_host());
 
   prefetch_document_manager->ProcessCandidates(candidates);
-
-  // Let `delegate_` process the candidates that it is interested in.
-  if (delegate_)
-    delegate_->ProcessCandidates(candidates);
 }
 
 bool Prefetcher::MaybePrefetch(blink::mojom::SpeculationCandidatePtr candidate,

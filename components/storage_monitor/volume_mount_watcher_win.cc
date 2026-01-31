@@ -17,7 +17,6 @@
 #include <string>
 
 #include "base/compiler_specific.h"
-#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
@@ -129,7 +128,13 @@ bool GetDeviceDetails(const base::FilePath& device_path, StorageInfo* info) {
                          kMaxPathBufLen)) {
     return false;
   }
-  mount_point.resize(UNSAFE_TODO(wcslen(mount_point.c_str())));
+
+  size_t actual_length = mount_point.find(L'\0');
+  // 2. Resize based on the found index. If no null is found (shouldn't happen
+  // with Win32 success), it remains at kMaxPathBufLen - 1.
+  if (actual_length != std::wstring::npos) {
+    mount_point.resize(actual_length);
+  }
 
   // Note: experimentally this code does not spin a floppy drive. It
   // returns a GUID associated with the device, not the volume.
@@ -362,7 +367,7 @@ void VolumeMountWatcherWin::AddDevicesOnUIThread(
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   for (size_t i = 0; i < removable_devices.size(); i++) {
-    if (base::Contains(pending_device_checks_, removable_devices[i]))
+    if (pending_device_checks_.contains(removable_devices[i]))
       continue;
     pending_device_checks_.insert(removable_devices[i]);
     device_info_task_runner_->PostTask(

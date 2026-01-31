@@ -2,7 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/containers/contains.h"
+#include <algorithm>
+
 #include "base/functional/bind.h"
 #include "base/memory/ref_counted.h"
 #include "base/run_loop.h"
@@ -162,7 +163,7 @@ TEST_F(VirtualDeviceTest, OnFrameReadyInBufferWithReceiver) {
       .Times(1)
       .WillOnce([this](int32_t buffer_id) {
         // Verify that the returned |buffer_id| is a known buffer ID.
-        EXPECT_TRUE(base::Contains(received_buffer_ids_, buffer_id));
+        EXPECT_TRUE(std::ranges::contains(received_buffer_ids_, buffer_id));
       });
   device_adapter_->RequestFrameBuffer(kTestFrameSize, kTestPixelFormat, nullptr,
                                       request_frame_buffer_callback.Get());

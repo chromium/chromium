@@ -4,11 +4,11 @@
 
 #include "ui/base/x/x11_clipboard_helper.h"
 
+#include <algorithm>
 #include <string>
 #include <vector>
 
 #include "base/compiler_specific.h"
-#include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/memory/singleton.h"
@@ -116,7 +116,7 @@ class XClipboardHelper::TargetList {
 
   bool ContainsText() const {
     for (const auto& atom : GetTextAtomsFrom()) {
-      if (base::Contains(target_list_, atom)) {
+      if (std::ranges::contains(target_list_, atom)) {
         return true;
       }
     }
@@ -125,7 +125,7 @@ class XClipboardHelper::TargetList {
 
   bool ContainsFormat(const ClipboardFormatType& format_type) const {
     x11::Atom atom = x11::GetAtom(format_type.GetName().c_str());
-    return base::Contains(target_list_, atom);
+    return std::ranges::contains(target_list_, atom);
   }
 
  private:
@@ -330,11 +330,14 @@ XClipboardHelper::TargetList XClipboardHelper::GetTargetList(
             selection_name, x11::GetAtom(kTargets), &data, &out_type)) {
       // Some apps return an |out_type| of "TARGETS". (crbug.com/377893)
       if (out_type == x11::Atom::ATOM || out_type == x11::GetAtom(kTargets)) {
-        const x11::Atom* atom_array =
-            UNSAFE_TODO(reinterpret_cast<const x11::Atom*>(data.data()));
-        for (size_t i = 0; i < data.size() / sizeof(x11::Atom); ++i) {
-          out.push_back(UNSAFE_TODO(atom_array[i]));
-        }
+        // SAFETY: `data` is populated by the X11 server and is expected to be a
+        // series of atoms since we already checked `out_type` is an ATOM or
+        // GetAtom(kTargets).
+        CHECK_EQ(data.size() % sizeof(x11::Atom), 0u);
+        base::span<const x11::Atom> atom_array = UNSAFE_BUFFERS(
+            base::span(reinterpret_cast<const x11::Atom*>(data.data()),
+                       data.size() / sizeof(x11::Atom)));
+        out.insert(out.end(), atom_array.begin(), atom_array.end());
       }
     } else {
       // There was no target list. Most Java apps doesn't offer a TARGETS list,

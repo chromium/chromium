@@ -18,7 +18,7 @@ class SignalsDecorator {
 
   // Asynchronously sets signals data on the `signals` proto properties and
   // invoked `done_closure` when done.
-  virtual void Decorate(base::Value::Dict& signals,
+  virtual void Decorate(base::DictValue& signals,
                         base::OnceClosure done_closure) = 0;
 };
 

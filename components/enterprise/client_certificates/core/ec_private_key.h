@@ -24,7 +24,7 @@ class ECPrivateKey : public PrivateKey {
   std::vector<uint8_t> GetSubjectPublicKeyInfo() const override;
   crypto::SignatureVerifier::SignatureAlgorithm GetAlgorithm() const override;
   client_certificates_pb::PrivateKey ToProto() const override;
-  base::Value::Dict ToDict() const override;
+  base::DictValue ToDict() const override;
 
  private:
   friend class base::RefCountedThreadSafe<ECPrivateKey>;

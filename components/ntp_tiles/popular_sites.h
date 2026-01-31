@@ -68,7 +68,7 @@ class PopularSites {
   virtual std::string GetDirectoryToFetch() = 0;
   virtual std::string GetCountryToFetch() = 0;
   virtual std::string GetVersionToFetch() = 0;
-  virtual const base::Value::List& GetCachedJson() = 0;
+  virtual const base::ListValue& GetCachedJson() = 0;
 };
 
 }  // namespace ntp_tiles

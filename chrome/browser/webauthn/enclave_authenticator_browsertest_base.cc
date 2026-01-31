@@ -270,11 +270,11 @@ void EnclaveAuthenticatorTestBase::SimulateTrustedVaultKeyRetrieval(
     auto store_keys_lock = enclave_manager().GetStoreKeysLock();
     enclave_manager().StoreKeys(kSyncGaiaId,
                                 {base::ToVector(trusted_vault_key)},
-                                trusted_vault_key_version);
+                                trusted_vault_key_version, std::nullopt);
   } else {
     enclave_manager().StoreKeys(kSyncGaiaId,
                                 {base::ToVector(trusted_vault_key)},
-                                trusted_vault_key_version);
+                                trusted_vault_key_version, std::nullopt);
   }
 }
 
@@ -379,12 +379,12 @@ void EnclaveAuthenticatorTestBase::SimulateSuccessfulGpmPinCreation(
   ASSERT_TRUE(add_device_future.Wait()) << "AddDeviceAndPINToAccount timed out";
   ASSERT_TRUE(add_device_future.Get()) << "AddDeviceAndPINToAccount failed";
 
-  ASSERT_TRUE(enclave_manager().is_ready());
+  ASSERT_TRUE(enclave_manager().IsReady());
   ASSERT_TRUE(enclave_manager().has_wrapped_pin());
 }
 
 void EnclaveAuthenticatorTestBase::WaitForEnclaveLoaded() {
-  if (!enclave_manager().is_loaded()) {
+  if (!enclave_manager().IsLoaded()) {
     base::test::TestFuture<void> load_future;
     enclave_manager().Load(load_future.GetCallback());
     ASSERT_TRUE(load_future.Wait());

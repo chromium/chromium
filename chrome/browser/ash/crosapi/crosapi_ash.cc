@@ -15,9 +15,7 @@
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/ash/crosapi/document_scan_ash.h"
-#include "chrome/browser/ash/crosapi/keystore_service_ash.h"
 #include "chrome/browser/ash/crosapi/local_printer_ash.h"
-#include "chrome/browser/ash/crosapi/vpn_service_ash.h"
 #include "chrome/browser/ash/login/quick_unlock/quick_unlock_factory.h"
 #include "chrome/browser/ash/printing/print_preview/print_preview_webcontents_adapter_ash.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
@@ -37,11 +35,7 @@
 #include "chromeos/components/in_session_auth/in_session_auth.h"
 #include "chromeos/components/sensors/ash/sensor_hal_dispatcher.h"
 #include "chromeos/constants/chromeos_features.h"
-#include "chromeos/crosapi/mojom/file_change_service_bridge.mojom.h"
-#include "chromeos/crosapi/mojom/keystore_service.mojom.h"
 #include "chromeos/crosapi/mojom/local_printer.mojom.h"
-#include "chromeos/crosapi/mojom/magic_boost.mojom.h"
-#include "chromeos/crosapi/mojom/mahi.mojom.h"
 #include "chromeos/crosapi/mojom/telemetry_diagnostic_routine_service.mojom.h"
 #include "chromeos/services/chromebox_for_meetings/public/cpp/service_connection.h"
 #include "chromeos/services/chromebox_for_meetings/public/mojom/cfm_service_manager.mojom.h"
@@ -83,7 +77,6 @@ Profile* GetAshProfile() {
 CrosapiAsh::CrosapiAsh()
     : diagnostics_service_ash_(std::make_unique<ash::DiagnosticsServiceAsh>()),
       document_scan_ash_(std::make_unique<DocumentScanAsh>()),
-      keystore_service_ash_(std::make_unique<KeystoreServiceAsh>()),
       local_printer_ash_(std::make_unique<LocalPrinterAsh>()),
       telemetry_diagnostic_routine_service_ash_(
           std::make_unique<ash::TelemetryDiagnosticsRoutineServiceAsh>()),
@@ -91,8 +84,8 @@ CrosapiAsh::CrosapiAsh()
           std::make_unique<ash::TelemetryManagementServiceAsh>()),
       probe_service_ash_(std::make_unique<ash::ProbeServiceAsh>()),
       print_preview_webcontents_adapter_ash_(
-          std::make_unique<ash::printing::PrintPreviewWebcontentsAdapterAsh>()),
-      vpn_service_ash_(std::make_unique<VpnServiceAsh>()) {
+          std::make_unique<
+              ash::printing::PrintPreviewWebcontentsAdapterAsh>()) {
   receiver_set_.set_disconnect_handler(base::BindRepeating(
       &CrosapiAsh::OnDisconnected, weak_factory_.GetWeakPtr()));
 }
@@ -155,11 +148,6 @@ void CrosapiAsh::BindInSessionAuth(
   chromeos::auth::BindToInSessionAuthService(std::move(receiver));
 }
 
-void CrosapiAsh::BindKeystoreService(
-    mojo::PendingReceiver<crosapi::mojom::KeystoreService> receiver) {
-  keystore_service_ash_->BindReceiver(std::move(receiver));
-}
-
 void CrosapiAsh::BindLocalPrinter(
     mojo::PendingReceiver<crosapi::mojom::LocalPrinter> receiver) {
   local_printer_ash_->BindReceiver(std::move(receiver));
@@ -189,11 +177,6 @@ void CrosapiAsh::BindMediaSessionController(
         receiver) {
   content::GetMediaSessionService().BindMediaControllerManager(
       std::move(receiver));
-}
-
-void CrosapiAsh::BindNetworkChange(
-    mojo::PendingReceiver<crosapi::mojom::NetworkChange> receiver) {
-  NOTREACHED();
 }
 
 void CrosapiAsh::BindReceiver(
@@ -232,11 +215,6 @@ void CrosapiAsh::BindVideoCaptureDeviceFactory(
     mojo::PendingReceiver<mojom::VideoCaptureDeviceFactory> receiver) {
   content::GetVideoCaptureService().BindVideoCaptureDeviceFactory(
       std::move(receiver));
-}
-
-void CrosapiAsh::BindVpnService(
-    mojo::PendingReceiver<mojom::VpnService> receiver) {
-  vpn_service_ash_->BindReceiver(std::move(receiver));
 }
 
 void CrosapiAsh::BindGuestOsSkForwarderFactory(

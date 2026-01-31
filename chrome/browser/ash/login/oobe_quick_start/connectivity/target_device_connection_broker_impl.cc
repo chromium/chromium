@@ -4,12 +4,12 @@
 
 #include "chrome/browser/ash/login/oobe_quick_start/connectivity/target_device_connection_broker_impl.h"
 
+#include <algorithm>
 #include <memory>
 #include <optional>
 #include <vector>
 
 #include "base/base64.h"
-#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
@@ -256,7 +256,7 @@ void TargetDeviceConnectionBrokerImpl::StartAdvertising(
       FeatureSupportStatus::kWaitingForAdapterToBecomePresent,
       FeatureSupportStatus::kWaitingForAdapterToBecomePowered};
 
-  if (base::Contains(kStatusShouldDeferStartAdvertising, status)) {
+  if (std::ranges::contains(kStatusShouldDeferStartAdvertising, status)) {
     QS_LOG(INFO) << "Deferring Start Advertising callback because of feature "
                     "suport status: "
                  << status;

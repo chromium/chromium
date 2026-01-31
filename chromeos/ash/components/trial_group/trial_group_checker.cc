@@ -84,7 +84,7 @@ TrialGroupChecker::Status TrialGroupChecker::LookUpMembership(
 
   std::string upload_data;
   {
-    base::Value::Dict request;
+    base::DictValue request;
     request.Set("group", static_cast<int>(group_id_));
     upload_data = base::WriteJson(request).value_or("");
   }

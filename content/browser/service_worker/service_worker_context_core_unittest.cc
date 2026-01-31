@@ -6,7 +6,6 @@
 
 #include <memory>
 
-#include "base/containers/contains.h"
 #include "base/functional/callback_helpers.h"
 #include "base/test/bind.h"
 #include "content/browser/service_worker/embedded_worker_test_helper.h"
@@ -201,7 +200,7 @@ TEST_F(ServiceWorkerContextCoreTest, FailureInfo) {
   context()->UpdateVersionFailureCount(kVersionId,
                                        blink::ServiceWorkerStatusCode::kOk);
   EXPECT_EQ(0, context()->GetVersionFailureCount(kVersionId));
-  EXPECT_FALSE(base::Contains(context()->failure_counts_, kVersionId));
+  EXPECT_FALSE(context()->failure_counts_.contains(kVersionId));
 }
 
 TEST_F(ServiceWorkerContextCoreTest, DeleteForStorageKey) {

@@ -29,11 +29,6 @@ android_resources("content_java_resources") {
     "//ui/android:ui_java_resources",
   ]
   sources = [
-    "java/res/drawable-hdpi/ic_search.png",
-    "java/res/drawable-mdpi/ic_search.png",
-    "java/res/drawable-xhdpi/ic_search.png",
-    "java/res/drawable-xxhdpi/ic_search.png",
-    "java/res/drawable-xxxhdpi/ic_search.png",
     "java/res/drawable/floating_popup_background.xml",
     "java/res/drawable/ic_paste_as_plain_text.xml",
     "java/res/layout-land/date_time_picker_dialog.xml",
@@ -103,6 +98,7 @@ android_library("content_main_dex_java") {
     ":content_main_dex_jni_java",
     ":public_common_jni_java",
     "//base:base_java",
+    "//base:flagged_apis_java",
     "//base:process_launcher_java",
     "//base/version_info/android:version_constants_java",
     "//build/android:build_java",
@@ -321,6 +317,7 @@ android_library("content_full_java") {
     "java/src/org/chromium/content/browser/framehost/NavigationControllerImpl.java",
     "java/src/org/chromium/content/browser/framehost/RenderFrameHostDelegate.java",
     "java/src/org/chromium/content/browser/framehost/RenderFrameHostImpl.java",
+    "java/src/org/chromium/content/browser/input/AutocorrectManager.java",
     "java/src/org/chromium/content/browser/input/ChromiumBaseInputConnection.java",
     "java/src/org/chromium/content/browser/input/CursorAnchorInfoController.java",
     "java/src/org/chromium/content/browser/input/DateTimeChooserAndroid.java",
@@ -728,6 +725,7 @@ android_library("content_javatests") {
 robolectric_binary("content_junit_tests") {
   resources_package = "org.chromium.content"
   sources = [
+    "java/src/org/chromium/content/browser/input/AutocorrectManagerUnitTest.java",
     "java/src/org/chromium/content/browser/input/ImeAdapterImplUnitTest.java",
     "java/src/org/chromium/content/browser/input/ImeUtilsTest.java",
     "junit/src/org/chromium/content/browser/BindingManagerTest.java",

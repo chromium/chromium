@@ -4,7 +4,6 @@
 
 #include <stddef.h>
 
-#include "base/containers/contains.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
@@ -395,7 +394,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionManagementTest, MAYBE_AutoUpdate) {
     ASSERT_TRUE(extension);
     ASSERT_EQ("2.0", extension->VersionString());
     ASSERT_TRUE(install_finished);
-    ASSERT_TRUE(base::Contains(updates, "ogjcoiohnmldgjemafoockdghcjciccf"));
+    ASSERT_TRUE(updates.contains("ogjcoiohnmldgjemafoockdghcjciccf"));
   }
 
   // Now try doing an update to version 3, which has been incorrectly
@@ -418,7 +417,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionManagementTest, MAYBE_AutoUpdate) {
     params2.callback = run_loop.QuitClosure();
     updater->CheckNow(std::move(params2));
     run_loop.Run();
-    ASSERT_TRUE(base::Contains(updates, "ogjcoiohnmldgjemafoockdghcjciccf"));
+    ASSERT_TRUE(updates.contains("ogjcoiohnmldgjemafoockdghcjciccf"));
   }
 
   // Make sure the extension state is the same as before.
@@ -504,7 +503,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionManagementTest,
   EnableExtension(extension->id());
   EXPECT_TRUE(listener2.WaitUntilSatisfied());
   ASSERT_TRUE(install_finished);
-  ASSERT_TRUE(base::Contains(updates, "ogjcoiohnmldgjemafoockdghcjciccf"));
+  ASSERT_TRUE(updates.contains("ogjcoiohnmldgjemafoockdghcjciccf"));
 }
 
 IN_PROC_BROWSER_TEST_F(ExtensionManagementTest, ExternalUrlUpdate) {
@@ -623,7 +622,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionManagementTest, ExternalPolicyRefresh) {
           .empty())
       << kForceInstallNotEmptyHelp;
 
-  base::Value::List forcelist;
+  base::ListValue forcelist;
   forcelist.Append(BuildForceInstallPolicyValue(kExtensionId,
                                                 GetUpdateUrl().spec().c_str()));
   PolicyMap policies;
@@ -697,7 +696,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionManagementTest,
 
   ExtensionRegistry* registry = extension_registry();
 
-  base::Value::List forcelist;
+  base::ListValue forcelist;
   forcelist.Append(BuildForceInstallPolicyValue(kExtensionId,
                                                 GetUpdateUrl().spec().c_str()));
   PolicyMap policies;
@@ -739,7 +738,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionManagementTest,
   ASSERT_NO_FATAL_FAILURE(SetUpExtensionUpdateResponse(
       temp_dir.GetPath(), "v2.crx", "manifest_v2.xml.template"));
 
-  base::Value::List forcelist;
+  base::ListValue forcelist;
   forcelist.Append(BuildForceInstallPolicyValue(kExtensionId,
                                                 GetUpdateUrl().spec().c_str()));
   PolicyMap policies;
@@ -784,7 +783,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionManagementTest,
   ASSERT_NO_FATAL_FAILURE(SetUpExtensionUpdateResponse(
       temp_dir.GetPath(), "v2.crx", "manifest_v2.xml.template"));
 
-  base::Value::List forcelist;
+  base::ListValue forcelist;
   forcelist.Append(BuildForceInstallPolicyValue(kExtensionId,
                                                 GetUpdateUrl().spec().c_str()));
   PolicyMap policies;
@@ -852,7 +851,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionManagementTest,
   EXPECT_TRUE(registrar->IsExtensionEnabled(kExtensionId));
 
   // Setup the force install policy. It should override the location.
-  base::Value::List forcelist;
+  base::ListValue forcelist;
   forcelist.Append(BuildForceInstallPolicyValue(kExtensionId,
                                                 GetUpdateUrl().spec().c_str()));
   PolicyMap policies;

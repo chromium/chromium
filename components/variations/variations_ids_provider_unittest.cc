@@ -7,7 +7,6 @@
 #include <string>
 
 #include "base/base64.h"
-#include "base/containers/contains.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
 #include "base/time/default_clock.h"
@@ -193,8 +192,8 @@ TEST_F(VariationsIdsProviderTest, LowEntropySourceValue_Valid) {
                                   &trigger_ids_any_context));
 
   // 3320983 is the offset value of kLowEntropySourceVariationIdRangeMin + 5.
-  EXPECT_TRUE(base::Contains(variation_ids_first_party, 3320983));
-  EXPECT_TRUE(base::Contains(variation_ids_any_context, 3320983));
+  EXPECT_TRUE(variation_ids_first_party.contains(3320983));
+  EXPECT_TRUE(variation_ids_any_context.contains(3320983));
 }
 
 TEST_F(VariationsIdsProviderTest, LowEntropySourceValue_Null) {
@@ -231,12 +230,12 @@ TEST_F(VariationsIdsProviderTest, LowEntropySourceValue_Null) {
 
   // We test to make sure that only two valid variation IDs are present and that
   // the low entropy source value is not added to the sets.
-  EXPECT_TRUE(base::Contains(variation_ids_first_party, 12));
-  EXPECT_TRUE(base::Contains(variation_ids_first_party, 456));
-  EXPECT_FALSE(base::Contains(variation_ids_first_party, 3320983));
-  EXPECT_TRUE(base::Contains(variation_ids_any_context, 12));
-  EXPECT_TRUE(base::Contains(variation_ids_any_context, 456));
-  EXPECT_FALSE(base::Contains(variation_ids_any_context, 3320983));
+  EXPECT_TRUE(variation_ids_first_party.contains(12));
+  EXPECT_TRUE(variation_ids_first_party.contains(456));
+  EXPECT_FALSE(variation_ids_first_party.contains(3320983));
+  EXPECT_TRUE(variation_ids_any_context.contains(12));
+  EXPECT_TRUE(variation_ids_any_context.contains(456));
+  EXPECT_FALSE(variation_ids_any_context.contains(3320983));
 
   // Check to make sure that no other variation IDs are present.
   EXPECT_EQ(2U, variation_ids_first_party.size());
@@ -295,19 +294,19 @@ TEST_F(VariationsIdsProviderTest, OnFieldTrialGroupFinalized) {
                                     &trigger_ids_any_context));
 
     EXPECT_EQ(2U, ids_first_party.size());
-    EXPECT_TRUE(base::Contains(ids_first_party, 11));
-    EXPECT_TRUE(base::Contains(ids_first_party, 22));
+    EXPECT_TRUE(ids_first_party.contains(11));
+    EXPECT_TRUE(ids_first_party.contains(22));
     EXPECT_EQ(2U, trigger_ids_first_party.size());
-    EXPECT_TRUE(base::Contains(trigger_ids_first_party, 33));
-    EXPECT_TRUE(base::Contains(trigger_ids_first_party, 44));
+    EXPECT_TRUE(trigger_ids_first_party.contains(33));
+    EXPECT_TRUE(trigger_ids_first_party.contains(44));
 
     // IDs associated with FIRST_PARTY ID CollectionKeys should be excluded from
     // the variations header that may be sent in third-party contexts.
     EXPECT_EQ(1U, ids_any_context.size());
-    EXPECT_TRUE(base::Contains(ids_any_context, 11));
+    EXPECT_TRUE(ids_any_context.contains(11));
     // Note '22' is omitted.
     EXPECT_EQ(1U, trigger_ids_any_context.size());
-    EXPECT_TRUE(base::Contains(trigger_ids_any_context, 33));
+    EXPECT_TRUE(trigger_ids_any_context.contains(33));
     // Note '44' is omitted.
   }
 
@@ -333,21 +332,21 @@ TEST_F(VariationsIdsProviderTest, OnFieldTrialGroupFinalized) {
                                     &trigger_ids_any_context));
 
     EXPECT_EQ(3U, ids_first_party.size());
-    EXPECT_TRUE(base::Contains(ids_first_party, 11));
-    EXPECT_TRUE(base::Contains(ids_first_party, 22));
-    EXPECT_TRUE(base::Contains(ids_any_context, 55));
+    EXPECT_TRUE(ids_first_party.contains(11));
+    EXPECT_TRUE(ids_first_party.contains(22));
+    EXPECT_TRUE(ids_any_context.contains(55));
     EXPECT_EQ(2U, trigger_ids_first_party.size());
-    EXPECT_TRUE(base::Contains(trigger_ids_first_party, 33));
-    EXPECT_TRUE(base::Contains(trigger_ids_first_party, 44));
+    EXPECT_TRUE(trigger_ids_first_party.contains(33));
+    EXPECT_TRUE(trigger_ids_first_party.contains(44));
 
     // IDs associated with FIRST_PARTY ID CollectionKeys should be excluded from
     // the variations header that may be sent in third-party contexts.
     EXPECT_EQ(2U, ids_any_context.size());
-    EXPECT_TRUE(base::Contains(ids_any_context, 11));
+    EXPECT_TRUE(ids_any_context.contains(11));
     // Note '22' is omitted.
-    EXPECT_TRUE(base::Contains(ids_any_context, 55));
+    EXPECT_TRUE(ids_any_context.contains(55));
     EXPECT_EQ(1U, trigger_ids_any_context.size());
-    EXPECT_TRUE(base::Contains(trigger_ids_any_context, 33));
+    EXPECT_TRUE(trigger_ids_any_context.contains(33));
     // Note '44' is omitted.
   }
 }

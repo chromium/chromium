@@ -5,7 +5,6 @@
 #include "services/audio/output_device_mixer_impl.h"
 
 #include "base/check.h"
-#include "base/containers/contains.h"
 #include "base/dcheck_is_on.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
@@ -533,7 +532,7 @@ void OutputDeviceMixerImpl::StartStream(
 #endif
   DCHECK(mix_track);
   DCHECK(callback);
-  DCHECK(!base::Contains(active_tracks_, mix_track));
+  DCHECK(!active_tracks_.contains(mix_track));
 
   TRACE_EVENT2(TRACE_DISABLED_BY_DEFAULT("audio"),
                "OutputDeviceMixerImpl::StartStream", "device_id", device_id(),
@@ -565,7 +564,7 @@ void OutputDeviceMixerImpl::StopStream(MixTrack* mix_track) {
   DCHECK(!device_changed_);
 #endif
   DCHECK(mix_track);
-  if (!base::Contains(active_tracks_, mix_track)) {
+  if (!active_tracks_.contains(mix_track)) {
     // MixableOutputStream::Stop() can be called multiple times, even if the
     // stream has not been started. See media::AudioOutputStream documentation.
     return;
@@ -609,7 +608,7 @@ void OutputDeviceMixerImpl::CloseStream(MixTrack* mix_track) {
   DCHECK(!device_changed_);
 #endif
   DCHECK(mix_track);
-  DCHECK(!base::Contains(active_tracks_, mix_track));
+  DCHECK(!active_tracks_.contains(mix_track));
 
   auto iter = mix_tracks_.find(mix_track);
   CHECK(iter != mix_tracks_.end());

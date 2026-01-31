@@ -71,7 +71,7 @@ class WebsiteUsageObserverTest : public ::testing::Test {
   }
 
   void SetAllowlistedUrls(const std::vector<std::string>& allowlisted_urls) {
-    base::Value::List allowed_urls;
+    base::ListValue allowed_urls;
     for (const auto& url : allowlisted_urls) {
       allowed_urls.Append(url);
     }
@@ -81,7 +81,7 @@ class WebsiteUsageObserverTest : public ::testing::Test {
 
   void SetAllowlistedTelemetryTypes(
       const std::vector<std::string>& allowlisted_telemetry_types) {
-    base::Value::List allowed_telemetry_types;
+    base::ListValue allowed_telemetry_types;
     for (const auto& telemetry_type : allowlisted_telemetry_types) {
       allowed_telemetry_types.Append(telemetry_type);
     }

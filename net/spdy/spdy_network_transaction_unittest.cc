@@ -317,10 +317,10 @@ class SpdyNetworkTransactionTest
     }
 
     size_t GetSpdySessionCount() {
-      std::unique_ptr<base::Value> value(
-          session_->spdy_session_pool()->SpdySessionPoolInfoToValue());
-      CHECK(value && value->is_list());
-      return value->GetList().size();
+      base::Value value =
+          session_->spdy_session_pool()->SpdySessionPoolInfoToValue();
+      CHECK(value.is_list());
+      return value.GetList().size();
     }
 
     HttpNetworkTransaction* trans() { return trans_.get(); }
@@ -8973,8 +8973,8 @@ TEST_P(SpdyNetworkTransactionTest, GreaseSettings) {
       NetLogEventPhase::NONE);
   ASSERT_LT(pos, entries.size());
 
-  const base::Value::Dict& params = entries[pos].params;
-  const base::Value::List* const settings = params.FindList("settings");
+  const base::DictValue& params = entries[pos].params;
+  const base::ListValue* const settings = params.FindList("settings");
   ASSERT_TRUE(settings);
 
   ASSERT_FALSE(settings->empty());

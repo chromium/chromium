@@ -17,7 +17,6 @@
 
 #include "base/auto_reset.h"
 #include "base/check_deref.h"
-#include "base/containers/contains.h"
 #include "base/json/json_reader.h"
 #include "base/run_loop.h"
 #include "base/strings/string_util_win.h"
@@ -3032,8 +3031,8 @@ TEST_F(AXPlatformNodeWinTest, UnlabeledImageAttributes) {
 
     std::vector<std::wstring> attribute_vector = base::SplitString(
         attributes, L";", base::KEEP_WHITESPACE, base::SPLIT_WANT_ALL);
-    EXPECT_TRUE(
-        base::Contains(attribute_vector, L"roledescription:Unlabeled image"));
+    EXPECT_TRUE(std::ranges::contains(attribute_vector,
+                                      L"roledescription:Unlabeled image"));
   }
 }
 
@@ -8054,7 +8053,7 @@ TEST_F(AXPlatformNodeWinTest, DISABLED_BulkFetch) {
   std::optional<base::Value> result_val =
       base::JSONReader::Read(response, base::JSON_ALLOW_TRAILING_COMMAS);
   ASSERT_TRUE(result_val);
-  const base::Value::Dict& result = result_val->GetDict();
+  const base::DictValue& result = result_val->GetDict();
   ASSERT_TRUE(result.contains("role"));
   ASSERT_EQ("scrollBar", CHECK_DEREF(result.FindString("role")));
 }

@@ -182,7 +182,7 @@ sk_sp<SkColorSpace> CreateColorSpace(T* params) {
 }  // namespace
 
 static void JNI_AwDrawFnImpl_SetDrawFnFunctionTable(JNIEnv* env,
-                                                    jlong function_table) {
+                                                    int64_t function_table) {
   g_draw_fn_function_table =
       reinterpret_cast<AwDrawFnFunctionTable*>(function_table);
 }
@@ -235,17 +235,17 @@ void AwDrawFnImpl::ReleaseHandle(JNIEnv* env) {
   g_draw_fn_function_table->release_functor(functor_handle_);
 }
 
-jint AwDrawFnImpl::GetFunctorHandle(JNIEnv* env) {
+int32_t AwDrawFnImpl::GetFunctorHandle(JNIEnv* env) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   return functor_handle_;
 }
 
-jlong AwDrawFnImpl::GetCompositorFrameConsumer(JNIEnv* env) {
+int64_t AwDrawFnImpl::GetCompositorFrameConsumer(JNIEnv* env) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   return reinterpret_cast<intptr_t>(GetCompositorFrameConsumer());
 }
 
-static jlong JNI_AwDrawFnImpl_Create(JNIEnv* env) {
+static int64_t JNI_AwDrawFnImpl_Create(JNIEnv* env) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   return reinterpret_cast<intptr_t>(new AwDrawFnImpl());
 }
@@ -344,7 +344,7 @@ void AwDrawFnImpl::RemoveOverlays(AwDrawFn_RemoveOverlaysParams* params) {
   render_thread_manager_.RemoveOverlaysOnRT(params->merge_transaction);
 }
 
-static jint JNI_AwDrawFnImpl_GetReferenceInstanceCount(JNIEnv* env) {
+static int32_t JNI_AwDrawFnImpl_GetReferenceInstanceCount(JNIEnv* env) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   return g_instance_count;
 }

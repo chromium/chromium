@@ -11,6 +11,7 @@
 
 #import "base/memory/raw_ptr.h"
 #import "base/metrics/histogram_samples.h"
+#import "base/run_loop.h"
 #import "base/test/metrics/histogram_tester.h"
 #import "base/test/task_environment.h"
 #import "components/previous_session_info/previous_session_info.h"
@@ -18,12 +19,12 @@
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_opener.h"
+#import "ios/testing/scoped_block_swizzler.h"
 #import "ios/web/public/test/fakes/fake_navigation_manager.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/platform_test.h"
-#import "third_party/ocmock/OCMock/OCMock.h"
 
 namespace {
 
@@ -46,17 +47,13 @@ enum WebStateInMemoryOption { NOT_IN_MEMORY = 0, IN_MEMORY };
 
 class TabUsageRecorderBrowserAgentTest : public PlatformTest {
  protected:
-  TabUsageRecorderBrowserAgentTest()
-      : application_(OCMClassMock([UIApplication class])) {
+  TabUsageRecorderBrowserAgentTest() {
     profile_ = TestProfileIOS::Builder().Build();
     browser_ = std::make_unique<TestBrowser>(profile_.get());
     TabUsageRecorderBrowserAgent::CreateForBrowser(browser_.get());
     tab_usage_recorder_ =
         TabUsageRecorderBrowserAgent::FromBrowser(browser_.get());
-    OCMStub([application_ sharedApplication]).andReturn(application_);
   }
-
-  ~TabUsageRecorderBrowserAgentTest() override { [application_ stopMocking]; }
 
   web::FakeWebState* InsertFakeWebState(const char* url,
                                         WebStateInMemoryOption in_memory) {
@@ -88,6 +85,16 @@ class TabUsageRecorderBrowserAgentTest : public PlatformTest {
     return item;
   }
 
+  // Returns a `ScopedBlockSwizzler` that swizzles `applicationState` with the
+  // given `state`.
+  std::unique_ptr<ScopedBlockSwizzler> SwizzleApplicationState(
+      UIApplicationState state) {
+    return std::make_unique<ScopedBlockSwizzler>([UIApplication class],
+                                                 @selector(applicationState), ^{
+                                                   return state;
+                                                 });
+  }
+
   void AddTimeToDequeInTabUsageRecorder(base::TimeTicks time) {
     tab_usage_recorder_->termination_timestamps_.push_back(time);
   }
@@ -97,7 +104,6 @@ class TabUsageRecorderBrowserAgentTest : public PlatformTest {
   std::unique_ptr<TestBrowser> browser_;
   base::HistogramTester histogram_tester_;
   raw_ptr<TabUsageRecorderBrowserAgent> tab_usage_recorder_;
-  id application_;
 };
 
 TEST_F(TabUsageRecorderBrowserAgentTest, SwitchBetweenInMemoryTabs) {
@@ -265,8 +271,7 @@ TEST_F(TabUsageRecorderBrowserAgentTest, TestTimeAfterLastRestore) {
 // Verifies that metrics are recorded correctly when a renderer terminates.
 TEST_F(TabUsageRecorderBrowserAgentTest, RendererTerminated) {
   web::FakeWebState* mock_tab_a = InsertFakeWebState(kURL, NOT_IN_MEMORY);
-  OCMStub([static_cast<UIApplication*>(application_) applicationState])
-      .andReturn(UIApplicationStateActive);
+  auto app_state_swizzler = SwizzleApplicationState(UIApplicationStateActive);
 
   // Add some extra WebStates that are not considered evicted so that
   // TabUsageRecorder count kAliveTabsCountAtRendererTermination tabs
@@ -317,8 +322,7 @@ TEST_F(TabUsageRecorderBrowserAgentTest, RendererTerminated) {
 TEST_F(TabUsageRecorderBrowserAgentTest, SwitchToRendererTerminatedTab) {
   web::FakeWebState* mock_tab_a = InsertFakeWebState(kURL, IN_MEMORY);
   web::FakeWebState* mock_tab_b = InsertFakeWebState(kURL, NOT_IN_MEMORY);
-  OCMStub([static_cast<UIApplication*>(application_) applicationState])
-      .andReturn(UIApplicationStateActive);
+  auto app_state_swizzler = SwizzleApplicationState(UIApplicationStateActive);
 
   mock_tab_b->OnRenderProcessGone();
   tab_usage_recorder_->RecordTabSwitched(mock_tab_a, mock_tab_b);
@@ -333,8 +337,7 @@ TEST_F(TabUsageRecorderBrowserAgentTest, SwitchToRendererTerminatedTab) {
 TEST_F(TabUsageRecorderBrowserAgentTest, StateAtRendererTerminationForeground) {
   web::FakeWebState* mock_tab_a = InsertFakeWebState(kURL, IN_MEMORY);
   web::FakeWebState* mock_tab_b = InsertFakeWebState(kURL, IN_MEMORY);
-  OCMStub([static_cast<UIApplication*>(application_) applicationState])
-      .andReturn(UIApplicationStateActive);
+  auto app_state_swizzler = SwizzleApplicationState(UIApplicationStateActive);
 
   mock_tab_a->WasShown();
   mock_tab_a->OnRenderProcessGone();
@@ -353,8 +356,8 @@ TEST_F(TabUsageRecorderBrowserAgentTest, StateAtRendererTerminationForeground) {
 TEST_F(TabUsageRecorderBrowserAgentTest, StateAtRendererTerminationBackground) {
   web::FakeWebState* mock_tab_a = InsertFakeWebState(kURL, IN_MEMORY);
   web::FakeWebState* mock_tab_b = InsertFakeWebState(kURL, IN_MEMORY);
-  OCMStub([static_cast<UIApplication*>(application_) applicationState])
-      .andReturn(UIApplicationStateBackground);
+  auto app_state_swizzler =
+      SwizzleApplicationState(UIApplicationStateBackground);
 
   mock_tab_a->WasShown();
   mock_tab_a->OnRenderProcessGone();
@@ -373,8 +376,7 @@ TEST_F(TabUsageRecorderBrowserAgentTest, StateAtRendererTerminationBackground) {
 TEST_F(TabUsageRecorderBrowserAgentTest, StateAtRendererTerminationInactive) {
   web::FakeWebState* mock_tab_a = InsertFakeWebState(kURL, IN_MEMORY);
   web::FakeWebState* mock_tab_b = InsertFakeWebState(kURL, IN_MEMORY);
-  OCMStub([static_cast<UIApplication*>(application_) applicationState])
-      .andReturn(UIApplicationStateInactive);
+  auto app_state_swizzler = SwizzleApplicationState(UIApplicationStateInactive);
 
   mock_tab_a->WasShown();
   mock_tab_a->OnRenderProcessGone();

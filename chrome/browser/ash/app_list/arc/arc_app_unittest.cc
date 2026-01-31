@@ -16,7 +16,6 @@
 #include "ash/constants/ash_switches.h"
 #include "ash/public/cpp/app_list/app_list_config.h"
 #include "ash/public/cpp/shelf_model.h"
-#include "base/containers/contains.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
@@ -630,7 +629,7 @@ class ArcAppModelBuilderTest : public extensions::ExtensionServiceTestBase,
     // In principle, order of items is not defined.
     for (const auto& app : apps) {
       const std::string id = ArcAppTest::GetAppId(*app);
-      EXPECT_TRUE(base::Contains(ids, id));
+      EXPECT_TRUE(std::ranges::contains(ids, id));
       std::unique_ptr<ArcAppListPrefs::AppInfo> app_info = prefs->GetApp(id);
       ASSERT_NE(nullptr, app_info.get());
       EXPECT_EQ(app->name, app_info->name);
@@ -644,7 +643,7 @@ class ArcAppModelBuilderTest : public extensions::ExtensionServiceTestBase,
 
     for (auto& shortcut : shortcuts) {
       const std::string id = ArcAppTest::GetAppId(shortcut);
-      EXPECT_TRUE(base::Contains(ids, id));
+      EXPECT_TRUE(std::ranges::contains(ids, id));
       std::unique_ptr<ArcAppListPrefs::AppInfo> app_info = prefs->GetApp(id);
       ASSERT_NE(nullptr, app_info.get());
       EXPECT_EQ(shortcut.name, app_info->name);
@@ -985,6 +984,7 @@ class ArcAppModelIconTest : public ArcAppModelBuilderRecreate,
     // Clean up any observers added in StartApp(). This is a no-op if we didn't
     // add an observer.
     arc_app_test()->arc_app_list_prefs()->RemoveObserver(this);
+    icon_updated_count_ = 0;
     scoped_supported_scale_factors_.reset();
     ArcAppModelBuilderRecreate::TearDown();
   }
@@ -1037,15 +1037,21 @@ class ArcAppModelIconTest : public ArcAppModelBuilderRecreate,
 
     const std::vector<std::unique_ptr<arc::FakeAppInstance::IconRequest>>&
         icon_requests = app_instance()->icon_requests();
-    ASSERT_EQ(2U, icon_requests.size());
-    ASSERT_TRUE(icon_requests[0]->IsForApp(*apps[0]));
-    ASSERT_TRUE(icon_requests[1]->IsForApp(*apps[0]));
+    // There are 4 requests triggered (2 from restart recovery + 2 from
+    // invalidation).
+    ASSERT_EQ(4u, icon_requests.size());
+    // Verify the two most recent requests.
+    size_t last_idx = icon_requests.size() - 1;
+    size_t prev_idx = icon_requests.size() - 2;
+    ASSERT_TRUE(icon_requests[prev_idx]->IsForApp(*apps[0]));
+    ASSERT_TRUE(icon_requests[last_idx]->IsForApp(*apps[0]));
 
     // testing::UnorderedElementsAre because icon requests could be out of order
     // when going through  base::ThreadPool::PostTaskAndReplyWithResult in
     // ArcAppIcon::LoadForScaleFactor.
-    const std::vector<int> requested_dims = {icon_requests[0]->dimension(),
-                                             icon_requests[1]->dimension()};
+    const std::vector<int> requested_dims = {
+        icon_requests[prev_idx]->dimension(),
+        icon_requests[last_idx]->dimension()};
     ASSERT_THAT(requested_dims,
                 testing::UnorderedElementsAre(
                     GetAppListIconDimensionForScaleFactor(ui::k100Percent),
@@ -1365,7 +1371,7 @@ class ArcPlayStoreAppTest : public ArcDefaultAppTest {
   void OnBeforeArcTestSetup() override {
     ArcDefaultAppTest::OnBeforeArcTestSetup();
 
-    base::Value::Dict manifest;
+    base::DictValue manifest;
     manifest.Set(extensions::manifest_keys::kName, "Play Store");
     manifest.Set(extensions::manifest_keys::kVersion, "1");
     manifest.Set(extensions::manifest_keys::kManifestVersion, 2);
@@ -2326,9 +2332,7 @@ TEST_P(ArcAppModelBuilderTest, ArcPacakgesIsUpToDate) {
       profile()->GetPrefs()->GetBoolean(arc::prefs::kArcPackagesIsUpToDate));
 }
 
-// Validate that arc model contains expected elements on restart.
-// Flaky. https://crbug.com/1013813
-TEST_P(ArcAppModelBuilderRecreate, DISABLED_AppModelRestart) {
+TEST_P(ArcAppModelBuilderRecreate, AppModelRestart) {
   // No apps on initial start.
   ValidateHaveApps(std::vector<arc::mojom::AppInfoPtr>());
 
@@ -2354,11 +2358,7 @@ TEST_P(ArcAppModelBuilderRecreate, DISABLED_AppModelRestart) {
   EXPECT_EQ(fake_apps().size(), GetArcItemCount());
 }
 
-// Verifies that no OnAppRegistered/OnAppRemoved is called in case ARC++ started
-// next time disabled.
-// Flaky. https://crbug.com/1013813
-TEST_P(ArcAppModelBuilderRecreate,
-       DISABLED_AppsNotReportedNextSessionDisabled) {
+TEST_P(ArcAppModelBuilderRecreate, AppsNotReportedNextSessionDisabled) {
   ArcAppListPrefs* prefs = ArcAppListPrefs::Get(profile());
   ASSERT_TRUE(prefs);
 
@@ -2372,8 +2372,9 @@ TEST_P(ArcAppModelBuilderRecreate,
   arc_app_test()->set_wait_default_apps(false);
   arc_app_test()->set_activate_arc_on_start(false);
   StopArc();
-  // Disable ARC in beetwen sessions.
-  SetArcPlayStoreEnabledForProfile(profile(), false);
+  // Disable ARC in between sessions. Use Prefs directly to avoid DCHECK in
+  // SetArcPlayStoreEnabledForProfile because StopArc() tears down user mapping.
+  profile()->GetPrefs()->SetBoolean(arc::prefs::kArcEnabled, false);
   StartArc();
 
   prefs = ArcAppListPrefs::Get(profile());
@@ -2384,6 +2385,7 @@ TEST_P(ArcAppModelBuilderRecreate,
   EXPECT_CALL(observer, OnAppRemoved(app_id)).Times(0);
 
   arc_app_test()->WaitForDefaultApps();
+  prefs->RemoveObserver(&observer);
 }
 
 TEST_P(ArcPlayStoreAppTest, PlayStore) {
@@ -2592,7 +2594,7 @@ TEST_P(ArcPlayStoreAppTest,
 
   // Fast App Reinstall is not expected to start when the user finishes
   // selection without the Play Store.
-  base::Value::List package_list;
+  base::ListValue package_list;
   package_list.Append("fake_package_name");
   profile()->GetPrefs()->SetList(arc::prefs::kArcFastAppReinstallPackages,
                                  std::move(package_list));
@@ -2640,7 +2642,7 @@ TEST_P(ArcPlayStoreAppTest,
   EXPECT_FALSE(starter1.started());
   EXPECT_EQ(0, app_instance()->start_fast_app_reinstall_request_count());
 
-  base::Value::List package_list;
+  base::ListValue package_list;
   package_list.Append("fake_package_name");
   profile()->GetPrefs()->SetList(arc::prefs::kArcFastAppReinstallPackages,
                                  std::move(package_list));
@@ -3006,8 +3008,7 @@ TEST_P(ArcAppModelBuilderTest, IconLoaderCompressed) {
   run_loop.Run();
 }
 
-// Flaky.  https://crbug.com/1248526
-TEST_P(ArcAppModelIconTest, DISABLED_IconInvalidation) {
+TEST_P(ArcAppModelIconTest, IconInvalidation) {
   ArcAppListPrefs* const prefs = ArcAppListPrefs::Get(profile());
   ASSERT_TRUE(prefs);
 
@@ -3020,13 +3021,25 @@ TEST_P(ArcAppModelIconTest, DISABLED_IconInvalidation) {
 
   // No icon update requests on restart. Icons were not invalidated.
   EXPECT_TRUE(app_instance()->icon_requests().empty());
+  // Force the system to display the icons for all supported scale factors (100%
+  // and 200%). This triggers 2 requests.
+  WaitForIconUpdates(profile(), app_id);
 
-  // Send new apps for the package. This should invalidate package icons.
+  // Send new apps for the package. This should invalidate package icons. This
+  // call also triggers an additional 2 requests.
   UpdatePackage(2 /* package_version */);
+
+  // UpdatePackage(2) triggers an asynchronous invalidation of the on-disk icon
+  // cache. We must wait for these background cleanup tasks to complete.
+  // Otherwise, the subsequent LoadAppIcon call might see an inconsistent cache
+  // state and trigger redundant Mojo requests, causing a flake in the following
+  // call to EnsureIconsUpdated(), in which 6 requests are counted instead of 4.
+  content::RunAllTasksUntilIdle();
 
   model_updater()->LoadAppIcon(app_id);
   WaitForIconUpdate();
 
+  // All in all 2 + 2 = 4 requests were triggered so far.
   EnsureIconsUpdated();
 
   // Simulate ARC restart again.

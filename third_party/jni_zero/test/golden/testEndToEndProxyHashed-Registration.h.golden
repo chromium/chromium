@@ -17,7 +17,7 @@ JNI_ZERO_BOUNDARY_EXPORT jobject Java_J_N_M_00024zHpGqF(
     jclass jcaller,
     jobject sample);
 JNI_ZERO_BOUNDARY_EXPORT void Java_J_N_MFxD5gzE(JNIEnv* env, jclass jcaller);
-JNI_ZERO_BOUNDARY_EXPORT jboolean Java_J_N_Mts1shVs(JNIEnv* env, jclass jcaller);
+JNI_ZERO_BOUNDARY_EXPORT bool Java_J_N_Mts1shVs(JNIEnv* env, jclass jcaller);
 JNI_ZERO_BOUNDARY_EXPORT jobject Java_J_N_MHC2XaYW(JNIEnv* env, jclass jcaller);
 JNI_ZERO_BOUNDARY_EXPORT jobject Java_J_N_MPl4TY3m(JNIEnv* env, jclass jcaller);
 JNI_ZERO_BOUNDARY_EXPORT jobject Java_J_N_MbcaLfAT(
@@ -44,21 +44,21 @@ JNI_ZERO_BOUNDARY_EXPORT jobject Java_J_N_M3btId9A(JNIEnv* env, jclass jcaller, 
 JNI_ZERO_BOUNDARY_EXPORT jobject Java_J_N_M3dkhKZM(
     JNIEnv* env,
     jclass jcaller,
-    jint zint,
+    int32_t zint,
     jobject ints,
-    jlong zlong,
+    int64_t zlong,
     jobject longs,
-    jshort zshort,
+    int16_t zshort,
     jobject shorts,
-    jchar zchar,
+    uint16_t zchar,
     jobject chars,
-    jbyte zbyte,
+    int8_t zbyte,
     jobject bytes,
-    jdouble zdouble,
+    double zdouble,
     jobject doubles,
-    jfloat zfloat,
+    float zfloat,
     jobject floats,
-    jboolean zbool,
+    bool zbool,
     jobject bools);
 JNI_ZERO_BOUNDARY_EXPORT void Java_J_N_MomokuWo(
     JNIEnv* env,

@@ -13,6 +13,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/values.h"
 #include "components/optimization_guide/core/delivery/model_enums.h"
+#include "components/optimization_guide/core/delivery/model_store_metadata_entry.h"
 #include "components/optimization_guide/proto/models.pb.h"
 
 class PrefService;
@@ -51,19 +52,19 @@ class PredictionModelStore {
   // Returns whether the model represented by |optimization_target| and
   // |model_cache_key| is available in the store.
   bool HasModel(proto::OptimizationTarget optimization_target,
-                const proto::ModelCacheKey& model_cache_key) const;
+                const ClientCacheKey& model_cache_key) const;
 
   // Returns whether the model represented by |optimization_target| and
   // |model_cache_key| with |version| is available in the store.
   bool HasModelWithVersion(proto::OptimizationTarget optimization_target,
-                           const proto::ModelCacheKey& model_cache_key,
+                           const ClientCacheKey& model_cache_key,
                            int64_t version);
 
   // Loads the model represented by |optimization_target| and
   // |model_cache_key|. Once the model is loaded and validated |callback|
   // is invoked. On any failures, callback is run with nullptr.
   void LoadModel(proto::OptimizationTarget optimization_target,
-                 const proto::ModelCacheKey& model_cache_key,
+                 const ClientCacheKey& model_cache_key,
                  scoped_refptr<base::SequencedTaskRunner> model_task_runner,
                  PredictionModelLoadedCallback callback);
 
@@ -71,7 +72,7 @@ class PredictionModelStore {
   // |optimization_target| and |model_cache_key| exists.
   void UpdateMetadataForExistingModel(
       proto::OptimizationTarget optimization_target,
-      const proto::ModelCacheKey& model_cache_key,
+      const ClientCacheKey& model_cache_key,
       const proto::ModelInfo& model_info);
 
   // Update the model for |model_info| in the store represented by
@@ -79,7 +80,7 @@ class PredictionModelStore {
   // |base_model_dir|. |callback| is invoked on completion. This will schedule
   // the old model files to be removed.
   void UpdateModel(proto::OptimizationTarget optimization_target,
-                   const proto::ModelCacheKey& model_cache_key,
+                   const ClientCacheKey& model_cache_key,
                    const proto::ModelInfo& model_info,
                    const base::FilePath& base_model_dir,
                    base::OnceClosure callback);
@@ -89,13 +90,13 @@ class PredictionModelStore {
   // |model_cache_key|.
   base::FilePath GetBaseModelDirForModelCacheKey(
       proto::OptimizationTarget optimization_target,
-      const proto::ModelCacheKey& model_cache_key);
+      const ClientCacheKey& model_cache_key);
 
   // Updates the mapping of |client_model_cache_key| to |server_model_cache_key|
   // for |optimization_target|.
   void UpdateModelCacheKeyMapping(
       proto::OptimizationTarget optimization_target,
-      const proto::ModelCacheKey& client_model_cache_key,
+      const ClientCacheKey& client_model_cache_key,
       const proto::ModelCacheKey& server_model_cache_key);
 
   // Removes the model represented by |optimization_target| and
@@ -103,7 +104,7 @@ class PredictionModelStore {
   // removed immediately while the model directories will be slated for removal
   // at next startup, by CleanUpOldModelFiles.
   void RemoveModel(proto::OptimizationTarget optimization_target,
-                   const proto::ModelCacheKey& model_cache_key,
+                   const ClientCacheKey& model_cache_key,
                    PredictionModelStoreModelRemovalReason model_removal_reason);
 
   base::FilePath GetBaseStoreDirForTesting() const;
@@ -119,13 +120,13 @@ class PredictionModelStore {
 
   // Invoked when the model loaded.
   void OnModelLoaded(proto::OptimizationTarget optimization_target,
-                     const proto::ModelCacheKey& model_cache_key,
+                     const ClientCacheKey& model_cache_key,
                      PredictionModelLoadedCallback callback,
                      std::unique_ptr<proto::PredictionModel> model);
 
   // Invoked when the model files are verified on a model update.
   void OnModelUpdateVerified(proto::OptimizationTarget optimization_target,
-                             const proto::ModelCacheKey& model_cache_key,
+                             const ClientCacheKey& model_cache_key,
                              base::OnceClosure callback,
                              bool model_paths_exist);
 
@@ -144,13 +145,12 @@ class PredictionModelStore {
   void CleanUpOldModelFiles();
 
   // Invoked when model files gets deleted.
-  void OnFilePathDeleted(const std::string& path_to_delete, bool success);
+  void OnFilePathDeleted(const base::FilePath& path_to_delete, bool success);
 
   // The base dir where the prediction model dirs are saved.
   base::FilePath base_store_dir_ GUARDED_BY_CONTEXT(sequence_checker_);
 
-  const raw_ref<PrefService, DanglingUntriaged> local_state_
-      GUARDED_BY_CONTEXT(sequence_checker_);
+  ModelStoreLedger ledger_ GUARDED_BY_CONTEXT(sequence_checker_);
 
   SEQUENCE_CHECKER(sequence_checker_);
 

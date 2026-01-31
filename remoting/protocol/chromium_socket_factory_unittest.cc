@@ -12,7 +12,6 @@
 #include <string>
 #include <vector>
 
-#include "base/containers/contains.h"
 #include "base/containers/flat_set.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
@@ -231,7 +230,7 @@ TEST_F(ChromiumSocketFactoryTest, CreateMultiplePortsFromPortRange) {
     uint16_t port = socket->GetLocalAddress().port();
     EXPECT_GE(port, kMinPort);
     EXPECT_LE(port, kMaxPort);
-    ASSERT_FALSE(base::Contains(assigned_ports, port));
+    ASSERT_FALSE(assigned_ports.contains(port));
     assigned_ports.insert(port);
   }
 

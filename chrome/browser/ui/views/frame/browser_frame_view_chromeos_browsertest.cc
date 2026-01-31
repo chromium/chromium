@@ -25,11 +25,11 @@
 #include "build/build_config.h"
 #include "build/buildflag.h"
 #include "chrome/app/chrome_command_ids.h"
-#include "chrome/browser/apps/app_service/app_launch_params.h"
 #include "chrome/browser/apps/app_service/app_registry_cache_waiter.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/apps/app_service/browser_app_launcher.h"
+#include "chrome/browser/ash/boca/on_task/on_task_locked_controller.h"
 #include "chrome/browser/ash/login/test/device_state_mixin.h"
 #include "chrome/browser/ash/login/test/login_manager_mixin.h"
 #include "chrome/browser/ash/system_web_apps/system_web_app_manager.h"
@@ -105,6 +105,7 @@
 #include "components/keep_alive_registry/keep_alive_types.h"
 #include "components/keep_alive_registry/scoped_keep_alive.h"
 #include "components/password_manager/core/browser/password_form.h"
+#include "components/services/app_service/public/cpp/app_launch_params.h"
 #include "components/services/app_service/public/cpp/app_update.h"
 #include "components/session_manager/core/session.h"
 #include "components/session_manager/core/session_manager.h"
@@ -941,8 +942,81 @@ IN_PROC_BROWSER_TEST_P(WebAppFrameViewChromeOSTest, PopupHasNoToolbar) {
 }
 
 IN_PROC_BROWSER_TEST_P(BrowserFrameViewChromeOSTest,
-                       FocusOmniboxRevealTopChrome) {
+                       ShortcutRevealTopChromeExceptForZoom) {
   EnterImmersiveFullscreenMode(browser());
+
+  enum Shortcut { kToolbar, kOmnibox, kBookmark, kMultitaskMenu };
+  for (auto shortcut : {kToolbar, kOmnibox, kMultitaskMenu}) {
+    auto* const immersive_mode_controller =
+        ImmersiveModeController::From(browser());
+    EXPECT_TRUE(immersive_mode_controller->IsEnabled());
+    // TODO(crbug.com/463559714): Replace the loop with EXPECT_TRUE, when the
+    // mechanism to disable gfx::Animation is added.
+    ASSERT_TRUE(base::test::RunUntil(
+        [&]() -> bool { return !immersive_mode_controller->IsRevealed(); }));
+
+    ui::test::EventGenerator generator(
+        browser()->window()->GetNativeWindow()->GetRootWindow());
+
+    switch (shortcut) {
+      case kOmnibox: {
+        SCOPED_TRACE("Omnibox");
+        // Ctrl-L focuses the omnibox.
+        generator.PressKey(ui::KeyboardCode::VKEY_CONTROL, 0);
+        generator.PressKey(ui::KeyboardCode::VKEY_L, ui::EF_CONTROL_DOWN);
+        generator.ReleaseKey(ui::KeyboardCode::VKEY_L, ui::EF_CONTROL_DOWN);
+        generator.ReleaseKey(ui::KeyboardCode::VKEY_CONTROL, 0);
+      } break;
+      case kToolbar: {
+        SCOPED_TRACE("Toolbar");
+        // Shift-Alt-T focuses the first item on toolbar.
+        generator.PressKey(ui::KeyboardCode::VKEY_SHIFT, 0);
+        generator.PressKey(ui::KeyboardCode::VKEY_MENU, ui::EF_SHIFT_DOWN);
+        generator.PressKey(ui::KeyboardCode::VKEY_T,
+                           ui::EF_SHIFT_DOWN | ui::EF_ALT_DOWN);
+        generator.ReleaseKey(ui::KeyboardCode::VKEY_T,
+                             ui::EF_SHIFT_DOWN | ui::EF_ALT_DOWN);
+        generator.ReleaseKey(ui::KeyboardCode::VKEY_MENU, ui::EF_SHIFT_DOWN);
+        generator.ReleaseKey(ui::KeyboardCode::VKEY_SHIFT, 0);
+      } break;
+      case kBookmark: {
+        SCOPED_TRACE("Bookmark");
+        generator.PressKey(ui::KeyboardCode::VKEY_MENU, 0);
+        generator.PressKey(ui::KeyboardCode::VKEY_D, ui::EF_ALT_DOWN);
+        generator.ReleaseKey(ui::KeyboardCode::VKEY_D, ui::EF_ALT_DOWN);
+        generator.ReleaseKey(ui::KeyboardCode::VKEY_MENU, 0);
+      } break;
+      case kMultitaskMenu: {
+        // The multask menu is not accessible via shortcut in in Tablet mode.
+        if (GetParam()) {
+          continue;
+        }
+        SCOPED_TRACE("MultitaskMenu");
+        generator.PressKey(ui::KeyboardCode::VKEY_COMMAND, 0);
+        generator.PressKey(ui::KeyboardCode::VKEY_Z, ui::EF_COMMAND_DOWN);
+        generator.ReleaseKey(ui::KeyboardCode::VKEY_Z, ui::EF_COMMAND_DOWN);
+        generator.ReleaseKey(ui::KeyboardCode::VKEY_COMMAND, 0);
+      } break;
+    }
+    // We need to wait here because the keysequence maybe be handled on
+    // unhandled case.
+    ASSERT_TRUE(base::test::RunUntil(
+        [&]() { return immersive_mode_controller->IsRevealed(); }));
+
+    generator.MoveMouseToCenterOf(browser()->window()->GetNativeWindow());
+    generator.ClickLeftButton();
+
+    // TODO(crbug.com/463559714): Replace the loop with EXPECT_TRUE, when the
+    // mechanism to disable gfx::Animation is added.
+    ASSERT_TRUE(base::test::RunUntil(
+        [&]() { return !immersive_mode_controller->IsRevealed(); }));
+  }
+}
+
+IN_PROC_BROWSER_TEST_P(BrowserFrameViewChromeOSTest,
+                       ZoomShortcutShouldNotRevealTopChrome) {
+  EnterImmersiveFullscreenMode(browser());
+
   auto* const immersive_mode_controller =
       ImmersiveModeController::From(browser());
   EXPECT_TRUE(immersive_mode_controller->IsEnabled());
@@ -953,12 +1027,17 @@ IN_PROC_BROWSER_TEST_P(BrowserFrameViewChromeOSTest,
 
   ui::test::EventGenerator generator(
       browser()->window()->GetNativeWindow()->GetRootWindow());
-  // Focus omnibox using shortcut.
+
+  SCOPED_TRACE("Zoom");
   generator.PressKey(ui::KeyboardCode::VKEY_CONTROL, 0);
-  generator.PressKey(ui::KeyboardCode::VKEY_L, ui::EF_CONTROL_DOWN);
-  generator.ReleaseKey(ui::KeyboardCode::VKEY_L, ui::EF_CONTROL_DOWN);
+  generator.PressKey(ui::KeyboardCode::VKEY_OEM_PLUS, ui::EF_CONTROL_DOWN);
+  generator.ReleaseKey(ui::KeyboardCode::VKEY_OEM_PLUS, ui::EF_CONTROL_DOWN);
   generator.ReleaseKey(ui::KeyboardCode::VKEY_CONTROL, 0);
-  EXPECT_TRUE(immersive_mode_controller->IsRevealed());
+  // Zoom bubble shouldn't reveal the immersive frame.
+  auto* zoom_bubble_coordinator = ZoomBubbleCoordinator::From(browser());
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return !!zoom_bubble_coordinator->bubble(); }));
+  EXPECT_FALSE(immersive_mode_controller->IsRevealed());
 }
 
 // Test the normal type browser's kTopViewInset is always 0.
@@ -1529,7 +1608,8 @@ using LockedFullscreenBrowserFrameViewChromeOSTest =
 
 IN_PROC_BROWSER_TEST_P(LockedFullscreenBrowserFrameViewChromeOSTest,
                        ToggleTabletModeWhenNotLockedForOnTask) {
-  browser()->SetLockedForOnTask(false);
+  ash::boca::OnTaskLockedController::From(browser())->set_locked_for_on_task(
+      false);
   BrowserView* const browser_view =
       BrowserView::GetBrowserViewForBrowser(browser());
   auto* const immersive_mode_controller =
@@ -1571,7 +1651,8 @@ IN_PROC_BROWSER_TEST_P(LockedFullscreenBrowserFrameViewChromeOSTest,
 
 IN_PROC_BROWSER_TEST_P(LockedFullscreenBrowserFrameViewChromeOSTest,
                        ToggleTabletModeWhenLockedForOnTask) {
-  browser()->SetLockedForOnTask(true);
+  ash::boca::OnTaskLockedController::From(browser())->set_locked_for_on_task(
+      true);
   BrowserView* const browser_view =
       BrowserView::GetBrowserViewForBrowser(browser());
   auto* const immersive_mode_controller =

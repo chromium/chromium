@@ -25,7 +25,6 @@
 <translation id="1072679792409426431">Onemogočil skrbnik</translation>
 <translation id="1074827084851510304">Izbrisali boste toliko gesel: {password_count} ter seznam spletnih mest in aplikacij, za katere ste izbrali, da se podatki za prijavo nikoli ne shranjujejo. Računi, ki ste jih ustvarili za spletna mesta in aplikacije, ne bodo izbrisani.</translation>
 <translation id="1076421457278169141">Koda je bila optično prebrana</translation>
-<translation id="1081114897601629648">Googlov upravitelj gesel ni mogel uvoziti naslednjih gesel, ker se ne ujemajo z zahtevami.</translation>
 <translation id="1081932398873105675">{count,plural, =1{{count} zavihek}one{{count} zavihek}two{{count} zavihka}few{{count} zavihki}other{{count} zavihkov}}</translation>
 <translation id="1082554859195167538">Mnenja o izdelkih za vas</translation>
 <translation id="1084365883616172403">Objava v Facebooku je dokončana.</translation>
@@ -34,7 +33,6 @@
 <translation id="1096992026380844478">Nastavitve sinhronizacije bodo obnovljene na podlagi zadnjega varnostnega kopiranja. <ph name="BEGIN_LINK" />Oglejte si, kaj lahko sinhronizirate<ph name="END_LINK" /></translation>
 <translation id="1103523840287552314">Vedno prevedi ta jezik: <ph name="LANGUAGE" /></translation>
 <translation id="110491332089958282">Delite vsebino strani z Geminijem in prejmite ustreznejše odgovore. Ko stran delite z Geminijem, se vsebina in URL strani v celoti pošljeta Googlu. <ph name="BEGIN_LINK" />Več o tem<ph name="END_LINK" /></translation>
-<translation id="1108938384783527433">Sinhronizacija zgodovine</translation>
 <translation id="1110772719190051587">Odkleni s funkcijo Face ID</translation>
 <translation id="1112015203684611006">Printing failed.</translation>
 <translation id="1118569444314402022">Dobrodošli nazaj, <ph name="USER_NAME" /></translation>
@@ -49,6 +47,7 @@
 <translation id="1149401351239820326">Mesec poteka</translation>
 <translation id="1150989369772528668">Koledar</translation>
 <translation id="1161663161838091892">Če želite nadaljevati, sinhronizirajte zavihke in zgodovino</translation>
+<translation id="1162834932051545794">{count,plural, =1{{count} kreditna kartica}one{{count} kreditna kartica}two{{count} kreditni kartici}few{{count} kreditne kartice}other{{count} kreditnih kartic}}</translation>
 <translation id="1164891049599601209">Vneseno na zavajajočem spletnem mestu</translation>
 <translation id="1165039591588034296">Napaka</translation>
 <translation id="1172898394251786223">Naslednje polje</translation>
@@ -76,6 +75,7 @@
 <translation id="1272079795634619415">Ustavi</translation>
 <translation id="1273416271143914096">{count,plural, =1{{count} geslo}one{{count} geslo}two{{count} gesli}few{{count} gesla}other{{count} gesel}}</translation>
 <translation id="1275718070701477396">Izbrano</translation>
+<translation id="1279024913354609713">Ne dovoli</translation>
 <translation id="1285320974508926690">Nikoli ne prevedi tega spletnega mesta</translation>
 <translation id="1287229685519872919">Podatki iz storitve Google Workspace</translation>
 <translation id="1291506870746876680">Dovoljenja za spletno mesto <ph name="BEGIN_BOLD" />»<ph name="SITE_NAME" />«<ph name="END_BOLD" /> bodo ponastavljena na izklopljena, ko zapustite to spletno mesto.</translation>
@@ -104,6 +104,7 @@
 <translation id="1366297852155605523">Deljeno z mano</translation>
 <translation id="1369286077209859800">Prikaz vseh zavihkov v skupini zavihkov</translation>
 <translation id="136942498637440594">Iščete lahko slike in prikazano vsebino.</translation>
+<translation id="1373120905936431262">Naložite sliko, ki jo želite predelati z orodjem Nano Banana</translation>
 <translation id="1377508275003315939">Gesla</translation>
 <translation id="1381022135873211423">{count,plural, =1{{position} od {count} naslova}one{{position} od {count} naslova}two{{position} od {count} naslovov}few{{position} od {count} naslovov}other{{position} od {count} naslovov}}</translation>
 <translation id="1383876407941801731">Išči</translation>
@@ -127,6 +128,7 @@
 <translation id="1455660774629812862">Ne skrij</translation>
 <translation id="1456545332132818232">Mnenja o izdelku <ph name="PRODUCT_NAME" />, <ph name="STARS" /> od <ph name="MAX_STARS" />, <ph name="DOMAIN" /></translation>
 <translation id="1460751212339734034">Prihranite čas in manj vnašajte</translation>
+<translation id="1466035273550360103">Ni odprtih zavihkov</translation>
 <translation id="1469381646033328562">Tvoj račun upravlja starš.
 <ph name="BEGIN_LINK" />Več o tem<ph name="END_LINK" /></translation>
 <translation id="147982357559798527">Spremenjeno</translation>
@@ -156,9 +158,11 @@
 <translation id="1545749641540134597">Scan QR Code</translation>
 <translation id="1545757265410828525">Zgodovina cen</translation>
 <translation id="1547610699249301703">Deljenje gesel</translation>
+<translation id="1554043146674176775">Izklop načina umetne inteligence</translation>
 <translation id="1554477036522844996">Novo okno</translation>
 <translation id="1558391695376153246">Zapri anonimne zavihke</translation>
 <translation id="1565371473877914088">Nov anonimni zavihek</translation>
+<translation id="1567960978791353852">Prikaz načina za branje</translation>
 <translation id="1571780780926010134">Anonimni zavihki</translation>
 <translation id="1580715474678097352">Bodite zaščiteni pred nevarnimi spletnimi mesti</translation>
 <translation id="1580783302095112590">Pošta je poslana.</translation>
@@ -209,6 +213,7 @@
 <translation id="17513872634828108">Odprti zavihki</translation>
 <translation id="1752547299766512813">Shranjena gesla</translation>
 <translation id="1764070164487214210">Navodila za pot</translation>
+<translation id="1764511703783285459">Drugi upravitelj gesel ni delil nobenih gesel ali ključev za dostop</translation>
 <translation id="1767766085187034454">Google Prevajalnik</translation>
 <translation id="1771016937398045251">Meni »Orodja«</translation>
 <translation id="1772468122139624049">Zavihkov ni mogoče znova naložiti</translation>
@@ -232,6 +237,7 @@
 <translation id="1836891464494477513">{count,plural, =1{Zaznamek je shranjen v računu Google, {email}}one{Zaznamki so shranjeni v računu Google, {email}}two{Zaznamki so shranjeni v računu Google, {email}}few{Zaznamki so shranjeni v računu Google, {email}}other{Zaznamki so shranjeni v računu Google, {email}}}</translation>
 <translation id="1838089197478136166">Želite odpreti v Google Denarnici?</translation>
 <translation id="183878838231635348">Na tej kartici so prikazane vse težave z zasebnostjo ali varnostjo, ki jih varnostno preverjanje samodejno zazna.</translation>
+<translation id="1840320537320704887">Nastavitve strani »Nov zavihek« so odstranjene</translation>
 <translation id="1845230888742614096">Ohrani skupino</translation>
 <translation id="1853692000353488670">Nov anonimni zavihek</translation>
 <translation id="1854463785401910334">Iskanje po odprtih zavihkih</translation>
@@ -250,7 +256,7 @@
 <translation id="1901366738768303267">Kako lahko uporabljam to funkcijo?</translation>
 <translation id="1901600657316773839">Ohrani izbiro</translation>
 <translation id="1902277226107477495">Zaznavanje naslova je izklopljeno. Znova ga lahko vklopite v nastavitvah.</translation>
-<translation id="1904580727789512086">URL-ji, ki jih obiščete, se shranijo v račun Google.</translation>
+<translation id="1909201414196501151">Spletno mesto je dodano in pripeto</translation>
 <translation id="1911619930368729126">Prenos v Google Drive</translation>
 <translation id="1925706052394657380">Odprite nastavitve <ph name="BEGIN_BOLD" />privzetih aplikacij<ph name="END_BOLD" /> v sistemu iOS</translation>
 <translation id="1941314575388338491">Dvakrat se dotaknite, če želite kopirati.</translation>
@@ -266,7 +272,6 @@
 <translation id="1965633132497641148">Neveljavna varnostna koda</translation>
 <translation id="1966313166384086081">podatki spletnih mest</translation>
 <translation id="1967461193809857427">{count,plural, =1{Želite nadaljevati na zavihku, na katerem ste končali v Androidu?}one{Želite nadaljevati na zavihkih, na katerih ste končali v Androidu?}two{Želite nadaljevati na zavihkih, na katerih ste končali v Androidu?}few{Želite nadaljevati na zavihkih, na katerih ste končali v Androidu?}other{Želite nadaljevati na zavihkih, na katerih ste končali v Androidu?}}</translation>
-<translation id="1972325230031091483">Brskali boste hitreje, ker se vsebina proaktivno naloži glede na trenutni obisk spletne strani.</translation>
 <translation id="1974060860693918893">Dodatno</translation>
 <translation id="1977621687170192347">Vklopite možnost »Poziv za odpiranje povezav iz drugih aplikacij v anonimnem načinu.«</translation>
 <translation id="1979055159547313322">Račun <ph name="USER_EMAIL" /> upravlja <ph name="HOSTED_DOMAIN" />, ki si lahko morda ogleda nekatere podatke, vključno s tem:</translation>
@@ -287,6 +292,7 @@
 <translation id="2015722694326466240">Če si želite ogledati gesla, morate najprej nastaviti geslo v napravi.</translation>
 <translation id="201759455285471444">Razširitev skupine zavihkov.</translation>
 <translation id="202070562065520783">Pojasni mi to</translation>
+<translation id="2023713324775943812">Dostop do načina za branje v naslovni vrstici, ko je na voljo</translation>
 <translation id="2044394949148788042">Odprite mrežo zavihkov</translation>
 <translation id="2044681667265133332">Račun <ph name="USER_EMAIL" /> upravlja <ph name="HOSTED_DOMAIN" />, ki si lahko morda ogleda nekatere podatke. <ph name="BEGIN_LINK" />Več o tem<ph name="END_LINK" /></translation>
 <translation id="20485545164632846">nov element</translation>
@@ -309,6 +315,7 @@
 <translation id="21133533946938348">Pripni zavihek</translation>
 <translation id="2117650889962717098">Poskrbite za zasebno brskanje tako, da preklopite v anonimni način</translation>
 <translation id="2119636449201577317">Odpri v aplikaciji …</translation>
+<translation id="2119962645034852864">Nekatere storitve niso na voljo za vaš račun</translation>
 <translation id="2120553909046681540">Vaša organizacija je izklopila zasebno brskanje.</translation>
 <translation id="2122754583996902531">Vaš brskalnik je upravljan. <ph name="BEGIN_LINK" />Več o tem<ph name="END_LINK" /></translation>
 <translation id="21243612977487926">Klepetov vaše organizacije ne uporabljamo za izboljšanje svojih modelov. Gemini morda prikazuje netočne informacije, tudi o ljudeh, zato preverite njegove odgovore. <ph name="YOUR_PRIVACY_GEMINI" /></translation>
@@ -326,6 +333,7 @@
 <translation id="2184272387334793084">Prijavite se, da boste lahko dostopali do gesel in drugega v vseh napravah</translation>
 <translation id="2186206192313702726">Google Lens</translation>
 <translation id="2188993354115194873">Dotaknite se <ph name="BEGIN_BOLD" />Shrani med prenose<ph name="END_BOLD" /></translation>
+<translation id="2191406283620379491">Prišlo je do resne napake. Posodobite različico sistema iOS.</translation>
 <translation id="219283042927675668">Zavihki v skupini</translation>
 <translation id="2194856509914051091">Kaj morate upoštevati</translation>
 <translation id="2196428379625389579">Iskanje v spletu</translation>
@@ -356,6 +364,7 @@
 <translation id="2271452184061378400">Skupine zavihkov so shranjene tukaj</translation>
 <translation id="2273327106802955778">More menu</translation>
 <translation id="2287614783861766820">{count,plural, =1{Ta naslov bo izbrisan iz te naprave.}one{Ti naslovi bodo izbrisani iz te naprave.}two{Ti naslovi bodo izbrisani iz te naprave.}few{Ti naslovi bodo izbrisani iz te naprave.}other{Ti naslovi bodo izbrisani iz te naprave.}}</translation>
+<translation id="2295236662082735391">Pridržite sliko v spletu, če jo želite urediti z Geminijem</translation>
 <translation id="2297989278479054870">Po odjavi bodo zaznamki, gesla in drugo v računu Google odstranjeni iz te naprave.</translation>
 <translation id="2299218006564889602">Gesla se šifrirajo v napravi, preden se shranijo v Google Upravitelju gesel.</translation>
 <translation id="2306265833370324042">Prikaz podrobnosti za <ph name="SEARCH_ENGINE_NAME" /></translation>
@@ -406,6 +415,7 @@
 <translation id="2479148705183875116">V nastavitve</translation>
 <translation id="2482878487686419369">Obvestila</translation>
 <translation id="2484459871750294497">Kako omogočim to funkcijo?</translation>
+<translation id="2485534095078940149">Priložena datoteka {title}</translation>
 <translation id="2493269659028026145">Takojšnje zaklepanje s tem: <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /></translation>
 <translation id="2496180316473517155">Zgodovina brskanja</translation>
 <translation id="2496626742194544812">Na prvi zavihek</translation>
@@ -429,6 +439,7 @@
 <translation id="2573117291489209663">Končano</translation>
 <translation id="2577522251608256362">Soseska</translation>
 <translation id="2579713773888829241">Deljeni diski</translation>
+<translation id="2580306219079937316">Odpiranje nastavitve prevajanja</translation>
 <translation id="2583688836549072561">Skupina zavihkov, <ph name="GROUP_TITLE" />, zavihki (<ph name="TABS_NUMBER" />), nova dejavnost.</translation>
 <translation id="2593272815202181319">Stalna širina</translation>
 <translation id="2601778637777010194">Spremljanje znižanj cen izdelkov</translation>
@@ -454,15 +465,18 @@
 <translation id="2669454659051515572">Prenesene datoteke lahko vidijo vsi, ki uporabljajo to napravo.</translation>
 <translation id="2671423594960767771">Deli skupino</translation>
 <translation id="2673508731173059946">Obisk povezave, ki ste jo kopirali</translation>
+<translation id="2679659833697380">Vaši podatki so shranjeni v napravi</translation>
 <translation id="2688535388040882469">Pasice</translation>
 <translation id="2690858294534178585">Kamera je v uporabi</translation>
 <translation id="2691653761409724435">Ni na voljo brez povezave</translation>
+<translation id="2697530870203420261">Neveljaven vzdevek</translation>
 <translation id="269819437389494246">Ogledate si lahko strani, ki ste jih obiskali, ali jih izbrišete iz zgodovine</translation>
 <translation id="2704606927547763573">Kopirano</translation>
 <translation id="2708051474374549906">Proaktivna sprotna zaščita pred nevarnimi spletnimi mesti, prenosi in razširitvami, ki temelji na podatkih brskanja, poslanih Googlu</translation>
 <translation id="2709516037105925701">Samodejno izpolnjevanje</translation>
 <translation id="271033894570825754">Nova zbirka</translation>
 <translation id="2712929214961145009">Sans-Serif</translation>
+<translation id="2713106313042589954">Izklopi kamero</translation>
 <translation id="2718352093833049315">Samo v omrežju Wi-Fi</translation>
 <translation id="2721190673959776287">Primer obogatene pomoči v izdelku za kontekstno podokno, ki bi se morala prikazati večkrat na dan.</translation>
 <translation id="2739887572830526131">Ohranite to skupino, če želite pozneje dodati zavihke, ali jo izbrišite, če je ne potrebujete več.</translation>
@@ -472,6 +486,7 @@
 <translation id="2761788987260570878">Fotografiranje iskanja</translation>
 <translation id="2761898608071930085">Uporabi drug račun</translation>
 <translation id="2762000892062317888">pravkar</translation>
+<translation id="2766178952536179189">{COUNT,plural, =1{Dodajte največ 1 sliko}one{Dodajte največ {COUNT} sliko}two{Dodajte največ {COUNT} sliki}few{Dodajte največ {COUNT} slike}other{Dodajte največ {COUNT} slik}}</translation>
 <translation id="2772667768515195373">Shranjene naslove lahko uporabite v Googlovih izdelkih. Ta naslov je shranjen v računu Google, <ph name="USER_EMAIL" />.</translation>
 <translation id="2773344962924806829">E-poštna obvestila</translation>
 <translation id="2781331604911854368">Vklopljeno</translation>
@@ -526,7 +541,6 @@
 <translation id="2989805286512600854">Odpri v novem zavihku</translation>
 <translation id="2996291259634659425">Ustvarjanje gesla</translation>
 <translation id="3010025794097054078">Zavarujte se pred podatkovnimi kršitvami, spletnimi mesti, ki niso varna, in drugim.</translation>
-<translation id="301080557829842765">Vodnik po zasebnosti</translation>
 <translation id="3012310354105716927">Nekateri podatki še niso shranjeni</translation>
 <translation id="3013922155552460252">Ogled in upravljanje dejavnosti v Geminiju, kot so klepeti, povratne informacije in pozivi</translation>
 <translation id="3016518775797983090">Deljenje strani ni mogoče</translation>
@@ -590,10 +604,10 @@
 <translation id="323863549127671026">Trenutno odprti zavihki in skupine zavihkov</translation>
 <translation id="3240426699337459095">Povezava kopirana</translation>
 <translation id="3244271242291266297">MM</translation>
-<translation id="3245429137663807393">Če delite tudi poročila o uporabi Chroma, so v teh poročilih vključeni URL-ji, ki jih obiščete.</translation>
 <translation id="3245744387817103524">Spremembe ni bilo mogoče shraniti.</translation>
 <translation id="3254806613790954367">Zadnji odprti zavihek v vseh napravah</translation>
 <translation id="325717987950204592">Dotaknite se »Zasebnost in varnost«</translation>
+<translation id="3265736395246760288">Hitreje se prijavite v vseh sinhroniziranih napravah.</translation>
 <translation id="3272527697863656322">Prekliči</translation>
 <translation id="3273510436356991673">Prilagajanje začetnega zaslona</translation>
 <translation id="3277021493514034324">Kopiran naslov spletnega mesta</translation>
@@ -611,10 +625,12 @@
 <translation id="3344485292736684439">{count,plural, =1{Zaznamek je shranjen v »{title}« v vašem računu, {email}}one{Zaznamki so shranjeni v »{title}« v vašem računu, {email}}two{Zaznamki so shranjeni v »{title}« v vašem računu, {email}}few{Zaznamki so shranjeni v »{title}« v vašem računu, {email}}other{Zaznamki so shranjeni v »{title}« v vašem računu, {email}}}</translation>
 <translation id="334690320928261823">Nedavni zavihki</translation>
 <translation id="3349031117032695619">Blokiranje pojavnih oken</translation>
+<translation id="3350976670663926380">Spremembe so shranjene</translation>
 <translation id="3353037916374303415"><ph name="EMAIL" />. Ta račun je upravljan.</translation>
 <translation id="3365529507898144230">Shrani v Foto</translation>
 <translation id="3371831930909698441">Prevod je na voljo. Možnosti so na voljo pri dnu zaslona.</translation>
 <translation id="3377063233124932127">Zdaj so shranjeni zaznamki, gesla in drugo na vrhu.</translation>
+<translation id="3378214228000661758">Ustvarjanje ključa za dostop za aplikacijo</translation>
 <translation id="3380352560400387991">To spletno mesto poskuša odpreti aplikacijo. S tem dejanjem se bo zaprl anonimni način.</translation>
 <translation id="3385742921291399323">Dostop do shranjenih gesel, zavihkov, zaznamkov in drugega.</translation>
 <translation id="3392923070107623576">Ostanite organizirani z ustvarjanjem skupin zavihkov</translation>
@@ -655,7 +671,6 @@
 <translation id="3530024057633834563">Nimate shranjenih gesel ali ključev za dostop, lahko pa izbrišete seznam spletnih mest in aplikacij, za katere ste izbrali, naj se podatki za prijavo nikoli ne shranjujejo. Računi, ki ste jih ustvarili za spletna mesta in aplikacije, ne bodo izbrisani.</translation>
 <translation id="3530206579861815432">Hitro poiščite odprte in nedavno zaprte zavihke v sinhroniziranih napravah.</translation>
 <translation id="3530767473765895035">Upravljanje računov v tej napravi …</translation>
-<translation id="353340646084395154">Nastavitve novega zavihka so odstranjene</translation>
 <translation id="3533436815740441613">Nov zavihek</translation>
 <translation id="3540141921715814660">Dodajanje med zaznamke</translation>
 <translation id="3546122170015471515">Predogledi Zemljevidov na Google.com</translation>
@@ -665,6 +680,7 @@
 <translation id="355765753469272474">Razveljavi</translation>
 <translation id="3565012355885596568">Slik ni bilo mogoče naložiti</translation>
 <translation id="3565930036634619844">Zavihek. <ph name="TAB_INDEX" />. od <ph name="NUMBER_OF_TABS" />.</translation>
+<translation id="3567168891086460374">Shrani na drug način</translation>
 <translation id="3572607909481582402">V računu za Google</translation>
 <translation id="3575234738189584619">Iskanje z Googlom Lens</translation>
 <translation id="3575426792457739946">Na tem seznamu so vsi naloženi profili</translation>
@@ -677,6 +693,7 @@
 <translation id="3602260545951981695">Izberite »Izboljšana zaščita«</translation>
 <translation id="3610041351087301930">Skrij bralnik</translation>
 <translation id="3610866916973186448">Da, izbriši</translation>
+<translation id="3616161326314492065">Fotografirajte in delite z Geminijem, da ustvarite in predelate slike.</translation>
 <translation id="3622175633937495219">Zgodovina iskanja (najdeno: <ph name="COUNT" />)</translation>
 <translation id="3625008969091706597">Za premik nazaj lahko povlečete po robu.</translation>
 <translation id="362709345066740529">Tukaj lahko prilagodite kartice, vir in drugo</translation>
@@ -688,10 +705,12 @@
 <translation id="3662966164093827811">{count,plural, =1{1 izbran}one{# izbran}two{# izbrana}few{# izbrani}other{# izbranih}}</translation>
 <translation id="3668816008081204991">Bralni seznam je skrit</translation>
 <translation id="3670030362669914947">Številka</translation>
+<translation id="3672283986707092811">Izberi vse</translation>
 <translation id="3679163990085797665">Izbriši prebrano</translation>
 <translation id="368329460027487650">Odjavljen. Odpre možnosti za prijavo.</translation>
 <translation id="3695446226812920698">Oglejte si navodila</translation>
 <translation id="3700134753671613714">Prijavite se, da boste lahko dostopali do zaznamkov v vseh napravah.</translation>
+<translation id="3701167022068948696">Odpravite težavo</translation>
 <translation id="3708944822379815019">{COUNT,plural, =1{{COUNT} geslo je shranjeno samo v tej napravi. Če ga želite uporabiti v drugih napravah, ga shranite v račun Google, {EMAIL}.}one{{COUNT} geslo je shranjeno samo v tej napravi. Če jih želite uporabljati v drugih napravah, jih shranite v računu Google, {EMAIL}.}two{{COUNT} gesli sta shranjeni samo v tej napravi. Če jih želite uporabljati v drugih napravah, jih shranite v računu Google, {EMAIL}.}few{{COUNT} gesla so shranjena samo v tej napravi. Če jih želite uporabljati v drugih napravah, jih shranite v računu Google, {EMAIL}.}other{{COUNT} gesel je shranjenih samo v tej napravi. Če jih želite uporabljati v drugih napravah, jih shranite v računu Google, {EMAIL}.}}</translation>
 <translation id="3709621342136814217">Tukaj izberite pisavo, velikost besedila in drugo</translation>
 <translation id="371230970611282515">Predvideva nevarne dogodke, preden se zgodijo, in vas opozarja nanje.</translation>
@@ -738,6 +757,7 @@
 <translation id="3888863481921783344">To bo uporabljeno za prikaz morebitnih povabljencev na vaš dogodek.</translation>
 <translation id="3891414008432200754">Cena</translation>
 <translation id="3892144330757387737">Tukaj bo prikazana zgodovina</translation>
+<translation id="3893858854379998374">Če želite shraniti zaznamke v računu, izbrišite neuporabljene zaznamke</translation>
 <translation id="3897092660631435901">Meni</translation>
 <translation id="3904270275864974753">Urejanje vrtiljaka</translation>
 <translation id="3909222758573607742">Shranjevanje gesel in drugih elementov v računu</translation>
@@ -855,6 +875,7 @@
 <translation id="4302061870579014542">Nastavi položaj</translation>
 <translation id="4304713468139749426">Upravitelj gesel</translation>
 <translation id="4309403553630140242">Dvakrat se dotaknite, če želite več informacij</translation>
+<translation id="4310738531374808763">Prilagajanje začetne strani</translation>
 <translation id="4320848494125124980">Nedavno</translation>
 <translation id="4322394346347055525">Zapri druge zavihke</translation>
 <translation id="4324735664183300693">Vklop obvestil</translation>
@@ -867,9 +888,11 @@
 <translation id="4338650699862464074">Googlu pošlje URL-je strani, ki jih obiščete.</translation>
 <translation id="4342946437867096381">Geslo za to spletno mesto ste že shranili v račun Google. Google lahko izbere najnovejše geslo za vas.</translation>
 <translation id="4365121137632832185">Skupina zavihkov. Razširjeno.</translation>
+<translation id="4365685757967464989">Dovolite Geminiju, da za fotografiranje uporabi vaš fotoaparat</translation>
 <translation id="4367971618859387374">Prikazno ime</translation>
 <translation id="4375772272517383391">Zapiranje vseh zavihkov</translation>
 <translation id="4378154925671717803">Telefon</translation>
+<translation id="4380677808580146413">Izberi</translation>
 <translation id="4389019817280890563">Dotaknite se, če želite spremeniti jezik.</translation>
 <translation id="4393294364304621138">{COUNT,plural, =1{Po 1 dnevu}one{Po {COUNT} dnevu}two{Po {COUNT} dneh}few{Po {COUNT} dneh}other{Po {COUNT} dneh}}</translation>
 <translation id="4402672425188312225">{COUNT,plural, =1{1 zavihek}one{# zavihek}two{# zavihka}few{# zavihki}other{# zavihkov}}</translation>
@@ -914,7 +937,9 @@
 <translation id="4565377596337484307">Skrij geslo</translation>
 <translation id="4568230126482344545">Skrij nedavne zavihke</translation>
 <translation id="4578835633387306383">Vklopi …</translation>
+<translation id="4580621046861724270">Nekateri zaznamki se niso shranili</translation>
 <translation id="4580716718466706433">Odprite »Upravitelja gesel«</translation>
+<translation id="4585751637295612750">Odprite nov zavihek, če ga želite dodati v vprašanje</translation>
 <translation id="4587589328781138893">Spletna mesta</translation>
 <translation id="4592672037257622855">{count,plural, =1{Stran je bila dodana na bralni seznam}one{{count} stran je bila dodana na bralni seznam}two{{count} strani sta bili dodani na bralni seznam}few{{count} strani so bile dodane na bralni seznam}other{{count} strani je bilo dodanih na bralni seznam}}</translation>
 <translation id="459644946100970322">Želite vklopiti opozorila o ceni?</translation>
@@ -922,7 +947,6 @@
 <translation id="4601095002996233687">Poglobljeni pregledi za sumljive prenose.</translation>
 <translation id="4606247758155004938">Vaš brskalnik upravlja organizacija.</translation>
 <translation id="4607887340472970274">Spremljanje cen</translation>
-<translation id="461440297010471931">Iskanje z Googlom</translation>
 <translation id="4619564267100705184">Potrditev identitete</translation>
 <translation id="4621768135601674446">Odpri možnosti načina za branje</translation>
 <translation id="4627107755957573804">Spletnim mestom in aplikacijam dovolite, da nadgradijo obstoječe račune, da bodo uporabljali ključe za dostop</translation>
@@ -948,6 +972,8 @@
 <translation id="4673565891421389203">Če se prijavite z upravljanim računom, lahko ločite brskanje, povezano z organizacijo (vključno z zavihki, zgodovino in gesli), od drugega brskanja
 
        Izberite, kaj želite storiti z obstoječimi podatki brskanja v tej napravi.</translation>
+<translation id="4675298276894277358">To spletno mesto ne bo več prikazano</translation>
+<translation id="4676647168422678078">Ali želite uporabiti nastavitve strani »Nov zavihek«?</translation>
 <translation id="4682496302933121474">Želite prevod strani?</translation>
 <translation id="4682686630151240767">1. Odprite nastavitve za iPhone.</translation>
 <translation id="4691892551491778176">Če uporabljate to funkcijo, se vsebina strani in URL-ji pošiljajo Googlu, vendar se ne uporabljajo za izboljšanje modelov generativne umetne inteligence. To lahko kadar koli izklopite v nastavitvah.</translation>
@@ -961,6 +987,7 @@
 <translation id="472259426228234149">Cena 100–180 USD</translation>
 <translation id="4735849923335729414">Prijavite se kot <ph name="EMAIL" />, ki ga upravlja vaša organizacija.</translation>
 <translation id="473775607612524610">Posodobi</translation>
+<translation id="4738968082443868320">Google Drive</translation>
 <translation id="474209246745757965">Nakupujte in prevajajte s fotoaparatom</translation>
 <translation id="4742407542027196863">Upravljaj gesla …</translation>
 <translation id="4744428388659507035">Če želite dostopati do zaznamkov v vseh napravah, v nastavitvah vklopite »Zaznamke«.</translation>
@@ -995,6 +1022,7 @@
 <translation id="4840495572919996524">Vaši zaznamki, zgodovina, gesla in drugo ne bodo več sinhronizirani z Google Računom.</translation>
 <translation id="484280513275854557">Bili ste odjavljeni; podatki brskanja so bili izbrisani</translation>
 <translation id="4850886885716139402">Prikaži</translation>
+<translation id="4854068532375923088">Aplikaciji »Gemini« omogočite uporabo fotoaparata</translation>
 <translation id="4860895144060829044">Pokličite</translation>
 <translation id="4861953997778766866">Vsi lahko spreminjajo vaše deljene skupine zavihkov</translation>
 <translation id="4865063548323785458">Shranite in samodejno izpolnite gesla, da se boste lahko preprosto prijavili na spletnih mestih in v aplikacijah</translation>
@@ -1034,6 +1062,7 @@
 <translation id="496392417432935267">Odprto drugje</translation>
 <translation id="4970724460420203313">Če Chrome uporabljate z upravljanim računom, lahko ločite brskanje, povezano z organizacijo (vključno z zavihki, zgodovino in gesli), od drugega brskanja</translation>
 <translation id="4971735654804503942">Hitrejša, še boljša zaščita proti nevarnim spletnim mestom, prenosom in razširitvam. Opozori vas glede kršitev gesel. Zahteva pošiljanje podatkov brskanja Googlu.</translation>
+<translation id="4977176874984951085">Odpiranje menija z dejanji za stran</translation>
 <translation id="4979397965658815378">Prijavite se z Google Računom, da boste zaznamke, gesla, zgodovino in druge nastavitve imeli na voljo v vseh napravah.</translation>
 <translation id="4985921635659180565">Ko je datoteka načrtovana za izbris, tega ni mogoče preklicati.</translation>
 <translation id="498624032394115435">Vsi s povezavo lahko urejajo vse zavihke.</translation>
@@ -1047,9 +1076,9 @@
 <translation id="5017529052065664584">Zadnjih 15 minut</translation>
 <translation id="5020732097997376541">Dotaknite se »ikone za Lens«</translation>
 <translation id="5021500396464456616">Obrnite se na osebo, ki je poslala to povezavo</translation>
-<translation id="5024511550058813796">Zgodovino si boste lahko ogledali v vseh sinhroniziranih napravah, da boste lahko nadaljevali, kar ste počeli.</translation>
 <translation id="5039804452771397117">Dovoli</translation>
 <translation id="5050810143224996149">Deli geslo</translation>
+<translation id="5052499409147950210">Urejanje spletnega mesta</translation>
 <translation id="5055015094595227120">Natančna lokacija</translation>
 <translation id="5055551113846164633">S tem izbrišete naslove, shranjene v tej napravi. Izbrišejo se tudi naslovi, shranjeni v računu Google <ph name="USER_EMAIL" />.</translation>
 <translation id="5056446788882570708">Težave so bile najdene: <ph name="TIME" />.</translation>
@@ -1068,6 +1097,8 @@
 <translation id="508645147179720015">Opomba ima več kot 1000 znakov.</translation>
 <translation id="5087098519049306025">Spremljanje cen</translation>
 <translation id="5090832849094901128">Če izbrišete to geslo, ne izbrišete računa na <ph name="WEBSITE" />.</translation>
+<translation id="5096619236864235">Ključi za dostop so shranjeni v Googlovem upravitelju gesel za</translation>
+<translation id="510580293474170715">Nič ni bilo uvoženo</translation>
 <translation id="5113960131843706315">Pridobivanje vaših stvari …</translation>
 <translation id="5118462200606189584">Dodajanje računa …</translation>
 <translation id="5118764316110575523">Izklopljeno</translation>
@@ -1106,6 +1137,7 @@
 <translation id="5220945116117011963">Ustvarjanje koledarskih dogodkov na podlagi datumov</translation>
 <translation id="5222676887888702881">Odjava</translation>
 <translation id="5225388483876575107">A</translation>
+<translation id="5225463052809312700">Vklopi kamero</translation>
 <translation id="5229315183665181733">Uredi spletno mesto</translation>
 <translation id="5233638681132016545">Nov zavihek</translation>
 <translation id="5234094073825090254">{count,plural, =1{Zaznamek je shranjen v računu Google, {email}.}one{Zaznamki so shranjeni v računu Google, {email}.}two{Zaznamki so shranjeni v računu Google, {email}.}few{Zaznamki so shranjeni v računu Google, {email}.}other{Zaznamki so shranjeni v računu Google, {email}.}}</translation>
@@ -1119,28 +1151,32 @@
 <translation id="5271265092610673171">{count,plural, =1{Obvezno polje je prazno. Pred shranjevanjem ga izpolnite.}one{Nekatera obvezna polja so prazna. Pred shranjevanjem jih izpolnite.}two{Nekatera obvezna polja so prazna. Pred shranjevanjem jih izpolnite.}few{Nekatera obvezna polja so prazna. Pred shranjevanjem jih izpolnite.}other{Nekatera obvezna polja so prazna. Pred shranjevanjem jih izpolnite.}}</translation>
 <translation id="5271549068863921519">Shrani geslo</translation>
 <translation id="5275912569557792098"><ph name="USER_NAME" /> (<ph name="USER_EMAIL" />) želi, da se pridružite skupini zavihkov. Vsi s povezavo lahko urejajo vse zavihke, zato bodite previdni. Povezava poteče čez 48 ur.</translation>
+<translation id="5275953427913009986">Priložen zavihek {title}</translation>
 <translation id="5282340693022193851">Če želite prejemati obvestila o spremljanju cen, vklopite obvestila v nastavitvah sistema iOS.</translation>
 <translation id="528857768909044842">Skupine zavihkov so shranjene tukaj</translation>
 <translation id="5294624619177114121">Obvestila v mobilnih napravah</translation>
 <translation id="5295239312320826323">Želite odstraniti račun <ph name="USER_EMAIL" />?</translation>
 <translation id="5300589172476337783">Pokaži</translation>
 <translation id="5311061401280561833">Dostop do kamere in mikrofona je odobren</translation>
+<translation id="5313967007315987356">Dodajanje mesta</translation>
 <translation id="5315870524563628285">Ničesar ni za uvoz</translation>
 <translation id="5316356981864168850"><ph name="INDEX" /> od <ph name="NUM_SUGGESTIONS" /></translation>
 <translation id="5317780077021120954">Shrani</translation>
 <translation id="5318298563956633672">Ta izdelek že spremljate.</translation>
 <translation id="5327248766486351172">Ime</translation>
 <translation id="5329451663851195956">Če želite osvežiti, povlecite navzdol.</translation>
+<translation id="5336910966955551309">Pridržite, če želite pripeti priljubljena spletna mesta</translation>
 <translation id="5338512273860059533">Prijava poteka.</translation>
 <translation id="5343472494710226394">Novice, šport in vsebina na podlagi vaših zanimanj.</translation>
 <translation id="5352128922772839949">Shrani datoteko</translation>
 <translation id="5355191726083956201">Izboljšana zaščita je vklopljena</translation>
 <translation id="536067926684072644">Prikaz zaznamkov</translation>
+<translation id="5364647308446127983">{count,plural, =1{{count} ključa za dostop ni bilo mogoče uvoziti}one{{count} ključa za dostop ni bilo mogoče uvoziti}two{{count} ključev za dostop ni bilo mogoče uvoziti}few{{count} ključev za dostop ni bilo mogoče uvoziti}other{{count} ključev za dostop ni bilo mogoče uvoziti}}</translation>
 <translation id="5371112366564891538">Povečaj velikost besedila</translation>
+<translation id="5376135254804080693">Počisti izbiro vseh</translation>
 <translation id="537853552771686272">Upravljanje tem in spletnih mest, ki vas zanimajo</translation>
 <translation id="5390458669633674385">{count,plural, =1{{count} zaprt}one{{count} zaprt}two{{count} zaprta}few{{count} zaprti}other{{count} zaprtih}}</translation>
 <translation id="5394975111793637642">Skrivanje kartice z mnenji o izdelkih za vas</translation>
-<translation id="5407806496954700135">Ali želite uporabiti prilagoditve strani novega zavihka iz druge naprave?</translation>
 <translation id="5414763847370083940">Če se cena zniža na katerem koli spletnem mestu, boste prejeli opozorilo.</translation>
 <translation id="5415289094036440596">Ključev za dostop ni mogoče deliti</translation>
 <translation id="5416455648658732408">Premakni v skupino zavihkov</translation>
@@ -1188,11 +1224,11 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="556042886152191864">Gumb</translation>
 <translation id="5565871407246142825">Kreditne kartice</translation>
 <translation id="5567439033041178034">VEČ O TEM</translation>
-<translation id="5572648434713976849">V naslovni vrstici boste prejemali izboljšane predloge.</translation>
 <translation id="5578795271662203820">Za iskanje te slike uporabi <ph name="SEARCH_ENGINE" /></translation>
 <translation id="5579012242779565775">Skrij bralni seznam</translation>
 <translation id="5581786858144165447">Vprašaj način UI</translation>
 <translation id="5585019845078534178">Kartice</translation>
+<translation id="5591526871732898147">Priložena slika {index}</translation>
 <translation id="5595485650161345191">Uredi naslov</translation>
 <translation id="559567008082979829">Nastavite, če želite, da se prenosi izbrišejo po enem mesecu.</translation>
 <translation id="5596627076506792578">Več možnosti</translation>
@@ -1228,7 +1264,6 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="5680012489335339762">Želite preklopiti med računi? Neshranjeni podatki v računu bodo izbrisani.</translation>
 <translation id="5683499062697987550">Če želite v računu Google uporabljati in shranjevati gesla, potrdite, da ste to vi.</translation>
 <translation id="5684761169742812828">To geslo je bilo razkrito v podatkovni kršitvi v internetu. Če trenutno nimate časa, da bi ga spremenili, Google priporoča, da to opozorilo obdržite kot opomnik za pozneje.</translation>
-<translation id="5688739340234490129">{count,plural, =1{{count} kartica}one{{count} kartica}two{{count} kartici}few{{count} kartice}other{{count} kartic}}</translation>
 <translation id="5694848685995373177">Shranjeno v Drive za <ph name="USER_EMAIL" />.</translation>
 <translation id="570209299585559496">V razdelku »Nastavitve &gt; Nastavitve vsebine« lahko spremenite privzeti pogled spletnega mesta na pogled za namizni računalnik</translation>
 <translation id="5702108177581350218">Če delite kopijo uporabniškega imena in gesla, ju lahko družinski član izpolni z Googlovim upraviteljem gesel.</translation>
@@ -1314,7 +1349,6 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="598634819525651074">Površina</translation>
 <translation id="5988097621740394599">Oglejte si znižanja cen na zavihkih.</translation>
 <translation id="5988851877894965432">Odpiranje URL-jev v Chromu</translation>
-<translation id="6001839398155993679">Pa začnimo</translation>
 <translation id="6006672969046233841">Nov zavihek</translation>
 <translation id="6011308810877101166">Izboljšanje predlogov za iskanje</translation>
 <translation id="6012140227487808125">Šifriranje ...</translation>
@@ -1330,6 +1364,7 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="605721222689873409">LL</translation>
 <translation id="6058415747854995776">Posnemi video</translation>
 <translation id="6059830886158432458">Nadzirajte članke in dejavnost tukaj</translation>
+<translation id="6063802271331271857">Predelava slike</translation>
 <translation id="6066301408025741299">Dotaknite se, da prekinete.</translation>
 <translation id="6074656473835429958">Prejemanje obvestil</translation>
 <translation id="607620096698446287">Datoteke <ph name="FILENAME" /> (<ph name="FILESIZE" />) ni bilo mogoče naložiti</translation>
@@ -1352,7 +1387,6 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="6122191549521593678">Dosegljiv</translation>
 <translation id="6122831415929794347">Želite izklopiti varno brskanje?</translation>
 <translation id="6123514585040403489">Zavihki bodo zaprti</translation>
-<translation id="6127379762771434464">Element odstranjen</translation>
 <translation id="6136914049981179737">Pred sek.</translation>
 <translation id="6138324221869147340">Nekatere funkcije niso več na voljo</translation>
 <translation id="6140600850356225166">Poziv za odpiranje povezav iz drugih aplikacij v anonimnem načinu</translation>
@@ -1445,6 +1479,7 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="6410390304316730527">Varno brskanje vas ščiti pred napadalci, ki vas lahko z zavajanjem morda pripravijo do tega, da storite kaj nevarnega – denimo, da namestite zlonamerno programsko opremo ali razkrijete osebne podatke, na primer gesla, telefonske številke ali podatke kreditnih kartic. Če ga izklopite, bodite previdni pri brskanju po neznanih ali razvpitih spletnih mestih.</translation>
 <translation id="6410883413783534063">Odprite zavihke, če želite obiskati različne strani hkrati</translation>
 <translation id="6418346271604475326">Preparing PDF</translation>
+<translation id="6420292512900923139">Težave pri uvozu podatkov</translation>
 <translation id="6421038304268477484">Prevedeno besedilo</translation>
 <translation id="6429213933892582367">Odprite »Password Options« (Možnosti gesla).</translation>
 <translation id="6435236283694032571">Dodajanje na bralni seznam</translation>
@@ -1457,6 +1492,7 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="6445981559479772097">Sporočilo poslano.</translation>
 <translation id="6449554712554071184">S tem boste skupino trajno izbrisali iz naprave.</translation>
 <translation id="6452534462676960500">Nova dejavnost</translation>
+<translation id="6454311990702999318">Neveljavni podatki</translation>
 <translation id="6459411599807878608">Podrobnosti so skrite</translation>
 <translation id="646394917185284261">Files</translation>
 <translation id="6472069383518492189">Tukaj bodo prikazani prenosi</translation>
@@ -1482,6 +1518,7 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="6537746030088321027">example.com</translation>
 <translation id="6550675742724504774">Možnosti</translation>
 <translation id="6550891580932862748">Ne ščiti pred nevarnimi spletnimi mesti, prenosi in razširitvami. To ne vpliva na vaše nastavitve varnega brskanja v drugih Googlovih izdelkih.</translation>
+<translation id="6556501700899673703">Lexend</translation>
 <translation id="6556866813142980365">Uveljavi</translation>
 <translation id="6559301491397835130">{count,plural, =1{Zaznamek je shranjen v »{title}«. Shranjen je samo v tej napravi.}one{Zaznamki so shranjeni v »{title}«. Shranjeni so samo v tej napravi.}two{Zaznamka sta shranjena v »{title}«. Shranjeni so samo v tej napravi.}few{Zaznamki so shranjeni v »{title}«. Shranjeni so samo v tej napravi.}other{Zaznamki so shranjeni v »{title}«. Shranjeni so samo v tej napravi.}}</translation>
 <translation id="656065428026159829">Prikaži več</translation>
@@ -1490,6 +1527,7 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="6579867704846662339">V anonimnem načinu lahko odprete dohodne URL-je iz drugih aplikacij.</translation>
 <translation id="6583087784430677195">Če želite izklopiti, odprite <ph name="BEGIN_LINK" />Nastavitve<ph name="END_LINK" /> in nato »Samodejno izpolnjevanje gesel«.</translation>
 <translation id="6585618849026997638">Na stran, ki vam je pomembna, se lahko vrnete tako, da jo dodate med zaznamke.</translation>
+<translation id="6589001036857939353">Spajanje dvojnikov</translation>
 <translation id="659407965921887085">Ta kartica prikazuje znižanja cen v spletu za izdelke, ki jih trenutno spremljate</translation>
 <translation id="6596481460663245319">Iskanje slike z Googlom</translation>
 <translation id="6598432073497341323">{COUNT,plural, =1{1 geslo}one{# geslo}two{# gesli}few{# gesla}other{# gesel}}</translation>
@@ -1514,7 +1552,6 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="6641465290890659327">Deljenje kopije gesla</translation>
 <translation id="6642362222295953972">Preklop na obstoječi zavihek</translation>
 <translation id="6645899968535965230">Koda QR: <ph name="PAGE_TITLE" /></translation>
-<translation id="6647441008198474441">URL-ji, ki jih obiščete, se pošljejo Googlu zaradi predvidevanja, katera spletna mesta boste morda obiskali.</translation>
 <translation id="6657585470893396449">Geslo</translation>
 <translation id="6659660757330712663">Če želite preklapljati med zavihki, lahko s prstom povlečete po orodni vrstici.</translation>
 <translation id="6663529247339810546">Slike ni mogoče shraniti</translation>
@@ -1558,9 +1595,11 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="6807287147325542056">Gesla v drugih aplikacijah</translation>
 <translation id="681368974849482173">Item created</translation>
 <translation id="6825078212112407882">{count,plural, =1{Zaznamek je shranjen v računu Google, {email}}one{{count} zaznamek je shranjen v računu Google, {email}}two{{count} zaznamka sta shranjena v računu Google, {email}}few{{count} zaznamki so shranjeni v računu Google, {email}}other{{count} zaznamkov je shranjenih v računu Google, {email}}}</translation>
+<translation id="6826004672264649705">Trenutno spremljate ta izdelek. Odprite za ogled zgodovine cen</translation>
 <translation id="6830728435402077660">Ni varno</translation>
 <translation id="6831043979455480757">Prevedi</translation>
 <translation id="6842136130964845393">Če želite poskrbeti, da boste vedno lahko dostopali do shranjenih gesel, potrdite, da ste to vi.</translation>
+<translation id="6844773122575789617">Vklop načina umetne inteligence</translation>
 <translation id="6851516051005285358">Zahtevaj spletno mesto za namizni računalnik</translation>
 <translation id="6857446173140146664">Brisanje ozadja</translation>
 <translation id="6858718102216837409">Dodaj jezik …</translation>
@@ -1599,7 +1638,6 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="6964760285928603117">Odstranitev iz skupine</translation>
 <translation id="6965382102122355670">V redu</translation>
 <translation id="6973630695168034713">Mape</translation>
-<translation id="69739764870135975">Če je Google tudi vaš privzeti iskalnik, vam bomo prikazovali boljše predloge, ki so primernejši kontekstu.</translation>
 <translation id="6979158407327259162">Google Drive</translation>
 <translation id="6979737339423435258">Od začetka</translation>
 <translation id="6980507581230208647">Rožnata tema</translation>
@@ -1676,11 +1714,10 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="7311244614769792472">Ni rezultatov</translation>
 <translation id="7313347584264171202">Tu bodo prikazani anonimni zavihki</translation>
 <translation id="7328162502911382168">(<ph name="COUNT" />)</translation>
-<translation id="7334364820047587268">Gesla za te račune že imate v Googlovem upravitelju gesel. Če izberete uvoz enega od spodnjih gesel, bo nadomestilo obstoječe.</translation>
 <translation id="7336264872878993241">Preneseno: <ph name="PERCENT" /> %</translation>
 <translation id="7345061034321640811">Uvoz ni dovoljen</translation>
+<translation id="7347998088283246662">Uvozite gesla, zgodovino, zaznamke in drugo</translation>
 <translation id="7352651011704765696">Prišlo je do neznane težave</translation>
-<translation id="7363349185727752629">Vodnik po vaših izbirah zasebnosti</translation>
 <translation id="7364796246159120393">Izberite datoteko</translation>
 <translation id="736564850024123010">Za prilagojeno izkušnjo spremenite položaj naslovne vrstice.</translation>
 <translation id="7366909168761621528">Podatki brskanja</translation>
@@ -1739,6 +1776,7 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="7522587739845660862">Podatki o vaši lokaciji</translation>
 <translation id="7522948500476882302">Ko prenesete datoteko, izberite, da se samodejno izbriše čez 1 mesec</translation>
 <translation id="7524055474074101597">Dostopajte do gesel in drugega v aplikacijah.</translation>
+<translation id="7525067979554623046">Ustvari</translation>
 <translation id="75362970626182391">Nova skupina zavihkov</translation>
 <translation id="7537586195939242955">Elementa trenutno ni mogoče namesiti v Passbook.</translation>
 <translation id="754655535278952384">Preverjeno: <ph name="TIME" /></translation>
@@ -1786,7 +1824,6 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="7696316012653762532">Možnosti za prevod strani</translation>
 <translation id="7700527812567437847">Išči po zaslonu z Googlom Lens</translation>
 <translation id="7701040980221191251">Nič</translation>
-<translation id="7708668404222666001">Nastavitve strani »Nov zavihek« so bile uporabljene</translation>
 <translation id="7708994397325774423">Zagotovitev dostopa do vseh gesel</translation>
 <translation id="7711440461521638739">Nimate nobenih znova uporabljenih gesel.</translation>
 <translation id="7712361583414030698">Ogled različice brez povezave</translation>
@@ -1831,6 +1868,7 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="7853202427316060426">Dejavnost</translation>
 <translation id="7854006015462979438">Odprite Splošno</translation>
 <translation id="7855678267851972597">Zvok</translation>
+<translation id="7857520352710212030">Spletno mesto je pripeto</translation>
 <translation id="7859988229622350291">Nikoli ne prevedi</translation>
 <translation id="7863211248337747225">Prenos aplikacije</translation>
 <translation id="7865127013871431856">Možnosti za Google Prevajalnik</translation>
@@ -1839,7 +1877,6 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="7879275349003161544">Pokaži prenose</translation>
 <translation id="7882689957034389473">Fotografiraj</translation>
 <translation id="7883882164760409935">Imate znova uporabljena gesla.</translation>
-<translation id="7887174313503389866">Oglejte si vodeno predstavitev ključnih kontrolnikov zasebnosti in varnosti. Če želite več možnosti, odprite posamezne nastavitve.</translation>
 <translation id="7887198238286927132">Chrome zaradi varovanja vaše zasebnosti ne bo samodejno izpolnil tega polja.</translation>
 <translation id="7887552845761062935">Dvakrat se dotaknite in pridržite, če želite odpreti več možnosti</translation>
 <translation id="7888562068293422208">Želite zapreti vse?</translation>
@@ -1847,6 +1884,7 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="7899199123054742721">Označi vse kot neprebrano</translation>
 <translation id="7911190106180361398">Vaša organizacija vam ne dovoli sinhronizirati vsega.</translation>
 <translation id="7918999344502274923">Skrivanje podrobnosti za <ph name="SEARCH_ENGINE_NAME" /></translation>
+<translation id="7921559948846049514">Izberite temo, barvo ali drugo za ozadje</translation>
 <translation id="792357691529995513">Najdena ni bila nobena težava</translation>
 <translation id="7925108652071887026">Samodejno izpolnjevanje podatkov</translation>
 <translation id="7926975587469166629">Vzdevek za kartico</translation>
@@ -1862,6 +1900,7 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="7958575506592576831">Stran z informacijami o varnosti</translation>
 <translation id="7961015016161918242">Nikoli</translation>
 <translation id="7971136598759319605">Aktivna pred 1 dnevom</translation>
+<translation id="7972837668077967426">Canvas</translation>
 <translation id="7975036700432177008">Preskus</translation>
 <translation id="797588153137233716">Meni → Zgodovina → Brisanje podatkov brskanja</translation>
 <translation id="7977451675950311423">Opozori vas, če uporabite geslo, ki je ogroženo zaradi podatkovne kršitve.</translation>
@@ -1878,6 +1917,7 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="8005666035647241369">V Googlov upravitelj gesel v tej napravi</translation>
 <translation id="8010488806779226127">Raziščite funkcije, ki vam lahko pomagajo pri večjemu številu opravil med brskanjem</translation>
 <translation id="8011489434346330032">Spletni pregledovalnik</translation>
+<translation id="8015826420689927262">Izbris priloge</translation>
 <translation id="8017015647846870183">Iz Googlovega upravitelja gesel, vključno z gesli in ključi za dostop</translation>
 <translation id="802154636333426148">Prenos ni uspel</translation>
 <translation id="8023170444051056234">Takoj boste izgubili dostop do skupine zavihkov »<ph name="GROUP_NAME" />« in izbrisana bo iz vseh vaših naprav</translation>
@@ -1894,6 +1934,7 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="8059312861912872211">{count,plural, =1{{count} zaznamek}one{{count} zaznamek}two{{count} zaznamka}few{{count} zaznamki}other{{count} zaznamkov}}</translation>
 <translation id="8059533439631660104">Strni razdelek.</translation>
 <translation id="8061584726507121204">Zgodovina</translation>
+<translation id="8064946459644399612">Nastavitve strani »Nov zavihek« so bile uporabljene</translation>
 <translation id="8069168488983557089">Pridobite ključne informacije in vpoglede, ki vam pomagajo razumeti katero koli temo</translation>
 <translation id="8069394452933076548">Izberite, kdaj se zavihki, ki niso bili nedavno uporabljeni, premaknejo v razdelek neaktivnih zavihkov.</translation>
 <translation id="8073670137947914548">Prenos je končan</translation>
@@ -1924,6 +1965,7 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="8161614462829037225">Odklepanje s tem: <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /></translation>
 <translation id="8173034266693057059">Dolžina</translation>
 <translation id="8182037667962849780">{count,plural, =1{Za {website_1}}=2{Za {website_1}, {website_2}}=3{Za {website_1}, {website_2} in še 1}one{Za {website_1}, {website_2} in še {more_count}}two{Za {website_1}, {website_2} in še {more_count}}few{Za {website_1}, {website_2} in še {more_count}}other{Za {website_1}, {website_2} in še {more_count}}}</translation>
+<translation id="8184895727539791845">Če želite, da Gemini uporablja vaš fotoaparat, v nastavitvah sistema iOS vklopite fotoaparat</translation>
 <translation id="8185076488803799132">Uvozi</translation>
 <translation id="8189615296021678665">Dotaknite se »Shrani«, če želite preprosto dostopati do tega gesla, ko se naslednjič prijavite.</translation>
 <translation id="8193953846147532858"><ph name="BEGIN_LINK" />Vaše naprave<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
@@ -1939,6 +1981,7 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="8221665793629393739">Opomnik za vnovični obisk</translation>
 <translation id="8232956427053453090">Ohrani podatke</translation>
 <translation id="8233237502828137700">Zapiranje promocijske pasice</translation>
+<translation id="823339794112333264">Vklop mikrofona</translation>
 <translation id="8250920743982581267">Dokumenti</translation>
 <translation id="8258734532103758067">Podatki so bili izvoženi</translation>
 <translation id="8258999165172757081">Dodano</translation>
@@ -1965,6 +2008,7 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="8319282042900445670">Opomnik je nastavljen za ta čas: <ph name="TIME" />, <ph name="DATE" /></translation>
 <translation id="8320212361750431956">Nedavna dejavnost</translation>
 <translation id="8325455175867928593">Skrij »Mnenja na podlagi vaših zanimanj«</translation>
+<translation id="8328777765163860529">Zapri vse</translation>
 <translation id="833647236762414178">Ustvarite, shranite in upravljajte gesla in ključe za dostop, da se boste lahko preprosto prijavili na spletnih mestih in v aplikacijah. <ph name="BEGIN_LINK" />Več o tem<ph name="END_LINK" /></translation>
 <translation id="8343993175958086504">Varnostno kopirajte vsebino in jo uporabljajte v poljubni napravi.</translation>
 <translation id="8348530355586151720">Dotaknite se menija z ikono s tremi pikami</translation>
@@ -1991,6 +2035,7 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="8428045167754449968">Mesto</translation>
 <translation id="8428213095426709021">Nastavitve</translation>
 <translation id="8428634594422941299">Razumem</translation>
+<translation id="8429455911440977338">Vklop fotoaparata</translation>
 <translation id="8434837876193928924">Podrobnosti o skupini zavihkov</translation>
 <translation id="8438566539970814960">Izboljšanje iskanja in brskanja</translation>
 <translation id="8439758443371991593">Skrij Dodaj na bralni seznam</translation>
@@ -2043,7 +2088,7 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="8609743333007776886">Dodaj ${url} med zaznamke</translation>
 <translation id="8611922158252451755">Vsi s povezavo lahko urejajo vse zavihke, zato premišljeno delite vsebino. Povezava poteče čez 48 ur.</translation>
 <translation id="8614671330774943747">Na preklop med zavihki</translation>
-<translation id="8620640915598389714">Uredi</translation>
+<translation id="862367213447108001">Vedno prikaži pojavne elemente na tem spletnem mestu</translation>
 <translation id="8625706492572042370">Urejanje začetnega zaslona</translation>
 <translation id="8631370184731241854">Zaklenjeni anonimni zavihki</translation>
 <translation id="8633025649649592204">Nedavna dejavnost</translation>
@@ -2117,6 +2162,7 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="8856643812068084733">Arhivi</translation>
 <translation id="8863067612494559785">Pošiljanje v napravo <ph name="DEVICE_NAME" /> …</translation>
 <translation id="8863431381414769983">Pridobivanje navodil za pot in lokalnih informacij iz Google Zemljevidov</translation>
+<translation id="8867879594900082274">Vaši popravki bodo veljali samo za pripeta spletna mesta v tej napravi.</translation>
 <translation id="8871974300055371298">Nastavitve vsebine</translation>
 <translation id="8877788021141246043">Nastavi opomnik</translation>
 <translation id="8879604564928138696">Dvakrat se dotaknite, če želite poskusiti</translation>
@@ -2140,6 +2186,7 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="8928426232677696166">Trenutno je izbran <ph name="EMAIL" />, ki ga upravlja vaša organizacija. Izberite račun.</translation>
 <translation id="894191600409472540">Ustvarite zapletena gesla.</translation>
 <translation id="8943780400130412484">Želite začeti nov prenos?</translation>
+<translation id="8947838125864566256">Izklop mikrofona</translation>
 <translation id="8953046091948372197">Tukaj bodo prikazana gesla</translation>
 <translation id="8953602327115378731">{count,plural, =1{Nad tipkovnico je na voljo {count} možnost za samodokončanje.}one{Nad tipkovnico je na voljo {count} možnost za samodokončanje.}two{Nad tipkovnico sta na voljo {count} možnosti za samodokončanje.}few{Nad tipkovnico so na voljo {count} možnosti za samodokončanje.}other{Nad tipkovnico je na voljo {count} možnosti za samodokončanje.}}</translation>
 <translation id="895541991026785598">Prijavite težavo</translation>
@@ -2197,6 +2244,7 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="914781932147356857">Označi vse …</translation>
 <translation id="9148126808321036104">Prijavite se znova</translation>
 <translation id="9149866541089851383">Uredi ...</translation>
+<translation id="9152637745605628097">Izbirate lahko med temami in barvami ali naložite sliko</translation>
 <translation id="9159628751968616911">Pošlji spletno stran</translation>
 <translation id="9162432979321511934">Vklopite AutoFill Passwords (Samodejno izpolnjevanje gesel).</translation>
 <translation id="9165320910061267720">Če želite prejemati obvestila z opozorili o znižanju cen, morate vklopiti obvestila v nastavitvah sistema iOS.</translation>
@@ -2230,6 +2278,8 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="956218893102219091">Uporabite natančno lokacijo za najnatančnejše rezultate Geminija namesto ocenjene lokacije na podlagi naslova IP. <ph name="BEGIN_LINK" />Več o tem<ph name="END_LINK" /></translation>
 <translation id="961856697154696964">Brisanje podatkov brskanja</translation>
 <translation id="963102227019621224">Dejavnost v spletu in aplikacijah</translation>
+<translation id="965259330007686240">Ustvarite sliko z Geminijem</translation>
+<translation id="965879457362663186">Dodajanje priloge</translation>
 <translation id="966593914872420832">Glasovno iskanje</translation>
 <translation id="972084300091883657">{COUNT,plural, =0{Pridružite se skupini zavihkov z osebo <ph name="OWNER_NAME" />}=1{Pridružite se skupini zavihkov z osebo <ph name="OWNER_NAME" /> in še {COUNT}}one{Pridružite se skupini zavihkov z osebo <ph name="OWNER_NAME" /> in še {COUNT}}two{Pridružite se skupini zavihkov z osebo <ph name="OWNER_NAME" /> in še {COUNT}}few{Pridružite se skupini zavihkov z osebo <ph name="OWNER_NAME" /> in še {COUNT}}other{Pridružite se skupini zavihkov z osebo <ph name="OWNER_NAME" /> in še {COUNT}}}</translation>
 <translation id="973493300226275298">Spremljajte ceno izdelka v več spletnih trgovinah. Ko se cena zniža, boste prejeli opozorilo.</translation>

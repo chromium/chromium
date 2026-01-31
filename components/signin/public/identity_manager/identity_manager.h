@@ -27,7 +27,6 @@
 #include "components/signin/public/identity_manager/access_token_fetcher.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/identity_mutator.h"
-#include "components/signin/public/identity_manager/scope_set.h"
 #include "google_apis/gaia/oauth2_access_token_manager.h"
 
 #if BUILDFLAG(IS_ANDROID)
@@ -228,25 +227,24 @@ class IdentityManager : public KeyedService,
   bool HasPrimaryAccount(ConsentLevel consent_level) const;
 
   // Creates an AccessTokenFetcher given the passed-in information.
+  //
+  // Only use this method if the feature requires dynamic scopes each time it
+  // requests an access token. Don't use this method if the feature gets it's
+  // scopes from finch. In that case you should add your finch logic in the
+  // OAuthConsumerRegistry subclasses.
+  //
+  // If you create a new OAuthConsumerId for this method then it will also need
+  // to be added in oauth_consumer_registry.cc. Otherwise this method will
+  // crash.
   [[nodiscard]] std::unique_ptr<AccessTokenFetcher>
-  CreateAccessTokenFetcherForAccount(const CoreAccountId& account_id,
-                                     const std::string& oauth_consumer_name,
-                                     const ScopeSet& scopes,
-                                     AccessTokenFetcher::TokenCallback callback,
-                                     AccessTokenFetcher::Mode mode,
-                                     AccessTokenFetcher::Source token_source =
-                                         AccessTokenFetcher::Source::kProfile);
-
-  // Creates an AccessTokenFetcher given the passed-in information, allowing
-  // to specify a custom |url_loader_factory| as well.
-  [[nodiscard]] std::unique_ptr<AccessTokenFetcher>
-  CreateAccessTokenFetcherForAccount(
+  CreateAccessTokenFetcherWithDynamicScopesForAccount(
       const CoreAccountId& account_id,
-      const std::string& oauth_consumer_name,
-      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
+      OAuthConsumerId oauth_consumer_id,
       const ScopeSet& scopes,
       AccessTokenFetcher::TokenCallback callback,
-      AccessTokenFetcher::Mode mode);
+      AccessTokenFetcher::Mode mode,
+      AccessTokenFetcher::Source token_source =
+          AccessTokenFetcher::Source::kProfile);
 
   // Creates an AccessTokenFetcher for the |oauth_consumer_id| feature.
   [[nodiscard]] std::unique_ptr<AccessTokenFetcher>
@@ -269,16 +267,10 @@ class IdentityManager : public KeyedService,
 
   // If an entry exists in the cache of access tokens corresponding to the
   // given information, removes that entry; in this case, the next access token
-  // request for |account_id| and |scopes| will fetch a new token from the
-  // network. Otherwise, is a no-op.
-  void RemoveAccessTokenFromCache(const CoreAccountId& account_id,
-                                  const ScopeSet& scopes,
-                                  const std::string& access_token);
-
-  // If an entry exists in the cache of access tokens corresponding to the
-  // given information, removes that entry; in this case, the next access token
   // request for |account_id| and |oauth_consumer_id| will fetch a new token
   // from the network. Otherwise, is a no-op.
+  //
+  // This method doesn't support `OAuthConsumerId` using dynamic scopes.
   void RemoveAccessTokenFromCache(const CoreAccountId& account_id,
                                   OAuthConsumerId oauth_consumer_id,
                                   const std::string& access_token);
@@ -542,7 +534,7 @@ class IdentityManager : public KeyedService,
 
   base::android::ScopedJavaLocalRef<jobject> GetPrimaryAccountInfo(
       JNIEnv* env,
-      jint consent_level) const;
+      int32_t consent_level) const;
 
   base::android::ScopedJavaLocalRef<jobject> GetPrimaryAccountId(
       JNIEnv* env) const;
@@ -556,15 +548,12 @@ class IdentityManager : public KeyedService,
       JNIEnv* env,
       const base::android::JavaRef<jstring>& j_email) const;
 
-  base::android::ScopedJavaLocalRef<jobjectArray> GetAccountsWithRefreshTokens(
-      JNIEnv* env) const;
-
   // Refreshes all accounts with refresh tokens if they are stale. See
   // RefreshAccountInfoIfStale(const CoreAccountId&).
   void RefreshAccountInfoIfStale(JNIEnv* env);
 
   // Returns true if the browser allows the primary account to be cleared.
-  jboolean IsClearPrimaryAccountAllowed(JNIEnv* env) const;
+  bool IsClearPrimaryAccountAllowed(JNIEnv* env) const;
 #endif
 
   // Returns a weak pointer of this.

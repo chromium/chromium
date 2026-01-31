@@ -10,7 +10,6 @@
 \bdistrito\s+federal\b	df
 \bfloriano\s+peixoto\b	floriano
 \btenente\s+coronel\b	tte cel
-\btenente_coronel\b	tte cel
 \bespirito\s+santo\b	es
 \bestrada\s+antiga\b	antiga estrada
 \bgetulio\s+vargas\b	vargas
@@ -66,6 +65,7 @@
 \bcoronel\b	cel
 \bdoutora\b	dr
 \bestrada\b	estr
+\bestrada\b	est
 \bfazenda\b	faz
 \bgaleria\b	gal
 \bjanerio\b	janeiro

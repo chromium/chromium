@@ -21,6 +21,10 @@ specific_include_rules = {
   "coop_access_violation_report_body\.cc": [
     "+services/network/public/cpp/cross_origin_opener_policy.h"
   ],
+  "crash_report_context\.h": [
+    "+base/memory/shared_memory_mapping.h",
+    "+base/memory/unsafe_shared_memory_region.h",
+  ],
   "dom_timer_test\.cc": [
     "+base/test/scoped_command_line.h",
   ],

@@ -81,6 +81,17 @@ gfx::GpuMemoryBufferHandle VideoCaptureBufferPoolImpl::GetGpuMemoryBufferHandle(
   return tracker->GetGpuMemoryBufferHandle();
 }
 
+media::mojom::VideoBufferHandlePtr
+VideoCaptureBufferPoolImpl::GetVideoBufferHandle(int buffer_id) {
+  base::AutoLock lock(lock_);
+  VideoCaptureBufferTracker* tracker = GetTracker(buffer_id);
+  if (!tracker) {
+    NOTREACHED() << "Invalid buffer_id.";
+  }
+
+  return tracker->GetVideoBufferHandle();
+}
+
 VideoCaptureBufferType VideoCaptureBufferPoolImpl::GetBufferType(
     int buffer_id) {
   base::AutoLock lock(lock_);
@@ -165,18 +176,32 @@ VideoCaptureBufferPoolImpl::ReserveIdForExternalBuffer(
   }
 
   // Create the new tracker.
-  auto tracker =
-      buffer_tracker_factory_->CreateTrackerForExternalGpuMemoryBuffer(
-          std::move(buffer.handle));
+  std::unique_ptr<VideoCaptureBufferTracker> tracker;
+  if (buffer.client_shared_image) {
+    tracker = buffer_tracker_factory_->CreateTrackerForExternalBuffer(
+        std::move(buffer));
+  } else {
+    // We need to keep |buffer| alive for UpdateExternalData(), so we move only
+    // the necessary parts for tracker creation.
+    CapturedExternalVideoBuffer factory_buffer = CapturedExternalVideoBuffer(
+        std::move(buffer.handle), buffer.format, buffer.color_space);
+    tracker = buffer_tracker_factory_->CreateTrackerForExternalBuffer(
+        std::move(factory_buffer));
+
 #if BUILDFLAG(IS_WIN)
-  // Windows needs to create buffer from external handle, but mac doesn't.
-  if (!tracker ||
-      !tracker->Init(dimensions, buffer.format.pixel_format, nullptr)) {
+    // Windows needs to create buffer from external handle, but mac doesn't.
+    if (tracker &&
+        tracker->Init(dimensions, buffer.format.pixel_format, nullptr)) {
+      tracker->UpdateExternalData(std::move(buffer));
+    }
+#endif
+  }
+
+  if (!tracker) {
     DLOG(ERROR) << "Error initializing VideoCaptureBufferTracker";
     return VideoCaptureDevice::Client::ReserveResult::kAllocationFailed;
   }
-  tracker->UpdateExternalData(std::move(buffer));
-#endif
+
   tracker->SetHeldByProducer(true);
   const int new_buffer_id = next_buffer_id_++;
   trackers_[new_buffer_id] = std::move(tracker);

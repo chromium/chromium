@@ -95,7 +95,7 @@ void AppUsageObserver::OnAppUsage(const std::string& app_id,
 
   if (!profile_->GetPrefs()->HasPrefPath(::apps::kAppUsageTime)) {
     // No data in the pref store, so we create an empty dictionary for now.
-    profile_->GetPrefs()->SetDict(::apps::kAppUsageTime, base::Value::Dict());
+    profile_->GetPrefs()->SetDict(::apps::kAppUsageTime, base::DictValue());
   }
 
   CreateOrUpdateAppUsageEntry(app_id, app_type, instance_id, running_time);

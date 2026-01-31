@@ -23,7 +23,6 @@ class MockImmersiveModeController : public ImmersiveModeController {
   MOCK_METHOD(void, Init, (BrowserView * browser_view), (override));
   MOCK_METHOD(void, SetEnabled, (bool enabled), (override));
   MOCK_METHOD(bool, IsEnabled, (), (const, override));
-  MOCK_METHOD(bool, ShouldHideTopViews, (), (const, override));
   MOCK_METHOD(bool, IsRevealed, (), (const, override));
   MOCK_METHOD(int,
               GetTopContainerVerticalOffset,

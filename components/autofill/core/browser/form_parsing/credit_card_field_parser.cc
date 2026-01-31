@@ -6,13 +6,13 @@
 
 #include <stddef.h>
 
+#include <algorithm>
 #include <memory>
 #include <string>
 #include <string_view>
 #include <utility>
 #include <vector>
 
-#include "base/containers/contains.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -336,7 +336,7 @@ bool CreditCardFieldParser::LikelyCardYearSelectField(
     // While 23 is a valid expiration year, the selector is not a expiration
     // year selector. In case we find a single-digit entry, we reject this as
     // an expiration year selector.
-    if (base::Contains(field.options(), u"2", option_projection)) {
+    if (std::ranges::contains(field.options(), u"2", option_projection)) {
       return false;
     }
     auto is_substring = [](std::u16string_view option,
@@ -627,7 +627,7 @@ FieldType CreditCardFieldParser::DetermineExpirationYearType(
     // While 23 is a valid expiration year, the selector is not a expiration
     // year selector. In case we find a single-digit entry, we reject this as
     // an expiration year selector.
-    if (base::Contains(field.options(), u"2", option_projection)) {
+    if (std::ranges::contains(field.options(), u"2", option_projection)) {
       return false;
     }
     auto is_substring = [&year_needle](std::u16string_view option) {
@@ -759,7 +759,7 @@ CreditCardFieldParser::DetermineExpirationDateFormat(
   }
   // Add generic fallbacks.
   for (const char16_t* fallback : {u"/", u""}) {
-    if (!base::Contains(separator_candidates, fallback)) {
+    if (!std::ranges::contains(separator_candidates, fallback)) {
       separator_candidates.emplace_back(fallback);
     }
   }

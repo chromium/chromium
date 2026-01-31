@@ -214,7 +214,7 @@ do
       ;;
     --touch-device-id=*)
       id=${1:18}
-      TOUCH_DEVICE_OPTION="--touch-devices=${id} --force-show-cursor"
+      TOUCH_DEVICE_OPTION="--touch-devices=0,${id} --force-show-cursor"
       ;;
     --guest)
       GUEST_MODE=true

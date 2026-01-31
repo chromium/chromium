@@ -18,6 +18,5 @@ source_set("ipc") {
     "//base",
     "//ui/gfx/ipc",
     "//ui/gfx/ipc/geometry",
-    "//ui/gfx/ipc/skia",
   ]
 }

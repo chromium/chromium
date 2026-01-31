@@ -33,7 +33,7 @@ class CORE_EXPORT ContainerQuery final
   friend class CSSContainerRule;
   friend class StyleRuleContainer;
 
-  const ConditionalExpNode& Query() const { return *query_; }
+  const ConditionalExpNode* Query() const { return query_; }
 
   ContainerSelector selector_;
   Member<const ConditionalExpNode> query_;

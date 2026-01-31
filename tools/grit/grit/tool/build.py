@@ -22,7 +22,15 @@ from grit import grd_reader
 from grit import shortcuts
 from grit import util
 from grit import zip_helpers
+from grit.format import android_xml
+from grit.format import c_format
+from grit.format import chrome_messages_json
+from grit.format import data_pack
 from grit.format import minifier
+from grit.format import policy_templates_json
+from grit.format import rc
+from grit.format import rc_header
+from grit.format import resource_map
 from grit.node import brotli_util
 from grit.node import include
 from grit.node import message
@@ -37,25 +45,23 @@ JAVA_STRINGS_PATH_RE = re.compile(r'^.*/(values.*)$')
 # require importing all of them on every run of GRIT.
 '''Map from <output> node types to modules under grit.format.'''
 _format_modules = {
-  'android': 'android_xml',
-  'c_format': 'c_format',
-  'chrome_messages_json': 'chrome_messages_json',
-  'chrome_messages_json_gzip': 'chrome_messages_json',
-  'data_package': 'data_pack',
-  'policy_templates': 'policy_templates_json',
-  'rc_all': 'rc',
-  'rc_header': 'rc_header',
-  'rc_nontranslateable': 'rc',
-  'rc_translateable': 'rc',
-  'resource_file_map_source': 'resource_map',
-  'resource_map_header': 'resource_map',
-  'resource_map_source': 'resource_map',
+    'android': android_xml,
+    'c_format': c_format,
+    'chrome_messages_json': chrome_messages_json,
+    'chrome_messages_json_gzip': chrome_messages_json,
+    'data_package': data_pack,
+    'policy_templates': policy_templates_json,
+    'rc_all': rc,
+    'rc_header': rc_header,
+    'rc_nontranslateable': rc,
+    'rc_translateable': rc,
+    'resource_file_map_source': resource_map,
+    'resource_map_header': resource_map,
+    'resource_map_source': resource_map,
 }
 
 def GetFormatter(type):
-  modulename = 'grit.format.' + _format_modules[type]
-  __import__(modulename)
-  module = sys.modules[modulename]
+  module = _format_modules[type]
   try:
     return module.Format
   except AttributeError:

@@ -101,12 +101,12 @@ class EduAccountLoginHandler : public content::WebUIMessageHandler,
   void RegisterMessages() override;
   void OnJavascriptDisallowed() override;
 
-  void HandleIsNetworkReady(const base::Value::List& args);
-  void HandleGetParents(const base::Value::List& args);
-  void HandleParentSignin(const base::Value::List& args);
+  void HandleIsNetworkReady(const base::ListValue& args);
+  void HandleGetParents(const base::ListValue& args);
+  void HandleParentSignin(const base::ListValue& args);
 
   virtual void FetchFamilyMembers();
-  virtual void FetchParentImages(base::Value::List parents,
+  virtual void FetchParentImages(base::ListValue parents,
                                  std::map<GaiaId, GURL> profile_image_urls);
   virtual void FetchAccessToken(const GaiaId& obfuscated_gaia_id,
                                 const std::string& password);
@@ -127,7 +127,7 @@ class EduAccountLoginHandler : public content::WebUIMessageHandler,
 
   // ProfileImageFetcher callback
   void OnParentProfileImagesFetched(
-      base::Value::List parents,
+      base::ListValue parents,
       std::map<GaiaId, gfx::Image> profile_images);
 
   // signin::PrimaryAccountAccessTokenFetcher callback

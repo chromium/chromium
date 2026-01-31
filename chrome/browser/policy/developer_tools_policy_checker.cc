@@ -4,6 +4,7 @@
 
 #include "chrome/browser/policy/developer_tools_policy_checker.h"
 
+#include "build/build_config.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_keyed_service_factory.h"
 #include "chrome/common/pref_names.h"
@@ -16,7 +17,8 @@ namespace policy {
 
 DeveloperToolsPolicyChecker::DeveloperToolsPolicyChecker(
     PrefService* pref_service)
-    : url_blocklist_manager_(pref_service,
+    : pref_service_(pref_service),
+      url_blocklist_manager_(pref_service,
                              prefs::kDeveloperToolsAvailabilityBlocklist,
                              prefs::kDeveloperToolsAvailabilityAllowlist) {}
 DeveloperToolsPolicyChecker::~DeveloperToolsPolicyChecker() = default;
@@ -42,6 +44,16 @@ DeveloperToolsPolicyChecker::CheckDevToolsAvailabilityForUrl(
   if (url_state == URLBlocklist::URLBlocklistState::URL_IN_ALLOWLIST) {
     return true;
   }
+
+#if !BUILDFLAG(IS_ANDROID)
+  if (!pref_service_->GetList(prefs::kDeveloperToolsAvailabilityAllowlist)
+           .empty() &&
+      pref_service_->GetList(prefs::kDeveloperToolsAvailabilityBlocklist)
+          .empty()) {
+    return false;
+  }
+#endif
+
   if (url_state == URLBlocklist::URLBlocklistState::URL_IN_BLOCKLIST) {
     return false;
   }

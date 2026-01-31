@@ -81,7 +81,7 @@ bool ChromeProcessManagerDelegate::IsExtensionBackgroundPageAllowed(
     }
 
     // Get login screen apps installed by policy.
-    base::Value::Dict login_screen_apps_list =
+    base::DictValue login_screen_apps_list =
         ExtensionManagementFactory::GetForBrowserContext(context)
             ->GetForceInstallList();
 

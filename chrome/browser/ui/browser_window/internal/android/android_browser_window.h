@@ -28,7 +28,7 @@ class AndroidBrowserWindow final : public BrowserWindowInterface {
   void Destroy(JNIEnv* env);
 
   // Implements Java |AndroidBrowserWindow.Natives#getSessionIdForTesting|.
-  jint GetSessionIdForTesting(JNIEnv* env) const;
+  int32_t GetSessionIdForTesting(JNIEnv* env) const;
 
   // Implements |BrowserWindowInterface|.
   ui::UnownedUserDataHost& GetUnownedUserDataHost() override;

@@ -59,7 +59,7 @@ TEST(GeolocationOverrideManager, SendsCommandOnConnect) {
 TEST(GeolocationOverrideManager, SendsCommandOnNavigation) {
   RecorderDevToolsClient client;
   GeolocationOverrideManager manager(&client);
-  base::Value::Dict main_frame_params;
+  base::DictValue main_frame_params;
   ASSERT_EQ(kOk,
             manager.OnEvent(&client, "Page.frameNavigated", main_frame_params)
                 .code());
@@ -75,7 +75,7 @@ TEST(GeolocationOverrideManager, SendsCommandOnNavigation) {
   ASSERT_NO_FATAL_FAILURE(
       AssertGeolocationCommand(client.commands_[1], geoposition));
 
-  base::Value::Dict sub_frame_params;
+  base::DictValue sub_frame_params;
   sub_frame_params.SetByDottedPath("frame.parentId", "id");
   ASSERT_EQ(
       kOk,

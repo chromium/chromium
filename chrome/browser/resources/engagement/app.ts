@@ -31,7 +31,7 @@ function compareTableItem(
 
   // Compare the hosts of the origin ignoring schemes.
   if (sortKey === 'origin') {
-    return new URL(val1.url).host > new URL(val2.url).host ? 1 : -1;
+    return new URL(val1).host > new URL(val2).host ? 1 : -1;
   }
 
   if (sortKey === 'baseScore' || sortKey === 'bonusScore' ||
@@ -105,7 +105,7 @@ export class SiteEngagementAppElement extends CustomElement {
   private createRow(info: SiteEngagementDetails): HTMLElement {
     const originCell = document.createElement('td');
     originCell.classList.add('origin-cell');
-    originCell.textContent = info.origin.url;
+    originCell.textContent = info.origin;
 
     const baseScoreInput = document.createElement('input');
     baseScoreInput.classList.add('base-score-input');
@@ -192,7 +192,7 @@ export class SiteEngagementAppElement extends CustomElement {
     } catch {
       return;
     }
-    const origin: Url = {url: originInput.value};
+    const origin: Url = originInput.value;
     const score = parseFloat(scoreInput.value);
 
     this.engagementDetailsProvider.setSiteEngagementBaseScoreForUrl(
@@ -238,8 +238,8 @@ export class SiteEngagementAppElement extends CustomElement {
     assert(this.info);
     this.info.forEach((info) => {
       if (!this.showWebUiPages &&
-          (info.origin.url.startsWith('chrome://') ||
-           info.origin.url.startsWith('chrome-untrusted://'))) {
+          (info.origin.startsWith('chrome://') ||
+           info.origin.startsWith('chrome-untrusted://'))) {
         return;
       }
 

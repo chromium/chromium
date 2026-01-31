@@ -614,6 +614,8 @@ BOOL ShouldShowTurnOnPasswordsInOtherAppsItem(
     if (CredentialExchangeEnabled()) {
       exportPasswordsItem.text =
           l10n_util::GetNSString(IDS_IOS_EXPORT_PASSWORDS_AND_PASSKEYS);
+      exportPasswordsItem.accessoryType =
+          UITableViewCellAccessoryDisclosureIndicator;
     }
   }
   exportPasswordsItem.accessibilityTraits = UIAccessibilityTraitButton;
@@ -1255,7 +1257,7 @@ BOOL ShouldShowTurnOnPasswordsInOtherAppsItem(
   }
 
   if (_canExportCredentials) {
-    _exportPasswordsItem.textColor = [UIColor colorNamed:kBlueColor];
+    _exportPasswordsItem.textColor = [UIColor colorNamed:kTextPrimaryColor];
     _exportPasswordsItem.accessibilityTraits &= ~UIAccessibilityTraitNotEnabled;
   } else {
     // Disable, rather than remove, because the button will go back and forth

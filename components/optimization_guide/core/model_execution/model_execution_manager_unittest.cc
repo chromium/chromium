@@ -190,6 +190,8 @@ TEST_F(ModelExecutionManagerTest, ExecuteModelWithUserSignIn) {
             "test_id");
   histogram_tester.ExpectUniqueSample(
       "OptimizationGuide.ModelExecution.Result.Compose", true, 1);
+  histogram_tester.ExpectTotalCount(
+      "OptimizationGuide.ModelExecution.FetchLatency2.Compose", 1);
 }
 
 // Tests that when a new request is issued and the total number of active
@@ -238,11 +240,14 @@ TEST_F(ModelExecutionManagerTest, MultipleParallelRequestsLimit) {
       "OptimizationGuide.ModelExecution.Result.Compose", true, 1);
   histogram_tester.ExpectBucketCount(
       "OptimizationGuide.ModelExecution.Result.Compose", false, 1);
+  histogram_tester.ExpectTotalCount(
+      "OptimizationGuide.ModelExecution.FetchLatency2.Compose", 2);
 }
 
 // Tests that multiple parallel model executions are possible for features that
 // support it (like kFormsClassification).
 TEST_F(ModelExecutionManagerTest, MultipleParallelRequests) {
+  base::HistogramTester histogram_tester;
   RemoteResponseHolder response_holder1, response_holder2;
   SetAutomaticIssueOfAccessTokens();
 
@@ -277,6 +282,8 @@ TEST_F(ModelExecutionManagerTest, MultipleParallelRequests) {
   ASSERT_TRUE(response_holder2.GetFinalStatus());
   EXPECT_THAT(response_holder2.GetOutput<proto::AutofillAiTypeResponse>(),
               EqualsProto(response));
+  histogram_tester.ExpectTotalCount(
+      "OptimizationGuide.ModelExecution.FetchLatency2.FormsClassifications", 2);
 }
 
 class ModelExecutionManagerDelegateTest : public ModelExecutionManagerTest {

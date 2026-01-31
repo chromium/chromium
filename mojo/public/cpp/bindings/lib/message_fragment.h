@@ -6,6 +6,7 @@
 #define MOJO_PUBLIC_CPP_BINDINGS_LIB_MESSAGE_FRAGMENT_H_
 
 #include <stddef.h>
+
 #include <type_traits>
 
 #include "base/bits.h"

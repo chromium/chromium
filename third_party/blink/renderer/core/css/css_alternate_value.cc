@@ -26,4 +26,9 @@ bool CSSAlternateValue::Equals(const CSSAlternateValue& other) const {
          base::ValuesEquivalent(aliases_, other.aliases_);
 }
 
+bool CSSAlternateValue::HasRandomFunctions() const {
+  return (function_ && function_->HasRandomFunctions()) ||
+         (aliases_ && aliases_->HasRandomFunctions());
+}
+
 }  // namespace blink::cssvalue

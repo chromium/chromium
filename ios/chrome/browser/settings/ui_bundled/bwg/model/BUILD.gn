@@ -4,9 +4,18 @@
 
 source_set("model") {
   sources = [
+    "gemini_dynamic_settings_item.h",
+    "gemini_dynamic_settings_item.mm",
+    "gemini_settings_action.h",
+    "gemini_settings_action.mm",
+    "gemini_settings_action_type.h",
+    "gemini_settings_context.h",
     "gemini_settings_metadata.h",
     "gemini_settings_metadata.mm",
   ]
   frameworks = [ "UIKit.framework" ]
-  deps = []
+  deps = [
+    "//ios/chrome/browser/shared/ui/table_view/cells",
+    "//ui/base",
+  ]
 }

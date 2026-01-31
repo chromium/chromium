@@ -444,7 +444,7 @@ void ProfileManagerIOSImpl::OnProfileCreationFinished(
   // The profile is fully loaded, so drop the ScopedProfileKeepAliveIOS
   // owned by this instance. If no other code keeps the profile alive,
   // it will be unloaded at this point.
-  CHECK(base::Contains(loading_profiles_map_, name));
+  CHECK(loading_profiles_map_.contains(name));
   loading_profiles_map_.erase(name);
 }
 
@@ -518,7 +518,7 @@ bool ProfileManagerIOSImpl::CreateOrLoadProfile(
   // Ensure the profile is kept alive until it is fully loaded or
   // the current instance is destroyed.
   if (inserted) {
-    CHECK(!base::Contains(loading_profiles_map_, name));
+    CHECK(!loading_profiles_map_.contains(name));
     loading_profiles_map_.emplace(name,
                                   CreateScopedProfileKeepAlive(&profile_info));
   }

@@ -83,8 +83,8 @@ void AppWindowGeometryCacheTest::AddGeometryAndLoadExtension(
     const gfx::Rect& bounds,
     const gfx::Rect& screen_bounds,
     ui::mojom::WindowShowState state) {
-  base::Value::Dict dict;
-  base::Value::Dict value;
+  base::DictValue dict;
+  base::DictValue value;
   value.Set("x", bounds.x());
   value.Set("y", bounds.y());
   value.Set("w", bounds.width());
@@ -263,7 +263,7 @@ TEST_F(AppWindowGeometryCacheTest, SaveGeometryAndStateToStore) {
   UnloadExtension(extension_id);
 
   // check if geometry got stored correctly in the state store
-  const base::Value::Dict* dict =
+  const base::DictValue* dict =
       extension_prefs_->GetGeometryCache(extension_id);
   ASSERT_TRUE(dict);
 

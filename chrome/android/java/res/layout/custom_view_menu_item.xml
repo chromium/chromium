@@ -19,7 +19,9 @@ found in the LICENSE file.
         android:layout_weight="1"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:minHeight="?attr/listItemHeight" />
+        android:minHeight="?attr/listItemHeight"
+        android:textAlignment="viewStart"
+        android:gravity="start|center_vertical" />
 
     <org.chromium.ui.widget.ChromeImageView
         android:id="@+id/trailing_icon"

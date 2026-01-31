@@ -6,9 +6,9 @@
 
 #include <stddef.h>
 
+#include <algorithm>
 #include <vector>
 
-#include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/no_destructor.h"
 #include "base/notreached.h"
@@ -310,21 +310,19 @@ std::vector<AcceleratorMapping> GetAcceleratorList() {
                          std::begin(kDevToolsAcceleratorMap),
                          std::end(kDevToolsAcceleratorMap));
 
-    if (features::IsSideBySideKeyboardShortcutEnabled()) {
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX)
-      accelerators->emplace_back(
-          AcceleratorMapping({ui::VKEY_N, ui::EF_SHIFT_DOWN | ui::EF_ALT_DOWN,
-                              IDC_NEW_SPLIT_TAB}));
+    accelerators->emplace_back(AcceleratorMapping(
+        {ui::VKEY_N, ui::EF_SHIFT_DOWN | ui::EF_ALT_DOWN, IDC_NEW_SPLIT_TAB}));
 #elif BUILDFLAG(IS_CHROMEOS)
-      accelerators->emplace_back(
-          AcceleratorMapping({ui::VKEY_N, ui::EF_CONTROL_DOWN | ui::EF_ALT_DOWN,
-                              IDC_NEW_SPLIT_TAB}));
+    accelerators->emplace_back(
+        AcceleratorMapping({ui::VKEY_N, ui::EF_CONTROL_DOWN | ui::EF_ALT_DOWN,
+                            IDC_NEW_SPLIT_TAB}));
 #endif
-    }
 
     // See https://devblogs.microsoft.com/oldnewthing/20040329-00/?p=40003
-    // Doing this check here and not at the bottom since kUIDebugAcceleratorMap
-    // contains Ctrl+Alt keys but we don't enable those for the public.
+    // Doing this check here and not at the bottom since
+    // kUIDebugAcceleratorMap contains Ctrl+Alt keys but we don't enable those
+    // for the public.
 #if DCHECK_IS_ON() && BUILDFLAG(IS_WIN)
     constexpr int kCtrlAlt = ui::EF_CONTROL_DOWN | ui::EF_ALT_DOWN;
     for (auto& mapping : *accelerators) {
@@ -382,5 +380,5 @@ bool GetStandardAcceleratorForCommandId(int command_id,
 }
 
 bool IsCommandRepeatable(int command_id) {
-  return base::Contains(kRepeatableCommandIds, command_id);
+  return std::ranges::contains(kRepeatableCommandIds, command_id);
 }

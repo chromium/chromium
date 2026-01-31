@@ -360,7 +360,7 @@ class PLATFORM_EXPORT NetworkStateNotifier {
   ObserverListMap connection_observers_;
   ObserverListMap on_line_state_observers_;
 
-  const uint8_t randomization_salt_ = base::RandInt(1, 20);
+  const uint8_t randomization_salt_ = base::RandIntInclusive(1, 20);
 };
 
 PLATFORM_EXPORT NetworkStateNotifier& GetNetworkStateNotifier();

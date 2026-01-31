@@ -261,7 +261,7 @@ Open full certificate details
                                 <#comment >
                                 </#comment>
                             </STYLE>
-                            <BUTTON class=outlined >
+                            <BUTTON class=outlined title=Open full certificate details aria-label=Open full certificate details >
                                 <#comment >
                                 </#comment>
                                 <#comment >
@@ -440,7 +440,7 @@ Open full certificate details
                                 <#comment >
                                 </#comment>
                             </STYLE>
-                            <BUTTON class=outlined >
+                            <BUTTON class=outlined title=Open full certificate details aria-label=Open full certificate details >
                                 <#comment >
                                 </#comment>
                                 <#comment >
@@ -619,7 +619,7 @@ Open full certificate details
                                 <#comment >
                                 </#comment>
                             </STYLE>
-                            <BUTTON class=outlined >
+                            <BUTTON class=outlined title=Open full certificate details aria-label=Open full certificate details >
                                 <#comment >
                                 </#comment>
                                 <#comment >
@@ -806,7 +806,7 @@ Open full certificate details
                                 <#comment >
                                 </#comment>
                             </STYLE>
-                            <BUTTON class=outlined >
+                            <BUTTON class=outlined title=Open full certificate details aria-label=Open full certificate details >
                                 <#comment >
                                 </#comment>
                                 <#comment >

@@ -28,7 +28,6 @@ Dacă opțiunea „<ph name="SERVICE_SCRIPT_NAME" />” este deja bifată, debif
 <translation id="2329392777730037872">Nu s-a putut deschide <ph name="URL" /> pe client.</translation>
 <translation id="2359808026110333948">Continuă</translation>
 <translation id="2366718077645204424">Gazda nu poate fi accesată. Acest lucru este cauzat, probabil, de configurația rețelei pe care o utilizați.</translation>
-<translation id="242591256144136845">Drepturi de autor 2025 Google LLC. Toate drepturile rezervate.</translation>
 <translation id="2504109125669302160">Acordă permisiunea „Accesibilitate” pentru <ph name="PRODUCT_NAME" /></translation>
 <translation id="2509394361235492552">Conectat la <ph name="HOSTNAME" /></translation>
 <translation id="2540992418118313681">Dorești să permiți accesul la acest computer altui utilizator, pentru ca acesta să îl poată vedea și controla?</translation>
@@ -47,6 +46,7 @@ Dacă opțiunea „<ph name="SERVICE_SCRIPT_NAME" />” este deja bifată, debif
 <translation id="3150823315463303127">Gazda nu a putut citi politica.</translation>
 <translation id="3171922709365450819">Dispozitivul nu este acceptat de acest client deoarece necesită autentificarea printr-o terță parte.</translation>
 <translation id="3197730452537982411">Desktop la distanță</translation>
+<translation id="3236334139428307578">Drept de autor 2026 The Chromium Authors. Toate drepturile rezervate.</translation>
 <translation id="324272851072175193">Trimite aceste instrucțiuni prin e-mail</translation>
 <translation id="3305934114213025800"><ph name="PRODUCT_NAME" /> dorește să facă modificări.</translation>
 <translation id="3339299787263251426">Accesează computerul în siguranță prin internet</translation>
@@ -111,6 +111,7 @@ Dacă opțiunea „<ph name="SERVICE_SCRIPT_NAME" />” este deja bifată, debif
 <translation id="5823554426827907568"><ph name="CLIENT_USERNAME" /> a solicitat acces să vadă ecranul și să controleze tastatura și mouse-ul. Apasă pe <ph name="IDS_SHARE_CONFIRM_DIALOG_DECLINE" /> dacă solicitarea este neașteptată. Sau selectează <ph name="IDS_SHARE_CONFIRM_DIALOG_CONFIRM" /> pentru a permite conectarea când ești gata.</translation>
 <translation id="5823658491130719298">Pe computerul pe care dorești să îl accesezi de la distanță, deschide Chrome și accesează <ph name="INSTALLATION_LINK" /></translation>
 <translation id="5841343754884244200">Opțiuni de afișare</translation>
+<translation id="5965133372831030509">Drept de autor 2026 Google LLC. Toate drepturile rezervate.</translation>
 <translation id="6033507038939587647">Opțiuni pentru tastatură</translation>
 <translation id="6040143037577758943">Închide</translation>
 <translation id="6062854958530969723">Gazda nu a fost inițializată.</translation>
@@ -138,7 +139,6 @@ Dacă opțiunea „<ph name="SERVICE_SCRIPT_NAME" />” este deja bifată, debif
 <translation id="7067321367069083429">Ecranul funcționează ca un ecran tactil</translation>
 <translation id="7116737094673640201">Bun venit la Desktop la distanță Chrome</translation>
 <translation id="7144878232160441200">Reîncearcă</translation>
-<translation id="7298392173540380852">Drepturi de autor 2025 The Chromium Authors. Toate drepturile rezervate.</translation>
 <translation id="7312846573060934304">Gazda este offline.</translation>
 <translation id="7319983568955948908">Opriți permiterea accesului</translation>
 <translation id="7359298090707901886">Browserul selectat nu poate fi folosit pentru a deschide adrese URL pe dispozitivul local.</translation>

@@ -29,7 +29,7 @@ each histogram. Maybe add here or add a new performance controls one
 </histogram>
 
 <histogram name="PerformanceControls.BatterySaver.IPHOpenSettings"
-    enum="BooleanOpened" expires_after="2026-03-01">
+    enum="BooleanOpened" expires_after="2026-09-01">
   <owner>agale@chromium.org</owner>
   <owner>estalin@chromium.org</owner>
   <owner>chrome-performance-ui-sea@google.com</owner>
@@ -54,7 +54,7 @@ each histogram. Maybe add here or add a new performance controls one
 
 <histogram
     name="PerformanceControls.Intervention.BackgroundTab.{ResourceType}.BubbleAction"
-    enum="InterventionBubbleActionType" expires_after="2026-05-17">
+    enum="InterventionBubbleActionType" expires_after="2026-07-19">
   <owner>stluong@chromium.org</owner>
   <owner>estalin@chromium.org</owner>
   <owner>chrome-performance-ui-sea@google.com</owner>
@@ -76,7 +76,7 @@ each histogram. Maybe add here or add a new performance controls one
 
 <histogram
     name="PerformanceControls.Intervention.BackgroundTab.{ResourceType}.HealthStatusAfterDiscard.{Time}"
-    enum="PerformanceDetectionManagerHealthLevel" expires_after="2026-05-17">
+    enum="PerformanceDetectionManagerHealthLevel" expires_after="2026-07-19">
   <owner>stluong@chromium.org</owner>
   <owner>estalin@chromium.org</owner>
   <owner>chrome-performance-ui-sea@google.com</owner>
@@ -108,7 +108,7 @@ each histogram. Maybe add here or add a new performance controls one
 
 <histogram
     name="PerformanceControls.Intervention.BackgroundTab.{ResourceType}.HealthStatusChange.{Time}"
-    enum="InterventionHealthChange" expires_after="2026-04-12">
+    enum="InterventionHealthChange" expires_after="2026-06-14">
   <owner>stluong@chromium.org</owner>
   <owner>estalin@chromium.org</owner>
   <owner>chrome-performance-ui-sea@google.com</owner>
@@ -140,7 +140,7 @@ each histogram. Maybe add here or add a new performance controls one
 
 <histogram
     name="PerformanceControls.Intervention.BackgroundTab.{ResourceType}.MessageShownCount"
-    units="count" expires_after="2026-05-17">
+    units="count" expires_after="2026-07-19">
   <owner>stluong@chromium.org</owner>
   <owner>estalin@chromium.org</owner>
   <owner>chrome-performance-ui-sea@google.com</owner>
@@ -161,7 +161,7 @@ each histogram. Maybe add here or add a new performance controls one
 
 <histogram
     name="PerformanceControls.Intervention.BackgroundTab.{ResourceType}.MessageTriggerResult"
-    enum="InterventionMessageTriggerResult" expires_after="2026-05-17">
+    enum="InterventionMessageTriggerResult" expires_after="2026-07-19">
   <owner>stluong@chromium.org</owner>
   <owner>estalin@chromium.org</owner>
   <owner>chrome-performance-ui-sea@google.com</owner>
@@ -205,7 +205,7 @@ each histogram. Maybe add here or add a new performance controls one
 </histogram>
 
 <histogram name="PerformanceControls.Intervention.DailyAcceptancePercentage"
-    units="%" expires_after="2026-05-10">
+    units="%" expires_after="2026-07-12">
   <owner>stluong@chromium.org</owner>
   <owner>estalin@chromium.org</owner>
   <owner>chrome-performance-ui-sea@google.com</owner>
@@ -244,7 +244,7 @@ each histogram. Maybe add here or add a new performance controls one
 </histogram>
 
 <histogram name="PerformanceControls.Intervention.DiscardedTabsPercentageUsage"
-    units="%" expires_after="2026-05-24">
+    units="%" expires_after="2026-07-26">
   <owner>stluong@chromium.org</owner>
   <owner>estalin@chromium.org</owner>
   <owner>chrome-performance-ui-sea@google.com</owner>
@@ -282,7 +282,7 @@ each histogram. Maybe add here or add a new performance controls one
 </histogram>
 
 <histogram name="PerformanceControls.MemorySaver.BubbleAction"
-    enum="MemorySaverBubbleActionType" expires_after="2026-05-03">
+    enum="MemorySaverBubbleActionType" expires_after="2026-07-05">
   <owner>agale@chromium.org</owner>
   <owner>chrome-performance-ui-sea@google.com</owner>
   <summary>
@@ -294,7 +294,7 @@ each histogram. Maybe add here or add a new performance controls one
 </histogram>
 
 <histogram name="PerformanceControls.MemorySaver.ChipState"
-    enum="MemorySaverChipState" expires_after="2026-03-01">
+    enum="MemorySaverChipState" expires_after="2026-09-01">
   <owner>agale@chromium.org</owner>
   <owner>chrome-performance-ui-sea@google.com</owner>
   <summary>
@@ -317,7 +317,7 @@ each histogram. Maybe add here or add a new performance controls one
 </histogram>
 
 <histogram name="PerformanceControls.MemorySaver.IPHEnableMode"
-    enum="BooleanEnabled" expires_after="2026-05-03">
+    enum="BooleanEnabled" expires_after="2026-07-05">
   <owner>agale@chromium.org</owner>
   <owner>chrome-performance-ui-sea@google.com</owner>
   <summary>

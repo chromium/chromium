@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_AFFILIATIONS_CORE_BROWSER_MOCK_AFFILIATION_SERVICE_H_
 #define COMPONENTS_AFFILIATIONS_CORE_BROWSER_MOCK_AFFILIATION_SERVICE_H_
 
+#include "base/memory/weak_ptr.h"
 #include "components/affiliations/core/browser/affiliation_service.h"
 #include "components/affiliations/core/browser/affiliation_utils.h"
 #include "services/network/test/test_network_connection_tracker.h"
@@ -58,6 +59,11 @@ class MockAffiliationService : public AffiliationService {
               RegisterSource,
               (std::unique_ptr<AffiliationSource>),
               (override));
+
+  base::WeakPtr<AffiliationService> AsWeakPtr() override;
+
+ private:
+  base::WeakPtrFactory<MockAffiliationService> weak_ptr_factory_{this};
 };
 
 }  // namespace affiliations

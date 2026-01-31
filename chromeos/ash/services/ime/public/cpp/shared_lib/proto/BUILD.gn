@@ -8,7 +8,6 @@ assert(is_chromeos)
 
 proto_library("proto") {
   sources = [
-    "fetch_japanese_legacy_config.proto",
     "japanese_dictionary.proto",
     "user_data_service.proto",
   ]

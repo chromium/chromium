@@ -106,7 +106,7 @@ public class CreditCardAccessorySheetViewTest {
                             new KeyboardAccessoryData.Tab[] {
                                 new KeyboardAccessoryData.Tab(
                                         "Credit Cards",
-                                        null,
+                                        0,
                                         null,
                                         R.layout.credit_card_accessory_sheet,
                                         AccessoryTabType.CREDIT_CARDS,

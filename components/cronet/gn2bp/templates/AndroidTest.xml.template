@@ -15,10 +15,10 @@
   -->
 <configuration description="Runs coverage tests for NetHttp">
     <target_preparer class="com.android.tradefed.targetprep.suite.SuiteApkInstaller">
-        <option name="test-file-name" value="NetHttpCoverageTests.apk" />
+        <option name="test-file-name" value="${GN2BP_MODULE_PREFIX}NetHttpCoverageTests.apk" />
         <option name="install-arg" value="-t" />
     </target_preparer>
-    <option name="test-tag" value="NetHttpCoverageTests" />
+    <option name="test-tag" value="${GN2BP_MODULE_PREFIX}NetHttpCoverageTests" />
 
     <target_preparer class="com.android.tradefed.targetprep.PushFilePreparer">
         <!--

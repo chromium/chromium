@@ -49,7 +49,7 @@ base::TimeDelta WebSocketPerProcessThrottler::CalculateDelay() const {
   int64_t s =
       num_previous_succeeded_connections_ + num_current_succeeded_connections_;
   int p = num_pending_connections_;
-  return base::Milliseconds(base::RandInt(1000, 5000) *
+  return base::Milliseconds(base::RandIntInclusive(1000, 5000) *
                             (1 << std::min(p + f / (s + 1), INT64_C(16))) /
                             65536);
 }

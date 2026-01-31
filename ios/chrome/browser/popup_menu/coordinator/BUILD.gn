@@ -1,0 +1,92 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("coordinator") {
+  sources = [
+    "popup_menu_coordinator.h",
+    "popup_menu_coordinator.mm",
+    "popup_menu_help_coordinator.h",
+    "popup_menu_help_coordinator.mm",
+  ]
+  deps = [
+    "//base",
+    "//components/feature_engagement/public",
+    "//components/segmentation_platform/embedder/default_model",
+    "//components/send_tab_to_self",
+    "//components/sync/service",
+    "//ios/chrome/app:tests_hook",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/bookmarks/model",
+    "//ios/chrome/browser/browser_content/ui_bundled",
+    "//ios/chrome/browser/bubble/model",
+    "//ios/chrome/browser/bubble/ui_bundled",
+    "//ios/chrome/browser/default_browser/model:utils",
+    "//ios/chrome/browser/feature_engagement/model",
+    "//ios/chrome/browser/intelligence/features",
+    "//ios/chrome/browser/lens_overlay/coordinator:lens_overlay_availability",
+    "//ios/chrome/browser/overlays/model",
+    "//ios/chrome/browser/popup_menu/overflow_menu/coordinator",
+    "//ios/chrome/browser/popup_menu/overflow_menu/public",
+    "//ios/chrome/browser/popup_menu/overflow_menu/public:overflow_menu_constants",
+    "//ios/chrome/browser/popup_menu/overflow_menu/ui:overflow_menu_metrics",
+    "//ios/chrome/browser/popup_menu/overflow_menu/ui:ui_swift",
+    "//ios/chrome/browser/popup_menu/public",
+    "//ios/chrome/browser/popup_menu/public:metrics_protocols",
+    "//ios/chrome/browser/presenters/ui_bundled",
+    "//ios/chrome/browser/promos_manager/model:factory",
+    "//ios/chrome/browser/reader_mode/model:features",
+    "//ios/chrome/browser/reading_list/model",
+    "//ios/chrome/browser/search_engines/model:template_url_service_factory",
+    "//ios/chrome/browser/segmentation_platform/model",
+    "//ios/chrome/browser/settings/model/sync/utils:identity_error_util",
+    "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
+    "//ios/chrome/browser/shared/coordinator/default_browser_promo",
+    "//ios/chrome/browser/shared/coordinator/layout_guide",
+    "//ios/chrome/browser/shared/coordinator/scene:scene_state_header",
+    "//ios/chrome/browser/shared/model/application_context",
+    "//ios/chrome/browser/shared/model/browser",
+    "//ios/chrome/browser/shared/model/profile",
+    "//ios/chrome/browser/shared/public/features",
+    "//ios/chrome/browser/shared/public/features:system_flags",
+    "//ios/chrome/browser/shared/ui/util",
+    "//ios/chrome/browser/shared/ui/util:util_swift",
+    "//ios/chrome/browser/signin/model:authentication_service",
+    "//ios/chrome/browser/signin/model:authentication_service_factory",
+    "//ios/chrome/browser/supervised_user/model",
+    "//ios/chrome/browser/sync/model",
+    "//ios/chrome/browser/url_loading/model",
+    "//ios/chrome/browser/web/model",
+    "//ios/chrome/common/ui/colors",
+    "//ios/web/public",
+    "//ui/base",
+  ]
+  frameworks = [ "UIKit.framework" ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [ "popup_menu_help_coordinator_unittest.mm" ]
+  deps = [
+    ":coordinator",
+    "//base",
+    "//components/feature_engagement/test:test_support",
+    "//components/prefs:test_support",
+    "//components/sync_preferences:test_support",
+    "//ios/chrome/app/application_delegate:app_state",
+    "//ios/chrome/browser/default_browser/model:test_support",
+    "//ios/chrome/browser/feature_engagement/model",
+    "//ios/chrome/browser/shared/coordinator/scene:scene_state_header",
+    "//ios/chrome/browser/shared/model/browser/test:test_support",
+    "//ios/chrome/browser/shared/model/prefs:browser_prefs",
+    "//ios/chrome/browser/shared/model/profile/test",
+    "//ios/chrome/browser/toolbar/coordinator",
+    "//ios/chrome/browser/toolbar/legacy/ui_bundled:coordinator",
+    "//ios/chrome/test:test_support",
+    "//ios/web/public/test",
+    "//testing/gmock",
+    "//testing/gtest",
+    "//third_party/ocmock",
+  ]
+}

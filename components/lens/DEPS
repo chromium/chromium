@@ -1,4 +1,6 @@
 include_rules = [
+  "+chrome/browser/page_content_annotations",
+  "+chrome/browser/profiles",
   "+components/base32",
   "+components/optimization_guide/content/browser",
   "+components/pdf/browser",
@@ -8,7 +10,6 @@ include_rules = [
   "+components/signin/public/identity_manager",
   "+components/sync",
   "+components/sync_preferences",
-  "+components/tabs",
   "+components/variations",
   "+components/viz/common",
   "+components/unified_consent",

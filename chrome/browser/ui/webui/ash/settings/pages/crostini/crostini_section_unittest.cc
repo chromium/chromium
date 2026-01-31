@@ -37,8 +37,8 @@ class CrostiniSectionTest : public testing::Test {
   }
 
   void AddInstallableConfig() {
-    base::Value::Dict pref;
-    base::Value::Dict config;
+    base::DictValue pref;
+    base::DictValue config;
     config.Set(bruschetta::prefs::kPolicyEnabledKey,
                static_cast<int>(
                    bruschetta::prefs::PolicyEnabledState::INSTALL_ALLOWED));

@@ -57,11 +57,12 @@ bool WebInputMethodControllerImpl::SetComposition(
     const std::vector<ui::ImeTextSpan>& ime_text_spans,
     const WebRange& replacement_range,
     int selection_start,
-    int selection_end) {
+    int selection_end,
+    mojom::blink::ImeState ime_state) {
   if (IsEditContextActive()) {
     return GetInputMethodController().GetActiveEditContext()->SetComposition(
-        text, ime_text_spans, replacement_range, selection_start,
-        selection_end);
+        text, ime_text_spans, replacement_range, selection_start, selection_end,
+        ime_state);
   }
 
   if (WebPlugin* plugin = FocusedPluginIfInputMethodSupported()) {
@@ -101,10 +102,21 @@ bool WebInputMethodControllerImpl::SetComposition(
 
   GetInputMethodController().SetComposition(
       String(text), ImeTextSpanVectorBuilder::Build(ime_text_spans),
-      selection_start, selection_end);
+      selection_start, selection_end, ime_state);
 
   return text.IsEmpty() ||
          (GetFrame() && GetInputMethodController().HasComposition());
+}
+
+bool WebInputMethodControllerImpl::SetComposition(
+    const WebString& text,
+    const std::vector<ui::ImeTextSpan>& ime_text_spans,
+    const WebRange& replacement_range,
+    int selection_start,
+    int selection_end) {
+  return SetComposition(text, ime_text_spans, replacement_range,
+                        selection_start, selection_end,
+                        mojom::blink::ImeState::kNone);
 }
 
 bool WebInputMethodControllerImpl::FinishComposingText(

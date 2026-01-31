@@ -37,7 +37,7 @@ class Shorthand : public CSSProperty {
       bool important,
       CSSParserTokenStream&,
       const CSSParserContext&,
-      const CSSParserLocalContext&,
+      CSSParserLocalContext&,
       HeapVector<CSSPropertyValue, 64>& properties) const {
     NOTREACHED();
   }

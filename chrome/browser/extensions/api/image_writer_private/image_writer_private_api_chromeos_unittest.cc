@@ -84,7 +84,7 @@ class ImageWriterPrivateApiTest : public ExtensionServiceTestBase {
     policy::external_storage::SetAllowlist(*profile()->GetPrefs(), device_id);
   }
 
-  base::Value::List RunList() {
+  base::ListValue RunList() {
     auto function = base::MakeRefCounted<
         ImageWriterPrivateListRemovableStorageDevicesFunction>();
     std::optional<base::Value> result =
@@ -125,26 +125,26 @@ class ImageWriterPrivateApiTest : public ExtensionServiceTestBase {
 };
 
 TEST_F(ImageWriterPrivateApiTest, List) {
-  base::Value::List result = RunList();
+  base::ListValue result = RunList();
   EXPECT_EQ(2u, result.size());
 }
 
 TEST_F(ImageWriterPrivateApiTest, List_Disabled) {
   SetDisabled(true);
-  base::Value::List result = RunList();
+  base::ListValue result = RunList();
   EXPECT_EQ(0u, result.size());
 }
 
 TEST_F(ImageWriterPrivateApiTest, List_ReadOnly) {
   SetReadOnly(true);
-  base::Value::List result = RunList();
+  base::ListValue result = RunList();
   EXPECT_EQ(0u, result.size());
 }
 
 TEST_F(ImageWriterPrivateApiTest, List_Allowlist) {
   SetDisabled(true);
   SetAllowlist({kVendorId1, kProductId1});
-  base::Value::List result = RunList();
+  base::ListValue result = RunList();
   EXPECT_EQ(1u, result.size());
 }
 

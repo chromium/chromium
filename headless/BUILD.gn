@@ -668,7 +668,12 @@ test("headless_browsertests") {
   }
 
   if (enable_printing && enable_pdf) {
-    sources += [ "test/headless_printtopdf_browsertest.cc" ]
+    sources += [
+      "test/headless_pdf_browsertest.cc",
+      "test/headless_pdf_browsertest.h",
+      "test/headless_printtopdf_browsertest.cc",
+      "test/headless_structured_pdf_browsertest.cc",
+    ]
   }
 
   if (headless_use_policy) {

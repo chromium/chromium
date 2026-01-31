@@ -49,7 +49,7 @@ void OnWellKnownParsed(
     return;
   }
 
-  const base::Value::Dict* dict = result->GetIfDict();
+  const base::DictValue* dict = result->GetIfDict();
   if (!dict) {
     std::move(callback).Run(
         {ParseStatus::kInvalidResponseError, fetch_status.response_code},
@@ -60,7 +60,7 @@ void OnWellKnownParsed(
   well_known.issuance_endpoint =
       ExtractEndpoint(well_known_url, *dict, kIssuanceEndpointKey);
 
-  const base::Value::List* signing_alg_values_supported_list =
+  const base::ListValue* signing_alg_values_supported_list =
       dict->FindList(kSigningAlgValuesSupportedKey);
   if (signing_alg_values_supported_list) {
     for (const auto& value : *signing_alg_values_supported_list) {
@@ -93,7 +93,7 @@ void OnTokenRequestParsed(
     return;
   }
 
-  const base::Value::Dict* response = result->GetIfDict();
+  const base::DictValue* response = result->GetIfDict();
   if (!response) {
     fetch_status.parse_status = ParseStatus::kInvalidResponseError;
     std::move(callback).Run(fetch_status, std::move(token_result));

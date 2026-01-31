@@ -6,6 +6,7 @@
 
 #include <stddef.h>
 
+#include <algorithm>
 #include <memory>
 #include <set>
 #include <string_view>
@@ -14,7 +15,6 @@
 
 #include "base/check.h"
 #include "base/command_line.h"
-#include "base/containers/contains.h"
 #include "base/files/file_path.h"
 #include "base/logging.h"
 #include "base/memory/scoped_refptr.h"
@@ -35,7 +35,7 @@
 #include "chrome/browser/extensions/external_component_loader.h"
 #include "chrome/browser/extensions/external_policy_loader.h"
 #include "chrome/browser/extensions/external_pref_loader.h"
-#include "chrome/browser/extensions/forced_extensions/install_stage_tracker.h"
+#include "chrome/browser/extensions/forced_extensions/install_stage_tracker_factory.h"
 #include "chrome/browser/extensions/initial_external_extension_loader.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/profiles/profile.h"
@@ -50,6 +50,7 @@
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/external_install_info.h"
 #include "extensions/browser/external_provider_interface.h"
+#include "extensions/browser/forced_extensions/install_stage_tracker.h"
 #include "extensions/browser/pref_names.h"
 #include "extensions/buildflags/buildflags.h"
 #include "extensions/common/constants.h"
@@ -163,7 +164,7 @@ void ExternalProviderImpl::VisitRegisteredExtension() {
   loader_->StartLoading();
 }
 
-void ExternalProviderImpl::SetPrefs(base::Value::Dict prefs) {
+void ExternalProviderImpl::SetPrefs(base::DictValue prefs) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   // Check if the service is still alive. It is possible that it went
@@ -172,7 +173,7 @@ void ExternalProviderImpl::SetPrefs(base::Value::Dict prefs) {
     return;
 
   InstallStageTracker* install_stage_tracker =
-      InstallStageTracker::Get(profile_);
+      InstallStageTrackerFactory::GetForBrowserContext(profile_);
   for (auto it : prefs) {
     install_stage_tracker->ReportInstallCreationStage(
         it.first,
@@ -213,7 +214,7 @@ void ExternalProviderImpl::NotifyServiceOnExternalExtensionsFound() {
   service_->OnExternalProviderReady(this);
 }
 
-void ExternalProviderImpl::UpdatePrefs(base::Value::Dict prefs) {
+void ExternalProviderImpl::UpdatePrefs(base::DictValue prefs) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   CHECK(allow_updates_);
 
@@ -254,7 +255,7 @@ void ExternalProviderImpl::RetrieveExtensionsFromPrefs(
   // Set of unsupported extensions that need to be deleted from prefs_.
   std::set<std::string> unsupported_extensions;
   InstallStageTracker* install_stage_tracker =
-      InstallStageTracker::Get(profile_);
+      InstallStageTrackerFactory::GetForBrowserContext(profile_);
 
   // Discover all the extensions this provider has.
   for (auto pref : *prefs_) {
@@ -298,7 +299,7 @@ void ExternalProviderImpl::RetrieveExtensionsFromPrefs(
       continue;
     }
 
-    const base::Value::Dict& extension_dict = pref.second.GetDict();
+    const base::DictValue& extension_dict = pref.second.GetDict();
     const std::string* external_crx = extension_dict.FindString(kExternalCrx);
     std::string external_version;
     const std::string* external_update_url = nullptr;
@@ -342,7 +343,7 @@ void ExternalProviderImpl::RetrieveExtensionsFromPrefs(
     }
 
     // Check that extension supports current browser locale.
-    const base::Value::List* supported_locales =
+    const base::ListValue* supported_locales =
         extension_dict.FindList(kSupportedLocales);
     if (supported_locales) {
       std::vector<std::string> browser_locales = l10n_util::GetParentLocales(
@@ -354,7 +355,7 @@ void ExternalProviderImpl::RetrieveExtensionsFromPrefs(
         if (current_locale && l10n_util::IsValidLocaleSyntax(*current_locale)) {
           std::string normalized_locale =
               l10n_util::NormalizeLocale(*current_locale);
-          if (base::Contains(browser_locales, normalized_locale)) {
+          if (std::ranges::contains(browser_locales, normalized_locale)) {
             locale_supported = true;
             break;
           }
@@ -561,7 +562,7 @@ bool ExternalProviderImpl::HasExtensionWithLocation(
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   CHECK(prefs_);
   CHECK(ready_);
-  const base::Value::Dict* dict = prefs_->FindDict(id);
+  const base::DictValue* dict = prefs_->FindDict(id);
   if (!dict) {
     return false;
   }
@@ -585,7 +586,7 @@ bool ExternalProviderImpl::GetExtensionDetails(
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   CHECK(prefs_);
   CHECK(ready_);
-  const base::Value::Dict* dict = prefs_->FindDict(id);
+  const base::DictValue* dict = prefs_->FindDict(id);
   if (!dict)
     return false;
 
@@ -614,7 +615,7 @@ bool ExternalProviderImpl::GetExtensionDetails(
 }
 
 bool ExternalProviderImpl::HandleMinProfileVersion(
-    const base::Value::Dict& extension,
+    const base::DictValue& extension,
     const std::string& extension_id,
     std::set<std::string>* unsupported_extensions) {
   const std::string* min_profile_created_by_version =
@@ -625,7 +626,7 @@ bool ExternalProviderImpl::HandleMinProfileVersion(
     base::Version min_version(*min_profile_created_by_version);
     if (min_version.IsValid() && profile_version.CompareTo(min_version) < 0) {
       unsupported_extensions->insert(extension_id);
-      InstallStageTracker::Get(profile_)->ReportFailure(
+      InstallStageTrackerFactory::GetForBrowserContext(profile_)->ReportFailure(
           extension_id, InstallStageTracker::FailureReason::TOO_OLD_PROFILE);
       VLOG(1) << "Skip installing (or uninstall) external extension: "
               << extension_id
@@ -639,7 +640,7 @@ bool ExternalProviderImpl::HandleMinProfileVersion(
 }
 
 bool ExternalProviderImpl::HandleDoNotInstallForEnterprise(
-    const base::Value::Dict& extension,
+    const base::DictValue& extension,
     const std::string& extension_id,
     std::set<std::string>* unsupported_extensions) {
   std::optional<bool> do_not_install_for_enterprise =
@@ -649,7 +650,7 @@ bool ExternalProviderImpl::HandleDoNotInstallForEnterprise(
         profile_->GetProfilePolicyConnector();
     if (connector->IsManaged()) {
       unsupported_extensions->insert(extension_id);
-      InstallStageTracker::Get(profile_)->ReportFailure(
+      InstallStageTrackerFactory::GetForBrowserContext(profile_)->ReportFailure(
           extension_id,
           InstallStageTracker::FailureReason::DO_NOT_INSTALL_FOR_ENTERPRISE);
       VLOG(1) << "Skip installing (or uninstall) external extension "

@@ -13,8 +13,9 @@ import androidx.preference.Preference;
 import androidx.preference.PreferenceCategory;
 
 import org.chromium.base.metrics.RecordUserAction;
-import org.chromium.base.supplier.ObservableSupplier;
-import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.supplier.MonotonicObservableSupplier;
+import org.chromium.base.supplier.ObservableSuppliers;
+import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -62,7 +63,8 @@ public class TopicsFragment extends PrivacySandboxSettingsBaseFragment
     private Preference mActiveTopicsPreference;
     private Preference mBlockedTopicsPreference;
     private Preference mManageTopicsPreference;
-    private final ObservableSupplierImpl<String> mPageTitle = new ObservableSupplierImpl<>();
+    private final SettableMonotonicObservableSupplier<String> mPageTitle =
+            ObservableSuppliers.createMonotonic();
 
     static boolean isTopicsPrefEnabled(Profile profile) {
         PrefService prefService = UserPrefs.get(profile);
@@ -113,7 +115,7 @@ public class TopicsFragment extends PrivacySandboxSettingsBaseFragment
     }
 
     @Override
-    public ObservableSupplier<String> getPageTitle() {
+    public MonotonicObservableSupplier<String> getPageTitle() {
         return mPageTitle;
     }
 
@@ -259,7 +261,7 @@ public class TopicsFragment extends PrivacySandboxSettingsBaseFragment
         boolean topicsEnabled = isTopicsPrefEnabled(getProfile());
         boolean topicsEmpty = mCurrentTopicsCategory.getPreferenceCount() == 0;
 
-        updateIndexedPreferencesVisibility(topicsEnabled);
+        updateIndexedPreferencesVisibility(topicsEnabled, /* refreshResult= */ true);
 
         // TODO(crbug.com/362973179): Set default values in xml.
         // Always not visible.
@@ -307,11 +309,13 @@ public class TopicsFragment extends PrivacySandboxSettingsBaseFragment
                     indexData.removeEntry(getUniqueId(TOPICS_PAGE_FOOTER_PREFERENCE));
                     indexData.removeEntry(getUniqueId(TOPICS_DISCLAIMER));
 
-                    updateIndexedPreferencesVisibility(isTopicsPrefEnabled(profile));
+                    updateIndexedPreferencesVisibility(
+                            isTopicsPrefEnabled(profile), /* refreshResult= */ false);
                 }
             };
 
-    private static void updateIndexedPreferencesVisibility(boolean topicsEnabled) {
+    private static void updateIndexedPreferencesVisibility(
+            boolean topicsEnabled, boolean refreshResult) {
         var indexData = SettingsIndexData.getInstance();
         if (indexData == null) return;
 
@@ -339,5 +343,6 @@ public class TopicsFragment extends PrivacySandboxSettingsBaseFragment
         if (hasRemovedEntries) {
             indexData.resolveIndex();
         }
+        if (refreshResult) indexData.setRefreshResult(true);
     }
 }

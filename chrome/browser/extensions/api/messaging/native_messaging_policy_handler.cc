@@ -30,7 +30,7 @@ bool NativeMessagingHostListPolicyHandler::CheckListEntry(
 }
 
 void NativeMessagingHostListPolicyHandler::ApplyList(
-    base::Value::List filtered_list,
+    base::ListValue filtered_list,
     PrefValueMap* prefs) {
   prefs->SetValue(pref_path_, base::Value(std::move(filtered_list)));
 }

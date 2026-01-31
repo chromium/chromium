@@ -7,7 +7,6 @@
 #include <stddef.h>
 #include <stdint.h>
 
-#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/memory/singleton.h"
 #include "base/metrics/histogram_macros.h"
@@ -86,7 +85,7 @@ void ExtensionCacheImpl::PutExtension(const std::string& id,
 }
 
 bool ExtensionCacheImpl::CachingAllowed(const std::string& id) {
-  return base::Contains(allowed_extensions_, id);
+  return allowed_extensions_.contains(id);
 }
 
 void ExtensionCacheImpl::OnCacheInitialized() {

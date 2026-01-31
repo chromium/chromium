@@ -28,6 +28,13 @@ namespace extensions {
 // restrictions registered with and exposed by the ManagementPolicy.
 class ManagementPolicy {
  public:
+  // The value returned by the UserMayInstall() method. This is safer than using
+  // an output parameter in an async method, for `error`.
+  struct Decision {
+    bool allowed;
+    std::u16string error;
+  };
+
   // Each mechanism that wishes to limit users' ability to control extensions,
   // whether one individual extension or the whole system, should implement
   // the methods of this Provider interface that it needs. In each case, if the
@@ -65,11 +72,15 @@ class ManagementPolicy {
     virtual bool UserMayLoad(const Extension* extension,
                              std::u16string* error) const;
 
-    // Returns false if the user should not be allowed to install the given
-    // `extension`. By default, this forwards to UserMayLoad() (since a user
-    // should not be able to install an extension they cannot load).
-    virtual bool UserMayInstall(const Extension* extension,
-                                std::u16string* error) const;
+    // Calls `callback` with a `Decision` indicating if the user should be
+    // allowed to install the given `extension`. By default, this forwards to
+    // UserMayLoad() (since a user should not be able to install an extension
+    // they cannot load).
+    //
+    // Callback may be called synchronously or asynchronously.
+    virtual void UserMayInstall(
+        scoped_refptr<const Extension> extension,
+        base::OnceCallback<void(Decision)> callback) const;
 
     // Providers should return false if a user may not enable, disable, or
     // uninstall the `extension`, or change its usage options (incognito
@@ -135,10 +146,14 @@ class ManagementPolicy {
   // TODO(crbug.com/41159442): Misleading name; see comment in Provider.
   bool UserMayLoad(const Extension* extension) const;
 
-  // Returns false if the user should not be allowed to install the given
-  // `extension`. By default, this forwards to UserMayLoad() (since a user
-  // should not be able to install an extension they cannot load).
-  bool UserMayInstall(const Extension* extension, std::u16string* error) const;
+  // Calls `callback` with a `Decision` indicating if the user should be allowed
+  // to install the given `extension`. By default, this forwards to
+  // UserMayLoad() (since a user should not be able to install an extension they
+  // cannot load).
+  //
+  // Callback may be called synchronously or asynchronously.
+  void UserMayInstall(scoped_refptr<const Extension> extension,
+                      base::OnceCallback<void(Decision)> callback) const;
 
   // Returns true if the user is permitted to enable, disable, or uninstall the
   // given extension, or change the extension's usage options (incognito mode,

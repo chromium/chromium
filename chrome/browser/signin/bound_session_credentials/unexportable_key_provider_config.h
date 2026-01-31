@@ -69,24 +69,30 @@ crypto::UnexportableKeyProvider::Config GetConfigForProfilePath(
 crypto::UnexportableKeyProvider::Config GetConfigForProfile(
     const Profile& profile);
 
-// Returns a config for the `UnexportableKeyProvider` for the given
-// `profile` and `purpose`. This config's tag is used on macOS to group related
-// keys in the Keychain so they can be queried and deleted together.
+// Returns a config for the `UnexportableKeyProvider` for the given `profile`
+// and `relative_partition_path`. This config's tag is used on macOS to group
+// related keys in the Keychain so they can be queried and deleted together.
+//
+// `relative_partition_path` should be relative to `profile.GetPath()`.
 //
 // The tag is constructed to ensure keys are uniquely scoped to a specific
-// profile and use case, which is critical for cleaning up orphaned keys when a
-// profile is deleted or an incognito session ends. It is composed of:
+// storage partition path, which is critical for cleaning up orphaned keys when
+// they are no longer used. It is composed of:
 // - The bundle and team identifiers to scope it to the application.
 // - A hash of the current profile's user data directory.
 // - The profile's name to uniquely identify the profile.
 // - A hash of the profile's creation time to distinguish OTR profiles that have
 //   dedicated cleanup logic.
+// - A hash of the storage partition path to uniquely identify the storage
+//   partition.
 // - A string representing the key's `purpose` (e.g., "dbsc", "lst").
 //
 // This allows for safe, bulk deletion of keys that are no longer in use without
-// affecting keys from other profiles or for other purposes.
-crypto::UnexportableKeyProvider::Config GetConfigForProfileAndPurpose(
+// affecting keys from other storage partitions or for other purposes.
+crypto::UnexportableKeyProvider::Config
+GetConfigForStoragePartitionPathAndPurpose(
     const Profile& profile,
+    const base::FilePath& relative_partition_path,
     KeyPurpose purpose);
 
 }  // namespace unexportable_keys

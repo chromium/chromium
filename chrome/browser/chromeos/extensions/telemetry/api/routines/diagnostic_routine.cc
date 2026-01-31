@@ -65,7 +65,7 @@ void DiagnosticRoutine::OnRoutineControlDisconnect(uint32_t error_code,
   auto event = std::make_unique<extensions::Event>(
       extensions::events::OS_DIAGNOSTICS_ON_ROUTINE_EXCEPTION,
       cx_diag::OnRoutineException::kEventName,
-      base::Value::List().Append(exception.ToValue()), info_.browser_context);
+      base::ListValue().Append(exception.ToValue()), info_.browser_context);
 
   // The `EventRouter` might be unavailable in unittests.
   if (!extensions::EventRouter::Get(info_.browser_context)) {

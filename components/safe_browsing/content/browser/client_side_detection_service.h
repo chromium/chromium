@@ -169,6 +169,11 @@ class ClientSideDetectionService
   // can override it.
   virtual const base::File& GetImageEmbeddingModel();
 
+  virtual int GetClassificationInputWidth();
+  virtual int GetClassificationInputHeight();
+  virtual int GetImageEmbeddingInputWidth();
+  virtual int GetImageEmbeddingInputHeight();
+
   virtual bool IsModelMetadataImageEmbeddingVersionMatching();
 
   // Returns the visual TFLite model thresholds from the model class
@@ -218,6 +223,10 @@ class ClientSideDetectionService
   // Returns the trigger model version to be used in cache for CSD-Phishing
   // debugging metadata.
   int GetTriggerModelVersion();
+
+  // Returns the image embedding model version to be passed onto
+  // |ClientPhishingRequest| when image embedding is called.
+  int GetImageEmbeddingModelVersion();
 
  private:
   friend class ClientSideDetectionServiceTest;

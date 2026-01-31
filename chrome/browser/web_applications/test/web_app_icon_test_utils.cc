@@ -8,7 +8,6 @@
 #include <utility>
 
 #include "base/compiler_specific.h"
-#include "base/containers/contains.h"
 #include "base/containers/span.h"
 #include "base/files/file_enumerator.h"
 #include "base/files/file_path.h"
@@ -184,7 +183,7 @@ std::map<SquareSizePx, SkBitmap> ReadPngsFromDirectory(
     EXPECT_EQ(bitmap.width(), bitmap.height());
 
     const int size_px = bitmap.width();
-    EXPECT_FALSE(base::Contains(pngs, size_px));
+    EXPECT_FALSE(pngs.contains(size_px));
 
     base::FilePath size_file_name;
     size_file_name =
@@ -288,7 +287,7 @@ SkColor IconManagerReadAppIconPixel(WebAppIconManager& icon_manager,
   icon_manager.ReadTrustedIconsWithFallbackToManifestIcons(
       app_id, {size_px}, IconPurpose::ANY,
       base::BindLambdaForTesting([&](IconMetadataFromDisk icon_metadata) {
-        DCHECK(base::Contains(icon_metadata.icons_map, size_px));
+        DCHECK(icon_metadata.icons_map.contains(size_px));
         result = icon_metadata.icons_map.at(size_px).getColor(x, y);
         run_loop.Quit();
       }));

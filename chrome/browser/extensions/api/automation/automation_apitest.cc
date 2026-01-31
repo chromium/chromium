@@ -840,7 +840,7 @@ IN_PROC_BROWSER_TEST_P(AutomationApiTestWithContextType,
       *stop_tracing_future.Take(), base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   ASSERT_TRUE(trace_data && trace_data->is_dict());
 
-  const base::Value::List* trace_events =
+  const base::ListValue* trace_events =
       trace_data->GetDict().FindList("traceEvents");
   ASSERT_TRUE(trace_events);
 

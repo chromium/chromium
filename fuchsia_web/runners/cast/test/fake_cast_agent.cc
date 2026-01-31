@@ -11,7 +11,6 @@
 #include <utility>
 
 #include "base/check.h"
-#include "base/containers/contains.h"
 #include "base/run_loop.h"
 #include "fuchsia_web/common/string_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -27,7 +26,7 @@ void FakeCastAgent::RegisterOnConnectClosure(std::string_view service,
   DCHECK(!is_started_);
 
   std::string name{service};
-  DCHECK(!base::Contains(on_connect_, name));
+  DCHECK(!on_connect_.contains(name));
 
   on_connect_[std::move(name)] = std::move(callback);
 }
@@ -58,7 +57,7 @@ void FakeCastAgent::GetCorsExemptHeaderNames(
 template <class T>
 void FakeCastAgent::MaybeAddDefaultService(
     fidl::InterfaceRequestHandler<T> request_handler) {
-  if (!base::Contains(on_connect_, T::Name_)) {
+  if (!on_connect_.contains(T::Name_)) {
     ASSERT_EQ(outgoing()->AddPublicService(std::move(request_handler)), ZX_OK);
   }
 }

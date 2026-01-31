@@ -169,7 +169,7 @@ void TranslationDispatcher::GetTranslation(absl::string_view result,
 void TranslationDispatcher::ResetURLLoaderFactory() {
   network::mojom::URLLoaderFactoryParamsPtr params =
       network::mojom::URLLoaderFactoryParams::New();
-  params->process_id = network::mojom::kBrowserProcessId;
+  params->process_id = network::OriginatingProcess::browser();
   params->is_trusted = false;
   params->automatically_assign_isolation_info = true;
   network::mojom::NetworkContext* network_context =
@@ -232,6 +232,11 @@ void TranslationDispatcher::EmitError(TranslateEventCallback callback,
   std::move(callback).Run(base::unexpected<std::string>(message));
 }
 
+void TranslationDispatcher::SetURLLoaderFactoryForTest(  // IN-TEST
+    mojo::Remote<network::mojom::URLLoaderFactory> url_loader_factory) {
+  url_loader_factory_ = std::move(url_loader_factory);
+}
+
 void TranslationDispatcher::OnResponseJsonParsed(
     TranslateEventCallback callback,
     data_decoder::DataDecoder::ValueOrError result) {
@@ -242,7 +247,6 @@ void TranslationDispatcher::OnResponseJsonParsed(
     EmitError(std::move(callback), "Error parsing response: value null");
     return;
   }
-
   if (!result.value().is_dict()) {
     base::UmaHistogramEnumeration(
         kTranslationDispatcherParseResultHistogram,
@@ -252,7 +256,7 @@ void TranslationDispatcher::OnResponseJsonParsed(
     return;
   }
 
-  const base::Value::Dict* data_dict =
+  const base::DictValue* data_dict =
       result.value().GetDict().FindDict(kDataKey);
   if (!data_dict) {
     base::UmaHistogramEnumeration(
@@ -263,7 +267,7 @@ void TranslationDispatcher::OnResponseJsonParsed(
     return;
   }
 
-  const base::Value::List* translations_list =
+  const base::ListValue* translations_list =
       data_dict->FindList(kTranslationsKey);
   if (!translations_list || translations_list->empty()) {
     base::UmaHistogramEnumeration(
@@ -274,8 +278,7 @@ void TranslationDispatcher::OnResponseJsonParsed(
     return;
   }
 
-  const base::Value::Dict* translated_text =
-      (*translations_list)[0].GetIfDict();
+  const base::DictValue* translated_text = (*translations_list)[0].GetIfDict();
   if (!translated_text) {
     base::UmaHistogramEnumeration(
         kTranslationDispatcherParseResultHistogram,

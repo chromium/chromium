@@ -90,7 +90,7 @@ TEST(CertificatePrincipalPatternTest, ParseFromNullptr) {
 }
 
 TEST(CertificatePrincipalPatternTest, ParseFromEmptyDict) {
-  base::Value::Dict dict_value;
+  base::DictValue dict_value;
   CertificatePrincipalPattern pattern =
       CertificatePrincipalPattern::ParseFromOptionalDict(&dict_value, kKeyCN,
                                                          kKeyL, kKeyO, kKeyOU);
@@ -98,7 +98,7 @@ TEST(CertificatePrincipalPatternTest, ParseFromEmptyDict) {
 }
 
 TEST(CertificatePrincipalPatternTest, Parse) {
-  base::Value::Dict dict_value;
+  base::DictValue dict_value;
   dict_value.Set(kKeyCN, "ValueCN");
   dict_value.Set(kKeyL, "ValueL");
   dict_value.Set(kKeyO, "ValueO");

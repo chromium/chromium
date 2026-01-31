@@ -134,7 +134,7 @@ class PrefsHelper {
                                bool keep_excess_allocation);
 
  private:
-  const base::Value::Dict* GetDisabledRuleIdsDict(const ExtensionId&) const;
+  const base::DictValue* GetDisabledRuleIdsDict(const ExtensionId&) const;
   void SetDisabledStaticRuleIds(const ExtensionId& extension_id,
                                 RulesetID ruleset_id,
                                 const base::flat_set<int>& disabled_rule_ids);

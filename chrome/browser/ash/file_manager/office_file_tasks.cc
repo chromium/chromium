@@ -7,12 +7,12 @@
 #include <algorithm>
 #include <initializer_list>
 #include <string_view>
+#include <utility>
 
 #include "base/metrics/histogram_macros.h"
 #include "base/no_destructor.h"
 #include "base/notreached.h"
 #include "base/strings/string_util.h"
-#include "base/types/cxx23_to_underlying.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/ash/drive/drive_integration_service.h"
@@ -239,7 +239,7 @@ void LaunchQuickOffice(Profile* profile,
               LOG(ERROR) << "Fallback to QuickOffice for opening office file "
                             "with error message: "
                          << error_message
-                         << " and result: " << base::to_underlying(result);
+                         << " and result: " << std::to_underlying(result);
             }
           }));
 
@@ -517,7 +517,7 @@ std::set<std::string> WordGroupMimeTypes() {
 bool HasExplicitDefaultFileHandler(Profile* profile,
                                    const std::string& extension) {
   std::string lower_extension = base::ToLowerASCII(extension);
-  const base::Value::Dict& extension_task_prefs =
+  const base::DictValue& extension_task_prefs =
       profile->GetPrefs()->GetDict(prefs::kDefaultTasksBySuffix);
   return extension_task_prefs.contains(lower_extension);
 }

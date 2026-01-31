@@ -100,33 +100,10 @@ inline void UmaHistogramClearedSitesCount(BtmCookieMode mode, int size) {
                                size);
 }
 
-inline void UmaHistogramBounceDelay(base::TimeDelta sample) {
-  base::UmaHistogramTimes("Privacy.DIPS.ServerBounceDelay", sample);
-}
-
-inline void UmaHistogramBounceChainDelay(base::TimeDelta sample) {
-  base::UmaHistogramTimes("Privacy.DIPS.ServerBounceChainDelay", sample);
-}
-
-inline void UmaHistogramBounceStatusCode(int response_code, bool cached) {
-  base::UmaHistogramSparse(cached ? "Privacy.DIPS.BounceStatusCode.Cached"
-                                  : "Privacy.DIPS.BounceStatusCode.NoCache",
-                           response_code);
-}
-
 inline void UmaHistogramDeletion(BtmCookieMode mode, BtmDeletionAction action) {
   base::UmaHistogramEnumeration(
       base::StrCat({"Privacy.DIPS.Deletion", GetHistogramSuffix(mode)}),
       action);
-}
-
-inline void UmaHistogramSiteToClearDomainLength(
-    std::string const& site_to_clear,
-    bool is_canonical_host) {
-  base::UmaHistogramSparse(
-      is_canonical_host ? "Privacy.DIPS.DeletionDomainLength.Serializable"
-                        : "Privacy.DIPS.DeletionDomainLength.NonCanonical",
-      site_to_clear.length());
 }
 
 void RecordRedirectMetrics(const BtmRedirect& redirect,
@@ -171,12 +148,6 @@ void RecordRedirectMetrics(const BtmRedirect& redirect,
       redirect.access_type, redirect.site_had_user_activation.value());
   UmaHistogramBounceCategory(category, chain.cookie_mode.value(),
                              redirect.redirect_type);
-
-  if (redirect.redirect_type == BtmRedirectType::kServer) {
-    UmaHistogramBounceDelay(redirect.server_bounce_delay);
-    UmaHistogramBounceStatusCode(redirect.response_code,
-                                 redirect.was_response_cached);
-  }
 }
 
 net::CookiePartitionKeyCollection CookiePartitionKeyCollectionForSites(
@@ -188,7 +159,6 @@ net::CookiePartitionKeyCollection CookiePartitionKeyCollectionForSites(
       std::optional<url::Origin> origin =
           url::Origin::UnsafelyCreateTupleOriginWithoutNormalization(
               scheme, site, port);
-      UmaHistogramSiteToClearDomainLength(site, origin.has_value());
       // The host may be non-canonical or invalid. In such a case, we ignore it,
       // since it will cause IPC deserialization issues later on.
       if (!origin.has_value()) {
@@ -453,14 +423,9 @@ void BtmServiceImpl::HandleRedirectChain(
   }
 
   std::set<std::string> redirect_sites;
-  base::TimeDelta total_server_bounce_delay;
   for (const auto& redirect : redirects) {
-    if (redirect->redirect_type == BtmRedirectType::kServer) {
-      total_server_bounce_delay += redirect->server_bounce_delay;
-    }
     redirect_sites.insert(GetSiteForBtm(redirect->redirector_url));
   }
-  UmaHistogramBounceChainDelay(total_server_bounce_delay);
 
   chain->cookie_mode = GetCookieMode();
   storage_.AsyncCall(&BtmStorage::FilterSitesWithProtectiveEvent)

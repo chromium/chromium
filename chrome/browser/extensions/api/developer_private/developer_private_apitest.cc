@@ -47,12 +47,11 @@
 #include "extensions/browser/app_window/app_window_registry.h"
 #endif  // BUILDFLAG(ENABLE_PLATFORM_APPS)
 
-// TODO(crbug.com/439447971): Enable on desktop android.
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/ui/browser.h"
 #include "ui/views/widget/widget_delegate.h"
 #include "ui/views/window/dialog_delegate.h"
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
@@ -492,8 +491,6 @@ IN_PROC_BROWSER_TEST_F(DeveloperPrivateApiTest, InspectOffscreenDocument) {
   DevToolsWindowTesting::CloseDevToolsWindowSync(dev_tools_window);
 }
 
-// TODO(crbug.com/439447971): Enable on desktop android.
-#if BUILDFLAG(ENABLE_EXTENSIONS)
 IN_PROC_BROWSER_TEST_F(DeveloperPrivateApiTest, UninstallMultipleExtensions) {
   // Load first extension.
   static constexpr char kManifest_0[] =
@@ -523,23 +520,16 @@ IN_PROC_BROWSER_TEST_F(DeveloperPrivateApiTest, UninstallMultipleExtensions) {
 
   auto function = base::MakeRefCounted<
       api::DeveloperPrivateRemoveMultipleExtensionsFunction>();
-  std::unique_ptr<ExtensionFunctionDispatcher> dispatcher(
-      new ExtensionFunctionDispatcher(profile()));
+  std::unique_ptr<ExtensionFunctionDispatcher> dispatcher =
+      std::make_unique<ExtensionFunctionDispatcher>(profile());
   function->SetDispatcher(dispatcher->AsWeakPtr());
 
   std::string args =
       base::StrCat({"[[\"", extension_0_id, "\", \"", extension_1_id, "\"]]"});
-  function->SetArgs(base::test::ParseJsonList(args));
-
-  // Create a waiter to wait for the uninstall dialog to show up.
-  views::NamedWidgetShownWaiter waiter(views::test::AnyWidgetTestPasskey{},
-                                       "ExtensionMultipleUninstallDialog");
   api_test_utils::SendResponseHelper response_helper(function.get());
-
+  function->SetArgs(base::test::ParseJsonList(args));
+  function->accept_bubble_for_testing(true);
   function->RunWithValidation().Execute();
-
-  auto* widget = waiter.WaitIfNeededAndGet();
-  widget->widget_delegate()->AsDialogDelegate()->AcceptDialog();
   response_helper.WaitForResponse();
 
   // Verify the extensions are uninstalled.
@@ -548,7 +538,6 @@ IN_PROC_BROWSER_TEST_F(DeveloperPrivateApiTest, UninstallMultipleExtensions) {
   EXPECT_FALSE(extension_registry()->GetExtensionById(
       extension_1_id, ExtensionRegistry::EVERYTHING));
 }
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 class DeveloperPrivateApiWithMV2DeprecationApiTest
     : public DeveloperPrivateApiTest,

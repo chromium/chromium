@@ -4,7 +4,12 @@
 
 package org.chromium.components.browser_ui.settings.search;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
+import android.content.Context;
 import android.os.Bundle;
+import android.os.Parcel;
+import android.os.Parcelable;
 import android.text.TextUtils;
 
 import org.chromium.base.ContextUtils;
@@ -19,6 +24,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.regex.Pattern;
 
 /** Data from Preferences used for settings search. This is a collection of data to be indexed. */
 @NullMarked
@@ -28,6 +34,9 @@ public class SettingsIndexData {
     public static final int EXACT_TITLE_MATCH = 10;
     public static final int PARTIAL_TITLE_MATCH = 5;
     public static final int PARTIAL_SUMMARY_MATCH = 3;
+
+    // Regular expression to remove diacritics.
+    private static final Pattern STRIP_ACCENTS_PATTERN = Pattern.compile("\\p{M}");
 
     private final Map<String, Entry> mEntries = new LinkedHashMap<>();
     // Map from a child fragment's class name to the list of preference keys that can link to it.
@@ -41,6 +50,12 @@ public class SettingsIndexData {
             "org.chromium.chrome.browser.settings.MainSettings";
 
     // LINT.ThenChange(//chrome/android/chrome_java_sources.gni:MainSettingsBuildRule)
+
+    // Whether the search results needs refreshing when coming back from result-browsing state
+    // to search state. It is possible for the index to be modified while browsing search results.
+    // In such case the search result display needs refreshing accordingly; otherwise it could
+    // show the results that are already hidden, or vice versa.
+    private boolean mShouldRefreshResult;
 
     @EnsuresNonNull("sInstance")
     public static SettingsIndexData createInstance() {
@@ -71,7 +86,7 @@ public class SettingsIndexData {
         // 1. Decompose characters into base letters and combining accent marks.
         String decomposed = Normalizer.normalize(input, Normalizer.Form.NFD);
         // 2. Remove the combining accent marks using a regular expression.
-        String stripped = decomposed.replaceAll("\\p{InCombiningDiacriticalMarks}+", "");
+        String stripped = STRIP_ACCENTS_PATTERN.matcher(decomposed).replaceAll("");
         // 3. Convert to lowercase for case-insensitive matching.
         return stripped.toLowerCase(Locale.getDefault());
     }
@@ -83,7 +98,7 @@ public class SettingsIndexData {
      * displaying a search result. Its public fields are final to guarantee immutability, ensuring
      * that its state cannot be changed after creation.
      */
-    public static class Entry {
+    public static class Entry implements Parcelable {
         /** The entry's globally unique id. */
         public final String id;
 
@@ -98,6 +113,12 @@ public class SettingsIndexData {
 
         /** Package path name if the entry is Fragment. Otherwise {@code null}. */
         public final @Nullable String fragment;
+
+        /** Key of the preference/fragment to highlight if it is not the same as {@code key}. */
+        public final @Nullable String highlightKey;
+
+        /** Zero-based index of the view to highlight if preference has multiple child views. */
+        public final int subViewPos;
 
         /**
          * Top-level setting entry where this entry belongs, such as Privacy and security, Payment,
@@ -121,6 +142,8 @@ public class SettingsIndexData {
                 @Nullable String header,
                 @Nullable String summary,
                 @Nullable String fragment,
+                @Nullable String highlightKey,
+                int subViewPos,
                 Bundle extras,
                 String parentFragment,
                 @Nullable String titleNormalized,
@@ -131,11 +154,65 @@ public class SettingsIndexData {
             this.header = header;
             this.summary = summary;
             this.fragment = fragment;
+            this.highlightKey = highlightKey;
+            this.subViewPos = subViewPos;
             this.extras = extras;
             this.parentFragment = parentFragment;
             mTitleNormalized = titleNormalized;
             mSummaryNormalized = summaryNormalized;
         }
+
+        // Parcel Constructor
+        protected Entry(Parcel in) {
+            id = assumeNonNull(in.readString());
+            key = in.readString();
+            title = in.readString();
+            summary = in.readString();
+            fragment = in.readString();
+            highlightKey = in.readString();
+            subViewPos = in.readInt();
+            header = in.readString();
+            parentFragment = in.readString();
+            // Bundles require a ClassLoader to unparcel custom classes inside them
+            Bundle inExtras = in.readBundle(getClass().getClassLoader());
+            extras = inExtras != null ? inExtras : new Bundle();
+            mTitleNormalized = in.readString();
+            mSummaryNormalized = in.readString();
+        }
+
+        @Override
+        public void writeToParcel(Parcel dest, int flags) {
+            dest.writeString(id);
+            dest.writeString(key);
+            dest.writeString(title);
+            dest.writeString(summary);
+            dest.writeString(fragment);
+            dest.writeString(highlightKey);
+            dest.writeInt(subViewPos);
+            dest.writeString(header);
+            dest.writeString(parentFragment);
+            dest.writeBundle(extras);
+            dest.writeString(mTitleNormalized);
+            dest.writeString(mSummaryNormalized);
+        }
+
+        @Override
+        public int describeContents() {
+            return 0;
+        }
+
+        public static final Creator<Entry> CREATOR =
+                new Creator<Entry>() {
+                    @Override
+                    public Entry createFromParcel(Parcel in) {
+                        return new Entry(in);
+                    }
+
+                    @Override
+                    public Entry[] newArray(int size) {
+                        return new Entry[size];
+                    }
+                };
 
         /**
          * A builder for creating immutable {@link Entry} objects. For future modifications, please
@@ -148,6 +225,8 @@ public class SettingsIndexData {
             private @Nullable String mHeader;
             private @Nullable String mSummary;
             private @Nullable String mFragment;
+            private @Nullable String mHighlightKey;
+            private int mSubViewPos;
             private Bundle mExtras;
             private final String mParentFragment;
 
@@ -180,6 +259,8 @@ public class SettingsIndexData {
                 mHeader = original.header;
                 mSummary = original.summary;
                 mFragment = original.fragment;
+                mHighlightKey = original.highlightKey;
+                mSubViewPos = original.subViewPos;
                 mExtras = original.extras;
                 mParentFragment = original.parentFragment;
             }
@@ -195,12 +276,23 @@ public class SettingsIndexData {
             }
 
             public Builder setSummary(@Nullable String summary) {
-                mSummary = summary;
+                // Removes tags before storing.
+                mSummary = summary != null ? summary.replaceAll("<[^>]*>", "") : summary;
                 return this;
             }
 
             public Builder setFragment(@Nullable String fragment) {
                 mFragment = fragment;
+                return this;
+            }
+
+            public Builder setHighlightKey(String key) {
+                mHighlightKey = key;
+                return this;
+            }
+
+            public Builder setSubViewPos(int viewPos) {
+                mSubViewPos = viewPos;
                 return this;
             }
 
@@ -225,6 +317,8 @@ public class SettingsIndexData {
                         mHeader,
                         mSummary,
                         mFragment,
+                        mHighlightKey,
+                        mSubViewPos,
                         mExtras,
                         mParentFragment,
                         titleNormalized,
@@ -247,6 +341,10 @@ public class SettingsIndexData {
             throw new IllegalStateException("Duplicate ID found: " + id);
         }
         mEntries.put(id, entry);
+
+        if (!TextUtils.isEmpty(entry.fragment)) {
+            addChildParentLink(entry.fragment, id);
+        }
     }
 
     /**
@@ -257,9 +355,128 @@ public class SettingsIndexData {
      * @param titleId String resource ID of the title.
      */
     public void addEntryForKey(String prefFragment, String key, int titleId) {
+        addEntryForKey(prefFragment, key, titleId, /* summaryId= */ 0);
+    }
+
+    /**
+     * Adds a new searchable preference entry to the index.
+     *
+     * @param prefFragment Full class name of the Fragment where the entry belongs.
+     * @param key The name of the key for the preference entry.
+     * @param titleId String resource ID of the title.
+     * @param summaryId String resource ID of the summary.
+     */
+    public void addEntryForKey(String prefFragment, String key, int titleId, int summaryId) {
+        Context context = ContextUtils.getApplicationContext();
+        addEntryForKey(
+                prefFragment,
+                key,
+                context.getString(titleId),
+                summaryId != 0 ? context.getString(summaryId) : null);
+    }
+
+    /**
+     * Adds a new searchable preference entry to the index.
+     *
+     * @param prefFragment Full class name of the Fragment where the entry belongs.
+     * @param key The name of the key for the preference entry.
+     * @param titleId String resource ID of the title.
+     * @param summaryId String resource ID of the summary.
+     * @param extras Extra bundle to pass to the Fragment.
+     */
+    public void addEntryForKey(
+            String prefFragment, String key, int titleId, int summaryId, Bundle extras) {
+        Context context = ContextUtils.getApplicationContext();
+        addEntryForKey(
+                prefFragment,
+                key,
+                context.getString(titleId),
+                summaryId != 0 ? context.getString(summaryId) : null,
+                extras);
+    }
+
+    /**
+     * Adds a new searchable preference entry to the index.
+     *
+     * @param prefFragment Full class name of the Fragment where the entry belongs.
+     * @param key The name of the key for the preference entry.
+     * @param title Title text.
+     * @param summary Summary text.
+     */
+    public void addEntryForKey(
+            String prefFragment, String key, String title, @Nullable String summary) {
+        addEntryForKey(prefFragment, key, title, summary, /* extras= */ null);
+    }
+
+    /**
+     * Adds a new searchable preference entry that launches a specific fragment.
+     *
+     * @param prefFragment Full class name of the Fragment where the entry belongs.
+     * @param key The name of the key for the preference entry.
+     * @param titleId String resource ID of the title.
+     * @param summaryId String resource ID of the summary.
+     * @param targetFragment Full class name of the child Fragment this entry opens.
+     */
+    public void addEntryForKey(
+            String prefFragment, String key, int titleId, int summaryId, String targetFragment) {
+        Context context = ContextUtils.getApplicationContext();
+        addEntryForKey(
+                prefFragment,
+                key,
+                context.getString(titleId),
+                summaryId != 0 ? context.getString(summaryId) : null,
+                /* extras= */ null,
+                targetFragment);
+    }
+
+    /**
+     * Adds a new searchable preference entry to the index.
+     *
+     * @param prefFragment Full class name of the Fragment where the entry belongs.
+     * @param key The name of the key for the preference entry.
+     * @param title Title text.
+     * @param summary Summary text.
+     * @param extras Extra bundle to pass to the Fragment.
+     * @param targetFragment Full class name of the child Fragment this entry opens.
+     */
+    public void addEntryForKey(
+            String prefFragment,
+            String key,
+            String title,
+            @Nullable String summary,
+            @Nullable Bundle extras) {
+        addEntryForKey(
+                prefFragment,
+                key,
+                title,
+                summary,
+                /* extras= */ extras,
+                /* targetFragment= */ null);
+    }
+
+    /**
+     * Adds a new searchable preference entry to the index.
+     *
+     * @param prefFragment Full class name of the Fragment where the entry belongs.
+     * @param key The name of the key for the preference entry.
+     * @param title Title text.
+     * @param summary Summary text.
+     * @param extras Extra bundle to pass to the Fragment.
+     * @param targetFragment Full class name of the child Fragment this entry opens.
+     */
+    public void addEntryForKey(
+            String prefFragment,
+            String key,
+            String title,
+            @Nullable String summary,
+            @Nullable Bundle extras,
+            @Nullable String targetFragment) {
         String id = PreferenceParser.createUniqueId(prefFragment, key);
-        String title = ContextUtils.getApplicationContext().getString(titleId);
-        addEntry(id, new Entry.Builder(id, key, title, prefFragment).build());
+        var builder = new Entry.Builder(id, key, title, prefFragment);
+        if (summary != null) builder.setSummary(summary);
+        if (extras != null) builder.setArguments(extras);
+        if (targetFragment != null) builder.setFragment(targetFragment);
+        addEntry(id, builder.build());
     }
 
     @Nullable
@@ -288,6 +505,10 @@ public class SettingsIndexData {
     public void updateEntry(String id, Entry updatedEntry) {
         assert PreferenceParser.isId(id) : "Use getUniqueId(key) to pass a unique id.";
         mEntries.put(id, updatedEntry);
+
+        if (!TextUtils.isEmpty(updatedEntry.fragment)) {
+            addChildParentLink(updatedEntry.fragment, id);
+        }
     }
 
     /**
@@ -299,11 +520,27 @@ public class SettingsIndexData {
      * @throws IllegalStateException If a preference with the same key does not exist in the index.
      */
     public void updateEntryForKey(String prefFragment, String key, int titleId) {
+        updateEntryForKey(prefFragment, key, titleId, null);
+    }
+
+    /**
+     * Replaces an existing entry with a new one.
+     *
+     * @param prefFragment Full class name of the Fragment where the entry belongs.
+     * @param key The name of the key for the preference entry.
+     * @param titleId String resource ID of the title.
+     * @param targetFragment Full class name of the child Fragment this entry opens.
+     * @throws IllegalStateException If a preference with the same key does not exist in the index.
+     */
+    public void updateEntryForKey(
+            String prefFragment, String key, int titleId, @Nullable String targetFragment) {
         String id = PreferenceParser.createUniqueId(prefFragment, key);
         String title = ContextUtils.getApplicationContext().getString(titleId);
         Entry entry = getEntry(id);
         if (entry != null) {
-            updateEntry(id, new Entry.Builder(entry).setTitle(title).build());
+            var builder = new Entry.Builder(entry).setTitle(title);
+            if (targetFragment != null) builder.setFragment(targetFragment);
+            updateEntry(id, builder.build());
         } else {
             throw new IllegalStateException("Existing ID cannot be found: " + id);
         }
@@ -314,8 +551,8 @@ public class SettingsIndexData {
      *
      * @param prefFragment Full class name of the Fragment where the entry belongs.
      * @param key The name of the key for the preference entry.
-     * @param summaryId String resource ID of the summary. * @throws IllegalStateException If a
-     *     preference with the same key does not exist in the index.
+     * @param summaryId String resource ID of the summary.
+     * @throws IllegalStateException If a preference with the same key does not exist in the index.
      */
     public void updateEntrySummaryForKey(String prefFragment, String key, int summaryId) {
         String id = PreferenceParser.createUniqueId(prefFragment, key);
@@ -323,7 +560,8 @@ public class SettingsIndexData {
         if (entry == null) {
             throw new IllegalStateException("Existing ID cannot be found: " + id);
         }
-        String summary = ContextUtils.getApplicationContext().getString(summaryId);
+        String summary =
+                summaryId != 0 ? ContextUtils.getApplicationContext().getString(summaryId) : null;
         updateEntry(id, new Entry.Builder(entry).setSummary(summary).build());
     }
 
@@ -375,6 +613,16 @@ public class SettingsIndexData {
         return sNeedsIndexing;
     }
 
+    /** Set the flag indicating whether the search results fragment needs refreshing. */
+    public void setRefreshResult(boolean refresh) {
+        mShouldRefreshResult = refresh;
+    }
+
+    /** Returns whether whether the search results fragment needs refreshing. */
+    public boolean shouldRefreshResult() {
+        return mShouldRefreshResult;
+    }
+
     /**
      * Clears all indexed entries and disabled fragments. This should be called before starting a
      * new indexing process.
@@ -392,9 +640,13 @@ public class SettingsIndexData {
      * @param parentId The ID of the preference that links to the child fragment.
      */
     public void addChildParentLink(String childFragmentName, String parentId) {
-        mChildFragmentToParentKeys
-                .computeIfAbsent(childFragmentName, k -> new ArrayList<>())
-                .add(parentId);
+        List<String> parents =
+                mChildFragmentToParentKeys.computeIfAbsent(
+                        childFragmentName, k -> new ArrayList<>());
+
+        if (!parents.contains(parentId)) {
+            parents.add(parentId);
+        }
     }
 
     /**
@@ -542,9 +794,9 @@ public class SettingsIndexData {
         }
 
         /** Returns a list of search results after grouping them by the header. */
-        public List<Entry> groupByHeader() {
+        public ArrayList<Entry> groupByHeader() {
             Map<String, Integer> groups = new HashMap<>();
-            List<Entry> results = new ArrayList<>();
+            ArrayList<Entry> results = new ArrayList<>();
             int pos = 0;
 
             // The input is already sorted by the score. Move up items till

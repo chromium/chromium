@@ -4,8 +4,6 @@
 
 package org.chromium.chrome.browser.readaloud;
 
-import android.app.Activity;
-
 import org.jni_zero.JNINamespace;
 import org.jni_zero.NativeMethods;
 
@@ -117,30 +115,9 @@ public final class ReadAloudFeatures {
         return ChromeFeatureList.isEnabled(ChromeFeatureList.READALOUD_PLAYBACK);
     }
 
-    /** Returns true if Read Aloud is allowed to play in the background. */
-    public static boolean isBackgroundPlaybackEnabled() {
-        return ChromeFeatureList.isEnabled(ChromeFeatureList.READALOUD_BACKGROUND_PLAYBACK);
-    }
-
-    /** Returns true if Read Aloud entrypoint can be added to overflow menu in CCT. */
-    public static boolean isEnabledForOverflowMenuInCct() {
-        return ChromeFeatureList.isEnabled(ChromeFeatureList.READALOUD_IN_OVERFLOW_MENU_IN_CCT);
-    }
-
-    // TODO: b/323238277 Move this check into isAllowed()
-    /** Returns true if in multi-window and ReadAloud is disabled for multi-window. */
-    public static boolean isInMultiWindowAndDisabled(Activity activity) {
-        return activity.isInMultiWindowMode()
-                && !ChromeFeatureList.isEnabled(ChromeFeatureList.READALOUD_IN_MULTI_WINDOW);
-    }
-
     public static boolean shouldSkipAudioOverviewsDisclaimerWhenPossible() {
-      return ChromeFeatureList.isEnabled(ChromeFeatureList.READALOUD_AUDIO_OVERVIEWS_SKIP_DISCLAIMER_WHEN_POSSIBLE);
-    }
-
-    /** Returns true if Read Aloud tap to seek is enabled. */
-    public static boolean isTapToSeekEnabled() {
-        return ChromeFeatureList.sReadAloudTapToSeek.isEnabled();
+        return ChromeFeatureList.isEnabled(
+                ChromeFeatureList.READALOUD_AUDIO_OVERVIEWS_SKIP_DISCLAIMER_WHEN_POSSIBLE);
     }
 
     /** Returns true if the ReadAloud CCT IPH should highlight the menu button. */

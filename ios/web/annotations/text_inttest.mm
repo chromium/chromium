@@ -25,7 +25,6 @@ class AnnotationJsTest : public JavascriptTest {
     JavascriptTest::SetUp();
 
     AddGCrWebScript();
-    AddCommonScript();
     AddUserScript(@"text_tests");
 
     // Start with empty web page.

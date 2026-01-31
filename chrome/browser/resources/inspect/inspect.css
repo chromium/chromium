@@ -35,7 +35,7 @@ img {
 
 #container {
   display: flex;
-  height: 100%
+  height: 100%;
 }
 
 #infobar {
@@ -457,7 +457,7 @@ dialog.target-discovery .port-forwarding {
 }
 
 .config-buttons > label {
-  flex-grow: 1
+  flex-grow: 1;
 }
 
 #bubble-locking-label {

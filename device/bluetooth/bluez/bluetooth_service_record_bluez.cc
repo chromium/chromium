@@ -6,7 +6,6 @@
 
 #include <utility>
 
-#include "base/containers/contains.h"
 #include "base/values.h"
 
 namespace bluez {
@@ -49,7 +48,7 @@ void BluetoothServiceRecordBlueZ::AddRecordEntry(
 }
 
 bool BluetoothServiceRecordBlueZ::IsAttributePresented(uint16_t id) const {
-  return base::Contains(attributes_, id);
+  return attributes_.contains(id);
 }
 
 }  // namespace bluez

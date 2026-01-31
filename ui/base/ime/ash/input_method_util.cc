@@ -11,23 +11,21 @@
 
 #include <stddef.h>
 
+#include <algorithm>
 #include <functional>
 #include <map>
 #include <memory>
+#include <optional>  // For SetHardwareKeyboardLayoutForTesting.
 #include <string_view>
-#include <unordered_set>
 #include <utility>
 
-#include "base/containers/contains.h"
 #include "base/logging.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
 #include "ui/base/ime/ash/component_extension_ime_manager.h"
 #include "ui/base/ime/ash/extension_ime_util.h"
-// For SetHardwareKeyboardLayoutForTesting.
-#include <optional>
-
 #include "ui/base/ime/ash/fake_input_method_delegate.h"
 #include "ui/base/ime/ash/input_method_delegate.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -739,7 +737,7 @@ void InputMethodUtil::GetLanguageCodesFromInputMethodIds(
     DCHECK(!input_method->language_codes().empty());
     const std::string language_code = input_method->language_codes().at(0);
     // Add it if it's not already present.
-    if (!base::Contains(*out_language_codes, language_code)) {
+    if (!std::ranges::contains(*out_language_codes, language_code)) {
       out_language_codes->push_back(language_code);
     }
   }
@@ -794,12 +792,11 @@ bool InputMethodUtil::GetMigratedInputMethodIDs(
   if (rewritten) {
     // Removes the duplicates.
     std::vector<std::string> new_ids;
-    std::unordered_set<std::string> ids_set;
+    absl::flat_hash_set<std::string> ids_set;
     for (const auto& id : ids) {
-      if (ids_set.find(id) == ids_set.end()) {
+      if (ids_set.insert(id).second) {
         new_ids.push_back(id);
       }
-      ids_set.insert(id);
     }
     ids.swap(new_ids);
   }

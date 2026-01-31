@@ -10,7 +10,6 @@
 #include <string_view>
 
 #include "base/base64url.h"
-#include "base/containers/contains.h"
 #include "base/containers/flat_set.h"
 #include "base/feature_list.h"
 #include "base/strings/strcat.h"
@@ -781,6 +780,11 @@ mojom::CSPSourceListPtr ParseSourceList(
       continue;
     }
 
+    if (base::EqualsCaseInsensitiveASCII(expression, "'trusted-types-eval'")) {
+      directive->allow_trusted_types_eval = true;
+      continue;
+    }
+
     std::string nonce;
     if (ParseNonce(expression, &nonce)) {
       directive->nonces.push_back(std::move(nonce));
@@ -895,7 +899,7 @@ network::mojom::CSPRequireTrustedTypesFor ParseRequireTrustedTypesFor(
 bool IsValidTrustedTypesPolicyName(std::string_view value) {
   return std::ranges::all_of(value, [](char c) {
     return base::IsAsciiAlpha(c) || base::IsAsciiDigit(c) ||
-           base::Contains("-#=_/@.%", c);
+           std::ranges::contains("-#=_/@.%", c);
   });
 }
 
@@ -913,20 +917,21 @@ network::mojom::CSPTrustedTypesPtr ParseTrustedTypes(
     return out;
 
   for (const auto expression : pieces) {
-    if (expression == "*")
+    if (expression == "*") {
       out->allow_any = true;
-    else if (expression == "'allow-duplicates'")
+    } else if (base::EqualsCaseInsensitiveASCII(expression,
+                                                "'allow-duplicates'")) {
       out->allow_duplicates = true;
-    else if (expression == "'none'") {
+    } else if (base::EqualsCaseInsensitiveASCII(expression, "'none'")) {
       parsing_errors.emplace_back(
           "The value of the Content Security Policy directive "
           "'trusted_types' contains an invalid policy: 'none'. "
           "It will be ignored. "
           "Note that 'none' has no effect unless it is the only "
           "expression in the directive value.");
-    } else if (IsValidTrustedTypesPolicyName(expression))
+    } else if (IsValidTrustedTypesPolicyName(expression)) {
       out->list.emplace_back(expression);
-    else {
+    } else {
       parsing_errors.emplace_back(base::StringPrintf(
           "The value of the Content Security Policy directive "
           "'trusted_types' contains an invalid policy: '%s'. "

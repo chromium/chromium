@@ -15,44 +15,57 @@ import org.chromium.android_webview.AwContents;
 final class WebIconDatabaseAdapter extends android.webkit.WebIconDatabase {
     @Override
     public void open(String path) {
-        WebViewChromium.recordWebViewApiCall(ApiCall.WEB_ICON_DATABASE_OPEN);
+        WebViewChromium.recordWebViewApiCall(
+                ApiCall.WEB_ICON_DATABASE_OPEN,
+                WebViewChromium.ApiCallUserAction.WEB_ICON_DATABASE_OPEN);
         AwContents.setShouldDownloadFavicons();
     }
 
     @Override
     public void close() {
-        WebViewChromium.recordWebViewApiCall(ApiCall.WEB_ICON_DATABASE_CLOSE);
+        WebViewChromium.recordWebViewApiCall(
+                ApiCall.WEB_ICON_DATABASE_CLOSE,
+                WebViewChromium.ApiCallUserAction.WEB_ICON_DATABASE_CLOSE);
         // Intentional no-op.
     }
 
     @Override
     public void removeAllIcons() {
-        WebViewChromium.recordWebViewApiCall(ApiCall.WEB_ICON_DATABASE_REMOVE_ALL_ICONS);
+        WebViewChromium.recordWebViewApiCall(
+                ApiCall.WEB_ICON_DATABASE_REMOVE_ALL_ICONS,
+                WebViewChromium.ApiCallUserAction.WEB_ICON_DATABASE_REMOVE_ALL_ICONS);
         // Intentional no-op: we have no database so nothing to remove.
     }
 
     @Override
     public void requestIconForPageUrl(String url, IconListener listener) {
-        WebViewChromium.recordWebViewApiCall(ApiCall.WEB_ICON_DATABASE_REQUEST_ICON_FOR_PAGE_URL);
+        WebViewChromium.recordWebViewApiCall(
+                ApiCall.WEB_ICON_DATABASE_REQUEST_ICON_FOR_PAGE_URL,
+                WebViewChromium.ApiCallUserAction.WEB_ICON_DATABASE_REQUEST_ICON_FOR_PAGE_URL);
         // Intentional no-op.
     }
 
     @Override
     public void bulkRequestIconForPageUrl(ContentResolver cr, String where, IconListener listener) {
         WebViewChromium.recordWebViewApiCall(
-                ApiCall.WEB_ICON_DATABASE_BULK_REQUEST_ICON_FOR_PAGE_URL);
+                ApiCall.WEB_ICON_DATABASE_BULK_REQUEST_ICON_FOR_PAGE_URL,
+                WebViewChromium.ApiCallUserAction.WEB_ICON_DATABASE_BULK_REQUEST_ICON_FOR_PAGE_URL);
         // Intentional no-op: hidden in base class.
     }
 
     @Override
     public void retainIconForPageUrl(String url) {
-        WebViewChromium.recordWebViewApiCall(ApiCall.WEB_ICON_DATABASE_RETAIN_ICON_FOR_PAGE_URL);
+        WebViewChromium.recordWebViewApiCall(
+                ApiCall.WEB_ICON_DATABASE_RETAIN_ICON_FOR_PAGE_URL,
+                WebViewChromium.ApiCallUserAction.WEB_ICON_DATABASE_RETAIN_ICON_FOR_PAGE_URL);
         // Intentional no-op.
     }
 
     @Override
     public void releaseIconForPageUrl(String url) {
-        WebViewChromium.recordWebViewApiCall(ApiCall.WEB_ICON_DATABASE_RELEASE_ICON_FOR_PAGE_URL);
+        WebViewChromium.recordWebViewApiCall(
+                ApiCall.WEB_ICON_DATABASE_RELEASE_ICON_FOR_PAGE_URL,
+                WebViewChromium.ApiCallUserAction.WEB_ICON_DATABASE_RELEASE_ICON_FOR_PAGE_URL);
         // Intentional no-op.
     }
 }

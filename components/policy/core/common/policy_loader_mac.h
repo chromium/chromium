@@ -25,6 +25,7 @@ class SequencedTaskRunner;
 
 namespace policy {
 
+class ManagementService;
 class PolicyBundle;
 class PolicyMap;
 class Schema;
@@ -34,12 +35,14 @@ class Schema;
 class POLICY_EXPORT PolicyLoaderMac : public AsyncPolicyLoader {
  public:
   PolicyLoaderMac(scoped_refptr<base::SequencedTaskRunner> task_runner,
+                  ManagementService* management_service,
                   const base::FilePath& managed_policy_path,
                   std::unique_ptr<MacPreferences> preferences);
 
   // |application_id| will be passed into Mac's Preference Utilities API
   // instead of the default value of kCFPreferencesCurrentApplication.
   PolicyLoaderMac(scoped_refptr<base::SequencedTaskRunner> task_runner,
+                  ManagementService* management_service,
                   const base::FilePath& managed_policy_path,
                   std::unique_ptr<MacPreferences> preferences,
                   CFStringRef application_id);

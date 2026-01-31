@@ -1,0 +1,19 @@
+This is a testharness.js-based test.
+[FAIL] maxPacketLifeTime with value -1 should throw TypeError
+  assert_throws_js: function "() => {\n      pc.createDataChannel('test', { maxPacketLifeTime: value });\n    }" did not throw
+[FAIL] maxPacketLifeTime with value -100 should throw TypeError
+  assert_throws_js: function "() => {\n      pc.createDataChannel('test', { maxPacketLifeTime: value });\n    }" did not throw
+[FAIL] maxPacketLifeTime with value 65536 should throw TypeError
+  assert_throws_js: function "() => {\n      pc.createDataChannel('test', { maxPacketLifeTime: value });\n    }" did not throw
+[FAIL] maxPacketLifeTime with value 100000 should throw TypeError
+  assert_throws_js: function "() => {\n      pc.createDataChannel('test', { maxPacketLifeTime: value });\n    }" did not throw
+[FAIL] maxPacketLifeTime with Infinity should throw TypeError
+  assert_throws_js: function "() => {\n      pc.createDataChannel('test', { maxPacketLifeTime: value });\n    }" did not throw
+[FAIL] maxPacketLifeTime with -Infinity should throw TypeError
+  assert_throws_js: function "() => {\n      pc.createDataChannel('test', { maxPacketLifeTime: value });\n    }" did not throw
+[FAIL] maxPacketLifeTime with NaN should throw TypeError
+  assert_throws_js: function "() => {\n      pc.createDataChannel('test', { maxPacketLifeTime: value });\n    }" did not throw
+[FAIL] maxPacketLifeTime with string "65536" should throw TypeError
+  assert_throws_js: function "() => {\n      pc.createDataChannel('test', { maxPacketLifeTime: value });\n    }" did not throw
+Harness: the test ran to completion.
+

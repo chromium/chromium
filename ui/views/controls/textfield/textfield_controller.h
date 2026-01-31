@@ -5,6 +5,7 @@
 #ifndef UI_VIEWS_CONTROLS_TEXTFIELD_TEXTFIELD_CONTROLLER_H_
 #define UI_VIEWS_CONTROLS_TEXTFIELD_TEXTFIELD_CONTROLLER_H_
 
+#include <memory>
 #include <set>
 #include <string>
 
@@ -19,6 +20,7 @@ namespace ui {
 class KeyEvent;
 class MouseEvent;
 class GestureEvent;
+class ScopedClipboardWriter;
 class SimpleMenuModel;
 }  // namespace ui
 
@@ -62,6 +64,17 @@ class VIEWS_EXPORT TextfieldController {
   // It's currently only supported by Views implementation.
   virtual void OnAfterUserAction(Textfield* sender) {}
 
+  // Called before performing a Cut or Copy operation, allowing the controller
+  // to intercept and provide copy contents. Implementations can populate
+  // `copy_contents` and return true to override the default obtained text;
+  // returning false will cause the textfield to use its standard clipboard
+  // handling. The textfield's existing selection will be deleted when this
+  // method is called for a Cut operation.
+  // NOTE: This hook runs before OnAfterCutOrCopy() and may affect the copied
+  // text set in the clipboard, as well as changes to the textfield.
+  virtual bool OnBeforeCutOrCopy(Textfield* sender,
+                                 std::u16string* copy_contents);
+
   // Called after performing a Cut or Copy operation.
   virtual void OnAfterCutOrCopy(ui::ClipboardBuffer clipboard_buffer) {}
 
@@ -85,6 +98,11 @@ class VIEWS_EXPORT TextfieldController {
   // controller a chance to update them.
   virtual void OnGetDragOperationsForTextfield(int* drag_operations) {}
 
+  // Returns a `ui::ScopedClipboardWriter` to be used for clipboard write
+  // operations. This lets the controller enhance the data written to the
+  // clipboard by adding extra information such as the exact source of the data.
+  virtual std::unique_ptr<ui::ScopedClipboardWriter> CreateClipboardWriter();
+
   // Enables the controller to append to the accepted drop formats.
   virtual void AppendDropFormats(
       int* formats,
@@ -102,15 +120,6 @@ class VIEWS_EXPORT TextfieldController {
 
   // Gives the controller a chance to modify the context menu contents.
   virtual void UpdateContextMenu(ui::SimpleMenuModel* menu_contents) {}
-
-  // Called before write to clipboard buffer
-  // If false, the controller does not override default clipboard write.
-  // If true, the controller overrides the clipboard write.
-  virtual bool HandleWriteTextToClipboard(ui::ClipboardBuffer clipboard_buffer,
-                                          const std::u16string_view& text);
-
-  // Returns whether textfield content can be dragged, to drop elsewhere.
-  virtual bool AllowStartDragEvent(const std::u16string_view& selected_text);
 
  protected:
   virtual ~TextfieldController() = default;

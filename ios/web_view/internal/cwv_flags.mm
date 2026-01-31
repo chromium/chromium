@@ -107,8 +107,8 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
   BOOL usesSyncSandbox = NO;
   BOOL usesWalletSandbox = NO;
 
-  base::Value::List supportedFeatures;
-  base::Value::List unsupportedFeatures;
+  base::ListValue supportedFeatures;
+  base::ListValue unsupportedFeatures;
 
   _flagsState->GetFlagFeatureEntries(
       _flagsStorage.get(), flags_ui::kGeneralAccessFlagsOnly, supportedFeatures,
@@ -116,8 +116,7 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
       base::BindRepeating(&ios_web_view::SkipConditionalFeatureEntry));
 
   for (const base::Value& supportedFeature : supportedFeatures) {
-    const base::Value::Dict* supportedFeatureDict =
-        supportedFeature.GetIfDict();
+    const base::DictValue* supportedFeatureDict = supportedFeature.GetIfDict();
     DCHECK(supportedFeatureDict);
 
     const std::string* featureName =
@@ -130,12 +129,12 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
       DCHECK(maybeEnabled.has_value());
       usesSyncSandbox = *maybeEnabled;
     } else if (*featureName == ios_web_view::kUseWalletSandboxFlagName) {
-      const base::Value::List* options =
+      const base::ListValue* options =
           supportedFeatureDict->FindList("options");
       DCHECK(options);
 
       for (const base::Value& option : *options) {
-        const base::Value::Dict* optionDict = option.GetIfDict();
+        const base::DictValue* optionDict = option.GetIfDict();
         DCHECK(optionDict);
 
         const std::string* optionName = optionDict->FindString("internal_name");

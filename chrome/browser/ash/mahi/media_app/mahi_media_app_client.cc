@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ash/mahi/media_app/mahi_media_app_client.h"
 
+#include <optional>
+
 #include "ash/shell.h"
 #include "base/check_deref.h"
 #include "base/i18n/break_iterator.h"
@@ -11,7 +13,6 @@
 #include "base/unguessable_token.h"
 #include "chromeos/components/mahi/public/cpp/mahi_media_app_content_manager.h"
 #include "chromeos/components/mahi/public/cpp/mahi_media_app_events_proxy.h"
-#include "chromeos/crosapi/mojom/mahi.mojom.h"
 #include "ui/aura/client/focus_client.h"
 #include "ui/gfx/geometry/rect_conversions.h"
 #include "ui/gfx/image/image_skia.h"
@@ -124,15 +125,17 @@ void MahiMediaAppClient::OnPdfContextMenuHide() {
   chromeos::MahiMediaAppEventsProxy::Get()->OnPdfContextMenuHide();
 }
 
-void MahiMediaAppClient::GetPdfContent(GetContentCallback callback) {
+void MahiMediaAppClient::GetPdfContent(
+    chromeos::MahiGetContentCallback callback) {
   media_app_pdf_file_->GetPdfContent(
       kContentByteSizeLimit,
       base::BindOnce(
-          [](GetContentCallback callback, base::UnguessableToken client_id,
+          [](chromeos::MahiGetContentCallback callback,
+             base::UnguessableToken client_id,
              const std::optional<std::string>& content) {
             if (!content.has_value()) {
               // TODO(b/335741382): UMA metric for this case.
-              std::move(callback).Run(nullptr);
+              std::move(callback).Run(std::nullopt);
               return;
             }
 
@@ -141,13 +144,15 @@ void MahiMediaAppClient::GetPdfContent(GetContentCallback callback) {
             if (!ContentsWordCountSatisfied(u16content,
                                             kContentWordCountThreshold)) {
               // TODO(b/335741382): UMA metric for this case.
-              std::move(callback).Run(nullptr);
+              std::move(callback).Run(std::nullopt);
               return;
             }
 
-            std::move(callback).Run(crosapi::mojom::MahiPageContent::New(
-                client_id,
-                /*page_id=*/client_id, std::move(u16content)));
+            chromeos::MahiPageContent page_content;
+            page_content.client_id = client_id;
+            page_content.page_id = client_id;
+            page_content.page_content = std::move(u16content);
+            std::move(callback).Run(std::move(page_content));
           },
           std::move(callback), client_id_));
 }

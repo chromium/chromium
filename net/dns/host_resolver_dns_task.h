@@ -157,9 +157,9 @@ class NET_EXPORT_PRIVATE HostResolverDnsTask final {
     std::unique_ptr<DnsTransaction> transaction;
   };
 
-  base::Value::Dict NetLogDnsTaskCreationParams();
+  base::DictValue NetLogDnsTaskCreationParams();
 
-  base::Value::Dict NetLogDnsTaskTimeoutParams();
+  base::DictValue NetLogDnsTaskTimeoutParams();
 
   DnsQueryTypeSet MaybeDisableAdditionalQueries(DnsQueryTypeSet types);
 

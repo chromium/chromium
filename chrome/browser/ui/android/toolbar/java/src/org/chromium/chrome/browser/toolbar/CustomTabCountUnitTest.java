@@ -17,7 +17,9 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
-import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.supplier.ObservableSuppliers;
+import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
+import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 
@@ -26,15 +28,14 @@ import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 public class CustomTabCountUnitTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Mock private TabModelSelector mTabModelSelector;
-    private final ObservableSupplierImpl<TabModelSelector> mTabModelSelectorSupplier =
-            new ObservableSupplierImpl<>();
-    private final ObservableSupplierImpl<Integer> mTabModelSelectorTabCountSupplier =
-            new ObservableSupplierImpl<>();
+    private final SettableMonotonicObservableSupplier<TabModelSelector> mTabModelSelectorSupplier =
+            ObservableSuppliers.createMonotonic();
+    private final SettableNonNullObservableSupplier<Integer> mTabModelSelectorTabCountSupplier =
+            ObservableSuppliers.createNonNull(0);
     private CustomTabCount mCustomTabCount;
 
     @Before
     public void setUp() {
-        mTabModelSelectorTabCountSupplier.set(0);
         when(mTabModelSelector.getCurrentModelTabCountSupplier())
                 .thenReturn(mTabModelSelectorTabCountSupplier);
         mCustomTabCount = new CustomTabCount(mTabModelSelectorSupplier);

@@ -835,7 +835,8 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothAdapter
   using DevicesMap =
       std::unordered_map<std::string, std::unique_ptr<BluetoothDevice>>;
   using PairingDelegatePair =
-      std::pair<BluetoothDevice::PairingDelegate*, PairingDelegatePriority>;
+      std::pair<raw_ptr<BluetoothDevice::PairingDelegate>,
+                PairingDelegatePriority>;
 
   using CallbackQueue =
       base::queue<std::unique_ptr<StartOrStopDiscoveryCallback>>;

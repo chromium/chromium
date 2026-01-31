@@ -19,6 +19,8 @@
 #import "ios/chrome/browser/affiliations/model/ios_chrome_affiliation_service_factory.h"
 #import "ios/chrome/browser/credential_exchange/coordinator/credential_export_coordinator.h"
 #import "ios/chrome/browser/credential_provider/model/features.h"
+#import "ios/chrome/browser/passwords/coordinator/password_export_handler.h"
+#import "ios/chrome/browser/passwords/coordinator/password_utils.h"
 #import "ios/chrome/browser/passwords/model/ios_chrome_account_password_store_factory.h"
 #import "ios/chrome/browser/passwords/model/ios_chrome_profile_password_store_factory.h"
 #import "ios/chrome/browser/passwords/model/metrics/ios_password_manager_metrics.h"
@@ -26,7 +28,6 @@
 #import "ios/chrome/browser/settings/ui_bundled/elements/enterprise_info_popover_view_controller.h"
 #import "ios/chrome/browser/settings/ui_bundled/password/create_password_manager_title_view.h"
 #import "ios/chrome/browser/settings/ui_bundled/password/password_settings/password_bulk_move_handler.h"
-#import "ios/chrome/browser/settings/ui_bundled/password/password_settings/password_export_handler.h"
 #import "ios/chrome/browser/settings/ui_bundled/password/password_settings/password_settings_constants.h"
 #import "ios/chrome/browser/settings/ui_bundled/password/password_settings/password_settings_coordinator_delegate.h"
 #import "ios/chrome/browser/settings/ui_bundled/password/password_settings/password_settings_mediator.h"
@@ -36,15 +37,14 @@
 #import "ios/chrome/browser/settings/ui_bundled/password/passwords_in_other_apps/passwords_in_other_apps_coordinator.h"
 #import "ios/chrome/browser/settings/ui_bundled/password/reauthentication/local_reauthentication_coordinator.h"
 #import "ios/chrome/browser/settings/ui_bundled/settings_navigation_controller.h"
-#import "ios/chrome/browser/settings/ui_bundled/utils/password_utils.h"
 #import "ios/chrome/browser/shared/coordinator/alert/alert_coordinator.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
-#import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/open_new_tab_command.h"
+#import "ios/chrome/browser/shared/public/commands/scene_commands.h"
 #import "ios/chrome/browser/shared/public/commands/snackbar_commands.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/signin/model/authentication_service.h"
@@ -151,7 +151,7 @@ const NSInteger kErrorUserDismissedUpdateGPMPinFlow = -105;
   PasswordSettingsMediator* _mediator;
 
   // Command dispatcher.
-  __weak id<ApplicationCommands> _dispatcher;
+  __weak id<SceneCommands> _dispatcher;
 
   // Module handling reauthentication before accessing sensitive data.
   ReauthenticationModule* _reauthModule;
@@ -224,8 +224,8 @@ const NSInteger kErrorUserDismissedUpdateGPMPinFlow = -105;
                                             GetForProfile(profile)
                                identity:_identity];
 
-  _dispatcher = static_cast<id<ApplicationCommands>>(
-      self.browser->GetCommandDispatcher());
+  _dispatcher =
+      static_cast<id<SceneCommands>>(self.browser->GetCommandDispatcher());
 
   _passwordSettingsViewController =
       [[PasswordSettingsViewController alloc] init];

@@ -9,7 +9,6 @@
 #include <string>
 #include <string_view>
 
-#include "base/containers/contains.h"
 #include "base/containers/fixed_flat_set.h"
 #include "base/no_destructor.h"
 #include "base/strings/string_util.h"
@@ -140,7 +139,7 @@ bool IsInternetCafeBrandCode(const std::string& brand) {
       "CHIQ", "CHSG", "HLJY", "NTMO", "OOBA", "OOBB", "OOBC", "OOBD",
       "OOBE", "OOBF", "OOBG", "OOBH", "OOBI", "OOBJ", "IDCM",
   };
-  return base::Contains(kBrands, brand);
+  return std::ranges::contains(kBrands, brand);
 }
 
 bool IsEnterprise(const std::string& brand) {

@@ -11,7 +11,6 @@
 
 #include "base/memory/raw_ptr.h"
 #include "ui/events/ash/event_rewriter_utils.h"
-#include "ui/events/ash/mojom/modifier_key.mojom-shared.h"
 #include "ui/events/ash/mojom/modifier_key.mojom.h"
 #include "ui/events/event_rewriter.h"
 

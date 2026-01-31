@@ -7,7 +7,6 @@
 #include <vector>
 
 #include "base/check.h"
-#include "base/containers/contains.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
 #include "base/values.h"
@@ -57,7 +56,7 @@ void TrackedSplitPreference::OnNewValue(
 }
 
 bool TrackedSplitPreference::EnforceAndReport(
-    base::Value::Dict& pref_store_contents,
+    base::DictValue& pref_store_contents,
     PrefHashStoreTransaction* transaction,
     PrefHashStoreTransaction* external_validation_transaction,
     const os_crypt_async::Encryptor* encryptor) const {
@@ -72,7 +71,7 @@ bool TrackedSplitPreference::EnforceAndReport(
     value = nullptr;
   }
 
-  base::Value::Dict* dict_value = value ? &value->GetDict() : nullptr;
+  base::DictValue* dict_value = value ? &value->GetDict() : nullptr;
 
   std::vector<std::string> invalid_keys;
   // TODO(zackhan@): Currently this function support dual-hash validation.
@@ -108,7 +107,7 @@ bool TrackedSplitPreference::EnforceAndReport(
   if (reset_action == TrackedPreferenceHelper::DO_RESET ||
       reset_action == TrackedPreferenceHelper::DO_RESET_LEGACY ||
       reset_action == TrackedPreferenceHelper::DO_RESET_ENCRYPTED) {
-    base::Value::List* reset_prefs_list =
+    base::ListValue* reset_prefs_list =
         pref_store_contents.EnsureList(user_prefs::kTrackedPreferencesReset);
     if (value_state == ValueState::CHANGED ||
         value_state == ValueState::CHANGED_VIA_HMAC_FALLBACK ||
@@ -122,18 +121,17 @@ bool TrackedSplitPreference::EnforceAndReport(
       // attempting to reset keys on a non-existent dictionary.
       if (dict_value) {
         for (const std::string& key : invalid_keys) {
-          base::Value new_path(pref_path_ + "." + key);
-          if (!base::Contains(*reset_prefs_list, new_path)) {
-            reset_prefs_list->Append(std::move(new_path));
+          std::string new_path(pref_path_ + "." + key);
+          if (!reset_prefs_list->contains(new_path)) {
+            reset_prefs_list->Append(new_path);
           }
           dict_value->Remove(key);
         }
       }
     } else {
       if (value) {
-        base::Value new_path(pref_path_);
-        if (!base::Contains(*reset_prefs_list, new_path)) {
-          reset_prefs_list->Append(std::move(new_path));
+        if (!reset_prefs_list->contains(pref_path_)) {
+          reset_prefs_list->Append(pref_path_);
         }
       }
       pref_store_contents.RemoveByDottedPath(pref_path_);

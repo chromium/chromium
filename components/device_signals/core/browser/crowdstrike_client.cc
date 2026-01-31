@@ -215,7 +215,7 @@ void CrowdStrikeClientImpl::OnPayloadParsed(
     return;
   }
 
-  const base::Value::Dict& result_dict = result->GetDict();
+  const base::DictValue& result_dict = result->GetDict();
   const std::string* agent_id = result_dict.FindString(kAgentIdJwtPropertyKey);
   if (!agent_id) {
     LogCrowdStrikeParsingError(SignalsParsingError::kMissingRequiredProperty);

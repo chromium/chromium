@@ -140,7 +140,7 @@ class HttpsFirstModeService
   PrefChangeRegistrar pref_change_registrar_;
   raw_ptr<base::Clock> clock_;
 
-  base::Value::Dict navigation_counts_dict_;
+  base::DictValue navigation_counts_dict_;
   std::unique_ptr<DailyNavigationCounter> navigation_counter_;
 
   base::ScopedObservation<

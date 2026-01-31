@@ -10,7 +10,6 @@
 #include "ash/public/cpp/shelf_item_delegate.h"
 #include "ash/public/cpp/shelf_model.h"
 #include "base/check_deref.h"
-#include "base/containers/contains.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/apps/app_service/policy_util.h"
@@ -60,7 +59,7 @@ AppListControllerDelegate::Pinnable GetPinnableForAppID(
   const char* kNoPinAppIds[] = {
       ash::eche_app::kEcheAppId,
   };
-  if (base::Contains(kNoPinAppIds, app_id)) {
+  if (std::ranges::contains(kNoPinAppIds, app_id)) {
     return AppListControllerDelegate::NO_PIN;
   }
 
@@ -78,7 +77,7 @@ AppListControllerDelegate::Pinnable GetPinnableForAppID(
     return AppListControllerDelegate::PIN_EDITABLE;
   }
 
-  const base::Value::List& policy_apps =
+  const base::ListValue& policy_apps =
       profile->GetPrefs()->GetList(prefs::kPolicyPinnedLauncherApps);
 
   for (const base::Value& policy_dict_entry : policy_apps) {
@@ -92,8 +91,8 @@ AppListControllerDelegate::Pinnable GetPinnableForAppID(
       return AppListControllerDelegate::PIN_EDITABLE;
     }
 
-    if (base::Contains(*policy_ids,
-                       apps_util::TransformRawPolicyId(*policy_entry))) {
+    if (std::ranges::contains(*policy_ids,
+                              apps_util::TransformRawPolicyId(*policy_entry))) {
       return AppListControllerDelegate::PIN_FIXED;
     }
   }

@@ -58,7 +58,7 @@ class ManagedUIHandlerTest : public testing::Test {
   void InitializeHandler() {
     TestManagedUIHandler::InitializeInternal(
         &web_ui_, source_->GetWebUIDataSource(), profile());
-    web_ui_.HandleReceivedMessage("observeManagedUI", base::Value::List());
+    web_ui_.HandleReceivedMessage("observeManagedUI", base::ListValue());
   }
 
   bool IsSourceManaged() {

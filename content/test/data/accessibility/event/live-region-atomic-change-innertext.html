@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html>
+<body>
+<div aria-live="polite" aria-atomic="true">
+    <div id="atomic-a"></div>
+    <div id="atomic-b">region</div>
+    <div id="atomic-c"></div>
+</div>
+<div aria-live=polite aria-atomic=true>
+  <div aria-label="final">
+    <p id="final_ptag"></p>
+  </div>
+</div>
+<script>
+  function go() {
+    document.getElementById('atomic-a').textContent = 'Live';
+    document.getElementById('atomic-c').textContent = 'succeeded';
+    document.getElementById('final_ptag').textContent = 'final';
+  }
+</script>
+</body>
+</html>

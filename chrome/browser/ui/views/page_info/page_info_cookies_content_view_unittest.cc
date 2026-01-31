@@ -13,7 +13,6 @@
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/test_with_browser_view.h"
 #include "chrome/browser/ui/views/page_info/page_info_view_factory.h"
-#include "components/content_settings/core/common/cookie_blocking_3pcd_status.h"
 #include "components/content_settings/core/common/cookie_controls_state.h"
 #include "components/content_settings/core/common/features.h"
 #include "components/page_info/page_info.h"
@@ -143,7 +142,8 @@ class PageInfoCookiesContentViewBaseTestClass : public TestWithBrowserView {
 
   ui::ImageModel GetImageModel(const gfx::VectorIcon& icon) {
     return ui::ImageModel::FromVectorIcon(
-        icon, ui::kColorIcon, GetLayoutConstant(PAGE_INFO_ICON_SIZE));
+        icon, ui::kColorIcon,
+        GetLayoutConstant(LayoutConstant::kPageInfoIconSize));
   }
 
   virtual std::vector<base::test::FeatureRefAndParams> EnabledFeatures() {

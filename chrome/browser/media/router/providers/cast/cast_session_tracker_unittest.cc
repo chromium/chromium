@@ -79,7 +79,7 @@ class MockCastSessionObserver : public CastSessionTracker::Observer {
   MOCK_METHOD(void,
               OnMediaStatusUpdated,
               (const MediaSinkInternal& sink,
-               const base::Value::Dict& media_status,
+               const base::DictValue& media_status,
                std::optional<int> request_id));
 };
 

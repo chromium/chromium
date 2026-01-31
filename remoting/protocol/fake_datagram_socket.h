@@ -10,8 +10,9 @@
 #include <string>
 #include <vector>
 
+#include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
-#include "net/base/completion_repeating_callback.h"
+#include "net/base/net_errors.h"
 #include "remoting/protocol/datagram_channel_factory.h"
 #include "remoting/protocol/p2p_datagram_socket.h"
 
@@ -49,7 +50,7 @@ class FakeDatagramSocket : public P2PDatagramSocket {
 
   // Set error codes for the next Write() call. Once returned the
   // value is automatically reset to net::OK .
-  void set_next_send_error(int error) { next_send_error_ = error; }
+  void set_next_send_error(net::Error error) { next_send_error_ = error; }
 
   void AppendInputPacket(const std::string& data);
 
@@ -64,30 +65,35 @@ class FakeDatagramSocket : public P2PDatagramSocket {
   base::WeakPtr<FakeDatagramSocket> GetWeakPtr();
 
   // P2PDatagramSocket implementation.
-  int Recv(const scoped_refptr<net::IOBuffer>& buf,
-           int buf_len,
-           const net::CompletionRepeatingCallback& callback) override;
-  int Send(const scoped_refptr<net::IOBuffer>& buf,
-           int buf_len,
-           const net::CompletionRepeatingCallback& callback) override;
+  base::expected<base::ByteSize, net::Error> Recv(
+      const scoped_refptr<net::IOBuffer>& buf,
+      base::ByteSize buf_len,
+      Callback callback) override;
+  base::expected<base::ByteSize, net::Error> Send(
+      const scoped_refptr<net::IOBuffer>& buf,
+      base::ByteSize buf_len,
+      Callback callback) override;
 
  private:
-  int CopyReadData(const scoped_refptr<net::IOBuffer>& buf, int buf_len);
+  base::ByteSize CopyReadData(const scoped_refptr<net::IOBuffer>& buf,
+                              base::ByteSize buf_len);
 
   void DoAsyncSend(const scoped_refptr<net::IOBuffer>& buf,
-                   int buf_len,
-                   const net::CompletionRepeatingCallback& callback);
-  int DoSend(const scoped_refptr<net::IOBuffer>& buf, int buf_len);
+                   base::ByteSize buf_len,
+                   Callback callback);
+  base::expected<base::ByteSize, net::Error> DoSend(
+      const scoped_refptr<net::IOBuffer>& buf,
+      base::ByteSize buf_len);
 
   bool async_send_ = false;
   bool send_pending_ = false;
-  int next_send_error_ = 0;
+  net::Error next_send_error_ = net::Error::OK;
 
   base::WeakPtr<FakeDatagramSocket> peer_socket_;
 
   scoped_refptr<net::IOBuffer> read_buffer_;
-  int read_buffer_size_;
-  net::CompletionRepeatingCallback read_callback_;
+  base::ByteSize read_buffer_size_;
+  P2PDatagramSocket::Callback read_callback_;
 
   std::vector<std::string> written_packets_;
   std::vector<std::string> input_packets_;
@@ -129,7 +135,7 @@ class FakeDatagramChannelFactory : public DatagramChannelFactory {
   void CancelChannelCreation(const std::string& name) override;
 
  private:
-  typedef std::map<std::string, base::WeakPtr<FakeDatagramSocket>> ChannelsMap;
+  using ChannelsMap = std::map<std::string, base::WeakPtr<FakeDatagramSocket>>;
 
   void NotifyChannelCreated(std::unique_ptr<FakeDatagramSocket> owned_socket,
                             const std::string& name,

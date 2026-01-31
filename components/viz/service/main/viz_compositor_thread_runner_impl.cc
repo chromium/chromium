@@ -74,7 +74,7 @@ class VizCompositorThread : public base::Thread {
 
 std::unique_ptr<VizCompositorThreadType> CreateAndStartCompositorThread(
     base::TaskObserver* task_observer) {
-  const base::ThreadType thread_type = base::ThreadType::kDisplayCritical;
+  const base::ThreadType thread_type = base::ThreadType::kPresentation;
 #if BUILDFLAG(IS_ANDROID)
   auto thread = std::make_unique<VizCompositorThread>(thread_type);
   thread->Start();
@@ -93,9 +93,10 @@ std::unique_ptr<VizCompositorThreadType> CreateAndStartCompositorThread(
   // DirectReceiver requires an I/O MessagePump, or the pump to expose an
   // IOWatcher like MessagePumpAndroid.
   const bool should_use_io_pump =
-      mojo::IsDirectReceiverSupported() &&
-      (features::IsVizDirectCompositorThreadIpcNonRootEnabled() ||
-       features::IsVizDirectCompositorThreadIpcFrameSinkManagerEnabled());
+      features::IsVizWithIoMessagePumpEnabled() ||
+      (mojo::IsDirectReceiverSupported() &&
+       (features::IsVizDirectCompositorThreadIpcNonRootEnabled() ||
+        features::IsVizDirectCompositorThreadIpcFrameSinkManagerEnabled()));
   if (should_use_io_pump) {
     thread_options.message_pump_type = base::MessagePumpType::IO;
   }

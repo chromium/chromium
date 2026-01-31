@@ -54,6 +54,10 @@
 #endif  // BUILDFLAG(IS_CHROMEOS_WITH_HW_DETAILS)
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+#include "chrome/browser/support_tool/updater_data_collector.h"
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+
 namespace {
 
 // Data collector types that can work on every platform.
@@ -89,6 +93,11 @@ constexpr support_tool::DataCollectorType kDataCollectorsChromeosAsh[] = {
 // Chrome OS Flex devices.
 constexpr support_tool::DataCollectorType kDataCollectorsChromeosHwDetails[] = {
     support_tool::CHROMEOS_REVEN};
+
+// Data collector types that can only work on Linux, macOS, and Windows.
+constexpr support_tool::DataCollectorType kDataCollectorsLinuxMacWin[] = {
+    support_tool::CHROME_UPDATER,
+};
 
 }  // namespace
 
@@ -291,6 +300,11 @@ std::unique_ptr<SupportToolHandler> GetSupportToolHandler(
 #endif  // BUILDFLAG(IS_CHROMEOS_WITH_HW_DETAILS)
         break;
 #endif  // BUILDFLAG(IS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+      case support_tool::CHROME_UPDATER:
+        handler->AddDataCollector(std::make_unique<UpdaterDataCollector>());
+        break;
+#endif
       default:
         break;
     }
@@ -307,6 +321,9 @@ std::vector<support_tool::DataCollectorType> GetAllDataCollectors() {
     data_collectors.push_back(type);
   }
   for (const auto& type : kDataCollectorsChromeosHwDetails) {
+    data_collectors.push_back(type);
+  }
+  for (const auto& type : kDataCollectorsLinuxMacWin) {
     data_collectors.push_back(type);
   }
   return data_collectors;
@@ -328,6 +345,11 @@ GetAllAvailableDataCollectorsOnDevice() {
   }
 #endif  // BUILDFLAG(IS_CHROMEOS_WITH_HW_DETAILS)
 #endif  // BUILDFLAG(IS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+  for (const auto& type : kDataCollectorsLinuxMacWin) {
+    data_collectors.push_back(type);
+  }
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
   return data_collectors;
 }
 

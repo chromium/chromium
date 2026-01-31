@@ -25,7 +25,7 @@ CONTENT_EXPORT scoped_refptr<base::SequencedTaskRunner> GetFontListTaskRunner();
 // GetFontListTaskRunner(). Most callers will want to use the GetFontListAsync
 // function in content/browser/font_list_async.h which does an asynchronous
 // call.
-CONTENT_EXPORT base::Value::List GetFontList_SlowBlocking();
+CONTENT_EXPORT base::ListValue GetFontList_SlowBlocking();
 
 }  // namespace content
 

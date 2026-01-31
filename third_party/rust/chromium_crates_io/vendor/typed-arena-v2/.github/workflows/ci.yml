@@ -1,0 +1,100 @@
+name: CI
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+    branches:
+      - master
+
+env:
+  RUST_BACKTRACE: short
+  CARGO_INCREMENTAL: 0
+  CARGO_NET_RETRY: 10
+  RUSTUP_MAX_RETRIES: 10
+  RUSTFLAGS: -Dwarnings
+  RUSTDOCFLAGS: -Dwarnings
+
+jobs:
+  # Test on a few targets, stable, beta
+  test:
+    name: Tests - ${{ matrix.name }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        name:
+          - linux
+          - macos
+          - win64
+          - win32
+          - beta
+          - nightly
+        include:
+          - name: linux
+            os: ubuntu-latest
+            toolchain: stable
+          - name: macos
+            os: macos-latest
+            toolchain: stable
+          - name: win64
+            os: windows-latest
+            toolchain: stable
+          - name: win32
+            os: windows-latest
+            toolchain: stable-i686-msvc
+          - name: beta
+            os: ubuntu-latest
+            toolchain: beta
+          - name: nightly
+            os: ubuntu-latest
+            toolchain: nightly
+    steps:
+      - uses: actions/checkout@v3
+      - uses: dtolnay/rust-toolchain@master
+        with:
+          toolchain: ${{ matrix.toolchain }}
+      - run: cargo check --verbose
+      - run: cargo test --verbose
+      - run: cargo build --no-default-features
+  MSRV:
+    name: Check MSRV
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: dtolnay/rust-toolchain@1.42.0
+      # Can't run tests because we have ed2021 crates in the dev-dependency
+      # graph, which old cargo can't parse. It seems likely that tests would
+      # pass on older versions if the crate builds and they pass on stable,
+      # though.
+      - run: cargo build --verbose
+
+  # Check formatting
+  rustfmt:
+    name: Check formatting
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          components: rustfmt
+      - run: cargo fmt --all -- --check
+
+  # linkcheck docs (we have `-Dwarnings` in RUSTFLAGS and RUSTDOCFLAGS above)
+  doc:
+    name: Check documentation
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: dtolnay/rust-toolchain@stable
+      - run: cargo doc --all-features
+
+  miri:
+    name: Miri
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: dtolnay/rust-toolchain@nightly
+        with:
+          components: miri, rust-src
+      - run: cargo miri test --all-features

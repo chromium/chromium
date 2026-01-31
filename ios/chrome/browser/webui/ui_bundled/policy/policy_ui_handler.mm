@@ -205,13 +205,13 @@ void PolicyUIHandler::RegisterMessages() {
                           base::Unretained(this)));
 }
 
-void PolicyUIHandler::HandleCopyPoliciesJson(const base::Value::List& args) {
+void PolicyUIHandler::HandleCopyPoliciesJson(const base::ListValue& args) {
   copy_to_json_count_ += 1;
   NSString* jsonString = base::SysUTF8ToNSString(GetPoliciesAsJson());
   StoreTextInPasteboard(jsonString);
 }
 
-void PolicyUIHandler::HandleUploadReport(const base::Value::List& args) {
+void PolicyUIHandler::HandleUploadReport(const base::ListValue& args) {
   upload_report_count_ += 1;
   DCHECK_EQ(1u, args.size());
   const std::string& callback_id = args[0].GetString();
@@ -252,8 +252,7 @@ void PolicyUIHandler::HandleUploadReport(const base::Value::List& args) {
   }
 }
 
-void PolicyUIHandler::HandleSetLocalTestPolicies(
-    const base::Value::List& args) {
+void PolicyUIHandler::HandleSetLocalTestPolicies(const base::ListValue& args) {
   const std::string& json_policies_string = args[1].GetString();
 
   if (!PolicyUI::ShouldLoadTestPage(ProfileIOS::FromWebUIIOS(web_ui()))) {
@@ -278,7 +277,7 @@ void PolicyUIHandler::HandleSetLocalTestPolicies(
 }
 
 void PolicyUIHandler::HandleRevertLocalTestPolicies(
-    const base::Value::List& args) {
+    const base::ListValue& args) {
   if (!PolicyUI::ShouldLoadTestPage(ProfileIOS::FromWebUIIOS(web_ui()))) {
     return;
   }
@@ -288,7 +287,7 @@ void PolicyUIHandler::HandleRevertLocalTestPolicies(
       ->RevertUseLocalTestPolicyProvider();
 }
 
-void PolicyUIHandler::HandleRestartBrowser(const base::Value::List& args) {
+void PolicyUIHandler::HandleRestartBrowser(const base::ListValue& args) {
   CHECK(args.size() == 2);
   const std::string& policies = args[1].GetString();
 
@@ -298,7 +297,7 @@ void PolicyUIHandler::HandleRestartBrowser(const base::Value::List& args) {
                    policies);
 }
 
-void PolicyUIHandler::HandleSetUserAffiliation(const base::Value::List& args) {
+void PolicyUIHandler::HandleSetUserAffiliation(const base::ListValue& args) {
   CHECK_EQ(static_cast<int>(args.size()), 2);
   bool affiliated = args[1].GetBool();
 
@@ -311,7 +310,7 @@ void PolicyUIHandler::HandleSetUserAffiliation(const base::Value::List& args) {
 }
 
 void PolicyUIHandler::HandleGetAppliedTestPolicies(
-    const base::Value::List& args) {
+    const base::ListValue& args) {
   CHECK_EQ(static_cast<int>(args.size()), 1);
 
   auto* local_test_provider = static_cast<policy::LocalTestPolicyProvider*>(
@@ -323,7 +322,7 @@ void PolicyUIHandler::HandleGetAppliedTestPolicies(
                                       local_test_provider->GetPolicies());
 }
 
-void PolicyUIHandler::HandleGetPolicyLogs(const base::Value::List& args) {
+void PolicyUIHandler::HandleGetPolicyLogs(const base::ListValue& args) {
   web_ui()->ResolveJavascriptCallback(
       args[0], policy::PolicyLogger::GetInstance()->GetAsList());
 }
@@ -380,14 +379,14 @@ void PolicyUIHandler::OnReportUploaded(const std::string& callback_id) {
   SendStatus();
 }
 
-base::Value::Dict PolicyUIHandler::GetPolicyNames() const {
+base::DictValue PolicyUIHandler::GetPolicyNames() const {
   ProfileIOS* profile = ProfileIOS::FromWebUIIOS(web_ui());
   policy::SchemaRegistry* registry =
       profile->GetPolicyConnector()->GetSchemaRegistry();
   scoped_refptr<policy::SchemaMap> schema_map = registry->schema_map();
 
   // Add Chrome policy names.
-  base::Value::List chrome_policy_names;
+  base::ListValue chrome_policy_names;
   policy::PolicyNamespace chrome_namespace(policy::POLICY_DOMAIN_CHROME, "");
   const policy::Schema* chrome_schema = schema_map->GetSchema(chrome_namespace);
   for (auto it = chrome_schema->GetPropertiesIterator(); !it.IsAtEnd();
@@ -395,38 +394,37 @@ base::Value::Dict PolicyUIHandler::GetPolicyNames() const {
     chrome_policy_names.Append(base::Value(it.key()));
   }
 
-  base::Value::Dict chrome_values;
+  base::DictValue chrome_values;
   chrome_values.Set(policy::kNameKey, policy::kChromePoliciesName);
   chrome_values.Set(policy::kPolicyNamesKey, std::move(chrome_policy_names));
 
-  base::Value::Dict names;
+  base::DictValue names;
   names.Set(policy::kChromePoliciesId, std::move(chrome_values));
   return names;
 }
 
-base::Value::Dict PolicyUIHandler::GetPolicyValues() const {
-  base::Value::List policy_ids;
+base::DictValue PolicyUIHandler::GetPolicyValues() const {
+  base::ListValue policy_ids;
   policy_ids.Append(policy::kChromePoliciesId);
 
-  base::Value::Dict policy_values =
+  base::DictValue policy_values =
       policy::PolicyConversions(std::make_unique<PolicyConversionsClientIOS>(
                                     ProfileIOS::FromWebUIIOS(web_ui())))
           .EnableConvertValues(true)
           .UseChromePolicyConversions()
           .ToValueDict();
 
-  base::Value::Dict dict;
+  base::DictValue dict;
   dict.Set(policy::kPolicyValuesKey, std::move(policy_values));
   dict.Set(policy::kPolicyIdsKey, std::move(policy_ids));
   return dict;
 }
 
-void PolicyUIHandler::HandleListenPoliciesUpdates(
-    const base::Value::List& args) {
+void PolicyUIHandler::HandleListenPoliciesUpdates(const base::ListValue& args) {
   OnRefreshPoliciesDone();
 }
 
-void PolicyUIHandler::HandleReloadPolicies(const base::Value::List& args) {
+void PolicyUIHandler::HandleReloadPolicies(const base::ListValue& args) {
   reload_policies_count_ += 1;
   GetPolicyService()->RefreshPolicies(
       base::BindOnce(&PolicyUIHandler::OnRefreshPoliciesDone,
@@ -435,8 +433,8 @@ void PolicyUIHandler::HandleReloadPolicies(const base::Value::List& args) {
 }
 
 void PolicyUIHandler::SendPolicies() {
-  base::Value::Dict names = GetPolicyNames();
-  base::Value::Dict values = GetPolicyValues();
+  base::DictValue names = GetPolicyNames();
+  base::DictValue values = GetPolicyValues();
   web_ui()->FireWebUIListener("policies-updated", names, values);
 }
 
@@ -449,14 +447,14 @@ void PolicyUIHandler::SendSchema() {
   web_ui()->FireWebUIListener("schema-updated", PolicyUI::GetSchema(profile));
 }
 
-base::Value::Dict PolicyUIHandler::GetStatusValue() const {
-  base::Value::Dict machine_status = machine_status_provider_->GetStatus();
+base::DictValue PolicyUIHandler::GetStatusValue() const {
+  base::DictValue machine_status = machine_status_provider_->GetStatus();
   // Given that it's usual for users to bring their own devices and the fact
   // that device names could expose personal information. We do not show
   // this field in Device Policy Box
   machine_status.Remove(policy::kMachineKey);
 
-  base::Value::Dict status;
+  base::DictValue status;
   status.Set("machine", std::move(machine_status));
   status.Set("user", user_policy_status_provider_->GetStatus());
 
@@ -464,7 +462,7 @@ base::Value::Dict PolicyUIHandler::GetStatusValue() const {
 }
 
 void PolicyUIHandler::SendStatus() {
-  base::Value::Dict status = GetStatusValue();
+  base::DictValue status = GetStatusValue();
   web_ui()->FireWebUIListener("status-updated", status);
 }
 

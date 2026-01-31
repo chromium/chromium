@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_VIEWS_FRAME_HORIZONTAL_TAB_STRIP_REGION_VIEW_H_
 
 #include "base/memory/raw_ptr.h"
+#include "chrome/browser/ui/tabs/tab_renderer_data.h"
 #include "chrome/browser/ui/views/frame/tab_strip_region_view.h"
 #include "chrome/browser/ui/views/tabs/tab_search_container.h"
 #include "chrome/browser/ui/views/tabs/tab_strip.h"
@@ -16,6 +17,7 @@
 class BrowserView;
 
 namespace views {
+class ActionViewController;
 class Button;
 }
 class NewTabButton;
@@ -25,11 +27,12 @@ class TabStrip;
 class TabStripScrollContainer;
 class ProductSpecificationsButton;
 class TabSearchPositionMetricsLogger;
+class TabStripControlButton;
 
 // Container for the tabstrip and the other views sharing space with it -
 // with the exception of the caption buttons.
 class HorizontalTabStripRegionView final : public TabStripRegionView {
-  METADATA_HEADER(HorizontalTabStripRegionView, views::AccessiblePaneView)
+  METADATA_HEADER(HorizontalTabStripRegionView, TabStripRegionView)
 
  public:
   // These values are persisted to logs. Entries should not be renumbered and
@@ -44,23 +47,15 @@ class HorizontalTabStripRegionView final : public TabStripRegionView {
   // LINT.ThenChange(//tools/metrics/histograms/metadata/tab/enums.xml:TabSearchPosition)
 
   explicit HorizontalTabStripRegionView(BrowserView* browser_view);
-  explicit HorizontalTabStripRegionView(std::unique_ptr<TabStrip> tab_strip);
   HorizontalTabStripRegionView(const HorizontalTabStripRegionView&) = delete;
   HorizontalTabStripRegionView& operator=(const HorizontalTabStripRegionView&) =
       delete;
   ~HorizontalTabStripRegionView() override;
 
-  // Returns true if the specified rect intersects the window caption area of
-  // the browser window. |rect| is in the local coordinate space
-  // of |this|.
-  bool IsRectInWindowCaption(const gfx::Rect& rect);
-
-  // A convenience function which calls |IsRectInWindowCaption()| with a rect of
-  // size 1x1 and an origin of |point|. |point| is in the local coordinate space
-  // of |this|.
+  // Returns true if |point| falls within the window caption area of the
+  // horizontal tab strip. Returns false if the point hits an interactive child
+  // view. |point| is in the local coordinate space of |this|.
   bool IsPositionInWindowCaption(const gfx::Point& point);
-
-  views::Button* GetNewTabButton();
 
   views::Button* new_tab_button_for_testing() { return new_tab_button_; }
 
@@ -96,28 +91,38 @@ class HorizontalTabStripRegionView final : public TabStripRegionView {
   void ChildPreferredSizeChanged(views::View* child) override;
   views::View* GetDefaultFocusableChild() override;
 
-  views::View* GetTabStripContainerForTesting() { return tab_strip_container_; }
-
   const Profile* profile() { return profile_; }
 
   TabStrip* tab_strip() { return tab_strip_; }
 
   // TabStripRegionView:
+  void InitializeTabStrip() override;
+  void ResetTabStrip() override;
   gfx::Size GetMinimumSize() const override;
   gfx::Size CalculatePreferredSize(
       const views::SizeBounds& available_size) const override;
   bool IsTabStripEditable() const override;
-  void SetTabStripNotEditableForTesting() const override;
+  void DisableTabStripEditingForTesting() const override;
   bool IsTabStripCloseable() const override;
   bool IsAnimating() const override;
   void StopAnimating() override;
   void UpdateLoadingAnimations(const base::TimeDelta& elapsed_time) override;
   std::optional<int> GetFocusedTabIndex() const override;
+  const TabRendererData& GetTabRendererData(int tab_index) override;
   views::View* GetTabAnchorViewAt(int tab_index) override;
   views::View* GetTabGroupAnchorView(
       const tab_groups::TabGroupId& group) override;
+  void OnTabGroupFocusChanged(
+      std::optional<tab_groups::TabGroupId> new_focused_group_id,
+      std::optional<tab_groups::TabGroupId> old_focused_group_id) override;
   TabDragContext* GetDragContext() override;
+  std::optional<BrowserRootView::DropIndex> GetDropIndex(
+      const ui::DropTargetEvent& event) override;
+  BrowserRootView::DropTarget* GetDropTarget(
+      gfx::Point loc_in_local_coords) override;
+  views::View* GetViewForDrop() override;
   void SetTabStripObserver(TabStripObserver* observer) override;
+  views::View* GetTabStripView() override;
 
   void LogTabSearchPositionForTesting();
 
@@ -136,6 +141,8 @@ class HorizontalTabStripRegionView final : public TabStripRegionView {
   // on `offset`. This should only used for views that show before tab strip.
   void AdjustViewBoundsRect(View* view, int offset);
 
+  bool tab_strip_set_ = false;
+
   raw_ptr<const Profile> profile_ = nullptr;
   raw_ptr<TabStripActionContainer> tab_strip_action_container_ = nullptr;
   raw_ptr<views::View> tab_strip_container_ = nullptr;
@@ -145,6 +152,7 @@ class HorizontalTabStripRegionView final : public TabStripRegionView {
   raw_ptr<views::Button> new_tab_button_ = nullptr;
   raw_ptr<TabSearchContainer> tab_search_container_ = nullptr;
   raw_ptr<ProductSpecificationsButton> product_specifications_button_ = nullptr;
+  raw_ptr<TabStripControlButton> unfocus_button_ = nullptr;
 
   // On some platforms for Chrome Refresh, the TabSearchButton should be
   // laid out before the TabStrip. Storing this configuration prevents
@@ -153,6 +161,8 @@ class HorizontalTabStripRegionView final : public TabStripRegionView {
 
   std::unique_ptr<TabSearchPositionMetricsLogger>
       tab_search_position_metrics_logger_;
+
+  std::unique_ptr<views::ActionViewController> action_view_controller_;
 
   const base::CallbackListSubscription subscription_ =
       ui::TouchUiController::Get()->RegisterCallback(base::BindRepeating(

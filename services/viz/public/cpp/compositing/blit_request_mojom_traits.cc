@@ -82,7 +82,7 @@ bool StructTraits<viz::mojom::BlitRequestDataView, viz::BlitRequest>::Read(
   *out = viz::BlitRequest(
       destination_region_offset, letterboxing_behavior,
       gpu::ClientSharedImage::ImportUnowned(std::move(exported_shared_image)),
-      sync_token, data.populates_gpu_memory_buffer());
+      sync_token, data.populates_mappable_shared_image());
 
   return true;
 }

@@ -57,10 +57,10 @@ class GcmInternalsUIMessageHandler : public content::WebUIMessageHandler {
                      const gcm::GCMClient::GCMStatistics* stats);
 
   // Request all of the GCM related infos through gcm profile service.
-  void RequestAllInfo(const base::Value::List& args);
+  void RequestAllInfo(const base::ListValue& args);
 
   // Enables/disables GCM activity recording through gcm profile service.
-  void SetRecording(const base::Value::List& args);
+  void SetRecording(const base::ListValue& args);
 
   // Callback function of the request for all gcm related infos.
   void RequestGCMStatisticsFinished(const gcm::GCMClient::GCMStatistics& args);
@@ -77,13 +77,12 @@ void GcmInternalsUIMessageHandler::ReturnResults(
     Profile* profile,
     gcm::GCMProfileService* profile_service,
     const gcm::GCMClient::GCMStatistics* stats) {
-  base::Value::Dict results = gcm_driver::SetGCMInternalsInfo(
+  base::DictValue results = gcm_driver::SetGCMInternalsInfo(
       stats, profile_service, profile->GetPrefs());
   FireWebUIListener(gcm_driver::kSetGcmInternalsInfo, results);
 }
 
-void GcmInternalsUIMessageHandler::RequestAllInfo(
-    const base::Value::List& list) {
+void GcmInternalsUIMessageHandler::RequestAllInfo(const base::ListValue& list) {
   AllowJavascript();
   if (list.size() != 1) {
     NOTREACHED();
@@ -108,7 +107,7 @@ void GcmInternalsUIMessageHandler::RequestAllInfo(
   }
 }
 
-void GcmInternalsUIMessageHandler::SetRecording(const base::Value::List& list) {
+void GcmInternalsUIMessageHandler::SetRecording(const base::ListValue& list) {
   if (list.size() != 1) {
     NOTREACHED();
   }

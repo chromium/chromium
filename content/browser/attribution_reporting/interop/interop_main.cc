@@ -47,7 +47,7 @@ class Env : public content::ContentTestSuiteBase {
       test_content_initializer_;
 };
 
-std::optional<base::Value::Dict> ReadDictFromFile(
+std::optional<base::DictValue> ReadDictFromFile(
     const base::CommandLine& cmd_line,
     const char* flag) {
   if (!cmd_line.HasSwitch(flag)) {
@@ -69,7 +69,7 @@ std::optional<base::Value::Dict> ReadDictFromFile(
     return std::nullopt;
   }
 
-  base::Value::Dict* dict = result->GetIfDict();
+  base::DictValue* dict = result->GetIfDict();
   if (!dict) {
     std::cerr << flag << " JSON must be a dictionary" << std::endl;
     return std::nullopt;

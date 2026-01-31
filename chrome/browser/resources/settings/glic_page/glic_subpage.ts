@@ -108,10 +108,10 @@ export class SettingsGlicSubpageElement extends SettingsGlicSubpageElementBase {
         },
       },
 
-      closedCaptionsFeatureEnabled_: {
+      closedCaptionsToggleEnabled_: {
         type: Boolean,
         value: () => {
-          return loadTimeData.getBoolean('glicClosedCaptionsFeatureEnabled');
+          return loadTimeData.getBoolean('glicCanUseLive');
         },
       },
 
@@ -139,6 +139,12 @@ export class SettingsGlicSubpageElement extends SettingsGlicSubpageElementBase {
         value: () => loadTimeData.getBoolean('showGeminiPersonalContextLink'),
       },
 
+      showGlicInstructionLink_: {
+        type: Boolean,
+        value: () => loadTimeData.getBoolean('showInstructionLink'),
+      },
+
+
       showGlicKeepSidepanelOpenOnNewTabsSetting_: {
         type: Boolean,
         value: () => loadTimeData.getBoolean(
@@ -161,6 +167,13 @@ export class SettingsGlicSubpageElement extends SettingsGlicSubpageElementBase {
         type: String,
         computed: `computeMicrophoneSubLabel_(prefs.${
             SettingsGlicPageFeaturePrefName.USER_STATUS}.value)`,
+      },
+
+      microphoneToggleEnabled_: {
+        type: Boolean,
+        value: () => {
+          return loadTimeData.getBoolean('glicCanUseLive');
+        },
       },
 
       tabAccessSubLabel_: {
@@ -278,15 +291,17 @@ export class SettingsGlicSubpageElement extends SettingsGlicSubpageElementBase {
       MetricsBrowserProxyImpl.getInstance();
   declare private tabAccessToggleExpanded_: boolean;
   declare private defaultTabAccessToggleExpanded_: boolean;
-  declare private closedCaptionsFeatureEnabled_: boolean;
+  declare private closedCaptionsToggleEnabled_: boolean;
   declare private glicExtensionsFeatureEnabled_: boolean;
   declare private glicUserStatusCheckFeatureEnabled_: boolean;
   declare private showGlicDefaultTabContextSetting_: boolean;
   declare private showGlicPersonalContextLink_: boolean;
+  declare private showGlicInstructionLink_: boolean;
   declare private showGlicKeepSidepanelOpenOnNewTabsSetting_: boolean;
   declare private locationSubLabel_: string;
   declare private locationLearnMoreUrl_: string;
   declare private microphoneSubLabel_: string;
+  declare private microphoneToggleEnabled_: boolean;
   declare private tabAccessSubLabel_: string;
   declare private tabAccessLearnMoreUrl_: string;
   declare private defaultTabAccessSubLabel_: string;

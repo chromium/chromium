@@ -11,6 +11,7 @@
 #include "base/callback_list.h"
 #include "base/functional/callback_helpers.h"
 #include "base/scoped_observation.h"
+#include "chrome/browser/actor/ui/actor_ui_tab_controller_interface.h"
 #include "chrome/browser/actor/ui/states/actor_overlay_state.h"
 #include "chrome/browser/ui/views/frame/immersive_mode_controller.h"
 #include "components/prefs/pref_change_registrar.h"
@@ -20,6 +21,10 @@
 #include "ui/views/view_observer.h"
 
 class ActorOverlayWebView;
+
+namespace chrome {
+class BrowserCommandController;
+}  // namespace chrome
 
 namespace views {
 class WebView;
@@ -61,12 +66,17 @@ class ActorUiContentsContainerController : public content::WebContentsObserver,
   void OnWebContentsDetached(views::WebView* web_view);
 
   // Called whenever the visibility of the overlay or state has changed.
+  // Note: ActorOverlayState cannot request both a mouse movement and a click in
+  // the same update.
   void OnOverlayStateChanged(bool is_visible,
                              ActorOverlayState state,
                              base::OnceClosure callback);
 
   // views::ViewObserver:
   void OnViewBoundsChanged(views::View* observed_view) override;
+
+  // Called by the WindowController when the omnibox popup visibility changes.
+  void NotifyWindowOmniboxPopupVisibilityChanged();
 
   // Called by the WindowController when Immersive state changes.
   void NotifyTabControllerOnImmersiveModeChanged();
@@ -82,6 +92,7 @@ class ActorUiContentsContainerController : public content::WebContentsObserver,
   // Gets the ActorUiTabController associated with the contentsContainer's
   // webcontents.
   ActorUiTabControllerInterface* GetActorUiTabController();
+
   // Notifies the respective tab controller that a new web contents has been
   // attached.
   void NotifyTabControllerOnWebContentsAttached();
@@ -89,6 +100,8 @@ class ActorUiContentsContainerController : public content::WebContentsObserver,
   void NotifyTabControllerOnViewBoundsChanged();
   // Notified whenever the overlay background status changes.
   void OnActorOverlayBackgroundChange(bool is_visible);
+  // Notifies the BrowserCommandController that the overlay state has changed.
+  void UpdateFindInPageCommandState();
 
   std::vector<base::CallbackListSubscription>
       web_contents_callback_subscriptions_;
@@ -128,6 +141,10 @@ class ActorUiWindowController : public ImmersiveModeController::Observer {
   actor::ui::ActorUiContentsContainerController* GetControllerForWebContents(
       content::WebContents* web_contents);
 
+  void OnOmniboxPopupStateChanged(bool is_open);
+  // Called by ActorUiTabController to check if any omnibox's popup is open.
+  bool IsAnyOmniboxPopupOpened() const;
+
   // ImmersiveModeController::Observer:
   void OnImmersiveRevealStarted() override;
   void OnImmersiveRevealEnded() override;
@@ -139,10 +156,19 @@ class ActorUiWindowController : public ImmersiveModeController::Observer {
   bool IsToolbarRevealed() const;
   bool IsToolbarPinned() const;
 
+  chrome::BrowserCommandController* GetCommandController();
+
  private:
   void InitializeImmersiveModeObserver();
   void NotifyControllersOfImmersiveChange();
   void OnImmersiveFullscreenToolbarPrefChanged();
+
+  // Helper to run the immersive change notification asynchronously.
+  void NotifyControllersOfImmersiveChangeInternal();
+  // Helper to run the omnibox popup state change notification asynchronously.
+  void OnOmniboxPopupStateChangedInternal(bool is_open);
+
+  bool is_omnibox_popup_open_ = false;
 
   PrefChangeRegistrar pref_change_registrar_;
 

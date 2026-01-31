@@ -8,10 +8,15 @@
 
 #include "base/run_loop.h"
 #include "base/test/bind.h"
+#include "base/test/gmock_expected_support.h"
 #include "base/test/mock_callback.h"
 #include "base/test/protobuf_matchers.h"
+#include "base/test/scoped_feature_list.h"
+#include "base/test/task_environment.h"
 #include "base/test/test_future.h"
+#include "base/types/expected.h"
 #include "chrome/browser/ai/ai_test_utils.h"
+#include "chrome/browser/ai/features.h"
 #include "chrome/browser/optimization_guide/mock_optimization_guide_keyed_service.h"
 #include "components/optimization_guide/core/model_execution/test/mock_on_device_capability.h"
 #include "components/optimization_guide/core/model_execution/test/substitution_builder.h"
@@ -21,6 +26,7 @@
 #include "components/optimization_guide/proto/features/proofreader_api.pb.h"
 #include "components/optimization_guide/proto/string_value.pb.h"
 #include "content/public/browser/render_widget_host_view.h"
+#include "services/on_device_model/public/cpp/features.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/mojom/ai/ai_manager.mojom.h"
@@ -28,8 +34,11 @@
 
 namespace {
 
+using ::base::test::ErrorIs;
+using ::base::test::TestFuture;
 using ::blink::mojom::AILanguageCode;
 using ::blink::mojom::AILanguageCodePtr;
+using ::on_device_model::mojom::PerformanceClass;
 using ::optimization_guide::FieldSubstitution;
 using ::optimization_guide::ForbidUnsafe;
 using ::optimization_guide::ProtoField;
@@ -45,13 +54,17 @@ constexpr char kInputStringWithError[] = "`input` string";
 constexpr char kCorrectedInputWithCorrection[] = "`Input` string.";
 constexpr char kCorrectionInstruction[] = "From `input` to `Input`";
 
-class MockCreateProofreaderClient
+using CreateProofreaderResult =
+    base::expected<mojo::PendingRemote<blink::mojom::AIProofreader>,
+                   blink::mojom::AIManagerCreateClientError>;
+
+class TestCreateProofreaderClient
     : public blink::mojom::AIManagerCreateProofreaderClient {
  public:
-  MockCreateProofreaderClient() = default;
-  ~MockCreateProofreaderClient() override = default;
-  MockCreateProofreaderClient(const MockCreateProofreaderClient&) = delete;
-  MockCreateProofreaderClient& operator=(const MockCreateProofreaderClient&) =
+  TestCreateProofreaderClient() = default;
+  ~TestCreateProofreaderClient() override = default;
+  TestCreateProofreaderClient(const TestCreateProofreaderClient&) = delete;
+  TestCreateProofreaderClient& operator=(const TestCreateProofreaderClient&) =
       delete;
 
   mojo::PendingRemote<blink::mojom::AIManagerCreateProofreaderClient>
@@ -59,17 +72,20 @@ class MockCreateProofreaderClient
     return receiver_.BindNewPipeAndPassRemote();
   }
 
-  MOCK_METHOD(void,
-              OnResult,
-              (mojo::PendingRemote<::blink::mojom::AIProofreader> proofreader),
-              (override));
-  MOCK_METHOD(void,
-              OnError,
-              (blink::mojom::AIManagerCreateClientError error,
-               blink::mojom::QuotaErrorInfoPtr quota_error_info),
-              (override));
+  void OnResult(
+      mojo::PendingRemote<::blink::mojom::AIProofreader> proofreader) override {
+    result_.SetValue(std::move(proofreader));
+  }
+
+  void OnError(blink::mojom::AIManagerCreateClientError error,
+               blink::mojom::QuotaErrorInfoPtr quota_error_info) override {
+    result_.SetValue(base::unexpected(error));
+  }
+
+  TestFuture<CreateProofreaderResult>& result() { return result_; }
 
  private:
+  TestFuture<CreateProofreaderResult> result_;
   mojo::Receiver<blink::mojom::AIManagerCreateProofreaderClient> receiver_{
       this};
 };
@@ -140,27 +156,17 @@ class AIProofreaderTest : public AITestUtils::AITestBase {
     return config;
   }
 
-  mojo::Remote<blink::mojom::AIProofreader> GetAIProofreaderRemote() {
-    mojo::Remote<blink::mojom::AIProofreader> proofreader_remote;
+  mojo::Remote<blink::mojom::AIProofreader> GetAIProofreaderRemote(
+      blink::mojom::AIProofreaderCreateOptionsPtr options =
+          GetDefaultOptions()) {
+    TestCreateProofreaderClient create_proofreader_client;
+    GetAIManagerRemote()->CreateProofreader(
+        create_proofreader_client.BindNewPipeAndPassRemote(),
+        std::move(options));
 
-    MockCreateProofreaderClient mock_create_proofreader_client;
-    base::RunLoop run_loop;
-    EXPECT_CALL(mock_create_proofreader_client, OnResult(_))
-        .WillOnce([&](mojo::PendingRemote<::blink::mojom::AIProofreader>
-                          proofreader) {
-          EXPECT_TRUE(proofreader);
-          proofreader_remote =
-              mojo::Remote<blink::mojom::AIProofreader>(std::move(proofreader));
-          run_loop.Quit();
-        });
-
-    mojo::Remote<blink::mojom::AIManager> ai_manager = GetAIManagerRemote();
-    ai_manager->CreateProofreader(
-        mock_create_proofreader_client.BindNewPipeAndPassRemote(),
-        GetDefaultOptions());
-    run_loop.Run();
-
-    return proofreader_remote;
+    CreateProofreaderResult result = create_proofreader_client.result().Take();
+    EXPECT_OK(result);
+    return mojo::Remote<blink::mojom::AIProofreader>(std::move(result.value()));
   }
 
   void RunSimpleProofreadTest(bool include_correction_types,
@@ -172,25 +178,8 @@ class AIProofreaderTest : public AITestUtils::AITestBase {
         /*correction_explanation_language=*/AILanguageCode::New(""),
         /*expected_input_languages=*/std::vector<AILanguageCodePtr>());
 
-    mojo::Remote<blink::mojom::AIProofreader> proofreader_remote;
-    {
-      MockCreateProofreaderClient mock_create_proofreader_client;
-      base::RunLoop run_loop;
-      EXPECT_CALL(mock_create_proofreader_client, OnResult(_))
-          .WillOnce([&](mojo::PendingRemote<::blink::mojom::AIProofreader>
-                            proofreader) {
-            EXPECT_TRUE(proofreader);
-            proofreader_remote = mojo::Remote<blink::mojom::AIProofreader>(
-                std::move(proofreader));
-            run_loop.Quit();
-          });
-
-      mojo::Remote<blink::mojom::AIManager> ai_manager = GetAIManagerRemote();
-      ai_manager->CreateProofreader(
-          mock_create_proofreader_client.BindNewPipeAndPassRemote(),
-          options.Clone());
-      run_loop.Run();
-    }
+    mojo::Remote<blink::mojom::AIProofreader> proofreader_remote =
+        GetAIProofreaderRemote(options.Clone());
 
     EXPECT_THAT(Proofread(*proofreader_remote, kInputString),
                 ElementsAreArray({"Result text"}));
@@ -209,22 +198,15 @@ class AIProofreaderTest : public AITestUtils::AITestBase {
 TEST_F(AIProofreaderTest, CreateProofreaderNoService) {
   SetupNullOptimizationGuideKeyedService();
 
-  MockCreateProofreaderClient mock_create_proofreader_client;
-  base::RunLoop run_loop;
-  EXPECT_CALL(mock_create_proofreader_client, OnError(_, _))
-      .WillOnce([&](blink::mojom::AIManagerCreateClientError error,
-                    blink::mojom::QuotaErrorInfoPtr quota_error_info) {
-        ASSERT_EQ(
-            error,
-            blink::mojom::AIManagerCreateClientError::kUnableToCreateSession);
-        run_loop.Quit();
-      });
-
-  mojo::Remote<blink::mojom::AIManager> ai_manager = GetAIManagerRemote();
-  ai_manager->CreateProofreader(
-      mock_create_proofreader_client.BindNewPipeAndPassRemote(),
+  TestCreateProofreaderClient create_proofreader_client;
+  GetAIManagerRemote()->CreateProofreader(
+      create_proofreader_client.BindNewPipeAndPassRemote(),
       GetDefaultOptions());
-  run_loop.Run();
+
+  EXPECT_THAT(
+      create_proofreader_client.result().Take(),
+      ErrorIs(
+          blink::mojom::AIManagerCreateClientError::kUnableToCreateSession));
 }
 
 TEST_F(AIProofreaderTest, CanCreateWaitsForEligibility) {
@@ -311,6 +293,113 @@ TEST_F(AIProofreaderTest, CanCreateUnIsLanguagesSupported) {
                                                 callback.Get());
 }
 
+TEST_F(AIProofreaderTest, CreateProofreaderModelNotEligible) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeaturesAndParameters(
+      {{optimization_guide::features::kOnDeviceModelPerformanceParams,
+        {{"compatible_on_device_performance_classes", "3,4,5,6"}}}},
+      {{on_device_model::features::kOnDeviceModelCpuBackend}});
+
+  fake_broker_->service_settings().performance_class =
+      PerformanceClass::kVeryLow;
+
+  TestCreateProofreaderClient create_proofreader_client;
+  GetAIManagerRemote()->CreateProofreader(
+      create_proofreader_client.BindNewPipeAndPassRemote(),
+      GetDefaultOptions());
+
+  EXPECT_THAT(
+      create_proofreader_client.result().Take(),
+      ErrorIs(
+          blink::mojom::AIManagerCreateClientError::kUnableToCreateSession));
+}
+
+TEST_F(AIProofreaderTest, CreateProofreaderWaitsForBaseModel) {
+  fake_broker_->InstallBaseModel(nullptr);
+
+  TestCreateProofreaderClient create_proofreader_client;
+  GetAIManagerRemote()->CreateProofreader(
+      create_proofreader_client.BindNewPipeAndPassRemote(),
+      GetDefaultOptions());
+
+  TestFuture<CreateProofreaderResult>& future =
+      create_proofreader_client.result();
+  task_environment()->FastForwardBy(base::Hours(1));
+  EXPECT_FALSE(future.IsReady());
+
+  fake_broker_->InstallBaseModel(
+      std::make_unique<optimization_guide::FakeBaseModelAsset>());
+
+  EXPECT_OK(future.Take());
+}
+
+TEST_F(AIProofreaderTest, CreateProofreaderWaitsForModelAdaptation) {
+  fake_broker_->model_provider().RemoveModel(
+      optimization_guide::proto::
+          OPTIMIZATION_TARGET_MODEL_EXECUTION_FEATURE_PROOFREADER_API);
+
+  TestCreateProofreaderClient create_proofreader_client;
+  GetAIManagerRemote()->CreateProofreader(
+      create_proofreader_client.BindNewPipeAndPassRemote(),
+      GetDefaultOptions());
+
+  TestFuture<CreateProofreaderResult>& future =
+      create_proofreader_client.result();
+  task_environment()->FastForwardBy(base::Hours(1));
+  EXPECT_FALSE(future.IsReady());
+
+  optimization_guide::FakeAdaptationAsset fake_asset(
+      {.config = CreateConfig()});
+  fake_broker_->UpdateModelAdaptation(fake_asset);
+
+  EXPECT_OK(future.Take());
+}
+
+TEST_F(AIProofreaderTest, CreateProofreaderWaitsForTextSafetyModel) {
+  optimization_guide::FakeAdaptationAsset fake_asset(
+      {.config = CreateSafeConfig()});
+  fake_broker_->UpdateModelAdaptation(fake_asset);
+
+  TestCreateProofreaderClient create_proofreader_client;
+  GetAIManagerRemote()->CreateProofreader(
+      create_proofreader_client.BindNewPipeAndPassRemote(),
+      GetDefaultOptions());
+
+  TestFuture<CreateProofreaderResult>& future =
+      create_proofreader_client.result();
+  task_environment()->FastForwardBy(base::Hours(1));
+  EXPECT_FALSE(future.IsReady());
+
+  optimization_guide::FakeSafetyModelAsset safety_asset(CreateSafetyConfig());
+  fake_broker_->UpdateSafetyModel(safety_asset);
+
+  EXPECT_OK(future.Take());
+}
+
+TEST_F(AIProofreaderTest, CreateProofreaderSafetyConfigNotAvailable) {
+  optimization_guide::FakeAdaptationAsset fake_asset(
+      {.config = CreateSafeConfig()});
+  fake_broker_->UpdateModelAdaptation(fake_asset);
+  // Provide a safety asset that does not support proofreader.
+  optimization_guide::FakeSafetyModelAsset safety_asset([] {
+    auto safety_config = CreateSafetyConfig();
+    safety_config.set_feature(
+        optimization_guide::proto::MODEL_EXECUTION_FEATURE_TEST);
+    return safety_config;
+  }());
+  fake_broker_->UpdateSafetyModel(safety_asset);
+
+  TestCreateProofreaderClient create_proofreader_client;
+  GetAIManagerRemote()->CreateProofreader(
+      create_proofreader_client.BindNewPipeAndPassRemote(),
+      GetDefaultOptions());
+
+  EXPECT_THAT(
+      create_proofreader_client.result().Take(),
+      ErrorIs(
+          blink::mojom::AIManagerCreateClientError::kUnableToCreateSession));
+}
+
 TEST_F(AIProofreaderTest, ProofreadDefault) {
   RunSimpleProofreadTest(false, false);
 }
@@ -376,26 +465,9 @@ TEST_F(AIProofreaderTest, GetCorretionTypeDefault) {
       /*include_correction_explanations=*/false,
       /*correction_explanation_language=*/AILanguageCode::New(""),
       /*expected_input_languages=*/std::vector<AILanguageCodePtr>());
-  mojo::Remote<blink::mojom::AIProofreader> proofreader_remote;
-  {
-    MockCreateProofreaderClient mock_create_proofreader_client;
-    base::RunLoop run_loop;
-    EXPECT_CALL(mock_create_proofreader_client, OnResult(_))
-        .WillOnce([&](mojo::PendingRemote<::blink::mojom::AIProofreader>
-                          proofreader) {
-          EXPECT_TRUE(proofreader);
-          proofreader_remote =
-              mojo::Remote<blink::mojom::AIProofreader>(std::move(proofreader));
-          run_loop.Quit();
-        });
 
-    mojo::Remote<blink::mojom::AIManager> ai_manager = GetAIManagerRemote();
-    ai_manager->CreateProofreader(
-        mock_create_proofreader_client.BindNewPipeAndPassRemote(),
-        options.Clone());
-    run_loop.Run();
-  }
-
+  mojo::Remote<blink::mojom::AIProofreader> proofreader_remote =
+      GetAIProofreaderRemote(options.Clone());
   AITestUtils::TestStreamingResponder responder;
   proofreader_remote->GetCorrectionType(
       kInputStringWithError, kCorrectedInputWithCorrection,

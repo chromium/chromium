@@ -18,7 +18,7 @@ void DistilledPagePrefsObserverBridge::OnChangeFontFamily(
 void DistilledPagePrefsObserverBridge::OnChangeTheme(
     dom_distiller::mojom::Theme theme,
     dom_distiller::ThemeSettingsUpdateSource source) {
-  [observer_ onChangeTheme:theme];
+  [observer_ onChangeTheme:theme withSource:source];
 }
 
 void DistilledPagePrefsObserverBridge::OnChangeFontScaling(float scaling) {

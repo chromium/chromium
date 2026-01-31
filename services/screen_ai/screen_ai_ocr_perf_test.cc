@@ -198,7 +198,7 @@ class OcrTestEnvironment : public ::testing::Environment {
     CHECK(json_serializer.Serialize(perf_values_));
   }
 
-  base::Value::Dict perf_values_;
+  base::DictValue perf_values_;
   base::FilePath output_path_;
   std::vector<SkBitmap> jpeg_images_;
   std::unique_ptr<ScreenAILibraryWrapper> library_;

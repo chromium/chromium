@@ -185,15 +185,15 @@ RequestCoordinator* GetRequestCoordinator(Profile* profile,
 
 }  // namespace
 
-static jlong JNI_OfflinePageEvaluationBridge_CreateBridgeForProfile(
+static int64_t JNI_OfflinePageEvaluationBridge_CreateBridgeForProfile(
     JNIEnv* env,
     Profile* profile,
-    const jboolean j_use_evaluation_scheduler) {
+    const bool j_use_evaluation_scheduler) {
   OfflinePageModel* offline_page_model =
       OfflinePageModelFactory::GetForBrowserContext(profile);
 
-  RequestCoordinator* request_coordinator = GetRequestCoordinator(
-      profile, static_cast<bool>(j_use_evaluation_scheduler));
+  RequestCoordinator* request_coordinator =
+      GetRequestCoordinator(profile, j_use_evaluation_scheduler);
 
   if (offline_page_model == nullptr || request_coordinator == nullptr)
     return 0;
@@ -201,7 +201,7 @@ static jlong JNI_OfflinePageEvaluationBridge_CreateBridgeForProfile(
   OfflinePageEvaluationBridge* bridge = new OfflinePageEvaluationBridge(
       env, obj, profile, offline_page_model, request_coordinator);
 
-  return reinterpret_cast<jlong>(bridge);
+  return reinterpret_cast<int64_t>(bridge);
 }
 
 OfflinePageEvaluationBridge::OfflinePageEvaluationBridge(
@@ -320,7 +320,7 @@ void OfflinePageEvaluationBridge::SavePageLater(JNIEnv* env,
                                                 std::string& url,
                                                 std::string& name_space,
                                                 std::string& client_id,
-                                                jboolean user_requested) {
+                                                bool user_requested) {
   offline_pages::ClientId client_id;
   client_id.name_space = name_space;
   client_id.id = client_id;
@@ -328,7 +328,7 @@ void OfflinePageEvaluationBridge::SavePageLater(JNIEnv* env,
   RequestCoordinator::SavePageLaterParams params;
   params.url = GURL(url);
   params.client_id = client_id;
-  params.user_requested = static_cast<bool>(user_requested);
+  params.user_requested = user_requested;
   request_coordinator_->SavePageLater(params);
 }
 

@@ -19,6 +19,8 @@
 #include "services/network/public/cpp/network_switches.h"
 #include "services/network/public/mojom/ip_address_space.mojom.h"
 #include "services/network/public/mojom/parsed_headers.mojom.h"
+#include "services/network/public/mojom/url_loader_factory.mojom.h"
+#include "services/network/public/mojom/url_loader_network_service_observer.mojom-shared.h"
 #include "url/gurl.h"
 
 namespace network {
@@ -27,6 +29,8 @@ namespace {
 using mojom::IPAddressSpace;
 using net::IPAddress;
 using net::IPEndPoint;
+using CIDR = IPAddressSpaceOverrides::CIDR;
+using AddressSpaceOverride = IPAddressSpaceOverrides::AddressSpaceOverride;
 
 // Parses a string of the form "<URL-safe IP address>:<port>".
 std::optional<IPEndPoint> ParseEndpoint(std::string_view str) {
@@ -68,6 +72,23 @@ std::optional<IPEndPoint> ParseEndpoint(std::string_view str) {
   return IPEndPoint(address, port);
 }
 
+// Parses an IP block specifier from CIDR notation, with the IP prefix in a
+// URL-safe format (e.g. `[2001::]/16`).  Unlike ParseEndpoint, no port is
+// specified.
+std::optional<CIDR> ParseCIDR(std::string_view str) {
+  size_t mask_bits;
+  std::optional<IPAddress> ip_address =
+      net::ParseCIDRBlockNonStandardURLFormat(str, &mask_bits);
+  if (!ip_address) {
+    return std::nullopt;
+  }
+
+  CIDR cidr(std::move(*ip_address), mask_bits);
+  return cidr;
+  // cidr.ip_address = std::move(ip_address);
+  // return std::make_optional({std::move(*ip_address), mask_bits});
+}
+
 std::optional<IPAddressSpace> ParseIPAddressSpace(std::string_view str) {
   if (str == "public") {
     return IPAddressSpace::kPublic;
@@ -93,32 +114,19 @@ std::optional<IPAddressSpace> ParseIPAddressSpace(std::string_view str) {
   return std::nullopt;
 }
 
-// Represents a single command-line-specified endpoint override.
-struct EndpointOverride {
-  // The IP endpoint to override the address space for.
-  IPEndPoint endpoint;
-
-  // The IP address space to which `endpoint` should be mapped.
-  IPAddressSpace space;
-};
-
-// Parses an override from `str`, of the form "<endpoint>=<space>".
-std::optional<EndpointOverride> ParseEndpointOverride(std::string_view str) {
+// Parses an override from `str`, of the form "<endpoint|range>=<space>".
+std::optional<AddressSpaceOverride> ParseAddressSpaceOverride(
+    std::string_view str) {
   std::vector<std::string_view> tokens = base::SplitStringPiece(
       str, "=", base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
 
-  // There should be 2 parts: the endpoint and the address space.
+  // There should be 2 parts: the CIDR/endpoint and the address space.
   if (tokens.size() != 2) {
     return std::nullopt;
   }
 
-  std::string_view endpoint = tokens[0];
+  std::string_view endpoint_or_cidr = tokens[0];
   std::string_view address_space = tokens[1];
-
-  std::optional<IPEndPoint> parsed_endpoint = ParseEndpoint(endpoint);
-  if (!parsed_endpoint.has_value()) {
-    return std::nullopt;
-  }
 
   std::optional<IPAddressSpace> parsed_address_space =
       ParseIPAddressSpace(address_space);
@@ -126,51 +134,50 @@ std::optional<EndpointOverride> ParseEndpointOverride(std::string_view str) {
     return std::nullopt;
   }
 
-  EndpointOverride result;
-  result.endpoint = std::move(*parsed_endpoint);
-  result.space = *parsed_address_space;
-  return result;
-}
-
-// Parses a comma-separated list of overrides. Ignores invalid entries.
-std::vector<EndpointOverride> ParseEndpointOverrideList(std::string_view list) {
-  // Since we skip invalid entries anyway, we can skip empty entries.
-  std::vector<std::string_view> tokens = base::SplitStringPiece(
-      list, ",", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
-
-  std::vector<EndpointOverride> endpoint_overrides;
-  for (std::string_view token : tokens) {
-    std::optional<EndpointOverride> parsed = ParseEndpointOverride(token);
-    if (parsed.has_value()) {
-      endpoint_overrides.push_back(*std::move(parsed));
-    }
+  std::optional<IPEndPoint> parsed_endpoint = ParseEndpoint(endpoint_or_cidr);
+  if (parsed_endpoint.has_value()) {
+    AddressSpaceOverride result;
+    result.endpoint = std::move(*parsed_endpoint);
+    result.space = *parsed_address_space;
+    return result;
   }
 
-  return endpoint_overrides;
-}
-
-// Applies overrides specified on the command-line to `endpoint`.
-// Returns nullopt if no override matches `endpoint`.
-std::optional<IPAddressSpace> ApplyCommandLineOverrides(
-    const IPEndPoint& endpoint) {
-  const base::CommandLine& command_line =
-      *base::CommandLine::ForCurrentProcess();
-  if (!command_line.HasSwitch(switches::kIpAddressSpaceOverrides)) {
-    return std::nullopt;
+  std::optional<CIDR> parsed_cidr = ParseCIDR(endpoint_or_cidr);
+  if (parsed_cidr.has_value()) {
+    AddressSpaceOverride result;
+    result.cidr = std::move(*parsed_cidr);
+    result.space = *parsed_address_space;
+    return result;
   }
 
-  std::string switch_str =
-      command_line.GetSwitchValueASCII(switches::kIpAddressSpaceOverrides);
-  std::vector<EndpointOverride> endpoint_overrides =
-      ParseEndpointOverrideList(switch_str);
+  return std::nullopt;
+}
 
-  for (const auto& endpoint_override : endpoint_overrides) {
-    if (endpoint_override.endpoint == endpoint) {
-      return endpoint_override.space;
-    }
-    if ((endpoint_override.endpoint.port() == 0) &&
-        (endpoint_override.endpoint.address() == endpoint.address())) {
-      return endpoint_override.space;
+std::optional<IPAddressSpace> ApplyOverrides(
+    const IPEndPoint& endpoint,
+    std::vector<AddressSpaceOverride>& address_space_overrides) {
+  for (const auto& address_space_override : address_space_overrides) {
+    if (address_space_override.endpoint) {
+      if (address_space_override.endpoint == endpoint) {
+        return address_space_override.space;
+      }
+      if ((address_space_override.endpoint->port() == 0) &&
+          (address_space_override.endpoint->address() == endpoint.address())) {
+        return address_space_override.space;
+      }
+    } else if (address_space_override.cidr) {
+      // net::IPAddressMatchesPrefix will automatically convert IPv4 address to
+      // IPv4-mapped IPv6 addresses if only one of the address is IPv4. To avoid
+      // overrides in this case, a check is added to ensure that overrides only
+      // occur when both addresses are IPv4 or both are IPv6.
+      if (endpoint.address().IsIPv4() ==
+              address_space_override.cidr->ip_address.IsIPv4() &&
+
+          net::IPAddressMatchesPrefix(endpoint.address(),
+                                      address_space_override.cidr->ip_address,
+                                      address_space_override.cidr->mask_bits)) {
+        return address_space_override.space;
+      }
     }
   }
 
@@ -311,12 +318,43 @@ IPAddressSpace IPEndPointToIPAddressSpace(const IPEndPoint& endpoint) {
     return IPAddressSpace::kUnknown;
   }
 
-  std::optional<IPAddressSpace> space = ApplyCommandLineOverrides(endpoint);
+  std::optional<IPAddressSpace> space =
+      IPAddressSpaceOverrides::GetInstance().HasOverride(endpoint);
   if (space.has_value()) {
     return *space;
   }
 
   return IPAddressToIPAddressSpace(endpoint.address());
+}
+
+std::string_view LocalNetworkAccessResultToStringPiece(
+    mojom::LocalNetworkAccessResult result) {
+  switch (result) {
+    case mojom::LocalNetworkAccessResult::kGranted:
+      return "granted";
+    case mojom::LocalNetworkAccessResult::kDenied:
+      return "denied";
+    case mojom::LocalNetworkAccessResult::kRetryDueToCache:
+      return "retryDueToCache";
+  }
+  // In case enum value gets corrupted.
+  return "unknown";
+}
+
+std::string_view TransportTypeToStringPiece(
+    mojom::TransportType transport_type) {
+  switch (transport_type) {
+    case mojom::TransportType::kDirect:
+      return "direct";
+    case mojom::TransportType::kProxied:
+      return "proxied";
+    case mojom::TransportType::kCached:
+      return "cached";
+    case mojom::TransportType::kCachedFromProxy:
+      return "cachedFromProxy";
+  }
+  // In case enum value gets corrupted.
+  return "unknown";
 }
 
 std::string_view IPAddressSpaceToStringPiece(IPAddressSpace space) {
@@ -330,6 +368,8 @@ std::string_view IPAddressSpaceToStringPiece(IPAddressSpace space) {
     case IPAddressSpace::kLoopback:
       return "loopback";
   }
+  // In case enum value gets corrupted.
+  return "unknown";
 }
 
 IPAddressSpace TransportInfoToIPAddressSpace(const net::TransportInfo& info) {
@@ -441,7 +481,11 @@ std::optional<mojom::IPAddressSpace> GetAddressSpaceFromUrl(const GURL& url) {
   }
 
   if (url.DomainIs("localhost")) {
-    return mojom::IPAddressSpace::kLoopback;
+    // Check IP address space mapping for 127.0.0.1, on the off chance that
+    // there is an override remapping this to something else.
+    net::IPEndPoint endpoint(net::IPAddress::IPv4Localhost(),
+                             url.EffectiveIntPort());
+    return IPEndPointToIPAddressSpace(endpoint);
   }
 
   net::IPAddress address;
@@ -450,6 +494,125 @@ std::optional<mojom::IPAddressSpace> GetAddressSpaceFromUrl(const GURL& url) {
   }
   net::IPEndPoint endpoint(address, url.EffectiveIntPort());
   return IPEndPointToIPAddressSpace(endpoint);
+}
+
+IPAddressSpaceOverrides& IPAddressSpaceOverrides::GetInstance() {
+  static base::NoDestructor<IPAddressSpaceOverrides> s_instance;
+  return *s_instance;
+}
+
+IPAddressSpaceOverrides::IPAddressSpaceOverrides() = default;
+
+IPAddressSpaceOverrides::AddressSpaceOverride::AddressSpaceOverride() = default;
+IPAddressSpaceOverrides::AddressSpaceOverride::~AddressSpaceOverride() =
+    default;
+
+IPAddressSpaceOverrides::AddressSpaceOverride::AddressSpaceOverride(
+    const AddressSpaceOverride&) = default;
+IPAddressSpaceOverrides::AddressSpaceOverride&
+IPAddressSpaceOverrides::AddressSpaceOverride::operator=(
+    const AddressSpaceOverride& other) = default;
+IPAddressSpaceOverrides::AddressSpaceOverride::AddressSpaceOverride(
+    AddressSpaceOverride&&) = default;
+IPAddressSpaceOverrides::AddressSpaceOverride&
+IPAddressSpaceOverrides::AddressSpaceOverride::operator=(
+    AddressSpaceOverride&& other) = default;
+
+void IPAddressSpaceOverrides::SetAuxiliaryOverrides(
+    const std::string& auxiliary_overrides,
+    std::vector<std::string>* rejected_patterns) {
+  // Ignore empty entries
+  std::vector<std::string_view> tokens =
+      base::SplitStringPiece(auxiliary_overrides, ",", base::TRIM_WHITESPACE,
+                             base::SPLIT_WANT_NONEMPTY);
+
+  std::vector<AddressSpaceOverride> address_space_overrides;
+  std::vector<std::string> address_space_overrides_str;
+  for (std::string_view token : tokens) {
+    std::optional<AddressSpaceOverride> parsed =
+        ParseAddressSpaceOverride(token);
+    if (parsed.has_value()) {
+      address_space_overrides.push_back(*std::move(parsed));
+      address_space_overrides_str.emplace_back(token);
+    } else {
+      rejected_patterns->emplace_back(token);
+    }
+  }
+
+  base::AutoLock lock(lock_);
+
+  auxiliary_overrides_ = std::move(address_space_overrides_str);
+  parsed_auxiliary_overrides_ = std::move(address_space_overrides);
+}
+
+void IPAddressSpaceOverrides::ParseCmdlineIfNeeded() {
+  lock_.AssertAcquired();
+  if (has_cmdline_been_parsed_) {
+    return;
+  }
+
+  const base::CommandLine& command_line =
+      *base::CommandLine::ForCurrentProcess();
+  std::string cmdline_overrides_str = "";
+  if (command_line.HasSwitch(switches::kIpAddressSpaceOverrides)) {
+    cmdline_overrides_str =
+        command_line.GetSwitchValueASCII(switches::kIpAddressSpaceOverrides);
+  }
+
+  std::vector<std::string_view> tokens =
+      base::SplitStringPiece(cmdline_overrides_str, ",", base::TRIM_WHITESPACE,
+                             base::SPLIT_WANT_NONEMPTY);
+
+  for (std::string_view token : tokens) {
+    std::optional<AddressSpaceOverride> parsed =
+        ParseAddressSpaceOverride(token);
+    if (parsed.has_value()) {
+      parsed_cmdline_overrides_.push_back(*std::move(parsed));
+      cmdline_overrides_.emplace_back(token);
+    }
+  }
+
+  has_cmdline_been_parsed_ = true;
+}
+
+void IPAddressSpaceOverrides::ResetForTesting() {
+  base::AutoLock lock(lock_);
+
+  cmdline_overrides_.clear();
+  parsed_cmdline_overrides_.clear();
+  has_cmdline_been_parsed_ = false;
+
+  auxiliary_overrides_.clear();
+  parsed_auxiliary_overrides_.clear();
+}
+
+std::optional<IPAddressSpace> IPAddressSpaceOverrides::HasOverride(
+    const IPEndPoint& endpoint) {
+  base::AutoLock lock(lock_);
+  ParseCmdlineIfNeeded();
+  auto cmdline_address_space_override =
+      ApplyOverrides(endpoint, parsed_cmdline_overrides_);
+  if (cmdline_address_space_override) {
+    return cmdline_address_space_override;
+  }
+
+  auto auxiliary_address_space_override =
+      ApplyOverrides(endpoint, parsed_auxiliary_overrides_);
+  if (auxiliary_address_space_override) {
+    return auxiliary_address_space_override;
+  }
+  return std::nullopt;
+}
+
+std::vector<std::string> IPAddressSpaceOverrides::GetCurrentOverrides() {
+  base::AutoLock lock(lock_);
+  ParseCmdlineIfNeeded();
+
+  std::vector<std::string> result;
+  result.reserve(cmdline_overrides_.size() + auxiliary_overrides_.size());
+  std::ranges::copy(cmdline_overrides_, std::back_inserter(result));
+  std::ranges::copy(auxiliary_overrides_, std::back_inserter(result));
+  return result;
 }
 
 }  // namespace network

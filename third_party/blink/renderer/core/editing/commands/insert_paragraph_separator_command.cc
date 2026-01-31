@@ -557,7 +557,8 @@ void InsertParagraphSeparatorCommand::DoApply(EditingState* editing_state) {
           << text_node;
       ReplaceTextInNode(text_node,
                         leading_whitespace.ComputeOffsetInContainerNode(), 1,
-                        NonBreakingSpaceString());
+                        NonBreakingSpaceString(),
+                        EditCommand::PasswordEchoBehavior::kDoNotEcho);
       GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kEditing);
     }
   }
@@ -662,7 +663,7 @@ void InsertParagraphSeparatorCommand::DoApply(EditingState* editing_state) {
       if (position_after_split.AnchorNode()->IsTextNode()) {
         InsertTextIntoNode(
             To<Text>(position_after_split.ComputeContainerNode()), 0,
-            NonBreakingSpaceString());
+            NonBreakingSpaceString(), PasswordEchoBehavior::kDoNotEcho);
       }
     }
   }

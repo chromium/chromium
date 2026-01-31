@@ -34,6 +34,12 @@ extern NSString* const kBookmarksHomeContextMenuIdentifier;
 extern NSString* const kBookmarkNavigationBarIdentifier;
 // Accessibility identifier of the BookmarksHome VC navigation bar done button.
 extern NSString* const kBookmarksHomeNavigationBarDoneButtonIdentifier;
+// Accessibility identifier of the BookmarksHome VC navigation bar deselect all
+// button.
+extern NSString* const kBookmarksHomeNavigationBarDeselectAllButtonIdentifier;
+// Accessibility identifier of the BookmarksHome VC navigation bar select all
+// button.
+extern NSString* const kBookmarksHomeNavigationBarSelectAllButtonIdentifier;
 // Accessibility identifier of the BookmarkEdit VC navigation bar done button.
 extern NSString* const kBookmarkEditNavigationBarDoneButtonIdentifier;
 // Accessibility identifier of the BookmarkFolderEdit VC navigation bar done

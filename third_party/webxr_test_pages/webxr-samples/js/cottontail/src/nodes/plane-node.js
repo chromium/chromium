@@ -115,9 +115,9 @@ export class PlaneNode extends Node {
       }
 
       if(max) {
-        max[0] = Math.min(min[0], vertex.x);
-        max[1] = Math.min(max[1], vertex.y);
-        max[2] = Math.min(max[2], vertex.z);
+        max[0] = Math.max(max[0], vertex.x);
+        max[1] = Math.max(max[1], vertex.y);
+        max[2] = Math.max(max[2], vertex.z);
       } else {
         max = vec3.fromValues(vertex.x, vertex.y, vertex.z);
       }
@@ -205,4 +205,3 @@ export class PlaneNode extends Node {
     return this.planeNode.waitForComplete();
   }
 }
-

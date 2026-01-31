@@ -21,7 +21,9 @@ namespace autofill {
 
 using ThreadSafe = base::StrongAlias<struct ThreadSafeTag, bool>;
 
-// Compiles a case-insensitive regular expression.
+// Compiles a case-insensitive regular expression. `flags` contains
+// `URegexpFlag`s that will be enabled when applying the compiled regex, it
+// holds `UREGEX_CASE_INSENSITIVE` if not specified.
 //
 // The return icu::RegexPattern is thread-safe (because it's const and icu
 // guarantees thread-safety of the const functions). In particularly this
@@ -30,14 +32,15 @@ using ThreadSafe = base::StrongAlias<struct ThreadSafeTag, bool>;
 // May also be used to initialize `static base::NoDestructor<icu::RegexPattern>`
 // function-scope variables.
 std::unique_ptr<const icu::RegexPattern> CompileRegex(
-    std::u16string_view regex);
+    std::u16string_view regex,
+    uint32_t flags = UREGEX_CASE_INSENSITIVE);
 
 // Returns true if `regex` is found in `input`.
 // If `groups` is non-null, it gets resized and the found capture groups
 // are written into it.
 // Thread-safe.
 bool MatchesRegex(std::u16string_view input,
-                  const icu::RegexPattern& regex_pattern,
+                  const icu::RegexPattern* regex_pattern,
                   std::vector<std::u16string>* groups = nullptr);
 
 // Calls MatchesRegex() after compiling the `regex` on the first call and
@@ -49,8 +52,15 @@ bool MatchesRegex(std::u16string_view input,
                   std::vector<std::u16string>* groups = nullptr) {
   static base::NoDestructor<std::unique_ptr<const icu::RegexPattern>>
       regex_pattern(CompileRegex(regex));
-  return MatchesRegex(input, **regex_pattern, groups);
+  return MatchesRegex(input, regex_pattern->get(), groups);
 }
+
+// If `pattern` matches any substring of `input`, the matched substring is
+// replaced with `replacement` and returned. If `pattern` matches more than
+// once, all matching substrings are replaced.
+std::u16string MatchAndReplace(std::u16string_view input,
+                               const icu::RegexPattern& pattern,
+                               std::string_view replacement);
 
 // Splits `input` into up to `max_groups` segments. Returns a vector of segments
 // in case of success or `std::nullopt` otherwise.

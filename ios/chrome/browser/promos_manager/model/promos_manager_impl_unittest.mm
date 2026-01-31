@@ -440,10 +440,10 @@ TEST_F(PromosManagerImplTest, SortsPromosPreferPendingToNonPending) {
 }
 
 // Tests PromosManager::ActivePromos() correctly ingests active promos
-// (base::Value::List) and returns corresponding
+// (base::ListValue) and returns corresponding
 // std::vector<promos_manager::Promo>.
 TEST_F(PromosManagerImplTest, ReturnsActivePromos) {
-  base::Value::List promos;
+  base::ListValue promos;
   promos.Append("promos_manager::Promo::DefaultBrowser");
   promos.Append("promos_manager::Promo::AppStoreRating");
   promos.Append("promos_manager::Promo::CredentialProviderExtension");
@@ -461,9 +461,9 @@ TEST_F(PromosManagerImplTest, ReturnsActivePromos) {
 }
 
 // Tests PromosManager::ActivePromos() correctly ingests empty active promos
-// (base::Value::List) and returns empty std::set<promos_manager::Promo>.
+// (base::ListValue) and returns empty std::set<promos_manager::Promo>.
 TEST_F(PromosManagerImplTest, ReturnsBlankActivePromosForBlankPrefs) {
-  base::Value::List promos;
+  base::ListValue promos;
 
   std::set<promos_manager::Promo> result =
       promos_manager_->ActivePromos(promos);
@@ -472,10 +472,10 @@ TEST_F(PromosManagerImplTest, ReturnsBlankActivePromosForBlankPrefs) {
 }
 
 // Tests PromosManager::ActivePromos() correctly ingests active promos with
-// malformed data (base::Value::List) and returns corresponding
+// malformed data (base::ListValue) and returns corresponding
 // std::vector<promos_manager::Promo> with malformed entries pruned.
 TEST_F(PromosManagerImplTest, ReturnsActivePromosAndSkipsMalformedData) {
-  base::Value::List promos;
+  base::ListValue promos;
   promos.Append("promos_manager::Promo::DefaultBrowser");
   promos.Append("promos_manager::Promo::AppStoreRating");
   promos.Append("promos_manager::Promo::FOOBAR");
@@ -496,7 +496,7 @@ TEST_F(PromosManagerImplTest, InitializePendingPromos) {
   CreatePromosManager();
 
   // write to Pref
-  base::Value::Dict promos;
+  base::DictValue promos;
   promos.Set("promos_manager::Promo::DefaultBrowser",
              base::TimeToValue(test_clock_.Now()));
   promos.Set("promos_manager::Promo::AppStoreRating",
@@ -527,7 +527,7 @@ TEST_F(PromosManagerImplTest, InitializePendingPromosMalformedData) {
   CreatePromosManager();
 
   // write to Pref
-  base::Value::Dict promos;
+  base::DictValue promos;
   promos.Set("promos_manager::Promo::DefaultBrowser",
              base::TimeToValue(test_clock_.Now()));
   promos.Set("promos_manager::Promo::Foo",

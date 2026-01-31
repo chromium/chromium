@@ -15,8 +15,8 @@
 #include "media/renderers/audio_renderer_impl.h"
 #include "media/renderers/renderer_impl.h"
 #include "media/renderers/video_renderer_impl.h"
-#include "media/video/gpu_memory_buffer_video_frame_pool.h"
 #include "media/video/gpu_video_accelerator_factories.h"
+#include "media/video/mappable_shared_image_video_frame_pool.h"
 
 namespace media {
 
@@ -108,10 +108,11 @@ std::unique_ptr<Renderer> RendererImplFactory::CreateRenderer(
   if (get_gpu_factories_cb_)
     gpu_factories = get_gpu_factories_cb_.Run();
 
-  std::unique_ptr<GpuMemoryBufferVideoFramePool> gmb_pool;
-  if (gpu_factories && gpu_factories->ShouldUseGpuMemoryBuffersForVideoFrames(
-                           false /* for_media_stream */)) {
-    gmb_pool = std::make_unique<GpuMemoryBufferVideoFramePool>(
+  std::unique_ptr<MappableSharedImageVideoFramePool> mappable_si_pool;
+  if (gpu_factories &&
+      gpu_factories->ShouldUseMappableSharedImagesForVideoFrames(
+          false /* for_media_stream */)) {
+    mappable_si_pool = std::make_unique<MappableSharedImageVideoFramePool>(
         media_task_runner, std::move(worker_task_runner), gpu_factories);
   }
 
@@ -127,7 +128,7 @@ std::unique_ptr<Renderer> RendererImplFactory::CreateRenderer(
                           base::Unretained(this), media_task_runner,
                           std::move(request_overlay_info_cb),
                           target_color_space, gpu_factories),
-      true, media_log_, std::move(gmb_pool), media_player_id_));
+      true, media_log_, std::move(mappable_si_pool), media_player_id_));
 
   return std::make_unique<RendererImpl>(
       media_task_runner, std::move(audio_renderer), std::move(video_renderer));

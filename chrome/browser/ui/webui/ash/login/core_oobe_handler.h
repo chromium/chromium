@@ -55,7 +55,7 @@ class CoreOobeView {
   // (kFullyInitialized). It is the responsibility of the client (CoreOobe) to
   // ensure that this invariant is met. Otherwise it will CHECK().
   virtual void ShowScreenWithData(const OobeScreenId& screen,
-                                  std::optional<base::Value::Dict> data) = 0;
+                                  std::optional<base::DictValue> data) = 0;
   virtual void UpdateOobeConfiguration() = 0;
   virtual void ReloadContent() = 0;
   virtual void ForwardCancel() = 0;
@@ -92,7 +92,7 @@ class CoreOobeHandler final : public BaseWebUIHandler,
   void DeclareLocalizedValues(
       ::login::LocalizedValuesBuilder* builder) override;
   void DeclareJSCallbacks() override;
-  void GetAdditionalParameters(base::Value::Dict* dict) override;
+  void GetAdditionalParameters(base::DictValue* dict) override;
 
   // CoreOobeView
   base::WeakPtr<CoreOobeView> AsWeakPtr() override;
@@ -103,7 +103,7 @@ class CoreOobeHandler final : public BaseWebUIHandler,
 
   // ---- BEGIN --- CoreOobeView
   void ShowScreenWithData(const OobeScreenId& screen,
-                          std::optional<base::Value::Dict> data) override;
+                          std::optional<base::DictValue> data) override;
   void UpdateOobeConfiguration() override;
   void ReloadContent() override;
   void ForwardCancel() override;

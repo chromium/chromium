@@ -33,8 +33,7 @@ unsigned NumGraphemeClusters(const StringView& string) {
   }
 
   // The only Latin-1 Extended Grapheme Cluster is CR LF
-  if (string.Is8Bit() &&
-      string.Find([](UChar c) { return c == '\r'; }) == kNotFound) {
+  if (string.Is8Bit() && !string.contains('\r')) {
     return string_length;
   }
 
@@ -71,7 +70,7 @@ void GraphemesClusterList(const StringView& text,
   }
 }
 
-unsigned LengthOfGraphemeCluster(const String& string, unsigned offset) {
+unsigned LengthOfGraphemeCluster(const StringView& string, unsigned offset) {
   unsigned string_length = string.length();
 
   if (string_length - offset <= 1) {

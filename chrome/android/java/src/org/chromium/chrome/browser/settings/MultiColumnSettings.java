@@ -6,7 +6,7 @@ package org.chromium.chrome.browser.settings;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Pair;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -24,7 +24,7 @@ import androidx.preference.PreferenceFragmentCompat;
 import androidx.preference.PreferenceHeaderFragmentCompat;
 import androidx.slidingpanelayout.widget.SlidingPaneLayout;
 
-import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -41,7 +41,7 @@ import java.util.Map;
 @NullMarked
 public class MultiColumnSettings extends PreferenceHeaderFragmentCompat {
 
-    interface Observer {
+    public interface Observer {
         /** Called when detailed pane title is updated. */
         default void onTitleUpdated() {}
 
@@ -86,6 +86,8 @@ public class MultiColumnSettings extends PreferenceHeaderFragmentCompat {
 
     private InnerOnBackPressedCallback mOnBackPressedCallback;
 
+    private Runnable mOnCreateViewRunnable;
+
     private @Nullable Intent mPendingFragmentIntent;
 
     private final List<Observer> mObservers = new ArrayList<>();
@@ -99,22 +101,39 @@ public class MultiColumnSettings extends PreferenceHeaderFragmentCompat {
         return new MainSettings();
     }
 
+    // Fragment data passed as extras of Intent via SettingsNavigation.
+    private static class FragmentData {
+        public final Fragment fragment;
+        public final boolean addToBackStack;
+        public final @Nullable String tag;
+
+        FragmentData(Fragment fragment, boolean addToBackStack, @Nullable String tag) {
+            this.fragment = fragment;
+            this.addToBackStack = addToBackStack;
+            this.tag = tag;
+        }
+    }
+
     @Override
     public @Nullable Fragment onCreateInitialDetailFragment() {
         // Look at if there is a pending Intent and use it if it is.
         // Otherwise fallback to the original logic, i.e. use the first item in the main menu.
-        Pair<Fragment, Boolean> processed = processPendingFragmentIntent();
+        FragmentData processed = processPendingFragmentIntent();
         if (processed != null) {
-            if (!(processed.first instanceof MainSettings)) {
+            if (!(processed.fragment instanceof MainSettings)) {
                 getSlidingPaneLayout().openPane();
             }
-            return processed.first;
+            return processed.fragment;
         }
         return super.onCreateInitialDetailFragment();
     }
 
     void setPendingFragmentIntent(Intent intent) {
         mPendingFragmentIntent = intent;
+    }
+
+    void setOnCreateViewRunnable(Runnable runnable) {
+        mOnCreateViewRunnable = runnable;
     }
 
     View getHeaderView() {
@@ -129,16 +148,16 @@ public class MultiColumnSettings extends PreferenceHeaderFragmentCompat {
     @Override
     public void onResume() {
         // Update the detail pane, if the intent is specified.
-        Pair<Fragment, Boolean> processed = processPendingFragmentIntent();
+        FragmentData processed = processPendingFragmentIntent();
         if (processed != null) {
             var fragmentManager = getChildFragmentManager();
 
             // Opening a new page. If we already have back stack entries,
             // and the intent does NOT says the fragment transaction should be added
-            // to the back stack (checked by processed.second), clean it up for
+            // to the back stack (checked by processed.addToBackStack), clean it up for
             // - back button behavior
             // - detailed page title
-            if (!processed.second) {
+            if (!processed.addToBackStack) {
                 if (fragmentManager.getBackStackEntryCount() > 0) {
                     var entry = fragmentManager.getBackStackEntryAt(0);
                     fragmentManager.popBackStack(
@@ -150,9 +169,9 @@ public class MultiColumnSettings extends PreferenceHeaderFragmentCompat {
             var transaction = fragmentManager.beginTransaction();
             transaction
                     .setReorderingAllowed(true)
-                    .replace(R.id.preferences_detail, processed.first);
-            if (processed.second) {
-                transaction.addToBackStack(null);
+                    .replace(R.id.preferences_detail, processed.fragment);
+            if (processed.addToBackStack) {
+                transaction.addToBackStack(processed.tag);
             }
             transaction.commit();
             getSlidingPaneLayout().open();
@@ -182,7 +201,7 @@ public class MultiColumnSettings extends PreferenceHeaderFragmentCompat {
      * @return a pair of processed fragment and whether or not to add the transaction to the back
      *     stack on success. Otherwise, null.
      */
-    private @Nullable Pair<Fragment, Boolean> processPendingFragmentIntent() {
+    private @Nullable FragmentData processPendingFragmentIntent() {
         if (mPendingFragmentIntent == null) {
             return null;
         }
@@ -198,8 +217,11 @@ public class MultiColumnSettings extends PreferenceHeaderFragmentCompat {
         Bundle arguments = intent.getBundleExtra(SettingsActivity.EXTRA_SHOW_FRAGMENT_ARGUMENTS);
         boolean addToBackStack =
                 intent.getBooleanExtra(SettingsActivity.EXTRA_ADD_TO_BACK_STACK, false);
-        return new Pair<>(
-                Fragment.instantiate(requireActivity(), fragmentName, arguments), addToBackStack);
+        String tag = intent.getStringExtra(SettingsActivity.EXTRA_FRAGMENT_TAG);
+        return new FragmentData(
+                Fragment.instantiate(requireActivity(), fragmentName, arguments),
+                addToBackStack,
+                tag);
     }
 
     @Override
@@ -241,6 +263,7 @@ public class MultiColumnSettings extends PreferenceHeaderFragmentCompat {
                         int oldBottom) -> {
                     updateHeaderLayout(v.findViewById(R.id.preferences_header));
                 });
+        if (mOnCreateViewRunnable != null) view.post(mOnCreateViewRunnable);
         return view;
     }
 
@@ -447,7 +470,7 @@ public class MultiColumnSettings extends PreferenceHeaderFragmentCompat {
     static class Title {
         Title(
                 String uuid,
-                ObservableSupplier<String> titleSupplier,
+                MonotonicObservableSupplier<String> titleSupplier,
                 int backStackCount,
                 @Nullable String mainMenuKey) {
             this.uuid = uuid;
@@ -458,7 +481,7 @@ public class MultiColumnSettings extends PreferenceHeaderFragmentCompat {
 
         public final String uuid;
 
-        public final ObservableSupplier<String> titleSupplier;
+        public final MonotonicObservableSupplier<String> titleSupplier;
 
         /** the number of back stack entries when the fragment started */
         public final int backStackCount;
@@ -541,7 +564,7 @@ public class MultiColumnSettings extends PreferenceHeaderFragmentCompat {
             }
 
             if (f instanceof EmbeddableSettingsPage page) {
-                ObservableSupplier<String> titleSupplier = page.getPageTitle();
+                MonotonicObservableSupplier<String> titleSupplier = page.getPageTitle();
                 String uuid = getUUID(f);
                 assert uuid != null;
                 int index = -1;
@@ -563,6 +586,17 @@ public class MultiColumnSettings extends PreferenceHeaderFragmentCompat {
                     for (int i = mTitles.size() - 1; i > index; --i) {
                         mTitles.remove(i);
                         updated = true;
+                    }
+                }
+                if (!updated) {
+                    // All the search results fragments share their |titleSupplier|. Replaces its
+                    // uuid to the latest one if the fragment is present at the end of the list.
+                    int pos = mTitles.size() - 1;
+                    Title result = mTitles.get(pos);
+                    if (titleSupplier == result.titleSupplier
+                            && !TextUtils.equals(uuid, result.uuid)) {
+                        mTitles.set(
+                                pos, new Title(uuid, titleSupplier, result.backStackCount, null));
                     }
                 }
             }

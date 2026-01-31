@@ -147,6 +147,20 @@ def find_screenshots(repo_root, translation_expectations, is_cog):
   return screenshots
 
 
+def maybe_add_files_to_cl(signatures, is_cog):
+  if is_cog:
+    return
+
+  # Always ask if the .sha1 files should be added to the CL, even if they are
+  # already part of the CL. If the files are not modified, adding again is a
+  # no-op.
+  if not query_yes_no('Do you want to add these files to your CL?',
+                      default='yes'):
+    return
+
+  git_helper.git_add(signatures, src_path)
+
+
 def main():
   default_depot_tools_path = os.path.normpath(
       os.path.join(src_path, 'third_party', 'depot_tools'))
@@ -244,15 +258,8 @@ def main():
     print('  %s' % s)
   print()
 
-  # Always ask if the .sha1 files should be added to the CL, even if they are
-  # already part of the CL. If the files are not modified, adding again is a
-  # no-op.
-  if not query_yes_no('Do you want to add these files to your CL?',
-                      default='yes'):
-    sys.exit(0)
-
   if not args.dry_run:
-    git_helper.git_add(signatures, src_path)
+    maybe_add_files_to_cl(signatures, is_cog)
 
   print('DONE.')
 

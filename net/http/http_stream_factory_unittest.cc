@@ -17,7 +17,6 @@
 #include <vector>
 
 #include "base/compiler_specific.h"
-#include "base/containers/contains.h"
 #include "base/memory/ptr_util.h"
 #include "base/no_destructor.h"
 #include "base/run_loop.h"
@@ -509,7 +508,6 @@ class CapturePreconnectsTransportSocketPool : public TransportClientSocketPool {
       ClientSocketHandle* handle,
       CompletionOnceCallback callback,
       const ClientSocketPool::ProxyAuthCallback& proxy_auth_callback,
-      bool fail_if_alias_requires_proxy_override,
       const NetLogWithSource& net_log) override {
     ADD_FAILURE();
     return ERR_UNEXPECTED;
@@ -520,7 +518,6 @@ class CapturePreconnectsTransportSocketPool : public TransportClientSocketPool {
       scoped_refptr<ClientSocketPool::SocketParams> socket_params,
       const std::optional<NetworkTrafficAnnotationTag>& proxy_annotation_tag,
       size_t num_sockets,
-      bool fail_if_alias_requires_proxy_override,
       CompletionOnceCallback callback,
       const NetLogWithSource& net_log) override {
     last_num_streams_ = num_sockets;
@@ -1272,7 +1269,7 @@ int GetSocketPoolGroupCount(ClientSocketPool* pool) {
   int count = 0;
   base::Value dict = pool->GetInfoAsValue("", "");
   EXPECT_TRUE(dict.is_dict());
-  const base::Value::Dict* groups = dict.GetDict().FindDict("groups");
+  const base::DictValue* groups = dict.GetDict().FindDict("groups");
   if (groups) {
     count = groups->size();
   }
@@ -1280,8 +1277,8 @@ int GetSocketPoolGroupCount(ClientSocketPool* pool) {
 }
 
 int GetHttpStreamPoolGroupCount(HttpNetworkSession* session) {
-  base::Value::Dict dict = session->http_stream_pool()->GetInfoAsValue();
-  const base::Value::Dict* groups = dict.FindDict("groups");
+  base::DictValue dict = session->http_stream_pool()->GetInfoAsValue();
+  const base::DictValue* groups = dict.FindDict("groups");
   if (groups) {
     return groups->size();
   }
@@ -1303,12 +1300,12 @@ int GetPoolGroupCount(HttpNetworkSession* session,
 
 // Return count of distinct spdy sessions.
 int GetSpdySessionCount(HttpNetworkSession* session) {
-  std::unique_ptr<base::Value> value(
-      session->spdy_session_pool()->SpdySessionPoolInfoToValue());
-  if (!value || !value->is_list()) {
+  base::Value value =
+      session->spdy_session_pool()->SpdySessionPoolInfoToValue();
+  if (!value.is_list()) {
     return -1;
   }
-  return value->GetList().size();
+  return value.GetList().size();
 }
 
 // Return count of sockets handed out by a given socket pool.
@@ -1319,7 +1316,7 @@ int GetHandedOutSocketCount(ClientSocketPool* pool) {
 }
 
 int GetHttpStreamPoolHandedOutCount(HttpNetworkSession* session) {
-  base::Value::Dict dict = session->http_stream_pool()->GetInfoAsValue();
+  base::DictValue dict = session->http_stream_pool()->GetInfoAsValue();
   return dict.FindInt("handed_out_socket_count").value_or(-1);
 }
 
@@ -1339,7 +1336,7 @@ int GetHandedOutCount(HttpNetworkSession* session,
 // Return count of distinct QUIC sessions.
 int GetQuicSessionCount(HttpNetworkSession* session) {
   base::Value dict(session->QuicInfoToValue());
-  base::Value::List* session_list = dict.GetDict().FindList("sessions");
+  base::ListValue* session_list = dict.GetDict().FindList("sessions");
   if (!session_list) {
     return -1;
   }
@@ -2057,7 +2054,6 @@ TEST_P(HttpStreamFactoryTest, NewSpdySessionCloseIdleH2Sockets) {
         group_id, socket_params, std::nullopt /* proxy_annotation_tag */,
         MEDIUM, SocketTag(), ClientSocketPool::RespectLimits::ENABLED,
         callback.callback(), ClientSocketPool::ProxyAuthCallback(),
-        /*fail_if_alias_requires_proxy_override=*/false,
         session->GetSocketPool(HttpNetworkSession::NORMAL_SOCKET_POOL,
                                ProxyChain::Direct()),
         NetLogWithSource());

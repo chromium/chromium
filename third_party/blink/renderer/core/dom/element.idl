@@ -35,6 +35,7 @@ dictionary SetHTMLOptions {
 };
 dictionary SetHTMLUnsafeOptions {
   (Sanitizer or SanitizerConfig or SanitizerPresets) sanitizer = {};
+  boolean runScripts = false;
 };
 
 // https://dom.spec.whatwg.org/#interface-element
@@ -89,8 +90,8 @@ dictionary SetHTMLUnsafeOptions {
     [RaisesException, CEReactions] Element? insertAdjacentElement(DOMString where, Element element);
     [RaisesException] undefined insertAdjacentText(DOMString where, DOMString data);
 
-    // CSS Shadow Parts
-    // https://drafts.csswg.org/css-shadow-parts/#idl
+    // CSS Shadow
+    // https://drafts.csswg.org/css-shadow/#idl
     [SameObject, PerWorldBindings, PutForwards=value] readonly attribute DOMTokenList part;
 
     // Pointer Events
@@ -118,8 +119,8 @@ dictionary SetHTMLUnsafeOptions {
     [RuntimeEnabled=SanitizerAPI,RaisesException,MeasureAs=SetHTMLSafe,CEReactions] void setHTML(DOMString html, optional SetHTMLOptions options = {});
 
     // https://github.com/whatwg/html/issues/2142
-    [RuntimeEnabled=DocumentPatching, CallWith=ScriptState, RaisesException] WritableStream streamAppendHTMLUnsafe();
-    [RuntimeEnabled=DocumentPatching, CallWith=ScriptState, RaisesException] WritableStream streamHTMLUnsafe();
+    [RuntimeEnabled=DocumentPatching, CallWith=ScriptState, RaisesException] WritableStream streamAppendHTMLUnsafe(optional SetHTMLUnsafeOptions options = {});
+    [RuntimeEnabled=DocumentPatching, CallWith=ScriptState, RaisesException] WritableStream streamHTMLUnsafe(optional SetHTMLUnsafeOptions options = {});
 
     // Declarative Shadow DOM getHTML() function.
     [Affects=Nothing, MeasureAs=ElementGetHTML, RaisesException] DOMString getHTML(optional GetHTMLOptions options = {});
@@ -185,9 +186,6 @@ dictionary SetHTMLUnsafeOptions {
 
     // Scoped Custom Element Registries
     [RuntimeEnabled=ScopedCustomElementRegistry] readonly attribute CustomElementRegistry? customElementRegistry;
-
-    // Declarative document updates
-    [RuntimeEnabled=DocumentPatching] readonly attribute Patch? currentPatch;
 };
 
 Element includes ParentNode;

@@ -97,4 +97,23 @@ size_t DomStorageBatchOperationLevelDB::ApproximateSizeForMetrics() const {
   return write_batch_.ApproximateSize();
 }
 
+DbStatus DomStorageBatchOperationLevelDB::UpdateMapKeyValues(
+    KeyView map_prefix,
+    const MapBatchUpdate& map_update) {
+  if (map_update.clear_all_first) {
+    DB_RETURN_IF_ERROR(DeletePrefixed(map_prefix));
+  }
+
+  for (const KeyValuePair& entry : map_update.entries_to_add) {
+    Key key = CreatePrefixedKey(map_prefix, entry.key);
+    Put(key, entry.value);
+  }
+
+  for (const Key& key : map_update.keys_to_delete) {
+    Key prefixed_key = CreatePrefixedKey(map_prefix, key);
+    Delete(prefixed_key);
+  }
+  return DbStatus::OK();
+}
+
 }  // namespace storage

@@ -13,7 +13,6 @@
 #include "base/notreached.h"
 #include "chrome/browser/content_settings/cookie_settings_factory.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
-#include "chrome/browser/privacy_sandbox/tracking_protection_settings_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
@@ -25,12 +24,10 @@
 #include "chrome/browser/ui/views/location_bar/cookie_controls/cookie_controls_bubble_view_impl.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/content_settings/browser/ui/cookie_controls_controller.h"
-#include "components/content_settings/core/common/cookie_blocking_3pcd_status.h"
 #include "components/content_settings/core/common/cookie_controls_state.h"
 #include "components/feature_engagement/public/event_constants.h"
 #include "components/omnibox/browser/vector_icons.h"
 #include "components/privacy_sandbox/privacy_sandbox_features.h"
-#include "components/privacy_sandbox/tracking_protection_settings.h"
 #include "components/strings/grit/privacy_sandbox_strings.h"
 #include "components/user_education/common/feature_promo/feature_promo_controller.h"
 #include "content/public/browser/web_contents.h"
@@ -109,7 +106,6 @@ void CookieControlsIconView::UpdateImpl() {
                                               profile->GetOriginalProfile())
                                         : nullptr,
               HostContentSettingsMapFactory::GetForProfile(profile),
-              TrackingProtectionSettingsFactory::GetForProfile(profile),
               profile->IsIncognitoProfile());
       controller_observation_.Observe(controller_.get());
     }
@@ -167,11 +163,8 @@ bool CookieControlsIconView::IsManagedIPHActive() const {
 }
 
 int CookieControlsIconView::GetLabelForState() const {
-  if (controls_state_ == CookieControlsState::kAllowed3pc) {
-    return IDS_COOKIE_CONTROLS_PAGE_ACTION_COOKIES_ALLOWED_LABEL;
-  }
-  return blocking_status_ == CookieBlocking3pcdStatus::kLimited
-             ? IDS_COOKIE_CONTROLS_PAGE_ACTION_COOKIES_LIMITED_LABEL
+  return controls_state_ == CookieControlsState::kAllowed3pc
+             ? IDS_COOKIE_CONTROLS_PAGE_ACTION_COOKIES_ALLOWED_LABEL
              : IDS_COOKIE_CONTROLS_PAGE_ACTION_COOKIES_BLOCKED_LABEL;
 }
 
@@ -194,7 +187,6 @@ std::u16string CookieControlsIconView::GetAlternativeAccessibleName() const {
 void CookieControlsIconView::OnCookieControlsIconStatusChanged(
     bool icon_visible,
     CookieControlsState controls_state,
-    CookieBlocking3pcdStatus blocking_status,
     bool should_highlight) {
   // Always respect a change to the visibility of the icon, as this may happen
   // regardless of the controls state (e.g. the omnibox having or losing focus).
@@ -208,11 +200,9 @@ void CookieControlsIconView::OnCookieControlsIconStatusChanged(
 
   // If the controls state has changed in some way, update the icon.
   if (controls_state != controls_state_ ||
-      blocking_status != blocking_status_ ||
       should_highlight != should_highlight_) {
     state_changed_ = controls_state != controls_state_;
     controls_state_ = controls_state;
-    blocking_status_ = blocking_status;
     should_highlight_ = should_highlight;
     UpdateIcon();
   }
@@ -224,9 +214,7 @@ void CookieControlsIconView::MaybeAnimateIcon() {
     return;
   }
 
-  int label = blocking_status_ == CookieBlocking3pcdStatus::kNotIn3pcd
-                  ? GetLabelForState()
-                  : IDS_TRACKING_PROTECTION_PAGE_ACTION_SITE_NOT_WORKING_LABEL;
+  int label = GetLabelForState();
   AnimateIn(label);
 // VoiceOver on Mac already announces this text.
 #if !BUILDFLAG(IS_MAC)
@@ -251,11 +239,7 @@ void CookieControlsIconView::UpdateIcon() {
 
   if (controls_state_ == CookieControlsState::kBlocked3pc &&
       should_highlight_) {
-    if (blocking_status_ == CookieBlocking3pcdStatus::kNotIn3pcd) {
-      MaybeShowIPH();
-    } else {
-      MaybeAnimateIcon();
-    }
+    MaybeShowIPH();
   } else {
     base::RecordAction(
         base::UserMetricsAction("TrackingProtection.UserBypass.Shown"));

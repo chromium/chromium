@@ -54,6 +54,8 @@ class CSSReflectValue : public CSSValue {
 
   bool Equals(const CSSReflectValue&) const;
 
+  bool HasRandomFunctions() const;
+
   void TraceAfterDispatch(blink::Visitor*) const;
 
  private:

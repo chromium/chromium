@@ -1,0 +1,51 @@
+/* Copyright 2025 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+/* #css_wrapper_metadata_start
+ * #type=style-lit
+ * #scheme=relative
+ * #css_wrapper_metadata_end */
+
+:host {
+  display: block;
+  font-size: 13px;
+  padding: 20px;
+}
+
+h1 {
+  font-size: 16px;
+  font-weight: 500;
+  margin-bottom: 20px;
+  margin-top: 0;
+}
+
+table {
+  border-collapse: collapse;
+  width: 100%;
+}
+
+th {
+  background-color: #f2f2f2;
+}
+
+td,
+th {
+  text-align: start;
+  padding-bottom: 8px;
+  padding-inline-end: 16px;
+  padding-inline-start: 16px;
+  padding-top: 8px;
+  border: 1px solid #ddd;
+}
+
+.wrapped-key {
+  max-width: 200px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+cr-icon-button {
+  margin-inline-start: auto;
+}

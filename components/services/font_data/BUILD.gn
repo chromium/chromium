@@ -23,7 +23,7 @@ source_set("lib") {
 
 source_set("unit_tests") {
   testonly = true
-  sources = [ "font_data_service_impl_unittests.cc" ]
+  sources = [ "font_data_service_impl_unittest.cc" ]
   deps = [
     ":lib",
     "//base",

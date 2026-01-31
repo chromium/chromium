@@ -7,6 +7,7 @@
 #include <overlay-prioritizer-client-protocol.h>
 
 #include <cstdint>
+#include <limits>
 #include <memory>
 
 #include "base/files/file_path.h"
@@ -369,12 +370,12 @@ TEST_P(WaylandBufferManagerTest, VerifyModifiers) {
     });
   }
 
-  auto buffer_formats =
-      connection_->buffer_factory()->GetSupportedBufferFormats();
-  ASSERT_EQ(buffer_formats.size(), 1u);
-  ASSERT_EQ(buffer_formats.begin()->first,
-            GetBufferFormatFromFourCCFormat(kFourccFormatR8));
-  auto modifiers = buffer_formats.begin()->second;
+  auto shared_image_formats =
+      connection_->buffer_factory()->GetSupportedSharedImageFormats();
+  ASSERT_EQ(shared_image_formats.size(), 1u);
+  ASSERT_EQ(shared_image_formats.begin()->first,
+            GetSharedImageFormatFromFourCCFormat(kFourccFormatR8));
+  auto modifiers = shared_image_formats.begin()->second;
   ASSERT_EQ(modifiers.size(), 2u);
   for (size_t i = 0; i < kFormatModifiers.size(); ++i) {
     ASSERT_EQ(modifiers[i], kFormatModifiers[i]);
@@ -683,7 +684,9 @@ TEST_P(WaylandBufferManagerTest, CommitOverlaysNonsensicalBoundsRect) {
   }
 
   const std::vector<gfx::RectF> bounds_rect_test_data = {
-      gfx::RectF(std::nanf(""), window_->GetBoundsInPixels().y(), std::nanf(""),
+      gfx::RectF(std::numeric_limits<float>::quiet_NaN(),
+                 window_->GetBoundsInPixels().y(),
+                 std::numeric_limits<float>::quiet_NaN(),
                  window_->GetBoundsInPixels().height()),
       gfx::RectF(window_->GetBoundsInPixels().x(),
                  std::numeric_limits<float>::infinity(),
@@ -784,7 +787,9 @@ TEST_P(WaylandBufferManagerTest,
   }
 
   const std::vector<gfx::RectF> bounds_rect_test_data = {
-      gfx::RectF(std::nanf(""), window_->GetBoundsInPixels().y(), std::nanf(""),
+      gfx::RectF(std::numeric_limits<float>::quiet_NaN(),
+                 window_->GetBoundsInPixels().y(),
+                 std::numeric_limits<float>::quiet_NaN(),
                  window_->GetBoundsInPixels().height()),
       gfx::RectF(window_->GetBoundsInPixels().x(),
                  std::numeric_limits<float>::infinity(),

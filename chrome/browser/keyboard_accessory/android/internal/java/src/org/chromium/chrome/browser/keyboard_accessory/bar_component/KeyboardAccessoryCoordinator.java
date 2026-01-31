@@ -20,8 +20,8 @@ import androidx.viewpager.widget.ViewPager;
 import org.chromium.base.Callback;
 import org.chromium.base.TraceEvent;
 import org.chromium.base.lifetime.Destroyable;
+import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.base.supplier.NonNullObservableSupplier;
-import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.build.annotations.MonotonicNonNull;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -68,7 +68,7 @@ public class KeyboardAccessoryCoordinator implements KeyboardAccessoryVisualStat
     private final KeyboardAccessoryButtonGroupCoordinator mButtonGroup;
     private final PropertyModel mModel;
     private @MonotonicNonNull KeyboardAccessoryView mView;
-    private final ObservableSupplier<EdgeToEdgeController> mEdgeToEdgeControllerSupplier;
+    private final MonotonicObservableSupplier<EdgeToEdgeController> mEdgeToEdgeControllerSupplier;
     private @MonotonicNonNull EdgeToEdgePadObserver mEdgeToEdgePadObserver;
 
     /**
@@ -149,7 +149,7 @@ public class KeyboardAccessoryCoordinator implements KeyboardAccessoryVisualStat
             Profile profile,
             BarVisibilityDelegate barVisibilityDelegate,
             AccessorySheetCoordinator.SheetVisibilityDelegate sheetVisibilityDelegate,
-            ObservableSupplier<EdgeToEdgeController> edgeToEdgeControllerSupplier,
+            MonotonicObservableSupplier<EdgeToEdgeController> edgeToEdgeControllerSupplier,
             InsetObserver insetObserver,
             AsyncViewStub barStub,
             Supplier<Boolean> isLargeFormFactorSupplier,
@@ -186,7 +186,7 @@ public class KeyboardAccessoryCoordinator implements KeyboardAccessoryVisualStat
             KeyboardAccessoryButtonGroupCoordinator buttonGroup,
             BarVisibilityDelegate barVisibilityDelegate,
             AccessorySheetCoordinator.SheetVisibilityDelegate sheetVisibilityDelegate,
-            ObservableSupplier<EdgeToEdgeController> edgeToEdgeControllerSupplier,
+            MonotonicObservableSupplier<EdgeToEdgeController> edgeToEdgeControllerSupplier,
             InsetObserver insetObserver,
             ViewProvider<KeyboardAccessoryView> viewProvider,
             Supplier<Boolean> isLargeFormFactorSupplier,
@@ -453,7 +453,8 @@ public class KeyboardAccessoryCoordinator implements KeyboardAccessoryVisualStat
             implements EdgeToEdgeSupplier.ChangeObserver, Destroyable {
         private final View mViewToPad;
         private final int mDefaultBottomPadding;
-        private final ObservableSupplier<EdgeToEdgeController> mEdgeToEdgeControllerSupplier;
+        private final MonotonicObservableSupplier<EdgeToEdgeController>
+                mEdgeToEdgeControllerSupplier;
         private final NonNullObservableSupplier<Integer> mKeyboardInsetSupplier;
         private @Nullable EdgeToEdgeController mEdgeToEdgeController;
         private final Callback<EdgeToEdgeController> mControllerChangedCallback =
@@ -465,7 +466,7 @@ public class KeyboardAccessoryCoordinator implements KeyboardAccessoryVisualStat
 
         EdgeToEdgePadObserver(
                 View view,
-                ObservableSupplier<EdgeToEdgeController> edgeToEdgeControllerSupplier,
+                MonotonicObservableSupplier<EdgeToEdgeController> edgeToEdgeControllerSupplier,
                 NonNullObservableSupplier<Integer> keyboardInsetSupplier) {
             mViewToPad = view;
             mDefaultBottomPadding = mViewToPad.getPaddingBottom();

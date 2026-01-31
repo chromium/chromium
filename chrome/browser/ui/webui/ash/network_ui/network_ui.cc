@@ -108,7 +108,7 @@ bool GetServicePathFromGuid(const std::string& guid,
   return true;
 }
 
-void SetDeviceProperties(base::Value::Dict* dictionary) {
+void SetDeviceProperties(base::DictValue* dictionary) {
   DCHECK(dictionary);
   const std::string* device = dictionary->FindString(shill::kDeviceProperty);
   if (!device) {
@@ -120,10 +120,10 @@ void SetDeviceProperties(base::Value::Dict* dictionary) {
     return;
   }
 
-  base::Value::Dict device_dictionary = device_state->properties().Clone();
+  base::DictValue device_dictionary = device_state->properties().Clone();
   if (!device_state->ip_configs().empty()) {
     // Convert IPConfig dictionary to a ListValue.
-    base::Value::List ip_configs;
+    base::ListValue ip_configs;
     for (auto iter : device_state->ip_configs()) {
       ip_configs.Append(iter.second.Clone());
     }
@@ -213,7 +213,7 @@ class NetworkDiagnosticsMessageHandler : public content::WebUIMessageHandler {
   }
 
  private:
-  void OpenFeedbackDialog(const base::Value::List& value) {
+  void OpenFeedbackDialog(const base::ListValue& value) {
     chrome::ShowFeedbackPage(
         nullptr, feedback::kFeedbackSourceNetworkHealthPage,
         "" /*description_template*/, "" /*description_template_placeholder*/,
@@ -310,14 +310,14 @@ class NetworkConfigMessageHandler : public content::WebUIMessageHandler {
     ResolveJavascriptCallback(base::Value(callback_id), response);
   }
 
-  void GetShillNetworkProperties(const base::Value::List& arg_list) {
+  void GetShillNetworkProperties(const base::ListValue& arg_list) {
     CHECK_EQ(2u, arg_list.size());
     std::string callback_id = arg_list[0].GetString();
     std::string guid = arg_list[1].GetString();
     ProvideNetworkProperties(callback_id, guid);
   }
 
-  void GetFirstWifiNetworkProperties(const base::Value::List& arg_list) {
+  void GetFirstWifiNetworkProperties(const base::ListValue& arg_list) {
     std::string callback_id = arg_list[0].GetString();
     const NetworkState* wifi_network =
         NetworkHandler::Get()->network_state_handler()->FirstNetworkByType(
@@ -326,7 +326,7 @@ class NetworkConfigMessageHandler : public content::WebUIMessageHandler {
       ProvideNetworkProperties(callback_id, wifi_network->guid());
       return;
     }
-    Respond(callback_id, base::Value::List());
+    Respond(callback_id, base::ListValue());
   }
 
   void ProvideNetworkProperties(const std::string& callback_id,
@@ -347,7 +347,7 @@ class NetworkConfigMessageHandler : public content::WebUIMessageHandler {
   void OnGetShillNetworkProperties(const std::string& callback_id,
                                    const std::string& guid,
                                    const std::string& service_path,
-                                   std::optional<base::Value::Dict> result) {
+                                   std::optional<base::DictValue> result) {
     if (!result) {
       RunErrorCallback(callback_id, guid, kGetNetworkProperties, "Error.DBus");
       return;
@@ -356,12 +356,12 @@ class NetworkConfigMessageHandler : public content::WebUIMessageHandler {
     result->Set("service_path", service_path);
     // Set the device properties for debugging.
     SetDeviceProperties(&result.value());
-    base::Value::List return_arg_list;
+    base::ListValue return_arg_list;
     return_arg_list.Append(std::move(*result));
     Respond(callback_id, return_arg_list);
   }
 
-  void GetShillDeviceProperties(const base::Value::List& arg_list) {
+  void GetShillDeviceProperties(const base::ListValue& arg_list) {
     CHECK_EQ(2u, arg_list.size());
     std::string callback_id = arg_list[0].GetString();
     std::string type = arg_list[1].GetString();
@@ -380,7 +380,7 @@ class NetworkConfigMessageHandler : public content::WebUIMessageHandler {
                        weak_ptr_factory_.GetWeakPtr(), callback_id, type));
   }
 
-  void GetShillEthernetEAP(const base::Value::List& arg_list) {
+  void GetShillEthernetEAP(const base::ListValue& arg_list) {
     CHECK_EQ(1u, arg_list.size());
     std::string callback_id = arg_list[0].GetString();
 
@@ -391,19 +391,19 @@ class NetworkConfigMessageHandler : public content::WebUIMessageHandler {
         &list);
 
     if (list.empty()) {
-      Respond(callback_id, base::Value::List());
+      Respond(callback_id, base::ListValue());
       return;
     }
     const NetworkState* eap = list.front();
 
     Respond(callback_id,
-            base::Value::List().Append(base::Value::Dict()
-                                           .Set("guid", eap->guid())
-                                           .Set("name", eap->name())
-                                           .Set("type", eap->type())));
+            base::ListValue().Append(base::DictValue()
+                                         .Set("guid", eap->guid())
+                                         .Set("name", eap->name())
+                                         .Set("type", eap->type())));
   }
 
-  void OpenCellularActivationUi(const base::Value::List& arg_list) {
+  void OpenCellularActivationUi(const base::ListValue& arg_list) {
     CHECK_EQ(1u, arg_list.size());
     std::string callback_id = arg_list[0].GetString();
 
@@ -414,12 +414,12 @@ class NetworkConfigMessageHandler : public content::WebUIMessageHandler {
       SystemTrayClientImpl::Get()->ShowSettingsCellularSetup(
           /*show_psim_flow=*/true);
     }
-    base::Value::List response;
+    base::ListValue response;
     response.Append(base::Value(cellular_network != nullptr));
     Respond(callback_id, response);
   }
 
-  void ResetESimCache(const base::Value::List& arg_list) {
+  void ResetESimCache(const base::ListValue& arg_list) {
     CellularESimProfileHandler* handler =
         NetworkHandler::Get()->cellular_esim_profile_handler();
     if (!handler) {
@@ -431,7 +431,7 @@ class NetworkConfigMessageHandler : public content::WebUIMessageHandler {
     handler_impl->ResetESimProfileCache();
   }
 
-  void DisableActiveESimProfile(const base::Value::List& arg_list) {
+  void DisableActiveESimProfile(const base::ListValue& arg_list) {
     CellularESimProfileHandler* handler =
         NetworkHandler::Get()->cellular_esim_profile_handler();
     if (!handler) {
@@ -443,7 +443,7 @@ class NetworkConfigMessageHandler : public content::WebUIMessageHandler {
     handler_impl->DisableActiveESimProfile();
   }
 
-  void ResetEuicc(const base::Value::List& arg_list) {
+  void ResetEuicc(const base::ListValue& arg_list) {
     std::optional<dbus::ObjectPath> euicc_path = GetEuiccResetPath();
     if (!euicc_path) {
       return;
@@ -460,7 +460,7 @@ class NetworkConfigMessageHandler : public content::WebUIMessageHandler {
                                     base::Unretained(this)));
   }
 
-  void ResetApnMigrator(const base::Value::List& arg_list) {
+  void ResetApnMigrator(const base::ListValue& arg_list) {
     NET_LOG(EVENT) << "Executing reset ApnMigrator";
     PrefService* local_state = g_browser_process->local_state();
 
@@ -469,10 +469,10 @@ class NetworkConfigMessageHandler : public content::WebUIMessageHandler {
 
     // Clear all revamp APN lists in all network.
     const std::string network_metadata_pref = "network_metadata";
-    base::Value::Dict device_dict =
+    base::DictValue device_dict =
         local_state->GetDict(network_metadata_pref).Clone();
     for (auto const [guid, val] : device_dict) {
-      base::Value::Dict* network_dict = device_dict.FindDict(guid.c_str());
+      base::DictValue* network_dict = device_dict.FindDict(guid.c_str());
       network_dict->Remove("custom_apn_list_v2");
     }
     local_state->SetDict(network_metadata_pref, std::move(device_dict));
@@ -484,28 +484,28 @@ class NetworkConfigMessageHandler : public content::WebUIMessageHandler {
     }
   }
 
-  void ShowNetworkDetails(const base::Value::List& arg_list) {
+  void ShowNetworkDetails(const base::ListValue& arg_list) {
     CHECK_EQ(1u, arg_list.size());
     std::string guid = arg_list[0].GetString();
 
     InternetDetailDialog::ShowDialog(guid);
   }
 
-  void ShowNetworkConfig(const base::Value::List& arg_list) {
+  void ShowNetworkConfig(const base::ListValue& arg_list) {
     CHECK_EQ(1u, arg_list.size());
     std::string guid = arg_list[0].GetString();
 
     InternetConfigDialog::ShowDialogForNetworkId(guid);
   }
 
-  void ShowAddNewWifi(const base::Value::List& arg_list) {
+  void ShowAddNewWifi(const base::ListValue& arg_list) {
     InternetConfigDialog::ShowDialogForNetworkType(::onc::network_type::kWiFi);
   }
 
   void OnGetShillDeviceProperties(const std::string& callback_id,
                                   const std::string& type,
                                   const std::string& device_path,
-                                  std::optional<base::Value::Dict> result) {
+                                  std::optional<base::DictValue> result) {
     if (!result) {
       RunErrorCallback(callback_id, type, kGetDeviceProperties,
                        "GetDeviceProperties failed");
@@ -515,12 +515,12 @@ class NetworkConfigMessageHandler : public content::WebUIMessageHandler {
     // Set the 'device_path' property for debugging.
     result->Set("device_path", device_path);
 
-    base::Value::List return_arg_list;
+    base::ListValue return_arg_list;
     return_arg_list.Append(std::move(*result));
     Respond(callback_id, return_arg_list);
   }
 
-  void GetHostname(const base::Value::List& arg_list) {
+  void GetHostname(const base::ListValue& arg_list) {
     CHECK_EQ(1u, arg_list.size());
     std::string callback_id = arg_list[0].GetString();
     std::string hostname =
@@ -528,7 +528,7 @@ class NetworkConfigMessageHandler : public content::WebUIMessageHandler {
     Respond(callback_id, base::Value(hostname));
   }
 
-  void SetHostname(const base::Value::List& arg_list) {
+  void SetHostname(const base::ListValue& arg_list) {
     CHECK_EQ(1u, arg_list.size());
     std::string hostname = arg_list[0].GetString();
     NET_LOG(USER) << "SET HOSTNAME: " << hostname;
@@ -544,13 +544,13 @@ class NetworkConfigMessageHandler : public content::WebUIMessageHandler {
                           ? shill::kTypeProperty
                           : shill::kGuidProperty;
 
-    Respond(callback_id, base::Value::List().Append(
-                             base::Value::Dict()
+    Respond(callback_id, base::ListValue().Append(
+                             base::DictValue()
                                  .Set(key, base::Value(guid_or_type))
                                  .Set("ShillError", base::Value(error_name))));
   }
 
-  void AddNetwork(const base::Value::List& args) {
+  void AddNetwork(const base::ListValue& args) {
     DCHECK(!args.empty());
     std::string onc_type = args[0].GetString();
     InternetConfigDialog::ShowDialogForNetworkType(onc_type);
@@ -596,7 +596,7 @@ class HotspotConfigMessageHandler : public content::WebUIMessageHandler {
     ResolveJavascriptCallback(base::Value(callback_id), response);
   }
 
-  void GetTetheringCapabilities(const base::Value::List& arg_list) {
+  void GetTetheringCapabilities(const base::ListValue& arg_list) {
     CHECK_EQ(1u, arg_list.size());
     std::string callback_id = arg_list[0].GetString();
 
@@ -606,7 +606,7 @@ class HotspotConfigMessageHandler : public content::WebUIMessageHandler {
         shill::kTetheringCapabilitiesProperty));
   }
 
-  void GetTetheringStatus(const base::Value::List& arg_list) {
+  void GetTetheringStatus(const base::ListValue& arg_list) {
     CHECK_EQ(1u, arg_list.size());
     std::string callback_id = arg_list[0].GetString();
 
@@ -616,7 +616,7 @@ class HotspotConfigMessageHandler : public content::WebUIMessageHandler {
         shill::kTetheringStatusProperty));
   }
 
-  void GetTetheringConfig(const base::Value::List& arg_list) {
+  void GetTetheringConfig(const base::ListValue& arg_list) {
     CHECK_EQ(1u, arg_list.size());
     std::string callback_id = arg_list[0].GetString();
 
@@ -626,7 +626,7 @@ class HotspotConfigMessageHandler : public content::WebUIMessageHandler {
         shill::kTetheringConfigProperty));
   }
 
-  void CheckTetheringReadiness(const base::Value::List& arg_list) {
+  void CheckTetheringReadiness(const base::ListValue& arg_list) {
     CHECK_EQ(1u, arg_list.size());
     std::string callback_id = arg_list[0].GetString();
 
@@ -638,11 +638,11 @@ class HotspotConfigMessageHandler : public content::WebUIMessageHandler {
                        kCheckTetheringReadiness));
   }
 
-  void SetTetheringConfig(const base::Value::List& arg_list) {
+  void SetTetheringConfig(const base::ListValue& arg_list) {
     CHECK_EQ(2u, arg_list.size());
     std::string callback_id = arg_list[0].GetString();
     std::string tethering_config = arg_list[1].GetString();
-    std::optional<base::Value::Dict> value = base::JSONReader::ReadDict(
+    std::optional<base::DictValue> value = base::JSONReader::ReadDict(
         tethering_config, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
 
     if (!value) {
@@ -672,7 +672,7 @@ class HotspotConfigMessageHandler : public content::WebUIMessageHandler {
   void OnGetShillManagerDictPropertiesByKey(
       const std::string& callback_id,
       const std::string& dict_key,
-      std::optional<base::Value::Dict> properties) {
+      std::optional<base::DictValue> properties) {
     if (!properties) {
       NET_LOG(ERROR) << "Error getting Shill manager properties.";
       Respond(callback_id,
@@ -680,7 +680,7 @@ class HotspotConfigMessageHandler : public content::WebUIMessageHandler {
       return;
     }
 
-    base::Value::Dict* value = properties->FindDict(dict_key);
+    base::DictValue* value = properties->FindDict(dict_key);
     if (value) {
       const std::string* ssid =
           value->FindString(shill::kTetheringConfSSIDProperty);
@@ -691,7 +691,7 @@ class HotspotConfigMessageHandler : public content::WebUIMessageHandler {
       return;
     }
 
-    Respond(callback_id, base::Value::Dict());
+    Respond(callback_id, base::DictValue());
   }
 
   void SetManagerPropertiesErrorCallback(
@@ -750,7 +750,7 @@ class WifiDirectMessageHandler : public content::WebUIMessageHandler {
     ResolveJavascriptCallback(base::Value(callback_id), response);
   }
 
-  void GetWifiDirectCapabilities(const base::Value::List& arg_list) {
+  void GetWifiDirectCapabilities(const base::ListValue& arg_list) {
     CHECK_EQ(1u, arg_list.size());
     std::string callback_id = arg_list[0].GetString();
 
@@ -760,7 +760,7 @@ class WifiDirectMessageHandler : public content::WebUIMessageHandler {
         shill::kP2PCapabilitiesProperty));
   }
 
-  void GetWifiDirectOwnerInfo(const base::Value::List& arg_list) {
+  void GetWifiDirectOwnerInfo(const base::ListValue& arg_list) {
     CHECK_EQ(1u, arg_list.size());
     std::string callback_id = arg_list[0].GetString();
 
@@ -770,7 +770,7 @@ class WifiDirectMessageHandler : public content::WebUIMessageHandler {
         shill::kP2PGroupInfosProperty));
   }
 
-  void GetWifiDirectClientInfo(const base::Value::List& arg_list) {
+  void GetWifiDirectClientInfo(const base::ListValue& arg_list) {
     CHECK_EQ(1u, arg_list.size());
     std::string callback_id = arg_list[0].GetString();
 
@@ -783,7 +783,7 @@ class WifiDirectMessageHandler : public content::WebUIMessageHandler {
   void OnGetShillManagerListPropertiesByKey(
       const std::string& callback_id,
       const std::string& dict_key,
-      std::optional<base::Value::Dict> properties) {
+      std::optional<base::DictValue> properties) {
     if (!properties) {
       NET_LOG(ERROR) << "Error getting Shill manager properties.";
       Respond(callback_id,
@@ -791,14 +791,14 @@ class WifiDirectMessageHandler : public content::WebUIMessageHandler {
       return;
     }
 
-    base::Value::List* value = properties->FindList(dict_key);
-    Respond(callback_id, value ? std::move(*value) : base::Value::List());
+    base::ListValue* value = properties->FindList(dict_key);
+    Respond(callback_id, value ? std::move(*value) : base::ListValue());
   }
 
   void OnGetShillManagerDictPropertiesByKey(
       const std::string& callback_id,
       const std::string& dict_key,
-      std::optional<base::Value::Dict> properties) {
+      std::optional<base::DictValue> properties) {
     if (!properties) {
       NET_LOG(ERROR) << "Error getting Shill manager properties.";
       Respond(callback_id,
@@ -806,8 +806,8 @@ class WifiDirectMessageHandler : public content::WebUIMessageHandler {
       return;
     }
 
-    base::Value::Dict* value = properties->FindDict(dict_key);
-    Respond(callback_id, value ? std::move(*value) : base::Value::Dict());
+    base::DictValue* value = properties->FindDict(dict_key);
+    Respond(callback_id, value ? std::move(*value) : base::DictValue());
   }
 
   base::WeakPtrFactory<WifiDirectMessageHandler> weak_ptr_factory_{this};
@@ -816,8 +816,8 @@ class WifiDirectMessageHandler : public content::WebUIMessageHandler {
 }  // namespace network_ui
 
 // static
-base::Value::Dict NetworkUI::GetLocalizedStrings() {
-  return base::Value::Dict()
+base::DictValue NetworkUI::GetLocalizedStrings() {
+  return base::DictValue()
       .Set("titleText", l10n_util::GetStringUTF16(IDS_NETWORK_UI_TITLE))
       .Set("generalTab", l10n_util::GetStringUTF16(IDS_NETWORK_UI_TAB_GENERAL))
       .Set("networkHealthTab",
@@ -1029,7 +1029,7 @@ NetworkUI::NetworkUI(content::WebUI* web_ui)
   // Enable extension API calls in the WebUI.
   extensions::TabHelper::CreateForWebContents(web_ui->GetWebContents());
 
-  base::Value::Dict localized_strings = GetLocalizedStrings();
+  base::DictValue localized_strings = GetLocalizedStrings();
 
   content::WebUIDataSource* html = content::WebUIDataSource::CreateAndAdd(
       web_ui->GetWebContents()->GetBrowserContext(),

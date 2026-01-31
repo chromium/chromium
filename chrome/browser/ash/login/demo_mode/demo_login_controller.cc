@@ -253,7 +253,7 @@ std::unique_ptr<network::SimpleURLLoader> CreateDemoAccountURLLoader(
 // Send demo account related http requests to server. i.e. setup request,
 // cleanup request.
 void SendDemoAccountRequest(
-    const base::Value::Dict& post_data,
+    const base::DictValue& post_data,
     network::SimpleURLLoader* url_loader,
     base::OnceCallback<void(std::optional<std::string> response_body)>
         callback) {
@@ -274,7 +274,7 @@ void LogServerResponseError(const std::string& error_response, bool is_setup) {
     return;
   }
 
-  std::optional<base::Value::Dict> error(base::JSONReader::ReadDict(
+  std::optional<base::DictValue> error(base::JSONReader::ReadDict(
       error_response, base::JSON_PARSE_CHROMIUM_EXTENSIONS));
   const std::string response_name =
       base::StringPrintf("%s response error:", is_setup ? "Setup" : "Clean up");
@@ -358,7 +358,7 @@ policy::DeviceCloudPolicyManagerAsh* GetDeviceCloudPolicyManager() {
   return policy_connector_ash->GetDeviceCloudPolicyManager();
 }
 
-base::Value::Dict GetDeviceInfo() {
+base::DictValue GetDeviceInfo() {
   // Full ChromeOS version, for example: R127-15919.0.0_stable-channel.
   const std::string version = demo_mode::GetChromeOSVersionString();
 
@@ -375,7 +375,7 @@ base::Value::Dict GetDeviceInfo() {
   // This field "locale" is used to set the language of the demo account.
   const std::string locale = demo_mode::Locale();
 
-  return base::Value::Dict()
+  return base::DictValue()
       .Set(kBuildVersion, version)
       .Set(kCountry, country)
       .Set(kRetailer, retailer)
@@ -465,7 +465,7 @@ void DemoLoginController::SendSetupDemoAccountRequest() {
   CHECK(!url_loader_);
 
   const auto sign_in_scoped_device_id = GenerateSigninScopedDeviceId();
-  std::optional<base::Value::Dict> device_identifier =
+  std::optional<base::DictValue> device_identifier =
       GetDeviceIdentifier(sign_in_scoped_device_id);
   if (!device_identifier) {
     OnSetupDemoAccountError(ResultCode::kCloudPolicyNotConnected);
@@ -482,11 +482,11 @@ void DemoLoginController::SendSetupDemoAccountRequest() {
     return;
   }
 
-  auto post_data = base::Value::Dict().Set(
-      kDeviceIdentifier, std::move(device_identifier.value()));
+  auto post_data = base::DictValue().Set(kDeviceIdentifier,
+                                         std::move(device_identifier.value()));
 
   if (features::IsSendDeviceInfoToDemoServerEnabled()) {
-    base::Value::Dict device_info = GetDeviceInfo();
+    base::DictValue device_info = GetDeviceInfo();
     post_data.Set(kDeviceInfo, std::move(device_info));
   }
 
@@ -644,9 +644,9 @@ void DemoLoginController::MaybeCleanupPreviousDemoAccount() {
     return;
   }
 
-  auto post_data = base::Value::Dict();
+  auto post_data = base::DictValue();
 
-  std::optional<base::Value::Dict> device_identifier =
+  std::optional<base::DictValue> device_identifier =
       GetDeviceIdentifier(login_scope_device_id);
   if (!device_identifier) {
     OnCleanUpDemoAccountError(ResultCode::kCloudPolicyNotConnected);
@@ -724,7 +724,7 @@ void DemoLoginController::OnCleanUpDemoAccountError(
   }
 }
 
-std::optional<base::Value::Dict> DemoLoginController::GetDeviceIdentifier(
+std::optional<base::DictValue> DemoLoginController::GetDeviceIdentifier(
     const std::string& login_scope_device_id) {
   // The class member `policy_manager_for_testing_` is set during testing.
   // If it's not set, it means we're not in the testing environment, so we
@@ -750,7 +750,7 @@ std::optional<base::Value::Dict> DemoLoginController::GetDeviceIdentifier(
   }
   std::string dm_token = client->dm_token();
   std::string client_id = client->client_id();
-  return base::Value::Dict()
+  return base::DictValue()
       .Set(kDMToken, dm_token)
       .Set(kClientID, client_id)
       .Set(kDeviceMachineId, GetMachineID())

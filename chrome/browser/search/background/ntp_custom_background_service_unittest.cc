@@ -104,9 +104,9 @@ std::unique_ptr<TestingProfile> MakeTestingProfile(
   }
 }
 
-base::Value::Dict GetBackgroundInfoAsDict(const GURL& background_url,
-                                          const GURL& thumbnail_url) {
-  base::Value::Dict background_info;
+base::DictValue GetBackgroundInfoAsDict(const GURL& background_url,
+                                        const GURL& thumbnail_url) {
+  base::DictValue background_info;
   background_info.Set("background_url", base::Value(background_url.spec()));
   background_info.Set("thumbnail_url", base::Value(thumbnail_url.spec()));
   background_info.Set("attribution_line_1", base::Value(std::string()));

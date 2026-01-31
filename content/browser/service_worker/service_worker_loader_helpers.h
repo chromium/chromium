@@ -107,6 +107,10 @@ bool IsEligibleForSyntheticResponseInternal(
     const std::string& allowed_url,
     const base::flat_set<std::string>& denied_url_params);
 bool IsSyntheticResponseDryRunModeEnabled();
+
+storage::mojom::ServiceWorkerFindRegistrationResultPtr
+CreateSyntheticRegistration(const GURL& client_url,
+                            const blink::StorageKey& key);
 }  // namespace service_worker_loader_helpers
 
 }  // namespace content

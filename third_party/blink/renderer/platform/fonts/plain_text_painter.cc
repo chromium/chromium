@@ -12,13 +12,13 @@
 #include "third_party/blink/renderer/platform/fonts/shaping/frame_shape_cache.h"
 #include "third_party/blink/renderer/platform/fonts/shaping/shape_result_bloberizer.h"
 #include "third_party/blink/renderer/platform/instrumentation/memory_pressure_listener.h"
+#include "third_party/blink/renderer/platform/text/text_run.h"
 
 namespace blink {
 
 PlainTextPainter::PlainTextPainter(PlainTextPainter::Mode mode) : mode_(mode) {
   // We don't use FrameShapeCache in the kShared mode. See GetCacheFor().
-  if (mode_ == kCanvas &&
-      RuntimeEnabledFeatures::CanvasTextMemoryPressureEnabled()) {
+  if (mode_ == kCanvas) {
     memory_pressure_listener_registration_.emplace(
         FROM_HERE, base::MemoryPressureListenerTag::kPlainTextPainter, this);
   }

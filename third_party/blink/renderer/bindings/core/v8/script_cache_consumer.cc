@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/script_cache_consumer.h"
 
 #include <atomic>
+
 #include "base/functional/bind.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
@@ -22,6 +23,7 @@
 #include "third_party/blink/renderer/platform/scheduler/public/worker_pool.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_copier.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
+#include "third_party/perfetto/include/perfetto/tracing/track_event_args.h"
 #include "v8/include/v8.h"
 
 namespace blink {
@@ -40,10 +42,10 @@ ScriptCacheConsumer::ScriptCacheConsumer(
       isolate_, V8CodeCache::CreateCachedData(cached_metadata_)));
 
   if (consume_task_) {
-    TRACE_EVENT_WITH_FLOW1(
+    TRACE_EVENT(
         "v8," TRACE_DISABLED_BY_DEFAULT("v8.compile"),
-        "v8.deserializeOnBackground.start", TRACE_ID_LOCAL(this),
-        TRACE_EVENT_FLAG_FLOW_OUT, "data", [&](perfetto::TracedValue context) {
+        "v8.deserializeOnBackground.start", perfetto::Flow::FromPointer(this),
+        "data", [&](perfetto::TracedValue context) {
           inspector_deserialize_script_event::Data(std::move(context),
                                                    script_resource_identifier_,
                                                    script_url_string_);
@@ -102,10 +104,9 @@ ScriptCacheConsumer::State ScriptCacheConsumer::AdvanceState(
 void ScriptCacheConsumer::RunTaskOffThread() {
   DCHECK(!IsMainThread());
 
-  TRACE_EVENT_WITH_FLOW1(
+  TRACE_EVENT(
       "v8,devtools.timeline," TRACE_DISABLED_BY_DEFAULT("v8.compile"),
-      "v8.deserializeOnBackground", TRACE_ID_LOCAL(this),
-      TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT, "data",
+      "v8.deserializeOnBackground", perfetto::Flow::FromPointer(this), "data",
       [&](perfetto::TracedValue context) {
         inspector_deserialize_script_event::Data(std::move(context),
                                                  script_resource_identifier_,
@@ -140,11 +141,10 @@ void ScriptCacheConsumer::RunMergeTaskOffThread() {
   DCHECK(!IsMainThread());
   DCHECK_EQ(state_, State::kFinishedAndReady);
 
-  TRACE_EVENT_WITH_FLOW1(
+  TRACE_EVENT(
       "v8,devtools.timeline," TRACE_DISABLED_BY_DEFAULT("v8.compile"),
       "v8.deserializeOnBackground.mergeWithExistingScript",
-      TRACE_ID_LOCAL(this),
-      TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT, "data",
+      perfetto::Flow::FromPointer(this), "data",
       [&](perfetto::TracedValue context) {
         inspector_deserialize_script_event::Data(std::move(context),
                                                  script_resource_identifier_,
@@ -190,10 +190,10 @@ void ScriptCacheConsumer::NotifyClientWaiting(
   if (new_state == State::kFinishedAndReady) {
     finish_trace_name_ = "v8.deserializeOnBackground.finishedBeforeResource";
     if (consume_task_ && consume_task_->ShouldMergeWithExistingScript()) {
-      TRACE_EVENT_WITH_FLOW1(
+      TRACE_EVENT(
           "v8," TRACE_DISABLED_BY_DEFAULT("v8.compile"),
           "v8.deserializeOnBackground.startMergeWithExistingScript",
-          TRACE_ID_LOCAL(this), TRACE_EVENT_FLAG_FLOW_OUT, "data",
+          perfetto::Flow::FromPointer(this), "data",
           [&](perfetto::TracedValue context) {
             inspector_deserialize_script_event::Data(
                 std::move(context), script_resource_identifier_,
@@ -220,14 +220,14 @@ void ScriptCacheConsumer::CallFinishCallback() {
   if (!client)
     return;
 
-  TRACE_EVENT_WITH_FLOW1("v8," TRACE_DISABLED_BY_DEFAULT("v8.compile"),
-                         finish_trace_name_, TRACE_ID_LOCAL(this),
-                         TRACE_EVENT_FLAG_FLOW_IN, "data",
-                         [&](perfetto::TracedValue context) {
-                           inspector_deserialize_script_event::Data(
-                               std::move(context), script_resource_identifier_,
-                               script_url_string_);
-                         });
+  TRACE_EVENT("v8," TRACE_DISABLED_BY_DEFAULT("v8.compile"),
+              perfetto::DynamicString(finish_trace_name_),
+              perfetto::TerminatingFlow::FromPointer(this), "data",
+              [&](perfetto::TracedValue context) {
+                inspector_deserialize_script_event::Data(
+                    std::move(context), script_resource_identifier_,
+                    script_url_string_);
+              });
 
   CHECK_EQ(state_, State::kMergeDoneOrNotNeeded);
   // Clear the task runner, we don't need it anymore since we've already made

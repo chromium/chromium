@@ -914,7 +914,6 @@ pub const ECHOPRT: crate::tcflag_t = 0x00000400;
 pub const ECHOCTL: crate::tcflag_t = 0x00000200;
 pub const ISIG: crate::tcflag_t = 0x00000001;
 pub const ICANON: crate::tcflag_t = 0x00000002;
-pub const XCASE: crate::tcflag_t = 0x00000004;
 pub const PENDIN: crate::tcflag_t = 0x00004000;
 pub const NOFLSH: crate::tcflag_t = 0x00000080;
 

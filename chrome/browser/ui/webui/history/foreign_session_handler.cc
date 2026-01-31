@@ -46,7 +46,7 @@ namespace {
 const size_t kMaxSessionsToShow = 10;
 
 // Helper method to create JSON compatible objects from Session objects.
-std::optional<base::Value::Dict> SessionTabToValue(
+std::optional<base::DictValue> SessionTabToValue(
     const ::sessions::SessionTab& tab) {
   if (tab.navigations.empty()) {
     return std::nullopt;
@@ -61,7 +61,7 @@ std::optional<base::Value::Dict> SessionTabToValue(
     return std::nullopt;
   }
 
-  base::Value::Dict dictionary;
+  base::DictValue dictionary;
   NewTabUI::SetUrlTitleAndDirection(&dictionary, current_navigation.title(),
                                     tab_url);
   dictionary.Set("remoteIconUrlForUma",
@@ -77,9 +77,9 @@ std::optional<base::Value::Dict> SessionTabToValue(
 }
 
 // Helper for initializing a boilerplate SessionWindow JSON compatible object.
-base::Value::Dict BuildWindowData(base::Time modification_time,
-                                  SessionID window_id) {
-  base::Value::Dict dictionary;
+base::DictValue BuildWindowData(base::Time modification_time,
+                                SessionID window_id) {
+  base::DictValue dictionary;
   dictionary.Set("type", "window");
   dictionary.Set("timestamp",
                  static_cast<double>(modification_time.ToInternalValue()));
@@ -89,13 +89,13 @@ base::Value::Dict BuildWindowData(base::Time modification_time,
 }
 
 // Helper method to create JSON compatible objects from SessionWindow objects.
-std::optional<base::Value::Dict> SessionWindowToValue(
+std::optional<base::DictValue> SessionWindowToValue(
     const ::sessions::SessionWindow& window) {
   if (window.tabs.empty()) {
     return std::nullopt;
   }
 
-  base::Value::List tab_values;
+  base::ListValue tab_values;
   // Calculate the last |modification_time| for all entries within a window.
   base::Time modification_time = window.timestamp;
   for (const std::unique_ptr<sessions::SessionTab>& tab : window.tabs) {
@@ -109,7 +109,7 @@ std::optional<base::Value::Dict> SessionWindowToValue(
     return std::nullopt;
   }
 
-  base::Value::Dict dictionary =
+  base::DictValue dictionary =
       BuildWindowData(window.timestamp, window.window_id);
   dictionary.Set("tabs", std::move(tab_values));
   return dictionary;
@@ -256,7 +256,7 @@ std::u16string ForeignSessionHandler::FormatSessionTime(
 }
 
 void ForeignSessionHandler::HandleGetForeignSessions(
-    const base::Value::List& args) {
+    const base::ListValue& args) {
   AllowJavascript();
   CHECK(initial_session_list_);
   const base::Value& callback_id = args[0];
@@ -267,28 +267,28 @@ void ForeignSessionHandler::HandleGetForeignSessions(
   initial_session_list_ = std::nullopt;
 }
 
-base::Value::List ForeignSessionHandler::GetForeignSessions() {
+base::ListValue ForeignSessionHandler::GetForeignSessions() {
   sync_sessions::OpenTabsUIDelegate* open_tabs =
       GetOpenTabsUIDelegate(web_ui());
   std::vector<raw_ptr<const sync_sessions::SyncedSession, VectorExperimental>>
       sessions;
 
-  base::Value::List session_list;
+  base::ListValue session_list;
   if (open_tabs && open_tabs->GetAllForeignSessions(&sessions)) {
     // Use a pref to keep track of sessions that were collapsed by the user.
     // To prevent the pref from accumulating stale sessions, clear it each time
     // and only add back sessions that are still current.
     ScopedDictPrefUpdate pref_update(Profile::FromWebUI(web_ui())->GetPrefs(),
                                      prefs::kNtpCollapsedForeignSessions);
-    base::Value::Dict& current_collapsed_sessions = pref_update.Get();
-    base::Value::Dict collapsed_sessions = current_collapsed_sessions.Clone();
+    base::DictValue& current_collapsed_sessions = pref_update.Get();
+    base::DictValue collapsed_sessions = current_collapsed_sessions.Clone();
     current_collapsed_sessions.clear();
 
     // Note: we don't own the SyncedSessions themselves.
     for (size_t i = 0; i < sessions.size() && i < kMaxSessionsToShow; ++i) {
       const sync_sessions::SyncedSession* session = sessions[i];
       const std::string& session_tag = session->GetSessionTag();
-      base::Value::Dict session_data;
+      base::DictValue session_data;
       // The items which are to be written into |session_data| are also
       // described in chrome/browser/resources/history/externs.js
       // @typedef for ForeignSession. Please update it whenever you add or
@@ -307,7 +307,7 @@ base::Value::List ForeignSessionHandler::GetForeignSessions() {
         current_collapsed_sessions.Set(session_tag, true);
       }
 
-      base::Value::List window_list;
+      base::ListValue window_list;
 
       // Order tabs by visual order within window.
       for (const auto& window_pair : session->windows) {
@@ -326,7 +326,7 @@ base::Value::List ForeignSessionHandler::GetForeignSessions() {
 }
 
 void ForeignSessionHandler::HandleOpenForeignSessionAllTabs(
-    const base::Value::List& args) {
+    const base::ListValue& args) {
   CHECK_EQ(args.size(), 1U);
 
   // Extract the session tag (always provided).
@@ -339,7 +339,7 @@ void ForeignSessionHandler::HandleOpenForeignSessionAllTabs(
 }
 
 void ForeignSessionHandler::HandleOpenForeignSessionTab(
-    const base::Value::List& args) {
+    const base::ListValue& args) {
   CHECK_EQ(args.size(), 7U);
 
   // Extract the session tag (always provided).
@@ -368,7 +368,7 @@ void ForeignSessionHandler::HandleOpenForeignSessionTab(
 }
 
 void ForeignSessionHandler::HandleDeleteForeignSession(
-    const base::Value::List& args) {
+    const base::ListValue& args) {
   if (args.size() != 1U) {
     LOG(ERROR) << "Wrong number of args to deleteForeignSession";
     return;
@@ -389,7 +389,7 @@ void ForeignSessionHandler::HandleDeleteForeignSession(
 }
 
 void ForeignSessionHandler::HandleSetForeignSessionCollapsed(
-    const base::Value::List& args) {
+    const base::ListValue& args) {
   if (args.size() != 2U) {
     LOG(ERROR) << "Wrong number of args to setForeignSessionCollapsed";
     return;

@@ -14,6 +14,10 @@
 
 class GURL;
 
+namespace permissions {
+struct PermissionPromptDecision;
+}  // namespace permissions
+
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
 // Update StorageAccessAPIRequestOutcome in enums.xml when you add entries.
@@ -102,8 +106,7 @@ class StorageAccessGrantPermissionContext
       const permissions::PermissionRequestData& request_data,
       permissions::BrowserPermissionCallback callback,
       bool persist,
-      PermissionDecision decision,
-      bool is_final_decision) override;
+      const permissions::PermissionPromptDecision& decision) override;
 
   // ContentSettingPermissionContextBase
   ContentSetting GetContentSettingStatusInternal(

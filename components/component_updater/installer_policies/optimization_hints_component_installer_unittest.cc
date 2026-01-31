@@ -60,7 +60,7 @@ class OptimizationHintsComponentInstallerTest : public PlatformTest {
   }
 
   void LoadOptimizationHints() {
-    base::Value::Dict manifest;
+    base::DictValue manifest;
     ASSERT_TRUE(policy_->VerifyInstallation(manifest, component_install_dir()));
     const base::Version expected_version(kTestHintsVersion);
     policy_->ComponentReady(expected_version, component_install_dir(),

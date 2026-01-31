@@ -18,16 +18,15 @@ import androidx.annotation.VisibleForTesting;
 import org.chromium.base.ActivityState;
 import org.chromium.base.ApplicationStatus;
 import org.chromium.base.ApplicationStatus.ActivityStateListener;
-import org.chromium.base.ObserverList;
 import org.chromium.base.metrics.RecordHistogram;
-import org.chromium.base.supplier.ObservableSupplier;
-import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.supplier.MonotonicObservableSupplier;
+import org.chromium.base.supplier.NonNullObservableSupplier;
+import org.chromium.base.supplier.ObservableSuppliers;
+import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeController;
 import org.chromium.ui.accessibility.AccessibilityState;
-import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.insets.InsetObserver;
 import org.chromium.ui.util.TokenHolder;
@@ -47,10 +46,7 @@ import java.util.Deque;
  */
 @NullMarked
 public class SnackbarManager
-        implements OnClickListener,
-                ActivityStateListener,
-                InsetObserver.WindowInsetObserver,
-                SnackbarStateProvider {
+        implements OnClickListener, ActivityStateListener, InsetObserver.WindowInsetObserver {
     /** Interface that shows the ability to provide a snackbar manager. */
     public interface SnackbarManageable {
         /**
@@ -103,15 +99,14 @@ public class SnackbarManager
                     updateView();
                 }
             };
-    private final ObservableSupplierImpl<Boolean> mIsShowingSupplier =
-            new ObservableSupplierImpl<>();
+    private final SettableNonNullObservableSupplier<Boolean> mIsShowingSupplier;
     private final ViewGroup mOriginalParentView;
     private final Deque<Pair<Integer, ViewGroup>> mParentViewOverrideStack = new ArrayDeque<>();
-    protected final ObserverList<SnackbarStateProvider.Observer> mObservers = new ObserverList<>();
     private final TokenHolder mTokenHolder = new TokenHolder(this::onTokenHolderChanged);
     private final SnackbarCollection mSnackbars = new SnackbarCollection();
 
-    private final @Nullable ObservableSupplier<EdgeToEdgeController> mEdgeToEdgeControllerSupplier;
+    private final @Nullable MonotonicObservableSupplier<EdgeToEdgeController>
+            mEdgeToEdgeControllerSupplier;
     private @Nullable SnackbarView mView;
     private boolean mActivityInForeground;
     private boolean mIsDisabledForTesting;
@@ -147,7 +142,8 @@ public class SnackbarManager
             Activity activity,
             ViewGroup snackbarParentView,
             @Nullable WindowAndroid windowAndroid,
-            @Nullable ObservableSupplier<EdgeToEdgeController> edgeToEdgeControllerSupplier) {
+            @Nullable MonotonicObservableSupplier<EdgeToEdgeController>
+                    edgeToEdgeControllerSupplier) {
         mActivity = activity;
         mUiThreadHandler = new Handler();
         mOriginalParentView = snackbarParentView;
@@ -158,8 +154,7 @@ public class SnackbarManager
                 || ApplicationStatus.getStateForActivity(mActivity) == ActivityState.RESUMED) {
             onStart();
         }
-
-        mIsShowingSupplier.set(isShowing());
+        mIsShowingSupplier = ObservableSuppliers.createNonNull(isShowing());
         mEdgeToEdgeControllerSupplier = edgeToEdgeControllerSupplier;
     }
 
@@ -303,7 +298,7 @@ public class SnackbarManager
     /**
      * @return Supplier of whether the snackbar is showing
      */
-    public ObservableSupplier<Boolean> isShowingSupplier() {
+    public NonNullObservableSupplier<Boolean> isShowingSupplier() {
         return mIsShowingSupplier;
     }
 
@@ -353,8 +348,7 @@ public class SnackbarManager
                                 mWindowAndroid,
                                 mEdgeToEdgeControllerSupplier != null
                                         ? mEdgeToEdgeControllerSupplier.get()
-                                        : null,
-                                isTablet());
+                                        : null);
                 mView.show();
 
                 // If there is a temporary parent set, reparent accordingly. We override here
@@ -377,41 +371,11 @@ public class SnackbarManager
             }
         }
 
-        for (Observer observer : mObservers) {
-            if (isShowing()) {
-                observer.onSnackbarStateChanged(true, assumeNonNull(mView).getBackgroundColor());
-            } else {
-                observer.onSnackbarStateChanged(false, null);
-            }
-        }
         mIsShowingSupplier.set(isShowing());
-    }
-
-    private boolean isTablet() {
-        return DeviceFormFactor.isNonMultiDisplayContextOnTablet(mActivity);
     }
 
     private void onTokenHolderChanged() {
         // Intentional no-op.
-    }
-
-    // ============================================================================================
-    // SnackbarStateProvider
-    // ============================================================================================
-
-    @Override
-    public void addObserver(Observer observer) {
-        mObservers.addObserver(observer);
-    }
-
-    @Override
-    public void removeObserver(Observer observer) {
-        mObservers.removeObserver(observer);
-    }
-
-    @Override
-    public boolean isFullWidth() {
-        return !isTablet();
     }
 
     // ============================================================================================
@@ -479,17 +443,5 @@ public class SnackbarManager
     /** Returns the currently showing snackbar view. For testing only. */
     public @Nullable SnackbarView getCurrentSnackbarViewForTesting() {
         return mView;
-    }
-
-    // ============================================================================================
-    // Flags
-    // ============================================================================================
-
-    /**
-     * Whether floating snackbar is enabled. When enabled, the snackbar will float on top of the web
-     * content.
-     */
-    public static boolean isFloatingSnackbarEnabled() {
-        return ChromeFeatureList.sFloatingSnackbar.isEnabled();
     }
 }

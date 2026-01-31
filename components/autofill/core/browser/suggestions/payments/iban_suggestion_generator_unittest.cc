@@ -69,14 +69,11 @@ Matcher<Suggestion> EqualsIbanSuggestion(
                                      {Suggestion::Text(identifier_string)}}));
 }
 
-class IbanSuggestionGeneratorTest : public testing::Test,
-                                    public testing::WithParamInterface<bool> {
+class IbanSuggestionGeneratorTest : public testing::Test {
  protected:
   IbanSuggestionGeneratorTest() {
     feature_list_.InitWithFeatureStates(
-        {{features::kAutofillEnableNewFopDisplayDesktop,
-          IsNewFopDisplayEnabled()},
-         {features::kAutofillNewSuggestionGeneration, true}});
+        {{features::kAutofillNewSuggestionGeneration, true}});
     prefs_ = test::PrefServiceForTesting();
     payments_data_manager().SetAutofillPaymentMethodsEnabled(true);
     autofill_client_.set_payments_autofill_client(
@@ -89,14 +86,6 @@ class IbanSuggestionGeneratorTest : public testing::Test,
     ON_CALL(*autofill_client_.GetAutofillOptimizationGuideDecider(),
             ShouldBlockSingleFieldSuggestions)
         .WillByDefault(testing::Return(false));
-  }
-
-  bool IsNewFopDisplayEnabled() const {
-#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
-    return false;
-#else
-    return GetParam();
-#endif
   }
 
   AutofillClient& client() { return autofill_client_; }
@@ -204,17 +193,13 @@ class IbanSuggestionGeneratorTest : public testing::Test,
   base::test::ScopedFeatureList feature_list_;
 };
 
-INSTANTIATE_TEST_SUITE_P(IbanSuggestionGeneratorTest,
-                         IbanSuggestionGeneratorTest,
-                         ::testing::Bool());
-
 MATCHER_P(MatchesTextAndSuggestionType, suggestion, "") {
   return arg.main_text == suggestion.main_text && arg.type == suggestion.type;
 }
 
 // Checks that all Ibans are returned as suggestion data, and used for
 // generating suggestions.
-TEST_P(IbanSuggestionGeneratorTest, GeneratesIbanSuggestions) {
+TEST_F(IbanSuggestionGeneratorTest, GeneratesIbanSuggestions) {
   payments_data_manager().SetAutofillWalletImportEnabled(true);
   Suggestion local_iban_suggestion_0 = GetSuggestionForIban(
       SetUpLocalIban("FR76 3000 6000 0112 3456 7890 189", kNickname_0));
@@ -240,13 +225,13 @@ TEST_P(IbanSuggestionGeneratorTest, GeneratesIbanSuggestions) {
   IbanSuggestionGenerator generator;
   std::pair<SuggestionGenerator::SuggestionDataSource,
             std::vector<SuggestionGenerator::SuggestionData>>
-      savedCallbackArgument;
+      saved_callback_argument;
 
   EXPECT_CALL(
       suggestion_data_callback,
       Run(testing::Pair(SuggestionGenerator::SuggestionDataSource::kIban,
                         testing::SizeIs(4))))
-      .WillOnce(testing::SaveArg<0>(&savedCallbackArgument));
+      .WillOnce(testing::SaveArg<0>(&saved_callback_argument));
   generator.FetchSuggestionData(form().ToFormData(), field(), &form(), &field(),
                                 client(), suggestion_data_callback.Get());
 
@@ -261,12 +246,12 @@ TEST_P(IbanSuggestionGeneratorTest, GeneratesIbanSuggestions) {
                       MatchesTextAndSuggestionType(separator_suggestion),
                       MatchesTextAndSuggestionType(footer_suggestion)))));
   generator.GenerateSuggestions(form().ToFormData(), field(), &form(), &field(),
-                                client(), {savedCallbackArgument},
+                                client(), {saved_callback_argument},
                                 suggestions_generated_callback.Get());
   task_environment().RunUntilIdle();
 }
 
-TEST_P(IbanSuggestionGeneratorTest, GetLocalIbanSuggestions) {
+TEST_F(IbanSuggestionGeneratorTest, GetLocalIbanSuggestions) {
   auto MakeLocalIban = [](const std::u16string& value,
                           const std::u16string& nickname) {
     Iban iban(Iban::Guid(base::Uuid::GenerateRandomV4().AsLowercaseString()));
@@ -319,7 +304,7 @@ TEST_P(IbanSuggestionGeneratorTest, GetLocalIbanSuggestions) {
   EXPECT_EQ(iban_suggestions[5].type, SuggestionType::kManageIban);
 }
 
-TEST_P(IbanSuggestionGeneratorTest, GetServerIbanSuggestions) {
+TEST_F(IbanSuggestionGeneratorTest, GetServerIbanSuggestions) {
   Iban server_iban1 = test::GetServerIban();
   Iban server_iban2 = test::GetServerIban2();
   Iban server_iban3 = test::GetServerIban3();
@@ -357,7 +342,7 @@ TEST_P(IbanSuggestionGeneratorTest, GetServerIbanSuggestions) {
   EXPECT_EQ(iban_suggestions[4].type, SuggestionType::kManageIban);
 }
 
-TEST_P(IbanSuggestionGeneratorTest, GetLocalAndServerIbanSuggestions) {
+TEST_F(IbanSuggestionGeneratorTest, GetLocalAndServerIbanSuggestions) {
   Iban server_iban1 = test::GetServerIban();
   Iban server_iban2 = test::GetServerIban2();
   Iban local_iban1 = test::GetLocalIban();

@@ -16,9 +16,8 @@
 #import "ios/chrome/browser/omnibox/ui/popup/row/image_retriever.h"
 #import "ui/base/window_open_disposition.h"
 
-@protocol ApplicationCommands;
-@protocol OmniboxCommands;
 @class BrowserActionFactory;
+@protocol BrowserCoordinatorCommands;
 @class CarouselItem;
 @protocol CarouselItemConsumer;
 @class OmniboxAutocompleteController;
@@ -26,9 +25,9 @@
 @protocol OmniboxPopupConsumer;
 @class OmniboxPopupMediator;
 @class OmniboxPopupPresenter;
+@protocol SceneCommands;
 @class SceneState;
 @protocol SnackbarCommands;
-@protocol LoadQueryCommands;
 class TemplateURLService;
 
 namespace feature_engagement {
@@ -71,8 +70,9 @@ class Tracker;
 
 @property(nonatomic, weak) id<OmniboxPopupConsumer> consumer;
 
-@property(nonatomic, weak) id<ApplicationCommands> applicationCommandsHandler;
-@property(nonatomic, weak) id<OmniboxCommands> omniboxCommandsHandler;
+@property(nonatomic, weak) id<SceneCommands> sceneHandler;
+@property(nonatomic, weak) id<BrowserCoordinatorCommands>
+    browserCoordinatorCommandsHandler;
 
 /// Browser scene state to notify about events happening in this popup.
 @property(nonatomic, weak) SceneState* sceneState;

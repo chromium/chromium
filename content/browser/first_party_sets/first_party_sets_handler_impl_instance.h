@@ -75,7 +75,7 @@ class CONTENT_EXPORT FirstPartySetsHandlerImplInstance
       const net::SchemefulSite& site,
       const net::FirstPartySetsContextConfig& config) const override;
   void GetContextConfigForPolicy(
-      base::optional_ref<const base::Value::Dict> policy,
+      base::optional_ref<const base::DictValue> policy,
       base::OnceCallback<void(net::FirstPartySetsContextConfig)> callback)
       override;
   void ClearSiteDataOnChangedSetsForContext(
@@ -155,7 +155,7 @@ class CONTENT_EXPORT FirstPartySetsHandlerImplInstance
   // Parses the policy and computes the config that represents the changes
   // needed to apply `policy` to `global_sets_`.
   net::FirstPartySetsContextConfig GetContextConfigForPolicyInternal(
-      const base::Value::Dict& policy,
+      const base::DictValue& policy,
       base::optional_ref<const base::ElapsedTimer> timer) const;
 
   void OnGetSitesToClear(

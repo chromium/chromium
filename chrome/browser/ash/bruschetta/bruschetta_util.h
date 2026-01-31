@@ -42,7 +42,7 @@ struct RunningVmPolicy {
   bool vtpm_enabled;
 };
 
-using InstallableConfig = std::pair<std::string, base::Value::Dict>;
+using InstallableConfig = std::pair<std::string, base::DictValue>;
 
 // Returns the string name of the BruschettaResult.
 const std::string BruschettaResultString(const BruschettaResult res);
@@ -51,17 +51,17 @@ guest_os::GuestId GetBruschettaAlphaId();
 
 guest_os::GuestId MakeBruschettaId(std::string vm_name);
 
-std::optional<const base::Value::Dict*> GetRunnableConfig(
+std::optional<const base::DictValue*> GetRunnableConfig(
     const Profile* profile,
     const std::string& config_id);
 
 base::FilePath BruschettaChromeOSBaseDirectory();
 
-std::optional<const base::Value::Dict*> GetInstallableConfig(
+std::optional<const base::DictValue*> GetInstallableConfig(
     const Profile* profile,
     const std::string& config_id);
 
-base::flat_map<std::string, base::Value::Dict> GetInstallableConfigs(
+base::flat_map<std::string, base::DictValue> GetInstallableConfigs(
     const Profile* profile);
 
 // In-place sort installable configs into display order.
@@ -74,7 +74,7 @@ bool HasInstallableConfig(const Profile* profile, const std::string& config_id);
 // Returns true if Bruschetta is installed.
 bool IsInstalled(Profile* profile, const guest_os::GuestId& guest_id);
 
-std::optional<const base::Value::Dict*> GetConfigForGuest(
+std::optional<const base::DictValue*> GetConfigForGuest(
     Profile* profile,
     const guest_os::GuestId& guest_id,
     prefs::PolicyEnabledState enabled_level);

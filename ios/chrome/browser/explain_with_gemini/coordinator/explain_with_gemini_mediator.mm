@@ -11,12 +11,12 @@
 #import "base/metrics/histogram_functions.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/signin/public/identity_manager/identity_manager.h"
-#import "ios/chrome/browser/browser_container/ui_bundled/browser_edit_menu_utils.h"
+#import "ios/chrome/browser/browser_content/ui_bundled/browser_edit_menu_utils.h"
 #import "ios/chrome/browser/explain_with_gemini/coordinator/explain_with_gemini_constants.h"
 #import "ios/chrome/browser/intelligence/features/features.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
-#import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/open_new_tab_command.h"
+#import "ios/chrome/browser/shared/public/commands/scene_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/signin/model/authentication_service.h"
 #import "ios/chrome/browser/web_selection/model/web_selection_response.h"
@@ -66,8 +66,7 @@ typedef void (^ProceduralBlockWithBlockWithItemArray)(
   }
   WebSelectionTabHelper* tabHelper =
       WebSelectionTabHelper::FromWebState(webState);
-  return tabHelper && tabHelper->CanRetrieveSelectedText() &&
-         self.applicationCommandHandler;
+  return tabHelper && tabHelper->CanRetrieveSelectedText() && self.sceneHandler;
 }
 
 // Returns YES if the user is signIn.
@@ -203,7 +202,7 @@ typedef void (^ProceduralBlockWithBlockWithItemArray)(
   };
   base::UmaHistogramCounts10000("IOS.ExplainWithGemini.CharSelected",
                                 [text length]);
-  [self.applicationCommandHandler openURLInNewTab:command];
+  [self.sceneHandler openURLInNewTab:command];
 }
 
 // Returns the action to trigger the search with feature. Calls `handler` on

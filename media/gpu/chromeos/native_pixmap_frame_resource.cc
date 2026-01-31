@@ -298,6 +298,10 @@ NativePixmapFrameResource::CreateGpuMemoryBufferHandle() const {
   return gmb_handle;
 }
 
+bool NativePixmapFrameResource::HasMappableSharedImage() const {
+  return false;
+}
+
 scoped_refptr<gpu::ClientSharedImage>
 NativePixmapFrameResource::GetSharedImage() const {
   // This class does not hold a ClientSharedImage internally.

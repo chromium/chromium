@@ -2,14 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "media/gpu/windows/mf_video_encoder_util.h"
 
 #include "base/check.h"
+#include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/hash/hash.h"
 #include "base/native_library.h"
@@ -325,18 +321,20 @@ EnumerateHardwareEncodersLegacy(VideoCodec codec) {
   }
 
   for (UINT32 i = 0; i < count; i++) {
-    if (codec == VideoCodec::kAV1 && IsIntelHybridAV1Encoder(pp_activates[i])) {
+    if (codec == VideoCodec::kAV1 &&
+        IsIntelHybridAV1Encoder(UNSAFE_TODO(pp_activates[i]))) {
       continue;
     }
 
     // We can still infer the MFT's adapter LUID if there's only one adapter
     // in the system.
     if (num_adapters == 1) {
-      pp_activates[i]->SetBlob(MFT_ENUM_ADAPTER_LUID,
-                               reinterpret_cast<BYTE*>(&single_adapter_luid),
-                               sizeof(LUID));
+      UNSAFE_TODO(pp_activates[i])
+          ->SetBlob(MFT_ENUM_ADAPTER_LUID,
+                    reinterpret_cast<BYTE*>(&single_adapter_luid),
+                    sizeof(LUID));
     }
-    encoders.push_back(pp_activates[i]);
+    encoders.push_back(UNSAFE_TODO(pp_activates[i]));
   }
 
   if (pp_activates) {
@@ -410,17 +408,17 @@ std::vector<Microsoft::WRL::ComPtr<IMFActivate>> EnumerateHardwareEncoders(
 
     for (UINT32 i = 0; i < count; i++) {
       if (codec == VideoCodec::kAV1 &&
-          IsIntelHybridAV1Encoder(pp_activates[i])) {
+          IsIntelHybridAV1Encoder(UNSAFE_TODO(pp_activates[i]))) {
         continue;
       }
       // It's safe to ignore return value here.
       // if SetBlob fails, the IMFActivate won't have a valid adapter LUID
       // which will fail the check for preferred adapter LUID, so the
       // MFDXGIDeviceManager will not be set for MFT, which is a safe option.
-      pp_activates[i]->SetBlob(MFT_ENUM_ADAPTER_LUID,
-                               reinterpret_cast<BYTE*>(&desc.AdapterLuid),
-                               sizeof(LUID));
-      encoders.push_back(pp_activates[i]);
+      UNSAFE_TODO(pp_activates[i])
+          ->SetBlob(MFT_ENUM_ADAPTER_LUID,
+                    reinterpret_cast<BYTE*>(&desc.AdapterLuid), sizeof(LUID));
+      encoders.push_back(UNSAFE_TODO(pp_activates[i]));
     }
 
     if (pp_activates) {

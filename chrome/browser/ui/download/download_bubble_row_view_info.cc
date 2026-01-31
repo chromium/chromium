@@ -217,6 +217,7 @@ void DownloadBubbleRowViewInfo::PopulateForInProgressOrComplete() {
     case download::DOWNLOAD_DANGER_TYPE_BLOCKED_PASSWORD_PROTECTED:
     case download::DOWNLOAD_DANGER_TYPE_BLOCKED_TOO_LARGE:
     case download::DOWNLOAD_DANGER_TYPE_FORCE_SAVE_TO_GDRIVE:
+    case download::DOWNLOAD_DANGER_TYPE_FORCE_SAVE_TO_ONEDRIVE:
     case download::DOWNLOAD_DANGER_TYPE_SENSITIVE_CONTENT_BLOCK:
     case download::DOWNLOAD_DANGER_TYPE_DEEP_SCANNED_SAFE:
     case download::DOWNLOAD_DANGER_TYPE_DEEP_SCANNED_OPENED_DANGEROUS:
@@ -246,6 +247,7 @@ void DownloadBubbleRowViewInfo::PopulateForInterrupted(
     }
 
     case download::DOWNLOAD_DANGER_TYPE_FORCE_SAVE_TO_GDRIVE:
+    case download::DOWNLOAD_DANGER_TYPE_FORCE_SAVE_TO_ONEDRIVE:
     case download::DOWNLOAD_DANGER_TYPE_SENSITIVE_CONTENT_BLOCK: {
 #if BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS)
       if (enterprise_connectors::ShouldPromptReviewForDownload(
@@ -282,6 +284,8 @@ void DownloadBubbleRowViewInfo::PopulateForInterrupted(
   }
 
   switch (fail_state) {
+    // TODO(alshawwa): Handle LOCAL_DOWNLOAD_BLOCKED separately
+    case FailState::LOCAL_DOWNLOAD_BLOCKED:
     case FailState::FILE_BLOCKED: {
       has_subpage_ = true;
       return;

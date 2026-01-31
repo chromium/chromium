@@ -69,15 +69,15 @@ class RendererStartupHelper : public KeyedService,
   // mojom::RendererHost:
   void AddAPIActionToActivityLog(const std::optional<ExtensionId>& extension_id,
                                  const std::string& call_name,
-                                 base::Value::List args,
+                                 base::ListValue args,
                                  const std::string& extra) override;
   void AddEventToActivityLog(const std::optional<ExtensionId>& extension_id,
                              const std::string& call_name,
-                             base::Value::List args,
+                             base::ListValue args,
                              const std::string& extra) override;
   void AddDOMActionToActivityLog(const ExtensionId& extension_id,
                                  const std::string& call_name,
-                                 base::Value::List args,
+                                 base::ListValue args,
                                  const GURL& url,
                                  const std::u16string& url_title,
                                  int32_t call_type) override;
@@ -137,6 +137,10 @@ class RendererStartupHelper : public KeyedService,
  private:
   friend class RendererStartupHelperTest;
   friend class RendererStartupHelperInterceptor;
+
+  // Registers a render process for extension communication by creating a Mojo
+  // remote and adding this instance as an observer.
+  void RegisterProcess(content::RenderProcessHost* process);
 
   // Initializes the specified process, informing it of system state and loaded
   // extensions.

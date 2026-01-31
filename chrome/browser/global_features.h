@@ -5,13 +5,16 @@
 #ifndef CHROME_BROWSER_GLOBAL_FEATURES_H_
 #define CHROME_BROWSER_GLOBAL_FEATURES_H_
 
-#include <memory.h>
+#include <memory>
 
 #include "base/functional/callback.h"
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
 #include "chrome/common/buildflags.h"
+#include "net/net_buildflags.h"
 #include "ui/base/unowned_user_data/user_data_factory.h"
+
+class GlobalBrowserCollection;
 
 namespace system_permission_settings {
 class PlatformHandle;
@@ -29,6 +32,7 @@ class DefaultBrowserManager;
 #if BUILDFLAG(ENABLE_GLIC)
 namespace glic {
 class GlicBackgroundModeManager;
+class GlicGlobalEnabling;
 class GlicProfileManager;
 class GlicSyntheticTrialManager;
 }  // namespace glic
@@ -51,9 +55,18 @@ class ApplicationAdvancedProtectionStatusDetector;
 }  // namespace safe_browsing
 
 #if !BUILDFLAG(IS_ANDROID)
-class GlobalBrowserCollection;
 class StartupLaunchManager;
 #endif  // !BUILDFLAG(IS_ANDROID)
+
+#if BUILDFLAG(ENABLE_DEVICE_BOUND_SESSIONS)
+namespace unexportable_keys {
+class UnexportableKeyObsoleteProfileGarbageCollector;
+}  // namespace unexportable_keys
+#endif  // BUILDFLAG(ENABLE_DEVICE_BOUND_SESSIONS)
+
+namespace local_network_access {
+class IPAddressSpaceOverridesPrefsObserver;
+}  // namespace local_network_access
 
 // This class owns the core controllers for features that are globally
 // scoped on desktop and Android. It can be subclassed by tests to perform
@@ -103,14 +116,6 @@ class GlobalFeatures {
   void PostMainMessageLoopRun();
   void PostDestroyThreads();
 
-  // Legacy method used in some tests. New code and non-test code should not use
-  // this.
-  //
-  // TODO(crbug.com/467395900): Remove this function and its remaining uses and
-  // replace them with
-  // TestingBrowserProcess::TearDownGlobalFeaturesForTesting().
-  void Shutdown();
-
   // Public accessors for features, e.g.
   // FooFeature* foo_feature() { return foo_feature_.get(); }
 
@@ -122,23 +127,26 @@ class GlobalFeatures {
   whats_new::WhatsNewRegistry* whats_new_registry() {
     return whats_new_registry_.get();
   }
-
-  default_browser::DefaultBrowserManager* default_browser_manager() {
-    return default_browser_manager_.get();
-  }
 #endif
 
 #if BUILDFLAG(ENABLE_GLIC)
   glic::GlicProfileManager* glic_profile_manager() {
     return glic_profile_manager_.get();
   }
-
+#endif
+#if BUILDFLAG(ENABLE_GLIC) && !BUILDFLAG(IS_ANDROID)
   glic::GlicBackgroundModeManager* glic_background_mode_manager() {
     return glic_background_mode_manager_.get();
   }
+#endif
 
+#if BUILDFLAG(ENABLE_GLIC)
   glic::GlicSyntheticTrialManager* glic_synthetic_trial_manager() {
     return synthetic_trial_manager_.get();
+  }
+
+  glic::GlicGlobalEnabling& glic_global_enabling() {
+    return *glic_global_enabling_.get();
   }
 #endif
 
@@ -167,11 +175,9 @@ class GlobalFeatures {
     return application_advanced_protection_status_detector_.get();
   }
 
-#if !BUILDFLAG(IS_ANDROID)
   GlobalBrowserCollection* global_browser_collection() {
     return global_browser_collection_.get();
   }
-#endif  // !BUILDFLAG(IS_ANDROID)
 
   static ui::UserDataFactoryWithOwner<BrowserProcess>&
   GetUserDataFactoryForTesting();
@@ -205,9 +211,16 @@ class GlobalFeatures {
 #endif
 
 #if BUILDFLAG(ENABLE_GLIC)
+  std::unique_ptr<glic::GlicGlobalEnabling> glic_global_enabling_;
+#endif
+#if BUILDFLAG(ENABLE_GLIC)
   std::unique_ptr<glic::GlicProfileManager> glic_profile_manager_;
+#endif
+#if BUILDFLAG(ENABLE_GLIC) && !BUILDFLAG(IS_ANDROID)
   std::unique_ptr<glic::GlicBackgroundModeManager>
       glic_background_mode_manager_;
+#endif
+#if BUILDFLAG(ENABLE_GLIC)
   std::unique_ptr<glic::GlicSyntheticTrialManager> synthetic_trial_manager_;
 #endif
 
@@ -228,10 +241,20 @@ class GlobalFeatures {
   std::unique_ptr<safe_browsing::ApplicationAdvancedProtectionStatusDetector>
       application_advanced_protection_status_detector_;
 
-#if !BUILDFLAG(IS_ANDROID)
+  std::unique_ptr<local_network_access::IPAddressSpaceOverridesPrefsObserver>
+      ip_address_space_overrides_prefs_observer_;
+
   std::unique_ptr<GlobalBrowserCollection> global_browser_collection_;
+
+#if !BUILDFLAG(IS_ANDROID)
   std::unique_ptr<StartupLaunchManager> startup_launch_manager_;
 #endif  // !BUILDFLAG(IS_ANDROID)
+
+#if BUILDFLAG(ENABLE_DEVICE_BOUND_SESSIONS)
+  std::unique_ptr<
+      unexportable_keys::UnexportableKeyObsoleteProfileGarbageCollector>
+      unexportable_key_obsolete_profile_garbage_collector_;
+#endif  // BUILDFLAG(ENABLE_DEVICE_BOUND_SESSIONS)
 };
 
 #endif  // CHROME_BROWSER_GLOBAL_FEATURES_H_

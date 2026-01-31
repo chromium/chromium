@@ -51,29 +51,29 @@ std::string GetDetailsForPixAccountLinkingRequest::GetRequestContentType() {
 }
 
 std::string GetDetailsForPixAccountLinkingRequest::GetRequestContent() {
-  base::Value::Dict request_dict =
-      base::Value::Dict()
+  base::DictValue request_dict =
+      base::DictValue()
           .Set("chrome_user_context",
-               base::Value::Dict().Set("full_sync_enabled", full_sync_enabled_))
+               base::DictValue().Set("full_sync_enabled", full_sync_enabled_))
           .Set(
               "context",
-              base::Value::Dict()
+              base::DictValue()
                   .Set("language_code", app_locale_)
                   .Set("billable_service", kChromePaymentsBillableServiceNumber)
                   .Set("customer_context",
-                       base::Value::Dict().Set(
+                       base::DictValue().Set(
                            "external_customer_id",
                            base::NumberToString(billing_customer_number_))))
           // Set an empty dict for Pix account linking info to indicate that the
           // request is for Pix account linking. No additional data is required
           // within the dict.
-          .Set("pix_account_linking_info", base::Value::Dict());
+          .Set("pix_account_linking_info", base::DictValue());
 
   return base::WriteJson(request_dict).value_or("");
 }
 
 void GetDetailsForPixAccountLinkingRequest::ParseResponse(
-    const base::Value::Dict& response) {
+    const base::DictValue& response) {
   if (response.FindDict("error")) {
     return;
   }

@@ -99,7 +99,7 @@ TEST(HeadlessTestMetaInfoTest, CommandLineSwitch) {
   EXPECT_FALSE(meta_info.value().IsEmpty());
 
   base::CommandLine command_line(0, nullptr);
-  meta_info.value().AppendToCommandLine(command_line);
+  meta_info.value().ProcessCommandLineSwitches(command_line);
 
   EXPECT_TRUE(command_line.HasSwitch("single-process"));
   EXPECT_TRUE(command_line.HasSwitch("window-size"));
@@ -112,22 +112,6 @@ TEST(HeadlessTestMetaInfoTest, CommandLineSwitch) {
             "workAreaBottom=80 label='primary screen'}");
 }
 
-TEST(HeadlessTestMetaInfoTest, DuplicateCommandLineSwitch) {
-  auto meta_info = TestMetaInfo::FromString(R"(
-  // META: --window-size=800,600
-  // META: --window-size=1600x1200
-  // )");
-
-  ASSERT_TRUE(meta_info.has_value());
-
-  EXPECT_FALSE(meta_info.value().IsEmpty());
-
-  base::CommandLine command_line(0, nullptr);
-  meta_info.value().AppendToCommandLine(command_line);
-
-  EXPECT_EQ(command_line.GetSwitchValueASCII("window-size"), "1600x1200");
-}
-
 TEST(HeadlessTestMetaInfoTest, CompositeCommandLineSwitch) {
   auto meta_info = TestMetaInfo::FromString(R"(
   // META: --js-flags=--expose-gc,--allow-natives-syntax
@@ -138,14 +122,41 @@ TEST(HeadlessTestMetaInfoTest, CompositeCommandLineSwitch) {
   EXPECT_FALSE(meta_info.value().IsEmpty());
 
   base::CommandLine command_line(0, nullptr);
-  meta_info.value().AppendToCommandLine(command_line);
+  meta_info.value().ProcessCommandLineSwitches(command_line);
 
   EXPECT_EQ(command_line.GetSwitchValueASCII("js-flags"),
             "--expose-gc,--allow-natives-syntax");
 }
 
+TEST(HeadlessTestMetaInfoTest, FeaturesCommandLineSwitches) {
+  auto meta_info = TestMetaInfo::FromString(R"(
+  // META: --enable-features=a,b,c
+  // META: --disable-features=d,e,f
+  // )");
+
+  ASSERT_TRUE(meta_info.has_value());
+
+  EXPECT_FALSE(meta_info.value().IsEmpty());
+
+  base::CommandLine command_line(0, nullptr);
+  auto scoped_feature_list =
+      meta_info.value().ProcessCommandLineSwitches(command_line);
+  EXPECT_NE(scoped_feature_list.get(), nullptr);
+
+  std::string enabled_features;
+  std::string disabled_features;
+  base::FeatureList* feature_list = base::FeatureList::GetInstance();
+  feature_list->GetFeatureOverrides(&enabled_features, &disabled_features);
+
+  EXPECT_THAT(enabled_features, testing::HasSubstr("a,b,c"));
+  EXPECT_THAT(disabled_features, testing::HasSubstr("d,e,f"));
+
+  EXPECT_FALSE(command_line.HasSwitch("enable-features"));
+  EXPECT_FALSE(command_line.HasSwitch("disable-features"));
+}
+
 TEST(HeadlessTestMetaInfoTest, ForkHeadlessModeExpectations) {
-  ASSERT_FALSE(TestMetaInfo().fork_headless_mode_expectations);
+  ASSERT_FALSE(TestMetaInfo().fork_headless_mode_expectations());
 
   auto meta_info = TestMetaInfo::FromString(R"(
   // META: fork_headless_mode_expectations
@@ -155,11 +166,11 @@ TEST(HeadlessTestMetaInfoTest, ForkHeadlessModeExpectations) {
 
   EXPECT_FALSE(meta_info.value().IsEmpty());
 
-  EXPECT_TRUE(meta_info.value().fork_headless_mode_expectations);
+  EXPECT_TRUE(meta_info.value().fork_headless_mode_expectations());
 }
 
 TEST(HeadlessTestMetaInfoTest, ForkHeadlessShellExpectations) {
-  ASSERT_FALSE(TestMetaInfo().fork_headless_shell_expectations);
+  ASSERT_FALSE(TestMetaInfo().fork_headless_shell_expectations());
 
   auto meta_info = TestMetaInfo::FromString(R"(
   // META: fork_headless_shell_expectations
@@ -169,7 +180,7 @@ TEST(HeadlessTestMetaInfoTest, ForkHeadlessShellExpectations) {
 
   EXPECT_FALSE(meta_info.value().IsEmpty());
 
-  EXPECT_TRUE(meta_info.value().fork_headless_shell_expectations);
+  EXPECT_TRUE(meta_info.value().fork_headless_shell_expectations());
 }
 
 }  // namespace

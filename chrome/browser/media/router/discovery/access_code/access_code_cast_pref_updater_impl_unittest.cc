@@ -128,14 +128,14 @@ TEST_F(AccessCodeCastPrefUpdaterImplTest,
   MediaSinkInternal cast_sink2 = CreateCastSink(2);
 
   UpdateDevicesDict(cast_sink);
-  base::test::TestFuture<base::Value::Dict> cast_sink_from_dict;
+  base::test::TestFuture<base::DictValue> cast_sink_from_dict;
   pref_updater()->GetMediaSinkInternalValueBySinkId(
       cast_sink.id(), cast_sink_from_dict.GetCallback());
   EXPECT_FALSE(cast_sink_from_dict.Get().empty());
   EXPECT_EQ(CreateValueDictFromMediaSinkInternal(cast_sink),
             cast_sink_from_dict.Get());
 
-  base::test::TestFuture<base::Value::Dict> cast_sink_from_dict2;
+  base::test::TestFuture<base::DictValue> cast_sink_from_dict2;
   pref_updater()->GetMediaSinkInternalValueBySinkId(
       cast_sink2.id(), cast_sink_from_dict2.GetCallback());
   EXPECT_TRUE(cast_sink_from_dict2.Get().empty());
@@ -176,7 +176,7 @@ TEST_F(AccessCodeCastPrefUpdaterImplTest, TestGetDeviceAddedTime) {
   MediaSinkInternal cast_sink2 = CreateCastSink(2);
 
   UpdateDeviceAddedTimeDict(cast_sink.id());
-  base::test::TestFuture<base::Value::Dict> device_added_time_dict;
+  base::test::TestFuture<base::DictValue> device_added_time_dict;
   pref_updater()->GetDeviceAddedTimeDict(device_added_time_dict.GetCallback());
   EXPECT_TRUE(device_added_time_dict.Get().contains(cast_sink.id()));
   EXPECT_FALSE(device_added_time_dict.Get().contains(cast_sink2.id()));
@@ -189,14 +189,14 @@ TEST_F(AccessCodeCastPrefUpdaterImplTest, TestClearDevicesDict) {
   UpdateDevicesDict(cast_sink);
   UpdateDevicesDict(cast_sink2);
   {
-    base::test::TestFuture<base::Value::Dict> devices_dict;
+    base::test::TestFuture<base::DictValue> devices_dict;
     pref_updater()->GetDevicesDict(devices_dict.GetCallback());
     EXPECT_FALSE(devices_dict.Get().empty());
   }
 
   pref_updater()->ClearDevicesDict(base::DoNothing());
   {
-    base::test::TestFuture<base::Value::Dict> devices_dict;
+    base::test::TestFuture<base::DictValue> devices_dict;
     pref_updater()->GetDevicesDict(devices_dict.GetCallback());
     EXPECT_TRUE(devices_dict.Get().empty());
   }
@@ -209,7 +209,7 @@ TEST_F(AccessCodeCastPrefUpdaterImplTest, TestClearDeviceAddedTimeDict) {
   UpdateDeviceAddedTimeDict(cast_sink.id());
   UpdateDeviceAddedTimeDict(cast_sink2.id());
   {
-    base::test::TestFuture<base::Value::Dict> device_added_time_dict;
+    base::test::TestFuture<base::DictValue> device_added_time_dict;
     pref_updater()->GetDeviceAddedTimeDict(
         device_added_time_dict.GetCallback());
     EXPECT_FALSE(device_added_time_dict.Get().empty());
@@ -217,7 +217,7 @@ TEST_F(AccessCodeCastPrefUpdaterImplTest, TestClearDeviceAddedTimeDict) {
 
   pref_updater()->ClearDeviceAddedTimeDict(base::DoNothing());
   {
-    base::test::TestFuture<base::Value::Dict> device_added_time_dict;
+    base::test::TestFuture<base::DictValue> device_added_time_dict;
     pref_updater()->GetDeviceAddedTimeDict(
         device_added_time_dict.GetCallback());
     EXPECT_TRUE(device_added_time_dict.Get().empty());
@@ -241,7 +241,7 @@ TEST_F(AccessCodeCastPrefUpdaterImplTest, TestUpdateDevicesDictIdenticalIPs) {
 
   // There should only be two devices stored since two ip_endpoints were
   // identical.
-  base::test::TestFuture<base::Value::Dict> devices_dict;
+  base::test::TestFuture<base::DictValue> devices_dict;
   pref_updater()->GetDevicesDict(devices_dict.GetCallback());
   EXPECT_EQ(devices_dict.Get().size(), 2u);
   EXPECT_TRUE(devices_dict.Get().contains(cast_sink2.id()));
@@ -259,7 +259,7 @@ TEST_F(AccessCodeCastPrefUpdaterImplTest, TestUpdateDevicesDictDifferentIPs) {
 
   // There should only be two devices stored since two ip_endpoints were
   // identical.
-  base::test::TestFuture<base::Value::Dict> devices_dict;
+  base::test::TestFuture<base::DictValue> devices_dict;
   pref_updater()->GetDevicesDict(devices_dict.GetCallback());
   EXPECT_EQ(devices_dict.Get().size(), 3u);
   EXPECT_TRUE(devices_dict.Get().contains(cast_sink.id()));

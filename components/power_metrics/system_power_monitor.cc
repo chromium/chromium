@@ -127,13 +127,19 @@ bool SystemPowerMonitorDelegate::IsTraceCategoryEnabled() const {
 SystemPowerMonitorHelper::SystemPowerMonitorHelper(
     std::unique_ptr<EnergyMetricsProvider> provider,
     std::unique_ptr<SystemPowerMonitorDelegate> delegate)
-    : provider_(std::move(provider)), delegate_(std::move(delegate)) {}
+    : provider_(std::move(provider)), delegate_(std::move(delegate)) {
+  base::trace_event::TraceSessionObserverList::AddObserver(this);
+}
 
-SystemPowerMonitorHelper::~SystemPowerMonitorHelper() = default;
+SystemPowerMonitorHelper::~SystemPowerMonitorHelper() {
+  base::trace_event::TraceSessionObserverList::RemoveObserver(this);
+}
 
 void SystemPowerMonitorHelper::Start() {
   CHECK(provider_);
-  CHECK(!timer_.IsRunning());
+  if (timer_.IsRunning()) {
+    return;
+  }
   if (!delegate_->IsTraceCategoryEnabled()) {
     return;
   }
@@ -167,6 +173,10 @@ void SystemPowerMonitorHelper::Stop() {
 }
 
 void SystemPowerMonitorHelper::Sample() {
+  if (!delegate_->IsTraceCategoryEnabled()) {
+    Stop();
+    return;
+  }
   // If the provider fails to capture valid metrics after the timer started,
   // we leave the timer running.
   auto sample = provider_->CaptureMetrics();
@@ -191,6 +201,11 @@ void SystemPowerMonitorHelper::Sample() {
   last_timestamp_ = timestamp;
 }
 
+void SystemPowerMonitorHelper::OnStart(
+    const perfetto::DataSourceBase::StartArgs&) {
+  Start();
+}
+
 bool SystemPowerMonitorHelper::IsTimerRunningForTesting() {
   return timer_.IsRunning();
 }
@@ -212,17 +227,8 @@ SystemPowerMonitor::SystemPowerMonitor(
 SystemPowerMonitor::~SystemPowerMonitor() = default;
 
 // static
-SystemPowerMonitor* SystemPowerMonitor::GetInstance() {
+void SystemPowerMonitor::Initialize() {
   static base::NoDestructor<SystemPowerMonitor> instance;
-  return instance.get();
-}
-
-void SystemPowerMonitor::OnTraceLogEnabled() {
-  helper_.AsyncCall(&SystemPowerMonitorHelper::Start);
-}
-
-void SystemPowerMonitor::OnTraceLogDisabled() {
-  helper_.AsyncCall(&SystemPowerMonitorHelper::Stop);
 }
 
 base::SequenceBound<SystemPowerMonitorHelper>*

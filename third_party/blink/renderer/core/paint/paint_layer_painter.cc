@@ -33,6 +33,7 @@
 #include "third_party/blink/renderer/platform/graphics/paint/drawing_recorder.h"
 #include "third_party/blink/renderer/platform/graphics/paint/foreign_layer_display_item.h"
 #include "third_party/blink/renderer/platform/graphics/paint/geometry_mapper.h"
+#include "third_party/blink/renderer/platform/graphics/paint/scoped_canvas_subtree_id.h"
 #include "third_party/blink/renderer/platform/graphics/paint/scoped_display_item_fragment.h"
 #include "third_party/blink/renderer/platform/graphics/paint/scoped_effectively_invisible.h"
 #include "third_party/blink/renderer/platform/graphics/paint/scoped_paint_chunk_properties.h"
@@ -391,8 +392,24 @@ PaintResult PaintLayerPainter::Paint(GraphicsContext& context,
   PaintController& controller = context.GetPaintController();
 
   std::optional<ScopedEffectivelyInvisible> effectively_invisible;
-  if (PaintedOutputInvisible(object.StyleRef()))
+  if (PaintedOutputInvisible(object.StyleRef())) {
     effectively_invisible.emplace(controller);
+  }
+
+  std::optional<ScopedCanvasSubtreeId> canvas_subtree_id_scope;
+  if (RuntimeEnabledFeatures::CanvasDrawElementEnabled()) {
+    // Start a canvas subtree id scope with the id of each direct child of a
+    // layoutsubtree canvas.
+    auto* element = DynamicTo<Element>(object.GetNode());
+    if (element && element->IsInCanvasSubtree()) [[unlikely]] {
+      auto* canvas = DynamicTo<HTMLCanvasElement>(element->parentElement());
+      if (canvas && canvas->layoutSubtree()) {
+        auto canvas_subtree_id =
+            CompositorElementIdFromDOMNodeId(element->GetDomNodeId());
+        canvas_subtree_id_scope.emplace(controller, canvas_subtree_id);
+      }
+    }
+  }
 
   std::optional<ScopedPaintChunkProperties> layer_chunk_properties;
 
@@ -513,8 +530,12 @@ void PaintLayerPainter::PaintTransitionScopeSnapshotIfNeeded(
   if (!layer) {
     return;
   }
-  auto rect = paint_layer_.LocalBoundingBoxIncludingSelfPaintingDescendants();
-  layer->SetBounds(rect.PixelSnappedSize());
+
+  PhysicalRect box_border_rect =
+      paint_layer_.LocalBoundingBoxIncludingSelfPaintingDescendants();
+  PhysicalRect ink_overflow_rect = object.ApplyFiltersToRect(box_border_rect);
+  PhysicalOffset paint_offset = ink_overflow_rect.offset;
+  layer->SetBounds(ink_overflow_rect.PixelSnappedSize());
   layer->SetIsDrawable(true);
 
   PropertyTreeStateOrAlias properties =
@@ -522,11 +543,9 @@ void PaintLayerPainter::PaintTransitionScopeSnapshotIfNeeded(
   DCHECK(effect);
   properties.SetEffect(*effect);
 
-  // TODO(crbug.com/405117383): layer size and paint offset may need to be
-  // adjusted for ink overflow.
-  RecordForeignLayer(context, paint_layer_,
-                     DisplayItem::kForeignLayerViewTransitionContent,
-                     std::move(layer), gfx::Point(), &properties);
+  RecordForeignLayer(
+      context, paint_layer_, DisplayItem::kForeignLayerViewTransitionContent,
+      std::move(layer), ToRoundedPoint(paint_offset), &properties);
 }
 
 PaintResult PaintLayerPainter::PaintTransitionPseudos(
@@ -540,6 +559,14 @@ PaintResult PaintLayerPainter::PaintTransitionPseudos(
   LayoutBoxModelObject* pseudo_layout_object = DynamicTo<LayoutBoxModelObject>(
       element->PseudoElementLayoutObject(kPseudoIdViewTransition));
   if (!pseudo_layout_object) {
+    return kFullyPainted;
+  }
+  auto* transition = ViewTransitionUtils::GetTransition(*element);
+  if (!transition || transition->IsCapturing()) {
+    // Don't paint the pseudos during the capture phase. This avoids scaling
+    // problems in the scope snapshot layer when participants overflow.
+    // Note: PaintTransitionScopeSnapshotIfNeeded will paint the scope snapshot
+    // layer during capture, ensuring that the scope remains visible.
     return kFullyPainted;
   }
   PaintLayer* pseudo_layer = pseudo_layout_object->Layer();
@@ -562,9 +589,16 @@ PaintResult PaintLayerPainter::PaintChildren(
     return result;
   }
 
-  // Prevent canvas fallback content from being rendered.
-  if (IsA<HTMLCanvasElement>(layout_object.GetNode())) {
-    return result;
+  if (auto* canvas = DynamicTo<HTMLCanvasElement>(layout_object.GetNode())) {
+    if (RuntimeEnabledFeatures::CanvasDrawElementEnabled() &&
+        canvas->layoutSubtree()) {
+      // We need to paint the children for later use by drawElementImage, but
+      // make sure we enforce privacy-preserving paint behavior.
+      paint_flags |= PaintFlag::kPrivacyPreserving;
+    } else {
+      // Prevent canvas fallback content from being rendered.
+      return result;
+    }
   }
 
   PaintLayerPaintOrderIterator iterator(&paint_layer_, children_to_visit);

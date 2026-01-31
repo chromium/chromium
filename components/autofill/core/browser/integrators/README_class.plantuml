@@ -13,15 +13,11 @@
  '/
 @startuml
 interface "TouchToFillDelegate" as ttfd
-interface "FastCheckoutDelegate" as fcod
 interface "PasswordManagerDelegate" as pmd
 interface "AutofillSuggestionDelegate" as asd
 class "AutofillExternalDelegate" as aed
 class "PasswordAutofillManager" as pam
 class "BrowserAutofillManager" as bam {
-  + set_fast_checkout_delegate
-  + set_touch_to_fill_delegate
-  # fast_checkout_delegate
   # client().GetPasswordManagerDelegate()
   # touch_to_fill_delegate
 }
@@ -29,7 +25,6 @@ class "BrowserAutofillManager" as bam {
 'The BrowserAutofillManager has numerous delegates to different components.
 pmd "1" -* "1" bam
 bam "1" *- "1" ttfd
-bam "1" *-- "1" fcod
 aed "1" ---o "1" bam
 
 'Pwd Autofill manager and external delegate implement the same interface.
@@ -41,6 +36,5 @@ asd <|.. (pam, aed)
 'Each delegate is implemented by a respective impl class in its component.
 pam  ..|> pmd
 ttfd <|.. TouchToFillDelegateImpl
-fcod <|.. FastCheckoutDelegateImpl
 
 @enduml

@@ -53,9 +53,17 @@
       <span class="sub-label">$i18n{googlePayments}</span>
 </if>
     </div>
-    <cr-icon-button class="icon-external" id="remotePayOverTimeIssuerLink"
-        title="$i18n{remotePaymentMethodsLinkLabel}" role="link"
-        on-click="onRemoteEditClick_"
-        aria-description="$i18n{opensInNewTab}"></cr-icon-button>
+    <template is="dom-if" if="[[autofillEnableWalletBrandingEnabled_]]">
+      <cr-icon-button class="icon-external" id="remotePayOverTimeIssuerLink"
+          title="$i18n{remotePaymentMethodsWalletLinkLabel}" role="link"
+          on-click="onRemoteEditClick_"
+          aria-description="$i18n{opensInNewTab}"></cr-icon-button>
+    </template>
+    <template is="dom-if" if="[[!autofillEnableWalletBrandingEnabled_]]">
+      <cr-icon-button class="icon-external" id="remotePayOverTimeIssuerLink"
+          title="$i18n{remotePaymentMethodsLinkLabel}" role="link"
+          on-click="onRemoteEditClick_"
+          aria-description="$i18n{opensInNewTab}"></cr-icon-button>
+    </template>
   </div>
 </div>

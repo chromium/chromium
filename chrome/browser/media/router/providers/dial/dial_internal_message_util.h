@@ -50,7 +50,7 @@ struct DialInternalMessage {
   // Returns a DialInternalMessage for |message|. If |message| is not a valid
   // custom DIAL launch internal message, returns nullptr and sets |error| with
   // an error reason.
-  static std::unique_ptr<DialInternalMessage> From(base::Value::Dict message,
+  static std::unique_ptr<DialInternalMessage> From(base::DictValue message,
                                                    std::string* error);
 
   DialInternalMessage(DialInternalMessageType type,
@@ -149,12 +149,12 @@ class DialInternalMessageUtil final {
       std::optional<int> http_error_code = std::nullopt) const;
 
  private:
-  base::Value::Dict CreateReceiver(const MediaSinkInternal& sink) const;
-  base::Value::Dict CreateReceiverActionBody(const MediaSinkInternal& sink,
-                                             DialReceiverAction action) const;
-  base::Value::Dict CreateNewSessionBody(const std::string& app_name,
-                                         const MediaSinkInternal& sink) const;
-  base::Value::Dict CreateDialAppInfoBody(
+  base::DictValue CreateReceiver(const MediaSinkInternal& sink) const;
+  base::DictValue CreateReceiverActionBody(const MediaSinkInternal& sink,
+                                           DialReceiverAction action) const;
+  base::DictValue CreateNewSessionBody(const std::string& app_name,
+                                       const MediaSinkInternal& sink) const;
+  base::DictValue CreateDialAppInfoBody(
       const MediaSinkInternal& sink,
       const ParsedDialAppInfo& app_info) const;
 
@@ -163,7 +163,7 @@ class DialInternalMessageUtil final {
   // corresponding request, then its |sequence_number| is an invalid value of
   // -1.
   base::Value CreateDialMessageCommon(DialInternalMessageType type,
-                                      base::Value::Dict body,
+                                      base::DictValue body,
                                       const std::string& client_id,
                                       int sequence_number = -1) const;
 

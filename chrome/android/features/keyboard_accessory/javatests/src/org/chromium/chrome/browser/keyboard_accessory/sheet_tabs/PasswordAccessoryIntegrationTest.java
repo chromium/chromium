@@ -143,7 +143,8 @@ public class PasswordAccessoryIntegrationTest {
                 .perform(selectTabAtPosition(0));
 
         mHelper.waitForKeyboardToDisappear();
-        whenDisplayed(withId(R.id.passwords_sheet)).perform(scrollToLastElement());
+        whenDisplayed(withId(R.id.passwords_sheet), /* atLeast= */ 51)
+                .perform(scrollToLastElement());
         onView(withText(containsString("Manage password"))).check(matches(isDisplayed()));
     }
 
@@ -189,7 +190,7 @@ public class PasswordAccessoryIntegrationTest {
         whenDisplayed(isAssignableFrom(KeyboardAccessoryButtonGroupView.class))
                 .perform(selectTabAtPosition(0));
         mHelper.waitForKeyboardToDisappear();
-        whenDisplayed(withId(R.id.passwords_sheet));
+        whenDisplayed(withId(R.id.passwords_sheet), /* atLeast= */ 51);
         onView(withText(containsString("No saved passwords"))).check(matches(isDisplayed()));
     }
 

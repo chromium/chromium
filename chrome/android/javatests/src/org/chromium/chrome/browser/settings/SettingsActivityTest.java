@@ -64,7 +64,6 @@ public class SettingsActivityTest {
 
     @Test
     @SmallTest
-    @EnableFeatures({ChromeFeatureList.EDGE_TO_EDGE_EVERYWHERE})
     @DisabledTest(message = "TODO(crbug.com/389790022)")
     public void testEdgeToEdgeEverywhere() {
         SettingsActivity activity = mSettingsActivityTestRule.startSettingsActivity();

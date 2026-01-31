@@ -21,13 +21,13 @@ class CredentialProviderSigninDialogTestDataStorage {
  public:
   CredentialProviderSigninDialogTestDataStorage();
 
-  static base::Value::Dict MakeSignInResponseValue(
+  static base::DictValue MakeSignInResponseValue(
       const std::string& id = std::string(),
       const std::string& password = std::string(),
       const std::string& email = std::string(),
       const std::string& access_token = std::string(),
       const std::string& refresh_token = std::string());
-  base::Value::Dict MakeValidSignInResponseValue() const;
+  base::DictValue MakeValidSignInResponseValue() const;
 
   void SetSigninPassword(const std::string& password);
 
@@ -59,23 +59,22 @@ class CredentialProviderSigninDialogTestDataStorage {
     return expected_success_fetch_result_.Find("full_name")->GetString();
   }
 
-  const base::Value::Dict& expected_signin_result() const {
+  const base::DictValue& expected_signin_result() const {
     return expected_success_signin_result_;
   }
 
-  const base::Value::Dict& expected_success_fetch_result() const {
+  const base::DictValue& expected_success_fetch_result() const {
     return expected_success_fetch_result_;
   }
 
-  const base::Value::Dict& expected_full_result() const {
+  const base::DictValue& expected_full_result() const {
     return expected_success_full_result_;
   }
 
-  bool EqualsSuccessfulSigninResult(
-      const base::Value::Dict& result_value) const {
+  bool EqualsSuccessfulSigninResult(const base::DictValue& result_value) const {
     return EqualsEncodedValue(expected_signin_result(), result_value);
   }
-  bool EqualsSccessfulFetchResult(const base::Value::Dict& result_value) const {
+  bool EqualsSccessfulFetchResult(const base::DictValue& result_value) const {
     return EqualsEncodedValue(expected_success_fetch_result(), result_value);
   }
 
@@ -91,21 +90,21 @@ class CredentialProviderSigninDialogTestDataStorage {
   static const char kInvalidEmailForSignin[];
 
  private:
-  bool EqualsEncodedValue(const base::Value::Dict& success_value,
-                          const base::Value::Dict& result_value) const {
+  bool EqualsEncodedValue(const base::DictValue& success_value,
+                          const base::DictValue& result_value) const {
     return result_value == success_value;
   }
 
   // An expected successful result from chrome://inline-signin.
-  base::Value::Dict expected_success_signin_result_;
+  base::DictValue expected_success_signin_result_;
 
   // An expected successful result from oauth2 fetches for user info, token
   // handle, and id token.
-  base::Value::Dict expected_success_fetch_result_;
+  base::DictValue expected_success_fetch_result_;
 
   // An expected successful full result sent to the credential provider from
   // GLS.
-  base::Value::Dict expected_success_full_result_;
+  base::DictValue expected_success_full_result_;
 };
 
 #endif  // CHROME_BROWSER_UI_STARTUP_CREDENTIAL_PROVIDER_SIGNIN_DIALOG_WIN_TEST_DATA_H_

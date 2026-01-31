@@ -21,6 +21,7 @@
 #include "chrome/browser/ui/views/side_panel/customize_chrome/customize_chrome_utils.h"
 #include "chrome/browser/ui/webui/cr_components/customize_color_scheme_mode/customize_color_scheme_mode_handler.h"
 #include "chrome/browser/ui/webui/cr_components/theme_color_picker/theme_color_picker_handler.h"
+#include "chrome/browser/ui/webui/new_tab_page/composebox/variations/composebox_fieldtrial.h"
 #include "chrome/browser/ui/webui/new_tab_page/new_tab_page_ui.h"
 #include "chrome/browser/ui/webui/sanitized_image_source.h"
 #include "chrome/browser/ui/webui/side_panel/customize_chrome/customize_chrome_page_handler.h"
@@ -36,6 +37,7 @@
 #include "chrome/grit/side_panel_customize_chrome_resources_map.h"
 #include "chrome/grit/side_panel_shared_resources.h"
 #include "chrome/grit/side_panel_shared_resources_map.h"
+#include "components/contextual_search/contextual_search_service.h"
 #include "components/ntp_tiles/features.h"
 #include "components/omnibox/browser/aim_eligibility_service.h"
 #include "components/search/ntp_features.h"
@@ -140,7 +142,7 @@ CustomizeChromeUI::CustomizeChromeUI(content::WebUI* web_ui)
       {"newTabPageManagedByA11yLabel",
        IDS_NTP_CUSTOMIZE_CHROME_MANAGED_NEW_TAB_PAGE_ACCESSIBILITY},
       // Tools strings.
-      {"showChipsToggleTitle", IDS_NTP_CUSTOMIZE_SHOW_CHIPS_LABEL},
+      {"showChipsToggleTitle", IDS_NTP_CUSTOMIZE_SHOW_SUGGESTIONS_CHIPS_LABEL},
       // Shortcut strings.
       {"topSites", IDS_NTP_CUSTOMIZE_MOST_VISITED_LABEL},
       {"myShortcuts", IDS_NTP_CUSTOMIZE_MY_SHORTCUTS_LABEL},
@@ -285,7 +287,8 @@ CustomizeChromeUI::CustomizeChromeUI(content::WebUI* web_ui)
 
   source->AddBoolean(
       "ntpNextFeaturesEnabled",
-      base::FeatureList::IsEnabled(ntp_features::kNtpNextFeatures));
+      ntp_realbox::IsNtpRealboxNextEnabled(profile_) &&
+          base::FeatureList::IsEnabled(ntp_features::kNtpNextFeatures));
   source->AddBoolean("wallpaperSearchEnabled", wallpaper_search_enabled);
   source->AddBoolean(
       "wallpaperSearchInspirationCardEnabled",
@@ -303,10 +306,16 @@ CustomizeChromeUI::CustomizeChromeUI(content::WebUI* web_ui)
 
   const auto* aim_eligibility_service =
       AimEligibilityServiceFactory::GetForProfile(profile_);
-  source->AddBoolean("aimPolicyEnabled",
-                     aim_eligibility_service &&
-                         aim_eligibility_service->IsDeepSearchEligible() &&
-                         aim_eligibility_service->IsCreateImagesEligible());
+  bool action_chips_eligible =
+      aim_eligibility_service && aim_eligibility_service->IsAimEligible() &&
+      contextual_search::ContextualSearchService::IsContextSharingEnabled(
+          profile_->GetPrefs()) &&
+      (ntp_features::kNtpNextShowSimplificationUIParam.Get()
+           ? (aim_eligibility_service->IsDeepSearchEligible() ||
+              aim_eligibility_service->IsCreateImagesEligible())
+           : (aim_eligibility_service->IsDeepSearchEligible() &&
+              aim_eligibility_service->IsCreateImagesEligible()));
+  source->AddBoolean("aimPolicyEnabled", action_chips_eligible);
 
   source->AddBoolean("footerEnabled",
                      base::FeatureList::IsEnabled(ntp_features::kNtpFooter));

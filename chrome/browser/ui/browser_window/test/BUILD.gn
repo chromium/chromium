@@ -21,15 +21,29 @@ if (is_android) {
       "//chrome/browser/android/lifecycle:java",
       "//chrome/browser/profiles/android:java",
       "//chrome/browser/tabmodel:java",
+      "//chrome/browser/ui/android/desktop_windowing:java",
       "//chrome/browser/ui/android/multiwindow:java",
       "//chrome/browser/ui/browser_window/internal:java",
       "//chrome/browser/ui/browser_window/public/android:java",
       "//chrome/browser/util:java",
+      "//components/browser_ui/desktop_windowing/android:java",
       "//third_party/androidx:androidx_annotation_annotation_java",
       "//third_party/androidx:androidx_core_core_java",
       "//third_party/mockito:mockito_java",
       "//ui/android:ui_no_recycler_view_java",
       "//ui/base/mojom:ui_base_types_java",
+    ]
+  }
+
+  source_set("android_browser_test_support") {
+    testonly = true
+    sources = [
+      "android/browser_window_android_browsertest_base.cc",
+      "android/browser_window_android_browsertest_base.h",
+    ]
+    deps = [
+      "//chrome/browser/flags:flags_android",
+      "//chrome/test:test_support_ui_android",
     ]
   }
 

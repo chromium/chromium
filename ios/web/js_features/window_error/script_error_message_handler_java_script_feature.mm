@@ -23,7 +23,6 @@ static const char kScriptMessageResponseFilenameKey[] = "filename";
 static const char kScriptMessageResponseLineNumberKey[] = "line_number";
 static const char kScriptMessageResponseMessageKey[] = "message";
 static const char kScriptMessageResponseStackKey[] = "stack";
-static const char kScriptMessageResponseIsCrWeb[] = "is_crweb";
 
 constexpr unsigned long kStackMaxSize = 1024;
 }  // namespace
@@ -56,7 +55,7 @@ void ScriptErrorMessageHandlerJavaScriptFeature::ScriptMessageReceived(
     const ScriptMessage& script_message) {
   ErrorDetails details;
 
-  const base::Value::Dict* script_dict =
+  const base::DictValue* script_dict =
       script_message.body() ? script_message.body()->GetIfDict() : nullptr;
   if (!script_dict) {
     return;
@@ -86,13 +85,6 @@ void ScriptErrorMessageHandlerJavaScriptFeature::ScriptMessageReceived(
     details.stack = base::SysUTF8ToNSString(*stack);
   }
 
-  const base::Value* crweb_value =
-      script_dict->Find(kScriptMessageResponseIsCrWeb);
-  if (!crweb_value || !crweb_value->is_bool()) {
-    return;
-  }
-  bool is_crweb = crweb_value->GetBool();
-
   details.is_main_frame = script_message.is_main_frame();
 
   if (script_message.request_url()) {
@@ -100,10 +92,7 @@ void ScriptErrorMessageHandlerJavaScriptFeature::ScriptMessageReceived(
   }
 
   if (log_message && stack &&
-      ((base::FeatureList::IsEnabled(features::kLogJavaScriptErrors) &&
-        !is_crweb) ||
-       (base::FeatureList::IsEnabled(features::kLogCrWebJavaScriptErrors) &&
-        is_crweb))) {
+      base::FeatureList::IsEnabled(features::kLogCrWebJavaScriptErrors)) {
     script_error_stack_util::FrameComponents top_stack_frame =
         script_error_stack_util::TopFrameComponentsFromStack(*stack);
 

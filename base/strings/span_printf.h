@@ -37,7 +37,7 @@ inline int SpanPrintf(base::span<char> buffer, const char* format, ...);
 inline int SpanPrintf(base::span<char> buffer, const char* format, ...) {
   va_list arguments;
   va_start(arguments, format);
-  int result = VSpanPrintf(buffer, format, arguments);
+  int result = UNSAFE_TODO(VSpanPrintf(buffer, format, arguments));
   va_end(arguments);
   return result;
 }

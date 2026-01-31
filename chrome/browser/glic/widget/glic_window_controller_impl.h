@@ -37,7 +37,6 @@
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_observer.h"
 
-class SkRegion;
 class Browser;
 class WindowFinder;
 namespace gfx {
@@ -88,17 +87,18 @@ class GlicWindowControllerImpl
   void Shutdown() override;
   void MaybeSetWidgetCanResize() override;
   gfx::Size GetPanelSize() override;
-  void Close() override;
+  void Close(const CloseOptions& options) override;
   void CloseInstanceWithFrame(
       content::RenderFrameHost* render_frame_host) override;
   void CloseAndShutdownInstanceWithFrame(
+      content::RenderFrameHost* render_frame_host) override;
+  void ArchiveInstanceWithFrame(
       content::RenderFrameHost* render_frame_host) override;
 
   void AddStateObserver(StateObserver* observer) override;
   void RemoveStateObserver(StateObserver* observer) override;
   void AddGlobalStateObserver(PanelStateObserver* observer) override;
   void RemoveGlobalStateObserver(PanelStateObserver* observer) override;
-  void SetDraggableRegion(const SkRegion& draggable_region) override;
 
   bool IsPanelShowingForBrowser(
       const BrowserWindowInterface& bwi) const override;
@@ -151,12 +151,11 @@ class GlicWindowControllerImpl
   void Resize(const gfx::Size& size,
               base::TimeDelta duration,
               base::OnceClosure callback) override;
-  void SetDraggableAreas(
-      const std::vector<gfx::Rect>& draggable_areas) override;
   void EnableDragResize(bool enabled) override;
   void Attach() override;
   void Detach() override;
   void ClosePanel() override;
+  void OnReload() override;
   void SetMinimumWidgetSize(const gfx::Size& size) override;
   bool IsShowing() const override;
   void SwitchConversation(
@@ -181,12 +180,20 @@ class GlicWindowControllerImpl
   HostManager& host_manager() override;
   std::vector<GlicInstance*> GetInstances() override;
   GlicInstance* GetInstanceForTab(const tabs::TabInterface* tab) const override;
+  void CreateNewConversationForTabs(
+      const std::vector<tabs::TabInterface*>& tabs) override;
+  void ShowInstanceForTabs(const std::vector<tabs::TabInterface*>& tabs,
+                           const InstanceId& instance_id) override;
+  std::vector<ConversationInfo> GetRecentlyActiveInstances(
+      size_t limit) override;
 
   // GlicInstance implementation
   Host& host() override;
   const InstanceId& id() const override;
   std::optional<std::string> conversation_id() const override;
-  base::TimeTicks GetLastActiveTime() const override;
+  base::Time GetLastActivationTimestamp() const override;
+
+  base::TimeDelta GetTimeSinceLastActive() const override;
   base::CallbackListSubscription RegisterStateChange(
       StateChangeCallback callback) override;
   base::CallbackListSubscription

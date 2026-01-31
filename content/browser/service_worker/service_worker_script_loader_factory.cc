@@ -4,7 +4,9 @@
 
 #include "content/browser/service_worker/service_worker_script_loader_factory.h"
 
+#include <algorithm>
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 
@@ -21,6 +23,7 @@
 #include "content/browser/service_worker/service_worker_version.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
+#include "net/base/hash_value.h"
 #include "services/network/public/cpp/request_destination.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
@@ -82,8 +85,18 @@ void ServiceWorkerScriptLoaderFactory::CreateLoaderAndStart(
       version->script_cache_map()->LookupResourceId(resource_request.url);
   if (resource_id != blink::mojom::kInvalidServiceWorkerResourceId) {
     mojo::Remote<storage::mojom::ServiceWorkerResourceReader> resource_reader;
+    std::optional<std::string> sha256_checksum =
+        version->script_cache_map()->LookupSha256Checksum(resource_request.url);
+    std::optional<net::SHA256HashValue> sha256_hash_value;
+    if (sha256_checksum) {
+      sha256_hash_value.emplace();
+      if (!base::HexStringToSpan(*sha256_checksum, *sha256_hash_value)) {
+        sha256_hash_value.reset();
+      }
+    }
     context_->registry().GetRemoteStorageControl()->CreateResourceReader(
-        resource_id, resource_reader.BindNewPipeAndPassReceiver());
+        resource_id, sha256_hash_value,
+        resource_reader.BindNewPipeAndPassReceiver());
     mojo::MakeSelfOwnedReceiver(
         std::make_unique<ServiceWorkerInstalledScriptLoader>(
             options, std::move(client), std::move(resource_reader), version,
@@ -199,8 +212,17 @@ void ServiceWorkerScriptLoaderFactory::CopyScript(
     return;
   }
   mojo::Remote<storage::mojom::ServiceWorkerResourceReader> reader;
+  std::optional<std::string> sha256_checksum =
+      worker_host_->version()->script_cache_map()->LookupSha256Checksum(url);
+  std::optional<net::SHA256HashValue> sha256_hash_value;
+  if (sha256_checksum) {
+    sha256_hash_value.emplace();
+    if (!base::HexStringToSpan(*sha256_checksum, *sha256_hash_value)) {
+      sha256_hash_value.reset();
+    }
+  }
   context_->registry().GetRemoteStorageControl()->CreateResourceReader(
-      resource_id, reader.BindNewPipeAndPassReceiver());
+      resource_id, sha256_hash_value, reader.BindNewPipeAndPassReceiver());
   mojo::Remote<storage::mojom::ServiceWorkerResourceWriter> writer;
   context_->registry().GetRemoteStorageControl()->CreateResourceWriter(
       new_resource_id, writer.BindNewPipeAndPassReceiver());
@@ -260,8 +282,14 @@ void ServiceWorkerScriptLoaderFactory::OnCopyScriptFinished(
 
   // Use ServiceWorkerInstalledScriptLoader to load the new copy.
   mojo::Remote<storage::mojom::ServiceWorkerResourceReader> resource_reader;
+  std::optional<net::SHA256HashValue> sha256_hash_value;
+  sha256_hash_value.emplace();
+  if (!base::HexStringToSpan(sha256_checksum, *sha256_hash_value)) {
+    sha256_hash_value.reset();
+  }
   context_->registry().GetRemoteStorageControl()->CreateResourceReader(
-      new_resource_id, resource_reader.BindNewPipeAndPassReceiver());
+      new_resource_id, sha256_hash_value,
+      resource_reader.BindNewPipeAndPassReceiver());
   mojo::MakeSelfOwnedReceiver(
       std::make_unique<ServiceWorkerInstalledScriptLoader>(
           options, std::move(client), std::move(resource_reader), version,

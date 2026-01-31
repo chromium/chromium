@@ -52,6 +52,9 @@ class TabUIHelper : public tabs::ContentsObservingTabFeature {
 
   void SetWasActiveAtLeastOnce();
 
+  // Returns true if the tab is crashed and false otherwise.
+  bool IsCrashed();
+
   using TitleUpdatedCallbackList =
       base::RepeatingCallbackList<void(std::u16string)>;
   base::CallbackListSubscription AddTitleUpdatedCallback(
@@ -72,9 +75,13 @@ class TabUIHelper : public tabs::ContentsObservingTabFeature {
     return created_by_session_restore_;
   }
 
+  void set_needs_attention(bool attention) { needs_attention_ = attention; }
+  bool needs_attention() const { return needs_attention_; }
+
  private:
   bool was_active_at_least_once_ = false;
   bool created_by_session_restore_ = false;
+  bool needs_attention_ = false;
 
   TitleUpdatedCallbackList title_change_callbacks_;
 

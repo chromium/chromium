@@ -49,6 +49,9 @@ bool IsPersonalShortcutsVisible(Profile* profile);
 // Returns the set of enabled NTP tile types.
 std::set<ntp_tiles::TileType> GetEnabledTileTypes(Profile* profile);
 
+// Updates the staleness information for shortcuts.
+void UpdateShortcutsStaleness(Profile* profile);
+
 // Updates the staleness counters for modules iff:
 // (1) It's not the first staleness update.
 // (2) Time since last update is above the staleness update threshold.
@@ -62,5 +65,9 @@ void DisableShortcutsAutoRemoval(Profile* profile);
 
 // Sets the kNtpModulesAutoRemovalDisabledDict pref to true for the module.
 void DisableModuleAutoRemoval(Profile* profile, const std::string& module_id);
+
+// Sets the kNtpModulesAutoRemovalDisabledDict pref to true for the modules.
+void DisableModuleListAutoRemoval(Profile* profile,
+                                  const std::vector<std::string>& module_ids);
 
 #endif  // CHROME_BROWSER_NEW_TAB_PAGE_NEW_TAB_PAGE_UTIL_H_

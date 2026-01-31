@@ -44,7 +44,7 @@ void OsInstallScreen::ShowImpl() {
 
 void OsInstallScreen::HideImpl() {}
 
-void OsInstallScreen::OnUserAction(const base::Value::List& args) {
+void OsInstallScreen::OnUserAction(const base::ListValue& args) {
   const std::string& action_id = args[0].GetString();
   if (action_id == kUserActionExitClicked) {
     exit_callback_.Run();

@@ -207,6 +207,7 @@ class CORE_EXPORT MediaValues : public GarbageCollected<MediaValues>,
   void ReferenceTreeScope() const override {}
   void ReferenceAnchor() const override {}
   void ReferenceSibling() const override {}
+  void ReferenceElementDependentRandom() const override {}
 
   Element* GetElement() const override { NOTREACHED(); }
 

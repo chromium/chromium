@@ -6,13 +6,6 @@
 
 namespace client_certificates::features {
 
-BASE_FEATURE(kManagedBrowserClientCertificateEnabled,
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-bool IsManagedBrowserClientCertificateEnabled() {
-  return base::FeatureList::IsEnabled(kManagedBrowserClientCertificateEnabled);
-}
-
 BASE_FEATURE(kEnableClientCertificateProvisioningOnAndroid,
              base::FEATURE_ENABLED_BY_DEFAULT);
 

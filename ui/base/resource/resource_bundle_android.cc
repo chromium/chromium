@@ -91,7 +91,7 @@ std::string GetPathForAndroidLocalePakWithinApk(std::string_view locale,
   base::android::ScopedJavaLocalRef<jstring> ret =
       Java_ResourceBundle_getLocalePakResourcePath(
           env, base::android::ConvertUTF8ToJavaString(env, locale),
-          static_cast<jint>(gender), in_bundle, log_error);
+          static_cast<int32_t>(gender), in_bundle, log_error);
   if (ret.obj() == nullptr) {
     return std::string();
   }

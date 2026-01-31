@@ -313,7 +313,7 @@ constexpr int kDisableDelayVarianceSeconds = 20;
 
 // static
 base::TimeDelta BrowserAccessibilityStateImpl::GetRandomizedDisableDelay() {
-  const base::TimeDelta variance = base::Seconds(base::RandInt(
+  const base::TimeDelta variance = base::Seconds(base::RandIntInclusive(
       -kDisableDelayVarianceSeconds, kDisableDelayVarianceSeconds));
   return kDisableDelay + variance;
 }
@@ -822,7 +822,7 @@ void BrowserAccessibilityStateImpl::OnWebContentsHidden(
   }
 
   // Add `web_contents` to the list of the last five hidden WCs.
-  CHECK(!base::Contains(last_hidden_, web_contents));
+  CHECK(!std::ranges::contains(last_hidden_, web_contents));
   last_hidden_.push_back(web_contents);
 
   // Create the disabler for this WebContents. The provided callback will be run
@@ -851,7 +851,8 @@ void BrowserAccessibilityStateImpl::OnDisablerDestroyedForWebContents(
 
 void BrowserAccessibilityStateImpl::OnInputEvent(
     const RenderWidgetHost& widget,
-    const blink::WebInputEvent& event) {
+    const blink::WebInputEvent& event,
+    InputEventSource source) {
   // |this| observer cares about user input events (specifically keyboard,
   // mouse & touch events) to decide if the accessibility APIs can be disabled.
   if (event.GetType() == blink::WebInputEvent::Type::kMouseDown ||

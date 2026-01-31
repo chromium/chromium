@@ -8,7 +8,6 @@
 
 #include "ash/public/cpp/style/color_provider.h"
 #include "base/functional/bind.h"
-#include "base/types/cxx23_to_underlying.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"

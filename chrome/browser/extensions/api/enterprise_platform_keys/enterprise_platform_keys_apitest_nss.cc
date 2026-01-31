@@ -196,7 +196,7 @@ void ImportPrivateKeyPKCS8ToSlot(const unsigned char* pkcs8_der,
 std::string BuildCustomArg(bool is_user_session_test,
                            bool system_token_enabled,
                            bool changes_wave1_enabled) {
-  base::Value::Dict custom_arg_value;
+  base::DictValue custom_arg_value;
   custom_arg_value.Set(kIsUserSessionTestConfig, is_user_session_test);
   custom_arg_value.Set(kSystemTokenEnabledConfig, system_token_enabled);
   custom_arg_value.Set(kChangesWave1EnabledConfig, changes_wave1_enabled);
@@ -577,7 +577,7 @@ class EnterprisePlatformKeysLoginScreenTest
 
 IN_PROC_BROWSER_TEST_P(EnterprisePlatformKeysLoginScreenTest, Basic) {
   AddScreenplayTag();
-  base::Value::Dict config;
+  base::DictValue config;
   config.Set(
       "customArg",
       BuildCustomArg(/*user_session_test=*/false, /*system_token_enabled=*/true,

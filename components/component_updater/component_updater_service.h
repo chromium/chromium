@@ -226,6 +226,7 @@ class OnDemandUpdater {
   friend class ::PluginObserver;
   friend class SwReporterOnDemandFetcher;
   friend class SodaComponentInstallerPolicy;
+  friend class WasmTtsEngineComponentInstallerPolicy;
   friend class SodaLanguagePackComponentInstallerPolicy;
   friend class TranslateKitComponentInstallerPolicy;
   friend class TranslateKitLanguagePackComponentInstallerPolicy;

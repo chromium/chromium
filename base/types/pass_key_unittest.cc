@@ -48,5 +48,45 @@ static_assert(std::constructible_from<Manager, Manager::UniformInitialization>);
 static_assert(std::constructible_from<Manager, Manager::CopiedKey>);
 static_assert(std::constructible_from<Manager, Manager::MovedKey>);
 
+// For testing multi-arg PassKey and internal concepts.
+class A;
+class B;
+class C;
+class D;
+
+class RestrictedMulti {
+ public:
+  explicit RestrictedMulti(PassKey<A, B, C>) {}
+};
+
+// Test single-to-multi conversion.
+static_assert(std::is_constructible_v<RestrictedMulti, PassKey<A>>);
+static_assert(std::is_constructible_v<RestrictedMulti, PassKey<B>>);
+static_assert(std::is_constructible_v<RestrictedMulti, PassKey<C>>);
+
+// Test multi-to-multi subset conversion.
+static_assert(std::is_constructible_v<RestrictedMulti, PassKey<A, B>>);
+static_assert(std::is_constructible_v<RestrictedMulti, PassKey<A, C>>);
+static_assert(std::is_constructible_v<RestrictedMulti, PassKey<B, C>>);
+
+// Test multi-to-multi full conversion.
+static_assert(std::is_constructible_v<RestrictedMulti, PassKey<A, B, C>>);
+static_assert(!std::is_constructible_v<RestrictedMulti, PassKey<A, B, C, D>>);
+
+// Test internal concepts.
+static_assert(pass_key_internal::OneOf<A, A, B, C>);
+static_assert(pass_key_internal::OneOf<B, A, B, C>);
+static_assert(pass_key_internal::OneOf<C, A, B, C>);
+static_assert(!pass_key_internal::OneOf<D, A, B, C>);
+static_assert(pass_key_internal::OneOf<A, A>);
+static_assert(!pass_key_internal::OneOf<B, A>);
+
+static_assert(pass_key_internal::PairwiseUnique<>);
+static_assert(pass_key_internal::PairwiseUnique<A>);
+static_assert(pass_key_internal::PairwiseUnique<A, B, C, D>);
+static_assert(!pass_key_internal::PairwiseUnique<A, B, C, A>);
+static_assert(!pass_key_internal::PairwiseUnique<A, A>);
+static_assert(!pass_key_internal::PairwiseUnique<A, B, A>);
+
 }  // namespace
 }  // namespace base

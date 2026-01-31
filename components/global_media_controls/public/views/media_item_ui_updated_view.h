@@ -58,8 +58,7 @@ const char kMediaItemUIUpdatedViewActionHistogram[] =
 // MediaItemUIUpdatedView holds the media information and playback controls for
 // a media session or cast session. This will be displayed within
 // MediaDialogView on non-CrOS desktop platforms and replace MediaItemUIView and
-// MediaItemUIDetailedView when the media::kGlobalMediaControlsUpdatedUI flag is
-// enabled.
+// MediaItemUIDetailedView.
 class COMPONENT_EXPORT(GLOBAL_MEDIA_CONTROLS) MediaItemUIUpdatedView
     : public MediaItemUI,
       public media_message_center::MediaNotificationView {

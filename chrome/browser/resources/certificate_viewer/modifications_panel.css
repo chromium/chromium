@@ -35,7 +35,7 @@
 
 .error {
   margin: 4px 10px;
-  color: var(--cr-fallback-color-error)
+  color: var(--cr-fallback-color-error);
 }
 
 .input-with-error {

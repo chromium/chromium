@@ -26,7 +26,7 @@ TEST_F(PolicyUtilTest, GetActivationCodesFromONC) {
   std::optional<SmdxActivationCode> activation_code;
 
   // Start with an empty configuration and slowly populate it.
-  base::Value::Dict onc_config;
+  base::DictValue onc_config;
 
   auto expect_invalid = [&]() {
     activation_code = GetSmdxActivationCodeFromONC(onc_config);
@@ -43,7 +43,7 @@ TEST_F(PolicyUtilTest, GetActivationCodesFromONC) {
                  base::Value(::onc::network_type::kCellular));
   expect_invalid();
 
-  base::Value::Dict cellular_dict;
+  base::DictValue cellular_dict;
   onc_config.Set(::onc::network_config::kCellular, cellular_dict.Clone());
   expect_invalid();
 

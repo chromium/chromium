@@ -31,13 +31,11 @@ class GPU_GLES2_EXPORT VulkanOzoneImageRepresentation
                                  gpu::VulkanImplementation& vulkan_impl);
   ~VulkanOzoneImageRepresentation() override;
 
-  std::unique_ptr<ScopedAccess> BeginScopedAccess(
-      AccessMode access_mode,
-      std::vector<VkSemaphore>& begin_semaphores,
-      std::vector<VkSemaphore>& end_semaphores) override;
+  bool BeginAccess(AccessMode access_mode,
+                   std::vector<VkSemaphore>& begin_semaphores,
+                   std::vector<VkSemaphore>& end_semaphores) override;
 
- protected:
-  void EndScopedAccess(bool is_read_only, VkSemaphore end_semaphore) override;
+  void EndAccess(bool is_read_only, VkSemaphore end_semaphore) override;
 
  private:
   gpu::OzoneImageBacking* ozone_backing() const {

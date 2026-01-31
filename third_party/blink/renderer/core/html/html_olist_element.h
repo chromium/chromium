@@ -24,6 +24,8 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_HTML_HTML_OLIST_ELEMENT_H_
 
 #include "third_party/blink/renderer/core/html/html_element.h"
+#include "third_party/blink/renderer/core/style/computed_style.h"
+#include "third_party/blink/renderer/core/style/counter_directives.h"
 
 namespace blink {
 
@@ -35,30 +37,33 @@ class HTMLOListElement final : public HTMLElement {
 
   int64_t InitialCounter() const {
     if (!RuntimeEnabledFeatures::CSSListCounterAccountingEnabled()) {
-      return has_explicit_start_
-                 ? start_
-                 : (is_reversed_ ? InitialCounterForReversed() : 1);
+      return HasExplicitStart()
+                 ? ExplicitStart()
+                 : (IsReversed() ? InitialCounterForReversed() : 1);
     }
-    if (has_explicit_start_) {
-      // We don't apply a counter value of the list item if we have an explicit
-      // start value.
-      return static_cast<int64_t>(start_) + (is_reversed_ ? 1 : -1);
+    if (HasExplicitStart()) {
+      return ExplicitStart();
     }
-    return is_reversed_ ? InitialCounterForReversed() : 0;
+    return IsReversed() ? InitialCounterForReversed() : 0;
   }
   int start() const { return has_explicit_start_ ? start_ : 1; }
   void setStart(int);
 
-  bool IsReversed() const { return is_reversed_; }
+  bool IsReversed() const {
+    if (RuntimeEnabledFeatures::CSSCounterResetReversedEnabled()) {
+      return ListItemCounterDirectives().IsResetReversed();
+    }
+    return is_reversed_;
+  }
 
   void ItemCountChanged() { should_recalculate_initial_counter_ = true; }
 
  private:
-  void UpdateItemValues();
+  void InvalidateItemValues();
 
   int InitialCounterForReversed() const {
     DCHECK(!RuntimeEnabledFeatures::CSSListCounterAccountingEnabled() ||
-           is_reversed_);
+           IsReversed());
     if (should_recalculate_initial_counter_) {
       const_cast<HTMLOListElement*>(this)
           ->RecalculateInitialCounterForReversed();
@@ -75,11 +80,37 @@ class HTMLOListElement final : public HTMLElement {
       const AtomicString&,
       HeapVector<CSSPropertyValue, 8>&) override;
 
+  const CounterDirectives ListItemCounterDirectives() const {
+    if (const ComputedStyle* style = GetComputedStyle()) {
+      return style->GetCounterDirectives(AtomicString("list-item"));
+    }
+    return CounterDirectives();
+  }
+  bool HasExplicitStart() const {
+    if (RuntimeEnabledFeatures::CSSCounterResetReversedEnabled()) {
+      return ListItemCounterDirectives().ResetValueInt64().has_value();
+    }
+    return has_explicit_start_;
+  }
+  int64_t ExplicitStart() const {
+    if (RuntimeEnabledFeatures::CSSCounterResetReversedEnabled()) {
+      DCHECK(HasExplicitStart());
+      return ListItemCounterDirectives().ResetValueInt64().value();
+    }
+    return start_;
+  }
+
+  // These values are used only for DOM reflection of start attribution, not
+  // used for the calculation of initial counter.
   int start_ = 0xBADBEEF;
+  bool has_explicit_start_ : 1 = false;
+
+  // TODO(crbug.com/40760770): Remove this value when
+  // CSSListCounterAccounting is enabled by default and removed.
+  bool is_reversed_ : 1 = false;
+
   int initial_counter_for_reversed_ = 0;
 
-  bool has_explicit_start_ : 1 = false;
-  bool is_reversed_ : 1 = false;
   bool should_recalculate_initial_counter_ : 1 = false;
 };
 

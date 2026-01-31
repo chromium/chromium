@@ -12,7 +12,6 @@
 #include <vector>
 
 #include "base/check.h"
-#include "base/containers/contains.h"
 #include "base/debug/alias.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
@@ -123,8 +122,9 @@ class ThreadSafeInterfaceEndpointClientProxy : public ThreadSafeProxy {
     ~SyncResponseSignaler() override {
       // If Accept() was not called we must still notify the waiter that the
       // sync call is finished.
-      if (response_)
+      if (response_) {
         response_->event.Signal();
+      }
     }
 
     bool Accept(Message* message) override {
@@ -202,8 +202,9 @@ class ThreadSafeInterfaceEndpointClientProxy : public ThreadSafeProxy {
    private:
     bool Accept(Message* message) override {
       // If we're the only remaining ref, don't bother accepting the reply.
-      if (proxy_->HasOneRef())
+      if (proxy_->HasOneRef()) {
         return false;
+      }
 
       return responder_->Accept(message);
     }
@@ -214,8 +215,9 @@ class ThreadSafeInterfaceEndpointClientProxy : public ThreadSafeProxy {
 
   void ForwardMessage(Message message) {
     DCHECK(task_runner_->RunsTasksInCurrentSequence());
-    if (!endpoint_)
+    if (!endpoint_) {
       return;
+    }
 
     endpoint_->SendMessage(&message, /*is_control_message=*/false);
   }
@@ -225,8 +227,9 @@ class ThreadSafeInterfaceEndpointClientProxy : public ThreadSafeProxy {
       InterfaceEndpointClient::SyncSendMode sync_send_mode,
       std::unique_ptr<MessageReceiver> responder) {
     DCHECK(task_runner_->RunsTasksInCurrentSequence());
-    if (!endpoint_)
+    if (!endpoint_) {
       return;
+    }
 
     endpoint_->SendMessageWithResponder(&message, /*is_control_message=*/false,
                                         sync_send_mode, std::move(responder));
@@ -308,8 +311,9 @@ class ResponderThunk : public MessageReceiverWithStatus {
 
     bool result = false;
 
-    if (endpoint_client_)
+    if (endpoint_client_) {
       result = endpoint_client_->Accept(message);
+    }
 
     return result;
   }
@@ -457,8 +461,9 @@ void ThreadSafeInterfaceEndpointClientProxy::SendMessageWithResponder(
     std::erase(sync_calls->pending_responses, response.get());
   }
 
-  if (response->received)
+  if (response->received) {
     std::ignore = responder->Accept(&response->message);
+  }
 }
 
 InterfaceEndpointClient::InterfaceEndpointClient(
@@ -486,8 +491,9 @@ InterfaceEndpointClient::InterfaceEndpointClient(
 
   // TODO(yzshen): the way to use validator (or message filter in general)
   // directly is a little awkward.
-  if (payload_validator)
+  if (payload_validator) {
     dispatcher_.SetValidator(std::move(payload_validator));
+  }
 
   if (handle_.pending_association()) {
     if (task_runner_->RunsTasksInCurrentSequence()) {
@@ -507,13 +513,15 @@ InterfaceEndpointClient::InterfaceEndpointClient(
 
 InterfaceEndpointClient::~InterfaceEndpointClient() {
   CHECK(sequence_checker_.CalledOnValidSequence());
-  if (controller_)
+  if (controller_) {
     handle_.group_controller()->DetachEndpointClient(handle_);
+  }
 }
 
 AssociatedGroup* InterfaceEndpointClient::associated_group() {
-  if (!associated_group_)
+  if (!associated_group_) {
     associated_group_ = std::make_unique<AssociatedGroup>(handle_);
+  }
   return associated_group_.get();
 }
 
@@ -529,8 +537,9 @@ ScopedInterfaceEndpointHandle InterfaceEndpointClient::PassHandle() {
   CHECK(sequence_checker_.CalledOnValidSequence());
   DCHECK(!has_pending_responders());
 
-  if (!handle_.is_valid())
+  if (!handle_.is_valid()) {
     return ScopedInterfaceEndpointHandle();
+  }
 
   handle_.SetAssociationEventHandler(
       ScopedInterfaceEndpointHandle::AssociationEventCallback());
@@ -550,8 +559,9 @@ void InterfaceEndpointClient::SetFilter(std::unique_ptr<MessageFilter> filter) {
 void InterfaceEndpointClient::RaiseError() {
   CHECK(sequence_checker_.CalledOnValidSequence());
 
-  if (!handle_.pending_association())
+  if (!handle_.pending_association()) {
     handle_.group_controller()->RaiseError();
+  }
 }
 
 void InterfaceEndpointClient::CloseWithReason(uint32_t custom_reason,
@@ -628,8 +638,9 @@ bool InterfaceEndpointClient::SendMessage(Message* message,
     return false;
   }
 
-  if (!is_control_message && idle_handler_)
+  if (!is_control_message && idle_handler_) {
     ++num_unacked_messages_;
+  }
 
   return true;
 }
@@ -655,8 +666,9 @@ bool InterfaceEndpointClient::SendMessageWithResponder(
 
   // Reserve 0 in case we want it to convey special meaning in the future.
   uint64_t request_id = next_request_id_++;
-  if (request_id == 0)
+  if (request_id == 0) {
     request_id = next_request_id_++;
+  }
 
   message->set_request_id(request_id);
   message->set_heap_profiler_tag(interface_name_);
@@ -676,8 +688,9 @@ bool InterfaceEndpointClient::SendMessageWithResponder(
     return false;
   }
 
-  if (!is_control_message && idle_handler_)
+  if (!is_control_message && idle_handler_) {
     ++num_unacked_messages_;
+  }
 
   if (!is_sync || sync_send_mode == SyncSendMode::kForceAsync) {
     if (is_sync) {
@@ -701,13 +714,14 @@ bool InterfaceEndpointClient::SendMessageWithResponder(
 
   base::WeakPtr<InterfaceEndpointClient> weak_self =
       weak_ptr_factory_.GetWeakPtr();
-  if (exclusive_wait)
+  if (exclusive_wait) {
     controller_->SyncWatchExclusive(request_id);
-  else
+  } else {
     controller_->SyncWatch(response_received);
+  }
   // Make sure that this instance hasn't been destroyed.
   if (weak_self) {
-    DCHECK(base::Contains(sync_responses_, request_id));
+    DCHECK(sync_responses_.contains(request_id));
     auto iter = sync_responses_.find(request_id);
     DCHECK_EQ(&response_received, iter->second->response_received);
     if (response_received) {
@@ -749,8 +763,9 @@ void InterfaceEndpointClient::NotifyError(
 
   CHECK(sequence_checker_.CalledOnValidSequence());
 
-  if (encountered_error_)
+  if (encountered_error_) {
     return;
+  }
   encountered_error_ = true;
 
   DEBUG_ALIAS_FOR_CSTR(interface_name, interface_name_, 256);
@@ -826,20 +841,23 @@ bool InterfaceEndpointClient::AcceptEnableIdleTracking(
 }
 
 bool InterfaceEndpointClient::AcceptMessageAck() {
-  if (!idle_handler_ || num_unacked_messages_ == 0)
+  if (!idle_handler_ || num_unacked_messages_ == 0) {
     return false;
+  }
 
   --num_unacked_messages_;
   return true;
 }
 
 bool InterfaceEndpointClient::AcceptNotifyIdle() {
-  if (!idle_handler_)
+  if (!idle_handler_) {
     return false;
+  }
 
   // We have outstanding unacked messages, so quietly ignore this NotifyIdle.
-  if (num_unacked_messages_ > 0)
+  if (num_unacked_messages_ > 0) {
     return true;
+  }
 
   // With no outstanding unacked messages, a NotifyIdle received implies that
   // the peer really is idle. We can invoke our idle handler.
@@ -887,22 +905,25 @@ void InterfaceEndpointClient::ForgetAsyncRequest(uint64_t request_id) {
   {
     base::AutoLock lock(async_responders_lock_);
     auto it = async_responders_.find(request_id);
-    if (it == async_responders_.end())
+    if (it == async_responders_.end()) {
       return;
+    }
     response = std::move(it->second);
     async_responders_.erase(it);
   }
 }
 
 void InterfaceEndpointClient::InitControllerIfNecessary() {
-  if (controller_ || handle_.pending_association())
+  if (controller_ || handle_.pending_association()) {
     return;
+  }
 
   controller_ = handle_.group_controller()->AttachEndpointClient(handle_, this,
                                                                  task_runner_);
   if (!sync_method_ordinals_.empty() &&
-      task_runner_->RunsTasksInCurrentSequence())
+      task_runner_->RunsTasksInCurrentSequence()) {
     controller_->AllowWokenUpBySyncWatchOnSameThread();
+  }
 }
 
 void InterfaceEndpointClient::OnAssociationEvent(
@@ -919,52 +940,51 @@ void InterfaceEndpointClient::OnAssociationEvent(
 }
 
 bool InterfaceEndpointClient::HandleValidatedMessage(Message* message) {
-  TRACE_EVENT("toplevel,mojom",
-              perfetto::StaticString{method_name_callback_(*message)},
-              [&](perfetto::EventContext& ctx) {
-                auto* info = ctx.event()->set_chrome_mojo_event_info();
+  TRACE_EVENT(
+      "toplevel,mojom", perfetto::StaticString{method_name_callback_(*message)},
+      [&](perfetto::EventContext& ctx) {
+        auto* info = ctx.event()->set_chrome_mojo_event_info();
 #if BUILDFLAG(IS_ANDROID) && defined(ARCH_CPU_ARM64)
-                // ARM64 Android - set the interface tag unconditionally.
-                // TODO(kraskevich): Remove this special case once we're
-                // fully confident in crrev.com/c/3763052.
-                info->set_mojo_interface_tag(interface_name_);
+        // ARM64 Android - set the interface tag unconditionally.
+        // TODO(kraskevich): Remove this special case once we're
+        // fully confident in crrev.com/c/3763052.
+        info->set_mojo_interface_tag(interface_name_);
 #else
-                // Generate mojo interface tag only for local traces.
-                //
-                // This saves trace buffer space for field traces. The
-                // interface tag can be extracted from the interface method
-                // after symbolization.
-                //
-                // For local traces, this produces a raw string so that the
-                // trace doesn't require symbolization to be useful.
-                if (!ctx.ShouldFilterDebugAnnotations()) {
-                  info->set_mojo_interface_tag(interface_name_);
-                }
+        // Generate mojo interface tag only for local traces.
+        //
+        // This saves trace buffer space for field traces. The
+        // interface tag can be extracted from the interface method
+        // after symbolization.
+        //
+        // For local traces, this produces a raw string so that the
+        // trace doesn't require symbolization to be useful.
+        if (!ctx.ShouldFilterDebugAnnotations()) {
+          info->set_mojo_interface_tag(interface_name_);
+        }
 #endif  // BUILDFLAG(IS_ANDROID) && defined(ARCH_CPU_ARM64)
-                const auto method_info = method_info_callback_(*message);
-                if (method_info) {
-                  info->set_ipc_hash((*method_info)());
-                  const auto method_address =
-                      reinterpret_cast<uintptr_t>(method_info);
-                  const std::optional<size_t> location_iid =
-                      base::trace_event::InternedUnsymbolizedSourceLocation::
-                          Get(&ctx, method_address);
-                  if (location_iid) {
-                    info->set_mojo_interface_method_iid(*location_iid);
-                  }
-                }
+        const auto method_info = method_info_callback_(*message);
+        if (method_info) {
+          info->set_ipc_hash((*method_info)());
+          const auto method_address = reinterpret_cast<uintptr_t>(method_info);
+          const std::optional<size_t> location_iid =
+              base::trace_event::InternedUnsymbolizedSourceLocation::Get(
+                  &ctx, method_address);
+          if (location_iid) {
+            info->set_mojo_interface_method_iid(*location_iid);
+          }
+        }
 
-                info->set_payload_size(message->payload_num_bytes());
-                info->set_data_num_bytes(message->data_num_bytes());
+        info->set_payload_size(message->payload_num_bytes());
+        info->set_data_num_bytes(message->data_num_bytes());
 
-                static const uint8_t* flow_enabled =
-                    TRACE_EVENT_API_GET_CATEGORY_GROUP_ENABLED(
-                        "toplevel.flow,mojom.flow");
-                if (!*flow_enabled)
-                  return;
+        static const uint8_t* flow_enabled =
+            TRACE_EVENT_API_GET_CATEGORY_GROUP_ENABLED(
+                "toplevel.flow,mojom.flow");
+        if (!*flow_enabled)
+          return;
 
-                perfetto::Flow::Global(message->GetTraceId())(ctx);
-              });
+        perfetto::Flow::Global(message->GetTraceId())(ctx);
+      });
 
   DCHECK_EQ(handle_.id(), message->interface_id());
 
@@ -1021,8 +1041,9 @@ bool InterfaceEndpointClient::HandleValidatedMessage(Message* message) {
 
     if (message->has_flag(Message::kFlagIsSync)) {
       auto it = sync_responses_.find(request_id);
-      if (it == sync_responses_.end())
+      if (it == sync_responses_.end()) {
         return false;
+      }
 
       if (it->second) {
         if (message->name() != it->second->request_message_name) {
@@ -1043,8 +1064,9 @@ bool InterfaceEndpointClient::HandleValidatedMessage(Message* message) {
     {
       base::AutoLock lock(async_responders_lock_);
       auto it = async_responders_.find(request_id);
-      if (it == async_responders_.end())
+      if (it == async_responders_.end()) {
         return false;
+      }
       pending_response = std::move(it->second);
       async_responders_.erase(it);
     }
@@ -1056,8 +1078,9 @@ bool InterfaceEndpointClient::HandleValidatedMessage(Message* message) {
     internal::MessageDispatchContext dispatch_context(message);
     return pending_response->responder->Accept(message);
   } else {
-    if (mojo::internal::ControlMessageHandler::IsControlMessage(message))
+    if (mojo::internal::ControlMessageHandler::IsControlMessage(message)) {
       return control_message_handler_.Accept(message);
+    }
 
     accepted_interface_message = incoming_receiver_->Accept(message);
   }
@@ -1065,8 +1088,9 @@ bool InterfaceEndpointClient::HandleValidatedMessage(Message* message) {
   if (weak_self && accepted_interface_message &&
       idle_tracking_connection_group_) {
     control_message_proxy_.SendMessageAck();
-    if (!has_response)
+    if (!has_response) {
       MaybeStartIdleTimer();
+    }
   }
 
   return accepted_interface_message;

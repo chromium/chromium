@@ -183,7 +183,7 @@ void ArcIntentHelperBridge::OnOpenDownloads() {
 void ArcIntentHelperBridge::OnOpenUrl(const std::string& url) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   // Converts |url| to a fixed-up one and checks validity.
-  const GURL gurl(url_formatter::FixupURL(url, /*desired_tld=*/std::string()));
+  const GURL gurl(url_formatter::FixupURL(url));
   if (!gurl.is_valid()) {
     return;
   }
@@ -197,15 +197,8 @@ void ArcIntentHelperBridge::OnOpenUrl(const std::string& url) {
 void ArcIntentHelperBridge::OnOpenCustomTab(const std::string& url,
                                             int32_t task_id,
                                             OnOpenCustomTabCallback callback) {
-  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  // Converts |url| to a fixed-up one and checks validity.
-  const GURL gurl(url_formatter::FixupURL(url, /*desired_tld=*/std::string()));
-  if (!gurl.is_valid() || allowed_arc_schemes_.find(gurl.GetScheme()) ==
-                              allowed_arc_schemes_.end()) {
-    std::move(callback).Run(mojo::NullRemote());
-    return;
-  }
-  g_open_url_delegate->OpenArcCustomTab(gurl, task_id, std::move(callback));
+  // CustomTab is deprecated.
+  std::move(callback).Run(mojo::NullRemote());
 }
 
 void ArcIntentHelperBridge::OnOpenChromePage(mojom::ChromePage page) {
@@ -235,7 +228,7 @@ void ArcIntentHelperBridge::OpenVolumeControl() {
 void ArcIntentHelperBridge::OnOpenWebApp(const std::string& url) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   // Converts |url| to a fixed-up one and checks validity.
-  const GURL gurl(url_formatter::FixupURL(url, /*desired_tld=*/std::string()));
+  const GURL gurl(url_formatter::FixupURL(url));
 
   // Web app launches should only be invoked on HTTPS URLs.
   if (CanOpenWebAppForUrl(gurl)) {
@@ -398,7 +391,7 @@ void ArcIntentHelperBridge::SendNewCaptureBroadcast(bool is_video,
   std::string action =
       is_video ? "org.chromium.arc.intent_helper.ACTION_SEND_NEW_VIDEO"
                : "org.chromium.arc.intent_helper.ACTION_SEND_NEW_PICTURE";
-  base::Value::Dict value;
+  base::DictValue value;
   value.Set("file_path", file_path);
   std::string extras = base::WriteJson(value).value_or("");
 

@@ -256,7 +256,8 @@ public class ModalDialogViewUnitTest {
         mDialogView.measure(widthMeasureSpec, heightMeasureSpec);
 
         assertEquals("Width is incorrect.", 500, mDialogView.getMeasuredWidth());
-        assertEquals("Height is incorrect.", 500, mDialogView.getMeasuredHeight());
+        // 500 + 16dp bottom spacer.
+        assertEquals("Height is incorrect.", 516, mDialogView.getMeasuredHeight());
     }
 
     /** Tests that dialog uses specified size if margins are not set on tablets. */
@@ -289,5 +290,43 @@ public class ModalDialogViewUnitTest {
         view.setMinimumHeight(customViewHeight);
         var model = modelBuilder.with(ModalDialogProperties.CUSTOM_VIEW, view).build();
         PropertyModelChangeProcessor.create(model, mDialogView, new ModalDialogViewBinder());
+    }
+
+    @Test
+    public void testBottomSpacerVisibility() {
+        // Create model with no buttons.
+        createModel(mModelBuilder, MIN_DIALOG_WIDTH, MIN_DIALOG_HEIGHT);
+
+        android.view.View spacer = mDialogView.findViewById(R.id.dialog_bottom_spacer);
+        assertEquals(
+                "Spacer should be visible when no buttons.",
+                android.view.View.VISIBLE,
+                spacer.getVisibility());
+    }
+
+    @Test
+    public void testBottomSpacerVisibility_WithLargePadding() {
+        // Create model with no buttons but large bottom padding.
+        mModelBuilder.with(ModalDialogProperties.PADDING, new android.graphics.Rect(0, 0, 0, 20));
+        createModel(mModelBuilder, MIN_DIALOG_WIDTH, MIN_DIALOG_HEIGHT);
+
+        android.view.View spacer = mDialogView.findViewById(R.id.dialog_bottom_spacer);
+        assertEquals(
+                "Spacer should be gone when large padding is present.",
+                android.view.View.GONE,
+                spacer.getVisibility());
+    }
+
+    @Test
+    public void testBottomSpacerVisibility_WithButtons() {
+        // Create model with buttons.
+        mModelBuilder.with(ModalDialogProperties.POSITIVE_BUTTON_TEXT, "OK");
+        createModel(mModelBuilder, MIN_DIALOG_WIDTH, MIN_DIALOG_HEIGHT);
+
+        android.view.View spacer = mDialogView.findViewById(R.id.dialog_bottom_spacer);
+        assertEquals(
+                "Spacer should be gone when buttons are present.",
+                android.view.View.GONE,
+                spacer.getVisibility());
     }
 }

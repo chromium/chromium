@@ -1,0 +1,11 @@
+Name: antlr4rust
+URL: https://crates.io/crates/antlr4rust
+Version: 0.5.2
+Revision: f507d41b9ad70eec488f1789ec3423b4e8e4adba
+Update Mechanism: Manual (https://crbug.com/449898466)
+License: BSD-3-Clause
+License File: //third_party/rust/chromium_crates_io/vendor/antlr4rust-v0_5/LICENSE.txt
+Shipped: yes
+Security Critical: yes
+
+Description: ANTLR4 runtime for Rust

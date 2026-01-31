@@ -159,7 +159,7 @@ void TermsOfServiceScreen::ShowImpl() {
 
 void TermsOfServiceScreen::HideImpl() {}
 
-void TermsOfServiceScreen::OnUserAction(const base::Value::List& args) {
+void TermsOfServiceScreen::OnUserAction(const base::ListValue& args) {
   const std::string& action_id = args[0].GetString();
   if (action_id == kBack)
     OnDecline();

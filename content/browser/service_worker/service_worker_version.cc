@@ -13,7 +13,6 @@
 
 #include "base/check.h"
 #include "base/command_line.h"
-#include "base/containers/contains.h"
 #include "base/debug/crash_logging.h"
 #include "base/debug/dump_without_crashing.h"
 #include "base/functional/bind.h"
@@ -38,7 +37,7 @@
 #include "content/browser/bad_message.h"
 #include "content/browser/child_process_security_policy_impl.h"
 #include "content/browser/renderer_host/back_forward_cache_can_store_document_result.h"
-#include "content/browser/renderer_host/private_network_access_util.h"
+#include "content/browser/renderer_host/local_network_access_util.h"
 #include "content/browser/service_worker/payment_handler_support.h"
 #include "content/browser/service_worker/service_worker_client.h"
 #include "content/browser/service_worker/service_worker_consts.h"
@@ -806,7 +805,7 @@ ServiceWorkerExternalRequestResult ServiceWorkerVersion::StartExternalRequest(
     return ServiceWorkerExternalRequestResult::kWorkerNotRunning;
   }
 
-  if (base::Contains(external_request_uuid_to_request_id_, request_uuid)) {
+  if (external_request_uuid_to_request_id_.contains(request_uuid)) {
     return ServiceWorkerExternalRequestResult::kBadRequestId;
   }
 
@@ -950,7 +949,7 @@ void ServiceWorkerVersion::AddControllee(
   CHECK(!service_worker_client->client_uuid().empty());
   // TODO(crbug.com/40657227): Change to DCHECK once we figure out the cause of
   // crash.
-  CHECK(!base::Contains(controllee_map_, uuid));
+  CHECK(!controllee_map_.contains(uuid));
 
   controllee_map_[uuid] = service_worker_client->AsWeakPtr();
   // Even if `context_` is invalid, `controllee_map_` should have `uuid`.
@@ -990,7 +989,7 @@ void ServiceWorkerVersion::RemoveControllee(const std::string& client_uuid) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   // TODO(crbug.com/40653867): Remove this once RemoveControllee() matches with
   // AddControllee().
-  if (!base::Contains(controllee_map_, client_uuid)) {
+  if (!controllee_map_.contains(client_uuid)) {
     return;
   }
 
@@ -1029,8 +1028,8 @@ void ServiceWorkerVersion::OnControlleeNavigationCommitted(
 void ServiceWorkerVersion::MoveControlleeToBackForwardCacheMap(
     const std::string& client_uuid) {
   DCHECK(IsBackForwardCacheEnabled());
-  CHECK(base::Contains(controllee_map_, client_uuid));
-  CHECK(!base::Contains(bfcached_controllee_map_, client_uuid));
+  CHECK(controllee_map_.contains(client_uuid));
+  CHECK(!bfcached_controllee_map_.contains(client_uuid));
   bfcached_controllee_map_[client_uuid] = controllee_map_[client_uuid];
   RemoveControllee(client_uuid);
 }
@@ -1040,14 +1039,14 @@ void ServiceWorkerVersion::RestoreControlleeFromBackForwardCacheMap(
   // TODO(crbug.com/40657227): Change these to DCHECK once we figure out the
   // cause of crash.
   CHECK(IsBackForwardCacheEnabled());
-  CHECK(!base::Contains(controllee_map_, client_uuid));
-  if (!base::Contains(bfcached_controllee_map_, client_uuid)) {
+  CHECK(!controllee_map_.contains(client_uuid));
+  if (!bfcached_controllee_map_.contains(client_uuid)) {
     // We are navigating to the page using BackForwardCache, which is being
     // evicted due to activation, postMessage or claim. In this case, we reload
     // the page without using BackForwardCache, so we can assume that
     // ContainerHost will be deleted soon.
     // TODO(crbug.com/40657227): Remove this CHECK once we fix the crash.
-    CHECK(base::Contains(controllees_to_be_evicted_, client_uuid));
+    CHECK(controllees_to_be_evicted_.contains(client_uuid));
     // TODO(crbug.com/40657227): Remove DumpWithoutCrashing once we confirm the
     // cause of the crash.
     BackForwardCacheCanStoreDocumentResult can_store;
@@ -1071,8 +1070,8 @@ void ServiceWorkerVersion::RemoveControlleeFromBackForwardCacheMap(
   // TODO(crbug.com/341322515): Investigate why sometimes
   // `bfcache_controllee_map_` does not contain the client.
   SCOPED_CRASH_KEY_BOOL("ServiceWorkerBfcache", "in_controllee_map",
-                        base::Contains(controllee_map_, client_uuid));
-  CHECK(base::Contains(bfcached_controllee_map_, client_uuid));
+                        controllee_map_.contains(client_uuid));
+  CHECK(bfcached_controllee_map_.contains(client_uuid));
   bfcached_controllee_map_.erase(client_uuid);
 }
 
@@ -1080,9 +1079,9 @@ void ServiceWorkerVersion::Uncontrol(const std::string& client_uuid) {
   if (!IsBackForwardCacheEnabled()) {
     RemoveControllee(client_uuid);
   } else {
-    if (base::Contains(controllee_map_, client_uuid)) {
+    if (controllee_map_.contains(client_uuid)) {
       RemoveControllee(client_uuid);
-    } else if (base::Contains(bfcached_controllee_map_, client_uuid)) {
+    } else if (bfcached_controllee_map_.contains(client_uuid)) {
       RemoveControlleeFromBackForwardCacheMap(client_uuid);
     } else {
       // It is possible that the controllee belongs to neither |controllee_map_|
@@ -1092,7 +1091,7 @@ void ServiceWorkerVersion::Uncontrol(const std::string& client_uuid) {
       // In this case, |controllees_to_be_evicted_| should contain the
       // controllee.
       // TODO(crbug.com/40657227): Remove this CHECK once we fix the crash.
-      CHECK(base::Contains(controllees_to_be_evicted_, client_uuid));
+      CHECK(controllees_to_be_evicted_.contains(client_uuid));
       controllees_to_be_evicted_.erase(client_uuid);
     }
   }
@@ -2170,10 +2169,10 @@ ServiceWorkerVersion::BuildClientSecurityState() const {
   const PolicyContainerPolicies& policies = policy_container_host_->policies();
 
   network::mojom::PrivateNetworkRequestPolicy private_network_request_policy =
-      DerivePrivateNetworkRequestPolicy(
+      DeriveLocalNetworkAccessRequestPolicy(
           policies.ip_address_space, policies.is_web_secure_context,
           policies.allow_non_secure_local_network_access,
-          PrivateNetworkRequestContext::kWorker);
+          LocalNetworkAccessRequestContext::kWorker);
 
   // Check for policy overrides on LNA. For service workers, we apply
   // policy overrides based on the storage key's origin (which should be the
@@ -2188,9 +2187,10 @@ ServiceWorkerVersion::BuildClientSecurityState() const {
     if (browser_context) {
       ContentBrowserClient* client = GetContentClient()->browser();
       url::Origin origin = key_.origin();
-      ContentBrowserClient::PrivateNetworkRequestPolicyOverride
-          policy_override = client->ShouldOverridePrivateNetworkRequestPolicy(
-              browser_context, origin);
+      ContentBrowserClient::LocalNetworkAccessRequestPolicyOverride
+          policy_override =
+              client->ShouldOverrideLocalNetworkAccessRequestPolicy(
+                  browser_context, origin);
       private_network_request_policy = OverrideLocalNetworkAccessPolicy(
           private_network_request_policy, policy_override);
     }
@@ -2488,9 +2488,9 @@ void ServiceWorkerVersion::StartWorkerInternal() {
     client_security_state_->is_web_secure_context =
         policy_container_host_->policies().is_web_secure_context;
     client_security_state_->private_network_request_policy =
-        DerivePrivateNetworkRequestPolicy(
+        DeriveLocalNetworkAccessRequestPolicy(
             policy_container_host_->policies(),
-            PrivateNetworkRequestContext::kWorker);
+            LocalNetworkAccessRequestContext::kWorker);
   }
 
   embedded_worker_->Start(std::move(params),
@@ -3267,7 +3267,7 @@ void ServiceWorkerVersion::GetAssociatedInterface(
 
 bool ServiceWorkerVersion::BFCacheContainsControllee(
     const std::string& uuid) const {
-  return base::Contains(bfcached_controllee_map_, uuid);
+  return bfcached_controllee_map_.contains(uuid);
 }
 
 base::WeakPtr<ServiceWorkerVersion> ServiceWorkerVersion::GetWeakPtr() {

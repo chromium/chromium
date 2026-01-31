@@ -7,6 +7,7 @@
 
 #include <stdint.h>
 
+#include <map>
 #include <memory>
 #include <optional>
 #include <string>
@@ -62,6 +63,10 @@ class DomStorageDatabaseLevelDB
   StatusOr<std::vector<KeyValuePair>> GetPrefixed(KeyView prefix) const;
   std::unique_ptr<DomStorageBatchOperationLevelDB> CreateBatchOperation();
 
+  // Like `GetPrefixed()` above, but returns a map of entries with `prefix`
+  // removed from each key.
+  StatusOr<std::map<Key, Value>> GetMapKeyValues(KeyView prefix);
+
   DbStatus RewriteDB();
 
   bool ShouldFailAllCommitsForTesting();
@@ -78,26 +83,20 @@ class DomStorageDatabaseLevelDB
   //
   // To create an in-memory database, provide an empty `directory`.
   static StatusOr<std::unique_ptr<DomStorageDatabaseLevelDB>> Open(
+      StorageType storage_type,
       const base::FilePath& directory,
-      const std::string& name,
       const std::optional<base::trace_event::MemoryAllocatorDumpGuid>&
           memory_dump_id,
       KeyView version_key,
       int64_t min_supported_version,
       int64_t max_supported_version);
 
-  using StatusCallback = base::OnceCallback<void(DbStatus)>;
-
-  static void Destroy(
-      const base::FilePath& directory,
-      const std::string& name,
-      scoped_refptr<base::SequencedTaskRunner> blocking_task_runner,
-      StatusCallback callback);
+  static DbStatus Destroy(const base::FilePath& directory);
 
  private:
   DomStorageDatabaseLevelDB(
+      StorageType storage_type,
       const base::FilePath& directory,
-      const std::string& name,
       const std::optional<base::trace_event::MemoryAllocatorDumpGuid>&
           memory_dump_id);
 

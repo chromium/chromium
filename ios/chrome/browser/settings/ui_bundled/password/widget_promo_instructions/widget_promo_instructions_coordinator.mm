@@ -100,12 +100,12 @@
   [self.delegate removeWidgetPromoInstructionsCoordinator:self];
 }
 
-- (id<ApplicationCommands, BrowserCommands>)handlerForSettings {
+- (id<SceneCommands, BrowserCommands>)handlerForSettings {
   NOTREACHED();
   return nil;
 }
 
-- (id<ApplicationCommands>)handlerForApplicationCommands {
+- (id<SceneCommands>)handlerForSceneCommands {
   NOTREACHED();
   return nil;
 }

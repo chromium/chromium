@@ -117,7 +117,7 @@ class ServiceFontManager::SkiaDiscardableManager
         &crash_key, base::StringPrintf(kFormatString, type, fontSize));
     NOTREACHED();
 #else
-    if (dump_count_ < kMaxDumps && base::RandInt(1, 100) == 1 &&
+    if (dump_count_ < kMaxDumps && base::RandIntInclusive(1, 100) == 1 &&
         !font_manager_->disable_oopr_debug_crash_dump()) {
       crash_reporter::ScopedCrashKeyString auto_clear(
           &crash_key, base::StringPrintf(kFormatString, type, fontSize));

@@ -42,7 +42,7 @@ void EmbeddedTestServerAndroid::ConnectionListener::ReadFromSocket(
 EmbeddedTestServerAndroid::EmbeddedTestServerAndroid(
     JNIEnv* env,
     const JavaRef<jobject>& jobj,
-    jboolean jhttps)
+    bool jhttps)
     : weak_java_server_(env, jobj),
       test_server_(jhttps ? EmbeddedTestServer::TYPE_HTTPS
                           : EmbeddedTestServer::TYPE_HTTP),
@@ -62,7 +62,7 @@ EmbeddedTestServerAndroid::~EmbeddedTestServerAndroid() {
   Java_EmbeddedTestServerImpl_clearNativePtr(env, weak_java_server_.get(env));
 }
 
-jboolean EmbeddedTestServerAndroid::Start(JNIEnv* env, jint port) {
+bool EmbeddedTestServerAndroid::Start(JNIEnv* env, int32_t port) {
   return test_server_.Start(static_cast<int>(port));
 }
 
@@ -72,7 +72,7 @@ ScopedJavaLocalRef<jstring> EmbeddedTestServerAndroid::GetRootCertPemPath(
       env, test_server_.GetRootCertPemPath().value());
 }
 
-jboolean EmbeddedTestServerAndroid::ShutdownAndWaitUntilComplete(JNIEnv* env) {
+bool EmbeddedTestServerAndroid::ShutdownAndWaitUntilComplete(JNIEnv* env) {
   return test_server_.ShutdownAndWaitUntilComplete();
 }
 
@@ -135,7 +135,7 @@ void EmbeddedTestServerAndroid::AddDefaultHandlers(
 }
 
 void EmbeddedTestServerAndroid::SetSSLConfig(JNIEnv* jenv,
-                                             jint jserver_certificate) {
+                                             int32_t jserver_certificate) {
   test_server_.SetSSLConfig(
       static_cast<EmbeddedTestServer::ServerCertificate>(jserver_certificate));
 }
@@ -144,7 +144,7 @@ typedef std::unique_ptr<HttpResponse> (*HandleRequestPtr)(
     const HttpRequest& request);
 
 void EmbeddedTestServerAndroid::RegisterRequestHandler(JNIEnv* env,
-                                                       jlong handler) {
+                                                       int64_t handler) {
   HandleRequestPtr handler_ptr = reinterpret_cast<HandleRequestPtr>(handler);
   test_server_.RegisterRequestHandler(base::BindRepeating(handler_ptr));
 }
@@ -177,7 +177,7 @@ static void JNI_EmbeddedTestServerImpl_Init(
     JNIEnv* env,
     const JavaRef<jobject>& jobj,
     const JavaRef<jstring>& jtest_data_dir,
-    jboolean jhttps) {
+    bool jhttps) {
   TRACE_EVENT0("native", "EmbeddedTestServerAndroid::Init");
   base::FilePath test_data_dir(
       base::android::ConvertJavaStringToUTF8(env, jtest_data_dir));

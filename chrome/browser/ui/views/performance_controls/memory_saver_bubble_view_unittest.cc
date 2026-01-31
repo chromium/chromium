@@ -6,7 +6,7 @@
 
 #include <tuple>
 
-#include "base/byte_count.h"
+#include "base/byte_size.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/time/time.h"
 #include "chrome/browser/profiles/profile.h"
@@ -44,7 +44,7 @@
 #include "ui/views/widget/widget.h"
 
 namespace {
-constexpr base::ByteCount kMemorySavings = base::MiB(100);
+constexpr base::ByteSize kMemorySavings = base::MiBU(100);
 }  // namespace
 
 class StubMemorySaverBubbleObserver : public MemorySaverBubbleObserver {
@@ -55,7 +55,7 @@ class StubMemorySaverBubbleObserver : public MemorySaverBubbleObserver {
 
 class MemorySaverBubbleViewTest
     : public MemorySaverUnitTestMixin<TestWithBrowserView>,
-      public testing::WithParamInterface<std::tuple<base::ByteCount, int>> {
+      public testing::WithParamInterface<std::tuple<base::ByteSize, int>> {
  public:
   // MemorySaverUnitTestMixin:
   void SetUp() override {
@@ -234,11 +234,12 @@ INSTANTIATE_TEST_SUITE_P(
     All,
     MemorySaverBubbleViewTest,
     ::testing::Values(
-        std::tuple{base::MiB(50), IDS_MEMORY_SAVER_DIALOG_SMALL_SAVINGS_LABEL},
-        std::tuple{base::MiB(100),
+        std::tuple{base::MiBU(50), IDS_MEMORY_SAVER_DIALOG_SMALL_SAVINGS_LABEL},
+        std::tuple{base::MiBU(100),
                    IDS_MEMORY_SAVER_DIALOG_MEDIUM_SAVINGS_LABEL},
-        std::tuple{base::MiB(150),
+        std::tuple{base::MiBU(150),
                    IDS_MEMORY_SAVER_DIALOG_MEDIUM_SAVINGS_LABEL},
-        std::tuple{base::MiB(600), IDS_MEMORY_SAVER_DIALOG_LARGE_SAVINGS_LABEL},
-        std::tuple{base::MiB(900),
+        std::tuple{base::MiBU(600),
+                   IDS_MEMORY_SAVER_DIALOG_LARGE_SAVINGS_LABEL},
+        std::tuple{base::MiBU(900),
                    IDS_MEMORY_SAVER_DIALOG_VERY_LARGE_SAVINGS_LABEL}));

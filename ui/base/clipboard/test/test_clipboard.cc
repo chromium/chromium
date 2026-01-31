@@ -11,7 +11,6 @@
 #include <string_view>
 #include <utility>
 
-#include "base/containers/contains.h"
 #include "base/containers/span.h"
 #include "base/memory/ptr_util.h"
 #include "base/notreached.h"
@@ -93,10 +92,10 @@ bool TestClipboard::IsFormatAvailable(
   // Chrome can retrieve an image from the clipboard as either a bitmap or PNG.
   if (format == ClipboardFormatType::PngType() ||
       format == ClipboardFormatType::BitmapType()) {
-    return base::Contains(store.data, ClipboardFormatType::PngType()) ||
-           base::Contains(store.data, ClipboardFormatType::BitmapType());
+    return store.data.contains(ClipboardFormatType::PngType()) ||
+           store.data.contains(ClipboardFormatType::BitmapType());
   }
-  return base::Contains(store.data, format);
+  return store.data.contains(format);
 }
 
 void TestClipboard::Clear(ClipboardBuffer buffer) {

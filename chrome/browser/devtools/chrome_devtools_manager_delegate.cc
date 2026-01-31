@@ -8,8 +8,8 @@
 #include <utility>
 
 #include "base/command_line.h"
-#include "base/containers/contains.h"
 #include "base/functional/bind.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
@@ -78,6 +78,13 @@ const char ChromeDevToolsManagerDelegate::kTypePage[] = "page";
 
 namespace {
 
+// This enum is used for UMA histograms and should not be renumbered.
+enum class DevToolsRemoteDebuggingConnectionPermission {
+  kAllowed = 0,
+  kDenied = 1,
+  kMaxValue = kDenied,
+};
+
 std::optional<std::string> GetIsolatedWebAppNameAndVersion(
     content::WebContents* web_contents) {
   const webapps::AppId* app_id =
@@ -90,17 +97,11 @@ std::optional<std::string> GetIsolatedWebAppNameAndVersion(
   if (!provider) {
     return std::nullopt;
   }
-  // In this case we will not modify any data and reading stale data is
-  // fine, since the app will already be installed and open in the case
-  // it needs to be checked in DevTools.
-  const web_app::WebAppRegistrar& registrar = provider->registrar_unsafe();
-  const web_app::WebApp* web_app = registrar.GetAppById(*app_id);
-
-  if (web_app &&
-      registrar.AppMatches(*app_id, web_app::WebAppFilter::IsIsolatedApp())) {
+  if (const web_app::WebApp* iwa = provider->registrar_unsafe().GetAppById(
+          *app_id, web_app::WebAppFilter::IsIsolatedApp())) {
     // Version is a key part of IWA so should be displayed in inspect tool
-    return base::StrCat({registrar.GetAppShortName(*app_id), " (",
-                         web_app->isolation_data()->version().GetString(),
+    return base::StrCat({provider->registrar_unsafe().GetAppShortName(*app_id),
+                         " (", iwa->isolation_data()->version().GetString(),
                          ")"});
   }
 
@@ -458,7 +459,21 @@ void ChromeDevToolsManagerDelegate::UpdateDeviceDiscovery() {
 }
 
 void ChromeDevToolsManagerDelegate::AcceptDebugging(AcceptCallback callback) {
-  DevToolsConnectionDialog::Show(chrome::FindLastActive(), std::move(callback));
+  auto wrapped_callback = base::BindOnce(
+      [](AcceptCallback inner_callback,
+         content::DevToolsManagerDelegate::AcceptConnectionResult result) {
+        bool allowed =
+            result ==
+            content::DevToolsManagerDelegate::AcceptConnectionResult::kAllow;
+        base::UmaHistogramEnumeration(
+            "DevTools.RemoteDebugging.ConnectionPermission",
+            allowed ? DevToolsRemoteDebuggingConnectionPermission::kAllowed
+                    : DevToolsRemoteDebuggingConnectionPermission::kDenied);
+        std::move(inner_callback).Run(result);
+      },
+      std::move(callback));
+  DevToolsConnectionDialog::Show(chrome::FindLastActive(),
+                                 std::move(wrapped_callback));
 }
 
 void ChromeDevToolsManagerDelegate::SetActiveWebSocketConnections(

@@ -8,6 +8,8 @@ const FORWARD_ARROWS = ['ArrowRight', 'ArrowDown'];
 const BACKWARD_ARROWS = ['ArrowLeft', 'ArrowUp'];
 const ALL_ARROWS = BACKWARD_ARROWS.concat(FORWARD_ARROWS);
 const HORIZONTAL_ARROWS = ['ArrowRight', 'ArrowLeft'];
+const VERTICAL_ARROWS = ['ArrowUp', 'ArrowDown'];
+const ACTIVATION_KEYS = ['Enter', ' '];
 
 // Returns the next item to focus in the list of focusableElements, depending
 // on which key is used and whether the UI is LTR or RTL.
@@ -38,6 +40,22 @@ export function isForwardArrow(key: string): boolean {
   return (isRTL() ? BACKWARD_ARROWS : FORWARD_ARROWS).includes(key);
 }
 
+export function isBackwardArrow(key: string): boolean {
+  return (isRTL() ? FORWARD_ARROWS : BACKWARD_ARROWS).includes(key);
+}
+
 export function isHorizontalArrow(key: string): boolean {
   return HORIZONTAL_ARROWS.includes(key);
+}
+
+export function isVerticalArrow(key: string): boolean {
+  return VERTICAL_ARROWS.includes(key);
+}
+
+export function isLineFocusShortcut(e: KeyboardEvent): boolean {
+  return e.key === 'l' && !e.metaKey && !e.ctrlKey && !e.altKey && !e.shiftKey;
+}
+
+export function isActivationKey(key: string): boolean {
+  return ACTIVATION_KEYS.includes(key);
 }

@@ -82,7 +82,11 @@ Response MemoryHandler::GetBrowserSamplingProfile(
 
 Response MemoryHandler::SetPressureNotificationsSuppressed(
     bool suppressed) {
-  base::MemoryPressureListener::SetNotificationsSuppressed(suppressed);
+  if (suppressed) {
+    memory_pressure_suppression_token_.emplace();
+  } else {
+    memory_pressure_suppression_token_.reset();
+  }
   return Response::Success();
 }
 

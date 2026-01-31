@@ -8,7 +8,6 @@
 #include <set>
 #include <utility>
 
-#include "base/containers/contains.h"
 #include "base/notimplemented.h"
 #include "build/build_config.h"
 
@@ -239,7 +238,7 @@ class ExternalMojoBroker::ConnectorImpl : public mojom::ExternalConnector {
   void RegisterServiceInstance(
       const std::string& service_name,
       mojo::PendingRemote<mojom::ExternalService> service_remote) {
-    if (base::Contains(services_, service_name)) {
+    if (services_.contains(service_name)) {
       LOG(ERROR) << "Duplicate service " << service_name;
       return;
     }

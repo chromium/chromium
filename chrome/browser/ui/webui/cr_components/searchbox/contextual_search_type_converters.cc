@@ -4,7 +4,9 @@
 
 #include "chrome/browser/ui/webui/cr_components/searchbox/contextual_search_type_converters.h"
 
+#include "components/contextual_search/input_state_model.h"
 #include "components/omnibox/composebox/composebox_query.mojom.h"
+#include "components/omnibox/composebox/contextual_search_mojom_traits.h"
 
 namespace contextual_search {
 
@@ -92,6 +94,22 @@ FileUploadErrorType FromMojom(
     case composebox_query::mojom::FileUploadErrorType::kImageProcessingError:
       return FileUploadErrorType::kImageProcessingError;
   }
+}
+
+composebox_query::mojom::InputStatePtr ToMojom(const InputState& state) {
+  auto mojom_state = composebox_query::mojom::InputState::New();
+
+  mojom_state->active_tool = state.active_tool;
+  mojom_state->active_model = state.active_model;
+
+  mojom_state->disabled_tools = state.disabled_tools;
+  mojom_state->disabled_models = state.disabled_models;
+  mojom_state->disabled_input_types = state.disabled_input_types;
+
+  mojom_state->allowed_tools = state.allowed_tools;
+  mojom_state->allowed_models = state.allowed_models;
+  mojom_state->allowed_input_types = state.allowed_input_types;
+  return mojom_state;
 }
 
 }  // namespace contextual_search

@@ -89,6 +89,9 @@ bool IsGoogleSearchHomepageUrl(const GURL& url);
 // Whether the given url is a Google Search redirector URL.
 bool IsGoogleSearchRedirectorUrl(const GURL& url);
 
+// Whether the given url is a Google Search prewarm URL.
+bool IsGoogleSearchPrewarmUrl(const GURL& url);
+
 }  // namespace page_load_metrics
 
 #endif  // COMPONENTS_PAGE_LOAD_METRICS_GOOGLE_BROWSER_GOOGLE_URL_UTIL_H_

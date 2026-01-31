@@ -90,7 +90,7 @@ TEST_F(OpenscreenStatsClientTest, OnStatisticsUpdatedValidValues) {
 
   // Check that the GetStats() dict has been populated with audio stats and
   // histograms.
-  const base::Value::Dict* audio_dict = stats_dict.FindDict(
+  const base::DictValue* audio_dict = stats_dict.FindDict(
       media::cast::StatsEventSubscriber::kAudioStatsDictKey);
   EXPECT_TRUE(audio_dict);
   EXPECT_TRUE(audio_dict->contains("NUM_FRAMES_CAPTURED"));
@@ -112,7 +112,7 @@ TEST_F(OpenscreenStatsClientTest, OnStatisticsUpdatedValidValues) {
 
   // Check that the GetStats() dict has been populated with video stats and
   // histograms.
-  const base::Value::Dict* video_dict = stats_dict.FindDict(
+  const base::DictValue* video_dict = stats_dict.FindDict(
       media::cast::StatsEventSubscriber::kVideoStatsDictKey);
   EXPECT_TRUE(video_dict);
 
@@ -142,7 +142,7 @@ TEST_F(OpenscreenStatsClientTest, OnStatisticsUpdatedEmptyValues) {
 
   // Check that the GetStats() dict has been populated with audio stats and
   // histograms.
-  const base::Value::Dict* audio_dict = stats_dict.FindDict(
+  const base::DictValue* audio_dict = stats_dict.FindDict(
       media::cast::StatsEventSubscriber::kAudioStatsDictKey);
   EXPECT_TRUE(audio_dict);
   EXPECT_TRUE(audio_dict->contains("NUM_FRAMES_CAPTURED"));
@@ -157,7 +157,7 @@ TEST_F(OpenscreenStatsClientTest, OnStatisticsUpdatedEmptyValues) {
 
   // Check that the GetStats() dict has been populated with video stats and
   // histograms.
-  const base::Value::Dict* video_dict = stats_dict.FindDict(
+  const base::DictValue* video_dict = stats_dict.FindDict(
       media::cast::StatsEventSubscriber::kVideoStatsDictKey);
   EXPECT_TRUE(video_dict);
   EXPECT_TRUE(video_dict->contains("NUM_FRAMES_CAPTURED"));

@@ -16,11 +16,14 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import androidx.annotation.Px;
 import androidx.appcompat.content.res.AppCompatResources;
+import androidx.coordinatorlayout.widget.CoordinatorLayout;
 import androidx.viewpager.widget.PagerAdapter;
 import androidx.viewpager.widget.ViewPager;
 
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.keyboard_accessory.R;
 
@@ -30,8 +33,10 @@ class AccessorySheetView extends LinearLayout {
     private ViewPager mViewPager;
     private FrameLayout mFrameLayout;
     private ImageView mTopShadow;
+    private ImageView mBarShadow;
     private ImageView mKeyboardToggle;
     private TextView mSheetTitle;
+    private @Nullable Integer mMaxWidth;
 
     /** Constructor for inflating from XML which is why it must be public. */
     public AccessorySheetView(Context context, AttributeSet attrs) {
@@ -61,8 +66,10 @@ class AccessorySheetView extends LinearLayout {
     @Override
     protected void onFinishInflate() {
         super.onFinishInflate();
+        mMaxWidth = null;
         mViewPager = findViewById(R.id.keyboard_accessory_sheet);
         mTopShadow = findViewById(R.id.accessory_sheet_shadow);
+        mBarShadow = findViewById(R.id.sheet_header_shadow);
         mFrameLayout = findViewById(R.id.keyboard_accessory_sheet_frame);
         mKeyboardToggle = findViewById(R.id.show_keyboard);
         mKeyboardToggle.setImageDrawable(
@@ -74,6 +81,16 @@ class AccessorySheetView extends LinearLayout {
         // Ensure that sub components of the sheet use the RTL direction:
         int layoutDirection = isLayoutRtl() ? View.LAYOUT_DIRECTION_RTL : View.LAYOUT_DIRECTION_LTR;
         mViewPager.setLayoutDirection(layoutDirection);
+    }
+
+    @Override
+    protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
+        int measuredWidth = MeasureSpec.getSize(widthMeasureSpec);
+        if (mMaxWidth != null && mMaxWidth < measuredWidth) {
+            int measureMode = MeasureSpec.getMode(widthMeasureSpec);
+            widthMeasureSpec = MeasureSpec.makeMeasureSpec(mMaxWidth, measureMode);
+        }
+        super.onMeasure(widthMeasureSpec, heightMeasureSpec);
     }
 
     void setAdapter(PagerAdapter adapter) {
@@ -99,6 +116,10 @@ class AccessorySheetView extends LinearLayout {
         mTopShadow.setVisibility(isShadowVisible ? View.VISIBLE : View.INVISIBLE);
     }
 
+    void setBarShadowVisible(boolean isShadowVisible) {
+        mBarShadow.setVisibility(isShadowVisible ? View.VISIBLE : View.INVISIBLE);
+    }
+
     void setFrameHeight(int height) {
         ViewGroup.LayoutParams p = mFrameLayout.getLayoutParams();
         p.height = height;
@@ -108,6 +129,26 @@ class AccessorySheetView extends LinearLayout {
     void setTitle(String title) {
         assert mSheetTitle != null : "setTitle called before view initialized";
         mSheetTitle.setText(title);
+    }
+
+    void setHorizontalPadding(@Px int padding) {
+        setPadding(padding, getPaddingTop(), padding, getPaddingBottom());
+    }
+
+    void setMaxWidth(Integer width) {
+        mMaxWidth = width;
+    }
+
+    void setTopOffset(@Px int offset) {
+        CoordinatorLayout.LayoutParams params = (CoordinatorLayout.LayoutParams) getLayoutParams();
+        params.setMargins(params.leftMargin, offset, params.rightMargin, params.bottomMargin);
+        setLayoutParams(params);
+    }
+
+    void setLayoutGravity(int gravity) {
+        CoordinatorLayout.LayoutParams params = (CoordinatorLayout.LayoutParams) getLayoutParams();
+        params.gravity = gravity;
+        setLayoutParams(params);
     }
 
     void setShowKeyboardCallback(Runnable runnable) {

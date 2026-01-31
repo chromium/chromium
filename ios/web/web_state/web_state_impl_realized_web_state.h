@@ -126,7 +126,7 @@ class WebStateImpl::RealizedWebState final : public NavigationManagerDelegate {
   bool HasWebUI() const;
   void HandleWebUIMessage(const GURL& source_url,
                           std::string_view message,
-                          const base::Value::List& args);
+                          const base::ListValue& args);
   void SetContentsMimeType(const std::string& mime_type);
   void ShouldAllowRequest(
       NSURLRequest* request,
@@ -231,7 +231,8 @@ class WebStateImpl::RealizedWebState final : public NavigationManagerDelegate {
   id<CRWWebViewNavigationProxy> GetWebViewNavigationProxy() const final;
   void GoToBackForwardListItem(WKBackForwardListItem* wk_item,
                                NavigationItem* item,
-                               NavigationInitiationType type,
+                               BackForwardNavigationType navigation_type,
+                               NavigationInitiationType initiation_type,
                                bool has_user_gesture) override;
   void RemoveWebView() override;
   NavigationItemImpl* GetPendingItem() override;

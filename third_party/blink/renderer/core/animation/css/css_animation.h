@@ -9,6 +9,7 @@
 #include "third_party/blink/renderer/core/animation/animation.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/dom/element.h"
+#include "third_party/blink/renderer/core/dom/trigger_scoped_name.h"
 #include "third_party/blink/renderer/core/style/style_trigger_attachment.h"
 
 namespace blink {
@@ -99,11 +100,12 @@ class CORE_EXPORT CSSAnimation : public Animation {
     trigger_attachments_ = attachments;
   }
 
-  void SetNamedTriggerAttachment(Member<const ScopedCSSName> name,
+  void SetNamedTriggerAttachment(Member<const TriggerScopedName> scope,
                                  AnimationTrigger* trigger);
-  void RemoveStaleNamedTriggerAttachments(
-      const Member<const StyleTriggerAttachmentVector>&
-          attachment_declarations);
+  HeapHashMap<Member<const TriggerScopedName>, Member<AnimationTrigger>>&
+  NamedTriggerAttachments() {
+    return named_trigger_attachments_;
+  }
 
  protected:
   AnimationEffect::EventDelegate* CreateEventDelegate(
@@ -151,9 +153,8 @@ class CORE_EXPORT CSSAnimation : public Animation {
   // This maps the trigger names to the AnimationTriggers that were attached as
   // a result of the animation-trigger declaration. We need to keep track of
   // this so that when style changes happen, in addition to attaching the
-  // (potentially new) correct trigger but we also remove the old (potentially
-  // incorrect) outdated trigger.
-  HeapHashMap<Member<const ScopedCSSName>, Member<AnimationTrigger>>
+  // (potentially new) correct trigger but we also remove the obsolete trigger.
+  HeapHashMap<Member<const TriggerScopedName>, Member<AnimationTrigger>>
       named_trigger_attachments_;
 };
 

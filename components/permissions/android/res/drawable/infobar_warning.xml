@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2025 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="32dp"
+    android:height="32dp"
+    android:viewportHeight="960"
+    android:viewportWidth="960"
+    android:tint="?attr/colorControlNormal">
+    <!-- The size of the path has been manually scaled down to 24dp to match the previous drawable's
+         size. -->
+    <path
+        android:fillColor="@android:color/white"
+        android:pathData="M150,750L480,180L810,750L150,750ZM482.08,661.5Q492.75,661.5 499.88,654.29Q507,647.08 507,636.41Q507,625.75 499.79,618.62Q492.58,611.5 481.91,611.5Q471.25,611.5 464.12,618.71Q457,625.93 457,636.59Q457,647.25 464.21,654.38Q471.43,661.5 482.08,661.5ZM457,576L507,576L507,414L457,414L457,576Z" />
+</vector>

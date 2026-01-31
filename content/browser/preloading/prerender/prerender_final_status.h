@@ -5,9 +5,8 @@
 #ifndef CONTENT_BROWSER_PRELOADING_PRERENDER_PRERENDER_FINAL_STATUS_H_
 #define CONTENT_BROWSER_PRELOADING_PRERENDER_PRERENDER_FINAL_STATUS_H_
 
-#include "content/public/browser/preloading.h"
-
 #include "content/common/content_export.h"
+#include "content/public/browser/preloading.h"
 
 namespace content {
 
@@ -183,7 +182,10 @@ enum class PrerenderFinalStatus {
 
   kMaxValue = kPrerenderHostReused,
 };
-// LINT.ThenChange(//third_party/blink/public/devtools_protocol/browser_protocol.pdl)
+// LINT.ThenChange(
+//     //third_party/blink/public/devtools_protocol/browser_protocol.pdl,
+//     //tools/metrics/histograms/enums.xml
+// )
 
 // Helper method to convert PrerenderFinalStatus to PreloadingFailureReason.
 PreloadingFailureReason CONTENT_EXPORT

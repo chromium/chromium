@@ -12,6 +12,7 @@
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/scoped_run_loop_timeout.h"
+#include "components/autofill/core/browser/foundations/autofill_manager_test_api.h"
 
 namespace autofill {
 
@@ -437,12 +438,12 @@ const FormStructure* WaitForMatchingForm(
       }
     }
 
-    FormStructure* FindForm() const {
+    const FormStructure* FindForm() const {
+      std::vector<const FormStructure*> forms =
+          test_api(*manager_).form_structures();
       auto it = std::ranges::find_if(
-          manager_->form_structures(),
-          [&](const auto& p) { return pred_.Run(*p.second); });
-      return it != manager_->form_structures().end() ? it->second.get()
-                                                     : nullptr;
+          forms, [&](const FormStructure* form) { return pred_.Run(*form); });
+      return it != forms.end() ? *it : nullptr;
     }
 
     base::ScopedObservation<AutofillManager, AutofillManager::Observer>

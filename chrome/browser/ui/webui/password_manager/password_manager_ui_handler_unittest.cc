@@ -284,32 +284,32 @@ TEST_F(PasswordManagerUIHandlerUnitTest,
 }
 
 TEST_F(PasswordManagerUIHandlerUnitTest,
-       IsAccountStorageEnabled_ReturnsCorrectValue) {
+       IsAccountStorageActive_ReturnsCorrectValue) {
   // Set the delegate to return true.
   test_delegate().SetAccountStorageEnabled(true);
 
   base::test::TestFuture<bool> future_true;
-  handler().IsAccountStorageEnabled(future_true.GetCallback());
+  handler().IsAccountStorageActive(future_true.GetCallback());
   EXPECT_TRUE(future_true.Get());
 
   // Set the delegate to return false.
   test_delegate().SetAccountStorageEnabled(false);
 
   base::test::TestFuture<bool> future_false;
-  handler().IsAccountStorageEnabled(future_false.GetCallback());
+  handler().IsAccountStorageActive(future_false.GetCallback());
   EXPECT_FALSE(future_false.Get());
 }
 
 TEST_F(PasswordManagerUIHandlerUnitTest,
        SetAccountStorageEnabled_CallsDelegate) {
   // Ensure default state is false
-  EXPECT_FALSE(test_delegate().IsAccountStorageEnabled());
+  EXPECT_FALSE(test_delegate().IsAccountStorageActive());
 
   // Call the handler
   handler().SetAccountStorageEnabled(true);
 
   // Verify the state changed in the delegate
-  EXPECT_TRUE(test_delegate().IsAccountStorageEnabled());
+  EXPECT_TRUE(test_delegate().IsAccountStorageActive());
 }
 
 TEST_F(PasswordManagerUIHandlerUnitTest,

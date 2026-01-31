@@ -32,7 +32,7 @@ html, body {
   margin: 0;
   padding: 0;
   overflow: scroll;
-  font-family: "Roboto", sans-serif;
+  font-family: 'Roboto', sans-serif;
   display: flex;
   flex-direction: row;
 }
@@ -98,7 +98,7 @@ cr-button {
   padding: 20px;
   box-shadow: 0 3px 10px 0 rgba(0, 0, 0, 0.2),
               0 3px 10px 0 rgba(0, 0, 0, 0.2),
-              4px 4px 6px 0 rgba(0, 0, 0, 0.5)
+              4px 4px 6px 0 rgba(0, 0, 0, 0.5);
 }
 
 .control-title {

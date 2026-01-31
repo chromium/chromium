@@ -69,18 +69,28 @@ void SublevelManager::EnsureOwnerSublevel() {
 }
 
 void SublevelManager::EnsureOwnerTreeSublevel() {
-  for (Widget* child : children_) {
-    child->GetSublevelManager()->EnsureOwnerTreeSublevel();
+  auto children_copy = children_;
+  for (Widget* child : children_copy) {
+    if (IsTrackingChildWidget(child)) {
+      child->GetSublevelManager()->EnsureOwnerTreeSublevel();
+    }
   }
 
-  if (Widget* parent = owner_->parent()) {
-    parent->GetSublevelManager()->OrderChildWidget(owner_);
+  Widget* parent = owner_->parent();
+  auto* parent_manager = parent ? parent->GetSublevelManager() : nullptr;
+  if (!parent_manager) {
+    return;
+  }
+
+  if (parent_manager->IsTrackingChildWidget(owner_) &&
+      !parent_manager->IsChildWidgetOrderValid(owner_)) {
+    parent_manager->OrderChildWidget(owner_);
   }
 }
 
 void SublevelManager::OnWidgetChildAdded(Widget* owner, Widget* child) {
   CHECK_EQ(owner, owner_);
-  CHECK(!base::Contains(children_, child));
+  CHECK(!std::ranges::contains(children_, child));
   CHECK_EQ(child->parent(), owner_);
   children_.push_back(child);
 }
@@ -137,6 +147,23 @@ void SublevelManager::OrderChildWidget(Widget* child) {
 
 bool SublevelManager::IsTrackingChildWidget(Widget* child) {
   return std::ranges::find(children_, child) != children_.end();
+}
+
+bool SublevelManager::IsChildWidgetOrderValid(Widget* child) {
+  auto it = std::ranges::find(children_, child);
+  if (it == children_.end()) {
+    return false;
+  }
+
+  auto is_ordered = [](const auto& lhs, const auto& rhs) {
+    return lhs->GetZOrderLevel() != rhs->GetZOrderLevel() ||
+           lhs->GetZOrderSublevel() <= rhs->GetZOrderSublevel();
+  };
+
+  return std::all_of(children_.begin(), it,
+                     [&](const auto& prev) { return is_ordered(prev, *it); }) &&
+         std::all_of(std::next(it), children_.end(),
+                     [&](const auto& next) { return is_ordered(*it, next); });
 }
 
 SublevelManager::ChildIterator SublevelManager::FindInsertPosition(

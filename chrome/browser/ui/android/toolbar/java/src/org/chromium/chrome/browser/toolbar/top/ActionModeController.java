@@ -14,10 +14,11 @@ import android.util.IntProperty;
 
 import androidx.appcompat.app.ActionBar;
 
-import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.toolbar.R;
+
+import java.util.function.Supplier;
 
 /**
  * This class controls the how toolbar animates while the action mode bar is being shown. It also
@@ -30,7 +31,7 @@ public class ActionModeController {
     private final ToolbarActionModeCallback mToolbarActionModeCallback;
     private @Nullable ObjectAnimator mCurrentAnimation;
     private boolean mShowingActionMode;
-    private final ObservableSupplier<Integer> mTabStripHeightSupplier;
+    private final Supplier<Integer> mTabStripHeightSupplier;
     private final Context mContext;
     private final ActionBarDelegate mActionBarDelegate;
 
@@ -90,7 +91,7 @@ public class ActionModeController {
             Context context,
             ActionBarDelegate actionBarDelegate,
             ToolbarActionModeCallback toolbarActionModeCallback,
-            ObservableSupplier<Integer> tabStripHeightSupplier) {
+            Supplier<Integer> tabStripHeightSupplier) {
         mActionBarDelegate = actionBarDelegate;
         mContext = context;
         mToolbarActionModeCallback = toolbarActionModeCallback;

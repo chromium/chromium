@@ -105,7 +105,7 @@ std::optional<BiddingAndAuctionResponse> BiddingAndAuctionResponse::TryParse(
     const base::flat_map<blink::InterestGroupKey, url::Origin>&
         group_pagg_coordinators) {
   BiddingAndAuctionResponse output;
-  base::Value::Dict* input_dict = input.GetIfDict();
+  base::DictValue* input_dict = input.GetIfDict();
   if (!input_dict) {
     return std::nullopt;
   }
@@ -121,7 +121,7 @@ std::optional<BiddingAndAuctionResponse> BiddingAndAuctionResponse::TryParse(
     }
   }
 
-  base::Value::Dict* error_struct = input_dict->FindDict("error");
+  base::DictValue* error_struct = input_dict->FindDict("error");
   if (error_struct) {
     std::string* message = error_struct->FindString("message");
     if (message) {
@@ -161,7 +161,7 @@ std::optional<BiddingAndAuctionResponse> BiddingAndAuctionResponse::TryParse(
   }
   base::Value* components_value = input_dict->Find("components");
   if (components_value) {
-    base::Value::List* components = components_value->GetIfList();
+    base::ListValue* components = components_value->GetIfList();
     if (!components) {
       return std::nullopt;
     }
@@ -203,7 +203,7 @@ std::optional<BiddingAndAuctionResponse> BiddingAndAuctionResponse::TryParse(
     if (!bidding_groups_value->is_dict()) {
       return std::nullopt;
     }
-    base::Value::Dict& bidding_groups = bidding_groups_value->GetDict();
+    base::DictValue& bidding_groups = bidding_groups_value->GetDict();
     for (const auto owner_groups : bidding_groups) {
       url::Origin owner = url::Origin::Create(GURL(owner_groups.first));
       if (!network::IsOriginPotentiallyTrustworthy(owner)) {
@@ -216,7 +216,7 @@ std::optional<BiddingAndAuctionResponse> BiddingAndAuctionResponse::TryParse(
       }
       const std::vector<std::string>& names = it->second;
 
-      const base::Value::List* groups = owner_groups.second.GetIfList();
+      const base::ListValue* groups = owner_groups.second.GetIfList();
       if (!groups) {
         return std::nullopt;
       }
@@ -252,21 +252,21 @@ std::optional<BiddingAndAuctionResponse> BiddingAndAuctionResponse::TryParse(
     output.bid_currency = blink::AdCurrency::From(*maybe_currency);
   }
 
-  base::Value::Dict* win_reporting_urls =
+  base::DictValue* win_reporting_urls =
       input_dict->FindDict("winReportingURLs");
   if (win_reporting_urls) {
-    base::Value::Dict* buyer_reporting =
+    base::DictValue* buyer_reporting =
         win_reporting_urls->FindDict("buyerReportingURLs");
     if (buyer_reporting) {
       output.buyer_reporting = ReportingURLs::TryParse(buyer_reporting);
     }
-    base::Value::Dict* top_level_seller_reporting =
+    base::DictValue* top_level_seller_reporting =
         win_reporting_urls->FindDict("topLevelSellerReportingURLs");
     if (top_level_seller_reporting) {
       output.top_level_seller_reporting =
           ReportingURLs::TryParse(top_level_seller_reporting);
     }
-    base::Value::Dict* component_seller_reporting =
+    base::DictValue* component_seller_reporting =
         win_reporting_urls->FindDict("componentSellerReportingURLs");
     if (component_seller_reporting) {
       output.component_seller_reporting =
@@ -312,14 +312,14 @@ std::optional<BiddingAndAuctionResponse> BiddingAndAuctionResponse::TryParse(
   }
 
   if (base::FeatureList::IsEnabled(features::kEnableBandAKAnonEnforcement)) {
-    base::Value::Dict* k_anon_winner_join_candidate =
+    base::DictValue* k_anon_winner_join_candidate =
         input_dict->FindDict("kAnonWinnerJoinCandidates");
     if (k_anon_winner_join_candidate) {
       output.k_anon_join_candidate =
           TryParseKAnonWinnerJoinCandidate(*k_anon_winner_join_candidate);
     }
 
-    base::Value::List* k_anon_ghost_winners =
+    base::ListValue* k_anon_ghost_winners =
         input_dict->FindList("kAnonGhostWinners");
     if (k_anon_ghost_winners) {
       output.k_anon_ghost_winner =
@@ -330,8 +330,7 @@ std::optional<BiddingAndAuctionResponse> BiddingAndAuctionResponse::TryParse(
   if (base::FeatureList::IsEnabled(blink::features::kPrivateAggregationApi) &&
       blink::features::kPrivateAggregationApiEnabledInProtectedAudience.Get() &&
       base::FeatureList::IsEnabled(features::kEnableBandAPrivateAggregation)) {
-    const base::Value::List* pagg_response =
-        input_dict->FindList("paggResponse");
+    const base::ListValue* pagg_response = input_dict->FindList("paggResponse");
     if (pagg_response) {
       TryParsePAggResponse(*pagg_response, group_names, group_pagg_coordinators,
                            output);
@@ -339,14 +338,14 @@ std::optional<BiddingAndAuctionResponse> BiddingAndAuctionResponse::TryParse(
   }
 
   if (base::FeatureList::IsEnabled(features::kEnableBandASampleDebugReports)) {
-    base::Value::List* for_debugging_only_reports =
+    base::ListValue* for_debugging_only_reports =
         input_dict->FindList("debugReports");
     if (for_debugging_only_reports) {
       TryParseForDebuggingOnlyReports(*for_debugging_only_reports, output);
     }
   }
 
-  base::Value::Dict* triggered_updates = input_dict->FindDict("updateGroups");
+  base::DictValue* triggered_updates = input_dict->FindDict("updateGroups");
   if (base::FeatureList::IsEnabled(features::kEnableBandATriggeredUpdates) &&
       triggered_updates) {
     for (const auto owner_groups : *triggered_updates) {
@@ -357,12 +356,12 @@ std::optional<BiddingAndAuctionResponse> BiddingAndAuctionResponse::TryParse(
       }
       const std::vector<std::string>& names = it->second;
 
-      const base::Value::List* groups = owner_groups.second.GetIfList();
+      const base::ListValue* groups = owner_groups.second.GetIfList();
       if (!groups) {
         continue;
       }
       for (const auto& group : *groups) {
-        const base::Value::Dict* group_dict = group.GetIfDict();
+        const base::DictValue* group_dict = group.GetIfDict();
         if (!group_dict) {
           continue;
         }
@@ -393,7 +392,7 @@ std::optional<BiddingAndAuctionResponse> BiddingAndAuctionResponse::TryParse(
 
 std::optional<BiddingAndAuctionResponse::KAnonJoinCandidate>
 BiddingAndAuctionResponse::TryParseKAnonWinnerJoinCandidate(
-    base::Value::Dict& k_anon_join_candidate) {
+    base::DictValue& k_anon_join_candidate) {
   KAnonJoinCandidate candidate;
   std::vector<uint8_t>* ad_render_url_hash =
       k_anon_join_candidate.FindBlob("adRenderURLHash");
@@ -405,7 +404,7 @@ BiddingAndAuctionResponse::TryParseKAnonWinnerJoinCandidate(
   base::Value* ad_component_render_urls_hash_value =
       k_anon_join_candidate.Find("adComponentRenderURLsHash");
   if (ad_component_render_urls_hash_value) {
-    base::Value::List* ad_component_render_urls_hash =
+    base::ListValue* ad_component_render_urls_hash =
         ad_component_render_urls_hash_value->GetIfList();
     if (!ad_component_render_urls_hash) {
       return std::nullopt;
@@ -431,19 +430,19 @@ BiddingAndAuctionResponse::TryParseKAnonWinnerJoinCandidate(
 
 std::optional<BiddingAndAuctionResponse::KAnonGhostWinner>
 BiddingAndAuctionResponse::TryParseKAnonGhostWinner(
-    base::Value::List& k_anon_ghost_winners,
+    base::ListValue& k_anon_ghost_winners,
     const base::flat_map<url::Origin, std::vector<std::string>>& group_names) {
   KAnonGhostWinner result;
   if (k_anon_ghost_winners.empty()) {
     return std::nullopt;
   }
-  base::Value::Dict* k_anon_ghost_winner =
+  base::DictValue* k_anon_ghost_winner =
       k_anon_ghost_winners.front().GetIfDict();
   if (!k_anon_ghost_winner) {
     return std::nullopt;
   }
 
-  base::Value::Dict* k_anon_join_candidate =
+  base::DictValue* k_anon_join_candidate =
       k_anon_ghost_winner->FindDict("kAnonJoinCandidates");
   if (!k_anon_join_candidate) {
     return std::nullopt;
@@ -483,14 +482,14 @@ BiddingAndAuctionResponse::TryParseKAnonGhostWinner(
   base::Value* ghost_winner_private_aggregation_signals_value =
       k_anon_ghost_winner->Find("ghostWinnerPrivateAggregationSignals");
   if (ghost_winner_private_aggregation_signals_value) {
-    base::Value::List* ghost_winner_private_aggregation_signals_list =
+    base::ListValue* ghost_winner_private_aggregation_signals_list =
         ghost_winner_private_aggregation_signals_value->GetIfList();
     if (!ghost_winner_private_aggregation_signals_list) {
       return std::nullopt;
     }
     for (const auto& ghost_winner_private_aggregation_signals :
          *ghost_winner_private_aggregation_signals_list) {
-      const base::Value::Dict* ghost_winner_private_aggregation_signals_dict =
+      const base::DictValue* ghost_winner_private_aggregation_signals_dict =
           ghost_winner_private_aggregation_signals.GetIfDict();
       if (!ghost_winner_private_aggregation_signals_dict) {
         return std::nullopt;
@@ -522,7 +521,7 @@ BiddingAndAuctionResponse::TryParseKAnonGhostWinner(
   base::Value* ghost_winner_for_top_level_auction_value =
       k_anon_ghost_winner->Find("ghostWinnerForTopLevelAuction");
   if (ghost_winner_for_top_level_auction_value) {
-    base::Value::Dict* ghost_winner_for_top_level_auction =
+    base::DictValue* ghost_winner_for_top_level_auction =
         ghost_winner_for_top_level_auction_value->GetIfDict();
     if (!ghost_winner_for_top_level_auction) {
       return std::nullopt;
@@ -541,7 +540,7 @@ BiddingAndAuctionResponse::TryParseKAnonGhostWinner(
 
 std::optional<BiddingAndAuctionResponse::GhostWinnerForTopLevelAuction>
 BiddingAndAuctionResponse::TryParseGhostWinnerForTopLevelAuction(
-    base::Value::Dict& ghost_winner_for_top_level_auction) {
+    base::DictValue& ghost_winner_for_top_level_auction) {
   GhostWinnerForTopLevelAuction result;
 
   std::string* maybe_ad_render_url =
@@ -558,7 +557,7 @@ BiddingAndAuctionResponse::TryParseGhostWinnerForTopLevelAuction(
   base::Value* ad_components_value =
       ghost_winner_for_top_level_auction.Find("adComponentRenderURLs");
   if (ad_components_value) {
-    base::Value::List* ad_components = ad_components_value->GetIfList();
+    base::ListValue* ad_components = ad_components_value->GetIfList();
     if (!ad_components) {
       return std::nullopt;
     }
@@ -642,13 +641,13 @@ BiddingAndAuctionResponse::TryParseGhostWinnerForTopLevelAuction(
 
 // static
 void BiddingAndAuctionResponse::TryParsePAggResponse(
-    const base::Value::List& pagg_response,
+    const base::ListValue& pagg_response,
     const base::flat_map<url::Origin, std::vector<std::string>>& group_names,
     const base::flat_map<blink::InterestGroupKey, url::Origin>&
         group_pagg_coordinators,
     BiddingAndAuctionResponse& output) {
   for (const auto& per_origin_response : pagg_response) {
-    const base::Value::Dict* per_origin_response_dict =
+    const base::DictValue* per_origin_response_dict =
         per_origin_response.GetIfDict();
     if (!per_origin_response_dict) {
       continue;
@@ -665,7 +664,7 @@ void BiddingAndAuctionResponse::TryParsePAggResponse(
       continue;
     }
 
-    const base::Value::List* ig_contributions =
+    const base::ListValue* ig_contributions =
         per_origin_response_dict->FindList("igContributions");
     if (ig_contributions) {
       TryParsePAggIgContributions(*ig_contributions, reporting_origin,
@@ -676,7 +675,7 @@ void BiddingAndAuctionResponse::TryParsePAggResponse(
 
 // static
 void BiddingAndAuctionResponse::TryParsePAggIgContributions(
-    const base::Value::List& ig_contributions,
+    const base::ListValue& ig_contributions,
     const url::Origin& reporting_origin,
     const base::flat_map<blink::InterestGroupKey, url::Origin>&
         group_pagg_coordinators,
@@ -684,7 +683,7 @@ void BiddingAndAuctionResponse::TryParsePAggIgContributions(
     BiddingAndAuctionResponse& output) {
   auto single_origin_group_names_it = group_names.find(reporting_origin);
   for (const auto& ig_contribution : ig_contributions) {
-    const base::Value::Dict* ig_contribution_dict = ig_contribution.GetIfDict();
+    const base::DictValue* ig_contribution_dict = ig_contribution.GetIfDict();
     if (!ig_contribution_dict) {
       continue;
     }
@@ -718,7 +717,7 @@ void BiddingAndAuctionResponse::TryParsePAggIgContributions(
     }
     std::optional<bool> maybe_component_win =
         ig_contribution_dict->FindBool("componentWin");
-    const base::Value::List* event_contributions =
+    const base::ListValue* event_contributions =
         ig_contribution_dict->FindList("eventContributions");
     if (event_contributions) {
       TryParsePAggEventContributions(
@@ -731,7 +730,7 @@ void BiddingAndAuctionResponse::TryParsePAggIgContributions(
 
 // static
 void BiddingAndAuctionResponse::TryParsePAggEventContributions(
-    const base::Value::List& event_contributions,
+    const base::ListValue& event_contributions,
     const url::Origin& reporting_origin,
     const std::optional<url::Origin>& aggregation_coordinator_origin,
     bool component_win,
@@ -744,7 +743,7 @@ void BiddingAndAuctionResponse::TryParsePAggEventContributions(
       reporting_origin, PrivateAggregationPhase::kNonTopLevelSeller,
       aggregation_coordinator_origin};
   for (const auto& event_contribution : event_contributions) {
-    const base::Value::Dict* event_contribution_dict =
+    const base::DictValue* event_contribution_dict =
         event_contribution.GetIfDict();
     if (!event_contribution_dict) {
       continue;
@@ -755,7 +754,7 @@ void BiddingAndAuctionResponse::TryParsePAggEventContributions(
       continue;
     }
 
-    const base::Value::List* contributions =
+    const base::ListValue* contributions =
         event_contribution_dict->FindList("contributions");
     if (contributions) {
       TryParsePAggContributions(*contributions, component_win, *event_type_str,
@@ -766,7 +765,7 @@ void BiddingAndAuctionResponse::TryParsePAggEventContributions(
 
 // static
 void BiddingAndAuctionResponse::TryParsePAggContributions(
-    const base::Value::List& contributions,
+    const base::ListValue& contributions,
     bool component_win,
     const std::string& event_type_str,
     const PrivateAggregationPhaseKey& agg_phase_key,
@@ -787,7 +786,7 @@ void BiddingAndAuctionResponse::TryParsePAggContributions(
     return;
   }
   for (const auto& contribution : contributions) {
-    const base::Value::Dict* contribution_dict = contribution.GetIfDict();
+    const base::DictValue* contribution_dict = contribution.GetIfDict();
     if (!contribution_dict) {
       continue;
     }
@@ -848,10 +847,10 @@ void BiddingAndAuctionResponse::TryParsePAggContributions(
 
 // static
 void BiddingAndAuctionResponse::TryParseForDebuggingOnlyReports(
-    const base::Value::List& for_debugging_only_reports,
+    const base::ListValue& for_debugging_only_reports,
     BiddingAndAuctionResponse& output) {
   for (const auto& per_origin_debug_reports : for_debugging_only_reports) {
-    const base::Value::Dict* per_origin_debug_reports_dict =
+    const base::DictValue* per_origin_debug_reports_dict =
         per_origin_debug_reports.GetIfDict();
     if (!per_origin_debug_reports_dict) {
       continue;
@@ -866,11 +865,11 @@ void BiddingAndAuctionResponse::TryParseForDebuggingOnlyReports(
     if (!network::IsOriginPotentiallyTrustworthy(ad_tech_origin)) {
       continue;
     }
-    const base::Value::List* reports =
+    const base::ListValue* reports =
         per_origin_debug_reports_dict->FindList("reports");
     if (reports) {
       for (const auto& report : *reports) {
-        const base::Value::Dict* report_dict = report.GetIfDict();
+        const base::DictValue* report_dict = report.GetIfDict();
         if (!report_dict) {
           continue;
         }
@@ -884,7 +883,7 @@ void BiddingAndAuctionResponse::TryParseForDebuggingOnlyReports(
 // static
 void BiddingAndAuctionResponse::TryParseSingleDebugReport(
     const url::Origin& ad_tech_origin,
-    const base::Value::Dict& report_dict,
+    const base::DictValue& report_dict,
     BiddingAndAuctionResponse& output) {
   std::optional<bool> maybe_component_win =
       report_dict.FindBool("componentWin");
@@ -938,7 +937,7 @@ BiddingAndAuctionResponse::ReportingURLs::operator=(ReportingURLs&&) = default;
 // static
 std::optional<BiddingAndAuctionResponse::ReportingURLs>
 BiddingAndAuctionResponse::ReportingURLs::TryParse(
-    base::Value::Dict* input_dict) {
+    base::DictValue* input_dict) {
   ReportingURLs output;
   std::string* maybe_reporting_url = input_dict->FindString("reportingURL");
   if (maybe_reporting_url) {
@@ -948,7 +947,7 @@ BiddingAndAuctionResponse::ReportingURLs::TryParse(
       output.reporting_url = std::move(reporting_url);
     }
   }
-  base::Value::Dict* interaction_reporting =
+  base::DictValue* interaction_reporting =
       input_dict->FindDict("interactionReportingURLs");
   if (interaction_reporting) {
     std::vector<std::pair<std::string, GURL>> beacon_urls;

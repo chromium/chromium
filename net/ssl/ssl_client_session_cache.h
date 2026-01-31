@@ -73,6 +73,7 @@ class NET_EXPORT SSLClientSessionCache : public base::MemoryPressureListener {
   static bool IsExpired(SSL_SESSION* session, time_t now);
 
   size_t size() const;
+  size_t max_size() const;
 
   // Returns the current generation number. When a new socket is initialized,
   // the `generation_number()` at the time should be recorded and used when

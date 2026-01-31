@@ -11,6 +11,7 @@
 
 #include <memory>
 
+#include "base/byte_size.h"
 #include "base/compiler_specific.h"
 #include "base/containers/heap_array.h"
 #include "base/debug/elf_reader.h"
@@ -310,11 +311,11 @@ uint32_t CountMappings(base::ProcessId pid) {
 }
 
 // Get values from smaps_rollup for the current process.
-void GetSmapsRollup(base::ByteCount* pss, base::ByteCount* swap_pss) {
+void GetSmapsRollup(base::ByteSize* pss, base::ByteSize* swap_pss) {
   auto value = base::debug::ReadAndParseSmapsRollup();
   if (!value) {
-    *pss = base::ByteCount(0);
-    *swap_pss = base::ByteCount(0);
+    *pss = base::ByteSize(0);
+    *swap_pss = base::ByteSize(0);
     return;
   }
   *pss = value->pss;
@@ -349,7 +350,7 @@ bool OSMetrics::FillOSMemoryDump(base::ProcessHandle handle,
     dump->mappings_count = CountMappings(handle);
   }
   if (flags.Has(mojom::MemDumpFlags::MEM_DUMP_PSS)) {
-    base::ByteCount pss, swap_pss;
+    base::ByteSize pss, swap_pss;
     GetSmapsRollup(&pss, &swap_pss);
     dump->pss_kb = pss.InKiB();
     dump->swap_pss_kb = swap_pss.InKiB();

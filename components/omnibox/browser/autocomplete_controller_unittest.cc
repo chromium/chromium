@@ -2767,18 +2767,18 @@ TEST_F(AutocompleteControllerTest, ContextualQueryAppendsSearchboxStats) {
           controller_.internal_result_.match_at(0)->takeover_action.get());
   EXPECT_EQ(OmniboxActionId::CONTEXTUAL_SEARCH_FULFILLMENT,
             contextual_takover_action_0->ActionId());
-  EXPECT_TRUE(base::Contains(
-      contextual_takover_action_0->get_fulfillment_url_for_testing().spec(),
-      "gs_lcrp="));
+  EXPECT_TRUE(contextual_takover_action_0->get_fulfillment_url_for_testing()
+                  .spec()
+                  .contains("gs_lcrp="));
   ASSERT_TRUE(controller_.internal_result_.match_at(1)->takeover_action);
   auto* contextual_takover_action_1 =
       ContextualSearchFulfillmentAction::FromAction(
           controller_.internal_result_.match_at(1)->takeover_action.get());
   EXPECT_EQ(OmniboxActionId::CONTEXTUAL_SEARCH_FULFILLMENT,
             contextual_takover_action_1->ActionId());
-  EXPECT_TRUE(base::Contains(
-      contextual_takover_action_1->get_fulfillment_url_for_testing().spec(),
-      "gs_lcrp="));
+  EXPECT_TRUE(contextual_takover_action_1->get_fulfillment_url_for_testing()
+                  .spec()
+                  .contains("gs_lcrp="));
 }
 
 TEST_F(AutocompleteControllerTest,

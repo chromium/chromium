@@ -10,11 +10,16 @@
 // Accessibility identifier for reading list view.
 extern NSString* const kReadingListViewID;
 
+// Accessibility identifiers for reading list navigation bar buttons.
+extern NSString* const kReadingListNavigationBarSelectButtonID;
+extern NSString* const kReadingListNavigationBarSelectAllButtonID;
+extern NSString* const kReadingListNavigationBarDeselectAllButtonID;
+extern NSString* const kReadingListNavigationBarExitEditButtonID;
+extern NSString* const kReadingListNavigationBarCloseButtonID;
+
 // Accessibility identifiers for reading list toolbar buttons.
-extern NSString* const kReadingListToolbarEditButtonID;
 extern NSString* const kReadingListToolbarDeleteButtonID;
 extern NSString* const kReadingListToolbarDeleteAllReadButtonID;
-extern NSString* const kReadingListToolbarCancelButtonID;
 extern NSString* const kReadingListToolbarMarkButtonID;
 
 // Accessibility identifier for the "local" image of the reading list items.

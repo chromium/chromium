@@ -77,14 +77,14 @@ class ExtensionUrlOverrideStateTrackerImplTest : public testing::Test {
       const std::string& name,
       const std::string& page_to_override,
       bool incognito_split_mode) {
-    base::Value::Dict manifest;
+    base::DictValue manifest;
     manifest.Set("name", name);
     manifest.Set("version", "1.0");
     manifest.Set("manifest_version", 2);
     if (incognito_split_mode) {
       manifest.Set("incognito", "split");
     }
-    base::Value::Dict chrome_url_overrides;
+    base::DictValue chrome_url_overrides;
     chrome_url_overrides.Set(page_to_override, "override.html");
     manifest.Set("chrome_url_overrides", std::move(chrome_url_overrides));
     return ExtensionBuilder()

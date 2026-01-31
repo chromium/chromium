@@ -5,10 +5,10 @@
 #ifndef UI_GFX_MOJOM_HDR_METADATA_MOJOM_TRAITS_H_
 #define UI_GFX_MOJOM_HDR_METADATA_MOJOM_TRAITS_H_
 
-#include "third_party/skia/include/core/SkData.h"
+#include "skia/public/mojom/hdr_metadata_mojom_traits.h"
+#include "third_party/skia/include/private/SkHdrMetadata.h"
 #include "ui/gfx/hdr_metadata.h"
 #include "ui/gfx/mojom/hdr_metadata.mojom.h"
-#include "ui/gfx/skia_span_util.h"
 
 namespace mojo {
 
@@ -86,13 +86,8 @@ struct StructTraits<gfx::mojom::HDRMetadataDataView, gfx::HDRMetadata> {
     return input.extended_range;
   }
 
-  static std::optional<base::span<const uint8_t>> agtm_serialized(
-      const gfx::HDRMetadata& input) {
-    if (input.getSerializedAgtm()) {
-      return gfx::SkDataToSpan(input.getSerializedAgtm());
-    }
-    return std::nullopt;
-  }
+  static std::optional<skhdr::AdaptiveGlobalToneMap> agtm(
+      const gfx::HDRMetadata& input);
 
   static bool Read(gfx::mojom::HDRMetadataDataView data,
                    gfx::HDRMetadata* output);

@@ -342,7 +342,7 @@ class SecondDeviceAuthBrokerTest : public ::testing::Test {
             return;
           }
 
-          std::optional<base::Value::Dict> request_body =
+          std::optional<base::DictValue> request_body =
               base::JSONReader::ReadDict(request.request_body->elements()
                                              ->at(0)
                                              .As<network::DataElementBytes>()
@@ -1010,7 +1010,7 @@ TEST_F(SecondDeviceAuthBrokerTest,
           return;
         }
 
-        std::optional<base::Value::Dict> request_body =
+        std::optional<base::DictValue> request_body =
             base::JSONReader::ReadDict(request.request_body->elements()
                                            ->at(0)
                                            .As<network::DataElementBytes>()
@@ -1021,14 +1021,14 @@ TEST_F(SecondDeviceAuthBrokerTest,
           return;
         }
 
-        const base::Value::Dict* target_device_info =
+        const base::DictValue* target_device_info =
             request_body->FindDict(kTargetDeviceInfoKey);
         if (!target_device_info) {
           SimulateBadRequest(kStartSessionUrl);
           return;
         }
 
-        const base::Value::Dict* chromeos_device_info =
+        const base::DictValue* chromeos_device_info =
             target_device_info->FindDict(kChromeOsDeviceInfoKey);
         if (!chromeos_device_info) {
           SimulateBadRequest(kStartSessionUrl);

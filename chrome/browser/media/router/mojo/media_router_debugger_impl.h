@@ -37,7 +37,7 @@ class MediaRouterDebuggerImpl : public MediaRouterDebugger,
   ~MediaRouterDebuggerImpl() override;
 
   // MediaRouterDebugger implementation:
-  base::Value::Dict GetMirroringStats() final;
+  base::DictValue GetMirroringStats() final;
   void AddObserver(MirroringStatsObserver& obs) final;
   void RemoveObserver(MirroringStatsObserver& obs) final;
   void EnableRtcpReports() final;
@@ -55,13 +55,13 @@ class MediaRouterDebuggerImpl : public MediaRouterDebugger,
   FRIEND_TEST_ALL_PREFIXES(MediaRouterDebuggerImplTest,
                            ShouldFetchMirroringStatsFeatureDisabled);
 
-  void NotifyGetMirroringStats(base::Value::Dict json_logs);
+  void NotifyGetMirroringStats(base::DictValue json_logs);
   void LogMirroringStats();
 
   base::ObserverList<MirroringStatsObserver> observers_;
   bool is_rtcp_reports_enabled_ = false;
   mojo::ReceiverSet<mojom::Debugger> receivers_;
-  base::Value::Dict most_recent_mirroring_stats_;
+  base::DictValue most_recent_mirroring_stats_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 

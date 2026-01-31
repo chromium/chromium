@@ -69,7 +69,7 @@ class BluetoothHandlerTest : public testing::Test {
 TEST_F(BluetoothHandlerTest, GetRequestFastPairDeviceSupport) {
   size_t call_data_count_before_call = test_web_ui()->call_data().size();
 
-  base::Value::List args;
+  base::ListValue args;
   test_web_ui()->HandleReceivedMessage("requestFastPairDeviceSupportStatus",
                                        args);
 
@@ -84,7 +84,7 @@ TEST_F(BluetoothHandlerTest, GetRequestFastPairDeviceSupport) {
 
 TEST_F(BluetoothHandlerTest, ShowBluetoothRevampHatsSurvey) {
   EXPECT_EQ(0u, GetTryToShowSurveyCount());
-  base::Value::List args;
+  base::ListValue args;
   test_web_ui()->HandleReceivedMessage("showBluetoothRevampHatsSurvey", args);
 
   EXPECT_EQ(1u, GetTryToShowSurveyCount());

@@ -11,7 +11,6 @@
 
 #include "base/check.h"
 #include "base/check_is_test.h"
-#include "base/containers/contains.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/memory/scoped_refptr.h"
@@ -429,12 +428,12 @@ void FilesPolicyNotificationManager::ShowDlpWarningTimeoutNotification(
 
 bool FilesPolicyNotificationManager::HasIOTask(
     file_manager::io_task::IOTaskId task_id) const {
-  return base::Contains(io_tasks_, task_id);
+  return io_tasks_.contains(task_id);
 }
 
 void FilesPolicyNotificationManager::OnIOTaskResumed(
     file_manager::io_task::IOTaskId task_id) {
-  if (base::Contains(io_tasks_warning_timers_, task_id)) {
+  if (io_tasks_warning_timers_.contains(task_id)) {
     io_tasks_warning_timers_.erase(task_id);
   }
 
@@ -480,7 +479,7 @@ FilesPolicyNotificationManager::GetIOTaskDialogInfoMapForTesting(
 
 bool FilesPolicyNotificationManager::HasWarningTimerForTesting(
     file_manager::io_task::IOTaskId task_id) const {
-  return base::Contains(io_tasks_warning_timers_, task_id);
+  return io_tasks_warning_timers_.contains(task_id);
 }
 
 void FilesPolicyNotificationManager::HandleDlpWarningNotificationClick(
@@ -1024,7 +1023,7 @@ bool FilesPolicyNotificationManager::HasWarning(
 
 bool FilesPolicyNotificationManager::HasNonIOTask(
     const std::string& notification_id) const {
-  return base::Contains(non_io_tasks_, notification_id);
+  return non_io_tasks_.contains(notification_id);
 }
 
 bool FilesPolicyNotificationManager::HasBlockedFiles(

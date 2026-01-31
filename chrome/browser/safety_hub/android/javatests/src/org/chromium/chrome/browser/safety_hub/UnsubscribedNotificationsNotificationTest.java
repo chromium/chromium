@@ -56,7 +56,11 @@ public final class UnsubscribedNotificationsNotificationTest {
     @SmallTest
     @Feature({"SafetyHubNotification"})
     public void testReviewNotification() throws Exception {
-        UnsubscribedNotificationsNotificationManager.displayNotification(1);
+        UnsubscribedNotificationsNotificationManager.displayNotification(
+                /* numRevokedPermissions= */ 1,
+                "example.com",
+                /* anySuspiciousRevocations= */ false,
+                /* anyDisruptiveRevocations= */ true);
         List<MockNotificationManagerProxy.NotificationEntry> notifications =
                 mNotificationTestRule.getNotificationEntries();
         assertEquals(1, notifications.size());
@@ -91,7 +95,11 @@ public final class UnsubscribedNotificationsNotificationTest {
     @SmallTest
     @Feature({"SafetyHubNotification"})
     public void testReviewNotificationClickingOnContent() throws Exception {
-        UnsubscribedNotificationsNotificationManager.displayNotification(1);
+        UnsubscribedNotificationsNotificationManager.displayNotification(
+                /* numRevokedPermissions= */ 1,
+                "example.com",
+                /* anySuspiciousRevocations= */ true,
+                /* anyDisruptiveRevocations= */ false);
         List<MockNotificationManagerProxy.NotificationEntry> notifications =
                 mNotificationTestRule.getNotificationEntries();
         assertEquals(1, notifications.size());

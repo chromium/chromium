@@ -170,7 +170,7 @@ class MigrateTargetsTest(unittest.TestCase):
     self.assertEqual(
         edits,
         migrate_targets.StarlarkEdits(
-            targets_builder_defaults={
+            targets_bundle_defaults={
                 'mixins':
                 textwrap.dedent("""\
                     [
@@ -388,7 +388,7 @@ class MigrateTargetsTest(unittest.TestCase):
     self.assertEqual(
         edits,
         migrate_targets.StarlarkEdits(
-            targets_builder_defaults={},
+            targets_bundle_defaults={},
             targets_settings_defaults={},
             edits_by_builder={
                 'builder-1': {
@@ -497,7 +497,7 @@ class MigrateTargetsTest(unittest.TestCase):
     builder_group = 'test-group'
     star_file = pathlib.Path('path/to/file.star')
     edits = migrate_targets.StarlarkEdits(
-        targets_builder_defaults={'mixins': '["mixin1"]'},
+        targets_bundle_defaults={'mixins': '["mixin1"]'},
         targets_settings_defaults={'allow_script_tests': 'False'},
         edits_by_builder={
             'builder-1': {
@@ -516,25 +516,25 @@ class MigrateTargetsTest(unittest.TestCase):
     file_target = f'{star_file}:__pkg__'
     builder_target = f'{star_file}:builder-1'
 
-    mock_buildozer_run.assert_any_call('new_load //lib/targets.star targets',
-                                       file_target)
+    mock_buildozer_run.assert_any_call(
+        'new_load @chromium-luci//targets.star targets', file_target)
 
     temp_name = 'NO_DECLARATION_SHOULD_EXIST_WITH_THIS_NAME'
     temp_target = f'{star_file}:{temp_name}'
-    builder_defaults_kind = 'targets.builder_defaults.set'
-    builder_defaults_target = f'{star_file}:%{builder_defaults_kind}'
+    bundle_defaults_kind = 'targets.bundle_defaults.set'
+    bundle_defaults_target = f'{star_file}:%{bundle_defaults_kind}'
     settings_defaults_kind = 'targets.settings_defaults.set'
     settings_defaults_target = f'{star_file}:%{settings_defaults_kind}'
 
     # Check creation and setting of defaults
     mock_buildozer_run.assert_has_calls(
         [
-            mock.call('print kind', builder_defaults_target),
+            mock.call('print kind', bundle_defaults_target),
             mock.call(
-                f'new {builder_defaults_kind} {temp_name} before {builder_group}',
+                f'new {bundle_defaults_kind} {temp_name} before {builder_group}',
                 file_target),
             mock.call('remove name', temp_target),
-            mock.call('set mixins ["mixin1"]', builder_defaults_target),
+            mock.call('set mixins ["mixin1"]', bundle_defaults_target),
         ],
         any_order=False,
     )
@@ -562,7 +562,7 @@ class MigrateTargetsTest(unittest.TestCase):
     builder_group = 'test-group'
     star_file = pathlib.Path('path/to/file.star')
     edits = migrate_targets.StarlarkEdits(
-        targets_builder_defaults={'mixins': '["mixin1"]'},
+        targets_bundle_defaults={'mixins': '["mixin1"]'},
         targets_settings_defaults={'allow_script_tests': 'False'},
         edits_by_builder={},
     )
@@ -573,12 +573,12 @@ class MigrateTargetsTest(unittest.TestCase):
 
     migrate_targets.update_starlark(builder_group, star_file, edits)
 
-    builder_defaults_target = f'{star_file}:%targets.builder_defaults.set'
+    bundle_defaults_target = f'{star_file}:%targets.bundle_defaults.set'
     settings_defaults_target = f'{star_file}:%targets.settings_defaults.set'
 
-    mock_buildozer_run.assert_any_call('print kind', builder_defaults_target)
+    mock_buildozer_run.assert_any_call('print kind', bundle_defaults_target)
     mock_buildozer_run.assert_any_call('set mixins ["mixin1"]',
-                                       builder_defaults_target)
+                                       bundle_defaults_target)
     mock_buildozer_run.assert_any_call('print kind', settings_defaults_target)
     mock_buildozer_run.assert_any_call('set allow_script_tests False',
                                        settings_defaults_target)
@@ -593,7 +593,7 @@ class MigrateTargetsTest(unittest.TestCase):
     builder_group = 'test-group'
     star_file = pathlib.Path('path/to/file.star')
     edits = migrate_targets.StarlarkEdits(
-        targets_builder_defaults={},
+        targets_bundle_defaults={},
         targets_settings_defaults={},
         edits_by_builder={'builder-1': {}},
     )
@@ -603,7 +603,7 @@ class MigrateTargetsTest(unittest.TestCase):
     # load is always called
     self.assertEqual(mock_buildozer_run.call_count, 1)
     mock_buildozer_run.assert_called_once_with(
-        'new_load //lib/targets.star targets', f'{star_file}:__pkg__')
+        'new_load @chromium-luci//targets.star targets', f'{star_file}:__pkg__')
 
 
 if __name__ == '__main__':

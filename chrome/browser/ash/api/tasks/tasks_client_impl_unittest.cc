@@ -227,7 +227,7 @@ TEST_F(TasksClientImplIsDisabledByAdminTest, Default) {
 TEST_F(TasksClientImplIsDisabledByAdminTest,
        NoTasksInContextualGoogleIntegrationsPref) {
   auto prefs = GetDefaultPrefs();
-  base::Value::List enabled_integrations;
+  base::ListValue enabled_integrations;
   enabled_integrations.Append(prefs::kGoogleCalendarIntegrationName);
   enabled_integrations.Append(prefs::kGoogleClassroomIntegrationName);
   prefs->SetList(prefs::kContextualGoogleIntegrationsConfiguration,
@@ -263,7 +263,7 @@ TEST_F(TasksClientImplIsDisabledByAdminTest, DisabledCalendarApp) {
 
 TEST_F(TasksClientImplIsDisabledByAdminTest, BlockedTasksUrl) {
   auto prefs = GetDefaultPrefs();
-  base::Value::List blocklist;
+  base::ListValue blocklist;
   blocklist.Append("tasks.google.com");
   prefs->SetManagedPref(policy::policy_prefs::kUrlBlocklist,
                         std::move(blocklist));
@@ -308,8 +308,7 @@ class TasksClientImplTest : public testing::Test {
     ASSERT_TRUE(test_server_.Start());
 
     gaia_urls_overrider_ = std::make_unique<GaiaUrlsOverriderForTesting>(
-        base::CommandLine::ForCurrentProcess(), "tasks_api_origin_url",
-        test_server_.base_url().spec());
+        "tasks_api_origin_url", test_server_.base_url().spec());
     ASSERT_EQ(GaiaUrls::GetInstance()->tasks_api_origin_url(),
               test_server_.base_url().spec());
   }

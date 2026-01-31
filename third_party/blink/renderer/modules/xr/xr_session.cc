@@ -10,7 +10,6 @@
 #include <utility>
 
 #include "base/auto_reset.h"
-#include "base/containers/contains.h"
 #include "base/dcheck_is_on.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/trace_event/trace_event.h"
@@ -94,6 +93,9 @@ const char kMultiLayersNotEnabled[] =
     "This session does not support multiple layers.";
 
 const char kDuplicateLayer[] = "All layers in render state must be unique.";
+
+const char kTooManyLayers[] =
+    "The number of layers to be enabled exceeds maxRenderLayers.";
 
 const char kInlineVerticalFOVNotSupported[] =
     "This session does not support inlineVerticalFieldOfView";
@@ -212,7 +214,7 @@ HashSet<device::HitTestSubscriptionId> GetIdsOfUnusedHitTestSources(
   // Gather all IDs of unused hit test sources:
   HashSet<device::HitTestSubscriptionId> unused_hit_test_source_ids;
   for (auto& id : all_ids) {
-    if (!base::Contains(id_to_hit_test_source, id)) {
+    if (!id_to_hit_test_source.Contains(id)) {
       unused_hit_test_source_ids.insert(id);
     }
   }
@@ -543,6 +545,13 @@ void XRSession::updateRenderState(XRRenderStateInit* init,
         !IsFeatureEnabled(device::mojom::XRSessionFeature::LAYERS)) {
       exception_state.ThrowDOMException(DOMExceptionCode::kNotSupportedError,
                                         kMultiLayersNotEnabled);
+      return;
+    }
+
+    // Validate that the number of layers is allowed.
+    if (init->layers()->size() > maxRenderLayers()) {
+      exception_state.ThrowDOMException(DOMExceptionCode::kNotSupportedError,
+                                        kTooManyLayers);
       return;
     }
 
@@ -2573,14 +2582,14 @@ void XRSession::OnExitPresent() {
 bool XRSession::ValidateHitTestSourceExists(
     XRHitTestSource* hit_test_source) const {
   DCHECK(hit_test_source);
-  return base::Contains(hit_test_source_ids_, hit_test_source->id());
+  return hit_test_source_ids_.Contains(hit_test_source->id());
 }
 
 bool XRSession::ValidateHitTestSourceExists(
     XRTransientInputHitTestSource* hit_test_source) const {
   DCHECK(hit_test_source);
-  return base::Contains(hit_test_source_for_transient_input_ids_,
-                        hit_test_source->id());
+  return hit_test_source_for_transient_input_ids_.Contains(
+      hit_test_source->id());
 }
 
 bool XRSession::RemoveHitTestSource(XRHitTestSource* hit_test_source) {
@@ -2588,7 +2597,7 @@ bool XRSession::RemoveHitTestSource(XRHitTestSource* hit_test_source) {
 
   DCHECK(hit_test_source);
 
-  if (!base::Contains(hit_test_source_ids_, hit_test_source->id())) {
+  if (!hit_test_source_ids_.Contains(hit_test_source->id())) {
     DVLOG(2) << __func__
              << ": hit test source was already removed, hit_test_source->id()="
              << hit_test_source->id();
@@ -2626,8 +2635,8 @@ bool XRSession::RemoveHitTestSource(
 
   DCHECK(hit_test_source);
 
-  if (!base::Contains(hit_test_source_for_transient_input_ids_,
-                      hit_test_source->id())) {
+  if (!hit_test_source_for_transient_input_ids_.Contains(
+          hit_test_source->id())) {
     DVLOG(2) << __func__
              << ": hit test source was already removed, hit_test_source->id()="
              << hit_test_source->id();

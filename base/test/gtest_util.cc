@@ -57,9 +57,9 @@ std::vector<TestIdentifier> GetCompiledInTests() {
 bool WriteCompiledInTestsToFile(const FilePath& path) {
   std::vector<TestIdentifier> tests(GetCompiledInTests());
 
-  Value::List storage;
+  ListValue storage;
   for (const TestIdentifier& i : tests) {
-    Value::Dict test_info;
+    DictValue test_info;
     test_info.Set("test_case_name", i.test_case_name);
     test_info.Set("test_name", i.test_name);
     test_info.Set("file", i.file);
@@ -91,7 +91,7 @@ bool ReadTestNamesFromFile(const FilePath& path,
       return false;
     }
 
-    const Value::Dict& dict = item.GetDict();
+    const DictValue& dict = item.GetDict();
     const std::string* test_case_name = dict.FindString("test_case_name");
     if (!test_case_name || !IsStringASCII(*test_case_name)) {
       return false;

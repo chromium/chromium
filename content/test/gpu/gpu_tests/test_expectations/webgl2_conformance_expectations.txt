@@ -66,6 +66,7 @@
 #         mesa_ge_23.2
 #         mesa_ge_24.2
 #         nvidia_ge_31.0.15.4601 nvidia_lt_31.0.15.4601
+#         nvidia_ge_32.0.15.8180 nvidia_lt_32.0.15.8180
 #         nvidia_ge_535.183.01 nvidia_lt_535.183.01 ]
 # ASan
 # tags: [ asan no-asan ]
@@ -626,6 +627,9 @@ crbug.com/41496274 [ win11 qualcomm-0x36334330 angle-d3d11 ] deqp/functional/gle
 # Graphite
 crbug.com/332745399 [ win graphite-enabled ] conformance2/extensions/webgl-shader-pixel-local-storage.html [ Failure ]
 
+# Win11 Qualcomm
+crbug.com/476376945 [ win11 qualcomm-0x41333430 angle-d3d11 ] conformance2/rendering/framebuffer-render-to-layer.html [ Failure ]
+
 ######################
 # Mac Metal failures #
 ######################
@@ -792,6 +796,18 @@ crbug.com/425671158 [ angle-metal intel-0x3e9b sequoia ] conformance2/textures/v
 # WebGL: INVALID_ENUM: getShaderParameter
 crbug.com/444250724 [ mac angle-metal graphite-enabled intel-0x3e9b ] conformance/extensions/khr-parallel-shader-compile.html [ Failure ]
 
+# Angel Metal on Intel Sequoia
+crbug.com/475181552 [ sequoia angle-metal graphite-enabled intel-0x3e9b ] conformance2/renderbuffers/multisample-draws-between-blits.html [ Failure ]
+crbug.com/475181552 [ sequoia angle-metal graphite-enabled intel-0x3e9b ] conformance2/rendering/framebuffer-to-texture.html [ Failure ]
+crbug.com/475181552 [ sequoia angle-metal graphite-enabled intel-0x3e9b ] conformance/textures/image_bitmap_from_video/* [ Failure ]
+crbug.com/475181552 [ sequoia angle-metal graphite-enabled intel-0x3e9b ] conformance/textures/misc/texture-corner-case-videos.html [ Failure ]
+crbug.com/475181552 [ sequoia angle-metal graphite-enabled intel-0x3e9b ] conformance/textures/misc/video-rotation.html [ Failure ]
+crbug.com/475181552 [ sequoia angle-metal graphite-enabled intel-0x3e9b ] conformance2/textures/canvas_sub_rectangle/* [ Failure ]
+crbug.com/475181552 [ sequoia angle-metal graphite-enabled intel-0x3e9b ] deqp/functional/gles3/fboinvalidate/* [ Failure ]
+crbug.com/475181552 [ sequoia angle-metal graphite-enabled intel-0x3e9b ] deqp/functional/gles3/fborender/* [ Failure ]
+crbug.com/475181552 [ sequoia angle-metal graphite-enabled intel-0x3e9b ] deqp/functional/gles3/framebufferblit/* [ Failure ]
+crbug.com/475181552 [ sequoia angle-metal graphite-enabled intel-0x3e9b ] deqp/functional/gles3/texturespecification/* [ Failure ]
+
 ## Mac / Apple Silicon ##
 
 
@@ -944,10 +960,10 @@ crbug.com/1221362 [ chromeos chromeos-board-amd64-generic ] conformance2/renderi
 crbug.com/1223542 [ chromeos chromeos-board-amd64-generic ] deqp/functional/gles3/framebufferblit/rect_03.html [ Failure ]
 crbug.com/1223542 [ chromeos chromeos-board-amd64-generic ] deqp/functional/gles3/framebufferblit/rect_04.html [ Failure ]
 
-
 crbug.com/1238075 [ chromeos chromeos-board-amd64-generic ] conformance/rendering/gl-scissor-test.html [ Failure ]
 crbug.com/1241179 [ chromeos chromeos-board-amd64-generic passthrough ] conformance2/extensions/ext-texture-norm16.html [ Failure ]
 crbug.com/1399117 [ chromeos chromeos-board-amd64-generic passthrough ] WebglExtension_WEBGL_provoking_vertex [ Skip ]
+crbug.com/478893325 [ chromeos chromeos-board-amd64-generic passthrough ] conformance2/extensions/ext-disjoint-timer-query-webgl2.html [ RetryOnFailure ]
 
 # ANGLE disallows WEBGL_clip_cull_distance if the underlying GL extension doesn't support requirements for number of distances.
 crbug.com/angleproject/7904 [ chromeos chromeos-board-amd64-generic passthrough ] WebglExtension_WEBGL_clip_cull_distance [ Failure ]
@@ -1011,6 +1027,9 @@ crbug.com/1399117 [ linux intel display-server-wayland no-passthrough ] WebglExt
 # Conflicts if between a generic os condition and a specific version
 #[ highsierra nvidia debug angle-opengl ] WebglExtension_test_10 [ Failure ]
 #[ mac nvidia debug angle-opengl ] WebglExtension_test_10 [ Failure ]
+
+# Incorrect colors
+crbug.com/475877304 [ linux intel-0x9bc5 angle-opengl ] conformance/glsl/samplers/glsl-function-texture2dprojlod.html [ Failure ]
 
 ####################
 # Fuchsia Failures #

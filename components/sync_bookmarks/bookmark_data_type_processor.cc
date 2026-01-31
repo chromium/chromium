@@ -860,7 +860,7 @@ void BookmarkDataTypeProcessor::GetAllNodesForDebugging(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK(bookmark_model_);
 
-  base::Value::List all_nodes;
+  base::ListValue all_nodes;
 
   // Create a permanent folder since sync server no longer create root folders,
   // and USS won't migrate root folders from directory, we create root folders.
@@ -869,7 +869,7 @@ void BookmarkDataTypeProcessor::GetAllNodesForDebugging(
   // UNIQUE_SERVER_TAG to check if the node is root node. isChildOf in
   // sync_node_browser.js uses dataType to check if root node is parent of real
   // data node. NON_UNIQUE_NAME will be the name of node to display.
-  auto root_node = base::Value::Dict()
+  auto root_node = base::DictValue()
                        .Set("ID", "BOOKMARKS_ROOT")
                        .Set("PARENT_ID", "r")
                        .Set("UNIQUE_SERVER_TAG", "Bookmarks")
@@ -892,7 +892,7 @@ void BookmarkDataTypeProcessor::GetAllNodesForDebugging(
 void BookmarkDataTypeProcessor::AppendNodeAndChildrenForDebugging(
     const bookmarks::BookmarkNode* node,
     int index,
-    base::Value::List* all_nodes) const {
+    base::ListValue* all_nodes) const {
   const SyncedBookmarkTrackerEntity* entity =
       bookmark_tracker_->GetEntityForBookmarkNode(node);
   // Include only tracked nodes. Newly added nodes are tracked even before being
@@ -929,7 +929,7 @@ void BookmarkDataTypeProcessor::AppendNodeAndChildrenForDebugging(
     data.legacy_parent_id = parent_entity->metadata().server_id();
   }
 
-  base::Value::Dict data_dictionary = data.ToDictionaryValue();
+  base::DictValue data_dictionary = data.ToDictionaryValue();
   // Set ID value as in legacy directory-based implementation, "s" means server.
   data_dictionary.Set("ID", "s" + metadata.server_id());
   if (node->is_permanent_node()) {

@@ -64,6 +64,9 @@ def generate_forwarding(jni_mode, script_name, full_gen_jni_class,
 
 package {full_gen_jni_class.package_with_dots};
 
+import javax.annotation.processing.Generated;
+
+@Generated("JNI Zero")
 public class {full_gen_jni_class.name}""")
   with sb.block():
     short_class_with_dots = short_gen_jni_class.full_name_with_dots
@@ -92,6 +95,9 @@ def generate_impl(jni_mode,
 
 package {gen_jni_class.package_with_dots};
 
+import javax.annotation.processing.Generated;
+
+@Generated("JNI Zero")
 public class {gen_jni_class.name}""")
   with sb.block():
     if jni_mode.is_muxing:

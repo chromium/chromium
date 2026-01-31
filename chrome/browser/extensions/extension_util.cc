@@ -33,7 +33,6 @@
 #include "extensions/browser/permissions/permissions_updater.h"
 #include "extensions/browser/pref_names.h"
 #include "extensions/browser/renderer_startup_helper.h"
-#include "extensions/browser/updater/scoped_extension_updater_keep_alive.h"
 #include "extensions/browser/user_script_manager.h"
 #include "extensions/buildflags/buildflags.h"
 #include "extensions/common/extension.h"
@@ -257,9 +256,9 @@ void SetAllowFileAccess(const std::string& extension_id,
   ReloadExtension(extension_id, context);
 }
 
-base::Value::Dict GetExtensionInfo(const Extension* extension) {
+base::DictValue GetExtensionInfo(const Extension* extension) {
   DCHECK(extension);
-  base::Value::Dict dict;
+  base::DictValue dict;
 
   dict.Set("id", extension->id());
   dict.Set("name", extension->name());
@@ -278,7 +277,7 @@ std::unique_ptr<const PermissionSet> GetInstallPromptPermissionSetForExtension(
     Profile* profile) {
   // Initialize permissions if they have not already been set so that
   // any transformations are correctly reflected in the install prompt.
-  PermissionsUpdater(profile, PermissionsUpdater::INIT_FLAG_TRANSIENT)
+  PermissionsUpdater(profile, PermissionsUpdater::InitFlag::kTransient)
       .InitializePermissions(extension);
 
   return extension->permissions_data()->active_permissions().Clone();

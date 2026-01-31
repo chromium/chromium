@@ -91,8 +91,6 @@ bool DidPasswordCheckupFail(PasswordCheckState currentState) {
 }
 
 - (void)reconfigureNotificationsSection:(BOOL)enabled {
-  CHECK(IsSafetyCheckNotificationsEnabled());
-
   [self.consumer setSafetyCheckNotificationsEnabled:enabled];
 }
 
@@ -104,8 +102,6 @@ bool DidPasswordCheckupFail(PasswordCheckState currentState) {
 }
 
 - (void)toggleSafetyCheckNotifications {
-  CHECK(IsSafetyCheckNotificationsEnabled());
-
   LogSafetyCheckNotificationOptInSource(
       SafetyCheckNotificationsOptInSource::kPasswordCheckupPageOptIn,
       SafetyCheckNotificationsOptInSource::kPasswordCheckupPageOptOut);
@@ -176,16 +172,14 @@ bool DidPasswordCheckupFail(PasswordCheckState currentState) {
 
   [self.consumer setAffiliatedGroupCount:_currentAffiliatedGroupCount];
 
-  if (IsSafetyCheckNotificationsEnabled()) {
-    // Safety Check notifications are controlled by app-wide notification
-    // settings, not profile-specific ones. No Gaia ID is required below in
-    // `GetMobileNotificationPermissionStatusForClient()`.
-    BOOL enabled = push_notification_settings::
-        GetMobileNotificationPermissionStatusForClient(
-            PushNotificationClientId::kSafetyCheck, GaiaId());
+  // Safety Check notifications are controlled by app-wide notification
+  // settings, not profile-specific ones. No Gaia ID is required below in
+  // `GetMobileNotificationPermissionStatusForClient()`.
+  BOOL enabled = push_notification_settings::
+      GetMobileNotificationPermissionStatusForClient(
+          PushNotificationClientId::kSafetyCheck, GaiaId());
 
-    [self.consumer setSafetyCheckNotificationsEnabled:enabled];
-  }
+  [self.consumer setSafetyCheckNotificationsEnabled:enabled];
 
   if (DidPasswordCheckupFail(_currentState)) {
     [self.consumer showErrorDialogWithMessage:[self computeErrorDialogMessage]];

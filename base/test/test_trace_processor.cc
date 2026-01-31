@@ -38,7 +38,7 @@ void EmitChromeTrackEventDescriptor() {
   });
 }
 
-std::string kChromeSqlModuleName = "chrome";
+std::string kChromeSqlPackageName = "chrome";
 // A command-line switch to save the trace test trace processor generated to
 // make debugging complex traces.
 constexpr char kSaveTraceSwitch[] = "ttp-save-trace";
@@ -46,8 +46,8 @@ constexpr char kSaveTraceSwitch[] = "ttp-save-trace";
 // Returns a vector of pairs of strings consisting of
 // {include_key, sql_file_contents}. For example, the include key for
 // `chrome/scroll_jank/utils.sql` is `chrome.scroll_jank.utils`.
-// The output is used to override the Chrome SQL module in the trace processor.
-TestTraceProcessorImpl::PerfettoSQLModule GetChromeStdlib() {
+// The output is used to override the Chrome SQL package in the trace processor.
+TestTraceProcessorImpl::PerfettoSQLPackage GetChromeStdlib() {
   std::vector<std::pair<std::string, std::string>> stdlib;
   for (const auto& file_to_sql :
        perfetto::trace_processor::chrome_stdlib::kFileToSql) {
@@ -56,7 +56,7 @@ TestTraceProcessorImpl::PerfettoSQLModule GetChromeStdlib() {
     if (include_key.ends_with(".sql")) {
       include_key.resize(include_key.size() - 4);
     }
-    stdlib.emplace_back(kChromeSqlModuleName + "." + include_key,
+    stdlib.emplace_back(kChromeSqlPackageName + "." + include_key,
                         file_to_sql.sql);
   }
   return stdlib;
@@ -112,8 +112,8 @@ TraceConfig DefaultTraceConfig(std::string_view category_filter_string,
 }
 
 TestTraceProcessor::TestTraceProcessor() {
-  auto status = test_trace_processor_.OverrideSqlModule(kChromeSqlModuleName,
-                                                        GetChromeStdlib());
+  auto status = test_trace_processor_.OverrideSqlPackage(kChromeSqlPackageName,
+                                                         GetChromeStdlib());
   CHECK(status.ok());
 }
 

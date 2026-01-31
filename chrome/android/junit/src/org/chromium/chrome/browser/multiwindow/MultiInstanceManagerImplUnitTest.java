@@ -30,8 +30,8 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.FeatureOverrides;
-import org.chromium.base.supplier.ObservableSupplier;
-import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.supplier.MonotonicObservableSupplier;
+import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.app.tabmodel.TabModelOrchestrator;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -41,7 +41,6 @@ import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncFeatures;
 import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncFeaturesJni;
 import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncServiceFactory;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
-import org.chromium.chrome.browser.tabmodel.TabGroupModelFilterProvider;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.components.browser_ui.widget.MenuOrKeyboardActionController;
@@ -62,7 +61,6 @@ public class MultiInstanceManagerImplUnitTest {
     @Mock private ActivityLifecycleDispatcher mActivityLifecycleDispatcher;
     @Mock private MenuOrKeyboardActionController mMenuOrKeyboardActionController;
     @Mock private TabModelSelector mTabModelSelector;
-    @Mock private TabGroupModelFilterProvider mTabGroupModelFilterProvider;
     @Mock private TabGroupModelFilter mTabGroupModelFilter;
     @Mock private TabModel mTabModel;
     @Mock private Profile mProfile;
@@ -70,8 +68,8 @@ public class MultiInstanceManagerImplUnitTest {
 
     private Activity mActivity;
 
-    private final ObservableSupplier<TabModelOrchestrator> mTabModelOrchestratorSupplier =
-            new ObservableSupplierImpl<>();
+    private final MonotonicObservableSupplier<TabModelOrchestrator> mTabModelOrchestratorSupplier =
+            ObservableSuppliers.alwaysNull();
 
     @Before
     public void setUp() {
@@ -218,9 +216,7 @@ public class MultiInstanceManagerImplUnitTest {
     @Test
     public void testCleanupSyncedTabGroupsIfOnlyInstance() {
         TabGroupSyncServiceFactory.setForTesting(mTabGroupSyncService);
-        when(mTabModelSelector.getTabGroupModelFilterProvider())
-                .thenReturn(mTabGroupModelFilterProvider);
-        when(mTabGroupModelFilterProvider.getTabGroupModelFilter(anyBoolean()))
+        when(mTabModelSelector.getTabGroupModelFilter(anyBoolean()))
                 .thenReturn(mTabGroupModelFilter);
         when(mTabGroupModelFilter.getTabModel()).thenReturn(mTabModel);
         when(mTabModel.getProfile()).thenReturn(mProfile);

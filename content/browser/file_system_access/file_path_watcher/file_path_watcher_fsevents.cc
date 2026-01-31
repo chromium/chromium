@@ -13,7 +13,6 @@
 #include "base/apple/scoped_cftyperef.h"
 #include "base/check.h"
 #include "base/compiler_specific.h"
-#include "base/containers/contains.h"
 #include "base/containers/span.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"

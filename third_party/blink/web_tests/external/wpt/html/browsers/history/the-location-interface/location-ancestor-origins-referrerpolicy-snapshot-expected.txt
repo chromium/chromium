@@ -1,0 +1,7 @@
+This is a testharness.js-based test.
+[FAIL] location.ancestorOrigins snapshot timing of referrerpolicy
+  assert_array_equals: expected property 0 to be "null" but got "http://web-platform.test:8001" (expected array ["null"] got ["http://web-platform.test:8001"])
+[FAIL] location.ancestorOrigins snapshot timing of referrerpolicy 1
+  assert_array_equals: expected property 0 to be "null" but got "http://web-platform.test:8001" (expected array ["null"] got ["http://web-platform.test:8001"])
+Harness: the test ran to completion.
+

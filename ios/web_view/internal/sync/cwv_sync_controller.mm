@@ -155,8 +155,10 @@ __weak id<CWVSyncControllerDataSource> gSyncDataSource;
   autofill::SetUserOptedInWalletSyncTransport(_prefService, accountId,
                                               /*opted_in=*/true);
   if (!CWVWebView.skipAccountStorageCheckEnabled) {
+    // TODO(crbug.com/470332074): Verify whether this should check for "enabled"
+    // instead of "active".
     CHECK(
-        password_manager::features_util::IsAccountStorageEnabled(_syncService));
+        password_manager::features_util::IsAccountStorageActive(_syncService));
   }
 }
 

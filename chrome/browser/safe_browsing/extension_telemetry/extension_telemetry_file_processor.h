@@ -43,7 +43,7 @@ class ExtensionTelemetryFileProcessor {
   // <manifest.json, file contents>
   // Each file path is relative starting from the extension root. Manifest.json
   // file is unhashed.
-  base::Value::Dict ProcessExtension(const base::FilePath& root_dir);
+  base::DictValue ProcessExtension(const base::FilePath& root_dir);
 
   void SetMaxFilesToProcessForTest(int64_t max_files_to_process);
   void SetMaxFileSizeBytesForTest(int64_t max_file_size);
@@ -66,8 +66,8 @@ class ExtensionTelemetryFileProcessor {
 
   // Hashes the given list of extension files and returns a Dict of <relative
   // file path, file hash> until |max_files_to_process_| is reached.
-  base::Value::Dict ComputeHashes(const base::FilePath& root_dir,
-                                  const SortedFilePaths& file_paths);
+  base::DictValue ComputeHashes(const base::FilePath& root_dir,
+                                const SortedFilePaths& file_paths);
 
   // Returns true if a file has JS, HTML, or CSS extension.
   bool IsApplicableType(const base::FilePath& file_path);

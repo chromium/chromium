@@ -39,7 +39,7 @@ class ExternalStoragePolicyControllerTest : public testing::Test {
 
   void SetAllowlist() {
     auto allowlist =
-        base::Value::List().Append(kDevice1.ToDict()).Append(kDevice3.ToDict());
+        base::ListValue().Append(kDevice1.ToDict()).Append(kDevice3.ToDict());
     pref_service_.SetList(disks::prefs::kExternalStorageAllowlist,
                           std::move(allowlist));
   }

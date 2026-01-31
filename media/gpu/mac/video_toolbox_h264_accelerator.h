@@ -86,6 +86,9 @@ class MEDIA_GPU_EXPORT VideoToolboxH264Accelerator
   // TODO(367764863) Rewrite to base::raw_span.
   RAW_PTR_EXCLUSION std::vector<base::span<const uint8_t>> slice_nalu_data_;
 
+  // True after Reset() and until after the first successful SubmitDecode().
+  bool first_decode_ = true;
+
   SEQUENCE_CHECKER(sequence_checker_);
 };
 

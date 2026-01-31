@@ -22,7 +22,7 @@
 #include "chrome/browser/ui/views/tabs/tab_strip_layout_types.h"
 #include "chrome/browser/ui/views/tabs/tab_style_views.h"
 #include "chrome/common/chrome_features.h"
-#include "components/tabs/public/split_tab_id.h"
+#include "components/split_tabs/split_tab_id.h"
 #include "tab_container_controller.h"
 #include "ui/gfx/range/range.h"
 #include "ui/views/view_model.h"

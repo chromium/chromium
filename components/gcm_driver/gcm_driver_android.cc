@@ -44,7 +44,7 @@ void GCMDriverAndroid::OnRegisterFinished(
     JNIEnv* env,
     const JavaRef<jstring>& j_app_id,
     const JavaRef<jstring>& j_registration_id,
-    jboolean success) {
+    bool success) {
   std::string app_id = ConvertJavaStringToUTF8(env, j_app_id);
   std::string registration_id = ConvertJavaStringToUTF8(env, j_registration_id);
   GCMClient::Result result =
@@ -57,7 +57,7 @@ void GCMDriverAndroid::OnRegisterFinished(
 
 void GCMDriverAndroid::OnUnregisterFinished(JNIEnv* env,
                                             const JavaRef<jstring>& j_app_id,
-                                            jboolean success) {
+                                            bool success) {
   std::string app_id = ConvertJavaStringToUTF8(env, j_app_id);
   GCMClient::Result result =
       success ? GCMClient::SUCCESS : GCMClient::UNKNOWN_ERROR;

@@ -427,6 +427,11 @@ chromium-metrics-reviews@google.com.
   <int value="100" label="DANGEROUS"/>
 </enum>
 
+<enum name="SafeBrowsingSecuritySettingsBundle">
+  <int value="0" label="Standard"/>
+  <int value="1" label="Enhanced"/>
+</enum>
+
 <enum name="SafeBrowsingSettingsUserAction">
   <int value="0" label="Settings page showed."/>
   <int value="1" label="Enhanced protection button clicked."/>

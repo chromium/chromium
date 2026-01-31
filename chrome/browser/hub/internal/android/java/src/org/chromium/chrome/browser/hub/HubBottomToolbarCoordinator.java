@@ -9,7 +9,7 @@ import static org.chromium.chrome.browser.hub.HubColorMixer.COLOR_MIXER;
 import android.content.Context;
 import android.view.ViewGroup;
 
-import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeController;
@@ -47,7 +47,7 @@ public class HubBottomToolbarCoordinator {
             PaneManager paneManager,
             HubColorMixer hubColorMixer,
             HubBottomToolbarDelegate delegate,
-            ObservableSupplier<EdgeToEdgeController> edgeToEdgeSupplier) {
+            MonotonicObservableSupplier<EdgeToEdgeController> edgeToEdgeSupplier) {
         mDelegate = delegate;
 
         PropertyModel model =

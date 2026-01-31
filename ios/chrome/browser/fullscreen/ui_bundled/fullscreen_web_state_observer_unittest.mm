@@ -12,7 +12,7 @@
 #import "ios/chrome/browser/fullscreen/ui_bundled/test/test_fullscreen_mediator.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
-#import "ios/chrome/browser/toolbar/ui_bundled/fullscreen/toolbars_size_browser_agent.h"
+#import "ios/chrome/browser/toolbar/legacy/ui_bundled/fullscreen/toolbars_size_browser_agent.h"
 #import "ios/chrome/browser/web/model/web_view_proxy/web_view_proxy_tab_helper.h"
 #import "ios/web/public/navigation/navigation_item.h"
 #import "ios/web/public/security/ssl_status.h"
@@ -117,19 +117,19 @@ TEST_F(FullscreenWebStateObserverTest, NoResetForSameDocumentFragmentChange) {
 }
 
 // Tests that the FullscreenModel is not reset for a same-document navigation.
-TEST_F(FullscreenWebStateObserverTest, ResetForSameDocumentURLChange) {
+TEST_F(FullscreenWebStateObserverTest, NoResetForSameDocumentURLChange) {
   // Navigate to a URL.
   web::FakeNavigationContext context;
-  context.SetUrl(GURL("https://www.test.com"));
+  context.SetUrl(GURL("https://www.test.com/test1"));
   web_state().OnNavigationFinished(&context);
   model()->SetYContentOffset(0.0);
   // Simulate a scroll to 0.5 progress.
   SimulateFullscreenUserScrollForProgress(model(), 0.5);
   EXPECT_EQ(0.5, model()->progress());
   // Simulate a same-document navigation to a new URL and verify that the 0.5
-  // progress is reset to 1.0.
-  context.SetUrl(GURL("https://www.test2.com"));
+  // progress hasn't been reset to 1.0.
+  context.SetUrl(GURL("https://www.test.com/test2"));
   context.SetIsSameDocument(true);
   web_state().OnNavigationFinished(&context);
-  EXPECT_EQ(1.0, model()->progress());
+  EXPECT_EQ(0.5, model()->progress());
 }

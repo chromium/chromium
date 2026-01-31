@@ -178,6 +178,7 @@ void DownloadBubbleSecurityViewInfo::PopulateForInterrupted(
           IDS_DOWNLOAD_BUBBLE_SUBPAGE_SUMMARY_TOO_BIG);
       return;
     case download::DOWNLOAD_DANGER_TYPE_FORCE_SAVE_TO_GDRIVE:
+    case download::DOWNLOAD_DANGER_TYPE_FORCE_SAVE_TO_ONEDRIVE:
     case download::DOWNLOAD_DANGER_TYPE_SENSITIVE_CONTENT_BLOCK: {
 #if BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS)
       if (enterprise_connectors::ShouldPromptReviewForDownload(
@@ -222,6 +223,8 @@ void DownloadBubbleSecurityViewInfo::PopulateForInterrupted(
   }
 
   switch (model.GetLastFailState()) {
+    // TODO(alshawwa): Handle LOCAL_DOWNLOAD_BLOCKED separately.
+    case FailState::LOCAL_DOWNLOAD_BLOCKED:
     case FailState::FILE_BLOCKED:
       warning_summary_ = l10n_util::GetStringUTF16(
           IDS_DOWNLOAD_BUBBLE_INTERRUPTED_SUBPAGE_SUMMARY_BLOCKED_ORGANIZATION);
@@ -519,6 +522,7 @@ void DownloadBubbleSecurityViewInfo::PopulateForInProgressOrComplete(
     case download::DOWNLOAD_DANGER_TYPE_ALLOWLISTED_BY_POLICY:
     case download::DOWNLOAD_DANGER_TYPE_BLOCKED_SCAN_FAILED:
     case download::DOWNLOAD_DANGER_TYPE_FORCE_SAVE_TO_GDRIVE:
+    case download::DOWNLOAD_DANGER_TYPE_FORCE_SAVE_TO_ONEDRIVE:
     case download::DOWNLOAD_DANGER_TYPE_MAX:
       return;
   }

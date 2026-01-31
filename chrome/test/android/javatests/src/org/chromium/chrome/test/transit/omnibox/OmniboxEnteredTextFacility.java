@@ -8,6 +8,7 @@ import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
 import org.chromium.base.test.transit.Facility;
 import org.chromium.base.test.transit.Station;
+import org.chromium.chrome.browser.profiles.Profile;
 
 /**
  * Represents test entered into the Omnibox.
@@ -50,10 +51,13 @@ public class OmniboxEnteredTextFacility extends Facility<Station<?>> {
     /** Simulate autocomplete suggestion received from the server. */
     public OmniboxEnteredTextFacility simulateAutocomplete(String autocompleted) {
         return runTo(
-                        () ->
-                                mOmniboxFacility
-                                        .getFakeSuggestions()
-                                        .simulateAutocompleteSuggestion(mText, autocompleted))
+                        () -> {
+                            Profile profile =
+                                    mOmniboxFacility.getHostStation().getTab().getProfile();
+                            mOmniboxFacility
+                                    .getFakeSuggestions()
+                                    .simulateAutocompleteSuggestion(profile, mText, autocompleted);
+                        })
                 .exitFacilityAnd()
                 .enterFacility(
                         new OmniboxEnteredTextFacility(mOmniboxFacility, mText + autocompleted));

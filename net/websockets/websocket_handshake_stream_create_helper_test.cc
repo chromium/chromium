@@ -177,9 +177,7 @@ class MockClientSocketHandleFactory {
         scoped_refptr<ClientSocketPool::SocketParams>(),
         std::nullopt /* proxy_annotation_tag */, MEDIUM, SocketTag(),
         ClientSocketPool::RespectLimits::ENABLED, CompletionOnceCallback(),
-        ClientSocketPool::ProxyAuthCallback(),
-        /*fail_if_alias_requires_proxy_override=*/false, &pool_,
-        NetLogWithSource());
+        ClientSocketPool::ProxyAuthCallback(), &pool_, NetLogWithSource());
     return socket_handle;
   }
 
@@ -244,8 +242,7 @@ class WebSocketHandshakeStreamCreateHelperTest
       public WithTaskEnvironment {
  protected:
   WebSocketHandshakeStreamCreateHelperTest()
-      : quic_version_(quic::HandshakeProtocol::PROTOCOL_TLS1_3,
-                      quic::QuicTransportVersion::QUIC_VERSION_IETF_RFC_V1),
+      : quic_version_(quic::QuicTransportVersion::QUIC_VERSION_IETF_RFC_V1),
         mock_quic_data_(quic_version_) {}
   std::unique_ptr<WebSocketStream> CreateAndInitializeStream(
       const std::vector<std::string>& sub_protocols,

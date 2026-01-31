@@ -44,13 +44,15 @@ class SessionServiceTest : public TestWithTaskEnvironment {
 
 TEST_F(SessionServiceTest, HasService) {
   crypto::ScopedFakeUnexportableKeyProvider scoped_fake_key_provider_;
-  auto service = SessionService::Create(context_.get());
+  auto service = SessionService::Create(
+      context_.get(), /*restricted_sites=*/std::vector<SchemefulSite>());
   EXPECT_TRUE(service);
 }
 
 TEST_F(SessionServiceTest, NoService) {
   ScopedNullUnexportableKeyFactory null_factory;
-  auto service = SessionService::Create(context_.get());
+  auto service = SessionService::Create(
+      context_.get(), /*restricted_sites=*/std::vector<SchemefulSite>());
   EXPECT_FALSE(service);
 }
 }  // namespace

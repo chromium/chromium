@@ -6,7 +6,6 @@
 
 #include <string>
 
-#include "base/containers/contains.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/queue.h"
 #include "base/run_loop.h"
@@ -95,9 +94,9 @@ TEST_F(WifiSignalStrengthRssiFetcherTest, Default) {
         callback_called = true;
 
         EXPECT_THAT(result, SizeIs(2));
-        ASSERT_TRUE(base::Contains(result, service_path1));
+        ASSERT_TRUE(result.contains(service_path1));
         EXPECT_THAT(result.at(service_path1), Eq(-44));
-        ASSERT_TRUE(base::Contains(result, service_path3));
+        ASSERT_TRUE(result.contains(service_path3));
         EXPECT_THAT(result.at(service_path3), Eq(-70));
 
         run_loop.Quit();
@@ -125,9 +124,9 @@ TEST_F(WifiSignalStrengthRssiFetcherTest, OneServiceWithNoRssiValue) {
         callback_called = true;
 
         EXPECT_THAT(result, SizeIs(2));
-        ASSERT_TRUE(base::Contains(result, service_path1));
+        ASSERT_TRUE(result.contains(service_path1));
         EXPECT_THAT(result.at(service_path1), Eq(-44));
-        ASSERT_TRUE(base::Contains(result, service_path3));
+        ASSERT_TRUE(result.contains(service_path3));
         EXPECT_THAT(result.at(service_path3), Eq(-70));
 
         run_loop.Quit();

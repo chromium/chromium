@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.composeplate;
 
 import android.content.Context;
 import android.content.res.ColorStateList;
+import android.content.res.Resources;
 import android.util.AttributeSet;
 import android.view.View;
 import android.widget.ImageView;
@@ -21,7 +22,8 @@ import org.chromium.build.annotations.NullMarked;
 @NullMarked
 /** View for the composeplate layout which is shown below the fake search box on NTP. */
 public class ComposeplateView extends LinearLayout {
-    private final int mPaddingForShadowPx;
+    private final int mPaddingForShadowLateralPx;
+    private final int mTopMarginPx;
 
     private @Nullable View mComposeplateButton;
     private @Nullable View mIncognitoButton;
@@ -31,9 +33,14 @@ public class ComposeplateView extends LinearLayout {
     public ComposeplateView(Context context, AttributeSet attrs) {
         super(context, attrs);
 
-        mPaddingForShadowPx =
-                context.getResources()
-                        .getDimensionPixelSize(R.dimen.composeplate_view_button_padding_for_shadow);
+        Resources resources = getResources();
+        mPaddingForShadowLateralPx =
+                resources.getDimensionPixelSize(
+                        R.dimen.composeplate_view_button_padding_for_shadow_lateral);
+        // This is the 4dp top margin when NTP customization is enabled.
+        mTopMarginPx =
+                resources.getDimensionPixelSize(
+                        R.dimen.composeplate_view_button_padding_for_shadow_bottom);
     }
 
     @Override
@@ -52,13 +59,22 @@ public class ComposeplateView extends LinearLayout {
      * @param apply Whether to apply or reset to the default background.
      */
     void applyWhiteBackgroundWithShadow(boolean apply) {
+        MarginLayoutParams marginLayoutParams = (MarginLayoutParams) getLayoutParams();
         if (apply) {
             // Adds paddings on each sides of the view to prevent shadow from being cut.
             setPadding(
-                    mPaddingForShadowPx, getPaddingTop(), mPaddingForShadowPx, getPaddingBottom());
+                    mPaddingForShadowLateralPx,
+                    getPaddingTop(),
+                    mPaddingForShadowLateralPx,
+                    getPaddingBottom());
+            // The 4dp top margin will be added to the fake search box which is on top of the
+            // composeplate view.
+            marginLayoutParams.topMargin = 0;
         } else {
             setPadding(0, getPaddingTop(), 0, getPaddingBottom());
+            marginLayoutParams.topMargin = mTopMarginPx;
         }
+        setLayoutParams(marginLayoutParams);
 
         Context context = getContext();
         if (mComposeplateButton != null) {

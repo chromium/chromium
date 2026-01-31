@@ -4,11 +4,23 @@
 
 #include "chrome/browser/signin/wait_for_network_callback_helper_chrome.h"
 
+#include "base/metrics/histogram_functions.h"
+#include "base/strings/stringprintf.h"
+#include "chrome/browser/browser_process.h"
 #include "content/public/browser/network_service_instance.h"
 #include "services/network/public/cpp/network_connection_tracker.h"
+#include "services/network/public/cpp/network_quality_tracker.h"
 
-WaitForNetworkCallbackHelperChrome::WaitForNetworkCallbackHelperChrome() {
+WaitForNetworkCallbackHelperChrome::WaitForNetworkCallbackHelperChrome(
+    bool should_disable_metrics_for_testing) {
   network_connection_observer_.Observe(content::GetNetworkConnectionTracker());
+  // Metrics timer causes `TaskEnvironment::FastForwardUntilNoTasksRemain()` to
+  // spin forever in testing environments.
+  if (!should_disable_metrics_for_testing) {
+    CHECK(g_browser_process);
+    metrics_timer_.Start(FROM_HERE, base::Minutes(30), this,
+                         &WaitForNetworkCallbackHelperChrome::LogMetrics);
+  }
 }
 
 WaitForNetworkCallbackHelperChrome::~WaitForNetworkCallbackHelperChrome() =
@@ -50,4 +62,15 @@ void WaitForNetworkCallbackHelperChrome::DelayNetworkCall(
 
   // This queue will be processed in `OnConnectionChanged()`.
   delayed_callbacks_.push_back(std::move(callback));
+}
+
+void WaitForNetworkCallbackHelperChrome::LogMetrics() {
+  net::EffectiveConnectionType ect =
+      g_browser_process->network_quality_tracker()
+          ->GetEffectiveConnectionType();
+
+  base::UmaHistogramCounts100(
+      base::StrCat({"Signin.DelayedNetworkCallQueueSize.",
+                    net::GetNameForEffectiveConnectionType(ect)}),
+      delayed_callbacks_.size());
 }

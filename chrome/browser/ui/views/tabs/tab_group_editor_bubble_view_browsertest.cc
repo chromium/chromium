@@ -244,13 +244,26 @@ IN_PROC_BROWSER_TEST_F(
   ASSERT_EQ(3, tsm->count());
   std::optional<tab_groups::TabGroupId> group = tsm->AddToNewGroup({0, 1});
 
-  ASSERT_FALSE(browser_view->tabstrip()->tab_at(0)->HasFreezingVote());
-  ASSERT_FALSE(browser_view->tabstrip()->tab_at(1)->HasFreezingVote());
-  ASSERT_FALSE(browser_view->tabstrip()->tab_at(2)->HasFreezingVote());
-  browser_view->tabstrip()->ToggleTabGroupCollapsedState(group.value());
-  EXPECT_TRUE(browser_view->tabstrip()->tab_at(0)->HasFreezingVote());
-  EXPECT_TRUE(browser_view->tabstrip()->tab_at(1)->HasFreezingVote());
-  EXPECT_FALSE(browser_view->tabstrip()->tab_at(2)->HasFreezingVote());
+  ASSERT_FALSE(browser_view->horizontal_tab_strip_for_testing()
+                   ->tab_at(0)
+                   ->HasFreezingVote());
+  ASSERT_FALSE(browser_view->horizontal_tab_strip_for_testing()
+                   ->tab_at(1)
+                   ->HasFreezingVote());
+  ASSERT_FALSE(browser_view->horizontal_tab_strip_for_testing()
+                   ->tab_at(2)
+                   ->HasFreezingVote());
+  browser_view->horizontal_tab_strip_for_testing()
+      ->ToggleTabGroupCollapsedState(group.value());
+  EXPECT_TRUE(browser_view->horizontal_tab_strip_for_testing()
+                  ->tab_at(0)
+                  ->HasFreezingVote());
+  EXPECT_TRUE(browser_view->horizontal_tab_strip_for_testing()
+                  ->tab_at(1)
+                  ->HasFreezingVote());
+  EXPECT_FALSE(browser_view->horizontal_tab_strip_for_testing()
+                   ->tab_at(2)
+                   ->HasFreezingVote());
 }
 
 class TabGroupEditorBubbleViewDialogBrowserTestWithSavedGroup

@@ -9,11 +9,11 @@
 #include "base/path_service.h"
 #include "chrome/browser/extensions/api/developer_private/developer_private_api.h"
 #include "chrome/browser/extensions/chrome_test_extension_loader.h"
-#include "chrome/browser/extensions/unpacked_installer.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/pref_names.h"
 #include "extensions/browser/extension_dialog_auto_confirm.h"
+#include "extensions/browser/unpacked_installer.h"
 #include "extensions/buildflags/buildflags.h"
 
 #if !BUILDFLAG(IS_ANDROID)

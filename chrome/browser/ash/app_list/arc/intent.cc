@@ -4,11 +4,11 @@
 
 #include "chrome/browser/ash/app_list/arc/intent.h"
 
+#include <algorithm>
 #include <cinttypes>
 #include <string_view>
 
 #include "base/compiler_specific.h"
-#include "base/containers/contains.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/strings/string_number_conversions.h"
@@ -106,7 +106,7 @@ void Intent::AddExtraParam(const std::string& extra_param) {
 }
 
 bool Intent::HasExtraParam(const std::string& extra_param) const {
-  return base::Contains(extra_params_, extra_param);
+  return std::ranges::contains(extra_params_, extra_param);
 }
 
 bool Intent::GetExtraParamValue(const std::string& extra_param_key,

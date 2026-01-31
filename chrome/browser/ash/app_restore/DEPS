@@ -53,22 +53,15 @@ specific_include_rules = {
   "browser_restore_observer\\.cc": [
     "+chrome/browser/custom_handlers/protocol_handler_registry_factory.h",
     "+chrome/browser/ui/browser.h",
-    "+chrome/browser/ui/browser_finder.h",
-    "+chrome/browser/ui/browser_list.h",
     "+chrome/browser/ui/browser_navigator.h",
     "+chrome/browser/ui/browser_navigator_params.h",
-    "+chrome/browser/ui/browser_window.h",
     "+chrome/browser/ui/tabs/tab_enums.h",
-  ],
-  "browser_restore_observer\\.h": [
-    "+chrome/browser/ui/browser_list_observer.h",
   ],
 
   ".*test\\.cc": [
     "+chrome/browser/browser_process.h",
     "+chrome/browser/ui/browser.h",
     "+chrome/browser/ui/browser_finder.h",
-    "+chrome/browser/ui/browser_list.h",
     "+chrome/browser/ui/browser_tabstrip.h",
     "+chrome/browser/ui/browser_window.h",
     "+chrome/browser/ui/browser_window/public",

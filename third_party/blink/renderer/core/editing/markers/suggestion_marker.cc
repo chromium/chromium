@@ -24,7 +24,8 @@ SuggestionMarker::SuggestionMarker(unsigned start_offset,
       suggestions_(properties.Suggestions()),
       suggestion_type_(properties.Type()),
       remove_on_finish_composing_(properties.RemoveOnFinishComposing()),
-      suggestion_highlight_color_(properties.HighlightColor()) {
+      suggestion_highlight_color_(properties.HighlightColor()),
+      should_hide_suggestion_menu_(properties.ShouldHideSuggestionMenu()) {
   DCHECK_GT(tag_, 0);
 }
 
@@ -60,6 +61,10 @@ void SuggestionMarker::SetSuggestion(uint32_t suggestion_index,
                                      const String& new_suggestion) {
   DCHECK_LT(suggestion_index, suggestions_.size());
   suggestions_[suggestion_index] = new_suggestion;
+}
+
+bool SuggestionMarker::ShouldHideSuggestionMenu() const {
+  return should_hide_suggestion_menu_ == HideSuggestionMenu::kYes;
 }
 
 // static

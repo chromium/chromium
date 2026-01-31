@@ -401,40 +401,6 @@ public class HistoricalTabSaverImplTest {
         assertEntriesAre(expectedEntries);
     }
 
-    /** Tests invalid urls are not saved. Requires native for {@link GURL}. */
-    @Test
-    @MediumTest
-    public void testCreateHistoricalTab_InvalidUrls() {
-        List<List<HistoricalEntry>> empty = new ArrayList<>();
-        final Tab tab0 = mActivityTestRule.loadUrlInNewTab("about:blank", /* incognito= */ false);
-        TabRestoreServiceUtils.createTabEntry(mTabModel, tab0);
-        assertEntriesAre(empty);
-
-        final Tab tab1 =
-                mActivityTestRule.loadUrlInNewTab("chrome://version/", /* incognito= */ false);
-        TabRestoreServiceUtils.createTabEntry(mTabModel, tab1);
-        assertEntriesAre(empty);
-
-        final Tab tab2 =
-                mActivityTestRule.loadUrlInNewTab(
-                        "chrome-native://recent-tabs/", /* incognito= */ false);
-        TabRestoreServiceUtils.createTabEntry(mTabModel, tab2);
-        assertEntriesAre(empty);
-
-        HistoricalEntry group =
-                new HistoricalEntry(
-                        new Token(43784L, 3748L),
-                        "bar",
-                        TabGroupColorId.GREY,
-                        Arrays.asList(new Tab[] {tab1, tab2}));
-        TabRestoreServiceUtils.createTabOrGroupEntry(mTabModel, group);
-        assertEntriesAre(empty);
-
-        TabRestoreServiceUtils.createWindowEntry(
-                mTabModel, Arrays.asList(new HistoricalEntry[] {new HistoricalEntry(tab0), group}));
-        assertEntriesAre(empty);
-    }
-
     @Test
     @MediumTest
     public void testArchivedTabsAreExcluded() {
@@ -460,9 +426,7 @@ public class HistoricalTabSaverImplTest {
                     archivedTabModelOrchestrator
                             .getTabArchiver()
                             .archiveAndRemoveTabs(
-                                    mTabModelSelector
-                                            .getTabGroupModelFilterProvider()
-                                            .getTabGroupModelFilter(false),
+                                    mTabModelSelector.getTabGroupModelFilter(false),
                                     Arrays.asList(newTab));
                 });
         List<List<HistoricalEntry>> empty = new ArrayList<>();

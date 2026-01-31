@@ -6,7 +6,6 @@
 
 #include <utility>
 
-#include "base/containers/contains.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_macros.h"
 #include "chromeos/ash/components/multidevice/logging/logging.h"
@@ -387,8 +386,7 @@ void BleConnectionManagerImpl::OnSecureChannelStatusChanged(
 
 bool BleConnectionManagerImpl::DoesAuthenticatingChannelExist(
     const std::string& remote_device_id) {
-  return base::Contains(remote_device_id_to_secure_channel_map_,
-                        remote_device_id);
+  return remote_device_id_to_secure_channel_map_.contains(remote_device_id);
 }
 
 void BleConnectionManagerImpl::SetAuthenticatingChannel(
@@ -621,7 +619,7 @@ void BleConnectionManagerImpl::StartConnectionAttemptTimerMetricsIfNecessary(
     ConnectionRole connection_role) {
   // If an entry already exists, there is nothing to do. This is expected if
   // more than one client is attempting a connection to the same device.
-  if (base::Contains(remote_device_id_to_timestamps_map_, remote_device_id))
+  if (remote_device_id_to_timestamps_map_.contains(remote_device_id))
     return;
 
   remote_device_id_to_timestamps_map_[remote_device_id] =

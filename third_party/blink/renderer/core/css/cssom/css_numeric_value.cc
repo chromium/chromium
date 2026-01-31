@@ -22,10 +22,13 @@
 #include "third_party/blink/renderer/core/css/cssom/css_math_sum.h"
 #include "third_party/blink/renderer/core/css/cssom/css_unit_value.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_context.h"
+#include "third_party/blink/renderer/core/css/parser/css_parser_local_context.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_token_stream.h"
 #include "third_party/blink/renderer/core/css/parser/css_tokenizer.h"
+#include "third_party/blink/renderer/core/css/properties/css_parsing_utils.h"
 #include "third_party/blink/renderer/core/css_value_keywords.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/wtf/text/strcat.h"
 
 namespace blink {
@@ -155,19 +158,23 @@ CSSNumericValue* CalcToNumericValue(const CSSMathExpressionNode& root) {
     return CSSMathSum::Create(std::move(values));
   }
 
-  if (root.IsRandomFunction()) {
+  if (root.IsRandomFunction() &&
+      RuntimeEnabledFeatures::CSSRandomFunctionTypedOMEnabled()) {
     const auto& node = To<CSSMathExpressionRandomFunction>(root);
-    DCHECK(node.GetRandomValueSharing().IsFixed());
+    DCHECK(node.GetRandomValueSharing()->IsFixed());
     CSSNumericValue* min = CalcToNumericValue(*node.Min());
     CSSNumericValue* max = CalcToNumericValue(*node.Max());
+    // TODO(crbug.com/475807587): Use correct random_base_value instead of 0 if
+    // it's not calculated.
+    double random_base_value =
+        node.GetRandomValueSharing()->GetFixed()->GetValueIfKnown().value_or(0);
     if (!node.Step()) {
-      return CSSMathRandom::Create(node.GetRandomValueSharing().GetFixed(),
-                                   std::move(min), std::move(max));
+      return CSSMathRandom::Create(random_base_value, std::move(min),
+                                   std::move(max));
     }
     CSSNumericValue* step = CalcToNumericValue(*node.Step());
-    return CSSMathRandom::Create(node.GetRandomValueSharing().GetFixed(),
-                                 std::move(min), std::move(max),
-                                 std::move(step));
+    return CSSMathRandom::Create(random_base_value, std::move(min),
+                                 std::move(max), std::move(step));
   }
 
   // TODO(crbug.com/40243221): Implement Typed OM API for `anchor()` and
@@ -352,12 +359,14 @@ CSSNumericValue* CSSNumericValue::parse(
         using enum CSSMathExpressionNode::Flag;
         using Flags = CSSMathExpressionNode::Flags;
 
+        CSSParserLocalContext local_context =
+            CSSParserLocalContext::CreateWithoutPropertyForCSSOM();
         // TODO(crbug.com/1309178): Decide how to handle anchor queries here.
         CSSMathExpressionNode* expression =
             CSSMathExpressionNode::ParseMathFunction(
                 CSSValueID::kCalc, stream,
                 *MakeGarbageCollected<CSSParserContext>(*execution_context),
-                Flags({AllowPercent}), kCSSAnchorQueryTypesAll);
+                local_context, Flags({AllowPercent}), kCSSAnchorQueryTypesAll);
         if (!expression) {
           break;
         }

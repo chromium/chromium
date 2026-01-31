@@ -17,6 +17,10 @@ ASH_EXPORT bool ShouldDevToolsOpen();
 
 ASH_EXPORT void SetDevToolsOpenState(bool is_opened);
 
+ASH_EXPORT bool ShouldSkipCancelUploadDialog();
+
+ASH_EXPORT void SetSkipCancelUploadDialog();
+
 }  // namespace ash::camera_app_prefs
 
 #endif  // ASH_SYSTEM_CAMERA_CAMERA_APP_PREFS_H_

@@ -71,7 +71,7 @@ class NET_EXPORT_PRIVATE HostResolverInternalResult {
                              Source source);
   // Expect to only be called with a `dict` well-formed for deserialization. Can
   // be checked via ValidateValueBaseDict().
-  explicit HostResolverInternalResult(const base::Value::Dict& dict);
+  explicit HostResolverInternalResult(const base::DictValue& dict);
 
   bool operator==(const HostResolverInternalResult& other) const {
     return std::tie(domain_name_, query_type_, type_, source_, expiration_,
@@ -80,9 +80,9 @@ class NET_EXPORT_PRIVATE HostResolverInternalResult {
                     other.source_, other.expiration_, other.timed_expiration_);
   }
 
-  static bool ValidateValueBaseDict(const base::Value::Dict& dict,
+  static bool ValidateValueBaseDict(const base::DictValue& dict,
                                     bool require_timed_expiration);
-  base::Value::Dict ToValueBaseDict() const;
+  base::DictValue ToValueBaseDict() const;
 
  private:
   const std::string domain_name_;
@@ -142,7 +142,7 @@ class NET_EXPORT_PRIVATE HostResolverInternalDataResult final
   base::Value ToValue() const override;
 
  private:
-  HostResolverInternalDataResult(const base::Value::Dict& dict,
+  HostResolverInternalDataResult(const base::DictValue& dict,
                                  std::vector<IPEndPoint> endpoints,
                                  std::vector<std::string> strings,
                                  std::vector<HostPortPair> hosts);
@@ -200,7 +200,7 @@ class NET_EXPORT_PRIVATE HostResolverInternalMetadataResult final
 
  private:
   HostResolverInternalMetadataResult(
-      const base::Value::Dict& dict,
+      const base::DictValue& dict,
       std::multimap<HttpsRecordPriority, ConnectionEndpointMetadata> metadatas);
 
   std::multimap<HttpsRecordPriority, ConnectionEndpointMetadata> metadatas_;
@@ -240,7 +240,7 @@ class NET_EXPORT_PRIVATE HostResolverInternalErrorResult final
   base::Value ToValue() const override;
 
  private:
-  HostResolverInternalErrorResult(const base::Value::Dict& dict, int error);
+  HostResolverInternalErrorResult(const base::DictValue& dict, int error);
 
   const int error_;
 };
@@ -278,7 +278,7 @@ class NET_EXPORT_PRIVATE HostResolverInternalAliasResult final
   base::Value ToValue() const override;
 
  private:
-  HostResolverInternalAliasResult(const base::Value::Dict& dict,
+  HostResolverInternalAliasResult(const base::DictValue& dict,
                                   std::string alias_target);
 
   const std::string alias_target_;

@@ -21,13 +21,7 @@ class BindingAccessChecker {
       base::RepeatingCallback<bool(v8::Local<v8::Context>,
                                    const std::string& name)>;
 
-  // The callback for determining if a given context is allowed to use promises
-  // with API calls.
-  using PromiseAvailabilityCallback =
-      base::RepeatingCallback<bool(v8::Local<v8::Context>)>;
-
-  BindingAccessChecker(APIAvailabilityCallback api_available,
-                       PromiseAvailabilityCallback promises_available);
+  explicit BindingAccessChecker(APIAvailabilityCallback api_available);
 
   BindingAccessChecker(const BindingAccessChecker&) = delete;
   BindingAccessChecker& operator=(const BindingAccessChecker&) = delete;
@@ -44,12 +38,8 @@ class BindingAccessChecker {
   bool HasAccessOrThrowError(v8::Local<v8::Context> context,
                              const std::string& full_name) const;
 
-  // Returns true if the given `context` is allowed to use promise-based APIs.
-  bool HasPromiseAccess(v8::Local<v8::Context> context) const;
-
  private:
   APIAvailabilityCallback api_available_;
-  PromiseAvailabilityCallback promises_available_;
 };
 
 }  // namespace extensions

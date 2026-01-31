@@ -34,6 +34,7 @@
 #include "third_party/blink/renderer/platform/scheduler/public/frame_scheduler.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
+#include "third_party/blink/renderer/platform/wtf/linked_hash_set.h"
 
 namespace blink {
 class BidirectionalStream;
@@ -124,15 +125,42 @@ class MODULES_EXPORT WebTransport final
   // Forwards a StopSending() message to the mojo interface.
   void StopSending(uint32_t stream_id, uint32_t code);
 
-  // Removes the reference to a stream.
-  void ForgetIncomingStream(uint32_t stream_id);
+  // Removes the reference to a stream. |has_received_close| indicates whether
+  // OnIncomingStreamClosed() was called for this stream before it was
+  // forgotten.
+  void ForgetIncomingStream(uint32_t stream_id, bool has_received_close);
   // Removes the reference to a stream.
   void ForgetOutgoingStream(uint32_t stream_id);
+
+  // Returns true if `OnIncomingStreamClosed()` arrived for a stream that hasn't
+  // been created yet. Tests use this to verify that entries in
+  // `closed_potentially_pending_streams_` are properly consumed or cleared.
+  bool HasPendingClosedStreamForTesting(uint32_t stream_id) const;
 
   // ScriptWrappable implementation
   void Trace(Visitor* visitor) const override;
 
  private:
+  // Nested class to track recently forgotten stream IDs with FIFO eviction.
+  // Used to ignore duplicate OnIncomingStreamClosed() calls for streams
+  // that were forgotten before the close notification arrived.
+  class RecentlyForgottenStreamIdSet {
+   public:
+    static constexpr wtf_size_t kMaxSize = 512;
+
+    RecentlyForgottenStreamIdSet() = default;
+    RecentlyForgottenStreamIdSet(const RecentlyForgottenStreamIdSet&) = delete;
+    RecentlyForgottenStreamIdSet& operator=(
+        const RecentlyForgottenStreamIdSet&) = delete;
+
+    void Insert(uint32_t stream_id);
+    bool Contains(uint32_t stream_id) const;
+    void Erase(uint32_t stream_id);
+
+   private:
+    LinkedHashSet<uint32_t, IntWithZeroKeyHashTraits<uint32_t>> id_set_;
+  };
+
   class DatagramUnderlyingSink;
   class DatagramUnderlyingSource;
   class StreamVendingUnderlyingSource;
@@ -195,6 +223,13 @@ class MODULES_EXPORT WebTransport final
               Member<IncomingStream>,
               IntWithZeroKeyHashTraits<uint32_t>>
       incoming_stream_map_;
+
+  // Tracks recently forgotten incoming streams so that late-arriving
+  // OnIncomingStreamClosed() calls can be safely ignored. We only track streams
+  // that were forgotten *before* receiving OnIncomingStreamClosed(); streams
+  // that did receive it don't need tracking because the network layer won't
+  // send another close for the same stream.
+  RecentlyForgottenStreamIdSet recently_forgotten_incoming_stream_ids_;
 
   // Map from stream_id to OutgoingStream.
   // Intentionally keeps streams reachable by GC as long as they are open.

@@ -17,10 +17,10 @@
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
-#import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/browser_coordinator_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/open_new_tab_command.h"
+#import "ios/chrome/browser/shared/public/commands/scene_commands.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #import "ios/web/public/test/fakes/fake_web_frames_manager.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
@@ -82,10 +82,10 @@ class VirtualCardEnrollmentBottomSheetCoordinatorTest : public PlatformTest {
     std::unique_ptr<autofill::VirtualCardEnrollUiModel> model =
         std::make_unique<autofill::VirtualCardEnrollUiModel>(enrollment_fields);
 
-    application_handler_ = OCMProtocolMock(@protocol(ApplicationCommands));
+    application_handler_ = OCMProtocolMock(@protocol(SceneCommands));
     [browser_->GetCommandDispatcher()
         startDispatchingToTarget:application_handler_
-                     forProtocol:@protocol(ApplicationCommands)];
+                     forProtocol:@protocol(SceneCommands)];
 
     [browser_->GetCommandDispatcher()
         startDispatchingToTarget:browser_coordinator_commands_
@@ -113,7 +113,7 @@ class VirtualCardEnrollmentBottomSheetCoordinatorTest : public PlatformTest {
   IOSChromeScopedTestingLocalState scoped_testing_local_state_;
   std::unique_ptr<TestProfileIOS> profile_;
   std::unique_ptr<TestBrowser> browser_;
-  id<ApplicationCommands> application_handler_;
+  id<SceneCommands> application_handler_;
   UIWindow* window_;
   id<BrowserCoordinatorCommands> browser_coordinator_commands_ =
       OCMProtocolMock(@protocol(BrowserCoordinatorCommands));

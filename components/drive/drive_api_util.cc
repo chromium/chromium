@@ -45,6 +45,7 @@ constexpr auto kHostedDocumentKinds = std::to_array<HostedDocumentKind>({
     {kGoogleMapMimeType, ".gmaps"},
     {kGoogleSiteMimeType, ".gsite"},
     {kEmailLayoutsMimeType, ".gmaillayout"},
+    {kDriveProjectMimeType, ".gprj"},
 });
 
 const char kUnknownHostedDocumentExtension[] = ".glink";

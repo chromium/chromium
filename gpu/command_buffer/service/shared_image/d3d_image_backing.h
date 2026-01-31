@@ -79,7 +79,8 @@ class GPU_GLES2_EXPORT D3DImageBacking final
       const gfx::Size& size,
       gpu::SharedImageUsageSet usage,
       std::string debug_label,
-      Microsoft::WRL::ComPtr<ID3D12Resource> d3d12_resource);
+      Microsoft::WRL::ComPtr<ID3D12Resource> d3d12_resource,
+      bool is_thread_safe);
 
   static std::unique_ptr<D3DImageBacking> CreateFromSwapChainBuffers(
       const Mailbox& mailbox,
@@ -144,7 +145,9 @@ class GPU_GLES2_EXPORT D3DImageBacking final
   wgpu::Buffer BeginAccessDawnBuffer(const wgpu::Device& device,
                                      wgpu::BackendType backend_type,
                                      wgpu::BufferUsage usage);
-  void EndAccessDawnBuffer(const wgpu::Device& device, wgpu::Buffer buffer);
+  void EndAccessDawnBuffer(const wgpu::Device& device,
+                           wgpu::BackendType backend_type,
+                           wgpu::Buffer buffer);
 
   std::unique_ptr<WebNNTensorRepresentation> ProduceWebNNTensor(
       SharedImageManager* manager,
@@ -270,7 +273,8 @@ class GPU_GLES2_EXPORT D3DImageBacking final
                   const gfx::Size& size,
                   gpu::SharedImageUsageSet usage,
                   std::string debug_label,
-                  Microsoft::WRL::ComPtr<ID3D12Resource> d3d12_resource);
+                  Microsoft::WRL::ComPtr<ID3D12Resource> d3d12_resource,
+                  bool is_thread_safe);
 
   bool use_cross_device_fence_synchronization() const {
     // Fences are needed if we're sharing between devices and there's no keyed

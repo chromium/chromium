@@ -596,7 +596,8 @@ void Navigator::DidNavigate(
           navigation_request->GetViewTransitionResources(),
           navigation_request->HasViewTransitionDelayLayerTreeViewDeletion());
   frame_tree_node->render_manager()->DidNavigateFrame(
-      render_frame_host, navigation_request->common_params().has_user_gesture,
+      render_frame_host,
+      navigation_request->common_params().has_possibly_filtered_user_gesture,
       was_within_same_document,
       navigation_request->browsing_context_group_swap()
           .ShouldClearProxiesOnCommit(),
@@ -880,8 +881,9 @@ void Navigator::Navigate(std::unique_ptr<NavigationRequest> request,
           ongoing_navigation_request->GetInitiatorFrameToken() &&
       request->common_params().initiator_origin ==
           ongoing_navigation_request->common_params().initiator_origin &&
-      request->common_params().has_user_gesture ==
-          ongoing_navigation_request->common_params().has_user_gesture &&
+      request->common_params().has_possibly_filtered_user_gesture ==
+          ongoing_navigation_request->common_params()
+              .has_possibly_filtered_user_gesture &&
       request->common_params().should_replace_current_entry ==
           ongoing_navigation_request->common_params()
               .should_replace_current_entry &&
@@ -1191,11 +1193,11 @@ void Navigator::NavigateFromFrameProxy(
       should_replace_current_entry, download_policy, method, post_body,
       extra_headers, std::move(source_location),
       std::move(blob_url_loader_factory), is_form_submission, impression,
-      initiator_activation_and_ad_status, actual_navigation_start_time,
-      navigation_start_time, is_embedder_initiated_fenced_frame_navigation,
-      is_unfenced_top_navigation, force_new_browsing_instance,
-      is_container_initiated, has_rel_opener, storage_access_api_status,
-      embedder_shared_storage_context);
+      has_user_gesture, initiator_activation_and_ad_status,
+      actual_navigation_start_time, navigation_start_time,
+      is_embedder_initiated_fenced_frame_navigation, is_unfenced_top_navigation,
+      force_new_browsing_instance, is_container_initiated, has_rel_opener,
+      storage_access_api_status, embedder_shared_storage_context);
 }
 
 void Navigator::SetWillNavigateFromFrameProxyCallbackForTesting(
@@ -1303,8 +1305,9 @@ void Navigator::OnBeginNavigation(
   }
 
   // Verify this navigation has precedence.
-  if (ShouldIgnoreIncomingRendererRequest(ongoing_navigation_request,
-                                          common_params->has_user_gesture)) {
+  if (ShouldIgnoreIncomingRendererRequest(
+          ongoing_navigation_request,
+          common_params->has_possibly_filtered_user_gesture)) {
     return;
   }
 

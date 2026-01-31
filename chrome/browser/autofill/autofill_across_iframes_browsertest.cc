@@ -543,8 +543,7 @@ class AutofillAcrossIframesTest_Dynamic : public AutofillAcrossIframesTest {
     // re-extraction and re-fill. The only newly filled field in the refill is
     // the CVC field, which triggers another OnDidAutofillForm() event.
     EXPECT_TRUE(manager.WaitForAutofill(3 + 1));
-    form =
-        manager.form_structures().find(form.global_id())->second->ToFormData();
+    form = manager.FindCachedFormById(form.global_id())->ToFormData();
     EXPECT_EQ(4u, form.fields().size());  // The CVC field has now been seen.
     return AllFieldValues(web_contents(), form);
   }

@@ -123,7 +123,7 @@ int64_t TaskTabHelper::GetParentRootTaskId() {
 }
 
 #if BUILDFLAG(IS_ANDROID)
-static jlong JNI_TaskTabHelper_GetTaskId(
+static int64_t JNI_TaskTabHelper_GetTaskId(
     JNIEnv* env,
     const JavaRef<jobject>& jweb_contents) {
   sessions::NavigationTaskId* navigation_task_id =
@@ -135,7 +135,7 @@ static jlong JNI_TaskTabHelper_GetTaskId(
   return -1;
 }
 
-static jlong JNI_TaskTabHelper_GetRootTaskId(
+static int64_t JNI_TaskTabHelper_GetRootTaskId(
     JNIEnv* env,
     const JavaRef<jobject>& jweb_contents) {
   sessions::NavigationTaskId* navigation_task_id =

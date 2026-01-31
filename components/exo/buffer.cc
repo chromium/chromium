@@ -292,9 +292,11 @@ bool Buffer::Texture::IsLost() {
 void Buffer::Texture::Release(base::OnceClosure callback,
                               viz::ReturnedResource resource) {
   if (context_provider_) {
+    gpu::SyncToken resource_sync_token = shared_image()->EndExport(
+        std::move(resource.shared_image_export_result));
     // Only need to wait on the sync token if we don't have a release fence.
-    if (resource.sync_token.HasData()) {
-      sync_token_ = resource.sync_token;
+    if (resource_sync_token.HasData()) {
+      sync_token_ = resource_sync_token;
     }
   }
 
@@ -323,9 +325,11 @@ void Buffer::Texture::ReleaseSharedImage(base::OnceClosure callback,
                                          viz::ReturnedResource resource) {
   if (context_provider_ && query_type_ != 0) {
     gpu::raster::RasterInterface* ri = context_provider_->RasterInterface();
-    if (resource.sync_token.HasData()) {
-      ri->WaitSyncTokenCHROMIUM(resource.sync_token.GetConstData());
-      sync_token_ = resource.sync_token;
+    gpu::SyncToken resource_sync_token = shared_image()->EndExport(
+        std::move(resource.shared_image_export_result));
+    if (resource_sync_token.HasData()) {
+      ri->WaitSyncTokenCHROMIUM(resource_sync_token.GetConstData());
+      sync_token_ = resource_sync_token;
     }
     ri->BeginQueryEXT(query_type_, query_id_);
     ri->EndQueryEXT(query_type_);
@@ -333,7 +337,7 @@ void Buffer::Texture::ReleaseSharedImage(base::OnceClosure callback,
     // on the shared image have completed and it's ready to be reused) if sync
     // token has data and buffer has been used. If buffer was never used then
     // run the callback immediately.
-    if (resource.sync_token.HasData()) {
+    if (resource_sync_token.HasData()) {
       ReleaseWhenQueryResultIsAvailable(std::move(callback));
       return;
     }
@@ -498,6 +502,8 @@ std::unique_ptr<Buffer> Buffer::CreateBufferFromGMBHandle(
     bool is_overlay_candidate,
     bool y_invert) {
   CHECK(viz::HasEquivalentBufferFormat(format));
+  UMA_HISTOGRAM_ENUMERATION("Graphics.Exo.Buffer.SharedImageFormat",
+                            viz::GetSharedImageFormatUMA(format));
   // If format is true multiplanar format, we prefer external sampler on
   // ChromeOS.
   if (format.is_multi_plane()) {
@@ -555,10 +561,6 @@ std::unique_ptr<Buffer> Buffer::CreateBuffer(
                  buffer_size, buffer_usage, kDefaultQueryType,
                  kDefaultUseZeroCopy, is_overlay_candidate, kDefaultYInvert));
 
-  // Destroy the |shared_image| as it will no longer be used. Note that the
-  // underlying handle is already cloned above and will not be destroyed by
-  // destroying the |shared_image|.
-  sii->DestroySharedImage(gpu::SyncToken(), std::move(shared_image));
   return buffer;
 }
 
@@ -835,8 +837,6 @@ SkBitmap Buffer::CreateBitmap() {
   bitmap.setImmutable();
   mapping.reset();
 
-  // Destroy this shared image as we no longer need it.
-  sii->DestroySharedImage(gpu::SyncToken(), std::move(shared_image));
   return bitmap;
 }
 

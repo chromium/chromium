@@ -34,7 +34,6 @@
 #include "components/web_modal/web_contents_modal_dialog_manager.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
-#include "third_party/blink/public/mojom/webid/federated_auth_request.mojom-shared.h"
 #include "third_party/blink/public/mojom/webid/federated_auth_request.mojom.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/native_ui_types.h"
@@ -424,6 +423,14 @@ bool FedCmAccountSelectionView::ShowLoadingDialog(
   UpdateDialogVisibilityAndPosition();
   modal_loading_dialog_state_ = webid::LoadingDialogResult::kDestroy;
   return true;
+}
+
+void FedCmAccountSelectionView::SetCanShowWidget(bool can_show_widget) {
+  if (can_show_widget == can_show_widget_) {
+    return;
+  }
+  can_show_widget_ = can_show_widget;
+  UpdateDialogVisibilityAndPosition();
 }
 
 bool FedCmAccountSelectionView::ShowVerifyingDialog(
@@ -1281,6 +1288,11 @@ gfx::Rect FedCmAccountSelectionView::GetDialogBounds() {
 }
 
 void FedCmAccountSelectionView::ShouldShowDialog(bool& should_show) {
+  if (!can_show_widget_) {
+    should_show = false;
+    return;
+  }
+
   if (dialog_type_ == DialogType::BUBBLE) {
     // Hide the bubble dialog if it can't fit.
     if (!CanFitInWebContents()) {

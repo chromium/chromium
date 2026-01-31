@@ -46,6 +46,8 @@ struct KeyData {
   int32 native_key_code;
   bool is_system_key;
   bool is_browser_shortcut;
+  [EnableIf=is_android]
+  bool is_confirmed_physical_keyboard_input;
   mojo_base.mojom.String16 text;
   mojo_base.mojom.String16 unmodified_text;
 };
@@ -232,6 +234,12 @@ enum PanAction {
   kMoveCursorOrScroll,
   // Pan action is stylus writable.
   kStylusWritable,
+};
+
+// An enumeration that describes IME state.
+enum ImeState {
+  kNone,
+  kTextSuggestionSelected,
 };
 
 // Interface exposed by the browser to the renderer.
@@ -483,7 +491,8 @@ interface WidgetInputHandler {
                     array<ui.mojom.ImeTextSpan> ime_text_spans,
                     gfx.mojom.Range range,
                     int32 start,
-                    int32 end) => ();
+                    int32 end,
+                    ImeState ime_state) => ();
 
   // This message deletes the current composition, inserts specified text, and
   // moves the cursor.
@@ -532,6 +541,11 @@ interface WidgetInputHandler {
   // CompositorFrame (containing all changes caused by prior input) has been
   // displayed.
   WaitForInputProcessed() => ();
+
+  // Pings the main thread by queuing a task directly onto the
+  // MainThreadEventQueue and waiting for its execution. Used for hang
+  // detection.
+  PingMainThread() => ();
 
   // Attach the synchronous compositor interface. This method only
   // should be called for Android WebView.

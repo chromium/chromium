@@ -201,7 +201,7 @@ class DISPLAY_EXPORT Screen {
 
   // Returns human readable description of the window manager, desktop, and
   // other system properties related to the compositing.
-  virtual base::Value::List GetGpuExtraInfo(
+  virtual base::ListValue GetGpuExtraInfo(
       const gfx::GpuExtraInfo& gpu_extra_info);
 
   // Returns the preferred scale factor for |window|, if the underlying platform

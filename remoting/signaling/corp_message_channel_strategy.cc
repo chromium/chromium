@@ -29,11 +29,14 @@ CorpMessageChannelStrategy::~CorpMessageChannelStrategy() = default;
 
 void CorpMessageChannelStrategy::Initialize(
     const StreamOpener& stream_opener,
-    const MessageCallback& on_incoming_msg) {
+    const MessageCallback& on_incoming_msg,
+    const SignalingAddressChangedCallback& on_signaling_address_changed) {
   DCHECK(stream_opener);
   DCHECK(on_incoming_msg);
+  DCHECK(on_signaling_address_changed);
   stream_opener_ = stream_opener;
   on_incoming_msg_ = on_incoming_msg;
+  on_signaling_address_changed_ = on_signaling_address_changed;
   // TODO: joedow - The current message channel impl expects to have an
   // inactivity timeout available as soon as the channel is created because that
   // is how FTL messaging works. Since the Corp inactivity timeout is provided
@@ -50,6 +53,12 @@ void CorpMessageChannelStrategy::OnReceiveMessagesResponse(
                    VLOG(0) << "Received channel open";
                    inactivity_timeout_ =
                        channel_open_message.inactivity_timeout;
+                   auto new_address = SignalingAddress(
+                       channel_open_message.signaling_address.jid);
+                   if (local_address_ != new_address) {
+                     local_address_ = std::move(new_address);
+                     on_signaling_address_changed_.Run(local_address_);
+                   }
                  },
                  [this](const ChannelActiveStruct& channel_active_message) {
                    VLOG(0) << "Received channel active";

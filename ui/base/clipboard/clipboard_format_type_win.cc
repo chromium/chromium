@@ -175,6 +175,13 @@ const ClipboardFormatType& ClipboardFormatType::UrlAType() {
 }
 
 // static
+const ClipboardFormatType& ClipboardFormatType::BookmarkListType() {
+  static base::NoDestructor<ClipboardFormatType> format(
+      RegisterClipboardFormatChecked(L"Bookmark List"));
+  return *format;
+}
+
+// static
 const ClipboardFormatType& ClipboardFormatType::PlainTextAType() {
   static base::NoDestructor<ClipboardFormatType> format(CF_TEXT);
   return *format;

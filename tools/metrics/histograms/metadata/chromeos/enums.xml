@@ -541,12 +541,6 @@ chromium-metrics-reviews@google.com.
   <int value="5" label="Number of logical is larger than possible"/>
 </enum>
 
-<enum name="ChromeOSParseLacrosPath">
-  <int value="0" label="Rootfs"/>
-  <int value="1" label="Stateful"/>
-  <int value="2" label="Unrecognized"/>
-</enum>
-
 <enum name="ChromeOSParsePSICPUStatus">
   <int value="0" label="Success"/>
   <int value="1" label="Fail to read file /proc/pressure/cpu"/>
@@ -1816,14 +1810,6 @@ chromeos/ash/components/language/language_packs/language_pack_manager.h -->
 <enum name="PrivacyHubNavigationOrigin">
   <int value="0" label="System settings"/>
   <int value="1" label="Notification"/>
-</enum>
-
-<enum name="PrivacyHubSensorSubpageUserAction">
-  <int value="0" label="Subpage opened"/>
-  <int value="1" label="System access changed"/>
-  <int value="2" label="App permission changed"/>
-  <int value="3" label="Android settings link clicked"/>
-  <int value="4" label="Website permission link clicked"/>
 </enum>
 
 <enum name="RgbKeyboardBacklightChangeType">

@@ -8,6 +8,7 @@
 #include <stdint.h>
 
 #include <memory>
+#include <optional>
 #include <set>
 #include <tuple>
 
@@ -256,6 +257,7 @@ class CONTENT_EXPORT Transaction : public blink::mojom::IDBTransaction {
                blink::mojom::IDBPutMode put_mode,
                std::vector<blink::IndexedDBIndexKeys> index_keys,
                blink::mojom::IDBTransaction::PutCallback callback,
+               mojo::ReportBadMessageCallback bad_message_callback,
                Transaction* transaction);
 
   Status DoSetIndexKeys(int64_t object_store_id,
@@ -263,15 +265,10 @@ class CONTENT_EXPORT Transaction : public blink::mojom::IDBTransaction {
                         blink::IndexedDBIndexKeys index_keys,
                         Transaction* transaction);
 
-  // Helper for posting a task to call Transaction::CommitPhaseTwo when
-  // we know the transaction had no requests and therefore the commit must
-  // succeed.
-  static Status CommitPhaseTwoProxy(Transaction* transaction);
-
   bool IsTaskQueueEmpty() const;
   bool HasPendingTasks() const;
 
-  Status BlobWriteComplete(StatusOr<BlobWriteResult> result);
+  void BlobWriteComplete(base::TimeTicks start_time, Status result);
   void CloseOpenCursors();
   Status CommitPhaseTwo();
   void TimeoutFired();
@@ -298,6 +295,9 @@ class CONTENT_EXPORT Transaction : public blink::mojom::IDBTransaction {
   // backing store transaction.
   PartitionedLockHolder locks_receiver_;
   bool is_commit_pending_ = false;
+  // This accumulates the duration of synchronous work done by the backing store
+  // for transaction commit (phase one + phase two).
+  base::TimeDelta commit_synchronous_duration_;
 
   // We are owned by the connection object, but during force closes sometimes
   // there are issues if there is a pending OpenRequest. So use a WeakPtr.

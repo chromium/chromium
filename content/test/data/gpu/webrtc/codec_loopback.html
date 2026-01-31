@@ -7,6 +7,28 @@
   <script type="text/javascript">
     'use strict';
 
+    // Using canvas-based tracks over getUserMedia() is preferred due to the
+    // capturer crashing on some bots.
+    function createCanvasTrack(width = 320, height = 180) {
+      // Draws the color red at 30 fps.
+      const canvas = Object.assign(
+          document.createElement('canvas'), {width, height});
+      const ctx = canvas.getContext('2d');
+      ctx.fillStyle = 'rgb(255,0,0)';
+      const interval = setInterval(() => {
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+      }, 1000 / 30);
+      const stream = canvas.captureStream();
+      const [track] = stream.getTracks();
+      // Clear the interval on stop().
+      const nativeStop = track.stop;
+      track.stop = () => {
+        clearInterval(interval);
+        nativeStop.apply(track);
+      };
+      return track;
+    }
+
     async function pollGetStatsUntil(pc, condition, pollingMs = 100) {
       return new Promise((resolve, reject) => {
         const timeoutId = setTimeout(() => { reject(new Error('Timeout after 30s')) }, 30000);
@@ -55,8 +77,7 @@
       pc1.onicecandidate = (e) => pc2.addIceCandidate(e.candidate);
       pc2.onicecandidate = (e) => pc1.addIceCandidate(e.candidate);
 
-      const stream = await navigator.mediaDevices.getUserMedia({ video: { width: 640, height: 360 } });
-      const [track] = stream.getVideoTracks();
+      const track = createCanvasTrack();
       TEST.addCleanup(() => track.stop());
       const transceiver = pc1.addTransceiver(track);
       transceiver.setCodecPreferences([sendCodec]);

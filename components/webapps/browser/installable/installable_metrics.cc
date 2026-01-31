@@ -94,6 +94,8 @@ std::ostream& operator<<(std::ostream& os, WebappInstallSource source) {
       return os << "web install";
     case WebappInstallSource::CHROMEOS_HELP_APP:
       return os << "chromeos help app";
+    case WebappInstallSource::MIGRATION:
+      return os << "migration";
   }
 }
 
@@ -147,6 +149,10 @@ std::ostream& operator<<(std::ostream& os, WebappUninstallSource source) {
       return os << "Isolated Web Apps Enterprise Policy";
     case webapps::WebappUninstallSource::kDevtools:
       return os << "Devtools";
+    case webapps::WebappUninstallSource::kIwaBlocklisted:
+      return os << "Isolated Web App Blocklisted";
+    case webapps::WebappUninstallSource::kAppMigration:
+      return os << "AppMigration";
   }
 }
 
@@ -167,6 +173,7 @@ bool IsUserUninstall(WebappUninstallSource source) {
     case webapps::WebappUninstallSource::kInstallUrlDeduping:
     case webapps::WebappUninstallSource::kHealthcareUserInstallCleanup:
     case webapps::WebappUninstallSource::kIwaEnterprisePolicy:
+    case webapps::WebappUninstallSource::kIwaBlocklisted:
       return false;
     case webapps::WebappUninstallSource::kUnknown:
     case webapps::WebappUninstallSource::kAppMenu:
@@ -177,6 +184,7 @@ bool IsUserUninstall(WebappUninstallSource source) {
     case webapps::WebappUninstallSource::kShelf:
     case webapps::WebappUninstallSource::kExternalLockScreen:
     case webapps::WebappUninstallSource::kDevtools:
+    case webapps::WebappUninstallSource::kAppMigration:
       return true;
   }
 }
@@ -227,6 +235,7 @@ bool InstallableMetrics::IsReportableInstallSource(WebappInstallSource source) {
     case WebappInstallSource::IWA_EXTERNAL_POLICY:
     case WebappInstallSource::IWA_SHIMLESS_RMA:
     case WebappInstallSource::MANAGEMENT_API:
+    case WebappInstallSource::MIGRATION:
     case WebappInstallSource::SUB_APP:
     case WebappInstallSource::SYNC:
       return false;

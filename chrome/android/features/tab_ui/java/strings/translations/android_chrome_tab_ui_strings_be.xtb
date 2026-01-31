@@ -20,6 +20,7 @@
 <translation id="1499635324672558517">Закрыць усе ўкладкі ў рэжыме інкогніта?</translation>
 <translation id="1501480321619201731">Выдаліць групу</translation>
 <translation id="1553638665176794706">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> неактыўны элемент}one{<ph name="TABS_COUNT_MANY" /> неактыўны элемент}few{<ph name="TABS_COUNT_MANY" /> неактыўныя элементы}many{<ph name="TABS_COUNT_MANY" /> неактыўных элементаў}other{<ph name="TABS_COUNT_MANY" /> неактыўнага элемента}}</translation>
+<translation id="1568067597247500137">Выключыць гук сайта</translation>
 <translation id="1645759014353344461">Укладак згрупавана: <ph name="TABS_COUNT_MANY" /></translation>
 <translation id="1657719826150349398">Перамясціць укладку ніжэй</translation>
 <translation id="1670942869417022142">Гук выключаны</translation>
@@ -82,13 +83,13 @@
 <translation id="3619255692378312441">Кіраванне доступам</translation>
 <translation id="3649471731638882002">{TAB_COUNT,plural, =1{Закрыць элемент}one{Закрыць элементы}few{Закрыць элементы}many{Закрыць элементы}other{Закрыць элементы}}</translation>
 <translation id="3652027618765638838"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
+<translation id="3714430408451673233">Ніжні аркуш укладкі адкрыты на палову вышыні экрана.</translation>
 <translation id="374923079891132274">Мініяцюра: перадпр. аркуша.</translation>
 <translation id="3776329373944672717">Назва групы ўкладак "<ph name="TITLE_OF_GROUP" />"</translation>
 <translation id="3810973564298564668">Кіраваць</translation>
 <translation id="3849789634341518784">{TAB_COUNT,plural, =1{Адмацаваць укладку}one{Адмацаваць укладкі}few{Адмацаваць укладкі}many{Адмацаваць укладкі}other{Адмацаваць укладкі}}</translation>
 <translation id="3940195383040445971">Адсочванне цэн на ўкладках</translation>
 <translation id="3940717704786481856">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> новая ўкладка; закрыта: <ph name="ANY_CLOSED" />}one{<ph name="MANY_ADDED" /> новая ўкладка; закрыта: <ph name="ANY_CLOSED" />}few{<ph name="MANY_ADDED" /> новыя ўкладкі; закрыта: <ph name="ANY_CLOSED" />}many{<ph name="MANY_ADDED" /> новых укладак; закрыта: <ph name="ANY_CLOSED" />}other{<ph name="MANY_ADDED" /> новай укладкі; закрыта: <ph name="ANY_CLOSED" />}}</translation>
-<translation id="3954615705217314756">{TABS_COUNT,plural, =1{Дадаць укладку ў групу}one{Згрупаваць укладкі}few{Згрупаваць укладкі}many{Згрупаваць укладкі}other{Згрупаваць укладкі}}</translation>
 <translation id="3962134438902735041">{TABS_COUNT,plural, =1{Адмацаваць <ph name="TABS_COUNT_ONE" /> выбраную ўкладку}one{Адмацаваць <ph name="TABS_COUNT_MANY" /> выбраную ўкладку}few{Адмацаваць <ph name="TABS_COUNT_MANY" /> выбраныя ўкладкі}many{Адмацаваць <ph name="TABS_COUNT_MANY" /> выбраных укладак}other{Адмацаваць <ph name="TABS_COUNT_MANY" /> выбранай укладкі}}</translation>
 <translation id="4009732926939031387">{NUM_DAYS,plural, =1{Створана <ph name="NUM_DAYS_ONE" /> дзень таму}one{Створана <ph name="NUM_DAYS_MANY" /> дзень таму}few{Створана <ph name="NUM_DAYS_MANY" /> дні таму}many{Створана <ph name="NUM_DAYS_MANY" /> дзён таму}other{Створана <ph name="NUM_DAYS_MANY" /> дня таму}}</translation>
 <translation id="4076226664360336092">Спіс груп укладак, адкрыты на ўсю вышыню экрана</translation>
@@ -126,8 +127,10 @@
 <translation id="5339733443032484186">Ваша апошняя ўкладка</translation>
 <translation id="5380159289133845234">Архіваваць паўторныя ўкладкі</translation>
 <translation id="5446043142172831860">Выдаліць укладку і выйсці з групы</translation>
+<translation id="5465437530117042974">Ніжні аркуш укладкі са змяненнямі закрыты.</translation>
 <translation id="5490235265819901748">Група ўкладак разгорнута</translation>
 <translation id="5494920125229734069">Выбраць усё</translation>
+<translation id="5505998972479309757">{LIMIT_COUNT,plural, =1{Дадайце не больш за <ph name="LIMIT_COUNT_ONE" /> файл, укладку або відарыс}one{Дадайце не больш за <ph name="LIMIT_COUNT_MANY" /> файл, укладку або відарыс}few{Дадайце не больш за <ph name="LIMIT_COUNT_MANY" /> файлы, укладкі або відарысы}many{Дадайце не больш за <ph name="LIMIT_COUNT_MANY" /> файлаў, укладак або відарысаў}other{Дадайце не больш за <ph name="LIMIT_COUNT_MANY" /> файла, укладкі або відарыса}}</translation>
 <translation id="5551694449008560081">{NUMBER_OF_TABS,plural, =1{Закрыць групу ўкладак з <ph name="TABS_COUNT_ONE" /> укладкай, колер: <ph name="COLOR_NAME" />.}one{Закрыць групу ўкладак з <ph name="TABS_COUNT_MANY" /> укладкай, колер: <ph name="COLOR_NAME" />.}few{Закрыць групу ўкладак з <ph name="TABS_COUNT_MANY" /> укладкамі, колер: <ph name="COLOR_NAME" />.}many{Закрыць групу ўкладак з <ph name="TABS_COUNT_MANY" /> укладкамі, колер: <ph name="COLOR_NAME" />.}other{Закрыць групу ўкладак з <ph name="TABS_COUNT_MANY" /> укладкі, колер: <ph name="COLOR_NAME" />.}}</translation>
 <translation id="5556417849629758491">Прагледзець звесткі пра краму; гэты варыянт выбару даступны ўверсе экрана</translation>
 <translation id="5627941783489838464">Абнаўленняў укладак няма</translation>
@@ -140,7 +143,9 @@
 <translation id="6040143037577758943">Закрыць</translation>
 <translation id="6051432659151380973">Групы ўкладак аўтаматычна захоўваюцца</translation>
 <translation id="6054741997831917303">Цана на гэты тавар нядаўна знізілася з <ph name="PREVIOUS_PRICE" /> да <ph name="NEW_PRICE" /></translation>
+<translation id="606985262342505139">Ніжні аркуш укладкі адкрыты на ўсю вышыню экрана</translation>
 <translation id="6109251075362363230">Цяпер усе паўторныя ўкладкі будуць таксама адпраўляцца ў архіў, за выключэннем той, якая выкарыстоўвалася апошняй.</translation>
+<translation id="612596694132302162">Уключыць гук на сайце</translation>
 <translation id="6149218574440723463">{TABS_COUNT,plural, =1{Закрыць <ph name="TABS_COUNT_ONE" /> выбраны элемент}one{Закрыць <ph name="TABS_COUNT_MANY" /> выбраны элемент}few{Закрыць <ph name="TABS_COUNT_MANY" /> выбраныя элементы}many{Закрыць <ph name="TABS_COUNT_MANY" /> выбраных элементаў}other{Закрыць <ph name="TABS_COUNT_MANY" /> выбранага элемента}}</translation>
 <translation id="61924696525243173">{WINDOW_COUNT,plural, =1{Перамясціць групу ўкладак у новае акно}one{Перамясціць групу ўкладак у яшчэ адно акно}few{Перамясціць групу ўкладак у яшчэ адно акно}many{Перамясціць групу ўкладак у яшчэ адно акно}other{Перамясціць групу ўкладак у яшчэ адно акно}}</translation>
 <translation id="6212374449852603982">{TAB_COUNT,plural, =1{Перамясціць укладку ўправа}one{Перамясціць укладкі ўправа}few{Перамясціць укладкі ўправа}many{Перамясціць укладкі ўправа}other{Перамясціць укладкі ўправа}}</translation>
@@ -195,7 +200,6 @@
 <translation id="7792771145871471484">Праглядзець прапановы.</translation>
 <translation id="7792860826279960128">Адкрытае на палову экрана апавяшчэнне пра змяненні ў абагуленай групе ўкладак</translation>
 <translation id="7825973332242257878">Групы ўкладак</translation>
-<translation id="7838146321400849846">{TABS_COUNT,plural, =1{Дадаць <ph name="TABS_COUNT_ONE" /> выбраную ўкладку ў групу}one{Дадаць <ph name="TABS_COUNT_MANY" /> выбраную ўкладку ў групу}few{Дадаць <ph name="TABS_COUNT_MANY" /> выбраныя ўкладкі ў групу}many{Дадаць <ph name="TABS_COUNT_MANY" /> выбраных укладак у групу}other{Дадаць <ph name="TABS_COUNT_MANY" /> выбранай укладкі ў групу}}</translation>
 <translation id="7853202427316060426">Дзеянні</translation>
 <translation id="7854360405711302755">{REVIEWS,plural, =1{ Ацэнка: <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" />, <ph name="REVIEWS_COUNT_ONE" /> водгук}one{Ацэнка: <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" />, <ph name="REVIEWS_COUNT_MANY" /> водгук}few{Ацэнка: <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" />, <ph name="REVIEWS_COUNT_MANY" /> водгукі}many{Ацэнка: <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" />, <ph name="REVIEWS_COUNT_MANY" /> водгукаў}other{Ацэнка: <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" />, <ph name="REVIEWS_COUNT_MANY" /> водгуку}}</translation>
 <translation id="7885132941432959125">Перамясціць укладку ўправа</translation>
@@ -223,7 +227,6 @@
 <translation id="8428213095426709021">Налады</translation>
 <translation id="855081842937141170">Замацаваць укладку</translation>
 <translation id="8633025649649592204">Нядаўнія дзеянні</translation>
-<translation id="8635822281281406185">Можна дадаць да 10 файлаў, укладак або відарысаў</translation>
 <translation id="8712637175834984815">Зразумела</translation>
 <translation id="8714939927607906138">Цана знізілася</translation>
 <translation id="8730621377337864115">Гатова</translation>

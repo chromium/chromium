@@ -42,8 +42,8 @@
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
-#import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/open_new_tab_command.h"
+#import "ios/chrome/browser/shared/public/commands/scene_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_detail_text_item.h"
@@ -83,6 +83,27 @@ typedef NS_ENUM(NSInteger, ItemType) {
   ItemTypePlusAddress,
   ItemTypePlusAddressFooter
 };
+
+// Returns the fallback detail text for a local profile when its detail text is
+// empty.
+NSString* GetFallbackDetailTextForLocalProfile(
+    const autofill::AutofillProfile& autofill_profile,
+    const std::string& locale) {
+  const autofill::FieldType fallback_types[] = {
+      autofill::ADDRESS_HOME_CITY, autofill::ADDRESS_HOME_STATE,
+      autofill::ADDRESS_HOME_ZIP, autofill::ADDRESS_HOME_COUNTRY};
+
+  NSString* detail_text;
+
+  for (const autofill::FieldType& type : fallback_types) {
+    detail_text =
+        base::SysUTF16ToNSString(autofill_profile.GetInfo(type, locale));
+    if ([detail_text length] != 0) {
+      return detail_text;
+    }
+  }
+  return @"";
+}
 
 }  // namespace
 
@@ -147,8 +168,8 @@ typedef NS_ENUM(NSInteger, ItemType) {
     _browser = browser;
     _personalDataManager = autofill::PersonalDataManagerFactory::GetForProfile(
         _browser->GetProfile());
-    _observer.reset(new autofill::PersonalDataManagerObserverBridge(self));
-    _personalDataManager->AddObserver(_observer.get());
+    _observer = std::make_unique<autofill::PersonalDataManagerObserverBridge>(
+        _personalDataManager, self);
   }
   return self;
 }
@@ -334,6 +355,10 @@ typedef NS_ENUM(NSInteger, ItemType) {
       } else {
         // This is a local profile.
         item.autofillProfileRecordType = AutofillLocalProfile;
+        if ([item.detailText length] == 0) {
+          item.detailText =
+              GetFallbackDetailTextForLocalProfile(autofillProfile, locale);
+        }
         if ([self shouldShowCloudOffIconForProfile:autofillProfile]) {
           item.showMigrateToAccountButton = YES;
           item.localProfileIconShown = YES;
@@ -369,7 +394,6 @@ typedef NS_ENUM(NSInteger, ItemType) {
   [self stopAutofillAddProfileCoordinator];
 
   [self stopAutofillProfileEditCoordinator];
-  _personalDataManager->RemoveObserver(_observer.get());
   [self dismissDeletionSheet];
 
   // Remove observer bridges.
@@ -491,7 +515,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
     OpenNewTabCommand* command = [OpenNewTabCommand
         commandWithURLFromChrome:
             GURL(plus_addresses::features::kPlusAddressManagementUrl.Get())];
-    [self.applicationHandler closePresentedViewsAndOpenURL:command];
+    [self.sceneHandler closePresentedViewsAndOpenURL:command];
     return;
   }
 
@@ -883,7 +907,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
                                  : hasWorkProfile
                                      ? kGoogleMyAccountWorkAddressURL
                                      : kGoogleAccountNameEmailAddressEditURL)];
-                    [weakSelf.applicationHandler
+                    [weakSelf.sceneHandler
                         closePresentedViewsAndOpenURL:command];
                   }
                    style:UIAlertActionStyleDefault];

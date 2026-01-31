@@ -48,6 +48,7 @@
 #include "third_party/blink/public/platform/web_url.h"
 #include "third_party/blink/public/platform/web_url_request.h"
 #include "third_party/blink/public/platform/web_url_response.h"
+#include "third_party/blink/public/web/web_agent_cluster_key.h"
 #include "third_party/blink/public/web/web_form_element.h"
 #include "third_party/blink/public/web/web_frame_load_type.h"
 #include "third_party/blink/public/web/web_history_item.h"
@@ -213,6 +214,17 @@ struct BLINK_EXPORT WebNavigationInfo {
   // src. Only container-initiated navigation report resource timing to the
   // parent.
   bool is_container_initiated = false;
+};
+
+// This is a container for yet-unparsed permissions policies from the manifest
+// of an Isolated Web App. It is passed within the `WebNavigationParams` to the
+// renderer for parsing, interpretation and merging with permissions policy
+// headers.
+// The only reason why it's not declared within WebNavigationParams is to allow
+// forward declaration.
+struct BLINK_EXPORT IsolatedAppPermissionPolicyEntry {
+  WebString feature;
+  std::vector<WebString> allowed_origins;
 };
 
 // This structure holds all information provided by the embedder that is
@@ -457,14 +469,10 @@ struct BLINK_EXPORT WebNavigationParams {
   // A list of origin trial names to enable for the document being loaded.
   std::vector<WebString> force_enabled_origin_trials;
 
-  // Whether the page is in an origin-keyed agent cluster.
-  // https://html.spec.whatwg.org/C/#is-origin-keyed
-  bool origin_agent_cluster = false;
-
-  // Whether the decision to use origin-keyed or site-keyed agent clustering
-  // (which itself is recorded in origin_agent_cluster, above) has been
-  // made based on absent Origin-Agent-Cluster http header.
-  bool origin_agent_cluster_left_as_default = true;
+  // The AgentClusterKey to use to obtain an agent cluster to commit the
+  // navigation.
+  // https://html.spec.whatwg.org/multipage/webappapis.html#agent-cluster-key
+  WebAgentClusterKey agent_cluster_key;
 
   // List of client hints enabled for top-level frame. These still need to be
   // checked against permissions policy before use.
@@ -486,7 +494,11 @@ struct BLINK_EXPORT WebNavigationParams {
   // take precedence over any permissions policy constructed in blink. This is
   // useful for isolated applications, which use a different base permissions
   // policy than blink, which uses a fully permissive policy as its base.
-  std::optional<network::ParsedPermissionsPolicy> permissions_policy_override;
+  // The raw string values are parsed from the JSON manifest, but individual
+  // entries themselves are not parsed and validated (in particular, this might
+  // contain malformed/invalid entries).
+  std::optional<std::vector<IsolatedAppPermissionPolicyEntry>>
+      isolated_app_policy;
 
   // These are used to construct a subset of the back/forward list for the
   // window.navigation API. They only have the attributes that are needed for

@@ -49,12 +49,12 @@ bool operator==(const struct VideoTransformation& first,
 
 // static
 VideoTransformation VideoTransformation::FromFFmpegDisplayMatrix(
-    const int32_t* matrix3x3) {
+    base::span<const int32_t, 9> matrix3x3) {
   const int32_t matrix2x2[4] = {
       matrix3x3[0],
-      UNSAFE_TODO(matrix3x3[1]),
-      UNSAFE_TODO(matrix3x3[3]),
-      UNSAFE_TODO(matrix3x3[4]),
+      matrix3x3[1],
+      matrix3x3[3],
+      matrix3x3[4],
   };
   return VideoTransformation(matrix2x2);
 }

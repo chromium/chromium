@@ -619,7 +619,7 @@ void ArcFlossBridge::CompleteListenSocketReady(
 void ArcFlossBridge::CompleteCreateSdpRecord(
     device::BluetoothUUID uuid,
     arc::mojom::BluetoothCreateSdpRecordResultPtr result) {
-  if (!base::Contains(create_sdp_record_callbacks_, uuid)) {
+  if (!create_sdp_record_callbacks_.contains(uuid)) {
     return;
   }
 

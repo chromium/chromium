@@ -83,7 +83,7 @@ std::unique_ptr<MessageWrapper> MessageWrapper::FromRawMessage(
     return nullptr;
   }
 
-  const base::Value::Dict* json_dictionary = json_value->GetIfDict();
+  const base::DictValue* json_dictionary = json_value->GetIfDict();
   if (!json_dictionary) {
     return nullptr;
   }
@@ -163,7 +163,7 @@ std::string MessageWrapper::ToRawMessage() const {
                         base::Base64UrlEncodePolicy::INCLUDE_PADDING,
                         &encoded_message);
 
-  base::Value::Dict json_dictionary;
+  base::DictValue json_dictionary;
   json_dictionary.Set(kJsonTypeKey, static_cast<int>(type_));
   json_dictionary.Set(kJsonDataKey, encoded_message);
 

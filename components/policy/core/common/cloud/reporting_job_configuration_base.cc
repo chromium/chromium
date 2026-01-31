@@ -53,11 +53,11 @@ const char
         "networkName";
 
 // static
-base::Value::Dict
+base::DictValue
 ReportingJobConfigurationBase::DeviceDictionaryBuilder::BuildDeviceDictionary(
     const std::string& dm_token,
     const std::string& client_id) {
-  base::Value::Dict device_dictionary;
+  base::DictValue device_dictionary;
   device_dictionary.Set(kDMToken, dm_token);
   device_dictionary.Set(kClientId, client_id);
   device_dictionary.Set(kOSVersion, GetOSVersion());
@@ -157,10 +157,10 @@ const char
         "chromeVersion";
 
 // static
-base::Value::Dict
+base::DictValue
 ReportingJobConfigurationBase::BrowserDictionaryBuilder::BuildBrowserDictionary(
     bool include_device_info) {
-  base::Value::Dict browser_dictionary;
+  base::DictValue browser_dictionary;
 
   base::FilePath browser_id;
   if (base::PathService::Get(base::DIR_EXE, &browser_id)) {

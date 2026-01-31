@@ -60,7 +60,7 @@ std::optional<AttributionScopesData> AttributionScopesData::Create(
 // static
 base::expected<AttributionScopesData, SourceRegistrationError>
 AttributionScopesData::FromJSON(base::Value& v) {
-  base::Value::Dict* scopes_dict = v.GetIfDict();
+  base::DictValue* scopes_dict = v.GetIfDict();
   if (!scopes_dict) {
     return base::unexpected(SourceRegistrationError::kAttributionScopesInvalid);
   }
@@ -125,8 +125,8 @@ AttributionScopesData& AttributionScopesData::operator=(
 AttributionScopesData& AttributionScopesData::operator=(
     AttributionScopesData&&) = default;
 
-base::Value::Dict AttributionScopesData::ToJson() const {
-  base::Value::Dict dict;
+base::DictValue AttributionScopesData::ToJson() const {
+  base::DictValue dict;
 
   dict.Set(kLimit, Uint32ToJson(attribution_scope_limit_));
   dict.Set(kMaxEventStates, Uint32ToJson(max_event_states_));

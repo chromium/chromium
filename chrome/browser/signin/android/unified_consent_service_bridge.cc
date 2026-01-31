@@ -17,7 +17,7 @@
 
 using base::android::JavaRef;
 
-static jboolean
+static bool
 JNI_UnifiedConsentServiceBridge_IsUrlKeyedAnonymizedDataCollectionEnabled(
     JNIEnv* env,
     Profile* profile) {
@@ -25,7 +25,7 @@ JNI_UnifiedConsentServiceBridge_IsUrlKeyedAnonymizedDataCollectionEnabled(
       unified_consent::prefs::kUrlKeyedAnonymizedDataCollectionEnabled);
 }
 
-static jboolean
+static bool
 JNI_UnifiedConsentServiceBridge_IsUrlKeyedAnonymizedDataCollectionManaged(
     JNIEnv* env,
     Profile* profile) {
@@ -37,19 +37,11 @@ static void
 JNI_UnifiedConsentServiceBridge_SetUrlKeyedAnonymizedDataCollectionEnabled(
     JNIEnv* env,
     Profile* profile,
-    const jboolean enabled) {
+    const bool enabled) {
   auto* unifiedConsentService =
       UnifiedConsentServiceFactory::GetForProfile(profile);
   DCHECK(unifiedConsentService);
   unifiedConsentService->SetUrlKeyedAnonymizedDataCollectionEnabled(enabled);
-}
-
-static void JNI_UnifiedConsentServiceBridge_RecordSyncSetupDataTypesHistogram(
-    JNIEnv* env,
-    Profile* profile) {
-  auto* syncService = SyncServiceFactory::GetForProfile(profile);
-  unified_consent::metrics::RecordSyncSetupDataTypesHistrogam(
-      syncService->GetUserSettings());
 }
 
 DEFINE_JNI(UnifiedConsentServiceBridge)

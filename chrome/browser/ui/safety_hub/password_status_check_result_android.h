@@ -39,12 +39,12 @@ class PasswordStatusCheckResultAndroid : public SafetyHubResult {
 
   std::unique_ptr<SafetyHubResult> Clone() const override;
 
-  base::Value::Dict ToDictValue() const override;
+  base::DictValue ToDictValue() const override;
 
   bool IsTriggerForMenuNotification() const override;
 
   bool WarrantsNewMenuNotification(
-      const base::Value::Dict& previous_result_dict) const override;
+      const base::DictValue& previous_result_dict) const override;
 
   std::u16string GetNotificationString() const override;
 

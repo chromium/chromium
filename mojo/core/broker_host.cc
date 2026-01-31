@@ -55,19 +55,22 @@ BrokerHost::~BrokerHost() {
   // We're always destroyed on the creation thread, which is the IO thread.
   base::CurrentThread::Get()->RemoveDestructionObserver(this);
 
-  if (channel_)
+  if (channel_) {
     channel_->ShutDown();
+  }
 }
 
 bool BrokerHost::PrepareHandlesForClient(
     std::vector<PlatformHandleInTransit>* handles) {
 #if BUILDFLAG(IS_WIN)
-  if (!client_process_.IsValid())
+  if (!client_process_.IsValid()) {
     return false;
+  }
   bool handles_ok = true;
   for (auto& handle : *handles) {
-    if (!handle.TransferToProcess(client_process_.Duplicate()))
+    if (!handle.TransferToProcess(client_process_.Duplicate())) {
       handles_ok = false;
+    }
   }
   return handles_ok;
 #else
@@ -93,8 +96,9 @@ bool BrokerHost::SendChannel(PlatformHandle handle) {
 
   // This may legitimately fail on Windows if the client process is in another
   // session, e.g., is an elevated process.
-  if (!PrepareHandlesForClient(&handles))
+  if (!PrepareHandlesForClient(&handles)) {
     return false;
+  }
 
   message->SetHandles(std::move(handles));
   channel_->Write(std::move(message));
@@ -160,8 +164,9 @@ void BrokerHost::OnChannelMessage(
     size_t payload_size,
     std::vector<PlatformHandle> handles,
     scoped_refptr<ipcz_driver::Envelope> envelope) {
-  if (payload_size < sizeof(BrokerMessageHeader))
+  if (payload_size < sizeof(BrokerMessageHeader)) {
     return;
+  }
 
   const BrokerMessageHeader* header =
       static_cast<const BrokerMessageHeader*>(payload);

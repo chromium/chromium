@@ -156,7 +156,7 @@ class IncomingStreamTest : public ::testing::Test {
     return ret;
   }
 
-  base::MockOnceCallback<void(std::optional<uint8_t>)> mock_on_abort_;
+  base::MockOnceCallback<void(std::optional<uint8_t>, bool)> mock_on_abort_;
   test::TaskEnvironment task_environment_;
   mojo::ScopedDataPipeProducerHandle data_pipe_producer_;
   mojo::ScopedDataPipeConsumerHandle data_pipe_consumer_;
@@ -344,7 +344,7 @@ TEST_F(IncomingStreamTest, ReadThenClosedWithFin) {
 
   auto* incoming_stream = CreateIncomingStream(scope);
 
-  EXPECT_CALL(mock_on_abort_, Run(std::optional<uint8_t>()));
+  EXPECT_CALL(mock_on_abort_, Run(std::optional<uint8_t>(), true));
 
   auto* script_state = scope.GetScriptState();
   auto* reader = incoming_stream->Readable()->GetDefaultReaderForTesting(
@@ -375,7 +375,7 @@ TEST_F(IncomingStreamTest, ReadThenClosedWithoutFin) {
 
   auto* incoming_stream = CreateIncomingStream(scope);
 
-  EXPECT_CALL(mock_on_abort_, Run(std::optional<uint8_t>()));
+  EXPECT_CALL(mock_on_abort_, Run(std::optional<uint8_t>(), true));
 
   auto* script_state = scope.GetScriptState();
   auto* reader = incoming_stream->Readable()->GetDefaultReaderForTesting(
@@ -418,7 +418,7 @@ TEST_F(IncomingStreamTest, ClosedWithFinThenRead) {
 
   auto* incoming_stream = CreateIncomingStream(scope);
 
-  EXPECT_CALL(mock_on_abort_, Run(std::optional<uint8_t>()));
+  EXPECT_CALL(mock_on_abort_, Run(std::optional<uint8_t>(), true));
 
   auto* script_state = scope.GetScriptState();
   auto* reader = incoming_stream->Readable()->GetDefaultReaderForTesting(
@@ -441,7 +441,7 @@ TEST_F(IncomingStreamTest, ClosedWithFinWithoutRead) {
 
   auto* incoming_stream = CreateIncomingStream(scope);
 
-  EXPECT_CALL(mock_on_abort_, Run(std::optional<uint8_t>()));
+  EXPECT_CALL(mock_on_abort_, Run(std::optional<uint8_t>(), true));
 
   auto* script_state = scope.GetScriptState();
   auto* reader = incoming_stream->Readable()->GetDefaultReaderForTesting(
@@ -459,7 +459,7 @@ TEST_F(IncomingStreamTest, DataPipeResetBeforeClosedWithFin) {
 
   auto* incoming_stream = CreateIncomingStream(scope);
 
-  EXPECT_CALL(mock_on_abort_, Run(std::optional<uint8_t>()));
+  EXPECT_CALL(mock_on_abort_, Run(std::optional<uint8_t>(), true));
 
   auto* script_state = scope.GetScriptState();
   auto* reader = incoming_stream->Readable()->GetDefaultReaderForTesting(
@@ -481,7 +481,7 @@ TEST_F(IncomingStreamTest, DataPipeResetBeforeClosedWithoutFin) {
 
   auto* incoming_stream = CreateIncomingStream(scope);
 
-  EXPECT_CALL(mock_on_abort_, Run(std::optional<uint8_t>()));
+  EXPECT_CALL(mock_on_abort_, Run(std::optional<uint8_t>(), true));
 
   auto* script_state = scope.GetScriptState();
   auto* reader = incoming_stream->Readable()->GetDefaultReaderForTesting(
@@ -535,7 +535,7 @@ TEST_F(IncomingStreamTest, Cancel) {
 
   auto* incoming_stream = CreateIncomingStream(scope);
 
-  EXPECT_CALL(mock_on_abort_, Run(std::make_optional<uint8_t>(0)));
+  EXPECT_CALL(mock_on_abort_, Run(std::make_optional<uint8_t>(0), false));
 
   auto* reader = incoming_stream->Readable()->GetDefaultReaderForTesting(
       script_state, ASSERT_NO_EXCEPTION);
@@ -555,7 +555,7 @@ TEST_F(IncomingStreamTest, CancelWithWebTransportError) {
 
   auto* incoming_stream = CreateIncomingStream(scope);
 
-  EXPECT_CALL(mock_on_abort_, Run(std::make_optional<uint8_t>(0)));
+  EXPECT_CALL(mock_on_abort_, Run(std::make_optional<uint8_t>(0), false));
 
   v8::Local<v8::Value> error =
       WebTransportError::Create(isolate,
@@ -580,7 +580,7 @@ TEST_F(IncomingStreamTest, CancelWithWebTransportErrorWithCode) {
 
   auto* incoming_stream = CreateIncomingStream(scope);
 
-  EXPECT_CALL(mock_on_abort_, Run(std::make_optional<uint8_t>(19)));
+  EXPECT_CALL(mock_on_abort_, Run(std::make_optional<uint8_t>(19), false));
 
   v8::Local<v8::Value> error =
       WebTransportError::Create(isolate,

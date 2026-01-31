@@ -71,6 +71,7 @@ class HTMLPreloadScanner;
 class HTMLResourcePreloader;
 class HTMLTreeBuilder;
 class HTMLDocumentParserState;
+class StreamingSanitizer;
 
 enum ParserPrefetchPolicy {
   // Indicates that prefetches/preloads should happen for this document type.
@@ -95,7 +96,8 @@ class CORE_EXPORT HTMLDocumentParser : public ScriptableDocumentParser,
                      Element* context_element,
                      ParserContentPolicy,
                      ParserPrefetchPolicy prefetch_policy,
-                     CustomElementRegistry* registry);
+                     CustomElementRegistry* registry,
+                     StreamingSanitizer* sanitizer);
   ~HTMLDocumentParser() override;
   void Trace(Visitor*) const override;
 

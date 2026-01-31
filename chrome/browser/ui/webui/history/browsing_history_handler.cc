@@ -30,7 +30,7 @@
 #include "chrome/browser/signin/chrome_signin_pref_names.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/signin/signin_ui_util.h"
-#include "chrome/browser/supervised_user/supervised_user_service_factory.h"
+#include "chrome/browser/supervised_user/supervised_user_url_filtering_service_factory.h"
 #include "chrome/browser/sync/device_info_sync_service_factory.h"
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/ui/browser_finder.h"
@@ -54,12 +54,12 @@
 #include "components/keyed_service/core/service_access_type.h"
 #include "components/prefs/pref_service.h"
 #include "components/query_parser/snippet.h"
+#include "components/signin/public/base/signin_pref_names.h"
 #include "components/signin/public/base/signin_prefs.h"
 #include "components/signin/public/identity_manager/account_info.h"
+#include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/strings/grit/components_strings.h"
-#include "components/supervised_user/core/browser/supervised_user_preferences.h"
-#include "components/supervised_user/core/browser/supervised_user_service.h"
-#include "components/supervised_user/core/browser/supervised_user_url_filter.h"
+#include "components/supervised_user/core/browser/supervised_user_url_filtering_service.h"
 #include "components/supervised_user/core/browser/supervised_user_utils.h"
 #include "components/sync/protocol/sync_enums.pb.h"
 #include "components/sync/service/sync_service.h"
@@ -81,6 +81,7 @@ namespace {
 
 #if !BUILDFLAG(IS_CHROMEOS)
 constexpr int kHistorySyncPromoShownThreshold = 5;
+constexpr base::TimeDelta kHistorySyncPromoCooldown = base::Days(7);
 
 history::mojom::AccountInfoPtr CreateAccountInfoDataMojo(
     const AccountInfo& info) {
@@ -229,7 +230,7 @@ history::mojom::HistoryEntryPtr HistoryEntryToMojom(
     const syncer::DeviceInfoTracker* tracker,
     base::Clock* clock) {
   auto result_mojom = history::mojom::HistoryEntry::New();
-  base::Value::Dict dictionary;
+  base::DictValue dictionary;
   auto url_and_title = SetHistoryEntryUrlAndTitle(entry);
   result_mojom->url = url_and_title.first;
   result_mojom->title = url_and_title.second;
@@ -305,12 +306,11 @@ history::mojom::HistoryEntryPtr HistoryEntryToMojom(
 
   supervised_user::FilteringBehavior filtering_behavior;
   if (profile.IsChild()) {
-    supervised_user::SupervisedUserService* supervised_user_service =
-        SupervisedUserServiceFactory::GetForProfile(&profile);
-    supervised_user::SupervisedUserURLFilter* url_filter =
-        supervised_user_service->GetURLFilter();
     filtering_behavior =
-        url_filter->GetFilteringBehavior(entry.url.GetWithEmptyPath()).behavior;
+        supervised_user::SupervisedUserUrlFilteringServiceFactory::
+            GetForProfile(&profile)
+                ->GetFilteringBehavior(entry.url.GetWithEmptyPath())
+                .behavior;
     is_blocked_visit = entry.blocked_visit;
     result_mojom->host_filtering_behavior =
         FilteringBehaviorToMojom(filtering_behavior);
@@ -506,27 +506,133 @@ void BrowsingHistoryHandler::TurnOnHistorySync() {
 #if !BUILDFLAG(IS_CHROMEOS)
 void BrowsingHistoryHandler::ShouldShowHistoryPageHistorySyncPromo(
     ShouldShowHistoryPageHistorySyncPromoCallback callback) {
-  AccountInfo account =
-      signin_ui_util::GetSingleAccountForPromos(&identity_manager_.get());
-  const int promo_shown_count =
-      account.gaia.empty() ? profile_->GetPrefs()->GetInteger(
-                                 prefs::kHistoryPageHistorySyncPromoShownCountPerProfile)
-                           : SigninPrefs(*profile_->GetPrefs())
-                                 .GetHistoryPageHistorySyncPromoShownCount(account.gaia);
-  std::move(callback).Run(promo_shown_count < kHistorySyncPromoShownThreshold);
+  const int promo_shown_count = GetHistoryPageHistorySyncPromoShownCount();
+
+  // If the promo has been shown more than the threshold, the promo should not
+  // be shown.
+  if (promo_shown_count >= kHistorySyncPromoShownThreshold) {
+    std::move(callback).Run(false);
+    return;
+  }
+
+  const bool shown_after_dismissal =
+      IsHistoryPageHistorySyncPromoShownAfterDismissal();
+  // If the promo was dismissed and shown once after dismissal, the promo should
+  // not be shown anymore.
+  if (shown_after_dismissal) {
+    std::move(callback).Run(false);
+    return;
+  }
+  const base::Time last_dismissed_timestamp =
+      GetHistoryPageHistorySyncPromoLastDismissedTimestamp();
+  const bool was_dismissed = !last_dismissed_timestamp.is_null();
+  // If the promo was dismissed and the cooldown has not passed, the promo
+  // should not be shown.
+  if (was_dismissed &&
+      clock_->Now() < last_dismissed_timestamp + kHistorySyncPromoCooldown) {
+    std::move(callback).Run(false);
+    return;
+  }
+
+  std::move(callback).Run(true);
+}
+
+void BrowsingHistoryHandler::RecordHistoryPageHistorySyncPromoDismissed() {
+  SetHistoryPageHistorySyncPromoLastDismissedTimestamp(clock_->Now());
 }
 
 void BrowsingHistoryHandler::IncrementHistoryPageHistorySyncPromoShownCount() {
-  AccountInfo account =
+  IncrementHistoryPageHistorySyncPromoShownCountPref();
+
+  const base::Time last_dismissed_timestamp =
+      GetHistoryPageHistorySyncPromoLastDismissedTimestamp();
+  const bool was_dismissed = !last_dismissed_timestamp.is_null();
+  if (was_dismissed) {
+    SetHistoryPageHistorySyncPromoShownAfterDismissal();
+  }
+}
+
+int BrowsingHistoryHandler::GetHistoryPageHistorySyncPromoShownCount() const {
+  const AccountInfo account =
       signin_ui_util::GetSingleAccountForPromos(&identity_manager_.get());
   if (account.gaia.empty()) {
-    int show_count = profile_->GetPrefs()->GetInteger(
+    return profile_->GetPrefs()->GetInteger(
+        prefs::kHistoryPageHistorySyncPromoShownCountPerProfile);
+  }
+
+  return SigninPrefs(*profile_->GetPrefs())
+      .GetHistoryPageHistorySyncPromoShownCount(account.gaia);
+}
+
+base::Time
+BrowsingHistoryHandler::GetHistoryPageHistorySyncPromoLastDismissedTimestamp()
+    const {
+  const AccountInfo account =
+      signin_ui_util::GetSingleAccountForPromos(&identity_manager_.get());
+  if (account.gaia.empty()) {
+    return profile_->GetPrefs()->GetTime(
+        prefs::kHistoryPageHistorySyncPromoLastDismissedTimestampPerProfile);
+  }
+
+  return SigninPrefs(*profile_->GetPrefs())
+      .GetHistoryPageHistorySyncPromoLastDismissedTimestamp(account.gaia)
+      .value_or(base::Time());
+}
+
+bool BrowsingHistoryHandler::IsHistoryPageHistorySyncPromoShownAfterDismissal()
+    const {
+  const AccountInfo account =
+      signin_ui_util::GetSingleAccountForPromos(&identity_manager_.get());
+  if (account.gaia.empty()) {
+    return profile_->GetPrefs()->GetBoolean(
+        prefs::kHistoryPageHistorySyncPromoShownAfterDismissalPerProfile);
+  }
+
+  return SigninPrefs(*profile_->GetPrefs())
+      .GetHistoryPageHistorySyncPromoShownAfterDismissal(account.gaia);
+}
+
+void BrowsingHistoryHandler::
+    SetHistoryPageHistorySyncPromoLastDismissedTimestamp(base::Time time) {
+  const AccountInfo account =
+      signin_ui_util::GetSingleAccountForPromos(&identity_manager_.get());
+  if (account.gaia.empty()) {
+    profile_->GetPrefs()->SetTime(
+        prefs::kHistoryPageHistorySyncPromoLastDismissedTimestampPerProfile,
+        time);
+  } else {
+    SigninPrefs(*profile_->GetPrefs())
+        .SetHistoryPageHistorySyncPromoLastDismissedTimestamp(account.gaia,
+                                                              time);
+  }
+}
+
+void BrowsingHistoryHandler::
+    IncrementHistoryPageHistorySyncPromoShownCountPref() {
+  const AccountInfo account =
+      signin_ui_util::GetSingleAccountForPromos(&identity_manager_.get());
+  if (account.gaia.empty()) {
+    const int promo_shown_count = profile_->GetPrefs()->GetInteger(
         prefs::kHistoryPageHistorySyncPromoShownCountPerProfile);
     profile_->GetPrefs()->SetInteger(
-        prefs::kHistoryPageHistorySyncPromoShownCountPerProfile, show_count + 1);
+        prefs::kHistoryPageHistorySyncPromoShownCountPerProfile,
+        promo_shown_count + 1);
   } else {
     SigninPrefs(*profile_->GetPrefs())
         .IncrementHistoryPageHistorySyncPromoShownCount(account.gaia);
+  }
+}
+
+void BrowsingHistoryHandler::
+    SetHistoryPageHistorySyncPromoShownAfterDismissal() {
+  const AccountInfo account =
+      signin_ui_util::GetSingleAccountForPromos(&identity_manager_.get());
+  if (account.gaia.empty()) {
+    profile_->GetPrefs()->SetBoolean(
+        prefs::kHistoryPageHistorySyncPromoShownAfterDismissalPerProfile, true);
+  } else {
+    SigninPrefs(*profile_->GetPrefs())
+        .SetHistoryPageHistorySyncPromoShownAfterDismissal(account.gaia);
   }
 }
 #endif

@@ -93,7 +93,7 @@ void WebUIIOSDataSourceImpl::AddLocalizedString(const std::string& name,
 }
 
 void WebUIIOSDataSourceImpl::AddLocalizedStrings(
-    const base::Value::Dict& localized_strings) {
+    const base::DictValue& localized_strings) {
   localized_strings_.Merge(localized_strings.Clone());
   ui::TemplateReplacementsFromDictionaryValue(localized_strings,
                                               &replacements_);
@@ -181,7 +181,7 @@ void WebUIIOSDataSourceImpl::EnsureLoadTimeDataDefaultsAdded() {
   }
 
   load_time_data_defaults_added_ = true;
-  base::Value::Dict defaults;
+  base::DictValue defaults;
   webui::SetLoadTimeDataDefaults(web::GetWebClient()->GetApplicationLocale(),
                                  &defaults);
   AddLocalizedStrings(defaults);

@@ -26,14 +26,16 @@ rust_static_library("mojom_parser_core") {
     "errors.rs",
     "lib_core.rs",
     "pack.rs",
-    "parse_messages.rs",
     "parse_primitives.rs",
     "parse_values.rs",
     "parsing_trait.rs",
   ]
-  deps = [ "//third_party/rust/anyhow/v1:lib" ]
+  deps = [
+    "//third_party/rust/anyhow/v1:lib",
+    "//third_party/rust/ordered_float/v5:lib",
+  ]
 
-  visibility = [ ":*" ]
+  visibility = [ "../*" ]
 }
 
 rust_macro("parsing_attribute") {
@@ -72,6 +74,7 @@ rust_static_library("mojom_parser_unittests") {
     ":validation_parser",
     "//testing/rust_gtest_interop",
     "//third_party/rust/anyhow/v1:lib",
+    "//third_party/rust/ordered_float/v5:lib",
   ]
 }
 

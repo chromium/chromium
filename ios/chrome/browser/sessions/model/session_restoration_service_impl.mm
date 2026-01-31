@@ -59,7 +59,7 @@ void DeleteUnknownContent(const base::FilePath& path,
   std::vector<base::FilePath> items_to_remove;
   base::FileEnumerator e(path, false, base::FileEnumerator::NAMES_ONLY);
   for (base::FilePath name = e.Next(); !name.empty(); name = e.Next()) {
-    if (!base::Contains(items_to_keep, name)) {
+    if (!items_to_keep.contains(name)) {
       items_to_remove.push_back(name);
     }
   }
@@ -408,8 +408,8 @@ void SessionRestorationServiceImpl::SetSessionID(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   WebStateList* web_state_list = browser->GetWebStateList();
 
-  DCHECK(!base::Contains(infos_, web_state_list));
-  DCHECK(!base::Contains(identifiers_, identifier));
+  DCHECK(!infos_.contains(web_state_list));
+  DCHECK(!identifiers_.contains(identifier));
   identifiers_.insert(identifier);
 
   // It is safe to use base::Unretained(this) as the callback is never called
@@ -426,7 +426,7 @@ void SessionRestorationServiceImpl::SetSessionID(
 
 void SessionRestorationServiceImpl::LoadSession(Browser* browser) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(base::Contains(infos_, browser->GetWebStateList()));
+  DCHECK(infos_.contains(browser->GetWebStateList()));
   WebStateListInfo& info = *infos_[browser->GetWebStateList()];
   DCHECK(!info.is_backup());
 
@@ -542,7 +542,7 @@ void SessionRestorationServiceImpl::LoadWebStateStorage(
     // as this method is usually called after the WebState has been detached.
     WebStateListInfo& info = *iterator->second;
     const auto& inserted_web_states = info.observer().inserted_web_states();
-    DCHECK(!base::Contains(inserted_web_states, web_state_id));
+    DCHECK(!inserted_web_states.contains(web_state_id));
     session_id = info.identifier();
   }
 
@@ -566,7 +566,7 @@ void SessionRestorationServiceImpl::AttachBackup(Browser* browser,
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   WebStateList* web_state_list = backup->GetWebStateList();
 
-  DCHECK(!base::Contains(infos_, web_state_list));
+  DCHECK(!infos_.contains(web_state_list));
 
   auto iterator = infos_.find(browser->GetWebStateList());
   DCHECK(iterator != infos_.end());
@@ -599,7 +599,7 @@ void SessionRestorationServiceImpl::Disconnect(Browser* browser) {
   DCHECK(!info.has_backup());
 
   if (!info.is_backup()) {
-    DCHECK(base::Contains(identifiers_, info.identifier()));
+    DCHECK(identifiers_.contains(info.identifier()));
     identifiers_.erase(info.identifier());
   }
 
@@ -635,7 +635,7 @@ SessionRestorationServiceImpl::CreateUnrealizedWebState(
   web::proto::WebStateMetadataStorage metadata;
   metadata.Swap(storage.mutable_metadata());
 
-  DCHECK(!base::Contains(info.metadata_map(), web_state_id));
+  DCHECK(!info.metadata_map().contains(web_state_id));
   info.metadata_map().insert(std::make_pair(web_state_id, metadata));
 
   // Create the request to serialize WebState storage and add it to the
@@ -713,7 +713,7 @@ void SessionRestorationServiceImpl::MarkWebStateListDirty(
 void SessionRestorationServiceImpl::UpdateOrphanInfoMap() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   for (WebStateList* web_state_list : dirty_web_state_lists_) {
-    DCHECK(base::Contains(infos_, web_state_list));
+    DCHECK(infos_.contains(web_state_list));
     WebStateListInfo& info = *infos_[web_state_list];
 
     const auto& detached_web_states = info.observer().detached_web_states();
@@ -725,7 +725,7 @@ void SessionRestorationServiceImpl::UpdateOrphanInfoMap() {
         // It is possible for this method to be called multiple times before
         // the dirty flag is called on the observer (as it is called by both
         // SaveDirySession() and LoadWebStateStorage() methods).
-        if (base::Contains(orphaned_map_, web_state_id)) {
+        if (orphaned_map_.contains(web_state_id)) {
           continue;
         }
 
@@ -776,7 +776,7 @@ void SessionRestorationServiceImpl::SaveDirtySessions() {
   // Handle adopted WebStates (i.e. "unrealized" WebStates inserted into a
   // WebStateList).
   for (WebStateList* web_state_list : dirty_web_state_lists_) {
-    DCHECK(base::Contains(infos_, web_state_list));
+    DCHECK(infos_.contains(web_state_list));
     WebStateListInfo& info = *infos_[web_state_list];
 
     const auto& inserted_web_states = info.observer().inserted_web_states();
@@ -788,7 +788,7 @@ void SessionRestorationServiceImpl::SaveDirtySessions() {
         // The `web_state_id` must be adopted from another Browser, thus needs
         // to be in the `orphaned_map_` (the case of expected WebState is dealt
         // entirely in SessionRestorationWebStateListObserver).
-        DCHECK(base::Contains(orphaned_map_, web_state_id));
+        DCHECK(orphaned_map_.contains(web_state_id));
         auto iter = orphaned_map_.find(web_state_id);
 
         // The WebState is adopted, remove it from the orphan map.
@@ -798,7 +798,7 @@ void SessionRestorationServiceImpl::SaveDirtySessions() {
         // Only unrealized WebState should be adopted, realized WebState
         // will instead be considered dirty. Thus the metadata should be
         // present in the orphaned_map_.
-        DCHECK(!base::Contains(metadata_map, web_state_id));
+        DCHECK(!metadata_map.contains(web_state_id));
         metadata_map.insert(
             std::make_pair(web_state_id, std::move(orphan_info.metadata)));
 
@@ -820,7 +820,7 @@ void SessionRestorationServiceImpl::SaveDirtySessions() {
 
   // Handle dirty WebStateLists and WebStates.
   for (WebStateList* web_state_list : dirty_web_state_lists_) {
-    DCHECK(base::Contains(infos_, web_state_list));
+    DCHECK(infos_.contains(web_state_list));
     WebStateListInfo& info = *infos_[web_state_list];
     WebStateMetadataMap& metadata_map = info.metadata_map();
 

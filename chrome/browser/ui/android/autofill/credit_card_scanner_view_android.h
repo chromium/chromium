@@ -40,8 +40,8 @@ class CreditCardScannerViewAndroid : public CreditCardScannerView {
   void ScanCompleted(JNIEnv* env,
                      const std::u16string& card_holder_name,
                      const std::u16string& card_number,
-                     jint expiration_month,
-                     jint expiration_year);
+                     int32_t expiration_month,
+                     int32_t expiration_year);
 
  private:
   // CreditCardScannerView implementation.

@@ -52,7 +52,7 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) ManagedCellularPrefHandler {
 
   // Returns the persisted eSIM metadata that corresponds to ICCID |iccid|, if
   // it exists, otherwise returns |nullptr|.
-  const base::Value::Dict* GetESimMetadata(const std::string& iccid);
+  const base::DictValue* GetESimMetadata(const std::string& iccid);
 
   // Removes the persisted eSIM metadata that corresponds to ICCID |iccid|. This
   // should only be done when the eSIM profile is removed from the device.

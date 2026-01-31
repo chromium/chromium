@@ -21,8 +21,6 @@
 namespace quick_answers {
 namespace {
 
-using base::Value;
-
 // The JSON we generate looks like this:
 // {
 //   "query": {
@@ -59,19 +57,19 @@ constexpr std::string_view kRequestContextKey = "requestContext";
 
 std::string BuildSearchRequestPayload(const std::string& selected_text,
                                       const std::string& device_language) {
-  Value::Dict payload;
+  base::DictValue payload;
 
-  Value::Dict query;
+  base::DictValue query;
   query.Set(kRawQueryKey, selected_text);
   payload.Set(kQueryKey, std::move(query));
 
   // TODO(llin): Change the client type.
-  Value::Dict client_id;
+  base::DictValue client_id;
   client_id.Set(kClientTypeKey, kClientType);
   payload.Set(kClientIdKey, std::move(client_id));
 
-  Value::Dict request_context;
-  Value::Dict language_context;
+  base::DictValue request_context;
+  base::DictValue language_context;
   language_context.Set(kLanguageCodeKey, device_language);
   request_context.Set(kLanguageContextKey, std::move(language_context));
   payload.Set(kRequestContextKey, std::move(request_context));

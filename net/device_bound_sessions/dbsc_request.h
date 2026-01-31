@@ -45,8 +45,11 @@ class NET_EXPORT DbscRequest {
   ~DbscRequest();
 
   // Accessors that do not do WebSocket normalization.
-  SessionUsage device_bound_session_usage() const;
+  const base::flat_map<device_bound_sessions::SessionKey,
+                       device_bound_sessions::SessionUsage>&
+  device_bound_session_usage() const;
   void set_device_bound_session_usage(
+      const device_bound_sessions::SessionKey& key,
       device_bound_sessions::SessionUsage usage);
   const base::flat_map<SessionKey, RefreshResult>&
   device_bound_session_deferrals() const;

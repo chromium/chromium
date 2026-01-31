@@ -94,7 +94,7 @@ class ExtensionInstallEventRouterTest
     mock_realtime_reporting_client_->SetBrowserCloudPolicyClientForTesting(
         client_.get());
 
-    base::Value::Dict manifest;
+    base::DictValue manifest;
     manifest.Set(extensions::manifest_keys::kName, kFakeExtensionName);
     manifest.Set(extensions::manifest_keys::kVersion, "1");
     manifest.Set(extensions::manifest_keys::kManifestVersion, 2);
@@ -165,7 +165,7 @@ class ExtensionInstallEventRouterTest
 
 TEST_P(ExtensionInstallEventRouterTest, CheckInstallEventReported) {
   ::chrome::cros::reporting::proto::Event expected_event_proto;
-  base::Value::Dict expected_event;
+  base::DictValue expected_event;
 
   if (use_proto_format()) {
     auto* extension_event =
@@ -205,7 +205,7 @@ TEST_P(ExtensionInstallEventRouterTest, CheckInstallEventReported) {
 
 TEST_P(ExtensionInstallEventRouterTest, CheckUpdateEventReported) {
   ::chrome::cros::reporting::proto::Event expected_event_proto;
-  base::Value::Dict expected_event;
+  base::DictValue expected_event;
 
   if (use_proto_format()) {
     auto* extension_event =
@@ -246,7 +246,7 @@ TEST_P(ExtensionInstallEventRouterTest, CheckUpdateEventReported) {
 
 TEST_P(ExtensionInstallEventRouterTest, CheckUninstallEventReported) {
   ::chrome::cros::reporting::proto::Event expected_event_proto;
-  base::Value::Dict expected_event;
+  base::DictValue expected_event;
 
   if (use_proto_format()) {
     auto* extension_event =
@@ -292,4 +292,3 @@ INSTANTIATE_TEST_SUITE_P(,
                                             ::testing::Bool()));
 
 }  // namespace enterprise_connectors
-

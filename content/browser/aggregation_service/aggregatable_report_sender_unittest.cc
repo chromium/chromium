@@ -43,7 +43,7 @@ using DelayTypeEnumSet =
 constexpr std::string_view kExampleURL = "https://a.com/";
 
 base::Value GetExampleContents() {
-  base::Value::Dict contents;
+  base::DictValue contents;
   contents.Set("id", "1234");
   return base::Value(std::move(contents));
 }

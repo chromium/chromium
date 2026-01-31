@@ -18,6 +18,7 @@
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/input/web_coalesced_input_event.h"
 #include "third_party/blink/public/common/input/web_keyboard_event.h"
+#include "third_party/blink/public/mojom/input/input_handler.mojom-blink.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/platform/scheduler/public/thread.h"
 #include "third_party/blink/renderer/platform/widget/input/frame_widget_input_handler_impl.h"
@@ -36,6 +37,12 @@ void RunClosureIfNotSwappedOut(base::WeakPtr<WidgetBase> widget,
     return;
   }
   std::move(closure).Run();
+}
+
+void RunPingCallback(
+    scoped_refptr<base::SingleThreadTaskRunner> callback_task_runner,
+    WidgetInputHandlerImpl::PingMainThreadCallback callback) {
+  callback_task_runner->PostTask(FROM_HERE, std::move(callback));
 }
 
 }  // namespace
@@ -106,8 +113,9 @@ static void ImeSetCompositionOnMainThread(
     const gfx::Range& range,
     int32_t start,
     int32_t end,
+    mojom::blink::ImeState ime_state,
     WidgetInputHandlerImpl::ImeSetCompositionCallback callback) {
-  widget->ImeSetComposition(text, ime_text_spans, range, start, end);
+  widget->ImeSetComposition(text, ime_text_spans, range, start, end, ime_state);
   callback_task_runner->PostTask(FROM_HERE, std::move(callback));
 }
 
@@ -117,11 +125,13 @@ void WidgetInputHandlerImpl::ImeSetComposition(
     const gfx::Range& range,
     int32_t start,
     int32_t end,
+    mojom::blink::ImeState ime_state,
     WidgetInputHandlerImpl::ImeSetCompositionCallback callback) {
-  RunOnMainThread(
-      base::BindOnce(&ImeSetCompositionOnMainThread, widget_,
-                     base::SingleThreadTaskRunner::GetCurrentDefault(), text,
-                     ime_text_spans, range, start, end, std::move(callback)));
+  // TODO(470910193): Avoid use of GetCurrentDefault() in Blink.
+  RunOnMainThread(base::BindOnce(
+      &ImeSetCompositionOnMainThread, widget_,
+      base::SingleThreadTaskRunner::GetCurrentDefault(), text, ime_text_spans,
+      range, start, end, ime_state, std::move(callback)));
 }
 
 static void ImeCommitTextOnMainThread(
@@ -142,6 +152,7 @@ void WidgetInputHandlerImpl::ImeCommitText(
     const gfx::Range& range,
     int32_t relative_cursor_position,
     ImeCommitTextCallback callback) {
+  // TODO(470910193): Avoid use of GetCurrentDefault() in Blink.
   RunOnMainThread(base::BindOnce(
       &ImeCommitTextOnMainThread, widget_,
       base::SingleThreadTaskRunner::GetCurrentDefault(), text, ime_text_spans,
@@ -195,6 +206,16 @@ void WidgetInputHandlerImpl::WaitForInputProcessed(
   input_handler_manager_->WaitForInputProcessed(
       base::BindOnce(&WidgetInputHandlerImpl::InputWasProcessed,
                      weak_ptr_factory_.GetWeakPtr()));
+}
+
+void WidgetInputHandlerImpl::PingMainThread(PingMainThreadCallback callback) {
+  // TODO(470910193): Avoid use of GetCurrentDefault() in Blink.
+  auto main_thread_task = base::BindOnce(
+      &RunPingCallback, base::SingleThreadTaskRunner::GetCurrentDefault(),
+      std::move(callback));
+
+  // Queue the task onto the MainThreadEventQueue via RunOnMainThread.
+  RunOnMainThread(std::move(main_thread_task));
 }
 
 void WidgetInputHandlerImpl::InputWasProcessed() {

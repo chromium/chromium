@@ -40,6 +40,7 @@
 #include "build/build_config.h"
 #include "partition_alloc/buildflags.h"
 #include "third_party/abseil-cpp/absl/base/dynamic_annotations.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 
 #if BUILDFLAG(IS_ANDROID)
 #include "base/android/jni_android.h"
@@ -321,9 +322,9 @@ void MemoryDumpManager::CreateProcessDump(const MemoryDumpRequestArgs& args,
                                           ProcessMemoryDumpCallback callback) {
   char guid_str[20];
   base::SpanPrintf(guid_str, "0x%" PRIx64, args.dump_guid);
-  TRACE_EVENT_NESTABLE_ASYNC_BEGIN1(kTraceCategory, "ProcessMemoryDump",
-                                    TRACE_ID_LOCAL(args.dump_guid), "dump_guid",
-                                    TRACE_STR_COPY(guid_str));
+  TRACE_EVENT_BEGIN(kTraceCategory, "ProcessMemoryDump",
+                    perfetto::Track(args.dump_guid), "dump_guid",
+                    TRACE_STR_COPY(guid_str));
 
   scoped_refptr<ProcessMemoryDumpAsyncState> pmd_async_state;
   {
@@ -483,14 +484,17 @@ void MemoryDumpManager::InvokeOnMemoryDump(
   CHECK(!is_thread_bound ||
         !*(static_cast<volatile bool*>(&mdpinfo->disabled)));
 
-  base::ElapsedTimer memory_dump_timer;
+  base::ElapsedLiveTimer memory_dump_timer;
   bool dump_successful =
       mdpinfo->dump_provider->OnMemoryDump(pmd->dump_args(), pmd);
   const base::TimeDelta memory_dump_time = memory_dump_timer.Elapsed();
   base::UmaHistogramMicrosecondsTimes(
-      base::StrCat({"Memory.DumpProvider.MemoryDumpTime.",
+      base::StrCat({"Memory.DumpProvider.MemoryDumpTime2.",
                     mdpinfo->name.histogram_name()}),
       memory_dump_time);
+  // Aggregate all providers together without a suffix.
+  base::UmaHistogramMicrosecondsTimes("Memory.DumpProvider.MemoryDumpTime2",
+                                      memory_dump_time);
 
   mdpinfo->consecutive_failures =
       dump_successful ? 0 : mdpinfo->consecutive_failures + 1;
@@ -523,8 +527,8 @@ void MemoryDumpManager::FinishAsyncProcessDump(
              std::move(pmd_async_state->process_memory_dump));
   }
 
-  TRACE_EVENT_NESTABLE_ASYNC_END0(kTraceCategory, "ProcessMemoryDump",
-                                  TRACE_ID_LOCAL(dump_guid));
+  TRACE_EVENT_END(kTraceCategory, /* ProcessMemoryDump */
+                  perfetto::Track(dump_guid));
 }
 
 void MemoryDumpManager::SetupForTracing(
@@ -578,14 +582,27 @@ MemoryDumpManager::ProcessMemoryDumpAsyncState::ProcessMemoryDumpAsyncState(
   // which will be executed after the provider being added.
   pending_dump_providers.reserve(dump_providers.size());
   size_t num_following_providers = 0;
+  absl::flat_hash_map<std::string, size_t> provider_counts;
   for (scoped_refptr<MemoryDumpProviderInfo> provider :
        base::Reversed(dump_providers)) {
+    ++provider_counts[provider->name.histogram_name()];
     pending_dump_providers.emplace_back(std::move(provider),
                                         num_following_providers++);
   }
   MemoryDumpArgs args = {req_args.level_of_detail, req_args.determinism,
                          req_args.dump_guid};
   process_memory_dump = std::make_unique<ProcessMemoryDump>(args);
+
+  // Log the count of objects for each provider type, and the total count
+  // without a suffix.
+  for (const auto& [provider_name, count] : provider_counts) {
+    base::UmaHistogramCounts100000(
+        base::StrCat({"Memory.DumpProvider.Count.", provider_name}),
+        static_cast<int>(count));
+  }
+  base::UmaHistogramCounts100000(
+      "Memory.DumpProvider.Count",
+      static_cast<int>(pending_dump_providers.size()));
 }
 
 MemoryDumpManager::ProcessMemoryDumpAsyncState::~ProcessMemoryDumpAsyncState() =

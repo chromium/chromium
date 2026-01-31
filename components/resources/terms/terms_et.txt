@@ -1,0 +1,13 @@
+Google Chrome'i ja ChromeOS-i lisateenusetingimused
+
+Viimati muudetud: 30. september 2025
+
+Kasutades Chrome'i või ChromeOS-i, nõustute Google'i teenusetingimustega, mis asuvad saidil https://policies.google.com/terms, ning Google Chrome'i ja ChromeOS-i lisateenusetingimustega.
+
+Need Google Chrome'i ja ChromeOS-i lisateenusetingimused kehtivad Chrome'i ning ChromeOS-i täitmiskoodiga versioonide korral. Enamik Chrome'i lähtekoodist on tasuta saadaval avatud lähtekoodiga tarkvara litsentsilepingu alusel aadressil chrome://credits.
+
+Chrome'i ja ChromeOS-i teatud komponentide kasutamisel kehtivad järgmised tingimused.
+
+AVC
+
+SEE TOODE ON LITSENTSITUD AVC PATENT PORTFOLIO LITSENTSI ALUSEL TARBIJALE ISIKLIKUKS KASUTAMISEKS VÕI MUUKS OTSTARBEKS, MILLE EEST EI SAADA HÜVITIST (i) VIDEO KODEERIMISE PUHUL AVC-STANDARDI JÄRGI („AVC-VIDEO“) JA/VÕI (ii) SELLISE AVC-VIDEO DEKODEERIMISE PUHUL, MILLE KODEERIS TARBIJA SEOSES ISIKLIKU TEGEVUSEGA JA/VÕI MIS SAADI AVC-VIDEOTE LEVITAMISE LITSENTSI OMAVATELT TEENUSEPAKKUJATELT. LITSENTSI EI ANTA OTSESELT EGA KAUDSELT MITTE ÜHELGI MUUL OTSTARBEL KASUTAMISEKS. LISATEAVET VÕITE SAADA MPEG LA, L.L.C-st. VAADAKE HTTPS://WWW.VIA-LA.COM.

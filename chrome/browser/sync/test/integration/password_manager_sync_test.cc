@@ -219,8 +219,6 @@ class PasswordManagerSyncTest : public SyncTest {
   void SetUpOnMainThread() override {
     SyncTest::SetUpOnMainThread();
 
-    ASSERT_TRUE(embedded_test_server()->Start());
-
     host_resolver()->AddRule("*", "127.0.0.1");
 
     // Allowlist all certs for the HTTPS server.
@@ -849,11 +847,11 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerSyncTest,
       {first_gaia_id});
 
   SignIn(SyncTestAccount::kConsumerAccount1, /*explicit_signin=*/false);
-  EXPECT_TRUE(password_manager::features_util::IsAccountStorageEnabled(
+  EXPECT_TRUE(password_manager::features_util::IsAccountStorageActive(
       GetSyncService(0)));
   SignOut();
   SignIn(SyncTestAccount::kConsumerAccount2, /*explicit_signin=*/false);
-  EXPECT_FALSE(password_manager::features_util::IsAccountStorageEnabled(
+  EXPECT_FALSE(password_manager::features_util::IsAccountStorageActive(
       GetSyncService(0)));
 }
 
@@ -874,11 +872,11 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerSyncTest,
       {first_gaia_id});
 
   SignIn(SyncTestAccount::kConsumerAccount1);
-  EXPECT_FALSE(password_manager::features_util::IsAccountStorageEnabled(
+  EXPECT_FALSE(password_manager::features_util::IsAccountStorageActive(
       GetSyncService(0)));
   SignOut();
   SignIn(SyncTestAccount::kConsumerAccount2);
-  EXPECT_TRUE(password_manager::features_util::IsAccountStorageEnabled(
+  EXPECT_TRUE(password_manager::features_util::IsAccountStorageActive(
       GetSyncService(0)));
 }
 
@@ -988,7 +986,7 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerSyncTestWithPolicy,
   SetupSyncTransportWithPasswordAccountStorage();
 
   // Disable passwords via the kSyncTypesListDisabled policy.
-  base::Value::List disabled_types;
+  base::ListValue disabled_types;
   disabled_types.Append("passwords");
   policy::PolicyMap policies;
   policies.Set(policy::key::kSyncTypesListDisabled,
@@ -1090,7 +1088,7 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerSyncTestWithForcedDiceMigrationDisabled,
   ASSERT_TRUE(GetClient(0)->AwaitSyncTransportActive());
 
   // Since we mangled the prefs file, account storage should be disabled.
-  ASSERT_FALSE(password_manager::features_util::IsAccountStorageEnabled(
+  ASSERT_FALSE(password_manager::features_util::IsAccountStorageActive(
       GetSyncService(0)));
   ASSERT_FALSE(GetSyncService(0)->GetActiveDataTypes().Has(syncer::PASSWORDS));
 

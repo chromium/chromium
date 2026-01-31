@@ -15,8 +15,10 @@ namespace {
 
 constexpr bool AreSpansDisjoint(base::span<const uint8_t> lhs,
                                 base::span<const uint8_t> rhs) {
-  return UNSAFE_TODO(lhs.data() + lhs.size()) <= rhs.data() ||  // [lhs)...[rhs)
-         UNSAFE_TODO(rhs.data() + rhs.size()) <= lhs.data();    // [rhs)...[lhs)
+  return base::to_address(lhs.end()) <=
+             base::to_address(rhs.begin()) ||  // [lhs)...[rhs)
+         base::to_address(rhs.end()) <=
+             base::to_address(lhs.begin());  // [rhs)...[lhs)
 }
 
 // Redacts `path` from `cbor` using the semantics described for `RedactCbor`.

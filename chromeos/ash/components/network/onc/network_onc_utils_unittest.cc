@@ -82,13 +82,13 @@ TEST_F(ONCUtilsTest,
   const char kWifiPassphrase[] = "test_phassphrase";
   const char kWifiOncName[] = "wifi_onc_name";
 
-  base::Value::Dict wifi_config =
-      base::Value::Dict()
+  base::DictValue wifi_config =
+      base::DictValue()
           .Set(::onc::network_config::kGUID, kPolicyGuid)
           .Set(::onc::network_config::kName, kWifiOncName)
           .Set(::onc::network_config::kType, ::onc::network_config::kWiFi)
           .Set(::onc::network_config::kWiFi,
-               base::Value::Dict()
+               base::DictValue()
                    .Set(::onc::wifi::kSSID, kWifiSSID)
                    .Set(::onc::wifi::kPassphrase, kWifiPassphrase)
                    .Set(::onc::wifi::kSecurity, ::onc::wifi::kWEP_PSK));
@@ -98,22 +98,22 @@ TEST_F(ONCUtilsTest,
   // Set user policy
   NetworkHandler::Get()->managed_network_configuration_handler()->SetPolicy(
       ::onc::ONC_SOURCE_USER_POLICY, user->username_hash(),
-      base::Value::List().Append(wifi_config.Clone()), base::Value::Dict());
+      base::ListValue().Append(wifi_config.Clone()), base::DictValue());
 
   // Set shared policy
   NetworkHandler::Get()->managed_network_configuration_handler()->SetPolicy(
-      ::onc::ONC_SOURCE_DEVICE_POLICY, std::string(), base::Value::List(),
-      base::Value::Dict());
+      ::onc::ONC_SOURCE_DEVICE_POLICY, std::string(), base::ListValue(),
+      base::DictValue());
   base::RunLoop().RunUntilIdle();
 
   // Modify the wifi config to "None" security and attempt to import it for the
   // user.
   wifi_config.Set(::onc::network_config::kWiFi,
-                  base::Value::Dict()
+                  base::DictValue()
                       .Set(::onc::wifi::kSSID, kWifiSSID)
                       .Set(::onc::wifi::kSecurity, ::onc::wifi::kSecurityNone));
   std::string error;
-  ImportNetworksForUser(user, base::Value::List().Append(wifi_config.Clone()),
+  ImportNetworksForUser(user, base::ListValue().Append(wifi_config.Clone()),
                         &error);
 
   // Verify the import network should not override the existing policy
@@ -123,7 +123,7 @@ TEST_F(ONCUtilsTest,
           kPolicyGuid);
   ASSERT_FALSE(service_path.empty());
 
-  const base::Value::Dict* properties =
+  const base::DictValue* properties =
       network_handler_test_helper_->service_test()->GetServiceProperties(
           service_path);
   ASSERT_TRUE(properties);
@@ -139,14 +139,14 @@ TEST_F(ONCUtilsTest, ImportNetworksForUser_ImportONCWithRemoveField) {
   const char kWifiPassphrase[] = "test_phassphrase";
   const char kWifiOncName[] = "wifi_onc_name";
 
-  base::Value::Dict wifi_config =
-      base::Value::Dict()
+  base::DictValue wifi_config =
+      base::DictValue()
           .Set(::onc::network_config::kGUID, kPolicyGuid)
           .Set(::onc::network_config::kName, kWifiOncName)
           .Set(::onc::network_config::kType, ::onc::network_config::kWiFi)
           .Set(::onc::kRemove, true)
           .Set(::onc::network_config::kWiFi,
-               base::Value::Dict()
+               base::DictValue()
                    .Set(::onc::wifi::kSSID, kWifiSSID)
                    .Set(::onc::wifi::kPassphrase, kWifiPassphrase)
                    .Set(::onc::wifi::kSecurity, ::onc::wifi::kWEP_PSK));
@@ -155,16 +155,16 @@ TEST_F(ONCUtilsTest, ImportNetworksForUser_ImportONCWithRemoveField) {
 
   // Set user policy
   NetworkHandler::Get()->managed_network_configuration_handler()->SetPolicy(
-      ::onc::ONC_SOURCE_USER_POLICY, user->username_hash(), base::Value::List(),
-      base::Value::Dict());
+      ::onc::ONC_SOURCE_USER_POLICY, user->username_hash(), base::ListValue(),
+      base::DictValue());
 
   // Set shared policy
   NetworkHandler::Get()->managed_network_configuration_handler()->SetPolicy(
-      ::onc::ONC_SOURCE_DEVICE_POLICY, std::string(), base::Value::List(),
-      base::Value::Dict());
+      ::onc::ONC_SOURCE_DEVICE_POLICY, std::string(), base::ListValue(),
+      base::DictValue());
 
   std::string error;
-  ImportNetworksForUser(user, base::Value::List().Append(wifi_config.Clone()),
+  ImportNetworksForUser(user, base::ListValue().Append(wifi_config.Clone()),
                         &error);
   ASSERT_TRUE(error.empty());
 
@@ -176,11 +176,10 @@ TEST_F(ONCUtilsTest, ImportNetworksForUser_ImportONCWithRemoveField) {
 }
 
 TEST_F(ONCUtilsTest, ProxySettingsToProxyConfig) {
-  base::Value::List list_of_tests =
-      test_utils::ReadTestList("proxy_config.json");
+  base::ListValue list_of_tests = test_utils::ReadTestList("proxy_config.json");
 
   // Additional ONC -> ProxyConfig test cases to test fixup.
-  base::Value::List additional_tests =
+  base::ListValue additional_tests =
       test_utils::ReadTestList("proxy_config_from_onc.json");
   for (const base::Value& value : additional_tests) {
     list_of_tests.Append(value.Clone());
@@ -189,17 +188,17 @@ TEST_F(ONCUtilsTest, ProxySettingsToProxyConfig) {
   int index = 0;
   for (const base::Value& test_case : list_of_tests) {
     SCOPED_TRACE("Test case #" + base::NumberToString(index++));
-    const base::Value::Dict& test_case_dict = test_case.GetDict();
+    const base::DictValue& test_case_dict = test_case.GetDict();
 
     const base::Value* expected_proxy_config =
         test_case_dict.Find("ProxyConfig");
     ASSERT_TRUE(expected_proxy_config);
 
-    const base::Value::Dict* onc_proxy_settings =
+    const base::DictValue* onc_proxy_settings =
         test_case_dict.FindDict("ONC_ProxySettings");
     ASSERT_TRUE(onc_proxy_settings);
 
-    std::optional<base::Value::Dict> actual_proxy_config =
+    std::optional<base::DictValue> actual_proxy_config =
         ConvertOncProxySettingsToProxyConfig(*onc_proxy_settings);
     ASSERT_TRUE(actual_proxy_config.has_value());
     EXPECT_EQ(*expected_proxy_config, actual_proxy_config);
@@ -207,23 +206,22 @@ TEST_F(ONCUtilsTest, ProxySettingsToProxyConfig) {
 }
 
 TEST_F(ONCUtilsTest, ProxyConfigToOncProxySettings) {
-  base::Value::List list_of_tests =
-      test_utils::ReadTestList("proxy_config.json");
+  base::ListValue list_of_tests = test_utils::ReadTestList("proxy_config.json");
 
   int index = 0;
   for (const base::Value& test_case : list_of_tests) {
     SCOPED_TRACE("Test case #" + base::NumberToString(index++));
-    const base::Value::Dict& test_case_dict = test_case.GetDict();
+    const base::DictValue& test_case_dict = test_case.GetDict();
 
-    const base::Value::Dict* shill_proxy_config =
+    const base::DictValue* shill_proxy_config =
         test_case_dict.FindDict("ProxyConfig");
     ASSERT_TRUE(shill_proxy_config);
 
-    const base::Value::Dict* onc_proxy_settings =
+    const base::DictValue* onc_proxy_settings =
         test_case_dict.FindDict("ONC_ProxySettings");
     ASSERT_TRUE(onc_proxy_settings);
 
-    std::optional<base::Value::Dict> actual_proxy_settings =
+    std::optional<base::DictValue> actual_proxy_settings =
         ConvertProxyConfigToOncProxySettings(*shill_proxy_config);
     ASSERT_TRUE(actual_proxy_settings.has_value());
     EXPECT_TRUE(
@@ -257,7 +255,7 @@ TEST(ONCPasswordVariable, PasswordHardcoded) {
 TEST(ONCPasswordVariable, MultipleNetworksPasswordAvailable) {
   const auto network_dictionary = test_utils::ReadTestDictionary(
       "managed_toplevel_with_password_variable.onc");
-  const base::Value::List* network_list =
+  const base::ListValue* network_list =
       network_dictionary.FindList("NetworkConfigurations");
   ASSERT_TRUE(network_list);
 
@@ -268,7 +266,7 @@ TEST(ONCPasswordVariable, MultipleNetworksPasswordNotAvailable) {
   const auto network_dictionary = test_utils::ReadTestDictionary(
       "managed_toplevel_with_no_password_variable.onc");
 
-  const base::Value::List* network_list =
+  const base::ListValue* network_list =
       network_dictionary.FindList("NetworkConfigurations");
   ASSERT_TRUE(network_list);
 
@@ -278,7 +276,7 @@ TEST(ONCPasswordVariable, MultipleNetworksPasswordNotAvailable) {
 TEST(ONCPasswordVariable, MultipleNetworksPasswordAvailableForL2tpVpn) {
   const auto network_dictionary = test_utils::ReadTestDictionary(
       "managed_toplevel_with_password_variable_in_l2tp_vpn.onc");
-  const base::Value::List* network_list =
+  const base::ListValue* network_list =
       network_dictionary.FindList("NetworkConfigurations");
   ASSERT_TRUE(network_list);
 

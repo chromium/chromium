@@ -1,0 +1,45 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("ui") {
+  sources = [
+    "pop_up_menu_control.h",
+    "pop_up_menu_control.mm",
+    "quick_delete_consumer.h",
+    "quick_delete_mutator.h",
+    "quick_delete_presentation_commands.h",
+    "quick_delete_view_controller.h",
+    "quick_delete_view_controller.mm",
+    "table_view_pop_up_cell.h",
+    "table_view_pop_up_cell.mm",
+  ]
+  deps = [
+    "//base",
+    "//components/browsing_data/core",
+    "//components/prefs",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/browsing_data/model:util",
+    "//ios/chrome/browser/intents/model:model_donation_helper",
+    "//ios/chrome/browser/keyboard/ui_bundled",
+    "//ios/chrome/browser/net/model:crurl",
+    "//ios/chrome/browser/settings/ui_bundled:settings_root",
+    "//ios/chrome/browser/settings/ui_bundled/clear_browsing_data/public:constants",
+    "//ios/chrome/browser/settings/ui_bundled/clear_browsing_data/public:features",
+    "//ios/chrome/browser/shared/model/url:constants",
+    "//ios/chrome/browser/shared/ui/bottom_sheet:table_view_bottom_sheet_view_controller",
+    "//ios/chrome/browser/shared/ui/list_model",
+    "//ios/chrome/browser/shared/ui/symbols",
+    "//ios/chrome/browser/shared/ui/table_view",
+    "//ios/chrome/browser/shared/ui/table_view:utils",
+    "//ios/chrome/browser/shared/ui/table_view/cells",
+    "//ios/chrome/browser/shared/ui/table_view/content_configuration",
+    "//ios/chrome/browser/shared/ui/util",
+    "//ios/chrome/common/ui/button_stack",
+    "//ios/chrome/common/ui/colors",
+    "//ios/chrome/common/ui/confirmation_alert",
+    "//ios/chrome/common/ui/table_view:cells_constants",
+    "//ios/chrome/common/ui/util",
+    "//ui/base",
+  ]
+}

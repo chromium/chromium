@@ -17,4 +17,14 @@ BASE_FEATURE_PARAM(std::string,
                    "walletable_supported_country_allowlist",
                    "");
 
+// The backend URL to save the walletable pass.
+BASE_FEATURE_PARAM(std::string,
+                   kWalletablePassSaveUrl,
+                   &kWalletablePassDetection,
+                   "walletable_pass_save_url",
+                   "");
+
+// Controls whether to enable saving walletable passes.
+// This is a test only flag, and should be removed before starting the rollout.
+BASE_FEATURE(kWalletablePassSave, base::FEATURE_ENABLED_BY_DEFAULT);
 }  // namespace wallet

@@ -24,6 +24,12 @@ const CSSBitset kKnownExposedProperties{ {
   {% endfor %}
 } };
 
+const CSSBitset kAnimationAffectingProperties{ {
+  {% for property in animation_affecting_properties %}
+    CSSPropertyID::{{ property }},
+  {% endfor %}
+} };
+
 const CSSBitset kSurrogateProperties{ {
   {% for property in surrogate_properties %}
     CSSPropertyID::{{ property }},

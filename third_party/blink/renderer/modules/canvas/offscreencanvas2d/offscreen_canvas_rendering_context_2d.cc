@@ -4,6 +4,8 @@
 
 #include "third_party/blink/renderer/modules/canvas/offscreencanvas2d/offscreen_canvas_rendering_context_2d.h"
 
+#include <optional>
+
 #include "base/metrics/histogram_functions.h"
 #include "base/trace_event/trace_event.h"
 #include "third_party/blink/public/common/features.h"
@@ -135,9 +137,7 @@ void OffscreenCanvasRenderingContext2D::FinalizeFrame(FlushReason reason) {
     return;
   }
   resource_provider_->FlushCanvas(reason);
-  if (RuntimeEnabledFeatures::CanvasTextSwitchFrameOnFinalizeEnabled()) {
-    Host()->NotifyCachesOfSwitchingFrame();
-  }
+  Host()->NotifyCachesOfSwitchingFrame();
 }
 
 // BaseRenderingContext2D implementation
@@ -300,7 +300,16 @@ OffscreenCanvasRenderingContext2D::ProduceCanvasResource(FlushReason reason) {
   if (!provider) {
     return nullptr;
   }
-  scoped_refptr<CanvasResource> frame = provider->ProduceCanvasResource(reason);
+
+  // Only CRPSI can produce CanvasResources.
+  CanvasResourceProviderSharedImage* si_provider =
+      provider->AsSharedImageProvider();
+  if (!si_provider) {
+    return nullptr;
+  }
+
+  scoped_refptr<CanvasResource> frame =
+      si_provider->ProduceCanvasResource(reason);
   if (!frame)
     return nullptr;
 
@@ -393,7 +402,8 @@ OffscreenCanvasRenderingContext2D::GetPaintCanvas() const {
   if (!is_valid_size_ || isContextLost()) [[unlikely]] {
     return nullptr;
   }
-  return resource_provider_ ? &resource_provider_->Canvas() : nullptr;
+  auto* recorder = Recorder();
+  return recorder ? &recorder->getRecordingCanvas() : nullptr;
 }
 
 const MemoryManagedPaintRecorder* OffscreenCanvasRenderingContext2D::Recorder()
@@ -437,7 +447,7 @@ void OffscreenCanvasRenderingContext2D::LoseContext(LostContextMode lost_mode) {
     host->DiscardResources();
     host->DiscardResourceDispatcher();
   }
-  uint32_t delay = base::RandInt(1, kMaxIframeContextLoseDelay);
+  uint32_t delay = base::RandIntInclusive(1, kMaxIframeContextLoseDelay);
   dispatch_context_lost_event_timer_.StartOneShot(base::Milliseconds(delay),
                                                   FROM_HERE);
 }
@@ -483,8 +493,12 @@ bool OffscreenCanvasRenderingContext2D::ResolveFont(const String& new_font) {
     if (!style) {
       return false;
     }
-    FontDescription desc = FontStyleResolver::ComputeFont(
+    std::optional<FontDescription> maybe_desc = FontStyleResolver::ComputeFont(
         *style, host->GetFontSelector()->BaseFontSelector());
+    if (!maybe_desc.has_value()) {
+      return false;
+    }
+    FontDescription desc = maybe_desc.value();
     desc.SetLocale(locale);
     font_cache.AddFont(new_font, desc);
     GetState().SetFont(desc, host->GetFontSelector());

@@ -95,8 +95,8 @@ std::string MakeSourceId(const std::string& app_id = kAppId1,
       {"cast:", app_id, "?clientId=", client_id, "&appParams=", app_params});
 }
 
-base::Value::Dict MakeReceiverStatus(const std::string& app_id,
-                                     bool update_display_name = false) {
+base::DictValue MakeReceiverStatus(const std::string& app_id,
+                                   bool update_display_name = false) {
   return ParseJsonDict(R"({
         "applications": [{
           "appId": ")" +
@@ -844,7 +844,7 @@ TEST_F(CastActivityManagerTest, AppMessageFromReceiver) {
   // Destination ID matches client ID.
   openscreen::cast::proto::CastMessage message =
       cast_channel::CreateCastMessage("urn:x-cast:com.google.foo",
-                                      base::Value(base::Value::Dict()),
+                                      base::Value(base::DictValue()),
                                       "sourceId", "theClientId");
 
   EXPECT_CALL(*app_activity_, OnAppMessage(IsCastChannelMessage(message)));

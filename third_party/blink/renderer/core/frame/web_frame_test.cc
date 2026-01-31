@@ -64,6 +64,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/context_menu_data/context_menu_data.h"
 #include "third_party/blink/public/common/context_menu_data/edit_flags.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/input/web_coalesced_input_event.h"
 #include "third_party/blink/public/common/input/web_keyboard_event.h"
 #include "third_party/blink/public/common/loader/referrer_utils.h"
@@ -110,6 +111,7 @@
 #include "third_party/blink/public/web/web_searchable_form_data.h"
 #include "third_party/blink/public/web/web_security_policy.h"
 #include "third_party/blink/public/web/web_settings.h"
+#include "third_party/blink/public/web/web_spelling_marker.h"
 #include "third_party/blink/public/web/web_text_check_client.h"
 #include "third_party/blink/public/web/web_text_checking_completion.h"
 #include "third_party/blink/public/web/web_text_checking_result.h"
@@ -337,6 +339,8 @@ class WebFrameTest : public PageTestBase {
     // which is needed for Javascript URL security checks to work properly in
     // tests below.
     url::AddStandardScheme("chrome", url::SCHEME_WITH_HOST);
+    feature_list_.InitAndEnableFeature(
+        blink::features::kUnrestrictSpellingAndGrammarForTesting);
   }
 
   ~WebFrameTest() override {
@@ -518,6 +522,7 @@ class WebFrameTest : public PageTestBase {
 
   ScopedTestingPlatformSupport<TestingPlatformSupport> platform_;
   url::ScopedSchemeRegistryForTests scoped_registry_;
+  base::test::ScopedFeatureList feature_list_;
 };
 
 TEST_F(WebFrameTest, ContentText) {
@@ -5313,8 +5318,9 @@ TEST_F(WebFrameTest, FindInPageMatchRects) {
     Range* result = main_frame->GetTextFinder()->ActiveMatch();
     ASSERT_TRUE(result);
     result->setEnd(result->endContainer(), result->endOffset() + 3);
-    EXPECT_EQ(result->GetText(),
-              String::Format("%s %02d", kFindString, result_index + 2));
+    EXPECT_EQ(
+        result->GetText(),
+        UNSAFE_TODO(String::Format("%s %02d", kFindString, result_index + 2)));
 
     // Verify that the expected match rect also matches the currently active
     // match.  Compare the enclosing rects to prevent precision issues caused by
@@ -6978,6 +6984,7 @@ class TextCheckClient : public WebTextCheckClient {
   bool IsSpellCheckingEnabled() const override { return true; }
   void RequestCheckingOfText(
       const WebString&,
+      const std::vector<WebSpellingMarker>&,
       WebTextCheckClient::ShouldForceRefreshTextCheckService,
       std::unique_ptr<WebTextCheckingCompletion> completion) override {
     ++number_of_times_checked_;
@@ -7124,6 +7131,7 @@ class StubbornTextCheckClient : public WebTextCheckClient {
   bool IsSpellCheckingEnabled() const override { return true; }
   void RequestCheckingOfText(
       const WebString&,
+      const std::vector<WebSpellingMarker>&,
       WebTextCheckClient::ShouldForceRefreshTextCheckService,
       std::unique_ptr<WebTextCheckingCompletion> completion) override {
     completion_ = std::move(completion);

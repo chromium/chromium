@@ -55,7 +55,6 @@ import org.chromium.chrome.test.util.browser.signin.AccountManagerTestRule;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.signin.SigninFeatures;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
-import org.chromium.components.signin.test.util.FakeIdentityManager;
 import org.chromium.components.signin.test.util.SigninMatchers;
 import org.chromium.components.signin.test.util.TestAccounts;
 import org.chromium.ui.test.util.DeviceRestriction;
@@ -74,8 +73,6 @@ import java.util.concurrent.atomic.AtomicReference;
 // TODO(crbug.com/354128847): Fix NPE when launching DeviceLockActivity on automotive.
 @Restriction(DeviceRestriction.RESTRICTION_TYPE_NON_AUTO)
 public class AccountPickerBottomSheetRenderTest {
-    private final FakeIdentityManager mIdentityManager = new FakeIdentityManager();
-
     @Rule
     public final RenderTestRule mRenderTestRule =
             RenderTestRule.Builder.withPublicCorpus()
@@ -414,7 +411,7 @@ public class AccountPickerBottomSheetRenderTest {
                     mCoordinator =
                             new AccountPickerBottomSheetCoordinator(
                                     mActivityTestRule.getActivity().getWindowAndroid(),
-                                    mIdentityManager,
+                                    mAccountManagerTestRule.getIdentityManager(),
                                     mSigninManagerMock,
                                     getBottomSheetController(),
                                     mAccountPickerDelegateMock,

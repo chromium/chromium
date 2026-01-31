@@ -101,7 +101,7 @@ class ChromeOriginTrialsTest : public InProcessBrowserTest {
   }
 
   void AddDisabledFeaturesToPrefs(const std::vector<std::string>& features) {
-    base::Value::List disabled_feature_list;
+    base::ListValue disabled_feature_list;
     for (const std::string& feature : features) {
       disabled_feature_list.Append(feature);
     }
@@ -111,7 +111,7 @@ class ChromeOriginTrialsTest : public InProcessBrowserTest {
   }
 
   void AddDisabledTokensToPrefs(const std::vector<std::string>& tokens) {
-    base::Value::List disabled_token_list;
+    base::ListValue disabled_token_list;
     for (const std::string& token : tokens) {
       disabled_token_list.Append(token);
     }

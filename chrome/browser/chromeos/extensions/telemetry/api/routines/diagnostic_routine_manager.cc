@@ -54,7 +54,7 @@ void NotifyExtensionAppUiClosed(
   auto event = std::make_unique<extensions::Event>(
       extensions::events::OS_DIAGNOSTICS_ON_ROUTINE_EXCEPTION,
       cx_diag::OnRoutineException::kEventName,
-      base::Value::List().Append(exception.ToValue()), browser_context);
+      base::ListValue().Append(exception.ToValue()), browser_context);
 
   // The `EventRouter` might be unavailable in unittests.
   if (!extensions::EventRouter::Get(browser_context)) {

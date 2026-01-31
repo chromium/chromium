@@ -1143,7 +1143,7 @@ LayoutInputNode BlockNode::FirstChild() const {
   }
   auto* block = DynamicTo<LayoutBlock>(box_.Get());
   if (!block) [[unlikely]] {
-    return BlockNode(box_->FirstChildBox());
+    return BlockNode(To<LayoutBox>(box_->SlowFirstChild()));
   }
   auto* child = block->FirstChild();
   if (!child)
@@ -1198,7 +1198,7 @@ LayoutUnit BlockNode::EmptyLineBlockSize(
   // Only return a line-height for the first fragment.
   if (IsBreakInside(incoming_break_token))
     return LayoutUnit();
-  return box_->LogicalHeightForEmptyLine();
+  return box_->FirstLineStyleRef().ComputedLineHeightAsFixed();
 }
 
 String BlockNode::ToString() const {
@@ -1314,10 +1314,8 @@ bool BlockNode::IsInlineLevel() const {
   return GetLayoutBox()->IsInline();
 }
 
-bool BlockNode::IsAtomicInlineLevel() const {
-  // LayoutObject::IsAtomicInlineLevel() returns true for e.g., <img
-  // style="display: block">. Check IsInline() as well.
-  return GetLayoutBox()->IsAtomicInlineLevel() && GetLayoutBox()->IsInline();
+bool BlockNode::IsAtomicInline() const {
+  return GetLayoutBox()->IsAtomicInline();
 }
 
 bool BlockNode::IsInTopOrViewTransitionLayer() const {

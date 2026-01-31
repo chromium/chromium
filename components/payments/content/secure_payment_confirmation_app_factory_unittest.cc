@@ -67,12 +67,10 @@ struct MockAuthenticatorOptions {
   bool is_user_verifying_platform_authenticator_available = true;
 };
 
-#if BUILDFLAG(IS_ANDROID)
 std::optional<std::vector<std::unique_ptr<SecurePaymentConfirmationCredential>>>
 NoMatchingCredentials() {
   return std::vector<std::unique_ptr<SecurePaymentConfirmationCredential>>();
 }
-#endif  // BUILDFLAG(IS_ANDROID)
 
 std::optional<std::vector<std::unique_ptr<SecurePaymentConfirmationCredential>>>
 GetMatchingCredentialsIsUnsupported() {
@@ -852,7 +850,6 @@ TEST_F(SecurePaymentConfirmationAppFactoryBrowserBoundKeysTest,
 }
 #endif  // !BUILDFLAG(IS_IOS)
 
-#if BUILDFLAG(IS_ANDROID)
 class SecurePaymentConfirmationAppFactoryFallbackTest
     : public SecurePaymentConfirmationAppFactoryTest {
  public:
@@ -1025,8 +1022,6 @@ TEST_F(
       ->TestDidDownloadImage(icon, /*http_status_code=*/200,
                              std::move(icon_bitmaps), std::move(icon_sizes));
 }
-
-#endif  // BUILDFLAG(IS_ANDROID)
 
 }  // namespace
 }  // namespace payments

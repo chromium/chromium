@@ -51,7 +51,7 @@ FakeVideoConferenceTrayEffectsManager::GetUiControllerForEffectId(
 std::vector<std::string>
 FakeVideoConferenceTrayEffectsManager::GetDlcIdsForEffectId(
     VcEffectId effect_id) {
-  if (base::Contains(dlc_ids_for_effect_id_, effect_id)) {
+  if (dlc_ids_for_effect_id_.contains(effect_id)) {
     return dlc_ids_for_effect_id_[effect_id];
   }
   return VideoConferenceTrayEffectsManager::GetDlcIdsForEffectId(effect_id);

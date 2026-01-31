@@ -8,7 +8,6 @@
 #include <utility>
 
 #include "base/check_is_test.h"
-#include "base/containers/contains.h"
 #include "base/values.h"
 #include "chrome/common/pref_names.h"
 #include "components/account_id/account_id.h"
@@ -41,10 +40,10 @@ void ReportingUserTracker::RegisterPrefs(PrefRegistrySimple* registry) {
 
 bool ReportingUserTracker::ShouldReportUser(
     const std::string& user_email) const {
-  const base::Value::List& reporting_users =
+  const base::ListValue& reporting_users =
       local_state_->GetList(::prefs::kReportingUsers);
-  base::Value user_email_value(FullyCanonicalize(user_email));
-  return base::Contains(reporting_users, user_email_value);
+  std::string user_email_value(FullyCanonicalize(user_email));
+  return reporting_users.contains(user_email_value);
 }
 
 void ReportingUserTracker::OnUserAffiliationUpdated(
@@ -83,15 +82,15 @@ void ReportingUserTracker::OnUserRemoved(
 
 void ReportingUserTracker::AddReportingUser(const AccountId& account_id) {
   ScopedListPrefUpdate users_update(local_state_, ::prefs::kReportingUsers);
-  base::Value email_value(FullyCanonicalize(account_id.GetUserEmail()));
-  if (!base::Contains(users_update.Get(), email_value)) {
-    users_update->Append(std::move(email_value));
+  std::string email(FullyCanonicalize(account_id.GetUserEmail()));
+  if (!users_update.Get().contains(email)) {
+    users_update->Append(email);
   }
 }
 
 void ReportingUserTracker::RemoveReportingUser(const AccountId& account_id) {
   ScopedListPrefUpdate users_update(local_state_, ::prefs::kReportingUsers);
-  base::Value::List& update_list = users_update.Get();
+  base::ListValue& update_list = users_update.Get();
   auto it = std::ranges::find(
       update_list, base::Value(FullyCanonicalize(account_id.GetUserEmail())));
   if (it == update_list.end()) {

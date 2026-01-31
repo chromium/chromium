@@ -53,7 +53,7 @@ void FakeBlobDataHandle::ReadSideData(
   }
 
   mojo_base::BigBuffer buffer(side_data_.size());
-  UNSAFE_TODO(memcpy(buffer.data(), side_data_.data(), side_data_.size()));
+  base::span(buffer).copy_from(base::as_byte_span(side_data_));
 
   std::move(callback).Run(side_data_.size(), std::move(buffer));
 }

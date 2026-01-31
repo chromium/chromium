@@ -12,9 +12,13 @@ import {getCss} from './composebox_match.css.js';
 import {getHtml} from './composebox_match.html.js';
 import {ComposeboxProxyImpl, createAutocompleteMatch} from './composebox_proxy.js';
 
+const LINE_HEIGHT_PX = 24;
+const MAX_DEEP_SEARCH_LINES = 2;
+
 export interface ComposeboxMatchElement {
   $: {
     remove: HTMLElement,
+    textContainer: HTMLElement,
   };
 }
 
@@ -46,6 +50,8 @@ export class ComposeboxMatchElement extends CrLitElement {
        */
       matchIndex: {type: Number},
 
+      inDeepSearchMode: {type: Boolean},
+
       removeButtonTitle_: {type: String},
     };
   }
@@ -53,9 +59,13 @@ export class ComposeboxMatchElement extends CrLitElement {
   accessor match: AutocompleteMatch = createAutocompleteMatch();
 
   accessor matchIndex: number = -1;
+  accessor inDeepSearchMode: boolean = false;
   private searchboxHandler_: SearchboxPageHandlerRemote;
   protected accessor removeButtonTitle_: string =
       loadTimeData.getString('removeSuggestion');
+
+  // Used for text clamping.
+  private resizeObserver_: ResizeObserver|null = null;
 
   constructor() {
     super();
@@ -71,6 +81,45 @@ export class ComposeboxMatchElement extends CrLitElement {
     // Prevent default mousedown behavior (e.g., focus) to avoid layout shifts
     // that could interfere with click events, especially for ZPS suggestions.
     this.addEventListener('mousedown', (event) => event.preventDefault());
+
+    // Set up observer for responsive clamping.
+    this.resizeObserver_ =
+        new ResizeObserver(() => this.clampDeepSearchContents_());
+    this.resizeObserver_.observe(this.$.textContainer);
+  }
+
+  override disconnectedCallback() {
+    super.disconnectedCallback();
+    if (this.resizeObserver_) {
+      this.resizeObserver_.unobserve(this.$.textContainer);
+    }
+  }
+
+  // This is needed since --webkit-box is deprecated and line-clamp does not
+  // work in CSS without it.
+  private clampDeepSearchContents_() {
+    if (!this.inDeepSearchMode) {
+      return;
+    }
+    const textContainer = this.$.textContainer;
+    // Always start with the full text to correctly calculate overflow.
+    textContainer.textContent = this.match.contents;
+
+    const maxHeight = LINE_HEIGHT_PX * MAX_DEEP_SEARCH_LINES;
+    if (textContainer.scrollHeight <= maxHeight) {
+      return;
+    }
+
+    // Text is overflowing, so clamp it by removing words until the contents
+    // fit in 2 lines.
+    const words = this.match.contents.split(' ');
+    while (words.length > 0) {
+      words.pop();
+      textContainer.textContent = words.join(' ') + '...';
+      if (textContainer.scrollHeight <= maxHeight) {
+        break;
+      }
+    }
   }
 
   protected computeContents_(): string {

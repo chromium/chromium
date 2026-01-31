@@ -164,7 +164,7 @@ v8::Local<v8::Value> AppHooksDelegate::GetDetails(
   if (!extension)
     return v8::Null(isolate);
 
-  base::Value::Dict manifest_copy = extension->manifest()->value()->Clone();
+  base::DictValue manifest_copy = extension->manifest()->value()->Clone();
   manifest_copy.Set("id", extension->id());
   return content::V8ValueConverter::Create()->ToV8Value(
       manifest_copy, script_context->v8_context());
@@ -227,7 +227,7 @@ void AppHooksDelegate::OnAppInstallStateResponse(int request_id,
   // Note: it's kind of lame that we serialize the install state to a
   // base::Value here when we're just going to later convert it to v8, but it's
   // not worth the specialization on APIRequestHandler for this oddball API.
-  base::Value::List response;
+  base::ListValue response;
   response.Append(state);
   request_handler_->CompleteRequest(request_id, response, std::string());
 }

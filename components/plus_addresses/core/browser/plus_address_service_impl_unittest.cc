@@ -23,7 +23,6 @@
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "base/time/time.h"
-#include "base/types/cxx23_to_underlying.h"
 #include "components/affiliations/core/browser/affiliation_utils.h"
 #include "components/affiliations/core/browser/mock_affiliation_service.h"
 #include "components/autofill/core/browser/autofill_field.h"
@@ -44,7 +43,7 @@
 #include "components/autofill/core/common/form_data.h"
 #include "components/autofill/core/common/form_field_data.h"
 #include "components/autofill/core/common/html_field_types.h"
-#include "components/autofill/core/common/mojom/autofill_types.mojom-data-view.h"
+#include "components/autofill/core/common/mojom/autofill_types.mojom-shared.h"
 #include "components/os_crypt/async/browser/test_utils.h"
 #include "components/plus_addresses/core/browser/blocked_facets.pb.h"
 #include "components/plus_addresses/core/browser/grit/plus_addresses_strings.h"
@@ -124,7 +123,7 @@ MATCHER_P(IsPreallocatedPlusAddress, address, "") {
   if (!arg.is_dict()) {
     return false;
   }
-  const base::Value::Dict& d = arg.GetDict();
+  const base::DictValue& d = arg.GetDict();
   const std::string* plus_address =
       d.FindString(PlusAddressPreallocator::kPlusAddressKey);
   return plus_address && *plus_address == address;
@@ -693,10 +692,10 @@ class PlusAddressServicePreAllocationTest
     InitService();
   }
 
-  const base::Value::List& GetPreallocatedAddresses() {
+  const base::ListValue& GetPreallocatedAddresses() {
     return pref_service().GetList(prefs::kPreallocatedAddresses);
   }
-  void SetPreallocatedAddresses(base::Value::List addresses) {
+  void SetPreallocatedAddresses(base::ListValue addresses) {
     pref_service().SetList(prefs::kPreallocatedAddresses, std::move(addresses));
   }
 
@@ -713,7 +712,7 @@ TEST_F(PlusAddressServicePreAllocationTest,
   const std::string kPlusAddress2 = "plus2@plus.com";
   const auto kOrigin = url::Origin::Create(GURL("https://foo.com"));
   SetPreallocatedAddresses(
-      base::Value::List()
+      base::ListValue()
           .Append(CreatePreallocatedPlusAddress(kFuture, kPlusAddress1))
           .Append(CreatePreallocatedPlusAddress(kFuture, kPlusAddress2)));
 

@@ -184,7 +184,7 @@ class BackgroundContentsService
   // Load a BackgroundContent; the settings are read from the provided
   // dictionary.
   void LoadBackgroundContentsFromDictionary(const std::string& extension_id,
-                                            const base::Value::Dict& contents);
+                                            const base::DictValue& contents);
 
   // Load the manifest-specified BackgroundContents for all apps for the
   // profile.

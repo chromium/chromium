@@ -35,7 +35,7 @@ class DeviceAuthenticatorBridgeImpl : public DeviceAuthenticatorBridge {
   void Cancel() override;
 
   // Called by Java when the authentication completes with the `result`.
-  void OnAuthenticationCompleted(JNIEnv* env, jint result);
+  void OnAuthenticationCompleted(JNIEnv* env, int32_t result);
 
  private:
   // Called when the authentication completes.

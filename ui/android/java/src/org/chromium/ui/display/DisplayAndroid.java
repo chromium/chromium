@@ -9,10 +9,12 @@ import android.graphics.Rect;
 import android.view.Display;
 import android.view.Surface;
 
+import org.chromium.base.AconfigFlaggedApiDelegate;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.WeakHashMap;
 
 /**
@@ -67,11 +69,16 @@ public class DisplayAndroid {
     public static final class AdaptiveRefreshRateInfo {
         public final boolean supportsAdaptiveRefreshRate;
         public final float suggestedFrameRateHigh;
+        public final @Nullable List<AconfigFlaggedApiDelegate.FrameRateVelocityPoint>
+                velocityMapping;
 
         public AdaptiveRefreshRateInfo(
-                boolean supportsAdaptiveRefreshRate, float suggestedFrameRateHigh) {
+                boolean supportsAdaptiveRefreshRate,
+                float suggestedFrameRateHigh,
+                @Nullable List<AconfigFlaggedApiDelegate.FrameRateVelocityPoint> velocityMapping) {
             this.supportsAdaptiveRefreshRate = supportsAdaptiveRefreshRate;
             this.suggestedFrameRateHigh = suggestedFrameRateHigh;
+            this.velocityMapping = velocityMapping;
         }
 
         @Override
@@ -81,7 +88,8 @@ public class DisplayAndroid {
             }
             AdaptiveRefreshRateInfo other = (AdaptiveRefreshRateInfo) obj;
             return supportsAdaptiveRefreshRate == other.supportsAdaptiveRefreshRate
-                    && suggestedFrameRateHigh == other.suggestedFrameRateHigh;
+                    && suggestedFrameRateHigh == other.suggestedFrameRateHigh
+                    && Objects.equals(velocityMapping, other.velocityMapping);
         }
     }
 
@@ -116,7 +124,7 @@ public class DisplayAndroid {
     protected boolean mIsDisplayWideColorGamut;
     protected boolean mIsDisplayServerWideColorGamut;
     private AdaptiveRefreshRateInfo mAdaptiveRefreshRateInfo =
-            new AdaptiveRefreshRateInfo(false, 0.0f);
+            new AdaptiveRefreshRateInfo(false, 0.0f, null);
 
     protected static DisplayAndroidManager getManager() {
         return DisplayAndroidManager.getInstance();
@@ -140,6 +148,22 @@ public class DisplayAndroid {
     public static DisplayAndroid getNonMultiDisplay(Context context) {
         Display display = DisplayAndroidManager.getDefaultDisplayForContext(context);
         return getManager().getDisplayAndroid(display);
+    }
+
+    /**
+     * Returns the device's internal, built-in display (ID 0).
+     *
+     * <p>This method always returns the default display (typically the phone or tablet screen),
+     * even if the application is currently running on a secondary screen (such as an external
+     * monitor or in Samsung DeX mode).
+     *
+     * <p>
+     *
+     * @return The {@link DisplayAndroid} corresponding to {@link
+     *     android.view.Display#DEFAULT_DISPLAY}.
+     */
+    /* package */ static DisplayAndroid getGlobalDefaultDisplay() {
+        return getManager().getDisplayAndroid(DisplayAndroidManager.getGlobalDefaultDisplay());
     }
 
     /** Returns the display ID that matches the one defined in Android's Display. */

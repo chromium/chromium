@@ -4,8 +4,10 @@
 
 #include "chrome/browser/ui/views/commerce/product_specifications_button.h"
 
+#include <memory>
+
 #include "chrome/browser/commerce/shopping_service_factory.h"
-#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window/test/mock_browser_window_interface.h"
 #include "chrome/browser/ui/commerce/product_specifications_entry_point_controller.h"
 #include "chrome/browser/ui/tabs/test_tab_strip_model_delegate.h"
 #include "chrome/browser/ui/views/tabs/fake_base_tab_strip_controller.h"
@@ -14,11 +16,13 @@
 #include "chrome/test/views/chrome_views_test_base.h"
 #include "components/commerce/core/mock_shopping_service.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/unowned_user_data/unowned_user_data_host.h"
 
 class MockProductSpecificationsEntryPointController
     : public commerce::ProductSpecificationsEntryPointController {
  public:
-  explicit MockProductSpecificationsEntryPointController(Browser* browser)
+  explicit MockProductSpecificationsEntryPointController(
+      BrowserWindowInterface* browser)
       : commerce::ProductSpecificationsEntryPointController(browser) {}
   ~MockProductSpecificationsEntryPointController() override = default;
 
@@ -37,20 +41,22 @@ class ProductSpecificationsButtonTest : public ChromeViewsTestBase {
           return commerce::MockShoppingService::Build();
         }));
     profile_ = profile_builder.Build();
-    Browser::CreateParams params(profile_.get(), true);
-    auto browser_window = std::make_unique<TestBrowserWindow>();
-    params.window = browser_window.release();
-    browser_ = Browser::DeprecatedCreateOwnedForTesting(params);
-    tab_strip_controller_ = std::make_unique<FakeBaseTabStripController>();
+    browser_window_interface_ = std::make_unique<MockBrowserWindowInterface>();
     tab_strip_model_ = std::make_unique<TabStripModel>(
         &tab_strip_model_delegate_, profile_.get());
+    EXPECT_CALL(*browser_window_interface_, GetTabStripModel())
+        .WillRepeatedly(testing::Return(tab_strip_model_.get()));
+    EXPECT_CALL(*browser_window_interface_, GetProfile())
+        .WillRepeatedly(testing::Return(profile_.get()));
+    EXPECT_CALL(*browser_window_interface_, GetUnownedUserDataHost())
+        .WillRepeatedly(testing::ReturnRef(unowned_user_data_host_));
     entry_point_controller_ =
         std::make_unique<MockProductSpecificationsEntryPointController>(
-            browser_.get());
+            browser_window_interface_.get());
     locked_expansion_view_ = std::make_unique<views::View>();
     button_ = std::make_unique<ProductSpecificationsButton>(
-        tab_strip_controller_.get(), tab_strip_model_.get(),
-        entry_point_controller_.get(), true, locked_expansion_view_.get());
+        browser_window_interface_.get(), entry_point_controller_.get(), true,
+        locked_expansion_view_.get());
     ON_CALL(*entry_point_controller_, ShouldExecuteEntryPointShow)
         .WillByDefault(testing::Return(true));
   }
@@ -60,10 +66,10 @@ class ProductSpecificationsButtonTest : public ChromeViewsTestBase {
   void ShowButton() { button_->Show(); }
 
  protected:
+  ui::UnownedUserDataHost unowned_user_data_host_;
   std::unique_ptr<TestingProfile> profile_;
-  std::unique_ptr<Browser> browser_;
+  std::unique_ptr<MockBrowserWindowInterface> browser_window_interface_;
   TestTabStripModelDelegate tab_strip_model_delegate_;
-  std::unique_ptr<TabStripController> tab_strip_controller_;
   std::unique_ptr<TabStripModel> tab_strip_model_;
   std::unique_ptr<MockProductSpecificationsEntryPointController>
       entry_point_controller_;

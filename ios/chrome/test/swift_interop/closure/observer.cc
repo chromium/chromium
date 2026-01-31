@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ios/chrome/test/swift_interop/include/observer.h"
+#include "ios/chrome/test/swift_interop/closure/observer.h"
 
 SWIFT_DEFINE_INTEROP_WRAPPER(ValueDidChangeCallback,
                              base::RepeatingCallback<void(int)>)

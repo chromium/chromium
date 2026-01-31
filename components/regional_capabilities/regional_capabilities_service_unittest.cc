@@ -14,7 +14,6 @@
 
 #include "base/check_deref.h"
 #include "base/command_line.h"
-#include "base/containers/contains.h"
 #include "base/containers/span.h"
 #include "base/location.h"
 #include "base/memory/weak_ptr.h"
@@ -362,6 +361,10 @@ INSTANTIATE_TEST_SUITE_P(
             .expected_ose_list_type = SearchEngineListType::kShuffled,
             .expected_histograms =
                 {
+#if BUILDFLAG(IS_ANDROID)
+                    {"RegionalCapabilities.Debug.AndroidProgramResolution",
+                     ExpectHistogramBucket(AndroidProgramResolution::kSuccess)},
+#endif
                     {"RegionalCapabilities.LoadedCountrySource",
                      ExpectHistogramBucket(LoadedCountrySource::kCurrentOnly)},
                 },
@@ -376,6 +379,8 @@ INSTANTIATE_TEST_SUITE_P(
             .expected_ose_list_type = SearchEngineListType::kTopN,
             .expected_histograms =
                 {
+                    {"RegionalCapabilities.Debug.AndroidProgramResolution",
+                     ExpectHistogramBucket(AndroidProgramResolution::kSuccess)},
                     {"RegionalCapabilities.LoadedCountrySource",
                      ExpectHistogramBucket(LoadedCountrySource::kCurrentOnly)},
                 },
@@ -391,6 +396,9 @@ INSTANTIATE_TEST_SUITE_P(
             .expected_ose_list_type = SearchEngineListType::kTopN,
             .expected_histograms =
                 {
+                    {"RegionalCapabilities.Debug.AndroidProgramResolution",
+                     ExpectHistogramBucket(AndroidProgramResolution::
+                                               kDefaultForOutOfProgramCountry)},
                     {"RegionalCapabilities.LoadedCountrySource",
                      ExpectHistogramBucket(LoadedCountrySource::kCurrentOnly)},
                 },

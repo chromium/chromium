@@ -4,12 +4,12 @@
 
 #include "components/performance_manager/v8_memory/v8_detailed_memory_decorator.h"
 
+#include <algorithm>
 #include <utility>
 #include <vector>
 
 #include "base/byte_count.h"
 #include "base/check.h"
-#include "base/containers/contains.h"
 #include "base/containers/flat_map.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -485,10 +485,10 @@ void NodeAttachedProcessData::OnV8MemoryUsage(
   // If a frame doesn't have corresponding data in the result, clear any data
   // it may have had. Any datum in the result that doesn't correspond to an
   // existing frame is likewise accrued to detached bytes.
-  base::ByteCount detached_v8_memory_used;
-  base::ByteCount detached_canvas_memory_used;
-  base::ByteCount shared_v8_memory_used;
-  base::ByteCount blink_memory_used;
+  base::ByteSize detached_v8_memory_used;
+  base::ByteSize detached_canvas_memory_used;
+  base::ByteSize shared_v8_memory_used;
+  base::ByteSize blink_memory_used;
 
   // Create a mapping from token to execution context usage for the merge below.
   std::vector<std::pair<ExecutionContextToken, PerContextV8MemoryUsagePtr>>
@@ -694,31 +694,31 @@ void V8DetailedMemoryDecorator::OnBeforeProcessNodeRemoved(
   process_data->process_measurement_requests().OnOwnerUnregistered();
 }
 
-base::Value::Dict V8DetailedMemoryDecorator::DescribeFrameNodeData(
+base::DictValue V8DetailedMemoryDecorator::DescribeFrameNodeData(
     const FrameNode* frame_node) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   const auto* const frame_data =
       V8DetailedMemoryExecutionContextData::ForFrameNode(frame_node);
   if (!frame_data)
-    return base::Value::Dict();
+    return base::DictValue();
 
-  base::Value::Dict dict;
+  base::DictValue dict;
   dict.Set("v8_bytes_used",
            static_cast<int>(frame_data->v8_memory_used().InBytes()));
   return dict;
 }
 
-base::Value::Dict V8DetailedMemoryDecorator::DescribeProcessNodeData(
+base::DictValue V8DetailedMemoryDecorator::DescribeProcessNodeData(
     const ProcessNode* process_node) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   const auto* const process_data =
       V8DetailedMemoryProcessData::ForProcessNode(process_node);
   if (!process_data)
-    return base::Value::Dict();
+    return base::DictValue();
 
   DCHECK_EQ(content::PROCESS_TYPE_RENDERER, process_node->GetProcessType());
 
-  base::Value::Dict dict;
+  base::DictValue dict;
   dict.Set("detached_v8_bytes_used",
            static_cast<int>(process_data->detached_v8_memory_used().InBytes()));
   dict.Set("shared_v8_bytes_used",
@@ -877,7 +877,7 @@ void V8DetailedMemoryRequestQueue::AddMeasurementRequest(
       measurement_requests =
           IsMeasurementBounded(request->mode()) ? bounded_measurement_requests_
                                                 : lazy_measurement_requests_;
-  DCHECK(!base::Contains(measurement_requests, request))
+  DCHECK(!std::ranges::contains(measurement_requests, request))
       << "V8DetailedMemoryRequest object added twice";
   // Each user of the decorator is expected to issue a single
   // V8DetailedMemoryRequest, so the size of measurement_requests is too low

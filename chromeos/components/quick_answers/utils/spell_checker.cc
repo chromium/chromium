@@ -17,6 +17,11 @@ namespace quick_answers {
 namespace {
 
 bool ShouldDownloadDictionaries() {
+  // `QuickAnswersState::IsEnabled()` returns enabled state for the current
+  // feature type, i.e., enabled as Quick Answers feature or enabled as Help Me
+  // Read feature. Note that feature type calculation is done as async
+  // operation. There is a short period of time where feature type is calculated
+  // as Quick Answers even if the session is for Help Me Read.
   if (QuickAnswersState::IsEnabled()) {
     return true;
   }

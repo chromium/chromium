@@ -1126,4 +1126,9 @@ CSSPrimitiveValue* CSSPrimitiveValue::ConvertLiteralsFromPercentageToNumber()
       CSSPrimitiveValue::ValueRange::kAll);
 }
 
+bool CSSPrimitiveValue::HasRandomFunctions() const {
+  return IsMathFunctionValue() &&
+         To<CSSMathFunctionValue>(this)->HasRandomFunctions();
+}
+
 }  // namespace blink

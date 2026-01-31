@@ -14,8 +14,15 @@ import '../i18n_setup.js';
 import '../settings_page/settings_section.js';
 import '../settings_shared.css.js';
 import './startup_urls_page.js';
+// <if expr="is_win">
+import '../controls/settings_toggle_button.js';
+
+// </if>
 
 import {WebUiListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
+// <if expr="is_win">
+import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
+// </if>
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getSearchManager} from '../search_settings.js';
@@ -53,6 +60,14 @@ export class SettingsOnStartupPageElement extends
         notify: true,
       },
 
+      // <if expr="is_win">
+      isForegroundLaunchFeatureEnabled_: {
+        type: Boolean,
+        value: () =>
+            loadTimeData.getBoolean('isForegroundLaunchFeatureEnabled'),
+      },
+      // </if>
+
       ntpExtension_: Object,
 
       prefValuesEnum_: {readOnly: true, type: Object, value: PrefValues},
@@ -60,6 +75,9 @@ export class SettingsOnStartupPageElement extends
   }
 
   declare prefs: Object;
+  // <if expr="is_win">
+  declare private isForegroundLaunchFeatureEnabled_: boolean;
+  // </if>
   declare private ntpExtension_: NtpExtension|null;
 
   override connectedCallback() {

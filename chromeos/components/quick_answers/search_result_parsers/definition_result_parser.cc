@@ -16,8 +16,6 @@
 namespace quick_answers {
 namespace {
 
-using base::Value;
-
 constexpr char kHttpsPrefix[] = "https:";
 
 // DictionaryResult
@@ -59,7 +57,7 @@ constexpr int kMaxSubSensesNumber = 3;
 // PartsOfSpeech
 constexpr char kPartsOfSpeechTextKey[] = "value";
 
-std::string GetQueryTerm(const base::Value::Dict& result) {
+std::string GetQueryTerm(const base::DictValue& result) {
   const std::string* query_term = result.FindString(kQueryTermKey);
   if (!query_term) {
     return std::string();
@@ -67,7 +65,7 @@ std::string GetQueryTerm(const base::Value::Dict& result) {
   return *query_term;
 }
 
-std::string GetHeadword(const base::Value::Dict& entry_result) {
+std::string GetHeadword(const base::DictValue& entry_result) {
   const std::string* headword = entry_result.FindString(kHeadwordKey);
   if (!headword) {
     return std::string();
@@ -75,22 +73,22 @@ std::string GetHeadword(const base::Value::Dict& entry_result) {
   return *headword;
 }
 
-std::string GetSampleSentence(const base::Value::Dict& sense_result) {
+std::string GetSampleSentence(const base::DictValue& sense_result) {
   std::string sample_sentence;
 
   // Check both the `exampleGroups` and `additionalExamples` keys for a
   // sample sentence text.
-  const base::Value::Dict* example_groups =
+  const base::DictValue* example_groups =
       ResultParser::GetFirstDictElementFromList(sense_result,
                                                 kExampleGroupsKey);
   if (example_groups) {
-    const Value::List* examples = example_groups->FindList(kExamplesKey);
+    const base::ListValue* examples = example_groups->FindList(kExamplesKey);
     if (examples && !examples->empty()) {
       sample_sentence = examples->front().GetString();
     }
   }
   if (sample_sentence.empty()) {
-    const Value::List* additional_examples =
+    const base::ListValue* additional_examples =
         sense_result.FindList(kAdditionalExamplesKey);
     if (additional_examples && !additional_examples->empty()) {
       sample_sentence = additional_examples->front().GetString();
@@ -100,25 +98,24 @@ std::string GetSampleSentence(const base::Value::Dict& sense_result) {
   return sample_sentence;
 }
 
-std::vector<std::string> GetSynonymsList(
-    const base::Value::Dict& sense_result) {
+std::vector<std::string> GetSynonymsList(const base::DictValue& sense_result) {
   std::vector<std::string> synonyms_list;
 
-  const base::Value::Dict* thesaurus_entries =
+  const base::DictValue* thesaurus_entries =
       ResultParser::GetFirstDictElementFromList(sense_result,
                                                 kThesaurusEntriesKey);
   if (!thesaurus_entries) {
     return synonyms_list;
   }
 
-  const base::Value::Dict* synonym_entries =
+  const base::DictValue* synonym_entries =
       ResultParser::GetFirstDictElementFromList(*thesaurus_entries,
                                                 kSynonymsKey);
   if (!synonym_entries) {
     return synonyms_list;
   }
 
-  const Value::List* nyms_entries = synonym_entries->FindList(kNymsKey);
+  const base::ListValue* nyms_entries = synonym_entries->FindList(kNymsKey);
   if (!nyms_entries) {
     return synonyms_list;
   }
@@ -129,7 +126,7 @@ std::vector<std::string> GetSynonymsList(
       break;
     }
 
-    const base::Value::Dict* nyms_entry = &(value.GetDict());
+    const base::DictValue* nyms_entry = &(value.GetDict());
     if (nyms_entry->empty()) {
       continue;
     }
@@ -143,8 +140,8 @@ std::vector<std::string> GetSynonymsList(
   return synonyms_list;
 }
 
-std::unique_ptr<Sense> ParseSense(const base::Value::Dict& sense_result) {
-  const base::Value::Dict* definition_entry =
+std::unique_ptr<Sense> ParseSense(const base::DictValue& sense_result) {
+  const base::DictValue* definition_entry =
       sense_result.FindDict(kDefinitionKey);
   if (!definition_entry) {
     DLOG(ERROR) << "Unable to find definition entry.";
@@ -174,10 +171,11 @@ std::unique_ptr<Sense> ParseSense(const base::Value::Dict& sense_result) {
   return sense;
 }
 
-std::vector<Sense> ParseSubSenses(const base::Value::Dict& sense_result) {
+std::vector<Sense> ParseSubSenses(const base::DictValue& sense_result) {
   std::vector<Sense> subsenses_list;
 
-  const Value::List* subsense_entries = sense_result.FindList(kSubSensesKey);
+  const base::ListValue* subsense_entries =
+      sense_result.FindList(kSubSensesKey);
   if (!subsense_entries) {
     return subsenses_list;
   }
@@ -188,7 +186,7 @@ std::vector<Sense> ParseSubSenses(const base::Value::Dict& sense_result) {
       break;
     }
 
-    const base::Value::Dict* subsense_entry = &(value.GetDict());
+    const base::DictValue* subsense_entry = &(value.GetDict());
     if (subsense_entry->empty()) {
       continue;
     }
@@ -207,29 +205,32 @@ std::vector<Sense> ParseSubSenses(const base::Value::Dict& sense_result) {
 }  // namespace
 
 std::unique_ptr<StructuredResult>
-DefinitionResultParser::ParseInStructuredResult(
-    const base::Value::Dict& result) {
-  const Value::Dict* dictionary_result = result.FindDict(kDictionaryResultKey);
+DefinitionResultParser::ParseInStructuredResult(const base::DictValue& result) {
+  const base::DictValue* dictionary_result =
+      result.FindDict(kDictionaryResultKey);
   if (!dictionary_result) {
     DLOG(ERROR) << "Unable to find the dictionary result entry.";
     return nullptr;
   }
 
-  const Value::Dict* first_entry = ResultParser::GetFirstDictElementFromList(
-      *dictionary_result, kEntriesKey);
+  const base::DictValue* first_entry =
+      ResultParser::GetFirstDictElementFromList(*dictionary_result,
+                                                kEntriesKey);
   if (!first_entry) {
     DLOG(ERROR) << "Unable to find a first entry.";
     return nullptr;
   }
 
-  const Value::Dict* first_sense_family = ExtractFirstSenseFamily(*first_entry);
+  const base::DictValue* first_sense_family =
+      ExtractFirstSenseFamily(*first_entry);
   if (!first_sense_family) {
     DLOG(ERROR) << "Unable to find a first sense familiy.";
     return nullptr;
   }
 
-  const Value::Dict* first_sense = ResultParser::GetFirstDictElementFromList(
-      *first_sense_family, kSensesKey);
+  const base::DictValue* first_sense =
+      ResultParser::GetFirstDictElementFromList(*first_sense_family,
+                                                kSensesKey);
   if (!first_sense) {
     DLOG(ERROR) << "Unable to find a first sense.";
     return nullptr;
@@ -250,8 +251,9 @@ DefinitionResultParser::ParseInStructuredResult(
     definition_result->subsenses_list = std::move(subsenses_list);
   }
 
-  const Value::Dict* part_of_speech = ResultParser::GetFirstDictElementFromList(
-      *first_sense_family, kPartsOfSpeechKey);
+  const base::DictValue* part_of_speech =
+      ResultParser::GetFirstDictElementFromList(*first_sense_family,
+                                                kPartsOfSpeechKey);
   if (!part_of_speech) {
     // For Spanish dictionary results, the |partsOfSpeech| field is found in
     // the individual sense information rather than in the sense family.
@@ -337,7 +339,7 @@ bool DefinitionResultParser::SupportsNewInterface() const {
   return true;
 }
 
-bool DefinitionResultParser::Parse(const base::Value::Dict& result,
+bool DefinitionResultParser::Parse(const base::DictValue& result,
                                    QuickAnswer* quick_answer) {
   std::unique_ptr<StructuredResult> structured_result =
       ParseInStructuredResult(result);
@@ -348,9 +350,9 @@ bool DefinitionResultParser::Parse(const base::Value::Dict& result,
   return PopulateQuickAnswer(*structured_result, quick_answer);
 }
 
-const Value::Dict* DefinitionResultParser::ExtractFirstSenseFamily(
-    const base::Value::Dict& definition_entry) {
-  const Value::Dict* first_sense_family =
+const base::DictValue* DefinitionResultParser::ExtractFirstSenseFamily(
+    const base::DictValue& definition_entry) {
+  const base::DictValue* first_sense_family =
       ResultParser::GetFirstDictElementFromList(definition_entry,
                                                 kSenseFamiliesKey);
   if (!first_sense_family) {
@@ -361,9 +363,9 @@ const Value::Dict* DefinitionResultParser::ExtractFirstSenseFamily(
   return first_sense_family;
 }
 
-const Value::Dict* DefinitionResultParser::ExtractFirstPhonetics(
-    const base::Value::Dict& definition_entry) {
-  const Value::Dict* first_phonetics =
+const base::DictValue* DefinitionResultParser::ExtractFirstPhonetics(
+    const base::DictValue& definition_entry) {
+  const base::DictValue* first_phonetics =
       ResultParser::GetFirstDictElementFromList(definition_entry,
                                                 kPhoneticsKey);
   if (first_phonetics)
@@ -371,7 +373,8 @@ const Value::Dict* DefinitionResultParser::ExtractFirstPhonetics(
 
   // It is is possible to have phonetics per sense family in case of heteronyms
   // such as "arithmetic".
-  const Value::Dict* sense_family = ExtractFirstSenseFamily(definition_entry);
+  const base::DictValue* sense_family =
+      ExtractFirstSenseFamily(definition_entry);
   if (sense_family)
     return ResultParser::GetFirstDictElementFromList(*sense_family,
                                                      kPhoneticsKey);
@@ -381,8 +384,8 @@ const Value::Dict* DefinitionResultParser::ExtractFirstPhonetics(
 }
 
 std::unique_ptr<PhoneticsInfo> DefinitionResultParser::ParsePhoneticsInfo(
-    const base::Value::Dict& entry_result) {
-  const Value::Dict* first_phonetics = ExtractFirstPhonetics(entry_result);
+    const base::DictValue& entry_result) {
+  const base::DictValue* first_phonetics = ExtractFirstPhonetics(entry_result);
   if (!first_phonetics) {
     DLOG(ERROR) << "Unable to find a first phonetics.";
     return nullptr;

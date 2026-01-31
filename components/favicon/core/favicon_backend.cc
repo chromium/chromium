@@ -7,7 +7,6 @@
 #include <algorithm>
 #include <vector>
 
-#include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
@@ -75,8 +74,9 @@ std::unique_ptr<FaviconBackend> FaviconBackend::Create(
   }
 
   // Computing metrics is costly, only do it every so often.
-  if (base::RandInt(1, 100) == 50)
+  if (base::RandIntInclusive(1, 100) == 50) {
     db->ComputeDatabaseMetrics();
+  }
 
   // WrapUnique() as constructor is private.
   return base::WrapUnique(new FaviconBackend(std::move(db), delegate));
@@ -406,7 +406,7 @@ MergeFaviconResult FaviconBackend::MergeFavicon(
       // a favicon bitmap mapped to `icon_url`. The one there is more correct
       // and having multiple equally sized favicon bitmaps for `page_url` is
       // ambiguous in terms of GetFaviconsForURL().
-      if (base::Contains(favicon_sizes, bitmaps_to_copy[j].pixel_size))
+      if (std::ranges::contains(favicon_sizes, bitmaps_to_copy[j].pixel_size))
         continue;
 
       // Add the favicon bitmap as expired as it is not consistent with the

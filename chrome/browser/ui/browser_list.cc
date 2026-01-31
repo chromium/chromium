@@ -8,7 +8,6 @@
 
 #include "base/auto_reset.h"
 #include "base/check.h"
-#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/user_metrics.h"
@@ -96,11 +95,11 @@ void BrowserList::AddBrowser(Browser* browser) {
 
   if (browser->profile()->IsGuestSession()) {
     base::UmaHistogramCounts100("Browser.WindowCount.Guest",
-                                GetGuestBrowserCount());
+                                chrome::GetGuestBrowserCount());
   } else if (browser->profile()->IsIncognitoProfile()) {
     base::UmaHistogramCounts100(
         "Browser.WindowCount.Incognito",
-        GetOffTheRecordBrowsersActiveForProfile(browser->profile()));
+        chrome::GetOffTheRecordBrowsersActiveForProfile(browser->profile()));
   }
 }
 
@@ -270,46 +269,9 @@ void BrowserList::PostTryToCloseBrowserWindow(
 }
 
 // static
-void BrowserList::MoveBrowsersInWorkspaceToFront(
-    const std::string& new_workspace) {
-  DCHECK(!new_workspace.empty());
-
-  BrowserList* instance = GetInstance();
-
-  BrowserWindowInterface* const old_last_active =
-      GetLastActiveBrowserWindowInterfaceWithAnyProfile();
-  BrowserVector& last_active_browsers =
-      instance->browsers_ordered_by_activation_;
-
-  // Perform a stable partition on the browsers in the list so that the browsers
-  // in the new workspace appear after the browsers in the other workspaces.
-  //
-  // For example, if we have a list of browser-workspace pairs
-  // [{b1, 0}, {b2, 1}, {b3, 0}, {b4, 1}]
-  // and we switch to workspace 1, we want the resulting browser list to look
-  // like [{b1, 0}, {b3, 0}, {b2, 1}, {b4, 1}].
-  std::stable_partition(
-      last_active_browsers.begin(), last_active_browsers.end(),
-      [&new_workspace](Browser* browser) {
-        return !browser->window()->IsVisibleOnAllWorkspaces() &&
-               browser->window()->GetWorkspace() != new_workspace;
-      });
-
-  BrowserWindowInterface* const new_last_active =
-      GetLastActiveBrowserWindowInterfaceWithAnyProfile();
-  if (old_last_active != new_last_active) {
-    for (BrowserListObserver& observer : observers_.Get()) {
-      observer.OnBrowserSetLastActive(
-          new_last_active ? new_last_active->GetBrowserForMigrationOnly()
-                          : nullptr);
-    }
-  }
-}
-
-// static
 void BrowserList::SetLastActive(Browser* browser) {
   BrowserList* instance = GetInstance();
-  DCHECK(base::Contains(*instance, browser))
+  DCHECK(std::ranges::contains(*instance, browser))
       << "SetLastActive called for a browser before the browser was added to "
          "the BrowserList.";
   DCHECK(browser->window())
@@ -328,7 +290,7 @@ void BrowserList::SetLastActive(Browser* browser) {
 // static
 void BrowserList::NotifyBrowserNoLongerActive(Browser* browser) {
   BrowserList* instance = GetInstance();
-  DCHECK(base::Contains(*instance, browser))
+  DCHECK(std::ranges::contains(*instance, browser))
       << "NotifyBrowserNoLongerActive called for a browser before the browser "
          "was added to the BrowserList.";
   DCHECK(browser->window())
@@ -337,51 +299,6 @@ void BrowserList::NotifyBrowserNoLongerActive(Browser* browser) {
   for (BrowserListObserver& observer : observers_.Get()) {
     observer.OnBrowserNoLongerActive(browser);
   }
-}
-
-// static
-bool BrowserList::IsOffTheRecordBrowserActive() {
-  for (Browser* browser : *BrowserList::GetInstance()) {
-    if (browser->profile()->IsOffTheRecord()) {
-      return true;
-    }
-  }
-  return false;
-}
-
-// static
-int BrowserList::GetOffTheRecordBrowsersActiveForProfile(Profile* profile) {
-  BrowserList* list = BrowserList::GetInstance();
-  return std::ranges::count_if(*list, [profile](Browser* browser) {
-    return browser->profile()->IsSameOrParent(profile) &&
-           browser->profile()->IsOffTheRecord() && !browser->is_type_devtools();
-  });
-}
-
-// static
-size_t BrowserList::GetIncognitoBrowserCount() {
-  BrowserList* list = BrowserList::GetInstance();
-  return std::ranges::count_if(*list, [](Browser* browser) {
-    return browser->profile()->IsIncognitoProfile() &&
-           !browser->is_type_devtools();
-  });
-}
-
-// static
-size_t BrowserList::GetGuestBrowserCount() {
-  BrowserList* list = BrowserList::GetInstance();
-  return std::ranges::count_if(*list, [](Browser* browser) {
-    return browser->profile()->IsGuestSession() && !browser->is_type_devtools();
-  });
-}
-
-// static
-bool BrowserList::IsOffTheRecordBrowserInUse(Profile* profile) {
-  BrowserList* list = BrowserList::GetInstance();
-  return std::ranges::any_of(*list, [profile](Browser* browser) {
-    return browser->profile()->IsSameOrParent(profile) &&
-           browser->profile()->IsOffTheRecord();
-  });
 }
 
 ////////////////////////////////////////////////////////////////////////////////

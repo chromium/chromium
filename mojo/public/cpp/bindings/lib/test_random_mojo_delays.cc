@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "mojo/public/cpp/bindings/lib/test_random_mojo_delays.h"
+
 #include <list>
 
 #include "base/functional/bind.h"
@@ -16,7 +18,6 @@
 #include "base/task/thread_pool.h"
 #include "base/time/time.h"
 #include "mojo/public/cpp/bindings/lib/binding_state.h"
-#include "mojo/public/cpp/bindings/lib/test_random_mojo_delays.h"
 
 namespace mojo {
 namespace internal {
@@ -97,7 +98,7 @@ class RandomMojoDelays {
         continue;
       }
       // Skip the resume with a 1/kInverseProbabilityOfNotResuming chance.
-      if (base::RandInt(1, kInverseProbabilityOfNotResuming) >= 2) {
+      if (base::RandIntInclusive(1, kInverseProbabilityOfNotResuming) >= 2) {
         wptr->ResumeIncomingMethodCallProcessing();
         it = paused_binding_state_bases.erase(it);
         continue;
@@ -140,7 +141,7 @@ class RandomMojoDelays {
         it = binding_state_bases.erase(it);
         continue;
       }
-      if (base::RandInt(1, kInverseProbabilityOfDelay) >= 2) {
+      if (base::RandIntInclusive(1, kInverseProbabilityOfDelay) >= 2) {
         it++;
         continue;
       }

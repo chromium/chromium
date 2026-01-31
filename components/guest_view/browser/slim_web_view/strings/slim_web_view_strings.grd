@@ -1,0 +1,204 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<!--
+  Strings for identifying the slim web view type in chrome UI such as the task manager.
+-->
+
+<grit latest_public_release="0" current_release="1"
+      source_lang_id="en" enc_check="möl">
+  <outputs>
+    <output filename="grit/slim_web_view_strings.h" type="rc_header">
+      <emit emit_type='prepend'></emit>
+    </output>
+    <output filename="slim_web_view_strings_af.pak" type="data_package" lang="af" />
+    <output filename="slim_web_view_strings_am.pak" type="data_package" lang="am" />
+    <output filename="slim_web_view_strings_ar.pak" type="data_package" lang="ar" />
+    <output filename="slim_web_view_strings_as.pak" type="data_package" lang="as" />
+    <output filename="slim_web_view_strings_az.pak" type="data_package" lang="az" />
+    <output filename="slim_web_view_strings_be.pak" type="data_package" lang="be" />
+    <output filename="slim_web_view_strings_bg.pak" type="data_package" lang="bg" />
+    <output filename="slim_web_view_strings_bn.pak" type="data_package" lang="bn" />
+    <output filename="slim_web_view_strings_bs.pak" type="data_package" lang="bs" />
+    <output filename="slim_web_view_strings_ca.pak" type="data_package" lang="ca" />
+    <output filename="slim_web_view_strings_cs.pak" type="data_package" lang="cs" />
+    <output filename="slim_web_view_strings_cy.pak" type="data_package" lang="cy" />
+    <output filename="slim_web_view_strings_da.pak" type="data_package" lang="da" />
+    <output filename="slim_web_view_strings_de.pak" type="data_package" lang="de" />
+    <output filename="slim_web_view_strings_el.pak" type="data_package" lang="el" />
+    <output filename="slim_web_view_strings_en-GB.pak" type="data_package" lang="en-GB" />
+    <output filename="slim_web_view_strings_en-US.pak" type="data_package" lang="en" />
+    <output filename="slim_web_view_strings_es.pak" type="data_package" lang="es" />
+    <if expr="is_ios">
+      <!-- iOS uses es-MX for es-419 -->
+      <output filename="slim_web_view_strings_es-MX.pak" type="data_package" lang="es-419" />
+    </if>
+    <if expr="not is_ios">
+      <output filename="slim_web_view_strings_es-419.pak" type="data_package" lang="es-419" />
+    </if>
+    <output filename="slim_web_view_strings_et.pak" type="data_package" lang="et" />
+    <output filename="slim_web_view_strings_eu.pak" type="data_package" lang="eu" />
+    <output filename="slim_web_view_strings_fa.pak" type="data_package" lang="fa" />
+    <output filename="slim_web_view_strings_fi.pak" type="data_package" lang="fi" />
+    <output filename="slim_web_view_strings_fil.pak" type="data_package" lang="fil" />
+    <output filename="slim_web_view_strings_fr-CA.pak" type="data_package" lang="fr-CA" />
+    <output filename="slim_web_view_strings_fr.pak" type="data_package" lang="fr" />
+    <output filename="slim_web_view_strings_gl.pak" type="data_package" lang="gl" />
+    <output filename="slim_web_view_strings_gu.pak" type="data_package" lang="gu" />
+    <output filename="slim_web_view_strings_he.pak" type="data_package" lang="he" />
+    <output filename="slim_web_view_strings_hi.pak" type="data_package" lang="hi" />
+    <output filename="slim_web_view_strings_hr.pak" type="data_package" lang="hr" />
+    <output filename="slim_web_view_strings_hu.pak" type="data_package" lang="hu" />
+    <output filename="slim_web_view_strings_hy.pak" type="data_package" lang="hy" />
+    <output filename="slim_web_view_strings_id.pak" type="data_package" lang="id" />
+    <output filename="slim_web_view_strings_is.pak" type="data_package" lang="is" />
+    <output filename="slim_web_view_strings_it.pak" type="data_package" lang="it" />
+    <output filename="slim_web_view_strings_ja.pak" type="data_package" lang="ja" />
+    <output filename="slim_web_view_strings_ka.pak" type="data_package" lang="ka" />
+    <output filename="slim_web_view_strings_kk.pak" type="data_package" lang="kk" />
+    <output filename="slim_web_view_strings_km.pak" type="data_package" lang="km" />
+    <output filename="slim_web_view_strings_kn.pak" type="data_package" lang="kn" />
+    <output filename="slim_web_view_strings_ko.pak" type="data_package" lang="ko" />
+    <output filename="slim_web_view_strings_ky.pak" type="data_package" lang="ky" />
+    <output filename="slim_web_view_strings_lo.pak" type="data_package" lang="lo" />
+    <output filename="slim_web_view_strings_lt.pak" type="data_package" lang="lt" />
+    <output filename="slim_web_view_strings_lv.pak" type="data_package" lang="lv" />
+    <output filename="slim_web_view_strings_mk.pak" type="data_package" lang="mk" />
+    <output filename="slim_web_view_strings_ml.pak" type="data_package" lang="ml" />
+    <output filename="slim_web_view_strings_mn.pak" type="data_package" lang="mn" />
+    <output filename="slim_web_view_strings_mr.pak" type="data_package" lang="mr" />
+    <output filename="slim_web_view_strings_ms.pak" type="data_package" lang="ms" />
+    <output filename="slim_web_view_strings_my.pak" type="data_package" lang="my" />
+    <output filename="slim_web_view_strings_ne.pak" type="data_package" lang="ne" />
+    <output filename="slim_web_view_strings_nl.pak" type="data_package" lang="nl" />
+    <!-- The translation console uses 'no' for Norwegian Bokmål. It should
+         be 'nb'. -->
+    <output filename="slim_web_view_strings_nb.pak" type="data_package" lang="no" />
+    <output filename="slim_web_view_strings_pa.pak" type="data_package" lang="pa" />
+    <output filename="slim_web_view_strings_pl.pak" type="data_package" lang="pl" />
+    <if expr="is_ios">
+      <!-- iOS uses pt for pt-BR -->
+      <output filename="slim_web_view_strings_pt.pak" type="data_package" lang="pt-BR" />
+    </if>
+    <if expr="not is_ios">
+      <output filename="slim_web_view_strings_pt-BR.pak" type="data_package" lang="pt-BR" />
+    </if>
+    <output filename="slim_web_view_strings_pt-PT.pak" type="data_package" lang="pt-PT" />
+    <output filename="slim_web_view_strings_or.pak" type="data_package" lang="or" />
+    <output filename="slim_web_view_strings_ro.pak" type="data_package" lang="ro" />
+    <output filename="slim_web_view_strings_ru.pak" type="data_package" lang="ru" />
+    <output filename="slim_web_view_strings_si.pak" type="data_package" lang="si" />
+    <output filename="slim_web_view_strings_sk.pak" type="data_package" lang="sk" />
+    <output filename="slim_web_view_strings_sl.pak" type="data_package" lang="sl" />
+    <output filename="slim_web_view_strings_sq.pak" type="data_package" lang="sq" />
+    <output filename="slim_web_view_strings_sr-Latn.pak" type="data_package" lang="sr-Latn" />
+    <output filename="slim_web_view_strings_sr.pak" type="data_package" lang="sr" />
+    <output filename="slim_web_view_strings_sv.pak" type="data_package" lang="sv" />
+    <output filename="slim_web_view_strings_sw.pak" type="data_package" lang="sw" />
+    <output filename="slim_web_view_strings_ta.pak" type="data_package" lang="ta" />
+    <output filename="slim_web_view_strings_te.pak" type="data_package" lang="te" />
+    <output filename="slim_web_view_strings_th.pak" type="data_package" lang="th" />
+    <output filename="slim_web_view_strings_tr.pak" type="data_package" lang="tr" />
+    <output filename="slim_web_view_strings_uk.pak" type="data_package" lang="uk" />
+    <output filename="slim_web_view_strings_ur.pak" type="data_package" lang="ur" />
+    <output filename="slim_web_view_strings_uz.pak" type="data_package" lang="uz" />
+    <output filename="slim_web_view_strings_vi.pak" type="data_package" lang="vi" />
+    <output filename="slim_web_view_strings_zh-CN.pak" type="data_package" lang="zh-CN" />
+    <output filename="slim_web_view_strings_zh-HK.pak" type="data_package" lang="zh-HK" />
+    <output filename="slim_web_view_strings_zh-TW.pak" type="data_package" lang="zh-TW" />
+    <output filename="slim_web_view_strings_zu.pak" type="data_package" lang="zu" />
+    <!-- Pseudolocales -->
+    <output filename="slim_web_view_strings_ar-XB.pak" type="data_package" lang="ar-XB" />
+    <output filename="slim_web_view_strings_en-XA.pak" type="data_package" lang="en-XA" />
+  </outputs>
+  <translations>
+    <file path="slim_web_view_strings_af.xtb" lang="af" />
+    <file path="slim_web_view_strings_am.xtb" lang="am" />
+    <file path="slim_web_view_strings_ar.xtb" lang="ar" />
+    <file path="slim_web_view_strings_as.xtb" lang="as" />
+    <file path="slim_web_view_strings_az.xtb" lang="az" />
+    <file path="slim_web_view_strings_be.xtb" lang="be" />
+    <file path="slim_web_view_strings_bg.xtb" lang="bg" />
+    <file path="slim_web_view_strings_bn.xtb" lang="bn" />
+    <file path="slim_web_view_strings_bs.xtb" lang="bs" />
+    <file path="slim_web_view_strings_ca.xtb" lang="ca" />
+    <file path="slim_web_view_strings_cs.xtb" lang="cs" />
+    <file path="slim_web_view_strings_cy.xtb" lang="cy" />
+    <file path="slim_web_view_strings_da.xtb" lang="da" />
+    <file path="slim_web_view_strings_de.xtb" lang="de" />
+    <file path="slim_web_view_strings_el.xtb" lang="el" />
+    <file path="slim_web_view_strings_en-GB.xtb" lang="en-GB" />
+    <file path="slim_web_view_strings_es.xtb" lang="es" />
+    <file path="slim_web_view_strings_es-419.xtb" lang="es-419" />
+    <file path="slim_web_view_strings_et.xtb" lang="et" />
+    <file path="slim_web_view_strings_eu.xtb" lang="eu" />
+    <file path="slim_web_view_strings_fa.xtb" lang="fa" />
+    <file path="slim_web_view_strings_fi.xtb" lang="fi" />
+    <file path="slim_web_view_strings_fil.xtb" lang="fil" />
+    <file path="slim_web_view_strings_fr.xtb" lang="fr" />
+    <file path="slim_web_view_strings_fr-CA.xtb" lang="fr-CA" />
+    <file path="slim_web_view_strings_gl.xtb" lang="gl" />
+    <file path="slim_web_view_strings_gu.xtb" lang="gu" />
+    <file path="slim_web_view_strings_hi.xtb" lang="hi" />
+    <file path="slim_web_view_strings_hr.xtb" lang="hr" />
+    <file path="slim_web_view_strings_hu.xtb" lang="hu" />
+    <file path="slim_web_view_strings_hy.xtb" lang="hy" />
+    <file path="slim_web_view_strings_id.xtb" lang="id" />
+    <file path="slim_web_view_strings_is.xtb" lang="is" />
+    <file path="slim_web_view_strings_it.xtb" lang="it" />
+    <!-- The translation console uses 'iw' for Hebrew, but we use 'he'. -->
+    <file path="slim_web_view_strings_iw.xtb" lang="he" />
+    <file path="slim_web_view_strings_ja.xtb" lang="ja" />
+    <file path="slim_web_view_strings_ka.xtb" lang="ka" />
+    <file path="slim_web_view_strings_kk.xtb" lang="kk" />
+    <file path="slim_web_view_strings_km.xtb" lang="km" />
+    <file path="slim_web_view_strings_kn.xtb" lang="kn" />
+    <file path="slim_web_view_strings_ko.xtb" lang="ko" />
+    <file path="slim_web_view_strings_ky.xtb" lang="ky" />
+    <file path="slim_web_view_strings_lo.xtb" lang="lo" />
+    <file path="slim_web_view_strings_lt.xtb" lang="lt" />
+    <file path="slim_web_view_strings_lv.xtb" lang="lv" />
+    <file path="slim_web_view_strings_mk.xtb" lang="mk" />
+    <file path="slim_web_view_strings_ml.xtb" lang="ml" />
+    <file path="slim_web_view_strings_mn.xtb" lang="mn" />
+    <file path="slim_web_view_strings_mr.xtb" lang="mr" />
+    <file path="slim_web_view_strings_ms.xtb" lang="ms" />
+    <file path="slim_web_view_strings_my.xtb" lang="my" />
+    <file path="slim_web_view_strings_ne.xtb" lang="ne" />
+    <file path="slim_web_view_strings_nl.xtb" lang="nl" />
+    <file path="slim_web_view_strings_no.xtb" lang="no" />
+    <file path="slim_web_view_strings_or.xtb" lang="or" />
+    <file path="slim_web_view_strings_pa.xtb" lang="pa" />
+    <file path="slim_web_view_strings_pl.xtb" lang="pl" />
+    <file path="slim_web_view_strings_pt-BR.xtb" lang="pt-BR" />
+    <file path="slim_web_view_strings_pt-PT.xtb" lang="pt-PT" />
+    <file path="slim_web_view_strings_ro.xtb" lang="ro" />
+    <file path="slim_web_view_strings_ru.xtb" lang="ru" />
+    <file path="slim_web_view_strings_si.xtb" lang="si" />
+    <file path="slim_web_view_strings_sk.xtb" lang="sk" />
+    <file path="slim_web_view_strings_sl.xtb" lang="sl" />
+    <file path="slim_web_view_strings_sq.xtb" lang="sq" />
+    <file path="slim_web_view_strings_sr.xtb" lang="sr" />
+    <file path="slim_web_view_strings_sr-Latn.xtb" lang="sr-Latn" />
+    <file path="slim_web_view_strings_sv.xtb" lang="sv" />
+    <file path="slim_web_view_strings_sw.xtb" lang="sw" />
+    <file path="slim_web_view_strings_ta.xtb" lang="ta" />
+    <file path="slim_web_view_strings_te.xtb" lang="te" />
+    <file path="slim_web_view_strings_th.xtb" lang="th" />
+    <file path="slim_web_view_strings_tr.xtb" lang="tr" />
+    <file path="slim_web_view_strings_uk.xtb" lang="uk" />
+    <file path="slim_web_view_strings_ur.xtb" lang="ur" />
+    <file path="slim_web_view_strings_uz.xtb" lang="uz" />
+    <file path="slim_web_view_strings_vi.xtb" lang="vi" />
+    <file path="slim_web_view_strings_zh-CN.xtb" lang="zh-CN" />
+    <file path="slim_web_view_strings_zh-HK.xtb" lang="zh-HK" />
+    <file path="slim_web_view_strings_zh-TW.xtb" lang="zh-TW" />
+    <file path="slim_web_view_strings_zu.xtb" lang="zu" />
+  </translations>
+  <release seq="1">
+    <messages fallback_to_english="true">
+      <message name="IDS_TASK_MANAGER_SLIM_WEB_VIEW_TAG_PREFIX" desc="The prefix for a guest page loaded in a slimwebview tag in the Task Manager">
+        Slim webview: <ph name="SLIM_WEB_VIEW_TAG_NAME">$1<ex>Google</ex></ph>
+      </message>
+    </messages>
+  </release>
+</grit>

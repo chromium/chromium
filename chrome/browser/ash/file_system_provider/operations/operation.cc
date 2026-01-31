@@ -27,7 +27,7 @@ Operation::~Operation() = default;
 bool Operation::SendEvent(int request_id,
                           extensions::events::HistogramValue histogram_value,
                           const std::string& event_name,
-                          base::Value::List event_args) {
+                          base::ListValue event_args) {
   auto event = std::make_unique<extensions::Event>(histogram_value, event_name,
                                                    std::move(event_args));
   return request_dispatcher_->DispatchRequest(

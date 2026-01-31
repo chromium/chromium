@@ -141,6 +141,8 @@ component("fido") {
         "ctap_get_assertion_request.h",
         "ctap_make_credential_request.cc",
         "ctap_make_credential_request.h",
+        "ctap_request_common.cc",
+        "ctap_request_common.h",
         "device_operation.h",
         "device_response_converter.cc",
         "device_response_converter.h",

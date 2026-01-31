@@ -1,6 +1,9 @@
 caption: Allow user to configure their device hostname
 default: false
+deprecated: true
 desc: |-
+  Deprecated: The host name setting feature was removed in M145. The Administrator can still control the hostname using the <ph name="DEVICE_HOSTNAME_TEMPLATE_POLICY_NAME">DeviceHostnameTemplate</ph> policy.
+
   Determine whether a user is allowed to configure the device hostname.
 
         If <ph name="DEVICE_HOSTNAME_TEMPLATE_POLICY_NAME">DeviceHostnameTemplate</ph> is set, the admininistrator sets hostname and the user cannot choose regardless of what this policy is set to.
@@ -23,7 +26,7 @@ owners:
 schema:
   type: boolean
 supported_on:
-- chrome_os:97-
+- chrome_os:97-144
 tags: []
 type: main
 generate_device_proto: False

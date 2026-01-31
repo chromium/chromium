@@ -11,7 +11,6 @@
 #include "chrome/browser/app_controller_mac.h"
 #include "chrome/browser/apps/app_shim/app_shim_host_mac.h"
 #include "chrome/browser/apps/app_shim/app_shim_manager_mac.h"
-#include "chrome/browser/autocomplete/aim_eligibility_service_factory.h"
 #include "chrome/browser/global_keyboard_shortcuts_mac.h"
 #include "chrome/browser/media/router/media_router_feature.h"
 #include "chrome/browser/ui/browser_command_controller.h"
@@ -21,6 +20,7 @@
 #import "chrome/browser/ui/cocoa/chrome_command_dispatcher_delegate.h"
 #import "chrome/browser/ui/cocoa/touchbar/browser_window_touch_bar_controller.h"
 #include "chrome/browser/ui/lens/lens_overlay_entry_point_controller.h"
+#include "chrome/browser/ui/omnibox/omnibox_next_features.h"
 #include "chrome/browser/ui/views/frame/browser_frame_view.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/browser_widget.h"
@@ -33,7 +33,6 @@
 #include "components/dom_distiller/core/url_utils.h"
 #include "components/input/native_web_keyboard_event.h"
 #include "components/lens/lens_features.h"
-#include "components/omnibox/browser/omnibox_field_trial.h"
 #include "components/omnibox/browser/omnibox_prefs.h"
 #import "components/omnibox/common/omnibox_feature_configs.h"
 #import "components/remote_cocoa/app_shim/native_widget_mac_nswindow.h"
@@ -163,13 +162,14 @@ void BrowserNativeWidgetMac::GetWindowFrameTitlebarHeight(
   if (browser_view_ && browser_view_->browser_widget() &&
       browser_view_->browser_widget()->GetFrameView()) {
     *override_titlebar_height = true;
+    const auto top_element_info = browser_view_->GetFrameElementInfo();
+
     *titlebar_height =
-        browser_view_->GetTabStripHeight() +
+        std::max(top_element_info.tabstrip_preferred_height,
+                 top_element_info.toolbar_minimum_height) +
         browser_view_->browser_widget()->GetFrameView()->GetTopInset(true);
     if (!browser_view_->ShouldDrawTabStrip()) {
-      *titlebar_height +=
-          browser_view_->GetWebAppFrameToolbarPreferredSize().height() +
-          kWebAppMenuMargin * 2;
+      *titlebar_height += kWebAppMenuMargin * 2;
     }
   } else {
     *override_titlebar_height = false;
@@ -244,12 +244,41 @@ void BrowserNativeWidgetMac::ValidateUserInterfaceItem(
           !media_router::MediaRouterEnabled(browser->profile());
       break;
     }
+    case IDC_BACK:
     case IDC_BOOKMARK_ALL_TABS:
+    case IDC_BOOKMARK_THIS_TAB:
+    case IDC_CREATE_NEW_TAB_GROUP:
+    case IDC_DUPLICATE_TAB:
+    case IDC_DUPLICATE_TARGET_TAB:
+    case IDC_FOCUS_LOCATION:
+    case IDC_FORWARD:
+    case IDC_GROUP_TARGET_TAB:
+    case IDC_HOME:
+    case IDC_MANAGE_EXTENSIONS:
+    case IDC_MOVE_TAB_TO_NEW_WINDOW:
+    case IDC_MUTE_TARGET_SITE:
     case IDC_NAME_WINDOW:
+    case IDC_NEW_TAB_TO_RIGHT:
+    case IDC_NEW_TAB:
+    case IDC_OPEN_FILE:
+    case IDC_PIN_TARGET_TAB:
     case IDC_PRINT:
-    case IDC_SAVE_PAGE: {
-      // Disable these commands when browser window already has an attached
-      // sheet.
+    case IDC_RELOAD:
+    case IDC_SAVE_PAGE:
+    case IDC_SELECT_NEXT_TAB:
+    case IDC_SELECT_PREVIOUS_TAB:
+    case IDC_SHOW_BOOKMARK_MANAGER:
+    case IDC_SHOW_DOWNLOADS:
+    case IDC_STOP:
+    case IDC_TAB_SEARCH:
+    case IDC_WINDOW_CLOSE_OTHER_TABS:
+    case IDC_WINDOW_CLOSE_TABS_TO_RIGHT:
+    case IDC_WINDOW_GROUP_TAB:
+    case IDC_WINDOW_MUTE_SITE:
+    case IDC_WINDOW_PIN_TAB: {
+      // In the case where there is a modal dialog active (either app or
+      // window), disable commands that would either try to put up their own
+      // dialog or otherwise be confusing to invoke.
       result->enable &= ![AppController.sharedController keyWindowIsModal];
       break;
     }
@@ -310,13 +339,9 @@ void BrowserNativeWidgetMac::ValidateUserInterfaceItem(
       PrefService* prefs = browser->profile()->GetPrefs();
       result->new_toggle_state =
           prefs->GetBoolean(omnibox::kShowAiModeOmniboxButton);
-      const auto* aim_eligibility_service =
-          AimEligibilityServiceFactory::GetForProfile(browser->profile());
-      const bool is_aim_entrypoint_enabled =
-          OmniboxFieldTrial::IsAimOmniboxEntrypointEnabled(
-              aim_eligibility_service);
       // Disable this menu option if the AI Mode feature is not enabled.
-      result->enable = is_aim_entrypoint_enabled;
+      result->enable =
+          omnibox::ShouldShowAimContextMenuOption(browser->profile());
       break;
     }
     case IDC_SHOW_SEARCH_TOOLS: {

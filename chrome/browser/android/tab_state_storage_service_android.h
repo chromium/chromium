@@ -19,6 +19,16 @@ const char kTabStateStorageServiceAndroidKey[] =
 
 class TabStateStorageServiceAndroid : public base::SupportsUserData::Data {
  public:
+  // ScopedBatchAndroid is a wrapper for TabStateStorageService::ScopedBatch
+  // that allows it to be used across the JNI boundary. The destructor of
+  // ScopedBatchAndroid will commit the batched operations.
+  struct ScopedBatchAndroid {
+    explicit ScopedBatchAndroid(TabStateStorageService::ScopedBatch batch);
+    ~ScopedBatchAndroid();
+
+    TabStateStorageService::ScopedBatch batch;
+  };
+
   explicit TabStateStorageServiceAndroid(
       TabStateStorageService* tab_state_storage_service);
   ~TabStateStorageServiceAndroid() override;
@@ -35,6 +45,28 @@ class TabStateStorageServiceAndroid : public base::SupportsUserData::Data {
   void ClearState(JNIEnv* env);
 
   void ClearWindow(JNIEnv* env, const std::string& window_tag);
+
+  void ClearWindowWithOtrStatus(JNIEnv* env,
+                                const std::string& window_tag,
+                                bool is_off_the_record);
+  void ClearUnusedNodesForWindow(JNIEnv* env,
+                                 const std::string& window_tag,
+                                 bool is_off_the_record,
+                                 const TabStripCollection* collection);
+
+  void PrintAll(JNIEnv* env);
+
+  int64_t CreateBatch(JNIEnv* env);
+
+  void SetKey(JNIEnv* env,
+              const std::string& window_tag,
+              std::vector<uint8_t> key);
+
+  void RemoveKey(JNIEnv* env, const std::string& window_tag);
+
+  base::android::ScopedJavaLocalRef<jbyteArray> GenerateKey(
+      JNIEnv* env,
+      const std::string& window_tag);
 
   base::android::ScopedJavaLocalRef<jobject> GetJavaObject();
 

@@ -711,6 +711,21 @@ If your feedback is about image or video quality, please attach a sample photo o
       <message desc="Description of the settings checkbox to toggle preview OCR scanning." name="IDS_PREVIEW_OCR_OPTION_DESCRIPTION">
         Displays text and button to copy
       </message>
+      <message desc="Dialog title indicating that the camera files will be saved to OneDrive." name="IDS_CLOUD_SAVE_WARNING_DIALOG_TITLE_ONEDRIVE">
+        All Camera files will save to OneDrive
+      </message>
+      <message desc="Dialog title indicating that the camera files will be saved to Google Drive." name="IDS_CLOUD_SAVE_WARNING_DIALOG_TITLE_GOOGLE_DRIVE">
+        All Camera files will save to Google Drive
+      </message>
+      <message desc="Disclaimer for the camera files being saved to the cloud and being visible by the administrator." name="IDS_CLOUD_SAVE_WARNING_DIALOG_DISCLAIMER">
+        Your files may be visible to your administrator
+      </message>
+      <message desc="Label for the checkbox to not show the cloud save warning dialog next time." name="IDS_CLOUD_SAVE_WARNING_DIALOG_SKIP_CHECKBOX">
+        Do not show this dialog next time
+      </message>
+      <message desc="Label for the button to acknowledge the cloud save warning dialog." name="IDS_CLOUD_SAVE_WARNING_DIALOG_ACK_BUTTON">
+        Got it
+      </message>
     </messages>
   </release>
 </grit>

@@ -6,10 +6,10 @@
 
 #import <UIKit/UIKit.h>
 
+#import <algorithm>
 #import <array>
 #import <string>
 
-#import "base/containers/contains.h"
 #import "base/metrics/field_trial_params.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/strings/utf_string_conversions.h"
@@ -69,7 +69,7 @@ UIColor* DimColorIncognito() {
   self = [super init];
   if (self) {
     _match = AutocompleteMatch(match);
-    _isReverseColorLogic = base::Contains(
+    _isReverseColorLogic = std::ranges::contains(
         kReverseColorLocales,
         GetApplicationContext()->GetApplicationLocaleStorage()->Get());
   }

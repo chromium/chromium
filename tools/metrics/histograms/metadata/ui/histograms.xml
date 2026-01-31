@@ -53,10 +53,16 @@ chromium-metrics-reviews@google.com.
   <variant name=".Video" summary="The context menu was shown for a video"/>
 </variants>
 
+<!-- LINT.IfChange(DefaultBrowserEntrypointType) -->
+
 <variants name="DefaultBrowserEntrypointType">
+  <variant name="ChangeDetectedNotification"
+      summary="the change detected Os notification"/>
   <variant name="InfoBar" summary="the startup infobar"/>
   <variant name="SettingsPage" summary="the settings page"/>
 </variants>
+
+<!-- LINT.ThenChange(//chrome/browser/default_browser/default_browser_controller.h:DefaultBrowserEntrypointType) -->
 
 <variants name="DefaultBrowserSetterType">
   <variant name="ShellIntegration" summary="the shell integration setter"/>
@@ -125,7 +131,7 @@ chromium-metrics-reviews@google.com.
 </variants>
 
 <histogram name="Bubble.{BubbleName}.CloseReason" enum="WidgetClosedReason"
-    expires_after="2026-01-25">
+    expires_after="2026-07-22">
   <owner>kerenzhu@chromium.org</owner>
   <owner>dayeung@chromium.org</owner>
   <owner>temao@chromium.org</owner>
@@ -137,7 +143,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Bubble.{BubbleName}.CreateToPresentationTime" units="ms"
-    expires_after="2026-01-25">
+    expires_after="2026-07-22">
   <owner>temao@chromium.org</owner>
   <owner>yuhengh@chromium.org</owner>
   <owner>kerenzhu@chromium.org</owner>
@@ -152,7 +158,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Bubble.{BubbleName}.CreateToVisibleTime" units="ms"
-    expires_after="2026-01-25">
+    expires_after="2026-07-22">
   <owner>temao@chromium.org</owner>
   <owner>yuhengh@chromium.org</owner>
   <owner>kerenzhu@chromium.org</owner>
@@ -167,7 +173,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Bubble.{BubbleName}.TimeVisible" units="ms"
-    expires_after="2026-01-25">
+    expires_after="2026-07-22">
   <owner>yuhengh@chromium.org</owner>
   <owner>kerenzhu@chromium.org</owner>
   <owner>dayeung@chromium.org</owner>
@@ -179,7 +185,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ContextMenu.LensSupportStatus" enum="LensSupportStatus"
-    expires_after="2026-05-24">
+    expires_after="2026-07-26">
   <owner>benwgold@google.com</owner>
   <owner>lens-chrome@google.com</owner>
   <summary>
@@ -208,7 +214,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ContextMenu.SelectedOptionDesktop{ContextMenuTypeDesktop}"
-    enum="ContextMenuOptionDesktop" expires_after="2026-05-24">
+    enum="ContextMenuOptionDesktop" expires_after="2026-07-26">
   <owner>avi@chromium.org</owner>
   <owner>mpearson@chromium.org</owner>
   <summary>
@@ -235,7 +241,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ContextMenu.Shown{Type}" enum="BooleanPresent"
-    expires_after="2026-05-03">
+    expires_after="2026-07-05">
   <owner>mpearson@chromium.org</owner>
   <owner>twellington@chromium.org</owner>
   <owner>clank-app-team@google.com</owner>
@@ -285,7 +291,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="DefaultBrowser.InfoBar.UserInteraction"
-    enum="DefaultBrowserInfoBarUserInteraction" expires_after="2026-05-24">
+    enum="DefaultBrowserInfoBarUserInteraction" expires_after="2026-07-26">
   <owner>pmonette@chromium.org</owner>
   <owner>robliao@chromium.org</owner>
   <summary>
@@ -386,8 +392,64 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
+    name="InitialWebUI.NewWindow{CreationSource}.BrowserWindow.FirstPaint.{StartPoint}"
+    units="ms" expires_after="2026-07-05">
+  <owner>mych@chromium.org</owner>
+  <owner>chrome-waap-eng@google.com</owner>
+  <summary>
+    Records the time from {StartPoint} to 'First Paint' of the new browser
+    window. {CreationSource}
+
+    This is only recorded for desktop platforms when the InitialWebUIMetrics is
+    enabled.
+  </summary>
+  <token key="CreationSource">
+    <variant name=".AllSources" summary="Aggregated across all sources"/>
+    <variant name=".BrowserInitiated"
+        summary="Triggered by browser action, e.g. shortcut or menu"/>
+    <variant name=".DragToNewWindow"
+        summary="Triggered by dragging a tab to a new window"/>
+    <variant name=".SessionRestore" summary="Triggered by session restore"/>
+  </token>
+  <token key="StartPoint">
+    <variant name="FromConstructor"
+        summary="immediately before the Browser constructor is called"/>
+  </token>
+</histogram>
+
+<histogram
+    name="InitialWebUI.NewWindow{CreationSource}.ReloadButton.{PaintType}.{StartPoint}"
+    units="ms" expires_after="2026-07-05">
+  <owner>mych@chromium.org</owner>
+  <owner>chrome-waap-eng@google.com</owner>
+  <summary>
+    Records the time from {StartPoint} to first {PaintType} of the Reload Button
+    in the new browser window. {CreationSource}
+
+    This is only recorded for desktop platforms when the InitialWebUIMetrics is
+    enabled.
+  </summary>
+  <token key="CreationSource">
+    <variant name=".AllSources" summary="Aggregated across all sources"/>
+    <variant name=".BrowserInitiated"
+        summary="Triggered by browser action, e.g. shortcut or menu"/>
+    <variant name=".DragToNewWindow"
+        summary="Triggered by dragging a tab to a new window"/>
+    <variant name=".SessionRestore" summary="Triggered by session restore"/>
+  </token>
+  <token key="PaintType">
+    <variant name="FirstContentfulPaint" summary="contentful paint"/>
+    <variant name="FirstPaint" summary="paint"/>
+  </token>
+  <token key="StartPoint">
+    <variant name="FromConstructor"
+        summary="immediately before the Browser constructor is called"/>
+  </token>
+</histogram>
+
+<histogram
     name="InitialWebUI.ReloadButton.ChangeVisibleModeToNextPaintIn{VisibleMode}"
-    units="ms" expires_after="2026-04-30">
+    units="ms" expires_after="2026-07-05">
   <owner>mych@chromium.org</owner>
   <owner>chrome-waap-eng@google.com</owner>
   <summary>
@@ -408,7 +470,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="InitialWebUI.ReloadButton.InputCount"
-    enum="ReloadButtonInputType" expires_after="2026-04-30">
+    enum="ReloadButtonInputType" expires_after="2026-07-05">
   <owner>mych@chromium.org</owner>
   <owner>chrome-waap-eng@google.com</owner>
   <summary>
@@ -421,7 +483,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="InitialWebUI.ReloadButton.InputToNextPaint{InputType}"
-    units="ms" expires_after="2026-04-30">
+    units="ms" expires_after="2026-07-05">
   <owner>mych@chromium.org</owner>
   <owner>chrome-waap-eng@google.com</owner>
   <summary>
@@ -438,7 +500,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="InitialWebUI.ReloadButton.InputToReload{InputType}" units="ms"
-    expires_after="2026-04-30">
+    expires_after="2026-07-05">
   <owner>mych@chromium.org</owner>
   <owner>chrome-waap-eng@google.com</owner>
   <summary>
@@ -455,7 +517,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="InitialWebUI.ReloadButton.InputToStop{InputType}" units="ms"
-    expires_after="2026-04-30">
+    expires_after="2026-07-05">
   <owner>mych@chromium.org</owner>
   <owner>chrome-waap-eng@google.com</owner>
   <summary>
@@ -472,7 +534,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="InitialWebUI.ReloadButton.MouseHoverToNextPaint" units="ms"
-    expires_after="2026-04-30">
+    expires_after="2026-07-05">
   <owner>mych@chromium.org</owner>
   <owner>chrome-waap-eng@google.com</owner>
   <summary>
@@ -485,7 +547,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="InitialWebUI.ReloadButton.MousePressToNextPaint" units="ms"
-    expires_after="2026-04-30">
+    expires_after="2026-07-05">
   <owner>mych@chromium.org</owner>
   <owner>chrome-waap-eng@google.com</owner>
   <summary>
@@ -500,84 +562,102 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
-    name="InitialWebUI.Startup{SessionRestore}.BrowserWindow.FirstPaint{StartupTemperature}"
-    units="ms" expires_after="2026-04-30">
+    name="InitialWebUI.Startup{Scenario}.BrowserWindow.FirstPaint{StartupTemperature}"
+    units="ms" expires_after="2026-07-05">
   <owner>mych@chromium.org</owner>
   <owner>chrome-waap-eng@google.com</owner>
   <summary>
-    Records the time from {SessionRestore} browser application startup to the
-    first presentation of the browser window onto the
-    screen{StartupTemperature}. . This is only recorded for desktop platforms
-    when the InitialWebUIMetrics feature is enabled.
+    Records the time from {Scenario} browser application startup to the first
+    presentation of the browser window onto the screen{StartupTemperature}.
+
+    This metric is mutually exclusive by scenarios.
+
+    This is only recorded for desktop platforms when the InitialWebUIMetrics
+    feature is enabled.
   </summary>
-  <token key="SessionRestore">
-    <variant name="" summary=""/>
+  <token key="Scenario">
+    <variant name="" summary="standard"/>
+    <variant name=".FirstRun" summary="first run"/>
     <variant name=".SessionRestore"
-        summary="session restored (when continue where you left off is on)"/>
+        summary="session restored (without showing the Profile Picker)"/>
   </token>
   <token key="StartupTemperature">
     <variant name="" summary=""/>
-    <variant name=".ColdStartup"
-        summary=", where startup was cold (mostly hard faults)"/>
-    <variant name=".WarmStartup"
-        summary=", where startup was warm (almost no hard faults)"/>
+    <variant name=".Temperature.ColdStartup"
+        summary=", where startup was cold (mostly hard faults). Only
+                 available on Windows."/>
+    <variant name=".Temperature.Other"
+        summary=", where startup temperature was undetermined"/>
+    <variant name=".Temperature.WarmStartup"
+        summary=", where startup was warm (almost no hard faults). Only
+                 available on Windows."/>
   </token>
 </histogram>
 
 <histogram
-    name="InitialWebUI.Startup{SessionRestore}.ReloadButton.FirstContentfulPaint{StartupTemperature}"
-    units="ms" expires_after="2026-04-30">
+    name="InitialWebUI.Startup{Scenario}.ReloadButton.{PaintType}{StartupTemperature}"
+    units="ms" expires_after="2026-07-05">
   <owner>mych@chromium.org</owner>
   <owner>chrome-waap-eng@google.com</owner>
   <summary>
     Records the time spent initializing a newly constructed ReloadButton in the
-    {SessionRestore} browser application startup with pre/post InitialWebUI
-    (WaaP) setup. The timer starts immediately after the browser application
-    startup{StartupTemperature}, and ends immediately after a contentful paint
-    of the view is requested. For browser process (pre-WaaP setup) this is equal
-    to the InitialWebUI.Startup.ReloadButton.FirstPaint metric. For renderer
-    process (post-WaaP setup) this might be slightly different. Only recorded on
-    desktop platforms.
+    {Scenario} browser application startup with pre/post InitialWebUI (WaaP)
+    setup. The timer starts immediately after the browser application
+    startup{StartupTemperature}, and ends immediately after a {PaintType} of the
+    view is requested.
+
+    This metric is mutually exclusive by scenarios.
+
+    For FirstPaint, the paint is requested by either the browser process
+    (pre-WaaP) or by the WebUI renderer process (post-WaaP).
+
+    Only recorded on desktop platforms.
   </summary>
-  <token key="SessionRestore">
-    <variant name="" summary=""/>
+  <token key="Scenario">
+    <variant name="" summary="standard"/>
+    <variant name=".FirstRun" summary="first run"/>
     <variant name=".SessionRestore"
-        summary="session restored (when continue where you left off is on)"/>
+        summary="session restored (without showing the Profile Picker)"/>
+  </token>
+  <token key="PaintType">
+    <variant name="FirstContentfulPaint" summary="contentful paint"/>
+    <variant name="FirstPaint" summary="paint"/>
   </token>
   <token key="StartupTemperature">
     <variant name="" summary=""/>
-    <variant name=".ColdStartup"
-        summary="where startup was cold (mostly hard faults)"/>
-    <variant name=".WarmStartup"
-        summary="where startup was warm (almost no hard faults)"/>
+    <variant name=".Temperature.ColdStartup"
+        summary=", where startup was cold (mostly hard faults). Only
+                 available on Windows."/>
+    <variant name=".Temperature.Other"
+        summary=", where startup temperature was undetermined"/>
+    <variant name=".Temperature.WarmStartup"
+        summary=", where startup was warm (almost no hard faults). Only
+                 available on Windows."/>
   </token>
 </histogram>
 
-<histogram
-    name="InitialWebUI.Startup{SessionRestore}.ReloadButton.FirstPaint{StartupTemperature}"
-    units="ms" expires_after="2026-04-30">
-  <owner>mych@chromium.org</owner>
-  <owner>chrome-waap-eng@google.com</owner>
+<histogram name="InitialWebUI.Toolbar.RenderProcessGone"
+    enum="TerminationStatus" expires_after="2026-07-05">
+  <owner>leimy@chromium.org</owner>
+  <owner>chrome-webium-product-eng@google.com</owner>
   <summary>
-    Records the time spent initializing a newly constructed ReloadButton in the
-    {SessionRestore} browser application startup with pre/post InitialWebUI
-    (WaaP) setup. The timer starts immediately after the browser application
-    startup{StartupTemperature}, and ends immediately after a paint of the view
-    is requested by either the browser process (pre-WaaP) or by the WebUI
-    renderer process (post-WaaP). Only recorded on desktop platforms.
+    Records the status when the Web UI Toolbar render process is terminated.
+
+    This is recorded every time when `WebUIToolbarWebView` receives
+    `PrimaryMainFrameRenderProcessGone()` signal including the normal
+    termination (i.e. `TERMINATION_STATUS_NORMAL_TERMINATION` and
+    `TERMINATION_STATUS_STILL_RUNNING`).
   </summary>
-  <token key="SessionRestore">
-    <variant name="" summary=""/>
-    <variant name=".SessionRestore"
-        summary="session restored (when continue where you left off is on)"/>
-  </token>
-  <token key="StartupTemperature">
-    <variant name="" summary=""/>
-    <variant name=".ColdStartup"
-        summary="where startup was cold (mostly hard faults)"/>
-    <variant name=".WarmStartup"
-        summary="where startup was warm (almost no hard faults)"/>
-  </token>
+</histogram>
+
+<histogram name="InitialWebUI.Toolbar.RenderProcessGoneExceedingRecoveryLimit"
+    enum="Boolean" expires_after="2026-07-05">
+  <owner>leimy@chromium.org</owner>
+  <owner>chrome-webium-product-eng@google.com</owner>
+  <summary>
+    Record the number of times that the Web UI Toolbar render process is
+    terminated abnormmaly and it exceeds the recovery limit.
+  </summary>
 </histogram>
 
 <histogram name="ListMenuUtils.SetupCallbacksRecursively.Duration"
@@ -629,7 +709,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="RenderTextHarfBuzz.ShapeRunsFallback" enum="ShapeRunFallback"
-    expires_after="2026-05-24">
+    expires_after="2026-07-26">
   <owner>dayeung@chromium.org</owner>
   <owner>etienneb@chromium.org</owner>
   <summary>
@@ -639,7 +719,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="RenderTextHarfBuzz.ShapeRunsWithFallbackFontsTime" units="ms"
-    expires_after="2026-05-10">
+    expires_after="2026-07-12">
   <owner>dayeung@chromium.org</owner>
   <owner>etienneb@chromium.org</owner>
   <summary>
@@ -662,7 +742,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="RenderViewContextMenu.Shown" enum="RenderViewContextMenuItem"
-    expires_after="2026-05-24">
+    expires_after="2026-07-26">
   <owner>avi@chromium.org</owner>
   <owner>edwardjung@chromium.org</owner>
   <owner>mpearson@chromium.org</owner>
@@ -743,7 +823,7 @@ features through Chrome Labs. -->
 </histogram>
 
 <histogram name="Views.InvalidatesDuringLayout" units="count"
-    expires_after="2026-05-17">
+    expires_after="2026-07-19">
   <owner>dpranke@chromium.org</owner>
   <owner>elainechien@chromium.org</owner>
   <owner>kylixrd@chromium.org</owner>
@@ -785,7 +865,7 @@ features through Chrome Labs. -->
 
 <histogram
     name="Views.{Process}.NumColorProvidersInitializedDuringOnNativeThemeUpdated"
-    units="providers" expires_after="2026-05-17">
+    units="providers" expires_after="2026-07-19">
   <owner>pkasting@chromium.org</owner>
   <owner>tluk@chromium.org</owner>
   <owner>skau@chromium.org</owner>
@@ -850,14 +930,14 @@ features through Chrome Labs. -->
 </histogram>
 
 <histogram name="WebUI.CreatedForUrl" enum="WebUIUrlHashes"
-    expires_after="2026-05-17">
+    expires_after="2026-07-19">
   <owner>dpapad@chromium.org</owner>
   <owner>chrome-webui@google.com</owner>
   <summary>URLs for which Chrome creates WebUIControllers.</summary>
 </histogram>
 
 <histogram name="WebUI.Settings.PathVisited" enum="WebUISettingsPathHashes"
-    expires_after="2026-05-03">
+    expires_after="2026-07-05">
   <owner>dschuyler@chromium.org</owner>
   <owner>tbuckley@chromium.org</owner>
   <owner>bettes@chromium.org</owner>
@@ -910,7 +990,7 @@ features through Chrome Labs. -->
 </histogram>
 
 <histogram name="WebUI.TopChrome.RequestToFCP{WebUIName}" units="ms"
-    expires_after="2026-04-19">
+    expires_after="2026-06-21">
   <owner>kerenzhu@chromium.org</owner>
   <owner>chrome-webui-for-features@google.com</owner>
   <improvement direction="LOWER_IS_BETTER"/>
@@ -924,7 +1004,7 @@ features through Chrome Labs. -->
 </histogram>
 
 <histogram name="WebUI.TopChrome.RequestToLCP{WebUIName}" units="ms"
-    expires_after="2026-04-19">
+    expires_after="2026-06-21">
   <owner>kerenzhu@chromium.org</owner>
   <owner>chrome-webui-for-features@google.com</owner>
   <improvement direction="LOWER_IS_BETTER"/>
@@ -982,7 +1062,7 @@ features through Chrome Labs. -->
 </histogram>
 
 <histogram name="WebUITabStrip.LoadCompletedTime" units="ms"
-    expires_after="2026-05-17">
+    expires_after="2026-07-26">
   <owner>robliao@chromium.org</owner>
   <owner>tluk@chromium.org</owner>
   <summary>
@@ -1008,7 +1088,7 @@ features through Chrome Labs. -->
 </histogram>
 
 <histogram name="WebUITabStrip.OpenAction" enum="WebUITabStripOpenActions"
-    expires_after="2026-04-19">
+    expires_after="2026-06-21">
   <owner>robliao@chromium.org</owner>
   <owner>tluk@chromium.org</owner>
   <summary>
@@ -1019,7 +1099,7 @@ features through Chrome Labs. -->
 </histogram>
 
 <histogram name="WebUITabStrip.OpenDuration" units="ms"
-    expires_after="2026-05-17">
+    expires_after="2026-07-26">
   <owner>robliao@chromium.org</owner>
   <owner>tluk@chromium.org</owner>
   <summary>
@@ -1060,111 +1140,114 @@ features through Chrome Labs. -->
 </histogram>
 
 <histogram name="WrenchMenu.MenuAction" enum="WrenchMenuAction"
-    expires_after="2026-05-03">
+    expires_after="2026-07-05">
   <owner>ainslie@chromium.org</owner>
   <owner>edwardjung@chromium.org</owner>
   <summary>Number of times that each menu item is clicked.</summary>
 </histogram>
 
-<histogram name="WrenchMenu.TimeToAction.{Action}" units="ms"
-    expires_after="2026-05-03">
+<histogram name="WrenchMenu.TimeToAction{Action}" units="ms"
+    expires_after="2026-07-05">
   <owner>ainslie@chromium.org</owner>
   <owner>edwardjung@chromium.org</owner>
   <summary>
     The time a user takes to select a menu item after opening the menu.
   </summary>
   <token key="Action">
-    <variant name="About"/>
-    <variant name="AddNewProfile"/>
-    <variant name="AppInfo"/>
-    <variant name="BetaForum"/>
-    <variant name="BookmarkAllTabs"/>
-    <variant name="BookmarkPage"/>
-    <variant name="Cast"/>
-    <variant name="ChromeOSRestart"/>
-    <variant name="ChromeTips"/>
-    <variant name="ClearBrowsingData"/>
-    <variant name="CloseProfile"/>
-    <variant name="Copy"/>
-    <variant name="CopyUrl"/>
-    <variant name="CreateHostedApp"/>
-    <variant name="CreateQrCode"/>
-    <variant name="CustomizeChrome"/>
-    <variant name="Cut"/>
-    <variant name="DeclutterTabs"/>
-    <variant name="DevTools"/>
-    <variant name="DevToolsConsole"/>
-    <variant name="DevToolsDevices"/>
-    <variant name="DistillPage"/>
-    <variant name="EnterFullScreen"/>
-    <variant name="Exit"/>
-    <variant name="Feedback"/>
-    <variant name="Find"/>
-    <variant name="FindExtensions"/>
-    <variant name="HelpPage"/>
-    <variant name="ImportSettings"/>
-    <variant name="InstallPwa"/>
-    <variant name="LoginForDeviceTabs"/>
-    <variant name="ManageChromeProfiles"/>
-    <variant name="ManageExtensions"/>
-    <variant name="ManageGoogleAccount"/>
-    <variant name="NewIncognitoWindow"/>
-    <variant name="NewTab"/>
-    <variant name="NewWindow"/>
-    <variant name="OpenBookmark"/>
-    <variant name="OpenGuestProfile"/>
-    <variant name="OpenInChrome"/>
-    <variant name="OpenInPwaWindow"/>
-    <variant name="OpenRecentTab"/>
-    <variant name="PasswordManager"/>
-    <variant name="Paste"/>
-    <variant name="Print"/>
-    <variant name="ProfilingEnabled"/>
-    <variant name="ReadingListAddTab"/>
-    <variant name="ReadingListShowUi"/>
-    <variant name="RequestTabletSite"/>
-    <variant name="RestoreTab"/>
-    <variant name="SafetyHubNotificationManageExtensions"/>
-    <variant name="SafetyHubNotificationOpenSafetyHub"/>
-    <variant name="SafetyHubNotificationPasswordCheck"/>
-    <variant name="SavePage"/>
-    <variant name="SeeDeviceTabs"/>
-    <variant name="SendToDevices"/>
-    <variant name="SetBrowserAsDefault"/>
-    <variant name="Settings"/>
-    <variant name="ShowAddresses"/>
-    <variant name="ShowBookmarkBar"/>
-    <variant name="ShowBookmarkMgr"/>
-    <variant name="ShowBookmarkSidePanel"/>
-    <variant name="ShowChromeLabs"/>
-    <variant name="ShowContactInfo"/>
-    <variant name="ShowCustomizeChromeSidePanel"/>
-    <variant name="ShowDownloads"/>
-    <variant name="ShowHistory"/>
-    <variant name="ShowHistoryClustersSidePanel"/>
-    <variant name="ShowIdentityDocs"/>
-    <variant name="ShowKaleidoscope"/>
-    <variant name="ShowLensOverlay"/>
-    <variant name="ShowPasswordManager"/>
-    <variant name="ShowPaymentMethods"/>
-    <variant name="ShowPerformanceSettings"/>
-    <variant name="ShowReadingModeSidePanel"/>
-    <variant name="ShowSavedTabGroups"/>
-    <variant name="ShowSignin"/>
-    <variant name="ShowSigninWhenPaused"/>
-    <variant name="ShowSyncSettings"/>
-    <variant name="ShowTranslate"/>
-    <variant name="ShowTravel"/>
-    <variant name="ShowTurnOnSync"/>
-    <variant name="SiteSettings"/>
-    <variant name="SwitchToAnotherProfile"/>
-    <variant name="TaskManager"/>
-    <variant name="ViewSource"/>
-    <variant name="VisitChromeWebStore"/>
-    <variant name="Win8MetroRestart"/>
-    <variant name="WinDesktopRestart"/>
-    <variant name="ZoomMinus"/>
-    <variant name="ZoomPlus"/>
+    <variant name=""/>
+    <variant name=".About"/>
+    <variant name=".AddNewProfile"/>
+    <variant name=".AppInfo"/>
+    <variant name=".BetaForum"/>
+    <variant name=".BookmarkAllTabs"/>
+    <variant name=".BookmarkPage"/>
+    <variant name=".Cast"/>
+    <variant name=".ChromeOSRestart"/>
+    <variant name=".ChromeTips"/>
+    <variant name=".ChromeWhatsNew"/>
+    <variant name=".ClearBrowsingData"/>
+    <variant name=".CloseProfile"/>
+    <variant name=".Copy"/>
+    <variant name=".CopyUrl"/>
+    <variant name=".CreateHostedApp"/>
+    <variant name=".CreateQrCode"/>
+    <variant name=".CustomizeChrome"/>
+    <variant name=".Cut"/>
+    <variant name=".DeclutterTabs"/>
+    <variant name=".DevTools"/>
+    <variant name=".DevToolsConsole"/>
+    <variant name=".DevToolsDevices"/>
+    <variant name=".DistillPage"/>
+    <variant name=".EnterFullScreen"/>
+    <variant name=".Exit"/>
+    <variant name=".Feedback"/>
+    <variant name=".Find"/>
+    <variant name=".FindExtensions"/>
+    <variant name=".HelpPage"/>
+    <variant name=".ImportSettings"/>
+    <variant name=".InstallPwa"/>
+    <variant name=".LoginForDeviceTabs"/>
+    <variant name=".ManageChromeProfiles"/>
+    <variant name=".ManageExtensions"/>
+    <variant name=".ManageGoogleAccount"/>
+    <variant name=".NewIncognitoWindow"/>
+    <variant name=".NewTab"/>
+    <variant name=".NewWindow"/>
+    <variant name=".OpenBookmark"/>
+    <variant name=".OpenGlic"/>
+    <variant name=".OpenGuestProfile"/>
+    <variant name=".OpenInChrome"/>
+    <variant name=".OpenInPwaWindow"/>
+    <variant name=".OpenRecentTab"/>
+    <variant name=".PasswordManager"/>
+    <variant name=".Paste"/>
+    <variant name=".Print"/>
+    <variant name=".ProfilingEnabled"/>
+    <variant name=".ReadingListAddTab"/>
+    <variant name=".ReadingListShowUi"/>
+    <variant name=".RequestTabletSite"/>
+    <variant name=".RestoreTab"/>
+    <variant name=".SafetyHubNotificationManageExtensions"/>
+    <variant name=".SafetyHubNotificationOpenSafetyHub"/>
+    <variant name=".SafetyHubNotificationPasswordCheck"/>
+    <variant name=".SavePage"/>
+    <variant name=".SeeDeviceTabs"/>
+    <variant name=".SendToDevices"/>
+    <variant name=".SetBrowserAsDefault"/>
+    <variant name=".Settings"/>
+    <variant name=".ShowAddresses"/>
+    <variant name=".ShowBookmarkBar"/>
+    <variant name=".ShowBookmarkMgr"/>
+    <variant name=".ShowBookmarkSidePanel"/>
+    <variant name=".ShowChromeLabs"/>
+    <variant name=".ShowContactInfo"/>
+    <variant name=".ShowCustomizeChromeSidePanel"/>
+    <variant name=".ShowDownloads"/>
+    <variant name=".ShowHistory"/>
+    <variant name=".ShowHistoryClustersSidePanel"/>
+    <variant name=".ShowIdentityDocs"/>
+    <variant name=".ShowKaleidoscope"/>
+    <variant name=".ShowLensOverlay"/>
+    <variant name=".ShowPasswordManager"/>
+    <variant name=".ShowPaymentMethods"/>
+    <variant name=".ShowPerformanceSettings"/>
+    <variant name=".ShowReadingModeSidePanel"/>
+    <variant name=".ShowSavedTabGroups"/>
+    <variant name=".ShowSignin"/>
+    <variant name=".ShowSigninWhenPaused"/>
+    <variant name=".ShowSyncSettings"/>
+    <variant name=".ShowTranslate"/>
+    <variant name=".ShowTravel"/>
+    <variant name=".ShowTurnOnSync"/>
+    <variant name=".SiteSettings"/>
+    <variant name=".SwitchToAnotherProfile"/>
+    <variant name=".TaskManager"/>
+    <variant name=".ViewSource"/>
+    <variant name=".VisitChromeWebStore"/>
+    <variant name=".Win8MetroRestart"/>
+    <variant name=".WinDesktopRestart"/>
+    <variant name=".ZoomMinus"/>
+    <variant name=".ZoomPlus"/>
   </token>
 </histogram>
 

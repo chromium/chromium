@@ -103,12 +103,12 @@ std::pair<int, std::optional<cbor::Value>> CborDecodeGetAssertionResponse(
 }
 
 std::string FindInstanceIdInBootstrapConfigurations(
-    const base::Value::Dict& payload) {
-  const base::Value::Dict* bootstrap_configurations =
+    const base::DictValue& payload) {
+  const base::DictValue* bootstrap_configurations =
       payload.FindDict(kBootstrapConfigurationsKey);
   CHECK(bootstrap_configurations);
 
-  const base::Value::Dict* device_details =
+  const base::DictValue* device_details =
       bootstrap_configurations->FindDict(kDeviceDetailsKey);
   if (!device_details) {
     LOG(WARNING) << "DeviceDetails not found within BootstrapConfigurations.";
@@ -120,13 +120,12 @@ std::string FindInstanceIdInBootstrapConfigurations(
   return instance_id_ptr ? *instance_id_ptr : "";
 }
 
-std::string FindEmailInBootstrapConfigurations(
-    const base::Value::Dict& payload) {
-  const base::Value::Dict* bootstrap_configurations =
+std::string FindEmailInBootstrapConfigurations(const base::DictValue& payload) {
+  const base::DictValue* bootstrap_configurations =
       payload.FindDict(kBootstrapConfigurationsKey);
   CHECK(bootstrap_configurations);
 
-  const base::Value::List* accounts =
+  const base::ListValue* accounts =
       bootstrap_configurations->FindList(kBootstrapAccountsKey);
   if (!accounts) {
     LOG(WARNING)
@@ -139,7 +138,7 @@ std::string FindEmailInBootstrapConfigurations(
     return "";
   }
 
-  const base::Value::Dict* first_account = accounts->front().GetIfDict();
+  const base::DictValue* first_account = accounts->front().GetIfDict();
   if (!first_account) {
     LOG(WARNING) << "Invalid value for account received from source device.";
     return "";
@@ -155,8 +154,8 @@ std::string FindEmailInBootstrapConfigurations(
 }
 
 bool FindIsSupervisedAccountInBootstrapConfigurations(
-    const base::Value::Dict& payload) {
-  const base::Value::Dict* second_device_auth_payload =
+    const base::DictValue& payload) {
+  const base::DictValue* second_device_auth_payload =
       payload.FindDict(kSecondDeviceAuthPayloadKey);
   if (!second_device_auth_payload) {
     LOG(WARNING) << "SecondDeviceAuthPayload not found in "
@@ -224,7 +223,7 @@ QuickStartDecoder::DoDecodeQuickStartMessage(const std::vector<uint8_t>& data) {
     }
   }
 
-  base::Value::Dict* payload = read_result.value()->GetPayload();
+  base::DictValue* payload = read_result.value()->GetPayload();
   QuickStartMessageType type = read_result.value()->get_type();
   switch (type) {
     case QuickStartMessageType::kSecondDeviceAuthPayload:
@@ -245,7 +244,7 @@ QuickStartDecoder::DoDecodeQuickStartMessage(const std::vector<uint8_t>& data) {
 
 base::expected<mojom::QuickStartMessagePtr, mojom::QuickStartDecoderError>
 QuickStartDecoder::DecodeSecondDeviceAuthPayload(
-    const base::Value::Dict& payload) {
+    const base::DictValue& payload) {
   const std::string* fido_message = payload.FindString(kFidoMessageKey);
   if (!fido_message) {
     LOG(ERROR) << "fidoMessage cannot be found within secondDeviceAuthPayload.";
@@ -369,7 +368,7 @@ QuickStartDecoder::DecodeSecondDeviceAuthPayload(
 }
 
 base::expected<mojom::QuickStartMessagePtr, mojom::QuickStartDecoderError>
-QuickStartDecoder::DecodeQuickStartPayload(const base::Value::Dict& payload) {
+QuickStartDecoder::DecodeQuickStartPayload(const base::DictValue& payload) {
   // user verification requested
   std::optional<bool> is_awaiting_user_verification;
   if ((is_awaiting_user_verification =
@@ -416,7 +415,7 @@ QuickStartDecoder::DecodeQuickStartPayload(const base::Value::Dict& payload) {
   }
 
   // wifi credentials
-  const base::Value::Dict* wifi_network_information = nullptr;
+  const base::DictValue* wifi_network_information = nullptr;
   if ((wifi_network_information =
            payload.FindDict(kWifiNetworkInformationKey))) {
     return DecodeWifiCredentials(*wifi_network_information);
@@ -437,7 +436,7 @@ QuickStartDecoder::DecodeQuickStartPayload(const base::Value::Dict& payload) {
 
 base::expected<mojom::QuickStartMessagePtr, mojom::QuickStartDecoderError>
 QuickStartDecoder::DecodeWifiCredentials(
-    const base::Value::Dict& wifi_network_information) {
+    const base::DictValue& wifi_network_information) {
   const std::string* ssid =
       wifi_network_information.FindString(kWifiNetworkSsidKey);
   if (!ssid) {
@@ -533,7 +532,7 @@ QuickStartDecoder::DecodeWifiCredentials(
 
 base::expected<mojom::QuickStartMessagePtr, mojom::QuickStartDecoderError>
 QuickStartDecoder::DecodeBootstrapConfigurations(
-    const base::Value::Dict& payload) {
+    const base::DictValue& payload) {
   return mojom::QuickStartMessage::NewBootstrapConfigurations(
       mojom::BootstrapConfigurations::New(
           FindInstanceIdInBootstrapConfigurations(payload),

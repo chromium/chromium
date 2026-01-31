@@ -124,7 +124,7 @@ void DeskModel::HandleTemplateConversionToPolicyJson(
     return;
   }
 
-  base::Value::List template_list;
+  base::ListValue template_list;
   template_list.Append(
       desk_template_conversion::SerializeDeskTemplateAsBaseValue(entry.get(),
                                                                  app_cache));

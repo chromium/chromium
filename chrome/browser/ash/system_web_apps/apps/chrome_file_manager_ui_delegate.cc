@@ -31,9 +31,9 @@ ChromeFileManagerUIDelegate::ChromeFileManagerUIDelegate(content::WebUI* web_ui)
 
 ChromeFileManagerUIDelegate::~ChromeFileManagerUIDelegate() = default;
 
-base::Value::Dict ChromeFileManagerUIDelegate::GetLoadTimeData() const {
+base::DictValue ChromeFileManagerUIDelegate::GetLoadTimeData() const {
   const std::string& locale = g_browser_process->GetApplicationLocale();
-  base::Value::Dict dict = GetFileManagerStrings(locale);
+  base::DictValue dict = GetFileManagerStrings(locale);
   AddFileManagerFeatureStrings(
       locale, locale, CHECK_DEREF(g_browser_process->variations_service()),
       Profile::FromWebUI(web_ui_), &dict);

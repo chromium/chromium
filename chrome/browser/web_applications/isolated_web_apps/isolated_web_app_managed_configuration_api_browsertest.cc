@@ -11,7 +11,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/web_applications/test/isolated_web_app_test_utils.h"
 #include "chrome/browser/web_applications/isolated_web_apps/runtime_data/chrome_iwa_runtime_data_provider.h"
-#include "chrome/browser/web_applications/isolated_web_apps/test/fake_chrome_iwa_runtime_data_provider.h"
+#include "chrome/browser/web_applications/isolated_web_apps/test/fake_iwa_runtime_data_provider_mixin.h"
 #include "chrome/browser/web_applications/isolated_web_apps/test/isolated_web_app_builder.h"
 #include "chrome/browser/web_applications/isolated_web_apps/test/isolated_web_app_test_update_server.h"
 #include "chrome/browser/web_applications/policy/web_app_policy_constants.h"
@@ -47,7 +47,7 @@ struct ResponseTemplate {
 std::unique_ptr<net::test_server::HttpResponse> HandleRequest(
     std::map<std::string, ResponseTemplate> templates,
     const net::test_server::HttpRequest& request) {
-  if (!base::Contains(templates, request.relative_url)) {
+  if (!templates.contains(request.relative_url)) {
     return std::make_unique<net::test_server::HungResponse>();
   }
 
@@ -68,10 +68,6 @@ class ManagedConfigurationAPIInIsolatedWebAppTest
     return test::GetDefaultEd25519WebBundleId();
   }
 
-  ChromeIwaRuntimeDataProvider* GetRuntimeDataProvider() override {
-    return &data_provider_;
-  }
-
   void EnableTestServer(
       const std::map<std::string, ResponseTemplate>& templates) {
     embedded_test_server()->RegisterRequestHandler(
@@ -84,8 +80,8 @@ class ManagedConfigurationAPIInIsolatedWebAppTest
                         const std::string& origin_key) {
     browser()->profile()->GetPrefs()->SetList(
         prefs::kManagedConfigurationPerOrigin,
-        base::Value::List().Append(
-            base::Value::Dict()
+        base::ListValue().Append(
+            base::DictValue()
                 .Set(ManagedConfigurationAPI::kOriginKey, origin_key)
                 .Set(ManagedConfigurationAPI::kManagedConfigurationUrlKey,
                      embedded_test_server()->GetURL(conf_url).spec())
@@ -95,7 +91,7 @@ class ManagedConfigurationAPIInIsolatedWebAppTest
 
  protected:
   IsolatedWebAppTestUpdateServer iwa_test_update_server_;
-  FakeIwaRuntimeDataProvider data_provider_;
+  FakeIwaRuntimeDataProviderMixin data_provider_{&mixin_host_};
 };
 
 IN_PROC_BROWSER_TEST_F(ManagedConfigurationAPIInIsolatedWebAppTest,
@@ -111,11 +107,11 @@ IN_PROC_BROWSER_TEST_F(ManagedConfigurationAPIInIsolatedWebAppTest,
       IsolatedWebAppBuilder(ManifestBuilder())
           .BuildBundle(GetWebBundleId(), {test::GetDefaultEd25519KeyPair()}));
 
-  data_provider_.Update(
+  data_provider_->Update(
       [&](auto& update) { update.AddToManagedAllowlist(GetWebBundleId()); });
   profile()->GetPrefs()->SetList(
       prefs::kIsolatedWebAppInstallForceList,
-      base::Value::List().Append(
+      base::ListValue().Append(
           iwa_test_update_server_.CreateForceInstallPolicyEntry(
               GetWebBundleId())));
 
@@ -125,7 +121,7 @@ IN_PROC_BROWSER_TEST_F(ManagedConfigurationAPIInIsolatedWebAppTest,
   auto result = content::EvalJs(
       OpenApp(url_info.app_id(), ""),
       content::JsReplace("navigator.managed.getManagedConfiguration($1)",
-                         base::Value::List().Append(kKey1).Append(kKey2)));
+                         base::ListValue().Append(kKey1).Append(kKey2)));
 
   EXPECT_EQ(result, base::test::ParseJson(kConfigurationData));
 }

@@ -28,6 +28,7 @@
 #include "components/affiliations/core/browser/affiliation_utils.h"
 #include "components/affiliations/core/browser/facet_manager.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
 
 namespace affiliations {
 
@@ -179,7 +180,7 @@ void AffiliationBackend::TrimUnusedCache(std::vector<FacetURI> facet_uris) {
 std::vector<GroupedFacets> AffiliationBackend::GetGroupingInfo(
     std::vector<FacetURI> facet_uris) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  std::unordered_set<std::string> facets_in_response;
+  absl::flat_hash_set<std::string> facets_in_response;
   std::vector<GroupedFacets> result;
 
   for (FacetURI& facet : facet_uris) {

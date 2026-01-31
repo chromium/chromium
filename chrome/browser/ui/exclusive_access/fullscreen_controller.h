@@ -179,6 +179,12 @@ class FullscreenController : public ExclusiveAccessControllerBase {
     is_tab_fullscreen_for_testing_ = is_tab_fullscreen;
   }
 
+  void set_disable_entering_fullscreen_within_tab_for_testing(
+      bool disable_fullscreen_within_tab) {
+    disable_entering_fullscreen_within_tab_for_testing_ =
+        disable_fullscreen_within_tab;
+  }
+
  private:
   friend class ExclusiveAccessTest;
 
@@ -257,6 +263,9 @@ class FullscreenController : public ExclusiveAccessControllerBase {
 
   // Used in testing to set the state to tab fullscreen.
   bool is_tab_fullscreen_for_testing_ = false;
+
+  // Used in testing to disable fullscreen within tab.
+  bool disable_entering_fullscreen_within_tab_for_testing_ = false;
 
   // Set of parameters used to enter fullscreen
   std::optional<FullscreenTabParams> fullscreen_parameters_;

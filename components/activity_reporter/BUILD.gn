@@ -1,0 +1,66 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/buildflag_header.gni")
+import("//components/activity_reporter/buildflags.gni")
+import("//testing/test.gni")
+
+buildflag_header("buildflags") {
+  header = "buildflags.h"
+  flags = [ "USE_LEGACY_ACTIVE_DEFINITION=$use_legacy_active_definition" ]
+}
+
+source_set("activity_reporter") {
+  public = [ "activity_reporter.h" ]
+
+  deps = [
+    ":buildflags",
+    "//base",
+    "//components/prefs",
+    "//components/update_client",
+  ]
+
+  sources = [ "activity_reporter_no_impl.cc" ]
+
+  if (report_activity) {
+    sources += [
+      "activity_reporter_impl.cc",
+      "configurator.cc",
+      "configurator.h",
+    ]
+    deps += [
+      "//base/version_info",
+      "//components/prefs",
+      "//url",
+    ]
+
+    if (checkout_src_internal) {
+      sources += [ "internal/constants.h" ]
+    } else {
+      sources += [ "constants.h" ]
+    }
+  } else {
+    sources += [ "activity_reporter_disabled.cc" ]
+  }
+
+  friend = [ ":unit_tests" ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  if (report_activity) {
+    sources = [
+      "activity_reporter_for_testing.h",
+      "activity_reporter_impl_unittest.cc",
+    ]
+    deps = [
+      ":activity_reporter",
+      "//base/test:test_support",
+      "//components/prefs:test_support",
+      "//components/update_client",
+      "//testing/gmock",
+      "//testing/gtest",
+    ]
+  }
+}

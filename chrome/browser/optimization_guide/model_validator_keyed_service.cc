@@ -29,7 +29,6 @@
 #include "components/optimization_guide/proto/model_execution.pb.h"
 #include "components/optimization_guide/proto/model_validation.pb.h"
 #include "components/optimization_guide/proto/string_value.pb.h"
-#include "components/optimization_guide/public/mojom/model_broker.mojom-data-view.h"
 
 #if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
 #include "components/optimization_guide/core/inference/model_validator.h"

@@ -6,20 +6,32 @@ package org.chromium.components.omnibox;
 
 import android.text.TextUtils;
 
+import org.chromium.base.UserData;
+import org.chromium.build.BuildConfig;
 import org.chromium.build.annotations.Initializer;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.components.metrics.OmniboxEventProtos.OmniboxEventProto.PageClassification;
-import org.chromium.components.omnibox.AimToolsAndModelsProto.ChromeAimToolsAndModels;
+import org.chromium.components.omnibox.AimToolsProto.ToolMode;
 import org.chromium.url.GURL;
 
-/** AutocompleteInput encompasses the input to autocomplete. */
+import java.util.Locale;
+
+/**
+ * AutocompleteInput encompasses the input to autocomplete and fusebox.
+ *
+ * <p>This class must have no dependencies on external services or logic and should be fully
+ * serializable.
+ */
 @NullMarked
-public class AutocompleteInput {
+public class AutocompleteInput implements UserData {
     private GURL mPageUrl;
     private int mPageClassification;
     private String mPageTitle;
     private String mUserText;
     private boolean mAllowExactKeywordMatch;
+    private boolean mHasAttachments;
+    private int mSelectionStart;
+    private int mSelectionEnd;
     private @AutocompleteRequestType int mRequestType;
 
     public AutocompleteInput() {
@@ -37,12 +49,36 @@ public class AutocompleteInput {
         return this;
     }
 
+    private int getComposeboxEquivalentOfPageClassification() {
+        return switch (mPageClassification) {
+            // LINT.IfChange(FuseboxSupportedPageClassifications)
+            case PageClassification.INSTANT_NTP_WITH_OMNIBOX_AS_STARTING_FOCUS_VALUE ->
+                    PageClassification.NTP_COMPOSEBOX_VALUE;
+            case PageClassification.SEARCH_RESULT_PAGE_NO_SEARCH_TERM_REPLACEMENT_VALUE ->
+                    PageClassification.SRP_OMNIBOX_COMPOSEBOX_VALUE;
+            case PageClassification.OTHER_VALUE ->
+                    PageClassification.OTHER_OMNIBOX_COMPOSEBOX_VALUE;
+            // LINT.ThenChange(/chrome/browser/ui/android/omnibox/java/src/org/chromium/chrome/browser/omnibox/fusebox/FuseboxCoordinator.java:FuseboxSupportedPageClassifications)
+            default -> {
+                // TODO(crbug.com/474808407): address the issue with top resumed activity change and
+                // remove condition, making assertion live again.
+                if (BuildConfig.ENABLE_DEBUG_LOGS) {
+                    assert false
+                            : String.format(
+                                    Locale.ROOT,
+                                    "Unrecognized page classification: %d",
+                                    mPageClassification);
+                }
+                yield PageClassification.OTHER_OMNIBOX_COMPOSEBOX_VALUE;
+            }
+        };
+    }
+
     /** Returns the current page classification. */
     public int getPageClassification() {
         return switch (mRequestType) {
-            case AutocompleteRequestType.AI_MODE -> PageClassification.NTP_COMPOSEBOX_VALUE;
-            case AutocompleteRequestType.IMAGE_GENERATION ->
-                    PageClassification.NTP_COMPOSEBOX_VALUE;
+            case AutocompleteRequestType.AI_MODE, AutocompleteRequestType.IMAGE_GENERATION ->
+                    getComposeboxEquivalentOfPageClassification();
             default -> mPageClassification;
         };
     }
@@ -90,11 +126,13 @@ public class AutocompleteInput {
     }
 
     /** Returns the Autocomplete Tool to use to fulfill the Request. */
-    public /* ChromeAimToolsAndModels */ int getToolMode() {
+    public /* ToolMode */ int getToolMode() {
         return switch (mRequestType) {
             case AutocompleteRequestType.IMAGE_GENERATION ->
-                    ChromeAimToolsAndModels.TOOL_MODE_IMAGE_GEN_VALUE;
-            default -> ChromeAimToolsAndModels.TOOL_MODE_UNSPECIFIED_VALUE;
+                    mHasAttachments
+                            ? ToolMode.TOOL_MODE_IMAGE_GEN_UPLOAD_VALUE
+                            : ToolMode.TOOL_MODE_IMAGE_GEN_VALUE;
+            default -> ToolMode.TOOL_MODE_UNSPECIFIED_VALUE;
         };
     }
 
@@ -156,6 +194,23 @@ public class AutocompleteInput {
         }
     }
 
+    public void setHasAttachments(boolean hasAttachments) {
+        mHasAttachments = hasAttachments;
+    }
+
+    public void setSelection(int rangeStart, int rangeEnd) {
+        mSelectionStart = rangeStart;
+        mSelectionEnd = rangeEnd;
+    }
+
+    public int getSelectionStart() {
+        return mSelectionStart;
+    }
+
+    public int getSelectionEnd() {
+        return mSelectionEnd;
+    }
+
     /**
      * Resets the AutocompleteInput to its default state.
      *
@@ -167,6 +222,9 @@ public class AutocompleteInput {
         mAllowExactKeywordMatch = false;
         mPageUrl = GURL.emptyGURL();
         mPageTitle = "";
+        mHasAttachments = false;
+        mSelectionStart = 0;
+        mSelectionEnd = 0;
         mPageClassification = PageClassification.BLANK_VALUE;
 
         return this;

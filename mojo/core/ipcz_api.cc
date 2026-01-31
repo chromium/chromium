@@ -4,12 +4,12 @@
 
 #include "mojo/core/ipcz_api.h"
 
+#include <vector>
+
 #include "base/check_op.h"
 #include "mojo/core/ipcz_driver/driver.h"
 #include "third_party/ipcz/include/ipcz/ipcz.h"
 #include "third_party/ipcz/src/api.h"
-
-#include <vector>
 
 namespace mojo::core {
 

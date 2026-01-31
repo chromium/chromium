@@ -11,11 +11,13 @@
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/scoped_observation.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/chromeos/app_mode/kiosk_policies.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_list_observer.h"
+#include "chrome/browser/ui/browser_window/public/browser_collection_observer.h"
+#include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 
 class BrowserWindowInterface;
 
@@ -51,7 +53,7 @@ enum class KioskBrowserWindowType {
 // If the last browser window gets closed, the session gets ended.
 //
 // It also manages showing required settings pages in a consistent browser.
-class KioskBrowserWindowHandler : public BrowserListObserver {
+class KioskBrowserWindowHandler : public BrowserCollectionObserver {
  public:
   KioskBrowserWindowHandler(
       Profile* profile,
@@ -94,9 +96,11 @@ class KioskBrowserWindowHandler : public BrowserListObserver {
   void OnCloseBrowserTimeout();
   void CloseAllUnexpectedBrowserWindows();
 
-  // BrowserListObserver
-  void OnBrowserAdded(Browser* browser) override;
-  void OnBrowserRemoved(Browser* browser) override;
+  // BrowserCollectionObserver
+  void OnBrowserCreated(
+      BrowserWindowInterface* browser_window_interface) override;
+  void OnBrowserClosed(
+      BrowserWindowInterface* browser_window_interface) override;
 
   // Returns true if open by web application and allowed by policy.
   bool IsNewBrowserWindowAllowed(Browser* browser) const;
@@ -143,6 +147,9 @@ class KioskBrowserWindowHandler : public BrowserListObserver {
   std::map<BrowserWindowInterface*, base::OneShotTimer> closing_browsers_;
 
   std::map<Browser*, std::unique_ptr<NavigationWaiter>> url_waiters_;
+
+  base::ScopedObservation<GlobalBrowserCollection, BrowserCollectionObserver>
+      browser_collection_observation_{this};
 
   base::WeakPtrFactory<KioskBrowserWindowHandler> weak_ptr_factory_{this};
 };

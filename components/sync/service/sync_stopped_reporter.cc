@@ -4,7 +4,6 @@
 
 #include "components/sync/service/sync_stopped_reporter.h"
 
-#include <optional>
 #include <string>
 #include <utility>
 
@@ -40,12 +39,13 @@ void LogSyncStoppedRequestTimeout(bool timed_out) {
   base::UmaHistogramBoolean("Sync.SyncStoppedURLFetchTimedOut", timed_out);
 }
 
-void LogSyncStoppedRequestResult(const network::SimpleURLLoader& url_loader) {
+void LogSyncStoppedRequestResult(
+    scoped_refptr<net::HttpResponseHeaders> headers,
+    int net_error_code) {
   int http_status_code = -1;
-  if (url_loader.ResponseInfo() && url_loader.ResponseInfo()->headers) {
-    http_status_code = url_loader.ResponseInfo()->headers->response_code();
+  if (headers) {
+    http_status_code = headers->response_code();
   }
-  const int net_error_code = url_loader.NetError();
   const bool request_succeeded =
       net_error_code == net::OK && http_status_code != -1;
   if (request_succeeded) {
@@ -125,7 +125,7 @@ void SyncStoppedReporter::ReportSyncStopped(const std::string& access_token,
   simple_url_loader_ = network::SimpleURLLoader::Create(
       std::move(resource_request), traffic_annotation);
   simple_url_loader_->AttachStringForUpload(msg, "application/octet-stream");
-  simple_url_loader_->DownloadToStringOfUnboundedSizeUntilCrashAndDie(
+  simple_url_loader_->DownloadHeadersOnly(
       url_loader_factory_.get(),
       base::BindOnce(&SyncStoppedReporter::OnSimpleLoaderComplete,
                      base::Unretained(this)));
@@ -134,9 +134,10 @@ void SyncStoppedReporter::ReportSyncStopped(const std::string& access_token,
 }
 
 void SyncStoppedReporter::OnSimpleLoaderComplete(
-    std::optional<std::string> response_body) {
+    scoped_refptr<net::HttpResponseHeaders> headers) {
   DCHECK(simple_url_loader_);
-  LogSyncStoppedRequestResult(*simple_url_loader_);
+  LogSyncStoppedRequestResult(std::move(headers),
+                              simple_url_loader_->NetError());
   simple_url_loader_.reset();
   timer_.Stop();
 }

@@ -37,6 +37,9 @@ class TextCodecUtf8 : public TextCodec {
  public:
   static void RegisterEncodingNames(EncodingNameRegistrar);
   static void RegisterCodecs(TextCodecRegistrar);
+  // Returns true if the given `canonical_name` is supported.
+  // This function ignores ASCII cases.
+  static bool IsSupported(StringView canonical_name);
 
  protected:
   TextCodecUtf8() : partial_sequence_size_(0) {}
@@ -67,16 +70,18 @@ class TextCodecUtf8 : public TextCodec {
   EncodeIntoResult EncodeIntoCommon(base::span<const CharType> characters,
                                     base::span<uint8_t> destination);
 
-  template <typename CharType>
-  bool HandlePartialSequence(base::span<CharType>& destination,
+  bool HandlePartialSequence(base::span<LChar>& destination,
+                             base::span<const uint8_t>& source,
+                             bool flush);
+  bool HandlePartialSequence(base::span<UChar>& destination,
                              base::span<const uint8_t>& source,
                              bool flush,
                              bool stop_on_error,
                              bool& saw_error);
-  void HandleError(int character,
-                   base::span<UChar>& destination,
-                   bool stop_on_error,
-                   bool& saw_error);
+  void FillPartialSequenceBytes(size_t sequence_length,
+                                base::span<const uint8_t>& source);
+  bool NeedMoreData(size_t sequence_length, int character, bool flush) const;
+  void SavePartialSequenceBytes(base::span<const uint8_t>& source);
   void ConsumePartialSequenceBytes(size_t num_bytes);
 
   std::array<uint8_t, U8_MAX_LENGTH> partial_sequence_;

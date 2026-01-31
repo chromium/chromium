@@ -648,7 +648,7 @@ IN_PROC_BROWSER_TEST_F(GeolocationPrerenderBrowserTest,
       current_browser(), https_test_server_.GetURL("/empty.html")));
 
   // Start a prerender with the geolocation test URL.
-  content::FrameTreeNodeId host_id =
+  content::PrerenderHostId host_id =
       prerender_helper_.AddPrerender(GetTestURL());
   content::test::PrerenderHostObserver prerender_observer(*web_contents(),
                                                           host_id);

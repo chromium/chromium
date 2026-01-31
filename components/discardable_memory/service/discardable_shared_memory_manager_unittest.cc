@@ -8,9 +8,11 @@
 #include <stdint.h>
 #include <string.h>
 
+#include <array>
 #include <memory>
 
 #include "base/compiler_specific.h"
+#include "base/memory/memory_pressure_listener_registry.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/task_environment.h"
 #include "base/threading/simple_thread.h"
@@ -80,6 +82,7 @@ class DiscardableSharedMemoryManagerTest : public testing::Test {
     manager_ = std::make_unique<TestDiscardableSharedMemoryManager>();
   }
 
+  base::MemoryPressureListenerRegistry memory_pressure_listener_registry_;
   // DiscardableSharedMemoryManager requires a message loop and a worker thread.
   base::test::TaskEnvironment task_environment_;
   std::unique_ptr<TestDiscardableSharedMemoryManager> manager_;
@@ -87,8 +90,8 @@ class DiscardableSharedMemoryManagerTest : public testing::Test {
 
 TEST_F(DiscardableSharedMemoryManagerTest, AllocateForClient) {
   const int kDataSize = 1024;
-  uint8_t data[kDataSize];
-  UNSAFE_TODO(memset(data, 0x80, kDataSize));
+  std::array<uint8_t, kDataSize> data;
+  data.fill(0x80);
 
   base::UnsafeSharedMemoryRegion shared_region;
   manager_->AllocateLockedDiscardableSharedMemoryForClient(

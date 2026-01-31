@@ -19,6 +19,7 @@
 #include "chrome/browser/ui/lens/lens_overlay_url_builder.h"
 #include "components/base32/base32.h"
 #include "components/lens/lens_features.h"
+#include "components/lens/lens_url_utils.h"
 #include "components/metrics_services_manager/metrics_services_manager.h"
 #include "components/search_engines/template_url_service.h"
 #include "net/base/url_util.h"
@@ -201,8 +202,8 @@ void LensOverlayGen204Controller::SendLatencyGen204IfEnabled(
                               ->search_terms_data()
                               .GoogleBaseURLValue())
                          .Resolve(query);
-    fetch_url =
-        lens::AppendInvocationSourceParamToURL(fetch_url, invocation_source_);
+    fetch_url = lens::AppendInvocationSourceParamToURL(
+        fetch_url, invocation_source_, /*is_contextual_tasks=*/false);
     if (encoded_analytics_id.has_value()) {
       fetch_url = net::AppendOrReplaceQueryParameter(
           fetch_url, kEncodedAnalyticsIdParameter,
@@ -254,8 +255,8 @@ void LensOverlayGen204Controller::SendTaskCompletionGen204IfEnabled(
                               ->search_terms_data()
                               .GoogleBaseURLValue())
                          .Resolve(query);
-    fetch_url =
-        lens::AppendInvocationSourceParamToURL(fetch_url, invocation_source_);
+    fetch_url = lens::AppendInvocationSourceParamToURL(
+        fetch_url, invocation_source_, /*is_contextual_tasks=*/false);
     CheckMetricsConsentAndIssueGen204NetworkRequest(fetch_url);
   }
 }
@@ -281,8 +282,8 @@ void LensOverlayGen204Controller::SendSemanticEventGen204IfEnabled(
                               ->search_terms_data()
                               .GoogleBaseURLValue())
                          .Resolve(query);
-    fetch_url =
-        lens::AppendInvocationSourceParamToURL(fetch_url, invocation_source_);
+    fetch_url = lens::AppendInvocationSourceParamToURL(
+        fetch_url, invocation_source_, /*is_contextual_tasks=*/false);
     if (request_id.has_value()) {
       fetch_url = net::AppendOrReplaceQueryParameter(
           fetch_url, kEncodedRequestIdParameter,

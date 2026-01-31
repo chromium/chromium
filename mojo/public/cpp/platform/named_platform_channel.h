@@ -90,9 +90,10 @@ class COMPONENT_EXPORT(MOJO_CPP_PLATFORM) NamedPlatformChannel {
 #if BUILDFLAG(IS_WIN)
   static ServerName GenerateRandomServerName();
 
-  // Returns an OS name for the pipe based on `server_name`. If `is_local_pipe` is true, the
-  // name will contain "LOCAL", which will allow the pipe to be created in an AppContainer
-  // sandbox but won't be cross-version compatible with pipes that lack this naming scheme.
+  // Returns an OS name for the pipe based on `server_name`. If `is_local_pipe`
+  // is true, the name will contain "LOCAL", which will allow the pipe to be
+  // created in an AppContainer sandbox but won't be cross-version compatible
+  // with pipes that lack this naming scheme.
   static std::wstring GetPipeNameFromServerName(const ServerName& server_name,
                                                 bool is_local_pipe = false);
 #endif

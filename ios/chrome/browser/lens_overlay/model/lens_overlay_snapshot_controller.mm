@@ -5,11 +5,11 @@
 #import "ios/chrome/browser/lens_overlay/model/lens_overlay_snapshot_controller.h"
 
 #import <map>
+#import <utility>
 
 #import "base/functional/callback_helpers.h"
 #import "base/task/bind_post_task.h"
 #import "base/task/thread_pool.h"
-#import "base/types/cxx23_to_underlying.h"
 #import "ios/chrome/browser/fullscreen/ui_bundled/fullscreen_controller.h"
 #import "ios/chrome/browser/lens_overlay/model/lens_overlay_presentation_type.h"
 #import "ios/chrome/browser/lens_overlay/model/lens_overlay_tab_helper.h"
@@ -50,8 +50,8 @@ UIColor* DominantColor(UIImage* image) {
   const NSUInteger bytesPerRow = kBytesPerPixel * width;
   CGContextRef context = CGBitmapContextCreate(
       rawData.data(), width, height, 8, bytesPerRow, colorSpace,
-      base::to_underlying(kCGImageAlphaPremultipliedLast) |
-          base::to_underlying(kCGImageByteOrder32Big));
+      std::to_underlying(kCGImageAlphaPremultipliedLast) |
+          std::to_underlying(kCGImageByteOrder32Big));
 
   CGColorSpaceRelease(colorSpace);
   CGContextDrawImage(context, CGRectMake(0, 0, width, height), imageRef);

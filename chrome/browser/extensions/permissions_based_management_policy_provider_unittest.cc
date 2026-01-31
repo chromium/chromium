@@ -65,9 +65,9 @@ class PermissionsBasedManagementPolicyProviderTest : public testing::Test {
   // |optional_permissions|.
   scoped_refptr<const Extension> CreateExtensionWithPermission(
       mojom::ManifestLocation location,
-      const base::Value::List* required_permissions,
-      const base::Value::List* optional_permissions) {
-    base::Value::Dict manifest_dict;
+      const base::ListValue* required_permissions,
+      const base::ListValue* optional_permissions) {
+    base::DictValue manifest_dict;
     manifest_dict.Set(manifest_keys::kName, "test");
     manifest_dict.Set(manifest_keys::kVersion, "0.1");
     manifest_dict.Set(manifest_keys::kManifestVersion, 2);
@@ -99,10 +99,10 @@ class PermissionsBasedManagementPolicyProviderTest : public testing::Test {
 // Verifies that extensions with conflicting permissions cannot be loaded.
 TEST_F(PermissionsBasedManagementPolicyProviderTest, APIPermissions) {
   // Prepares the extension manifest.
-  base::Value::List required_permissions;
+  base::ListValue required_permissions;
   required_permissions.Append(GetAPIPermissionName(APIPermissionID::kHistory));
   required_permissions.Append(GetAPIPermissionName(APIPermissionID::kCookie));
-  base::Value::List optional_permissions;
+  base::ListValue optional_permissions;
   optional_permissions.Append(GetAPIPermissionName(APIPermissionID::kBookmark));
 
   scoped_refptr<const Extension> extension = CreateExtensionWithPermission(

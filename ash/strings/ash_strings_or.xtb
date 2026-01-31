@@ -342,6 +342,7 @@
 <translation id="2201071101391734388">ବର୍ତ୍ତମାନର ଫଟୋ <ph name="TOTAL_COUNT" />ଟିରୁ <ph name="INDEX" />।</translation>
 <translation id="2201687081523799384">Google Tasksକୁ ସଙ୍କୁଚିତ କରନ୍ତୁ</translation>
 <translation id="2208323208084708176">ଏକୀକୃତ ଡେସ୍କଟପ୍ ମୋଡ୍</translation>
+<translation id="2210311543574621570">ଆପଣ Ctrl + V ଦବାଇ ଧରି ରଖିଲେ କ୍ଲିପବୋର୍ଡ ଦେଖିବେ। ଆପଣ chrome://flagsରେ #clipboard-history-longpress ଫ୍ଲାଗକୁ ଅକ୍ଷମ କରି ଏହି ସର୍ଟକଟକୁ ବନ୍ଦ କରିପାରିବେ।</translation>
 <translation id="2215920961700443347">କୌଣସି ଇଣ୍ଟରନେଟ୍‌ ନାହିଁ ଇଣ୍ଟରନେଟ ସହ ସଂଯୋଗ କରି ପୁଣି ଚେଷ୍ଟା କରନ୍ତୁ।</translation>
 <translation id="2222841058024245321">ଡେସ୍କ 7</translation>
 <translation id="2223384056430485343">ଏକ ସ୍ପ୍ଲିଟ ସ୍କ୍ରିନରେ</translation>
@@ -1102,7 +1103,7 @@
 <translation id="4697357603686181098">ଏଥିପାଇଁ ସାହାଯ୍ୟ କରାଯାଇପାରିବ ନାହିଁ। ଅନ୍ୟ ଏକ ଅନୁରୋଧ କରି ଚେଷ୍ଟା କରନ୍ତୁ।</translation>
 <translation id="4702647871202761252">ଗୋପନୀୟତା ସ୍କ୍ରିନ ବନ୍ଦ ଅଛି</translation>
 <translation id="4706121060329443414">ପରେ ଡାଉନଲୋଡ୍ କରିବା ପାଇଁ ଚେଷ୍ଟା କରାଯିବ। ସ୍ପିଚ୍ ବର୍ତ୍ତମାନ ପ୍ରକ୍ରିୟାନ୍ୱିତ ହେବା ପାଇଁ Googleକୁ ପଠାଯିବ।</translation>
-<translation id="470644585772471629">ରଙ୍ଗ ଇନଭର୍ସନ</translation>
+<translation id="470644585772471629">କଲର ଇନଭର୍ସନ</translation>
 <translation id="4708065238214351979">କୀବୋର୍ଡକୁ ଅଧିକ ଉଜ୍ଜ୍ୱଳ କରନ୍ତୁ</translation>
 <translation id="4708185346211948049">ପରବର୍ତ୍ତୀ ସପ୍ତାହର <ph name="DAY_OF_WEEK" /></translation>
 <translation id="4717575069099566988">ଆପଣଙ୍କ USB-C କେବୁଲ USB4କୁ ସମର୍ଥନ କରେ ନାହିଁ। ଡିଭାଇସ ପରଫରମାନ୍ସକୁ ସୀମିତ କରାଯାଇପାରେ।</translation>

@@ -58,7 +58,7 @@ namespace extensions {
 
 // static
 bool ManifestPermissionSet::ParseFromJSON(
-    const base::Value::List& permissions,
+    const base::ListValue& permissions,
     ManifestPermissionSet* manifest_permissions,
     std::u16string* error,
     std::vector<std::string>* unhandled_permissions) {

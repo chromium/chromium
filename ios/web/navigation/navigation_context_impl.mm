@@ -9,6 +9,7 @@
 #import "base/memory/ptr_util.h"
 #import "ios/web/common/features.h"
 #import "ios/web/navigation/navigation_item_impl.h"
+#import "ios/web/public/web_state.h"
 #import "net/http/http_response_headers.h"
 
 namespace web {
@@ -51,7 +52,7 @@ NSString* NavigationContextImpl::GetDescription() const {
 #endif  // NDEBUG
 
 WebState* NavigationContextImpl::GetWebState() {
-  return web_state_;
+  return web_state_.get();
 }
 
 int64_t NavigationContextImpl::GetNavigationId() const {
@@ -208,7 +209,7 @@ NavigationContextImpl::NavigationContextImpl(WebState* web_state,
                                              bool has_user_gesture,
                                              ui::PageTransition page_transition,
                                              bool is_renderer_initiated)
-    : web_state_(web_state),
+    : web_state_(web_state ? web_state->GetWeakPtr() : nullptr),
       navigation_id_(CreateUniqueContextId()),
       url_(url),
       has_user_gesture_(has_user_gesture),

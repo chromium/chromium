@@ -140,17 +140,16 @@ class InterstitialEnterpriseUtilTest : public testing::Test {
         ->SetBrowserCloudPolicyClientForTesting(client_.get());
   }
 
-  void ValidateReferrerChain(const base::Value::Dict& report_dict,
+  void ValidateReferrerChain(const base::DictValue& report_dict,
                              std::string_view event_name) {
-    const base::Value::List* events_list = report_dict.FindList("events");
+    const base::ListValue* events_list = report_dict.FindList("events");
     ASSERT_NE(events_list, nullptr);
     ASSERT_EQ(events_list->size(), 1u);
-    const base::Value::Dict* event_dict = (*events_list)[0].GetIfDict();
+    const base::DictValue* event_dict = (*events_list)[0].GetIfDict();
     ASSERT_NE(event_dict, nullptr);
-    const base::Value::Dict* intertitial_event =
-        event_dict->FindDict(event_name);
+    const base::DictValue* intertitial_event = event_dict->FindDict(event_name);
     ASSERT_NE(intertitial_event, nullptr);
-    const base::Value::List* referrer_chain =
+    const base::ListValue* referrer_chain =
         intertitial_event->FindList("referrers");
     EXPECT_EQ(referrer_chain->size(), 1u);
   }
@@ -201,10 +200,10 @@ TEST_F(InterstitialEnterpriseUtilTest,
       .WillOnce(DoAll(SetArgPointee<2>(expected_referrer_chain),
                       Return(safe_browsing::ReferrerChainProvider::SUCCESS)));
   base::RunLoop run_loop;
-  base::Value::Dict report_dict;
+  base::DictValue report_dict;
   EXPECT_CALL(*client_, UploadSecurityEventReport)
       .Times(1)
-      .WillOnce([&](bool include_device_info, base::Value::Dict&& report,
+      .WillOnce([&](bool include_device_info, base::DictValue&& report,
                     policy::CloudPolicyClient::ResultCallback callback) {
         report_dict = std::move(report);
         run_loop.Quit();
@@ -239,10 +238,10 @@ TEST_F(InterstitialEnterpriseUtilTest,
       .WillOnce(DoAll(SetArgPointee<2>(expected_referrer_chain),
                       Return(safe_browsing::ReferrerChainProvider::SUCCESS)));
   base::RunLoop run_loop;
-  base::Value::Dict report_dict;
+  base::DictValue report_dict;
   EXPECT_CALL(*client_, UploadSecurityEventReport)
       .Times(1)
-      .WillOnce([&](bool include_device_info, base::Value::Dict&& report,
+      .WillOnce([&](bool include_device_info, base::DictValue&& report,
                     policy::CloudPolicyClient::ResultCallback callback) {
         report_dict = std::move(report);
         run_loop.Quit();
@@ -286,10 +285,10 @@ TEST_F(InterstitialEnterpriseUtilTest,
       .WillOnce(DoAll(SetArgPointee<2>(expected_referrer_chain),
                       Return(safe_browsing::ReferrerChainProvider::SUCCESS)));
   base::RunLoop run_loop;
-  base::Value::Dict report_dict;
+  base::DictValue report_dict;
   EXPECT_CALL(*client_, UploadSecurityEventReport)
       .Times(1)
-      .WillOnce([&](bool include_device_info, base::Value::Dict&& report,
+      .WillOnce([&](bool include_device_info, base::DictValue&& report,
                     policy::CloudPolicyClient::ResultCallback callback) {
         report_dict = std::move(report);
         run_loop.Quit();
@@ -337,10 +336,10 @@ TEST_F(InterstitialEnterpriseUtilTest, ReferrerChainFallsbackToEventUrl) {
       .WillOnce(DoAll(SetArgPointee<3>(expected_referrer_chain),
                       Return(safe_browsing::ReferrerChainProvider::SUCCESS)));
   base::RunLoop run_loop;
-  base::Value::Dict report_dict;
+  base::DictValue report_dict;
   EXPECT_CALL(*client_, UploadSecurityEventReport)
       .Times(1)
-      .WillOnce([&](bool include_device_info, base::Value::Dict&& report,
+      .WillOnce([&](bool include_device_info, base::DictValue&& report,
                     policy::CloudPolicyClient::ResultCallback callback) {
         report_dict = std::move(report);
         run_loop.Quit();

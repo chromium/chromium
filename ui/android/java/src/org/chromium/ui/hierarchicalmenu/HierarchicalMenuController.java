@@ -21,6 +21,7 @@ import androidx.annotation.StringRes;
 import androidx.annotation.VisibleForTesting;
 import androidx.core.view.ViewCompat;
 
+import org.chromium.base.ResettersForTesting;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -51,6 +52,8 @@ import java.util.List;
 @NullMarked
 public class HierarchicalMenuController<T> {
 
+    private static @Nullable Boolean sDrillDownOverrideValueForTesting;
+
     /** An interface for creating the ListItem for drilldown's header. */
     public interface SubmenuHeaderFactory {
         /**
@@ -78,8 +81,11 @@ public class HierarchicalMenuController<T> {
      * @param drillDownOverrideValue If not null, forces the menu behavior to be drill-down ({@code
      *     true}) or flyout ({@code false}), overriding the default.
      */
-    public void setDrillDownOverrideValueForTesting(@Nullable Boolean drillDownOverrideValue) {
-        mDrillDownOverrideValue = drillDownOverrideValue;
+    public static void setDrillDownOverrideValueForTesting(
+            @Nullable Boolean drillDownOverrideValue) {
+        @Nullable Boolean oldValue = sDrillDownOverrideValueForTesting;
+        ResettersForTesting.register(() -> sDrillDownOverrideValueForTesting = oldValue);
+        sDrillDownOverrideValueForTesting = drillDownOverrideValue;
     }
 
     private final SubmenuHeaderFactory mSubmenuHeaderFactory;
@@ -149,6 +155,7 @@ public class HierarchicalMenuController<T> {
      * @return True to use the drilldown, false to use the flyout style.
      */
     public boolean shouldUseDrillDown() {
+        if (sDrillDownOverrideValueForTesting != null) return sDrillDownOverrideValueForTesting;
         if (mDrillDownOverrideValue != null) {
             if (!mDrillDownOverrideValue) {
                 assert mFlyoutController != null;

@@ -22,24 +22,24 @@ fn parse_payment_cards_file<'a, R: Read>(
     stream_reader: ZipEntryBufReader<'a, R>,
     callback: impl FnMut(PaymentCardJSONEntry) + 'a,
 ) -> bool {
-    return json::deserialize_top_level(
+    json::deserialize_top_level(
         stream_reader.inner,
         ffi::FileType::PaymentCards,
         callback,
         /* metadata_only= */ false,
     )
-    .is_ok();
+    .is_ok()
 }
 
 // Returns whether the file used by the stream reader is a payment cards file.
 fn is_payment_cards_file<'a, R: Read>(stream_reader: ZipEntryBufReader<'a, R>) -> bool {
-    return json::deserialize_top_level::<PaymentCardJSONEntry, zip::read::ZipFile<'a, R>>(
+    json::deserialize_top_level::<PaymentCardJSONEntry, zip::read::ZipFile<'a, R>>(
         stream_reader.inner,
         ffi::FileType::PaymentCards,
         |_| {},
         /* metadata_only= */ true,
     )
-    .is_ok();
+    .is_ok()
 }
 
 /// FFI-friendly wrapper around `Result<T, E>` (`cxx` can't handle arbitrary
@@ -64,7 +64,7 @@ fn create_archive(zip_filename: &[u8]) -> Result<ZipFileArchive> {
     let path = str::from_utf8(zip_filename)?;
     let file = fs::File::open(path)?;
     let archive = zip::ZipArchive::new(file)?;
-    Ok(ZipFileArchive { archive: archive })
+    Ok(ZipFileArchive { archive })
 }
 
 pub fn new_archive(zip_filename: &[u8]) -> Box<ResultOfZipFileArchive> {
@@ -86,12 +86,11 @@ impl ZipFileArchive {
         F: FnMut(zip::read::ZipFile<std::fs::File>, &Path) -> Option<R>,
     {
         for i in 0..self.archive.len() {
-            if let Ok(file) = self.archive.by_index(i) {
-                if let Some(outpath) = file.enclosed_name() {
-                    if let Some(r) = f(file, &outpath) {
-                        return Some(r);
-                    }
-                }
+            if let Ok(file) = self.archive.by_index(i)
+                && let Some(outpath) = file.enclosed_name()
+                && let Some(r) = f(file, &outpath)
+            {
+                return Some(r);
             }
         }
         None
@@ -105,10 +104,10 @@ impl ZipFileArchive {
     {
         let mut acc = init;
         for i in 0..self.archive.len() {
-            if let Ok(file) = self.archive.by_index(i) {
-                if let Some(outpath) = file.enclosed_name() {
-                    acc = f(acc, file, &outpath);
-                }
+            if let Ok(file) = self.archive.by_index(i)
+                && let Some(outpath) = file.enclosed_name()
+            {
+                acc = f(acc, file, &outpath);
             }
         }
         acc
@@ -169,7 +168,7 @@ impl ZipFileArchive {
                 };
 
                 // Copy the contents of the file to the output.
-                if file_contents.len() > 0 {
+                if !file_contents.is_empty() {
                     output_bytes.as_mut().reserve(file_contents.len());
                     output_bytes.as_mut().push_str(&file_contents);
                 }

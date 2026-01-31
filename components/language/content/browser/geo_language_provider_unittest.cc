@@ -66,7 +66,7 @@ class GeoLanguageProviderTest : public testing::Test {
 
   void SetUpCachedLanguages(const std::vector<std::string>& languages,
                             const double update_time) {
-    base::Value::List cache_list;
+    base::ListValue cache_list;
     for (const std::string& language : languages) {
       cache_list.Append(language);
     }
@@ -78,7 +78,7 @@ class GeoLanguageProviderTest : public testing::Test {
 
   const std::vector<std::string> GetCachedLanguages() {
     std::vector<std::string> languages;
-    const base::Value::List& cached_languages_list =
+    const base::ListValue& cached_languages_list =
         local_state_.GetList(GeoLanguageProvider::kCachedGeoLanguagesPref);
     for (const auto& language_value : cached_languages_list) {
       languages.push_back(language_value.GetString());

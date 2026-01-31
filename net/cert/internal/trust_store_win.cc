@@ -8,6 +8,7 @@
 #include <string_view>
 
 #include "base/compiler_specific.h"
+#include "base/containers/heap_array.h"
 #include "base/containers/span.h"
 #include "base/containers/to_vector.h"
 #include "base/location.h"
@@ -70,14 +71,13 @@ constexpr bssl::CertificateTrust kTrustedPeopleTrust =
 bool IsCertTrustedForServerAuth(PCCERT_CONTEXT cert) {
   DWORD usage_size = 0;
 
-  if (!CertGetEnhancedKeyUsage(cert, 0, nullptr, &usage_size)) {
+  if (!::CertGetEnhancedKeyUsage(cert, 0, nullptr, &usage_size)) {
     return false;
   }
 
-  std::vector<BYTE> usage_bytes(usage_size);
-  CERT_ENHKEY_USAGE* usage =
-      UNSAFE_TODO(reinterpret_cast<CERT_ENHKEY_USAGE*>(usage_bytes.data()));
-  if (!CertGetEnhancedKeyUsage(cert, 0, usage, &usage_size)) {
+  auto usage_buffer = base::HeapArray<uint8_t>::WithSize(usage_size);
+  auto* usage = reinterpret_cast<CERT_ENHKEY_USAGE*>(usage_buffer.data());
+  if (!::CertGetEnhancedKeyUsage(cert, 0, usage, &usage_size)) {
     return false;
   }
 
@@ -510,6 +510,11 @@ void TrustStoreWin::SyncGetIssuersOf(const bssl::ParsedCertificate* cert,
 bssl::CertificateTrust TrustStoreWin::GetTrust(
     const bssl::ParsedCertificate* cert) {
   return MaybeInitializeAndGetImpl()->GetTrust(cert);
+}
+
+std::shared_ptr<const bssl::MTCAnchor> TrustStoreWin::GetTrustedMTCIssuerOf(
+    const bssl::ParsedCertificate* cert) {
+  return nullptr;
 }
 
 std::vector<net::PlatformTrustStore::CertWithTrust>

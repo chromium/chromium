@@ -4,6 +4,7 @@
 
 #include "components/page_info/page_info.h"
 
+#include <algorithm>
 #include <memory>
 #include <optional>
 #include <set>
@@ -37,7 +38,6 @@
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_constraints.h"
 #include "components/content_settings/core/common/content_settings_types.h"
-#include "components/content_settings/core/common/cookie_blocking_3pcd_status.h"
 #include "components/infobars/content/content_infobar_manager.h"
 #include "components/infobars/core/infobar.h"
 #include "components/page_info/core/features.h"
@@ -1733,7 +1733,6 @@ TEST_F(PageInfoTest, ShowInfoBarWhenAllowingThirdPartyCookies) {
 
   page_info()->OnStatusChanged(CookieControlsState::kBlocked3pc,
                                CookieControlsEnforcement::kNoEnforcement,
-                               CookieBlocking3pcdStatus::kNotIn3pcd,
                                base::Time());
 
   EXPECT_EQ(0u, infobar_manager()->infobars().size());
@@ -1756,7 +1755,6 @@ TEST_F(PageInfoTest, ShowInfoBarWhenBlockingThirdPartyCookies) {
 
   page_info()->OnStatusChanged(CookieControlsState::kAllowed3pc,
                                CookieControlsEnforcement::kNoEnforcement,
-                               CookieBlocking3pcdStatus::kNotIn3pcd,
                                base::Time());
 
   EXPECT_EQ(0u, infobar_manager()->infobars().size());
@@ -2053,7 +2051,7 @@ TEST_F(PageInfoTest, SafetyTipTimeOpenMetrics) {
 // Tests that the SubresourceFilter setting is omitted correctly.
 TEST_F(PageInfoTest, SubresourceFilterSetting_MatchesActivation) {
   auto showing_setting = [](const PermissionInfoList& permissions) {
-    return base::Contains(
+    return std::ranges::contains(
         permissions, ContentSettingsType::ADS,
         [](const auto& permission) { return permission.type; });
   };

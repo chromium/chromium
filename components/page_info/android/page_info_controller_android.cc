@@ -4,19 +4,20 @@
 
 #include "components/page_info/android/page_info_controller_android.h"
 
+#include <algorithm>
 #include <string>
 
 #include "base/android/jni_android.h"
 #include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
 #include "base/command_line.h"
-#include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/notimplemented.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/browser/permission_settings_registry.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_types.h"
+#include "components/content_settings/core/common/content_settings_utils.h"
 #include "components/content_settings/core/common/features.h"
 #include "components/page_info/android/page_info_client.h"
 #include "components/page_info/core/features.h"
@@ -49,7 +50,7 @@ using base::android::ConvertUTF8ToJavaString;
 using base::android::JavaRef;
 
 // static
-static jlong JNI_PageInfoController_Init(
+static int64_t JNI_PageInfoController_Init(
     JNIEnv* env,
     const JavaRef<jobject>& obj,
     const JavaRef<jobject>& java_web_contents) {
@@ -92,7 +93,8 @@ void PageInfoControllerAndroid::Destroy(JNIEnv* env) {
   delete this;
 }
 
-void PageInfoControllerAndroid::RecordPageInfoAction(JNIEnv* env, jint action) {
+void PageInfoControllerAndroid::RecordPageInfoAction(JNIEnv* env,
+                                                     int32_t action) {
   presenter_->RecordPageInfoAction(
       static_cast<page_info::PageInfoAction>(action));
 }
@@ -157,13 +159,8 @@ void PageInfoControllerAndroid::SetPermissionInfo(
   // a particular order, but only if their value is different from the
   // default. This order comes from https://crbug.com/610358.
   std::vector<ContentSettingsType> permissions_to_display;
-  if (base::FeatureList::IsEnabled(
-          content_settings::features::kApproximateGeolocationPermission)) {
-    permissions_to_display.push_back(
-        ContentSettingsType::GEOLOCATION_WITH_OPTIONS);
-  } else {
-    permissions_to_display.push_back(ContentSettingsType::GEOLOCATION);
-  }
+  permissions_to_display.push_back(
+      content_settings::GeolocationContentSettingsType());
   permissions_to_display.push_back(ContentSettingsType::MEDIASTREAM_CAMERA);
   permissions_to_display.push_back(ContentSettingsType::MEDIASTREAM_MIC);
   permissions_to_display.push_back(ContentSettingsType::NOTIFICATIONS);
@@ -203,7 +200,14 @@ void PageInfoControllerAndroid::SetPermissionInfo(
   permissions_to_display.push_back(ContentSettingsType::STORAGE_ACCESS);
   if (base::FeatureList::IsEnabled(
           network::features::kLocalNetworkAccessChecks)) {
-    permissions_to_display.push_back(ContentSettingsType::LOCAL_NETWORK_ACCESS);
+    if (base::FeatureList::IsEnabled(
+            network::features::kLocalNetworkAccessChecksSplitPermissions)) {
+      permissions_to_display.push_back(ContentSettingsType::LOCAL_NETWORK);
+      permissions_to_display.push_back(ContentSettingsType::LOOPBACK_NETWORK);
+    } else {
+      permissions_to_display.push_back(
+          ContentSettingsType::LOCAL_NETWORK_ACCESS);
+    }
   }
 
   std::map<ContentSettingsType, /*allowed*/ bool>
@@ -211,12 +215,12 @@ void PageInfoControllerAndroid::SetPermissionInfo(
 
   // Whether the notifications permission is being requested. This is
   // needed to determine whether to show the permission in Page Info while it is
-  // being requested. This is needed for the Loud Clapper experiment
-  // (crbug.com/458351800).
+  // being requested. This is needed for the Clapper experiment
+  // (crbug.com/458351800) and (crbug.com/463333225).
   bool requested_notifications = false;
 
   for (const auto& permission : permission_info_list) {
-    if (base::Contains(permissions_to_display, permission.type)) {
+    if (std::ranges::contains(permissions_to_display, permission.type)) {
       std::optional<PermissionSetting> setting_to_display =
           GetSettingToDisplay(permission);
       if (setting_to_display) {
@@ -229,7 +233,7 @@ void PageInfoControllerAndroid::SetPermissionInfo(
       }
 
       // Notifications permission can have the setting to display as DEFAULT
-      // only if it is being requested and the Loud Clapper experiment is
+      // only if it is being requested and the Clapper experiment is
       // enabled.
       if (permission.type == ContentSettingsType::NOTIFICATIONS &&
           setting_to_display.has_value() &&
@@ -240,7 +244,7 @@ void PageInfoControllerAndroid::SetPermissionInfo(
   }
 
   for (const auto& permission : permissions_to_display) {
-    if (base::Contains(user_specified_settings_to_display, permission)) {
+    if (user_specified_settings_to_display.contains(permission)) {
       std::u16string setting_title =
           PageInfoUI::PermissionTypeToUIString(permission);
       std::u16string setting_title_mid_sentence =
@@ -250,7 +254,7 @@ void PageInfoControllerAndroid::SetPermissionInfo(
           env, controller_jobject_,
           ConvertUTF16ToJavaString(env, setting_title),
           ConvertUTF16ToJavaString(env, setting_title_mid_sentence),
-          static_cast<jint>(permission),
+          static_cast<int32_t>(permission),
           user_specified_settings_to_display[permission],
           requested_notifications);
     }
@@ -264,8 +268,8 @@ void PageInfoControllerAndroid::SetPermissionInfo(
     Java_PageInfoController_addPermissionSection(
         env, controller_jobject_, ConvertUTF16ToJavaString(env, object_title),
         ConvertUTF16ToJavaString(env, object_title),
-        static_cast<jint>(chosen_object->ui_info->content_settings_type),
-        static_cast<jint>(CONTENT_SETTING_ALLOW), requested_notifications);
+        static_cast<int32_t>(chosen_object->ui_info->content_settings_type),
+        static_cast<int32_t>(CONTENT_SETTING_ALLOW), requested_notifications);
   }
 
   Java_PageInfoController_updatePermissionDisplay(env, controller_jobject_);
@@ -291,9 +295,11 @@ std::optional<PermissionSetting> PageInfoControllerAndroid::GetSettingToDisplay(
     // to give users an easy way to create exceptions.
     return permission.default_setting;
   } else if (permission.type == ContentSettingsType::NOTIFICATIONS &&
-             base::FeatureList::IsEnabled(
-                 permissions::kPermissionsAndroidClapperLoud)) {
-    // For the Loud Clapper experiment, Notifications permission should be
+             (base::FeatureList::IsEnabled(
+                  permissions::kPermissionsAndroidClapperLoud) ||
+              base::FeatureList::IsEnabled(
+                  permissions::kPermissionsAndroidClapperQuiet))) {
+    // For the Clapper experiment, Notifications permission should be
     // displayed while it is being requested.
     return permission.default_setting;
   } else if (permission.type == ContentSettingsType::SOUND) {

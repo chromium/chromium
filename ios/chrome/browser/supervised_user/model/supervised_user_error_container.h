@@ -13,7 +13,6 @@
 #import "components/security_interstitials/core/controller_client.h"
 #import "components/supervised_user/core/browser/supervised_user_interstitial.h"
 #import "components/supervised_user/core/browser/supervised_user_service_observer.h"
-#import "components/supervised_user/core/browser/supervised_user_url_filter.h"
 #import "components/supervised_user/core/browser/supervised_user_utils.h"
 #import "ios/components/security_interstitials/ios_blocking_page_controller_client.h"
 #import "ios/components/security_interstitials/ios_security_interstitial_page.h"
@@ -22,6 +21,11 @@
 #import "url/gurl.h"
 
 @protocol ParentAccessCommands;
+
+namespace supervised_user {
+class SupervisedUserService;
+class SupervisedUserUrlFilteringService;
+}  // namespace supervised_user
 
 namespace web {
 class WebState;
@@ -48,23 +52,21 @@ class SupervisedUserErrorContainer
   class SupervisedUserErrorInfo {
    public:
     SupervisedUserErrorInfo(
-        const GURL& request_url,
-        bool is_main_frame,
-        supervised_user::FilteringBehaviorReason filtering_behavior_reason);
+        supervised_user::WebFilteringResult filtering_result,
+        bool is_main_frame);
     SupervisedUserErrorInfo() = delete;
     SupervisedUserErrorInfo(const SupervisedUserErrorInfo& other) = delete;
     SupervisedUserErrorInfo& operator=(const SupervisedUserErrorInfo& other) =
         delete;
-    bool is_main_frame() const { return is_main_frame_; }
-    supervised_user::FilteringBehaviorReason filtering_behavior_reason() const {
-      return filtering_behavior_reason_;
+
+    supervised_user::WebFilteringResult filtering_result() const {
+      return filtering_result_;
     }
-    GURL request_url() const { return request_url_; }
+    bool is_main_frame() const { return is_main_frame_; }
 
    private:
+    supervised_user::WebFilteringResult filtering_result_;
     bool is_main_frame_;
-    supervised_user::FilteringBehaviorReason filtering_behavior_reason_;
-    GURL request_url_;
   };
 
   // Stores info associated with a supervised user interstitial error page.
@@ -107,13 +109,14 @@ class SupervisedUserErrorContainer
                         const GURL& url,
                         bool successfully_created_request);
   void MaybeUpdatePendingApprovals();
-  void URLFilterCheckCallback(
-      supervised_user::SupervisedUserURLFilter::Result result);
+  void URLFilterCheckCallback(supervised_user::WebFilteringResult result);
 
   // Handler used to request showing the parent access bottom sheet.
   __weak id<ParentAccessCommands> commands_handler_;
   std::unique_ptr<SupervisedUserErrorInfo> supervised_user_error_info_;
   raw_ref<supervised_user::SupervisedUserService> supervised_user_service_;
+  raw_ref<supervised_user::SupervisedUserUrlFilteringService>
+      supervised_user_url_filtering_service_;
   raw_ptr<web::WebState> web_state_;
   std::set<std::string> requested_hosts_;
   base::WeakPtrFactory<SupervisedUserErrorContainer> weak_ptr_factory_{this};
@@ -142,7 +145,7 @@ class SupervisedUserInterstitialBlockingPage
       security_interstitials::SecurityInterstitialCommand command) override;
   bool ShouldCreateNewNavigation() const override;
   void PopulateInterstitialStrings(
-      base::Value::Dict& load_time_data) const override;
+      base::DictValue& load_time_data) const override;
   std::string_view GetInterstitialType() const override;
 
   // web::WebStateObserver implementation:

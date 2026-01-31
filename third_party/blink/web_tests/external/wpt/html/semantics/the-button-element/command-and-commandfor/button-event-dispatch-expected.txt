@@ -1,0 +1,22 @@
+This is a testharness.js-based test.
+Found 9 FAIL, 0 TIMEOUT, 0 NOTRUN.
+[FAIL] setting command to show-modal did not dispatch an event for invalid element
+  assert_false: command event fired expected false got true
+[FAIL] setting command to show-modal did not dispatch an event for svg element
+  assert_false: command event fired expected false got true
+[FAIL] setting command to close did not dispatch an event for invalid element
+  assert_false: command event fired expected false got true
+[FAIL] setting command to close did not dispatch an event for svg element
+  assert_false: command event fired expected false got true
+[FAIL] setting command to request-close did not dispatch an event for invalid element
+  assert_false: command event fired expected false got true
+[FAIL] setting command to request-close did not dispatch an event for svg element
+  assert_false: command event fired expected false got true
+[FAIL] setting command to show-popover did not dispatch an event for svg element
+  assert_false: command event fired expected false got true
+[FAIL] setting command to hide-popover did not dispatch an event for svg element
+  assert_false: command event fired expected false got true
+[FAIL] setting command to toggle-popover did not dispatch an event for svg element
+  assert_false: command event fired expected false got true
+Harness: the test ran to completion.
+

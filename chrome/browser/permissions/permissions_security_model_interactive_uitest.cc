@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <variant>
+
 #include "base/command_line.h"
 #include "base/path_service.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -1054,7 +1056,7 @@ IN_PROC_BROWSER_TEST_F(PermissionsSecurityModelInteractiveUITest,
   EXPECT_TRUE(manager->IsRequestInProgress());
   EXPECT_TRUE(observer.request_shown());
 
-  manager->Accept();
+  manager->Accept(/*prompt_options=*/std::monostate());
 
   EXPECT_EQ(true, content::EvalJs(main_rfh, kCheckMicrophone,
                                   content::EXECUTE_SCRIPT_DEFAULT_OPTIONS, 1));
@@ -1187,7 +1189,7 @@ class PermissionsSecurityModelHTTPS
     EXPECT_TRUE(manager->IsRequestInProgress());
     EXPECT_TRUE(observer.request_shown());
 
-    manager->Accept();
+    manager->Accept(/*prompt_options=*/std::monostate());
   }
 
  private:
@@ -1554,7 +1556,7 @@ IN_PROC_BROWSER_TEST_F(PermissionRequestWithPrerendererTest,
   GURL prerender_url =
       embedded_test_server()->GetURL("/prerenderer_geolocation_test.html");
   prerender_helper().AddPrerender(prerender_url);
-  content::FrameTreeNodeId host_id =
+  content::PrerenderHostId host_id =
       prerender_helper().AddPrerender(prerender_url);
 
   content::RenderFrameHost* prerender_render_frame_host =
@@ -1615,7 +1617,7 @@ IN_PROC_BROWSER_TEST_F(PermissionRequestWithPrerendererTest,
   content::EvalJsResult results =
       content::EvalJs(prerender_render_frame_host, "eventsSeen");
   std::vector<std::string> eventsSeen;
-  const base::Value::List& results_list = results.ExtractList();
+  const base::ListValue& results_list = results.ExtractList();
   for (const auto& result : results_list) {
     eventsSeen.push_back(result.GetString());
   }

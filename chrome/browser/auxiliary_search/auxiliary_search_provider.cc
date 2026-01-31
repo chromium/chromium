@@ -171,7 +171,7 @@ void AuxiliarySearchProvider::GetNonSensitiveHistoryData(
 void AuxiliarySearchProvider::GetCustomTabs(
     JNIEnv* env,
     const base::android::JavaRef<jobject>& j_url,
-    jlong j_begin_time,
+    int64_t j_begin_time,
     const base::android::JavaRef<jobject>& j_callback_obj) const {
   CHECK(ranking_service_ != nullptr);
   scoped_refptr<FetchAndRankHelper> helper =
@@ -225,8 +225,8 @@ void AuxiliarySearchProvider::GetNonSensitiveTabsInternal(
 }
 
 // static
-static jlong JNI_AuxiliarySearchBridge_GetForProfile(JNIEnv* env,
-                                                     Profile* profile) {
+static int64_t JNI_AuxiliarySearchBridge_GetForProfile(JNIEnv* env,
+                                                       Profile* profile) {
   DCHECK(profile);
 
   return reinterpret_cast<intptr_t>(

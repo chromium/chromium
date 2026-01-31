@@ -65,10 +65,10 @@ SyncCycleSnapshot::SyncCycleSnapshot(const SyncCycleSnapshot& other) = default;
 
 SyncCycleSnapshot::~SyncCycleSnapshot() = default;
 
-base::Value::Dict SyncCycleSnapshot::ToValue() const {
+base::DictValue SyncCycleSnapshot::ToValue() const {
   std::string encoded_bag_of_chips = base::Base64Encode(bag_of_chips_);
 
-  return base::Value::Dict()
+  return base::DictValue()
       .Set("birthday", birthday_)
       .Set("bagOfChips", encoded_bag_of_chips)
       .Set("numSuccessfulCommits", model_neutral_state_.num_successful_commits)

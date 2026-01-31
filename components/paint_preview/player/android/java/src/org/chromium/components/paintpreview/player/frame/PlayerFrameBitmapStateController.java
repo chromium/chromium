@@ -36,9 +36,6 @@ public class PlayerFrameBitmapStateController {
         mViewport = viewport;
         mContentSize = contentSize;
         mCompositorDelegate = compositorDelegate;
-        if (mCompositorDelegate != null) {
-            mCompositorDelegate.addMemoryPressureListener(this::onMemoryPressure);
-        }
         mMediatorDelegate = mediatorDelegate;
     }
 
@@ -64,15 +61,9 @@ public class PlayerFrameBitmapStateController {
         swap(mLoadingBitmapState);
     }
 
-    void onMemoryPressure() {
-        if (mVisibleBitmapState == null) return;
-
-        mVisibleBitmapState.releaseNotVisibleTiles();
-        stateUpdated(mVisibleBitmapState);
-    }
-
     /**
      * Gets the bitmap state for loading.
+     *
      * @param scaleUpdated Whether the scale was updated.
      * @return The bitmap state to load new bitmaps to.
      */

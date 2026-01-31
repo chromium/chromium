@@ -68,7 +68,7 @@ class NewTabPageTest : public InProcessBrowserTest,
                          message.size()),
         base::JSON_PARSE_CHROMIUM_EXTENSIONS);
     CHECK(maybe_parsed_message.has_value());
-    base::Value::Dict parsed_message =
+    base::DictValue parsed_message =
         std::move(maybe_parsed_message.value()).TakeDict();
     auto* method = parsed_message.FindString("method");
     if (!method) {

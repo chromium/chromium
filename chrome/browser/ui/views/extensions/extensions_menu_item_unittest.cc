@@ -12,18 +12,13 @@
 #include "chrome/browser/ui/views/extensions/extensions_toolbar_unittest.h"
 #include "chrome/browser/ui/views/hover_button_controller.h"
 #include "chrome/browser/ui/views/native_widget_factory.h"
-#include "extensions/common/extension_features.h"
 #include "ui/views/controls/styled_label.h"
 
-class ExtensionMenuItemViewTest : public ExtensionsToolbarUnitTest,
-                                  public testing::WithParamInterface<bool> {
+class ExtensionMenuItemViewTest : public ExtensionsToolbarUnitTest {
  public:
   ExtensionMenuItemViewTest()
       : initial_extension_name_(u"Initial Extension Name"),
-        initial_tooltip_(u"Initial tooltip") {
-    feature_list_.InitWithFeatureState(
-        extensions_features::kExtensionsMenuAccessControl, GetParam());
-  }
+        initial_tooltip_(u"Initial tooltip") {}
   ExtensionMenuItemViewTest(const ExtensionMenuItemViewTest&) = delete;
   ExtensionMenuItemViewTest& operator=(const ExtensionMenuItemViewTest&) =
       delete;
@@ -48,6 +43,7 @@ class ExtensionMenuItemViewTest : public ExtensionsToolbarUnitTest,
 
  private:
   base::test::ScopedFeatureList feature_list_;
+  std::unique_ptr<TestToolbarActionViewModel> action_model_holder_;
 };
 
 void ExtensionMenuItemViewTest::SetUp() {
@@ -73,16 +69,9 @@ void ExtensionMenuItemViewTest::SetUp() {
   model_->SetActionName(initial_extension_name_);
   model_->SetTooltip(initial_tooltip_);
 
-  std::unique_ptr<ExtensionMenuItemView> menu_item;
-  if (GetParam()) {
-    menu_item = std::make_unique<ExtensionMenuItemView>(
-        browser(), /*is_enterprise=*/false, std::move(model),
-        /*site_access_toggle_callback*/ base::DoNothing(),
-        /*site_permissions_button_callback=*/base::RepeatingClosure());
-  } else {
-    menu_item = std::make_unique<ExtensionMenuItemView>(
-        browser(), std::move(model), /*allow_pinning=*/true);
-  }
+  std::unique_ptr<ExtensionMenuItemView> menu_item =
+      std::make_unique<ExtensionMenuItemView>(browser(), std::move(model),
+                                              /*allow_pinning=*/true);
 
   primary_button_ = menu_item->primary_action_button_for_testing();
   pin_button_ = menu_item->pin_button_for_testing();
@@ -98,15 +87,7 @@ void ExtensionMenuItemViewTest::TearDown() {
   ExtensionsToolbarUnitTest::TearDown();
 }
 
-INSTANTIATE_TEST_SUITE_P(,
-                         ExtensionMenuItemViewTest,
-                         testing::Bool(),
-                         [](const testing::TestParamInfo<bool>& info) {
-                           return info.param ? "FeatureEnabled"
-                                             : "FeatureDisabled";
-                         });
-
-TEST_P(ExtensionMenuItemViewTest, UpdatesToDisplayCorrectActionTitle) {
+TEST_F(ExtensionMenuItemViewTest, UpdatesToDisplayCorrectActionTitle) {
   EXPECT_EQ(primary_button()->label_text_for_testing(),
             initial_extension_name_);
 
@@ -116,7 +97,7 @@ TEST_P(ExtensionMenuItemViewTest, UpdatesToDisplayCorrectActionTitle) {
   EXPECT_EQ(primary_button()->label_text_for_testing(), extension_name);
 }
 
-TEST_P(ExtensionMenuItemViewTest, UpdatesToDisplayTooltip) {
+TEST_F(ExtensionMenuItemViewTest, UpdatesToDisplayTooltip) {
   EXPECT_EQ(primary_button()->GetRenderedTooltipText(gfx::Point()),
             initial_tooltip_);
 
@@ -126,7 +107,7 @@ TEST_P(ExtensionMenuItemViewTest, UpdatesToDisplayTooltip) {
   EXPECT_EQ(primary_button()->GetRenderedTooltipText(gfx::Point()), tooltip);
 }
 
-TEST_P(ExtensionMenuItemViewTest, ButtonMatchesEnabledStateOfExtension) {
+TEST_F(ExtensionMenuItemViewTest, ButtonMatchesEnabledStateOfExtension) {
   EXPECT_TRUE(primary_button()->GetEnabled());
   model_->SetEnabled(false);
   EXPECT_FALSE(primary_button()->GetEnabled());
@@ -134,7 +115,7 @@ TEST_P(ExtensionMenuItemViewTest, ButtonMatchesEnabledStateOfExtension) {
   EXPECT_TRUE(primary_button()->GetEnabled());
 }
 
-TEST_P(ExtensionMenuItemViewTest, NotifyClickExecutesAction) {
+TEST_F(ExtensionMenuItemViewTest, NotifyClickExecutesAction) {
   base::UserActionTester user_action_tester;
   constexpr char kActivatedUserAction[] =
       "Extensions.Toolbar.ExtensionActivatedFromMenu";
@@ -148,13 +129,7 @@ TEST_P(ExtensionMenuItemViewTest, NotifyClickExecutesAction) {
   EXPECT_EQ(1, user_action_tester.GetActionCount(kActivatedUserAction));
 }
 
-TEST_P(ExtensionMenuItemViewTest, PinButtonUserAction) {
-  if (GetParam()) {
-    // kExtensionsMenuAccessControl feature doesn't have a pin button.
-    EXPECT_EQ(pin_button(), nullptr);
-    return;
-  }
-
+TEST_F(ExtensionMenuItemViewTest, PinButtonUserAction) {
   base::UserActionTester user_action_tester;
   constexpr char kPinButtonUserAction[] = "Extensions.Toolbar.PinButtonPressed";
   EXPECT_EQ(0, user_action_tester.GetActionCount(kPinButtonUserAction));
@@ -164,7 +139,7 @@ TEST_P(ExtensionMenuItemViewTest, PinButtonUserAction) {
   EXPECT_EQ(1, user_action_tester.GetActionCount(kPinButtonUserAction));
 }
 
-TEST_P(ExtensionMenuItemViewTest, ContextMenuButtonUserAction) {
+TEST_F(ExtensionMenuItemViewTest, ContextMenuButtonUserAction) {
   base::UserActionTester user_action_tester;
   constexpr char kContextMenuButtonUserAction[] =
       "Extensions.Toolbar.MoreActionsButtonPressedFromMenu";

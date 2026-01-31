@@ -66,7 +66,7 @@ class DevicePermissionEntry : public base::RefCounted<DevicePermissionEntry> {
 
   // Convert the device to a serializable value, returns an is_none() value
   // if the entry is not persistent.
-  base::Value::Dict ToValue() const;
+  base::DictValue ToValue() const;
 
   std::u16string GetPermissionMessageString() const;
 

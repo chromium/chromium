@@ -28,11 +28,11 @@ class ReadAloudMiniPlayerSceneLayer : public SceneLayer {
 
   // Update the compositor version of the view.
   void UpdateReadAloudMiniPlayerLayer(JNIEnv* env,
-                                      jint color_argb,
-                                      jint width,
-                                      jint viewport_height,
-                                      jint container_height,
-                                      jint bottom_offset);
+                                      int32_t color_argb,
+                                      int32_t width,
+                                      int32_t viewport_height,
+                                      int32_t container_height,
+                                      int32_t bottom_offset);
 
   void SetContentTree(JNIEnv* env,
                       const base::android::JavaRef<jobject>& jcontent_tree);

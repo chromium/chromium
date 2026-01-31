@@ -119,15 +119,14 @@ class WaitableDownloadLoggerObserver : public download::Logger::Observer {
   }
 
   // download::Logger::Observer implementation:
-  void OnServiceStatusChanged(
-      const base::Value::Dict& service_status) override {}
+  void OnServiceStatusChanged(const base::DictValue& service_status) override {}
   void OnServiceDownloadsAvailable(
-      const base::Value::List& service_downloads) override {}
+      const base::ListValue& service_downloads) override {}
   void OnServiceDownloadChanged(
-      const base::Value::Dict& service_download) override {}
+      const base::DictValue& service_download) override {}
   void OnServiceDownloadFailed(
-      const base::Value::Dict& service_download) override {}
-  void OnServiceRequestMade(const base::Value::Dict& service_request) override {
+      const base::DictValue& service_download) override {}
+  void OnServiceRequestMade(const base::DictValue& service_request) override {
     const std::string* client = service_request.FindString("client");
     const std::string* guid = service_request.FindString("guid");
     const std::string* result = service_request.FindString("result");
@@ -427,8 +426,8 @@ class BackgroundFetchBrowserTest : public InProcessBrowserTest {
     content::WebContents* web_contents =
         browser()->tab_strip_model()->GetActiveWebContents();
     DownloadRequestLimiter::TabDownloadState* tab_download_state =
-        g_browser_process->download_request_limiter()->GetDownloadState(
-            web_contents, true /* create */);
+        g_browser_process->download_request_limiter()->GetOrCreateDownloadState(
+            web_contents);
     tab_download_state->set_download_seen();
     tab_download_state->SetDownloadStatusAndNotify(
         url::Origin::Create(web_contents->GetVisibleURL()),

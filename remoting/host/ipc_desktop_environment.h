@@ -116,7 +116,7 @@ class IpcDesktopEnvironmentFactory : public DesktopEnvironmentFactory,
   // DesktopSessionConnector implementation.
   void ConnectTerminal(DesktopSessionProxy* desktop_session_proxy,
                        const ScreenResolution& resolution,
-                       bool virtual_terminal) override;
+                       bool is_curtained) override;
   void DisconnectTerminal(DesktopSessionProxy* desktop_session_proxy) override;
   void SetScreenResolution(DesktopSessionProxy* desktop_session_proxy,
                            const ScreenResolution& resolution) override;

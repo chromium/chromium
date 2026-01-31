@@ -146,7 +146,7 @@ RealtimeReportingClient::GetReportingSettings() {
 void RealtimeReportingClient::ReportRealtimeEvent(
     const std::string& name,
     const ReportingSettings& settings,
-    base::Value::Dict event) {
+    base::DictValue event) {
   ReportEventWithTimestampDeprecated(name, settings, std::move(event),
                                      base::Time::Now(),
                                      /*include_profile_user_name=*/true);
@@ -154,7 +154,7 @@ void RealtimeReportingClient::ReportRealtimeEvent(
 
 void RealtimeReportingClient::ReportPastEvent(const std::string& name,
                                               const ReportingSettings& settings,
-                                              base::Value::Dict event,
+                                              base::DictValue event,
                                               const base::Time& time) {
   // Do not include profile information for past events because for crash events
   // we do not necessarily know which profile caused the crash .
@@ -165,7 +165,7 @@ void RealtimeReportingClient::ReportPastEvent(const std::string& name,
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 
 void AddCrowdstrikeSignalsToEvent(
-    base::Value::Dict& event,
+    base::DictValue& event,
     const device_signals::SignalsAggregationResponse& response) {
   if (!response.agent_signals_response ||
       !response.agent_signals_response->crowdstrike_signals) {
@@ -174,12 +174,12 @@ void AddCrowdstrikeSignalsToEvent(
   const auto& crowdstrike_signals =
       response.agent_signals_response->crowdstrike_signals.value();
 
-  base::Value::Dict crowdstrike_agent_fields;
+  base::DictValue crowdstrike_agent_fields;
   crowdstrike_agent_fields.Set("agent_id", crowdstrike_signals.agent_id);
   crowdstrike_agent_fields.Set("customer_id", crowdstrike_signals.customer_id);
-  base::Value::Dict crowdstrike_agent;
+  base::DictValue crowdstrike_agent;
   crowdstrike_agent.Set("crowdstrike", std::move(crowdstrike_agent_fields));
-  base::Value::List agents;
+  base::ListValue agents;
   agents.Append(std::move(crowdstrike_agent));
   event.Set("securityAgents", std::move(agents));
 }
@@ -372,7 +372,7 @@ void RealtimeReportingClient::PopulateSignalsAndReportEvent(
 }
 
 void RealtimeReportingClient::MaybeCollectDeviceSignalsAndReportEventDeprecated(
-    base::Value::Dict event,
+    base::DictValue event,
     policy::CloudPolicyClient* client,
     std::string name,
     const ReportingSettings& settings,
@@ -396,7 +396,7 @@ void RealtimeReportingClient::MaybeCollectDeviceSignalsAndReportEventDeprecated(
 }
 
 void RealtimeReportingClient::PopulateSignalsAndReportEventDeprecated(
-    base::Value::Dict event,
+    base::DictValue event,
     policy::CloudPolicyClient* client,
     std::string name,
     ReportingSettings settings,
@@ -413,9 +413,9 @@ bool RealtimeReportingClient::ShouldIncludeDeviceInfo(bool per_profile) {
   return IncludeDeviceInfo(Profile::FromBrowserContext(context_), per_profile);
 }
 
-base::Value::Dict RealtimeReportingClient::ReportErrorDetails(
+base::DictValue RealtimeReportingClient::ReportErrorDetails(
     const policy::CloudPolicyClient::Result& upload_result) {
-  base::Value::Dict event_wrapper = base::Value::Dict();
+  base::DictValue event_wrapper = base::DictValue();
   event_wrapper.Set("uploaded_successfully", upload_result.IsSuccess());
   if (!upload_result.IsSuccess()) {
     event_wrapper.Set("error_code", upload_result.GetNetError());
@@ -425,7 +425,7 @@ base::Value::Dict RealtimeReportingClient::ReportErrorDetails(
 }
 
 void RealtimeReportingClient::UploadCallbackDeprecated(
-    base::Value::Dict event_wrapper,
+    base::DictValue event_wrapper,
     bool per_profile,
     policy::CloudPolicyClient* client,
     EnterpriseReportingEventType event_type,
@@ -443,7 +443,7 @@ void RealtimeReportingClient::UploadCallbackDeprecated(
             BuildDeviceDictionary(client->dm_token(), client->client_id()));
   }
 #endif
-  base::Value::Dict error_details = ReportErrorDetails(upload_result);
+  base::DictValue error_details = ReportErrorDetails(upload_result);
   event_wrapper.Merge(std::move(error_details));
 
   safe_browsing::WebUIContentInfoSingleton::GetInstance()->AddToReportingEvents(
@@ -495,7 +495,7 @@ void RealtimeReportingClient::UploadCallback(
   }
 }
 
-base::Value::Dict RealtimeReportingClient::GetContext() {
+base::DictValue RealtimeReportingClient::GetContext() {
   return reporting::GetContext(Profile::FromBrowserContext(context_));
 }
 
@@ -521,7 +521,7 @@ void RealtimeReportingClient::RemoveDmTokenFromRejectedSet(
 }
 
 void RealtimeReportingClient::OnClientError(policy::CloudPolicyClient* client) {
-  base::Value::Dict error_value;
+  base::DictValue error_value;
   error_value.Set("error",
                   "An event got an error status and hasn't been reported. Find "
                   "details below in error_message and error_code.");

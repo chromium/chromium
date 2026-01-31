@@ -107,12 +107,12 @@ build_webui_tests("build") {
     "safety_hub_page_test.ts",
     "safety_hub_unused_site_permissions_module_test.ts",
     "scrollable_mixin_test.ts",
-    "searchable_view_container_mixin_test.ts",
     "search_engine_entry_test.ts",
     "search_engines_page_test.ts",
     "search_page_index_test.ts",
     "search_page_test.ts",
     "search_settings_test.ts",
+    "searchable_view_container_mixin_test.ts",
     "secure_dns_interactive_test.ts",
     "secure_dns_test.ts",
     "secure_dns_v2_test.ts",
@@ -121,12 +121,12 @@ build_webui_tests("build") {
     "security_keys_reset_dialog_test.ts",
     "security_keys_set_pin_dialog_test.ts",
     "security_keys_test_util.ts",
+    "security_page_feature_row_test.ts",
     "security_page_test.ts",
     "security_page_v2_test.ts",
     "settings_category_default_radio_group_test.ts",
-    "security_page_feature_row_test.ts",
-    "settings_main_test.ts",
     "settings_main_plugins_test.ts",
+    "settings_main_test.ts",
     "settings_menu_interactive_ui_test.ts",
     "settings_menu_test.ts",
     "settings_pref_util_test.ts",
@@ -183,9 +183,10 @@ build_webui_tests("build") {
     "test_util.ts",
     "travel_page_test.ts",
     "v8_page_test.ts",
+    "walletable_pass_detection_toggle_test.ts",
     "your_saved_info_account_test.ts",
-    "your_saved_info_page_test.ts",
     "your_saved_info_page_index_test.ts",
+    "your_saved_info_page_test.ts",
     "zoom_levels_test.ts",
   ]
 
@@ -206,7 +207,6 @@ build_webui_tests("build") {
   } else {
     files += [
       "account_page_test.ts",
-      "test_batch_upload_promo_browser_proxy.ts",
       "clear_browsing_data_account_indicator_test.ts",
       "default_browser_test.ts",
       "fake_language_settings_private.ts",
@@ -224,12 +224,16 @@ build_webui_tests("build") {
       "spell_check_page_test.ts",
       "sync_account_control_test.ts",
       "system_page_test.ts",
+      "test_batch_upload_promo_browser_proxy.ts",
       "test_captions_browser_proxy.ts",
       "test_languages_browser_proxy.ts",
       "test_languages_settings_metrics_proxy.ts",
       "translate_page_metrics_test_browser.ts",
       "translate_page_test.ts",
     ]
+    if (is_chrome_branded) {
+      files += [ "system_page_official_test.ts" ]
+    }
   }
 
   if (is_mac) {

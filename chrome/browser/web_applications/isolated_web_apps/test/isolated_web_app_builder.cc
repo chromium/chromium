@@ -9,7 +9,6 @@
 #include <map>
 #include <memory>
 #include <optional>
-#include <sstream>
 #include <string>
 #include <string_view>
 #include <utility>
@@ -19,8 +18,7 @@
 #include "base/base_paths.h"
 #include "base/check.h"
 #include "base/check_deref.h"
-#include "base/containers/extend.h"
-#include "base/containers/fixed_flat_map.h"
+#include "base/check_op.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/map_util.h"
 #include "base/containers/to_value_list.h"
@@ -41,10 +39,12 @@
 #include "base/test/test_future.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/types/expected.h"
+#include "base/values.h"
 #include "chrome/browser/web_applications/isolated_web_apps/commands/install_isolated_web_app_command.h"
 #include "chrome/browser/web_applications/isolated_web_apps/install/isolated_web_app_install_source.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_trust_checker.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
+#include "chrome/browser/web_applications/model/display_override.h"
 #include "chrome/browser/web_applications/test/fake_web_app_provider.h"
 #include "chrome/browser/web_applications/test/fake_web_contents_manager.h"
 #include "chrome/browser/web_applications/test/web_app_icon_test_utils.h"
@@ -70,16 +70,14 @@
 #include "net/test/embedded_test_server/request_handler_util.h"
 #include "services/network/public/cpp/permissions_policy/origin_with_possible_wildcards.h"
 #include "services/network/public/cpp/permissions_policy/permissions_policy_declaration.h"
-#include "services/network/public/mojom/permissions_policy/permissions_policy_feature.mojom-data-view.h"
+#include "services/network/public/mojom/permissions_policy/permissions_policy_feature.mojom-shared.h"
 #include "skia/ext/codec_utils.h"
 #include "third_party/abseil-cpp/absl/functional/overload.h"
 #include "third_party/blink/public/common/manifest/manifest.h"
 #include "third_party/blink/public/common/manifest/manifest_util.h"
 #include "third_party/blink/public/common/permissions_policy/policy_helper_public.h"
-#include "third_party/blink/public/common/safe_url_pattern.h"
 #include "third_party/blink/public/mojom/manifest/display_mode.mojom.h"
 #include "third_party/blink/public/mojom/manifest/manifest.mojom.h"
-#include "third_party/liburlpattern/part.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "third_party/skia/include/core/SkData.h"
@@ -210,49 +208,6 @@ web_package::SignedWebBundleId CreateSignedWebBundleIdFromKeyPair(
       key_pair);
 }
 
-std::string UrlPatternPartsToString(
-    const std::vector<liburlpattern::Part>& parts) {
-  std::stringstream ss;
-  for (const auto& part : parts) {
-    switch (part.type) {
-      case liburlpattern::PartType::kFullWildcard:
-        ss << part.prefix << "*";
-        break;
-      case liburlpattern::PartType::kSegmentWildcard:
-        ss << part.prefix << ":" << part.name;
-        break;
-      case liburlpattern::PartType::kRegex:
-      case liburlpattern::PartType::kFixed:
-        ss << part.value;
-        break;
-    }
-  }
-  return ss.str();
-}
-
-base::Value::Dict UrlPatternToValue(const blink::SafeUrlPattern& pattern) {
-  static constexpr auto kFields =
-      base::MakeFixedFlatMap<std::string_view, std::vector<liburlpattern::Part>
-                                                   blink::SafeUrlPattern::*>({
-          {"protocol", &blink::SafeUrlPattern::protocol},
-          {"username", &blink::SafeUrlPattern::username},
-          {"password", &blink::SafeUrlPattern::password},
-          {"hostname", &blink::SafeUrlPattern::hostname},
-          {"port", &blink::SafeUrlPattern::port},
-          {"pathname", &blink::SafeUrlPattern::pathname},
-          {"search", &blink::SafeUrlPattern::search},
-          {"hash", &blink::SafeUrlPattern::hash},
-      });
-
-  base::Value::Dict result;
-  for (const auto& [field, getter] : kFields) {
-    if (!(pattern.*getter).empty()) {
-      result.Set(field, UrlPatternPartsToString(pattern.*getter));
-    }
-  }
-  return result;
-}
-
 }  // namespace
 
 ManifestBuilder::PermissionsPolicy::PermissionsPolicy(
@@ -268,13 +223,16 @@ ManifestBuilder::PermissionsPolicy::PermissionsPolicy(
     const ManifestBuilder::PermissionsPolicy&) = default;
 ManifestBuilder::PermissionsPolicy::~PermissionsPolicy() = default;
 
-ManifestBuilder::ManifestBuilder()
+ManifestBuilder::ManifestBuilder(
+    bool include_cross_origin_isolated_permissions_policy)
     : name_("Test App"),
       version_(*IwaVersion::Create("0.0.1")),
       start_url_("/") {
-  AddPermissionsPolicy(
-      network::mojom::PermissionsPolicyFeature::kCrossOriginIsolated,
-      /*self=*/true, /*origins=*/{});
+  if (include_cross_origin_isolated_permissions_policy) {
+    AddPermissionsPolicy(
+        network::mojom::PermissionsPolicyFeature::kCrossOriginIsolated,
+        /*self=*/true, /*origins=*/{});
+  }
 }
 
 ManifestBuilder::ManifestBuilder(const ManifestBuilder&) = default;
@@ -314,7 +272,7 @@ ManifestBuilder& ManifestBuilder::SetLaunchHandlerClientMode(
 }
 
 ManifestBuilder& ManifestBuilder::SetDisplayModeOverride(
-    std::vector<blink::mojom::DisplayMode> display_mode_override) {
+    std::vector<web_app::DisplayOverride> display_mode_override) {
   display_mode_override_ = std::move(display_mode_override);
   return *this;
 }
@@ -359,9 +317,9 @@ ManifestBuilder& ManifestBuilder::AddFileHandler(
   return *this;
 }
 
-ManifestBuilder& ManifestBuilder::AddBorderlessUrlPattern(
-    blink::SafeUrlPattern pattern) {
-  borderless_url_patterns_.emplace_back(std::move(pattern));
+ManifestBuilder& ManifestBuilder::AddScopeExtension(url::Origin origin,
+                                                    bool has_origin_wildcard) {
+  scope_extensions_.push_back({std::move(origin), has_origin_wildcard});
   return *this;
 }
 
@@ -383,7 +341,7 @@ const IwaVersion& ManifestBuilder::version() const {
 }
 
 std::string ManifestBuilder::ToJson() const {
-  auto json = base::Value::Dict()
+  auto json = base::DictValue()
                   .Set("name", name_)
                   .Set("version", version_.GetString())
                   .Set("id", "/")
@@ -392,7 +350,7 @@ std::string ManifestBuilder::ToJson() const {
                   .Set("display", blink::DisplayModeToString(display_mode_))
                   .Set("display_override",
                        base::ToValueList(display_mode_override_,
-                                         &blink::DisplayModeToString));
+                                         &DisplayOverride::ToDebugValue));
   if (update_manifest_url_) {
     json.Set("update_manifest_url", update_manifest_url_->spec());
   }
@@ -412,14 +370,17 @@ std::string ManifestBuilder::ToJson() const {
     }());
   }
 
-  base::Value::Dict policies;
+  base::DictValue policies;
   for (const auto& policy : permissions_policy_) {
-    base::Value::List values;
+    base::ListValue values;
     if (policy.second.wildcard) {
       values.Append("*");
     }
     if (policy.second.self) {
       values.Append("self");
+    }
+    if (values.empty() && policy.second.origins.empty()) {
+      values.Append("none");
     }
     for (const auto& origin : policy.second.origins) {
       values.Append(origin.Serialize());
@@ -430,10 +391,10 @@ std::string ManifestBuilder::ToJson() const {
   }
   json.Set("permissions_policy", std::move(policies));
 
-  base::Value::List icons;
+  base::ListValue icons;
   for (const auto& icon : icons_) {
     icons.Append(
-        base::Value::Dict()
+        base::DictValue()
             .Set("src", icon.resource_path)
             .Set("sizes", base::StringPrintf("%dx%d", icon.size.width(),
                                              icon.size.height()))
@@ -441,35 +402,50 @@ std::string ManifestBuilder::ToJson() const {
   }
   json.Set("icons", std::move(icons));
 
-  base::Value::List protocol_handlers;
+  base::ListValue protocol_handlers;
   for (const auto& protocol_handler : protocol_handlers_) {
-    protocol_handlers.Append(base::Value::Dict()
+    protocol_handlers.Append(base::DictValue()
                                  .Set("protocol", protocol_handler.first)
                                  .Set("url", protocol_handler.second));
   }
   json.Set("protocol_handlers", std::move(protocol_handlers));
 
   if (!file_handlers_.empty()) {
-    base::Value::List file_handlers;
+    base::ListValue file_handlers;
     for (const auto& handler_entry : file_handlers_) {
-      base::Value::Dict accept;
+      base::DictValue accept;
       for (const auto& accept_entry : handler_entry.second) {
-        base::Value::List extensions;
+        base::ListValue extensions;
         for (const auto& extension : accept_entry.second) {
           extensions.Append(extension);
         }
         accept.Set(accept_entry.first, std::move(extensions));
       }
-      file_handlers.Append(base::Value::Dict()
+      file_handlers.Append(base::DictValue()
                                .Set("action", handler_entry.first)
                                .Set("accept", std::move(accept)));
     }
     json.Set("file_handlers", std::move(file_handlers));
   }
 
-  if (!borderless_url_patterns_.empty()) {
-    json.Set("borderless_url_patterns",
-             base::ToValueList(borderless_url_patterns_, &UrlPatternToValue));
+  if (!scope_extensions_.empty()) {
+    json.Set("scope_extensions",
+             base::ToValueList(scope_extensions_, [](const ScopeExtension& it) {
+               base::DictValue extension_entry;
+               extension_entry.Set("type", "origin");
+
+               std::string origin_string = it.origin.Serialize();
+
+               if (it.has_origin_wildcard) {
+                 // Replaces "scheme://host" with "scheme://*.host" safely.
+                 // If "://" is not found, the string remains unchanged.
+                 base::ReplaceFirstSubstringAfterOffset(&origin_string, 0,
+                                                        "://", "://*.");
+               }
+
+               extension_entry.Set("origin", std::move(origin_string));
+               return extension_entry;
+             }));
   }
 
   return base::WriteJsonWithOptions(json, base::OPTIONS_PRETTY_PRINT).value();
@@ -488,7 +464,17 @@ blink::mojom::ManifestPtr ManifestBuilder::ToBlinkManifest(
     manifest->update_manifest_url = update_manifest_url_;
   }
   manifest->display = display_mode_;
-  manifest->display_override = display_mode_override_;
+  for (const auto& item : display_mode_override_) {
+    if (!item.url_patterns().empty()) {
+      CHECK_EQ(item.display_mode(), blink::mojom::DisplayMode::kBorderless)
+          << "Only the 'unframed' display override can have URL patterns.";
+    }
+    manifest->display_override.push_back(
+        item.display_mode() == blink::mojom::DisplayMode::kBorderless
+            ? blink::Manifest::DisplayOverride::CreateUnframed(
+                  item.url_patterns())
+            : blink::Manifest::DisplayOverride::Create(item.display_mode()));
+  }
   if (launch_handler_client_mode_) {
     manifest->launch_handler =
         blink::Manifest::LaunchHandler(*launch_handler_client_mode_);
@@ -542,7 +528,12 @@ blink::mojom::ManifestPtr ManifestBuilder::ToBlinkManifest(
     manifest->file_handlers.push_back(std::move(handler));
   }
 
-  base::Extend(manifest->borderless_url_patterns, borderless_url_patterns_);
+  for (const ScopeExtension& it : scope_extensions_) {
+    auto scope_extension = blink::mojom::ManifestScopeExtension::New();
+    scope_extension->origin = it.origin;
+    scope_extension->has_origin_wildcard = it.has_origin_wildcard;
+    manifest->scope_extensions.push_back(std::move(scope_extension));
+  }
 
   return manifest;
 }

@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.settings;
 import static android.view.ViewGroup.LayoutParams.WRAP_CONTENT;
 
 import android.content.Context;
+import android.graphics.text.LineBreaker;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,7 +18,7 @@ import androidx.appcompat.widget.AppCompatTextView;
 import androidx.fragment.app.FragmentManager;
 
 import org.chromium.base.Callback;
-import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
@@ -48,7 +49,7 @@ class MultiColumnTitleUpdater implements MultiColumnSettings.Observer {
                     setText(title);
                 };
 
-        private @Nullable ObservableSupplier<String> mSupplier;
+        private @Nullable MonotonicObservableSupplier<String> mSupplier;
 
         DetailedTitle(Context context) {
             super(context);
@@ -57,7 +58,7 @@ class MultiColumnTitleUpdater implements MultiColumnSettings.Observer {
             setTextAppearance(R.style.TextAppearance_Headline_Primary);
         }
 
-        void setSupplier(@Nullable ObservableSupplier<String> supplier) {
+        void setSupplier(@Nullable MonotonicObservableSupplier<String> supplier) {
             if (mSupplier == supplier) {
                 return;
             }
@@ -102,7 +103,7 @@ class MultiColumnTitleUpdater implements MultiColumnSettings.Observer {
      * Keeps tracking the current main page title supplier. Null if not tracking, e.g. in two pane
      * mode.
      */
-    private @Nullable ObservableSupplier<String> mCurrentPageTitle;
+    private @Nullable MonotonicObservableSupplier<String> mCurrentPageTitle;
 
     MultiColumnTitleUpdater(
             MultiColumnSettings multiColumnSettings,
@@ -115,6 +116,61 @@ class MultiColumnTitleUpdater implements MultiColumnSettings.Observer {
         mContainer = container;
         mMainTitleSetter = mainTitleSetter;
         mTitleTapCallback = titleTapCallback;
+
+        final int originalHeight =
+                mContainer
+                        .getResources()
+                        .getDimensionPixelSize(R.dimen.settings_detailed_title_height);
+        mContainer.addOnLayoutChangeListener(
+                (View v,
+                        int left,
+                        int top,
+                        int right,
+                        int bottom,
+                        int oldLeft,
+                        int oldTop,
+                        int oldRight,
+                        int oldBottom) -> {
+                    int actualHeight = bottom - top;
+
+                    // If actual height is bigger than the original one, some text view
+                    // is overflown and being wrapped. In the case, we relayout the view
+                    // by evenly splitting the components (to avoid only the last component
+                    // has very narrow width space and shrunk in very weird way).
+                    if (actualHeight > originalHeight) {
+                        for (int i = mContainer.getChildCount() - 1; i >= 0; --i) {
+                            if (mContainer.getChildAt(i) instanceof DetailedTitle title) {
+                                LinearLayout.LayoutParams params =
+                                        (LinearLayout.LayoutParams) title.getLayoutParams();
+                                // not to relayout when unneeded, check the weight.
+                                if (params.weight == 1f) {
+                                    // DetailedTitle views leading this element should have 1f
+                                    // already.
+                                    break;
+                                }
+                                params.weight = 1f;
+                                params.width = 0;
+                                title.setLayoutParams(params);
+                            }
+                        }
+                    } else {
+                        // note: we cannot traverse in the reverse order here unlike above,
+                        // because a new view may be just added and so even if weight=0 view
+                        // is found, there may be weight!=0 views in leading components.
+                        for (int i = 0; i < mContainer.getChildCount(); ++i) {
+                            if (mContainer.getChildAt(i) instanceof DetailedTitle title) {
+                                LinearLayout.LayoutParams params =
+                                        (LinearLayout.LayoutParams) title.getLayoutParams();
+                                // not to relayout when unneeded, check the weight.
+                                if (params.weight != 0f) {
+                                    params.weight = 0f;
+                                    params.width = LinearLayout.LayoutParams.WRAP_CONTENT;
+                                    title.setLayoutParams(params);
+                                }
+                            }
+                        }
+                    }
+                });
     }
 
     @Override
@@ -184,14 +240,17 @@ class MultiColumnTitleUpdater implements MultiColumnSettings.Observer {
                 view.setPadding(paddingPx, 0, paddingPx, 0);
                 view.setImageResource(R.drawable.chevron_right);
                 view.setScaleX(scaleX);
-                view.setLayoutParams(LAYOUT_CENTER_VERTICAL);
+                // Passed instance is owned by the view, so create the new instance.
+                view.setLayoutParams(new LinearLayout.LayoutParams(LAYOUT_CENTER_VERTICAL));
                 mContainer.addView(view);
             }
             var view = new DetailedTitle(mContext);
             var title = titles.get(i);
             view.setSupplier(title.titleSupplier);
             view.setGravity(Gravity.CENTER_VERTICAL);
-            view.setLayoutParams(LAYOUT_CENTER_VERTICAL);
+            // Passed instance is owned by the view, so create the new instance.
+            view.setLayoutParams(new LinearLayout.LayoutParams(LAYOUT_CENTER_VERTICAL));
+            view.setBreakStrategy(LineBreaker.BREAK_STRATEGY_BALANCED);
 
             final int backStackCount = title.backStackCount;
             view.setOnClickListener(

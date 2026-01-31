@@ -4,13 +4,17 @@
 
 #include "chrome/browser/android/seccomp_support_detector.h"
 
-#include <stdio.h>
 #include <sys/utsname.h>
+
+#include <string_view>
+#include <vector>
 
 #include "base/compiler_specific.h"
 #include "base/cpu.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/strings/string_number_conversions.h"
+#include "base/strings/string_split.h"
 #include "build/build_config.h"
 
 namespace {
@@ -22,13 +26,35 @@ void ReportKernelVersion() {
   // the two into a 32-bit number.
 
   utsname uts;
-  if (uname(&uts) == 0) {
-    int major, minor;
-    if (UNSAFE_TODO(sscanf(uts.release, "%d.%d", &major, &minor)) == 2) {
-      int version = ((major & 0xFFFF) << 16) | (minor & 0xFFFF);
-      base::UmaHistogramSparse("Android.KernelVersion", version);
-    }
+  if (uname(&uts) != 0) {
+    return;
   }
+
+  std::vector<std::string_view> parts = base::SplitStringPiece(
+      uts.release, ".", base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
+  if (parts.size() < 2) {
+    return;
+  }
+
+  int major;
+  if (!base::StringToInt(parts[0], &major)) {
+    return;
+  }
+
+  // Handle minor versions with suffixes (e.g., "18-generic").
+  std::string_view minor_str = parts[1];
+  size_t suffix_pos = minor_str.find_first_not_of("0123456789");
+  if (suffix_pos != std::string_view::npos) {
+    minor_str = minor_str.substr(0, suffix_pos);
+  }
+
+  int minor;
+  if (!base::StringToInt(minor_str, &minor)) {
+    return;
+  }
+
+  int version = ((major & 0xFFFF) << 16) | (minor & 0xFFFF);
+  base::UmaHistogramSparse("Android.KernelVersion", version);
 }
 
 }  // namespace

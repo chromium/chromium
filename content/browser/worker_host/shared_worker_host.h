@@ -138,6 +138,8 @@ class CONTENT_EXPORT SharedWorkerHost : public blink::mojom::SharedWorkerHost,
       mojo::PendingReceiver<blink::mojom::BlobURLStore> receiver);
   void CreateBucketManagerHost(
       mojo::PendingReceiver<blink::mojom::BucketManagerHost> receiver);
+  void CreateLockManager(
+      mojo::PendingReceiver<blink::mojom::LockManager> receiver);
 
 #if BUILDFLAG(ENABLE_COMPUTE_PRESSURE)
   void BindPressureService(

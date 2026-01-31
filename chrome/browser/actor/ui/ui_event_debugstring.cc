@@ -9,6 +9,7 @@
 
 #include "base/strings/strcat.h"
 #include "chrome/browser/actor/shared_types.h"
+#include "chrome/common/actor.mojom-shared.h"
 #include "third_party/abseil-cpp/absl/functional/overload.h"
 #include "third_party/abseil-cpp/absl/strings/str_format.h"
 
@@ -31,6 +32,12 @@ constexpr absl::Overload UiEventToDebugStringFn{
     [](const StartTask& e) -> std::string {
       return absl::StrFormat("StartTask[id=%d]", e.task_id.value());
     },
+    [](const StopTask& e) -> std::string {
+      return absl::StrFormat(
+          "StopTask[id=%d, final_state=%s, title=%s, last_acted_on_tab=%d]",
+          e.task_id.value(), ToString(e.final_state), e.title,
+          e.last_acted_on_tab_handle.raw_value());
+    },
     [](const TaskStateChanged& e) -> std::string {
       return absl::StrFormat("TaskStateChanged[task_id=%d, state=%s]",
                              e.task_id.value(), ToString(e.state));
@@ -45,8 +52,8 @@ constexpr absl::Overload UiEventToDebugStringFn{
     },
     [](const MouseClick& e) -> std::string {
       return absl::StrFormat("MouseClick[type=%s, count=%s]",
-                             actor::DebugString(e.click_type),
-                             actor::DebugString(e.click_count));
+                             absl::FormatStreamed(e.click_type),
+                             absl::FormatStreamed(e.click_count));
     },
     [](const MouseMove& e) -> std::string {
       return absl::StrFormat(

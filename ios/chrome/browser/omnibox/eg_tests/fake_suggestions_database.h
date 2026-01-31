@@ -49,7 +49,7 @@ class FakeSuggestionsDatabase {
   // Loads fake suggestions from `file_path`.
   void LoadFakeSuggestions(base::FilePath file_path);
 
-  raw_ptr<TemplateURLService, DanglingUntriaged> template_url_service_;
+  raw_ptr<TemplateURLService> template_url_service_;
   std::map<std::u16string, std::string> data_;
 };
 

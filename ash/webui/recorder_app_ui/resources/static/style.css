@@ -3,10 +3,10 @@
  * found in the LICENSE file. */
 
 @font-face {
-  font-family: "Google Sans Clock";
+  font-family: 'Google Sans Clock';
 
   /* TODO(pihsun): Preload the font. */
-  src: url("./GoogleSansClock.ttf");
+  src: url('./GoogleSansClock.ttf');
 }
 
 @keyframes slide-out-right {
@@ -52,7 +52,7 @@
    * shorter side.
    */
   --border-radius-rounded-with-short-side: 9999999px;
-  --monospace-font-family: "Google Sans Clock";
+  --monospace-font-family: 'Google Sans Clock';
   --small-viewport: 0;
 
   @media (width <= 960px) {

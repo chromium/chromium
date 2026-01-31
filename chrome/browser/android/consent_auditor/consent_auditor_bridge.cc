@@ -24,9 +24,9 @@ static void JNI_ConsentAuditorBridge_RecordConsent(
     JNIEnv* env,
     Profile* profile,
     GaiaId& gaia_id,
-    jint j_feature,
+    int32_t j_feature,
     const JavaRef<jintArray>& j_consent_description,
-    jint j_consent_confirmation) {
+    int32_t j_consent_confirmation) {
   // TODO(markusheintz): Update the ConsentAuditorBridgeInterface.
   DCHECK_EQ(static_cast<consent_auditor::Feature>(j_feature),
             consent_auditor::Feature::CHROME_SYNC);

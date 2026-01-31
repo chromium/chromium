@@ -7,7 +7,6 @@
 #include <string_view>
 #include <utility>
 
-#include "base/containers/contains.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/scoped_run_loop_timeout.h"
 #include "base/test/test_timeouts.h"
@@ -187,7 +186,8 @@ static constexpr const char* const kSlowChromeUrls[] = {
     "chrome://prefs-internals",
 #else
     // Placeholder entry to prevent zero-sized array which causes template
-    // instantiation failures with std::ranges algorithms in base::Contains.
+    // instantiation failures with std::ranges algorithms in
+    // std::ranges::contains.
     "",
 #endif
 };
@@ -216,7 +216,7 @@ class ChromeURLDataManagerWebUITrustedTypesTest
 
   void CheckNoTrustedTypesViolation(std::string_view url) {
     std::unique_ptr<base::test::ScopedRunLoopTimeout> timeout;
-    if (base::Contains(kSlowChromeUrls, url)) {
+    if (std::ranges::contains(kSlowChromeUrls, url)) {
       timeout = std::make_unique<base::test::ScopedRunLoopTimeout>(
           FROM_HERE, GetSlowTestTimeout());
     }
@@ -237,7 +237,7 @@ class ChromeURLDataManagerWebUITrustedTypesTest
 
   void CheckTrustedTypesEnabled(std::string_view url) {
     std::unique_ptr<base::test::ScopedRunLoopTimeout> timeout;
-    if (base::Contains(kSlowChromeUrls, url)) {
+    if (std::ranges::contains(kSlowChromeUrls, url)) {
       timeout = std::make_unique<base::test::ScopedRunLoopTimeout>(
           FROM_HERE, GetSlowTestTimeout());
     }
@@ -340,7 +340,10 @@ IN_PROC_BROWSER_TEST_P(ChromeURLDataManagerWebUITrustedTypesTest,
 //  1) TrustedTypes violations (see NoTrustedTypesViolation test).
 //  2) Presence of TrustedTypes checks (see TrustedTypesEnabled test).
 static constexpr const char* const kChromeUrls[] = {
+#if !(BUILDFLAG(IS_WIN) && defined(ADDRESS_SANITIZER))
+    // TODO(crbug.com/477013842): Investigate why tests fail on Win-Asan.
     "chrome://accessibility",
+#endif
 // TODO:(https://crbug.com/1439754): Flakily crashes on ChromeOS.
 #if !BUILDFLAG(IS_CHROMEOS)
     "chrome://app-service-internals",
@@ -451,9 +454,6 @@ static constexpr const char* const kChromeUrls[] = {
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS)
-    // TODO(crbug.com/40250441): Add CrOS-only WebUI URLs here as TrustedTypes
-    // are deployed to more WebUIs.
-
     "chrome://accessory-update",
     "chrome://account-manager-error",
     "chrome://account-migration-welcome",
@@ -475,7 +475,6 @@ static constexpr const char* const kChromeUrls[] = {
     "chrome://connectors-internals",
     "chrome://crashes",
     "chrome://crostini-installer",
-    "chrome://crostini-upgrader",
     "chrome://cryptohome",
     "chrome://diagnostics",
     "chrome://drive-internals",

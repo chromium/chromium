@@ -59,7 +59,7 @@ class AccountCapabilitiesFetcherGaia
 
   // gaia::GaiaOAuthClient::Delegate:
   void OnGetAccountCapabilitiesResponse(
-      const base::Value::Dict& account_capabilities) override;
+      const base::DictValue& account_capabilities) override;
   void OnOAuthError() override;
   void OnNetworkError(int response_code) override;
 

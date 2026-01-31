@@ -11,6 +11,21 @@
 #include "build/build_config.h"
 #include "components/translate/core/common/translate_switches.h"
 
+namespace {
+// The default number of times user should consecutively translate for "Always
+// Translate" to automatically trigger.
+constexpr int kAutoAlwaysThreshold = 5;
+// The default number of times user should consecutively dismiss the translate
+// infobar for "Never Translate" to automatically trigger.
+constexpr int kAutoNeverThreshold = 20;
+// The default maximum number of times "Always Translate" is automatically
+// triggered.
+constexpr int kMaxNumberOfAutoAlways = 2;
+// The default maximum number of times "Never Translate" is automatically
+// triggered.
+constexpr int kMaxNumberOfAutoNever = 2;
+}  // namespace
+
 namespace translate {
 
 const char kSecurityOrigin[] = "https://translate.googleapis.com/";
@@ -36,30 +51,20 @@ bool IsTFLiteLanguageDetectionEnabled() {
 #endif
 }
 
-BASE_FEATURE(kTranslateAutoSnackbars, base::FEATURE_ENABLED_BY_DEFAULT);
-
 int GetAutoAlwaysThreshold() {
-  static constexpr base::FeatureParam<int> auto_always_threshold{
-      &kTranslateAutoSnackbars, "AutoAlwaysThreshold", 5};
-  return auto_always_threshold.Get();
+  return kAutoAlwaysThreshold;
 }
 
 int GetAutoNeverThreshold() {
-  static constexpr base::FeatureParam<int> auto_never_threshold{
-      &kTranslateAutoSnackbars, "AutoNeverThreshold", 20};
-  return auto_never_threshold.Get();
+  return kAutoNeverThreshold;
 }
 
 int GetMaximumNumberOfAutoAlways() {
-  static constexpr base::FeatureParam<int> auto_always_maximum{
-      &kTranslateAutoSnackbars, "AutoAlwaysMaximum", 2};
-  return auto_always_maximum.Get();
+  return kMaxNumberOfAutoAlways;
 }
 
 int GetMaximumNumberOfAutoNever() {
-  static constexpr base::FeatureParam<int> auto_never_maximum{
-      &kTranslateAutoSnackbars, "AutoNeverMaximum", 2};
-  return auto_never_maximum.Get();
+  return kMaxNumberOfAutoNever;
 }
 
 }  // namespace translate

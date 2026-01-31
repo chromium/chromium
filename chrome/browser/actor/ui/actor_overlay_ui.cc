@@ -14,6 +14,7 @@
 #include "chrome/common/chrome_features.h"
 #include "chrome/grit/actor_overlay_resources.h"
 #include "chrome/grit/actor_overlay_resources_map.h"
+#include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui_data_source.h"
 #include "ui/webui/webui_util.h"
 
@@ -72,18 +73,18 @@ void ActorOverlayUI::SetHandlerInitializedCallback(base::OnceClosure callback) {
 }
 
 void ActorOverlayUI::SetOverlayBackground(bool is_visible) {
+  // If handler is not initialized yet, queue the update.
   if (!handler_) {
+    SetHandlerInitializedCallback(
+        base::BindOnce(&ActorOverlayUI::SetOverlayBackground,
+                       weak_factory_.GetWeakPtr(), is_visible));
     return;
   }
-
   handler_->SetOverlayBackground(is_visible);
 }
 
 void ActorOverlayUI::SetBorderGlowVisibility(bool is_visible) {
-  if (!handler_) {
-    return;
-  }
-
+  DCHECK(handler_);
   handler_->SetBorderGlowVisibility(is_visible);
 }
 
@@ -100,6 +101,11 @@ void ActorOverlayUI::MoveCursorTo(const gfx::Point& point,
                                   base::OnceClosure callback) {
   DCHECK(handler_);
   handler_->MoveCursorTo(point, std::move(callback));
+}
+
+void ActorOverlayUI::TriggerClickAnimation(base::OnceClosure callback) {
+  DCHECK(handler_);
+  handler_->TriggerClickAnimation(std::move(callback));
 }
 
 }  // namespace actor::ui

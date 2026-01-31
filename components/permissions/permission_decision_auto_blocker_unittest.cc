@@ -314,9 +314,9 @@ TEST_F(PermissionDecisionAutoBlockerUnitTest, RemoveEmbargoAndResetCounts_All) {
   EXPECT_EQ(
       1, autoblocker()->GetIgnoreCount(url1, ContentSettingsType::MIDI_SYSEX));
   EXPECT_FALSE(autoblocker()->RecordIgnoreAndEmbargo(
-      url1, ContentSettingsType::DURABLE_STORAGE, false));
+      url1, ContentSettingsType::PERSISTENT_STORAGE, false));
   EXPECT_EQ(1, autoblocker()->GetIgnoreCount(
-                   url1, ContentSettingsType::DURABLE_STORAGE));
+                   url1, ContentSettingsType::PERSISTENT_STORAGE));
   EXPECT_FALSE(autoblocker()->RecordIgnoreAndEmbargo(
       url2, ContentSettingsType::GEOLOCATION, false));
   EXPECT_FALSE(autoblocker()->RecordIgnoreAndEmbargo(
@@ -335,7 +335,7 @@ TEST_F(PermissionDecisionAutoBlockerUnitTest, RemoveEmbargoAndResetCounts_All) {
   EXPECT_EQ(
       0, autoblocker()->GetIgnoreCount(url1, ContentSettingsType::MIDI_SYSEX));
   EXPECT_EQ(0, autoblocker()->GetIgnoreCount(
-                   url1, ContentSettingsType::DURABLE_STORAGE));
+                   url1, ContentSettingsType::PERSISTENT_STORAGE));
 
   EXPECT_EQ(1, autoblocker()->GetDismissCount(
                    url2, ContentSettingsType::GEOLOCATION));
@@ -367,9 +367,9 @@ TEST_F(PermissionDecisionAutoBlockerUnitTest, RemoveEmbargoAndResetCounts_All) {
   EXPECT_EQ(1, autoblocker()->GetIgnoreCount(
                    url1, ContentSettingsType::NOTIFICATIONS));
   EXPECT_FALSE(autoblocker()->RecordIgnoreAndEmbargo(
-      url1, ContentSettingsType::DURABLE_STORAGE, false));
+      url1, ContentSettingsType::PERSISTENT_STORAGE, false));
   EXPECT_EQ(1, autoblocker()->GetIgnoreCount(
-                   url1, ContentSettingsType::DURABLE_STORAGE));
+                   url1, ContentSettingsType::PERSISTENT_STORAGE));
   EXPECT_FALSE(autoblocker()->RecordIgnoreAndEmbargo(
       url2, ContentSettingsType::MIDI_SYSEX, false));
   EXPECT_EQ(
@@ -392,7 +392,7 @@ TEST_F(PermissionDecisionAutoBlockerUnitTest, RemoveEmbargoAndResetCounts_All) {
   EXPECT_EQ(
       0, autoblocker()->GetIgnoreCount(url2, ContentSettingsType::GEOLOCATION));
   EXPECT_EQ(0, autoblocker()->GetIgnoreCount(
-                   url2, ContentSettingsType::DURABLE_STORAGE));
+                   url2, ContentSettingsType::PERSISTENT_STORAGE));
   EXPECT_EQ(
       0, autoblocker()->GetIgnoreCount(url2, ContentSettingsType::MIDI_SYSEX));
 }

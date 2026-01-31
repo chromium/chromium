@@ -21,7 +21,7 @@
 namespace blink {
 
 // Parses and stores mappings from part name to ordered set of part names as in
-// http://drafts.csswg.org/css-shadow-parts/.
+// http://drafts.csswg.org/css-shadow/#part
 // TODO(crbug/805271): Deduplicate identical maps as SpaceSplitString does so
 // that elements with identical exportparts attributes share instances.
 class CORE_EXPORT NamesMap : public GarbageCollected<NamesMap>,

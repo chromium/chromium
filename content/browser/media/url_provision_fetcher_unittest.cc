@@ -14,10 +14,17 @@
 #include "build/build_config.h"
 #include "content/public/browser/provision_fetcher_factory.h"
 #include "media/base/media_switches.h"
+#include "net/http/http_request_headers.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/test/test_url_loader_factory.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
+
+#if BUILDFLAG(IS_ANDROID)
+#include "base/android/android_info.h"
+#include "base/android/locale_utils.h"
+#include "base/strings/stringprintf.h"
+#endif  // BUILDFLAG(IS_ANDROID)
 
 namespace content {
 
@@ -110,6 +117,34 @@ TEST_F(URLProvisionFetcherTest, FeatureEnabled_SendsPostRequestWithBody) {
 
   SimulateResponse(kTestUrl);
   run_loop.Run();
+}
+
+TEST_F(URLProvisionFetcherTest, UserAgent) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(media::kUsePostBodyForUrlProvisionFetcher);
+
+  std::string expected_user_agent;
+#if BUILDFLAG(IS_ANDROID)
+  expected_user_agent = base::StringPrintf(
+      "Widevine CDM v1.0 (Linux; U; Android %d; %s; Build/%s; %s)",
+      base::android::android_info::sdk_int(),
+      base::android::GetDefaultLocaleString().c_str(),
+      base::android::android_info::android_build_id(),
+      base::android::android_info::build_type());
+#else
+  expected_user_agent = "Widevine CDM v1.0";
+#endif
+
+  auto fetcher = CreateProvisionFetcherWithUserAgent(shared_url_loader_factory_,
+                                                     expected_user_agent);
+
+  fetcher->Retrieve(GURL(kTestUrl), kTestRequestBody,
+                    base::BindOnce([](bool, const std::string&) {}));
+
+  EXPECT_EQ(test_url_loader_factory_.NumPending(), 1);
+  auto* pending_request = test_url_loader_factory_.GetPendingRequest(0);
+  EXPECT_EQ(expected_user_agent, pending_request->request.headers.GetHeader(
+                                     net::HttpRequestHeaders::kUserAgent));
 }
 
 }  // namespace content

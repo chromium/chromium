@@ -31,4 +31,9 @@ enum InstallState {
   // For example, preinstalled apps are installed by this state on
   // Windows/Max/Linux.
   INSTALLED_WITHOUT_OS_INTEGRATION = 2;
+  // The app is not fully installed yet, and needs to undergo the app migration
+  // process before it can be used as a full app, perhaps with OS integration
+  // etc. It is still in the registry, and might have certain fields populated,
+  // but will not show up on any user facing Chrome surfaces.
+  SUGGESTED_FROM_MIGRATION = 3;
 }

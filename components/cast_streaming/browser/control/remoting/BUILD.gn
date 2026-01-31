@@ -38,7 +38,7 @@ source_set("remoting") {
 source_set("unit_tests") {
   testonly = true
   public = []
-  sources = [ "rpc_demuxer_stream_handler_unittests.cc" ]
+  sources = [ "rpc_demuxer_stream_handler_unittest.cc" ]
   deps = [
     ":remoting",
     "//base",

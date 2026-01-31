@@ -194,6 +194,21 @@ impl DateDuration {
         }
     }
 
+    /// Returns a new [`DateDuration`] representing a number of days
+    /// represented as weeks and days
+    pub(crate) fn for_weeks_and_days(days: i64) -> Self {
+        let is_negative = days.is_negative();
+        let days = days.unsigned_abs();
+        let weeks = (days / 7) as u32;
+        let days = days % 7;
+        Self {
+            is_negative,
+            weeks,
+            days,
+            ..Default::default()
+        }
+    }
+
     /// Do NOT pass this function values of mixed signs!
     pub(crate) fn from_signed_ymwd(years: i64, months: i64, weeks: i64, days: i64) -> Self {
         let is_negative = years.is_negative()

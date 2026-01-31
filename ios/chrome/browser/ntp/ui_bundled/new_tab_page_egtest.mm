@@ -8,20 +8,21 @@
 #import "components/omnibox/browser/aim_eligibility_service_features.h"
 #import "components/policy/core/common/policy_test_utils.h"
 #import "components/policy/policy_constants.h"
-#import "components/signin/public/base/signin_switches.h"
 #import "components/strings/grit/components_strings.h"
+#import "ios/chrome/browser/authentication/account_menu/public/account_menu_constants.h"
 #import "ios/chrome/browser/authentication/test/signin_earl_grey.h"
 #import "ios/chrome/browser/authentication/test/signin_earl_grey_ui_test_util.h"
-#import "ios/chrome/browser/content_suggestions/ui_bundled/ntp_home_constant.h"
+#import "ios/chrome/browser/content_suggestions/public/ntp_home_constants.h"
 #import "ios/chrome/browser/metrics/model/metrics_app_interface.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_constants.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_feature.h"
 #import "ios/chrome/browser/policy/model/policy_earl_grey_utils.h"
-#import "ios/chrome/browser/popup_menu/ui_bundled/popup_menu_constants.h"
+#import "ios/chrome/browser/popup_menu/public/popup_menu_constants.h"
 #import "ios/chrome/browser/settings/ui_bundled/google_services/manage_sync_settings_constants.h"
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/signin/model/fake_system_identity.h"
+#import "ios/chrome/browser/signin/model/test_constants.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey_ui.h"
@@ -136,11 +137,6 @@ void VerifyMIAButtonVisible(bool mia_button_visible) {
 
 - (AppLaunchConfiguration)appConfigurationForTestCase {
   AppLaunchConfiguration config = [super appConfigurationForTestCase];
-
-  if ([self isRunningTest:@selector(DISABLED_testErrorBadge)]) {
-    config.features_enabled.push_back(
-        switches::kEnableErrorBadgeOnIdentityDisc);
-  }
 
   if ([self isRunningTest:@selector(testNewTabShowsMIAEntryPointInline)]) {
     config.features_enabled_and_params.push_back(
@@ -497,10 +493,12 @@ void VerifyMIAButtonVisible(bool mia_button_visible) {
 
 // Tests that the error badge is shown on top of the identity disc when the
 // primary account has a persistent error.
-// TODO(crbug.com/394268777): Reenable test.
-- (void)DISABLED_testErrorBadge {
+- (void)testErrorBadge {
   [SigninEarlGrey signinWithFakeIdentity:kPrimaryIdentity];
-  [ChromeEarlGrey addBookmarkWithSyncPassphrase:kPassphrase];
+  [SigninEarlGrey
+      setPersistentAuthErrorForAccount:CoreAccountId::FromGaiaId(
+                                           kPrimaryIdentity.gaiaId)];
+  //[ChromeEarlGrey addBookmarkWithSyncPassphrase:kPassphrase];
   [ChromeEarlGreyUI waitForAppToIdle];
 
   // Wait for the error badge to appear.
@@ -517,30 +515,30 @@ void VerifyMIAButtonVisible(bool mia_button_visible) {
                  base::test::ios::kWaitForUIElementTimeout, condition),
              @"Error badge didn't appear in the allotted time");
 
-  // Tap on the identity disc to open Settings.
+  // Tap on the identity disc to open the account menu.
   [[EarlGrey
       selectElementWithMatcher:grey_accessibilityID(kNTPFeedHeaderIdentityDisc)]
       performAction:grey_tap()];
-
-  // Open account settings.
-  [ChromeEarlGreyUI
-      tapSettingsMenuButton:chrome_test_util::SettingsAccountButton()];
-
-  // Verify the error section is showing.
+  // Ensure the Account Menu is displayed.
   [[EarlGrey
-      selectElementWithMatcher:grey_accessibilityID(kSyncErrorButtonIdentifier)]
+      selectElementWithMatcher:grey_accessibilityID(kAccountMenuTableViewId)]
       assertWithMatcher:grey_sufficientlyVisible()];
 
-  // Tap "Enter Passphrase" button.
-  [[EarlGrey
-      selectElementWithMatcher:grey_accessibilityID(kSyncErrorButtonIdentifier)]
+  // Check the error button is displayed.
+  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
+                                          kAccountMenuErrorActionButtonId)]
+      assertWithMatcher:grey_sufficientlyVisible()];
+  // Tap on it.
+  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
+                                          kAccountMenuErrorActionButtonId)]
       performAction:grey_tap()];
 
-  // Enter the passphrase.
-  [SigninEarlGreyUI submitSyncPassphrase:kPassphrase];
-
-  // Dismiss settings.
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::SettingsDoneButton()]
+  // Confirm the fake reauthentication dialog.
+  [[EarlGrey
+      selectElementWithMatcher:grey_allOf(
+                                   grey_accessibilityID(
+                                       kFakeAuthAddAccountButtonIdentifier),
+                                   grey_sufficientlyVisible(), nil)]
       performAction:grey_tap()];
 
   // Verify the error badge on the ADP disappears.

@@ -27,7 +27,7 @@ public interface AwNavigationListener {
 
     void onPageDOMContentLoadedEventFired(AwPage page);
 
-    void onFirstContentfulPaint(AwPage page, long loadTimeUs);
+    void onFirstContentfulPaint(AwPage page, long durationMs);
 
     void onLargestContentfulPaint(AwPage page, long durationMs);
 

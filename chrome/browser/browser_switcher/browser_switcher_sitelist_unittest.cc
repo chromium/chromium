@@ -32,7 +32,7 @@ class TestBrowserSwitcherPrefs : public BrowserSwitcherPrefs {
 };
 
 base::Value StringArrayToValue(const std::vector<const char*>& strings) {
-  base::Value::List list;
+  base::ListValue list;
   for (const auto* string : strings)
     list.Append(string);
   return base::Value(std::move(list));

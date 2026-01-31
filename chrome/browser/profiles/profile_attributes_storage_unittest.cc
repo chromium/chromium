@@ -591,7 +591,7 @@ TEST_F(ProfileAttributesStorageTest, AddStubProfile) {
   // Check that the profiles can be extracted from the local state.
   std::vector<std::string> names;
   PrefService* local_state = g_browser_process->local_state();
-  const base::Value::Dict& attributes =
+  const base::DictValue& attributes =
       local_state->GetDict(prefs::kProfileAttributes);
   for (const auto kv : attributes) {
     const base::Value& info = kv.second;
@@ -2119,7 +2119,7 @@ TEST_F(ProfileAttributesStorageTest,
 TEST_F(ProfileAttributesStorageTest, RecoverProfileOrderPrefAfterIssues) {
   DisableObserver();
 
-  base::Value::List profile_keys;
+  base::ListValue profile_keys;
   profile_keys.with_capacity(3);
   profile_keys.Append(u"D");
   profile_keys.Append(u"B");
@@ -2132,13 +2132,13 @@ TEST_F(ProfileAttributesStorageTest, RecoverProfileOrderPrefAfterIssues) {
 
   PrefService* local_state = g_browser_process->local_state();
   ScopedListPrefUpdate update(local_state, prefs::kProfilesOrder);
-  base::Value::List& profiles_order = update.Get();
+  base::ListValue& profiles_order = update.Get();
 
   ASSERT_EQ(profile_keys, profiles_order);
 
   // After recovery, the expected order is modified to be alphabetically
   // ordered.
-  base::Value::List expected_recovered_keys;
+  base::ListValue expected_recovered_keys;
   expected_recovered_keys.with_capacity(profile_keys.size());
   expected_recovered_keys.Append(profile_keys[1].GetString());
   expected_recovered_keys.Append(profile_keys[2].GetString());

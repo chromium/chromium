@@ -55,6 +55,14 @@ void ExecuteJavaScriptForFeature(web::WebState* web_state,
     NSString* script,
     JavaScriptFeature* feature);
 
+// Executes JavaScript on `web_view` and returns the result as an id.
+// `error` can be null and will be updated only if script execution fails.
+// If last action is to wait for a Promise to resolve, the function will wait
+// until the promise resolution.
+[[nodiscard]] id ExecuteAsyncJavaScript(WKWebView* web_view,
+                                        NSString* script,
+                                        NSError* __autoreleasing* error);
+
 // Synchronously loads `html` into `web_view`. Returns true is successful or
 // false if the `web_view` never finishes loading.
 [[nodiscard]] bool LoadHtml(WKWebView* web_view,

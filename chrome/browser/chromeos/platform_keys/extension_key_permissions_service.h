@@ -32,6 +32,10 @@ namespace content {
 class BrowserContext;
 }
 
+namespace crosapi {
+class KeystoreServiceAsh;
+}  // namespace crosapi
+
 namespace chromeos::platform_keys {
 
 // PlatformKeys is a field stored in each extension's state store. It saves
@@ -105,7 +109,7 @@ class ExtensionKeyPermissionsService {
   // instead.
   ExtensionKeyPermissionsService(const std::string& extension_id,
                                  extensions::StateStore* state_store,
-                                 base::Value::List state_store_value,
+                                 base::ListValue state_store_value,
                                  policy::PolicyService* profile_policies,
                                  content::BrowserContext* browser_context);
 
@@ -183,11 +187,11 @@ class ExtensionKeyPermissionsService {
 
   // Reads a KeyEntry list from |state| and stores them in
   // |state_store_entries_|.
-  void KeyEntriesFromState(const base::Value::List& state);
+  void KeyEntriesFromState(const base::ListValue& state);
 
   // Converts |state_store_entries_| to a base::Value for storing in the state
   // store.
-  base::Value::List KeyEntriesToState();
+  base::ListValue KeyEntriesToState();
 
   // Returns an existing entry for |public_key_spki_der_b64| from
   // |state_store_entries_|. If there is no existing entry, creates, adds and
@@ -216,7 +220,7 @@ class ExtensionKeyPermissionsService {
       extensions_state_store_ = nullptr;
   std::vector<KeyEntry> state_store_entries_;
   const raw_ptr<policy::PolicyService> profile_policies_;
-  const raw_ptr<crosapi::mojom::KeystoreService> keystore_service_ = nullptr;
+  const raw_ptr<crosapi::KeystoreServiceAsh> keystore_service_ = nullptr;
   base::WeakPtrFactory<ExtensionKeyPermissionsService> weak_factory_{this};
 };
 

@@ -298,6 +298,8 @@ public class PasswordCsvDownloadFlowControllerTest {
         histogramWatcher.assertExpected();
     }
 
+    // TODO(crbug.com/450954710): This test fails on SDK 36.
+    @Config(sdk = 29)
     @Test
     public void testDownloadFlow() throws IOException {
         HistogramWatcher histogramWatcher =

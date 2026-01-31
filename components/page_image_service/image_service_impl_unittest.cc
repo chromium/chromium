@@ -24,7 +24,6 @@
 #include "components/optimization_guide/proto/hints.pb.h"
 #include "components/optimization_guide/proto/salient_image_metadata.pb.h"
 #include "components/page_image_service/metrics_util.h"
-#include "components/page_image_service/mojom/page_image_service.mojom-shared.h"
 #include "components/page_image_service/mojom/page_image_service.mojom.h"
 #include "components/search_engines/search_engines_test_environment.h"
 #include "components/sync/test/test_sync_service.h"

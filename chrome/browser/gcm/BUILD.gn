@@ -1,0 +1,73 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+
+source_set("gcm") {
+  sources = [
+    "gcm_product_util.cc",
+    "gcm_product_util.h",
+    "gcm_profile_service_factory.cc",
+    "gcm_profile_service_factory.h",
+    "instance_id/instance_id_profile_service_factory.cc",
+    "instance_id/instance_id_profile_service_factory.h",
+  ]
+
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
+
+  public_deps = [
+    "//base",
+    "//chrome/browser/profiles",
+    "//components/gcm_driver",
+  ]
+
+  deps = [
+    "//chrome/browser:browser_process",
+    "//chrome/browser/image_fetcher",
+    "//chrome/browser/signin",
+    "//chrome/common:constants",
+    "//chrome/common:version_header",
+    "//components/gcm_driver/instance_id",
+    "//components/offline_pages/buildflags",
+    "//components/pref_registry",
+    "//components/prefs",
+    "//components/version_info",
+    "//content/public/browser",
+    "//mojo/public/cpp/bindings",
+    "//services/network/public/cpp",
+    "//services/network/public/mojom",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  # GCMDriverAndroid is not yet implemented.
+  if (!is_android) {
+    sources = [ "gcm_profile_service_unittest.cc" ]
+
+    deps = [
+      ":gcm",
+      "//base",
+      "//chrome/browser/signin",
+      "//chrome/common:channel_info",
+      "//chrome/test:test_support",
+      "//components/gcm_driver",
+      "//components/gcm_driver:test_support",
+      "//components/os_crypt/async/browser:test_support",
+      "//components/pref_registry",
+      "//content/public/browser",
+      "//content/test:test_support",
+      "//mojo/public/cpp/bindings",
+      "//services/network:test_support",
+      "//services/network/public/cpp",
+      "//services/network/public/mojom",
+      "//testing/gtest",
+    ]
+
+    if (is_chromeos) {
+      deps += [ "//chromeos/ash/components/dbus/concierge" ]
+    }
+  }
+}

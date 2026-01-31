@@ -1,0 +1,215 @@
+# Copyright 2023 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+# @generated from third_party/rust/chromium_crates_io/BUILD.gn.hbs by
+# tools/crates/gnrt.
+# Do not edit!
+
+import("//build/rust/cargo_crate.gni")
+
+cargo_crate("lib") {
+  crate_name = "jxl"
+  epoch = "0.3"
+  crate_type = "rlib"
+  crate_root =
+      "//third_party/rust/chromium_crates_io/vendor/jxl-v0_3/src/lib.rs"
+  sources = [
+    "//third_party/rust/chromium_crates_io/vendor/jxl-v0_3/src/api/color.rs",
+    "//third_party/rust/chromium_crates_io/vendor/jxl-v0_3/src/api/data_types.rs",
+    "//third_party/rust/chromium_crates_io/vendor/jxl-v0_3/src/api/decoder.rs",
+    "//third_party/rust/chromium_crates_io/vendor/jxl-v0_3/src/api/inner/box_parser.rs",
+    "//third_party/rust/chromium_crates_io/vendor/jxl-v0_3/src/api/inner/codestream_parser/mod.rs",
+    "//third_party/rust/chromium_crates_io/vendor/jxl-v0_3/src/api/inner/codestream_parser/non_section.rs",
+    "//third_party/rust/chromium_crates_io/vendor/jxl-v0_3/src/api/inner/codestream_parser/sections.rs",
+    "//third_party/rust/chromium_crates_io/vendor/jxl-v0_3/src/api/inner/mod.rs",
+    "//third_party/rust/chromium_crates_io/vendor/jxl-v0_3/src/api/inner/process.rs",
+    "//third_party/rust/chromium_crates_io/vendor/jxl-v0_3/src/api/input.rs",
+    "//third_party/rust/chromium_crates_io/vendor/jxl-v0_3/src/api/mod.rs",
+    "//third_party/rust/chromium_crates_io/vendor/jxl-v0_3/src/api/options.rs",
+    "//third_party/rust/chromium_crates_io/vendor/jxl-v0_3/src/api/signature.rs",
+    "//third_party/rust/chromium_crates_io/vendor/jxl-v0_3/src/bit_reader.rs",
+    "//third_party/rust/chromium_crates_io/vendor/jxl-v0_3/src/color/mod.rs",
+    "//third_party/rust/chromium_crates_io/vendor/jxl-v0_3/src/color/tf.rs",
+    "//third_party/rust/chromium_crates_io/vendor/jxl-v0_3/src/container/box_header.rs",
+    "//third_party/rust/chromium_crates_io/vendor/jxl-v0_3/src/container/mod.rs",
+    "//third_party/rust/chromium_crates_io/vendor/jxl-v0_3/src/container/parse.rs",
+    "//third_party/rust/chromium_crates_io/vendor/jxl-v0_3/src/entropy_coding/ans.rs",
+    "//third_party/rust/chromium_crates_io/vendor/jxl-v0_3/src/entropy_coding/context_map.rs",
+    "//third_party/rust/chromium_crates_io/vendor/jxl-v0_3/src/entropy_coding/decode.rs",
+    "//third_party/rust/chromium_crates_io/vendor/jxl-v0_3/src/entropy_coding/huffman.rs",
+    "//third_party/rust/chromium_crates_io/vendor/jxl-v0_3/src/entropy_coding/hybrid_uint.rs",
+    "//third_party/rust/chromium_crates_io/vendor/jxl-v0_3/src/entropy_coding/mod.rs",
+    "//third_party/rust/chromium_crates_io/vendor/jxl-v0_3/src/error.rs",
+    "//third_party/rust/chromium_crates_io/vendor/jxl-v0_3/src/features/blending.rs",
+    "//third_party/rust/chromium_crates_io/vendor/jxl-v0_3/src/features/epf.rs",
+    "//third_party/rust/chromium_crates_io/vendor/jxl-v0_3/src/features/mod.rs",
+    "//third_party/rust/chromium_crates_io/vendor/jxl-v0_3/src/features/noise.rs",
+    "//third_party/rust/chromium_crates_io/vendor/jxl-v0_3/src/features/patches.rs",
+    "//third_party/rust/chromium_crates_io/vendor/jxl-v0_3/src/features/spline.rs",
+    "//third_party/rust/chromium_crates_io/vendor/jxl-v0_3/src/frame/adaptive_lf_smoothing.rs",
+    "//third_party/rust/chromium_crates_io/vendor/jxl-v0_3/src/frame/block_context_map.rs",
+    "//third_party/rust/chromium_crates_io/vendor/jxl-v0_3/src/frame/coeff_order.rs",
+    "//third_party/rust/chromium_crates_io/vendor/jxl-v0_3/src/frame/color_correlation_map.rs",
+    "//third_party/rust/chromium_crates_io/vendor/jxl-v0_3/src/frame/decode.rs",
+    "//third_party/rust/chromium_crates_io/vendor/jxl-v0_3/src/frame/group.rs",
+    "//third_party/rust/chromium_crates_io/vendor/jxl-v0_3/src/frame/mod.rs",
+    "//third_party/rust/chromium_crates_io/vendor/jxl-v0_3/src/frame/modular/borrowed_buffers.rs",
+    "//third_party/rust/chromium_crates_io/vendor/jxl-v0_3/src/frame/modular/decode/bitstream.rs",
+    "//third_party/rust/chromium_crates_io/vendor/jxl-v0_3/src/frame/modular/decode/channel.rs",
+    "//third_party/rust/chromium_crates_io/vendor/jxl-v0_3/src/frame/modular/decode/common.rs",
+    "//third_party/rust/chromium_crates_io/vendor/jxl-v0_3/src/frame/modular/decode/mod.rs",
+    "//third_party/rust/chromium_crates_io/vendor/jxl-v0_3/src/frame/modular/decode/specialized_trees.rs",
+    "//third_party/rust/chromium_crates_io/vendor/jxl-v0_3/src/frame/modular/mod.rs",
+    "//third_party/rust/chromium_crates_io/vendor/jxl-v0_3/src/frame/modular/predict.rs",
+    "//third_party/rust/chromium_crates_io/vendor/jxl-v0_3/src/frame/modular/transforms/apply.rs",
+    "//third_party/rust/chromium_crates_io/vendor/jxl-v0_3/src/frame/modular/transforms/mod.rs",
+    "//third_party/rust/chromium_crates_io/vendor/jxl-v0_3/src/frame/modular/transforms/palette.rs",
+    "//third_party/rust/chromium_crates_io/vendor/jxl-v0_3/src/frame/modular/transforms/rct.rs",
+    "//third_party/rust/chromium_crates_io/vendor/jxl-v0_3/src/frame/modular/transforms/squeeze.rs",
+    "//third_party/rust/chromium_crates_io/vendor/jxl-v0_3/src/frame/modular/tree.rs",
+    "//third_party/rust/chromium_crates_io/vendor/jxl-v0_3/src/frame/quant_weights.rs",
+    "//third_party/rust/chromium_crates_io/vendor/jxl-v0_3/src/frame/quantizer.rs",
+    "//third_party/rust/chromium_crates_io/vendor/jxl-v0_3/src/frame/render.rs",
+    "//third_party/rust/chromium_crates_io/vendor/jxl-v0_3/src/headers/bit_depth.rs",
+    "//third_party/rust/chromium_crates_io/vendor/jxl-v0_3/src/headers/color_encoding.rs",
+    "//third_party/rust/chromium_crates_io/vendor/jxl-v0_3/src/headers/encodings.rs",
+    "//third_party/rust/chromium_crates_io/vendor/jxl-v0_3/src/headers/extra_channels.rs",
+    "//third_party/rust/chromium_crates_io/vendor/jxl-v0_3/src/headers/frame_header.rs",
+    "//third_party/rust/chromium_crates_io/vendor/jxl-v0_3/src/headers/image_metadata.rs",
+    "//third_party/rust/chromium_crates_io/vendor/jxl-v0_3/src/headers/mod.rs",
+    "//third_party/rust/chromium_crates_io/vendor/jxl-v0_3/src/headers/modular.rs",
+    "//third_party/rust/chromium_crates_io/vendor/jxl-v0_3/src/headers/permutation.rs",
+    "//third_party/rust/chromium_crates_io/vendor/jxl-v0_3/src/headers/size.rs",
+    "//third_party/rust/chromium_crates_io/vendor/jxl-v0_3/src/headers/toc.rs",
+    "//third_party/rust/chromium_crates_io/vendor/jxl-v0_3/src/headers/transform_data.rs",
+    "//third_party/rust/chromium_crates_io/vendor/jxl-v0_3/src/icc/header.rs",
+    "//third_party/rust/chromium_crates_io/vendor/jxl-v0_3/src/icc/mod.rs",
+    "//third_party/rust/chromium_crates_io/vendor/jxl-v0_3/src/icc/stream.rs",
+    "//third_party/rust/chromium_crates_io/vendor/jxl-v0_3/src/icc/tag.rs",
+    "//third_party/rust/chromium_crates_io/vendor/jxl-v0_3/src/image/data_type.rs",
+    "//third_party/rust/chromium_crates_io/vendor/jxl-v0_3/src/image/internal.rs",
+    "//third_party/rust/chromium_crates_io/vendor/jxl-v0_3/src/image/mod.rs",
+    "//third_party/rust/chromium_crates_io/vendor/jxl-v0_3/src/image/output_buffer.rs",
+    "//third_party/rust/chromium_crates_io/vendor/jxl-v0_3/src/image/raw.rs",
+    "//third_party/rust/chromium_crates_io/vendor/jxl-v0_3/src/image/rect.rs",
+    "//third_party/rust/chromium_crates_io/vendor/jxl-v0_3/src/image/test.rs",
+    "//third_party/rust/chromium_crates_io/vendor/jxl-v0_3/src/image/typed.rs",
+    "//third_party/rust/chromium_crates_io/vendor/jxl-v0_3/src/lib.rs",
+    "//third_party/rust/chromium_crates_io/vendor/jxl-v0_3/src/render/buffer_splitter.rs",
+    "//third_party/rust/chromium_crates_io/vendor/jxl-v0_3/src/render/builder.rs",
+    "//third_party/rust/chromium_crates_io/vendor/jxl-v0_3/src/render/channels.rs",
+    "//third_party/rust/chromium_crates_io/vendor/jxl-v0_3/src/render/internal.rs",
+    "//third_party/rust/chromium_crates_io/vendor/jxl-v0_3/src/render/low_memory_pipeline/helpers.rs",
+    "//third_party/rust/chromium_crates_io/vendor/jxl-v0_3/src/render/low_memory_pipeline/mod.rs",
+    "//third_party/rust/chromium_crates_io/vendor/jxl-v0_3/src/render/low_memory_pipeline/render_group.rs",
+    "//third_party/rust/chromium_crates_io/vendor/jxl-v0_3/src/render/low_memory_pipeline/row_buffers.rs",
+    "//third_party/rust/chromium_crates_io/vendor/jxl-v0_3/src/render/low_memory_pipeline/run_stage.rs",
+    "//third_party/rust/chromium_crates_io/vendor/jxl-v0_3/src/render/low_memory_pipeline/save/identity.rs",
+    "//third_party/rust/chromium_crates_io/vendor/jxl-v0_3/src/render/low_memory_pipeline/save/mod.rs",
+    "//third_party/rust/chromium_crates_io/vendor/jxl-v0_3/src/render/mod.rs",
+    "//third_party/rust/chromium_crates_io/vendor/jxl-v0_3/src/render/save.rs",
+    "//third_party/rust/chromium_crates_io/vendor/jxl-v0_3/src/render/simd_utils.rs",
+    "//third_party/rust/chromium_crates_io/vendor/jxl-v0_3/src/render/simple_pipeline/extend.rs",
+    "//third_party/rust/chromium_crates_io/vendor/jxl-v0_3/src/render/simple_pipeline/mod.rs",
+    "//third_party/rust/chromium_crates_io/vendor/jxl-v0_3/src/render/simple_pipeline/run_stage.rs",
+    "//third_party/rust/chromium_crates_io/vendor/jxl-v0_3/src/render/simple_pipeline/save.rs",
+    "//third_party/rust/chromium_crates_io/vendor/jxl-v0_3/src/render/stages/blending.rs",
+    "//third_party/rust/chromium_crates_io/vendor/jxl-v0_3/src/render/stages/chroma_upsample.rs",
+    "//third_party/rust/chromium_crates_io/vendor/jxl-v0_3/src/render/stages/cms.rs",
+    "//third_party/rust/chromium_crates_io/vendor/jxl-v0_3/src/render/stages/convert.rs",
+    "//third_party/rust/chromium_crates_io/vendor/jxl-v0_3/src/render/stages/epf/common.rs",
+    "//third_party/rust/chromium_crates_io/vendor/jxl-v0_3/src/render/stages/epf/epf0.rs",
+    "//third_party/rust/chromium_crates_io/vendor/jxl-v0_3/src/render/stages/epf/epf1.rs",
+    "//third_party/rust/chromium_crates_io/vendor/jxl-v0_3/src/render/stages/epf/epf2.rs",
+    "//third_party/rust/chromium_crates_io/vendor/jxl-v0_3/src/render/stages/epf/mod.rs",
+    "//third_party/rust/chromium_crates_io/vendor/jxl-v0_3/src/render/stages/epf/test.rs",
+    "//third_party/rust/chromium_crates_io/vendor/jxl-v0_3/src/render/stages/extend.rs",
+    "//third_party/rust/chromium_crates_io/vendor/jxl-v0_3/src/render/stages/from_linear.rs",
+    "//third_party/rust/chromium_crates_io/vendor/jxl-v0_3/src/render/stages/gaborish.rs",
+    "//third_party/rust/chromium_crates_io/vendor/jxl-v0_3/src/render/stages/mod.rs",
+    "//third_party/rust/chromium_crates_io/vendor/jxl-v0_3/src/render/stages/nearest_neighbor.rs",
+    "//third_party/rust/chromium_crates_io/vendor/jxl-v0_3/src/render/stages/noise.rs",
+    "//third_party/rust/chromium_crates_io/vendor/jxl-v0_3/src/render/stages/patches.rs",
+    "//third_party/rust/chromium_crates_io/vendor/jxl-v0_3/src/render/stages/premultiply_alpha.rs",
+    "//third_party/rust/chromium_crates_io/vendor/jxl-v0_3/src/render/stages/splines.rs",
+    "//third_party/rust/chromium_crates_io/vendor/jxl-v0_3/src/render/stages/spot.rs",
+    "//third_party/rust/chromium_crates_io/vendor/jxl-v0_3/src/render/stages/to_linear.rs",
+    "//third_party/rust/chromium_crates_io/vendor/jxl-v0_3/src/render/stages/upsample.rs",
+    "//third_party/rust/chromium_crates_io/vendor/jxl-v0_3/src/render/stages/xyb.rs",
+    "//third_party/rust/chromium_crates_io/vendor/jxl-v0_3/src/render/stages/ycbcr.rs",
+    "//third_party/rust/chromium_crates_io/vendor/jxl-v0_3/src/render/test.rs",
+    "//third_party/rust/chromium_crates_io/vendor/jxl-v0_3/src/util/atomic_refcell/internal.rs",
+    "//third_party/rust/chromium_crates_io/vendor/jxl-v0_3/src/util/atomic_refcell/mod.rs",
+    "//third_party/rust/chromium_crates_io/vendor/jxl-v0_3/src/util/bits.rs",
+    "//third_party/rust/chromium_crates_io/vendor/jxl-v0_3/src/util/cacheline.rs",
+    "//third_party/rust/chromium_crates_io/vendor/jxl-v0_3/src/util/concat_slice.rs",
+    "//third_party/rust/chromium_crates_io/vendor/jxl-v0_3/src/util/fast_math.rs",
+    "//third_party/rust/chromium_crates_io/vendor/jxl-v0_3/src/util/float16.rs",
+    "//third_party/rust/chromium_crates_io/vendor/jxl-v0_3/src/util/linalg.rs",
+    "//third_party/rust/chromium_crates_io/vendor/jxl-v0_3/src/util/log2.rs",
+    "//third_party/rust/chromium_crates_io/vendor/jxl-v0_3/src/util/mod.rs",
+    "//third_party/rust/chromium_crates_io/vendor/jxl-v0_3/src/util/ndarray.rs",
+    "//third_party/rust/chromium_crates_io/vendor/jxl-v0_3/src/util/rational_poly.rs",
+    "//third_party/rust/chromium_crates_io/vendor/jxl-v0_3/src/util/shift_right_ceil.rs",
+    "//third_party/rust/chromium_crates_io/vendor/jxl-v0_3/src/util/smallvec.rs",
+    "//third_party/rust/chromium_crates_io/vendor/jxl-v0_3/src/util/test.rs",
+    "//third_party/rust/chromium_crates_io/vendor/jxl-v0_3/src/util/tracing_wrappers.rs",
+    "//third_party/rust/chromium_crates_io/vendor/jxl-v0_3/src/util/vec_helpers.rs",
+    "//third_party/rust/chromium_crates_io/vendor/jxl-v0_3/src/util/xorshift128plus.rs",
+  ]
+  inputs = []
+
+  build_native_rust_unit_tests = false
+  edition = "2024"
+  cargo_pkg_authors = "Luca Versari <veluca93@gmail.com>"
+  cargo_pkg_name = "jxl"
+  cargo_pkg_description =
+      "High performance Rust implementation of a JPEG XL decoder"
+  cargo_pkg_repository = "https://github.com/libjxl/jxl-rs"
+  cargo_pkg_version = "0.3.0"
+
+  allow_unsafe = true
+
+  deps = [
+    "//third_party/rust/array_init/v2:lib",
+    "//third_party/rust/byteorder/v1:lib",
+    "//third_party/rust/jxl_macros/v0_3:lib",
+    "//third_party/rust/jxl_simd/v0_3:lib",
+    "//third_party/rust/jxl_transforms/v0_3:lib",
+    "//third_party/rust/num_derive/v0_4:lib",
+    "//third_party/rust/num_traits/v0_2:lib",
+    "//third_party/rust/thiserror/v2:lib",
+  ]
+  features = [ "all-simd" ]
+
+  #####################################################################
+  # Tweaking which GN `config`s apply to this target.
+
+  # Config changes that apply to all `//third_party/rust` crates.
+  _configs_to_remove = [
+    # We don't need code coverage data for any `chromium_crates_io` crates.
+    "//build/config/coverage:default_coverage",
+
+    # This is third-party code, so remove `chromium_code` config.  We are not
+    # at the same time adding `//build/config/compiler:no_chromium_code`,
+    # because 1) we don't want to pull how warnings are handled by that config
+    # and 2) that config doesn't have any non-warnings-related stuff.
+    "//build/config/compiler:chromium_code",
+  ]
+  _configs_to_add = []
+
+  # Changing (if needed) which configs apply to this specific crate (based on
+  # `extra_kv.configs_to_remove` and `extra_kv.configs_to_add` from
+  # `gnrt_config.toml`).
+  _configs_to_remove += [ "//build/config/compiler:default_optimization" ]
+  _configs_to_add += [ "//build/config/compiler:optimize" ]
+
+  # Applying config changes.
+  library_configs -= _configs_to_remove
+  library_configs += _configs_to_add
+  executable_configs -= _configs_to_remove
+  executable_configs += _configs_to_add
+  proc_macro_configs -= _configs_to_remove
+  proc_macro_configs += _configs_to_add
+}

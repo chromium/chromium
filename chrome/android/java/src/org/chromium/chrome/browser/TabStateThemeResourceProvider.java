@@ -8,7 +8,7 @@ import android.content.Context;
 
 import org.chromium.base.Callback;
 import org.chromium.base.ValueChangedCallback;
-import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.compositor.layouts.LayoutManagerImpl;
@@ -26,7 +26,7 @@ import org.chromium.ui.theme.ThemeResourceWrapper;
 @NullMarked
 public class TabStateThemeResourceProvider extends ThemeResourceWrapper {
     private final ActivityTabProvider mActivityTabProvider;
-    private final ObservableSupplier<LayoutManagerImpl> mLayoutManagerSupplier;
+    private final MonotonicObservableSupplier<LayoutManagerImpl> mLayoutManagerSupplier;
     private final LayoutStateObserver mLayoutStateObserver;
     private final Callback<@Nullable Tab> mTabCallback = this::maybeUpdateOverlay;
     private final Callback<LayoutManagerImpl> mLayoutManagerChangeCallback =
@@ -45,7 +45,7 @@ public class TabStateThemeResourceProvider extends ThemeResourceWrapper {
             Context baseContext,
             int resourceId,
             ActivityTabProvider activityTabProvider,
-            ObservableSupplier<LayoutManagerImpl> layoutManagerSupplier) {
+            MonotonicObservableSupplier<LayoutManagerImpl> layoutManagerSupplier) {
         super(baseContext, resourceId);
 
         mActivityTabProvider = activityTabProvider;

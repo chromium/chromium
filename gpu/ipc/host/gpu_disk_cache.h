@@ -17,8 +17,10 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/threading/thread_checker.h"
+#include "base/types/expected.h"
 #include "gpu/ipc/common/gpu_disk_cache_type.h"
 #include "net/base/completion_once_callback.h"
+#include "net/base/net_errors.h"
 #include "net/disk_cache/disk_cache.h"
 
 namespace gpu {
@@ -58,7 +60,8 @@ class GpuDiskCache : public base::RefCounted<GpuDiskCache> {
   // Returns the element count synchronously if available, or
   // net::ERR_IO_PENDING for asynchronous completion via `callback`. Returns
   // net::ERR_FAILED if the cache is not yet available.
-  int32_t Size(net::CompletionOnceCallback callback);
+  using SizeCallback = base::OnceCallback<void(int32_t)>;
+  base::expected<int32_t, net::Error> Size(SizeCallback callback);
 
   // Set a callback notification for when all current entries have been
   // written to the cache.

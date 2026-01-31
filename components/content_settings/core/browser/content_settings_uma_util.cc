@@ -43,7 +43,7 @@ constexpr auto kHistogramValue = base::MakeFixedFlatMap<ContentSettingsType,
     {ContentSettingsType::PROTECTED_MEDIA_IDENTIFIER, 21},
     {ContentSettingsType::APP_BANNER, 22},
     {ContentSettingsType::SITE_ENGAGEMENT, 23},
-    {ContentSettingsType::DURABLE_STORAGE, 24},
+    {ContentSettingsType::PERSISTENT_STORAGE, 24},
     // Removed "Key generation setting"
     {ContentSettingsType::BLUETOOTH_GUARD, 26},
     {ContentSettingsType::BACKGROUND_SYNC, 27},
@@ -115,7 +115,7 @@ constexpr auto kHistogramValue = base::MakeFixedFlatMap<ContentSettingsType,
     {ContentSettingsType::FEDERATED_IDENTITY_IDENTITY_PROVIDER_REGISTRATION,
      95},
     {ContentSettingsType::ANTI_ABUSE, 96},
-    {ContentSettingsType::THIRD_PARTY_STORAGE_PARTITIONING, 97},
+    // Removed THIRD_PARTY_STORAGE_PARTITIONING in M146.
     {ContentSettingsType::HTTPS_ENFORCED, 98},
     {ContentSettingsType::USB_CHOOSER_DATA, 99},
     // The value 100 is assigned to COOKIES!
@@ -141,7 +141,7 @@ constexpr auto kHistogramValue = base::MakeFixedFlatMap<ContentSettingsType,
     {ContentSettingsType::KEYBOARD_LOCK, 120},
     {ContentSettingsType::POINTER_LOCK, 121},
     {ContentSettingsType::REVOKED_ABUSIVE_NOTIFICATION_PERMISSIONS, 122},
-    {ContentSettingsType::TRACKING_PROTECTION, 123},
+    // Removed TRACKING_PROTECTION in M146.
     // Removed TOP_LEVEL_TPCD_ORIGIN_TRIAL in M143.
     {ContentSettingsType::DISPLAY_MEDIA_SYSTEM_AUDIO, 125},
     {ContentSettingsType::JAVASCRIPT_OPTIMIZER, 126},

@@ -1,0 +1,7 @@
+include_rules = [
+  # keep-sorted start
+  "+ios/chrome/browser/authentication/ui_bundled/signin/signin_constants.h",
+  "+ios/chrome/browser/tips_notifications/ui",
+  "+ios/chrome/browser/welcome_back/model",
+  # keep-sorted end
+]

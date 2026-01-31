@@ -14,11 +14,11 @@
 #include "chrome/browser/android/tab_android.h"
 #include "chrome/browser/android/tab_web_contents_delegate_android.h"
 #include "chrome/browser/autofill/personal_data_manager_factory.h"
-#include "chrome/browser/autofill/strike_database_factory.h"
 #include "chrome/browser/device_reauth/chrome_device_authenticator_factory.h"
 #include "chrome/browser/facilitated_payments/ui/android/facilitated_payments_controller.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
+#include "chrome/browser/strike_database/strike_database_factory.h"
 #include "chrome/browser/ui/autofill/risk_util.h"
 #include "components/autofill/core/browser/data_manager/payments/payments_data_manager.h"
 #include "components/autofill/core/browser/data_manager/personal_data_manager.h"
@@ -52,7 +52,11 @@ ChromeFacilitatedPaymentsClient::ChromeFacilitatedPaymentsClient(
   RegisterAllowlists();
 }
 
-ChromeFacilitatedPaymentsClient::~ChromeFacilitatedPaymentsClient() = default;
+ChromeFacilitatedPaymentsClient::~ChromeFacilitatedPaymentsClient() {
+  if (pix_account_linking_manager_) {
+    pix_account_linking_manager_->DismissPrompt();
+  }
+}
 
 void ChromeFacilitatedPaymentsClient::LoadRiskData(
     base::OnceCallback<void(const std::string&)> on_risk_data_loaded_callback) {
@@ -188,7 +192,7 @@ ChromeFacilitatedPaymentsClient::GetStrikeDatabase() {
     return nullptr;
   }
 
-  return autofill::StrikeDatabaseFactory::GetForProfile(profile);
+  return StrikeDatabaseFactory::GetForProfile(profile);
 }
 
 void ChromeFacilitatedPaymentsClient::InitPixAccountLinkingFlow(

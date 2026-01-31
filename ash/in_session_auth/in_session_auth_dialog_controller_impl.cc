@@ -31,6 +31,7 @@
 #include "chromeos/ash/components/login/auth/auth_performer.h"
 #include "chromeos/ash/components/osauth/impl/legacy_auth_surface_registry.h"
 #include "chromeos/ash/components/osauth/impl/request/password_manager_auth_request.h"
+#include "chromeos/ash/components/osauth/impl/request/payments_autofill_auth_request.h"
 #include "chromeos/ash/components/osauth/impl/request/settings_auth_request.h"
 #include "chromeos/ash/components/osauth/public/auth_factor_status_consumer.h"
 #include "chromeos/ash/components/osauth/public/auth_hub.h"
@@ -50,6 +51,7 @@ AuthPurpose InSessionAuthReasonToAuthPurpose(
   switch (reason) {
     case InSessionAuthDialogController::Reason::kAccessPasswordManager:
     case InSessionAuthDialogController::Reason::kAccessMultideviceSettings:
+    case InSessionAuthDialogController::Reason::kAccessAutofillPayments:
       return AuthPurpose::kUserVerification;
     case InSessionAuthDialogController::Reason::kAccessAuthenticationSettings:
       return AuthPurpose::kAuthSettings;
@@ -116,6 +118,11 @@ void InSessionAuthDialogControllerImpl::ShowAuthDialog(
   } else if (reason == Reason::kAccessAuthenticationSettings) {
     Shell::Get()->active_session_auth_controller()->ShowAuthDialog(
         std::make_unique<SettingsAuthRequest>(std::move(on_auth_complete)));
+  } else if (reason == Reason::kAccessAutofillPayments) {
+    CHECK(prompt.has_value());
+    Shell::Get()->active_session_auth_controller()->ShowAuthDialog(
+        std::make_unique<PaymentsAutofillAuthRequest>(
+            base::UTF8ToUTF16(prompt.value()), std::move(on_auth_complete)));
   }
 }
 

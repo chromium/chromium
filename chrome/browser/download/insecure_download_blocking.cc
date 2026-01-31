@@ -24,6 +24,7 @@
 #include "components/download/public/common/download_stats.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/download_item_utils.h"
+#include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/url_constants.h"
 #include "net/base/url_util.h"
@@ -355,8 +356,22 @@ struct InsecureDownloadData {
           !net::IsLocalhost(dl_url);
     }
 
+    // A download is considered initiated from a trusted WebUI (e.g. chrome://)
+    // if either:
+    // 1. The download's Tab URL is a trusted WebUI scheme. This covers cases
+    //    where the user clicked a link on a WebUI page. This URL persists even
+    //    if the user navigates away or closes the tab (in which case the
+    //    RenderFrameHost might be null or point to a different page).
+    // 2. The RenderFrameHost's last committed URL is a trusted WebUI scheme.
+    //    This covers top-level navigations (e.g. typing a file URL in the
+    //    Omnibox on the NTP). In this case, the download's Tab URL reflects the
+    //    pending file URL (not the NTP), so we must rely on the RenderFrameHost
+    //    to identify the initiating context.
+    content::RenderFrameHost* rfh =
+        content::DownloadItemUtils::GetRenderFrameHost(item);
     is_initiated_from_trusted_webui_ =
-        item->GetTabUrl().SchemeIs(content::kChromeUIScheme);
+        item->GetTabUrl().SchemeIs(content::kChromeUIScheme) ||
+        (rfh && rfh->GetLastCommittedURL().SchemeIs(content::kChromeUIScheme));
   }
 
   std::optional<url::Origin> initiator_;
@@ -370,7 +385,12 @@ struct InsecureDownloadData {
   // Was the download initiated by an insecure origin or delivered insecurely?
   bool is_insecure_download_;
   // Was the download initiated from a trusted WebUI page (chrome://...)?
-  // This can happen, e.g., if user saves a HTTP link from chrome://history.
+  // This can happen in the following cases:
+  // 1) Clicking on a HTTP downloadable link on a WebUI page (e.g. NTP or
+  //    chrome://history).
+  // 2) Right clicking "Save Link As..." to a HTTP link on a WebUI page.
+  // 3) Top-level navigation to a downloadable HTTP URL initiated from a WebUI
+  //    page (e.g. typing a file URL in the Omnibox on NTP).
   bool is_initiated_from_trusted_webui_;
 };
 

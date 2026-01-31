@@ -125,7 +125,7 @@ public class PwaRestoreBottomSheetIntegrationTest {
         // At the beginning, there should be no signal, but at the end we should be ready to show
         // the promo during the next launch (see `testSecondLaunchAfterBeingNotified`).
         assertCurrentFlag(sFlagValueMissing);
-        mActivityTestRule.startFromLauncherTo().pickUpCarryOn(new PwaRestoreHiddenCarryOn());
+        mActivityTestRule.startFromLauncherTo().enterState(new PwaRestoreHiddenCarryOn());
         assertCurrentFlag(DisplayStage.SHOW_PROMO);
     }
 
@@ -139,7 +139,7 @@ public class PwaRestoreBottomSheetIntegrationTest {
         setAppsAvailableAndPromoStage(true, DisplayStage.SHOW_PROMO);
 
         assertCurrentFlag(DisplayStage.SHOW_PROMO);
-        mActivityTestRule.startFromLauncherTo().pickUpCarryOn(new PwaRestoreCarryOn());
+        mActivityTestRule.startFromLauncherTo().enterState(new PwaRestoreCarryOn());
         assertCurrentFlag(DisplayStage.ALREADY_LAUNCHED);
     }
 
@@ -153,7 +153,7 @@ public class PwaRestoreBottomSheetIntegrationTest {
         setAppsAvailableAndPromoStage(false, DisplayStage.SHOW_PROMO);
 
         assertCurrentFlag(DisplayStage.SHOW_PROMO);
-        mActivityTestRule.startFromLauncherTo().pickUpCarryOn(new PwaRestoreHiddenCarryOn());
+        mActivityTestRule.startFromLauncherTo().enterState(new PwaRestoreHiddenCarryOn());
         assertCurrentFlag(DisplayStage.NO_APPS_AVAILABLE);
     }
 
@@ -166,7 +166,7 @@ public class PwaRestoreBottomSheetIntegrationTest {
         setAppsAvailableAndPromoStage(true, DisplayStage.ALREADY_LAUNCHED);
 
         assertCurrentFlag(DisplayStage.ALREADY_LAUNCHED);
-        mActivityTestRule.startFromLauncherTo().pickUpCarryOn(new PwaRestoreHiddenCarryOn());
+        mActivityTestRule.startFromLauncherTo().enterState(new PwaRestoreHiddenCarryOn());
         assertCurrentFlag(DisplayStage.ALREADY_LAUNCHED);
     }
 
@@ -181,7 +181,7 @@ public class PwaRestoreBottomSheetIntegrationTest {
         mPreferences.writeBoolean(ChromePreferenceKeys.PWA_RESTORE_APPS_AVAILABLE, true);
 
         assertCurrentFlag(sFlagValueMissing);
-        mActivityTestRule.startFromLauncherTo().pickUpCarryOn(new PwaRestoreHiddenCarryOn());
+        mActivityTestRule.startFromLauncherTo().enterState(new PwaRestoreHiddenCarryOn());
         assertCurrentFlag(DisplayStage.PRE_EXISTING_PROFILE);
     }
 
@@ -194,7 +194,7 @@ public class PwaRestoreBottomSheetIntegrationTest {
         setAppsAvailableAndPromoStage(true, DisplayStage.PRE_EXISTING_PROFILE);
 
         assertCurrentFlag(DisplayStage.PRE_EXISTING_PROFILE);
-        mActivityTestRule.startFromLauncherTo().pickUpCarryOn(new PwaRestoreHiddenCarryOn());
+        mActivityTestRule.startFromLauncherTo().enterState(new PwaRestoreHiddenCarryOn());
         assertCurrentFlag(DisplayStage.PRE_EXISTING_PROFILE);
     }
 
@@ -214,7 +214,7 @@ public class PwaRestoreBottomSheetIntegrationTest {
 
         // Start from launched and verify we're in initial state for the dialog.
         PwaRestoreCarryOn pwaRestore =
-                mActivityTestRule.startFromLauncherTo().pickUpCarryOn(new PwaRestoreCarryOn());
+                mActivityTestRule.startFromLauncherTo().enterState(new PwaRestoreCarryOn());
 
         // Go to PWA list mode.
         PwaReviewCarryOn pwaReview = pwaRestore.clickReview();
@@ -223,7 +223,7 @@ public class PwaRestoreBottomSheetIntegrationTest {
         pwaRestore = pwaReview.pressBackToReturn();
 
         // Pressing the Back button again should close the bottom sheet.
-        pwaRestore.pressBackTo().dropCarryOn();
+        pwaRestore.pressBackTo().exitState();
     }
 
     @Test
@@ -239,7 +239,7 @@ public class PwaRestoreBottomSheetIntegrationTest {
         PwaReviewCarryOn pwaReview =
                 mActivityTestRule
                         .startFromLauncherTo()
-                        .pickUpCarryOn(new PwaRestoreCarryOn())
+                        .enterState(new PwaRestoreCarryOn())
                         .clickReview();
 
         PwaReviewAppEntryCarryOn appEntry = pwaReview.focusOnEntry("App 1");
@@ -256,7 +256,7 @@ public class PwaRestoreBottomSheetIntegrationTest {
         setAppsAvailableAndPromoStage(true, DisplayStage.SHOW_PROMO);
 
         PwaRestoreCarryOn pwaRestore =
-                mActivityTestRule.startFromLauncherTo().pickUpCarryOn(new PwaRestoreCarryOn());
+                mActivityTestRule.startFromLauncherTo().enterState(new PwaRestoreCarryOn());
 
         // Ensure Deselect and Restore buttons are disabled (nothing to act on).
         PwaReviewCarryOn pwaReview = pwaRestore.clickReview();
@@ -276,7 +276,7 @@ public class PwaRestoreBottomSheetIntegrationTest {
         setAppsAvailableAndPromoStage(true, DisplayStage.SHOW_PROMO);
 
         PwaRestoreCarryOn pwaRestore =
-                mActivityTestRule.startFromLauncherTo().pickUpCarryOn(new PwaRestoreCarryOn());
+                mActivityTestRule.startFromLauncherTo().enterState(new PwaRestoreCarryOn());
 
         // Deselect and Restore buttons should start in enabled state.
         PwaReviewCarryOn pwaReview = pwaRestore.clickReview();
@@ -338,14 +338,14 @@ public class PwaRestoreBottomSheetIntegrationTest {
         PwaReviewCarryOn pwaReview =
                 mActivityTestRule
                         .startFromLauncherTo()
-                        .pickUpCarryOn(new PwaRestoreCarryOn())
+                        .enterState(new PwaRestoreCarryOn())
                         .clickReview();
 
         pwaReview
                 .restoreButtonElement
                 .clickTo()
-                .dropCarryOnAnd()
-                .pickUpCarryOn(new PwaRestoreHiddenCarryOn());
+                .exitStateAnd()
+                .enterState(new PwaRestoreHiddenCarryOn());
     }
 
     @Test
@@ -353,7 +353,7 @@ public class PwaRestoreBottomSheetIntegrationTest {
     @Feature({"PwaRestore"})
     @DisableFeatures({ChromeFeatureList.PWA_RESTORE_UI_AT_STARTUP})
     public void testForceFlagOff() {
-        mActivityTestRule.startFromLauncherTo().pickUpCarryOn(new PwaRestoreHiddenCarryOn());
+        mActivityTestRule.startFromLauncherTo().enterState(new PwaRestoreHiddenCarryOn());
     }
 
     @Test
@@ -361,7 +361,7 @@ public class PwaRestoreBottomSheetIntegrationTest {
     @Feature({"PwaRestore"})
     @EnableFeatures({ChromeFeatureList.PWA_RESTORE_UI_AT_STARTUP})
     public void testForceFlagOn() {
-        mActivityTestRule.startFromLauncherTo().pickUpCarryOn(new PwaRestoreCarryOn());
+        mActivityTestRule.startFromLauncherTo().enterState(new PwaRestoreCarryOn());
     }
 
     private void setAppsAvailableAndPromoStage(boolean appsAvailable, @DisplayStage int value) {

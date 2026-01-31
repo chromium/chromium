@@ -7,6 +7,7 @@
 #include "base/rand_util.h"
 #include "base/time/default_tick_clock.h"
 #include "base/trace_event/trace_event.h"
+#include "third_party/perfetto/include/perfetto/tracing/track_event_args.h"
 
 namespace viz {
 
@@ -38,22 +39,21 @@ bool ChildLocalSurfaceIdAllocator::UpdateFromParent(
     // is actually a new LocalSurfaceId and so we report its allocation time
     // as now.
     if (current_local_surface_id != parent_allocated_local_surface_id) {
-      TRACE_EVENT_WITH_FLOW2(
+      TRACE_EVENT(
           TRACE_DISABLED_BY_DEFAULT("viz.surface_id_flow"),
           "ChildLocalSurfaceIdAllocator::UpdateFromParent New Id Allocation",
-          TRACE_ID_LOCAL(
+          perfetto::Flow::ProcessScoped(
               parent_allocated_local_surface_id.submission_trace_id()),
-          TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT, "current",
-          current_local_surface_id_.ToString(), "parent",
+          "current", current_local_surface_id_.ToString(), "parent",
           parent_local_surface_id.ToString());
     }
   } else if (current_local_surface_id != parent_allocated_local_surface_id) {
-    TRACE_EVENT_WITH_FLOW2(
+    TRACE_EVENT(
         TRACE_DISABLED_BY_DEFAULT("viz.surface_id_flow"),
         "ChildLocalSurfaceIdAllocator::UpdateFromParent Synchronization",
-        TRACE_ID_LOCAL(parent_allocated_local_surface_id.submission_trace_id()),
-        TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT, "current",
-        current_local_surface_id_.ToString(), "parent",
+        perfetto::Flow::ProcessScoped(
+            parent_allocated_local_surface_id.submission_trace_id()),
+        "current", current_local_surface_id_.ToString(), "parent",
         parent_local_surface_id.ToString());
   }
 
@@ -80,19 +80,17 @@ void ChildLocalSurfaceIdAllocator::GenerateId() {
 
   ++current_local_surface_id_.child_sequence_number_;
 
-  TRACE_EVENT_WITH_FLOW2(
+  TRACE_EVENT(
       TRACE_DISABLED_BY_DEFAULT("viz.surface_id_flow"),
       "LocalSurfaceId.Embed.Flow",
-      TRACE_ID_GLOBAL(current_local_surface_id_.embed_trace_id()),
-      TRACE_EVENT_FLAG_FLOW_OUT, "step",
-      "ChildLocalSurfaceIdAllocator::GenerateId", "local_surface_id",
+      perfetto::Flow::Global(current_local_surface_id_.embed_trace_id()),
+      "step", "ChildLocalSurfaceIdAllocator::GenerateId", "local_surface_id",
       current_local_surface_id_.ToString());
-  TRACE_EVENT_WITH_FLOW2(
+  TRACE_EVENT(
       TRACE_DISABLED_BY_DEFAULT("viz.surface_id_flow"),
       "LocalSurfaceId.Submission.Flow",
-      TRACE_ID_GLOBAL(current_local_surface_id_.submission_trace_id()),
-      TRACE_EVENT_FLAG_FLOW_OUT, "step",
-      "ChildLocalSurfaceIdAllocator::GenerateId", "local_surface_id",
+      perfetto::Flow::Global(current_local_surface_id_.submission_trace_id()),
+      "step", "ChildLocalSurfaceIdAllocator::GenerateId", "local_surface_id",
       current_local_surface_id_.ToString());
 }
 

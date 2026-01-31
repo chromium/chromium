@@ -7,13 +7,15 @@ package org.chromium.chrome.test.memory_leaks;
 import androidx.test.core.app.ApplicationProvider;
 import androidx.test.filters.LargeTest;
 
+import org.junit.After;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
-import org.chromium.base.test.util.Features.DisableFeatures;
+import org.chromium.base.test.util.DisableIf;
+import org.chromium.base.test.util.ImportantFormFactors;
 import org.chromium.base.test.util.LeakCanaryChecker.EnableLeakChecks;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.customtabs.CustomTabsIntentTestUtils;
@@ -31,7 +33,7 @@ import java.util.concurrent.TimeoutException;
 /** Tests the behavior of {@link ChromeFeatureList} in instrumentation tests. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
-@DisableFeatures({ChromeFeatureList.SETTINGS_MULTI_COLUMN})
+@ImportantFormFactors(DeviceFormFactor.TABLET_OR_DESKTOP)
 @Batch(Batch.PER_CLASS)
 @EnableLeakChecks
 public class PublicTransitLeakTest {
@@ -40,6 +42,11 @@ public class PublicTransitLeakTest {
             ChromeTransitTestRules.freshChromeTabbedActivityRule();
 
     @Rule public CctTransitTestRule mCustomTabActivityTestRule = new CctTransitTestRule();
+
+    @After
+    public void tearDown() {
+        mChromeTabbedActivityTestRule.closeAllWindowsAndDeleteInstanceAndTabState();
+    }
 
     @Test
     @LargeTest
@@ -70,6 +77,8 @@ public class PublicTransitLeakTest {
 
     @Test
     @LargeTest
+    // For some reason, this test is flaky on desktop.
+    @DisableIf.Device(DeviceFormFactor.DESKTOP)
     public void searchActivityTest() {
         var page = mChromeTabbedActivityTestRule.startOnBlankPage();
         var activity = mChromeTabbedActivityTestRule.getActivity();
@@ -87,5 +96,21 @@ public class PublicTransitLeakTest {
                         mChromeTabbedActivityTestRule
                                 .getTestServer()
                                 .getURL("/chrome/test/data/android/google.html")));
+    }
+
+    @Test
+    @LargeTest
+    public void omniboxTest() {
+        var page = mChromeTabbedActivityTestRule.startOnBlankPage();
+        var omnibox = page.openOmnibox();
+        omnibox.pressBackTo().exitFacility();
+    }
+
+    @Test
+    @LargeTest
+    public void ntpAndIncognitoNtpTest() {
+        var page = mChromeTabbedActivityTestRule.startOnBlankPage();
+        var ntp = page.openNewTabFast();
+        ntp.openNewIncognitoTabOrWindowFast();
     }
 }

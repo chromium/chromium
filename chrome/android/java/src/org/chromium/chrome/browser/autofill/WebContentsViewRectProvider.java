@@ -7,7 +7,9 @@ package org.chromium.chrome.browser.autofill;
 import android.graphics.Rect;
 
 import org.chromium.base.Callback;
-import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.MonotonicObservableSupplier;
+import org.chromium.base.supplier.NonNullObservableSupplier;
+import org.chromium.base.supplier.SupplierUtils;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.fullscreen.BrowserControlsManager;
@@ -15,8 +17,6 @@ import org.chromium.chrome.browser.keyboard_accessory.ManualFillingComponent;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.ViewAndroidDelegate;
 import org.chromium.ui.widget.RectProvider;
-
-import java.util.function.Supplier;
 
 /**
  * Helper class that computes the visible rect of a given {@link WebContents} objects. It observes
@@ -33,31 +33,36 @@ import java.util.function.Supplier;
 @NullMarked
 class WebContentsViewRectProvider extends RectProvider {
     private final WebContents mWebContents;
-    private @Nullable ObservableSupplier<BrowserControlsManager> mBrowserControlsSupplier;
-    private @Nullable ObservableSupplier<ManualFillingComponent> mManualFillingComponentSupplier;
-    private @Nullable ObservableSupplier<Integer> mBottomInsetSupplier;
+    private @Nullable MonotonicObservableSupplier<BrowserControlsManager> mBrowserControlsSupplier;
+    private @Nullable MonotonicObservableSupplier<ManualFillingComponent>
+            mManualFillingComponentSupplier;
+    private @Nullable NonNullObservableSupplier<Integer> mBottomInsetSupplier;
 
     private final Callback<ManualFillingComponent> mOnManualFillingComponentChanged =
             fillComponent -> observeBottomInsetSupplier(fillComponent.getBottomInsetSupplier());
     private final Callback<Integer> mOnBottomInsetChanged =
             bottomInset ->
                     updateVisibleRectForPopup(
-                            bottomInset, getValueOrNull(mBrowserControlsSupplier));
+                            bottomInset, SupplierUtils.getOrNull(mBrowserControlsSupplier));
     private final Callback<BrowserControlsManager> mOnBrowserControlsChanged =
-            ctrlMgr -> updateVisibleRectForPopup(getValueOrNull(mBottomInsetSupplier), ctrlMgr);
+            ctrlMgr ->
+                    updateVisibleRectForPopup(
+                            SupplierUtils.getOrNull(mBottomInsetSupplier), ctrlMgr);
 
     /**
      * Creates a new RectProvider and starts observing given parameters. If they provide a valid
      * rect, it's immediately computed.
      *
      * @param webContents A required, non-null {@link WebContents} object.
-     * @param browserControlsSupplier A {@link ObservableSupplier<BrowserControlsManager>}.
-     * @param manualFillingComponentSupplier A {@link ObservableSupplier<ManualFillingComponent>}.
+     * @param browserControlsSupplier A {@link MonotonicObservableSupplier
+     *     <BrowserControlsManager>}.
+     * @param manualFillingComponentSupplier A {@link MonotonicObservableSupplier
+     *     <ManualFillingComponent>}.
      */
     public WebContentsViewRectProvider(
             WebContents webContents,
-            ObservableSupplier<BrowserControlsManager> browserControlsSupplier,
-            ObservableSupplier<ManualFillingComponent> manualFillingComponentSupplier) {
+            MonotonicObservableSupplier<BrowserControlsManager> browserControlsSupplier,
+            MonotonicObservableSupplier<ManualFillingComponent> manualFillingComponentSupplier) {
         assert webContents != null;
         assert webContents.getViewAndroidDelegate() != null;
         assert webContents.getViewAndroidDelegate().getContainerView() != null;
@@ -74,7 +79,7 @@ class WebContentsViewRectProvider extends RectProvider {
     }
 
     private void observeBrowserControlsSupplier(
-            @Nullable ObservableSupplier<BrowserControlsManager> supplier) {
+            @Nullable MonotonicObservableSupplier<BrowserControlsManager> supplier) {
         if (mBrowserControlsSupplier != null) {
             mBrowserControlsSupplier.removeObserver(mOnBrowserControlsChanged);
         }
@@ -83,26 +88,24 @@ class WebContentsViewRectProvider extends RectProvider {
             mBrowserControlsSupplier.addObserver(mOnBrowserControlsChanged);
         }
         updateVisibleRectForPopup(
-                getValueOrNull(mBottomInsetSupplier), getValueOrNull(mBrowserControlsSupplier));
+                SupplierUtils.getOrNull(mBottomInsetSupplier),
+                SupplierUtils.getOrNull(mBrowserControlsSupplier));
     }
 
     private void observeManualFillingComponentSupplier(
-            @Nullable ObservableSupplier<ManualFillingComponent> supplier) {
+            @Nullable MonotonicObservableSupplier<ManualFillingComponent> supplier) {
         if (mManualFillingComponentSupplier != null) {
             observeBottomInsetSupplier(null);
             mManualFillingComponentSupplier.removeObserver(mOnManualFillingComponentChanged);
         }
         mManualFillingComponentSupplier = supplier;
         if (mManualFillingComponentSupplier != null) {
-            mManualFillingComponentSupplier.addObserver(mOnManualFillingComponentChanged);
-            observeBottomInsetSupplier(
-                    mManualFillingComponentSupplier.get() != null
-                            ? mManualFillingComponentSupplier.get().getBottomInsetSupplier()
-                            : null);
+            mManualFillingComponentSupplier.addSyncObserverAndCallIfNonNull(
+                    mOnManualFillingComponentChanged);
         }
     }
 
-    private void observeBottomInsetSupplier(@Nullable ObservableSupplier<Integer> supplier) {
+    private void observeBottomInsetSupplier(@Nullable NonNullObservableSupplier<Integer> supplier) {
         if (mBottomInsetSupplier != null) {
             mBottomInsetSupplier.removeObserver(mOnBottomInsetChanged);
         }
@@ -111,7 +114,8 @@ class WebContentsViewRectProvider extends RectProvider {
             mBottomInsetSupplier.addObserver(mOnBottomInsetChanged);
         }
         updateVisibleRectForPopup(
-                getValueOrNull(mBottomInsetSupplier), getValueOrNull(mBrowserControlsSupplier));
+                SupplierUtils.getOrNull(mBottomInsetSupplier),
+                SupplierUtils.getOrNull(mBrowserControlsSupplier));
     }
 
     private void updateVisibleRectForPopup(
@@ -130,9 +134,5 @@ class WebContentsViewRectProvider extends RectProvider {
         if (bottomInset != null) rect.bottom -= bottomInset;
 
         if (!mRect.equals(rect)) setRect(rect); // Update and notify only if the rect changes.
-    }
-
-    private static @Nullable <T> T getValueOrNull(@Nullable Supplier<T> supplier) {
-        return supplier != null ? supplier.get() : null;
     }
 }

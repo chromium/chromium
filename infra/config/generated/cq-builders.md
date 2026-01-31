@@ -93,18 +93,6 @@ builder.
   Location filters:
   * [`//infra/config/generated/cq-usage/full.cfg`](https://cs.chromium.org/search?q=+file:infra/config/generated/cq-usage/full.cfg)
 
-* [linux-bluebird-rel](https://ci.chromium.org/p/chrome/builders/try/linux-bluebird-rel) ([definition](https://source.corp.google.com/search?q=+file:/try/.*\.star$+""linux-bluebird-rel""))
-
-  Location filters:
-  * [`//chrome/browser/actor/.+`](https://cs.chromium.org/chromium/src/chrome/browser/actor/)
-  * [`//chrome/browser/glic/.+`](https://cs.chromium.org/chromium/src/chrome/browser/glic/)
-  * [`//chrome/common/actor/.+`](https://cs.chromium.org/chromium/src/chrome/common/actor/)
-  * [`//chrome/renderer/actor/.+`](https://cs.chromium.org/chromium/src/chrome/renderer/actor/)
-  * [`//chrome/test/data/actor/.+`](https://cs.chromium.org/chromium/src/chrome/test/data/actor/)
-
-  This builder is only run when the CL owner is in the group:
-  * [`google/glic-internal-cq@google.com`](https://chrome-infra-auth.appspot.com/auth/lookup?p=google/glic-internal-cq@google.com)
-
 * [optimization_guide-linux](https://ci.chromium.org/p/chrome/builders/try/optimization_guide-linux) ([definition](https://source.corp.google.com/search?q=+file:/try/.*\.star$+""optimization_guide-linux""))
 
   Location filters:
@@ -288,8 +276,8 @@ builder.
   Location filters:
   * [`//cc/.+`](https://cs.chromium.org/chromium/src/cc/)
   * [`//chrome/browser/vr/.+`](https://cs.chromium.org/chromium/src/chrome/browser/vr/)
-  * [`//content/browser/xr/.+`](https://cs.chromium.org/chromium/src/content/browser/xr/)
   * [`//components/viz/.+`](https://cs.chromium.org/chromium/src/components/viz/)
+  * [`//content/browser/xr/.+`](https://cs.chromium.org/chromium/src/content/browser/xr/)
   * [`//content/test/data/gpu/.+`](https://cs.chromium.org/chromium/src/content/test/data/gpu/)
   * [`//content/test/gpu/.+`](https://cs.chromium.org/chromium/src/content/test/gpu/)
   * [`//gpu/.+`](https://cs.chromium.org/chromium/src/gpu/)
@@ -302,7 +290,6 @@ builder.
   * [`//media/renderers/.+`](https://cs.chromium.org/chromium/src/media/renderers/)
   * [`//media/video/.+`](https://cs.chromium.org/chromium/src/media/video/)
   * [`//services/viz/.+`](https://cs.chromium.org/chromium/src/services/viz/)
-  * [`//testing/buildbot/tryserver.chromium.android.json`](https://cs.chromium.org/search?q=+file:testing/buildbot/tryserver.chromium.android.json)
   * [`//testing/trigger_scripts/.+`](https://cs.chromium.org/chromium/src/testing/trigger_scripts/)
   * [`//third_party/blink/renderer/modules/mediastream/.+`](https://cs.chromium.org/chromium/src/third_party/blink/renderer/modules/mediastream/)
   * [`//third_party/blink/renderer/modules/webcodecs/.+`](https://cs.chromium.org/chromium/src/third_party/blink/renderer/modules/webcodecs/)
@@ -481,8 +468,8 @@ builder.
   Location filters:
   * [`//cc/.+`](https://cs.chromium.org/chromium/src/cc/)
   * [`//chrome/browser/vr/.+`](https://cs.chromium.org/chromium/src/chrome/browser/vr/)
-  * [`//content/browser/xr/.+`](https://cs.chromium.org/chromium/src/content/browser/xr/)
   * [`//components/viz/.+`](https://cs.chromium.org/chromium/src/components/viz/)
+  * [`//content/browser/xr/.+`](https://cs.chromium.org/chromium/src/content/browser/xr/)
   * [`//content/test/data/gpu/.+`](https://cs.chromium.org/chromium/src/content/test/data/gpu/)
   * [`//content/test/gpu/.+`](https://cs.chromium.org/chromium/src/content/test/gpu/)
   * [`//gpu/.+`](https://cs.chromium.org/chromium/src/gpu/)
@@ -495,6 +482,33 @@ builder.
   * [`//media/renderers/.+`](https://cs.chromium.org/chromium/src/media/renderers/)
   * [`//media/video/.+`](https://cs.chromium.org/chromium/src/media/video/)
   * [`//services/viz/.+`](https://cs.chromium.org/chromium/src/services/viz/)
+  * [`//testing/trigger_scripts/.+`](https://cs.chromium.org/chromium/src/testing/trigger_scripts/)
+  * [`//third_party/blink/renderer/modules/mediastream/.+`](https://cs.chromium.org/chromium/src/third_party/blink/renderer/modules/mediastream/)
+  * [`//third_party/blink/renderer/modules/webcodecs/.+`](https://cs.chromium.org/chromium/src/third_party/blink/renderer/modules/webcodecs/)
+  * [`//third_party/blink/renderer/modules/webgl/.+`](https://cs.chromium.org/chromium/src/third_party/blink/renderer/modules/webgl/)
+  * [`//third_party/blink/renderer/modules/webgpu/.+`](https://cs.chromium.org/chromium/src/third_party/blink/renderer/modules/webgpu/)
+  * [`//third_party/blink/renderer/platform/graphics/gpu/.+`](https://cs.chromium.org/chromium/src/third_party/blink/renderer/platform/graphics/gpu/)
+  * [`//tools/clang/scripts/update.py`](https://cs.chromium.org/search?q=+file:tools/clang/scripts/update.py)
+  * [`//ui/gl/.+`](https://cs.chromium.org/chromium/src/ui/gl/)
+  * exclude: [`//.*\.md`](https://cs.chromium.org/search?q=+file:.*\.md)
+
+* [gpu-fyi-cq-mac-arm64](https://ci.chromium.org/p/chromium/builders/try/gpu-fyi-cq-mac-arm64) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""gpu-fyi-cq-mac-arm64""))
+
+  Location filters:
+  * [`//chrome/browser/vr/.+`](https://cs.chromium.org/chromium/src/chrome/browser/vr/)
+  * [`//content/browser/xr/.+`](https://cs.chromium.org/chromium/src/content/browser/xr/)
+  * [`//content/test/data/gpu/.+`](https://cs.chromium.org/chromium/src/content/test/data/gpu/)
+  * [`//content/test/gpu/.+`](https://cs.chromium.org/chromium/src/content/test/gpu/)
+  * [`//gpu/.+`](https://cs.chromium.org/chromium/src/gpu/)
+  * [`//media/audio/.+`](https://cs.chromium.org/chromium/src/media/audio/)
+  * [`//media/base/.+`](https://cs.chromium.org/chromium/src/media/base/)
+  * [`//media/capture/.+`](https://cs.chromium.org/chromium/src/media/capture/)
+  * [`//media/filters/.+`](https://cs.chromium.org/chromium/src/media/filters/)
+  * [`//media/gpu/.+`](https://cs.chromium.org/chromium/src/media/gpu/)
+  * [`//media/mojo/.+`](https://cs.chromium.org/chromium/src/media/mojo/)
+  * [`//media/renderers/.+`](https://cs.chromium.org/chromium/src/media/renderers/)
+  * [`//media/video/.+`](https://cs.chromium.org/chromium/src/media/video/)
+  * [`//services/shape_detection/.+`](https://cs.chromium.org/chromium/src/services/shape_detection/)
   * [`//testing/trigger_scripts/.+`](https://cs.chromium.org/chromium/src/testing/trigger_scripts/)
   * [`//third_party/blink/renderer/modules/mediastream/.+`](https://cs.chromium.org/chromium/src/third_party/blink/renderer/modules/mediastream/)
   * [`//third_party/blink/renderer/modules/webcodecs/.+`](https://cs.chromium.org/chromium/src/third_party/blink/renderer/modules/webcodecs/)
@@ -543,6 +557,16 @@ builder.
   * [`//components/cast_streaming/.+`](https://cs.chromium.org/chromium/src/components/cast_streaming/)
   * [`//third_party/cast_core/.+`](https://cs.chromium.org/chromium/src/third_party/cast_core/)
   * [`//third_party/openscreen/.+`](https://cs.chromium.org/chromium/src/third_party/openscreen/)
+  * [`//ui/events/platform/platform_event_dispatcher\.h`](https://cs.chromium.org/search?q=+file:ui/events/platform/platform_event_dispatcher\.h)
+  * [`//ui/gfx/client_native_pixmap\.h`](https://cs.chromium.org/search?q=+file:ui/gfx/client_native_pixmap\.h)
+  * [`//ui/gfx/client_native_pixmap_factory\.h`](https://cs.chromium.org/search?q=+file:ui/gfx/client_native_pixmap_factory\.h)
+  * [`//ui/gl/gl_surface_egl\.h`](https://cs.chromium.org/search?q=+file:ui/gl/gl_surface_egl\.h)
+  * [`//ui/ozone/common/gl_ozone_egl\.h`](https://cs.chromium.org/search?q=+file:ui/ozone/common/gl_ozone_egl\.h)
+  * [`//ui/ozone/platform/cast/.+`](https://cs.chromium.org/chromium/src/ui/ozone/platform/cast/)
+  * [`//ui/platform_window/stub/stub_window\.h`](https://cs.chromium.org/search?q=+file:ui/platform_window/stub/stub_window\.h)
+  * [`//ui/ozone/public/overlay_manager_ozone\.h`](https://cs.chromium.org/search?q=+file:ui/ozone/public/overlay_manager_ozone\.h)
+  * [`//ui/ozone/public/ozone_platform\.h`](https://cs.chromium.org/search?q=+file:ui/ozone/public/ozone_platform\.h)
+  * [`//ui/ozone/public/surface_factory_ozone\.h`](https://cs.chromium.org/search?q=+file:ui/ozone/public/surface_factory_ozone\.h)
 
 * [linux-cast-x64-dbg](https://ci.chromium.org/p/chromium/builders/try/linux-cast-x64-dbg) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""linux-cast-x64-dbg""))
 
@@ -599,6 +623,11 @@ builder.
 
   Location filters:
   * [`//.*\.(js|ts)`](https://cs.chromium.org/search?q=+file:.*\.(js|ts))
+
+* [linux-metadata-validator](https://ci.chromium.org/p/chromium/builders/try/linux-metadata-validator) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""linux-metadata-validator""))
+
+  Location filters:
+  * [`//.*/README\.(chromium|angle|pdfium|crashpad|skia|swarming|v8|webrtc|google|libaom)`](https://cs.chromium.org/search?q=+file:.*/README\.(chromium|angle|pdfium|crashpad|skia|swarming|v8|webrtc|google|libaom))
 
 * [linux-oi-rel](https://ci.chromium.org/p/chromium/builders/try/linux-oi-rel) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""linux-oi-rel""))
 
@@ -738,7 +767,6 @@ builder.
   * [`//media/mojo/.+`](https://cs.chromium.org/chromium/src/media/mojo/)
   * [`//media/renderers/.+`](https://cs.chromium.org/chromium/src/media/renderers/)
   * [`//media/video/.+`](https://cs.chromium.org/chromium/src/media/video/)
-  * [`//testing/buildbot/tryserver.chromium.linux.json`](https://cs.chromium.org/search?q=+file:testing/buildbot/tryserver.chromium.linux.json)
   * [`//testing/trigger_scripts/.+`](https://cs.chromium.org/chromium/src/testing/trigger_scripts/)
   * [`//third_party/blink/renderer/modules/mediastream/.+`](https://cs.chromium.org/chromium/src/third_party/blink/renderer/modules/mediastream/)
   * [`//third_party/blink/renderer/modules/webcodecs/.+`](https://cs.chromium.org/chromium/src/third_party/blink/renderer/modules/webcodecs/)
@@ -798,7 +826,6 @@ builder.
   * [`//media/renderers/.+`](https://cs.chromium.org/chromium/src/media/renderers/)
   * [`//media/video/.+`](https://cs.chromium.org/chromium/src/media/video/)
   * [`//services/shape_detection/.+`](https://cs.chromium.org/chromium/src/services/shape_detection/)
-  * [`//testing/buildbot/tryserver.chromium.mac.json`](https://cs.chromium.org/search?q=+file:testing/buildbot/tryserver.chromium.mac.json)
   * [`//testing/trigger_scripts/.+`](https://cs.chromium.org/chromium/src/testing/trigger_scripts/)
   * [`//third_party/blink/renderer/modules/mediastream/.+`](https://cs.chromium.org/chromium/src/third_party/blink/renderer/modules/mediastream/)
   * [`//third_party/blink/renderer/modules/webcodecs/.+`](https://cs.chromium.org/chromium/src/third_party/blink/renderer/modules/webcodecs/)
@@ -900,10 +927,9 @@ builder.
   * [`//media/video/.+`](https://cs.chromium.org/chromium/src/media/video/)
   * [`//services/on_device_model/.+`](https://cs.chromium.org/chromium/src/services/on_device_model/)
   * [`//services/webnn/.+`](https://cs.chromium.org/chromium/src/services/webnn/)
-  * [`//testing/buildbot/tryserver.chromium.win.json`](https://cs.chromium.org/search?q=+file:testing/buildbot/tryserver.chromium.win.json)
   * [`//testing/trigger_scripts/.+`](https://cs.chromium.org/chromium/src/testing/trigger_scripts/)
-  * [`//third_party/blink/renderer/modules/vr/.+`](https://cs.chromium.org/chromium/src/third_party/blink/renderer/modules/vr/)
   * [`//third_party/blink/renderer/modules/mediastream/.+`](https://cs.chromium.org/chromium/src/third_party/blink/renderer/modules/mediastream/)
+  * [`//third_party/blink/renderer/modules/vr/.+`](https://cs.chromium.org/chromium/src/third_party/blink/renderer/modules/vr/)
   * [`//third_party/blink/renderer/modules/webcodecs/.+`](https://cs.chromium.org/chromium/src/third_party/blink/renderer/modules/webcodecs/)
   * [`//third_party/blink/renderer/modules/webgl/.+`](https://cs.chromium.org/chromium/src/third_party/blink/renderer/modules/webgl/)
   * [`//third_party/blink/renderer/modules/webgpu/.+`](https://cs.chromium.org/chromium/src/third_party/blink/renderer/modules/webgpu/)

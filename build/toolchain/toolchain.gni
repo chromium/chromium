@@ -41,7 +41,7 @@ declare_args() {
 }
 
 declare_args() {
-  clang_version = "22"
+  clang_version = "23"
 }
 
 # Extension for shared library files (including leading dot).

@@ -3,6 +3,8 @@
 // found in the LICENSE file.
 
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/renderer/core/frame/local_frame.h"
+#include "third_party/blink/renderer/core/html/html_iframe_element.h"
 #include "third_party/blink/renderer/core/layout/layout_embedded_content.h"
 #include "third_party/blink/renderer/core/layout/layout_text.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
@@ -271,6 +273,267 @@ TEST_P(VisualRectMappingTest, LayoutInlineContainerFlippedWritingMode) {
       leaf->MapToVisualRectInAncestorSpace(container, rect, kEdgeInclusive));
   rect.Move(-PhysicalOffset(container->ScrolledContentOffset()));
   EXPECT_EQ(rect, PhysicalRect(0, 10, 80, 0));
+}
+
+TEST_P(VisualRectMappingTest, SkipAncestorAndViewportClipFlag) {
+  SetBodyInnerHTML(R"HTML(
+    <style>
+      body { margin: 0; }
+      #clipper {
+        position: absolute;
+        left: 10px;
+        top: 15px;
+        width: 60px;
+        height: 60px;
+        overflow: hidden;
+      }
+      #target {
+        position: absolute;
+        left: 40px;
+        top: 40px;
+        width: 80px;
+        height: 80px;
+        background: green;
+      }
+    </style>
+    <div id="clipper"><div id="target"></div></div>
+  )HTML");
+
+  LayoutObject* target = GetLayoutObjectByElementId("target");
+  ASSERT_TRUE(target);
+  UpdateAllLifecyclePhasesForTest();
+
+  gfx::RectF local_rect_f = target->LocalBoundingBoxRectForAccessibility(
+      LayoutObject::IncludeDescendants(true));
+  PhysicalRect local_rect = PhysicalRect::EnclosingRect(local_rect_f);
+  ASSERT_FALSE(local_rect.IsEmpty());
+
+  PhysicalRect clipped = local_rect;
+  EXPECT_TRUE(
+      target->MapToVisualRectInAncestorSpace(&GetLayoutView(), clipped));
+  // The overflow clip on #clipper limits the visible rect to the portion of
+  // #target intersecting the 60x60 clip.
+  EXPECT_EQ(clipped, PhysicalRect(50, 55, 20, 20));
+
+  PhysicalRect unclipped = local_rect;
+  EXPECT_TRUE(target->MapToVisualRectInAncestorSpace(
+      &GetLayoutView(), unclipped, kSkipAncestorAndViewportClips));
+  // Skipping ancestor clips should report the target's full rect relative to
+  // the viewport rather than the 20x20 clipped region.
+  EXPECT_EQ(unclipped, PhysicalRect(50, 55, 80, 80));
+
+  // Check again, using geometry mapper (fast path).
+  PhysicalRect unclipped_fast = local_rect;
+  EXPECT_TRUE(target->MapToVisualRectInAncestorSpace(
+      &GetLayoutView(), unclipped_fast,
+      static_cast<VisualRectFlags>(kSkipAncestorAndViewportClips |
+                                   kUseGeometryMapper)));
+  EXPECT_EQ(unclipped_fast, PhysicalRect(50, 55, 80, 80));
+}
+
+TEST_P(VisualRectMappingTest, SkipAncestorAndViewportClipFlagViewportSpace) {
+  // Mapping directly into viewport space (ancestor == nullptr) should skip the
+  // viewport and ancestor clips when explicitly requested so callers can clamp
+  // the result themselves without recomputing geometry.
+  SetBodyInnerHTML(R"HTML(
+    <style>
+      body { margin: 0; }
+      #clipper {
+        position: absolute;
+        left: -10px;
+        top: -10px;
+        width: 35px;
+        height: 35px;
+        overflow: hidden;
+      }
+      #target {
+        position: absolute;
+        left: -20px;
+        top: -25px;
+        width: 40px;
+        height: 40px;
+        background: coral;
+      }
+    </style>
+    <div id="clipper"><div id="target"></div></div>
+  )HTML");
+
+  LayoutObject* target = GetLayoutObjectByElementId("target");
+  ASSERT_TRUE(target);
+  UpdateAllLifecyclePhasesForTest();
+
+  const gfx::Rect viewport_rect =
+      GetDocument().View()->LayoutViewport()->VisibleContentRect(
+          IncludeScrollbarsInRect::kIncludeScrollbars);
+  SCOPED_TRACE(testing::Message()
+               << "viewport_rect=" << viewport_rect.ToString());
+  EXPECT_TRUE(GetLayoutView().HasClipRelatedProperty());
+  EXPECT_EQ(viewport_rect, gfx::Rect(0, 0, 800, 600));
+
+  gfx::RectF local_rect_f = target->LocalBoundingBoxRectForAccessibility(
+      LayoutObject::IncludeDescendants(false));
+  PhysicalRect local_rect = PhysicalRect::EnclosingRect(local_rect_f);
+  ASSERT_FALSE(local_rect.IsEmpty());
+
+  PhysicalRect clipped_to_view = local_rect;
+  EXPECT_TRUE(target->MapToVisualRectInAncestorSpace(&GetLayoutView(),
+                                                     clipped_to_view));
+  // Mapping into the LayoutView coordinate space should apply the ancestor
+  // (#clipper) overflow clip but leave the viewport clip for the caller.
+  EXPECT_EQ(clipped_to_view, PhysicalRect(-10, -10, 20, 15));
+
+  PhysicalRect clipped = local_rect;
+  EXPECT_TRUE(target->MapToVisualRectInAncestorSpace(nullptr, clipped));
+  SCOPED_TRACE(testing::Message()
+               << "local_rect=" << local_rect.ToString()
+               << " clipped_to_view=" << clipped_to_view.ToString()
+               << " clipped=" << clipped.ToString() << " target_location="
+               << To<LayoutBox>(target)->PhysicalLocation().ToString());
+  // Regular mapping applies the ancestor clip (#clipper) and the viewport
+  // clip, so the rect collapses to the small portion that intersects both
+  // clips. The clipper trims to 20x15 at (-10,-10) and the viewport then clips
+  // that down to the visible 10x5 slice.
+  EXPECT_EQ(clipped, PhysicalRect(0, 0, 10, 5));
+
+  PhysicalRect unclipped = local_rect;
+  EXPECT_TRUE(target->MapToVisualRectInAncestorSpace(
+      nullptr, unclipped, kSkipAncestorAndViewportClips));
+  // The block is positioned at (-30, -35) relative to the viewport once the
+  // ancestor offsets are applied. Skipping clips should expose the entire rect
+  // even though none of it is currently visible.
+  EXPECT_EQ(unclipped, PhysicalRect(-30, -35, 40, 40));
+
+  // Check again, using geometry mapper (fast path).
+  PhysicalRect unclipped_fast = local_rect;
+  EXPECT_TRUE(target->MapToVisualRectInAncestorSpace(
+      nullptr, unclipped_fast,
+      static_cast<VisualRectFlags>(kSkipAncestorAndViewportClips |
+                                   kUseGeometryMapper)));
+  EXPECT_EQ(unclipped_fast, PhysicalRect(-30, -35, 40, 40));
+}
+
+TEST_P(VisualRectMappingTest, SkipAncestorAndViewportClipsInSubframe) {
+  // Validate that iframe viewport clipping can be skipped on request so callers
+  // can compute both unclipped and clipped geometry in one pass.
+  SetBodyInnerHTML(R"HTML(
+    <style>
+      body { margin: 0; }
+      iframe {
+        width: 100px;
+        height: 100px;
+        border: none;
+      }
+    </style>
+    <iframe id="child"></iframe>
+  )HTML");
+
+  SetChildFrameHTML(R"HTML(
+    <style>
+      body { margin: 0; }
+      #target {
+        position: absolute;
+        left: -20px;
+        top: -30px;
+        width: 80px;
+        height: 80px;
+        background: red;
+      }
+    </style>
+    <body><div id="target"></div></body>
+  )HTML");
+
+  UpdateAllLifecyclePhasesForTest();
+
+  auto* iframe_element = To<HTMLIFrameElement>(
+      GetDocument().getElementById(AtomicString("child")));
+  ASSERT_TRUE(iframe_element);
+  auto* child_frame = DynamicTo<LocalFrame>(iframe_element->ContentFrame());
+  ASSERT_TRUE(child_frame);
+  auto* child_view = child_frame->View();
+  ASSERT_TRUE(child_view);
+  child_view->UpdateAllLifecyclePhasesForTest();
+
+  auto* target_element =
+      child_frame->GetDocument()->getElementById(AtomicString("target"));
+  ASSERT_TRUE(target_element);
+  LayoutObject* target = target_element->GetLayoutObject();
+  ASSERT_TRUE(target);
+
+  gfx::RectF local_rect_f = target->LocalBoundingBoxRectForAccessibility(
+      LayoutObject::IncludeDescendants(false));
+  PhysicalRect local_rect = PhysicalRect::EnclosingRect(local_rect_f);
+  ASSERT_FALSE(local_rect.IsEmpty());
+
+  PhysicalRect clipped = local_rect;
+  EXPECT_TRUE(target->MapToVisualRectInAncestorSpace(nullptr, clipped));
+  EXPECT_EQ(clipped, PhysicalRect(0, 0, 60, 50));
+
+  PhysicalRect unclipped = local_rect;
+  EXPECT_TRUE(target->MapToVisualRectInAncestorSpace(
+      nullptr, unclipped, kSkipAncestorAndViewportClips));
+  EXPECT_EQ(unclipped, PhysicalRect(-20, -30, 80, 80));
+
+  // Check again, using geometry mapper (fast path).
+  PhysicalRect unclipped_fast = local_rect;
+  EXPECT_TRUE(target->MapToVisualRectInAncestorSpace(
+      nullptr, unclipped_fast,
+      static_cast<VisualRectFlags>(kSkipAncestorAndViewportClips |
+                                   kUseGeometryMapper)));
+  EXPECT_EQ(unclipped_fast, PhysicalRect(-20, -30, 80, 80));
+}
+
+TEST_P(VisualRectMappingTest, RegressionTest_SkipAncestorClipExpansion) {
+  SetBodyInnerHTML(R"HTML(
+    <style>
+      body { margin: 0; }
+      #grandparent {
+        position: relative;
+        left: 100px; top: 100px;
+      }
+      #parent {
+        width: 100px; height: 100px;
+        transform: rotate(45deg);
+        overflow: hidden;
+      }
+      #child {
+        width: 20px; height: 20px;
+        background: green;
+        transform: rotate(-45deg);
+      }
+    </style>
+    <div id="grandparent">
+      <div id="parent">
+        <div id="child"></div>
+      </div>
+    </div>
+  )HTML");
+
+  auto* grandparent = GetLayoutObjectByElementId("grandparent");
+  auto* child = GetLayoutObjectByElementId("child");
+
+  UpdateAllLifecyclePhasesForTest();
+
+  PhysicalRect local_rect(0, 0, 20, 20);
+
+  // Slow path.
+  PhysicalRect slow_result = local_rect;
+  child->MapToVisualRectInAncestorSpace(To<LayoutBoxModelObject>(grandparent),
+                                        slow_result,
+                                        kSkipAncestorAndViewportClips);
+
+  // Fast path (GeometryMapper).
+  PhysicalRect fast_result = local_rect;
+  child->MapToVisualRectInAncestorSpace(
+      To<LayoutBoxModelObject>(grandparent), fast_result,
+      static_cast<VisualRectFlags>(kSkipAncestorAndViewportClips |
+                                   kUseGeometryMapper));
+
+  EXPECT_NEAR(slow_result.Width().ToFloat(), 20.0f, 0.1f);
+  EXPECT_NEAR(slow_result.Height().ToFloat(), 20.0f, 0.1f);
+  EXPECT_NEAR(fast_result.Width().ToFloat(), 20.0f, 0.1f);
+  EXPECT_NEAR(fast_result.Height().ToFloat(), 20.0f, 0.1f);
+
+  EXPECT_EQ(slow_result, fast_result);
 }
 
 TEST_P(VisualRectMappingTest, LayoutView) {
@@ -1290,6 +1553,37 @@ TEST_P(VisualRectMappingTest, PerspectiveWithAnonymousTable) {
   PhysicalRect rect(0, 0, 10, 10);
   child->MapToVisualRectInAncestorSpace(ancestor, rect);
   EXPECT_EQ(gfx::Rect(1, -1, 8, 12), ToEnclosingRect(rect));
+}
+
+TEST_P(VisualRectMappingTest, MapToVisualRectFastPathMapsToViewport) {
+  // Mapping to a null ancestor uses the GeometryMapper fast path to reach the
+  // local root viewport (including remote viewport transforms).
+  SetBodyInnerHTML(R"HTML(
+    <style>
+      body { margin: 0; }
+      #target {
+        position: absolute;
+        left: 15px;
+        top: 25px;
+        width: 60px;
+        height: 40px;
+      }
+    </style>
+    <div id='target'></div>
+  )HTML");
+
+  auto* target = To<LayoutBlock>(GetLayoutObjectByElementId("target"));
+  ASSERT_TRUE(target);
+  gfx::RectF rect(0, 0, 60, 40);
+  constexpr auto kMapperFlags =
+      static_cast<VisualRectFlags>(kIgnoreFilters | kUseGeometryMapper |
+                                   kVisualRectApplyRemoteViewportTransform);
+
+  bool intersects = false;
+  ASSERT_TRUE(target->MapToVisualRectInAncestorSpaceInternalFastPath(
+      /*ancestor=*/nullptr, rect, kMapperFlags, intersects));
+  EXPECT_EQ(gfx::Rect(15, 25, 60, 40), gfx::ToEnclosingRect(rect));
+  EXPECT_TRUE(intersects);
 }
 
 TEST_P(VisualRectMappingTest, AnchorPositionScroll) {

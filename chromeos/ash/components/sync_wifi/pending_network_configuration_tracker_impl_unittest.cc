@@ -47,7 +47,7 @@ class PendingNetworkConfigurationTrackerImplTest : public testing::Test {
 
   PendingNetworkConfigurationTrackerImpl* tracker() { return tracker_.get(); }
 
-  const base::Value::Dict* GetPref() const {
+  const base::DictValue* GetPref() const {
     return &test_pref_service_.get()
                 ->GetUserPref(kPendingNetworkConfigurationsPref)
                 ->GetDict();
@@ -55,7 +55,7 @@ class PendingNetworkConfigurationTrackerImplTest : public testing::Test {
 
   bool DoesPrefContainPendingUpdate(const NetworkIdentifier& id,
                                     const std::string& update_guid) const {
-    const base::Value::Dict* dict = GetPref()->FindDict(id.SerializeToString());
+    const base::DictValue* dict = GetPref()->FindDict(id.SerializeToString());
     if (!dict) {
       return false;
     }

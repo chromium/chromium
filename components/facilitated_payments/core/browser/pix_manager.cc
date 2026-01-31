@@ -9,6 +9,7 @@
 
 #include "base/check.h"
 #include "base/check_deref.h"
+#include "base/feature_list.h"
 #include "base/functional/callback_helpers.h"
 #include "base/time/time.h"
 #include "components/autofill/core/browser/data_manager/payments/payments_data_manager.h"
@@ -78,7 +79,8 @@ void PixManager::Reset() {
 void PixManager::OnPixCodeCopiedToClipboard(
     const GURL& render_frame_host_url,
     const url::Origin& render_frame_host_origin,
-    const std::string& pix_code,
+    std::optional<PixCodeRustValidationResult> rust_validation_result,
+    std::string pix_code,
     ukm::SourceId ukm_source_id) {
   if (has_payflow_started_) {
     return;
@@ -98,11 +100,32 @@ void PixManager::OnPixCodeCopiedToClipboard(
   initiate_payment_request_details_->merchant_payment_page_hostname_ =
       render_frame_host_url.GetHost();
   pix_payment_page_origin_ = render_frame_host_origin;
-  // Trigger Pix code validation.
-  utility_process_validator_.ValidatePixCode(
-      pix_code, base::BindOnce(&PixManager::OnPixCodeValidated,
-                               weak_ptr_factory_.GetWeakPtr(), pix_code,
-                               base::TimeTicks::Now()));
+  if (base::FeatureList::IsEnabled(kUseRustPixCodeValidator)) {
+    // This logic is duplicated into faciliated_payments_metrics.h, but it's
+    // temporary and will be cleaned up once the validator is fully switched
+    // over to Rust.
+    mojom::PixQrCodeType mapped_type = [&]() {
+      switch (*rust_validation_result) {
+        case PixCodeRustValidationResult::kStatic:
+          return mojom::PixQrCodeType::kStatic;
+        case PixCodeRustValidationResult::kDynamic:
+          return mojom::PixQrCodeType::kDynamic;
+        case PixCodeRustValidationResult::kNonPixMerchantPresentedCode:
+        case PixCodeRustValidationResult::kEmptyAdditionalDataFieldTemplate:
+        case PixCodeRustValidationResult::kNonFinalCrc:
+        case PixCodeRustValidationResult::kUnknownPixCodeType:
+          return mojom::PixQrCodeType::kInvalid;
+      }
+    }();
+    OnPixCodeValidated(rust_validation_result, std::move(pix_code),
+                       base::TimeTicks::Now(), mapped_type);
+  } else {
+    utility_process_validator_.ValidatePixCode(
+        pix_code,
+        base::BindOnce(&PixManager::OnPixCodeValidated,
+                       weak_ptr_factory_.GetWeakPtr(), rust_validation_result,
+                       pix_code, base::TimeTicks::Now()));
+  }
 }
 
 bool PixManager::IsMerchantAllowlisted(const GURL& url) const {
@@ -126,12 +149,13 @@ bool PixManager::IsMerchantAllowlisted(const GURL& url) const {
 }
 
 void PixManager::OnPixCodeValidated(
+    std::optional<PixCodeRustValidationResult> rust_validation_result,
     std::string pix_code,
     base::TimeTicks start_time,
     base::expected<mojom::PixQrCodeType, std::string> pix_qr_code_type) {
   LogPaymentCodeValidationResultAndLatency(
       ConvertPixQrCodeTypeToValidationResult(pix_qr_code_type),
-      (base::TimeTicks::Now() - start_time));
+      rust_validation_result, base::TimeTicks::Now() - start_time);
   if (!pix_qr_code_type.has_value()) {
     // Pix code validator encountered an error.
     LogPixFlowExitedReason(PixFlowExitedReason::kCodeValidatorFailed);
@@ -144,7 +168,12 @@ void PixManager::OnPixCodeValidated(
     return;
   }
 
-  if (pix_qr_code_type.value() == mojom::PixQrCodeType::kStatic &&
+  OnValidPixCode(std::move(pix_code), *pix_qr_code_type);
+}
+
+void PixManager::OnValidPixCode(std::string pix_code,
+                                mojom::PixQrCodeType pix_qr_code_type) {
+  if (pix_qr_code_type == mojom::PixQrCodeType::kStatic &&
       !base::FeatureList::IsEnabled(
           payments::facilitated::kEnableStaticQrCodeForPix)) {
     // Pix code is static and not supported.

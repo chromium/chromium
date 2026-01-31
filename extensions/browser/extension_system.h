@@ -132,7 +132,7 @@ class ExtensionSystem : public KeyedService {
   // Perform various actions depending on the Omaga attributes on the extension.
   virtual void PerformActionBasedOnOmahaAttributes(
       const ExtensionId& extension_id,
-      const base::Value::Dict& attributes) = 0;
+      const base::DictValue& attributes) = 0;
 };
 
 }  // namespace extensions

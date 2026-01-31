@@ -133,7 +133,7 @@ class DeviceLocalAccountPolicyBroker
 
   // Returns all cached extensions, both the ones meant for Ash and the ones
   // meant for Lacros.
-  base::Value::Dict GetCachedExtensionsForTesting() const;
+  base::DictValue GetCachedExtensionsForTesting() const;
 
  private:
   void CreateComponentCloudPolicyService(CloudPolicyClient* client);

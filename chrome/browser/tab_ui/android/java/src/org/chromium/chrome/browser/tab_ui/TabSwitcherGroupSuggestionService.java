@@ -12,7 +12,7 @@ import org.chromium.base.Callback;
 import org.chromium.base.Token;
 import org.chromium.base.ValueChangedCallback;
 import org.chromium.base.metrics.RecordHistogram;
-import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -223,11 +223,11 @@ public class TabSwitcherGroupSuggestionService {
                 }
             };
     private final @WindowId int mWindowId;
-    private final ObservableSupplier<@Nullable TabGroupModelFilter>
+    private final MonotonicObservableSupplier<TabGroupModelFilter>
             mCurrentTabGroupModelFilterSupplier;
     private final SuggestionLifecycleObserverHandler mSuggestionLifecycleObserverHandler;
     private final GroupSuggestionsService mGroupSuggestionsService;
-    private final Callback<@Nullable TabGroupModelFilter> mOnTabGroupModelFilterChanged =
+    private final Callback<TabGroupModelFilter> mOnTabGroupModelFilterChanged =
             new ValueChangedCallback<>(this::onTabGroupModelFilterChanged);
 
     /**
@@ -239,7 +239,7 @@ public class TabSwitcherGroupSuggestionService {
      */
     public TabSwitcherGroupSuggestionService(
             @WindowId int windowId,
-            ObservableSupplier<@Nullable TabGroupModelFilter> currentTabGroupModelFilterSupplier,
+            MonotonicObservableSupplier<TabGroupModelFilter> currentTabGroupModelFilterSupplier,
             Profile profile,
             SuggestionLifecycleObserverHandler suggestionLifecycleObserverHandler) {
         mWindowId = windowId;
@@ -258,7 +258,7 @@ public class TabSwitcherGroupSuggestionService {
     }
 
     private void onTabGroupModelFilterChanged(
-            @Nullable TabGroupModelFilter newFilter, @Nullable TabGroupModelFilter oldFilter) {
+            TabGroupModelFilter newFilter, @Nullable TabGroupModelFilter oldFilter) {
         if (oldFilter != null) {
             oldFilter.removeObserver(mTabModelObserver);
             oldFilter.removeTabGroupObserver(mTabGroupModelFilterObserver);
@@ -413,6 +413,7 @@ public class TabSwitcherGroupSuggestionService {
         if (filter == null) return;
 
         TabModel tabModel = filter.getTabModel();
+        if (tabModel.getCount() == 0) return;
         List<Integer> tabIds = new ArrayList<>();
 
         // Collect the bottom-most tabs that are not already in a group.
@@ -424,6 +425,7 @@ public class TabSwitcherGroupSuggestionService {
                 tabIds.add(tab.getId());
             }
         }
+        if (tabIds.isEmpty()) return;
 
         // To order it by index, reverse the list.
         Collections.reverse(tabIds);

@@ -335,14 +335,14 @@ interface OnDisplayChangedEvent : ExtensionEvent {
 interface Display {
   // Requests the information for all attached display devices.
   // |flags|: Options affecting how the information is returned.
-  // |Returns|: The callback to invoke with the results.
+  // |Returns|: Promise that resolves with the results.
   // |PromiseValue|: displayInfo
   [requiredCallback] static Promise<sequence<DisplayUnitInfo>> getInfo(
       optional GetInfoFlags flags);
 
   // Requests the layout info for all displays.
   // NOTE: This is only available to ChromeOS Kiosk apps and Web UI.
-  // |Returns|: The callback to invoke with the results.
+  // |Returns|: Promise that resolves with the results.
   // |PromiseValue|: layouts
   [requiredCallback] static Promise<sequence<DisplayLayout>> getDisplayLayout();
 
@@ -354,10 +354,8 @@ interface Display {
   // |info|: The information about display properties that should be changed.
   //     A property will be changed only if a new value for it is specified in
   //     |info|.
-  // |Returns|: Empty function called when the function finishes. To find out
-  //     whether the function succeeded, $(ref:runtime.lastError) should be
-  //     queried.
-  static Promise<undefined> setDisplayProperties(
+  // |Returns|: Promise that resolves when the function finishes.
+    static Promise<undefined> setDisplayProperties(
       DOMString id,
       DisplayProperties info);
 
@@ -368,9 +366,7 @@ interface Display {
   // NOTE: This is only available to ChromeOS Kiosk apps and Web UI.
   // |layouts|: The layout information, required for all displays except
   //     the primary display.
-  // |Returns|: Empty function called when the function finishes. To find out
-  //     whether the function succeeded, $(ref:runtime.lastError) should be
-  //     queried.
+  // |Returns|: Promise that resolves when the function finishes.
   static Promise<undefined> setDisplayLayout(
       sequence<DisplayLayout> layouts);
 
@@ -411,9 +407,9 @@ interface Display {
   // successful calibration only. If the calibration fails, this will throw an
   // error.
   // |id|: The display's unique identifier.
-  // |Returns|: Optional callback to inform the caller that the touch
-  //      calibration has ended. The argument of the callback informs if the
-  //      calibration was a success or not.
+  // |Returns|: Promise that resolves to inform the caller that the touch
+  // calibration has ended. The boolean value informs if the calibration was a
+  // success or not.
   // |PromiseValue|: success
   static Promise<boolean> showNativeTouchCalibration(DOMString id);
 
@@ -446,9 +442,7 @@ interface Display {
   // NOTE: This is only available to ChromeOS Kiosk apps and Web UI.
   // |info|: The information of the mirror mode that should be applied to the
   //     display mode.
-  // |Returns|: Empty function called when the function finishes. To find out
-  //     whether the function succeeded, $(ref:runtime.lastError) should be
-  //     queried.
+  // |Returns|: Promise that resolves when the function finishes.
   static Promise<undefined> setMirrorMode(MirrorModeInfo info);
 
   // Fired when anything changes to the display configuration.

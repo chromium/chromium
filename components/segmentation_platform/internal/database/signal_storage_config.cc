@@ -4,7 +4,6 @@
 
 #include "components/segmentation_platform/internal/database/signal_storage_config.h"
 
-#include "base/containers/contains.h"
 #include "base/functional/callback_helpers.h"
 #include "components/segmentation_platform/internal/metadata/metadata_utils.h"
 #include "components/segmentation_platform/public/proto/model_metadata.pb.h"
@@ -286,9 +285,8 @@ void SignalStorageConfig::GetSignalsForCleanup(
     // include signals when not needed. For UMA signals, skip adding signals
     // that are used by any models.
     // TODO(ssid) : Handle this for UKM signals.
-    if (base::Contains(known_signals,
-                       std::make_pair(signal_config.name_hash(),
-                                      signal_config.signal_type())) ||
+    if (known_signals.contains(std::make_pair(signal_config.name_hash(),
+                                              signal_config.signal_type())) ||
         signal_config.signal_type() == proto::SignalType::UKM_EVENT) {
       continue;
     }

@@ -68,7 +68,7 @@ class HttpStreamPool::TcpBasedAttempt : public TlsStreamAttempt::Delegate {
   // SSLConfig.
   std::optional<CompletionOnceCallback> MaybeTakeSSLConfigWaitingCallback();
 
-  base::Value::Dict GetInfoAsValue() const;
+  base::DictValue GetInfoAsValue() const;
 
  private:
   void OnAttemptSlow();
@@ -157,7 +157,7 @@ class HttpStreamPool::TcpBasedAttemptSlot {
   // slow.
   void UpdateIsSlow();
 
-  base::Value::Dict GetInfoAsValue() const;
+  base::DictValue GetInfoAsValue() const;
 
  private:
   // Re-calculates whether this slot is considered slow, without updating

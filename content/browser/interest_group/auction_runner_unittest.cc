@@ -6,6 +6,7 @@
 
 #include <stdint.h>
 
+#include <algorithm>
 #include <array>
 #include <functional>
 #include <limits>
@@ -20,7 +21,6 @@
 
 #include "base/base64.h"
 #include "base/check.h"
-#include "base/containers/contains.h"
 #include "base/containers/flat_set.h"
 #include "base/feature_list.h"
 #include "base/functional/callback_helpers.h"
@@ -1448,11 +1448,11 @@ struct BiddingSignalsPerInterestGroupData {
 // Creates a trusted bidding signals response body with the provided data.
 std::string MakeBiddingSignalsWithPerInterestGroupData(
     std::vector<BiddingSignalsPerInterestGroupData> per_interest_group_data) {
-  base::Value::Dict per_interest_group_dict;
+  base::DictValue per_interest_group_dict;
   for (const auto& data : per_interest_group_data) {
-    base::Value::Dict interest_group_dict;
+    base::DictValue interest_group_dict;
     if (data.priority_vector) {
-      base::Value::Dict priority_vector;
+      base::DictValue priority_vector;
       for (const auto& pair : *data.priority_vector) {
         priority_vector.Set(pair.first, pair.second);
       }
@@ -1462,7 +1462,7 @@ std::string MakeBiddingSignalsWithPerInterestGroupData(
                                 std::move(interest_group_dict));
   }
 
-  base::Value::Dict bidding_signals_dict;
+  base::DictValue bidding_signals_dict;
   bidding_signals_dict.Set("perInterestGroupData",
                            std::move(per_interest_group_dict));
 
@@ -1838,7 +1838,7 @@ class MockTrustedSignalsCacheImpl : public TrustedSignalsCacheImpl {
     int partition_id;
     std::set<std::string> interest_group_names;
     std::set<std::string> keys;
-    base::Value::Dict additional_params;
+    base::DictValue additional_params;
     std::optional<std::string> buyer_tkv_signals;
 
     bool operator<(const BiddingPartitionInfo& other) const {
@@ -1873,7 +1873,7 @@ class MockTrustedSignalsCacheImpl : public TrustedSignalsCacheImpl {
     int partition_id;
     GURL render_url;
     std::set<GURL> component_render_urls;
-    base::Value::Dict additional_params;
+    base::DictValue additional_params;
     std::optional<std::string> seller_tkv_signals;
 
     bool operator<(const ScoringPartitionInfo& other) const {
@@ -4119,7 +4119,7 @@ class AuctionRunnerTrustedSignalsTest
         /*partition_id=*/0,
         {kBidder1Name},
         /*keys=*/{"k1", "k2"},
-        /*additional_params=*/base::Value::Dict()});
+        /*additional_params=*/base::DictValue()});
     std::map<int,
              std::vector<MockTrustedSignalsCacheImpl::BiddingPartitionInfo>>
         compression_groups;
@@ -4137,7 +4137,7 @@ class AuctionRunnerTrustedSignalsTest
         /*partition_id=*/0,
         {kBidder2Name},
         /*keys=*/{"l1", "l2"},
-        /*additional_params=*/base::Value::Dict()});
+        /*additional_params=*/base::DictValue()});
     std::map<int,
              std::vector<MockTrustedSignalsCacheImpl::BiddingPartitionInfo>>
         compression_groups;
@@ -4179,7 +4179,7 @@ class AuctionRunnerTrustedSignalsTest
         /*partition_id=*/0,
         /*render_url=*/GURL("https://ad1.com/"),
         /*component_render_urls=*/{GURL("https://ad1.com-component1.com")},
-        /*additional_params=*/base::Value::Dict()});
+        /*additional_params=*/base::DictValue()});
     std::map<int,
              std::vector<MockTrustedSignalsCacheImpl::ScoringPartitionInfo>>
         compression_groups;
@@ -4198,7 +4198,7 @@ class AuctionRunnerTrustedSignalsTest
         /*partition_id=*/0,
         /*render_url=*/GURL("https://ad2.com/"),
         /*component_render_urls=*/{GURL("https://ad2.com-component1.com")},
-        /*additional_params=*/base::Value::Dict()});
+        /*additional_params=*/base::DictValue()});
     std::map<int,
              std::vector<MockTrustedSignalsCacheImpl::ScoringPartitionInfo>>
         compression_groups;
@@ -4220,7 +4220,7 @@ class AuctionRunnerTrustedSignalsTest
         /*partition_id=*/0,
         /*render_url=*/GURL("https://ad2.com/"),
         /*component_render_urls=*/{GURL("https://ad2.com-component1.com")},
-        /*additional_params=*/base::Value::Dict()});
+        /*additional_params=*/base::DictValue()});
     std::map<int,
              std::vector<MockTrustedSignalsCacheImpl::ScoringPartitionInfo>>
         compression_groups;
@@ -5031,7 +5031,7 @@ TEST_F(AuctionRunnerTest, BasicDebug) {
           debug.WaitForMethodNotification("Debugger.paused");
 
       ASSERT_TRUE(breakpoint_hit.value.is_dict());
-      base::Value::List* hit_breakpoints =
+      base::ListValue* hit_breakpoints =
           breakpoint_hit.value.GetDict().FindListByDottedPath(
               "params.hitBreakpoints");
       ASSERT_TRUE(hit_breakpoints);
@@ -8741,7 +8741,7 @@ TEST_P(AuctionRunnerTrustedSignalsTest,
             /*partition_id=*/1,
             /*render_url=*/GURL("https://ad2.com/"),
             /*component_render_urls=*/{GURL("https://ad2.com-component1.com")},
-            /*additional_params=*/base::Value::Dict()});
+            /*additional_params=*/base::DictValue()});
     auto bidder2_first_request_info = IsolatedBidder2SellerRequestInfo();
     AddScoringSignalsCacheResult(
         std::move(bidder1_first_request_info),
@@ -8752,7 +8752,7 @@ TEST_P(AuctionRunnerTrustedSignalsTest,
             /*partition_id=*/1,
             /*render_url=*/GURL("https://ad1.com/"),
             /*component_render_urls=*/{GURL("https://ad1.com-component1.com")},
-            /*additional_params=*/base::Value::Dict()});
+            /*additional_params=*/base::DictValue()});
     AddScoringSignalsCacheResult(
         std::move(bidder2_first_request_info),
         MakeBidder1Bidder2ScoringSignalsTwoPartitionsCompressionGroupMap());
@@ -17024,8 +17024,8 @@ TEST_F(AuctionRunnerTest, PrivateAggregationReservedOnceRandomlyChosen) {
     auto pa_requests_map =
         private_aggregation_manager_.TakePrivateAggregationRequests();
     ASSERT_EQ(pa_requests_map.size(), 2u);
-    ASSERT_TRUE(base::Contains(pa_requests_map, kBidder1));
-    ASSERT_TRUE(base::Contains(pa_requests_map, kSeller));
+    ASSERT_TRUE(pa_requests_map.contains(kBidder1));
+    ASSERT_TRUE(pa_requests_map.contains(kSeller));
 
     const auto& bidder_requests = pa_requests_map[kBidder1];
     const auto& seller_requests = pa_requests_map[kSeller];
@@ -17164,7 +17164,7 @@ TEST_F(AuctionRunnerTest, PrivateAggregationReservedOnceAdditionalBid) {
     auto pa_requests_map =
         private_aggregation_manager_.TakePrivateAggregationRequests();
     ASSERT_EQ(pa_requests_map.size(), 1u);
-    ASSERT_TRUE(base::Contains(pa_requests_map, kSeller));
+    ASSERT_TRUE(pa_requests_map.contains(kSeller));
 
     const auto& seller_requests = pa_requests_map[kSeller];
 
@@ -18176,7 +18176,7 @@ TEST_F(AuctionRunnerTest,
   scoped_feature_list.InitWithFeatures(
       /*enabled_features=*/{blink::features::kFledgeConsiderKAnonymity,
                             blink::features::kFledgeEnforceKAnonymity},
-      /*disabled_features=*/{features::kCookieDeprecationFacilitatedTesting});
+      /*disabled_features=*/{});
 
   // Only one bidder participating the auction, to keep things simple.
   interest_group_buyers_ = {{kBidder1}};
@@ -22852,31 +22852,31 @@ TEST_P(AuctionRunnerBiddingAndScoringDebugReportingAPIEnabledTest,
     RunAuctionAndWait(kSellerUrl, std::move(bidders));
 
     double highest_scoring_other_bid = 0.0;
-    if (base::Contains(result_.report_urls,
-                       "https://reporting.example.com/"
-                       "?highestScoringOtherBid=1&"
-                       "highestScoringOtherBidCurrency=???&"
-                       "bidCurrency=USD&bid=3",
-                       &GURL::spec) ||
-        base::Contains(result_.report_urls,
-                       "https://reporting.example.com/"
-                       "?highestScoringOtherBid=10&"
-                       "highestScoringOtherBidCurrency=EUR&"
-                       "bidCurrency=USD&bid=3",
-                       &GURL::spec)) {
-      highest_scoring_other_bid = 1;
-    } else if (base::Contains(result_.report_urls,
+    if (std::ranges::contains(result_.report_urls,
                               "https://reporting.example.com/"
-                              "?highestScoringOtherBid=2&"
+                              "?highestScoringOtherBid=1&"
                               "highestScoringOtherBidCurrency=???&"
                               "bidCurrency=USD&bid=3",
                               &GURL::spec) ||
-               base::Contains(result_.report_urls,
+        std::ranges::contains(result_.report_urls,
                               "https://reporting.example.com/"
-                              "?highestScoringOtherBid=20&"
+                              "?highestScoringOtherBid=10&"
                               "highestScoringOtherBidCurrency=EUR&"
                               "bidCurrency=USD&bid=3",
                               &GURL::spec)) {
+      highest_scoring_other_bid = 1;
+    } else if (std::ranges::contains(result_.report_urls,
+                                     "https://reporting.example.com/"
+                                     "?highestScoringOtherBid=2&"
+                                     "highestScoringOtherBidCurrency=???&"
+                                     "bidCurrency=USD&bid=3",
+                                     &GURL::spec) ||
+               std::ranges::contains(result_.report_urls,
+                                     "https://reporting.example.com/"
+                                     "?highestScoringOtherBid=20&"
+                                     "highestScoringOtherBidCurrency=EUR&"
+                                     "bidCurrency=USD&bid=3",
+                                     &GURL::spec)) {
       highest_scoring_other_bid = 2;
     }
 
@@ -23100,31 +23100,31 @@ TEST_P(AuctionRunnerBiddingAndScoringDebugReportingAPIEnabledTest,
     EXPECT_EQ(2u, result_.debug_win_report_urls.size());
     EXPECT_EQ(2u, result_.report_urls.size());
     double highest_scoring_other_bid = 0.0;
-    if (base::Contains(result_.report_urls,
-                       "https://reporting.example.com/"
-                       "?highestScoringOtherBid=1&"
-                       "highestScoringOtherBidCurrency=???&"
-                       "bidCurrency=USD&bid=3",
-                       &GURL::spec) ||
-        base::Contains(result_.report_urls,
-                       "https://reporting.example.com/"
-                       "?highestScoringOtherBid=10&"
-                       "highestScoringOtherBidCurrency=EUR&"
-                       "bidCurrency=USD&bid=3",
-                       &GURL::spec)) {
-      highest_scoring_other_bid = 1;
-    } else if (base::Contains(result_.report_urls,
+    if (std::ranges::contains(result_.report_urls,
                               "https://reporting.example.com/"
-                              "?highestScoringOtherBid=2&"
+                              "?highestScoringOtherBid=1&"
                               "highestScoringOtherBidCurrency=???&"
                               "bidCurrency=USD&bid=3",
                               &GURL::spec) ||
-               base::Contains(result_.report_urls,
+        std::ranges::contains(result_.report_urls,
                               "https://reporting.example.com/"
-                              "?highestScoringOtherBid=20&"
+                              "?highestScoringOtherBid=10&"
                               "highestScoringOtherBidCurrency=EUR&"
                               "bidCurrency=USD&bid=3",
                               &GURL::spec)) {
+      highest_scoring_other_bid = 1;
+    } else if (std::ranges::contains(result_.report_urls,
+                                     "https://reporting.example.com/"
+                                     "?highestScoringOtherBid=2&"
+                                     "highestScoringOtherBidCurrency=???&"
+                                     "bidCurrency=USD&bid=3",
+                                     &GURL::spec) ||
+               std::ranges::contains(result_.report_urls,
+                                     "https://reporting.example.com/"
+                                     "?highestScoringOtherBid=20&"
+                                     "highestScoringOtherBidCurrency=EUR&"
+                                     "bidCurrency=USD&bid=3",
+                                     &GURL::spec)) {
       highest_scoring_other_bid = 2;
     }
 
@@ -25361,17 +25361,6 @@ class AuctionRunnerKAnonTest : public AuctionRunnerTest,
             /*should_enable_private_aggregation=*/true,
             kanon_mode()) {
     std::vector<base::test::FeatureRef> disabled_features;
-
-    switch (kanon_mode()) {
-      case auction_worklet::mojom::KAnonymityBidMode::kEnforce:
-      case auction_worklet::mojom::KAnonymityBidMode::kSimulate:
-        disabled_features.push_back(
-            features::kCookieDeprecationFacilitatedTesting);
-        break;
-      case auction_worklet::mojom::KAnonymityBidMode::kNone:
-        break;
-    }
-
     feature_list_.InitWithFeatures(
         /*enabled_features=*/{blink::features::kFledgeMultiBid},
         disabled_features);
@@ -27299,79 +27288,6 @@ TEST_P(AuctionRunnerKAnonTest, AdditionalBidBuyerReporting) {
                   "https://contextual.test/?additionalPseudoIG"));
 }
 
-TEST_P(AuctionRunnerKAnonTest, CookieDeprecationFacilitatedTestingExcluded) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      features::kCookieDeprecationFacilitatedTesting);
-  auction_worklet::AddJavascriptResponse(
-      &url_loader_factory_, kBidder1Url,
-      // bidding script tries to bid with ad that is not k-anonymous.
-      // The interest group name should still be available for reporting.
-      std::string(R"(
-        function generateBid(interestGroup, auctionSignals, perBuyerSignals,
-                         trustedBiddingSignals, browserSignals) {
-          privateAggregation.contributeToHistogramOnEvent("reserved.loss", {
-              bucket: {baseValue: "bid-reject-reason"},
-              value: 0,
-            });
-          privateAggregation.contributeToHistogramOnEvent("reserved.loss", {
-              bucket: {baseValue: "winning-bid"},
-              value: 2,
-            });
-          return {ad: {},
-              bid: 1,
-              render: "https://ad1.com",
-              allowComponentAuction: true};
-        }
-
-        function reportWin(auctionSignals, perBuyerSignals, sellerSignals,
-                       browserSignals) {
-          sendReportTo("https://buyer-reporting.example.com/" +
-            browserSignals.interestGroupName);
-        })"));
-  auction_worklet::AddJavascriptResponse(
-      &url_loader_factory_, kSellerUrl,
-      std::string(kMinimumDecisionScript) + kBasicReportResult);
-
-  std::vector<StorageInterestGroup> bidders;
-  bidders.emplace_back(MakeInterestGroup(
-      kBidder1, kBidder1Name, kBidder1Url,
-      /*trusted_bidding_signals_url=*/std::nullopt,
-      /*trusted_bidding_signals_keys=*/{}, GURL("https://ad1.com")));
-
-  // No k-anon authorizations.
-  StartAuction(kSellerUrl, bidders);
-  auction_run_loop_->Run();
-  // Have to spin all message loops to flush any k-anon set join events.
-  task_environment()->RunUntilIdle();
-  EXPECT_THAT(
-      interest_group_manager_->TakeJoinedKAnonSets(),
-      testing::UnorderedElementsAre(
-          blink::HashedKAnonKeyForAdBid(
-              bidders[0].interest_group,
-              bidders[0].interest_group.ads.value()[0].render_url()),
-          blink::HashedKAnonKeyForAdNameReporting(
-              bidders[0].interest_group,
-              bidders[0].interest_group.ads.value()[0],
-              /*selected_buyer_and_seller_reporting_id=*/std::nullopt)));
-  histogram_tester_->ExpectUniqueSample(
-      "Ads.InterestGroup.Auction.NonKAnonWinnerIsKAnon", false, 1);
-
-  // Always act like the k-anonymity mode is `KAnonMode::kNone`
-  ASSERT_TRUE(result_.ad_descriptor.has_value());
-  EXPECT_EQ(GURL("https://ad1.com"), result_.ad_descriptor->url);
-  EXPECT_THAT(result_.errors, testing::ElementsAre());
-  EXPECT_THAT(result_.report_urls,
-              testing::UnorderedElementsAre(
-                  "https://reporting.example.com/1",
-                  "https://buyer-reporting.example.com/Ad%20Platform"));
-  EXPECT_THAT(
-      private_aggregation_manager_.TakePrivateAggregationRequests(),
-      testing::UnorderedElementsAre(testing::Pair(
-          kSeller, ElementsAreRequests(
-                       kExpectedReportResultPrivateAggregationRequest))));
-}
-
 INSTANTIATE_TEST_SUITE_P(
     /* no label */,
     AuctionRunnerKAnonTest,
@@ -28978,7 +28894,7 @@ TEST_P(AuctionRunnerTrustedSignalsTest,
       /*partition_id=*/1,
       {kOtherBidderName},
       /*keys=*/{"l1", "l2"},
-      /*additional_params=*/base::Value::Dict()};
+      /*additional_params=*/base::DictValue()};
   bidder_request_info.compression_groups[0].emplace_back(std::move(partition2));
   auto compression_group_map = MakeCompressionGroupMapForOneGroup(
       R"([
@@ -29097,7 +29013,7 @@ TEST_P(AuctionRunnerTrustedSignalsTest,
       /*partition_id=*/0,
       {kOtherBidderName},
       /*keys=*/{"l1", "l2"},
-      /*additional_params=*/base::Value::Dict()});
+      /*additional_params=*/base::DictValue()});
   bidder_request_info.compression_groups.emplace(1, std::move(partitions2));
   AddBiddingSignalsCacheResult(std::move(bidder_request_info),
                                std::move(compression_group_map));
@@ -29241,7 +29157,7 @@ TEST_P(
       /*partition_id=*/0,
       /*render_url=*/GURL("https://ad1.com/"),
       /*component_render_urls=*/{GURL("https://ad1.com-component1.com")},
-      /*additional_params=*/base::Value::Dict()});
+      /*additional_params=*/base::DictValue()});
   std::map<int, std::vector<MockTrustedSignalsCacheImpl::ScoringPartitionInfo>>
       compression_groups;
   compression_groups.emplace(0, std::move(partitions));
@@ -29330,7 +29246,7 @@ function reportWin() {}
       /*partition_id=*/0,
       {},
       /*keys=*/{"k1"},
-      /*additional_params=*/base::Value::Dict()});
+      /*additional_params=*/base::DictValue()});
   for (size_t i = 0; i < 3 * AuctionWorkletManager::kBatchSize; ++i) {
     std::string interest_group_name = base::NumberToString(i);
     partitions[0].interest_group_names.emplace(interest_group_name);

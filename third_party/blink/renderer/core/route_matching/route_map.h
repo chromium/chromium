@@ -7,7 +7,6 @@
 
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/route_matching/navigation_preposition.h"
-#include "third_party/blink/renderer/core/route_matching/route_match_state.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_map.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_set.h"
@@ -61,6 +60,13 @@ class CORE_EXPORT RouteMap final : public ScriptWrappable,
     bool IsSuccess() const { return status == kSuccess; }
   };
 
+  using MatchCollection = HeapHashSet<WeakMember<Route>>;
+  enum HistoryTraverseType {
+    kNotTraversing,
+    kBack,
+    kForward,
+  };
+
   explicit RouteMap(Document&);
 
   // For testing only.
@@ -82,8 +88,15 @@ class CORE_EXPORT RouteMap final : public ScriptWrappable,
     return *document;
   }
 
+  void SetHasHistoryRules() { has_history_rules_ = true; }
+  bool HasHistoryRules() const { return has_history_rules_; }
+  HistoryTraverseType GetHistoryTraverseType() const {
+    return history_traverse_type_;
+  }
+
   ParseResult ParseAndApplyRoutes(const String& route_map_text);
 
+  void AddRouteFromRule(const String& dashed_ident, URLPattern*);
   void AddAnonymousRoute(URLPattern*);
 
   const Route* FindRoute(const String& route_name) const;
@@ -93,24 +106,26 @@ class CORE_EXPORT RouteMap final : public ScriptWrappable,
   // changed.
   void UpdateActiveRoutes();
 
-  void GetActiveRoutes(NavigationPreposition,
-                       RouteMatchState::MatchCollection*) const;
+  void GetActiveRoutes(NavigationPreposition, MatchCollection*) const;
 
   // Set the URLs that we're navigating between at the start of navigation. This
   // is used to match @route "from" (and "to") rules.
-  void OnNavigationStart(const KURL& previous_url, const KURL& next_url) {
-    previous_url_ = previous_url;
-    next_url_ = next_url;
-    UpdateActiveRoutes();
-  }
+  void OnNavigationStart(const KURL& previous_url, const KURL& next_url);
+
+  void OnNavigationTraverse(HistoryTraverseType type);
+
+  // The current URL has changed. This is used to match @route "at" rules.
+  void OnNavigationCommitted() { UpdateActiveRoutes(); }
 
   // Clear the URL that we're navigating between when the navigation is
   // complete.
-  void OnNavigationDone() {
-    previous_url_ = KURL();
-    next_url_ = KURL();
-    UpdateActiveRoutes();
-  }
+  void OnNavigationDone();
+
+  // Return the "from" URL of the current navigation, if any.
+  KURL GetFromURL() const { return previous_url_; }
+
+  // Return the "from" URL of the current navigation, if any.
+  KURL GetToURL() const { return next_url_; }
 
  private:
   ParseResult AddPatternToRoute(Route&, const JSONValue&);
@@ -123,6 +138,9 @@ class CORE_EXPORT RouteMap final : public ScriptWrappable,
   // Only set while navigating from one URL to another one.
   KURL previous_url_;
   KURL next_url_;
+
+  HistoryTraverseType history_traverse_type_ = kNotTraversing;
+  bool has_history_rules_ = false;
 
 #if DCHECK_IS_ON()
   bool is_updating_active_routes_ = false;

@@ -2,7 +2,7 @@ void CommandData::OutTitle()
 {
   if (BareOutput || DisableCopyright)
     return;
-#if defined(__GNUC__) && defined(SFX_MODULE)
+#ifdef SFX_MODULE
   mprintf(St(MCopyrightS));
 #else
 #ifndef SILENT

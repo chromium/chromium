@@ -19,7 +19,6 @@ source_set("push_notification") {
     "//components/optimization_guide/core",
     "//components/optimization_guide/proto:optimization_guide_proto",
     "//components/variations/service",
-    "//components/variations/service",
     "//ios/chrome/browser/bookmarks/model",
     "//ios/chrome/browser/commerce/model:shopping_service",
     "//ios/chrome/browser/optimization_guide/model",
@@ -67,8 +66,4 @@ source_set("unit_tests") {
     "//testing/gtest",
     "//third_party/ocmock",
   ]
-
-  # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
-  # enable the diagnostic by removing this line.
-  configs += [ "//build/config/compiler:no_exit_time_destructors" ]
 }

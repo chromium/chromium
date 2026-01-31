@@ -13,8 +13,7 @@
 #include "mojo/public/cpp/bindings/shared_remote.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
-namespace ash {
-namespace nearby {
+namespace ash::nearby {
 
 class MockQuickStartDecoder
     : public ash::quick_start::mojom::QuickStartDecoder {
@@ -44,7 +43,6 @@ class MockQuickStartDecoder
   mojo::SharedRemote<ash::quick_start::mojom::QuickStartDecoder> shared_remote_;
 };
 
-}  // namespace nearby
-}  // namespace ash
+}  // namespace ash::nearby
 
 #endif  // CHROMEOS_ASH_SERVICES_NEARBY_PUBLIC_CPP_MOCK_QUICK_START_DECODER_H_

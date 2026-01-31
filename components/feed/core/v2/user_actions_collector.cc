@@ -69,7 +69,7 @@ void UserActionsCollector::UpdateUserProfileOnLinkClick(
 }
 
 void UserActionsCollector::InitStoreFromPrefs() {
-  const base::Value::List& list_value_from_disk =
+  const base::ListValue& list_value_from_disk =
       profile_prefs_->GetList(prefs::kFeedOnDeviceUserActionsCollector);
   size_t count_values_during_store_initialization = 0;
 

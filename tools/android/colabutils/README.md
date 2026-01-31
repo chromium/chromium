@@ -116,3 +116,49 @@ async with wpr_archive.replay():
     await asyncio.sleep(2) # wait for trace recording to start
     await app.start(url="https://chromium.org")
 ```
+
+## Example: Collect and visualize a heap snapshot
+This example is under development. It will describe how to collect a Perfetto
+trace with a heap dump, symbolize it, and visualize in a Colab notebook.
+
+To set up the build environment follow [instructions for heaptrack](https://chromium.googlesource.com/chromium/src/+/main/docs/memory/heap_profiling_external.md#heaptrack).
+In particular, it is essential to replace PartitionAlloc with the system
+allocator via these GN flags:
+```
+forward_through_malloc = true
+is_component_build = true
+use_partition_alloc_as_malloc = false
+enable_backup_ref_ptr_support = false
+```
+
+After starting the browser on the device, use the `heap_profile` tool from the
+Perfetto repository to obtain a `symbolized-trace`.
+```bash
+DURATION_MS=30000
+CONTINUOUS_DUMP_INTERVAL_MS=500
+PERFETTO_REPO_PATH=/path/to/perfetto
+$PERFETTO_REPO_PATH/tools/heap_profile -d "$DURATION_MS" --name org.chromium.chrome --continuous-dump "$CONTINUOUS_DUMP_INTERVAL_MS"
+RAW_TRACE="$(mktemp)"
+PERFETTO_BINARY_PATH=out/$OUTDIR/lib.unstripped $PERFETTO_REPO_PATH/tools/traceconv symbolize "$RAW_TRACE" >logs/symbols
+cat "$RAW_TRACE" logs/symbols >symbolized-trace
+rm "$RAW_TRACE"
+```
+
+The `MemoryUsageView` can load this trace like so:
+```python
+from colabutils.memory_usage import MemoryUsageView
+
+view = MemoryUsageView.from_heap_dump('symbolized-trace')
+view.toplevel_names()
+view.display()
+```
+
+View a diff between two memory usage views:
+```python
+from colabutils.memory_usage import MemoryUsageView
+
+view1 = MemoryUsageView.from_heap_dump('symbolized-trace1')
+view2 = MemoryUsageView.from_heap_dump('symbolized-trace2')
+diff_view = MemoryUsageView.from_comparison(view, view2)
+diff_view.display()
+```

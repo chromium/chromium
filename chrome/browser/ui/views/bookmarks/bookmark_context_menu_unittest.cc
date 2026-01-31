@@ -477,10 +477,10 @@ TEST_P(BookmarkContextMenuTest, ShowManagedBookmarks) {
   EXPECT_TRUE(menu->GetMenuItemByID(IDC_BOOKMARK_BAR_NEW_FOLDER)->GetVisible());
 
   // Now set the managed bookmarks policy.
-  base::Value::Dict dict;
+  base::DictValue dict;
   dict.Set("name", "Google");
   dict.Set("url", "http://google.com");
-  base::Value::List list;
+  base::ListValue list;
   list.Append(std::move(dict));
   EXPECT_TRUE(managed->managed_node()->children().empty());
   profile_->GetPrefs()->Set(bookmarks::prefs::kManagedBookmarks,

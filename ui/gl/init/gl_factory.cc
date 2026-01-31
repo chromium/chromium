@@ -58,11 +58,11 @@ GLImplementationParts GetRequestedGLImplementation() {
       // Filter out disabled software implementations
       if (IsSwiftShaderGLImplementation(*iter) &&
           !features::IsSwiftShaderAllowed(cmd)) {
-        iter++;
+        iter = allowed_impls.erase(iter);
         continue;
       }
       if (IsWARPGLImplementation(*iter) && !features::IsWARPAllowed(cmd)) {
-        iter++;
+        iter = allowed_impls.erase(iter);
         continue;
       }
 
@@ -80,7 +80,7 @@ GLImplementationParts GetRequestedGLImplementation() {
                          angle_impls.end());
     // Insert software implementations at the end, after all other hardware
     // implementations.
-    allowed_impls.insert(allowed_impls.begin(), software_impls.begin(),
+    allowed_impls.insert(allowed_impls.end(), software_impls.begin(),
                          software_impls.end());
   }
 

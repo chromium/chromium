@@ -182,7 +182,7 @@ DownloadInterruptReason BaseFile::WriteDataToFile(
   // Use nestable async event instead of sync event so that all the writes
   // belong to the same download will be grouped together.
   CONDITIONAL_TRACE(
-      NESTABLE_ASYNC_BEGIN0("download", "DownloadFileWrite", download_id_));
+      BEGIN("download", "DownloadFileWrite", perfetto::Track(download_id_)));
 
   if (bytes_so_far_ != offset) {
     // A hole is created in the file.
@@ -210,8 +210,8 @@ DownloadInterruptReason BaseFile::WriteDataToFile(
     current_data = current_data.subspan(*write_result);
   }
 
-  CONDITIONAL_TRACE(NESTABLE_ASYNC_END1("download", "DownloadFileWrite",
-                                        download_id_, "bytes", data.size()));
+  CONDITIONAL_TRACE(
+      END("download", perfetto::Track(download_id_), "bytes", data.size()));
 
   if (secure_hash_)
     secure_hash_->Update(data);
@@ -422,9 +422,9 @@ DownloadInterruptReason BaseFile::Open(const std::string& hash_so_far,
     }
   }
 
-  CONDITIONAL_TRACE(NESTABLE_ASYNC_BEGIN2(
-      "download", "DownloadFileOpen", download_id_, "file_name",
-      full_path_.AsUTF8Unsafe(), "bytes_so_far", bytes_so_far_));
+  CONDITIONAL_TRACE(BEGIN(
+      "download", "DownloadFileOpen", perfetto::Track(download_id_),
+      "file_name", full_path_.AsUTF8Unsafe(), "bytes_so_far", bytes_so_far_));
 
   // For sparse file, skip hash validation.
   if (is_sparse_file_) {
@@ -489,8 +489,7 @@ void BaseFile::ClearFile() {
   // This should only be called when we have a stream.
   DCHECK(file_.IsValid());
   file_.Close();
-  CONDITIONAL_TRACE(
-      NESTABLE_ASYNC_END0("download", "DownloadFileOpen", download_id_));
+  CONDITIONAL_TRACE(END("download", perfetto::Track(download_id_)));
 }
 
 DownloadInterruptReason BaseFile::LogNetError(const char* operation,

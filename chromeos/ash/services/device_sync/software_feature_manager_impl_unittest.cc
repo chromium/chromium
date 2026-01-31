@@ -4,7 +4,8 @@
 
 #include "chromeos/ash/services/device_sync/software_feature_manager_impl.h"
 
-#include "base/containers/contains.h"
+#include <algorithm>
+
 #include "base/functional/bind.h"
 #include "chromeos/ash/components/multidevice/remote_device_ref.h"
 #include "chromeos/ash/components/multidevice/remote_device_test_util.h"
@@ -163,14 +164,15 @@ class DeviceSyncSoftwareFeatureManagerImplTest
     EXPECT_TRUE(result_eligible_devices_.size() > 0);
     EXPECT_TRUE(result_ineligible_devices_.size() > 0);
     for (const auto& device_info : result_eligible_devices_) {
-      EXPECT_TRUE(base::Contains(test_eligible_external_devices_infos_,
-                                 device_info.public_key(),
-                                 &cryptauth::ExternalDeviceInfo::public_key));
+      EXPECT_TRUE(std::ranges::contains(
+          test_eligible_external_devices_infos_, device_info.public_key(),
+          &cryptauth::ExternalDeviceInfo::public_key));
     }
     for (const auto& ineligible_device : result_ineligible_devices_) {
-      EXPECT_TRUE(base::Contains(test_ineligible_external_devices_infos_,
-                                 ineligible_device.device().public_key(),
-                                 &cryptauth::ExternalDeviceInfo::public_key));
+      EXPECT_TRUE(
+          std::ranges::contains(test_ineligible_external_devices_infos_,
+                                ineligible_device.device().public_key(),
+                                &cryptauth::ExternalDeviceInfo::public_key));
     }
     result_eligible_devices_.clear();
     result_ineligible_devices_.clear();

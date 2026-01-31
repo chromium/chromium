@@ -101,6 +101,10 @@ void FakeWebState::LoadSimulatedRequest(const GURL& url,
   OnPageLoaded(web::PageLoadCompletionStatus::SUCCESS);
 }
 
+void FakeWebState::Stop() {
+  was_stopped_ = true;
+}
+
 void FakeWebState::LoadSimulatedRequest(const GURL& url,
                                         NSData* response_data,
                                         NSString* mime_type) {

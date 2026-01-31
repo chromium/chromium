@@ -51,6 +51,10 @@ class BookmarkBarButtonProperties {
     /** The title to render in the bookmark bar button. */
     public static final WritableObjectPropertyKey<String> TITLE = new WritableObjectPropertyKey<>();
 
+    /** The tooltip to display on hover for the bookmark bar button. */
+    public static final WritableObjectPropertyKey<String> TOOLTIP =
+            new WritableObjectPropertyKey<>();
+
     /** The content description for folders in the bookmark bar. */
     public static final WritableObjectPropertyKey<String> FOLDER_CONTENT_DESCRIPTION =
             new WritableObjectPropertyKey<>();
@@ -73,6 +77,7 @@ class BookmarkBarButtonProperties {
                 ICON_SUPPLIER,
                 ICON_TINT_LIST_ID,
                 TITLE,
+                TOOLTIP,
                 FOLDER_CONTENT_DESCRIPTION,
                 TEXT_APPEARANCE_ID,
                 BOOKMARK_ITEM,

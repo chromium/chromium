@@ -61,6 +61,7 @@ import android.text.style.SuperscriptSpan;
 import android.text.style.TypefaceSpan;
 import android.text.style.URLSpan;
 import android.text.style.UnderlineSpan;
+import android.util.SparseArray;
 import android.view.View;
 
 import androidx.core.view.accessibility.AccessibilityNodeInfoCompat;
@@ -169,6 +170,9 @@ public class AccessibilityNodeInfoBuilder {
 
         // Set of coordinates for providing the correct size and scroll of the View.
         AccessibilityDelegate.AccessibilityCoordinates getAccessibilityCoordinates();
+
+        // The set of rects that are occluding the view.
+        SparseArray<Rect> getOccludingRects();
     }
 
     public final BuilderDelegate mDelegate;
@@ -416,12 +420,13 @@ public class AccessibilityNodeInfoBuilder {
         node.setTooltipText(tooltipText);
         node.setExpandedState(expandedState);
 
-        // If we have enabled WINDOW_CONTENT_CHANGED live region events or deprecated
-        // TYPE_ANNOUNCEMENT, we should properly mark live region root nodes. Otherwise, we choose
-        // to use AnnounceLiveRegionText() to make this announcement for us.
-        if (ContentFeatureMap.isEnabled(ContentFeatureList.ACCESSIBILITY_DEPRECATE_TYPE_ANNOUNCE)
-                || ContentFeatureMap.isEnabled(
-                        ContentFeatureList.ACCESSIBILITY_IMPROVE_LIVE_REGION_ANNOUNCE)) {
+        // If we have deprecated TYPE_ANNOUNCEMENT, we should properly mark live region root nodes.
+        // Otherwise, we choose to use AnnounceLiveRegionText() to make this announcement for us.
+        // TODO(crbug.com/470048610): Once the Finch experiment for
+        // ACCESSIBILITY_IMPROVE_LIVE_REGION_ANNOUNCE is complete, we should add the flag to the
+        // if-statement below. However, until TalkBack 17.0 is released, we cannot send
+        // WINDOW_CONTENT_CHANGED events with a valid LiveRegion without altering user experience.
+        if (ContentFeatureMap.isEnabled(ContentFeatureList.ACCESSIBILITY_DEPRECATE_TYPE_ANNOUNCE)) {
             node.setLiveRegion(liveRegion);
         }
 
@@ -579,6 +584,18 @@ public class AccessibilityNodeInfoBuilder {
             node.setContentDescription(computedText);
         } else {
             node.setText(computedText);
+
+            // Though actions are generally set elsewhere, we make an exception here in order to
+            // stay consistent with when we supply `text` on a node. In these cases, we can
+            // confidently state there is text selection available via
+            // WebContentsAccessibilityAndroid::SetSelection.
+            if (computedText.length() > 0
+                    && ContentFeatureMap.isEnabled(
+                            ContentFeatureList
+                                    .ACCESSIBILITY_SET_SELECTABLE_ON_ALL_NODES_WITH_TEXT)) {
+                node.addAction(ACTION_SET_SELECTION);
+                node.setTextSelectable(true);
+            }
         }
 
         recordTimeToCreateSpannables(now);
@@ -638,6 +655,38 @@ public class AccessibilityNodeInfoBuilder {
             // In case of a cached node, remove the offscreen extra if it is there.
             if (node.getExtras().containsKey(EXTRAS_KEY_OFFSCREEN)) {
                 node.getExtras().remove(EXTRAS_KEY_OFFSCREEN);
+            }
+
+            updateNodeVisibilityForOcclusion(node);
+        }
+    }
+
+    /**
+     * Updates the visibility of an accessibility node based on whether it is occluded by other
+     * rects. If it is, it should be invisible to accessibility.
+     *
+     * @param info The {@link AccessibilityNodeInfoCompat} for the web content node.
+     */
+    private void updateNodeVisibilityForOcclusion(AccessibilityNodeInfoCompat info) {
+        if (!AccessibilityFeaturesMap.isEnabled(
+                AccessibilityFeatures.ACCESSIBILITY_HANDLE_OCCLUDING_VIEWS)) {
+            return;
+        }
+
+        if (!info.isVisibleToUser()) return;
+
+        Rect webNodeBounds = new Rect();
+        info.getBoundsInScreen(webNodeBounds);
+        if (webNodeBounds.isEmpty()) return;
+
+        SparseArray<Rect> occludingRects = mDelegate.getOccludingRects();
+        for (int i = 0; i < occludingRects.size(); i++) {
+            Rect occludingRect = occludingRects.valueAt(i);
+            Rect intersection = new Rect(webNodeBounds);
+            if (intersection.intersect(occludingRect)) {
+                info.setVisibleToUser(false);
+                // No need to check other occluding rects if the node is already invisible.
+                return;
             }
         }
     }

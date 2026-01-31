@@ -43,13 +43,12 @@ function bufferToPngObjectUrl(value: BigBuffer): Url|null {
       const sharedMemory = value.sharedMemory;
       const {buffer, result} =
           sharedMemory.bufferHandle.mapBuffer(0, sharedMemory.size);
-      assert(result === Mojo.RESULT_OK, 'Could not map buffer');
+      assert(
+          result === Mojo.RESULT_OK, `Could not map buffer. error: ${result}`);
       bytes = new Uint8Array(buffer);
     }
 
-    const result = {
-      url: URL.createObjectURL(new Blob([bytes], {type: 'image/png'})),
-    };
+    const result = URL.createObjectURL(new Blob([bytes], {type: 'image/png'}));
     objectUrlCache.set(value, result);
     return result;
 
@@ -63,9 +62,7 @@ function bufferToPngObjectUrl(value: BigBuffer): Url|null {
  * The placeholder url is used as the user image url for invalid or unknown
  * urls.
  */
-const placeHolderUrl = {
-  url: AVATAR_PLACEHOLDER_URL,
-};
+const placeHolderUrl = AVATAR_PLACEHOLDER_URL;
 
 /**
  * Derive a user image |Url| from |PersonalizationState|. Return a |Url| rather

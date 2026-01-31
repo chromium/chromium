@@ -78,14 +78,14 @@ IN_PROC_BROWSER_TEST_F(SandboxDiagnosticsBrowserTest, Navigate) {
       }));
   run_loop.Run();
 
-  const base::Value::List* process_list = out_args.GetIfList();
+  const base::ListValue* process_list = out_args.GetIfList();
   ASSERT_TRUE(process_list);
   bool found_renderer = false;
   bool found_device_api = false;
   bool found_ksec_dd = false;
 
   for (const base::Value& process_value : *process_list) {
-    const base::Value::Dict* process = process_value.GetIfDict();
+    const base::DictValue* process = process_value.GetIfDict();
     ASSERT_TRUE(process);
     std::optional<double> pid = process->FindDouble("processId");
     ASSERT_TRUE(pid.has_value());

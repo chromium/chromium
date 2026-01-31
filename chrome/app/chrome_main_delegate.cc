@@ -165,6 +165,7 @@
 #include "base/android/java_exception_reporter.h"
 #include "base/android/library_loader/library_loader_hooks.h"
 #include "chrome/browser/android/flags/chrome_cached_flags.h"
+#include "chrome/browser/android/initialize_feature_list_android.h"
 #include "chrome/browser/android/metrics/uma_session_stats.h"
 #include "chrome/browser/flags/android/chrome_feature_list.h"
 #include "chrome/common/chrome_descriptors_android.h"
@@ -847,7 +848,6 @@ std::optional<int> ChromeMainDelegate::PostEarlyInitialization(
   std::string actual_locale = LoadLocalState(
       chrome_feature_list_creator, invoked_in_browser->is_running_test);
   chrome_feature_list_creator->SetApplicationLocale(actual_locale);
-  chrome_feature_list_creator->OverrideCachedUIStrings();
 
   // On Chrome OS, initialize D-Bus clients that depend on feature list.
 #if BUILDFLAG(IS_CHROMEOS)
@@ -946,17 +946,6 @@ void ChromeMainDelegate::CommonEarlyInitialization() {
   std::string process_type =
       command_line->GetSwitchValueASCII(switches::kProcessType);
   bool is_browser_process = process_type.empty();
-
-#if BUILDFLAG(IS_WIN)
-  if (base::FeatureList::IsEnabled(features::kDisableBoostPriority) &&
-      features::kDisableBoostPriorityMode.Get() ==
-          features::DisableBoostPriorityMode::kAtStartup) {
-    // The second argument to this function *disables* boosting if true. See
-    // https://learn.microsoft.com/en-us/windows/win32/api/processthreadsapi/nf-processthreadsapi-setprocesspriorityboost
-    SetProcessPriorityBoost(/*hProcess=*/base::GetCurrentProcessHandle(),
-                            /*bDisablePriorityBoost=*/true);
-  }
-#endif
 
   // Enable Split cache by default here and not in content/ so as to not
   // impact non-Chrome embedders like WebView, Cronet etc. This only enables
@@ -1719,12 +1708,7 @@ void ChromeMainDelegate::InitializeMemorySystem() {
 
 bool ChromeMainDelegate::IsInitFeatureListEarly() {
 #if BUILDFLAG(IS_ANDROID)
-  return base::CommandLine::ForCurrentProcess()
-             ->GetSwitchValueASCII(switches::kProcessType)
-             .empty() &&
-         chrome::android::IsJavaDrivenFeatureEnabled(
-             chrome::android::kLoadNativeEarly) &&
-         chrome::android::IsInitFeatureListEarlyFeatureParamEnabled();
+  return variations::android::DidInitFeatureListEarly();
 #else
   return false;
 #endif

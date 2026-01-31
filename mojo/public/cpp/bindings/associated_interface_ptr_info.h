@@ -6,6 +6,7 @@
 #define MOJO_PUBLIC_CPP_BINDINGS_ASSOCIATED_INTERFACE_PTR_INFO_H_
 
 #include <stdint.h>
+
 #include <utility>
 
 #include "mojo/public/cpp/bindings/scoped_interface_endpoint_handle.h"

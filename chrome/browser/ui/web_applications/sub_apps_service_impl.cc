@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/web_applications/sub_apps_service_impl.h"
 
+#include <memory>
 #include <string>
 #include <utility>
 #include <vector>
@@ -23,16 +24,18 @@
 #include "chrome/browser/permissions/permission_decision_auto_blocker_factory.h"
 #include "chrome/browser/policy/policy_util.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/web_applications/sub_apps_install_dialog_controller.h"
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_command_scheduler.h"
+#include "chrome/browser/web_applications/web_app_filter.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_install_finalizer.h"
+#include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/browser/web_applications/web_app_install_params.h"
 #include "chrome/browser/web_applications/web_app_management_type.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/browser/web_applications/web_app_tab_helper.h"
+#include "chrome/browser/web_applications/web_app_ui_manager.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/grit/generated_resources.h"
@@ -44,6 +47,7 @@
 #include "content/public/browser/isolated_context_util.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
+#include "third_party/blink/public/mojom/subapps/sub_apps_service.mojom.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/message_center/public/cpp/notification.h"
 #include "url/gurl.h"
@@ -107,11 +111,12 @@ AddOptionsFromMojo(
     const std::vector<SubAppsServiceAddParametersPtr>& sub_apps_to_add_mojo) {
   std::vector<SubAppInstallParams> sub_apps;
   for (const auto& sub_app : sub_apps_to_add_mojo) {
-    ASSIGN_OR_RETURN(webapps::ManifestId manifest_id,
+    ASSIGN_OR_RETURN(GURL manifest_url,
                      ConvertPathToUrl(sub_app->manifest_id_path, origin));
     ASSIGN_OR_RETURN(GURL install_url,
                      ConvertPathToUrl(sub_app->install_url_path, origin));
-    sub_apps.emplace_back(std::move(manifest_id), std::move(install_url));
+    sub_apps.emplace_back(webapps::ManifestId(std::move(manifest_url)),
+                          std::move(install_url));
   }
   return sub_apps;
 }
@@ -276,8 +281,11 @@ void SubAppsServiceImpl::Add(
       // Compromised renderer, bail immediately (this call deletes *this).
       &SubAppsServiceImpl::ReportBadMessageAndDeleteThis, this);
 
-  CHECK(AreWebAppsUserInstallable(
-      Profile::FromBrowserContext(render_frame_host().GetBrowserContext())));
+  if (!AreWebAppsUserInstallable(Profile::FromBrowserContext(
+          render_frame_host().GetBrowserContext()))) {
+    ReturnAllAddsAsFailed(sub_apps_to_add, std::move(result_callback));
+    return;
+  }
 
   // Assign id to this add call
   int add_call_id = next_add_call_id_++;
@@ -381,21 +389,13 @@ void SubAppsServiceImpl::FinishAddCallOrShowInstallDialog(int add_call_id) {
     return;
   }
 
-  WebAppRegistrar& registrar =
-      GetWebAppProvider(render_frame_host())->registrar_unsafe();
+  WebAppProvider* provider = GetWebAppProvider(render_frame_host());
   const webapps::AppId* parent_app_id = GetAppId(render_frame_host());
-
-  add_call_info.install_dialog =
-      std::make_unique<SubAppsInstallDialogController>();
-  add_call_info.install_dialog->Init(
+  provider->ui_manager().ShowSubAppsInstallDialog(
+      content::WebContents::FromRenderFrameHost(&render_frame_host()),
+      add_call_info.install_infos, *parent_app_id,
       base::BindOnce(&SubAppsServiceImpl::ProcessDialogResponse,
-                     weak_ptr_factory_.GetWeakPtr(), add_call_id),
-      add_call_info.install_infos,
-      /*parent_app_name=*/registrar.GetAppShortName(*parent_app_id),
-      *parent_app_id, GetProfile(render_frame_host()),
-      /*window=*/
-      content::WebContents::FromRenderFrameHost(&render_frame_host())
-          ->GetTopLevelNativeWindow());
+                     weak_ptr_factory_.GetWeakPtr(), add_call_id));
 }
 
 void SubAppsServiceImpl::ProcessDialogResponse(int add_call_id,
@@ -574,7 +574,8 @@ void SubAppsServiceImpl::RemoveSubApp(
   // its parent_app is the one doing the current call.
   if (!app || !app->parent_app_id() ||
       *calling_app_id != *app->parent_app_id() ||
-      !provider->registrar_unsafe().IsInRegistrar(sub_app_id)) {
+      !provider->registrar_unsafe().AppMatches(
+          sub_app_id, WebAppFilter::IsAppSurfaceableToUser())) {
     return std::move(callback).Run(SubAppsServiceRemoveResult::New(
         manifest_id_path, SubAppsServiceResultCode::kFailure));
   }

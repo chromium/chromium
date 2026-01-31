@@ -27,12 +27,12 @@ class AppTimeLimitsAllowlistPolicyBuilder {
   void Clear();
   void AppendToAllowlistAppList(const AppId& app_id);
 
-  const base::Value::Dict& dict() const { return dict_; }
+  const base::DictValue& dict() const { return dict_; }
 
  private:
-  void AppendToList(const std::string& key, base::Value::Dict dict);
+  void AppendToList(const std::string& key, base::DictValue dict);
 
-  base::Value::Dict dict_;
+  base::DictValue dict_;
 };
 
 }  // namespace ash::app_time

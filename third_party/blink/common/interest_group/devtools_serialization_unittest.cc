@@ -228,8 +228,8 @@ TEST(SerializeAuctionConfigTest, AuctionSignalsPendingPromise) {
   AuctionConfig config = CreateBasicAuctionConfig();
   config.non_shared_params.auction_signals =
       AuctionConfig::MaybePromiseJson::FromPromise();
-  base::Value::Dict serialized = SerializeAuctionConfigForDevtools(config);
-  const base::Value::Dict* signal_dict = serialized.FindDict("auctionSignals");
+  base::DictValue serialized = SerializeAuctionConfigForDevtools(config);
+  const base::DictValue* signal_dict = serialized.FindDict("auctionSignals");
   ASSERT_TRUE(signal_dict);
 
   const char kExpected[] = R"({
@@ -244,8 +244,8 @@ TEST(SerializeAuctionConfigTest, SellerSignalsPendingPromise) {
   AuctionConfig config = CreateBasicAuctionConfig();
   config.non_shared_params.seller_signals =
       AuctionConfig::MaybePromiseJson::FromPromise();
-  base::Value::Dict serialized = SerializeAuctionConfigForDevtools(config);
-  const base::Value::Dict* signal_dict = serialized.FindDict("sellerSignals");
+  base::DictValue serialized = SerializeAuctionConfigForDevtools(config);
+  const base::DictValue* signal_dict = serialized.FindDict("sellerSignals");
   ASSERT_TRUE(signal_dict);
 
   const char kExpected[] = R"({
@@ -260,9 +260,8 @@ TEST(SerializeAuctionConfigTest, SellerTKVSignalsPendingPromise) {
   AuctionConfig config = CreateBasicAuctionConfig();
   config.non_shared_params.seller_tkv_signals =
       AuctionConfig::MaybePromiseJson::FromPromise();
-  base::Value::Dict serialized = SerializeAuctionConfigForDevtools(config);
-  const base::Value::Dict* signal_dict =
-      serialized.FindDict("sellerTKVSignals");
+  base::DictValue serialized = SerializeAuctionConfigForDevtools(config);
+  const base::DictValue* signal_dict = serialized.FindDict("sellerTKVSignals");
   ASSERT_TRUE(signal_dict);
 
   const char kExpected[] = R"({
@@ -278,8 +277,8 @@ TEST(SerializeAuctionConfigTest, ServerResponse) {
   config.server_response.emplace();
   config.server_response->request_id =
       base::Uuid::ParseLowercase("626e6419-1872-48ac-877d-c4c096f28284");
-  base::Value::Dict serialized = SerializeAuctionConfigForDevtools(config);
-  const base::Value::Dict* server_dict = serialized.FindDict("serverResponse");
+  base::DictValue serialized = SerializeAuctionConfigForDevtools(config);
+  const base::DictValue* server_dict = serialized.FindDict("serverResponse");
   ASSERT_TRUE(server_dict);
 
   const char kExpected[] = R"({

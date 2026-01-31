@@ -50,6 +50,7 @@
 using base::ASCIIToUTF16;
 using net::test::IsError;
 using net::test::IsOk;
+using testing::Contains;
 
 namespace net {
 
@@ -522,8 +523,23 @@ TEST_F(CertDatabaseNSSTest, ImportCACertHierarchy) {
 }
 
 TEST_F(CertDatabaseNSSTest, ImportCACertHierarchyDupeRoot) {
+  // Create a chain of certs: A(leaf) <- B <- C <- D(root)
+  std::vector<std::unique_ptr<CertBuilder>> cert_builders =
+      CertBuilder::CreateSimpleChain(/*chain_length=*/4);
+  ASSERT_EQ(4U, cert_builders.size());
+
+  scoped_refptr<X509Certificate> leaf_a_cert =
+      cert_builders[0]->GetX509Certificate();
+  scoped_refptr<X509Certificate> intermediate_b_cert =
+      cert_builders[1]->GetX509Certificate();
+  scoped_refptr<X509Certificate> intermediate_c_cert =
+      cert_builders[2]->GetX509Certificate();
+  scoped_refptr<X509Certificate> root_d_cert =
+      cert_builders[3]->GetX509Certificate();
+
   ScopedCERTCertificateList certs;
-  ASSERT_TRUE(ReadCertIntoList("multi-root-D-by-D.pem", &certs));
+  certs.push_back(
+      x509_util::CreateCERTCertificateFromX509Certificate(root_d_cert.get()));
 
   // First import just the root.
   NSSCertDatabase::ImportCertFailureList failed;
@@ -534,13 +550,17 @@ TEST_F(CertDatabaseNSSTest, ImportCACertHierarchyDupeRoot) {
   EXPECT_EQ(0U, failed.size());
   ScopedCERTCertificateList cert_list = ListCerts();
   ASSERT_EQ(1U, cert_list.size());
-  EXPECT_EQ("D Root CA - Multi-root", GetSubjectCN(cert_list[0].get()));
+  EXPECT_EQ(root_d_cert->subject().GetDisplayName(),
+            GetSubjectCN(cert_list[0].get()));
 
-  ASSERT_TRUE(ReadCertIntoList("multi-root-C-by-D.pem", &certs));
-  ASSERT_TRUE(ReadCertIntoList("multi-root-B-by-C.pem", &certs));
-  ASSERT_TRUE(ReadCertIntoList("multi-root-A-by-B.pem", &certs));
+  certs.push_back(x509_util::CreateCERTCertificateFromX509Certificate(
+      intermediate_c_cert.get()));
+  certs.push_back(x509_util::CreateCERTCertificateFromX509Certificate(
+      intermediate_b_cert.get()));
+  certs.push_back(
+      x509_util::CreateCERTCertificateFromX509Certificate(leaf_a_cert.get()));
 
-  // Now import with the other certs in the list too.  Even though the root is
+  // Now import with the other certs in the list too. Even though the root is
   // already present, we should still import the rest.
   failed.clear();
   EXPECT_TRUE(cert_db_->ImportCACerts(
@@ -548,17 +568,27 @@ TEST_F(CertDatabaseNSSTest, ImportCACertHierarchyDupeRoot) {
       &failed));
 
   ASSERT_EQ(2U, failed.size());
-  EXPECT_EQ("D Root CA - Multi-root",
+  EXPECT_EQ(root_d_cert->subject().GetDisplayName(),
             GetSubjectCN(failed[0].certificate.get()));
   EXPECT_THAT(failed[0].net_error, IsError(ERR_IMPORT_CERT_ALREADY_EXISTS));
-  EXPECT_EQ("127.0.0.1", GetSubjectCN(failed[1].certificate.get()));
+  EXPECT_EQ(leaf_a_cert->subject().GetDisplayName(),
+            GetSubjectCN(failed[1].certificate.get()));
   EXPECT_THAT(failed[1].net_error, IsError(ERR_IMPORT_CA_CERT_NOT_CA));
 
   cert_list = ListCerts();
   ASSERT_EQ(3U, cert_list.size());
-  EXPECT_EQ("C CA - Multi-root", GetSubjectCN(cert_list[0].get()));
-  EXPECT_EQ("B CA - Multi-root", GetSubjectCN(cert_list[1].get()));
-  EXPECT_EQ("D Root CA - Multi-root", GetSubjectCN(cert_list[2].get()));
+
+  std::set<std::string> cert_list_subjects;
+  for (const auto& cert : cert_list) {
+    cert_list_subjects.insert(GetSubjectCN(cert.get()));
+  }
+
+  EXPECT_THAT(cert_list_subjects,
+              Contains(intermediate_b_cert->subject().GetDisplayName()));
+  EXPECT_THAT(cert_list_subjects,
+              Contains(intermediate_c_cert->subject().GetDisplayName()));
+  EXPECT_THAT(cert_list_subjects,
+              Contains(root_d_cert->subject().GetDisplayName()));
 
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(0, observer_->client_cert_store_changes());

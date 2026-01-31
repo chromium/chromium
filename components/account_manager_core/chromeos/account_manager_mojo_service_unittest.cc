@@ -635,7 +635,7 @@ TEST_F(AccountManagerMojoServiceTest,
   mojom::AccessTokenResultPtr result = FetchAccessToken(account_key);
 
   ASSERT_TRUE(result->is_error());
-  EXPECT_EQ(mojom::GoogleServiceAuthError::State::kUserNotSignedUp,
+  EXPECT_EQ(mojom::GoogleServiceAuthError::State::kAccountNotFound,
             result->get_error()->state);
 
   // Check that requests are not leaking.

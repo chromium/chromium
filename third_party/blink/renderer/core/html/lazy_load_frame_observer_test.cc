@@ -678,7 +678,7 @@ class LazyLoadFramesTest : public SimTest {
                                     "text/html");
     LoadURL("https://example.com/");
 
-    main_resource.Complete(String::Format(
+    main_resource.Complete(UNSAFE_TODO(String::Format(
         R"HTML(
           <body onload='console.log("main body onload");'>
           <div style='height: %dpx;'></div>
@@ -687,7 +687,7 @@ class LazyLoadFramesTest : public SimTest {
                onload='console.log("child frame element onload");'></iframe>
           </body>)HTML",
         kViewportHeight + kLoadingDistanceThresholdPx + 100,
-        iframe_attributes));
+        iframe_attributes)));
 
     Compositor().BeginFrame();
     test::RunPendingTasks();
@@ -704,7 +704,7 @@ class LazyLoadFramesTest : public SimTest {
     SimRequest main_resource("https://example.com/", "text/html");
     LoadURL("https://example.com/");
 
-    main_resource.Complete(String::Format(
+    main_resource.Complete(UNSAFE_TODO(String::Format(
         R"HTML(
           <body onload='console.log("main body onload");'>
           <div style='height: %dpx;'></div>
@@ -713,7 +713,7 @@ class LazyLoadFramesTest : public SimTest {
                onload='console.log("child frame element onload");'></iframe>
           </body>)HTML",
         kViewportHeight + kLoadingDistanceThresholdPx + 100,
-        iframe_attributes));
+        iframe_attributes)));
 
     Compositor().BeginFrame();
     test::RunPendingTasks();
@@ -751,7 +751,7 @@ class LazyLoadFramesTest : public SimTest {
     SimRequest main_resource("https://example.com/", "text/html");
     MainFrame().StartReload(WebFrameLoadType::kReload);
 
-    main_resource.Complete(String::Format(
+    main_resource.Complete(UNSAFE_TODO(String::Format(
         R"HTML(
             <body onload='console.log("main body onload");'>
             <div style='height: %dpx;'></div>
@@ -761,7 +761,7 @@ class LazyLoadFramesTest : public SimTest {
             </body>)HTML",
         LazyLoadFramesTest::kViewportHeight +
             LazyLoadFramesTest::kLoadingDistanceThresholdPx + 100,
-        iframe_attributes));
+        iframe_attributes)));
 
     if (is_deferral_expected_on_reload) {
       // The body's load event should have already fired.

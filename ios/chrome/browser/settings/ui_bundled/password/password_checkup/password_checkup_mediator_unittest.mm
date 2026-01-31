@@ -224,8 +224,6 @@ TEST_F(PasswordCheckupMediatorTest,
 // enabled.
 TEST_F(PasswordCheckupMediatorTest,
        NotifiesConsumerWhenSafetyCheckNotificationsAreEnabled) {
-  feature_list_.InitAndEnableFeature(kSafetyCheckNotifications);
-
   OCMExpect([consumer() setSafetyCheckNotificationsEnabled:YES]);
 
   [mediator() reconfigureNotificationsSection:YES];
@@ -237,8 +235,6 @@ TEST_F(PasswordCheckupMediatorTest,
 // disabled.
 TEST_F(PasswordCheckupMediatorTest,
        NotifiesConsumerWhenSafetyCheckNotificationsAreDisabled) {
-  feature_list_.InitAndEnableFeature(kSafetyCheckNotifications);
-
   OCMExpect([consumer() setSafetyCheckNotificationsEnabled:NO]);
 
   [mediator() reconfigureNotificationsSection:NO];
@@ -250,8 +246,6 @@ TEST_F(PasswordCheckupMediatorTest,
 // in the `IOS.Notifications.SafetyCheck.NotificationsOptInSource` histogram
 // when notifications are enabled.
 TEST_F(PasswordCheckupMediatorTest, FiresOptInForSafetyCheckNotifications) {
-  feature_list_.InitAndEnableFeature(kSafetyCheckNotifications);
-
   // Configure notifications to be disabled initially.
   UpdateSafetyCheckNotificationsPermission(NO);
 
@@ -272,8 +266,6 @@ TEST_F(PasswordCheckupMediatorTest, FiresOptInForSafetyCheckNotifications) {
 // in the `IOS.Notifications.SafetyCheck.NotificationsOptInSource` histogram
 // when notifications are disabled.
 TEST_F(PasswordCheckupMediatorTest, FiresOptOutForSafetyCheckNotifications) {
-  feature_list_.InitAndEnableFeature(kSafetyCheckNotifications);
-
   // Configure notifications to be enabled initially.
   UpdateSafetyCheckNotificationsPermission(YES);
 

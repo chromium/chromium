@@ -64,7 +64,7 @@ void ContextualGoogleIntegrationsPoliciesHandler::ApplyPolicySettings(
       !umbrella_policy_value || umbrella_policy_value->GetBool();
   if (!is_umbrella_policy_enabled) {
     prefs->SetValue(ash::prefs::kContextualGoogleIntegrationsConfiguration,
-                    base::Value(base::Value::List()));
+                    base::Value(base::ListValue()));
     return;
   }
 
@@ -73,7 +73,7 @@ void ContextualGoogleIntegrationsPoliciesHandler::ApplyPolicySettings(
     CheckAndGetValue(policies, /*errors=*/nullptr, &value);
     CHECK(value);
 
-    base::Value::List enabled_integrations;
+    base::ListValue enabled_integrations;
     for (const auto& integration_value : value->GetList()) {
       if (integration_value.is_string() &&
           kKnownGoogleIntegrations.contains(integration_value.GetString())) {

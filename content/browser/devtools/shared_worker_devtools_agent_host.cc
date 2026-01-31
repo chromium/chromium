@@ -71,7 +71,7 @@ std::string SharedWorkerDevToolsAgentHost::GetDescription() {
     return std::string();
   }
 
-  base::Value::Dict description;
+  base::DictValue description;
   description.Set("extendedLifetime", true);
   return base::WriteJson(description).value_or("");
 }

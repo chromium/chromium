@@ -65,6 +65,8 @@
           ],
           "script": "//tools/perf/process_perf_results.py"
         },
+        "module_name": "//clank/java:resource_sizes_system_webview_google_bundle",
+        "module_scheme": "single",
         "name": "resource_sizes_system_webview_google_bundle",
         "resultdb": {
           "has_native_resultdb_integration": true
@@ -243,6 +245,8 @@
           ],
           "script": "//tools/perf/process_perf_results.py"
         },
+        "module_name": "//chrome/test:performance_webview_test_suite",
+        "module_scheme": "flat",
         "name": "performance_webview_test_suite",
         "resultdb": {
           "enable": true
@@ -632,6 +636,8 @@
           ],
           "script": "//tools/perf/process_perf_results.py"
         },
+        "module_name": "//chrome/test:performance_webview_test_suite",
+        "module_scheme": "flat",
         "name": "performance_webview_test_suite",
         "resultdb": {
           "enable": true
@@ -679,6 +685,8 @@
           ],
           "script": "//tools/perf/process_perf_results.py"
         },
+        "module_name": "//chrome/test:performance_webview_test_suite",
+        "module_scheme": "flat",
         "name": "performance_webview_test_suite",
         "resultdb": {
           "enable": true
@@ -1060,6 +1068,8 @@
           ],
           "script": "//tools/perf/process_perf_results.py"
         },
+        "module_name": "//clank/java:resource_sizes_system_webview_google_bundle",
+        "module_scheme": "single",
         "name": "resource_sizes_system_webview_google_bundle",
         "resultdb": {
           "has_native_resultdb_integration": true

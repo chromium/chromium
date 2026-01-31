@@ -9,9 +9,14 @@
 #include <vector>
 
 #include "base/uuid.h"
+#include "components/contextual_tasks/public/contextual_task.h"
 #include "components/sessions/core/session_id.h"
 #include "ui/gfx/image/image.h"
 #include "url/gurl.h"
+
+namespace url_deduplication {
+class URLDeduplicationHelper;
+}  // namespace url_deduplication
 
 namespace contextual_tasks {
 
@@ -76,7 +81,7 @@ struct UrlAttachmentDecoratorData {
 // the URL itself and a data block that can be populated by decorators.
 struct UrlAttachment {
  public:
-  explicit UrlAttachment(const GURL& url);
+  explicit UrlAttachment(const GURL& url, ResourceType resource_type);
   ~UrlAttachment();
 
   UrlAttachment(const UrlAttachment&);
@@ -91,6 +96,8 @@ struct UrlAttachment {
   bool IsOpen() const;
   // The tab SessionID of the tab that was the source of this attachment.
   SessionID GetTabSessionId() const;
+  // The type of resource.
+  ResourceType GetResourceType() const;
 
   // Gives access to internal data sources.
   UrlAttachmentDecoratorData& GetMutableDecoratorDataForTesting();
@@ -105,6 +112,9 @@ struct UrlAttachment {
 
   // The URL that is attached.
   GURL url_;
+
+  // The type of resource.
+  ResourceType resource_type = ResourceType::kUnknown;
 
   // The title of the web page, if available from the ContextualTask directly.
   std::optional<std::u16string> title_;
@@ -140,6 +150,16 @@ struct ContextualTaskContext {
 
   // Returns a mutable version of the URL attachments for the task.
   std::vector<UrlAttachment>& GetMutableUrlAttachmentsForTesting();
+
+  // Returns true if the given |url| is contained in the context.
+  bool ContainsURL(
+      const GURL& url,
+      url_deduplication::URLDeduplicationHelper* deduplication_helper) const;
+
+  // Returns a list of URL attachments that match the given |url|.
+  std::vector<const UrlAttachment*> GetMatchingUrlAttachments(
+      const GURL& url,
+      url_deduplication::URLDeduplicationHelper* deduplication_helper) const;
 
  private:
   friend class ContextDecorator;

@@ -13,17 +13,6 @@ import org.chromium.build.annotations.Nullable;
 @NullMarked
 public interface FirstRunFragment {
     /**
-     * Notifies that the object returned by {@link #getPageDelegate()} and its dependencies have
-     * been fully initialized, including native initialization.
-     *
-     * <p>TODO(crbug.com/40232440): Remove this method.
-     *
-     * @deprecated Use {@link FirstRunPageDelegate#getNativeInitializationPromise()} instead.
-     */
-    @Deprecated
-    default void onNativeInitialized() {}
-
-    /**
      * @see androidx.fragment.app.Fragment#getActivity().
      */
     @Nullable Activity getActivity();

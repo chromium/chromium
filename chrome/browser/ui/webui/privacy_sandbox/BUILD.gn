@@ -49,7 +49,6 @@ if (!is_android) {
     deps = [
       "//chrome/browser/ui",
       "//chrome/browser/ui/tabs:tab_strip",
-      "//chrome/browser/ui/views/privacy_sandbox",
       "//chrome/test:test_support_ui",
       "//content/test:test_support",
       "//testing/gmock",

@@ -70,7 +70,6 @@ public class QuickDeleteTabsFilterTest {
         // Create tabs.
         for (int id = 0; id < countOfTabs; id++) {
             MockTab mockTab = new MockTab(id, mProfileMock);
-            mockTab.setRootId(id);
             mMockTabList.add(mockTab);
         }
         // Update the tab model.

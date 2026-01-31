@@ -46,7 +46,7 @@ namespace blink {
 class CSSParserContext;
 class CSSSelectorList;
 class Document;
-class NavigationLocation;
+class LinkCondition;
 class StyleRule;
 
 // This class represents a simple selector for a StyleRule.
@@ -317,12 +317,15 @@ class CORE_EXPORT CSSSelector {
     kPseudoSearchText,
     kPseudoPickerIcon,
     kPseudoPicker,
+    kPseudoSelectHasSlottedButton,
     kPseudoSelection,
     kPseudoSelectorFragmentAnchor,
     kPseudoSingleButton,
     kPseudoStart,
     kPseudoState,
     kPseudoTarget,
+    kPseudoToolFormActive,
+    kPseudoToolSubmitActive,
     kPseudoUnknown,
     // Something that was unparsable, but contained either a nesting
     // selector (&), or a :scope pseudo-class, and must therefore be kept
@@ -373,7 +376,6 @@ class CORE_EXPORT CSSSelector {
     kPseudoMultiSelectFocus,
     kPseudoOpen,
     kPseudoPastCue,
-    kPseudoPatching,
     kPseudoPopoverInTopLayer,
     kPseudoPopoverOpen,
     kPseudoRelativeAnchor,
@@ -407,11 +409,13 @@ class CORE_EXPORT CSSSelector {
     // Scroll button pseudo for Carousel
     kPseudoScrollButton,
 
+    // Overscroll gesture support.
+    kPseudoOverscrollTarget,
     kPseudoOverscrollAreaParent,
 
-    // :link-to(<navigation-location>)
-    // TODO(crbug.com/436805487): Should be :link-to(<link-condition>)
+    // :link-to(<link-condition>)
     kPseudoLinkTo,
+
   };
 
   enum class AttributeMatchType : int {
@@ -513,11 +517,11 @@ class CORE_EXPORT CSSSelector {
   const CSSSelectorList* SelectorList() const {
     return HasRareData() ? data_.rare_data_->selector_list_.Get() : nullptr;
   }
-  const NavigationLocation* GetNavigationLocation() const {
+  const LinkCondition* GetLinkCondition() const {
     if (!HasRareData()) {
       return nullptr;
     }
-    return data_.rare_data_->navigation_location_.Get();
+    return data_.rare_data_->link_condition_.Get();
   }
   // Similar to SelectorList(), but also works for kPseudoParent
   // (i.e., nested selectors); on &, will give the parent's selector list.
@@ -551,7 +555,7 @@ class CORE_EXPORT CSSSelector {
   void SetArgument(const AtomicString&);
   void SetArgumentList(std::unique_ptr<Vector<AtomicString>>);
   void SetSelectorList(CSSSelectorList*);
-  void SetNavigationLocation(NavigationLocation*);
+  void SetLinkCondition(LinkCondition*);
   void SetIdentList(std::unique_ptr<Vector<AtomicString>>);
   void SetContainsPseudoInsideHasPseudoClass();
   void SetContainsComplexLogicalCombinationsInsideHasPseudoClass();
@@ -674,6 +678,10 @@ class CORE_EXPORT CSSSelector {
   bool IsPseudoParent() const {
     return Match() == kPseudoClass && GetPseudoType() == kPseudoParent;
   }
+
+  // Returns true if the provided pseudo-class supports invalidation and can be
+  // passed to Element::PseudoStateChanged, otherwise false.
+  static bool SupportsPseudoStateChange(PseudoType);
 
   void Trace(Visitor* visitor) const;
 
@@ -801,7 +809,7 @@ class CORE_EXPORT CSSSelector {
     std::unique_ptr<Vector<AtomicString>> argument_list_;  // Used for :lang
     Member<CSSSelectorList>
         selector_list_;  // Used :is, :not, :-webkit-any, etc.
-    Member<NavigationLocation> navigation_location_;  // Used for :link-to().
+    Member<LinkCondition> link_condition_;  // Used for :link-to().
     std::unique_ptr<Vector<AtomicString>>
         ident_list_;  // Used for ::part(), :active-view-transition-type().
 
@@ -996,8 +1004,8 @@ inline CSSSelector::CSSSelector(CSSSelector&& o)
   // constructor (i.e., using similar code as in the copy constructor above)
   // after moving to Oilpan, copying the bits one by one. We already allow
   // memcpy + memset by traits, so we can do it by ourselves, too.
-  UNSAFE_TODO(memcpy(this, &o, sizeof(*this)));
-  UNSAFE_TODO(memset(&o, 0, sizeof(o)));
+  UNSAFE_BUFFERS(memcpy(this, &o, sizeof(*this)));
+  UNSAFE_BUFFERS(memset(&o, 0, sizeof(o)));
 }
 
 inline CSSSelector::~CSSSelector() {
@@ -1063,7 +1071,7 @@ inline bool CSSSelector::IsIdClassOrAttributeSelector() const {
 
 inline void swap(CSSSelector& a, CSSSelector& b) {
   char tmp[sizeof(CSSSelector)];
-  UNSAFE_TODO({
+  UNSAFE_BUFFERS({
     memcpy(tmp, &a, sizeof(CSSSelector));
     memcpy(&a, &b, sizeof(CSSSelector));
     memcpy(&b, tmp, sizeof(CSSSelector));

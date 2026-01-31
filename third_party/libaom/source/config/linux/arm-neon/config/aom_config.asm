@@ -1,5 +1,5 @@
 ;
-; Copyright (c) 2025, Alliance for Open Media. All rights reserved.
+; Copyright (c) 2026, Alliance for Open Media. All rights reserved.
 ;
 ; This source code is subject to the terms of the BSD 2 Clause License and
 ; the Alliance for Open Media Patent License 1.0. If the BSD 2 Clause License
@@ -85,6 +85,7 @@ HAVE_NEON equ 1
 HAVE_NEON_DOTPROD equ 0
 HAVE_NEON_I8MM equ 0
 HAVE_PTHREAD_H equ 1
+HAVE_PTHREAD_SETNAME_NP equ 1
 HAVE_RVV equ 0
 HAVE_SSE equ 0
 HAVE_SSE2 equ 0

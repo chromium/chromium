@@ -134,8 +134,6 @@ class WebUILoginView : public views::View,
   bool CheckMediaAccessPermission(content::RenderFrameHost* render_frame_host,
                                   const url::Origin& security_origin,
                                   blink::mojom::MediaStreamType type) override;
-  bool PreHandleGestureEvent(content::WebContents* source,
-                             const blink::WebGestureEvent& event) override;
 
   // Overridden from SystemTrayObserver.
   void OnFocusLeavingSystemTray(bool reverse) override;

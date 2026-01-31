@@ -4,7 +4,6 @@
 
 #include "device/bluetooth/dbus/fake_bluetooth_advertisement_monitor_application_service_provider.h"
 
-#include "base/containers/contains.h"
 #include "device/bluetooth/dbus/bluez_dbus_manager.h"
 #include "device/bluetooth/dbus/fake_bluetooth_advertisement_monitor_manager_client.h"
 #include "device/bluetooth/dbus/fake_bluetooth_advertisement_monitor_service_provider.h"
@@ -51,8 +50,8 @@ size_t FakeBluetoothAdvertisementMonitorApplicationServiceProvider::
 FakeBluetoothAdvertisementMonitorServiceProvider*
 FakeBluetoothAdvertisementMonitorApplicationServiceProvider::
     GetLastAddedAdvertisementMonitorServiceProvider() {
-  if (!base::Contains(advertisement_monitor_providers_,
-                      last_added_advertisement_monitor_provider_path_)) {
+  if (!advertisement_monitor_providers_.contains(
+          last_added_advertisement_monitor_provider_path_)) {
     return nullptr;
   }
 

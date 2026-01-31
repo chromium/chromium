@@ -1233,6 +1233,7 @@ TEST_F(GetAutocompleteEntryLabelSensitiveTest,
 //   * Cap normalized string length at 50 characters.
 //   * Ensure ICU awareness for proper handling of emojis, Kanji, and other
 //   scripts.
+//   * Unicode NFKC normalization is applied.
 TEST_F(AutocompleteTableLabelSensitiveTest, CorrectlyNormalizesLabel) {
   FormFieldData field = CreateTestFormField(
       u" !!!Long and!Case SeNsItIvE❤️Label 你好世界日本語안녕하세요Γειά σου "
@@ -1244,6 +1245,17 @@ TEST_F(AutocompleteTableLabelSensitiveTest, CorrectlyNormalizesLabel) {
                 field.name(), field.label(), field.value())
                 .value(),
             u"long and!case sensitive❤️label 你好世界日本語안녕하세요γειά σο");
+
+  // NFKC normalization should decompose compatibility characters like the 'ﬁ'
+  // ligature (U+FB03) into 'f' and 'i'.
+  field = CreateTestFormField(u"ﬁle", kDefaultName, kDefaultValue,
+                              FormControlType::kInputText);
+  ASSERT_TRUE(SubmitFormField(field));
+
+  EXPECT_EQ(GetAutocompleteEntryLabelSensitiveLabelNormalized(
+                field.name(), field.label(), field.value())
+                .value(),
+            u"file");
 }
 
 // Poisons the database and checks that we don't crash when adding a value.

@@ -134,14 +134,11 @@ leveldb::Status TransactionalLevelDBDatabase::Get(std::string_view key,
 leveldb::Status TransactionalLevelDBDatabase::Write(
     LevelDBWriteBatch* write_batch) {
   DCHECK(write_batch);
-  base::TimeTicks begin_time = base::TimeTicks::Now();
   leveldb::WriteOptions write_options;
   write_options.sync = kSyncWrites;
 
   const leveldb::Status s =
       db()->Write(write_options, write_batch->write_batch_.get());
-  UMA_HISTOGRAM_TIMES("WebCore.IndexedDB.LevelDB.WriteTime",
-                      base::TimeTicks::Now() - begin_time);
   EvictAllIterators();
   return s;
 }

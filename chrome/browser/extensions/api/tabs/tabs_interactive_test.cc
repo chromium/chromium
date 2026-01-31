@@ -65,7 +65,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionTabsTest, GetLastFocusedWindow) {
   scoped_refptr<const extensions::Extension> extension(
       extensions::ExtensionBuilder("Test").Build());
   function->set_extension(extension.get());
-  base::Value::Dict result =
+  base::DictValue result =
       utils::ToDict(utils::RunFunctionAndReturnSingleResult(
           function.get(), "[]", new_browser->profile()));
 
@@ -107,7 +107,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionTabsTest, QueryLastFocusedWindowTabs) {
   scoped_refptr<const extensions::Extension> extension(
       extensions::ExtensionBuilder("Test").Build());
   function->set_extension(extension.get());
-  base::Value::List result_tabs(
+  base::ListValue result_tabs(
       utils::ToList(utils::RunFunctionAndReturnSingleResult(
           function.get(), "[{\"lastFocusedWindow\":true}]", GetProfile())));
 
@@ -201,7 +201,7 @@ class ExtensionWindowLastFocusedTest : public PlatformAppBrowserTest {
 
   Browser* CreateBrowserWithEmptyTab(bool as_popup);
 
-  int GetTabId(const base::Value::Dict& dict) const;
+  int GetTabId(const base::DictValue& dict) const;
 
   std::optional<base::Value> RunFunction(ExtensionFunction* function,
                                          const std::string& params);
@@ -276,12 +276,12 @@ Browser* ExtensionWindowLastFocusedTest::CreateBrowserWithEmptyTab(
 }
 
 int ExtensionWindowLastFocusedTest::GetTabId(
-    const base::Value::Dict& dict) const {
-  const base::Value::List* tabs = dict.FindList(ExtensionTabUtil::kTabsKey);
+    const base::DictValue& dict) const {
+  const base::ListValue* tabs = dict.FindList(ExtensionTabUtil::kTabsKey);
   if (!tabs || tabs->empty()) {
     return -2;
   }
-  const base::Value::Dict* tab_dict = (*tabs)[0].GetIfDict();
+  const base::DictValue* tab_dict = (*tabs)[0].GetIfDict();
   if (!tab_dict) {
     return -2;
   }
@@ -307,7 +307,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionWindowLastFocusedTest,
 
     scoped_refptr<WindowsGetLastFocusedFunction> function =
         new WindowsGetLastFocusedFunction();
-    const base::Value::Dict result =
+    const base::DictValue result =
         utils::ToDict(RunFunction(function.get(), "[{\"populate\": true}]"));
     EXPECT_NE(devtools_window_id, api_test_utils::GetInteger(result, "id"));
   }
@@ -324,7 +324,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionWindowLastFocusedTest,
 
     scoped_refptr<WindowsGetLastFocusedFunction> get_current_app_function =
         new WindowsGetLastFocusedFunction();
-    const base::Value::Dict result = utils::ToDict(
+    const base::DictValue result = utils::ToDict(
         RunFunction(get_current_app_function.get(), "[{\"populate\": true}]"));
     int app_window_id = app_window->session_id().id();
     EXPECT_NE(app_window_id, api_test_utils::GetInteger(result, "id"));
@@ -342,7 +342,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionWindowLastFocusedTest,
 
     scoped_refptr<WindowsGetLastFocusedFunction> function =
         new WindowsGetLastFocusedFunction();
-    const base::Value::Dict result =
+    const base::DictValue result =
         utils::ToDict(RunFunction(function.get(), "[{\"populate\": true}]"));
     int normal_browser_window_id =
         ExtensionTabUtil::GetWindowId(normal_browser);
@@ -358,7 +358,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionWindowLastFocusedTest,
 
     scoped_refptr<WindowsGetLastFocusedFunction> function =
         new WindowsGetLastFocusedFunction();
-    const base::Value::Dict result =
+    const base::DictValue result =
         utils::ToDict(RunFunction(function.get(), "[{\"populate\": true}]"));
     int popup_browser_window_id = ExtensionTabUtil::GetWindowId(popup_browser);
     EXPECT_EQ(popup_browser_window_id,
@@ -374,7 +374,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionWindowLastFocusedTest,
 
     scoped_refptr<WindowsGetLastFocusedFunction> function =
         new WindowsGetLastFocusedFunction();
-    const base::Value::Dict result = utils::ToDict(RunFunction(
+    const base::DictValue result = utils::ToDict(RunFunction(
         function.get(),
         "[{\"populate\": true, \"windowTypes\": [ \"devtools\" ]}]"));
     int devtools_window_id = ExtensionTabUtil::GetWindowId(

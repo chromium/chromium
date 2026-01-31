@@ -40,8 +40,8 @@ class NET_EXPORT BackoffEntrySerializer {
   // converted to an absolute timestamp, thus the time will continue counting
   // down even whilst the device is powered off, and will be partially
   // vulnerable to changes in the system clock time.
-  static base::Value::List SerializeToList(const BackoffEntry& entry,
-                                           base::Time time_now);
+  static base::ListValue SerializeToList(const BackoffEntry& entry,
+                                         base::Time time_now);
 
   // Deserializes a `list` back to a BackoffEntry. It supports all
   // serialization format versions. `policy` MUST be the same Policy as the
@@ -52,7 +52,7 @@ class NET_EXPORT BackoffEntrySerializer {
   // to TimeTicks as best as possible. Returns NULL if deserialization was
   // unsuccessful.
   static std::unique_ptr<BackoffEntry> DeserializeFromList(
-      const base::Value::List& serialized,
+      const base::ListValue& serialized,
       const BackoffEntry::Policy* policy,
       const base::TickClock* clock,
       base::Time time_now);

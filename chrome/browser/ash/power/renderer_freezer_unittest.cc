@@ -306,16 +306,16 @@ TEST_F(RendererFreezerTestWithExtensions, DoesNotFreezeGcmExtensionRenderers) {
   scoped_refptr<const extensions::Extension> gcm_app =
       extensions::ExtensionBuilder()
           .SetManifest(
-              base::Value::Dict()
+              base::DictValue()
                   .Set("name", "GCM App")
                   .Set("version", "1.0.0")
                   .Set("manifest_version", 2)
-                  .Set("app", base::Value::Dict().Set(
+                  .Set("app", base::DictValue().Set(
                                   "background",
-                                  base::Value::Dict().Set(
-                                      "scripts", base::Value::List().Append(
+                                  base::DictValue().Set(
+                                      "scripts", base::ListValue().Append(
                                                      "background.js"))))
-                  .Set("permissions", base::Value::List().Append("gcm")))
+                  .Set("permissions", base::ListValue().Append("gcm")))
           .Build();
 
   // Now install it and give it a renderer.
@@ -334,14 +334,14 @@ TEST_F(RendererFreezerTestWithExtensions, FreezesNonGcmExtensionRenderers) {
   scoped_refptr<const extensions::Extension> background_app =
       extensions::ExtensionBuilder()
           .SetManifest(
-              base::Value::Dict()
+              base::DictValue()
                   .Set("name", "Background App")
                   .Set("version", "1.0.0")
                   .Set("manifest_version", 2)
-                  .Set("app", base::Value::Dict().Set(
+                  .Set("app", base::DictValue().Set(
                                   "background",
-                                  base::Value::Dict().Set(
-                                      "scripts", base::Value::List().Append(
+                                  base::DictValue().Set(
+                                      "scripts", base::ListValue().Append(
                                                      "background.js")))))
           .Build();
 

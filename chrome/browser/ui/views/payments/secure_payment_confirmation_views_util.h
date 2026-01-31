@@ -22,6 +22,10 @@ namespace gfx {
 class ImageSkia;
 }
 
+namespace ui {
+class ImageModel;
+}
+
 namespace payments {
 
 // Height of the header icons.
@@ -58,7 +62,11 @@ std::unique_ptr<views::Label> CreateSecurePaymentConfirmationTitleLabel(
 
 /// Creates an image view for an icon in the SPC transactions details table.
 std::unique_ptr<views::ImageView> CreateSecurePaymentConfirmationIconView(
-    const gfx::ImageSkia& bitmap);
+    const gfx::ImageSkia& image);
+
+/// Creates an image view for an icon in the SPC dialog using an ImageModel.
+std::unique_ptr<views::ImageView> CreateSecurePaymentConfirmationIconView(
+    const ui::ImageModel& image);
 
 // Formats the merchant label by combining the name and origin for display.
 std::u16string FormatMerchantLabel(

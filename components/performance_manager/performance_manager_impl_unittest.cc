@@ -60,7 +60,7 @@ TEST_F(PerformanceManagerImplTest, InstantiateNodes) {
   std::unique_ptr<ProcessNodeImpl> process_node =
       PerformanceManagerImpl::CreateProcessNode(
           RenderProcessHostProxy::CreateForTesting(render_process_host_id),
-          base::TaskPriority::HIGHEST);
+          base::Process::Priority::kMaxValue);
   EXPECT_NE(nullptr, process_node.get());
   std::unique_ptr<PageNodeImpl> page_node =
       PerformanceManagerImpl::CreatePageNode(nullptr, std::string(), GURL(),
@@ -86,7 +86,7 @@ TEST_F(PerformanceManagerImplTest, InstantiateNodes) {
 TEST_F(PerformanceManagerImplDeathTest, InvalidProcessHostProxies) {
   const auto browser_child_process_host_id = BrowserChildProcessHostId(1);
   EXPECT_CHECK_DEATH(PerformanceManagerImpl::CreateProcessNode(
-      RenderProcessHostProxy(), base::TaskPriority::HIGHEST));
+      RenderProcessHostProxy(), base::Process::Priority::kMaxValue));
   EXPECT_CHECK_DEATH(PerformanceManagerImpl::CreateProcessNode(
       content::PROCESS_TYPE_UTILITY, BrowserChildProcessHostProxy()));
 
@@ -108,7 +108,7 @@ TEST_F(PerformanceManagerImplTest, BatchDeleteNodes) {
   std::unique_ptr<ProcessNodeImpl> process_node =
       PerformanceManagerImpl::CreateProcessNode(
           RenderProcessHostProxy::CreateForTesting(render_process_host_id),
-          base::TaskPriority::HIGHEST);
+          base::Process::Priority::kMaxValue);
   std::unique_ptr<PageNodeImpl> page_node =
       PerformanceManagerImpl::CreatePageNode(nullptr, std::string(), GURL(),
                                              PagePropertyFlags{},

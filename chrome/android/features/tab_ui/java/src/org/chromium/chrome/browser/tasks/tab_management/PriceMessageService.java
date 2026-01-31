@@ -171,6 +171,7 @@ public class PriceMessageService extends MessageService<@MessageType Integer, @U
 
     private static final int MAX_PRICE_MESSAGE_SHOW_COUNT = 10;
 
+    private final Context mContext;
     private final Profile mProfile;
     private final Supplier<@Nullable PriceWelcomeMessageProvider>
             mPriceWelcomeMessageProviderSupplier;
@@ -180,6 +181,7 @@ public class PriceMessageService extends MessageService<@MessageType Integer, @U
     private @Nullable PriceTabData mPriceTabData;
 
     PriceMessageService(
+            Context context,
             Profile profile,
             Supplier<@Nullable PriceWelcomeMessageProvider> priceWelcomeMessageProviderSupplier,
             Supplier<@Nullable PriceWelcomeMessageReviewActionProvider>
@@ -189,6 +191,7 @@ public class PriceMessageService extends MessageService<@MessageType Integer, @U
                 UiType.PRICE_MESSAGE,
                 R.layout.large_message_card_item,
                 LargeMessageCardViewBinder::bind);
+        mContext = context;
         mProfile = profile;
         mPriceTabData = null;
         mPriceWelcomeMessageProviderSupplier = priceWelcomeMessageProviderSupplier;
@@ -213,7 +216,7 @@ public class PriceMessageService extends MessageService<@MessageType Integer, @U
         // before preparing new messages.
         invalidateMessage();
         mPriceTabData = priceTabData;
-        sendAvailabilityNotification((a, b) -> buildModel(type, a, b));
+        queueMessage(dismiss -> buildModel(type, dismiss));
         return true;
     }
 
@@ -224,15 +227,14 @@ public class PriceMessageService extends MessageService<@MessageType Integer, @U
 
     void invalidateMessage() {
         mPriceTabData = null;
-        sendInvalidNotification();
+        invalidateMessages();
     }
 
     private PropertyModel buildModel(
             @PriceMessageType int type,
-            Context context,
             ServiceDismissActionProvider<@MessageType Integer> serviceActionProvider) {
         return PriceMessageCardViewModel.create(
-                context,
+                mContext,
                 serviceActionProvider,
                 new PriceMessageData(type, mPriceTabData, () -> review(type), this::dismiss),
                 PriceDropNotificationManagerFactory.create(mProfile));
@@ -266,6 +268,7 @@ public class PriceMessageService extends MessageService<@MessageType Integer, @U
         PriceTrackingUtilities.disablePriceWelcomeMessageCard();
         mPriceTabData = null;
         RecordUserAction.record("Commerce.PriceWelcomeMessageCard.Dismissed");
+        dismissShownMessage();
     }
 
     private void logMessageDisableMetrics(@MessageDisableReason int reason) {

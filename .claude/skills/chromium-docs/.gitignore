@@ -1,0 +1,9 @@
+# Python cache files
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Generated data (can be rebuilt locally)
+data/indexes/
+data/cache/

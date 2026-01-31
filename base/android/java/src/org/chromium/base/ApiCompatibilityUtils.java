@@ -19,12 +19,14 @@ import android.graphics.drawable.Drawable;
 import android.hardware.display.DisplayManager;
 import android.net.Uri;
 import android.os.Build;
+import android.os.Bundle;
 import android.os.StrictMode;
 import android.provider.MediaStore;
 import android.view.Display;
 import android.view.View;
 
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 import java.io.IOException;
 import java.lang.reflect.Field;
@@ -231,5 +233,51 @@ public class ApiCompatibilityUtils {
             return ImageDecoder.decodeBitmap(ImageDecoder.createSource(cr, uri));
         }
         return MediaStore.Images.Media.getBitmap(cr, uri);
+    }
+
+    /**
+     * Calls {@link android.app.ActivityManager#moveTaskToFront(int, int)} and catches {@link
+     * NullPointerException}s. See crbug.com/471434499 for more context.
+     *
+     * @param context Context to get an ActivityManager instance from.
+     * @param taskId Task ID passed to a {@link android.app.ActivityManager#moveTaskToFront(int,
+     *     int)} method call.
+     * @param flags Flags passed to a {@link android.app.ActivityManager#moveTaskToFront(int, int)}
+     *     method call.
+     */
+    public static void moveTaskToFront(Context context, int taskId, int flags) {
+        moveTaskToFront(context, taskId, flags, null);
+    }
+
+    /**
+     * Calls {@link android.app.ActivityManager#moveTaskToFront(int, int, android.os.Bundle)} and
+     * catches {@link NullPointerException}s. See crbug.com/471434499 for more context.
+     *
+     * @param context Context to get an ActivityManager instance from.
+     * @param taskId Task ID passed to a {@link android.app.ActivityManager#moveTaskToFront(int,
+     *     int, android.os.Bundle)} method call.
+     * @param flags Flags passed to a {@link android.app.ActivityManager#moveTaskToFront(int, int,
+     *     android.os.Bundle)} method call.
+     * @param bOptions ActivityOptions Bundle passed to a {@link
+     *     android.app.ActivityManager#moveTaskToFront(int, int, android.os.Bundle)} method call.
+     */
+    @SuppressWarnings("NoMoveTaskToFront")
+    public static void moveTaskToFront(
+            Context context, int taskId, int flags, @Nullable Bundle bOptions) {
+        final ActivityManager am =
+                (ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE);
+        if (am == null) {
+            Log.w(TAG, "Context#getSystemService returned null ActivityManager");
+            return;
+        }
+        try {
+            if (bOptions == null) {
+                am.moveTaskToFront(taskId, flags);
+            } else {
+                am.moveTaskToFront(taskId, flags, bOptions);
+            }
+        } catch (NullPointerException e) {
+            Log.w(TAG, "Caught expected NPE from Android API, see crbug.com/471434499", e);
+        }
     }
 }

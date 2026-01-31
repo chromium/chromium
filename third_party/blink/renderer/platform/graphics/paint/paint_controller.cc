@@ -14,6 +14,7 @@
 #include "third_party/blink/renderer/platform/graphics/paint/ignore_paint_timing_scope.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_chunk_subset.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_under_invalidation_checker.h"
+#include "third_party/blink/renderer/platform/graphics/paint/tracked_element_data.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder_stream.h"
@@ -184,6 +185,22 @@ void PaintController::RecordRegionCaptureData(
   if (paint_chunker_.AddRegionCaptureDataToCurrentChunk(id, client, crop_id,
                                                         rect))
     CheckNewChunk();
+}
+
+void PaintController::RecordTrackedElementData(
+    const DisplayItemClient& client,
+    const TrackedElementRect& tracked_element_rect,
+    const gfx::Rect& rect) {
+  DCHECK(!tracked_element_rect.id->is_zero());
+  PaintChunk::Id id(client.Id(), DisplayItem::kTrackedElement,
+                    current_fragment_);
+  CheckNewChunkId(id);
+  ValidateNewChunkClient(client);
+  if (paint_chunker_.AddTrackedElementDataToCurrentChunk(
+          id, client, tracked_element_rect.id,
+          tracked_element_rect.GetEffectiveBounds(rect))) {
+    CheckNewChunk();
+  }
 }
 
 void PaintController::RecordScrollHitTestData(

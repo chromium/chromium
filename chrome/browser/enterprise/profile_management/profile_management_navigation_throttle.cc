@@ -8,7 +8,6 @@
 #include <string>
 
 #include "base/command_line.h"
-#include "base/containers/contains.h"
 #include "base/containers/flat_map.h"
 #include "base/feature_list.h"
 #include "base/json/json_reader.h"
@@ -92,7 +91,7 @@ base::flat_map<std::string, SAMLProfileAttributes>& GetAttributeMap() {
       continue;
     }
 
-    const base::Value::Dict& attributes = attributes_value.GetDict();
+    const base::DictValue& attributes = attributes_value.GetDict();
     SAMLProfileAttributes new_attributes;
     if (auto* name_attribute = attributes.FindString(kNameAttributeKey);
         name_attribute) {
@@ -193,8 +192,7 @@ ProfileManagementNavigationThrottle::~ProfileManagementNavigationThrottle() =
 
 content::NavigationThrottle::ThrottleCheckResult
 ProfileManagementNavigationThrottle::WillProcessResponse() {
-  if (!base::Contains(GetAttributeMap(),
-                      navigation_handle()->GetURL().GetHost())) {
+  if (!GetAttributeMap().contains(navigation_handle()->GetURL().GetHost())) {
     return PROCEED;
   }
 
@@ -238,11 +236,11 @@ void ProfileManagementNavigationThrottle::OnResponseBodyReady(
 void ProfileManagementNavigationThrottle::OnManagementDataReceived(
     const base::flat_map<std::string, std::string>& attributes) {
   const std::string navigation_host = navigation_handle()->GetURL().GetHost();
-  DCHECK(base::Contains(GetAttributeMap(), navigation_host));
+  DCHECK(GetAttributeMap().contains(navigation_host));
   const auto profile_attributes = GetAttributeMap().at(navigation_host);
 
   if (base::FeatureList::IsEnabled(features::kThirdPartyProfileManagement) &&
-      base::Contains(attributes, profile_attributes.domain)) {
+      attributes.contains(profile_attributes.domain)) {
     RegisterWithDomain(attributes.at(profile_attributes.domain));
     // DO NOT ADD CODE AFTER THIS, as the NavigationThrottle might have been
     // deleted by the previous call.
@@ -252,8 +250,8 @@ void ProfileManagementNavigationThrottle::OnManagementDataReceived(
   // If the third-party domain-based profile management feature is disabled, or
   // no domain is found in the response, fall back to token-based management.
   if (base::FeatureList::IsEnabled(features::kEnableProfileTokenManagement) &&
-      base::Contains(attributes, profile_attributes.token)) {
-    RegisterWithToken(base::Contains(attributes, profile_attributes.name)
+      attributes.contains(profile_attributes.token)) {
+    RegisterWithToken(attributes.contains(profile_attributes.name)
                           ? attributes.at(profile_attributes.name)
                           : std::string(),
                       attributes.at(profile_attributes.token));

@@ -48,6 +48,8 @@ const char kExtensionsRequestAccessButtonClicked[] =
 
 const char kCookieControlsBubbleShown[] = "cookie_controls_bubble_shown";
 
+const char kGlicOnboardingCompleted[] = "glic_onboarding_completed";
+
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_LINUX) ||
         // BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_FUCHSIA)
 
@@ -154,6 +156,10 @@ const char kIOSContextualPanelPriceInsightsEntrypointUsed[] =
 const char kIOSContextualPanelPriceInsightsEntrypointExplicitlyDismissed[] =
     "ios_contextual_panel_price_insights_entrypoint_explicitly_dismissed";
 const char kHomeCustomizationMenuUsed[] = "home_customization_menu_used";
+const char kHomeBackgroundCustomizationMenuUsed[] =
+    "home_customization_background_menu_used";
+const char kHomeCustomizationPromoTriggered[] =
+    "home_customization_menu_iph_triggered";
 const char kLensOverlayEntrypointUsed[] = "lens_overlay_entrypoint_used";
 const char kIOSLensButtonUsed[] = "ios_lens_button_used";
 const char kIOSTabReminderScheduled[] = "tab_reminder_scheduled";
@@ -179,6 +185,7 @@ const char kIOSFirstRunComplete[] = "ios_first_run_complete";
 const char kIOSFREBadgeHoldbackPeriodElapsed[] =
     "ios_fre_badge_holdback_period_elapsed";
 const char kIOSReaderModeUsed[] = "ios_reader_mode_used";
+const char kIOSReaderModeChipExpanded[] = "ios_reader_mode_chip_expanded";
 const char kIOSIPHBadgedReaderModeTriggered[] =
     "ios_iph_badged_reader_mode_triggered";
 const char kIOSAIHubNewBadgeTriggered[] = "ios_new_ai_hub_badge_triggered";
@@ -200,6 +207,9 @@ const char kIOSGeminiFullscreenPromoTriggered[] =
 const char kIOSGeminiFlowStartedNonPromo[] =
     "ios_gemini_flow_started_non_promo";
 const char kIOSGeminiConsentGiven[] = "ios_gemini_consent_given";
+const char kIOSGeminiImageRemixIPHTrigger[] =
+    "ios_gemini_image_remix_iph_trigger";
+const char kIOSPinMVTSiteUsed[] = "ios_pin_mvt_site_used";
 #endif  // BUILDFLAG(IS_IOS)
 
 #if BUILDFLAG(IS_ANDROID)

@@ -76,7 +76,7 @@ Request::Request(scoped_refptr<dbus::Bus> bus, ResponseCallback callback)
 }
 
 Request::~Request() {
-  if (!bus_) {
+  if (released_ || !bus_) {
     return;
   }
 
@@ -93,6 +93,10 @@ Request::~Request() {
           },
           std::move(bus_), std::move(request_object_path_),
           std::move(portal_service_name_)));
+}
+
+void Request::Release() {
+  released_ = true;
 }
 
 void Request::OnMethodResponse(dbus::Response* response,

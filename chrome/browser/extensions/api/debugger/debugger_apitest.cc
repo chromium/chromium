@@ -89,7 +89,7 @@ namespace {
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 // Gets all URLs from the list of targets, with the ports removed.
 std::vector<std::string> GetTargetUrlsWithoutPorts(
-    const base::Value::List& targets) {
+    const base::ListValue& targets) {
   return base::ToVector(targets, [](const base::Value& value) {
     GURL::Replacements remove_port;
     remove_port.ClearPort();
@@ -323,8 +323,7 @@ class TestInterstitialPage
   void OnInterstitialClosing() override {}
 
  protected:
-  void PopulateInterstitialStrings(base::Value::Dict& load_time_data) override {
-  }
+  void PopulateInterstitialStrings(base::DictValue& load_time_data) override {}
 
   std::unique_ptr<security_interstitials::MetricsHelper>
   CreateTestMetricsHelper(content::WebContents* web_contents) {
@@ -720,7 +719,7 @@ IN_PROC_BROWSER_TEST_F(CrossProfileDebuggerApiTest, GetTargets) {
             api_test_utils::FunctionMode::kIncognito));
 
     ASSERT_TRUE(value.is_list());
-    const base::Value::List targets = std::move(value).TakeList();
+    const base::ListValue targets = std::move(value).TakeList();
     std::vector<std::string> urls = GetTargetUrlsWithoutPorts(targets);
     EXPECT_THAT(urls, testing::UnorderedElementsAre(
                           "about:blank",
@@ -945,7 +944,7 @@ IN_PROC_BROWSER_TEST_F(DebuggerExtensionApiOopifPdfTest, GetTargets) {
 
   // Verify that the inner PDF frames aren't targets in the list. Only the PDF
   // embedder frame (the main frame) should be a target.
-  const base::Value::List targets = std::move(get_targets_result).TakeList();
+  const base::ListValue targets = std::move(get_targets_result).TakeList();
   ASSERT_THAT(targets, testing::SizeIs(1));
 
   // Verify that the target is the PDF embedder frame.

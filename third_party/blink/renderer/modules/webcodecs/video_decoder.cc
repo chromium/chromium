@@ -197,7 +197,8 @@ void ParseH264KeyFrame(const media::DecoderBuffer& buffer, bool* is_key_frame) {
 #if BUILDFLAG(USE_PROPRIETARY_CODECS)
   auto result = media::mp4::AVC::AnalyzeAnnexB(
       buffer, std::vector<media::SubsampleEntry>());
-  *is_key_frame = result.is_keyframe.value_or(false);
+  *is_key_frame = result.is_keyframe.value_or(false) ||
+                  result.is_sei_recovery_point.value_or(false);
 #endif
 }
 
@@ -624,6 +625,7 @@ VideoDecoder::MakeInput(const InputType& chunk, bool verify_key_frame) {
         media::DecoderBuffer::CopyFrom(base::span(buf).first(output_size));
     decoder_buffer->set_timestamp(chunk.buffer()->timestamp());
     decoder_buffer->set_duration(chunk.buffer()->duration());
+    decoder_buffer->set_is_key_frame(chunk.buffer()->is_key_frame());
   }
 
   if (verify_key_frame) {

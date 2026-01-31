@@ -130,7 +130,7 @@ IN_PROC_BROWSER_TEST_F(SetIconAPITest, Parameter) {
   ASSERT_EQ(1u, rules.size());
   ASSERT_EQ(rules[0]->actions.size(), 1u);
 
-  const base::Value::Dict& action_value = rules[0]->actions[0].GetDict();
+  const base::DictValue& action_value = rules[0]->actions[0].GetDict();
   const std::string* action_instance_type =
       action_value.FindString("instanceType");
   ASSERT_TRUE(action_instance_type);
@@ -151,7 +151,7 @@ class SetIconAPIPrerenderingTest : public SetIconAPITest {
   ~SetIconAPIPrerenderingTest() override = default;
 
  protected:
-  content::FrameTreeNodeId Prerender(const GURL& url) {
+  content::PrerenderHostId Prerender(const GURL& url) {
     return prerender_helper_.AddPrerender(url);
   }
   void Activate(const GURL& url) { prerender_helper_.NavigatePrimaryPage(url); }
@@ -186,7 +186,7 @@ IN_PROC_BROWSER_TEST_F(SetIconAPIPrerenderingTest, Overview) {
   // Prerendering an unmatched page should not reset the icon.
   const GURL kPrerenderingUrl =
       embedded_test_server()->GetURL("/empty.html?hide");
-  content::FrameTreeNodeId host_id = Prerender(kPrerenderingUrl);
+  content::PrerenderHostId host_id = Prerender(kPrerenderingUrl);
   ASSERT_TRUE(host_id);
   EXPECT_FALSE(action->GetDeclarativeIcon(tab_id).IsEmpty());
 

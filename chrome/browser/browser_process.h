@@ -80,8 +80,16 @@ namespace subresource_filter {
 class RulesetService;
 }
 
+namespace supervised_user {
+class DeviceParentalControls;
+}  // namespace supervised_user
+
 namespace variations {
 class VariationsService;
+}
+
+namespace activity_reporter {
+class ActivityReporter;
 }
 
 namespace component_updater {
@@ -216,6 +224,14 @@ class BrowserProcess {
   virtual printing::BackgroundPrintingManager*
   background_printing_manager() = 0;
 
+  // Returns a handle to the manager of device parental controls, which
+  // are independent from the profile. This handler is member of browser process
+  // directly and cannot be moved to GlobalFeatures, because it is also required
+  // early to initialize the pref service on Android.
+  // Platforms not implementing device parental control return a no-op stub.
+  virtual supervised_user::DeviceParentalControls&
+  device_parental_controls() = 0;
+
 #if !BUILDFLAG(IS_ANDROID)
   virtual IntranetRedirectDetector* intranet_redirect_detector() = 0;
 #endif
@@ -275,6 +291,8 @@ class BrowserProcess {
   virtual void StartAutoupdateTimer() = 0;
 #endif
 
+  virtual activity_reporter::ActivityReporter* activity_reporter() = 0;
+
   virtual component_updater::ComponentUpdateService* component_updater() = 0;
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -325,11 +343,6 @@ class BrowserProcess {
   virtual BuildState* GetBuildState() = 0;
   // Returns the feature controllers scoped to this browser process.
   virtual GlobalFeatures* GetFeatures() = 0;
-
-  // Legacy method. Should not be used in new code.
-  // TODO(crbug.com/467395900): Remove this function and its remaining uses and
-  // replace them with TestingBrowserProcess::SetUpGlobalFeaturesForTesting().
-  virtual void CreateGlobalFeaturesForTesting() = 0;
 
   // Do not add new members to this class. Instead use GlobalFeatures. See file
   // level comment for details.

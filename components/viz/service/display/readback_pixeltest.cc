@@ -624,7 +624,7 @@ class ReadbackPixelTestRGBAWithBlit
       : ReadbackPixelTest(std::get<0>(GetParam())),
         should_scale_by_half_(std::get<1>(GetParam())),
         letterboxing_behavior_(std::get<2>(GetParam())),
-        populates_gpu_memory_buffer_(std::get<3>(GetParam())) {}
+        populates_mappable_shared_image_(std::get<3>(GetParam())) {}
 
   CopyOutputResult::Destination RequestDestination() const {
     return CopyOutputResult::Destination::kSharedImage;
@@ -643,16 +643,16 @@ class ReadbackPixelTestRGBAWithBlit
   }
 
   // Test parameter that will return `true` if we'll claim that the textures we
-  // create come from GpuMemoryBuffer, `false` otherwise. This exercises a
-  // different code path in SkiaRenderer.
-  bool populates_gpu_memory_buffer() const {
-    return populates_gpu_memory_buffer_;
+  // create come from a mappable SharedImage, `false` otherwise. This exercises
+  // a different code path in SkiaRenderer.
+  bool populates_mappable_shared_image() const {
+    return populates_mappable_shared_image_;
   }
 
  private:
   bool should_scale_by_half_ = false;
   LetterboxingBehavior letterboxing_behavior_;
-  bool populates_gpu_memory_buffer_ = false;
+  bool populates_mappable_shared_image_ = false;
 };
 
 // Test that RGBA readback works correctly using existing textures.
@@ -696,10 +696,10 @@ TEST_P(ReadbackPixelTestRGBAWithBlit, ExecutesCopyRequestWithBlit) {
 
             request.set_result_selection(result_selection);
 
-            request.set_blit_request(
-                BlitRequest(destination_subregion.origin(),
-                            GetLetterboxingBehavior(), std::move(shared_image),
-                            gpu::SyncToken(), populates_gpu_memory_buffer()));
+            request.set_blit_request(BlitRequest(
+                destination_subregion.origin(), GetLetterboxingBehavior(),
+                std::move(shared_image), gpu::SyncToken(),
+                populates_mappable_shared_image()));
           }));
 
   // Check that a result was produced and is of the expected rect/size.
@@ -894,7 +894,7 @@ class ReadbackPixelTestNV12WithBlit
       : ReadbackPixelTest(std::get<0>(GetParam())),
         should_scale_by_half_(std::get<1>(GetParam())),
         letterboxing_behavior_(std::get<2>(GetParam())),
-        populates_gpu_memory_buffer_(std::get<3>(GetParam())) {}
+        populates_mappable_shared_image_(std::get<3>(GetParam())) {}
 
   CopyOutputResult::Destination RequestDestination() const {
     return CopyOutputResult::Destination::kSharedImage;
@@ -915,14 +915,14 @@ class ReadbackPixelTestNV12WithBlit
   // Test parameter that will return `true` if we'll claim that the textures we
   // create come from GpuMemoryBuffer, `false` otherwise. This exercises a
   // different code path in SkiaRenderer.
-  bool populates_gpu_memory_buffer() const {
-    return populates_gpu_memory_buffer_;
+  bool populates_mappable_shared_image() const {
+    return populates_mappable_shared_image_;
   }
 
  private:
   bool should_scale_by_half_ = false;
   LetterboxingBehavior letterboxing_behavior_;
-  bool populates_gpu_memory_buffer_ = false;
+  bool populates_mappable_shared_image_ = false;
 };
 
 // Test that NV12 readback works correctly using existing textures.
@@ -1031,7 +1031,7 @@ TEST_P(ReadbackPixelTestNV12WithBlit, ExecutesCopyRequestWithBlit) {
 
         request.set_blit_request(BlitRequest(
             destination_subregion.origin(), GetLetterboxingBehavior(),
-            shared_image, sync_token, populates_gpu_memory_buffer()));
+            shared_image, sync_token, populates_mappable_shared_image()));
       }));
 
   // Check that a result was produced and is of the expected rect/size.

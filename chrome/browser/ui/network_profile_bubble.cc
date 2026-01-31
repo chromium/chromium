@@ -15,12 +15,16 @@
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/scoped_observation.h"
 #include "base/time/time.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_list.h"
-#include "chrome/browser/ui/browser_list_observer.h"
+#include "chrome/browser/ui/browser_window/public/browser_collection_observer.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/pref_names.h"
 #include "components/pref_registry/pref_registry_syncable.h"
@@ -38,32 +42,35 @@ const int kSilenceDurationDays = 100;
 // silent period starts.
 const int kMaxWarnings = 2;
 
-// Implementation of BrowserListObserver used to wait for a browser
+// Implementation of BrowserCollectionObserver used to wait for a browser
 // window.
-class NetworkProfileBubbleBrowserListObserver : public BrowserListObserver {
- private:
-  ~NetworkProfileBubbleBrowserListObserver() override;
+class NetworkProfileBubbleBrowserCollectionObserver
+    : public BrowserCollectionObserver {
+ public:
+  NetworkProfileBubbleBrowserCollectionObserver();
 
-  // Overridden from ::BrowserListObserver:
-  void OnBrowserAdded(Browser* browser) override;
-  void OnBrowserRemoved(Browser* browser) override;
-  void OnBrowserSetLastActive(Browser* browser) override;
+ private:
+  ~NetworkProfileBubbleBrowserCollectionObserver() override;
+
+  // Overridden from ::BrowserCollectionObserver:
+  void OnBrowserActivated(BrowserWindowInterface* browser) override;
+
+  base::ScopedObservation<GlobalBrowserCollection, BrowserCollectionObserver>
+      browser_collection_observation_{this};
 };
 
-NetworkProfileBubbleBrowserListObserver::
-    ~NetworkProfileBubbleBrowserListObserver() = default;
-
-void NetworkProfileBubbleBrowserListObserver::OnBrowserAdded(Browser* browser) {
+NetworkProfileBubbleBrowserCollectionObserver::
+    NetworkProfileBubbleBrowserCollectionObserver() {
+  browser_collection_observation_.Observe(
+      GlobalBrowserCollection::GetInstance());
 }
 
-void NetworkProfileBubbleBrowserListObserver::OnBrowserRemoved(
-    Browser* browser) {}
+NetworkProfileBubbleBrowserCollectionObserver::
+    ~NetworkProfileBubbleBrowserCollectionObserver() = default;
 
-void NetworkProfileBubbleBrowserListObserver::OnBrowserSetLastActive(
-    Browser* browser) {
+void NetworkProfileBubbleBrowserCollectionObserver::OnBrowserActivated(
+    BrowserWindowInterface* browser) {
   NetworkProfileBubble::ShowNotification(browser);
-  // No need to observe anymore.
-  BrowserList::RemoveObserver(this);
   delete this;
 }
 
@@ -175,6 +182,6 @@ void NetworkProfileBubble::NotifyNetworkProfileDetected() {
     ShowNotification(browser);
   } else {
     // Won't leak because the observer is self-deleting.
-    BrowserList::AddObserver(new NetworkProfileBubbleBrowserListObserver());
+    new NetworkProfileBubbleBrowserCollectionObserver();
   }
 }

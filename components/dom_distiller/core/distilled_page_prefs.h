@@ -59,6 +59,10 @@ class DistilledPagePrefs {
   // Sets the user's preference for the theme of distilled pages.
   void SetUserPrefTheme(mojom::Theme new_theme);
 
+  // Removes the user's preference for the theme of distilled pages, this will
+  // reset to the default theme.
+  void ClearUserPrefTheme();
+
   // Sets default theme, used when user's preference for theme is not set.
   void SetDefaultTheme(mojom::Theme default_theme);
 
@@ -66,6 +70,10 @@ class DistilledPagePrefs {
   // is set, it will return the user's preference for the theme. Otherwise, it
   // will return the value of default_theme_.
   mojom::Theme GetTheme();
+
+  // Returns whether the current theme was set via a user update or if it is
+  // based on the default_theme_.
+  ThemeSettingsUpdateSource GetThemeSettingsUpdateSource();
 
   // Sets the user's preference for the font size scaling of distilled pages.
   void SetUserPrefFontScaling(float scaling);
@@ -83,6 +91,10 @@ class DistilledPagePrefs {
   void RemoveObserver(Observer* obs);
 
  private:
+  // Checks whether the user preference font set (used in GetFontFamily) is
+  // admissible based on feature flags enabled.
+  bool IsUserPrefFontAvailable(mojom::FontFamily font);
+
 #if BUILDFLAG(IS_ANDROID)
   // Clamps the default font scaling to properly follow min and max font scaling
   // for whether the distillation is in-app or CCT.
@@ -92,7 +104,7 @@ class DistilledPagePrefs {
   // Notifies all Observers of new font family.
   void NotifyOnChangeFontFamily();
   // Notifies all Observers of new theme.
-  void NotifyOnChangeTheme(ThemeSettingsUpdateSource source);
+  void NotifyOnChangeTheme();
   // Notifies all Observers of new font scaling.
   void NotifyOnChangeFontScaling();
 

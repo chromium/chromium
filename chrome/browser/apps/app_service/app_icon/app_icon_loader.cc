@@ -4,11 +4,11 @@
 
 #include "chrome/browser/apps/app_service/app_icon/app_icon_loader.h"
 
+#include <algorithm>
 #include <memory>
 #include <string_view>
 #include <utility>
 
-#include "base/containers/contains.h"
 #include "base/containers/span.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -421,18 +421,6 @@ void AppIconLoader::ApplyBadges(IconEffects icon_effects,
                                 const std::optional<std::string>& app_id,
                                 IconValuePtr iv) {
   TRACE_EVENT0("ui", "AppIconLoader::ApplyBadges");
-#if BUILDFLAG(IS_CHROMEOS)
-  if (icon_effects & apps::IconEffects::kGuestOsBadge) {
-    CHECK(profile_ != nullptr && app_id.has_value());
-    auto* registry =
-        guest_os::GuestOsRegistryServiceFactory::GetForProfile(profile_);
-    if (registry) {
-      registry->ApplyContainerBadge(app_id, &iv->uncompressed);
-    }
-    std::move(callback_).Run(std::move(iv));
-    return;
-  }
-#endif  // BUILDFLAG(IS_CHROMEOS)
 
   const bool rounded_corners = icon_effects & apps::IconEffects::kRoundCorners;
 
@@ -523,7 +511,8 @@ void AppIconLoader::LoadWebAppIcon(const std::string& web_app_id,
                 size_hint_in_dip_,
                 ui::GetScaleForResourceScaleFactor(scale_factor)));
         DCHECK(size_and_purpose.has_value());
-        if (!base::Contains(icon_pixel_sizes, size_and_purpose->size_px)) {
+        if (!std::ranges::contains(icon_pixel_sizes,
+                                   size_and_purpose->size_px)) {
           icon_pixel_sizes.emplace_back(size_and_purpose->size_px);
         }
       }

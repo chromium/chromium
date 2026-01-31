@@ -23,7 +23,7 @@ void DisplayInfoProviderBase::DispatchOnDisplayChangedEvent() {
   ExtensionsBrowserClient::Get()->BroadcastEventToRenderers(
       events::SYSTEM_DISPLAY_ON_DISPLAY_CHANGED,
       extensions::api::system_display::OnDisplayChanged::kEventName,
-      base::Value::List(), /*dispatch_to_off_the_record_profiles=*/true);
+      base::ListValue(), /*dispatch_to_off_the_record_profiles=*/true);
 }
 
 }  // namespace extensions

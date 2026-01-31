@@ -14,7 +14,8 @@ import org.junit.runner.RunWith;
 import org.robolectric.annotation.LooperMode;
 
 import org.chromium.base.Callback;
-import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.supplier.ObservableSuppliers;
+import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.ui.mojom.VirtualKeyboardMode;
 
@@ -37,13 +38,13 @@ public class ApplicationViewportInsetTrackerTest {
     }
 
     private ApplicationViewportInsetTracker mWindowApplicationInsetSupplier;
-    private ObservableSupplierImpl<Integer> mKeyboardInsetSupplier;
+    private SettableNonNullObservableSupplier<Integer> mKeyboardInsetSupplier;
     private CapturingCallback<ViewportInsets> mInsetObserver;
 
     @Before
     public void setUp() {
         mWindowApplicationInsetSupplier = new ApplicationViewportInsetTracker();
-        mKeyboardInsetSupplier = new ObservableSupplierImpl<>();
+        mKeyboardInsetSupplier = ObservableSuppliers.createNonNull(0);
 
         mInsetObserver = new CapturingCallback<>();
 
@@ -142,7 +143,8 @@ public class ApplicationViewportInsetTrackerTest {
 
     @Test
     public void testKeyboardWithAccessory() {
-        ObservableSupplierImpl<Integer> accessorySupplier = new ObservableSupplierImpl<>();
+        SettableNonNullObservableSupplier<Integer> accessorySupplier =
+                ObservableSuppliers.createNonNull(0);
         mWindowApplicationInsetSupplier.setKeyboardAccessoryInsetSupplier(accessorySupplier);
 
         mKeyboardInsetSupplier.set(10);
@@ -179,8 +181,7 @@ public class ApplicationViewportInsetTrackerTest {
 
     @Test
     public void testSupplierSetBeforeAddingTriggersObserverOnAdd() {
-        ObservableSupplierImpl<Integer> supplier = new ObservableSupplierImpl<>();
-        supplier.set(20);
+        SettableNonNullObservableSupplier<Integer> supplier = ObservableSuppliers.createNonNull(20);
 
         mWindowApplicationInsetSupplier.setKeyboardAccessoryInsetSupplier(supplier);
 
@@ -192,7 +193,8 @@ public class ApplicationViewportInsetTrackerTest {
 
     @Test
     public void testRemovingSupplierTriggersObservers() {
-        ObservableSupplierImpl<Integer> accessorySupplier = new ObservableSupplierImpl<>();
+        SettableNonNullObservableSupplier<Integer> accessorySupplier =
+                ObservableSuppliers.createNonNull(0);
         mWindowApplicationInsetSupplier.setKeyboardAccessoryInsetSupplier(accessorySupplier);
 
         mKeyboardInsetSupplier.set(20);
@@ -213,7 +215,8 @@ public class ApplicationViewportInsetTrackerTest {
 
     @Test
     public void testAllSuppliersRemoved() {
-        ObservableSupplierImpl<Integer> accessorySupplier = new ObservableSupplierImpl<>();
+        SettableNonNullObservableSupplier<Integer> accessorySupplier =
+                ObservableSuppliers.createNonNull(0);
         mWindowApplicationInsetSupplier.setKeyboardAccessoryInsetSupplier(accessorySupplier);
 
         mKeyboardInsetSupplier.set(10);
@@ -251,7 +254,8 @@ public class ApplicationViewportInsetTrackerTest {
 
     @Test
     public void testVisualViewportBottomInset() {
-        ObservableSupplierImpl<Integer> accessorySupplier = new ObservableSupplierImpl<>();
+        SettableNonNullObservableSupplier<Integer> accessorySupplier =
+                ObservableSuppliers.createNonNull(0);
         mWindowApplicationInsetSupplier.setKeyboardAccessoryInsetSupplier(accessorySupplier);
 
         mWindowApplicationInsetSupplier.setVirtualKeyboardMode(VirtualKeyboardMode.RESIZES_VISUAL);
@@ -292,7 +296,8 @@ public class ApplicationViewportInsetTrackerTest {
 
     @Test
     public void testVisualViewportInsetWithVirtualKeyboardModes() {
-        ObservableSupplierImpl<Integer> accessorySupplier = new ObservableSupplierImpl<>();
+        SettableNonNullObservableSupplier<Integer> accessorySupplier =
+                ObservableSuppliers.createNonNull(0);
         mWindowApplicationInsetSupplier.setKeyboardAccessoryInsetSupplier(accessorySupplier);
 
         mWindowApplicationInsetSupplier.setVirtualKeyboardMode(VirtualKeyboardMode.RESIZES_VISUAL);
@@ -342,7 +347,8 @@ public class ApplicationViewportInsetTrackerTest {
     public void testTriggerVisualViewportObserver() {
         assertNull("Observer initially uncalled", mInsetObserver.getCapturedValue());
 
-        ObservableSupplierImpl<Integer> accessorySupplier = new ObservableSupplierImpl<>();
+        SettableNonNullObservableSupplier<Integer> accessorySupplier =
+                ObservableSuppliers.createNonNull(0);
         mWindowApplicationInsetSupplier.setKeyboardAccessoryInsetSupplier(accessorySupplier);
         mWindowApplicationInsetSupplier.setVirtualKeyboardMode(VirtualKeyboardMode.RESIZES_VISUAL);
 
@@ -376,7 +382,8 @@ public class ApplicationViewportInsetTrackerTest {
 
     @Test
     public void testTriggerObserverWithVirtualKeyboardModes() {
-        ObservableSupplierImpl<Integer> accessorySupplier = new ObservableSupplierImpl<>();
+        SettableNonNullObservableSupplier<Integer> accessorySupplier =
+                ObservableSuppliers.createNonNull(0);
         mWindowApplicationInsetSupplier.setKeyboardAccessoryInsetSupplier(accessorySupplier);
         mKeyboardInsetSupplier.set(30);
         accessorySupplier.set(15);

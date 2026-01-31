@@ -48,6 +48,7 @@
 <translation id="2761536921376153655">扫描类型</translation>
 <translation id="28682968802727151">镜像翻转预览画面</translation>
 <translation id="2879583609344924966"><ph name="CAMERA" />已插入。</translation>
+<translation id="3063987824612038785">所有相机文件都将保存到 Google 云端硬盘</translation>
 <translation id="3067436040345934772">向右平移</translation>
 <translation id="3081586908890909590">切换到录制视频模式</translation>
 <translation id="3091480460059548935">预览文本检测</translation>
@@ -67,6 +68,7 @@
 <translation id="3642192109456033823">正在处理视频…</translation>
 <translation id="3789724198583203151">逆时针旋转 90 度</translation>
 <translation id="3810838688059735925">视频</translation>
+<translation id="386366972082231038">所有相机文件都将保存到 OneDrive</translation>
 <translation id="4060608699153044055">无法录制，因为设备存储空间不足。若要开始录制，您需先释放设备上的空间。</translation>
 <translation id="4061162772429051350"><ph name="MAGAPIXELS_AMOUNT" /> MP</translation>
 <translation id="4118525110028899586">暂停录制</translation>
@@ -100,6 +102,7 @@
 <translation id="5634947914995388399">展开对话框并停止扫描</translation>
 <translation id="5662366948659129155">正在扫描第 <ph name="COUNT" /> 页</translation>
 <translation id="5671277269877808209">方形</translation>
+<translation id="5725797473946373607">下次不再显示此对话框</translation>
 <translation id="574392208103952083">中等</translation>
 <translation id="5746169159649715125">另存为 PDF</translation>
 <translation id="5753488212459587150">启用专家模式</translation>
@@ -156,6 +159,7 @@
 <translation id="7983668134180549431">检测到文字。</translation>
 <translation id="8079255378695216066">无法开始录制</translation>
 <translation id="8120146556401698679">平移，倾斜，缩放</translation>
+<translation id="8127459436205030819">您的管理员可能会看到您的文件</translation>
 <translation id="8131740175452115882">确认</translation>
 <translation id="8145038249676204903">切换到拍照模式</translation>
 <translation id="8167081290930651932">另存为照片</translation>
@@ -165,6 +169,7 @@
 <translation id="8609951387004618906">打开“<ph name="URL" />”</translation>
 <translation id="8629662593426079630">360p</translation>
 <translation id="8711011893539266636">使用切换开关可将麦克风静音或取消静音。目前已静音</translation>
+<translation id="8712637175834984815">知道了</translation>
 <translation id="8730621377337864115">完成</translation>
 <translation id="8732462232047530626">预览元数据</translation>
 <translation id="874854738381978209">检测到 Wi-Fi 网络。</translation>

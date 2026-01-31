@@ -46,6 +46,8 @@ class CSSFontFeatureValue : public CSSValue {
 
   bool Equals(const CSSFontFeatureValue&) const;
 
+  bool HasRandomFunctions() const;
+
   void TraceAfterDispatch(blink::Visitor* visitor) const {
     visitor->Trace(value_);
     CSSValue::TraceAfterDispatch(visitor);

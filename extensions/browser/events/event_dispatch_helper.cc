@@ -6,7 +6,6 @@
 
 #include <optional>
 
-#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/task/sequenced_task_runner.h"
 #include "content/public/browser/render_process_host.h"
@@ -315,7 +314,7 @@ void EventDispatchHelper::DispatchEventToActiveListener(
 void EventDispatchHelper::TryQueueEventForLazyListener(
     Event& event,
     const LazyContextId& dispatch_context,
-    const base::Value::Dict* listener_filter) {
+    const base::DictValue* listener_filter) {
   const Extension* extension = GetExtension(dispatch_context.extension_id());
   if (!extension) {
     return;
@@ -334,7 +333,7 @@ bool EventDispatchHelper::TryQueueEventDispatch(
     Event& event,
     const LazyContextId& dispatch_context,
     const Extension* extension,
-    const base::Value::Dict* listener_filter) {
+    const base::DictValue* listener_filter) {
   if (IsAlreadyQueued(dispatch_context)) {
     return false;
   }
@@ -380,7 +379,7 @@ bool EventDispatchHelper::TryQueueEventDispatch(
 
 std::unique_ptr<Event> EventDispatchHelper::CreateEventForDispatch(
     const Event& event,
-    const base::Value::Dict* listener_filter,
+    const base::DictValue* listener_filter,
     const Extension* extension,
     BrowserContext& listener_context,
     mojom::ContextType target_context_type,
@@ -391,7 +390,7 @@ std::unique_ptr<Event> EventDispatchHelper::CreateEventForDispatch(
 
   // Run the callback before copying the event to determine if events need
   // de-duplicating based on the `dispatch_separate_event_out` argument.
-  std::optional<base::Value::List> modified_event_args;
+  std::optional<base::ListValue> modified_event_args;
   mojom::EventFilteringInfoPtr modified_event_filter_info;
   if (!event.will_dispatch_callback.Run(
           &listener_context, target_context_type, extension, listener_filter,
@@ -427,7 +426,7 @@ void EventDispatchHelper::RecordAlreadyQueued(
 
 bool EventDispatchHelper::IsAlreadyQueued(
     const LazyContextId& dispatch_context) const {
-  return base::Contains(dispatched_ids_, dispatch_context);
+  return dispatched_ids_.contains(dispatch_context);
 }
 
 bool EventDispatchHelper::ListenerMeetsRestrictions(

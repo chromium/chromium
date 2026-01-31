@@ -131,10 +131,15 @@ function createDestroyRace() {
 
 function destroyCreateRace() {
   chrome.vpnProvider.createConfig('test-config1', function() {
-    chrome.test.assertEq(chrome.runtime.lastError, undefined);
+    chrome.test.assertEq(undefined, chrome.runtime.lastError);
     chrome.vpnProvider.destroyConfig('test-config1', function() {});
     chrome.vpnProvider.createConfig('test-config1', function() {
-      chrome.test.assertEq(chrome.runtime.lastError, undefined);
+      // Depending upon who wins the race either createConfig succeeds or a
+      // 'Name not unique.' error is returned.
+      if (chrome.runtime.lastError) {
+        chrome.test.assertEq('Name not unique.',
+                             chrome.runtime.lastError.message);
+      }
       chrome.test.succeed();
     });
   });

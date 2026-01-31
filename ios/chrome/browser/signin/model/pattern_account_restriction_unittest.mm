@@ -19,7 +19,7 @@ class PatternAccountRestrictionTest : public PlatformTest {};
 // Tests that the PatternAccountRestriction filters email correctly when
 // restrictions are set.
 TEST_F(PatternAccountRestrictionTest, FilterEmailsWithRestrictions) {
-  base::Value::List list;
+  base::ListValue list;
   list.Append("*gmail.com");
   list.Append("*google.com");
   auto restriction = PatternAccountRestrictionFromValue(list);
@@ -32,7 +32,7 @@ TEST_F(PatternAccountRestrictionTest, FilterEmailsWithRestrictions) {
 // Tests that the PatternAccountRestriction does not filter emails when
 // restrictions are not set.
 TEST_F(PatternAccountRestrictionTest, FilterEmailsWithoutRestriction) {
-  base::Value::List list;
+  base::ListValue list;
   auto restriction = PatternAccountRestrictionFromValue(list);
 
   EXPECT_EQ(restriction.IsAccountRestricted(email1), false);
@@ -43,7 +43,7 @@ TEST_F(PatternAccountRestrictionTest, FilterEmailsWithoutRestriction) {
 // Tests that the PatternAccountRestriction does not filter emails when the
 // restriction is not correctly formatted.
 TEST_F(PatternAccountRestrictionTest, FilterEmailsWithBadPattern) {
-  base::Value::List list;
+  base::ListValue list;
   list.Append("*gmail.com\\");
   list.Append("*google.com");
   auto restriction = PatternAccountRestrictionFromValue(list);

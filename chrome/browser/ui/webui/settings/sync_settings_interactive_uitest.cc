@@ -208,7 +208,8 @@ IN_PROC_BROWSER_TEST_F(SyncSettingsInteractiveTest,
         std::unique_ptr<ProcessDiceHeaderDelegateImpl>
             process_dice_header_delegate_impl =
                 ProcessDiceHeaderDelegateImpl::Create(signin_tab);
-        process_dice_header_delegate_impl->EnableSync(account_info);
+        process_dice_header_delegate_impl->CompleteChromeSignInAfterGaiaSignin(
+            account_info);
       }),
       WaitForShow(SigninViewController::kHistorySyncOptinViewId),
       InstrumentNonTabWebView(kHistorySyncOptinDialogContentsId,

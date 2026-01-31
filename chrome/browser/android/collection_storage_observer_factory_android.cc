@@ -17,8 +17,8 @@
 
 namespace tabs {
 
-static jlong JNI_CollectionStorageObserverFactory_Build(JNIEnv* env,
-                                                        Profile* profile) {
+static int64_t JNI_CollectionStorageObserverFactory_Build(JNIEnv* env,
+                                                          Profile* profile) {
   TabStateStorageService* service =
       TabStateStorageServiceFactory::GetForProfile(profile);
   CollectionStorageObserver* orchestrator =

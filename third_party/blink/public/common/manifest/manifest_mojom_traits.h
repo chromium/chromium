@@ -11,11 +11,13 @@
 #include <vector>
 
 #include "base/strings/utf_string_conversions.h"
+#include "mojo/public/cpp/bindings/map_traits_absl.h"
 #include "mojo/public/cpp/bindings/struct_traits.h"
 #include "third_party/blink/public/common/common_export.h"
 #include "third_party/blink/public/common/manifest/manifest.h"
+#include "third_party/blink/public/common/safe_url_pattern.h"
+#include "third_party/blink/public/mojom/manifest/display_mode.mojom.h"
 #include "third_party/blink/public/mojom/manifest/manifest.mojom.h"
-#include "third_party/blink/public/mojom/safe_url_pattern.mojom.h"
 
 namespace mojo {
 namespace internal {
@@ -75,13 +77,13 @@ template <>
 struct BLINK_COMMON_EXPORT StructTraits<
     blink::mojom::ManifestLocalizedTextObjectDataView,
     blink::Manifest::ManifestLocalizedTextObject> {
-  static const std::optional<std::u16string>& value(
+  static std::u16string_view value(
       const blink::Manifest::ManifestLocalizedTextObject& obj) {
-    return obj.value;
+    return internal::TruncateString16(obj.value);
   }
-  static const std::optional<std::u16string>& lang(
+  static std::optional<std::u16string_view> lang(
       const blink::Manifest::ManifestLocalizedTextObject& obj) {
-    return obj.lang;
+    return internal::TruncateOptionalString16(obj.lang);
   }
   static const std::optional<blink::mojom::Manifest_TextDirection>& dir(
       const blink::Manifest::ManifestLocalizedTextObject& obj) {
@@ -89,6 +91,16 @@ struct BLINK_COMMON_EXPORT StructTraits<
   }
   static bool Read(blink::mojom::ManifestLocalizedTextObjectDataView data,
                    blink::Manifest::ManifestLocalizedTextObject* out);
+};
+
+// StructTraits for icu::Locale - enables automatic conversion in mojo.
+// Serializes using ICU's getName() format ("en_US").
+// This allows icu::Locale to be used as map keys with mojom Locale type.
+template <>
+struct BLINK_COMMON_EXPORT StructTraits<blink::mojom::LocaleDataView,
+                                        icu::Locale> {
+  static std::string_view tag(const icu::Locale& locale);
+  static bool Read(blink::mojom::LocaleDataView data, icu::Locale* out);
 };
 
 template <>
@@ -119,30 +131,36 @@ struct BLINK_COMMON_EXPORT
     return shortcut.icons;
   }
 
-  static const std::map<std::u16string,
-                        std::vector<blink::Manifest::ImageResource>>&
+  static const std::optional<
+      absl::flat_hash_map<icu::Locale,
+                          std::vector<blink::Manifest::ImageResource>>>&
   icons_localized(const blink::Manifest::ShortcutItem& shortcut) {
     return shortcut.icons_localized;
   }
 
-  static bool Read(blink::mojom::ManifestShortcutItemDataView data,
-                   ::blink::Manifest::ShortcutItem* out);
-
-  static const std::map<std::u16string,
-                        blink::Manifest::ManifestLocalizedTextObject>&
+  static const std::optional<
+      absl::flat_hash_map<icu::Locale,
+                          blink::Manifest::ManifestLocalizedTextObject>>&
   name_localized(const blink::Manifest::ShortcutItem& shortcut) {
     return shortcut.name_localized;
   }
-  static const std::map<std::u16string,
-                        blink::Manifest::ManifestLocalizedTextObject>&
+
+  static const std::optional<
+      absl::flat_hash_map<icu::Locale,
+                          blink::Manifest::ManifestLocalizedTextObject>>&
   short_name_localized(const blink::Manifest::ShortcutItem& shortcut) {
     return shortcut.short_name_localized;
   }
-  static const std::map<std::u16string,
-                        blink::Manifest::ManifestLocalizedTextObject>&
+
+  static const std::optional<
+      absl::flat_hash_map<icu::Locale,
+                          blink::Manifest::ManifestLocalizedTextObject>>&
   description_localized(const blink::Manifest::ShortcutItem& shortcut) {
     return shortcut.description_localized;
   }
+
+  static bool Read(blink::mojom::ManifestShortcutItemDataView data,
+                   ::blink::Manifest::ShortcutItem* out);
 };
 
 template <>
@@ -341,6 +359,24 @@ struct BLINK_COMMON_EXPORT StructTraits<blink::mojom::ManifestTabStripDataView,
 
   static bool Read(blink::mojom::ManifestTabStripDataView data,
                    ::blink::Manifest::TabStrip* out);
+};
+
+template <>
+struct BLINK_COMMON_EXPORT StructTraits<
+    blink::mojom::DisplayOverrideItemDataView,
+    ::blink::Manifest::DisplayOverride> {
+  static ::blink::mojom::DisplayMode display(
+      const ::blink::Manifest::DisplayOverride& item) {
+    return item.display();
+  }
+
+  static const std::vector<::blink::SafeUrlPattern>& url_patterns(
+      const ::blink::Manifest::DisplayOverride& item) {
+    return item.url_patterns();
+  }
+
+  static bool Read(blink::mojom::DisplayOverrideItemDataView data,
+                   ::blink::Manifest::DisplayOverride* out);
 };
 
 }  // namespace mojo

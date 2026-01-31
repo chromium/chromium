@@ -4,8 +4,8 @@
 
 package org.chromium.chrome.browser.readaloud;
 
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
@@ -29,8 +29,9 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 
-import org.chromium.base.supplier.ObservableSupplier;
-import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.supplier.MonotonicObservableSupplier;
+import org.chromium.base.supplier.NonNullObservableSupplier;
+import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
@@ -42,10 +43,9 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuHandler;
 import org.chromium.chrome.browser.user_education.IphCommand;
 import org.chromium.chrome.browser.user_education.UserEducationHelper;
+import org.chromium.chrome.modules.readaloud.PlaybackArgs.PlaybackMode;
 import org.chromium.url.GURL;
 import org.chromium.url.JUnitTestGURLs;
-
-import org.chromium.chrome.modules.readaloud.PlaybackArgs.PlaybackMode;
 
 /** Unit test for {@link ReadAloudIphController}. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -61,9 +61,9 @@ public class ReadAloudIphControllerUnitTest {
     @Mock Context mContext;
     @Mock Resources mResources;
     @Captor ArgumentCaptor<IphCommand> mIphCommandCaptor;
-    @Mock private ObservableSupplier<Tab> mMockTabProvider;
+    @Mock private MonotonicObservableSupplier<Tab> mMockTabProvider;
     @Mock ReadAloudController mReadAloudController;
-    ObservableSupplierImpl<ReadAloudController> mReadAloudControllerSupplier;
+    private NonNullObservableSupplier<ReadAloudController> mReadAloudControllerSupplier;
     private MockTab mTab;
     @Mock private Profile mProfile;
     private static final GURL sTestGURL = JUnitTestGURLs.EXAMPLE_URL;
@@ -80,8 +80,7 @@ public class ReadAloudIphControllerUnitTest {
         mTab.setGurlOverrideForTesting(sTestGURL);
         doReturn(mTab).when(mMockTabProvider).get();
 
-        mReadAloudControllerSupplier = new ObservableSupplierImpl<>();
-        mReadAloudControllerSupplier.set(mReadAloudController);
+        mReadAloudControllerSupplier = ObservableSuppliers.createNonNull(mReadAloudController);
         doReturn(PlaybackMode.CLASSIC).when(mReadAloudController).getModeToPlay(mTab);
 
         mController =

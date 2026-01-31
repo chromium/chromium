@@ -245,8 +245,8 @@ export const FocusRowMixin = dedupingMixin(
             this.removeObservers_();
             this.row_.destroy();
 
-            const controls =
-                this.root!.querySelectorAll<HTMLElement>('[focus-row-control]');
+            const controls = this.shadowRoot!.querySelectorAll<HTMLElement>(
+                '[focus-row-control]');
 
             controls.forEach(control => {
               assert(control);

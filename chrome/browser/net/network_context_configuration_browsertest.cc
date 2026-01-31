@@ -530,13 +530,9 @@ class NetworkContextConfigurationBrowserTest
     request->credentials_mode = network::mojom::CredentialsMode::kOmit;
     live_during_shutdown_simple_loader_ = network::SimpleURLLoader::Create(
         std::move(request), TRAFFIC_ANNOTATION_FOR_TESTS);
-    live_during_shutdown_simple_loader_helper_ =
-        std::make_unique<content::SimpleURLLoaderTestHelper>();
 
-    live_during_shutdown_simple_loader_
-        ->DownloadToStringOfUnboundedSizeUntilCrashAndDie(
-            loader_factory(),
-            live_during_shutdown_simple_loader_helper_->GetCallback());
+    live_during_shutdown_simple_loader_->DownloadHeadersOnly(loader_factory(),
+                                                             base::DoNothing());
 
     // Don't actually care about controlling the response, just need to wait
     // until it sees the request, to make sure that a URLRequest has been
@@ -598,14 +594,18 @@ class NetworkContextConfigurationBrowserTest
     request->trusted_params->isolation_info =
         net::IsolationInfo::CreateForInternalRequest(origin);
 
-    content::SimpleURLLoaderTestHelper simple_loader_helper;
+    base::RunLoop run_loop;
     std::unique_ptr<network::SimpleURLLoader> simple_loader =
         network::SimpleURLLoader::Create(std::move(request),
                                          TRAFFIC_ANNOTATION_FOR_TESTS);
 
-    simple_loader->DownloadToStringOfUnboundedSizeUntilCrashAndDie(
-        loader_factory(), simple_loader_helper.GetCallback());
-    simple_loader_helper.WaitForCallback();
+    simple_loader->DownloadHeadersOnly(
+        loader_factory(),
+        base::BindLambdaForTesting(
+            [&](scoped_refptr<net::HttpResponseHeaders> headers) {
+              run_loop.Quit();
+            }));
+    run_loop.Run();
     EXPECT_EQ(net::OK, simple_loader->NetError());
   }
 
@@ -746,8 +746,6 @@ class NetworkContextConfigurationBrowserTest
   testing::NiceMock<policy::MockConfigurationPolicyProvider> provider_;
   // Used in tests that need a live request during browser shutdown.
   std::unique_ptr<network::SimpleURLLoader> live_during_shutdown_simple_loader_;
-  std::unique_ptr<content::SimpleURLLoaderTestHelper>
-      live_during_shutdown_simple_loader_helper_;
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 

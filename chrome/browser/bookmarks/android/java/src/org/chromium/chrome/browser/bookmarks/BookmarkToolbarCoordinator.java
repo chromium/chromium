@@ -11,11 +11,13 @@ import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.bookmarks.BookmarkUiState.BookmarkUiMode;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.components.bookmarks.BookmarkId;
-import org.chromium.components.browser_ui.widget.dragreorder.DragReorderableRecyclerViewAdapter;
+import org.chromium.components.browser_ui.widget.dragreorder.DragTouchHandler;
 import org.chromium.components.browser_ui.widget.selectable_list.SelectableListLayout;
 import org.chromium.components.browser_ui.widget.selectable_list.SelectableListToolbar.SearchDelegate;
 import org.chromium.components.browser_ui.widget.selectable_list.SelectionDelegate;
+import org.chromium.ui.base.Clipboard;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
@@ -34,7 +36,7 @@ public class BookmarkToolbarCoordinator {
             SelectableListLayout<BookmarkId> selectableListLayout,
             SelectionDelegate<BookmarkId> selectionDelegate,
             SearchDelegate searchDelegate,
-            DragReorderableRecyclerViewAdapter dragReorderableRecyclerViewAdapter,
+            DragTouchHandler dragTouchHandler,
             boolean isDialogUi,
             OneshotSupplier<BookmarkDelegate> bookmarkDelegateSupplier,
             BookmarkModel bookmarkModel,
@@ -44,6 +46,7 @@ public class BookmarkToolbarCoordinator {
             Runnable endSearchRunnable,
             BooleanSupplier incognitoEnabledSupplier,
             BookmarkManagerOpener bookmarkManagerOpener,
+            SnackbarManager snackbarManager,
             View nextFocusableView) {
         mToolbar =
                 (BookmarkToolbar)
@@ -68,7 +71,7 @@ public class BookmarkToolbarCoordinator {
                 context,
                 profile,
                 mModel,
-                dragReorderableRecyclerViewAdapter,
+                dragTouchHandler,
                 bookmarkDelegateSupplier,
                 selectionDelegate,
                 bookmarkModel,
@@ -77,7 +80,9 @@ public class BookmarkToolbarCoordinator {
                 new BookmarkAddNewFolderCoordinator(context, modalDialogManager, bookmarkModel),
                 endSearchRunnable,
                 incognitoEnabledSupplier,
-                bookmarkManagerOpener);
+                bookmarkManagerOpener,
+                snackbarManager,
+                Clipboard.getInstance());
 
         PropertyModelChangeProcessor.create(mModel, mToolbar, BookmarkToolbarViewBinder::bind);
     }

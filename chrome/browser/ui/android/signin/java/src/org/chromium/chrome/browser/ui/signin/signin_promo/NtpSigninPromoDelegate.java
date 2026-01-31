@@ -22,6 +22,7 @@ import org.chromium.chrome.browser.signin.services.SigninManager;
 import org.chromium.chrome.browser.signin.services.SigninPreferencesManager;
 import org.chromium.chrome.browser.ui.signin.R;
 import org.chromium.chrome.browser.ui.signin.SigninAndHistorySyncActivityLauncher;
+import org.chromium.chrome.browser.ui.signin.SigninSurveyController;
 import org.chromium.components.signin.SigninFeatureMap;
 import org.chromium.components.signin.SigninFeatures;
 import org.chromium.components.signin.base.CoreAccountInfo;
@@ -51,6 +52,10 @@ public class NtpSigninPromoDelegate extends SigninPromoDelegate {
     // 14 days in hours.
     @VisibleForTesting static final int NTP_SYNC_PROMO_NTP_SINCE_FIRST_TIME_SHOWN_LIMIT_HOURS = 336;
     @VisibleForTesting static final int NTP_SYNC_PROMO_RESET_AFTER_DAYS = 30;
+
+    /** Period for which promos are suppressed if signin is refused in FRE. */
+    @VisibleForTesting static final long SUPPRESSION_PERIOD_MS = DateUtils.DAY_IN_MILLIS;
+
     private static final int NTP_SYNC_PROMO_INCREASE_SHOW_COUNT_AFTER_MINUTES = 30;
     private @PromoState int mPromoState = PromoState.NONE;
 
@@ -149,7 +154,7 @@ public class NtpSigninPromoDelegate extends SigninPromoDelegate {
     }
 
     @Override
-    void onDismissButtonClicked() {
+    void permanentlyDismissPromo() {
         ChromeSharedPreferences.getInstance()
                 .writeBoolean(ChromePreferenceKeys.SIGNIN_PROMO_NTP_PROMO_DISMISSED, true);
     }
@@ -165,11 +170,6 @@ public class NtpSigninPromoDelegate extends SigninPromoDelegate {
         boolean wasStateChanged = mPromoState != newState;
         mPromoState = newState;
         return wasStateChanged;
-    }
-
-    @Override
-    boolean isSeamlessSigninAllowed() {
-        return SigninFeatureMap.isEnabled(SigninFeatures.ENABLE_SEAMLESS_SIGNIN);
     }
 
     @Override
@@ -203,6 +203,13 @@ public class NtpSigninPromoDelegate extends SigninPromoDelegate {
         return ChromeSharedPreferences.getInstance().readInt(getPromoShowCountPreferenceName());
     }
 
+    @Override
+    @Nullable
+    @SigninSurveyController.SigninSurveyType
+    Integer getSurveyTriggerType() {
+        return SigninSurveyController.SigninSurveyType.NTP_PROMO;
+    }
+
     private static boolean timeElapsedSinceFirstShownExceedsLimit() {
         final long timeSinceFirstShownLimitMs =
                 NTP_SYNC_PROMO_NTP_SINCE_FIRST_TIME_SHOWN_LIMIT_HOURS * DateUtils.HOUR_IN_MILLIS;
@@ -219,6 +226,10 @@ public class NtpSigninPromoDelegate extends SigninPromoDelegate {
     }
 
     private @PromoState int computePromoState(@Nullable CoreAccountInfo visibleAccount) {
+        if (SigninFeatureMap.isEnabled(SigninFeatures.ENABLE_SEAMLESS_SIGNIN)
+                && isPromoSuppressed()) {
+            return PromoState.NONE;
+        }
         IdentityManager identityManager =
                 IdentityServicesProvider.get().getIdentityManager(mProfile);
         assumeNonNull(identityManager);
@@ -242,9 +253,28 @@ public class NtpSigninPromoDelegate extends SigninPromoDelegate {
             return PromoState.SIGNIN;
         }
         // Don't show the promo if account image is not available yet.
-        return identityManager.findExtendedAccountInfoByEmailAddress(visibleAccount.getEmail())
-                        == null
+        return identityManager.findExtendedAccountInfoByAccountId(visibleAccount.getId()) == null
                 ? PromoState.NONE
                 : PromoState.SIGNIN;
+    }
+
+    // TODO(crbug.com/448227402): Remove this after removing the class SignInPromo once Seamless
+    // Sign-in is launched.
+    public static long getSuppressionPeriodMs() {
+        return SUPPRESSION_PERIOD_MS;
+    }
+
+    private static boolean isPromoSuppressed() {
+        long suppressedFrom =
+                SigninPreferencesManager.getInstance()
+                        .getNewTabPageSigninPromoSuppressionPeriodStart();
+        if (suppressedFrom == 0) return false;
+        long currentTime = System.currentTimeMillis();
+        long suppressedTo = suppressedFrom + SUPPRESSION_PERIOD_MS;
+        if (suppressedFrom <= currentTime && currentTime < suppressedTo) {
+            return true;
+        }
+        SigninPreferencesManager.getInstance().clearNewTabPageSigninPromoSuppressionPeriodStart();
+        return false;
     }
 }

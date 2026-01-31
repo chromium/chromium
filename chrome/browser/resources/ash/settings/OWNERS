@@ -12,6 +12,7 @@ cros-settings-reviews@google.com
 # Keep sorted. The LAST_RESORT_SUGGESTION annotation should be applied to each
 # user so that our GWSQ is prioritized instead.
 wesokuhara@google.com #{LAST_RESORT_SUGGESTION}
+wutao@google.com #{LAST_RESORT_SUGGESTION}
 xiaohuic@chromium.org #{LAST_RESORT_SUGGESTION}
 
 # Subdir OWNERS can approve icon changes related to their subdir.

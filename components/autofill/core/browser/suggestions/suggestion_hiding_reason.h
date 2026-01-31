@@ -58,7 +58,7 @@ enum class SuggestionHidingReason {
   // The context menu is shown instead of the autofill suggestions.
   kOverlappingWithAutofillContextMenu = 19,
   // The Fast Checkout surface is shown instead of autofill suggestions.
-  kOverlappingWithFastCheckoutSurface = 20,
+  // kOverlappingWithFastCheckoutSurface = 20, // DEPRECATED
   // The picture-in-picture window overlaps with the autofill suggestions.
   kOverlappingWithPictureInPictureWindow = 21,
   // The context menu was opened. We hide the autofill popup to make sure it

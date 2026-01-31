@@ -17,8 +17,7 @@
 }
 
 - (instancetype)initWithBrowser:(Browser*)browser {
-  self = [super init];
-  if (self) {
+  if ((self = [super init])) {
     _browser = browser;
   }
   return self;
@@ -51,6 +50,19 @@
   [snackbarHandler showSnackbarMessage:message bottomOffset:bottomOffset];
 }
 
+- (void)showAttachmentLimitForImageGenerationSnackbarWithBottomOffset:
+    (CGFloat)bottomOffset {
+  NSString* title = l10n_util::GetPluralNSStringF(
+      IDS_IOS_COMPOSEBOX_IMAGE_GEN_MAXIMUM_ATTACHMENTS_REACHED,
+      kAttachmentLimitForImageGeneration);
+  SnackbarMessage* message = [[SnackbarMessage alloc] initWithTitle:title];
+
+  CommandDispatcher* dispatcher = _browser->GetCommandDispatcher();
+  id<SnackbarCommands> snackbarHandler =
+      HandlerForProtocol(dispatcher, SnackbarCommands);
+  [snackbarHandler showSnackbarMessage:message bottomOffset:bottomOffset];
+}
+
 - (void)showCannotReloadTabError {
   NSString* title =
       l10n_util::GetNSString(IDS_IOS_COMPOSEBOX_CANNOT_RELOAD_TAB_ERROR);
@@ -60,6 +72,13 @@
   id<SnackbarCommands> snackbarHandler =
       HandlerForProtocol(dispatcher, SnackbarCommands);
   [snackbarHandler showSnackbarMessage:message bottomOffset:0];
+}
+
+- (void)dismissAllSnackbars {
+  CommandDispatcher* dispatcher = _browser->GetCommandDispatcher();
+  id<SnackbarCommands> snackbarHandler =
+      HandlerForProtocol(dispatcher, SnackbarCommands);
+  [snackbarHandler dismissAllSnackbars];
 }
 
 @end

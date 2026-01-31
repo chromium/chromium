@@ -70,7 +70,8 @@ class PermissionUpdateMessageController
   // This function can only be called with one of
   // ContentSettingsType::MEDIASTREAM_MIC,
   // ContentSettingsType::MEDIASTREAM_CAMERA,
-  // ContentSettingsType::GEOLOCATION, or
+  // ContentSettingsType::GEOLOCATION,
+  // ContentSettingsType::GEOLOCATION_WITH_OPTIONS, or
   // ContentSettingsType::AR or with both
   // ContentSettingsType::MEDIASTREAM_MIC and
   // ContentSettingsType::MEDIASTREAM_CAMERA.

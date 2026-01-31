@@ -47,7 +47,7 @@ optimization_guide::proto::SiteEngagementScore EngagementLevelToProtoScore(
 // Extracts the notification content detection metadata dictionary from the
 // notification database data. Returns std::nullopt if the metadata is not
 // present or cannot be parsed.
-std::optional<base::Value::Dict> GetNotificationContentMetadata(
+std::optional<base::DictValue> GetNotificationContentMetadata(
     const content::NotificationDatabaseData& notification_database_data) {
   const auto& metadata_it = notification_database_data.serialized_metadata.find(
       safe_browsing::kNotificationContentDetectionMetadataDictionaryKey);
@@ -115,7 +115,7 @@ void SendNotificationContentDetectionDataToMQLSServer(
       optimization_guide::proto::NotificationContentDetectionQuality>();
 
   // Add metadata to log if it's defined in the `notification_database_data`.
-  std::optional<base::Value::Dict> metadata_dict =
+  std::optional<base::DictValue> metadata_dict =
       GetNotificationContentMetadata(notification_database_data);
   if (metadata_dict.has_value()) {
     std::optional<bool> is_origin_allowlisted_by_user =
@@ -198,7 +198,7 @@ void NotificationContentDetectionUkmUtil::
   // If a suspicious score can be found in `notification_database_data`, then
   // set the value on the UKM builder.
   if (is_database_data_found) {
-    std::optional<base::Value::Dict> metadata_dict =
+    std::optional<base::DictValue> metadata_dict =
         GetNotificationContentMetadata(notification_database_data);
     if (metadata_dict.has_value()) {
       std::optional<double> suspicious_score =

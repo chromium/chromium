@@ -27,10 +27,10 @@ IN_PROC_BROWSER_TEST_F(AuditsProtocolWithServerTest, OverrideFlashEmbedwithHTML)
     SendCommandSync("DOM.enable");
 
     GURL url = embedded_test_server()->GetURL("/flash_embed_test.html");
-    SendCommandSync("Page.navigate", base::Value::Dict().Set("url", url.spec()));
+    SendCommandSync("Page.navigate", base::DictValue().Set("url", url.spec()));
 
-    base::Value::Dict notification =
-      WaitForNotification("Audits.issueAdded", true);
+    base::DictValue notification =
+        WaitForNotification("Audits.issueAdded", true);
     EXPECT_EQ(*notification.FindStringByDottedPath("issue.code"),
               "DeprecationIssue");
     EXPECT_EQ(*notification.FindStringByDottedPath("issue.details.deprecationIssueDetails.type"),

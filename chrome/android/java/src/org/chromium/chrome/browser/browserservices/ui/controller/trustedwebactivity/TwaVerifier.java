@@ -99,7 +99,7 @@ public class TwaVerifier implements Verifier, DestroyObserver {
     }
 
     @Override
-    public boolean shouldIgnoreExternalIntentHandlers(String url) {
+    public boolean isUrlInVerifiedScope(String url) {
         Origin origin = Origin.create(url);
         if (origin == null) return false;
 

@@ -76,7 +76,7 @@ MerchantSignalDB::~MerchantSignalDB() = default;
 
 void MerchantSignalDB::Save(JNIEnv* env,
                             std::string& key,
-                            const jlong jtimestamp,
+                            const int64_t jtimestamp,
                             const base::android::JavaRef<jobject>& jcallback) {
   MerchantSignalProto proto;
   proto.set_key(key);

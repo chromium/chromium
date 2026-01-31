@@ -1279,12 +1279,12 @@ class NetworkServiceTestWithService : public testing::Test {
     request.url = url;
     request.method = "GET";
     request.request_initiator = url::Origin();
-    StartLoadingURL(request, 0 /* process_id */, options);
+    StartLoadingURL(request, OriginatingProcess::browser(), options);
     client_->RunUntilComplete();
   }
 
   void StartLoadingURL(const ResourceRequest& request,
-                       uint32_t process_id,
+                       OriginatingProcess process_id,
                        int options = mojom::kURLLoadOptionNone) {
     client_ = std::make_unique<TestURLLoaderClient>();
     mojo::Remote<mojom::URLLoaderFactory> loader_factory;
@@ -1352,7 +1352,7 @@ TEST_F(NetworkServiceTestWithService, StartsNetLog) {
   network_service_->StartNetLog(
       std::move(log_file), net::FileNetLogObserver::kNoLimit,
       net::NetLogCaptureMode::kDefault,
-      base::Value::Dict().Set("amiatest", "iamatest"), std::nullopt);
+      base::DictValue().Set("amiatest", "iamatest"), std::nullopt);
   CreateNetworkContext();
   LoadURL(test_server()->GetURL("/echo"));
   EXPECT_EQ(net::OK, client()->completion_status().error_code);
@@ -1363,7 +1363,7 @@ TEST_F(NetworkServiceTestWithService, StartsNetLog) {
   // |log_file| is closed on another thread, so have to wait for that to happen.
   task_environment_.RunUntilIdle();
 
-  base::Value::Dict log_dict = base::test::ParseJsonDictFromFile(log_path);
+  base::DictValue log_dict = base::test::ParseJsonDictFromFile(log_path);
   ASSERT_EQ(*log_dict.FindStringByDottedPath("constants.amiatest"), "iamatest");
 
   // The log should have a "polledData" list.
@@ -1386,7 +1386,7 @@ TEST_F(NetworkServiceTestWithService, StartsNetLogBounded) {
                       base::File::FLAG_CREATE_ALWAYS | base::File::FLAG_WRITE);
   network_service_->StartNetLog(std::move(log_file), kMaxSizeBytes,
                                 net::NetLogCaptureMode::kEverything,
-                                base::Value::Dict(), std::nullopt);
+                                base::DictValue(), std::nullopt);
   CreateNetworkContext();
 
   // Through trial and error it was found that this looping navigation results
@@ -1406,7 +1406,7 @@ TEST_F(NetworkServiceTestWithService, StartsNetLogBounded) {
   // |log_file| is closed on another thread, so have to wait for that to happen.
   task_environment_.RunUntilIdle();
 
-  base::Value::Dict log_dict = base::test::ParseJsonDictFromFile(log_path);
+  base::DictValue log_dict = base::test::ParseJsonDictFromFile(log_path);
 
   base::File log_file_read(log_path,
                            base::File::FLAG_OPEN | base::File::FLAG_READ);
@@ -1428,7 +1428,7 @@ TEST_F(NetworkServiceTestWithService, RawRequestHeadersAbsent) {
   request.url = test_server()->GetURL("/server-redirect?/echo");
   request.method = "GET";
   request.request_initiator = url::Origin();
-  StartLoadingURL(request, 0);
+  StartLoadingURL(request, OriginatingProcess::browser());
   client()->RunUntilRedirectReceived();
   EXPECT_TRUE(client()->has_received_redirect());
   loader()->FollowRedirect({}, {}, {}, std::nullopt);
@@ -1455,13 +1455,13 @@ TEST_F(NetworkServiceTestWithServiceMockTime, StartsNetLogWithDuration) {
   network_service_->StartNetLog(
       std::move(log_file), net::FileNetLogObserver::kNoLimit,
       net::NetLogCaptureMode::kDefault,
-      base::Value::Dict().Set("amiatest", "iamatest"), log_duration);
+      base::DictValue().Set("amiatest", "iamatest"), log_duration);
   CreateNetworkContext();
   LoadURL(test_server()->GetURL("/echo"));
   EXPECT_EQ(net::OK, client()->completion_status().error_code);
   task_environment_.FastForwardBy(log_duration);
 
-  base::Value::Dict log_dict = base::test::ParseJsonDictFromFile(log_path);
+  base::DictValue log_dict = base::test::ParseJsonDictFromFile(log_path);
   ASSERT_EQ(*log_dict.FindStringByDottedPath("constants.amiatest"), "iamatest");
 
   // The log should have a "polledData" list.
@@ -1497,12 +1497,12 @@ TEST_F(NetworkServiceTestWithService, SetNetworkConditions) {
       url::Origin::Create(GURL("https://initiator.example.com"));
   request.method = "GET";
 
-  StartLoadingURL(request, 0);
+  StartLoadingURL(request, OriginatingProcess::browser());
   client()->RunUntilComplete();
   EXPECT_EQ(net::OK, client()->completion_status().error_code);
 
   request.throttling_profile_id = profile_id;
-  StartLoadingURL(request, 0);
+  StartLoadingURL(request, OriginatingProcess::browser());
   client()->RunUntilComplete();
   EXPECT_EQ(net::ERR_INTERNET_DISCONNECTED,
             client()->completion_status().error_code);
@@ -1514,7 +1514,7 @@ TEST_F(NetworkServiceTestWithService, SetNetworkConditions) {
     network_conditions.back()->conditions->offline = false;
     context()->SetNetworkConditions(profile_id, std::move(network_conditions));
   }
-  StartLoadingURL(request, 0);
+  StartLoadingURL(request, OriginatingProcess::browser());
   client()->RunUntilComplete();
   EXPECT_EQ(net::OK, client()->completion_status().error_code);
 
@@ -1527,12 +1527,12 @@ TEST_F(NetworkServiceTestWithService, SetNetworkConditions) {
   }
 
   request.throttling_profile_id = profile_id;
-  StartLoadingURL(request, 0);
+  StartLoadingURL(request, OriginatingProcess::browser());
   client()->RunUntilComplete();
   EXPECT_EQ(net::ERR_INTERNET_DISCONNECTED,
             client()->completion_status().error_code);
   context()->SetNetworkConditions(profile_id, {});
-  StartLoadingURL(request, 0);
+  StartLoadingURL(request, OriginatingProcess::browser());
   client()->RunUntilComplete();
   EXPECT_EQ(net::OK, client()->completion_status().error_code);
 }
@@ -1781,14 +1781,14 @@ class NetworkServiceNetworkDelegateTest : public NetworkServiceTest {
     request.url = url;
     request.method = "GET";
     request.request_initiator = url::Origin();
-    StartLoadingURL(request, 0 /* process_id */, options,
+    StartLoadingURL(request, OriginatingProcess::browser(), options,
                     std::move(url_loader_network_observer));
     client_->RunUntilComplete();
   }
 
   void StartLoadingURL(
       const ResourceRequest& request,
-      uint32_t process_id,
+      OriginatingProcess process_id,
       int options = mojom::kURLLoadOptionNone,
       mojo::PendingRemote<mojom::URLLoaderNetworkServiceObserver>
           url_loader_network_observer = mojo::NullRemote()) {
@@ -2156,6 +2156,46 @@ TEST_F(NetworkServiceTest, NetworkAnnotationMonitor) {
   std::vector<int32_t> expected_hash_codes = {
       TRAFFIC_ANNOTATION_FOR_TESTS.unique_id_hash_code};
   EXPECT_EQ(expected_hash_codes, monitor.reported_hash_codes());
+}
+
+TEST_F(NetworkServiceTest, DurableMessagesMultipleCollectors) {
+  // Tests that multiple durable message collectors can be added and that they
+  // are both called when a message is written.
+  mojo::Remote<mojom::DurableMessageCollector> remote1;
+  service()->AddDurableMessageCollector(remote1.BindNewPipeAndPassReceiver());
+  mojo::Remote<mojom::DurableMessageCollector> remote2;
+  service()->AddDurableMessageCollector(remote2.BindNewPipeAndPassReceiver());
+  ASSERT_EQ(service()
+                ->GetDurableMessageCollectorManagerForTesting()
+                ->GetCollectorsForTesting()
+                .size(),
+            2u);
+
+  const base::UnguessableToken profile_id = base::UnguessableToken::Create();
+  base::RunLoop enable_loop1;
+  remote1->EnableForProfile(profile_id, enable_loop1.QuitClosure());
+  enable_loop1.Run();
+  base::RunLoop enable_loop2;
+  remote2->EnableForProfile(profile_id, enable_loop2.QuitClosure());
+  enable_loop2.Run();
+  ASSERT_EQ(service()
+                ->GetDurableMessageCollectorManagerForTesting()
+                ->GetCollectorsEnabledForProfile(profile_id)
+                .size(),
+            2u);
+
+  const std::string devtools_request_id = "request-id";
+  auto durable_message_writer = service()->MaybeCreateDurableMessageWriter(
+      profile_id, devtools_request_id);
+  durable_message_writer->MarkComplete();
+
+  base::test::TestFuture<std::optional<mojo_base::BigBuffer>> future1;
+  remote1->Retrieve(devtools_request_id, future1.GetCallback());
+  EXPECT_TRUE(future1.Take());
+
+  base::test::TestFuture<std::optional<mojo_base::BigBuffer>> future2;
+  remote2->Retrieve(devtools_request_id, future2.GetCallback());
+  EXPECT_TRUE(future2.Take());
 }
 
 }  // namespace

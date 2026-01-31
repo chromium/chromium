@@ -10,8 +10,8 @@
 SafetyHubResult::SafetyHubResult(base::Time timestamp)
     : timestamp_(timestamp) {}
 
-base::Value::Dict SafetyHubResult::BaseToDictValue() const {
-  base::Value::Dict result;
+base::DictValue SafetyHubResult::BaseToDictValue() const {
+  base::DictValue result;
   result.Set(kSafetyHubTimestampResultKey, base::TimeToValue(timestamp_));
   return result;
 }

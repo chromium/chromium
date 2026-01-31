@@ -42,9 +42,6 @@ class LensRegionSearchInstructionsView
       const LensRegionSearchInstructionsView&) = delete;
   ~LensRegionSearchInstructionsView() override;
 
-  // views::View
-  void OnThemeChanged() override;
-
  protected:
   // views::BubbleDialogDelegateView:
   void Init() override;

@@ -8,6 +8,7 @@
 #include <string_view>
 
 #include "components/autofill/core/browser/data_model/valuables/loyalty_card.h"
+#include "components/autofill/core/browser/data_model/valuables/valuable_types.h"
 #include "components/sync/protocol/autofill_valuable_specifics.pb.h"
 
 namespace autofill {
@@ -20,6 +21,9 @@ sync_pb::AutofillValuableSpecifics TestLoyaltyCardSpecifics(
     std::string_view id = "1",
     std::string_view program_logo = "http://foobar.com/logo.png",
     std::string_view number = "80974934820245");
+
+// Creates a test `ValuableMetadata`.
+ValuableMetadata TestValuableMetadata(std::string_view id = "1");
 
 }  // namespace autofill
 

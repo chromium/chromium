@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import {CrWebApi, gCrWeb} from '//ios/web/public/js_messaging/resources/gcrweb.js';
-import {isTextField, removeQueryAndReferenceFromURL, sendWebKitMessage, trim} from '//ios/web/public/js_messaging/resources/utils.js';
+import {isTextField, removeQueryAndReferenceFromURL, sendWebKitMessage, sendWebKitMessageWithReply, trim} from '//ios/web/public/js_messaging/resources/utils.js';
 
 const utils_tests = new CrWebApi();
 
@@ -14,3 +14,5 @@ utils_tests.addFunction(
 utils_tests.addFunction('sendWebKitMessage', sendWebKitMessage);
 utils_tests.addFunction('trim', trim);
 utils_tests.addFunction('isTextField', isTextField);
+utils_tests.addFunction(
+    'sendWebKitMessageWithReply', sendWebKitMessageWithReply);

@@ -14,8 +14,11 @@
 #include "extensions/browser/extension_function.h"
 #include "extensions/browser/extension_registrar.h"
 #include "extensions/browser/extension_registry.h"
+#include "extensions/buildflags/buildflags.h"
 #include "extensions/common/extension_builder.h"
 #include "testing/gtest/include/gtest/gtest.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 namespace extensions {
 
@@ -23,7 +26,7 @@ namespace {
 
 void SuccessCallback(bool* did_respond,
                      ExtensionFunction::ResponseType type,
-                     base::Value::List results,
+                     base::ListValue results,
                      const std::string& error,
                      mojom::ExtraResponseDataPtr) {
   EXPECT_EQ(ExtensionFunction::ResponseType::kSucceeded, type);
@@ -32,7 +35,7 @@ void SuccessCallback(bool* did_respond,
 
 void FailCallback(bool* did_respond,
                   ExtensionFunction::ResponseType type,
-                  base::Value::List results,
+                  base::ListValue results,
                   const std::string& error,
                   mojom::ExtraResponseDataPtr) {
   EXPECT_EQ(ExtensionFunction::ResponseType::kFailed, type);

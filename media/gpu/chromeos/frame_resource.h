@@ -96,6 +96,8 @@ class FrameResource : public base::RefCountedThreadSafe<FrameResource> {
   // Create a shared GPU memory handle to |this|'s data.
   virtual gfx::GpuMemoryBufferHandle CreateGpuMemoryBufferHandle() const = 0;
 
+  virtual bool HasMappableSharedImage() const = 0;
+
   virtual scoped_refptr<gpu::ClientSharedImage> GetSharedImage() const = 0;
 
   virtual const VideoFrameLayout& layout() const = 0;

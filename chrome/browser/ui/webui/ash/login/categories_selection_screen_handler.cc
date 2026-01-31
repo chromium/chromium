@@ -34,7 +34,7 @@ void CategoriesSelectionScreenHandler::Show() {
 }
 
 void CategoriesSelectionScreenHandler::SetCategoriesData(
-    base::Value::Dict categories) {
+    base::DictValue categories) {
   CallExternalAPI("setCategoriesData", std::move(categories));
 }
 

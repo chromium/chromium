@@ -4,9 +4,9 @@
 
 #include "chrome/browser/dbus_memory_pressure_evaluator_linux.h"
 
+#include <algorithm>
 #include <memory>
 
-#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/memory/memory_pressure_listener.h"
 #include "base/memory/memory_pressure_monitor.h"
@@ -112,7 +112,7 @@ class DbusMemoryPressureEvaluatorLinuxTest : public testing::Test {
       std::unique_ptr<dbus::Response> response =
           dbus::Response::FromMethodCall(method_call);
       dbus::MessageWriter writer(response.get());
-      writer.AppendBool(base::Contains(running_services_, service));
+      writer.AppendBool(std::ranges::contains(running_services_, service));
 
       std::move(response_callback).Run(response.get());
     } else if (method_call->GetMember() == "ListActivatableNames") {

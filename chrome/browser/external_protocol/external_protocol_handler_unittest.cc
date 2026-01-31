@@ -567,18 +567,17 @@ TEST_F(ExternalProtocolHandlerTest, TestSetBlockState) {
       ExternalProtocolHandler::kBlockStateMetric,
       ExternalProtocolHandler::BlockStateMetric::kPrompt, 9);
 
-  const base::Value::Dict& protocol_origin_pairs =
-      profile_->GetPrefs()->GetDict(
-          prefs::kProtocolHandlerPerOriginAllowedProtocols);
-  base::Value::Dict expected_allowed_protocols_for_example_origin_1;
+  const base::DictValue& protocol_origin_pairs = profile_->GetPrefs()->GetDict(
+      prefs::kProtocolHandlerPerOriginAllowedProtocols);
+  base::DictValue expected_allowed_protocols_for_example_origin_1;
   expected_allowed_protocols_for_example_origin_1.Set(kScheme_1, true);
-  const base::Value::Dict* allowed_protocols_for_example_origin_1 =
+  const base::DictValue* allowed_protocols_for_example_origin_1 =
       protocol_origin_pairs.FindDict(example_origin_1.Serialize());
   EXPECT_EQ(expected_allowed_protocols_for_example_origin_1,
             *allowed_protocols_for_example_origin_1);
-  base::Value::Dict expected_allowed_protocols_for_example_origin_2;
+  base::DictValue expected_allowed_protocols_for_example_origin_2;
   expected_allowed_protocols_for_example_origin_2.Set(kScheme_2, true);
-  const base::Value::Dict* allowed_protocols_for_example_origin_2 =
+  const base::DictValue* allowed_protocols_for_example_origin_2 =
       protocol_origin_pairs.FindDict(example_origin_2.Serialize());
   EXPECT_EQ(expected_allowed_protocols_for_example_origin_2,
             *allowed_protocols_for_example_origin_2);

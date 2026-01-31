@@ -25,6 +25,12 @@ mod ffi {
 
         #[cfg(not(target_family = "unix"))]
         fn double_non_unix_value(x: u32) -> u32;
+
+        #[cfg(MY_TEST_CONFIG)]
+        fn double_my_test_config(x: u32) -> u32;
+
+        #[cfg(not(MY_TEST_CONFIG))]
+        fn double_not_my_test_config(x: u32) -> u32;
     }
 }
 
@@ -35,5 +41,15 @@ fn double_unix_value(x: u32) -> u32 {
 
 #[cfg(not(target_family = "unix"))]
 fn double_non_unix_value(x: u32) -> u32 {
+    x + x
+}
+
+#[cfg(MY_TEST_CONFIG)]
+fn double_my_test_config(x: u32) -> u32 {
+    x * 2
+}
+
+#[cfg(not(MY_TEST_CONFIG))]
+fn double_not_my_test_config(x: u32) -> u32 {
     x + x
 }

@@ -29,47 +29,45 @@ class COMPONENTS_PREFS_EXPORT PrefServiceAndroid {
 
   void ClearPref(JNIEnv* env,
                  const base::android::JavaRef<jstring>& j_preference);
-  jboolean HasPrefPath(JNIEnv* env,
-                       const base::android::JavaRef<jstring>& j_preference);
-  jboolean GetBoolean(JNIEnv* env,
-                      const base::android::JavaRef<jstring>& j_preference);
+  bool HasPrefPath(JNIEnv* env,
+                   const base::android::JavaRef<jstring>& j_preference);
+  bool GetBoolean(JNIEnv* env,
+                  const base::android::JavaRef<jstring>& j_preference);
   void SetBoolean(JNIEnv* env,
                   const base::android::JavaRef<jstring>& j_preference,
-                  const jboolean j_value);
-  jint GetInteger(JNIEnv* env,
-                  const base::android::JavaRef<jstring>& j_preference);
+                  const bool j_value);
+  int32_t GetInteger(JNIEnv* env,
+                     const base::android::JavaRef<jstring>& j_preference);
   void SetInteger(JNIEnv* env,
                   const base::android::JavaRef<jstring>& j_preference,
-                  const jint j_value);
-  jdouble GetDouble(JNIEnv* env,
-                    const base::android::JavaRef<jstring>& j_preference);
+                  const int32_t j_value);
+  double GetDouble(JNIEnv* env,
+                   const base::android::JavaRef<jstring>& j_preference);
   void SetDouble(JNIEnv* env,
                  const base::android::JavaRef<jstring>& j_preference,
-                 const jdouble j_value);
-  jlong GetLong(JNIEnv* env,
-                const base::android::JavaRef<jstring>& j_preference);
+                 const double j_value);
+  int64_t GetLong(JNIEnv* env,
+                  const base::android::JavaRef<jstring>& j_preference);
   void SetLong(JNIEnv* env,
                const base::android::JavaRef<jstring>& j_preference,
-               const jlong j_value);
+               const int64_t j_value);
   base::android::ScopedJavaLocalRef<jstring> GetString(
       JNIEnv* env,
       const base::android::JavaRef<jstring>& j_preference);
   void SetString(JNIEnv* env,
                  const base::android::JavaRef<jstring>& j_preference,
                  const base::android::JavaRef<jstring>& j_value);
-  jboolean IsManagedPreference(
+  bool IsManagedPreference(JNIEnv* env,
+                           const base::android::JavaRef<jstring>& j_preference);
+  bool HasRecommendation(JNIEnv* env,
+                         const base::android::JavaRef<jstring>& j_preference);
+  bool IsFollowingRecommendation(
       JNIEnv* env,
       const base::android::JavaRef<jstring>& j_preference);
-  jboolean HasRecommendation(
+  bool IsRecommendedPreference(
       JNIEnv* env,
       const base::android::JavaRef<jstring>& j_preference);
-  jboolean IsFollowingRecommendation(
-      JNIEnv* env,
-      const base::android::JavaRef<jstring>& j_preference);
-  jboolean IsRecommendedPreference(
-      JNIEnv* env,
-      const base::android::JavaRef<jstring>& j_preference);
-  jboolean IsDefaultValuePreference(
+  bool IsDefaultValuePreference(
       JNIEnv* env,
       const base::android::JavaRef<jstring>& j_preference);
 

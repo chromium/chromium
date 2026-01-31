@@ -38,19 +38,25 @@ import org.chromium.components.favicon.LargeIconBridgeJni;
 import org.chromium.components.prefs.PrefChangeRegistrar;
 import org.chromium.components.prefs.PrefChangeRegistrarJni;
 import org.chromium.components.prefs.PrefService;
+import org.chromium.components.signin.SigninFeatures;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.sync.SyncService;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.components.user_prefs.UserPrefsJni;
+import org.chromium.ui.base.ActivityResultTracker;
 import org.chromium.ui.base.TestActivity;
+import org.chromium.ui.base.WindowAndroid;
+import org.chromium.ui.modaldialog.ModalDialogManager;
 
 import java.util.function.DoubleConsumer;
+import java.util.function.Supplier;
 
 /** Unit tests for {@link HistoryPane}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @EnableFeatures({
     ChromeFeatureList.HISTORY_PANE_ANDROID,
-    ChromeFeatureList.ENABLE_ESCAPE_HANDLING_FOR_SECONDARY_ACTIVITIES
+    ChromeFeatureList.ENABLE_ESCAPE_HANDLING_FOR_SECONDARY_ACTIVITIES,
+    SigninFeatures.ENABLE_SEAMLESS_SIGNIN
 })
 public class HistoryPaneUnitTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
@@ -59,10 +65,13 @@ public class HistoryPaneUnitTest {
             new OneshotSupplierImpl<>();
 
     @Mock private DoubleConsumer mOnToolbarAlphaChange;
+    @Mock private WindowAndroid mWindowAndroid;
     @Mock private SnackbarManager mSnackbarManager;
+    @Mock private BottomSheetController mBottomSheetController;
+    @Mock private Supplier<ModalDialogManager> mModalDialogManagerSupplier;
+    @Mock private ActivityResultTracker mActivityResultTracker;
     @Mock private ProfileProvider mProfileProvider;
     @Mock private Profile mProfile;
-    @Mock private BottomSheetController mBottomSheetController;
     @Mock private Tab mCurrentTab;
     @Mock private BrowsingHistoryBridge.Natives mBrowsingHistoryBridgeNatives;
     @Mock private PrefService mPrefService;
@@ -93,11 +102,14 @@ public class HistoryPaneUnitTest {
         IncognitoUtilsJni.setInstanceForTesting(mIncognitoUtilsNatives);
         mHistoryPane =
                 new HistoryPane(
+                        mProfileProviderSupplier,
                         mOnToolbarAlphaChange,
+                        mWindowAndroid,
                         Robolectric.buildActivity(TestActivity.class).setup().get(),
                         mSnackbarManager,
-                        mProfileProviderSupplier,
                         () -> mBottomSheetController,
+                        mModalDialogManagerSupplier,
+                        mActivityResultTracker,
                         () -> mCurrentTab);
     }
 

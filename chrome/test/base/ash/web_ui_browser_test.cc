@@ -11,7 +11,6 @@
 #include <vector>
 
 #include "base/command_line.h"
-#include "base/containers/contains.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
@@ -114,7 +113,7 @@ class WebUITestMessageHandler : public content::WebUIMessageHandler,
   ~WebUITestMessageHandler() override = default;
 
   // Receives testResult messages.
-  void HandleTestResult(const base::Value::List& list) {
+  void HandleTestResult(const base::ListValue& list) {
     // To ensure this gets done, do this before ASSERT* calls.
     RunQuitClosure();
 
@@ -146,14 +145,14 @@ BaseWebUIBrowserTest::~BaseWebUIBrowserTest() = default;
 
 bool BaseWebUIBrowserTest::RunJavascriptFunction(
     const std::string& function_name) {
-  return RunJavascriptFunction(function_name, base::Value::List());
+  return RunJavascriptFunction(function_name, base::ListValue());
 }
 
 bool BaseWebUIBrowserTest::RunJavascriptFunction(
     const std::string& function_name,
     base::Value arg) {
   return RunJavascriptFunction(function_name,
-                               base::Value::List().Append(std::move(arg)));
+                               base::ListValue().Append(std::move(arg)));
 }
 
 bool BaseWebUIBrowserTest::RunJavascriptFunction(
@@ -162,12 +161,12 @@ bool BaseWebUIBrowserTest::RunJavascriptFunction(
     base::Value arg2) {
   return RunJavascriptFunction(
       function_name,
-      base::Value::List().Append(std::move(arg1)).Append(std::move(arg2)));
+      base::ListValue().Append(std::move(arg1)).Append(std::move(arg2)));
 }
 
 bool BaseWebUIBrowserTest::RunJavascriptFunction(
     const std::string& function_name,
-    base::Value::List function_arguments) {
+    base::ListValue function_arguments) {
   return RunJavascriptUsingHandler(function_name, std::move(function_arguments),
                                    false, false, nullptr);
 }
@@ -175,7 +174,7 @@ bool BaseWebUIBrowserTest::RunJavascriptFunction(
 bool BaseWebUIBrowserTest::RunJavascriptTestF(bool is_async,
                                               const std::string& test_fixture,
                                               const std::string& test_name) {
-  auto args = base::Value::List().Append(test_fixture).Append(test_name);
+  auto args = base::ListValue().Append(test_fixture).Append(test_name);
   bool result = is_async ? RunJavascriptAsyncTest("RUN_TEST_F", std::move(args))
                          : RunJavascriptTest("RUN_TEST_F", std::move(args));
 
@@ -188,13 +187,12 @@ bool BaseWebUIBrowserTest::RunJavascriptTestF(bool is_async,
 }
 
 bool BaseWebUIBrowserTest::RunJavascriptTest(const std::string& test_name) {
-  return RunJavascriptTest(test_name, base::Value::List());
+  return RunJavascriptTest(test_name, base::ListValue());
 }
 
 bool BaseWebUIBrowserTest::RunJavascriptTest(const std::string& test_name,
                                              base::Value arg) {
-  return RunJavascriptTest(test_name,
-                           base::Value::List().Append(std::move(arg)));
+  return RunJavascriptTest(test_name, base::ListValue().Append(std::move(arg)));
 }
 
 bool BaseWebUIBrowserTest::RunJavascriptTest(const std::string& test_name,
@@ -202,24 +200,24 @@ bool BaseWebUIBrowserTest::RunJavascriptTest(const std::string& test_name,
                                              base::Value arg2) {
   return RunJavascriptTest(
       test_name,
-      base::Value::List().Append(std::move(arg1)).Append(std::move(arg2)));
+      base::ListValue().Append(std::move(arg1)).Append(std::move(arg2)));
 }
 
 bool BaseWebUIBrowserTest::RunJavascriptTest(const std::string& test_name,
-                                             base::Value::List test_arguments) {
+                                             base::ListValue test_arguments) {
   return RunJavascriptUsingHandler(test_name, std::move(test_arguments), true,
                                    false, nullptr);
 }
 
 bool BaseWebUIBrowserTest::RunJavascriptAsyncTest(
     const std::string& test_name) {
-  return RunJavascriptAsyncTest(test_name, base::Value::List());
+  return RunJavascriptAsyncTest(test_name, base::ListValue());
 }
 
 bool BaseWebUIBrowserTest::RunJavascriptAsyncTest(const std::string& test_name,
                                                   base::Value arg) {
   return RunJavascriptAsyncTest(test_name,
-                                base::Value::List().Append(std::move(arg)));
+                                base::ListValue().Append(std::move(arg)));
 }
 
 bool BaseWebUIBrowserTest::RunJavascriptAsyncTest(const std::string& test_name,
@@ -227,14 +225,14 @@ bool BaseWebUIBrowserTest::RunJavascriptAsyncTest(const std::string& test_name,
                                                   base::Value arg2) {
   return RunJavascriptAsyncTest(
       test_name,
-      base::Value::List().Append(std::move(arg1)).Append(std::move(arg2)));
+      base::ListValue().Append(std::move(arg1)).Append(std::move(arg2)));
 }
 
 bool BaseWebUIBrowserTest::RunJavascriptAsyncTest(const std::string& test_name,
                                                   base::Value arg1,
                                                   base::Value arg2,
                                                   base::Value arg3) {
-  return RunJavascriptAsyncTest(test_name, base::Value::List()
+  return RunJavascriptAsyncTest(test_name, base::ListValue()
                                                .Append(std::move(arg1))
                                                .Append(std::move(arg2))
                                                .Append(std::move(arg3)));
@@ -242,7 +240,7 @@ bool BaseWebUIBrowserTest::RunJavascriptAsyncTest(const std::string& test_name,
 
 bool BaseWebUIBrowserTest::RunJavascriptAsyncTest(
     const std::string& test_name,
-    base::Value::List test_arguments) {
+    base::ListValue test_arguments) {
   return RunJavascriptUsingHandler(test_name, std::move(test_arguments), true,
                                    true, nullptr);
 }
@@ -255,13 +253,12 @@ void BaseWebUIBrowserTest::PreLoadJavascriptLibraries(
   // process.
   auto global_frame_routing_id = preload_frame->GetGlobalId();
   ASSERT_FALSE(
-      base::Contains(libraries_preloaded_for_frames_, global_frame_routing_id));
+      libraries_preloaded_for_frames_.contains(global_frame_routing_id));
 
-  RunJavascriptUsingHandler("preloadJavascriptLibraries",
-                            base::Value::List()
-                                .Append(preload_test_fixture)
-                                .Append(preload_test_name),
-                            false, false, preload_frame);
+  RunJavascriptUsingHandler(
+      "preloadJavascriptLibraries",
+      base::ListValue().Append(preload_test_fixture).Append(preload_test_name),
+      false, false, preload_frame);
   libraries_preloaded_for_frames_.emplace(global_frame_routing_id);
 
   bool should_wait_flag = base::CommandLine::ForCurrentProcess()->HasSwitch(
@@ -432,7 +429,7 @@ WebUIMessageHandler* BaseWebUIBrowserTest::GetMockMessageHandler() {
 
 bool BaseWebUIBrowserTest::RunJavascriptUsingHandler(
     const std::string& function_name,
-    base::Value::List function_arguments,
+    base::ListValue function_arguments,
     bool is_test,
     bool is_async,
     RenderFrameHost* preload_frame) {
@@ -451,8 +448,8 @@ bool BaseWebUIBrowserTest::RunJavascriptUsingHandler(
   auto* frame_for_libraries = preload_frame
                                   ? preload_frame
                                   : test_handler_->GetRenderFrameHostForTest();
-  if (!base::Contains(libraries_preloaded_for_frames_,
-                      frame_for_libraries->GetGlobalId())) {
+  if (!libraries_preloaded_for_frames_.contains(
+          frame_for_libraries->GetGlobalId())) {
     if (!BuildJavascriptLibraries(&libraries)) {
       ADD_FAILURE() << "Failed to build JavaScript libraries";
       return false;

@@ -304,8 +304,7 @@ void MultideviceHandler::OnNearbySharingEnabledChanged() {
 }
 
 void MultideviceHandler::UpdatePageContent() {
-  base::Value::Dict page_content_dictionary =
-      GeneratePageContentDataDictionary();
+  base::DictValue page_content_dictionary = GeneratePageContentDataDictionary();
   PA_LOG(INFO) << "Updating MultiDevice settings page content with: "
                << page_content_dictionary << ".";
   FireWebUIListener("settings.updateMultidevicePageContentData",
@@ -313,14 +312,14 @@ void MultideviceHandler::UpdatePageContent() {
 }
 
 void MultideviceHandler::HandleShowMultiDeviceSetupDialog(
-    const base::Value::List& args) {
+    const base::ListValue& args) {
   DCHECK(args.empty());
   multidevice_setup::MultiDeviceSetupDialog::Show();
   ash::phonehub::util::LogMultiDeviceSetupDialogEntryPoint(
       ash::phonehub::util::MultiDeviceSetupDialogEntrypoint::kSettingsPage);
 }
 
-void MultideviceHandler::HandleGetPageContent(const base::Value::List& args) {
+void MultideviceHandler::HandleGetPageContent(const base::ListValue& args) {
   // This callback is expected to be the first one executed when the page is
   // loaded, so it should be the one to allow JS calls.
   AllowJavascript();
@@ -328,8 +327,7 @@ void MultideviceHandler::HandleGetPageContent(const base::Value::List& args) {
   const base::Value& callback_id = args[0];
   DCHECK(callback_id.is_string());
 
-  base::Value::Dict page_content_dictionary =
-      GeneratePageContentDataDictionary();
+  base::DictValue page_content_dictionary = GeneratePageContentDataDictionary();
   PA_LOG(INFO) << "Responding to getPageContentData() request with: "
                << page_content_dictionary << ".";
 
@@ -337,7 +335,7 @@ void MultideviceHandler::HandleGetPageContent(const base::Value::List& args) {
 }
 
 void MultideviceHandler::HandleSetFeatureEnabledState(
-    const base::Value::List& args) {
+    const base::ListValue& args) {
   const auto& list = args;
   DCHECK_GE(list.size(), 3u);
   const std::string& callback_id = list[0].GetString();
@@ -371,20 +369,20 @@ void MultideviceHandler::HandleSetFeatureEnabledState(
   }
 }
 
-void MultideviceHandler::HandleRemoveHostDevice(const base::Value::List& args) {
+void MultideviceHandler::HandleRemoveHostDevice(const base::ListValue& args) {
   DCHECK(args.empty());
   multidevice_setup_client_->RemoveHostDevice();
 }
 
 void MultideviceHandler::HandleRetryPendingHostSetup(
-    const base::Value::List& args) {
+    const base::ListValue& args) {
   DCHECK(args.empty());
   multidevice_setup_client_->RetrySetHostNow(
       base::BindOnce(&OnRetrySetHostNowResult));
 }
 
 void MultideviceHandler::HandleAttemptNotificationSetup(
-    const base::Value::List& args) {
+    const base::ListValue& args) {
   DCHECK(features::IsPhoneHubEnabled());
   DCHECK(!notification_access_operation_);
 
@@ -405,14 +403,14 @@ void MultideviceHandler::HandleAttemptNotificationSetup(
 }
 
 void MultideviceHandler::HandleCancelNotificationSetup(
-    const base::Value::List& args) {
+    const base::ListValue& args) {
   DCHECK(features::IsPhoneHubEnabled());
   DCHECK(notification_access_operation_);
 
   notification_access_operation_.reset();
 }
 
-void MultideviceHandler::HandleAttemptAppsSetup(const base::Value::List& args) {
+void MultideviceHandler::HandleAttemptAppsSetup(const base::ListValue& args) {
   DCHECK(features::IsEcheSWAEnabled());
   DCHECK(!apps_access_operation_);
 
@@ -431,7 +429,7 @@ void MultideviceHandler::HandleAttemptAppsSetup(const base::Value::List& args) {
   DCHECK(apps_access_operation_);
 }
 
-void MultideviceHandler::HandleCancelAppsSetup(const base::Value::List& args) {
+void MultideviceHandler::HandleCancelAppsSetup(const base::ListValue& args) {
   DCHECK(features::IsEcheSWAEnabled());
   DCHECK(apps_access_operation_);
 
@@ -440,7 +438,7 @@ void MultideviceHandler::HandleCancelAppsSetup(const base::Value::List& args) {
 }
 
 void MultideviceHandler::HandleAttemptCombinedFeatureSetup(
-    const base::Value::List& args) {
+    const base::ListValue& args) {
   bool camera_roll = false;
   if (args[0].is_bool()) {
     camera_roll = args[0].GetBool();
@@ -487,7 +485,7 @@ void MultideviceHandler::HandleAttemptCombinedFeatureSetup(
 }
 
 void MultideviceHandler::HandleCancelCombinedFeatureSetup(
-    const base::Value::List& args) {
+    const base::ListValue& args) {
   DCHECK(features::IsPhoneHubEnabled());
   DCHECK(combined_access_operation_);
 
@@ -495,7 +493,7 @@ void MultideviceHandler::HandleCancelCombinedFeatureSetup(
 }
 
 void MultideviceHandler::HandleAttemptFeatureSetupConnection(
-    const base::Value::List& args) {
+    const base::ListValue& args) {
   DCHECK(features::IsPhoneHubEnabled());
   DCHECK(!feature_setup_connection_operation_);
 
@@ -505,7 +503,7 @@ void MultideviceHandler::HandleAttemptFeatureSetupConnection(
 }
 
 void MultideviceHandler::HandleCancelFeatureSetupConnection(
-    const base::Value::List& args) {
+    const base::ListValue& args) {
   DCHECK(features::IsPhoneHubEnabled());
   DCHECK(feature_setup_connection_operation_);
 
@@ -513,7 +511,7 @@ void MultideviceHandler::HandleCancelFeatureSetupConnection(
 }
 
 void MultideviceHandler::HandleShowBrowserSyncSettings(
-    const base::Value::List& args) {
+    const base::ListValue& args) {
   ash::NewWindowDelegate::GetInstance()->OpenUrl(
       GURL("chrome://settings/syncSetup/advanced"),
       ash::NewWindowDelegate::OpenUrlFrom::kUserInteraction,
@@ -521,7 +519,7 @@ void MultideviceHandler::HandleShowBrowserSyncSettings(
 }
 
 void MultideviceHandler::LogPhoneHubPermissionSetUpScreenAction(
-    const base::Value::List& args) {
+    const base::ListValue& args) {
   int setup_screen_int = args[0].GetInt();
   int setup_action_int = args[1].GetInt();
   LogPermissionOnboardingDialogAction(
@@ -530,21 +528,21 @@ void MultideviceHandler::LogPhoneHubPermissionSetUpScreenAction(
 }
 
 void MultideviceHandler::LogPhoneHubPermissionSetUpButtonClicked(
-    const base::Value::List& args) {
+    const base::ListValue& args) {
   int setup_mode = args[0].GetInt();
   LogPermissionOnboardingSettingsClicked(
       static_cast<PermissionsOnboardingSetUpMode>(setup_mode));
 }
 
 void MultideviceHandler::LogPhoneHubPermissionOnboardingSetupMode(
-    const base::Value::List& args) {
+    const base::ListValue& args) {
   int setup_mode = args[0].GetInt();
   LogPermissionOnboardingSetupMode(
       static_cast<PermissionsOnboardingSetUpMode>(setup_mode));
 }
 
 void MultideviceHandler::LogPhoneHubPermissionOnboardingSetupResult(
-    const base::Value::List& args) {
+    const base::ListValue& args) {
   int completed_mode = args[0].GetInt();
   LogPermissionOnboardingSetupResult(
       static_cast<PermissionsOnboardingSetUpMode>(completed_mode));
@@ -596,8 +594,8 @@ void MultideviceHandler::OnSetFeatureStateEnabledResult(
   ResolveJavascriptCallback(base::Value(js_callback_id), base::Value(success));
 }
 
-base::Value::Dict MultideviceHandler::GeneratePageContentDataDictionary() {
-  base::Value::Dict page_content_dictionary;
+base::DictValue MultideviceHandler::GeneratePageContentDataDictionary() {
+  base::DictValue page_content_dictionary;
 
   multidevice_setup::MultiDeviceSetupClient::HostStatusWithDevice
       host_status_with_device = GetHostStatusWithDevice();

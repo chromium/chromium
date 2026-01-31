@@ -1,0 +1,20 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("buttons") {
+  sources = [
+    "toolbar_button.h",
+    "toolbar_button.mm",
+    "toolbar_button_factory.h",
+    "toolbar_button_factory.mm",
+    "toolbar_button_visibility.h",
+  ]
+  deps = [
+    "//base",
+    "//ios/chrome/browser/shared/ui/symbols",
+    "//ios/chrome/browser/toolbar/ui:constants",
+    "//ios/chrome/common/ui/util",
+  ]
+  frameworks = [ "UIKit.framework" ]
+}

@@ -12,8 +12,9 @@
 #include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
-#include "chrome/browser/ui/browser_list.h"
-#include "chrome/browser/ui/browser_list_observer.h"
+#include "chrome/browser/ui/browser_window/public/browser_collection_observer.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/browser_window/public/profile_browser_collection.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/search_engines/search_engine_choice/search_engine_choice_service.h"
@@ -23,10 +24,13 @@
 class Browser;
 class TemplateURLService;
 
+namespace regional_capabilities {
+enum class SearchEngineChoiceScreenConditions;
+}
+
 namespace search_engines {
 
 class ChoiceScreenData;
-enum class SearchEngineChoiceScreenConditions;
 
 // Profile specific data related to the search engine choice.
 // `timestamp` is the search engine choice timestamp that's saved in the
@@ -99,8 +103,8 @@ class SearchEngineChoiceDialogService : public KeyedService {
   // If calling this ahead of requesting to show the dialog, prefer to call
   // `SearchEngineChoiceTabHelper::MaybeShowDialog()` instead. It will check a
   // few more things and ensure we log the event correctly.
-  search_engines::SearchEngineChoiceScreenConditions ComputeDialogConditions(
-      Browser& browser) const;
+  regional_capabilities::SearchEngineChoiceScreenConditions
+  ComputeDialogConditions(Browser& browser) const;
 
   // Returns whether the dialog should be displayed over the passed URL.
   bool IsUrlSuitableForDialog(GURL url);
@@ -151,7 +155,7 @@ class SearchEngineChoiceDialogService : public KeyedService {
   // Keeps track of browsers that are known to be showing the choice dialog
   // to make sure that we can keep new browsers blocked until a choice is made
   // and unblock all of them when it is done.
-  class BrowserRegistry : public BrowserListObserver {
+  class BrowserRegistry : public BrowserCollectionObserver {
    public:
     explicit BrowserRegistry(SearchEngineChoiceDialogService& service);
     ~BrowserRegistry() override;
@@ -171,8 +175,8 @@ class SearchEngineChoiceDialogService : public KeyedService {
                          base::OnceClosure close_dialog_callback);
     void CloseAllDialogs();
 
-    // BrowserListObserver implementation:
-    void OnBrowserRemoved(Browser* browser) override;
+    // BrowserCollectionObserver implementation:
+    void OnBrowserClosed(BrowserWindowInterface* browser) override;
 
    private:
     raw_ref<SearchEngineChoiceDialogService>
@@ -185,8 +189,8 @@ class SearchEngineChoiceDialogService : public KeyedService {
     // in the past, but that is has since been closed.
     base::flat_map<raw_ref<Browser>, base::OnceClosure> registered_browsers_;
 
-    base::ScopedObservation<BrowserList, BrowserListObserver> observation_{
-        this};
+    base::ScopedObservation<ProfileBrowserCollection, BrowserCollectionObserver>
+        observation_{this};
   };
 
   // To know whether the choice was made during the Profile Picker or not.

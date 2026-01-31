@@ -10,7 +10,6 @@
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/wm/desks/desks_util.h"
-#include "base/containers/contains.h"
 #include "base/i18n/rtl.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/icu_test_util.h"
@@ -209,7 +208,7 @@ TEST_F(DefaultFrameHeaderTest, DeleteDuringAnimation) {
   auto* animating_layer =
       animating_layer_holding_view->layer()->parent()->children()[0].get();
   EXPECT_EQ(ui::LAYER_TEXTURED, animating_layer->type());
-  EXPECT_TRUE(base::Contains(animating_layer->name(), ":Old"));
+  EXPECT_TRUE(animating_layer->name().contains(":Old"));
   EXPECT_TRUE(animating_layer->GetAnimator()->is_animating());
 
   LayerDestroyedChecker checker(animating_layer);

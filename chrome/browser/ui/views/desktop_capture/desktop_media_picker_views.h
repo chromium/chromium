@@ -32,7 +32,6 @@ class MdTextButton;
 
 class DesktopMediaPickerImpl;
 
-BASE_DECLARE_FEATURE(kDesktopMediaPickerMultiLineTitle);
 
 const DesktopMediaSourceViewStyle& GetGenericScreenStyle();
 const DesktopMediaSourceViewStyle& GetSingleScreenStyle();
@@ -135,10 +134,6 @@ class DesktopMediaPickerDialogView : public views::DialogDelegateView,
   void RemoveCurrentPaneUI();
   void MaybeCreateReselectButtonForPane(const DisplaySurfaceCategory& category);
 
-  // If a Chromium window is selected, disable the audio-checkbox. If a
-  // non-Chromium window is selected, restore the audio-checkbox state.
-  void MaybeUpdateAudioSharingControlStateForApplicationAudioCapture();
-
   std::u16string GetLabelForAudioToggle(
       const DisplaySurfaceCategory& category) const;
 
@@ -161,7 +156,6 @@ class DesktopMediaPickerDialogView : public views::DialogDelegateView,
 
   DesktopMediaList::Type GetSelectedSourceListType() const;
   bool IsAudioSharingApprovedByUser() const;
-  bool IsAudioSharingControlEnabled() const;
 
   // Records the number of tabs, windows and screens that were available
   // for the user to choose from when they eventually made their selection
@@ -233,7 +227,6 @@ class DesktopMediaPickerDialogView : public views::DialogDelegateView,
   raw_ptr<views::TabbedPane> tabbed_pane_ = nullptr;
   std::vector<DisplaySurfaceCategory> categories_;
   int previously_selected_category_ = 0;
-  bool is_chromium_window_selected_ = false;
 
   std::optional<content::DesktopMediaID> accepted_source_;
 

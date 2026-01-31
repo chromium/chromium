@@ -335,6 +335,7 @@ public class ChromeDragAndDropBrowserDelegateUnitTest {
     private ChromeDropDataAndroid createTabGroupDropData(boolean allowDragToCreateNewInstance) {
         return new ChromeTabGroupDropDataAndroid.Builder()
                 .withTabGroupMetadata(buildTabGroupMetadata())
+                .withTabs(new ArrayList<Tab>()) // Unimportant for this test; must be non-null.
                 .withAllowDragToCreateInstance(allowDragToCreateNewInstance)
                 .build();
     }

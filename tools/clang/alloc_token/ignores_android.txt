@@ -1,0 +1,4 @@
+[alloc-token]
+# Crashpad is built with no_default_deps = true, so it doesn't have the
+# dependencies required by the allocator_shim.
+src:*crashpad/crashpad/handler/*

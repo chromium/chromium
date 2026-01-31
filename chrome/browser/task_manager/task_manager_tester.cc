@@ -13,7 +13,7 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/task_manager/task_manager_interface.h"
-#include "chrome/browser/ui/browser_dialogs.h"
+#include "chrome/browser/ui/dialogs/browser_dialogs.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/grit/generated_resources.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -132,23 +132,29 @@ int64_t TaskManagerTester::GetColumnValue(ColumnSpecifier column, size_t row) {
   switch (column) {
     case ColumnSpecifier::COLUMN_NONE:
       return 0;
-    case ColumnSpecifier::MEMORY_FOOTPRINT:
-      return task_manager()->GetMemoryFootprintUsage(task_id).InBytes();
+    case ColumnSpecifier::MEMORY_FOOTPRINT: {
+      std::optional<base::ByteSize> usage =
+          task_manager()->GetMemoryFootprintUsage(task_id);
+      return usage ? usage->InBytes() : -1;
+    }
     case ColumnSpecifier::PROCESS_ID:
       return task_manager()->GetProcessId(task_id);
     case ColumnSpecifier::V8_MEMORY:
     case ColumnSpecifier::V8_MEMORY_USED: {
-      base::ByteCount allocated;
-      base::ByteCount used;
+      base::ByteSize allocated;
+      base::ByteSize used;
       bool success = task_manager()->GetV8Memory(task_id, &allocated, &used);
       if (!success) {
-        return 0;
+        return -1;
       }
       return column == ColumnSpecifier::V8_MEMORY ? allocated.InBytes()
                                                   : used.InBytes();
     }
-    case ColumnSpecifier::SQLITE_MEMORY_USED:
-      return task_manager()->GetSqliteMemoryUsed(task_id).InBytes();
+    case ColumnSpecifier::SQLITE_MEMORY_USED: {
+      std::optional<base::ByteSize> usage =
+          task_manager()->GetSqliteMemoryUsed(task_id);
+      return usage ? usage->InBytes() : -1;
+    }
     case ColumnSpecifier::IDLE_WAKEUPS:
       return task_manager()->GetIdleWakeupsPerSecond(task_id);
     case ColumnSpecifier::NETWORK_USE:

@@ -171,6 +171,8 @@ class XRSession final : public EventTarget,
 
   bool isSystemKeyboardSupported() const { return false; }
 
+  uint16_t maxRenderLayers() const { return device_config_->max_render_layers; }
+
   XRSpace* viewerSpace() const;
 
   XRAnchorSet* TrackedAnchors() const;

@@ -260,10 +260,6 @@ UrlIndex::UrlIndex(ResourceFetchContext* fetch_context,
     : fetch_context_(fetch_context),
       lru_(base::MakeRefCounted<MultiBuffer::GlobalLRU>(task_runner)),
       block_shift_(block_shift),
-      memory_pressure_listener_registration_(
-          FROM_HERE,
-          base::MemoryPressureListenerTag::kMediaUrlIndex,
-          this),
       task_runner_(std::move(task_runner)) {}
 
 UrlIndex::~UrlIndex() = default;
@@ -297,20 +293,6 @@ scoped_refptr<UrlData> UrlIndex::NewUrlData(
   return base::MakeRefCounted<UrlData>(base::PassKey<UrlIndex>(), url,
                                        cors_mode, weak_factory_.GetWeakPtr(),
                                        cache_lookup_mode, task_runner_);
-}
-
-void UrlIndex::OnMemoryPressure(
-    base::MemoryPressureLevel memory_pressure_level) {
-  switch (memory_pressure_level) {
-    case base::MEMORY_PRESSURE_LEVEL_NONE:
-      break;
-    case base::MEMORY_PRESSURE_LEVEL_MODERATE:
-      lru_->TryFree(128);  // try to free 128 32kb blocks if possible
-      break;
-    case base::MEMORY_PRESSURE_LEVEL_CRITICAL:
-      lru_->TryFreeAll();  // try to free as many blocks as possible
-      break;
-  }
 }
 
 namespace {

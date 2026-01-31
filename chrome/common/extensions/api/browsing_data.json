@@ -186,7 +186,7 @@
         ],
         "returns_async": {
           "name": "callback",
-          "description": "Called when deletion has completed.",
+          "description": "Resolves when deletion has completed.",
           "optional": true,
           "parameters": []
         }
@@ -203,7 +203,7 @@
         ],
         "returns_async": {
           "name": "callback",
-          "description": "Called when websites' appcache data has been cleared.",
+          "description": "Resolves when websites' appcache data has been cleared.",
           "optional": true,
           "parameters": []
         }
@@ -220,7 +220,7 @@
         ],
         "returns_async": {
           "name": "callback",
-          "description": "Called when the browser's cache has been cleared.",
+          "description": "Resolves when the browser's cache has been cleared.",
           "optional": true,
           "parameters": []
         }
@@ -237,7 +237,7 @@
         ],
         "returns_async": {
           "name": "callback",
-          "description": "Called when websites' cache storage has been cleared.",
+          "description": "Resolves when websites' cache storage has been cleared.",
           "optional": true,
           "parameters": []
         }
@@ -254,7 +254,7 @@
         ],
         "returns_async": {
           "name": "callback",
-          "description": "Called when the browser's cookies and server-bound certificates have been cleared.",
+          "description": "Resolves when the browser's cookies and server-bound certificates have been cleared.",
           "optional": true,
           "parameters": []
         }
@@ -271,7 +271,7 @@
         ],
         "returns_async": {
           "name": "callback",
-          "description": "Called when the browser's list of downloaded files has been cleared.",
+          "description": "Resolves when the browser's list of downloaded files has been cleared.",
           "optional": true,
           "parameters": []
         }
@@ -288,7 +288,7 @@
         ],
         "returns_async": {
           "name": "callback",
-          "description": "Called when websites' file systems have been cleared.",
+          "description": "Resolves when websites' file systems have been cleared.",
           "optional": true,
           "parameters": []
         }
@@ -305,7 +305,7 @@
         ],
         "returns_async": {
           "name": "callback",
-          "description": "Called when the browser's form data has been cleared.",
+          "description": "Resolves when the browser's form data has been cleared.",
           "optional": true,
           "parameters": []
         }
@@ -322,7 +322,7 @@
         ],
         "returns_async": {
           "name": "callback",
-          "description": "Called when the browser's history has cleared.",
+          "description": "Resolves when the browser's history has cleared.",
           "optional": true,
           "parameters": []
         }
@@ -339,7 +339,7 @@
         ],
         "returns_async": {
           "name": "callback",
-          "description": "Called when websites' IndexedDB data has been cleared.",
+          "description": "Resolves when websites' IndexedDB data has been cleared.",
           "optional": true,
           "parameters": []
         }
@@ -356,7 +356,7 @@
         ],
         "returns_async": {
           "name": "callback",
-          "description": "Called when websites' local storage has been cleared.",
+          "description": "Resolves when websites' local storage has been cleared.",
           "optional": true,
           "parameters": []
         }
@@ -374,7 +374,7 @@
         ],
         "returns_async": {
           "name": "callback",
-          "description": "Called when plugins' data has been cleared.",
+          "description": "Resolves when plugins' data has been cleared.",
           "optional": true,
           "parameters": []
         }
@@ -392,7 +392,7 @@
         ],
         "returns_async": {
           "name": "callback",
-          "description": "Called when the browser's passwords have been cleared.",
+          "description": "Resolves when the browser's passwords have been cleared.",
           "optional": true,
           "parameters": []
         }
@@ -409,7 +409,7 @@
         ],
         "returns_async": {
           "name": "callback",
-          "description": "Called when websites' service workers have been cleared.",
+          "description": "Resolves when websites' service workers have been cleared.",
           "optional": true,
           "parameters": []
         }
@@ -426,7 +426,7 @@
         ],
         "returns_async": {
           "name": "callback",
-          "description": "Called when websites' WebSQL databases have been cleared.",
+          "description": "Resolves when websites' WebSQL databases have been cleared.",
           "optional": true,
           "parameters": []
         }

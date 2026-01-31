@@ -57,6 +57,10 @@ template("compile_ts") {
                              "testonly",
                            ])
 
+    if (defined(invoker.tsconfig_base)) {
+      tsconfig_base = invoker.tsconfig_base
+    }
+
     composite = true
 
     # The root must be the src directory since it must contain all scripts.

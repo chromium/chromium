@@ -460,6 +460,8 @@ class CORE_EXPORT CSSPrimitiveValue : public CSSValue {
   static UnitType CanonicalUnit(UnitType unit_type);
   static double ConversionToCanonicalUnitsScaleFactor(UnitType);
 
+  bool HasRandomFunctions() const;
+
   // Returns true and populates lengthUnitType, if unitType is a length unit.
   // Otherwise, returns false.
   static bool UnitTypeToLengthUnitType(UnitType, LengthUnitType&);

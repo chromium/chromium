@@ -12,7 +12,6 @@
 
 #include "ash/public/cpp/shelf_types.h"
 #include "ash/wm/window_animations.h"
-#include "base/containers/contains.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
@@ -103,7 +102,7 @@ std::optional<ash::ShelfAction> AdvanceApp(
   // activate the first item in the list.
   size_t index = 0;
   if (active_item) {
-    DCHECK(base::Contains(items, active_item));
+    DCHECK(std::ranges::contains(items, active_item));
     auto it = std::ranges::find(items, active_item);
     index = (it - items.cbegin() + 1) % items.size();
   }

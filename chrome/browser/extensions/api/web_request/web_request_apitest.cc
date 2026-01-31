@@ -10,7 +10,6 @@
 
 #include "base/base64.h"
 #include "base/command_line.h"
-#include "base/containers/contains.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/json/json_reader.h"
@@ -203,7 +202,7 @@ class NavigateTabMessageHandler {
     std::optional<base::Value> command =
         base::JSONReader::Read(message, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
     if (command && command->is_dict()) {  // Check the message decoded from JSON
-      base::Value::Dict* data = command->GetDict().FindDict("navigate");
+      base::DictValue* data = command->GetDict().FindDict("navigate");
       if (data) {
         int tab_id = data->FindInt("tabId").value();
         GURL url = GURL(*data->FindString("url"));
@@ -446,7 +445,7 @@ class ExtensionWebRequestApiTest : public ExtensionApiTest {
   CreateURLLoaderFactory() {
     network::mojom::URLLoaderFactoryParamsPtr params =
         network::mojom::URLLoaderFactoryParams::New();
-    params->process_id = network::mojom::kBrowserProcessId;
+    params->process_id = network::OriginatingProcess::browser();
     params->automatically_assign_isolation_info = true;
     params->is_orb_enabled = false;
     mojo::PendingRemote<network::mojom::URLLoaderFactory> loader_factory;
@@ -466,7 +465,7 @@ class ExtensionWebRequestApiTest : public ExtensionApiTest {
     net::X509Certificate::GetPEMEncoded(certificate->cert_buffer(),
                                         &pem_string);
 
-    base::Value::Dict custom_args;
+    base::DictValue custom_args;
     custom_args.Set("request_url", request_url.spec());
     custom_args.Set("certificate_bytes", std::move(pem_string));
     custom_args.Set("expect_state", std::move(expect_state));
@@ -480,7 +479,7 @@ class ExtensionWebRequestApiTest : public ExtensionApiTest {
   }
 
   void RunSecurityInfoInsecureTest(bool use_web_socket, GURL request_url) {
-    base::Value::Dict custom_args;
+    base::DictValue custom_args;
     custom_args.Set("request_url", request_url.spec());
     custom_args.Set("use_web_socket", use_web_socket);
 
@@ -1036,7 +1035,7 @@ IN_PROC_BROWSER_TEST_P(ExtensionDevToolsProtocolTest,
   ASSERT_TRUE(LoadExtension(test_dir.UnpackedPath()));
   EXPECT_TRUE(listener.WaitUntilSatisfied());
 
-  SendCommand("Network.enable", base::Value::Dict(), true);
+  SendCommand("Network.enable", base::DictValue(), true);
   const GURL url(
       embedded_test_server()->GetURL("/set-cookie?cookieName=cookieValue"));
   ui_test_utils::NavigateToURLWithDisposition(
@@ -1045,7 +1044,7 @@ IN_PROC_BROWSER_TEST_P(ExtensionDevToolsProtocolTest,
 
   // Check that `Network.responseReceived` contains the response header added
   // by the extension
-  base::Value::Dict response_received_result =
+  base::DictValue response_received_result =
       WaitForNotification("Network.responseReceived", false);
   auto* extension_header = response_received_result.FindByDottedPath(
       "response.headers.extensionHeaderName");
@@ -1054,9 +1053,8 @@ IN_PROC_BROWSER_TEST_P(ExtensionDevToolsProtocolTest,
 
   // Check that the cookie as specified in the original headers has been set
   auto* get_all_cookies_result =
-      SendCommand("Network.getAllCookies", base::Value::Dict(), true);
-  const base::Value::List* cookies =
-      get_all_cookies_result->FindList("cookies");
+      SendCommand("Network.getAllCookies", base::DictValue(), true);
+  const base::ListValue* cookies = get_all_cookies_result->FindList("cookies");
   ASSERT_TRUE(cookies);
   ASSERT_EQ(cookies->size(), 1u);
   ASSERT_TRUE(cookies->front().is_dict());
@@ -1096,11 +1094,11 @@ IN_PROC_BROWSER_TEST_P(ExtensionDevToolsProtocolTest,
   ASSERT_TRUE(LoadExtension(test_dir.UnpackedPath()));
   EXPECT_TRUE(listener.WaitUntilSatisfied());
 
-  SendCommand("Network.enable", base::Value::Dict(), true);
+  SendCommand("Network.enable", base::DictValue(), true);
 
-  base::Value::Dict enable_params;
-  base::Value::List patterns;
-  base::Value::Dict pattern;
+  base::DictValue enable_params;
+  base::ListValue patterns;
+  base::DictValue pattern;
   pattern.Set("requestStage", "Response");
   patterns.Append(std::move(pattern));
   enable_params.Set("patterns", std::move(patterns));
@@ -1111,13 +1109,13 @@ IN_PROC_BROWSER_TEST_P(ExtensionDevToolsProtocolTest,
   ui_test_utils::NavigateToURLWithDisposition(
       browser(), url, WindowOpenDisposition::CURRENT_TAB,
       ui_test_utils::BROWSER_TEST_NO_WAIT);
-  base::Value::Dict request_paused_result =
+  base::DictValue request_paused_result =
       WaitForNotification("Fetch.requestPaused", true);
   std::string* request_id = request_paused_result.FindString("requestId");
 
   // Checks that `Fetch.requestPaused` contains the response headers added by
   // the extension
-  base::Value::List* response_headers =
+  base::ListValue* response_headers =
       request_paused_result.FindListByDottedPath("responseHeaders");
   auto* header_name = response_headers->back().GetDict().FindString("name");
   ASSERT_TRUE(header_name);
@@ -1127,15 +1125,15 @@ IN_PROC_BROWSER_TEST_P(ExtensionDevToolsProtocolTest,
   ASSERT_EQ(*header_value, "extensionHeaderValue");
 
   // Response headers are replaced by new overrides
-  base::Value::Dict params;
+  base::DictValue params;
   params.Set("requestId", *request_id);
-  base::Value::Dict header_1;
+  base::DictValue header_1;
   header_1.Set("name", "firstName");
   header_1.Set("value", "firstValue");
-  base::Value::Dict header_2;
+  base::DictValue header_2;
   header_2.Set("name", "secondName");
   header_2.Set("value", "secondValue");
-  base::Value::List headers;
+  base::ListValue headers;
   headers.Append(std::move(header_1));
   headers.Append(std::move(header_2));
   params.Set("responseHeaders", std::move(headers));
@@ -1145,7 +1143,7 @@ IN_PROC_BROWSER_TEST_P(ExtensionDevToolsProtocolTest,
 
   // Check that `Network.responseReceived` contains the response headers as
   // specified via `Fetch.fulfillRequest`
-  base::Value::Dict response_received_result =
+  base::DictValue response_received_result =
       WaitForNotification("Network.responseReceived", false);
   auto* first_header =
       response_received_result.FindByDottedPath("response.headers.firstName");
@@ -1162,9 +1160,8 @@ IN_PROC_BROWSER_TEST_P(ExtensionDevToolsProtocolTest,
 
   // Check that the cookie as specified in the original headers has been set
   auto* get_all_cookies_result =
-      SendCommand("Network.getAllCookies", base::Value::Dict(), true);
-  const base::Value::List* cookies =
-      get_all_cookies_result->FindList("cookies");
+      SendCommand("Network.getAllCookies", base::DictValue(), true);
+  const base::ListValue* cookies = get_all_cookies_result->FindList("cookies");
   ASSERT_TRUE(cookies);
   ASSERT_EQ(cookies->size(), 1u);
   auto* cookie_name = cookies->front().GetDict().FindString("name");
@@ -1616,7 +1613,7 @@ IN_PROC_BROWSER_TEST_P(ExtensionWebRequestApiTestWithContextType,
 
   GURL url = https_test_server.GetURL("/webrequest/simulate_click.html");
 
-  base::Value::List custom_args;
+  base::ListValue custom_args;
   custom_args.Append(url.spec());
   custom_args.Append(insecure_destination.spec());
 
@@ -1648,7 +1645,7 @@ IN_PROC_BROWSER_TEST_P(ExtensionWebRequestApiTestWithContextType,
 
   GURL base_url =
       https_test_server.GetURL("/webrequest/test_redirects_workers/page/");
-  base::Value::Dict custom_args;
+  base::DictValue custom_args;
   custom_args.Set("base_url", base_url.spec());
   std::string config_string = base::WriteJson(custom_args).value_or("");
 
@@ -1978,13 +1975,13 @@ IN_PROC_BROWSER_TEST_F(ExtensionWebRequestApiTest, HostedAppRequest) {
   scoped_refptr<const Extension> hosted_app =
       ExtensionBuilder()
           .SetManifest(
-              base::Value::Dict()
+              base::DictValue()
                   .Set("name", "Some hosted app")
                   .Set("version", "1")
                   .Set("manifest_version", 2)
                   .Set("app",
-                       base::Value::Dict().Set(
-                           "launch", base::Value::Dict().Set(
+                       base::DictValue().Set(
+                           "launch", base::DictValue().Set(
                                          "web_url", hosted_app_url.spec()))))
           .Build();
   extension_registrar()->AddExtension(hosted_app);
@@ -2861,7 +2858,7 @@ IN_PROC_BROWSER_TEST_F(
       nullptr));
   temp_web_contents.reset();
   auto params = network::mojom::URLLoaderFactoryParams::New();
-  params->process_id = 0;
+  params->process_id = network::OriginatingProcess::browser();
   mojo::Remote<network::mojom::URLLoaderFactory> factory(
       std::move(factory_builder)
           .Finish<mojo::PendingRemote<network::mojom::URLLoaderFactory>>(
@@ -4178,7 +4175,7 @@ IN_PROC_BROWSER_TEST_P(ServiceWorkerWebRequestApiTest,
         base::AutoLock auto_lock(lock);
         ++served_service_worker_count;
         foo_header_value.clear();
-        if (base::Contains(request.headers, "foo")) {
+        if (request.headers.contains("foo")) {
           foo_header_value = request.headers.at("foo");
         }
 
@@ -4258,7 +4255,7 @@ IN_PROC_BROWSER_TEST_P(ServiceWorkerWebRequestApiTest,
           base::AutoLock auto_lock(lock);
           ++served_service_worker_count;
           foo_header_value.clear();
-          if (base::Contains(request.headers, "foo")) {
+          if (request.headers.contains("foo")) {
             foo_header_value = request.headers.at("foo");
           }
           auto response =
@@ -4567,9 +4564,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionWebRequestApiTest,
   std::string body =
       content::EvalJs(tab, "document.body.textContent").ExtractString();
 
-  EXPECT_TRUE(
-      base::Contains(body, "This page has been blocked by an extension"));
-  EXPECT_TRUE(base::Contains(body, "Try disabling your extensions."));
+  EXPECT_TRUE(body.contains("This page has been blocked by an extension"));
+  EXPECT_TRUE(body.contains("Try disabling your extensions."));
 }
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
@@ -7728,8 +7724,11 @@ class OnAuthRequiredApiTest : public ExtensionApiTest {
     host_resolver()->AddRule("*", "127.0.0.1");
 
     embedded_test_server()->ServeFilesFromSourceDirectory("chrome/test/data");
+    RegisterAdditionalHandlers();
     ASSERT_TRUE(StartEmbeddedTestServer());
   }
+
+  virtual void RegisterAdditionalHandlers() {}
 
   // Returns a URL which requires username/password
   GURL MakeAuthUrl() {
@@ -7740,8 +7739,11 @@ class OnAuthRequiredApiTest : public ExtensionApiTest {
   }
 
   // Loads an extension that implements onAuthRequired. `additional_js` will be
-  // concatenated to the background.js.
-  void LoadExtensionWithAdditionalJs(const std::string& additional_js) {
+  // concatenated to the background.js. If provided, `expected_request_type`
+  // will be used to verify the request type.
+  void LoadExtensionWithAdditionalJs(
+      const std::string& additional_js,
+      const std::optional<std::string>& expected_request_type = std::nullopt) {
     static constexpr char kManifest[] =
         R"({
              "name": "MV3 WebRequest",
@@ -7751,7 +7753,15 @@ class OnAuthRequiredApiTest : public ExtensionApiTest {
              "host_permissions": [ "http://127.0.0.1/*", "https://a.test/*" ],
              "background": {"service_worker": "background.js"}
            })";
-    static constexpr char kBackgroundJs[] =
+
+    std::string type_check;
+    if (expected_request_type) {
+      type_check =
+          base::StringPrintf("chrome.test.assertEq('%s', details.type);\n",
+                             *expected_request_type);
+    }
+
+    std::string background_js = base::StringPrintf(
         R"(
             let didInterceptAuth = false;
             chrome.webRequest.onAuthRequired.addListener(
@@ -7759,13 +7769,14 @@ class OnAuthRequiredApiTest : public ExtensionApiTest {
                  didInterceptAuth = true;
                  chrome.test.assertEq('mv3authprovider', details.realm);
                  chrome.test.assertEq(401, details.statusCode);
+                 %s
                  const authCredentials = {username: 'foo', password: 'secret'};
                  callback({authCredentials});
                },
                {urls: ['<all_urls>']},
                ['asyncBlocking']);
-          )";
-    std::string background_js(kBackgroundJs);
+          )",
+        type_check);
     background_js += additional_js;
 
     test_extension_dir_.WriteManifest(kManifest);
@@ -7842,6 +7853,78 @@ IN_PROC_BROWSER_TEST_F(OnAuthRequiredApiTest,
           .ExtractString();
   EXPECT_THAT(fetch_response, testing::HasSubstr("<title>"));
 }
+
+#if !BUILDFLAG(IS_ANDROID)
+class ServiceWorkerAuthTest : public OnAuthRequiredApiTest {
+ public:
+  void RegisterAdditionalHandlers() override {
+    // Register a custom request handler to simulate an HTTP "401 Unauthorized"
+    // response with a "WWW-Authenticate" header. This forces the browser to
+    // issue an auth challenge, which should be intercepted by the extension.
+    embedded_test_server()->RegisterRequestHandler(base::BindLambdaForTesting(
+        [](const net::test_server::HttpRequest& request)
+            -> std::unique_ptr<net::test_server::HttpResponse> {
+          if (request.relative_url != "/service_worker/auth") {
+            return nullptr;
+          }
+
+          auto response =
+              std::make_unique<net::test_server::BasicHttpResponse>();
+          // If request doesn't have the "Authorization" header, return 401.
+          if (request.headers.find("Authorization") == request.headers.end()) {
+            response->set_code(net::HTTP_UNAUTHORIZED);
+            response->AddCustomHeader("WWW-Authenticate",
+                                      "Basic realm=\"mv3authprovider\"");
+          } else {
+            // If "Authorization" header is present (supplied by extension),
+            // return 200 OK.
+            response->set_code(net::HTTP_OK);
+            response->set_content("Auth success");
+          }
+          return response;
+        }));
+  }
+};
+
+// Tests authentication flow when a service worker intercepts a navigation
+// and issues a network request that requires authentication.
+// This ensures that the `OnAuthRequired` event is correctly fired and handled
+// even when the request originates from a service worker.
+// Regression test for b/457210267.
+IN_PROC_BROWSER_TEST_F(ServiceWorkerAuthTest,
+                       ServiceWorkerInterceptedNavigationAuth) {
+  // Load an extension that listens for "onAuthRequired" events and provides
+  // credentials when the realm matches "mv3authprovider". Also check that
+  // the request type for the proxied request is "xmlhttprequest", which
+  // indicates it's not a navigation request. This is expected because,
+  // technically speaking, the proxied request is a `fetch()` from a service
+  // worker.
+  LoadExtensionWithAdditionalJs("", "xmlhttprequest");
+
+  // Navigate to a setup page and register a service worker that intercepts
+  // fetch events. "fetch_event_respond_with_fetch.js" responds to fetch events
+  // by issuing a new `fetch()` to the network, effectively acting as a proxy.
+  GURL sw_setup_url = embedded_test_server()->GetURL(
+      kTestDomain, "/service_worker/create_service_worker.html");
+  ASSERT_TRUE(NavigateToURL(GetActiveWebContents(), sw_setup_url));
+  // Register service worker which uses `respondWith(fetch(event.request))`.
+  EXPECT_EQ("DONE",
+            EvalJs(GetActiveWebContents(),
+                   "register('fetch_event_respond_with_fetch.js', './');"));
+
+  // This navigation is intercepted by the service worker registered above.
+  // The service worker issues a `fetch()` for "/service_worker/auth".
+  // The server returns 401, triggering `OnAuthRequired`.
+  // The extension provides credentials, and the request is retried with
+  // "Authorization".
+  GURL auth_url =
+      embedded_test_server()->GetURL(kTestDomain, "/service_worker/auth");
+  ASSERT_TRUE(NavigateToURL(GetActiveWebContents(), auth_url));
+
+  EXPECT_EQ("Auth success",
+            EvalJs(GetActiveWebContents(), "document.body.textContent"));
+}
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 // Tests the behavior of an extension that registers an event listener
 // asynchronously.
@@ -8482,7 +8565,9 @@ INSTANTIATE_TEST_SUITE_P(
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 
-IN_PROC_BROWSER_TEST_F(ExtensionWebRequestApiTest, SecurityInfo_Secure) {
+// TODO(crbug.com/478208019): Test is flaky.
+IN_PROC_BROWSER_TEST_F(ExtensionWebRequestApiTest,
+                       DISABLE_SecurityInfo_Secure) {
   UseHttpsTestServer(net::EmbeddedTestServer::ServerCertificate::CERT_OK);
   ASSERT_TRUE(StartEmbeddedTestServer());
 
@@ -8514,8 +8599,9 @@ class SecurityInfoBrokenWebRequestApiTest : public ExtensionWebRequestApiTest {
   }
 };
 
+// TODO(crbug.com/478208019): Test is flaky.
 IN_PROC_BROWSER_TEST_F(SecurityInfoBrokenWebRequestApiTest,
-                       SecurityInfo_Broken) {
+                       DISABLE_SecurityInfo_Broken) {
   UseHttpsTestServer(net::EmbeddedTestServer::ServerCertificate::CERT_EXPIRED);
   ASSERT_TRUE(StartEmbeddedTestServer());
 
@@ -8524,8 +8610,9 @@ IN_PROC_BROWSER_TEST_F(SecurityInfoBrokenWebRequestApiTest,
                       embedded_test_server()->GetURL("/simple.html"));
 }
 
+// TODO(crbug.com/478208019): Test is flaky.
 IN_PROC_BROWSER_TEST_F(ExtensionWebRequestApiTest,
-                       SecurityInfo_WebSocket_Secure) {
+                       DISABLE_SecurityInfo_WebSocket_Secure) {
   ASSERT_TRUE(StartEmbeddedTestServer());
 
   InitWebSocketHttpsServer();
@@ -8548,8 +8635,9 @@ IN_PROC_BROWSER_TEST_F(ExtensionWebRequestApiTest,
       GetWebSocketServer().GetURL("/echo-with-no-extension"));
 }
 
+// TODO(crbug.com/478208019): Test is flaky.
 IN_PROC_BROWSER_TEST_F(SecurityInfoBrokenWebRequestApiTest,
-                       SecurityInfo_WebSocket_Broken) {
+                       DISABLED_SecurityInfo_WebSocket_Broken) {
   ASSERT_TRUE(StartEmbeddedTestServer());
 
   InitWebSocketHttpsServer(

@@ -15,7 +15,7 @@
 #include "build/chromecast_buildflags.h"
 #include "content/common/buildflags.h"
 #include "content/common/content_export.h"
-#include "content/public/browser/child_process_id.h"
+#include "content/public/common/child_process_id.h"
 #include "content/public/common/content_constants.h"
 #include "mojo/public/cpp/bindings/generic_pending_receiver.h"
 
@@ -81,8 +81,8 @@ class CONTENT_EXPORT ChildProcessHost {
     CHILD_ALLOW_SELF = 1 << 0,
 #elif BUILDFLAG(IS_MAC)
     // Note, on macOS these are not bitwise flags and each value is mutually
-    // exclusive with the others. Each one of these options should correspond
-    // to a value in //content/public/app/mac_helpers.gni.
+    // exclusive with the others. Each one of these options must correspond to a
+    // value in //content/public/app/mac_helpers.gni.
 
     // Starts a child process with the macOS entitlement that allows JIT (i.e.
     // memory that is writable and executable). In order to make use of this,
@@ -98,12 +98,14 @@ class CONTENT_EXPORT ChildProcessHost {
     CHILD_GPU,
 
     // Starts a child process with the macOS entitlement that ignores the
-    // library validation code signing enforcement. Library validation mandates
-    // that all executable pages be backed by a code signature that either 1)
-    // is signed by Apple, or 2) signed by the same Team ID as the main
-    // executable. Binary plug-ins that are not always signed by the same Team
-    // ID as the main binary, so this flag should be used when needing to load
-    // third-party plug-ins.
+    // library validation code signing enforcement.
+    //
+    // Library validation mandates that all executable pages be backed by a code
+    // signature of either 1) Apple, or 2) the same Team ID as the main
+    // executable. Third-party plug-ins are not signed by the same Team ID as
+    // the main binary, so this flag must be used when loading them.
+    //
+    // This is deprecated and being removed; see https://crbug.com/461717105.
     CHILD_PLUGIN,
 
     // Marker for the start of embedder-specific helper child process types.

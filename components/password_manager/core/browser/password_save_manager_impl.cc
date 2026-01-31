@@ -422,7 +422,7 @@ void PasswordSaveManagerImpl::Save(const FormData* observed_form,
 
 void PasswordSaveManagerImpl::Blocklist(const PasswordFormDigest& form_digest) {
   CHECK(!client_->IsOffTheRecord());
-  if (IsAccountStorageEnabled()) {
+  if (IsAccountStorageActive()) {
     account_store_form_saver_->Blocklist(form_digest);
   } else {
     // For users with account storage disabled, we store their blocklisted
@@ -436,7 +436,7 @@ void PasswordSaveManagerImpl::Unblocklist(
   // Try to unblocklist in both stores anyway because if credentials don't
   // exist, the unblocklist operation is no-op.
   profile_store_form_saver_->Unblocklist(form_digest);
-  if (IsAccountStorageEnabled()) {
+  if (IsAccountStorageActive()) {
     account_store_form_saver_->Unblocklist(form_digest);
   }
 }
@@ -945,14 +945,14 @@ void PasswordSaveManagerImpl::CloneInto(PasswordSaveManagerImpl* clone) {
   clone->pending_credentials_state_ = pending_credentials_state_;
 }
 
-bool PasswordSaveManagerImpl::IsAccountStorageEnabled() const {
+bool PasswordSaveManagerImpl::IsAccountStorageActive() const {
   return account_store_form_saver_ &&
-         client_->GetPasswordFeatureManager()->IsAccountStorageEnabled();
+         client_->GetPasswordFeatureManager()->IsAccountStorageActive();
 }
 
 bool PasswordSaveManagerImpl::ShouldStoreGeneratedPasswordsInAccountStore()
     const {
-  if (IsAccountStorageEnabled()) {
+  if (IsAccountStorageActive()) {
     return true;
   }
   return false;
@@ -962,7 +962,7 @@ PasswordForm::Store PasswordSaveManagerImpl::GetPasswordStoreForSavingImpl(
     const PendingCredentialsStates& states) const {
   PasswordForm::Store result = PasswordForm::Store::kNotSet;
   if (HasGeneratedPassword()) {
-    if (IsAccountStorageEnabled()) {
+    if (IsAccountStorageActive()) {
       result = result | PasswordForm::Store::kAccountStore;
       if (states.profile_store_state == PendingCredentialsState::UPDATE) {
         result = result | PasswordForm::Store::kProfileStore;
@@ -976,7 +976,7 @@ PasswordForm::Store PasswordSaveManagerImpl::GetPasswordStoreForSavingImpl(
       states.account_store_state == PendingCredentialsState::NEW_LOGIN) {
     // If the credential is new to both stores, store it only in the default
     // store.
-    if (IsAccountStorageEnabled()) {
+    if (IsAccountStorageActive()) {
       // TODO(crbug.com/40102239): Record UMA for how many passwords get dropped
       // here. In rare cases it could happen that the user had account storage
       // enabled when the save dialog was shown, but now doesn't anymore.
@@ -998,7 +998,7 @@ PasswordForm::Store PasswordSaveManagerImpl::GetPasswordStoreForSavingImpl(
       break;
   }
 
-  if (IsAccountStorageEnabled()) {
+  if (IsAccountStorageActive()) {
     switch (states.account_store_state) {
       case PendingCredentialsState::AUTOMATIC_SAVE:
       case PendingCredentialsState::UPDATE:

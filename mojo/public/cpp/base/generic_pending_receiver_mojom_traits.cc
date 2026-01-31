@@ -28,8 +28,9 @@ bool StructTraits<mojo_base::mojom::GenericPendingReceiverDataView,
     Read(mojo_base::mojom::GenericPendingReceiverDataView data,
          GenericPendingReceiver* out) {
   std::string_view interface_name;
-  if (!data.ReadInterfaceName(&interface_name))
+  if (!data.ReadInterfaceName(&interface_name)) {
     return false;
+  }
   *out = GenericPendingReceiver(interface_name, data.TakeReceivingPipe());
   return true;
 }

@@ -53,7 +53,7 @@ void PrefRegistrySimple::RegisterListPref(std::string_view path,
 }
 
 void PrefRegistrySimple::RegisterListPref(std::string_view path,
-                                          base::Value::List default_value,
+                                          base::ListValue default_value,
                                           uint32_t flags) {
   RegisterPreference(path, base::Value(std::move(default_value)), flags);
 }
@@ -64,7 +64,7 @@ void PrefRegistrySimple::RegisterDictionaryPref(std::string_view path,
 }
 
 void PrefRegistrySimple::RegisterDictionaryPref(std::string_view path,
-                                                base::Value::Dict default_value,
+                                                base::DictValue default_value,
                                                 uint32_t flags) {
   RegisterPreference(path, base::Value(std::move(default_value)), flags);
 }

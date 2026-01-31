@@ -25,11 +25,9 @@ class Point;
 class Range;
 }  // namespace gfx
 
-#if BUILDFLAG(IS_MAC)
 namespace views {
 class Widget;
 }
-#endif
 
 class FindBar {
  public:
@@ -108,11 +106,9 @@ class FindBar {
   // Closes any overlapping bubbles, such as the translate bubble.
   virtual void CloseOverlappingBubbles() = 0;
 
-#if BUILDFLAG(IS_MAC)
   // Get the host widget. Used by immersive fullscreen to detect the find bar
   // widget and reparent as necessary.
   virtual views::Widget* GetHostWidget() = 0;
-#endif
 };
 
 class FindBarTesting {

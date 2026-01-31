@@ -7,24 +7,25 @@
 
 #import <UIKit/UIKit.h>
 
-@protocol ApplicationCommands;
 struct AutocompleteMatch;
-@protocol OmniboxCommands;
+@protocol BrowserCoordinatorCommands;
 @class OmniboxPedalData;
 @protocol QuickDeleteCommands;
+@protocol SceneCommands;
 @protocol SettingsCommands;
 
 /// A class to add pedal data to a given autocomplete match object
 @interface OmniboxPedalAnnotator : NSObject
 
-/// The endpoint that handles Actions and Pedals application commands.
-@property(nonatomic, weak) id<ApplicationCommands> applicationHandler;
+/// The endpoint that handles Actions and Pedals scene commands.
+@property(nonatomic, weak) id<SceneCommands> sceneHandler;
 
 /// The endpoint that handles Actions and Pedals settings commands.
 @property(nonatomic, weak) id<SettingsCommands> settingsHandler;
 
-/// The endpoint that handles Omnibox commands.
-@property(nonatomic, weak) id<OmniboxCommands> omniboxHandler;
+/// The endpoint that handles BrowserCoordinator commands.
+@property(nonatomic, weak) id<BrowserCoordinatorCommands>
+    browserCoordinatorHandler;
 
 /// The endpoint that handles QuickDelete commands.
 @property(nonatomic, weak) id<QuickDeleteCommands> quickDeleteHandler;

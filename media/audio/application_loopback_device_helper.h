@@ -15,8 +15,13 @@ namespace media {
 std::string MEDIA_EXPORT
 CreateApplicationLoopbackDeviceId(const uint32_t application_id);
 
+std::string MEDIA_EXPORT CreateRestrictOwnAudioBrowserLoopbackDeviceId();
+
 uint32_t MEDIA_EXPORT
 GetApplicationIdFromApplicationLoopbackDeviceId(std::string_view device_id);
+
+bool MEDIA_EXPORT
+IsRestrictOwnAudioBrowserLoopbackDeviceId(std::string_view device_id);
 
 }  // namespace media
 

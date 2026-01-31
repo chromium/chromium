@@ -112,6 +112,11 @@ void InstallExtensionsPendingForSync(Profile* profile) {
   SyncExtensionHelper::GetInstance()->InstallExtensionsPendingForSync(profile);
 }
 
+extensions::ExtensionId GetExtensionId(int index) {
+  return SyncExtensionHelper::GetInstance()->GetExtensionId(
+      CreateFakeExtensionName(index));
+}
+
 }  // namespace extensions_helper
 
 ExtensionsMatchChecker::ExtensionsMatchChecker()

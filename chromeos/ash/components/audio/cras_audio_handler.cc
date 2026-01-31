@@ -2502,7 +2502,7 @@ void CrasAudioHandler::HandleSystemBoots(bool is_input,
 }
 
 bool CrasAudioHandler::ActivateMostRecentActiveDevice(bool is_input) {
-  const base::Value::List& ids =
+  const base::ListValue& ids =
       audio_pref_handler_->GetMostRecentActivatedDeviceIdList(is_input);
   for (int i = ids.size() - 1; i >= 0; i--) {
     std::optional<uint64_t> device_stable_id =

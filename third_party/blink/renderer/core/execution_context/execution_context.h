@@ -49,6 +49,7 @@
 #include "third_party/blink/renderer/platform/feature_context.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
 #include "third_party/blink/renderer/platform/heap_observer_list.h"
+#include "third_party/blink/renderer/platform/loader/fetch/guardrail_policy_asset_type.h"
 #include "third_party/blink/renderer/platform/loader/fetch/https_state.h"
 #include "third_party/blink/renderer/platform/loader/fetch/loader_freeze_mode.h"
 #include "third_party/blink/renderer/platform/mojo/mojo_binding_context.h"
@@ -477,6 +478,22 @@ class CORE_EXPORT ExecutionContext : public Supplementable<ExecutionContext>,
 
   void SetCanvasNoiseToken(std::optional<NoiseToken> token) {
     canvas_noise_token_ = token;
+  }
+
+  // Returns the policy state for network-efficiency-guardrails in this
+  // document.
+  virtual std::optional<mojom::blink::PolicyDisposition>
+  GetGuardrailsPolicyState() const {
+    return std::nullopt;
+  }
+
+  // Check for guardrails policy state and report large asset violation if
+  // necessary. Returns true if a violation was reported.
+  virtual bool CheckGuardrailsPolicyForAssetSize(
+      GuardrailPolicyAssetType asset_type,
+      size_t bytes,
+      const KURL& url) const {
+    return false;
   }
 
  protected:

@@ -1,0 +1,36 @@
+/* Copyright 2025 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+/* #css_wrapper_metadata_start
+ * #type=style-lit
+ * #scheme=relative
+ * #import=chrome://resources/cr_elements/cr_shared_vars.css.js
+ * #css_wrapper_metadata_end */
+
+:host {
+  display: block;
+  /* Neutral, subtle border for filter bar, input fields, and buttons */
+  --filter-border-color: var(--google-grey-300);
+}
+
+@media (prefers-color-scheme: dark) {
+  :host {
+    --filter-border-color: var(--google-grey-700);
+  }
+}
+
+dialog {
+  padding: 8px 0;
+  background: var(--cr-menu-background-color);
+  border: 1px solid var(--filter-border-color);
+  border-radius: 4px;
+  box-shadow: var(--cr-elevation-2);
+  color: inherit;
+  margin: 0;
+  position: fixed;
+}
+
+dialog::backdrop {
+  background: transparent;
+}

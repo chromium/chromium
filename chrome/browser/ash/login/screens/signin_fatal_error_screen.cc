@@ -30,7 +30,7 @@ SignInFatalErrorScreen::SignInFatalErrorScreen(
 SignInFatalErrorScreen::~SignInFatalErrorScreen() = default;
 
 void SignInFatalErrorScreen::SetErrorState(Error error,
-                                           base::Value::Dict params) {
+                                           base::DictValue params) {
   error_state_ = error;
   extra_error_info_ = std::move(params);
 }
@@ -40,7 +40,7 @@ void SignInFatalErrorScreen::SetCustomError(const std::string& error_text,
                                             const std::string& details,
                                             const std::string& help_link_text) {
   error_state_ = Error::kCustom;
-  extra_error_info_ = base::Value::Dict();
+  extra_error_info_ = base::DictValue();
   DCHECK(!error_text.empty());
   extra_error_info_.Set("errorText", error_text);
   if (!keyboard_hint.empty()) {
@@ -63,7 +63,7 @@ void SignInFatalErrorScreen::ShowImpl() {
 
 void SignInFatalErrorScreen::HideImpl() {}
 
-void SignInFatalErrorScreen::OnUserAction(const base::Value::List& args) {
+void SignInFatalErrorScreen::OnUserAction(const base::ListValue& args) {
   const std::string& action_id = args[0].GetString();
   if (action_id == kUserActionScreenDismissed) {
     exit_callback_.Run();

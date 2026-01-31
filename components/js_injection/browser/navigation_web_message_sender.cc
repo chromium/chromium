@@ -37,10 +37,10 @@ std::set<int64_t>& GetAllOngoingNavigationIds() {
   return *all_ongoing_navigation_ids;
 }
 
-base::Value::Dict CreateBaseMessageFromNavigationHandle(
+base::DictValue CreateBaseMessageFromNavigationHandle(
     content::NavigationHandle* navigation_handle) {
   bool is_history = (navigation_handle->IsHistory());
-  return base::Value::Dict()
+  return base::DictValue()
       .Set("id", base::NumberToString(navigation_handle->GetNavigationId()))
       .Set("url", navigation_handle->GetURL().spec())
       .Set("isSameDocument", navigation_handle->IsSameDocument())
@@ -240,8 +240,8 @@ NavigationWebMessageSender::~NavigationWebMessageSender() {
 void NavigationWebMessageSender::DispatchOptInMessage() {
   CHECK(page().IsPrimary());
 
-  base::Value::Dict message_dict =
-      base::Value::Dict()
+  base::DictValue message_dict =
+      base::DictValue()
           .Set("type", kOptedInMessage)
           .Set("supports_start_and_redirect", true)
           .Set("supports_history_details", true)
@@ -308,7 +308,7 @@ void NavigationWebMessageSender::DidStartNavigation(
   // navigations.
   GetOngoingPrimaryMainFrameNavigationIds().insert(
       navigation_handle->GetNavigationId());
-  base::Value::Dict message_dict =
+  base::DictValue message_dict =
       CreateBaseMessageFromNavigationHandle(navigation_handle)
           .Set("type", kNavigationStartedMessage);
   PostMessage(std::move(message_dict));
@@ -322,7 +322,7 @@ void NavigationWebMessageSender::DidRedirectNavigation(
   CheckNavigationIsInPrimaryOngoingList(navigation_handle,
                                         kNavigationRedirectedMessage);
 
-  base::Value::Dict message_dict =
+  base::DictValue message_dict =
       CreateBaseMessageFromNavigationHandle(navigation_handle)
           .Set("type", kNavigationRedirectedMessage);
   PostMessage(std::move(message_dict));
@@ -344,7 +344,7 @@ void NavigationWebMessageSender::DidFinishNavigation(
   GetOngoingPrimaryMainFrameNavigationIds().erase(
       navigation_handle->GetNavigationId());
 
-  base::Value::Dict message_dict =
+  base::DictValue message_dict =
       CreateBaseMessageFromNavigationHandle(navigation_handle)
           .Set("type", kNavigationCompletedMessage)
           .Set("isErrorPage", navigation_handle->IsErrorPage())
@@ -359,7 +359,7 @@ void NavigationWebMessageSender::DidFinishNavigation(
 }
 
 std::unique_ptr<WebMessage> NavigationWebMessageSender::CreateWebMessage(
-    base::Value::Dict message_dict) {
+    base::DictValue message_dict) {
   std::string json_message = base::WriteJson(message_dict).value_or("");
   std::unique_ptr<WebMessage> web_message = std::make_unique<WebMessage>();
   web_message->message = base::UTF8ToUTF16(json_message);
@@ -367,12 +367,12 @@ std::unique_ptr<WebMessage> NavigationWebMessageSender::CreateWebMessage(
 }
 
 void NavigationWebMessageSender::PostMessageWithType(std::string_view type) {
-  base::Value::Dict message_dict;
+  base::DictValue message_dict;
   message_dict.Set("type", type);
   PostMessage(std::move(message_dict));
 }
 
-void NavigationWebMessageSender::PostMessage(base::Value::Dict message_dict) {
+void NavigationWebMessageSender::PostMessage(base::DictValue message_dict) {
   host_->OnPostMessage(CreateWebMessage(std::move(message_dict)));
 }
 

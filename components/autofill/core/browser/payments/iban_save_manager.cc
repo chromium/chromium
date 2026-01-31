@@ -314,7 +314,7 @@ void IbanSaveManager::OnDidGetUploadDetails(
     PaymentsRpcResult result,
     const std::u16string& validation_regex,
     const std::u16string& context_token,
-    std::unique_ptr<base::Value::Dict> legal_message) {
+    std::unique_ptr<base::DictValue> legal_message) {
   if (observer_for_testing_) {
     observer_for_testing_->OnReceivedGetUploadDetailsResponse();
   }
@@ -322,7 +322,8 @@ void IbanSaveManager::OnDidGetUploadDetails(
   // Upload should only be offered when result is `kSuccess` and the IBAN passes
   // regex validation.
   if (result == PaymentsRpcResult::kSuccess &&
-      MatchesRegex(import_candidate.value(), *CompileRegex(validation_regex))) {
+      MatchesRegex(import_candidate.value(),
+                   CompileRegex(validation_regex).get())) {
     // Upload should only be offered when legal messages are parsed
     // successfully.
     LegalMessageLines parsed_legal_message_lines;

@@ -90,15 +90,15 @@ void BackgroundFetchRegistration::OnRecordsUnavailable() {
 void BackgroundFetchRegistration::OnRequestCompleted(
     mojom::blink::FetchAPIRequestPtr request,
     mojom::blink::FetchAPIResponsePtr response) {
-  for (auto it = observers_.begin(); it != observers_.end();) {
-    BackgroundFetchRecord* observer = it->Get();
+  HeapVector<Member<BackgroundFetchRecord>> remaining_observers;
+  for (auto& observer : observers_) {
     if (observer->ObservedUrl() == request->url) {
       observer->OnRequestCompleted(response->Clone());
-      it = observers_.erase(it);
     } else {
-      UNSAFE_TODO(it++);
+      remaining_observers.push_back(observer);
     }
   }
+  observers_.swap(remaining_observers);
 }
 
 String BackgroundFetchRegistration::id() const {

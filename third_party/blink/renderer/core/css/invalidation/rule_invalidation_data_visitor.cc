@@ -134,7 +134,6 @@ bool SupportsInvalidation(CSSSelector::PseudoType type) {
     case CSSSelector::kPseudoFullScreen:
     case CSSSelector::kPseudoFullScreenAncestor:
     case CSSSelector::kPseudoFullscreen:
-    case CSSSelector::kPseudoPatching:
     case CSSSelector::kPseudoPaused:
     case CSSSelector::kPseudoPermissionGranted:
     case CSSSelector::kPseudoPictureInPicture:
@@ -155,12 +154,14 @@ bool SupportsInvalidation(CSSSelector::PseudoType type) {
     case CSSSelector::kPseudoMultiSelectFocus:
     case CSSSelector::kPseudoHostHasNonAutoAppearance:
     case CSSSelector::kPseudoOpen:
+    case CSSSelector::kPseudoOverscrollTarget:
     case CSSSelector::kPseudoDialogInTopLayer:
     case CSSSelector::kPseudoPicker:
     case CSSSelector::kPseudoPopoverInTopLayer:
     case CSSSelector::kPseudoPopoverOpen:
     case CSSSelector::kPseudoMenulistPopoverWithMenubarAnchor:
     case CSSSelector::kPseudoMenulistPopoverWithMenulistAnchor:
+    case CSSSelector::kPseudoSelectHasSlottedButton:
     case CSSSelector::kPseudoSlotted:
     case CSSSelector::kPseudoVideoPersistent:
     case CSSSelector::kPseudoVideoPersistentAncestor:
@@ -187,6 +188,8 @@ bool SupportsInvalidation(CSSSelector::PseudoType type) {
     case CSSSelector::kPseudoInterestTarget:
     case CSSSelector::kPseudoHasSlotted:
     case CSSSelector::kPseudoLinkTo:
+    case CSSSelector::kPseudoToolFormActive:
+    case CSSSelector::kPseudoToolSubmitActive:
       return true;
     case CSSSelector::kPseudoUnknown:
     case CSSSelector::kPseudoLeftPage:
@@ -1634,72 +1637,6 @@ RuleInvalidationDataVisitor<VisitorType>::InvalidationSetForSimpleSelector(
   }
   if (selector.Match() == CSSSelector::kPseudoClass) {
     switch (selector.GetPseudoType()) {
-      case CSSSelector::kPseudoEmpty:
-      case CSSSelector::kPseudoFirstChild:
-      case CSSSelector::kPseudoLastChild:
-      case CSSSelector::kPseudoOnlyChild:
-      case CSSSelector::kPseudoLink:
-      case CSSSelector::kPseudoVisited:
-      case CSSSelector::kPseudoWebkitAnyLink:
-      case CSSSelector::kPseudoAnyLink:
-      case CSSSelector::kPseudoAutofill:
-      case CSSSelector::kPseudoWebKitAutofill:
-      case CSSSelector::kPseudoAutofillPreviewed:
-      case CSSSelector::kPseudoAutofillSelected:
-      case CSSSelector::kPseudoHover:
-      case CSSSelector::kPseudoDrag:
-      case CSSSelector::kPseudoFocus:
-      case CSSSelector::kPseudoFocusVisible:
-      case CSSSelector::kPseudoFocusWithin:
-      case CSSSelector::kPseudoActive:
-      case CSSSelector::kPseudoChecked:
-      case CSSSelector::kPseudoEnabled:
-      case CSSSelector::kPseudoDefault:
-      case CSSSelector::kPseudoDisabled:
-      case CSSSelector::kPseudoOptional:
-      case CSSSelector::kPseudoPlaceholderShown:
-      case CSSSelector::kPseudoRequired:
-      case CSSSelector::kPseudoReadOnly:
-      case CSSSelector::kPseudoReadWrite:
-      case CSSSelector::kPseudoState:
-      case CSSSelector::kPseudoUserInvalid:
-      case CSSSelector::kPseudoUserValid:
-      case CSSSelector::kPseudoValid:
-      case CSSSelector::kPseudoInvalid:
-      case CSSSelector::kPseudoIndeterminate:
-      case CSSSelector::kPseudoTarget:
-      case CSSSelector::kPseudoTargetCurrent:
-      case CSSSelector::kPseudoTargetBefore:
-      case CSSSelector::kPseudoTargetAfter:
-      case CSSSelector::kPseudoLang:
-      case CSSSelector::kPseudoDir:
-      case CSSSelector::kPseudoFullScreen:
-      case CSSSelector::kPseudoFullScreenAncestor:
-      case CSSSelector::kPseudoFullscreen:
-      case CSSSelector::kPseudoPaused:
-      case CSSSelector::kPseudoPermissionGranted:
-      case CSSSelector::kPseudoPictureInPicture:
-      case CSSSelector::kPseudoPlaying:
-      case CSSSelector::kPseudoInRange:
-      case CSSSelector::kPseudoOutOfRange:
-      case CSSSelector::kPseudoDefined:
-      case CSSSelector::kPseudoOpen:
-      case CSSSelector::kPseudoPopoverOpen:
-      case CSSSelector::kPseudoVideoPersistent:
-      case CSSSelector::kPseudoVideoPersistentAncestor:
-      case CSSSelector::kPseudoXrOverlay:
-      case CSSSelector::kPseudoHasDatalist:
-      case CSSSelector::kPseudoMultiSelectFocus:
-      case CSSSelector::kPseudoModal:
-      case CSSSelector::kPseudoSelectorFragmentAnchor:
-      case CSSSelector::kPseudoActiveViewTransition:
-      case CSSSelector::kPseudoActiveViewTransitionType:
-      case CSSSelector::kPseudoInterestSource:
-      case CSSSelector::kPseudoInterestTarget:
-      case CSSSelector::kPseudoHasSlotted:
-      case CSSSelector::kPseudoLinkTo:
-        return EnsurePseudoInvalidationSet(selector.GetPseudoType(), type,
-                                           position, in_nth_child);
       case CSSSelector::kPseudoFirstOfType:
       case CSSSelector::kPseudoLastOfType:
       case CSSSelector::kPseudoOnlyOfType:
@@ -1713,9 +1650,12 @@ RuleInvalidationDataVisitor<VisitorType>::InvalidationSetForSimpleSelector(
                    ? EnsurePseudoInvalidationSet(selector.GetPseudoType(), type,
                                                  position, in_nth_child)
                    : nullptr;
-      case CSSSelector::kPseudoPart:
       default:
         break;
+    }
+    if (CSSSelector::SupportsPseudoStateChange(selector.GetPseudoType())) {
+      return EnsurePseudoInvalidationSet(selector.GetPseudoType(), type,
+                                         position, in_nth_child);
     }
   }
   return nullptr;

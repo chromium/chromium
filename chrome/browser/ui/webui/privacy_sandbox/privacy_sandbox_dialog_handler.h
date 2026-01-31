@@ -41,11 +41,11 @@ class PrivacySandboxDialogHandler : public content::WebUIMessageHandler {
   void SetDialogCallbackForTesting(
       const base::RepeatingCallback<void(
           PrivacySandboxService::AdsDialogCallbackNoArgsEvents)>& callback);
-  void HandlePromptActionOccurred(const base::Value::List& args);
-  void HandleResizeDialog(const base::Value::List& args);
-  void HandleShowDialog(const base::Value::List& args);
-  void HandleRecordPrivacyPolicyLoadTime(const base::Value::List& args);
-  void HandleShouldShowAdTopicsContentParity(const base::Value::List& args);
+  void HandlePromptActionOccurred(const base::ListValue& args);
+  void HandleResizeDialog(const base::ListValue& args);
+  void HandleShowDialog(const base::ListValue& args);
+  void HandleRecordPrivacyPolicyLoadTime(const base::ListValue& args);
+  void HandleShouldShowAdTopicsContentParity(const base::ListValue& args);
   void CloseDialog();
 
   base::RepeatingCallback<void(

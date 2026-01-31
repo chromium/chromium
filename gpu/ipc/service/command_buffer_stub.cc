@@ -38,6 +38,7 @@
 #include "gpu/ipc/service/gpu_watchdog_thread.h"
 #include "gpu/ipc/service/image_transport_surface.h"
 #include "ipc/ipc_mojo_bootstrap.h"
+#include "third_party/perfetto/include/perfetto/tracing/track_event_args.h"
 #include "ui/gl/gl_bindings.h"
 #include "ui/gl/gl_context.h"
 #include "ui/gl/gl_implementation.h"
@@ -93,7 +94,7 @@ class DevToolsChannelData : public base::trace_event::ConvertableToTraceFormat {
 
 std::unique_ptr<base::trace_event::ConvertableToTraceFormat>
 DevToolsChannelData::CreateForChannel(GpuChannel* channel) {
-  base::Value::Dict res;
+  base::DictValue res;
   res.Set("renderer_pid", static_cast<int>(channel->client_pid()));
   res.Set("used_bytes", static_cast<double>(channel->GetMemoryUsage()));
   return base::WrapUnique(new DevToolsChannelData(base::Value(std::move(res))));
@@ -485,10 +486,8 @@ void CommandBufferStub::OnAsyncFlush(
 
   const uint64_t global_flush_id =
       GlobalFlushTracingId(channel_->client_id(), flush_id);
-  TRACE_EVENT_WITH_FLOW0(
-      "gpu,toplevel.flow", "CommandBuffer::Flush",
-      TRACE_ID_WITH_SCOPE("CommandBuffer::Flush", global_flush_id),
-      TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT);
+  TRACE_EVENT("gpu,toplevel.flow", "CommandBuffer::Flush",
+              perfetto::Flow::Global(global_flush_id, "CommandBuffer::Flush"));
 
   TRACE_EVENT1("gpu", "CommandBufferStub::OnAsyncFlush", "put_offset",
                put_offset);
@@ -515,10 +514,9 @@ void CommandBufferStub::OnAsyncFlush(
 #endif
 
   if (!HasUnprocessedCommands()) {
-    TRACE_EVENT_WITH_FLOW0(
-        "gpu,toplevel.flow", "CommandBuffer::FlushComplete",
-        TRACE_ID_WITH_SCOPE("CommandBuffer::Flush", global_flush_id),
-        TRACE_EVENT_FLAG_FLOW_IN);
+    TRACE_EVENT("gpu,toplevel.flow", "CommandBuffer::FlushComplete",
+                perfetto::TerminatingFlow::Global(global_flush_id,
+                                                  "CommandBuffer::Flush"));
   }
 }
 

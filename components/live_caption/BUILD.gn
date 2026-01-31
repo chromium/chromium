@@ -112,6 +112,7 @@ if (!is_android && !is_ios) {
       "caption_util_unittest.cc",
       "greedy_text_stabilizer_unittest.cc",
       "live_caption_bubble_settings_unittest.cc",
+      "translation_dispatcher_unittest.cc",
       "translation_util_unittest.cc",
     ]
 
@@ -128,6 +129,8 @@ if (!is_android && !is_ios) {
       "//media",
       "//media/mojo/mojom:speech_recognition",
       "//mojo/public/cpp/bindings",
+      "//net:test_support",
+      "//services/network:test_support",
       "//testing/gmock",
       "//testing/gtest",
       "//ui/base",

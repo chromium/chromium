@@ -9,7 +9,6 @@
 #include <utility>
 
 #include "base/check_op.h"
-#include "base/containers/contains.h"
 #include "base/strings/string_number_conversions.h"
 #include "extensions/browser/extension_icon_image.h"
 #include "extensions/browser/extension_icon_placeholder.h"
@@ -20,7 +19,7 @@
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkCanvas.h"
 #include "third_party/skia/include/core/SkPaint.h"
-#include "third_party/skia/include/effects/SkGradientShader.h"
+#include "third_party/skia/include/effects/SkGradient.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/gfx/animation/animation_delegate.h"
 #include "ui/gfx/canvas.h"
@@ -65,7 +64,7 @@ struct IconRepresentationInfo {
 
 template <class T>
 bool HasValue(const std::map<int, T>& map, ExtensionAction::TabID tab_id) {
-  return base::Contains(map, tab_id);
+  return map.contains(tab_id);
 }
 
 }  // namespace
@@ -315,7 +314,7 @@ bool ExtensionAction::GetIsVisibleInternal(TabID tab_id,
     return *tab_is_visible;
   }
 
-  if (include_declarative && base::Contains(declarative_show_count_, tab_id)) {
+  if (include_declarative && declarative_show_count_.contains(tab_id)) {
     return true;
   }
 

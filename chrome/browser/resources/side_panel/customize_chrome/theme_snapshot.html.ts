@@ -16,7 +16,7 @@ ${this.themeType_ === CustomizeThemeType.CUSTOM_THEME ? html`
     <div class="image-background" id="customThemeImageBackground"
         @click="${this.onThemeSnapshotClick_}">
       <img class="image" id="customThemeImage" is="cr-auto-img"
-          .autoSrc="${this.theme_!.backgroundImage!.snapshotUrl.url}"
+          .autoSrc="${this.theme_!.backgroundImage!.snapshotUrl}"
           draggable="false"
           aria-labelledby="customThemeTitle">
       <div class="overlay"></div>

@@ -27,7 +27,6 @@
 #include "chrome/browser/ash/apps/apk_web_app_service.h"
 #include "chrome/browser/ash/arc/arc_util.h"
 #include "chrome/browser/ash/arc/fileapi/arc_content_file_system_url_util.h"
-#include "chrome/browser/ash/arc/intent_helper/custom_tab_session_impl.h"
 #include "chrome/browser/ash/browser_delegate/browser_controller.h"
 #include "chrome/browser/ash/browser_delegate/browser_delegate.h"
 #include "chrome/browser/ash/file_manager/fileapi_util.h"
@@ -315,42 +314,6 @@ void ArcOpenUrlDelegateImpl::OpenWebAppFromArc(const GURL& url) {
   for (const auto& id : prefs->GetAppsForPackage(package_name.value())) {
     arc_tracker->CloseWindows(id);
   }
-}
-
-void ArcOpenUrlDelegateImpl::OpenArcCustomTab(
-    const GURL& url,
-    int32_t task_id,
-    arc::mojom::IntentHelperHost::OnOpenCustomTabCallback callback) {
-  GURL url_to_open = ConvertArcUrlToExternalFileUrlIfNeeded(url);
-  Profile* profile = ProfileManager::GetActiveUserProfile();
-
-  aura::Window* arc_window = arc::GetArcWindow(task_id);
-  if (!arc_window) {
-    std::move(callback).Run(mojo::NullRemote());
-    return;
-  }
-
-  auto custom_tab = std::make_unique<arc::CustomTab>(arc_window);
-  auto web_contents = arc::CreateArcCustomTabWebContents(profile, url);
-
-  const user_manager::User& user = CHECK_DEREF(
-      ash::BrowserContextHelper::Get()->GetUserByBrowserContext(profile));
-
-  // |custom_tab_browser| will be destroyed when its tab strip becomes empty,
-  // either due to the user opening the custom tab page in a tabbed browser or
-  // because of the CustomTabSessionImpl object getting destroyed.
-  ash::BrowserDelegate* custom_tab_browser =
-      ash::BrowserController::GetInstance()->CreateCustomTab(
-          user.GetAccountId(), std::move(web_contents));
-  CHECK(custom_tab_browser);
-
-  // TODO(crbug.com/41454219): Remove this temporary conversion to InterfacePtr
-  // once OnOpenCustomTab from
-  // //chromeos/ash/experiences/arc/mojom/intent_helper.mojom could take
-  // pending_remote directly. Refer to crrev.com/c/1868870.
-  auto custom_tab_remote(CustomTabSessionImpl::Create(
-      std::move(custom_tab), &custom_tab_browser->GetBrowser()));
-  std::move(callback).Run(std::move(custom_tab_remote));
 }
 
 void ArcOpenUrlDelegateImpl::OpenChromePageFromArc(ChromePage page) {

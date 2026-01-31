@@ -21,6 +21,8 @@
   id<BETextInputDelegate> be_text_input_delegate_;
   BETextInteraction* text_interaction_;
   BOOL _isEditable;
+  std::u16string _markedText;
+  std::optional<input::NativeWebKeyboardEvent> _currentKeyDownEvent;
   std::optional<gfx::Vector2dF> _viewOffsetDuringTouchSequence;
 }
 

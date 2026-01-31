@@ -69,6 +69,11 @@ class PermissionSettingsInfo {
         const PermissionSetting& persistent_permission_setting,
         const PermissionSetting& ephemeral_permission_setting) const;
 
+    // Returns a PermissionSetting that represent the given ContentSetting (e.g.
+    // either allows or blocks everything).
+    virtual PermissionSetting ToPermissionSetting(
+        ContentSetting setting) const = 0;
+
     // Parsing and conversion methods.
     virtual base::Value ToValue(const PermissionSetting& setting) const = 0;
     virtual std::optional<PermissionSetting> FromValue(

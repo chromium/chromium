@@ -28,6 +28,18 @@ inline constexpr size_t kSyncIdLength = 16u;
 // The maximum byte length of the WebauthnCredentialSpecifics `user_id` field.
 inline constexpr size_t kUserIdMaxLength = 64u;
 
+// Lower bound for credential ID length
+// (https://www.w3.org/TR/webauthn-2/#credential-id).
+inline constexpr size_t kCredentialIdMinLength = 16u;
+
+// Upper bound for credential ID length
+// (https://www.w3.org/TR/webauthn-3/#credential-id).
+inline constexpr size_t kCredentialIdMaxLength = 1023u;
+
+// The byte length of the WebauthnCredentialSpecifics `credential_id` field for
+// passkeys created by GPM.
+inline constexpr size_t kGpmCreatedCredentialIdLength = 16u;
+
 // Extension output data for passkey creation and assertion.
 struct ExtensionOutputData {
   ExtensionOutputData();
@@ -37,14 +49,29 @@ struct ExtensionOutputData {
   std::vector<uint8_t> prf_result;
 };
 
+// PRF extension input data for passkey creation and assertion.
+struct PRFInputData {
+  PRFInputData(base::span<const uint8_t> prf_input1,
+               std::optional<base::span<const uint8_t>> prf_input2);
+
+  PRFInputData(const PRFInputData&);
+  PRFInputData(PRFInputData&&);
+  PRFInputData& operator=(PRFInputData&& other);
+  ~PRFInputData();
+
+  inline const device::PRFInput& prf_input() const { return input; }
+
+ private:
+  device::PRFInput input;
+};
+
 // Extension input data for passkey creation and assertion.
 struct ExtensionInputData {
   // This constructor must be used if there is an extension present in the
   // passkey request. Even if there's no PRF data, this constructor will
   // initialize `prf_input` so that `hasPRF` can later return true, so that PRF
   // support can be returned as part of the creation or assertion response.
-  ExtensionInputData(base::span<const uint8_t> prf_input1,
-                     base::span<const uint8_t> prf_input2);
+  explicit ExtensionInputData(PRFInputData prf_input_data);
 
   // This constructor must be used when there are no extensions present in the
   // passkey request.
@@ -68,7 +95,7 @@ struct ExtensionInputData {
   std::vector<uint8_t> EvaluateHMAC(
       const sync_pb::WebauthnCredentialSpecifics_Encrypted& encrypted) const;
 
-  std::optional<device::PRFInput> prf_input;
+  std::optional<PRFInputData> prf_input_data;
 };
 
 // Serialized versions of the attestation object and authenticator data.
@@ -89,6 +116,15 @@ struct SerializedAttestationObject {
 // this function, if applicable for the use case.
 std::vector<sync_pb::WebauthnCredentialSpecifics> FilterShadowedCredentials(
     base::span<const sync_pb::WebauthnCredentialSpecifics> passkeys);
+
+// Returns whether the passkey is of the expected format. The conditions checked
+// in this function should apply to every passkey stored in Google Password
+// Manager, regardless of whether they were actually created by GPM or imported
+// through Credential Exchange. For more specific functions based on the source
+// of passkeys, use one of the following:
+// * `passkey_model_utils::IsGpmPasskeyValid()`
+// * `webauthn::CheckImportedPasskey()`
+bool IsPasskeyValid(const sync_pb::WebauthnCredentialSpecifics& passkey);
 
 // Returns whether the passkey created by the Google Password Manager is of the
 // expected format. This function might make some stricter assumptions than what

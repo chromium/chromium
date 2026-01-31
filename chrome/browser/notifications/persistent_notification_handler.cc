@@ -25,7 +25,6 @@
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/permissions/notifications_engagement_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/safe_browsing/notification_content_detection/notification_content_detection_util.h"
 #include "chrome/browser/ui/safety_hub/disruptive_notification_permissions_manager.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/content_settings.h"
@@ -34,9 +33,7 @@
 #include "components/permissions/features.h"
 #include "components/permissions/permission_uma_util.h"
 #include "components/permissions/permission_util.h"
-#include "components/safe_browsing/content/browser/notification_content_detection/notification_content_detection_constants.h"
-#include "components/safe_browsing/core/browser/safe_browsing_metrics_collector.h"
-#include "components/safe_browsing/core/common/features.h"
+#include "components/safe_browsing/buildflags.h"
 #include "components/site_engagement/content/site_engagement_service.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/notification_event_dispatcher.h"
@@ -51,6 +48,13 @@
 #include "ui/message_center/message_center_stats_collector.h"
 #include "url/gurl.h"
 #include "url/origin.h"
+
+#if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
+#include "chrome/browser/safe_browsing/notification_content_detection/notification_content_detection_util.h"
+#include "components/safe_browsing/content/browser/notification_content_detection/notification_content_detection_constants.h"
+#include "components/safe_browsing/core/browser/safe_browsing_metrics_collector.h"
+#include "components/safe_browsing/core/common/features.h"
+#endif
 
 #if BUILDFLAG(ENABLE_BACKGROUND_MODE)
 #include "chrome/browser/profiles/keep_alive/scoped_profile_keep_alive.h"
@@ -317,6 +321,8 @@ void PersistentNotificationHandler::DisableNotifications(
   NotificationPermissionContext::UpdatePermission(profile, origin,
                                                   CONTENT_SETTING_BLOCK);
 #endif
+
+#if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
   // Remove `origin` from user allowlisted sites when user unsubscribes. On
   // Android, log the suspicious notification unsubscribe ukm event if the
   // notification was suspicious.
@@ -326,7 +332,7 @@ void PersistentNotificationHandler::DisableNotifications(
         ContentSettingsPattern::FromURLNoWildcard(origin),
         ContentSettingsPattern::Wildcard(),
         ContentSettingsType::ARE_SUSPICIOUS_NOTIFICATIONS_ALLOWLISTED_BY_USER,
-        base::Value(base::Value::Dict().Set(
+        base::Value(base::DictValue().Set(
             safe_browsing::kIsAllowlistedByUserKey, false)));
 #if BUILDFLAG(IS_ANDROID)
     if (notification_id.has_value()) {
@@ -342,8 +348,9 @@ void PersistentNotificationHandler::DisableNotifications(
                   : safe_browsing::NotificationRevocationSource::
                         kStandardOneTapUnsubscribe);
     }
-#endif
+#endif  // BUILDFLAG(IS_ANDROID)
   }
+#endif  // BUILDFLAG(SAFE_BROWSING_AVAILABLE)
 }
 
 void PersistentNotificationHandler::OpenSettings(Profile* profile,
@@ -401,7 +408,7 @@ void PersistentNotificationHandler::OnShowOriginalNotification(
           ContentSettingsPattern::FromURLNoWildcard(url),
           ContentSettingsPattern::Wildcard(),
           ContentSettingsType::SUSPICIOUS_NOTIFICATION_SHOW_ORIGINAL,
-          base::Value(base::Value::Dict().Set(
+          base::Value(base::DictValue().Set(
               safe_browsing::kSuspiciousNotificationShowOriginalKey, true)));
     }
   }
@@ -416,6 +423,7 @@ void PersistentNotificationHandler::OnMaybeReport(
     bool did_user_unsubscribe) {
   CHECK(profile);
 
+#if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
   // In case the data volume becomes excessive, logging should happen at a
   // sampled rate. This rate is defined by the
   // `kReportNotificationContentDetectionDataRate` feature parameter.
@@ -450,6 +458,7 @@ void PersistentNotificationHandler::OnMaybeReport(
               ->GetWeakPtr(),
           safe_browsing::NotificationContentDetectionMQLSMetadata(
               did_show_warning, did_user_unsubscribe, engagement_level)));
+#endif  // BUILDFLAG(SAFE_BROWSING_AVAILABLE)
 }
 
 #if BUILDFLAG(ENABLE_BACKGROUND_MODE)

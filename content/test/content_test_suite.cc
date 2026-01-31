@@ -37,7 +37,6 @@ ContentTestSuite::ContentTestSuite(int argc, char** argv)
   // Failing tests on windows:
   // -DelegatedFrameHostTest.NoCopyOutputRequestWithNoValidSurface
   // -EmbeddedFrameSinkProviderImplTest.*
-  // -RendererSandboxSettings/RendererFeatureSandboxWinTest.RendererGeneratedPolicyTest/0
   // TODO(40105939): Enable field trials on windows.
   // --------------------------------------------------
   // On Android, `content_unittests` fails during `--gtest-list-tests` with

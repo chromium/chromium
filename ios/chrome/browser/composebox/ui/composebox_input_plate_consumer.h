@@ -10,6 +10,7 @@
 #import "ios/chrome/browser/composebox/ui/composebox_input_item.h"
 
 enum class ComposeboxInputPlateControls : unsigned int;
+enum class ComposeboxModelOption;
 
 // Consumer for the composebox composebox.
 @protocol ComposeboxInputPlateConsumer
@@ -29,6 +30,12 @@ enum class ComposeboxInputPlateControls : unsigned int;
 
 // Sets whether Image Generation mode is enabled.
 - (void)setImageGenerationEnabled:(BOOL)enabled;
+
+// Sets whether Canvas mode is enabled.
+- (void)setCanvasEnabled:(BOOL)enabled;
+
+// Sets whether the model picker is enabled.
+- (void)allowModelPicker:(BOOL)allowed;
 
 // Whether to present in compact (single line) mode.
 - (void)setCompact:(BOOL)compact;
@@ -54,6 +61,9 @@ enum class ComposeboxInputPlateControls : unsigned int;
 // Sets whether the create image actions are hidden.
 - (void)hideCreateImageActions:(BOOL)hidden;
 
+// Sets whether the canvas actions are hidden.
+- (void)hideCanvasActions:(BOOL)hidden;
+
 // Sets whether the create image actions are disabled.
 - (void)disableCreateImageActions:(BOOL)disabled;
 
@@ -68,6 +78,12 @@ enum class ComposeboxInputPlateControls : unsigned int;
 
 // Sets whether the gallery actions are disabled.
 - (void)disableGalleryActions:(BOOL)disabled;
+
+// Sets the remaining capacity for attachments.
+- (void)setRemainingAttachmentCapacity:(NSUInteger)capacity;
+
+// Called when the model option is updated.
+- (void)setModelOption:(ComposeboxModelOption)modelOption;
 
 @end
 

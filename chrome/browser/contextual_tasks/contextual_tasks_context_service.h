@@ -15,9 +15,9 @@
 #include "base/time/tick_clock.h"
 #include "base/time/time.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_types.mojom.h"
-#include "chrome/browser/passage_embeddings/page_embeddings_service.h"
 #include "components/keyed_service/core/keyed_service.h"
-#include "components/passage_embeddings/passage_embeddings_types.h"
+#include "components/passage_embeddings/content/page_embeddings_service.h"
+#include "components/passage_embeddings/core/passage_embeddings_types.h"
 
 class GURL;
 class OptimizationGuideKeyedService;
@@ -117,25 +117,9 @@ class ContextualTasksContextService
   // Returns all tabs for the profile that are eligible for selection.
   std::vector<content::WebContents*> GetAllEligibleTabs();
 
-  // Returns the relevant tabs for `query` based on given `tab_selection_mode`.
+  // Returns the relevant tabs for `query`. Collects and logs all the signals
+  // irrespective of chosen `tab_selection_mode`.
   std::vector<content::WebContents*> SelectRelevantTabs(
-      const std::string& query,
-      const TabSelectionOptions& options,
-      const passage_embeddings::Embedding& query_embedding,
-      const std::vector<content::WebContents*>& all_tabs,
-      const std::vector<GURL>& explicit_urls,
-      optimization_guide::proto::ContextualTasksContextQuality* quality_log);
-
-  // Selects tabs based on embeddings match.
-  std::vector<content::WebContents*> SelectTabsByEmbeddingsMatch(
-      const std::string& query,
-      const TabSelectionOptions& options,
-      const passage_embeddings::Embedding& query_embedding,
-      const std::vector<content::WebContents*>& all_tabs);
-
-  // Scores and selects tabs based on multiple signals like embedding score,
-  // tab recency etc.
-  std::vector<content::WebContents*> SelectTabsByMultiSignalScore(
       const std::string& query,
       const TabSelectionOptions& options,
       const passage_embeddings::Embedding& query_embedding,
@@ -145,6 +129,11 @@ class ContextualTasksContextService
 
   // Returns the duration since the tab was last active.
   std::optional<base::TimeDelta> GetDurationSinceLastActive(
+      content::WebContents* web_contents);
+
+  // Returns the time spent in the tab on its last visit. If the tab is still
+  // active, then it returns the time spent in the current visit.
+  std::optional<base::TimeDelta> GetDurationOfCurrentOrLastVisit(
       content::WebContents* web_contents);
 
   // Returns whether the tab should be added to the selection.

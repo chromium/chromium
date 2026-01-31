@@ -7,7 +7,6 @@
 #include <memory>
 #include <utility>
 
-#include "base/containers/contains.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/span.h"
 #include "base/i18n/char_iterator.h"
@@ -72,10 +71,12 @@ void LogPerfectFillingMetric(const FormStructure& form) {
 
 // Logs metrics related to how long it took the user from load/interaction time
 // till form submission.
-void LogDurationMetrics(const FormStructure& form,
-                        base::TimeTicks load_time,
-                        base::TimeTicks interaction_time,
-                        base::TimeTicks now) {
+void LogDurationMetrics(
+    const FormStructure& form,
+    base::TimeTicks load_time,
+    base::TimeTicks interaction_time,
+    base::TimeTicks now,
+    AutocompleteUnrecognizedBehavior ac_unrecognized_behavior) {
   size_t num_detected_field_types =
       std::ranges::count_if(form, &FieldHasMeaningfulPossibleFieldTypes,
                             &std::unique_ptr<AutofillField>::operator*);
@@ -108,7 +109,8 @@ void LogDurationMetrics(const FormStructure& form,
     if (!interaction_time.is_null() && now >= interaction_time) {
       base::TimeDelta elapsed = now - interaction_time;
       AutofillMetrics::LogFormFillDurationFromInteraction(
-          form.GetFormTypes(), form_has_autofilled_fields, elapsed);
+          form.GetFormTypes(ac_unrecognized_behavior),
+          form_has_autofilled_fields, elapsed);
     }
   }
   if (has_observed_one_time_code_field) {
@@ -201,11 +203,13 @@ void LogPredictionMetrics(
   }
 }
 
-void LogFillingMetrics(const FormStructure& form,
-                       FormInteractionsUkmLogger& form_interactions_ukm_logger,
-                       ukm::SourceId source_id,
-                       bool observed_submission,
-                       base::TimeTicks now) {
+void LogFillingMetrics(
+    const FormStructure& form,
+    FormInteractionsUkmLogger& form_interactions_ukm_logger,
+    ukm::SourceId source_id,
+    bool observed_submission,
+    base::TimeTicks now,
+    AutocompleteUnrecognizedBehavior ac_unrecognized_behavior) {
   const QualityMetricType metric_type =
       observed_submission ? TYPE_SUBMISSION : TYPE_NO_SUBMISSION;
   for (const std::unique_ptr<AutofillField>& field : form) {
@@ -216,8 +220,8 @@ void LogFillingMetrics(const FormStructure& form,
     return;
   }
   LogPerfectFillingMetric(form);
-  LogFieldFillingStatsAndScore(form);
-  LogFillingQualityMetrics(form);
+  LogFieldFillingStatsAndScore(form, ac_unrecognized_behavior);
+  LogFillingQualityMetrics(form, ac_unrecognized_behavior);
 
   FieldTypeSet autofilled_field_types;
   for (const std::unique_ptr<AutofillField>& field : form) {
@@ -230,7 +234,8 @@ void LogFillingMetrics(const FormStructure& form,
       autofilled_field_types.insert_all(field->Type().GetTypes());
     }
   }
-  if (base::Contains(form.GetFormTypes(), FormType::kCreditCardForm)) {
+  if (form.GetFormTypes(ac_unrecognized_behavior)
+          .contains(FormType::kCreditCardForm)) {
     AutofillMetrics::LogCreditCardSeamlessnessAtSubmissionTime(
         autofilled_field_types);
   }
@@ -238,25 +243,27 @@ void LogFillingMetrics(const FormStructure& form,
 
 }  // namespace
 
-void LogQualityMetrics(const FormStructure& form_structure,
-                       base::TimeTicks load_time,
-                       base::TimeTicks interaction_time,
-                       base::TimeTicks submission_time,
-                       FormInteractionsUkmLogger& form_interactions_ukm_logger,
-                       ukm::SourceId source_id,
-                       bool observed_submission) {
+void LogQualityMetrics(
+    const FormStructure& form_structure,
+    base::TimeTicks load_time,
+    base::TimeTicks interaction_time,
+    base::TimeTicks submission_time,
+    FormInteractionsUkmLogger& form_interactions_ukm_logger,
+    ukm::SourceId source_id,
+    bool observed_submission,
+    AutocompleteUnrecognizedBehavior ac_unrecognized_behavior) {
   base::TimeTicks now = base::TimeTicks::Now();
   LogPredictionMetrics(form_structure, form_interactions_ukm_logger, source_id,
                        observed_submission, now);
   LogFillingMetrics(form_structure, form_interactions_ukm_logger, source_id,
-                    observed_submission, now);
+                    observed_submission, now, ac_unrecognized_behavior);
   if (observed_submission) {
     // TODO(crbug.com/359768803): Remove this metric once the feature is
     // launched.
     LogSubmittedAlternativeNameCharacterSetValues(form_structure);
     LogExtractionMetrics(form_structure);
     LogDurationMetrics(form_structure, load_time, interaction_time,
-                       submission_time);
+                       submission_time, ac_unrecognized_behavior);
   }
 }
 

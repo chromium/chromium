@@ -135,8 +135,7 @@ class TestVariationsService : public VariationsService {
       : VariationsService(std::make_unique<TestVariationsServiceClient>(),
                           std::move(test_notifier),
                           local_state,
-                          state_manager,
-                          UIStringOverrider()),
+                          state_manager),
         intercepts_fetch_(true),
         fetch_attempted_(false),
         latest_serial_number_(""),
@@ -368,7 +367,7 @@ TEST_F(VariationsServiceTest, GetVariationsServerURL) {
       std::move(client),
       std::make_unique<web_resource::TestRequestAllowedNotifier>(
           &prefs_, network_tracker_),
-      &prefs_, GetMetricsStateManager(), UIStringOverrider());
+      &prefs_, GetMetricsStateManager());
   GURL url = service.GetVariationsServerURL(TestVariationsService::USE_HTTPS);
   EXPECT_TRUE(base::StartsWith(url.spec(), default_variations_url,
                                base::CompareCase::SENSITIVE));
@@ -419,7 +418,7 @@ TEST_F(VariationsServiceTest, VariationsURLHasParams) {
       std::move(client),
       std::make_unique<web_resource::TestRequestAllowedNotifier>(
           &prefs_, network_tracker_),
-      &prefs_, GetMetricsStateManager(), UIStringOverrider());
+      &prefs_, GetMetricsStateManager());
   raw_client->set_channel(version_info::Channel::UNKNOWN);
   GURL url = service.GetVariationsServerURL(TestVariationsService::USE_HTTPS);
 
@@ -670,7 +669,7 @@ TEST_F(VariationsServiceTest, Observer) {
       std::make_unique<TestVariationsServiceClient>(),
       std::make_unique<web_resource::TestRequestAllowedNotifier>(
           &prefs_, network_tracker_),
-      &prefs_, GetMetricsStateManager(), UIStringOverrider());
+      &prefs_, GetMetricsStateManager());
 
   struct TestCase {
     int normal_count;
@@ -746,7 +745,7 @@ TEST_F(VariationsServiceTest, GetStoredPermanentCountry) {
       prefs_.ClearPref(prefs::kVariationsPermanentConsistencyCountry);
     } else {
       std::string version_number(version_info::GetVersionNumber());
-      base::Value::List list_value;
+      base::ListValue list_value;
       for (const std::string& component :
            base::SplitString(test.permanent_consistency_country_before, ",",
                              base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL)) {

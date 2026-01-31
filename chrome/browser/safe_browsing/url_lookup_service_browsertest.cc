@@ -120,7 +120,7 @@ IN_PROC_BROWSER_TEST_F(SafeBrowsingUrlLookupServiceTest,
 
 IN_PROC_BROWSER_TEST_F(SafeBrowsingUrlLookupServiceTest, LookupWithToken) {
   identity_test_env()->SetPrimaryAccount("test@example.com",
-                                         signin::ConsentLevel::kSync);
+                                         signin::ConsentLevel::kSignin);
   identity_test_env()->SetRefreshTokenForPrimaryAccount();
   identity_test_env()->SetAutomaticIssueOfAccessTokens(true);
 
@@ -143,8 +143,8 @@ IN_PROC_BROWSER_TEST_F(SafeBrowsingUrlLookupServiceTest, LookupWithToken) {
       /*referring_app_info=*/std::nullopt);
   run_loop.Run();
 
-  EXPECT_TRUE(base::Contains(last_realtime_request().headers,
-                             net::HttpRequestHeaders::kAuthorization));
+  EXPECT_TRUE(last_realtime_request().headers.contains(
+      net::HttpRequestHeaders::kAuthorization));
 
   histogram_tester.ExpectUniqueSample(
       "SafeBrowsing.AuthenticatedCookieResetEndpoint",
@@ -171,8 +171,8 @@ IN_PROC_BROWSER_TEST_F(SafeBrowsingUrlLookupServiceTest, LookupWithoutToken) {
       /*referring_app_info=*/std::nullopt);
   run_loop.Run();
 
-  EXPECT_FALSE(base::Contains(last_realtime_request().headers,
-                              net::HttpRequestHeaders::kAuthorization));
+  EXPECT_FALSE(last_realtime_request().headers.contains(
+      net::HttpRequestHeaders::kAuthorization));
 
   histogram_tester.ExpectUniqueSample(
       "SafeBrowsing.AuthenticatedCookieResetEndpoint",

@@ -228,6 +228,14 @@ void LayoutTextFragment::UpdateHitTestResult(
 
 DOMNodeId LayoutTextFragment::OwnerNodeId(bool) const {
   NOT_DESTROYED();
+
+  // Anonymous list marker text content belongs to the marker pseudo-element.
+  if (!GetNode() && Parent() && Parent()->IsListMarker()) {
+    if (Node* marker_node = Parent()->GetNode()) {
+      return marker_node->GetDomNodeId();
+    }
+  }
+
   Node* node = AssociatedTextNode();
   return node ? node->GetDomNodeId() : kInvalidDOMNodeId;
 }

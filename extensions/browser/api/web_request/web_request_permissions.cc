@@ -330,7 +330,9 @@ bool WebRequestPermissions::HideRequest(
       DCHECK(extensions::ExtensionsBrowserClient::Get()
                  ->IsWebUIAllowedToMakeNetworkRequests(*request.initiator))
           << "Unsupported network request from "
-          << request.initiator->GetURL().spec() << " for " << url.spec();
+          << request.initiator->GetTupleOrPrecursorTupleIfOpaque().GetURL()
+          << " for " << url << " with request type "
+          << WebRequestResourceTypeToString(request.web_request_type);
     }
 #endif  // DCHECK_IS_ON()
 

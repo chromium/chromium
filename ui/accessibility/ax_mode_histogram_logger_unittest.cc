@@ -81,27 +81,6 @@ TEST_F(AXHistogramLoggerTest, BundleTest) {
       histogram_name, AXMode::BundleHistogramValue::kComplete, 1);
 }
 
-TEST_F(AXHistogramLoggerTest, FormsTest) {
-  const std::string histogram_name =
-      "Accessibility.ExperimentalModeFlag.FormControls";
-  base::HistogramTester histogram_tester;
-
-  SetAXMode(kAXModeBasic);
-  histogram_tester.ExpectBucketCount(histogram_name, true, 0);
-
-  SetAXMode(kAXModeFormControls);
-  histogram_tester.ExpectBucketCount(histogram_name, true, 1);
-
-  SetAXMode(AXMode(AXMode::kHTML, AXMode::kFormsAndLabelsOnly));
-  histogram_tester.ExpectBucketCount(histogram_name, true, 1);
-
-  SetAXMode(kAXModeBasic);
-  histogram_tester.ExpectBucketCount(histogram_name, true, 1);
-
-  SetAXMode(kAXModeFormControls);
-  histogram_tester.ExpectBucketCount(histogram_name, true, 2);
-}
-
 TEST_F(AXHistogramLoggerTest, RendererTest) {
   base::HistogramTester histogram_tester;
   prefix_ = AXHistogramPrefix::kBlink;
@@ -112,8 +91,6 @@ TEST_F(AXHistogramLoggerTest, RendererTest) {
   histogram_tester.ExpectBucketCount(
       "Blink.Accessibility.Bundle", AXMode::BundleHistogramValue::kFormControls,
       1);
-  histogram_tester.ExpectBucketCount(
-      "Blink.Accessibility.ExperimentalModeFlag.FormControls", true, 1);
 }
 
 }  // anonymous namespace

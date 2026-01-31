@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html>
+<body>
+<div id="live" aria-live="polite" aria-atomic="true">Before</div>
+<div id="second-live" aria-live="polite" aria-atomic="true">Another</div>
+<script>
+  function go() {
+    var empty_div = document.createElement('div');
+    document.getElementById('live').appendChild(empty_div);
+    var after = document.createElement('p');
+    after.innerText = 'After';
+    document.getElementById('live').appendChild(after);
+  }
+</script>
+</body>
+</html>

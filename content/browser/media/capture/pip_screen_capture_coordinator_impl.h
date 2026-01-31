@@ -5,19 +5,19 @@
 #ifndef CONTENT_BROWSER_MEDIA_CAPTURE_PIP_SCREEN_CAPTURE_COORDINATOR_IMPL_H_
 #define CONTENT_BROWSER_MEDIA_CAPTURE_PIP_SCREEN_CAPTURE_COORDINATOR_IMPL_H_
 
-#include "base/memory/weak_ptr.h"
 #include "base/no_destructor.h"
 #include "base/observer_list.h"
-#include "base/unguessable_token.h"
-#include "content/browser/media/capture/capture_util.h"
-#include "content/browser/media/capture/capture_util_mac.h"
+#include "content/browser/media/capture/pip_screen_capture_coordinator.h"
 #include "content/browser/media/capture/pip_screen_capture_coordinator_proxy.h"
+#include "content/public/browser/desktop_media_id.h"
+#include "content/public/browser/global_routing_id.h"
 
 namespace content {
 
 class WebContents;
 
-class CONTENT_EXPORT PipScreenCaptureCoordinatorImpl {
+class CONTENT_EXPORT PipScreenCaptureCoordinatorImpl
+    : public PipScreenCaptureCoordinator {
  public:
   static PipScreenCaptureCoordinatorImpl* GetInstance();
 
@@ -29,32 +29,35 @@ class CONTENT_EXPORT PipScreenCaptureCoordinatorImpl {
    public:
     // Called when the state of the coordinator changes.
     virtual void OnStateChanged(
-        std::optional<NativeWindowId> new_pip_window_id,
+        std::optional<DesktopMediaID::Id> new_pip_window_id,
         const GlobalRenderFrameHostId& new_pip_owner_render_frame_host_id,
         const std::vector<PipScreenCaptureCoordinatorProxy::CaptureInfo>&
             captures) = 0;
   };
 
-  ~PipScreenCaptureCoordinatorImpl();
+  ~PipScreenCaptureCoordinatorImpl() override;
 
   PipScreenCaptureCoordinatorImpl(const PipScreenCaptureCoordinatorImpl&) =
       delete;
   PipScreenCaptureCoordinatorImpl& operator=(
       const PipScreenCaptureCoordinatorImpl&) = delete;
 
+  // PipScreenCaptureCoordinator:
   void OnPipShown(
       WebContents& pip_web_contents,
-      const GlobalRenderFrameHostId& pip_owner_render_frame_host_id);
-  void OnPipShown(
-      NativeWindowId pip_window_id,
-      const GlobalRenderFrameHostId& pip_owner_render_frame_host_id);
-  void OnPipClosed();
+      const GlobalRenderFrameHostId& pip_owner_render_frame_host_id) override;
+  void OnPipClosed() override;
+  std::unique_ptr<PipScreenCaptureCoordinatorProxy> CreateProxy() override;
+  std::optional<DesktopMediaID::Id> GetPipWindowToExcludeFromScreenCapture(
+      DesktopMediaID::Id desktop_id) override;
 
-  std::optional<NativeWindowId> PipWindowId() const;
+  void OnPipShown(
+      DesktopMediaID::Id pip_window_id,
+      const GlobalRenderFrameHostId& pip_owner_render_frame_host_id);
+
+  std::optional<DesktopMediaID::Id> PipWindowId() const;
   GlobalRenderFrameHostId GetPipOwnerRenderFrameHostId() const;
   std::vector<PipScreenCaptureCoordinatorProxy::CaptureInfo> Captures() const;
-
-  std::unique_ptr<PipScreenCaptureCoordinatorProxy> CreateProxy();
 
   void AddObserver(Observer* observer);
   void RemoveObserver(Observer* observer);
@@ -69,7 +72,7 @@ class CONTENT_EXPORT PipScreenCaptureCoordinatorImpl {
   friend class base::NoDestructor<PipScreenCaptureCoordinatorImpl>;
   PipScreenCaptureCoordinatorImpl();
 
-  std::optional<NativeWindowId> pip_window_id_;
+  std::optional<DesktopMediaID::Id> pip_window_id_;
   GlobalRenderFrameHostId pip_owner_render_frame_host_id_;
   base::ObserverList<Observer> observers_;
   std::vector<PipScreenCaptureCoordinatorProxy::CaptureInfo> captures_;

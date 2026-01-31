@@ -4,6 +4,8 @@
 
 #include "remoting/host/linux/gnome_remote_desktop_session.h"
 
+#include <signal.h>
+
 #include <memory>
 #include <string>
 #include <string_view>
@@ -205,14 +207,32 @@ void GnomeRemoteDesktopSession::OnHeadlessDetection(bool is_headless) {
 void GnomeRemoteDesktopSession::OnSessionCreated(std::tuple<ObjectPath> args) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   std::tie(session_path_) = args;
-  // TODO(jamiewalch): While we don't close the session ourselves, the Mutter
-  // remote desktop has a Close signal, which might be fired when the session is
-  // closed externally. See if we need to do something with it.
+
+  session_closed_signal_ =
+      connection_
+          .SignalSubscribe<org_gnome_Mutter_RemoteDesktop_Session::Closed>(
+              kRemoteDesktopBusName, session_path_,
+              base::BindRepeating(&GnomeRemoteDesktopSession::OnSessionClosed,
+                                  weak_ptr_factory_.GetWeakPtr()));
 
   connection_.GetProperty<org_gnome_Mutter_RemoteDesktop_Session::SessionId>(
       kRemoteDesktopBusName, session_path_,
       CheckResultAndContinue(&GnomeRemoteDesktopSession::OnGotSessionId,
                              "Failed to get session ID"));
+}
+
+void GnomeRemoteDesktopSession::OnSessionClosed(std::tuple<>) {
+  // This can happen if the user clicks on GNOME's taskbar button to stop the
+  // recording session.
+  HOST_LOG << "The GNOME remote desktop session was closed externally. "
+              "Restarting the host process now.";
+
+  // Raising SIGTERM causes the host process to run its signal-handler, which
+  // cleanly disconnects the user and shuts down the process. The process will
+  // be automatically restarted and the user can reconnect.
+  // TODO: crbug.com/465280349 - Recreate the GNOME remote desktop session and
+  // streams without disconnecting the user.
+  raise(SIGTERM);
 }
 
 void GnomeRemoteDesktopSession::OnGotSessionId(std::string session_id) {

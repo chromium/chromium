@@ -170,9 +170,6 @@ class NativeInputMethodEngineObserver : public InputMethodEngineObserver,
 
   void ConnectToImeService(const std::string& engine_id);
 
-  void SetJapanesePrefsFromLegacyConfig(
-      ime::mojom::JapaneseLegacyConfigResponsePtr response);
-
   void HandleOnFocusAsyncForNativeMojoEngine(
       const std::string& engine_id,
       int context_id,

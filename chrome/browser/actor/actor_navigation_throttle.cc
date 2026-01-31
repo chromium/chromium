@@ -7,7 +7,7 @@
 #include <algorithm>
 
 #include "base/containers/fixed_flat_set.h"
-#include "base/memory/ptr_util.h"
+#include "base/types/pass_key.h"
 #include "chrome/browser/actor/actor_features.h"
 #include "chrome/browser/actor/actor_keyed_service.h"
 #include "chrome/browser/actor/actor_policy_checker.h"
@@ -19,6 +19,7 @@
 #include "chrome/common/actor_webui.mojom.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/navigation_handle.h"
+#include "content/public/browser/navigation_throttle.h"
 #include "content/public/browser/navigation_throttle_registry.h"
 #include "content/public/browser/web_contents.h"
 #include "net/http/http_response_headers.h"
@@ -71,11 +72,19 @@ void ActorNavigationThrottle::MaybeCreateAndAdd(
     return;
   }
 
-  registry.AddThrottle(base::WrapUnique(
-      new ActorNavigationThrottle(registry, *task_it->second)));
+  registry.AddThrottle(std::make_unique<ActorNavigationThrottle>(
+      base::PassKey<ActorNavigationThrottle>(), registry, *task_it->second));
+}
+
+ActorNavigationThrottle ActorNavigationThrottle::CreateForTesting(
+    content::NavigationThrottleRegistry& registry,
+    const ActorTask& task) {
+  return ActorNavigationThrottle(base::PassKey<ActorNavigationThrottle>(),
+                                 registry, task);
 }
 
 ActorNavigationThrottle::ActorNavigationThrottle(
+    base::PassKey<ActorNavigationThrottle>,
     content::NavigationThrottleRegistry& registry,
     const ActorTask& task)
     : content::NavigationThrottle(registry),
@@ -98,50 +107,61 @@ content::NavigationThrottle::ThrottleCheckResult
 ActorNavigationThrottle::WillProcessResponse() {
   if (base::FeatureList::IsEnabled(
           kGlicBlockNavigationToDangerousContentTypes)) {
-    const net::HttpResponseHeaders* headers =
-        navigation_handle()->GetResponseHeaders();
-    std::string mime_type;
-    if (headers->GetMimeType(&mime_type) &&
-        kBlockedMimeTypes.contains(mime_type)) {
-      GetJournal().Log(navigation_handle()->GetURL(), task_id_, "NavThrottle",
-                       JournalDetailsBuilder()
-                           .AddError("Navigate to disallowed content-type")
-                           .Add("mime_type", mime_type)
-                           .Build());
+    if (const net::HttpResponseHeaders* headers =
+            navigation_handle()->GetResponseHeaders();
+        headers) {
+      std::string mime_type;
+      if (headers->GetMimeType(&mime_type) &&
+          kBlockedMimeTypes.contains(mime_type)) {
+        GetJournal().Log(navigation_handle()->GetURL(), task_id_, "NavThrottle",
+                         JournalDetailsBuilder()
+                             .AddError("Navigate to disallowed content-type")
+                             .Add("mime_type", mime_type)
+                             .Build());
 
-      // If the navigation we're about to cancel is attributable to the actor's
-      // tool usage, consider the action a failure.
-      if (navigation_handle()->IsInPrimaryMainFrame() && execution_engine_) {
-        execution_engine_->FailCurrentTool(
-            mojom::ActionResultCode::kTriggeredNavigationBlocked);
+        // If the navigation we're about to cancel is attributable to the
+        // actor's tool usage, consider the action a failure.
+        if (navigation_handle()->IsInPrimaryMainFrame() && execution_engine_) {
+          execution_engine_->FailCurrentTool(
+              mojom::ActionResultCode::kTriggeredNavigationBlocked);
+        }
+
+        return content::NavigationThrottle::CANCEL_AND_IGNORE;
       }
-
-      return content::NavigationThrottle::CANCEL_AND_IGNORE;
     }
   }
 
-  if (!execution_engine_ ||
-      !execution_engine_->ShouldGateNavigation(
+  if (!execution_engine_) {
+    return content::NavigationThrottle::PROCEED;
+  }
+  content::NavigationThrottle::ThrottleAction action =
+      execution_engine_->ShouldDeferNavigation(
           *navigation_handle(),
           base::BindOnce(
               &ActorNavigationThrottle::OnNavigationConfirmationDecision,
-              weak_factory_.GetWeakPtr()))) {
-    return content::NavigationThrottle::PROCEED;
-  }
-  // We do not invoke the callback which resumes/cancels the request
-  // in pre-rendered frames.
+              weak_factory_.GetWeakPtr(), /*was_deferred=*/true));
   if (navigation_handle()->IsInPrerenderedMainFrame()) {
-    return content::NavigationThrottle::CANCEL_AND_IGNORE;
+    return action == content::NavigationThrottle::PROCEED
+               ? action
+               : content::NavigationThrottle::CANCEL_AND_IGNORE;
   }
-  return content::NavigationThrottle::DEFER;
+  if (action != content::NavigationThrottle::DEFER) {
+    OnNavigationConfirmationDecision(
+        /*was_deferred=*/false,
+        /*may_continue=*/action == content::NavigationThrottle::PROCEED);
+  }
+  return action;
 }
 
 void ActorNavigationThrottle::OnNavigationConfirmationDecision(
+    bool was_deferred,
     bool may_continue) {
   CHECK(!navigation_handle()->IsInPrerenderedMainFrame())
       << "We should not be prompting for pre-rendered frame navigations.";
   if (may_continue) {
-    Resume();
+    if (was_deferred) {
+      Resume();
+    }
     return;
   }
   AggregatedJournal& journal = GetJournal();
@@ -154,7 +174,9 @@ void ActorNavigationThrottle::OnNavigationConfirmationDecision(
     execution_engine_->FailCurrentTool(
         mojom::ActionResultCode::kTriggeredNavigationBlocked);
   }
-  CancelDeferredNavigation(CANCEL_AND_IGNORE);
+  if (was_deferred) {
+    CancelDeferredNavigation(CANCEL_AND_IGNORE);
+  }
 }
 
 content::NavigationThrottle::ThrottleCheckResult
@@ -237,6 +259,7 @@ void ActorNavigationThrottle::OnMayActOnUrlResult(
       case MayActOnUrlBlockReason::kTabIsErrorDocument:
       case MayActOnUrlBlockReason::kUrlNotInAllowlist:
       case MayActOnUrlBlockReason::kWrongScheme:
+      case MayActOnUrlBlockReason::kEnterprisePolicy:
         tool_failure_code =
             mojom::ActionResultCode::kTriggeredNavigationBlocked;
         break;

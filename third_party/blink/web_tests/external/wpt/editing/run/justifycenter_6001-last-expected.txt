@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 40 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 42 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] [["stylewithcss","false"],["defaultparagraphseparator","p"],["justifycenter",""]] "<div style=text-align:center><p>foo</div> <p>[bar]</p> <div style=text-align:center><p>baz</div>" compare innerHTML
   assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<div style=\\"text-align:center\\"><p>foo</p> <p>bar</p> <p>baz</p></div>" but got "<div style=\\"text-align:center\\"><p>foo</p></div> <p style=\\"text-align:center\\">bar</p> <div style=\\"text-align:center\\"><p>baz</p></div>"
 [FAIL] [["stylewithcss","false"],["defaultparagraphseparator","p"],["justifycenter",""]] "<div style=text-align:center><p>foo</div> <p>[bar]</p> <div style=text-align:center><p>baz</div>" queryCommandState("stylewithcss") after
@@ -80,5 +80,9 @@ Found 40 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_equals: Wrong result returned expected "center" but got "false"
 [FAIL] [] "<div contenteditable=false style=text-align:center><p contenteditable>f[]oo</p></div>" queryCommandValue("justifyright") after
   assert_equals: Wrong result returned expected "center" but got "false"
+[FAIL] [["stylewithcss","true"],["defaultparagraphseparator","div"],["justifycenter",""]] "{ <span contenteditable=\\"false\\">A</span> ; <span contenteditable=\\"false\\">B</span> ; <span contenteditable=\\"false\\">C</span> }" checks for modifications to non-editable content
+  assert_equals: Wrapper div must have only one attribute (<div contenteditable="">), but has more (<div contenteditable="" style="text-align: center;">) expected 1 but got 2
+[FAIL] [["stylewithcss","true"],["defaultparagraphseparator","div"],["justifycenter",""]] "{ <span contenteditable=\\"false\\">A</span> ; <span contenteditable=\\"false\\">B</span> ; <span contenteditable=\\"false\\">C</span> }" compare innerHTML
+  assert_in_array: Unexpected innerHTML (after normalizing inline style) value "<div style=\\"text-align:center\\"></div> <span contenteditable=\\"false\\">A</span> ; <span contenteditable=\\"false\\">B</span> ; <span contenteditable=\\"false\\">C</span> " not in array ["<div style=\\"text-align:center\\"> <span contenteditable=\\"false\\">A</span> ; <span contenteditable=\\"false\\">B</span> ; <span contenteditable=\\"false\\">C</span> </div>", " <div style=\\"text-align:center\\"><span contenteditable=\\"false\\">A</span> ; <span contenteditable=\\"false\\">B</span> ; <span contenteditable=\\"false\\">C</span></div> ", "<div style=\\"text-align:center\\"><span contenteditable=\\"false\\">A</span> ; <span contenteditable=\\"false\\">B</span> ; <span contenteditable=\\"false\\">C</span></div>"]
 Harness: the test ran to completion.
 

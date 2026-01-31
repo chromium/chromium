@@ -128,7 +128,7 @@ class MainThreadIPCMessageSender : public IPCMessageSender {
 
   void SendAddFilteredEventListenerIPC(ScriptContext* context,
                                        const std::string& event_name,
-                                       const base::Value::Dict& filter,
+                                       const base::DictValue& filter,
                                        bool is_lazy) override {
     DCHECK(!context->IsForServiceWorker());
     DCHECK_EQ(kMainThreadId, content::WorkerThread::GetCurrentId());
@@ -139,7 +139,7 @@ class MainThreadIPCMessageSender : public IPCMessageSender {
 
   void SendRemoveFilteredEventListenerIPC(ScriptContext* context,
                                           const std::string& event_name,
-                                          const base::Value::Dict& filter,
+                                          const base::DictValue& filter,
                                           bool remove_lazy_listener) override {
     DCHECK(!context->IsForServiceWorker());
     DCHECK_EQ(kMainThreadId, content::WorkerThread::GetCurrentId());
@@ -246,7 +246,7 @@ class MainThreadIPCMessageSender : public IPCMessageSender {
                           const ExtensionId& extension_id,
                           ActivityLogCallType call_type,
                           const std::string& call_name,
-                          base::Value::List args,
+                          base::ListValue args,
                           const std::string& extra) override {
     std::optional<ExtensionId> optional_extension_id;
     if (!extension_id.empty()) {
@@ -267,7 +267,7 @@ class MainThreadIPCMessageSender : public IPCMessageSender {
  private:
   void OnResponse(int request_id,
                   bool success,
-                  base::Value::List response,
+                  base::ListValue response,
                   const std::string& error,
                   mojom::ExtraResponseDataPtr response_data) {
     ExtensionsRendererClient::Get()
@@ -333,7 +333,7 @@ class WorkerThreadIPCMessageSender : public IPCMessageSender {
         ->RequestWorker(std::move(params),
                         base::BindOnce(
                             [](int request_id, bool success,
-                               base::Value::List args, const std::string& error,
+                               base::ListValue args, const std::string& error,
                                mojom::ExtraResponseDataPtr extra_data) {
                               WorkerThreadDispatcher::GetServiceWorkerData()
                                   ->bindings_system()
@@ -424,7 +424,7 @@ class WorkerThreadIPCMessageSender : public IPCMessageSender {
 
   void SendAddFilteredEventListenerIPC(ScriptContext* context,
                                        const std::string& event_name,
-                                       const base::Value::Dict& filter,
+                                       const base::DictValue& filter,
                                        bool is_lazy) override {
     DCHECK(context->IsForServiceWorker());
     DCHECK_NE(kMainThreadId, content::WorkerThread::GetCurrentId());
@@ -444,7 +444,7 @@ class WorkerThreadIPCMessageSender : public IPCMessageSender {
 
   void SendRemoveFilteredEventListenerIPC(ScriptContext* context,
                                           const std::string& event_name,
-                                          const base::Value::Dict& filter,
+                                          const base::DictValue& filter,
                                           bool remove_lazy_listener) override {
     DCHECK(context->IsForServiceWorker());
     DCHECK_NE(kMainThreadId, content::WorkerThread::GetCurrentId());
@@ -534,7 +534,7 @@ class WorkerThreadIPCMessageSender : public IPCMessageSender {
                           const ExtensionId& extension_id,
                           ActivityLogCallType call_type,
                           const std::string& call_name,
-                          base::Value::List args,
+                          base::ListValue args,
                           const std::string& extra) override {
     std::optional<ExtensionId> optional_extension_id;
     if (!extension_id.empty()) {

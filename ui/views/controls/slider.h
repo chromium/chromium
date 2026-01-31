@@ -14,6 +14,7 @@
 #include "ui/gfx/animation/slide_animation.h"
 #include "ui/views/view.h"
 #include "ui/views/views_export.h"
+#include "ui/views/widget/widget_observer.h"
 
 namespace views {
 
@@ -46,7 +47,9 @@ class VIEWS_EXPORT SliderListener {
 
 // Slider operates in interval [0,1] by default, but can also switch between a
 // predefined set of values, see SetAllowedValues method below.
-class VIEWS_EXPORT Slider : public View, public gfx::AnimationDelegate {
+class VIEWS_EXPORT Slider : public View,
+                            public gfx::AnimationDelegate,
+                            public views::WidgetObserver {
   METADATA_HEADER(Slider, View)
 
  public:
@@ -89,6 +92,9 @@ class VIEWS_EXPORT Slider : public View, public gfx::AnimationDelegate {
   // The radius of the thumb.
   static constexpr float kThumbRadius = 4.f;
 
+  // views::WidgetObserver:
+  void OnWidgetVisibilityChanged(views::Widget* widget, bool visible) override;
+
  protected:
   // Returns the current position of the thumb on the slider.
   float GetAnimatingValue() const;
@@ -105,6 +111,7 @@ class VIEWS_EXPORT Slider : public View, public gfx::AnimationDelegate {
   void OnPaint(gfx::Canvas* canvas) override;
 
   void AddedToWidget() override;
+  void RemovedFromWidget() override;
 
  private:
   friend class test::SliderTestApi;
@@ -163,6 +170,7 @@ class VIEWS_EXPORT Slider : public View, public gfx::AnimationDelegate {
   float initial_animating_value_ = 0.f;
   bool value_is_valid_ = false;
   bool accessibility_events_enabled_ = true;
+  raw_ptr<views::Widget> attached_widget_ = nullptr;
 
   // Relative position of the mouse cursor (or the touch point) on the slider's
   // button.

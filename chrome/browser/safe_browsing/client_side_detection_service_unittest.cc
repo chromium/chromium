@@ -495,7 +495,7 @@ TEST_P(ClientSideDetectionServiceTest,
        GetNumReportTestWhenPrefsPreloadedAndOverLimit) {
   // The current report limit is 3 as per
   // ClientSideDetectionService::kMaxReportsPerInterval.
-  base::Value::List time_list;
+  base::ListValue time_list;
   time_list.Append(base::Value(base::Time::Now().InSecondsFSinceUnixEpoch()));
   time_list.Append(base::Value(base::Time::Now().InSecondsFSinceUnixEpoch()));
   time_list.Append(base::Value(base::Time::Now().InSecondsFSinceUnixEpoch()));
@@ -513,7 +513,7 @@ TEST_P(ClientSideDetectionServiceTest,
        GetNumReportTestWhenPrefsPreloadedNotOverLimit) {
   // The current report limit is 3 as per
   // ClientSideDetectionService::kMaxReportsPerInterval.
-  base::Value::List time_list;
+  base::ListValue time_list;
   time_list.Append(base::Value(base::Time::Now().InSecondsFSinceUnixEpoch()));
   time_list.Append(base::Value(base::Time::Now().InSecondsFSinceUnixEpoch()));
 

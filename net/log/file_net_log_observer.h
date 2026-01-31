@@ -55,18 +55,18 @@ class NET_EXPORT FileNetLogObserver : public NetLog::ThreadSafeObserver {
   // log. It should generally be a modified version of GetNetConstants(). If not
   // present, the output of GetNetConstants() will be used.
   // TODO(crbug.com/40257546): This should be updated to pass a
-  // base::Value::Dict instead of a std::unique_ptr.
+  // base::DictValue instead of a std::unique_ptr.
   static std::unique_ptr<FileNetLogObserver> CreateBounded(
       const base::FilePath& log_path,
       uint64_t max_total_size,
       NetLogCaptureMode capture_mode,
-      std::unique_ptr<base::Value::Dict> constants);
+      std::unique_ptr<base::DictValue> constants);
 
   // Shortcut for calling CreateBounded() with kNoLimit.
   static std::unique_ptr<FileNetLogObserver> CreateUnbounded(
       const base::FilePath& log_path,
       NetLogCaptureMode capture_mode,
-      std::unique_ptr<base::Value::Dict> constants);
+      std::unique_ptr<base::DictValue> constants);
 
   // Creates a bounded log that writes to a pre-existing file (truncating
   // it to start with, and closing it upon completion).  |inprogress_dir_path|
@@ -77,14 +77,14 @@ class NET_EXPORT FileNetLogObserver : public NetLog::ThreadSafeObserver {
       base::File output_file,
       uint64_t max_total_size,
       NetLogCaptureMode capture_mode,
-      std::unique_ptr<base::Value::Dict> constants);
+      std::unique_ptr<base::DictValue> constants);
 
   // Creates an unbounded log that writes to a pre-existing file (truncating
   // it to start with, and closing it upon completion).
   static std::unique_ptr<FileNetLogObserver> CreateUnboundedPreExisting(
       base::File output_file,
       NetLogCaptureMode capture_mode,
-      std::unique_ptr<base::Value::Dict> constants);
+      std::unique_ptr<base::DictValue> constants);
 
   // Creates a bounded log that writes to a pre-existing. Instead of stitching
   // multiple log files together, once the maximum capacity has been reached the
@@ -93,7 +93,7 @@ class NET_EXPORT FileNetLogObserver : public NetLog::ThreadSafeObserver {
       base::File output_file,
       uint64_t max_total_size,
       NetLogCaptureMode capture_mode,
-      std::unique_ptr<base::Value::Dict> constants);
+      std::unique_ptr<base::DictValue> constants);
 
   FileNetLogObserver(const FileNetLogObserver&) = delete;
   FileNetLogObserver& operator=(const FileNetLogObserver&) = delete;
@@ -137,7 +137,7 @@ class NET_EXPORT FileNetLogObserver : public NetLog::ThreadSafeObserver {
       uint64_t max_total_size,
       size_t total_num_event_files,
       NetLogCaptureMode capture_mode,
-      std::unique_ptr<base::Value::Dict> constants);
+      std::unique_ptr<base::DictValue> constants);
 
  private:
   // The default number of events in the write queue.
@@ -153,13 +153,13 @@ class NET_EXPORT FileNetLogObserver : public NetLog::ThreadSafeObserver {
       uint64_t max_total_size,
       size_t total_num_event_files,
       NetLogCaptureMode capture_mode,
-      std::unique_ptr<base::Value::Dict> constants);
+      std::unique_ptr<base::DictValue> constants);
 
   FileNetLogObserver(scoped_refptr<base::SequencedTaskRunner> file_task_runner,
                      std::unique_ptr<FileWriter> file_writer,
                      scoped_refptr<WriteQueue> write_queue,
                      NetLogCaptureMode capture_mode,
-                     std::unique_ptr<base::Value::Dict> constants);
+                     std::unique_ptr<base::DictValue> constants);
 
   static std::string CaptureModeToString(NetLogCaptureMode mode);
 

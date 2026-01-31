@@ -5,6 +5,7 @@
 #include "chrome/browser/performance_manager/policies/discard_page_with_crashed_subframe_policy.h"
 
 #include "base/test/scoped_feature_list.h"
+#include "chrome/browser/flags/android/chrome_feature_list.h"
 #include "chrome/browser/performance_manager/policies/discard_eligibility_policy.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "components/performance_manager/graph/frame_node_impl.h"
@@ -15,6 +16,7 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_features.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/mojom/permissions/permission_status.mojom.h"
 #include "url/gurl.h"
 
 namespace performance_manager::policies {
@@ -166,6 +168,83 @@ TEST_F(DiscardPageWithCrashedSubframePolicyTest,
   EXPECT_FALSE(web_contents()->WasDiscarded());
   page_graph.sub_frame_node.get()->CrossProcessSubframeRenderProcessGone();
   EXPECT_FALSE(web_contents()->WasDiscarded());
+}
+
+TEST_F(DiscardPageWithCrashedSubframePolicyTest,
+       DiscardAllowedWithFormInteractions_RelaxedEligibilityFeatureEnabled) {
+  feature_list_.InitWithFeatures(
+      /*enabled_features=*/
+      {::features::kWebContentsDiscard,
+       chrome::android::kDiscardPageWithCrashedSubframeRelaxedEligibility},
+      /*disabled_features=*/{});
+  MockPageGraph page_graph = CreatePageNodes();
+
+  page_graph.page_node.get()->SetIsVisible(false);
+  page_graph.sub_frame_node.get()->SetIsActive(true);
+  page_graph.sub_frame_node.get()->SetIsRendered(true);
+  page_graph.page_node.get()->SetHadFormInteractionForTesting(true);
+
+  EXPECT_FALSE(web_contents()->WasDiscarded());
+  page_graph.sub_frame_node.get()->CrossProcessSubframeRenderProcessGone();
+  EXPECT_TRUE(web_contents()->WasDiscarded());
+}
+
+TEST_F(
+    DiscardPageWithCrashedSubframePolicyTest,
+    DiscardDisallowedWithFormInteractions_RelaxedEligibilityFeatureDisabled) {
+  feature_list_.InitWithFeatures(
+      /*enabled_features=*/{::features::kWebContentsDiscard},
+      /*disabled_features=*/{
+          chrome::android::kDiscardPageWithCrashedSubframeRelaxedEligibility});
+  MockPageGraph page_graph = CreatePageNodes();
+
+  page_graph.page_node.get()->SetIsVisible(false);
+  page_graph.sub_frame_node.get()->SetIsActive(true);
+  page_graph.sub_frame_node.get()->SetIsRendered(true);
+  page_graph.page_node.get()->SetHadFormInteractionForTesting(true);
+
+  EXPECT_FALSE(web_contents()->WasDiscarded());
+  page_graph.sub_frame_node.get()->CrossProcessSubframeRenderProcessGone();
+  EXPECT_FALSE(web_contents()->WasDiscarded());
+}
+
+TEST_F(DiscardPageWithCrashedSubframePolicyTest,
+       DiscardDisallowedWithNotifications_RelaxedEligibilityFeatureEnabled) {
+  feature_list_.InitWithFeatures(
+      /*enabled_features=*/
+      {::features::kWebContentsDiscard,
+       chrome::android::kDiscardPageWithCrashedSubframeRelaxedEligibility},
+      /*disabled_features=*/{});
+  MockPageGraph page_graph = CreatePageNodes();
+
+  page_graph.page_node.get()->SetIsVisible(false);
+  page_graph.sub_frame_node.get()->SetIsActive(true);
+  page_graph.sub_frame_node.get()->SetIsRendered(true);
+  page_graph.page_node.get()->OnNotificationPermissionStatusChange(
+      blink::mojom::PermissionStatus::GRANTED);
+
+  EXPECT_FALSE(web_contents()->WasDiscarded());
+  page_graph.sub_frame_node.get()->CrossProcessSubframeRenderProcessGone();
+  EXPECT_FALSE(web_contents()->WasDiscarded());
+}
+
+TEST_F(DiscardPageWithCrashedSubframePolicyTest,
+       DiscardAllowedWithNotifications_RelaxedEligibilityFeatureDisabled) {
+  feature_list_.InitWithFeatures(
+      /*enabled_features=*/{::features::kWebContentsDiscard},
+      /*disabled_features=*/{
+          chrome::android::kDiscardPageWithCrashedSubframeRelaxedEligibility});
+  MockPageGraph page_graph = CreatePageNodes();
+
+  page_graph.page_node.get()->SetIsVisible(false);
+  page_graph.sub_frame_node.get()->SetIsActive(true);
+  page_graph.sub_frame_node.get()->SetIsRendered(true);
+  page_graph.page_node.get()->OnNotificationPermissionStatusChange(
+      blink::mojom::PermissionStatus::GRANTED);
+
+  EXPECT_FALSE(web_contents()->WasDiscarded());
+  page_graph.sub_frame_node.get()->CrossProcessSubframeRenderProcessGone();
+  EXPECT_TRUE(web_contents()->WasDiscarded());
 }
 
 }  // namespace performance_manager::policies

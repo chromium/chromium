@@ -4,7 +4,10 @@
 
 package org.chromium.chrome.browser.segmentation_platform;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.bookmarks.BookmarkModel;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarButtonVariant;
@@ -18,12 +21,12 @@ import java.util.function.Supplier;
 @NullMarked
 public class PriceTrackingActionProvider implements ContextualPageActionController.ActionProvider {
     private final Supplier<ShoppingService> mShoppingServiceSupplier;
-    private final Supplier<BookmarkModel> mBookmarkModelSupplier;
+    private final Supplier<@Nullable BookmarkModel> mBookmarkModelSupplier;
 
     /** Constructor. */
     public PriceTrackingActionProvider(
             Supplier<ShoppingService> shoppingServiceSupplier,
-            Supplier<BookmarkModel> bookmarkModelSupplier) {
+            Supplier<@Nullable BookmarkModel> bookmarkModelSupplier) {
         mShoppingServiceSupplier = shoppingServiceSupplier;
         mBookmarkModelSupplier = bookmarkModelSupplier;
     }
@@ -36,7 +39,7 @@ public class PriceTrackingActionProvider implements ContextualPageActionControll
             return;
         }
 
-        final BookmarkModel bookmarkModel = mBookmarkModelSupplier.get();
+        final BookmarkModel bookmarkModel = assumeNonNull(mBookmarkModelSupplier.get());
         bookmarkModel.finishLoadingBookmarkModel(
                 () -> {
                     ShoppingService shoppingService = mShoppingServiceSupplier.get();

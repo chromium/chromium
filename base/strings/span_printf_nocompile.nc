@@ -11,5 +11,5 @@
 
 void MismatchSpanprintf() {
   char buf[100];
-  std::ignore = base::SpanPrintf(buf, "%s\n", 42);  // expected-error {{format specifies type 'char *' but the argument has type 'int'}}
+  std::ignore = base::SpanPrintf(buf, "%f\n", 42);  // expected-error {{format specifies type 'double' but the argument has type 'int'}}
 }

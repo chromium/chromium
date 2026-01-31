@@ -22,7 +22,6 @@
 
 #include "base/base64.h"
 #include "base/check.h"
-#include "base/containers/contains.h"
 #include "base/containers/flat_set.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
@@ -83,7 +82,6 @@
 #include "content/services/auction_worklet/public/cpp/auction_worklet_features.h"
 #include "content/services/auction_worklet/public/cpp/private_aggregation_reporting.h"
 #include "content/services/auction_worklet/public/cpp/real_time_reporting.h"
-#include "content/services/auction_worklet/public/mojom/bidder_worklet.mojom-forward.h"
 #include "content/services/auction_worklet/public/mojom/bidder_worklet.mojom.h"
 #include "content/services/auction_worklet/public/mojom/private_aggregation_request.mojom.h"
 #include "content/services/auction_worklet/public/mojom/real_time_reporting.mojom.h"
@@ -694,7 +692,7 @@ void UpdateDebugReportCooldown(
   CHECK_GE(restricted_cooldown_random_max, 0);
   // Give a restricted cooldown in 1/(restricted_cooldown_random_max+1)
   // chance. Treat INT_MAX `restricted_cooldown_random_max` as 0 chance.
-  int cooldown_rand = base::RandInt(0, restricted_cooldown_random_max);
+  int cooldown_rand = base::RandIntInclusive(0, restricted_cooldown_random_max);
   DebugReportCooldownType cooldown_type =
       restricted_cooldown_random_max == INT_MAX || cooldown_rand != 0
           ? DebugReportCooldownType::kShortCooldown
@@ -731,7 +729,7 @@ bool SampleDebugReport(
           base::Hours(1)));
   // Only allow sending debug reports 1/(sampling_max_rand+1) chance. Treat
   // INT_MAX `sampling_random_max` as 0 chance.
-  int sampling_rand = base::RandInt(0, sampling_random_max);
+  int sampling_rand = base::RandIntInclusive(0, sampling_random_max);
   // Don't do sampling if the report is from B&A response, which has already
   // been sampled on server side.
   if (is_from_server_response ||
@@ -2406,7 +2404,7 @@ class InterestGroupAuction::BuyerHelper
     }
 
     // Create additional params.
-    base::Value::Dict additional_params;
+    base::DictValue additional_params;
     std::optional<int16_t> experiment_id =
         InterestGroupAuction::GetBuyerExperimentId(*auction_->config_,
                                                    interest_group.owner);
@@ -3711,7 +3709,7 @@ InterestGroupAuction::CreateReporter(
       winner->bid->bidding_signals_data_version;
   winning_bid_info.selected_buyer_and_seller_reporting_id =
       winner->bid->selected_buyer_and_seller_reporting_id;
-  base::Value::Dict ad_metadata;
+  base::DictValue ad_metadata;
   ad_metadata.Set("renderURL", winner->bid->ad_descriptor.url.spec());
   if (winner->bid->bid_ad->metadata) {
     ad_metadata.Set("metadata", winner->bid->bid_ad->metadata.value());
@@ -5602,9 +5600,8 @@ bool InterestGroupAuction::IsBuyerOptedInToRealTimeReporting(
     const url::Origin& owner) {
   return config_->non_shared_params.per_buyer_real_time_reporting_types
              .has_value() &&
-         base::Contains(
-             *config_->non_shared_params.per_buyer_real_time_reporting_types,
-             owner);
+         config_->non_shared_params.per_buyer_real_time_reporting_types
+             ->contains(owner);
 }
 
 void InterestGroupAuction::MaybeAddScriptFailureRealTimeContribution(
@@ -5798,7 +5795,7 @@ void InterestGroupAuction::ScoreBid(std::unique_ptr<Bid> bid) {
       interest_group_manager_->trusted_signals_cache() &&
       seller_worklet_handle_->TrustedScoringSignalsUrlAllowed()) {
     int partition_id;
-    base::Value::Dict additional_params;
+    base::DictValue additional_params;
     if (config_->seller_experiment_group_id) {
       additional_params.Set(
           "experimentGroupId",
@@ -6052,7 +6049,7 @@ void InterestGroupAuction::OnScoreAdComplete(
     // Update which of the executions gets used for 'reserved.once'.
     ++seller_reserved_once_rep_count_;
     if (seller_reserved_once_rep_count_ == 1 ||
-        base::RandInt(1, seller_reserved_once_rep_count_) == 1) {
+        base::RandIntInclusive(1, seller_reserved_once_rep_count_) == 1) {
       seller_reserved_once_rep_ = bid->bid_state.get();
     }
 
@@ -6175,7 +6172,7 @@ void InterestGroupAuction::UpdateAuctionLeaders(
     // chance. This is the select random value from a stream with fixed
     // storage problem.
     ++leader_info.num_top_bids;
-    if (1 == base::RandInt(1, leader_info.num_top_bids)) {
+    if (1 == base::RandIntInclusive(1, leader_info.num_top_bids)) {
       is_top_bid = true;
     }
     if (owner != leader_info.top_bid->bid->interest_group->owner) {
@@ -6241,7 +6238,7 @@ void InterestGroupAuction::OnNewHighestScoringOtherBid(
   ++leader_info.num_second_highest_bids;
   // In case of a tie, randomly pick one. This is the select random value from
   // a stream with fixed storage problem.
-  if (1 == base::RandInt(1, leader_info.num_second_highest_bids)) {
+  if (1 == base::RandIntInclusive(1, leader_info.num_second_highest_bids)) {
     leader_info.highest_scoring_other_bid = bid_value;
     leader_info.highest_scoring_other_bid_in_seller_currency =
         bid_in_seller_currency;
@@ -6602,7 +6599,7 @@ bool InterestGroupAuction::OnParsedServerResponseImpl(
     blink::InterestGroupKey winning_group(response->interest_group_owner,
                                           response->interest_group_name);
     // Winning group must be a bidder.
-    if (!base::Contains(response->bidding_groups, winning_group)) {
+    if (!std::ranges::contains(response->bidding_groups, winning_group)) {
       errors_.push_back("runAdAuction(): Winning group must be a bidder");
       saved_response_.emplace();
       base::UmaHistogramEnumeration(

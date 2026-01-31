@@ -19,7 +19,6 @@
 #include "base/auto_reset.h"
 #include "base/barrier_closure.h"
 #include "base/check.h"
-#include "base/containers/contains.h"
 #include "base/files/file.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -1028,7 +1027,8 @@ TEST_P(IndexedDBTest, NotifyIndexedDBListChanged) {
     loop.Run();
   }
 
-  EXPECT_EQ(1, observer.notify_list_changed_count);
+  // 1 from backing store initialization and 1 from transaction commit.
+  EXPECT_EQ(2, observer.notify_list_changed_count);
 
   // Connection need to be closed before opening another connection. Because if
   // one connection triggers a version change, it can affect other open
@@ -1092,7 +1092,7 @@ TEST_P(IndexedDBTest, NotifyIndexedDBListChanged) {
 
     loop.Run();
   }
-  EXPECT_EQ(2, observer.notify_list_changed_count);
+  EXPECT_EQ(3, observer.notify_list_changed_count);
 
   connection2.reset();
 
@@ -1150,7 +1150,7 @@ TEST_P(IndexedDBTest, NotifyIndexedDBListChanged) {
 
     loop.Run();
   }
-  EXPECT_EQ(3, observer.notify_list_changed_count);
+  EXPECT_EQ(4, observer.notify_list_changed_count);
 
   // Close the connections to finish the test nicely.
   connection3.reset();
@@ -1251,7 +1251,7 @@ TEST_P(IndexedDBTest, NotifyIndexedDBContentChanged) {
 
   loop2.Run();
 
-  EXPECT_EQ(1, observer.notify_list_changed_count);
+  EXPECT_EQ(2, observer.notify_list_changed_count);
   EXPECT_EQ(1, observer.notify_content_changed_count);
 
   // Connection need to be closed before opening another connection. Because if
@@ -1309,7 +1309,7 @@ TEST_P(IndexedDBTest, NotifyIndexedDBContentChanged) {
   loop5.Run();
 
   // +1 list changed for the transaction
-  EXPECT_EQ(2, observer.notify_list_changed_count);
+  EXPECT_EQ(3, observer.notify_list_changed_count);
   EXPECT_EQ(2, observer.notify_content_changed_count);
 
   // Close the connection to finish the test nicely.
@@ -2610,9 +2610,13 @@ TEST_P(IndexedDBTest, TransactionHistograms) {
         "IndexedDB.BackingStore.CommitPhaseTwo.OnDisk", 0 /*Status::Type::kOk*/,
         1);
     histogram_tester.ExpectTotalCount(
+        "IndexedDB.BackendDuration.BeginTransaction.OnDisk", 1);
+    histogram_tester.ExpectTotalCount(
         "IndexedDB.BackendDuration.ChangeDatabaseVersion.OnDisk", 1);
     histogram_tester.ExpectTotalCount(
         "IndexedDB.BackendDuration.CreateObjectStore.OnDisk", 1);
+    histogram_tester.ExpectTotalCount(
+        "IndexedDB.BackendDuration.CommitTransaction.OnDisk", 1);
   }
 
   // Create a transaction and commit it without issuing any request.
@@ -2640,6 +2644,10 @@ TEST_P(IndexedDBTest, TransactionHistograms) {
         "IndexedDB.BackingStore.CommitPhaseOne.OnDisk", 0);
     histogram_tester.ExpectTotalCount(
         "IndexedDB.BackingStore.CommitPhaseTwo.OnDisk", 0);
+    histogram_tester.ExpectTotalCount(
+        "IndexedDB.BackendDuration.BeginTransaction.OnDisk", 1);
+    histogram_tester.ExpectTotalCount(
+        "IndexedDB.BackendDuration.CommitTransaction.OnDisk", 0);
   }
 
   // Create another transaction and issue some requests.
@@ -2681,7 +2689,11 @@ TEST_P(IndexedDBTest, TransactionHistograms) {
         "IndexedDB.BackingStore.CommitPhaseTwo.OnDisk", 0 /*Status::Type::kOk*/,
         1);
     histogram_tester.ExpectTotalCount(
+        "IndexedDB.BackendDuration.BeginTransaction.OnDisk", 1);
+    histogram_tester.ExpectTotalCount(
         "IndexedDB.BackendDuration.PutRecord.OnDisk", 1);
+    histogram_tester.ExpectTotalCount(
+        "IndexedDB.BackendDuration.CommitTransaction.OnDisk", 1);
   }
 }
 
@@ -2817,8 +2829,7 @@ TEST_P(IndexedDBTest, DatabaseFailedOpen) {
     run_loop.Run();
     BucketContext* bucket_context = GetBucketContext(bucket_locator.id);
     ASSERT_TRUE(bucket_context);
-    EXPECT_FALSE(
-        base::Contains(bucket_context->GetDatabasesForTesting(), db_name));
+    EXPECT_FALSE(bucket_context->GetDatabasesForTesting().contains(db_name));
   }
 }
 

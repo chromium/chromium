@@ -8,7 +8,9 @@
 #include "base/metrics/user_metrics_action.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
+#include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/views/tabs/tab_strip_controller.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/strings/grit/components_strings.h"
@@ -42,19 +44,18 @@ constexpr base::TimeDelta kShowDuration = base::Seconds(20);
 }  // namespace
 
 ProductSpecificationsButton::ProductSpecificationsButton(
-    TabStripController* tab_strip_controller,
-    TabStripModel* tab_strip_model,
+    BrowserWindowInterface* browser_window_interface,
     commerce::ProductSpecificationsEntryPointController* entry_point_controller,
     bool before_tab_strip,
     View* locked_expansion_view)
     : TabStripControlButton(
-          tab_strip_controller,
+          browser_window_interface,
           base::BindRepeating(&ProductSpecificationsButton::OnClicked,
                               base::Unretained(this)),
           l10n_util::GetStringUTF16(IDS_COMPARE_ENTRY_POINT_DEFAULT),
           Edge::kNone),
       locked_expansion_view_(locked_expansion_view),
-      tab_strip_model_(tab_strip_model),
+      tab_strip_model_(browser_window_interface->GetTabStripModel()),
       entry_point_controller_(entry_point_controller) {
   mouse_watcher_ = std::make_unique<views::MouseWatcher>(
       std::make_unique<views::MouseWatcherViewHost>(locked_expansion_view,

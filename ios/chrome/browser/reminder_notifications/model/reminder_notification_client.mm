@@ -174,7 +174,7 @@ void ReminderNotificationClient::OnGetPendingNotificationsForCancellation(
 
 void ReminderNotificationClient::ScheduleNotification(
     const GURL& reminder_url,
-    const base::Value::Dict& reminder_details,
+    const base::DictValue& reminder_details,
     std::string_view profile_name) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
@@ -281,7 +281,7 @@ void ReminderNotificationClient::ScheduleNewRemindersIfNeeded(
   }
 
   PrefService* prefs = current_profile->GetPrefs();
-  const base::Value::Dict& reminders_in_prefs =
+  const base::DictValue& reminders_in_prefs =
       prefs->GetDict(prefs::kReminderNotifications);
   if (reminders_in_prefs.empty()) {
     return;
@@ -311,7 +311,7 @@ void ReminderNotificationClient::ScheduleNewRemindersIfNeeded(
     std::string url_string = url.spec();
 
     if (pending_urls.find(url_string) == pending_urls.end()) {
-      const base::Value::Dict* details = value.GetIfDict();
+      const base::DictValue* details = value.GetIfDict();
 
       if (details) {
         ScheduleNotification(url, *details, current_profile->GetProfileName());

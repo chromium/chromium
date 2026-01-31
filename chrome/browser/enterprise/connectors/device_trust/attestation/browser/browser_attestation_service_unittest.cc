@@ -133,12 +133,12 @@ class BrowserAttestationServiceTest : public testing::Test {
     attesters.push_back(std::move(mock_profile_attester));
     attesters.push_back(std::move(mock_device_attester));
 
-    attestation_service_ =
-        std::make_unique<BrowserAttestationService>(std::move(attesters));
+    attestation_service_ = std::make_unique<BrowserAttestationService>(
+        std::move(attesters), VerifiedAccessFlow::CBCM);
   }
 
-  base::Value::Dict CreateSignals() {
-    base::Value::Dict signals;
+  base::DictValue CreateSignals() {
+    base::DictValue signals;
     signals.Set(device_signals::names::kDisplayName, kDisplayName);
     return signals;
   }

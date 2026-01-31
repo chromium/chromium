@@ -68,7 +68,7 @@ TEST_F(AccessibilityHandlerTest, ShowBrowserAppearanceSettings) {
                           .Resolve(chrome::kAppearanceSubPage),
                       ash::NewWindowDelegate::OpenUrlFrom::kUserInteraction,
                       ash::NewWindowDelegate::Disposition::kSwitchToTab));
-  base::Value::List empty_args;
+  base::ListValue empty_args;
   web_ui_->HandleReceivedMessage("showBrowserAppearanceSettings", empty_args);
 }
 

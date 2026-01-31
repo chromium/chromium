@@ -165,12 +165,12 @@ TEST_F(ExecutionContextRegistryImplTest, Observers) {
   // Set the priority and reason of the frame and expect a notification.
   EXPECT_CALL(obs, OnPriorityAndReasonChanged(frame_ec, testing::_));
   frame->SetPriorityAndReason(
-      PriorityAndReason(base::TaskPriority::HIGHEST, "frame reason"));
+      PriorityAndReason(base::Process::Priority::kMaxValue, "frame reason"));
 
   // Set the priority and reason of the worker and expect a notification.
   EXPECT_CALL(obs, OnPriorityAndReasonChanged(worker_ec, testing::_));
   worker->SetPriorityAndReason(
-      PriorityAndReason(base::TaskPriority::HIGHEST, "worker reason"));
+      PriorityAndReason(base::Process::Priority::kMaxValue, "worker reason"));
 
   // Destroy nodes one by one and expect observer notifications.
   EXPECT_CALL(obs, OnBeforeExecutionContextRemoved(worker_ec));

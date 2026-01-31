@@ -11,7 +11,6 @@
 #include <vector>
 
 #include "base/check_deref.h"
-#include "base/containers/contains.h"
 #include "base/strings/stringprintf.h"
 #include "chrome/common/extensions/api/enterprise_kiosk_input.h"
 #include "ui/base/ime/ash/input_method_manager.h"
@@ -48,7 +47,7 @@ EnterpriseKioskInputSetCurrentInputMethodFunction::Run() {
   const std::string migrated_input_method_id =
       input_method_manager.GetMigratedInputMethodID(input_method_id);
 
-  const bool is_input_method_enabled = base::Contains(
+  const bool is_input_method_enabled = std::ranges::contains(
       ime_state.GetEnabledInputMethodIds(), migrated_input_method_id);
   if (!is_input_method_enabled) {
     return RespondNow(Error(

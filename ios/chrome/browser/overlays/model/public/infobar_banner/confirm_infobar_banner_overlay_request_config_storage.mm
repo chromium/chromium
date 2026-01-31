@@ -12,9 +12,9 @@
 namespace confirm_infobar_overlays {
 
 ConfirmBannerRequestConfigStorage::ConfirmBannerRequestConfigStorage(
-    infobars::InfoBar* infobar)
-    : infobar_(infobar) {
-  DCHECK(infobar_);
+    infobars::InfoBar* infobar) {
+  DCHECK(infobar);
+  infobar_ = infobar->AsWeakPtr();
   ConfirmInfoBarDelegate* delegate =
       static_cast<ConfirmInfoBarDelegate*>(infobar_->delegate());
   title_text_ = delegate->GetTitleText();

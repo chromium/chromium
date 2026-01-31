@@ -21,8 +21,6 @@
 #include "chrome/browser/ui/webui/sanitized_image_source.h"
 #include "chrome/browser/ui/webui/theme_source.h"
 #include "chrome/common/webui_url_constants.h"
-#include "chrome/grit/commerce_product_specifications_resources.h"
-#include "chrome/grit/commerce_product_specifications_resources_map.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/commerce/core/commerce_constants.h"
 #include "components/commerce/core/commerce_feature_list.h"
@@ -58,19 +56,6 @@ ProductSpecificationsUI::ProductSpecificationsUI(content::WebUI* web_ui)
   // Set up the chrome://compare source.
   content::WebUIDataSource* source = content::WebUIDataSource::CreateAndAdd(
       web_ui->GetWebContents()->GetBrowserContext(), kChromeUICompareHost);
-
-  // Add required resources.
-  webui::SetupWebUIDataSource(
-      source, kCommerceProductSpecificationsResources,
-      IDR_COMMERCE_PRODUCT_SPECIFICATIONS_PRODUCT_SPECIFICATIONS_HTML);
-
-  // Set up chrome://compare/disclosure
-  source->AddResourcePath(
-      "disclosure/",
-      IDR_COMMERCE_PRODUCT_SPECIFICATIONS_DISCLOSURE_PRODUCT_SPECIFICATIONS_DISCLOSURE_HTML);
-  source->AddResourcePath(
-      "disclosure",
-      IDR_COMMERCE_PRODUCT_SPECIFICATIONS_DISCLOSURE_PRODUCT_SPECIFICATIONS_DISCLOSURE_HTML);
 
   static constexpr webui::LocalizedString kLocalizedStrings[] = {
       // Disclosure strings:

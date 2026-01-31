@@ -85,9 +85,6 @@ RequestResult TabsHooksDelegate::HandleSendRequest(
     const APISignature::V8ParseResult& parse_result) {
   const v8::LocalVector<v8::Value>& arguments = *parse_result.arguments;
   DCHECK_EQ(3u, arguments.size());
-  // tabs.sendRequest() is restricted to MV2, so it should never be called with
-  // a promise based request as they are restricted to MV3 and above.
-  DCHECK_NE(binding::AsyncResponseType::kPromise, parse_result.async_type);
 
   int tab_id = messaging_util::ExtractIntegerId(arguments[0]);
   v8::Local<v8::Value> v8_message = arguments[1];
@@ -109,11 +106,19 @@ RequestResult TabsHooksDelegate::HandleSendRequest(
   if (!arguments[2]->IsNull())
     response_callback = arguments[2].As<v8::Function>();
 
-  messaging_service_->SendOneTimeMessage(
+  v8::Local<v8::Promise> promise = messaging_service_->SendOneTimeMessage(
       script_context, MessageTarget::ForTab(tab_id, messaging_util::kNoFrameId),
       channel_type, *message, parse_result.async_type, response_callback);
+  DCHECK_EQ(parse_result.async_type == binding::AsyncResponseType::kPromise,
+            !promise.IsEmpty())
+      << "SendOneTimeMessage should only return a Promise for promise based "
+         "API calls, otherwise it should be empty";
 
-  return RequestResult(RequestResult::HANDLED);
+  RequestResult result(RequestResult::HANDLED);
+  if (parse_result.async_type == binding::AsyncResponseType::kPromise) {
+    result.return_value = promise;
+  }
+  return result;
 }
 
 RequestResult TabsHooksDelegate::HandleSendMessage(

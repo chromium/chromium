@@ -92,7 +92,7 @@ blink::WebURL PdfViewWebPluginClient::CompleteURL(
   return plugin_container_->GetDocument().CompleteURL(partial_url);
 }
 
-void PdfViewWebPluginClient::PostMessage(base::Value::Dict message) {
+void PdfViewWebPluginClient::PostMessage(base::DictValue message) {
   blink::WebLocalFrame* frame = GetFrame();
   if (!frame) {
     return;

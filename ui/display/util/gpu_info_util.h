@@ -15,8 +15,8 @@ namespace display {
 // values named description (string) and value (depends on the helper).
 base::Value BuildGpuInfoEntry(std::string_view description,
                               std::string_view value);
-base::Value::Dict BuildGpuInfoEntry(std::string_view description,
-                                    base::Value value);
+base::DictValue BuildGpuInfoEntry(std::string_view description,
+                                  base::Value value);
 
 }  // namespace display
 

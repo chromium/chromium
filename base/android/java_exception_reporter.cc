@@ -81,7 +81,7 @@ void SetJavaException(const char* exception) {
 
 static void JNI_JavaExceptionReporter_ReportJavaException(
     JNIEnv* env,
-    jboolean crash_after_report,
+    bool crash_after_report,
     const JavaRef<jthrowable>& e) {
   std::string exception_info = base::android::GetJavaExceptionInfo(env, e);
   bool should_report_exception = GetJavaExceptionFilter().Run(e);

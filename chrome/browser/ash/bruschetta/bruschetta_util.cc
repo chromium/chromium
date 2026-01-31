@@ -19,7 +19,7 @@
 namespace bruschetta {
 
 namespace {
-std::optional<const base::Value::Dict*> GetConfigWithEnabledLevel(
+std::optional<const base::DictValue*> GetConfigWithEnabledLevel(
     const Profile* profile,
     const std::string& config_id,
     prefs::PolicyEnabledState enabled_level) {
@@ -81,7 +81,7 @@ guest_os::GuestId MakeBruschettaId(std::string vm_name) {
                            "penguin"};
 }
 
-std::optional<const base::Value::Dict*> GetRunnableConfig(
+std::optional<const base::DictValue*> GetRunnableConfig(
     const Profile* profile,
     const std::string& config_id) {
   return GetConfigWithEnabledLevel(profile, config_id,
@@ -92,7 +92,7 @@ base::FilePath BruschettaChromeOSBaseDirectory() {
   return base::FilePath("/mnt/shared");
 }
 
-std::optional<const base::Value::Dict*> GetInstallableConfig(
+std::optional<const base::DictValue*> GetInstallableConfig(
     const Profile* profile,
     const std::string& config_id) {
   return GetConfigWithEnabledLevel(profile, config_id,
@@ -104,9 +104,9 @@ bool HasInstallableConfig(const Profile* profile,
   return GetInstallableConfig(profile, config_id).has_value();
 }
 
-base::flat_map<std::string, base::Value::Dict> GetInstallableConfigs(
+base::flat_map<std::string, base::DictValue> GetInstallableConfigs(
     const Profile* profile) {
-  base::flat_map<std::string, base::Value::Dict> ret;
+  base::flat_map<std::string, base::DictValue> ret;
   for (auto it :
        profile->GetPrefs()->GetDict(prefs::kBruschettaVMConfiguration)) {
     if (HasInstallableConfig(profile, it.first)) {
@@ -159,7 +159,7 @@ std::string GetVmUsername(const Profile* profile) {
   return username.substr(0, username.find("@"));
 }
 
-std::optional<const base::Value::Dict*> GetConfigForGuest(
+std::optional<const base::DictValue*> GetConfigForGuest(
     Profile* profile,
     const guest_os::GuestId& guest_id,
     prefs::PolicyEnabledState enabled_level) {
@@ -196,7 +196,7 @@ std::u16string GetOverallVmName(Profile* profile) {
       bruschetta::GetInstallableConfigs(profile).extract();
   if (!configs.empty()) {
     SortInstallableConfigs(&configs);
-    const base::Value::Dict& first_vm = configs[0].second;
+    const base::DictValue& first_vm = configs[0].second;
     const auto* name = first_vm.FindString(prefs::kPolicyNameKey);
     if (name) {
       return base::UTF8ToUTF16(*name);

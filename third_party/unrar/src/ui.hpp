@@ -116,6 +116,7 @@ bool uiDictLimit(CommandData *Cmd,const std::wstring &FileName,uint64 DictSize,u
 
 #ifndef SFX_MODULE
 const wchar *uiGetMonthName(uint Month);
+const wchar *uiGetWeekDayName(uint Day);
 #endif
 
 class uiMsgStore

@@ -85,7 +85,7 @@ void OobeTestAPIHandler::DeclareJSCallbacks() {
               &OobeTestAPIHandler::HandleGetShouldSkipSplitModifierScreen);
 }
 
-void OobeTestAPIHandler::GetAdditionalParameters(base::Value::Dict* dict) {
+void OobeTestAPIHandler::GetAdditionalParameters(base::DictValue* dict) {
   login::NetworkStateHelper helper_;
   dict->Set("testapi_shouldSkipNetworkFirstShow",
             !switches::IsOOBENetworkScreenSkippingDisabledForTesting() &&

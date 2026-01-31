@@ -32,7 +32,7 @@ CollectionSaveForwarderAndroid::CollectionSaveForwarderAndroid(
 
 CollectionSaveForwarderAndroid::~CollectionSaveForwarderAndroid() = default;
 
-static jlong JNI_CollectionSaveForwarder_CreateForTabGroup(
+static int64_t JNI_CollectionSaveForwarder_CreateForTabGroup(
     JNIEnv* env,
     Profile* profile,
     base::Token& tab_group_id,
@@ -44,6 +44,19 @@ static jlong JNI_CollectionSaveForwarder_CreateForTabGroup(
       CollectionSaveForwarder::CreateForTabGroupTabCollection(
           tab_groups::TabGroupId::FromRawToken(tab_group_id), collection,
           service));
+  return reinterpret_cast<intptr_t>(wrapper);
+}
+
+static int64_t JNI_CollectionSaveForwarder_CreateForTabStripCollection(
+    JNIEnv* env,
+    Profile* profile,
+    tabs::TabStripCollection* collection) {
+  TabStateStorageService* service =
+      TabStateStorageServiceFactory::GetForProfile(profile);
+
+  CollectionSaveForwarderAndroid* wrapper = new CollectionSaveForwarderAndroid(
+      CollectionSaveForwarder::CreateForTabStripCollection(collection,
+                                                           service));
   return reinterpret_cast<intptr_t>(wrapper);
 }
 

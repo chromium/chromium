@@ -13,6 +13,7 @@
 #include "components/autofill/core/browser/metrics/payments/save_and_fill_metrics.h"
 #include "components/autofill/core/browser/payments/payments_autofill_client.h"
 #include "components/autofill/core/common/autofill_clock.h"
+#include "components/autofill/core/common/autofill_payments_features.h"
 #include "components/autofill/core/common/credit_card_number_validation.h"
 #include "components/strings/grit/components_strings.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -31,33 +32,46 @@ void SaveAndFillDialogControllerImpl::ShowLocalDialog(
     payments::PaymentsAutofillClient::CardSaveAndFillDialogCallback
         card_save_and_fill_dialog_callback) {
   dialog_state_ = SaveAndFillDialogState::kLocalDialog;
-  dialog_view_ = std::move(create_and_show_view_callback).Run();
   card_save_and_fill_dialog_callback_ =
       std::move(card_save_and_fill_dialog_callback);
+  if (dialog_view_) {
+    // If this function is called while a view is already pending, it means the
+    // pre-flight server call for an upload save has failed. In this case,
+    // transition the throbber view to the local save dialog instead of creating
+    // a new dialog.
+    dialog_view_->DismissThrobberAndUpdateMainView();
+  } else {
+    // The user was only eligible for local save and the server pre-flight call
+    // was not attempted. Therefore, no throbber view is pending and a new
+    // dialog view is created since this is a direct local save flow.
+    dialog_view_ = std::move(create_and_show_view_callback).Run();
+  }
   CHECK(dialog_view_);
   autofill_metrics::LogSaveAndFillDialogShown(/*is_upload=*/false);
 }
 
 void SaveAndFillDialogControllerImpl::ShowUploadDialog(
     const LegalMessageLines& legal_message_lines,
-    base::OnceCallback<std::unique_ptr<SaveAndFillDialogView>()>
-        create_and_show_view_callback,
     payments::PaymentsAutofillClient::CardSaveAndFillDialogCallback
         card_save_and_fill_dialog_callback) {
   dialog_state_ = SaveAndFillDialogState::kUploadDialog;
   legal_message_lines_ = legal_message_lines;
-  dialog_view_ = std::move(create_and_show_view_callback).Run();
   card_save_and_fill_dialog_callback_ =
       std::move(card_save_and_fill_dialog_callback);
   CHECK(dialog_view_);
   autofill_metrics::LogSaveAndFillDialogShown(/*is_upload=*/true);
+  dialog_view_->DismissThrobberAndUpdateMainView();
 }
 
 void SaveAndFillDialogControllerImpl::ShowPendingDialog(
     base::OnceCallback<std::unique_ptr<SaveAndFillDialogView>()>
-        create_and_show_view_callback) {
+        create_and_show_view_callback,
+    payments::PaymentsAutofillClient::CardSaveAndFillDialogCallback
+        card_save_and_fill_dialog_callback) {
   dialog_state_ = SaveAndFillDialogState::kPendingDialog;
   dialog_view_ = std::move(create_and_show_view_callback).Run();
+  card_save_and_fill_dialog_callback_ =
+      std::move(card_save_and_fill_dialog_callback);
   CHECK(dialog_view_);
 }
 
@@ -70,7 +84,9 @@ std::u16string SaveAndFillDialogControllerImpl::GetExplanatoryMessage() const {
   switch (dialog_state_) {
     case SaveAndFillDialogState::kUploadDialog:
       return l10n_util::GetStringUTF16(
-          IDS_AUTOFILL_SAVE_AND_FILL_DIALOG_EXPLANATION_UPLOAD);
+          base::FeatureList::IsEnabled(features::kAutofillEnableWalletBranding)
+              ? IDS_AUTOFILL_SAVE_AND_FILL_TO_WALLET_DIALOG_EXPLANATION_UPLOAD
+              : IDS_AUTOFILL_SAVE_AND_FILL_DIALOG_EXPLANATION_UPLOAD);
     case SaveAndFillDialogState::kLocalDialog:
       return l10n_util::GetStringUTF16(
           IDS_AUTOFILL_SAVE_AND_FILL_DIALOG_EXPLANATION_LOCAL);

@@ -30,7 +30,6 @@
 #include <utility>
 
 #include "base/check_op.h"
-#include "base/memory/memory_pressure_listener.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ptr_exclusion.h"
@@ -212,15 +211,14 @@ struct HashTraits<DecoderCacheKey> : GenericHashTraits<DecoderCacheKey> {
 //
 // All public methods can be used on any thread.
 
-class PLATFORM_EXPORT ImageDecodingStore final
-    : public base::MemoryPressureListener {
+class PLATFORM_EXPORT ImageDecodingStore final {
   USING_FAST_MALLOC(ImageDecodingStore);
 
  public:
   ImageDecodingStore();
   ImageDecodingStore(const ImageDecodingStore&) = delete;
   ImageDecodingStore& operator=(const ImageDecodingStore&) = delete;
-  ~ImageDecodingStore() override;
+  ~ImageDecodingStore();
 
   static ImageDecodingStore& Instance();
 
@@ -253,9 +251,6 @@ class PLATFORM_EXPORT ImageDecodingStore final
 
  private:
   void Prune();
-
-  // Called by the memory pressure listener when the memory pressure rises.
-  void OnMemoryPressure(base::MemoryPressureLevel) override;
 
   // These helper methods are called while |lock_| is held.
   template <class T, class U, class V>
@@ -317,10 +312,6 @@ class PLATFORM_EXPORT ImageDecodingStore final
 
   size_t heap_limit_in_bytes_ GUARDED_BY(lock_);
   size_t heap_memory_usage_in_bytes_ GUARDED_BY(lock_);
-
-  // A listener to global memory pressure events.
-  base::AsyncMemoryPressureListenerRegistration
-      memory_pressure_listener_registration_;
 
   // Also protects:
   // - the CacheEntry in |decoder_cache_map_|.

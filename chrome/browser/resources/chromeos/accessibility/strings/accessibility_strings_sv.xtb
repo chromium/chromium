@@ -1181,7 +1181,7 @@
 <translation id="8882002077197914455">Radrubrik</translation>
 <translation id="8883850400338911892">urlred 8punkt</translation>
 <translation id="8896479570570613387">Mellanmörklila</translation>
-<translation id="8897030325301866860">Teckensnitt <ph name="FONT_FAMILY" /></translation>
+<translation id="8897030325301866860">Font <ph name="FONT_FAMILY" /></translation>
 <translation id="8898516272131543774">eko för skiljetecken</translation>
 <translation id="8908714597367957477">kolumnrubrik</translation>
 <translation id="8909819899961392044">.input {$$COUNT :number} .match $$COUNT 1{{vänsterklammerparentes}} *{{{$$COUNT} vänsterklammerparenteser}}</translation>

@@ -39,7 +39,7 @@ class PLATFORM_EXPORT UnacceleratedStaticBitmapImage final
   void Transfer() final;
 
   bool CopyToResourceProvider(
-      CanvasResourceProviderSharedImage* resource_provider,
+      CanvasResourceProviderSharedImageNon2D* resource_provider,
       const gfx::Rect& copy_rect) override;
 
   SkImageInfo GetSkImageInfo() const;

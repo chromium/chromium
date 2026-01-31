@@ -3,6 +3,8 @@
 # found in the LICENSE file.
 
 include_rules = [
+  # keep-sorted start
   "+ios/chrome/browser/optimization_guide/model",
   "+ios/chrome/browser/optimization_guide/mojom",
+  # keep-sorted end
 ]

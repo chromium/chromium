@@ -29,11 +29,11 @@ const TestSyncablePrefsDatabase::PrefsMap kSyncablePrefsDatabase = {
 
 TEST(PreferencesMergeHelperTest, MergeListValues) {
   auto local_value =
-      base::Value::List().Append("local_value").Append("common_value");
+      base::ListValue().Append("local_value").Append("common_value");
   auto server_value =
-      base::Value::List().Append("server_value").Append("common_value");
+      base::ListValue().Append("server_value").Append("common_value");
 
-  auto expected_value = base::Value::List()
+  auto expected_value = base::ListValue()
                             .Append("server_value")
                             .Append("common_value")
                             .Append("local_value");
@@ -41,14 +41,14 @@ TEST(PreferencesMergeHelperTest, MergeListValues) {
 }
 
 TEST(PreferencesMergeHelperTest, MergeDictionaryValues) {
-  auto local_value = base::Value::Dict()
+  auto local_value = base::DictValue()
                          .Set("local_key", "local_value")
                          .Set("common_key", "local_value");
-  auto server_value = base::Value::Dict()
+  auto server_value = base::DictValue()
                           .Set("server_key", "server_value")
                           .Set("common_key", "server_value");
 
-  auto expected_value = base::Value::Dict()
+  auto expected_value = base::DictValue()
                             .Set("server_key", "server_value")
                             .Set("common_key", "server_value")
                             .Set("local_key", "local_value");
@@ -58,11 +58,11 @@ TEST(PreferencesMergeHelperTest, MergeDictionaryValues) {
 
 TEST(PreferencesMergeHelperTest,
      UnmergeDictionaryValuesShouldAddNewValueToBothUpdates) {
-  base::Value::Dict local_value;
-  base::Value::Dict account_value;
+  base::DictValue local_value;
+  base::DictValue account_value;
 
-  base::Value::Dict new_value =
-      base::Value::Dict()
+  base::DictValue new_value =
+      base::DictValue()
           // "new_key" is not present in either, should get added to both.
           .Set("new_key", "new_value");
 
@@ -76,7 +76,7 @@ TEST(PreferencesMergeHelperTest,
 }
 
 TEST(PreferencesMergeHelperTest, UnmergeDictionaryValuesShouldRemoveValues) {
-  auto local_value = base::Value::Dict()
+  auto local_value = base::DictValue()
                          .Set("local_key1", "local_value")
                          // "local_key2" is not part of new value, should get
                          // removed.
@@ -84,7 +84,7 @@ TEST(PreferencesMergeHelperTest, UnmergeDictionaryValuesShouldRemoveValues) {
                          // "common_key" is not part of new value, should get
                          // removed.
                          .Set("common_key", "local_value");
-  auto account_value = base::Value::Dict()
+  auto account_value = base::DictValue()
                            .Set("server_key1", "server_value")
                            // "server_key2" is not part of new value, should get
                            // removed.
@@ -94,29 +94,29 @@ TEST(PreferencesMergeHelperTest, UnmergeDictionaryValuesShouldRemoveValues) {
                            .Set("common_key", "server_value");
 
   auto [updated_local_value, updated_account_value] =
-      helper::UnmergeDictionaryValues(base::Value::Dict()
+      helper::UnmergeDictionaryValues(base::DictValue()
                                           .Set("server_key1", "server_value")
                                           .Set("local_key1", "local_value"),
                                       local_value, account_value);
 
   // Entries not present in new value gets removed.
   EXPECT_EQ(updated_local_value,
-            base::Value::Dict().Set("local_key1", "local_value"));
+            base::DictValue().Set("local_key1", "local_value"));
   EXPECT_EQ(updated_account_value,
-            base::Value::Dict().Set("server_key1", "server_value"));
+            base::DictValue().Set("server_key1", "server_value"));
 }
 
 TEST(PreferencesMergeHelperTest,
      UnmergeDictionaryValuesShouldNotAddValuesWithNoUpdate) {
-  auto local_value = base::Value::Dict()
+  auto local_value = base::DictValue()
                          .Set("local_key", "local_value")
                          .Set("common_key", "local_value");
-  auto account_value = base::Value::Dict()
+  auto account_value = base::DictValue()
                            .Set("server_key", "server_value")
                            .Set("common_key", "server_value");
 
   auto [updated_local_value, updated_account_value] =
-      helper::UnmergeDictionaryValues(base::Value::Dict()
+      helper::UnmergeDictionaryValues(base::DictValue()
                                           // New value same as the merged value,
                                           // so no update.
                                           .Set("server_key", "server_value")
@@ -132,17 +132,17 @@ TEST(PreferencesMergeHelperTest,
 TEST(PreferencesMergeHelperTest,
      UnmergeDictionaryValuesShouldOnlyUpdateCommonKeyIfEffectiveValueChanges) {
   auto local_value =
-      base::Value::Dict()
+      base::DictValue()
           // Entries are overridden by the entries in the account value.
           .Set("common_key1", "local_value1")
           .Set("common_key2", "local_value2");
-  auto account_value = base::Value::Dict()
+  auto account_value = base::DictValue()
                            .Set("common_key1", "server_value1")
                            .Set("common_key2", "server_value2");
 
   auto [updated_local_value, updated_account_value] =
       helper::UnmergeDictionaryValues(
-          base::Value::Dict()
+          base::DictValue()
               // "common_key1" value same as merged value, hence no update.
               .Set("common_key1", "server_value1")
               // "common_key2" value is different from merged value.
@@ -150,12 +150,12 @@ TEST(PreferencesMergeHelperTest,
           local_value, account_value);
 
   EXPECT_EQ(updated_local_value,
-            base::Value::Dict()
+            base::DictValue()
                 // No change as the effective value (overridden by account
                 // value) is unchanged.
                 .Set("common_key1", "local_value1")
                 .Set("common_key2", "local_value2"));
-  EXPECT_EQ(updated_account_value, base::Value::Dict()
+  EXPECT_EQ(updated_account_value, base::DictValue()
                                        .Set("common_key1", "server_value1")
                                        // Value updated.
                                        .Set("common_key2", "local_value2"));
@@ -163,18 +163,18 @@ TEST(PreferencesMergeHelperTest,
 
 TEST(PreferencesMergeHelperTest,
      UnmergeDictionaryValuesShouldAddUpdatedValuesToBothUpdates) {
-  auto local_value = base::Value::Dict()
+  auto local_value = base::DictValue()
                          .Set("local_key1", "local_value")
                          .Set("local_key2", "local_value")
                          .Set("common_key", "local_value");
-  auto account_value = base::Value::Dict()
+  auto account_value = base::DictValue()
                            .Set("server_key1", "server_value")
                            .Set("server_key2", "server_value")
                            .Set("common_key", "server_value");
 
   auto [updated_local_value, updated_account_value] =
       helper::UnmergeDictionaryValues(
-          base::Value::Dict()
+          base::DictValue()
               // Updated, should get added to both.
               .Set("server_key1", "new_server_value")
               // Updated, should get added to both.
@@ -188,12 +188,12 @@ TEST(PreferencesMergeHelperTest,
           local_value, account_value);
 
   // Updated entries get added to both.
-  EXPECT_EQ(updated_local_value, base::Value::Dict()
+  EXPECT_EQ(updated_local_value, base::DictValue()
                                      .Set("local_key1", "new_local_value")
                                      .Set("local_key2", "local_value")
                                      .Set("common_key", "new_common_value")
                                      .Set("server_key1", "new_server_value"));
-  EXPECT_EQ(updated_account_value, base::Value::Dict()
+  EXPECT_EQ(updated_account_value, base::DictValue()
                                        .Set("server_key1", "new_server_value")
                                        .Set("server_key2", "server_value")
                                        .Set("common_key", "new_common_value")
@@ -595,7 +595,7 @@ TEST(PreferencesMergeHelperTest,
 
   base::Value corrupt_local_value("corrupt value");
   base::Value account_value(
-      base::Value::Dict().Set("account_key", "account value"));
+      base::DictValue().Set("account_key", "account value"));
 
   base::Value merged_value = helper::MergePreference(
       client.get(), kMergeableDictPref, corrupt_local_value, account_value);
@@ -607,7 +607,7 @@ TEST(PreferencesMergeHelperTest,
      ShouldHandleCorruptServerValueForMergeableDictPref) {
   auto client = base::MakeRefCounted<TestPrefModelAssociatorClient>();
 
-  base::Value local_value(base::Value::Dict().Set("local_key", "local value"));
+  base::Value local_value(base::DictValue().Set("local_key", "local value"));
   base::Value corrupt_account_value("corrupt value");
 
   base::Value merged_value = helper::MergePreference(
@@ -621,8 +621,7 @@ TEST(PreferencesMergeHelperTest,
   auto client = base::MakeRefCounted<TestPrefModelAssociatorClient>();
 
   base::Value corrupt_local_value("corrupt value");
-  base::Value corrupt_account_value(
-      base::Value::List().Append("account value"));
+  base::Value corrupt_account_value(base::ListValue().Append("account value"));
 
   base::Value merged_value =
       helper::MergePreference(client.get(), kMergeableDictPref,
@@ -637,7 +636,7 @@ TEST(PreferencesMergeHelperTest,
   auto client = base::MakeRefCounted<TestPrefModelAssociatorClient>();
 
   base::Value corrupt_local_value("corrupt value");
-  base::Value account_value(base::Value::List().Append("account value"));
+  base::Value account_value(base::ListValue().Append("account value"));
 
   base::Value merged_value = helper::MergePreference(
       client.get(), kMergeableListPref, corrupt_local_value, account_value);
@@ -649,7 +648,7 @@ TEST(PreferencesMergeHelperTest,
      ShouldHandleCorruptServerValueForMergeableListPref) {
   auto client = base::MakeRefCounted<TestPrefModelAssociatorClient>();
 
-  base::Value local_value(base::Value::List().Append("local value"));
+  base::Value local_value(base::ListValue().Append("local value"));
   base::Value corrupt_account_value("corrupt value");
 
   base::Value merged_value = helper::MergePreference(
@@ -664,7 +663,7 @@ TEST(PreferencesMergeHelperTest,
 
   base::Value corrupt_local_value("corrupt value");
   base::Value corrupt_account_value(
-      base::Value::Dict().Set("account_key", "account value"));
+      base::DictValue().Set("account_key", "account value"));
 
   base::Value merged_value =
       helper::MergePreference(client.get(), kMergeableListPref,

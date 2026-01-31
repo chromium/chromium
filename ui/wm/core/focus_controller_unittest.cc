@@ -7,6 +7,7 @@
 #include <map>
 
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ptr_exclusion.h"
 #include "base/test/scoped_feature_list.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/client/default_capture_client.h"
@@ -103,7 +104,7 @@ class FocusNotificationObserver : public ActivationChangeObserver,
 
 class WindowDeleter {
  public:
-  virtual aura::Window* GetDeletedWindow() = 0;
+  virtual bool IsDeletedWindow(const aura::Window* window) const = 0;
 
  protected:
   virtual ~WindowDeleter() {}
@@ -143,29 +144,29 @@ class RecordingActivationAndFocusChangeObserver
   void OnWindowActivating(ActivationReason reason,
                           aura::Window* gaining_active,
                           aura::Window* losing_active) override {
-    if (deleter_->GetDeletedWindow()) {
-      // A deleted window during activation should never be return as either the
-      // gaining or losing active windows, nor should it be returned as the
-      // currently active one.
-      auto* active_window = GetActivationClient(root_)->GetActiveWindow();
-      EXPECT_NE(active_window, deleter_->GetDeletedWindow());
-      EXPECT_NE(gaining_active, deleter_->GetDeletedWindow());
-      EXPECT_NE(losing_active, deleter_->GetDeletedWindow());
-    }
+    // A deleted window during activation should never be return as either the
+    // gaining or losing active windows, nor should it be returned as the
+    // currently active one.
+    auto* active_window = GetActivationClient(root_)->GetActiveWindow();
+    EXPECT_FALSE(deleter_->IsDeletedWindow(active_window));
+    EXPECT_FALSE(deleter_->IsDeletedWindow(gaining_active));
+    EXPECT_FALSE(deleter_->IsDeletedWindow(losing_active));
   }
 
   void OnWindowActivated(ActivationReason reason,
                          aura::Window* gained_active,
                          aura::Window* lost_active) override {
-    if (lost_active && lost_active == deleter_->GetDeletedWindow())
+    if (lost_active && deleter_->IsDeletedWindow(lost_active)) {
       was_notified_with_deleted_window_ = true;
+    }
   }
 
   // Overridden from aura::client::FocusChangeObserver:
   void OnWindowFocused(aura::Window* gained_focus,
                        aura::Window* lost_focus) override {
-    if (lost_focus && lost_focus == deleter_->GetDeletedWindow())
+    if (lost_focus && deleter_->IsDeletedWindow(lost_focus)) {
       was_notified_with_deleted_window_ = true;
+    }
   }
 
  private:
@@ -232,8 +233,7 @@ class DeleteOnActivationChangeObserver : public ActivationChangeObserver,
       : root_(window->GetRootWindow()),
         window_(window),
         delete_on_activating_(delete_on_activating),
-        delete_window_losing_active_(delete_window_losing_active),
-        did_delete_(false) {
+        delete_window_losing_active_(delete_window_losing_active) {
     GetActivationClient(root_)->AddObserver(this);
   }
 
@@ -276,16 +276,18 @@ class DeleteOnActivationChangeObserver : public ActivationChangeObserver,
   }
 
   // Overridden from WindowDeleter:
-  aura::Window* GetDeletedWindow() override {
-    return did_delete_ ? window_.get() : nullptr;
+  bool IsDeletedWindow(const aura::Window* window) const override {
+    return did_delete_ && window == window_;
   }
 
  private:
   raw_ptr<aura::Window> root_;
-  raw_ptr<aura::Window, DanglingUntriaged> window_;
+  // Intentionally held as a dangling pointer to enable safe comparison with
+  // already-deleted windows.
+  RAW_PTR_EXCLUSION const aura::Window* window_;
   const bool delete_on_activating_;
   const bool delete_window_losing_active_;
-  bool did_delete_;
+  bool did_delete_ = false;
 };
 
 // FocusChangeObserver that deletes the window losing focus.
@@ -294,7 +296,7 @@ class DeleteOnLoseFocusChangeObserver
       public WindowDeleter {
  public:
   explicit DeleteOnLoseFocusChangeObserver(aura::Window* window)
-      : root_(window->GetRootWindow()), window_(window), did_delete_(false) {
+      : root_(window->GetRootWindow()), window_(window) {
     aura::client::GetFocusClient(root_)->AddObserver(this);
   }
 
@@ -317,14 +319,16 @@ class DeleteOnLoseFocusChangeObserver
   }
 
   // Overridden from WindowDeleter:
-  aura::Window* GetDeletedWindow() override {
-    return did_delete_ ? window_.get() : nullptr;
+  bool IsDeletedWindow(const aura::Window* window) const override {
+    return did_delete_ && window == window_;
   }
 
  private:
   raw_ptr<aura::Window> root_;
-  raw_ptr<aura::Window, DanglingUntriaged> window_;
-  bool did_delete_;
+  // Intentionally held as a dangling pointer to enable safe comparison with
+  // already-deleted windows.
+  RAW_PTR_EXCLUSION const aura::Window* window_;
+  bool did_delete_ = false;
 };
 
 class ScopedFocusNotificationObserver : public FocusNotificationObserver {
@@ -351,11 +355,11 @@ class ScopedFocusNotificationObserver : public FocusNotificationObserver {
 
 class ScopedTargetFocusNotificationObserver : public FocusNotificationObserver {
  public:
-  ScopedTargetFocusNotificationObserver(aura::Window* root_window, int id)
-      : target_(root_window->GetChildById(id)) {
-    SetActivationChangeObserver(target_, this);
-    aura::client::SetFocusChangeObserver(target_, this);
-    tracker_.Add(target_);
+  ScopedTargetFocusNotificationObserver(aura::Window* root_window, int id) {
+    aura::Window* target = root_window->GetChildById(id);
+    SetActivationChangeObserver(target, this);
+    aura::client::SetFocusChangeObserver(target, this);
+    tracker_.Add(target);
   }
 
   ScopedTargetFocusNotificationObserver(
@@ -364,14 +368,14 @@ class ScopedTargetFocusNotificationObserver : public FocusNotificationObserver {
       const ScopedTargetFocusNotificationObserver&) = delete;
 
   ~ScopedTargetFocusNotificationObserver() override {
-    if (tracker_.Contains(target_)) {
-      SetActivationChangeObserver(target_, nullptr);
-      aura::client::SetFocusChangeObserver(target_, nullptr);
+    if (!tracker_.windows().empty()) {
+      aura::Window* target = tracker_.Pop();
+      SetActivationChangeObserver(target, nullptr);
+      aura::client::SetFocusChangeObserver(target, nullptr);
     }
   }
 
  private:
-  raw_ptr<aura::Window, DanglingUntriaged> target_;
   aura::WindowTracker tracker_;
 };
 
@@ -1041,7 +1045,7 @@ class FocusControllerDirectTestBase : public FocusControllerTestBase {
       EXPECT_EQ(2, GetActiveWindowId());
       EXPECT_EQ(2, GetFocusedWindowId());
 
-      EXPECT_EQ(to_delete, observer1.GetDeletedWindow());
+      EXPECT_TRUE(observer1.IsDeletedWindow(to_delete));
       EXPECT_FALSE(observer2.was_notified_with_deleted_window());
     }
 
@@ -1058,7 +1062,7 @@ class FocusControllerDirectTestBase : public FocusControllerTestBase {
       EXPECT_EQ(3, GetActiveWindowId());
       EXPECT_EQ(3, GetFocusedWindowId());
 
-      EXPECT_EQ(to_delete, observer1.GetDeletedWindow());
+      EXPECT_TRUE(observer1.IsDeletedWindow(to_delete));
       EXPECT_FALSE(observer2.was_notified_with_deleted_window());
     }
 
@@ -1084,7 +1088,7 @@ class FocusControllerDirectTestBase : public FocusControllerTestBase {
       EXPECT_EQ(4, GetActiveWindowId());
       EXPECT_EQ(4, GetFocusedWindowId());
 
-      EXPECT_EQ(to_delete, observer1.GetDeletedWindow());
+      EXPECT_TRUE(observer1.IsDeletedWindow(to_delete));
       EXPECT_FALSE(observer2.was_notified_with_deleted_window());
     }
 
@@ -1130,9 +1134,9 @@ class FocusControllerDirectTestBase : public FocusControllerTestBase {
       EXPECT_EQ(4, GetActiveWindowId());
       EXPECT_EQ(4, GetFocusedWindowId());
 
-      EXPECT_EQ(to_delete1, observer1.GetDeletedWindow());
+      EXPECT_TRUE(observer1.IsDeletedWindow(to_delete1));
       EXPECT_FALSE(observer2.was_notified_with_deleted_window());
-      EXPECT_EQ(to_delete2, observer3.GetDeletedWindow());
+      EXPECT_TRUE(observer3.IsDeletedWindow(to_delete2));
       EXPECT_FALSE(observer4.was_notified_with_deleted_window());
     }
   }

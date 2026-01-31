@@ -7,7 +7,6 @@
 
 #include <map>
 
-#include "base/containers/contains.h"
 #include "base/containers/map_util.h"
 #include "base/feature_list.h"
 #include "components/user_education/common/feature_promo/feature_promo_specification.h"
@@ -32,7 +31,7 @@ class FeatureRegistry {
 
   // Determines whether or not a particular `feature` is registered.
   bool IsFeatureRegistered(const base::Feature& feature) const {
-    return base::Contains(feature_data_, &feature);
+    return feature_data_.contains(&feature);
   }
 
   // Returns the specification for the given `feature`, or null if not found.

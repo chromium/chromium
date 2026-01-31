@@ -27,7 +27,7 @@ class ThemeSelectionScreenView {
 
   virtual ~ThemeSelectionScreenView() = default;
 
-  virtual void Show(base::Value::Dict data) = 0;
+  virtual void Show(base::DictValue data) = 0;
   virtual base::WeakPtr<ThemeSelectionScreenView> AsWeakPtr() = 0;
 };
 
@@ -45,7 +45,7 @@ class ThemeSelectionScreenHandler final : public ThemeSelectionScreenView,
   ~ThemeSelectionScreenHandler() override;
 
   // ThemeSelectionScreenView implementation
-  void Show(base::Value::Dict data) override;
+  void Show(base::DictValue data) override;
   base::WeakPtr<ThemeSelectionScreenView> AsWeakPtr() override;
 
   // BaseScreenHandler implementation

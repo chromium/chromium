@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Actor specific strings (included from generated_resources.grd). -->
+<grit-part>
+  <message name="IDS_HANDOFF_TAKE_OVER_TASK_LABEL" desc="Text on the handoff button when an actor is in control">
+    Take over task
+  </message>
+  <message name="IDS_HANDOFF_GIVE_TASK_BACK_LABEL" desc="[Placeholder Description]" translateable="false">
+    Give task back
+  </message>
+  <message name="IDS_HANDOFF_TAKE_OVER_TASK_A11Y_LABEL" desc="Spoken by screen readers when the handoff button is focused when an actor is in control">
+    Take over task, Gemini is currently in control
+  </message>
+  <message name="IDS_HANDOFF_GIVE_TASK_BACK_A11Y_LABEL" desc="[Placeholder Description]" translateable="false">
+    Give task back
+  </message>
+  <message name="IDS_TASK_IN_PROGRESS_TOAST_BODY" desc="Text on a toast notification that is shown when an actor is working on a task" translateable="true">
+    Your task is still in progress
+  </message>
+  <message name="IDS_ACTOR_TASK_NUDGE_CHECK_TASK_LABEL" desc="Text shown in a tab strip nudge informing the user that their task needs attention before it can proceed." translateable="true">
+    {NUM_TASKS, plural,
+      =1 {Check your task}
+      other {Check your tasks}}
+  </message>
+  <message name="IDS_ACTOR_TASK_NUDGE_TASK_COMPLETE_LABEL" desc="Text shown in a tab strip nudge informing the user that their task is done." translateable="true">
+    {NUM_TASKS, plural,
+      =1 {Task done}
+      other {Tasks done}}
+  </message>
+  <message name="IDR_ACTOR_TASK_LIST_BUBBLE_ROW_TAB_CLOSED_SUBTITLE" desc="Subtitle shown for a task in the task list bubble informing the user that the tab associated with a task no longer exists or was closed." translateable="true">
+    Tab closed
+  </message>
+  <message name="IDR_ACTOR_TASK_LIST_BUBBLE_ROW_CHECK_TASK_SUBTITLE" desc="Subtitle shown for a task in the task list bubble informing the user that the task needs attention." translateable="true">
+    Waiting for your help
+  </message>
+  <message name="IDR_ACTOR_TASK_LIST_BUBBLE_ROW_ACTING_TASK_SUBTITLE" desc="Subtitle shown for a task in the task list bubble informing the user that the task is acting." translateable="true">
+   Working on your task…
+  </message>
+  <message name="IDS_ACTOR_TASK_LIST_BUBBLE_A11Y_LABEL" desc="Text used by screenreaders for the list of tasks the user is running." translateable="true">
+    Task list
+  </message>
+  <message name="IDS_ACTOR_TASK_INDICATOR_TOOLTIP" desc="Tooltip text for the task indicator button. The button will open a bubble containing the list of tasks currently running." translateable="true">
+    Check your tasks
+  </message>
+  <message name="IDR_ACTOR_TASK_LIST_BUBBLE_ROW_PAUSED_TASK_SUBTITLE" desc="Subtitle shown for a task in the task list bubble informing the user that the task is paused." translateable="true">
+   Paused
+  </message>
+  <message name="IDR_ACTOR_TASK_LIST_BUBBLE_ROW_COMPLETED_TASK_SUBTITLE" desc="Subtitle shown for a task in the task list bubble informing the user that the task is completed." translateable="true">
+   Done
+  </message>
+  <message name="IDR_ACTOR_TASK_LIST_BUBBLE_ROW_FAILED_TASK_SUBTITLE" desc="Subtitle shown for a task in the task list bubble informing the user that the task has failed." translateable="true">
+   Something went wrong
+  </message>
+</grit-part>

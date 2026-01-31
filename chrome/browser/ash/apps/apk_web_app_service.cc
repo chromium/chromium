@@ -201,7 +201,7 @@ bool ApkWebAppService::IsWebAppShellPackage(const std::string& package_name) {
 std::optional<std::string> ApkWebAppService::GetPackageNameForWebApp(
     const webapps::AppId& app_id,
     bool include_installing_apks) {
-  if (const base::Value::Dict* app_dict = WebAppToApks().FindDict(app_id)) {
+  if (const base::DictValue* app_dict = WebAppToApks().FindDict(app_id)) {
     if (const std::string* value = app_dict->FindString(kPackageNameKey)) {
       return *value;
     }
@@ -387,7 +387,7 @@ void ApkWebAppService::OnPackageRemoved(const std::string& package_name,
   std::optional<std::string> web_app_id =
       GetWebAppIdForPackageName(package_name);
   if (web_app_id) {
-    const base::Value::Dict* app_dict = WebAppToApks().FindDict(*web_app_id);
+    const base::DictValue* app_dict = WebAppToApks().FindDict(*web_app_id);
     if (app_dict && app_dict->FindBool(kShouldRemoveKey).value_or(false)) {
       // This package removal was triggered by web app removal, so cleanup and
       // do not kick off the uninstallation loop again.
@@ -489,7 +489,7 @@ void ApkWebAppService::OnDidFinishInstall(
     // uninstallation.
     ScopedDictPrefUpdate dict_update(profile_->GetPrefs(),
                                      kWebAppToApkDictPref);
-    base::Value::Dict* web_app_dict = dict_update->EnsureDict(web_app_id);
+    base::DictValue* web_app_dict = dict_update->EnsureDict(web_app_id);
     web_app_dict->Set(kPackageNameKey, package_name);
 
     // Set that the app should not be removed next time the ARC container starts
@@ -523,8 +523,8 @@ void ApkWebAppService::OnDidRemoveInstallSource(
   }
 }
 
-const base::Value::Dict& ApkWebAppService::WebAppToApks() const {
-  const base::Value::Dict& value =
+const base::DictValue& ApkWebAppService::WebAppToApks() const {
+  const base::DictValue& value =
       profile_->GetPrefs()->GetDict(kWebAppToApkDictPref);
   return value;
 }
@@ -595,8 +595,8 @@ void ApkWebAppService::SyncArcAndWebApps() {
        migration_packages) {
     // We only perform a migration if both packages are installed and both
     // trying to install the same web app.
-    if (!base::Contains(arc_packages, canonical_package) ||
-        !base::Contains(arc_packages, deprecated_package)) {
+    if (!arc_packages.contains(canonical_package) ||
+        !arc_packages.contains(deprecated_package)) {
       continue;
     }
 
@@ -615,7 +615,7 @@ void ApkWebAppService::SyncArcAndWebApps() {
     if (GetPackageNameForWebApp(*canonical_id) == deprecated_package) {
       ScopedDictPrefUpdate dict_update(profile_->GetPrefs(),
                                        kWebAppToApkDictPref);
-      base::Value::Dict* app_id_dict = dict_update->EnsureDict(*canonical_id);
+      base::DictValue* app_id_dict = dict_update->EnsureDict(*canonical_id);
       app_id_dict->Set(kPackageNameKey, canonical_package);
     }
 
@@ -670,7 +670,7 @@ void ApkWebAppService::SyncArcAndWebApps() {
       RemoveObsoletePrefValues(web_app_id);
     }
 
-    if (base::Contains(arc_packages, *package_name)) {
+    if (arc_packages.contains(*package_name)) {
       if (web_app_info_dict.FindBool(kShouldRemoveKey).value_or(false)) {
         // ARC app should be uninstalled.
         arc_apps_to_uninstall.push_back(*package_name);
@@ -692,7 +692,7 @@ void ApkWebAppService::SyncArcAndWebApps() {
 void ApkWebAppService::RemoveObsoletePrefValues(
     const webapps::AppId& web_app_id) {
   ScopedDictPrefUpdate dict_update(profile_->GetPrefs(), kWebAppToApkDictPref);
-  base::Value::Dict* app_id_dict = dict_update->EnsureDict(web_app_id);
+  base::DictValue* app_id_dict = dict_update->EnsureDict(web_app_id);
   app_id_dict->Remove(kIsWebOnlyTwaKey);
   app_id_dict->Remove(kSha256FingerprintKey);
 }

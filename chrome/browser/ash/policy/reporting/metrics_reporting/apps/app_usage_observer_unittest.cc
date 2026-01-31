@@ -115,7 +115,7 @@ class AppUsageObserverTest : public ::apps::AppPlatformMetricsServiceTestBase {
   }
 
   void SetAllowedAppReportingTypes(const std::vector<std::string>& app_types) {
-    base::Value::List allowed_app_types;
+    base::ListValue allowed_app_types;
     for (const auto& app_type : app_types) {
       allowed_app_types.Append(app_type);
     }

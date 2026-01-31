@@ -17,7 +17,6 @@
 #include "base/no_destructor.h"
 #include "base/notreached.h"
 #include "base/task/single_thread_task_runner.h"
-#include "components/safe_browsing/content/common/safe_browsing.mojom-forward.h"
 #include "components/safe_browsing/content/common/safe_browsing.mojom-shared.h"
 #include "components/safe_browsing/content/renderer/phishing_classifier/features.h"
 #include "components/safe_browsing/content/renderer/phishing_classifier/phishing_classifier.h"

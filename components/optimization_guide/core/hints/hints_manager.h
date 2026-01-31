@@ -579,7 +579,7 @@ class HintsManager : public OptimizationHintsComponentObserver,
   raw_ptr<TopHostProvider> top_host_provider_ = nullptr;
 
   // The tab URL provider that can be queried. Not owned.
-  raw_ptr<TabUrlProvider, DanglingUntriaged> tab_url_provider_ = nullptr;
+  raw_ptr<TabUrlProvider> tab_url_provider_ = nullptr;
 
   // The timer used to schedule fetching hints from the remote Optimization
   // Guide Service.

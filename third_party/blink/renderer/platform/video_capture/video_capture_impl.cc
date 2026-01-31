@@ -139,11 +139,11 @@ struct VideoCaptureImpl::BufferContext
     return gmb_resources_->gpu_memory_buffer_handle.Clone();
   }
 
-  static void MailboxHolderReleased(scoped_refptr<BufferContext> buffer_context,
-                                    const gpu::SyncToken& release_sync_token) {
+  static void SharedImageReleased(scoped_refptr<BufferContext> buffer_context,
+                                  const gpu::SyncToken& release_sync_token) {
     if (!buffer_context->media_task_runner_->RunsTasksInCurrentSequence()) {
       buffer_context->media_task_runner_->PostTask(
-          FROM_HERE, base::BindOnce(&BufferContext::MailboxHolderReleased,
+          FROM_HERE, base::BindOnce(&BufferContext::SharedImageReleased,
                                     buffer_context, release_sync_token));
       return;
     }
@@ -535,6 +535,10 @@ bool VideoCaptureImpl::BindVideoFrameOnMediaTaskRunner(
 
   auto size = gfx::Size(video_frame_init_data.ready_buffer->info->coded_size);
   auto color_space = video_frame_init_data.ready_buffer->info->color_space;
+  if (!color_space.IsValid()) {
+    color_space = gfx::ColorSpace::CreateREC601();
+  }
+
   auto& shared_image =
       video_frame_init_data.buffer_context->gmb_resources()->shared_image;
   // If there is size or color space mismatch, recreate shared image with new
@@ -588,7 +592,7 @@ bool VideoCaptureImpl::BindVideoFrameOnMediaTaskRunner(
 
   auto frame = media::VideoFrame::WrapMappableSharedImage(
       shared_image, sync_token,
-      base::BindOnce(&BufferContext::MailboxHolderReleased,
+      base::BindOnce(&BufferContext::SharedImageReleased,
                      video_frame_init_data.buffer_context),
       gfx::Rect(video_frame_init_data.ready_buffer->info->visible_rect),
       video_frame_init_data.ready_buffer->info->visible_rect.size(),
@@ -1002,7 +1006,7 @@ void VideoCaptureImpl::OnBufferDestroyed(int32_t buffer_id) {
   const auto& cb_iter = client_buffers_.find(buffer_id);
   if (cb_iter != client_buffers_.end()) {
     // If the BufferContext is non-null, the GpuMemoryBufferHandle-backed frames
-    // can have more than one reference (held by MailboxHolderReleased).
+    // can have more than one reference (held by SharedImageReleased).
     // Otherwise, only one reference should be held.
     DCHECK(!cb_iter->second.get() ||
            cb_iter->second->buffer_type() ==
@@ -1052,7 +1056,7 @@ void VideoCaptureImpl::OnAllClientsFinishedConsumingFrame(
   buffer_context = nullptr;
   // For non-GMB case, there should be only one reference, from
   // |client_buffers_|. This DCHECK is invalid for GpuMemoryBufferHandle-backed
-  // frames, because MailboxHolderReleased may hold on to a reference to
+  // frames, because SharedImageReleased may hold on to a reference to
   // |buffer_context|.
   if (buffer_raw_ptr->buffer_type() !=
       VideoFrameBufferHandleType::kGpuMemoryBufferHandle) {

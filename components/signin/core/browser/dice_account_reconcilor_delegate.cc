@@ -7,13 +7,11 @@
 #include <algorithm>
 #include <vector>
 
-#include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_macros.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/base/consent_level.h"
-#include "components/signin/public/base/signin_client.h"
 #include "components/signin/public/base/signin_metrics.h"
 #include "components/signin/public/base/signin_pref_names.h"
 #include "components/signin/public/base/signin_switches.h"
@@ -25,17 +23,6 @@
 #include "components/supervised_user/core/common/buildflags.h"
 
 namespace signin {
-
-#if BUILDFLAG(ENABLE_SUPERVISED_USERS)
-namespace {
-bool IsAccountSupervised(IdentityManager* identity_manager) {
-  AccountInfo account_info = identity_manager->FindExtendedAccountInfo(
-      identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin));
-  return account_info.capabilities.is_subject_to_parental_controls() ==
-         signin::Tribool::kTrue;
-}
-}  // namespace
-#endif
 
 // Revokes tokens for all accounts in chrome accounts but the primary account.
 void RevokeAllSecondaryTokens(
@@ -92,9 +79,8 @@ void RevokeAllSecondaryTokens(
 }
 
 DiceAccountReconcilorDelegate::DiceAccountReconcilorDelegate(
-    IdentityManager* identity_manager,
-    SigninClient* signin_client)
-    : identity_manager_(identity_manager), signin_client_(signin_client) {}
+    IdentityManager* identity_manager)
+    : identity_manager_(identity_manager) {}
 DiceAccountReconcilorDelegate::~DiceAccountReconcilorDelegate() = default;
 
 bool DiceAccountReconcilorDelegate::IsReconcileEnabled() const {
@@ -144,9 +130,9 @@ DiceAccountReconcilorDelegate::GetInconsistencyReason(
   bool primary_account_has_token = false;
   if (!primary_account.empty()) {
     primary_account_has_token =
-        base::Contains(chrome_accounts, primary_account);
+        std::ranges::contains(chrome_accounts, primary_account);
     bool primary_account_has_cookie =
-        base::Contains(valid_gaia_accounts_ids, primary_account);
+        std::ranges::contains(valid_gaia_accounts_ids, primary_account);
     if (primary_account_has_token && !primary_account_has_cookie) {
       return InconsistencyReason::kMissingSyncCookie;
     }
@@ -159,7 +145,7 @@ DiceAccountReconcilorDelegate::GetInconsistencyReason(
   bool missing_first_web_account_token =
       primary_account.empty() && !gaia_accounts.empty() &&
       gaia_accounts[0].valid &&
-      !base::Contains(chrome_accounts, gaia_accounts[0].id);
+      !std::ranges::contains(chrome_accounts, gaia_accounts[0].id);
 
   if (missing_first_web_account_token) {
     return InconsistencyReason::kMissingFirstWebAccountToken;
@@ -204,7 +190,7 @@ bool DiceAccountReconcilorDelegate::ShouldDeleteAccountsFromGaia(
   // account.
   for (const gaia::ListedAccount& gaia_account : gaia_accounts) {
     if (gaia_account.valid &&
-        !base::Contains(chrome_accounts, gaia_account.id)) {
+        !std::ranges::contains(chrome_accounts, gaia_account.id)) {
       return true;
     }
   }
@@ -246,28 +232,7 @@ bool DiceAccountReconcilorDelegate::
 
 ConsentLevel DiceAccountReconcilorDelegate::GetConsentLevelForPrimaryAccount()
     const {
-#if BUILDFLAG(ENABLE_SUPERVISED_USERS)
-  // A supervised user regardless of consent should not be signed out in certain
-  // cases such as clearing browsing data. In this instance the account
-  // reconciler should not remove the primary account.
-  if (IsAccountSupervised(identity_manager_)) {
-    return ConsentLevel::kSignin;
-  }
-#endif
-
-  if (!IsImplicitBrowserSigninOrExplicitDisabled(identity_manager_,
-                                                 signin_client_->GetPrefs())) {
-    return ConsentLevel::kSignin;
-  }
-
-  // In some cases, clearing the primary account is not allowed regardless of
-  // the consent level (e.g. cloud-managed profiles). In these cases, the dice
-  // account reconcilor delegate should never remove the primary account
-  // regardless of the consent.
-  // TODO(https://crbug.com.1464264): Migrate away from `ConsentLevel::kSync`
-  // on desktop platforms.
-  return signin_client_->IsClearPrimaryAccountAllowed() ? ConsentLevel::kSync
-                                                        : ConsentLevel::kSignin;
+  return ConsentLevel::kSignin;
 }
 
 void DiceAccountReconcilorDelegate::OnReconcileError(
@@ -331,7 +296,7 @@ bool DiceAccountReconcilorDelegate::ShouldRevokeTokensBeforeMultilogin(
   }
 
   // The default gaia account doesn't have token.
-  if (!base::Contains(chrome_accounts, gaia_accounts[0].id)) {
+  if (!std::ranges::contains(chrome_accounts, gaia_accounts[0].id)) {
     if (IsCookieBasedConsistencyMode()) {
       // Logout only if the default cookie account is valid.
       return gaia_accounts[0].valid;
@@ -361,7 +326,7 @@ CoreAccountId DiceAccountReconcilorDelegate::GetFirstGaiaAccountForMultilogin(
   // should try to put cached first account first since Gaia has no information
   // about it.
   if (gaia_accounts.empty() && !last_known_first_account_.empty() &&
-      base::Contains(chrome_accounts, last_known_first_account_)) {
+      std::ranges::contains(chrome_accounts, last_known_first_account_)) {
     // last_known_account_ is always empty on first execution.
     DCHECK(!first_execution);
     return last_known_first_account_;
@@ -431,30 +396,6 @@ void DiceAccountReconcilorDelegate::OnAccountsCookieDeletedByUserAction() {
           kAccountReconcilor_GaiaCookiesDeletedByUser,
       signin_metrics::ProfileSignout::kUserDeletedAccountCookies,
       /*revoke_only_if_in_error=*/false);
-
-  if (!identity_manager_->HasPrimaryAccount(consent_level)) {
-    return;
-  }
-
-  // In the explicit browser signin model the primary account should not be
-  // signed out if authentication cookies are deleted by user action.
-  if (AreGoogleCookiesRebuiltAfterClearingWhenSignedIn(
-          *identity_manager_, *signin_client_->GetPrefs())) {
-    return;
-  }
-
-#if BUILDFLAG(ENABLE_SUPERVISED_USERS)
-  if (IsAccountSupervised(identity_manager_)) {
-    return;
-  }
-#endif
-
-  // The primary account should be invalidated if the account cookie is deleted
-  // by user action.
-  auto* accounts_mutator = identity_manager_->GetAccountsMutator();
-  accounts_mutator->InvalidateRefreshTokenForPrimaryAccount(
-      signin_metrics::SourceForRefreshTokenOperation::
-          kAccountReconcilor_GaiaCookiesDeletedByUser);
 }
 
 void DiceAccountReconcilorDelegate::OnReconcileFinished(

@@ -8,7 +8,7 @@ import {FreAppController} from '/fre/fre_app_controller.js';
 import {getRequiredElement} from 'chrome://resources/js/util.js';
 
 import {BrowserProxyImpl} from './browser_proxy.js';
-import {type PageInterface, type PanelStateKind, ProfileReadyState} from './glic.mojom-webui.js';
+import {type PanelStateKind, ProfileReadyState} from './glic.mojom-webui.js';
 import {GlicAppController} from './glic_app_controller.js';
 
 export enum AppView {
@@ -21,7 +21,7 @@ export enum AppView {
  * First Run Experience (FRE) and the main GLIC application. It handles
  * the outcome of the FRE and delegates browser interactions to controllers.
  */
-export class AppRouter implements PageInterface {
+export class AppRouter {
   private glicController: GlicAppController|undefined;
   private freAppController: FreAppController|undefined;
   private glicContainer: HTMLElement;
@@ -33,7 +33,17 @@ export class AppRouter implements PageInterface {
   constructor() {
     this.glicContainer = getRequiredElement('glic-app-container');
     this.freContainer = getRequiredElement('fre-app-container');
-    this.browserProxy = new BrowserProxyImpl(this);
+    this.browserProxy = new BrowserProxyImpl();
+    this.browserProxy.pageCallbackRouter.intentToShow.addListener(
+        this.intentToShow_.bind(this));
+    this.browserProxy.pageCallbackRouter.updatePageState.addListener(
+        this.updatePageState_.bind(this));
+    // TODO(crbug.com/454120908): Remove this method after WebContents warming
+    // is rolled out.
+    this.browserProxy.pageCallbackRouter.setProfileReadyState.addListener(
+        this.setProfileReadyState_.bind(this));
+    this.browserProxy.preloadPageCallbackRouter.setProfileReadyState
+        .addListener(this.setProfileReadyState_.bind(this));
     const shouldShowFre = loadTimeData.getBoolean('shouldShowFre');
     if (shouldShowFre) {
       this.switchToView(AppView.FRE);
@@ -81,11 +91,11 @@ export class AppRouter implements PageInterface {
     }
   }
 
-  intentToShow() {
+  private intentToShow_() {
     this.glicController?.intentToShow();
   }
 
-  setProfileReadyState(state: ProfileReadyState) {
+  private setProfileReadyState_(state: ProfileReadyState) {
     // If the view is currently FRE, transition to GLIC once in a ready state.
     if (this.currentView === AppView.FRE &&
         state === ProfileReadyState.kReady) {
@@ -94,13 +104,13 @@ export class AppRouter implements PageInterface {
     this.glicController?.setProfileReadyState(state);
   }
 
-  updatePageState(panelStateKind: PanelStateKind) {
+  private updatePageState_(panelStateKind: PanelStateKind) {
     this.currentPanelStateKind = panelStateKind;
     this.glicController?.updatePageState(panelStateKind);
   }
 
   close(): void {
-    this.browserProxy.handler.closePanel();
+    this.browserProxy.pageHandler.closePanel();
   }
 
   reload(): void {

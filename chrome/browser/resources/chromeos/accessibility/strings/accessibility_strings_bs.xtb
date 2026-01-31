@@ -27,7 +27,7 @@
 <translation id="1146441463334103638">Uključivanje ili isključivanje ekrana</translation>
 <translation id="1156488781945104845">Trenutno vrijeme</translation>
 <translation id="1161762950103988776">Preskoči</translation>
-<translation id="1164857107703583584">Komande za preskakanje mogu se efikasno koristiti za kretanje na web stranici.</translation>
+<translation id="1164857107703583584">Naredbe za preskakanje mogu se efikasno koristiti za kretanje na web stranici.</translation>
 <translation id="1175914831232945926">Cifre</translation>
 <translation id="1186712907912748007">Prevlačenje i ispuštanje je u toku. <ph name="GESTURE" /> da završite. Drugi pokreti su privremeno nedostupni.</translation>
 <translation id="1188858454923323853">komplementarno</translation>
@@ -288,7 +288,7 @@
 <translation id="2792200646155001340">Također možete prevući jednim prstom zdesna ulijevo da pređete na prethodnu stavku. Isprobajte sada.</translation>
 <translation id="280499067616661124">Funkcija Pronađi na stranici u ChromeVoxu</translation>
 <translation id="2811204574343810641">Red</translation>
-<translation id="2816868829355607410">Područje za vježbanje: komande za preskakanje</translation>
+<translation id="2816868829355607410">Područje za vježbanje: naredbe za preskakanje</translation>
 <translation id="2841013758207633010">Vrijeme</translation>
 <translation id="284171465644749950">Prevlačite ulijevo ili udesno jednim prstom da pregledate teme</translation>
 <translation id="2843432675592278677">Nema prethodnog ARIA obilježja</translation>
@@ -302,7 +302,7 @@
 <translation id="287383510823843610">Tamnonarandžasta</translation>
 <translation id="2876760662374103627">Upravljanje licem je aktivno</translation>
 <translation id="2879867157561757640">Prevucite s tri prsta prema dolje</translation>
-<translation id="288178314850623291">Koristite komande za preskakanje da preskočite određene vrste elemenata. Da preskačete naslove unaprijed, pritisnite tipku za pretraživanje + H ili da preskačete unazad, pritisnite tipku za pretraživanje + Shift + H.</translation>
+<translation id="288178314850623291">Koristite naredbe za preskakanje da preskočite određene vrste elemenata. Da preskačete naslove unaprijed, pritisnite tipku za pretraživanje + H ili da preskačete unazad, pritisnite tipku za pretraživanje + Shift + H.</translation>
 <translation id="2894654529758326923">Informacije</translation>
 <translation id="2909584066358367921">Nema sljedećeg dugmeta</translation>
 <translation id="2911433807131383493">Otvaranje vodiča za ChromeVox</translation>
@@ -732,7 +732,7 @@
 <translation id="5648939288050772726">Čestitamo! Uspješno ste naučili osnove korištenja ChromeVoxa. Upamtite da u bilo kojem trenutku možete otvoriti komandni meni na ChromeVoxu pritiskom na tipku za pretraživanje + tačka. Posjetite sljedeće članke da saznate više o ChromeVoxu i ChromeOS-u.
     Ako ste pregledali tutorijal, pomoću ChromeVoxa idite do dugmeta Zatvori i kliknite na njega.</translation>
 <translation id="5653397561111110475">Korištenje funkcija pristupačnosti dodirnog ekrana Chromebook računara</translation>
-<translation id="5655682562155942719">Komande za skakanje</translation>
+<translation id="5655682562155942719">Naredbe za preskakanje</translation>
 <translation id="56637627897541303">Prostor za tekst</translation>
 <translation id="5666746275818170484">Pritisnite tipku sa strelicom ulijevo</translation>
 <translation id="5669637233317991674">Pritisnite tipku za pretraživanje i strelicu udesno ili tipku za pretraživanje i strelicu ulijevo da se krećete kroz ovu lekciju</translation>
@@ -974,7 +974,7 @@
 <translation id="7313717760367325059">pomoć</translation>
 <translation id="7317017974771324508">djelimično odabrano</translation>
 <translation id="7322442671176251901">Istraživanje dodirom</translation>
-<translation id="7344012264516629579">Dodatne komande za preskakanje uključuju, između ostalih, preskakanje pomoću linka, dugmeta i polja za potvrdu. Kompletnu listu komandi za preskakanje možete pronaći u menijima ChromeVoxa, koji se otvaraju pritiskom na tipku za pretraživanje i tipku s tačkom.</translation>
+<translation id="7344012264516629579">Dodatne naredbe za preskakanje uključuju, između ostalih, preskakanje pomoću linka, dugmeta i polja za potvrdu. Kompletnu listu naredbi za preskakanje možete pronaći u menijima ChromeVoxa, koji se otvaraju pritiskom na tipku za pretraživanje i tipku s tačkom.</translation>
 <translation id="7356165926712028380">Prebaci na brailovo pismo od osam tačaka</translation>
 <translation id="7356610683936413584">Detalj spiska opisa</translation>
 <translation id="737396357417333429">klk</translation>

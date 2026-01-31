@@ -66,13 +66,13 @@ class ExternalCacheImplTest : public testing::Test,
     return test_shared_loader_factory_;
   }
 
-  const std::optional<base::Value::Dict>& provided_prefs() { return prefs_; }
+  const std::optional<base::DictValue>& provided_prefs() { return prefs_; }
   const std::set<extensions::ExtensionId>& deleted_extension_files() const {
     return deleted_extension_files_;
   }
 
   // ExternalCacheDelegate:
-  void OnExtensionListsUpdated(const base::Value::Dict& prefs) override {
+  void OnExtensionListsUpdated(const base::DictValue& prefs) override {
     prefs_ = prefs.Clone();
   }
 
@@ -119,7 +119,7 @@ class ExternalCacheImplTest : public testing::Test,
   }
 
   base::Value CreateEntryWithUpdateUrl(bool from_webstore) {
-    base::Value::Dict entry;
+    base::DictValue entry;
     entry.Set(extensions::ExternalProviderImpl::kExternalUpdateUrl,
               from_webstore ? extension_urls::GetWebstoreUpdateUrl().spec()
                             : kNonWebstoreUpdateUrl);
@@ -127,7 +127,7 @@ class ExternalCacheImplTest : public testing::Test,
   }
 
   base::Value CreateEntryWithExternalCrx() {
-    base::Value::Dict entry;
+    base::DictValue entry;
     entry.Set(extensions::ExternalProviderImpl::kExternalCrx, kExternalCrxPath);
     entry.Set(extensions::ExternalProviderImpl::kExternalVersion,
               kExternalCrxVersion);
@@ -154,7 +154,7 @@ class ExternalCacheImplTest : public testing::Test,
   bool can_rollback_now_ = false;
   base::ScopedTempDir cache_dir_;
   base::ScopedTempDir temp_dir_;
-  std::optional<base::Value::Dict> prefs_;
+  std::optional<base::DictValue> prefs_;
   std::set<extensions::ExtensionId> deleted_extension_files_;
 
   ash::ScopedCrosSettingsTestHelper cros_settings_test_helper_;
@@ -167,7 +167,7 @@ TEST_F(ExternalCacheImplTest, Basic) {
       base::ThreadPool::CreateSequencedTaskRunner({base::MayBlock()}), this,
       true, false, false);
 
-  base::Value::Dict prefs;
+  base::DictValue prefs;
   prefs.Set(kTestExtensionId1, CreateEntryWithUpdateUrl(true));
   CreateExtensionFile(cache_dir, kTestExtensionId1, "1");
   prefs.Set(kTestExtensionId2, CreateEntryWithUpdateUrl(true));
@@ -182,7 +182,7 @@ TEST_F(ExternalCacheImplTest, Basic) {
   EXPECT_EQ(provided_prefs()->size(), 2ul);
 
   // File in cache from Webstore.
-  const base::Value::Dict* entry1 =
+  const base::DictValue* entry1 =
       provided_prefs()->FindDictByDottedPath(kTestExtensionId1);
   ASSERT_TRUE(entry1);
   EXPECT_EQ(entry1->Find(extensions::ExternalProviderImpl::kExternalUpdateUrl),
@@ -196,7 +196,7 @@ TEST_F(ExternalCacheImplTest, Basic) {
       Optional(true));
 
   // File in cache not from Webstore.
-  const base::Value::Dict* entry3 =
+  const base::DictValue* entry3 =
       provided_prefs()->FindDictByDottedPath(kTestExtensionId3);
   ASSERT_TRUE(entry3);
   EXPECT_EQ(entry3->Find(extensions::ExternalProviderImpl::kExternalUpdateUrl),
@@ -224,7 +224,7 @@ TEST_F(ExternalCacheImplTest, Basic) {
   content::RunAllTasksUntilIdle();
   EXPECT_EQ(provided_prefs()->size(), 3ul);
 
-  const base::Value::Dict* entry2 =
+  const base::DictValue* entry2 =
       provided_prefs()->FindDictByDottedPath(kTestExtensionId2);
   ASSERT_TRUE(entry2);
   EXPECT_EQ(entry2->Find(extensions::ExternalProviderImpl::kExternalUpdateUrl),
@@ -256,7 +256,7 @@ TEST_F(ExternalCacheImplTest, Basic) {
   content::RunAllTasksUntilIdle();
   EXPECT_EQ(provided_prefs()->size(), 4ul);
 
-  const base::Value::Dict* entry4 =
+  const base::DictValue* entry4 =
       provided_prefs()->FindDictByDottedPath(kTestExtensionId4);
   ASSERT_TRUE(entry4);
   EXPECT_EQ(entry4->Find(extensions::ExternalProviderImpl::kExternalUpdateUrl),
@@ -284,7 +284,7 @@ TEST_F(ExternalCacheImplTest, Basic) {
   // Shutdown with callback OnExtensionListsUpdated that clears prefs.
   external_cache.Shutdown(
       base::BindOnce(&ExternalCacheImplTest::OnExtensionListsUpdated,
-                     base::Unretained(this), base::Value::Dict()));
+                     base::Unretained(this), base::DictValue()));
   content::RunAllTasksUntilIdle();
   EXPECT_TRUE(provided_prefs()->empty());
 
@@ -303,7 +303,7 @@ TEST_F(ExternalCacheImplTest, PreserveExternalCrx) {
       base::ThreadPool::CreateSequencedTaskRunner({base::MayBlock()}), this,
       true, false, false);
 
-  base::Value::Dict prefs;
+  base::DictValue prefs;
   prefs.Set(kTestExtensionId1, CreateEntryWithExternalCrx());
   prefs.Set(kTestExtensionId2, CreateEntryWithUpdateUrl(true));
 
@@ -317,7 +317,7 @@ TEST_F(ExternalCacheImplTest, PreserveExternalCrx) {
   // prefs once the download of the .crx has finished. Extensions that are
   // provided as external crx path directly should also be visible in the
   // provided prefs directly.
-  const base::Value::Dict* entry1 =
+  const base::DictValue* entry1 =
       provided_prefs()->FindDictByDottedPath(kTestExtensionId1);
   ASSERT_TRUE(entry1);
   EXPECT_EQ(entry1->Find(extensions::ExternalProviderImpl::kExternalUpdateUrl),
@@ -338,7 +338,7 @@ TEST_F(ExternalCacheImplTest, ImmediateRollback) {
       true, false, false);
 
   CreateExtensionFile(cache_dir, kTestExtensionId1, "2");
-  external_cache.UpdateExtensionsList(base::Value::Dict().Set(
+  external_cache.UpdateExtensionsList(base::DictValue().Set(
       kTestExtensionId1, CreateEntryWithUpdateUrl(false)));
   content::RunAllTasksUntilIdle();
 
@@ -391,7 +391,7 @@ TEST_F(ExternalCacheImplTest, RollbackOnNextInit) {
       true, false, false);
 
   CreateExtensionFile(cache_dir, kTestExtensionId1, "2");
-  base::Value::Dict prefs;
+  base::DictValue prefs;
   prefs.Set(kTestExtensionId1, CreateEntryWithUpdateUrl(false));
   external_cache.UpdateExtensionsList(prefs.Clone());
   content::RunAllTasksUntilIdle();
@@ -461,7 +461,7 @@ TEST_F(ExternalCacheImplTest, RollbackDisallowed) {
       true, false, false);
 
   CreateExtensionFile(cache_dir, kTestExtensionId1, "2");
-  base::Value::Dict prefs;
+  base::DictValue prefs;
   prefs.Set(kTestExtensionId1, CreateEntryWithUpdateUrl(false));
   external_cache.UpdateExtensionsList(prefs.Clone());
   content::RunAllTasksUntilIdle();

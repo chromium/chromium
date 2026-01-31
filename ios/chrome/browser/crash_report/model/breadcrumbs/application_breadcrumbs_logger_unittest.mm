@@ -9,7 +9,6 @@
 #import <list>
 #import <string>
 
-#import "base/containers/contains.h"
 #import "base/files/scoped_temp_dir.h"
 #import "base/test/task_environment.h"
 #import "components/breadcrumbs/core/breadcrumb_manager.h"
@@ -38,7 +37,7 @@ class ApplicationBreadcrumbsLoggerTest : public PlatformTest {
 TEST_F(ApplicationBreadcrumbsLoggerTest, Orientation) {
   const auto& events = BreadcrumbManager::GetInstance().GetEvents();
   ASSERT_EQ(1u, events.size());
-  ASSERT_TRUE(base::Contains(events.back(), "Startup"));
+  ASSERT_TRUE(events.back().contains("Startup"));
 
   [NSNotificationCenter.defaultCenter
       postNotificationName:UIDeviceOrientationDidChangeNotification
@@ -46,8 +45,7 @@ TEST_F(ApplicationBreadcrumbsLoggerTest, Orientation) {
 
   ASSERT_EQ(2u, events.size());
 
-  EXPECT_TRUE(base::Contains(events.back(), kBreadcrumbOrientation))
-      << events.back();
+  EXPECT_TRUE(events.back().contains(kBreadcrumbOrientation)) << events.back();
 
   // Ensure that same orientation is not logged more than once.
   [NSNotificationCenter.defaultCenter

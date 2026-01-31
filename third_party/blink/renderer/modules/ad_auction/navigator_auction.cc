@@ -10,7 +10,6 @@
 #include <utility>
 
 #include "base/check.h"
-#include "base/containers/contains.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/numerics/checked_math.h"
@@ -2636,8 +2635,7 @@ bool CopyAllSlotsRequestedSizesFromIdlToMojo(
 
   // If `requested_size` is set, `all_slots_requested_sizes` must include it.
   if (output.auction_ad_config_non_shared_params->requested_size &&
-      !base::Contains(
-          distinct_sizes,
+      !distinct_sizes.contains(
           *output.auction_ad_config_non_shared_params->requested_size)) {
     exception_state.ThrowTypeError(
         StrCat({"allSlotsRequestedSizes for AuctionAdConfig with seller '",

@@ -158,7 +158,7 @@ TEST_P(PrivacyHubHandlerMicrophoneTest, HandleInitialMicrophoneSwitchState) {
   SetParamValueMicrophoneMute();
 
   privacy_hub_handler_->HandleInitialMicrophoneSwitchState(
-      base::Value::List().Append(this_test_name_));
+      base::ListValue().Append(this_test_name_));
 
   const base::Value data = GetLastWebUIResponse(this_test_name_);
 
@@ -187,7 +187,7 @@ INSTANTIATE_TEST_SUITE_P(HardwareSwitchStates,
 
 TEST_P(PrivacyHubHandlerCameraLedFallbackTest,
        HandleInitialCameraLedCallbackState) {
-  base::Value::List args;
+  base::ListValue args;
   args.Append(this_test_name_);
 
   privacy_hub_handler_->HandleInitialCameraLedFallbackState(args);
@@ -221,14 +221,14 @@ using PrivacyHubHandlerDeathTest = PrivacyHubHandlerTest;
 
 TEST_F(PrivacyHubHandlerDeathTest,
        HandleInitialMicrophoneSwitchStateNoCallbackId) {
-  base::Value::List args;
+  base::ListValue args;
 
   EXPECT_DEATH(privacy_hub_handler_->HandleInitialMicrophoneSwitchState(args),
                ".*");
 }
 
 TEST_F(PrivacyHubHandlerDeathTest, HandleInitialMicrophoneSwitchStateWithArgs) {
-  base::Value::List args;
+  base::ListValue args;
   args.Append(this_test_name_);
   args.Append(base::Value());
 

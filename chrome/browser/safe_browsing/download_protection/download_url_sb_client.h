@@ -62,7 +62,7 @@ class DownloadUrlSBClient : public SafeBrowsingDatabaseManager::Client,
 
   void CheckDone(SBThreatType threat_type);
 
-  void ReportMalware(SBThreatType threat_type);
+  void ReportMalware();
 
   void IdentifyReferrerChain();
 
@@ -87,8 +87,6 @@ class DownloadUrlSBClient : public SafeBrowsingDatabaseManager::Client,
   CheckDownloadCallback callback_;
   scoped_refptr<SafeBrowsingUIManager> ui_manager_;
   base::TimeTicks start_time_;
-  ExtendedReportingLevel extended_reporting_level_;
-  bool is_enhanced_protection_;
   scoped_refptr<SafeBrowsingDatabaseManager> database_manager_;
   base::ScopedObservation<download::DownloadItem,
                           download::DownloadItem::Observer>

@@ -29,7 +29,7 @@ namespace {
 
 class MockLogSource {
  public:
-  MOCK_METHOD0(Log, const char*());
+  MOCK_METHOD(const char*, Log, ());
 };
 
 }  // namespace

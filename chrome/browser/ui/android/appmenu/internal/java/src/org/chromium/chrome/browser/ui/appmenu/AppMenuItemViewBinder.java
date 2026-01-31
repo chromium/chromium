@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.ui.appmenu;
 
 import android.annotation.SuppressLint;
+import android.content.Context;
 import android.content.res.ColorStateList;
 import android.content.res.TypedArray;
 import android.graphics.drawable.Drawable;
@@ -14,6 +15,7 @@ import android.widget.ImageButton;
 import android.widget.TextView;
 
 import androidx.annotation.ColorRes;
+import androidx.annotation.Px;
 import androidx.appcompat.content.res.AppCompatResources;
 import androidx.core.graphics.drawable.DrawableCompat;
 import androidx.core.widget.ImageViewCompat;
@@ -228,6 +230,17 @@ class AppMenuItemViewBinder {
         }
     }
 
+    public static @Px int getIconRowItemPixelHeight(Context context) {
+        TypedArray a =
+                context.obtainStyledAttributes(
+                        new int[] {R.attr.minInteractTargetSize, R.attr.appMenuIconRowPadding});
+        int itemRowHeight = a.getDimensionPixelSize(0, 0);
+        int iconRowPadding = a.getDimensionPixelSize(1, 0);
+        a.recycle();
+
+        return itemRowHeight + 2 * iconRowPadding;
+    }
+
     public static void bindItemWithSubmenu(PropertyModel model, View view, PropertyKey key) {
         if (key == AppMenuItemProperties.MENU_ITEM_ID) {
             int id = model.get(AppMenuItemProperties.MENU_ITEM_ID);
@@ -291,12 +304,19 @@ class AppMenuItemViewBinder {
         ChromeImageView imageView = view.findViewById(R.id.menu_item_icon);
 
         @ColorRes int colorResId = model.get(AppMenuItemProperties.ICON_COLOR_RES);
-        if (colorResId == 0) {
+        ColorStateList tintList = null;
+        boolean noTint = model.get(AppMenuItemProperties.ICON_NO_TINT);
+
+        if (noTint) {
+            // No-op: If noTint is true, we do not want the default grey tint. tintList = null;
+        } else if (colorResId == 0) {
             // If there is no color assigned to the icon, use the default color.
             colorResId = R.color.default_icon_color_secondary_tint_list;
+            tintList = AppCompatResources.getColorStateList(imageView.getContext(), colorResId);
+        } else {
+            // User the specific color requested.
+            tintList = AppCompatResources.getColorStateList(imageView.getContext(), colorResId);
         }
-        ColorStateList tintList =
-                AppCompatResources.getColorStateList(imageView.getContext(), colorResId);
 
         if (model.get(AppMenuItemProperties.ICON_SHOW_BADGE)) {
             // Draw the icon with a red badge on top.

@@ -32,7 +32,7 @@ TEST_F(OmahaAttributesHandlerUnitTest, LogPolicyViolationUWSMetrics) {
   base::HistogramTester histograms;
   InitializeGoodInstalledExtensionService();
   service()->Init();
-  base::Value::Dict attributes;
+  base::DictValue attributes;
   attributes.Set("_policy_violation", true);
   attributes.Set("_potentially_uws", true);
 
@@ -61,7 +61,7 @@ TEST_F(OmahaAttributesHandlerUnitTest, LogMalwareMetrics) {
   InitializeGoodInstalledExtensionService();
   service()->Init();
 
-  base::Value::Dict attributes;
+  base::DictValue attributes;
 
   attributes.Set("_malware", false);
   service()->PerformActionBasedOnOmahaAttributes(kTestExtensionId, attributes);
@@ -102,7 +102,7 @@ TEST_F(OmahaAttributesHandlerUnitTest, DisableRemotelyForPolicyViolation) {
 
   EXPECT_TRUE(state_tester.ExpectEnabled(kTestExtensionId));
 
-  base::Value::Dict attributes;
+  base::DictValue attributes;
   attributes.Set("_policy_violation", true);
   service()->PerformActionBasedOnOmahaAttributes(kTestExtensionId, attributes);
 
@@ -141,7 +141,7 @@ TEST_F(OmahaAttributesHandlerUnitTest, DisableRemotelyForPotentiallyUws) {
 
   EXPECT_TRUE(state_tester.ExpectEnabled(kTestExtensionId));
 
-  base::Value::Dict attributes;
+  base::DictValue attributes;
   attributes.Set("_potentially_uws", true);
   service()->PerformActionBasedOnOmahaAttributes(kTestExtensionId, attributes);
 
@@ -179,7 +179,7 @@ TEST_F(OmahaAttributesHandlerUnitTest, MultipleGreylistStates) {
 
   EXPECT_TRUE(state_tester.ExpectEnabled(kTestExtensionId));
 
-  base::Value::Dict attributes;
+  base::DictValue attributes;
   attributes.Set("_policy_violation", true);
   service()->PerformActionBasedOnOmahaAttributes(kTestExtensionId, attributes);
 
@@ -233,7 +233,7 @@ TEST_F(OmahaAttributesHandlerUnitTest, KeepDisabledWhenMalwareRemoved) {
   EXPECT_TRUE(state_tester.ExpectEnabled(kTestExtensionId));
 
   auto attributes =
-      base::Value::Dict().Set("_malware", true).Set("_policy_violation", true);
+      base::DictValue().Set("_malware", true).Set("_policy_violation", true);
   service()->PerformActionBasedOnOmahaAttributes(kTestExtensionId, attributes);
 
   ExtensionPrefs* prefs = ExtensionPrefs::Get(profile());
@@ -264,7 +264,7 @@ TEST_F(OmahaAttributesHandlerUnitTest, ExtensionUninstalledBeforeNotified) {
   registrar()->UninstallExtension(kTestExtensionId,
                                   UNINSTALL_REASON_FOR_TESTING, nullptr);
 
-  auto attributes = base::Value::Dict().Set("_malware", true);
+  auto attributes = base::DictValue().Set("_malware", true);
   // kTestExtensionId is already uninstalled. Performing action on it should
   // not crash. Regression test for https://crbug.com/1305490.
   service()->PerformActionBasedOnOmahaAttributes(kTestExtensionId, attributes);

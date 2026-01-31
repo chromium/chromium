@@ -34,13 +34,13 @@ class OnTaskBlocklist {
     OnTaskBlocklistSource& operator=(const OnTaskBlocklistSource&) = delete;
     ~OnTaskBlocklistSource() override = default;
 
-    const base::Value::List* GetBlocklistSpec() const override;
-    const base::Value::List* GetAllowlistSpec() const override;
+    const base::ListValue* GetBlocklistSpec() const override;
+    const base::ListValue* GetAllowlistSpec() const override;
     void SetBlocklistObserver(base::RepeatingClosure observer) override {}
 
    private:
-    base::Value::List blocklist_;
-    base::Value::List allowlist_;
+    base::ListValue blocklist_;
+    base::ListValue allowlist_;
   };
 
   explicit OnTaskBlocklist(

@@ -19,6 +19,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "components/services/filesystem/public/mojom/types.mojom.h"
 #include "content/common/content_export.h"
+#include "content/public/common/child_process_id.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
@@ -54,7 +55,7 @@ class CONTENT_EXPORT FileSystemManagerImpl
   // the UI thread. Used by render frames (via the RenderFrameHost), workers
   // and pepper (via the render process host).
   FileSystemManagerImpl(
-      int process_id,
+      ChildProcessId process_id,
       scoped_refptr<storage::FileSystemContext> file_system_context,
       scoped_refptr<ChromeBlobStorageContext> blob_storage_context);
 
@@ -275,7 +276,7 @@ class CONTENT_EXPORT FileSystemManagerImpl
                           base::FilePath platform_path);
   static void GetPlatformPathOnFileThread(
       const GURL& path,
-      int process_id,
+      ChildProcessId process_id,
       scoped_refptr<storage::FileSystemContext> context,
       base::WeakPtr<FileSystemManagerImpl> file_system_manager,
       const blink::StorageKey& storage_key,
@@ -295,7 +296,7 @@ class CONTENT_EXPORT FileSystemManagerImpl
       OperationListenerID listener_id);
   void OnConnectionErrorForOpListeners(OperationListenerID listener_id);
 
-  const int process_id_;
+  const ChildProcessId process_id_;
   const scoped_refptr<storage::FileSystemContext> context_;
   const scoped_refptr<ChromeBlobStorageContext> blob_storage_context_;
   std::unique_ptr<storage::FileSystemOperationRunner> operation_runner_;

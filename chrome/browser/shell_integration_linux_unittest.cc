@@ -16,7 +16,6 @@
 
 #include "base/base_paths.h"
 #include "base/command_line.h"
-#include "base/containers/contains.h"
 #include "base/environment.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -65,7 +64,7 @@ class MockEnvironment : public base::Environment {
   }
 
   std::optional<std::string> GetVar(base::cstring_view variable_name) override {
-    if (!base::Contains(variables_, std::string(variable_name))) {
+    if (!variables_.contains(std::string(variable_name))) {
       return std::nullopt;
     }
     return variables_[std::string(variable_name)];

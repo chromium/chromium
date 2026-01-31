@@ -18,6 +18,7 @@
 namespace blink {
 
 class ExecutionContext;
+struct IsolatedAppPermissionPolicyEntry;
 
 // Returns the list of features which are currently available in this context,
 // including any features which have been made available by an origin trial.
@@ -50,6 +51,29 @@ class CORE_EXPORT PermissionsPolicyParser {
     Vector<Declaration> declarations;
   };
 
+  // Converts the permissions policy from the Isolated Web App manifest to
+  // network::ParsedPermissionsPolicy and combines it with the policies
+  // specified in the headers, providing with the final allowlists to be used
+  // for an IWA page.
+  //
+  // The combining is done in the following way:
+  // For each (`feature`, `allowlist`) entry specified within the manifest:
+  // - If `feature` is specified only within the manifest, manifest `allowlist`
+  //   is used.
+  // - If the `feature` is specified within both the manifest and the headers,
+  //   the intersection of both `allowlist`s is used.
+  //
+  // In a nutshell, what is specified within the manifest is a base policy that
+  // individual page's headers can constrain.
+  //
+  // More: https://github.com/WICG/isolated-web-apps/blob/main/Permissions.md
+  static network::ParsedPermissionsPolicy ParseIsolatedAppPermissionsPolicy(
+      const Vector<IsolatedAppPermissionPolicyEntry>& isolated_app_policy,
+      const network::ParsedPermissionsPolicy& permissions_policy_from_headers,
+      const SecurityOrigin&,
+      PolicyParserMessageBuffer& permissions_policy_logger,
+      ExecutionContext* execution_context);
+
   // Converts a header policy string into a vector of allowlists, one for each
   // feature specified. Unrecognized features are filtered out. The optional
   // ExecutionContext is used to determine if any origin trials affect the
@@ -58,7 +82,7 @@ class CORE_EXPORT PermissionsPolicyParser {
   static network::ParsedPermissionsPolicy ParseHeader(
       const String& feature_policy_header,
       const String& permission_policy_header,
-      scoped_refptr<const SecurityOrigin>,
+      const SecurityOrigin&,
       PolicyParserMessageBuffer& feature_policy_logger,
       PolicyParserMessageBuffer& permissions_policy_logger,
       ExecutionContext* = nullptr);
@@ -70,8 +94,8 @@ class CORE_EXPORT PermissionsPolicyParser {
   //     "vibrate a.com 'src'; fullscreen 'none'; payment 'self', payment *".
   static network::ParsedPermissionsPolicy ParseAttribute(
       const String& policy,
-      scoped_refptr<const SecurityOrigin> self_origin,
-      scoped_refptr<const SecurityOrigin> src_origin,
+      const SecurityOrigin& self_origin,
+      const SecurityOrigin& src_origin,
       PolicyParserMessageBuffer& logger,
       ExecutionContext* = nullptr);
 
@@ -79,22 +103,22 @@ class CORE_EXPORT PermissionsPolicyParser {
   // Unrecognized features are filtered out.
   static network::ParsedPermissionsPolicy ParsePolicyFromNode(
       Node&,
-      scoped_refptr<const SecurityOrigin>,
+      const SecurityOrigin&,
       PolicyParserMessageBuffer& logger,
       ExecutionContext* = nullptr);
 
   static network::ParsedPermissionsPolicy ParseFeaturePolicyForTest(
       const String& policy,
-      scoped_refptr<const SecurityOrigin> self_origin,
-      scoped_refptr<const SecurityOrigin> src_origin,
+      const SecurityOrigin& self_origin,
+      const SecurityOrigin* src_origin,
       PolicyParserMessageBuffer& logger,
       const FeatureNameMap& feature_names,
       ExecutionContext* = nullptr);
 
   static network::ParsedPermissionsPolicy ParsePermissionsPolicyForTest(
       const String& policy,
-      scoped_refptr<const SecurityOrigin> self_origin,
-      scoped_refptr<const SecurityOrigin> src_origin,
+      const SecurityOrigin& self_origin,
+      const SecurityOrigin* src_origin,
       PolicyParserMessageBuffer& logger,
       const FeatureNameMap& feature_names,
       ExecutionContext* = nullptr);

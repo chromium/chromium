@@ -514,7 +514,7 @@ TEST(UnexportableKeyServiceProxyTest,
   EXPECT_THAT(result, ErrorIs(expected_error));
 }
 
-TEST(UnexportableKeyServiceProxyTest, DeleteKeySuccess) {
+TEST(UnexportableKeyServiceProxyTest, DeleteKeysSuccess) {
   base::test::TaskEnvironment task_environment;
   mojo::Remote<mojom::UnexportableKeyService> uks_remote;
   mojo::PendingReceiver<mojom::UnexportableKeyService> receiver =
@@ -526,17 +526,18 @@ TEST(UnexportableKeyServiceProxyTest, DeleteKeySuccess) {
   const base::UnguessableToken test_token = base::UnguessableToken::Create();
   UnexportableKeyId key_id(test_token);
 
-  EXPECT_CALL(mock_uks, DeleteKeySlowlyAsync(Eq(key_id), kTestPriority, _))
-      .WillOnce(RunOnceCallback<2>(base::ok()));
+  EXPECT_CALL(mock_uks,
+              DeleteKeysSlowlyAsync(ElementsAre(key_id), kTestPriority, _))
+      .WillOnce(RunOnceCallback<2>(1));
 
-  TestFuture<std::optional<ServiceError>> future;
-  uks_remote->DeleteKey(key_id, kTestPriority, future.GetCallback());
+  TestFuture<ServiceErrorOr<uint64_t>> future;
+  uks_remote->DeleteKeys({key_id}, kTestPriority, future.GetCallback());
 
   const auto& result = future.Get();
-  EXPECT_THAT(result, Eq(std::nullopt));
+  EXPECT_THAT(result, ValueIs(1));
 }
 
-TEST(UnexportableKeyServiceProxyTest, DeleteKeyError) {
+TEST(UnexportableKeyServiceProxyTest, DeleteKeysError) {
   base::test::TaskEnvironment task_environment;
   mojo::Remote<mojom::UnexportableKeyService> uks_remote;
   mojo::PendingReceiver<mojom::UnexportableKeyService> receiver =
@@ -549,14 +550,15 @@ TEST(UnexportableKeyServiceProxyTest, DeleteKeyError) {
   UnexportableKeyId key_id(test_token);
   ServiceError expected_error = ServiceError::kKeyNotFound;
 
-  EXPECT_CALL(mock_uks, DeleteKeySlowlyAsync(Eq(key_id), kTestPriority, _))
+  EXPECT_CALL(mock_uks,
+              DeleteKeysSlowlyAsync(ElementsAre(key_id), kTestPriority, _))
       .WillOnce(RunOnceCallback<2>(base::unexpected(expected_error)));
 
-  TestFuture<std::optional<ServiceError>> future;
-  uks_remote->DeleteKey(key_id, kTestPriority, future.GetCallback());
+  TestFuture<ServiceErrorOr<uint64_t>> future;
+  uks_remote->DeleteKeys({key_id}, kTestPriority, future.GetCallback());
 
   const auto& result = future.Get();
-  EXPECT_THAT(result, Optional(Eq(expected_error)));
+  EXPECT_THAT(result, ErrorIs(expected_error));
 }
 
 TEST(UnexportableKeyServiceProxyTest, DeleteAllKeysSuccess) {

@@ -11,7 +11,6 @@
 #include <string>
 #include <vector>
 
-#include "base/containers/contains.h"
 #include "base/containers/flat_set.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -50,7 +49,7 @@ class UpdateDataProviderExtensionsBrowserClient
 
   bool IsExtensionEnabled(const std::string& id,
                           content::BrowserContext* context) const override {
-    return base::Contains(enabled_ids_, id);
+    return enabled_ids_.contains(id);
   }
 
   void AddEnabledExtension(const std::string& id) { enabled_ids_.insert(id); }
@@ -118,7 +117,7 @@ class UpdateDataProviderTest : public ExtensionsTest {
     ASSERT_TRUE(AddFileToDirectory(temp_dir.GetPath(), bar_html, "world"));
 
     ExtensionBuilder builder;
-    auto manifest_builder = base::Value::Dict()
+    auto manifest_builder = base::DictValue()
                                 .Set("name", "My First Extension")
                                 .Set("version", version)
                                 .Set("manifest_version", 2);

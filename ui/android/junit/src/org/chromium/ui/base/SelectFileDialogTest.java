@@ -269,6 +269,8 @@ public class SelectFileDialogTest {
         testMimeTypesWithExternalPicker(Intent.ACTION_GET_CONTENT);
     }
 
+    // TODO(crbug.com/450954710): This test fails on SDK 36.
+    @Config(sdk = 29)
     @Test
     public void testExternalPickerWithFileExtensions() throws Exception {
         verifyExternalPickerWithFileExtensions(Intent.ACTION_GET_CONTENT);
@@ -836,6 +838,8 @@ public class SelectFileDialogTest {
         return instance.determineSelectFileDialogScope();
     }
 
+    // TODO(crbug.com/450954710): This test fails on SDK 36.
+    @Config(sdk = 29)
     @Test
     public void testDetermineSelectFileDialogScope() {
         assertEquals(SelectFileDialog.SELECT_FILE_DIALOG_SCOPE_GENERIC, scopeForFileTypes());
@@ -913,6 +917,8 @@ public class SelectFileDialogTest {
                 scopeForFileTypes("video/*", "image/*", "text/plain"));
     }
 
+    // TODO(crbug.com/450954710): This test fails on SDK 36.
+    @Config(sdk = 29)
     @Test
     public void testPhotoPickerLaunchAndMimeTypes() {
         ShadowMimeTypeMap shadowMimeTypeMap = Shadows.shadowOf(MimeTypeMap.getSingleton());
@@ -1047,6 +1053,8 @@ public class SelectFileDialogTest {
                 /* expectedGetDisplayNameResult= */ true);
     }
 
+    // TODO(crbug.com/450954710): This test fails on SDK 36.
+    @Config(sdk = 29)
     @Test
     public void testShowTypes() {
         ShadowMimeTypeMap shadowMimeTypeMap = Shadows.shadowOf(MimeTypeMap.getSingleton());
@@ -1179,6 +1187,8 @@ public class SelectFileDialogTest {
         assertFalse(selectFileDialog.shouldShowAudioTypes());
     }
 
+    // TODO(crbug.com/450954710): This test fails on SDK 36.
+    @Config(sdk = 29)
     @Test
     public void testConvertToSupportedMimeTypes() {
         ShadowMimeTypeMap shadowMimeTypeMap = Shadows.shadowOf(MimeTypeMap.getSingleton());

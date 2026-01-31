@@ -15,10 +15,10 @@ namespace {
 
 constexpr char kCommandLineArgs[] = "command-line-args";
 
-base::Value::Dict CreateConfigWithSwitchValue(std::string switch_name,
-                                              std::string switch_value) {
-  base::Value::Dict config_dict;
-  base::Value::Dict args;
+base::DictValue CreateConfigWithSwitchValue(std::string switch_name,
+                                            std::string switch_value) {
+  base::DictValue config_dict;
+  base::DictValue args;
   args.Set(switch_name, switch_value);
   config_dict.Set(kCommandLineArgs, std::move(args));
   return config_dict;
@@ -64,10 +64,10 @@ TEST_F(WebEngineConfigTest, DisallowedCommandLineArgs) {
 }
 
 TEST_F(WebEngineConfigTest, WronglyTypedCommandLineArgs) {
-  base::Value::Dict config;
+  base::DictValue config;
 
   // Specify a configuration that sets valid args with invalid value.
-  base::Value::Dict args;
+  base::DictValue args;
   args.Set("renderer-process-limit", false);
   config.Set(kCommandLineArgs, std::move(args));
 

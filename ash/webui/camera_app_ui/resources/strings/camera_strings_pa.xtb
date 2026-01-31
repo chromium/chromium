@@ -48,6 +48,7 @@
 <translation id="2761536921376153655">ਸਕੈਨ ਦੀ ਕਿਸਮ</translation>
 <translation id="28682968802727151">ਪ੍ਰਤਿਬਿੰਬ ਦੀ ਪੂਰਵ-ਝਲਕ</translation>
 <translation id="2879583609344924966"><ph name="CAMERA" /> ਪਲੱਗ-ਇਨ ਕੀਤਾ ਹੋਇਆ ਹੈ।</translation>
+<translation id="3063987824612038785">ਸਾਰੀਆਂ ਕੈਮਰਾ ਫ਼ਾਈਲਾਂ Google Drive ਵਿੱਚ ਰੱਖਿਅਤ ਹੋਣਗੀਆਂ</translation>
 <translation id="3067436040345934772">ਸੱਜੇ ਪਾਸੇ ਪੈਨ ਕਰੋ</translation>
 <translation id="3081586908890909590">'ਵੀਡੀਓ ਰਿਕਾਰਡ ਕਰੋ' ਮੋਡ 'ਤੇ ਜਾਓ</translation>
 <translation id="3091480460059548935">ਪੂਰਵ-ਝਲਕ ਵਿੱਚ ਲਿਖਤ ਦੀ ਪਛਾਣ ਕਰਨ ਦੀ ਸੁਵਿਧਾ</translation>
@@ -67,6 +68,7 @@
 <translation id="3642192109456033823">ਵੀਡੀਓ ’ਤੇ ਪ੍ਰਕਿਰਿਆ ਕੀਤੀ ਜਾ ਰਹੀ ਹੈ...</translation>
 <translation id="3789724198583203151">ਘੜੀ ਦੀ ਉਲਟੀ ਦਿਸ਼ਾ ਵਿੱਚ 90 ਡਿਗਰੀ ਘੁਮਾਓ</translation>
 <translation id="3810838688059735925">ਵੀਡੀਓ</translation>
+<translation id="386366972082231038">ਸਾਰੀਆਂ ਕੈਮਰਾ ਫ਼ਾਈਲਾਂ OneDrive ਵਿੱਚ ਰੱਖਿਅਤ ਹੋਣਗੀਆਂ</translation>
 <translation id="4060608699153044055">ਡੀਵਾਈਸ ਦੀ ਸਟੋਰੇਜ ਜਗ੍ਹਾ ਘੱਟ ਹੋਣ ਕਰਕੇ ਤੁਸੀਂ ਰਿਕਾਰਡ ਨਹੀਂ ਕਰ ਸਕਦੇ। ਰਿਕਾਰਡਿੰਗ ਸ਼ੁਰੂ ਕਰਨ ਲਈ, ਤੁਹਾਨੂੰ ਆਪਣੇ ਡੀਵਾਈਸ ਵਿੱਚ ਜਗ੍ਹਾ ਖਾਲੀ ਕਰਨੀ ਪਵੇਗੀ।</translation>
 <translation id="4061162772429051350"><ph name="MAGAPIXELS_AMOUNT" /> MP</translation>
 <translation id="4118525110028899586">ਰਿਕਾਰਡਿੰਗ ਰੋਕੋ</translation>
@@ -100,6 +102,7 @@
 <translation id="5634947914995388399">ਵਿੰਡੋ ਦਾ ਵਿਸਤਾਰ ਕਰੋ ਅਤੇ ਸਕੈਨ ਕਰਨਾ ਬੰਦ ਕਰੋ</translation>
 <translation id="5662366948659129155">ਪੰਨਾ <ph name="COUNT" /> ਸਕੈਨ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ</translation>
 <translation id="5671277269877808209">ਵਰਗ</translation>
+<translation id="5725797473946373607">ਅਗਲੀ ਵਾਰ ਇਹ ਵਿੰਡੋ ਨਾ ਦਿਖਾਓ</translation>
 <translation id="574392208103952083">ਦਰਮਿਆਨਾ</translation>
 <translation id="5746169159649715125">PDF ਵਜੋਂ ਰੱਖਿਅਤ ਕਰੋ</translation>
 <translation id="5753488212459587150">ਮਾਹਰ ਮੋਡ ਚਾਲੂ ਕਰੋ</translation>
@@ -156,6 +159,7 @@
 <translation id="7983668134180549431">ਲਿਖਤ ਦਾ ਪਤਾ ਲੱਗਾ।</translation>
 <translation id="8079255378695216066">ਰਿਕਾਰਡਿੰਗ ਨੂੰ ਸ਼ੁਰੂ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਦਾ</translation>
 <translation id="8120146556401698679">ਪੈਨ ਕਰੋ ਟੇਢਾ ਕਰੋ ਜ਼ੂਮ ਕਰੋ</translation>
+<translation id="8127459436205030819">ਤੁਹਾਡੀਆਂ ਫ਼ਾਈਲਾਂ ਤੁਹਾਡੇ ਪ੍ਰਸ਼ਾਸਕ ਨੂੰ ਦਿਖਾਈ ਦੇ ਸਕਦੀਆਂ ਹਨ</translation>
 <translation id="8131740175452115882">ਪੁਸ਼ਟੀ ਕਰੋ</translation>
 <translation id="8145038249676204903">'ਫ਼ੋਟੋ ਖਿੱਚੋ' ਮੋਡ 'ਤੇ ਜਾਓ</translation>
 <translation id="8167081290930651932">ਫ਼ੋਟੋ ਵਜੋਂ ਰੱਖਿਅਤ ਕਰੋ</translation>
@@ -165,6 +169,7 @@
 <translation id="8609951387004618906"><ph name="URL" /> ਖੋਲ੍ਹੋ</translation>
 <translation id="8629662593426079630">360p</translation>
 <translation id="8711011893539266636">ਮਾਈਕ੍ਰੋਫ਼ੋਨ ਨੂੰ ਮਿਊਟ 'ਤੇ ਟੌਗਲ ਕਰੋ। ਮਿਊਟ ਚਾਲੂ ਹੈ</translation>
+<translation id="8712637175834984815">ਸਮਝ ਲਿਆ</translation>
 <translation id="8730621377337864115">ਹੋ ਗਿਆ</translation>
 <translation id="8732462232047530626">ਮੈਟਾਡਾਟੇ ਦੀ ਪੂਰਵ-ਝਲਕ ਦੇਖੋ</translation>
 <translation id="874854738381978209">ਵਾਈ-ਫਾਈ ਨੈੱਟਵਰਕ ਦੀ ਪਛਾਣ ਕੀਤੀ ਗਈ।</translation>

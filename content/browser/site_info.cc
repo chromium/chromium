@@ -8,7 +8,6 @@
 #include <optional>
 
 #include "base/command_line.h"
-#include "base/containers/contains.h"
 #include "base/debug/dump_without_crashing.h"
 #include "base/memory/safe_ref.h"
 #include "base/no_destructor.h"
@@ -17,7 +16,6 @@
 #include "content/browser/child_process_security_policy_impl.h"
 #include "content/browser/origin_agent_cluster_isolation_state.h"
 #include "content/browser/renderer_host/render_process_host_impl.h"
-#include "content/browser/security/coop/cross_origin_isolation_mode.h"
 #include "content/browser/site_instance_impl.h"
 #include "content/browser/webui/url_data_manager_backend.h"
 #include "content/common/features.h"
@@ -54,9 +52,19 @@ WebUIDomains GetWebUIDomains(const GURL& url) {
 // to share a process whilst maintaining independent SiteURLs to allow for
 // WebUIType differentiation.
 bool IsWebUIAndUsesTLDForProcessLockURL(const GURL& url) {
-  if (!base::Contains(URLDataManagerBackend::GetWebUISchemes(), url.scheme())) {
+  if (!std::ranges::contains(URLDataManagerBackend::GetWebUISchemes(),
+                             url.scheme())) {
     return false;
   }
+
+#if !BUILDFLAG(IS_ANDROID)
+  if (features::kInitialWebUIUseSeparateProcess.Get() &&
+      GetContentClient()->browser()->IsInitialWebUIURL(url)) {
+    // If initial WebUIs need to use a different process separate from other
+    // WebUIs, use the full URL for process lock instead of just the TLD.
+    return false;
+  }
+#endif
 
   WebUIDomains domains = GetWebUIDomains(url);
   // This only applies to WebUI urls with two or more non-empty domains.
@@ -653,11 +661,11 @@ std::string SiteInfo::GetDebugString() const {
                         ->common_coi_origin.GetDebugString();
     if (agent_cluster_key_.GetCrossOriginIsolationKey()
             ->cross_origin_isolation_mode ==
-        CrossOriginIsolationMode::kConcrete) {
+        blink::mojom::CrossOriginIsolationMode::kConcrete) {
       debug_string += ", concrete coi";
     } else if (agent_cluster_key_.GetCrossOriginIsolationKey()
                    ->cross_origin_isolation_mode ==
-               CrossOriginIsolationMode::kLogical) {
+               blink::mojom::CrossOriginIsolationMode::kLogical) {
       debug_string += ", logical coi";
     }
   }
@@ -700,7 +708,7 @@ bool SiteInfo::ShouldLockProcessToSite(
   // Most WebUI processes should be locked on all platforms.  The only exception
   // is NTP, handled via the separate callout to the embedder.
   const auto& webui_schemes = URLDataManagerBackend::GetWebUISchemes();
-  if (base::Contains(webui_schemes, site_url_.scheme())) {
+  if (std::ranges::contains(webui_schemes, site_url_.scheme())) {
     return GetContentClient()->browser()->DoesWebUIUrlRequireProcessLock(
         site_url_);
   }

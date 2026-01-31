@@ -20,14 +20,17 @@ class MockPage extends TestBrowserProxy implements PageInterface {
 
   constructor() {
     super([
-      'setThreadTitle',
-      'postMessageToWebview',
-      'onHandshakeComplete',
-      'onSidePanelStateChanged',
-      'setOAuthToken',
-      'onContextUpdated',
       'hideInput',
+      'postMessageToWebview',
+      'onAiPageStatusChanged',
+      'onContextUpdated',
+      'onHandshakeComplete',
+      'onLensOverlayStateChanged',
+      'onSidePanelStateChanged',
       'restoreInput',
+      'setOAuthToken',
+      'setTaskDetails',
+      'setThreadTitle',
     ]);
   }
 
@@ -73,6 +76,30 @@ class MockPage extends TestBrowserProxy implements PageInterface {
   restoreInput() {
     this.methodCalled('restoreInput');
   }
+
+  onZeroStateChange() {
+    this.methodCalled('onZeroStateChange');
+  }
+
+  onAiPageStatusChanged(isAiPage: boolean) {
+    this.methodCalled('onAiPageStatusChanged', isAiPage);
+  }
+
+  onLensOverlayStateChanged(isOverlayShowing: boolean) {
+    this.methodCalled('onLensOverlayStateChanged', isOverlayShowing);
+  }
+
+  setTaskDetails(taskId: Uuid, threadId: string, turnId: string) {
+    this.methodCalled('setTaskDetails', taskId, threadId, turnId);
+  }
+
+  showErrorPage() {
+    this.methodCalled('showErrorPage');
+  }
+
+  hideErrorPage() {
+    this.methodCalled('hideErrorPage');
+  }
 }
 
 /**
@@ -87,25 +114,31 @@ class TestContextualTasksPageHandler extends TestBrowserProxy implements
 
   constructor(url: string, page: MockPage) {
     super([
+      'closeSidePanel',
+      'getCommonSearchParams',
+      'getRecentTabs',
+      'getSearchUrl',
       'getThreadUrl',
       'getUrlForTask',
+      'isAiPage',
+      'isShownInTab',
+      'isZeroState',
+      'moveTaskUiToNewTab',
+      'onboardingTooltipDismissed',
+      'onFileClickedFromSourcesMenu',
+      'onImageClickedFromSourcesMenu',
+      'onTabClickedFromSourcesMenu',
+      'onWebviewMessage',
+      'openHelpUi',
+      'openMyActivityUi',
+      'openOnboardingHelpUi',
       'setTaskId',
       'setThreadTitle',
-      'closeSidePanel',
       'showThreadHistory',
-      'isShownInTab',
-      'openMyActivityUi',
-      'openHelpUi',
-      'moveTaskUiToNewTab',
-      'onTabClickedFromSourcesMenu',
-      'getSearchUrl',
-      'onWebviewMessage',
       'submitQuery',
-      'getRecentTabs',
-      'getCommonSearchParams',
     ]);
 
-    this.url_ = {url};
+    this.url_ = url;
     this.page_ = page;
   }
 
@@ -144,12 +177,30 @@ class TestContextualTasksPageHandler extends TestBrowserProxy implements
     return Promise.resolve({isInTab: this.isInTab_});
   }
 
+  isZeroState(url: Url) {
+    this.methodCalled('isZeroState', url);
+    return Promise.resolve({isZeroState: false});
+  }
+
+  isAiPage(url: Url) {
+    this.methodCalled('isAiPage', url);
+    return Promise.resolve({isAiPage: false});
+  }
+
   openMyActivityUi() {
     this.methodCalled('openMyActivityUi');
   }
 
   openHelpUi() {
     this.methodCalled('openHelpUi');
+  }
+
+  openOnboardingHelpUi() {
+    this.methodCalled('openOnboardingHelpUi');
+  }
+
+  onboardingTooltipDismissed() {
+    this.methodCalled('onboardingTooltipDismissed');
   }
 
   moveTaskUiToNewTab() {
@@ -181,6 +232,14 @@ class TestContextualTasksPageHandler extends TestBrowserProxy implements
 
   onTabClickedFromSourcesMenu(tabId: number, url: Url) {
     this.methodCalled('onTabClickedFromSourcesMenu', tabId, url);
+  }
+
+  onFileClickedFromSourcesMenu(url: Url) {
+    this.methodCalled('onFileClickedFromSourcesMenu', url);
+  }
+
+  onImageClickedFromSourcesMenu(url: Url) {
+    this.methodCalled('onImageClickedFromSourcesMenu', url);
   }
 
   getSearchUrl(query: string) {

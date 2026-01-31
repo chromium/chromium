@@ -73,6 +73,9 @@ class SyncBundle {
   // Returns a vector of all the pending extension data.
   std::vector<ExtensionSyncData> GetPendingExtensionData() const;
 
+  // Returns a set of all the synced extension data.
+  std::vector<ExtensionSyncData> GetSyncedExtensionData() const;
+
  private:
   // Creates a SyncChange to add or update an extension.
   syncer::SyncChange CreateSyncChange(const ExtensionId& extension_id,
@@ -81,15 +84,17 @@ class SyncBundle {
   // Pushes the given list of SyncChanges to the server.
   void PushSyncChanges(const syncer::SyncChangeList& sync_change_list);
 
-  void AddSyncedExtension(const ExtensionId& id);
+  void AddSyncedExtension(const syncer::SyncData& sync_data);
+  void AddSyncedExtension(const ExtensionSyncData& extension_sync_data);
   void RemoveSyncedExtension(const ExtensionId& id);
   bool HasSyncedExtension(const ExtensionId& id) const;
 
   std::unique_ptr<syncer::SyncChangeProcessor> sync_processor_;
 
-  // Stores the set of extensions we know about. Used to decide if a sync change
-  // should be ACTION_ADD or ACTION_UPDATE.
-  std::set<ExtensionId> synced_extensions_;
+  // Stores the extensions we know about. Used to decide if a sync
+  // change should be ACTION_ADD or ACTION_UPDATE and to reload synced
+  // extensions.
+  std::map<ExtensionId, ExtensionSyncData> synced_extensions_;
 
   // This stores pending installs we got from sync. We'll send this back to the
   // server until we've installed the extension locally, to prevent the sync

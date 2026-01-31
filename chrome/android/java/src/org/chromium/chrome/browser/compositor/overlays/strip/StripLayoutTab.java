@@ -26,7 +26,6 @@ import org.chromium.base.ObserverList;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.compositor.layouts.LayoutRenderHost;
 import org.chromium.chrome.browser.compositor.layouts.LayoutUpdateHost;
 import org.chromium.chrome.browser.compositor.layouts.components.CompositorButton;
 import org.chromium.chrome.browser.compositor.layouts.components.CompositorButton.ButtonType;
@@ -190,8 +189,10 @@ public class StripLayoutTab extends StripLayoutView {
      * @param keyboardFocusHandler Handles keyboard focus gain/loss on this {@link StripLayoutTab}.
      * @param loadTrackerCallback The {@link TabLoadTrackerCallback} to be notified of loading state
      *     changes.
-     * @param updateHost The {@link LayoutRenderHost}.
+     * @param updateHost The {@link LayoutUpdateHost}.
      * @param incognito Whether or not this layout tab is incognito.
+     * @param isPinned Whether or not this tab is pinned.
+     * @param mediaState The media state of the tab.
      */
     public StripLayoutTab(
             Context context,
@@ -201,9 +202,11 @@ public class StripLayoutTab extends StripLayoutView {
             TabLoadTrackerCallback loadTrackerCallback,
             LayoutUpdateHost updateHost,
             boolean incognito,
-            boolean isPinned) {
+            boolean isPinned,
+            @MediaState int mediaState) {
         super(incognito, clickHandler, keyboardFocusHandler, context);
         mTabId = id;
+        mMediaState = mediaState;
         mIsPinned = isPinned;
         mLoadTracker = new TabLoadTracker(id, loadTrackerCallback);
         mUpdateHost = updateHost;

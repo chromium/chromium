@@ -35,6 +35,7 @@
 #include "third_party/blink/renderer/core/dom/focus_params.h"
 #include "third_party/blink/renderer/core/dom/id_target_observer_registry.h"
 #include "third_party/blink/renderer/core/dom/node_lists_node_data.h"
+#include "third_party/blink/renderer/core/dom/popover_data.h"
 #include "third_party/blink/renderer/core/dom/shadow_root.h"
 #include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/core/html/forms/html_data_list_options_collection.h"
@@ -48,6 +49,9 @@ HTMLDataListElement::HTMLDataListElement(Document& document)
     : HTMLElement(html_names::kDatalistTag, document) {
   UseCounter::Count(document, WebFeature::kDataListElement);
   document.IncrementDataListCount();
+  if (RuntimeEnabledFeatures::CustomizableComboboxEnabled()) {
+    EnsurePopoverData().setType(PopoverValueType::kAuto);
+  }
 }
 
 HTMLDataListOptionsCollection* HTMLDataListElement::options() {
@@ -75,6 +79,14 @@ void HTMLDataListElement::OptionElementChildrenChanged() {
   if (auto* registry = GetTreeScope().GetIdTargetObserverRegistry()) {
     registry->NotifyObservers(GetIdAttribute());
   }
+}
+
+bool HTMLDataListElement::SupportsBaseAppearanceInternal(
+    BaseAppearanceValue value) const {
+  if (!RuntimeEnabledFeatures::CustomizableComboboxEnabled()) {
+    return false;
+  }
+  return value == BaseAppearanceValue::kBase;
 }
 
 void HTMLDataListElement::DidMoveToNewDocument(Document& old_doc) {

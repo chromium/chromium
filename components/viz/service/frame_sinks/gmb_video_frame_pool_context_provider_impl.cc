@@ -22,7 +22,7 @@
 namespace viz {
 
 class GmbVideoFramePoolContext
-    : public media::RenderableGpuMemoryBufferVideoFramePool::Context,
+    : public media::RenderableMappableSharedImageVideoFramePool::Context,
       public gpu::SharedContextState::ContextLostObserver {
  public:
   explicit GmbVideoFramePoolContext(
@@ -169,7 +169,7 @@ GmbVideoFramePoolContextProviderImpl::GmbVideoFramePoolContextProviderImpl(
 GmbVideoFramePoolContextProviderImpl::~GmbVideoFramePoolContextProviderImpl() =
     default;
 
-std::unique_ptr<media::RenderableGpuMemoryBufferVideoFramePool::Context>
+std::unique_ptr<media::RenderableMappableSharedImageVideoFramePool::Context>
 GmbVideoFramePoolContextProviderImpl::CreateContext(
     base::OnceClosure on_context_lost) {
   return std::make_unique<GmbVideoFramePoolContext>(gpu_service_,

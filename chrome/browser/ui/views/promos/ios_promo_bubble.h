@@ -10,6 +10,7 @@
 #include "base/memory/raw_ptr.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/views/bubble/bubble_border.h"
+#include "ui/views/bubble/bubble_dialog_delegate_view.h"
 
 namespace views {
 class BubbleDialogDelegate;
@@ -38,7 +39,7 @@ class IOSPromoBubble {
 
   // Specifies how the bubble should be anchored.
   struct Anchor {
-    raw_ptr<views::View> view;
+    views::BubbleAnchor anchor_base;
     views::BubbleBorder::Arrow arrow = views::BubbleBorder::TOP_RIGHT;
   };
 

@@ -4,7 +4,8 @@
 
 #include "ios/chrome/browser/metrics/model/first_user_action_recorder.h"
 
-#include "base/containers/contains.h"
+#include <algorithm>
+
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/logging.h"
@@ -113,7 +114,7 @@ void FirstUserActionRecorder::RecordStartOnNTP() {
 void FirstUserActionRecorder::OnUserAction(const std::string& action_name,
                                            base::TimeTicks action_time) {
   if (ShouldProcessAction(action_name, action_time)) {
-    if (base::Contains(kNewTaskActions, action_name)) {
+    if (std::ranges::contains(kNewTaskActions, action_name)) {
       std::string log_message = base::StringPrintf(
           "Recording 'New task' for first user action type"
           " (user action: %s)",
@@ -173,7 +174,8 @@ bool FirstUserActionRecorder::ShouldProcessAction(
     return false;
   }
 
-  if (!action_pending_ && base::Contains(kRethrownActions, action_name)) {
+  if (!action_pending_ &&
+      std::ranges::contains(kRethrownActions, action_name)) {
     rethrow_callback_.Reset(
         base::BindOnce(&FirstUserActionRecorder::OnUserAction,
                        base::Unretained(this), action_name, action_time));
@@ -187,7 +189,8 @@ bool FirstUserActionRecorder::ShouldProcessAction(
   // inkNewTaskActions.
   bool known_mobile_action =
       base::StartsWith(action_name, "Mobile", base::CompareCase::SENSITIVE) ||
-      base::Contains(kNewTaskActions, action_name);
+      std::ranges::contains(kNewTaskActions, action_name);
 
-  return known_mobile_action && !base::Contains(kIgnoredActions, action_name);
+  return known_mobile_action &&
+         !std::ranges::contains(kIgnoredActions, action_name);
 }

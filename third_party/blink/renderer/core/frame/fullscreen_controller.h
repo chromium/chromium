@@ -31,6 +31,9 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_FRAME_FULLSCREEN_CONTROLLER_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_FRAME_FULLSCREEN_CONTROLLER_H_
 
+#include <memory>
+
+#include "cc/trees/layer_tree_host.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/platform/graphics/color.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_linked_hash_set.h"
@@ -101,6 +104,8 @@ class CORE_EXPORT FullscreenController {
 
   using PendingFullscreenSet = GCedHeapLinkedHashSet<WeakMember<LocalFrame>>;
   Persistent<PendingFullscreenSet> pending_frames_;
+
+  std::unique_ptr<cc::ScopedRequestHighFramerate> high_framerate_request_;
 };
 
 }  // namespace blink

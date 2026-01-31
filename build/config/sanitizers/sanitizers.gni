@@ -112,6 +112,11 @@ declare_args() {
   # files or symbol names should be instrumented, rather than all of them.
   sanitizer_coverage_allowlist = ""
 
+  # A sanitizer coverage ignorelist, specifying which files or symbol names
+  # should be excluded from coverage instrumentation (mostly for performance
+  # reasons).
+  sanitizer_coverage_ignorelist = ""
+
   # When enabled, only relevant sanitizer defines are set, but compilation
   # happens with no extra flags. This is useful when in component build
   # enabling sanitizers only in some of the components.
@@ -367,9 +372,26 @@ assert(
         "Chromium mac_clang_x64 toolchain on iOS distribution. Please set " +
         "the argument value to false.")
 
+declare_args() {
+  # Skip instrumentation of standard library types and containers, and absl.
+  # This is currently an experiment to evaluate performance improvements, see
+  # https://crbug.com/476343968.
+  sanitizer_coverage_skip_stdlib_and_absl = false
+}
+
+if (use_sanitizer_coverage && sanitizer_coverage_skip_stdlib_and_absl &&
+    sanitizer_coverage_ignorelist == "") {
+  sanitizer_coverage_ignorelist =
+      "//build/config/sanitizers/ignorelist_stdlib_and_absl.txt"
+}
+
 assert(
     sanitizer_coverage_allowlist == "" || use_sanitizer_coverage,
     "Can't specify a sanitizer coverage allowlist without using sanitizer coverage.")
+
+assert(
+    sanitizer_coverage_ignorelist == "" || use_sanitizer_coverage,
+    "Can't specify a sanitizer coverage ignorelist without using sanitizer coverage.")
 
 # Use these lists of configs to disable instrumenting code that is part of a
 # fuzzer, but which isn't being targeted (such as libprotobuf-mutator, *.pb.cc

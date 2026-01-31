@@ -299,7 +299,6 @@ public class AnchoredPopupWindow implements OnTouchListener, RectProvider.Observ
          * @param anchorRectProvider The {@link RectProvider} that will provide the {@link Rect}
          *     this popup attaches and orients to. The coordinates in the {@link Rect} are expected
          *     to be screen coordinates.
-         * @deprecated Use the {@link Builder} to create the popup instead.
          */
         public Builder(
                 Context context,

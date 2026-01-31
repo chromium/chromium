@@ -24,8 +24,9 @@ enum RendererType {
   RENDERER_TYPE_RENDERER = 1,
   RENDERER_TYPE_EXTENSION,
   // NOTE: Add new action types only immediately above this line. Also,
-  // make sure the enum list in tools/metrics/histograms/histograms.xml is
-  // updated with any change in here.
+  // make sure the enum list in
+  // tools/metrics/histograms/metadata/browser/enums.xml is updated with any
+  // change in here.
   RENDERER_TYPE_COUNT
 };
 

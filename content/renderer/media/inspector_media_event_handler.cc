@@ -14,7 +14,7 @@ namespace content {
 namespace {
 
 std::optional<blink::InspectorPlayerError> ErrorFromParams(
-    const base::Value::Dict& param) {
+    const base::DictValue& param) {
   std::optional<int> code = param.FindInt(media::StatusConstants::kCodeKey);
   const std::string* group =
       param.FindString(media::StatusConstants::kGroupKey);
@@ -77,7 +77,7 @@ blink::WebString ToString(const base::Value& value) {
   return blink::WebString::FromUTF8(output_str);
 }
 
-blink::WebString ToString(const base::Value::Dict& value) {
+blink::WebString ToString(const base::DictValue& value) {
   std::string output_str = base::WriteJson(value).value_or("");
   return blink::WebString::FromUTF8(output_str);
 }

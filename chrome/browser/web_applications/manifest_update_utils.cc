@@ -10,6 +10,7 @@
 #include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/utf_string_conversions.h"
+#include "chrome/browser/web_applications/proto/web_app.equal.h"
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_install_utils.h"
@@ -166,21 +167,7 @@ std::optional<AppIconIdentityChange> CompareIdentityIconBitmaps(
 }
 
 bool CanWebAppSilentlyUpdateIdentity(const WebApp& web_app) {
-  if (web_app.IsPolicyInstalledApp() &&
-      base::FeatureList::IsEnabled(
-          features::kWebAppManifestPolicyAppIdentityUpdate)) {
-    return true;
-  }
-  if (web_app.scope().SchemeIs(content::kChromeUIScheme)) {
-    return true;
-  }
-
-  // The `!web_app.IsPolicyInstalledApp()` hack is to ensure that the "existing"
-  // manifest update process only works for policy installed apps if
-  // `kWebAppManifestPolicyAppIdentityUpdate` is enabled, for browser tests.
-  // Once predictable app updating lands, this code will be removed (since that
-  // feature flag is enabled by default anyway).
-  return !web_app.IsPolicyInstalledApp() &&
+  return web_app.scope().SchemeIs(content::kChromeUIScheme) ||
          web_app.WasInstalledByTrustedSources();
 }
 
@@ -318,6 +305,10 @@ ManifestDataChanges GetManifestDataChanges(
     }
     if (existing_web_app.related_applications() !=
         new_install_info.related_applications) {
+      return true;
+    }
+    if (existing_web_app.unvalidated_migration_sources() !=
+        new_install_info.migration_sources) {
       return true;
     }
     // TODO(crbug.com/40611449): Check more manifest fields.

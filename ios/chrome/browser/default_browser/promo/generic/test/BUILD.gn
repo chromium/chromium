@@ -1,0 +1,33 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "default_browser_generic_promo_coordinator_unittest.mm" ]
+  deps = [
+    "//base",
+    "//base/test:test_support",
+    "//components/feature_engagement/public",
+    "//components/feature_engagement/test:test_support",
+    "//components/segmentation_platform/embedder/default_model",
+    "//components/segmentation_platform/public",
+    "//components/segmentation_platform/public:test_support",
+    "//components/sync_device_info:test_support",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/default_browser/model:features",
+    "//ios/chrome/browser/default_browser/model:utils",
+    "//ios/chrome/browser/default_browser/promo/generic/coordinator",
+    "//ios/chrome/browser/default_browser/promo/ui",
+    "//ios/chrome/browser/feature_engagement/model",
+    "//ios/chrome/browser/shared/model/browser/test:test_support",
+    "//ios/chrome/browser/shared/model/profile/test",
+    "//ios/chrome/browser/shared/public/features",
+    "//ios/chrome/common/ui/button_stack:constants",
+    "//ios/chrome/test:test_support",
+    "//ios/web/public/test",
+    "//testing/gtest",
+    "//third_party/ocmock",
+    "//ui/base",
+  ]
+}

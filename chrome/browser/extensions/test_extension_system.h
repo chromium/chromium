@@ -124,7 +124,7 @@ class TestExtensionSystem : public ExtensionSystem {
                      InstallUpdateCallback install_update_callback) override;
   void PerformActionBasedOnOmahaAttributes(
       const std::string& extension_id,
-      const base::Value::Dict& attributes) override;
+      const base::DictValue& attributes) override;
 
   // Note that you probably want to use base::RunLoop().RunUntilIdle() right
   // after this to run all the accumulated tasks.

@@ -4,6 +4,8 @@
 
 #import "ios/chrome/browser/authentication/ui_bundled/authentication_flow/authentication_flow.h"
 
+#import <algorithm>
+
 #import "base/check_op.h"
 #import "base/feature_list.h"
 #import "base/functional/callback_helpers.h"
@@ -167,7 +169,7 @@ IOSIdentityAvailableInProfile IdentityAvailableInProfileStatus(
       callback, profile_name);
   std::vector<CoreAccountInfo> accounts_in_profile =
       identity_manager->GetAccountsWithRefreshTokens();
-  bool is_identity_available_in_identity_manager = base::Contains(
+  bool is_identity_available_in_identity_manager = std::ranges::contains(
       accounts_in_profile, GaiaId(gaia_id), &CoreAccountInfo::gaia);
   if (!is_identity_available_in_profile_mapper &&
       !is_identity_available_in_identity_manager) {
@@ -671,11 +673,11 @@ void RecordUnsyncedDataHistogramIfNeeded(UnsyncedDataTypeHistogram histogram,
                                       profile->GetProfileName());
   std::vector<AccountInfo> accountsOnDevice =
       identityManager->GetAccountsOnDevice();
-  BOOL isValidIdentityOnDevice = base::Contains(
+  BOOL isValidIdentityOnDevice = std::ranges::contains(
       accountsOnDevice, _identityToSignIn.gaiaId, &AccountInfo::gaia);
   std::vector<CoreAccountInfo> accountsInProfile =
       identityManager->GetAccountsWithRefreshTokens();
-  BOOL isValidIdentityInCurrentProfile = base::Contains(
+  BOOL isValidIdentityInCurrentProfile = std::ranges::contains(
       accountsInProfile, _identityToSignIn.gaiaId, &CoreAccountInfo::gaia);
   if (!isValidIdentityOnDevice ||
       (!isValidIdentityInCurrentProfile &&
@@ -753,8 +755,8 @@ void RecordUnsyncedDataHistogramIfNeeded(UnsyncedDataTypeHistogram histogram,
           ? ChangeProfileReason::kSwitchAccounts
           : ChangeProfileReason::kManagedAccountSignIn;
 
-  // Calling switchToProfileWithIdentity will shutdown the BrowserViewWrangler
-  // and clear the browser.
+  // Calling switchToProfileWithIdentity will shutdown the
+  // BrowserLifecycleManager and clear the browser.
   _browser = nullptr;
   _browserForAuthenticationFlowInProfile = nullptr;
   _presentingViewController = nil;

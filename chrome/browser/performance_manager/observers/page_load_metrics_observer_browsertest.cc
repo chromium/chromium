@@ -108,7 +108,7 @@ IN_PROC_BROWSER_TEST_F(PageLoadMetricsObserverPrerenderBrowserTest,
 
   // Load a page in the prerender.
   GURL prerender_url = embedded_test_server()->GetURL("/title1.html");
-  const content::FrameTreeNodeId host_id =
+  const content::PrerenderHostId host_id =
       prerender_test_helper().AddPrerender(prerender_url);
   content::test::PrerenderHostObserver host_observer(*GetWebContents(),
                                                      host_id);

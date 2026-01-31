@@ -9,7 +9,6 @@
 #include <memory>
 #include <sstream>
 
-#include "base/containers/contains.h"
 #include "base/format_macros.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
@@ -161,7 +160,7 @@ void ShillPropertyHandler::SetTechnologyEnabled(
     network_handler::ErrorCallback error_callback,
     base::OnceClosure success_callback) {
   if (enabled) {
-    if (base::Contains(prohibited_technologies_, technology)) {
+    if (prohibited_technologies_.contains(technology)) {
       NET_LOG(ERROR) << "Attempt to enable prohibited network technology: "
                      << technology;
       network_handler::RunErrorCallback(std::move(error_callback),
@@ -277,7 +276,7 @@ void ShillPropertyHandler::RequestScanByType(const std::string& type) const {
 
 void ShillPropertyHandler::RequestProperties(ManagedState::ManagedType type,
                                              const std::string& path) {
-  if (base::Contains(pending_updates_[type], path)) {
+  if (pending_updates_[type].contains(path)) {
     return;  // Update already requested.
   }
 
@@ -356,7 +355,7 @@ void ShillPropertyHandler::OnPropertyChanged(const std::string& key,
 // Private methods
 
 void ShillPropertyHandler::ManagerPropertiesCallback(
-    std::optional<base::Value::Dict> properties) {
+    std::optional<base::DictValue> properties) {
   if (!properties) {
     NET_LOG(ERROR) << "ManagerPropertiesCallback Failed";
     return;
@@ -458,7 +457,7 @@ void ShillPropertyHandler::UpdateProperties(ManagedState::ManagedType type,
     // that prevents it from sending property changed signals for cellular
     // devices (see crbug.com/321854).
     if (type == ManagedState::MANAGED_TYPE_DEVICE ||
-        !base::Contains(requested_updates, *path)) {
+        !requested_updates.contains(*path)) {
       RequestProperties(type, *path);
     }
     new_requested_updates.insert(*path);
@@ -535,8 +534,7 @@ void ShillPropertyHandler::UpdateEnabledTechnologies(
   // from the disabling list.
   for (auto it = disabling_technologies_.begin();
        it != disabling_technologies_.end();) {
-    base::Value technology_value(*it);
-    if (!base::Contains(technologies.GetList(), technology_value))
+    if (!technologies.GetList().contains(*it))
       it = disabling_technologies_.erase(it);
     else
       ++it;
@@ -626,7 +624,7 @@ void ShillPropertyHandler::DisableTechnologyFailed(
 void ShillPropertyHandler::GetPropertiesCallback(
     ManagedState::ManagedType type,
     const std::string& path,
-    std::optional<base::Value::Dict> properties) {
+    std::optional<base::DictValue> properties) {
   pending_updates_[type].erase(path);
   if (!properties) {
     // The shill service no longer exists.  This can happen when a network
@@ -708,7 +706,7 @@ void ShillPropertyHandler::GetIPConfigCallback(
     ManagedState::ManagedType type,
     const std::string& path,
     const std::string& ip_config_path,
-    std::optional<base::Value::Dict> properties) {
+    std::optional<base::DictValue> properties) {
   if (!properties) {
     // IP Config properties not available. Shill will emit a property change
     // when they are.

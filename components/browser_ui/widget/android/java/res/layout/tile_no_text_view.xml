@@ -48,5 +48,6 @@ found in the LICENSE file.
         android:layout_marginEnd="@dimen/tile_view_offline_badge_margin_end_modern"
         android:visibility="gone"
         android:contentDescription="@string/accessibility_ntp_offline_badge"
-        app:srcCompat="@drawable/ic_offline_pin_blue_white" />
+        app:srcCompat="@drawable/ic_offline_pin_fill_24dp"
+        app:tint="@macro/default_icon_color_accent1"/>
 </merge>

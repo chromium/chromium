@@ -73,7 +73,7 @@ class PolicyTestPageVisibilityTest
     PlatformBrowserTest::SetUpOnMainThread();
     // Enable or disable policy as needed
     policy::PolicyMap policy_map;
-    base::Value::List policy_list;
+    base::ListValue policy_list;
     policy_list.Append(policy::key::kPolicyTestPageEnabled);
     policy_map.Set(policy::key::kEnableExperimentalPolicies,
                    policy::POLICY_LEVEL_MANDATORY, policy::POLICY_SCOPE_MACHINE,
@@ -275,7 +275,7 @@ IN_PROC_BROWSER_TEST_F(PolicyTestHandlerTest,
           .disabled;
       )";
 
-  base::Value::List list_args;
+  base::ListValue list_args;
 
   list_args.Append("setLocalTestPolicies");
   list_args.Append(jsonString);
@@ -326,7 +326,7 @@ IN_PROC_BROWSER_TEST_F(PolicyTestHandlerTest,
           .disabled;
       )";
 
-  base::Value::List list_args;
+  base::ListValue list_args;
 
   list_args.Append("setLocalTestPolicies");
   list_args.Append(jsonString);
@@ -447,7 +447,7 @@ IN_PROC_BROWSER_TEST_F(PolicyTestHandlerTest, FilterSensitivePolicies) {
       "name": "DefaultSearchProviderEnabled","value": false}
       ])";
 
-  base::Value::List list_args;
+  base::ListValue list_args;
 
   list_args.Append("setLocalTestPolicies");
   list_args.Append(jsonString);
@@ -493,7 +493,7 @@ IN_PROC_BROWSER_TEST_F(PolicyTestHandlerTest,
       "name": "AccessCodeCastDeviceDuration","value": 100}
       ])";
 
-  base::Value::List list_args;
+  base::ListValue list_args;
 
   list_args.Append("restartBrowser");
   list_args.Append(jsonString);
@@ -555,7 +555,7 @@ class PolicyTestHandlerTestDisabledByPolicy : public PolicyTestHandlerTest {
     policy::BrowserPolicyConnector::SetPolicyProviderForTesting(&provider_);
 
     policy::PolicyMap policy_map;
-    base::Value::List policy_list;
+    base::ListValue policy_list;
     policy_list.Append(policy::key::kPolicyTestPageEnabled);
     policy_map.Set(policy::key::kEnableExperimentalPolicies,
                    policy::POLICY_LEVEL_MANDATORY, policy::POLICY_SCOPE_MACHINE,
@@ -610,7 +610,7 @@ IN_PROC_BROWSER_TEST_F(PolicyTestHandlerTestDisabledByPolicy,
       "name": "AccessCodeCastDeviceDuration","value": 100}
       ])";
 
-  base::Value::List list_args;
+  base::ListValue list_args;
 
   list_args.Append("restartBrowser");
   list_args.Append(jsonString);
@@ -709,7 +709,7 @@ class PolicyTestUITest : public PlatformBrowserTest {
 
     // Enable kPolicyTestPageEnabled policy.
     policy::PolicyMap policy_map;
-    base::Value::List policy_list;
+    base::ListValue policy_list;
     policy_list.Append(policy::key::kPolicyTestPageEnabled);
     policy_map.Set(policy::key::kEnableExperimentalPolicies,
                    policy::POLICY_LEVEL_MANDATORY, policy::POLICY_SCOPE_MACHINE,
@@ -872,7 +872,7 @@ IN_PROC_BROWSER_TEST_F(PolicyTestUITest, GetSchema) {
   ASSERT_NE(nullptr, schema.GetDict().FindDict(kExtensionId));
   // The extension's schema should exclude "sensitive_number", because it's
   // a sensitive policy.
-  ASSERT_EQ(base::Value::Dict()
+  ASSERT_EQ(base::DictValue()
                 .Set("normal_boolean", "boolean")
                 .Set("normal_number", "number"),
             *schema.GetDict().FindDict(kExtensionId));
@@ -912,7 +912,7 @@ IN_PROC_BROWSER_TEST_F(PolicyTestUITest, TestExtensionPoliciesIncluded) {
             .map(e => e.innerText)
       )";
   EXPECT_EQ(
-      base::Value(base::Value::List().Append("Chrome").Append(kExtensionId)),
+      base::Value(base::ListValue().Append("Chrome").Append(kExtensionId)),
       content::EvalJs(web_contents(), getNamespacesFromSelect));
 
   // Get list of available policies from the <datalist>. They should initially
@@ -987,7 +987,7 @@ IN_PROC_BROWSER_TEST_F(PolicyTestUITest, TestSchemaChangeReflected) {
             .map(e => e.innerText)
       )";
   EXPECT_EQ(
-      base::Value(base::Value::List().Append("Chrome").Append(kExtensionId)),
+      base::Value(base::ListValue().Append("Chrome").Append(kExtensionId)),
       content::EvalJs(web_contents(), getNamespacesFromSelect));
 
   // Delete the extension from the schema. It should disappear from the
@@ -995,7 +995,7 @@ IN_PROC_BROWSER_TEST_F(PolicyTestUITest, TestSchemaChangeReflected) {
   auto* registry = GetProfile()->GetPolicySchemaRegistryService()->registry();
   registry->UnregisterComponent(
       policy::PolicyNamespace(policy::POLICY_DOMAIN_EXTENSIONS, kExtensionId));
-  EXPECT_EQ(base::Value(base::Value::List().Append("Chrome")),
+  EXPECT_EQ(base::Value(base::ListValue().Append("Chrome")),
             content::EvalJs(web_contents(), getNamespacesFromSelect));
 }
 

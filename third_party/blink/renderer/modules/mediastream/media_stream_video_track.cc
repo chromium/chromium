@@ -8,7 +8,6 @@
 #include <string>
 #include <utility>
 
-#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/metrics/histogram_functions.h"
@@ -577,7 +576,7 @@ void MediaStreamVideoTrack::FrameDeliverer::
         CrossThreadOnceClosure callback) {
   DCHECK(video_task_runner_->RunsTasksInCurrentSequence());
   CHECK_NE(capture_version, media::CaptureVersion());
-  CHECK(!base::Contains(capture_version_callbacks_, capture_version));
+  CHECK(!capture_version_callbacks_.Contains(capture_version));
 
   capture_version_callbacks_.Set(capture_version, std::move(callback));
 }
@@ -961,7 +960,7 @@ MediaStreamVideoTrack::CreateFromComponent(
 
 static void AddSinkInternal(Vector<WebMediaStreamSink*>* sinks,
                             WebMediaStreamSink* sink) {
-  DCHECK(!base::Contains(*sinks, sink));
+  DCHECK(!std::ranges::contains(*sinks, sink));
   sinks->push_back(sink);
 }
 

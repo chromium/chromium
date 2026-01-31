@@ -24,7 +24,6 @@
 #include "base/auto_reset.h"
 #include "base/check.h"
 #include "base/check_op.h"
-#include "base/containers/contains.h"
 #include "base/containers/map_util.h"
 #include "base/feature_list.h"
 #include "base/files/file_path.h"
@@ -56,11 +55,11 @@
 #include "components/services/storage/public/cpp/quota_error_or.h"
 #include "components/services/storage/public/mojom/blob_storage_context.mojom.h"
 #include "components/services/storage/public/mojom/file_system_access_context.mojom.h"
-#include "content/browser/indexed_db/blob_reader.h"
 #include "content/browser/indexed_db/file_path_util.h"
 #include "content/browser/indexed_db/indexed_db_external_object.h"
 #include "content/browser/indexed_db/indexed_db_reporting.h"
 #include "content/browser/indexed_db/instance/backing_store.h"
+#include "content/browser/indexed_db/instance/blob_reader.h"
 #include "content/browser/indexed_db/instance/bucket_context_handle.h"
 #include "content/browser/indexed_db/instance/connection.h"
 #include "content/browser/indexed_db/instance/database.h"
@@ -83,6 +82,10 @@
 
 namespace content::indexed_db {
 namespace {
+
+// This flag enables the SQLite backing store for in-memory contexts.
+BASE_FEATURE(kIdbSqliteBackingStoreInMemoryContexts,
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Time after the last connection to a database is closed and when we destroy
 // the backing store.
@@ -176,11 +179,14 @@ DatabaseError CreateDefaultError() {
       u"Internal error opening backing store for indexedDB.open.");
 }
 
-}  // namespace
+bool ShouldUseSqlite(bool in_memory) {
+  return g_should_use_sqlite_for_testing.value_or(
+      base::FeatureList::IsEnabled(features::kIdbSqliteBackingStore) ||
+      (in_memory &&
+       base::FeatureList::IsEnabled(kIdbSqliteBackingStoreInMemoryContexts)));
+}
 
-// This flag enables the SQLite backing store for in-memory contexts.
-BASE_FEATURE(kIdbSqliteBackingStoreInMemoryContexts,
-             base::FEATURE_DISABLED_BY_DEFAULT);
+}  // namespace
 
 BucketContext::Delegate::Delegate()
     : on_ready_for_destruction(base::DoNothing()),
@@ -212,10 +218,7 @@ BucketContext::BucketContext(
           base::trace_event::MemoryDumpProvider::Options());
   receivers_.set_disconnect_handler(base::BindRepeating(
       &BucketContext::OnReceiverDisconnected, base::Unretained(this)));
-  should_use_sqlite_ = g_should_use_sqlite_for_testing.value_or(
-      base::FeatureList::IsEnabled(features::kIdbSqliteBackingStore) ||
-      (in_memory() &&
-       base::FeatureList::IsEnabled(kIdbSqliteBackingStoreInMemoryContexts)));
+  should_use_sqlite_ = content::indexed_db::ShouldUseSqlite(in_memory());
 }
 
 BucketContext::~BucketContext() {
@@ -228,6 +231,19 @@ BucketContext::~BucketContext() {
   if (delegate_.on_destroyed) {
     std::move(delegate_.on_destroyed).Run();
   }
+}
+
+// static
+uint64_t BucketContext::ReadUsageFromDisk(
+    const storage::BucketLocator& bucket_locator,
+    const base::FilePath& data_path) {
+  CHECK(!data_path.empty());
+  return content::indexed_db::ShouldUseSqlite(/*in_memory=*/false)
+             ? sqlite::BackingStoreImpl::SumSizesOfDatabaseFiles(
+                   data_path.Append(GetSqliteDbDirectory(bucket_locator)))
+             : level_db::BackingStore::ReadSizeFromDisk(
+                   data_path.Append(GetLevelDBFileName(bucket_locator)),
+                   data_path.Append(GetBlobStoreFileName(bucket_locator)));
 }
 
 void BucketContext::ForceClose(bool doom, const std::string& message) {
@@ -308,8 +324,10 @@ BucketContext::StopMetadataRecording() {
   return std::move(metadata_recording_buffer_);
 }
 
-int64_t BucketContext::GetInMemorySize() {
-  return backing_store_ ? backing_store_->GetInMemorySize() : 0;
+uint64_t BucketContext::GetUsage(bool write_in_progress) {
+  return backing_store_ ? backing_store_->EstimateSize(write_in_progress)
+         : in_memory()  ? 0
+                        : ReadUsageFromDisk(bucket_locator(), data_path_);
 }
 
 void BucketContext::ReportOutstandingBlobs(bool blobs_outstanding) {
@@ -651,7 +669,7 @@ void BucketContext::DeleteDatabase(
     }
   }
 
-  if (!base::Contains(databases_, name)) {
+  if (!databases_.contains(name)) {
     // This adds `Database` in an uninitialized state.
     CreateAndAddDatabase(name);
   }
@@ -675,9 +693,7 @@ storage::mojom::IdbBucketMetadataPtr BucketContext::FillInMetadata(
     storage::mojom::IdbBucketMetadataPtr info) {
   // TODO(jsbell): Sort by name?
   std::vector<storage::mojom::IdbDatabaseMetadataPtr> database_list;
-  if (backing_store_ && in_memory()) {
-    info->size = GetInMemorySize();
-  }
+  info->size = GetUsage(/*write_in_progress=*/false);
   for (const auto& [name, db] : databases_) {
     info->connection_count += db->ConnectionCount();
     database_list.push_back(db->GetIdbInternalsMetadata());
@@ -709,7 +725,7 @@ void BucketContext::BindMockFailureSingletonForTesting(
 }
 
 Database* BucketContext::CreateAndAddDatabase(const std::u16string& name) {
-  CHECK(!base::Contains(databases_, name));
+  CHECK(!databases_.contains(name));
   auto database =
       std::make_unique<Database>(next_database_id_for_locks_++, name, *this);
   return databases_.emplace(name, std::move(database)).first->second.get();
@@ -1001,7 +1017,6 @@ BucketContext::InitBackingStore(bool create_if_missing) {
   } else {
     std::unique_ptr<BackingStore> backing_store;
     bool disk_full = false;
-    base::ElapsedTimer open_timer;
     Status status, first_try_status;
     constexpr static const int kNumOpenTries = 2;
     for (int i = 0; i < kNumOpenTries; ++i) {
@@ -1035,18 +1050,7 @@ BucketContext::InitBackingStore(bool create_if_missing) {
     first_try_status.LogLevelDbStatus(
         "WebCore.IndexedDB.BackingStore.OpenFirstTryResult");
 
-    if (first_try_status.ok()) [[likely]] {
-      UMA_HISTOGRAM_TIMES(
-          "WebCore.IndexedDB.BackingStore.OpenFirstTrySuccessTime",
-          open_timer.Elapsed());
-    }
-
-    if (status.ok()) [[likely]] {
-      base::UmaHistogramTimes("WebCore.IndexedDB.BackingStore.OpenSuccessTime",
-                              open_timer.Elapsed());
-    } else {
-      base::UmaHistogramTimes("WebCore.IndexedDB.BackingStore.OpenFailureTime",
-                              open_timer.Elapsed());
+    if (!status.ok()) [[unlikely]] {
       if (disk_full) {
         ReportOpenStatus(INDEXED_DB_BACKING_STORE_OPEN_DISK_FULL,
                          bucket_locator());
@@ -1079,7 +1083,6 @@ void BucketContext::ResetBackingStore() {
   weak_factory_.InvalidateWeakPtrs();
 
   if (backing_store_) {
-    const auto start = base::TimeTicks::Now();
     base::WaitableEvent leveldb_destruct_event;
     backing_store_->TearDown(&leveldb_destruct_event);
     if (!GetTeardownExtraStepForTesting().is_null()) {
@@ -1087,8 +1090,6 @@ void BucketContext::ResetBackingStore() {
     }
     backing_store_.reset();
     leveldb_destruct_event.Wait();
-    base::UmaHistogramTimes("IndexedDB.BackingStoreCloseDuration",
-                            base::TimeTicks::Now() - start);
   }
 
   if (is_doomed_) {

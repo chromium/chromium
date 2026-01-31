@@ -25,8 +25,8 @@ std::string GenerateIfMatchHeader(const std::string& etag) {
   return etag.empty() ? kIfMatchAllHeader : (kIfMatchHeaderPrefix + etag);
 }
 
-base::Value::Dict CreateParentValue(const std::string& file_id) {
-  base::Value::Dict parent;
+base::DictValue CreateParentValue(const std::string& file_id) {
+  base::DictValue parent;
   parent.Set("kind", kParentLinkKind);
   parent.Set("id", file_id);
   return parent;

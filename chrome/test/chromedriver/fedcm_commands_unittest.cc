@@ -22,7 +22,7 @@ class MockResponseWebView : public StubWebView {
 
   Status SendCommandAndGetResult(
       const std::string& command,
-      const base::Value::Dict& params,
+      const base::DictValue& params,
       std::unique_ptr<base::Value>* result) override {
     last_command_ = command;
     return Status(kOk);
@@ -34,11 +34,11 @@ class MockResponseWebView : public StubWebView {
   }
 
   void SendEvent(DevToolsClient* client) {
-    base::Value::Dict dict;
+    base::DictValue dict;
     dict.Set("dialogId", "0");
     dict.Set("title", "Title");
     dict.Set("dialogType", "AccountChooser");
-    base::Value::Dict account;
+    base::DictValue account;
     account.Set("accountId", "123");
     account.Set("email", "foo@bar.com");
     account.Set("name", "Foo Bar");
@@ -48,7 +48,7 @@ class MockResponseWebView : public StubWebView {
     account.Set("idpLoginUrl", "https://idp.example/login");
     account.Set("loginState", "SignIn");
 
-    base::Value::List accounts;
+    base::ListValue accounts;
     accounts.Append(std::move(account));
     dict.Set("accounts", std::move(accounts));
 
@@ -62,7 +62,7 @@ class MockResponseWebView : public StubWebView {
   Status CallFunctionWithTimeout(
       const std::string& frame,
       const std::string& function,
-      const base::Value::List& args,
+      const base::ListValue& args,
       const base::TimeDelta& timeout,
       const CallFunctionOptions& options,
       std::unique_ptr<base::Value>* result) override {
@@ -87,7 +87,7 @@ class FedCmCommandsTest : public testing::Test {
 }  // namespace
 
 TEST_F(FedCmCommandsTest, ExecuteCancelDialog) {
-  base::Value::Dict params;
+  base::DictValue params;
   std::unique_ptr<base::Value> value;
 
   Status status =
@@ -103,7 +103,7 @@ TEST_F(FedCmCommandsTest, ExecuteCancelDialog) {
 }
 
 TEST_F(FedCmCommandsTest, ExecuteSelectAccount) {
-  base::Value::Dict params;
+  base::DictValue params;
   std::unique_ptr<base::Value> value;
 
   Status status =
@@ -124,7 +124,7 @@ TEST_F(FedCmCommandsTest, ExecuteSelectAccount) {
 }
 
 TEST_F(FedCmCommandsTest, ExecuteGetAccounts) {
-  base::Value::Dict params;
+  base::DictValue params;
   std::unique_ptr<base::Value> value;
 
   Status status =
@@ -135,10 +135,10 @@ TEST_F(FedCmCommandsTest, ExecuteGetAccounts) {
 
   status = ExecuteGetAccounts(&session, &web_view, params, &value, nullptr);
   ASSERT_EQ(kOk, status.code());
-  base::Value::List* response = value->GetIfList();
+  base::ListValue* response = value->GetIfList();
   ASSERT_TRUE(response);
   ASSERT_EQ(1u, response->size());
-  base::Value::Dict* account = response->front().GetIfDict();
+  base::DictValue* account = response->front().GetIfDict();
   ASSERT_TRUE(account);
   std::string* accountId = account->FindString("accountId");
   ASSERT_TRUE(accountId);
@@ -170,7 +170,7 @@ TEST_F(FedCmCommandsTest, ExecuteGetAccounts) {
 }
 
 TEST_F(FedCmCommandsTest, ExecuteGetTitle) {
-  base::Value::Dict params;
+  base::DictValue params;
   std::unique_ptr<base::Value> value;
 
   Status status =
@@ -181,7 +181,7 @@ TEST_F(FedCmCommandsTest, ExecuteGetTitle) {
 
   status = ExecuteGetFedCmTitle(&session, &web_view, params, &value, nullptr);
   ASSERT_EQ(kOk, status.code());
-  base::Value::Dict* dict = value->GetIfDict();
+  base::DictValue* dict = value->GetIfDict();
   ASSERT_TRUE(dict);
   std::string* title = dict->FindString("title");
   ASSERT_TRUE(title);
@@ -192,7 +192,7 @@ TEST_F(FedCmCommandsTest, ExecuteGetTitle) {
 }
 
 TEST_F(FedCmCommandsTest, ExecuteGetDialogType) {
-  base::Value::Dict params;
+  base::DictValue params;
   std::unique_ptr<base::Value> value;
 
   Status status =
@@ -212,7 +212,7 @@ TEST_F(FedCmCommandsTest, ExecuteGetDialogType) {
 }
 
 TEST_F(FedCmCommandsTest, ExecuteSetDelayEnabled) {
-  base::Value::Dict params;
+  base::DictValue params;
   std::unique_ptr<base::Value> value;
 
   // No enabled argument.
@@ -228,7 +228,7 @@ TEST_F(FedCmCommandsTest, ExecuteSetDelayEnabled) {
 }
 
 TEST_F(FedCmCommandsTest, ExecuteResetCooldown) {
-  base::Value::Dict params;
+  base::DictValue params;
   std::unique_ptr<base::Value> value;
 
   Status status =

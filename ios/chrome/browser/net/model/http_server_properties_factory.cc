@@ -34,16 +34,16 @@ class PrefServiceAdapter : public net::HttpServerProperties::PrefDelegate,
   }
 
   // PrefDelegate implementation.
-  const base::Value::Dict& GetServerProperties() const override {
+  const base::DictValue& GetServerProperties() const override {
     const base::Value* value;
     if (pref_store_->GetValue(path_, &value) && value->is_dict()) {
       return value->GetDict();
     }
 
-    static const base::NoDestructor<base::Value::Dict> empty_dict;
+    static const base::NoDestructor<base::DictValue> empty_dict;
     return *empty_dict;
   }
-  void SetServerProperties(base::Value::Dict dict,
+  void SetServerProperties(base::DictValue dict,
                            base::OnceClosure callback) override {
     pref_store_->SetValue(path_, base::Value(std::move(dict)),
                           WriteablePrefStore::DEFAULT_PREF_WRITE_FLAGS);

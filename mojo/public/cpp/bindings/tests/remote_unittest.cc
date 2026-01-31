@@ -106,8 +106,9 @@ class MathCalculatorUI {
  private:
   void Output(base::OnceClosure closure, double output) {
     output_ = output;
-    if (closure)
+    if (closure) {
       std::move(closure).Run();
+    }
   }
 
   Remote<math::Calculator> calculator_;
@@ -201,8 +202,9 @@ class IntegerAccessorImpl : public sample::IntegerAccessor {
   }
   void SetInteger(int64_t data, sample::Enum type) override {
     integer_ = data;
-    if (closure_)
+    if (closure_) {
       std::move(closure_).Run();
+    }
   }
 
   int64_t integer_;
@@ -980,14 +982,16 @@ class SequenceCheckerImpl : public mojom::SequenceChecker {
   }
 
   void GetNextExpectedValue(GetNextExpectedValueCallback callback) override {
-    for (auto& client : clients_)
+    for (auto& client : clients_) {
       client->OnNextExpectedValueQueried(next_expected_value_);
+    }
     std::move(callback).Run(next_expected_value_);
   }
 
   void Quit(QuitCallback callback) override {
-    for (auto& client : clients_)
+    for (auto& client : clients_) {
       client->OnQuit();
+    }
 
     // Destroys `this`, so we don't bother responding.
     DCHECK(quit_callback_);
@@ -1116,7 +1120,8 @@ TEST_P(RemoteTest, SharedRemoteSyncCallWithPendingEventOnSameThread) {
 }
 
 // Flaky on all platforms. https://crbug.com/1224768
-TEST_P(RemoteTest, DISABLED_DisconnectDuringOffThreadSyncWaitWithUnprocessedTasks) {
+TEST_P(RemoteTest,
+       DISABLED_DisconnectDuringOffThreadSyncWaitWithUnprocessedTasks) {
   // Regression test for https://crbug.com/1223628.
   //
   // This tests a fairly obscure edge case where one or more message tasks is

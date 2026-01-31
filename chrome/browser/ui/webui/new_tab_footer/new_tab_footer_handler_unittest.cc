@@ -92,6 +92,13 @@ class NewTabFooterHandlerExtensionTest
     testing::Mock::VerifyAndClearExpectations(&document_);
   }
 
+  void TearDown() override {
+    testing::Mock::VerifyAndClearExpectations(&document_);
+    handler_.reset();
+    web_contents_.reset();
+    ExtensionServiceTestBase::TearDown();
+  }
+
   scoped_refptr<const extensions::Extension> LoadNtpExtension() {
     extensions::TestExtensionDir extension_dir;
     const std::string kManifest = R"(

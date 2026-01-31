@@ -1,0 +1,14 @@
+// Copyright 2025 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+[
+  Exposed=Window,
+  RuntimeEnabled=AutofillEvent
+] interface AutofillEvent : Event {
+  [SameObject, SaveSameObject] readonly attribute FrozenArray<AutofillFieldData> autofillValues;
+  // Callback to request a refill of the form. Returns a promise that resolves
+  // when the refill is done. Null if refill is not supported.
+  [CallWith=ScriptState] readonly attribute AutofillRefillCallback? refill;
+};
+

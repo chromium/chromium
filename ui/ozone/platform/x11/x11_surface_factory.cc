@@ -259,17 +259,9 @@ X11SurfaceFactory::CreateNativePixmapFromHandle(
   return pixmap;
 }
 
-std::vector<gfx::BufferFormat>
-X11SurfaceFactory::GetSupportedFormatsForTexturing() const {
-  std::vector<gfx::BufferFormat> supported_buffer_formats;
-  for (int j = 0; j <= static_cast<int>(gfx::BufferFormat::LAST); ++j) {
-    const gfx::BufferFormat buffer_format = static_cast<gfx::BufferFormat>(j);
-    auto format = viz::GetSharedImageFormat(buffer_format);
-    if (ui::GBMSupportX11::GetInstance()->CanCreateBufferForFormat(format)) {
-      supported_buffer_formats.push_back(buffer_format);
-    }
-  }
-  return supported_buffer_formats;
+bool X11SurfaceFactory::IsFormatSupportedForTexturing(
+    viz::SharedImageFormat format) const {
+  return ui::GBMSupportX11::GetInstance()->CanCreateBufferForFormat(format);
 }
 
 }  // namespace ui

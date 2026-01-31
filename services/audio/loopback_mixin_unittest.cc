@@ -8,6 +8,7 @@
 
 #include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
+#include "media/audio/application_loopback_device_helper.h"
 #include "media/audio/audio_device_description.h"
 #include "media/base/audio_bus.h"
 #include "media/base/audio_glitch_info.h"
@@ -52,9 +53,11 @@ class LoopbackMixinUnderTest : public LoopbackMixin {
   LoopbackMixinUnderTest(
       std::unique_ptr<LoopbackSignalProviderInterface> signal_provider,
       const media::AudioParameters& params,
+      bool include_primary_source,
       OnDataCallback on_data_callback)
       : LoopbackMixin(std::move(signal_provider),
                       params,
+                      include_primary_source,
                       std::move(on_data_callback)) {}
 };
 
@@ -78,6 +81,10 @@ class LoopbackMixinTest : public testing::Test {
         EXPECT_FLOAT_EQ(sample, expected_value);
       }
     }
+  }
+
+  bool ExtractIncludePrimarySource(LoopbackMixin* mixin) {
+    return mixin->include_primary_source_;
   }
 
   base::test::ScopedFeatureList feature_list_;
@@ -107,7 +114,8 @@ TEST_F(LoopbackMixinTest, MaybeCreate_FailsWhenFeatureIsDisabled) {
   EXPECT_EQ(mixin, nullptr);
 }
 
-TEST_F(LoopbackMixinTest, MaybeCreate_SucceedsWithCorrectIdAndFeature) {
+TEST_F(LoopbackMixinTest,
+       MaybeCreate_SucceedsWithApplicationLoopbackIdAndFeature) {
   feature_list_.InitAndEnableFeature(kRestrictOwnAudioAddChromiumBack);
   auto mixin = LoopbackMixin::MaybeCreateRestrictOwnAudioLoopbackMixin(
       &coordinator_, base::UnguessableToken::Create(),
@@ -115,7 +123,24 @@ TEST_F(LoopbackMixinTest, MaybeCreate_SucceedsWithCorrectIdAndFeature) {
       on_data_callback_.Get());
 
   if (media::IsRestrictOwnAudioSupported()) {
-    EXPECT_NE(mixin, nullptr);
+    CHECK_NE(mixin, nullptr);
+    EXPECT_TRUE(ExtractIncludePrimarySource(mixin.get()));
+  } else {
+    EXPECT_EQ(mixin, nullptr);
+  }
+}
+
+TEST_F(LoopbackMixinTest,
+       MaybeCreate_SucceedsWithRestrictOwnAudioBrowserLoopbackIdAndFeature) {
+  feature_list_.InitAndEnableFeature(kRestrictOwnAudioAddChromiumBack);
+  auto mixin = LoopbackMixin::MaybeCreateRestrictOwnAudioLoopbackMixin(
+      &coordinator_, base::UnguessableToken::Create(),
+      media::CreateRestrictOwnAudioBrowserLoopbackDeviceId(), params_,
+      on_data_callback_.Get());
+
+  if (media::IsRestrictOwnAudioSupported()) {
+    CHECK_NE(mixin, nullptr);
+    EXPECT_FALSE(ExtractIncludePrimarySource(mixin.get()));
   } else {
     EXPECT_EQ(mixin, nullptr);
   }
@@ -129,16 +154,33 @@ TEST_F(LoopbackMixinTest, Start_CallsProviderStart) {
   MockLoopbackSignalProvider* mock_provider_ptr = mock_provider.get();
 
   LoopbackMixinUnderTest mixin(std::move(mock_provider), params_,
+                               /*include_primary_source=*/false,
                                on_data_callback_.Get());
 
   EXPECT_CALL(*mock_provider_ptr, Start()).Times(1);
   mixin.Start();
 }
 
-TEST_F(LoopbackMixinTest, OnData_MixesAudioAndForwardsToCallback) {
+enum class IncludePrimarySourceBehavior {
+  kIncludePrimarySource,
+  kMutePrimarySource
+};
+
+class LoopbackMixinOnDataTest
+    : public LoopbackMixinTest,
+      public testing::WithParamInterface<IncludePrimarySourceBehavior> {};
+
+TEST_P(LoopbackMixinOnDataTest, MixesAudioAndForwardsToCallback) {
+  const bool include_primary_source =
+      GetParam() == IncludePrimarySourceBehavior::kIncludePrimarySource;
+
   const float kSourceValue = 0.2f;
   const float kLoopbackValue = 0.3f;
-  const float kExpectedMixedValue = kSourceValue + kLoopbackValue;
+
+  // If the primary source is included, it's the sum of the source and the
+  // loopback. Otherwise, it's just the loopback.
+  const float kExpectedMixedValue =
+      include_primary_source ? kSourceValue + kLoopbackValue : kLoopbackValue;
 
   auto mock_provider = std::make_unique<MockLoopbackSignalProvider>();
   MockLoopbackSignalProvider* mock_provider_ptr = mock_provider.get();
@@ -170,17 +212,28 @@ TEST_F(LoopbackMixinTest, OnData_MixesAudioAndForwardsToCallback) {
       });
 
   LoopbackMixinUnderTest mixin(std::move(mock_provider), params_,
-                               on_data_callback_.Get());
+                               include_primary_source, on_data_callback_.Get());
 
   // Set expectation on the final callback.
   EXPECT_CALL(on_data_callback_, Run(_, now, volume, glitch_info))
       .WillOnce(WithArgs<0>([&](const media::AudioBus* mixed_bus) {
-        // Verify the audio data was mixed correctly.
+        // Verify the audio data was mixed (or muted) correctly.
         VerifyAudioBus(mixed_bus, kExpectedMixedValue);
       }));
 
   // Trigger the mixing process.
   mixin.OnData(source_audio.get(), now, volume, glitch_info);
 }
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    LoopbackMixinOnDataTest,
+    testing::Values(IncludePrimarySourceBehavior::kIncludePrimarySource,
+                    IncludePrimarySourceBehavior::kMutePrimarySource),
+    [](const testing::TestParamInfo<LoopbackMixinOnDataTest::ParamType>& info) {
+      return info.param == IncludePrimarySourceBehavior::kMutePrimarySource
+                 ? "MutePrimarySource"
+                 : "IncludePrimarySource";
+    });
 
 }  // namespace audio

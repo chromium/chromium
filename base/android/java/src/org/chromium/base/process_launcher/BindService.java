@@ -54,6 +54,18 @@ public final class BindService {
             Handler handler,
             Executor executor,
             @Nullable String instanceName) {
+        if (ScopedServiceBindingBatch.shouldBatchUpdate()) {
+            BindingRequestQueue queue = ScopedServiceBindingBatch.getBindingRequestQueue();
+            // This should never be null because shouldBatchUpdate() checks that the feature is
+            // enabled.
+            assert queue != null;
+            // Flush all enqueued unbind requests before binding a new service. The order of unbind
+            // -> bind requests is important on the devices where process count limit is hit.
+            // TODO(crbug.com/469633098): Skip flushing if there is no unbind request in the queue
+            // (e.g. rebind requests only).
+            queue.flush();
+        }
+
         if (sBinderCallCounter != null) {
             sBinderCallCounter.mBindServiceCount++;
         }

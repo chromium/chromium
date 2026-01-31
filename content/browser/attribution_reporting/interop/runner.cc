@@ -115,23 +115,23 @@ class Adjuster : public ReportBodyAdjuster {
   ~Adjuster() override = default;
 
  private:
-  void AdjustEventLevel(base::Value::Dict& report_body) override {
+  void AdjustEventLevel(base::DictValue& report_body) override {
     AdjustTime(report_body, "scheduled_report_time");
   }
 
-  void AdjustAggregatable(base::Value::Dict& report_body) override {
+  void AdjustAggregatable(base::DictValue& report_body) override {
     AdjustAggregatableReportSharedInfo(report_body);
   }
 
-  void AdjustAggregatableDebug(base::Value::Dict& report_body) override {
+  void AdjustAggregatableDebug(base::DictValue& report_body) override {
     AdjustAggregatableReportSharedInfo(report_body);
   }
 
-  void AdjustAggregatableReportSharedInfo(base::Value::Dict& report_body) {
+  void AdjustAggregatableReportSharedInfo(base::DictValue& report_body) {
     std::string* shared_info = report_body.FindString("shared_info");
     CHECK(shared_info);
 
-    std::optional<base::Value::Dict> shared_info_dict =
+    std::optional<base::DictValue> shared_info_dict =
         base::JSONReader::ReadDict(*shared_info, base::JSON_PARSE_RFC);
     CHECK(shared_info_dict);
 
@@ -147,7 +147,7 @@ class Adjuster : public ReportBodyAdjuster {
 
     // The payloads were encrypted with the original shared info, therefore
     // need to be re-encrypted with the adjusted shared info.
-    base::Value::List* payloads =
+    base::ListValue* payloads =
         report_body.FindList("aggregation_service_payloads");
     CHECK(payloads);
 
@@ -179,7 +179,7 @@ class Adjuster : public ReportBodyAdjuster {
   // Adjust the field that contains a string encoding seconds from the UNIX
   // epoch. It needs to be adjusted relative to the simulator's origin time in
   // order for test output to be consistent.
-  void AdjustTime(base::Value::Dict& dict,
+  void AdjustTime(base::DictValue& dict,
                   std::string_view key,
                   std::string_view skip_adjust_value = "") {
     if (std::string* str = dict.FindString(key);
@@ -609,23 +609,23 @@ void MaybeAdjustReportBody(const GURL& url,
                            base::Value& payload,
                            ReportBodyAdjuster& adjuster) {
   if (base::EndsWith(url.path(), "/report-aggregate-attribution")) {
-    if (base::Value::Dict* dict = payload.GetIfDict()) {
+    if (base::DictValue* dict = payload.GetIfDict()) {
       adjuster.AdjustAggregatable(*dict);
     }
   } else if (base::EndsWith(url.path(), "/report-event-attribution")) {
-    if (base::Value::Dict* dict = payload.GetIfDict()) {
+    if (base::DictValue* dict = payload.GetIfDict()) {
       adjuster.AdjustEventLevel(*dict);
     }
   } else if (url.path() == "/.well-known/attribution-reporting/debug/verbose") {
-    if (base::Value::List* list = payload.GetIfList()) {
+    if (base::ListValue* list = payload.GetIfList()) {
       for (auto& item : *list) {
-        base::Value::Dict* dict = item.GetIfDict();
+        base::DictValue* dict = item.GetIfDict();
         if (!dict) {
           continue;
         }
 
         const std::string* debug_data_type = dict->FindString("type");
-        base::Value::Dict* body = dict->FindDict("body");
+        base::DictValue* body = dict->FindDict("body");
         if (debug_data_type && body) {
           adjuster.AdjustVerboseDebug(*debug_data_type, *body);
         }
@@ -634,14 +634,14 @@ void MaybeAdjustReportBody(const GURL& url,
   } else if (url.path() ==
              "/.well-known/attribution-reporting/debug/"
              "report-aggregate-debug") {
-    if (base::Value::Dict* dict = payload.GetIfDict()) {
+    if (base::DictValue* dict = payload.GetIfDict()) {
       adjuster.AdjustAggregatableDebug(*dict);
     }
   }
 }
 
 void ReportBodyAdjuster::AdjustVerboseDebug(std::string_view debug_data_type,
-                                            base::Value::Dict& body) {
+                                            base::DictValue& body) {
   if (debug_data_type == "trigger-event-excessive-reports" ||
       debug_data_type == "trigger-event-low-priority") {
     AdjustEventLevel(body);

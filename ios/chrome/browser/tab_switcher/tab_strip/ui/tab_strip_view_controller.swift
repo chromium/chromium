@@ -7,13 +7,10 @@ import ios_chrome_browser_shared_ui_util_util_swift
 import ios_chrome_browser_tab_switcher_tab_strip_ui_swift_constants
 
 /// View Controller displaying the TabStrip.
-// TODO(crbug.com/427169284): Replace @preconcurrency with @MainActor when all test bots
-// support this new syntax. @preconcurrency tells the Swift 6 compiler to do concurrency
-// chencking during the run-time instead of the compile time.
 @MainActor
 @objcMembers
 class TabStripViewController: UIViewController, TabStripConsumer, TabStripNewTabButtonDelegate,
-  @preconcurrency TabStripGroupCellDelegate, @preconcurrency TabStripTabCellDelegate
+  @MainActor TabStripGroupCellDelegate, @MainActor TabStripTabCellDelegate
 {
 
   // The enum used by the data source to manage the sections.
@@ -61,6 +58,9 @@ class TabStripViewController: UIViewController, TabStripConsumer, TabStripNewTab
 
   /// `true` if a drop animation is in progress.
   private var dropAnimationInProgress: Bool = false
+
+  /// Counter for the number of items currently being closed.
+  private var closingItemCount: Int = 0
 
   /// `true` if the user is in incognito.
   public var isIncognito: Bool = false
@@ -398,10 +398,30 @@ class TabStripViewController: UIViewController, TabStripConsumer, TabStripNewTab
     var snapshot = dataSource.snapshot(for: .tabs)
     snapshot.delete(items)
     itemData.removeObjects(forKeys: items)
+
+    // Clip the collection view to bounds during the animation to avoid the
+    // deleted cell to be visible above the toolbar.
+    closingItemCount += 1
+    collectionView.clipsToBounds = true
+
+    // Use a CATransaction to handle the completion of the animation.
+    // The `applySnapshot` completion block is called before the visual
+    // animation is fully finished, leading to premature unclipping.
+    CATransaction.begin()
+    CATransaction.setCompletionBlock { [weak self] in
+      guard let self = self else { return }
+      self.closingItemCount = max(0, self.closingItemCount - 1)
+      if self.closingItemCount == 0 {
+        self.collectionView.clipsToBounds = false
+      }
+    }
+
     applySnapshot(
       dataSource: dataSource, snapshot: snapshot,
       animatingDifferences: !UIAccessibility.isReduceMotionEnabled,
       numberOfVisibleItemsChanged: true)
+
+    CATransaction.commit()
   }
 
   func replaceItem(_ oldItem: TabSwitcherItem?, withItem newItem: TabSwitcherItem?) {

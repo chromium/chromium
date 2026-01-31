@@ -12,6 +12,10 @@
 
 class TabAndroid;
 
+namespace tab_groups {
+class TabGroupId;
+}  // namespace tab_groups
+
 // An interface to be notified about changes to a TabModel. Notifications are
 // routed to instances of this class via TabModelObserverJniBridge. See
 // TabModelObserver.java for more details about individual notifications.
@@ -29,6 +33,10 @@ class TabModelObserver {
 
   // Called when a |tab| starts closing.
   virtual void WillCloseTab(TabAndroid* tab);
+
+  // Called after a tab has been removed due to closure. At this point the tab
+  // is no longer in the TabModel.
+  virtual void DidRemoveTabForClosure(TabAndroid* tab);
 
   // Called right before a |tab| has been destroyed.
   virtual void OnFinishingTabClosure(TabAndroid* tab,
@@ -71,6 +79,18 @@ class TabModelObserver {
   // Called after a tab has been removed. At this point the tab is no longer in
   // the TabModel.
   virtual void TabRemoved(TabAndroid* tab);
+
+  // Called after a tab group has been created.
+  virtual void OnTabGroupCreated(tab_groups::TabGroupId group_id);
+
+  // Called before a tab group will be removed.
+  virtual void OnTabGroupRemoving(tab_groups::TabGroupId group_id);
+
+  // Called after a tab group has been moved to a new position.
+  virtual void OnTabGroupMoved(tab_groups::TabGroupId group_id, int old_index);
+
+  // Called after a tab group's visual data has been changed.
+  virtual void OnTabGroupVisualsChanged(tab_groups::TabGroupId group_id);
 };
 
 #endif  // CHROME_BROWSER_UI_ANDROID_TAB_MODEL_TAB_MODEL_OBSERVER_H_

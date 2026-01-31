@@ -5,7 +5,8 @@
 #ifndef COMPONENTS_WALLET_CONTENT_BROWSER_CONTENT_WALLETABLE_PASS_INGESTION_CONTROLLER_H_
 #define COMPONENTS_WALLET_CONTENT_BROWSER_CONTENT_WALLETABLE_PASS_INGESTION_CONTROLLER_H_
 
-#include "components/wallet/core/browser/walletable_pass_ingestion_controller.h"
+#include "components/wallet/content/browser/walletable_pass_barcode_detector_impl.h"
+#include "components/wallet/core/browser/ingestion/walletable_pass_ingestion_controller.h"
 #include "content/public/browser/web_contents_observer.h"
 
 namespace content {
@@ -37,10 +38,14 @@ class ContentWalletablePassIngestionController
   std::string GetPageTitle() const override;
 
   void GetAnnotatedPageContent(AnnotatedPageContentCallback callback) override;
+  void DetectBarcodes(BarcodeDetectionCallback callback) override;
 
   // content::WebContentsObserver:
   void DidFinishLoad(content::RenderFrameHost* render_frame_host,
                      const GURL& validated_url) override;
+
+ private:
+  WalletablePassBarcodeDetectorImpl barcode_detector_;
 };
 
 }  // namespace wallet

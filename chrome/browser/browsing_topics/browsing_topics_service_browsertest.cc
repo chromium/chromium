@@ -471,12 +471,12 @@ class BrowsingTopicsBrowserTest : public BrowsingTopicsBrowserTestBase {
       const base::FilePath& profile_path,
       const std::vector<EpochTopics>& epochs,
       base::Time next_scheduled_calculation_time) {
-    base::Value::List epochs_list;
+    base::ListValue epochs_list;
     for (const EpochTopics& epoch : epochs) {
       epochs_list.Append(epoch.ToDictValue());
     }
 
-    base::Value::Dict dict;
+    base::DictValue dict;
     dict.Set("epochs", std::move(epochs_list));
     dict.Set("next_scheduled_calculation_time",
              base::TimeToValue(next_scheduled_calculation_time));
@@ -600,7 +600,7 @@ class BrowsingTopicsBrowserTest : public BrowsingTopicsBrowserTestBase {
     InitializePreexistingState(history_service, site_data_manager,
                                profile->GetPath(), annotator.get());
 
-    DCHECK(!base::Contains(calculation_finish_waiters_, profile));
+    DCHECK(!calculation_finish_waiters_.contains(profile));
     calculation_finish_waiters_.emplace(profile,
                                         std::make_unique<base::RunLoop>());
 
@@ -1222,7 +1222,7 @@ IN_PROC_BROWSER_TEST_F(BrowsingTopicsBrowserTest,
   GURL prerender_url =
       https_server_.GetURL("a.test", "/browsing_topics/empty_page.html");
 
-  content::FrameTreeNodeId host_id =
+  content::PrerenderHostId host_id =
       prerender_helper().AddPrerender(prerender_url);
 
   content::RenderFrameHost* prerender_host =

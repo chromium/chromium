@@ -8,7 +8,6 @@
 #include <optional>
 
 #include "device/vr/public/mojom/vr_service.mojom-blink.h"
-#include "gpu/command_buffer/common/mailbox_holder.h"
 #include "third_party/blink/renderer/core/dom/events/event_target.h"
 
 namespace blink {

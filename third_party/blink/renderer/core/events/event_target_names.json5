@@ -10,7 +10,6 @@
   data: [
     "Animation",
     "Clipboard",
-    "CSSPseudoElement",
     "EditContext",
     "FontFaceSet",
     "MediaQueryList",

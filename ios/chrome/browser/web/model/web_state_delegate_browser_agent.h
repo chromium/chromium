@@ -51,8 +51,7 @@ class WebStateDelegateBrowserAgent
  private:
   friend class BrowserUserData<WebStateDelegateBrowserAgent>;
 
-  WebStateDelegateBrowserAgent(Browser* browser,
-                               TabInsertionBrowserAgent* tab_insertion_agent);
+  WebStateDelegateBrowserAgent(Browser* browser);
 
   // TabsDependencyInstaller implementation.
   void OnWebStateInserted(web::WebState* web_state) override;
@@ -103,9 +102,10 @@ class WebStateDelegateBrowserAgent
                       base::OnceCallback<void(bool)> callback) override;
   void DidFinishClipboardRead(web::WebState* source) override;
 
+  TabInsertionBrowserAgent* tab_insertion_agent();
+
   raw_ptr<WebStateList> web_state_list_ = nullptr;
-  raw_ptr<TabInsertionBrowserAgent, DanglingUntriaged> tab_insertion_agent_ =
-      nullptr;
+  raw_ptr<Browser> browser_ = nullptr;
 
   OverlayJavaScriptDialogPresenter java_script_dialog_presenter_;
 

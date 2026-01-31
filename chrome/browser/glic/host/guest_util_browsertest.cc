@@ -6,6 +6,7 @@
 
 #include "base/check_deref.h"
 #include "base/test/scoped_feature_list.h"
+#include "chrome/browser/extensions/tab_helper.h"
 #include "chrome/browser/glic/glic_pref_names.h"
 #include "chrome/browser/glic/test_support/glic_test_environment.h"
 #include "chrome/browser/profiles/profile_manager.h"
@@ -22,8 +23,14 @@
 #include "components/guest_view/browser/test_guest_view_manager.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/browser/web_ui.h"
+#include "content/public/browser/web_ui_controller.h"
+#include "content/public/browser/web_ui_data_source.h"
+#include "content/public/browser/webui_config.h"
+#include "content/public/common/bindings_policy.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "content/public/test/scoped_web_ui_controller_factory_registration.h"
 #include "extensions/browser/api/extensions_api_client.h"
 #include "extensions/browser/app_window/app_window.h"
 #include "extensions/browser/app_window/app_window_registry.h"
@@ -33,6 +40,45 @@
 
 namespace glic {
 namespace {
+
+// Use `kChromeUIContextualTasksURL` because it is allow-listed for web view
+// use in `chrome/common/extensions/api/_api_features.json`.
+const char* kTestWebViewURL = chrome::kChromeUIContextualTasksURL;
+const char* kTestWebViewHost = chrome::kChromeUIContextualTasksHost;
+
+// A simple WebUI controller that serves a blank page with a <webview> tag.
+class TestWebUIController : public content::WebUIController {
+ public:
+  explicit TestWebUIController(content::WebUI* web_ui)
+      : content::WebUIController(web_ui) {
+    web_ui->SetBindings(
+        content::BindingsPolicySet({content::BindingsPolicyValue::kWebUi}));
+    content::WebContents* web_contents = web_ui->GetWebContents();
+    // Necessary for web view to be allowed.
+    extensions::TabHelper::CreateForWebContents(web_contents);
+    content::WebUIDataSource* source = content::WebUIDataSource::CreateAndAdd(
+        web_contents->GetBrowserContext(), kTestWebViewHost);
+    source->SetRequestFilter(
+        base::BindRepeating(
+            [](const std::string& path) { return path.empty(); }),
+        base::BindRepeating(
+            [](const std::string& path,
+               content::WebUIDataSource::GotDataCallback callback) {
+              std::move(callback).Run(new base::RefCountedString(R"(
+                  <!DOCTYPE html>
+                  <html>
+                    <body><webview src="about:blank"></webview></body>
+                  </html>)"));
+            }));
+  }
+};
+
+class TestWebUIConfig
+    : public content::DefaultWebUIConfig<TestWebUIController> {
+ public:
+  TestWebUIConfig()
+      : DefaultWebUIConfig(content::kChromeUIScheme, kTestWebViewHost) {}
+};
 
 Profile& GetProfile() {
   return CHECK_DEREF(ProfileManager::GetLastUsedProfile());
@@ -91,8 +137,11 @@ class GuestUtilBrowserTest : public InProcessBrowserTest {
 IN_PROC_BROWSER_TEST_F(GuestUtilBrowserTest, OnGuestAdded_NonGlic) {
   EXPECT_EQ(0ULL, GetGuestViewManager(factory()).GetCurrentGuestCount());
 
-  // Load a non-glic webui containing a <webview>
-  OpenWebUiWithGuestView(GURL{"chrome://chrome-signin/?reason=5"});
+  std::unique_ptr<content::ScopedWebUIConfigRegistration>
+      web_ui_config_registration =
+          std::make_unique<content::ScopedWebUIConfigRegistration>(
+              std::make_unique<TestWebUIConfig>());
+  OpenWebUiWithGuestView(GURL{kTestWebViewURL});
 
   auto* guest_view =
       GetGuestViewManager(factory()).WaitForSingleGuestViewCreated();

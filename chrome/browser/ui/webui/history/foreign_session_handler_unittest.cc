@@ -161,7 +161,7 @@ TEST_F(ForeignSessionHandlerTest, HandleOpenForeignSessionAllTabs) {
               GetForeignSession("my_session_tag"))
       .Times(testing::AtLeast(1));
 
-  base::Value::List list_args;
+  base::ListValue list_args;
   list_args.Append("my_session_tag");
   handler()->HandleOpenForeignSessionAllTabs(list_args);
 }
@@ -172,7 +172,7 @@ TEST_F(ForeignSessionHandlerTest, HandleOpenForeignSessionTab) {
                             SessionID::FromSerializedValue(456), testing::_))
       .Times(testing::AtLeast(1));
 
-  base::Value::List list_args;
+  base::ListValue list_args;
   list_args.Append("my_session_tag");
   list_args.Append("456");
   list_args.Append(1.0);

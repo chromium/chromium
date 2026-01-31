@@ -6,31 +6,41 @@
 #define CHROME_BROWSER_EXTENSIONS_API_TABS_TABS_EVENT_ROUTER_H_
 
 #include <map>
+#include <memory>
 #include <set>
 #include <string>
 
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ref.h"
+#include "base/memory/weak_ptr.h"
 #include "base/scoped_multi_source_observation.h"
-#include "base/scoped_observation.h"
-#include "chrome/browser/extensions/api/tabs/tabs_api.h"
-#include "chrome/browser/resource_coordinator/lifecycle_unit_observer.h"
-#include "chrome/browser/ui/browser_list_observer.h"
-#include "chrome/browser/ui/browser_tab_strip_tracker.h"
-#include "chrome/browser/ui/browser_tab_strip_tracker_delegate.h"
-#include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
+#include "base/values.h"
+#include "build/build_config.h"
+#include "chrome/browser/ui/tabs/tab_list_interface.h"
+#include "chrome/browser/ui/tabs/tab_list_interface_observer.h"
 #include "components/favicon/core/favicon_driver.h"
 #include "components/favicon/core/favicon_driver_observer.h"
 #include "components/performance_manager/public/decorators/page_live_state_decorator.h"
 #include "components/zoom/zoom_observer.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "extensions/browser/event_router.h"
+#include "extensions/browser/extension_event_histogram_value.h"
+#include "url/gurl.h"
+
+#if BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/extensions/api/tabs/tabs_event_router_platform_delegate_android.h"
+#else
+#include "chrome/browser/extensions/api/tabs/tabs_event_router_platform_delegate_non_android.h"
+#endif
+
+class Profile;
 
 namespace content {
 class WebContents;
 }
 
-namespace resource_coordinator {
-class TabLifecycleUnitSource;
+namespace tabs {
+class TabInterface;
 }
 
 namespace extensions {
@@ -39,46 +49,132 @@ namespace extensions {
 // extension process renderers.
 // TabsEventRouter will only route events from windows/tabs within a profile to
 // extension processes in the same profile.
-class TabsEventRouter : public TabStripModelObserver,
-                        public BrowserTabStripTrackerDelegate,
-                        public BrowserListObserver,
-                        public favicon::FaviconDriverObserver,
-                        public zoom::ZoomObserver,
-                        public resource_coordinator::LifecycleUnitObserver,
-                        public performance_manager::PageLiveStateObserver {
+// TODO(https://crbug.com/473593117): Right now, the entire functionality of
+// this class is essentially delegated to its platform delegate. We need to
+// pull this functionality into this class.
+class TabsEventRouter : public favicon::FaviconDriverObserver,
+                        public performance_manager::PageLiveStateObserver,
+                        public TabListInterfaceObserver,
+                        public zoom::ZoomObserver {
  public:
   explicit TabsEventRouter(Profile* profile);
-
   TabsEventRouter(const TabsEventRouter&) = delete;
   TabsEventRouter& operator=(const TabsEventRouter&) = delete;
-
   ~TabsEventRouter() override;
 
-  // BrowserTabStripTrackerDelegate:
-  bool ShouldTrackBrowser(BrowserWindowInterface* browser) override;
+ private:
+  // The platform delegate is basically a platform-specific addendum to this
+  // class, so we allow it to reach into this class's internal state.
+  friend class TabsEventRouterPlatformDelegate;
 
-  // BrowserListObserver:
-  void OnBrowserSetLastActive(Browser* browser) override;
+  // Maintain some information about known tabs, so we can:
+  //
+  //  - distinguish between tab creation and tab insertion
+  //  - not send tab-detached after tab-removed
+  //  - reduce the "noise" of TabChangedAt() when sending events to extensions
+  //  - remember last muted and audible states to know if there was a change
+  //  - listen to WebContentsObserver notifications and forward them to the
+  //    event router.
+  class TabEntry : public content::WebContentsObserver {
+   public:
+    // Create a TabEntry associated with, and tracking state changes to,
+    // `contents`.
+    TabEntry(TabsEventRouter& router, content::WebContents& contents);
 
-  // TabStripModelObserver:
-  void OnTabStripModelChanged(
-      TabStripModel* tab_strip_model,
-      const TabStripModelChange& change,
-      const TabStripSelectionChange& selection) override;
+    TabEntry(const TabEntry&) = delete;
+    TabEntry& operator=(const TabEntry&) = delete;
 
-  void TabChangedAt(content::WebContents* contents,
-                    int index,
-                    TabChangeType change_type) override;
-  void TabPinnedStateChanged(TabStripModel* tab_strip_model,
-                             content::WebContents* contents,
-                             int index) override;
-  void TabGroupedStateChanged(TabStripModel* tab_strip_model,
-                              std::optional<tab_groups::TabGroupId> old_group,
-                              std::optional<tab_groups::TabGroupId> new_group,
-                              tabs::TabInterface* tab,
-                              int index) override;
-  void OnTabGroupChanged(const TabGroupChange& change) override;
-  void OnSplitTabChanged(const SplitTabChange& change) override;
+    ~TabEntry() override;
+
+    // Update the audible state and return whether they were changed.
+    bool SetAudible(bool new_val);
+
+    // content::WebContentsObserver:
+    void NavigationEntryCommitted(
+        const content::LoadCommittedDetails& load_details) override;
+    void DidStopLoading() override;
+    void TitleWasSet(content::NavigationEntry* entry) override;
+    void DidUpdateAudioMutingState(bool muted) override;
+    void WebContentsDestroyed() override;
+
+   private:
+    // Called when the recently-audible state for the tab changed.
+    void OnRecentlyAudibleStateChanged(bool was_recently_audible);
+
+    // Called when the pin state has changed for the given tab.
+    void OnPinnedStateChanged(tabs::TabInterface* tab, bool new_pinned_state);
+
+    // Whether we are waiting to fire the 'complete' status change. This will
+    // occur the first time the WebContents stops loading after the
+    // NavigationEntryCommitted() method was called. The tab may go back into
+    // and out of the loading state subsequently, but we will ignore those
+    // changes.
+    bool complete_waiting_on_load_ = false;
+
+    GURL url_;
+
+    // Callback subscription to be notified as the "pinned" state changes.
+    base::CallbackListSubscription pinned_state_subscription_;
+
+    // Callback subscription to be notified as the "recently audible" state
+    // changes.
+    base::CallbackListSubscription recently_audible_subscription_;
+
+    // Event router that the WebContents's notifications are forwarded to.
+    raw_ref<TabsEventRouter> router_;
+
+    base::WeakPtrFactory<TabEntry> weak_factory_{this};
+  };
+
+  // Returns true if the event router should track the given `browser`.
+  bool ShouldTrackBrowser(BrowserWindowInterface& browser);
+
+  // Starts tracking the given `tab_list`.
+  void TrackTabList(TabListInterface& tab_list);
+
+  // Registers to receive the various notifications we are interested in for a
+  // tab.
+  void RegisterForTabNotifications(content::WebContents& contents);
+
+  // Removes notifications and tab entry added in RegisterForTabNotifications.
+  // `expect_registered` indicates whether we should enforce that the tab was
+  // being observed.
+  void UnregisterForTabNotifications(content::WebContents& contents,
+                                     bool expect_registered);
+
+  // Gets the TabEntry for the given `contents`. Returns TabEntry* if found,
+  // nullptr if not.
+  TabEntry* GetTabEntry(content::WebContents& contents);
+
+  // Internal processing of tab updated events. Intended to be called when
+  // there's any changed property.
+  void TabUpdated(TabEntry* entry,
+                  std::set<std::string> changed_property_names);
+
+  // Packages `changed_property_names` as a tab updated event for the tab
+  // `contents` and dispatches the event to the extension.
+  void DispatchTabUpdatedEvent(content::WebContents* contents,
+                               std::set<std::string> changed_property_names);
+
+  // Dispatches the `tabs.onCreated` API event for the given `contents`.
+  // `active` indicates if the tab is active in its tab strip.
+  void DispatchTabCreatedEvent(content::WebContents* contents, bool active);
+
+  // The DispatchEvent methods forward events to the `profile`'s event router.
+  // The TabsEventRouterPlatformDelegate listens to events for all profiles,
+  // so we avoid duplication by dropping events destined for other profiles.
+  void DispatchEvent(Profile* profile,
+                     events::HistogramValue histogram_value,
+                     const std::string& event_name,
+                     base::ListValue args,
+                     EventRouter::UserGestureState user_gesture);
+
+  // TabListInterfaceObserver:
+  void OnTabAdded(tabs::TabInterface* tab, int index) override;
+  void OnTabMoved(tabs::TabInterface* tab,
+                  int from_index,
+                  int to_index) override;
+  void OnTabListDestroyed(TabListInterface& tab_list) override;
 
   // ZoomObserver:
   void OnZoomControllerDestroyed(
@@ -93,133 +189,23 @@ class TabsEventRouter : public TabStripModelObserver,
                         bool icon_url_changed,
                         const gfx::Image& image) override;
 
-  // resource_coordinator::LifecycleUnitObserver:
-  void OnLifecycleUnitStateChanged(
-      resource_coordinator::LifecycleUnit* lifecycle_unit,
-      ::mojom::LifecycleUnitState previous_state) override;
+  // Triggers a tab updated event if the favicon URL changes.
+  void FaviconUrlUpdated(content::WebContents* contents);
 
   // performance_manager::PageLiveStateObserver:
   void OnIsAutoDiscardableChanged(
       const performance_manager::PageNode* page_node) override;
 
- private:
-  // Methods called from OnTabStripModelChanged.
-  void DispatchTabInsertedAt(TabStripModel* tab_strip_model,
-                             content::WebContents* contents,
-                             int index,
-                             bool active);
-  void DispatchTabClosingAt(TabStripModel* tab_strip_model,
-                            content::WebContents* contents,
-                            int index);
-  void DispatchTabDetachedAt(content::WebContents* contents,
-                             int index,
-                             bool was_active);
-  void DispatchActiveTabChanged(content::WebContents* old_contents,
-                                content::WebContents* new_contents);
-  void DispatchTabSelectionChanged(TabStripModel* tab_strip_model,
-                                   const ui::ListSelectionModel& old_model);
-  void DispatchTabMoved(content::WebContents* contents,
-                        int from_index,
-                        int to_index);
-  void DispatchTabReplacedAt(content::WebContents* old_contents,
-                             content::WebContents* new_contents,
-                             int index);
+  // Whether this event router has been fully initialized.
+  bool initialized_ = false;
 
-  // "Synthetic" event. Called from DispatchTabInsertedAt if new tab is
-  // detected.
-  void TabCreatedAt(content::WebContents* contents, int index, bool active);
-
-  // Internal processing of tab updated events. Intended to be called when
-  // there's any changed property.
-  class TabEntry;
-  void TabUpdated(TabEntry* entry,
-                  std::set<std::string> changed_property_names);
-
-  // Triggers a tab updated event if the favicon URL changes.
-  void FaviconUrlUpdated(content::WebContents* contents);
-
-  // The DispatchEvent methods forward events to the `profile`'s event router.
-  // The TabsEventRouter listens to events for all profiles,
-  // so we avoid duplication by dropping events destined for other profiles.
-  void DispatchEvent(Profile* profile,
-                     events::HistogramValue histogram_value,
-                     const std::string& event_name,
-                     base::Value::List args,
-                     EventRouter::UserGestureState user_gesture);
-
-  // Packages `changed_property_names` as a tab updated event for the tab
-  // `contents` and dispatches the event to the extension.
-  void DispatchTabUpdatedEvent(content::WebContents* contents,
-                               std::set<std::string> changed_property_names);
-
-  // Register ourselves to receive the various notifications we are interested
-  // in for a tab. Also create tab entry to observe web contents notifications.
-  void RegisterForTabNotifications(content::WebContents* contents);
-
-  // Removes notifications and tab entry added in RegisterForTabNotifications.
-  void UnregisterForTabNotifications(content::WebContents* contents);
-
-  // Maintain some information about known tabs, so we can:
-  //
-  //  - distinguish between tab creation and tab insertion
-  //  - not send tab-detached after tab-removed
-  //  - reduce the "noise" of TabChangedAt() when sending events to extensions
-  //  - remember last muted and audible states to know if there was a change
-  //  - listen to WebContentsObserver notifications and forward them to the
-  //    event router.
-  class TabEntry : public content::WebContentsObserver {
-   public:
-    // Create a TabEntry associated with, and tracking state changes to,
-    // `contents`.
-    TabEntry(TabsEventRouter* router, content::WebContents* contents);
-
-    TabEntry(const TabEntry&) = delete;
-    TabEntry& operator=(const TabEntry&) = delete;
-
-    // Indicate via a list of property names if a tab is loading based on its
-    // WebContents. Whether the state has changed or not is used to determine if
-    // events need to be sent to extensions during processing of TabChangedAt()
-    // If this method indicates that a tab should "hold" a state-change to
-    // "loading", the NavigationEntryCommitted() method should eventually send a
-    // similar message to undo it.
-    std::set<std::string> UpdateLoadState();
-
-    // Update the audible and muted states and return whether they were changed
-    bool SetAudible(bool new_val);
-    bool SetMuted(bool new_val);
-
-    // content::WebContentsObserver:
-    void NavigationEntryCommitted(
-        const content::LoadCommittedDetails& load_details) override;
-    void TitleWasSet(content::NavigationEntry* entry) override;
-    void WebContentsDestroyed() override;
-
-   private:
-    // Whether we are waiting to fire the 'complete' status change. This will
-    // occur the first time the WebContents stops loading after the
-    // NAV_ENTRY_COMMITTED was fired. The tab may go back into and out of the
-    // loading state subsequently, but we will ignore those changes.
-    bool complete_waiting_on_load_;
-
-    // Previous audible and muted states
-    bool was_audible_;
-    bool was_muted_;
-
-    GURL url_;
-
-    // Event router that the WebContents's noficiations are forwarded to.
-    raw_ptr<TabsEventRouter> router_;
-  };
-
-  // Gets the TabEntry for the given `contents`. Returns TabEntry* if found,
-  // nullptr if not.
-  TabEntry* GetTabEntry(content::WebContents* contents);
+  // Observations for different state changes in tabs.
 
   using TabEntryMap = std::map<int, std::unique_ptr<TabEntry>>;
   TabEntryMap tab_entries_;
 
-  // The main profile that owns this event router.
-  raw_ptr<Profile> profile_;
+  base::ScopedMultiSourceObservation<TabListInterface, TabListInterfaceObserver>
+      tab_list_observations_{this};
 
   base::ScopedMultiSourceObservation<favicon::FaviconDriver,
                                      favicon::FaviconDriverObserver>
@@ -227,11 +213,13 @@ class TabsEventRouter : public TabStripModelObserver,
   base::ScopedMultiSourceObservation<zoom::ZoomController, zoom::ZoomObserver>
       zoom_scoped_observations_{this};
 
-  BrowserTabStripTracker browser_tab_strip_tracker_;
+  // The profile this router is associated with.
+  raw_ptr<Profile> profile_;
 
-  base::ScopedObservation<resource_coordinator::TabLifecycleUnitSource,
-                          resource_coordinator::LifecycleUnitObserver>
-      tab_source_scoped_observation_{this};
+  // The associated platform delegate. This is only wrapped in an optional to
+  // allow delayed instantiation. See also comment in the constructor
+  // definition.
+  std::optional<TabsEventRouterPlatformDelegate> platform_delegate_;
 };
 
 }  // namespace extensions

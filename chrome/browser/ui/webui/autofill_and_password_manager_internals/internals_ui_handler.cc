@@ -161,7 +161,7 @@ void InternalsUIHandler::OnJavascriptDisallowed() {
 }
 
 void InternalsUIHandler::OnDeleteAutofillAiCacheEntry(
-    const base::Value::List& args) {
+    const base::ListValue& args) {
   AutofillAiModelCache* model_cache =
       AutofillAiModelCacheFactory::GetForProfile(Profile::FromWebUI(web_ui()));
   uint64_t number;
@@ -172,27 +172,27 @@ void InternalsUIHandler::OnDeleteAutofillAiCacheEntry(
   model_cache->Erase(FormSignature(number));
 }
 
-void InternalsUIHandler::OnGetAutofillAiCache(const base::Value::List& args) {
+void InternalsUIHandler::OnGetAutofillAiCache(const base::ListValue& args) {
   AutofillAiModelCache* model_cache =
       AutofillAiModelCacheFactory::GetForProfile(Profile::FromWebUI(web_ui()));
   if (!model_cache) {
-    FireWebUIListener("display-autofill-ai-cache", base::Value::List());
+    FireWebUIListener("display-autofill-ai-cache", base::ListValue());
     return;
   }
 
-  base::Value::List results;
+  base::ListValue results;
   for (const auto& [form_signature, cache_entry] :
        model_cache->GetAllEntries()) {
     const int num_fields =
         std::min(cache_entry.field_identifiers_size(),
                  cache_entry.server_response().field_responses_size());
-    auto fields = base::Value::List::with_capacity(num_fields);
+    auto fields = base::ListValue::with_capacity(num_fields);
     for (int i = 0; i < num_fields; ++i) {
       const auto& field_response =
           cache_entry.server_response().field_responses(i);
       const auto& field_identifier = cache_entry.field_identifiers(i);
       auto field_info =
-          base::Value::Dict()
+          base::DictValue()
               .Set("signature",
                    base::NumberToString(field_identifier.field_signature()))
               .Set("rank",
@@ -207,7 +207,7 @@ void InternalsUIHandler::OnGetAutofillAiCache(const base::Value::List& args) {
       fields.Append(std::move(field_info));
     }
     results.Append(
-        base::Value::Dict()
+        base::DictValue()
             .Set("formSignature", base::NumberToString(*form_signature))
             .Set("creationTime",
                  base::TimeFormatFriendlyDateAndTime(
@@ -219,7 +219,7 @@ void InternalsUIHandler::OnGetAutofillAiCache(const base::Value::List& args) {
   FireWebUIListener("display-autofill-ai-cache", std::move(results));
 }
 
-void InternalsUIHandler::OnLoaded(const base::Value::List& args) {
+void InternalsUIHandler::OnLoaded(const base::ListValue& args) {
   AllowJavascript();
   FireWebUIListener(call_on_load_, call_on_load_argument_);
   // This is only available in contents, because the iOS BrowsingDataRemover
@@ -232,7 +232,7 @@ void InternalsUIHandler::OnLoaded(const base::Value::List& args) {
   FireWebUIListener("notify-about-variations", version_ui::GetVariationsList());
 }
 
-void InternalsUIHandler::OnResetCache(const base::Value::List& args) {
+void InternalsUIHandler::OnResetCache(const base::ListValue& args) {
   if (!autofill_cache_resetter_) {
     content::BrowserContext* browser_context = Profile::FromWebUI(web_ui());
     autofill_cache_resetter_.emplace(browser_context);
@@ -245,7 +245,7 @@ void InternalsUIHandler::OnResetCacheDone(const std::string& message) {
   FireWebUIListener("notify-reset-done", base::Value(message));
 }
 
-void InternalsUIHandler::OnDumpAddresses(const base::Value::List& args) {
+void InternalsUIHandler::OnDumpAddresses(const base::ListValue& args) {
   Profile* profile = Profile::FromWebUI(web_ui());
   PersonalDataManager* pdm =
       PersonalDataManagerFactory::GetForBrowserContext(profile);
@@ -257,14 +257,14 @@ void InternalsUIHandler::OnDumpAddresses(const base::Value::List& args) {
        pdm->address_data_manager().GetProfiles()) {
     log << *address;
   }
-  if (std::optional<base::Value::Dict> result = log.RetrieveResult()) {
+  if (std::optional<base::DictValue> result = log.RetrieveResult()) {
     LogEntry(*result);
   }
 }
 
 #if !BUILDFLAG(IS_ANDROID)
 void InternalsUIHandler::CheckAutofillAiPermissions(
-    const base::Value::List& args) {
+    const base::ListValue& args) {
   std::string debug_message;
   const bool may_opt_in = autofill::MayPerformAutofillAiAction(
       CHECK_DEREF(autofill::ContentAutofillClient::FromWebContents(
@@ -279,7 +279,7 @@ void InternalsUIHandler::CheckAutofillAiPermissions(
                                      debug_message})));
 }
 
-void InternalsUIHandler::SetDomNodeId(const base::Value::List& args) {
+void InternalsUIHandler::SetDomNodeId(const base::ListValue& args) {
   for (auto* browser : GetAllBrowserWindowInterfaces()) {
     if (!browser->GetTabStripModel()) {
       continue;
@@ -321,7 +321,7 @@ void InternalsUIHandler::EndSubscription() {
   }
 }
 
-void InternalsUIHandler::LogEntry(const base::Value::Dict& entry) {
+void InternalsUIHandler::LogEntry(const base::DictValue& entry) {
   if (!registered_with_log_router_) {
     return;
   }

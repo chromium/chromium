@@ -15,7 +15,6 @@
 #include "base/task/single_thread_task_runner.h"
 #include "components/viz/common/gpu/vulkan_context_provider.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
-#include "gpu/command_buffer/service/abstract_texture_android.h"
 #include "gpu/command_buffer/service/ahardwarebuffer_utils.h"
 #include "gpu/command_buffer/service/dawn_context_provider.h"
 #include "gpu/command_buffer/service/memory_tracking.h"
@@ -40,6 +39,7 @@
 #include "ui/gl/android/egl_fence_utils.h"
 #include "ui/gl/gl_fence_egl.h"
 #include "ui/gl/gl_utils.h"
+#include "ui/gl/scoped_binders.h"
 #include "ui/gl/scoped_restore_texture.h"
 
 #if BUILDFLAG(SKIA_USE_DAWN)
@@ -63,6 +63,19 @@ void CreateAndBindEglImageFromAHB(AHardwareBuffer* buffer, GLuint service_id) {
   } else {
     LOG(ERROR) << "Failed to create EGL image ";
   }
+}
+
+GLuint CreateTextureWithLinearFilter() {
+  const auto target = GL_TEXTURE_EXTERNAL_OES;
+  GLuint service_id = 0;
+  auto* api = gl::g_current_gl_context;
+  api->glGenTexturesFn(1, &service_id);
+  gl::ScopedTextureBinder binder(target, service_id);
+  api->glTexParameteriFn(target, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+  api->glTexParameteriFn(target, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+  api->glTexParameteriFn(target, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+  api->glTexParameteriFn(target, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+  return service_id;
 }
 
 class VideoImage : public base::RefCounted<VideoImage> {
@@ -174,20 +187,23 @@ class VideoImageReaderImageBacking::GLTextureVideoImageRepresentation
     : public GLTextureImageRepresentation,
       public RefCountedLockHelperDrDc {
  public:
-  GLTextureVideoImageRepresentation(
-      SharedImageManager* manager,
-      VideoImageReaderImageBacking* backing,
-      MemoryTypeTracker* tracker,
-      std::unique_ptr<AbstractTextureAndroid> texture,
-      scoped_refptr<RefCountedLock> drdc_lock)
+  GLTextureVideoImageRepresentation(SharedImageManager* manager,
+                                    VideoImageReaderImageBacking* backing,
+                                    MemoryTypeTracker* tracker,
+                                    scoped_refptr<RefCountedLock> drdc_lock)
       : GLTextureImageRepresentation(manager, backing, tracker),
-        RefCountedLockHelperDrDc(std::move(drdc_lock)),
-        texture_(std::move(texture)) {}
+        RefCountedLockHelperDrDc(std::move(drdc_lock)) {
+    texture_ = gpu::gles2::CreateGLES2TextureWithLightRef(
+        CreateTextureWithLinearFilter(), GL_TEXTURE_EXTERNAL_OES);
+    gfx::Rect cleared_rect;
+    texture_->SetLevelInfo(GL_TEXTURE_EXTERNAL_OES, 0, GL_RGBA, size().width(),
+                           size().height(), 1, 0, GL_RGBA, GL_UNSIGNED_BYTE,
+                           cleared_rect);
+    texture_->SetImmutable(true, false);
+  }
 
   ~GLTextureVideoImageRepresentation() override {
-    if (!has_context()) {
-      texture_->NotifyOnContextLost();
-    }
+    texture_.ExtractAsDangling()->RemoveLightweightRef(has_context());
   }
 
   // Disallow copy and assign.
@@ -198,11 +214,7 @@ class VideoImageReaderImageBacking::GLTextureVideoImageRepresentation
 
   gles2::Texture* GetTexture(int plane_index) override {
     DCHECK_EQ(plane_index, 0);
-
-    auto* texture = gles2::Texture::CheckedCast(texture_->GetTextureBase());
-    DCHECK(texture);
-
-    return texture;
+    return texture_;
   }
 
   bool BeginAccess(GLenum mode) override {
@@ -234,7 +246,7 @@ class VideoImageReaderImageBacking::GLTextureVideoImageRepresentation
   }
 
  private:
-  std::unique_ptr<AbstractTextureAndroid> texture_;
+  raw_ptr<gles2::Texture> texture_ = nullptr;
   std::unique_ptr<base::android::ScopedHardwareBufferFenceSync>
       scoped_hardware_buffer_;
 };
@@ -248,20 +260,19 @@ class VideoImageReaderImageBacking::GLTexturePassthroughVideoImageRepresentation
       SharedImageManager* manager,
       VideoImageReaderImageBacking* backing,
       MemoryTypeTracker* tracker,
-      std::unique_ptr<AbstractTextureAndroid> abstract_texture,
       scoped_refptr<RefCountedLock> drdc_lock)
       : GLTexturePassthroughImageRepresentation(manager, backing, tracker),
         RefCountedLockHelperDrDc(std::move(drdc_lock)),
-        abstract_texture_(std::move(abstract_texture)),
-        passthrough_texture_(gles2::TexturePassthrough::CheckedCast(
-            abstract_texture_->GetTextureBase())) {
+        passthrough_texture_(base::MakeRefCounted<gles2::TexturePassthrough>(
+            CreateTextureWithLinearFilter(),
+            GL_TEXTURE_EXTERNAL_OES)) {
     // TODO(crbug.com/40166788): Remove this CHECK.
     CHECK(passthrough_texture_);
   }
 
   ~GLTexturePassthroughVideoImageRepresentation() override {
     if (!has_context()) {
-      abstract_texture_->NotifyOnContextLost();
+      passthrough_texture_->MarkContextLost();
     }
   }
 
@@ -307,7 +318,6 @@ class VideoImageReaderImageBacking::GLTexturePassthroughVideoImageRepresentation
   }
 
  private:
-  std::unique_ptr<AbstractTextureAndroid> abstract_texture_;
   scoped_refptr<gles2::TexturePassthrough> passthrough_texture_;
   std::unique_ptr<base::android::ScopedHardwareBufferFenceSync>
       scoped_hardware_buffer_;
@@ -635,13 +645,8 @@ VideoImageReaderImageBacking::ProduceGLTexture(SharedImageManager* manager,
   if (!stream_texture_sii_->HasTextureOwner())
     return nullptr;
 
-  // Generate an abstract texture.
-  auto texture = GenAbstractTexture(/*passthrough=*/false);
-  if (!texture)
-    return nullptr;
-
   return std::make_unique<GLTextureVideoImageRepresentation>(
-      manager, this, tracker, std::move(texture), GetDrDcLock());
+      manager, this, tracker, GetDrDcLock());
 }
 
 std::unique_ptr<GLTexturePassthroughImageRepresentation>
@@ -656,13 +661,8 @@ VideoImageReaderImageBacking::ProduceGLTexturePassthrough(
   if (!stream_texture_sii_->HasTextureOwner())
     return nullptr;
 
-  // Generate an abstract texture.
-  auto texture = GenAbstractTexture(/*passthrough=*/true);
-  if (!texture)
-    return nullptr;
-
   return std::make_unique<GLTexturePassthroughVideoImageRepresentation>(
-      manager, this, tracker, std::move(texture), GetDrDcLock());
+      manager, this, tracker, GetDrDcLock());
 }
 
 std::unique_ptr<SkiaGaneshImageRepresentation>
@@ -690,18 +690,15 @@ VideoImageReaderImageBacking::ProduceSkiaGanesh(
   gles2::FeatureInfo* feature_info = context_state->feature_info();
   const bool passthrough =
       (feature_info && feature_info->is_passthrough_cmd_decoder());
-  auto texture = GenAbstractTexture(passthrough);
-  if (!texture)
-    return nullptr;
 
   std::unique_ptr<gpu::GLTextureImageRepresentationBase> gl_representation;
   if (passthrough) {
     gl_representation =
         std::make_unique<GLTexturePassthroughVideoImageRepresentation>(
-            manager, this, tracker, std::move(texture), GetDrDcLock());
+            manager, this, tracker, GetDrDcLock());
   } else {
     gl_representation = std::make_unique<GLTextureVideoImageRepresentation>(
-        manager, this, tracker, std::move(texture), GetDrDcLock());
+        manager, this, tracker, GetDrDcLock());
   }
   return SkiaGLImageRepresentation::Create(std::move(gl_representation),
                                            std::move(context_state), manager,

@@ -166,7 +166,7 @@ class None_(_ValueBase):
 Constant: typing.TypeAlias = Str | Int | Bool | None_
 
 K = typing.TypeVar('K', bound=Constant)
-V = typing.TypeVar('V', bound=_ValueBase)
+V = typing.TypeVar('V', bound='Value')
 
 
 @dataclasses.dataclass(frozen=True, kw_only=True)
@@ -181,7 +181,7 @@ class Dict(_ValueBase, typing.Generic[K, V]):
   """Comments following the last item in the dictionary."""
 
 
-E = typing.TypeVar('E', bound=_ValueBase)
+E = typing.TypeVar('E', bound='Value')
 
 
 @dataclasses.dataclass(frozen=True, kw_only=True)

@@ -22,6 +22,10 @@ EVENTS_EXPORT int GetKeyEventUnicodeChar(
     const base::android::JavaRef<jobject>& event,
     int meta_state);
 
+EVENTS_EXPORT bool IsVirtualKeyboardEvent(
+    JNIEnv* env,
+    const base::android::JavaRef<jobject>& event);
+
 }  // namespace android
 }  // namespace events
 }  // namespace ui

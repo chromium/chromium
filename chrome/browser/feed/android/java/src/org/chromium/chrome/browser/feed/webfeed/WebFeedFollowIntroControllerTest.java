@@ -31,12 +31,11 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.Robolectric;
 import org.robolectric.annotation.LooperMode;
-import org.robolectric.shadows.ShadowLog;
 
 import org.chromium.base.Callback;
 import org.chromium.base.UserDataHost;
 import org.chromium.base.shared_preferences.SharedPreferencesManager;
-import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.feed.webfeed.WebFeedSnackbarController.FeedLauncher;
@@ -82,7 +81,7 @@ public final class WebFeedFollowIntroControllerTest {
             new ActivityScenarioRule<>(TestActivity.class);
 
     @Mock FeedLauncher mFeedLauncher;
-    @Mock private ObservableSupplier<Tab> mTabSupplier;
+    @Mock private MonotonicObservableSupplier<Tab> mTabSupplier;
     @Mock private Tracker mTracker;
     @Mock private WebFeedBridge.Natives mWebFeedBridgeJniMock;
     @Mock private Tab mTab;
@@ -105,7 +104,6 @@ public final class WebFeedFollowIntroControllerTest {
     @Before
     public void setUp() {
         // Print logs to stdout.
-        ShadowLog.stream = System.out;
 
         WebFeedBridgeJni.setInstanceForTesting(mWebFeedBridgeJniMock);
         UserPrefsJni.setInstanceForTesting(mUserPrefsJniMock);

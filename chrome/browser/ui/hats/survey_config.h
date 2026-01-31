@@ -67,6 +67,7 @@ extern const char kHatsSurveyTriggerSafetyHubOneOffExperimentControl[];
 extern const char kHatsSurveyTriggerSafetyHubOneOffExperimentNotification[];
 extern const char kHatsSurveyTriggerSafetyHubOneOffExperimentInteraction[];
 extern const char kHatsSurveyTriggerSettings[];
+extern const char kHatsSurveyTriggerSEHijacking[];
 extern const char kHatsSurveyTriggerSettingsPrivacy[];
 extern const char kHatsSurveyTriggerSettingsSecurity[];
 extern const char kHatsSurveyTriggerTrustSafetyPrivacySettings[];
@@ -139,6 +140,24 @@ struct SurveyConfig {
   };
   // LINT.ThenChange(//chrome/browser/ui/android/hats/java/src/org/chromium/chrome/browser/ui/hats/SurveyConfig.java:RequestedBrowserType)
 
+  // Enum to control the minimum profile age check before showing a survey.
+  // The profile age is determined by the creation time of the profile
+  // directory, and is NOT related to the age of the user.
+  enum class ProfileAgeRequirement {
+    // Default requirement: Only show the survey if the current profile was
+    // created at least 30 days ago. This helps filter out transient or
+    // very new profiles, aiming for feedback from more established users.
+    kOneMonthOrOlder,
+
+    // Allow the survey to be shown regardless of how recently the profile
+    // was created. Use this option with caution, as it can introduce bias.
+    // For example, on shared computers where profiles are frequently reset,
+    // this could lead to overrepresentation of these environments in survey
+    // results, and bypass "at most 1 survey per user" throttling if not
+    // combined with other constraints.
+    kAnyAge
+  };
+
   // Constructs a SurveyConfig by inspecting |feature|. This includes checking
   // if the feature is enabled, as well as inspecting the feature parameters
   // for the survey probability, and if |presupplied_trigger_id| is not
@@ -156,6 +175,8 @@ struct SurveyConfig {
       const std::vector<std::string>& product_specific_string_data_fields = {},
       bool log_responses_to_uma = false,
       bool log_responses_to_ukm = false,
+      ProfileAgeRequirement profile_age_requirement =
+          ProfileAgeRequirement::kOneMonthOrOlder,
       RequestedBrowserType requested_browser_type =
           RequestedBrowserType::kRegular);
 
@@ -194,6 +215,10 @@ struct SurveyConfig {
   // Product Specific String Data fields which are sent with the survey
   // response.
   std::vector<std::string> product_specific_string_data_fields;
+
+  // Specifies the profile age requirement.
+  ProfileAgeRequirement profile_age_requirement =
+      ProfileAgeRequirement::kOneMonthOrOlder;
 
   // Requested browser type decides where the survey can be shown.
   RequestedBrowserType requested_browser_type = RequestedBrowserType::kRegular;

@@ -8,7 +8,7 @@
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/ios/wait_util.h"
 #import "components/feature_engagement/public/feature_constants.h"
-#import "ios/chrome/browser/popup_menu/ui_bundled/popup_menu_constants.h"
+#import "ios/chrome/browser/popup_menu/public/popup_menu_constants.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_navigation_controller_constants.h"
 #import "ios/chrome/grit/ios_branded_strings.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -36,16 +36,8 @@ using base::test::ios::WaitUntilConditionOrTimeout;
 
 // Matcher for the Reading List Text Badge.
 id<GREYMatcher> ReadingListTextBadge() {
-  NSString* new_overflow_menu_accessibility_id =
-      [NSString stringWithFormat:@"%@-promoBadge", kToolsMenuReadingListId];
-  return [ChromeEarlGrey isNewOverflowMenuEnabled]
-             ? grey_accessibilityID(new_overflow_menu_accessibility_id)
-             : grey_allOf(grey_accessibilityID(
-                              @"kToolsMenuTextBadgeAccessibilityIdentifier"),
-                          grey_ancestor(grey_allOf(
-                              grey_accessibilityID(kToolsMenuReadingListId),
-                              grey_sufficientlyVisible(), nil)),
-                          nil);
+  return grey_accessibilityID(
+      [NSString stringWithFormat:@"%@-promoBadge", kToolsMenuReadingListId]);
 }
 
 // Matcher for the Translate Manual Trigger button.
@@ -70,9 +62,7 @@ id<GREYMatcher> DefaultSiteViewTip() {
 // Opens the tools menu and request the desktop version of the page.
 void RequestDesktopVersion() {
   id<GREYMatcher> toolsMenuMatcher =
-      [ChromeEarlGrey isNewOverflowMenuEnabled]
-          ? grey_accessibilityID(kPopupMenuToolsMenuActionListId)
-          : grey_accessibilityID(kPopupMenuToolsMenuTableViewId);
+      grey_accessibilityID(kPopupMenuToolsMenuActionListId);
 
   [ChromeEarlGreyUI openToolsMenu];
   [[[EarlGrey
@@ -115,13 +105,9 @@ void RequestDesktopVersion() {
 }
 
 // Verifies that the Badged Manual Translate Trigger feature shows.
-- (void)testBadgedTranslateManualTriggerFeatureShows {
-  if ([ChromeEarlGrey isNewOverflowMenuEnabled]) {
-    // TODO(crbug.com/40814816): Reenable once this is supported.
-    EARL_GREY_TEST_DISABLED(
-        @"New overflow menu does not support translate badge");
-  }
-
+// TODO(crbug.com/40814816): Reenable once new overflow menu supports translate
+// badge.
+- (void)DISABLED_testBadgedTranslateManualTriggerFeatureShows {
   [self enableDemoModeForFeature:"IPH_BadgedTranslateManualTrigger"];
 
   [ChromeEarlGreyUI openToolsMenu];

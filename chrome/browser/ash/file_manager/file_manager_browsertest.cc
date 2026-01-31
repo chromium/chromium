@@ -1315,11 +1315,6 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
     ::testing::Values(TestCase("navigateToParent")));
 
 WRAPPED_INSTANTIATE_TEST_SUITE_P(
-    InstallLinuxPackageDialog, /* install_linux_package_dialog.ts */
-    FilesAppBrowserTest,
-    ::testing::Values(TestCase("installLinuxPackageDialog")));
-
-WRAPPED_INSTANTIATE_TEST_SUITE_P(
     Recents, /* recents.ts */
     FilesAppBrowserTest,
     ::testing::Values(

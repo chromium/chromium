@@ -35,7 +35,6 @@
 #include <vector>
 
 #include "base/compiler_specific.h"
-#include "base/containers/contains.h"
 #include "base/substring_set_matcher/substring_set_matcher.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/renderer/core/css/css_font_selector.h"
@@ -57,6 +56,7 @@
 #include "third_party/blink/renderer/core/css/style_rule_font_palette_values.h"
 #include "third_party/blink/renderer/core/css/style_rule_import.h"
 #include "third_party/blink/renderer/core/css/style_rule_nested_declarations.h"
+#include "third_party/blink/renderer/core/css/style_rule_route.h"
 #include "third_party/blink/renderer/core/css/style_rule_view_transition.h"
 #include "third_party/blink/renderer/core/css/style_sheet_contents.h"
 #include "third_party/blink/renderer/core/dom/document.h"
@@ -66,6 +66,7 @@
 #include "third_party/blink/renderer/core/html_names.h"
 #include "third_party/blink/renderer/core/inspector/invalidation_set_to_selector_map.h"
 #include "third_party/blink/renderer/core/route_matching/route_map.h"
+#include "third_party/blink/renderer/core/route_matching/route_match_state.h"
 #include "third_party/blink/renderer/core/style/computed_style_constants.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
 #include "third_party/blink/renderer/platform/weborigin/security_origin.h"
@@ -209,7 +210,7 @@ void RuleData::ComputeBloomFilterHashes(const StyleScope* style_scope,
   // captures most of the benefits. (It is fairly common, especially with
   // nesting, to have the same sets of parents in consecutive rules.)
   if (bloom_hash_size_ > 0 && bloom_hash_pos_ >= bloom_hash_size_ &&
-      UNSAFE_TODO(std::equal(
+      UNSAFE_BUFFERS(std::equal(
           bloom_hash_backing.begin() + bloom_hash_pos_ - bloom_hash_size_,
           bloom_hash_backing.begin() + bloom_hash_pos_,
           bloom_hash_backing.begin() + bloom_hash_pos_))) {
@@ -223,7 +224,7 @@ void RuleData::MovedToDifferentRuleSet(const Vector<uint16_t>& old_backing,
                                        unsigned new_position) {
   unsigned new_pos = new_backing.size();
   new_backing.insert(new_backing.size(),
-                     UNSAFE_TODO(old_backing.data() + bloom_hash_pos_),
+                     UNSAFE_BUFFERS(old_backing.data() + bloom_hash_pos_),
                      bloom_hash_size_);
   bloom_hash_pos_ = new_pos;
   position_ = new_position;
@@ -386,6 +387,7 @@ static bool ExtractBucketingValues(const CSSSelector* selector,
         case CSSSelector::kPseudoSelectorFragmentAnchor:
         case CSSSelector::kPseudoRoot:
         case CSSSelector::kPseudoActiveViewTransition:
+        case CSSSelector::kPseudoOverscrollTarget:
           // Pseudo classes.
           values.pseudo_type = selector->GetPseudoType();
           if (values.pseudo_type == CSSSelector::kPseudoSlotted) {
@@ -542,7 +544,7 @@ template <class Func>
 static void MarkAsCoveredByBucketing(CSSSelector& selector,
                                      Func&& should_mark_func) {
   for (CSSSelector* s = &selector;;
-       UNSAFE_TODO(++s)) {  // Termination condition within loop.
+       UNSAFE_BUFFERS(++s)) {  // Termination condition within loop.
     if (should_mark_func(*s)) {
       s->SetCoveredByBucketing(true);
     }
@@ -566,7 +568,7 @@ static void MarkAsCoveredByBucketing(CSSSelector& selector,
 
 static void UnmarkAsCoveredByBucketing(CSSSelector& selector) {
   for (CSSSelector* s = &selector;;
-       UNSAFE_TODO(++s)) {  // Termination condition within loop.
+       UNSAFE_BUFFERS(++s)) {  // Termination condition within loop.
     s->SetCoveredByBucketing(false);
     if (s->IsLastInComplexSelector() ||
         s->Relation() != CSSSelector::kSubSelector) {
@@ -658,6 +660,16 @@ void RuleSet::FindBestBucketAndAdd(CSSSelector& component,
       });
     }
     AddToBucket(active_view_transition_rules_, rule_data);
+    return;
+  }
+  if (values.pseudo_type == CSSSelector::kPseudoOverscrollTarget) {
+    if (bucket_coverage == BucketCoverage::kCompute) {
+      MarkAsCoveredByBucketing(component, [](const CSSSelector& selector) {
+        return selector.Match() == CSSSelector::kPseudoClass &&
+               selector.GetPseudoType() == CSSSelector::kPseudoOverscrollTarget;
+      });
+    }
+    AddToBucket(overscroll_target_rules_, rule_data);
     return;
   }
 
@@ -981,6 +993,9 @@ void RuleSet::AddChildRules(StyleRule* parent_rule,
                    style_scope);
     } else if (auto* page_rule = DynamicTo<StyleRulePage>(rule)) {
       AddPageRule(page_rule, cascade_layer);
+    } else if (auto* route_rule = DynamicTo<StyleRuleRoute>(rule)) {
+      // TODO(crbug.com/436805487): Support removal of @route rules too.
+      route_rule->CreateRouteIfNeeded(medium.GetMediaValues().GetDocument());
     } else if (auto* navigation_rule = DynamicTo<StyleRuleNavigation>(rule)) {
       const NavigationQuery& query = navigation_rule->GetNavigationQuery();
       if (query.Evaluate(medium.GetMediaValues().GetDocument())) {
@@ -1329,6 +1344,8 @@ void RuleSet::AddFilteredRulesFromOtherSet(
     AddFilteredRulesFromOtherBucket(other, other.active_view_transition_rules_,
                                     only_include,
                                     &active_view_transition_rules_);
+    AddFilteredRulesFromOtherBucket(other, other.overscroll_target_rules_,
+                                    only_include, &overscroll_target_rules_);
     AddFilteredRulesFromOtherBucket(other, other.root_element_rules_,
                                     only_include, &root_element_rules_);
 
@@ -1551,7 +1568,7 @@ bool RuleSet::CanIgnoreEntireList(base::span<const RuleData> list,
   }
   if (list.size() < GetMinimumRulesetSizeForSubstringMatcher()) {
     // Too small to build up a tree, so always check.
-    DCHECK(!base::Contains(attr_substring_matchers_, key));
+    DCHECK(!attr_substring_matchers_.Contains(key));
     return false;
   }
 
@@ -1653,6 +1670,7 @@ void RuleSet::CompactRules() {
   part_pseudo_rules_.shrink_to_fit();
   slotted_pseudo_element_rules_.shrink_to_fit();
   active_view_transition_rules_.shrink_to_fit();
+  overscroll_target_rules_.shrink_to_fit();
   page_rules_.shrink_to_fit();
   font_face_rules_.shrink_to_fit();
   font_palette_values_rules_.shrink_to_fit();
@@ -1729,6 +1747,7 @@ void RuleSet::AssertRuleListsSorted() const {
   DCHECK(IsRuleListSorted(shadow_host_rules_));
   DCHECK(IsRuleListSorted(part_pseudo_rules_));
   DCHECK(IsRuleListSorted(active_view_transition_rules_));
+  DCHECK(IsRuleListSorted(overscroll_target_rules_));
 }
 
 #endif  // EXPENSIVE_DCHECKS_ARE_ON()
@@ -1787,6 +1806,7 @@ void RuleSet::Trace(Visitor* visitor) const {
   visitor->Trace(part_pseudo_rules_);
   visitor->Trace(slotted_pseudo_element_rules_);
   visitor->Trace(active_view_transition_rules_);
+  visitor->Trace(overscroll_target_rules_);
   visitor->Trace(page_rules_);
   visitor->Trace(font_face_rules_);
   visitor->Trace(font_palette_values_rules_);

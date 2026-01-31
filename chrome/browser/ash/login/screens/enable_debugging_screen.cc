@@ -56,7 +56,7 @@ void EnableDebuggingScreen::ShowImpl() {
 
 void EnableDebuggingScreen::HideImpl() {}
 
-void EnableDebuggingScreen::OnUserAction(const base::Value::List& args) {
+void EnableDebuggingScreen::OnUserAction(const base::ListValue& args) {
   const std::string& action_id = args[0].GetString();
   if (action_id == kUserActionCancel || action_id == kUserActionDone) {
     exit_callback_.Run();

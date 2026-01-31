@@ -21,6 +21,7 @@
 #include "components/commerce/core/commerce_feature_list.h"
 #include "components/data_sharing/public/features.h"
 #include "components/saved_tab_groups/public/features.h"
+#include "components/skills/features.h"
 #include "components/spellcheck/spellcheck_buildflags.h"
 #include "components/sync/base/command_line_switches.h"
 #include "components/sync/base/data_type.h"
@@ -103,7 +104,7 @@ class SyncServiceFactoryTest : public testing::Test {
 
   // Returns the collection of default datatypes.
   syncer::DataTypeSet DefaultDatatypes() {
-    static_assert(59 == syncer::GetNumDataTypes(),
+    static_assert(61 == syncer::GetNumDataTypes(),
                   "When adding a new type, you probably want to add it here as "
                   "well (assuming it is already enabled). Check similar "
                   "function in "
@@ -231,6 +232,14 @@ class SyncServiceFactoryTest : public testing::Test {
       datatypes.Put(syncer::CONTEXTUAL_TASK);
     }
 
+    if (base::FeatureList::IsEnabled(features::kSkillsEnabled)) {
+      datatypes.Put(syncer::SKILL);
+    }
+
+    if (base::FeatureList::IsEnabled(syncer::kSyncGeminiThread)) {
+      datatypes.Put(syncer::GEMINI_THREAD);
+    }
+
     return datatypes;
   }
 
@@ -251,9 +260,18 @@ class SyncServiceFactoryTest : public testing::Test {
 #endif
 };
 
+// Test fixture for testing the kDisableSync flag.
+class SyncServiceFactoryTestDisableSync : public SyncServiceFactoryTest {
+ public:
+  void SetUp() override {
+    // Append the switch *before* the profile is built.
+    base::CommandLine::ForCurrentProcess()->AppendSwitch(syncer::kDisableSync);
+    SyncServiceFactoryTest::SetUp();
+  }
+};
+
 // Verify that the disable sync flag disables creation of the sync service.
-TEST_F(SyncServiceFactoryTest, DisableSyncFlag) {
-  base::CommandLine::ForCurrentProcess()->AppendSwitch(syncer::kDisableSync);
+TEST_F(SyncServiceFactoryTestDisableSync, DisableSyncFlag) {
   EXPECT_EQ(nullptr, SyncServiceFactory::GetForProfile(profile()));
 }
 

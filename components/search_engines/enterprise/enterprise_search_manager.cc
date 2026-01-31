@@ -22,7 +22,7 @@ namespace {
 
 std::unique_ptr<TemplateURLData> DictToTemplateURLData(
     const base::Value& engine) {
-  const base::Value::Dict& url_dict = engine.GetDict();
+  const base::DictValue& url_dict = engine.GetDict();
   std::unique_ptr<TemplateURLData> turl_data =
       TemplateURLDataFromDictionary(url_dict);
   CHECK(turl_data);
@@ -129,7 +129,7 @@ EnterpriseSearchManager::LoadSearchEnginesFromPrefs(
   }
 
   // Get the list of engines from the main policy pref.
-  const base::Value::List& engine_list = pref->GetValue()->GetList();
+  const base::ListValue& engine_list = pref->GetValue()->GetList();
   // For site search engines, load the
   // `kSiteSearchSettingsOverriddenKeywordsPrefName` pref dictionary.
   if (base::FeatureList::IsEnabled(
@@ -140,7 +140,7 @@ EnterpriseSearchManager::LoadSearchEnginesFromPrefs(
 
   LoadingResult result = LoadingResult::kAvailableEmpty;
   for (const base::Value& engine : engine_list) {
-    const base::Value::Dict& engine_dict = engine.GetDict();
+    const base::DictValue& engine_dict = engine.GetDict();
     const std::string* keyword =
         engine_dict.FindString(DefaultSearchManager::kKeyword);
     CHECK(keyword);
@@ -184,17 +184,16 @@ EnterpriseSearchManager::LoadSearchAggregator(
 }
 
 void EnterpriseSearchManager::LoadOverriddenKeywordsPref(
-    const base::Value::List& engine_list) {
+    const base::ListValue& engine_list) {
   ScopedListPrefUpdate overridden_keywords_update(
       pref_service_, kSiteSearchSettingsOverriddenKeywordsPrefName);
-  base::Value::List& overridden_keywords_list =
-      overridden_keywords_update.Get();
+  base::ListValue& overridden_keywords_list = overridden_keywords_update.Get();
 
   // Keep track of keywords present in the current policy along with whether
   // they are enforced by policy.
   base::flat_map<std::string, bool> policy_keywords_enforced_status;
   for (const base::Value& engine : engine_list) {
-    const base::Value::Dict& engine_dict = engine.GetDict();
+    const base::DictValue& engine_dict = engine.GetDict();
     const std::string* keyword =
         engine_dict.FindString(DefaultSearchManager::kKeyword);
     CHECK(keyword);

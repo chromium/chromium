@@ -4,6 +4,7 @@
 
 #import "ios/web/webui/url_data_manager_ios_backend.h"
 
+#import <algorithm>
 #import <set>
 
 #import "base/command_line.h"
@@ -33,6 +34,7 @@
 #import "net/url_request/url_request_context.h"
 #import "net/url_request/url_request_job.h"
 #import "net/url_request/url_request_job_factory.h"
+#import "third_party/perfetto/include/perfetto/tracing/track.h"
 #import "ui/base/template_expressions.h"
 #import "ui/base/webui/i18n_source_stream.h"
 #import "url/url_util.h"
@@ -57,7 +59,7 @@ bool CheckURLIsValid(const GURL& url) {
   std::vector<std::string> additional_schemes;
   DCHECK(GetWebClient()->IsAppSpecificURL(url) ||
          (GetWebClient()->GetAdditionalWebUISchemes(&additional_schemes),
-          base::Contains(additional_schemes, url.GetScheme())));
+          std::ranges::contains(additional_schemes, url.GetScheme())));
 
   if (!url.is_valid()) {
     NOTREACHED();
@@ -300,9 +302,9 @@ URLRequestChromeJob::~URLRequestChromeJob() {
 }
 
 void URLRequestChromeJob::Start() {
-  TRACE_EVENT_NESTABLE_ASYNC_BEGIN1("browser", "DataManager:Request",
-                                    TRACE_ID_LOCAL(this), "URL",
-                                    request_->url().possibly_invalid_spec());
+  TRACE_EVENT_BEGIN("browser", "DataManager:Request",
+                    perfetto::Track::FromPointer(this), "URL",
+                    request_->url().possibly_invalid_spec());
 
   if (!request_) {
     return;
@@ -402,8 +404,8 @@ void URLRequestChromeJob::MimeTypeAvailable(URLDataSourceIOSImpl* source,
 }
 
 void URLRequestChromeJob::DataAvailable(base::RefCountedMemory* bytes) {
-  TRACE_EVENT_NESTABLE_ASYNC_END0("browser", "DataManager:Request",
-                                  TRACE_ID_LOCAL(this));
+  TRACE_EVENT_END("browser", /*"DataManager:Request"*/
+                  perfetto::Track::FromPointer(this));
 
   if (bytes) {
     CHECK(!data_.is_valid());

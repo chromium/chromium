@@ -37,7 +37,7 @@ class ExternalTestingLoader : public ExternalLoader {
   ~ExternalTestingLoader() override;
 
   base::FilePath fake_base_path_;
-  base::Value::Dict testing_prefs_;
+  base::DictValue testing_prefs_;
 };
 
 }  // namespace extensions

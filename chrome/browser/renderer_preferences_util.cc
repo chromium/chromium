@@ -86,7 +86,7 @@ void ParsePortRange(const std::string& range,
 
 // Extracts the string representation of URLs allowed for local IP exposure.
 std::vector<std::string> GetLocalIpsAllowedUrls(
-    const base::Value::List& allowed_urls) {
+    const base::ListValue& allowed_urls) {
   std::vector<std::string> ret;
   for (const auto& url : allowed_urls)
     ret.push_back(url.GetString());
@@ -154,12 +154,13 @@ void UpdateFromSystemSettings(blink::RendererPreferences* prefs,
       pref_service->GetBoolean(prefs::kEnableDoNotTrack);
   prefs->enable_encrypted_media =
       pref_service->GetBoolean(prefs::kEnableEncryptedMedia);
+
   prefs->webrtc_ip_handling_policy = blink::ToWebRTCIPHandlingPolicy(
       pref_service->GetString(prefs::kWebRTCIPHandlingPolicy));
 
   for (const base::Value& entry :
        pref_service->GetList(prefs::kWebRTCIPHandlingUrl)) {
-    const base::Value::Dict& dict = entry.GetDict();
+    const base::DictValue& dict = entry.GetDict();
     const std::string* url = dict.FindString("url");
     if (!url) {
       DVLOG(1) << "Malformed WebRtcIPHandlingUrl entry: Missing 'url' value.";
@@ -198,8 +199,8 @@ void UpdateFromSystemSettings(blink::RendererPreferences* prefs,
       pref_service->GetBoolean(prefs::kFullscreenAllowed);
 #endif
 #if BUILDFLAG(IS_ANDROID)
-  prefs->uses_platform_autofill = pref_service->GetBoolean(
-      autofill::prefs::kAutofillUsingVirtualViewStructure);
+  prefs->uses_platform_autofill =
+      pref_service->GetBoolean(autofill::prefs::kAutofillUsingPlatformAutofill);
 #endif
   prefs->caret_browsing_enabled =
       pref_service->GetBoolean(prefs::kCaretBrowsingEnabled);

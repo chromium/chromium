@@ -14,6 +14,10 @@ namespace enterprise_encryption {
 // encryption to be active.
 BASE_DECLARE_FEATURE(kEnableCacheEncryption);
 
+// Force enabling the use of on-disk encryption for the HTTP cache.
+// This is for testing purposes only and bypasses the enterprise policy check.
+BASE_DECLARE_FEATURE(kEnableCacheEncryptionForTesting);
+
 }  // namespace enterprise_encryption
 
 #endif  // COMPONENTS_ENTERPRISE_ENCRYPTION_CORE_FEATURES_H_

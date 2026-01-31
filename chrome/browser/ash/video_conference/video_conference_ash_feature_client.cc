@@ -5,7 +5,6 @@
 #include "chrome/browser/ash/video_conference/video_conference_ash_feature_client.h"
 
 #include "base/check_deref.h"
-#include "base/containers/contains.h"
 #include "base/functional/callback_helpers.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/unguessable_token.h"
@@ -87,7 +86,7 @@ void VideoConferenceAshFeatureClient::OnVmDeviceUpdated(
     bool is_capturing) {
   const AppIdString& app_id = ToVideoConferenceAppId(vm_type);
 
-  const bool is_already_tracked = base::Contains(id_to_app_state_, app_id);
+  const bool is_already_tracked = id_to_app_state_.contains(app_id);
 
   // We only want to start tracking a app if it starts to accessing
   // microphone/camera.
@@ -180,7 +179,7 @@ apps::AppType VideoConferenceAshFeatureClient::GetAppType(
 
 VideoConferenceAshFeatureClient::AppState&
 VideoConferenceAshFeatureClient::GetOrAddAppState(const std::string& app_id) {
-  if (!base::Contains(id_to_app_state_, app_id)) {
+  if (!id_to_app_state_.contains(app_id)) {
     id_to_app_state_[app_id] = AppState{base::UnguessableToken::Create(),
                                         base::Time::Now(), false, false};
   }

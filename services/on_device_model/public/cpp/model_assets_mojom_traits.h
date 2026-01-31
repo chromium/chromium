@@ -12,7 +12,7 @@
 #include "mojo/public/cpp/bindings/struct_traits.h"
 #include "services/on_device_model/public/cpp/model_assets.h"
 #include "services/on_device_model/public/cpp/model_file_mojom_traits.h"
-#include "services/on_device_model/public/mojom/on_device_model_service.mojom-shared.h"
+#include "services/on_device_model/public/mojom/on_device_model_service.mojom-data-view.h"
 
 namespace mojo {
 

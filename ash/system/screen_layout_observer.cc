@@ -4,6 +4,7 @@
 
 #include "ash/system/screen_layout_observer.h"
 
+#include <algorithm>
 #include <memory>
 #include <utility>
 #include <vector>
@@ -18,7 +19,6 @@
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/system/model/system_tray_model.h"
 #include "ash/system/tray/tray_constants.h"
-#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -58,8 +58,8 @@ std::u16string GetDisplaySize(int64_t display_id) {
   // to empty string if this happens on release build.
   const display::DisplayIdList id_list =
       display_manager->GetMirroringDestinationDisplayIdList();
-  const bool mirroring =
-      display_manager->IsInMirrorMode() && base::Contains(id_list, display_id);
+  const bool mirroring = display_manager->IsInMirrorMode() &&
+                         std::ranges::contains(id_list, display_id);
   DCHECK(!mirroring);
   if (mirroring)
     return std::u16string();

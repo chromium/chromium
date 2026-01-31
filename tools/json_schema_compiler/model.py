@@ -449,7 +449,7 @@ class Property(object):
   """A property of a type OR a parameter to a function.
   Properties:
   - |name| name of the property as in the json. This shouldn't change since
-    it is the key used to access Value::Dict
+    it is the key used to access base::DictValue
   - |unix_name| the unix_style_name of the property. Used as variable name
   - |optional| a boolean representing whether the property is optional
   - |description| a description of the property (if provided)
@@ -489,7 +489,7 @@ class Property(object):
           json['type'] = 'integer'
         elif isinstance(self.value, float):
           json['type'] = 'double'
-        elif isinstance(self.value, basestring):
+        elif isinstance(self.value, str):
           json['type'] = 'string'
         else:
           # TODO(kalman): support more types as necessary.
@@ -839,8 +839,17 @@ def _GetManifestKeysType(self, json):
       'type': 'object',
       'properties': json['manifest_keys'],
   }
-  return Type(self, 'ManifestKeys', manifest_keys_type, self,
-              Origin(from_manifest_keys=True))
+
+  # Create a Type instance for the manifest keys object.
+  manifest_type = Type(self, 'ManifestKeys', manifest_keys_type, self,
+                       Origin(from_manifest_keys=True))
+
+  # Enforce that all the top-level manifest keys are optional.
+  for name, item in manifest_type.properties.items():
+    if not item.optional:
+      raise ParseException(self, 'Manifest key "%s" must be optional.' % name)
+
+  return manifest_type
 
 
 def _GetWithDefaultChecked(self, json, key, default):

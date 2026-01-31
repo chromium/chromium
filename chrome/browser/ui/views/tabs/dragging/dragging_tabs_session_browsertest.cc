@@ -90,9 +90,13 @@ IN_PROC_BROWSER_TEST_F(DraggingTabsSessionBrowserTest, MAYBE_BasicTest) {
 
   // Set up drag session.
   DragSessionData drag_data = StartDragging({0}, 0);
+  auto* drag_context = view_->GetDragContext();
+  ASSERT_NE(drag_context, nullptr);
+  auto* drag_position_delegate = drag_context->GetPositioningDelegate();
+  ASSERT_NE(drag_position_delegate, nullptr);
   const gfx::Point start_point = tab_0_view->GetBoundsInScreen().CenterPoint();
-  DraggingTabsSession session(drag_data, view_->GetDragContext(), 0.5, true,
-                              start_point);
+  DraggingTabsSession session(drag_data, *drag_context, *drag_position_delegate,
+                              0.5, true, start_point);
 
   // Swap them.
   const gfx::Point target_point =

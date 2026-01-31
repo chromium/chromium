@@ -262,7 +262,6 @@ void XuCameraService::GetUnitIdWithDevicePath(
       std::move(callback).Run(0, 0);
       return;
     }
-    // TODO(b/260593636): Leverage WebRTC and GetDevicePath() once implemented
     auto unitId = guid_unitid_map_.find(guid_le);
     if (unitId != guid_unitid_map_.end()) {
       VLOG(4) << __func__ << ": UnitId found: "
@@ -563,7 +562,6 @@ void XuCameraService::GetDevicePath(
     return;
   }
 
-  // TODO(b/295912291): Check get_device_id is in a map
   auto hashed_device_id = id->get_device_id();
 
   if (!host_id || hashed_device_id.empty()) {

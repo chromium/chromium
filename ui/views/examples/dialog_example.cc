@@ -330,7 +330,7 @@ void DialogExample::ShowButtonPressed() {
     dialog->InitDelegate();
 
     // constrained_window::CreateBrowserModalDialogViews() allows dialogs to
-    // be created as MODAL_TYPE_WINDOW without specifying a parent.
+    // be created as ModalType::kWindow without specifying a parent.
     gfx::NativeView parent = gfx::NativeView();
     if (mode_->GetSelectedIndex() != kFakeModeless) {
       parent = example_view()->GetWidget()->GetNativeView();
@@ -390,17 +390,23 @@ void DialogExample::ContentsChanged(Textfield* sender,
 }
 
 void DialogExample::OnPerformAction() {
-  bool enable =
-      bubble_->GetChecked() || GetModalType() != ui::mojom::ModalType::kChild;
-#if BUILDFLAG(IS_MAC)
+  bool enable = (bubble_->GetChecked() ||
+                 GetModalType() != ui::mojom::ModalType::kChild) &&
+                (!bubble_->GetChecked() ||
+                 GetModalType() != ui::mojom::ModalType::kWindow);
+#if !BUILDFLAG(IS_CHROMEOS)
   enable = enable && GetModalType() != ui::mojom::ModalType::kSystem;
 #endif
   show_->SetEnabled(enable);
   if (!enable && GetModalType() == ui::mojom::ModalType::kChild) {
-    PrintStatus("MODAL_TYPE_CHILD can't be used with non-bubbles.");
+    PrintStatus("ModalType::kChild can't be used with non-bubbles.");
+  }
+  if (!enable && GetModalType() == ui::mojom::ModalType::kWindow) {
+    PrintStatus(
+        "ModalType::kWindow or Fake Modeless can't be used with bubbles.");
   }
   if (!enable && GetModalType() == ui::mojom::ModalType::kSystem) {
-    PrintStatus("MODAL_TYPE_SYSTEM isn't supported on Mac.");
+    PrintStatus("ModalType::kSystem is only supported on ChromeOS.");
   }
 }
 

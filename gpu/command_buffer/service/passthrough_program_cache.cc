@@ -6,6 +6,7 @@
 
 #include <stddef.h>
 
+#include <cmath>
 #include <string_view>
 #include <utility>
 
@@ -45,7 +46,11 @@ PassthroughProgramCache::PassthroughProgramCache(
     : ProgramCache(max_cache_size_bytes),
       disable_gpu_shader_disk_cache_(disable_gpu_shader_disk_cache),
       curr_size_bytes_(0),
-      store_(ProgramLRUCache::NO_AUTO_EVICT) {
+      store_(ProgramLRUCache::NO_AUTO_EVICT),
+      memory_pressure_listener_registration_(
+          FROM_HERE,
+          base::MemoryPressureListenerTag::kProgramCache,
+          this) {
   gl::GLDisplayEGL* gl_display = gl::GLSurfaceEGL::GetGLDisplayEGL();
   EGLDisplay egl_display = gl_display->GetDisplay();
 
@@ -125,6 +130,11 @@ size_t PassthroughProgramCache::Trim(size_t limit) {
   return initial_size - curr_size_bytes_;
 }
 
+void PassthroughProgramCache::OnMemoryPressure(
+    base::MemoryPressureLevel memory_pressure_level) {
+  Trim(GetCurrentMaxSizeBytes());
+}
+
 bool PassthroughProgramCache::CacheEnabled() const {
   return !disable_gpu_shader_disk_cache_;
 }
@@ -135,7 +145,7 @@ void PassthroughProgramCache::Set(Key&& key,
   {
     base::AutoLock auto_lock(lock_);
     // If the value is so big it will never fit in the cache, throw it away.
-    if (value.size() > max_size_bytes()) {
+    if (value.size() > GetCurrentMaxSizeBytes()) {
       return;
     }
 
@@ -147,10 +157,10 @@ void PassthroughProgramCache::Set(Key&& key,
     }
 
     // If the cache is overflowing, remove some old entries.
-    DCHECK(max_size_bytes() >= value.size());
+    DCHECK(GetCurrentMaxSizeBytes() >= value.size());
   }
 
-  Trim(max_size_bytes() - value.size());
+  Trim(GetCurrentMaxSizeBytes() - value.size());
 
   {
     base::AutoLock auto_lock(lock_);
@@ -232,6 +242,13 @@ void PassthroughProgramCache::BlobCacheSetImpl(const void* key,
 
   // Pass a null callback to use the default cache_program_callback_
   Set(std::move(entry_key), std::move(entry_value), CacheProgramCallback());
+}
+
+size_t PassthroughProgramCache::GetCurrentMaxSizeBytes() const {
+  double memory_limit_ratio = GetMemoryLimitRatio();
+  CHECK_LE(memory_limit_ratio, 1.0);
+  // To match previous behavior, the size must be 1/4 at 50% memory limit.
+  return max_size_bytes() * std::pow(memory_limit_ratio, 2.0);
 }
 
 void PassthroughProgramCache::BlobCacheSet(const void* key,

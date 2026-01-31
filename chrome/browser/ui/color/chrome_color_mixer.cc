@@ -62,6 +62,37 @@ ui::ColorTransform SelectColorBasedOnDarkInputOrMode(
                              std::move(light_mode_color_transform));
 }
 
+// Determines a color to use for Actor Ui components based on the tab frame
+// color used in custom themes. In the near-white case, we default to use an
+// accent color instead.
+ui::ColorTransform SelectActorUiColorBasedOnNearWhiteInput() {
+  return base::BindRepeating(
+      [](SkColor input_color, const ui::ColorMixer& mixer) {
+        const SkColor frame_color = mixer.GetResultColor(ui::kColorFrameActive);
+
+        // 1.0f is white. For near-white scenarios, we want to use the accent
+        // color to ensure visibility.
+        constexpr float kThreshold = 1.1f;
+        if (color_utils::GetContrastRatio(frame_color, SK_ColorWHITE) <
+            kThreshold) {
+          return mixer.GetResultColor(ui::kColorAccent);
+        }
+
+        return frame_color;
+      });
+}
+
+// Blend the custom color (based on the tab frame of a custom theme) on
+// the provided alpha.
+ui::ColorTransform GetActorUiScrimColor(SkAlpha alpha) {
+  return base::BindRepeating(
+      [](SkAlpha alpha, SkColor input_color, const ui::ColorMixer& mixer) {
+        return color_utils::BlendTowardMaxContrast(
+            mixer.GetResultColor(ui::kColorFrameActive), alpha);
+      },
+      alpha);
+}
+
 ui::ColorTransform GetToolbarTopSeparatorColorTransform(
     ui::ColorTransform toolbar_color_transform,
     ui::ColorTransform frame_color_transform) {
@@ -107,6 +138,18 @@ void AddChromeColorMixer(ui::ColorProvider* provider,
       key.color_mode == ui::ColorProviderKey::ColorMode::kDark;
   ui::ColorMixer& mixer = provider->AddMixer();
 
+  mixer[kColorActorUiHandoffButtonBorder] =
+      SelectActorUiColorBasedOnNearWhiteInput();
+  mixer[kColorActorUiOverlayBorder] = SelectActorUiColorBasedOnNearWhiteInput();
+  mixer[kColorActorUiOverlayBorderGlow] =
+      SelectActorUiColorBasedOnNearWhiteInput();
+  mixer[kColorActorUiScrimStart] = GetActorUiScrimColor(
+      /*alpha=*/0x66);
+  mixer[kColorActorUiScrimMiddle] = GetActorUiScrimColor(
+      /*alpha=*/0x00);
+  mixer[kColorActorUiScrimEnd] = GetActorUiScrimColor(
+      /*alpha=*/0x26);
+  mixer[kColorActorUiMagicCursor] = SelectActorUiColorBasedOnNearWhiteInput();
   mixer[kColorAppMenuHighlightSeverityLow] = AdjustHighlightColorForContrast(
       ui::kColorAlertLowSeverity, kColorToolbar);
   mixer[kColorAppMenuHighlightSeverityHigh] = {
@@ -227,6 +270,21 @@ void AddChromeColorMixer(ui::ColorProvider* provider,
   mixer[kColorGlicModalForeground] = {dark_mode
                                           ? SkColorSetRGB(0x30, 0x30, 0x30)
                                           : SkColorSetRGB(0xF2, 0xF2, 0xF2)};
+  // Gradient colors used for underlines on active tabs.
+  constexpr color_utils::HSL start{-1.0, -1.0, 0.6};
+  constexpr color_utils::HSL end{-1.0, -1.0, 0.4};
+  mixer[kColorGlicActiveTabUnderlineGradient1] =
+      ui::HSLShift({ui::kColorFrameActive}, start);
+  mixer[kColorGlicActiveTabUnderlineGradient2] = {ui::kColorFrameActive};
+  mixer[kColorGlicActiveTabUnderlineGradient3] =
+      ui::HSLShift({ui::kColorFrameActive}, end);
+  // Gradient colors used for underlines on inactive tabs.
+  mixer[kColorGlicInactiveTabUnderlineGradient1] =
+      ui::HSLShift({kColorTabBackgroundActiveFrameInactive}, start);
+  mixer[kColorGlicInactiveTabUnderlineGradient2] = {
+      kColorTabBackgroundActiveFrameInactive};
+  mixer[kColorGlicInactiveTabUnderlineGradient3] =
+      ui::HSLShift({kColorTabBackgroundActiveFrameInactive}, end);
 
   mixer[kColorInfoBarBackground] = {kColorToolbar};
   mixer[kColorInfoBarButtonIcon] = {kColorToolbarButtonIcon};
@@ -843,6 +901,35 @@ void AddChromeColorMixer(ui::ColorProvider* provider,
       SkColorSetRGB(143, 143, 143)};
   mixer[kColorReadAnythingForegroundSepiaLight] = {SkColorSetRGB(98, 78, 65)};
   mixer[kColorReadAnythingForegroundSepiaDark] = {SkColorSetRGB(155, 149, 141)};
+  mixer[kColorReadAnythingLineFocusScrim] =
+      ui::SetAlpha(ui::kColorSysShadow, 0xCC);
+  mixer[kColorReadAnythingLineFocus] = {dark_mode
+                                            ? kColorReadAnythingLineFocusDark
+                                            : kColorReadAnythingLineFocusLight};
+  mixer[kColorReadAnythingLineFocusBlue] = {
+      dark_mode ? ui::kColorSysStateFocusRingInverse
+                : ui::kColorSysStateFocusRing};
+  mixer[kColorReadAnythingLineFocusDark] = {
+      dark_mode ? ui::kColorSysStateFocusRing
+                : ui::kColorSysStateFocusRingInverse};
+  mixer[kColorReadAnythingLineFocusLight] = {
+      dark_mode ? ui::kColorSysStateFocusRingInverse
+                : ui::kColorSysStateFocusRing};
+  mixer[kColorReadAnythingLineFocusYellow] = {
+      dark_mode ? ui::kColorSysStateFocusRingInverse
+                : ui::kColorSysStateFocusRing};
+  mixer[kColorReadAnythingLineFocusHighContrast] = {
+      dark_mode ? ui::kColorSysStateFocusRing
+                : ui::kColorSysStateFocusRingInverse};
+  mixer[kColorReadAnythingLineFocusLowContrast] = {
+      dark_mode ? ui::kColorSysStateFocusRing
+                : ui::kColorSysStateFocusRingInverse};
+  mixer[kColorReadAnythingLineFocusSepiaLight] = {
+      dark_mode ? ui::kColorSysStateFocusRingInverse
+                : ui::kColorSysStateFocusRing};
+  mixer[kColorReadAnythingLineFocusSepiaDark] = {
+      dark_mode ? ui::kColorSysStateFocusRing
+                : ui::kColorSysStateFocusRingInverse};
   mixer[kColorReadAnythingPreviousReadAloudHighlight] = {
       dark_mode ? kColorReadAnythingPreviousReadAloudHighlightDark
                 : kColorReadAnythingPreviousReadAloudHighlightLight};
@@ -862,6 +949,60 @@ void AddChromeColorMixer(ui::ColorProvider* provider,
       SkColorSetRGB(18, 74, 115)};
   mixer[kColorReadAnythingPreviousReadAloudHighlightSepiaDark] = {
       SkColorSetRGB(91, 179, 240)};
+  mixer[kColorReadAnythingAudioPlayerBackground] = {
+      dark_mode ? kColorReadAnythingAudioPlayerBackgroundDark
+                : kColorReadAnythingAudioPlayerBackgroundLight};
+  mixer[kColorReadAnythingAudioPlayerBackgroundBlue] = {
+      dark_mode ? ui::kColorSysStateFocusRing
+                : ui::kColorSysStateFocusRingInverse};
+  mixer[kColorReadAnythingAudioPlayerBackgroundDark] = {
+      dark_mode ? ui::kColorSysStateFocusRingInverse
+                : ui::kColorSysStateFocusRing};
+  mixer[kColorReadAnythingAudioPlayerBackgroundLight] = {
+      dark_mode ? ui::kColorSysStateFocusRing
+                : ui::kColorSysStateFocusRingInverse};
+  mixer[kColorReadAnythingAudioPlayerBackgroundYellow] = {
+      dark_mode ? ui::kColorSysStateFocusRing
+                : ui::kColorSysStateFocusRingInverse};
+  mixer[kColorReadAnythingAudioPlayerBackgroundHighContrast] = {
+      dark_mode ? ui::kColorSysStateFocusRingInverse
+                : ui::kColorSysStateFocusRing};
+  mixer[kColorReadAnythingAudioPlayerBackgroundLowContrast] = {
+      dark_mode ? ui::kColorSysStateFocusRingInverse
+                : ui::kColorSysStateFocusRing};
+  mixer[kColorReadAnythingAudioPlayerBackgroundSepiaLight] = {
+      dark_mode ? ui::kColorSysStateFocusRing
+                : ui::kColorSysStateFocusRingInverse};
+  mixer[kColorReadAnythingAudioPlayerBackgroundSepiaDark] = {
+      dark_mode ? ui::kColorSysStateFocusRingInverse
+                : ui::kColorSysStateFocusRing};
+  mixer[kColorReadAnythingAudioPlayerIcon] = {
+      dark_mode ? kColorReadAnythingAudioPlayerIconDark
+                : kColorReadAnythingAudioPlayerIconLight};
+  mixer[kColorReadAnythingAudioPlayerIconBlue] = {
+      dark_mode ? ui::kColorSysStateFocusRingInverse
+                : ui::kColorSysStateFocusRing};
+  mixer[kColorReadAnythingAudioPlayerIconDark] = {
+      dark_mode ? ui::kColorSysStateFocusRing
+                : ui::kColorSysStateFocusRingInverse};
+  mixer[kColorReadAnythingAudioPlayerIconLight] = {
+      dark_mode ? ui::kColorSysStateFocusRingInverse
+                : ui::kColorSysStateFocusRing};
+  mixer[kColorReadAnythingAudioPlayerIconYellow] = {
+      dark_mode ? ui::kColorSysStateFocusRingInverse
+                : ui::kColorSysStateFocusRing};
+  mixer[kColorReadAnythingAudioPlayerIconHighContrast] = {
+      dark_mode ? ui::kColorSysStateFocusRing
+                : ui::kColorSysStateFocusRingInverse};
+  mixer[kColorReadAnythingAudioPlayerIconLowContrast] = {
+      dark_mode ? ui::kColorSysStateFocusRing
+                : ui::kColorSysStateFocusRingInverse};
+  mixer[kColorReadAnythingAudioPlayerIconSepiaLight] = {
+      dark_mode ? ui::kColorSysStateFocusRingInverse
+                : ui::kColorSysStateFocusRing};
+  mixer[kColorReadAnythingAudioPlayerIconSepiaDark] = {
+      dark_mode ? ui::kColorSysStateFocusRing
+                : ui::kColorSysStateFocusRingInverse};
   mixer[kColorReadAnythingSeparator] = {dark_mode
                                             ? kColorReadAnythingSeparatorDark
                                             : kColorReadAnythingSeparatorLight};

@@ -35,7 +35,6 @@
 #include "base/types/expected.h"
 #include "base/types/expected_macros.h"
 #include "base/version.h"
-#include "base/win/elevation_util.h"
 #include "base/win/registry.h"
 #include "base/win/scoped_bstr.h"
 #include "base/win/scoped_handle.h"
@@ -86,27 +85,6 @@ std::optional<std::wstring> StringFromVariant(const VARIANT& source) {
   }
 
   return {};
-}
-
-std::string GetStringFromValue(const std::string& value) {
-  return value;
-}
-
-std::string GetStringFromValue(int value) {
-  return base::NumberToString(value);
-}
-
-std::string GetStringFromValue(bool value) {
-  return base::ToString(value);
-}
-
-std::string GetStringFromValue(const updater::UpdatesSuppressedTimes& value) {
-  return base::StringPrintf("%d, %d, %d", value.start_hour_,
-                            value.start_minute_, value.duration_minute_);
-}
-
-std::string GetStringFromValue(const std::vector<std::string>& value) {
-  return base::JoinString(value, ";");
 }
 
 }  // namespace
@@ -1123,23 +1101,8 @@ LegacyProcessLauncherImpl::LegacyProcessLauncherImpl() = default;
 LegacyProcessLauncherImpl::~LegacyProcessLauncherImpl() = default;
 
 STDMETHODIMP LegacyProcessLauncherImpl::LaunchCmdLine(const WCHAR* cmd_line) {
-  if (!cmd_line || !cmd_line[0]) {
-    return E_INVALIDARG;
-  }
-
-  ASSIGN_OR_RETURN(const DWORD explorer_pid, GetExplorerPid(), [] {
-    const HRESULT hr = HRESULTFromLastError();
-    LOG(ERROR) << "GetExplorerPid failed: " << hr;
-    return hr;
-  });
-
-  RETURN_IF_ERROR(base::win::RunDeElevated(
-                      base::CommandLine::FromString(cmd_line), explorer_pid),
-                  [](DWORD error_code) {
-                    LOG(ERROR) << "RunDeElevated failed: " << error_code;
-                    return HRESULT_FROM_WIN32(error_code);
-                  });
-  return S_OK;
+  LOG(ERROR) << "Reached unimplemented COM method: " << __func__;
+  return E_NOTIMPL;
 }
 
 STDMETHODIMP LegacyProcessLauncherImpl::LaunchBrowser(DWORD browser_type,
@@ -1945,14 +1908,10 @@ template <typename T>
   return MakeAndInitializeComObject<PolicyStatusValueImpl>(
       policy_status_value,
       value.effective_policy() ? value.effective_policy()->source : "",
-      value.effective_policy()
-          ? GetStringFromValue(value.effective_policy()->policy)
-          : "",
+      value.effective_policy() ? value.effective_policy()->ToString() : "",
       value.conflict_policy() != std::nullopt,
       value.conflict_policy() ? value.conflict_policy()->source : "",
-      value.conflict_policy()
-          ? GetStringFromValue(value.conflict_policy()->policy)
-          : "");
+      value.conflict_policy() ? value.conflict_policy()->ToString() : "");
 }
 
 HRESULT PolicyStatusValueImpl::RuntimeClassInitialize(

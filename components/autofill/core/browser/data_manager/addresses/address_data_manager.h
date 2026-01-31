@@ -379,10 +379,6 @@ class AddressDataManager : public AutofillWebDataServiceObserverOnUISequence {
   // Triggered when a profile is added/updated/removed on db.
   void OnAutofillProfileChanged(const AutofillProfileChange& change);
 
-  // Update a profile in AutofillTable asynchronously. The change only surfaces
-  // in the PDM after the task on the DB sequence has finished.
-  void UpdateProfileInDB(const AutofillProfile& profile);
-
   // Look at the next `ongoing_profile_changes_` and schedules the corresponding
   // database operation.
   void HandleNextProfileChange();

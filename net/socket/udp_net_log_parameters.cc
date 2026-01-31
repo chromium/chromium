@@ -15,11 +15,11 @@ namespace net {
 
 namespace {
 
-base::Value::Dict NetLogUDPDataTransferParams(int byte_count,
-                                              const char* bytes,
-                                              const IPEndPoint* address,
-                                              NetLogCaptureMode capture_mode) {
-  auto dict = base::Value::Dict().Set("byte_count", byte_count);
+base::DictValue NetLogUDPDataTransferParams(int byte_count,
+                                            const char* bytes,
+                                            const IPEndPoint* address,
+                                            NetLogCaptureMode capture_mode) {
+  auto dict = base::DictValue().Set("byte_count", byte_count);
   if (NetLogCaptureIncludesSocketBytes(capture_mode))
     dict.Set("bytes", NetLogBinaryValue(bytes, byte_count));
   if (address)
@@ -27,9 +27,9 @@ base::Value::Dict NetLogUDPDataTransferParams(int byte_count,
   return dict;
 }
 
-base::Value::Dict NetLogUDPConnectParams(const IPEndPoint& address,
-                                         handles::NetworkHandle network) {
-  auto dict = base::Value::Dict().Set("address", address.ToString());
+base::DictValue NetLogUDPConnectParams(const IPEndPoint& address,
+                                       handles::NetworkHandle network) {
+  auto dict = base::DictValue().Set("address", address.ToString());
   if (network != handles::kInvalidNetworkHandle)
     dict.Set("bound_to_network", static_cast<int>(network));
   return dict;
@@ -49,8 +49,8 @@ void NetLogUDPDataTransfer(const NetLogWithSource& net_log,
   });
 }
 
-base::Value::Dict CreateNetLogUDPConnectParams(const IPEndPoint& address,
-                                               handles::NetworkHandle network) {
+base::DictValue CreateNetLogUDPConnectParams(const IPEndPoint& address,
+                                             handles::NetworkHandle network) {
   return NetLogUDPConnectParams(address, network);
 }
 

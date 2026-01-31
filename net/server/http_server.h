@@ -68,7 +68,7 @@ class NET_EXPORT HttpServer {
   // performed that data constitutes a valid HTTP response. A valid HTTP
   // response may be split across multiple calls to SendRaw.
   void SendRaw(int connection_id,
-               const std::string& data,
+               std::string_view data,
                NetworkTrafficAnnotationTag traffic_annotation);
   // TODO(byungchul): Consider replacing function name with SendResponseInfo
   void SendResponse(int connection_id,
@@ -76,17 +76,17 @@ class NET_EXPORT HttpServer {
                     NetworkTrafficAnnotationTag traffic_annotation);
   void Send(int connection_id,
             HttpStatusCode status_code,
-            const std::string& data,
-            const std::string& mime_type,
+            std::string_view data,
+            std::string_view mime_type,
             NetworkTrafficAnnotationTag traffic_annotation);
   void Send200(int connection_id,
-               const std::string& data,
-               const std::string& mime_type,
+               std::string_view data,
+               std::string_view mime_type,
                NetworkTrafficAnnotationTag traffic_annotation);
   void Send404(int connection_id,
                NetworkTrafficAnnotationTag traffic_annotation);
   void Send500(int connection_id,
-               const std::string& message,
+               std::string_view message,
                NetworkTrafficAnnotationTag traffic_annotation);
 
   void Close(int connection_id);

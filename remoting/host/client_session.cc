@@ -16,7 +16,6 @@
 #include <vector>
 
 #include "base/check.h"
-#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/logging.h"
@@ -716,7 +715,7 @@ void ClientSession::CreatePerMonitorVideoStreams() {
   for (int i = 0; i < desktop_display_info_.NumDisplays(); i++) {
     auto id = desktop_display_info_.GetDisplayInfo(i)->id;
 
-    if (base::Contains(video_streams_, id)) {
+    if (video_streams_.contains(id)) {
       HOST_LOG << "Video stream for id " << id << " already exists.";
       continue;
     }
@@ -756,7 +755,7 @@ void ClientSession::CreatePerMonitorVideoStreams() {
   const auto& displays = desktop_display_info_.displays();
   std::erase_if(video_streams_, [displays](const auto& id_stream_pair) {
     webrtc::ScreenId id = id_stream_pair.first;
-    bool keep = base::Contains(
+    bool keep = std::ranges::contains(
         displays, id, [](const DisplayGeometry& geo) { return geo.id; });
     HOST_LOG << (keep ? "Keeping" : "Removing") << " video stream for id "
              << id;

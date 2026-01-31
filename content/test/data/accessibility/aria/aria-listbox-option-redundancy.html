@@ -1,0 +1,14 @@
+<html>
+<body>
+  <div role="listbox" aria-label="Search suggestions">
+    <!--
+      The option div should *not* be marked "interesting". If it is, Talkback
+      will read out the container and also the text causing a double speak bug
+      where "Search result" is read twice.
+    -->
+    <div role="option" onclick="return;">
+      <p>Search result</p>
+    </div>
+  </div>
+</body>
+</html>

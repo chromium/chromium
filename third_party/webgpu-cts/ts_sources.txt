@@ -203,6 +203,7 @@ src/webgpu/api/operation/render_pass/clear_value.spec.ts
 src/webgpu/api/operation/render_pass/resolve.spec.ts
 src/webgpu/api/operation/render_pass/storeOp.spec.ts
 src/webgpu/api/operation/render_pass/storeop2.spec.ts
+src/webgpu/api/operation/render_pass/transient_attachment.spec.ts
 src/webgpu/api/operation/render_pipeline/culling_tests.spec.ts
 src/webgpu/api/operation/render_pipeline/overrides.spec.ts
 src/webgpu/util/shader.ts
@@ -321,6 +322,7 @@ src/webgpu/api/validation/encoding/cmds/debug.spec.ts
 src/webgpu/api/validation/encoding/cmds/index_access.spec.ts
 src/webgpu/api/validation/encoding/cmds/render_pass.spec.ts
 src/webgpu/api/validation/encoding/cmds/setBindGroup.spec.ts
+src/webgpu/api/validation/encoding/cmds/setImmediates.spec.ts
 src/webgpu/api/validation/encoding/cmds/render/draw.spec.ts
 src/webgpu/api/validation/encoding/cmds/render/dynamic_state.spec.ts
 src/webgpu/api/validation/encoding/cmds/render/render.ts
@@ -331,6 +333,7 @@ src/webgpu/api/validation/encoding/cmds/render/setPipeline.spec.ts
 src/webgpu/api/validation/encoding/cmds/render/setVertexBuffer.spec.ts
 src/webgpu/api/validation/encoding/cmds/render/state_tracking.spec.ts
 src/webgpu/api/validation/encoding/programmable/pipeline_bind_group_compat.spec.ts
+src/webgpu/api/validation/encoding/programmable/pipeline_immediate.spec.ts
 src/webgpu/api/validation/encoding/queries/begin_end.spec.ts
 src/webgpu/api/validation/encoding/queries/general.spec.ts
 src/webgpu/api/validation/encoding/queries/resolveQuerySet.spec.ts
@@ -760,6 +763,7 @@ src/webgpu/shader/execution/statement/increment_decrement.spec.ts
 src/webgpu/shader/execution/statement/phony.spec.ts
 src/webgpu/shader/validation/shader_validation_test.ts
 src/webgpu/shader/validation/const_assert/const_assert.spec.ts
+src/webgpu/shader/validation/decl/assignment_statement.spec.ts
 src/webgpu/shader/validation/decl/compound_statement.spec.ts
 src/webgpu/shader/validation/decl/const.spec.ts
 src/webgpu/shader/validation/decl/context_dependent_resolution.spec.ts

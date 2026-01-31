@@ -38,6 +38,7 @@ class TimeViewTest : public AshTestBase {
   }
 
   void TearDown() override {
+    time_view_ = nullptr;
     widget_.reset();
     AshTestBase::TearDown();
   }
@@ -103,7 +104,7 @@ class TimeViewTest : public AshTestBase {
  private:
   std::unique_ptr<views::Widget> widget_;
   // Owned by `widget_`.
-  raw_ptr<TimeView, DanglingUntriaged> time_view_;
+  raw_ptr<TimeView> time_view_;
   base::WeakPtrFactory<TimeViewTest> weak_factory_{this};
 };
 

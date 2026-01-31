@@ -14,7 +14,6 @@
 #include <vector>
 
 #include "base/auto_reset.h"
-#include "base/containers/contains.h"
 #include "base/containers/to_value_list.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
@@ -52,6 +51,7 @@
 #include "chrome/browser/net/profile_network_context_service_factory.h"
 #include "chrome/browser/privacy_sandbox/privacy_sandbox_settings_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/tabs/tab_list_interface.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/webui_url_constants.h"
@@ -558,8 +558,8 @@ class DeclarativeNetRequestBrowserTest
           });
     )";
 
-    base::Value::List ids_to_disable = base::ToValueList(rule_ids_to_disable);
-    base::Value::List ids_to_enable = base::ToValueList(rule_ids_to_enable);
+    base::ListValue ids_to_disable = base::ToValueList(rule_ids_to_disable);
+    base::ListValue ids_to_enable = base::ToValueList(rule_ids_to_enable);
 
     const std::string script = content::JsReplace(
         kScript, ruleset_id, base::Value(std::move(ids_to_disable)),
@@ -601,7 +601,7 @@ class DeclarativeNetRequestBrowserTest
                 : ['expected:', expected, '; actual:', actual].join(''));
           });
     )";
-    base::Value::List expected = base::ToValueList(expected_disabled_rule_ids);
+    base::ListValue expected = base::ToValueList(expected_disabled_rule_ids);
     std::string result = ExecuteScriptInBackgroundPageAndReturnString(
         extension_id,
         content::JsReplace(kScript, ruleset_id_string, std::move(expected)));
@@ -2633,9 +2633,8 @@ IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestBrowserTest,
       content::EvalJs(GetActiveWebContents(), "document.body.textContent")
           .ExtractString();
 
-  EXPECT_TRUE(
-      base::Contains(body, "This page has been blocked by an extension"));
-  EXPECT_TRUE(base::Contains(body, "Try disabling your extensions."));
+  EXPECT_TRUE(body.contains("This page has been blocked by an extension"));
+  EXPECT_TRUE(body.contains("Try disabling your extensions."));
 }
 
 // Test an extension with multiple static rulesets.
@@ -2696,9 +2695,10 @@ IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestBrowserTest, RendererCacheCleared) {
   bool expect_request_seen =
       base::FeatureList::IsEnabled(
           extensions_features::kForceWebRequestProxyForTest);
-  EXPECT_EQ(expect_request_seen,
-            base::Contains(ruleset_manager_observer()->GetAndResetRequestSeen(),
-                           observed_url));
+  EXPECT_EQ(
+      expect_request_seen,
+      std::ranges::contains(
+          ruleset_manager_observer()->GetAndResetRequestSeen(), observed_url));
 
   // Another request to |url| should not cause a network request for
   // script.js since it will be served by the renderer's in-memory
@@ -2706,7 +2706,7 @@ IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestBrowserTest, RendererCacheCleared) {
   NavigateToURL(url);
   EXPECT_EQ(content::PAGE_TYPE_NORMAL, GetPageType());
   EXPECT_TRUE(WasFrameWithScriptLoaded(GetPrimaryMainFrame()));
-  EXPECT_FALSE(base::Contains(
+  EXPECT_FALSE(std::ranges::contains(
       ruleset_manager_observer()->GetAndResetRequestSeen(), observed_url));
 
   // Now block requests to script.js.
@@ -2720,7 +2720,7 @@ IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestBrowserTest, RendererCacheCleared) {
   NavigateToURL(url);
   EXPECT_EQ(content::PAGE_TYPE_NORMAL, GetPageType());
   EXPECT_FALSE(WasFrameWithScriptLoaded(GetPrimaryMainFrame()));
-  EXPECT_TRUE(base::Contains(
+  EXPECT_TRUE(std::ranges::contains(
       ruleset_manager_observer()->GetAndResetRequestSeen(), observed_url));
 
   // Disable the extension.
@@ -2734,9 +2734,10 @@ IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestBrowserTest, RendererCacheCleared) {
   NavigateToURL(url);
   EXPECT_EQ(content::PAGE_TYPE_NORMAL, GetPageType());
   EXPECT_TRUE(WasFrameWithScriptLoaded(GetPrimaryMainFrame()));
-  EXPECT_EQ(expect_request_seen,
-            base::Contains(ruleset_manager_observer()->GetAndResetRequestSeen(),
-                           observed_url));
+  EXPECT_EQ(
+      expect_request_seen,
+      std::ranges::contains(
+          ruleset_manager_observer()->GetAndResetRequestSeen(), observed_url));
 }
 
 // Tests that proxy requests aren't intercepted. See https://crbug.com/794674.
@@ -3354,9 +3355,9 @@ IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestBrowserTest,
     std::map<GURL, net::test_server::HttpRequest> seen_requests =
         GetAndResetRequestsToServer();
     EXPECT_EQ(!expect_script_redirected,
-              base::Contains(seen_requests, requested_script_url));
+              seen_requests.contains(requested_script_url));
     EXPECT_EQ(expect_script_redirected,
-              base::Contains(seen_requests, redirected_script_url));
+              seen_requests.contains(redirected_script_url));
 
     ExtensionActionRunner* runner =
         ExtensionActionRunner::GetForWebContents(GetActiveWebContents());
@@ -3766,11 +3767,11 @@ IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestBrowserTest,
   const GURL second_tab_url = get_url_for_host("nomatch.com");
   NavigateToURLInNewTab(second_tab_url);
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
-  // TODO(crbug.com/419057482): Support cross-platform browser windows.
-  ASSERT_EQ(2, browser()->tab_strip_model()->count());
-  ASSERT_TRUE(browser()->tab_strip_model()->IsTabSelected(1));
-#endif
+  TabListInterface* tab_list =
+      TabListInterface::From(browser_window_interface());
+  ASSERT_TRUE(tab_list);
+  ASSERT_EQ(2, tab_list->GetTabCount());
+  ASSERT_EQ(1, tab_list->GetActiveIndex());
 
   int second_tab_id = ExtensionTabUtil::GetTabId(GetActiveWebContents());
   EXPECT_EQ("", action->GetDisplayBadgeText(second_tab_id));
@@ -5153,11 +5154,11 @@ IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestBrowserTest,
   // matched.
   NavigateToURLInNewTab(page_url);
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
-  // TODO(crbug.com/419057482): Support cross-platform browser windows.
-  ASSERT_EQ(2, browser()->tab_strip_model()->count());
-  ASSERT_TRUE(browser()->tab_strip_model()->IsTabSelected(1));
-#endif
+  TabListInterface* tab_list =
+      TabListInterface::From(browser_window_interface());
+  ASSERT_TRUE(tab_list);
+  ASSERT_EQ(2, tab_list->GetTabCount());
+  ASSERT_EQ(1, tab_list->GetActiveIndex());
 
   // Get the ActiveTabPermissionGranter for the second tab.
   ActiveTabPermissionGranter* active_tab_granter =
@@ -5579,14 +5580,14 @@ class DeclarativeNetRequestAllowAllRequestsBrowserTest
 
     for (const auto& path : paths_seen) {
       GURL expected_request_url = embedded_test_server()->GetURL(path);
-      EXPECT_TRUE(base::Contains(requests_seen, expected_request_url))
+      EXPECT_TRUE(requests_seen.contains(expected_request_url))
           << expected_request_url.spec()
           << " was not requested from the server.";
     }
 
     for (const auto& path : paths_not_seen) {
       GURL expected_request_url = embedded_test_server()->GetURL(path);
-      EXPECT_FALSE(base::Contains(requests_seen, expected_request_url))
+      EXPECT_FALSE(requests_seen.contains(expected_request_url))
           << expected_request_url.spec() << " request seen unexpectedly.";
     }
   }
@@ -8815,7 +8816,7 @@ IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestAllowChromeURLsBrowserTest,
 // no logging and no stack.
 // TODO(crbug.com/408364840): Re-enable flaky test.
 IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestAllowChromeURLsBrowserTest,
-                       DISABLED_CrossExtensionNavigationRequestBlocking) {
+                       CrossExtensionNavigationRequestBlocking) {
   set_config_flags(ConfigFlag::kConfig_HasBackgroundScript |
                    ConfigFlag::kConfig_HasFeedbackPermission |
                    ConfigFlag::kConfig_HasManifestSandbox);
@@ -8851,8 +8852,12 @@ IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestAllowChromeURLsBrowserTest,
   NavigateToURL(extension_page_url);
   content::RenderFrameHost* extension_page = GetPrimaryMainFrame();
 
-  content::TestNavigationObserver navigation_observer(main_frame_url);
-  navigation_observer.StartWatchingNewWebContents();
+  content::TestNavigationObserver main_frame_observer(main_frame_url);
+  main_frame_observer.StartWatchingNewWebContents();
+
+  content::TestNavigationObserver sub_frame_observer(sub_frame_url);
+  sub_frame_observer.WatchWebContents(
+      content::WebContents::FromRenderFrameHost(extension_page));
 
   constexpr char kNavigationRequestsTemplate[] = R"(
       const frame = document.createElement('iframe');
@@ -8866,13 +8871,14 @@ IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestAllowChromeURLsBrowserTest,
       extension_page, base::StringPrintf(kNavigationRequestsTemplate,
                                          sub_frame_url.spec().c_str(),
                                          main_frame_url.spec().c_str())));
-  navigation_observer.Wait();
+  main_frame_observer.Wait();
+  sub_frame_observer.Wait();
 
   // The main_frame request should be blocked.
   content::RenderFrameHost* main_frame = GetPrimaryMainFrame();
   EXPECT_FALSE(WasFrameWithScriptLoaded(main_frame));
-  EXPECT_FALSE(navigation_observer.last_navigation_succeeded());
-  EXPECT_EQ(navigation_observer.last_net_error_code(),
+  EXPECT_FALSE(main_frame_observer.last_navigation_succeeded());
+  EXPECT_EQ(main_frame_observer.last_net_error_code(),
             net::ERR_BLOCKED_BY_CLIENT);
 
   // The sub_frame request shouldn't be blocked, unless the the
@@ -8882,10 +8888,10 @@ IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestAllowChromeURLsBrowserTest,
       content::ChildFrameAt(extension_page, 0);
   ASSERT_TRUE(sub_frame);
   EXPECT_EQ(sub_frame_url, sub_frame->GetLastCommittedURL());
-  content::WaitForLoadStop(
-      content::WebContents::FromRenderFrameHost(sub_frame));
   EXPECT_EQ(should_iframe_navigation_succeed,
             WasFrameWithScriptLoaded(sub_frame));
+  EXPECT_EQ(should_iframe_navigation_succeed,
+            sub_frame_observer.last_navigation_succeeded());
 
   // The rule should have matched once (the main_frame request), or twice (both
   // sub_frame and main_frame requests) if the switch was used.

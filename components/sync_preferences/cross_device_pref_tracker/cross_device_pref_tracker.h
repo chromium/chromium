@@ -22,30 +22,6 @@
 
 namespace sync_preferences {
 
-// Service availability state of the `CrossDevicePrefTracker` when the Query API
-// (`GetValues()` or `GetMostRecentValue()`) is called. This logs how often the
-// Tracker is being used before it's fully ready.
-//
-// These values are persisted to logs. Entries should not be renumbered and
-// numeric values should never be reused.
-//
-// LINT.IfChange(CrossDevicePrefTrackerAvailabilityAtQuery)
-enum class CrossDevicePrefTrackerAvailabilityAtQuery {
-  // The tracker is fully operational.
-  kAvailable = 0,
-  // `DeviceInfoTracker` is not available.
-  kDeviceInfoTrackerMissing = 1,
-  // Sync is not configured for writes (e.g., user is signed out or Prefs sync
-  // disabled).
-  kSyncNotConfigured = 2,
-  // `LocalDeviceInfo` (Cache GUID) is not yet initialized.
-  kLocalDeviceInfoMissing = 3,
-  // Both `LocalDeviceInfo` is missing and Sync is not configured for writes.
-  kSyncNotConfiguredAndLocalDeviceInfoMissing = 4,
-  kMaxValue = kSyncNotConfiguredAndLocalDeviceInfoMissing,
-};
-// LINT.ThenChange(/tools/metrics/histograms/metadata/sync/enums.xml:CrossDevicePrefTrackerAvailabilityAtQuery)
-
 // Abstract interface for a keyed service responsible for querying the values of
 // select non-syncing prefs across all of a user's syncing devices. It allows
 // clients to observe how a particular non-syncing pref value differs across
@@ -65,6 +41,32 @@ enum class CrossDevicePrefTrackerAvailabilityAtQuery {
 // For more details on the design, see go/cross-device-pref-tracker.
 class CrossDevicePrefTracker : public KeyedService {
  public:
+  // The current service status for `CrossDevicePrefTracker`.
+  //
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
+  //
+  // GENERATED_JAVA_ENUM_PACKAGE: (
+  // org.chromium.components.sync_preferences.cross_device_pref_tracker)
+  // LINT.IfChange(ServiceStatus)
+  enum class ServiceStatus {
+    // The tracker is fully operational and available for use.
+    kAvailable = 0,
+    // `DeviceInfoTracker` is not available.
+    kDeviceInfoTrackerMissing = 1,
+    // Sync is not configured for writes (e.g., user is signed out or Prefs sync
+    // disabled).
+    kSyncNotConfigured = 2,
+    // `LocalDeviceInfo` (Cache GUID) is not yet initialized.
+    kLocalDeviceInfoMissing = 3,
+    // Both `LocalDeviceInfo` is missing and Sync is not configured for writes.
+    kSyncNotConfiguredAndLocalDeviceInfoMissing = 4,
+    kMaxValue = kSyncNotConfiguredAndLocalDeviceInfoMissing,
+  };
+  // Note: The UMA XML enum is named "CrossDevicePrefTrackerAvailabilityAtQuery"
+  // for legacy reasons.
+  // LINT.ThenChange(/tools/metrics/histograms/metadata/sync/enums.xml:CrossDevicePrefTrackerAvailabilityAtQuery)
+
   // Observer interface for remote changes.
   class Observer : public base::CheckedObserver {
    public:
@@ -75,6 +77,9 @@ class CrossDevicePrefTracker : public KeyedService {
         std::string_view pref_name,
         const TimestampedPrefValue& pref_value,
         const syncer::DeviceInfo& remote_device_info) {}
+    // Called when the service status changes (e.g., the tracker becomes
+    // available to use).
+    virtual void OnServiceStatusChanged(ServiceStatus status) {}
   };
 
   // Defines criteria for querying devices.
@@ -91,6 +96,11 @@ class CrossDevicePrefTracker : public KeyedService {
 
   virtual void AddObserver(Observer* observer) = 0;
   virtual void RemoveObserver(Observer* observer) = 0;
+
+  // Returns the current status of the service. (Clients can use this to
+  // determine if they should wait to query the tracker until it is
+  // `kAvailable`.)
+  virtual ServiceStatus GetServiceStatus() const = 0;
 
   // Retrieves all values for a tracked pref matching the filter, sorted in
   // descending order by timestamp (i.e., most recent first).
@@ -123,7 +133,7 @@ class CrossDevicePrefTracker : public KeyedService {
       const base::android::JavaRef<jstring>& pref_name,
       std::optional<int> os_type,
       std::optional<int> form_factor,
-      std::optional<jlong> max_sync_recency_microseconds) const = 0;
+      std::optional<int64_t> max_sync_recency_microseconds) const = 0;
   // `pref_name` can be either the tracked pref name or the cross-device pref
   // name.
   virtual base::android::ScopedJavaLocalRef<jobject> GetMostRecentValue(
@@ -131,7 +141,7 @@ class CrossDevicePrefTracker : public KeyedService {
       const base::android::JavaRef<jstring>& pref_name,
       std::optional<int> os_type,
       std::optional<int> form_factor,
-      std::optional<jlong> max_sync_recency_microseconds) const = 0;
+      std::optional<int64_t> max_sync_recency_microseconds) const = 0;
 #endif  // BUILDFLAG(IS_ANDROID)
 
  protected:

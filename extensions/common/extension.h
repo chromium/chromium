@@ -134,7 +134,7 @@ class Extension final : public base::RefCountedThreadSafe<Extension> {
 
   static scoped_refptr<Extension> Create(const base::FilePath& path,
                                          mojom::ManifestLocation location,
-                                         const base::Value::Dict& value,
+                                         const base::DictValue& value,
                                          int flags,
                                          std::u16string* error);
 
@@ -142,7 +142,7 @@ class Extension final : public base::RefCountedThreadSafe<Extension> {
   // an explicit id. Most consumers should just use the other Create() method.
   static scoped_refptr<Extension> Create(const base::FilePath& path,
                                          mojom::ManifestLocation location,
-                                         const base::Value::Dict& value,
+                                         const base::DictValue& value,
                                          int flags,
                                          const ExtensionId& explicit_id,
                                          std::u16string* error);
@@ -346,8 +346,8 @@ class Extension final : public base::RefCountedThreadSafe<Extension> {
   // Initialize the extension from a parsed manifest.
   // TODO(aa): Rename to just Init()? There's no Value here anymore.
   // TODO(aa): It is really weird the way this class essentially contains a copy
-  // of the underlying base::Value::Dict in its members. We should decide to
-  // either wrap the base::Value::Dict and go with that only, or we should parse
+  // of the underlying base::DictValue in its members. We should decide to
+  // either wrap the base::DictValue and go with that only, or we should parse
   // into strong types and discard the value. But doing both is bad.
   bool InitFromValue(int flags, std::u16string* error);
 
@@ -467,7 +467,7 @@ using ExtensionList = std::vector<scoped_refptr<const Extension>>;
 
 // Handy struct to pass core extension info around.
 struct ExtensionInfo {
-  ExtensionInfo(const base::Value::Dict* manifest,
+  ExtensionInfo(const base::DictValue* manifest,
                 const ExtensionId& id,
                 const base::FilePath& path,
                 mojom::ManifestLocation location);
@@ -479,7 +479,7 @@ struct ExtensionInfo {
 
   // Note: This may be null (e.g. for unpacked extensions retrieved from the
   // Preferences file).
-  std::unique_ptr<base::Value::Dict> extension_manifest;
+  std::unique_ptr<base::DictValue> extension_manifest;
 
   ExtensionId extension_id;
   base::FilePath extension_path;

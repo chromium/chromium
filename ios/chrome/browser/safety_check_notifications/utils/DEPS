@@ -1,5 +1,7 @@
 include_rules = [
+  # keep-sorted start
   "+ios/chrome/browser/passwords/model",
   "+ios/chrome/browser/push_notification/model",
   "+ios/chrome/browser/safety_check/model",
+  # keep-sorted end
 ]

@@ -7,7 +7,6 @@
 
 #include "gpu/command_buffer/common/command_buffer.h"
 #include "gpu/ipc/common/gpu_channel.mojom-shared.h"
-#include "gpu/ipc/common/gpu_command_buffer_traits.h"
 #include "gpu/ipc/common/gpu_ipc_common_export.h"
 
 namespace mojo {

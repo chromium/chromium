@@ -14,6 +14,9 @@
 
     promise_test(async t => {
       const context = new AudioContext();
+      // AudioContext starts in "suspended" state and transitions to "running"
+      // asynchronously.
+      await context.resume();
       assert_equals(context.state, 'running');
       assert_true(internals.isSilenceDetectionActive(context));
 
@@ -34,6 +37,7 @@
 
     promise_test(async t => {
       const context = new AudioContext();
+      await context.resume();
       assert_equals(context.state, 'running');
       assert_true(internals.isSilenceDetectionActive(context));
 
@@ -55,6 +59,7 @@
 
     promise_test(async t => {
       const context = new AudioContext();
+      await context.resume();
       const filePath = 'worklet-processors/empty-processor.js';
       await context.audioWorklet.addModule(filePath);
       assert_equals(context.state, 'running');

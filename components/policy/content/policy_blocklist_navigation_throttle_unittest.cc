@@ -167,9 +167,9 @@ class PolicyBlocklistNavigationThrottleTest
     // TODO(crbug.com/442891187): Remove this once the prefs are registered in
     // the URLBlocklistManager::RegisterProfilePrefs.
     pref_service_.registry()->RegisterListPref(
-        policy::policy_prefs::kIncognitoModeBlocklist);
+        policy::policy_prefs::kIncognitoModeUrlBlocklist);
     pref_service_.registry()->RegisterListPref(
-        policy::policy_prefs::kIncognitoModeAllowlist);
+        policy::policy_prefs::kIncognitoModeUrlAllowlist);
 
     auto url_blocklist_manager = std::make_unique<policy::URLBlocklistManager>(
         &pref_service_, policy::policy_prefs::kUrlBlocklist,
@@ -179,8 +179,8 @@ class PolicyBlocklistNavigationThrottleTest
     if (IsIncognitoMode()) {
       incognito_url_blocklist_manager =
           std::make_unique<policy::URLBlocklistManager>(
-              &pref_service_, policy::policy_prefs::kIncognitoModeBlocklist,
-              policy::policy_prefs::kIncognitoModeAllowlist);
+              &pref_service_, policy::policy_prefs::kIncognitoModeUrlBlocklist,
+              policy::policy_prefs::kIncognitoModeUrlAllowlist);
     }
 
     policy_blocklist_service_ = std::make_unique<PolicyBlocklistService>(
@@ -203,7 +203,7 @@ class PolicyBlocklistNavigationThrottleTest
   }
 
   void SetBlocklistUrlPattern(const std::string& pattern) {
-    base::Value::List value;
+    base::ListValue value;
     value.Append(pattern);
     pref_service_.SetManagedPref(policy::policy_prefs::kUrlBlocklist,
                                  std::move(value));
@@ -211,7 +211,7 @@ class PolicyBlocklistNavigationThrottleTest
   }
 
   void SetAllowlistUrlPattern(const std::string& pattern) {
-    base::Value::List value;
+    base::ListValue value;
     value.Append(pattern);
     pref_service_.SetManagedPref(policy::policy_prefs::kUrlAllowlist,
                                  std::move(value));
@@ -219,18 +219,18 @@ class PolicyBlocklistNavigationThrottleTest
   }
 
   void SetIncognitoBlocklistUrlPattern(const std::string& pattern) {
-    base::Value::List value;
+    base::ListValue value;
     value.Append(pattern);
-    pref_service_.SetManagedPref(policy::policy_prefs::kIncognitoModeBlocklist,
-                                 std::move(value));
+    pref_service_.SetManagedPref(
+        policy::policy_prefs::kIncognitoModeUrlBlocklist, std::move(value));
     task_environment()->RunUntilIdle();
   }
 
   void SetIncognitoAllowlistUrlPattern(const std::string& pattern) {
-    base::Value::List value;
+    base::ListValue value;
     value.Append(pattern);
-    pref_service_.SetManagedPref(policy::policy_prefs::kIncognitoModeAllowlist,
-                                 std::move(value));
+    pref_service_.SetManagedPref(
+        policy::policy_prefs::kIncognitoModeUrlAllowlist, std::move(value));
     task_environment()->RunUntilIdle();
   }
 
@@ -242,12 +242,18 @@ class PolicyBlocklistNavigationThrottleTest
 
   void TestNavigationThrottleCheckResult(
       const GURL& url,
-      content::NavigationThrottle::ThrottleAction expected_result) {
+      content::NavigationThrottle::ThrottleAction expected_action,
+      std::optional<net::Error> expected_error = std::nullopt) {
     auto navigation_simulator = StartNavigation(url);
     ASSERT_FALSE(navigation_simulator->IsDeferred());
 
-    EXPECT_EQ(expected_result,
-              navigation_simulator->GetLastThrottleCheckResult());
+    EXPECT_EQ(expected_action,
+              navigation_simulator->GetLastThrottleCheckResult().action());
+    if (expected_error.has_value()) {
+      EXPECT_EQ(
+          expected_error,
+          navigation_simulator->GetLastThrottleCheckResult().net_error_code());
+    }
 
     // Call WebContents::Stop() to reset the main rfh's navigation state. It
     // results in destructing the navigation throttles to flush metrics.
@@ -273,7 +279,8 @@ TEST_P(PolicyBlocklistNavigationThrottleTest, Blocklist) {
 
   // Block a blocklisted site.
   TestNavigationThrottleCheckResult(GURL("http://www.example.com/"),
-                                    content::NavigationThrottle::BLOCK_REQUEST);
+                                    content::NavigationThrottle::BLOCK_REQUEST,
+                                    net::ERR_BLOCKED_BY_ADMINISTRATOR);
 }
 
 TEST_P(PolicyBlocklistNavigationThrottleTest, Allowlist) {
@@ -296,7 +303,10 @@ TEST_P(PolicyBlocklistNavigationThrottleTest, IncognitoBlocklist) {
   TestNavigationThrottleCheckResult(
       GURL("http://www.example.com/"),
       IsIncognitoMode() ? content::NavigationThrottle::BLOCK_REQUEST
-                        : content::NavigationThrottle::PROCEED);
+                        : content::NavigationThrottle::PROCEED,
+      IsIncognitoMode()
+          ? std::make_optional(net::ERR_BLOCKED_IN_INCOGNITO_BY_ADMINISTRATOR)
+          : std::nullopt);
 }
 
 TEST_P(PolicyBlocklistNavigationThrottleTest,
@@ -321,7 +331,10 @@ TEST_P(PolicyBlocklistNavigationThrottleTest,
   TestNavigationThrottleCheckResult(
       GURL("http://www.example.com/"),
       IsIncognitoMode() ? content::NavigationThrottle::PROCEED
-                        : content::NavigationThrottle::BLOCK_REQUEST);
+                        : content::NavigationThrottle::BLOCK_REQUEST,
+      IsIncognitoMode()
+          ? std::nullopt
+          : std::make_optional(net::ERR_BLOCKED_BY_ADMINISTRATOR));
 }
 
 TEST_P(PolicyBlocklistNavigationThrottleTest,
@@ -336,7 +349,10 @@ TEST_P(PolicyBlocklistNavigationThrottleTest,
   TestNavigationThrottleCheckResult(
       GURL("http://www.example.com/"),
       IsIncognitoMode() ? content::NavigationThrottle::BLOCK_REQUEST
-                        : content::NavigationThrottle::PROCEED);
+                        : content::NavigationThrottle::PROCEED,
+      IsIncognitoMode()
+          ? std::make_optional(net::ERR_BLOCKED_IN_INCOGNITO_BY_ADMINISTRATOR)
+          : std::nullopt);
 }
 
 TEST_P(PolicyBlocklistNavigationThrottleTest, SafeSites_Safe) {
@@ -672,7 +688,7 @@ TEST_P(PolicyBlocklistNavigationThrottleTest,
 #if BUILDFLAG(IS_CHROMEOS)
 TEST_P(PolicyBlocklistNavigationThrottleTest, UseVpnPreConnectFiltering) {
   SetBlocklistUrlPattern("block-by-general-pref.com");
-  base::Value::List list;
+  base::ListValue list;
   list.Append("allowed-preconnect.com");
   pref_service_.SetManagedPref(
       policy::policy_prefs::kAlwaysOnVpnPreConnectUrlAllowlist,

@@ -9,10 +9,10 @@
 #import "ios/chrome/browser/sad_tab/ui_bundled/sad_tab_view_controller.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
-#import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
+#import "ios/chrome/browser/shared/public/commands/scene_commands.h"
 #import "ios/chrome/browser/shared/ui/util/named_guide.h"
-#import "ios/chrome/browser/toolbar/ui_bundled/fullscreen/toolbars_size_browser_agent.h"
+#import "ios/chrome/browser/toolbar/legacy/ui_bundled/fullscreen/toolbars_size_browser_agent.h"
 #import "ios/chrome/browser/web/model/web_navigation_browser_agent.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
@@ -236,12 +236,11 @@ TEST_F(SadTabCoordinatorTest, RepeatedFailureAction) {
       initWithBaseViewController:base_view_controller_
                          browser:browser_.get()];
 
-  id mock_application_commands_handler_ =
-      OCMStrictProtocolMock(@protocol(ApplicationCommands));
+  id mock_scene_handler_ = OCMStrictProtocolMock(@protocol(SceneCommands));
   [browser_->GetCommandDispatcher()
-      startDispatchingToTarget:mock_application_commands_handler_
-                   forProtocol:@protocol(ApplicationCommands)];
-  OCMExpect([mock_application_commands_handler_
+      startDispatchingToTarget:mock_scene_handler_
+                   forProtocol:@protocol(SceneCommands)];
+  OCMExpect([mock_scene_handler_
       showReportAnIssueFromViewController:base_view_controller_
                                    sender:UserFeedbackSender::SadTab]);
 
@@ -258,7 +257,7 @@ TEST_F(SadTabCoordinatorTest, RepeatedFailureAction) {
   // Verify dispatcher's message.
   [view_controller.actionButton
       sendActionsForControlEvents:UIControlEventTouchUpInside];
-  EXPECT_OCMOCK_VERIFY(mock_application_commands_handler_);
+  EXPECT_OCMOCK_VERIFY(mock_scene_handler_);
   [coordinator stop];
   // TODO(crbug.com/40823248): To remove after cleaning as it should be handle
   // in the stop function.

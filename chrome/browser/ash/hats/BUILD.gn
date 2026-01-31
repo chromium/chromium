@@ -30,6 +30,7 @@ static_library("hats") {
     "//chrome/browser/notifications",
     "//chrome/browser/profiles",
     "//chrome/browser/themes",
+    "//chrome/browser/ui/dialogs:browser_dialogs",
     "//chrome/common",
     "//chromeos/ash/components/install_attributes",
     "//chromeos/ash/components/network",

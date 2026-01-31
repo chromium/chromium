@@ -6,6 +6,7 @@ package org.chromium.components.omnibox;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
@@ -15,7 +16,10 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.components.metrics.OmniboxEventProtos.OmniboxEventProto.PageClassification;
+import org.chromium.components.omnibox.AimToolsProto.ToolMode;
 
+import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 /** Tests for {@link AutocompleteMediator}. */
@@ -207,6 +211,45 @@ public class AutocompleteInputUnitTest {
     }
 
     @Test
+    public void getPageClassification_forFuseboxRequests() {
+        Map<Integer, Integer> testCases =
+                Map.of(
+                        // NTP
+                        PageClassification.INSTANT_NTP_WITH_OMNIBOX_AS_STARTING_FOCUS_VALUE,
+                        PageClassification.NTP_COMPOSEBOX_VALUE,
+                        // SRP
+                        PageClassification.SEARCH_RESULT_PAGE_NO_SEARCH_TERM_REPLACEMENT_VALUE,
+                        PageClassification.SRP_OMNIBOX_COMPOSEBOX_VALUE,
+                        // Web
+                        PageClassification.OTHER_VALUE, //
+                        PageClassification.OTHER_OMNIBOX_COMPOSEBOX_VALUE);
+
+        for (var requestType :
+                List.of(
+                        AutocompleteRequestType.AI_MODE,
+                        AutocompleteRequestType.IMAGE_GENERATION)) {
+            mInput.setRequestType(requestType);
+            for (var givePageClass : PageClassification.values()) {
+                Integer wantPageClass = testCases.getOrDefault(givePageClass.getNumber(), null);
+                String message =
+                        String.format(
+                                "Unexpected results in mode %d for page class %s",
+                                requestType, givePageClass.name());
+
+                if (wantPageClass != null) {
+                    // Page classes known to Fusebox.
+                    mInput.setPageClassification(givePageClass.getNumber());
+                    assertEquals(message, (int) wantPageClass, mInput.getPageClassification());
+                } else {
+                    // These page classes not recognized by Fusebox.
+                    mInput.setPageClassification(givePageClass.getNumber());
+                    assertThrows(message, AssertionError.class, mInput::getPageClassification);
+                }
+            }
+        }
+    }
+
+    @Test
     public void setUserText_edgeCases() {
         // Test setting text to exactly one space
         mInput.setUserText(" ");
@@ -272,5 +315,15 @@ public class AutocompleteInputUnitTest {
         assertTrue(mInput.isInCacheableContext());
         assertTrue(mInput.isInZeroPrefixContext());
         assertFalse(mInput.allowExactKeywordMatch());
+    }
+
+    @Test
+    public void toolMode() {
+        assertEquals(ToolMode.TOOL_MODE_UNSPECIFIED_VALUE, mInput.getToolMode());
+        mInput.setRequestType(AutocompleteRequestType.IMAGE_GENERATION);
+        assertEquals(ToolMode.TOOL_MODE_IMAGE_GEN_VALUE, mInput.getToolMode());
+        mInput.setHasAttachments(true);
+        assertEquals(
+                ToolMode.TOOL_MODE_IMAGE_GEN_UPLOAD_VALUE, mInput.getToolMode());
     }
 }

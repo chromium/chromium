@@ -372,7 +372,6 @@ void ClientSidePhishingModel::OnModelAndVisualTfLiteFileLoaded(
         if (!VerifyCSDFlatBufferIndicesAndFields(flatbuffer_model)) {
           VLOG(0) << "Failed to verify CSD Flatbuffer indices and fields";
         } else {
-          trigger_model_version_ = flatbuffer_model->version();
           if (tflite_valid) {
             thresholds_.clear();  // Clear the previous model's thresholds
                                   // before adding on the new ones
@@ -385,6 +384,27 @@ void ClientSidePhishingModel::OnModelAndVisualTfLiteFileLoaded(
                                               ? flat_threshold->esb_threshold()
                                               : flat_threshold->threshold());
               thresholds_.push_back(threshold);
+            }
+            // TODO: (crbug.com/467955445) tflite_metadata has been verified
+            // already, but image embedding metadata is not for testing
+            // purposes in keeping flatbuffer model size small with an older
+            // version. Once the metadata has been migrated to optimization
+            // guide service, the fields will be derived through that instead
+            // of the flatbuffer.
+            const flat::TfLiteModelMetadata* tflite_metadata =
+                flatbuffer_model->tflite_metadata();
+            classification_input_width_ = tflite_metadata->input_width();
+            classification_input_height_ = tflite_metadata->input_height();
+            trigger_model_version_ = tflite_metadata->version();
+            const flat::TfLiteModelMetadata* image_embedding_metadata =
+                flatbuffer_model->img_embedding_metadata();
+            if (image_embedding_metadata) {
+              img_embedding_input_width_ =
+                  image_embedding_metadata->input_width();
+              img_embedding_input_height_ =
+                  image_embedding_metadata->input_height();
+              image_embedding_model_version_ =
+                  image_embedding_metadata->version();
             }
           }
         }
@@ -536,6 +556,12 @@ int ClientSidePhishingModel::GetTriggerModelVersion() {
                                             : 0;
 }
 
+int ClientSidePhishingModel::GetImageEmbeddingModelVersion() {
+  return image_embedding_model_version_.has_value()
+             ? image_embedding_model_version_.value()
+             : 0;
+}
+
 #if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
 const std::vector<TargetEmbedding>&
 ClientSidePhishingModel::GetTargetImageEmbeddings() const {
@@ -547,6 +573,29 @@ void ClientSidePhishingModel::SetTargetImageEmbeddingsForTesting(
   target_image_embeddings_ = std::move(target_embeddings);
 }
 #endif
+int ClientSidePhishingModel::GetClassificationInputWidth() {
+  return classification_input_width_.has_value()
+             ? classification_input_width_.value()
+             : 0;
+}
+
+int ClientSidePhishingModel::GetClassificationInputHeight() {
+  return classification_input_height_.has_value()
+             ? classification_input_height_.value()
+             : 0;
+}
+
+int ClientSidePhishingModel::GetImageEmbeddingInputWidth() {
+  return img_embedding_input_width_.has_value()
+             ? img_embedding_input_width_.value()
+             : 0;
+}
+
+int ClientSidePhishingModel::GetImageEmbeddingInputHeight() {
+  return img_embedding_input_height_.has_value()
+             ? img_embedding_input_height_.value()
+             : 0;
+}
 
 ClientSidePhishingModel::~ClientSidePhishingModel() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -593,6 +642,11 @@ bool ClientSidePhishingModel::IsEnabled() const {
 // static
 bool ClientSidePhishingModel::VerifyCSDFlatBufferIndicesAndFields(
     const flat::ClientSideModel* model) {
+  const flat::TfLiteModelMetadata* metadata = model->tflite_metadata();
+  if (!metadata) {
+    return false;
+  }
+
   const flatbuffers::Vector<flatbuffers::Offset<flat::Hash>>* hashes =
       model->hashes();
   if (!hashes) {
@@ -631,10 +685,6 @@ bool ClientSidePhishingModel::VerifyCSDFlatBufferIndicesAndFields(
     return false;
   }
 
-  const flat::TfLiteModelMetadata* metadata = model->tflite_metadata();
-  if (!metadata) {
-    return false;
-  }
   const flatbuffers::Vector<
       flatbuffers::Offset<flat::TfLiteModelMetadata_::Threshold>>* thresholds =
       metadata->thresholds();

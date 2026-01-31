@@ -87,11 +87,11 @@ std::string GetInputEventSourceKey(InputEventSource event_source) {
   }
 }
 
-base::Value::Dict ConvertEventCountsToValue(
+base::DictValue ConvertEventCountsToValue(
     const AppPlatformInputMetrics::EventSourceToCounts& event_counts) {
-  base::Value::Dict event_counts_dict;
+  base::DictValue event_counts_dict;
   for (const auto& counts : event_counts) {
-    base::Value::Dict count_dict;
+    base::DictValue count_dict;
     for (const auto& it : counts.second) {
       count_dict.Set(GetAppTypeHistogramName(it.first), it.second);
     }
@@ -102,7 +102,7 @@ base::Value::Dict ConvertEventCountsToValue(
 }
 
 AppPlatformInputMetrics::EventSourceToCounts ConvertDictValueToEventCounts(
-    const base::Value::Dict& event_counts) {
+    const base::DictValue& event_counts) {
   AppPlatformInputMetrics::EventSourceToCounts ret;
   for (const auto [app_id, counts] : event_counts) {
     auto event_source = GetInputEventSourceFromString(app_id);
@@ -110,7 +110,7 @@ AppPlatformInputMetrics::EventSourceToCounts ConvertDictValueToEventCounts(
       continue;
     }
 
-    const base::Value::Dict* counts_dict = counts.GetIfDict();
+    const base::DictValue* counts_dict = counts.GetIfDict();
     if (!counts_dict) {
       continue;
     }
@@ -208,7 +208,7 @@ void AppPlatformInputMetrics::OnInstanceUpdate(const InstanceUpdate& update) {
   // For apps, not opened with browser windows, the app id and app type should
   // not change. So if we have the app info for the window, we don't need to
   // update it.
-  if (base::Contains(window_to_app_info_, window) &&
+  if (window_to_app_info_.contains(window) &&
       !IsAppOpenedWithBrowserWindow(profile_, app_type, app_id)) {
     return;
   }
@@ -381,7 +381,7 @@ void AppPlatformInputMetrics::RecordInputEventsAppKMFromPref() {
       continue;
     }
 
-    const base::Value::Dict* events_dict = events.GetIfDict();
+    const base::DictValue* events_dict = events.GetIfDict();
     if (!events_dict) {
       continue;
     }

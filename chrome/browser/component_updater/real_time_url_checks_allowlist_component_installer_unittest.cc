@@ -45,7 +45,7 @@ class RealTimeUrlChecksAllowlistComponentInstallerTest
     // Calling ComponentReady should trigger PopulateFromDynamicUpdate call
     EXPECT_CALL(mock_realtime_allowlist, PopulateFromDynamicUpdate(_));
     policy_->ComponentReady(base::Version(), component_install_dir_.GetPath(),
-                            base::Value::Dict());
+                            base::DictValue());
 
     env_.RunUntilIdle();
     testing::Mock::VerifyAndClearExpectations(&mock_realtime_allowlist);

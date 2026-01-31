@@ -9,6 +9,7 @@
 #include <cstddef>
 #include <cstdint>
 #include <deque>
+#include <limits>
 #include <memory>
 #include <optional>
 #include <string>
@@ -69,7 +70,6 @@
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/primary_account_access_token_fetcher.h"
 #include "components/signin/public/identity_manager/primary_account_change_event.h"
-#include "components/signin/public/identity_manager/scope_set.h"
 #include "components/trusted_vault/frontend_trusted_vault_connection.h"
 #include "components/trusted_vault/proto/recovery_key_store.pb.h"
 #include "components/trusted_vault/recovery_key_store_connection.h"
@@ -587,10 +587,6 @@ cbor::Value::ArrayValue BuildRecoveryKeyStorePINWrappingEnclaveRequest(
   return requests;
 }
 
-
-
-
-
 // Build an enclave request for recovery_key_store/wrap_pin_and_secret, which
 // wraps a PIN with the security domain secret, and creates Vault parameters for
 // the PIN, wrapping the security domain secret.
@@ -967,13 +963,19 @@ base::flat_map<int32_t, std::vector<uint8_t>> GetNewSecretsToStore(
     const EnclaveManager::StoreKeysArgs& args) {
   const auto& existing = user.wrapped_security_domain_secrets();
   base::flat_map<int32_t, std::vector<uint8_t>> new_secrets;
-  for (int32_t i = args.last_key_version - args.keys.size() + 1;
-       i <= args.last_key_version; i++) {
-    if (existing.find(i) == existing.end()) {
-      new_secrets.emplace(i, args.keys[args.last_key_version - i]);
+  CHECK(args.keys.size() <= std::numeric_limits<int32_t>::max());
+
+  // Return previously unknown keys by version. Key version for the initial key
+  // was chosen at random, and increments with each new key. The caller provides
+  // all known keys, but only the version of the last one.
+  int32_t first_key_version = args.last_key_version - args.keys.size() + 1;
+  for (int32_t i = 0; i < static_cast<int32_t>(args.keys.size()); i++) {
+    int32_t current_key_version = first_key_version + i;
+    if (existing.find(current_key_version) == existing.end()) {
+      new_secrets.emplace(current_key_version,
+                          args.keys[args.keys.size() - i - 1]);
     }
   }
-
   return new_secrets;
 }
 
@@ -2908,12 +2910,12 @@ bool EnclaveManager::is_idle() const {
   return !loading_ && !state_machine_;
 }
 
-bool EnclaveManager::is_loaded() const {
+bool EnclaveManager::IsLoaded() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return static_cast<bool>(local_state_);
 }
 
-bool EnclaveManager::is_registered() const {
+bool EnclaveManager::IsRegistered() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return user_ && user_->registered();
 }
@@ -2923,9 +2925,9 @@ bool EnclaveManager::has_pending_keys() const {
   return pending_keys_ != nullptr;
 }
 
-bool EnclaveManager::is_ready() const {
+bool EnclaveManager::IsReady() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return is_registered() && !user_->wrapped_security_domain_secrets().empty();
+  return IsRegistered() && !user_->wrapped_security_domain_secrets().empty();
 }
 
 unsigned EnclaveManager::store_keys_count() const {
@@ -2943,7 +2945,7 @@ void EnclaveManager::LoadAfterDelay(base::TimeDelta delay,
 void EnclaveManager::Load(base::OnceClosure closure) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  if (is_loaded()) {
+  if (IsLoaded()) {
     base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, std::move(closure));
     return;
@@ -3102,7 +3104,7 @@ void EnclaveManager::Unenroll(EnclaveManager::Callback callback) {
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback));
   action->unregister = true;
 
-  if (!user_ || !is_registered()) {
+  if (!user_ || !IsRegistered()) {
     base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(std::move(action->callback), true));
     return;
@@ -3118,7 +3120,7 @@ bool EnclaveManager::ConsiderSecurityDomainState(
     EnclaveManager::Callback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK(user_);
-  bool ret = is_ready();
+  bool ret = IsReady();
 
   if (IsSecurityDomainReset(state)) {
     ClearRegistration();
@@ -3568,7 +3570,7 @@ void EnclaveManager::AddPendingUvRequest(
 std::optional<std::vector<uint8_t>> EnclaveManager::GetWrappedSecret(
     int32_t version) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  CHECK(is_ready());
+  CHECK(IsReady());
   const auto it = user_->wrapped_security_domain_secrets().find(version);
   if (it == user_->wrapped_security_domain_secrets().end()) {
     return std::nullopt;
@@ -3579,7 +3581,7 @@ std::optional<std::vector<uint8_t>> EnclaveManager::GetWrappedSecret(
 std::pair<int32_t, std::vector<uint8_t>>
 EnclaveManager::GetCurrentWrappedSecret() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  CHECK(is_ready());
+  CHECK(IsReady());
 
   return GetCurrentWrappedSecretForUser(user_);
 }
@@ -3595,7 +3597,7 @@ EnclaveManager::TakeSecret() {
 }
 
 bool EnclaveManager::has_wrapped_pin() const {
-  CHECK(is_ready());
+  CHECK(IsReady());
   return user_->has_wrapped_pin();
 }
 
@@ -3622,7 +3624,7 @@ void EnclaveManager::SetWrappedPINDataForTesting(
 
 EnclaveManager::UvKeyState EnclaveManager::uv_key_state(
     bool platform_has_biometrics) const {
-  CHECK(is_ready());
+  CHECK(IsReady());
 #if BUILDFLAG(IS_WIN)
   if (user_->deferred_uv_key_creation()) {
     return UvKeyState::kUsesSystemUIDeferredCreation;
@@ -3721,10 +3723,57 @@ void EnclaveManager::StorePendingKeys(const GaiaId& gaia_id,
   }
 }
 
-void EnclaveManager::StoreKeys(const GaiaId& gaia_id,
-                               std::vector<std::vector<uint8_t>> keys,
-                               int last_key_version) {
+void EnclaveManager::TemporarilyCachePendingOpportunisticKeys(
+    const GaiaId& gaia_id,
+    std::vector<std::vector<uint8_t>> keys,
+    int last_key_version) {
+  auto store_keys_args = std::make_unique<StoreKeysArgs>();
+  store_keys_args->gaia_id = gaia_id;
+  store_keys_args->keys = std::move(keys);
+  store_keys_args->last_key_version = last_key_version;
+  if (opportunistic_pending_keys_) {
+    // Some opportunistically retrieved key has already been cached. It will be
+    // overwritten by the current key.
+    webauthn::metrics::RecordGPMCachedOpportunisticallyRetrievedKeyEvent(
+        webauthn::metrics::
+            WebAuthenticationGPMCachedOpportunisticallyRetrievedKeyEvent::
+                kStoreKeysFromOpportunisticFlowCachedKeysHaveBeenOverwritten);
+  }
+  opportunistic_pending_keys_ = std::move(store_keys_args);
+  // Ensure that the cached keys could be discarded after the timeout.
+  int ttl_seconds =
+      device::kWebAuthnOpportunisticRetrievalTimeToKeepCachedKeySeconds.Get();
+  // Configuring the task for invalidating the cached key (if we overwrote the
+  // cached key - the previous key invalidation task will be cancelled at this
+  // point).
+  opportunistic_pending_keys_invalidation_task_.Reset(base::BindOnce(
+      [](base::WeakPtr<EnclaveManager> manager) {
+        if (manager && manager->opportunistic_pending_keys_) {
+          manager->opportunistic_pending_keys_.reset();
+          webauthn::metrics::RecordGPMCachedOpportunisticallyRetrievedKeyEvent(
+              webauthn::metrics::
+                  WebAuthenticationGPMCachedOpportunisticallyRetrievedKeyEvent::
+                      kStoreKeysFromOpportunisticFlowCachedKeysRemovedAfterTimeout);
+        }
+      },
+      weak_ptr_factory_.GetWeakPtr()));
+  base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
+      FROM_HERE, opportunistic_pending_keys_invalidation_task_.callback(),
+      base::Seconds(ttl_seconds));
+}
+
+void EnclaveManager::StoreKeys(
+    const GaiaId& gaia_id,
+    std::vector<std::vector<uint8_t>> keys,
+    int last_key_version,
+    std::optional<trusted_vault::TrustedVaultUserActionTriggerForUMA>
+        user_action_trigger) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (user_action_trigger.has_value()) {
+    base::UmaHistogramEnumeration(
+        "PasswordManager.UserActionTriggerThatRetrievedPasskeySecret",
+        user_action_trigger.value());
+  }
   if (base::FeatureList::IsEnabled(device::kWebAuthnOpportunisticRetrieval)) {
     if (store_keys_lock_depth_) {
       webauthn::metrics::RecordGPMRecoveryEvent(
@@ -3732,6 +3781,23 @@ void EnclaveManager::StoreKeys(const GaiaId& gaia_id,
               kStoreKeysFromExplicitFlowStarted);
       StorePendingKeys(gaia_id, std::move(keys), last_key_version);
     } else {
+      CoreAccountInfo primary_account_info =
+          identity_manager_->GetPrimaryAccountInfo(
+              signin::ConsentLevel::kSignin);
+      if (primary_account_info.IsEmpty() ||
+          primary_account_info.gaia != gaia_id) {
+        // We can't store keys if the primary account is empty or has a
+        // different Gaia Id (because for storing keys we need to fetch a
+        // trusted vault access token, which can't be done if the account is
+        // empty or has a different Gaia Id). Upon identity change we will
+        // re-attempt to store these keys.
+        TemporarilyCachePendingOpportunisticKeys(gaia_id, std::move(keys),
+                                                 last_key_version);
+        webauthn::metrics::RecordGPMRecoveryEvent(
+            webauthn::metrics::WebAuthenticationGPMRecoveryEvent::
+                kStoreKeysFromOpportunisticFlowCachedKeysBecauseAccountDoesNotMatch);
+        return;
+      }
       webauthn::metrics::RecordGPMRecoveryEvent(
           webauthn::metrics::WebAuthenticationGPMRecoveryEvent::
               kStoreKeysFromOpportunisticFlowStarted);
@@ -3758,7 +3824,7 @@ void EnclaveManager::StoreKeysFromOutOfContextRetrieval(
   pending_keys->keys = std::move(keys);
   pending_keys->last_key_version = last_key_version;
 
-  if (is_registered()) {
+  if (IsRegistered()) {
     FIDO_LOG(EVENT) << "Redundant opportunistic keys provided for version "
                     << last_key_version;
     NotifyObserversAboutOutOfContextRecoveryOutcome(
@@ -4025,6 +4091,12 @@ void EnclaveManager::HandleIdentityChange(bool is_post_load) {
   // This function is called when local state finishes loading. Prior to that
   // identity changes are ignored.
   if (!local_state_) {
+    if (opportunistic_pending_keys_ && !loading_) {
+      // Identity has changed, and we have pending opportunistic keys, but
+      // enclave manager is not loading - so let's load it. After loading the
+      // pending opportunistic keys will be stored.
+      Load(base::DoNothing());
+    }
     return;
   }
 
@@ -4035,6 +4107,22 @@ void EnclaveManager::HandleIdentityChange(bool is_post_load) {
   CoreAccountInfo primary_account_info =
       identity_manager_->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin);
   if (!primary_account_info.IsEmpty()) {
+    if (opportunistic_pending_keys_ &&
+        opportunistic_pending_keys_->gaia_id == primary_account_info.gaia) {
+      std::unique_ptr<StoreKeysArgs> store_keys_arg =
+          std::move(opportunistic_pending_keys_);
+      // Storing pending opportunistically retrieved keys. These keys were in a
+      // pending state because at the moment in time when they were retrieved
+      // the primary account was either empty or had a different Gaia Id. Now
+      // the primary account is available so we can store them.
+      StoreKeys(store_keys_arg->gaia_id, std::move(store_keys_arg->keys),
+                store_keys_arg->last_key_version,
+                /*user_action_trigger=*/std::nullopt);
+      webauthn::metrics::RecordGPMCachedOpportunisticallyRetrievedKeyEvent(
+          webauthn::metrics::
+              WebAuthenticationGPMCachedOpportunisticallyRetrievedKeyEvent::
+                  kStoreKeysFromOpportunisticFlowCachedKeysStoringAfterSignIn);
+    }
     if (primary_account_info_ &&
         primary_account_info_->account_id != primary_account_info.account_id) {
       // If the signed-in user has changed, the state machine must be halted
@@ -4217,8 +4305,8 @@ void EnclaveManager::ClearRegistration() {
             if (crypto::StatefulUnexportableKeyProvider* stateful_provider =
                     provider ? provider->AsStatefulUnexportableKeyProvider()
                              : nullptr) {
-              stateful_provider->DeleteSigningKeySlowly(
-                  wrapped_identity_private_key);
+              stateful_provider->DeleteWrappedKeysSlowly(
+                  {wrapped_identity_private_key});
             }
           },
           ToVector(user_->wrapped_identity_private_key())));
@@ -4281,7 +4369,7 @@ void EnclaveManager::ConsiderPinRenewal() {
                                 PinRenewalEvent::kConsidered);
 
   renewal_checks_++;
-  if (!user_ || !is_ready() || !user_->has_wrapped_pin()) {
+  if (!user_ || !IsReady() || !user_->has_wrapped_pin()) {
     base::UmaHistogramEnumeration(kPinRenewalHistogram,
                                   PinRenewalEvent::kNothingToRenew);
     return;

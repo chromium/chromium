@@ -4,11 +4,12 @@
 
 #include "chrome/browser/ui/ash/holding_space/holding_space_util.h"
 
+#include <algorithm>
+
 #include "ash/public/cpp/holding_space/holding_space_constants.h"
 #include "ash/public/cpp/holding_space/holding_space_util.h"
 #include "ash/public/cpp/image_util.h"
 #include "base/barrier_closure.h"
-#include "base/containers/contains.h"
 #include "base/files/file_path.h"
 #include "chrome/browser/ash/drive/drive_integration_service.h"
 #include "chrome/browser/ash/drive/drive_integration_service_factory.h"
@@ -194,7 +195,7 @@ void PartitionFilePathsByValidity(
               FilePathList temp_file_paths;
               temp_file_paths.swap(*file_paths);
               for (const auto& file_path : sorted_file_paths) {
-                if (base::Contains(temp_file_paths, file_path)) {
+                if (std::ranges::contains(temp_file_paths, file_path)) {
                   file_paths->push_back(file_path);
                 }
               }

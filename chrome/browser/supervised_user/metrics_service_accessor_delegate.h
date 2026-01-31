@@ -5,13 +5,15 @@
 #ifndef CHROME_BROWSER_SUPERVISED_USER_METRICS_SERVICE_ACCESSOR_DELEGATE_H_
 #define CHROME_BROWSER_SUPERVISED_USER_METRICS_SERVICE_ACCESSOR_DELEGATE_H_
 
-#include "components/supervised_user/core/browser/supervised_user_metrics_service.h"
+#include <string_view>
+
+#include "components/supervised_user/core/browser/supervised_user_synthetic_field_trial_service_delegate.h"
 
 namespace supervised_user {
 // Implements the delegate for the metrics service accessor using chromium's
 // metrics service client.
-class MetricsServiceAccessorDelegateImpl
-    : public SupervisedUserMetricsService::MetricsServiceAccessorDelegate {
+// TODO(crbug.com/473728936): Rename to follow base class naming.
+class MetricsServiceAccessorDelegateImpl : public SynteticFieldTrialDelegate {
  public:
   MetricsServiceAccessorDelegateImpl();
   ~MetricsServiceAccessorDelegateImpl() override;

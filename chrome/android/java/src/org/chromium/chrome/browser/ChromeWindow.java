@@ -40,7 +40,7 @@ public class ChromeWindow extends ActivityWindowAndroid {
     private static KeyboardVisibilityDelegateFactory sKeyboardVisibilityDelegateFactory =
             ChromeKeyboardVisibilityDelegate::new;
 
-    private final Supplier<CompositorViewHolder> mCompositorViewHolderSupplier;
+    private final Supplier<@Nullable CompositorViewHolder> mCompositorViewHolderSupplier;
     private final Supplier<ModalDialogManager> mModalDialogManagerSupplier;
 
     /**
@@ -54,7 +54,7 @@ public class ChromeWindow extends ActivityWindowAndroid {
      */
     public ChromeWindow(
             Activity activity,
-            Supplier<CompositorViewHolder> compositorViewHolderSupplier,
+            Supplier<@Nullable CompositorViewHolder> compositorViewHolderSupplier,
             Supplier<ModalDialogManager> modalDialogManagerSupplier,
             Supplier<ManualFillingComponent> manualFillingComponentSupplier,
             IntentRequestTracker intentRequestTracker,
@@ -81,7 +81,7 @@ public class ChromeWindow extends ActivityWindowAndroid {
      */
     public ChromeWindow(
             Activity activity,
-            Supplier<CompositorViewHolder> compositorViewHolderSupplier,
+            Supplier<@Nullable CompositorViewHolder> compositorViewHolderSupplier,
             Supplier<ModalDialogManager> modalDialogManagerSupplier,
             ActivityKeyboardVisibilityDelegate activityKeyboardVisibilityDelegate,
             boolean activityTopResumedSupported,
@@ -112,9 +112,8 @@ public class ChromeWindow extends ActivityWindowAndroid {
 
     @Override
     public @Nullable View getReadbackView() {
-        return mCompositorViewHolderSupplier.get() == null
-                ? null
-                : mCompositorViewHolderSupplier.get().getActiveSurfaceView();
+        var holder = mCompositorViewHolderSupplier.get();
+        return holder == null ? null : holder.getActiveSurfaceView();
     }
 
     @Override

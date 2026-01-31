@@ -21,8 +21,8 @@ class LaunchParams final : public ScriptWrappable {
  public:
   explicit LaunchParams(KURL target_url,
                         base::TimeTicks time_navigation_started_in_browser,
-                        bool navigation_started);
-  explicit LaunchParams(HeapVector<Member<FileSystemHandle>> files);
+                        bool navigation_started,
+                        HeapVector<Member<FileSystemHandle>> optional_files);
   ~LaunchParams() override;
 
   // LaunchParams IDL interface.

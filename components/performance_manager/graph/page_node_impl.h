@@ -9,6 +9,7 @@
 #include <optional>
 #include <string>
 
+#include "base/byte_size.h"
 #include "base/containers/enum_set.h"
 #include "base/containers/flat_set.h"
 #include "base/memory/raw_ptr.h"
@@ -104,12 +105,12 @@ class PageNodeImpl
   GetNotificationPermissionStatus() const override;
   base::TimeDelta GetTimeSinceLastNavigation() const override;
   const GURL& GetMainFrameUrl() const override;
-  base::ByteCount EstimateMainFramePrivateFootprintSize() const override;
+  base::ByteSize EstimateMainFramePrivateFootprintSize() const override;
   bool HadFormInteraction() const override;
   bool HadUserEdits() const override;
   base::WeakPtr<content::WebContents> GetWebContents() const override;
-  base::ByteCount EstimateResidentSetSize() const override;
-  base::ByteCount EstimatePrivateFootprintSize() const override;
+  base::ByteSize EstimateResidentSetSize() const override;
+  base::ByteSize EstimatePrivateFootprintSize() const override;
   base::WeakPtr<PageNode> GetWeakPtr() override;
   base::WeakPtr<const PageNode> GetWeakPtr() const override;
 

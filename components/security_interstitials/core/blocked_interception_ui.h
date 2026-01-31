@@ -27,7 +27,7 @@ class BlockedInterceptionUI {
 
   ~BlockedInterceptionUI();
 
-  void PopulateStringsForHTML(base::Value::Dict& load_time_data);
+  void PopulateStringsForHTML(base::DictValue& load_time_data);
   void HandleCommand(SecurityInterstitialCommand command);
 
  private:

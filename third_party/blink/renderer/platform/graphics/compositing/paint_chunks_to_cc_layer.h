@@ -7,7 +7,9 @@
 
 #include "cc/input/layer_selection_bound.h"
 #include "cc/paint/display_item_list.h"
+#include "third_party/blink/renderer/platform/graphics/compositor_element_id.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_record.h"
+#include "third_party/blink/renderer/platform/graphics/paint/tracked_element_data.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
@@ -72,7 +74,8 @@ class PLATFORM_EXPORT PaintChunksToCcLayer {
                                     const PropertyTreeState& layer_state,
                                     const PaintChunkSubset&,
                                     cc::LayerSelection& layer_selection,
-                                    bool selection_only);
+                                    bool selection_only,
+                                    CompositorElementId canvas_subtree_id);
 };
 
 }  // namespace blink

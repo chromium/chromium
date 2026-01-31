@@ -8,7 +8,6 @@
 #include <span>  // std::size.
 #include <string_view>
 
-#include "base/containers/contains.h"
 #include "base/strings/stringprintf.h"
 #include "chrome/browser/extensions/pref_transformer_interface.h"
 #include "chrome/browser/prefetch/pref_names.h"
@@ -235,7 +234,7 @@ PrefMapping::~PrefMapping() = default;
 void PrefMapping::RegisterPrefTransformer(
     const std::string& browser_pref,
     std::unique_ptr<PrefTransformerInterface> transformer) {
-  DCHECK(!base::Contains(transformers_, browser_pref))
+  DCHECK(!transformers_.contains(browser_pref))
       << "Trying to register pref transformer for " << browser_pref << " twice";
   transformers_[browser_pref] = std::move(transformer);
 }

@@ -4,6 +4,8 @@
 
 #include "chrome/browser/tab/tab_state_storage_backend.h"
 
+#include <string>
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -24,23 +26,25 @@ using TransactionCallback = base::OnceCallback<bool(OpenTransaction*)>;
 namespace {
 
 // MayBlock - DB access may involve disk I/O.
-// BEST_EFFORT - Default priority except during critical restore and shutdown
-//   tasks.
+// USER_VISIBLE - Increased priority since the result of tasks will be visible
+//   to the user on start up.
 // BLOCK_SHUTDOWN - Ensure all data is persisted to disk before shutdown. This
 //   may not work reliably on Android due to the OS killing the process.
 // MUST_USE_FOREGROUND - This reduces the benefit of the BEST_EFFORT, but is
 //   required to ensure a priority inversion does not occur when boosting the
 //   priority.
 constexpr base::TaskTraits kDBTaskTraits = {
-    base::MayBlock(), base::TaskPriority::BEST_EFFORT,
+    base::MayBlock(), base::TaskPriority::USER_VISIBLE,
     base::TaskShutdownBehavior::BLOCK_SHUTDOWN,
     base::ThreadPolicy::MUST_USE_FOREGROUND};
 
 }  // namespace
 
 TabStateStorageBackend::TabStateStorageBackend(
-    const base::FilePath& profile_path)
+    const base::FilePath& profile_path,
+    bool support_off_the_record_data)
     : profile_path_(profile_path),
+      support_off_the_record_data_(support_off_the_record_data),
       db_task_runner_(base::ThreadPool::CreateUpdateableSequencedTaskRunner(
           kDBTaskTraits)) {}
 
@@ -51,7 +55,8 @@ TabStateStorageBackend::~TabStateStorageBackend() {
 }
 
 void TabStateStorageBackend::Initialize() {
-  database_ = std::make_unique<TabStateStorageDatabase>(profile_path_);
+  database_ = std::make_unique<TabStateStorageDatabase>(
+      profile_path_, support_off_the_record_data_);
   db_task_runner_->PostTaskAndReplyWithResult(
       FROM_HERE,
       base::BindOnce(&TabStateStorageDatabase::Initialize,
@@ -84,7 +89,7 @@ void TabStateStorageBackend::Update(
 }
 
 void TabStateStorageBackend::LoadAllNodes(
-    const std::string& window_tag,
+    std::string_view window_tag,
     bool is_off_the_record,
     std::unique_ptr<StorageLoadedData::Builder> builder,
     OnStorageLoadedData on_storage_loaded_data) {
@@ -92,7 +97,7 @@ void TabStateStorageBackend::LoadAllNodes(
   db_task_runner_->PostTaskAndReplyWithResult(
       FROM_HERE,
       base::BindOnce(&TabStateStorageDatabase::LoadAllNodes,
-                     base::Unretained(database_.get()), window_tag,
+                     base::Unretained(database_.get()), std::string(window_tag),
                      is_off_the_record, std::move(builder)),
       base::BindOnce(&TabStateStorageBackend::OnLoadDone,
                      weak_ptr_factory_.GetWeakPtr(),
@@ -105,11 +110,46 @@ void TabStateStorageBackend::ClearAllNodes() {
                                 base::Unretained(database_.get())));
 }
 
-void TabStateStorageBackend::ClearWindow(const std::string& window_tag) {
+void TabStateStorageBackend::ClearWindow(std::string_view window_tag) {
   db_task_runner_->PostTask(
       FROM_HERE, base::BindOnce(&TabStateStorageDatabase::ClearWindow,
                                 base::Unretained(database_.get()), window_tag));
 }
+
+void TabStateStorageBackend::ClearNodesForWindowExcept(
+    std::string_view window_tag,
+    bool is_off_the_record,
+    std::vector<StorageId> ids) {
+  db_task_runner_->PostTask(
+      FROM_HERE,
+      base::BindOnce(base::IgnoreResult(
+                         &TabStateStorageDatabase::ClearNodesForWindowExcept),
+                     base::Unretained(database_.get()), std::string(window_tag),
+                     is_off_the_record, std::move(ids)));
+}
+
+void TabStateStorageBackend::SetKey(std::string_view window_tag,
+                                    std::vector<uint8_t> key) {
+  db_task_runner_->PostTask(
+      FROM_HERE, base::BindOnce(&TabStateStorageDatabase::SetKey,
+                                base::Unretained(database_.get()),
+                                std::string(window_tag), std::move(key)));
+}
+
+void TabStateStorageBackend::RemoveKey(std::string_view window_tag) {
+  db_task_runner_->PostTask(FROM_HERE,
+                            base::BindOnce(&TabStateStorageDatabase::RemoveKey,
+                                           base::Unretained(database_.get()),
+                                           std::string(window_tag)));
+}
+
+#if defined(NDEBUG)
+void TabStateStorageBackend::PrintAll() {
+  db_task_runner_->PostTask(FROM_HERE,
+                            base::BindOnce(&TabStateStorageDatabase::PrintAll,
+                                           base::Unretained(database_.get())));
+}
+#endif
 
 void TabStateStorageBackend::OnDBReady(bool success) {}
 
@@ -125,7 +165,7 @@ void TabStateStorageBackend::IncrementBoostCounter() {
 void TabStateStorageBackend::DecrementBoostCounter() {
   boosted_priority_count_--;
   if (boosted_priority_count_ == 0) {
-    db_task_runner_->UpdatePriority(base::TaskPriority::BEST_EFFORT);
+    db_task_runner_->UpdatePriority(base::TaskPriority::USER_VISIBLE);
   }
 }
 

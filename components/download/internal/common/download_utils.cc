@@ -678,6 +678,7 @@ ResumeMode GetDownloadResumeMode(const GURL& url,
     case DOWNLOAD_INTERRUPT_REASON_SERVER_FORBIDDEN:
     case DOWNLOAD_INTERRUPT_REASON_SERVER_CROSS_ORIGIN_REDIRECT:
     case DOWNLOAD_INTERRUPT_REASON_FILE_SAME_AS_SOURCE:
+    case DOWNLOAD_INTERRUPT_REASON_LOCAL_DOWNLOAD_BLOCKED:
       return ResumeMode::INVALID;
   }
   if (user_action_required && restart_required)
@@ -761,10 +762,7 @@ int64_t GetDownloadValidationLengthConfig() {
 }
 
 base::TimeDelta GetExpiredDownloadDeleteTime() {
-  int expired_days = base::GetFieldTrialParamByFeatureAsInt(
-      features::kDeleteExpiredDownloads, kExpiredDownloadDeleteTimeFinchKey,
-      kDefaultDownloadExpiredTimeInDays);
-  return base::Days(expired_days);
+  return base::Days(kDefaultDownloadExpiredTimeInDays);
 }
 
 base::TimeDelta GetOverwrittenDownloadDeleteTime() {

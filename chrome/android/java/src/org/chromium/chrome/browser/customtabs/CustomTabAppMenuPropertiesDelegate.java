@@ -16,7 +16,7 @@ import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.content.res.AppCompatResources;
 
 import org.chromium.base.ContextUtils;
-import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.NullableObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
@@ -31,8 +31,8 @@ import org.chromium.chrome.browser.dom_distiller.ReaderModeManager;
 import org.chromium.chrome.browser.firstrun.FirstRunStatus;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.multiwindow.MultiWindowModeStateDispatcher;
+import org.chromium.chrome.browser.open_in_app.OpenInAppMenuItemProvider;
 import org.chromium.chrome.browser.readaloud.ReadAloudController;
-import org.chromium.chrome.browser.readaloud.ReadAloudFeatures;
 import org.chromium.chrome.browser.segmentation_platform.ContextualPageActionController;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
@@ -84,7 +84,7 @@ public class CustomTabAppMenuPropertiesDelegate extends AppMenuPropertiesDelegat
             TabModelSelector tabModelSelector,
             ToolbarManager toolbarManager,
             View decorView,
-            ObservableSupplier<BookmarkModel> bookmarkModelSupplier,
+            NullableObservableSupplier<BookmarkModel> bookmarkModelSupplier,
             Verifier verifier,
             @CustomTabsUiType final int uiType,
             List<String> menuEntries,
@@ -97,7 +97,8 @@ public class CustomTabAppMenuPropertiesDelegate extends AppMenuPropertiesDelegat
             boolean isStartIconMenu,
             Supplier<ReadAloudController> readAloudControllerSupplier,
             Supplier<ContextualPageActionController> contextualPageActionControllerSupplier,
-            boolean hasClientPackage) {
+            boolean hasClientPackage,
+            @Nullable OpenInAppMenuItemProvider openInAppMenuItemProvider) {
         super(
                 context,
                 activityTabProvider,
@@ -107,7 +108,8 @@ public class CustomTabAppMenuPropertiesDelegate extends AppMenuPropertiesDelegat
                 decorView,
                 null,
                 bookmarkModelSupplier,
-                readAloudControllerSupplier);
+                readAloudControllerSupplier,
+                openInAppMenuItemProvider);
         mVerifier = verifier;
         mUiType = uiType;
         mMenuEntries = menuEntries;
@@ -139,7 +141,7 @@ public class CustomTabAppMenuPropertiesDelegate extends AppMenuPropertiesDelegat
         boolean downloadItemVisible = mShowDownload;
         boolean addToHomeScreenVisible = true;
         boolean requestDesktopSiteVisible = true;
-        boolean tryAddingReadAloud = ReadAloudFeatures.isEnabledForOverflowMenuInCct();
+        boolean tryAddingReadAloud = true;
         boolean readerModePrefsVisible = false;
         boolean translateVisible = true;
         // When the icon row is visible, site info is a button in that row.
@@ -394,6 +396,11 @@ public class CustomTabAppMenuPropertiesDelegate extends AppMenuPropertiesDelegat
         // --- Add to Homescreen / Open WebAPK ---
         if (addToHomeScreenVisible) {
             modelList.add(buildAddToHomescreenListItem(currentTab, false));
+        }
+
+        // Open in App
+        if (shouldShowOpenInAppItem()) {
+            modelList.add(buildOpenInAppItem());
         }
 
         // --- Request Desktop Site ---

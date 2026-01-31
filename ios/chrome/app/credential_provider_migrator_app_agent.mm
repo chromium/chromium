@@ -6,7 +6,6 @@
 
 #import <map>
 
-#import "base/containers/contains.h"
 #import "base/functional/bind.h"
 #import "base/functional/callback.h"
 #import "base/functional/callback_helpers.h"
@@ -213,7 +212,7 @@ void MigrationCompleteForProfile(
                        userDefaults:(NSUserDefaults*)userDefaults {
   CHECK(profile);
   // Do nothing if the migration for the profile already started.
-  if (base::Contains(_migratorMap, profile->GetProfileName())) {
+  if (_migratorMap.contains(profile->GetProfileName())) {
     return;
   }
 
@@ -227,7 +226,7 @@ void MigrationCompleteForProfile(
   }
 
   password_manager::PasswordForm::Store defaultStore =
-      password_manager::features_util::IsAccountStorageEnabled(
+      password_manager::features_util::IsAccountStorageActive(
           SyncServiceFactory::GetForProfile(profile))
           ? password_manager::PasswordForm::Store::kAccountStore
           : password_manager::PasswordForm::Store::kProfileStore;
@@ -273,7 +272,7 @@ void MigrationCompleteForProfile(
 
 // Returns whether we already own an observer for the provided passkey model.
 - (BOOL)isObservingPasskeyModel:(webauthn::PasskeyModel*)passkeyModel {
-  return base::Contains(_passkeyModelObservers, passkeyModel);
+  return _passkeyModelObservers.contains(passkeyModel);
 }
 
 // Adds an observer for the provided passkey model.

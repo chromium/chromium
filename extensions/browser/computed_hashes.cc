@@ -105,7 +105,7 @@ std::optional<ComputedHashes> ComputedHashes::CreateFromFile(
 
   std::optional<base::Value> top_dictionary =
       base::JSONReader::Read(contents, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
-  base::Value::Dict* dictionary =
+  base::DictValue* dictionary =
       top_dictionary ? top_dictionary->GetIfDict() : nullptr;
   if (!dictionary) {
     *status = Status::PARSE_FAILED;
@@ -121,7 +121,7 @@ std::optional<ComputedHashes> ComputedHashes::CreateFromFile(
     return std::nullopt;
   }
 
-  const base::Value::List* all_hashes =
+  const base::ListValue* all_hashes =
       dictionary->FindList(computed_hashes::kFileHashesKey);
   if (!all_hashes) {
     *status = Status::PARSE_FAILED;
@@ -130,7 +130,7 @@ std::optional<ComputedHashes> ComputedHashes::CreateFromFile(
 
   ComputedHashes::Data data;
   for (const base::Value& file_hash : *all_hashes) {
-    const base::Value::Dict* file_hash_dict = file_hash.GetIfDict();
+    const base::DictValue* file_hash_dict = file_hash.GetIfDict();
     if (!file_hash_dict) {
       *status = Status::PARSE_FAILED;
       return std::nullopt;
@@ -155,7 +155,7 @@ std::optional<ComputedHashes> ComputedHashes::CreateFromFile(
       return std::nullopt;
     }
 
-    const base::Value::List* block_hashes =
+    const base::ListValue* block_hashes =
         file_hash_dict->FindList(computed_hashes::kBlockHashesKey);
     if (!block_hashes) {
       *status = Status::PARSE_FAILED;
@@ -252,19 +252,19 @@ bool ComputedHashes::WriteToFile(const base::FilePath& path) const {
     return false;
   }
 
-  base::Value::List file_list;
+  base::ListValue file_list;
   for (const auto& resource_info : data_.items()) {
     const Data::HashInfo& hash_info = resource_info.second;
     int block_size = hash_info.block_size;
     const std::vector<std::string>& hashes = hash_info.hashes;
 
-    base::Value::List block_hashes;
+    base::ListValue block_hashes;
     block_hashes.reserve(hashes.size());
     for (const auto& hash : hashes) {
       block_hashes.Append(base::Base64Encode(hash));
     }
 
-    base::Value::Dict dict;
+    base::DictValue dict;
     dict.Set(computed_hashes::kPathKey,
              hash_info.relative_unix_path.AsUTF8Unsafe());
     dict.Set(computed_hashes::kBlockSizeKey, block_size);
@@ -274,7 +274,7 @@ bool ComputedHashes::WriteToFile(const base::FilePath& path) const {
   }
 
   std::string json;
-  base::Value::Dict top_dictionary;
+  base::DictValue top_dictionary;
   top_dictionary.Set(computed_hashes::kVersionKey, computed_hashes::kVersion);
   top_dictionary.Set(computed_hashes::kFileHashesKey, std::move(file_list));
 

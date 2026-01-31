@@ -148,6 +148,7 @@
     "manifest_keys": {
       "omnibox": {
         "type": "object",
+        "optional": true,
         "properties": {
           "keyword": {
             "type": "string",

@@ -102,7 +102,32 @@ ParagraphData getParagraphData(DialogModelField* field) {
     data.spans.push_back(label.GetString());
     data.closures.emplace_back();  // Add a null closure.
   } else {
+    std::vector<std::u16string> replacement_texts;
     for (const auto& replacement : replacements) {
+      replacement_texts.push_back(replacement.text());
+    }
+
+    // Find the offsets of the replacements in the localized string.
+    std::vector<size_t> offsets;
+    const std::u16string final_text = l10n_util::GetStringFUTF16(
+        label.message_id(), replacement_texts, &offsets);
+
+    // Slice the final text into spans based on the offsets of the replacements.
+    // This allows Java to build a SpannableString where only the replacement
+    // portions are clickable/styled.
+    // Note: This assumes replacements appear in numerical order ($1 before $2).
+    size_t current_pos = 0;
+    for (size_t i = 0; i < offsets.size(); ++i) {
+      size_t start = offsets[i];
+      // Capture the plain text preceding the replacement.
+      if (start > current_pos) {
+        data.spans.push_back(
+            final_text.substr(current_pos, start - current_pos));
+        data.closures.emplace_back();
+      }
+
+      // Handle the current replacement.
+      const auto& replacement = replacements[i];
       data.spans.push_back(replacement.text());
       if (replacement.callback().has_value()) {
         data.closures.push_back(base::BindRepeating(
@@ -114,8 +139,15 @@ ParagraphData getParagraphData(DialogModelField* field) {
             },
             replacement.callback().value()));
       } else {
-        data.closures.emplace_back();  // Add a null closure.
+        data.closures.emplace_back();
       }
+      current_pos = start + replacement.text().length();
+    }
+
+    // Capture trailing text after all replacements.
+    if (current_pos < final_text.length()) {
+      data.spans.push_back(final_text.substr(current_pos));
+      data.closures.emplace_back();
     }
   }
   return data;
@@ -206,7 +238,7 @@ void ModalDialogWrapper::BuildPropertyModel() {
   }
 
   std::u16string checkbox_text;
-  jboolean checked = false;
+  bool checked = false;
   std::vector<std::vector<std::u16string>> all_paragraph_spans;
   std::vector<std::vector<base::RepeatingClosure>> all_paragraph_closures;
   std::vector<const SkBitmap*> menu_item_icons;
@@ -346,16 +378,15 @@ void ModalDialogWrapper::NegativeButtonClicked(JNIEnv* env) {
   dialog_model_->OnDialogCancelAction(DialogModelHost::GetPassKey());
 }
 
-void ModalDialogWrapper::CheckboxToggled(JNIEnv* env, jboolean is_checked) {
+void ModalDialogWrapper::CheckboxToggled(JNIEnv* env, bool is_checked) {
   if (!checkbox_id_) {
     return;
   }
   dialog_model_->GetCheckboxByUniqueId(checkbox_id_)
-      ->OnChecked(DialogModelFieldHost::GetPassKey(),
-                  static_cast<bool>(is_checked));
+      ->OnChecked(DialogModelFieldHost::GetPassKey(), is_checked);
 }
 
-void ModalDialogWrapper::MenuItemClicked(JNIEnv* env, jint index) {
+void ModalDialogWrapper::MenuItemClicked(JNIEnv* env, int32_t index) {
   CHECK_GE(index, 0);
   CHECK_LT(static_cast<size_t>(index), menu_items_.size());
   menu_items_[index]->OnActivated(DialogModelFieldHost::GetPassKey(), 0);

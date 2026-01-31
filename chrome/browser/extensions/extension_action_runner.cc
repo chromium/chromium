@@ -10,7 +10,6 @@
 #include <vector>
 
 #include "base/auto_reset.h"
-#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/location.h"
@@ -402,7 +401,7 @@ void ExtensionActionRunner::ShowReloadPageBubble(
 }
 
 void ExtensionActionRunner::RunBlockedActions(const Extension* extension) {
-  DCHECK(base::Contains(pending_scripts_, extension->id()) ||
+  DCHECK(pending_scripts_.contains(extension->id()) ||
          web_request_blocked_.count(extension->id()) != 0);
 
   // Clicking to run the extension counts as granting it permission to run on

@@ -103,7 +103,7 @@ bool WriteSkp(sk_sp<SkPicture> skp,
 
 }  // namespace
 
-static jlong JNI_PaintPreviewTestService_GetInstance(
+static int64_t JNI_PaintPreviewTestService_GetInstance(
     JNIEnv* env,
     const JavaRef<jstring>& j_path) {
   base::FilePath file_path(base::android::ConvertJavaStringToUTF8(env, j_path));
@@ -121,7 +121,7 @@ PaintPreviewTestService::PaintPreviewTestService(const base::FilePath& path)
 
 PaintPreviewTestService::~PaintPreviewTestService() = default;
 
-jlong PaintPreviewTestService::GetBaseService(JNIEnv* env) {
+int64_t PaintPreviewTestService::GetBaseService(JNIEnv* env) {
   return reinterpret_cast<intptr_t>(
       static_cast<PaintPreviewBaseService*>(this));
 }
@@ -129,9 +129,9 @@ jlong PaintPreviewTestService::GetBaseService(JNIEnv* env) {
 base::android::ScopedJavaLocalRef<jintArray>
 PaintPreviewTestService::CreateSingleSkp(
     JNIEnv* env,
-    jint j_id,
-    jint j_width,
-    jint j_height,
+    int32_t j_id,
+    int32_t j_width,
+    int32_t j_height,
     const JavaRef<jintArray>& j_link_rects,
     const JavaRef<jobjectArray>& j_link_urls,
     const JavaRef<jintArray>& j_child_rects) {
@@ -220,7 +220,7 @@ PaintPreviewTestService::CreateSingleSkp(
   return base::android::ToJavaIntArray(env, out);
 }
 
-jboolean PaintPreviewTestService::SerializeFrames(
+bool PaintPreviewTestService::SerializeFrames(
     JNIEnv* env,
     const base::android::JavaRef<jstring>& j_key,
     const base::android::JavaRef<jstring>& j_url) {

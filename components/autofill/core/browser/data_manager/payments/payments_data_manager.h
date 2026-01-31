@@ -287,6 +287,9 @@ class PaymentsDataManager : public AutofillWebDataServiceObserverOnUISequence,
   // Delete all local credit cards.
   void DeleteAllLocalCreditCards();
 
+  // Checks whether all credit cards are local.
+  bool HasAllLocalCreditCards() const;
+
   // Updates |credit_card| which already exists in the web database. This
   // can only be used on local credit cards.
   virtual void UpdateCreditCard(const CreditCard& credit_card);
@@ -376,16 +379,11 @@ class PaymentsDataManager : public AutofillWebDataServiceObserverOnUISequence,
   // Sets the value of the kAutofillHasSeenIban pref to true.
   void SetAutofillHasSeenIban();
 
-  // TODO(crbug.com/430575808): Remove build flags.
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
-    BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
   // Returns the value of the kAutofillHasSeenBnpl pref.
   virtual bool IsAutofillHasSeenBnplPrefEnabled() const;
 
   // Sets the value of the kAutofillHasSeenBnpl pref to true.
   void SetAutofillHasSeenBnpl();
-#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) ||
-        // BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
 
   // Returns the value of the kAutofillAmountExtractionAiTermsSeen pref.
   virtual bool IsAutofillAmountExtractionAiTermsSeenPrefEnabled() const;
@@ -725,14 +723,10 @@ class PaymentsDataManager : public AutofillWebDataServiceObserverOnUISequence,
   // Clears all credit card benefits in `credit_card_benefits_`.
   void ClearAllCreditCardBenefits();
 
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
-    BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
   // Monitors the `kAutofillBnplEnabled` preference for changes and controls the
   // clearing/loading of payment instruments accordingly. Will also log the
   // `Autofill.SettingsPage.BnplToggled` metric.
   void OnBnplEnabledPrefChange();
-#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) ||
-        // BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
 
   // Saves |imported_credit_card| to the WebDB if it exists. Returns the guid of
   // the new or updated card, or the empty string if no card was saved.

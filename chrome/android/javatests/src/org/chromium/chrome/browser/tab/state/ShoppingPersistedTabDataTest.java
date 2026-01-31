@@ -23,7 +23,8 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.ThreadUtils;
-import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.supplier.ObservableSuppliers;
+import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
@@ -89,8 +90,8 @@ public class ShoppingPersistedTabDataTest {
     public void testShoppingProto() {
         Tab tab = new MockTab(ShoppingPersistedTabDataTestUtils.TAB_ID, mProfileMock);
         ShoppingPersistedTabData shoppingPersistedTabData = new ShoppingPersistedTabData(tab);
-        ObservableSupplierImpl<Boolean> supplier = new ObservableSupplierImpl<>();
-        supplier.set(true);
+        SettableNonNullObservableSupplier<Boolean> supplier =
+                ObservableSuppliers.createNonNull(true);
         shoppingPersistedTabData.registerIsTabSaveEnabledSupplier(supplier);
         shoppingPersistedTabData.setPriceMicros(ShoppingPersistedTabDataTestUtils.PRICE_MICROS);
         shoppingPersistedTabData.setCurrencyCode(
@@ -131,8 +132,8 @@ public class ShoppingPersistedTabDataTest {
     public void testMetricDerivations() {
         Tab tab = new MockTab(ShoppingPersistedTabDataTestUtils.TAB_ID, mProfileMock);
         ShoppingPersistedTabData shoppingPersistedTabData = new ShoppingPersistedTabData(tab);
-        ObservableSupplierImpl<Boolean> supplier = new ObservableSupplierImpl<>();
-        supplier.set(true);
+        SettableNonNullObservableSupplier<Boolean> supplier =
+                ObservableSuppliers.createNonNull(true);
         shoppingPersistedTabData.registerIsTabSaveEnabledSupplier(supplier);
         for (boolean isProductDetailPage : new boolean[] {false, true}) {
             for (boolean containsPrice : new boolean[] {false, true}) {
@@ -543,8 +544,8 @@ public class ShoppingPersistedTabDataTest {
     public void testSerializeWithOfferId() {
         Tab tab = new MockTab(ShoppingPersistedTabDataTestUtils.TAB_ID, mProfileMock);
         ShoppingPersistedTabData shoppingPersistedTabData = new ShoppingPersistedTabData(tab);
-        ObservableSupplierImpl<Boolean> supplier = new ObservableSupplierImpl<>();
-        supplier.set(true);
+        SettableNonNullObservableSupplier<Boolean> supplier =
+                ObservableSuppliers.createNonNull(true);
         shoppingPersistedTabData.registerIsTabSaveEnabledSupplier(supplier);
         shoppingPersistedTabData.setMainOfferId(ShoppingPersistedTabDataTestUtils.FAKE_OFFER_ID);
         ByteBuffer serialized = shoppingPersistedTabData.getSerializer().get();
@@ -891,8 +892,8 @@ public class ShoppingPersistedTabDataTest {
     }
 
     private static void save(ShoppingPersistedTabData shoppingPersistedTabData) {
-        ObservableSupplierImpl<Boolean> supplier = new ObservableSupplierImpl<>();
-        supplier.set(true);
+        SettableNonNullObservableSupplier<Boolean> supplier =
+                ObservableSuppliers.createNonNull(true);
         shoppingPersistedTabData.registerIsTabSaveEnabledSupplier(supplier);
         shoppingPersistedTabData.enableSaving();
         shoppingPersistedTabData.save();
@@ -997,8 +998,8 @@ public class ShoppingPersistedTabDataTest {
 
     private static void registerObserverSupplier(
             ShoppingPersistedTabData shoppingPersistedTabData) {
-        ObservableSupplierImpl<Boolean> supplier = new ObservableSupplierImpl<>();
-        supplier.set(true);
+        SettableNonNullObservableSupplier<Boolean> supplier =
+                ObservableSuppliers.createNonNull(true);
         shoppingPersistedTabData.registerIsTabSaveEnabledSupplier(supplier);
     }
 }

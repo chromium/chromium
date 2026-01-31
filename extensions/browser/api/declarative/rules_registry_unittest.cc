@@ -192,7 +192,7 @@ TEST(RulesRegistryTest, TwoRulesInManifest) {
   content::BrowserTaskEnvironment task_environment;
 
   // Create extension
-  base::Value::Dict manifest = base::test::ParseJsonDict(
+  base::DictValue manifest = base::test::ParseJsonDict(
       "{"
       "  \"name\": \"Test\","
       "  \"version\": \"1\","
@@ -238,7 +238,7 @@ TEST(RulesRegistryTest, TwoRulesInManifest) {
   registry->GetAllRules(kExtensionId, &get_rules);
 
   ASSERT_EQ(2u, get_rules.size());
-  base::Value::Dict expected_rule_0 = base::test::ParseJsonDict(
+  base::DictValue expected_rule_0 = base::test::ParseJsonDict(
       "{"
       "  \"id\": \"000\","
       "  \"priority\": 200,"
@@ -253,7 +253,7 @@ TEST(RulesRegistryTest, TwoRulesInManifest) {
       "}");
   EXPECT_EQ(expected_rule_0, get_rules[0]->ToValue());
 
-  base::Value::Dict expected_rule_1 = base::test::ParseJsonDict(
+  base::DictValue expected_rule_1 = base::test::ParseJsonDict(
       "{"
       "  \"id\": \"_0_\","
       "  \"priority\": 100,"
@@ -274,7 +274,7 @@ TEST(RulesRegistryTest, DeleteRuleInManifest) {
   content::BrowserTaskEnvironment task_environment;
 
   // Create extension
-  base::Value::Dict manifest = base::test::ParseJsonDict(
+  base::DictValue manifest = base::test::ParseJsonDict(
       "{"
       "  \"name\": \"Test\","
       "  \"version\": \"1\","

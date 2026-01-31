@@ -69,7 +69,7 @@ TEST_F(ReportingNetworkChangeObserverTest, ClearNothing) {
   UsePolicy(new_policy);
 
   cache()->AddReport(kReportingSource_, kNak_, kUrl_, kUserAgent_, kGroup_,
-                     kType_, base::Value::Dict(), 0, tick_clock()->NowTicks(),
+                     kType_, base::DictValue(), 0, tick_clock()->NowTicks(),
                      ReportingTargetType::kDeveloper);
   SetEndpoint();
   ASSERT_EQ(1u, report_count());
@@ -88,7 +88,7 @@ TEST_F(ReportingNetworkChangeObserverTest, ClearReports) {
   UsePolicy(new_policy);
 
   cache()->AddReport(kReportingSource_, kNak_, kUrl_, kUserAgent_, kGroup_,
-                     kType_, base::Value::Dict(), 0, tick_clock()->NowTicks(),
+                     kType_, base::DictValue(), 0, tick_clock()->NowTicks(),
                      ReportingTargetType::kDeveloper);
   SetEndpoint();
   ASSERT_EQ(1u, report_count());
@@ -107,7 +107,7 @@ TEST_F(ReportingNetworkChangeObserverTest, ClearClients) {
   UsePolicy(new_policy);
 
   cache()->AddReport(kReportingSource_, kNak_, kUrl_, kUserAgent_, kGroup_,
-                     kType_, base::Value::Dict(), 0, tick_clock()->NowTicks(),
+                     kType_, base::DictValue(), 0, tick_clock()->NowTicks(),
                      ReportingTargetType::kDeveloper);
   SetEndpoint();
   ASSERT_EQ(1u, report_count());
@@ -126,7 +126,7 @@ TEST_F(ReportingNetworkChangeObserverTest, ClearReportsAndClients) {
   UsePolicy(new_policy);
 
   cache()->AddReport(kReportingSource_, kNak_, kUrl_, kUserAgent_, kGroup_,
-                     kType_, base::Value::Dict(), 0, tick_clock()->NowTicks(),
+                     kType_, base::DictValue(), 0, tick_clock()->NowTicks(),
                      ReportingTargetType::kDeveloper);
   SetEndpoint();
   ASSERT_EQ(1u, report_count());

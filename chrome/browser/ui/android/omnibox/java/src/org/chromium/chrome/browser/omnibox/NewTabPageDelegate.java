@@ -80,6 +80,16 @@ public interface NewTabPageDelegate {
     default void getSearchBoxBounds(Rect bounds, Point translation) {}
 
     /**
+     * Get the vertical inset applied to the search box bounds. This is used to adjust the search
+     * box bounds to match the toolbar's location bar position.
+     *
+     * @return The vertical inset in pixels.
+     */
+    default int getSearchBoxBoundsVerticalInset() {
+        return 0;
+    }
+
+    /**
      * Updates the opacity of the search box when scrolling.
      *
      * @param alpha opacity (alpha) value to use.

@@ -5,6 +5,7 @@
 #include "services/audio/sync_reader.h"
 
 #include <algorithm>
+#include <atomic>
 #include <limits>
 #include <string>
 #include <utility>
@@ -70,16 +71,22 @@ SyncReader::SyncReader(
       base::CancelableSyncSocket::CreatePair(&socket_, foreign_socket)) {
     auto buffer_span = shared_memory_mapping_.GetMemoryAsSpan<uint8_t>();
     auto audio_data =
-        buffer_span.subspan<sizeof(media::AudioInputBufferParameters)>();
+        buffer_span.subspan<sizeof(media::AudioOutputBufferParameters)>();
     CHECK_EQ(audio_data.size(), output_bus_buffer_size_);
 
     auto* const buffer =
         shared_memory_mapping_.GetMemoryAs<media::AudioOutputBuffer>();
     CHECK_EQ(audio_data.data(), buffer->audio);
+    buffer->params.cumulative_glitch_duration_us = 0;
+    buffer->params.cumulative_glitch_count = 0;
 
     output_bus_ = media::AudioBus::WrapMemory(params, audio_data);
     output_bus_->Zero();
+#if BUILDFLAG(ENABLE_PASSTHROUGH_AUDIO_CODECS)
     output_bus_->set_is_bitstream_format(params.IsBitstreamFormat());
+#else
+    CHECK(!params.IsBitstreamFormat());
+#endif
   }
 }
 
@@ -127,10 +134,9 @@ void SyncReader::RequestMoreData(base::TimeDelta delay,
   buffer->params.delay_timestamp_us =
       (delay_timestamp - base::TimeTicks()).InMicroseconds();
   // Add platform glitches to the accumulated glitch info.
-  pending_glitch_info_ += glitch_info;
-  buffer->params.glitch_duration_us =
-      pending_glitch_info_.duration.InMicroseconds();
-  buffer->params.glitch_count = pending_glitch_info_.count;
+  pending_glitch_info_.Add(glitch_info);
+  media::AudioOutputBufferParametersHelper::AddGlitchIncrementToBuffer(
+      buffer->params, pending_glitch_info_.GetAndReset());
 
   // Zero out the entire output buffer to avoid stuttering/repeating-buffers
   // in the anomalous case if the renderer is unable to keep up with real-time.
@@ -159,8 +165,6 @@ void SyncReader::RequestMoreData(base::TimeDelta delay,
     }
   } else {
     had_socket_error_ = false;
-    // We have successfully passed on the glitch info, now reset it.
-    pending_glitch_info_ = {};
     // The AudioDeviceThread will only increase its own index if the socket
     // write succeeds, so only increase our own index on successful writes in
     // order not to get out of sync.
@@ -182,7 +186,7 @@ bool SyncReader::Read(media::AudioBus* dest, bool is_mixing) {
     }
     dest->Zero();
     // Add IPC glitch to the accumulated glitch info.
-    pending_glitch_info_ += read_timeout_glitch_;
+    pending_glitch_info_.Add(read_timeout_glitch_);
     return false;
   }
 
@@ -193,6 +197,7 @@ bool SyncReader::Read(media::AudioBus* dest, bool is_mixing) {
     return true;
   }
 
+#if BUILDFLAG(ENABLE_PASSTHROUGH_AUDIO_CODECS)
   if (output_bus_->is_bitstream_format()) {
     // For bitstream formats, we need the real data size and PCM frame count.
     auto* const buffer =
@@ -209,6 +214,7 @@ bool SyncReader::Read(media::AudioBus* dest, bool is_mixing) {
     output_bus_->CopyTo(dest);
     return true;
   }
+#endif
 
   // Copy and clip data coming across the shared memory since it's untrusted.
   output_bus_->CopyAndClipTo(dest);

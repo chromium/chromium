@@ -4,10 +4,10 @@
 
 #include "components/policy/test_support/client_storage.h"
 
+#include <algorithm>
 #include <array>
 
 #include "base/check.h"
-#include "base/containers/contains.h"
 #include "base/strings/string_view_util.h"
 #include "crypto/hash.h"
 
@@ -66,7 +66,7 @@ const ClientStorage::ClientInfo* ClientStorage::GetClientOrNull(
 const ClientStorage::ClientInfo* ClientStorage::LookupByStateKey(
     const std::string& state_key) const {
   for (auto const& [device_id, client_info] : clients_) {
-    if (base::Contains(client_info.state_keys, state_key)) {
+    if (std::ranges::contains(client_info.state_keys, state_key)) {
       return &client_info;
     }
   }

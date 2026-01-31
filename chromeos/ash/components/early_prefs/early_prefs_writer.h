@@ -35,15 +35,15 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_EARLY_PREFS) EarlyPrefsWriter
  private:
   void ScheduleWrite();
   void SerializeUserPref(const base::Value& value,
-                         base::Value::Dict& result) const;
+                         base::DictValue& result) const;
   void SerializePolicy(const base::Value& value,
                        bool is_recommended,
-                       base::Value::Dict& result) const;
+                       base::DictValue& result) const;
 
   std::optional<std::string> SerializeData() override;
 
-  base::Value::Dict root_;
-  raw_ptr<base::Value::Dict> data_;
+  base::DictValue root_;
+  raw_ptr<base::DictValue> data_;
   base::FilePath data_file_;
   std::unique_ptr<base::ImportantFileWriter> writer_;
   scoped_refptr<base::SequencedTaskRunner> file_task_runner_;

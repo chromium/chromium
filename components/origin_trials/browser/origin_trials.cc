@@ -7,7 +7,6 @@
 #include <algorithm>
 #include <string_view>
 
-#include "base/containers/contains.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
 #include "components/origin_trials/common/persisted_trial_token.h"
@@ -211,7 +210,7 @@ base::flat_set<std::string> OriginTrials::GetPersistedTrialsForOriginWithMatch(
       if (trial_feature_match &&
           // TODO(crbug.com/40189223): FeaturesEnabledByTrial should be part of
           // general validation logic.
-          !base::Contains(
+          !std::ranges::contains(
               trial_token_validator_->FeaturesEnabledByTrial(token.trial_name),
               trial_feature_match.value())) {
         continue;

@@ -35,6 +35,8 @@ class CORE_EXPORT HTMLMenuItemElement final : public HTMLElement {
   HTMLMenuOwnerElement* OwningMenuElement() const;
 
   bool CanBeCommandInvoker() const override;
+  bool IsValidInterestInvoker(Element& target) const override;
+  HTMLMenuListElement* GetInvokedSubmenu() const;
 
   Node::InsertionNotificationRequest InsertedInto(ContainerNode&) override;
   void RemovedFrom(ContainerNode&) override;
@@ -56,7 +58,6 @@ class CORE_EXPORT HTMLMenuItemElement final : public HTMLElement {
   FocusableState SupportsFocus(UpdateBehavior update_behavior) const override;
   bool ShouldHaveFocusAppearance() const override;
 
-  HTMLMenuListElement* InvokesSubmenu() const;
   // This is generally used when a menuitem has been selected, and the "tree" of
   // menus should now close. It finds the innermost (nearest ancestor) menulist
   // containing this menuitem, and then walks the tree of command invokers up

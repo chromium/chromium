@@ -93,7 +93,7 @@
       {
         "name": "request",
         "type": "function",
-        "description": "Requests access to the specified permissions, displaying a prompt to the user if necessary. These permissions must either be defined in the <code>optional_permissions</code> field of the manifest or be required permissions that were withheld by the user. Paths on origin patterns will be ignored. You can request subsets of optional origin permissions; for example, if you specify <code>*://*/*</code> in the <code>optional_permissions</code> section of the manifest, you can request <code>http://example.com/</code>. If there are any problems requesting the permissions, $(ref:runtime.lastError) will be set.",
+        "description": "Requests access to the specified permissions, displaying a prompt to the user if necessary. These permissions must either be defined in the <code>optional_permissions</code> field of the manifest or be required permissions that were withheld by the user. Paths on origin patterns will be ignored. You can request subsets of optional origin permissions; for example, if you specify <code>*://*/*</code> in the <code>optional_permissions</code> section of the manifest, you can request <code>http://example.com/</code>. If there are any problems requesting the permissions, the promise will be rejected.",
         "parameters": [
           {
             "name": "permissions",
@@ -115,7 +115,7 @@
       {
         "name": "remove",
         "type": "function",
-        "description": "Removes access to the specified permissions. If there are any problems removing the permissions, $(ref:runtime.lastError) will be set.",
+        "description": "Removes access to the specified permissions. If there are any problems removing the permissions, the promise will be rejected.",
         "parameters": [
           {
             "name": "permissions",

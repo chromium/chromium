@@ -1322,7 +1322,9 @@ TEST_F(SqlBackendImplTest, DoomedEntriesCleanup) {
     ASSERT_EQ(future_init.Get(), disk_cache::SqlPersistentStore::Error::kOk);
 
     base::test::TestFuture<SqlPersistentStore::Error> future_doom;
-    store->DoomEntry(CacheEntryKey(kKey3), res_id, future_doom.GetCallback());
+    store->DoomEntry(CacheEntryKey(kKey3), res_id,
+                     /*accept_index_mismatch=*/false,
+                     future_doom.GetCallback());
     EXPECT_EQ(future_doom.Get(), SqlPersistentStore::Error::kOk);
 
     store.reset();
@@ -2033,7 +2035,8 @@ void SqlBackendImplTest::RunDelayedPostInitializationTasksTest() {
 
     // Doom one of the entries.
     base::test::TestFuture<SqlPersistentStore::Error> future_doom;
-    store->DoomEntry(kKey1, res_id1, future_doom.GetCallback());
+    store->DoomEntry(kKey1, res_id1, /*accept_index_mismatch=*/false,
+                     future_doom.GetCallback());
     EXPECT_EQ(future_doom.Get(), SqlPersistentStore::Error::kOk);
 
     store.reset();
@@ -2268,6 +2271,46 @@ TEST_F(SqlBackendImplTest, SetEntryDataHintsWithSpeculativeCreateEntryFailure) {
 
   // 5. Verify the hint is not set in the backend.
   EXPECT_EQ(backend->GetEntryInMemoryData(kKey), 0);
+}
+
+// Regression test for https://crbug.com/473912285.
+// Tests that an optimistic write failure does not cause an index mismatch error
+// (which can lead to a CHECK failure in strict mode) if the entry has already
+// been doomed by DoomAllEntries.
+TEST_F(SqlBackendImplTest, OptimisticWriteIndexMismatchAfterDoomAllEntries) {
+  auto backend = CreateBackendAndInit();
+  EXPECT_TRUE(LoadInMemoryIndex(*backend));
+  backend->EnableStrictCorruptionCheckForTesting();
+
+  // 1. Create a speculative entry.
+  TestEntryResultCompletionCallback cb_create;
+  disk_cache::EntryResult create_result =
+      backend->CreateEntry("key", net::HIGHEST, cb_create.callback());
+  ASSERT_THAT(create_result.net_error(), IsOk());
+  auto* entry = create_result.ReleaseEntry();
+  ASSERT_TRUE(entry);
+
+  // 2. Doom all entries.
+  net::TestCompletionCallback doom_cb;
+  int rv_doom = backend->DoomAllEntries(doom_cb.callback());
+  EXPECT_EQ(rv_doom, net::ERR_IO_PENDING);
+  EXPECT_THAT(doom_cb.WaitForResult(), IsOk());
+
+  // 3. Set DB failure to force OptimisticWrite to fail.
+  backend->GetSqlStoreForTest()->SetSimulateDbFailureForTesting(true);
+
+  // 4. Write data optimistically.
+  auto buffer = base::MakeRefCounted<net::StringIOBuffer>("data");
+  int rv_write =
+      entry->WriteData(1, 100, buffer.get(), 4, base::DoNothing(), false);
+  EXPECT_EQ(rv_write, 4);
+
+  // 4. Wait for operations to complete.
+  // Previously, this would trigger an index mismatch error (and a CHECK failure
+  // in RecordIndexMismatch).
+  FlushQueue(*backend);
+
+  entry->Close();
 }
 
 }  // namespace

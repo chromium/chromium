@@ -487,9 +487,14 @@ bool RendererBlinkPlatformImpl::IsLcdTextEnabled() {
   return thread ? thread->IsLcdTextEnabled() : false;
 }
 
-bool RendererBlinkPlatformImpl::IsElasticOverscrollEnabled() {
+bool RendererBlinkPlatformImpl::IsElasticOverscrollEnabledOnRoot() {
   RenderThreadImpl* thread = RenderThreadImpl::current();
-  return thread ? thread->IsElasticOverscrollEnabled() : false;
+  return thread ? thread->IsElasticOverscrollEnabledOnRoot() : false;
+}
+
+bool RendererBlinkPlatformImpl::IsElasticOverscrollSupported() {
+  RenderThreadImpl* thread = RenderThreadImpl::current();
+  return thread ? thread->IsElasticOverscrollSupported() : false;
 }
 
 bool RendererBlinkPlatformImpl::IsScrollAnimatorEnabled() {
@@ -812,8 +817,8 @@ RendererBlinkPlatformImpl::CreateSharedOffscreenGraphicsContext3DProvider() {
 static std::unique_ptr<blink::WebGraphicsContext3DProvider>
 CreateWebGPUGraphicsContext3DImpl(
     const blink::WebURL& document_url,
+    blink::Platform::WebGPUReplyThread reply_thread,
     scoped_refptr<gpu::GpuChannelHost> gpu_channel_host) {
-
   // WebGPU GPUBuffers, which are backed by shared memory transfer buffers, may
   // be accessed as ArrayBuffers from JavaScript. As such, the underlying
   // buffers need to be mapped using the ArrayBuffer shared memory mapper. As
@@ -825,15 +830,26 @@ CreateWebGPUGraphicsContext3DImpl(
   base::SharedMemoryMapper* buffer_mapper =
       gin::GetSharedMemoryMapperForArrayBuffers();
 
+  scoped_refptr<base::SingleThreadTaskRunner> ipc_task_runner = nullptr;
+  switch (reply_thread) {
+    case blink::Platform::WebGPUReplyThread::kIOThread:
+      ipc_task_runner = gpu_channel_host->io_task_runner();
+      break;
+    case blink::Platform::WebGPUReplyThread::kMainThread:
+      break;
+  }
+
   return std::make_unique<WebGraphicsContext3DProviderImpl>(
       viz::ContextProviderCommandBuffer::CreateForWebGPU(
           std::move(gpu_channel_host), GURL(document_url),
-          viz::command_buffer_metrics::ContextType::WEBGPU, buffer_mapper));
+          viz::command_buffer_metrics::ContextType::WEBGPU, buffer_mapper),
+      std::move(ipc_task_runner));
 }
 
 std::unique_ptr<blink::WebGraphicsContext3DProvider>
 RendererBlinkPlatformImpl::CreateWebGPUGraphicsContext3DProvider(
-    const blink::WebURL& document_url) {
+    const blink::WebURL& document_url,
+    WebGPUReplyThread reply_thread) {
 #if !BUILDFLAG(USE_DAWN)
   return nullptr;
 #else
@@ -845,26 +861,30 @@ RendererBlinkPlatformImpl::CreateWebGPUGraphicsContext3DProvider(
     return nullptr;
   }
 
-  return CreateWebGPUGraphicsContext3DImpl(document_url, gpu_channel_host);
+  return CreateWebGPUGraphicsContext3DImpl(document_url, reply_thread,
+                                           gpu_channel_host);
 #endif
 }
 
 void RendererBlinkPlatformImpl::CreateWebGPUGraphicsContext3DProviderAsync(
     const blink::WebURL& document_url,
+    WebGPUReplyThread reply_thread,
     base::OnceCallback<
         void(std::unique_ptr<blink::WebGraphicsContext3DProvider>)> callback) {
 #if !BUILDFLAG(USE_DAWN)
   std::move(callback).Run(nullptr);
 #else
   // Initiate the asynchronous call to establish the GPU channel
-  RenderThreadImpl::current()->EstablishGpuChannel(base::BindOnce(
-      &RendererBlinkPlatformImpl::OnGpuChannelEstablished,
-      weak_factory_.GetWeakPtr(), document_url, std::move(callback)));
+  RenderThreadImpl::current()->EstablishGpuChannel(
+      base::BindOnce(&RendererBlinkPlatformImpl::OnGpuChannelEstablished,
+                     weak_factory_.GetWeakPtr(), document_url, reply_thread,
+                     std::move(callback)));
 #endif
 }
 
 void RendererBlinkPlatformImpl::OnGpuChannelEstablished(
     const blink::WebURL& document_url,
+    WebGPUReplyThread reply_thread,
     base::OnceCallback<
         void(std::unique_ptr<blink::WebGraphicsContext3DProvider>)> callback,
     scoped_refptr<gpu::GpuChannelHost> gpu_channel_host) {
@@ -873,8 +893,8 @@ void RendererBlinkPlatformImpl::OnGpuChannelEstablished(
     return;
   }
 
-  std::move(callback).Run(
-      CreateWebGPUGraphicsContext3DImpl(document_url, gpu_channel_host));
+  std::move(callback).Run(CreateWebGPUGraphicsContext3DImpl(
+      document_url, reply_thread, gpu_channel_host));
 }
 
 //------------------------------------------------------------------------------
@@ -1130,7 +1150,7 @@ RendererBlinkPlatformImpl::VideoFrameCompositorTaskRunner() {
       video_frame_compositor_thread_ =
           std::make_unique<base::Thread>("VideoFrameCompositor");
       video_frame_compositor_thread_->StartWithOptions(
-          base::Thread::Options(base::ThreadType::kDisplayCritical));
+          base::Thread::Options(base::ThreadType::kPresentation));
     }
 
     return video_frame_compositor_thread_->task_runner();

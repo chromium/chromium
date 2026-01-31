@@ -4,46 +4,42 @@
 
 package org.chromium.chrome.test.util.browser.signin;
 
-import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import org.junit.rules.TestRule;
 import org.junit.runner.Description;
 import org.junit.runners.model.Statement;
 
-import org.chromium.base.ThreadUtils;
+import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.components.signin.AccountManagerFacadeProvider;
 import org.chromium.components.signin.base.AccountInfo;
-import org.chromium.components.signin.identitymanager.AccountInfoServiceProvider;
-import org.chromium.components.signin.identitymanager.IdentityManager;
-import org.chromium.components.signin.test.util.FakeAccountInfoService;
 import org.chromium.components.signin.test.util.FakeAccountManagerFacade;
+import org.chromium.components.signin.test.util.FakeIdentityManager;
 import org.chromium.google_apis.gaia.CoreAccountId;
 
 /**
- * This test rule establishing a simulated account management environment for unit tests, using a
- * FakeAccountManagerFacade and a FakeAccountInfoService.
+ * Test rule establishing a simulated account management environment for unit tests, using a {@link
+ * FakeAccountManagerFacade} and a {@link FakeIdentityManager}.
  *
  * <p>The rule will not invoke any native code, therefore it is safe to use it in Robolectric tests.
  */
 public class AccountManagerTestRule implements TestRule {
-    private final @NonNull FakeAccountManagerFacade mFakeAccountManagerFacade;
-    // TODO(crbug.com/40234741): Revise this test rule and make this non-nullable.
-    private final @Nullable FakeAccountInfoService mFakeAccountInfoService;
+    private final FakeAccountManagerFacade mFakeAccountManagerFacade;
+    private final FakeIdentityManager mFakeIdentityManager;
 
     public AccountManagerTestRule() {
-        this(new FakeAccountManagerFacade(), new FakeAccountInfoService());
+        this(new FakeAccountManagerFacade(), new FakeIdentityManager());
     }
 
-    public AccountManagerTestRule(@NonNull FakeAccountManagerFacade fakeAccountManagerFacade) {
-        this(fakeAccountManagerFacade, new FakeAccountInfoService());
+    public AccountManagerTestRule(FakeAccountManagerFacade fakeAccountManagerFacade) {
+        this(fakeAccountManagerFacade, new FakeIdentityManager());
     }
 
     public AccountManagerTestRule(
-            @NonNull FakeAccountManagerFacade fakeAccountManagerFacade,
-            @Nullable FakeAccountInfoService fakeAccountInfoService) {
+            FakeAccountManagerFacade fakeAccountManagerFacade,
+            FakeIdentityManager fakeIdentityManager) {
         mFakeAccountManagerFacade = fakeAccountManagerFacade;
-        mFakeAccountInfoService = fakeAccountInfoService;
+        mFakeIdentityManager = fakeIdentityManager;
     }
 
     @Override
@@ -52,52 +48,34 @@ public class AccountManagerTestRule implements TestRule {
             @Override
             public void evaluate() throws Throwable {
                 setUpRule();
-                try {
-                    statement.evaluate();
-                } finally {
-                    tearDownRule();
-                }
+                statement.evaluate();
             }
         };
     }
 
-    /** Sets up the AccountManagerFacade mock. */
+    /** Sets up the FakeIdentityManager and FakeAccountManagerFacade mocks. */
     private void setUpRule() {
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    if (mFakeAccountInfoService != null) {
-                        AccountInfoServiceProvider.setInstanceForTests(mFakeAccountInfoService);
-                    }
-                });
+        IdentityServicesProvider.setIdentityManagerForTesting(mFakeIdentityManager);
         AccountManagerFacadeProvider.setInstanceForTests(mFakeAccountManagerFacade);
     }
 
-    /** Tears down the AccountManagerFacade mock and signs out if user is signed in. */
-    private void tearDownRule() {
-        if (mFakeAccountInfoService != null) AccountInfoServiceProvider.resetForTests();
+    /** Returns the {@link FakeIdentityManager} used by this test rule. */
+    public FakeIdentityManager getIdentityManager() {
+        return mFakeIdentityManager;
     }
 
-    /**
-     * Adds an observer that detects changes in the account state propagated by the IdentityManager
-     * object.
-     */
-    public void observeIdentityManager(IdentityManager identityManager) {
-        identityManager.addObserver(mFakeAccountInfoService);
-    }
-
-    /**
-     * Adds an account to the fake AccountManagerFacade and {@link AccountInfo} to {@link
-     * FakeAccountInfoService}.
-     */
+    /** Adds an account to the {@link FakeAccountManagerFacade} and {@link FakeIdentityManager}. */
     public void addAccount(AccountInfo accountInfo) {
         mFakeAccountManagerFacade.addAccount(accountInfo);
-        // TODO(crbug.com/40234741): Revise this test rule and remove the condition here.
-        if (mFakeAccountInfoService != null) mFakeAccountInfoService.addAccountInfo(accountInfo);
+        mFakeIdentityManager.addOrUpdateExtendedAccountInfo(accountInfo);
     }
 
-    /** Updates an account in the fake AccountManagerFacade and {@link FakeAccountInfoService}. */
+    /**
+     * Updates an account in the {@link FakeAccountManagerFacade} and {@link FakeIdentityManager}.
+     */
     public void updateAccount(AccountInfo accountInfo) {
         mFakeAccountManagerFacade.updateAccount(accountInfo);
+        mFakeIdentityManager.addOrUpdateExtendedAccountInfo(accountInfo);
     }
 
     /**

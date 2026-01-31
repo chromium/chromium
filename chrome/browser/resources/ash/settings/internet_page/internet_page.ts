@@ -627,7 +627,6 @@ export class SettingsInternetPageElement extends
       event: CustomEvent<{enabled: boolean, type: NetworkType}>): void {
     this.networkConfig_.setNetworkTypeEnabledState(
         event.detail.type, event.detail.enabled);
-    // TODO(b/282233232) recordSettingChange() for enabling/disabling device.
   }
 
   private onShowConfig_(
@@ -901,7 +900,6 @@ export class SettingsInternetPageElement extends
   private onAddThirdPartyVpnClick_(event: DomRepeatEvent<VpnProvider>): void {
     const provider = event.model.item;
     this.browserProxy_.addThirdPartyVpn(provider.appId);
-    // TODO(b/282233232) recordSettingChange() for adding third party VPN.
   }
 
   private showNetworksSubpage_(type: NetworkType): void {

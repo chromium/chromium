@@ -681,6 +681,9 @@ WorkerGlobalScope::WorkerGlobalScope(
               (creation_params->agent_cluster_id.is_empty()
                    ? base::UnguessableToken::Create()
                    : creation_params->agent_cluster_id),
+              creation_params->cross_origin_isolated_capability
+                  ? blink::Agent::AgentType::kCrossOriginIsolatedWorker
+                  : blink::Agent::AgentType::kNonCrossOriginIsolatedWorker,
               v8::MicrotaskQueue::New(thread->GetIsolate(),
                                       v8::MicrotasksPolicy::kScoped)),
           creation_params->global_scope_name,
@@ -693,7 +696,6 @@ WorkerGlobalScope::WorkerGlobalScope(
           creation_params->script_url.ProtocolIsData(),
           /*is_default_world_of_isolate=*/
           creation_params->is_default_world_of_isolate),
-      ActiveScriptWrappable<WorkerGlobalScope>({}),
       script_type_(creation_params->script_type),
       user_agent_(creation_params->user_agent),
       ua_metadata_(creation_params->ua_metadata),
@@ -837,10 +839,6 @@ void WorkerGlobalScope::Trace(Visitor* visitor) const {
   UniversalGlobalScope::Trace(visitor);
   WorkerOrWorkletGlobalScope::Trace(visitor);
   Supplementable<WorkerGlobalScope>::Trace(visitor);
-}
-
-bool WorkerGlobalScope::HasPendingActivity() const {
-  return !ExecutionContext::IsContextDestroyed();
 }
 
 CodeCacheHost* WorkerGlobalScope::GetCodeCacheHost() {

@@ -364,6 +364,25 @@ base::TimeDelta GetCleanupTaskPeriodMs() {
   _framesFormExtractionStatus.clear();
 }
 
+- (void)cleanupForFrameId:(const std::string&)frameId {
+  _fillDataMap.erase(frameId);
+  _framesFormExtractionStatus.erase(frameId);
+
+  NSString* nsFrameId = SysUTF8ToNSString(frameId);
+  NSMutableArray<PendingFormQuery*>* remainingQueries = [NSMutableArray array];
+  for (PendingFormQuery* query in _pendingFormQueries) {
+    if ([query.frameId isEqualToString:nsFrameId]) {
+      // Complete the query even if the frame is gone so any task waiting on
+      // this can be completed. Worst case: the task will be completed with
+      // no suggestions available.
+      [query runCompletion];
+    } else {
+      [remainingQueries addObject:query];
+    }
+  }
+  _pendingFormQueries = remainingQueries;
+}
+
 - (void)processWithPasswordFormFillData:(const PasswordFormFillData&)formData
                              forFrameId:(const std::string&)frameId
                             isMainFrame:(BOOL)isMainFrame

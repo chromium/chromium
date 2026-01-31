@@ -316,7 +316,7 @@ void EnclaveAuthenticator::OnHaveReencodedLargeBlob(
   CHECK(exts);
   auto* large_blob = exts->FindDict(kLargeBlobKey);
   if (!large_blob) {
-    large_blob = exts->Set(kLargeBlobKey, base::Value::Dict())->GetIfDict();
+    large_blob = exts->Set(kLargeBlobKey, base::DictValue())->GetIfDict();
   }
 
   large_blob->Set(kLargeBlobWriteKey, large_blob_b64);

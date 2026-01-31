@@ -24,6 +24,7 @@
 #import "ios/chrome/browser/omnibox/ui/popup/row/actions/omnibox_popup_actions_row_delegate.h"
 #import "ios/chrome/browser/omnibox/ui/popup/row/omnibox_popup_row_content_configuration.h"
 #import "ios/chrome/browser/omnibox/ui/popup/row/omnibox_popup_row_delegate.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/public/features/system_flags.h"
 #import "ios/chrome/browser/shared/ui/elements/self_sizing_table_view.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
@@ -31,8 +32,8 @@
 #import "ios/chrome/browser/shared/ui/util/rtl_geometry.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/shared/ui/util/util_swift.h"
-#import "ios/chrome/browser/toolbar/ui_bundled/buttons/toolbar_configuration.h"
-#import "ios/chrome/browser/toolbar/ui_bundled/public/omnibox_position_util.h"
+#import "ios/chrome/browser/toolbar/legacy/ui_bundled/buttons/toolbar_configuration.h"
+#import "ios/chrome/browser/toolbar/legacy/ui_bundled/public/omnibox_position_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #import "ios/chrome/common/ui/util/device_util.h"
@@ -40,7 +41,6 @@
 #import "ui/base/device_form_factor.h"
 
 namespace {
-const CGFloat kTopPadding = 8.0;
 const CGFloat kBottomPadding = 8.0;
 const CGFloat kFooterHeight = 4.0;
 /// Percentage of the suggestion height that needs to be visible in order to
@@ -69,7 +69,8 @@ const CGFloat kCloseButtonPadding = 16.0f;
                                           OmniboxPopupCarouselCellDelegate,
                                           OmniboxPopupRowDelegate,
                                           UITableViewDataSource,
-                                          UITableViewDelegate>
+                                          UITableViewDelegate,
+                                          SelfSizingTableViewDelegate>
 
 /// Index path of currently highlighted row. The rows can be highlighted by
 /// tapping and holding on them or by using arrow keys on a hardware keyboard.
@@ -85,7 +86,7 @@ const CGFloat kCloseButtonPadding = 16.0f;
 @property(nonatomic, assign) CGFloat keyboardHeight;
 
 /// Table view that displays the results.
-@property(nonatomic, strong) UITableView* tableView;
+@property(nonatomic, strong) SelfSizingTableView* tableView;
 
 /// Alignment of omnibox text. Popup text should match this alignment.
 @property(nonatomic, assign) NSTextAlignment alignment;
@@ -178,9 +179,10 @@ const CGFloat kCloseButtonPadding = 16.0f;
 
 // Sets the additional vertical content inset for the suggestion list.
 - (void)setAdditionalVerticalContentInset:
-    (CGFloat)additionalVerticalContentInset {
-  self.tableView.contentInset =
-      UIEdgeInsetsMake(kTopPadding + additionalVerticalContentInset, 0, 0, 0);
+    (UIEdgeInsets)additionalVerticalContentInset {
+  self.tableView.contentInset = UIEdgeInsetsMake(
+      kOmniboxPopupTopPadding + additionalVerticalContentInset.top, 0,
+      additionalVerticalContentInset.bottom, 0);
   [self.tableView
       setContentOffset:CGPointMake(0, -self.tableView.contentInset.top)
               animated:YES];
@@ -941,6 +943,12 @@ const CGFloat kCloseButtonPadding = 16.0f;
   }
 }
 
+#pragma mark - SelfSizingTableViewDelegate
+
+- (void)tableViewContentSizeDidChange:(CGSize)contentSize {
+  self.preferredContentSize = contentSize;
+}
+
 #pragma mark - OmniboxPopupCarouselCellDelegate
 
 - (void)carouselCellDidChangeItemCount:(OmniboxPopupCarouselCell*)carouselCell {
@@ -1088,6 +1096,9 @@ const CGFloat kCloseButtonPadding = 16.0f;
                                            style:UITableViewStyleGrouped];
   self.tableView.translatesAutoresizingMaskIntoConstraints = NO;
   self.tableView.delegate = self;
+  if (IsComposeboxIpadEnabled()) {
+    self.tableView.contentSizeDelegate = self;
+  }
   self.tableView.dataSource = self;
 
   self.tableView.accessibilityIdentifier =
@@ -1107,15 +1118,16 @@ const CGFloat kCloseButtonPadding = 16.0f;
   if (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET) {
     self.tableView.tableFooterView =
         [[UIView alloc] initWithFrame:CGRectMake(0, 0, 0, FLT_MIN)];
-    [self.tableView
-        setDirectionalLayoutMargins:NSDirectionalEdgeInsetsMake(
-                                        kTopPadding, 0, kBottomPadding, 0)];
+    [self.tableView setDirectionalLayoutMargins:NSDirectionalEdgeInsetsMake(
+                                                    kOmniboxPopupTopPadding, 0,
+                                                    kBottomPadding, 0)];
     self.tableView.contentInset =
-        UIEdgeInsetsMake(kTopPadding, 0, kBottomPadding, 0);
+        UIEdgeInsetsMake(kOmniboxPopupTopPadding, 0, kBottomPadding, 0);
   } else {
     [self.tableView setDirectionalLayoutMargins:NSDirectionalEdgeInsetsMake(
                                                     0, 0, kBottomPadding, 0)];
-    self.tableView.contentInset = UIEdgeInsetsMake(kTopPadding, 0, 0, 0);
+    self.tableView.contentInset =
+        UIEdgeInsetsMake(kOmniboxPopupTopPadding, 0, 0, 0);
   }
 
   self.tableView.sectionHeaderHeight = 0.1;

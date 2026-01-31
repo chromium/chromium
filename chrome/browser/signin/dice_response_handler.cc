@@ -33,7 +33,6 @@
 #include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/accounts_mutator.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
-#include "components/signin/public/identity_manager/identity_utils.h"
 #include "components/unexportable_keys/unexportable_key_id.h"
 #include "components/unexportable_keys/unexportable_key_service.h"
 #include "google_apis/gaia/gaia_auth_fetcher.h"
@@ -371,24 +370,13 @@ void DiceResponseHandler::ProcessEnableSyncHeader(
       return;  // There is already a request in flight with the same parameters.
     }
   }
-  delegate->EnableSync(
+  delegate->CompleteChromeSignInAfterGaiaSignin(
       identity_manager_->FindExtendedAccountInfoByGaiaId(gaia_id));
 }
 
 void DiceResponseHandler::ProcessDiceSignoutHeader(
     const std::vector<signin::DiceResponseParams::AccountInfo>& account_infos) {
   VLOG(1) << "Start processing Dice signout response";
-
-  // In some cases, the primary account can only be invalidated:
-  // - There is a sync primary account
-  // - Browser explicit sign in is enabled, setting/clearing the primary account
-  //   requires explicit user action through chrome UI.
-  // - If there is a policy restriction on removing the primary account.
-  bool invalidate_only_primary_account =
-      identity_manager_->HasPrimaryAccount(signin::ConsentLevel::kSync) ||
-      !signin::IsImplicitBrowserSigninOrExplicitDisabled(
-          identity_manager_, signin_client_->GetPrefs()) ||
-      !signin_client_->IsClearPrimaryAccountAllowed();
 
   CoreAccountId primary_account =
       identity_manager_->GetPrimaryAccountId(signin::ConsentLevel::kSignin);
@@ -398,8 +386,10 @@ void DiceResponseHandler::ProcessDiceSignoutHeader(
     CoreAccountId signed_out_account =
         identity_manager_->PickAccountIdForAccount(account_info.gaia_id,
                                                    account_info.email);
-    if (invalidate_only_primary_account &&
-        signed_out_account == primary_account) {
+
+    // The primary account can only be invalidated. Removing the primary accouny
+    // requires explicit user action from the Chrome UI.
+    if (!primary_account.empty() && signed_out_account == primary_account) {
       primary_account_signed_out = true;
       RecordDiceResponseHeader(kSignoutPrimary);
 
@@ -474,7 +464,7 @@ void DiceResponseHandler::OnTokenExchangeSuccess(
   token_fetcher->delegate()->HandleTokenExchangeSuccess(account_id,
                                                         is_new_account);
   if (should_enable_sync) {
-    token_fetcher->delegate()->EnableSync(
+    token_fetcher->delegate()->CompleteChromeSignInAfterGaiaSignin(
         identity_manager_->FindExtendedAccountInfoByAccountId(account_id));
   }
 

@@ -15,8 +15,8 @@ namespace extensions {
 
 namespace {
 
-base::Value::List GenerateSampleAllowlist() {
-  base::Value::List allowlist;
+base::ListValue GenerateSampleAllowlist() {
+  base::ListValue allowlist;
   allowlist.Append("allowed-domain.com");
   allowlist.Append("example.com");
 

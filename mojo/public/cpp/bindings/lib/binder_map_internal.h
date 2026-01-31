@@ -5,10 +5,12 @@
 #ifndef MOJO_PUBLIC_CPP_BINDINGS_LIB_BINDER_MAP_INTERNAL_H_
 #define MOJO_PUBLIC_CPP_BINDINGS_LIB_BINDER_MAP_INTERNAL_H_
 
+#include <type_traits>
 #include <utility>
 
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/functional/callback_helpers.h"
 #include "base/task/sequenced_task_runner.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 
@@ -120,13 +122,19 @@ template <typename ContextType>
 class GenericCallbackBinderWithContext {
  public:
   using Traits = BinderContextTraits<ContextType>;
+  using SequenceTraits = BinderContextTraits<void>;
   using ContextValueType = typename Traits::ValueType;
   using GenericBinderType = typename Traits::GenericBinderType;
+  using SequenceBinderType = typename SequenceTraits::GenericBinderType;
 
   GenericCallbackBinderWithContext(
-      GenericBinderType callback,
+      SequenceBinderType callback,
       scoped_refptr<base::SequencedTaskRunner> task_runner)
-      : callback_(std::move(callback)), task_runner_(std::move(task_runner)) {}
+      : callback_(MaybeIgnoreArgs(std::move(callback))),
+        task_runner_(std::move(task_runner)) {}
+
+  explicit GenericCallbackBinderWithContext(GenericBinderType callback)
+      : callback_(std::move(callback)), task_runner_(nullptr) {}
 
   GenericCallbackBinderWithContext(const GenericCallbackBinderWithContext&) =
       delete;
@@ -165,6 +173,14 @@ class GenericCallbackBinderWithContext {
   }
 
  private:
+  static GenericBinderType MaybeIgnoreArgs(SequenceBinderType&& callback) {
+    if constexpr (std::is_void_v<ContextType>) {
+      return callback;
+    } else {
+      return base::IgnoreArgs<ContextType>(std::move(callback));
+    }
+  }
+
   static void RunCallbackWithContext(const GenericBinderType& callback,
                                      ContextValueType context,
                                      mojo::ScopedMessagePipeHandle handle) {

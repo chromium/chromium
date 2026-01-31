@@ -49,7 +49,7 @@ SupervisedUserVerificationPageForBlockedSites::GetTypeForTesting() {
 }
 
 void SupervisedUserVerificationPageForBlockedSites::PopulateInterstitialStrings(
-    base::Value::Dict& load_time_data) {
+    base::DictValue& load_time_data) {
   if (is_main_frame_) {
     load_time_data.Set("type", "SUPERVISED_USER_VERIFY");
   } else {

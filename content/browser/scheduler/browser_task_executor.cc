@@ -303,7 +303,7 @@ std::unique_ptr<BrowserProcessIOThread> BrowserTaskExecutor::CreateIOThread() {
   options.thread_type =
       base::FeatureList::IsEnabled(features::kIOThreadInteractiveThreadType)
           ? base::ThreadType::kInteractive
-          : base::ThreadType::kDisplayCritical;
+          : base::ThreadType::kPresentation;
   if (!io_thread->StartWithOptions(std::move(options)))
     LOG(FATAL) << "Failed to start BrowserThread:IO";
   return io_thread;

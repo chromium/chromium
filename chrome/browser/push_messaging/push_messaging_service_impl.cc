@@ -389,8 +389,8 @@ void PushMessagingServiceImpl::OnMessage(const std::string& app_id,
       message.decrypted ? message.raw_data : std::string());
 
   bool user_visible =
-      !base::Contains(origins_requesting_user_visible_requirement_bypass,
-                      app_identifier.origin());
+      !origins_requesting_user_visible_requirement_bypass.contains(
+          app_identifier.origin());
   if (IsPermissionSet(app_identifier.origin(), user_visible)) {
     messages_pending_permission_check_.emplace(app_id, message);
     // Start abusive and disruptive origin verifications only if no other
@@ -447,8 +447,8 @@ void PushMessagingServiceImpl::OnCheckedOrigin(
   int64_t service_worker_registration_id =
       app_identifier.service_worker_registration_id();
 
-  bool user_visible = !base::Contains(
-      origins_requesting_user_visible_requirement_bypass, origin);
+  bool user_visible =
+      !origins_requesting_user_visible_requirement_bypass.contains(origin);
 
   // It is possible that Notifications permission has been revoked by a user
   // during abusive origin verification.
@@ -515,8 +515,8 @@ void PushMessagingServiceImpl::
       weak_factory_.GetWeakPtr(), app_id, origin,
       service_worker_registration_id, message, /*did_enqueue_message=*/true);
 
-  bool user_visible = !base::Contains(
-      origins_requesting_user_visible_requirement_bypass, origin);
+  bool user_visible =
+      !origins_requesting_user_visible_requirement_bypass.contains(origin);
 
   // It is possible that Notification permissions have been revoked by a user
   // while handling previous messages for |origin|.
@@ -651,8 +651,9 @@ void PushMessagingServiceImpl::DeliverMessageCallback(
         .Run(false /* did_show_generic_notification */);
   } else {
     // Defaults to true since that is the more restrictive option.
-    bool user_visible_only = base::Contains(
-        origins_requesting_user_visible_requirement_bypass, requesting_origin);
+    bool user_visible_only =
+        origins_requesting_user_visible_requirement_bypass.contains(
+            requesting_origin);
     notification_manager_.EnforceUserVisibleOnlyRequirements(
         requesting_origin, service_worker_registration_id,
         std::move(message_handled_callback), user_visible_only);
@@ -939,7 +940,7 @@ JNI_PushMessagingServiceBridge_VerifyAndRevokeNotificationsPermission(
     JNIEnv* env,
     std::string& origin,
     std::string& profile_id,
-    jboolean app_level_notifications_enabled) {
+    bool app_level_notifications_enabled) {
   ProfileManager* profile_manager = g_browser_process->profile_manager();
   DCHECK(profile_manager);
 
@@ -1510,8 +1511,8 @@ void PushMessagingServiceImpl::OnContentSettingChanged(
     }
 
     bool user_visible =
-        !base::Contains(origins_requesting_user_visible_requirement_bypass,
-                        app_identifier.origin());
+        !origins_requesting_user_visible_requirement_bypass.contains(
+            app_identifier.origin());
 
     if (IsPermissionSet(app_identifier.origin(), user_visible)) {
       barrier_closure.Run();
@@ -1541,8 +1542,8 @@ void PushMessagingServiceImpl::OnContentSettingChanged(
     }
 
     bool user_visible =
-        !base::Contains(origins_requesting_user_visible_requirement_bypass,
-                        unsubscribed_entry.origin());
+        !origins_requesting_user_visible_requirement_bypass.contains(
+            unsubscribed_entry.origin());
 
     if (!IsPermissionSet(unsubscribed_entry.origin(), user_visible)) {
       barrier_closure.Run();

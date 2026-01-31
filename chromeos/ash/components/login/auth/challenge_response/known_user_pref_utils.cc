@@ -17,7 +17,7 @@ namespace {
 constexpr char kPublicKeySpkiKey[] = "public_key_spki";
 constexpr char kExtensionId[] = "extension_id";
 
-void DeserializeSpkiKey(const base::Value::Dict& key_representation,
+void DeserializeSpkiKey(const base::DictValue& key_representation,
                         std::string* spki_key) {
   const std::string* spki_base64 =
       key_representation.FindString(kPublicKeySpkiKey);
@@ -35,7 +35,7 @@ void DeserializeSpkiKey(const base::Value::Dict& key_representation,
   }
 }
 
-void DeserializeExtensionId(const base::Value::Dict& key_representation,
+void DeserializeExtensionId(const base::DictValue& key_representation,
                             std::string* extension_id) {
   const std::string* extension_id_value =
       key_representation.FindString(kExtensionId);
@@ -52,12 +52,12 @@ void DeserializeExtensionId(const base::Value::Dict& key_representation,
 
 }  // namespace
 
-base::Value::List SerializeChallengeResponseKeysForKnownUser(
+base::ListValue SerializeChallengeResponseKeysForKnownUser(
     const std::vector<ChallengeResponseKey>& challenge_response_keys) {
-  base::Value::List pref_value;
+  base::ListValue pref_value;
   for (const auto& key : challenge_response_keys) {
     std::string spki_base64 = base::Base64Encode(key.public_key_spki_der());
-    base::Value::Dict key_representation;
+    base::DictValue key_representation;
     key_representation.Set(kPublicKeySpkiKey, spki_base64);
     key_representation.Set(kExtensionId, key.extension_id());
     pref_value.Append(std::move(key_representation));
@@ -66,7 +66,7 @@ base::Value::List SerializeChallengeResponseKeysForKnownUser(
 }
 
 bool DeserializeChallengeResponseKeyFromKnownUser(
-    const base::Value::List& pref_value,
+    const base::ListValue& pref_value,
     std::vector<DeserializedChallengeResponseKey>*
         deserialized_challenge_response_keys) {
   deserialized_challenge_response_keys->clear();

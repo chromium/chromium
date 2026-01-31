@@ -12,7 +12,6 @@
 #include "chrome/browser/ui/views/page_action/page_action_icon_view.h"
 #include "components/content_settings/browser/ui/cookie_controls_controller.h"
 #include "components/content_settings/browser/ui/cookie_controls_view.h"
-#include "components/content_settings/core/common/cookie_blocking_3pcd_status.h"
 #include "components/user_education/common/feature_promo/feature_promo_result.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 
@@ -35,7 +34,6 @@ class CookieControlsIconView : public PageActionIconView,
   void OnCookieControlsIconStatusChanged(
       bool icon_visible,
       CookieControlsState controls_state,
-      CookieBlocking3pcdStatus blocking_status,
       bool should_highlight) override;
   void OnFinishedPageReloadWithChangedSettings() override;
 
@@ -92,9 +90,6 @@ class CookieControlsIconView : public PageActionIconView,
   // True if calls to UpdateImpl should noop for testing purposes.
   // TODO: 344042974 - Remove this once the issue has been resolved.
   bool disable_updates_for_testing_ = false;
-
-  CookieBlocking3pcdStatus blocking_status_ =
-      CookieBlocking3pcdStatus::kNotIn3pcd;
 
   raw_ptr<Browser> browser_ = nullptr;
 

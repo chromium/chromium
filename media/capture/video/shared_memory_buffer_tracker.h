@@ -47,6 +47,7 @@ class SharedMemoryBufferTracker final : public VideoCaptureBufferTracker {
 
   base::UnsafeSharedMemoryRegion DuplicateAsUnsafeRegion() override;
   gfx::GpuMemoryBufferHandle GetGpuMemoryBufferHandle() override;
+  media::mojom::VideoBufferHandlePtr GetVideoBufferHandle() override;
 
   VideoCaptureBufferType GetBufferType() override;
 

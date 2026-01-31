@@ -59,7 +59,7 @@ chrome::mojom::MediaMetadataPtr ParseAudioVideoMetadata(
 
   for (const auto& it : extractor.stream_infos()) {
     chrome::mojom::MediaStreamInfoPtr stream_info =
-        chrome::mojom::MediaStreamInfo::New(it.type, base::Value::Dict());
+        chrome::mojom::MediaStreamInfo::New(it.type, base::DictValue());
     for (const auto& tag : it.tags) {
       stream_info->additional_properties.Set(tag.first, tag.second);
     }

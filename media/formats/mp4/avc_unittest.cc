@@ -253,8 +253,7 @@ INSTANTIATE_TEST_SUITE_P(AVCConversionTestValues,
                          ::testing::Values(1, 2, 4));
 
 TEST_F(AVCConversionTest, AnalyzeSEI) {
-  base::test::ScopedFeatureList scoped_sei_flag(
-      kTreatSEIRecoveryPointAsKeyframe);
+  base::test::ScopedFeatureList scoped_sei_flag(kParseSEIRecoveryPoints);
   constexpr auto kStream = std::to_array<const uint8_t>({
       // First NALU Start code.
       0x00,
@@ -290,13 +289,13 @@ TEST_F(AVCConversionTest, AnalyzeSEI) {
 
   auto result = AVC::AnalyzeAnnexB(kStream, {});
   EXPECT_TRUE(result.is_conformant);
-  EXPECT_TRUE(result.is_keyframe.has_value());
-  EXPECT_TRUE(result.is_keyframe.value());
+  EXPECT_FALSE(result.is_keyframe.has_value());
+  EXPECT_TRUE(result.is_sei_recovery_point.has_value());
+  EXPECT_TRUE(result.is_sei_recovery_point.value());
 }
 
 TEST_F(AVCConversionTest, AnalyzeSEICorruptionNonFatal) {
-  base::test::ScopedFeatureList scoped_sei_flag(
-      kTreatSEIRecoveryPointAsKeyframe);
+  base::test::ScopedFeatureList scoped_sei_flag(kParseSEIRecoveryPoints);
   constexpr auto kStream = std::to_array<const uint8_t>({
       // First NALU Start code.
       0x00,
@@ -318,6 +317,7 @@ TEST_F(AVCConversionTest, AnalyzeSEICorruptionNonFatal) {
   auto result = AVC::AnalyzeAnnexB(kStream, {});
   EXPECT_TRUE(result.is_conformant);
   EXPECT_FALSE(result.is_keyframe.has_value());
+  EXPECT_FALSE(result.is_sei_recovery_point.has_value());
 }
 
 TEST_F(AVCConversionTest, ConvertConfigToAnnexB) {
@@ -353,6 +353,19 @@ TEST_F(AVCConversionTest, StringConversionFunctions) {
   EXPECT_PRED2(AnalysesMatch, AVC::AnalyzeAnnexB(buf, subsamples), expected);
 
   EXPECT_EQ(str, AnnexBToString(buf, subsamples));
+}
+
+TEST_F(AVCConversionTest, ReservedNalUnitsIgnored) {
+  std::string str = "FILL I EOStr";
+  std::vector<uint8_t> buf;
+  std::vector<SubsampleEntry> subsamples;
+  AvcStringToAnnexB(str, &buf, &subsamples);
+  buf[4] = 25;  // Change FILL NALU type to reserved type.
+
+  BitstreamConverter::AnalysisResult expected;
+  expected.is_conformant = false;
+  expected.is_keyframe = true;
+  EXPECT_PRED2(AnalysesMatch, AVC::AnalyzeAnnexB(buf, subsamples), expected);
 }
 
 TEST_F(AVCConversionTest, ValidAnnexBConstructs) {

@@ -29,8 +29,8 @@ namespace internal {
 namespace {
 
 class MockObserver : public WorkQueueSets::Observer {
-  MOCK_METHOD1(WorkQueueSetBecameEmpty, void(size_t set_index));
-  MOCK_METHOD1(WorkQueueSetBecameNonEmpty, void(size_t set_index));
+  MOCK_METHOD(void, WorkQueueSetBecameEmpty, (size_t set_index), (override));
+  MOCK_METHOD(void, WorkQueueSetBecameNonEmpty, (size_t set_index), (override));
 };
 
 const TaskQueue::QueuePriority kHighestPriority = 0;

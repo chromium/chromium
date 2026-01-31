@@ -1,0 +1,32 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//mojo/public/tools/bindings/mojom.gni")
+
+mojom("mojo_bindings") {
+  sources = [ "aim_eligibility.mojom" ]
+
+  webui_module_path = "/"
+
+  public_deps = [ "//mojo/public/mojom/base" ]
+}
+
+static_library("aim_eligibility") {
+  sources = [
+    "aim_eligibility_page_handler.cc",
+    "aim_eligibility_page_handler.h",
+  ]
+
+  deps = [
+    ":mojo_bindings",
+    "//chrome/browser/autocomplete:aim_eligibility_service",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/resources/omnibox:resources",
+    "//chrome/common",
+    "//components/omnibox/browser",
+    "//content/public/browser",
+    "//mojo/public/cpp/bindings",
+    "//ui/webui",
+  ]
+}

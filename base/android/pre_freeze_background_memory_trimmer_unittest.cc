@@ -52,7 +52,7 @@ class MockMetric final
   MockMetric() : PreFreezeBackgroundMemoryTrimmer::PreFreezeMetric("Mock") {
     count_++;
   }
-  std::optional<ByteCount> Measure() const override { return ByteCount(0); }
+  std::optional<ByteSize> Measure() const override { return ByteSize(0); }
   static size_t count_;
 
   ~MockMetric() override { count_--; }

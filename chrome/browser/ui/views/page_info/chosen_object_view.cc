@@ -65,6 +65,11 @@ ChosenObjectView::ChosenObjectView(
   delete_button_ = row_view_->AddControl(std::move(delete_button));
 
   UpdateIconImage(/*is_deleted=*/false);
+  views::SetImageFromVectorIconWithColor(
+      delete_button_, vector_icons::kCloseRoundedIcon,
+      {kColorPageInfoChosenObjectDeleteButtonIcon,
+       kColorPageInfoChosenObjectDeleteButtonIconDisabled});
+
   // Set flex rule, defined in `RichControlsContainerView`, to wrap the subtitle
   // text but size the parent view to match the content.
   SetProperty(
@@ -75,15 +80,6 @@ ChosenObjectView::ChosenObjectView(
 
 void ChosenObjectView::AddObserver(ChosenObjectViewObserver* observer) {
   observer_list_.AddObserver(observer);
-}
-
-void ChosenObjectView::OnThemeChanged() {
-  views::View::OnThemeChanged();
-  const ui::ColorProvider* cp = GetColorProvider();
-  views::SetImageFromVectorIconWithColor(
-      delete_button_, vector_icons::kCloseRoundedIcon,
-      cp->GetColor(kColorPageInfoChosenObjectDeleteButtonIcon),
-      cp->GetColor(kColorPageInfoChosenObjectDeleteButtonIconDisabled));
 }
 
 ChosenObjectView::~ChosenObjectView() = default;

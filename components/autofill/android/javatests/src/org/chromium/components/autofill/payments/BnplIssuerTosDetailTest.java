@@ -13,7 +13,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.components.autofill.R;
 
 import java.util.Arrays;
 
@@ -29,18 +28,11 @@ public class BnplIssuerTosDetailTest {
         BnplIssuerTosDetail bnplIssuerTosDetail =
                 new BnplIssuerTosDetail(
                         /* issuerId= */ ISSUER_ID,
-                        /* headerIconDrawableId= */ R.drawable.bnpl_icon_generic,
-                        /* headerIconDarkDrawableId= */ R.drawable.error_icon,
                         /* isLinkedIssuer= */ true,
                         /* issuerName= */ ISSUER_NAME,
                         Arrays.asList(LEGAL_MESSAGE_LINE));
 
         assertThat(bnplIssuerTosDetail.getIssuerId(), equalTo(ISSUER_ID));
-        assertThat(
-                bnplIssuerTosDetail.getHeaderIconDrawableId(),
-                equalTo(R.drawable.bnpl_icon_generic));
-        assertThat(
-                bnplIssuerTosDetail.getHeaderIconDarkDrawableId(), equalTo(R.drawable.error_icon));
         assertTrue(bnplIssuerTosDetail.getIsLinkedIssuer());
         assertThat(bnplIssuerTosDetail.getIssuerName(), equalTo(ISSUER_NAME));
         assertThat(bnplIssuerTosDetail.getLegalMessageLines().size(), equalTo(1));

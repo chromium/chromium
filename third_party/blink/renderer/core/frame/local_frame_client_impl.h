@@ -173,6 +173,8 @@ class CORE_EXPORT LocalFrameClientImpl final : public LocalFrameClient {
   void DidObserveNewFeatureUsage(const UseCounterFeature&) override;
   void DidObserveSoftNavigation(
       SoftNavigationMetricsForReporting metrics) override;
+  void DidObserveSoftLargestContentfulPaint(
+      const LargestContentfulPaintDetailsForReporting& lcp) override;
   void DidObserveLayoutShift(double score, bool after_input_or_scroll) override;
   void SelectorMatchChanged(const Vector<String>& added_selectors,
                             const Vector<String>& removed_selectors) override;

@@ -113,7 +113,7 @@ TEST_F(UpdateRequiredScreenUnitTest, HandlesNoUpdate) {
   update_required_screen_->Show(wizard_context_.get());
   EXPECT_EQ(fake_view_->ui_state(),
             UpdateRequiredView::UPDATE_REQUIRED_MESSAGE);
-  base::Value::List args;
+  base::ListValue args;
   args.Append(kUserActionUpdateButtonClicked);
   update_required_screen_->HandleUserAction(args);
 
@@ -132,7 +132,7 @@ TEST_F(UpdateRequiredScreenUnitTest, HandlesUpdateExists) {
   update_required_screen_->Show(wizard_context_.get());
   EXPECT_EQ(fake_view_->ui_state(),
             UpdateRequiredView::UPDATE_REQUIRED_MESSAGE);
-  base::Value::List args;
+  base::ListValue args;
   args.Append(kUserActionUpdateButtonClicked);
   update_required_screen_->HandleUserAction(args);
 
@@ -163,7 +163,7 @@ TEST_F(UpdateRequiredScreenUnitTest, HandlesCellularPermissionNeeded) {
   EXPECT_EQ(fake_view_->ui_state(),
             UpdateRequiredView::UPDATE_REQUIRED_MESSAGE);
   {
-    base::Value::List args;
+    base::ListValue args;
     args.Append(kUserActionUpdateButtonClicked);
     update_required_screen_->HandleUserAction(args);
   }
@@ -178,7 +178,7 @@ TEST_F(UpdateRequiredScreenUnitTest, HandlesCellularPermissionNeeded) {
   SetUpdateEngineStatus(update_engine::Operation::NEED_PERMISSION_TO_UPDATE);
 
   {
-    base::Value::List args;
+    base::ListValue args;
     args.Append(kUserActionAcceptUpdateOverCellular);
     update_required_screen_->HandleUserAction(args);
   }

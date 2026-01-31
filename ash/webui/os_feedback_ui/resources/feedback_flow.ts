@@ -338,7 +338,7 @@ export class FeedbackFlowElement extends PolymerElement {
       isInternalAccount: feedbackInfo.isInternalAccount ?? false,
       wifiDebugLogsAllowed: false,
       traceId: feedbackInfo.traceId ?? 0,
-      pageUrl: {url: feedbackInfo.pageUrl ?? ''},
+      pageUrl: feedbackInfo.pageUrl ?? '',
       fromAutofill: feedbackInfo.fromAutofill ?? false,
       autofillMetadata: feedbackInfo.autofillMetadata ?
           JSON.stringify(feedbackInfo.autofillMetadata) :
@@ -436,7 +436,7 @@ export class FeedbackFlowElement extends PolymerElement {
         categoryTag ? decodeURIComponent(categoryTag) : '';
     const pageUrl = params.get(AdditionalContextQueryParam.PAGE_URL);
     if (pageUrl) {
-      this.set('feedbackContext.pageUrl', {url: pageUrl});
+      this.set('feedbackContext.pageUrl', pageUrl);
     }
     const settingsSearchDoNotRecordMetrics = params.get(
         AdditionalContextQueryParam.SETTINGS_SEARCH_DO_NOT_RECORD_METRICS);

@@ -44,9 +44,10 @@ void CheckReplaceComponentsPreservesSpec(const GURL& url) {
 extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
   if (size < 1)
     return 0;
+  // SAFETY: libufzzer is responsible to pass valid `data` and `size`.
+  auto bytes = UNSAFE_BUFFERS(base::span<const uint8_t>(data, size));
   {
-    std::string_view string_piece_input(reinterpret_cast<const char*>(data),
-                                        size);
+    std::string_view string_piece_input(base::as_chars(bytes));
     const GURL url_from_string_piece(string_piece_input);
     CheckIdempotency(url_from_string_piece);
     CheckReplaceComponentsPreservesSpec(url_from_string_piece);
@@ -61,19 +62,21 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
   }
   // Resolve relative url tests.
   {
-    size_t size_t_bytes = sizeof(size_t);
-    if (size < size_t_bytes + 1) {
+    constexpr size_t kSizeTBytes = sizeof(size_t);
+    if (size < kSizeTBytes + 1) {
       return 0;
     }
-    size_t relative_size =
-        *reinterpret_cast<const size_t*>(data) % (size - size_t_bytes);
-    std::string relative_string(
-        reinterpret_cast<const char*>(UNSAFE_TODO(data + size_t_bytes)),
-        relative_size);
-    std::string_view string_piece_part_input(
-        reinterpret_cast<const char*>(
-            UNSAFE_TODO(data + size_t_bytes + relative_size)),
-        size - relative_size - size_t_bytes);
+    // `bytes` is split into three spans; `size_bytes`, `relative_chars`, and
+    // `part_chars`.
+    auto [size_bytes, payload_bytes] = bytes.split_at(kSizeTBytes);
+    size_t relative_size;
+    base::byte_span_from_ref(relative_size).copy_from(size_bytes);
+    relative_size = relative_size % payload_bytes.size();
+    auto [relative_chars, part_chars] =
+        base::as_chars(payload_bytes).split_at(relative_size);
+
+    std::string_view relative_string(relative_chars);
+    std::string_view string_piece_part_input(part_chars);
     const GURL url_from_string_piece_part(string_piece_part_input);
     CheckIdempotency(url_from_string_piece_part);
     CheckReplaceComponentsPreservesSpec(url_from_string_piece_part);
@@ -82,7 +85,7 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
 
     if (relative_size % sizeof(char16_t) == 0) {
       std::u16string relative_string16(
-          reinterpret_cast<const char16_t*>(UNSAFE_TODO(data + size_t_bytes)),
+          reinterpret_cast<const char16_t*>(relative_chars.data()),
           relative_size / sizeof(char16_t));
       std::ignore = url_from_string_piece_part.Resolve(relative_string16);
     }

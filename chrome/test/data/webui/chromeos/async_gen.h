@@ -24,10 +24,10 @@ class WebUIBrowserAsyncGenTest : public WebUIBrowserTest {
     AsyncWebUIMessageHandler();
     ~AsyncWebUIMessageHandler() override;
 
-    MOCK_METHOD1(HandleTearDown, void(const base::Value::List&));
+    MOCK_METHOD1(HandleTearDown, void(const base::ListValue&));
 
    private:
-    void HandleCallJS(const base::Value::List& list_value);
+    void HandleCallJS(const base::ListValue& list_value);
 
     // WebUIMessageHandler implementation.
     void RegisterMessages() override;

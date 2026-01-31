@@ -217,10 +217,10 @@ TEST_F(TrustedVaultEncryptionKeysTabHelperPrerenderingTest,
   // If the prerendering happens to the cross origin, the prerendering would be
   // canceled.
   const GURL kCrossOriginPrerenderingUrl(GURL("http://page.com"));
-  content::FrameTreeNodeId frame_tree_node_id =
+  content::PrerenderHostId prerender_host_id =
       content::WebContentsTester::For(web_contents())
           ->AddPrerender(kCrossOriginPrerenderingUrl);
-  ASSERT_TRUE(frame_tree_node_id.is_null());
+  ASSERT_TRUE(prerender_host_id.is_null());
   // EncryptionKeys is still valid in a primary page.
   EXPECT_TRUE(HasEncryptionKeysApiInMainFrame());
 

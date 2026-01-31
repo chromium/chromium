@@ -18,6 +18,7 @@ static_library("facilitated_payments") {
     "//chrome/browser/optimization_guide",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/signin",
+    "//chrome/browser/strike_database",
     "//chrome/browser/ui/autofill",
     "//components/autofill/core/browser",
     "//components/facilitated_payments/android",

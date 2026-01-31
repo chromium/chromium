@@ -61,58 +61,58 @@ class AboutHandler : public settings::SettingsPageUIHandler,
 
   // Called once the JS page is ready to be called, serves as a signal to the
   // handler to register C++ observers.
-  void HandlePageReady(const base::Value::List& args);
+  void HandlePageReady(const base::ListValue& args);
 
   // Called once when the page has loaded. On ChromeOS, this gets the current
   // update status. On other platforms, it will request and perform an update
   // (if one is available).
-  void HandleRefreshUpdateStatus(const base::Value::List& args);
+  void HandleRefreshUpdateStatus(const base::ListValue& args);
   void RefreshUpdateStatus();
 
 #if BUILDFLAG(IS_MAC)
   // Promotes the updater for all users.
-  void PromoteUpdater(const base::Value::List& args);
+  void PromoteUpdater(const base::ListValue& args);
 #endif
 
   // Opens the feedback dialog.
   // |args| must be empty.
-  void HandleOpenFeedbackDialog(const base::Value::List& args);
+  void HandleOpenFeedbackDialog(const base::ListValue& args);
 
   // Opens the help page. |args| must be empty.
-  void HandleOpenHelpPage(const base::Value::List& args);
+  void HandleOpenHelpPage(const base::ListValue& args);
 
 #if BUILDFLAG(IS_CHROMEOS)
   // Checks if ReleaseNotes is enabled.
-  void HandleGetEnabledReleaseNotes(const base::Value::List& args);
+  void HandleGetEnabledReleaseNotes(const base::ListValue& args);
 
   // Checks if system is connected to internet.
-  void HandleCheckInternetConnection(const base::Value::List& args);
+  void HandleCheckInternetConnection(const base::ListValue& args);
 
   // Opens the release notes app. |args| must be empty.
-  void HandleLaunchReleaseNotes(const base::Value::List& args);
+  void HandleLaunchReleaseNotes(const base::ListValue& args);
 
   // Opens the help page. |args| must be empty.
-  void HandleOpenOsHelpPage(const base::Value::List& args);
+  void HandleOpenOsHelpPage(const base::ListValue& args);
 
   // Sets the release track version.
-  void HandleSetChannel(const base::Value::List& args);
+  void HandleSetChannel(const base::ListValue& args);
 
   // Retrieves OS, ARC and firmware versions.
-  void HandleGetVersionInfo(const base::Value::List& args);
+  void HandleGetVersionInfo(const base::ListValue& args);
   void OnGetVersionInfoReady(std::string callback_id,
-                             base::Value::Dict version_info);
+                             base::DictValue version_info);
 
   // Retrieves the number of firmware updates available.
-  void HandleGetFirmwareUpdateCount(const base::Value::List& args);
+  void HandleGetFirmwareUpdateCount(const base::ListValue& args);
 
   // Retrieves channel info.
-  void HandleGetChannelInfo(const base::Value::List& args);
+  void HandleGetChannelInfo(const base::ListValue& args);
 
   // Checks whether we can update the firmware.
-  void HandleCanChangeFirmware(const base::Value::List& args);
+  void HandleCanChangeFirmware(const base::ListValue& args);
 
   // Checks whether we can change the current channel.
-  void HandleCanChangeChannel(const base::Value::List& args);
+  void HandleCanChangeChannel(const base::ListValue& args);
 
   // Callbacks for version_updater_->GetChannel calls.
   void OnGetCurrentChannel(std::string callback_id,
@@ -122,14 +122,14 @@ class AboutHandler : public settings::SettingsPageUIHandler,
                           const std::string& target_channel);
 
   // Applies deferred update, triggered by JS.
-  void HandleApplyDeferredUpdateAdvanced(const base::Value::List& args);
+  void HandleApplyDeferredUpdateAdvanced(const base::ListValue& args);
 
   // Checks for and applies update, triggered by JS.
-  void HandleRequestUpdate(const base::Value::List& args);
+  void HandleRequestUpdate(const base::ListValue& args);
 
   // Checks for and applies update over cellular connection, triggered by JS.
   // Update version and size should be included in the list of arguments.
-  void HandleRequestUpdateOverCellular(const base::Value::List& args);
+  void HandleRequestUpdateOverCellular(const base::ListValue& args);
 
   // Checks for and applies update over cellular connection.
   void RequestUpdateOverCellular(const std::string& update_version,
@@ -137,7 +137,7 @@ class AboutHandler : public settings::SettingsPageUIHandler,
 
   // Called once when the page has loaded to retrieve the TPM firmware update
   // status.
-  void HandleRefreshTPMFirmwareUpdateStatus(const base::Value::List& args);
+  void HandleRefreshTPMFirmwareUpdateStatus(const base::ListValue& args);
   void RefreshTPMFirmwareUpdateStatus(
       const std::set<ash::tpm_firmware_update::Mode>& modes);
 #endif
@@ -160,11 +160,11 @@ class AboutHandler : public settings::SettingsPageUIHandler,
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS)
-  void HandleOpenDiagnostics(const base::Value::List& args);
+  void HandleOpenDiagnostics(const base::ListValue& args);
 
-  void HandleOpenFirmwareUpdates(const base::Value::List& args);
+  void HandleOpenFirmwareUpdates(const base::ListValue& args);
 
-  void HandleGetRegulatoryInfo(const base::Value::List& args);
+  void HandleGetRegulatoryInfo(const base::ListValue& args);
 
   // Callback for when the directory with the regulatory label image and alt
   // text has been found.
@@ -180,7 +180,7 @@ class AboutHandler : public settings::SettingsPageUIHandler,
   // date. Will asynchronously resolve the provided callback with an object
   // containing a boolean indicating whether the device has reached/passed End
   // of Life, and an End Of Life description formatted with the month and year.
-  void HandleGetEndOfLifeInfo(const base::Value::List& args);
+  void HandleGetEndOfLifeInfo(const base::ListValue& args);
 
   // Callbacks for version_updater_->GetEolInfo calls.
   void OnGetEndOfLifeInfo(std::string callback_id,
@@ -189,21 +189,21 @@ class AboutHandler : public settings::SettingsPageUIHandler,
   std::u16string GetEndOfLifeMessage(base::Time eol_date) const;
 
   // Opens the end of life incentive URL.
-  void HandleOpenEndOfLifeIncentive(const base::Value::List& args);
+  void HandleOpenEndOfLifeIncentive(const base::ListValue& args);
 
   // Get the managed auto update cros setting.
-  void HandleIsManagedAutoUpdateEnabled(const base::Value::List& args);
+  void HandleIsManagedAutoUpdateEnabled(const base::ListValue& args);
 
   // Get the consumer auto update pref from update_engine.
-  void HandleIsConsumerAutoUpdateEnabled(const base::Value::List& args);
+  void HandleIsConsumerAutoUpdateEnabled(const base::ListValue& args);
 
   // Callbacks for version_updater_->IsConsumerAutoUpdateEnabled calls.
   void OnIsConsumerAutoUpdateEnabled(std::string callback_id,
                                      std::string feature,
                                      std::optional<bool> enabled);
 
-  void HandleSetConsumerAutoUpdate(const base::Value::List& args);
-  void HandleOpenProductLicenseOther(const base::Value::List& args);
+  void HandleSetConsumerAutoUpdate(const base::ListValue& args);
+  void HandleOpenProductLicenseOther(const base::ListValue& args);
 
   // Handles the check for extended updates eligibility.
   // |args| should have 4 values:
@@ -211,13 +211,13 @@ class AboutHandler : public settings::SettingsPageUIHandler,
   //   - [bool] Whether eol has passed
   //   - [bool] Whether extended updates date has passed
   //   - [bool] Whether opt-in is required for extended updates
-  void HandleIsExtendedUpdatesOptInEligible(const base::Value::List& args);
+  void HandleIsExtendedUpdatesOptInEligible(const base::ListValue& args);
 
   // Opens the Extended Updates dialog. |args| must be empty.
-  void HandleOpenExtendedUpdatesDialog(const base::Value::List& args);
+  void HandleOpenExtendedUpdatesDialog(const base::ListValue& args);
 
   // Records metric indicating that the Extended Updates option was shown.
-  void HandleRecordExtendedUpdatesShown(const base::Value::List& args);
+  void HandleRecordExtendedUpdatesShown(const base::ListValue& args);
 
   // Called when the |kDeviceExtendedAutoUpdateEnabled| setting is changed.
   void OnExtendedUpdatesSettingChanged();

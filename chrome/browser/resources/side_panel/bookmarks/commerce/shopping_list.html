@@ -254,18 +254,18 @@
           on-click="onProductClick_"
           on-auxclick="onProductAuxClick_"
           on-contextmenu="onProductContextMenu_">
-        <template is="dom-if" if="[[item.info.imageUrl.url.length]]" restamp>
+        <template is="dom-if" if="[[item.info.imageUrl.length]]" restamp>
           <div class="product-image-container item-image">
               <img class="product-image" is="cr-auto-img"
-                  auto-src="[[item.info.imageUrl.url]]"
+                  auto-src="[[item.info.imageUrl]]"
                   on-load="onImageLoadSuccess_"
                   on-error="onImageLoadError_"></img>
           </div>
         </template>
-        <template is="dom-if" if="[[!item.info.imageUrl.url.length]]" restamp>
+        <template is="dom-if" if="[[!item.info.imageUrl.length]]" restamp>
           <div class="favicon-image item-image"
               style="background-image:
-                  [[getFaviconUrl_(item.info.productUrl.url)]]">
+                  [[getFaviconUrl_(item.info.productUrl)]]">
           </div>
         </template>
         <div class="product-info" id="productInfo-[[index]]">

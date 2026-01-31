@@ -65,7 +65,6 @@
 #include "ash/wm/window_util.h"
 #include "ash/wm/wm_event.h"
 #include "base/command_line.h"
-#include "base/containers/contains.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/json/json_writer.h"
@@ -1800,7 +1799,7 @@ TEST_F(AcceleratorControllerTest, SideVolumeButtonLocation) {
 
   // Tests that |side_volume_button_location_| is read correctly if the location
   // file exists.
-  base::Value::Dict location;
+  base::DictValue location;
   location.Set(kVolumeButtonRegion, kVolumeButtonRegionScreen);
   location.Set(kVolumeButtonSide, kVolumeButtonSideLeft);
   base::ScopedTempDir file_tmp_dir;
@@ -2394,9 +2393,9 @@ TEST_F(AcceleratorControllerTest, DisallowedAtModalWindow) {
     actionsAllowedAtModalWindow.insert(action);
   }
   for (const auto& action : actionsAllowedAtModalWindow) {
-    EXPECT_TRUE(base::Contains(all_actions, action) ||
-                base::Contains(all_debug_actions, action) ||
-                base::Contains(all_dev_actions, action))
+    EXPECT_TRUE(all_actions.contains(action) ||
+                all_debug_actions.contains(action) ||
+                all_dev_actions.contains(action))
         << " action from kActionsAllowedAtModalWindow"
         << " not found in kAcceleratorData, kDebugAcceleratorData or"
         << " kDeveloperAcceleratorData action: " << action;
@@ -2406,7 +2405,7 @@ TEST_F(AcceleratorControllerTest, DisallowedAtModalWindow) {
   wm::ActivateWindow(window.get());
   ShellTestApi().SimulateModalWindowOpenForTest(true);
   for (const auto& action : all_actions) {
-    if (!base::Contains(actionsAllowedAtModalWindow, action)) {
+    if (!actionsAllowedAtModalWindow.contains(action)) {
       EXPECT_TRUE(controller_->PerformActionIfEnabled(action, {}))
           << " for action (disallowed at modal window): " << action;
     }
@@ -2509,7 +2508,7 @@ TEST_F(AcceleratorControllerTest, DisallowedWithNoWindow) {
   std::map<AcceleratorAction, ui::Accelerator> accelerators_needing_window;
   for (const AcceleratorData& accelerator_data : kAcceleratorData) {
     auto iter = actions_needing_window.find(accelerator_data.action);
-    if (!base::Contains(actions_needing_window, accelerator_data.action)) {
+    if (!actions_needing_window.contains(accelerator_data.action)) {
       continue;
     }
 

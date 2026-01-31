@@ -135,7 +135,7 @@ class DaemonProcessWin : public DaemonProcess {
   std::unique_ptr<DesktopSession> DoCreateDesktopSession(
       int terminal_id,
       const ScreenResolution& resolution,
-      bool virtual_terminal) override;
+      bool is_curtained) override;
   void DoCrashNetworkProcess(const base::Location& location) override;
   void LaunchNetworkProcess() override;
   void SendHostConfigToNetworkProcess(
@@ -260,10 +260,10 @@ bool DaemonProcessWin::OnDesktopSessionAgentAttached(
 std::unique_ptr<DesktopSession> DaemonProcessWin::DoCreateDesktopSession(
     int terminal_id,
     const ScreenResolution& resolution,
-    bool virtual_terminal) {
+    bool is_curtained) {
   DCHECK(caller_task_runner()->BelongsToCurrentThread());
 
-  if (virtual_terminal) {
+  if (is_curtained) {
     return DesktopSessionWin::CreateForVirtualTerminal(
         caller_task_runner(), io_task_runner(), this, terminal_id, resolution);
   } else {
@@ -290,7 +290,7 @@ void DaemonProcessWin::LaunchNetworkProcess() {
   }
 
   std::unique_ptr<base::CommandLine> target(new base::CommandLine(host_binary));
-  target->AppendSwitchASCII(kProcessTypeSwitchName, kProcessTypeHost);
+  target->AppendSwitchASCII(kProcessTypeSwitchName, kProcessTypeNetwork);
   target->CopySwitchesFrom(*base::CommandLine::ForCurrentProcess(),
                            kCopiedSwitchNames);
 
@@ -309,8 +309,7 @@ void DaemonProcessWin::SendHostConfigToNetworkProcess(
   LOG_IF(ERROR, !remoting_host_control_.is_connected())
       << "IPC channel not connected. HostConfig message will be dropped.";
 
-  std::optional<base::Value::Dict> config(
-      HostConfigFromJson(serialized_config));
+  std::optional<base::DictValue> config(HostConfigFromJson(serialized_config));
   if (!config.has_value()) {
     LOG(ERROR) << "Invalid host config, shutting down.";
     OnPermanentError(kInvalidHostConfigurationExitCode);

@@ -68,7 +68,7 @@ bool RealTimeUrlChecksAllowlistComponentInstallerPolicy::
 
 update_client::CrxInstaller::Result
 RealTimeUrlChecksAllowlistComponentInstallerPolicy::OnCustomInstall(
-    const base::Value::Dict& manifest,
+    const base::DictValue& manifest,
     const base::FilePath& install_dir) {
   return update_client::CrxInstaller::Result(0);  // Nothing custom here.
 }
@@ -84,7 +84,7 @@ RealTimeUrlChecksAllowlistComponentInstallerPolicy::GetInstalledPath(
 void RealTimeUrlChecksAllowlistComponentInstallerPolicy::ComponentReady(
     const base::Version& version,
     const base::FilePath& install_dir,
-    base::Value::Dict manifest) {
+    base::DictValue manifest) {
   base::ThreadPool::PostTask(
       FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
       base::BindOnce(&LoadFromDisk, GetInstalledPath(install_dir)));
@@ -92,7 +92,7 @@ void RealTimeUrlChecksAllowlistComponentInstallerPolicy::ComponentReady(
 
 // Called during startup and installation before ComponentReady().
 bool RealTimeUrlChecksAllowlistComponentInstallerPolicy::VerifyInstallation(
-    const base::Value::Dict& manifest,
+    const base::DictValue& manifest,
     const base::FilePath& install_dir) const {
   // No need to actually validate the proto here, since we'll do the checking
   // in |PopulateFromDynamicUpdate()|.

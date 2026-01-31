@@ -12,7 +12,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/threading/thread_checker.h"
-#include "chromeos/ash/experiences/arc/mojom/system_ui.mojom-shared.h"
 #include "chromeos/ash/experiences/arc/mojom/system_ui.mojom.h"
 #include "chromeos/ash/experiences/arc/session/connection_observer.h"
 #include "components/keyed_service/core/keyed_service.h"

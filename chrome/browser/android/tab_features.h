@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "chrome/common/buildflags.h"
 #include "ui/base/unowned_user_data/user_data_factory.h"
 
 class Profile;
@@ -16,6 +17,11 @@ class NewTabPagePreloadPipelineManager;
 namespace content {
 class WebContents;
 }  // namespace content
+
+namespace glic {
+class GlicInstanceHelper;
+class GlicSidePanelCoordinator;
+}  // namespace glic
 
 namespace sync_sessions {
 class SyncSessionsRouterTabHelper;
@@ -55,6 +61,9 @@ class TabFeatures {
       new_tab_page_preload_pipeline_manager_;
   std::unique_ptr<lens::TabContextualizationController>
       tab_contextualization_controller_;
+
+  std::unique_ptr<glic::GlicInstanceHelper> glic_instance_helper_;
+  std::unique_ptr<glic::GlicSidePanelCoordinator> glic_side_panel_coordinator_;
 };
 
 }  // namespace tabs

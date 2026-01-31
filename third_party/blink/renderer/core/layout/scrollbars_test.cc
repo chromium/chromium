@@ -2825,18 +2825,15 @@ TEST_P(ScrollbarsTest, PLSADisposeShouldClearPointerInLayers) {
 
   Document& document = GetDocument();
   Element* div = document.getElementById(AtomicString("div"));
-  auto* scrollable_div = GetScrollableArea(*div);
+  PaintLayerScrollableArea* plsa = GetScrollableArea(*div);
 
-  ASSERT_TRUE(scrollable_div);
-
-  PaintLayer* paint_layer = scrollable_div->Layer();
-  ASSERT_TRUE(paint_layer);
-  EXPECT_EQ(scrollable_div, paint_layer->GetScrollableArea());
+  ASSERT_TRUE(plsa);
+  EXPECT_EQ(plsa, plsa->Layer()->GetScrollableArea());
 
   div->setAttribute(html_names::kClassAttr, AtomicString("hide"));
   document.UpdateStyleAndLayout(DocumentUpdateReason::kTest);
 
-  EXPECT_FALSE(paint_layer->GetScrollableArea());
+  EXPECT_FALSE(GetScrollableArea(*div));
 }
 
 TEST_P(ScrollbarsTest, OverlayScrollbarHitTest) {

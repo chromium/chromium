@@ -57,14 +57,14 @@ class APIBindingsSystemTest : public APIBindingTest {
   void AddConsoleError(v8::Local<v8::Context> context,
                        const std::string& error);
 
-  // Returns the base::Value::Dict representing the schema with the given API
+  // Returns the base::DictValue representing the schema with the given API
   // name.
-  const base::Value::Dict& GetAPISchema(const std::string& api_name);
+  const base::DictValue& GetAPISchema(const std::string& api_name);
 
   // Callback for event listeners changing.
   void OnEventListenersChanged(const std::string& event_name,
                                binding::EventListenersChanged changed,
-                               const base::Value::Dict* filter,
+                               const base::DictValue* filter,
                                bool was_manual,
                                v8::Local<v8::Context> context);
 
@@ -96,7 +96,7 @@ class APIBindingsSystemTest : public APIBindingTest {
 
  private:
   // The API schemas for the fake APIs.
-  std::map<std::string, base::Value::Dict> api_schemas_;
+  std::map<std::string, base::DictValue> api_schemas_;
 
   // The APIBindingsSystem associated with the test. Safe to use across multiple
   // contexts.

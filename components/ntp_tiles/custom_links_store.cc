@@ -37,7 +37,7 @@ std::vector<CustomLinksManager::Link> CustomLinksStore::RetrieveLinks() {
 
   std::vector<CustomLinksManager::Link> links;
 
-  const base::Value::List& stored_links =
+  const base::ListValue& stored_links =
       prefs_->GetList(prefs::kCustomLinksList);
 
   for (const base::Value& link : stored_links) {
@@ -72,9 +72,9 @@ std::vector<CustomLinksManager::Link> CustomLinksStore::RetrieveLinks() {
 
 void CustomLinksStore::StoreLinks(
     const std::vector<CustomLinksManager::Link>& links) {
-  base::Value::List new_link_list;
+  base::ListValue new_link_list;
   for (const CustomLinksManager::Link& link : links) {
-    base::Value::Dict new_link;
+    base::DictValue new_link;
     new_link.Set(kDictionaryKeyUrl, link.url.spec());
     new_link.Set(kDictionaryKeyTitle, link.title);
     new_link.Set(kDictionaryKeyIsMostVisited, link.is_most_visited);

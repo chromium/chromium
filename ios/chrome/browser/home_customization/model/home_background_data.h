@@ -31,12 +31,12 @@ struct FramingCoordinates {
                      double width_val,
                      double height_val);
 
-  // Creates FramingCoordinates from a base::Value::Dict.
+  // Creates FramingCoordinates from a base::DictValue.
   static std::optional<FramingCoordinates> FromDict(
-      const base::Value::Dict& dict);
+      const base::DictValue& dict);
 
-  // Converts to base::Value::Dict for serialization.
-  base::Value::Dict ToDict() const;
+  // Converts to base::DictValue for serialization.
+  base::DictValue ToDict() const;
 
   // Equality operator.
   friend bool operator==(const FramingCoordinates&,
@@ -49,12 +49,12 @@ struct HomeUserUploadedBackground {
   std::string image_path;
   FramingCoordinates framing_coordinates;
 
-  // Creates HomeUserUploadedBackground from a base::Value::Dict.
+  // Creates HomeUserUploadedBackground from a base::DictValue.
   static std::optional<HomeUserUploadedBackground> FromDict(
-      const base::Value::Dict& dict);
+      const base::DictValue& dict);
 
-  // Converts to base::Value::Dict for serialization.
-  base::Value::Dict ToDict() const;
+  // Converts to base::DictValue for serialization.
+  base::DictValue ToDict() const;
 
   // Equality operator.
   friend bool operator==(const HomeUserUploadedBackground&,

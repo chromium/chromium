@@ -432,7 +432,7 @@ class NET_EXPORT TransportSecurityState {
   typedef std::map<HashedHost, STSState> STSStateMap;
   typedef std::map<HashedHost, PKPState> PKPStateMap;
 
-  base::Value::Dict NetLogUpgradeToSSLParam(std::string_view host);
+  base::DictValue NetLogUpgradeToSSLParam(std::string_view host);
 
   // IsBuildTimely returns true if the current build is new enough ensure that
   // built in security information (i.e. HSTS preloading and pinning

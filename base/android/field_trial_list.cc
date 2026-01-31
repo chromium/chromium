@@ -55,8 +55,8 @@ static std::string JNI_FieldTrialList_FindFullName(JNIEnv* env,
   return base::FieldTrialList::FindFullName(trial_name);
 }
 
-static jboolean JNI_FieldTrialList_TrialExists(JNIEnv* env,
-                                               std::string& trial_name) {
+static bool JNI_FieldTrialList_TrialExists(JNIEnv* env,
+                                           std::string& trial_name) {
   return base::FieldTrialList::TrialExists(trial_name);
 }
 
@@ -110,9 +110,9 @@ static void JNI_FieldTrialList_LogActiveTrials(JNIEnv* env) {
   }
 }
 
-static jboolean JNI_FieldTrialList_CreateFieldTrial(JNIEnv* env,
-                                                    std::string& trial_name,
-                                                    std::string& group_name) {
+static bool JNI_FieldTrialList_CreateFieldTrial(JNIEnv* env,
+                                                std::string& trial_name,
+                                                std::string& group_name) {
   return base::FieldTrialList::CreateFieldTrial(trial_name, group_name) !=
          nullptr;
 }

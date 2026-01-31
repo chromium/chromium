@@ -101,6 +101,7 @@
 
 #if BUILDFLAG(IS_ANDROID)
 #include "base/android/content_uri_utils.h"
+#include "base/android/device_info.h"
 #include "base/android/path_utils.h"
 #include "base/process/process_handle.h"
 #include "chrome/browser/android/tab_android.h"
@@ -131,7 +132,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
-#include "chrome/common/actor.mojom-data-view.h"
+#include "chrome/common/actor.mojom-shared.h"
 #endif
 
 #if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
@@ -148,7 +149,7 @@
 #endif
 
 #if BUILDFLAG(ENTERPRISE_CONTENT_ANALYSIS)
-#include "chrome/browser/safe_browsing/cloud_content_scanning/binary_upload_service.h"
+#include "components/enterprise/connectors/core/cloud_content_scanning/binary_upload_service.h"
 #include "components/enterprise/obfuscation/core/download_obfuscator.h"
 #endif
 
@@ -177,8 +178,6 @@
 #include "components/enterprise/connectors/core/reporting_event_router.h"
 #endif  // BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS)
 #endif  // BUILDFLAG(SAFE_BROWSING_DOWNLOAD_PROTECTION)
-
-#include "base/android/device_info.h"
 
 using content::BrowserThread;
 using content::DownloadManager;
@@ -505,6 +504,8 @@ download::DownloadDangerType SavePackageDangerType(
       return download::DOWNLOAD_DANGER_TYPE_BLOCKED_TOO_LARGE;
     case safe_browsing::DownloadCheckResult::FORCE_SAVE_TO_GDRIVE:
       return download::DOWNLOAD_DANGER_TYPE_FORCE_SAVE_TO_GDRIVE;
+    case safe_browsing::DownloadCheckResult::FORCE_SAVE_TO_ONEDRIVE:
+      return download::DOWNLOAD_DANGER_TYPE_FORCE_SAVE_TO_ONEDRIVE;
     case safe_browsing::DownloadCheckResult::SENSITIVE_CONTENT_BLOCK:
       return download::DOWNLOAD_DANGER_TYPE_SENSITIVE_CONTENT_BLOCK;
     case safe_browsing::DownloadCheckResult::BLOCKED_SCAN_FAILED:
@@ -851,7 +852,8 @@ bool ChromeDownloadManagerDelegate::IsDangerTypeBlocked(
          danger_type ==
              download::DOWNLOAD_DANGER_TYPE_SENSITIVE_CONTENT_BLOCK ||
          danger_type == download::DOWNLOAD_DANGER_TYPE_BLOCKED_SCAN_FAILED ||
-         danger_type == download::DOWNLOAD_DANGER_TYPE_FORCE_SAVE_TO_GDRIVE;
+         danger_type == download::DOWNLOAD_DANGER_TYPE_FORCE_SAVE_TO_GDRIVE ||
+         danger_type == download::DOWNLOAD_DANGER_TYPE_FORCE_SAVE_TO_ONEDRIVE;
 }
 
 bool ChromeDownloadManagerDelegate::IsDownloadReadyForCompletion(
@@ -937,7 +939,9 @@ bool ChromeDownloadManagerDelegate::IsDownloadReadyForCompletion(
             // Specifying a dangerous type here would take precedence over the
             // blocking of the file.
             download::DOWNLOAD_DANGER_TYPE_NOT_DANGEROUS,
-            download::DOWNLOAD_INTERRUPT_REASON_FILE_BLOCKED);
+            danger_type == download::DOWNLOAD_DANGER_TYPE_FORCE_SAVE_TO_GDRIVE
+                ? download::DOWNLOAD_INTERRUPT_REASON_LOCAL_DOWNLOAD_BLOCKED
+                : download::DOWNLOAD_INTERRUPT_REASON_FILE_BLOCKED);
       } else {
         item->OnContentCheckCompleted(
             download::DOWNLOAD_DANGER_TYPE_DANGEROUS_FILE,
@@ -1053,7 +1057,7 @@ bool ChromeDownloadManagerDelegate::ShouldObfuscateDownload(
 
   // Skip obfuscation for large files if size is known.
   if (static_cast<size_t>(item->GetTotalBytes()) >
-      safe_browsing::BinaryUploadService::kMaxUploadSizeBytes) {
+      enterprise_connectors::BinaryUploadService::kMaxUploadSizeBytes) {
     return false;
   }
 
@@ -1776,6 +1780,9 @@ void ChromeDownloadManagerDelegate::CheckClientDownloadDone(
       case safe_browsing::DownloadCheckResult::FORCE_SAVE_TO_GDRIVE:
         danger_type = download::DOWNLOAD_DANGER_TYPE_FORCE_SAVE_TO_GDRIVE;
         break;
+      case safe_browsing::DownloadCheckResult::FORCE_SAVE_TO_ONEDRIVE:
+        danger_type = download::DOWNLOAD_DANGER_TYPE_FORCE_SAVE_TO_ONEDRIVE;
+        break;
       case safe_browsing::DownloadCheckResult::DEEP_SCANNED_SAFE:
         danger_type = download::DOWNLOAD_DANGER_TYPE_DEEP_SCANNED_SAFE;
         break;
@@ -1848,7 +1855,10 @@ void ChromeDownloadManagerDelegate::CheckClientDownloadDone(
             item->GetTargetFilePath().AsUTF8Unsafe(), item);
       }
       item->OnContentCheckCompleted(
-          danger_type, download::DOWNLOAD_INTERRUPT_REASON_FILE_BLOCKED);
+          danger_type,
+          danger_type == download::DOWNLOAD_DANGER_TYPE_FORCE_SAVE_TO_GDRIVE
+              ? download::DOWNLOAD_INTERRUPT_REASON_LOCAL_DOWNLOAD_BLOCKED
+              : download::DOWNLOAD_INTERRUPT_REASON_FILE_BLOCKED);
     } else {
       item->OnContentCheckCompleted(danger_type,
                                     download::DOWNLOAD_INTERRUPT_REASON_NONE);
@@ -1932,6 +1942,7 @@ void ChromeDownloadManagerDelegate::CheckSavePackageScanningDone(
     case safe_browsing::DownloadCheckResult::SENSITIVE_CONTENT_BLOCK:
     case safe_browsing::DownloadCheckResult::BLOCKED_SCAN_FAILED:
     case safe_browsing::DownloadCheckResult::FORCE_SAVE_TO_GDRIVE:
+    case safe_browsing::DownloadCheckResult::FORCE_SAVE_TO_ONEDRIVE:
       enterprise_connectors::RunSavePackageScanningCallback(item,
                                                             /*allowed*/ false);
       break;

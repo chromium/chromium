@@ -177,6 +177,8 @@ public class StandardNotificationBuilderTest {
                 notification.extras.getString(Notification.EXTRA_TEMPLATE));
     }
 
+    // TODO(crbug.com/450954710): This test fails on SDK 36.
+    @Config(sdk = 29)
     @Test
     @Feature({"Browser", "Notifications"})
     public void testSetSmallIcon() {

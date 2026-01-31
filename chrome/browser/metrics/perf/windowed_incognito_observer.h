@@ -7,11 +7,12 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/no_destructor.h"
+#include "base/scoped_observation.h"
 #include "base/sequence_checker.h"
 #include "base/synchronization/lock.h"
-#include "chrome/browser/ui/browser_list_observer.h"
+#include "chrome/browser/ui/browser_window/public/browser_collection_observer.h"
 
-class Browser;
+class GlobalBrowserCollection;
 
 namespace metrics {
 
@@ -60,9 +61,9 @@ class WindowedIncognitoObserver {
 // WindowedIncognitoMonitor watches for any incognito window being opened or
 // closed from the time it is instantiated to the time it is destroyed. The
 // monitor is affine to the UI thread: instantiation, destruction and the
-// BrowserListObserver callbacks are called on the UI thread. The other methods
-// for creating and serving WindowedIncognitoObserver are thread-safe.
-class WindowedIncognitoMonitor : public BrowserListObserver {
+// BrowserCollectionObserver callbacks are called on the UI thread. The other
+// methods for creating and serving WindowedIncognitoObserver are thread-safe.
+class WindowedIncognitoMonitor : public BrowserCollectionObserver {
  public:
   // Must be called on the UI thread before any observers are created.
   static void Init();
@@ -97,9 +98,9 @@ class WindowedIncognitoMonitor : public BrowserListObserver {
   // monitor.
   bool IncognitoLaunched(uint64_t num_prev_incognito_opened) const;
 
-  // BrowserListObserver implementation.
-  void OnBrowserAdded(Browser* browser) override;
-  void OnBrowserRemoved(Browser* browser) override;
+  // BrowserCollectionObserver implementation.
+  void OnBrowserCreated(BrowserWindowInterface* browser) override;
+  void OnBrowserClosed(BrowserWindowInterface* browser) override;
 
   // For testing.
   int num_active_incognito_windows() const {
@@ -121,6 +122,9 @@ class WindowedIncognitoMonitor : public BrowserListObserver {
   int num_active_incognito_windows_;
   // The number of incognito windows we have ever seen.
   uint64_t num_incognito_window_opened_;
+
+  base::ScopedObservation<GlobalBrowserCollection, BrowserCollectionObserver>
+      browser_collection_observation_{this};
 
   SEQUENCE_CHECKER(sequence_checker_);
 };

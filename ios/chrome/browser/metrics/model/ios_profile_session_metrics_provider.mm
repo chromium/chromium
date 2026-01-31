@@ -7,6 +7,7 @@
 #import <algorithm>
 
 #import "base/metrics/histogram_functions.h"
+#import "components/activity_reporter/activity_reporter.h"
 #import "ios/chrome/browser/metrics/model/ios_profile_session_durations_service.h"
 #import "ios/chrome/browser/metrics/model/ios_profile_session_durations_service_factory.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
@@ -23,6 +24,9 @@ class IOSProfileSessionMetricsProvider : public metrics::MetricsProvider {
         GetLoadedProfiles(), &IOSProfileSessionMetricsProvider::IsSessionActive,
         &IOSProfileSessionDurationsServiceFactory::GetForProfile);
     base::UmaHistogramBoolean("Session.IsActive", session_is_active);
+    if (session_is_active) {
+      GetApplicationContext()->GetActivityReporter()->ReportActive();
+    }
   }
 
  private:

@@ -185,9 +185,10 @@ TEST(LayoutLocaleTest, BreakKeyword) {
         LayoutLocale::CreateForTesting(AtomicString(test.locale));
     EXPECT_EQ(test.expected,
               locale->LocaleWithBreakKeyword(test.strictness, test.use_phrase))
-        << String::Format("'%s' with line-break %d, phrase=%d should be '%s'",
-                          test.locale, static_cast<int>(test.strictness),
-                          static_cast<int>(test.use_phrase), test.expected);
+        << UNSAFE_TODO(String::Format(
+               "'%s' with line-break %d, phrase=%d should be '%s'", test.locale,
+               static_cast<int>(test.strictness),
+               static_cast<int>(test.use_phrase), test.expected));
   }
 }
 

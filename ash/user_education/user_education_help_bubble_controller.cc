@@ -137,7 +137,7 @@ void UserEducationHelpBubbleController::NotifyHelpBubbleShown(
     base::PassKey<HelpBubbleViewAsh>,
     const HelpBubbleViewAsh* help_bubble_view) {
   // Ignore event if the associated help bubble has already been shown.
-  if (!base::Contains(help_bubble_metadata_by_key_, help_bubble_view)) {
+  if (!help_bubble_metadata_by_key_.contains(help_bubble_view)) {
     help_bubble_metadata_by_key_.emplace(
         std::piecewise_construct, std::forward_as_tuple(help_bubble_view),
         std::forward_as_tuple(help_bubble_view,

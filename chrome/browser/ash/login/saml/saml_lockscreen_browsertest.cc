@@ -1186,7 +1186,7 @@ IN_PROC_BROWSER_TEST_F(SamlUnlockTest, SAMLBlocklistNavigationDisallowed) {
       BrowserContextHelper::Get()->GetLockScreenBrowserContext())
       ->GetPrefs()
       ->SetList(policy::policy_prefs::kUrlBlocklist,
-                base::Value::List().Append(kSAMLLinkedPageURLPattern));
+                base::ListValue().Append(kSAMLLinkedPageURLPattern));
 
   test::JSChecker signin_frame_js = reauth_dialog_helper->SigninFrameJS();
   signin_frame_js.CreateVisibilityWaiter(true, kSAMLLink)->Wait();

@@ -12,7 +12,7 @@
 #include "chrome/browser/sync/test/integration/web_apps/web_apps_sync_test_base.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
-#include "chrome/browser/ui/browser_dialogs.h"
+#include "chrome/browser/ui/dialogs/browser_dialogs.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
 #include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
@@ -194,7 +194,6 @@ INSTANTIATE_TEST_SUITE_P(,
 IN_PROC_BROWSER_TEST_P(TwoClientWebAppsBMOSyncTest,
                        DISABLED_SyncDoubleInstallation) {
   ASSERT_TRUE(SetupClients());
-  ASSERT_TRUE(embedded_test_server()->Start());
   ASSERT_THAT(GetAllAppIdsForProfile(GetProfile(0)),
               ElementsAreArray(GetAllAppIdsForProfile(GetProfile(1))));
 
@@ -281,7 +280,6 @@ IN_PROC_BROWSER_TEST_P(TwoClientWebAppsBMOSyncTest, DisplayMode) {
   ASSERT_TRUE(SetupSync());
   ASSERT_THAT(GetAllAppIdsForProfile(GetProfile(0)),
               ElementsAreArray(GetAllAppIdsForProfile(GetProfile(1))));
-  ASSERT_TRUE(embedded_test_server()->Start());
 
   WebAppTestInstallObserver install_observer(GetProfile(1));
   WebAppTestInstallWithOsHooksObserver install_observer_with_os_hooks(
@@ -327,7 +325,6 @@ IN_PROC_BROWSER_TEST_P(TwoClientWebAppsBMOSyncTest,
   ASSERT_TRUE(SetupSync());
   ASSERT_THAT(GetAllAppIdsForProfile(GetProfile(0)),
               ElementsAreArray(GetAllAppIdsForProfile(GetProfile(1))));
-  ASSERT_TRUE(embedded_test_server()->Start());
 
   // Install web app to both profiles.
   webapps::AppId app_id = InstallAppAsUserInitiated(GetProfile(0));
@@ -349,7 +346,6 @@ IN_PROC_BROWSER_TEST_P(TwoClientWebAppsBMOSyncTest, NotSynced) {
   ASSERT_TRUE(SetupSync());
   ASSERT_THAT(GetAllAppIdsForProfile(GetProfile(0)),
               ElementsAreArray(GetAllAppIdsForProfile(GetProfile(1))));
-  ASSERT_TRUE(embedded_test_server()->Start());
 
   // Install a non-syncing web app.
   webapps::AppId app_id = InstallAppAsUserInitiated(
@@ -361,14 +357,13 @@ IN_PROC_BROWSER_TEST_P(TwoClientWebAppsBMOSyncTest, NotSynced) {
   // profile 1.
   EXPECT_THAT(GetAllAppIdsForProfile(GetProfile(0)),
               Not(ElementsAreArray(GetAllAppIdsForProfile(GetProfile(1)))));
-  EXPECT_FALSE(GetRegistrar(GetProfile(1)).IsInRegistrar(app_id));
+  EXPECT_FALSE(GetRegistrar(GetProfile(1)).GetInstallState(app_id).has_value());
 }
 
 IN_PROC_BROWSER_TEST_P(TwoClientWebAppsBMOSyncTest, NotSyncedThenSynced) {
   ASSERT_TRUE(SetupSync());
   ASSERT_THAT(GetAllAppIdsForProfile(GetProfile(0)),
               ElementsAreArray(GetAllAppIdsForProfile(GetProfile(1))));
-  ASSERT_TRUE(embedded_test_server()->Start());
 
   // Install a non-syncing web app.
   webapps::AppId app_id = InstallAppAsUserInitiated(
@@ -407,7 +402,6 @@ IN_PROC_BROWSER_TEST_P(TwoClientWebAppsBMOSyncTest,
   ASSERT_TRUE(SetupSync());
   ASSERT_THAT(GetAllAppIdsForProfile(GetProfile(0)),
               ElementsAreArray(GetAllAppIdsForProfile(GetProfile(1))));
-  ASSERT_TRUE(embedded_test_server()->Start());
 
   // Install a non-syncing web app.
   webapps::AppId app_id = InstallAppAsUserInitiated(
@@ -445,7 +439,6 @@ IN_PROC_BROWSER_TEST_P(TwoClientWebAppsBMOSyncTest, AppSortingSynced) {
   ASSERT_TRUE(SetupSync());
   ASSERT_THAT(GetAllAppIdsForProfile(GetProfile(0)),
               ElementsAreArray(GetAllAppIdsForProfile(GetProfile(1))));
-  ASSERT_TRUE(embedded_test_server()->Start());
 
   webapps::AppId app_id = InstallAppAsUserInitiated(GetProfile(0));
 
@@ -472,7 +465,6 @@ IN_PROC_BROWSER_TEST_P(TwoClientWebAppsBMOSyncTest,
   ASSERT_TRUE(SetupSync());
   ASSERT_THAT(GetAllAppIdsForProfile(GetProfile(0)),
               ElementsAreArray(GetAllAppIdsForProfile(GetProfile(1))));
-  ASSERT_TRUE(embedded_test_server()->Start());
 
   // Install two different apps.
   webapps::AppId app_id1 = InstallAppAsUserInitiated(GetProfile(0));
@@ -527,7 +519,6 @@ IN_PROC_BROWSER_TEST_P(TwoClientWebAppsBMOSyncTest, MAYBE_UninstallSynced) {
   ASSERT_TRUE(SetupSync());
   ASSERT_THAT(GetAllAppIdsForProfile(GetProfile(0)),
               ElementsAreArray(GetAllAppIdsForProfile(GetProfile(1))));
-  ASSERT_TRUE(embedded_test_server()->Start());
 
   webapps::AppId app_id;
   // Install & uninstall on profile 0, and validate profile 1 sees it.
@@ -575,7 +566,6 @@ IN_PROC_BROWSER_TEST_P(TwoClientWebAppsBMOSyncTest, UninstallDoesNotReinstall) {
   ASSERT_TRUE(SetupSync());
   ASSERT_THAT(GetAllAppIdsForProfile(GetProfile(0)),
               ElementsAreArray(GetAllAppIdsForProfile(GetProfile(1))));
-  ASSERT_TRUE(embedded_test_server()->Start());
 
   webapps::AppId app_id;
   // Install & uninstall on profile 0, and validate profile 1 sees it.
@@ -650,7 +640,6 @@ IN_PROC_BROWSER_TEST_P(TwoClientWebAppsBMOSyncTest,
   ASSERT_TRUE(SetupSync());
   ASSERT_THAT(GetAllAppIdsForProfile(GetProfile(0)),
               ElementsAreArray(GetAllAppIdsForProfile(GetProfile(1))));
-  ASSERT_TRUE(embedded_test_server()->Start());
 
   // Install & uninstall on profile 0, and validate profile 1 sees it.
   {

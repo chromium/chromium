@@ -6348,7 +6348,6 @@
         <!-- End of Feedback Tool -->
 
         <!-- Shortcut Customization -->
-        <!-- TODO(b/340668387): Update strings for split modifier keyboard.-->
         <message name="IDS_SHORTCUT_CUSTOMIZATION_APP_TITLE" desc="Title of the app">
           Key Shortcuts
         </message>

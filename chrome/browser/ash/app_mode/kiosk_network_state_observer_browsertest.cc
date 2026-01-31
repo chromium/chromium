@@ -72,7 +72,7 @@ WiFiServiceInfo ServiceInfoWithSuffix(std::string suffix) {
 
 bool IsPropertyValueEqualsTo(std::string key,
                              base::Value expected_value,
-                             const base::Value::Dict* service_properties) {
+                             const base::DictValue* service_properties) {
   const base::Value* value = service_properties->Find(key);
   return !!value && (*value == expected_value);
 }
@@ -157,7 +157,7 @@ class KioskNetworkStateObserverTest
     if (!exposure_attempt_.Take()) {
       return false;
     }
-    const base::Value::Dict* service_properties =
+    const base::DictValue* service_properties =
         network_helper().service_test()->GetServiceProperties(
             wifi.service_path);
     if (!service_properties) {
@@ -297,7 +297,7 @@ IN_PROC_BROWSER_TEST_P(KioskNetworkStateObserverTest, ExposeOnlyActiveWiFi) {
   UpdateActiveWiFiCredentialsScopeChangePolicy(true);
 
   EXPECT_FALSE(IsWiFiSuccessfullyExposedToDeviceLevel(kOnlineService));
-  const base::Value::Dict* service_properties =
+  const base::DictValue* service_properties =
       network_helper().service_test()->GetServiceProperties(
           kIdleService.service_path);
   ASSERT_NE(service_properties, nullptr);

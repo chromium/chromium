@@ -118,66 +118,67 @@ TEST_F(ConvertToWebRtcVideoFrameBufferTest, ToI420ADownScale) {
 }
 
 TEST_F(ConvertToWebRtcVideoFrameBufferTest,
-       Nv12WrapsGmbWhenNoScalingNeeededWithFeature) {
+       Nv12WrapsMappableSIWhenNoScalingNeeededWithFeature) {
   const gfx::Size kCodedSize(1280, 960);
   const gfx::Rect kVisibleRect(0, 120, 1280, 720);
   // Same size as visible rect so no scaling.
   const gfx::Size kNaturalSize = kVisibleRect.size();
   auto resources = WebRtcVideoFrameAdapter::SharedResources::Create(nullptr);
 
-  auto gmb_frame = CreateTestFrame(
+  auto mappable_si_frame = CreateTestFrame(
       kCodedSize, kVisibleRect, kNaturalSize,
       media::VideoFrame::STORAGE_MAPPABLE_SHARED_IMAGE, test_sii_.get());
 
   // The adapter should report width and height from the natural size for
-  // VideoFrame backed by GpuMemoryBuffer.
-  webrtc::scoped_refptr<webrtc::VideoFrameBuffer> gmb_frame_buffer =
-      ConvertToWebRtcVideoFrameBuffer(std::move(gmb_frame), resources);
-  EXPECT_EQ(gmb_frame_buffer->width(), kNaturalSize.width());
-  EXPECT_EQ(gmb_frame_buffer->height(), kNaturalSize.height());
+  // VideoFrame backed by MappableSI.
+  webrtc::scoped_refptr<webrtc::VideoFrameBuffer> mappable_si_frame_buffer =
+      ConvertToWebRtcVideoFrameBuffer(std::move(mappable_si_frame), resources);
+  EXPECT_EQ(mappable_si_frame_buffer->width(), kNaturalSize.width());
+  EXPECT_EQ(mappable_si_frame_buffer->height(), kNaturalSize.height());
 
   // Under feature, expect that the adapted frame is NV12 with frame should
   // have the same size as the natural size.
-  auto* nv12_frame = gmb_frame_buffer->GetNV12();
+  auto* nv12_frame = mappable_si_frame_buffer->GetNV12();
   ASSERT_TRUE(nv12_frame);
   EXPECT_EQ(webrtc::VideoFrameBuffer::Type::kNV12, nv12_frame->type());
   EXPECT_EQ(nv12_frame->width(), kNaturalSize.width());
   EXPECT_EQ(nv12_frame->height(), kNaturalSize.height());
 
   // Even though we have an NV12 frame, ToI420 should return an I420 frame.
-  auto i420_frame = gmb_frame_buffer->ToI420();
+  auto i420_frame = mappable_si_frame_buffer->ToI420();
   ASSERT_TRUE(i420_frame);
   EXPECT_EQ(i420_frame->width(), kNaturalSize.width());
   EXPECT_EQ(i420_frame->height(), kNaturalSize.height());
 }
 
-TEST_F(ConvertToWebRtcVideoFrameBufferTest, Nv12ScalesGmbWithFeature) {
+TEST_F(ConvertToWebRtcVideoFrameBufferTest,
+       Nv12ScalesMappableSharedImageWithFeature) {
   const gfx::Size kCodedSize(1280, 960);
   const gfx::Rect kVisibleRect(0, 120, 1280, 720);
   const gfx::Size kNaturalSize(640, 360);
   auto resources = WebRtcVideoFrameAdapter::SharedResources::Create(nullptr);
 
-  auto gmb_frame = CreateTestFrame(
+  auto mappable_si_frame = CreateTestFrame(
       kCodedSize, kVisibleRect, kNaturalSize,
       media::VideoFrame::STORAGE_MAPPABLE_SHARED_IMAGE, test_sii_.get());
 
   // The adapter should report width and height from the natural size for
-  // VideoFrame backed by GpuMemoryBuffer.
-  webrtc::scoped_refptr<webrtc::VideoFrameBuffer> gmb_frame_buffer =
-      ConvertToWebRtcVideoFrameBuffer(gmb_frame, resources);
-  EXPECT_EQ(gmb_frame_buffer->width(), kNaturalSize.width());
-  EXPECT_EQ(gmb_frame_buffer->height(), kNaturalSize.height());
+  // VideoFrame backed by MappableSI.
+  webrtc::scoped_refptr<webrtc::VideoFrameBuffer> mappable_si_frame_buffer =
+      ConvertToWebRtcVideoFrameBuffer(mappable_si_frame, resources);
+  EXPECT_EQ(mappable_si_frame_buffer->width(), kNaturalSize.width());
+  EXPECT_EQ(mappable_si_frame_buffer->height(), kNaturalSize.height());
 
   // Under feature, expect that the adapted frame is NV12 with frame should
   // have the same size as the natural size.
-  auto* nv12_frame = gmb_frame_buffer->GetNV12();
+  auto* nv12_frame = mappable_si_frame_buffer->GetNV12();
   ASSERT_TRUE(nv12_frame);
   EXPECT_EQ(webrtc::VideoFrameBuffer::Type::kNV12, nv12_frame->type());
   EXPECT_EQ(nv12_frame->width(), kNaturalSize.width());
   EXPECT_EQ(nv12_frame->height(), kNaturalSize.height());
 
   // Even though we have an NV12 frame, ToI420 should return an I420 frame.
-  auto i420_frame = gmb_frame_buffer->ToI420();
+  auto i420_frame = mappable_si_frame_buffer->ToI420();
   ASSERT_TRUE(i420_frame);
   EXPECT_EQ(i420_frame->width(), kNaturalSize.width());
   EXPECT_EQ(i420_frame->height(), kNaturalSize.height());

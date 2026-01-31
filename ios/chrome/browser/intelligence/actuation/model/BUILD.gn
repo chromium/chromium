@@ -1,0 +1,96 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("model") {
+  sources = [
+    "actuation_service.h",
+    "actuation_service.mm",
+    "actuation_service_factory.h",
+    "actuation_service_factory.mm",
+    "actuation_tool_factory.h",
+    "actuation_tool_factory.mm",
+  ]
+  public_deps = [ "//ios/chrome/browser/intelligence/actuation/model/tools:actuation_interface" ]
+  deps = [
+    "//base",
+    "//components/keyed_service/core",
+    "//components/optimization_guide/proto:optimization_guide_proto",
+    "//ios/chrome/browser/intelligence/actuation/model/tools:actuation_interface",
+    "//ios/chrome/browser/intelligence/actuation/model/tools:navigate_tool",
+    "//ios/chrome/browser/intelligence/features",
+    "//ios/chrome/browser/shared/model/browser",
+    "//ios/chrome/browser/shared/model/profile",
+    "//ios/chrome/browser/shared/model/profile:profile_keyed_service_factory",
+    "//ios/chrome/browser/shared/model/web_state_list",
+    "//ios/chrome/browser/url_loading/model",
+    "//ios/web/public",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [
+    "actuation_service_unittest.mm",
+    "actuation_tool_factory_unittest.mm",
+  ]
+  deps = [
+    ":model",
+    "//base/test:test_support",
+    "//components/optimization_guide/proto:optimization_guide_proto",
+    "//ios/chrome/browser/intelligence/actuation/model/tools:actuation_interface",
+    "//ios/chrome/browser/intelligence/actuation/model/tools:navigate_tool",
+    "//ios/chrome/browser/intelligence/features",
+    "//ios/chrome/browser/shared/model/browser",
+    "//ios/chrome/browser/shared/model/browser/test:test_support",
+    "//ios/chrome/browser/shared/model/profile/test",
+    "//ios/chrome/browser/shared/model/web_state_list",
+    "//ios/web/public/test/fakes",
+    "//testing/gtest",
+  ]
+}
+
+source_set("eg_app_support+eg2") {
+  configs += [ "//build/config/ios:xctest_config" ]
+  testonly = true
+  sources = [
+    "actuation_app_interface.h",
+    "actuation_app_interface.mm",
+  ]
+  deps = [
+    ":model",
+    "//base",
+    "//components/optimization_guide/proto:optimization_guide_proto",
+    "//ios/chrome/browser/shared/model/profile",
+    "//ios/chrome/test/app:test_support",
+  ]
+}
+
+source_set("eg_test_support+eg2") {
+  configs += [ "//build/config/ios:xctest_config" ]
+  testonly = true
+  sources = [
+    "actuation_app_interface.h",
+    "actuation_app_interface_stub.mm",
+  ]
+  deps = [
+    "//ios/chrome/test:eg_test_support+eg2",
+    "//ios/chrome/test/earl_grey:eg_test_support+eg2",
+    "//ios/testing/earl_grey:eg_test_support+eg2",
+  ]
+}
+
+source_set("eg2_tests") {
+  configs += [ "//build/config/ios:xctest_config" ]
+  testonly = true
+  sources = [ "actuation_service_egtest.mm" ]
+  deps = [
+    ":eg_test_support+eg2",
+    "//components/optimization_guide/proto:optimization_guide_proto",
+    "//ios/chrome/browser/intelligence/features",
+    "//ios/chrome/test/earl_grey:eg_test_support+eg2",
+    "//ios/testing/earl_grey:eg_test_support+eg2",
+    "//net:test_support",
+  ]
+  frameworks = [ "UIKit.framework" ]
+}

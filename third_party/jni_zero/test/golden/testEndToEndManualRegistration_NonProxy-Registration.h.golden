@@ -26,18 +26,18 @@ inline jclass org_jni_1zero_SampleNonProxy_clazz(JNIEnv* env) {
 
 
 // Forward Declarations.
-JNI_ZERO_BOUNDARY_EXPORT jlong Java_org_jni_1zero_SampleNonProxy_nativeAddBookmark(
+JNI_ZERO_BOUNDARY_EXPORT int64_t Java_org_jni_1zero_SampleNonProxy_nativeAddBookmark(
     JNIEnv* env,
     jobject jcaller,
-    jint nativeChromeBrowserProvider,
+    int32_t nativeChromeBrowserProvider,
     jstring url,
     jstring title,
-    jboolean isFolder,
-    jlong parentId);
-JNI_ZERO_BOUNDARY_EXPORT jlong Java_org_jni_1zero_SampleNonProxy_nativeAddBookmarkFromAPI(
+    bool isFolder,
+    int64_t parentId);
+JNI_ZERO_BOUNDARY_EXPORT int64_t Java_org_jni_1zero_SampleNonProxy_nativeAddBookmarkFromAPI(
     JNIEnv* env,
     jobject jcaller,
-    jint nativeChromeBrowserProvider,
+    int32_t nativeChromeBrowserProvider,
     jstring url,
     jobject created,
     jobject isBookmark,
@@ -49,12 +49,12 @@ JNI_ZERO_BOUNDARY_EXPORT void Java_org_jni_1zero_SampleNonProxy_nativeCreateHist
     JNIEnv* env,
     jclass jcaller,
     jbyteArray state,
-    jint tabIndex);
+    int32_t tabIndex);
 JNI_ZERO_BOUNDARY_EXPORT void Java_org_jni_1zero_SampleNonProxy_nativeDestroy(
     JNIEnv* env,
     jobject jcaller,
-    jint nativeChromeBrowserProvider);
-JNI_ZERO_BOUNDARY_EXPORT jint Java_org_jni_1zero_SampleNonProxy_nativeFindAll(
+    int32_t nativeChromeBrowserProvider);
+JNI_ZERO_BOUNDARY_EXPORT int32_t Java_org_jni_1zero_SampleNonProxy_nativeFindAll(
     JNIEnv* env,
     jobject jcaller,
     jstring find);
@@ -75,14 +75,14 @@ JNI_ZERO_BOUNDARY_EXPORT jbyteArray Java_org_jni_1zero_SampleNonProxy_nativeGetS
 JNI_ZERO_BOUNDARY_EXPORT void Java_org_jni_1zero_SampleNonProxy_nativeGotOrientation(
     JNIEnv* env,
     jobject jcaller,
-    jint nativeDataFetcherImplAndroid,
-    jdouble alpha,
-    jdouble beta,
-    jdouble gamma);
-JNI_ZERO_BOUNDARY_EXPORT jint Java_org_jni_1zero_SampleNonProxy_nativeInit(
+    int32_t nativeDataFetcherImplAndroid,
+    double alpha,
+    double beta,
+    double gamma);
+JNI_ZERO_BOUNDARY_EXPORT int32_t Java_org_jni_1zero_SampleNonProxy_nativeInit(
     JNIEnv* env,
     jobject jcaller);
-JNI_ZERO_BOUNDARY_EXPORT jint Java_org_jni_1zero_SampleNonProxy_nativeInit(
+JNI_ZERO_BOUNDARY_EXPORT int32_t Java_org_jni_1zero_SampleNonProxy_nativeInit(
     JNIEnv* env,
     jobject jcaller);
 JNI_ZERO_BOUNDARY_EXPORT jthrowable Java_org_jni_1zero_SampleNonProxy_nativeMessWithJavaException(
@@ -92,7 +92,7 @@ JNI_ZERO_BOUNDARY_EXPORT jthrowable Java_org_jni_1zero_SampleNonProxy_nativeMess
 JNI_ZERO_BOUNDARY_EXPORT jobject Java_org_jni_1zero_SampleNonProxy_nativeQueryBitmap(
     JNIEnv* env,
     jobject jcaller,
-    jint nativeChromeBrowserProvider,
+    int32_t nativeChromeBrowserProvider,
     jobjectArray projection,
     jstring selection,
     jobjectArray selectionArgs,
@@ -100,7 +100,7 @@ JNI_ZERO_BOUNDARY_EXPORT jobject Java_org_jni_1zero_SampleNonProxy_nativeQueryBi
 JNI_ZERO_BOUNDARY_EXPORT void Java_org_jni_1zero_SampleNonProxy_nativeSetRecognitionResults(
     JNIEnv* env,
     jobject jcaller,
-    jint sessionId,
+    int32_t sessionId,
     jobjectArray results);
 
 // Helper Methods.

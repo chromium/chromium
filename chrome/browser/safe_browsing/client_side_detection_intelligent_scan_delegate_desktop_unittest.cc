@@ -12,8 +12,8 @@
 #include "components/optimization_guide/core/model_execution/test/mock_on_device_capability.h"
 #include "components/optimization_guide/core/optimization_guide_proto_util.h"
 #include "components/optimization_guide/proto/model_quality_metadata.pb.h"
-#include "components/optimization_guide/public/mojom/model_broker.mojom-data-view.h"
-#include "components/safe_browsing/content/browser/client_side_detection_host.h"
+#include "components/optimization_guide/public/mojom/model_broker.mojom-shared.h"
+#include "components/safe_browsing/core/browser/intelligent_scan_delegate.h"
 #include "components/safe_browsing/core/common/features.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
@@ -32,8 +32,8 @@ using ::testing::Return;
 
 namespace safe_browsing {
 
-using IntelligentScanResult =
-    ClientSideDetectionHost::IntelligentScanDelegate::IntelligentScanResult;
+using IntelligentScanResult = IntelligentScanDelegate::IntelligentScanResult;
+using ModelType = IntelligentScanDelegate::ModelType;
 
 class ClientSideDetectionIntelligentScanDelegateDesktopTest
     : public testing::Test {
@@ -77,8 +77,9 @@ class ClientSideDetectionIntelligentScanDelegateDesktopTest
         optimization_guide::mojom::OnDeviceFeature::kScamDetection,
         optimization_guide::OnDeviceModelEligibilityReason::kSuccess);
 
-    ASSERT_TRUE(delegate_->IsIntelligentScanAvailable(
-        /*log_failed_eligibility_reason=*/true));
+    ASSERT_EQ(delegate_->GetIntelligentScanModelType(
+                  /*log_failed_eligibility_reason=*/true),
+              ModelType::kOnDevice);
   }
 
   void EnableOnDeviceModelWithSession() {
@@ -181,8 +182,9 @@ TEST_F(ClientSideDetectionIntelligentScanDelegateDesktopTest,
 TEST_F(ClientSideDetectionIntelligentScanDelegateDesktopTest,
        TestOnDeviceModelFetchSuccessCall) {
   CreateDelegate(/*is_enhanced_protection_enabled=*/false);
-  EXPECT_FALSE(delegate_->IsIntelligentScanAvailable(
-      /*log_failed_eligibility_reason=*/true));
+  EXPECT_EQ(delegate_->GetIntelligentScanModelType(
+                /*log_failed_eligibility_reason=*/true),
+            ModelType::kNotSupportedOnDevice);
 
   optimization_guide::OnDeviceModelAvailabilityObserver* availability_observer =
       nullptr;
@@ -226,8 +228,9 @@ TEST_F(ClientSideDetectionIntelligentScanDelegateDesktopTest,
   histogram_tester_.ExpectUniqueSample(
       "SBClientPhishing.OnDeviceModelDownloadSuccess", true, 0);
 
-  EXPECT_FALSE(delegate_->IsIntelligentScanAvailable(
-      /*log_failed_eligibility_reason=*/true));
+  EXPECT_EQ(delegate_->GetIntelligentScanModelType(
+                /*log_failed_eligibility_reason=*/true),
+            ModelType::kNotSupportedOnDevice);
 
   // And then send `kSuccess` to the observer, which will log the histogram.
   availability_observer->OnDeviceModelAvailabilityChanged(
@@ -239,15 +242,17 @@ TEST_F(ClientSideDetectionIntelligentScanDelegateDesktopTest,
   histogram_tester_.ExpectTotalCount("SBClientPhishing.OnDeviceModelFetchTime",
                                      1);
 
-  EXPECT_TRUE(delegate_->IsIntelligentScanAvailable(
-      /*log_failed_eligibility_reason=*/true));
+  EXPECT_EQ(delegate_->GetIntelligentScanModelType(
+                /*log_failed_eligibility_reason=*/true),
+            ModelType::kOnDevice);
 }
 
 TEST_F(ClientSideDetectionIntelligentScanDelegateDesktopTest,
        TestOnDeviceModelFetchSuccessImmediateSessionCreation) {
   CreateDelegate(/*is_enhanced_protection_enabled=*/false);
-  EXPECT_FALSE(delegate_->IsIntelligentScanAvailable(
-      /*log_failed_eligibility_reason=*/true));
+  EXPECT_EQ(delegate_->GetIntelligentScanModelType(
+                /*log_failed_eligibility_reason=*/true),
+            ModelType::kNotSupportedOnDevice);
 
   testing::NiceMock<MockSession> session;
   EXPECT_CALL(mock_opt_guide_, StartSession(_, _, _))
@@ -265,15 +270,17 @@ TEST_F(ClientSideDetectionIntelligentScanDelegateDesktopTest,
 
   histogram_tester_.ExpectUniqueSample(
       "SBClientPhishing.OnDeviceModelDownloadSuccess", true, 1);
-  EXPECT_TRUE(delegate_->IsIntelligentScanAvailable(
-      /*log_failed_eligibility_reason=*/true));
+  EXPECT_EQ(delegate_->GetIntelligentScanModelType(
+                /*log_failed_eligibility_reason=*/true),
+            ModelType::kOnDevice);
 }
 
 TEST_F(ClientSideDetectionIntelligentScanDelegateDesktopTest,
        TestOnDeviceModelFetchFailureCall) {
   CreateDelegate(/*is_enhanced_protection_enabled=*/false);
-  EXPECT_FALSE(delegate_->IsIntelligentScanAvailable(
-      /*log_failed_eligibility_reason=*/true));
+  EXPECT_EQ(delegate_->GetIntelligentScanModelType(
+                /*log_failed_eligibility_reason=*/true),
+            ModelType::kNotSupportedOnDevice);
 
   optimization_guide::OnDeviceModelAvailabilityObserver* availability_observer =
       nullptr;
@@ -301,8 +308,9 @@ TEST_F(ClientSideDetectionIntelligentScanDelegateDesktopTest,
   histogram_tester_.ExpectUniqueSample(
       "SBClientPhishing.OnDeviceModelDownloadSuccess", false, 1);
 
-  EXPECT_FALSE(delegate_->IsIntelligentScanAvailable(
-      /*log_failed_eligibility_reason=*/true));
+  EXPECT_EQ(delegate_->GetIntelligentScanModelType(
+                /*log_failed_eligibility_reason=*/true),
+            ModelType::kNotSupportedOnDevice);
 }
 
 TEST_F(ClientSideDetectionIntelligentScanDelegateDesktopTest,
@@ -310,7 +318,7 @@ TEST_F(ClientSideDetectionIntelligentScanDelegateDesktopTest,
   CreateDelegate(/*is_enhanced_protection_enabled=*/false);
 
   // The below function is called by the delegate when calling
-  // IsIntelligentScanAvailable but the on device model is not available yet.
+  // GetIntelligentScanModelType, but the on device model is not available yet.
   EXPECT_CALL(mock_opt_guide_, GetOnDeviceModelEligibility(_))
       .WillOnce([&](optimization_guide::mojom::OnDeviceFeature feature) {
         return optimization_guide::OnDeviceModelEligibilityReason::
@@ -347,8 +355,9 @@ TEST_F(ClientSideDetectionIntelligentScanDelegateDesktopTest,
   histogram_tester_.ExpectUniqueSample(
       "SBClientPhishing.OnDeviceModelDownloadSuccess", true, 0);
 
-  EXPECT_FALSE(delegate_->IsIntelligentScanAvailable(
-      /*log_failed_eligibility_reason=*/true));
+  EXPECT_EQ(delegate_->GetIntelligentScanModelType(
+                /*log_failed_eligibility_reason=*/true),
+            ModelType::kNotSupportedOnDevice);
 
   // We expect the histogram value for
   // SBClientPhishing.OnDeviceModelEligibilityReasonAtInquiryFailure to be
@@ -360,8 +369,9 @@ TEST_F(ClientSideDetectionIntelligentScanDelegateDesktopTest,
       optimization_guide::OnDeviceModelEligibilityReason::kModelToBeInstalled,
       1);
 
-  EXPECT_FALSE(delegate_->IsIntelligentScanAvailable(
-      /*log_failed_eligibility_reason=*/false));
+  EXPECT_EQ(delegate_->GetIntelligentScanModelType(
+                /*log_failed_eligibility_reason=*/false),
+            ModelType::kNotSupportedOnDevice);
 
   // The histogram is not logged again because
   // log_failed_eligibility_reason is set to false.
@@ -374,8 +384,9 @@ TEST_F(ClientSideDetectionIntelligentScanDelegateDesktopTest,
       optimization_guide::mojom::OnDeviceFeature::kScamDetection,
       optimization_guide::OnDeviceModelEligibilityReason::kSuccess);
 
-  EXPECT_TRUE(delegate_->IsIntelligentScanAvailable(
-      /*log_failed_eligibility_reason=*/true));
+  EXPECT_EQ(delegate_->GetIntelligentScanModelType(
+                /*log_failed_eligibility_reason=*/true),
+            ModelType::kOnDevice);
 
   // The histogram is not logged again because
   // it is only logged when the model is not available.
@@ -412,8 +423,9 @@ TEST_F(ClientSideDetectionIntelligentScanDelegateDesktopTest,
 
   // The delegate should not be available because we stopped listening to the
   // model update before the model was available.
-  EXPECT_FALSE(delegate_->IsIntelligentScanAvailable(
-      /*log_failed_eligibility_reason=*/true));
+  EXPECT_EQ(delegate_->GetIntelligentScanModelType(
+                /*log_failed_eligibility_reason=*/true),
+            ModelType::kNotSupportedOnDevice);
 }
 
 TEST_F(ClientSideDetectionIntelligentScanDelegateDesktopTest,
@@ -439,13 +451,15 @@ TEST_F(ClientSideDetectionIntelligentScanDelegateDesktopTest,
       optimization_guide::mojom::OnDeviceFeature::kScamDetection,
       optimization_guide::OnDeviceModelEligibilityReason::kSuccess);
 
-  EXPECT_TRUE(delegate_->IsIntelligentScanAvailable(
-      /*log_failed_eligibility_reason=*/true));
+  EXPECT_EQ(delegate_->GetIntelligentScanModelType(
+                /*log_failed_eligibility_reason=*/true),
+            ModelType::kOnDevice);
 
   SetEnhancedProtectionPrefForTests(&pref_service_, false);
 
-  EXPECT_FALSE(delegate_->IsIntelligentScanAvailable(
-      /*log_failed_eligibility_reason=*/true));
+  EXPECT_EQ(delegate_->GetIntelligentScanModelType(
+                /*log_failed_eligibility_reason=*/true),
+            ModelType::kNotSupportedOnDevice);
 
   // Start listening again should work.
   base::RunLoop run_loop_for_add_observer2;
@@ -465,8 +479,9 @@ TEST_F(ClientSideDetectionIntelligentScanDelegateDesktopTest,
       optimization_guide::mojom::OnDeviceFeature::kScamDetection,
       optimization_guide::OnDeviceModelEligibilityReason::kSuccess);
 
-  EXPECT_TRUE(delegate_->IsIntelligentScanAvailable(
-      /*log_failed_eligibility_reason=*/true));
+  EXPECT_EQ(delegate_->GetIntelligentScanModelType(
+                /*log_failed_eligibility_reason=*/true),
+            ModelType::kOnDevice);
 }
 
 TEST_F(ClientSideDetectionIntelligentScanDelegateDesktopTest,
@@ -489,15 +504,17 @@ TEST_F(ClientSideDetectionIntelligentScanDelegateDesktopTest,
   run_loop_for_add_observer.Run();
   CHECK(availability_observer);
 
-  EXPECT_FALSE(delegate_->IsIntelligentScanAvailable(
-      /*log_failed_eligibility_reason=*/true));
+  EXPECT_EQ(delegate_->GetIntelligentScanModelType(
+                /*log_failed_eligibility_reason=*/true),
+            ModelType::kNotSupportedOnDevice);
 
   availability_observer->OnDeviceModelAvailabilityChanged(
       optimization_guide::mojom::OnDeviceFeature::kScamDetection,
       optimization_guide::OnDeviceModelEligibilityReason::kSuccess);
 
-  EXPECT_TRUE(delegate_->IsIntelligentScanAvailable(
-      /*log_failed_eligibility_reason=*/true));
+  EXPECT_EQ(delegate_->GetIntelligentScanModelType(
+                /*log_failed_eligibility_reason=*/true),
+            ModelType::kOnDevice);
 }
 
 TEST_F(ClientSideDetectionIntelligentScanDelegateDesktopTest,
@@ -514,6 +531,9 @@ TEST_F(ClientSideDetectionIntelligentScanDelegateDesktopTest,
   histogram_tester_.ExpectTotalCount(
       "SBClientPhishing.OnDeviceModelSessionCreationTime", 0);
   EXPECT_FALSE(future.Get().execution_success);
+  EXPECT_EQ(future.Get().model_type, ModelType::kOnDevice);
+  EXPECT_EQ(future.Get().no_info_reason,
+            IntelligentScanInfo::ON_DEVICE_MODEL_OUTPUT_MISSING);
 }
 
 TEST_F(ClientSideDetectionIntelligentScanDelegateDesktopTest,
@@ -683,6 +703,9 @@ TEST_F(ClientSideDetectionIntelligentScanDelegateDesktopTest,
 
   EXPECT_FALSE(future.Get().execution_success);
   EXPECT_EQ(future.Get().model_version, 123);
+  EXPECT_EQ(future.Get().model_type, ModelType::kOnDevice);
+  EXPECT_EQ(future.Get().no_info_reason,
+            IntelligentScanInfo::ON_DEVICE_MODEL_OUTPUT_MISSING);
 }
 
 TEST_F(ClientSideDetectionIntelligentScanDelegateDesktopTest,
@@ -755,6 +778,9 @@ TEST_F(ClientSideDetectionIntelligentScanDelegateDesktopTest,
 
   EXPECT_FALSE(future.Get().execution_success);
   EXPECT_EQ(future.Get().model_version, 123);
+  EXPECT_EQ(future.Get().model_type, ModelType::kOnDevice);
+  EXPECT_EQ(future.Get().no_info_reason,
+            IntelligentScanInfo::ON_DEVICE_MODEL_OUTPUT_MISSING);
 }
 
 TEST_F(ClientSideDetectionIntelligentScanDelegateDesktopTest,
@@ -793,6 +819,9 @@ TEST_F(ClientSideDetectionIntelligentScanDelegateDesktopTest,
   EXPECT_EQ(future.Get().brand, "Google");
   EXPECT_EQ(future.Get().intent, "Search Engine");
   EXPECT_EQ(future.Get().model_version, 123);
+  EXPECT_EQ(future.Get().model_type, ModelType::kOnDevice);
+  EXPECT_EQ(future.Get().no_info_reason,
+            IntelligentScanInfo::NO_INFO_REASON_UNSPECIFIED);
 }
 
 TEST_F(ClientSideDetectionIntelligentScanDelegateDesktopTest,
@@ -812,8 +841,7 @@ TEST_F(ClientSideDetectionIntelligentScanDelegateDesktopTest,
           }));
 
   // Create an empty callback.
-  ClientSideDetectionHost::IntelligentScanDelegate::IntelligentScanDoneCallback
-      host_callback;
+  IntelligentScanDelegate::IntelligentScanDoneCallback host_callback;
   delegate_->StartIntelligentScan("", std::move(host_callback));
 
   histogram_tester_.ExpectUniqueSample(
@@ -936,8 +964,9 @@ TEST_F(ClientSideDetectionIntelligentScanDelegateDesktopTestKillSwitchEnabled,
       .Times(0);
   CreateDelegate(/*is_enhanced_protection_enabled=*/true);
 
-  EXPECT_FALSE(delegate_->IsIntelligentScanAvailable(
-      /*log_failed_eligibility_reason=*/true));
+  EXPECT_EQ(delegate_->GetIntelligentScanModelType(
+                /*log_failed_eligibility_reason=*/true),
+            ModelType::kNotSupportedOnDevice);
 }
 
 class

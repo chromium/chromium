@@ -1,0 +1,42 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("eg2_tests") {
+  configs += [ "//build/config/ios:xctest_config" ]
+  testonly = true
+  sources = [ "quick_delete_egtest.mm" ]
+  deps = [
+    "//base",
+    "//base/test:test_support",
+    "//components/browsing_data/core",
+    "//components/browsing_data/core:cookie_or_cache_deletion_choice",
+    "//components/data_sharing/public:features",
+    "//components/signin/internal/identity_manager:capabilities",
+    "//components/strings",
+    "//components/sync/base",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/authentication/test:eg_test_support+eg2",
+    "//ios/chrome/browser/autofill/ui_bundled:eg_test_support+eg2",
+    "//ios/chrome/browser/metrics/model:eg_test_support+eg2",
+    "//ios/chrome/browser/recent_tabs/public:ui_constants",
+    "//ios/chrome/browser/settings/ui_bundled/clear_browsing_data/public:constants",
+    "//ios/chrome/browser/settings/ui_bundled/clear_browsing_data/public:features",
+    "//ios/chrome/browser/settings/ui_bundled/password:eg_test_support+eg2",
+    "//ios/chrome/browser/shared/model/prefs:pref_names",
+    "//ios/chrome/browser/shared/public/features",
+    "//ios/chrome/browser/signin/model:fake_system_identity",
+    "//ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/grid:grid_ui_constants",
+    "//ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/tab_groups:tab_groups_constant",
+    "//ios/chrome/test/earl_grey:eg_test_support+eg2",
+    "//ios/testing/earl_grey:eg_test_support+eg2",
+    "//net",
+    "//net:test_support",
+    "//ui/base",
+  ]
+  frameworks = [ "UIKit.framework" ]
+
+  # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
+  # enable the diagnostic by removing this line.
+  configs += [ "//build/config/compiler:no_exit_time_destructors" ]
+}

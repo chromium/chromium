@@ -21,7 +21,6 @@
 #include "base/android/scoped_java_ref.h"
 #include "base/check.h"
 #include "base/command_line.h"
-#include "base/containers/contains.h"
 #include "base/files/file_enumerator.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -63,7 +62,7 @@ AwComponentUpdateService* AwComponentUpdateService::GetInstance() {
 static void JNI_AwComponentUpdateService_StartComponentUpdateService(
     JNIEnv* env,
     const base::android::JavaRef<jobject>& j_finished_callback,
-    jboolean j_on_demand_update) {
+    bool j_on_demand_update) {
   AwComponentUpdateService::GetInstance()->StartComponentUpdateService(
       base::BindOnce(
           &base::android::RunIntCallbackAndroid,
@@ -135,7 +134,7 @@ void AwComponentUpdateService::CheckForUpdates(UpdateCallback on_finished,
   std::vector<std::string> secure_ids;    // Require HTTPS for update checks.
   std::vector<std::string> unsecure_ids;  // Can fallback to HTTP.
   for (const auto& id : components_order_) {
-    DCHECK(base::Contains(components_, id));
+    DCHECK(components_.contains(id));
 
     const auto component = component_updater::GetComponent(components_, id);
     if (!component || component->requires_network_encryption)
@@ -290,7 +289,7 @@ void AwComponentUpdateService::UpdateMetadataFiles(
     base::FilePath dest_path =
         cps_component_base_path.AppendASCII(highest_sequence_number_dir);
 
-    base::Value::Dict metadata_file_contents;
+    base::DictValue metadata_file_contents;
     metadata_file_contents.Set(component_updater::kMetadataFileCohortIdKey,
                                GetCohortId(component_id));
     std::optional<std::string> metadata_file_contents_json =

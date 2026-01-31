@@ -55,7 +55,7 @@ VizCompositorThreadRunnerWebView::VizCompositorThreadRunnerWebView()
     viz_task_runner_ =
         base::ThreadPool::CreateSingleThreadTaskRunner({base::MayBlock()});
   } else {
-    base::Thread::Options options(base::ThreadType::kDisplayCritical);
+    base::Thread::Options options(base::ThreadType::kPresentation);
     CHECK(viz_thread_.StartWithOptions(std::move(options)));
     viz_task_runner_ = viz_thread_.task_runner();
   }

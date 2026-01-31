@@ -6,8 +6,11 @@
 
 #import "base/strings/sys_string_conversions.h"
 #import "ios/chrome/browser/intelligence/bwg/metrics/gemini_metrics.h"
+#import "ios/chrome/browser/intelligence/bwg/model/gemini_view_state_delegate.h"
+#import "ios/chrome/browser/intelligence/features/features.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_browser_agent.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_params.h"
+#import "ios/public/provider/chrome/browser/bwg/bwg_api.h"
 #import "url/gurl.h"
 
 @implementation BWGLinkOpeningHandler {
@@ -31,6 +34,13 @@
   params.append_to = OpenPosition::kCurrentTab;
   _URLLoadingAgent->Load(params);
   RecordURLOpened();
+
+  if (!IsGeminiCopresenceEnabled()) {
+    return;
+  }
+
+  [self.geminiViewStateDelegate
+      switchToViewState:ios::provider::GeminiViewState::kCollapsed];
 }
 
 @end

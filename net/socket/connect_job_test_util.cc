@@ -4,7 +4,6 @@
 
 #include "net/socket/connect_job_test_util.h"
 
-#include <set>
 #include <utility>
 
 #include "base/check.h"
@@ -54,18 +53,6 @@ void TestConnectJobDelegate::OnNeedsProxyAuth(
   restart_with_auth_callback_ = std::move(restart_with_auth_callback);
   if (auth_challenge_run_loop_)
     auth_challenge_run_loop_->Quit();
-}
-
-Error TestConnectJobDelegate::OnDestinationDnsAliasesResolved(
-    const std::set<std::string>& aliases,
-    ConnectJob* job) {
-  EXPECT_FALSE(aliases.empty());
-  EXPECT_FALSE(on_dns_aliases_resolved_called_);
-  EXPECT_TRUE(dns_aliases_.empty());
-
-  on_dns_aliases_resolved_called_ = true;
-  dns_aliases_ = aliases;
-  return error_for_dns_aliases_resolved_;
 }
 
 void TestConnectJobDelegate::WaitForAuthChallenge(

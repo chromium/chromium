@@ -328,7 +328,7 @@ TEST_F(PasswordReceiverServiceImplTest,
   // Set up an account store user (a non-syncing one, but that doesn't really
   // matter).
   sync_service().SetSignedIn(signin::ConsentLevel::kSignin);
-  ASSERT_TRUE(features_util::IsAccountStorageEnabled(&sync_service()));
+  ASSERT_TRUE(features_util::IsAccountStorageActive(&sync_service()));
 
   password_receiver_service()->ProcessIncomingSharingInvitation(
       CreateIncomingSharingInvitation());
@@ -349,7 +349,7 @@ TEST_F(PasswordReceiverServiceImplTest,
   sync_service().SetSignedIn(signin::ConsentLevel::kSignin);
   sync_service().GetUserSettings()->SetSelectedType(
       syncer::UserSelectableType::kPasswords, false);
-  ASSERT_FALSE(features_util::IsAccountStorageEnabled(&sync_service()));
+  ASSERT_FALSE(features_util::IsAccountStorageActive(&sync_service()));
 
   password_receiver_service()->ProcessIncomingSharingInvitation(
       CreateIncomingSharingInvitation());

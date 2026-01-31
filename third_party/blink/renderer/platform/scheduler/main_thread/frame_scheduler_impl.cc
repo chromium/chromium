@@ -794,10 +794,14 @@ void FrameSchedulerImpl::OnStartedUsingNonStickyFeature(
   }
 
   if (feature == SchedulingPolicy::Feature::kWebRTC) {
-    if (base::FeatureList::IsEnabled(
+    // If kWebRtcUseMediaThreadTypes is enabled, we rely on WebRTC setting
+    // appropriate thread priorities for its tasks.
+    if (!base::FeatureList::IsEnabled(
+            blink::features::kWebRtcUseMediaThreadTypes) &&
+        base::FeatureList::IsEnabled(
             kRendererMainIsDefaultThreadTypeForWebRTC) &&
         (base::PlatformThread::GetCurrentThreadType() ==
-             base::ThreadType::kDisplayCritical ||
+             base::ThreadType::kPresentation ||
          base::PlatformThread::GetCurrentThreadType() ==
              base::ThreadType::kInteractive)) {
       base::PlatformThread::SetCurrentThreadType(base::ThreadType::kDefault);

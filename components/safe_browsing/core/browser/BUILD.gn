@@ -40,7 +40,6 @@ source_set("browser") {
     "//components/safe_browsing/core/browser:sync_observer",
     "//components/safe_browsing/core/browser:token_fetcher",
     "//components/safe_browsing/core/browser/db:database_manager",
-    "//components/safe_browsing/core/browser/db:hit_report",
     "//components/safe_browsing/core/browser/db:util",
     "//components/safe_browsing/core/browser/db:v4_protocol_manager_util",
     "//components/safe_browsing/core/browser/hashprefix_realtime:hash_realtime_service",
@@ -254,6 +253,32 @@ source_set("referring_app_info_unittest") {
   ]
 }
 
+source_set("intelligent_scan_delegate") {
+  sources = [
+    "intelligent_scan_delegate.cc",
+    "intelligent_scan_delegate.h",
+  ]
+
+  deps = [
+    "//base",
+    "//components/keyed_service/core",
+    "//components/safe_browsing/core/common/proto:csd_proto",
+  ]
+
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
+}
+
+source_set("intelligent_scan_delegate_unittest") {
+  testonly = true
+  sources = [ "intelligent_scan_delegate_unittest.cc" ]
+  deps = [
+    ":intelligent_scan_delegate",
+    "//base",
+    "//base/test:test_support",
+    "//testing/gtest",
+  ]
+}
+
 source_set("safe_browsing_metrics_collector") {
   sources = [
     "safe_browsing_metrics_collector.cc",
@@ -267,8 +292,8 @@ source_set("safe_browsing_metrics_collector") {
     "//components/keyed_service/core",
     "//components/password_manager/core/common",
     "//components/prefs",
-    "//components/safe_browsing/core/browser/db:hit_report",
     "//components/safe_browsing/core/common:safe_browsing_prefs",
+    "//components/safe_browsing/core/common:threat_enums",
   ]
 }
 

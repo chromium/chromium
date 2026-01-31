@@ -38,7 +38,7 @@ class EnterpriseInterstitialBase {
   // `SecurityInterstitialPage::PopulateInterstitialStrings` and
   // `IOSSecurityInterstitialPage::PopulateInterstitialStrings` overrides to
   // populate their strings.
-  void PopulateStrings(base::Value::Dict& load_time_data) const;
+  void PopulateStrings(base::DictValue& load_time_data) const;
 
  private:
   int GetPrimaryParagraphMessageId() const;

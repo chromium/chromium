@@ -134,7 +134,7 @@ export class HistorySyncOptinAppElement extends HistorySyncOptinAppElementBase {
   }
 
   private handleAccountInfoChanged_(accountInfo: AccountInfo) {
-    this.accountImageSrc_ = accountInfo.accountImageSrc.url;
+    this.accountImageSrc_ = accountInfo.accountImageSrc;
   }
 
   private handleScreenModeChanged_(screenMode: ScreenMode) {

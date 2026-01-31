@@ -28,24 +28,24 @@ constexpr char kPrivateKey[] = "TEST_PRIVATE_KEY";
 
 constexpr char kNewRefreshToken[] = "NEW_REFRESH_TOKEN";
 
-auto kBaseConfig = base::Value::Dict()
+auto kBaseConfig = base::DictValue()
                        .Set(kOAuthRefreshTokenConfigPath, kRefreshToken)
                        .Set(kHostIdConfigPath, kHostId)
                        .Set(kHostNameConfigPath, kHostName)
                        .Set(kPrivateKeyConfigPath, kPrivateKey);
 
-auto kTestConfig = base::Value::Dict(kBaseConfig.Clone())
+auto kTestConfig = base::DictValue(kBaseConfig.Clone())
                        .Set(kHostOwnerConfigPath, kHostOwnerEmail)
                        .Set(kServiceAccountConfigPath, kServiceAccountEmail);
 
 auto kLegacyTestConfig =
-    base::Value::Dict(kBaseConfig.Clone())
+    base::DictValue(kBaseConfig.Clone())
         .Set(kHostOwnerConfigPath, kHostOwnerJid)
         .Set(kDeprecatedHostOwnerEmailConfigPath, kHostOwnerEmail)
         .Set(kDeprecatedXmppLoginConfigPath, kServiceAccountEmail);
 
 void WriteTestFile(const base::FilePath& filename,
-                   const base::Value::Dict& file_contents) {
+                   const base::DictValue& file_contents) {
   auto json = base::WriteJson(file_contents);
   ASSERT_TRUE(json.has_value());
   base::WriteFile(filename, *json);
@@ -53,7 +53,7 @@ void WriteTestFile(const base::FilePath& filename,
 
 }  // namespace
 
-class HostConfigTest : public ::testing::TestWithParam<base::Value::Dict*> {
+class HostConfigTest : public ::testing::TestWithParam<base::DictValue*> {
  public:
   HostConfigTest(const HostConfigTest&) = delete;
   HostConfigTest& operator=(const HostConfigTest&) = delete;

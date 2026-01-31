@@ -11,6 +11,7 @@
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"
 #import "base/time/time.h"
+#import "components/contextual_search/contextual_search_service.h"
 #import "components/feature_engagement/public/event_constants.h"
 #import "components/feature_engagement/public/tracker.h"
 #import "components/feed/core/v2/public/common_enums.h"
@@ -42,10 +43,11 @@
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_utils.h"
 #import "ios/chrome/browser/bubble/ui_bundled/bubble_view_controller_presenter.h"
 #import "ios/chrome/browser/composebox/coordinator/composebox_availability.h"
-#import "ios/chrome/browser/content_suggestions/ui_bundled/content_suggestions_collection_utils.h"
-#import "ios/chrome/browser/content_suggestions/ui_bundled/content_suggestions_coordinator.h"
-#import "ios/chrome/browser/content_suggestions/ui_bundled/content_suggestions_delegate.h"
-#import "ios/chrome/browser/content_suggestions/ui_bundled/content_suggestions_mediator.h"
+#import "ios/chrome/browser/content_suggestions/coordinator/content_suggestions_coordinator.h"
+#import "ios/chrome/browser/content_suggestions/coordinator/content_suggestions_delegate.h"
+#import "ios/chrome/browser/content_suggestions/coordinator/content_suggestions_mediator.h"
+#import "ios/chrome/browser/content_suggestions/ui/content_suggestions_collection_utils.h"
+#import "ios/chrome/browser/content_suggestions/ui/content_suggestions_view_controller.h"
 #import "ios/chrome/browser/context_menu/ui_bundled/link_preview/link_preview_coordinator.h"
 #import "ios/chrome/browser/discover_feed/model/discover_feed_observer_bridge.h"
 #import "ios/chrome/browser/discover_feed/model/discover_feed_service.h"
@@ -93,16 +95,18 @@
 #import "ios/chrome/browser/omnibox/model/placeholder_service/placeholder_service_factory.h"
 #import "ios/chrome/browser/overscroll_actions/ui_bundled/overscroll_actions_controller.h"
 #import "ios/chrome/browser/policy/model/policy_util.h"
+#import "ios/chrome/browser/safari_data_import/coordinator/safari_data_import_child_coordinator_delegate.h"
+#import "ios/chrome/browser/safari_data_import/coordinator/safari_data_import_export_coordinator.h"
 #import "ios/chrome/browser/search_engines/model/template_url_service_factory.h"
 #import "ios/chrome/browser/shared/coordinator/layout_guide/layout_guide_util.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
+#import "ios/chrome/browser/shared/coordinator/scene/state/tab_grid_state.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/model/profile/features.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
-#import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/browser_coordinator_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/help_commands.h"
@@ -110,6 +114,7 @@
 #import "ios/chrome/browser/shared/public/commands/omnibox_commands.h"
 #import "ios/chrome/browser/shared/public/commands/open_lens_input_selection_command.h"
 #import "ios/chrome/browser/shared/public/commands/open_new_tab_command.h"
+#import "ios/chrome/browser/shared/public/commands/scene_commands.h"
 #import "ios/chrome/browser/shared/public/commands/settings_commands.h"
 #import "ios/chrome/browser/shared/public/commands/show_signin_command.h"
 #import "ios/chrome/browser/shared/public/commands/snackbar_commands.h"
@@ -130,10 +135,8 @@
 #import "ios/chrome/browser/signin/model/system_identity_manager.h"
 #import "ios/chrome/browser/supervised_user/model/family_link_user_capabilities_observer_bridge.h"
 #import "ios/chrome/browser/sync/model/sync_service_factory.h"
-#import "ios/chrome/browser/tab_switcher/tab_grid/base_grid/coordinator/tab_grid_observing.h"
-#import "ios/chrome/browser/tab_switcher/tab_grid/base_grid/coordinator/tab_grid_scene_agent.h"
-#import "ios/chrome/browser/toolbar/ui_bundled/public/fakebox_focuser.h"
-#import "ios/chrome/browser/toolbar/ui_bundled/tab_groups/coordinator/tab_group_indicator_coordinator.h"
+#import "ios/chrome/browser/toolbar/legacy/ui_bundled/public/fakebox_focuser.h"
+#import "ios/chrome/browser/toolbar/tab_group/coordinator/tab_group_indicator_coordinator.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_browser_agent.h"
 #import "ios/chrome/browser/web/model/web_navigation_util.h"
 #import "ios/chrome/common/NSString+Chromium.h"
@@ -164,12 +167,14 @@
                                      NewTabPageDelegate,
                                      NewTabPageHeaderCommands,
                                      NewTabPageActionsDelegate,
+                                     NewTabPageViewControllerDelegate,
                                      OverscrollActionsControllerDelegate,
                                      ProfileStateObserver,
                                      SceneStateObserver,
-                                     TabGridObserving,
+                                     TabGridStateObserver,
                                      FamilyLinkUserCapabilitiesObserving,
-                                     NewTabPageShortcutsHandler> {
+                                     NewTabPageShortcutsHandler,
+                                     SafariDataImportChildCoordinatorDelegate> {
   // Observes changes in the IdentityManager.
   std::unique_ptr<signin::IdentityManagerObserverBridge>
       _identityObserverBridge;
@@ -287,6 +292,8 @@
   SigninCoordinator* _signinCoordinator;
   // Logo mediator to display the doodle on the NTP.
   SearchEngineLogoMediator* _searchEngineLogoMediator;
+  // The Safari data import used by the content suggestions.
+  SafariDataImportExportCoordinator* _safariDataImportExportCoordinator;
 }
 
 // Synthesize NewTabPageConfiguring properties.
@@ -330,7 +337,7 @@
   [sceneState addObserver:self];
 
   if (IsNTPBackgroundCustomizationEnabled()) {
-    [[TabGridSceneAgent agentFromScene:sceneState] addObserver:self];
+    [sceneState.tabGridState addObserver:self];
   }
 
   // Configures incognito NTP if user is in incognito mode.
@@ -397,7 +404,7 @@
   [sceneState removeObserver:self];
 
   if (IsNTPBackgroundCustomizationEnabled()) {
-    [[TabGridSceneAgent agentFromScene:sceneState] removeObserver:self];
+    [sceneState.tabGridState removeObserver:self];
   }
 
   if (self.isOffTheRecord) {
@@ -464,6 +471,9 @@
   [_customizationCoordinator stop];
   _customizationCoordinator = nil;
 
+  [_safariDataImportExportCoordinator stop];
+  _safariDataImportExportCoordinator = nil;
+
   [_fakeboxLensIconBubblePresenter dismissAnimated:NO];
 
   _identityManager = nullptr;
@@ -490,6 +500,10 @@
 
 - (BOOL)isScrolledToTop {
   return [self.NTPViewController isNTPScrolledToTop];
+}
+
+- (void)scrollToTop {
+  [self.NTPViewController setContentOffsetToTop];
 }
 
 - (void)willUpdateSnapshot {
@@ -664,6 +678,9 @@
   id<NewTabPageComponentFactoryProtocol> componentFactory =
       self.componentFactory;
   self.NTPViewController = [componentFactory NTPViewController];
+  self.NTPViewController.engagementTracker =
+      feature_engagement::TrackerFactory::GetForProfile(self.profile);
+  self.NTPViewController.delegate = self;
   self.NTPViewController.incognitoDisabled =
       IsIncognitoModeDisabled(self.prefService);
   self.headerViewController =
@@ -1022,6 +1039,12 @@
 #pragma mark - ContentSuggestionsDelegate
 
 - (void)contentSuggestionsWasUpdated {
+  // Force a layout to make sure the frame height is successfully updated,
+  // before updating height above the feed.
+  UIView* contentSuggestionsView =
+      self.NTPViewController.contentSuggestionsViewController.view;
+  [contentSuggestionsView setNeedsLayout];
+  [contentSuggestionsView layoutIfNeeded];
   [self.NTPViewController updateHeightAboveFeed];
 }
 
@@ -1053,6 +1076,19 @@
 
   [self openCustomizationMenuAtPage:CustomizationMenuPage::kMagicStack
                            animated:NO];
+}
+
+- (void)openMainCustomizationMenu {
+  [self openCustomizationMenuAtPage:CustomizationMenuPage::kMain animated:YES];
+}
+
+- (void)openSafariDataImport {
+  _safariDataImportExportCoordinator =
+      [[SafariDataImportExportCoordinator alloc]
+          initWithBaseViewController:self.NTPViewController
+                             browser:self.browser];
+  _safariDataImportExportCoordinator.delegate = self;
+  [_safariDataImportExportCoordinator start];
 }
 
 #pragma mark - FeedSignInPromoDelegate
@@ -1151,9 +1187,9 @@
 }
 
 - (void)cancelOmniboxEdit {
-  id<OmniboxCommands> omniboxCommandHandler =
-      HandlerForProtocol(self.browser->GetCommandDispatcher(), OmniboxCommands);
-  [omniboxCommandHandler cancelOmniboxEdit];
+  id<BrowserCoordinatorCommands> browserCoordinatorHandler = HandlerForProtocol(
+      self.browser->GetCommandDispatcher(), BrowserCoordinatorCommands);
+  [browserCoordinatorHandler hideComposebox];
 }
 
 - (void)onFakeboxBlur {
@@ -1163,11 +1199,18 @@
 }
 
 - (void)focusOmnibox {
-  id<FakeboxFocuser> fakeboxFocuserHandler =
-      HandlerForProtocol(self.browser->GetCommandDispatcher(), FakeboxFocuser);
-  [fakeboxFocuserHandler focusOmniboxFromFakebox:_fakeboxTapped
-                                          pinned:[self isFakeboxPinned]
-                  fakeboxButtonsSnapshotProvider:self.headerViewController];
+  if (IsChromeNextIaEnabled()) {
+    id<BrowserCoordinatorCommands> browserCoordinatorHandler =
+        HandlerForProtocol(self.browser->GetCommandDispatcher(),
+                           BrowserCoordinatorCommands);
+    [browserCoordinatorHandler showComposebox];
+  } else {
+    id<FakeboxFocuser> fakeboxFocuserHandler = HandlerForProtocol(
+        self.browser->GetCommandDispatcher(), FakeboxFocuser);
+    [fakeboxFocuserHandler focusOmniboxFromFakebox:_fakeboxTapped
+                                            pinned:[self isFakeboxPinned]
+                    fakeboxButtonsSnapshotProvider:self.headerViewController];
+  }
 }
 
 - (void)refreshNTPContent {
@@ -1307,9 +1350,9 @@
 #pragma mark - OverscrollActionsControllerDelegate
 
 - (void)overscrollActionNewTab:(OverscrollActionsController*)controller {
-  id<ApplicationCommands> applicationCommandsHandler = HandlerForProtocol(
-      self.browser->GetCommandDispatcher(), ApplicationCommands);
-  [applicationCommandsHandler openURLInNewTab:[OpenNewTabCommand command]];
+  id<SceneCommands> sceneHandler =
+      HandlerForProtocol(self.browser->GetCommandDispatcher(), SceneCommands);
+  [sceneHandler openURLInNewTab:[OpenNewTabCommand command]];
   [self.NTPMetricsRecorder
       recordOverscrollActionForType:OverscrollActionType::kOpenedNewTab];
 }
@@ -1813,10 +1856,11 @@
 }
 
 - (void)openMIA {
-  if (MaybeShowComposebox(self.browser, ComposeboxEntrypoint::kNTPAIMButton)) {
+  [self.NTPMetricsRecorder recordMIATapped];
+  if (!IsComposeboxAIMDisabled() &&
+      MaybeShowComposebox(self.browser, ComposeboxEntrypoint::kNTPAIMButton)) {
     return;
   }
-  [self.NTPMetricsRecorder recordMIATapped];
 
   GURL URL = GetUrlForAim(self.templateURLService,
                           /*query_start_time=*/base::Time::Now());
@@ -1824,9 +1868,9 @@
   command.extraHeaders =
       web_navigation_util::VariationHeadersForURL(URL, /*is_incognito=*/false);
 
-  id<ApplicationCommands> applicationHandler = HandlerForProtocol(
-      self.browser->GetCommandDispatcher(), ApplicationCommands);
-  [applicationHandler openURLInNewTab:command];
+  id<SceneCommands> sceneHandler =
+      HandlerForProtocol(self.browser->GetCommandDispatcher(), SceneCommands);
+  [sceneHandler openURLInNewTab:command];
 }
 
 - (void)preloadVoiceSearch {
@@ -1844,9 +1888,9 @@
   [layoutGuideCenter referenceView:voiceSearchSourceView
                          underName:kVoiceSearchButtonGuide];
 
-  id<ApplicationCommands> applicationHandler = HandlerForProtocol(
-      self.browser->GetCommandDispatcher(), ApplicationCommands);
-  [applicationHandler startVoiceSearch];
+  id<SceneCommands> sceneHandler =
+      HandlerForProtocol(self.browser->GetCommandDispatcher(), SceneCommands);
+  [sceneHandler startVoiceSearch];
 }
 
 - (void)openIncognitoSearch {
@@ -1855,12 +1899,12 @@
 
   OpenNewTabCommand* command = [OpenNewTabCommand commandWithIncognito:YES];
   command.shouldFocusOmnibox = YES;
-  id<ApplicationCommands> applicationHandler = HandlerForProtocol(
-      self.browser->GetCommandDispatcher(), ApplicationCommands);
-  [applicationHandler openURLInNewTab:command];
+  id<SceneCommands> sceneHandler =
+      HandlerForProtocol(self.browser->GetCommandDispatcher(), SceneCommands);
+  [sceneHandler openURLInNewTab:command];
 }
 
-#pragma mark - TabGridObserving
+#pragma mark - TabGridStateObserver
 
 - (void)willEnterTabGrid {
   [self clearPresentedState];
@@ -1868,6 +1912,42 @@
 
 - (void)willExitTabGrid {
   // Do nothing.
+}
+
+#pragma mark - SafariDataImportChildCoordinatorDelegate
+
+- (void)safariDataImportCoordinatorWillDismissWorkflow:
+    (SafariDataImportExportCoordinator*)coordinator {
+  // Return early if the Safari import is not presented to avoid dismissing
+  // another view controller.
+  if (!_safariDataImportExportCoordinator) {
+    return;
+  }
+  [_safariDataImportExportCoordinator stop];
+  _safariDataImportExportCoordinator = nil;
+}
+
+#pragma mark - NewTabPageViewControllerDelegate
+
+- (void)showCustomizationMenuForUserEducationFromNewTabPageViewController:
+    (NewTabPageViewController*)newTabPageViewController {
+  if (_customizationCoordinator) {
+    // Make sure to alert the coordinator that user education is active, so it
+    // can alert the Feature Engagement Tracker on dismissal.
+    _customizationCoordinator.openedForUserEducation = YES;
+    return;
+  }
+
+  // Hide the 'new' badge for the current session after being tapped.
+  [self.headerViewController hideBadgeOnCustomizationMenu];
+
+  [self.NTPMetricsRecorder recordHomeCustomizationMenuOpenedFromEntrypoint:
+                               HomeCustomizationEntrypoint::kPromo];
+
+  [self openCustomizationMenuAtPage:CustomizationMenuPage::kMain animated:YES];
+  // Make sure to alert the coordinator that user education is active, so it can
+  // alert the Feature Engagement Tracker on dismissal.
+  _customizationCoordinator.openedForUserEducation = YES;
 }
 
 @end

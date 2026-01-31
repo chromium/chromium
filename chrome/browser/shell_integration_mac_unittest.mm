@@ -28,17 +28,17 @@ TEST(ShellIntegrationMacTest, GetDirectLaunchUrlScheme) {
   {
     chrome::ScopedChannelOverride beta(
         chrome::ScopedChannelOverride::Channel::kBeta);
-    EXPECT_EQ("google-chrome-beta", GetDirectLaunchUrlScheme());
+    EXPECT_EQ("", GetDirectLaunchUrlScheme());
   }
   {
     chrome::ScopedChannelOverride dev(
         chrome::ScopedChannelOverride::Channel::kDev);
-    EXPECT_EQ("google-chrome-dev", GetDirectLaunchUrlScheme());
+    EXPECT_EQ("", GetDirectLaunchUrlScheme());
   }
   {
     chrome::ScopedChannelOverride canary(
         chrome::ScopedChannelOverride::Channel::kCanary);
-    EXPECT_EQ("google-chrome-canary", GetDirectLaunchUrlScheme());
+    EXPECT_EQ("", GetDirectLaunchUrlScheme());
   }
 }
 #else  // !BUILDFLAG(GOOGLE_CHROME_BRANDING)

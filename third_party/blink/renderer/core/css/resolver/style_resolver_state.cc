@@ -41,6 +41,28 @@ namespace blink {
 
 namespace {
 
+bool MayReturnNullRenderingStyleForPseudoElement(
+    PseudoId pseudo_id,
+    const ComputedStyle* parent_style) {
+  switch (pseudo_id) {
+    // We always create styles for ::column pseudo-elements to collect
+    // pseudo-element styles even if there are no matched properties.
+    // E.g. if we only have ::column::scroll-marker {} rule, we need to create
+    // a style for ::column.
+    case kPseudoIdColumn: {
+      return false;
+    }
+    // We always create styles for ::scroll-marker-group pseudo-elements
+    // if there is 'scroll-marker-group' property specified on the parent.
+    case kPseudoIdScrollMarkerGroup: {
+      CHECK(parent_style);
+      return parent_style->ScrollMarkerGroupNone();
+    }
+    default:
+      return true;
+  }
+}
+
 Element* ComputeStyledElement(const StyleRequest& style_request,
                               Element& element) {
   Element* styled_element = style_request.styled_element;
@@ -135,6 +157,9 @@ EInsideLink StyleResolverState::InsideLink() const {
 
 const ComputedStyle* StyleResolverState::TakeStyle() {
   if (had_no_matched_properties_ &&
+      MayReturnNullRenderingStyleForPseudoElement(
+          element_context_.GetElement().GetPseudoIdForStyling(),
+          parent_style_) &&
       pseudo_request_type_ == StyleRequest::kForRenderer) {
     return nullptr;
   }

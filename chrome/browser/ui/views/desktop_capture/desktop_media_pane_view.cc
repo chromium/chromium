@@ -49,14 +49,6 @@ void DesktopMediaPaneView::SetAudioSharingApprovedByUser(bool is_on) {
   content_pane_view_->SetAudioSharingApprovedByUser(is_on);
 }
 
-bool DesktopMediaPaneView::IsAudioSharingControlEnabled() const {
-  return content_pane_view_->IsAudioSharingControlEnabled();
-}
-
-void DesktopMediaPaneView::SetAudioSharingControlEnabled(bool enabled) {
-  content_pane_view_->SetAudioSharingControlEnabled(enabled);
-}
-
 std::u16string_view DesktopMediaPaneView::GetAudioLabelText() const {
   return content_pane_view_->GetAudioLabelText();
 }

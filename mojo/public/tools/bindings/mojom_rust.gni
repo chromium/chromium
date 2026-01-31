@@ -135,8 +135,10 @@ template("mojom_rust") {
       deps = [
         ":$rust_crate_root_target_name",
         ":$rust_generator_target_name",
+        "//mojo/public/rust/bindings:mojo_rust_bindings_api",
         "//mojo/public/rust/mojom_parser",
         "//third_party/rust/anyhow/v1:lib",
+        "//third_party/rust/ordered_float/v5:lib",
       ]
 
       public_deps = []
@@ -146,6 +148,10 @@ template("mojom_rust") {
       }
 
       visibility = output_visibility
+
+      # The generated crate doesn't need these dependencies.
+      no_allocator_crate = true
+      no_clippy = true
     }
   } else {
     group("${base_name}_meta") {

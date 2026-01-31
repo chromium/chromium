@@ -49,8 +49,8 @@ source_set("mac") {
 source_set("unit_tests") {
   testonly = true
   sources = [
-    "channel_layout_util_mac_unittests.cc",
-    "video_frame_mac_unittests.cc",
+    "channel_layout_util_mac_unittest.cc",
+    "video_frame_mac_unittest.cc",
   ]
   frameworks = [
     "AudioToolbox.framework",

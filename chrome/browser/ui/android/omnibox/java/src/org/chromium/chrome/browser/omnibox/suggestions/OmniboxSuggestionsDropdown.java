@@ -34,7 +34,6 @@ import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.omnibox.OmniboxMetrics;
 import org.chromium.chrome.browser.omnibox.R;
-import org.chromium.components.browser_ui.widget.RoundedCornerOutlineProvider;
 import org.chromium.components.omnibox.OmniboxFeatures;
 import org.chromium.ui.base.KeyNavigationUtil;
 import org.chromium.ui.util.MotionEventUtils;
@@ -308,27 +307,6 @@ public class OmniboxSuggestionsDropdown extends RecyclerView {
     @Override
     protected void onSizeChanged(int w, int h, int oldW, int oldH) {
         mLayoutScrollListener.updateVisualScrollState();
-    }
-
-    /**
-     * Set whether the dropdown should be clipped to its outline.
-     *
-     * @param clip whether to clip the outline
-     */
-    public void setShouldClipToOutline(boolean clip) {
-        if (clip) {
-            setOutlineProvider(
-                    new RoundedCornerOutlineProvider(
-                            getContext()
-                                    .getResources()
-                                    .getDimensionPixelSize(
-                                            R.dimen
-                                                    .omnibox_suggestion_dropdown_round_corner_radius)));
-            setClipToOutline(true);
-        } else {
-            setOutlineProvider(null);
-            setClipToOutline(false);
-        }
     }
 
     /** Get the Android View implementing suggestion list. */

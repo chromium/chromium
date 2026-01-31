@@ -60,11 +60,6 @@ base::TaskPriority GetTaskPriority() {
              : base::TaskPriority::BEST_EFFORT;
 }
 
-void RecordSitesToClearCount(int count) {
-  base::UmaHistogramCounts1000(
-      "FirstPartySets.Initialization.SitesToClear.Count", count);
-}
-
 }  // namespace
 
 // static
@@ -102,8 +97,7 @@ FirstPartySetsHandlerImpl* FirstPartySetsHandlerImpl::GetInstance() {
 // static
 std::pair<base::expected<void, FirstPartySetsHandler::ParseError>,
           std::vector<FirstPartySetsHandler::ParseWarning>>
-FirstPartySetsHandler::ValidateEnterprisePolicy(
-    const base::Value::Dict& policy) {
+FirstPartySetsHandler::ValidateEnterprisePolicy(const base::DictValue& policy) {
   auto [parsed, warnings] =
       FirstPartySetParser::ParseSetsFromEnterprisePolicy(policy);
 
@@ -124,7 +118,7 @@ FirstPartySetsHandlerImplInstance::CreateForTesting(
 }
 
 void FirstPartySetsHandlerImplInstance::GetContextConfigForPolicy(
-    base::optional_ref<const base::Value::Dict> policy,
+    base::optional_ref<const base::DictValue> policy,
     base::OnceCallback<void(net::FirstPartySetsContextConfig)> callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!policy) {
@@ -220,7 +214,6 @@ void FirstPartySetsHandlerImplInstance::SetPublicFirstPartySets(
     return;
   }
 
-  // TODO(crbug.com/40186153): Use the version to compute sets diff.
   sets_loader_->SetComponentSets(version, std::move(sets_file));
 }
 
@@ -426,8 +419,6 @@ void FirstPartySetsHandlerImplInstance::OnGetSitesToClear(
     return;
   }
 
-  RecordSitesToClearCount(sites_to_clear->first.size());
-
   BrowserContext* browser_context = browser_context_getter.Run();
   if (!browser_context) {
     DVLOG(1) << "Invalid Browser Context. Failed to clear site data for "
@@ -519,7 +510,7 @@ void FirstPartySetsHandlerImplInstance::ComputeFirstPartySetMetadataInternal(
 
 net::FirstPartySetsContextConfig
 FirstPartySetsHandlerImplInstance::GetContextConfigForPolicyInternal(
-    const base::Value::Dict& policy,
+    const base::DictValue& policy,
     base::optional_ref<const base::ElapsedTimer> timer) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK(global_sets_.has_value());

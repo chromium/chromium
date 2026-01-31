@@ -11,6 +11,7 @@ import android.content.Intent;
 import android.net.Uri;
 import android.provider.Browser;
 
+import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.IntentUtils;
 import org.chromium.base.metrics.RecordHistogram;
@@ -107,6 +108,8 @@ public class ChromeAsyncTabLauncher implements AsyncTabLauncher {
             if (otherActivity != null) {
                 assert otherActivity instanceof ChromeTabbedActivity;
                 ((ChromeTabbedActivity) otherActivity).onNewIntent(intent);
+                ApiCompatibilityUtils.moveTaskToFront(
+                        activity, ((ChromeTabbedActivity) otherActivity).getTaskId(), 0);
                 return;
             }
             if (preferNew) intent.putExtra(IntentHandler.EXTRA_PREFER_NEW, true);

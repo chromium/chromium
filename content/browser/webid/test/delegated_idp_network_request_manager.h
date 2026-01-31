@@ -32,7 +32,6 @@ class DelegatedIdpNetworkRequestManager : public MockIdpNetworkRequestManager {
   void FetchWellKnown(const GURL& provider,
                       FetchWellKnownCallback callback) override;
   void FetchConfig(const GURL& provider,
-                   blink::mojom::RpMode rp_mode,
                    int idp_brand_icon_ideal_size,
                    int idp_brand_icon_minimum_size,
                    FetchConfigCallback callback) override;
@@ -49,9 +48,10 @@ class DelegatedIdpNetworkRequestManager : public MockIdpNetworkRequestManager {
       const GURL& token_url,
       const std::string& account,
       const std::string& url_encoded_post_data,
-      bool idp_blidness,
+      bool idp_blindness,
       TokenRequestCallback callback,
-      ContinueOnCallback continue_on_callback,
+      ContinueOnCallback continue_on,
+      RedirectToCallback redirect_to,
       RecordErrorMetricsCallback record_error_metrics_callback) override;
   void SendSuccessfulTokenRequestMetrics(
       const GURL& metrics_endpoint_url,

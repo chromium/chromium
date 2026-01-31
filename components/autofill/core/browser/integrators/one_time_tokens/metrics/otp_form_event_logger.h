@@ -46,7 +46,8 @@ class OtpFormEventLogger : public FormEventLoggerBase {
   DenseSet<FormTypeNameForLogging> GetSupportedFormTypeNamesForLogging()
       const override;
   DenseSet<FormTypeNameForLogging> GetFormTypesForLogging(
-      const FormStructure& form) const override;
+      const FormStructure& form,
+      AutocompleteUnrecognizedBehavior ac_unrecognized_behavior) const override;
 
  private:
   // Tracks the number of OTPs that have been made available for filling during

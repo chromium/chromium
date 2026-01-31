@@ -8,6 +8,7 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/content_browser_test_utils.h"
+#include "services/network/public/cpp/features.h"
 
 // Local Network Access browser tests related to iframes.
 //
@@ -19,8 +20,21 @@ constexpr char kLnaPath[] =
     "?Access-Control-Allow-Origin: *";
 
 class LocalNetworkAccessIframeBrowserTest
-    : public LocalNetworkAccessBrowserTestBase {
+    : public LocalNetworkAccessBrowserTestBase,
+      public ::testing::WithParamInterface<bool> {
  public:
+  LocalNetworkAccessIframeBrowserTest() {
+    if (split_permissions_enabled()) {
+      feature_list_.InitAndEnableFeature(
+          network::features::kLocalNetworkAccessChecksSplitPermissions);
+    } else {
+      feature_list_.InitAndDisableFeature(
+          network::features::kLocalNetworkAccessChecksSplitPermissions);
+    }
+  }
+
+  bool split_permissions_enabled() { return GetParam(); }
+
   // Helper function for running iframe navigation tests that are intended to
   // succeed.
   //
@@ -55,9 +69,12 @@ class LocalNetworkAccessIframeBrowserTest
     ASSERT_TRUE(nav_url_nav_manager.WaitForNavigationFinished());
     EXPECT_TRUE(nav_url_nav_manager.was_successful());
   }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
 };
 
-IN_PROC_BROWSER_TEST_F(LocalNetworkAccessIframeBrowserTest,
+IN_PROC_BROWSER_TEST_P(LocalNetworkAccessIframeBrowserTest,
                        IframeDenyPermission) {
   ASSERT_TRUE(content::NavigateToURL(
       web_contents(),
@@ -85,7 +102,7 @@ IN_PROC_BROWSER_TEST_F(LocalNetworkAccessIframeBrowserTest,
   EXPECT_FALSE(nav_manager.was_successful());
 }
 
-IN_PROC_BROWSER_TEST_F(LocalNetworkAccessIframeBrowserTest,
+IN_PROC_BROWSER_TEST_P(LocalNetworkAccessIframeBrowserTest,
                        IframeAcceptPermission) {
   ASSERT_TRUE(content::NavigateToURL(
       web_contents(),
@@ -115,7 +132,7 @@ IN_PROC_BROWSER_TEST_F(LocalNetworkAccessIframeBrowserTest,
 
 // Open a public page that iframes a public page, then navigate it to a loopback
 // page.
-IN_PROC_BROWSER_TEST_F(LocalNetworkAccessIframeBrowserTest,
+IN_PROC_BROWSER_TEST_P(LocalNetworkAccessIframeBrowserTest,
                        IframeNavigationPublicPagePublicIframe) {
   GURL initial_url = https_server().GetURL(
       "a.com", "/local_network_access/no-favicon-treat-as-public-address.html");
@@ -131,7 +148,7 @@ IN_PROC_BROWSER_TEST_F(LocalNetworkAccessIframeBrowserTest,
 
 // Open a public page that iframes a loopback page, then navigate it to a
 // loopback page.
-IN_PROC_BROWSER_TEST_F(LocalNetworkAccessIframeBrowserTest,
+IN_PROC_BROWSER_TEST_P(LocalNetworkAccessIframeBrowserTest,
                        IframeNavigationPublicPageLoopbackIframe) {
   GURL initial_url = https_server().GetURL(
       "a.com", "/local_network_access/no-favicon-treat-as-public-address.html");
@@ -144,7 +161,7 @@ IN_PROC_BROWSER_TEST_F(LocalNetworkAccessIframeBrowserTest,
 
 // Open a loopback page that iframes a public page, then navigate it to a
 // loopback page.
-IN_PROC_BROWSER_TEST_F(LocalNetworkAccessIframeBrowserTest,
+IN_PROC_BROWSER_TEST_P(LocalNetworkAccessIframeBrowserTest,
                        IframeNavLoopbackPagePublicIframe) {
   GURL initial_url =
       https_server().GetURL("a.com", "/local_network_access/no-favicon.html");
@@ -159,7 +176,7 @@ IN_PROC_BROWSER_TEST_F(LocalNetworkAccessIframeBrowserTest,
 
 // Open a loopback page that iframes a loopback page, then navigate it to a
 // loopback page.
-IN_PROC_BROWSER_TEST_F(LocalNetworkAccessIframeBrowserTest,
+IN_PROC_BROWSER_TEST_P(LocalNetworkAccessIframeBrowserTest,
                        IframeNavLoopbackPageLoopbackIframe) {
   GURL initial_url =
       https_server().GetURL("a.com", "/local_network_access/no-favicon.html");
@@ -172,7 +189,7 @@ IN_PROC_BROWSER_TEST_F(LocalNetworkAccessIframeBrowserTest,
 
 // Open a public page that iframes a public page, then navigate it to a loopback
 // page. The page and the iframe have the same origin
-IN_PROC_BROWSER_TEST_F(LocalNetworkAccessIframeBrowserTest,
+IN_PROC_BROWSER_TEST_P(LocalNetworkAccessIframeBrowserTest,
                        IframeNavPublicPagePublicLoopbackSameOrigin) {
   GURL initial_url = https_server().GetURL(
       "a.com", "/local_network_access/no-favicon-treat-as-public-address.html");
@@ -188,7 +205,7 @@ IN_PROC_BROWSER_TEST_F(LocalNetworkAccessIframeBrowserTest,
 
 // Open a loopback page that iframes a loopback page, then navigate it to a
 // loopback page. The page and the iframe have the same origin.
-IN_PROC_BROWSER_TEST_F(LocalNetworkAccessIframeBrowserTest,
+IN_PROC_BROWSER_TEST_P(LocalNetworkAccessIframeBrowserTest,
                        IframeNavLoopbackPageLoopbackIframeSameOrigin) {
   GURL initial_url =
       https_server().GetURL("a.com", "/local_network_access/no-favicon.html");
@@ -198,5 +215,9 @@ IN_PROC_BROWSER_TEST_F(LocalNetworkAccessIframeBrowserTest,
       "/local_network_access/client-redirect.html?url=" + final_url.spec());
   RunIframeNavigationTest(initial_url, iframe_url, final_url);
 }
+
+INSTANTIATE_TEST_SUITE_P(SplitPermissions,
+                         LocalNetworkAccessIframeBrowserTest,
+                         testing::Bool());
 
 }  // namespace local_network_access

@@ -30,7 +30,7 @@ import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.Callback;
-import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.flags.ActivityType;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -86,24 +86,15 @@ public class ArchivedTabModelSelectorImplTest {
                         realAsyncTabParamsManager);
         assertTrue(currentTabModelSupplierHasObservers());
         assertNull(mTabModelSelector.getCurrentTabModelSupplier().get());
-        assertNull(
-                mTabModelSelector.getTabGroupModelFilterProvider().getCurrentTabGroupModelFilter());
+        assertNull(mTabModelSelector.getCurrentTabGroupModelFilter());
 
         mTabCreatorManager.initialize(mTabModelSelector);
         TabRemover regularTabRemover =
-                new PassthroughTabRemover(
-                        () ->
-                                mTabModelSelector
-                                        .getTabGroupModelFilterProvider()
-                                        .getTabGroupModelFilter(false));
+                new PassthroughTabRemover(() -> mTabModelSelector.getTabGroupModelFilter(false));
         MockTabModel regularTabModel = new MockTabModel(mProfile, null);
         regularTabModel.setTabRemoverForTesting(regularTabRemover);
         TabRemover incognitoTabRemover =
-                new PassthroughTabRemover(
-                        () ->
-                                mTabModelSelector
-                                        .getTabGroupModelFilterProvider()
-                                        .getTabGroupModelFilter(true));
+                new PassthroughTabRemover(() -> mTabModelSelector.getTabGroupModelFilter(true));
         MockTabModel incognitoTabModel = new MockTabModel(mIncognitoProfile, null);
         incognitoTabModel.setTabRemoverForTesting(incognitoTabRemover);
         mTabModelSelector.onNativeLibraryReadyInternal(
@@ -119,10 +110,7 @@ public class ArchivedTabModelSelectorImplTest {
                 mTabModelSelector.getCurrentTabModelSupplier().get());
         assertEquals(
                 mTabModelSelector.getCurrentModel(),
-                mTabModelSelector
-                        .getTabGroupModelFilterProvider()
-                        .getCurrentTabGroupModelFilter()
-                        .getTabModel());
+                mTabModelSelector.getCurrentTabGroupModelFilter().getTabModel());
     }
 
     @After
@@ -149,10 +137,7 @@ public class ArchivedTabModelSelectorImplTest {
         assertEquals(normalTab, mTabModelSelector.getCurrentTabSupplier().get());
         assertEquals(
                 mTabModelSelector.getModel(false),
-                mTabModelSelector
-                        .getTabGroupModelFilterProvider()
-                        .getCurrentTabGroupModelFilter()
-                        .getTabModel());
+                mTabModelSelector.getCurrentTabGroupModelFilter().getTabModel());
         ShadowLooper.runUiThreadTasks();
         verify(mTabSupplierObserverMock).onResult(eq(normalTab));
         mTabModelSelector.getCurrentTabSupplier().removeObserver(mTabSupplierObserverMock);
@@ -225,7 +210,7 @@ public class ArchivedTabModelSelectorImplTest {
         WindowAndroid window = mock(WindowAndroid.class);
         WeakReference<Context> weakContext = new WeakReference<>(mContext);
         when(window.getContext()).thenReturn(weakContext);
-        doReturn(new ObservableSupplierImpl<>(false)).when(window).getOcclusionSupplier();
+        doReturn(ObservableSuppliers.alwaysFalse()).when(window).getOcclusionSupplier();
         tab.updateAttachment(window, mTabDelegateFactory);
 
         Assert.assertEquals(
@@ -251,7 +236,6 @@ public class ArchivedTabModelSelectorImplTest {
     }
 
     private boolean currentTabModelSupplierHasObservers() {
-        return ((ObservableSupplierImpl<?>) mTabModelSelector.getCurrentTabModelSupplier())
-                .hasObservers();
+        return mTabModelSelector.getCurrentTabModelSupplier().hasObservers();
     }
 }

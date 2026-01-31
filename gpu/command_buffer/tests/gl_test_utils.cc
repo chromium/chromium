@@ -14,7 +14,6 @@
 
 #include "base/command_line.h"
 #include "base/compiler_specific.h"
-#include "base/containers/contains.h"
 #include "base/containers/heap_array.h"
 #include "base/containers/span.h"
 #include "base/logging.h"
@@ -88,7 +87,7 @@ bool GLTestHelper::HasExtension(const char* extension) {
       std::string(reinterpret_cast<const char*>(glGetString(GL_EXTENSIONS))) +
       " ";
   std::string extension_padded = std::string(extension) + " ";
-  return base::Contains(extensions, extension_padded);
+  return extensions.contains(extension_padded);
 }
 
 bool GLTestHelper::CheckGLError(const char* msg, int line) {
@@ -402,7 +401,7 @@ bool GpuCommandBufferTestEGL::InitializeEGL(int width, int height) {
                                   &gpu_info);
     // See crbug.com/822716, the ATI proprietary driver has eglGetProcAddress
     // but eglInitialize crashes with x11.
-    if (base::Contains(gpu_info.gl_vendor, "ATI Technologies Inc.")) {
+    if (gpu_info.gl_vendor.contains("ATI Technologies Inc.")) {
       LOG(INFO) << "Skip test, ATI proprietary driver crashes with egl/x11";
       return false;
     }

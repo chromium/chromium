@@ -490,33 +490,30 @@ void SandboxedUnpacker::Unpack(const base::FilePath& directory) {
 }
 
 void SandboxedUnpacker::ReadManifestDone(
-    base::expected<base::Value, std::string> result) {
+    base::expected<base::Value, std::u16string> result) {
   DCHECK(unpacker_io_task_runner_->RunsTasksInCurrentSequence());
   if (!result.has_value()) {
     ReportUnpackExtensionFailed(result.error());
     return;
   }
-  const base::Value::Dict* dict = result->GetIfDict();
+  const base::DictValue* dict = result->GetIfDict();
   if (!dict) {
     ReportUnpackExtensionFailed(manifest_errors::kInvalidManifest);
     return;
   }
 
-  // TODO(crbug.com/41317803): Continue removing std::string errors and
-  // replacing with std::u16string.
-  std::u16string utf16_error;
+  std::u16string error;
   scoped_refptr<Extension> extension(
       Extension::Create(extension_root_, location_, *dict, creation_flags_,
-                        extension_id_, &utf16_error));
+                        extension_id_, &error));
   if (!extension) {
-    ReportUnpackExtensionFailed(base::UTF16ToUTF8(utf16_error));
+    ReportUnpackExtensionFailed(error);
     return;
   }
 
-  std::string error_msg;
   std::vector<InstallWarning> warnings;
-  if (!file_util::ValidateExtension(extension.get(), &error_msg, &warnings)) {
-    ReportUnpackExtensionFailed(error_msg);
+  if (!file_util::ValidateExtension(extension.get(), &error, &warnings)) {
+    ReportUnpackExtensionFailed(error);
     return;
   }
   extension->AddInstallWarnings(std::move(warnings));
@@ -524,11 +521,10 @@ void SandboxedUnpacker::ReadManifestDone(
   UnpackExtensionSucceeded(std::move(result).value().TakeDict());
 }
 
-void SandboxedUnpacker::UnpackExtensionSucceeded(base::Value::Dict manifest) {
+void SandboxedUnpacker::UnpackExtensionSucceeded(base::DictValue manifest) {
   DCHECK(unpacker_io_task_runner_->RunsTasksInCurrentSequence());
 
-  std::optional<base::Value::Dict> final_manifest(
-      RewriteManifestFile(manifest));
+  std::optional<base::DictValue> final_manifest(RewriteManifestFile(manifest));
   if (!final_manifest) {
     return;
   }
@@ -787,11 +783,12 @@ void SandboxedUnpacker::MaybeComputeHashes(bool should_compute) {
   ReportSuccess();
 }
 
-void SandboxedUnpacker::ReportUnpackExtensionFailed(std::string_view error) {
+void SandboxedUnpacker::ReportUnpackExtensionFailed(
+    const std::u16string& error) {
   DCHECK(unpacker_io_task_runner_->RunsTasksInCurrentSequence());
-  ReportFailure(SandboxedUnpackerFailureReason::UNPACKER_CLIENT_FAILED,
-                l10n_util::GetStringFUTF16(IDS_EXTENSION_PACKAGE_ERROR_MESSAGE,
-                                           base::UTF8ToUTF16(error)));
+  ReportFailure(
+      SandboxedUnpackerFailureReason::UNPACKER_CLIENT_FAILED,
+      l10n_util::GetStringFUTF16(IDS_EXTENSION_PACKAGE_ERROR_MESSAGE, error));
 }
 
 std::u16string SandboxedUnpacker::FailureReasonToString16(
@@ -980,7 +977,7 @@ void SandboxedUnpacker::ReportSuccess() {
   // Client takes ownership of temporary directory, manifest, and extension.
   client_->OnUnpackSuccess(
       temp_dir_.Take(), extension_root_,
-      std::make_unique<base::Value::Dict>(std::move(manifest_.value())),
+      std::make_unique<base::DictValue>(std::move(manifest_.value())),
       extension_.get(), install_icon_, std::move(ruleset_install_prefs_));
 
   // Interestingly, the C++ standard doesn't guarantee that a moved-from vector
@@ -992,15 +989,15 @@ void SandboxedUnpacker::ReportSuccess() {
   Cleanup();
 }
 
-std::optional<base::Value::Dict> SandboxedUnpacker::RewriteManifestFile(
-    const base::Value::Dict& manifest) {
+std::optional<base::DictValue> SandboxedUnpacker::RewriteManifestFile(
+    const base::DictValue& manifest) {
   constexpr int64_t kMaxFingerprintSize = 1024;
 
   // Add the public key extracted earlier to the parsed manifest and overwrite
   // the original manifest. We do this to ensure the manifest doesn't contain an
   // exploitable bug that could be used to compromise the browser.
   DCHECK(!public_key_.empty());
-  base::Value::Dict final_manifest = manifest.Clone();
+  base::DictValue final_manifest = manifest.Clone();
   final_manifest.Set(manifest_keys::kPublicKey, public_key_);
 
   {
@@ -1051,7 +1048,7 @@ void SandboxedUnpacker::ParseJsonFile(const base::FilePath& path) {
   DCHECK(unpacker_io_task_runner_->RunsTasksInCurrentSequence());
   std::string contents;
   if (!base::ReadFileToString(path, &contents)) {
-    ReadManifestDone(base::unexpected("File doesn't exist."));
+    ReadManifestDone(base::unexpected(u"File doesn't exist."));
     return;
   }
 
@@ -1059,7 +1056,9 @@ void SandboxedUnpacker::ParseJsonFile(const base::FilePath& path) {
       base::JSONReader::ReadAndReturnValueWithError(
           contents, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   ReadManifestDone(std::move(result).transform_error(
-      [](const base::JSONReader::Error& error) { return error.ToString(); }));
+      [](const base::JSONReader::Error& error) {
+        return base::UTF8ToUTF16(error.ToString());
+      }));
 }
 
 }  // namespace extensions

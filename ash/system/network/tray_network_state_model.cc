@@ -9,7 +9,6 @@
 
 #include "ash/public/cpp/network_config_service.h"
 #include "ash/system/network/vpn_list.h"
-#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/location.h"
@@ -212,7 +211,7 @@ void TrayNetworkStateModel::OnGetDeviceStateList(
   devices_.clear();
   for (auto& device : devices) {
     NetworkType type = device->type;
-    if (base::Contains(devices_, type))
+    if (devices_.contains(type))
       continue;  // Ignore multiple entries with the same type.
     devices_.emplace(std::make_pair(type, std::move(device)));
   }

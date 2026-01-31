@@ -95,22 +95,22 @@ media::cast::StatsEventSubscriber::CastStat HistogramTypeToCastStat(
 OpenscreenStatsClient::OpenscreenStatsClient() = default;
 OpenscreenStatsClient::~OpenscreenStatsClient() = default;
 
-base::Value::Dict OpenscreenStatsClient::GetStats() const {
+base::DictValue OpenscreenStatsClient::GetStats() const {
   return most_recent_stats_.Clone();
 }
 
-base::Value::Dict OpenscreenStatsClient::ConvertSenderStatsToDict(
+base::DictValue OpenscreenStatsClient::ConvertSenderStatsToDict(
     const openscreen::cast::SenderStats& updated_stats) const {
-  base::Value::Dict ret;
+  base::DictValue ret;
 
-  base::Value::Dict audio_stats =
+  base::DictValue audio_stats =
       ConvertStatisticsListToDict(updated_stats.audio_statistics);
   audio_stats.Merge(
       ConvertHistogramsListToDict(updated_stats.audio_histograms));
   ret.Set(media::cast::StatsEventSubscriber::kAudioStatsDictKey,
           std::move(audio_stats));
 
-  base::Value::Dict video_stats =
+  base::DictValue video_stats =
       ConvertStatisticsListToDict(updated_stats.video_statistics);
   video_stats.Merge(
       ConvertHistogramsListToDict(updated_stats.video_histograms));
@@ -119,9 +119,9 @@ base::Value::Dict OpenscreenStatsClient::ConvertSenderStatsToDict(
   return ret;
 }
 
-base::Value::Dict OpenscreenStatsClient::ConvertStatisticsListToDict(
+base::DictValue OpenscreenStatsClient::ConvertStatisticsListToDict(
     const openscreen::cast::SenderStats::StatisticsList& stats_list) const {
-  base::Value::Dict ret;
+  base::DictValue ret;
   for (std::size_t i = 0; i < stats_list.size(); ++i) {
     const char* key = media::cast::StatsEventSubscriber::CastStatToString(
         StatisticTypeToCastStat(
@@ -135,10 +135,10 @@ base::Value::Dict OpenscreenStatsClient::ConvertStatisticsListToDict(
   return ret;
 }
 
-base::Value::Dict OpenscreenStatsClient::ConvertHistogramsListToDict(
+base::DictValue OpenscreenStatsClient::ConvertHistogramsListToDict(
     const openscreen::cast::SenderStats::HistogramsList& histograms_list)
     const {
-  base::Value::Dict ret;
+  base::DictValue ret;
   for (std::size_t i = 0; i < histograms_list.size(); ++i) {
     ret.Set(media::cast::StatsEventSubscriber::CastStatToString(
                 HistogramTypeToCastStat(
@@ -148,17 +148,17 @@ base::Value::Dict OpenscreenStatsClient::ConvertHistogramsListToDict(
   return ret;
 }
 
-base::Value::List OpenscreenStatsClient::ConvertOpenscreenHistogramToList(
+base::ListValue OpenscreenStatsClient::ConvertOpenscreenHistogramToList(
     const openscreen::cast::SimpleHistogram& histogram) const {
   // If there are no buckets then we return an empty list.
   if (histogram.buckets.empty()) {
-    return base::Value::List();
+    return base::ListValue();
   }
 
-  base::Value::List histo;
+  base::ListValue histo;
 
   if (histogram.buckets.front()) {
-    base::Value::Dict bucket;
+    base::DictValue bucket;
     bucket.Set(base::StringPrintf("<%" PRId64, histogram.min),
                histogram.buckets.front());
     histo.Append(std::move(bucket));
@@ -168,7 +168,7 @@ base::Value::List OpenscreenStatsClient::ConvertOpenscreenHistogramToList(
     if (!histogram.buckets[i]) {
       continue;
     }
-    base::Value::Dict bucket;
+    base::DictValue bucket;
     int64_t lower = histogram.min + (i - 1) * histogram.width;
     int64_t upper = lower + histogram.width - 1;
     bucket.Set(base::StringPrintf("%" PRId64 "-%" PRId64, lower, upper),
@@ -177,7 +177,7 @@ base::Value::List OpenscreenStatsClient::ConvertOpenscreenHistogramToList(
   }
 
   if (histogram.buckets.back()) {
-    base::Value::Dict bucket;
+    base::DictValue bucket;
     bucket.Set(base::StringPrintf(">=%" PRId64, histogram.max),
                histogram.buckets.back());
     histo.Append(std::move(bucket));

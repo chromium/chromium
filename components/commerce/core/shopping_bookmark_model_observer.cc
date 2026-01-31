@@ -8,7 +8,6 @@
 #include <optional>
 #include <vector>
 
-#include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/functional/callback.h"
 #include "base/metrics/user_metrics.h"
@@ -216,7 +215,7 @@ void ShoppingBookmarkModelObserver::HandleNodeDeletion(
   // Determine the number of duplicates that are in the folder being deleted.
   // Skip any previously unsubscribed IDs.
   if (folder_being_deleted &&
-      !base::Contains(*unsubscribed_ids, specifics->product_cluster_id())) {
+      !unsubscribed_ids->contains(specifics->product_cluster_id())) {
     size_t duplicates_in_deleted_folder = 0;
     for (const bookmarks::BookmarkNode* duplicate : bookmarks_with_cluster) {
       if (bookmarks::IsDescendantOf(duplicate, folder_being_deleted)) {

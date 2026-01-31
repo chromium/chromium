@@ -19,6 +19,7 @@ import static org.mockito.Mockito.when;
 import static org.chromium.chrome.browser.multiwindow.MultiWindowUtils.HISTOGRAM_NUM_ACTIVITIES_DESKTOP_WINDOW;
 import static org.chromium.chrome.browser.multiwindow.MultiWindowUtils.HISTOGRAM_NUM_INSTANCES_DESKTOP_WINDOW;
 import static org.chromium.chrome.browser.multiwindow.MultiWindowUtils.INVALID_TASK_ID;
+import static org.chromium.chrome.browser.url_constants.UrlConstantResolver.getOriginalNativeNtpUrl;
 
 import android.app.Activity;
 import android.content.Context;
@@ -45,7 +46,7 @@ import org.robolectric.annotation.Implements;
 
 import org.chromium.base.FeatureOverrides;
 import org.chromium.base.SysUtils;
-import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.DisabledTest;
@@ -69,7 +70,6 @@ import org.chromium.chrome.test.OverrideContextWrapperTestRule;
 import org.chromium.components.browser_ui.desktop_windowing.AppHeaderState;
 import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateManager;
 import org.chromium.components.browser_ui.util.ConversionUtils;
-import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.messages.MessageBannerProperties;
 import org.chromium.components.messages.MessageDispatcher;
 import org.chromium.components.messages.MessageIdentifier;
@@ -87,7 +87,10 @@ import java.util.Map.Entry;
 /** Unit tests for {@link MultiWindowUtils}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE, shadows = ShadowMultiInstanceManagerApi31.class)
-@EnableFeatures(ChromeFeatureList.ROBUST_WINDOW_MANAGEMENT)
+@EnableFeatures({
+    ChromeFeatureList.ROBUST_WINDOW_MANAGEMENT,
+    ChromeFeatureList.RECENTLY_CLOSED_TABS_AND_WINDOWS
+})
 public class MultiWindowUtilsUnitTest {
     /** Shadows {@link MultiInstanceManagerApi31} class for testing. */
     @Implements(MultiInstanceManagerApi31.class)
@@ -141,7 +144,7 @@ public class MultiWindowUtilsUnitTest {
     private static final String URL_1 = "url1";
     private static final String URL_2 = "url2";
     private static final String URL_3 = "url3";
-    private static final GURL NTP_GURL = new GURL(UrlConstants.NTP_URL);
+    private static final GURL NTP_GURL = new GURL(getOriginalNativeNtpUrl());
     private static final GURL TEST_GURL = new GURL("https://youtube.com/");
 
     private MultiWindowUtils mUtils;
@@ -154,7 +157,7 @@ public class MultiWindowUtilsUnitTest {
 
     @Mock TabModelSelector mTabModelSelector;
     @Mock TabGroupModelFilter mTabGroupModelFilter;
-    @Mock ObservableSupplier<TabModel> mTabModelSupplier;
+    @Mock MonotonicObservableSupplier<TabModel> mTabModelSupplier;
     @Mock TabModel mNormalTabModel;
     @Mock TabModel mIncognitoTabModel;
     @Mock HomepageManager mHomepageManager;

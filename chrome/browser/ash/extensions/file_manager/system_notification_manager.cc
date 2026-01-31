@@ -6,6 +6,7 @@
 
 #include <optional>
 #include <string>
+#include <utility>
 
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/webui/file_manager/file_manager_ui.h"
@@ -21,7 +22,6 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/types/cxx23_to_underlying.h"
 #include "chrome/browser/ash/drive/file_system_util.h"
 #include "chrome/browser/ash/extensions/file_manager/drivefs_event_router.h"
 #include "chrome/browser/ash/file_manager/fileapi_util.h"
@@ -614,7 +614,7 @@ NotificationPtr SystemNotificationManager::MakeDriveSyncErrorNotification(
   }
 
   LOG(ERROR) << "Unexpected Drive sync error: "
-             << base::to_underlying(sync_error->type);
+             << std::to_underlying(sync_error->type);
   return nullptr;
 }
 
@@ -1119,7 +1119,7 @@ void SystemNotificationManager::HandleMountCompletedEvent(
     case fmp::MountCompletedEventType::kNone:
     default:
       VLOG(1) << "Unexpected mount event "
-              << base::to_underlying(event.event_type);
+              << std::to_underlying(event.event_type);
       break;
   }
 

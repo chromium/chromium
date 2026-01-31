@@ -59,11 +59,10 @@ namespace {
 const char kNotImplementedString[] =
     "NotSupportedError: Method is not implemented.";
 
-class ScopedFetcherForTests final
-    : public GarbageCollected<ScopedFetcherForTests>,
-      public GlobalFetch::ScopedFetcher {
+class ScopedFetcherForTests final : public GlobalFetch::ScopedFetcher {
  public:
-  ScopedFetcherForTests() = default;
+  explicit ScopedFetcherForTests(ExecutionContext& context)
+      : GlobalFetch::ScopedFetcher(context) {}
 
   ScriptPromise<Response> Fetch(ScriptState* script_state,
                                 const V8RequestInfo* request_info,
@@ -389,7 +388,8 @@ V8RequestInfo* StringToRequestInfo(const String& value) {
 TEST_F(CacheStorageTest, Basics) {
   ScriptState::Scope scope(GetScriptState());
   NonThrowableExceptionState exception_state;
-  auto* fetcher = MakeGarbageCollected<ScopedFetcherForTests>();
+  auto* fetcher =
+      MakeGarbageCollected<ScopedFetcherForTests>(*GetExecutionContext());
   Cache* cache =
       CreateCache(fetcher, std::make_unique<NotImplementedErrorCache>());
   DCHECK(cache);
@@ -421,7 +421,8 @@ TEST_F(CacheStorageTest, Basics) {
 TEST_F(CacheStorageTest, BasicArguments) {
   ScriptState::Scope scope(GetScriptState());
   NonThrowableExceptionState exception_state;
-  auto* fetcher = MakeGarbageCollected<ScopedFetcherForTests>();
+  auto* fetcher =
+      MakeGarbageCollected<ScopedFetcherForTests>(*GetExecutionContext());
   Cache* cache =
       CreateCache(fetcher, std::make_unique<NotImplementedErrorCache>());
   DCHECK(cache);
@@ -500,7 +501,8 @@ TEST_F(CacheStorageTest, BasicArguments) {
 TEST_F(CacheStorageTest, BatchOperationArguments) {
   ScriptState::Scope scope(GetScriptState());
   NonThrowableExceptionState exception_state;
-  auto* fetcher = MakeGarbageCollected<ScopedFetcherForTests>();
+  auto* fetcher =
+      MakeGarbageCollected<ScopedFetcherForTests>(*GetExecutionContext());
   Cache* cache =
       CreateCache(fetcher, std::make_unique<NotImplementedErrorCache>());
   DCHECK(cache);
@@ -597,7 +599,8 @@ class MatchTestCache : public NotImplementedErrorCache {
 TEST_F(CacheStorageTest, MatchResponseTest) {
   ScriptState::Scope scope(GetScriptState());
   NonThrowableExceptionState exception_state;
-  auto* fetcher = MakeGarbageCollected<ScopedFetcherForTests>();
+  auto* fetcher =
+      MakeGarbageCollected<ScopedFetcherForTests>(*GetExecutionContext());
   const String request_url = "http://request.url/";
   const String response_url = "http://match.response.test/";
 
@@ -640,7 +643,8 @@ class KeysTestCache : public NotImplementedErrorCache {
 TEST_F(CacheStorageTest, KeysResponseTest) {
   ScriptState::Scope scope(GetScriptState());
   NonThrowableExceptionState exception_state;
-  auto* fetcher = MakeGarbageCollected<ScopedFetcherForTests>();
+  auto* fetcher =
+      MakeGarbageCollected<ScopedFetcherForTests>(*GetExecutionContext());
   const String url1 = "http://first.request/";
   const String url2 = "http://second.request/";
 
@@ -700,7 +704,8 @@ class MatchAllAndBatchTestCache : public NotImplementedErrorCache {
 TEST_F(CacheStorageTest, MatchAllAndBatchResponseTest) {
   ScriptState::Scope scope(GetScriptState());
   NonThrowableExceptionState exception_state;
-  auto* fetcher = MakeGarbageCollected<ScopedFetcherForTests>();
+  auto* fetcher =
+      MakeGarbageCollected<ScopedFetcherForTests>(*GetExecutionContext());
   const String url1 = "http://first.response/";
   const String url2 = "http://second.response/";
 
@@ -753,7 +758,8 @@ TEST_F(CacheStorageTest, MatchAllAndBatchResponseTest) {
 TEST_F(CacheStorageTest, Add) {
   ScriptState::Scope scope(GetScriptState());
   NonThrowableExceptionState exception_state;
-  auto* fetcher = MakeGarbageCollected<ScopedFetcherForTests>();
+  auto* fetcher =
+      MakeGarbageCollected<ScopedFetcherForTests>(*GetExecutionContext());
   const String url = "http://www.cacheadd.test/";
   const String content_type = "text/plain";
   const String content = "hello cache";
@@ -799,7 +805,8 @@ TEST_F(CacheStorageTest, AddIsolatedApp) {
   CommonSchemeRegistry::RegisterURLSchemeAsIsolatedApp("isolated-app");
   ScriptState::Scope scope(GetScriptState());
   NonThrowableExceptionState exception_state;
-  auto* fetcher = MakeGarbageCollected<ScopedFetcherForTests>();
+  auto* fetcher =
+      MakeGarbageCollected<ScopedFetcherForTests>(*GetExecutionContext());
   const String url =
       "isolated-app://"
       "aerugqztij5biqquuk3mfwpsaibuegaqcitgfchwuosuofdjabzqaaic/";
@@ -849,7 +856,8 @@ TEST_F(CacheStorageTest, AddIsolatedApp) {
 TEST_F(CacheStorageTest, AddAllAbortOne) {
   ScriptState::Scope scope(GetScriptState());
   DummyExceptionStateForTesting exception_state;
-  auto* fetcher = MakeGarbageCollected<ScopedFetcherForTests>();
+  auto* fetcher =
+      MakeGarbageCollected<ScopedFetcherForTests>(*GetExecutionContext());
   const String url = "http://www.cacheadd.test/";
   const String content_type = "text/plain";
   const String content = "hello cache";
@@ -877,7 +885,8 @@ TEST_F(CacheStorageTest, AddAllAbortOne) {
 TEST_F(CacheStorageTest, AddAllAbortMany) {
   ScriptState::Scope scope(GetScriptState());
   DummyExceptionStateForTesting exception_state;
-  auto* fetcher = MakeGarbageCollected<ScopedFetcherForTests>();
+  auto* fetcher =
+      MakeGarbageCollected<ScopedFetcherForTests>(*GetExecutionContext());
   const String url = "http://www.cacheadd.test/";
   const String content_type = "text/plain";
   const String content = "hello cache";

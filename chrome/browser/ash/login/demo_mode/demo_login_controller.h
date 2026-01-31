@@ -97,7 +97,7 @@ class DemoLoginController
   // We keep this function in-class because it needs to access the member
   // `policy_manager_for_testing_`, which is set by unit tests through
   // SetDeviceCloudPolicyManagerForTesting().
-  std::optional<base::Value::Dict> GetDeviceIdentifier(
+  std::optional<base::DictValue> GetDeviceIdentifier(
       const std::string& login_scope_device_id);
 
   // Called on the feature is finished loading from growth.

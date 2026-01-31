@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.test.transit;
 
+import static org.chromium.chrome.browser.url_constants.UrlConstantResolver.getOriginalNativeNtpUrl;
+
 import android.content.Intent;
 
 import com.google.errorprone.annotations.CheckReturnValue;
@@ -17,7 +19,6 @@ import org.chromium.chrome.browser.firstrun.FirstRunStatus;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.transit.ntp.RegularNewTabPageStation;
 import org.chromium.chrome.test.transit.page.WebPageStation;
-import org.chromium.components.embedder_support.util.UrlConstants;
 
 /**
  * Public Transit entry points for {@link ChromeTabbedActivity}.
@@ -97,7 +98,7 @@ public class ChromeTabbedActivityEntryPoints {
         EntryPointSentinelStation sentinel = new EntryPointSentinelStation();
         sentinel.setAsEntryPoint();
 
-        return sentinel.runTo(() -> ctaTestRule.startMainActivityWithURL(UrlConstants.NTP_URL))
+        return sentinel.runTo(() -> ctaTestRule.startMainActivityWithURL(getOriginalNativeNtpUrl()))
                 .arriveAt(RegularNewTabPageStation.newBuilder().withEntryPoint().build());
     }
 

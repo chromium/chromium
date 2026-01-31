@@ -13,6 +13,7 @@
 
 namespace permissions {
 enum class RequestType;
+struct PermissionPromptDecision;
 }  // namespace permissions
 
 class GURL;
@@ -44,8 +45,7 @@ class RegisterProtocolHandlerPermissionRequest
   std::u16string GetMessageTextFragment() const override;
 
   void PermissionDecided(
-      PermissionDecision decision,
-      bool is_final_decision,
+      const permissions::PermissionPromptDecision& decision,
       const permissions::PermissionRequestData& request_data);
 
   raw_ptr<custom_handlers::ProtocolHandlerRegistry> registry_;

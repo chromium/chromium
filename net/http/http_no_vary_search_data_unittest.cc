@@ -45,7 +45,7 @@ using ::testing::ValuesIn;
 TEST(HttpNoVarySearchCreateTest, CreateFromNoVaryParamsNonEmptyVaryOnKeyOrder) {
   const auto no_vary_search =
       HttpNoVarySearchData::CreateFromNoVaryParams({"a"}, true);
-  EXPECT_THAT(no_vary_search.affected_params(),
+  EXPECT_THAT(no_vary_search.GetAffectedParams(),
               UnorderedElementsAreArray({"a"}));
   EXPECT_TRUE(no_vary_search.vary_on_key_order());
   EXPECT_TRUE(no_vary_search.vary_by_default());
@@ -55,7 +55,7 @@ TEST(HttpNoVarySearchCreateTest,
      CreateFromNoVaryParamsNonEmptyNoVaryOnKeyOrder) {
   const auto no_vary_search =
       HttpNoVarySearchData::CreateFromNoVaryParams({"a"}, false);
-  EXPECT_THAT(no_vary_search.affected_params(),
+  EXPECT_THAT(no_vary_search.GetAffectedParams(),
               UnorderedElementsAreArray({"a"}));
   EXPECT_FALSE(no_vary_search.vary_on_key_order());
   EXPECT_TRUE(no_vary_search.vary_by_default());
@@ -64,7 +64,7 @@ TEST(HttpNoVarySearchCreateTest,
 TEST(HttpNoVarySearchCreateTest, CreateFromNoVaryParamsEmptyNoVaryOnKeyOrder) {
   const auto no_vary_search =
       HttpNoVarySearchData::CreateFromNoVaryParams({}, false);
-  EXPECT_THAT(no_vary_search.affected_params(), IsEmpty());
+  EXPECT_THAT(no_vary_search.GetAffectedParams(), IsEmpty());
   EXPECT_FALSE(no_vary_search.vary_on_key_order());
   EXPECT_TRUE(no_vary_search.vary_by_default());
 }
@@ -72,7 +72,7 @@ TEST(HttpNoVarySearchCreateTest, CreateFromNoVaryParamsEmptyNoVaryOnKeyOrder) {
 TEST(HttpNoVarySearchCreateTest, CreateFromVaryParamsNonEmptyVaryOnKeyOrder) {
   const auto no_vary_search =
       HttpNoVarySearchData::CreateFromVaryParams({"a"}, true);
-  EXPECT_THAT(no_vary_search.affected_params(),
+  EXPECT_THAT(no_vary_search.GetAffectedParams(),
               UnorderedElementsAreArray({"a"}));
   EXPECT_TRUE(no_vary_search.vary_on_key_order());
   EXPECT_FALSE(no_vary_search.vary_by_default());
@@ -81,7 +81,7 @@ TEST(HttpNoVarySearchCreateTest, CreateFromVaryParamsNonEmptyVaryOnKeyOrder) {
 TEST(HttpNoVarySearchCreateTest, CreateFromVaryParamsNonEmptyNoVaryOnKeyOrder) {
   const auto no_vary_search =
       HttpNoVarySearchData::CreateFromVaryParams({"a"}, false);
-  EXPECT_THAT(no_vary_search.affected_params(),
+  EXPECT_THAT(no_vary_search.GetAffectedParams(),
               UnorderedElementsAreArray({"a"}));
   EXPECT_FALSE(no_vary_search.vary_on_key_order());
   EXPECT_FALSE(no_vary_search.vary_by_default());
@@ -90,7 +90,7 @@ TEST(HttpNoVarySearchCreateTest, CreateFromVaryParamsNonEmptyNoVaryOnKeyOrder) {
 TEST(HttpNoVarySearchCreateTest, CreateFromVaryParamsEmptyNoVaryOnKeyOrder) {
   const auto no_vary_search =
       HttpNoVarySearchData::CreateFromVaryParams({}, false);
-  EXPECT_THAT(no_vary_search.affected_params(), IsEmpty());
+  EXPECT_THAT(no_vary_search.GetAffectedParams(), IsEmpty());
   EXPECT_FALSE(no_vary_search.vary_on_key_order());
   EXPECT_FALSE(no_vary_search.vary_by_default());
 }
@@ -98,7 +98,7 @@ TEST(HttpNoVarySearchCreateTest, CreateFromVaryParamsEmptyNoVaryOnKeyOrder) {
 TEST(HttpNoVarySearchCreateTest, CreateFromVaryParamsEmptyVaryOnKeyOrder) {
   const auto no_vary_search =
       HttpNoVarySearchData::CreateFromVaryParams({}, true);
-  EXPECT_THAT(no_vary_search.affected_params(), IsEmpty());
+  EXPECT_THAT(no_vary_search.GetAffectedParams(), IsEmpty());
   EXPECT_TRUE(no_vary_search.vary_on_key_order());
   EXPECT_FALSE(no_vary_search.vary_by_default());
 }
@@ -129,7 +129,7 @@ TEST_P(HttpNoVarySearchResponseHeadersTest, ParsingSuccess) {
   EXPECT_EQ(no_vary_search_data.vary_by_default(),
             test.expected_vary_by_default);
 
-  EXPECT_EQ(no_vary_search_data.affected_params(),
+  EXPECT_EQ(no_vary_search_data.GetAffectedParams(),
             test.expected_affected_params);
 }
 

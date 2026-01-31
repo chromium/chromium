@@ -4,7 +4,6 @@
 
 #include "device/vr/android/arcore/arcore_anchor_manager.h"
 
-#include "base/containers/contains.h"
 #include "device/vr/android/arcore/vr_service_type_converters.h"
 #include "device/vr/public/mojom/anchor_id.h"
 
@@ -160,7 +159,7 @@ void ArCoreAnchorManager::Update(ArFrame* ar_frame) {
 
         // Inspect the tracking state of this anchor in the previous frame. If
         // it changed, mark the anchor as updated.
-        if (base::Contains(anchor_id_to_anchor_info_, id) &&
+        if (anchor_id_to_anchor_info_.contains(id) &&
             anchor_id_to_anchor_info_.at(id).tracking_state != tracking_state) {
           updated_anchor_ids.insert(id);
         }
@@ -179,8 +178,7 @@ void ArCoreAnchorManager::Update(ArFrame* ar_frame) {
   // are no longer tracked.
   absl::erase_if(anchor_address_to_id_, [&new_anchor_id_to_anchor_info](
                                             const auto& anchor_address_and_id) {
-    return !base::Contains(new_anchor_id_to_anchor_info,
-                           anchor_address_and_id.second);
+    return !new_anchor_id_to_anchor_info.contains(anchor_address_and_id.second);
   });
   anchor_id_to_anchor_info_.swap(new_anchor_id_to_anchor_info);
   updated_anchor_ids_.swap(updated_anchor_ids);
@@ -274,7 +272,7 @@ AnchorId ArCoreAnchorManager::GetOrCreateAnchorId(ArAnchor* anchor_address,
 }
 
 bool ArCoreAnchorManager::AnchorExists(AnchorId id) const {
-  return base::Contains(anchor_id_to_anchor_info_, id);
+  return anchor_id_to_anchor_info_.contains(id);
 }
 
 std::optional<gfx::Transform> ArCoreAnchorManager::GetMojoFromAnchor(

@@ -8,7 +8,6 @@
 
 #import "base/check_op.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
-#import "ios/chrome/browser/shared/public/prototypes/diamond/utils.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 
 @interface BVCContainerViewController ()
@@ -54,20 +53,13 @@
   [self.view addSubview:bvc.view];
   [bvc didMoveToParentViewController:self];
 
-  DCHECK(self.currentBVC == bvc);
+  // This will fail if there's another child view controller added before `bvc`.
+  // If this happens during startup, it may be the BVC adding the launch screen
+  // as a child VC of this VC (BVC's parent).
+  CHECK(self.currentBVC == bvc, base::NotFatalUntil::M150);
 }
 
 #pragma mark - UIViewController methods
-
-- (void)viewDidLoad {
-  [super viewDidLoad];
-  if (IsDiamondPrototypeEnabled()) {
-    self.view.layer.cornerRadius = kDiamondBrowserCornerRadius;
-    self.view.layer.maskedCorners =
-        kCALayerMinXMaxYCorner | kCALayerMaxXMaxYCorner;
-    self.view.layer.masksToBounds = YES;
-  }
-}
 
 - (void)presentViewController:(UIViewController*)viewControllerToPresent
                      animated:(BOOL)flag

@@ -6,7 +6,6 @@
 
 #import <map>
 
-#import "base/containers/contains.h"
 #import "ios/chrome/browser/discover_feed/model/discover_feed_app_agent_profile_helper.h"
 #import "ios/chrome/browser/start_surface/ui_bundled/start_surface_features.h"
 
@@ -17,10 +16,6 @@
 #pragma mark - ObservingAppAgent
 
 - (void)appDidEnterBackground {
-  if (IsAvoidFeedRefreshOnBackgroundEnabled()) {
-    return;
-  }
-
   for (const auto& [_, helper] : _helpers) {
     [helper refreshFeedInBackground];
   }
@@ -30,7 +25,7 @@
 
 - (void)appState:(AppState*)appState
     profileStateConnected:(ProfileState*)profileState {
-  DCHECK(!base::Contains(_helpers, profileState));
+  DCHECK(!_helpers.contains(profileState));
   _helpers.insert(
       std::make_pair(profileState, [[DiscoverFeedAppAgentProfileHelper alloc]
                                        initWithProfileState:profileState]));

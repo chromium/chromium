@@ -49,12 +49,12 @@ void PageNodeImplDescriber::OnTakenFromGraph(Graph* graph) {
   graph->GetNodeDataDescriberRegistry()->UnregisterDescriber(this);
 }
 
-base::Value::Dict PageNodeImplDescriber::DescribePageNodeData(
+base::DictValue PageNodeImplDescriber::DescribePageNodeData(
     const PageNode* page_node) const {
   const PageNodeImpl* page_node_impl = PageNodeImpl::FromNode(page_node);
   DCHECK_CALLED_ON_VALID_SEQUENCE(page_node_impl->sequence_checker_);
 
-  base::Value::Dict result;
+  base::DictValue result;
 
   result.Set("visibility_change_time",
              TimeDeltaFromNowToValue(page_node_impl->visibility_change_time_));
@@ -94,7 +94,7 @@ base::Value::Dict PageNodeImplDescriber::DescribePageNodeData(
   result.Set("resource_context",
              page_node_impl->GetResourceContext().ToString());
 
-  base::Value::Dict estimates;
+  base::DictValue estimates;
   estimates.Set("private_footprint_kb",
                 base::NumberToString(
                     page_node_impl->EstimatePrivateFootprintSize().InKiB()));

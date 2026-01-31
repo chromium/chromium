@@ -62,8 +62,8 @@ TEST_F(RateLimiterLeakyBucketTest, RandomizedEventsStream) {
     ASSERT_TRUE(rate_limiter_.Acquire(1u));
     ASSERT_FALSE(rate_limiter_.Acquire(1u));
     // We only used 1 byte, will fill in again in 1 period, plus add a random.
-    task_environment_.FastForwardBy(kFillingPeriod +
-                                    base::Milliseconds(base::RandInt(0, 100)));
+    task_environment_.FastForwardBy(
+        kFillingPeriod + base::Milliseconds(base::RandIntInclusive(0, 100)));
   }
 }
 

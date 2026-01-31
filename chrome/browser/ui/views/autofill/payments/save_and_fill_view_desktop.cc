@@ -31,6 +31,8 @@ SaveAndFillViewDesktop::SaveAndFillViewDesktop(
       controller,
       base::BindRepeating(&SaveAndFillViewDesktop::OnLegalMessageLinkClicked,
                           weak_ptr_factory_.GetWeakPtr()));
+  save_and_fill_dialog_ = dialog_view->GetWeakPtr();
+
   TabInterface* tab_interface = TabInterface::GetFromContents(web_contents);
   CHECK(tab_interface);
   dialog_widget_ = tab_interface->GetTabFeatures()
@@ -41,6 +43,12 @@ SaveAndFillViewDesktop::SaveAndFillViewDesktop(
 }
 
 SaveAndFillViewDesktop::~SaveAndFillViewDesktop() = default;
+
+void SaveAndFillViewDesktop::DismissThrobberAndUpdateMainView() {
+  if (save_and_fill_dialog_) {
+    save_and_fill_dialog_->DismissThrobberAndUpdateMainView();
+  }
+}
 
 void SaveAndFillViewDesktop::OnLegalMessageLinkClicked(const GURL& url) {
   web_contents_->OpenURL(

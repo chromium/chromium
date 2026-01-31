@@ -220,7 +220,7 @@ void SetDeviceDlcPredownloadListSetting(
     const RepeatedPtrField<std::string>& raw_policy_value,
     PrefValueMap* pref_value_map) {
   std::string warning;
-  base::Value::List decoded_dlc_list =
+  base::ListValue decoded_dlc_list =
       policy::DeviceDlcPredownloadListPolicyHandler::
           DecodeDeviceDlcPredownloadListPolicy(raw_policy_value, warning);
   // The warning can be ignored here since it is already reported during
@@ -391,7 +391,7 @@ void DecodeLoginPolicies(const em::ChromeDeviceSettingsProto& policy,
           policy.ephemeral_users_enabled().ephemeral_users_enabled());
 
   {
-    base::Value::List list;
+    base::ListValue list;
     const em::UserAllowlistProto& allowlist_proto = policy.user_allowlist();
     if (policy.user_allowlist().user_allowlist_size() > 0) {
       const RepeatedPtrField<std::string>& allowlist =
@@ -412,13 +412,13 @@ void DecodeLoginPolicies(const em::ChromeDeviceSettingsProto& policy,
                                base::Value(std::move(list)));
   }
 
-  base::Value::List account_list;
+  base::ListValue account_list;
   const em::DeviceLocalAccountsProto device_local_accounts_proto =
       policy.device_local_accounts();
   const RepeatedPtrField<em::DeviceLocalAccountInfoProto>& accounts =
       device_local_accounts_proto.account();
   for (const em::DeviceLocalAccountInfoProto& entry : accounts) {
-    base::Value::Dict entry_dict;
+    base::DictValue entry_dict;
     if (entry.has_type()) {
       if (entry.has_account_id()) {
         entry_dict.Set(kAccountsPrefDeviceLocalAccountsKeyId,
@@ -532,7 +532,7 @@ void DecodeLoginPolicies(const em::ChromeDeviceSettingsProto& policy,
       policy.device_local_accounts().prompt_for_network_when_offline());
 
   if (policy.has_feature_flags()) {
-    base::Value::List feature_flags_list;
+    base::ListValue feature_flags_list;
     for (const std::string& entry : policy.feature_flags().feature_flags()) {
       feature_flags_list.Append(entry);
     }
@@ -572,7 +572,7 @@ void DecodeLoginPolicies(const em::ChromeDeviceSettingsProto& policy,
   }
 
   if (policy.has_login_video_capture_allowed_urls()) {
-    base::Value::List list;
+    base::ListValue list;
     const em::LoginVideoCaptureAllowedUrlsProto&
         login_video_capture_allowed_urls_proto =
             policy.login_video_capture_allowed_urls();
@@ -584,7 +584,7 @@ void DecodeLoginPolicies(const em::ChromeDeviceSettingsProto& policy,
   }
 
   if (policy.has_login_screen_locales()) {
-    base::Value::List locales;
+    base::ListValue locales;
     const em::LoginScreenLocalesProto& login_screen_locales(
         policy.login_screen_locales());
     for (const auto& locale : login_screen_locales.login_screen_locales())
@@ -594,7 +594,7 @@ void DecodeLoginPolicies(const em::ChromeDeviceSettingsProto& policy,
   }
 
   if (policy.has_login_screen_input_methods()) {
-    base::Value::List input_methods;
+    base::ListValue input_methods;
     const em::LoginScreenInputMethodsProto& login_screen_input_methods(
         policy.login_screen_input_methods());
     for (const auto& input_method :
@@ -622,7 +622,7 @@ void DecodeLoginPolicies(const em::ChromeDeviceSettingsProto& policy,
     const em::StringListPolicyProto& container(
         policy.device_web_based_attestation_allowed_urls());
 
-    base::Value::List urls;
+    base::ListValue urls;
     for (const std::string& entry : container.value().entries()) {
       urls.Append(entry);
     }
@@ -678,7 +678,7 @@ void DecodeAutoUpdatePolicies(const em::ChromeDeviceSettingsProto& policy,
 
     const RepeatedField<int>& allowed_connection_types =
         au_settings_proto.allowed_connection_types();
-    base::Value::List list;
+    base::ListValue list;
     for (int value : allowed_connection_types) {
       list.Append(value);
     }
@@ -877,7 +877,7 @@ void DecodeReportingPolicies(const em::ChromeDeviceSettingsProto& policy,
           reporting_policy.device_report_runtime_counters_checking_rate_ms());
     }
     if (reporting_policy.has_report_signal_strength_event_driven_telemetry()) {
-      base::Value::List signal_strength_telemetry_list;
+      base::ListValue signal_strength_telemetry_list;
       for (const std::string& telemetry_entry :
            reporting_policy.report_signal_strength_event_driven_telemetry()
                .entries()) {
@@ -1190,7 +1190,7 @@ void DecodeGenericPolicies(const em::ChromeDeviceSettingsProto& policy,
 
   // Use Blocklist policy if present, otherwise Blacklist version.  // nocheck
   if (policy.has_device_printers_blocklist()) {
-    base::Value::List list;
+    base::ListValue list;
     const em::DevicePrintersBlocklistProto& proto(
         policy.device_printers_blocklist());
     for (const auto& id : proto.blocklist())
@@ -1201,7 +1201,7 @@ void DecodeGenericPolicies(const em::ChromeDeviceSettingsProto& policy,
 
   // Use Allowlist policy if present, otherwise Whitelist version.  // nocheck
   if (policy.has_device_printers_allowlist()) {
-    base::Value::List list;
+    base::ListValue list;
     const em::DevicePrintersAllowlistProto& proto(
         policy.device_printers_allowlist());
     for (const auto& id : proto.allowlist())
@@ -1285,9 +1285,9 @@ void DecodeGenericPolicies(const em::ChromeDeviceSettingsProto& policy,
       policy.usb_detachable_allowlist().id_size() > 0) {
     const em::UsbDetachableAllowlistProto& container =
         policy.usb_detachable_allowlist();
-    base::Value::List allowlist;
+    base::ListValue allowlist;
     for (const auto& entry : container.id()) {
-      base::Value::Dict ids;
+      base::DictValue ids;
       if (entry.has_vendor_id() && entry.has_product_id()) {
         ids.Set(kUsbDetachableAllowlistKeyVid, entry.vendor_id());
         ids.Set(kUsbDetachableAllowlistKeyPid, entry.product_id());
@@ -1299,7 +1299,7 @@ void DecodeGenericPolicies(const em::ChromeDeviceSettingsProto& policy,
   }
 
   if (policy.has_device_allowed_bluetooth_services()) {
-    base::Value::List list;
+    base::ListValue list;
     const em::DeviceAllowedBluetoothServicesProto& container(
         policy.device_allowed_bluetooth_services());
     for (const auto& service_uuid : container.allowlist())
@@ -1308,7 +1308,7 @@ void DecodeGenericPolicies(const em::ChromeDeviceSettingsProto& policy,
                                base::Value(std::move(list)));
   }
   if (policy.has_devicebluetoothjustworkspairingenabled()) {
-    base::Value::List list;
+    base::ListValue list;
     const em::BooleanPolicyProto& container(
         policy.devicebluetoothjustworkspairingenabled());
     new_values_cache->SetValue(kDeviceBluetoothJustWorksPairingEnabled,

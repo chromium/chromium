@@ -4,10 +4,10 @@
 
 #include "components/infobars/core/infobar_container_with_priority.h"
 
+#include <algorithm>
 #include <memory>
 #include <vector>
 
-#include "base/containers/contains.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -17,6 +17,7 @@
 #include "components/infobars/core/infobar.h"
 #include "components/infobars/core/infobar_delegate.h"
 #include "components/infobars/core/infobar_manager.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "url/gurl.h"
@@ -52,6 +53,15 @@ class TestInfoBar : public InfoBar {
   ~TestInfoBar() override = default;
 };
 
+class MockInfoBar : public InfoBar {
+ public:
+  explicit MockInfoBar(std::unique_ptr<InfoBarDelegate> delegate)
+      : InfoBar(std::move(delegate)) {}
+  ~MockInfoBar() override = default;
+
+  MOCK_METHOD1(PlatformSpecificShow, void(bool animate));
+};
+
 class TestPriorityContainer : public InfoBarContainerWithPriority {
  public:
   class MockDelegate : public InfoBarContainer::Delegate {
@@ -68,7 +78,7 @@ class TestPriorityContainer : public InfoBarContainerWithPriority {
   size_t visible_count() const { return visible_infobars_.size(); }
 
   bool IsCurrentlyVisible(const InfoBar* infobar) const {
-    return base::Contains(visible_infobars_, infobar);
+    return std::ranges::contains(visible_infobars_, infobar);
   }
 
  protected:
@@ -117,11 +127,11 @@ static void EnableWithCaps(base::test::ScopedFeatureList& feature_list,
                            int default_cap,
                            int low_cap) {
   feature_list.InitAndEnableFeatureWithParameters(
-      kInfobarPrioritization,
-      {{kMaxVisibleCritical.name, base::NumberToString(critical_cap)},
-       {kMaxVisibleDefault.name, base::NumberToString(default_cap)},
-       {kMaxVisibleLow.name, base::NumberToString(low_cap)},
-       {kMaxLowQueued.name, "3"}});
+      features::kInfobarPrioritization,
+      {{features::kMaxVisibleCritical.name, base::NumberToString(critical_cap)},
+       {features::kMaxVisibleDefault.name, base::NumberToString(default_cap)},
+       {features::kMaxVisibleLow.name, base::NumberToString(low_cap)},
+       {features::kMaxLowQueued.name, "3"}});
 }
 
 class InfoBarContainerWithPriorityTest : public testing::Test {
@@ -527,6 +537,27 @@ TEST_F(InfoBarContainerWithPriorityTest, UmaStarvedCountRecorded) {
 
   histogram_tester_.ExpectUniqueSample("InfoBar.Prioritization.StarvedCount", 3,
                                        1);
+}
+
+TEST_F(InfoBarContainerWithPriorityTest, NoAnimationOnManagerChange) {
+  base::test::ScopedFeatureList feature_list;
+  EnableWithCaps(feature_list, /*critical_cap=*/1, /*default_cap=*/1,
+                 /*low_cap=*/1);
+
+  TestPriorityContainer container(&delegate_);
+  TestManager manager;
+
+  auto delegate = std::make_unique<PriorityDelegate>(
+      InfoBarDelegate::InfobarPriority::kDefault);
+  auto mock_infobar_ptr = std::make_unique<MockInfoBar>(std::move(delegate));
+  MockInfoBar* mock_infobar = mock_infobar_ptr.get();
+
+  manager.AddInfoBar(std::move(mock_infobar_ptr));
+
+  EXPECT_CALL(*mock_infobar, PlatformSpecificShow(false)).Times(1);
+
+  container.ChangeInfoBarManager(&manager);
+  container.ChangeInfoBarManager(nullptr);
 }
 
 }  // namespace

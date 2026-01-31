@@ -9,7 +9,6 @@
 #include <memory>
 
 #include "base/compiler_specific.h"
-#include "base/containers/contains.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -210,7 +209,7 @@ TEST_F(OSExchangeDataWinTest, StringDataWritingViaCOM) {
   OSExchangeData data2(data.provider().Clone());
   EXPECT_TRUE(data2.HasURL(FilenameToURLPolicy::CONVERT_FILENAMES));
   std::vector<ui::ClipboardUrlInfo> url_infos =
-      data2.GetURLsAndTitles(FilenameToURLPolicy::CONVERT_FILENAMES);
+      data2.GetURLs(FilenameToURLPolicy::CONVERT_FILENAMES);
   ASSERT_FALSE(url_infos.empty());
   const ui::ClipboardUrlInfo& url_info = url_infos.front();
   GURL reference_url(base::AsStringPiece16(input));
@@ -258,7 +257,7 @@ TEST_F(OSExchangeDataWinTest, RemoveData) {
   OSExchangeData data2(data.provider().Clone());
   EXPECT_TRUE(data2.HasURL(FilenameToURLPolicy::CONVERT_FILENAMES));
   std::vector<ui::ClipboardUrlInfo> url_infos =
-      data2.GetURLsAndTitles(FilenameToURLPolicy::CONVERT_FILENAMES);
+      data2.GetURLs(FilenameToURLPolicy::CONVERT_FILENAMES);
   ASSERT_FALSE(url_infos.empty());
   EXPECT_EQ(GURL(base::AsStringPiece16(input2)), url_infos.front().url);
 }
@@ -516,7 +515,7 @@ TEST_F(OSExchangeDataWinTest, VirtualFiles) {
         // IStorage uses compound files, so temp files won't be flat text files.
         // Just make sure the original contents appears in the compound files.
         EXPECT_TRUE(
-            base::Contains(read_contents, kTestFilenamesAndContents[i].second));
+            read_contents.contains(kTestFilenamesAndContents[i].second));
       }
     }
   }
@@ -655,7 +654,7 @@ TEST_F(OSExchangeDataWinTest, VirtualFilesDuplicateNames) {
         // IStorage uses compound files, so temp files won't be flat text files.
         // Just make sure the original contents appears in the compound files.
         EXPECT_TRUE(
-            base::Contains(read_contents, kTestFilenamesAndContents[i].second));
+            read_contents.contains(kTestFilenamesAndContents[i].second));
       }
     }
   }
@@ -740,7 +739,7 @@ TEST_F(OSExchangeDataWinTest, VirtualFilesDuplicateNamesCaseInsensitivity) {
         // IStorage uses compound files, so temp files won't be flat text files.
         // Just make sure the original contents appears in the compound files.
         EXPECT_TRUE(
-            base::Contains(read_contents, kTestFilenamesAndContents[i].second));
+            read_contents.contains(kTestFilenamesAndContents[i].second));
       }
     }
   }
@@ -863,7 +862,7 @@ TEST_F(OSExchangeDataWinTest, VirtualFilesInvalidAndDuplicateNames) {
         // IStorage uses compound files, so temp files won't be flat text files.
         // Just make sure the original contents appears in the compound files.
         EXPECT_TRUE(
-            base::Contains(read_contents, kTestFilenamesAndContents[i].second));
+            read_contents.contains(kTestFilenamesAndContents[i].second));
       }
     }
   }
@@ -975,7 +974,7 @@ TEST_F(OSExchangeDataWinTest, ProvideURLForPlainTextURL) {
   OSExchangeData data2(data.provider().Clone());
   ASSERT_TRUE(data2.HasURL(FilenameToURLPolicy::CONVERT_FILENAMES));
   std::vector<ui::ClipboardUrlInfo> url_infos =
-      data2.GetURLsAndTitles(FilenameToURLPolicy::CONVERT_FILENAMES);
+      data2.GetURLs(FilenameToURLPolicy::CONVERT_FILENAMES);
   ASSERT_FALSE(url_infos.empty());
   EXPECT_EQ(GURL("http://google.com"), url_infos.front().url);
 }

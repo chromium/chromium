@@ -45,14 +45,6 @@ IN_PROC_BROWSER_TEST_F(CrElementsTest, CrCollapse) {
   RunTest("cr_elements/cr_collapse_test.js", "mocha.run()");
 }
 
-IN_PROC_BROWSER_TEST_F(CrElementsTest, CrContainerShadowMixin) {
-  RunTest("cr_elements/cr_container_shadow_mixin_test.js", "mocha.run()");
-}
-
-IN_PROC_BROWSER_TEST_F(CrElementsTest, CrContainerShadowMixinLit) {
-  RunTest("cr_elements/cr_container_shadow_mixin_lit_test.js", "mocha.run()");
-}
-
 IN_PROC_BROWSER_TEST_F(CrElementsTest, CrDialog) {
   RunTest("cr_elements/cr_dialog_test.js", "mocha.run()");
 }
@@ -142,14 +134,6 @@ IN_PROC_BROWSER_TEST_F(CrElementsTest, CrCardRadioButton) {
 
 IN_PROC_BROWSER_TEST_F(CrElementsTest, CrRadioGroup) {
   RunTest("cr_elements/cr_radio_group_test.js", "mocha.run()");
-}
-
-IN_PROC_BROWSER_TEST_F(CrElementsTest, CrScrollObserverMixin) {
-  RunTest("cr_elements/cr_scroll_observer_mixin_test.js", "mocha.run()");
-}
-
-IN_PROC_BROWSER_TEST_F(CrElementsTest, CrScrollObserverMixinLit) {
-  RunTest("cr_elements/cr_scroll_observer_mixin_lit_test.js", "mocha.run()");
 }
 
 IN_PROC_BROWSER_TEST_F(CrElementsTest, CrSearchField) {

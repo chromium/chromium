@@ -130,7 +130,7 @@ TEST_F(ExtensionCookiesTest, ExtensionTypeCreation) {
   EXPECT_EQ(10000, *cookie2.expiration_date);
 
   TestingProfile profile;
-  base::Value::List tab_ids_list;
+  base::ListValue tab_ids_list;
   std::vector<int> tab_ids;
   CookieStore cookie_store =
       cookies_helpers::CreateCookieStore(&profile, std::move(tab_ids_list));
@@ -159,7 +159,7 @@ TEST_F(ExtensionCookiesTest, GetURLFromCanonicalCookie) {
 }
 
 TEST_F(ExtensionCookiesTest, EmptyDictionary) {
-  base::Value::Dict dict;
+  base::DictValue dict;
   auto details = GetAll::Params::Details::FromValue(dict);
   ASSERT_TRUE(details);
   cookies_helpers::MatchFilter filter(&details.value());
@@ -180,8 +180,8 @@ TEST_F(ExtensionCookiesTest, DomainMatching) {
 
   for (size_t i = 0; i < std::size(tests); ++i) {
     // Build up the Params struct.
-    base::Value::List args;
-    base::Value::Dict dict;
+    base::ListValue args;
+    base::DictValue dict;
     dict.Set(kDomainKey, tests[i].filter);
     args.Append(std::move(dict));
     std::optional<GetAll::Params> params = GetAll::Params::Create(args);

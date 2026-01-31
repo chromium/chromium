@@ -23,7 +23,7 @@ chromium-metrics-reviews@google.com.
 <histograms>
 
 <histogram name="DevTools.ActionTaken" enum="DevToolsAction"
-    expires_after="2026-05-24">
+    expires_after="2026-07-26">
   <owner>yangguo@google.com</owner>
   <owner>bmeurer@google.com</owner>
   <summary>Specified DevTools action has been taken.</summary>
@@ -48,7 +48,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="DevTools.CDPCommandFrom{ClientType}" enum="CDPCommands"
-    expires_after="2026-05-24">
+    expires_after="2026-07-26">
   <owner>wolfi@google.com</owner>
   <owner>danilsomsikov@google.com</owner>
   <owner>yangguo@google.com</owner>
@@ -130,7 +130,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="DevTools.ExperimentDisabled" enum="DevtoolsExperiments"
-    expires_after="2026-05-24">
+    expires_after="2026-07-26">
   <owner>yangguo@google.com</owner>
   <owner>changhaohan@google.com</owner>
   <summary>
@@ -148,7 +148,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="DevTools.ExperimentEnabled" enum="DevtoolsExperiments"
-    expires_after="2026-05-24">
+    expires_after="2026-07-26">
   <owner>yangguo@google.com</owner>
   <owner>changhaohan@google.com</owner>
   <summary>
@@ -157,7 +157,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="DevTools.ExperimentEnabledAtLaunch" enum="DevtoolsExperiments"
-    expires_after="2026-05-24">
+    expires_after="2026-07-26">
   <owner>yangguo@google.com</owner>
   <owner>changhaohan@google.com</owner>
   <summary>
@@ -177,12 +177,54 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="DevTools.Freestyler.QueryLength" units="count"
-    expires_after="2026-05-17">
+    expires_after="2026-07-19">
   <owner>ergunsh@google.com</owner>
   <owner>alexrudenko@google.com</owner>
   <component>1633102</component>
   <summary>
     The length of the query (number of characters) given to the FreestylerAgent.
+  </summary>
+</histogram>
+
+<histogram name="DevTools.Insights.LongTeaserGenerationTime" units="ms"
+    expires_after="2026-10-24">
+  <owner>wolfi@google.com</owner>
+  <owner>alexrudenko@google.com</owner>
+  <summary>
+    Measures the time it takes to generate a console insight teaser which is at
+    least 301 characters long.
+  </summary>
+</histogram>
+
+<histogram name="DevTools.Insights.ShortTeaserGenerationTime" units="ms"
+    expires_after="2026-10-24">
+  <owner>wolfi@google.com</owner>
+  <owner>alexrudenko@google.com</owner>
+  <summary>
+    Measures the time it takes to generate a console insight teaser which is
+    shorter than 301 characters.
+  </summary>
+</histogram>
+
+<histogram name="DevTools.Insights.TeaserAfterFirstCharacterAbortionTime"
+    units="ms" expires_after="2026-10-24">
+  <owner>wolfi@google.com</owner>
+  <owner>alexrudenko@google.com</owner>
+  <summary>
+    Measures the time after which console insight teaser generation is aborted.
+    Abortion is triggered after the first character of the teaser has already
+    been generated.
+  </summary>
+</histogram>
+
+<histogram name="DevTools.Insights.TeaserBeforeFirstCharacterAbortionTime"
+    units="ms" expires_after="2026-10-24">
+  <owner>wolfi@google.com</owner>
+  <owner>alexrudenko@google.com</owner>
+  <summary>
+    Measures the time after which console insight teaser generation is aborted.
+    Abortion is triggered before the first character of the teaser has been
+    generated.
   </summary>
 </histogram>
 
@@ -205,7 +247,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="DevTools.InspectElement" units="ms" expires_after="2026-03-22">
+<histogram name="DevTools.InspectElement" units="ms" expires_after="2026-06-21">
   <owner>yangguo@google.com</owner>
   <owner>bmeurer@google.com</owner>
   <summary>
@@ -311,7 +353,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="DevTools.Launch{DevToolsLaunchPanels}" units="ms"
-    expires_after="2026-05-03">
+    expires_after="2026-07-05">
   <owner>yangguo@google.com</owner>
   <owner>bmeurer@google.com</owner>
   <summary>
@@ -356,7 +398,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="DevTools.PanelShown" enum="DevToolsPanel"
-    expires_after="2026-05-24">
+    expires_after="2026-07-26">
   <owner>yangguo@google.com</owner>
   <owner>bmeurer@google.com</owner>
   <summary>Specified DevTools panel was shown.</summary>
@@ -392,58 +434,8 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="DevTools.RecordingAssertion" enum="DevToolsRecordingAssertion"
-    expires_after="2026-03-01">
-  <owner>alexrudenko@google.com</owner>
-  <owner>mathiasb@google.com</owner>
-  <owner>yangguo@google.com</owner>
-  <component>1456922</component>
-  <summary>Recorded when assertions are used/edited</summary>
-</histogram>
-
-<histogram name="DevTools.RecordingCodeToggled"
-    enum="DevToolsRecordingCodeToggled" expires_after="2026-03-01">
-  <owner>alexrudenko@google.com</owner>
-  <owner>mathiasb@google.com</owner>
-  <owner>yangguo@google.com</owner>
-  <component>1456922</component>
-  <summary>
-    Recorded when the code view for a recording was toggled in Recorder panel.
-  </summary>
-</histogram>
-
-<histogram name="DevTools.RecordingCopiedToClipboard"
-    enum="DevToolsRecordingCopiedToClipboard" expires_after="2026-03-01">
-  <owner>alexrudenko@google.com</owner>
-  <owner>mathiasb@google.com</owner>
-  <owner>yangguo@google.com</owner>
-  <component>1456922</component>
-  <summary>
-    Recorded when user copies a recording or step to clipboard in Recorder
-    panel.
-  </summary>
-</histogram>
-
-<histogram name="DevTools.RecordingEdited" enum="DevToolsRecordingEdited"
-    expires_after="2026-03-01">
-  <owner>alexrudenko@google.com</owner>
-  <owner>mathiasb@google.com</owner>
-  <owner>yangguo@google.com</owner>
-  <component>1456922</component>
-  <summary>Recorded when a recording is being edited by the user.</summary>
-</histogram>
-
-<histogram name="DevTools.RecordingExported" enum="DevToolsRecordingExported"
-    expires_after="2026-03-01">
-  <owner>alexrudenko@google.com</owner>
-  <owner>mathiasb@google.com</owner>
-  <owner>yangguo@google.com</owner>
-  <component>1456922</component>
-  <summary>Recorded when a recording is exported.</summary>
-</histogram>
-
 <histogram name="DevTools.RecordingReplayFinished"
-    enum="DevToolsRecordingReplayFinished" expires_after="2026-05-03">
+    enum="DevToolsRecordingReplayFinished" expires_after="2027-01-01">
   <owner>alexrudenko@google.com</owner>
   <owner>mathiasb@google.com</owner>
   <owner>yangguo@google.com</owner>
@@ -451,21 +443,8 @@ chromium-metrics-reviews@google.com.
   <summary>Recorded when a replay is over.</summary>
 </histogram>
 
-<histogram name="DevTools.RecordingReplaySpeed"
-    enum="DevToolsRecordingReplaySpeed" expires_after="2026-03-01">
-  <owner>ergunsh@google.com</owner>
-  <owner>alexrudenko@google.com</owner>
-  <owner>mathiasb@google.com</owner>
-  <owner>yangguo@google.com</owner>
-  <component>1456922</component>
-  <summary>
-    Recorded when a recording is being replayed. Used to count number of times
-    replay started with which speed.
-  </summary>
-</histogram>
-
 <histogram name="DevTools.RecordingReplayStarted"
-    enum="DevToolsRecordingReplayStarted" expires_after="2026-03-01">
+    enum="DevToolsRecordingReplayStarted" expires_after="2027-01-01">
   <owner>alexrudenko@google.com</owner>
   <owner>mathiasb@google.com</owner>
   <owner>yangguo@google.com</owner>
@@ -474,13 +453,32 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="DevTools.RecordingToggled" enum="DevToolsRecordingToggled"
-    expires_after="2026-03-01">
+    expires_after="2027-01-01">
   <owner>alexrudenko@google.com</owner>
   <owner>mathiasb@google.com</owner>
   <owner>yangguo@google.com</owner>
   <component>1456922</component>
   <summary>
     Recorded when a recording is started or finished in the Recorder panel.
+  </summary>
+</histogram>
+
+<histogram name="DevTools.RemoteDebugging.ConnectionPermission"
+    enum="DevToolsRemoteDebuggingConnectionPermission"
+    expires_after="2027-01-01">
+  <owner>alexrudenko@google.com</owner>
+  <owner>hablich@google.com</owner>
+  <summary>
+    Records user's choice on the remote debugging connection dialog.
+  </summary>
+</histogram>
+
+<histogram name="DevTools.RemoteDebugging.ServerAction"
+    enum="DevToolsRemoteDebuggingServerAction" expires_after="2027-01-01">
+  <owner>alexrudenko@google.com</owner>
+  <owner>hablich@google.com</owner>
+  <summary>
+    Actions taken on the remote debugging server on chrome://inspect.
   </summary>
 </histogram>
 
@@ -507,7 +505,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="DevTools.SwatchActivated" enum="DevToolsSwatchActivated"
-    expires_after="2026-04-12">
+    expires_after="2026-06-21">
   <owner>ergunsh@google.com</owner>
   <owner>changhaohan@google.com</owner>
   <owner>bmeurer@google.com</owner>
@@ -547,7 +545,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="DevTools.VisualLogging.ProcessingTime" units="ms"
-    expires_after="2026-05-03">
+    expires_after="2026-07-05">
   <owner>danilsomsikov@google.com</owner>
   <owner>hablich@google.com</owner>
   <summary>

@@ -10,4 +10,8 @@ MockAffiliationService::MockAffiliationService() = default;
 
 MockAffiliationService::~MockAffiliationService() = default;
 
+base::WeakPtr<AffiliationService> MockAffiliationService::AsWeakPtr() {
+  return weak_ptr_factory_.GetWeakPtr();
+}
+
 }  // namespace affiliations

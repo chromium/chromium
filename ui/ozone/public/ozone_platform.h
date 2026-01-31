@@ -15,6 +15,7 @@
 #include "base/message_loop/message_pump_type.h"
 #include "base/task/single_thread_task_runner.h"
 #include "build/build_config.h"
+#include "components/viz/common/resources/shared_image_format.h"
 #include "ui/gfx/buffer_types.h"
 #include "ui/gfx/native_ui_types.h"
 #include "ui/platform_window/platform_window.h"
@@ -96,13 +97,6 @@ class COMPONENT_EXPORT(OZONE) OzonePlatform {
     // TODO(fangzhoug): Some Chrome OS boards still use the legacy video
     // decoder. Remove this once ChromeOSVideoDecoder is on everywhere.
     bool allow_sync_and_real_buffer_page_flip_testing = false;
-
-    // TODO(b/331237773): Unfortunately, the kHandleOverlaysSwapFailure feature
-    // cannot be checked by the overlay manager in ozone/drm directly as it
-    // creates a circular dependency that gn complains about. That's why this
-    // control bool is here. Remove this once kHandleOverlaysSwapFailure is
-    // removed and DrmOverlayManager is always handling swap failures.
-    bool handle_overlays_swap_failure = false;
   };
 
   // Struct used to indicate platform properties.
@@ -322,8 +316,8 @@ class COMPONENT_EXPORT(OZONE) OzonePlatform {
   // management is supported, null otherwise.
   virtual PlatformSessionManager* GetSessionManager();
 
-  // Returns true if the specified buffer format is supported.
-  virtual bool IsNativePixmapConfigSupported(gfx::BufferFormat format,
+  // Returns true if the specified format is supported.
+  virtual bool IsNativePixmapConfigSupported(viz::SharedImageFormat format,
                                              gfx::BufferUsage usage) const;
 
   // Whether the platform supports compositing windows with transparency.

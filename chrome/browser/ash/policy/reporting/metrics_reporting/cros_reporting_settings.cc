@@ -33,7 +33,7 @@ bool CrosReportingSettings::GetInteger(const std::string& path,
 }
 
 bool CrosReportingSettings::GetList(const std::string& path,
-                                    const base::Value::List** out_value) const {
+                                    const base::ListValue** out_value) const {
   return ::ash::CrosSettings::Get()->GetList(path, out_value);
 }
 

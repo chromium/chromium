@@ -18,20 +18,20 @@
 
 namespace {
 
-base::Value::List GaiaIdSetToValue(
+base::ListValue GaiaIdSetToValue(
     const ProfileAttributesIOS::GaiaIdSet& gaia_ids) {
-  base::Value::List list;
+  base::ListValue list;
   for (const GaiaId& gaia_id : gaia_ids) {
     list.Append(gaia_id.ToString());
   }
   return list;
 }
 
-base::Value::Dict CreateProfileEntry(const ProfileAttributesIOS& attr,
-                                     bool is_personal_profile,
-                                     bool is_current_profile,
-                                     bool is_loaded) {
-  base::Value::Dict profile_entry;
+base::DictValue CreateProfileEntry(const ProfileAttributesIOS& attr,
+                                   bool is_personal_profile,
+                                   bool is_current_profile,
+                                   bool is_loaded) {
+  base::DictValue profile_entry;
   profile_entry.Set("profileName", attr.GetProfileName());
   profile_entry.Set("isPersonalProfile", is_personal_profile);
   profile_entry.Set("isCurrentProfile", is_current_profile);
@@ -39,7 +39,7 @@ base::Value::Dict CreateProfileEntry(const ProfileAttributesIOS& attr,
   profile_entry.Set("isNewProfile", attr.IsNewProfile());
   profile_entry.Set("isFullyInitialized", attr.IsFullyInitialized());
 
-  base::Value::Dict attributes;
+  base::DictValue attributes;
   attributes.Set("gaiaId", attr.GetGaiaId().ToString());
   attributes.Set("userName", attr.GetUserName());
   attributes.Set("hasAuthenticationError", attr.HasAuthenticationError());
@@ -52,14 +52,14 @@ base::Value::Dict CreateProfileEntry(const ProfileAttributesIOS& attr,
   return profile_entry;
 }
 
-base::Value::List GetProfilesList(ProfileIOS* current_profile) {
+base::ListValue GetProfilesList(ProfileIOS* current_profile) {
   ProfileManagerIOS* profile_manager =
       GetApplicationContext()->GetProfileManager();
   ProfileAttributesStorageIOS* attributes_storage =
       profile_manager->GetProfileAttributesStorage();
-  base::Value::List profiles_list;
+  base::ListValue profiles_list;
   attributes_storage->IterateOverProfileAttributes(base::BindRepeating(
-      [](base::Value::List& profiles_list, ProfileManagerIOS* profile_manager,
+      [](base::ListValue& profiles_list, ProfileManagerIOS* profile_manager,
          std::string_view personal_profile_name,
          std::string_view current_profile_name,
          const ProfileAttributesIOS& attr) {
@@ -91,7 +91,7 @@ void ProfileInternalsHandler::RegisterMessages() {
 }
 
 void ProfileInternalsHandler::HandleGetProfilesList(
-    const base::Value::List& args) {
+    const base::ListValue& args) {
   CHECK_EQ(1u, args.size());
   const std::string& callback_id = args[0].GetString();
 

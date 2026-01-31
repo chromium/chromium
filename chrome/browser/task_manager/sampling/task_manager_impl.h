@@ -53,10 +53,13 @@ class TaskManagerImpl : public TaskManagerInterface,
   double GetPlatformIndependentCPUUsage(TaskId task_id) const override;
   base::Time GetStartTime(TaskId task_id) const override;
   base::TimeDelta GetCpuTime(TaskId task_id) const override;
-  base::ByteCount GetMemoryFootprintUsage(TaskId task_id) const override;
-  base::ByteCount GetSwappedMemoryUsage(TaskId task_id) const override;
-  base::ByteCount GetGpuMemoryUsage(TaskId task_id,
-                                    bool* has_duplicates) const override;
+  std::optional<base::ByteSize> GetMemoryFootprintUsage(
+      TaskId task_id) const override;
+  std::optional<base::ByteSize> GetSwappedMemoryUsage(
+      TaskId task_id) const override;
+  std::optional<base::ByteSize> GetGpuMemoryUsage(
+      TaskId task_id,
+      bool* has_duplicates) const override;
   int GetIdleWakeupsPerSecond(TaskId task_id) const override;
   int GetHardFaultsPerSecond(TaskId task_id) const override;
   void GetGDIHandles(TaskId task_id,
@@ -80,15 +83,15 @@ class TaskManagerImpl : public TaskManagerInterface,
   void GetTerminationStatus(TaskId task_id,
                             base::TerminationStatus* out_status,
                             int* out_error_code) const override;
-  base::ByteCount GetNetworkUsage(TaskId task_id) const override;
-  base::ByteCount GetCumulativeNetworkUsage(TaskId task_id) const override;
-  base::ByteCount GetProcessTotalNetworkUsage(TaskId task_id) const override;
-  base::ByteCount GetCumulativeProcessTotalNetworkUsage(
+  base::ByteSize GetNetworkUsage(TaskId task_id) const override;
+  base::ByteSize GetCumulativeNetworkUsage(TaskId task_id) const override;
+  std::optional<base::ByteSize> GetProcessTotalNetworkUsage(
       TaskId task_id) const override;
-  base::ByteCount GetSqliteMemoryUsed(TaskId task_id) const override;
+  std::optional<base::ByteSize> GetSqliteMemoryUsed(
+      TaskId task_id) const override;
   bool GetV8Memory(TaskId task_id,
-                   base::ByteCount* allocated,
-                   base::ByteCount* used) const override;
+                   base::ByteSize* allocated,
+                   base::ByteSize* used) const override;
   bool GetWebCacheStats(TaskId task_id,
                         blink::WebCacheResourceTypeStats* stats) const override;
   int GetKeepaliveCount(TaskId task_id) const override;
@@ -110,8 +113,8 @@ class TaskManagerImpl : public TaskManagerInterface,
 
   void UpdateAccumulatedStatsNetworkForRoute(
       content::GlobalRenderFrameHostId render_frame_host_id,
-      base::ByteCount recv_bytes,
-      base::ByteCount sent_bytes);
+      base::ByteSize recv_bytes,
+      base::ByteSize sent_bytes);
 
   bool is_running() const { return is_running_; }
 

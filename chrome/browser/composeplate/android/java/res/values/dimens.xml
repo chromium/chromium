@@ -11,8 +11,10 @@ found in the LICENSE file.
     <dimen name="composeplate_view_margin_top">6dp</dimen>
     <dimen name="composeplate_view_button_margin">8dp</dimen>
     <dimen name="composeplate_view_height">48dp</dimen>
+    <dimen name="composeplate_view_height_with_padding_for_shadow">52dp</dimen>
     <dimen name="composeplate_view_icon_size">24dp</dimen>
     <dimen name="composeplate_view_long_button_padding_top">2dp</dimen>
-    <dimen name="composeplate_view_button_padding_for_shadow">3dp</dimen>
+    <dimen name="composeplate_view_button_padding_for_shadow_lateral">3dp</dimen>
+    <dimen name="composeplate_view_button_padding_for_shadow_bottom">4dp</dimen>
     <dimen name="composeplate_view_max_width">680dp</dimen>
 </resources>

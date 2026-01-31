@@ -24,7 +24,6 @@ import org.mockito.InOrder;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.robolectric.annotation.LooperMode;
-import org.robolectric.shadows.ShadowLog;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.content_public.browser.InputMethodManagerWrapper;
@@ -73,9 +72,7 @@ public class InputMethodManagerWrapperImplTest {
 
     private InputMethodManagerWrapperImpl mImmw;
 
-    public InputMethodManagerWrapperImplTest() {
-        if (DEBUG) ShadowLog.stream = System.out;
-    }
+    public InputMethodManagerWrapperImplTest() {}
 
     @Before
     public void setUp() throws Exception {

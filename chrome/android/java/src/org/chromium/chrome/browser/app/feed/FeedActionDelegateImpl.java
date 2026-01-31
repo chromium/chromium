@@ -20,7 +20,6 @@ import org.chromium.chrome.browser.feed.R;
 import org.chromium.chrome.browser.feed.SingleWebFeedEntryPoint;
 import org.chromium.chrome.browser.feed.webfeed.CreatorIntentConstants;
 import org.chromium.chrome.browser.feed.webfeed.WebFeedBridge;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.native_page.NativePageNavigationDelegate;
 import org.chromium.chrome.browser.ntp.NewTabPageUma;
 import org.chromium.chrome.browser.offlinepages.OfflinePageBridge;
@@ -177,9 +176,6 @@ public class FeedActionDelegateImpl implements FeedActionDelegate {
 
     @Override
     public void startSigninFlow(@SigninAccessPoint int signinAccessPoint) {
-        if (!ChromeFeatureList.isEnabled(ChromeFeatureList.FEED_SHOW_SIGN_IN_COMMAND)) {
-            return;
-        }
         AccountPickerBottomSheetStrings bottomSheetStrings =
                 new AccountPickerBottomSheetStrings.Builder(
                                 mActivity.getString(

@@ -49,9 +49,8 @@ namespace network {
 
 namespace {
 
-base::Value::Dict NetLogErrorParams(int line_number,
-                                    const std::string& message) {
-  return base::Value::Dict()
+base::DictValue NetLogErrorParams(int line_number, const std::string& message) {
+  return base::DictValue()
       .Set("line_number", line_number)
       .Set("message", message);
 }

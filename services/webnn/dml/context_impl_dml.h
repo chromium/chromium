@@ -67,27 +67,6 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) ContextImplDml final
 
   CommandQueue* GetCommandQueue() const;
 
-  void RemoveDeviceForTesting();
-
-  // The test cases can override the graph/tensor creating behavior by
-  // implementing this class and setting its instance by SetBackendForTesting().
-  class BackendForTesting {
-   public:
-    virtual void CreateGraphImpl(
-        mojo::PendingAssociatedReceiver<mojom::WebNNGraph> receiver,
-        ContextImplDml* context_impl,
-        WebNNGraphImpl::ComputeResourceInfo compute_resource_info,
-        CreateGraphImplCallback callback) = 0;
-
-    virtual base::expected<scoped_refptr<WebNNTensorImpl>, mojom::ErrorPtr>
-    CreateTensorImpl(
-        ContextImplDml* context,
-        mojo::PendingAssociatedReceiver<mojom::WebNNTensor> receiver,
-        mojom::TensorInfoPtr tensor_info) = 0;
-  };
-
-  static void SetBackendForTesting(BackendForTesting* backend_for_testing);
-
  private:
   ~ContextImplDml() override;
 

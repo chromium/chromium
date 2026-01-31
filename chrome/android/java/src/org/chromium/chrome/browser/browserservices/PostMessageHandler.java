@@ -67,7 +67,11 @@ public class PostMessageHandler implements OriginVerificationListener {
         mPostMessageBackend = postMessageBackend;
         mMessageCallback =
                 (messagePayload, sentPorts) -> {
-                    assumeNonNull(mChannel);
+                    if (mChannel == null) {
+                        Log.e(TAG, "Discarding postMessage as channel is null.");
+                        return;
+                    }
+
                     if (mChannel[0].isTransferred()) {
                         Log.e(TAG, "Discarding postMessage as channel has been transferred.");
                         return;

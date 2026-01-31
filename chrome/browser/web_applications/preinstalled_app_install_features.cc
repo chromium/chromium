@@ -56,7 +56,6 @@ constexpr const raw_ref<const base::Feature> kPreinstalledAppInstallFeatures[] =
 #if BUILDFLAG(IS_CHROMEOS)
         raw_ref(chromeos::features::kCloudGamingDevice),
         raw_ref(chromeos::features::kGeminiAppPreinstall),
-        raw_ref(chromeos::features::kNotebookLmAppPreinstall),
 #endif
 };
 

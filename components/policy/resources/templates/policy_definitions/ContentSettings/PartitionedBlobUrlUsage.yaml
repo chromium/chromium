@@ -7,11 +7,6 @@ desc: |-
   If this policy is set to Enabled or not set, Blob URLs will be partitioned.
   If this policy is set to Disabled, Blob URLs won't be partitioned.
 
-  If storage partitioning is disabled for a given top-level origin by either
-  <ph name="THIRD_PARTY_STORAGE_PARTITIONING_BLOCKED_FOR_ORIGINS_POLICY_NAME">ThirdPartyStoragePartitioningBlockedForOrigins</ph>
-  or <ph name="DEFAULT_THIRD_PARTY_STORAGE_PARTITIONING_SETTING_POLICY_NAME">DefaultThirdPartyStoragePartitioningSetting</ph>,
-  then Blob URLs will also not be partitioned.
-
   If you must use the policy, please file a bug at
   <ph name="BUG_URL">$1<ex>https://crbug.com/new?component=1779870&amp;cc=awillia@chromium.org&amp;priority=p1&amp;type=bug&amp;noWizard=true</ex></ph>
   explaining your use case. The policy is scheduled to be offered through

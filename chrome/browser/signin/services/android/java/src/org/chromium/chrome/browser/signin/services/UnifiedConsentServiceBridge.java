@@ -43,14 +43,6 @@ public class UnifiedConsentServiceBridge {
                 .isUrlKeyedAnonymizedDataCollectionManaged(profile);
     }
 
-    /**
-     * Records the sync data types that were turned off during the advanced sync opt-in flow.
-     * See C++ unified_consent::metrics::RecordSyncSetupDataTypesHistrogam for details.
-     */
-    public static void recordSyncSetupDataTypesHistogram(Profile profile) {
-        UnifiedConsentServiceBridgeJni.get().recordSyncSetupDataTypesHistogram(profile);
-    }
-
     @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
     public static void setUrlKeyedAnonymizedDataCollectionEnabled(Boolean isEnabled) {
         sUrlKeyedAnonymizedDataCollectionEnabledForTesting = isEnabled;
@@ -67,7 +59,5 @@ public class UnifiedConsentServiceBridge {
                 @JniType("Profile*") Profile profile, boolean enabled);
 
         boolean isUrlKeyedAnonymizedDataCollectionManaged(@JniType("Profile*") Profile profile);
-
-        void recordSyncSetupDataTypesHistogram(@JniType("Profile*") Profile profile);
     }
 }

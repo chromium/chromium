@@ -36,7 +36,7 @@ std::string ConfigureGetUpdatesRequestEvent::GetDetails() const {
   return base::StringPrintf("Reason: %s", ProtoEnumToString(origin_));
 }
 
-base::Value::Dict ConfigureGetUpdatesRequestEvent::GetProtoMessage(
+base::DictValue ConfigureGetUpdatesRequestEvent::GetProtoMessage(
     bool include_specifics) const {
   return ClientToServerMessageToValue(
              request_, {.include_specifics = include_specifics,

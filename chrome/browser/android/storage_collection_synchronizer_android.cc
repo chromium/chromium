@@ -44,7 +44,7 @@ void StorageCollectionSynchronizerAndroid::ConsumeCollectionObserverFactory(
       CollectionStorageObserverFactoryAndroid::Build(env, j_object));
 }
 
-static jlong JNI_StorageCollectionSynchronizer_Init(
+static int64_t JNI_StorageCollectionSynchronizer_Init(
     JNIEnv* env,
     const jni_zero::JavaRef<jobject>& j_object,
     Profile* profile,

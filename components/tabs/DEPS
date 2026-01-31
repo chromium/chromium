@@ -1,5 +1,7 @@
 include_rules = [
+  "+components/split_tabs",
   "+components/tab_groups",
+  "+content/public/browser",
   "+ui/gfx",
   "+ui/views",
 ]

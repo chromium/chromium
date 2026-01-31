@@ -323,9 +323,9 @@ std::set<std::string> GetSupportedLinksForAppManagement(
   return supported_links;
 }
 
-base::Value::Dict ConvertConditionValueToDict(
+base::DictValue ConvertConditionValueToDict(
     const apps::ConditionValuePtr& condition_value) {
-  base::Value::Dict condition_value_dict;
+  base::DictValue condition_value_dict;
   condition_value_dict.Set(kValueKey, condition_value->value);
   condition_value_dict.Set(kMatchTypeKey,
                            static_cast<int>(condition_value->match_type));
@@ -333,7 +333,7 @@ base::Value::Dict ConvertConditionValueToDict(
 }
 
 apps::ConditionValuePtr ConvertDictToConditionValue(
-    const base::Value::Dict& dict) {
+    const base::DictValue& dict) {
   const std::string* value_string = dict.FindString(kValueKey);
   if (!value_string) {
     DVLOG(0) << "Fail to parse condition value. Cannot find \"" << kValueKey
@@ -359,11 +359,11 @@ apps::ConditionValuePtr ConvertDictToConditionValue(
                                                 pattern_match_type);
 }
 
-base::Value::Dict ConvertConditionToDict(const apps::ConditionPtr& condition) {
-  base::Value::Dict condition_dict;
+base::DictValue ConvertConditionToDict(const apps::ConditionPtr& condition) {
+  base::DictValue condition_dict;
   condition_dict.Set(kConditionTypeKey,
                      static_cast<int>(condition->condition_type));
-  base::Value::List condition_values_list;
+  base::ListValue condition_values_list;
   for (auto& condition_value : condition->condition_values) {
     condition_values_list.Append(ConvertConditionValueToDict(condition_value));
   }
@@ -371,7 +371,7 @@ base::Value::Dict ConvertConditionToDict(const apps::ConditionPtr& condition) {
   return condition_dict;
 }
 
-apps::ConditionPtr ConvertDictToCondition(const base::Value::Dict& dict) {
+apps::ConditionPtr ConvertDictToCondition(const base::DictValue& dict) {
   const std::optional<int> condition_type = dict.FindInt(kConditionTypeKey);
   if (!condition_type) {
     DVLOG(0) << "Fail to parse condition. Cannot find \"" << kConditionTypeKey
@@ -380,7 +380,7 @@ apps::ConditionPtr ConvertDictToCondition(const base::Value::Dict& dict) {
   }
 
   apps::ConditionValues condition_values;
-  const base::Value::List* values = dict.FindList(kConditionValuesKey);
+  const base::ListValue* values = dict.FindList(kConditionValuesKey);
   if (!values) {
     DVLOG(0) << "Fail to parse condition. Cannot find \"" << kConditionValuesKey
              << "\" key with list value.";
@@ -401,9 +401,9 @@ apps::ConditionPtr ConvertDictToCondition(const base::Value::Dict& dict) {
       std::move(condition_values));
 }
 
-base::Value::List ConvertIntentFilterConditionsToList(
+base::ListValue ConvertIntentFilterConditionsToList(
     const apps::IntentFilterPtr& intent_filter) {
-  base::Value::List intent_filter_list;
+  base::ListValue intent_filter_list;
   for (auto& condition : intent_filter->conditions) {
     intent_filter_list.Append(apps_util::ConvertConditionToDict(condition));
   }
@@ -411,7 +411,7 @@ base::Value::List ConvertIntentFilterConditionsToList(
 }
 
 apps::IntentFilterPtr ConvertListToIntentFilterConditions(
-    const base::Value::List* value) {
+    const base::ListValue* value) {
   if (!value) {
     DVLOG(0) << "Fail to parse intent filter. Cannot find the conditions list.";
     return nullptr;
@@ -429,9 +429,9 @@ apps::IntentFilterPtr ConvertListToIntentFilterConditions(
   return intent_filter;
 }
 
-base::Value::Dict ConvertIntentFilterToDict(
+base::DictValue ConvertIntentFilterToDict(
     const apps::IntentFilterPtr& intent_filter) {
-  base::Value::Dict intent_filter_dict;
+  base::DictValue intent_filter_dict;
 
   if (!intent_filter) {
     return intent_filter_dict;
@@ -455,14 +455,14 @@ base::Value::Dict ConvertIntentFilterToDict(
   return intent_filter_dict;
 }
 
-apps::IntentFilterPtr ConvertDictToIntentFilter(const base::Value::Dict* dict) {
+apps::IntentFilterPtr ConvertDictToIntentFilter(const base::DictValue* dict) {
   if (!dict) {
     return nullptr;
   }
 
   apps::IntentFilterPtr intent_filter = std::make_unique<apps::IntentFilter>();
 
-  const base::Value::List* conditions_list = dict->FindList(kConditionsKey);
+  const base::ListValue* conditions_list = dict->FindList(kConditionsKey);
   if (conditions_list) {
     for (const base::Value& condition : *conditions_list) {
       auto parsed_condition =

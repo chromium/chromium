@@ -8,7 +8,6 @@
 #include <functional>
 
 #include "base/auto_reset.h"
-#include "base/containers/contains.h"
 #include "base/memory/ptr_util.h"
 #include "base/observer_list.h"
 #include "ui/aura/client/transient_window_client.h"
@@ -88,7 +87,7 @@ void TransientWindowManager::AddTransientChild(Window* child) {
   TransientWindowManager* child_manager = GetOrCreate(child);
   if (child_manager->transient_parent_)
     GetOrCreate(child_manager->transient_parent_)->RemoveTransientChild(child);
-  DCHECK(!base::Contains(transient_children_, child));
+  DCHECK(!std::ranges::contains(transient_children_, child));
   transient_children_.push_back(child);
   child_manager->transient_parent_ = window_;
 
@@ -167,6 +166,9 @@ void TransientWindowManager::RestackTransientDescendants() {
       Window::Windows(parent->children().rbegin(), parent->children().rend()));
   while (!tracker.windows().empty()) {
     auto* child_window = tracker.Pop();
+    if (!std::ranges::contains(parent->children(), child_window)) {
+      continue;
+    }
     if (child_window != window_ &&
         HasTransientAncestor(child_window, window_)) {
       TransientWindowManager* descendant_manager = GetOrCreate(child_window);

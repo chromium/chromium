@@ -6,6 +6,7 @@
 #define COMPONENTS_BACKGROUND_TASK_SCHEDULER_INTERNAL_ANDROID_NATIVE_TASK_SCHEDULER_H_
 
 #include "components/background_task_scheduler/background_task_scheduler.h"
+#include "components/background_task_scheduler/task_ids.h"
 
 namespace background_task {
 
@@ -21,7 +22,7 @@ class NativeTaskScheduler : public BackgroundTaskScheduler {
 
   // BackgroundTaskScheduler overrides.
   bool Schedule(const TaskInfo& task_info) override;
-  void Cancel(int task_id) override;
+  void Cancel(TaskIds task_id) override;
 };
 
 }  // namespace background_task

@@ -49,15 +49,15 @@ class PasswordStoreBridge
 
   // Called by Java to get the number of stored credentials for both profile and
   // account stores.
-  jint GetPasswordStoreCredentialsCountForAllStores(JNIEnv* env) const;
+  int32_t GetPasswordStoreCredentialsCountForAllStores(JNIEnv* env) const;
 
   // Called by Java to get the number of stored credentials in the account
   // storage.
-  jint GetPasswordStoreCredentialsCountForAccountStore(JNIEnv* env) const;
+  int32_t GetPasswordStoreCredentialsCountForAccountStore(JNIEnv* env) const;
 
   // Called by Java to get the number of stored credentials in the local
   // storage.
-  jint GetPasswordStoreCredentialsCountForProfileStore(JNIEnv* env) const;
+  int32_t GetPasswordStoreCredentialsCountForProfileStore(JNIEnv* env) const;
 
   // Called by Java to get all stored credentials.
   void GetAllCredentials(

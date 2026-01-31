@@ -11,6 +11,7 @@
 #include "base/functional/callback_forward.h"
 #include "build/build_config.h"
 #include "chrome/browser/ui/extensions/mv2_disabled_dialog_controller.h"
+#include "extensions/buildflags/buildflags.h"
 #include "extensions/common/extension_id.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/mojom/dialog_button.mojom.h"
@@ -21,6 +22,8 @@
 #include "base/files/safe_base_name.h"
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
+
 class Browser;
 class ControlledHomeDialogControllerInterface;
 class SettingsOverriddenDialogController;
@@ -30,6 +33,10 @@ namespace content {
 class WebContents;
 }
 
+namespace custom_handlers {
+class ProtocolHandler;
+}  // namespace custom_handlers
+
 namespace gfx {
 class ImageSkia;
 }  // namespace gfx
@@ -37,6 +44,10 @@ class ImageSkia;
 namespace permissions {
 class ChooserController;
 }  // namespace permissions
+
+namespace url {
+class Origin;
+}  // namespace url
 
 namespace extensions {
 
@@ -49,6 +60,10 @@ DECLARE_ELEMENT_IDENTIFIER_VALUE(kMv2DisabledDialogParagraphElementId);
 DECLARE_ELEMENT_IDENTIFIER_VALUE(kMv2DisabledDialogRemoveButtonElementId);
 DECLARE_ELEMENT_IDENTIFIER_VALUE(kMv2KeepDialogOkButtonElementId);
 DECLARE_ELEMENT_IDENTIFIER_VALUE(kParentBlockedDialogMessage);
+DECLARE_ELEMENT_IDENTIFIER_VALUE(
+    kConfirmProtocolHandlerDialogHandlerRedirection);
+DECLARE_ELEMENT_IDENTIFIER_VALUE(
+    kConfirmProtocolHandlerDialogRememberMeCheckbox);
 
 void ShowConstrainedDeviceChooserDialog(
     content::WebContents* web_contents,
@@ -145,10 +160,22 @@ void ShowExtensionInstallBlockedByParentDialog(
     base::OnceClosure done_callback);
 
 // Shows a dialog when the user tries to upload an extension to their account.
-void ShowUploadExtensionToAccountDialog(Browser* browser,
+void ShowUploadExtensionToAccountDialog(Profile* profile,
+                                        gfx::NativeWindow parent,
                                         const Extension& extension,
                                         base::OnceClosure accept_callback,
                                         base::OnceClosure cancel_callback);
+
+#if !BUILDFLAG(IS_ANDROID)
+// Shows a dialog when the user tries to perform a navigation and the target url
+// has a protocol handler registered by an extension to handle the url's scheme.
+void ShowConfirmProtocolHandlerDialog(
+    content::WebContents* web_contents,
+    const custom_handlers::ProtocolHandler& handler,
+    const std::optional<url::Origin>& initiating_origin,
+    base::OnceCallback<void(bool)> granted_callback,
+    base::OnceCallback<void()> denied_callback);
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_CHROMEOS)
 

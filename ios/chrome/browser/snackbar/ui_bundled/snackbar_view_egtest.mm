@@ -88,7 +88,7 @@ void VerifySnackbarUI(NSString* title,
 
 @implementation SnackbarViewTestCase
 
-+ (BOOL)loadMinimalAppUI {
+- (BOOL)loadMinimalAppUI {
   return YES;
 }
 

@@ -11,6 +11,7 @@
 #include "chrome/browser/search_engine_choice/search_engine_choice_service_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
+#include "components/regional_capabilities/regional_capabilities_metrics.h"
 #include "components/search_engines/search_engine_choice/search_engine_choice_service.h"
 #include "components/search_engines/search_engine_choice/search_engine_choice_utils.h"
 #include "content/public/browser/navigation_controller.h"
@@ -93,7 +94,7 @@ void SearchEngineChoiceTabHelper::MaybeShowDialog() {
     return;
   }
 
-  search_engines::SearchEngineChoiceScreenConditions conditions =
+  regional_capabilities::SearchEngineChoiceScreenConditions conditions =
       search_engine_choice_dialog_service->ComputeDialogConditions(*browser);
 
   search_engines::SearchEngineChoiceService* search_engine_choice_service =
@@ -101,8 +102,7 @@ void SearchEngineChoiceTabHelper::MaybeShowDialog() {
           browser->profile());
   search_engine_choice_service->RecordTriggeringEligibility(conditions);
 
-  if (conditions !=
-      search_engines::SearchEngineChoiceScreenConditions::kEligible) {
+  if (!regional_capabilities::IsEligible(conditions)) {
     return;
   }
 

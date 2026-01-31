@@ -13,6 +13,7 @@
 #include "base/compiler_specific.h"
 #include "base/logging.h"
 #include "base/memory/page_size.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/trace_event/memory_dump_manager.h"
 #include "base/trace_event/memory_dump_provider.h"
 #include "base/trace_event/memory_dump_request_args.h"
@@ -234,8 +235,8 @@ void CommandBufferService::Flush(int32_t put_offset,
     return;
   }
 
-  TRACE_EVENT1("gpu", "CommandBufferService:PutChanged", "handler",
-               std::string(handler->GetLogPrefix()));
+  TRACE_EVENT2("gpu", "CommandBufferService:PutChanged", "handler",
+               std::string(handler->GetLogPrefix()), "put_offset", put_offset);
 
   put_offset_ = put_offset;
 

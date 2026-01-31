@@ -1,0 +1,366 @@
+From 180d7d6dd5ecfaddb7c08835b34af75e5dcb2164 Mon Sep 17 00:00:00 2001
+From: Manish Goregaokar <manishearth@google.com>
+Date: Tue, 16 Dec 2025 19:23:27 +0000
+Subject: [PATCH] Uplift calendar performance patch
+
+Uplifts https://github.com/unicode-org/icu4x/pull/7308
+
+This needed some changes to work with ICU4X 2.x
+
+Change-Id: I9c44e6597e054cd9ef43befbe2bad6648ed1e456
+---
+ .../src/cal/abstract_gregorian.rs             |  6 +++-
+ .../vendor/icu_calendar-v2/src/cal/coptic.rs  |  6 +++-
+ .../src/cal/east_asian_traditional.rs         | 10 ++++--
+ .../icu_calendar-v2/src/cal/ethiopian.rs      |  6 +++-
+ .../vendor/icu_calendar-v2/src/cal/hebrew.rs  | 14 +++++---
+ .../vendor/icu_calendar-v2/src/cal/hijri.rs   | 10 ++++--
+ .../vendor/icu_calendar-v2/src/cal/indian.rs  | 34 +++++++++++--------
+ .../vendor/icu_calendar-v2/src/cal/julian.rs  |  6 +++-
+ .../vendor/icu_calendar-v2/src/cal/persian.rs | 10 +++---
+ .../src/calendar_arithmetic.rs                | 24 +++++++++++++
+ .../vendor/icu_calendar-v2/src/duration.rs    | 15 ++++++++
+ 11 files changed, 107 insertions(+), 34 deletions(-)
+
+diff --git a/third_party/rust/chromium_crates_io/vendor/icu_calendar-v2/src/cal/abstract_gregorian.rs b/third_party/rust/chromium_crates_io/vendor/icu_calendar-v2/src/cal/abstract_gregorian.rs
+index 17cd85e3f581e..b1aaafdf00e18 100644
+--- a/third_party/rust/chromium_crates_io/vendor/icu_calendar-v2/src/cal/abstract_gregorian.rs
++++ b/third_party/rust/chromium_crates_io/vendor/icu_calendar-v2/src/cal/abstract_gregorian.rs
+@@ -86,6 +86,10 @@ impl<Y: GregorianYears> DateFieldsResolver for AbstractGregorian<Y> {
+     ) -> Result<Self::YearInfo, EcmaReferenceYearError> {
+         Ok(REFERENCE_YEAR)
+     }
++
++    fn to_rata_die_inner(year: Self::YearInfo, month: u8, day: u8) -> RataDie {
++        calendrical_calculations::gregorian::fixed_from_gregorian(year, month, day)
++    }
+ }
+ 
+ impl<Y: GregorianYears> crate::cal::scaffold::UnstableSealed for AbstractGregorian<Y> {}
+@@ -135,7 +139,7 @@ impl<Y: GregorianYears> Calendar for AbstractGregorian<Y> {
+     }
+ 
+     fn to_rata_die(&self, date: &Self::DateInner) -> RataDie {
+-        calendrical_calculations::gregorian::fixed_from_gregorian(date.year, date.month, date.day)
++        date.to_rata_die()
+     }
+ 
+     fn has_cheap_iso_conversion(&self) -> bool {
+diff --git a/third_party/rust/chromium_crates_io/vendor/icu_calendar-v2/src/cal/coptic.rs b/third_party/rust/chromium_crates_io/vendor/icu_calendar-v2/src/cal/coptic.rs
+index 3878168f9c9b4..547879f60cf2c 100644
+--- a/third_party/rust/chromium_crates_io/vendor/icu_calendar-v2/src/cal/coptic.rs
++++ b/third_party/rust/chromium_crates_io/vendor/icu_calendar-v2/src/cal/coptic.rs
+@@ -111,6 +111,10 @@ impl DateFieldsResolver for Coptic {
+             _ => Err(MonthCodeError::NotInCalendar),
+         }
+     }
++
++    fn to_rata_die_inner(year: Self::YearInfo, month: u8, day: u8) -> RataDie {
++        calendrical_calculations::coptic::fixed_from_coptic(year, month, day)
++    }
+ }
+ 
+ impl Coptic {
+@@ -172,7 +176,7 @@ impl Calendar for Coptic {
+     }
+ 
+     fn to_rata_die(&self, date: &Self::DateInner) -> RataDie {
+-        calendrical_calculations::coptic::fixed_from_coptic(date.0.year, date.0.month, date.0.day)
++        date.0.to_rata_die()
+     }
+ 
+     fn has_cheap_iso_conversion(&self) -> bool {
+diff --git a/third_party/rust/chromium_crates_io/vendor/icu_calendar-v2/src/cal/east_asian_traditional.rs b/third_party/rust/chromium_crates_io/vendor/icu_calendar-v2/src/cal/east_asian_traditional.rs
+index 879c4a6f2c8fd..20d33a4260a2e 100644
+--- a/third_party/rust/chromium_crates_io/vendor/icu_calendar-v2/src/cal/east_asian_traditional.rs
++++ b/third_party/rust/chromium_crates_io/vendor/icu_calendar-v2/src/cal/east_asian_traditional.rs
+@@ -630,6 +630,12 @@ impl<R: Rules> DateFieldsResolver for EastAsianTraditional<R> {
+             ordinal_month == leap_month,
+         )
+     }
++
++    fn to_rata_die_inner(year: Self::YearInfo, month: u8, day: u8) -> RataDie {
++        year.new_year()
++            + year.packed.last_day_of_month(month - 1) as i64
++            + (day - 1) as i64
++    }
+ }
+ 
+ impl<R: Rules> crate::cal::scaffold::UnstableSealed for EastAsianTraditional<R> {}
+@@ -695,9 +701,7 @@ impl<R: Rules> Calendar for EastAsianTraditional<R> {
+     }
+ 
+     fn to_rata_die(&self, date: &Self::DateInner) -> RataDie {
+-        date.0.year.new_year()
+-            + date.0.year.packed.last_day_of_month(date.0.month - 1) as i64
+-            + (date.0.day - 1) as i64
++        date.0.to_rata_die()
+     }
+ 
+     fn has_cheap_iso_conversion(&self) -> bool {
+diff --git a/third_party/rust/chromium_crates_io/vendor/icu_calendar-v2/src/cal/ethiopian.rs b/third_party/rust/chromium_crates_io/vendor/icu_calendar-v2/src/cal/ethiopian.rs
+index 7474cb1cc8413..b3b22eb9bddbd 100644
+--- a/third_party/rust/chromium_crates_io/vendor/icu_calendar-v2/src/cal/ethiopian.rs
++++ b/third_party/rust/chromium_crates_io/vendor/icu_calendar-v2/src/cal/ethiopian.rs
+@@ -138,6 +138,10 @@ impl DateFieldsResolver for Ethiopian {
+             _ => Err(MonthCodeError::NotInCalendar),
+         }
+     }
++
++    fn to_rata_die_inner(year: Self::YearInfo, month: u8, day: u8) -> RataDie {
++        Coptic::to_rata_die_inner(year, month, day)
++    }
+ }
+ 
+ impl crate::cal::scaffold::UnstableSealed for Ethiopian {}
+@@ -176,7 +180,7 @@ impl Calendar for Ethiopian {
+     }
+ 
+     fn to_rata_die(&self, date: &Self::DateInner) -> RataDie {
+-        Coptic.to_rata_die(&date.0)
++        date.0 .0.to_rata_die()
+     }
+ 
+     fn has_cheap_iso_conversion(&self) -> bool {
+diff --git a/third_party/rust/chromium_crates_io/vendor/icu_calendar-v2/src/cal/hebrew.rs b/third_party/rust/chromium_crates_io/vendor/icu_calendar-v2/src/cal/hebrew.rs
+index e1e43953ca886..5568a4fe91ded 100644
+--- a/third_party/rust/chromium_crates_io/vendor/icu_calendar-v2/src/cal/hebrew.rs
++++ b/third_party/rust/chromium_crates_io/vendor/icu_calendar-v2/src/cal/hebrew.rs
+@@ -187,6 +187,14 @@ impl DateFieldsResolver for Hebrew {
+             ordinal_month == 6 && is_leap,
+         )
+     }
++
++    fn to_rata_die_inner(year: Self::YearInfo, month: u8, day: u8) -> RataDie {
++        let ny = year.keviyah.year_info(year.value).new_year();
++        let days_preceding = year.keviyah.days_preceding(month);
++
++        // Need to subtract 1 since the new year is itself in this year
++        ny + i64::from(days_preceding) + i64::from(day) - 1
++    }
+ }
+ 
+ impl crate::cal::scaffold::UnstableSealed for Hebrew {}
+@@ -233,11 +241,7 @@ impl Calendar for Hebrew {
+     }
+ 
+     fn to_rata_die(&self, date: &Self::DateInner) -> RataDie {
+-        let ny = date.0.year.keviyah.year_info(date.0.year.value).new_year();
+-        let days_preceding = date.0.year.keviyah.days_preceding(date.0.month);
+-
+-        // Need to subtract 1 since the new year is itself in this year
+-        ny + i64::from(days_preceding) + i64::from(date.0.day) - 1
++        date.0.to_rata_die()
+     }
+ 
+     fn has_cheap_iso_conversion(&self) -> bool {
+diff --git a/third_party/rust/chromium_crates_io/vendor/icu_calendar-v2/src/cal/hijri.rs b/third_party/rust/chromium_crates_io/vendor/icu_calendar-v2/src/cal/hijri.rs
+index cd445acd34067..4d7f25b6f5a0a 100644
+--- a/third_party/rust/chromium_crates_io/vendor/icu_calendar-v2/src/cal/hijri.rs
++++ b/third_party/rust/chromium_crates_io/vendor/icu_calendar-v2/src/cal/hijri.rs
+@@ -853,6 +853,12 @@ impl<R: Rules> DateFieldsResolver for Hijri<R> {
+             .ecma_reference_year(month_code.to_tuple(), day)
+             .map(|y| self.0.year_data(y))
+     }
++
++    fn to_rata_die_inner(year: Self::YearInfo, month: u8, day: u8) -> RataDie {
++        year.new_year()
++            + year.packed.last_day_of_month(month - 1) as i64
++            + (day - 1) as i64
++    }
+ }
+ 
+ impl<R: Rules> crate::cal::scaffold::UnstableSealed for Hijri<R> {}
+@@ -927,9 +933,7 @@ impl<R: Rules> Calendar for Hijri<R> {
+     }
+ 
+     fn to_rata_die(&self, date: &Self::DateInner) -> RataDie {
+-        date.0.year.new_year()
+-            + date.0.year.packed.last_day_of_month(date.0.month - 1) as i64
+-            + (date.0.day - 1) as i64
++        date.0.to_rata_die()
+     }
+ 
+     fn has_cheap_iso_conversion(&self) -> bool {
+diff --git a/third_party/rust/chromium_crates_io/vendor/icu_calendar-v2/src/cal/indian.rs b/third_party/rust/chromium_crates_io/vendor/icu_calendar-v2/src/cal/indian.rs
+index 0b021d41970d9..4664da82caba9 100644
+--- a/third_party/rust/chromium_crates_io/vendor/icu_calendar-v2/src/cal/indian.rs
++++ b/third_party/rust/chromium_crates_io/vendor/icu_calendar-v2/src/cal/indian.rs
+@@ -110,6 +110,25 @@ impl DateFieldsResolver for Indian {
+         };
+         Ok(shaka_year)
+     }
++
++    fn to_rata_die_inner(year: Self::YearInfo, month: u8, day: u8) -> RataDie {
++        // This is implemented in terms of other manual impls, might as well reuse them
++        let date = IndianDateInner(ArithmeticDate::new_unchecked(year, month, day));
++        let day_of_year_indian = Indian.day_of_year(&date).0; // 1-indexed
++        let days_in_year = Indian.days_in_year(&date);
++
++        let mut year_iso = date.0.year + YEAR_OFFSET;
++        // days_in_year is a valid day of the year, so we check > not >=
++        let day_of_year_iso = if day_of_year_indian + DAY_OFFSET > days_in_year {
++            year_iso += 1;
++            // calculate day of year in next year
++            day_of_year_indian + DAY_OFFSET - days_in_year
++        } else {
++            day_of_year_indian + DAY_OFFSET
++        };
++
++        calendrical_calculations::gregorian::day_before_year(year_iso) + day_of_year_iso as i64
++    }
+ }
+ 
+ impl crate::cal::scaffold::UnstableSealed for Indian {}
+@@ -180,20 +199,7 @@ impl Calendar for Indian {
+ 
+     // Algorithms directly implemented in icu_calendar since they're not from the book
+     fn to_rata_die(&self, date: &Self::DateInner) -> RataDie {
+-        let day_of_year_indian = self.day_of_year(date).0; // 1-indexed
+-        let days_in_year = self.days_in_year(date);
+-
+-        let mut year_iso = date.0.year + YEAR_OFFSET;
+-        // days_in_year is a valid day of the year, so we check > not >=
+-        let day_of_year_iso = if day_of_year_indian + DAY_OFFSET > days_in_year {
+-            year_iso += 1;
+-            // calculate day of year in next year
+-            day_of_year_indian + DAY_OFFSET - days_in_year
+-        } else {
+-            day_of_year_indian + DAY_OFFSET
+-        };
+-
+-        calendrical_calculations::gregorian::day_before_year(year_iso) + day_of_year_iso as i64
++        date.0.to_rata_die()
+     }
+ 
+     fn has_cheap_iso_conversion(&self) -> bool {
+diff --git a/third_party/rust/chromium_crates_io/vendor/icu_calendar-v2/src/cal/julian.rs b/third_party/rust/chromium_crates_io/vendor/icu_calendar-v2/src/cal/julian.rs
+index f0a48379d6fe2..87212c7cd789b 100644
+--- a/third_party/rust/chromium_crates_io/vendor/icu_calendar-v2/src/cal/julian.rs
++++ b/third_party/rust/chromium_crates_io/vendor/icu_calendar-v2/src/cal/julian.rs
+@@ -132,6 +132,10 @@ impl DateFieldsResolver for Julian {
+         };
+         Ok(julian_year)
+     }
++
++    fn to_rata_die_inner(year: Self::YearInfo, month: u8, day: u8) -> RataDie {
++        calendrical_calculations::julian::fixed_from_julian(year, month, day)
++    }
+ }
+ 
+ impl crate::cal::scaffold::UnstableSealed for Julian {}
+@@ -170,7 +174,7 @@ impl Calendar for Julian {
+     }
+ 
+     fn to_rata_die(&self, date: &Self::DateInner) -> RataDie {
+-        calendrical_calculations::julian::fixed_from_julian(date.0.year, date.0.month, date.0.day)
++        date.0.to_rata_die()
+     }
+ 
+     fn has_cheap_iso_conversion(&self) -> bool {
+diff --git a/third_party/rust/chromium_crates_io/vendor/icu_calendar-v2/src/cal/persian.rs b/third_party/rust/chromium_crates_io/vendor/icu_calendar-v2/src/cal/persian.rs
+index 0e1a95b111953..6b78390d171e3 100644
+--- a/third_party/rust/chromium_crates_io/vendor/icu_calendar-v2/src/cal/persian.rs
++++ b/third_party/rust/chromium_crates_io/vendor/icu_calendar-v2/src/cal/persian.rs
+@@ -103,6 +103,10 @@ impl DateFieldsResolver for Persian {
+         };
+         Ok(persian_year)
+     }
++
++    fn to_rata_die_inner(year: Self::YearInfo, month: u8, day: u8) -> RataDie {
++        calendrical_calculations::persian::fixed_from_fast_persian(year, month, day)
++    }
+ }
+ 
+ impl crate::cal::scaffold::UnstableSealed for Persian {}
+@@ -141,11 +145,7 @@ impl Calendar for Persian {
+     }
+ 
+     fn to_rata_die(&self, date: &Self::DateInner) -> RataDie {
+-        calendrical_calculations::persian::fixed_from_fast_persian(
+-            date.0.year,
+-            date.0.month,
+-            date.0.day,
+-        )
++        date.0.to_rata_die()
+     }
+ 
+     fn has_cheap_iso_conversion(&self) -> bool {
+diff --git a/third_party/rust/chromium_crates_io/vendor/icu_calendar-v2/src/calendar_arithmetic.rs b/third_party/rust/chromium_crates_io/vendor/icu_calendar-v2/src/calendar_arithmetic.rs
+index ca186d0713c01..9b24e3e260216 100644
+--- a/third_party/rust/chromium_crates_io/vendor/icu_calendar-v2/src/calendar_arithmetic.rs
++++ b/third_party/rust/chromium_crates_io/vendor/icu_calendar-v2/src/calendar_arithmetic.rs
+@@ -151,6 +151,10 @@ pub(crate) trait DateFieldsResolver: Calendar {
+     fn month_code_from_ordinal(&self, _year: &Self::YearInfo, ordinal_month: u8) -> ValidMonthCode {
+         ValidMonthCode::new_unchecked(ordinal_month, false)
+     }
++
++    // Date-to-RD conversion
++    // Used internally for implementing date arithmetic
++    fn to_rata_die_inner(year: Self::YearInfo, month: u8, day: u8) -> types::RataDie;
+ }
+ 
+ impl<C: DateFieldsResolver> ArithmeticDate<C> {
+@@ -159,6 +163,10 @@ impl<C: DateFieldsResolver> ArithmeticDate<C> {
+         ArithmeticDate { year, month, day }
+     }
+ 
++    pub(crate) fn to_rata_die(self) -> types::RataDie {
++        C::to_rata_die_inner(self.year, self.month, self.day)
++    }
++
+     pub(crate) const fn cast<C2: DateFieldsResolver<YearInfo = C::YearInfo>>(
+         self,
+     ) -> ArithmeticDate<C2> {
+@@ -579,6 +587,22 @@ impl<C: DateFieldsResolver> ArithmeticDate<C> {
+         cal: &C,
+         options: DateDifferenceOptions,
+     ) -> DateDuration {
++        // Fast path for day/week diffs
++        // Avoids quadratic behavior in surpasses() for days/weeks
++        if matches!(
++            options.largest_unit,
++            Some(DateDurationUnit::Days) | Some(DateDurationUnit::Weeks)
++        ) {
++            let from = self.to_rata_die();
++            let to = other.to_rata_die();
++            let diff = to - from;
++            if matches!(options.largest_unit, Some(DateDurationUnit::Weeks)) {
++                return DateDuration::for_weeks_and_days(diff);
++            } else {
++                return DateDuration::for_days(diff);
++            }
++        }
++
+         // 1. Let _sign_ be -1 × CompareISODate(_one_, _two_).
+         // 1. If _sign_ = 0, return ZeroDateDuration().
+         let sign = match other.cmp(self) {
+diff --git a/third_party/rust/chromium_crates_io/vendor/icu_calendar-v2/src/duration.rs b/third_party/rust/chromium_crates_io/vendor/icu_calendar-v2/src/duration.rs
+index d089dd0644ac9..f1d9c66b1a7fa 100644
+--- a/third_party/rust/chromium_crates_io/vendor/icu_calendar-v2/src/duration.rs
++++ b/third_party/rust/chromium_crates_io/vendor/icu_calendar-v2/src/duration.rs
+@@ -194,6 +194,21 @@ impl DateDuration {
+         }
+     }
+ 
++    /// Returns a new [`DateDuration`] representing a number of days
++    /// represented as weeks and days
++    pub(crate) fn for_weeks_and_days(days: i64) -> Self {
++        let is_negative = days.is_negative();
++        let days = days.unsigned_abs();
++        let weeks = (days / 7) as u32;
++        let days = days % 7;
++        Self {
++            is_negative,
++            weeks,
++            days,
++            ..Default::default()
++        }
++    }
++
+     /// Do NOT pass this function values of mixed signs!
+     pub(crate) fn from_signed_ymwd(years: i64, months: i64, weeks: i64, days: i64) -> Self {
+         let is_negative = years.is_negative()
+-- 
+2.52.0.305.g3fc767764a-goog
+

@@ -8,7 +8,6 @@
 #include <type_traits>
 #include <vector>
 
-#include "base/containers/contains.h"
 #include "base/containers/flat_map.h"
 #include "base/functional/callback.h"
 #include "base/memory/ref_counted.h"
@@ -112,7 +111,7 @@ void TokenResultsMerger<T>::HandleOneResult(
     std::move(result.value().begin(), result.value().end(),
               std::back_inserter(good_results_));
   } else {
-    CHECK(!base::Contains(errors_, token));
+    CHECK(!errors_.contains(token));
     errors_[token] = result.error();
   }
   --results_to_receive_;

@@ -4,7 +4,6 @@
 
 #include "components/optimization_guide/core/delivery/model_info.h"
 
-#include "base/containers/contains.h"
 #include "base/memory/ptr_util.h"
 #include "base/notreached.h"
 #include "base/strings/utf_string_conversions.h"
@@ -79,8 +78,9 @@ base::flat_set<base::FilePath> ModelInfo::GetAdditionalFiles() const {
 
 std::optional<base::FilePath> ModelInfo::GetAdditionalFileWithBaseName(
     const base::FilePath::StringType& base_name) const {
-  if (base::Contains(additional_files_, base_name)) {
-    return additional_files_.at(base_name);
+  if (auto it = additional_files_.find(base_name);
+      it != additional_files_.end()) {
+    return it->second;
   }
   return std::nullopt;
 }

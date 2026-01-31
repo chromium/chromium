@@ -134,13 +134,12 @@ void Network3gppHandler::OnPropertyChanged(const std::string& name,
 }
 
 void Network3gppHandler::ManagerPropertiesCallback(
-    std::optional<base::Value::Dict> properties) {
+    std::optional<base::DictValue> properties) {
   if (!properties) {
     NET_LOG(ERROR) << "Network3gppHandler: Failed to get manager properties.";
     return;
   }
-  const base::Value::List* value =
-      properties->FindList(shill::kDevicesProperty);
+  const base::ListValue* value = properties->FindList(shill::kDevicesProperty);
   if (!value) {
     NET_LOG(EVENT) << "Network3gppHandler: No list value for: "
                    << shill::kDevicesProperty;
@@ -149,7 +148,7 @@ void Network3gppHandler::ManagerPropertiesCallback(
   UpdateDevices(*value);
 }
 
-void Network3gppHandler::UpdateDevices(const base::Value::List& devices) {
+void Network3gppHandler::UpdateDevices(const base::ListValue& devices) {
   for (const auto& item : devices) {
     if (!item.is_string()) {
       continue;
@@ -170,7 +169,7 @@ void Network3gppHandler::UpdateDevices(const base::Value::List& devices) {
 
 void Network3gppHandler::DevicePropertiesCallback(
     const std::string& device_path,
-    std::optional<base::Value::Dict> properties) {
+    std::optional<base::DictValue> properties) {
   if (!properties) {
     NET_LOG(ERROR) << "Network3gppHandler error for: " << device_path;
     return;

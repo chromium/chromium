@@ -20,7 +20,7 @@
 #include "third_party/blink/public/mojom/peerconnection/peer_connection_tracker.mojom.h"
 
 namespace base {
-class Value;
+class ListValue;
 }  // namespace base
 
 namespace content {
@@ -34,7 +34,7 @@ class RenderFrameHost;
 //
 // Note: This class and all of its methods are meant to only be used on the UI
 //       thread.
-class PeerConnectionTrackerHost
+class CONTENT_EXPORT PeerConnectionTrackerHost
     : public DocumentUserData<PeerConnectionTrackerHost>,
       public base::PowerSuspendObserver,
       public base::PowerThermalObserver,
@@ -115,12 +115,15 @@ class PeerConnectionTrackerHost
                            const std::vector<uint8_t>& output) override;
   void WebRtcDataChannelLogWrite(int lid,
                                  const std::vector<uint8_t>& output) override;
-  void AddStandardStats(int lid, base::Value::List value) override;
+  void AddStandardStats(int lid, base::ListValue value) override;
 
   GlobalRenderFrameHostId frame_id_;
   base::ProcessId peer_pid_;
   mojo::Receiver<blink::mojom::PeerConnectionTrackerHost> receiver_{this};
   mojo::Remote<blink::mojom::PeerConnectionManager> tracker_;
+
+  // A set of local peer connection IDs that belong to this host.
+  std::set<int> peer_connection_lids_;
 };
 
 }  // namespace content

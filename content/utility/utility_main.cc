@@ -20,7 +20,7 @@
 #include "base/time/time.h"
 #include "base/timer/hi_res_timer_manager.h"
 #include "build/build_config.h"
-#include "components/services/on_device_translation/buildflags/buildflags.h"
+#include "components/on_device_translation/buildflags/buildflags.h"
 #include "content/child/child_process.h"
 #include "content/common/content_switches_internal.h"
 #include "content/common/features.h"
@@ -113,7 +113,7 @@ sandbox::TargetServices* g_utility_target_services = nullptr;
 
 #if BUILDFLAG(ENABLE_ON_DEVICE_TRANSLATION) && \
     (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS))
-#include "components/services/on_device_translation/sandbox_hook.h"
+#include "components/on_device_translation/service/sandbox_hook.h"
 #endif  // BUILDFLAG(ENABLE_ON_DEVICE_TRANSLATION) &&  (BUILDFLAG(IS_LINUX) ||
         // BUILDFLAG(IS_CHROMEOS))
 

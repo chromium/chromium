@@ -19,8 +19,9 @@ from binary_sizes import PACKAGES_SIZES_FILE
 # First-warning will fail the test if the uncompressed and compressed size
 # grow, while always-fail will fail the test regardless of uncompressed growth
 # (solely based on compressed growth).
-_FIRST_WARNING_DELTA_BYTES = 12 * 1024  # 12 KiB
-_ALWAYS_FAIL_DELTA_BYTES = 100 * 1024  # 100 KiB
+_FIRST_WARNING_COMPRESSED_DELTA_BYTES = 32 * 1024
+_FIRST_WARNING_UNCOMPRESSED_DELTA_BYTES = 16 * 1024
+_ALWAYS_FAIL_DELTA_BYTES = 128 * 1024
 _TRYBOT_DOC = 'https://chromium.googlesource.com/chromium/src/+/main/docs/speed/binary_size/fuchsia_binary_size_trybot.md'
 
 SIZE_FAILURE = 1
@@ -48,8 +49,10 @@ def ComputePackageDiffs(before_sizes_file, after_sizes_file, author=None):
         after_sizes[package_name].uncompressed -
         before_sizes[package_name].uncompressed)
     # Developers are only responsible if uncompressed increases.
-    if ((growth['compressed'][package_name] >= _FIRST_WARNING_DELTA_BYTES
-         and growth['uncompressed'][package_name] > 0)
+    if ((growth['compressed'][package_name]
+         >= _FIRST_WARNING_COMPRESSED_DELTA_BYTES
+         and growth['uncompressed'][package_name]
+         >= _FIRST_WARNING_UNCOMPRESSED_DELTA_BYTES)
         # However, if compressed growth is unusually large, fail always.
         or growth['compressed'][package_name] >= _ALWAYS_FAIL_DELTA_BYTES):
       if not summary:

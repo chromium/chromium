@@ -51,7 +51,7 @@ std::string Base32Encode(base::span<const uint8_t> input,
   // That is: ceil(input.size() * 8.0 / 5.0) ==
   //          (input.size() * 8 + 4) / 5.
   const size_t unpadded_length =
-      ((base::MakeCheckedNum(input.size()) * 8 + 4) / 5).ValueOrDie();
+      ((base::CheckedNumeric(input.size()) * 8 + 4) / 5).ValueOrDie();
 
   std::string output;
   const size_t encoded_length = policy == Base32EncodePolicy::INCLUDE_PADDING
@@ -97,7 +97,7 @@ std::vector<uint8_t> Base32Decode(std::string_view input) {
     return std::vector<uint8_t>();
 
   const size_t decoded_length =
-      (base::MakeCheckedNum(input.size()) * 5 / 8).ValueOrDie();
+      (base::CheckedNumeric(input.size()) * 5 / 8).ValueOrDie();
 
   std::vector<uint8_t> output;
   output.reserve(decoded_length);

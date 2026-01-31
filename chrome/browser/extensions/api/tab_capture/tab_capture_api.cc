@@ -110,7 +110,7 @@ void AddMediaStreamSourceConstraints(content::WebContents* target_contents,
     if (!msc) {
       continue;
     }
-    base::Value::Dict* constraint = &msc->mandatory.additional_properties;
+    base::DictValue* constraint = &msc->mandatory.additional_properties;
     constraint->Set(kMediaStreamSource, kMediaStreamSourceTab);
     constraint->Set(kMediaStreamSourceId, device_id);
   }
@@ -213,7 +213,7 @@ ExtensionFunction::ResponseAction TabCaptureCaptureFunction::Run() {
 
 ExtensionFunction::ResponseAction TabCaptureGetCapturedTabsFunction::Run() {
   TabCaptureRegistry* registry = TabCaptureRegistry::Get(browser_context());
-  base::Value::List list;
+  base::ListValue list;
   if (registry) {
     registry->GetCapturedTabs(extension()->id(), &list);
   }

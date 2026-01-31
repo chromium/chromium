@@ -6,6 +6,8 @@
 
 #include <stdint.h>
 
+#include <algorithm>
+
 #include "base/command_line.h"
 #include "base/compiler_specific.h"
 #include "base/functional/bind.h"
@@ -992,9 +994,7 @@ class RTCVideoEncoderEncodeTest : public RTCVideoEncoderTest,
 
   explicit RTCVideoEncoderEncodeTest(
       bool enable_keep_encoder_instance_on_release) {
-    std::vector<base::test::FeatureRef> enabled_features = {
-        features::kZeroCopyTabCapture,
-    };
+    std::vector<base::test::FeatureRef> enabled_features;
     if (enable_keep_encoder_instance_on_release) {
       enabled_features.push_back(features::kKeepEncoderInstanceOnRelease);
     }
@@ -1513,7 +1513,7 @@ TEST_F(RTCVideoEncoderEncodeTest, EncodeWithDropFrame) {
       ASSERT_EQ(encode_results_.size(), kNumEncodeFrames);
       for (size_t i = 0; i < kNumEncodeFrames; ++i) {
         EncodeResult expected = EncodeResult::kEncoded;
-        if (base::Contains(kDropIndices, i)) {
+        if (std::ranges::contains(kDropIndices, i)) {
           expected = EncodeResult::kDropped;
         }
         EXPECT_EQ(encode_results_[i], expected);
@@ -1549,7 +1549,7 @@ TEST_F(RTCVideoEncoderEncodeTest, EncodeWithDropFrame) {
     if (i > 0) {
       EXPECT_CALL(*mock_vea_, UseOutputBitstreamBuffer(_)).Times(1);
     }
-    if (base::Contains(kDropIndices, i)) {
+    if (std::ranges::contains(kDropIndices, i)) {
       EXPECT_CALL(*mock_vea_, Encode)
           .WillOnce(DoAll(Invoke(this, &RTCVideoEncoderTest::DropFrame),
                           [&event]() { event.Signal(); }));
@@ -1710,7 +1710,7 @@ TEST_F(RTCVideoEncoderEncodeTest, EncodeSpatialLayerWithDropFrame) {
       ASSERT_EQ(encode_results_.size(), kNumEncodeFrames);
       for (size_t i = 0; i < kNumEncodeFrames; ++i) {
         EncodeResult expected = EncodeResult::kEncoded;
-        if (base::Contains(kDropIndices, i)) {
+        if (std::ranges::contains(kDropIndices, i)) {
           expected = EncodeResult::kDropped;
         }
         EXPECT_EQ(encode_results_[i], expected);
@@ -1746,7 +1746,7 @@ TEST_F(RTCVideoEncoderEncodeTest, EncodeSpatialLayerWithDropFrame) {
       EXPECT_CALL(*mock_vea_, UseOutputBitstreamBuffer(_))
           .Times(kNumSpatialLayers);
     }
-    if (base::Contains(kDropIndices, i)) {
+    if (std::ranges::contains(kDropIndices, i)) {
       EXPECT_CALL(*mock_vea_, Encode)
           .WillOnce(DoAll(
               Invoke(this,

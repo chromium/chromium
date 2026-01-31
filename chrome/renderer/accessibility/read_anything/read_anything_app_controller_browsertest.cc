@@ -17,9 +17,8 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
-#include "base/types/cxx23_to_underlying.h"
 #include "build/build_config.h"
-#include "chrome/common/read_anything/read_anything.mojom-data-view.h"
+#include "chrome/common/read_anything/read_anything.mojom-shared.h"
 #include "chrome/common/read_anything/read_anything_util.h"
 #include "chrome/renderer/accessibility/ax_tree_distiller.h"
 #include "chrome/renderer/accessibility/phrase_segmentation/dependency_parser_model.h"
@@ -32,7 +31,7 @@
 #include "services/strings/grit/services_strings.h"
 #include "third_party/blink/public/web/web_local_frame.h"
 #include "ui/accessibility/accessibility_features.h"
-#include "ui/accessibility/ax_enums.mojom-data-view.h"
+#include "ui/accessibility/ax_enums.mojom-shared.h"
 #include "ui/accessibility/ax_location_and_scroll_updates.h"
 #include "ui/accessibility/ax_node.h"
 #include "ui/accessibility/ax_node_data.h"
@@ -125,7 +124,11 @@ class MockReadAnythingUntrustedPageHandler
               (override));
   MOCK_METHOD(void,
               OnHighlightGranularityChanged,
-              (read_anything::mojom::HighlightGranularity color),
+              (read_anything::mojom::HighlightGranularity granularity),
+              (override));
+  MOCK_METHOD(void,
+              OnLineFocusChanged,
+              (read_anything::mojom::LineFocus line_focus),
               (override));
   MOCK_METHOD(void,
               OnImageDataRequested,
@@ -136,6 +139,16 @@ class MockReadAnythingUntrustedPageHandler
   MOCK_METHOD(void,
               OnDistillationStatus,
               (read_anything::mojom::DistillationStatus, int word_count),
+              (override));
+  MOCK_METHOD(void, GetPresentationState, (), (override));
+  MOCK_METHOD(void, CloseUI, (), (override));
+  MOCK_METHOD(void, TogglePinState, (), (override));
+  MOCK_METHOD(void, TogglePresentation, (), (override));
+  MOCK_METHOD(void, AckReadingModeHidden, (), (override));
+  MOCK_METHOD(void, SendPinStateRequest, (), (override));
+  MOCK_METHOD(void,
+              OnDistillationStateChanged,
+              (read_anything::mojom::ReadAnythingDistillationState new_state),
               (override));
 
   mojo::PendingRemote<read_anything::mojom::UntrustedPageHandler>
@@ -204,6 +217,8 @@ class ReadAnythingAppControllerTest : public ChromeRenderViewTest {
   ReadAloudAppModel& read_aloud_model() {
     return controller_->read_aloud_model_;
   }
+
+  void Distill() { controller_->Distill(); }
 
   void SendBatchUpdates() {
     std::vector<ui::AXTreeUpdate> batch_updates;
@@ -306,10 +321,35 @@ class ReadAnythingAppControllerTest : public ChromeRenderViewTest {
         features::kReadAnythingDocsIntegration);
   }
 
+  void EnableLineFocus() {
+    scoped_feature_list_.Reset();
+    scoped_feature_list_.InitAndEnableFeature(features::kReadAnythingLineFocus);
+  }
+
   void DisableReadAloud() {
     scoped_feature_list_.Reset();
     scoped_feature_list_.InitWithFeatures({},
                                           {features::kReadAnythingReadAloud});
+  }
+
+  void StartLineFocusSession() { controller_->StartLineFocusSession(); }
+
+  void LogLineFocusSession() { controller_->LogLineFocusSession(); }
+
+  void AddLineFocusScrollDistance(int distance) {
+    controller_->AddLineFocusScrollDistance(distance);
+  }
+
+  void AddLineFocusMouseDistance(int distance) {
+    controller_->AddLineFocusMouseDistance(distance);
+  }
+
+  void IncrementLineFocusKeyboardLines() {
+    controller_->IncrementLineFocusKeyboardLines();
+  }
+
+  void IncrementLineFocusSpeechLines() {
+    controller_->IncrementLineFocusSpeechLines();
   }
 
   void ExpectNodesMapToEntireText(std::vector<ReadAloudTextSegment> segments,
@@ -426,6 +466,27 @@ TEST_F(ReadAnythingAppControllerTest, OnDeviceLocked_ResetsWordsHeard) {
 
   EXPECT_EQ(0, model().words_heard());
 }
+
+TEST_F(ReadAnythingAppControllerTest,
+       OnDeviceLocked_LogsLineFocusSessionWithFlag) {
+  EnableLineFocus();
+  base::HistogramTester histogram_tester;
+  StartLineFocusSession();
+  controller().OnDeviceLocked();
+
+  histogram_tester.ExpectTotalCount(
+      "Accessibility.ReadAnything.LineFocusSessionLength", 1);
+}
+
+TEST_F(ReadAnythingAppControllerTest,
+       OnDeviceLocked_DoesNotLogLineFocusSessionWithoutFlag) {
+  base::HistogramTester histogram_tester;
+  StartLineFocusSession();
+  controller().OnDeviceLocked();
+
+  histogram_tester.ExpectTotalCount(
+      "Accessibility.ReadAnything.LineFocusSessionLength", 0);
+}
 #endif
 
 TEST_F(ReadAnythingAppControllerTest, OnIsAudioCurrentlyPlayingChanged) {
@@ -433,6 +494,11 @@ TEST_F(ReadAnythingAppControllerTest, OnIsAudioCurrentlyPlayingChanged) {
   EXPECT_CALL(page_handler_, OnReadAloudAudioStateChange(true)).Times(1);
   controller().OnIsAudioCurrentlyPlayingChanged(false);
   EXPECT_CALL(page_handler_, OnReadAloudAudioStateChange(false)).Times(1);
+}
+
+TEST_F(ReadAnythingAppControllerTest, OnReadingModeHidden_SendsAck) {
+  controller().OnReadingModeHidden(true);
+  EXPECT_CALL(page_handler_, AckReadingModeHidden()).Times(1);
 }
 
 TEST_F(ReadAnythingAppControllerTest,
@@ -453,6 +519,7 @@ TEST_F(ReadAnythingAppControllerTest,
   histogram_tester.ExpectUniqueSample(
       ReadAloudAppModel::kSpeechStopSourceHistogramName,
       ReadAloudAppModel::ReadAloudStopSource::kCloseReadingMode, 1);
+  EXPECT_CALL(page_handler_, AckReadingModeHidden()).Times(3);
 }
 
 TEST_F(ReadAnythingAppControllerTest,
@@ -464,6 +531,7 @@ TEST_F(ReadAnythingAppControllerTest,
 
   EXPECT_EQ(0, histogram_tester.GetTotalSum(
                    ReadAloudAppModel::kSpeechStopSourceHistogramName));
+  EXPECT_CALL(page_handler_, AckReadingModeHidden());
 }
 
 TEST_F(ReadAnythingAppControllerTest, OnReadingModeHidden_LogsWordsSeen) {
@@ -473,6 +541,7 @@ TEST_F(ReadAnythingAppControllerTest, OnReadingModeHidden_LogsWordsSeen) {
 
   histogram_tester.ExpectUniqueSample(
       ReadAnythingAppController::kWordsSeenHistogramName, 123, 1);
+  EXPECT_CALL(page_handler_, AckReadingModeHidden());
 }
 
 TEST_F(ReadAnythingAppControllerTest,
@@ -483,6 +552,7 @@ TEST_F(ReadAnythingAppControllerTest,
 
   histogram_tester.ExpectUniqueSample(
       ReadAnythingAppController::kWordsSeenHistogramName, 123, 1);
+  EXPECT_CALL(page_handler_, AckReadingModeHidden());
 }
 
 TEST_F(ReadAnythingAppControllerTest, OnReadingModeHidden_ResetsWordsSeen) {
@@ -490,6 +560,7 @@ TEST_F(ReadAnythingAppControllerTest, OnReadingModeHidden_ResetsWordsSeen) {
   controller().OnReadingModeHidden(true);
 
   EXPECT_EQ(0, model().words_seen());
+  EXPECT_CALL(page_handler_, AckReadingModeHidden());
 }
 
 TEST_F(ReadAnythingAppControllerTest, OnReadingModeHidden_LogsWordsHeard) {
@@ -499,6 +570,7 @@ TEST_F(ReadAnythingAppControllerTest, OnReadingModeHidden_LogsWordsHeard) {
 
   histogram_tester.ExpectUniqueSample(
       ReadAnythingAppController::kWordsHeardHistogramName, 123, 1);
+  EXPECT_CALL(page_handler_, AckReadingModeHidden());
 }
 
 TEST_F(ReadAnythingAppControllerTest,
@@ -509,6 +581,7 @@ TEST_F(ReadAnythingAppControllerTest,
 
   histogram_tester.ExpectUniqueSample(
       ReadAnythingAppController::kWordsHeardHistogramName, 123, 1);
+  EXPECT_CALL(page_handler_, AckReadingModeHidden());
 }
 
 TEST_F(ReadAnythingAppControllerTest,
@@ -521,6 +594,7 @@ TEST_F(ReadAnythingAppControllerTest,
 
   histogram_tester.ExpectTotalCount(
       ReadAnythingAppController::kWordsHeardHistogramName, 0);
+  EXPECT_CALL(page_handler_, AckReadingModeHidden());
 }
 
 TEST_F(ReadAnythingAppControllerTest, OnReadingModeHidden_ResetsWordsHeard) {
@@ -528,6 +602,30 @@ TEST_F(ReadAnythingAppControllerTest, OnReadingModeHidden_ResetsWordsHeard) {
   controller().OnReadingModeHidden(true);
 
   EXPECT_EQ(0, model().words_heard());
+  EXPECT_CALL(page_handler_, AckReadingModeHidden());
+}
+
+TEST_F(ReadAnythingAppControllerTest,
+       OnReadingModeHidden_LogsLineFocusSessionWithFlag) {
+  EnableLineFocus();
+  base::HistogramTester histogram_tester;
+  StartLineFocusSession();
+  controller().OnReadingModeHidden(true);
+
+  histogram_tester.ExpectTotalCount(
+      "Accessibility.ReadAnything.LineFocusSessionLength", 1);
+  EXPECT_CALL(page_handler_, AckReadingModeHidden());
+}
+
+TEST_F(ReadAnythingAppControllerTest,
+       OnReadingModeHidden_DoesNotLogLineFocusSessionWithoutFlag) {
+  base::HistogramTester histogram_tester;
+  StartLineFocusSession();
+  controller().OnReadingModeHidden(true);
+
+  histogram_tester.ExpectTotalCount(
+      "Accessibility.ReadAnything.LineFocusSessionLength", 0);
+  EXPECT_CALL(page_handler_, AckReadingModeHidden());
 }
 
 TEST_F(ReadAnythingAppControllerTest, OnTabWillDetach_OnlyLogsIfSpeechPlaying) {
@@ -579,6 +677,27 @@ TEST_F(ReadAnythingAppControllerTest, OnTabWillDetach_ResetsWordsHeard) {
   controller().OnTabWillDetach();
 
   EXPECT_EQ(0, model().words_heard());
+}
+
+TEST_F(ReadAnythingAppControllerTest,
+       OnTabWillDetach_LogsLineFocusSessionWithFlag) {
+  EnableLineFocus();
+  base::HistogramTester histogram_tester;
+  StartLineFocusSession();
+  controller().OnTabWillDetach();
+
+  histogram_tester.ExpectTotalCount(
+      "Accessibility.ReadAnything.LineFocusSessionLength", 1);
+}
+
+TEST_F(ReadAnythingAppControllerTest,
+       OnTabWillDetach_DoesNotLogLineFocusSessionWithoutFlag) {
+  base::HistogramTester histogram_tester;
+  StartLineFocusSession();
+  controller().OnTabWillDetach();
+
+  histogram_tester.ExpectTotalCount(
+      "Accessibility.ReadAnything.LineFocusSessionLength", 0);
 }
 
 TEST_F(ReadAnythingAppControllerTest, OnUrlInformationSet_LogsReload) {
@@ -680,41 +799,41 @@ TEST_F(ReadAnythingAppControllerTest,
 TEST_F(ReadAnythingAppControllerTest, OnLetterSpacingChange_ValidChange) {
   static constexpr auto kLetterSpacing =
       read_anything::mojom::LetterSpacing::kWide;
-  controller().OnLetterSpacingChange(base::to_underlying(kLetterSpacing));
+  controller().OnLetterSpacingChange(std::to_underlying(kLetterSpacing));
   EXPECT_CALL(page_handler_, OnLetterSpaceChange(kLetterSpacing)).Times(1);
-  ASSERT_EQ(controller().LetterSpacing(), base::to_underlying(kLetterSpacing));
+  ASSERT_EQ(controller().LetterSpacing(), std::to_underlying(kLetterSpacing));
 }
 
 TEST_F(ReadAnythingAppControllerTest, OnLetterSpacingChange_InvalidChange) {
   controller().OnLetterSpacingChange(
-      base::to_underlying(read_anything::mojom::LetterSpacing::kMaxValue) + 1);
+      std::to_underlying(read_anything::mojom::LetterSpacing::kMaxValue) + 1);
   EXPECT_CALL(page_handler_, OnLetterSpaceChange).Times(0);
 }
 
 TEST_F(ReadAnythingAppControllerTest, OnLineSpacingChange_ValidChange) {
   static constexpr auto kLineSpacing =
       read_anything::mojom::LineSpacing::kVeryLoose;
-  controller().OnLineSpacingChange(base::to_underlying(kLineSpacing));
+  controller().OnLineSpacingChange(std::to_underlying(kLineSpacing));
   EXPECT_CALL(page_handler_, OnLineSpaceChange(kLineSpacing)).Times(1);
-  ASSERT_EQ(controller().LineSpacing(), base::to_underlying(kLineSpacing));
+  ASSERT_EQ(controller().LineSpacing(), std::to_underlying(kLineSpacing));
 }
 
 TEST_F(ReadAnythingAppControllerTest, OnLineSpacingChange_InvalidChange) {
   controller().OnLineSpacingChange(
-      base::to_underlying(read_anything::mojom::LineSpacing::kMaxValue) + 1);
+      std::to_underlying(read_anything::mojom::LineSpacing::kMaxValue) + 1);
   EXPECT_CALL(page_handler_, OnLineSpaceChange).Times(0);
 }
 
 TEST_F(ReadAnythingAppControllerTest, OnThemeChange_ValidChange) {
   static constexpr auto kColor = read_anything::mojom::Colors::kYellow;
-  controller().OnThemeChange(base::to_underlying(kColor));
+  controller().OnThemeChange(std::to_underlying(kColor));
   EXPECT_CALL(page_handler_, OnColorChange(kColor)).Times(1);
-  ASSERT_EQ(controller().ColorTheme(), base::to_underlying(kColor));
+  ASSERT_EQ(controller().ColorTheme(), std::to_underlying(kColor));
 }
 
 TEST_F(ReadAnythingAppControllerTest, OnThemeChange_InvalidChange) {
   controller().OnThemeChange(
-      base::to_underlying(read_anything::mojom::Colors::kMaxValue) + 1);
+      std::to_underlying(read_anything::mojom::Colors::kMaxValue) + 1);
   EXPECT_CALL(page_handler_, OnColorChange).Times(0);
 }
 
@@ -773,10 +892,10 @@ TEST_F(ReadAnythingAppControllerTest, OnLanguagePrefChange) {
   controller().OnLanguagePrefChange(disabled_lang, false);
 
   EXPECT_CALL(page_handler_, OnLanguagePrefChange).Times(3);
-  ASSERT_TRUE(base::Contains(read_aloud_model().languages_enabled_in_pref(),
-                             enabled_lang));
-  ASSERT_FALSE(base::Contains(read_aloud_model().languages_enabled_in_pref(),
-                              disabled_lang));
+  ASSERT_TRUE(
+      read_aloud_model().languages_enabled_in_pref().contains(enabled_lang));
+  ASSERT_FALSE(
+      read_aloud_model().languages_enabled_in_pref().contains(disabled_lang));
 }
 
 TEST_F(ReadAnythingAppControllerTest, GetStoredVoice_ReturnsLatestVoice) {
@@ -865,6 +984,219 @@ TEST_F(ReadAnythingAppControllerTest,
   ASSERT_EQ(controller().GetStoredVoice(), "");
 }
 
+TEST_F(ReadAnythingAppControllerTest,
+       OnSettingsRestoredFromPrefs_WithLineFocusFlag) {
+  EnableLineFocus();
+  auto line_spacing = read_anything::mojom::LineSpacing::kVeryLoose;
+  auto letter_spacing = read_anything::mojom::LetterSpacing::kVeryWide;
+  std::string font_name = "Roboto";
+  double font_size = 3.0;
+  bool links_enabled = false;
+  bool images_enabled = true;
+  auto color = read_anything::mojom::Colors::kDefaultValue;
+  double speech_rate = 1.5;
+  std::string voice_value = "Italian voice 3";
+  std::string language_value = "it";
+  base::DictValue voices = base::DictValue();
+  voices.Set(language_value, voice_value);
+  base::ListValue languages_enabled_in_pref = base::ListValue();
+  languages_enabled_in_pref.Append(language_value);
+  auto highlight_granularity =
+      read_anything::mojom::HighlightGranularity::kDefaultValue;
+  auto line_focus = read_anything::mojom::LineFocus::kLineCursor;
+  controller().SetLanguageForTesting(language_value);
+
+  controller().OnSettingsRestoredFromPrefs(
+      line_spacing, letter_spacing, font_name, font_size, links_enabled,
+      images_enabled, color, speech_rate, std::move(voices),
+      std::move(languages_enabled_in_pref), highlight_granularity, line_focus);
+
+  EXPECT_EQ(static_cast<int>(line_focus), controller().LineFocus());
+}
+
+TEST_F(ReadAnythingAppControllerTest,
+       StartLineFocusSession_DoesNothingWithoutFlag) {
+  StartLineFocusSession();
+  ASSERT_FALSE(model().line_focus_session_start_time().has_value());
+}
+
+TEST_F(ReadAnythingAppControllerTest,
+       StartLineFocusSession_StartsSessionWithFlag) {
+  EnableLineFocus();
+  StartLineFocusSession();
+  ASSERT_TRUE(model().line_focus_session_start_time().has_value());
+}
+
+TEST_F(ReadAnythingAppControllerTest,
+       AddLineFocusScrollDistance_DoesNothingWithoutFlag) {
+  const int distance = 100;
+  AddLineFocusScrollDistance(distance);
+  ASSERT_EQ(model().line_focus_scroll_distance(), 0);
+}
+
+TEST_F(ReadAnythingAppControllerTest,
+       AddLineFocusScrollDistance_AddsDistanceWithFlag) {
+  const int distance = 100;
+  EnableLineFocus();
+
+  AddLineFocusScrollDistance(distance);
+  ASSERT_EQ(model().line_focus_scroll_distance(), distance);
+
+  AddLineFocusScrollDistance(distance);
+  ASSERT_EQ(model().line_focus_scroll_distance(), distance + distance);
+}
+
+TEST_F(ReadAnythingAppControllerTest,
+       AddLineFocusMouseDistance_DoesNothingWithoutFlag) {
+  const int distance = 100;
+  AddLineFocusMouseDistance(distance);
+  ASSERT_EQ(model().line_focus_scroll_distance(), 0);
+}
+
+TEST_F(ReadAnythingAppControllerTest,
+       AddLineFocusMouseDistance_AddsDistanceWithFlag) {
+  const int distance = 100;
+  EnableLineFocus();
+
+  AddLineFocusMouseDistance(distance);
+  ASSERT_EQ(model().line_focus_mouse_distance(), distance);
+
+  AddLineFocusMouseDistance(distance);
+  ASSERT_EQ(model().line_focus_mouse_distance(), distance + distance);
+}
+
+TEST_F(ReadAnythingAppControllerTest,
+       IncrementLineFocusKeyboardLines_DoesNothingWithoutFlag) {
+  IncrementLineFocusKeyboardLines();
+  ASSERT_EQ(model().line_focus_keyboard_lines(), 0);
+}
+
+TEST_F(ReadAnythingAppControllerTest,
+       IncrementLineFocusKeyboardLines_IncrementsWithFlag) {
+  EnableLineFocus();
+
+  IncrementLineFocusKeyboardLines();
+  ASSERT_EQ(model().line_focus_keyboard_lines(), 1);
+
+  IncrementLineFocusKeyboardLines();
+  ASSERT_EQ(model().line_focus_keyboard_lines(), 2);
+}
+
+TEST_F(ReadAnythingAppControllerTest,
+       IncrementLineFocusSpeechLines_DoesNothingWithoutFlag) {
+  IncrementLineFocusSpeechLines();
+  ASSERT_EQ(model().line_focus_speech_lines(), 0);
+}
+
+TEST_F(ReadAnythingAppControllerTest,
+       IncrementLineFocusSpeechLines_IncrementsWithFlag) {
+  EnableLineFocus();
+
+  IncrementLineFocusSpeechLines();
+  ASSERT_EQ(model().line_focus_speech_lines(), 1);
+
+  IncrementLineFocusSpeechLines();
+  ASSERT_EQ(model().line_focus_speech_lines(), 2);
+}
+
+TEST_F(ReadAnythingAppControllerTest,
+       LogLineFocusSession_DoesNothingWithoutFlag) {
+  base::HistogramTester histogram_tester;
+  StartLineFocusSession();
+  model().set_line_focus_mouse_distance(1000);
+  model().set_line_focus_scroll_distance(348);
+  model().set_line_focus_keyboard_lines(25);
+  model().set_line_focus_speech_lines(102);
+
+  LogLineFocusSession();
+
+  histogram_tester.ExpectTotalCount(
+      "Accessibility.ReadAnything.LineFocusSessionLength", 0);
+  histogram_tester.ExpectTotalCount(
+      "Accessibility.ReadAnything.LineFocusSessionMouseDistance", 0);
+  histogram_tester.ExpectTotalCount(
+      "Accessibility.ReadAnything.LineFocusSessionScrollDistance", 0);
+  histogram_tester.ExpectTotalCount(
+      "Accessibility.ReadAnything.LineFocusSessionKeyboardLines", 0);
+  histogram_tester.ExpectTotalCount(
+      "Accessibility.ReadAnything.LineFocusSessionSpeechLines", 0);
+}
+
+TEST_F(ReadAnythingAppControllerTest,
+       LogLineFocusSession_DoesNothingIfNeverStarted) {
+  EnableLineFocus();
+  base::HistogramTester histogram_tester;
+  model().set_line_focus_mouse_distance(1000);
+  model().set_line_focus_scroll_distance(348);
+  model().set_line_focus_keyboard_lines(25);
+  model().set_line_focus_speech_lines(102);
+
+  LogLineFocusSession();
+
+  histogram_tester.ExpectTotalCount(
+      "Accessibility.ReadAnything.LineFocusSessionLength", 0);
+  histogram_tester.ExpectTotalCount(
+      "Accessibility.ReadAnything.LineFocusSessionMouseDistance", 0);
+  histogram_tester.ExpectTotalCount(
+      "Accessibility.ReadAnything.LineFocusSessionScrollDistance", 0);
+  histogram_tester.ExpectTotalCount(
+      "Accessibility.ReadAnything.LineFocusSessionKeyboardLines", 0);
+  histogram_tester.ExpectTotalCount(
+      "Accessibility.ReadAnything.LineFocusSessionSpeechLines", 0);
+}
+
+TEST_F(ReadAnythingAppControllerTest, LogLineFocusSession_IncrementsWithFlag) {
+  EnableLineFocus();
+  base::HistogramTester histogram_tester;
+  StartLineFocusSession();
+  const int mouse_distance = 2001;
+  const int scroll_distance = 202;
+  const int keyboard_lines = 405;
+  const int speech_lines = 21;
+  model().set_line_focus_mouse_distance(mouse_distance);
+  model().set_line_focus_scroll_distance(scroll_distance);
+  model().set_line_focus_keyboard_lines(keyboard_lines);
+  model().set_line_focus_speech_lines(speech_lines);
+
+  LogLineFocusSession();
+
+  histogram_tester.ExpectTotalCount(
+      "Accessibility.ReadAnything.LineFocusSessionLength", 1);
+  histogram_tester.ExpectUniqueSample(
+      "Accessibility.ReadAnything.LineFocusSessionMouseDistance",
+      mouse_distance, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Accessibility.ReadAnything.LineFocusSessionScrollDistance",
+      scroll_distance, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Accessibility.ReadAnything.LineFocusSessionKeyboardLines",
+      keyboard_lines, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Accessibility.ReadAnything.LineFocusSessionSpeechLines", speech_lines,
+      1);
+}
+
+TEST_F(ReadAnythingAppControllerTest, LogLineFocusSession_ResetsSession) {
+  EnableLineFocus();
+  StartLineFocusSession();
+  const int mouse_distance = 2001;
+  const int scroll_distance = 202;
+  const int keyboard_lines = 405;
+  const int speech_lines = 21;
+  model().set_line_focus_mouse_distance(mouse_distance);
+  model().set_line_focus_scroll_distance(scroll_distance);
+  model().set_line_focus_keyboard_lines(keyboard_lines);
+  model().set_line_focus_speech_lines(speech_lines);
+
+  LogLineFocusSession();
+
+  ASSERT_FALSE(model().line_focus_session_start_time().has_value());
+  ASSERT_EQ(model().line_focus_mouse_distance(), 0);
+  ASSERT_EQ(model().line_focus_scroll_distance(), 0);
+  ASSERT_EQ(model().line_focus_keyboard_lines(), 0);
+  ASSERT_EQ(model().line_focus_speech_lines(), 0);
+}
+
 TEST_F(ReadAnythingAppControllerTest, OnSettingsRestoredFromPrefs) {
   auto line_spacing = read_anything::mojom::LineSpacing::kVeryLoose;
   auto letter_spacing = read_anything::mojom::LetterSpacing::kVeryWide;
@@ -877,23 +1209,24 @@ TEST_F(ReadAnythingAppControllerTest, OnSettingsRestoredFromPrefs) {
   double speech_rate = 1.5;
   std::string voice_value = "Italian voice 3";
   std::string language_value = "it";
-  base::Value::Dict voices = base::Value::Dict();
+  base::DictValue voices = base::DictValue();
   voices.Set(language_value, voice_value);
-  base::Value::List languages_enabled_in_pref = base::Value::List();
+  base::ListValue languages_enabled_in_pref = base::ListValue();
   languages_enabled_in_pref.Append(language_value);
   auto highlight_granularity =
       read_anything::mojom::HighlightGranularity::kDefaultValue;
   int highlight_granularity_value = 0;
+  auto line_focus = read_anything::mojom::LineFocus::kLineCursor;
 
   controller().SetLanguageForTesting(language_value);
 
   controller().OnSettingsRestoredFromPrefs(
       line_spacing, letter_spacing, font_name, font_size, links_enabled,
       images_enabled, color, speech_rate, std::move(voices),
-      std::move(languages_enabled_in_pref), highlight_granularity);
+      std::move(languages_enabled_in_pref), highlight_granularity, line_focus);
 
-  EXPECT_EQ(base::to_underlying(line_spacing), controller().LineSpacing());
-  EXPECT_EQ(base::to_underlying(letter_spacing), controller().LetterSpacing());
+  EXPECT_EQ(std::to_underlying(line_spacing), controller().LineSpacing());
+  EXPECT_EQ(std::to_underlying(letter_spacing), controller().LetterSpacing());
   EXPECT_EQ(font_name, controller().FontName());
   EXPECT_EQ(font_size, controller().FontSize());
   EXPECT_EQ(links_enabled, controller().LinksEnabled());
@@ -904,6 +1237,8 @@ TEST_F(ReadAnythingAppControllerTest, OnSettingsRestoredFromPrefs) {
   EXPECT_EQ(language_value, controller().GetLanguagesEnabledInPref()[0]);
   EXPECT_EQ(highlight_granularity_value,
             read_aloud_model().highlight_granularity());
+  EXPECT_EQ(static_cast<int>(read_anything::mojom::LineFocus::kDefaultValue),
+            controller().LineFocus());
 }
 
 TEST_F(ReadAnythingAppControllerTest, RootIdIsSnapshotRootId) {
@@ -1483,10 +1818,10 @@ TEST_F(ReadAnythingAppControllerTest,
   update.tree_data.sel_is_backward = false;
 
   AccessibilityEventReceived({std::move(update)});
-  EXPECT_TRUE(base::Contains(model().selection_node_ids(), 1));
-  EXPECT_TRUE(base::Contains(model().selection_node_ids(), 2));
-  EXPECT_TRUE(base::Contains(model().selection_node_ids(), 3));
-  EXPECT_TRUE(base::Contains(model().selection_node_ids(), 4));
+  EXPECT_TRUE(model().selection_node_ids().contains(1));
+  EXPECT_TRUE(model().selection_node_ids().contains(2));
+  EXPECT_TRUE(model().selection_node_ids().contains(3));
+  EXPECT_TRUE(model().selection_node_ids().contains(4));
 }
 
 TEST_F(ReadAnythingAppControllerTest,
@@ -1500,10 +1835,10 @@ TEST_F(ReadAnythingAppControllerTest,
   update.tree_data.sel_focus_offset = 0;
   update.tree_data.sel_is_backward = true;
   AccessibilityEventReceived({std::move(update)});
-  EXPECT_TRUE(base::Contains(model().selection_node_ids(), 1));
-  EXPECT_TRUE(base::Contains(model().selection_node_ids(), 2));
-  EXPECT_TRUE(base::Contains(model().selection_node_ids(), 3));
-  EXPECT_TRUE(base::Contains(model().selection_node_ids(), 4));
+  EXPECT_TRUE(model().selection_node_ids().contains(1));
+  EXPECT_TRUE(model().selection_node_ids().contains(2));
+  EXPECT_TRUE(model().selection_node_ids().contains(3));
+  EXPECT_TRUE(model().selection_node_ids().contains(4));
 }
 
 TEST_F(ReadAnythingAppControllerTest, DisplayNodeIdsContains_ContentNodes) {
@@ -1519,19 +1854,19 @@ TEST_F(ReadAnythingAppControllerTest, DisplayNodeIdsContains_ContentNodes) {
   ui::AXEvent load_complete(0, ax::mojom::Event::kLoadComplete);
   AccessibilityEventReceived({std::move(update)}, {std::move(load_complete)});
   controller().OnAXTreeDistilled(tree_id_, {3});
-  EXPECT_TRUE(base::Contains(model().display_node_ids(), 1));
-  EXPECT_FALSE(base::Contains(model().display_node_ids(), 2));
-  EXPECT_TRUE(base::Contains(model().display_node_ids(), 3));
+  EXPECT_TRUE(model().display_node_ids().contains(1));
+  EXPECT_FALSE(model().display_node_ids().contains(2));
+  EXPECT_TRUE(model().display_node_ids().contains(3));
   Mock::VerifyAndClearExpectations(distiller_);
 }
 
 TEST_F(ReadAnythingAppControllerTest,
        DisplayNodeIdsContains_NoSelectionOrContentNodes) {
   controller().OnAXTreeDistilled(tree_id_, {});
-  EXPECT_FALSE(base::Contains(model().display_node_ids(), 1));
-  EXPECT_FALSE(base::Contains(model().display_node_ids(), 2));
-  EXPECT_FALSE(base::Contains(model().display_node_ids(), 3));
-  EXPECT_FALSE(base::Contains(model().display_node_ids(), 4));
+  EXPECT_FALSE(model().display_node_ids().contains(1));
+  EXPECT_FALSE(model().display_node_ids().contains(2));
+  EXPECT_FALSE(model().display_node_ids().contains(3));
+  EXPECT_FALSE(model().display_node_ids().contains(4));
 }
 
 TEST_F(ReadAnythingAppControllerTest, DoesNotCrashIfContentNodeNotFoundInTree) {
@@ -1548,10 +1883,10 @@ TEST_F(ReadAnythingAppControllerTest, Draw_RecomputeDisplayNodes) {
   model().Reset({3, 4});
   controller().Draw(/* recompute_display_nodes= */ true);
 
-  EXPECT_TRUE(base::Contains(model().display_node_ids(), 1));
-  EXPECT_FALSE(base::Contains(model().display_node_ids(), 2));
-  EXPECT_TRUE(base::Contains(model().display_node_ids(), 3));
-  EXPECT_TRUE(base::Contains(model().display_node_ids(), 4));
+  EXPECT_TRUE(model().display_node_ids().contains(1));
+  EXPECT_FALSE(model().display_node_ids().contains(2));
+  EXPECT_TRUE(model().display_node_ids().contains(3));
+  EXPECT_TRUE(model().display_node_ids().contains(4));
 }
 
 TEST_F(ReadAnythingAppControllerTest, Draw_DoNotRecomputeDisplayNodesForDocs) {
@@ -1572,9 +1907,9 @@ TEST_F(ReadAnythingAppControllerTest, Draw_DoNotRecomputeDisplayNodesForDocs) {
   controller().OnAXTreeDistilled(tree_id_, {3});
   controller().OnActiveAXTreeIDChanged(id_1, ukm::kInvalidSourceId, false);
   EXPECT_TRUE(controller().IsGoogleDocs());
-  EXPECT_TRUE(base::Contains(model().display_node_ids(), 1));
-  EXPECT_FALSE(base::Contains(model().display_node_ids(), 2));
-  EXPECT_TRUE(base::Contains(model().display_node_ids(), 3));
+  EXPECT_TRUE(model().display_node_ids().contains(1));
+  EXPECT_FALSE(model().display_node_ids().contains(2));
+  EXPECT_TRUE(model().display_node_ids().contains(3));
   Mock::VerifyAndClearExpectations(distiller_);
 
   ui::AXNodeData node1;
@@ -1585,10 +1920,10 @@ TEST_F(ReadAnythingAppControllerTest, Draw_DoNotRecomputeDisplayNodesForDocs) {
   SendUpdateWithNodes({std::move(node1)});
   model().Reset({3, 4});
   controller().Draw(/* recompute_display_nodes= */ true);
-  EXPECT_FALSE(base::Contains(model().display_node_ids(), 1));
-  EXPECT_FALSE(base::Contains(model().display_node_ids(), 2));
-  EXPECT_FALSE(base::Contains(model().display_node_ids(), 3));
-  EXPECT_FALSE(base::Contains(model().display_node_ids(), 4));
+  EXPECT_FALSE(model().display_node_ids().contains(1));
+  EXPECT_FALSE(model().display_node_ids().contains(2));
+  EXPECT_FALSE(model().display_node_ids().contains(3));
+  EXPECT_FALSE(model().display_node_ids().contains(4));
 }
 
 TEST_F(ReadAnythingAppControllerTest, AccessibilityEventReceived) {
@@ -1987,15 +2322,10 @@ TEST_F(ReadAnythingAppControllerTest,
   EXPECT_EQ(u"23456", controller().GetTextContent(1));
   Mock::VerifyAndClearExpectations(distiller_);
 
-  // Speech stops. We request distillation (deferred from above)
+  // Speech stops. We request distillation (deferred from above).
+  // The queued up tree updates ProcessPendingUpdatesIfAllowed immediately.
   EXPECT_CALL(*distiller_, Distill).Times(1);
   controller().OnIsSpeechActiveChanged(/*is_speech_active=*/false);
-  EXPECT_EQ(u"23456", controller().GetTextContent(1));
-  Mock::VerifyAndClearExpectations(distiller_);
-
-  // Complete distillation. The queued up tree update gets unserialized.
-  EXPECT_CALL(*distiller_, Distill).Times(0);
-  controller().OnAXTreeDistilled(tree_id_, {1});
   EXPECT_EQ(u"234567", controller().GetTextContent(1));
   Mock::VerifyAndClearExpectations(distiller_);
 }
@@ -2143,17 +2473,18 @@ TEST_F(ReadAnythingAppControllerTest, RequestImageData) {
   double speech_rate = 1.5;
   std::string voice_value = "Italian voice 3";
   std::string language_value = "it-IT";
-  base::Value::Dict voices = base::Value::Dict();
+  base::DictValue voices = base::DictValue();
   voices.Set(language_value, voice_value);
-  base::Value::List languages_enabled_in_pref = base::Value::List();
+  base::ListValue languages_enabled_in_pref = base::ListValue();
   languages_enabled_in_pref.Append(language_value);
   auto highlight_granularity =
       read_anything::mojom::HighlightGranularity::kDefaultValue;
+  auto line_focus = read_anything::mojom::LineFocus::kDefaultValue;
 
   controller().OnSettingsRestoredFromPrefs(
       line_spacing, letter_spacing, font_name, font_size, links_enabled,
       images_enabled, color, speech_rate, std::move(voices),
-      std::move(languages_enabled_in_pref), highlight_granularity);
+      std::move(languages_enabled_in_pref), highlight_granularity, line_focus);
   controller().RequestImageData(ax_node_id);
   page_handler_.FlushForTesting();
   Mock::VerifyAndClearExpectations(distiller_);
@@ -2543,7 +2874,7 @@ TEST_F(ReadAnythingAppControllerTest, TurnedHighlightOn_SavesHighlightState) {
       .Times(0);
 
   controller().OnHighlightGranularityChanged(
-      base::to_underlying(read_anything::mojom::HighlightGranularity::kOn));
+      std::to_underlying(read_anything::mojom::HighlightGranularity::kOn));
 
   EXPECT_TRUE(controller().IsHighlightOn());
 }
@@ -2559,9 +2890,17 @@ TEST_F(ReadAnythingAppControllerTest, TurnedHighlightOff_SavesHighlightState) {
       .Times(1);
 
   controller().OnHighlightGranularityChanged(
-      base::to_underlying(read_anything::mojom::HighlightGranularity::kOff));
+      std::to_underlying(read_anything::mojom::HighlightGranularity::kOff));
 
   EXPECT_FALSE(controller().IsHighlightOn());
+}
+
+TEST_F(ReadAnythingAppControllerTest, OnLineFocusChanged_SetsLineFocus) {
+  EnableLineFocus();
+  auto line_focus = read_anything::mojom::LineFocus::kLineCursor;
+  EXPECT_CALL(page_handler_, OnLineFocusChanged(line_focus)).Times(1);
+  controller().OnLineFocusChanged(static_cast<int>(line_focus));
+  ASSERT_EQ(line_focus, model().line_focus());
 }
 
 TEST_F(ReadAnythingAppControllerTest, SetLanguageCode_UpdatesModelLanguage) {
@@ -2662,13 +3001,13 @@ TEST_F(ReadAnythingAppControllerTest, DisplayNodes_WithMultipleTrees) {
 
   // Check the display nodes.
   const auto& display_node_ids = model().display_node_ids();
-  EXPECT_TRUE(base::Contains(display_node_ids, kId1));
-  EXPECT_TRUE(base::Contains(display_node_ids, kId2));
-  EXPECT_TRUE(base::Contains(display_node_ids, kId3));
+  EXPECT_TRUE(display_node_ids.contains(kId1));
+  EXPECT_TRUE(display_node_ids.contains(kId2));
+  EXPECT_TRUE(display_node_ids.contains(kId3));
 
   // The ad content from the child tree should not be in the display nodes.
-  EXPECT_FALSE(base::Contains(display_node_ids, kAdChildNodeId));
-  EXPECT_FALSE(base::Contains(display_node_ids, kAdChildRootId));
+  EXPECT_FALSE(display_node_ids.contains(kAdChildNodeId));
+  EXPECT_FALSE(display_node_ids.contains(kAdChildRootId));
 
   // The text content for the duplicate id returns the actual content, not the
   // ad content.
@@ -2889,6 +3228,254 @@ TEST_F(ReadAnythingAppControllerTest,
   controller().OnActiveAXTreeIDChanged(id, ukm::kInvalidSourceId, false);
   task_environment_.FastForwardBy(kTimeSincePageLoadForDataCollection +
                                   base::Seconds(1));
+}
+
+class ReadAnythingAppControllerImmersiveTest
+    : public ReadAnythingAppControllerTest {
+ public:
+  void SetUp() override {
+    ReadAnythingAppControllerTest::SetUp();
+    scoped_feature_list_.Reset();
+    scoped_feature_list_.InitWithFeatures({features::kImmersiveReadAnything},
+                                          {});
+  }
+};
+
+TEST_F(ReadAnythingAppControllerImmersiveTest,
+       OnDistillationStateChanged_CalledAfterDistillationEmpty) {
+  EXPECT_CALL(page_handler_,
+              OnDistillationStateChanged(
+                  read_anything::mojom::ReadAnythingDistillationState::
+                      kDistillationEmpty))
+      .Times(1);
+  controller().OnAXTreeDistilled(tree_id_, {});
+  page_handler_.FlushForTesting();
+}
+
+TEST_F(ReadAnythingAppControllerImmersiveTest,
+       OnDistillationStateChanged_CalledAfterDistillationWithContent) {
+  EXPECT_CALL(page_handler_,
+              OnDistillationStateChanged(
+                  read_anything::mojom::ReadAnythingDistillationState::
+                      kDistillationWithContent))
+      .Times(1);
+  controller().OnAXTreeDistilled(tree_id_, {1});
+  page_handler_.FlushForTesting();
+}
+
+TEST_F(ReadAnythingAppControllerImmersiveTest,
+       OnActiveAXTreeIDChanged_SetsDistillationInProgress) {
+  EXPECT_CALL(page_handler_,
+              OnDistillationStateChanged(
+                  read_anything::mojom::ReadAnythingDistillationState::
+                      kDistillationInProgress))
+      .Times(1);
+  controller().OnActiveAXTreeIDChanged(ui::AXTreeID::CreateNewAXTreeID(),
+                                       ukm::kInvalidSourceId, false);
+  page_handler_.FlushForTesting();
+}
+
+TEST_F(ReadAnythingAppControllerImmersiveTest,
+       Distill_SetsDistillationInProgress) {
+  EXPECT_CALL(page_handler_,
+              OnDistillationStateChanged(
+                  read_anything::mojom::ReadAnythingDistillationState::
+                      kDistillationInProgress))
+      .Times(1);
+  Distill();
+  page_handler_.FlushForTesting();
+}
+
+TEST_F(ReadAnythingAppControllerImmersiveTest,
+       ImmersiveModeWithGoodDistillation_UpdateProcessingPaused) {
+  // Set to Immersive.
+  controller().OnGetPresentationState(
+      read_anything::mojom::ReadAnythingPresentationState::kInImmersiveOverlay);
+  EXPECT_FALSE(controller().IsUpdateProcessingPaused());
+
+  // Distillation succeeded
+  EXPECT_CALL(page_handler_,
+              OnDistillationStateChanged(
+                  read_anything::mojom::ReadAnythingDistillationState::
+                      kDistillationWithContent))
+      .Times(1);
+  controller().OnAXTreeDistilled(tree_id_, {1});
+  page_handler_.FlushForTesting();
+
+  // Confirm that the update processing is paused when IRM with a good
+  // distillation open
+  EXPECT_TRUE(controller().IsUpdateProcessingPaused());
+}
+
+TEST_F(ReadAnythingAppControllerImmersiveTest,
+       SidePanelWithGoodDistillation_DoesNotPauseUpdateProcessing) {
+  // Set to Side Panel.
+  controller().OnGetPresentationState(
+      read_anything::mojom::ReadAnythingPresentationState::kInSidePanel);
+  EXPECT_FALSE(controller().IsUpdateProcessingPaused());
+
+  // Distillation succeeded
+  EXPECT_CALL(page_handler_,
+              OnDistillationStateChanged(
+                  read_anything::mojom::ReadAnythingDistillationState::
+                      kDistillationWithContent))
+      .Times(1);
+  controller().OnAXTreeDistilled(tree_id_, {1});
+  page_handler_.FlushForTesting();
+
+  // Confirm that the update processing is not paused when SP with good
+  // distillation is not open.
+  EXPECT_FALSE(controller().IsUpdateProcessingPaused());
+}
+
+TEST_F(ReadAnythingAppControllerImmersiveTest,
+       ImmersiveModeWithEmptyDistillation_DoesNotPauseUpdateProcessing) {
+  // Set to Immersive
+  controller().OnGetPresentationState(
+      read_anything::mojom::ReadAnythingPresentationState::kInImmersiveOverlay);
+  EXPECT_FALSE(controller().IsUpdateProcessingPaused());
+
+  // Set the distillation state to empty.
+  EXPECT_CALL(page_handler_,
+              OnDistillationStateChanged(
+                  read_anything::mojom::ReadAnythingDistillationState::
+                      kDistillationEmpty))
+      .Times(1);
+  controller().OnAXTreeDistilled(tree_id_, {});
+  page_handler_.FlushForTesting();
+
+  // Confirm that the update processing is not paused when the distillation
+  // state is empty, even though the presentation state is Immersive.
+  EXPECT_FALSE(controller().IsUpdateProcessingPaused());
+}
+
+TEST_F(ReadAnythingAppControllerImmersiveTest,
+       DistillationPausedInImmersive_ResumesOnSwitchToSidePanel) {
+  // Set to Immersive.
+  controller().OnGetPresentationState(
+      read_anything::mojom::ReadAnythingPresentationState::kInImmersiveOverlay);
+
+  // Simulate a successful distillation.
+  EXPECT_CALL(page_handler_,
+              OnDistillationStateChanged(
+                  read_anything::mojom::ReadAnythingDistillationState::
+                      kDistillationWithContent))
+      .Times(1);
+  controller().OnAXTreeDistilled(tree_id_, {1});
+  page_handler_.FlushForTesting();
+
+  // Confirm that the update processing is paused because we had a successful
+  // distillation in Immersive.
+  ASSERT_TRUE(controller().IsUpdateProcessingPaused());
+
+  // Request distillation. It should be blocked and queued.
+  EXPECT_CALL(*distiller_, Distill).Times(0);
+  Distill();
+  EXPECT_TRUE(model().requires_distillation());
+  Mock::VerifyAndClearExpectations(distiller_);
+
+  // Switch to side panel. This should trigger the queued distillation.
+  EXPECT_CALL(page_handler_,
+              OnDistillationStateChanged(
+                  read_anything::mojom::ReadAnythingDistillationState::
+                      kDistillationInProgress))
+      .Times(1);
+  EXPECT_CALL(*distiller_, Distill).Times(1);
+  controller().OnGetPresentationState(
+      read_anything::mojom::ReadAnythingPresentationState::kInSidePanel);
+  Mock::VerifyAndClearExpectations(distiller_);
+}
+
+TEST_F(ReadAnythingAppControllerImmersiveTest,
+       DistillationPausedInImmersive_ResumesOnTreeChange) {
+  // Set to Immersive.
+  controller().OnGetPresentationState(
+      read_anything::mojom::ReadAnythingPresentationState::kInImmersiveOverlay);
+
+  // Simulate a successful distillation.
+  EXPECT_CALL(page_handler_,
+              OnDistillationStateChanged(
+                  read_anything::mojom::ReadAnythingDistillationState::
+                      kDistillationWithContent))
+      .Times(1);
+  controller().OnAXTreeDistilled(tree_id_, {1});
+  page_handler_.FlushForTesting();
+
+  // Confirm that the update processing is paused because we had a successful
+  // distillation in Immersive.
+  EXPECT_TRUE(controller().IsUpdateProcessingPaused());
+
+  // Change the tree ID. This should trigger distillation (because it's a new
+  // tree).
+  EXPECT_CALL(page_handler_,
+              OnDistillationStateChanged(
+                  read_anything::mojom::ReadAnythingDistillationState::
+                      kDistillationInProgress))
+      .Times(1);
+  EXPECT_CALL(*distiller_, Distill).Times(1);
+
+  // Add the new tree to the model so that we can switch to it.
+  ui::AXTreeID new_tree_id = ui::AXTreeID::CreateNewAXTreeID();
+  ui::AXTreeUpdate update;
+  test::SetUpdateTreeID(&update, new_tree_id);
+  ui::AXNodeData root;
+  root.id = 1;
+  update.root_id = root.id;
+  update.nodes = {std::move(root)};
+
+  AccessibilityEventReceived({std::move(update)});
+  controller().OnActiveAXTreeIDChanged(new_tree_id, ukm::kInvalidSourceId,
+                                       false);
+  page_handler_.FlushForTesting();
+  Mock::VerifyAndClearExpectations(distiller_);
+}
+
+TEST_F(ReadAnythingAppControllerTest, ReadAloudStateResetsOnNewPageNavigation) {
+  // Create two distinct "web pages" as AXTreeUpdate objects.
+  const std::u16string first_page_sentence = u"Hello world.";
+  auto const first_page_tree_id = ui::AXTreeID::CreateNewAXTreeID();
+  ui::AXTreeUpdate first_page_update;
+  test::SetUpdateTreeID(&first_page_update, first_page_tree_id);
+  ui::AXNodeData first_page_node = test::TextNode(kId1, first_page_sentence);
+  first_page_update.root_id = first_page_node.id;
+  first_page_update.nodes = {std::move(first_page_node)};
+
+  const std::u16string second_page_sentence = u"This is the second page.";
+  auto const second_page_tree_id = ui::AXTreeID::CreateNewAXTreeID();
+  ui::AXTreeUpdate second_page_update;
+  test::SetUpdateTreeID(&second_page_update, second_page_tree_id);
+  ui::AXNodeData second_page_node = test::TextNode(kId1, second_page_sentence);
+  second_page_update.root_id = second_page_node.id;
+  second_page_update.nodes = {std::move(second_page_node)};
+
+  // Simulate loading Page 1 and initializing Read Aloud.
+
+  AccessibilityEventReceived({std::move(first_page_update)});
+  controller().OnActiveAXTreeIDChanged(first_page_tree_id,
+                                       ukm::kInvalidSourceId, false);
+  controller().OnAXTreeDistilled(first_page_tree_id, {kId1});
+  controller().InitAXPositionWithNode(kId1);
+
+  ASSERT_TRUE(controller().IsSpeechTreeInitialized());
+  ASSERT_EQ(controller().GetCurrentTextContent(), first_page_sentence);
+
+  // Simulate navigating to Page 2.
+
+  AccessibilityEventReceived({std::move(second_page_update)});
+  controller().OnActiveAXTreeIDChanged(second_page_tree_id,
+                                       ukm::kInvalidSourceId, false);
+  controller().OnAXTreeDistilled(second_page_tree_id, {kId1});
+
+  // Verify model state has been reset.
+  ASSERT_FALSE(controller().IsSpeechTreeInitialized());
+  ASSERT_EQ(controller().GetCurrentTextContent(), u"");
+
+  // Simulate the UI re-initializing speech for Page 2.
+
+  controller().InitAXPositionWithNode(kId1);
+
+  ASSERT_TRUE(controller().IsSpeechTreeInitialized());
+  ASSERT_EQ(controller().GetCurrentTextContent(), second_page_sentence);
 }
 
 class ReadAnythingAppControllerV8SegmentationTest
@@ -3517,10 +4104,10 @@ TEST_F(ReadAnythingAppControllerV8SegmentationTest,
   controller().Draw(/* recompute_display_nodes= */ true);
 
   EXPECT_FALSE(controller().IsSpeechTreeInitialized());
-  EXPECT_TRUE(base::Contains(model().display_node_ids(), 1));
-  EXPECT_FALSE(base::Contains(model().display_node_ids(), 2));
-  EXPECT_TRUE(base::Contains(model().display_node_ids(), 3));
-  EXPECT_TRUE(base::Contains(model().display_node_ids(), 4));
+  EXPECT_TRUE(model().display_node_ids().contains(1));
+  EXPECT_FALSE(model().display_node_ids().contains(2));
+  EXPECT_TRUE(model().display_node_ids().contains(3));
+  EXPECT_TRUE(model().display_node_ids().contains(4));
 }
 
 TEST_F(ReadAnythingAppControllerV8SegmentationTest,

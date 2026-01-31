@@ -108,9 +108,9 @@ void ResumableDriveUploader::UploadFile() {
       GURL(kDriveUploadUrl), endpoint_fetcher::HttpMethod::kPost,
       kJsonContentType,
       *base::WriteJson(
-          base::Value::Dict()
+          base::DictValue()
               .Set("name", title_)
-              .Set("parents", base::Value::List().Append(parent_folder_->id))),
+              .Set("parents", base::ListValue().Append(parent_folder_->id))),
       request_headers, base::DoNothing());
 
   initiation_endpoint_fetcher_->Fetch(

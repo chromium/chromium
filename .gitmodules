@@ -275,6 +275,9 @@
 	path = third_party/javalang/src
 	url = https://chromium.googlesource.com/external/github.com/c2nes/javalang
 	gclient-condition = checkout_android
+[submodule "third_party/nlohmann_json/src"]
+	path = third_party/nlohmann_json/src
+	url = https://chromium.googlesource.com/external/github.com/nlohmann/json
 [submodule "third_party/jsoncpp/source"]
 	path = third_party/jsoncpp/source
 	url = https://chromium.googlesource.com/external/github.com/open-source-parsers/jsoncpp
@@ -683,6 +686,10 @@
 	path = chrome/browser/resources/downloads/internal
 	url = https://chrome-internal.googlesource.com/chrome/browser/resources/downloads_internal
 	gclient-condition = checkout_src_internal
+[submodule "chrome/browser/resources/history/internal"]
+	path = chrome/browser/resources/history/internal
+	url = https://chrome-internal.googlesource.com/chrome/browser/resources/history/internal
+	gclient-condition = checkout_src_internal
 [submodule "chrome/browser/resources/settings/internal"]
 	path = chrome/browser/resources/settings/internal
 	url = https://chrome-internal.googlesource.com/chrome/browser/resources/settings_internal
@@ -750,6 +757,10 @@
 [submodule "components/accessibility/internal"]
 	path = components/accessibility/internal
 	url = https://chrome-internal.googlesource.com/chrome-accessibility
+	gclient-condition = checkout_src_internal
+[submodule "components/activity_reporter/internal"]
+	path = components/activity_reporter/internal
+	url = https://chrome-internal.googlesource.com/activity_reporter_internal
 	gclient-condition = checkout_src_internal
 [submodule "components/autofill/core/browser/geo/chrome_alternative_state_name_maps"]
 	path = components/autofill/core/browser/geo/chrome_alternative_state_name_maps

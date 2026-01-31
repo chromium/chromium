@@ -82,7 +82,7 @@ class DownloadManagerService
   void OpenDownload(JNIEnv* env,
                     std::string& download_guid,
                     const JavaRef<jobject>& j_profile_key,
-                    jint source);
+                    int32_t source);
 
   // Called to resume downloading the item that has GUID equal to
   // |jdownload_guid|..
@@ -172,7 +172,7 @@ class DownloadManagerService
   // download.
   void RecordFirstBackgroundInterruptReason(JNIEnv* env,
                                             std::string& download_guid,
-                                            jboolean download_started);
+                                            bool download_started);
 
   // Open the download page the given profile, and the source of the opening
   // action is |download_open_source|.

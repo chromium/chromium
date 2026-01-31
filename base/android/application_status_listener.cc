@@ -112,7 +112,7 @@ ApplicationState ApplicationStatusListener::GetState() {
 }
 
 static void JNI_ApplicationStatus_OnApplicationStateChange(JNIEnv* env,
-                                                           jint new_state) {
+                                                           int32_t new_state) {
   ApplicationState application_state = static_cast<ApplicationState>(new_state);
   ApplicationStatusListener::NotifyApplicationStateChange(application_state);
 }

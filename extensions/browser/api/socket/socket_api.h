@@ -173,6 +173,8 @@ class SocketApiFunction : public ExtensionFunction {
                         Socket* socket);
 
  private:
+  FRIEND_TEST_ALL_PREFIXES(SocketApiTest, ShutdownWithLingeringWriteQuota);
+
   class ScopedWriteQuota {
    public:
     ScopedWriteQuota(SocketApiFunction* owner, size_t bytes_used);

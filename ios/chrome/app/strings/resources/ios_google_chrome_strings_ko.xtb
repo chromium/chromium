@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="ko">
 <translation id="1076643793026027628">Chrome에서 시크릿 모드로 YouTube 시크릿 모드 링크를 자동으로 엽니다</translation>
+<translation id="1081114897601629648">다음 비밀번호는 요건을 충족하지 않아 Google 비밀번호 관리자로 가져오지 않았습니다.</translation>
 <translation id="1086486568852410168">Google 렌즈로 검색</translation>
 <translation id="1088490543924960890">Google 비밀번호 관리자로 패스키를 저장하세요</translation>
 <translation id="1143896152279775643">비밀번호가 <ph name="EMAIL" />의 Google 비밀번호 관리자에 저장됩니다.</translation>
@@ -85,6 +86,9 @@
 <translation id="2767464022270041271">저장된 비밀번호가 없습니다. 비밀번호를 저장하면 Google 비밀번호 관리자에서 확인할 수 있습니다.</translation>
 <translation id="2788811701191021538">Chrome에서 결제 수단 설정 페이지를 엽니다.</translation>
 <translation id="2876628302275096482"><ph name="BEGIN_LINK" />Chrome에서 데이터를 비공개로 유지하는 방법<ph name="END_LINK" /> 자세히 알아보기</translation>
+<translation id="288992067439702510">Chrome의 북마크 한도인 <ph name="LIMIT" />개에 도달하여 북마크 중 일부가 아직 Google 계정에 저장되지 않았습니다.
+
+일부 북마크를 삭제할 때까지 계정에 새 북마크를 저장할 수 없습니다. 지금 로그아웃하면 저장되지 않은 북마크가 삭제됩니다.</translation>
 <translation id="2922914028977213693">여기를 탭하여 iPad에서 Chrome을 최대한 활용하세요.</translation>
 <translation id="292371311537977079">Chrome 설정</translation>
 <translation id="2923827943290349720">Chrome 종료 시 시크릿 탭 잠금</translation>
@@ -115,6 +119,7 @@
 <translation id="3460369101684070455">저장된 비밀번호를 다른 앱에서 쉽게 사용하려면 Chrome 자동 완성 기능을 선택하세요</translation>
 <translation id="3472587960215700950">Chrome에서 Google 지도를 사용하여 감지된 주소의 경로 및 지역 정보를 제공합니다.</translation>
 <translation id="3482807551645716768">iPad의 홈 화면에서 Chrome에 더 빠르게 액세스하세요.</translation>
+<translation id="3491067552520121605">표시된 사이트의 비밀번호 또는 패스키가 Google 비밀번호 관리자에 이미 있습니다. 표시된 로그인 정보를 유지하고 Google 비밀번호 관리자에 있는 정보를 덮어쓰려면 계정을 선택하세요.</translation>
 <translation id="3503014945441706099">이 Chrome 프로필에 향상된 세이프 브라우징도 사용해 보세요.</translation>
 <translation id="3522659714780527202">Chrome을 사용하는 어느 곳에서나 탭을 확인하려면 동기화를 사용 설정하세요.</translation>
 <translation id="364480321352456989">Chrome이 최신 버전이 아닙니다.</translation>
@@ -134,6 +139,7 @@
 <translation id="4167555379306984168">Chrome의 새로운 기능 확인하기</translation>
 <translation id="417201473131094001">Chrome Canary에서 지원되지 않습니다.</translation>
 <translation id="424864128008805179">Chrome에서 로그아웃하시겠습니까?</translation>
+<translation id="4409545895715116037">다음 패스키는 요건을 충족하지 않아 Google 비밀번호 관리자로 가져오지 않았습니다.</translation>
 <translation id="4430797724889237570">Gmail, 지도, YouTube 및 기타 앱의 링크를 Chrome에서 엽니다</translation>
 <translation id="447252321002412580">Chrome의 기능 및 성능 개선에 참여</translation>
 <translation id="4523886039239821078">일부 부가기능이 Chrome을 비정상 종료시킵니다. 다음 항목을 제거하세요.</translation>
@@ -272,6 +278,7 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="7284245284340063465">암호가 기억나지 않거나 이 설정을 변경하려면 <ph name="BEGIN_LINK" />계정에서 Chrome 데이터를 삭제<ph name="END_LINK" />하세요.</translation>
 <translation id="7296102444587051536">iOS용 Chrome</translation>
 <translation id="7299681342915173313">이제 언제든 이메일, 문서 및 다른 앱에서 링크를 탭하여 Chrome을 사용할 수 있습니다</translation>
+<translation id="7334364820047587268">Google 비밀번호 관리자에 이미 이 계정의 비밀번호가 있습니다. 아래 비밀번호 중 하나를 가져오면 기존 비밀번호가 대체됩니다.</translation>
 <translation id="7344094882820374540">위험한 사이트로부터 보호하는 Chrome의 가장 강력한 보안 기능을 이용하세요</translation>
 <translation id="7349129508108954623">Chrome에서 Google 지도를 사용하여 감지된 주소의 경로 및 지역 정보를 제공하도록 허용합니다</translation>
 <translation id="7371674917547846460">유용한 Chrome 도움말 등을 확인하세요.</translation>
@@ -300,11 +307,11 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="7787205077729386167">iOS에서 Chrome Settings(Chrome 설정)를 열고 'Default Browser App(기본 브라우저 앱)'을 탭한 다음 Chrome을 선택합니다</translation>
 <translation id="778855399387580014">새 Chrome 탭에서 검색을 시작합니다.</translation>
 <translation id="7792140019572081272">Chrome은 Face ID를 통해 사용자의 민감한 정보를 안전하게 보호합니다.</translation>
+<translation id="7825648984449922731">Chrome의 Gemini로 이미지 수정</translation>
 <translation id="7855730255114109580">Chrome이 최신 버전입니다.</translation>
 <translation id="787226752901403048">Chrome에 로그인하여 탭 그룹을 공유하고, 탭 그룹에 참여하며, 아이디어를 함께 작업하세요.</translation>
 <translation id="7897703007638178753">Chrome 최근 탭 보기</translation>
 <translation id="7948283758957877064">Chrome의 새로운 기능</translation>
-<translation id="7996707498590516621">Chrome의 Gemini로 이미지 만들기</translation>
 <translation id="8000174216052461231">Chrome 도움말: Chrome의 가장 강력한 보안 기능을 이용하세요</translation>
 <translation id="8006014511203279255">언제든지 메시지 또는 기타 앱에서 링크를 탭하여 Chrome을 사용해 보세요</translation>
 <translation id="8014670471808569312">Chrome에서 비밀번호 저장을 제안합니다.</translation>

@@ -8,7 +8,6 @@
 #include <utility>
 
 #include "base/command_line.h"
-#include "base/containers/contains.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/ref_counted.h"
 #include "base/strings/string_number_conversions.h"
@@ -104,7 +103,7 @@ bool ParseHostsFromJSON(Extension* extension,
   }
 
   // Add all permissions parsed from the manifest to |hosts|.
-  const base::Value::List& list = permissions->GetList();
+  const base::ListValue& list = permissions->GetList();
   for (size_t i = 0; i < list.size(); ++i) {
     if (list[i].is_string()) {
       hosts->push_back(list[i].GetString());
@@ -129,7 +128,7 @@ void ParseHostPermissions(Extension* extension,
 
   // Users should be able to enable file access for extensions with activeTab.
   if (!can_execute_script_everywhere &&
-      base::Contains(api_permissions, APIPermissionID::kActiveTab)) {
+      api_permissions.count(APIPermissionID::kActiveTab)) {
     extension->set_wants_file_access(true);
   }
 

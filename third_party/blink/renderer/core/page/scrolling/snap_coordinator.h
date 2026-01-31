@@ -43,6 +43,13 @@ class CORE_EXPORT SnapCoordinator final {
 
   // Returns true if the SnapContainerData actually changed.
   static bool UpdateSnapContainerData(LayoutBox&);
+
+ private:
+  static void AddOverscrollSnapAreas(
+      LayoutBox& snap_container,
+      cc::SnapContainerData& snap_container_data,
+      cc::TargetSnapAreaElementIds& new_target_ids,
+      const cc::TargetSnapAreaElementIds& old_target_ids);
 };
 
 }  // namespace blink

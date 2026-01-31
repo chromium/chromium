@@ -10,14 +10,12 @@
 #include <tuple>
 #include <vector>
 
-#include "base/containers/contains.h"
 #include "base/test/bind.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/ash/scanning/fake_lorgnette_scanner_manager.h"
 #include "chrome/browser/ash/scanning/lorgnette_scanner_manager_factory.h"
 #include "chrome/test/base/testing_profile.h"
-#include "chromeos/crosapi/mojom/document_scan.mojom-forward.h"
 #include "chromeos/crosapi/mojom/document_scan.mojom-shared.h"
 #include "components/user_manager/scoped_user_manager.h"
 #include "components/user_manager/test_helper.h"
@@ -161,8 +159,8 @@ TEST_F(DocumentScanAshTest, OpenScanner_GoodResponse) {
   ASSERT_TRUE(response->scanner_handle.has_value());
   EXPECT_EQ(response->scanner_handle.value(), "12345");
   ASSERT_TRUE(response->options.has_value());
-  EXPECT_TRUE(base::Contains(response->options.value(), "option1-name"));
-  EXPECT_TRUE(base::Contains(response->options.value(), "option2-name"));
+  EXPECT_TRUE(response->options.value().contains("option1-name"));
+  EXPECT_TRUE(response->options.value().contains("option2-name"));
 }
 
 TEST_F(DocumentScanAshTest, CloseScanner_BadResponse) {

@@ -8,6 +8,7 @@
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/authentication/test/signin_earl_grey.h"
 #import "ios/chrome/browser/authentication/test/signin_earl_grey_ui_test_util.h"
+#import "ios/chrome/browser/autofill/ui_bundled/address_editor/autofill_constants.h"
 #import "ios/chrome/browser/autofill/ui_bundled/autofill_app_interface.h"
 #import "ios/chrome/browser/autofill/ui_bundled/bottom_sheet/bottom_sheet_constants.h"
 #import "ios/chrome/browser/signin/model/fake_system_identity.h"
@@ -22,6 +23,7 @@
 #import "ui/base/l10n/l10n_util.h"
 
 using chrome_test_util::ButtonWithAccessibilityLabelId;
+using chrome_test_util::SearchBar;
 using chrome_test_util::SettingsDoneButton;
 using chrome_test_util::SettingsMenuBackButton;
 using chrome_test_util::SettingsProfileMatcher;
@@ -48,6 +50,25 @@ NSString* const kZipLabel =
 NSString* const kNameLabel = @"Name";
 
 NSString* const kCompanyNameLabel = @"Organization";
+
+// Matcher for a country entry with the given accessibility label.
+id<GREYMatcher> CountryEntry(NSString* label) {
+  return grey_allOf(chrome_test_util::ButtonWithAccessibilityLabel(label),
+                    grey_userInteractionEnabled(), grey_sufficientlyVisible(),
+                    nil);
+}
+
+// Matcher for the "Country" button.
+id<GREYMatcher> CountryButton() {
+  return grey_allOf(
+      grey_accessibilityLabel(l10n_util::GetNSString(IDS_IOS_AUTOFILL_COUNTRY)),
+      grey_userInteractionEnabled(), nil);
+}
+
+// Matcher for the search bar's scrim.
+id<GREYMatcher> SearchBarScrim() {
+  return grey_accessibilityID(kAutofillCountrySelectionSearchScrimId);
+}
 
 // Matcher for the "Save Address" button.
 id<GREYMatcher> SaveAddressButton() {
@@ -382,6 +403,74 @@ UIViewController* TopPresentedViewController() {
                   @"Profile should have been saved locally.");
 }
 
+// Tests adding a local address manually through settings, adding only a zip
+// code. Expecting to see the zip code in the cell.
+- (void)testAddLocalAddressManuallyWithOnlyZipCode {
+  [self openAddAddressView:NO];
+
+  [[EarlGrey selectElementWithMatcher:TextFieldWithLabel(kZipLabel)]
+      performAction:grey_replaceText(@"H3H 1H1")];
+
+  // Save the profile.
+  [[EarlGrey selectElementWithMatcher:SaveAddressButton()]
+      performAction:grey_tap()];
+
+  // Ensure profile is saved.
+  GREYAssertEqual(1U, [AutofillAppInterface profilesCount],
+                  @"Profile should have been saved.");
+
+  // Confirm saved profile is a local profile.
+  GREYAssertFalse([AutofillAppInterface isAccountProfileAtIndex:0],
+                  @"Profile should have been saved locally.");
+
+  id<GREYMatcher> zipCode = grey_allOf(
+      grey_text(@"H3H 1H1"), grey_ancestor(SettingsProfileMatcher()), nil);
+  [[EarlGrey selectElementWithMatcher:zipCode]
+      assertWithMatcher:grey_sufficientlyVisible()];
+}
+
+// Tests adding a local address manually through settings, adding nothing.
+// Expecting to see the country in the cell.
+- (void)testAddLocalEmptyAddressManually {
+  [self openAddAddressView:NO];
+
+  [[EarlGrey selectElementWithMatcher:CountryButton()]
+      performAction:grey_tap()];
+
+  // Focus the search bar.
+  [[EarlGrey selectElementWithMatcher:SearchBar()] performAction:grey_tap()];
+
+  [[EarlGrey selectElementWithMatcher:SearchBar()]
+      performAction:grey_replaceText(@"Canada")];
+
+  // Verify that scrim is not visible anymore.
+  [[EarlGrey selectElementWithMatcher:SearchBarScrim()]
+      assertWithMatcher:grey_nil()];
+
+  // Set `Canada` as the country.
+  [[EarlGrey selectElementWithMatcher:CountryEntry(@"Canada")]
+      assertWithMatcher:grey_notNil()];
+  [[EarlGrey selectElementWithMatcher:CountryEntry(@"Canada")]
+      performAction:grey_tap()];
+
+  // Save the profile.
+  [[EarlGrey selectElementWithMatcher:SaveAddressButton()]
+      performAction:grey_tap()];
+
+  // Ensure profile is saved.
+  GREYAssertEqual(1U, [AutofillAppInterface profilesCount],
+                  @"Profile should have been saved.");
+
+  // Confirm saved profile is a local profile.
+  GREYAssertFalse([AutofillAppInterface isAccountProfileAtIndex:0],
+                  @"Profile should have been saved locally.");
+
+  id<GREYMatcher> country = grey_allOf(
+      grey_text(@"Canada"), grey_ancestor(SettingsProfileMatcher()), nil);
+  [[EarlGrey selectElementWithMatcher:country]
+      assertWithMatcher:grey_sufficientlyVisible()];
+}
+
 // Tests adding a local address manually through settings, filling some of the
 // required fields.
 - (void)testAddLocalAddressWithSomeRequiredFields {
@@ -414,26 +503,24 @@ UIViewController* TopPresentedViewController() {
     EARL_GREY_TEST_SKIPPED(@"Test is not applicable for iPhone.");
   }
 
-  if (@available(iOS 17.0, *)) {
-    [self openAddAddressView:YES];
+  [self openAddAddressView:YES];
 
-    // Change trait collection to use extra large content size so that the
-    // 'Save' button becomes hidden.
-    ScopedTraitOverrider overrider(TopPresentedViewController());
-    overrider.SetContentSizeCategory(UIContentSizeCategoryExtraLarge);
-    [ChromeEarlGreyUI waitForAppToIdle];
+  // Change trait collection to use extra large content size so that the
+  // 'Save' button becomes hidden.
+  ScopedTraitOverrider overrider(TopPresentedViewController());
+  overrider.SetContentSizeCategory(UIContentSizeCategoryExtraLarge);
+  [ChromeEarlGreyUI waitForAppToIdle];
 
-    // Fill the required fields.
-    [self fillRequiredFields];
+  // Fill the required fields.
+  [self fillRequiredFields];
 
-    // Scroll down to show the 'Save' button.
-    [[EarlGrey selectElementWithMatcher:EditProfileBottomSheet()]
-        performAction:grey_scrollToContentEdge(kGREYContentEdgeBottom)];
+  // Scroll down to show the 'Save' button.
+  [[EarlGrey selectElementWithMatcher:EditProfileBottomSheet()]
+      performAction:grey_scrollToContentEdge(kGREYContentEdgeBottom)];
 
-    // Ensure the 'Save' button's status changed to enabled.
-    [[EarlGrey selectElementWithMatcher:SaveAddressButton()]
-        assertWithMatcher:grey_enabled()];
-  }
+  // Ensure the 'Save' button's status changed to enabled.
+  [[EarlGrey selectElementWithMatcher:SaveAddressButton()]
+      assertWithMatcher:grey_enabled()];
 }
 
 @end

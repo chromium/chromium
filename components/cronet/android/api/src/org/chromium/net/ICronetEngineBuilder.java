@@ -29,6 +29,7 @@ public abstract class ICronetEngineBuilder {
     public static final int CONNECTION_MIGRATION_OPTIONS = 1;
     public static final int DNS_OPTIONS = 2;
     public static final int QUIC_OPTIONS = 3;
+    // No longer used. Keep around to make sure future *_OPTIONS do not use this value.
     public static final int PROXY_OPTIONS = 4;
 
     // Public API methods.

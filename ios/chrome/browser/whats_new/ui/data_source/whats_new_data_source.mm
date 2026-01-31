@@ -10,12 +10,14 @@
 #import "base/strings/string_util.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/version.h"
+#import "ios/chrome/browser/intelligence/features/features.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/whats_new/coordinator/whats_new_util.h"
 #import "ios/chrome/browser/whats_new/ui/data_source/whats_new_item.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/grit/ios_branded_strings.h"
 #import "ios/chrome/grit/ios_strings.h"
+#import "ios/chrome/grit/ios_whats_new_strings.h"
 #import "ui/base/l10n/l10n_util_mac.h"
 #import "url/gurl.h"
 
@@ -115,8 +117,19 @@ NSArray<NSString*>* GenerateLocalizedInstructions(NSArray* instructions) {
       return nil;
     }
 
+    int instruction_id_int = [instruction_id intValue];
+
+    // Conditionally replace the instruction step 2 string the lens search
+    // feature when kPageActionMenu is enabled.
+    if (IsPageActionMenuEnabled() &&
+        instruction_id_int ==
+            IDS_IOS_WHATS_NEW_LENSSEARCHWHATYOUSEE_INSTRUCTIONS_STEP_2) {
+      instruction_id_int =
+          IDS_IOS_WHATS_NEW_LENSSEARCHWHATYOUSEE_INSTRUCTIONS_STEP_2_GEMINI_ENABLED;
+    }
+
     [localized_instructions
-        addObject:l10n_util::GetNSString([instruction_id intValue])];
+        addObject:l10n_util::GetNSString(instruction_id_int)];
   }
   return localized_instructions;
 }

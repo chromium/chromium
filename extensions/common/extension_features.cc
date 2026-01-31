@@ -78,6 +78,27 @@ BASE_FEATURE(kExtensionManifestV2ExceptionList,
 
 BASE_FEATURE(kExtensionManifestV2Disabled, base::FEATURE_ENABLED_BY_DEFAULT);
 
+BASE_FEATURE(kExtensionsBackgroundCompilation,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE_PARAM(base::TimeDelta,
+                   kBackgroundCompilationTimeout,
+                   &kExtensionsBackgroundCompilation,
+                   "timeout",
+                   base::Milliseconds(0));
+
+// Default to the same value v8 uses to code cache scripts.
+BASE_FEATURE_PARAM(size_t,
+                   kMinScriptSizeForBackgroundCompilation,
+                   &kExtensionsBackgroundCompilation,
+                   "min_script_size",
+                   1024);
+BASE_FEATURE_PARAM(size_t,
+                   kMaxScriptSizeForBackgroundCompilation,
+                   &kExtensionsBackgroundCompilation,
+                   "max_script_size",
+                   0);
+
 const base::FeatureParam<std::string> kExtensionManifestV2ExceptionListParam(
     &kExtensionManifestV2ExceptionList,
     /*name=*/"mv2_exception_list",
@@ -89,7 +110,13 @@ BASE_FEATURE(kExtensionProtocolHandlers, base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kExtensionsManifestV3Only, base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kExtensionsMenuAccessControl, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kExtensionsMenuAccessControl,
+#if BUILDFLAG(IS_ANDROID)
+             base::FEATURE_ENABLED_BY_DEFAULT
+#else
+             base::FEATURE_DISABLED_BY_DEFAULT
+#endif
+);
 
 BASE_FEATURE(kExtensionsMenuAccessControlWithPermittedSites,
              "ExtensionsMenuAccessControlWithPermittedSitesName",
@@ -107,9 +134,6 @@ BASE_FEATURE(kLaunchWindowsNativeHostsDirectly,
 
 BASE_FEATURE(kSafeBrowsingCrxAllowlistAutoDisable,
              base::FEATURE_DISABLED_BY_DEFAULT);
-
-BASE_FEATURE(kSafeBrowsingCrxAllowlistShowWarnings,
-             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kStructuredCloningForMessaging, base::FEATURE_DISABLED_BY_DEFAULT);
 
@@ -163,7 +187,7 @@ BASE_FEATURE(kDebuggerAPIRestrictedToDevMode,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kExtensionBrowserNamespaceAlternative,
-             base::FEATURE_ENABLED_BY_DEFAULT);
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kOptimizeServiceWorkerStartRequests,
              base::FEATURE_ENABLED_BY_DEFAULT);
@@ -171,13 +195,22 @@ BASE_FEATURE(kOptimizeServiceWorkerStartRequests,
 BASE_FEATURE(kAvoidCloneArgsOnExtensionFunctionDispatch,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kExtensionContentVerificationUsesExtensionRoot,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kContentVerifyJobUseJobVersionForHashing,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kRuntimeOnMessageWebExtensionPolyfillSupport,
-             base::FEATURE_ENABLED_BY_DEFAULT);
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kEnableShouldShowPromotion, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kEnableShouldShowPromotion, base::FEATURE_ENABLED_BY_DEFAULT);
+
+BASE_FEATURE(kSearchEngineExplicitChoiceDialog,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kSearchEngineUnconditionalDialog,
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kWebRequestPersistFilteredEvents,
              base::FEATURE_ENABLED_BY_DEFAULT);

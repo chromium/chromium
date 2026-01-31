@@ -71,7 +71,7 @@ bool CommandsHandler::Parse(Extension* extension, std::u16string* error) {
     return true;
   }
 
-  const base::Value::Dict* dict =
+  const base::DictValue* dict =
       extension->manifest()->available_values().FindDict(keys::kCommands);
   if (!dict) {
     *error = manifest_errors::kInvalidCommandsKey;
@@ -86,7 +86,7 @@ bool CommandsHandler::Parse(Extension* extension, std::u16string* error) {
   for (const auto item : *dict) {
     ++command_index;
 
-    const base::Value::Dict* command = item.second.GetIfDict();
+    const base::DictValue* command = item.second.GetIfDict();
     if (!command) {
       *error = ErrorUtils::FormatErrorMessageUTF16(
           manifest_errors::kInvalidKeyBindingDictionary,

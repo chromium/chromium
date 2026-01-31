@@ -23,6 +23,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/scoped_observation.h"
+#include "base/types/pass_key.h"
 #include "base/types/strong_alias.h"
 #include "base/values.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
@@ -65,13 +66,15 @@ enum InstallState : int;
 
 class IsolatedWebAppUrlInfo;
 class WebApp;
+class WebAppCommandScheduler;
 class WebAppProvider;
 class WebAppRegistrarObserver;
 class WebAppScope;
-class AppLock;
 class ManifestSilentUpdateCommand;
+class ManifestUpdateJob;
 class FetchManifestAndUpdateCommand;
 class ApplyPendingManifestUpdateCommand;
+class ResolveWebAppPendingMigrationInfoCommand;
 
 using Registry = std::map<webapps::AppId, std::unique_ptr<WebApp>>;
 
@@ -118,7 +121,8 @@ class WebAppRegistrar {
 
   bool is_empty() const { return registry_.empty(); }
 
-  const WebApp* GetAppById(const webapps::AppId& app_id) const;
+  const WebApp* GetAppById(const webapps::AppId& app_id,
+                           std::optional<WebAppFilter> = std::nullopt) const;
 
   // TODO(crbug.com/40170773): should be removed when id is introduced to
   // manifest.
@@ -145,13 +149,9 @@ class WebAppRegistrar {
       WebAppManagement::Type install_source,
       const GURL& install_url) const;
 
-  // Returns true if the given `app_id` is in the registrar. Important: This
-  // function should not be used to check whether an app is installed or not.
-  // Please consider GetInstallState() instead of this function for that.
-  bool IsInRegistrar(const webapps::AppId& app_id) const;
-
-  // Returns the install state of the given `app_id`, or std::nullopt if it is
-  // not in the registrar.
+  // Returns the install state of the given `app_id`, or std::nullopt if the
+  // app is scheduled to be uninstalled, is going to be uninstalled via sync, or
+  // if the app is not in the registry.
   std::optional<proto::InstallState> GetInstallState(
       const webapps::AppId& app_id) const;
 
@@ -474,8 +474,7 @@ class WebAppRegistrar {
   // |isolated_web_app_id|. Both the primary and any <controlledframe>
   // StoragePartitions will be returned.
   std::vector<content::StoragePartitionConfig>
-  GetIsolatedWebAppStoragePartitionConfigs(
-      const webapps::AppId& isolated_web_app_id) const;
+  GetIsolatedWebAppStoragePartitionConfigs(const webapps::AppId& app_id) const;
 
   // Saves a record of the |partition_name| in
   // |isolated_web_app_in_memory_controlled_frame_partitions_|.
@@ -593,21 +592,22 @@ class WebAppRegistrar {
       bool is_preferred);
 #endif  // !BUILDFLAG(IS_CHROMEOS)
 
-  // Mimic base::PassKey<T> to ensure only certain call sites have the privilege
-  // of triggering a pending update info change.
-  class PendingUpdateInfoChangePassKey {
-    friend class ManifestSilentUpdateCommand;
-    friend class FetchManifestAndUpdateCommand;
-    friend void SetWebAppPendingUpdateAsIgnored(const webapps::AppId&,
-                                                AppLock& lock,
-                                                base::Value::Dict& debug_value);
-    friend class ApplyPendingManifestUpdateCommand;
-    PendingUpdateInfoChangePassKey() = default;
-  };
+  using PendingUpdateInfoChangePassKey =
+      base::PassKey<ManifestUpdateJob,
+                    ApplyPendingManifestUpdateCommand,
+                    WebAppCommandScheduler>;
 
   void NotifyPendingUpdateInfoChanged(const webapps::AppId& app_id,
                                       bool pending_update_available,
                                       PendingUpdateInfoChangePassKey);
+
+  using PendingMigrationInfoChangePassKey =
+      base::PassKey<ResolveWebAppPendingMigrationInfoCommand>;
+
+  void NotifyWebAppPendingMigrationInfoChanged(
+      const webapps::AppId& app_id,
+      bool has_pending_migration,
+      PendingMigrationInfoChangePassKey);
 
   // A filter must return false to skip the |web_app|.
   using Filter = base::RepeatingCallback<bool(const WebApp&)>;
@@ -705,7 +705,8 @@ class WebAppRegistrar {
   std::vector<webapps::AppId> GetAppIdsForAppSet(const AppSet& app_set) const;
 
  private:
-  bool IsIsolated(const webapps::AppId& app_id) const;
+  bool IsIsolatedApp(const webapps::AppId& app_id) const;
+  bool IsIsolatedSubApp(const webapps::AppId& app_id) const;
   // Returns if the given app_id is the most recently installed application of
   // the set of other apps with matching scopes, AND no other app has user link
   // capturing explicitly turned on. Note that this doesn't consider the link

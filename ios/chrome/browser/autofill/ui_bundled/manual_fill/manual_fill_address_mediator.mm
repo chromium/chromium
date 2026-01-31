@@ -84,8 +84,8 @@ std::vector<AutofillProfile> FetchAddresses(
     _personalDataManager = personalDataManager;
     CHECK(_personalDataManager);
     _personalDataManagerObserver =
-        std::make_unique<autofill::PersonalDataManagerObserverBridge>(self);
-    _personalDataManager->AddObserver(_personalDataManagerObserver.get());
+        std::make_unique<autofill::PersonalDataManagerObserverBridge>(
+            _personalDataManager, self);
     _authenticationService = authenticationService;
     _addresses = FetchAddresses(*_personalDataManager);
     _showAutofillFormButton = showAutofillFormButton;
@@ -103,10 +103,7 @@ std::vector<AutofillProfile> FetchAddresses(
 }
 
 - (void)disconnect {
-  if (_personalDataManager && _personalDataManagerObserver.get()) {
-    _personalDataManager->RemoveObserver(_personalDataManagerObserver.get());
-    _personalDataManagerObserver.reset();
-  }
+  _personalDataManagerObserver = nullptr;
   _personalDataManager = nullptr;
   _authenticationService = nullptr;
 }

@@ -36,12 +36,6 @@ class ArcIntentHelperTest : public testing::Test {
     // OpenUrlDelegate:
     void OpenUrlFromArc(const GURL& url) override { last_opened_url_ = url; }
     void OpenWebAppFromArc(const GURL& url) override { last_opened_url_ = url; }
-    void OpenArcCustomTab(
-        const GURL& url,
-        int32_t task_id,
-        mojom::IntentHelperHost::OnOpenCustomTabCallback callback) override {
-      std::move(callback).Run(mojo::NullRemote());
-    }
     void OpenChromePageFromArc(mojom::ChromePage chrome_page) override {}
     void OpenAppWithIntent(const GURL& url,
                            mojom::LaunchIntentPtr intent) override {

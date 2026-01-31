@@ -4,7 +4,6 @@
 
 #include "extensions/renderer/bindings/api_bindings_system_unittest.h"
 
-#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/strings/stringprintf.h"
@@ -120,10 +119,6 @@ bool AllowAllAPIs(v8::Local<v8::Context> context, const std::string& name) {
   return true;
 }
 
-bool AllowPromises(v8::Local<v8::Context> context) {
-  return true;
-}
-
 }  // namespace
 
 APIBindingsSystemTest::APIBindingsSystemTest() = default;
@@ -134,7 +129,7 @@ void APIBindingsSystemTest::SetUp() {
 
   // Create the fake API schemas.
   for (const auto& api : GetAPIs()) {
-    base::Value::Dict api_schema = DictValueFromString(api.spec);
+    base::DictValue api_schema = DictValueFromString(api.spec);
     api_schemas_[api.name] = std::move(api_schema);
   }
 
@@ -146,7 +141,7 @@ void APIBindingsSystemTest::SetUp() {
   bindings_system_ = std::make_unique<APIBindingsSystem>(
       base::BindRepeating(&APIBindingsSystemTest::GetAPISchema,
                           base::Unretained(this)),
-      base::BindRepeating(&AllowAllAPIs), base::BindRepeating(&AllowPromises),
+      base::BindRepeating(&AllowAllAPIs),
       base::BindRepeating(&APIBindingsSystemTest::OnAPIRequest,
                           base::Unretained(this)),
       std::make_unique<TestInteractionProvider>(),
@@ -191,9 +186,9 @@ void APIBindingsSystemTest::AddConsoleError(v8::Local<v8::Context> context,
   console_errors_.push_back(error);
 }
 
-const base::Value::Dict& APIBindingsSystemTest::GetAPISchema(
+const base::DictValue& APIBindingsSystemTest::GetAPISchema(
     const std::string& api_name) {
-  EXPECT_TRUE(base::Contains(api_schemas_, api_name));
+  EXPECT_TRUE(api_schemas_.contains(api_name));
   return api_schemas_[api_name];
 }
 
@@ -207,7 +202,7 @@ void APIBindingsSystemTest::OnAPIRequest(
 void APIBindingsSystemTest::OnEventListenersChanged(
     const std::string& event_name,
     binding::EventListenersChanged changed,
-    const base::Value::Dict* filter,
+    const base::DictValue* filter,
     bool was_manual,
     v8::Local<v8::Context> context) {}
 
@@ -287,7 +282,7 @@ TEST_F(APIBindingsSystemTest, TestInitializationAndCallbacks) {
                         "[{'prop1':'alpha','prop2':42}]");
 
     bindings_system()->CompleteRequest(last_request()->request_id,
-                                       base::Value::List(), std::string());
+                                       base::ListValue(), std::string());
 
     EXPECT_EQ("[]", GetStringPropertyFromObject(context->Global(), context,
                                                 "callbackArguments"));
@@ -320,7 +315,7 @@ TEST_F(APIBindingsSystemTest, TestInitializationAndCallbacks) {
     CallFunctionOnObject(context, alpha_api, kTestCall);
 
     const char kResponseArgsJson[] = R"([{"key":42}])";
-    base::Value::List expected_args = ListValueFromString(kResponseArgsJson);
+    base::ListValue expected_args = ListValueFromString(kResponseArgsJson);
     bindings_system()->FireEventInContext("alpha.alphaEvent", context,
                                           expected_args, nullptr);
 

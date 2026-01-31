@@ -24,16 +24,14 @@
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "components/page_info/android/jni_headers/ConnectionInfoView_jni.h"
 
-using base::android::CheckException;
 using base::android::ConvertUTF16ToJavaString;
 using base::android::ConvertUTF8ToJavaString;
-using base::android::GetClass;
 using base::android::JavaRef;
 using base::android::ScopedJavaLocalRef;
 using content::WebContents;
 
 // static
-static jlong JNI_ConnectionInfoView_Init(
+static int64_t JNI_ConnectionInfoView_Init(
     JNIEnv* env,
     const JavaRef<jobject>& obj,
     const JavaRef<jobject>& java_web_contents) {

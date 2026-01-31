@@ -12,6 +12,7 @@
 #include "base/containers/flat_set.h"
 #include "base/files/file_path.h"
 #include "base/functional/callback_forward.h"
+#include "base/memory/memory_pressure_listener.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
@@ -35,7 +36,8 @@ namespace paint_preview {
 // A service for capturing and using Paint Previews per Tab. Captures are stored
 // using Tab IDs as the key such that the data can be accessed even if the
 // browser is restarted.
-class PaintPreviewTabService : public PaintPreviewBaseService {
+class PaintPreviewTabService : public PaintPreviewBaseService,
+                               public base::MemoryPressureListener {
  public:
   PaintPreviewTabService(std::unique_ptr<PaintPreviewFileMixin> file_mixin,
                          std::unique_ptr<PaintPreviewPolicy> policy,
@@ -85,23 +87,29 @@ class PaintPreviewTabService : public PaintPreviewBaseService {
 #if BUILDFLAG(IS_ANDROID)
   // JNI wrapped versions of the above methods
   void CaptureTabAndroid(JNIEnv* env,
-                         jint j_tab_id,
+                         int32_t j_tab_id,
                          const base::android::JavaRef<jobject>& j_web_contents,
-                         jboolean j_accessibility_enabled,
-                         jfloat j_page_scale_factor,
-                         jint j_x,
-                         jint j_y,
+                         bool j_accessibility_enabled,
+                         float j_page_scale_factor,
+                         int32_t j_x,
+                         int32_t j_y,
                          const base::android::JavaRef<jobject>& j_callback);
-  void TabClosedAndroid(JNIEnv* env, jint j_tab_id);
-  jboolean HasCaptureForTabAndroid(JNIEnv* env, jint j_tab_id);
+  void TabClosedAndroid(JNIEnv* env, int32_t j_tab_id);
+  bool HasCaptureForTabAndroid(JNIEnv* env, int32_t j_tab_id);
   void AuditArtifactsAndroid(
       JNIEnv* env,
       const base::android::JavaRef<jintArray>& j_tab_ids);
-  jboolean IsCacheInitializedAndroid(JNIEnv* env);
+  bool IsCacheInitializedAndroid(JNIEnv* env);
   std::string GetPathAndroid(JNIEnv* env);
 
   base::android::ScopedJavaGlobalRef<jobject> GetJavaRef() { return java_ref_; }
 #endif  // BUILDFLAG(IS_ANDROID)
+
+  // base::MemoryPressureListener:
+  // Note: This class only cares about querying the current level, so no need to
+  // actually react on memory pressure level change.
+  void OnMemoryPressure(
+      base::MemoryPressureLevel memory_pressure_level) override {}
 
  private:
   class TabServiceTask {
@@ -207,6 +215,10 @@ class PaintPreviewTabService : public PaintPreviewBaseService {
 #if BUILDFLAG(IS_ANDROID)
   base::android::ScopedJavaGlobalRef<jobject> java_ref_;
 #endif  // BUILDFLAG(IS_ANDROID)
+
+  base::MemoryPressureListenerRegistration
+      memory_pressure_listener_registration_;
+
   SEQUENCE_CHECKER(sequence_checker_);
   base::WeakPtrFactory<PaintPreviewTabService> weak_ptr_factory_{this};
 };

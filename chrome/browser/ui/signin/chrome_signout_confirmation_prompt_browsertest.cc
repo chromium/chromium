@@ -84,6 +84,8 @@ class ChromeSignoutConfirmationPromptPixelTest
             unsynced_data_count);
       case ChromeSignoutConfirmationPromptVariant::kProfileWithParentalControls:
         return "SupervisedProfile";
+      case ChromeSignoutConfirmationPromptVariant::kTooManyBookmarks:
+        return "TooManyBookmarks";
     }
   }
 
@@ -121,7 +123,10 @@ INSTANTIATE_TEST_SUITE_P(
                         2U),
         std::make_tuple(ChromeSignoutConfirmationPromptVariant::
                             kProfileWithParentalControls,
-                        0U)),
+                        0U),
+        std::make_tuple(
+            ChromeSignoutConfirmationPromptVariant::kTooManyBookmarks,
+            0U)),
     &ChromeSignoutConfirmationPromptPixelTest::GetTestSuffix);
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
@@ -187,7 +192,10 @@ INSTANTIATE_TEST_SUITE_P(
                         2U),
         std::make_tuple(ChromeSignoutConfirmationPromptVariant::
                             kProfileWithParentalControls,
-                        0U)),
+                        0U),
+        std::make_tuple(
+            ChromeSignoutConfirmationPromptVariant::kTooManyBookmarks,
+            0U)),
     &ChromeSignoutConfirmationPromptPixelTest::GetTestSuffix);
 
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)

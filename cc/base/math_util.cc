@@ -808,7 +808,7 @@ bool MathUtil::FromValue(const base::Value* raw_value, gfx::Rect* out_rect) {
   if (!raw_value->is_list())
     return false;
 
-  const base::Value::List& list = raw_value->GetList();
+  const base::ListValue& list = raw_value->GetList();
 
   if (list.size() != 4)
     return false;

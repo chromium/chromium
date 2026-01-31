@@ -9,7 +9,6 @@
 #include <string>
 #include <utility>
 
-#include "base/containers/contains.h"
 #include "base/observer_list.h"
 #include "base/values.h"
 #include "build/build_config.h"

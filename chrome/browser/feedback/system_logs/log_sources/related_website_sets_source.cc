@@ -64,12 +64,12 @@ std::string ComputeRelatedWebsiteSetsInfo(
     return true;
   });
 
-  base::Value::List list;
+  base::ListValue list;
   list.reserve(sets.size());
   for (auto& [unused_primary, set] : sets) {
-    base::Value::Dict value;
+    base::DictValue value;
     for (auto& [site_type, sites] : set) {
-      base::Value::List* subset = value.EnsureList(GetSiteType(site_type));
+      base::ListValue* subset = value.EnsureList(GetSiteType(site_type));
       subset->reserve(sites.size());
       for (auto& site : sites) {
         subset->Append(std::move(site));

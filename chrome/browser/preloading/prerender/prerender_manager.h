@@ -60,8 +60,6 @@ class PrerenderManager : public content::WebContentsObserver,
   ~PrerenderManager() override;
 
   // content::WebContentsObserver
-  void DidStartNavigation(
-      content::NavigationHandle* navigation_handle) override;
   void DidFinishNavigation(
       content::NavigationHandle* navigation_handle) override;
 
@@ -129,7 +127,8 @@ class PrerenderManager : public content::WebContentsObserver,
     kInPictureInPicture = 9,
     kInIsolatedWebApp = 10,
     kInKioskSession = 11,
-    kMaxValue = kInKioskSession,
+    kLowMemory = 12,
+    kMaxValue = kLowMemory,
   };
   // LINT.ThenChange(//tools/metrics/histograms/metadata/navigation/enums.xml:PrerenderPrewarmDecision)
 
@@ -143,7 +142,7 @@ class PrerenderManager : public content::WebContentsObserver,
   // Otherwise, returns kReady and sets `prewarm_url`.
   PrewarmDecision ShouldPrewarm(GURL& prewarm_url);
 
-  void OnPrerenderNavigationHandle(
+  void OnSearchPrewarmPrerenderNavigationHandle(
       content::NavigationHandle& navigation_handle);
 
   std::unique_ptr<content::PrerenderHandle> search_prewarm_handle_;

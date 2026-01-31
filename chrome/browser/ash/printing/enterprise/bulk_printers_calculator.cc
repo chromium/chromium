@@ -7,7 +7,6 @@
 #include <optional>
 #include <set>
 
-#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/json/json_reader.h"
 #include "base/logging.h"
@@ -71,7 +70,7 @@ std::optional<PrinterCache> ParsePrinters(std::unique_ptr<std::string> data) {
     return std::nullopt;
   }
 
-  const base::Value::List& printer_list = json_blob.GetList();
+  const base::ListValue& printer_list = json_blob.GetList();
   if (printer_list.size() > kMaxRecords) {
     PRINTER_LOG(ERROR) << "Failed to parse printers policy ("
                        << "too many records: " << printer_list.size() << ")";
@@ -194,14 +193,14 @@ class Restrictions : public base::RefCountedThreadSafe<Restrictions> {
         NOTREACHED();
       case BulkPrintersCalculator::ALLOWLIST_ONLY:
         for (const auto& printer : *printers_cache_) {
-          if (base::Contains(allowlist_, printer->id())) {
+          if (allowlist_.contains(printer->id())) {
             task_data->printers.insert({printer->id(), *printer});
           }
         }
         break;
       case BulkPrintersCalculator::BLOCKLIST_ONLY:
         for (const auto& printer : *printers_cache_) {
-          if (!base::Contains(blocklist_, printer->id())) {
+          if (!blocklist_.contains(printer->id())) {
             task_data->printers.insert({printer->id(), *printer});
           }
         }

@@ -15,9 +15,10 @@
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
 #include "base/types/expected.h"
-#include "components/legion/attestation_handler.h"
+#include "components/legion/attestation/handler.h"
 #include "components/legion/legion_common.h"
 #include "components/legion/proto/legion.pb.h"
+#include "components/legion/proto_utils/attestation_evidence_utils.h"
 #include "components/legion/secure_session.h"
 #include "components/legion/transport.h"
 #include "third_party/oak/chromium/proto/session/session.pb.h"
@@ -77,35 +78,37 @@ void SecureChannelImpl::EstablishChannel(EstablishChannelCallback callback) {
 bool SecureChannelImpl::Write(const Request& request) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  if (state_ == State::kClosed) {
-    DLOG(ERROR) << "SecureChannel is closed.";
-    return false;
-  }
-
-  requests_in_session_count_++;
-  pending_encryption_requests_.push_back(request);
-
   switch (state_) {
     case State::kUninitialized:
+      AddRequestToPendingEncryptionQueue(request);
       StartSessionEstablishment();
-      break;
+      return true;
     case State::kPerformingAttestation:
     case State::kWaitingHandshakeMessage:
     case State::kPerformingHandshake:
     case State::kVerifyingHandshake:
       // Request is queued and will be processed once the session is
       // established.
-      break;
+      AddRequestToPendingEncryptionQueue(request);
+      return true;
     case State::kEstablished:
       // The session is established. A new request is sent only if there is
       // no other request in flight.
+      AddRequestToPendingEncryptionQueue(request);
       ProcessPendingEncryptionRequests();
-      break;
+      return true;
     case State::kClosed:
-      // This case should not be reached because of the check at the top.
-      NOTREACHED();
+      LOG(ERROR) << "SecureChannel is closed.";
+      return false;
   }
-  return true;
+}
+
+void SecureChannelImpl::AddRequestToPendingEncryptionQueue(
+    const Request& request) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  requests_in_session_count_++;
+  pending_encryption_requests_.push_back(request);
 }
 
 void SecureChannelImpl::Send(
@@ -123,7 +126,7 @@ void SecureChannelImpl::OnResponseReceived(
     DLOG(ERROR) << "Transport error: " << static_cast<int>(response.error())
                 << " in state: " << static_cast<int>(state_);
 
-    ErrorCode error_code;
+    ErrorCode error_code = ErrorCode::kError;
     switch (state_) {
       case State::kPerformingAttestation:
         error_code = ErrorCode::kAttestationFailed;
@@ -140,35 +143,75 @@ void SecureChannelImpl::OnResponseReceived(
       case State::kClosed:
         // Transport error in these states is unexpected because no requests
         // should be in flight.
-        NOTREACHED() << "Unexpected transport error in state: "
-                     << static_cast<int>(state_);
+        //
+        // Nevertheless, we do not crash here as this branch could be triggered
+        // by misbehaving server.
+        LOG(ERROR) << "Unexpected transport error in state: "
+                   << static_cast<int>(state_);
+        break;
     }
 
     FailAllRequestsAndClose(error_code);
     return;
   }
 
-  oak::session::v1::SessionResponse& session_response = response.value();
-  if (session_response.has_attest_response()) {
-    OnAttestationResponse(session_response.attest_response());
-  } else if (session_response.has_handshake_response()) {
-    OnHandshakeResponse(session_response.handshake_response());
-  } else if (session_response.has_encrypted_message()) {
-    OnEncryptedResponse(session_response.encrypted_message());
-  } else {
-    LOG(ERROR) << "Response does not contain any messages";
-    FailAllRequestsAndClose(ErrorCode::kNetworkError);
+  CHECK(response.has_value());
+
+  const oak::session::v1::SessionResponse& session_response = response.value();
+
+  switch (state_) {
+    case State::kPerformingAttestation:
+      OnAttestationResponse(session_response);
+      break;
+    case State::kPerformingHandshake:
+      OnHandshakeResponse(session_response);
+      break;
+    case State::kEstablished:
+      OnEncryptedResponse(session_response);
+      break;
+    case State::kUninitialized:
+    case State::kWaitingHandshakeMessage:
+    case State::kVerifyingHandshake:
+    case State::kClosed:
+      LOG(ERROR) << "Received unexpected response in state: "
+                 << static_cast<int>(state_);
+      break;
   }
 }
 
 void SecureChannelImpl::OnAttestationResponse(
-    const oak::session::v1::AttestResponse& response) {
+    const oak::session::v1::SessionResponse& session_response) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   DCHECK_EQ(state_, State::kPerformingAttestation);
 
+  if (!session_response.has_attest_response()) {
+    LOG(ERROR) << "Response proto does not have attestation message.";
+    base::UmaHistogramMediumTimes(
+        "Legion.SecureChannel.SendAttestationRequestLatency.Error",
+        base::TimeTicks::Now() -
+            state_entry_times_[State::kPerformingAttestation]);
+    FailAllRequestsAndClose(ErrorCode::kAttestationFailed);
+    return;
+  }
+
+  const oak::session::v1::AttestResponse& response =
+      session_response.attest_response();
+
   // Step 2: Verify Attestation Response
-  if (!attestation_handler_->VerifyAttestationResponse(response)) {
+  std::optional<AttestationEvidence> attestation_evidence =
+      ConvertToAttestationEvidence(response);
+  if (!attestation_evidence) {
+    DLOG(ERROR) << "Attestation evidence conversion failed.";
+    base::UmaHistogramMediumTimes(
+        "Legion.SecureChannel.SendAttestationRequestLatency.Error",
+        base::TimeTicks::Now() -
+            state_entry_times_[State::kPerformingAttestation]);
+    FailAllRequestsAndClose(ErrorCode::kAttestationFailed);
+    return;
+  }
+
+  if (!attestation_handler_->VerifyAttestationResponse(*attestation_evidence)) {
     DLOG(ERROR) << "Attestation verification failed.";
     base::UmaHistogramMediumTimes(
         "Legion.SecureChannel.SendAttestationRequestLatency.Error",
@@ -233,10 +276,23 @@ void SecureChannelImpl::RecordSessionDurationMetrics() {
 }
 
 void SecureChannelImpl::OnHandshakeResponse(
-    const oak::session::v1::HandshakeResponse& response) {
+    const oak::session::v1::SessionResponse& session_response) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   DCHECK_EQ(state_, State::kPerformingHandshake);
+
+  if (!session_response.has_handshake_response()) {
+    LOG(ERROR) << "Response proto does not have handshake message.";
+    base::UmaHistogramMediumTimes(
+        "Legion.SecureChannel.SendHandshakeRequestLatency.Error",
+        base::TimeTicks::Now() -
+            state_entry_times_[State::kPerformingHandshake]);
+    FailAllRequestsAndClose(ErrorCode::kHandshakeFailed);
+    return;
+  }
+
+  const oak::session::v1::HandshakeResponse& response =
+      session_response.handshake_response();
 
   state_ = State::kVerifyingHandshake;
 
@@ -279,8 +335,19 @@ void SecureChannelImpl::OnHandshakeVerification(bool handshake_verified) {
 }
 
 void SecureChannelImpl::OnEncryptedResponse(
-    const oak::session::v1::EncryptedMessage& response) {
+    const oak::session::v1::SessionResponse& session_response) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  DCHECK_EQ(state_, State::kEstablished);
+
+  if (!session_response.has_encrypted_message()) {
+    LOG(ERROR) << "Response proto does not have encrypted message.";
+    FailAllRequestsAndClose(ErrorCode::kDecryptionFailed);
+    return;
+  }
+
+  const oak::session::v1::EncryptedMessage& response =
+      session_response.encrypted_message();
 
   // Step 6: Decrypt the response
   secure_session_->Decrypt(

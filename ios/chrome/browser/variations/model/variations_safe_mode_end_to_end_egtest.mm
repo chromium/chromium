@@ -176,7 +176,7 @@ std::unique_ptr<ScopedAllowCrashOnStartup> gAllowCrashOnStartup;
   GREYAssertTrue([self hasSafeSeed],
                  @"The variations safe seed pref should be set.");
   GREYAssertTrue([VariationsAppInterface fieldTrialExistsForTestSeed],
-                 @"There should be field trials from kTestSeedData.");
+                 @"There should be field trials from TestSeedData().");
   [self checkCrashStreakValue:variations::kCrashStreakSafeSeedThreshold];
 }
 

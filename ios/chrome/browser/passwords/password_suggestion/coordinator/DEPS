@@ -1,0 +1,7 @@
+include_rules = [
+  # keep-sorted start
+  "+ios/chrome/browser/autofill/model",
+  "+ios/chrome/browser/signin/model/authentication_service.h",
+  "+ios/chrome/browser/signin/model/authentication_service_factory.h",
+  # keep-sorted end
+]

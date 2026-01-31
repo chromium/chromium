@@ -577,6 +577,7 @@ IN_PROC_BROWSER_TEST_F(RequestStorageAccessForEnabledBrowserTest,
 IN_PROC_BROWSER_TEST_F(RequestStorageAccessForEnabledBrowserTest,
                        RequestStorageAccessForEmbeddedOriginScoping) {
   ukm::TestAutoSetUkmRecorder ukm_recorder;
+  base::HistogramTester histogram_tester;
 
   SetBlockThirdPartyCookies(true);
 
@@ -599,6 +600,13 @@ IN_PROC_BROWSER_TEST_F(RequestStorageAccessForEnabledBrowserTest,
   EXPECT_EQ(CookiesFromFetchWithCredentials(GetFrame(), kHostASubdomain,
                                             /*cors_enabled=*/true),
             "");
+
+  content::FetchHistogramsFromChildProcesses();
+  histogram_tester.ExpectBucketCount(
+      "Blink.UseCounter.Features",
+      blink::mojom::WebFeature::
+          kStorageAccessAPI_requestStorageAccessFor_Method_AsyncSuccess,
+      /*expected_count=*/0);
 
   EXPECT_THAT(
       ukm_recorder.GetMetricsEntryValues(kRequestStorageAccessUkmEntryName,
@@ -727,7 +735,6 @@ IN_PROC_BROWSER_TEST_F(RequestStorageAccessForWithFirstPartySetsBrowserTest,
 // unblocked for just that top-level/third-party combination.
 IN_PROC_BROWSER_TEST_F(
     RequestStorageAccessForWithFirstPartySetsBrowserTest,
-    // TODO(crbug.com/40869547): Re-enable usage metric assertions.
     Permission_AutograntedWithinFirstPartySet) {
   SetBlockThirdPartyCookies(true);
   base::HistogramTester histogram_tester;
@@ -793,6 +800,13 @@ IN_PROC_BROWSER_TEST_F(
                   kRequestOutcomeHistogram,
                   TopLevelStorageAccessRequestOutcome::kGrantedByFirstPartySet),
               Gt(0));
+
+  content::FetchHistogramsFromChildProcesses();
+  histogram_tester.ExpectBucketCount(
+      "Blink.UseCounter.Features",
+      blink::mojom::WebFeature::
+          kStorageAccessAPI_requestStorageAccessFor_Method_AsyncSuccess,
+      /*expected_count=*/1);
 
   EXPECT_THAT(
       ukm_recorder.GetMetricsEntryValues(kRequestStorageAccessUkmEntryName,
@@ -1232,20 +1246,7 @@ IN_PROC_BROWSER_TEST_F(RequestStorageAccessForWithFirstPartySetsBrowserTest,
   EXPECT_EQ("prompt", QueryPermission(GetPrimaryMainFrame(), kHostB));
 }
 
-class RequestStorageAccessForWithCHIPSBrowserTest
-    : public RequestStorageAccessForBaseBrowserTest {
- public:
-  void SetUpCommandLine(base::CommandLine* command_line) override {
-    RequestStorageAccessForBaseBrowserTest::SetUpCommandLine(command_line);
-    command_line->AppendSwitchASCII(
-        network::switches::kUseRelatedWebsiteSet,
-        base::StrCat({R"({"primary": "https://)", kHostA,
-                      R"(", "associatedSites": ["https://)", kHostC, R"("])",
-                      R"(, "serviceSites": ["https://)", kHostB, R"("]})"}));
-  }
-};
-
-IN_PROC_BROWSER_TEST_F(RequestStorageAccessForWithCHIPSBrowserTest,
+IN_PROC_BROWSER_TEST_F(RequestStorageAccessForWithFirstPartySetsBrowserTest,
                        RequestStorageAccessFor_CoexistsWithCHIPS) {
   ukm::TestAutoSetUkmRecorder ukm_recorder;
   SetBlockThirdPartyCookies(true);
@@ -1401,12 +1402,6 @@ class TopLevelStorageExemptionReasonMetricTest
 
   const std::vector<int64_t>& expected_metric_value() {
     return GetParam().expected_metric_value;
-  }
-
-  std::vector<base::test::FeatureRef> GetDisabledFeatures() const override {
-    return {
-        content_settings::features::kTrackingProtection3pcd,
-    };
   }
 };
 

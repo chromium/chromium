@@ -53,7 +53,9 @@ join-ad-interest-group
 keyboard-map
 language-detector
 local-fonts
+local-network
 local-network-access
+loopback-network
 magnetometer
 microphone
 midi

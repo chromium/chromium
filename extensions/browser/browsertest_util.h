@@ -5,6 +5,7 @@
 #ifndef EXTENSIONS_BROWSER_BROWSERTEST_UTIL_H_
 #define EXTENSIONS_BROWSER_BROWSERTEST_UTIL_H_
 
+#include <optional>
 #include <string>
 
 #include "base/run_loop.h"
@@ -27,6 +28,23 @@ enum class ScriptUserActivation {
   kActivate,
   kDontActivate,
 };
+
+// Executes `script` as a user script associated with the given `extension_id`
+// within the primary main frame of `web_contents`, waiting for the injection to
+// complete and returning the result.
+base::Value ExecuteUserScript(
+    content::WebContents* web_contents,
+    const ExtensionId& extension_id,
+    const std::string& script,
+    const std::optional<std::string>& world_id = std::nullopt);
+
+// Same as `ExecuteUserScript`, but doesn't wait for the script to return a
+// result.
+void ExecuteUserScriptNoWait(
+    content::WebContents* web_contents,
+    const ExtensionId& extension_id,
+    const std::string& script,
+    const std::optional<std::string>& world_id = std::nullopt);
 
 // Waits until `script` calls "chrome.test.sendScriptResult(result)",
 // where `result` is a serializable value, and returns `result`. Fails

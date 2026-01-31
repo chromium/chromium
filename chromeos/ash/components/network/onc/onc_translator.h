@@ -27,9 +27,9 @@ namespace onc {
 // This function is used to translate network settings from ONC to Shill's
 // format before sending them to Shill.
 COMPONENT_EXPORT(CHROMEOS_NETWORK)
-base::Value::Dict TranslateONCObjectToShill(
+base::DictValue TranslateONCObjectToShill(
     const chromeos::onc::OncValueSignature* signature,
-    const base::Value::Dict& onc_object);
+    const base::DictValue& onc_object);
 
 // Translates a |shill_dictionary| to an ONC object according to the given
 // |onc_signature|. |onc_signature| must point to a signature object in
@@ -44,8 +44,8 @@ base::Value::Dict TranslateONCObjectToShill(
 // will be used to set the ErrorState property. Otherwise ErrorState will not be
 // set.
 COMPONENT_EXPORT(CHROMEOS_NETWORK)
-base::Value::Dict TranslateShillServiceToONCPart(
-    const base::Value::Dict& shill_dictionary,
+base::DictValue TranslateShillServiceToONCPart(
+    const base::DictValue& shill_dictionary,
     ::onc::ONCSource onc_source,
     const chromeos::onc::OncValueSignature* onc_signature,
     const NetworkState* network_state);

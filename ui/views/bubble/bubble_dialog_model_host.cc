@@ -821,12 +821,12 @@ void BubbleDialogModelHost::ThemeChangedObserver::OnViewThemeChanged(
 
 BubbleDialogModelHost::BubbleDialogModelHost(
     std::unique_ptr<ui::DialogModel> model,
-    View* anchor_view,
+    views::BubbleAnchor anchor,
     BubbleBorder::Arrow arrow,
     bool autosize)
     : BubbleDialogModelHost(base::PassKey<BubbleDialogModelHost>(),
                             std::move(model),
-                            anchor_view,
+                            anchor,
                             arrow,
                             ui::mojom::ModalType::kNone,
                             autosize) {}
@@ -834,11 +834,11 @@ BubbleDialogModelHost::BubbleDialogModelHost(
 BubbleDialogModelHost::BubbleDialogModelHost(
     base::PassKey<BubbleDialogModelHost>,
     std::unique_ptr<ui::DialogModel> model,
-    View* anchor_view,
+    views::BubbleAnchor anchor,
     BubbleBorder::Arrow arrow,
     ui::mojom::ModalType modal_type,
     bool autosize)
-    : BubbleDialogDelegate(anchor_view,
+    : BubbleDialogDelegate(anchor,
                            arrow,
                            views::BubbleBorder::DIALOG_SHADOW,
                            autosize),
@@ -976,8 +976,9 @@ BubbleDialogModelHost::BubbleDialogModelHost(
   // menus). This is probably too wide for the TabGroupEditorBubbleView which is
   // currently being converted.
   set_fixed_width(LayoutProvider::Get()->GetDistanceMetric(
-      anchor_view ? DISTANCE_BUBBLE_PREFERRED_WIDTH
-                  : DISTANCE_MODAL_DIALOG_PREFERRED_WIDTH));
+      !std::holds_alternative<std::nullptr_t>(anchor)
+          ? DISTANCE_BUBBLE_PREFERRED_WIDTH
+          : DISTANCE_MODAL_DIALOG_PREFERRED_WIDTH));
 
   if (model_->footnote_label()) {
     SetFootnoteView(BubbleDialogModelHostContentsView::CreateViewForLabel(

@@ -290,14 +290,13 @@ AutofillBubbleBase* AutofillBubbleHandlerImpl::ShowMandatoryReauthBubble(
   IconLabelBubbleView* icon_view = toolbar_button_provider_->GetPageActionView(
       kActionAutofillMandatoryReauth);
 
-  views::View* anchor_view =
-      toolbar_button_provider_->GetAnchorView(kActionAutofillMandatoryReauth);
+  auto anchor =
+      toolbar_button_provider_->GetBubbleAnchor(kActionAutofillMandatoryReauth);
 
   switch (bubble_type) {
     case MandatoryReauthBubbleType::kOptIn: {
       MandatoryReauthOptInBubbleView* bubble =
-          new MandatoryReauthOptInBubbleView(anchor_view, web_contents,
-                                             controller);
+          new MandatoryReauthOptInBubbleView(anchor, web_contents, controller);
       bubble->SetHighlightedButton(icon_view);
       views::BubbleDialogDelegateView::CreateBubble(bubble);
       bubble->Show(is_user_gesture ? LocationBarBubbleDelegateView::USER_GESTURE
@@ -306,7 +305,7 @@ AutofillBubbleBase* AutofillBubbleHandlerImpl::ShowMandatoryReauthBubble(
     }
     case MandatoryReauthBubbleType::kConfirmation: {
       MandatoryReauthConfirmationBubbleView* bubble =
-          new MandatoryReauthConfirmationBubbleView(anchor_view, web_contents,
+          new MandatoryReauthConfirmationBubbleView(anchor, web_contents,
                                                     controller);
       bubble->SetHighlightedButton(icon_view);
       views::BubbleDialogDelegateView::CreateBubble(bubble);

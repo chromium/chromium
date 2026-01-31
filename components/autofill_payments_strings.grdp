@@ -55,8 +55,11 @@
     </if>
   </if>
 
-  <message name="IDS_AUTOFILL_GOOGLE_PAY_LOGO_ACCESSIBLE_NAME" desc="The accessible name for the Google Pay logo.">
+  <message name="IDS_AUTOFILL_GOOGLE_PAY_LOGO_ACCESSIBLE_NAME" desc="The accessible name for the Google Pay logo." formatter_data="android_java">
     Google Pay logo
+  </message>
+  <message name="IDS_AUTOFILL_GOOGLE_WALLET_LOGO_ACCESSIBLE_NAME" desc="The accessible name for the Google Wallet logo.">
+    Google Wallet logo
   </message>
   <message name="IDS_AUTOFILL_CHROME_LOGO_ACCESSIBLE_NAME" desc="The accessible name for the Chrome logo.">
     Chrome logo
@@ -148,9 +151,11 @@
       </message>
     </else>
   </if>
-  <message name="IDS_AUTOFILL_SAVE_CARD_PROMPT_TITLE_TO_CLOUD_V3" desc="Title text for the Autofill save card prompt when the card is to be saved by uploading it to Google Payments, according to January 2018 UI guidelines. The prompt can be either a bubble or an infobar.">
-    Save card?
-  </message>
+  <if expr="is_android">
+    <message name="IDS_AUTOFILL_SAVE_CARD_PROMPT_TITLE_TO_CLOUD_V3" desc="Title text for the Autofill save card prompt when the card is to be saved by uploading it to Google Payments, according to January 2018 UI guidelines. The prompt can be either a bubble or an infobar.">
+      Save card?
+    </message>
+  </if>
   <message name="IDS_AUTOFILL_SAVE_CARD_PROMPT_TITLE_TO_CLOUD_V4" desc="Title text for the Autofill save card prompt when the card is to be saved by uploading it to Google Payments, according to November 2018 UI guidelines. The prompt can be either a bubble or an infobar.">
     Save card to Google Account?
   </message>
@@ -189,14 +194,25 @@
   <message name="IDS_AUTOFILL_SAVE_CARD_PROMPT_UPLOAD_EXPLANATION" desc="Explanation of the effect of the Autofill save card prompt when the card is to be saved by uploading it to Google Payments and also saved locally. The prompt can be either a bubble or an infobar.">
     Pay quickly on sites and apps across devices using cards you have saved with Google.
   </message>
-  <message name="IDS_AUTOFILL_SAVE_CARD_PROMPT_UPLOAD_EXPLANATION_V3" desc="Explanation of the effect of the Autofill save card prompt when the card is to be saved by uploading it to Google Payments, according to April 2018 UI guidelines, and minorly updated again in September 2023. The prompt will be shown either in a bubble below the omnibox, or in a bottom sheet, or in an infobar.">
-    To pay faster next time, save your card and billing address in your Google Account
+  <if expr="is_android">
+    <message name="IDS_AUTOFILL_SAVE_CARD_PROMPT_UPLOAD_EXPLANATION_V3" desc="Explanation of the effect of the Autofill save card prompt when the card is to be saved by uploading it to Google Payments, according to April 2018 UI guidelines, and minorly updated again in September 2023. The prompt will be shown either in a bubble below the omnibox, or in a bottom sheet, or in an infobar.">
+      To pay faster next time, save your card and billing address in your Google Account
+    </message>
+  </if>
+  <message name="IDS_AUTOFILL_SAVE_CARD_PROMPT_UPLOAD_TO_WALLET_EXPLANATION" desc="Explanation of the effect of the Autofill save card prompt when the card is to be saved by uploading it to Google Wallet. The prompt will be shown either in a bubble below the omnibox, or in a bottom sheet, or in an infobar.">
+    To pay faster next time, save your card and billing address in Google Wallet
   </message>
   <message name="IDS_AUTOFILL_SAVE_CVC_PROMPT_EXPLANATION_UPLOAD" desc="Explanation text for the Autofill save CVC prompt that offers to upload CVC to the Sync server for existing server cards. This prompt is shown if a CVC is detected for an existing server card on form submission.">
     This card's CVC will be encrypted and saved in your Google Account for faster checkout
   </message>
+  <message name="IDS_AUTOFILL_SAVE_CVC_TO_WALLET_PROMPT_EXPLANATION_UPLOAD" desc="Explanation text for the Autofill save CVC to Google Wallet prompt that offers to upload CVC to the Sync server for existing server cards. This prompt is shown if a CVC is detected for an existing server card on form submission.">
+    This card's CVC will be encrypted and saved in Google Wallet for faster checkout
+  </message>
   <message name="IDS_AUTOFILL_SAVE_CARD_PROMPT_UPLOAD_EXPLANATION_SECURITY" desc="Explanation of the benefit of credit card upload save on Desktop, using security-focused messaging. Became the new default for Desktop in Dec. 2024 and new default for Android and IOS (bottomsheet only) in H1 2025.">
     Pay faster when your card is saved. Card details are encrypted in your Google Account.
+  </message>
+  <message name="IDS_AUTOFILL_SAVE_CARD_PROMPT_UPLOAD_TO_WALLET_EXPLANATION_SECURITY" desc="Explanation of the benefit of credit card upload save on Desktop, using security-focused messaging. Became the new default for Desktop in Dec. 2024 and new default for Android and IOS (bottomsheet only) in H1 2025. The final line specifically references Google Wallet instead of Google Account.">
+    Pay faster when your card is saved. Card details are encrypted in Google Wallet.
   </message>
   <if expr="is_android or is_ios">
     <message name="IDS_AUTOFILL_SAVE_CVC_MESSAGE_SAVE_ACCEPT" desc="Positive button label for the Autofill save CVC prompt that offers to save CVC for existing server cards. This prompt is shown if a CVC is detected for an existing server card on form submission. The prompt is shown on Android and IOS devices.">
@@ -206,6 +222,9 @@
   <if expr="is_ios">
     <message name="IDS_AUTOFILL_SAVE_CVC_PROMPT_EXPLANATION_UPLOAD_IOS" desc="Explanation text for the Autofill save CVC prompt that offers to upload CVC to the Sync server for existing server cards. This prompt is shown if a CVC is detected for an existing server card on form submission on IOS devices.">
       For faster checkout, save this CVC in your account, <ph name="ACCOUNT_EMAIL">$1<ex>youraccount@email.com</ex></ph>
+    </message>
+    <message name="IDS_AUTOFILL_SAVE_CVC_TO_WALLET_PROMPT_EXPLANATION_UPLOAD_IOS" desc="Explanation text for the Autofill save CVC prompt that offers to upload CVC to the Sync server for existing server cards. This prompt is shown if a CVC is detected for an existing server card on form submission on IOS devices. The wording specifically references Google Wallet instead of Google Account.">
+      For faster checkout, save this CVC in Google Wallet (<ph name="ACCOUNT_EMAIL">$1<ex>youraccount@email.com</ex></ph>)
     </message>
     <message name="IDS_AUTOFILL_SAVE_CVC_PROMPT_EXPLANATION_LOCAL_SAVE_IOS" desc="Explanation text for the Autofill save CVC prompt that offers to save CVC to this device for existing local cards. This prompt is shown if a CVC is detected for an existing local card on form submission on IOS devices.">
       For faster checkout, save this CVC on your device
@@ -265,6 +284,9 @@
       <message name="IDS_AUTOFILL_SAVE_AND_FILL_DIALOG_EXPLANATION_UPLOAD" desc="Explanation text for the Autofill Save and Fill dialog for cards that will be saved to the GPay server.">
         Autofill this card for purchases made in Chrome when it's saved to use with Google Pay
       </message>
+      <message name="IDS_AUTOFILL_SAVE_AND_FILL_TO_WALLET_DIALOG_EXPLANATION_UPLOAD" desc="Explanation text for the Autofill Save and Fill dialog for cards that will be saved to Google Wallet.">
+        Autofill this card for purchases made in Chrome when it's saved in Google Wallet
+      </message>
     </if>
     <if expr="not _google_chrome">
       <message name="IDS_AUTOFILL_SAVE_AND_FILL_DIALOG_EXPLANATION_LOCAL" desc="Explanation text for the Autofill Save and Fill dialog for cards that will be saved locally.">
@@ -272,6 +294,9 @@
       </message>
       <message name="IDS_AUTOFILL_SAVE_AND_FILL_DIALOG_EXPLANATION_UPLOAD" desc="Explanation text for the Autofill Save and Fill dialog for cards that will be saved to the GPay server.">
         Autofill this card for purchases made in Chromium when it's saved to use with Google Pay
+      </message>
+      <message name="IDS_AUTOFILL_SAVE_AND_FILL_TO_WALLET_DIALOG_EXPLANATION_UPLOAD" desc="Explanation text for the Autofill Save and Fill dialog for cards that will be saved to Google Wallet.">
+        Autofill this card for purchases made in Chromium when it's saved in Google Wallet
       </message>
     </if>
     <message name="IDS_AUTOFILL_SAVE_AND_FILL_DIALOG_CARD_NUMBER_LABEL" desc="The label text for the card number textfield.">
@@ -710,6 +735,9 @@
   <message name="IDS_AUTOFILL_UPLOAD_IBAN_PROMPT_EXPLANATION" desc="Explanation text for the Autofill save IBAN (International Bank Account Number) to the GPay server prompt when a user submits a form with a valid IBAN.">
     To autofill this IBAN next time, save it in your Google Account
   </message>
+  <message name="IDS_AUTOFILL_UPLOAD_IBAN_TO_WALLET_PROMPT_EXPLANATION" desc="Explanation text for the Autofill save IBAN (International Bank Account Number) to the Google Wallet server prompt when a user submits a form with a valid IBAN.">
+    To autofill this IBAN next time, save it in Google Wallet
+  </message>
   <!-- Autofill save IBAN bottom sheet prompt -->
   <if expr="is_android">
     <message name="IDS_AUTOFILL_SAVE_IBAN_PROMPT_BOTTOM_SHEET_CONTENT_DESCRIPTION" desc="The description of the Autofill save IBAN bottom sheet. 'Swipe down to close.' will automatically be appended." formatter_data="android_java">
@@ -973,11 +1001,11 @@
   <message name="IDS_AUTOFILL_CARD_BNPL_SELECT_PROVIDER_PAYMENT_OPTION_CHECKOUT_AMOUNT_TOO_HIGH" desc="Text for the payment option button in the BNPL select provider screen, explaining that the checkout amount is too high for the BNPL issuer to support.">
       Purchase must be under <ph name="CHECKOUT_AMOUNT_MAXIMUM">$1<ex>$10,000.00</ex></ph>
   </message>
-  <message name="IDS_AUTOFILL_CARD_BNPL_SELECT_PROVIDER_AI_FOOTNOTE" desc="A note explaining that Google will collect data from the checkout page to determine the checkout amount.">
-      Google uses information from the checkout page and other relevant data to offer these options. To hide pay later options, go to <ph name="IDS_AUTOFILL_CARD_BNPL_SELECT_PROVIDER_FOOTNOTE_HIDE_OPTION_PAYMENT_SETTINGS_LINK_TEXT">$1<ex>payment settings</ex></ph>
+  <message name="IDS_AUTOFILL_CARD_BNPL_SELECT_PROVIDER_AI_FOOTNOTE" desc="A note explaining that Google will collect data from the checkout page to determine the checkout amount." translateable="false">
+      Page content from the checkout page is shared with Google to offer these options. To hide pay later options in autofill, go to <ph name="IDS_AUTOFILL_CARD_BNPL_SELECT_PROVIDER_FOOTNOTE_HIDE_OPTION_PAYMENT_SETTINGS_LINK_TEXT">$1<ex>payment settings</ex></ph>.
   </message>
-  <message name="IDS_AUTOFILL_CARD_BNPL_SELECT_PROVIDER_FOOTNOTE_FOR_AI_AMOUNT_EXTRACTION_NOTE" desc="A note explaining that Google will collect data from the checkout page to determine the checkout amount.">
-      Google uses information from the checkout page and other relevant data to offer these options.
+  <message name="IDS_AUTOFILL_CARD_BNPL_SELECT_PROVIDER_FOOTNOTE_FOR_AI_AMOUNT_EXTRACTION_NOTE" desc="A note explaining that Google will collect data from the checkout page to determine the checkout amount." translateable="false">
+      Page content from the checkout page is shared with Google to offer these options.
   </message>
   <message name="IDS_AUTOFILL_CARD_BNPL_SELECT_PROVIDER_FOOTNOTE_HIDE_OPTION" desc="Text shown in the footnote of the BNPL select provider screen, instructing users how to hide the pay later options.">
   To hide pay later options, go to <ph name="IDS_AUTOFILL_CARD_BNPL_SELECT_PROVIDER_FOOTNOTE_HIDE_OPTION_PAYMENT_SETTINGS_LINK_TEXT">$1<ex>payment settings</ex></ph>
@@ -1099,28 +1127,28 @@
   <message name="IDS_AUTOFILL_BNPL_SETTINGS_SUBLABEL" desc="Sublabel for the Buy Now Pay Later preference in the payments settings page, including a hyperlink to learn more about pay later options. When enabled, users can checkout with external BNPL issuers using a Buy Now Pay Later option.">
     Show <ph name="PAY_LATER_OPTIONS_HELP_LINK_BEGIN">&lt;a href="$1" aria-description="$2"&gt;</ph>pay later<ph name="PAY_LATER_OPTIONS_HELP_LINK_END">&lt;/a&gt;</ph> options at checkout
   </message>
-  <message name="IDS_AUTOFILL_BNPL_AFFIRM" desc="Name of Buy Now Pay Later provider Affirm.">
+  <message name="IDS_AUTOFILL_BNPL_AFFIRM" desc="Name of Buy Now Pay Later provider Affirm." formatter_data="android_java">
     Affirm
   </message>
-  <message name="IDS_AUTOFILL_BNPL_ZIP" desc="Name of Buy Now Pay Later provider Zip.">
+  <message name="IDS_AUTOFILL_BNPL_ZIP" desc="Name of Buy Now Pay Later provider Zip." formatter_data="android_java">
     Zip
   </message>
   <message name="IDS_AUTOFILL_BNPL_AFTER_PAY" desc="Name of Buy Now Pay Later provider AfterPay.">
     AfterPay
   </message>
-  <message name="IDS_AUTOFILL_BNPL_KLARNA" desc="Name of Buy Now Pay Later provider Klarna.">
+  <message name="IDS_AUTOFILL_BNPL_KLARNA" desc="Name of Buy Now Pay Later provider Klarna." formatter_data="android_java">
     Klarna
   </message>
-    <message name="IDS_AUTOFILL_GOOGLE_PAY_AND_AFFIRM_LOGO_ACCESSIBLE_NAME" desc="The accessible name for the Google Pay and Affirm logo.">
+  <message name="IDS_AUTOFILL_GOOGLE_PAY_AND_AFFIRM_LOGO_ACCESSIBLE_NAME" desc="The accessible name for the Google Pay and Affirm logo." formatter_data="android_java">
     Google Pay, Affirm logo
   </message>
-  <message name="IDS_AUTOFILL_GOOGLE_PAY_AND_ZIP_LOGO_ACCESSIBLE_NAME" desc="The accessible name for the Google Pay and Zip logo.">
+  <message name="IDS_AUTOFILL_GOOGLE_PAY_AND_ZIP_LOGO_ACCESSIBLE_NAME" desc="The accessible name for the Google Pay and Zip logo." formatter_data="android_java">
     Google Pay, Zip logo
   </message>
   <message name="IDS_AUTOFILL_GOOGLE_PAY_AND_AFTERPAY_LOGO_ACCESSIBLE_NAME" desc="The accessible name for the Google Pay and AfterPay logo.">
     Google Pay, AfterPay logo
   </message>
-  <message name="IDS_AUTOFILL_GOOGLE_PAY_AND_KLARNA_LOGO_ACCESSIBLE_NAME" desc="The accessible name for the Google Pay and Klarna logo.">
+  <message name="IDS_AUTOFILL_GOOGLE_PAY_AND_KLARNA_LOGO_ACCESSIBLE_NAME" desc="The accessible name for the Google Pay and Klarna logo." formatter_data="android_java">
     Google Pay, Klarna logo
   </message>
   <message name="IDS_AUTOFILL_BNPL_FILLED_CARD_INFORMATION_BUBBLE_TITLE" desc="Title for the Autofill filled card information bubble for the Buy Now Pay Later flow.">
@@ -1155,6 +1183,9 @@
       <message name="IDS_AUTOFILL_BNPL_TOS_REVIEW_TEXT" desc="The text informing the user that they will be asked to review their order in the Buy-Now-Pay-Later Terms of Service dialog." formatter_data="android_java">
         After you review your order, you must sign into or create an account with <ph name="BNPL_ISSUER_NAME">%1$s</ph>. This account will be automatically linked to Google Pay.
       </message>
+      <message name="IDS_AUTOFILL_BNPL_TOS_REVIEW_TEXT_WALLET_BRANDING" desc="The text informing the user that they will be asked to review their order in the Buy-Now-Pay-Later Terms of Service dialog with Google Wallet branding." formatter_data="android_java">
+        After you review your order, you must sign into or create an account with <ph name="BNPL_ISSUER_NAME">%1$s</ph>. This account will be automatically linked in Google Wallet.
+      </message>
       <message name="IDS_AUTOFILL_BNPL_TOS_APPROVE_TEXT" desc="The text informing the user that that BNPL issuer will check and approve their eligibility in the Buy-Now-Pay-Later Terms of Service dialog." formatter_data="android_java">
         <ph name="BNPL_ISSUER_NAME">%1$s</ph> will check your eligibility (this won't affect your credit score). If approved, <ph name="BNPL_ISSUER_NAME">%1$s</ph> will provide payment plans for you to choose from and complete your purchase.
       </message>
@@ -1171,6 +1202,9 @@
       </message>
       <message name="IDS_AUTOFILL_BNPL_TOS_REVIEW_TEXT" desc="The text informing the user that they will be asked to review their order in the Buy-Now-Pay-Later Terms of Service dialog.">
         After you review your order, you must sign into or create an account with <ph name="BNPL_ISSUER_NAME">$1</ph>. This account will be automatically linked to Google Pay.
+      </message>
+      <message name="IDS_AUTOFILL_BNPL_TOS_REVIEW_TEXT_WALLET_BRANDING" desc="The text informing the user that they will be asked to review their order in the Buy-Now-Pay-Later Terms of Service dialog with Google Wallet branding.">
+        After you review your order, you must sign into or create an account with <ph name="BNPL_ISSUER_NAME">$1</ph>. This account will be automatically linked in Google Wallet.
       </message>
       <message name="IDS_AUTOFILL_BNPL_TOS_APPROVE_TEXT" desc="The text informing the user that that BNPL issuer will check and approve their eligibility in the Buy-Now-Pay-Later Terms of Service dialog.">
         <ph name="BNPL_ISSUER_NAME">$1</ph> will check your eligibility (this won't affect your credit score). If approved, <ph name="BNPL_ISSUER_NAME">$1</ph> will provide payment plans for you to choose from and complete your purchase.
@@ -1206,6 +1240,12 @@
       Show pay later options at checkout
     </message>
   </if>
+  <message name="IDS_AUTOFILL_BNPL_UNSUPPORTED_CURRENCY_ERROR_DIALOG_TITLE" desc="The title text of an error dialog informing the user that Pay Later is not available for the selected currency.">
+    Pay later not available in this currency
+  </message>
+  <message name="IDS_AUTOFILL_BNPL_UNSUPPORTED_CURRENCY_ERROR_DESCRIPTION" desc="The description text of an error dialog informing the user to choose another payment method due to the selected currency is not supported yet.">
+    Choose another payment method to complete this purchase
+  </message>
 
   <!-- Credit card benefits-related strings -->
   <message name="IDS_AUTOFILL_CREDIT_CARD_BENEFIT_TEXT_FOR_SUGGESTIONS" desc="benefit text string shown in suggestion dropdown indicating that the credit card has an applicable benefit for this purchase with `terms apply` appended.">
@@ -1539,6 +1579,9 @@
     <message name="IDS_AUTOFILL_SETTINGS_PAGE_BULK_REMOVE_CVC_DESCRIPTION" desc="Description for the modal dialog when the user is trying to bulk remove/delete all the CVCs stored locally and on Google servers.">
       All security codes saved on your device and in Google Account will be deleted
     </message>
+    <message name="IDS_AUTOFILL_SETTINGS_PAGE_BULK_REMOVE_CVC_FROM_WALLET_DESCRIPTION" desc="Description for the modal dialog when the user is trying to bulk remove/delete all the CVCs stored locally and on Google servers.">
+      All security codes saved on your device and in Google Wallet will be deleted
+    </message>
     <message name="IDS_AUTOFILL_SETTINGS_PAGE_CVC_TAG_FOR_CREDIT_CARD_LIST_ENTRY" desc="Tag present on each entry in the credit card list on the payments settings page if that entry has a cvc saved to it.">
       CVC saved
     </message>
@@ -1580,6 +1623,9 @@
     <message name="IDS_AUTOFILL_SAVE_SERVER_IBAN_SUCCESS_SNACKBAR_MESSAGE_TEXT" desc="Text to be displayed in the snackbar shown after a server IBAN is saved.">
       IBAN saved to your Google Account
     </message>
+    <message name="IDS_AUTOFILL_SAVE_SERVER_IBAN_TO_WALLET_SUCCESS_SNACKBAR_MESSAGE_TEXT" desc="Text to be displayed in the snackbar shown after a server IBAN is saved in Google Wallet.">
+      IBAN saved in Google Wallet
+    </message>
     <message name="IDS_AUTOFILL_SAVE_SERVER_IBAN_SUCCESS_SNACKBAR_BUTTON_TEXT" desc="Text shown on the ok button of the confirmation prompt after an IBAN is saved.">
       Got it
     </message>
@@ -1608,17 +1654,32 @@
   <message name="IDS_AUTOFILL_SAVE_CARD_CONFIRMATION_SUCCESS_DESCRIPTION_TEXT" desc="Description text for confirmation shown after save card is successfully uploaded and saved to the server.">
     Your card is saved in your Google Account so you can autofill it for future purchases
   </message>
+  <message name="IDS_AUTOFILL_SAVE_CARD_TO_WALLET_CONFIRMATION_SUCCESS_DESCRIPTION_TEXT" desc="Description text for confirmation shown after Google Wallet save card is successfully uploaded and saved to the server.">
+    Your card is saved in Google Wallet so you can autofill it for future purchases
+  </message>
   <message name="IDS_AUTOFILL_SAVE_CARD_CONFIRMATION_FAILURE_DESCRIPTION_TEXT" desc="Description text for confirmation shown after save card upload to the server was unsuccessful.">
     This card couldn't be saved in your Google Account. It's saved to Chrome on this device instead.
+  </message>
+  <message name="IDS_AUTOFILL_SAVE_CARD_TO_WALLET_CONFIRMATION_FAILURE_DESCRIPTION_TEXT" desc="Description text for confirmation shown after Google Wallet save card upload to the server was unsuccessful.">
+    This card couldn't be saved in Google Wallet. It's saved to Chrome on this device instead.
   </message>
   <message name="IDS_AUTOFILL_SAVE_IBAN_CONFIRMATION_SUCCESS_DESCRIPTION_TEXT" desc="Description text for confirmation shown after upload save IBAN attempt was successful and it was uploaded to the server.">
     This IBAN is saved in your Google Account so you can use it across Google services.
   </message>
+  <message name="IDS_AUTOFILL_SAVE_IBAN_TO_WALLET_CONFIRMATION_SUCCESS_DESCRIPTION_TEXT" desc="Description text for confirmation shown after upload save IBAN attempt was successful and it was uploaded to the server. The wording specifically references Google Wallet.">
+    This IBAN is saved in Google Wallet so you can use it across Google services.
+  </message>
   <message name="IDS_AUTOFILL_SAVE_IBAN_CONFIRMATION_FAILURE_DESCRIPTION_TEXT" desc="Description text for confirmation shown after upload save IBAN attempt was failed and and it was not uploaded to the server.">
     This IBAN couldn't be saved in your Google Account. It's saved to Chrome on this device instead. Chrome will ask you again the next time you use this IBAN.
   </message>
+  <message name="IDS_AUTOFILL_SAVE_IBAN_TO_WALLET_CONFIRMATION_FAILURE_DESCRIPTION_TEXT" desc="Description text for confirmation shown after upload save IBAN to Google Wallet attempt was failed and and it was not uploaded to the server.">
+     This IBAN couldn't be saved in Google Wallet. It's saved to Chrome on this device instead. Chrome will ask you again the next time you use this IBAN.
+  </message>
   <message name="IDS_AUTOFILL_SAVE_IBAN_CONFIRMATION_FAILURE_HIT_MAX_STRIKE_DESCRIPTION_TEXT" desc="Description text for confirmation shown after upload save IBAN attempt was failed and and it was not uploaded to the server. Other than that, the number of offer-to-upload has hit the max strike.">
     This IBAN couldn't be saved in your Google Account. It's saved to Chrome on this device instead.
+  </message>
+  <message name="IDS_AUTOFILL_SAVE_IBAN_TO_WALLET_CONFIRMATION_FAILURE_HIT_MAX_STRIKE_DESCRIPTION_TEXT" desc="Description text for confirmation shown after upload save IBAN to Google Wallet attempt was failed and and it was not uploaded to the server. Other than that, the number of offer-to-upload has hit the max strike.">
+    This IBAN couldn't be saved in Google Wallet. It's saved to Chrome on this device instead.
   </message>
   <message name="IDS_AUTOFILL_VIRTUAL_CARD_ENROLL_CONFIRMATION_SUCCESS_DESCRIPTION_TEXT" desc="Description text for confirmation shown after virtual card enrollment is successful.">
     You can now use a virtual card to check out more securely with autofill.

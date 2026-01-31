@@ -138,8 +138,8 @@ class GlicIphControllerTestClassic : public GlicIphControllerTestBase {
       : GlicIphControllerTestBase({feature_engagement::kIPHGlicPromoFeature}) {
     // enables FRE warming to test that successful IPH will warm the FRE.
     scoped_feature_list_.InitWithFeatures(
-        {features::kGlicFreWarming},
-        {feature_engagement::kIPHGlicTryItFeature});
+        {features::kGlicFreWarming}, {feature_engagement::kIPHGlicTryItFeature,
+                                      features::kGlicTrustFirstOnboarding});
   }
   ~GlicIphControllerTestClassic() override = default;
 };
@@ -177,9 +177,12 @@ IN_PROC_BROWSER_TEST_F(GlicIphControllerTestClassic,
 class GlicIphControllerTestTryIt : public GlicIphControllerTestBase {
  public:
   GlicIphControllerTestTryIt()
-      // Enable both features to make sure that TryIt takes priority.
-      : GlicIphControllerTestBase({feature_engagement::kIPHGlicPromoFeature,
-                                   feature_engagement::kIPHGlicTryItFeature}) {}
+      : GlicIphControllerTestBase({feature_engagement::kIPHGlicTryItFeature}) {
+    // enables FRE warming to test that successful IPH will warm the FRE.
+    scoped_feature_list_.InitWithFeatures(
+        {}, {features::kGlicTrustFirstOnboarding});
+  }
+
   ~GlicIphControllerTestTryIt() override = default;
 };
 
@@ -225,7 +228,7 @@ class GlicIphControllerTestMultiInstance : public GlicIphControllerTestBase {
         {mojom::features::kGlicMultiTab, features::kGlicMultitabUnderlines,
          features::kGlicMultiInstance,
          feature_engagement::kIPHGlicPromoFeature},
-        {});
+        {features::kGlicTrustFirstOnboarding});
   }
   ~GlicIphControllerTestMultiInstance() override = default;
 };

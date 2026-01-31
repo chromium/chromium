@@ -170,7 +170,7 @@ public class DisplayAndroidManager {
         return sIsDisplayTopologyAvailable;
     }
 
-    private static Display getGlobalDefaultDisplay() {
+    /* package */ static Display getGlobalDefaultDisplay() {
         return getDisplayManager().getDisplay(Display.DEFAULT_DISPLAY);
     }
 

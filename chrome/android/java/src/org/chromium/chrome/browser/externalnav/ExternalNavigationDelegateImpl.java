@@ -20,6 +20,7 @@ import org.chromium.base.ApplicationState;
 import org.chromium.base.ApplicationStatus;
 import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
+import org.chromium.base.DeviceInfo;
 import org.chromium.base.IntentUtils;
 import org.chromium.base.PackageManagerUtils;
 import org.chromium.base.ResettersForTesting;
@@ -29,6 +30,8 @@ import org.chromium.chrome.browser.ChromeTabbedActivity2;
 import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.browserservices.intents.WebappConstants;
 import org.chromium.chrome.browser.document.ChromeLauncherActivity;
+import org.chromium.chrome.browser.open_in_app.OpenInAppDelegate;
+import org.chromium.chrome.browser.open_in_app.OpenInAppUtils;
 import org.chromium.chrome.browser.password_manager.CctPasswordSavingMetricsRecorderBridge;
 import org.chromium.chrome.browser.safe_browsing.SafeBrowsingBridge;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
@@ -307,6 +310,47 @@ public class ExternalNavigationDelegateImpl implements ExternalNavigationDelegat
     @Override
     public boolean wasTabLaunchedFromLinkCreatingNewWindow() {
         return mTabLaunchType == TabLaunchType.FROM_LINK_CREATING_NEW_WINDOW;
+    }
+
+    @Override
+    public boolean shouldLaunchNewWindow(ExternalNavigationParams params) {
+        return wasTabLaunchedFromLinkCreatingNewWindow()
+                && params.isInitialNavigationInFrame()
+                // TODO(crbug.com/452537438): Figure out a better way to check whether we are in
+                // desktop windowing mode or if the device can enter desktop windowing mode.
+                && (DeviceInfo.isDesktop() || params.isInDesktopWindowingMode());
+    }
+
+    @Override
+    public boolean shouldSelfNavigationLaunchAsMultipleTask(ExternalNavigationParams params) {
+        return false;
+    }
+
+    @Override
+    public boolean shouldSetAppForCurrentPage() {
+        return OpenInAppUtils.isOpenInAppAvailable();
+    }
+
+    @Override
+    public void setAppForCurrentPage(@Nullable ResolveInfo resolveInfo, Runnable openInApp) {
+        if (!OpenInAppUtils.isOpenInAppAvailable()) return;
+        if (!hasValidTab()) return;
+
+        // TODO(crbug.com/450253146): Share code with ExternalNavigationHandler#maybeAskToLaunchApp.
+        var pm = mApplicationContext.getPackageManager();
+        var name = resolveInfo != null ? resolveInfo.loadLabel(pm).toString() : null;
+        var icon = resolveInfo != null ? resolveInfo.loadIcon(pm) : null;
+        var info = new OpenInAppDelegate.OpenInAppInfo(openInApp, name, icon);
+
+        OpenInAppDelegate.from(mTab).updateOpenInAppInfo(info);
+    }
+
+    @Override
+    public void clearAppForCurrentPage() {
+        if (!OpenInAppUtils.isOpenInAppAvailable()) return;
+        if (!hasValidTab()) return;
+
+        OpenInAppDelegate.from(mTab).updateOpenInAppInfo(null);
     }
 
     /**

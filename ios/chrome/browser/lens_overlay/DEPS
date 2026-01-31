@@ -1,11 +1,13 @@
 include_rules = [
+  # keep-sorted start
   "+components/lens",
-  "+ios/chrome/browser/ntp/model",
-  "+ios/chrome/browser/snapshots/model",
+  "+ios/chrome/browser/device_orientation/ui_bundled/scoped_force_portrait_orientation.h",
   "+ios/chrome/browser/fullscreen/ui_bundled",
-  "+ios/chrome/browser/menu/ui_bundled",
   "+ios/chrome/browser/lens/ui_bundled/lens_entrypoint.h",
+  "+ios/chrome/browser/menu/ui_bundled",
+  "+ios/chrome/browser/ntp/model",
   "+ios/chrome/browser/signin/model/authentication_service.h",
   "+ios/chrome/browser/signin/model/authentication_service_factory.h",
-  "+ios/chrome/browser/device_orientation/ui_bundled/scoped_force_portrait_orientation.h",
+  "+ios/chrome/browser/snapshots/model",
+  # keep-sorted end
 ]

@@ -6,13 +6,14 @@
 #define CHROME_BROWSER_UI_VIEWS_EXTENSIONS_EXTENSIONS_MENU_COORDINATOR_H_
 
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ref.h"
+#include "chrome/browser/ui/extensions/extensions_container.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/view_observer.h"
 #include "ui/views/view_tracker.h"
 
 class Browser;
-class ExtensionsMenuViewPlatformDelegateViews;
-class ExtensionsMenuViewModel;
+class ExtensionsMenuDelegateDesktop;
 class ExtensionsContainerViews;
 
 namespace views {
@@ -23,7 +24,8 @@ class Widget;
 // Handles the lifetime and showing/hidden state of the extensions menu bubble.
 class ExtensionsMenuCoordinator : public views::ViewObserver {
  public:
-  explicit ExtensionsMenuCoordinator(Browser* browser);
+  ExtensionsMenuCoordinator(Browser* browser,
+                            ExtensionsContainer* extensions_container);
   ExtensionsMenuCoordinator(const ExtensionsMenuCoordinator&) = delete;
   const ExtensionsMenuCoordinator& operator=(const ExtensionsMenuCoordinator&) =
       delete;
@@ -31,7 +33,7 @@ class ExtensionsMenuCoordinator : public views::ViewObserver {
 
   // Displays the extensions menu under `anchor`.
   void Show(views::BubbleAnchor anchor,
-            ExtensionsContainerViews* extensions_container);
+            ExtensionsContainerViews* extensions_container_views);
 
   // Hides the currently-showing extensions menu, if it exists.
   void Hide();
@@ -43,20 +45,20 @@ class ExtensionsMenuCoordinator : public views::ViewObserver {
   views::Widget* GetExtensionsMenuWidget();
 
   // Accessors used by tests:
-  ExtensionsMenuViewPlatformDelegateViews* GetDelegateForTesting() {
-    return menu_delegate_;
+  ExtensionsMenuDelegateDesktop* GetDelegateForTesting() {
+    return menu_delegate_.get();
   }
   std::unique_ptr<views::BubbleDialogDelegate>
   CreateExtensionsMenuBubbleDialogDelegateForTesting(
       views::BubbleAnchor anchor,
-      ExtensionsContainerViews* extensions_container);
+      ExtensionsContainerViews* extensions_container_views);
 
  private:
   // Creates the bubble contents and returns its delegate.
   std::unique_ptr<views::BubbleDialogDelegate>
   CreateExtensionsMenuBubbleDialogDelegate(
       views::BubbleAnchor anchor,
-      ExtensionsContainerViews* extensions_container);
+      ExtensionsContainerViews* extensions_container_views);
 
   // views::ViewObserver
   void OnViewIsDeleting(views::View* observed_view) override;
@@ -64,14 +66,14 @@ class ExtensionsMenuCoordinator : public views::ViewObserver {
   const raw_ptr<Browser> browser_;
   views::ViewTracker bubble_tracker_;
 
+  // The `ExtensionsContainer` to use. It must outlive `this`.
+  raw_ref<ExtensionsContainer> extensions_container_;
+
   base::ScopedObservation<views::View, views::ViewObserver>
       bubble_view_observation_{this};
 
-  // The model for the extensions menu.
-  std::unique_ptr<ExtensionsMenuViewModel> menu_model_;
-
   // The platform delegate for the extensions menu.
-  raw_ptr<ExtensionsMenuViewPlatformDelegateViews> menu_delegate_;
+  std::unique_ptr<ExtensionsMenuDelegateDesktop> menu_delegate_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_EXTENSIONS_EXTENSIONS_MENU_COORDINATOR_H_

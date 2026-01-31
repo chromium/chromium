@@ -72,9 +72,9 @@ std::string GetExpectedMultipartRequestBody(
   const std::string boundary =
       content_type_header.substr(kBoundaryPrefix.size());
 
-  base::Value::Dict metadata;
+  base::DictValue metadata;
   metadata.Set("name", "test_title");
-  base::Value::List parents;
+  base::ListValue parents;
   parents.Append("test_folder_id");
   metadata.Set("parents", std::move(parents));
   return base::StrCat(
@@ -207,7 +207,7 @@ TEST_F(MultipartDriveUploaderTest, UploadSuccess) {
             elements[0].As<network::DataElementBytes>().AsStringPiece();
         EXPECT_EQ(request_body, GetExpectedMultipartRequestBody(request));
 
-        base::Value::Dict response_dict;
+        base::DictValue response_dict;
         response_dict.Set("id", kTestFileId);
         response_dict.Set("name", "test_title.pdf");
         content::URLLoaderInterceptor::WriteResponse(

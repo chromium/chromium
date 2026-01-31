@@ -144,10 +144,6 @@ export class HistoryToolbarElement extends CrLitElement {
     }
   }
 
-  private canShowMenuPromo_(): boolean {
-    return this.showMenuPromo && !loadTimeData.getBoolean('isGuestSession');
-  }
-
   protected onSearchChanged_(event: CustomEvent<string>) {
     this.fire(
         'change-query',
@@ -188,7 +184,7 @@ export class HistoryToolbarElement extends CrLitElement {
           'historyEmbeddingsAnswersSearchAlternativePrompt4',
         ];
         const randomIndex = Math.floor(Math.random() * possiblePrompts.length);
-        return loadTimeData.getString(possiblePrompts[randomIndex]);
+        return loadTimeData.getString(possiblePrompts[randomIndex]!);
       }
 
       return loadTimeData.getString('historyEmbeddingsSearchPrompt');

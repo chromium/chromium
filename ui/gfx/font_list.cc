@@ -5,7 +5,6 @@
 #include "ui/gfx/font_list.h"
 
 #include <ostream>
-#include <unordered_set>
 
 #include "base/lazy_instance.h"
 #include "base/strings/string_number_conversions.h"
@@ -16,6 +15,10 @@
 #include "third_party/skia/include/core/SkFontMgr.h"
 #include "third_party/skia/include/core/SkTypeface.h"
 #include "ui/gfx/font_list_impl.h"
+
+#if BUILDFLAG(IS_MAC)
+#include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
+#endif
 
 namespace {
 
@@ -254,7 +257,8 @@ std::string FontList::FirstAvailableOrFirst(const std::string& font_name_list) {
   // names in order to avoid at worst `available_size * families.size()` string
   // comparisons.
   const int available_size = fm->countFamilies();
-  std::unordered_set<std::string> availables;
+  absl::flat_hash_set<std::string> availables;
+  availables.reserve(available_size);
   for (int i = 0; i < available_size; ++i) {
     SkString name;
     fm->getFamilyName(i, &name);

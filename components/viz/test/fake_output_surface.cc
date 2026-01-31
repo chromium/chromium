@@ -12,7 +12,6 @@
 #include "components/viz/test/begin_frame_args_test.h"
 #include "gpu/command_buffer/common/swap_buffers_complete_params.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "ui/gfx/buffer_format_util.h"
 #include "ui/gfx/presentation_feedback.h"
 #include "ui/gfx/swap_result.h"
 

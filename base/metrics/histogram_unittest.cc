@@ -1036,18 +1036,18 @@ TEST_P(HistogramTest, CheckGetCountAndBucketData) {
   EXPECT_EQ(58, count_and_data_bucket.count);
   EXPECT_EQ(1440, count_and_data_bucket.sum);
 
-  const base::Value::List& buckets_list = count_and_data_bucket.buckets;
+  const base::ListValue& buckets_list = count_and_data_bucket.buckets;
   ASSERT_EQ(2u, buckets_list.size());
 
   // Check the first bucket.
-  const base::Value::Dict* bucket1 = buckets_list[0].GetIfDict();
+  const base::DictValue* bucket1 = buckets_list[0].GetIfDict();
   ASSERT_TRUE(bucket1 != nullptr);
   EXPECT_EQ(bucket1->FindInt("low"), std::optional<int>(20));
   EXPECT_EQ(bucket1->FindInt("high"), std::optional<int>(21));
   EXPECT_EQ(bucket1->FindInt("count"), std::optional<int>(30));
 
   // Check the second bucket.
-  const base::Value::Dict* bucket2 = buckets_list[1].GetIfDict();
+  const base::DictValue* bucket2 = buckets_list[1].GetIfDict();
   ASSERT_TRUE(bucket2 != nullptr);
   EXPECT_EQ(bucket2->FindInt("low"), std::optional<int>(30));
   EXPECT_EQ(bucket2->FindInt("high"), std::optional<int>(31));
@@ -1078,7 +1078,7 @@ TEST_P(HistogramTest, ToGraphDict) {
                                   /*bucket_count=*/5, HistogramBase::kNoFlags);
   histogram->AddCount(/*value=*/4, /*count=*/5);
 
-  base::Value::Dict output = histogram->ToGraphDict();
+  base::DictValue output = histogram->ToGraphDict();
   const std::string* header = output.FindString("header");
   const std::string* body = output.FindString("body");
 
@@ -1106,7 +1106,7 @@ TEST_P(HistogramTest, ToGraphDictNormalize) {
   histogram->AddCount(/*value=*/value_bucket_1, /*count=*/count_bucket_1);
   histogram->AddCount(/*value=*/value_bucket_2, /*count=*/count_bucket_2);
 
-  base::Value::Dict output = histogram->ToGraphDict();
+  base::DictValue output = histogram->ToGraphDict();
   std::string* header = output.FindString("header");
   std::string* body = output.FindString("body");
 

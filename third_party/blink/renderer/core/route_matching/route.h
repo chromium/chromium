@@ -12,6 +12,7 @@
 
 namespace blink {
 
+class AtomicString;
 class Document;
 class KURL;
 class URLPattern;
@@ -45,6 +46,15 @@ class Route : public EventTarget {
   // current state. Fire "activate" or "deactivate" events if the match status
   // changes. Return true if match status changed.
   bool UpdateMatchStatus(const KURL& previous_url, const KURL& next_url);
+
+  bool FromOrToMatchesParamInHref(const KURL& from,
+                                  const KURL& to,
+                                  const AtomicString& param,
+                                  const KURL& href) const;
+
+  bool HrefMatchesParam(const KURL& href,
+                        const AtomicString& key,
+                        const AtomicString& expected_value) const;
 
  private:
   // EventTarget:

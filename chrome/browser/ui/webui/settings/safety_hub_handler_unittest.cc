@@ -130,7 +130,8 @@ class SafetyHubHandlerTest : public testing::Test {
           {}},
          {features::kSafetyHubExtensionsUwSTrigger, {}},
          {features::kSafetyHubExtensionsOffStoreTrigger, {}},
-         {kMobilePromoOnDesktop, {{kMobilePromoOnDesktopPromoTypeParam, "2"}}},
+         {kMobilePromoOnDesktopWithReminder,
+          {{kMobilePromoOnDesktopPromoTypeParam, "2"}}},
          {sync_preferences::features::kEnableCrossDevicePrefTracker, {}}},
         /*disabled_features=*/{});
   }
@@ -186,21 +187,21 @@ class SafetyHubHandlerTest : public testing::Test {
   }
 
   void AddRevokedPermission() {
-    auto dict = base::Value::Dict()
-                    .Set(permissions::kRevokedKey,
-                         base::Value::List()
-                             .Append(UnusedSitePermissionsManager::
-                                         ConvertContentSettingsTypeToKey(
-                                             kUnusedRegularPermission))
-                             .Append(UnusedSitePermissionsManager::
-                                         ConvertContentSettingsTypeToKey(
-                                             kUnusedChooserPermission)))
-                    .Set(permissions::kRevokedChooserPermissionsKey,
-                         base::Value::Dict().Set(
-                             UnusedSitePermissionsManager::
+    auto dict =
+        base::DictValue()
+            .Set(permissions::kRevokedKey,
+                 base::ListValue()
+                     .Append(UnusedSitePermissionsManager::
                                  ConvertContentSettingsTypeToKey(
-                                     kUnusedChooserPermission),
-                             base::Value::Dict().Set("foo", "bar")));
+                                     kUnusedRegularPermission))
+                     .Append(UnusedSitePermissionsManager::
+                                 ConvertContentSettingsTypeToKey(
+                                     kUnusedChooserPermission)))
+            .Set(permissions::kRevokedChooserPermissionsKey,
+                 base::DictValue().Set(UnusedSitePermissionsManager::
+                                           ConvertContentSettingsTypeToKey(
+                                               kUnusedChooserPermission),
+                                       base::DictValue().Set("foo", "bar")));
 
     content_settings::ContentSettingConstraints constraint(clock()->Now());
     constraint.set_lifetime(kLifetime);
@@ -220,8 +221,8 @@ class SafetyHubHandlerTest : public testing::Test {
     hcsm()->SetWebsiteSettingDefaultScope(
         GURL(kAbusiveTestSite), GURL(kAbusiveTestSite),
         ContentSettingsType::REVOKED_ABUSIVE_NOTIFICATION_PERMISSIONS,
-        base::Value(base::Value::Dict().Set(
-            safety_hub::kRevokedStatusDictKeyStr, safety_hub::kRevokeStr)),
+        base::Value(base::DictValue().Set(safety_hub::kRevokedStatusDictKeyStr,
+                                          safety_hub::kRevokeStr)),
         constraint);
   }
 
@@ -235,15 +236,15 @@ class SafetyHubHandlerTest : public testing::Test {
     hcsm()->SetWebsiteSettingDefaultScope(
         GURL(kAbusiveAndUnusedTestSite), GURL(kAbusiveAndUnusedTestSite),
         ContentSettingsType::REVOKED_ABUSIVE_NOTIFICATION_PERMISSIONS,
-        base::Value(base::Value::Dict().Set(
-            safety_hub::kRevokedStatusDictKeyStr, safety_hub::kRevokeStr)),
+        base::Value(base::DictValue().Set(safety_hub::kRevokedStatusDictKeyStr,
+                                          safety_hub::kRevokeStr)),
         constraint);
 
     // Setup unused permissions.
     auto dict =
-        base::Value::Dict()
+        base::DictValue()
             .Set(permissions::kRevokedKey,
-                 base::Value::List()
+                 base::ListValue()
                      .Append(UnusedSitePermissionsManager::
                                  ConvertContentSettingsTypeToKey(
                                      kUnusedRegularPermission))
@@ -251,10 +252,10 @@ class SafetyHubHandlerTest : public testing::Test {
                                  ConvertContentSettingsTypeToKey(
                                      kUnusedChooserPermission)))
             .Set(permissions::kRevokedChooserPermissionsKey,
-                 base::Value::Dict().Set(UnusedSitePermissionsManager::
-                                             ConvertContentSettingsTypeToKey(
-                                                 kUnusedChooserPermission),
-                                         base::Value::Dict().Set("foo", "bar")))
+                 base::DictValue().Set(UnusedSitePermissionsManager::
+                                           ConvertContentSettingsTypeToKey(
+                                               kUnusedChooserPermission),
+                                       base::DictValue().Set("foo", "bar")))
             .Set(safety_hub::kExpirationKey,
                  base::TimeToValue(constraint.expiration()))
             .Set(safety_hub::kLifetimeKey,
@@ -364,7 +365,7 @@ class SafetyHubHandlerTest : public testing::Test {
   void ValidateHandleSafeBrowsingCardData(std::string header,
                                           std::string subheader,
                                           SafetyHubCardState state) {
-    base::Value::List args;
+    base::ListValue args;
     args.Append("getSafeBrowsingState");
 
     handler()->HandleGetSafeBrowsingCardData(args);
@@ -386,7 +387,7 @@ class SafetyHubHandlerTest : public testing::Test {
   }
 
   void ValidateEntryPointHasRecommendationsAndHeader(bool hasRecommendations) {
-    base::Value::List args;
+    base::ListValue args;
     args.Append("getSafetyHubEntryPointData");
 
     handler()->HandleGetSafetyHubEntryPointData(args);
@@ -448,13 +449,13 @@ class SafetyHubHandlerTest : public testing::Test {
         isModuleRecommended
             ? AddNotificationPermissionsForReview()
             : handler()->HandleIgnoreOriginsForNotificationPermissionReview(
-                  base::Value::List().Append(GetOriginList(1)));
+                  base::ListValue().Append(GetOriginList(1)));
         break;
       case SafetyHubHandler::SafetyHubModule::kUnusedSitePermissions:
         isModuleRecommended
             ? AddRevokedPermission()
             : handler()->HandleAcknowledgeRevokedUnusedSitePermissionsList(
-                  base::Value::List());
+                  base::ListValue());
         break;
       default:
         NOTREACHED()
@@ -491,7 +492,7 @@ class SafetyHubHandlerTest : public testing::Test {
     }
 
     // Send a message to handler to get the current state of the subheader.
-    base::Value::List args;
+    base::ListValue args;
     args.Append("getSafetyHubEntryPointData");
     handler()->HandleGetSafetyHubEntryPointData(args);
     const content::TestWebUI::CallData& data = *web_ui()->call_data().back();
@@ -515,8 +516,8 @@ class SafetyHubHandlerTest : public testing::Test {
     }
   }
 
-  base::Value::List GetOriginList(int size) {
-    base::Value::List origins;
+  base::ListValue GetOriginList(int size) {
+    base::ListValue origins;
     for (int i = 0; i < size; i++) {
       origins.Append("https://example" + base::NumberToString(i) + ".org:443");
     }
@@ -629,7 +630,7 @@ TEST_F(SafetyHubHandlerTest, PopulateUnusedSitePermissionsData) {
 
 TEST_F(SafetyHubHandlerTest, HandleAllowPermissionsAgainForUnusedSite) {
   AddUnusedPermission();
-  base::Value::List initial_unused_site_permissions =
+  base::ListValue initial_unused_site_permissions =
       handler()->PopulateUnusedSitePermissionsData();
   ExpectRevokedUnusedSitePermission(kUnusedTestSite);
   EXPECT_EQ(hcsm()
@@ -639,7 +640,7 @@ TEST_F(SafetyHubHandlerTest, HandleAllowPermissionsAgainForUnusedSite) {
             1U);
 
   // Allow the revoked permission for the unused site again.
-  base::Value::List args;
+  base::ListValue args;
   args.Append(base::Value(kUnusedTestSite));
   handler()->HandleAllowPermissionsAgainForUnusedSite(args);
 
@@ -654,7 +655,7 @@ TEST_F(SafetyHubHandlerTest, HandleAllowPermissionsAgainForUnusedSite) {
       hcsm()->GetContentSetting(GURL(kUnusedTestSite), GURL(kUnusedTestSite),
                                 kUnusedRegularPermission));
   EXPECT_EQ(
-      base::Value::Dict().Set("foo", "bar"),
+      base::DictValue().Set("foo", "bar"),
       hcsm()->GetWebsiteSetting(GURL(kUnusedTestSite), GURL(kUnusedTestSite),
                                 kUnusedChooserPermission));
 
@@ -676,14 +677,14 @@ TEST_F(SafetyHubHandlerTest,
       handler()->PopulateUnusedSitePermissionsData();
   EXPECT_GT(revoked_permissions_before.size(), 0U);
   // Acknowledging revoked permissions from unused sites clears the list.
-  base::Value::List args;
+  base::ListValue args;
   handler()->HandleAcknowledgeRevokedUnusedSitePermissionsList(args);
   const auto& revoked_permissions_after =
       handler()->PopulateUnusedSitePermissionsData();
   EXPECT_EQ(revoked_permissions_after.size(), 0U);
 
   // Undo reverts the list to its initial state.
-  base::Value::List undo_args;
+  base::ListValue undo_args;
   undo_args.Append(revoked_permissions_before.Clone());
   handler()->HandleUndoAcknowledgeRevokedUnusedSitePermissionsList(undo_args);
   EXPECT_EQ(revoked_permissions_before,
@@ -737,12 +738,12 @@ TEST_F(SafetyHubHandlerTest, PopulateAbusiveAndUnusedSitePermissionsData) {
 
 TEST_F(SafetyHubHandlerTest, HandleAllowPermissionsAgainForAbusiveSite) {
   AddAbusiveNotificationPermission();
-  base::Value::List initial_abusive_site_permissions =
+  base::ListValue initial_abusive_site_permissions =
       handler()->PopulateUnusedSitePermissionsData();
   ExpectRevokedAbusiveNotificationPermission(kAbusiveTestSite);
 
   // Allow the revoked permission for the unused site again.
-  base::Value::List args;
+  base::ListValue args;
   args.Append(base::Value(kAbusiveTestSite));
   handler()->HandleAllowPermissionsAgainForUnusedSite(args);
 
@@ -764,11 +765,11 @@ TEST_F(SafetyHubHandlerTest, HandleAllowPermissionsAgainForAbusiveSite) {
 TEST_F(SafetyHubHandlerTest,
        HandleAllowPermissionsAgainForAbusiveAndUnusedSite) {
   AddAbusiveAndUnusedNotificationPermission();
-  base::Value::List initial_abusive_and_unused_site_permissions =
+  base::ListValue initial_abusive_and_unused_site_permissions =
       handler()->PopulateUnusedSitePermissionsData();
 
   // Allow the revoked permission for the unused site again.
-  base::Value::List args;
+  base::ListValue args;
   args.Append(base::Value(kAbusiveAndUnusedTestSite));
   handler()->HandleAllowPermissionsAgainForUnusedSite(args);
 
@@ -826,7 +827,7 @@ TEST_F(SafetyHubHandlerTest,
       2U);
 
   // Acknowledging revoked permissions clears the list.
-  base::Value::List args;
+  base::ListValue args;
   handler()->HandleAcknowledgeRevokedUnusedSitePermissionsList(args);
   const auto& revoked_permissions_after =
       handler()->PopulateUnusedSitePermissionsData();
@@ -841,7 +842,7 @@ TEST_F(SafetyHubHandlerTest,
       0U);
 
   // Undo reverts the list to its initial state.
-  base::Value::List undo_args;
+  base::ListValue undo_args;
   undo_args.Append(revoked_permissions_before.Clone());
   handler()->HandleUndoAcknowledgeRevokedUnusedSitePermissionsList(undo_args);
   EXPECT_EQ(revoked_permissions_before,
@@ -865,7 +866,7 @@ TEST_F(SafetyHubHandlerTest,
           ContentSettingsType::NOTIFICATION_PERMISSION_REVIEW);
   ASSERT_EQ(0U, ignored_patterns.size());
 
-  base::Value::List args;
+  base::ListValue args;
   args.Append(GetOriginList(1));
   handler()->HandleIgnoreOriginsForNotificationPermissionReview(args);
 
@@ -879,7 +880,7 @@ TEST_F(SafetyHubHandlerTest,
 
 TEST_F(SafetyHubHandlerTest,
        HandleUndoIgnoreOriginsForNotificationPermissionReview) {
-  base::Value::List args;
+  base::ListValue args;
   args.Append(GetOriginList(1));
   handler()->HandleIgnoreOriginsForNotificationPermissionReview(args);
 
@@ -899,8 +900,8 @@ TEST_F(SafetyHubHandlerTest,
 }
 
 TEST_F(SafetyHubHandlerTest, HandleAllowNotificationPermissionForOrigins) {
-  base::Value::List args;
-  base::Value::List origins = GetOriginList(2);
+  base::ListValue args;
+  base::ListValue origins = GetOriginList(2);
   args.Append(origins.Clone());
   handler()->HandleAllowNotificationPermissionForOrigins(args);
 
@@ -922,8 +923,8 @@ TEST_F(SafetyHubHandlerTest, HandleAllowNotificationPermissionForOrigins) {
 }
 
 TEST_F(SafetyHubHandlerTest, HandleBlockNotificationPermissionForOrigins) {
-  base::Value::List args;
-  base::Value::List origins = GetOriginList(2);
+  base::ListValue args;
+  base::ListValue origins = GetOriginList(2);
   args.Append(origins.Clone());
 
   handler()->HandleBlockNotificationPermissionForOrigins(args);
@@ -948,8 +949,8 @@ TEST_F(SafetyHubHandlerTest, HandleBlockNotificationPermissionForOrigins) {
 TEST_F(SafetyHubHandlerTest, HandleResetNotificationPermissionForOrigins) {
   HostContentSettingsMap* content_settings =
       HostContentSettingsMapFactory::GetForProfile(profile());
-  base::Value::List args;
-  base::Value::List origins = GetOriginList(1);
+  base::ListValue args;
+  base::ListValue origins = GetOriginList(1);
   args.Append(origins.Clone());
 
   content_settings->SetContentSettingCustomScope(
@@ -1068,15 +1069,12 @@ TEST_F(SafetyHubHandlerTest, RevokeAllContentSettingTypes) {
       base::MakeFixedFlatSet<ContentSettingsType>({
           // clang-format off
           ContentSettingsType::MIDI,
-          ContentSettingsType::DURABLE_STORAGE,
+          ContentSettingsType::PERSISTENT_STORAGE,
           ContentSettingsType::NFC,
           ContentSettingsType::FILE_SYSTEM_READ_GUARD,
           ContentSettingsType::CAMERA_PAN_TILT_ZOOM,
           ContentSettingsType::FILE_SYSTEM_ACCESS_EXTENDED_PERMISSION,
           ContentSettingsType::POINTER_LOCK,
-          // TODO(crbug.com/465491626): remove once settings UI is added.
-          ContentSettingsType::LOCAL_NETWORK,
-          ContentSettingsType::LOOPBACK_NETWORK,
           // clang-format on
       });
 
@@ -1100,9 +1098,9 @@ TEST_F(SafetyHubHandlerTest, RevokeAllContentSettingTypes) {
     }
 
     // Add the permission to revoked permission list.
-    auto dict = base::Value::Dict().Set(
+    auto dict = base::DictValue().Set(
         permissions::kRevokedKey,
-        base::Value::List().Append(
+        base::ListValue().Append(
             UnusedSitePermissionsManager::ConvertContentSettingsTypeToKey(
                 type)));
     hcsm()->SetWebsiteSettingDefaultScope(
@@ -1113,7 +1111,7 @@ TEST_F(SafetyHubHandlerTest, RevokeAllContentSettingTypes) {
     // Unless the permission in kNoNameTypes, it should be shown on the UI.
     const auto& revoked_permissions =
         handler()->PopulateUnusedSitePermissionsData();
-    if (base::Contains(kNoNameTypes, type)) {
+    if (kNoNameTypes.contains(type)) {
       EXPECT_EQ(revoked_permissions.size(), 0U);
     } else {
       EXPECT_EQ(revoked_permissions.size(), 1U);
@@ -1122,7 +1120,7 @@ TEST_F(SafetyHubHandlerTest, RevokeAllContentSettingTypes) {
 }
 
 TEST_F(SafetyHubHandlerTest, VersionCardUpToDate) {
-  base::Value::List args;
+  base::ListValue args;
   args.Append("getVersionCardData");
   handler()->HandleGetVersionCardData(args);
 
@@ -1146,7 +1144,7 @@ TEST_F(SafetyHubHandlerTest, VersionCardOutOfDate) {
                      CHROME_VERSION_BUILD, CHROME_VERSION_PATCH + 1}),
       std::nullopt);
 
-  base::Value::List args;
+  base::ListValue args;
   args.Append("getVersionCardData");
   handler()->HandleGetVersionCardData(args);
 
@@ -1455,8 +1453,8 @@ class SafetyHubHandlerUnusedPermissionRevocationDisabledTest
     hcsm()->SetWebsiteSettingDefaultScope(
         GURL(kAbusiveTestSite), GURL(kAbusiveTestSite),
         ContentSettingsType::REVOKED_ABUSIVE_NOTIFICATION_PERMISSIONS,
-        base::Value(base::Value::Dict().Set(
-            safety_hub::kRevokedStatusDictKeyStr, safety_hub::kRevokeStr)));
+        base::Value(base::DictValue().Set(safety_hub::kRevokedStatusDictKeyStr,
+                                          safety_hub::kRevokeStr)));
   }
 
   void ExpectRevokedAbusiveNotificationPermission(const std::string& url) {
@@ -1512,7 +1510,7 @@ TEST_P(SafetyHubHandlerUnusedPermissionRevocationDisabledTest,
 
 TEST_P(SafetyHubHandlerUnusedPermissionRevocationDisabledTest,
        HandleAllowPermissionsAgainForSite) {
-  base::Value::List initial_permissions =
+  base::ListValue initial_permissions =
       handler()->PopulateUnusedSitePermissionsData();
   if (IsSafeBrowsingEnabled()) {
     ExpectRevokedAbusiveNotificationPermission(kAbusiveTestSite);
@@ -1526,7 +1524,7 @@ TEST_P(SafetyHubHandlerUnusedPermissionRevocationDisabledTest,
   }
 
   // Allow the revoked permission for the abusive notification site again.
-  base::Value::List args;
+  base::ListValue args;
   args.Append(base::Value(kAbusiveTestSite));
   handler()->HandleAllowPermissionsAgainForUnusedSite(args);
 
@@ -1587,7 +1585,7 @@ TEST_P(SafetyHubHandlerUnusedPermissionRevocationDisabledTest,
   EXPECT_EQ(0U, revoked_permissions_list.size());
 
   // Acknowledging revoked permissions clears the list.
-  base::Value::List args;
+  base::ListValue args;
   handler()->HandleAcknowledgeRevokedUnusedSitePermissionsList(args);
   const auto& revoked_permissions_after =
       handler()->PopulateUnusedSitePermissionsData();
@@ -1599,7 +1597,7 @@ TEST_P(SafetyHubHandlerUnusedPermissionRevocationDisabledTest,
   EXPECT_TRUE(revoked_permissions_list.empty());
 
   // Undo reverts the list to its initial state.
-  base::Value::List undo_args;
+  base::ListValue undo_args;
   undo_args.Append(revoked_permissions_before.Clone());
   handler()->HandleUndoAcknowledgeRevokedUnusedSitePermissionsList(undo_args);
   EXPECT_EQ(revoked_permissions_before,

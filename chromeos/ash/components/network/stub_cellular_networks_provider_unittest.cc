@@ -99,11 +99,11 @@ class StubCellularNetworksProviderTest : public testing::Test {
   }
 
   void SetPSimSlotInfo(const std::string& iccid) {
-    auto sim_slot_infos = base::Value::List().Append(
-        base::Value::Dict()
-            .Set(shill::kSIMSlotInfoEID, std::string())
-            .Set(shill::kSIMSlotInfoICCID, iccid)
-            .Set(shill::kSIMSlotInfoPrimary, true));
+    auto sim_slot_infos =
+        base::ListValue().Append(base::DictValue()
+                                     .Set(shill::kSIMSlotInfoEID, std::string())
+                                     .Set(shill::kSIMSlotInfoICCID, iccid)
+                                     .Set(shill::kSIMSlotInfoPrimary, true));
 
     helper_.device_test()->SetDeviceProperty(
         kDefaultCellularDevicePath, shill::kSIMSlotInfoProperty,
@@ -214,10 +214,10 @@ TEST_F(StubCellularNetworksProviderTest, AddOrRemoveStubCellularNetworks) {
   // `AddOrRemoveStubCellularNetworks()` directly and not rely on
   // `ManagedCellularPrefHandler` notifying pref changes.
   const std::string& iccid = profile3_properties->iccid().value();
-  base::Value::Dict prefs =
+  base::DictValue prefs =
       device_prefs()->GetDict(prefs::kManagedCellularESimMetadata).Clone();
   ASSERT_TRUE(prefs.contains(iccid));
-  base::Value::Dict* esim_metadata = prefs.FindDict(iccid);
+  base::DictValue* esim_metadata = prefs.FindDict(iccid);
   esim_metadata->Set("PolicyMissing", true);
   device_prefs()->SetDict(prefs::kManagedCellularESimMetadata,
                           std::move(prefs));

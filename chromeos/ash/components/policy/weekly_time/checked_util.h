@@ -19,11 +19,11 @@ class WeeklyTimeChecked;
 
 namespace policy::weekly_time {
 
-// Extracts a list of intervals from a Value::List with format like
+// Extracts a list of intervals from a base::ListValue with format like
 // `chromeos::prefs::kDeviceRestrictionSchedule`. Returns std::nullopt on error.
 COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_POLICY)
 std::optional<std::vector<WeeklyTimeIntervalChecked>> ExtractIntervalsFromList(
-    const base::Value::List& list);
+    const base::ListValue& list);
 
 // Returns whether any of the intervals contain the given time.
 COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_POLICY)

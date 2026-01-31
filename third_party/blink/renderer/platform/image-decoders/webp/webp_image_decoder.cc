@@ -369,9 +369,11 @@ bool WEBPImageDecoder::UpdateDemuxer() {
     // alpha.
     if (!(format_flags_ & (ANIMATION_FLAG | ALPHA_FLAG))) {
       WebPBitstreamFeatures features;
-      CHECK_EQ(WebPGetFeatures(consolidated_data_->bytes(),
-                               consolidated_data_->size(), &features),
-               VP8_STATUS_OK);
+      if (WebPGetFeatures(consolidated_data_->bytes(),
+                          consolidated_data_->size(),
+                          &features) != VP8_STATUS_OK) {
+        return SetFailed();
+      }
       if (features.format == CompressionFormat::kLossyFormat) {
         is_lossy_not_animated_no_alpha_ = true;
         static constexpr char kType[] = "WebP";

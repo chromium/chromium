@@ -28,7 +28,7 @@ namespace reporting {
 
 namespace {
 
-StatusOr<std::string> ValueToJson(base::Value::Dict record) {
+StatusOr<std::string> ValueToJson(base::DictValue record) {
   std::string json_record;
   if (!base::JSONWriter::Write(record, &json_record)) {
     return base::unexpected(
@@ -102,7 +102,7 @@ void ReportQueue::Enqueue(std::string record,
       base::BindOnce(&EnqueueResponded, std::move(callback), GetDestination()));
 }
 
-void ReportQueue::Enqueue(base::Value::Dict record,
+void ReportQueue::Enqueue(base::DictValue record,
                           Priority priority,
                           ReportQueue::EnqueueCallback callback) const {
   AddProducedRecord(

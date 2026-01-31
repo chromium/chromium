@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_SAFE_BROWSING_CONTENT_BROWSER_SAFE_BROWSING_SERVICE_INTERFACE_H_
 #define COMPONENTS_SAFE_BROWSING_CONTENT_BROWSER_SAFE_BROWSING_SERVICE_INTERFACE_H_
 
+#include "base/functional/callback_helpers.h"
 #include "base/memory/ref_counted.h"
 #include "build/build_config.h"
 #include "components/safe_browsing/core/browser/db/database_manager.h"
@@ -73,14 +74,28 @@ class SafeBrowsingServiceInterface
                                          std::string_view app_name,
                                          std::string_view uri) = 0;
 
+  void SetAddProfileTasksCompletedClosureForTesting(
+      base::OnceClosure completion_closure) {
+    add_profile_tasks_completed_closure_for_testing_ =
+        std::move(completion_closure);
+  }
+
  protected:
-  SafeBrowsingServiceInterface() = default;
-  virtual ~SafeBrowsingServiceInterface() = default;
+  SafeBrowsingServiceInterface();
+  virtual ~SafeBrowsingServiceInterface();
+
+  // Take the add-profile-tasks-completed closure if it has been set.
+  base::OnceClosure TakeAddProfileTasksCompletedClosureForTesting();
 
  private:
   friend struct content::BrowserThread::DeleteOnThread<
       content::BrowserThread::UI>;
   friend class base::DeleteHelper<SafeBrowsingServiceInterface>;
+
+  // For testing only: A closure that is queued to run after any tasks
+  // posted by the SafeBrowsingServiceInterface implementation of
+  // ProfileManagerObserver::OnProfileAdded() have completed.
+  base::OnceClosure add_profile_tasks_completed_closure_for_testing_;
 
   // The factory used to instantiate a SafeBrowsingServiceInterface object.
   // Useful for tests, so they can provide their own implementation of

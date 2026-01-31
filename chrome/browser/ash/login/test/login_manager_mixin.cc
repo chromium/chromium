@@ -9,7 +9,6 @@
 #include <utility>
 
 #include "base/command_line.h"
-#include "base/containers/contains.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "chrome/browser/ash/login/existing_user_controller.h"
@@ -162,8 +161,8 @@ void LoginManagerMixin::SetUpLocalState() {
   for (const auto& user : initial_users_) {
     ScopedListPrefUpdate users_pref(g_browser_process->local_state(),
                                     "LoggedInUsers");
-    base::Value email_value(user.account_id.GetUserEmail());
-    if (!base::Contains(users_pref.Get(), email_value)) {
+    std::string email_value(user.account_id.GetUserEmail());
+    if (!users_pref.Get().contains(email_value)) {
       users_pref->Append(std::move(email_value));
     }
 

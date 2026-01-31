@@ -15,7 +15,6 @@
 #include <vector>
 
 #include "base/base64.h"
-#include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
@@ -963,7 +962,7 @@ IN_PROC_BROWSER_TEST_F(BtmBounceDetectorBrowserTest,
 
   const GURL prerendering_url =
       embedded_test_server()->GetURL("a.test", "/title2.html");
-  const FrameTreeNodeId host_id =
+  const PrerenderHostId host_id =
       prerender_test_helper()->AddPrerender(prerendering_url);
   prerender_test_helper()->WaitForPrerenderLoadCompletion(prerendering_url);
   test::PrerenderHostObserver observer(*GetActiveWebContents(), host_id);
@@ -1004,7 +1003,7 @@ IN_PROC_BROWSER_TEST_F(BtmBounceDetectorBrowserTest,
       embedded_test_server()->GetURL("a.test", "/set_cookie_header.html");
   URLCookieAccessObserver observer(GetActiveWebContents(), prerendering_url,
                                    CookieOperation::kChange);
-  const FrameTreeNodeId host_id =
+  const PrerenderHostId host_id =
       prerender_test_helper()->AddPrerender(prerendering_url);
   prerender_test_helper()->WaitForPrerenderLoadCompletion(prerendering_url);
   observer.Wait();
@@ -2394,7 +2393,7 @@ IN_PROC_BROWSER_TEST_P(BtmSiteDataAccessDetectorTest,
 
   const GURL prerendering_url =
       embedded_https_test_server().GetURL("a.test", "/title2.html");
-  const FrameTreeNodeId host_id =
+  const PrerenderHostId host_id =
       prerender_test_helper()->AddPrerender(prerendering_url);
   prerender_test_helper()->WaitForPrerenderLoadCompletion(prerendering_url);
   test::PrerenderHostObserver observer(*GetActiveWebContents(), host_id);
@@ -3128,9 +3127,9 @@ class BtmPrivacySandboxDataPreservationTest : public ContentBrowserTest {
               if (request.relative_url != "/issue") {
                 return nullptr;
               }
-              if (!base::Contains(request.headers, "Sec-Private-State-Token") ||
-                  !base::Contains(request.headers,
-                                  "Sec-Private-State-Token-Crypto-Version")) {
+              if (!request.headers.contains("Sec-Private-State-Token") ||
+                  !request.headers.contains(
+                      "Sec-Private-State-Token-Crypto-Version")) {
                 return MakeTrustTokenFailureResponse();
               }
 

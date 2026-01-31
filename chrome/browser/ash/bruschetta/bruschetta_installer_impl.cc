@@ -303,7 +303,7 @@ void BruschettaInstallerImpl::OnBootDiskDownloaded(base::FilePath path,
 void BruschettaInstallerImpl::DownloadPflash() {
   VLOG(2) << "Downloading pflash";
   NotifyObserver(State::kPflashDownload);
-  const base::Value::Dict* pflash = config_.FindDict(prefs::kPolicyPflashKey);
+  const base::DictValue* pflash = config_.FindDict(prefs::kPolicyPflashKey);
   if (!pflash) {
     VLOG(2) << "No pflash file set, skipping to OpenFds";
 

@@ -27,10 +27,7 @@ public class TabGroupModelFilterCondition extends ConditionWithResult<TabGroupMo
     protected ConditionStatusWithResult<TabGroupModelFilter> resolveWithSuppliers()
             throws Exception {
         TabGroupModelFilter model =
-                mTabModelSelectorSupplier
-                        .get()
-                        .getTabGroupModelFilterProvider()
-                        .getTabGroupModelFilter(mIncognito);
+                mTabModelSelectorSupplier.get().getTabGroupModelFilter(mIncognito);
         if (model == null) {
             return notFulfilled("TabGroupModelFilter is null").withoutResult();
         }

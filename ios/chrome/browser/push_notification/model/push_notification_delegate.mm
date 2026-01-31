@@ -62,8 +62,8 @@
 #import "ios/chrome/browser/shared/model/profile/profile_manager_ios.h"
 #import "ios/chrome/browser/shared/model/profile/scoped_profile_keep_alive_ios.h"
 #import "ios/chrome/browser/shared/model/utils/first_run_util.h"
-#import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
+#import "ios/chrome/browser/shared/public/commands/scene_commands.h"
 #import "ios/chrome/browser/shared/public/commands/settings_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/signin/model/account_profile_mapper.h"
@@ -108,13 +108,12 @@ void ExtractNotificationInformation(ProfileManagerIOS* manager,
 
   // Get the permissions from `attr` but if they are missing, check if they
   // can be found in the profile (if it is loaded).
-  const base::Value::Dict* permissions = attr.GetNotificationPermissions();
+  const base::DictValue* permissions = attr.GetNotificationPermissions();
   if (!permissions) {
     ProfileIOS* profile = manager->GetProfileWithName(attr.GetProfileName());
     if (profile) {
-      const base::Value::Dict& profile_permissions =
-          profile->GetPrefs()->GetDict(
-              prefs::kFeaturePushNotificationPermissions);
+      const base::DictValue& profile_permissions = profile->GetPrefs()->GetDict(
+          prefs::kFeaturePushNotificationPermissions);
       attr.SetNotificationPermissions(profile_permissions.Clone());
       permissions = attr.GetNotificationPermissions();
     }
@@ -1214,12 +1213,12 @@ void ProcessIncomingNotification(
       (client) ? std::make_optional(client->GetClientId()) : std::nullopt;
 
   CommandDispatcher* dispatcher = browser->GetCommandDispatcher();
-  id<ApplicationCommands> applicationHandler =
-      HandlerForProtocol(dispatcher, ApplicationCommands);
+  id<SceneCommands> sceneHandler =
+      HandlerForProtocol(dispatcher, SceneCommands);
   id<SettingsCommands> settingsHandler =
       HandlerForProtocol(dispatcher, SettingsCommands);
   __block base::OnceClosure completion2 = std::move(completion);
-  [applicationHandler
+  [sceneHandler
       prepareToPresentModalWithSnackbarDismissal:YES
                                       completion:^{
                                         [settingsHandler

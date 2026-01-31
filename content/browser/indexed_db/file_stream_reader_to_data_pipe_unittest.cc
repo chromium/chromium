@@ -136,8 +136,9 @@ void FileStreamReaderToDataPipeTest::TestOpenFileAndReadIntoPipe(
   base::RunLoop run_loop;
   content::indexed_db::OpenFileAndReadIntoPipe(
       file_path, read_offset, read_length, std::move(file_reader_producer),
-      base::BindLambdaForTesting([&](int status) {
+      base::BindLambdaForTesting([&](int status, uint64_t transferred_bytes) {
         EXPECT_EQ(status, net::OK);
+        EXPECT_LE(transferred_bytes, read_length);
         run_loop.Quit();
       }));
 
@@ -174,10 +175,11 @@ TEST_F(FileStreamReaderToDataPipeTest, FileDoesNotExistError) {
   content::indexed_db::OpenFileAndReadIntoPipe(
       file_path, /*offset=*/0u, /*read_length=*/100u,
       std::move(file_reader_producer),
-      base::BindLambdaForTesting([&](int status) {
-        EXPECT_EQ(status, net::ERR_FILE_NOT_FOUND);
-        run_loop.Quit();
-      }));
+      base::BindLambdaForTesting(
+          [&](int status, uint64_t /*transferred_bytes*/) {
+            EXPECT_EQ(status, net::ERR_FILE_NOT_FOUND);
+            run_loop.Quit();
+          }));
   run_loop.Run();
 }
 
@@ -193,10 +195,11 @@ TEST_F(FileStreamReaderToDataPipeTest, FileReadError) {
   content::indexed_db::OpenFileAndReadIntoPipe(
       temp_dir_.GetPath(), /*offset=*/0, /*read_length=*/100u,
       std::move(file_reader_producer),
-      base::BindLambdaForTesting([&](int status) {
-        EXPECT_NE(status, net::OK);
-        run_loop.Quit();
-      }));
+      base::BindLambdaForTesting(
+          [&](int status, uint64_t /*transferred_bytes*/) {
+            EXPECT_NE(status, net::OK);
+            run_loop.Quit();
+          }));
   run_loop.Run();
 }
 

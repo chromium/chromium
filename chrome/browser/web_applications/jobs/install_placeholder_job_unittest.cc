@@ -21,6 +21,7 @@
 #include "chrome/browser/web_applications/test/fake_web_app_provider.h"
 #include "chrome/browser/web_applications/test/fake_web_contents_manager.h"
 #include "chrome/browser/web_applications/test/mock_data_retriever.h"
+#include "chrome/browser/web_applications/test/test_web_app_url_loader.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/test/web_app_test.h"
 #include "chrome/browser/web_applications/web_app_command_manager.h"
@@ -49,7 +50,8 @@ class InstallPlaceholderJobWrapperCommand
       Profile* profile,
       const ExternalInstallOptions& install_options,
       InstallPlaceholderJob::InstallAndReplaceCallback callback,
-      std::unique_ptr<WebAppDataRetriever> data_retriever = nullptr)
+      std::unique_ptr<WebAppDataRetriever> data_retriever = nullptr,
+      std::unique_ptr<webapps::WebAppUrlLoader> url_loader = nullptr)
       : WebAppCommand<SharedWebContentsWithAppLock,
                       webapps::InstallResultCode,
                       webapps::AppId>(
@@ -65,7 +67,8 @@ class InstallPlaceholderJobWrapperCommand
                             webapps::AppId())),
         profile_(*profile),
         install_options_(install_options),
-        data_retriever_(std::move(data_retriever)) {}
+        data_retriever_(std::move(data_retriever)),
+        url_loader_(std::move(url_loader)) {}
 
   ~InstallPlaceholderJobWrapperCommand() override = default;
 
@@ -78,6 +81,10 @@ class InstallPlaceholderJobWrapperCommand
             &InstallPlaceholderJobWrapperCommand::OnPlaceholderInstalled,
             weak_factory_.GetWeakPtr()),
         *lock_);
+    if (url_loader_) {
+      install_placeholder_job_->SetUrlLoaderForTesting(std::move(url_loader_));
+    }
+
     if (data_retriever_) {
       install_placeholder_job_->SetDataRetrieverForTesting(
           std::move(data_retriever_));
@@ -96,6 +103,7 @@ class InstallPlaceholderJobWrapperCommand
   raw_ref<Profile> profile_;
   ExternalInstallOptions install_options_;
   std::unique_ptr<WebAppDataRetriever> data_retriever_;
+  std::unique_ptr<webapps::WebAppUrlLoader> url_loader_;
 
   std::unique_ptr<SharedWebContentsWithAppLock> lock_;
 
@@ -150,12 +158,13 @@ TEST_F(InstallPlaceholderJobTest, InstallPlaceholder) {
 TEST_F(InstallPlaceholderJobTest, InstallPlaceholderWithOverrideIconUrl) {
   ExternalInstallOptions options(kInstallUrl, mojom::UserDisplayMode::kBrowser,
                                  ExternalInstallSource::kExternalPolicy);
-  const GURL icon_url("https://example.com/test.png");
+  const GURL icon_url("https://somedifferentoriginexample.com/test.png");
   options.override_icon_url = icon_url;
   base::test::TestFuture<webapps::InstallResultCode, webapps::AppId> future;
 
   auto data_retriever =
       std::make_unique<testing::StrictMock<MockDataRetriever>>();
+  auto url_loader = std::make_unique<web_app::TestWebAppUrlLoader>();
 
   SkBitmap bitmap;
   std::vector<gfx::Size> icon_sizes(1, gfx::Size(kIconSize, kIconSize));
@@ -173,9 +182,14 @@ TEST_F(InstallPlaceholderJobTest, InstallPlaceholderWithOverrideIconUrl) {
                base::test::IsNotNullCallback()))
       .WillOnce(base::test::RunOnceCallback<4>(
           IconsDownloadedResult::kCompleted, std::move(icons), http_result));
+  url_loader->SetNextLoadUrlResult(kInstallUrl,
+                                   webapps::WebAppUrlLoaderResult::kUrlLoaded);
+  url_loader->SetNextLoadUrlResult(icon_url,
+                                   webapps::WebAppUrlLoaderResult::kUrlLoaded);
 
   auto command = std::make_unique<InstallPlaceholderJobWrapperCommand>(
-      profile(), options, future.GetCallback(), std::move(data_retriever));
+      profile(), options, future.GetCallback(), std::move(data_retriever),
+      std::move(url_loader));
   provider()->command_manager().ScheduleCommand(std::move(command));
 
   EXPECT_EQ(future.Get<0>(), webapps::InstallResultCode::kSuccessNewInstall);

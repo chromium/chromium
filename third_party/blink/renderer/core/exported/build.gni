@@ -3,6 +3,8 @@
 # found in the LICENSE file.
 
 blink_core_sources_exported = [
+  "extension_script_streamer.cc",
+  "web_agent_cluster_key.cc",
   "web_array_buffer.cc",
   "web_array_buffer_converter.cc",
   "web_blob.cc",
@@ -75,6 +77,7 @@ blink_core_sources_exported = [
 ]
 
 blink_core_tests_exported = [
+  "extension_script_streamer_test.cc",
   "web_bundled_code_cache_generator_test.cc",
   "web_disallow_transition_scope_test.cc",
   "web_document_subresource_filter_test.cc",
@@ -95,5 +98,6 @@ blink_core_tests_exported = [
   "web_scoped_window_focus_allowed_indicator_test.cc",
   "web_searchable_form_data_test.cc",
   "web_selector_test.cc",
+  "web_view_impl_test.cc",
   "web_view_test.cc",
 ]

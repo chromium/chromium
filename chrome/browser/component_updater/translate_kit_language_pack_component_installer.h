@@ -7,6 +7,7 @@
 
 #include <string>
 
+#include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
 #include "base/values.h"
@@ -27,7 +28,8 @@ class TranslateKitLanguagePackComponentInstallerPolicy
  public:
   TranslateKitLanguagePackComponentInstallerPolicy(
       PrefService* pref_service,
-      on_device_translation::LanguagePackKey language_pack_key);
+      on_device_translation::LanguagePackKey language_pack_key,
+      base::RepeatingClosure on_ready_callback);
   ~TranslateKitLanguagePackComponentInstallerPolicy() override;
 
   // Not Copyable.
@@ -37,17 +39,17 @@ class TranslateKitLanguagePackComponentInstallerPolicy
       const TranslateKitLanguagePackComponentInstallerPolicy&) = delete;
 
   // `ComponentInstallerPolicy` overrides:
-  bool VerifyInstallation(const base::Value::Dict& manifest,
+  bool VerifyInstallation(const base::DictValue& manifest,
                           const base::FilePath& install_dir) const override;
   bool SupportsGroupPolicyEnabledComponentUpdates() const override;
   bool RequiresNetworkEncryption() const override;
   update_client::CrxInstaller::Result OnCustomInstall(
-      const base::Value::Dict& manifest,
+      const base::DictValue& manifest,
       const base::FilePath& install_dir) override;
   void OnCustomUninstall() override;
   void ComponentReady(const base::Version& version,
                       const base::FilePath& install_dir,
-                      base::Value::Dict manifest) override;
+                      base::DictValue manifest) override;
   base::FilePath GetRelativeInstallDir() const override;
   void GetHash(std::vector<uint8_t>* hash) const override;
   std::string GetName() const override;
@@ -55,6 +57,7 @@ class TranslateKitLanguagePackComponentInstallerPolicy
 
   // Requests to update a given language pack component.
   static void UpdateComponentOnDemand(
+      component_updater::ComponentUpdateService* cus,
       on_device_translation::LanguagePackKey language_pack_key);
 
  private:
@@ -62,13 +65,15 @@ class TranslateKitLanguagePackComponentInstallerPolicy
 
   const on_device_translation::LanguagePackKey language_pack_key_;
   raw_ptr<PrefService> pref_service_;
+  base::RepeatingClosure on_ready_callback_;
 };
 
 void RegisterTranslateKitLanguagePackComponent(
     ComponentUpdateService* cus,
     PrefService* pref_service,
     on_device_translation::LanguagePackKey language_pack_key,
-    base::OnceClosure registered_callback);
+    base::OnceClosure registered_callback,
+    base::RepeatingClosure on_ready_callback);
 
 void RegisterTranslateKitLanguagePackComponentsForUpdate(
     ComponentUpdateService* cus,

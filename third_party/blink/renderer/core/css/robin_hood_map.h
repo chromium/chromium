@@ -122,7 +122,7 @@ struct RobinHoodMap {
 
     Bucket* bucket = FindBucket(key);
     for (unsigned i = 0; i < kPossibleBucketsPerKey;
-         ++i, UNSAFE_TODO(++bucket)) {
+         ++i, UNSAFE_BUFFERS(++bucket)) {
       if (bucket->key == key) {
         return bucket;
       }
@@ -148,15 +148,15 @@ struct RobinHoodMap {
    public:
     iterator(Bucket* pos, const Bucket* end) : pos_(pos), end_(end) {
       while (pos_ != end_ && pos_->key.IsNull()) {
-        UNSAFE_TODO(++pos_);
+        UNSAFE_BUFFERS(++pos_);
       }
     }
     Bucket& operator*() const { return *pos_; }
     Bucket* operator->() const { return pos_; }
     iterator& operator++() {
-      UNSAFE_TODO(++pos_);
+      UNSAFE_BUFFERS(++pos_);
       while (pos_ != end_ && pos_->key.IsNull()) {
-        UNSAFE_TODO(++pos_);
+        UNSAFE_BUFFERS(++pos_);
       }
       return *this;
     }
@@ -171,15 +171,15 @@ struct RobinHoodMap {
     const_iterator(const Bucket* pos, const Bucket* end)
         : pos_(pos), end_(end) {
       while (pos_ != end_ && pos_->key.IsNull()) {
-        UNSAFE_TODO(++pos_);
+        UNSAFE_BUFFERS(++pos_);
       }
     }
     const Bucket& operator*() const { return *pos_; }
     const Bucket* operator->() const { return pos_; }
     const_iterator& operator++() {
-      UNSAFE_TODO(++pos_);
+      UNSAFE_BUFFERS(++pos_);
       while (pos_ != end_ && pos_->key.IsNull()) {
-        UNSAFE_TODO(++pos_);
+        UNSAFE_BUFFERS(++pos_);
       }
       return *this;
     }
@@ -200,13 +200,13 @@ struct RobinHoodMap {
 
  private:
   Bucket* EndBucket() {
-    return buckets_.get() ? UNSAFE_TODO(buckets_.get() + num_buckets_ +
-                                        kPossibleBucketsPerKey)
+    return buckets_.get() ? UNSAFE_BUFFERS(buckets_.get() + num_buckets_ +
+                                           kPossibleBucketsPerKey)
                           : nullptr;
   }
   const Bucket* EndBucket() const {
-    return buckets_.get() ? UNSAFE_TODO(buckets_.get() + num_buckets_ +
-                                        kPossibleBucketsPerKey)
+    return buckets_.get() ? UNSAFE_BUFFERS(buckets_.get() + num_buckets_ +
+                                           kPossibleBucketsPerKey)
                           : nullptr;
   }
   unsigned FindBucketIndex(const Key& key) const {
@@ -225,10 +225,10 @@ struct RobinHoodMap {
   // to find the element. This can never overflow; see the definition
   // of buckets_ below.
   Bucket* FindBucket(const Key& key) {
-    return UNSAFE_TODO(buckets_.get() + FindBucketIndex(key));
+    return UNSAFE_BUFFERS(buckets_.get() + FindBucketIndex(key));
   }
   const Bucket* FindBucket(const Key& key) const {
-    return UNSAFE_TODO(buckets_.get() + FindBucketIndex(key));
+    return UNSAFE_BUFFERS(buckets_.get() + FindBucketIndex(key));
   }
 
   // Inserts the given key/value, possibly displacing other buckets in the

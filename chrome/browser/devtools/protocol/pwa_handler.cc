@@ -23,7 +23,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/web_applications/isolated_web_apps/install/isolated_web_app_installation_manager.h"
+#include "chrome/browser/web_applications/isolated_web_apps/install/isolated_web_app_dev_install_manager.h"
 #include "chrome/browser/web_applications/locks/app_lock.h"
 #include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
 #include "chrome/browser/web_applications/os_integration/web_app_file_handler_manager.h"
@@ -76,7 +76,7 @@ base::expected<FileHandlers, protocol::Response> GetFileHandlersFromApp(
     const webapps::AppId app_id,
     const std::string in_manifest_id,
     web_app::AppLock& app_lock,
-    base::Value::Dict& debug_value) {
+    base::DictValue& debug_value) {
   const web_app::WebApp* web_app = app_lock.registrar().GetAppById(app_id);
   if (web_app == nullptr) {
     return base::unexpected(protocol::Response::InvalidParams(
@@ -348,7 +348,7 @@ void PWAHandler::InstallWebBundleFromUrl(
   }
   auto& installation_manager =
       web_app::WebAppProvider::GetForWebApps(GetProfile())
-          ->isolated_web_app_installation_manager();
+          ->isolated_web_app_dev_install_manager();
 
   if (web_bundle_url.SchemeIsFile()) {
     base::FilePath file_path;
@@ -361,7 +361,7 @@ void PWAHandler::InstallWebBundleFromUrl(
 
     installation_manager.InstallIsolatedWebAppFromDevModeBundle(
         file_path,
-        web_app::IsolatedWebAppInstallationManager::InstallSurface::
+        web_app::IsolatedWebAppDevInstallManager::InstallSurface::
             kDevToolsProtocol,
         base::BindOnce(&OnWebBundleInstalled, std::move(callback), manifest_url,
                        web_bundle_url),
@@ -371,7 +371,7 @@ void PWAHandler::InstallWebBundleFromUrl(
     if (expected_bundle_id->is_for_proxy_mode()) {
       installation_manager.InstallIsolatedWebAppFromDevModeProxy(
           web_bundle_url,
-          web_app::IsolatedWebAppInstallationManager::InstallSurface::
+          web_app::IsolatedWebAppDevInstallManager::InstallSurface::
               kDevToolsProtocol,
           base::BindOnce(&OnWebBundleInstalled, std::move(callback),
                          manifest_url, web_bundle_url),
@@ -379,7 +379,7 @@ void PWAHandler::InstallWebBundleFromUrl(
     } else {
       installation_manager.DownloadAndInstallIsolatedWebAppFromDevModeBundle(
           web_bundle_url,
-          web_app::IsolatedWebAppInstallationManager::InstallSurface::
+          web_app::IsolatedWebAppDevInstallManager::InstallSurface::
               kDevToolsProtocol,
           base::BindOnce(&OnWebBundleInstalled, std::move(callback),
                          manifest_url, web_bundle_url),
@@ -708,7 +708,7 @@ void PWAHandler::ChangeAppUserSettings(
       "PWAHandler::ChangeAppUserSettings", web_app::AppLockDescription(app_id),
       base::BindOnce(
           [](const webapps::AppId& app_id, web_app::AppLock& app_lock,
-             base::Value::Dict& debug_value) -> std::optional<std::string> {
+             base::DictValue& debug_value) -> std::optional<std::string> {
             // Only consider apps that are installed with or without OS
             // integration. Apps coming via sync should not be considered.
             if (app_lock.registrar().IsInstallState(

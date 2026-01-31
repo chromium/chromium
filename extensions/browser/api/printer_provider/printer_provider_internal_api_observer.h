@@ -36,7 +36,7 @@ class PrinterProviderInternalAPIObserver {
   // chrome.printerProvider.onGetCapabilityRequested event.
   virtual void OnGetCapabilityResult(const Extension* extension,
                                      int request_id,
-                                     base::Value::Dict result) = 0;
+                                     base::DictValue result) = 0;
 
   // Used by chrome.printerProviderInternal API to report
   // chrome.printerProvider.onPrintRequested result returned by the extension

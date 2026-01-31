@@ -8,7 +8,6 @@
 #include "base/memory/raw_ptr.h"
 #include "chromeos/ash/components/dbus/chromebox_for_meetings/cfm_observer.h"
 #include "chromeos/services/chromebox_for_meetings/public/cpp/service_adaptor.h"
-#include "chromeos/services/chromebox_for_meetings/public/mojom/meet_devices_logger.mojom-shared.h"
 #include "chromeos/services/chromebox_for_meetings/public/mojom/meet_devices_logger.mojom.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"

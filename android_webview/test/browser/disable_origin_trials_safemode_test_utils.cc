@@ -9,7 +9,7 @@
 
 namespace android_webview {
 
-static jboolean
+static bool
 JNI_DisableOriginTrialsSafeModeTestUtils_IsNonDeprecationTrialDisabled(
     JNIEnv* env) {
   const char kFrobulateThirdPartyTrialName[] = "FrobulateThirdParty";
@@ -18,8 +18,7 @@ JNI_DisableOriginTrialsSafeModeTestUtils_IsNonDeprecationTrialDisabled(
   return policy->IsFeatureDisabled(kFrobulateThirdPartyTrialName);
 }
 
-static jboolean
-JNI_DisableOriginTrialsSafeModeTestUtils_IsDeprecationTrialDisabled(
+static bool JNI_DisableOriginTrialsSafeModeTestUtils_IsDeprecationTrialDisabled(
     JNIEnv* env) {
   const char kFrobulateDeprecationTrialName[] = "FrobulateDeprecation";
   content::ContentClient* client = content::GetContentClientForTesting();
@@ -27,15 +26,14 @@ JNI_DisableOriginTrialsSafeModeTestUtils_IsDeprecationTrialDisabled(
   return policy->IsFeatureDisabled(kFrobulateDeprecationTrialName);
 }
 
-static jboolean JNI_DisableOriginTrialsSafeModeTestUtils_DoesPolicyExist(
+static bool JNI_DisableOriginTrialsSafeModeTestUtils_DoesPolicyExist(
     JNIEnv* env) {
   content::ContentClient* client = content::GetContentClientForTesting();
   blink::OriginTrialPolicy* policy = client->GetOriginTrialPolicy();
   return policy != nullptr;
 }
 
-static jboolean JNI_DisableOriginTrialsSafeModeTestUtils_IsFlagSet(
-    JNIEnv* env) {
+static bool JNI_DisableOriginTrialsSafeModeTestUtils_IsFlagSet(JNIEnv* env) {
   content::ContentClient* client = content::GetContentClientForTesting();
   auto* policy =
       (embedder_support::OriginTrialPolicyImpl*)client->GetOriginTrialPolicy();

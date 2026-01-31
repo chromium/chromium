@@ -33,7 +33,7 @@ std::string CommitResponseEvent::GetDetails() const {
   return "Result: " + result_.ToString();
 }
 
-base::Value::Dict CommitResponseEvent::GetProtoMessage(
+base::DictValue CommitResponseEvent::GetProtoMessage(
     bool include_specifics) const {
   return ClientToServerResponseToValue(
              response_, {.include_specifics = include_specifics,

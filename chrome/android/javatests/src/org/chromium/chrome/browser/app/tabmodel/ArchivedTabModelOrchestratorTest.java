@@ -216,11 +216,13 @@ public class ArchivedTabModelOrchestratorTest {
                     normalOrchestrator.initForTesting(
                             normalOrchestrator.getTabModelSelector(),
                             mNormalTabPersistentStore,
-                            mTabPersistencePolicy);
+                            mTabPersistencePolicy,
+                            /* shadowPersistentStore= */ null);
                     mOrchestrator.initForTesting(
                             mOrchestrator.getTabModelSelector(),
                             mArchivedTabPersistentStore,
-                            mTabPersistencePolicy);
+                            mTabPersistencePolicy,
+                            /* shadowPersistentStore= */ null);
                     mOrchestrator.doDeclutterPass(normalOrchestrator);
                 });
 

@@ -31,9 +31,11 @@ void HandleCapturedBitmap(
         reply,
     std::optional<uint32_t> last_hash,
     gfx::Size thumbnail_size,
-    const viz::CopyOutputBitmapWithMetadata& result) {
+    const content::CopyFromSurfaceResult& result) {
   DCHECK(!thumbnail_size.IsEmpty());
-  const SkBitmap& bitmap = result.bitmap;
+
+  // TODO(crbug.com/466199824): Update callsite to handle error case.
+  const SkBitmap& bitmap = result.has_value() ? result->bitmap : SkBitmap();
 
   std::optional<gfx::ImageSkia> image;
 
@@ -108,7 +110,7 @@ void CurrentTabDesktopMediaList::Refresh(bool update_thumbnails) {
                               weak_factory_.GetWeakPtr());
 
   view->CopyFromSurface(
-      gfx::Rect(), gfx::Size(),
+      gfx::Rect(), gfx::Size(), base::TimeDelta(),
       base::BindPostTask(thumbnail_task_runner_,
                          base::BindOnce(&HandleCapturedBitmap, std::move(reply),
                                         last_hash_, thumbnail_size_)));

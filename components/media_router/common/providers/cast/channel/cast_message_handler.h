@@ -129,7 +129,7 @@ struct InternalMessage {
                   std::string_view source_id,
                   std::string_view destination_id,
                   std::string_view message_namespace,
-                  base::Value::Dict message);
+                  base::DictValue message);
   ~InternalMessage();
 
   CastMessageType type;
@@ -146,7 +146,7 @@ struct InternalMessage {
   // One possibility is to derive namespace when it's needed based on the
   // context and/or message type.
   std::string message_namespace;
-  base::Value::Dict message;
+  base::DictValue message;
 };
 
 // Default timeout amount for requests waiting for a response.
@@ -273,7 +273,7 @@ class CastMessageHandler : public CastSocket::Observer {
   // the sequenceNumber on the message).
   virtual std::optional<int> SendMediaRequest(
       int channel_id,
-      const base::Value::Dict& body,
+      const base::DictValue& body,
       const std::string& source_id,
       const std::string& destination_id);
 
@@ -281,7 +281,7 @@ class CastMessageHandler : public CastSocket::Observer {
   // with the result of the operation. It is invalid to call this with
   // a message body that is not a volume request.
   virtual void SendSetVolumeRequest(int channel_id,
-                                    const base::Value::Dict& body,
+                                    const base::DictValue& body,
                                     const std::string& source_id,
                                     ResultCallback callback);
 
@@ -313,8 +313,7 @@ class CastMessageHandler : public CastSocket::Observer {
                           base::TimeDelta timeout);
     bool AddStopRequest(std::unique_ptr<StopSessionRequest> request);
     void AddVolumeRequest(std::unique_ptr<SetVolumeRequest> request);
-    void HandlePendingRequest(int request_id,
-                              const base::Value::Dict& response);
+    void HandlePendingRequest(int request_id, const base::DictValue& response);
 
    private:
     // Invokes the pending callback associated with |request_id| with a timed

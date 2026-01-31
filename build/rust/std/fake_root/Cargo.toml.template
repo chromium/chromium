@@ -12,8 +12,6 @@ features = [
     "backtrace",
     "panic-unwind",
     "profiler",
-    "std_detect_dlsym_getauxval",
-    "std_detect_file_io"
 ]
 
 [patch.crates-io]

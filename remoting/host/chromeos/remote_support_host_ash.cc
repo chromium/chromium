@@ -29,17 +29,15 @@ namespace remoting {
 
 namespace {
 
-base::Value::Dict SessionParamsToDict(
-    const mojom::SupportSessionParams& params) {
-  auto session_params = base::Value::Dict()
+base::DictValue SessionParamsToDict(const mojom::SupportSessionParams& params) {
+  auto session_params = base::DictValue()
                             .Set(kUserName, params.user_name)
                             .Set(kAuthorizedHelper, *params.authorized_helper);
 
   return session_params;
 }
 
-mojom::SupportSessionParams SessionParamsFromDict(
-    const base::Value::Dict& dict) {
+mojom::SupportSessionParams SessionParamsFromDict(const base::DictValue& dict) {
   mojom::SupportSessionParams result;
   const std::string* user_name = dict.FindString(kUserName);
   if (user_name) {
@@ -155,7 +153,7 @@ void RemoteSupportHostAsh::OnSessionRetrieved(
     SessionId session_id,
     const std::string& access_token,
     StartSessionCallback callback,
-    std::optional<base::Value::Dict> session) {
+    std::optional<base::DictValue> session) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (!session.has_value()) {
@@ -204,7 +202,7 @@ void RemoteSupportHostAsh::OnHostStateConnected(
 
     LOG(INFO) << "CRD: Storing information for reconnectable session";
     session_storage_->StoreSession(
-        base::Value::Dict()
+        base::DictValue()
             .Set(kSessionParamsDict, SessionParamsToDict(session_params))
             .Set(kEnterpriseParamsDict, enterprise_params->ToDict())
             .Set(kReconnectParamsDict,

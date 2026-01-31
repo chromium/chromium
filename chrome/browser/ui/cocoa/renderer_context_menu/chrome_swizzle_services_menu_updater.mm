@@ -13,6 +13,7 @@
 namespace {
 
 base::apple::ScopedObjCClassSwizzler* g_populatemenu_swizzler = nullptr;
+base::apple::ScopedObjCClassSwizzler* g_plugmenu_swizzler = nullptr;
 
 // |g_filtered_entries_array| is only set during testing (see
 // +[ChromeSwizzleServicesMenuUpdater storeFilteredEntriesForTestingInArray:]).
@@ -21,12 +22,19 @@ NSMutableArray* g_filtered_entries_array = nil;
 
 }  // namespace
 
+// AppKit-private method to determine if a menu is a contextual menu.
+@interface NSMenu (PrivateAPI)
+- (BOOL)_isContextualMenu;
+@end
+
 // An AppKit-private class that adds Services items to contextual menus and
 // the application Services menu.
 @interface _NSServicesMenuUpdater : NSObject
 - (void)populateMenu:(NSMenu*)menu
     withServiceEntries:(NSArray*)entries
             forDisplay:(BOOL)display;
+
+- (void)plugMenu:(NSMenu*)menu intoMenu:(NSMenu*)parentMenu;
 @end
 
 // An AppKit-private class representing a Services menu entry.
@@ -70,6 +78,30 @@ NSMutableArray* g_filtered_entries_array = nil;
       self, _cmd, menu, remainingEntries, display);
 }
 
+- (void)plugMenu:(NSMenu*)menu intoMenu:(NSMenu*)parentMenu {
+  // Fix appearance inconsistency for Services menu items inserted into
+  // contextual menus on macOS 14+. When AppKit inserts Services menu items,
+  // the menu's appearance may not match the current window's appearance
+  // (e.g., dark mode vs. light mode). This causes visual glitches where menu
+  // items appear with mismatched styling. (https://crbug.com/469479971)
+  //
+  // Only apply this fix to contextual menus by checking the private
+  // _isContextualMenu API. This ensures we don't inadvertently modify the
+  // appearance of other menu types (e.g., the main menu bar).
+  if ([parentMenu respondsToSelector:@selector(_isContextualMenu)] &&
+      [parentMenu _isContextualMenu]) {
+    // Inherit the appearance from the key window to match the current UI theme.
+    NSWindow* window = [NSApp keyWindow];
+    if (window && [window appearance]) {
+      [menu setAppearance:[window appearance]];
+    }
+  }
+
+  // Call the original implementation to perform the actual menu insertion.
+  g_plugmenu_swizzler->InvokeOriginal<void, NSMenu*, NSMenu*>(self, _cmd, menu,
+                                                              parentMenu);
+}
+
 + (void)storeFilteredEntriesForTestingInArray:(NSMutableArray*)array {
   g_filtered_entries_array = array;
 }
@@ -110,6 +142,21 @@ NSMutableArray* g_filtered_entries_array = nil;
     static base::NoDestructor<base::apple::ScopedObjCClassSwizzler>
         servicesMenuFilter(targetClass, swizzleClass, targetSelector);
     g_populatemenu_swizzler = servicesMenuFilter.get();
+
+    // Swizzle the plugMenu:intoMenu: method to fix appearance inconsistencies
+    // when Services menu items are inserted into contextual menus. This ensures
+    // that the inserted menu items inherit the correct appearance (dark/light
+    // mode) from the current window.
+    // This issue only affects macOS 14 and later; macOS 13 and earlier do not
+    // exhibit this problem, so we skip the swizzle on older versions.
+    if (@available(macOS 14.0, *)) {
+      SEL plugMenuSelector = @selector(plugMenu:intoMenu:);
+      if ([targetClass instancesRespondToSelector:plugMenuSelector]) {
+        static base::NoDestructor<base::apple::ScopedObjCClassSwizzler>
+            plugMenuFilter(targetClass, swizzleClass, plugMenuSelector);
+        g_plugmenu_swizzler = plugMenuFilter.get();
+      }
+    }
   });
 }
 

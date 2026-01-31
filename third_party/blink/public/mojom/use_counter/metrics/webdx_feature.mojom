@@ -340,7 +340,7 @@ enum WebDXFeature {
   kProfiler = 278,
   kAsyncIterableStreams = 279,
   kContainerScrollStateQueries = 280,
-  kDRAFT_ScopedViewTransitions = 281,
+  kViewTransitionsElementScoped = 281,
   kAttributionReporting = 282,
   kCookieStore = 283,
   kFencedframe = 284,
@@ -476,6 +476,13 @@ enum WebDXFeature {
   kTextJustify = 414,
   kSummarizer = 415,
   kTranslationApi = 416,
+  kDRAFT_MetaTextScale = 417,
+  kJpegxl = 418,
+  kPartitionedCookies = 419,
+  kPrompt = 420,
+  kProofreader = 421,
+  kRewriter = 422,
+  kWriter = 423,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots.

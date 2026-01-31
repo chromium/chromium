@@ -75,8 +75,8 @@ std::string Convert(mojom::ProcessState state) {
   }
 }
 
-base::Value::Dict ConvertBatteryValue(const mojom::BatteryInfoPtr& info) {
-  base::Value::Dict out_battery;
+base::DictValue ConvertBatteryValue(const mojom::BatteryInfoPtr& info) {
+  base::DictValue out_battery;
   if (info) {
     out_battery.Set("currentNow", info->current_now);
     out_battery.Set("voltageNow", info->voltage_now);
@@ -85,14 +85,14 @@ base::Value::Dict ConvertBatteryValue(const mojom::BatteryInfoPtr& info) {
   return out_battery;
 }
 
-base::Value::List ConvertLogicalCpus(
+base::ListValue ConvertLogicalCpus(
     const std::vector<mojom::LogicalCpuInfoPtr>& logical_cpus) {
-  base::Value::List out_logical_cpus;
+  base::ListValue out_logical_cpus;
   for (const auto& logical_cpu : logical_cpus) {
     if (!logical_cpu) {
       continue;
     }
-    base::Value::Dict out_logical_cpu;
+    base::DictValue out_logical_cpu;
     out_logical_cpu.Set("coreId", base::NumberToString(logical_cpu->core_id));
     out_logical_cpu.SetByDottedPath(
         "frequency.current",
@@ -114,14 +114,14 @@ base::Value::List ConvertLogicalCpus(
   return out_logical_cpus;
 }
 
-base::Value::List ConvertPhysicalCpus(
+base::ListValue ConvertPhysicalCpus(
     const std::vector<mojom::PhysicalCpuInfoPtr>& physical_cpus) {
-  base::Value::List out_physical_cpus;
+  base::ListValue out_physical_cpus;
   for (const auto& physical_cpu : physical_cpus) {
     if (!physical_cpu) {
       continue;
     }
-    base::Value::Dict out_physical_cpu;
+    base::DictValue out_physical_cpu;
     if (physical_cpu->model_name.has_value()) {
       out_physical_cpu.Set("modelName", physical_cpu->model_name.value());
     }
@@ -132,14 +132,14 @@ base::Value::List ConvertPhysicalCpus(
   return out_physical_cpus;
 }
 
-base::Value::List ConvertTemperatureChannels(
+base::ListValue ConvertTemperatureChannels(
     const std::vector<mojom::CpuTemperatureChannelPtr>& temperature_channels) {
-  base::Value::List out_temperature_channels;
+  base::ListValue out_temperature_channels;
   for (const auto& temperature_channel : temperature_channels) {
     if (!temperature_channel) {
       continue;
     }
-    base::Value::Dict out_temperature_channel;
+    base::DictValue out_temperature_channel;
     if (temperature_channel->label.has_value()) {
       out_temperature_channel.Set("label", temperature_channel->label.value());
     }
@@ -150,8 +150,8 @@ base::Value::List ConvertTemperatureChannels(
   return out_temperature_channels;
 }
 
-base::Value::Dict ConvertCpuValue(const mojom::CpuInfoPtr& info) {
-  base::Value::Dict out_cpu;
+base::DictValue ConvertCpuValue(const mojom::CpuInfoPtr& info) {
+  base::DictValue out_cpu;
   if (info) {
     out_cpu.Set("architecture", Convert(info->architecture));
     out_cpu.Set("numTotalThreads",
@@ -163,11 +163,11 @@ base::Value::Dict ConvertCpuValue(const mojom::CpuInfoPtr& info) {
   return out_cpu;
 }
 
-base::Value::List ConvertFanValue(const std::vector<mojom::FanInfoPtr>& info) {
-  base::Value::List out_fans;
+base::ListValue ConvertFanValue(const std::vector<mojom::FanInfoPtr>& info) {
+  base::ListValue out_fans;
   for (const auto& fan : info) {
     if (fan) {
-      base::Value::Dict fan_result;
+      base::DictValue fan_result;
       fan_result.Set("speedRpm", base::NumberToString(fan->speed_rpm));
       out_fans.Append(std::move(fan_result));
     }
@@ -178,14 +178,14 @@ base::Value::List ConvertFanValue(const std::vector<mojom::FanInfoPtr>& info) {
 // Set the value to `output` for optional uint64 value.
 void SetValue(std::string_view field_name,
               std::optional<uint64_t> value,
-              base::Value::Dict& output) {
+              base::DictValue& output) {
   if (value.has_value()) {
     output.Set(field_name, base::NumberToString(value.value()));
   }
 }
 
-base::Value::Dict ConvertMemoryValue(const mojom::MemoryInfoPtr& info) {
-  base::Value::Dict out_memory;
+base::DictValue ConvertMemoryValue(const mojom::MemoryInfoPtr& info) {
+  base::DictValue out_memory;
   if (info) {
     out_memory.Set("availableMemoryKib",
                    base::NumberToString(info->available_memory_kib));
@@ -213,8 +213,8 @@ base::Value::Dict ConvertMemoryValue(const mojom::MemoryInfoPtr& info) {
   return out_memory;
 }
 
-base::Value::Dict ConvertProcessValue(const mojom::ProcessInfoPtr& info) {
-  base::Value::Dict out_process;
+base::DictValue ConvertProcessValue(const mojom::ProcessInfoPtr& info) {
+  base::DictValue out_process;
   if (info) {
     out_process.Set("command", info->command);
     out_process.Set("userId", base::NumberToString(info->user_id));
@@ -241,11 +241,11 @@ base::Value::Dict ConvertProcessValue(const mojom::ProcessInfoPtr& info) {
   return out_process;
 }
 
-base::Value::List ConvertThermalValue(const mojom::ThermalInfoPtr& info) {
-  base::Value::List out_thermals;
+base::ListValue ConvertThermalValue(const mojom::ThermalInfoPtr& info) {
+  base::ListValue out_thermals;
   if (info) {
     for (const auto& thermal : info->thermal_sensors) {
-      base::Value::Dict thermal_result;
+      base::DictValue thermal_result;
       thermal_result.Set("name", thermal->name);
       thermal_result.Set("source", Convert(thermal->source));
       thermal_result.Set("temperatureCelsius", thermal->temperature_celsius);
@@ -255,13 +255,13 @@ base::Value::List ConvertThermalValue(const mojom::ThermalInfoPtr& info) {
   return out_thermals;
 }
 
-std::optional<base::Value::Dict> GetZramValue() {
+std::optional<base::DictValue> GetZramValue() {
   base::SwapInfo swap_info;
   if (!GetSwapInfo(&swap_info)) {
     LOG(WARNING) << ("Unable to get system zram info.");
     return std::nullopt;
   }
-  base::Value::Dict out_zram;
+  base::DictValue out_zram;
   out_zram.Set("totalUsedMemory",
                base::NumberToString(swap_info.mem_used_total));
   out_zram.Set("originalDataSize",
@@ -301,7 +301,7 @@ void HealthdInternalsMessageHandler::RegisterMessages() {
 }
 
 void HealthdInternalsMessageHandler::HandleGetHealthdInternalsFeatureFlag(
-    const base::Value::List& list) {
+    const base::ListValue& list) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   AllowJavascript();
@@ -309,13 +309,13 @@ void HealthdInternalsMessageHandler::HandleGetHealthdInternalsFeatureFlag(
     NOTREACHED();
   }
   base::Value callback_id = list[0].Clone();
-  base::Value::Dict result;
+  base::DictValue result;
   result.Set("tabsDisplayed", features::AreHealthdInternalsTabsEnabled());
   ResolveJavascriptCallback(callback_id, result);
 }
 
 void HealthdInternalsMessageHandler::HandleGetHealthdTelemetryInfo(
-    const base::Value::List& list) {
+    const base::ListValue& list) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   AllowJavascript();
@@ -343,11 +343,11 @@ void HealthdInternalsMessageHandler::HandleTelemetryResult(
     mojom::TelemetryInfoPtr info) {
   if (!info) {
     LOG(WARNING) << "Unable to access telemetry info from Healthd";
-    ReplyHealthdInternalInfo(std::move(callback_id), base::Value::Dict());
+    ReplyHealthdInternalInfo(std::move(callback_id), base::DictValue());
     return;
   }
 
-  base::Value::Dict result;
+  base::DictValue result;
   if (info->battery_result && info->battery_result->is_battery_info()) {
     const auto& battery_info = info->battery_result->get_battery_info();
     if (battery_info) {
@@ -373,7 +373,7 @@ void HealthdInternalsMessageHandler::HandleTelemetryResult(
 }
 
 void HealthdInternalsMessageHandler::HandleGetHealthdProcessInfo(
-    const base::Value::List& list) {
+    const base::ListValue& list) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   AllowJavascript();
@@ -398,15 +398,15 @@ void HealthdInternalsMessageHandler::HandleGetHealthdProcessInfo(
 void HealthdInternalsMessageHandler::HandleMultipleProcessResult(
     base::Value callback_id,
     mojom::MultipleProcessResultPtr process_result) {
-  base::Value::Dict result;
+  base::DictValue result;
   if (!process_result) {
     LOG(WARNING) << "Unable to access process info from Healthd";
-    result.Set("processes", base::Value::List());
+    result.Set("processes", base::ListValue());
     ReplyHealthdInternalInfo(std::move(callback_id), std::move(result));
     return;
   }
 
-  base::Value::List out_processes;
+  base::ListValue out_processes;
   for (const auto& [_, process_info] : process_result->process_infos) {
     out_processes.Append(ConvertProcessValue(process_info));
   }
@@ -416,7 +416,7 @@ void HealthdInternalsMessageHandler::HandleMultipleProcessResult(
 }
 
 void HealthdInternalsMessageHandler::HandleGetCrosSystemInfo(
-    const base::Value::List& list) {
+    const base::ListValue& list) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   AllowJavascript();
@@ -424,7 +424,7 @@ void HealthdInternalsMessageHandler::HandleGetCrosSystemInfo(
     NOTREACHED();
   }
   base::Value callback_id = list[0].Clone();
-  base::Value::Dict result;
+  base::DictValue result;
 
   auto zram = GetZramValue();
   if (zram.has_value()) {
@@ -436,7 +436,7 @@ void HealthdInternalsMessageHandler::HandleGetCrosSystemInfo(
 
 void HealthdInternalsMessageHandler::ReplyHealthdInternalInfo(
     base::Value callback_id,
-    base::Value::Dict result) {
+    base::DictValue result) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   ResolveJavascriptCallback(callback_id, result);

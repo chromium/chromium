@@ -295,11 +295,11 @@ test("display_unittests") {
     "display_layout_unittest.cc",
     "display_list_unittest.cc",
     "display_unittest.cc",
-    "headless/headless_screen_manager_unittests.cc",
+    "headless/headless_screen_manager_unittest.cc",
     "mojom/display_mojom_traits_unittest.cc",
     "mojom/screen_infos_mojom_traits_unittest.cc",
     "screen_unittest.cc",
-    "unified_desktop_utils_unittests.cc",
+    "unified_desktop_utils_unittest.cc",
     "util/display_util_unittest.cc",
     "util/edid_parser_unittest.cc",
   ]

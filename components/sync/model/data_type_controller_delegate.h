@@ -27,7 +27,7 @@ struct TypeEntitiesCount;
 // (which lives on the UI thread).
 class DataTypeControllerDelegate {
  public:
-  using AllNodesCallback = base::OnceCallback<void(base::Value::List)>;
+  using AllNodesCallback = base::OnceCallback<void(base::ListValue)>;
   using StartCallback =
       base::OnceCallback<void(std::unique_ptr<DataTypeActivationResponse>)>;
 
@@ -52,8 +52,9 @@ class DataTypeControllerDelegate {
   virtual void GetUnsyncedDataCount(
       base::OnceCallback<void(size_t)> callback) = 0;
 
-  // Returns a Value::List representing all nodes for the type to `callback`.
-  // Used for populating nodes in Sync Node Browser of chrome://sync-internals.
+  // Returns a base::ListValue representing all nodes for the type to
+  // `callback`. Used for populating nodes in Sync Node Browser of
+  // chrome://sync-internals.
   virtual void GetAllNodesForDebugging(AllNodesCallback callback) = 0;
 
   // Returns TypeEntitiesCount for the type to `callback`.

@@ -86,7 +86,7 @@ TEST_F(SyncErrorInfobarDelegateTest, SyncServiceSignInNeedsUpdate) {
   auto delegate = std::make_unique<SyncErrorInfoBarDelegate>(
       profile_.get(), presenter_, kSyncErrorInfoBarTrigger);
 
-  EXPECT_FALSE(delegate->Accept());
+  EXPECT_TRUE(delegate->Accept());
 }
 
 // Tests that the user sign-out while the infobar is displayed, check that
@@ -119,7 +119,7 @@ TEST_F(SyncErrorInfobarDelegateTest, SyncServiceUnrecoverableError) {
   auto delegate = std::make_unique<SyncErrorInfoBarDelegate>(
       profile_.get(), presenter_, kSyncErrorInfoBarTrigger);
 
-  EXPECT_FALSE(delegate->Accept());
+  EXPECT_TRUE(delegate->Accept());
 }
 
 TEST_F(SyncErrorInfobarDelegateTest, SyncServiceNeedsPassphrase) {
@@ -131,7 +131,7 @@ TEST_F(SyncErrorInfobarDelegateTest, SyncServiceNeedsPassphrase) {
   auto delegate = std::make_unique<SyncErrorInfoBarDelegate>(
       profile_.get(), presenter_, kSyncErrorInfoBarTrigger);
 
-  EXPECT_FALSE(delegate->Accept());
+  EXPECT_TRUE(delegate->Accept());
 }
 
 TEST_F(SyncErrorInfobarDelegateTest, SyncServiceNeedsTrustedVaultKey) {
@@ -146,7 +146,7 @@ TEST_F(SyncErrorInfobarDelegateTest, SyncServiceNeedsTrustedVaultKey) {
   auto delegate = std::make_unique<SyncErrorInfoBarDelegate>(
       profile_.get(), presenter_, kSyncErrorInfoBarTrigger);
 
-  EXPECT_FALSE(delegate->Accept());
+  EXPECT_TRUE(delegate->Accept());
 }
 
 TEST_F(SyncErrorInfobarDelegateTest,
@@ -163,7 +163,23 @@ TEST_F(SyncErrorInfobarDelegateTest,
   auto delegate = std::make_unique<SyncErrorInfoBarDelegate>(
       profile_.get(), presenter_, kSyncErrorInfoBarTrigger);
 
-  EXPECT_FALSE(delegate->Accept());
+  EXPECT_TRUE(delegate->Accept());
+}
+
+TEST_F(SyncErrorInfobarDelegateTest, SyncServiceBookmarksLimitExceeded) {
+  ON_CALL(*mock_sync_service(), GetUserActionableError())
+      .WillByDefault(Return(
+          syncer::SyncService::UserActionableError::kBookmarksLimitExceeded));
+
+  OCMExpect([presenter_ showBookmarksLimitExceededHelp]);
+  auto delegate = std::make_unique<SyncErrorInfoBarDelegate>(
+      profile_.get(), presenter_, kSyncErrorInfoBarTrigger);
+
+  EXPECT_FALSE(delegate->GetTitleText().empty());
+  EXPECT_FALSE(delegate->GetMessageText().empty());
+  EXPECT_FALSE(
+      delegate->GetButtonLabel(SyncErrorInfoBarDelegate::BUTTON_OK).empty());
+  EXPECT_TRUE(delegate->Accept());
 }
 
 TEST_F(SyncErrorInfobarDelegateTest, LogsMetricOnDismissal) {

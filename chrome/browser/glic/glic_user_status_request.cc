@@ -137,7 +137,7 @@ GlicUserStatusRequest::MapApiErrorCodeAndResponseBodyToUserStatus(
   //    is_access_denied_by_admin: true/false
   //    is_enterprise_account_data_protected: true/false
   // }
-  std::optional<base::Value::Dict> parsed_json = base::JSONReader::ReadDict(
+  std::optional<base::DictValue> parsed_json = base::JSONReader::ReadDict(
       response_body_as_string, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
 
   if (!parsed_json.has_value()) {

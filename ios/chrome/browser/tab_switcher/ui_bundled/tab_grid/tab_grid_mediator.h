@@ -13,6 +13,7 @@
 @protocol TabGridConsumer;
 @class TabGridModeHolder;
 @protocol TabGridPageMutator;
+@class TabGridState;
 
 namespace feature_engagement {
 class Tracker;
@@ -39,6 +40,9 @@ class PrefService;
 
 // Consumer for state changes in tab grid.
 @property(nonatomic, weak) id<TabGridConsumer> consumer;
+
+// Tab grid state for page updates.
+@property(nonatomic, weak) TabGridState* tabGridState;
 
 - (instancetype)initWithIdentityManager:
                     (signin::IdentityManager*)identityManager

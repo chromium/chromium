@@ -201,6 +201,19 @@ cetera:
 git cl upload -r foo@example.com,bar@example.com -b 123456
 ```
 
+Documented in [Issue 461824120][issue-461824120],
+sometimes `git cl upload` fails for users with a message similar to
+```
+error: RPC failed; HTTP 401 curl 22 The requested URL returned error: 401
+send-pack: unexpected disconnect while reading sideband packet
+fatal: the remote end hung up unexpectedly
+```
+One solution is to wait some time, pull the latest branch and run `gclient sync`.
+Alternatively, you may use `git config` to resolve the problem immediately:
+```
+git config --global http.postBuffer 524288000
+```
+
 See `git cl help upload` for a full list of flags.
 
 ### Uploading dependent changes
@@ -662,6 +675,7 @@ formats.
 [github-tutorial]: https://try.github.io
 [good-git-commit-message]: https://chris.beams.io/posts/git-commit/
 [individual-cla]: https://cla.developers.google.com/about/google-individual?csw=1
+[issue-461824120]: https://issues.chromium.org/issues/461824120
 [life-of-a-chromium-developer]: https://docs.google.com/presentation/d/1abnqM9j6zFodPHA38JG1061rG2iGj_GABxEDgZsdbJg/edit
 [noms-tutorial]: https://meowni.ca/posts/chromium-101
 [review-lag]: https://dev.chromium.org/developers/contributing-code/minimizing-review-lag-across-time-zones

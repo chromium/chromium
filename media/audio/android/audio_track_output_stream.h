@@ -45,10 +45,10 @@ class MEDIA_EXPORT AudioTrackOutputStream : public MuteableAudioOutputStream {
   base::android::ScopedJavaLocalRef<jobject> OnMoreData(
       JNIEnv* env,
       const base::android::JavaRef<jobject>& audio_data,
-      jlong delay);
+      int64_t delay);
   void OnError(JNIEnv* env);
-  jlong GetAddress(JNIEnv* env,
-                   const base::android::JavaRef<jobject>& byte_buffer);
+  int64_t GetAddress(JNIEnv* env,
+                     const base::android::JavaRef<jobject>& byte_buffer);
 
  private:
   const AudioParameters params_;

@@ -35,6 +35,8 @@
     <string name="menu_devui">WebView DevTools</string>
     <string name="menu_hide">Show/Hide WebView</string>
     <string name="menu_preconnect">Preconnect</string>
+    <string name="menu_add_quic_hint">Add QUIC hint</string>
+    <string name="menu_check_protocol">Check Protocol</string>
     <string name="load_url">Load URL</string>
     <string name="url_hint">Enter URL</string>
 

@@ -399,10 +399,6 @@ mojom::blink::AILanguageModelPromptRole LanguageModel::ConvertRoleToMojo(
       return mojom::blink::AILanguageModelPromptRole::kUser;
     case V8LanguageModelMessageRole::Enum::kAssistant:
       return mojom::blink::AILanguageModelPromptRole::kAssistant;
-    case V8LanguageModelMessageRole::Enum::kToolCall:
-      return mojom::blink::AILanguageModelPromptRole::kToolCall;
-    case V8LanguageModelMessageRole::Enum::kToolResponse:
-      return mojom::blink::AILanguageModelPromptRole::kToolResponse;
   }
   NOTREACHED();
 }
@@ -414,19 +410,10 @@ LanguageModel::LanguageModel(
     blink::mojom::blink::AILanguageModelInstanceInfoPtr info)
     : ExecutionContextClient(execution_context),
       task_runner_(task_runner),
-      language_model_remote_(execution_context) {
+      language_model_remote_(execution_context),
+      info_(std::move(info)) {
+  CHECK(info_);
   language_model_remote_.Bind(std::move(pending_remote), task_runner);
-  if (info) {
-    input_quota_ = info->input_quota;
-    input_usage_ = info->input_usage;
-    top_k_ = info->sampling_params->top_k;
-    temperature_ = info->sampling_params->temperature;
-    if (info->input_types.has_value()) {
-      for (const auto& input_type : *(info->input_types)) {
-        input_types_.insert(input_type);
-      }
-    }
-  }
 }
 
 void LanguageModel::Trace(Visitor* visitor) const {
@@ -650,8 +637,7 @@ ScriptPromise<V8LanguageModelPromptResult> LanguageModel::prompt(
 
   String json_schema = GetSchemaForInput(*processed_constraint, options);
   ConvertPromptInputsToMojo(
-      script_state, options->getSignalOr(nullptr), input, input_types_,
-      json_schema,
+      script_state, options->getSignalOr(nullptr), input, info_, json_schema,
       BindOnce(&LanguageModel::ExecutePrompt, WrapPersistent(this),
                WrapPersistent(script_state), WrapPersistent(resolver),
                std::move(*processed_constraint), std::move(pending_remote)),
@@ -681,8 +667,7 @@ ReadableStream* LanguageModel::promptStreaming(
 
   String json_schema = GetSchemaForInput(*processed_constraint, options);
   ConvertPromptInputsToMojo(
-      script_state, options->getSignalOr(nullptr), input, input_types_,
-      json_schema,
+      script_state, options->getSignalOr(nullptr), input, info_, json_schema,
       BindOnce(&LanguageModel::ExecutePrompt, WrapPersistent(this),
                WrapPersistent(script_state), WrapPersistent(stream),
                std::move(*processed_constraint), std::move(remote)),
@@ -827,7 +812,7 @@ ScriptPromise<IDLUndefined> LanguageModel::append(
   auto promise = resolver->Promise();
 
   ConvertPromptInputsToMojo(
-      script_state, options->getSignalOr(nullptr), input, input_types_,
+      script_state, options->getSignalOr(nullptr), input, info_,
       /*json_schema=*/"",
       blink::BindOnce(&AppendClient::Create, WrapPersistent(script_state),
                       WrapPersistent(this), WrapPersistent(resolver),
@@ -896,7 +881,7 @@ ScriptPromise<IDLDouble> LanguageModel::measureInputUsage(
   }
 
   ConvertPromptInputsToMojo(
-      script_state, options->getSignalOr(nullptr), input, input_types_,
+      script_state, options->getSignalOr(nullptr), input, info_,
       /*json_schema=*/"",
       BindOnce(&LanguageModel::ExecuteMeasureInputUsage, WrapPersistent(this),
                WrapPersistent(resolver), WrapPersistent(signal)),
@@ -930,7 +915,7 @@ void LanguageModel::ResolvePromiseOnComplete(
 void LanguageModel::OnResponseComplete(
     mojom::blink::ModelExecutionContextInfoPtr context_info) {
   if (context_info) {
-    input_usage_ = context_info->current_tokens;
+    info_->input_usage = context_info->current_tokens;
   }
 }
 

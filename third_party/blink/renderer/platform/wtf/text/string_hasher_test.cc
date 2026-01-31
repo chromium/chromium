@@ -26,6 +26,7 @@
 #include "third_party/blink/renderer/platform/wtf/text/string_hasher.h"
 
 #include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
 #include "third_party/blink/renderer/platform/wtf/text/case_folding_hash.h"
@@ -86,20 +87,21 @@ TEST(StringHasherTest, StringHasher_ComputeHashAndMaskTop8Bits) {
 
   // Test a slightly longer case (including characters that fit in Latin1
   // but not in ASCII).
-  const char kStr[] = "A quick browñ föx jumps over thé lazy dog";
-  UChar kWideStr[sizeof(kStr)];
-  for (unsigned i = 0; i < sizeof(kStr); ++i) {
-    UNSAFE_TODO(kWideStr[i]) = static_cast<uint8_t>(UNSAFE_TODO(kStr[i]));
-  }
-  EXPECT_EQ(StringHasher::ComputeHashAndMaskTop8Bits(kStr, strlen(kStr)),
-            StringHasher::ComputeHashAndMaskTop8Bits<ConvertTo8BitHashReader>(
-                (const char*)kWideStr, strlen(kStr)));
-  EXPECT_NE(StringHasher::ComputeHashAndMaskTop8Bits(kStr, strlen(kStr)),
-            StringHasher::ComputeHashAndMaskTop8Bits((const char*)kWideStr,
-                                                     strlen(kStr)));
-  EXPECT_NE(StringHasher::ComputeHashAndMaskTop8Bits(kStr, strlen(kStr)),
-            StringHasher::ComputeHashAndMaskTop8Bits((const char*)kWideStr,
-                                                     strlen(kStr) * 2));
+  constexpr base::span<const char> kStr =
+      base::span_from_cstring("A quick browñ föx jumps over thé lazy dog");
+  std::array<UChar, kStr.size()> wide_str;
+  std::ranges::copy(base::as_bytes(kStr), wide_str.begin());
+  auto wide_bytes = base::as_chars(base::as_byte_span(wide_str));
+  unsigned expected_hash =
+      StringHasher::ComputeHashAndMaskTop8Bits(kStr.data(), kStr.size());
+  using Reader = ConvertTo8BitHashReader;
+  EXPECT_EQ(expected_hash, StringHasher::ComputeHashAndMaskTop8Bits<Reader>(
+                               wide_bytes.data(),
+                               wide_bytes.size() / Reader::kCompressionFactor));
+  EXPECT_NE(expected_hash, StringHasher::ComputeHashAndMaskTop8Bits(
+                               wide_bytes.data(), wide_bytes.size() / 2));
+  EXPECT_NE(expected_hash, StringHasher::ComputeHashAndMaskTop8Bits(
+                               wide_bytes.data(), wide_bytes.size()));
 }
 
 TEST(StringHasherTest, StringHasher_HashMemory) {

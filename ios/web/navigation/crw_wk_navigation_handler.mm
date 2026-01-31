@@ -674,8 +674,8 @@ void LogPresentingErrorPageFailedWithError(NSError* error) {
     // If there was a redirect, change the URL to have the URL of the first
     // page.
     NSMutableDictionary* userInfo = [error.userInfo mutableCopy];
-    userInfo[NSURLErrorFailingURLStringErrorKey] =
-        base::SysUTF8ToNSString(navigationContext->GetUrl().spec());
+    userInfo[NSURLErrorFailingURLErrorKey] =
+        net::NSURLWithGURL(navigationContext->GetUrl());
     error = [NSError errorWithDomain:error.domain
                                 code:error.code
                             userInfo:userInfo];
@@ -684,16 +684,13 @@ void LogPresentingErrorPageFailedWithError(NSError* error) {
   if (@available(iOS 26, *)) {
     if ([error.domain isEqualToString:@(web::kWebKitErrorDomain)] &&
         error.code == web::kWebKitErrorCannotShowUrl &&
-        !error.userInfo[NSURLErrorFailingURLStringErrorKey]) {
+        !error.userInfo[NSURLErrorFailingURLErrorKey]) {
       // URL is expected in these errors, but it broke on iOS 26. Apply
       // workaround until WebKit fix is shipped.
       // TODO(crbug.com/441372052): Remove workaround.
-      NSString* urlString =
-          base::SysUTF8ToNSString(navigationContext->GetUrl().spec());
-
+      NSURL* url = net::NSURLWithGURL(navigationContext->GetUrl());
       NSMutableDictionary* userInfo = [error.userInfo mutableCopy];
-      userInfo[NSURLErrorFailingURLStringErrorKey] = urlString;
-      userInfo[web::kNSErrorFailingURLKey] = urlString;
+      userInfo[NSURLErrorFailingURLErrorKey] = url;
       error = [NSError errorWithDomain:error.domain
                                   code:error.code
                               userInfo:userInfo];
@@ -1371,7 +1368,7 @@ void LogPresentingErrorPageFailedWithError(NSError* error) {
 // running App specific pages in the same process as a web site from the
 // internet. Allows navigation to app specific URL in the following cases:
 //   - last committed URL is app specific
-//   - navigation not a new navigation (back-forward or reload)
+//   - navigation not a new navigation (back-forward)
 //   - navigation is typed, generated or bookmark
 //   - navigation is performed in iframe and main frame is app-specific page
 - (BOOL)shouldAllowAppSpecificURLNavigationAction:(WKNavigationAction*)action
@@ -1379,8 +1376,11 @@ void LogPresentingErrorPageFailedWithError(NSError* error) {
                                            (ui::PageTransition)pageTransition {
   GURL requestURL = net::GURLWithNSURL(action.request.URL);
   DCHECK(web::GetWebClient()->IsAppSpecificURL(requestURL));
-  if (web::GetWebClient()->IsAppSpecificURL(
-          self.webStateImpl->GetLastCommittedURL())) {
+  web::NavigationItem* lastItem =
+      self.webStateImpl->GetNavigationManager()->GetLastCommittedItem();
+  if (lastItem &&
+      (web::GetWebClient()->IsAppSpecificURL(lastItem->GetVirtualURL()) ||
+       web::GetWebClient()->IsAppSpecificURL(lastItem->GetURL()))) {
     // Last committed page is also app specific and navigation should be
     // allowed.
     return YES;
@@ -1388,11 +1388,6 @@ void LogPresentingErrorPageFailedWithError(NSError* error) {
 
   if (pageTransition & ui::PAGE_TRANSITION_FORWARD_BACK) {
     // Allow back-forward navigations.
-    return YES;
-  }
-
-  if (pageTransition & ui::PAGE_TRANSITION_RELOAD) {
-    // Allow reload navigations.
     return YES;
   }
 
@@ -1968,11 +1963,11 @@ void LogPresentingErrorPageFailedWithError(NSError* error) {
 
   // Error page needs the URL string in the error's userInfo for proper
   // display.
-  if (!error.userInfo[NSURLErrorFailingURLStringErrorKey]) {
+  if (!error.userInfo[NSURLErrorFailingURLErrorKey]) {
     NSMutableDictionary* updatedUserInfo = [[NSMutableDictionary alloc] init];
     [updatedUserInfo addEntriesFromDictionary:error.userInfo];
-    [updatedUserInfo setObject:blockedNSURL.absoluteString
-                        forKey:NSURLErrorFailingURLStringErrorKey];
+    [updatedUserInfo setObject:blockedNSURL
+                        forKey:NSURLErrorFailingURLErrorKey];
 
     error = [NSError errorWithDomain:error.domain
                                 code:error.code
@@ -2131,7 +2126,7 @@ void LogPresentingErrorPageFailedWithError(NSError* error) {
       // `didReceiveAuthenticationChallenge:` is the OS constructed chain, while
       // `chain` is the chain from the server.
       NSArray* chain = error.userInfo[web::kNSErrorPeerCertificateChainKey];
-      NSURL* requestURL = error.userInfo[web::kNSErrorFailingURLKey];
+      NSURL* requestURL = error.userInfo[NSURLErrorFailingURLErrorKey];
       NSString* host = requestURL.host;
       scoped_refptr<net::X509Certificate> leafCert;
       if (chain.count && host.length) {
@@ -2154,9 +2149,8 @@ void LogPresentingErrorPageFailedWithError(NSError* error) {
       ssl_info = info;
     }
   }
-  NSString* failingURLString =
-      error.userInfo[NSURLErrorFailingURLStringErrorKey];
-  GURL failingURL(base::SysNSStringToUTF8(failingURLString));
+  GURL failingURL =
+      net::GURLWithNSURL(error.userInfo[NSURLErrorFailingURLErrorKey]);
   GURL itemURL = item->GetURL();
   if (itemURL != failingURL) {
     item->SetVirtualURL(failingURL);

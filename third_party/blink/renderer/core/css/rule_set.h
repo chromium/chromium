@@ -37,7 +37,6 @@
 #include "third_party/blink/renderer/core/css/rule_feature_set.h"
 #include "third_party/blink/renderer/core/css/valid_property_filter.h"
 #include "third_party/blink/renderer/core/dom/element.h"
-#include "third_party/blink/renderer/core/route_matching/route_match_state.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_map.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_set.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_linked_stack.h"
@@ -65,10 +64,10 @@ enum AddRuleFlag {
   kRuleIsStartingStyle = 1 << 1,
 };
 
-
 class CSSSelector;
 class MediaQueryEvaluator;
 class StyleSheetContents;
+class RouteMatchState;
 
 // This is a wrapper around a StyleRule, pointing to one of the N complex
 // selectors in the StyleRule. This allows us to treat each selector
@@ -120,7 +119,7 @@ class CORE_EXPORT RuleData {
   // Member functions related to the descendant Bloom filter.
   const base::span<const uint16_t> DescendantSelectorIdentifierHashes(
       const Vector<uint16_t>& backing) const {
-    return UNSAFE_TODO({backing.data() + bloom_hash_pos_, bloom_hash_size_});
+    return UNSAFE_BUFFERS({backing.data() + bloom_hash_pos_, bloom_hash_size_});
   }
   void ComputeBloomFilterHashes(const StyleScope* style_scope,
                                 Vector<uint16_t>& backing);
@@ -249,7 +248,7 @@ class RuleMap {
     if (bucket == nullptr) {
       return {};
     } else {
-      return UNSAFE_TODO(
+      return UNSAFE_BUFFERS(
           {backing.begin() + bucket->value.start_index, bucket->value.length});
     }
   }
@@ -285,17 +284,19 @@ class RuleMap {
 
  private:
   base::span<RuleData> GetRulesFromExtent(Extent extent) {
-    return UNSAFE_TODO({backing.begin() + extent.start_index, extent.length});
+    return UNSAFE_BUFFERS(
+        {backing.begin() + extent.start_index, extent.length});
   }
   base::span<const RuleData> GetRulesFromExtent(Extent extent) const {
-    return UNSAFE_TODO({backing.begin() + extent.start_index, extent.length});
+    return UNSAFE_BUFFERS(
+        {backing.begin() + extent.start_index, extent.length});
   }
   base::span<unsigned> GetBucketNumberFromExtent(Extent extent) {
-    return UNSAFE_TODO(
+    return UNSAFE_BUFFERS(
         {bucket_number_.begin() + extent.start_index, extent.length});
   }
   base::span<const unsigned> GetBucketNumberFromExtent(Extent extent) const {
-    return UNSAFE_TODO(
+    return UNSAFE_BUFFERS(
         {bucket_number_.begin() + extent.start_index, extent.length});
   }
 
@@ -471,6 +472,9 @@ class CORE_EXPORT RuleSet final : public GarbageCollected<RuleSet> {
   }
   base::span<const RuleData> ActiveViewTransitionRules() const {
     return active_view_transition_rules_;
+  }
+  base::span<const RuleData> OverscrollTargetRules() const {
+    return overscroll_target_rules_;
   }
   const HeapVector<CascadeLayered<StyleRulePage>>& PageRules() const {
     return page_rules_;
@@ -756,6 +760,7 @@ class CORE_EXPORT RuleSet final : public GarbageCollected<RuleSet> {
   // Separate bucket for :active-view-transition rules, to support a default
   // view-transition-name in user-agent style.
   HeapVector<RuleData> active_view_transition_rules_;
+  HeapVector<RuleData> overscroll_target_rules_;
   HeapVector<RuleData> root_element_rules_;
   RuleFeatureSet features_;
   HeapVector<CascadeLayered<StyleRulePage>> page_rules_;

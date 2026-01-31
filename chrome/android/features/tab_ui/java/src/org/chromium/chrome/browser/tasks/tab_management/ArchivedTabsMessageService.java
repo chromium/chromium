@@ -18,8 +18,9 @@ import android.view.ViewGroup;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Callback;
+import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.base.supplier.NonNullObservableSupplier;
-import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.NullableObservableSupplier;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.build.annotations.EnsuresNonNull;
@@ -42,6 +43,7 @@ import org.chromium.chrome.browser.tab_ui.TabContentManager;
 import org.chromium.chrome.browser.tabmodel.TabCreator;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabModel;
+import org.chromium.chrome.browser.tasks.tab_management.MessageCardView.ServiceDismissActionProvider;
 import org.chromium.chrome.browser.tasks.tab_management.TabListCoordinator.TabListItemSizeChangedObserver;
 import org.chromium.chrome.browser.tasks.tab_management.TabListCoordinator.TabListMode;
 import org.chromium.chrome.browser.tasks.tab_management.TabProperties.UiType;
@@ -111,13 +113,13 @@ public class ArchivedTabsMessageService
     private final ModalDialogManager mModalDialogManager;
     private final Tracker mTracker;
     private final Runnable mAppendMessageRunnable;
-    private final ObservableSupplier<@Nullable TabListCoordinator> mTabListCoordinatorSupplier;
+    private final NullableObservableSupplier<TabListCoordinator> mTabListCoordinatorSupplier;
     private final @Nullable DesktopWindowStateManager mDesktopWindowStateManager;
-    private final ObservableSupplier<EdgeToEdgeController> mEdgeToEdgeSupplier;
+    private final MonotonicObservableSupplier<EdgeToEdgeController> mEdgeToEdgeSupplier;
     private final @Nullable TabGroupSyncService mTabGroupSyncService;
     private final Supplier<PaneManager> mPaneManagerSupplier;
     private final Supplier<TabGroupUiActionHandler> mTabGroupUiActionHandlerSupplier;
-    private final ObservableSupplier<@Nullable TabGroupModelFilter>
+    private final NullableObservableSupplier<TabGroupModelFilter>
             mCurrentTabGroupModelFilterSupplier;
     private final NonNullObservableSupplier<Integer> mTabCountSupplier;
     private final Supplier<LayoutStateProvider> mLayoutStateProviderSupplier;
@@ -152,13 +154,13 @@ public class ArchivedTabsMessageService
             ModalDialogManager modalDialogManager,
             Tracker tracker,
             Runnable appendMessageRunnable,
-            ObservableSupplier<@Nullable TabListCoordinator> tabListCoordinatorSupplier,
+            NullableObservableSupplier<TabListCoordinator> tabListCoordinatorSupplier,
             @Nullable DesktopWindowStateManager desktopWindowStateManager,
-            ObservableSupplier<EdgeToEdgeController> edgeToEdgeSupplier,
+            MonotonicObservableSupplier<EdgeToEdgeController> edgeToEdgeSupplier,
             @Nullable TabGroupSyncService tabGroupSyncService,
             Supplier<PaneManager> paneManagerSupplier,
             Supplier<TabGroupUiActionHandler> tabGroupUiActionHandlerSupplier,
-            ObservableSupplier<@Nullable TabGroupModelFilter> currentTabGroupModelFilterSupplier,
+            NullableObservableSupplier<TabGroupModelFilter> currentTabGroupModelFilterSupplier,
             Supplier<LayoutStateProvider> layoutStateProviderSupplier) {
         super(
                 MessageType.ARCHIVED_TABS_MESSAGE,
@@ -241,9 +243,7 @@ public class ArchivedTabsMessageService
         mModel.set(ICON_HIGHLIGHTED, mShowTwoStepIph);
     }
 
-    @Override
     public void destroy() {
-        super.destroy();
         if (mTabArchiveSettings != null) {
             mTabArchiveSettings.removeObserver(mTabArchiveSettingsObserver);
         }
@@ -291,8 +291,9 @@ public class ArchivedTabsMessageService
     }
 
     @Override
-    public void addObserver(MessageService.MessageObserver<@MessageType Integer> obs) {
-        super.addObserver(obs);
+    public void initialize(
+            ServiceDismissActionProvider<@MessageType Integer> serviceDismissActionProvider) {
+        super.initialize(serviceDismissActionProvider);
         maybeSendMessageToQueue(mTabCountSupplier.get());
     }
 
@@ -310,7 +311,7 @@ public class ArchivedTabsMessageService
         if (mTabGroupSyncService == null) return;
         if (tabCount <= 0) return;
         updateModelProperties(tabCount);
-        sendAvailabilityNotification((a, b) -> mModel);
+        queueMessage(dismiss -> mModel);
         mMessageSentToQueue = true;
         mAppendMessageRunnable.run();
     }
@@ -318,7 +319,7 @@ public class ArchivedTabsMessageService
     @VisibleForTesting
     void maybeInvalidatePreviouslySentMessage() {
         if (!mMessageSentToQueue) return;
-        sendInvalidNotification();
+        invalidateMessages();
         mMessageSentToQueue = false;
     }
 

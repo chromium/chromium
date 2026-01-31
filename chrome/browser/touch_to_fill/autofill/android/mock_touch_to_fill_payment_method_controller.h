@@ -51,12 +51,18 @@ class MockTouchToFillPaymentMethodController
                base::span<const Iban>),
               (override));
   MOCK_METHOD(bool,
-              ShowLoyaltyCards,
+              ShowAffiliatedLoyaltyCards,
               (std::unique_ptr<TouchToFillPaymentMethodView>,
                base::WeakPtr<TouchToFillDelegate>,
                base::span<const LoyaltyCard>,
                base::span<const LoyaltyCard>,
                bool),
+              (override));
+  MOCK_METHOD(bool,
+              ShowAllLoyaltyCards,
+              (std::unique_ptr<TouchToFillPaymentMethodView>,
+               base::WeakPtr<TouchToFillDelegate>,
+               base::span<const LoyaltyCard>),
               (override));
   MOCK_METHOD(
       bool,

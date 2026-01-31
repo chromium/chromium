@@ -4,7 +4,10 @@
 
 #![allow(non_snake_case)]
 
+use crate::extensions::unicode::{value, Value};
 use crate::preferences::extensions::unicode::enum_keyword;
+use crate::preferences::extensions::unicode::errors::PreferencesParseError;
+use crate::subtags::{subtag, Subtag};
 
 enum_keyword!(
     /// Hijri Calendar sub-type
@@ -20,6 +23,18 @@ enum_keyword!(
         /// Hijri calendar, Saudi Arabia sighting
         Rgsa
 });
+
+/// Handles aliases present in `v`. If found, returns a CalendarAlgorithm, else returns None
+fn handle_aliases(v: &Value) -> Option<CalendarAlgorithm> {
+    if *v == value!("islamicc") {
+        return Some(CalendarAlgorithm::Hijri(Some(
+            HijriCalendarAlgorithm::Civil,
+        )));
+    } else if v.as_subtags_slice() == [subtag!("ethiopic"), subtag!("amete"), subtag!("alem")] {
+        return Some(CalendarAlgorithm::Ethioaa);
+    }
+    None
+}
 
 enum_keyword!(
     /// A Unicode Calendar Identifier defines a type of calendar.
@@ -63,4 +78,31 @@ enum_keyword!(
         ("persian" => Persian),
         /// Republic of China calendar
         ("roc" => Roc)
-}, "ca", s, if *s == value!("islamicc") { return Ok(Self::Hijri(Some(HijriCalendarAlgorithm::Civil))); });
+}, "ca", s, if let Some(s) = handle_aliases(s) { return Ok(s) });
+
+#[test]
+fn test_calendar_aliases() {
+    fn test(s: &str, expectation: CalendarAlgorithm) {
+        let v = Value::try_from_str(s).unwrap();
+        let parsed = CalendarAlgorithm::try_from(&v).unwrap();
+        assert_eq!(parsed, expectation, "{s} must parse to {expectation:?}");
+    }
+
+    test("ethiopic-amete-alem", CalendarAlgorithm::Ethioaa);
+    test("ethiopic", CalendarAlgorithm::Ethiopic);
+    test("ethiopic-foobar", CalendarAlgorithm::Ethiopic);
+    test("ethioaa", CalendarAlgorithm::Ethioaa);
+    test(
+        "islamicc",
+        CalendarAlgorithm::Hijri(Some(HijriCalendarAlgorithm::Civil)),
+    );
+    test(
+        "islamic-civil",
+        CalendarAlgorithm::Hijri(Some(HijriCalendarAlgorithm::Civil)),
+    );
+    test(
+        "islamic-rgsa",
+        CalendarAlgorithm::Hijri(Some(HijriCalendarAlgorithm::Rgsa)),
+    );
+    test("islamic", CalendarAlgorithm::Hijri(None));
+}

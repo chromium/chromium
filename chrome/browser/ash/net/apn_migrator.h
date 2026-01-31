@@ -50,7 +50,7 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) ApnMigrator
   // Creates an ONC configuration object for the custom APN list Shill property
   // containing |apn_list|, and applies it for the cellular |network|.
   void SetShillCustomApnListForNetwork(const NetworkState& network,
-                                       const base::Value::List* apn_list);
+                                       const base::ListValue* apn_list);
 
   void OnSetShillCustomApnListSuccess(const std::string iccid);
   void OnSetShillCustomApnListFailure(const std::string iccid,
@@ -67,7 +67,7 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) ApnMigrator
   void OnGetManagedProperties(std::string iccid,
                               std::string guid,
                               const std::string& service_path,
-                              std::optional<base::Value::Dict> properties,
+                              std::optional<base::DictValue> properties,
                               std::optional<std::string> error);
 
   // Helper func that creates the |default_apn| before creating the

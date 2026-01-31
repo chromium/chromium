@@ -8,7 +8,6 @@
 
 #include "ash/metrics/task_switch_time_tracker.h"
 #include "base/check_op.h"
-#include "base/containers/contains.h"
 #include "base/notreached.h"
 
 namespace ash {
@@ -75,7 +74,7 @@ TaskSwitchTimeTracker* TaskSwitchMetricsRecorder::FindTaskSwitchTimeTracker(
 
 void TaskSwitchMetricsRecorder::AddTaskSwitchTimeTracker(
     TaskSwitchSource task_switch_source) {
-  CHECK(!base::Contains(histogram_map_, static_cast<int>(task_switch_source)));
+  CHECK(!histogram_map_.contains(static_cast<int>(task_switch_source)));
 
   const char* histogram_name = GetHistogramName(task_switch_source);
   if (histogram_name) {

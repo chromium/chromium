@@ -39,7 +39,7 @@ void ValueStore::Status::Merge(const Status& status) {
 
 // Implementation of ReadResult.
 
-ValueStore::ReadResult::ReadResult(base::Value::Dict settings, Status status)
+ValueStore::ReadResult::ReadResult(base::DictValue settings, Status status)
     : settings_(std::move(settings)), status_(std::move(status)) {}
 
 ValueStore::ReadResult::ReadResult(Status status)

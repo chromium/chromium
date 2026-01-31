@@ -11,9 +11,9 @@
 #include "base/time/time.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_key.h"
+#include "chrome/browser/supervised_user/family_link_settings_service_factory.h"
 #include "chrome/browser/supervised_user/linux_mac_windows/parent_access_dialog_result_observer.h"
 #include "chrome/browser/supervised_user/linux_mac_windows/parent_access_view.h"
-#include "chrome/browser/supervised_user/supervised_user_settings_service_factory.h"
 #include "components/supervised_user/core/common/features.h"
 #include "components/supervised_user/core/common/supervised_user_constants.h"
 #include "content/public/browser/navigation_handle.h"
@@ -33,17 +33,15 @@ SupervisedUserWebContentHandlerImpl::~SupervisedUserWebContentHandlerImpl() =
     default;
 
 void SupervisedUserWebContentHandlerImpl::RequestLocalApproval(
-    const GURL& url,
+    const GURL& target_url,
+    supervised_user::WebFilteringResult filtering_result,
     const std::u16string& child_display_name,
-    const supervised_user::UrlFormatter& url_formatter,
-    const supervised_user::FilteringBehaviorReason& filtering_reason,
     ApprovalRequestInitiatedCallback callback) {
   CHECK(base::FeatureList::IsEnabled(supervised_user::kLocalWebApprovals));
   CHECK(web_contents_);
-  GURL target_url = url_formatter.FormatUrl(url);
   base::TimeTicks start_time = base::TimeTicks::Now();
 
-  if (!url.has_host() || IsLocalApprovalInProgress()) {
+  if (!filtering_result.url.has_host() || IsLocalApprovalInProgress()) {
     // A host must exist, because this is allow-listed at the end of the flow.
     std::move(callback).Run(false);
     return;
@@ -70,7 +68,7 @@ void SupervisedUserWebContentHandlerImpl::RequestLocalApproval(
       weak_ptr_factory_.GetWeakPtr());
 
   weak_parent_access_view_ = ParentAccessView::ShowParentAccessDialog(
-      web_contents_, target_url, filtering_reason,
+      web_contents_, target_url, filtering_result.reason,
       std::move(create_observer_callback), std::move(abort_dialog_callback),
       std::move(dialog_result_observer_reset_callback));
 
@@ -104,12 +102,14 @@ void SupervisedUserWebContentHandlerImpl::
         std::optional<supervised_user::LocalWebApprovalErrorType> error_type) {
   Profile* profile =
       Profile::FromBrowserContext(web_contents_->GetBrowserContext());
-  supervised_user::SupervisedUserSettingsService* settings_service =
-      SupervisedUserSettingsServiceFactory::GetForKey(profile->GetProfileKey());
-  CHECK(settings_service);
+  supervised_user::FamilyLinkSettingsService* family_link_settings_service =
+      supervised_user::FamilyLinkSettingsServiceFactory::GetForKey(
+          profile->GetProfileKey());
+  CHECK(family_link_settings_service);
 
   supervised_user::WebContentHandler::OnLocalApprovalRequestCompleted(
-      *settings_service, target_url, start_time, result, error_type);
+      *family_link_settings_service, target_url, start_time, result,
+      error_type);
   switch (result) {
     case supervised_user::LocalApprovalResult::kError:
       DisplayErrorMessageInDialog();

@@ -56,12 +56,9 @@ class MediaSessionAndroid final
   void Resume(JNIEnv* env);
   void Suspend(JNIEnv* env);
   void Stop(JNIEnv* env);
-  void Seek(JNIEnv* env,
-            const jlong millis);
-  void SeekTo(JNIEnv* env,
-              const jlong millis);
-  void DidReceiveAction(JNIEnv* env,
-                        jint action);
+  void Seek(JNIEnv* env, const int64_t millis);
+  void SeekTo(JNIEnv* env, const int64_t millis);
+  void DidReceiveAction(JNIEnv* env, int32_t action);
   void RequestSystemAudioFocus(JNIEnv* env);
 
  private:

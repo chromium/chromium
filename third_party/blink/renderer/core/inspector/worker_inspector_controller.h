@@ -53,7 +53,7 @@ struct WorkerDevToolsParams;
 
 class WorkerInspectorController final
     : public GarbageCollected<WorkerInspectorController>,
-      public trace_event::EnabledStateObserver,
+      public trace_event::TraceSessionObserver,
       public DevToolsAgent::Client,
       private Thread::TaskObserver {
  public:
@@ -86,9 +86,8 @@ class WorkerInspectorController final
   void WillProcessTask(const base::PendingTask&, bool) override;
   void DidProcessTask(const base::PendingTask&) override;
 
-  // blink::trace_event::EnabledStateObserver implementation:
-  void OnTraceLogEnabled() override;
-  void OnTraceLogDisabled() override;
+  // trace_event::TraceSessionObserver implementation:
+  void OnStart(const perfetto::DataSourceBase::StartArgs&) override;
 
   void EmitTraceEvent();
 

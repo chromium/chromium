@@ -218,21 +218,21 @@ FEATURE_GRAMMAR = ({
         list: {
             'enum_map': {
                 'extension':
-                'Manifest::TYPE_EXTENSION',
+                'Manifest::Type::kExtension',
                 'hosted_app':
-                'Manifest::TYPE_HOSTED_APP',
+                'Manifest::Type::kHostedApp',
                 'legacy_packaged_app':
-                'Manifest::TYPE_LEGACY_PACKAGED_APP',
+                'Manifest::Type::kLegacyPackagedApp',
                 'platform_app':
-                'Manifest::TYPE_PLATFORM_APP',
+                'Manifest::Type::kPlatformApp',
                 'shared_module':
-                'Manifest::TYPE_SHARED_MODULE',
+                'Manifest::Type::kSharedModule',
                 'theme':
-                'Manifest::TYPE_THEME',
+                'Manifest::Type::kTheme',
                 'login_screen_extension':
-                'Manifest::TYPE_LOGIN_SCREEN_EXTENSION',
+                'Manifest::Type::kLoginScreenExtension',
                 'chromeos_system_extension':
-                'Manifest::TYPE_CHROMEOS_SYSTEM_EXTENSION',
+                'Manifest::Type::kChromeOSSystemExtension',
             },
             'allow_all': True
         },
@@ -243,11 +243,11 @@ FEATURE_GRAMMAR = ({
     'location': {
         str: {
             'enum_map': {
-                'component': 'SimpleFeature::COMPONENT_LOCATION',
+                'component': 'SimpleFeature::Location::kComponent',
                 'external_component':
-                'SimpleFeature::EXTERNAL_COMPONENT_LOCATION',
-                'policy': 'SimpleFeature::POLICY_LOCATION',
-                'unpacked': 'SimpleFeature::UNPACKED_LOCATION',
+                'SimpleFeature::Location::kExternalComponent',
+                'policy': 'SimpleFeature::Location::kPolicy',
+                'unpacked': 'SimpleFeature::Location::kUnpacked',
             }
         }
     },
@@ -421,9 +421,9 @@ def DoesNotHaveAllowlistForHostedApps(value):
     return True
 
   types = value['extension_types']
-  # |types| looks like "{Manifest::TYPE_1, Manifest::TYPE_2}", so just looking
-  # for the "TYPE_HOSTED_APP substring is sufficient.
-  if 'TYPE_HOSTED_APP' not in types:
+  # |types| looks like "{Manifest::Type::kOne, Manifest::Type::kTwo}", so just
+  # looking for the "Type::kHostedApp" substring is sufficient.
+  if 'Type::kHostedApp' not in types:
     return True
 
   # Helper to convert our C++ string array like "{\"aaa\", \"bbb\"}" (which is

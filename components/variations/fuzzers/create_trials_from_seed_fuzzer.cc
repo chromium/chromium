@@ -17,34 +17,6 @@
 namespace variations {
 namespace {
 
-class TestOverrideStringCallback {
- public:
-  typedef std::map<uint32_t, std::u16string> OverrideMap;
-
-  TestOverrideStringCallback()
-      : callback_(base::BindRepeating(&TestOverrideStringCallback::Override,
-                                      base::Unretained(this))) {}
-  TestOverrideStringCallback(const TestOverrideStringCallback&) = delete;
-  TestOverrideStringCallback& operator=(const TestOverrideStringCallback&) =
-      delete;
-
-  virtual ~TestOverrideStringCallback() = default;
-
-  const VariationsSeedProcessor::UIStringOverrideCallback& callback() const {
-    return callback_;
-  }
-
-  const OverrideMap& overrides() const { return overrides_; }
-
- private:
-  void Override(uint32_t hash, const std::u16string& string) {
-    overrides_[hash] = string;
-  }
-
-  VariationsSeedProcessor::UIStringOverrideCallback callback_;
-  OverrideMap overrides_;
-};
-
 struct Environment {
   Environment() { base::CommandLine::Init(0, nullptr); }
 
@@ -68,7 +40,6 @@ void CreateTrialsFromStudyFuzzer(const VariationsSeed& seed) {
   base::FieldTrialList field_trial_list;
   base::FeatureList feature_list;
 
-  TestOverrideStringCallback override_callback;
   // TODO(b/244252663): Add more coverage of client_state and entropy
   // provider arguments.
   auto client_state = MockChromeClientFilterableState();
@@ -80,8 +51,8 @@ void CreateTrialsFromStudyFuzzer(const VariationsSeed& seed) {
   VariationsLayers layers(seed, entropy_providers);
   StickyActivationManager sticky_activation_manager(/*local_state=*/nullptr);
   VariationsSeedProcessor(sticky_activation_manager)
-      .CreateTrialsFromSeed(seed, *client_state, override_callback.callback(),
-                            entropy_providers, layers, &feature_list);
+      .CreateTrialsFromSeed(seed, *client_state, entropy_providers, layers,
+                            &feature_list);
 }
 
 DEFINE_PROTO_FUZZER(const VariationsSeed& seed) {

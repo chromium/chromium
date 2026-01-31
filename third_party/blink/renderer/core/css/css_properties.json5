@@ -250,7 +250,14 @@
         // Field is stored as an enum and has a initial/getter/setter/resetter.
         // If include_paths is empty, we would also generate the corresponding
         // enum definition in ComputedStyleConstants.h.
+        // "keyword" properties are required to be parsed in
+        // CSSParserFastPaths.
+        // Use "keyword_custom" if a custom ParseSingleValue implementation is
+        // necessary.
         "keyword",
+        // Same as "keyword" except the implementation is allowed to implement a
+        // custom ParseSingleValue. See Cursor and RubyPosition.
+        "keyword_custom",
         // Field can take on any subset of values from a list of keywords.
         "multi_keyword",
         // Semantically equivalent to keyword, but the type is represented as a
@@ -590,7 +597,8 @@
     // certain operations, like updating fonts. (Most high-priority properties
     // are 1; 2 and higher are used only in special circumstances.) This mechanism
     // is primarily useful for properties that influence other properties,
-    // like line-height influencing lh units. Negative values are not used.
+    // like line-height influencing lh units. Negative values can be used to
+    // to define ordered groups within the low-priority properties.
     priority: {
       default: 0,
       valid_type: "int",
@@ -711,6 +719,19 @@
     // - is_animation_property
     // The property is a longhand of the 'animation' or 'transition' shorthands.
     is_animation_property: {
+      default: false,
+      valid_type: "bool",
+    },
+
+    // - is_animation_affecting
+    //
+    // Properties that affect animations are not allowed to be affected by
+    // animations. Animation properties must always be animation-affecting.
+    // Internal properties ignore this field; can_be_animated() always
+    // returns true.
+    //
+    // https://w3.org/TR/web-animations-1/#animating-properties
+    is_animation_affecting: {
       default: false,
       valid_type: "bool",
     },
@@ -854,6 +875,7 @@
       default_value: "EffectModel::kCompositeReplace",
       type_name: "EffectModel::CompositeOperation",
       valid_for_marker: true,
+      is_animation_affecting: true,
     },
     {
       name: "animation-delay",
@@ -866,6 +888,7 @@
       separator: ",",
       valid_for_marker: true,
       is_animation_property: true,
+      is_animation_affecting: true,
       // Animation properites are never incremental.
       supports_incremental_style: false,
       valid_for_keyframe: false,
@@ -883,6 +906,7 @@
       separator: ",",
       valid_for_marker: true,
       is_animation_property: true,
+      is_animation_affecting: true,
       // Animation properites are never incremental.
       supports_incremental_style: false,
       valid_for_keyframe: false,
@@ -899,6 +923,7 @@
       separator: ",",
       valid_for_marker: true,
       is_animation_property: true,
+      is_animation_affecting: true,
       // Animation properites are never incremental.
       supports_incremental_style: false,
       valid_for_keyframe: false,
@@ -915,6 +940,7 @@
       separator: ",",
       valid_for_marker: true,
       is_animation_property: true,
+      is_animation_affecting: true,
       // Animation properites are never incremental.
       supports_incremental_style: false,
       valid_for_keyframe: false,
@@ -933,6 +959,7 @@
       separator: ",",
       valid_for_marker: true,
       is_animation_property: true,
+      is_animation_affecting: true,
       // Animation properites are never incremental.
       supports_incremental_style: false,
       valid_for_keyframe: false,
@@ -950,6 +977,7 @@
       separator: ",",
       valid_for_marker: true,
       is_animation_property: true,
+      is_animation_affecting: true,
       // Animation properites are never incremental.
       supports_incremental_style: false,
       valid_for_keyframe: false,
@@ -966,6 +994,7 @@
       separator: ",",
       valid_for_marker: true,
       is_animation_property: true,
+      is_animation_affecting: true,
       // Animation properites are never incremental.
       supports_incremental_style: false,
       valid_for_keyframe: false,
@@ -980,6 +1009,7 @@
       separator: ",",
       valid_for_marker: true,
       is_animation_property: true,
+      is_animation_affecting: true,
       // Animation properites are never incremental.
       supports_incremental_style: false,
       valid_for_keyframe: false,
@@ -994,6 +1024,7 @@
       separator: ",",
       valid_for_marker: true,
       is_animation_property: true,
+      is_animation_affecting: true,
       // Animation properites are never incremental.
       supports_incremental_style: false,
       valid_for_keyframe: false,
@@ -1010,6 +1041,7 @@
       separator: ",",
       valid_for_marker: true,
       is_animation_property: true,
+      is_animation_affecting: true,
       // Animation properites are never incremental.
       supports_incremental_style: false,
     },
@@ -1037,6 +1069,7 @@
       separator: ",",
       valid_for_marker: true,
       is_animation_property: true,
+      is_animation_affecting: true,
       // Animation properites are never incremental.
       supports_incremental_style: false,
     },
@@ -1056,6 +1089,7 @@
       separator: ",",
       valid_for_marker: true,
       runtime_flag: "AnimationTrigger",
+      is_animation_affecting: true,
     },
     {
       name: "timeline-trigger-name",
@@ -1074,50 +1108,55 @@
       separator: ",",
       valid_for_marker: true,
       runtime_flag: "TimelineTrigger",
+      is_animation_affecting: true,
     },
     {
-      name: "timeline-trigger-range-start",
+      name: "timeline-trigger-entry-range-start",
       property_methods: ["ParseSingleValue", "CSSValueFromComputedStyleInternal", "InitialValue"],
       style_builder_template: "animation",
       style_builder_template_args: {
-        attribute: "TimelineTriggerRangeStart",
+        attribute: "TimelineTriggerEntryRangeStart",
       },
       separator: ",",
       valid_for_marker: true,
       runtime_flag: "TimelineTrigger",
+      is_animation_affecting: true,
     },
     {
-      name: "timeline-trigger-range-end",
+      name: "timeline-trigger-entry-range-end",
       property_methods: ["ParseSingleValue", "CSSValueFromComputedStyleInternal", "InitialValue"],
       style_builder_template: "animation",
       style_builder_template_args: {
-        attribute: "TimelineTriggerRangeEnd",
+        attribute: "TimelineTriggerEntryRangeEnd",
       },
       separator: ",",
       valid_for_marker: true,
       runtime_flag: "TimelineTrigger",
+      is_animation_affecting: true,
     },
     {
-      name: "timeline-trigger-exit-range-start",
+      name: "timeline-trigger-active-range-start",
       property_methods: ["ParseSingleValue", "CSSValueFromComputedStyleInternal", "InitialValue"],
       style_builder_template: "animation",
       style_builder_template_args: {
-        attribute: "TimelineTriggerExitRangeStart",
+        attribute: "TimelineTriggerActiveRangeStart",
       },
       separator: ",",
       valid_for_marker: true,
       runtime_flag: "TimelineTrigger",
+      is_animation_affecting: true,
     },
     {
-      name: "timeline-trigger-exit-range-end",
+      name: "timeline-trigger-active-range-end",
       property_methods: ["ParseSingleValue", "CSSValueFromComputedStyleInternal", "InitialValue"],
       style_builder_template: "animation",
       style_builder_template_args: {
-        attribute: "TimelineTriggerExitRangeEnd",
+        attribute: "TimelineTriggerActiveRangeEnd",
       },
       separator: ",",
       valid_for_marker: true,
       runtime_flag: "TimelineTrigger",
+      is_animation_affecting: true,
     },
     {
       name: "timeline-trigger-source",
@@ -1131,6 +1170,7 @@
       separator: ",",
       valid_for_marker: true,
       runtime_flag: "TimelineTrigger",
+      is_animation_affecting: true,
     },
     {
       name: "transition-delay",
@@ -1143,6 +1183,7 @@
       separator: ",",
       valid_for_marker: true,
       is_animation_property: true,
+      is_animation_affecting: true,
       // Animation properites are never incremental.
       supports_incremental_style: false,
     },
@@ -1157,6 +1198,7 @@
       },
       valid_for_marker: true,
       is_animation_property: true,
+      is_animation_affecting: true,
       // Animation properites are never incremental.
       supports_incremental_style: false,
     },
@@ -1171,6 +1213,7 @@
       typedom_types: ["Keyword"],
       valid_for_marker: true,
       is_animation_property: true,
+      is_animation_affecting: true,
       // Animation properites are never incremental.
       supports_incremental_style: false,
     },
@@ -1186,6 +1229,7 @@
       },
       valid_for_marker: true,
       is_animation_property: true,
+      is_animation_affecting: true,
       // Animation properites are never incremental.
       supports_incremental_style: false,
     },
@@ -1212,6 +1256,7 @@
       separator: ",",
       valid_for_marker: true,
       is_animation_property: true,
+      is_animation_affecting: true,
       // Animation properites are never incremental.
       supports_incremental_style: false,
     },
@@ -1284,6 +1329,7 @@
       valid_for_marker: true,
       valid_for_page_context: true,
       invalidate: ["reshape"],
+      is_animation_affecting: true,
     },
     {
       name: "font-family",
@@ -1750,6 +1796,7 @@
       default_value: 0,
       field_group: "*",
       field_template: "primitive",
+      interpolable: true,
       inherited: true,
       property_methods: ["ParseSingleValue", "CSSValueFromComputedStyleInternal"],
       style_builder_custom_functions: ["value"],
@@ -1774,6 +1821,7 @@
       computable: false,
       invalidate: ["layout", "paint"],
       valid_for_marker: true,
+      is_animation_affecting: true,
     },
     {
       name: "-webkit-text-orientation",
@@ -1803,6 +1851,7 @@
       supports_incremental_style: false,
       invalidate: ["layout", "paint"],
       highlight_style_comes_from_originating_element: true,
+      is_animation_affecting: true,
     },
     {
       name: "-webkit-writing-mode",
@@ -1811,6 +1860,7 @@
       type_name: "WritingMode",
       priority: 1,
       surrogate_for: "writing-mode",
+      is_animation_affecting: true,
     },
     {
       name: "text-rendering",
@@ -2253,7 +2303,7 @@
     },
     {
       name: "border-bottom-style",
-      property_methods: ["ParseSingleValue", "CSSValueFromComputedStyleInternal"],
+      property_methods: ["CSSValueFromComputedStyleInternal"],
       field_group: "box",
       field_template: "keyword",
       keywords: [
@@ -2408,7 +2458,7 @@
     },
     {
       name: "border-left-style",
-      property_methods: ["ParseSingleValue", "CSSValueFromComputedStyleInternal"],
+      property_methods: ["CSSValueFromComputedStyleInternal"],
       field_group: "box",
       field_template: "keyword",
       keywords: [
@@ -2482,7 +2532,7 @@
     },
     {
       name: "border-right-style",
-      property_methods: ["ParseSingleValue", "CSSValueFromComputedStyleInternal"],
+      property_methods: ["CSSValueFromComputedStyleInternal"],
       field_group: "box",
       field_template: "keyword",
       keywords: [
@@ -2600,7 +2650,7 @@
     },
     {
       name: "border-top-style",
-      property_methods: ["ParseSingleValue", "CSSValueFromComputedStyleInternal"],
+      property_methods: ["CSSValueFromComputedStyleInternal"],
       field_group: "box",
       field_template: "keyword",
       keywords: [
@@ -2954,16 +3004,17 @@
       name: "contain",
       property_methods: ["ParseSingleValue", "CSSValueFromComputedStyleInternal"],
       field_group: "*",
-      field_size: 6,
+      field_size: 5,
       field_template: "primitive",
       default_value: "kContainsNone",
       name_for_methods: "Contain",
       type_name: "unsigned",
       converter: "ConvertFlags<Containment>",
-      keywords: ["none", "strict", "content", "size", "layout", "style", "paint", "inline-size", "block-size", "view-transition"],
+      keywords: ["none", "strict", "content", "size", "layout", "style", "paint", "inline-size", "block-size"],
       typedom_types: ["Keyword"],
       computable: false,
       invalidate: ["layout"],
+      is_animation_affecting: true,
     },
     {
       name: "contain-intrinsic-width",
@@ -3005,6 +3056,7 @@
       keywords: ["none"],
       typedom_types: ["Keyword"],
       valid_for_permission_element: true,
+      is_animation_affecting: true,
     },
     {
       name: "container-type",
@@ -3019,6 +3071,7 @@
       typedom_types: ["Keyword"],
       valid_for_permission_element: true,
       invalidate: ["layout"],
+      is_animation_affecting: true,
     },
     {
       name: "content",
@@ -3157,7 +3210,7 @@
       field_group: "inherited",
       inherited: true,
       independent: true,
-      field_template: "keyword",
+      field_template: "keyword_custom",
       keywords: [
         "auto", "default", "none", "context-menu", "help", "pointer",
         "progress", "wait", "cell", "crosshair", "text", "vertical-text",
@@ -3439,6 +3492,20 @@
       invalidate: ["paint"],
     },
     {
+      name: "flow-tolerance",
+      include_paths: ["third_party/blink/renderer/core/style/flow_tolerance.h"],
+      property_methods: ["ParseSingleValue", "CSSValueFromComputedStyleInternal"],
+      field_group: "*",
+      field_template: "external",
+      default_value: "FlowTolerance(CSSValueID::kNormal)",
+      type_name: "FlowTolerance",
+      converter: "ConvertFlowTolerance",
+      typedom_types: ["Length", "Percentage", "Keyword"],
+      keywords: ["normal", "infinite"],
+      invalidate: ["layout", "paint"],
+      runtime_flag: "CSSGridLanesLayout",
+    },
+    {
       name: "grid-auto-columns",
       property_methods: ["ParseSingleValue", "CSSValueFromComputedStyleInternal", "InitialValue"],
       field_group: "*",
@@ -3508,22 +3575,26 @@
     },
     {
       name: "grid-lanes-direction",
-      property_methods: ["CSSValueFromComputedStyleInternal"],
+      property_methods: ["ParseSingleValue", "CSSValueFromComputedStyleInternal"],
       field_group: "*",
-      field_template: "keyword",
+      field_template: "external",
+      include_paths: ["third_party/blink/renderer/core/layout/grid_lanes/grid_lanes_direction.h"],
+      default_value: "GridLanesDirection()",
+      type_name: "GridLanesDirection",
+      converter: "ConvertGridLanesDirection",
+      getter: "GetGridLanesDirection",
       typedom_types: ["Keyword"],
-      keywords: ["row", "row-reverse", "column", "column-reverse"],
-      default_value: "column",
+      keywords: ["normal", "row", "column", "fill-reverse", "track-reverse"],
       invalidate: ["layout", "paint"],
       runtime_flag: "CSSGridLanesLayout",
     },
     {
-      name: "grid-lanes-fill",
+      name: "grid-lanes-pack",
       property_methods: ["CSSValueFromComputedStyleInternal"],
       field_group: "*",
       field_template: "keyword",
-      keywords: ["normal", "reverse"],
       typedom_types: ["Keyword"],
+      keywords: ["normal", "dense"],
       default_value: "normal",
       invalidate: ["layout", "paint"],
       runtime_flag: "CSSGridLanesLayout",
@@ -3770,6 +3841,7 @@
       typedom_types: ["Keyword"],
       default_value: "numeric-only",
       invalidate: [],
+      is_animation_affecting: true,
     },
     {
       name: "isolation",
@@ -4104,20 +4176,6 @@
       typedom_types: ["Keyword"],
       default_value: "luminance",
       invalidate: ["paint"],
-    },
-    {
-      name: "item-tolerance",
-      include_paths: ["third_party/blink/renderer/core/style/item_tolerance.h"],
-      property_methods: ["ParseSingleValue", "CSSValueFromComputedStyleInternal"],
-      field_group: "*",
-      field_template: "external",
-      default_value: "ItemTolerance(CSSValueID::kNormal)",
-      type_name: "ItemTolerance",
-      converter: "ConvertItemTolerance",
-      typedom_types: ["Length", "Percentage", "Keyword"],
-      keywords: ["normal", "infinite"],
-      invalidate: ["layout", "paint"],
-      runtime_flag: "CSSGridLanesLayout",
     },
     {
       name: "math-shift",
@@ -4583,20 +4641,14 @@
       invalidate: ["layout", "paint"],
     },
     {
-      name: "overscroll-area",
-      property_methods: ["ParseSingleValue", "CSSValueFromComputedStyleInternal" ],
-      include_paths: ["third_party/blink/renderer/core/style/scoped_css_name.h"],
-      type_name: "ScopedCSSNameList",
-      wrapper_pointer_name: "Member",
-      default_value: "nullptr",
+      name: "-internal-overscroll-area",
+      property_methods: ["CSSValueFromComputedStyleInternal"],
       field_group: "*",
-      field_template: "external",
-      converter: "ConvertOverscrollArea",
-      keywords: ["none"],
+      field_template: "keyword",
+      keywords: ["none", "auto"],
       typedom_types: ["Keyword"],
-      valid_for_permission_element: true,
-      invalidate: ["layout"],
-      runtime_flag: "CSSOverscrollGestures",
+      default_value: "none",
+      runtime_flag: "OverscrollGestures",
     },
     {
       name: "overscroll-behavior-inline",
@@ -4647,20 +4699,14 @@
       valid_for_permission_element: true,
     },
     {
-      name: "overscroll-position",
-      property_methods: ["ParseSingleValue", "CSSValueFromComputedStyleInternal" ],
-      include_paths: ["third_party/blink/renderer/core/style/scoped_css_name.h"],
-      type_name: "ScopedCSSName",
-      wrapper_pointer_name: "Member",
-      default_value: "nullptr",
+      name: "-internal-overscroll-position",
+      property_methods: ["CSSValueFromComputedStyleInternal"],
       field_group: "*",
-      field_template: "external",
-      converter: "ConvertOverscrollPosition",
-      keywords: ["none"],
+      field_template: "keyword",
+      keywords: ["none", "auto"],
       typedom_types: ["Keyword"],
-      valid_for_permission_element: true,
-      invalidate: ["layout", "paint"],
-      runtime_flag: "CSSOverscrollGestures",
+      default_value: "none",
+      runtime_flag: "OverscrollGestures",
     },
     {
       name: "padding-bottom",
@@ -4758,6 +4804,20 @@
       typedom_types: ["Keyword"],
       computable: false,
       valid_for_permission_element: true,
+    },
+    {
+      name: "page-margin-safety",
+      is_descriptor: true,
+      field_group: "*",
+      field_template: "keyword",
+      keywords: ["none", "clamp", "add"],
+      default_value: "none",
+      getter: "GetPageMarginSafety",
+      computed_style_custom_functions: ["setter"],
+      computable: false,
+      valid_for_page_context: true,
+      invalidate: ["layout", "paint"],
+      runtime_flag: "CSSSafePrintableInset",
     },
     {
       name: "page-orientation",
@@ -4937,7 +4997,7 @@
     },
     {
       name: "content-visibility",
-      property_methods: ["ParseSingleValue", "CSSValueFromComputedStyleInternal"],
+      property_methods: ["CSSValueFromComputedStyleInternal"],
       field_template: "keyword",
       keywords: ["visible", "auto", "hidden"],
       default_value: "visible",
@@ -5402,17 +5462,18 @@
       type_name: "Vector<TimelineAxis>",
       converter: "ConvertViewTimelineAxis",
       separator: ",",
+      is_animation_affecting: true,
     },
     {
       name: "scroll-timeline-name",
       property_methods: ["ParseSingleValue", "CSSValueFromComputedStyleInternal", "InitialValue"],
       field_group: "misc->timeline",
       field_template: "external",
-      default_value: "nullptr",
-      type_name: "ScopedCSSNameList",
-      wrapper_pointer_name: "Member",
+      default_value: "Vector<AtomicString>()",
+      type_name: "Vector<AtomicString>",
       converter: "ConvertViewTimelineName",
       separator: ",",
+      is_animation_affecting: true,
     },
     {
       name: "shape-image-threshold",
@@ -5766,6 +5827,7 @@
       valid_for_marker: true,
       computable: false,
       invalidate: ["layout", "paint"],
+      is_animation_affecting: true,
     },
     {
       name: "text-decoration-color",
@@ -5884,6 +5946,8 @@
       inherited: true,
       keywords: ["auto", "none", "inter-word", "inter-character"],
       typedom_types: ["Keyword"],
+      valid_for_first_letter: true,
+      valid_for_first_line: true,
       invalidate: ["layout"],
       runtime_flag: "CssTextJustify",
     },
@@ -6026,11 +6090,12 @@
       property_methods: ["ParseSingleValue", "CSSValueFromComputedStyleInternal"],
       field_group: "misc->timeline",
       field_template: "external",
-      default_value: "nullptr",
-      type_name: "ScopedCSSNameList",
-      wrapper_pointer_name: "Member",
+      default_value: "StyleTimelineScope()",
+      include_paths: ["third_party/blink/renderer/core/style/style_timeline_scope.h"],
+      type_name: "StyleTimelineScope",
       converter: "ConvertTimelineScope",
       separator: ",",
+      is_animation_affecting: true,
     },
     {
       name: "top",
@@ -6062,6 +6127,7 @@
       keywords: ["none", "auto"],
       default_value: "none",
       typedom_types: ["Keyword"],
+      runtime_flag: "OverlayProperty",
     },
     {
       name: "touch-action",
@@ -6193,6 +6259,7 @@
       type_name: "UnicodeBidi",
       valid_for_marker: true,
       invalidate: ["reshape"],
+      is_animation_affecting: true,
     },
     {
       name: "vector-effect",
@@ -6225,6 +6292,7 @@
       type_name: "Vector<TimelineAxis>",
       converter: "ConvertViewTimelineAxis",
       separator: ",",
+      is_animation_affecting: true,
     },
     {
       name: "view-timeline-inset",
@@ -6236,17 +6304,18 @@
       type_name: "Vector<TimelineInset>",
       converter: "ConvertViewTimelineInset",
       separator: ",",
+      is_animation_affecting: true,
     },
     {
       name: "view-timeline-name",
       property_methods: ["ParseSingleValue", "CSSValueFromComputedStyleInternal", "InitialValue"],
       field_group: "misc->timeline",
       field_template: "external",
-      default_value: "nullptr",
-      type_name: "ScopedCSSNameList",
-      wrapper_pointer_name: "Member",
+      default_value: "Vector<AtomicString>()",
+      type_name: "Vector<AtomicString>",
       converter: "ConvertViewTimelineName",
       separator: ",",
+      is_animation_affecting: true,
     },
     {
       name: "view-transition-class",
@@ -6284,6 +6353,17 @@
       keywords: ["none", "auto"],
       typedom_types: ["Keyword"],
       wrapper_pointer_name: "Member",
+    },
+    {
+      name: "view-transition-scope",
+      field_group: "*",
+      property_methods: ["CSSValueFromComputedStyleInternal"],
+      inherited: false,
+      field_template: "keyword",
+      keywords: ["none", "auto"],
+      typedom_types: ["Keyword"],
+      default_value: "none",
+      runtime_flag: "ScopedViewTransitions",
     },
     {
       name: "visibility",
@@ -6562,7 +6642,7 @@
       runtime_flag: "CSSGapDecoration",
     },
     {
-      name: "column-rule-edge-end-inset",
+      name: "column-rule-edge-inset-end",
       property_methods: ["ParseSingleValue", "CSSValueFromComputedStyleInternal"],
       interpolable: true,
       inherited: false,
@@ -6575,7 +6655,7 @@
       runtime_flag: "CSSGapDecoration",
     },
     {
-      name: "row-rule-edge-end-inset",
+      name: "row-rule-edge-inset-end",
       property_methods: ["ParseSingleValue", "CSSValueFromComputedStyleInternal"],
       interpolable: true,
       inherited: false,
@@ -6588,7 +6668,7 @@
       runtime_flag: "CSSGapDecoration",
     },
     {
-      name: "column-rule-edge-start-inset",
+      name: "column-rule-edge-inset-start",
       property_methods: ["ParseSingleValue", "CSSValueFromComputedStyleInternal"],
       interpolable: true,
       inherited: false,
@@ -6601,7 +6681,7 @@
       runtime_flag: "CSSGapDecoration",
     },
     {
-      name: "row-rule-edge-start-inset",
+      name: "row-rule-edge-inset-start",
       property_methods: ["ParseSingleValue", "CSSValueFromComputedStyleInternal"],
       interpolable: true,
       inherited: false,
@@ -6614,7 +6694,7 @@
       runtime_flag: "CSSGapDecoration",
     },
     {
-      name: "column-rule-interior-end-inset",
+      name: "column-rule-interior-inset-end",
       property_methods: ["ParseSingleValue", "CSSValueFromComputedStyleInternal"],
       interpolable: true,
       inherited: false,
@@ -6627,7 +6707,7 @@
       runtime_flag: "CSSGapDecoration",
     },
     {
-      name: "row-rule-interior-end-inset",
+      name: "row-rule-interior-inset-end",
       property_methods: ["ParseSingleValue", "CSSValueFromComputedStyleInternal"],
       interpolable: true,
       inherited: false,
@@ -6640,7 +6720,7 @@
       runtime_flag: "CSSGapDecoration",
     },
     {
-      name: "column-rule-interior-start-inset",
+      name: "column-rule-interior-inset-start",
       property_methods: ["ParseSingleValue", "CSSValueFromComputedStyleInternal"],
       interpolable: true,
       inherited: false,
@@ -6653,7 +6733,7 @@
       runtime_flag: "CSSGapDecoration",
     },
     {
-      name: "row-rule-interior-start-inset",
+      name: "row-rule-interior-inset-start",
       property_methods: ["ParseSingleValue", "CSSValueFromComputedStyleInternal"],
       interpolable: true,
       inherited: false,
@@ -6741,7 +6821,7 @@
       inherited: false,
       field_group: "*",
       field_template: "keyword",
-      keywords: ["all", "around", "between", "none"],
+      keywords: ["all", "around", "between"],
       default_value: "all",
       type_name: "RuleVisibilityItems",
       typedom_types: ["Keyword"],
@@ -6754,7 +6834,7 @@
       inherited: false,
       field_group: "*",
       field_template: "keyword",
-      keywords: ["all", "around", "between", "none"],
+      keywords: ["all", "around", "between"],
       default_value: "all",
       type_name: "RuleVisibilityItems",
       typedom_types: ["Keyword"],
@@ -6795,7 +6875,7 @@
     },
     {
       name: "column-span",
-      property_methods: ["ParseSingleValue", "CSSValueFromComputedStyleInternal"],
+      property_methods: ["CSSValueFromComputedStyleInternal"],
       field_group: "*",
       field_template: "keyword",
       keywords: ["none", "all"],
@@ -7009,6 +7089,9 @@
       style_builder_template_args: {
         fill_type: "CompositingOperator",
       },
+      // {-webkit-}mask-image needs to be applied before {-webkit-}mask-composite,
+      // otherwise {-webkit-}mask-composite has no effect.
+      priority: -1,
     },
     {
       name: "-webkit-mask-composite",
@@ -7022,9 +7105,6 @@
         fill_type: "Image",
         fill_type_getter: "GetImage"
       },
-      // {-webkit-}mask-image needs to be applied before {-webkit-}mask-composite,
-      // otherwise {-webkit-}mask-composite has no effect.
-      priority: 2,
       includes_currentcolor: true,
     },
     {
@@ -7160,7 +7240,7 @@
       property_methods: ["ParseSingleValue", "CSSValueFromComputedStyleInternal"],
       inherited: true,
       field_group: "*",
-      field_template: "keyword",
+      field_template: "keyword_custom",
       keywords: ["over", "under"],
       default_value: "over",
       type_name: "RubyPosition",
@@ -7244,7 +7324,7 @@
       invalidate: ["color"],
     },
     {
-      name: "text-grow",
+      name: "text-fit",
       property_methods: ["ParseSingleValue", "CSSValueFromComputedStyleInternal"],
       field_group: "*",
       field_template: "external",
@@ -7264,18 +7344,6 @@
       keywords: ["none", "disc", "circle", "square"],
       default_value: "none",
       invalidate: ["layout", "paint"],
-    },
-    {
-      name: "text-shrink",
-      property_methods: ["ParseSingleValue", "CSSValueFromComputedStyleInternal"],
-      field_group: "*",
-      field_template: "external",
-      include_paths: ["third_party/blink/renderer/core/style/fit_text.h"],
-      default_value: "FitText()",
-      type_name: "FitText",
-      converter: "ConvertFitText",
-      invalidate: ["layout"],
-      runtime_flag: "CssFitWidthText",
     },
     {
       name: "-webkit-text-stroke-color",
@@ -7477,6 +7545,7 @@
       keywords: ["auto"],
       typedom_types: ["Keyword"],
       valid_for_permission_element: true,
+      is_animation_affecting: true,
     },
     {
       name: "word-break",
@@ -8246,6 +8315,54 @@
       runtime_flag: "CSSFunctions",
     },
     {
+      name: "base-url",
+      is_descriptor: true,
+      is_property: false,
+      runtime_flag: "RouteMatching",
+    },
+    {
+      name: "hash",
+      is_descriptor: true,
+      is_property: false,
+      runtime_flag: "RouteMatching",
+    },
+    {
+      name: "hostname",
+      is_descriptor: true,
+      is_property: false,
+      runtime_flag: "RouteMatching",
+    },
+    {
+      name: "pathname",
+      is_descriptor: true,
+      is_property: false,
+      runtime_flag: "RouteMatching",
+    },
+    {
+      name: "pattern",
+      is_descriptor: true,
+      is_property: false,
+      runtime_flag: "RouteMatching",
+    },
+    {
+      name: "port",
+      is_descriptor: true,
+      is_property: false,
+      runtime_flag: "RouteMatching",
+    },
+    {
+      name: "protocol",
+      is_descriptor: true,
+      is_property: false,
+      runtime_flag: "RouteMatching",
+    },
+    {
+      name: "search",
+      is_descriptor: true,
+      is_property: false,
+      runtime_flag: "RouteMatching",
+    },
+    {
       name: "position-area",
       property_methods: ["ParseSingleValue", "CSSValueFromComputedStyleInternal"],
       style_builder_custom_functions: ["value", "inherit"],
@@ -8280,6 +8397,7 @@
       property_methods: ["ParseShorthand", "CSSValueFromComputedStyleInternal"],
       supports_incremental_style: false,
       valid_for_keyframe: false,
+      is_animation_affecting: true,
     },
     {
       name: "animation-range",
@@ -8289,6 +8407,7 @@
       property_methods: ["ParseShorthand", "CSSValueFromComputedStyleInternal"],
       supports_incremental_style: false,
       valid_for_keyframe: false,
+      is_animation_affecting: true,
     },
     {
       name: "background",
@@ -8531,6 +8650,18 @@
       valid_for_page_context: true,
     },
     {
+      name: "column-rule-edge-inset",
+      longhands: ["column-rule-edge-inset-start", "column-rule-edge-inset-end"],
+      property_methods: ["ParseShorthand", "CSSValueFromComputedStyleInternal"],
+      runtime_flag: "CSSGapDecoration",
+    },
+    {
+      name: "column-rule-interior-inset",
+      longhands: ["column-rule-interior-inset-start", "column-rule-interior-inset-end"],
+      property_methods: ["ParseShorthand", "CSSValueFromComputedStyleInternal"],
+      runtime_flag: "CSSGapDecoration",
+    },
+    {
       name: "contain-intrinsic-inline-size",
       property_methods: ["ParseSingleValue"],
       logical_property_group: {
@@ -8744,15 +8875,9 @@
     },
     {
       name: "grid-lanes",
-      longhands: [ "grid-template-areas", "grid-template-columns", "grid-lanes-direction", "grid-lanes-fill"],
+      longhands: [ "grid-template-areas", "grid-template-columns", "grid-lanes-direction"],
       property_methods: ["ParseShorthand", "CSSValueFromComputedStyleInternal"],
       layout_dependent: true,
-      runtime_flag: "CSSGridLanesLayout",
-    },
-    {
-      name: "grid-lanes-flow",
-      longhands: ["grid-lanes-direction", "grid-lanes-fill"],
-      property_methods: ["ParseShorthand", "CSSValueFromComputedStyleInternal"],
       runtime_flag: "CSSGridLanesLayout",
     },
     {
@@ -8894,6 +9019,18 @@
       property_methods: ["ParseShorthand", "CSSValueFromComputedStyleInternal"],
     },
     {
+      name: "row-rule-edge-inset",
+      longhands: ["row-rule-edge-inset-start", "row-rule-edge-inset-end"],
+      property_methods: ["ParseShorthand", "CSSValueFromComputedStyleInternal"],
+      runtime_flag: "CSSGapDecoration",
+    },
+    {
+      name: "row-rule-interior-inset",
+      longhands: ["row-rule-interior-inset-start", "row-rule-interior-inset-end"],
+      property_methods: ["ParseShorthand", "CSSValueFromComputedStyleInternal"],
+      runtime_flag: "CSSGapDecoration",
+    },
+    {
       name: "rule",
       longhands: [
         "column-rule-width", "column-rule-style", "column-rule-color",
@@ -8914,24 +9051,38 @@
       runtime_flag: "CSSGapDecoration",
     },
     {
+      name: "rule-edge-inset",
+      longhands: ["row-rule-edge-inset-start", "row-rule-edge-inset-end",
+                  "column-rule-edge-inset-start", "column-rule-edge-inset-end"],
+      property_methods: ["ParseShorthand", "CSSValueFromComputedStyleInternal"],
+      runtime_flag: "CSSGapDecoration",
+    },
+    {
+      name: "rule-interior-inset",
+      longhands: ["row-rule-interior-inset-start", "row-rule-interior-inset-end",
+                  "column-rule-interior-inset-start", "column-rule-interior-inset-end"],
+      property_methods: ["ParseShorthand", "CSSValueFromComputedStyleInternal"],
+      runtime_flag: "CSSGapDecoration",
+    },
+    {
       name: "column-rule-inset",
-      longhands: ["column-rule-edge-start-inset", "column-rule-edge-end-inset", "column-rule-interior-start-inset",
-                  "column-rule-interior-end-inset"],
+      longhands: ["column-rule-edge-inset-start", "column-rule-edge-inset-end", "column-rule-interior-inset-start",
+                  "column-rule-interior-inset-end"],
       property_methods: ["ParseShorthand", "CSSValueFromComputedStyleInternal"],
       runtime_flag: "CSSGapDecoration",
     },
     {
       name: "row-rule-inset",
-      longhands: ["row-rule-edge-start-inset", "row-rule-edge-end-inset", "row-rule-interior-start-inset",
-                  "row-rule-interior-end-inset"],
+      longhands: ["row-rule-edge-inset-start", "row-rule-edge-inset-end", "row-rule-interior-inset-start",
+                  "row-rule-interior-inset-end"],
       property_methods: ["ParseShorthand", "CSSValueFromComputedStyleInternal"],
       runtime_flag: "CSSGapDecoration",
     },
     {
       name: "rule-inset",
-      longhands: ["row-rule-edge-start-inset", "row-rule-edge-end-inset", "row-rule-interior-start-inset",
-                  "row-rule-interior-end-inset", "column-rule-edge-start-inset", "column-rule-edge-end-inset",
-                  "column-rule-interior-start-inset", "column-rule-interior-end-inset"],
+      longhands: ["row-rule-edge-inset-start", "row-rule-edge-inset-end", "row-rule-interior-inset-start",
+                  "row-rule-interior-inset-end", "column-rule-edge-inset-start", "column-rule-edge-inset-end",
+                  "column-rule-interior-inset-start", "column-rule-interior-inset-end"],
       property_methods: ["ParseShorthand", "CSSValueFromComputedStyleInternal"],
       runtime_flag: "CSSGapDecoration",
     },
@@ -9002,6 +9153,7 @@
       property_methods: ["ParseShorthand", "CSSValueFromComputedStyleInternal"],
       // Animation properites are never incremental.
       supports_incremental_style: false,
+      is_animation_affecting: true,
     },
     {
       name: "view-timeline",
@@ -9101,8 +9253,8 @@
       name: "timeline-trigger",
       longhands: [
         "timeline-trigger-name", "timeline-trigger-source",
-        "timeline-trigger-range-start", "timeline-trigger-range-end",
-        "timeline-trigger-exit-range-start", "timeline-trigger-exit-range-end",
+        "timeline-trigger-entry-range-start", "timeline-trigger-entry-range-end",
+        "timeline-trigger-active-range-start", "timeline-trigger-active-range-end",
       ],
       property_methods: ["ParseShorthand", "CSSValueFromComputedStyleInternal"],
       supports_incremental_style: false,
@@ -9110,9 +9262,9 @@
       runtime_flag: "TimelineTrigger",
     },
     {
-      name: "timeline-trigger-range",
+      name: "timeline-trigger-entry-range",
       longhands: [
-        "timeline-trigger-range-start", "timeline-trigger-range-end",
+        "timeline-trigger-entry-range-start", "timeline-trigger-entry-range-end",
       ],
       property_methods: ["ParseShorthand", "CSSValueFromComputedStyleInternal"],
       supports_incremental_style: false,
@@ -9120,9 +9272,9 @@
       runtime_flag: "TimelineTrigger",
     },
     {
-      name: "timeline-trigger-exit-range",
+      name: "timeline-trigger-active-range",
       longhands: [
-        "timeline-trigger-exit-range-start", "timeline-trigger-exit-range-end",
+        "timeline-trigger-active-range-start", "timeline-trigger-active-range-end",
       ],
       property_methods: ["ParseShorthand", "CSSValueFromComputedStyleInternal"],
       supports_incremental_style: false,

@@ -19,10 +19,6 @@ bool APIIsAvailable(v8::Local<v8::Context> context,
   return full_name == "available";
 }
 
-bool PromisesAvailable(v8::Local<v8::Context> context) {
-  return true;
-}
-
 }  // namespace
 
 using BindingAccessCheckerTest = APIBindingTest;
@@ -30,8 +26,7 @@ using BindingAccessCheckerTest = APIBindingTest;
 TEST_F(BindingAccessCheckerTest, TestHasAccess) {
   v8::HandleScope handle_scope(isolate());
 
-  BindingAccessChecker checker(base::BindRepeating(&APIIsAvailable),
-                               base::BindRepeating(&PromisesAvailable));
+  BindingAccessChecker checker(base::BindRepeating(&APIIsAvailable));
 
   v8::Local<v8::Context> context = MainContext();
   EXPECT_TRUE(checker.HasAccess(context, "available"));
@@ -41,8 +36,7 @@ TEST_F(BindingAccessCheckerTest, TestHasAccess) {
 TEST_F(BindingAccessCheckerTest, TestHasAccessOrThrowError) {
   v8::HandleScope handle_scope(isolate());
 
-  BindingAccessChecker checker(base::BindRepeating(&APIIsAvailable),
-                               base::BindRepeating(&PromisesAvailable));
+  BindingAccessChecker checker(base::BindRepeating(&APIIsAvailable));
 
   v8::Local<v8::Context> context = MainContext();
   {
@@ -58,24 +52,6 @@ TEST_F(BindingAccessCheckerTest, TestHasAccessOrThrowError) {
     EXPECT_EQ("Uncaught Error: 'unavailable' is not available in this context.",
               gin::V8ToString(isolate(), try_catch.Message()->Get()));
   }
-}
-
-TEST_F(BindingAccessCheckerTest, TestHasPromiseAccess) {
-  bool context_allows_promises = true;
-  auto promises_available = base::BindRepeating(
-      [](bool* flag, v8::Local<v8::Context> context) { return *flag; },
-      &context_allows_promises);
-
-  v8::HandleScope handle_scope(isolate());
-
-  BindingAccessChecker checker(base::BindRepeating(&APIIsAvailable),
-                               promises_available);
-
-  v8::Local<v8::Context> context = MainContext();
-  EXPECT_TRUE(checker.HasPromiseAccess(context));
-
-  context_allows_promises = false;
-  EXPECT_FALSE(checker.HasPromiseAccess(context));
 }
 
 }  // namespace extensions

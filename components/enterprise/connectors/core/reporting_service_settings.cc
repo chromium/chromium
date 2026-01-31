@@ -17,7 +17,7 @@ ReportingServiceSettings::ReportingServiceSettings(
     const ServiceProviderConfig& service_provider_config) {
   if (!settings_value.is_dict())
     return;
-  const base::Value::Dict& settings_dict = settings_value.GetDict();
+  const base::DictValue& settings_dict = settings_value.GetDict();
 
   // The service provider identifier should always be there, and it should match
   // an existing provider.
@@ -35,7 +35,7 @@ ReportingServiceSettings::ReportingServiceSettings(
     return;
   }
 
-  const base::Value::List* enabled_event_name_list_value =
+  const base::ListValue* enabled_event_name_list_value =
       settings_dict.FindList(kKeyEnabledEventNames);
   if (enabled_event_name_list_value) {
     for (const base::Value& enabled_event_name_value :
@@ -57,13 +57,13 @@ ReportingServiceSettings::ReportingServiceSettings(
     }
   }
 
-  const base::Value::List* enabled_opt_in_events_value =
+  const base::ListValue* enabled_opt_in_events_value =
       settings_dict.FindList(kKeyEnabledOptInEvents);
   if (enabled_opt_in_events_value) {
     for (const base::Value& event : *enabled_opt_in_events_value) {
       DCHECK(event.is_dict());
       const std::string* name = event.GetDict().FindString(kKeyOptInEventName);
-      const base::Value::List* url_patterns_value =
+      const base::ListValue* url_patterns_value =
           event.GetDict().FindList(kKeyOptInEventUrlPatterns);
 
       DCHECK(url_patterns_value);

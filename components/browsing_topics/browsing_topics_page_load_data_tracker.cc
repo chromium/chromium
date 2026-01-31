@@ -4,7 +4,6 @@
 
 #include "components/browsing_topics/browsing_topics_page_load_data_tracker.h"
 
-#include "base/containers/contains.h"
 #include "base/metrics/histogram_functions.h"
 #include "components/browsing_topics/util.h"
 #include "components/history/content/browser/history_context_helper.h"

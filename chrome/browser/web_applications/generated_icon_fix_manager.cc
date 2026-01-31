@@ -11,11 +11,13 @@
 #include "base/strings/to_string.h"
 #include "base/time/time.h"
 #include "base/values.h"
+#include "chrome/browser/web_applications/commands/generated_icon_fix_command.h"
 #include "chrome/browser/web_applications/generated_icon_fix_util.h"
 #include "chrome/browser/web_applications/locks/all_apps_lock.h"
 #include "chrome/browser/web_applications/locks/app_lock.h"
 #include "chrome/browser/web_applications/locks/with_app_resources.h"
 #include "chrome/browser/web_applications/proto/web_app.pb.h"
+#include "chrome/browser/web_applications/scheduler/generated_icon_fix_result.h"
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_command_manager.h"
 #include "chrome/browser/web_applications/web_app_command_scheduler.h"
@@ -69,7 +71,7 @@ void GeneratedIconFixManager::InvalidateWeakPtrsForTesting() {
 }
 
 void GeneratedIconFixManager::ScheduleFixes(AllAppsLock& all_apps_lock,
-                                            base::Value::Dict& debug_value) {
+                                            base::DictValue& debug_value) {
   int started_attempt_count = 0;
   for (const webapps::AppId& app_id : all_apps_lock.registrar().GetAppIds()) {
     bool scheduled = MaybeScheduleFix(app_id, all_apps_lock,
@@ -95,7 +97,7 @@ void GeneratedIconFixManager::ScheduleFixes(AllAppsLock& all_apps_lock,
 
 bool GeneratedIconFixManager::MaybeScheduleFix(const webapps::AppId& app_id,
                                                WithAppResources& resources,
-                                               base::Value::Dict& debug_value) {
+                                               base::DictValue& debug_value) {
   const WebApp* app = resources.registrar().GetAppById(app_id);
   GeneratedIconFixScheduleDecision decision = MakeScheduleDecision(app);
 
@@ -124,7 +126,7 @@ bool GeneratedIconFixManager::MaybeScheduleFix(const webapps::AppId& app_id,
 void GeneratedIconFixManager::MaybeScheduleFixAppLock(
     const webapps::AppId& app_id,
     AppLock& app_lock,
-    base::Value::Dict& debug_value) {
+    base::DictValue& debug_value) {
   MaybeScheduleFix(app_id, app_lock, debug_value);
 }
 

@@ -32,6 +32,7 @@
 
 #include <algorithm>
 #include <complex>
+#include <limits>
 
 #include "base/compiler_specific.h"
 #include "base/containers/span.h"
@@ -591,8 +592,8 @@ void Biquad::GetFrequencyResponse(base::span<const float> frequency,
   for (size_t k = 0; k < frequency.size(); ++k) {
     if (frequency[k] < 0 || frequency[k] > 1) {
       // Out-of-bounds frequencies should return NaN.
-      mag_response[k] = std::nanf("");
-      phase_response[k] = std::nanf("");
+      mag_response[k] = std::numeric_limits<float>::quiet_NaN();
+      phase_response[k] = std::numeric_limits<float>::quiet_NaN();
     } else {
       double omega = -kPiDouble * frequency[k];
       std::complex<double> z =

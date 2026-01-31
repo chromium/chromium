@@ -224,7 +224,7 @@ ExtensionInstallProto::BackgroundScriptType GetBackgroundScriptType(
   return ExtensionInstallProto::NO_BACKGROUND_SCRIPT;
 }
 
-static_assert(extensions::disable_reason::DISABLE_REASON_LAST == (1LL << 26),
+static_assert(extensions::disable_reason::DISABLE_REASON_LAST == (1LL << 27),
               "Adding a new disable reason? Be sure to include the new reason "
               "below, update the test to exercise it, and then adjust this "
               "value for DISABLE_REASON_LAST");
@@ -274,6 +274,8 @@ std::vector<ExtensionInstallProto::DisableReason> GetDisableReasons(
        ExtensionInstallProto::UNSUPPORTED_MANIFEST_VERSION},
       {extensions::disable_reason::DISABLE_UNSUPPORTED_DEVELOPER_EXTENSION,
        ExtensionInstallProto::UNSUPPORTED_DEVELOPER_EXTENSION},
+      {extensions::disable_reason::DISABLE_BLOCKED_BY_CLOUD_POLICY_CHECK,
+       ExtensionInstallProto::BLOCKED_BY_CLOUD_POLICY_CHECK},
       {extensions::disable_reason::DISABLE_UNKNOWN,
        ExtensionInstallProto::UNKNOWN},
   };

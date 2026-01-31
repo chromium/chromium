@@ -29,10 +29,10 @@ class AppTimeLimitsPolicyBuilder {
 
   void SetAppActivityReportingEnabled(bool enabled);
 
-  const base::Value::Dict& value() const { return value_; }
+  const base::DictValue& value() const { return value_; }
 
  private:
-  base::Value::Dict value_;
+  base::DictValue value_;
 };
 
 }  // namespace ash::app_time

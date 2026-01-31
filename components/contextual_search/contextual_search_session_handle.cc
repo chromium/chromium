@@ -6,6 +6,7 @@
 
 #include <vector>
 
+#include "base/containers/flat_set.h"
 #include "base/memory/ptr_util.h"
 #include "base/unguessable_token.h"
 #include "components/contextual_search/contextual_search_context_controller.h"
@@ -13,8 +14,10 @@
 #include "components/contextual_search/contextual_search_service.h"
 #include "components/lens/contextual_input.h"
 #include "components/lens/proto/server/lens_overlay_response.pb.h"
+#include "components/prefs/pref_service.h"
 #include "contextual_search_context_controller.h"
 #include "contextual_search_types.h"
+#include "pref_names.h"
 
 namespace contextual_search {
 
@@ -41,8 +44,11 @@ std::vector<FileInfo> TokensToFileInfos(
 
 ContextualSearchSessionHandle::ContextualSearchSessionHandle(
     base::WeakPtr<ContextualSearchService> service,
-    const base::UnguessableToken& session_id)
-    : service_(service), session_id_(session_id) {}
+    const base::UnguessableToken& session_id,
+    std::optional<lens::LensOverlayInvocationSource> invocation_source)
+    : service_(service),
+      session_id_(session_id),
+      invocation_source_(invocation_source) {}
 
 ContextualSearchSessionHandle::~ContextualSearchSessionHandle() {
   if (service_) {
@@ -77,6 +83,15 @@ void ContextualSearchSessionHandle::NotifySessionAbandoned() {
   }
 }
 
+bool ContextualSearchSessionHandle::CheckSearchContentSharingSettings(
+    const PrefService* prefs) {
+  if (!prefs) {
+    return false;
+  }
+  policy_checked_ = true;
+  return ContextualSearchService::IsContextSharingEnabled(prefs);
+}
+
 std::optional<lens::proto::LensOverlaySuggestInputs>
 ContextualSearchSessionHandle::GetSuggestInputs() const {
   auto* controller = GetController();
@@ -93,11 +108,28 @@ ContextualSearchSessionHandle::GetSuggestInputs() const {
   return std::nullopt;
 }
 
-void ContextualSearchSessionHandle::AddFileContext(
+base::UnguessableToken ContextualSearchSessionHandle::CreateContextToken() {
+  CHECK(policy_checked_);
+  // Create the file token and add it to the list of uploaded context tokens so
+  // that it is referenced in the query.
+  base::UnguessableToken file_token = base::UnguessableToken::Create();
+  uploaded_context_tokens_.push_back(file_token);
+  return file_token;
+}
+
+void ContextualSearchSessionHandle::StartFileContextUploadFlow(
+    const base::UnguessableToken& file_token,
     std::string file_mime_type,
     mojo_base::BigBuffer file_bytes,
-    std::optional<lens::ImageEncodingOptions> image_options,
-    AddFileContextCallback callback) {
+    std::optional<lens::ImageEncodingOptions> image_options) {
+  // Exit early if the file token is not in the list of uploaded context
+  // tokens, i.e. it was deleted before the upload flow could start.
+  auto it = std::find(uploaded_context_tokens_.begin(),
+                      uploaded_context_tokens_.end(), file_token);
+  if (it == uploaded_context_tokens_.end()) {
+    return;
+  }
+
   auto* context_controller = GetController();
   auto* metrics_recorder = GetMetricsRecorder();
   if (!context_controller) {
@@ -106,8 +138,6 @@ void ContextualSearchSessionHandle::AddFileContext(
   if (!metrics_recorder) {
     return;
   }
-  base::UnguessableToken file_token = base::UnguessableToken::Create();
-  uploaded_context_tokens_.push_back(file_token);
 
   lens::MimeType mime_type;
 
@@ -130,22 +160,9 @@ void ContextualSearchSessionHandle::AddFileContext(
   input_data->context_input->push_back(
       lens::ContextualInput(std::move(file_data_vector), mime_type));
 
-  std::move(callback).Run(file_token);
   metrics_recorder->RecordFileSizeMetric(mime_type, file_bytes.size());
   context_controller->StartFileUploadFlow(file_token, std::move(input_data),
                                           std::move(image_options));
-}
-
-void ContextualSearchSessionHandle::AddTabContext(
-    int32_t tab_id,
-    AddTabContextCallback callback) {
-  // Create the file token and add it to the list of uploaded context tokens so
-  // that it is referenced in the search url.
-  base::UnguessableToken file_token = base::UnguessableToken::Create();
-  uploaded_context_tokens_.push_back(file_token);
-  // TODO(crbug.com/461869881): Store tab metadata in a list of attached tabs
-  // to be able to return the list of attached tabs.
-  std::move(callback).Run(file_token);
 }
 
 void ContextualSearchSessionHandle::StartTabContextUploadFlow(
@@ -248,7 +265,23 @@ void ContextualSearchSessionHandle::CreateSearchUrl(
       contextual_search::SessionState::kNavigationOccurred);
   metrics_recorder->RecordQueryMetrics(query_text.size(),
                                        uploaded_context_tokens_.size());
-  search_url_request_info->file_tokens = uploaded_context_tokens_;
+  // Move the uploaded tokens to the request's file_tokens. Make sure to dedupe
+  // the tokens with those already in the SearchUrlRequestInfo.
+  base::flat_set<base::UnguessableToken> file_tokens_set(
+      std::move(search_url_request_info->file_tokens));
+  file_tokens_set.insert(uploaded_context_tokens_.begin(),
+                         uploaded_context_tokens_.end());
+  search_url_request_info->file_tokens = std::move(file_tokens_set).extract();
+  uploaded_context_tokens_.clear();
+
+  // Copy the tokens from this request to the list of all submitted tokens.
+  submitted_context_tokens_.insert(submitted_context_tokens_.end(),
+                                   search_url_request_info->file_tokens.begin(),
+                                   search_url_request_info->file_tokens.end());
+
+  // Set the invocation source on the search URL request info.
+  search_url_request_info->invocation_source = invocation_source_;
+
   context_controller->CreateSearchUrl(std::move(search_url_request_info),
                                       std::move(callback));
 }
@@ -301,6 +334,28 @@ ContextualSearchSessionHandle::GetSubmittedContextFileInfos() const {
 
 void ContextualSearchSessionHandle::ClearSubmittedContextTokens() {
   submitted_context_tokens_.clear();
+}
+
+void ContextualSearchSessionHandle::set_submitted_context_tokens(
+    const std::vector<base::UnguessableToken>& tokens) {
+  submitted_context_tokens_ = tokens;
+}
+
+bool ContextualSearchSessionHandle::IsTabInContext(SessionID session_id) const {
+  ContextualSearchContextController* controller = GetController();
+  if (!controller) {
+    return false;
+  }
+
+  // TODO(crbug.com/468453630): The context needs to actually be populated
+  // with tab data from the server-managed context list.
+  for (const auto& file_info : GetSubmittedContextFileInfos()) {
+    if (file_info.tab_session_id.has_value() &&
+        file_info.tab_session_id.value() == session_id) {
+      return true;
+    }
+  }
+  return false;
 }
 
 base::WeakPtr<ContextualSearchSessionHandle>

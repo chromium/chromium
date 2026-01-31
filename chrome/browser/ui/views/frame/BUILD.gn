@@ -39,11 +39,18 @@ source_set("toolbar_button_provider") {
 }
 
 source_set("frame") {
-  sources = [ "tab_strip_region_view.h" ]
+  sources = [
+    "browser_root_view.h",
+    "tab_strip_region_view.cc",
+    "tab_strip_region_view.h",
+  ]
 
   deps = [
+    "//base",
+    "//chrome/browser/ui/tabs",
     "//chrome/browser/ui/views",
     "//components/tab_groups",
+    "//ui/base",
     "//ui/views",
   ]
 }

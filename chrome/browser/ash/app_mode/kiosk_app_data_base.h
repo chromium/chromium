@@ -18,7 +18,7 @@
 class PrefService;
 
 namespace base {
-class Value;
+class DictValue;
 }
 
 namespace ash {
@@ -58,7 +58,7 @@ class KioskAppDataBase {
 
   // Helper to load name and icon_path from provided dictionary.
   // This method does not load the icon from disk.
-  bool LoadFromDictionary(const base::Value::Dict& dict);
+  bool LoadFromDictionary(const base::DictValue& dict);
 
   // Starts loading the icon from `icon_path_`. Calling this cancels previous
   // request if any.

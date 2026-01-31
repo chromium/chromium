@@ -12,8 +12,8 @@
 class Profile;
 
 namespace glic {
+class GlicEnabling;
 class GlicInstance;
-
 class GlicInstanceCoordinator;
 
 // Sharing manager that tracks with the active browser. When a Chrome window is

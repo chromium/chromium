@@ -9,7 +9,6 @@
 #include <algorithm>
 #include <string_view>
 
-#include "base/containers/contains.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/escape.h"
@@ -88,11 +87,11 @@ const GURL& RequestAdapter::GetUrl() {
 bool RequestAdapter::HasHeader(const std::string& name) {
   return (original_headers_->HasHeader(name) ||
           modified_headers_->HasHeader(name)) &&
-         !base::Contains(*headers_to_remove_, name);
+         !std::ranges::contains(*headers_to_remove_, name);
 }
 
 void RequestAdapter::RemoveRequestHeaderByName(const std::string& name) {
-  if (!base::Contains(*headers_to_remove_, name)) {
+  if (!std::ranges::contains(*headers_to_remove_, name)) {
     headers_to_remove_->push_back(name);
   }
 }

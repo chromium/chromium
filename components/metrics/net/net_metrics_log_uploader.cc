@@ -4,7 +4,6 @@
 
 #include "components/metrics/net/net_metrics_log_uploader.h"
 
-#include <optional>
 #include <sstream>
 #include <string>
 #include <string_view>
@@ -12,6 +11,7 @@
 #include "base/base64.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/statistics_recorder.h"
 #include "base/strings/strcat.h"
@@ -623,7 +623,7 @@ void NetMetricsLogUploader::UploadLogToURL(
   // It's safe to use |base::Unretained(this)| here, because |this| owns
   // the |url_loader_|, and the callback will be cancelled if the |url_loader_|
   // is destroyed.
-  url_loader_->DownloadToStringOfUnboundedSizeUntilCrashAndDie(
+  url_loader_->DownloadHeadersOnly(
       url_loader_factory_.get(),
       base::BindOnce(&NetMetricsLogUploader::OnURLLoadComplete,
                      base::Unretained(this)));
@@ -645,10 +645,10 @@ void NetMetricsLogUploader::HTTPFallbackAborted() {
 
 // The callback is only invoked if |url_loader_| it was bound against is alive.
 void NetMetricsLogUploader::OnURLLoadComplete(
-    std::optional<std::string> response_body) {
+    scoped_refptr<net::HttpResponseHeaders> headers) {
   int response_code = -1;
-  if (url_loader_->ResponseInfo() && url_loader_->ResponseInfo()->headers) {
-    response_code = url_loader_->ResponseInfo()->headers->response_code();
+  if (headers) {
+    response_code = headers->response_code();
   }
 
   int error_code = url_loader_->NetError();

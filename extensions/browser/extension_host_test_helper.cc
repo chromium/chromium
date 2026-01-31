@@ -5,7 +5,6 @@
 #include "extensions/browser/extension_host_test_helper.h"
 
 #include "base/check.h"
-#include "base/containers/contains.h"
 #include "base/run_loop.h"
 #include "extensions/browser/extension_host.h"
 
@@ -86,7 +85,7 @@ ExtensionHost* ExtensionHostTestHelper::WaitFor(HostEvent event) {
   waiting_for_ = event;
   run_loop.Run();
 
-  DCHECK(base::Contains(observed_events_, event));
+  DCHECK(observed_events_.contains(event));
   // Note: This can still be null here if the corresponding ExtensionHost was
   // destroyed.  This is always true when waiting for
   // OnExtensionHostDestroyed(), but can also happen if the ExtensionHost is

@@ -34,11 +34,16 @@
 <translation id="159029779861043703">Chromium chrání vaše citlivá data pomocí Face ID.</translation>
 <translation id="1591119736686995611">Otevře mřížku karet prohlížeče Chromium.</translation>
 <translation id="16001233025397167">Bezpečnostní kontrola vás chrání před úniky dat, nebezpečnými weby a dalšími hrozbami. Nechte si zasílat upozornění na problémy s ochranou soukromí nebo zabezpečením, které u vás Chromium zjistí.</translation>
+<translation id="1614362805233822594">Pro zobrazené weby už ve Správci hesel hesla nebo přístupové klíče máte. Pokud chcete zobrazené přihlašovací údaje zachovat a přepsat jimi údaje ve Správci hesel, vyberte účet.</translation>
 <translation id="1617663976202781617">Data ze synchronizace prohlížeče Chromium</translation>
 <translation id="164952285225495380">Tento balíček již byl v prohlížeči Chromium sledován.</translation>
+<translation id="1703338211136118534">Následující hesla se do Správce hesel neimportovala, protože neodpovídají požadavkům.</translation>
 <translation id="1707458603865303524">Používejte Chromium, kdykoli klepnete na odkazy ve zprávách nebo jiných aplikacích.</translation>
 <translation id="1722370509450468186">Heslo bude uloženo do vašeho účtu (<ph name="EMAIL" />).</translation>
 <translation id="1747088204252710672">Feed přizpůsobený pro vás</translation>
+<translation id="1761196287436320018">V prohlížeči Chromium jste dosáhli limitu <ph name="LIMIT" /> záložek. Některé záložky se vám proto zatím neuložily do účtu Google.
+
+Nové záložky nebude možné do účtu uložit, dokud některé nesmažete. Pokud se teď odhlásíte, neuložené záložky se smažou.</translation>
 <translation id="1811860791247653035">Pokud chcete získat personalizaci a další funkce, zahrňte Chromium do: <ph name="FEATURE_NAME_1" /> a <ph name="FEATURE_NAME_2" /></translation>
 <translation id="1838412507805038478">Prohlížeč Chromium ověřil, že certifikát tohoto webu byl vydán vydavatelem <ph name="ISSUER" />.</translation>
 <translation id="1839447949248872139">Otevírejte odkazy v Chromiu ve výchozím nastavení</translation>
@@ -46,6 +51,7 @@
 <translation id="1847960401032164406">Mapy v prohlížeči Chromium</translation>
 <translation id="1867772173333403444">4. Vyberte Chromium.</translation>
 <translation id="1965068424387304464">Tip pro Chromium: Ukládání hesel</translation>
+<translation id="1992653360331625459">Hesla pro tyto účty už ve Správci hesel máte. Pokud importujete některá z níže uvedených hesel, nahradí ta stávající.</translation>
 <translation id="2006345422933397527">Chromium nemůže vyhledat dostupné aktualizace. Zkuste zkontrolovat připojení k internetu.</translation>
 <translation id="2042889939382983733">Zobrazit historii prohlížeče Chromium</translation>
 <translation id="2052320862053429062">Chromium vaše hesla pravidelně porovnává se seznamy hesel, která unikla na internet. Vaše hesla a uživatelská jména jsou při tom šifrována, takže je nemůže nikdo zobrazit (ani Google).</translation>
@@ -64,6 +70,7 @@
 <translation id="2326738825692478496">Některá data prohlížeče Chromium ještě nebyla uložena do vašeho účtu Google.
 
 Zkuste s odhlášením několik minut počkat. Pokud se teď odhlásíte, tato data budou smazána.</translation>
+<translation id="2334943301233020675">Následující přístupové klíče se do Správce hesel neimportovaly, protože neodpovídají požadavkům.</translation>
 <translation id="2337722506862731008">Sdílet Chromium</translation>
 <translation id="2340423701577464731">Přidat položku do seznamu četby v prohlížeči Chromium</translation>
 <translation id="2374627437126809292">Chromium používá Mapy Google k poskytování tras a místních informací o zjištěných adresách.</translation>
@@ -124,6 +131,7 @@ Zkuste před přepnutím účtů pár minut počkat. Pokud teď přepnete účty
 <translation id="3728124580182886854">Propojte Chromium a další služby Google pro personalizaci a další účely</translation>
 <translation id="377649297473651452">Rozbalené zobrazení automatického vyplňování prohlížeče Chromium</translation>
 <translation id="3780779443901618967">Varuje vás před nebezpečnými weby (včetně těch, o kterých Google dříve nevěděl) tím, že analyzuje více dat z webů než standardní ochrana. Upozornění prohlížeče Chromium můžete přeskočit.</translation>
+<translation id="3793136096560888222">Úprava obrázku pomocí Gemini v Chromiu</translation>
 <translation id="3805899903892079518">Chromium nemá přístup k vašim fotkám nebo videím. Povolte přístup v systému iOS v Nastavení &gt; Soukromí &gt; Fotky.</translation>
 <translation id="3816686541346279443">Chromium vám nabídne uložení hesla.</translation>
 <translation id="3827545470516145620">Na tomto zařízení máte standardní bezpečnostní ochranu</translation>
@@ -291,7 +299,6 @@ Vaše šifrovaná data mohou číst pouze uživatelé, kteří mají vaši heslo
 <translation id="7554983317097061001">Tip pro Chromium: Přesuňte Chromium do Docku</translation>
 <translation id="7576863740961052505">Spravovat nastavení prohlížeče Chromium</translation>
 <translation id="7674213385180944843">Otevřete Nastavení &gt; Soukromí &gt; Kamera &gt; Chromium a zapněte fotoaparát.</translation>
-<translation id="7685160423563372998">Vytvoření obrázku pomocí Gemini v Chromiu</translation>
 <translation id="7733418656985455268">Tip pro Chromium: Vyhledávejte pomocí Lens</translation>
 <translation id="7747820849741499258">Vyhledat v prohlížeči Chromium</translation>
 <translation id="7753923083404296545">Otevřeno v anonymním režimu prohlížeče Chromium</translation>

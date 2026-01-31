@@ -1,4 +1,4 @@
-<style include="cr-page-host-style cr-shared-style cr-nav-menu-item-style certificate-manager-style">
+<style include="cr-page-host-style cr-shared-style cr-nav-menu-item-style cr-scrollable certificate-manager-style">
   :host {
     display: flex;
     flex-direction: column;
@@ -23,24 +23,10 @@
     width: 250px;
   }
 
-  #cr-container-shadow-top {
-    /* Needs to be higher than #container's z-index to appear above
-     * scrollbars. */
-    z-index: 2;
-  }
-
   #container {
-   /* CrContainerShadowMixin creates a div inside of #container to
-    * calculate when the div is off-screen, indicating that the user has
-    * scrolled #container. Since this div needs to be at the top of
-    * #container, set align-items to flex-start. Otherwise, the flex layout
-    * will stretch the div across the entire height of #container and never
-    * appear off-screen. */
     display: flex;
-    align-items: flex-start;
     overflow: auto;
     flex: 1;
-    z-index: 1;
   }
 
   #adminCertsSection,
@@ -65,7 +51,8 @@
     page-name="$i18n{certificateManagerV2Title}"
     show-search="[[showSearch_]]" always-show-logo>
 </cr-toolbar>
-<div id="container">
+<div id="container" class="cr-scrollable">
+  <div id="scrollableShadow" class="cr-scrollable-top-shadow"></div>
   <div id="sidebar" role="navigation">
     <cr-menu-selector id="menu" selectable="a" attr-for-selected="href"
         selected-attribute="selected"

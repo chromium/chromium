@@ -8,7 +8,6 @@
 
 source_set("windows_app_sdk_headers") {
   sources = [
-    "src/inc/abi/runtime/WindowsAppSDK-VersionInfo.h",
     "src/inc/abi/winml/Microsoft.Windows.AI.MachineLearning.h",
     "src/inc/abi/winml/winml/onnxruntime_c_api.h",
     "src/inc/abi/winml/winml/onnxruntime_ep_c_api.h",
@@ -16,7 +15,19 @@ source_set("windows_app_sdk_headers") {
     "src/inc/abi/winml/winml/onnxruntime_session_options_config_keys.h",
   ]
 
+  public_deps = [ ":version_info" ]
+
   visibility = [
+    "//chrome/browser/webnn/*",
+    "//services/webnn/*",
+  ]
+}
+
+source_set("version_info") {
+  sources = [ "src/inc/abi/runtime/WindowsAppSDK-VersionInfo.h" ]
+
+  visibility = [
+    ":windows_app_sdk_headers",
     "//chrome/browser/webnn/*",
     "//services/webnn/*",
   ]

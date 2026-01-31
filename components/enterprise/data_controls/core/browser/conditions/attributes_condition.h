@@ -43,7 +43,7 @@ class AttributesCondition {
   static constexpr char kKeyComponents[] = "components";
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
-  explicit AttributesCondition(const base::Value::Dict& value);
+  explicit AttributesCondition(const base::DictValue& value);
   AttributesCondition(AttributesCondition&& other);
   ~AttributesCondition();
 
@@ -101,7 +101,7 @@ class SourceAttributesCondition : public AttributesCondition, public Condition {
  public:
   // Returns nullptr if the passed JSON doesn't match the expected schema.
   static std::unique_ptr<Condition> Create(const base::Value& value);
-  static std::unique_ptr<Condition> Create(const base::Value::Dict& value);
+  static std::unique_ptr<Condition> Create(const base::DictValue& value);
 
   // data_controls::Condition:
   bool CanBeEvaluated(const ActionContext& action_context) const override;
@@ -119,7 +119,7 @@ class DestinationAttributesCondition : public AttributesCondition,
  public:
   // Returns nullptr if the passed JSON doesn't match the expected schema.
   static std::unique_ptr<Condition> Create(const base::Value& value);
-  static std::unique_ptr<Condition> Create(const base::Value::Dict& value);
+  static std::unique_ptr<Condition> Create(const base::DictValue& value);
 
   // data_controls::Condition:
   bool CanBeEvaluated(const ActionContext& action_context) const override;

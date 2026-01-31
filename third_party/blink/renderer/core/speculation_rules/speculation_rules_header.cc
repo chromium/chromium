@@ -4,7 +4,6 @@
 
 #include "third_party/blink/renderer/core/speculation_rules/speculation_rules_header.h"
 
-#include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "net/http/structured_headers.h"
 #include "services/network/public/mojom/fetch_api.mojom-blink-forward.h"

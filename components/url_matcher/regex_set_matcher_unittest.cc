@@ -6,7 +6,6 @@
 
 #include <set>
 
-#include "base/containers/contains.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
@@ -29,14 +28,14 @@ TEST(RegexSetMatcherTest, MatchRegexes) {
   std::set<MatcherStringPattern::ID> result1;
   matcher.Match("http://abracadabra.com", &result1);
   EXPECT_EQ(2U, result1.size());
-  EXPECT_TRUE(base::Contains(result1, 42));
-  EXPECT_TRUE(base::Contains(result1, 239));
+  EXPECT_TRUE(result1.contains(42));
+  EXPECT_TRUE(result1.contains(239));
 
   std::set<MatcherStringPattern::ID> result2;
   matcher.Match("https://abfffffffffffffffffffffffffffffff.fi/cf", &result2);
   EXPECT_EQ(2U, result2.size());
-  EXPECT_TRUE(base::Contains(result2, 17));
-  EXPECT_TRUE(base::Contains(result2, 42));
+  EXPECT_TRUE(result2.contains(17));
+  EXPECT_TRUE(result2.contains(42));
 
   std::set<MatcherStringPattern::ID> result3;
   matcher.Match("http://nothing.com/", &result3);
@@ -59,7 +58,7 @@ TEST(RegexSetMatcherTest, CaseSensitivity) {
   std::set<MatcherStringPattern::ID> result2;
   matcher.Match("http://aaa.net/quaaACK", &result2);
   EXPECT_EQ(1U, result2.size());
-  EXPECT_TRUE(base::Contains(result2, 57));
+  EXPECT_TRUE(result2.contains(57));
 }
 
 }  // namespace url_matcher

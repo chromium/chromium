@@ -11,15 +11,15 @@
 
 static void JNI_SigninMetricsUtils_LogSigninUserActionForAccessPoint(
     JNIEnv* env,
-    jint access_point) {
+    int32_t access_point) {
   signin_metrics::RecordSigninUserActionForAccessPoint(
       static_cast<signin_metrics::AccessPoint>(access_point));
 }
 
 static void JNI_SigninMetricsUtils_LogAccountConsistencyPromoAction(
     JNIEnv* env,
-    jint consistency_promo_action,
-    jint access_point) {
+    int32_t consistency_promo_action,
+    int32_t access_point) {
   CHECK_GE(consistency_promo_action, 0);
   CHECK_LE(consistency_promo_action,
            static_cast<int>(
@@ -34,8 +34,8 @@ static void JNI_SigninMetricsUtils_LogAccountConsistencyPromoAction(
 }
 
 static void JNI_SigninMetricsUtils_LogSigninOffered(JNIEnv* env,
-                                                    jint signin_promo_action,
-                                                    jint access_point) {
+                                                    int32_t signin_promo_action,
+                                                    int32_t access_point) {
   CHECK_GE(signin_promo_action, 0);
   CHECK_LE(signin_promo_action,
            static_cast<int>(signin_metrics::PromoAction::kMaxValue));

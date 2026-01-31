@@ -141,7 +141,8 @@ void FloatingAccessibilityController::SetMenuPosition(
   }
 
   gfx::Rect new_bounds = GetOnScreenBoundsForFloatingMenuPosition(
-      menu_view_->GetPreferredSize(), new_position);
+      menu_view_->GetPreferredSize(), new_position,
+      Shell::GetPrimaryRootWindow());
 
   gfx::Rect resting_bounds =
       CollisionDetectionUtils::AdjustToFitMovementAreaByGravity(

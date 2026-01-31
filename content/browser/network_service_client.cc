@@ -124,10 +124,6 @@ NetworkServiceClient::NetworkServiceClient()
 
   if (IsOutOfProcessNetworkService()) {
     net::CertDatabase::GetInstance()->AddObserver(this);
-    memory_pressure_listener_registration_ =
-        std::make_unique<base::MemoryPressureListenerRegistration>(
-            FROM_HERE, base::MemoryPressureListenerTag::kNetworkServiceClient,
-            this);
   }
 
   webrtc_connections_observer_ =
@@ -160,11 +156,6 @@ void NetworkServiceClient::OnTrustStoreChanged() {
 
 void NetworkServiceClient::OnClientCertStoreChanged() {
   GetNetworkService()->OnClientCertStoreChanged();
-}
-
-void NetworkServiceClient::OnMemoryPressure(
-    base::MemoryPressureLevel memory_pressure_level) {
-  GetNetworkService()->OnMemoryPressure(memory_pressure_level);
 }
 
 void NetworkServiceClient::OnPeerToPeerConnectionsCountChange(uint32_t count) {
@@ -306,6 +297,7 @@ void NetworkServiceClient::OnAuthRequired(
 
 void NetworkServiceClient::OnLocalNetworkAccessPermissionRequired(
     network::mojom::TransportType type,
+    network::mojom::IPAddressSpace ip_address_space,
     OnLocalNetworkAccessPermissionRequiredCallback callback) {
   std::move(callback).Run(network::mojom::LocalNetworkAccessResult::kDenied);
 }
@@ -328,8 +320,8 @@ void NetworkServiceClient::OnLoadingStateUpdate(
 
 void NetworkServiceClient::OnDataUseUpdate(
     int32_t network_traffic_annotation_id_hash,
-    int64_t recv_bytes,
-    int64_t sent_bytes) {
+    base::ByteSize recv_bytes,
+    base::ByteSize sent_bytes) {
   GetContentClient()->browser()->OnNetworkServiceDataUseUpdate(
       GlobalRenderFrameHostId(), network_traffic_annotation_id_hash, recv_bytes,
       sent_bytes);

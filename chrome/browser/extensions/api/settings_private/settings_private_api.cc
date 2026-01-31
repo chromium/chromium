@@ -80,7 +80,7 @@ ExtensionFunction::ResponseAction SettingsPrivateGetPrefFunction::Run() {
       SettingsPrivateDelegateFactory::GetForBrowserContext(browser_context());
   DCHECK(delegate);
 
-  std::optional<base::Value::Dict> value = delegate->GetPref(parameters->name);
+  std::optional<base::DictValue> value = delegate->GetPref(parameters->name);
   if (!value) {
     return RespondNow(Error("Pref * does not exist", parameters->name));
   }

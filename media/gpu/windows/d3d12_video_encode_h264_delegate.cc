@@ -241,9 +241,8 @@ D3D12VideoEncodeH264Delegate::GetSupportedProfiles(
 
 D3D12VideoEncodeH264Delegate::D3D12VideoEncodeH264Delegate(
     Microsoft::WRL::ComPtr<ID3D12VideoDevice3> video_device,
-    bool disable_non_reference_frames)
-    : D3D12VideoEncodeDelegate(std::move(video_device)),
-      disable_non_reference_frames_(disable_non_reference_frames) {
+    const gpu::GpuDriverBugWorkarounds& gpu_workarounds)
+    : D3D12VideoEncodeDelegate(std::move(video_device), gpu_workarounds) {
   // We always do add-one before encoding, so we assign them to be -1 to make it
   // start with 0.
   pic_params_.idr_pic_id = -1;
@@ -272,7 +271,7 @@ size_t D3D12VideoEncodeH264Delegate::GetMaxNumOfManualRefBuffers() const {
 
   // Same as L1Tx modes, we must reserve 1 DPB slot internally for handling
   // frame_num gap.
-  if (disable_non_reference_frames_) {
+  if (gpu_workarounds_.disable_d3d12_h264_encoder_non_reference_frames) {
     return max_num_ref_frames_ - 2;
   }
   return max_num_ref_frames_ - 1;
@@ -399,7 +398,7 @@ EncoderStatus D3D12VideoEncodeH264Delegate::EncodeImpl(
     update_buffer = options.update_buffer;
   }
 
-  if (disable_non_reference_frames_) {
+  if (gpu_workarounds_.disable_d3d12_h264_encoder_non_reference_frames) {
     // Currently it is not supported by some hardware to set current frame
     // not-referenced. So we use slot 1 for non-referenced frame and let other
     // long term frames' index added by one if it is not 0.
@@ -617,7 +616,7 @@ EncoderStatus D3D12VideoEncodeH264Delegate::InitializeVideoEncoder(
 
   if (svc_layers_.has_value()) {
     max_num_ref_frames_ = GetNumTemporalLayers() == 3 ? 2 : 1;
-    if (disable_non_reference_frames_) {
+    if (gpu_workarounds_.disable_d3d12_h264_encoder_non_reference_frames) {
       // Currently it is not supported by some hardware to set current frame
       // not-referenced. So we add a space for such case.
       ++max_num_ref_frames_;

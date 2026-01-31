@@ -37,6 +37,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_SYSTEM) FakeStatisticsProvider
   bool IsCrosDebugMode() override;
   VpdStatus GetVpdStatus() const override;
   LoadingState GetLoadingState() const override;
+  std::optional<std::string> GetUpdatedHardwareClass() const override;
 
   void SetMachineStatistic(const std::string& key, const std::string& value);
   void ClearMachineStatistic(std::string_view key);
@@ -45,6 +46,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_SYSTEM) FakeStatisticsProvider
   void ClearMachineFlag(std::string_view key);
   void SetVpdStatus(VpdStatus new_status);
   void SetLoadingState(LoadingState new_state);
+  void SetUpdatedHardwareClass(const std::optional<std::string> new_hw_class);
 
  private:
   base::flat_map<std::string, std::string> machine_statistics_;
@@ -52,6 +54,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_SYSTEM) FakeStatisticsProvider
 
   VpdStatus vpd_status_{VpdStatus::kUnknown};
   LoadingState loading_state_{LoadingState::kNotStarted};
+  std::optional<std::string> updated_hardware_class_;
 };
 
 // A convenience subclass that automatically registers itself as the test

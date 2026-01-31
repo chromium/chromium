@@ -96,4 +96,9 @@ bool DeviceInfoSyncClientImpl::IsUmaEnabledOnCrOSDevice() const {
   return false;
 #endif
 }
+
+bool DeviceInfoSyncClientImpl::GetDesktopToIOSPromoReceivingEnabled() const {
+  return false;
+}
+
 }  // namespace browser_sync

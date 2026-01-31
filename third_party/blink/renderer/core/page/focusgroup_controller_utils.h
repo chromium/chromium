@@ -153,7 +153,7 @@ class CORE_EXPORT FocusgroupControllerUtils {
   //
   // Selection priority (highest to lowest):
   // 1. Last focused item (if memory is enabled and item is in this segment).
-  // 2. First item with focusgroup-entry-priority attribute.
+  // 2. First item with focusgroupstart attribute.
   // 3. First item in segment.
   //
   // Note: Elements with tabindex=-1 are not focusgroup items and do not
@@ -189,10 +189,10 @@ class CORE_EXPORT FocusgroupControllerUtils {
   // subtree is the nearest ancestor (or self) with focusgroup="none".
   static const Element* GetOptedOutSubtreeRoot(const Element* element);
 
-  // Returns true if the element has the focusgroup-entry-priority attribute.
+  // Returns true if the element has the focusgroupstart attribute.
   // This boolean attribute marks an element as the preferred entry point when
   // entering a focusgroup segment via sequential focus navigation.
-  static bool HasFocusgroupEntryPriority(const Element& element);
+  static bool IsFocusgroupStart(const Element& element);
 
   static GridFocusgroupStructureInfo*
   CreateGridFocusgroupStructureInfoForGridRoot(const Element* root);

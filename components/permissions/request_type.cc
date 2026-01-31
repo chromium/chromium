@@ -7,11 +7,11 @@
 #include <algorithm>
 
 #include "base/check.h"
-#include "base/containers/contains.h"
 #include "base/containers/fixed_flat_set.h"
 #include "base/feature_list.h"
 #include "base/notreached.h"
 #include "build/build_config.h"
+#include "components/content_settings/core/common/content_settings_utils.h"
 #include "components/content_settings/core/common/features.h"
 #include "components/permissions/features.h"
 #include "components/permissions/permission_request.h"
@@ -51,8 +51,12 @@ int GetIconIdAndroid(RequestType type) {
       return IDR_ANDROID_INFOBAR_IDENTITY_PROVIDER;
     case RequestType::kIdleDetection:
       return IDR_ANDROID_INFOBAR_IDLE_DETECTION;
+    case RequestType::kLocalNetwork:
+      return IDR_ANDROID_INFOBAR_LOCAL_NETWORK;
     case RequestType::kLocalNetworkAccess:
       return IDR_ANDROID_INFOBAR_LOCAL_NETWORK_ACCESS;
+    case RequestType::kLoopbackNetwork:
+      return IDR_ANDROID_INFOBAR_LOOPBACK_NETWORK;
     case RequestType::kMicStream:
       return IDR_ANDROID_INFOBAR_MEDIA_STREAM_MIC;
     case RequestType::kMidiSysex:
@@ -103,8 +107,11 @@ const gfx::VectorIcon& GetIconIdDesktop(RequestType type) {
       return vector_icons::kKeyboardLockIcon;
     case RequestType::kLocalFonts:
       return vector_icons::kFontDownloadChromeRefreshIcon;
+    case RequestType::kLocalNetwork:
     case RequestType::kLocalNetworkAccess:
       return vector_icons::kRouterIcon;
+    case RequestType::kLoopbackNetwork:
+      return vector_icons::kDesktopWindowsIcon;
     case RequestType::kMicStream:
       return vector_icons::kMicChromeRefreshIcon;
     case RequestType::kMidiSysex:
@@ -165,8 +172,11 @@ const gfx::VectorIcon& GetBlockedIconIdDesktop(RequestType type) {
       return vector_icons::kHandGestureOffIcon;
     case RequestType::kIdleDetection:
       return vector_icons::kDevicesOffIcon;
+    case RequestType::kLocalNetwork:
     case RequestType::kLocalNetworkAccess:
       return vector_icons::kRouterOffIcon;
+    case RequestType::kLoopbackNetwork:
+      return vector_icons::kDesktopAccessDisabledIcon;
     case RequestType::kMicStream:
       return vector_icons::kMicOffChromeRefreshIcon;
     case RequestType::kMidiSysex:
@@ -250,6 +260,10 @@ std::optional<RequestType> ContentSettingsTypeToRequestTypeIfExists(
       return RequestType::kWindowManagement;
     case ContentSettingsType::LOCAL_NETWORK_ACCESS:
       return RequestType::kLocalNetworkAccess;
+    case ContentSettingsType::LOCAL_NETWORK:
+      return RequestType::kLocalNetwork;
+    case ContentSettingsType::LOOPBACK_NETWORK:
+      return RequestType::kLoopbackNetwork;
     case ContentSettingsType::TOP_LEVEL_STORAGE_ACCESS:
       return RequestType::kTopLevelStorageAccess;
     case ContentSettingsType::FILE_SYSTEM_WRITE_GUARD:
@@ -301,16 +315,15 @@ std::optional<ContentSettingsType> RequestTypeToContentSettingsType(
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
     case RequestType::kLocalFonts:
       return ContentSettingsType::LOCAL_FONTS;
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
     case RequestType::kLocalNetworkAccess:
       return ContentSettingsType::LOCAL_NETWORK_ACCESS;
-#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+    case RequestType::kLocalNetwork:
+      return ContentSettingsType::LOCAL_NETWORK;
+    case RequestType::kLoopbackNetwork:
+      return ContentSettingsType::LOOPBACK_NETWORK;
     case RequestType::kGeolocation:
-      if (base::FeatureList::IsEnabled(
-              content_settings::features::kApproximateGeolocationPermission)) {
-        return ContentSettingsType::GEOLOCATION_WITH_OPTIONS;
-      } else {
-        return ContentSettingsType::GEOLOCATION;
-      }
+      return content_settings::GeolocationContentSettingsType();
     case RequestType::kHandTracking:
       return ContentSettingsType::HAND_TRACKING;
     case RequestType::kIdleDetection:
@@ -374,7 +387,7 @@ bool IsConfirmationChipSupported(RequestType for_request_type) {
           RequestType::kMicStream,
           // clang-format on
       });
-  return base::Contains(kRequestsWithChip, for_request_type);
+  return kRequestsWithChip.contains(for_request_type);
 }
 
 #if !BUILDFLAG(IS_IOS)
@@ -434,6 +447,10 @@ const char* PermissionKeyForRequestType(permissions::RequestType request_type) {
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
     case permissions::RequestType::kLocalNetworkAccess:
       return "local_network_access";
+    case permissions::RequestType::kLocalNetwork:
+      return "local_network";
+    case permissions::RequestType::kLoopbackNetwork:
+      return "loopback_network";
     case permissions::RequestType::kMicStream:
       return "mic_stream";
     case permissions::RequestType::kMidiSysex:

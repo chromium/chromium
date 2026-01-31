@@ -28,7 +28,7 @@ FilesInternalsUI::FilesInternalsUI(
       content::WebUIDataSource::CreateAndAdd(
           web_ui->GetWebContents()->GetBrowserContext(),
           kChromeUIFilesInternalsHost);
-  data_source->AddResourcePath("", IDR_ASH_FILES_INTERNALS_INDEX_HTML);
+  data_source->SetDefaultResource(IDR_ASH_FILES_INTERNALS_INDEX_HTML);
   data_source->AddResourcePaths(kAshFilesInternalsResources);
   CallSetRequestFilter(data_source);
 }

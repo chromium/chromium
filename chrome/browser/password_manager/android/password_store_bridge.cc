@@ -55,7 +55,7 @@ PasswordForm Blocklist(JNIEnv* env, std::string url) {
 }  // namespace
 
 // static
-static jlong JNI_PasswordStoreBridge_Init(
+static int64_t JNI_PasswordStoreBridge_Init(
     JNIEnv* env,
     const base::android::JavaRef<jobject>& java_bridge,
     Profile* profile) {
@@ -118,13 +118,13 @@ bool PasswordStoreBridge::EditPassword(
          password_manager::SavedPasswordsPresenter::EditResult::kSuccess;
 }
 
-jint PasswordStoreBridge::GetPasswordStoreCredentialsCountForAllStores(
+int32_t PasswordStoreBridge::GetPasswordStoreCredentialsCountForAllStores(
     JNIEnv* env) const {
   return static_cast<int>(
       saved_passwords_presenter_.GetSavedPasswords().size());
 }
 
-jint PasswordStoreBridge::GetPasswordStoreCredentialsCountForAccountStore(
+int32_t PasswordStoreBridge::GetPasswordStoreCredentialsCountForAccountStore(
     JNIEnv* env) const {
   auto in_account_store = [](const auto& credential) {
     return credential.stored_in.contains(Store::kAccountStore);
@@ -133,7 +133,7 @@ jint PasswordStoreBridge::GetPasswordStoreCredentialsCountForAccountStore(
                   in_account_store);
 }
 
-jint PasswordStoreBridge::GetPasswordStoreCredentialsCountForProfileStore(
+int32_t PasswordStoreBridge::GetPasswordStoreCredentialsCountForProfileStore(
     JNIEnv* env) const {
   auto in_account_store = [](const auto& credential) {
     return credential.stored_in.contains(Store::kProfileStore);

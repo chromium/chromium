@@ -48,6 +48,7 @@
 <translation id="2761536921376153655">የቅኝት ዓይነት</translation>
 <translation id="28682968802727151">የመስታወት ቅድመ-ዕይታ</translation>
 <translation id="2879583609344924966"><ph name="CAMERA" /> ተሰክቷል።</translation>
+<translation id="3063987824612038785">ሁሉም የካሜራ ፋይሎች ወደ Google Drive ይቀመጣሉ</translation>
 <translation id="3067436040345934772">ወደ ቀኝ ያንፏቅቁ</translation>
 <translation id="3081586908890909590">ቪዲዮ ለመቅረጽ ቀይር</translation>
 <translation id="3091480460059548935">የጽሑፍ ማወቂያ በቅድመ እይታ ውስጥ</translation>
@@ -67,6 +68,7 @@
 <translation id="3642192109456033823">ቪድዮን በማሰናዳት ላይ...</translation>
 <translation id="3789724198583203151">90 ዲግሪ በሰዓት ተቃራኒ አቅጣጫ አሽከርክር</translation>
 <translation id="3810838688059735925">ቪዲዮ</translation>
+<translation id="386366972082231038">ሁሉም የካሜራ ፋይሎች ወደ OneDrive ይቀመጣሉ</translation>
 <translation id="4060608699153044055">በዝቅተኛ የመሣሪያ የማከማቻ ቦታ ምክንያት መቅረጽ አይችሉም። ቀረጻ ለመጀመር መሣሪያዎ ላይ ቦታ ማስለቀቅ አለብዎት።</translation>
 <translation id="4061162772429051350"><ph name="MAGAPIXELS_AMOUNT" /> ሜፒ</translation>
 <translation id="4118525110028899586">ቀረጻን ለአፍታ አቁም</translation>
@@ -100,6 +102,7 @@
 <translation id="5634947914995388399">መገናኛን ዘርጋ እና መቃኘትን አቁም</translation>
 <translation id="5662366948659129155">ገፅ <ph name="COUNT" />ን በመቃኘት ላይ</translation>
 <translation id="5671277269877808209">ካሬ</translation>
+<translation id="5725797473946373607">ይህን መገናኛ በቀጣይ ጊዜ አታሳይ</translation>
 <translation id="574392208103952083">መካከለኛ</translation>
 <translation id="5746169159649715125">እንደ PDF አስቀምጥ</translation>
 <translation id="5753488212459587150">የባለሙያ ሁነታን ያንቁ</translation>
@@ -156,6 +159,7 @@
 <translation id="7983668134180549431">ጽሁፍ ተገኝቷል።</translation>
 <translation id="8079255378695216066">ቀረጻን መጀመር አልተቻለም</translation>
 <translation id="8120146556401698679">ማንፏቀቅ- ማጋደል-አጉላ/አሳንስ</translation>
+<translation id="8127459436205030819">ፋይሎችዎ ለአስተዳዳሪዎ የሚታዩ ሊሆኑ ይችላሉ</translation>
 <translation id="8131740175452115882">አረጋግጥ</translation>
 <translation id="8145038249676204903">ፎቶ ለማንሳት ይቀይሩ</translation>
 <translation id="8167081290930651932">እንደ ፎቶ አስቀምጥ</translation>
@@ -165,6 +169,7 @@
 <translation id="8609951387004618906"><ph name="URL" /> ይክፈቱ</translation>
 <translation id="8629662593426079630">360p</translation>
 <translation id="8711011893539266636">የማይክሮፎን ድምጸ-ከል መቀያየሪያ ድምጸ-ከል በርቷል</translation>
+<translation id="8712637175834984815">ገባኝ</translation>
 <translation id="8730621377337864115">ተከናውኗል</translation>
 <translation id="8732462232047530626">የቅድመ ዕይታ ዲበ ውሂብ</translation>
 <translation id="874854738381978209">የWi-Fi አውታረ መረብ ተገኝቷል።</translation>

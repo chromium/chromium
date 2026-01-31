@@ -4,6 +4,7 @@
 
 #include "chrome/browser/extensions/api/terminal/terminal_private_api.h"
 
+#include <algorithm>
 #include <cstdlib>
 #include <memory>
 #include <string>
@@ -14,7 +15,6 @@
 #include "ash/constants/ash_pref_names.h"
 #include "ash/webui/settings/public/constants/routes.mojom.h"
 #include "base/command_line.h"
-#include "base/containers/contains.h"
 #include "base/containers/fixed_flat_map.h"
 #include "base/containers/fixed_flat_set.h"
 #include "base/containers/flat_set.h"
@@ -214,7 +214,7 @@ void NotifyProcessOutput(content::BrowserContext* browser_context,
     return;
   }
 
-  base::Value::List args;
+  base::ListValue args;
   args.Append(terminal_id);
   args.Append(output_type);
   args.Append(base::Value(base::as_byte_span(output)));
@@ -234,8 +234,8 @@ void PrefChanged(Profile* profile, const std::string& pref_name) {
   if (!event_router) {
     return;
   }
-  base::Value::List args;
-  base::Value::Dict prefs;
+  base::ListValue args;
+  base::DictValue prefs;
   prefs.Set(pref_name, profile->GetPrefs()->GetValue(pref_name).Clone());
   args.Append(std::move(prefs));
   auto event = std::make_unique<extensions::Event>(
@@ -753,7 +753,7 @@ TerminalPrivateOpenSettingsSubpageFunction::Run() {
 TerminalPrivateGetOSInfoFunction::~TerminalPrivateGetOSInfoFunction() = default;
 
 ExtensionFunction::ResponseAction TerminalPrivateGetOSInfoFunction::Run() {
-  base::Value::Dict info;
+  base::DictValue info;
   info.Set("tast", extensions::ExtensionRegistry::Get(browser_context())
                        ->enabled_extensions()
                        .Contains(extension_misc::kGuestModeTestExtensionId));
@@ -767,11 +767,11 @@ ExtensionFunction::ResponseAction TerminalPrivateGetPrefsFunction::Run() {
   EXTENSION_FUNCTION_VALIDATE(params);
   PrefService* service =
       Profile::FromBrowserContext(browser_context())->GetPrefs();
-  base::Value::Dict result;
+  base::DictValue result;
 
   for (const auto& path : params->paths) {
     // Ignore non-allowed paths.
-    if (!base::Contains(*kPrefsReadAllowList, path)) {
+    if (!std::ranges::contains(*kPrefsReadAllowList, path)) {
       LOG(WARNING) << "Ignoring non-allowed GetPrefs path=" << path;
       continue;
     }

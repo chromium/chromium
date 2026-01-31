@@ -20,15 +20,13 @@ import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 import type {TabInfo} from '//resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 import type {UnguessableToken} from '//resources/mojo/mojo/public/mojom/base/unguessable_token.mojom-webui.js';
 
-import {recordContextAdditionMethod} from './common.js';
+import {recordBoolean, recordContextAdditionMethod, TabUploadOrigin} from './common.js';
 import {getCss} from './context_menu_entrypoint.css.js';
 import {getHtml} from './context_menu_entrypoint.html.js';
 
 
 /** The width of the dropdown menu in pixels. */
 const MENU_WIDTH_PX = 190;
-/** The string value of the tall bottom context layout mode. */
-const TALL_BOTTOM_CONTEXT_LAYOUT_MODE = 'TallBottomContext';
 
 export interface ContextMenuEntrypointElement {
   $: {
@@ -75,6 +73,7 @@ export class ContextMenuEntrypointElement extends
         reflect: true,
         type: Boolean,
       },
+      hideEntrypointButton: {type: Boolean},
       disabledTabIds: {type: Object},
       tabSuggestions: {type: Array},
       entrypointName: {type: String},
@@ -109,6 +108,7 @@ export class ContextMenuEntrypointElement extends
   accessor showContextMenuDescription: boolean = false;
   accessor inCreateImageMode: boolean = false;
   accessor hasImageFiles: boolean = false;
+  accessor hideEntrypointButton: boolean = false;
   accessor disabledTabIds: Map<number, UnguessableToken> = new Map();
   accessor tabSuggestions: TabInfo[] = [];
   accessor entrypointName: string = '';
@@ -136,8 +136,7 @@ export class ContextMenuEntrypointElement extends
   }
 
   openMenuForMultiSelection() {
-    if (this.enableMultiTabSelection_ &&
-        this.searchboxLayoutMode !== TALL_BOTTOM_CONTEXT_LAYOUT_MODE) {
+    if (this.enableMultiTabSelection_) {
       this.updateComplete.then(this.showMenuAtEntrypoint_.bind(this));
     }
   }
@@ -188,19 +187,17 @@ export class ContextMenuEntrypointElement extends
 
     const metricName =
         'ContextualSearch.ContextMenuEntry.Clicked.' + this.metricsSource_;
-    chrome.metricsPrivate.recordBoolean(metricName, true);
-    if (this.entrypointName === 'Omnibox') {
-      const entrypoint =
-          this.shadowRoot.querySelector<HTMLElement>('#entrypoint');
-      assert(entrypoint);
-      this.fire('context-menu-entrypoint-click', {
-        x: entrypoint.getBoundingClientRect().left,
-        y: entrypoint.getBoundingClientRect().bottom,
-      });
-      return;
+    recordBoolean(metricName, true);
+    const entrypoint =
+        this.shadowRoot.querySelector<HTMLElement>('#entrypoint');
+    assert(entrypoint);
+    this.fire('context-menu-entrypoint-click', {
+      x: entrypoint.getBoundingClientRect().left,
+      y: entrypoint.getBoundingClientRect().bottom,
+    });
+    if (this.entrypointName !== 'Omnibox') {
+      this.showMenuAtEntrypoint_();
     }
-
-    this.showMenuAtEntrypoint_();
   }
 
   protected onTabClick_(e: Event) {
@@ -223,9 +220,6 @@ export class ContextMenuEntrypointElement extends
 
   protected deleteTabContext_(uuid: UnguessableToken) {
     this.fire('delete-tab-context', {uuid: uuid});
-    if (this.searchboxLayoutMode === TALL_BOTTOM_CONTEXT_LAYOUT_MODE) {
-      this.$.menu.close();
-    }
   }
 
 
@@ -235,9 +229,9 @@ export class ContextMenuEntrypointElement extends
       title: tabInfo.title,
       url: tabInfo.url,
       delayUpload: false,
+      origin: TabUploadOrigin.CONTEXT_MENU,
     });
-    if (!this.enableMultiTabSelection_ || this.entrypointName === 'Realbox' ||
-        this.searchboxLayoutMode === TALL_BOTTOM_CONTEXT_LAYOUT_MODE) {
+    if (!this.enableMultiTabSelection_ || this.entrypointName === 'Realbox') {
       this.$.menu.close();
     }
   }
@@ -297,6 +291,7 @@ export class ContextMenuEntrypointElement extends
         this.shadowRoot.querySelector<HTMLElement>('#entrypoint');
     assert(entrypoint);
     entrypoint.classList.remove('menu-open');
+    this.fire('context-menu-closed');
   }
 
   private showMenuAtEntrypoint_() {

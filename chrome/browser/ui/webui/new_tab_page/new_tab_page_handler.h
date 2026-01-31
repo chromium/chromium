@@ -35,6 +35,7 @@
 #include "components/search_provider_logos/logo_common.h"
 #include "components/segmentation_platform/public/result.h"
 #include "components/themes/ntp_background_service_observer.h"
+#include "components/user_education/common/feature_promo/feature_promo_controller.h"
 #include "components/user_education/common/feature_promo/feature_promo_result.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -107,6 +108,12 @@ class NewTabPageHandler
   // Histograms being recorded when a module is dismissed or restored.
   static const char kModuleDismissedHistogram[];
   static const char kModuleRestoredHistogram[];
+  // Histograms being recorded when auto removal/undo event is triggered.
+  static const char kModuleAutoRemovalHistogram[];
+  static const char kModuleAutoRemovalUndoneHistogram[];
+  // Histograms being recorded when a module is automatically removed or undone.
+  static const char kModuleAutoRemovalModuleIdHistogram[];
+  static const char kModuleAutoRemovalUndoneModuleIdHistogram[];
 
   static void RegisterProfilePrefs(PrefRegistrySimple* registry);
 
@@ -129,13 +136,17 @@ class NewTabPageHandler
   void OnDismissModule(const std::string& module_id) override;
   void OnRestoreModule(const std::string& module_id) override;
   void SetModulesVisible(bool visible) override;
-  void SetModuleDisabled(const std::string& module_id, bool disabled) override;
+  void SetModulesDisabled(const std::vector<std::string>& module_ids,
+                          bool disabled,
+                          bool is_user_action) override;
   void UpdateDisabledModules() override;
   void UpdateFooterVisibility() override;
   void OnModulesLoadedWithData(
       const std::vector<std::string>& module_ids) override;
   void OnModuleUsed(const std::string& module_id) override;
   void GetModulesIdNames(GetModulesIdNamesCallback callback) override;
+  void GetModulesEligibleForRemoval(
+      GetModulesEligibleForRemovalCallback callback) override;
   void SetModulesOrder(const std::vector<std::string>& module_ids) override;
   void GetModulesOrder(GetModulesOrderCallback callback) override;
   void UpdateModulesLoadable() override;
@@ -158,6 +169,7 @@ class NewTabPageHandler
   void OnPromoLinkClicked() override;
   void IncrementComposeButtonShownCount() override;
   void MaybeTriggerAutomaticCustomizeChromePromo() override;
+  void RecordContextMenuClick() override;
 
  private:
   // ui::NativeThemeObserver:
@@ -210,7 +222,9 @@ class NewTabPageHandler
                                     const std::string& module_id,
                                     int delay_time_ms = 0);
   void MaybeShowWebstoreToast();
+
   void RecordModuleInteraction(const std::string& module_id);
+
   void IncrementDictPrefKeyCount(const std::string& pref_name,
                                  const std::string& key);
 
@@ -224,6 +238,14 @@ class NewTabPageHandler
       const std::string& module_id);
 
   void SetModuleHidden(const std::string& module_id, bool hidden);
+
+  // Returns a list of module ids that are eligible for removal, which is
+  // determined the module staleness and the staleness threshold.
+  std::vector<std::string> GetModulesEligibleForRemoval() const;
+  void SetStaleModulesDisabled(const std::vector<std::string>& module_ids,
+                               bool disabled);
+
+  void TryShowRealboxContextualMenuIPH(ui::TrackedElement* element);
 
   // Synchronizes Microsoft module enablement with their current authentication
   // state. The return value indicates whether the modules should be considered
@@ -269,9 +291,11 @@ class NewTabPageHandler
                           new_tab_footer::NewTabFooterControllerObserver>
       footer_controller_observation_{this};
   std::optional<base::TimeTicks> promo_load_start_time_;
-  base::Value::Dict interaction_module_id_trigger_dict_;
+  base::DictValue interaction_module_id_trigger_dict_;
   // Notifies this when the browser window context changes.
   base::CallbackListSubscription browser_window_changed_subscription_;
+  // Triggered when the searchbox's contextual menu entrypoint is displayed.
+  base::CallbackListSubscription searchbox_shown_subscription_;
 
   // These are located at the end of the list of member variables to ensure the
   // WebUI page is disconnected before other members are destroyed.

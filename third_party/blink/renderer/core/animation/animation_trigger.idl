@@ -10,10 +10,8 @@ enum AnimationTriggerBehavior {
   "pause",
   "reset",
   "play-once",
-  "play-alternate",
   "play-forwards",
   "play-backwards",
-  "play-pause",
   "replay",
   "none",
 };

@@ -231,9 +231,7 @@ external/wpt/dpub-aria/inuse-manual.html [ Skip ]
 external/wpt/wai-aria/manual [ Skip ]
 
 # Manual tests for CSS Paged Media.
-external/wpt/css/css-page/forced-page-breaks-002.xht [ Skip ]
 external/wpt/css/css-page/page-background-000.xht [ Skip ]
-external/wpt/css/css-page/page-borders-000.xht [ Skip ]
 external/wpt/css/css-page/page-counters-000.xht [ Skip ]
 external/wpt/css/css-page/page-margin-003.xht [ Skip ]
 external/wpt/css/css-page/page-name-000.xht [ Skip ]

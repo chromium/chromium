@@ -14,8 +14,6 @@ import java.util.NoSuchElementException;
  * either contain a success value of type <T>, or an error of type <E>. Users must check {@link
  * isSuccess} before attempting to retrieve the value.
  *
- * <p>TODO(crbug.com/40841428): Document this API in the bindings README.md.
- *
  * @param <T> The success type.
  * @param <E> The error type.
  */

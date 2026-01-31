@@ -30,22 +30,22 @@ class HistoryLoginHandler : public content::WebUIMessageHandler {
 
  private:
   // Handler for the "otherDevicesInitialized" message. No args.
-  void HandleOtherDevicesInitialized(const base::Value::List& args);
+  void HandleOtherDevicesInitialized(const base::ListValue& args);
 
   // Handler for the "startTurnOnSyncFlow" message. No args.
-  void HandleTurnOnSyncFlow(const base::Value::List& args);
+  void HandleTurnOnSyncFlow(const base::ListValue& args);
 
   // Handler for the "recordSigninPendingOffered" message. No args.
-  void HandleRecordSigninPendingOffered(const base::Value::List& args);
+  void HandleRecordSigninPendingOffered(const base::ListValue& args);
 
   // Handler for the "getInitialIdentityState" message. Resolves with a
   // DictionaryValue containing the initial identity state.
-  void HandleGetInitialIdentityState(const base::Value::List& args);
+  void HandleGetInitialIdentityState(const base::ListValue& args);
 
   // Called by |history_sign_in_state_watcher_| when the signin state changes
   void IdentityStateChanged();
 
-  base::Value::Dict GetHistoryIdentityStateDict();
+  base::DictValue GetHistoryIdentityStateDict();
 
   // Watches for changes to the history-related sign-in state.
   std::unique_ptr<HistoryIdentityStateWatcher> history_identity_state_watcher_;

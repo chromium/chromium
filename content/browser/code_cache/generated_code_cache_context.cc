@@ -11,6 +11,7 @@
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/system/sys_info.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner_thread_mode.h"
@@ -27,6 +28,7 @@
 #include "third_party/blink/public/common/features.h"
 
 #if !BUILDFLAG(IS_FUCHSIA)
+#include "components/persistent_cache/client.h"
 #include "components/persistent_cache/persistent_cache_collection.h"
 #endif
 
@@ -105,8 +107,10 @@ void GeneratedCodeCacheContext::InitializeOnThread(const base::FilePath& path,
         // bytecode, both from WebUI and from open web sites, to max_bytes. The
         // larger portion by far should be reserved for open web sites.
         const int kMaxWebUIPercent = 2;
-        max_bytes_webui_js = std::min(max_bytes * kMaxWebUIPercent / 100,
-                                      disk_cache::kMaxWebUICodeCacheSize);
+        max_bytes_webui_js =
+            std::min(base::saturated_cast<int>(static_cast<int64_t>(max_bytes) *
+                                               kMaxWebUIPercent / 100),
+                     disk_cache::kMaxWebUICodeCacheSize);
 
         // The rest is left over for open web JS.
         max_bytes_js = max_bytes - max_bytes_webui_js;
@@ -162,7 +166,8 @@ void GeneratedCodeCacheContext::InitializeOnThread(const base::FilePath& path,
 
     persistent_cache_collection_ = {
         new persistent_cache::PersistentCacheCollection(
-            persistent_cache_collection_path, disk_cache_max_size),
+            persistent_cache_collection_path, disk_cache_max_size,
+            persistent_cache::Client::kCodeCache),
         base::OnTaskRunnerDeleter(task_runner_)};
 
     // Delete the GeneratedCodeCache files that won't be used to avoid wasting
@@ -194,6 +199,7 @@ void GeneratedCodeCacheContext::Shutdown() {
 
 void GeneratedCodeCacheContext::ClearAndDeletePersistentCacheCollection() {
 #if !BUILDFLAG(IS_FUCHSIA)
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (persistent_cache_collection_) {
     persistent_cache_collection_->DeleteAllFiles();
   }
@@ -204,6 +210,8 @@ void GeneratedCodeCacheContext::ClearAndDeletePersistentCacheCollection() {
 std::optional<persistent_cache::PendingBackend>
 GeneratedCodeCacheContext::ShareReadOnlyConnection(
     const std::string& context_key) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
   if (persistent_cache_collection_) {
     return persistent_cache_collection_->ShareReadOnlyConnection(context_key);
   }
@@ -216,6 +224,8 @@ void GeneratedCodeCacheContext::InsertIntoPersistentCacheCollection(
     std::string_view url,
     base::span<const uint8_t> content,
     persistent_cache::EntryMetadata metadata) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
   if (!persistent_cache_collection_) {
     return;
   }
@@ -240,6 +250,8 @@ std::optional<GeneratedCodeCacheContext::MetadataAndContent>
 GeneratedCodeCacheContext::FindInPersistentCacheCollection(
     const std::string& context_key,
     std::string_view url) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
   if (!persistent_cache_collection_) {
     return std::nullopt;
   }

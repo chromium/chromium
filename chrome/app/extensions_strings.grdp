@@ -25,15 +25,6 @@
   <message name="IDS_EXTENSIONS_ENABLE_ERROR_COLLECTION" desc="The checkbox for enabling error collection for an extension.">
     Collect errors
   </message>
-  <message name="IDS_EXTENSIONS_ENABLE_TOGGLE_TOOLTIP_DISABLED" desc="The tooltip for the enable extension toggle when the extension is disabled.">
-    This extension cannot read and change site information or run in the background
-  </message>
-  <message name="IDS_EXTENSIONS_ENABLE_TOGGLE_TOOLTIP_ENABLED" desc="The tooltip for the enable extension toggle when the extension is enabled but does not have host permissions.">
-    This extension may run in the background
-  </message>
-  <message name="IDS_EXTENSIONS_ENABLE_TOGGLE_TOOLTIP_ENABLED_WITH_SITE_ACCESS" desc="The tooltip for the enable extension toggle when the extension is enabled and has host permissions.">
-    This extension may read and change site information or run in the background
-  </message>
   <message name="IDS_EXTENSIONS_ERROR_NO_ERRORS_CODE_MESSAGE" desc="The text displayed in the 'code' section when an extension has no errors.">
     Nothing to see here, move along.
   </message>

@@ -48,14 +48,14 @@ class SessionStorageImpl : public base::trace_event::MemoryDumpProvider,
                            public SessionStorageNamespaceImpl::Delegate {
  public:
   enum class BackingMode {
-    // Use an in-memory leveldb database to store our state.
+    // Use an in-memory database to store our state.
     kNoDisk,
-    // Use disk for the leveldb database, but clear its contents before we open
+    // Use disk for the database, but clear its contents before we open
     // it. This is used for platforms like Android where the session restore
     // code is never used, ScavengeUnusedNamespace is never called, and old
     // session storage data will never be reused.
     kClearDiskStateOnOpen,
-    // Use disk for the leveldb database, restore all saved namespaces from
+    // Use disk for the database, restore all saved namespaces from
     // disk. This assumes that ScavengeUnusedNamespace will eventually be called
     // to clean up unused namespaces on disk.
     kRestoreDiskState
@@ -64,9 +64,8 @@ class SessionStorageImpl : public base::trace_event::MemoryDumpProvider,
   using DestructSessionStorageCallback =
       base::OnceCallback<void(SessionStorageImpl*)>;
   SessionStorageImpl(
-      const base::FilePath& partition_directory,
+      const base::FilePath& storage_partition_directory,
       BackingMode backing_option,
-      std::string database_name,
       DestructSessionStorageCallback destruct_callback,
       mojo::PendingReceiver<mojom::SessionStorageControl> receiver);
 
@@ -75,20 +74,18 @@ class SessionStorageImpl : public base::trace_event::MemoryDumpProvider,
   // mojom::SessionStorageControl implementation:
   void BindNamespace(
       const std::string& namespace_id,
-      mojo::PendingReceiver<blink::mojom::SessionStorageNamespace> receiver,
-      BindNamespaceCallback callback) override;
+      mojo::PendingReceiver<blink::mojom::SessionStorageNamespace> receiver)
+      override;
   void BindStorageArea(
       const blink::StorageKey& storage_key,
       const std::string& namespace_id,
-      mojo::PendingReceiver<blink::mojom::StorageArea> receiver,
-      BindStorageAreaCallback callback) override;
+      mojo::PendingReceiver<blink::mojom::StorageArea> receiver) override;
   void GetUsage(GetUsageCallback callback) override;
   void DeleteStorage(const blink::StorageKey& storage_key,
                      const std::string& namespace_id,
                      DeleteStorageCallback callback) override;
   void CleanUpStorage(CleanUpStorageCallback callback) override;
-  void ScavengeUnusedNamespaces(
-      ScavengeUnusedNamespacesCallback callback) override;
+  void ScavengeUnusedNamespaces() override;
   void Flush() override;
   void PurgeMemory() override;
   void CreateNamespace(const std::string& namespace_id) override;
@@ -105,7 +102,7 @@ class SessionStorageImpl : public base::trace_event::MemoryDumpProvider,
   bool OnMemoryDump(const base::trace_event::MemoryDumpArgs& args,
                     base::trace_event::ProcessMemoryDump* pmd) override;
 
-  const base::FilePath& GetStoragePath() const { return partition_directory_; }
+  const base::FilePath& GetStoragePartitionDirectory() const;
 
   void PretendToConnectForTesting();
 
@@ -114,11 +111,9 @@ class SessionStorageImpl : public base::trace_event::MemoryDumpProvider,
   void FlushAreaForTesting(const std::string& namespace_id,
                            const blink::StorageKey& storage_key);
 
-  // Access the underlying DomStorageDatabaseLevelDB. May be null if the
+  // Access the underlying `AsyncDomStorageDatabase`. May be null if the
   // database is not yet open.
-  base::SequenceBound<DomStorageDatabase>& GetDatabaseForTesting() {
-    return database_->database();
-  }
+  AsyncDomStorageDatabase* GetDatabaseForTesting() { return database_.get(); }
 
   const SessionStorageMetadata& GetMetadataForTesting() const {
     return metadata_;
@@ -138,19 +133,22 @@ class SessionStorageImpl : public base::trace_event::MemoryDumpProvider,
  private:
   friend class DOMStorageBrowserTest;
 
-  scoped_refptr<SessionStorageMetadata::MapData> RegisterNewAreaMap(
+  // Constructs an absolute path to the database using
+  // `storage_partition_directory_`.
+  base::FilePath GetDatabasePath() const;
+
+  scoped_refptr<DomStorageDatabase::SharedMapLocator> RegisterNewAreaMap(
       const std::string& namespace_id,
       const blink::StorageKey& storage_key);
 
   // SessionStorageAreaImpl::Listener implementation:
-  void OnDataMapCreation(const std::vector<uint8_t>& map_prefix,
-                         SessionStorageDataMap* map) override;
-  void OnDataMapDestruction(const std::vector<uint8_t>& map_prefix) override;
+  void OnDataMapCreation(int64_t map_id, SessionStorageDataMap* map) override;
+  void OnDataMapDestruction(int64_t map_id) override;
   void OnCommitResult(DbStatus status) override;
 
   // SessionStorageNamespaceImpl::Delegate implementation:
   scoped_refptr<SessionStorageDataMap> MaybeGetExistingDataMapForId(
-      const std::vector<uint8_t>& map_number_as_bytes) override;
+      int64_t map_id) override;
   void RegisterShallowClonedNamespace(
       const std::string& source_namespace_id,
       const std::string& new_namespace_id,
@@ -204,7 +202,11 @@ class SessionStorageImpl : public base::trace_event::MemoryDumpProvider,
     CONNECTION_FINISHED,
   } connection_state_ = NO_CONNECTION;
 
-  const base::FilePath partition_directory_;
+  // The profile data directory, which is an ancestor of the database path.
+  // Empty for in-memory databases. When not empty, the owner of
+  // `SessionStorageImpl` uses this path as an ID for the `SessionStorageImpl`
+  // instance.
+  const base::FilePath storage_partition_directory_;
 
   base::trace_event::MemoryAllocatorDumpGuid memory_dump_id_;
 
@@ -222,8 +224,7 @@ class SessionStorageImpl : public base::trace_event::MemoryDumpProvider,
   // The removal of items from this map is managed by the refcounting in
   // SessionStorageDataMap.
   // Populated after the database is connected.
-  std::map<std::vector<uint8_t>,
-           raw_ptr<SessionStorageDataMap, CtnExperimental>>
+  std::map</*map_id=*/int64_t, raw_ptr<SessionStorageDataMap, CtnExperimental>>
       data_maps_;
   // Populated in CreateNamespace, CloneNamespace, and sometimes
   // RegisterShallowClonedNamespace. Items are removed in
@@ -237,7 +238,6 @@ class SessionStorageImpl : public base::trace_event::MemoryDumpProvider,
   // not delete them. Cleared after ScavengeUnusedNamespaces is called.
   std::set<std::string> protected_namespaces_from_scavenge_;
 
-  bool is_low_end_mode_;
   // Counts consecutive commit errors. If this number reaches a threshold, the
   // whole database is thrown away.
   int commit_error_count_ = 0;

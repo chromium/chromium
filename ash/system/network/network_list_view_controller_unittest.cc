@@ -39,7 +39,6 @@
 #include "chromeos/ash/services/bluetooth_config/public/mojom/cros_bluetooth_config.mojom.h"
 #include "chromeos/ash/services/bluetooth_config/scoped_bluetooth_config_test_helper.h"
 #include "chromeos/ash/services/multidevice_setup/public/cpp/fake_multidevice_setup.h"
-#include "chromeos/ash/services/multidevice_setup/public/mojom/multidevice_setup.mojom-shared.h"
 #include "chromeos/ash/services/multidevice_setup/public/mojom/multidevice_setup.mojom.h"
 #include "chromeos/ash/services/network_config/public/cpp/cros_network_config_test_helper.h"
 #include "chromeos/services/network_config/public/cpp/cros_network_config_util.h"
@@ -237,7 +236,11 @@ class NetworkListViewControllerTest : public AshTestBase,
 
   void TearDown() override {
     network_list_view_controller_impl_.reset();
+    network_detailed_network_view_ = nullptr;
     widget_.reset();
+    detailed_view_delegate_.reset();
+    cros_network_.reset();
+    fake_multidevice_setup_.reset();
 
     AshTestBase::TearDown();
   }
@@ -489,8 +492,8 @@ class NetworkListViewControllerTest : public AshTestBase,
   std::unique_ptr<views::Widget> widget_;
 
   // Owned by `widget_`.
-  raw_ptr<NetworkDetailedNetworkViewImpl, DanglingUntriaged>
-      network_detailed_network_view_ = nullptr;
+  raw_ptr<NetworkDetailedNetworkViewImpl> network_detailed_network_view_ =
+      nullptr;
 
   std::unique_ptr<NetworkListViewControllerImpl>
       network_list_view_controller_impl_;

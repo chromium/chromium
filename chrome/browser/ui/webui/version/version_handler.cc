@@ -79,7 +79,7 @@ void VersionHandler::RegisterMessages() {
                           base::Unretained(this)));
 }
 
-void VersionHandler::HandleRequestVersionInfo(const base::Value::List& args) {
+void VersionHandler::HandleRequestVersionInfo(const base::ListValue& args) {
   // This method is overridden by platform-specific handlers which may still
   // use |CallJavascriptFunction|. Main version info is returned by promise
   // using handlers below.
@@ -89,14 +89,14 @@ void VersionHandler::HandleRequestVersionInfo(const base::Value::List& args) {
   AllowJavascript();
 }
 
-void VersionHandler::HandleRequestVariationInfo(const base::Value::List& args) {
+void VersionHandler::HandleRequestVariationInfo(const base::ListValue& args) {
   AllowJavascript();
 
   CHECK_EQ(2U, args.size());
   const std::string& callback_id = args[0].GetString();
   const bool return_raw_variations_cmd = args[1].GetBool();
 
-  base::Value::Dict response;
+  base::DictValue response;
   response.Set(version_ui::kKeyVariationsList, version_ui::GetVariationsList());
   if (return_raw_variations_cmd) {
     response.Set(version_ui::kKeyVariationsCmd,
@@ -113,7 +113,7 @@ void VersionHandler::HandleRequestVariationInfo(const base::Value::List& args) {
   ResolveJavascriptCallback(base::Value(callback_id), response);
 }
 
-void VersionHandler::HandleRequestPathInfo(const base::Value::List& args) {
+void VersionHandler::HandleRequestPathInfo(const base::ListValue& args) {
   AllowJavascript();
 
   CHECK_EQ(1U, args.size());
@@ -138,7 +138,7 @@ void VersionHandler::OnGotFilePaths(std::string callback_id,
                                     std::u16string* executable_path_data,
                                     std::u16string* profile_path_data) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  base::Value::Dict response;
+  base::DictValue response;
   response.Set(version_ui::kKeyExecPath, *executable_path_data);
   response.Set(version_ui::kKeyProfilePath, *profile_path_data);
   ResolveJavascriptCallback(base::Value(callback_id), response);

@@ -99,6 +99,10 @@ class CORE_EXPORT FontSizeFunctions {
   static std::optional<float> MetricsMultiplierAdjustedFontSize(
       const SimpleFontData*,
       const FontDescription&);
+
+  // Snaps the given text scale factor to the nearest value in a fixed set of
+  // buckets (e.g. 0.85, 1.0, 1.15, ...).
+  static double SnapToClosestFontScaleBucket(double raw_font_scale);
 };
 
 }  // namespace blink

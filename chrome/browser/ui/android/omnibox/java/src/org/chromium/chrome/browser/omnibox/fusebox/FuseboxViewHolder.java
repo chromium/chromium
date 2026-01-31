@@ -19,7 +19,6 @@ class FuseboxViewHolder {
     public final ConstraintLayout parentView;
     public final RecyclerView attachmentsView;
     public final ChromeImageView addButton;
-    public final ChromeImageView settingsButton;
     public final FuseboxPopup popup;
     public final ButtonCompat requestType;
     public final ChromeImageView navigateButton;
@@ -28,7 +27,6 @@ class FuseboxViewHolder {
         parentView = parent;
         attachmentsView = parent.findViewById(R.id.location_bar_attachments);
         addButton = parent.findViewById(R.id.location_bar_attachments_add);
-        settingsButton = parent.findViewById(R.id.location_bar_attachments_settings);
         requestType = parent.findViewById(R.id.fusebox_request_type);
         navigateButton = parent.findViewById(R.id.navigate_button);
 
@@ -40,6 +38,5 @@ class FuseboxViewHolder {
                                 .getDimensionPixelSize(R.dimen.fusebox_button_corner_radius));
         outline.setClipPaddedArea(true);
         addButton.setOutlineProvider(outline);
-        settingsButton.setOutlineProvider(outline);
     }
 }

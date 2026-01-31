@@ -104,7 +104,7 @@ void AppInstallDialogUI::CreatePageHandler(
 }
 
 void AppInstallDialogUI::CloseDialog() {
-  ui::MojoWebDialogUI::CloseDialog(base::Value::List());
+  ui::MojoWebDialogUI::CloseDialog(base::ListValue());
 }
 
 WEB_UI_CONTROLLER_TYPE_IMPL(AppInstallDialogUI)

@@ -102,8 +102,8 @@ class WebContentsState {
                                 const base::android::JavaRef<jobject>& state,
                                 content::BrowserContext* browser_context,
                                 int saved_state_version,
-                                jboolean initially_hidden,
-                                jboolean no_renderer);
+                                bool initially_hidden,
+                                bool no_renderer);
 
   // Restores a WebContents from the passed in state using native parameters.
   static std::unique_ptr<content::WebContents> RestoreContentsFromByteBuffer(

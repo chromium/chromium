@@ -55,7 +55,7 @@ bool IsSeedValid(AwVariationsSeed* seed) {
 }
 }  // namespace
 
-static jboolean JNI_VariationsSeedLoader_ParseAndSaveSeedProto(
+static bool JNI_VariationsSeedLoader_ParseAndSaveSeedProto(
     JNIEnv* env,
     std::string& seed_path) {
   // Parse the proto.
@@ -87,13 +87,13 @@ static jboolean JNI_VariationsSeedLoader_ParseAndSaveSeedProto(
   }
 }
 
-static jboolean JNI_VariationsSeedLoader_ParseAndSaveSeedProtoFromByteArray(
+static bool JNI_VariationsSeedLoader_ParseAndSaveSeedProtoFromByteArray(
     JNIEnv* env,
     const JavaRef<jbyteArray>& seed_as_bytes) {
   // Parse the proto.
   std::unique_ptr<AwVariationsSeed> seed =
       std::make_unique<AwVariationsSeed>(AwVariationsSeed::default_instance());
-  jbyte* src_bytes = env->GetByteArrayElements(seed_as_bytes.obj(), nullptr);
+  int8_t* src_bytes = env->GetByteArrayElements(seed_as_bytes.obj(), nullptr);
   if (!seed->ParseFromArray(src_bytes,
                             env->GetArrayLength(seed_as_bytes.obj()))) {
     LOG(ERROR) << "Failed to parse seed file.";
@@ -108,7 +108,7 @@ static jboolean JNI_VariationsSeedLoader_ParseAndSaveSeedProtoFromByteArray(
   }
 }
 
-static jlong JNI_VariationsSeedLoader_GetSavedSeedDate(JNIEnv* env) {
+static int64_t JNI_VariationsSeedLoader_GetSavedSeedDate(JNIEnv* env) {
   return g_seed ? g_seed->date() : 0;
 }
 

@@ -22,21 +22,15 @@ void ImeKeyboard::RemoveObserver(Observer* observer) {
   observers_.RemoveObserver(observer);
 }
 
-void ImeKeyboard::SetCurrentKeyboardLayoutByName(
-    const std::string& layout_name,
-    base::OnceCallback<void(bool)> callback) {
-  std::move(callback).Run(SetCurrentKeyboardLayoutByNameImpl(layout_name));
-}
-
-bool ImeKeyboard::SetCurrentKeyboardLayoutByNameImpl(
+ImeKeyboard::Result ImeKeyboard::SetCurrentKeyboardLayoutByNameImplBase(
     const std::string& layout_name) {
   // Only notify on keyboard layout change.
   if (last_layout_ == layout_name) {
-    return false;
+    return ImeKeyboard::Result::kSuccessNoOp;
   }
   observers_.Notify(&ImeKeyboard::Observer::OnLayoutChanging, layout_name);
   last_layout_ = layout_name;
-  return true;
+  return ImeKeyboard::Result::kSuccessNewlySet;
 }
 
 void ImeKeyboard::SetCapsLockEnabled(bool enable_caps_lock) {

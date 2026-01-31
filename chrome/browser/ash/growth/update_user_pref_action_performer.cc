@@ -4,9 +4,9 @@
 
 #include "chrome/browser/ash/growth/update_user_pref_action_performer.h"
 
+#include <algorithm>
 #include <memory>
 
-#include "base/containers/contains.h"
 #include "base/logging.h"
 #include "base/values.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
@@ -93,7 +93,7 @@ bool AppendValueToUserPref(const std::string& pref_name,
     return false;
   }
 
-  if (base::Contains(pref_service->GetList(pref_name), *value)) {
+  if (std::ranges::contains(pref_service->GetList(pref_name), *value)) {
     CAMPAIGNS_LOG(ERROR) << "Pref value is already in the list.";
     return false;
   }
@@ -113,7 +113,7 @@ bool RemoveValueFromUserPref(const std::string& pref_name,
     return false;
   }
 
-  if (!base::Contains(pref_service->GetList(pref_name), *value)) {
+  if (!std::ranges::contains(pref_service->GetList(pref_name), *value)) {
     CAMPAIGNS_LOG(ERROR)
         << "Unable to remove: Pref value not in user preference.";
     return false;
@@ -149,7 +149,7 @@ UpdateUserPrefActionPerformer::~UpdateUserPrefActionPerformer() = default;
 void UpdateUserPrefActionPerformer::Run(
     int campaign_id,
     std::optional<int> group_id,
-    const base::Value::Dict* params,
+    const base::DictValue* params,
     growth::ActionPerformer::Callback callback) {
   if (!params) {
     std::move(callback).Run(growth::ActionResult::kFailure,

@@ -10,12 +10,15 @@
 
 #include "base/debug/dump_without_crashing.h"
 #include "base/feature_list.h"
+#include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
+#include "base/task/bind_post_task.h"
 #include "base/trace_event/trace_event.h"
 #include "content/browser/service_worker/service_worker_fetch_dispatcher.h"
+#include "content/browser/service_worker/service_worker_synthetic_response_data_pipe_connector.h"
 #include "content/common/service_worker/race_network_request_url_loader_client.h"
 #include "mojo/public/cpp/system/data_pipe.h"
 #include "net/http/http_status_code.h"
@@ -25,6 +28,7 @@
 #include "third_party/blink/public/common/service_worker/service_worker_status_code.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_response.mojom.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_stream_handle.mojom.h"
+#include "third_party/perfetto/include/perfetto/tracing/track_event_args.h"
 
 namespace {
 
@@ -32,6 +36,10 @@ constexpr char kHistogramIsHeaderConsistent[] =
     "ServiceWorker.SyntheticResponse.IsHeaderConsistent";
 constexpr char kHistogramIsHeaderStored[] =
     "ServiceWorker.SyntheticResponse.IsHeaderStored";
+constexpr char kHistogramStartRequestToReceiveResponse[] =
+    "ServiceWorker.SyntheticResponse.StartRequestToReceiveResponse";
+constexpr char kHistogramReceiveResponseToComplete[] =
+    "ServiceWorker.SyntheticResponse.ReceiveResponseToComplete";
 constexpr char kHistogramSyntheticResponseReloadReason[] =
     "ServiceWorker.SyntheticResponse.ReloadReason";
 
@@ -59,9 +67,8 @@ const base::FeatureParam<std::string>
         "ignored_headers_for_bypass", ""};
 
 bool IsBypassSyntheticResponseHeaderCheckEnabled() {
-  static const bool kIsEnabled = base::FeatureList::IsEnabled(
+  return base::FeatureList::IsEnabled(
       kServiceWorkerBypassSyntheticResponseHeaderCheck);
-  return kIsEnabled;
 }
 
 const std::string& GetIgnoredHeadersForBypass() {
@@ -141,6 +148,19 @@ void MaybeReportHeaderInconsistency(
       base::debug::DumpWithoutCrashing();
     }
   }
+}
+
+bool IsServiceWorkerSyntheticResponseOffMainThread() {
+  static const bool is_off_main_thread(
+      blink::features::kServiceWorkerSyntheticResponseOffMainThread.Get());
+  return is_off_main_thread;
+}
+
+bool IsServiceWorkerSyntheticResponseSkipUnnecessaryBuffering() {
+  static const bool skip_unnecessary_buffering(
+      blink::features::kServiceWorkerSyntheticResponseSkipUnnecessaryBuffering
+          .Get());
+  return skip_unnecessary_buffering;
 }
 }  // namespace
 
@@ -252,7 +272,8 @@ ServiceWorkerSyntheticResponseManager::ServiceWorkerSyntheticResponseManager(
     : url_loader_factory_(url_loader_factory), version_(version) {
   TRACE_EVENT("ServiceWorker",
               "ServiceWorkerSyntheticResponseManager::"
-              "ServiceWorkerSyntheticResponseManager");
+              "ServiceWorkerSyntheticResponseManager",
+              perfetto::Flow::FromPointer(this));
   write_buffer_manager_.emplace();
   status_ = write_buffer_manager_->is_data_pipe_created() &&
                     version_->GetResponseHeadForSyntheticResponse()
@@ -261,7 +282,12 @@ ServiceWorkerSyntheticResponseManager::ServiceWorkerSyntheticResponseManager(
 }
 
 ServiceWorkerSyntheticResponseManager::
-    ~ServiceWorkerSyntheticResponseManager() = default;
+    ~ServiceWorkerSyntheticResponseManager() {
+  TRACE_EVENT("ServiceWorker",
+              "ServiceWorkerSyntheticResponseManager::"
+              "~ServiceWorkerSyntheticResponseManager",
+              perfetto::TerminatingFlow::FromPointer(this));
+}
 
 void ServiceWorkerSyntheticResponseManager::StartRequest(
     int request_id,
@@ -271,8 +297,11 @@ void ServiceWorkerSyntheticResponseManager::StartRequest(
     OnReceiveRedirectCallback receive_redirect_callback,
     OnCompleteCallback complete_callback) {
   TRACE_EVENT("ServiceWorker",
-              "ServiceWorkerSyntheticResponseManager::StartRequest");
+              "ServiceWorkerSyntheticResponseManager::StartRequest",
+              perfetto::Flow::FromPointer(this), "request_id", request_id,
+              "url", request.url.spec());
   CHECK(!request.client_side_content_decoding_enabled);
+  request_start_time_ = base::TimeTicks::Now();
   response_callback_ = std::move(receive_response_callback);
   redirect_callback_ = std::move(receive_redirect_callback);
   complete_callback_ = std::move(complete_callback);
@@ -342,11 +371,96 @@ void ServiceWorkerSyntheticResponseManager::MaybeSetResponseHead(
   base::UmaHistogramBoolean(kHistogramIsHeaderStored, is_header_stored);
 }
 
+// static
+void ServiceWorkerSyntheticResponseManager::CloneBufferInBackground(
+    mojo::ScopedDataPipeConsumerHandle consumer,
+    mojo::ScopedDataPipeProducerHandle producer,
+    base::OnceCallback<void()> callback) {
+  if (IsServiceWorkerSyntheticResponseSkipUnnecessaryBuffering()) {
+    auto data_pipe_connector =
+        std::make_unique<ServiceWorkerSyntheticResponseDataPipeConnector>(
+            std::move(consumer));
+    // To keep `data_pipe_connector` alive for the duration of the async
+    // `Transfer` operation, we move its `std::unique_ptr` into a callback that
+    // is chained to run after the main `callback`. The `data_pipe_connector`
+    // is destroyed when this chained callback runs and the `unique_ptr` goes
+    // out of scope.
+    //
+    // TODO(crbug.com/447039330): Consider using `RefCountedThreadSafe`, we
+    // should guarantee `data_pipe_connector` is successfully destroyed even
+    // if the callback chain is never run.
+    data_pipe_connector->Transfer(
+        std::move(producer),
+        std::move(callback).Then(base::BindOnce(
+            [](std::unique_ptr<ServiceWorkerSyntheticResponseDataPipeConnector>
+                   keep_alive_connector) {
+              // This lambda is executed as the `on_complete_` from
+              // `ServiceWorkerSyntheticResponseDataPipeConnector::Finish`. If
+              // we allow `keep_alive_connector` to be destructed
+              // synchronously here, `Finish()` will still be on the call stack,
+              // leading to a use-after-free. `DeleteSoon()` defers the
+              // deletion, avoiding this issue.
+              base::SequencedTaskRunner::GetCurrentDefault()->DeleteSoon(
+                  FROM_HERE, keep_alive_connector.release());
+            },
+            std::move(data_pipe_connector))));
+    return;
+  }
+  auto simple_buffer_manager =
+      std::make_unique<RaceNetworkRequestSimpleBufferManager>(
+          std::move(consumer));
+  simple_buffer_manager->Clone(
+      std::move(producer),
+      std::move(callback).Then(base::BindOnce(
+          [](std::unique_ptr<RaceNetworkRequestSimpleBufferManager>
+                 simple_buffer_manager) {
+            base::SequencedTaskRunner::GetCurrentDefault()->DeleteSoon(
+                FROM_HERE, simple_buffer_manager.release());
+          },
+          std::move(simple_buffer_manager))));
+}
+
+void ServiceWorkerSyntheticResponseManager::TransferResponseBody(
+    mojo::ScopedDataPipeConsumerHandle body) {
+  if (IsServiceWorkerSyntheticResponseOffMainThread()) {
+    // Offload the buffer cloning to a background thread.
+    base::OnceCallback<void()> callback = base::BindPostTaskToCurrentDefault(
+        base::BindOnce(&ServiceWorkerSyntheticResponseManager::OnCloneCompleted,
+                       weak_factory_.GetWeakPtr()));
+    base::ThreadPool::CreateSequencedTaskRunner({base::MayBlock()})
+        ->PostTask(
+            FROM_HERE,
+            base::BindOnce(
+                &ServiceWorkerSyntheticResponseManager::CloneBufferInBackground,
+                std::move(body), write_buffer_manager_->ReleaseProducerHandle(),
+                std::move(callback)));
+    return;
+  }
+  if (IsServiceWorkerSyntheticResponseSkipUnnecessaryBuffering()) {
+    data_pipe_connector_.emplace(std::move(body));
+    data_pipe_connector_->Transfer(
+        write_buffer_manager_->ReleaseProducerHandle(),
+        base::BindOnce(&ServiceWorkerSyntheticResponseManager::OnCloneCompleted,
+                       weak_factory_.GetWeakPtr()));
+    return;
+  }
+  simple_buffer_manager_.emplace(std::move(body));
+  simple_buffer_manager_->Clone(
+      write_buffer_manager_->ReleaseProducerHandle(),
+      base::BindOnce(&ServiceWorkerSyntheticResponseManager::OnCloneCompleted,
+                     weak_factory_.GetWeakPtr()));
+}
+
 void ServiceWorkerSyntheticResponseManager::OnReceiveResponse(
     network::mojom::URLResponseHeadPtr response_head,
     mojo::ScopedDataPipeConsumerHandle body) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   TRACE_EVENT("ServiceWorker",
-              "ServiceWorkerSyntheticResponseManager::OnReceiveResponse");
+              "ServiceWorkerSyntheticResponseManager::OnReceiveResponse",
+              perfetto::Flow::FromPointer(this));
+  response_received_time_ = base::TimeTicks::Now();
+  base::UmaHistogramTimes(kHistogramStartRequestToReceiveResponse,
+                          response_received_time_ - request_start_time_);
   switch (status_) {
     case SyntheticResponseStatus::kReady: {
       CHECK(write_buffer_manager_.has_value());
@@ -354,12 +468,7 @@ void ServiceWorkerSyntheticResponseManager::OnReceiveResponse(
       if (version_->GetResponseHeadForSyntheticResponse()) {
         is_header_consistent = CheckHeaderConsistency(response_head->headers);
         if (is_header_consistent) {
-          simple_buffer_manager_.emplace(std::move(body));
-          simple_buffer_manager_->Clone(
-              write_buffer_manager_->ReleaseProducerHandle(),
-              base::BindOnce(
-                  &ServiceWorkerSyntheticResponseManager::OnCloneCompleted,
-                  weak_factory_.GetWeakPtr()));
+          TransferResponseBody(std::move(body));
         } else {
           // Clear the stored header when it's inconsistent with the header from
           // the network so that the next navigation won't get the header
@@ -413,11 +522,18 @@ void ServiceWorkerSyntheticResponseManager::OnReceiveRedirect(
 void ServiceWorkerSyntheticResponseManager::OnComplete(
     const network::URLLoaderCompletionStatus& status) {
   TRACE_EVENT("ServiceWorker",
-              "ServiceWorkerSyntheticResponseManager::OnComplete");
+              "ServiceWorkerSyntheticResponseManager::OnComplete",
+              perfetto::Flow::FromPointer(this));
+  base::UmaHistogramTimes(kHistogramReceiveResponseToComplete,
+                          base::TimeTicks::Now() - response_received_time_);
   std::move(complete_callback_).Run(status);
 }
 
 void ServiceWorkerSyntheticResponseManager::OnCloneCompleted() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  TRACE_EVENT("ServiceWorker",
+              "ServiceWorkerSyntheticResponseManager::OnCloneCompleted",
+              perfetto::Flow::FromPointer(this));
   write_buffer_manager_->ResetProducer();
   CHECK(stream_callback_);
   // Perhaps this assumption is wrong because the write operation may not be
@@ -461,10 +577,16 @@ bool ServiceWorkerSyntheticResponseManager::CheckHeaderConsistency(
     MaybeReportHeaderInconsistency(incoming_headers, stored_headers);
   }
 
+  TRACE_EVENT1("ServiceWorker",
+               "ServiceWorkerSyntheticResponseManager::CheckHeaderConsistency",
+               "result", result);
+
   return result;
 }
 
 void ServiceWorkerSyntheticResponseManager::NotifyReloading() {
+  TRACE_EVENT("ServiceWorker",
+              "ServiceWorkerSyntheticResponseManager::NotifyReloading");
   auto body_for_reload = base::span_from_cstring<const char>(
       "<meta http-equiv=\"refresh\" content=\"0;\" />");
   auto [result, size] = write_buffer_manager_->WriteData(body_for_reload);

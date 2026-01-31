@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/views/desktop_capture/desktop_media_picker_views.h"
 
+#include <algorithm>
 #include <map>
 #include <string>
 #include <utility>
@@ -464,7 +465,7 @@ class DesktopMediaPickerViewsPerTypeTest
     // then teardown will fail.
     DesktopMediaPickerViewsTestBase::SetUp();
 
-    if (!base::Contains(source_types(), type())) {
+    if (!std::ranges::contains(source_types(), type())) {
       GTEST_SKIP();
     }
 
@@ -595,149 +596,6 @@ TEST_P(DesktopMediaPickerViewsPerTypeTest, ClearSelection) {
   EXPECT_FALSE(test_api_.GetSelectedSourceId().has_value());
 }
 
-#if BUILDFLAG(IS_WIN)
-// When doing windows captures, Chromium is not allowed to share its own audio
-// via application audio capture. This test suite asserts that the media picker
-// UI is changed as expected when a Chromium window is selected - i.e., the
-// audio-checkbox is disabled and unchecked.
-class DesktopMediaPickerViewsApplicationAudioSharingControlTest
-    : public DesktopMediaPickerViewsTestBase {
- public:
-  DesktopMediaPickerViewsApplicationAudioSharingControlTest()
-      : DesktopMediaPickerViewsTestBase(GetSourceTypes(/*new_order=*/true)) {}
-  ~DesktopMediaPickerViewsApplicationAudioSharingControlTest() override =
-      default;
-
-  void SetUp() override {
-    feature_list_.InitAndEnableFeature(features::kApplicationAudioCaptureWin);
-    DesktopMediaPickerViewsTestBase::SetUp();
-
-    test_api_.SelectTabForSourceType(DesktopMediaList::Type::kWindow);
-    media_lists_[DesktopMediaList::Type::kWindow]->AddChromiumWindowSource(10);
-    media_lists_[DesktopMediaList::Type::kWindow]->AddChromiumWindowSource(20);
-    media_lists_[DesktopMediaList::Type::kWindow]->AddSource(30);
-    media_lists_[DesktopMediaList::Type::kWindow]->AddSource(40);
-  }
-
-  void MaybeCreatePickerViews() override {
-    CreatePickerViews(/*request_audio=*/true,
-                      /*screen_exclude_system_audio=*/false,
-                      blink::mojom::WindowAudioPreference::kWindow);
-  }
-
-  void CheckDefaultState() {
-    // By default, nothing should be selected.
-    EXPECT_FALSE(test_api_.GetSelectedSourceId().has_value());
-
-    EXPECT_TRUE(test_api_.HasAudioShareControl());
-    EXPECT_TRUE(test_api_.IsAudioSharingControlEnabled());
-    EXPECT_TRUE(test_api_.IsAudioSharingApprovedByUser());
-  }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
-
-TEST_F(DesktopMediaPickerViewsApplicationAudioSharingControlTest,
-       DefaultState) {
-  CheckDefaultState();
-}
-
-TEST_F(DesktopMediaPickerViewsApplicationAudioSharingControlTest,
-       ChromiumWindow) {
-  CheckDefaultState();
-
-  // Select first Chromium window.
-  test_api_.FocusSourceAtIndex(0);
-  ASSERT_TRUE(test_api_.GetSelectedSourceId().has_value());
-  EXPECT_EQ(10, test_api_.GetSelectedSourceId().value());
-  EXPECT_TRUE(test_api_.HasAudioShareControl());
-  EXPECT_FALSE(test_api_.IsAudioSharingControlEnabled());
-  EXPECT_FALSE(test_api_.IsAudioSharingApprovedByUser());
-
-  // Select second Chromium window.
-  test_api_.FocusSourceAtIndex(1);
-  ASSERT_TRUE(test_api_.GetSelectedSourceId().has_value());
-  EXPECT_EQ(20, test_api_.GetSelectedSourceId().value());
-  EXPECT_TRUE(test_api_.HasAudioShareControl());
-  EXPECT_FALSE(test_api_.IsAudioSharingControlEnabled());
-  EXPECT_FALSE(test_api_.IsAudioSharingApprovedByUser());
-}
-
-TEST_F(DesktopMediaPickerViewsApplicationAudioSharingControlTest,
-       NonChromiumWindow) {
-  CheckDefaultState();
-
-  // Select first non-Chromium window.
-  test_api_.FocusSourceAtIndex(2);
-  ASSERT_TRUE(test_api_.GetSelectedSourceId().has_value());
-  EXPECT_EQ(30, test_api_.GetSelectedSourceId().value());
-  EXPECT_TRUE(test_api_.HasAudioShareControl());
-  EXPECT_TRUE(test_api_.IsAudioSharingControlEnabled());
-  EXPECT_TRUE(test_api_.IsAudioSharingApprovedByUser());
-
-  // Select second non-Chromium window.
-  test_api_.FocusSourceAtIndex(3);
-  ASSERT_TRUE(test_api_.GetSelectedSourceId().has_value());
-  EXPECT_EQ(40, test_api_.GetSelectedSourceId().value());
-  EXPECT_TRUE(test_api_.HasAudioShareControl());
-  EXPECT_TRUE(test_api_.IsAudioSharingControlEnabled());
-  EXPECT_TRUE(test_api_.IsAudioSharingApprovedByUser());
-}
-
-TEST_F(DesktopMediaPickerViewsApplicationAudioSharingControlTest,
-       NonChromiumWindowStateIsPersisted) {
-  CheckDefaultState();
-
-  // Select first non-Chromium window.
-  test_api_.FocusSourceAtIndex(2);
-  ASSERT_TRUE(test_api_.GetSelectedSourceId().has_value());
-  EXPECT_EQ(30, test_api_.GetSelectedSourceId().value());
-  EXPECT_TRUE(test_api_.HasAudioShareControl());
-  EXPECT_TRUE(test_api_.IsAudioSharingControlEnabled());
-  EXPECT_TRUE(test_api_.IsAudioSharingApprovedByUser());
-
-  // Select first Chromium window.
-  test_api_.FocusSourceAtIndex(0);
-  ASSERT_TRUE(test_api_.GetSelectedSourceId().has_value());
-  EXPECT_EQ(10, test_api_.GetSelectedSourceId().value());
-  EXPECT_TRUE(test_api_.HasAudioShareControl());
-  EXPECT_FALSE(test_api_.IsAudioSharingControlEnabled());
-  EXPECT_FALSE(test_api_.IsAudioSharingApprovedByUser());
-
-  // Re-select second non-Chromium window and verify that audio sharing state is
-  // persisted.
-  test_api_.FocusSourceAtIndex(3);
-  ASSERT_TRUE(test_api_.GetSelectedSourceId().has_value());
-  EXPECT_EQ(40, test_api_.GetSelectedSourceId().value());
-  EXPECT_TRUE(test_api_.HasAudioShareControl());
-  EXPECT_TRUE(test_api_.IsAudioSharingControlEnabled());
-  EXPECT_TRUE(test_api_.IsAudioSharingApprovedByUser());
-
-  // Uncheck audio sharing.
-  test_api_.SetAudioSharingApprovedByUser(false);
-  EXPECT_FALSE(test_api_.IsAudioSharingApprovedByUser());
-
-  // Select first Chromium window again.
-  test_api_.FocusSourceAtIndex(0);
-  ASSERT_TRUE(test_api_.GetSelectedSourceId().has_value());
-  EXPECT_EQ(10, test_api_.GetSelectedSourceId().value());
-  EXPECT_TRUE(test_api_.HasAudioShareControl());
-  EXPECT_FALSE(test_api_.IsAudioSharingControlEnabled());
-  EXPECT_FALSE(test_api_.IsAudioSharingApprovedByUser());
-
-  // Re-select first non-Chromium window and verify that audio sharing state is
-  // persisted.
-  test_api_.FocusSourceAtIndex(2);
-  ASSERT_TRUE(test_api_.GetSelectedSourceId().has_value());
-  EXPECT_EQ(30, test_api_.GetSelectedSourceId().value());
-  EXPECT_TRUE(test_api_.HasAudioShareControl());
-  EXPECT_TRUE(test_api_.IsAudioSharingControlEnabled());
-  EXPECT_FALSE(test_api_.IsAudioSharingApprovedByUser());
-}
-
-#endif  // BUILDFLAG(IS_WIN)
-
 class DesktopMediaPickerViewsPerTypeAndAudioTest
     : public DesktopMediaPickerViewsTestBase,
       public testing::WithParamInterface<std::tuple<
@@ -752,9 +610,9 @@ class DesktopMediaPickerViewsPerTypeAndAudioTest
 
   void SetUp() override {
 #if BUILDFLAG(IS_WIN)
-    feature_list_.InitAndEnableFeature(features::kApplicationAudioCaptureWin);
+    feature_list_.InitAndEnableFeature(media::kApplicationAudioCaptureWin);
 #elif BUILDFLAG(IS_MAC)
-    feature_list_.InitAndEnableFeature(features::kApplicationAudioCaptureMac);
+    feature_list_.InitAndEnableFeature(media::kApplicationAudioCaptureMac);
 #endif  // BUILDFLAG(IS_WIN)
     DesktopMediaPickerViewsTestBase::SetUp();
   }
@@ -798,11 +656,6 @@ TEST_P(DesktopMediaPickerViewsPerTypeAndAudioTest, AcceptSpecific) {
     // For Window captures, the `window_audio_type` will be set based on
     // platform support.
     fake_id.window_audio_type = test_api_.GetWindowAudioType();
-
-    // Audio is enabled by default for window application audio capture.
-    fake_id.audio_share =
-        RequireAudio() && test_api_.GetWindowAudioType() ==
-                              DesktopMediaID::AudioType::kApplication;
   }
   media_lists_[Type()]->AddSourceByFullMediaID(fake_id);
 
@@ -960,17 +813,15 @@ class DesktopMediaPickerViewsApplicationAudioTest
   void SetUp() override {
     if (ShouldEnableApplicationAudioCapture()) {
 #if BUILDFLAG(IS_WIN)
-      feature_list_.InitAndEnableFeature(features::kApplicationAudioCaptureWin);
+      feature_list_.InitAndEnableFeature(media::kApplicationAudioCaptureWin);
 #elif BUILDFLAG(IS_MAC)
-      feature_list_.InitAndEnableFeature(features::kApplicationAudioCaptureMac);
+      feature_list_.InitAndEnableFeature(media::kApplicationAudioCaptureMac);
 #endif
     } else {
 #if BUILDFLAG(IS_WIN)
-      feature_list_.InitAndDisableFeature(
-          features::kApplicationAudioCaptureWin);
+      feature_list_.InitAndDisableFeature(media::kApplicationAudioCaptureWin);
 #elif BUILDFLAG(IS_MAC)
-      feature_list_.InitAndDisableFeature(
-          features::kApplicationAudioCaptureMac);
+      feature_list_.InitAndDisableFeature(media::kApplicationAudioCaptureMac);
 #endif
     }
     DesktopMediaPickerViewsTestBase::SetUp();
@@ -1013,14 +864,8 @@ class DesktopMediaPickerViewsApplicationAudioTest
       return false;
     }
 #endif  // BUILDFLAG(IS_MAC)
-    return RequestAudio() &&
-           WindowAudioPreference() !=
-               blink::mojom::WindowAudioPreference::kExclude &&
-           (((media::IsApplicationAudioCaptureSupported() &&
-              WindowAudioPreference() ==
-                  blink::mojom::WindowAudioPreference::kWindow)) ||
-            (WindowAudioPreference() ==
-             blink::mojom::WindowAudioPreference::kSystem));
+    return RequestAudio() && WindowAudioPreference() !=
+                                 blink::mojom::WindowAudioPreference::kExclude;
   }
 
   // Returns the expected label for the screen pane's audio toggle of the
@@ -1054,7 +899,7 @@ class DesktopMediaPickerViewsApplicationAudioTest
     if (ShouldOfferWindowAudio()) {
       if (WindowAudioPreference() ==
               blink::mojom::WindowAudioPreference::kWindow &&
-          media::IsApplicationAudioCaptureSupported()) {
+          media::IsApplicationLoopbackCaptureSupported()) {
         return l10n_util::GetStringUTF16(
             IDS_DESKTOP_MEDIA_PICKER_ALSO_SHARE_APPLICATION_AUDIO);
       }
@@ -1102,15 +947,9 @@ TEST_P(DesktopMediaPickerViewsApplicationAudioTest, AudioCheckbox) {
   test_api_.SelectTabForSourceType(DesktopMediaList::Type::kWindow);
   EXPECT_EQ(test_api_.HasAudioShareControl(), ShouldOfferWindowAudio());
   EXPECT_EQ(test_api_.IsWindowAudioOffered(), ShouldOfferWindowAudio());
-  // By default, the audio sharing toggle is checked for application audio,
-  // and unchecked for system audio.
+  // By default, the audio sharing toggle is unchecked for window capture.
   if (ShouldOfferWindowAudio()) {
-    if (test_api_.GetWindowAudioType() ==
-        DesktopMediaID::AudioType::kApplication) {
-      EXPECT_TRUE(test_api_.IsAudioSharingApprovedByUser());
-    } else {
       EXPECT_FALSE(test_api_.IsAudioSharingApprovedByUser());
-    }
   }
   EXPECT_EQ(test_api_.GetAudioLabelText(), GetExpectedWindowAudioLabel());
 
@@ -1368,7 +1207,7 @@ class DelegatedSourceListTest : public DesktopMediaPickerViewsTestBase {
     delegated_source_types_ = delegated_source_types;
     ASSERT_FALSE(
         std::ranges::any_of(source_types_, [this](DesktopMediaList::Type type) {
-          return base::Contains(delegated_source_types_, type);
+          return std::ranges::contains(delegated_source_types_, type);
         }));
   }
 };

@@ -17,6 +17,7 @@
 #include <string_view>
 
 #include "base/base_export.h"
+#include "base/containers/span.h"
 #include "base/third_party/icu/icu_utf.h"
 #include "build/build_config.h"
 
@@ -59,20 +60,24 @@ BASE_EXPORT std::optional<size_t> CountUnicodeCharacters(
 // (as in a for loop) will take the reader to the next character.
 //
 // Returns true on success. On false, |*code_point| will be invalid.
-// TODO(crbug.com/40284755): implement spanified version (or use string view).
-// BASE_EXPORT bool ReadUnicodeCharacter(base::span<const char> src,
-//                                       size_t* char_index,
-//                                       base_icu::UChar32* code_point_out);
+BASE_EXPORT bool ReadUnicodeCharacter(std::string_view src,
+                                      size_t* char_index,
+                                      base_icu::UChar32* code_point_out);
+
+// TODO(crbug.com/40284755): migrate usage to spanified version.
+// Deprecated. Use span version instead.
 BASE_EXPORT bool ReadUnicodeCharacter(const char* src,
                                       size_t src_len,
                                       size_t* char_index,
                                       base_icu::UChar32* code_point_out);
 
 // Reads a UTF-16 character. The usage is the same as the 8-bit version above.
-// TODO(crbug.com/40284755): implement spanified version (or use string view).
-// BASE_EXPORT bool ReadUnicodeCharacter(base::span<const char16_t> src,
-//                                       size_t* char_index,
-//                                       base_icu::UChar32* code_point);
+BASE_EXPORT bool ReadUnicodeCharacter(std::u16string_view src,
+                                      size_t* char_index,
+                                      base_icu::UChar32* code_point);
+
+// TODO(crbug.com/40284755): migrate usage to spanified version.
+// Deprecated. Use span version instead.
 BASE_EXPORT bool ReadUnicodeCharacter(const char16_t* src,
                                       size_t src_len,
                                       size_t* char_index,
@@ -80,16 +85,18 @@ BASE_EXPORT bool ReadUnicodeCharacter(const char16_t* src,
 
 #if defined(WCHAR_T_IS_32_BIT)
 // Reads UTF-32 character. The usage is the same as the 8-bit version above.
-// TODO(crbug.com/40284755): implement spanified version (or use string view).
-// BASE_EXPORT bool ReadUnicodeCharacter(base::span<const wchar_t> src,
-//                                       size_t* char_index,
-//                                       base_icu::UChar32* code_point);
-BASE_EXPORT bool ReadUnicodeCharacter(const wchar_t* src,
-                                      size_t src_len,
+BASE_EXPORT bool ReadUnicodeCharacter(std::wstring_view src,
                                       size_t* char_index,
                                       base_icu::UChar32* code_point);
-#endif  // defined(WCHAR_T_IS_32_BIT)
 
+// TODO(crbug.com/40284755): migrate usage to spanified version.
+// Deprecated. Use span version instead.
+UNSAFE_BUFFER_USAGE BASE_EXPORT bool ReadUnicodeCharacter(
+    const wchar_t* src,
+    size_t src_len,
+    size_t* char_index,
+    base_icu::UChar32* code_point);
+#endif  // defined(WCHAR_T_IS_32_BIT)
 // WriteUnicodeCharacter -------------------------------------------------------
 
 // Appends a UTF-8 character to the given 8-bit string.  Returns the number of
@@ -119,19 +126,14 @@ inline size_t WriteUnicodeCharacter(base_icu::UChar32 code_point,
 // string, and reserves that amount of space.  We assume that the input
 // character types are unsigned, which will be true for UTF-16 and -32 on our
 // systems.
-// TODO(crbug.com/40284755): implement spanified version.
-// template <typename CHAR>
-// void PrepareForUTF8Output(base::span<const CHAR> src, std::string* output);
 template <typename CHAR>
-void PrepareForUTF8Output(const CHAR* src, size_t src_len, std::string* output);
+void PrepareForUTF8Output(std::basic_string_view<CHAR> src,
+                          std::string* output);
 
 // Prepares an output buffer (containing either UTF-16 or -32 data) given some
 // UTF-8 input that will be converted to it.  See PrepareForUTF8Output().
-// TODO(crbug.com/40284755): implement spanified version.
-// template <typename STRING>
-// void PrepareForUTF16Or32Output(base::span<const char> src, STRING* output);
 template <typename STRING>
-void PrepareForUTF16Or32Output(const char* src, size_t src_len, STRING* output);
+void PrepareForUTF16Or32Output(std::string_view src, STRING* output);
 
 }  // namespace base
 

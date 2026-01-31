@@ -993,7 +993,7 @@ class BlockedUrlPolicyAppLauncherTabHelperTest
     web_state_.SetBrowserState(enterprise_policy_helper_->GetProfile());
 
     policy::PolicyMap policy_map;
-    base::Value::List value;
+    base::ListValue value;
     value.Append("itms-apps://*");
     policy_map.Set(policy::key::kURLBlocklist, policy::POLICY_LEVEL_MANDATORY,
                    policy::POLICY_SCOPE_USER, policy::POLICY_SOURCE_CLOUD,

@@ -1,1 +1,1 @@
-These tests have to run with RestrictSpellingAndGrammarHighlights disabled to prevent the fieldtrial config from interfering.
+These tests have to run with UnrestrictSpellingAndGrammarForTesting enabled to allow selection from script to trigger the spelling and grammar checks.

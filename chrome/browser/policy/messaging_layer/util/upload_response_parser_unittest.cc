@@ -51,12 +51,12 @@ constexpr std::string_view kEncryptionSignature = "Encryption_Signature";
 constexpr int kConfigVersion = 11;
 constexpr std::string_view kConfigSignature = "Config_Signature";
 
-base::Value::Dict ComposeSequencingInfo(
+base::DictValue ComposeSequencingInfo(
     std::optional<Priority> priority,
     std::optional<int64_t> sequencing_id,
     std::optional<int64_t> generation_id,
     std::optional<std::string_view> generation_guid) {
-  base::Value::Dict seq_info;
+  base::DictValue seq_info;
   if (priority.has_value()) {
     // Alternate Priority between string and number representation at random.
     if (base::RandUint64() % 2uL == 0uL) {
@@ -90,7 +90,7 @@ class ResponseBuilder {
   }
 
   void SetEncryptionSettings() {
-    base::Value::Dict encryption_settings;
+    base::DictValue encryption_settings;
     encryption_settings.Set(json_keys::kPublicKey,
                             base::Base64Encode(kEncryptionKey));
     encryption_settings.Set(json_keys::kPublicKeyId, kPublicKeyId);
@@ -100,25 +100,25 @@ class ResponseBuilder {
   }
 
   void SetConfigFile() {
-    base::Value::Dict config_file_dict;
+    base::DictValue config_file_dict;
     config_file_dict.Set(json_keys::kConfigurationFileVersionResponse,
                          kConfigVersion);
     config_file_dict.Set(json_keys::kConfigurationFileSignature,
                          base::Base64Encode(kConfigSignature));
     // Leave the list empty.
-    config_file_dict.Set(json_keys::kBlockedEventConfigs, base::Value::List());
+    config_file_dict.Set(json_keys::kBlockedEventConfigs, base::ListValue());
     result_.Set(json_keys::kConfigurationFile, std::move(config_file_dict));
   }
 
-  void SetLastSuccessfulRecord(base::Value::Dict&& seq_info) {
+  void SetLastSuccessfulRecord(base::DictValue&& seq_info) {
     result_.Set(json_keys::kLastSucceedUploadedRecord, std::move(seq_info));
   }
 
-  void SetFirstFailedRecord(base::Value::Dict&& seq_info, Status status) {
-    base::Value::Dict failure_info;
+  void SetFirstFailedRecord(base::DictValue&& seq_info, Status status) {
+    base::DictValue failure_info;
     failure_info.Set(json_keys::kFailedUploadedRecord, std::move(seq_info));
 
-    base::Value::Dict failure_status;
+    base::DictValue failure_status;
     failure_status.Set(json_keys::kErrorCode, status.error_code());
     failure_status.Set(json_keys::kErrorMessage, status.error_message());
     failure_info.Set(json_keys::kFailureStatus, std::move(failure_status));
@@ -126,10 +126,10 @@ class ResponseBuilder {
     result_.Set(json_keys::kFirstFailedUploadedRecord, std::move(failure_info));
   }
 
-  base::Value::Dict Build() { return std::move(result_); }
+  base::DictValue Build() { return std::move(result_); }
 
  private:
-  base::Value::Dict result_;
+  base::DictValue result_;
 };
 
 class UploadResponseParserTest

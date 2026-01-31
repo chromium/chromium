@@ -88,8 +88,10 @@ TEST_F(BackgroundTabLoadingPolicyHelpersTest, CalculateAgeScore) {
 
   // Generate a bunch more random ages.
   for (size_t i = tab_age_score.size(); i < 1000; ++i) {
-    tab_age_score.push_back(std::make_pair(
-        base::Seconds(base::RandInt(-kMonthInSeconds, kMonthInSeconds)), 0.0));
+    tab_age_score.push_back(
+        std::make_pair(base::Seconds(base::RandIntInclusive(-kMonthInSeconds,
+                                                            kMonthInSeconds)),
+                       0.0));
   }
 
   // Calculate the tab scores.

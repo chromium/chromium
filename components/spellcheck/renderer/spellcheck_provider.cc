@@ -20,6 +20,7 @@
 #include "components/spellcheck/common/spellcheck_common.h"
 #include "components/spellcheck/common/spellcheck_features.h"
 #include "components/spellcheck/common/spellcheck_result.h"
+#include "components/spellcheck/common/spelling_marker.h"
 #include "components/spellcheck/renderer/spellcheck.h"
 #include "components/spellcheck/renderer/spellcheck_language.h"
 #include "components/spellcheck/renderer/spellcheck_renderer_metrics.h"
@@ -43,11 +44,31 @@ using blink::WebTextCheckingResult;
 using blink::WebTextDecorationType;
 
 static_assert(static_cast<int>(blink::kWebTextDecorationTypeSpelling) ==
-                  static_cast<int>(SpellCheckResult::SPELLING),
+                  static_cast<int>(spellcheck::Decoration::SPELLING),
               "mismatching enums");
 static_assert(static_cast<int>(blink::kWebTextDecorationTypeGrammar) ==
-                  static_cast<int>(SpellCheckResult::GRAMMAR),
+                  static_cast<int>(spellcheck::Decoration::GRAMMAR),
               "mismatching enums");
+
+namespace {
+
+spellcheck::Decoration MapToDecoration(
+    blink::WebSpellingMarker::SpellingMarkerType marker_type) {
+  switch (marker_type) {
+    case blink::WebSpellingMarker::SpellingMarkerType::kSpelling:
+      return spellcheck::Decoration::SPELLING;
+    case blink::WebSpellingMarker::SpellingMarkerType::kGrammar:
+      return spellcheck::Decoration::GRAMMAR;
+  }
+}
+
+spellcheck::SpellingMarker MapToSpellingMarker(
+    const blink::WebSpellingMarker& marker) {
+  return spellcheck::SpellingMarker(marker.start, marker.end,
+                                    MapToDecoration(marker.marker_type));
+}
+
+}  // namespace
 
 class SpellCheckProvider::DictionaryUpdateObserverImpl
     : public DictionaryUpdateObserver {
@@ -106,6 +127,7 @@ void SpellCheckProvider::ResetDictionaryUpdateObserverForTesting() {
 
 void SpellCheckProvider::RequestTextChecking(
     const std::u16string& text,
+    const std::vector<spellcheck::SpellingMarker>& spelling_markers,
     blink::WebTextCheckClient::ShouldForceRefreshTextCheckService
         should_force_refresh,
     std::unique_ptr<WebTextCheckingCompletion> completion) {
@@ -149,7 +171,7 @@ void SpellCheckProvider::RequestTextChecking(
     }
 #endif  // BUILDFLAG(IS_WIN)
 
-    RequestTextCheckingFromBrowser(text);
+    RequestTextCheckingFromBrowser(text, spelling_markers);
   }
 #endif  // BUILDFLAG(USE_BROWSER_SPELLCHECKER)
 
@@ -165,7 +187,8 @@ void SpellCheckProvider::RequestTextChecking(
 
 #if BUILDFLAG(USE_BROWSER_SPELLCHECKER)
 void SpellCheckProvider::RequestTextCheckingFromBrowser(
-    const std::u16string& text) {
+    const std::u16string& text,
+    const std::vector<spellcheck::SpellingMarker>& spelling_markers) {
   DCHECK(spellcheck::UseBrowserSpellChecker());
 #if BUILDFLAG(IS_WIN)
 
@@ -203,8 +226,9 @@ void SpellCheckProvider::RequestTextCheckingFromBrowser(
   // available for browser process, so we ask the system spellchecker
   // over mojo or return an empty result if the checker is not available.
   GetSpellCheckHost().RequestTextCheck(
-      text, base::BindOnce(&SpellCheckProvider::OnRespondTextCheck,
-                           weak_factory_.GetWeakPtr(), last_identifier_, text));
+      text, spelling_markers,
+      base::BindOnce(&SpellCheckProvider::OnRespondTextCheck,
+                     weak_factory_.GetWeakPtr(), last_identifier_, text));
 }
 
 #if BUILDFLAG(IS_WIN)
@@ -224,7 +248,7 @@ void SpellCheckProvider::OnRespondInitializeDictionaries(
   // the SpellChecker is initialized before performing a spellcheck.
   spellcheck_->Initialize(std::move(dictionaries), custom_words, enable);
 
-  RequestTextCheckingFromBrowser(text);
+  RequestTextCheckingFromBrowser(text, /*spelling_markers=*/{});
 }
 #endif  // BUILDFLAG(IS_WIN)
 #endif  // BUILDFLAG(USE_BROWSER_SPELLCHECKER)
@@ -304,11 +328,13 @@ void SpellCheckProvider::CheckSpelling(
 
 void SpellCheckProvider::RequestCheckingOfText(
     const WebString& text,
+    const std::vector<blink::WebSpellingMarker>& spelling_markers,
     blink::WebTextCheckClient::ShouldForceRefreshTextCheckService
         should_force_refresh,
     std::unique_ptr<WebTextCheckingCompletion> completion) {
-  RequestTextChecking(text.Utf16(), should_force_refresh,
-                      std::move(completion));
+  RequestTextChecking(text.Utf16(),
+                      base::ToVector(spelling_markers, &MapToSpellingMarker),
+                      should_force_refresh, std::move(completion));
   spellcheck_renderer_metrics::RecordAsyncCheckedTextLength(
       base::saturated_cast<int>(text.length()));
 }

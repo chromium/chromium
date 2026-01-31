@@ -90,7 +90,7 @@ using UIPresentation =
   /* Called when the enclave authenticator is available for a request or */   \
   /* the enclave authenticator needs a reauth before it is available for a */ \
   /* request. */                                                              \
-  AUTHENTICATOR_REQUEST_EVENT_1(EnclaveEnabledStatusChanged,                  \
+  AUTHENTICATOR_REQUEST_EVENT_1(OnGPMEnclaveEnabledStatusChanged,             \
                                 EnclaveEnabledStatus)                         \
   AUTHENTICATOR_REQUEST_EVENT_0(OnBioEnrollmentDone)                          \
   /* Called when the power state of the Bluetooth adapter has changed. */     \
@@ -102,26 +102,26 @@ using UIPresentation =
   AUTHENTICATOR_REQUEST_EVENT_0(OnCancelRequest)                              \
   /* Called when the user picks Google Password Manager from the */           \
   /* mechanism selection sheet. */                                            \
-  AUTHENTICATOR_REQUEST_EVENT_0(OnGPMSelected)                                \
+  AUTHENTICATOR_REQUEST_EVENT_0(OnGPMCreationSelected)                        \
   /* Called when the user accepts the create passkey sheet. */                \
   /* (But not the GPM one.) */                                                \
-  AUTHENTICATOR_REQUEST_EVENT_0(OnCreatePasskeyAccepted)                      \
+  AUTHENTICATOR_REQUEST_EVENT_0(OnChromeProfileCreatePasskeyAccepted)         \
   /* Called when the user accepts passkey creation dialog. */                 \
-  AUTHENTICATOR_REQUEST_EVENT_0(OnGPMCreatePasskey)                           \
+  AUTHENTICATOR_REQUEST_EVENT_0(OnGPMCreationConfirmed)                       \
   /* Called when the user accepts the warning dialog for creating a GPM */    \
   /* passkey in incognito mode.*/                                             \
   AUTHENTICATOR_REQUEST_EVENT_0(OnGPMConfirmOffTheRecordCreate)               \
   /* Called when the user clicks "Forgot PIN" during UV. */                   \
-  AUTHENTICATOR_REQUEST_EVENT_0(OnForgotGPMPinPressed)                        \
+  AUTHENTICATOR_REQUEST_EVENT_0(OnGPMForgotPinPressed)                        \
   /* OnOffTheRecordInterstitialAccepted is called when the user accepts */    \
   /* the interstitial that warns that platform/caBLE authenticators may */    \
   /* record information even in incognito mode. */                            \
   AUTHENTICATOR_REQUEST_EVENT_0(OnOffTheRecordInterstitialAccepted)           \
   /* Sent by GPMEnclaveController when it's ready for the UI to be */         \
   /* displayed. */                                                            \
-  AUTHENTICATOR_REQUEST_EVENT_0(OnReadyForUI)                                 \
+  AUTHENTICATOR_REQUEST_EVENT_0(OnGPMReadyForUI)                              \
   /* Called when a user closes the MagicArch window. */                       \
-  AUTHENTICATOR_REQUEST_EVENT_0(OnRecoverSecurityDomainClosed)                \
+  AUTHENTICATOR_REQUEST_EVENT_0(OnGPMRecoverSecurityDomainClosed)             \
   /* To be called when the Web Authentication request is complete. */         \
   AUTHENTICATOR_REQUEST_EVENT_0(OnRequestComplete)                            \
   /* OnResidentCredentialConfirmed is called when a user accepts a dialog */  \
@@ -135,7 +135,7 @@ using UIPresentation =
   /* should update. */                                                        \
   AUTHENTICATOR_REQUEST_EVENT_0(OnStepTransition)                             \
   /* Called when the user accepts enrolling a device to use passkeys. */      \
-  AUTHENTICATOR_REQUEST_EVENT_0(OnTrustThisComputer)                          \
+  AUTHENTICATOR_REQUEST_EVENT_0(OnGPMTrustThisComputer)                       \
   AUTHENTICATOR_REQUEST_EVENT_0(OnUserConfirmedPriorityMechanism)             \
   /* Open the system dialog to grant BLE permission to Chrome. Valid */       \
   /* action when at step: kBlePermissionMac. */                               \
@@ -144,7 +144,7 @@ using UIPresentation =
   /* kBlePowerOnAutomatic. */                                                 \
   AUTHENTICATOR_REQUEST_EVENT_0(PowerOnBleAdapter)                            \
   /* Called when loading the enclave times out. */                            \
-  AUTHENTICATOR_REQUEST_EVENT_0(OnLoadingEnclaveTimeout)                      \
+  AUTHENTICATOR_REQUEST_EVENT_0(OnGPMLoadingEnclaveTimeout)                   \
   /* Restarts the UX flow. */                                                 \
   AUTHENTICATOR_REQUEST_EVENT_0(StartOver)                                    \
   /* Like `OnAccountPreselected()`, but this takes an index into `creds()` */ \
@@ -169,15 +169,15 @@ using UIPresentation =
   /* true for success, false for failure. */                                  \
   /* On success, the emitter must set the model's `local_auth_token` to an */ \
   /* authenticated one. In MacOS this is a ScopedLAContext. */                \
-  AUTHENTICATOR_REQUEST_EVENT_1(OnTouchIDComplete, bool)                      \
+  AUTHENTICATOR_REQUEST_EVENT_1(OnGPMTouchIDComplete, bool)                   \
   /* Called when GAIA reauth has completed. The argument is the reauth */     \
   /* proof token. */                                                          \
-  AUTHENTICATOR_REQUEST_EVENT_1(OnReauthComplete, std::string)                \
+  AUTHENTICATOR_REQUEST_EVENT_1(OnGPMReauthComplete, std::string)             \
   /* Called just before the model is destructed. */                           \
   AUTHENTICATOR_REQUEST_EVENT_1(OnModelDestroyed,                             \
                                 AuthenticatorRequestDialogModel*)             \
   /* Called when the GPM passkeys are reset successfully or not. */           \
-  AUTHENTICATOR_REQUEST_EVENT_1(OnGpmPasskeysReset, bool)                     \
+  AUTHENTICATOR_REQUEST_EVENT_1(OnGPMPasskeysReset, bool)                     \
   /* Called when a password mechanism is selected */                          \
   AUTHENTICATOR_REQUEST_EVENT_1(OnPasswordCredentialSelected,                 \
                                 PasswordCredentialPair)
@@ -274,13 +274,13 @@ struct AuthenticatorRequestDialogModel
     // GPM passkey creation.
     kGPMCreatePasskey,
     kGPMConfirmOffTheRecordCreate,
-    kCreatePasskey,
+    kChromeProfileCreatePasskey,
     kGPMError,
     kGPMConnecting,
     // Device bootstrap to use GPM passkeys.
-    kRecoverSecurityDomain,
-    kTrustThisComputerAssertion,
-    kTrustThisComputerCreation,
+    kGPMRecoverSecurityDomain,
+    kGPMTrustThisComputerAssertion,
+    kGPMTrustThisComputerCreation,
     // Changing GPM PIN.
     kGPMReauthForPinReset,
     kGPMLockedPin,
@@ -334,13 +334,16 @@ struct AuthenticatorRequestDialogModel
     using Credential = base::StrongAlias<class CredentialTag, CredentialInfo>;
 
     struct PasswordInfo {
-      explicit PasswordInfo(std::optional<base::Time> last_used_time_in);
+      explicit PasswordInfo(
+          std::optional<base::Time> last_used_time_in,
+          std::optional<std::u16string> origin_in = std::nullopt);
 
       PasswordInfo(const PasswordInfo&);
       ~PasswordInfo();
       bool operator==(const PasswordInfo& other) const;
 
       const std::optional<base::Time> last_used_time;
+      const std::optional<std::u16string> origin;
     };
     using Password = base::StrongAlias<class PasswordTag, PasswordInfo>;
     using Transport =
@@ -478,9 +481,9 @@ struct AuthenticatorRequestDialogModel
   bool is_off_the_record = false;
 
   // Tracks whether the model is in the GPM onboarding state.
-  // This value is set/reset only in GPMEnclaveController::OnGPMSelected and
-  // read only to record metrics (WebAuthentication.OnboardingEvents) during the
-  // onboarding flow.
+  // This value is set/reset only in GPMEnclaveController::OnGPMCreationSelected
+  // and read only to record metrics (WebAuthentication.OnboardingEvents) during
+  // the onboarding flow.
   bool in_onboarding_flow = false;
 
   std::optional<int> max_bio_samples;

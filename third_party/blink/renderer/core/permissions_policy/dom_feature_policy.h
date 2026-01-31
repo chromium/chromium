@@ -47,8 +47,8 @@ class CORE_EXPORT DOMFeaturePolicy : public ScriptWrappable {
   // Inform the DOMFeaturePolicy object when the container policy on its frame
   // element has changed.
   virtual void UpdateContainerPolicy(
-      const network::ParsedPermissionsPolicy& container_policy = {},
-      scoped_refptr<const SecurityOrigin> src_origin = nullptr) {}
+      const network::ParsedPermissionsPolicy& container_policy,
+      const SecurityOrigin& src_origin) {}
 
   void Trace(Visitor*) const override;
 

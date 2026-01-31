@@ -54,6 +54,7 @@ const CGFloat kGridCellBarHeight = 22;
   if (self) {
     _type = type;
     self.backgroundColor = [UIColor colorNamed:kPrimaryBackgroundColor];
+    self.barColor = [UIColor colorNamed:kSecondaryBackgroundColor];
     [self setupPlaceholderViews];
   }
   return self;
@@ -94,6 +95,15 @@ const CGFloat kGridCellBarHeight = 22;
       _stackView.spacing = kSmallVerticalSpacing;
       break;
   }
+}
+
+- (void)setBarColor:(UIColor*)barColor {
+  if (_barColor == barColor) {
+    return;
+  }
+  CHECK(barColor);
+  _barColor = barColor;
+  [self updateBarBackgroundColor];
 }
 
 #pragma mark - Private
@@ -210,12 +220,19 @@ const CGFloat kGridCellBarHeight = 22;
 
 - (UIView*)createBar {
   UIView* barView = [[UIView alloc] init];
-  barView.backgroundColor = [UIColor colorNamed:kSecondaryBackgroundColor];
+  barView.backgroundColor = _barColor;
   barView.layer.cornerRadius = kBarCornerRadius;
   CGFloat barHeight = _type == EmptyThumbnailTypeGridCell ? kGridCellBarHeight
                                                           : kGroupViewBarHeight;
   [barView.heightAnchor constraintEqualToConstant:barHeight].active = YES;
   return barView;
+}
+
+// Updates the bars' backgroundColor without re-creating them.
+- (void)updateBarBackgroundColor {
+  for (UIView* barSubview in _stackView.subviews) {
+    barSubview.backgroundColor = _barColor;
+  }
 }
 
 @end

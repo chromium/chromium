@@ -40,7 +40,6 @@
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
-#include "components/content_settings/core/common/features.h"
 #include "components/no_state_prefetch/browser/no_state_prefetch_manager.h"
 #include "components/omnibox/browser/location_bar_model.h"
 #include "components/prefs/pref_service.h"
@@ -436,8 +435,7 @@ class LoginPromptBrowserTestThirdPartyCookiesUnblocked
   LoginPromptBrowserTestThirdPartyCookiesUnblocked() {
     scoped_feature_list_.InitWithFeatureStates(
         {{network::features::kSplitAuthCacheByNetworkIsolationKey,
-          (GetParam() == SplitAuthCacheByNetworkIsolationKey::kTrue)},
-         {content_settings::features::kTrackingProtection3pcd, false}});
+          (GetParam() == SplitAuthCacheByNetworkIsolationKey::kTrue)}});
   }
 
  private:
@@ -2631,7 +2629,7 @@ IN_PROC_BROWSER_TEST_P(LoginPromptPrerenderBrowserTest, CancelOnAuthRequested) {
   content::test::PrerenderHostRegistryObserver registry_observer(
       *GetWebContents());
   registry_observer.WaitForTrigger(kPrerenderingUrl);
-  content::FrameTreeNodeId host_id =
+  content::PrerenderHostId host_id =
       prerender_helper().GetHostForUrl(kPrerenderingUrl);
   content::test::PrerenderHostObserver host_observer(*GetWebContents(),
                                                      host_id);
@@ -2654,7 +2652,7 @@ IN_PROC_BROWSER_TEST_P(LoginPromptPrerenderBrowserTest,
 
   // Start prerendering `kPrerenderingUrl`.
   const GURL kPrerenderingUrl = embedded_test_server()->GetURL("/title1.html");
-  content::FrameTreeNodeId host_id =
+  content::PrerenderHostId host_id =
       prerender_helper().AddPrerender(kPrerenderingUrl);
   content::test::PrerenderHostObserver host_observer(*GetWebContents(),
                                                      host_id);
@@ -2689,7 +2687,7 @@ IN_PROC_BROWSER_TEST_P(LoginPromptPrerenderBrowserTest,
 
   // Start prerendering `kPrerenderingUrl`.
   const GURL kPrerenderingUrl = embedded_test_server()->GetURL("/title1.html");
-  content::FrameTreeNodeId host_id =
+  content::PrerenderHostId host_id =
       prerender_helper().AddPrerender(kPrerenderingUrl);
   content::test::PrerenderHostObserver host_observer(*GetWebContents(),
                                                      host_id);

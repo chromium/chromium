@@ -4,6 +4,7 @@
 
 #include "components/autofill/core/browser/data_manager/addresses/address_data_manager.h"
 
+#include <algorithm>
 #include <string>
 #include <vector>
 
@@ -603,8 +604,8 @@ TEST_F(AddressDataManagerTest, AddProfile_CrazyCharacters) {
   }
   ASSERT_EQ(profiles.size(), address_data_manager().GetProfiles().size());
   for (size_t i = 0; i < profiles.size(); ++i) {
-    EXPECT_TRUE(
-        base::Contains(profiles, *address_data_manager().GetProfiles()[i]));
+    EXPECT_TRUE(std::ranges::contains(
+        profiles, *address_data_manager().GetProfiles()[i]));
   }
 }
 
@@ -697,8 +698,6 @@ TEST_F(AddressDataManagerTest, RemoveLocalProfilesModifiedBetween) {
 }
 
 TEST_F(AddressDataManagerTest, HideAccountProfile) {
-  base::test::ScopedFeatureList feature_list{
-      features::kAutofillDeduplicateAccountAddresses};
   AutofillProfile local_profile1 = test::GetFullProfile();
   AutofillProfile local_profile2 = test::GetFullProfile2();
   AutofillProfile account_profile1 = test::GetFullCanadianProfile();
@@ -824,9 +823,7 @@ TEST_F(AddressDataManagerTest, MigrateProfileToAccount) {
   EXPECT_EQ(kAccountProfile.record_type(),
             AutofillProfile::RecordType::kAccount);
   EXPECT_EQ(kAccountProfile.initial_creator_id(),
-            AutofillProfile::kInitialCreatorOrModifierChrome);
-  EXPECT_EQ(kAccountProfile.last_modifier_id(),
-            AutofillProfile::kInitialCreatorOrModifierChrome);
+            AutofillProfile::kInitialCreatorChrome);
   EXPECT_NE(kLocalProfile.guid(), kAccountProfile.guid());
   EXPECT_EQ(kLocalProfile.Compare(kAccountProfile), 0);
 }
@@ -955,105 +952,9 @@ TEST_F(AddressDataManagerTest, UpdateLanguageCodeInProfile) {
   EXPECT_EQ("en", results[0]->language_code());
 }
 
-// Tests that the least recently used profile of two existing profiles is
-// deleted, when an update of one of the profiles makes it a duplicate of the
-// other, already existing profile. Here, the less recently used profile is
-// edited to become a duplicate of the more recently used profile.
-// TODO(crbug.com/357074792): Remove this test when the feature is cleaned up.
-TEST_F(AddressDataManagerTest, CreateDuplicateWithAnUpdate) {
-  base::test::ScopedFeatureList feature;
-  feature.InitAndDisableFeature(features::kAutofillDeduplicateAccountAddresses);
-  AdvanceClock(kArbitraryTime - base::Time::Now());
-
-  AutofillProfile more_recently_used_profile(test::GetFullProfile());
-  AutofillProfile less_recently_used_profile(test::GetFullProfile2());
-
-  base::Time older_use_date = base::Time::Now();
-  less_recently_used_profile.usage_history().set_use_date(older_use_date);
-  AdvanceClock(base::Days(1));
-
-  // Set more recently used profile to have a use date that is newer than
-  // `older_use_date`.
-  base::Time newer_use_data = base::Time::Now();
-  more_recently_used_profile.usage_history().set_use_date(newer_use_data);
-
-  AddProfileToAddressDataManager(more_recently_used_profile);
-  AddProfileToAddressDataManager(less_recently_used_profile);
-
-  EXPECT_EQ(address_data_manager().GetProfiles().size(), 2U);
-
-  // Now make an update to less recently used profile that makes it a duplicate
-  // of the more recently used profile.
-  AutofillProfile updated_less_recently_used_profile =
-      more_recently_used_profile;
-  updated_less_recently_used_profile.set_guid(
-      less_recently_used_profile.guid());
-  // Set the updated profile to have a older use date than it's duplicate.
-  updated_less_recently_used_profile.usage_history().set_use_date(
-      older_use_date);
-  UpdateProfileOnAddressDataManager(updated_less_recently_used_profile);
-
-  // Verify that the less recently used profile was removed.
-  ASSERT_EQ(address_data_manager().GetProfiles().size(), 1U);
-  EXPECT_EQ(*address_data_manager().GetProfiles()[0],
-            more_recently_used_profile);
-  EXPECT_EQ(address_data_manager().GetProfiles()[0]->usage_history().use_date(),
-            newer_use_data);
-}
-
-// Tests that the least recently used profile of two existing profiles is
-// deleted, when an update of one of the profiles makes it a duplicate of the
-// other, already existing profile. Here, the more recently used profile is
-// edited to become a duplicate of the less recently used profile.
-// TODO(crbug.com/357074792): Remove this test when the feature is cleaned up.
-TEST_F(AddressDataManagerTest,
-       CreateDuplicateWithAnUpdate_UpdatedProfileWasMoreRecentlyUsed) {
-  base::test::ScopedFeatureList feature;
-  feature.InitAndDisableFeature(features::kAutofillDeduplicateAccountAddresses);
-  AdvanceClock(kArbitraryTime - base::Time::Now());
-
-  AutofillProfile less_recently_used_profile(test::GetFullProfile());
-  AutofillProfile more_recently_used_profile(test::GetFullProfile2());
-
-  less_recently_used_profile.usage_history().set_use_date(base::Time::Now());
-  more_recently_used_profile.usage_history().set_use_date(base::Time::Now());
-
-  AddProfileToAddressDataManager(less_recently_used_profile);
-  AddProfileToAddressDataManager(more_recently_used_profile);
-
-  EXPECT_EQ(address_data_manager().GetProfiles().size(), 2U);
-
-  // Now make an update to profile2 that makes it a duplicate of profile1,
-  // but set the last use time to be more recent than the one of profile1.
-  AutofillProfile updated_more_recently_used_profile =
-      less_recently_used_profile;
-  updated_more_recently_used_profile.set_guid(
-      more_recently_used_profile.guid());
-  // Set the updated profile to have a newer use date than it's duplicate.
-  AdvanceClock(base::Days(1));
-  base::Time newer_use_data = base::Time::Now();
-  updated_more_recently_used_profile.usage_history().set_use_date(
-      newer_use_data);
-  // Expect an update and a deletion. This only triggers a single notification
-  // once both operations have finished.
-  address_data_manager().UpdateProfile(updated_more_recently_used_profile);
-  WaitForOnAddressDataChanged();
-
-  // Verify that less recently used profile was removed.
-  ASSERT_EQ(address_data_manager().GetProfiles().size(), 1U);
-
-  EXPECT_EQ(*address_data_manager().GetProfiles()[0],
-            updated_more_recently_used_profile);
-  EXPECT_EQ(address_data_manager().GetProfiles()[0]->usage_history().use_date(),
-            newer_use_data);
-}
-
-// Tests that when an update of one of the profiles makes it a duplicate of the
-// other, already existing profile. Both of them are preserved if
-// `kAutofillDeduplicateAccountAddresses` is enabled.
+// Tests updating a profile in a way that creates a duplicate. Expect that both
+// profiles are preserved.
 TEST_F(AddressDataManagerTest, CreateDuplicateWithAnUpdate_BothProfilesExists) {
-  base::test::ScopedFeatureList feature_list{
-      features::kAutofillDeduplicateAccountAddresses};
   AutofillProfile profile1(test::GetFullProfile());
   AutofillProfile profile2(test::GetFullProfile2());
 

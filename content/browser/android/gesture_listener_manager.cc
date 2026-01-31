@@ -140,20 +140,20 @@ void GestureListenerManager::ResetGestureDetection(JNIEnv* env) {
 }
 
 void GestureListenerManager::SetDoubleTapSupportEnabled(JNIEnv* env,
-                                                        jboolean enabled) {
+                                                        bool enabled) {
   if (rwhva_)
     rwhva_->SetDoubleTapSupportEnabled(enabled);
 }
 
 void GestureListenerManager::SetMultiTouchZoomSupportEnabled(JNIEnv* env,
-                                                             jboolean enabled) {
+                                                             bool enabled) {
   if (rwhva_)
     rwhva_->SetMultiTouchZoomSupportEnabled(enabled);
 }
 
 void GestureListenerManager::SetRootScrollOffsetUpdateFrequency(
     JNIEnv* env,
-    jint frequency) {
+    int32_t frequency) {
   auto new_frequency =
       static_cast<cc::mojom::RootScrollOffsetUpdateFrequency>(frequency);
   root_scroll_offset_update_frequency_ = new_frequency;
@@ -179,7 +179,8 @@ void GestureListenerManager::RenderFrameHostChanged(RenderFrameHost* old_host,
 }
 
 void GestureListenerManager::OnInputEvent(const RenderWidgetHost& widget,
-                                          const blink::WebInputEvent& event) {
+                                          const blink::WebInputEvent& event,
+                                          InputEventSource source) {
   const blink::mojom::EventType event_type = event.GetType();
 
   if (IsUserInteractionInputType(event_type)) {
@@ -383,7 +384,7 @@ void GestureListenerManager::UnobserveRenderFrames() {
   observed_render_frames_.clear();
 }
 
-static jlong JNI_GestureListenerManagerImpl_Init(
+static int64_t JNI_GestureListenerManagerImpl_Init(
     JNIEnv* env,
     const JavaRef<jobject>& obj,
     const JavaRef<jobject>& jweb_contents) {

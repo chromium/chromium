@@ -131,6 +131,48 @@ public class BasePageStation<HostActivity extends ChromeActivity>
             mConfig = new Config();
         }
 
+        /** Expect to show the first tab in the Activity. */
+        public Builder<PageT> withEntryPoint() {
+            mConfig.withEntryPoint();
+            return this;
+        }
+
+        /**
+         * Expect to show the same tab as |previousStation|, without it becoming selected or
+         * navigating.
+         */
+        public Builder<PageT> initFrom(BasePageStation<?> previousStation) {
+            mConfig.initFrom(previousStation);
+            return this;
+        }
+
+        /**
+         * Expect to show the same tab as |previousStation|, without it becoming selected, but
+         * loading |url|.
+         */
+        public Builder<PageT> initForLoadingUrlOnSameTab(
+                String url, BasePageStation<?> previousStation) {
+            mConfig.initFrom(previousStation);
+            if (mConfig.mExpectedUrlSubstring == null) {
+                mConfig.withExpectedUrlSubstring(url);
+            }
+            return this;
+        }
+
+        /** Expect to show a tab opened in the transition. */
+        public Builder<PageT> initOpeningNewTab() {
+            mConfig.withIsOpeningTabs(1);
+            mConfig.withIsSelectingTabs(1);
+            return this;
+        }
+
+        /** Expect to show an existing tab selected in the transition. */
+        public Builder<PageT> initSelectingExistingTab() {
+            mConfig.withIsOpeningTabs(0);
+            mConfig.withIsSelectingTabs(1);
+            return this;
+        }
+
         public Builder<PageT> withIncognito(boolean incognito) {
             mConfig.withIncognito(incognito);
             return this;
@@ -153,11 +195,6 @@ public class BasePageStation<HostActivity extends ChromeActivity>
             return this;
         }
 
-        public Builder<PageT> withEntryPoint() {
-            mConfig.withEntryPoint();
-            return this;
-        }
-
         public Builder<PageT> withExpectedUrlSubstring(String value) {
             mConfig.withExpectedUrlSubstring(value);
             return this;
@@ -165,35 +202,6 @@ public class BasePageStation<HostActivity extends ChromeActivity>
 
         public Builder<PageT> withExpectedTitle(String title) {
             mConfig.withExpectedTitle(title);
-            return this;
-        }
-
-        public Builder<PageT> initFrom(BasePageStation<?> previousStation) {
-            mConfig.initFrom(previousStation);
-            return this;
-        }
-
-        /** Wait for the |url| to be loaded on the current tab. */
-        public Builder<PageT> initForLoadingUrlOnSameTab(
-                String url, BasePageStation<?> previousStation) {
-            initFrom(previousStation);
-            if (mConfig.mExpectedUrlSubstring == null) {
-                mConfig.withExpectedUrlSubstring(url);
-            }
-            return this;
-        }
-
-        /** Wait for a new tab to be opened and selected. */
-        public Builder<PageT> initOpeningNewTab() {
-            mConfig.withIsOpeningTabs(1);
-            mConfig.withIsSelectingTabs(1);
-            return this;
-        }
-
-        /** Wait for an existing tab to be selected. */
-        public Builder<PageT> initSelectingExistingTab() {
-            mConfig.withIsOpeningTabs(0);
-            mConfig.withIsSelectingTabs(1);
             return this;
         }
 
@@ -211,12 +219,14 @@ public class BasePageStation<HostActivity extends ChromeActivity>
 
         // mNumTabsBeingOpened is required
         assert config.mNumTabsBeingOpened != null
-                : "PageStation.Builder needs withIsOpeningTabs() or initFrom()";
+                : "PageStation.Builder needs either 1. init_() (such as initOpeningNewTab());"
+                        + " 2. withEntryPoint(); or 3. withIsOpeningTabs().";
 
         // mNumTabsBeingSelected is required
         assert config.mNumTabsBeingSelected != null
-                : "PageStation.Builder needs withIsSelectingTabs(), withTabAlreadySelected() or"
-                        + " initFrom()";
+                : "PageStation.Builder needs either 1. init_() (such as initOpeningNewTab()); 2."
+                        + " withEntryPoint(); 3. withIsSelectingTabs(); or 4."
+                        + " withTabAlreadySelected().";
 
         // Pages must have an already selected tab, or be selecting a tab.
         assert config.mIsEntryPoint
@@ -238,23 +248,23 @@ public class BasePageStation<HostActivity extends ChromeActivity>
             activityTabElement =
                     declareEnterConditionAsElement(new AnyActivityTabCondition<>(mActivityElement));
         } else {
-            Supplier<Tab> mSelectedTabSupplier;
+            Supplier<Tab> selectedTabSupplier;
             if (config.mNumTabsBeingSelected > 0) {
-                // The last tab of N opened is the Tab that mSelectedTabSupplier will supply.
+                // The last tab of N opened is the Tab that selectedTabSupplier will supply.
                 TabSelectedCondition tabSelectedCondition =
                         new TabSelectedCondition(config.mNumTabsBeingSelected, tabModelElement);
                 declareEnterCondition(tabSelectedCondition);
-                mSelectedTabSupplier = tabSelectedCondition;
+                selectedTabSupplier = tabSelectedCondition;
             } else {
                 // The Tab already created and provided to the constructor is the one that is
                 // expected to be the activityTab.
-                mSelectedTabSupplier = () -> config.mTabAlreadySelected;
+                selectedTabSupplier = () -> config.mTabAlreadySelected;
             }
             // Only returns the tab when it is the activityTab.
             activityTabElement =
                     declareEnterConditionAsElement(
                             new CorrectActivityTabCondition<>(
-                                    mActivityElement, mSelectedTabSupplier));
+                                    mActivityElement, selectedTabSupplier));
         }
         loadedTabElement =
                 declareEnterConditionAsElement(

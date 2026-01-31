@@ -57,11 +57,12 @@
 #include "third_party/search_engines_data/resources/definitions/prepopulated_engines.h"
 
 using ::country_codes::CountryId;
-using regional_capabilities::CheckHistogramExpectation;
-using regional_capabilities::ExpectHistogramBucket;
-using regional_capabilities::ExpectHistogramNever;
-using regional_capabilities::FunnelStage;
-using regional_capabilities::HistogramExpectation;
+using ::regional_capabilities::CheckHistogramExpectation;
+using ::regional_capabilities::ExpectHistogramBucket;
+using ::regional_capabilities::ExpectHistogramNever;
+using ::regional_capabilities::FunnelStage;
+using ::regional_capabilities::HistogramExpectation;
+using ::regional_capabilities::SearchEngineChoiceScreenConditions;
 using ::search_engines::RepromptResult;
 using ::search_engines::SearchEngineChoiceWipeReason;
 using ::testing::NiceMock;
@@ -1499,7 +1500,7 @@ TEST_P(SearchEngineChoiceServiceDeviceRestoreTest, RepromptOnRestoreDetection) {
       SearchEngineChoiceScreenConditions::kUnsupportedBrowserType;
 #else
       GetParam().expect_invalidation_timestamp
-          ? SearchEngineChoiceScreenConditions::kEligible
+          ? SearchEngineChoiceScreenConditions::kEligibleForRestore
           : SearchEngineChoiceScreenConditions::kAlreadyCompleted;
 #endif
   histogram_tester_.ExpectUniqueSample(
@@ -1843,11 +1844,6 @@ INSTANTIATE_TEST_SUITE_P(
              ExpectHistogramUnique(FunnelStage::kNotEligible)},
         {.test_suffix = "ControlledByPolicy",
          .condition = SearchEngineChoiceScreenConditions::kControlledByPolicy,
-         .expected_if_static = ExpectHistogramUnique(FunnelStage::kNotEligible),
-         .expected_if_dynamic =
-             ExpectHistogramUnique(FunnelStage::kNotEligible)},
-        {.test_suffix = "ProfileOutOfScope",
-         .condition = SearchEngineChoiceScreenConditions::kProfileOutOfScope,
          .expected_if_static = ExpectHistogramUnique(FunnelStage::kNotEligible),
          .expected_if_dynamic =
              ExpectHistogramUnique(FunnelStage::kNotEligible)},

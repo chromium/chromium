@@ -5,9 +5,9 @@
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_type.h"
 
 #include <optional>
+#include <utility>
 
 #include "base/feature_list.h"
-#include "base/types/cxx23_to_underlying.h"
 #include "components/autofill/core/browser/data_model/addresses/contact_info.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/common/autofill_features.h"
@@ -183,7 +183,7 @@ std::optional<EntityTypeName> ToSafeEntityTypeName(
   // auto-generated and its value range is contiguous. If it were not, this
   // check would not be sufficient.
   if (raw_value < 0 ||
-      raw_value > base::to_underlying(EntityTypeName::kMaxValue)) {
+      raw_value > std::to_underlying(EntityTypeName::kMaxValue)) {
     return std::nullopt;
   }
   return EntityTypeName(raw_value);

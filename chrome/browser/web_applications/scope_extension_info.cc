@@ -10,10 +10,10 @@
 namespace web_app {
 
 base::Value ScopeExtensionInfo::AsDebugValue() const {
-  base::Value::Dict root = base::Value::Dict()
-                               .Set("origin", origin.GetDebugString())
-                               .Set("scope", scope.possibly_invalid_spec())
-                               .Set("has_origin_wildcard", has_origin_wildcard);
+  base::DictValue root = base::DictValue()
+                             .Set("origin", origin.GetDebugString())
+                             .Set("scope", scope.possibly_invalid_spec())
+                             .Set("has_origin_wildcard", has_origin_wildcard);
   return base::Value(std::move(root));
 }
 

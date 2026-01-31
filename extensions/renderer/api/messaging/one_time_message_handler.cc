@@ -10,7 +10,6 @@
 #include <optional>
 #include <vector>
 
-#include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -424,8 +423,8 @@ bool OneTimeMessageHandler::HasPort(ScriptContext* script_context,
           CreatePerContextData::kDontCreateIfMissing);
   if (!data)
     return false;
-  return port_id.is_opener ? base::Contains(data->openers, port_id)
-                           : base::Contains(data->receivers, port_id);
+  return port_id.is_opener ? data->openers.contains(port_id)
+                           : data->receivers.contains(port_id);
 }
 
 v8::Local<v8::Promise> OneTimeMessageHandler::SendMessage(
@@ -523,7 +522,7 @@ void OneTimeMessageHandler::AddReceiver(ScriptContext* script_context,
       GetPerContextData<OneTimeMessageContextData>(
           context, CreatePerContextData::kCreateIfMissing);
   DCHECK(data);
-  DCHECK(!base::Contains(data->receivers, target_port_id));
+  DCHECK(!data->receivers.contains(target_port_id));
   OneTimeReceiver& receiver = data->receivers[target_port_id];
   receiver.sender.Reset(isolate, sender);
   receiver.event_name = event_name;
@@ -694,7 +693,8 @@ bool OneTimeMessageHandler::DeliverMessageToReceiver(
     // intend to respond asynchronously. `message_dispatched_callback` will
     // check the results of the listeners to determine if a listener indicated
     // it intended to respond asynchronously.
-    if (port.event_name == messaging_util::kOnMessageEvent) {
+    if (port.event_name == messaging_util::kOnMessageEvent ||
+        port.event_name == messaging_util::kOnMessageExternalEvent) {
       CallbackID listener_throws_error_callback_id;
       if (IsMessagePolyfillSupportEnabled()) {
         auto listener_throws_error_callback =
@@ -1025,6 +1025,17 @@ void OneTimeMessageHandler::OneTimeMessageCallbackManager::
     OnDelayedOneTimeMessageCallbackCollected(ScriptContext* script_context,
                                              const PortId& port_id,
                                              CallbackID callback_id) {
+  // TODO(crbug.com/475029699): Can probably remove this check after this is
+  // resolved because then we'll know that the script context will be valid when
+  // this is called.
+  // The ScriptContext may have been invalidated (and the `v8::Context`
+  // released) if this callback was created during context invalidation. In that
+  // case, the `OneTimeMessageContextData` will be destroyed when the
+  // `v8::Context` is garbage collected, so we can just return.
+  if (!script_context->is_valid()) {
+    return;
+  }
+
   // Note: we know |script_context| is still valid because the GC callback won't
   // be called after context invalidation.
   v8::HandleScope handle_scope(script_context->isolate());

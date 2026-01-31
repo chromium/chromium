@@ -16,6 +16,8 @@
 
 namespace ios {
 
+using ::regional_capabilities::SearchEngineChoiceScreenConditions;
+
 SearchEngineChoiceTriggeringService::SearchEngineChoiceTriggeringService(
     PrefService& profile_prefs,
     const policy::PolicyService& policy_service,
@@ -29,29 +31,25 @@ SearchEngineChoiceTriggeringService::SearchEngineChoiceTriggeringService(
 SearchEngineChoiceTriggeringService::~SearchEngineChoiceTriggeringService() =
     default;
 
-search_engines::SearchEngineChoiceScreenConditions
+SearchEngineChoiceScreenConditions
 SearchEngineChoiceTriggeringService::EvaluateTriggeringConditions(
     bool is_first_run_entrypoint,
     bool app_started_via_external_intent) {
   if (!search_engine_choice_service_->IsSurfaceEligible(
           is_first_run_entrypoint)) {
-    return search_engines::SearchEngineChoiceScreenConditions::
-        kIneligibleSurface;
+    return SearchEngineChoiceScreenConditions::kIneligibleSurface;
   }
 
-  if (auto conditions =
-          search_engine_choice_service_->GetStaticChoiceScreenConditions(
-              policy_service_.get(), template_url_service_.get());
-      conditions !=
-      search_engines::SearchEngineChoiceScreenConditions::kEligible) {
+  SearchEngineChoiceScreenConditions conditions =
+      search_engine_choice_service_->GetStaticChoiceScreenConditions(
+          policy_service_.get(), template_url_service_.get());
+  if (!regional_capabilities::IsEligible(conditions)) {
     return conditions;
   }
 
-  if (auto conditions =
-          search_engine_choice_service_->GetDynamicChoiceScreenConditions(
-              template_url_service_.get());
-      conditions !=
-      search_engines::SearchEngineChoiceScreenConditions::kEligible) {
+  conditions = search_engine_choice_service_->GetDynamicChoiceScreenConditions(
+      template_url_service_.get());
+  if (!regional_capabilities::IsEligible(conditions)) {
     return conditions;
   }
 
@@ -65,12 +63,11 @@ SearchEngineChoiceTriggeringService::EvaluateTriggeringConditions(
       profile_prefs_->SetInteger(
           prefs::kDefaultSearchProviderChoiceScreenSkippedCount, count + 1);
 
-      return search_engines::SearchEngineChoiceScreenConditions::
-          kAppStartedByExternalIntent;
+      return SearchEngineChoiceScreenConditions::kAppStartedByExternalIntent;
     }
   }
 
-  return search_engines::SearchEngineChoiceScreenConditions::kEligible;
+  return conditions;
 }
 
 }  // namespace ios

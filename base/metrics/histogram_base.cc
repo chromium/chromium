@@ -73,7 +73,7 @@ HistogramBase* DeserializeHistogramInfo(PickleIterator* iter) {
 
 HistogramBase::CountAndBucketData::CountAndBucketData(Count32 count,
                                                       int64_t sum,
-                                                      Value::List buckets)
+                                                      ListValue buckets)
     : count(count), sum(sum), buckets(std::move(buckets)) {}
 
 HistogramBase::CountAndBucketData::~CountAndBucketData() = default;
@@ -116,32 +116,6 @@ bool HistogramBase::HasFlags(int32_t flags) const {
   return (this->flags() & flags) == flags;
 }
 
-void HistogramBase::AddScaled(Sample32 value, int count, int scale) {
-  DCHECK_GT(scale, 0);
-
-  // Convert raw count and probabilistically round up/down if the remainder
-  // is more than a random number [0, scale). This gives a more accurate
-  // count when there are a large number of records. RandInt is "inclusive",
-  // hence the -1 for the max value.
-  int count_scaled = count / scale;
-  if (count - (count_scaled * scale) > base::RandInt(0, scale - 1)) {
-    ++count_scaled;
-  }
-  if (count_scaled <= 0) {
-    return;
-  }
-
-  AddCount(value, count_scaled);
-}
-
-void HistogramBase::AddKilo(Sample32 value, int count) {
-  AddScaled(value, count, 1000);
-}
-
-void HistogramBase::AddKiB(Sample32 value, int count) {
-  AddScaled(value, count, 1024);
-}
-
 void HistogramBase::AddTimeMillisecondsGranularity(const TimeDelta& time) {
   Add(saturated_cast<Sample32>(time.InMilliseconds()));
 }
@@ -172,10 +146,10 @@ uint32_t HistogramBase::FindCorruption(const HistogramSamples& samples) const {
 void HistogramBase::WriteJSON(std::string* output,
                               JSONVerbosityLevel verbosity_level) const {
   CountAndBucketData count_and_bucket_data = GetCountAndBucketData();
-  Value::Dict parameters = GetParameters();
+  DictValue parameters = GetParameters();
 
   JSONStringValueSerializer serializer(output);
-  Value::Dict root;
+  DictValue root;
   root.Set("name", histogram_name());
   root.Set("count", count_and_bucket_data.count);
   root.Set("sum", static_cast<double>(count_and_bucket_data.sum));
@@ -213,14 +187,14 @@ HistogramBase::CountAndBucketData HistogramBase::GetCountAndBucketData() const {
   int64_t sum = snapshot->sum();
   std::unique_ptr<SampleCountIterator> it = snapshot->Iterator();
 
-  Value::List buckets;
+  ListValue buckets;
   while (!it->Done()) {
     Sample32 bucket_min;
     int64_t bucket_max;
     Count32 bucket_count;
     it->Get(&bucket_min, &bucket_max, &bucket_count);
 
-    Value::Dict bucket_value;
+    DictValue bucket_value;
     bucket_value.Set("low", bucket_min);
     // TODO(crbug.com/40228085): Make base::Value able to hold int64_t and
     // remove this cast.
@@ -259,7 +233,7 @@ void HistogramBase::WriteAsciiBucketValue(Count32 current,
 }
 
 void HistogramBase::WriteAscii(std::string* output) const {
-  base::Value::Dict graph_dict = ToGraphDict();
+  base::DictValue graph_dict = ToGraphDict();
   output->append(*graph_dict.FindString("header"));
   output->append("\n");
   output->append(*graph_dict.FindString("body"));

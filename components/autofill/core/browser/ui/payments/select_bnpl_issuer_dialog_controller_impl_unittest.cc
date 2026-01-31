@@ -63,7 +63,7 @@ class SelectBnplIssuerDialogControllerImplTest
   base::MockCallback<
       base::OnceCallback<std::unique_ptr<SelectBnplIssuerView>()>>
       create_view_callback_;
-  base::MockOnceCallback<void(BnplIssuer)> selected_issuer_callback_;
+  base::MockRepeatingCallback<void(BnplIssuer)> selected_issuer_callback_;
   base::MockOnceClosure cancel_callback_;
 };
 
@@ -143,6 +143,24 @@ TEST_F(SelectBnplIssuerDialogControllerImplTest, GetLinkText) {
               Field(&TextWithLink::text, Not(testing::IsEmpty())));
 }
 #endif  // !BUILDFLAG(IS_ANDROID)
+
+TEST_F(SelectBnplIssuerDialogControllerImplTest,
+       OnIssuerSelected_InvokesCallbackMultipleTimes) {
+  BnplIssuer issuer = test::GetTestLinkedBnplIssuer();
+  SetIssuerContexts(
+      {BnplIssuerContext(issuer, BnplIssuerEligibilityForPage::kIsEligible)});
+
+  InitController();
+
+  // Verify the callback can be called multiple times.
+  EXPECT_CALL(selected_issuer_callback_, Run(issuer)).Times(2);
+
+  // Mock the first issuer click.
+  controller_->OnIssuerSelected(issuer);
+
+  // Mock the second issuer click.
+  controller_->OnIssuerSelected(issuer);
+}
 
 }  // namespace
 

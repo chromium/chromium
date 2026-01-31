@@ -8,6 +8,7 @@
 #import <UIKit/UIKit.h>
 
 @class GroupTabView;
+@class TabGroupColorPalette;
 @class TabSnapshotAndFavicon;
 
 // View that manages the tab group sample view with multiples snapshots.
@@ -15,6 +16,9 @@
 
 // Number of tabs displayed in the snapshot
 @property(nonatomic, assign) NSInteger tabsCount;
+
+// The color palette containing different tones of the group color.
+@property(nonatomic) TabGroupColorPalette* tabGroupColorPalette;
 
 // Initializes the view.
 // - `isLight`: `YES` for light UI interface.

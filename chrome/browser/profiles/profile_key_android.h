@@ -26,9 +26,9 @@ class ProfileKeyAndroid {
   base::android::ScopedJavaLocalRef<jobject> GetOriginalKey(JNIEnv* env);
 
   // Whether this profile is off the record.
-  jboolean IsOffTheRecord(JNIEnv* env);
+  bool IsOffTheRecord(JNIEnv* env);
 
-  jlong GetSimpleFactoryKeyPointer(JNIEnv* env);
+  int64_t GetSimpleFactoryKeyPointer(JNIEnv* env);
 
   base::android::ScopedJavaLocalRef<jobject> GetJavaObject();
 

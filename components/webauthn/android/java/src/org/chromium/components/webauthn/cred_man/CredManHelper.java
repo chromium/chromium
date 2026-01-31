@@ -255,7 +255,6 @@ public class CredManHelper {
         mBarrier = barrier; // Store this for any cancellation requests.
         final Barrier localBarrier = barrier;
         final WebauthnBrowserBridge localBridge = assumeNonNull(mBridgeProvider.getBridge());
-        assumeNonNull(options.publicKey);
 
         RenderFrameHost frameHost = mAuthenticationContextProvider.getRenderFrameHost();
         OutcomeReceiver<PrepareGetCredentialResponse, GetCredentialException> receiver =
@@ -444,7 +443,6 @@ public class CredManHelper {
         mClientDataJson = clientDataJson;
         RenderFrameHost frameHost = mAuthenticationContextProvider.getRenderFrameHost();
         final WebauthnBrowserBridge localBridge = assumeNonNull(mBridgeProvider.getBridge());
-        assumeNonNull(options.publicKey);
 
         // The Android 14 APIs have to be called via reflection until Chromium
         // builds with the Android 14 SDK by default.
@@ -639,7 +637,9 @@ public class CredManHelper {
                             response.info.clientDataJson = mClientDataJson;
                         }
                         response.extensions.echoAppidExtension =
-                                assumeNonNull(options.publicKey).extensions.appid != null;
+                                options.publicKey != null
+                                        && assumeNonNull(options.publicKey).extensions.appid
+                                                != null;
                         mCancellableUiState =
                                 options.mediation == Mediation.CONDITIONAL
                                         ? CancellableUiState.WAITING_FOR_SELECTION
@@ -675,7 +675,9 @@ public class CredManHelper {
             return AuthenticatorStatus.NOT_ALLOWED_ERROR;
         }
 
-        mRequestPasswords = options.mediation == Mediation.IMMEDIATE && options.password;
+        if (options.mediation == Mediation.IMMEDIATE) {
+            mRequestPasswords = options.password;
+        }
         mCancellableUiState =
                 options.mediation == Mediation.CONDITIONAL
                         ? CancellableUiState.WAITING_FOR_CREDENTIAL_LIST
@@ -773,17 +775,21 @@ public class CredManHelper {
      */
     @RequiresApi(Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
     private GetCredentialRequest buildGetCredentialRequest(
-            PublicKeyCredentialRequestOptions options,
+            @Nullable PublicKeyCredentialRequestOptions options,
             String originString,
             byte @Nullable [] clientDataHash,
             boolean requestPasswords,
             boolean preferImmediatelyAvailable,
             boolean ignoreGpm) {
-        final String requestAsJson =
-                Fido2CredentialRequestJni.get().getOptionsToJson(options.serialize());
+        final @Nullable String requestAsJson =
+                options == null
+                        ? null
+                        : Fido2CredentialRequestJni.get().getOptionsToJson(options.serialize());
 
         boolean hasAllowCredentials =
-                options.allowCredentials != null && options.allowCredentials.length != 0;
+                options != null
+                        && options.allowCredentials != null
+                        && options.allowCredentials.length != 0;
         CredManGetCredentialRequestHelper helper =
                 new CredManGetCredentialRequestHelper.Builder(
                                 requestAsJson,

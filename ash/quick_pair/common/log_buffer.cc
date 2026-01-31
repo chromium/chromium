@@ -6,8 +6,7 @@
 
 #include "base/no_destructor.h"
 
-namespace ash {
-namespace quick_pair {
+namespace ash::quick_pair {
 
 namespace {
 
@@ -59,5 +58,4 @@ size_t LogBuffer::MaxBufferSize() const {
   return kMaxBufferSize;
 }
 
-}  // namespace quick_pair
-}  // namespace ash
+}  // namespace ash::quick_pair

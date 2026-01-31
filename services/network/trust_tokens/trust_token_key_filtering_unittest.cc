@@ -8,7 +8,6 @@
 #include <vector>
 
 #include "base/test/task_environment.h"
-#include "services/network/public/mojom/trust_tokens.mojom-forward.h"
 #include "services/network/public/mojom/trust_tokens.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
 

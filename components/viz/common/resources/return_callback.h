@@ -5,13 +5,15 @@
 #ifndef COMPONENTS_VIZ_COMMON_RESOURCES_RETURN_CALLBACK_H_
 #define COMPONENTS_VIZ_COMMON_RESOURCES_RETURN_CALLBACK_H_
 
+#include <vector>
+
 #include "base/functional/callback.h"
 #include "components/viz/common/resources/returned_resource.h"
 
 namespace viz {
 
 using ReturnCallback =
-    base::RepeatingCallback<void(std::vector<ReturnedResource>)>;
+    base::RepeatingCallback<void(std::vector<ReturnedResourceViz>)>;
 
 }  // namespace viz
 

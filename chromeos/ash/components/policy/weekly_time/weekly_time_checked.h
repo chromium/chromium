@@ -54,13 +54,12 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_POLICY) WeeklyTimeChecked {
   friend bool operator==(const WeeklyTimeChecked&,
                          const WeeklyTimeChecked&) = default;
 
-  // Constructs from a Value::Dict:
+  // Constructs from a base::DictValue:
   // {
   //   "day_of_week": int,
   //   "milliseconds_since_midnight": int
   // }.
-  static std::optional<WeeklyTimeChecked> FromDict(
-      const base::Value::Dict& dict);
+  static std::optional<WeeklyTimeChecked> FromDict(const base::DictValue& dict);
 
   // Constructs from an exploded base::Time.
   static WeeklyTimeChecked FromExploded(const base::Time::Exploded& exploded);

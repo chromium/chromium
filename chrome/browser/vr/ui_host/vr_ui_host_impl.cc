@@ -4,9 +4,9 @@
 
 #include "chrome/browser/vr/ui_host/vr_ui_host_impl.h"
 
+#include <algorithm>
 #include <memory>
 
-#include "base/containers/contains.h"
 #include "base/task/single_thread_task_runner.h"
 #include "build/build_config.h"
 #include "chrome/browser/media/webrtc/media_capture_devices_dispatcher.h"
@@ -134,10 +134,10 @@ VRUiHostImpl::VRUiHostImpl(
       triggered_capturing_transience_(&triggered_capturing_state_model_) {
   DVLOG(1) << __func__;
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  CHECK(base::Contains(views, device::mojom::XREye::kLeft,
-                       &device::mojom::XRView::eye));
-  CHECK(base::Contains(views, device::mojom::XREye::kRight,
-                       &device::mojom::XRView::eye));
+  CHECK(std::ranges::contains(views, device::mojom::XREye::kLeft,
+                              &device::mojom::XRView::eye));
+  CHECK(std::ranges::contains(views, device::mojom::XREye::kRight,
+                              &device::mojom::XRView::eye));
 
   DesktopMediaPickerManager::Get()->AddObserver(this);
 

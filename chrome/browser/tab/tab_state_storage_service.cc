@@ -5,11 +5,13 @@
 #include "chrome/browser/tab/tab_state_storage_service.h"
 
 #include <memory>
+#include <string_view>
 #include <utility>
 
 #include "base/memory/ptr_util.h"
 #include "base/token.h"
 #include "chrome/browser/tab/payload.h"
+#include "chrome/browser/tab/payload_util.h"
 #include "chrome/browser/tab/protocol/children.pb.h"
 #include "chrome/browser/tab/protocol/tab_state.pb.h"
 #include "chrome/browser/tab/protocol/tab_strip_collection_state.pb.h"
@@ -55,10 +57,11 @@ TabStateStorageService::OpenBatches::~OpenBatches() = default;
 
 TabStateStorageService::TabStateStorageService(
     const base::FilePath& profile_path,
+    bool support_off_the_record_data,
     std::unique_ptr<TabStoragePackager> packager,
     TabCanonicalizer tab_canonicalizer,
     RestoreEntityTrackerFactory tracker_factory)
-    : tab_backend_(profile_path),
+    : tab_backend_(profile_path, support_off_the_record_data),
       packager_(std::move(packager)),
       tab_canonicalizer_(tab_canonicalizer),
       tracker_factory_(tracker_factory) {
@@ -193,7 +196,7 @@ void TabStateStorageService::ApplyUpdate(UpdateOperation operation) {
   }
 }
 
-void TabStateStorageService::LoadAllNodes(const std::string& window_tag,
+void TabStateStorageService::LoadAllNodes(std::string_view window_tag,
                                           bool is_off_the_record,
                                           LoadDataCallback callback) {
   auto on_tab_association = base::BindRepeating(
@@ -218,9 +221,39 @@ void TabStateStorageService::ClearState() {
   tab_backend_.ClearAllNodes();
 }
 
-void TabStateStorageService::ClearWindow(const std::string& window_tag) {
+void TabStateStorageService::ClearWindow(std::string_view window_tag) {
   tab_backend_.ClearWindow(window_tag);
 }
+
+void TabStateStorageService::ClearNodesForWindowExcept(
+    std::string_view window_tag,
+    bool is_off_the_record,
+    std::vector<StorageId> ids) {
+  tab_backend_.ClearNodesForWindowExcept(window_tag, is_off_the_record,
+                                         std::move(ids));
+}
+
+void TabStateStorageService::SetKey(std::string_view window_tag,
+                                    std::vector<uint8_t> key) {
+  tab_backend_.SetKey(window_tag, std::move(key));
+}
+
+void TabStateStorageService::RemoveKey(std::string_view window_tag) {
+  tab_backend_.RemoveKey(window_tag);
+}
+
+std::vector<uint8_t> TabStateStorageService::GenerateKey(
+    std::string_view window_tag) {
+  std::vector<uint8_t> key = GenerateKeyForOtrPayloads();
+  tab_backend_.SetKey(window_tag, key);
+  return key;
+}
+
+#if defined(NDEBUG)
+void TabStateStorageService::PrintAll() {
+  tab_backend_.PrintAll();
+}
+#endif
 
 void TabStateStorageService::OnTabCreated(StorageId storage_id,
                                           const TabInterface* tab) {

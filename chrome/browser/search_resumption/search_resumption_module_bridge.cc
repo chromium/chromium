@@ -68,7 +68,7 @@ void SearchResumptionModuleBridge::OnSuggestionsReceived(
                                                           titles, urls);
 }
 
-static jlong JNI_SearchResumptionModuleBridge_Create(
+static int64_t JNI_SearchResumptionModuleBridge_Create(
     JNIEnv* env,
     const JavaRef<jobject>& obj,
     Profile* profile) {

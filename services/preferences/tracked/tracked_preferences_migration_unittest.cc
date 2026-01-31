@@ -50,7 +50,7 @@ class SimpleInterceptablePrefFilter final : public InterceptablePrefFilter {
   // PrefFilter remaining implementation.
   void FilterUpdate(std::string_view path) override { ADD_FAILURE(); }
   OnWriteCallbackPair FilterSerializeData(
-      base::Value::Dict& pref_store_contents) override {
+      base::DictValue& pref_store_contents) override {
     ADD_FAILURE();
     return std::make_pair(base::OnceClosure(),
                           base::OnceCallback<void(bool success)>());
@@ -62,7 +62,7 @@ class SimpleInterceptablePrefFilter final : public InterceptablePrefFilter {
   // InterceptablePrefFilter implementation.
   void FinalizeFilterOnLoad(
       PostFilterOnLoadCallback post_filter_on_load_callback,
-      base::Value::Dict pref_store_contents,
+      base::DictValue pref_store_contents,
       bool prefs_altered) override {
     std::move(post_filter_on_load_callback)
         .Run(std::move(pref_store_contents), prefs_altered);
@@ -95,8 +95,8 @@ class TrackedPreferencesMigrationTest : public testing::Test {
       base::test::TaskEnvironment::MainThreadType::UI};
 
   TrackedPreferencesMigrationTest()
-      : unprotected_prefs_(new base::Value::Dict),
-        protected_prefs_(new base::Value::Dict),
+      : unprotected_prefs_(new base::DictValue),
+        protected_prefs_(new base::DictValue),
         migration_modified_unprotected_store_(false),
         migration_modified_protected_store_(false),
         unprotected_store_migration_complete_(false),
@@ -167,7 +167,7 @@ class TrackedPreferencesMigrationTest : public testing::Test {
   void PresetStoreValueHash(MockPrefStoreID store_id,
                             const std::string& key,
                             const std::string value) {
-    base::Value::Dict* store = nullptr;
+    base::DictValue* store = nullptr;
     std::unique_ptr<PrefHashStore> pref_hash_store;
     switch (store_id) {
       case MOCK_UNPROTECTED_PREF_STORE:
@@ -202,7 +202,7 @@ class TrackedPreferencesMigrationTest : public testing::Test {
   // in the store identified by |store_id|.
   void VerifyValuesStored(MockPrefStoreID store_id,
                           const base::StringPairs& expected_prefs_in_store) {
-    base::Value::Dict* store = nullptr;
+    base::DictValue* store = nullptr;
     switch (store_id) {
       case MOCK_UNPROTECTED_PREF_STORE:
         store = unprotected_prefs_.get();
@@ -225,7 +225,7 @@ class TrackedPreferencesMigrationTest : public testing::Test {
   // store identified by |store_id|.
   bool ContainsHash(MockPrefStoreID store_id,
                     std::string expected_pref_in_hash_store) {
-    base::Value::Dict* store = nullptr;
+    base::DictValue* store = nullptr;
     switch (store_id) {
       case MOCK_UNPROTECTED_PREF_STORE:
         store = unprotected_prefs_.get();
@@ -235,7 +235,7 @@ class TrackedPreferencesMigrationTest : public testing::Test {
         break;
     }
     DCHECK(store);
-    const base::Value::Dict* hash_store_contents =
+    const base::DictValue* hash_store_contents =
         DictionaryHashStoreContents(*store).GetContents();
     return hash_store_contents && hash_store_contents->FindStringByDottedPath(
                                       expected_pref_in_hash_store);
@@ -246,7 +246,7 @@ class TrackedPreferencesMigrationTest : public testing::Test {
   void HandPrefsToMigrator(MockPrefStoreID store_id) {
     switch (store_id) {
       case MOCK_UNPROTECTED_PREF_STORE: {
-        std::unique_ptr<base::Value::Dict> unprotected_prefs =
+        std::unique_ptr<base::DictValue> unprotected_prefs =
             std::move(unprotected_prefs_);
         mock_unprotected_pref_filter_.FilterOnLoad(
             base::BindOnce(&TrackedPreferencesMigrationTest::GetPrefsBack,
@@ -255,7 +255,7 @@ class TrackedPreferencesMigrationTest : public testing::Test {
         break;
       }
       case MOCK_PROTECTED_PREF_STORE: {
-        std::unique_ptr<base::Value::Dict> protected_prefs =
+        std::unique_ptr<base::DictValue> protected_prefs =
             std::move(protected_prefs_);
         mock_protected_pref_filter_.FilterOnLoad(
             base::BindOnce(&TrackedPreferencesMigrationTest::GetPrefsBack,
@@ -325,9 +325,9 @@ class TrackedPreferencesMigrationTest : public testing::Test {
   // Helper given as an InterceptablePrefFilter::FinalizeFilterOnLoadCallback
   // to the migrator to be invoked when it's done.
   void GetPrefsBack(MockPrefStoreID store_id,
-                    base::Value::Dict prefs,
+                    base::DictValue prefs,
                     bool prefs_altered) {
-    auto prefs_ptr = std::make_unique<base::Value::Dict>(std::move(prefs));
+    auto prefs_ptr = std::make_unique<base::DictValue>(std::move(prefs));
     switch (store_id) {
       case MOCK_UNPROTECTED_PREF_STORE:
         EXPECT_FALSE(unprotected_prefs_);
@@ -363,7 +363,7 @@ class TrackedPreferencesMigrationTest : public testing::Test {
   void PresetStoreValueOnly(MockPrefStoreID store_id,
                             const std::string& key,
                             const std::string value) {
-    base::Value::Dict* store = nullptr;
+    base::DictValue* store = nullptr;
     switch (store_id) {
       case MOCK_UNPROTECTED_PREF_STORE:
         store = unprotected_prefs_.get();
@@ -379,8 +379,8 @@ class TrackedPreferencesMigrationTest : public testing::Test {
 
   static const char kSeed[];
 
-  std::unique_ptr<base::Value::Dict> unprotected_prefs_;
-  std::unique_ptr<base::Value::Dict> protected_prefs_;
+  std::unique_ptr<base::DictValue> unprotected_prefs_;
+  std::unique_ptr<base::DictValue> protected_prefs_;
 
   SimpleInterceptablePrefFilter mock_unprotected_pref_filter_;
   SimpleInterceptablePrefFilter mock_protected_pref_filter_;

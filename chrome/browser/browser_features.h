@@ -46,7 +46,6 @@ BASE_DECLARE_FEATURE(kDbusSecretPortal);
 #endif
 
 BASE_DECLARE_FEATURE(kDestroyProfileOnBrowserClose);
-BASE_DECLARE_FEATURE(kDestroySystemProfiles);
 
 BASE_DECLARE_FEATURE(kFlexOrgManagementDisclosure);
 BASE_DECLARE_FEATURE(kIncomingCallNotifications);
@@ -76,9 +75,6 @@ const base::FeatureParam<int>
 BASE_DECLARE_FEATURE(kNotificationOneTapUnsubscribeOnDesktop);
 #endif
 
-BASE_DECLARE_FEATURE(kPromoBrowserCommands);
-extern const char kBrowserCommandIdParam[];
-
 #if BUILDFLAG(IS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
 BASE_DECLARE_FEATURE(kRegisterOsUpdateHandlerWin);
 BASE_DECLARE_FEATURE(kInstallPlatformExperienceHelperWin);
@@ -93,10 +89,6 @@ BASE_DECLARE_FEATURE(kSecretPortalKeyProviderUseForEncryption);
 #endif
 
 BASE_DECLARE_FEATURE(kTriggerNetworkDataMigration);
-
-#if BUILDFLAG(IS_CHROMEOS)
-BASE_DECLARE_FEATURE(kTabCaptureBlueBorderCrOS);
-#endif
 
 BASE_DECLARE_FEATURE(kWebUsbDeviceDetection);
 

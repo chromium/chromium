@@ -12,6 +12,7 @@ import android.graphics.drawable.LayerDrawable;
 
 import androidx.annotation.ColorInt;
 import androidx.annotation.ColorRes;
+import androidx.annotation.StringRes;
 import androidx.core.content.ContextCompat;
 import androidx.core.graphics.drawable.DrawableCompat;
 import androidx.recyclerview.widget.RecyclerView;
@@ -28,7 +29,7 @@ import java.util.List;
 /** Utility class for Chrome NTP's theme colors. */
 @NullMarked
 public class NtpThemeColorUtils {
-    private static final int INVALID_ID = 0;
+    static final int INVALID_ID = 0;
 
     /**
      * Creates a {@link NtpThemeColorInfo} instance for the given color Id.
@@ -72,6 +73,35 @@ public class NtpThemeColorUtils {
     }
 
     /**
+     * Gets the accessibility string resource id of color theme when selected if exists, INVALID_ID
+     * otherwise.
+     */
+    public static @StringRes int getNtpColorThemeStringResId(@NtpThemeColorId int colorId) {
+        switch (colorId) {
+            case NtpThemeColorId.NTP_COLORS_BLUE:
+                return R.string.accessibility_ntp_blue_color_theme;
+            case NtpThemeColorId.NTP_COLORS_AQUA:
+                return R.string.accessibility_ntp_aqua_color_theme;
+            case NtpThemeColorId.NTP_COLORS_GREEN:
+                return R.string.accessibility_ntp_green_color_theme;
+            case NtpThemeColorId.NTP_COLORS_VIRIDIAN:
+                return R.string.accessibility_ntp_viridian_color_theme;
+            case NtpThemeColorId.NTP_COLORS_CITRON:
+                return R.string.accessibility_ntp_citron_color_theme;
+            case NtpThemeColorId.NTP_COLORS_ORANGE:
+                return R.string.accessibility_ntp_orange_color_theme;
+            case NtpThemeColorId.NTP_COLORS_ROSE:
+                return R.string.accessibility_ntp_rose_color_theme;
+            case NtpThemeColorId.NTP_COLORS_FUCHSIA:
+                return R.string.accessibility_ntp_fuchsia_color_theme;
+            case NtpThemeColorId.NTP_COLORS_VIOLET:
+                return R.string.accessibility_ntp_violet_color_theme;
+            default:
+                return INVALID_ID;
+        }
+    }
+
+    /**
      * Initializes a list of NtpThemeColorInfo and add them to the provided list {@link
      * chromeColorsList}. Returns the index of the info whose primary color matches the given
      * primary color.
@@ -84,7 +114,9 @@ public class NtpThemeColorUtils {
             Context context,
             List<NtpThemeColorInfo> chromeColorsList,
             @Nullable NtpThemeColorInfo primaryColorInfo) {
-        if (!chromeColorsList.isEmpty()) return RecyclerView.NO_POSITION;
+        if (!chromeColorsList.isEmpty()) {
+            return findMatchedIndex(context, chromeColorsList, primaryColorInfo);
+        }
 
         boolean hasPrimaryColor = primaryColorInfo != null;
         int primaryColorIndex = RecyclerView.NO_POSITION;
@@ -112,6 +144,28 @@ public class NtpThemeColorUtils {
         }
 
         return primaryColorIndex;
+    }
+
+    /**
+     * If the primaryColorInfo matches any color info in the list, returns its index. Otherwise
+     * returns RecyclerView.NO_POSITION.
+     *
+     * @param context The application context.
+     * @param chromeColorsList The chrome colors list which has been build.
+     * @param primaryColorInfo The current color info to match.
+     */
+    private static int findMatchedIndex(
+            Context context,
+            List<NtpThemeColorInfo> chromeColorsList,
+            @Nullable NtpThemeColorInfo primaryColorInfo) {
+        if (primaryColorInfo == null) return RecyclerView.NO_POSITION;
+
+        for (int i = 0; i < chromeColorsList.size(); i++) {
+            if (isPrimaryColorMatched(context, primaryColorInfo, chromeColorsList.get(i))) {
+                return i;
+            }
+        }
+        return RecyclerView.NO_POSITION;
     }
 
     /**
@@ -225,12 +279,7 @@ public class NtpThemeColorUtils {
      */
     public static List<NtpThemeColorInfo> createThemeColorListForTesting(Context context) {
         List<NtpThemeColorInfo> colorList = new ArrayList<>();
-        colorList.add(
-                createNtpThemeColorInfo(
-                        context, NtpThemeColorInfo.NtpThemeColorId.NTP_COLORS_AQUA));
-        colorList.add(
-                createNtpThemeColorInfo(
-                        context, NtpThemeColorInfo.NtpThemeColorId.NTP_COLORS_BLUE));
+        NtpThemeColorUtils.initColorsListAndFindPrimaryColorIndex(context, colorList, null);
         return colorList;
     }
 }

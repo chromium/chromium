@@ -180,13 +180,13 @@ class ChromeUsbTestHelper {
   // Creates a fake extension with the specified `extension_id` so that it can
   // exercise behaviors that are only enabled for privileged extensions.
   std::optional<GURL> CreateExtensionWithId(std::string_view extension_id) {
-    auto manifest = base::Value::Dict()
+    auto manifest = base::DictValue()
                         .Set("name", "Fake extension")
                         .Set("description", "For testing.")
                         .Set("version", "0.1")
                         .Set("manifest_version", 2)
                         .Set("web_accessible_resources",
-                             base::Value::List().Append("index.html"));
+                             base::ListValue().Append("index.html"));
     scoped_refptr<const extensions::Extension> extension =
         extensions::ExtensionBuilder()
             .SetManifest(std::move(manifest))

@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.partnerbookmarks;
 import android.content.Context;
 import android.content.pm.ApplicationInfo;
 
+import org.chromium.base.Log;
 import org.chromium.base.version_info.VersionInfo;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.partnercustomizations.PartnerBrowserCustomizations;
@@ -20,6 +21,7 @@ import org.chromium.chrome.browser.profiles.Profile;
  */
 @NullMarked
 public class PartnerBookmarksShim {
+    private static final String TAG = "PartnerBookmarksShim";
     private static boolean sIsReadingAttempted;
 
     /**
@@ -28,7 +30,10 @@ public class PartnerBookmarksShim {
      */
     public static void kickOffReading(
             Context context, Profile profile, PartnerBookmark.BookmarkIterator bookmarkIterator) {
-        if (sIsReadingAttempted) return;
+        if (sIsReadingAttempted) {
+            Log.e(TAG, "Can't kick off reading since it's already been attempted.");
+            return;
+        }
         sIsReadingAttempted = true;
 
         PartnerBookmarksReader reader =

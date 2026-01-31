@@ -28,9 +28,9 @@ BASE_FEATURE(kAndroidDownloadableFontsMatching,
 BASE_FEATURE(kAndroidDragDropOopif, base::FEATURE_ENABLED_BY_DEFAULT);
 
 #if BUILDFLAG(IS_WIN)
-// Flag guard for Windows Arabic digit substitution workaround.
+// Flag guard for Windows Arabic Indic digit input solution.
 // crbug.com/440381284
-BASE_FEATURE(kArabicDigitSubstitution, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kArabicIndicDigitInput, base::FEATURE_DISABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_WIN)
 
 // Synchronously continuing with navigation can lead to trying to start another
@@ -107,8 +107,13 @@ BASE_FEATURE(kHoldbackDebugReasonStringRemoval,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 #if BUILDFLAG(IS_MAC)
+
+BASE_FEATURE(kBlockThirdPartyInProcessPlugins,
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 BASE_FEATURE(kCancelCompositionWhenWindowLosesFocus,
              base::FEATURE_ENABLED_BY_DEFAULT);
+
 #endif  // BUILDFLAG(IS_MAC)
 
 // If Canvas2D Image Chromium is allowed, this feature controls whether it is
@@ -155,6 +160,17 @@ BASE_FEATURE(kCopyFromSurfaceAlwaysCallCallback,
 // https://github.com/WICG/client-hints-infrastructure/blob/master/reliability.md#critical-ch
 BASE_FEATURE(kCriticalClientHint, base::FEATURE_ENABLED_BY_DEFAULT);
 
+// This feature controls whether Dev Tools supports debugging Device Bound
+// Sessions.
+BASE_FEATURE(kDeviceBoundSessionsDevTools, base::FEATURE_DISABLED_BY_DEFAULT);
+
+#if BUILDFLAG(IS_ANDROID)
+// Disables the auto_resize_output_surface feature in the Viz process.
+// This prevents visual artifacts (blue gutters) during window resizing on
+// large form factor devices.
+BASE_FEATURE(kDisableAutoResizeOutputSurface, base::FEATURE_ENABLED_BY_DEFAULT);
+#endif
+
 // Enable document policy negotiation mechanism.
 BASE_FEATURE(kDocumentPolicyNegotiation, base::FEATURE_DISABLED_BY_DEFAULT);
 
@@ -187,11 +203,6 @@ BASE_FEATURE(kEnforceSameDocumentOriginInvariants,
 // experimental Content Security Policy features ('navigate-to').
 BASE_FEATURE(kExperimentalContentSecurityPolicyFeatures,
              base::FEATURE_DISABLED_BY_DEFAULT);
-
-// Whether to support the newer syntax for the "Use Other Account"
-// and account labels features.
-BASE_FEATURE(kFedCmUseOtherAccountAndLabelsNewSyntax,
-             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables NonString Tokens
 BASE_FEATURE(kFedCmNonStringToken, base::FEATURE_ENABLED_BY_DEFAULT);
@@ -259,7 +270,7 @@ const base::FeatureParam<double>
 // Windows and Linux (via separate features and experiments). See
 // crbug.com/335680565.
 #if BUILDFLAG(IS_WIN)
-BASE_FEATURE(kFontDataServiceAllWebContents, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kFontDataServiceAllWebContents, base::FEATURE_ENABLED_BY_DEFAULT);
 const base::FeatureParam<FontDataServiceTypefaceType>::Option
     font_data_service_typeface[] = {
         {FontDataServiceTypefaceType::kDwrite, "DWrite"},
@@ -336,11 +347,6 @@ BASE_FEATURE(kIgnoreDuplicateNavsOnlyWithUserGesture,
 
 // A feature flag for the memory-backed code cache.
 BASE_FEATURE(kInMemoryCodeCache, base::FEATURE_DISABLED_BY_DEFAULT);
-
-// Whether initial WebUI navigations should synchronously go from navigation
-// start to commit, by doing e.g. in-renderer body loading.
-BASE_FEATURE(kInitialWebUISyncNavStartToCommit,
-             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Enables the ability to use the updateIfOlderThanMs field in the trusted
 // bidding response to trigger a post-auction update if the group has been
@@ -658,10 +664,6 @@ BASE_FEATURE(kServiceWorkerStaticRouterStartServiceWorker,
 // including changes to history.pushState().
 BASE_FEATURE(kServiceWorkerClientUrlIsCreationUrl,
              base::FEATURE_ENABLED_BY_DEFAULT);
-
-// Handles blocking the file picker when a visible but inactive tab in a split
-// triggers it. This serves as a kill switch for crbug.com/444653104.
-BASE_FEATURE(kSideBySideFilePickerCancelling, base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables skipping the early call to CommitPending when navigating away from a
 // crashed frame.

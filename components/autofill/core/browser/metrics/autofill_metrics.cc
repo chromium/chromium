@@ -9,7 +9,6 @@
 #include <variant>
 #include <vector>
 
-#include "base/containers/contains.h"
 #include "base/containers/fixed_flat_map.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
@@ -18,7 +17,6 @@
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/time/time.h"
-#include "base/types/cxx23_to_underlying.h"
 #include "components/autofill/core/browser/autofill_field.h"
 #include "components/autofill/core/browser/autofill_type.h"
 #include "components/autofill/core/browser/data_model/addresses/autofill_profile.h"
@@ -40,7 +38,6 @@
 #include "components/autofill/core/common/autofill_clock.h"
 #include "components/autofill/core/common/autofill_prefs.h"
 #include "components/autofill/core/common/form_data.h"
-#include "components/autofill/core/common/form_interactions_flow.h"
 #include "components/autofill/core/common/metrics_enums.h"
 #include "components/language/core/browser/language_usage_metrics.h"
 #include "services/metrics/public/cpp/metrics_utils.h"
@@ -108,7 +105,7 @@ const std::string GetImageTypeString(
       return "ValuableImage";
   }
   NOTREACHED() << "Unhandled AutofillImageFetcherBase::ImageType "
-               << base::to_underlying(image_type);
+               << std::to_underlying(image_type);
 }
 
 }  // namespace
@@ -648,16 +645,16 @@ void AutofillMetrics::LogFormFillDurationFromInteraction(
     parent_metric = "Autofill.FillDuration.FromInteraction.WithoutAutofill";
   }
   LogFormFillDuration(parent_metric, duration);
-  if (base::Contains(form_types, FormType::kCreditCardForm)) {
+  if (form_types.contains(FormType::kCreditCardForm)) {
     LogFormFillDuration(parent_metric + ".CreditCard", duration);
   }
-  if (base::Contains(form_types, FormType::kAddressForm)) {
+  if (form_types.contains(FormType::kAddressForm)) {
     LogFormFillDuration(parent_metric + ".Address", duration);
   }
-  if (base::Contains(form_types, FormType::kPasswordForm)) {
+  if (form_types.contains(FormType::kPasswordForm)) {
     LogFormFillDuration(parent_metric + ".Password", duration);
   }
-  if (base::Contains(form_types, FormType::kUnknownFormType)) {
+  if (form_types.contains(FormType::kUnknownFormType)) {
     LogFormFillDuration(parent_metric + ".Unknown", duration);
   }
 }

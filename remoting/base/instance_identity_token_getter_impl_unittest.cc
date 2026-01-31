@@ -60,22 +60,22 @@ constexpr std::string_view kJwtWithoutPadding =
     // Signature
     "SIGNATURE!!";
 
-base::Value::Dict CreateJwtHeaderDict() {
-  return base::Value::Dict()
+base::DictValue CreateJwtHeaderDict() {
+  return base::DictValue()
       .Set("typ", "JWT")
       .Set("kid", "kid-signature")
       .Set("alg", "RS256");
 }
 
-base::Value::Dict CreateJwtPayloadDict(base::Time now = base::Time::Now()) {
-  auto compute_engine_dict = base::Value::Dict()
+base::DictValue CreateJwtPayloadDict(base::Time now = base::Time::Now()) {
+  auto compute_engine_dict = base::DictValue()
                                  .Set("instance_id", "123456789")
                                  .Set("instance_name", "my-instance")
                                  .Set("project_id", "my-project")
                                  .Set("project_number", 54321)
                                  .Set("zone", "us-wild-west1-z");
 
-  return base::Value::Dict()
+  return base::DictValue()
       .Set("iss", "G00gle")
       .Set("iat", static_cast<int>(now.InSecondsFSinceUnixEpoch()))
       .Set("exp", static_cast<int>(
@@ -83,11 +83,11 @@ base::Value::Dict CreateJwtPayloadDict(base::Time now = base::Time::Now()) {
       .Set("aud", kTestAudience)
       .Set("sub", "12345")
       .Set("azp", "12345")
-      .Set("google", base::Value::Dict().Set("compute_engine",
-                                             std::move(compute_engine_dict)));
+      .Set("google", base::DictValue().Set("compute_engine",
+                                           std::move(compute_engine_dict)));
 }
 
-std::string Base64EncodeDict(base::Value::Dict dict) {
+std::string Base64EncodeDict(base::DictValue dict) {
   return base::Base64Encode(*base::WriteJson(std::move(dict)));
 }
 
@@ -433,11 +433,11 @@ INSTANTIATE_TEST_SUITE_P(
                     "ExtraPadding"),
         TokenParams("", GetBase64EncodedPayload(), "EmptyHeader"),
         TokenParams(GetBase64EncodedHeader(), "", "EmptyPayload"),
-        TokenParams(Base64EncodeDict(base::Value::Dict()),
+        TokenParams(Base64EncodeDict(base::DictValue()),
                     GetBase64EncodedPayload(),
                     "HeaderIsAnEmptyDict"),
         TokenParams(GetBase64EncodedHeader(),
-                    Base64EncodeDict(base::Value::Dict()),
+                    Base64EncodeDict(base::DictValue()),
                     "PayloadIsAnEmptyDict"),
         TokenParams(*base::WriteJson(CreateJwtHeaderDict()),
                     GetBase64EncodedPayload(),
@@ -451,29 +451,29 @@ INSTANTIATE_TEST_SUITE_P(
         TokenParams(GetBase64EncodedHeader(),
                     base::Base64Encode("I'm JSON!"),
                     "PayloadIsNotValidJson"),
-        TokenParams(Base64EncodeDict(base::Value::Dict()
+        TokenParams(Base64EncodeDict(base::DictValue()
                                          .Set("alg", "RS256")
                                          .Set("typ", "JWT")),
                     GetBase64EncodedPayload(),
                     "HeaderIsMissingMembers"),
         TokenParams(GetBase64EncodedHeader(),
-                    Base64EncodeDict(base::Value::Dict().Set("iss", "blergh")),
+                    Base64EncodeDict(base::DictValue().Set("iss", "blergh")),
                     "PayloadIsMissingMembers"),
         TokenParams(GetBase64EncodedHeader(),
                     Base64EncodeDict(CreateJwtPayloadDict().SetByDottedPath(
                         "google",
-                        base::Value::Dict())),
+                        base::DictValue())),
                     "NoComputeEngineDict"),
         TokenParams(GetBase64EncodedHeader(),
                     Base64EncodeDict(CreateJwtPayloadDict().SetByDottedPath(
                         "google.compute_engine",
-                        base::Value::Dict())),
+                        base::DictValue())),
                     "EmptyComputeEngineDict"),
         TokenParams(GetBase64EncodedHeader(),
                     Base64EncodeDict(CreateJwtPayloadDict().SetByDottedPath(
                         "google.compute_engine",
-                        base::Value::Dict().Set("instance_id",
-                                                "test-instance-id"))),
+                        base::DictValue().Set("instance_id",
+                                              "test-instance-id"))),
                     "ComputeEngineDictMissingValues")),
     [](const testing::TestParamInfo<
         InstanceIdentityTokenGetterImplTest::ParamType>& info) {

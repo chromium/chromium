@@ -106,7 +106,7 @@ class RecentAppsInteractionHandlerTest : public testing::Test {
         /*icon_color=*/std::nullopt, /*icon_is_monochrome=*/false,
         expected_user_id2, proto::AppStreamabilityStatus::STREAMABLE);
 
-    base::Value::List app_metadata_value_list;
+    base::ListValue app_metadata_value_list;
     app_metadata_value_list.Append(app_metadata1.ToValue());
     app_metadata_value_list.Append(app_metadata2.ToValue());
 
@@ -118,7 +118,7 @@ class RecentAppsInteractionHandlerTest : public testing::Test {
     const char16_t app_visible_name1[] = u"Fake App";
     const char package_name1[] = "com.fakeapp";
     const int64_t expected_user_id1 = 1;
-    base::Value::Dict app_metadata_value =
+    base::DictValue app_metadata_value =
         Notification::AppMetadata(
             app_visible_name1, package_name1, /*color_icon=*/gfx::Image(),
             /*monochrome_icon_mask=*/std::nullopt,
@@ -132,7 +132,7 @@ class RecentAppsInteractionHandlerTest : public testing::Test {
     EXPECT_TRUE(app_metadata_value.Remove(kIconColorG));
     EXPECT_TRUE(app_metadata_value.Remove(kIconColorB));
 
-    base::Value::List app_metadata_value_list;
+    base::ListValue app_metadata_value_list;
     app_metadata_value_list.Append(std::move(app_metadata_value));
 
     pref_service_.SetList(prefs::kRecentAppsHistory,

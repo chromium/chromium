@@ -15,7 +15,7 @@ namespace api {
 namespace file_manager_private {
 
 // Converts a mojo::MediaMetadata to a MediaMetadata value.
-base::Value::Dict MojoMediaMetadataToValue(
+base::DictValue MojoMediaMetadataToValue(
     chrome::mojom::MediaMetadataPtr metadata);
 
 }  // namespace file_manager_private

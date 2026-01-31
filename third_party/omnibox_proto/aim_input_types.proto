@@ -1,0 +1,25 @@
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = 'proto2';
+
+option optimize_for = LITE_RUNTIME;
+option java_package = 'org.chromium.components.omnibox';
+option java_outer_classname = 'AimInputTypesProto';
+
+package omnibox;
+
+// Input type
+// Assume text inputs are always allowed.
+// Next ID: 4
+enum InputType {
+  // Unspecified input type.
+  INPUT_TYPE_UNSPECIFIED = 0;
+  // Lens image
+  INPUT_TYPE_LENS_IMAGE = 1;
+  // Lens file
+  INPUT_TYPE_LENS_FILE = 2;
+  // Browser tab
+  INPUT_TYPE_BROWSER_TAB = 3;
+}

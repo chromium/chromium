@@ -8,7 +8,6 @@
 
 #include <algorithm>
 
-#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
@@ -25,7 +24,7 @@ namespace ash {
 
 namespace {
 
-bool ConvertListValueToStringVector(const base::Value::List& string_list,
+bool ConvertListValueToStringVector(const base::ListValue& string_list,
                                     std::vector<std::string>* result) {
   for (const base::Value& i : string_list) {
     const std::string* str = i.GetIfString();
@@ -73,7 +72,7 @@ bool NetworkProfileHandler::HasObserver(NetworkProfileObserver* observer) {
 }
 
 void NetworkProfileHandler::GetManagerPropertiesCallback(
-    std::optional<base::Value::Dict> properties) {
+    std::optional<base::DictValue> properties) {
   if (!properties) {
     LOG(ERROR) << "Error when requesting manager properties.";
     return;
@@ -105,7 +104,7 @@ void NetworkProfileHandler::OnPropertyChanged(const std::string& name,
   std::vector<std::string> removed_profile_paths;
   for (ProfileList::const_iterator it = profiles_.begin();
        it != profiles_.end(); ++it) {
-    if (!base::Contains(new_profile_paths, it->path)) {
+    if (!std::ranges::contains(new_profile_paths, it->path)) {
       removed_profile_paths.push_back(it->path);
     }
   }
@@ -134,7 +133,7 @@ void NetworkProfileHandler::OnPropertyChanged(const std::string& name,
 
 void NetworkProfileHandler::GetProfilePropertiesCallback(
     const std::string& profile_path,
-    base::Value::Dict properties) {
+    base::DictValue properties) {
   if (pending_profile_creations_.erase(profile_path) == 0) {
     VLOG(1) << "Ignore received properties, profile was removed.";
     return;
@@ -213,7 +212,7 @@ void NetworkProfileHandler::GetAlwaysOnVpnConfiguration(
 
 void NetworkProfileHandler::GetAlwaysOnVpnConfigurationCallback(
     base::OnceCallback<void(std::string, std::string)> callback,
-    base::Value::Dict properties) {
+    base::DictValue properties) {
   // A profile always contains the mode.
   std::string* mode = properties.FindString(shill::kAlwaysOnVpnModeProperty);
   DCHECK(mode);

@@ -502,7 +502,7 @@ TEST_F(MostRelevantTabResumptionPageHandlerTest, RemoveOldDismissedTabs) {
   base::Time last_year = base::Time::Now() - base::Days(365);
   double last_year_micros = static_cast<double>(
       last_year.ToDeltaSinceWindowsEpoch().InMicroseconds());
-  base::Value::Dict dismissed_urls_dict;
+  base::DictValue dismissed_urls_dict;
   dismissed_urls_dict.Set("http://www.google.com/", last_year_micros);
   dismissed_urls_dict.Set("http://www.google2.com/", last_year_micros);
   profile()->GetPrefs()->SetDict(kDismissedVisitsPrefName,

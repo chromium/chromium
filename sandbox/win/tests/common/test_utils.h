@@ -24,11 +24,13 @@ bool DeleteReparsePoint(HANDLE source);
 // `allowed` if true checks for access allowed ACEs, otherwise for deny ACEs.
 // `mask` check for a specific access mask. Ignored if the value is empty.
 // `sid` the SID to check for.
+// `conditional` checks for a conditional ACE rather than a normal one.
 // Returns true if the SID and access mask is present.
 bool IsSidInDacl(const base::win::AccessControlList& dacl,
                  bool allowed,
                  std::optional<ACCESS_MASK> mask,
-                 const base::win::Sid& sid);
+                 const base::win::Sid& sid,
+                 bool conditional = false);
 
 }  // namespace sandbox
 

@@ -77,7 +77,7 @@ class GridTrackCollectionTest : public RenderingTest {
       const GridTrackList& implicit_tracks,
       GridSizingTrackCollection* sizing_collection) {
     sizing_collection->BuildSets(explicit_tracks, implicit_tracks,
-                                 /*is_masonry=*/false);
+                                 /*is_grid_lanes=*/false);
     sizing_collection->InitializeSets();
   }
 

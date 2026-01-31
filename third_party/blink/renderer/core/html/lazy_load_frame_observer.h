@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/time/time.h"
 #include "third_party/blink/public/web/web_frame_load_type.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
@@ -50,8 +49,7 @@ class LazyLoadFrameObserver final
  private:
   struct LazyLoadRequestInfo;
 
-  void LoadIfHiddenOrNearViewport(
-      const HeapVector<Member<IntersectionObserverEntry>>&);
+  void LoadIfNearViewport(const HeapVector<Member<IntersectionObserverEntry>>&);
 
   const Member<HTMLFrameOwnerElement> element_;
 

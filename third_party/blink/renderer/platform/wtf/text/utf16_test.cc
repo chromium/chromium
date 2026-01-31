@@ -38,7 +38,7 @@ TEST(Utf16Test, ContainsOnlyLatin1) {
     std::vector<UChar> str(65, 'a');
 
     // Set a random value in the vector to i.
-    int position = base::RandInt(1, 64);
+    int position = base::RandIntInclusive(1, 64);
     str[position] = i;
     SCOPED_TRACE(base::StringPrintf("Char: %u Position: %d", i, position));
 

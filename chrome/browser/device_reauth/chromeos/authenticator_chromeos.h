@@ -28,6 +28,8 @@ class AuthenticatorChromeOSInterface {
   virtual void AuthenticateUser(const std::u16string& message,
                                 base::OnceCallback<void(bool)> callback) = 0;
   virtual BiometricsStatusChromeOS CheckIfBiometricsAvailable() = 0;
+  virtual void CheckIfPinIsAvailable(
+      base::OnceCallback<void(bool)> callback) = 0;
 };
 
 // Implementation of the interface that handles communication with the OS.
@@ -46,5 +48,9 @@ class AuthenticatorChromeOS : public AuthenticatorChromeOSInterface {
   // Returns the status for biometric authentication availability on the
   // chromebook.
   BiometricsStatusChromeOS CheckIfBiometricsAvailable() override;
+
+  // Asynchronously checks if a PIN authentication factor is configured for the
+  // current active user by querying the cryptohome service.
+  void CheckIfPinIsAvailable(base::OnceCallback<void(bool)> callback) override;
 };
 #endif  // CHROME_BROWSER_DEVICE_REAUTH_CHROMEOS_AUTHENTICATOR_CHROMEOS_H_

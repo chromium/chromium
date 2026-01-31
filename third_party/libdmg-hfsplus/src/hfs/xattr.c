@@ -136,36 +136,50 @@ static BTKey* attrDataRead(off_t offset, io_func* io) {
 	HFSPlusAttrRecord* record;
 
 	record = (HFSPlusAttrRecord*) malloc(sizeof(HFSPlusAttrRecord));
-
-	if(!READ(io, offset, sizeof(uint32_t), record))
+	if (!record) {
 		return NULL;
+	}
+	if(!READ(io, offset, sizeof(uint32_t), record)) {
+		free(record);
+		return NULL;
+	}
 
 	FLIPENDIAN(record->recordType);
 	switch(record->recordType)
 	{
 		case kHFSPlusAttrInlineData:
-			if(!READ(io, offset, sizeof(HFSPlusAttrData), record))
+			if(!READ(io, offset, sizeof(HFSPlusAttrData), record)) {
 				return NULL;
+			}
 
 			flipAttrData((HFSPlusAttrData*) record);
 
 			record = realloc(record, sizeof(HFSPlusAttrData) + ((HFSPlusAttrData*) record)->size);
-			if(!READ(io, offset + sizeof(HFSPlusAttrData), ((HFSPlusAttrData*) record)->size, ((HFSPlusAttrData*) record)->data))
+			if (!record) {
 				return NULL;
+			}
+			if(!READ(io, offset + sizeof(HFSPlusAttrData), ((HFSPlusAttrData*) record)->size, ((HFSPlusAttrData*) record)->data)) {
+				free(record);
+				return NULL;
+			}
 
 			break;
 
 		case kHFSPlusAttrForkData:
-			if(!READ(io, offset, sizeof(HFSPlusAttrForkData), record))
+			if(!READ(io, offset, sizeof(HFSPlusAttrForkData), record)) {
+				free(record);
 				return NULL;
+			}
 
 			flipAttrForkData((HFSPlusAttrForkData*) record);
 
 			break;
 
 		case kHFSPlusAttrExtents:
-			if(!READ(io, offset, sizeof(HFSPlusAttrExtents), record))
+			if(!READ(io, offset, sizeof(HFSPlusAttrExtents), record)) {
+				free(record);
 				return NULL;
+			}
 
 			flipAttrExtents((HFSPlusAttrExtents*) record);
 
@@ -233,8 +247,9 @@ size_t getAttribute(Volume* volume, uint32_t fileID, const char* name, uint8_t**
 	size_t size;
 	int exact;
 
-	if(!volume->attrTree)
+	if(!volume->attrTree) {
 		return FALSE;
+	}
 
 	memset(&key, 0 , sizeof(HFSPlusAttrKey));
 	key.fileID = fileID;
@@ -250,22 +265,20 @@ size_t getAttribute(Volume* volume, uint32_t fileID, const char* name, uint8_t**
 		if(record) {
 			free(record);
 		}
-
 		return 0;
 	}
 
-	switch(record->recordType)
-	{
-		case kHFSPlusAttrInlineData:
-			size = record->attrData.size;
-			*data = (uint8_t*) malloc(size);
-			memcpy(*data, record->attrData.data, size);
-			free(record);
-			return size;
-		default:
-			fprintf(stderr, "unsupported attribute node format\n");
-			return 0;
+	if (record->recordType != kHFSPlusAttrInlineData) {
+		fprintf(stderr, "unsupported attribute node format\n");
+		free(record);
+		return 0;
 	}
+
+	size = record->attrData.size;
+	*data = (uint8_t*) malloc(size);
+	memcpy(*data, record->attrData.data, size);
+	free(record);
+	return size;
 }
 
 int setAttribute(Volume* volume, uint32_t fileID, const char* name, uint8_t* data, size_t size) {

@@ -47,8 +47,6 @@ namespace web_app {
 
 namespace {
 
-constexpr char kFakeChromeBundleId[] = "fake.cfbundleidentifier";
-
 class WebAppShortcutCreatorMock : public WebAppShortcutCreator {
  public:
   WebAppShortcutCreatorMock(const base::FilePath& app_data_dir,
@@ -141,8 +139,6 @@ class WebAppShortcutCreatorTest : public testing::Test {
   WebAppShortcutCreatorTest() = default;
 
   void SetUp() override {
-    base::apple::SetBaseBundleIDOverride(kFakeChromeBundleId);
-
     override_registration_ =
         OsIntegrationTestOverrideImpl::OverrideForTesting();
     destination_dir_ =

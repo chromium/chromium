@@ -28,7 +28,7 @@ using base::android::ScopedJavaLocalRef;
 using net::x509_util::CryptoBufferAsStringPiece;
 
 // static
-static jlong JNI_PageInfoConnectionSecurityController_Init(
+static int64_t JNI_PageInfoConnectionSecurityController_Init(
     JNIEnv* env,
     const JavaRef<jobject>& obj,
     const JavaRef<jobject>& java_web_contents) {

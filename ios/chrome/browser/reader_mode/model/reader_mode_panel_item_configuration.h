@@ -6,9 +6,12 @@
 #define IOS_CHROME_BROWSER_READER_MODE_MODEL_READER_MODE_PANEL_ITEM_CONFIGURATION_H_
 
 #import "base/scoped_observation.h"
+#import "components/feature_engagement/public/tracker.h"
 #import "ios/chrome/browser/contextual_panel/model/contextual_panel_item_configuration.h"
 #import "ios/chrome/browser/reader_mode/model/reader_mode_tab_helper.h"
 #import "ios/web/public/web_state_observer.h"
+
+class ProfileIOS;
 
 // Configuration for the Reader Mode item in the contextual panel.
 // This object observes the WebState and the ReaderModeTabHelper to manage its
@@ -18,7 +21,8 @@ class ReaderModePanelItemConfiguration
       public web::WebStateObserver,
       public ReaderModeTabHelper::Observer {
  public:
-  explicit ReaderModePanelItemConfiguration(web::WebState* web_state);
+  ReaderModePanelItemConfiguration(ProfileIOS* profile,
+                                   web::WebState* web_state);
   ~ReaderModePanelItemConfiguration() override;
 
   // ContextualPanelItemConfiguration
@@ -46,6 +50,10 @@ class ReaderModePanelItemConfiguration
   // Helper which returns whether the profile is eligible for BWG.
   bool IsProfileEligibleForBwg();
 
+  // Returns true if the expanded omnibox message can be shown.
+  bool CanShowLargeEntrypointMessage();
+
+  raw_ptr<feature_engagement::Tracker> engagement_tracker_;
   base::ScopedObservation<web::WebState, web::WebStateObserver>
       web_state_observation_{this};
   base::ScopedObservation<ReaderModeTabHelper, ReaderModeTabHelper::Observer>

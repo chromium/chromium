@@ -1,4 +1,3 @@
-
 // Copyright 2025 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
@@ -9,10 +8,11 @@
 #include <set>
 #include <string>
 
+#include "google_apis/gaia/oauth2_access_token_manager.h"
+
 namespace signin {
 
-// TODO(crbug.com/425896213): Add std::less<> after removing scope_set.h
-using ScopeSet = std::set<std::string>;
+using ScopeSet = OAuth2AccessTokenManager::ScopeSet;
 
 // Represents an OAuth consumer, identified by its name and the OAuth2 scopes it
 // requires.

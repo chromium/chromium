@@ -4,7 +4,6 @@
 
 #include "ash/public/cpp/test/shell_test_api.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller_test_api.h"
-#include "base/containers/contains.h"
 #include "base/path_service.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
@@ -57,7 +56,7 @@ class BackGestureEventRecorder : public ui::EventHandler {
   }
 
   bool HasReceivedEvent(ui::EventType event_type) {
-    return base::Contains(received_event_types_, event_type);
+    return received_event_types_.contains(event_type);
   }
 
   void Reset() {

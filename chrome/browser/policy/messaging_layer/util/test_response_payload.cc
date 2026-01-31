@@ -17,10 +17,10 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace reporting {
-ResponseBuilder::ResponseBuilder(const base::Value::Dict& request)
+ResponseBuilder::ResponseBuilder(const base::DictValue& request)
     : request_(request.Clone()) {}
 
-ResponseBuilder::ResponseBuilder(base::Value::Dict&& request)
+ResponseBuilder::ResponseBuilder(base::DictValue&& request)
     : request_(std::move(request)) {}
 
 ResponseBuilder::ResponseBuilder(const ResponseBuilder& other)
@@ -36,12 +36,12 @@ ResponseBuilder& ResponseBuilder::SetNull(bool null) {
   return *this;
 }
 
-ResponseBuilder& ResponseBuilder::SetRequest(const base::Value::Dict& request) {
+ResponseBuilder& ResponseBuilder::SetRequest(const base::DictValue& request) {
   request_ = request.Clone();
   return *this;
 }
 
-ResponseBuilder& ResponseBuilder::SetRequest(base::Value::Dict&& request) {
+ResponseBuilder& ResponseBuilder::SetRequest(base::DictValue&& request) {
   request_ = std::move(request);
   return *this;
 }
@@ -51,16 +51,16 @@ ResponseBuilder& ResponseBuilder::SetSuccess(bool success) {
   return *this;
 }
 
-StatusOr<base::Value::Dict> ResponseBuilder::Build() const {
+StatusOr<base::DictValue> ResponseBuilder::Build() const {
   if (params_.null) {
     return base::unexpected(
         Status(error::FAILED_PRECONDITION, "No parameters set"));
   }
 
-  base::Value::Dict response;
+  base::DictValue response;
 
   // Attach sequenceInformation.
-  if (const base::Value::List* const encrypted_record_list =
+  if (const base::ListValue* const encrypted_record_list =
           request_.FindList(json_keys::kEncryptedRecordList);
       encrypted_record_list != nullptr) {
     EXPECT_FALSE(encrypted_record_list->empty());
@@ -76,17 +76,17 @@ StatusOr<base::Value::Dict> ResponseBuilder::Build() const {
       response.Set(json_keys::kLastSucceedUploadedRecord, seq_info->Clone());
     } else {
       response.Set(json_keys::kFirstFailedUploadedRecord,
-                   base::Value::Dict().Set(json_keys::kFailedUploadedRecord,
-                                           seq_info->Clone()));
+                   base::DictValue().Set(json_keys::kFailedUploadedRecord,
+                                         seq_info->Clone()));
       response.Set(json_keys::kFirstFailedUploadedRecord,
-                   base::Value::Dict().Set(
+                   base::DictValue().Set(
                        json_keys::kFailureStatus,
-                       base::Value::Dict().Set(json_keys::kErrorCode, 12345)));
+                       base::DictValue().Set(json_keys::kErrorCode, 12345)));
       response.Set(json_keys::kFirstFailedUploadedRecord,
-                   base::Value::Dict().Set(
+                   base::DictValue().Set(
                        json_keys::kFailureStatus,
-                       base::Value::Dict().Set(json_keys::kErrorCode,
-                                               "You've got a fake error.")));
+                       base::DictValue().Set(json_keys::kErrorCode,
+                                             "You've got a fake error.")));
       const auto* const last_success_seq_info =
           std::prev(seq_info_it)
               ->GetDict()
@@ -107,7 +107,7 @@ StatusOr<base::Value::Dict> ResponseBuilder::Build() const {
       request_.FindBool(json_keys::kAttachEncryptionSettings);
   if (attach_encryption_settings.has_value() &&
       attach_encryption_settings.value()) {
-    base::Value::Dict encryption_settings;
+    base::DictValue encryption_settings;
     std::string encoded = base::Base64Encode("PUBLIC KEY");
     encryption_settings.Set(json_keys::kPublicKey, std::move(encoded));
     encryption_settings.Set(json_keys::kPublicKeyId, 12345);
@@ -121,18 +121,18 @@ StatusOr<base::Value::Dict> ResponseBuilder::Build() const {
   const auto configuration_file_version =
       request_.FindInt(json_keys::kConfigurationFileVersion);
   if (configuration_file_version.has_value()) {
-    base::Value::Dict configuration_file;
-    base::Value::List event_configs;
-    base::Value::Dict heartbeat;
+    base::DictValue configuration_file;
+    base::ListValue event_configs;
+    base::DictValue heartbeat;
     heartbeat.Set(json_keys::kConfigurationFileDestination, "HEARTBEAT_EVENTS");
     heartbeat.Set(json_keys::kConfigurationFileMinimumReleaseVersion, 11111);
     event_configs.Append(std::move(heartbeat));
-    base::Value::Dict login;
+    base::DictValue login;
     login.Set(json_keys::kConfigurationFileDestination, "LOGIN_LOGOUT_EVENTS");
     login.Set(json_keys::kConfigurationFileMinimumReleaseVersion, 22222);
     login.Set(json_keys::kConfigurationFileMaximumReleaseVersion, 33333);
     event_configs.Append(std::move(login));
-    base::Value::Dict lock;
+    base::DictValue lock;
     lock.Set(json_keys::kConfigurationFileDestination, "LOCK_UNLOCK_EVENTS");
     event_configs.Append(std::move(lock));
     std::string encoded = base::Base64Encode("Fake signature");
@@ -153,8 +153,8 @@ MakeUploadEncryptedReportAction::MakeUploadEncryptedReportAction(
     : response_builder_(std::move(response_builder)) {}
 
 void MakeUploadEncryptedReportAction::operator()(
-    base::Value::Dict request,
-    std::optional<base::Value::Dict> context,
+    base::DictValue request,
+    std::optional<base::DictValue> context,
     ReportingServerConnector::ResponseCallback callback) {
   response_builder_.SetRequest(std::move(request));
   auto response_result = response_builder_.Build();

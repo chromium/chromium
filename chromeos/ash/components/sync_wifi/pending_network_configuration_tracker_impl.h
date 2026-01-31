@@ -48,7 +48,7 @@ class PendingNetworkConfigurationTrackerImpl
 
  private:
   raw_ptr<PrefService> pref_service_;
-  base::Value::Dict dict_;
+  base::DictValue dict_;
 };
 
 }  // namespace ash::sync_wifi

@@ -14,6 +14,7 @@
 #include "chrome/browser/extensions/extension_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/tab_group_sync/tab_group_sync_service_factory.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/common/webui_url_constants.h"
 #include "components/data_sharing/public/features.h"
 #include "components/saved_tab_groups/public/features.h"
@@ -35,8 +36,10 @@
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
+#include "chrome/browser/ui/tabs/tab_group_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/tabs/public/tab_group.h"
 #endif
 
 static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
@@ -181,6 +184,30 @@ IN_PROC_BROWSER_TEST_F(ExtensionTabUtilBrowserTest, NavigateToURLCheckFailure) {
                    GURL("chrome://version")),
                "");
 #endif
+}
+
+IN_PROC_BROWSER_TEST_F(ExtensionTabUtilBrowserTest, SupportsTabGroups) {
+  // Tests default to a normal browser window.
+  ASSERT_EQ(BrowserWindowInterface::TYPE_NORMAL,
+            browser_window_interface()->GetType());
+
+  // Normal browsers support tab groups.
+  EXPECT_TRUE(ExtensionTabUtil::SupportsTabGroups(browser_window_interface()));
+}
+
+IN_PROC_BROWSER_TEST_F(ExtensionTabUtilBrowserTest, DoesNotSupportTabGroups) {
+#if BUILDFLAG(IS_ANDROID)
+  // Android doesn't support Chrome Apps, so we test with popups.
+  const auto window_type = BrowserWindowInterface::Type::TYPE_POPUP;
+#else
+  // Test other platforms with apps, because they are a more typical use case.
+  const auto window_type = BrowserWindowInterface::Type::TYPE_APP;
+#endif  // BUILDFLAG(IS_ANDROID)
+
+  BrowserWindowInterface* browser = CreateBrowserWindowWithType(window_type);
+
+  // The window does not support tab groups.
+  EXPECT_FALSE(ExtensionTabUtil::SupportsTabGroups(browser));
 }
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
@@ -502,6 +529,39 @@ IN_PROC_BROWSER_TEST_F(ExtensionTabUtilBrowserTest, RecordNavigationScheme) {
   }
 }
 
+// TODO(405219902): Port test to desktop Android when we have support for
+// creating a tab group from native code.
+IN_PROC_BROWSER_TEST_F(ExtensionTabUtilBrowserTest, GetGroupById) {
+  TabStripModel* tab_strip_model = browser()->tab_strip_model();
+  ASSERT_EQ(1, tab_strip_model->count());
+  ASSERT_TRUE(NavigateToURLInNewTab(GURL("about:blank")));
+  ASSERT_EQ(2, tab_strip_model->count());
+
+  tab_groups::TabGroupId group_id = tab_strip_model->AddToNewGroup({0, 1});
+
+  const tab_groups::TabGroupVisualData new_data(
+      u"Test", tab_groups::TabGroupColorId::kCyan);
+  tab_strip_model->group_model()->GetTabGroup(group_id)->SetVisualData(
+      new_data);
+
+  int raw_group_id = ExtensionTabUtil::GetGroupId(group_id);
+
+  WindowController* window = nullptr;
+  tab_groups::TabGroupId found_id = tab_groups::TabGroupId::CreateEmpty();
+  tab_groups::TabGroupVisualData visual_data;
+  std::string error;
+  bool found = ExtensionTabUtil::GetGroupById(
+      raw_group_id, profile(),
+      /*include_incognito=*/true, &window, &found_id, &visual_data, &error);
+
+  EXPECT_TRUE(found);
+  EXPECT_TRUE(window);
+  EXPECT_EQ(group_id, found_id);
+  EXPECT_EQ(visual_data.title(), u"Test");
+  EXPECT_EQ(visual_data.color(), tab_groups::TabGroupColorId::kCyan);
+  EXPECT_TRUE(error.empty());
+}
+
 class SharedTabGroupExtensionsTabUtilTest : public ExtensionTabUtilBrowserTest {
  public:
   SharedTabGroupExtensionsTabUtilTest() {
@@ -516,8 +576,6 @@ class SharedTabGroupExtensionsTabUtilTest : public ExtensionTabUtilBrowserTest {
       const SharedTabGroupExtensionsTabUtilTest&) = delete;
   SharedTabGroupExtensionsTabUtilTest& operator=(
       const SharedTabGroupExtensionsTabUtilTest&) = delete;
-
-  void SetUp() override { ExtensionTabUtilBrowserTest ::SetUp(); }
 
   // Adds tab navigated to |url| in the given |browser|.
   tabs::TabInterface* AddTab(const GURL& url) {

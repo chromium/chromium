@@ -144,7 +144,7 @@ TEST_F(ZlibOutputStreamTest, WriteLongDataMultipleTimes) {
   size_t index = 0;
   while (index < kLongDataLength) {
     size_t write_length =
-        std::min(static_cast<size_t>(base::RandInt(0, 4096 * 2)),
+        std::min(static_cast<size_t>(base::RandIntInclusive(0, 4096 * 2)),
                  kLongDataLength - index);
     SCOPED_TRACE(
         base::StringPrintf("index %zu, write_length %zu", index, write_length));

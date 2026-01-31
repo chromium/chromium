@@ -5,6 +5,8 @@
 #ifndef SERVICES_NETWORK_PUBLIC_CPP_PERMISSIONS_POLICY_ORIGIN_WITH_POSSIBLE_WILDCARDS_H_
 #define SERVICES_NETWORK_PUBLIC_CPP_PERMISSIONS_POLICY_ORIGIN_WITH_POSSIBLE_WILDCARDS_H_
 
+#include <compare>
+
 #include "base/component_export.h"
 #include "services/network/public/mojom/content_security_policy.mojom.h"
 #include "services/network/public/mojom/permissions_policy/permissions_policy.mojom-shared.h"
@@ -78,9 +80,11 @@ class COMPONENT_EXPORT(NETWORK_CPP_WEB_PLATFORM) OriginWithPossibleWildcards {
   COMPONENT_EXPORT(NETWORK_CPP_WEB_PLATFORM)
   friend bool operator==(const OriginWithPossibleWildcards&,
                          const OriginWithPossibleWildcards&) = default;
+
   COMPONENT_EXPORT(NETWORK_CPP_WEB_PLATFORM)
-  friend bool operator<(const OriginWithPossibleWildcards& lhs,
-                        const OriginWithPossibleWildcards& rhs);
+  friend std::strong_ordering operator<=>(
+      const OriginWithPossibleWildcards& lhs,
+      const OriginWithPossibleWildcards& rhs);
 
  private:
   friend struct mojo::StructTraits<

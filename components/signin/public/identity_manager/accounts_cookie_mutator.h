@@ -90,7 +90,7 @@ class AccountsCookieMutator {
   // GoogleServiceAuthError::AuthErrorNone() then the operation succeeded.
   // Notably, if there are accounts being added for which IdentityManager does
   // not have refresh tokens, the operation will fail with a
-  // GoogleServiceAuthError::USER_NOT_SIGNED_UP error.
+  // GoogleServiceAuthError::ACCOUNT_NOT_FOUND error.
   virtual void SetAccountsInCookie(
       const MultiloginParameters& parameters,
       gaia::GaiaSource source,

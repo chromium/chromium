@@ -120,14 +120,11 @@ found in the LICENSE file.
 
     <!-- NTP dimensions -->
     <dimen name="tile_layout_no_logo_top_margin">20dp</dimen>
-    <dimen name="mvt_container_lateral_margin">@dimen/signin_promo_lateral_paddings</dimen>
     <dimen name="mvt_container_top_padding">17dp</dimen>
     <dimen name="mvt_container_bottom_padding">22dp</dimen>
-    <dimen name="mvt_container_top_margin">23dp</dimen>
     <dimen name="ntp_search_box_bottom_margin">1dp</dimen>
     <dimen name="ntp_search_box_transition_start_offset">16dp</dimen>
     <dimen name="ntp_search_box_transition_end_offset">4dp</dimen>
-    <dimen name="ntp_search_box_lateral_margin_tablet">100dp</dimen>
     <dimen name="snippets_article_header_height">40dp</dimen>
     <dimen name="content_suggestions_card_bottom_margin">12dp</dimen>
     <!-- This is in sp because we want the icon to scale with the TextView it sits alongside. -->
@@ -149,9 +146,6 @@ found in the LICENSE file.
     <!-- Incognito NTP -->
     <dimen name="incognito_ntp_total_space_between_views">14sp</dimen>
     <dimen name="incognito_ntp_fading_shadow_size">16dp</dimen>
-
-    <!-- Incognito Indicator Menu -->
-    <dimen name="incognito_indicator_menu_max_width">270dp</dimen>
 
     <!-- Recent tabs page -->
     <dimen name="recent_tabs_visible_separator_padding">8dp</dimen>
@@ -295,7 +289,6 @@ found in the LICENSE file.
     <dimen name="dialog_width_unit">56dp</dimen>  <!-- MD dialog widths are multiples of this. -->
 
     <!--  Used as a margin to force the shadow view to overlap other views. -->
-    <dimen name="action_bar_shadow_margin_negative">-10dp</dimen>
     <dimen name="legacy_sync_promo_view_padding">16dp</dimen>
     <!-- 18dp padding is added to each side of the remove button to limit the image width to 20dp (56dp - 2 * 18dp). -->
     <dimen name="history_item_remove_button_lateral_padding">18dp</dimen>
@@ -360,7 +353,8 @@ found in the LICENSE file.
     <dimen name="settings_narrow_header_width">360dp</dimen>
     <dimen name="settings_wide_header_width">412dp</dimen>
     <dimen name="settings_search_ui_height">48dp</dimen>
-    <dimen name="settings_search_ui_bottom_margin">4dp</dimen>
+    <dimen name="settings_search_ui_top_margin">4dp</dimen>
+    <dimen name="settings_search_ui_bottom_margin">12dp</dimen>
     <dimen name="settings_search_icon_padding">16dp</dimen>
     <dimen name="settings_detailed_title_padding">10dp</dimen>
     <dimen name="settings_detailed_title_height">48dp</dimen>
@@ -446,7 +440,7 @@ found in the LICENSE file.
     <dimen name="link_hover_status_bar_mouse_padding">20dp</dimen>
 
     <!--  Reader mode prefs dimensions. -->
-    <dimen name="reader_mode_prefs_font_style_container_width">280dp</dimen>
+    <dimen name="reader_mode_prefs_font_style_button_separator_padding">16dp</dimen>
     <dimen name="reader_mode_prefs_font_style_button_size">72dp</dimen>
     <dimen name="reader_mode_prefs_font_style_signifier_text_size">24dp</dimen>
     <dimen name="reader_mode_prefs_font_style_name_text_size">10dp</dimen>
@@ -471,4 +465,7 @@ found in the LICENSE file.
     <!-- Auto PiP permission dialog dimensions -->
     <dimen name="auto_pip_permission_dialog_width">360dp</dimen>
     <dimen name="auto_pip_permission_dialog_padding">24dp</dimen>
+
+    <!-- Document PiP dimensions -->
+    <dimen name="document_picture_in_picture_header_icon_size">48dp</dimen>
 </resources>

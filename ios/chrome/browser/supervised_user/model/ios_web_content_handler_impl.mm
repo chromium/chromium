@@ -9,13 +9,13 @@
 #import "base/functional/callback_helpers.h"
 #import "base/notreached.h"
 #import "base/task/sequenced_task_runner.h"
-#import "components/supervised_user/core/browser/supervised_user_settings_service.h"
+#import "components/supervised_user/core/browser/family_link_settings_service.h"
 #import "components/supervised_user/core/browser/web_content_handler.h"
 #import "components/supervised_user/core/common/features.h"
 #import "components/supervised_user/core/common/supervised_user_constants.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/public/commands/parent_access_commands.h"
-#import "ios/chrome/browser/supervised_user/model/supervised_user_settings_service_factory.h"
+#import "ios/chrome/browser/supervised_user/model/family_link_settings_service_factory.h"
 #import "ios/web/public/navigation/navigation_manager.h"
 #import "ios/web/public/web_state.h"
 
@@ -32,19 +32,18 @@ IOSWebContentHandlerImpl::IOSWebContentHandlerImpl(
 IOSWebContentHandlerImpl::~IOSWebContentHandlerImpl() = default;
 
 void IOSWebContentHandlerImpl::RequestLocalApproval(
-    const GURL& url,
+    const GURL& target_url,
+    supervised_user::WebFilteringResult filtering_result,
     const std::u16string& child_display_name,
-    const supervised_user::UrlFormatter& url_formatter,
-    const supervised_user::FilteringBehaviorReason& filtering_behavior_reason,
     ApprovalRequestInitiatedCallback callback) {
   CHECK(base::FeatureList::IsEnabled(supervised_user::kLocalWebApprovals));
 
-  if (!url.has_host()) {
+  if (!filtering_result.url.has_host()) {
     // A host must exist, because this is allow-listed at the end of the flow.
     std::move(callback).Run(false);
     return;
   }
-  GURL target_url = url_formatter.FormatUrl(url);
+
   base::OnceCallback<void(
       supervised_user::LocalApprovalResult,
       std::optional<supervised_user::LocalWebApprovalErrorType>)>
@@ -57,7 +56,7 @@ void IOSWebContentHandlerImpl::RequestLocalApproval(
   [commands_handler_
       showParentAccessBottomSheetForWebState:web_state_
                                    targetURL:target_url
-                     filteringBehaviorReason:filtering_behavior_reason
+                     filteringBehaviorReason:filtering_result.reason
                                   completion:base::CallbackToBlock(std::move(
                                                  completion_callback))];
   is_bottomsheet_shown_ = true;
@@ -123,9 +122,10 @@ void IOSWebContentHandlerImpl::OnLocalApprovalRequestCompleted(
   }
   is_bottomsheet_shown_ = false;
 
-  supervised_user::SupervisedUserSettingsService* settings_service =
-      SupervisedUserSettingsServiceFactory::GetForProfile(
+  supervised_user::FamilyLinkSettingsService* family_link_settings_service =
+      supervised_user::FamilyLinkSettingsServiceFactory::GetForProfile(
           ProfileIOS::FromBrowserState(web_state_->GetBrowserState()));
   WebContentHandler::OnLocalApprovalRequestCompleted(
-      *settings_service, url, start_time, approval_result, error_type);
+      *family_link_settings_service, url, start_time, approval_result,
+      error_type);
 }

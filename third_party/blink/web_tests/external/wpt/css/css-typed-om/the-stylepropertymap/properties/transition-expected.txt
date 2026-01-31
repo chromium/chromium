@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
 [FAIL] 'transition' does not support 'none, none'
-  assert_not_equals: Unsupported value must not be null got disallowed value null
+  assert_class_string: Unsupported value must be a CSSStyleValue and not one of its subclasses expected "[object CSSStyleValue]" but got "[object Undefined]"
 Harness: the test ran to completion.
 

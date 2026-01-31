@@ -64,7 +64,7 @@ public class ExtensionActionsUpdateHelper implements Destroyable {
         mModels = models;
         mCurrentTabSupplier = currentTabSupplier;
         mActionsUpdateDelegate = delegate;
-        mExtensionActionsBridge = ExtensionActionsBridge.get(task);
+        mExtensionActionsBridge = new ExtensionActionsBridge(task);
 
         mCurrentTabSupplier.addObserver(mTabChangedCallback);
         mExtensionActionsBridge.addObserver(mActionsObserver);
@@ -133,6 +133,7 @@ public class ExtensionActionsUpdateHelper implements Destroyable {
     public void destroy() {
         mExtensionActionsBridge.removeObserver(mActionsObserver);
         mCurrentTabSupplier.removeObserver(mTabChangedCallback);
+        mExtensionActionsBridge.destroy();
 
         mCurrentTab = null;
     }

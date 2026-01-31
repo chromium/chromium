@@ -173,7 +173,7 @@ class OzonePlatformDrm : public OzonePlatform {
     return std::make_unique<ash::InputMethodAsh>(ime_key_event_dispatcher);
   }
 
-  bool IsNativePixmapConfigSupported(gfx::BufferFormat format,
+  bool IsNativePixmapConfigSupported(viz::SharedImageFormat format,
                                      gfx::BufferUsage usage) const override {
     return gfx::ClientNativePixmapDmaBuf::IsConfigurationSupported(format,
                                                                    usage);
@@ -239,7 +239,7 @@ class OzonePlatformDrm : public OzonePlatform {
     host_properties_.supports_native_pixmaps = true;
 
     overlay_manager_ = std::make_unique<DrmOverlayManagerGpu>(
-        drm_thread_proxy_.get(), args.handle_overlays_swap_failure,
+        drm_thread_proxy_.get(),
         args.allow_sync_and_real_buffer_page_flip_testing);
 
     // If gpu is in a separate process, rest of the initialization happens after

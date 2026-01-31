@@ -40,7 +40,7 @@ TEST(PasswordStatusCheckResultAndroidTest, ResultToDict) {
 
   // When converting to dict, the values of the password data should be
   // correctly converted to base::Value.
-  base::Value::Dict dict = result->ToDictValue();
+  base::DictValue dict = result->ToDictValue();
   std::optional<int> compromised_password_count =
       dict.FindInt(safety_hub::kSafetyHubCompromiedPasswordOriginsCount);
   EXPECT_EQ(1, compromised_password_count.value());

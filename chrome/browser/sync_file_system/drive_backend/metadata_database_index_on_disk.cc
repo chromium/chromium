@@ -5,9 +5,7 @@
 #include "chrome/browser/sync_file_system/drive_backend/metadata_database_index_on_disk.h"
 
 #include <array>
-#include <unordered_set>
 
-#include "base/containers/contains.h"
 #include "base/format_macros.h"
 #include "base/logging.h"
 #include "base/notreached.h"
@@ -18,6 +16,7 @@
 #include "chrome/browser/sync_file_system/drive_backend/leveldb_wrapper.h"
 #include "chrome/browser/sync_file_system/drive_backend/metadata_database.pb.h"
 #include "chrome/browser/sync_file_system/logger.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
 #include "third_party/leveldatabase/src/include/leveldb/status.h"
 
 // LevelDB database schema
@@ -211,7 +210,7 @@ void RemoveUnreachableItemsFromDB(LevelDBWrapper* db,
 
   // Delete all unreachable trackers, and list all |file_id| referred by
   // remained trackers.
-  std::unordered_set<std::string> referred_file_ids;
+  absl::flat_hash_set<std::string> referred_file_ids;
   {
     std::unique_ptr<LevelDBWrapper::Iterator> itr = db->NewIterator();
     for (itr->Seek(kFileTrackerKeyPrefix); itr->Valid(); itr->Next()) {
@@ -225,7 +224,7 @@ void RemoveUnreachableItemsFromDB(LevelDBWrapper* db,
         continue;
       }
 
-      if (base::Contains(visited_trackers, tracker->tracker_id())) {
+      if (visited_trackers.contains(tracker->tracker_id())) {
         referred_file_ids.insert(tracker->file_id());
       } else {
         PutFileTrackerDeletionToDB(tracker->tracker_id(), db);
@@ -247,7 +246,7 @@ void RemoveUnreachableItemsFromDB(LevelDBWrapper* db,
         continue;
       }
 
-      if (!base::Contains(referred_file_ids, metadata->file_id())) {
+      if (!referred_file_ids.contains(metadata->file_id())) {
         PutFileMetadataDeletionToDB(metadata->file_id(), db);
       }
     }

@@ -147,8 +147,8 @@ class AutotestPrivateApiTest : public ExtensionApiTest {
 
   bool RunAutotestPrivateExtensionTest(
       const std::string& test_suite,
-      base::Value::List suite_args = base::Value::List()) {
-    base::Value::Dict custom_args;
+      base::ListValue suite_args = base::ListValue()) {
+    base::DictValue custom_args;
     custom_args.Set("testSuite", test_suite);
     custom_args.Set("args", std::move(suite_args));
 
@@ -341,9 +341,9 @@ IN_PROC_BROWSER_TEST_P(AutotestPrivateHoldingSpaceApiTest,
 
   const bool mark_time_of_first_add = GetParam().mark_time_of_first_add;
 
-  base::Value::Dict options;
+  base::DictValue options;
   options.Set("markTimeOfFirstAdd", mark_time_of_first_add);
-  base::Value::List suite_args;
+  base::ListValue suite_args;
   suite_args.Append(std::move(options));
 
   ASSERT_TRUE(
@@ -757,7 +757,7 @@ IN_PROC_BROWSER_TEST_P(AutotestPrivateApiTestWithContextType,
   ash::AmbientUiSettings(kTestTheme)
       .WriteToPrefService(*browser()->profile()->GetPrefs());
 
-  base::Value::List suite_args;
+  base::ListValue suite_args;
   suite_args.Append(base::Value(ash::ambient::prefs::kAmbientUiSettings));
 
   ASSERT_TRUE(RunAutotestPrivateExtensionTest("clearAllowedPref",
@@ -773,7 +773,7 @@ IN_PROC_BROWSER_TEST_P(AutotestPrivateApiTestWithContextType,
 IN_PROC_BROWSER_TEST_P(AutotestPrivateApiTestWithContextType,
                        SetDeviceLanguage) {
   std::string target_locale = "ja-JP";
-  base::Value::List args;
+  base::ListValue args;
   args.Append(base::Value(target_locale));
   ASSERT_TRUE(
       RunAutotestPrivateExtensionTest("setDeviceLanguage", std::move(args)))

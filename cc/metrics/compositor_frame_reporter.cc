@@ -1912,8 +1912,6 @@ void CompositorFrameReporter::ReportScrollJankV1Metrics() {
     }
     if (global_trackers_.scroll_jank_ukm_reporter) {
       global_trackers_.scroll_jank_ukm_reporter->EmitScrollJankUkm();
-      global_trackers_.scroll_jank_ukm_reporter->SetEarliestScrollEvent(
-          *latest_event);
     }
   }
 

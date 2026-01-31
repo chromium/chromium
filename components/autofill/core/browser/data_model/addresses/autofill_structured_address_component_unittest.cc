@@ -25,6 +25,7 @@ using base::ASCIIToUTF16;
 using base::UTF8ToUTF16;
 
 namespace autofill {
+namespace {
 
 using AddressComponentTestValues = std::vector<AddressComponentTestValue>;
 
@@ -184,28 +185,6 @@ class TestNonProperFirstNameAddressComponent : public AddressComponent {
  private:
   TestAtomicFirstNameAddressComponent first_name;
 };
-
-// Tests the merging of two atomic component with |type|, and values
-// |older_values| and |newer_values| respectively, and |merge_modes|.
-// If |is_mergeable| it is expected that the two components are mergeable.
-// If |newer_was_more_recently_used| the newer component was also more recently
-// used which is true by default.
-void TestAtomMerging(FieldType type,
-                     AddressComponentTestValues older_values,
-                     AddressComponentTestValues newer_values,
-                     AddressComponentTestValues merge_expectation,
-                     bool is_mergeable,
-                     int merge_modes,
-                     bool newer_was_more_recently_used = true) {
-  AddressComponent older(type, {}, merge_modes);
-  AddressComponent newer(type, {}, merge_modes);
-
-  SetTestValues(&older, older_values);
-  SetTestValues(&newer, newer_values);
-
-  TestMerging(&older, &newer, merge_expectation, is_mergeable, merge_modes,
-              newer_was_more_recently_used);
-}
 
 void TestCompoundNameMerging(AddressComponentTestValues older_values,
                              AddressComponentTestValues newer_values,
@@ -1908,4 +1887,5 @@ TEST_F(AutofillStructuredAddressAddressComponent, TestFillTreeGapsParsing) {
   VerifyTestValues(&name, expectation);
 }
 
+}  // namespace
 }  // namespace autofill

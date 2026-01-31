@@ -1,0 +1,33 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("eg2_tests") {
+  configs += [ "//build/config/ios:xctest_config" ]
+  testonly = true
+  sources = [
+    "card_unmask_authentication_egtest.mm",
+    "otp_input_dialog_egtest.mm",
+  ]
+  deps = [
+    ":egtest_util",
+    "//components/autofill/core/browser:test_support",
+    "//components/strings:components_strings_grit",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/autofill/authentication/public",
+    "//ios/chrome/browser/autofill/ui_bundled:eg_test_support+eg2",
+    "//ios/chrome/test/earl_grey:eg_test_support+eg2",
+    "//ios/testing/earl_grey:eg_test_support+eg2",
+    "//net:test_support",
+  ]
+  frameworks = [ "UIKit.framework" ]
+}
+
+source_set("egtest_util") {
+  testonly = true
+  sources = [
+    "authentication_egtest_util.h",
+    "authentication_egtest_util.mm",
+  ]
+  frameworks = [ "Foundation.framework" ]
+}

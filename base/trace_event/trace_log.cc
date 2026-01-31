@@ -11,7 +11,6 @@
 #include <utility>
 
 #include "base/compiler_specific.h"
-#include "base/containers/contains.h"
 #include "base/debug/leak_annotations.h"
 #include "base/format_macros.h"
 #include "base/functional/bind.h"
@@ -235,7 +234,7 @@ void OnUpdateLegacyTraceEventDuration(
       perfetto::internal::TrackEventInternal::kDefaultTrack, timestamp);
 }
 
-base::trace_event::TraceEventHandle AddTraceEventWithThreadIdAndTimestamps(
+void AddTraceEventWithThreadIdAndTimestamps(
     char phase,
     const unsigned char* category_group_enabled,
     const char* name,
@@ -244,9 +243,8 @@ base::trace_event::TraceEventHandle AddTraceEventWithThreadIdAndTimestamps(
     const base::TimeTicks& timestamp,
     base::trace_event::TraceArguments* args,
     unsigned int flags) {
-  base::trace_event::TraceEventHandle handle = {};
   if (!*category_group_enabled) {
-    return handle;
+    return;
   }
   DCHECK(!timestamp.is_null());
 
@@ -255,7 +253,6 @@ base::trace_event::TraceEventHandle AddTraceEventWithThreadIdAndTimestamps(
                                                 id, args, flags);
 
   base::trace_event::OnAddLegacyTraceEvent(&new_trace_event);
-  return handle;
 }
 
 }  // namespace
@@ -335,16 +332,6 @@ class JsonStringOutputWriter
 };
 #endif  // BUILDFLAG(USE_PERFETTO_TRACE_PROCESSOR)
 
-struct TraceLog::RegisteredAsyncObserver {
-  explicit RegisteredAsyncObserver(WeakPtr<AsyncEnabledStateObserver> observer)
-      : observer(observer),
-        task_runner(SequencedTaskRunner::GetCurrentDefault()) {}
-  ~RegisteredAsyncObserver() = default;
-
-  WeakPtr<AsyncEnabledStateObserver> observer;
-  scoped_refptr<SequencedTaskRunner> task_runner;
-};
-
 // static
 TraceLog* TraceLog::GetInstance() {
   static base::NoDestructor<TraceLog> instance{};
@@ -354,22 +341,15 @@ TraceLog* TraceLog::GetInstance() {
 // static
 void TraceLog::ResetForTesting() {
   auto* self = GetInstance();
-  AutoLock lock(self->observers_lock_);
   self->tracing_session_.reset();
-  self->enabled_state_observers_.clear();
-  self->owned_enabled_state_observer_copy_.clear();
-  self->async_observers_.clear();
 }
 
 TraceLog::TraceLog() : process_id_(base::kNullProcessId) {
   SetProcessID(GetCurrentProcId());
-  TrackEvent::AddSessionObserver(this);
   g_trace_log_for_testing = this;
 }
 
-TraceLog::~TraceLog() {
-  TrackEvent::RemoveSessionObserver(this);
-}
+TraceLog::~TraceLog() = default;
 
 void TraceLog::SetEnabled(const TraceConfig& trace_config) {
   DCHECK(trace_config.process_filter_config().IsEnabled(process_id_));
@@ -402,9 +382,9 @@ void TraceLog::SetEnabled(const TraceConfig& trace_config) {
   // TODO(khokhlov): Avoid duplication between this code and
   // services/tracing/public/cpp/perfetto/perfetto_config.cc.
   perfetto::TraceConfig perfetto_config;
-  ByteCount size_limit = trace_config.GetTraceBufferSizeInBytes();
+  ByteSize size_limit = trace_config.GetTraceBufferSizeInBytes();
   if (size_limit.is_zero()) {
-    size_limit = MiB(200);
+    size_limit = MiBU(200);
   }
   auto* buffer_config = perfetto_config.add_buffers();
   buffer_config->set_size_kb(checked_cast<uint32_t>(size_limit.InKiB()));
@@ -540,47 +520,6 @@ void TraceLog::SetDisabledWhileLocked() {
   }
 }
 
-void TraceLog::AddEnabledStateObserver(EnabledStateObserver* listener) {
-  AutoLock lock(observers_lock_);
-  enabled_state_observers_.push_back(listener);
-}
-
-void TraceLog::RemoveEnabledStateObserver(EnabledStateObserver* listener) {
-  AutoLock lock(observers_lock_);
-  auto removed = std::ranges::remove(enabled_state_observers_, listener);
-  enabled_state_observers_.erase(removed.begin(), removed.end());
-}
-
-void TraceLog::AddOwnedEnabledStateObserver(
-    std::unique_ptr<EnabledStateObserver> listener) {
-  AutoLock lock(observers_lock_);
-  enabled_state_observers_.push_back(listener.get());
-  owned_enabled_state_observer_copy_.push_back(std::move(listener));
-}
-
-bool TraceLog::HasEnabledStateObserver(EnabledStateObserver* listener) const {
-  AutoLock lock(observers_lock_);
-  return Contains(enabled_state_observers_, listener);
-}
-
-void TraceLog::AddAsyncEnabledStateObserver(
-    WeakPtr<AsyncEnabledStateObserver> listener) {
-  AutoLock lock(observers_lock_);
-  async_observers_.emplace(listener.get(), RegisteredAsyncObserver(listener));
-}
-
-void TraceLog::RemoveAsyncEnabledStateObserver(
-    AsyncEnabledStateObserver* listener) {
-  AutoLock lock(observers_lock_);
-  async_observers_.erase(listener);
-}
-
-bool TraceLog::HasAsyncEnabledStateObserver(
-    AsyncEnabledStateObserver* listener) const {
-  AutoLock lock(observers_lock_);
-  return Contains(async_observers_, listener);
-}
-
 // Flush() works as the following:
 // 1. Flush() is called in thread A whose task runner is saved in
 //    flush_task_runner_;
@@ -693,81 +632,29 @@ void TraceLog::SetProcessID(ProcessId process_id) {
   process_id_ = process_id;
 }
 
-size_t TraceLog::GetObserverCountForTest() const {
-  AutoLock lock(observers_lock_);
-  return enabled_state_observers_.size();
-}
-
-void TraceLog::OnStart(const perfetto::DataSourceBase::StartArgs&) {
-  {
-    AutoLock lock(track_event_lock_);
-    ++active_track_event_sessions_;
-    // Legacy observers don't support multiple tracing sessions. So we only
-    // notify them about the first one.
-    if (active_track_event_sessions_ > 1) {
-      return;
-    }
-  }
-
-  AutoLock lock(observers_lock_);
-  for (EnabledStateObserver* observer : enabled_state_observers_) {
-    observer->OnTraceLogEnabled();
-  }
-  for (const auto& it : async_observers_) {
-    it.second.task_runner->PostTask(
-        FROM_HERE, BindOnce(&AsyncEnabledStateObserver::OnTraceLogEnabled,
-                            it.second.observer));
-  }
-}
-
-void TraceLog::OnStop(const perfetto::DataSourceBase::StopArgs& args) {
-  {
-    AutoLock lock(track_event_lock_);
-    --active_track_event_sessions_;
-    // Legacy observers don't support multiple tracing sessions. So we only
-    // notify them when the last one stopped.
-    if (active_track_event_sessions_ > 0) {
-      return;
-    }
-  }
-
-  AutoLock lock(observers_lock_);
-  for (base::trace_event::TraceLog::EnabledStateObserver* it :
-       enabled_state_observers_) {
-    it->OnTraceLogDisabled();
-  }
-  for (const auto& it : async_observers_) {
-    it.second.task_runner->PostTask(
-        FROM_HERE, BindOnce(&AsyncEnabledStateObserver::OnTraceLogDisabled,
-                            it.second.observer));
-  }
-}
-
 }  // namespace base::trace_event
 
 namespace trace_event_internal {
 
-base::trace_event::TraceEventHandle AddTraceEvent(
-    char phase,
-    const unsigned char* category_group_enabled,
-    const char* name,
-    uint64_t id,
-    base::trace_event::TraceArguments* args,
-    unsigned int flags) {
+void AddTraceEvent(char phase,
+                   const unsigned char* category_group_enabled,
+                   const char* name,
+                   uint64_t id,
+                   base::trace_event::TraceArguments* args,
+                   unsigned int flags) {
   auto thread_id = base::PlatformThread::CurrentId();
   base::TimeTicks now = TRACE_TIME_TICKS_NOW();
   return AddTraceEventWithThreadIdAndTimestamp(
       phase, category_group_enabled, name, id, thread_id, now, args, flags);
 }
 
-base::trace_event::TraceEventHandle AddTraceEventWithProcessId(
-    char phase,
-    const unsigned char* category_group_enabled,
-    const char* name,
-    uint64_t id,
-    base::ProcessId process_id,
-    base::trace_event::TraceArguments* args,
-    unsigned int flags) {
+void AddTraceEventWithProcessId(char phase,
+                                const unsigned char* category_group_enabled,
+                                const char* name,
+                                uint64_t id,
+                                base::ProcessId process_id,
+                                base::trace_event::TraceArguments* args,
+                                unsigned int flags) {
   static_assert(sizeof(base::PlatformThreadId::UnderlyingType) >=
                 sizeof(base::ProcessId));
   base::TimeTicks now = TRACE_TIME_TICKS_NOW();
@@ -778,7 +665,7 @@ base::trace_event::TraceEventHandle AddTraceEventWithProcessId(
       now, args, flags | TRACE_EVENT_FLAG_HAS_PROCESS_ID);
 }
 
-base::trace_event::TraceEventHandle AddTraceEventWithThreadIdAndTimestamp(
+void AddTraceEventWithThreadIdAndTimestamp(
     char phase,
     const unsigned char* category_group_enabled,
     const char* name,
@@ -792,7 +679,7 @@ base::trace_event::TraceEventHandle AddTraceEventWithThreadIdAndTimestamp(
       flags);
 }
 
-base::trace_event::TraceEventHandle AddTraceEventWithThreadIdAndTimestamps(
+void AddTraceEventWithThreadIdAndTimestamps(
     char phase,
     const unsigned char* category_group_enabled,
     const char* name,
@@ -806,8 +693,7 @@ base::trace_event::TraceEventHandle AddTraceEventWithThreadIdAndTimestamps(
 }
 
 void UpdateTraceEventDuration(const unsigned char* category_group_enabled,
-                              const char* name,
-                              base::trace_event::TraceEventHandle handle) {
+                              const char* name) {
   if (!*category_group_enabled) {
     return;
   }

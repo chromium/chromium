@@ -40,7 +40,19 @@ below) -->
   <menuitem>Submenu2 first item</menuitem>
 </menulist>
 
+<!-- This menuitem should show a collapsed state; script shows and then hides
+the submenu, which should apply `expanded=true` and then `expanded=false`, thus
+ultimately resulting in the collapsed state -->
+<menubar>
+  <menuitem command=toggle-menu commandfor=submenu2>First item</menuitem>
+</menubar>
+<menulist id=submenu2></menulist>
+
 <script>
   openedmenu.showPopover();
   submenu1.showPopover();
+
+  // See documentation above.
+  submenu2.showPopover();
+  submenu2.hidePopover();
 </script>

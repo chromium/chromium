@@ -29,7 +29,7 @@ void TestWebUI::ClearTrackedCalls() {
 }
 
 void TestWebUI::HandleReceivedMessage(const std::string& handler_name,
-                                      const base::Value::List& args) {
+                                      const base::ListValue& args) {
   const auto callbacks_map_it = message_callbacks_.find(handler_name);
   if (callbacks_map_it != message_callbacks_.end()) {
     // Create a copy of the callbacks before running them. Without this, it
@@ -104,7 +104,7 @@ void TestWebUI::RegisterMessageCallback(std::string_view message,
 
 void TestWebUI::ProcessWebUIMessage(const GURL& source_url,
                                     const std::string& message,
-                                    base::Value::List args) {
+                                    base::ListValue args) {
   auto callback_entry = message_callbacks_.find(message);
   if (callback_entry == message_callbacks_.end()) {
     return;

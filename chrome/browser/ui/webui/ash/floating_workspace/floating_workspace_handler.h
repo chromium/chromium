@@ -27,11 +27,11 @@ class FloatingWorkspaceDialogHandler : public content::WebUIMessageHandler {
   FloatingWorkspaceDialog::State state() { return state_; }
 
  private:
-  void Initialize(const base::Value::List& args);
-  void ShowNetworkDetails(const base::Value::List& args);
-  void ShowNetworkConfig(const base::Value::List& args);
-  void AddNetwork(const base::Value::List& args);
-  void GetHostname(const base::Value::List& args);
+  void Initialize(const base::ListValue& args);
+  void ShowNetworkDetails(const base::ListValue& args);
+  void ShowNetworkConfig(const base::ListValue& args);
+  void AddNetwork(const base::ListValue& args);
+  void GetHostname(const base::ListValue& args);
   void Respond(const std::string& callback_id, base::ValueView response);
 
   FloatingWorkspaceDialog::State state_ =

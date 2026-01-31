@@ -14,8 +14,7 @@
 #include "chromeos/ash/services/nearby/public/mojom/quick_start_decoder.mojom.h"
 #include "mojo/public/cpp/bindings/shared_remote.h"
 
-namespace ash {
-namespace nearby {
+namespace ash::nearby {
 
 FakeNearbyProcessManager::FakeNearbyProcessReference::
     FakeNearbyProcessReference(
@@ -139,5 +138,4 @@ void FakeNearbyProcessManager::OnReferenceDeleted(
   }
 }
 
-}  // namespace nearby
-}  // namespace ash
+}  // namespace ash::nearby

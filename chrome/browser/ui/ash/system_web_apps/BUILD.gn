@@ -21,7 +21,6 @@ static_library("system_web_apps") {
   deps = [
     "//ash/webui/system_apps/public:system_web_app_type",
     "//base",
-    "//chrome/browser/apps/app_service:constants",
     "//chrome/browser/ash/browser_delegate",
     "//chrome/browser/ash/browser_delegate:impl",
     "//chrome/browser/ash/file_manager",
@@ -35,6 +34,7 @@ static_library("system_web_apps") {
     "//chrome/common",
     "//chromeos/ash/components/browser_context_helper",
     "//chromeos/ash/experiences/system_web_apps/types",
+    "//components/services/app_service",
     "//components/webapps/common",
     "//content/public/browser",
     "//ui/base",

@@ -31,13 +31,15 @@ void HostMetrics::Shutdown() {
           features::kGlicRecordMemoryFootprintMetrics)) {
     if (max_webui_memory_ > 0) {
       base::UmaHistogramMemoryLargeMB(
-          "Glic.Instance.WebUI.MaxPrivateMemoryFootprint",
+          "Glic.Instance.WebUI.MaxPrivateMemoryFootprint2",
           max_webui_memory_ / 1024 / 1024);
+      max_webui_memory_ = 0;
     }
     if (max_web_client_memory_ > 0) {
       base::UmaHistogramMemoryLargeMB(
-          "Glic.Instance.WebClient.MaxPrivateMemoryFootprint",
+          "Glic.Instance.WebClient.MaxPrivateMemoryFootprint2",
           max_web_client_memory_ / 1024 / 1024);
+      max_web_client_memory_ = 0;
     }
   }
 }

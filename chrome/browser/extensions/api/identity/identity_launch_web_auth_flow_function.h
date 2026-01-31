@@ -72,7 +72,7 @@ class IdentityLaunchWebAuthFlowFunction : public ExtensionFunction,
 
   // Helper to initialize final URL prefix.
   void InitFinalRedirectURLDomains(const std::string& extension_id,
-                                   const base::Value::List* redirect_urls);
+                                   const base::ListValue* redirect_urls);
 
   std::unique_ptr<WebAuthFlow> auth_flow_;
   std::vector<GURL> final_url_domains_;

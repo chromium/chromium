@@ -105,7 +105,7 @@ pub fn init_rust_log_crate() {
     // An error may occur if set_logger has already been called, which can happen
     // during unit tests. In that case, return from the method without executing the
     // subsequent code.
-    if let Err(_) = log::set_logger(&RUST_LOGGER) {
+    if log::set_logger(&RUST_LOGGER).is_err() {
         return;
     };
     log::set_max_level(LevelFilter::Trace);

@@ -156,6 +156,11 @@ export class SettingsPrivacyPageIndexElement extends
         type: Boolean,
         value: () => loadTimeData.getBoolean('enableLocalNetworkAccessSetting'),
       },
+      enableLocalNetworkAccessSplitPermissions_: {
+        type: Boolean,
+        value: () =>
+            loadTimeData.getBoolean('enableLocalNetworkAccessSplitPermissions'),
+      },
 
       enableWebAppInstallation_: {
         type: Boolean,
@@ -212,6 +217,7 @@ export class SettingsPrivacyPageIndexElement extends
   declare private enableSafeBrowsingSubresourceFilter_: boolean;
   declare private enableKeyboardLockPrompt_: boolean;
   declare private enableLocalNetworkAccessSetting_: boolean;
+  declare private enableLocalNetworkAccessSplitPermissions_: boolean;
   declare private enablePaymentHandlerContentSetting_: boolean;
   declare private enablePersistentPermissions_: boolean;
   declare private enableSecurityKeysSubpage_: boolean;

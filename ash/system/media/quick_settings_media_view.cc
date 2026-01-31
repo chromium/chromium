@@ -172,7 +172,7 @@ void QuickSettingsMediaView::OnGestureEvent(ui::GestureEvent* event) {
 void QuickSettingsMediaView::ShowItem(
     const std::string& id,
     std::unique_ptr<global_media_controls::MediaItemUIView> item) {
-  DCHECK(!base::Contains(items_, id));
+  DCHECK(!items_.contains(id));
   items_[id] = media_scroll_view_->contents()->AddChildView(std::move(item));
 
   // Set the updated size of the media item based on the number of media items.
@@ -185,7 +185,7 @@ void QuickSettingsMediaView::ShowItem(
 }
 
 void QuickSettingsMediaView::HideItem(const std::string& id) {
-  if (!base::Contains(items_, id)) {
+  if (!items_.contains(id)) {
     return;
   }
   media_scroll_view_->contents()->RemoveChildViewT(items_[id]);

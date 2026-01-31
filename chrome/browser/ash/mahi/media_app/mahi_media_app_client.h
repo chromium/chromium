@@ -9,7 +9,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/unguessable_token.h"
-#include "chromeos/crosapi/mojom/mahi.mojom.h"
+#include "chromeos/components/mahi/public/cpp/mahi_types.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "ui/aura/client/focus_change_observer.h"
 #include "ui/aura/client/focus_client.h"
@@ -26,9 +26,6 @@ class MahiMediaAppClient : public media_app_ui::mojom::MahiUntrustedService,
                            public aura::client::FocusChangeObserver,
                            public aura::WindowObserver {
  public:
-  using GetContentCallback =
-      base::OnceCallback<void(crosapi::mojom::MahiPageContentPtr)>;
-
   MahiMediaAppClient(
       mojo::PendingRemote<ash::media_app_ui::mojom::MahiUntrustedPage> page,
       const std::string& file_name,
@@ -45,7 +42,7 @@ class MahiMediaAppClient : public media_app_ui::mojom::MahiUntrustedService,
   void OnPdfContextMenuHide() override;
 
   // Exposes media_app_ui::mojom::MahiUntrustedPage interfaces:
-  void GetPdfContent(GetContentCallback callback);
+  void GetPdfContent(chromeos::MahiGetContentCallback callback);
   void HideMediaAppContextMenu();
 
   // aura::client::FocusChangeObserver:

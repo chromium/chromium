@@ -60,10 +60,6 @@ void StructuredMetricsRecorder::DisableRecording() {
   recording_enabled_ = false;
   disallowed_projects_.clear();
 }
-void StructuredMetricsRecorder::ProvideUmaEventMetrics(
-    ChromeUserMetricsExtension& uma_proto) {
-  // no-op
-}
 
 void StructuredMetricsRecorder::ProvideEventMetrics(
     ChromeUserMetricsExtension& uma_proto) {

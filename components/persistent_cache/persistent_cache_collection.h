@@ -27,6 +27,7 @@
 
 namespace persistent_cache {
 
+enum class Client;
 struct PendingBackend;
 class PersistentCache;
 
@@ -60,6 +61,7 @@ class COMPONENT_EXPORT(PERSISTENT_CACHE) PersistentCacheCollection {
   // management within `top_directory`.
   PersistentCacheCollection(base::FilePath top_directory,
                             int64_t target_footprint,
+                            Client client,
                             size_t lru_capacity = kDefaultLruCacheCapacity);
 
   // Constructs an instance that will use `storage_delegate` for file management
@@ -68,6 +70,7 @@ class COMPONENT_EXPORT(PERSISTENT_CACHE) PersistentCacheCollection {
       base::FilePath top_directory,
       int64_t target_footprint,
       std::unique_ptr<BackendStorage::Delegate> storage_delegate,
+      Client client,
       size_t lru_capacity = kDefaultLruCacheCapacity);
 
   PersistentCacheCollection(const PersistentCacheCollection&) = delete;

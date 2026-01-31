@@ -6,17 +6,16 @@
 
 #include <stdint.h>
 
+#include <algorithm>
 #include <memory>
 #include <type_traits>
 #include <utility>
 
-#include "base/containers/contains.h"
 #include "base/containers/span.h"
 #include "base/logging.h"
 #include "base/numerics/byte_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/system/sys_info.h"
-#include "base/types/cxx23_to_underlying.h"
 #include "ui/gfx/geometry/vector2d.h"
 #include "ui/gfx/x/connection.h"
 #include "ui/gfx/x/x11_crtc_resizer.h"
@@ -140,7 +139,7 @@ gfx::Size CalculateSizeInMmForGnome(const gfx::Size& dimensions,
   // https://gitlab.gnome.org/GNOME/mutter/-/blob/main/src/backends/meta-monitor-manager.c
   constexpr std::pair<int, int> kBadSizes[] = {
       {16, 9}, {16, 10}, {160, 90}, {160, 100}, {1600, 900}, {1600, 1000}};
-  if (base::Contains(kBadSizes, std::pair(width_mm, height_mm))) {
+  if (std::ranges::contains(kBadSizes, std::pair(width_mm, height_mm))) {
     width_mm--;
   }
   return {width_mm, height_mm};
@@ -397,8 +396,8 @@ void RandROutputManager::SetLayout(const RandRMonitorLayout& layout) {
         continue;
       }
       resizer.AddActiveCrtc(crtc, mode, {output}, new_layout.rect());
-      VLOG(0) << "Added display with crtc: " << base::to_underlying(crtc)
-              << ", output: " << base::to_underlying(output);
+      VLOG(0) << "Added display with crtc: " << std::to_underlying(crtc)
+              << ", output: " << std::to_underlying(output);
     }
     if (i < diff.new_displays.configs.size()) {
       LOG(WARNING) << "Failed to create "
@@ -416,7 +415,7 @@ void RandROutputManager::SetLayout(const RandRMonitorLayout& layout) {
       // This is not expected to happen. Disabled Outputs are not expected to
       // have any Monitor, but |output| was found in the RRGetMonitors response,
       // so it should have a CRTC attached.
-      LOG(ERROR) << "No CRTC found for output: " << base::to_underlying(output);
+      LOG(ERROR) << "No CRTC found for output: " << std::to_underlying(output);
       continue;
     }
     resizer.DisableCrtc(crtc);
@@ -436,7 +435,7 @@ void RandROutputManager::SetLayout(const RandRMonitorLayout& layout) {
     auto output = GetOutputFromContext(removed_display.context);
     auto crtc = resizer.GetCrtcForOutput(output);
     if (crtc == kDisabledCrtc) {
-      LOG(ERROR) << "No CRTC found for output: " << base::to_underlying(output);
+      LOG(ERROR) << "No CRTC found for output: " << std::to_underlying(output);
       continue;
     }
     resizer.DisableCrtc(crtc);
@@ -503,7 +502,7 @@ void RandROutputManager::SetResolutionForOutput(x11::RandR::Output output,
     // This is not expected to happen. Disabled Outputs are not expected to
     // have any Monitor, but |output| was found in the RRGetMonitors response,
     // so it should have a CRTC attached.
-    LOG(ERROR) << "No CRTC found for output: " << base::to_underlying(output);
+    LOG(ERROR) << "No CRTC found for output: " << std::to_underlying(output);
     return;
   }
 
@@ -554,7 +553,7 @@ std::string RandROutputManager::GetModeNameForOutput(
   // The name of the mode representing the current client view resolution. This
   // must be unique per Output, so that Outputs can be resized independently.
   return base::StringPrintf("%s%i", output_name_prefix_.c_str(),
-                            base::to_underlying(output));
+                            std::to_underlying(output));
 }
 
 }  // namespace x11

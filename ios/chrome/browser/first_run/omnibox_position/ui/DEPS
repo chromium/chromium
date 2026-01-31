@@ -1,0 +1,6 @@
+include_rules = [
+  # keep-sorted start
+  "+ios/chrome/browser/settings/ui_bundled/address_bar_preference/cells/address_bar_option_item_view.h",
+  "+ios/chrome/browser/toolbar/legacy/ui_bundled/public/toolbar_type.h",
+  # keep-sorted end
+]

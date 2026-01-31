@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/intelligence/enhanced_calendar/coordinator/enhanced_calendar_mediator.h"
 
+#import "base/strings/stringprintf.h"
 #import "base/strings/sys_string_conversions.h"
 #import "ios/chrome/browser/intelligence/enhanced_calendar/constants/error_strings.h"
 #import "ios/chrome/browser/intelligence/enhanced_calendar/coordinator/enhanced_calendar_mediator_delegate.h"
@@ -22,13 +23,13 @@ NSString* const kDateTimeTemplate = @"dd/MM/yyyy HH:mm";
 
 // String template to use for adding additional information to the calendar
 // event summary.
-constexpr std::string kCalendarEventSummaryAdditionalInfoTemplate = "\n{} {}";
+constexpr char kCalendarEventSummaryAdditionalInfoTemplate[] = "\n%s %s";
 
 // The string template to use for the calendar event summary.
-constexpr std::string kCalendarEventSummaryTemplate = "{}\n";
+constexpr char kCalendarEventSummaryTemplate[] = "%s\n";
 
 // The string template to use for the calendar event title.
-constexpr std::string kCalendarEventTitleTemplate = "{} {}";
+constexpr char kCalendarEventTitleTemplate[] = "%s %s";
 
 }  // namespace
 
@@ -202,18 +203,18 @@ constexpr std::string kCalendarEventTitleTemplate = "{} {}";
     return @"";
   }
 
-  return base::SysUTF8ToNSString(
-      std::format(kCalendarEventSummaryAdditionalInfoTemplate,
-                  l10n_util::GetStringUTF8(
-                      IDS_IOS_ENHANCED_CALENDAR_EVENT_DESCRIPTION_LOCATION),
-                  eventLocation));
+  return base::SysUTF8ToNSString(base::StringPrintf(
+      kCalendarEventSummaryAdditionalInfoTemplate,
+      l10n_util::GetStringUTF8(
+          IDS_IOS_ENHANCED_CALENDAR_EVENT_DESCRIPTION_LOCATION),
+      eventLocation));
 }
 
 // Get description URL field.
 - (NSString*)descriptionURL {
   CHECK(!_enhancedCalendarConfig.URL.empty());
 
-  return base::SysUTF8ToNSString(std::format(
+  return base::SysUTF8ToNSString(base::StringPrintf(
       kCalendarEventSummaryAdditionalInfoTemplate,
       l10n_util::GetStringUTF8(IDS_IOS_ENHANCED_CALENDAR_EVENT_DESCRIPTION_URL),
       _enhancedCalendarConfig.URL));
@@ -225,7 +226,7 @@ constexpr std::string kCalendarEventTitleTemplate = "{} {}";
     return @"";
   }
 
-  return base::SysUTF8ToNSString(std::format(
+  return base::SysUTF8ToNSString(base::StringPrintf(
       kCalendarEventSummaryAdditionalInfoTemplate,
       l10n_util::GetStringUTF8(
           IDS_IOS_ENHANCED_CALENDAR_EVENT_DESCRIPTION_CONFIRMATION_CODE),
@@ -243,7 +244,7 @@ constexpr std::string kCalendarEventTitleTemplate = "{} {}";
   std::string prefix = l10n_util::GetStringUTF8(
       IDS_IOS_ENHANCED_CALENDAR_EVENT_TITLE_BOOKED_PREFIX);
   return base::SysUTF8ToNSString(
-      std::format(kCalendarEventTitleTemplate, prefix, eventTitle));
+      base::StringPrintf(kCalendarEventTitleTemplate, prefix, eventTitle));
 }
 
 // Get the event summary.
@@ -252,7 +253,7 @@ constexpr std::string kCalendarEventTitleTemplate = "{} {}";
                           confirmationCode:(std::string)confirmationCode {
   // Set the templated description.
   NSString* summary = base::SysUTF8ToNSString(
-      std::format(kCalendarEventSummaryTemplate, eventSummary));
+      base::StringPrintf(kCalendarEventSummaryTemplate, eventSummary));
 
   summary = [summary
       stringByAppendingString:[self optionalLocationField:eventLocation]];

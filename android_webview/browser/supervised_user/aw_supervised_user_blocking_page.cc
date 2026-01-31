@@ -105,7 +105,7 @@ void AwSupervisedUserBlockingPage::CommandReceived(const std::string& command) {
 }
 
 void AwSupervisedUserBlockingPage::PopulateInterstitialStrings(
-    base::Value::Dict& load_time_data) {
+    base::DictValue& load_time_data) {
   load_time_data.Set(
       "primaryParagraph",
       l10n_util::GetStringUTF16(IDS_SUPERVISED_USER_URL_BLOCKED_MESSAGE));

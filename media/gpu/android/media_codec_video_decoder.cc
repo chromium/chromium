@@ -919,6 +919,7 @@ bool MediaCodecVideoDecoder::QueueInput() {
       FlushCodec();
       return true;
     }
+    DVLOG(2) << "Deferring flush for unreleased codec outputs.";
     return false;
   }
 
@@ -1010,7 +1011,7 @@ bool MediaCodecVideoDecoder::QueueInput() {
              ? 3
              : 2))
       << "QueueInput(" << pending_buffer->AsHumanReadableString()
-      << ") status=" << status.message();
+      << ") status=" << static_cast<int>(status.code());
 
   switch (status.code()) {
     case CodecWrapper::QueueStatus::Codes::kOk:

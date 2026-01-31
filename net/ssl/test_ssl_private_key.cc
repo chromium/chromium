@@ -4,10 +4,10 @@
 
 #include "net/ssl/test_ssl_private_key.h"
 
+#include <algorithm>
 #include <memory>
 #include <utility>
 
-#include "base/containers/contains.h"
 #include "base/containers/to_vector.h"
 #include "base/task/sequenced_task_runner.h"
 #include "net/base/net_errors.h"
@@ -59,7 +59,7 @@ class SSLPrivateKeyWithPreferences : public SSLPrivateKey {
   void Sign(uint16_t algorithm,
             base::span<const uint8_t> input,
             SignCallback callback) override {
-    if (!base::Contains(prefs_, algorithm)) {
+    if (!std::ranges::contains(prefs_, algorithm)) {
       base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
           FROM_HERE, base::BindOnce(std::move(callback),
                                     ERR_SSL_CLIENT_AUTH_SIGNATURE_FAILED,

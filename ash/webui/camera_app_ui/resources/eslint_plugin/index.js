@@ -142,12 +142,11 @@ const stringEnumOrder = {
   },
 };
 
-/* global module */
-module.exports = {
-  rules: {
-    'parameter-comment-format': parameterCommentFormatRule,
-    'generic-parameter-on-declaration-type': genericParameterOnDeclarationType,
-    'todo-format': todoFormatRule,
-    'string-enum-order': stringEnumOrder,
-  },
+const rules = {
+  'parameter-comment-format': parameterCommentFormatRule,
+  'generic-parameter-on-declaration-type': genericParameterOnDeclarationType,
+  'todo-format': todoFormatRule,
+  'string-enum-order': stringEnumOrder,
 };
+
+export default {rules};

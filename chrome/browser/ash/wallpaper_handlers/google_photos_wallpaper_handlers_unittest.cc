@@ -92,7 +92,7 @@ constexpr char kGooglePhotosAlbumsFullResponse[] =
 
 // Parses `json` as a value dictionary. A test calling this function will fail
 // if `json` is not appropriately formatted.
-base::Value::Dict JsonToDict(std::string_view json) {
+base::DictValue JsonToDict(std::string_view json) {
   std::optional<base::Value> parsed_json =
       base::JSONReader::Read(json, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   EXPECT_TRUE(parsed_json.has_value() && parsed_json->is_dict());
@@ -102,8 +102,8 @@ base::Value::Dict JsonToDict(std::string_view json) {
 // Returns a non-null pointer to the photo in a hypothetical Google Photos
 // photos query response. A test calling this function will fail if the response
 // does not contain exactly one photo.
-base::Value::Dict* GetPhotoFromGooglePhotosPhotosResponse(
-    base::Value::Dict* response) {
+base::DictValue* GetPhotoFromGooglePhotosPhotosResponse(
+    base::DictValue* response) {
   EXPECT_TRUE(response);
   auto* photos = response->FindList("item");
   EXPECT_TRUE(photos && photos->size() == 1);
@@ -115,8 +115,8 @@ base::Value::Dict* GetPhotoFromGooglePhotosPhotosResponse(
 // Returns a non-null pointer to the album in a hypothetical Google Photos
 // albums query response. A test calling this function will fail if the response
 // does not contain exactly one album.
-base::Value::Dict* GetAlbumFromGooglePhotosAlbumsResponse(
-    base::Value::Dict* response) {
+base::DictValue* GetAlbumFromGooglePhotosAlbumsResponse(
+    base::DictValue* response) {
   EXPECT_TRUE(response);
   auto* albums = response->FindList("collection");
   EXPECT_TRUE(albums && albums->size() == 1);
@@ -164,7 +164,7 @@ class GooglePhotosFetcherTestBase : public testing::Test {
 
 class GooglePhotosEnabledFetcherTest : public GooglePhotosFetcherTestBase {
  public:
-  GooglePhotosEnablementState ParseResponse(base::Value::Dict* response) {
+  GooglePhotosEnablementState ParseResponse(base::DictValue* response) {
     return google_photos_enabled_fetcher_->ParseResponse(response);
   }
 
@@ -192,7 +192,7 @@ TEST_F(GooglePhotosEnabledFetcherTest, ParseGooglePhotosEnabled) {
   EXPECT_EQ(GetResultCount(result), std::nullopt);
 
   // Parse a response without an enabled state.
-  base::Value::Dict response;
+  base::DictValue response;
   EXPECT_EQ(ParseResponse(&response), result);
   EXPECT_EQ(GetResultCount(result), std::nullopt);
 
@@ -216,7 +216,7 @@ TEST_F(GooglePhotosEnabledFetcherTest, ParseGooglePhotosEnabled) {
 
 class GooglePhotosPhotosFetcherTest : public GooglePhotosFetcherTestBase {
  public:
-  GooglePhotosPhotosCbkArgs ParseResponse(const base::Value::Dict* response) {
+  GooglePhotosPhotosCbkArgs ParseResponse(const base::DictValue* response) {
     return google_photos_photos_fetcher_->ParseResponse(response);
   }
 
@@ -244,7 +244,7 @@ TEST_F(GooglePhotosPhotosFetcherTest, ParseGooglePhotosPhotosAbsentPhoto) {
   EXPECT_EQ(GetResultCount(result), std::nullopt);
 
   // Parse a response with no resume token or photos.
-  base::Value::Dict empty_response;
+  base::DictValue empty_response;
   EXPECT_EQ(ParseResponse(&empty_response), result);
   EXPECT_EQ(GetResultCount(result), std::nullopt);
 
@@ -355,7 +355,7 @@ TEST_F(GooglePhotosPhotosFetcherTest, ParsePhotosValidPhoto) {
 
 class GooglePhotosAlbumsFetcherTest : public GooglePhotosFetcherTestBase {
  public:
-  GooglePhotosAlbumsCbkArgs ParseResponse(const base::Value::Dict* response) {
+  GooglePhotosAlbumsCbkArgs ParseResponse(const base::DictValue* response) {
     return google_photos_albums_fetcher_->ParseResponse(response);
   }
 
@@ -383,7 +383,7 @@ TEST_F(GooglePhotosAlbumsFetcherTest, ParseAlbumsAbsentAlbum) {
   EXPECT_EQ(GetResultCount(result), std::nullopt);
 
   // Parse a response with no resume token or albums.
-  base::Value::Dict empty_response;
+  base::DictValue empty_response;
   EXPECT_EQ(ParseResponse(&empty_response), result);
 
   // Parse a response with a resume token and no albums.

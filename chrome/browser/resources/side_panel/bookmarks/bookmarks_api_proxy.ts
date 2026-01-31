@@ -45,6 +45,8 @@ export interface BookmarksApiProxy {
   contextMenuOpenBookmarkInNewWindow(ids: string[], source: ActionSource): void;
   contextMenuOpenBookmarkInIncognitoWindow(ids: string[], source: ActionSource):
       void;
+  canOpenBookmarksInIncognitoWindow(ids: string[]):
+      Promise<{canOpenInIncognito: boolean}>;
   contextMenuOpenBookmarkInNewTabGroup(ids: string[], source: ActionSource):
       void;
   contextMenuOpenBookmarkInSplitView(ids: string[], source: ActionSource): void;
@@ -78,6 +80,10 @@ export class BookmarksApiProxyImpl implements BookmarksApiProxy {
 
   bookmarkCurrentTabInFolder(folderId: string) {
     this.handler.bookmarkCurrentTabInFolder(folderId);
+  }
+
+  canOpenBookmarksInIncognitoWindow(ids: string[]) {
+    return this.handler.canOpenBookmarksInIncognitoWindow(ids);
   }
 
   contextMenuOpenBookmarkInNewTab(ids: string[], source: ActionSource) {

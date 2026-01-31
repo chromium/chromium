@@ -8,6 +8,7 @@
 #import <Cocoa/Cocoa.h>
 
 #include "base/apple/foundation_util.h"
+#import "components/remote_cocoa/app_shim/native_widget_mac_nswindow_headless.h"
 #include "components/remote_cocoa/app_shim/remote_cocoa_app_shim_export.h"
 #import "ui/base/cocoa/command_dispatcher.h"
 
@@ -88,6 +89,9 @@ REMOTE_COCOA_APP_SHIM_EXPORT
 // The sheet parent that should be used. In immersive fullscreen the preferred
 // sheet parent is the root window (the browser window).
 - (NSWindow*)preferredSheetParent;
+
+// Returns headless window extra info or nullptr if this window is not headless.
+- (NativeWidgetMacNSWindowHeadlessInfo*)headlessInfo;
 
 // Identifier for the NativeWidgetMac from which this window was created. This
 // may be used to look up the NativeWidgetMacNSWindowHost in the browser process

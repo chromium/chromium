@@ -8,7 +8,6 @@
 #include <set>
 #include <vector>
 
-#include "base/containers/contains.h"
 #include "chrome/browser/predictors/loading_data_collector.h"
 #include "chrome/browser/predictors/resource_prefetch_predictor.h"
 #include "content/public/browser/preconnect_request.h"
@@ -99,11 +98,10 @@ void LoadingStatsCollector::RecordPageRequestSummary(
         const bool is_cross_origin =
             !main_frame_origin.IsSameOriginWith(subresource_url);
         const bool is_correctly_predicted =
-            base::Contains(summary.subresource_urls, subresource_url);
+            summary.subresource_urls.contains(subresource_url);
         const bool is_correctly_predicted_low_priority =
             !is_correctly_predicted &&
-            base::Contains(summary.low_priority_subresource_urls,
-                           subresource_url);
+            summary.low_priority_subresource_urls.contains(subresource_url);
         if (is_cross_origin) {
           cross_origin_predicted_subresources++;
         }
@@ -154,15 +152,14 @@ void LoadingStatsCollector::RecordPageRequestSummary(
           std::min(ukm_cap, predicted_origins.size()));
       size_t correctly_predicted_origins = std::ranges::count_if(
           predicted_origins, [&summary](const url::Origin& subresource_origin) {
-            return base::Contains(summary.origins, subresource_origin);
+            return summary.origins.contains(subresource_origin);
           });
       builder.SetOptimizationGuidePredictionCorrectlyPredictedOrigins(
           std::min(ukm_cap, correctly_predicted_origins));
       size_t correctly_predicted_low_priority_origins = std::ranges::count_if(
           predicted_origins, [&summary](const url::Origin& subresource_origin) {
-            return base::Contains(summary.low_priority_origins,
-                                  subresource_origin) &&
-                   !base::Contains(summary.origins, subresource_origin);
+            return summary.low_priority_origins.contains(subresource_origin) &&
+                   !summary.origins.contains(subresource_origin);
           });
       builder
           .SetOptimizationGuidePredictionCorrectlyPredictedLowPriorityOrigins(

@@ -102,28 +102,28 @@ class DisplayManagerObserverValidator : public display::DisplayObserver,
 
   // display::DisplayObserver:
   void OnDisplayAdded(const display::Display& new_display) override {
-    if (!base::Contains(added_displays_, new_display)) {
-      EXPECT_TRUE(base::Contains(active_display_list(), new_display));
+    if (!std::ranges::contains(added_displays_, new_display)) {
+      EXPECT_TRUE(std::ranges::contains(active_display_list(), new_display));
       added_displays_.push_back(new_display);
     }
   }
   void OnWillRemoveDisplays(const Displays& removed_displays) override {
     for (const auto& display : removed_displays) {
-      EXPECT_TRUE(base::Contains(active_display_list(), display));
+      EXPECT_TRUE(std::ranges::contains(active_display_list(), display));
     }
   }
   void OnDisplaysRemoved(const display::Displays& removed_displays) override {
     for (const auto& display : removed_displays) {
-      EXPECT_FALSE(base::Contains(active_display_list(), display));
-      if (!base::Contains(added_displays_, display)) {
+      EXPECT_FALSE(std::ranges::contains(active_display_list(), display));
+      if (!std::ranges::contains(added_displays_, display)) {
         removed_displays_.push_back(display);
       }
     }
   }
   void OnDisplayMetricsChanged(const display::Display& display,
                                uint32_t changed_metrics) override {
-    EXPECT_TRUE(base::Contains(active_display_list(), display));
-    if (!base::Contains(changed_displays_, display)) {
+    EXPECT_TRUE(std::ranges::contains(active_display_list(), display));
+    if (!std::ranges::contains(changed_displays_, display)) {
       changed_displays_.push_back(display);
     }
     if (!changed_metrics_.try_emplace(display.id(), changed_metrics).second) {
@@ -158,7 +158,7 @@ class DisplayManagerObserverValidator : public display::DisplayObserver,
     EXPECT_EQ(changed_metrics_.size(),
               configuration_change.display_metrics_changes.size());
     for (const auto& change : configuration_change.display_metrics_changes) {
-      EXPECT_TRUE(base::Contains(changed_metrics_, change.display->id()));
+      EXPECT_TRUE(changed_metrics_.contains(change.display->id()));
       EXPECT_EQ(changed_metrics_[change.display->id()], change.changed_metrics);
     }
 
@@ -5338,11 +5338,11 @@ TEST_F(DisplayManagerTest, DisplayManagerObserverNestedChangesOrdering) {
 
       // If correctly ordered observers should be notified of added displays
       // before any changes to the metrics for these displays.
-      std::ranges::for_each(configuration_change.display_metrics_changes,
-                            [this](const auto& change) {
-                              EXPECT_TRUE(base::Contains(tracked_display_ids_,
-                                                         change.display->id()));
-                            });
+      std::ranges::for_each(
+          configuration_change.display_metrics_changes,
+          [this](const auto& change) {
+            EXPECT_TRUE(tracked_display_ids_.contains(change.display->id()));
+          });
 
       if (on_processed_cb_) {
         std::move(on_processed_cb_).Run();

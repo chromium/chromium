@@ -55,8 +55,7 @@ bool CanShowBottomSheet(content::WebContents* web_contents,
 PwaBottomSheetController::~PwaBottomSheetController() = default;
 
 // static
-static jboolean
-JNI_PwaBottomSheetController_RequestOrExpandBottomSheetInstaller(
+static bool JNI_PwaBottomSheetController_RequestOrExpandBottomSheetInstaller(
     JNIEnv* env,
     const JavaRef<jobject>& jweb_contents,
     int install_trigger) {
@@ -93,7 +92,7 @@ bool PwaBottomSheetController::MaybeShow(
           env, web_contents->GetJavaWebContents())) {
     Java_PwaBottomSheetControllerProvider_updateState(
         env, web_contents->GetJavaWebContents(),
-        jint(a2hs_params->install_source), expand_sheet);
+        int32_t(a2hs_params->install_source), expand_sheet);
   } else {
     // Lifetime of this object is managed by the Java counterpart, iff bottom
     // sheets can be shown (otherwise an infobar is used and this class is no

@@ -7,7 +7,7 @@
 #include "base/test/values_test_util.h"
 #include "components/os_crypt/async/browser/os_crypt_async.h"
 #include "components/os_crypt/async/browser/test_utils.h"
-#include "components/safe_browsing/content/browser/web_ui/safe_browsing_ui_handler.h"
+#include "components/safe_browsing/content/browser/web_ui/safe_browsing_content_ui_handler.h"
 #include "components/safe_browsing/core/browser/web_ui/web_ui_info_singleton_event_observer.h"
 #include "components/safe_browsing/core/common/proto/safebrowsingv5.pb.h"
 #include "content/public/test/browser_task_environment.h"
@@ -31,16 +31,16 @@ class SafeBrowsingUITest : public testing::Test {
     return member_int_;
   }
 
-  SafeBrowsingUIHandler* RegisterNewHandler() {
-    auto handler_unique = std::make_unique<SafeBrowsingUIHandler>(
+  SafeBrowsingContentUIHandler* RegisterNewHandler() {
+    auto handler_unique = std::make_unique<SafeBrowsingContentUIHandler>(
         &browser_context_, nullptr, os_crypt_async_.get());
 
-    SafeBrowsingUIHandler* handler = handler_unique.get();
+    SafeBrowsingContentUIHandler* handler = handler_unique.get();
     handler->SetWebUIForTesting(&web_ui_);
     // Calling AllowJavascript will register the handler as a web UI instance
     // for WebUIContentInfoSingleton::GetInstance(). We do this instead of
     // registering the instance directly because otherwise, the first
-    // SafeBrowsingUIHandler call to AllowJavascript will re-register the
+    // SafeBrowsingContentUIHandler call to AllowJavascript will re-register the
     // instance.
     handler->AllowJavascriptForTesting();
 
@@ -48,7 +48,7 @@ class SafeBrowsingUITest : public testing::Test {
     return handler;
   }
 
-  void UnregisterHandler(SafeBrowsingUIHandler* handler) {
+  void UnregisterHandler(SafeBrowsingContentUIHandler* handler) {
     WebUIContentInfoSingleton::GetInstance()->UnregisterWebUIInstance(
         handler->event_observer());
   }
@@ -69,7 +69,7 @@ TEST_F(SafeBrowsingUITest, CRSBLOGDoesNotEvaluateWhenNoListeners) {
   EXPECT_EQ(member_int_, 0);
 
   // Register a listener, so SetMemberInt() will be evaluated.
-  SafeBrowsingUIHandler* handler = RegisterNewHandler();
+  SafeBrowsingContentUIHandler* handler = RegisterNewHandler();
 
   CRSBLOG << SetMemberInt(1);
   EXPECT_EQ(member_int_, 1);
@@ -78,7 +78,7 @@ TEST_F(SafeBrowsingUITest, CRSBLOGDoesNotEvaluateWhenNoListeners) {
 }
 
 TEST_F(SafeBrowsingUITest, TestHPRTLookups) {
-  SafeBrowsingUIHandler* handler = RegisterNewHandler();
+  SafeBrowsingContentUIHandler* handler = RegisterNewHandler();
   ASSERT_EQ(0u, web_ui_.call_data().size());
 
   // Create request.
@@ -97,7 +97,7 @@ TEST_F(SafeBrowsingUITest, TestHPRTLookups) {
   ASSERT_EQ(1u, web_ui_.call_data().size());
   EXPECT_EQ(web_ui_.call_data()[0]->arg1()->GetString(),
             "hprt-lookup-pings-update");
-  const base::Value::List& request_data =
+  const base::ListValue& request_data =
       web_ui_.call_data()[0]->arg2()->GetList();
   EXPECT_EQ(request_data[0].GetInt(), token.value());
   EXPECT_EQ(base::test::ParseJson(request_data[1].GetString()),
@@ -142,7 +142,7 @@ TEST_F(SafeBrowsingUITest, TestHPRTLookups) {
   ASSERT_EQ(2u, web_ui_.call_data().size());
   EXPECT_EQ(web_ui_.call_data()[1]->arg1()->GetString(),
             "hprt-lookup-responses-update");
-  const base::Value::List& response_data =
+  const base::ListValue& response_data =
       web_ui_.call_data()[1]->arg2()->GetList();
   EXPECT_EQ(response_data[0].GetInt(), token.value());
   EXPECT_EQ(base::test::ParseJson(response_data[1].GetString()),
@@ -169,25 +169,25 @@ TEST_F(SafeBrowsingUITest, TestHPRTLookups) {
 )!"));
 
   // Simulate JS calling getHPRTLookupPings and validate call_data.
-  base::Value::List call_args;
+  base::ListValue call_args;
   call_args.Append("dummy-callback-id-1");
   web_ui_.HandleReceivedMessage("getHPRTLookupPings", call_args);
   ASSERT_EQ(3u, web_ui_.call_data().size());
   EXPECT_EQ(web_ui_.call_data()[2]->arg1()->GetString(), "dummy-callback-id-1");
   EXPECT_EQ(web_ui_.call_data()[2]->arg2()->GetBool(), true);
-  const base::Value::List& request_pings =
+  const base::ListValue& request_pings =
       web_ui_.call_data()[2]->arg3()->GetList();
   ASSERT_EQ(request_pings.size(), 1u);
   EXPECT_EQ(request_pings[0], request_data);
 
   // Simulate JS calling getHPRTLookupResponses and validate call_data.
-  base::Value::List call_args2;
+  base::ListValue call_args2;
   call_args2.Append("dummy-callback-id-2");
   web_ui_.HandleReceivedMessage("getHPRTLookupResponses", call_args2);
   ASSERT_EQ(4u, web_ui_.call_data().size());
   EXPECT_EQ(web_ui_.call_data()[3]->arg1()->GetString(), "dummy-callback-id-2");
   EXPECT_EQ(web_ui_.call_data()[3]->arg2()->GetBool(), true);
-  const base::Value::List& response_pings =
+  const base::ListValue& response_pings =
       web_ui_.call_data()[3]->arg3()->GetList();
   ASSERT_EQ(response_pings.size(), 1u);
   EXPECT_EQ(response_pings[0], response_data);

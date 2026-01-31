@@ -27,7 +27,7 @@ class ExtensionUrlOverrideStateTracker {
   };
 
   ExtensionUrlOverrideStateTracker() = default;
-  ~ExtensionUrlOverrideStateTracker() = default;
+  virtual ~ExtensionUrlOverrideStateTracker() = default;
 
   ExtensionUrlOverrideStateTracker(
       const ExtensionUrlOverrideStateTracker& client) = delete;

@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "base/functional/bind.h"
+#include "base/test/with_feature_override.h"
 #include "build/build_config.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/notifications/notification_permission_context.h"
@@ -10,6 +11,10 @@
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
+#include "components/content_settings/core/browser/permission_settings_registry.h"
+#include "components/content_settings/core/common/content_settings_types.h"
+#include "components/content_settings/core/common/content_settings_utils.h"
+#include "components/content_settings/core/common/features.h"
 #include "components/permissions/contexts/geolocation_permission_context.h"
 #include "components/permissions/contexts/midi_permission_context.h"
 #include "components/permissions/permission_decision.h"
@@ -27,6 +32,7 @@
 #include "services/network/public/cpp/permissions_policy/permissions_policy_declaration.h"
 #include "services/network/public/mojom/permissions_policy/permissions_policy_feature.mojom.h"
 #include "third_party/blink/public/common/features.h"
+#include "third_party/blink/public/common/permissions/permission_utils.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -128,13 +134,15 @@ class PermissionContextBasePermissionsPolicyTest
 
   PermissionStatus RequestPermissionForFrame(
       permissions::PermissionContextBase* pcb,
-      content::RenderFrameHost* rfh) {
+      content::RenderFrameHost* rfh,
+      blink::PermissionType permission) {
     permissions::PermissionRequestID id(
         rfh, permission_request_id_generator_.GenerateNextId());
     pcb->RequestPermission(
         std::make_unique<permissions::PermissionRequestData>(
-            std::make_unique<permissions::ContentSettingPermissionResolver>(
-                pcb->content_settings_type()),
+            pcb->CreatePermissionResolver(
+                content::PermissionDescriptorUtil::
+                    CreatePermissionDescriptorForPermissionType(permission)),
             id, /*user_gesture=*/true, rfh->GetLastCommittedURL()),
         base::BindOnce(&PermissionContextBasePermissionsPolicyTest::
                            RequestPermissionForFrameFinished,
@@ -270,17 +278,37 @@ TEST_F(PermissionContextBasePermissionsPolicyTest,
   EXPECT_EQ(CONTENT_SETTING_ASK, GetPermissionForFrame(&midi, child));
 }
 
-TEST_F(PermissionContextBasePermissionsPolicyTest, RequestPermission) {
+class PermissionContextBasePermissionsPolicyGeolocationTest
+    : public base::test::WithFeatureOverride,
+      public PermissionContextBasePermissionsPolicyTest {
+ public:
+  PermissionContextBasePermissionsPolicyGeolocationTest()
+      : base::test::WithFeatureOverride(
+            content_settings::features::kApproximateGeolocationPermission) {}
+};
+
+INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(
+    PermissionContextBasePermissionsPolicyGeolocationTest);
+
+TEST_P(PermissionContextBasePermissionsPolicyGeolocationTest,
+       RequestPermission) {
   content::RenderFrameHost* parent = GetMainRFH(kOrigin1);
 
+  ContentSettingsType geolocation_type =
+      content_settings::GeolocationContentSettingsType();
   HostContentSettingsMapFactory::GetForProfile(profile())
-      ->SetDefaultContentSetting(ContentSettingsType::GEOLOCATION,
-                                 CONTENT_SETTING_ALLOW);
+      ->SetDefaultPermissionSetting(
+          geolocation_type,
+          content_settings::PermissionSettingsRegistry::GetInstance()
+              ->Get(geolocation_type)
+              ->delegate()
+              .ToPermissionSetting(CONTENT_SETTING_ALLOW));
 
   // Request geolocation in the top level frame, request should work.
   auto geolocation = MakeGeolocationPermissionContext();
   EXPECT_EQ(PermissionStatus::GRANTED,
-            RequestPermissionForFrame(geolocation.get(), parent));
+            RequestPermissionForFrame(geolocation.get(), parent,
+                                      blink::PermissionType::GEOLOCATION));
 
   // Disable geolocation in the top level frame.
   RefreshPageAndSetHeaderPolicy(
@@ -289,5 +317,6 @@ TEST_F(PermissionContextBasePermissionsPolicyTest, RequestPermission) {
 
   // Request should fail.
   EXPECT_EQ(PermissionStatus::DENIED,
-            RequestPermissionForFrame(geolocation.get(), parent));
+            RequestPermissionForFrame(geolocation.get(), parent,
+                                      blink::PermissionType::GEOLOCATION));
 }

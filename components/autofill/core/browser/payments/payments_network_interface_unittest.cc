@@ -181,7 +181,7 @@ class PaymentsNetworkInterfaceTest : public PaymentsNetworkInterfaceTestBase,
   void OnDidGetUploadDetails(
       PaymentsRpcResult result,
       const std::u16string& context_token,
-      std::unique_ptr<base::Value::Dict> legal_message,
+      std::unique_ptr<base::DictValue> legal_message,
       std::vector<std::pair<int, int>> supported_card_bin_ranges) {
     result_ = result;
     legal_message_ = std::move(legal_message);
@@ -282,7 +282,7 @@ class PaymentsNetworkInterfaceTest : public PaymentsNetworkInterfaceTestBase,
 
     request_details.risk_data = "some risk data";
     if (options.use_fido) {
-      request_details.fido_assertion_info = base::Value::Dict();
+      request_details.fido_assertion_info = base::DictValue();
     }
     if (options.use_cvc) {
       request_details.user_response.cvc = base::ASCIIToUTF16(options.cvc);
@@ -460,7 +460,7 @@ class PaymentsNetworkInterfaceTest : public PaymentsNetworkInterfaceTestBase,
   GetDetailsForEnrollmentResponseDetails
       get_details_for_enrollment_response_fields_;
   // The legal message returned from a GetDetails upload save preflight call.
-  std::unique_ptr<base::Value::Dict> legal_message_;
+  std::unique_ptr<base::DictValue> legal_message_;
   // The parsed legal message returned from a GetDetails call.
   LegalMessageLines parsed_legal_message_;
   // A list of card BIN ranges supported by Google Payments, returned from a

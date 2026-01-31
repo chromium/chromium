@@ -5,6 +5,8 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_GRID_GRID_LAYOUT_UTILS_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_GRID_GRID_LAYOUT_UTILS_H_
 
+#include "third_party/blink/renderer/core/style/grid_enums.h"
+#include "third_party/blink/renderer/platform/fonts/font_baseline.h"
 #include "third_party/blink/renderer/platform/geometry/layout_unit.h"
 #include "third_party/blink/renderer/platform/wtf/wtf_size_t.h"
 
@@ -14,6 +16,7 @@ class BlockNode;
 class BoxFragmentBuilder;
 class ConstraintSpace;
 class GridLayoutTrackCollection;
+class GridSizingTrackCollection;
 class GridTrackList;
 class LogicalBoxFragment;
 
@@ -124,6 +127,40 @@ LayoutUnit CalculateIntrinsicMinimumContribution(
 LayoutUnit ClampIntrinsicMinSize(LayoutUnit min_content_contribution,
                                  LayoutUnit min_clamp_size,
                                  LayoutUnit spanned_tracks_definite_max_size);
+
+// Returns the track baseline for a grid item based on its baseline-sharing
+// group.
+LayoutUnit GetTrackBaseline(const GridItemData& grid_item,
+                            const GridLayoutTrackCollection& track_collection);
+
+// Returns the baseline of an item from its fragment. Handles both first and
+// last baseline based on `is_last_baseline`.
+LayoutUnit GetLogicalBaseline(const LogicalBoxFragment& baseline_fragment,
+                              FontBaseline font_baseline,
+                              bool is_last_baseline);
+
+// Calculates and stores an item's baseline in the appropriate track.
+// `extra_margin` should include any margins and subgrid extra margins that need
+// to be added to the baseline.
+void StoreItemBaseline(const LogicalBoxFragment& baseline_fragment,
+                       GridTrackSizingDirection track_direction,
+                       FontBaseline font_baseline,
+                       LayoutUnit extra_margin,
+                       GridSizingTrackCollection& track_collection,
+                       GridItemData& item);
+
+// Computes the baseline offset for aligning a grid item within its
+// baseline-sharing group. Returns the offset needed to align the item's
+// baseline with its track's baseline, accounting for major/minor baseline
+// groups.
+LayoutUnit ComputeBaselineOffset(
+    const GridItemData& grid_item,
+    const GridLayoutTrackCollection& track_collection,
+    const LogicalBoxFragment& baseline_fragment,
+    const LogicalBoxFragment& fragment,
+    FontBaseline font_baseline,
+    GridTrackSizingDirection track_direction,
+    LayoutUnit available_size);
 
 }  // namespace blink
 

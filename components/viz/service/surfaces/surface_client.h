@@ -59,7 +59,7 @@ class VIZ_SERVICE_EXPORT SurfaceClient {
       const std::vector<TransferableResource>& resources) = 0;
 
   // Decrements the reference count on resources specified by |resources|.
-  virtual void UnrefResources(std::vector<ReturnedResource> resources) = 0;
+  virtual void UnrefResources(std::vector<ReturnedResourceViz> resources) = 0;
 
   // ReturnResources gets called when the display compositor is done using the
   // resources so that the client can use them.
@@ -72,8 +72,8 @@ class VIZ_SERVICE_EXPORT SurfaceClient {
 
   // Takes all the CopyOutputRequests made at the client level that happened for
   // a LocalSurfaceId preceeding the given one.
-  virtual std::vector<PendingCopyOutputRequest> TakeCopyOutputRequests(
-      const LocalSurfaceId& latest_surface_id) = 0;
+  virtual std::vector<std::unique_ptr<PendingCopyOutputRequest>>
+  TakeCopyOutputRequests(const LocalSurfaceId& latest_surface_id) = 0;
 
   // Notifies the client that a frame with |token| has been activated.
   virtual void OnFrameTokenChanged(uint32_t frame_token) = 0;

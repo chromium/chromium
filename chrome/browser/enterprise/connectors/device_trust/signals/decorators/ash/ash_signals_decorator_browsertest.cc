@@ -52,8 +52,8 @@ constexpr char kWifiServicePath[] = "/service/stub_wifi";
 constexpr char kFakeSerialNumber[] = "fake_serial_number";
 constexpr char kFakeDeviceHostName[] = "fake_device_host_name";
 
-base::Value::List GetExpectedMacAddresses() {
-  base::Value::List mac_addresses;
+base::ListValue GetExpectedMacAddresses() {
+  base::ListValue mac_addresses;
   mac_addresses.Append(kMacAddress);
   return mac_addresses;
 }
@@ -148,7 +148,7 @@ IN_PROC_BROWSER_TEST_F(AshSignalsDecoratorBrowserTest,
 
   base::RunLoop run_loop;
   AshSignalsDecorator decorator(connector_, testing_profile());
-  base::Value::Dict signals;
+  base::DictValue signals;
   decorator.Decorate(signals, run_loop.QuitClosure());
 
   run_loop.Run();
@@ -195,18 +195,16 @@ IN_PROC_BROWSER_TEST_F(AshSignalsDecoratorBrowserTest, TestNetworkSignals) {
   // Test for no network
   {
     base::RunLoop run_loop;
-    base::Value::Dict signals;
+    base::DictValue signals;
     decorator.Decorate(signals, run_loop.QuitClosure());
 
     run_loop.Run();
 
-    base::Value::List* imei_list =
-        signals.FindList(device_signals::names::kImei);
+    base::ListValue* imei_list = signals.FindList(device_signals::names::kImei);
     ASSERT_TRUE(imei_list);
     EXPECT_TRUE(imei_list->empty());
 
-    base::Value::List* meid_list =
-        signals.FindList(device_signals::names::kMeid);
+    base::ListValue* meid_list = signals.FindList(device_signals::names::kMeid);
     ASSERT_TRUE(meid_list);
     EXPECT_TRUE(meid_list->empty());
   }
@@ -216,7 +214,7 @@ IN_PROC_BROWSER_TEST_F(AshSignalsDecoratorBrowserTest, TestNetworkSignals) {
     SetupFakeNetwork();
 
     base::RunLoop run_loop;
-    base::Value::Dict signals;
+    base::DictValue signals;
     decorator.Decorate(signals, run_loop.QuitClosure());
 
     run_loop.Run();
@@ -226,13 +224,11 @@ IN_PROC_BROWSER_TEST_F(AshSignalsDecoratorBrowserTest, TestNetworkSignals) {
     ASSERT_TRUE(mac_addresses);
     EXPECT_EQ(*mac_addresses, GetExpectedMacAddresses());
 
-    base::Value::List* imei_list =
-        signals.FindList(device_signals::names::kImei);
+    base::ListValue* imei_list = signals.FindList(device_signals::names::kImei);
     EXPECT_EQ(imei_list->size(), 1u);
     EXPECT_EQ(imei_list->front(), kFakeImei);
 
-    base::Value::List* meid_list =
-        signals.FindList(device_signals::names::kMeid);
+    base::ListValue* meid_list = signals.FindList(device_signals::names::kMeid);
     EXPECT_EQ(meid_list->size(), 1u);
     EXPECT_EQ(meid_list->front(), kFakeMeid);
   }
@@ -243,7 +239,7 @@ IN_PROC_BROWSER_TEST_F(AshSignalsDecoratorBrowserTest, TestSignalTrigger) {
   {
     base::RunLoop run_loop;
     AshSignalsDecorator decorator(connector_, testing_profile());
-    base::Value::Dict signals;
+    base::DictValue signals;
     decorator.Decorate(signals, run_loop.QuitClosure());
 
     run_loop.Run();
@@ -262,7 +258,7 @@ IN_PROC_BROWSER_TEST_F(AshSignalsDecoratorBrowserTest, TestSignalTrigger) {
     AshSignalsDecorator decorator(
         connector_,
         ash::ProfileHelper::GetSigninProfile()->GetOriginalProfile());
-    base::Value::Dict signals;
+    base::DictValue signals;
     decorator.Decorate(signals, run_loop.QuitClosure());
 
     run_loop.Run();

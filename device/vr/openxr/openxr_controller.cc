@@ -351,18 +351,25 @@ XrSpace OpenXrController::GetInputSpace(
   }
 }
 
-XrResult OpenXrController::Update(XrSpace base_space,
-                                  XrTime predicted_display_time) {
+void OpenXrController::Update(XrSpace base_space,
+                              XrTime predicted_display_time) {
   if (interaction_profile_ == mojom::OpenXrInteractionProfileType::kInvalid) {
-    RETURN_IF_XR_FAILED(UpdateInteractionProfile());
+    // Worst case if this fails the query button and other commands later will
+    // fail. We'll at least know why.
+    if (XR_FAILED(UpdateInteractionProfile())) {
+      DLOG(ERROR) << __func__ << " UpdateInteractionProfile failed for hand "
+                  << GetHandness();
+    }
   }
 
   if (IsHandTrackingEnabled() || IsCurrentProfileFromHandTracker()) {
-    RETURN_IF_XR_FAILED(
-        hand_tracker_->Update(base_space, predicted_display_time));
+    // If the hand tracker fails to update it will stop providing data. This at
+    // least lets us know why.
+    if (XR_FAILED(hand_tracker_->Update(base_space, predicted_display_time))) {
+      DLOG(ERROR) << __func__ << " Update HandTracker failed for hand "
+                  << GetHandness();
+    }
   }
-
-  return XR_SUCCESS;
 }
 
 mojom::XRTargetRayMode OpenXrController::GetTargetRayMode() const {

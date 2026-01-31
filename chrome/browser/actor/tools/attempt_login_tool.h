@@ -102,6 +102,10 @@ class AttemptLoginTool : public Tool {
 
   tabs::TabHandle tab_handle_;
 
+  // The time where the attempt tool is created, used to calculate the overall
+  // time of the flow until filling and submission time.
+  const base::TimeTicks attempt_login_tool_start_time_;
+
   // Helper class which uploads the model quality log for each filling.
   ActorLoginQualityLogger quality_logger_;
 

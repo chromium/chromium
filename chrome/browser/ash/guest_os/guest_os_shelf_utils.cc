@@ -71,7 +71,7 @@ bool MatchingString(const std::string& search_string,
 enum class FindAppIdResult { NoMatch, UniqueMatch, NonUniqueMatch };
 // Looks for an app where prefs_key is set to search_value. Returns the apps id
 // if there was only one app matching, otherwise returns an empty string.
-FindAppIdResult FindAppId(const base::Value::Dict& prefs,
+FindAppIdResult FindAppId(const base::DictValue& prefs,
                           std::string_view prefs_key,
                           std::string_view search_value,
                           const std::optional<GuestId>& guest_id,
@@ -193,7 +193,7 @@ std::string GetGuestOsShelfAppId(Profile* profile,
   if (!profile || !profile->GetPrefs())
     return std::string();
 
-  const base::Value::Dict& apps =
+  const base::DictValue& apps =
       profile->GetPrefs()->GetDict(guest_os::prefs::kGuestOsRegistry);
 
   // TODO(b/244651040): Consider moving the borealis GetBorealisAppId logic

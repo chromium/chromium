@@ -1066,7 +1066,7 @@ base::TimeDelta UsageTimeLimitProcessor::GetTimeZoneOffset(base::Time time) {
 
 // Transforms the time dictionary sent on the UsageTimeLimit policy to a
 // TimeDelta, that represents the distance from midnight.
-base::TimeDelta DictToTimeDelta(const base::Value::Dict& policy_time) {
+base::TimeDelta DictToTimeDelta(const base::DictValue& policy_time) {
   int hour = policy_time.FindInt(kWindowLimitEntryTimeHour).value();
   int minute = policy_time.FindInt(kWindowLimitEntryTimeMinute).value();
   return base::Minutes(hour * 60 + minute);
@@ -1102,19 +1102,19 @@ TimeWindowLimitBoundaries TimeWindowLimitEntry::GetLimits(
 }
 
 TimeWindowLimit::TimeWindowLimit(const base::Value& window_limit_val) {
-  const base::Value::Dict& window_limit_dict = window_limit_val.GetDict();
+  const base::DictValue& window_limit_dict = window_limit_val.GetDict();
   if (!window_limit_dict.contains(kWindowLimitEntries)) {
     return;
   }
 
   for (const base::Value& entry_val :
        CHECK_DEREF(window_limit_dict.FindList(kWindowLimitEntries))) {
-    const base::Value::Dict& entry_dict = entry_val.GetDict();
+    const base::DictValue& entry_dict = entry_val.GetDict();
     const std::string* effective_day =
         entry_dict.FindString(kWindowLimitEntryEffectiveDay);
-    const base::Value::Dict* starts_at =
+    const base::DictValue* starts_at =
         entry_dict.FindDict(kWindowLimitEntryStartsAt);
-    const base::Value::Dict* ends_at =
+    const base::DictValue* ends_at =
         entry_dict.FindDict(kWindowLimitEntryEndsAt);
     const std::string* last_updated_value =
         entry_dict.FindString(kTimeLimitLastUpdatedAt);
@@ -1154,18 +1154,17 @@ TimeWindowLimit& TimeWindowLimit::operator=(TimeWindowLimit&&) = default;
 
 TimeUsageLimitEntry::TimeUsageLimitEntry() = default;
 
-TimeUsageLimit::TimeUsageLimit(const base::Value::Dict& usage_limit_dict)
+TimeUsageLimit::TimeUsageLimit(const base::DictValue& usage_limit_dict)
     // Default reset time is midnight.
     : resets_at(base::Minutes(0)) {
-  const base::Value::Dict* resets_at_value =
+  const base::DictValue* resets_at_value =
       usage_limit_dict.FindDict(kUsageLimitResetAt);
   if (resets_at_value) {
     resets_at = DictToTimeDelta(*resets_at_value);
   }
 
   for (const std::string& weekday_key : kTimeLimitWeekdays) {
-    const base::Value::Dict* entry_dict =
-        usage_limit_dict.FindDict(weekday_key);
+    const base::DictValue* entry_dict = usage_limit_dict.FindDict(weekday_key);
     if (!entry_dict) {
       continue;
     }
@@ -1199,7 +1198,7 @@ TimeUsageLimit& TimeUsageLimit::operator=(TimeUsageLimit&&) = default;
 }  // namespace internal
 
 std::optional<internal::TimeWindowLimit> TimeWindowLimitFromPolicy(
-    const base::Value::Dict& time_limit) {
+    const base::DictValue& time_limit) {
   const base::Value* time_window_limit_value =
       time_limit.Find(internal::kTimeWindowLimit);
   if (!time_window_limit_value)
@@ -1208,7 +1207,7 @@ std::optional<internal::TimeWindowLimit> TimeWindowLimitFromPolicy(
 }
 
 std::optional<internal::TimeUsageLimit> TimeUsageLimitFromPolicy(
-    const base::Value::Dict& time_limit) {
+    const base::DictValue& time_limit) {
   const base::Value* time_usage_limit_value =
       time_limit.Find(internal::kTimeUsageLimit);
   if (!time_usage_limit_value)
@@ -1217,14 +1216,14 @@ std::optional<internal::TimeUsageLimit> TimeUsageLimitFromPolicy(
 }
 
 std::optional<TimeLimitOverride> OverrideFromPolicy(
-    const base::Value::Dict& time_limit) {
-  const base::Value::List* override_value =
+    const base::DictValue& time_limit) {
+  const base::ListValue* override_value =
       time_limit.FindList(TimeLimitOverride::kOverridesDictKey);
   return TimeLimitOverride::MostRecentFromList(override_value);
 }
 
-State GetState(const base::Value::Dict& time_limit,
-               const base::Value::Dict* local_override,
+State GetState(const base::DictValue& time_limit,
+               const base::DictValue* local_override,
                const base::TimeDelta& used_time,
                const base::Time& usage_timestamp,
                const base::Time& current_time,
@@ -1247,8 +1246,8 @@ State GetState(const base::Value::Dict& time_limit,
       .GetState();
 }
 
-base::Time GetExpectedResetTime(const base::Value::Dict& time_limit,
-                                const base::Value::Dict* local_override,
+base::Time GetExpectedResetTime(const base::DictValue& time_limit,
+                                const base::DictValue* local_override,
                                 const base::Time current_time,
                                 const icu::TimeZone* const time_zone) {
   std::optional<internal::TimeWindowLimit> time_window_limit =
@@ -1268,8 +1267,8 @@ base::Time GetExpectedResetTime(const base::Value::Dict& time_limit,
 }
 
 std::optional<base::TimeDelta> GetRemainingTimeUsage(
-    const base::Value::Dict& time_limit,
-    const base::Value::Dict* local_override,
+    const base::DictValue& time_limit,
+    const base::DictValue* local_override,
     const base::Time current_time,
     const base::TimeDelta& used_time,
     const icu::TimeZone* const time_zone) {
@@ -1289,13 +1288,12 @@ std::optional<base::TimeDelta> GetRemainingTimeUsage(
       .GetRemainingTimeUsage();
 }
 
-base::TimeDelta GetTimeUsageLimitResetTime(
-    const base::Value::Dict& time_limit) {
+base::TimeDelta GetTimeUsageLimitResetTime(const base::DictValue& time_limit) {
   return internal::GetUsageLimitResetTime(TimeUsageLimitFromPolicy(time_limit));
 }
 
-std::set<PolicyType> UpdatedPolicyTypes(const base::Value::Dict& old_policy,
-                                        const base::Value::Dict& new_policy) {
+std::set<PolicyType> UpdatedPolicyTypes(const base::DictValue& old_policy,
+                                        const base::DictValue& new_policy) {
   std::set<PolicyType> updated_policies;
   if (TimeUsageLimitFromPolicy(old_policy) !=
       TimeUsageLimitFromPolicy(new_policy)) {
@@ -1319,7 +1317,7 @@ std::set<PolicyType> UpdatedPolicyTypes(const base::Value::Dict& old_policy,
 }
 
 std::set<PolicyType> GetEnabledTimeLimitPolicies(
-    const base::Value::Dict& time_limit_prefs) {
+    const base::DictValue& time_limit_prefs) {
   std::set<PolicyType> enabled_policies;
 
   std::optional<internal::TimeWindowLimit> time_window_limit =

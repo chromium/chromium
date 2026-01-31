@@ -63,6 +63,7 @@
 #define BASE_SYNCHRONIZATION_CONDITION_VARIABLE_H_
 
 #include "base/dcheck_is_on.h"
+#include "base/location.h"
 #include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 
@@ -94,8 +95,10 @@ class BASE_EXPORT ConditionVariable {
   // Wait() releases the caller's critical section atomically as it starts to
   // sleep, and the reacquires it when it is signaled. The wait functions are
   // susceptible to spurious wakeups. (See usage note 1 for more details.)
-  NOT_TAIL_CALLED void Wait();
-  NOT_TAIL_CALLED void TimedWait(const TimeDelta& max_time);
+  NOT_TAIL_CALLED void Wait(const Location& location = Location::Current());
+  NOT_TAIL_CALLED void TimedWait(
+      const TimeDelta& max_time,
+      const Location& location = Location::Current());
 
   // Broadcast() revives all waiting threads. (See usage note 2 for more
   // details.)

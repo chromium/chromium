@@ -167,7 +167,7 @@ std::string AutomationInternalCustomBindings::GetOffscreenStateString() const {
 
 void AutomationInternalCustomBindings::DispatchEvent(
     const std::string& event_name,
-    const base::Value::List& event_args) const {
+    const base::ListValue& event_args) const {
   bindings_system_->DispatchEventInContext(event_name, event_args, nullptr,
                                            context());
 }

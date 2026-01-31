@@ -8,7 +8,6 @@
 #include <vector>
 
 #include "base/compiler_specific.h"
-#include "base/containers/contains.h"
 #include "base/containers/span.h"
 #include "base/files/file_util.h"
 #include "base/rand_util.h"
@@ -22,6 +21,7 @@
 #include "base/test/test_future.h"
 #include "net/cert/mock_cert_verifier.h"
 #include "net/dns/mock_host_resolver.h"
+#include "net/log/net_log_event_type.h"
 #include "net/log/test_net_log.h"
 #include "net/quic/quic_context.h"
 #include "net/test/test_data_directory.h"
@@ -45,6 +45,10 @@
 
 namespace network {
 namespace {
+
+using ::testing::Eq;
+using ::testing::Pointee;
+using ::testing::SizeIs;
 
 class HostResolverFactory final : public net::HostResolver::Factory {
  public:
@@ -541,6 +545,7 @@ class LNAPermissionURLLoaderNetworkObserver
  public:
   void OnLocalNetworkAccessPermissionRequired(
       mojom::TransportType type,
+      network::mojom::IPAddressSpace ip_address_space,
       OnLocalNetworkAccessPermissionRequiredCallback callback) override {
     std::move(callback).Run(lna_permission_granted
                                 ? mojom::LocalNetworkAccessResult::kGranted
@@ -584,6 +589,14 @@ TEST_F(WebTransportTest, ConnectLNAPermissionDenied) {
   ASSERT_TRUE(test_handshake_client.handshake_error().has_value());
   EXPECT_EQ(test_handshake_client.handshake_error()->net_error,
             net::ERR_BLOCKED_BY_LOCAL_NETWORK_ACCESS_CHECKS);
+
+  std::vector<net::NetLogEntry> entries = net_log_observer().GetEntriesWithType(
+      net::NetLogEventType::LOCAL_NETWORK_ACCESS_PERMISSION_REQUESTED);
+  ASSERT_THAT(entries, SizeIs(1));
+  const base::DictValue& params = entries[0].params;
+  EXPECT_THAT(params.FindString("address_space"), Pointee(Eq("loopback")));
+  EXPECT_THAT(params.FindString("transport_type"), Pointee(Eq("direct")));
+  EXPECT_THAT(params.FindString("result"), Pointee(Eq("denied")));
 }
 
 TEST_F(WebTransportTest, ConnectLNAPermissionGranted) {
@@ -619,6 +632,14 @@ TEST_F(WebTransportTest, ConnectLNAPermissionGranted) {
   EXPECT_EQ(test_handshake_client.selected_application_protocol(),
             std::nullopt);
   EXPECT_EQ(1u, network_context().NumOpenWebTransports());
+
+  std::vector<net::NetLogEntry> entries = net_log_observer().GetEntriesWithType(
+      net::NetLogEventType::LOCAL_NETWORK_ACCESS_PERMISSION_REQUESTED);
+  ASSERT_THAT(entries, SizeIs(1));
+  const base::DictValue& params = entries[0].params;
+  EXPECT_THAT(params.FindString("address_space"), Pointee(Eq("loopback")));
+  EXPECT_THAT(params.FindString("transport_type"), Pointee(Eq("direct")));
+  EXPECT_THAT(params.FindString("result"), Pointee(Eq("granted")));
 }
 
 TEST_F(WebTransportTest, SendDatagram) {
@@ -644,12 +665,7 @@ TEST_F(WebTransportTest, SendDatagram) {
   while (client.received_datagrams().empty()) {
     base::RunLoop run_loop_for_datagram;
     bool result;
-    std::vector<uint8_t> data = {
-        static_cast<uint8_t>(base::RandInt(0, 255)),
-        static_cast<uint8_t>(base::RandInt(0, 255)),
-        static_cast<uint8_t>(base::RandInt(0, 255)),
-        static_cast<uint8_t>(base::RandInt(0, 255)),
-    };
+    std::vector<uint8_t> data = base::RandBytesAsVector(4);
     transport_remote->SendDatagram(base::span(data),
                                    base::BindLambdaForTesting([&](bool r) {
                                      result = r;
@@ -663,7 +679,7 @@ TEST_F(WebTransportTest, SendDatagram) {
     sent_data.insert(std::move(data));
   }
 
-  EXPECT_TRUE(base::Contains(sent_data, client.received_datagrams()[0]));
+  EXPECT_TRUE(sent_data.contains(client.received_datagrams()[0]));
 }
 
 TEST_F(WebTransportTest, SendToolargeDatagram) {

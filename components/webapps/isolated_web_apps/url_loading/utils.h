@@ -12,6 +12,7 @@
 #include "components/web_package/signed_web_bundles/signed_web_bundle_id.h"
 #include "content/public/browser/frame_tree_node_id.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "net/base/net_errors.h"
 #include "net/http/http_status_code.h"
 #include "services/network/public/mojom/url_loader.mojom-forward.h"
 #include "url/gurl.h"
@@ -45,7 +46,8 @@ void LogErrorMessageToConsole(
 void LogErrorAndFail(
     const std::string& error_message,
     const std::optional<content::FrameTreeNodeId>& frame_tree_node_id,
-    mojo::PendingRemote<network::mojom::URLLoaderClient> client);
+    mojo::PendingRemote<network::mojom::URLLoaderClient> client,
+    net::Error err = net::ERR_FAILED);
 
 void HandleProxy(
     content::BrowserContext* browser_context,

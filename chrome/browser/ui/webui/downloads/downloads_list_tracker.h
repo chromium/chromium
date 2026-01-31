@@ -98,12 +98,6 @@ class DownloadsListTracker
 
  private:
   FRIEND_TEST_ALL_PREFIXES(DownloadsListTrackerTest,
-                           CreateDownloadData_UrlFormatting_OmitUserPass);
-  FRIEND_TEST_ALL_PREFIXES(DownloadsListTrackerTest,
-                           CreateDownloadData_UrlFormatting_Idn);
-  FRIEND_TEST_ALL_PREFIXES(DownloadsListTrackerTest,
-                           CreateDownloadData_UrlFormatting_Long);
-  FRIEND_TEST_ALL_PREFIXES(DownloadsListTrackerTest,
                            CreateDownloadData_UrlFormatting_VeryLong);
   FRIEND_TEST_ALL_PREFIXES(DownloadsListTrackerTest,
                            CreateDownloadData_InitiatorOriginPresent);

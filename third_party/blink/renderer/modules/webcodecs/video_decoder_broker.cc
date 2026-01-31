@@ -8,12 +8,14 @@
 #include <memory>
 #include <string>
 
+#include "base/feature_list.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/sequenced_task_runner.h"
 #include "build/buildflag.h"
 #include "media/base/decoder_factory.h"
 #include "media/base/decoder_status.h"
+#include "media/base/media_switches.h"
 #include "media/base/media_util.h"
 #include "media/base/video_decoder_config.h"
 #include "media/mojo/buildflags.h"
@@ -127,6 +129,18 @@ class MediaVideoTaskWrapper {
                       Unretained(this)),
         blink::BindRepeating(&MediaVideoTaskWrapper::OnDecodeOutput,
                              weak_factory_.GetWeakPtr()));
+
+    // Prefer the existing decoder if the `config` is still supported by it.
+    // This avoids unnecessary decoder churn during repeated flush() operations.
+    // This also works around an issue with flushing on Android where the
+    // automatic call to Initialize() after Flush() destroys the codec;
+    // invalidating any unrendered output buffers.
+    // See https://crbug.com/474398415
+    if (decoder_ && !decoder_factory_needs_update_ &&
+        base::FeatureList::IsEnabled(
+            media::kWebCodecsDecoderFlushOptimizations)) {
+      selector_->PrependDecoder(std::move(decoder_));
+    }
 
     selector_->SelectDecoder(
         config, low_delay,

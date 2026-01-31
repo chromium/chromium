@@ -30,7 +30,7 @@ base::Value CreateKilobyte() {
 
 // Creates a megabyte of data.
 base::Value CreateMegabyte() {
-  base::Value::List megabyte;
+  base::ListValue megabyte;
   for (int i = 0; i < 1000; ++i) {
     megabyte.Append(CreateKilobyte());
   }
@@ -73,11 +73,11 @@ scoped_refptr<const Extension> AddExtensionWithIdAndPermissions(
     Manifest::Type type,
     const std::set<std::string>& permissions_set) {
   auto manifest =
-      base::Value::Dict().Set("name", std::string("Test extension ") + id);
+      base::DictValue().Set("name", std::string("Test extension ") + id);
   manifest.Set("version", "1.0");
   manifest.Set("manifest_version", 2);
 
-  base::Value::List permissions;
+  base::ListValue permissions;
   for (const auto& perm : permissions_set)
     permissions.Append(perm);
   manifest.Set("permissions", std::move(permissions));
@@ -87,8 +87,8 @@ scoped_refptr<const Extension> AddExtensionWithIdAndPermissions(
       break;
 
     case Manifest::Type::kLegacyPackagedApp: {
-      base::Value::Dict app;
-      base::Value::Dict app_launch;
+      base::DictValue app;
+      base::DictValue app_launch;
       app_launch.Set("local_path", "fake.html");
       app.Set("launch", std::move(app_launch));
       manifest.Set("app", std::move(app));

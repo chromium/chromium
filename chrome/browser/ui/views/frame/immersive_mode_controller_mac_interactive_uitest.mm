@@ -12,11 +12,15 @@
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_manager.h"
+#include "chrome/browser/ui/tabs/features.h"
+#include "chrome/browser/ui/tabs/vertical_tab_strip_state_controller.h"
 #include "chrome/browser/ui/views/find_bar_host.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/immersive_mode_controller.h"
 #include "chrome/browser/ui/views/frame/immersive_mode_controller_mac.h"
 #include "chrome/browser/ui/views/frame/top_container_view.h"
+#include "chrome/browser/ui/views/toolbar/browser_app_menu_button.h"
+#include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -24,6 +28,7 @@
 #include "components/prefs/pref_service.h"
 #include "content/public/test/browser_test.h"
 #include "third_party/blink/public/mojom/frame/fullscreen.mojom.h"
+#include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #import "ui/views/cocoa/native_widget_mac_ns_window_host.h"
 #include "ui/views/widget/any_widget_observer.h"
 #include "ui/views/widget/native_widget_mac.h"
@@ -49,7 +54,8 @@ class ScopedAlwaysShowToolbar {
 class ImmersiveModeControllerMacInteractiveTest : public InProcessBrowserTest {
  public:
   ImmersiveModeControllerMacInteractiveTest() {
-    scoped_feature_list_.InitAndEnableFeature(features::kImmersiveFullscreen);
+    scoped_feature_list_.InitWithFeatures(
+        {features::kImmersiveFullscreen, tabs::kVerticalTabs}, {});
   }
 
   ImmersiveModeControllerMacInteractiveTest(
@@ -223,6 +229,9 @@ IN_PROC_BROWSER_TEST_F(ImmersiveModeControllerMacInteractiveTest,
                        ExtraInfobarOffset) {
   ScopedAlwaysShowToolbar scoped_always_show(browser(), false);
 
+  // Note that setting the immersive mode controller to "on" without making the
+  // window fullscreen may cause some minor discrepancies in layout. They should
+  // not adversely affect this test.
   ImmersiveModeControllerMac* controller =
       reinterpret_cast<ImmersiveModeControllerMac*>(
           ImmersiveModeController::From(browser()));
@@ -241,7 +250,9 @@ IN_PROC_BROWSER_TEST_F(ImmersiveModeControllerMacInteractiveTest,
   controller->OnImmersiveModeMenuBarRevealChanged(1);
   RunScheduledLayouts();
   int revealed = controller->GetExtraInfobarOffset();
-  EXPECT_EQ(revealed, half_revealed * 2);
+  // The size may be even or odd, in which case one of these is true.
+  EXPECT_GE(revealed, half_revealed * 2);
+  EXPECT_LE(revealed, half_revealed * 2 + 1);
 
   // Now with non-zero menubar.
   controller->OnAutohidingMenuBarHeightChanged(30);
@@ -293,6 +304,86 @@ IN_PROC_BROWSER_TEST_F(ImmersiveModeControllerMacInteractiveTest,
   EXPECT_TRUE(SecondBrowserWindowIsOnTheActiveSpace());
 
   CleanUp();
+}
+
+// Tests that the browser can be toggled into and out of immersive fullscreen
+// with vertical tabs enabled, and that proper connections are maintained.
+IN_PROC_BROWSER_TEST_F(ImmersiveModeControllerMacInteractiveTest,
+                       ToggleFullscreenWithVerticalTabstrip) {
+  BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser());
+  tabs::VerticalTabStripStateController::From(browser())
+      ->SetVerticalTabsEnabled(true);
+  RunScheduledLayouts();
+  views::Widget* overlay_widget = browser_view->overlay_widget();
+
+  NSView* overlay_widget_content_view =
+      overlay_widget->GetNativeWindow().GetNativeNSWindow().contentView;
+  NSWindow* overlay_widget_window = [overlay_widget_content_view window];
+
+  EXPECT_EQ(GetMovedContentViewForWidget(overlay_widget), nullptr);
+  ui_test_utils::ToggleFullscreenModeAndWait(browser());
+
+  FullscreenController* fullscreen_controller = browser()
+                                                    ->GetFeatures()
+                                                    .exclusive_access_manager()
+                                                    ->fullscreen_controller();
+
+  EXPECT_TRUE(fullscreen_controller->IsFullscreenForBrowser());
+  EXPECT_EQ(GetMovedContentViewForWidget(overlay_widget),
+            overlay_widget_content_view);
+
+  // Only on macOS 13 and higher will the contentView no longer live in the
+  // window.
+  if (base::mac::MacOSMajorVersion() >= 13) {
+    EXPECT_NE([overlay_widget_window contentView], overlay_widget_content_view);
+  }
+
+  ui_test_utils::ToggleFullscreenModeAndWait(browser());
+
+  EXPECT_FALSE(fullscreen_controller->IsFullscreenForBrowser());
+  EXPECT_EQ(GetMovedContentViewForWidget(overlay_widget), nullptr);
+  EXPECT_EQ([overlay_widget_window contentView], overlay_widget_content_view);
+}
+
+// Tests that the browser does not crash when toggling between vertical and
+// horizontal tab layouts.
+IN_PROC_BROWSER_TEST_F(ImmersiveModeControllerMacInteractiveTest,
+                       ToggleHorizontalVerticalTabLayout) {
+  BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser());
+  tabs::VerticalTabStripStateController::From(browser())
+      ->SetVerticalTabsEnabled(true);
+  RunScheduledLayouts();
+  views::Widget* overlay_widget = browser_view->overlay_widget();
+
+  NSView* overlay_widget_content_view =
+      overlay_widget->GetNativeWindow().GetNativeNSWindow().contentView;
+  NSWindow* overlay_widget_window = [overlay_widget_content_view window];
+
+  EXPECT_EQ(GetMovedContentViewForWidget(overlay_widget), nullptr);
+  ui_test_utils::ToggleFullscreenModeAndWait(browser());
+
+  FullscreenController* fullscreen_controller = browser()
+                                                    ->GetFeatures()
+                                                    .exclusive_access_manager()
+                                                    ->fullscreen_controller();
+
+  EXPECT_TRUE(fullscreen_controller->IsFullscreenForBrowser());
+  EXPECT_EQ(GetMovedContentViewForWidget(overlay_widget),
+            overlay_widget_content_view);
+
+  // Only on macOS 13 and higher will the contentView no longer live in the
+  // window.
+  if (base::mac::MacOSMajorVersion() >= 13) {
+    EXPECT_NE([overlay_widget_window contentView], overlay_widget_content_view);
+  }
+
+  tabs::VerticalTabStripStateController::From(browser())
+      ->SetVerticalTabsEnabled(false);
+  RunScheduledLayouts();
+
+  EXPECT_TRUE(fullscreen_controller->IsFullscreenForBrowser());
+  EXPECT_EQ(GetMovedContentViewForWidget(overlay_widget),
+            overlay_widget_content_view);
 }
 
 // NSWindow category for the private `-_rebuildOrderingGroup:` method.
@@ -438,4 +529,49 @@ IN_PROC_BROWSER_TEST_F(ImmersiveModeControllerMacInteractiveTest,
   // Transition out of fullscreen.
   ui_test_utils::ToggleFullscreenModeAndWait(browser());
   EXPECT_FALSE(fullscreen_controller->IsFullscreenForBrowser());
+}
+
+// Tests that bubbles anchored to the app menu button are correctly re-anchored
+// when entering immersive fullscreen, and that the content offset is updated.
+IN_PROC_BROWSER_TEST_F(ImmersiveModeControllerMacInteractiveTest,
+                       BubbleAnchoring) {
+  // Disable "Always Show Toolbar in Full Screen"
+  ScopedAlwaysShowToolbar scoped_always_show(browser(), false);
+
+  BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser());
+  views::View* anchor_view = browser_view->toolbar()->app_menu_button();
+
+  // Create and show a bubble anchored to the app menu button.
+  auto delegate = std::make_unique<views::BubbleDialogDelegate>(
+      anchor_view, views::BubbleBorder::TOP_RIGHT);
+  delegate->SetContentsView(std::make_unique<views::View>())
+      ->SetPreferredSize(gfx::Size(100, 100));
+  views::Widget* bubble_widget =
+      views::BubbleDialogDelegate::CreateBubble(std::move(delegate));
+  bubble_widget->Show();
+
+  ui_test_utils::ToggleFullscreenModeAndWait(browser());
+
+  ImmersiveModeControllerMac* controller =
+      static_cast<ImmersiveModeControllerMac*>(
+          ImmersiveModeController::From(browser()));
+
+  // Verify that the bubble caused the toolbar to be revealed.
+  EXPECT_TRUE(controller->IsRevealed());
+
+  // Verify that the content is offset to make room for the toolbar.
+  EXPECT_GT(controller->GetMinimumContentOffset(), 0);
+
+  // Verify the bubble is anchored correctly.
+  gfx::Rect anchor_bounds = anchor_view->GetBoundsInScreen();
+  gfx::Rect bubble_bounds = bubble_widget->GetWindowBoundsInScreen();
+
+  EXPECT_GE(bubble_bounds.y(), anchor_bounds.bottom());
+  EXPECT_GT(bubble_bounds.y(), 0);
+  EXPECT_GT(bubble_bounds.x(), 0);
+
+  bubble_widget->CloseNow();
+
+  // Verify MinimumContentOffset resets to 0.
+  EXPECT_EQ(controller->GetMinimumContentOffset(), 0);
 }

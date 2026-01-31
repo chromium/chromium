@@ -33,4 +33,5 @@ static_library("pe_image") {
     "pe_image.cc",
     "pe_image.h",
   ]
+  deps = [ "//base:compiler_specific" ]
 }

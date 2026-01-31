@@ -174,11 +174,11 @@ void EnterTestMode(const GURL& update_url,
 void ExitTestMode(UpdaterScope scope);
 
 // Sets the dict policies that are surfaced via external constants.
-void SetDictPolicies(const base::Value::Dict& values);
+void SetDictPolicies(const base::DictValue& values);
 
 // Sets platform policies. Platform policy is group policy on Windows, and
 // Managed Preferences on macOS.
-void SetPlatformPolicies(const base::Value::Dict& values);
+void SetPlatformPolicies(const base::DictValue& values);
 
 // Sets whether the machine is in managed state.
 void SetMachineManaged(bool is_managed_device);
@@ -195,7 +195,7 @@ void CopyLog(const base::FilePath& src_dir, const std::string& infix);
 void ExpectInstalled(UpdaterScope scope);
 
 // Installs the updater.
-void Install(UpdaterScope scope, const base::Value::List& switches);
+void Install(UpdaterScope scope, const base::ListValue& switches);
 
 // Installs the updater and an app via the command line.
 void InstallUpdaterAndApp(UpdaterScope scope,
@@ -208,7 +208,7 @@ void InstallUpdaterAndApp(UpdaterScope scope,
                           bool expect_success,
                           bool wait_for_the_installer,
                           int expected_exit_code,
-                          const base::Value::List& additional_switches,
+                          const base::ListValue& additional_switches,
                           const base::FilePath& updater_path);
 
 // Expects that the updater is installed on the system and the specified
@@ -267,10 +267,10 @@ void UpdateAll(UpdaterScope scope);
 // app.
 void InstallAppViaService(UpdaterScope scope,
                           const std::string& app_id,
-                          const base::Value::Dict& expected_final_values);
+                          const base::DictValue& expected_final_values);
 
 void GetAppStates(UpdaterScope updater_scope,
-                  const base::Value::Dict& expected_app_states);
+                  const base::DictValue& expected_app_states);
 
 // Deletes the file.
 void DeleteFile(UpdaterScope scope, const base::FilePath& path);
@@ -327,7 +327,7 @@ std::vector<TestUpdaterVersion> GetRealUpdaterVersions();
 // `UpdaterSetup.exe` in `updater_path`.
 void SetupRealUpdater(UpdaterScope scope,
                       const base::FilePath& updater_path,
-                      const base::Value::List& switches);
+                      const base::ListValue& switches);
 
 // Sets up a fake updater on the system at a version higher than the test.
 void SetupFakeUpdaterHigherVersion(UpdaterScope scope);
@@ -374,7 +374,7 @@ void ExpectAppVersion(UpdaterScope scope,
 
 void RegisterApp(UpdaterScope scope, const RegistrationRequest& registration);
 void RegisterAppByValue(UpdaterScope scope,
-                        const base::Value::Dict& registration_data);
+                        const base::DictValue& registration_data);
 
 [[nodiscard]] bool WaitForUpdaterExit();
 
@@ -393,7 +393,7 @@ void ExpectProcessLauncherLaunchCmdLineSucceeds(UpdaterScope scope);
 void ExpectLegacyAppCommandWebSucceeds(UpdaterScope scope,
                                        const std::string& app_id,
                                        const std::string& command_id,
-                                       const base::Value::List& parameters,
+                                       const base::ListValue& parameters,
                                        int expected_exit_code);
 void ExpectPolicyStatusValues(
     Microsoft::WRL::ComPtr<IPolicyStatusValue> policy_status_value,
@@ -411,7 +411,7 @@ void LegacyInstallApp(UpdaterScope scope,
 // Entries of the `arguments` dictionary should be the function's parameter
 // name/value pairs.
 void InvokeTestServiceFunction(const std::string& function_name,
-                               const base::Value::Dict& arguments);
+                               const base::DictValue& arguments);
 
 void RunUninstallCmdLine(UpdaterScope scope);
 void RunHandoff(UpdaterScope scope, const std::string& app_id);
@@ -428,15 +428,17 @@ void DeleteScheduledTask(const std::string& task_name,
 // links, or dot dot.
 int CountDirectoryFiles(const base::FilePath& dir);
 
-void ExpectSelfUpdateSequence(UpdaterScope scope, ScopedServer* test_server);
+void ExpectSelfUpdateSequence(UpdaterScope scope, ScopedServer& test_server);
 
 void ExpectPing(UpdaterScope scope,
-                ScopedServer* test_server,
+                ScopedServer& test_server,
                 int event_type,
                 std::optional<GURL> target_url);
-
+void ExpectInstallSource(UpdaterScope scope,
+                         ScopedServer& test_server,
+                         const std::string& install_source);
 void ExpectAppCommandPing(UpdaterScope scope,
-                          ScopedServer* test_server,
+                          ScopedServer& test_server,
                           const std::string& appid,
                           const std::string& appcommandid,
                           int errorcode,
@@ -445,10 +447,10 @@ void ExpectAppCommandPing(UpdaterScope scope,
                           const base::Version& version,
                           const base::Version& updater_version);
 
-void ExpectUpdateCheckRequest(UpdaterScope scope, ScopedServer* test_server);
+void ExpectUpdateCheckRequest(UpdaterScope scope, ScopedServer& test_server);
 
 void ExpectUpdateCheckSequence(UpdaterScope scope,
-                               ScopedServer* test_server,
+                               ScopedServer& test_server,
                                const std::string& app_id,
                                UpdateService::Priority priority,
                                const base::Version& from_version,
@@ -457,7 +459,7 @@ void ExpectUpdateCheckSequence(UpdaterScope scope,
 
 void ExpectUpdateSequence(
     UpdaterScope scope,
-    ScopedServer* test_server,
+    ScopedServer& test_server,
     const std::string& app_id,
     const std::string& install_data_index,
     UpdateService::Priority priority,
@@ -470,7 +472,7 @@ void ExpectUpdateSequence(
     bool use_xz = false);
 
 void ExpectUpdateSequenceBadHash(UpdaterScope scope,
-                                 ScopedServer* test_server,
+                                 ScopedServer& test_server,
                                  const std::string& app_id,
                                  const std::string& install_data_index,
                                  UpdateService::Priority priority,
@@ -478,7 +480,7 @@ void ExpectUpdateSequenceBadHash(UpdaterScope scope,
                                  const base::Version& to_version);
 
 void ExpectInstallSequence(UpdaterScope scope,
-                           ScopedServer* test_server,
+                           ScopedServer& test_server,
                            const std::string& app_id,
                            const std::string& install_data_index,
                            UpdateService::Priority priority,
@@ -489,12 +491,12 @@ void ExpectInstallSequence(UpdaterScope scope,
                            const base::Version& updater_version,
                            const std::string& event_regex);
 
-void ExpectEnterpriseCompanionAppOTAInstallSequence(ScopedServer* test_server);
+void ExpectEnterpriseCompanionAppOTAInstallSequence(ScopedServer& test_server);
 
 void ExpectAppsUpdateSequence(
     UpdaterScope scope,
-    ScopedServer* test_server,
-    const base::Value::Dict& request_attributes,
+    ScopedServer& test_server,
+    const base::DictValue& request_attributes,
     const std::vector<AppUpdateExpectation>& apps,
     const base::Version& updater_version = base::Version(kUpdaterVersion));
 
@@ -546,7 +548,8 @@ void RunOfflineInstall(UpdaterScope scope,
                        bool is_legacy_install,
                        bool is_silent_install,
                        int installer_result,
-                       int installer_error);
+                       int installer_error,
+                       const std::string& install_source);
 
 void RunOfflineInstallOsNotSupported(UpdaterScope scope,
                                      bool is_legacy_install,
@@ -584,7 +587,7 @@ void InstallEnterpriseCompanionApp();
 // Installs the constants overrides for the enterprise companion app, always at
 // the system scope.
 void InstallEnterpriseCompanionAppOverrides(
-    const base::Value::Dict& external_overrides);
+    const base::DictValue& external_overrides);
 
 // Expects that the enterprise companion app is not installed, always at system
 // scope.
@@ -604,7 +607,7 @@ void SetAppAllowsUsageStats(UpdaterScope scope,
 void ClearAppAllowsUsageStats(UpdaterScope scope,
                               const std::string& identifier);
 
-void ExpectDeviceManagementRequest(ScopedServer* test_server,
+void ExpectDeviceManagementRequest(ScopedServer& test_server,
                                    const std::string& request_type,
                                    const std::string& authorization_type,
                                    const std::string& authorization_token,
@@ -612,21 +615,21 @@ void ExpectDeviceManagementRequest(ScopedServer* test_server,
                                    const std::string& response,
                                    std::optional<GURL> target_url = {});
 void ExpectDeviceManagementRegistrationRequest(
-    ScopedServer* test_server,
+    ScopedServer& test_server,
     const std::string& enrollment_token,
     const std::string& dm_token);
 void ExpectDeviceManagementPolicyFetchRequest(
-    ScopedServer* test_server,
+    ScopedServer& test_server,
     const std::string& dm_token,
     const ::wireless_android_enterprise_devicemanagement::
         OmahaSettingsClientProto& omaha_settings,
     bool first_request = true,
     bool rotate_public_key = false,
     std::optional<GURL> target_url = std::nullopt);
-void ExpectDeviceManagementTokenDeletionRequest(ScopedServer* test_server,
+void ExpectDeviceManagementTokenDeletionRequest(ScopedServer& test_server,
                                                 const std::string& dm_token,
                                                 bool invalidate_token);
-void ExpectProxyPacScriptRequest(ScopedServer* test_server);
+void ExpectProxyPacScriptRequest(ScopedServer& test_server);
 
 #if BUILDFLAG(IS_MAC)
 

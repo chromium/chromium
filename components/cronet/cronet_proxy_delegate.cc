@@ -138,13 +138,4 @@ void CronetProxyDelegate::SetProxyResolutionService(
                       "CronetProxyDelegate::SetProxyResolutionService");
 }
 
-bool CronetProxyDelegate::AliasRequiresProxyOverride(
-    const std::string scheme,
-    const std::vector<std::string>& dns_aliases,
-    const net::NetworkAnonymizationKey& network_anonymization_key) {
-  TRACE_EVENT_INSTANT("cronet",
-                      "CronetProxyDelegate::AliasRequiresProxyOverride");
-  return false;
-}
-
 }  // namespace cronet

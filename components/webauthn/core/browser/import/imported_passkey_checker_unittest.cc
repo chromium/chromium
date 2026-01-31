@@ -18,7 +18,7 @@ sync_pb::WebauthnCredentialSpecifics CreateValidPasskey() {
   passkey.set_sync_id(
       base::RandBytesAsString(passkey_model_utils::kSyncIdLength));
   passkey.set_credential_id(
-      base::RandBytesAsString(webauthn::kCredentialIdMinLength));
+      base::RandBytesAsString(passkey_model_utils::kCredentialIdMinLength));
   passkey.set_user_id(
       base::RandBytesAsString(passkey_model_utils::kUserIdMaxLength));
   passkey.set_private_key({1, 2, 3, 4});
@@ -35,7 +35,7 @@ TEST(ImportedPasskeyCheckerTest, ReturnsStatusForValidPasskey) {
 TEST(ImportedPasskeyCheckerTest, ReturnsStatusForTooShortCredentialId) {
   sync_pb::WebauthnCredentialSpecifics passkey = CreateValidPasskey();
   passkey.set_credential_id(
-      base::RandBytesAsString(webauthn::kCredentialIdMinLength - 1));
+      base::RandBytesAsString(passkey_model_utils::kCredentialIdMinLength - 1));
 
   EXPECT_EQ(CheckImportedPasskey(passkey),
             ImportedPasskeyStatus::kCredentialIdTooShort);
@@ -44,7 +44,7 @@ TEST(ImportedPasskeyCheckerTest, ReturnsStatusForTooShortCredentialId) {
 TEST(ImportedPasskeyCheckerTest, ReturnsStatusForTooLongCredentialId) {
   sync_pb::WebauthnCredentialSpecifics passkey = CreateValidPasskey();
   passkey.set_credential_id(
-      base::RandBytesAsString(webauthn::kCredentialIdMaxLength + 1));
+      base::RandBytesAsString(passkey_model_utils::kCredentialIdMaxLength + 1));
 
   EXPECT_EQ(CheckImportedPasskey(passkey),
             ImportedPasskeyStatus::kCredentialIdTooLong);

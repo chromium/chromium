@@ -43,6 +43,9 @@ bool IsUrlForPrimaryAccount(signin::IdentityManager* identity_manager,
 bool IsUserSignedInToWeb(signin::IdentityManager* identity_manager,
                          const GURL& url);
 
+// Returns if the cookie jar contains the primary signed in account.
+bool CookieJarContainsPrimaryAccount(signin::IdentityManager* identity_manager);
+
 }  // namespace contextual_tasks
 
 #endif  // COMPONENTS_CONTEXTUAL_TASKS_PUBLIC_ACCOUNT_UTILS_H_

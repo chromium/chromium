@@ -44,7 +44,7 @@ class ProcessPriorityPolicy : public GraphOwned, public ProcessNodeObserver {
   // ProcessNodeObserver implementation:
   void OnProcessNodeAdded(const ProcessNode* process_node) override;
   void OnPriorityChanged(const ProcessNode* process_node,
-                         base::TaskPriority previous_value) override;
+                         base::Process::Priority previous_value) override;
 };
 
 }  // namespace policies

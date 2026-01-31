@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/signin/model/account_consistency_browser_agent.h"
 
 #import "base/memory/raw_ptr.h"
+#import "base/strings/sys_string_conversions.h"
 #import "base/test/scoped_feature_list.h"
 #import "components/test/ios/test_utils.h"
 #import "ios/chrome/browser/lens/model/lens_browser_agent.h"
@@ -15,10 +16,10 @@
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_manager_ios.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_opener.h"
-#import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/browser_coordinator_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/open_new_tab_command.h"
+#import "ios/chrome/browser/shared/public/commands/scene_commands.h"
 #import "ios/chrome/browser/shared/public/commands/settings_commands.h"
 #import "ios/chrome/browser/shared/public/commands/show_signin_command.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
@@ -54,11 +55,10 @@ class AccountConsistencyBrowserAgentTestBase : public PlatformTest {
     profile_ = profile_manager_.AddProfileWithBuilder(std::move(builder));
     browser_ = std::make_unique<TestBrowser>(profile_.get());
 
-    application_commands_mock_ =
-        OCMStrictProtocolMock(@protocol(ApplicationCommands));
+    mock_scene_handler_ = OCMStrictProtocolMock(@protocol(SceneCommands));
     [browser_->GetCommandDispatcher()
-        startDispatchingToTarget:application_commands_mock_
-                     forProtocol:@protocol(ApplicationCommands)];
+        startDispatchingToTarget:mock_scene_handler_
+                     forProtocol:@protocol(SceneCommands)];
     settings_commands_mock_ =
         OCMStrictProtocolMock(@protocol(SettingsCommands));
     [browser_->GetCommandDispatcher()
@@ -84,7 +84,7 @@ class AccountConsistencyBrowserAgentTestBase : public PlatformTest {
   }
 
   void TearDown() override {
-    EXPECT_OCMOCK_VERIFY((id)application_commands_mock_);
+    EXPECT_OCMOCK_VERIFY((id)mock_scene_handler_);
     EXPECT_OCMOCK_VERIFY((id)settings_commands_mock_);
     EXPECT_OCMOCK_VERIFY((id)browser_coordinator_commands_mock_);
     EXPECT_OCMOCK_VERIFY((id)base_view_controller_mock_);
@@ -105,13 +105,14 @@ class AccountConsistencyBrowserAgentTestBase : public PlatformTest {
 
   base::test::ScopedFeatureList features_;
 
+  const GURL url_ = GURL("https://www.example.com");
   web::WebTaskEnvironment task_environment_;
   IOSChromeScopedTestingLocalState scoped_testing_local_state_;
   TestProfileManagerIOS profile_manager_;
   raw_ptr<TestProfileIOS> profile_;
   std::unique_ptr<Browser> browser_;
   raw_ptr<AccountConsistencyBrowserAgent> agent_;
-  id<ApplicationCommands> application_commands_mock_;
+  id<SceneCommands> mock_scene_handler_;
   id<SettingsCommands> settings_commands_mock_;
   id<BrowserCoordinatorCommands> browser_coordinator_commands_mock_;
   UIViewController* base_view_controller_mock_;
@@ -137,7 +138,7 @@ class AccountConsistencyBrowserAgentWithSeparateProfilesTest
 // Tests the command sent by OnGoIncognito() when there is no URL.
 TEST_P(AccountConsistencyBrowserAgentTest, OnGoIncognitoWithNoURL) {
   __block OpenNewTabCommand* received_command = nil;
-  OCMExpect([application_commands_mock_
+  OCMExpect([mock_scene_handler_
       openURLInNewTab:AssignValueToVariable(received_command)]);
   agent_->OnGoIncognito(GURL());
   EXPECT_NE(received_command, nil);
@@ -149,15 +150,14 @@ TEST_P(AccountConsistencyBrowserAgentTest, OnGoIncognitoWithNoURL) {
 // Tests the command sent by OnGoIncognito() when there is a valid URL.
 TEST_P(AccountConsistencyBrowserAgentTest, OnGoIncognitoWithURL) {
   // This URL is not opened.
-  GURL url("http://www.example.com");
   __block OpenNewTabCommand* received_command = nil;
-  OCMExpect([application_commands_mock_
+  OCMExpect([mock_scene_handler_
       openURLInNewTab:AssignValueToVariable(received_command)]);
-  agent_->OnGoIncognito(url);
+  agent_->OnGoIncognito(url_);
   EXPECT_NE(received_command, nil);
   EXPECT_TRUE(received_command.inIncognito);
   EXPECT_FALSE(received_command.inBackground);
-  EXPECT_EQ(received_command.URL, url);
+  EXPECT_EQ(received_command.URL, url_);
 }
 
 // Tests OnAddAccount() to not send ShowSigninCommand if a view controller is
@@ -167,8 +167,8 @@ TEST_P(AccountConsistencyBrowserAgentTest, OnAddAccountWithPresentedView) {
   OCMStub([base_view_controller_mock_ presentedViewController])
       .andReturn([[UIViewController alloc] init]);
   agent_->OnAddAccount(GURL(), "");
-  // Expect [application_commands_mock_ showSignin:baseViewController:] to not
-  // be called. This is ensured by TearDown because application_commands_mock_
+  // Expect [mock_scene_handler_ showSignin:baseViewController:] to not
+  // be called. This is ensured by TearDown because mock_scene_handler_
   // is a strict mock.
 }
 
@@ -192,7 +192,11 @@ TEST_F(AccountConsistencyBrowserAgentWithSeparateProfilesTest,
     return;
   }
   SignIn();
-  const GURL url("https://www.example.com");
+  FakeSystemIdentity* fake_identity2 = [FakeSystemIdentity fakeIdentity2];
+  FakeSystemIdentityManager* system_identity_manager =
+      FakeSystemIdentityManager::FromSystemIdentityManager(
+          GetApplicationContext()->GetSystemIdentityManager());
+  system_identity_manager->AddIdentity(fake_identity2);
   // Register a second profile.
   TestProfileIOS::Builder builder;
   builder.SetName("work_profile");
@@ -203,23 +207,50 @@ TEST_F(AccountConsistencyBrowserAgentWithSeparateProfilesTest,
 
   // Since there is another profile, the agent should trigger the account menu
   // instead of the add-account flow.
-  OCMExpect([application_commands_mock_ showAccountMenuFromWebWithURL:url]);
-  agent_->OnAddAccount(url, "");
-  // Expect [application_commands_mock_ showSignin:baseViewController:] to not
-  // be called. This is ensured by TearDown because application_commands_mock_
-  // is a strict mock.
+  OCMExpect([mock_scene_handler_ showAccountMenuFromWebWithURL:url_]);
+  // The expected email is foo2@gmail.com. Using foo.2 instead allows to check
+  // adding account with a non-canonical email.
+  agent_->OnAddAccount(url_, "foo.2@gmail.com");
 }
 
 // Tests that calling the `OnRestoreGaiaCookies()` callback invokes the account
 // notification command.
 TEST_P(AccountConsistencyBrowserAgentTest, OnRestorGaiaCookiesCallsCommand) {
-  OCMExpect([application_commands_mock_
-      showSigninAccountNotificationFromViewController:
-          base_view_controller_mock_]);
+  OCMExpect(
+      [mock_scene_handler_ showSigninAccountNotificationFromViewController:
+                               base_view_controller_mock_]);
   agent_->OnRestoreGaiaCookies();
   // Expect -showSigninAccountNotificationFromViewController to have
-  // been called. This is ensured by TearDown because application_commands_mock_
+  // been called. This is ensured by TearDown because mock_scene_handler_
   // is a strict mock.
+}
+
+// Tests that OnAddAccount with a email not of a secondary account opens the add
+// account view.
+TEST_F(AccountConsistencyBrowserAgentWithSeparateProfilesTest,
+       OnAddAccountShowsAddAccount) {
+  if (!AreSeparateProfilesForManagedAccountsEnabled()) {
+    // This can happen on iOS < 17, where separate profiles are not supported.
+    return;
+  }
+  SignIn();
+  // Register a second profile.
+  TestProfileIOS::Builder builder;
+  builder.SetName("work_profile");
+  profile_manager_.AddProfileWithBuilder(std::move(builder));
+
+  OCMStub([base_view_controller_mock_ presentedViewController])
+      .andReturn((id)nil);
+  NSString* email = @"foo3@gmail.com";
+
+  // Since there is another profile, the agent should trigger the account menu
+  // instead of the add-account flow.
+  signin_metrics::AccessPoint access_point =
+      signin_metrics::AccessPoint::kAccountConsistencyService;
+  OCMExpect([browser_coordinator_commands_mock_
+      showAddAccountWithAccessPoint:access_point
+                     prefilledEmail:email]);
+  agent_->OnAddAccount(url_, base::SysNSStringToUTF8(email));
 }
 
 // Tests that calling the `OnManageAccounts()` callback invokes the account
@@ -234,6 +265,8 @@ TEST_P(AccountConsistencyBrowserAgentTest, OnManageAccountsCallsCommand) {
   // settings_commands_mock_ is a strict mock.
 }
 
+// Tests that OnAddAccount with a email of a secondary account opens the account
+// menu.
 TEST_F(AccountConsistencyBrowserAgentWithSeparateProfilesTest,
        OnManageAccountsShowsAccountMenu) {
   if (!AreSeparateProfilesForManagedAccountsEnabled()) {
@@ -241,7 +274,6 @@ TEST_F(AccountConsistencyBrowserAgentWithSeparateProfilesTest,
     return;
   }
   SignIn();
-  const GURL url("https://www.example.com");
   // Register a second profile.
   TestProfileIOS::Builder builder;
   builder.SetName("work_profile");
@@ -249,10 +281,10 @@ TEST_F(AccountConsistencyBrowserAgentWithSeparateProfilesTest,
 
   // Since there is another profile, the agent should trigger the account menu
   // instead of the manage accounts screen.
-  OCMExpect([application_commands_mock_ showAccountMenuFromWebWithURL:url]);
-  agent_->OnManageAccounts(url);
+  OCMExpect([mock_scene_handler_ showAccountMenuFromWebWithURL:url_]);
+  agent_->OnManageAccounts(url_);
   // Expect showAccountsSettingsFromViewController:skipIfUINotAvailable: to not
-  // be called. This is ensured by TearDown because application_commands_mock_
+  // be called. This is ensured by TearDown because mock_scene_handler_
   // is a strict mock.
 }
 
@@ -260,18 +292,17 @@ TEST_F(AccountConsistencyBrowserAgentWithSeparateProfilesTest,
 // web state invokes the command to show the signing promo.
 TEST_P(AccountConsistencyBrowserAgentTest,
        OnShowConsistencyPromoWithCurrentWebState) {
-  const GURL url("https://www.example.com");
   // Activate a web state and pass that web state into `OnShowConsistencyPromo`.
   WebStateList* web_state_list = browser_.get()->GetWebStateList();
   web_state_list->ActivateWebStateAt(0);
   web::WebState* web_state =
       browser_.get()->GetWebStateList()->GetActiveWebState();
-  OCMExpect([application_commands_mock_
+  OCMExpect([mock_scene_handler_
       showWebSigninPromoFromViewController:base_view_controller_mock_
-                                       URL:url]);
-  agent_->OnShowConsistencyPromo(url, web_state);
+                                       URL:url_]);
+  agent_->OnShowConsistencyPromo(url_, web_state);
   // Expect -showWebSigninPromoFromViewController:URL: to have been called.
-  // This is ensured by TearDown because application_commands_mock_ is a strict
+  // This is ensured by TearDown because mock_scene_handler_ is a strict
   // mock.
 }
 
@@ -279,7 +310,6 @@ TEST_P(AccountConsistencyBrowserAgentTest,
 // web state does not invoke the command to show the signing promo.
 TEST_P(AccountConsistencyBrowserAgentTest,
        OnShowConsistencyPromoWithOtherWebState) {
-  const GURL url("https://www.example.com");
   // Activate the first web state.
   WebStateList* web_state_list = browser_.get()->GetWebStateList();
   web_state_list->ActivateWebStateAt(0);
@@ -291,9 +321,9 @@ TEST_P(AccountConsistencyBrowserAgentTest,
       std::move(test_web_state),
       WebStateList::InsertionParams::AtIndex(1).WithOpener(opener));
   web::WebState* web_state = web_state_list->GetWebStateAt(1);
-  agent_->OnShowConsistencyPromo(url, web_state);
+  agent_->OnShowConsistencyPromo(url_, web_state);
   // Expect -showWebSigninPromoFromViewController:URL: to have not been called.
-  // This is ensured by TearDown because application_commands_mock_ is a strict
+  // This is ensured by TearDown because mock_scene_handler_ is a strict
   // mock.
 }
 

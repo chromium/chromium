@@ -49,7 +49,13 @@ IN_PROC_BROWSER_TEST_F(BookmarksTest, Item) {
   RunTest("bookmarks/item_test.js", "mocha.run()");
 }
 
-IN_PROC_BROWSER_TEST_F(BookmarksTest, List) {
+// TODO(crbug.com/475126748): Re-enable this test.
+#if BUILDFLAG(IS_LINUX) && !defined(NDEBUG)
+#define MAYBE_List DISABLED_List
+#else
+#define MAYBE_List List
+#endif
+IN_PROC_BROWSER_TEST_F(BookmarksTest, MAYBE_List) {
   RunTest("bookmarks/list_test.js", "mocha.run()");
 }
 
@@ -92,14 +98,14 @@ class BookmarksExtensionAPITest : public BookmarksBrowserTest {
         ManagedBookmarkServiceFactory::GetForProfile(profile);
     bookmarks::test::WaitForBookmarkModelToLoad(model);
 
-    base::Value::List list;
-    base::Value::Dict node;
+    base::ListValue list;
+    base::DictValue node;
     node.Set("name", "Managed Bookmark");
     node.Set("url", "http://www.chromium.org");
     list.Append(node.Clone());
     node.clear();
     node.Set("name", "Managed Folder");
-    node.Set("children", base::Value::List());
+    node.Set("children", base::ListValue());
     list.Append(std::move(node));
     profile->GetPrefs()->Set(bookmarks::prefs::kManagedBookmarks,
                              base::Value(std::move(list)));

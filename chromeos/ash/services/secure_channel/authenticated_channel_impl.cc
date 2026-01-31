@@ -4,7 +4,6 @@
 
 #include "chromeos/ash/services/secure_channel/authenticated_channel_impl.h"
 
-#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/logging.h"
@@ -74,7 +73,7 @@ void AuthenticatedChannelImpl::PerformSendMessage(
 
   int sequence_number = secure_channel_->SendMessage(feature, payload);
 
-  if (base::Contains(sequence_number_to_callback_map_, sequence_number)) {
+  if (sequence_number_to_callback_map_.contains(sequence_number)) {
     NOTREACHED() << "AuthenticatedChannelImpl::SendMessage(): Started sending "
                  << "a message whose sequence number already exists in the "
                  << "map.";
@@ -138,7 +137,7 @@ void AuthenticatedChannelImpl::OnMessageSent(SecureChannel* secure_channel,
                                              int sequence_number) {
   DCHECK_EQ(secure_channel_.get(), secure_channel);
 
-  if (!base::Contains(sequence_number_to_callback_map_, sequence_number)) {
+  if (!sequence_number_to_callback_map_.contains(sequence_number)) {
     PA_LOG(WARNING) << "AuthenticatedChannelImpl::OnMessageSent(): Sent a "
                     << "message whose sequence number did not exist in the "
                     << "map. Disregarding.";

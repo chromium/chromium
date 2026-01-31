@@ -16,7 +16,6 @@
 #include "build/build_config.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/extensions/unpacked_installer.h"
 #include "chrome/browser/media/router/media_router_feature.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
@@ -60,6 +59,7 @@
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_system.h"
 #include "extensions/browser/test_extension_registry_observer.h"
+#include "extensions/browser/unpacked_installer.h"
 #include "extensions/common/extension_urls.h"
 #include "extensions/test/test_extension_dir.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -141,7 +141,7 @@ class AppMenuModelInteractiveTest : public InteractiveBrowserTest {
   auto CheckGuestWindowOpened(const Browser* default_browser) {
     return Check(base::BindLambdaForTesting([default_browser]() {
       BrowserWindowInterface* new_browser = nullptr;
-      if (BrowserList::GetGuestBrowserCount() == 1) {
+      if (chrome::GetGuestBrowserCount() == 1) {
         EXPECT_EQ(2u, chrome::GetTotalBrowserCount());
         ForEachCurrentBrowserWindowInterfaceOrderedByActivation(
             [default_browser, &new_browser](BrowserWindowInterface* browser) {

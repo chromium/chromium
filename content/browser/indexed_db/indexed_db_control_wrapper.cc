@@ -56,8 +56,6 @@ void IndexedDBControlWrapper::BindIndexedDB(
     mojo::PendingReceiver<blink::mojom::IDBFactory> receiver) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (storage_policy_observer_) {
-    // TODO(crbug.com/40177656): Pass the real StorageKey once
-    // StoragePolicyObserver is migrated.
     storage_policy_observer_->StartTrackingOrigin(
         bucket_locator.storage_key.origin());
   }

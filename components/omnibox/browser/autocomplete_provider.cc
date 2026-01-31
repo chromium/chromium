@@ -264,7 +264,7 @@ AutocompleteProvider::FixupReturn AutocompleteProvider::FixupUserInput(
 
   // Fixup and canonicalize user input.
   const GURL canonical_gurl(
-      url_formatter::FixupURL(base::UTF16ToUTF8(input_text), std::string()));
+      url_formatter::FixupURL(base::UTF16ToUTF8(input_text)));
   std::string canonical_gurl_str(canonical_gurl.possibly_invalid_spec());
   if (canonical_gurl_str.empty()) {
     // This probably won't happen, but there are no guarantees.

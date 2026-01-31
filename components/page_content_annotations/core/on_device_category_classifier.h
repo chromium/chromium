@@ -15,7 +15,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "components/optimization_guide/core/inference/model_handler.h"
-#include "components/passage_embeddings/passage_embeddings_types.h"
+#include "components/passage_embeddings/core/passage_embeddings_types.h"
 
 namespace optimization_guide {
 class OptimizationGuideModelProvider;

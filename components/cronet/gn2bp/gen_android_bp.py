@@ -248,6 +248,10 @@ def initialize_globals(import_channel: str):
       for suffix in gn_utils.POSSIBLE_SUFFIXES
   }
 
+  additional_args.update({
+    f'{MODULE_PREFIX}components_cronet_android_cronet': [('afdo', True)]
+  })
+
 # Shared libraries which are directly translated to Android system equivalents.
 shared_library_allowlist = [
     'android',
@@ -356,11 +360,17 @@ def enable_boringssl(module, arch):
     return
   if arch == 'common':
     shared_libs = module.shared_libs
+    static_libs = module.static_libs
+    whole_static_libs = module.whole_static_libs
   else:
     shared_libs = module.target[arch].shared_libs
+    static_libs = module.target[arch].static_libs
+    whole_static_libs = module.target[arch].whole_static_libs
   shared_libs.add(f'{MODULE_PREFIX}libcrypto')
-  shared_libs.add(f'{MODULE_PREFIX}libssl')
-  shared_libs.add(f'{MODULE_PREFIX}libpki')
+  if module.type == "cc_library_static":
+    static_libs.add(f'{MODULE_PREFIX}ssl_and_pki')
+  else:
+    whole_static_libs.add(f'{MODULE_PREFIX}ssl_and_pki')
 
 
 def add_androidx_experimental_java_deps(module, _):
@@ -571,13 +581,26 @@ builtin_deps = {
 
 # Same as _builtin_deps but will only apply what is explicitly specified.
 builtin_deps.update({
-    '//third_party/boringssl:boringssl': enable_boringssl,
     '//third_party/boringssl:boringssl_asm':
     # Due to FIPS requirements, downstream BoringSSL has a different "shape" than upstream's.
     # We're guaranteed that if X depends on :boringssl it will also depend on :boringssl_asm.
     # Hence, always drop :boringssl_asm and handle the translation entirely in :boringssl.
     always_disable,
 })
+
+# Declares internal modules that are processed by GN but excluded from the final Android.bp.
+# While GN traverses the graph, the Soong crawler does not visit these dependencies,
+# which prevents them from being written to the output file.
+#
+# When referenced as a dependency, a custom handler is invoked (e.g., via `replace_deps`)
+# instead of the usual code flow.
+#
+# The benefit of using |replace_deps| over |builtin_deps| is that some of the module's
+# attributes can be reused / copied as the module is created in memory. unlike |builtin_deps|
+# which never visits the target itself.
+replace_deps = {
+    '//third_party/boringssl:boringssl': enable_boringssl,
+}
 
 # Name of tethering apex module
 tethering_apex = "com.android.tethering"
@@ -838,6 +861,7 @@ class Module:
     self.cargo_env_compat = None
     self.cargo_pkg_version = None
     self.whole_program_vtables = False
+    self.afdo = None
 
   def variant(self, arch_name):
     return self if arch_name == 'common' else self.target[arch_name]
@@ -924,6 +948,8 @@ class Module:
     self._output_field(output, 'cargo_pkg_version')
     if self.whole_program_vtables:
       self._output_field(output, 'whole_program_vtables')
+    if self.afdo:
+      self._output_field(output, 'afdo')
     if self.rtti:
       self._output_field(output, 'rtti')
     target_out = []
@@ -1039,7 +1065,8 @@ class Blueprint:
     if self._license_module:
       self._license_module.to_string(ret)
     for m in sorted(self.modules.values(), key=lambda m: m.name):
-      if m.type != "cc_library_static" or m.has_input_files():
+      if (m.type != "cc_library_static"
+          or m.has_input_files()) and m.gn_target not in replace_deps.keys():
         # Don't print cc_library_static with empty srcs. These attributes are already
         # propagated up the tree. Printing them messes the presubmits because
         # every module is compiled while those targets are not reachable in
@@ -2002,6 +2029,11 @@ class MakeDafsaSanitizer(BaseActionSanitizer):
     # (e.g. registry_controlled_domain.cc)
     return True
 
+  def _sanitize_args(self):
+    self._update_all_args(self._sanitize_filepath_with_location_tag)
+    self._update_all_args(self._sanitize_filepath)
+    super()._sanitize_args()
+
 
 class JavaCppFeatureSanitizer(BaseActionSanitizer):
 
@@ -2076,7 +2108,14 @@ class ProtocJavaSanitizer(BaseActionSanitizer):
     self._set_value_arg('--protoc', '$(location %s)' % self._protoc)
     self._update_value_arg('--proto-path', self._sanitize_proto_path)
     self._set_value_arg('--srcjar', '$(out)')
-    self._update_arg_at(-1, self._sanitize_filepath_with_location_tag)
+    for i, arg in enumerate(self.target.args):
+      if arg == '--import-dir':
+        self.target.args[
+            i +
+            1] = f"{tree_path}/{self.target.args[i+1].removeprefix('../../')}"
+      elif arg.startswith('../../') and arg.removeprefix(
+          '../../') in self.get_srcs():
+        self.target.args[i] = self._sanitize_filepath_with_location_tag(arg)
 
   def _sanitize_inputs(self):
     super()._sanitize_inputs()
@@ -3078,11 +3117,6 @@ def create_modules_from_target(blueprint, gn, gn_target_name, parent_gn_type,
       if output_name is None:
         module.stem = 'lib' + target.get_target_name().removesuffix(
             gn_utils.TESTING_SUFFIX)
-      elif output_name.startswith("cronet."):
-        # The AOSP version of CronetLibraryLoader looks for the libcronet so
-        # with an extra suffix. Make sure the shared library name matches what
-        # the loader expects.
-        module.stem = 'libmainline' + output_name
       else:
         module.stem = 'lib' + output_name
 
@@ -3090,6 +3124,10 @@ def create_modules_from_target(blueprint, gn, gn_target_name, parent_gn_type,
     all_deps = [(dep_name, 'common') for dep_name in target.proto_deps]
     for arch_name, arch in target.arch.items():
       all_deps += [(dep_name, arch_name) for dep_name in arch.deps]
+
+    if gn_target_name in replace_deps:
+      # Do not recurse into replace_deps target's dependencies.
+      return (module, )
 
     # Sort deps before iteration to make result deterministic.
     for (dep_name, arch_name) in sorted(all_deps):
@@ -3105,6 +3143,12 @@ def create_modules_from_target(blueprint, gn, gn_target_name, parent_gn_type,
 
       for dep_module in create_modules_from_target(blueprint, gn, dep_name,
                                                    target.type, is_test_target):
+        if dep_name in replace_deps:
+          replace_deps[dep_name](module.java_unfiltered_module if
+                                 module.is_java_top_level_module() else module,
+                                 arch_name)
+          continue
+
         if dep_module is None:
           continue
 
@@ -3400,7 +3444,6 @@ def create_cc_defaults_module():
       # broken by changes to Chromium cflags, e.g. https://crbug.com/406704769.
       # Ideally this list should be deduced from GN cflags.
       '-DGOOGLE_PROTOBUF_NO_RTTI',
-      '-DBORINGSSL_SHARED_LIBRARY',
       '-Wno-error=return-type',
       '-Wno-non-virtual-dtor',
       '-Wno-macro-redefined',
@@ -3482,6 +3525,65 @@ def apply_post_processing(module):
       raise Exception('Unimplemented type %r of additional_args: %r' %
                       (type(add_val), key))
 
+
+def make_cc_defaults_from_boringssl(boringssl_module: Module) -> Module:
+  module_name = boringssl_module.name + "__flags"
+  cc_default_flags_module = Module(
+      "cc_defaults", module_name,
+      "Flags auto-extracted from BoringSSL GN rules, to be used in manually maintained BoringSSL Android.bp rules"
+  )
+
+  libcrypto_cc_defaults_flags_module = Module(
+      "cc_defaults", f'{module_name}_libcrypto',
+      f"""This cc_defaults inherits the same flags from {module_name} except some flags that breaks FIPS compliance."""
+  )
+
+  def _get_libcrypto_cflags(cflags):
+    return [
+        cflag for cflag in cflags
+        if all(not cflag.startswith(denied_prefix) for denied_prefix in [
+            # Breaks FIPS compliance as this is used by the linker's `--gc-sections` to remove
+            # unused sections which breaks the hash. `-fno-*-sections` is intentionally not
+            # added here as those flags are used to build all of boringSSL, while only
+            # boringCrypto(libcrypto) requires it.
+            "-ffunction-sections",
+            "-fdata-sections",
+            # Causes 'tot_cronet_bcm_object.o:(.text): multiple relocation sections to one section are not supported'
+            # during linking stage.
+            "-fno-unique-section-names",
+        ])
+    ]
+
+  def _get_libcrypto_ldflags(ldflags):
+    return [
+        ldflag for ldflag in ldflags
+        if all(not ldflag.startswith(denied_prefix) for denied_prefix in [
+            # -Wl, --gc-sections is effectively useless when '-ffunctions-sections' and
+            # '-fdata-sections' are not used. Hence remove it.
+            "-Wl,--gc-sections",
+        ])
+    ]
+
+  cc_default_flags_module.cflags = boringssl_module.cflags
+  cc_default_flags_module.ldflags = boringssl_module.ldflags
+  libcrypto_cc_defaults_flags_module.cflags = _get_libcrypto_cflags(
+      boringssl_module.cflags)
+  libcrypto_cc_defaults_flags_module.ldflags = _get_libcrypto_ldflags(
+      boringssl_module.ldflags)
+  for arch, variant in boringssl_module.target.items():
+    cc_default_flags_module.target[arch].cflags = variant.cflags
+    cc_default_flags_module.target[arch].ldflags = variant.ldflags
+    libcrypto_cc_defaults_flags_module.target[
+        arch].cflags = _get_libcrypto_cflags(variant.cflags)
+    libcrypto_cc_defaults_flags_module.target[
+        arch].ldflags = _get_libcrypto_ldflags(variant.ldflags)
+
+  cc_default_flags_module.build_file_path = ""
+  libcrypto_cc_defaults_flags_module.build_file_path = ""
+  cc_default_flags_module.defaults = [cc_defaults_module]
+  libcrypto_cc_defaults_flags_module.defaults = [cc_defaults_module]
+  return (cc_default_flags_module, libcrypto_cc_defaults_flags_module)
+
 def create_blueprint_for_targets(gn, targets, test_targets):
   """Generate a blueprint for a list of GN targets."""
   blueprint = Blueprint()
@@ -3511,6 +3613,9 @@ def create_blueprint_for_targets(gn, targets, test_targets):
   for module in blueprint.modules.values():
     apply_post_processing(module)
 
+  for module in make_cc_defaults_from_boringssl(blueprint.modules[
+      label_to_module_name("//third_party/boringssl:boringssl")]):
+    blueprint.add_module(module)
   return blueprint
 
 

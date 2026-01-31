@@ -71,7 +71,7 @@ test(function() {
     editable.innerHTML = 'abc def';
     selection.collapse(editable, 0);
     selection.extend(editable, 1);
-    testKeyDownInputType('Backspace', [DELETE_WORD_MODIFIER], 'deleteWordBackward');
+    testKeyDownInputType('Backspace', [DELETE_WORD_MODIFIER], 'deleteContentBackward');
 
     // Keyboard commands
     if (!isMacOS) {

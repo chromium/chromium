@@ -35,7 +35,7 @@ TEST_F(CommerceUtilsTest, GetProductSpecsTabUrl) {
   ASSERT_TRUE(json != std::nullopt);
   ASSERT_TRUE(json.value().is_list());
 
-  base::Value::List* list = json.value().GetIfList();
+  base::ListValue* list = json.value().GetIfList();
   ASSERT_TRUE(list != nullptr);
   ASSERT_EQ(2U, list->size());
 

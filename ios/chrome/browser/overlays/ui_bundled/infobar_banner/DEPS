@@ -1,5 +1,7 @@
 include_rules = [
-  "+ios/chrome/browser/authentication/ui_bundled/signin_promo",
+  # keep-sorted start
+  "+ios/chrome/browser/authentication/signin/non_modal_promo/coordinator",
   "+ios/chrome/browser/infobars/ui_bundled/banners",
   "+ios/chrome/browser/infobars/ui_bundled/presentation",
+  # keep-sorted end
 ]

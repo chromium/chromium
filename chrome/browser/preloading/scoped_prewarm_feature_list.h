@@ -17,6 +17,7 @@ class ScopedPrewarmFeatureList {
     kDisabled,
     kEnabledWithNoTrigger,
     kEnabledWithDefaultTrigger,
+    kEnabledWithInterationTrigger,
   };
   explicit ScopedPrewarmFeatureList(PrewarmState state);
   ScopedPrewarmFeatureList(const ScopedPrewarmFeatureList&) = delete;

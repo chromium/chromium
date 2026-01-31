@@ -143,7 +143,7 @@ AssertionResult CmpHelperSTRC(const char* str_expression,
                               const char* substr_expression,
                               const char* str,
                               const char* substr) {
-  if (nullptr != UNSAFE_TODO(strstr(str, substr))) {
+  if ((std::string_view(str)).contains(substr)) {
     return AssertionSuccess();
   }
 
@@ -156,7 +156,7 @@ AssertionResult CmpHelperSTRNC(const char* str_expression,
                                const char* substr_expression,
                                const char* str,
                                const char* substr) {
-  if (nullptr == UNSAFE_TODO(strstr(str, substr))) {
+  if (!(std::string_view(str)).contains(substr)) {
     return AssertionSuccess();
   }
 

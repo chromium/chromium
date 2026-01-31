@@ -134,6 +134,21 @@ InputEvent::InputType InputTypeFromCommandType(EditingCommandType command_type,
                                              : InputType::kInsertLineBreak;
   }
 
+  // Helper lambda to determine InputType for deletion commands that behave
+  // differently for selections vs carets. When a selection exists, they delete
+  // the selected content (deleteContent*). Otherwise, they delete by
+  // granularity (deleteWord*, deleteSoftLine*).
+  auto get_deletion_input_type = [&frame](InputType selection_type,
+                                          InputType caret_type) -> InputType {
+    if (RuntimeEnabledFeatures::
+            InputEventsDeleteNonCollapsedSelectionEnabled()) {
+      return frame.Selection().ComputeVisibleSelectionInDOMTree().IsRange()
+                 ? selection_type
+                 : caret_type;
+    }
+    return caret_type;
+  };
+
   switch (command_type) {
     // Insertion.
     case CommandType::kInsertBacktab:
@@ -161,13 +176,17 @@ InputEvent::InputType InputTypeFromCommandType(EditingCommandType command_type,
     case CommandType::kDeleteForward:
       return InputType::kDeleteContentForward;
     case CommandType::kDeleteToBeginningOfLine:
-      return InputType::kDeleteSoftLineBackward;
+      return get_deletion_input_type(InputType::kDeleteContentBackward,
+                                     InputType::kDeleteSoftLineBackward);
     case CommandType::kDeleteToEndOfLine:
-      return InputType::kDeleteSoftLineForward;
+      return get_deletion_input_type(InputType::kDeleteContentForward,
+                                     InputType::kDeleteSoftLineForward);
     case CommandType::kDeleteWordBackward:
-      return InputType::kDeleteWordBackward;
+      return get_deletion_input_type(InputType::kDeleteContentBackward,
+                                     InputType::kDeleteWordBackward);
     case CommandType::kDeleteWordForward:
-      return InputType::kDeleteWordForward;
+      return get_deletion_input_type(InputType::kDeleteContentForward,
+                                     InputType::kDeleteWordForward);
     case CommandType::kDeleteToBeginningOfParagraph:
       return InputType::kDeleteHardLineBackward;
     case CommandType::kDeleteToEndOfParagraph:
@@ -469,9 +488,22 @@ static bool DeleteWithDirection(LocalFrame& frame,
     if (kill_ring) {
       editor.AddToKillRing(editor.SelectedRange());
     }
+    InputEvent::InputType input_type;
+    if (RuntimeEnabledFeatures::
+            InputEventsDeleteNonCollapsedSelectionEnabled()) {
+      // When deleting a non-collapsed selection, the granularity shouldn't
+      // matter - we're just deleting the selected content. Use the appropriate
+      // "content" input type based on direction only.
+      input_type = (direction == DeleteDirection::kBackward)
+                       ? InputEvent::InputType::kDeleteContentBackward
+                       : InputEvent::InputType::kDeleteContentForward;
+    } else {
+      // use granularity-based input type.
+      input_type = DeletionInputTypeFromTextGranularity(direction, granularity);
+    }
     editor.DeleteSelectionWithSmartDelete(
         CanSmartCopyOrDelete(frame) ? DeleteMode::kSmart : DeleteMode::kSimple,
-        DeletionInputTypeFromTextGranularity(direction, granularity));
+        input_type);
     // Implicitly calls revealSelectionAfterEditingOperation().
   } else {
     EditingState editing_state;
@@ -956,7 +988,8 @@ static bool ExecuteTranspose(LocalFrame& frame,
   if (text.length() != 2) {
     return false;
   }
-  const String& transposed = text.Right(1) + text.Left(1);
+  const String& transposed =
+      StrCat({StringView(text, text.length() - 1, 1), StringView(text, 0, 1)});
 
   if (DispatchBeforeInputInsertText(EventTargetNodeForDocument(document),
                                     transposed,
@@ -987,7 +1020,9 @@ static bool ExecuteTranspose(LocalFrame& frame,
   if (new_text.length() != 2) {
     return false;
   }
-  const String& new_transposed = new_text.Right(1) + new_text.Left(1);
+  const String& new_transposed =
+      StrCat({StringView(new_text, new_text.length() - 1, 1),
+              StringView(new_text, 0, 1)});
 
   const SelectionInDOMTree& new_selection =
       SelectionInDOMTree::Builder().SetBaseAndExtent(new_range).Build();
@@ -999,8 +1034,9 @@ static bool ExecuteTranspose(LocalFrame& frame,
   }
 
   // Insert the transposed characters.
-  editor.ReplaceSelectionWithText(new_transposed, false, false,
-                                  InputEvent::InputType::kInsertTranspose);
+  editor.ReplaceSelectionWithText(
+      new_transposed, false, false, InputEvent::InputType::kInsertTranspose,
+      EditCommand::PasswordEchoBehavior::kDoNotEcho);
   return true;
 }
 

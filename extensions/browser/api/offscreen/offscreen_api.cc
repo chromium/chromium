@@ -5,7 +5,6 @@
 #include "extensions/browser/api/offscreen/offscreen_api.h"
 
 #include "base/command_line.h"
-#include "base/containers/contains.h"
 #include "base/strings/stringprintf.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/navigation_controller.h"
@@ -97,7 +96,7 @@ ExtensionFunction::ResponseAction OffscreenCreateDocumentFunction::Run() {
     return RespondNow(Error("A `reason` must be provided."));
   }
 
-  if (base::Contains(deduped_reasons, api::offscreen::Reason::kTesting) &&
+  if (deduped_reasons.contains(api::offscreen::Reason::kTesting) &&
       !base::CommandLine::ForCurrentProcess()->HasSwitch(
           switches::kOffscreenDocumentTesting)) {
     return RespondNow(Error(base::StringPrintf(

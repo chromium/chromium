@@ -144,8 +144,8 @@ void MetadataTable::Load() {
   DCHECK(pref_service_);
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
-  const base::Value::Dict& dict = pref_service_->GetDict(kMetadataPrefPath);
-  const base::Value::List* installed_items = dict.FindList(kMetadataContentKey);
+  const base::DictValue& dict = pref_service_->GetDict(kMetadataPrefPath);
+  const base::ListValue* installed_items = dict.FindList(kMetadataContentKey);
   if (installed_items) {
     installed_items_ = installed_items->Clone();
     return;
@@ -168,7 +168,7 @@ void MetadataTable::AddItem(const std::string& hashed_user_id,
     return;
   }
 
-  base::Value::Dict item;
+  base::DictValue item;
   item.Set(kMetadataContentItemHashedUserIdKey, hashed_user_id);
   item.Set(kMetadataContentItemComponentKey, component_name);
   installed_items_.Append(std::move(item));

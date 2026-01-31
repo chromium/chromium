@@ -98,8 +98,9 @@ void LanguageModelCreateClient::Create(
     return;
   }
 
-  HashSet<mojom::blink::AILanguageModelPromptType> maybe_allowed_types;
-  maybe_allowed_types.insert(mojom::blink::AILanguageModelPromptType::kText);
+  // TODO(crbug.com/476192657): Process initialPrompts after getting real info.
+  auto info = blink::mojom::blink::AILanguageModelInstanceInfo::New();
+  info->input_types = {mojom::blink::AILanguageModelPromptType::kText};
   Vector<mojom::blink::AILanguageModelExpectedPtr> expected_in, expected_out;
   if (options_->hasExpectedInputs()) {
     expected_in = ToMojoExpectations(options_->expectedInputs());
@@ -114,7 +115,9 @@ void LanguageModelCreateClient::Create(
             DOMException::GetErrorName(DOMExceptionCode::kNotSupportedError)));
       }
       // TODO(crbug.com/417817645): Check model capabilities before conversion.
-      maybe_allowed_types.insert(expected->type);
+      if (!info->input_types->Contains(expected->type)) {
+        info->input_types->push_back(expected->type);
+      }
     }
   }
   if (options_->hasExpectedOutputs()) {
@@ -167,7 +170,7 @@ void LanguageModelCreateClient::Create(
   ConvertPromptInputsToMojo(
       GetScriptState(), options_->getSignalOr(nullptr),
       MakeGarbageCollected<V8LanguageModelPrompt>(options_->initialPrompts()),
-      maybe_allowed_types, /*json_schema=*/"",
+      info, /*json_schema=*/"",
       BindOnce(&LanguageModelCreateClient::OnInitialPromptsResolved,
                WrapPersistent(this), std::move(expected_in),
                std::move(expected_out)),

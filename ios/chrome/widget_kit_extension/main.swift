@@ -12,11 +12,7 @@ struct ChromeWidgetsMain {
   static func main() {
     CrashHelper.configure()
 
-    if #available(iOS 17.0, *) {
-      return ChromeWidgetsForMIM.main()
-    } else {
-      return ChromeWidgets.main()
-    }
+    return ChromeWidgetsForMIM.main()
   }
 }
 

@@ -6,6 +6,8 @@
 
 #include <linux/input.h>
 
+#include <algorithm>
+
 #include "base/memory/raw_ptr.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/ozone/common/features.h"
@@ -42,10 +44,10 @@ class WaylandEventSourceTest
       public WaylandTestSimple {
  public:
   void SetUp() override {
-    CHECK(!base::Contains(
+    CHECK(!std::ranges::contains(
         enabled_features_,
         base::test::FeatureRef(kDispatchPointerEventsOnFrameEvent)));
-    CHECK(!base::Contains(
+    CHECK(!std::ranges::contains(
         disabled_features_,
         base::test::FeatureRef(kDispatchPointerEventsOnFrameEvent)));
     if (GetParam().dispatch_mouse_events_on_frame_event) {

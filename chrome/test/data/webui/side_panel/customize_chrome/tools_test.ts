@@ -4,11 +4,14 @@
 
 import 'chrome://customize-chrome-side-panel.top-chrome/tools.js';
 
+import {CustomizeChromeAction} from 'chrome://customize-chrome-side-panel.top-chrome/common.js';
 import type {CustomizeChromePageRemote} from 'chrome://customize-chrome-side-panel.top-chrome/customize_chrome.mojom-webui.js';
 import {CustomizeChromePageCallbackRouter, CustomizeChromePageHandlerRemote} from 'chrome://customize-chrome-side-panel.top-chrome/customize_chrome.mojom-webui.js';
 import {CustomizeChromeApiProxy} from 'chrome://customize-chrome-side-panel.top-chrome/customize_chrome_api_proxy.js';
 import type {ToolChipsElement} from 'chrome://customize-chrome-side-panel.top-chrome/tools.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import type {MetricsTracker} from 'chrome://webui-test/metrics_test_support.js';
+import {fakeMetricsPrivate} from 'chrome://webui-test/metrics_test_support.js';
 import type {TestMock} from 'chrome://webui-test/test_mock.js';
 import {$$, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
@@ -22,8 +25,10 @@ suite('ToolChipsTest', () => {
   let toolChips: ToolChipsElement;
   let handler: TestMock<CustomizeChromePageHandlerRemote>;
   let callbackRouterRemote: CustomizeChromePageRemote;
+  let metrics: MetricsTracker;
 
   setup(() => {
+    metrics = fakeMetricsPrivate();
     handler = installMock(
         CustomizeChromePageHandlerRemote,
         (mock: CustomizeChromePageHandlerRemote) =>
@@ -68,6 +73,19 @@ suite('ToolChipsTest', () => {
       assertEquals(1, handler.getCallCount('setToolChipsVisible'));
       let visibleArg = handler.getArgs('setToolChipsVisible')[0];
       assertTrue(visibleArg);
+      assertEquals(
+          1, metrics.count('NewTabPage.CustomizeChromeSidePanelAction'));
+      assertEquals(
+          1,
+          metrics.count(
+              'NewTabPage.CustomizeChromeSidePanelAction',
+              CustomizeChromeAction.SHOW_ACTION_CHIPS_TOGGLE_CLICKED));
+      assertEquals(
+          1, metrics.count('NewTabPage.ActionChips.ToggledVisibility'));
+      assertEquals(
+          1,
+          metrics.count(
+              'NewTabPage.ActionChips.ToggledVisibility', visibleArg));
 
       toggle.click();
       await microtasksFinished();
@@ -76,6 +94,19 @@ suite('ToolChipsTest', () => {
       assertEquals(2, handler.getCallCount('setToolChipsVisible'));
       visibleArg = handler.getArgs('setToolChipsVisible')[1];
       assertFalse(visibleArg);
+      assertEquals(
+          2, metrics.count('NewTabPage.CustomizeChromeSidePanelAction'));
+      assertEquals(
+          2,
+          metrics.count(
+              'NewTabPage.CustomizeChromeSidePanelAction',
+              CustomizeChromeAction.SHOW_ACTION_CHIPS_TOGGLE_CLICKED));
+      assertEquals(
+          2, metrics.count('NewTabPage.ActionChips.ToggledVisibility'));
+      assertEquals(
+          1,
+          metrics.count(
+              'NewTabPage.ActionChips.ToggledVisibility', visibleArg));
     });
   });
 });

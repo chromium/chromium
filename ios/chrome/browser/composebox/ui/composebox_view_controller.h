@@ -23,7 +23,8 @@
 // View Controller that contains the composebox, presenting it modally.
 @interface ComposeboxViewController
     : UIViewController <ComposeboxNavigationConsumer,
-                        OmniboxPopupPresenterDelegate>
+                        OmniboxPopupPresenterDelegate,
+                        UIAdaptivePresentationControllerDelegate>
 
 // Creates an instance with the theme of the input plate.
 - (instancetype)initWithTheme:(ComposeboxTheme*)theme;
@@ -41,12 +42,19 @@
 // Container for the omnibox popup.
 @property(nonatomic, readonly) UIView* omniboxPopupContainer;
 
+// The optional fallback incognito view.
+@property(nonatomic, readonly) UIView* incognitoView;
+
 // Adds the input view controller to this ViewController.
 - (void)addInputViewController:
     (ComposeboxInputPlateViewController*)inputViewController;
 
 // Requests the input plate to expand beyond to full width when dismissing.
 - (void)expandInputPlateForDismissal;
+
+// Whether the system anticipates a clipboard suggestion causing the incognito
+// view to remain hidden.
+- (void)setExpectsClipboardSuggestion:(BOOL)expectsClipboardSuggestion;
 
 @end
 

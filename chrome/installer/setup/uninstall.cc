@@ -28,6 +28,7 @@
 #include "base/process/kill.h"
 #include "base/process/launch.h"
 #include "base/process/process_iterator.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -410,20 +411,27 @@ void RemoveFiletypeRegistration(const InstallerState& installer_state,
   // not to delete the association if it references a system-level install of
   // Chrome (only a risk if the suffix is empty).  Don't delete the whole key
   // since other apps may have stored data there.
-  std::vector<const wchar_t*> cleared_assocs;
+  std::vector<std::wstring_view> cleared_assocs;
   if (installer_state.system_install() || !browser_entry_suffix.empty() ||
       !base::win::RegKey(HKEY_LOCAL_MACHINE, (classes_path + prog_id).c_str(),
                          KEY_QUERY_VALUE)
            .Valid()) {
     ValueEquals prog_id_pred(prog_id);
-    for (const wchar_t* const* filetype =
-             &ShellUtil::kPotentialFileAssociations[0];
-         *filetype != nullptr; UNSAFE_TODO(++filetype)) {
+    for (const auto& association : ShellUtil::kPotentialFileAssociations) {
       if (DeleteRegistryValueIf(
-              root, (classes_path + *filetype).c_str(), WorkItem::kWow64Default,
-              nullptr, prog_id_pred) == ConditionalDeleteResult::DELETED) {
-        cleared_assocs.push_back(*filetype);
+              root, base::StrCat({classes_path, association}).c_str(),
+              WorkItem::kWow64Default, nullptr,
+              prog_id_pred) == ConditionalDeleteResult::DELETED) {
+        cleared_assocs.push_back(association);
       }
+    }
+    if (DeleteRegistryValueIf(root,
+                              base::StrCat({classes_path, L".pdf"}).c_str(),
+                              WorkItem::kWow64Default, nullptr,
+                              ValueEquals(install_static::GetPDFProgIdPrefix() +
+                                          browser_entry_suffix)) ==
+        ConditionalDeleteResult::DELETED) {
+      cleared_assocs.push_back(L".pdf");
     }
   }
 
@@ -551,10 +559,11 @@ void RemoveDistributionRegistryState() {
 }
 
 // Deletes {root}\Software\Classes\{prog_id} registry key.
-bool DeleteProgIdFromSoftwareClasses(HKEY root, const std::wstring& prog_id) {
+bool DeleteSoftwareClassesSubkey(HKEY root, const std::wstring& subkey) {
+  CHECK(!subkey.empty());
   std::wstring reg_prog_id(ShellUtil::kRegClasses);
   reg_prog_id.push_back(base::FilePath::kSeparators[0]);
-  reg_prog_id.append(prog_id);
+  reg_prog_id.append(subkey);
   return DeleteRegistryKey(root, reg_prog_id, WorkItem::kWow64Default);
 }
 
@@ -602,7 +611,7 @@ bool DeleteChromeRegistrationKeys(const InstallerState& installer_state,
   // Delete {root}\Software\Classes\ChromeHTML.
   const std::wstring html_prog_id(install_static::GetBrowserProgIdPrefix() +
                                   browser_entry_suffix);
-  DeleteProgIdFromSoftwareClasses(root, html_prog_id);
+  DeleteSoftwareClassesSubkey(root, html_prog_id);
 
   // Delete {root}\Software\Classes\Chrome.
 
@@ -610,10 +619,18 @@ bool DeleteChromeRegistrationKeys(const InstallerState& installer_state,
   // would try to figure out the currently installed suffix.
   const std::wstring chrome_prog_id(install_static::GetBaseAppId() +
                                     browser_entry_suffix);
-  DeleteProgIdFromSoftwareClasses(root, chrome_prog_id);
+  DeleteSoftwareClassesSubkey(root, chrome_prog_id);
 
   // TODO(crbug.com/40384442): Delete ChromePDF ProgId once support for
   // PDF docs has landed.
+
+  // Delete {root}\Software\Classes\<DirectLaunchUrlScheme> (e.g.,
+  // google-chrome, chromium).
+  const std::wstring direct_launch_url_scheme =
+      base::ASCIIToWide(install_static::GetDirectLaunchUrlScheme());
+  if (!direct_launch_url_scheme.empty()) {
+    DeleteSoftwareClassesSubkey(root, direct_launch_url_scheme);
+  }
 
   // Delete Software\Classes\CLSID\|toast_activator_clsid|.
   const std::wstring toast_activator_reg_path =
@@ -715,25 +732,28 @@ bool DeleteChromeRegistrationKeys(const InstallerState& installer_state,
   std::wstring file_assoc_key;
   std::wstring open_with_list_key;
   std::wstring open_with_progids_key;
-  for (int i = 0;
-       UNSAFE_TODO(ShellUtil::kPotentialFileAssociations[i]) != nullptr; ++i) {
-    file_assoc_key.assign(ShellUtil::kRegClasses);
-    file_assoc_key.push_back(base::FilePath::kSeparators[0]);
-    file_assoc_key.append(
-        UNSAFE_TODO(ShellUtil::kPotentialFileAssociations[i]));
-    file_assoc_key.push_back(base::FilePath::kSeparators[0]);
+  for (auto association : ShellUtil::kPotentialFileAssociations) {
+    file_assoc_key.clear();
+    base::StrAppend(&file_assoc_key,
+                    {ShellUtil::kRegClasses, L"\\", association, L"\\"});
 
-    open_with_list_key.assign(file_assoc_key);
-    open_with_list_key.append(L"OpenWithList");
-    open_with_list_key.push_back(base::FilePath::kSeparators[0]);
-    open_with_list_key.append(installer::kChromeExe);
+    open_with_list_key.clear();
+    base::StrAppend(&open_with_list_key,
+                    {file_assoc_key, L"OpenWithList\\", installer::kChromeExe});
     DeleteRegistryKey(root, open_with_list_key, WorkItem::kWow64Default);
 
-    open_with_progids_key.assign(file_assoc_key);
-    open_with_progids_key.append(ShellUtil::kRegOpenWithProgids);
+    open_with_progids_key.clear();
+    base::StrAppend(&open_with_progids_key,
+                    {file_assoc_key, ShellUtil::kRegOpenWithProgids});
     DeleteRegistryValue(root, open_with_progids_key, WorkItem::kWow64Default,
                         html_prog_id);
   }
+  DeleteRegistryValue(
+      root,
+      base::StrCat({ShellUtil::kRegClasses, L"\\.pdf\\",
+                    ShellUtil::kRegOpenWithProgids}),
+      WorkItem::kWow64Default,
+      install_static::GetPDFProgIdPrefix() + browser_entry_suffix);
 
   // Cleanup in case Chrome had been made the default browser.
 

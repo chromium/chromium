@@ -47,9 +47,9 @@ std::string DetermineUserType(Profile* profile) {
 
 bool UserTypeMatchesJsonUserType(const std::string& user_type,
                                  const std::string& app_id,
-                                 const base::Value::Dict& json_root,
-                                 const base::Value::List* default_user_types) {
-  const base::Value::List* value = json_root.FindList(kKeyUserType);
+                                 const base::DictValue& json_root,
+                                 const base::ListValue* default_user_types) {
+  const base::ListValue* value = json_root.FindList(kKeyUserType);
   if (!value) {
     if (!default_user_types) {
       LOG(ERROR) << "Json has no user type filter for " << app_id << ".";

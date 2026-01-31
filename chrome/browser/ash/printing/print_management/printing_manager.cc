@@ -4,7 +4,6 @@
 
 #include "chrome/browser/ash/printing/print_management/printing_manager.h"
 
-#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "chrome/browser/ash/printing/cups_print_job.h"
 #include "chrome/browser/ash/printing/history/print_job_history_service.h"
@@ -77,7 +76,7 @@ void PrintingManager::CancelPrintJob(const std::string& id,
                                      CancelPrintJobCallback callback) {
   // Checks if the print job is still stored in the local cache and the validity
   // of the WeakPtr and do not attempt to cancel an invalid print job.
-  if (!base::Contains(active_print_jobs_, id) || !active_print_jobs_[id]) {
+  if (!active_print_jobs_.contains(id) || !active_print_jobs_[id]) {
     std::move(callback).Run(/*attempted_cancel=*/false);
     return;
   }

@@ -227,12 +227,8 @@ TEST_F(BluetoothSerialPortImplTest, StartWritingTest) {
           [&](scoped_refptr<net::IOBuffer> buf, int buffer_size,
               MockBluetoothSocket::SendCompletionCallback success_callback) {
             ASSERT_EQ(buffer_size, static_cast<int>(bytes_read));
-            // EXPECT_EQ only does a shallow comparison, so it's necessary to
-            // iterate through both objects and compare each character.
-            for (int i = 0; i < buffer_size; i++) {
-              UNSAFE_TODO(EXPECT_EQ(buf->data()[i], kBuffer[i]))
-                  << "buffer comparison failed at index " << i;
-            }
+            EXPECT_EQ(std::string_view(buf->data(), buf->size()),
+                      std::string_view(kBuffer));
             std::move(success_callback).Run(buffer_size);
           }));
 
@@ -270,10 +266,7 @@ TEST_F(BluetoothSerialPortImplTest, StartReadingTest) {
   std::string consumer_data;
   EXPECT_EQ(MOJO_RESULT_OK, ReadConsumerData(consumer, &consumer_data));
   ASSERT_EQ(kBufferNumBytes, consumer_data.size());
-  for (size_t i = 0; i < consumer_data.size(); i++) {
-    UNSAFE_TODO(EXPECT_EQ(consumer_data[i], kBuffer[i]))
-        << "buffer comparison failed at index " << i;
-  }
+  EXPECT_EQ(std::string_view(consumer_data), std::string_view(kBuffer));
 
   base::RunLoop disconnect_loop;
   watcher->set_connection_error_handler(disconnect_loop.QuitClosure());
@@ -477,10 +470,8 @@ TEST_F(BluetoothSerialPortImplTest, FlushWriteAndWriteNewPipe) {
                 MockBluetoothSocket::SendCompletionCallback callback) {
               EXPECT_EQ(buffer_size, static_cast<int>(actually_written_bytes1));
               DCHECK(!pre_flush_send_callback);
-              for (int i = 0; i < buffer_size; i++) {
-                UNSAFE_TODO(EXPECT_EQ(buf->data()[i], pre_flush_data[i]))
-                    << "buffer comparison failed at index " << i;
-              }
+              EXPECT_EQ(std::string_view(buf->data(), buf->size()),
+                        std::string_view(pre_flush_data));
               pre_flush_send_callback = std::move(callback);
             }));
 
@@ -538,10 +529,8 @@ TEST_F(BluetoothSerialPortImplTest, FlushWriteAndWriteNewPipe) {
               MockBluetoothSocket::SendCompletionCallback callback) {
             EXPECT_EQ(buffer_size, static_cast<int>(actually_written_bytes1));
             DCHECK(!pre_flush_send_callback);
-            for (int i = 0; i < buffer_size; i++) {
-              UNSAFE_TODO(EXPECT_EQ(buf->data()[i], post_flush_data[i]))
-                  << "buffer comparison failed at index " << i;
-            }
+            EXPECT_EQ(std::string_view(buf->data(), buf->size()),
+                      std::string_view(post_flush_data));
             std::move(callback).Run(buffer_size);
             post_flush_send_run_loop.Quit();
           }));

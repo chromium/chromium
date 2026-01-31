@@ -3,7 +3,7 @@ Short Name: protobuf-javascript
 URL: https://github.com/protocolbuffers/protobuf-javascript
 License: BSD-3-Clause
 License File: LICENSE
-Version: 3.21.4 (plus fixes)
+Version: 31.1
 Revision: e6d763860001ba1a76a63adcff5efb12b1c96024
 Update Mechanism: Manual
 Security Critical: yes

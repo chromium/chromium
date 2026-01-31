@@ -26,6 +26,7 @@
 #include "components/sync/protocol/entity_specifics.pb.h"
 #include "components/sync/protocol/extension_setting_specifics.pb.h"
 #include "components/sync/protocol/extension_specifics.pb.h"
+#include "components/sync/protocol/gemini_thread_specifics.pb.h"
 #include "components/sync/protocol/managed_user_setting_specifics.pb.h"
 #include "components/sync/protocol/nigori_specifics.pb.h"
 #include "components/sync/protocol/os_preference_specifics.pb.h"
@@ -68,7 +69,7 @@ using testing::Not;
 
 DEFINE_SPECIFICS_TO_VALUE_TEST(encrypted)
 
-static_assert(59 == syncer::GetNumDataTypes(),
+static_assert(61 == syncer::GetNumDataTypes(),
               "When adding a new field, add a DEFINE_SPECIFICS_TO_VALUE_TEST "
               "for your field below, and optionally a test for the specific "
               "conversions.");
@@ -132,6 +133,8 @@ DEFINE_SPECIFICS_TO_VALUE_TEST(shared_tab_group_account_data)
 DEFINE_SPECIFICS_TO_VALUE_TEST(shared_comment)
 DEFINE_SPECIFICS_TO_VALUE_TEST(ai_thread)
 DEFINE_SPECIFICS_TO_VALUE_TEST(contextual_task)
+DEFINE_SPECIFICS_TO_VALUE_TEST(skill)
+DEFINE_SPECIFICS_TO_VALUE_TEST(gemini_thread)
 
 TEST(ProtoValueConversionsTest, AutofillWalletSpecificsToValue) {
   sync_pb::AutofillWalletSpecifics specifics;
@@ -141,8 +144,7 @@ TEST(ProtoValueConversionsTest, AutofillWalletSpecificsToValue) {
   specifics.mutable_cloud_token_data()->set_masked_card_id("1111");
 
   specifics.set_type(sync_pb::AutofillWalletSpecifics::UNKNOWN);
-  base::Value::Dict value =
-      AutofillWalletSpecificsToValue(specifics).TakeDict();
+  base::DictValue value = AutofillWalletSpecificsToValue(specifics).TakeDict();
   EXPECT_FALSE(value.contains("masked_card"));
   EXPECT_FALSE(value.contains("address"));
   EXPECT_FALSE(value.contains("customer_data"));
@@ -191,7 +193,7 @@ TEST(ProtoValueConversionsTest, BookmarkSpecificsData) {
   meta_2->set_key("key2");
   meta_2->set_value("value2");
 
-  base::Value::Dict value = BookmarkSpecificsToValue(specifics).TakeDict();
+  base::DictValue value = BookmarkSpecificsToValue(specifics).TakeDict();
   EXPECT_FALSE(value.empty());
   const std::string* encoded_time = value.FindString("creation_time_us");
   EXPECT_TRUE(encoded_time);
@@ -201,7 +203,7 @@ TEST(ProtoValueConversionsTest, BookmarkSpecificsData) {
   EXPECT_TRUE(encoded_icon_url);
   EXPECT_EQ(icon_url, *encoded_icon_url);
 
-  const base::Value::List* meta_info_list = value.FindList("meta_info");
+  const base::ListValue* meta_info_list = value.FindList("meta_info");
 
   EXPECT_EQ(2u, meta_info_list->size());
   std::string meta_key;
@@ -220,7 +222,7 @@ TEST(ProtoValueConversionsTest, UniquePositionToValue) {
   sync_pb::SyncEntity entity;
   entity.mutable_unique_position()->set_custom_compressed_v1("test");
 
-  base::Value::Dict value =
+  base::DictValue value =
       SyncEntityToValue(entity, {.include_specifics = false}).TakeDict();
   const std::string* unique_position = value.FindString("unique_position");
   EXPECT_TRUE(unique_position);
@@ -234,7 +236,7 @@ TEST(ProtoValueConversionsTest, SyncEntityToValueIncludeSpecifics) {
   sync_pb::SyncEntity entity;
   entity.mutable_specifics();
 
-  base::Value::Dict value =
+  base::DictValue value =
       SyncEntityToValue(entity, {.include_specifics = true}).TakeDict();
   EXPECT_TRUE(value.FindDict("specifics"));
 
@@ -245,9 +247,8 @@ TEST(ProtoValueConversionsTest, SyncEntityToValueIncludeSpecifics) {
 namespace {
 // Returns whether the given value has specifics under the entries in the given
 // path.
-bool ValueHasSpecifics(const base::Value::Dict& value,
-                       const std::string& path) {
-  const base::Value::List* entities_list = value.FindListByDottedPath(path);
+bool ValueHasSpecifics(const base::DictValue& value, const std::string& path) {
+  const base::ListValue* entities_list = value.FindListByDottedPath(path);
   if (!entities_list) {
     return false;
   }
@@ -257,14 +258,14 @@ bool ValueHasSpecifics(const base::Value::Dict& value,
     return false;
   }
 
-  const base::Value::Dict& entry_dictionary = entry_dictionary_value.GetDict();
+  const base::DictValue& entry_dictionary = entry_dictionary_value.GetDict();
   return entry_dictionary.FindDict("specifics") != nullptr;
 }
 
 MATCHER(ValueHasNonEmptyGetUpdateTriggers, "") {
-  const base::Value::Dict& value_dict = arg;
+  const base::DictValue& value_dict = arg;
 
-  const base::Value::List* entities_list =
+  const base::ListValue* entities_list =
       value_dict.FindListByDottedPath("get_updates.from_progress_marker");
   if (!entities_list) {
     *result_listener << "no from_progress_marker list";
@@ -277,8 +278,8 @@ MATCHER(ValueHasNonEmptyGetUpdateTriggers, "") {
     return false;
   }
 
-  const base::Value::Dict& entry_dictionary = entry_dictionary_value.GetDict();
-  const base::Value::Dict* get_update_triggers_dictionary =
+  const base::DictValue& entry_dictionary = entry_dictionary_value.GetDict();
+  const base::DictValue* get_update_triggers_dictionary =
       entry_dictionary.FindDict("get_update_triggers");
   if (!get_update_triggers_dictionary) {
     *result_listener << "no get_update_triggers dictionary";
@@ -297,13 +298,13 @@ TEST(ProtoValueConversionsTest, ClientToServerMessageToValue) {
   sync_pb::SyncEntity* entity = commit_message->add_entries();
   entity->mutable_specifics();
 
-  base::Value::Dict value_with_specifics =
+  base::DictValue value_with_specifics =
       ClientToServerMessageToValue(message, {.include_specifics = true})
           .TakeDict();
   EXPECT_FALSE(value_with_specifics.empty());
   EXPECT_TRUE(ValueHasSpecifics(value_with_specifics, "commit.entries"));
 
-  base::Value::Dict value_without_specifics =
+  base::DictValue value_without_specifics =
       ClientToServerMessageToValue(message, {.include_specifics = false})
           .TakeDict();
   EXPECT_FALSE(value_without_specifics.empty());
@@ -323,14 +324,14 @@ TEST(ProtoValueConversionsTest, ClientToServerMessageToValueGUTriggers) {
   get_update_triggers->set_initial_sync_in_progress(false);
   get_update_triggers->set_sync_for_resolve_conflict_in_progress(false);
 
-  base::Value::Dict value_with_full_gu_triggers =
+  base::DictValue value_with_full_gu_triggers =
       ClientToServerMessageToValue(message,
                                    {.include_full_get_update_triggers = true})
           .TakeDict();
   EXPECT_FALSE(value_with_full_gu_triggers.empty());
   EXPECT_THAT(value_with_full_gu_triggers, ValueHasNonEmptyGetUpdateTriggers());
 
-  base::Value::Dict value_without_full_gu_triggers =
+  base::DictValue value_without_full_gu_triggers =
       ClientToServerMessageToValue(message,
                                    {.include_full_get_update_triggers = false})
           .TakeDict();
@@ -347,13 +348,13 @@ TEST(ProtoValueConversionsTest, ClientToServerResponseToValue) {
   sync_pb::SyncEntity* entity = response->add_entries();
   entity->mutable_specifics();
 
-  base::Value::Dict value_with_specifics =
+  base::DictValue value_with_specifics =
       ClientToServerResponseToValue(message, {.include_specifics = true})
           .TakeDict();
   EXPECT_FALSE(value_with_specifics.empty());
   EXPECT_TRUE(ValueHasSpecifics(value_with_specifics, "get_updates.entries"));
 
-  base::Value::Dict value_without_specifics =
+  base::DictValue value_without_specifics =
       ClientToServerResponseToValue(message, {.include_specifics = false})
           .TakeDict();
   EXPECT_FALSE(value_without_specifics.empty());
@@ -372,7 +373,7 @@ TEST(ProtoValueConversionsTest, CompareSpecificsData) {
   specifics.add_data();
   specifics.mutable_data(1)->set_url("https://www.bar.com");
 
-  base::Value::Dict value =
+  base::DictValue value =
       ProductComparisonSpecificsToValue(specifics).TakeDict();
   EXPECT_FALSE(value.empty());
   EXPECT_TRUE(value.FindString("uuid"));
@@ -385,7 +386,7 @@ TEST(ProtoValueConversionsTest, CompareSpecificsData) {
                value.FindString("update_time_unix_epoch_millis")->c_str());
   EXPECT_TRUE(value.FindString("name"));
   EXPECT_STREQ("my_name", value.FindString("name")->c_str());
-  const base::Value::List* data_list = value.FindList("data");
+  const base::ListValue* data_list = value.FindList("data");
   EXPECT_TRUE(data_list);
   EXPECT_EQ(2u, data_list->size());
   EXPECT_TRUE((*data_list)[0].GetDict().FindString("url"));
@@ -394,6 +395,20 @@ TEST(ProtoValueConversionsTest, CompareSpecificsData) {
   EXPECT_TRUE((*data_list)[1].GetDict().FindString("url"));
   EXPECT_STREQ("https://www.bar.com",
                (*data_list)[1].GetDict().FindString("url")->c_str());
+}
+
+TEST(ProtoValueConversionsTest, GeminiThreadSpecificsToValue) {
+  sync_pb::GeminiThreadSpecifics gemini_specifics;
+  gemini_specifics.set_conversation_id("my_id");
+  gemini_specifics.set_title("my_title");
+
+  base::Value::Dict value =
+      GeminiThreadSpecificsToValue(gemini_specifics).TakeDict();
+  EXPECT_FALSE(value.empty());
+  EXPECT_THAT(value.FindString("conversation_id"),
+              ::testing::Pointee(testing::Eq("my_id")));
+  EXPECT_THAT(value.FindString("title"),
+              ::testing::Pointee(testing::Eq("my_title")));
 }
 
 }  // namespace

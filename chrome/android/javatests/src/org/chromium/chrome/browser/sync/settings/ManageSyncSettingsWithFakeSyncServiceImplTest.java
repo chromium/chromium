@@ -339,7 +339,7 @@ public class ManageSyncSettingsWithFakeSyncServiceImplTest {
 
         intended(
                 IntentMatchers.hasDataString(
-                        startsWith("https://support.google.com/chrome/answer/165139")));
+                        startsWith(SyncSettingsUtils.BOOKMARKS_LIMIT_EXCEEDED_HELP_CENTER_URL)));
 
         // The error card should be gone now.
         onView(withId(R.id.signin_settings_card)).check(doesNotExist());

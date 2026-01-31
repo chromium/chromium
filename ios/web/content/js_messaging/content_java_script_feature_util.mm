@@ -20,7 +20,6 @@ std::vector<JavaScriptFeature*> GetBuiltInJavaScriptFeaturesForContent(
     BrowserState* browser_state) {
   std::vector<JavaScriptFeature*> features = {
       GetBaseJavaScriptFeature(),
-      GetCommonJavaScriptFeature(),
       ContextMenuJavaScriptFeature::FromBrowserState(browser_state),
       ErrorPageJavaScriptFeature::GetInstance(),
       FindInPageJavaScriptFeature::GetInstance(),

@@ -23,7 +23,8 @@ import org.mockito.junit.MockitoRule;
 import org.robolectric.Robolectric;
 
 import org.chromium.base.Token;
-import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.supplier.ObservableSuppliers;
+import org.chromium.base.supplier.SettableNullableObservableSupplier;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.compositor.overlays.strip.AnimationHost;
 import org.chromium.chrome.browser.compositor.overlays.strip.ScrollDelegate;
@@ -35,6 +36,7 @@ import org.chromium.chrome.browser.compositor.overlays.strip.reorder.ReorderDele
 import org.chromium.chrome.browser.layouts.animation.CompositorAnimationHandler;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tab.Tab.MediaState;
 import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.browser.tab_ui.ActionConfirmationManager;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
@@ -75,7 +77,6 @@ public abstract class ReorderStrategyTestBase {
     @Mock protected StripUpdateDelegate mStripUpdateDelegate;
     @Mock protected ScrollDelegate mScrollDelegate;
     @Mock protected View mContainerView;
-    @Mock protected ObservableSupplierImpl<Token> mGroupIdToHideSupplier;
     @Mock protected TabGroupModelFilter mTabGroupModelFilter;
     @Mock protected ReorderDelegate mReorderDelegate;
     @Mock protected Supplier<Float> mTabWidthSupplier;
@@ -84,6 +85,8 @@ public abstract class ReorderStrategyTestBase {
     @Spy protected AnimationHost mAnimationHost = new TestAnimationHost();
 
     // Data
+    protected SettableNullableObservableSupplier<Token> mGroupIdToHideSupplier =
+            ObservableSuppliers.createNullable();
     protected StripLayoutTab[] mStripTabs = new StripLayoutTab[0];
     protected StripLayoutGroupTitle[] mGroupTitles = new StripLayoutGroupTitle[0];
     protected StripLayoutView[] mStripViews = new StripLayoutView[0];
@@ -121,7 +124,8 @@ public abstract class ReorderStrategyTestBase {
 
     protected StripLayoutTab buildStripTab(int id, int x) {
         StripLayoutTab tab =
-                new StripLayoutTab(mActivity, id, null, null, null, null, false, false);
+                new StripLayoutTab(
+                        mActivity, id, null, null, null, null, false, false, MediaState.NONE);
         setDrawProperties(tab, x);
         return tab;
     }
@@ -137,14 +141,13 @@ public abstract class ReorderStrategyTestBase {
         view.setVisible(true);
     }
 
-    protected void mockTabGroup(Token groupId, int rootId, Tab... tabs) {
+    protected void mockTabGroup(Token groupId, Tab... tabs) {
         List<Tab> tabList = List.of(tabs);
         for (Tab tab : tabList) {
             when(mTabGroupModelFilter.isTabInTabGroup(tab)).thenReturn(true);
             when(mTabGroupModelFilter.getRelatedTabList(tab.getId())).thenReturn(tabList);
             when(mTabGroupModelFilter.getTabsInGroup(groupId)).thenReturn(tabList);
             tab.setTabGroupId(groupId);
-            tab.setRootId(rootId);
         }
         when(mTabGroupModelFilter.getTabCountForGroup(groupId)).thenReturn(tabList.size());
         when(mTabGroupModelFilter.getGroupLastShownTabId(groupId))

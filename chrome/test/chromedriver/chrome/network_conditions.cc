@@ -38,7 +38,7 @@ Status FindPresetNetwork(std::string network_name,
                     "malformed network in list: should be a dictionary");
     }
 
-    const base::Value::Dict& network = entry.GetDict();
+    const base::DictValue& network = entry.GetDict();
 
     const std::string* title = network.FindString("title");
     if (!title) {

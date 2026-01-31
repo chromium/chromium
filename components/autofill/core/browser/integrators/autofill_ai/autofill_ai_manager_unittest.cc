@@ -75,11 +75,10 @@ using ::testing::Truly;
 using ::testing::VariantWith;
 
 constexpr auto kAcceptBubble =
-    AutofillClient::AutofillAiBubbleClosedReason::kAccepted;
-constexpr auto kDeclineBubble =
-    AutofillClient::AutofillAiBubbleClosedReason::kClosed;
+    AutofillClient::AutofillAiBubbleResult::kAccepted;
+constexpr auto kDeclineBubble = AutofillClient::AutofillAiBubbleResult::kClosed;
 constexpr auto kIgnoreBubble =
-    AutofillClient::AutofillAiBubbleClosedReason::kNotInteracted;
+    AutofillClient::AutofillAiBubbleResult::kNotInteracted;
 
 auto FirstElementIs(auto&& matcher) {
   return ResultOf(
@@ -132,7 +131,7 @@ class MockAutofillClient : public TestAutofillClient {
               ShowEntityImportBubble,
               (EntityInstance entity,
                std::optional<EntityInstance> old_entity,
-               EntityImportPromptResultCallback prompt_acceptance_callback),
+               EntityImportPromptResultCallback prompt_result_callback),
               (override));
   MOCK_METHOD(void,
               TriggerAutofillAiSavePromptSurvey,
@@ -162,7 +161,8 @@ class AutofillAiManagerTest : public testing::Test {
             autofill_client().GetSyncService(),
             webdata_helper_.autofill_webdata_service(),
             /*history_service=*/nullptr,
-            /*strike_database=*/nullptr));
+            /*strike_database=*/nullptr,
+            /*variation_country_code=*/GeoIpCountryCode("US")));
     autofill_client().SetUpPrefsAndIdentityForAutofillAi();
     autofill_client().set_sync_service(&sync_service_);
     autofill_client().GetSyncService()->GetUserSettings()->SetSelectedType(
@@ -193,7 +193,7 @@ class AutofillAiManagerTest : public testing::Test {
       FormStructure& form_structure,
       const std::vector<std::vector<FieldType>>& field_types_predictions) {
     CHECK_EQ(form_structure.field_count(), field_types_predictions.size());
-    for (size_t i = 0; i < form_structure.field_count(); i++) {
+    for (size_t i = 0; i < form_structure.field_count(); ++i) {
       std::vector<AutofillQueryResponse::FormSuggestion::FieldSuggestion::
                       FieldPrediction>
           predictions_for_field;
@@ -276,55 +276,10 @@ TEST_F(AutofillAiManagerTest, ShouldDisplayIph) {
       manager().ShouldDisplayIph(form_structure, form.fields()[0].global_id()));
 }
 
-// Tests that IPH should not be displayed if the user is opted out of the
-// feature, but does not have address or payments data stored.
-TEST_F(AutofillAiManagerTest,
-       ShouldNotDisplayIphWhenUserHasNoAddressOrPaymentsData) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(
-      features::kAutofillAiIgnoreWhetherUserHasAddressOrPaymentsDataForIph);
-  test::FormDescription form_description = {.fields = {{}}};
-  FormData form = test::GetFormData(form_description);
-  FormStructure form_structure = FormStructure(form);
-  AddPredictionsToFormStructure(form_structure, {{PASSPORT_NUMBER}});
-  SetAutofillAiOptInStatus(autofill_client(), AutofillAiOptInStatus::kOptedOut);
-
-  EXPECT_FALSE(
-      manager().ShouldDisplayIph(form_structure, form.fields()[0].global_id()));
-}
-
-// Tests that IPH is not displayed if the user has disabled, say,
-// identity-related entities, and the submitted form would import (only) an
-// identity-related entity.
-TEST_F(AutofillAiManagerTest,
-       ShouldNotDisplayIphWhenUserHasDisabledTheGroupOfEntities) {
-  test::FormDescription form_description = {.fields = {{}}};
-  FormData form = test::GetFormData(form_description);
-  FormStructure form_structure = FormStructure(form);
-  FieldGlobalId field_id = form.fields()[0].global_id();
-  AddPredictionsToFormStructure(form_structure, {{PASSPORT_NUMBER}});
-  AddAutofillProfile();
-  SetAutofillAiOptInStatus(autofill_client(), AutofillAiOptInStatus::kOptedOut);
-
-  autofill_client().GetPrefs()->SetBoolean(
-      prefs::kAutofillAiTravelEntitiesEnabled, false);
-  autofill_client().GetPrefs()->SetBoolean(
-      prefs::kAutofillAiIdentityEntitiesEnabled, false);
-  EXPECT_FALSE(manager().ShouldDisplayIph(form_structure, field_id));
-
-  // Confirm that it is only the pref for identity entities that affects IPH.
-  autofill_client().GetPrefs()->SetBoolean(
-      prefs::kAutofillAiIdentityEntitiesEnabled, true);
-  EXPECT_TRUE(manager().ShouldDisplayIph(form_structure, field_id));
-}
-
-// Tests that if kAutofillAiIgnoreWhetherUserHasAddressOrPaymentsDataForIph is
-// enabled, IPH should be displayed when the user is opted out of the feature
+// Tests that IPH should be displayed when the user is opted out of the feature
 // and does not have address or payments data stored.
 TEST_F(AutofillAiManagerTest,
-       ShouldDisplayIphWhenUserHasNoAddressOrPaymentsDataAndFeatureFlagIsOn) {
-  base::test::ScopedFeatureList feature_list{
-      features::kAutofillAiIgnoreWhetherUserHasAddressOrPaymentsDataForIph};
+       ShouldDisplayIphWhenUserHasNoAddressOrPaymentsData) {
   test::FormDescription form_description = {.fields = {{}}};
   FormData form = test::GetFormData(form_description);
   FormStructure form_structure = FormStructure(form);
@@ -504,7 +459,7 @@ class AutofillAiManagerImportFormTest : public AutofillAiManagerTest {
     }
     auto form_structure =
         std::make_unique<FormStructure>(test::GetFormData(form_description));
-    for (size_t i = 0; i < form_structure->field_count(); i++) {
+    for (size_t i = 0; i < form_structure->field_count(); ++i) {
       AutofillQueryResponse::FormSuggestion::FieldSuggestion::FieldPrediction
           prediction;
       prediction.set_type(form_description.fields[i].role);

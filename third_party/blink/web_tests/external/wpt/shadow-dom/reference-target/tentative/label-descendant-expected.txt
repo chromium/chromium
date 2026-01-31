@@ -1,0 +1,7 @@
+This is a testharness.js-based test.
+[FAIL] Implicit <label> association should apply to only the first labelable custom element for .labels
+  assert_array_equals: real_input1 after fancy_input2 referenceTarget change lengths differ, expected array [Element node <label id="label6">\n  \n  <fancy-input id="fancy-input6-2"...] length 1, got [] length 0
+[FAIL] Changing the reference target causes label association to change for .labels
+  assert_array_equals: input1 after change lengths differ, expected array [] length 0, got [Element node <label id="label-input8" for="fancy-input8-outer">Input 8...] length 1
+Harness: the test ran to completion.
+

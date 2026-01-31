@@ -12,7 +12,9 @@ group("all") {
   deps = [
     ":mojo_c_system_bindings",
     ":rust_mojo_tests",
+    "bindings:mojo_rust_bindings_api",
     "mojom_parser",
+    "sequences",
   ]
 }
 
@@ -25,6 +27,7 @@ rust_static_library("mojo_ffi") {
   crate_root = "system/ffi.rs"
   sources = [ "system/ffi.rs" ]
   deps = [ ":mojo_c_system_bindings" ]
+  allow_unsafe = true
 }
 
 rust_static_library("mojo_rust_system_api") {
@@ -32,9 +35,10 @@ rust_static_library("mojo_rust_system_api") {
   sources = [
     "system/data_pipe.rs",
     "system/lib.rs",
+    "system/message_pipe.rs",
     "system/mojo_types.rs",
     "system/raw_trap.rs",
-    "system/safe_trap.rs",
+    "system/trap.rs",
   ]
   allow_unsafe = true
   deps = [
@@ -48,6 +52,7 @@ group("tests") {
   testonly = true
   deps = [
     "mojom_parser:mojom_parser_unittests",
+    "sequences:rust_sequences_unittests",
     "test_mojom:test_mojom_rust",
     "test_system:system_api_unittests",
   ]

@@ -61,7 +61,11 @@
 }
 
 #remove {
+  --cr-icon-button-fill-color: white;
   display: none;
+  margin-inline-start: 0px;
+  margin-inline-end: 0px;
+  background-color: transparent;
 }
 
 :host(:hover) #remove,
@@ -72,11 +76,4 @@
 :host(:focus-visible) #container {
   border: solid 3px var(--color-searchbox-thumbnail-border);
   box-sizing: border-box;
-}
-
-#remove {
-  margin-inline-start: 0px;
-  margin-inline-end: 0px;
-  --cr-icon-button-fill-color: white;
-  background-color: transparent;
 }

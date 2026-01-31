@@ -95,7 +95,7 @@ class DeviceTrustConnectorService
   void OnInlinePolicyDisabled(DTCPolicyLevel level);
 
   // Gets a list of URLs from the specified `pref`.
-  const base::Value::List* GetPolicyUrlPatterns(const std::string& pref) const;
+  const base::ListValue* GetPolicyUrlPatterns(const std::string& pref) const;
 
   PrefChangeRegistrar pref_observer_;
 

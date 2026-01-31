@@ -14,6 +14,8 @@ component("proxy_config") {
     "proxy_config_pref_names.h",
     "proxy_prefs.cc",
     "proxy_prefs.h",
+    "proxy_prefs_utils.cc",
+    "proxy_prefs_utils.h",
   ]
 
   defines = [ "PROXY_CONFIG_IMPLEMENTATION" ]
@@ -60,6 +62,7 @@ source_set("unit_tests") {
     "pref_proxy_config_tracker_impl_unittest.cc",
     "proxy_config_dictionary_unittest.cc",
     "proxy_prefs_unittest.cc",
+    "proxy_prefs_utils_unittest.cc",
   ]
   deps = [
     ":proxy_config",
@@ -79,5 +82,9 @@ source_set("unit_tests") {
 
   if (!is_ios) {
     sources += [ "proxy_policy_handler_unittest.cc" ]
+  }
+
+  if (!is_ios && !is_fuchsia) {
+    sources += [ "proxy_override_rules_policy_handler_unittest.cc" ]
   }
 }

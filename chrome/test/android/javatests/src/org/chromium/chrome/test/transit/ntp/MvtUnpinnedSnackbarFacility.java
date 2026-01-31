@@ -25,9 +25,10 @@ public class MvtUnpinnedSnackbarFacility extends SnackbarFacility<RegularNewTabP
                 new MvtsFacility(
                         mMvtsBeforeUnpin.getSiteSuggestions(),
                         mMvtsBeforeUnpin.getSeparatorIndices());
-        return runTo(
+        return buttonElement
+                .clickTo()
+                .withAdditionalTrigger(
                         () -> {
-                            buttonElement.clickTo().executeTriggerWithoutTransition();
                             ThreadUtils.runOnUiThreadBlocking(
                                     () ->
                                             fakeMostVisitedSites.setTileSuggestions(

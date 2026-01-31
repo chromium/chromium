@@ -109,7 +109,7 @@ bool PasswordManagerClientHelper::ShouldPromptToMovePasswordToAccount(
 #if !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
   PasswordFeatureManager* feature_manager =
       delegate_->GetPasswordFeatureManager();
-  if (!feature_manager->IsAccountStorageEnabled()) {
+  if (!feature_manager->IsAccountStorageActive()) {
     return false;
   }
   if (!submitted_manager.IsMovableToAccountStore()) {

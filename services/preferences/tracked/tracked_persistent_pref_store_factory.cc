@@ -161,7 +161,7 @@ PersistentPrefStore* CreateTrackedPersistentPrefStore(
 
 void InitializeMasterPrefsTracking(
     prefs::mojom::TrackedPersistentPrefStoreConfigurationPtr configuration,
-    base::Value::Dict& master_prefs,
+    base::DictValue& master_prefs,
     os_crypt_async::OSCryptAsync* os_crypt) {
   PrefHashFilter(
       CreatePrefHashStore(*configuration, false),

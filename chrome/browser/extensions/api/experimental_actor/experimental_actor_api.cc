@@ -238,6 +238,7 @@ ExperimentalActorPerformActionsFunction::Run() {
       case optimization_guide::proto::Action::kActivateWindow:
       case optimization_guide::proto::Action::kYieldToUser:
       case optimization_guide::proto::Action::kMediaControl:
+      case optimization_guide::proto::Action::kLoadAndExtractContent:
       case optimization_guide::proto::Action::ACTION_NOT_SET:
         // No tab id to convert.
         break;
@@ -310,6 +311,12 @@ void ExperimentalActorPerformActionsFunction::OnActionsFinished(
 }
 
 void ExperimentalActorPerformActionsFunction::OnObservationResult(
+    base::TimeTicks start_time,
+    actor::mojom::ActionResultCode result_code,
+    std::optional<size_t> index_of_failed_action,
+    std::vector<actor::ActionResultWithLatencyInfo> action_results,
+    actor::TaskId task_id,
+    bool skip_async_observation_information,
     std::unique_ptr<optimization_guide::proto::ActionsResult> response,
     std::unique_ptr<actor::AggregatedJournal::PendingAsyncEntry>
         journal_entry) {

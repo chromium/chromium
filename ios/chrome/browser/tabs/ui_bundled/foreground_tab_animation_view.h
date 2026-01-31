@@ -15,6 +15,10 @@
 // The content view (typically the new tab's view) to animate.
 @property(nonatomic, strong) UIView* contentView;
 
+// Snapshot view of the background content (the previous tab) to be displayed
+// behind the animation.
+@property(nonatomic, strong) UIView* backgroundView;
+
 // Starts a New Tab animation in `parentView`, from `originPoint` with
 // a `completion` block. The new tab will scale up and move from the direction
 // if `originPoint` to the center of the receiver. `originPoint` must be in

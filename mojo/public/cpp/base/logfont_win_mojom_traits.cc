@@ -30,12 +30,14 @@ bool StructTraits<mojo_base::mojom::LOGFONTDataView, ::LOGFONT>::Read(
     ::LOGFONT* out) {
   ArrayDataView<uint8_t> bytes_view;
   data.GetBytesDataView(&bytes_view);
-  if (bytes_view.size() != sizeof(::LOGFONT))
+  if (bytes_view.size() != sizeof(::LOGFONT)) {
     return false;
+  }
 
   const ::LOGFONT* font = reinterpret_cast<const ::LOGFONT*>(bytes_view.data());
-  if (_tcsnlen(font->lfFaceName, LF_FACESIZE) >= LF_FACESIZE)
+  if (_tcsnlen(font->lfFaceName, LF_FACESIZE) >= LF_FACESIZE) {
     return false;
+  }
 
   memcpy(out, font, sizeof(::LOGFONT));
   return true;

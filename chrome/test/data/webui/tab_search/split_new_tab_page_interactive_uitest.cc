@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/strings/stringprintf.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/views/frame/multi_contents_view.h"
 #include "chrome/browser/ui/views/frame/multi_contents_view_mini_toolbar.h"
@@ -28,7 +29,7 @@ const auto getDeepActiveElement = [](std::string property) {
          "  while (a && a.shadowRoot && a.shadowRoot.activeElement) {"
          "    a = a.shadowRoot.activeElement;"
          "  }" +
-         std::format("  return a.{};", property) + "}";
+         base::StringPrintf("  return a.%s;", property) + "}";
 };
 }  // namespace
 
@@ -74,7 +75,7 @@ IN_PROC_BROWSER_TEST_F(SplitNewTabPageUiTest, MAYBE_Focus) {
       SendKeyPress(kMultiContentsViewElementId, ui::VKEY_TAB),
       CheckJsResult(kFourthTab, getDeepActiveElement("tagName"),
                     ::testing::Eq("TAB-SEARCH-ITEM")),
-      CheckJsResult(kFourthTab, getDeepActiveElement("data.tab.url.url"),
+      CheckJsResult(kFourthTab, getDeepActiveElement("data.tab.url"),
                     ::testing::Eq(GetTestUrl().spec())),
       CheckJsResult(kFourthTab, getDeepActiveElement("data.tab.index"),
                     ::testing::Eq(1)),
@@ -84,7 +85,7 @@ IN_PROC_BROWSER_TEST_F(SplitNewTabPageUiTest, MAYBE_Focus) {
       SendKeyPress(kMultiContentsViewElementId, ui::VKEY_TAB),
       CheckJsResult(kFourthTab, getDeepActiveElement("tagName"),
                     ::testing::Eq("TAB-SEARCH-ITEM")),
-      CheckJsResult(kFourthTab, getDeepActiveElement("data.tab.url.url"),
+      CheckJsResult(kFourthTab, getDeepActiveElement("data.tab.url"),
                     ::testing::Eq(url::kAboutBlankURL)),
       CheckJsResult(kFourthTab, getDeepActiveElement("data.tab.index"),
                     ::testing::Eq(0)),

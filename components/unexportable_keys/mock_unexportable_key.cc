@@ -6,7 +6,10 @@
 
 namespace unexportable_keys {
 
-MockUnexportableKey::MockUnexportableKey() = default;
+MockUnexportableKey::MockUnexportableKey() {
+  ON_CALL(*this, AsStatefulUnexportableSigningKey())
+      .WillByDefault(testing::Return(this));
+}
 MockUnexportableKey::~MockUnexportableKey() = default;
 
 }  // namespace unexportable_keys

@@ -58,14 +58,14 @@ public class FakeExtensionActionsBridgeTest {
     public void setUp() {
         when(mTask.getOrCreateNativeBrowserWindowPtr()).thenReturn(BROWSER_WINDOW_POINTER);
         mTaskModel = mFakeBridge.getOrCreateTaskModel(mTask);
-        mBridge = ExtensionActionsBridge.get(mTask);
-        assertEquals(mTaskModel.getBridge(), mBridge);
+        mBridge = new ExtensionActionsBridge(mTask);
         mBridge.addObserver(mObserver);
     }
 
     @After
     public void tearDown() {
         mBridge.removeObserver(mObserver);
+        mBridge.destroy();
     }
 
     @Test

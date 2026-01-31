@@ -54,6 +54,7 @@
     copy->_identifier = _identifier;
     copy.previewImage = self.previewImage;
     copy.title = self.title;
+    copy.uploadIndex = self.uploadIndex;
     copy.state = self.state;
     copy.type = self.type;
   }

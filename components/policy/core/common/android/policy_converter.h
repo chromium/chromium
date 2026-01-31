@@ -47,10 +47,10 @@ class POLICY_EXPORT PolicyConverter {
   // To be called from Java:
   void SetPolicyBoolean(JNIEnv* env,
                         const base::android::JavaRef<jstring>& policyKey,
-                        jboolean value);
+                        bool value);
   void SetPolicyInteger(JNIEnv* env,
                         const base::android::JavaRef<jstring>& policyKey,
-                        jint value);
+                        int32_t value);
   void SetPolicyString(JNIEnv* env,
                        const base::android::JavaRef<jstring>& policyKey,
                        const base::android::JavaRef<jstring>& value);
@@ -69,7 +69,7 @@ class POLICY_EXPORT PolicyConverter {
                                                          const Schema& schema);
 
   // Public for testing.
-  static base::Value::List ConvertJavaStringArrayToListValue(
+  static base::ListValue ConvertJavaStringArrayToListValue(
       JNIEnv* env,
       const base::android::JavaRef<jobjectArray>& array);
 

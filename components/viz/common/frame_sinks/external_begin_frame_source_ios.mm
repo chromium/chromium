@@ -234,7 +234,8 @@ void ExternalBeginFrameSourceIOS::OnVSync(base::TimeTicks vsync_time,
                                           base::TimeTicks next_vsync_time,
                                           base::TimeDelta vsync_interval) {
   OnBeginFrame(begin_frame_args_generator_.GenerateBeginFrameArgs(
-      source_id(), vsync_time, next_vsync_time, vsync_interval));
+      source_id(), vsync_time, next_vsync_time, vsync_interval,
+      GetMinimumFrameInterval()));
 }
 
 void ExternalBeginFrameSourceIOS::OnNeedsBeginFrames(bool needs_begin_frames) {

@@ -11,6 +11,7 @@
 #import "base/functional/callback_helpers.h"
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"
+#import "base/not_fatal_until.h"
 #import "base/notreached.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/strings/utf_string_conversions.h"
@@ -21,7 +22,7 @@
 #import "components/signin/public/identity_manager/account_info.h"
 #import "components/sync/service/sync_service.h"
 #import "components/sync/service/sync_service_utils.h"
-#import "ios/chrome/browser/authentication/ui_bundled/signin_promo/signin_promo_types.h"
+#import "ios/chrome/browser/authentication/signin/non_modal_promo/coordinator/non_modal_signin_promo_types.h"
 #import "ios/chrome/browser/bookmarks/editor/coordinator/bookmarks_editor_coordinator.h"
 #import "ios/chrome/browser/bookmarks/editor/coordinator/bookmarks_editor_coordinator_delegate.h"
 #import "ios/chrome/browser/bookmarks/folder_chooser/coordinator/bookmarks_folder_chooser_coordinator.h"
@@ -44,9 +45,9 @@
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
-#import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/non_modal_signin_promo_commands.h"
+#import "ios/chrome/browser/shared/public/commands/scene_commands.h"
 #import "ios/chrome/browser/shared/public/commands/settings_commands.h"
 #import "ios/chrome/browser/shared/public/commands/snackbar_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
@@ -118,9 +119,8 @@ enum class PresentedState {
 
 @property(nonatomic, strong) BookmarkMediator* mediator;
 
-// Handler for Application Commands.
-@property(nonatomic, readonly, weak) id<ApplicationCommands>
-    applicationCommandsHandler;
+// Handler for Scene Commands.
+@property(nonatomic, readonly, weak) id<SceneCommands> sceneHandler;
 
 // Handler for Snackbar Commands.
 @property(nonatomic, readonly, weak) id<SnackbarCommands>
@@ -142,7 +142,7 @@ enum class PresentedState {
   ReminderNotificationsCoordinator* _reminderNotificationsCoordinator;
 }
 
-@synthesize applicationCommandsHandler = _applicationCommandsHandler;
+@synthesize sceneHandler = _sceneHandler;
 @synthesize baseViewController = _baseViewController;
 @synthesize snackbarCommandsHandler = _snackbarCommandsHandler;
 
@@ -212,14 +212,14 @@ enum class PresentedState {
   [super stop];
 }
 
-- (id<ApplicationCommands>)applicationCommandsHandler {
-  // Using lazy loading here to avoid potential crashes with ApplicationCommands
+- (id<SceneCommands>)sceneHandler {
+  // Using lazy loading here to avoid potential crashes with SceneCommands
   // not being yet dispatched.
-  if (!_applicationCommandsHandler) {
-    _applicationCommandsHandler = HandlerForProtocol(
-        self.browser->GetCommandDispatcher(), ApplicationCommands);
+  if (!_sceneHandler) {
+    _sceneHandler =
+        HandlerForProtocol(self.browser->GetCommandDispatcher(), SceneCommands);
   }
-  return _applicationCommandsHandler;
+  return _sceneHandler;
 }
 
 - (id<SnackbarCommands>)snackbarCommandsHandler {
@@ -256,7 +256,7 @@ enum class PresentedState {
       HandlerForProtocol(self.browser->GetCommandDispatcher(),
                          NonModalSignInPromoCommands);
   [nonModalSignInPromoHandler
-      showNonModalSignInPromoWithType:SignInPromoType::kBookmark];
+      showNonModalSignInPromoWithType:NonModalSignInPromoType::kBookmark];
 
   default_browser::NotifyBookmarkAddOrEdit(
       feature_engagement::TrackerFactory::GetForProfile(
@@ -424,10 +424,8 @@ enum class PresentedState {
 }
 
 - (void)dismissBookmarksEditorAnimated:(BOOL)animated {
-  if (self.currentPresentedState != PresentedState::BOOKMARK_EDITOR) {
-    // TODO(crbug.com/40062447): This test should be turned into a DCHECK().
-    return;
-  }
+  CHECK_EQ(PresentedState::BOOKMARK_EDITOR, self.currentPresentedState,
+           base::NotFatalUntil::M154);
   self.bookmarkEditorCoordinator.animatedDismissal = animated;
   [self stopBookmarksEditorCoordinator];
 }
@@ -438,7 +436,9 @@ enum class PresentedState {
                             urlsToOpen:std::vector<GURL>()
                            inIncognito:NO
                                 newTab:NO];
-  [self dismissBookmarksEditorAnimated:animated];
+  if (self.currentPresentedState == PresentedState::BOOKMARK_EDITOR) {
+    [self dismissBookmarksEditorAnimated:animated];
+  }
 }
 
 - (void)dismissSnackbar {
@@ -804,8 +804,7 @@ enum class PresentedState {
   self.bookmarkBrowser =
       [[BookmarksHomeViewController alloc] initWithBrowser:self.browser];
   self.bookmarkBrowser.homeDelegate = self;
-  self.bookmarkBrowser.applicationCommandsHandler =
-      self.applicationCommandsHandler;
+  self.bookmarkBrowser.sceneHandler = self.sceneHandler;
   self.bookmarkBrowser.snackbarCommandsHandler = self.snackbarCommandsHandler;
 
   NSArray<BookmarksHomeViewController*>* replacementViewControllers = nil;

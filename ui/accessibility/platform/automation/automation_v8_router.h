@@ -70,7 +70,7 @@ class COMPONENT_EXPORT(AX_PLATFORM) AutomationV8Router {
 
   // Dispatches an event with the given name and arguments.
   virtual void DispatchEvent(const std::string& event_name,
-                             const base::Value::List& event_args) const = 0;
+                             const base::ListValue& event_args) const = 0;
 };
 }  // namespace ui
 

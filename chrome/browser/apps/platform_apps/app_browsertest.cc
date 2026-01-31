@@ -9,7 +9,6 @@
 #include "apps/launcher.h"
 #include "base/auto_reset.h"
 #include "base/command_line.h"
-#include "base/containers/contains.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/bind.h"
@@ -21,7 +20,6 @@
 #include "base/threading/thread_restrictions.h"
 #include "build/build_config.h"
 #include "chrome/app/chrome_command_ids.h"
-#include "chrome/browser/apps/app_service/app_launch_params.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/apps/app_service/launch_utils.h"
@@ -45,6 +43,7 @@
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_service.h"
+#include "components/services/app_service/public/cpp/app_launch_params.h"
 #include "components/services/app_service/public/cpp/app_launch_util.h"
 #include "components/web_modal/web_contents_modal_dialog_manager.h"
 #include "content/public/browser/devtools_agent_host.h"
@@ -1332,7 +1331,7 @@ IN_PROC_BROWSER_TEST_F(PlatformAppIncognitoBrowserTest,
                                    true /* prefer_container */),
                apps::LaunchSource::kFromTest);
 
-  while (!base::Contains(opener_app_ids_, file_manager->id())) {
+  while (!opener_app_ids_.contains(file_manager->id())) {
     content::RunAllPendingInMessageLoop();
   }
 }

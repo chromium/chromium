@@ -116,17 +116,9 @@ ExtensionWebContentsObserver::ExtensionWebContentsObserver(
     : content::WebContentsObserver(web_contents),
       browser_context_(web_contents->GetBrowserContext()),
       dispatcher_(browser_context_),
-      initialized_(false) {
-  dispatcher_.set_delegate(this);
-}
+      initialized_(false) {}
 
 ExtensionWebContentsObserver::~ExtensionWebContentsObserver() {
-}
-
-content::WebContents* ExtensionWebContentsObserver::GetAssociatedWebContents()
-    const {
-  DCHECK(initialized_);
-  return web_contents();
 }
 
 void ExtensionWebContentsObserver::InitializeRenderFrame(

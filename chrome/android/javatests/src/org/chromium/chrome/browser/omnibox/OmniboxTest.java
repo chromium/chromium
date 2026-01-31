@@ -4,6 +4,13 @@
 
 package org.chromium.chrome.browser.omnibox;
 
+import static androidx.test.espresso.Espresso.onView;
+import static androidx.test.espresso.action.ViewActions.click;
+import static androidx.test.espresso.assertion.ViewAssertions.doesNotExist;
+import static androidx.test.espresso.assertion.ViewAssertions.matches;
+import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
+import static androidx.test.espresso.matcher.ViewMatchers.withId;
+
 import android.annotation.SuppressLint;
 import android.view.KeyEvent;
 import android.widget.ImageView;
@@ -27,6 +34,7 @@ import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.EnormousTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Manual;
+import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.omnibox.status.StatusCoordinator;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
@@ -50,6 +58,7 @@ import org.chromium.components.search_engines.TemplateUrl;
 import org.chromium.components.search_engines.TemplateUrlService;
 import org.chromium.net.test.EmbeddedTestServer;
 import org.chromium.net.test.ServerCertificate;
+import org.chromium.ui.base.DeviceFormFactor;
 
 import java.util.List;
 
@@ -442,5 +451,29 @@ public class OmniboxTest {
                             .getLocationBarModelForTesting()
                             .shouldEmphasizeHttpsScheme());
         }
+    }
+
+    @Test
+    @SmallTest
+    @Restriction(DeviceFormFactor.TABLET_OR_DESKTOP)
+    public void testClickStatusIcon_OnNTPDoesNothing() {
+        mActivityTestRule.startOnNtp();
+
+        onView(withId(R.id.location_bar_status_icon)).perform(click());
+        onView(withId(R.id.page_info_url_wrapper)).check(doesNotExist());
+    }
+
+    @Test
+    @SmallTest
+    public void testClickStatusIcon_ShowsPageInfo() {
+        mActivityTestRule.startOnBlankPage();
+        String testUrl =
+                mActivityTestRule
+                        .getTestServer()
+                        .getURL("/chrome/test/data/android/omnibox/one.html");
+        mActivityTestRule.loadUrl(testUrl);
+
+        onView(withId(R.id.location_bar_status_icon)).perform(click());
+        onView(withId(R.id.page_info_url_wrapper)).check(matches(isDisplayed()));
     }
 }

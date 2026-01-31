@@ -125,8 +125,8 @@ class TestDelegateBase : public BidirectionalStream::Delegate {
     std::move(callback_).Run(OK);
   }
 
-  void OnHeadersReceived(
-      const quiche::HttpHeaderBlock& response_headers) override {
+  void OnHeadersReceived(const quiche::HttpHeaderBlock& response_headers,
+                         const net::ProxyInfo& used_proxy_info) override {
     CHECK(!not_expect_callback_);
 
     response_headers_ = response_headers.Clone();
@@ -327,9 +327,9 @@ class DeleteStreamDelegate : public TestDelegateBase {
 
   ~DeleteStreamDelegate() override = default;
 
-  void OnHeadersReceived(
-      const quiche::HttpHeaderBlock& response_headers) override {
-    TestDelegateBase::OnHeadersReceived(response_headers);
+  void OnHeadersReceived(const quiche::HttpHeaderBlock& response_headers,
+                         const net::ProxyInfo& used_proxy_info) override {
+    TestDelegateBase::OnHeadersReceived(response_headers, used_proxy_info);
     if (phase_ == ON_HEADERS_RECEIVED) {
       DeleteStream();
       QuitLoop();

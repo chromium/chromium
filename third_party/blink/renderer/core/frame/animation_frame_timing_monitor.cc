@@ -322,9 +322,7 @@ ToProtoEnum(ThirdPartyScriptDetector::Technology technology) {
 
 void AnimationFrameTimingMonitor::RequestPresentationTimeForTracing(
     LocalFrame& frame) {
-  bool tracing_enabled;
-  TRACE_EVENT_CATEGORY_GROUP_ENABLED("devtools.timeline", &tracing_enabled);
-  if (tracing_enabled) {
+  if (TRACE_EVENT_CATEGORY_ENABLED("devtools.timeline")) {
     frame.GetChromeClient().NotifyPresentationTime(
         frame, blink::BindOnce(
                    &AnimationFrameTimingMonitor::ReportPresentationTimeToTrace,
@@ -353,9 +351,7 @@ void AnimationFrameTimingMonitor::ReportPresentationTimeToTrace(
 void AnimationFrameTimingMonitor::RecordLongAnimationFrameTrace(
     const AnimationFrameTimingInfo& info,
     LocalDOMWindow& window) {
-  bool tracing_enabled;
-  TRACE_EVENT_CATEGORY_GROUP_ENABLED("devtools.timeline", &tracing_enabled);
-  if (!tracing_enabled) {
+  if (!TRACE_EVENT_CATEGORY_ENABLED("devtools.timeline")) {
     return;
   }
 

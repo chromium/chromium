@@ -10,7 +10,6 @@
 #include <numeric>
 #include <utility>
 
-#include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
@@ -64,7 +63,7 @@ void MediaStreamVideoSource::AddTrack(
     MediaStreamVideoSourceCallbacks media_stream_callbacks,
     ConstraintsOnceCallback callback) {
   DCHECK(GetTaskRunner()->BelongsToCurrentThread());
-  DCHECK(!base::Contains(tracks_, track));
+  DCHECK(!std::ranges::contains(tracks_, track));
   tracks_.push_back(track);
   secure_tracker_.Add(track, true);
 
@@ -564,6 +563,11 @@ MediaStreamVideoSource::GetNextCaptureVersion() {
 VideoCaptureFeedbackCB MediaStreamVideoSource::GetFeedbackCallback() const {
   // Each source implementation has to implement its own feedback callbacks.
   return base::DoNothing();
+}
+
+size_t MediaStreamVideoSource::NumTracks() const {
+  DCHECK(GetTaskRunner()->BelongsToCurrentThread());
+  return tracks_.size();
 }
 
 void MediaStreamVideoSource::SetStartCallback(SourceStartCallback callback) {

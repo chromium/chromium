@@ -196,16 +196,17 @@ void FullRestoreAppLaunchHandler::OnAppTypeInitialized(apps::AppType app_type) {
   }
 }
 
-void FullRestoreAppLaunchHandler::OnGotSession(Profile* session_profile,
-                                               bool for_app,
-                                               int window_count) {
+void FullRestoreAppLaunchHandler::OnGotSession(
+    Profile* session_profile,
+    bool for_app,
+    const std::vector<const sessions::SessionWindow*>& windows) {
   if (session_profile != profile())
     return;
 
   if (for_app)
-    browser_app_window_count_ = window_count;
+    browser_app_window_count_ = windows.size();
   else
-    browser_window_count_ = window_count;
+    browser_window_count_ = windows.size();
 }
 
 void FullRestoreAppLaunchHandler::ForceLaunchBrowserForTesting() {
@@ -515,8 +516,8 @@ void FullRestoreAppLaunchHandler::MaybeStartSaveTimer() {
     return;
   }
 
-  if (base::Contains(restore_data()->app_id_to_launch_list(),
-                     app_constants::kChromeAppId)) {
+  if (restore_data()->app_id_to_launch_list().contains(
+          app_constants::kChromeAppId)) {
     // If the browser hasn't been restored yet, Wait for the browser
     // restoration. LaunchBrowser will call this function again to start the
     // save timer after restore the browser sessions.

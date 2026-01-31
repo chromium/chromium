@@ -55,7 +55,7 @@ public class MediaCapturePickerHeadlessFragment extends Fragment {
 
     private MediaProjectionManager mMediaProjectionManager;
     private ActivityResultLauncher<Intent> mLauncher;
-    private @Nullable Delegate mNextDelegate;
+    /* package */ @Nullable Delegate mNextDelegate;
 
     public static @Nullable MediaCapturePickerHeadlessFragment getInstanceForCurrentActivity() {
         var activity = (FragmentActivity) ApplicationStatus.getLastTrackedFocusedActivity();
@@ -106,8 +106,13 @@ public class MediaCapturePickerHeadlessFragment extends Fragment {
     }
 
     public void startAndroidCapturePrompt(Delegate delegate) {
+        startAndroidCapturePrompt(delegate, /* intent= */ null);
+    }
+
+    public void startAndroidCapturePrompt(Delegate delegate, @Nullable Intent intent) {
         assert mNextDelegate == null;
         mNextDelegate = delegate;
-        mLauncher.launch(mMediaProjectionManager.createScreenCaptureIntent());
+        mLauncher.launch(
+                intent != null ? intent : mMediaProjectionManager.createScreenCaptureIntent());
     }
 }

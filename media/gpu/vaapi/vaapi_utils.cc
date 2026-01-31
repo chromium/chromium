@@ -2,17 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "media/gpu/vaapi/vaapi_utils.h"
 
 #include <algorithm>
 #include <type_traits>
 #include <utility>
 
+#include "base/compiler_specific.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/synchronization/lock.h"
@@ -33,7 +29,7 @@ void CheckedMemcpy(To& to, From& from) {
   static_assert(std::is_array<From>::value,
                 "Second parameter must be an array");
   static_assert(sizeof(to) == sizeof(from), "arrays must be of same size");
-  memcpy(&to, &from, sizeof(to));
+  UNSAFE_TODO(memcpy(&to, &from, sizeof(to)));
 }
 
 }  // namespace
@@ -261,16 +257,17 @@ void FillVP8DataStructures(const Vp8FrameHeader& frame_header,
     }
 
 #define CLAMP_Q(q) std::clamp(q, 0, 127)
-    iq_matrix_buf->quantization_index[i][0] = CLAMP_Q(q);
-    iq_matrix_buf->quantization_index[i][1] = CLAMP_Q(q + quant_hdr.y_dc_delta);
-    iq_matrix_buf->quantization_index[i][2] =
-        CLAMP_Q(q + quant_hdr.y2_dc_delta);
-    iq_matrix_buf->quantization_index[i][3] =
-        CLAMP_Q(q + quant_hdr.y2_ac_delta);
-    iq_matrix_buf->quantization_index[i][4] =
-        CLAMP_Q(q + quant_hdr.uv_dc_delta);
-    iq_matrix_buf->quantization_index[i][5] =
-        CLAMP_Q(q + quant_hdr.uv_ac_delta);
+    UNSAFE_TODO(iq_matrix_buf->quantization_index[i])[0] = CLAMP_Q(q);
+    UNSAFE_TODO(iq_matrix_buf->quantization_index[i])
+    [1] = CLAMP_Q(q + quant_hdr.y_dc_delta);
+    UNSAFE_TODO(iq_matrix_buf->quantization_index[i])
+    [2] = CLAMP_Q(q + quant_hdr.y2_dc_delta);
+    UNSAFE_TODO(iq_matrix_buf->quantization_index[i])
+    [3] = CLAMP_Q(q + quant_hdr.y2_ac_delta);
+    UNSAFE_TODO(iq_matrix_buf->quantization_index[i])
+    [4] = CLAMP_Q(q + quant_hdr.uv_dc_delta);
+    UNSAFE_TODO(iq_matrix_buf->quantization_index[i])
+    [5] = CLAMP_Q(q + quant_hdr.uv_ac_delta);
 #undef CLAMP_Q
   }
 
@@ -336,13 +333,13 @@ void FillVP8DataStructures(const Vp8FrameHeader& frame_header,
     if (sgmnt_hdr.segmentation_enabled) {
       if (sgmnt_hdr.segment_feature_mode ==
           Vp8SegmentationHeader::FEATURE_MODE_ABSOLUTE) {
-        lf_level = sgmnt_hdr.lf_update_value[i];
+        lf_level = UNSAFE_TODO(sgmnt_hdr.lf_update_value[i]);
       } else {
-        lf_level += sgmnt_hdr.lf_update_value[i];
+        lf_level += UNSAFE_TODO(sgmnt_hdr.lf_update_value[i]);
       }
     }
 
-    pic_param->loop_filter_level[i] = std::clamp(lf_level, 0, 63);
+    UNSAFE_TODO(pic_param->loop_filter_level[i]) = std::clamp(lf_level, 0, 63);
   }
 
   static_assert(
@@ -356,8 +353,10 @@ void FillVP8DataStructures(const Vp8FrameHeader& frame_header,
                     std::extent<decltype(lf_hdr.mb_mode_delta)>(),
                 "loop filter deltas arrays size mismatch");
   for (size_t i = 0; i < std::size(lf_hdr.ref_frame_delta); ++i) {
-    pic_param->loop_filter_deltas_ref_frame[i] = lf_hdr.ref_frame_delta[i];
-    pic_param->loop_filter_deltas_mode[i] = lf_hdr.mb_mode_delta[i];
+    UNSAFE_TODO(pic_param->loop_filter_deltas_ref_frame[i]) =
+        UNSAFE_TODO(lf_hdr.ref_frame_delta[i]);
+    UNSAFE_TODO(pic_param->loop_filter_deltas_mode[i]) =
+        UNSAFE_TODO(lf_hdr.mb_mode_delta[i]);
   }
 
 #define FHDR_TO_PP(a) pic_param->a = frame_header.a
@@ -389,7 +388,8 @@ void FillVP8DataStructures(const Vp8FrameHeader& frame_header,
       ((frame_header.macroblock_bit_offset + 7) / 8);
 
   for (size_t i = 0; i < frame_header.num_of_dct_partitions; ++i)
-    slice_param->partition_size[i + 1] = frame_header.dct_partition_sizes[i];
+    UNSAFE_TODO(slice_param->partition_size[i + 1]) =
+        frame_header.dct_partition_sizes[i];
 }
 
 bool IsValidVABufferType(VABufferType type) {

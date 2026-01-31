@@ -8,67 +8,32 @@
 #include "base/test/task_environment.h"
 #include "base/unguessable_token.h"
 #include "base/uuid.h"
-#include "components/contextual_search/contextual_search_context_controller.h"
 #include "components/contextual_search/contextual_search_service.h"
 #include "components/contextual_search/contextual_search_session_handle.h"
+#include "components/contextual_search/mock_contextual_search_context_controller.h"
 #include "components/contextual_tasks/public/context_decoration_params.h"
 #include "components/contextual_tasks/public/contextual_task.h"
 #include "components/contextual_tasks/public/contextual_task_context.h"
 #include "components/lens/contextual_input.h"
 #include "components/lens/proto/server/lens_overlay_response.pb.h"
+#include "components/prefs/testing_pref_service.h"
 #include "components/sessions/core/session_id.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace contextual_tasks {
 
-class MockContextualSearchContextController
-    : public contextual_search::ContextualSearchContextController {
- public:
-  MockContextualSearchContextController() = default;
-  ~MockContextualSearchContextController() override = default;
-
-  MOCK_METHOD(void, InitializeIfNeeded, (), (override));
-  MOCK_METHOD(void,
-              CreateSearchUrl,
-              (std::unique_ptr<CreateSearchUrlRequestInfo>,
-               base::OnceCallback<void(GURL)>),
-              (override));
-  MOCK_METHOD(lens::ClientToAimMessage,
-              CreateClientToAimRequest,
-              (std::unique_ptr<CreateClientToAimRequestInfo>),
-              (override));
-  MOCK_METHOD(void, AddObserver, (FileUploadStatusObserver*), (override));
-  MOCK_METHOD(void, RemoveObserver, (FileUploadStatusObserver*), (override));
-  MOCK_METHOD(void,
-              StartFileUploadFlow,
-              (const base::UnguessableToken&,
-               std::unique_ptr<lens::ContextualInputData>,
-               std::optional<lens::ImageEncodingOptions>),
-              (override));
-  MOCK_METHOD(bool, DeleteFile, (const base::UnguessableToken&), (override));
-  MOCK_METHOD(void, ClearFiles, (), (override));
-  MOCK_METHOD(std::unique_ptr<lens::proto::LensOverlaySuggestInputs>,
-              CreateSuggestInputs,
-              (const std::vector<base::UnguessableToken>&),
-              (override));
-  MOCK_METHOD(const contextual_search::FileInfo*,
-              GetFileInfo,
-              (const base::UnguessableToken&),
-              (override));
-  MOCK_METHOD(std::vector<const contextual_search::FileInfo*>,
-              GetFileInfoList,
-              (),
-              (override));
-};
-
 class PendingContextDecoratorTest : public testing::Test {
  public:
-  PendingContextDecoratorTest() = default;
+  PendingContextDecoratorTest() {
+    contextual_search::ContextualSearchService::RegisterProfilePrefs(
+        pref_service_.registry());
+  }
   ~PendingContextDecoratorTest() override = default;
 
  protected:
   base::test::TaskEnvironment task_environment_;
+  TestingPrefServiceSimple pref_service_;
 };
 
 TEST_F(PendingContextDecoratorTest, Construction) {
@@ -98,21 +63,17 @@ TEST_F(PendingContextDecoratorTest, DecorateWithContextualSearchData) {
   // Set up the Contextual Search service and a mock controller.
   contextual_search::ContextualSearchService service(
       nullptr, nullptr, nullptr, nullptr, version_info::Channel::UNKNOWN, "");
-  auto mock_controller =
-      std::make_unique<MockContextualSearchContextController>();
+  auto mock_controller = std::make_unique<
+      contextual_search::MockContextualSearchContextController>();
   auto* mock_controller_ptr = mock_controller.get();
   auto session_handle =
       service.CreateSessionForTesting(std::move(mock_controller), nullptr);
+  // Check the search content sharing settings to notify the session handle
+  // that the client is properly checking the pref value.
+  session_handle->CheckSearchContentSharingSettings(&pref_service_);
 
   // Add a tab context to the session, which will produce a token.
-  base::UnguessableToken token;
-  session_handle->AddTabContext(
-      123, base::BindOnce(
-               [](base::UnguessableToken* out_token,
-                  const base::UnguessableToken& new_token) {
-                 *out_token = new_token;
-               },
-               &token));
+  base::UnguessableToken token = session_handle->CreateContextToken();
 
   // Move the token to the submitted state.
   session_handle->CreateClientToAimRequest(
@@ -120,14 +81,7 @@ TEST_F(PendingContextDecoratorTest, DecorateWithContextualSearchData) {
                            CreateClientToAimRequestInfo>());
 
   // Add a second tab context that will remain in the uploaded state.
-  base::UnguessableToken token2;
-  session_handle->AddTabContext(
-      456, base::BindOnce(
-               [](base::UnguessableToken* out_token,
-                  const base::UnguessableToken& new_token) {
-                 *out_token = new_token;
-               },
-               &token2));
+  base::UnguessableToken token2 = session_handle->CreateContextToken();
 
   // Mock the controller to return valid file info for the token.
   contextual_search::FileInfo file_info;
@@ -205,10 +159,13 @@ TEST_F(PendingContextDecoratorTest, DecorateWithNoContextTokens) {
   // Set up a session handle with no context tokens.
   contextual_search::ContextualSearchService service(
       nullptr, nullptr, nullptr, nullptr, version_info::Channel::UNKNOWN, "");
-  auto mock_controller =
-      std::make_unique<MockContextualSearchContextController>();
+  auto mock_controller = std::make_unique<
+      contextual_search::MockContextualSearchContextController>();
   auto session_handle =
       service.CreateSessionForTesting(std::move(mock_controller), nullptr);
+  // Check the search content sharing settings to notify the session handle
+  // that the client is properly checking the pref value.
+  session_handle->CheckSearchContentSharingSettings(&pref_service_);
 
   // Set up decoration params with the session handle.
   ContextDecorationParams params;
@@ -237,40 +194,23 @@ TEST_F(PendingContextDecoratorTest, DecorateWithIncompleteData) {
   // Set up the service and session handle.
   contextual_search::ContextualSearchService service(
       nullptr, nullptr, nullptr, nullptr, version_info::Channel::UNKNOWN, "");
-  auto mock_controller =
-      std::make_unique<MockContextualSearchContextController>();
+  auto mock_controller = std::make_unique<
+      contextual_search::MockContextualSearchContextController>();
   auto* mock_controller_ptr = mock_controller.get();
   auto session_handle =
       service.CreateSessionForTesting(std::move(mock_controller), nullptr);
+  // Check the search content sharing settings to notify the session handle
+  // that the client is properly checking the pref value.
+  session_handle->CheckSearchContentSharingSettings(&pref_service_);
 
   // Add three tokens: one valid, one with no URL, and one that will have a
   // null FileInfo.
-  base::UnguessableToken valid_token;
-  session_handle->AddTabContext(
-      123, base::BindOnce(
-               [](base::UnguessableToken* out_token,
-                  const base::UnguessableToken& new_token) {
-                 *out_token = new_token;
-               },
-               &valid_token));
+  base::UnguessableToken valid_token = session_handle->CreateContextToken();
 
-  base::UnguessableToken no_url_token;
-  session_handle->AddTabContext(
-      124, base::BindOnce(
-               [](base::UnguessableToken* out_token,
-                  const base::UnguessableToken& new_token) {
-                 *out_token = new_token;
-               },
-               &no_url_token));
+  base::UnguessableToken no_url_token = session_handle->CreateContextToken();
 
-  base::UnguessableToken null_file_info_token;
-  session_handle->AddTabContext(
-      125, base::BindOnce(
-               [](base::UnguessableToken* out_token,
-                  const base::UnguessableToken& new_token) {
-                 *out_token = new_token;
-               },
-               &null_file_info_token));
+  base::UnguessableToken null_file_info_token =
+      session_handle->CreateContextToken();
 
   // Mock the controller to return appropriate data for each token.
   contextual_search::FileInfo valid_file_info;

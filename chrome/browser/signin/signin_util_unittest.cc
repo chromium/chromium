@@ -211,7 +211,7 @@ TEST_F(SigninUtilTest, IsSecondaryAccountAllowed) {
 
   {
     profile()->GetPrefs()->SetList(prefs::kProfileSeparationDomainExceptionList,
-                                   base::Value::List());
+                                   base::ListValue());
 
     EXPECT_FALSE(signin_util::IsAccountExemptedFromEnterpriseProfileSeparation(
         profile(), consumer_email));
@@ -221,7 +221,7 @@ TEST_F(SigninUtilTest, IsSecondaryAccountAllowed) {
         profile(), other_enterprise_email));
   }
   {
-    base::Value::List profile_separation_exception_list;
+    base::ListValue profile_separation_exception_list;
     profile_separation_exception_list.Append(base::Value("bob.com"));
     profile()->GetPrefs()->SetList(
         prefs::kProfileSeparationDomainExceptionList,
@@ -235,7 +235,7 @@ TEST_F(SigninUtilTest, IsSecondaryAccountAllowed) {
         profile(), other_enterprise_email));
   }
   {
-    base::Value::List profile_separation_exception_list;
+    base::ListValue profile_separation_exception_list;
     profile_separation_exception_list.Append(base::Value("bob.com"));
     profile_separation_exception_list.Append(base::Value("gmail.com"));
     profile()->GetPrefs()->SetList(
@@ -276,7 +276,7 @@ TEST_F(SigninUtilTest,
   }
 
   profile()->GetPrefs()->SetList(prefs::kProfileSeparationDomainExceptionList,
-                                 base::Value::List());
+                                 base::ListValue());
 
   for (const auto& policy : all_policies) {
     profile()->GetPrefs()->SetString(prefs::kManagedAccountsSigninRestriction,
@@ -293,7 +293,7 @@ TEST_F(SigninUtilTest,
         << policy;
   }
 
-  base::Value::List profile_separation_exception_list;
+  base::ListValue profile_separation_exception_list;
   profile_separation_exception_list.Append(base::Value("example.com"));
   profile()->GetPrefs()->SetList(prefs::kProfileSeparationDomainExceptionList,
                                  std::move(profile_separation_exception_list));

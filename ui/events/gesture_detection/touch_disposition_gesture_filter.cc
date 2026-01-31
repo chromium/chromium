@@ -6,10 +6,11 @@
 
 #include <stddef.h>
 
+#include <utility>
+
 #include "base/check_op.h"
 #include "base/notreached.h"
 #include "base/trace_event/typed_macros.h"
-#include "base/types/cxx23_to_underlying.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/events/gesture_event_details.h"
 
@@ -17,8 +18,8 @@ namespace ui {
 namespace {
 
 // A BitSet32 is used for tracking dropped gesture types.
-static_assert(base::to_underlying(EventType::kGestureTypeEnd) -
-                      base::to_underlying(EventType::kGestureTypeStart) <
+static_assert(std::to_underlying(EventType::kGestureTypeEnd) -
+                      std::to_underlying(EventType::kGestureTypeStart) <
                   32,
               "gesture type count too large");
 
@@ -130,8 +131,8 @@ DispositionHandlingInfo GetDispositionHandlingInfo(EventType type) {
 int GetGestureTypeIndex(EventType type) {
   DCHECK_GE(type, EventType::kGestureTypeStart);
   DCHECK_LE(type, EventType::kGestureTypeEnd);
-  return base::to_underlying(type) -
-         base::to_underlying(EventType::kGestureTypeStart);
+  return std::to_underlying(type) -
+         std::to_underlying(EventType::kGestureTypeStart);
 }
 
 bool IsTouchStartEvent(GestureEventDataPacket::GestureSource gesture_source) {

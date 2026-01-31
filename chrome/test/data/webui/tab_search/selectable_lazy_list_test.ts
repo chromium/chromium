@@ -78,8 +78,7 @@ suite('SelectableLazyListTest', () => {
 
   function sampleTabItems(siteNames: string[]): TabData[] {
     return generateSampleTabsFromSiteNames(siteNames).map(tab => {
-      return new TabData(
-          tab, TabItemType.OPEN_TAB, new URL(tab.url.url).hostname);
+      return new TabData(tab, TabItemType.OPEN_TAB, new URL(tab.url).hostname);
     });
   }
 

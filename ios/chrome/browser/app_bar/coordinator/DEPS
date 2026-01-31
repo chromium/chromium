@@ -1,0 +1,5 @@
+include_rules = [
+  # go/keep-sorted start
+  "+ios/chrome/browser/intents/model/intents_donation_helper.h",
+  # go/keep-sorted end
+]

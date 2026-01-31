@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/callback_list.h"
 #include "base/memory/raw_ref.h"
 #include "chrome/browser/ui/views/page_action/page_action_controller.h"
 #include "components/tabs/public/tab_interface.h"
@@ -50,6 +51,9 @@ class LensOverlayHomeworkPageActionController {
   void HandlePageActionEvent(bool is_from_keyboard);
 
  private:
+  void OnTabWillDetach(tabs::TabInterface* tab,
+                       tabs::TabInterface::DetachReason reason);
+
   // Determines whether the page action icon should be shown.
   bool ShouldShow();
 
@@ -67,6 +71,8 @@ class LensOverlayHomeworkPageActionController {
   // Associates this controller with the tab's UnownedUserDataHost.
   ui::ScopedUnownedUserData<LensOverlayHomeworkPageActionController>
       scoped_unowned_user_data_;
+
+  base::CallbackListSubscription tab_will_detach_subscription_;
 
   std::unique_ptr<ScopedWindowCallToAction> scoped_window_call_to_action_ptr_;
 };

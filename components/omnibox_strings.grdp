@@ -170,9 +170,6 @@
       <message name="IDS_FUSEBOX_ADD_CURRENT_TAB" desc="The text displayed in the omnibox attachments popup. When clicked - adds the curernt tab as context." formatter_data="android_java">
         Add current tab
       </message>
-      <message name="IDS_FUSEBOX_MAX_ATTACHMENTS" desc="The text displayed in a snackbar when the max number of omnibox attachments is reached" formatter_data="android_java">
-        Add up to 10 files, tabs, or images
-      </message>
       <message name="IDS_FUSEBOX_UPLOAD_FAILED" desc="The text displayed in a snackbar when an attachment fails to upload" formatter_data="android_java">
         Unable to add attachments
       </message>
@@ -407,13 +404,25 @@
     Try AI Mode
   </message>
   <message name="IDS_ACC_SEND_BUTTON_SEARCH_OR_NAVIGATE" desc="Accessibility text for the Omnibox `Send` button, announced when the user is in the search/open URL context" formatter_data="android_java">
-    Navigate
+    Submit
   </message>
   <message name="IDS_ACC_SEND_BUTTON_SEND_TO_AI" desc="Accessibility text for the Omnibox `Send` button, announced when the user is in the AI Mode context" formatter_data="android_java">
     Send to assistant
   </message>
   <message name="IDS_ACC_SEND_BUTTON_CREATE_IMAGE" desc="Accessibility text for the Omnibox `Send` button, announced when the user is in the Create Image context" formatter_data="android_java">
     Create image
+  </message>
+  <message name="IDS_ACC_REMOVE_IMAGE_ATTACHMENT" desc="Accessibility text for the remove button of image attachment, announced when the user selects an image as an attachment" formatter_data="android_java">
+    Remove image attachment
+  </message>
+  <message name="IDS_ACC_REMOVE_ATTACHMENT" desc="Accessibility text for the remove button of tab or file attachment, announced when the user selects a tab or file as an attachment" formatter_data="android_java">
+    Remove attachment
+  </message>
+  <message name="IDS_ACC_AI_MODE_SELECTED" desc="Accessibility announcement when the `AI Mode` option in the Omnibox `Add context` popup is selected." formatter_data="android_java">
+    AI Mode selected
+  </message>
+  <message name="IDS_ACC_CREATE_IMAGE_SELECTED" desc="Accessibility announcement when the `Create Image` option in the Omnibox `Add context` popup is selected." formatter_data="android_java">
+    Create image selected
   </message>
 
   <!-- Accessibility labels for autocomplete match types.

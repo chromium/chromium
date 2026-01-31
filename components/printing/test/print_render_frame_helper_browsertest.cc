@@ -358,7 +358,7 @@ class TestPrintManagerHost
     std::move(callback).Run(std::move(settings));
   }
 #if BUILDFLAG(ENABLE_PRINT_PREVIEW)
-  void UpdatePrintSettings(base::Value::Dict job_settings,
+  void UpdatePrintSettings(base::DictValue job_settings,
                            UpdatePrintSettingsCallback callback) override {
     // Check and make sure the required settings are all there.
     std::optional<int> margins_type = job_settings.FindInt(kSettingMarginsType);
@@ -1873,12 +1873,12 @@ class PrintRenderFrameHelperPreviewTest
               preview_ui()->all_pages_have_custom_orientation());
   }
 
-  base::Value::Dict& print_settings() { return print_settings_; }
+  base::DictValue& print_settings() { return print_settings_; }
 
  private:
   void CreatePrintSettingsDictionary() {
     print_settings_ =
-        base::Value::Dict()
+        base::DictValue()
             .Set(kSettingLandscape, false)
             .Set(kSettingCollate, false)
             .Set(kSettingColor, static_cast<int>(mojom::ColorModel::kGray))
@@ -1907,7 +1907,7 @@ class PrintRenderFrameHelperPreviewTest
             .Set(kSettingShouldPrintSelectionOnly, false);
 
     // Using a media size with realistic dimensions for a Letter paper.
-    auto media_size = base::Value::Dict()
+    auto media_size = base::DictValue()
                           .Set(kSettingMediaSizeWidthMicrons, 215900)
                           .Set(kSettingMediaSizeHeightMicrons, 279400)
                           .Set(kSettingsImageableAreaLeftMicrons, 12700)
@@ -1917,7 +1917,7 @@ class PrintRenderFrameHelperPreviewTest
     print_settings_.Set(kSettingMediaSize, std::move(media_size));
   }
 
-  base::Value::Dict print_settings_;
+  base::DictValue print_settings_;
 };
 
 TEST_F(PrintRenderFrameHelperPreviewTest, BlockScriptInitiatedPrinting) {
@@ -2336,7 +2336,7 @@ TEST_F(PrintRenderFrameHelperPreviewTest, ShrinkToFitPageMatchOrientation) {
 
   print_settings().Set(kSettingPrinterType,
                        static_cast<int>(mojom::PrinterType::kLocal));
-  base::Value::Dict custom_margins;
+  base::DictValue custom_margins;
   custom_margins.Set(kSettingMarginTop, 10);
   custom_margins.Set(kSettingMarginRight, 20);
   custom_margins.Set(kSettingMarginBottom, 30);
@@ -2935,7 +2935,7 @@ TEST_F(PrintRenderFrameHelperPreviewTest,
        PrintToPDFSelectedHonorOrientationCss) {
   LoadHTML(kHTMLWithLandscapePageCss);
 
-  base::Value::Dict custom_margins;
+  base::DictValue custom_margins;
   custom_margins.Set(kSettingMarginTop, 21);
   custom_margins.Set(kSettingMarginBottom, 23);
   custom_margins.Set(kSettingMarginLeft, 21);
@@ -3006,10 +3006,10 @@ TEST_F(PrintRenderFrameHelperPreviewTest, PrintPreviewForSelectedPages) {
   // Set a page range and update the dictionary to generate only the complete
   // metafile with the selected pages. Page numbers used in the dictionary
   // are 1-based.
-  base::Value::Dict page_range;
+  base::DictValue page_range;
   page_range.Set(kSettingPageRangeFrom, base::Value(2));
   page_range.Set(kSettingPageRangeTo, base::Value(3));
-  base::Value::List page_range_array;
+  base::ListValue page_range_array;
   page_range_array.Append(std::move(page_range));
   print_settings().Set(kSettingPageRange, std::move(page_range_array));
 
@@ -3038,10 +3038,10 @@ TEST_F(PrintRenderFrameHelperPreviewTest, PrintPreviewInvalidPageRange) {
 
   // Request a page beyond the end of document and assure we get the entire
   // document back.
-  base::Value::Dict page_range;
+  base::DictValue page_range;
   page_range.Set(kSettingPageRangeFrom, 2);
   page_range.Set(kSettingPageRangeTo, 2);
-  base::Value::List page_range_array;
+  base::ListValue page_range_array;
   page_range_array.Append(std::move(page_range));
   print_settings().Set(kSettingPageRange, std::move(page_range_array));
 
@@ -3327,7 +3327,7 @@ TEST_F(PrintRenderFrameHelperPreviewTest,
 TEST_F(PrintRenderFrameHelperPreviewTest, OnPrintPreviewUsingInvalidMediaSize) {
   LoadHTML(kPrintPreviewHTML);
 
-  print_settings().Set(kSettingMediaSize, base::Value::Dict());
+  print_settings().Set(kSettingMediaSize, base::DictValue());
 
   OnPrintPreview();
 
@@ -3526,7 +3526,7 @@ TEST_F(PrintRenderFrameHelperPreviewTest, IgnorePageSizeAndMargin) {
                        static_cast<int>(mojom::PrinterType::kLocal));
   print_settings().Set(kSettingShouldPrintBackgrounds, true);
 
-  base::Value::Dict custom_margins;
+  base::DictValue custom_margins;
   custom_margins.Set(kSettingMarginTop, 12);
   custom_margins.Set(kSettingMarginRight, 6);
   custom_margins.Set(kSettingMarginBottom, 12);
@@ -3583,7 +3583,7 @@ TEST_F(PrintRenderFrameHelperPreviewTest, LandscapeIgnorePageSizeAndMargin) {
                        static_cast<int>(mojom::PrinterType::kLocal));
   print_settings().Set(kSettingShouldPrintBackgrounds, true);
 
-  base::Value::Dict custom_margins;
+  base::DictValue custom_margins;
   // TODO(crbug.com/40280219): Would be neat to test with different vertical and
   // horizontal margins here.
   custom_margins.Set(kSettingMarginTop, 12);

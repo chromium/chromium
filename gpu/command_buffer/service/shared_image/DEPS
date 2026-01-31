@@ -12,6 +12,10 @@ specific_include_rules = {
     "+cc/test",
     "+components/viz/common/gpu/vulkan_in_process_context_provider.h",
   ],
+  "shared_image_factory\.cc": [
+    # TODO(crbug.com/434724013): Remove include once DumpWithoutCrashing is no longer needed.
+    "+ash/constants/ash_switches.h"
+  ],
   ".*_unittest\.cc": [
     "+cc/test",
   ],

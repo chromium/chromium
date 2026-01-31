@@ -42,7 +42,7 @@ class DiagnosticsMetricsMessageHandlerTest : public testing::Test {
   }
 
   void SendRecordNavigation(NavigationView from, NavigationView to) {
-    base::Value::List args;
+    base::ListValue args;
     args.Append(static_cast<int>(from));
     args.Append(static_cast<int>(to));
     web_ui_.HandleReceivedMessage(kRecordNavigation, args);
@@ -183,7 +183,7 @@ TEST_F(DiagnosticsMetricsMessageHandlerTest,
 
 TEST_F(DiagnosticsMetricsMessageHandlerTest,
        HandleRecordNavigationWithoutArgs) {
-  base::Value::List args;
+  base::ListValue args;
 
   NavigationView expected_view = NavigationView::kSystem;
   InitializeHandler(expected_view);
@@ -194,7 +194,7 @@ TEST_F(DiagnosticsMetricsMessageHandlerTest,
 }
 
 TEST_F(DiagnosticsMetricsMessageHandlerTest, HandleRecordNavigationWithOneArg) {
-  base::Value::List args;
+  base::ListValue args;
   args.Append(0);
 
   NavigationView expected_view = NavigationView::kSystem;
@@ -207,7 +207,7 @@ TEST_F(DiagnosticsMetricsMessageHandlerTest, HandleRecordNavigationWithOneArg) {
 
 TEST_F(DiagnosticsMetricsMessageHandlerTest,
        HandleRecordNavigationWithInvalidArgs) {
-  base::Value::List args;
+  base::ListValue args;
   args.Append("0");
   args.Append(base::Value());
 
@@ -221,7 +221,7 @@ TEST_F(DiagnosticsMetricsMessageHandlerTest,
 
 TEST_F(DiagnosticsMetricsMessageHandlerTest,
        HandleRecordNavigationWithMatchingArgs) {
-  base::Value::List args;
+  base::ListValue args;
   args.Append(1);
   args.Append(1);
 
@@ -235,7 +235,7 @@ TEST_F(DiagnosticsMetricsMessageHandlerTest,
 
 TEST_F(DiagnosticsMetricsMessageHandlerTest,
        HandleRecordNavigationWithOutOfRangeArgs) {
-  base::Value::List args;
+  base::ListValue args;
   args.Append(-100);
   args.Append(100);
 

@@ -15,10 +15,12 @@ import android.view.ViewGroup;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.supplier.LazyOneshotSupplier;
-import org.chromium.base.supplier.ObservableSupplier;
-import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.supplier.MonotonicObservableSupplier;
+import org.chromium.base.supplier.NonNullObservableSupplier;
+import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.base.supplier.OneshotSupplierImpl;
+import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.back_press.BackPressManager;
@@ -71,7 +73,7 @@ public class TabManagementDelegateImpl implements TabManagementDelegate {
             ViewGroup parentView,
             BrowserControlsStateProvider browserControlsStateProvider,
             ScrimManager scrimManager,
-            ObservableSupplier<Boolean> omniboxFocusStateSupplier,
+            NonNullObservableSupplier<Boolean> omniboxFocusStateSupplier,
             BottomSheetController bottomSheetController,
             DataSharingTabManager dataSharingTabManager,
             TabModelSelector tabModelSelector,
@@ -81,7 +83,7 @@ public class TabManagementDelegateImpl implements TabManagementDelegate {
             ModalDialogManager modalDialogManager,
             ThemeColorProvider themeColorProvider,
             UndoBarThrottle undoBarThrottle,
-            ObservableSupplier<TabBookmarker> tabBookmarkerSupplier,
+            MonotonicObservableSupplier<TabBookmarker> tabBookmarkerSupplier,
             Supplier<ShareDelegate> shareDelegateSupplier) {
         return new TabGroupUiCoordinator(
                 activity,
@@ -122,21 +124,22 @@ public class TabManagementDelegateImpl implements TabManagementDelegate {
             boolean isIncognito,
             DoubleConsumer onToolbarAlphaChange,
             BackPressManager backPressManager,
-            ObservableSupplier<EdgeToEdgeController> edgeToEdgeSupplier,
+            MonotonicObservableSupplier<EdgeToEdgeController> edgeToEdgeSupplier,
             @Nullable DesktopWindowStateManager desktopWindowStateManager,
-            ObservableSupplier<TabModelDotInfo> tabModelNotificationDotSupplier,
-            ObservableSupplier<CompositorViewHolder> compositorViewHolderSupplier,
-            ObservableSupplier<ShareDelegate> shareDelegateSupplier,
-            ObservableSupplier<TabBookmarker> tabBookmarkerSupplier,
+            MonotonicObservableSupplier<TabModelDotInfo> tabModelNotificationDotSupplier,
+            MonotonicObservableSupplier<CompositorViewHolder> compositorViewHolderSupplier,
+            MonotonicObservableSupplier<ShareDelegate> shareDelegateSupplier,
+            MonotonicObservableSupplier<TabBookmarker> tabBookmarkerSupplier,
             TabGroupCreationUiDelegate tabGroupCreationUiDelegate,
             UndoBarThrottle undoBarThrottle,
             LazyOneshotSupplier<HubManager> hubManagerSupplier,
             @Nullable ArchivedTabsAutoDeletePromoManager archivedTabsAutoDeletePromoManager,
             Supplier<TabGroupUiActionHandler> tabGroupUiActionHandlerSupplier,
             Supplier<LayoutStateProvider> layoutStateProviderSupplier,
-            @Nullable ObservableSupplier<Boolean> xrSpaceModeObservableSupplier,
+            @Nullable MonotonicObservableSupplier<Boolean> xrSpaceModeObservableSupplier,
             @Nullable MultiInstanceManager multiInstanceManager,
-            @Nullable DragAndDropDelegate dragDropDelegate) {
+            @Nullable DragAndDropDelegate dragDropDelegate,
+            TabSwitcherBackPressHandlerManager dragHandlerManager) {
 
         TabSwitcherDragHandler tabSwitcherDragHandler = null;
         if (modalDialogManager != null
@@ -147,11 +150,14 @@ public class TabManagementDelegateImpl implements TabManagementDelegate {
                             () -> activity,
                             multiInstanceManager,
                             dragDropDelegate,
-                            () -> AppHeaderUtils.isAppInDesktopWindow(desktopWindowStateManager));
+                            () -> AppHeaderUtils.isAppInDesktopWindow(desktopWindowStateManager),
+                            dragHandlerManager);
             tabSwitcherDragHandler.setTabModelSelector(tabModelSelector);
             if (ChromeFeatureList.sEscCancelDrag.isEnabled()) {
-                backPressManager.addHandler(
-                        tabSwitcherDragHandler, BackPressHandler.Type.CANCEL_TAB_SWITCHER_DRAG);
+                if (!backPressManager.has(BackPressHandler.Type.CANCEL_TAB_SWITCHER_DRAG)) {
+                    backPressManager.addHandler(
+                            dragHandlerManager, BackPressHandler.Type.CANCEL_TAB_SWITCHER_DRAG);
+                }
             }
         }
 
@@ -190,11 +196,7 @@ public class TabManagementDelegateImpl implements TabManagementDelegate {
                 new UserEducationHelper(activity, profileSupplier, handler);
 
         Supplier<TabGroupModelFilter> tabGroupModelFilterSupplier =
-                () ->
-                        assumeNonNull(
-                                tabModelSelector
-                                        .getTabGroupModelFilterProvider()
-                                        .getTabGroupModelFilter(isIncognito));
+                () -> assumeNonNull(tabModelSelector.getTabGroupModelFilter(isIncognito));
         TabSwitcherPaneBase pane =
                 isIncognito
                         ? new IncognitoTabSwitcherPane(
@@ -239,15 +241,11 @@ public class TabManagementDelegateImpl implements TabManagementDelegate {
             LazyOneshotSupplier<HubManager> hubManagerSupplier,
             Supplier<TabGroupUiActionHandler> tabGroupUiActionHandlerSupplier,
             Supplier<ModalDialogManager> modalDialogManagerSupplier,
-            ObservableSupplier<EdgeToEdgeController> edgeToEdgeSupplier,
+            MonotonicObservableSupplier<EdgeToEdgeController> edgeToEdgeSupplier,
             DataSharingTabManager dataSharingTabManager) {
         LazyOneshotSupplier<TabGroupModelFilter> tabGroupModelFilterSupplier =
                 LazyOneshotSupplier.fromSupplier(
-                        () ->
-                                assumeNonNull(
-                                        tabModelSelector
-                                                .getTabGroupModelFilterProvider()
-                                                .getTabGroupModelFilter(false)));
+                        () -> assumeNonNull(tabModelSelector.getTabGroupModelFilter(false)));
         return new TabGroupsPane(
                 context,
                 tabGroupModelFilterSupplier,
@@ -266,7 +264,8 @@ public class TabManagementDelegateImpl implements TabManagementDelegate {
             ModalDialogManager modalDialogManager,
             OneshotSupplier<HubManager> hubManagerSupplier,
             Supplier<@Nullable TabGroupModelFilter> tabGroupModelFilterSupplier) {
-        ObservableSupplierImpl<PaneManager> paneManagerSupplier = new ObservableSupplierImpl<>();
+        SettableMonotonicObservableSupplier<PaneManager> paneManagerSupplier =
+                ObservableSuppliers.createMonotonic();
         hubManagerSupplier.onAvailable(
                 hubManager -> paneManagerSupplier.set(hubManager.getPaneManager()));
         return new TabGroupCreationUiDelegate(

@@ -49,7 +49,7 @@ class LookalikeUrlBlockingPage
  protected:
   // SecurityInterstitialPage implementation:
   void CommandReceived(const std::string& command) override;
-  void PopulateInterstitialStrings(base::Value::Dict& load_time_data) override;
+  void PopulateInterstitialStrings(base::DictValue& load_time_data) override;
   void OnInterstitialClosing() override;
   bool ShouldDisplayURL() const override;
   int GetHTMLTemplateId() override;

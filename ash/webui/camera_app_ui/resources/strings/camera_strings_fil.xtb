@@ -48,6 +48,7 @@
 <translation id="2761536921376153655">Uri ng pag-scan</translation>
 <translation id="28682968802727151">Preview ng mirror</translation>
 <translation id="2879583609344924966">Nakasaksak ang <ph name="CAMERA" />.</translation>
+<translation id="3063987824612038785">Mase-save ang lahat ng file ng Camera sa Google Drive</translation>
 <translation id="3067436040345934772">Mag-pan sa kanan</translation>
 <translation id="3081586908890909590">Lumipat sa pag-record ng video</translation>
 <translation id="3091480460059548935">Pag-detect ng text sa preview</translation>
@@ -67,6 +68,7 @@
 <translation id="3642192109456033823">Pinoproseso ang video...</translation>
 <translation id="3789724198583203151">I-rotate nang 90 degree counterclockwise</translation>
 <translation id="3810838688059735925">Video</translation>
+<translation id="386366972082231038">Mase-save ang lahat ng file ng Camera sa OneDrive</translation>
 <translation id="4060608699153044055">Hindi ka puwedeng mag-record dahil sa mababang storage space ng device. Para magsimulang mag-record, kailangan mong magbakante ng espasyo sa iyong device.</translation>
 <translation id="4061162772429051350"><ph name="MAGAPIXELS_AMOUNT" /> MP</translation>
 <translation id="4118525110028899586">I-pause ang pag-record</translation>
@@ -100,6 +102,7 @@
 <translation id="5634947914995388399">Palawakin ang dialog at ihinto ang pag-scan</translation>
 <translation id="5662366948659129155">Sina-scan ang page <ph name="COUNT" /></translation>
 <translation id="5671277269877808209">Parisukat</translation>
+<translation id="5725797473946373607">Huwag ipakita ang dialog na ito sa susunod</translation>
 <translation id="574392208103952083">Katamtaman</translation>
 <translation id="5746169159649715125">I-save bilang PDF</translation>
 <translation id="5753488212459587150">I-enable ang expert mode</translation>
@@ -156,6 +159,7 @@ Kung tungkol ang iyong feedback sa kalidad ng larawan o video, mag-attach ng hal
 <translation id="7983668134180549431">Na-detect na text.</translation>
 <translation id="8079255378695216066">Hindi masimulan ang pag-record</translation>
 <translation id="8120146556401698679">I-pan i-tilt i-zoom</translation>
+<translation id="8127459436205030819">Posibleng makita ng iyong administrator ang mga file mo</translation>
 <translation id="8131740175452115882">Kumpirmahin</translation>
 <translation id="8145038249676204903">Lumipat sa pagkuha ng larawan</translation>
 <translation id="8167081290930651932">I-save bilang Larawan</translation>
@@ -165,6 +169,7 @@ Kung tungkol ang iyong feedback sa kalidad ng larawan o video, mag-attach ng hal
 <translation id="8609951387004618906">Buksan ang <ph name="URL" /></translation>
 <translation id="8629662593426079630">360p</translation>
 <translation id="8711011893539266636">I-toggle ang pagkaka-mute ng mikropono. Naka-on ang mute</translation>
+<translation id="8712637175834984815">Nakuha ko</translation>
 <translation id="8730621377337864115">Tapos na</translation>
 <translation id="8732462232047530626">I-preview ang metadata</translation>
 <translation id="874854738381978209">May na-detect na Wi-Fi network.</translation>

@@ -7,31 +7,47 @@
 #include <string_view>
 
 #include "base/compiler_specific.h"
+#include "base/features.h"
 #include "base/numerics/checked_math.h"
 #include "base/strings/escape.h"
 #include "base/test/gtest_util.h"
+#include "base/test/scoped_feature_list.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/modp_b64/modp_b64.h"
 
 namespace base {
 
-TEST(Base64Test, Basic) {
+class Base64Test : public testing::TestWithParam<bool> {
+ public:
+  Base64Test() = default;
+  Base64Test(const Base64Test&) = delete;
+  Base64Test& operator=(const Base64Test&) = delete;
+  ~Base64Test() override = default;
+
+  void SetUp() override {
+    feature_list_.InitWithFeatureState(features::kSimdutfBase64Encode,
+                                       GetParam());
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+TEST_P(Base64Test, Basic) {
   const std::string kText = "hello world";
   const std::string kBase64Text = "aGVsbG8gd29ybGQ=";
-
-  std::string decoded;
-  bool ok;
 
   std::string encoded = Base64Encode(kText);
   EXPECT_EQ(kBase64Text, encoded);
 
-  ok = Base64Decode(encoded, &decoded);
+  std::string decoded;
+  bool ok = Base64Decode(encoded, &decoded);
   EXPECT_TRUE(ok);
   EXPECT_EQ(kText, decoded);
 }
 
-TEST(Base64Test, ForgivingAndStrictDecode) {
+TEST_P(Base64Test, ForgivingAndStrictDecode) {
   struct {
     const char* in;
 
@@ -112,7 +128,7 @@ TEST(Base64Test, ForgivingAndStrictDecode) {
   }
 }
 
-TEST(Base64Test, Binary) {
+TEST_P(Base64Test, Binary) {
   const uint8_t kData[] = {0x00, 0x01, 0xFE, 0xFF};
 
   std::string binary_encoded = Base64Encode(kData);
@@ -133,7 +149,7 @@ TEST(Base64Test, Binary) {
   EXPECT_EQ(encoded_with_prefix, "PREFIX" + binary_encoded);
 }
 
-TEST(Base64Test, InPlace) {
+TEST_P(Base64Test, InPlace) {
   const std::string kText = "hello world";
   const std::string kBase64Text = "aGVsbG8gd29ybGQ=";
 
@@ -145,7 +161,7 @@ TEST(Base64Test, InPlace) {
   EXPECT_EQ(text, kText);
 }
 
-TEST(Base64Test, Overflow) {
+TEST_P(Base64Test, Overflow) {
   // `Base64Encode` makes the input larger, which means inputs whose base64
   // output overflows `size_t`. Actually allocating a span of this size will
   // likely fail, but we test it with a fake span and assume a correct
@@ -166,5 +182,7 @@ TEST(Base64Test, Overflow) {
   base::CheckedNumeric<size_t> max_len = MODP_B64_MAX_INPUT_LEN;
   EXPECT_TRUE(modp_b64_encode_data_len(max_len).IsValid());
 }
+
+INSTANTIATE_TEST_SUITE_P(All, Base64Test, testing::Bool());
 
 }  // namespace base

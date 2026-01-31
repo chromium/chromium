@@ -25,7 +25,6 @@
 #include "ash/test/ash_test_base.h"
 #include "ash/test/ash_test_util.h"
 #include "base/command_line.h"
-#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/memory/weak_ptr.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -191,7 +190,7 @@ TEST_P(PrivacyIndicatorsControllerTest, NotificationMetadata) {
           notification_id);
 
   // Notification message should contains app name.
-  EXPECT_TRUE(base::Contains((notification->title()), app_name));
+  EXPECT_TRUE(notification->title().contains(app_name));
 
   // Privacy indicators notification should not be a popup. It is silently added
   // to the tray.
@@ -335,7 +334,9 @@ TEST_P(PrivacyIndicatorsControllerTest, NotificationWithTwoApps) {
 }
 
 // Tests privacy indicators tray item visibility across all status area widgets.
-TEST_P(PrivacyIndicatorsControllerTest, PrivacyIndicatorsTrayItemView) {
+// TODO(crbug.com/475195986): Re-enable flaky test.
+TEST_P(PrivacyIndicatorsControllerTest,
+       DISABLED_PrivacyIndicatorsTrayItemView) {
   // Uses normal animation duration so that the icons would not be immediately
   // hidden after the animation.
   gfx::ScopedAnimationDurationScaleMode animation_scale(

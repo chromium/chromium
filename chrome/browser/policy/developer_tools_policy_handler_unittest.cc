@@ -61,6 +61,8 @@ class DeveloperToolsPolicyHandlerTest
   }
 };
 
+#if !BUILDFLAG(IS_ANDROID)
+// Android does not support the legacy kDeveloperToolsDisabled policy.
 TEST_F(DeveloperToolsPolicyHandlerTest, NewPolicyOverridesLegacyPolicy) {
   EXPECT_FALSE(store_->GetValue(prefs::kDevToolsAvailability, nullptr));
 
@@ -80,7 +82,7 @@ TEST_F(DeveloperToolsPolicyHandlerTest, NewPolicyOverridesLegacyPolicy) {
       static_cast<int>(Availability::kDisallowedForForceInstalledExtensions),
       value->GetInt());
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
   // No force-disabling of developer mode on extensions UI.
   EXPECT_FALSE(store_->GetValue(prefs::kExtensionsUIDeveloperMode, nullptr));
 #endif
@@ -101,7 +103,7 @@ TEST_F(DeveloperToolsPolicyHandlerTest, LegacyPolicyAppliesIfNewPolicyInvalid) {
   ASSERT_TRUE(store_->GetValue(prefs::kDevToolsAvailability, &value));
   EXPECT_EQ(static_cast<int>(Availability::kDisallowed), value->GetInt());
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
   // Developer mode on extensions UI is also disabled.
   const base::Value* extensions_ui_dev_mode_value = nullptr;
   ASSERT_TRUE(store_->GetValue(prefs::kExtensionsUIDeveloperMode,
@@ -125,6 +127,7 @@ TEST_F(DeveloperToolsPolicyHandlerTest, NewPolicyAppliesIfLegacyPolicyInvalid) {
   ASSERT_TRUE(store_->GetValue(prefs::kDevToolsAvailability, &value));
   EXPECT_EQ(static_cast<int>(Availability::kAllowed), value->GetInt());
 }
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 TEST_F(DeveloperToolsPolicyHandlerTest, DisallowedForForceInstalledExtensions) {
   EXPECT_FALSE(store_->GetValue(prefs::kDevToolsAvailability, nullptr));
@@ -142,7 +145,7 @@ TEST_F(DeveloperToolsPolicyHandlerTest, DisallowedForForceInstalledExtensions) {
       static_cast<int>(Availability::kDisallowedForForceInstalledExtensions),
       value->GetInt());
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
   // No force-disabling of developer mode on extensions UI.
   EXPECT_FALSE(store_->GetValue(prefs::kExtensionsUIDeveloperMode, nullptr));
 #endif
@@ -160,7 +163,7 @@ TEST_F(DeveloperToolsPolicyHandlerTest, Allowed) {
   ASSERT_TRUE(store_->GetValue(prefs::kDevToolsAvailability, &value));
   EXPECT_EQ(static_cast<int>(Availability::kAllowed), value->GetInt());
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
   // No force-disabling of developer mode on extensions UI.
   EXPECT_FALSE(store_->GetValue(prefs::kExtensionsUIDeveloperMode, nullptr));
 #endif
@@ -178,7 +181,7 @@ TEST_F(DeveloperToolsPolicyHandlerTest, Disallowed) {
   ASSERT_TRUE(store_->GetValue(prefs::kDevToolsAvailability, &value));
   EXPECT_EQ(static_cast<int>(Availability::kDisallowed), value->GetInt());
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
   // Developer mode on extensions UI is also disabled.
   const base::Value* extensions_ui_dev_mode_value = nullptr;
   ASSERT_TRUE(store_->GetValue(prefs::kExtensionsUIDeveloperMode,
@@ -197,7 +200,7 @@ TEST_F(DeveloperToolsPolicyHandlerTest, InvalidValue) {
   UpdateProviderPolicy(policy);
   EXPECT_FALSE(store_->GetValue(prefs::kDevToolsAvailability, nullptr));
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
   EXPECT_FALSE(store_->GetValue(prefs::kExtensionsUIDeveloperMode, nullptr));
 #endif
 }

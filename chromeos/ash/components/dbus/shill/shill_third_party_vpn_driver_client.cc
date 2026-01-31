@@ -11,7 +11,6 @@
 #include <set>
 
 #include "base/compiler_specific.h"
-#include "base/containers/contains.h"
 #include "base/containers/to_vector.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
@@ -64,7 +63,7 @@ class ShillThirdPartyVpnDriverClientImpl
       const std::string& object_path_value) override;
 
   void SetParameters(const std::string& object_path_value,
-                     const base::Value::Dict& parameters,
+                     const base::DictValue& parameters,
                      StringCallback callback,
                      ErrorCallback error_callback) override;
 
@@ -212,7 +211,7 @@ void ShillThirdPartyVpnDriverClientImpl::DeleteHelper(
 
 void ShillThirdPartyVpnDriverClientImpl::SetParameters(
     const std::string& object_path_value,
-    const base::Value::Dict& parameters,
+    const base::DictValue& parameters,
     StringCallback callback,
     ErrorCallback error_callback) {
   dbus::MethodCall method_call(shill::kFlimflamThirdPartyVpnInterface,
@@ -221,7 +220,7 @@ void ShillThirdPartyVpnDriverClientImpl::SetParameters(
   dbus::MessageWriter array_writer(nullptr);
   writer.OpenArray("{ss}", &array_writer);
   for (auto it : parameters) {
-    if (!base::Contains(valid_keys_, it.first)) {
+    if (!valid_keys_.contains(it.first)) {
       LOG(WARNING) << "Unknown key " << it.first;
       continue;
     }

@@ -464,7 +464,7 @@ void BrowsingDataRemoverImpl::RemoveImpl(base::Time delete_begin,
     https_upgrade_service->ClearAllowlist(delete_begin, delete_end);
 
     // Clear cross-platform promos data.
-    if (MobilePromoOnDesktopEnabled()) {
+    if (IsMobilePromoOnDesktopRecordActiveDaysEnabled()) {
       CrossPlatformPromosDataRemover(profile_).Remove();
     }
   }
@@ -648,7 +648,7 @@ void BrowsingDataRemoverImpl::RemoveImpl(base::Time delete_begin,
     profile_->GetPrefs()->SetString(omnibox::kZeroSuggestCachedResults,
                                     std::string());
     profile_->GetPrefs()->SetDict(omnibox::kZeroSuggestCachedResultsWithURL,
-                                  base::Value::Dict());
+                                  base::DictValue());
   }
 
   if (IsRemoveDataMaskSet(mask, BrowsingDataRemoveMask::REMOVE_DOWNLOADS)) {

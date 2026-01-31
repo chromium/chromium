@@ -209,7 +209,7 @@ extern const std::array<char, 8> kCharToHexLookup;
 
 // Assumes the input is a valid hex digit! Call IsHexChar before using this.
 inline int HexCharToValue(unsigned char c) {
-  return c - UNSAFE_TODO(kCharToHexLookup[c / 0x20]);
+  return c - kCharToHexLookup[c / 0x20];
 }
 
 // Indicates if the start of `spec` is a dot or dot equivalent, returning the
@@ -555,20 +555,6 @@ constexpr uint64_t StringToUint64WithBase(std::string_view str, uint8_t base) {
 
   return result;
 }
-
-#ifndef WIN32
-
-// Implementations of Windows' int-to-string conversions
-COMPONENT_EXPORT(URL)
-int _itoa_s(int value, char* buffer, size_t size_in_chars, int radix);
-
-// Secure template overloads for these functions
-template <size_t N>
-inline int _itoa_s(int value, char (&buffer)[N], int radix) {
-  return _itoa_s(value, buffer, N, radix);
-}
-
-#endif  // WIN32
 
 // The threshold we set to consider SIMD processing, in bytes; there is
 // no deep theory here, it's just set empirically to a value that seems

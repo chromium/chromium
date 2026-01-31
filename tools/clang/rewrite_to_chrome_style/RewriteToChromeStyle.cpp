@@ -19,6 +19,7 @@
 #include <string>
 
 #include "clang/AST/ASTContext.h"
+#include "clang/AST/NestedNameSpecifier.h"
 #include "clang/ASTMatchers/ASTMatchFinder.h"
 #include "clang/ASTMatchers/ASTMatchers.h"
 #include "clang/ASTMatchers/ASTMatchersMacros.h"
@@ -68,21 +69,21 @@ bool IsMatching(const MatcherType& matcher,
 
 const clang::ast_matchers::internal::
     VariadicDynCastAllOfMatcher<clang::Expr, clang::UnresolvedMemberExpr>
-        unresolvedMemberExpr;
+        unresolvedMemberExprMatcher;
 
 const clang::ast_matchers::internal::
     VariadicDynCastAllOfMatcher<clang::Expr, clang::DependentScopeDeclRefExpr>
-        dependentScopeDeclRefExpr;
+        dependentScopeDeclRefExprMatcher;
 
 const clang::ast_matchers::internal::
     VariadicDynCastAllOfMatcher<clang::Expr, clang::CXXDependentScopeMemberExpr>
-        cxxDependentScopeMemberExpr;
+        cxxDependentScopeMemberExprMatcher;
 
 AST_MATCHER(clang::FunctionDecl, isOverloadedOperator) {
   return Node.isOverloadedOperator();
 }
 
-AST_MATCHER(clang::CXXMethodDecl, isInstanceMethod) {
+AST_MATCHER(clang::CXXMethodDecl, isCXXInstanceMethod) {
   return Node.isInstance();
 }
 
@@ -112,8 +113,9 @@ AST_MATCHER_P(clang::CXXMethodDecl,
     return false;
 
   llvm::StringRef method_name = Node.getName();
-  if (!method_name.startswith(kGMockMethodNamePrefix))
+  if (!method_name.starts_with(kGMockMethodNamePrefix)) {
     return false;
+  }
 
   llvm::StringRef mocked_method_name =
       method_name.substr(strlen(kGMockMethodNamePrefix));
@@ -236,10 +238,21 @@ AST_MATCHER_P(
     hasTopLevelPrefix,
     clang::ast_matchers::internal::Matcher<clang::NestedNameSpecifier>,
     InnerMatcher) {
-  const clang::NestedNameSpecifier* NodeToMatch = &Node;
-  while (NodeToMatch->getPrefix())
-    NodeToMatch = NodeToMatch->getPrefix();
-  return InnerMatcher.matches(*NodeToMatch, Finder, Builder);
+  clang::NestedNameSpecifier NodeToMatch = Node;
+  auto GetPrefix =
+      [](clang::NestedNameSpecifier NNS) -> clang::NestedNameSpecifier {
+    if (NNS.getKind() == clang::NestedNameSpecifier::Kind::Namespace) {
+      return NNS.getAsNamespaceAndPrefix().Prefix;
+    }
+    if (NNS.getKind() == clang::NestedNameSpecifier::Kind::Type) {
+      return NNS.getAsType()->getPrefix();
+    }
+    return {};
+  };
+  while (clang::NestedNameSpecifier Next = GetPrefix(NodeToMatch)) {
+    NodeToMatch = Next;
+  }
+  return InnerMatcher.matches(NodeToMatch, Finder, Builder);
 }
 
 // This will narrow CXXCtorInitializers down for both FieldDecls and
@@ -271,7 +284,7 @@ AST_MATCHER_P(clang::OverloadExpr,
 
 void PrintForDiagnostics(clang::raw_ostream& os,
                          const clang::FunctionDecl& decl) {
-  decl.getLocStart().print(os, decl.getASTContext().getSourceManager());
+  decl.getBeginLoc().print(os, decl.getASTContext().getSourceManager());
   os << ": ";
   decl.getNameForDiagnostic(os, decl.getASTContext().getPrintingPolicy(), true);
 }
@@ -370,9 +383,9 @@ AST_MATCHER_P(clang::CXXDependentScopeMemberExpr,
               clang::ast_matchers::internal::Matcher<clang::QualType>,
               InnerMatcher) {
   // Given |T::m| and/or |x->T::m| and/or |x->m| ...
-  if (clang::NestedNameSpecifier* nestedNameSpecifier = Node.getQualifier()) {
+  if (clang::NestedNameSpecifier nestedNameSpecifier = Node.getQualifier()) {
     // ... if |T| is present, then InnerMatcher has to match |T|.
-    clang::QualType qualType(nestedNameSpecifier->getAsType(), 0);
+    clang::QualType qualType(nestedNameSpecifier.getAsType(), 0);
     return InnerMatcher.matches(qualType, Finder, Builder);
   } else {
     // ... if there is no |T|, then InnerMatcher has to match the type of |x|.
@@ -468,9 +481,10 @@ bool IsBlacklistedMethod(const clang::CXXMethodDecl& decl) {
   // Subclasses of InspectorAgent will subclass "disable()" from both blink and
   // from gen/, which is problematic, but DevTools folks don't want to rename
   // it or split this up. So don't rename it at all.
-  if (name.equals("disable") &&
-      IsMethodOverrideOf(decl, "blink::InspectorBaseAgent"))
+  if (name == "disable" &&
+      IsMethodOverrideOf(decl, "blink::InspectorBaseAgent")) {
     return true;
+  }
 
   return false;
 }
@@ -508,24 +522,23 @@ AST_MATCHER(clang::Decl, isDeclInGeneratedFile) {
   // (gen/blink/core/SettingsMacros.h), but expanded in non-generated code
   // (third_party/WebKit/Source/core/frame/Settings.h).
   clang::SourceLocation loc =
-      source_manager.getExpansionLoc(Node.getLocStart());
+      source_manager.getExpansionLoc(Node.getBeginLoc());
 
   // TODO(lukasza): jump out of scratch space if token concatenation was used.
   if (loc.isInvalid())
     return false;
 
-  const clang::FileEntry* file_entry =
-      source_manager.getFileEntryForID(source_manager.getFileID(loc));
+  clang::OptionalFileEntryRef file_entry =
+      source_manager.getFileEntryRefForID(source_manager.getFileID(loc));
   if (!file_entry)
     return false;
 
   bool is_generated_file = false;
   bool is_computed_style_base_cpp =
-      llvm::sys::path::filename(file_entry->getName())
-          .equals("ComputedStyleBase.h");
+      llvm::sys::path::filename(file_entry->getName()) == "ComputedStyleBase.h";
   for (auto it = llvm::sys::path::begin(file_entry->getName());
        it != llvm::sys::path::end(file_entry->getName()); ++it) {
-    if (it->equals("gen")) {
+    if (*it == "gen") {
       is_generated_file = true;
       break;
     }
@@ -588,6 +601,23 @@ bool CanBeEvaluatedAtCompileTime(const clang::Stmt* stmt,
   // changes the output of isEvaluatable().
   if (expr->hasNonTrivialCall(context))
     return false;
+
+  // Explicitly allow string literals (e.g. "foo").
+  // These are not always considered evaluatable by isEvaluatable().
+  if (clang::isa<clang::StringLiteral>(expr->IgnoreParenImpCasts())) {
+    return true;
+  }
+
+  // Explicitly disallow reference to other variables for pointers.
+  // We want to force initialization with literals.
+  if (!expr->getType().isNull() && expr->getType()->isAnyPointerType()) {
+    if (auto* decl_ref =
+            clang::dyn_cast<clang::DeclRefExpr>(expr->IgnoreParenImpCasts())) {
+      if (clang::isa<clang::VarDecl>(decl_ref->getDecl())) {
+        return false;
+      }
+    }
+  }
 
   // Recurse on children. If they are all const (or are uses of template
   // input) then the statement can be considered const. For whatever reason the
@@ -873,7 +903,7 @@ bool GetNameForDecl(const clang::FieldDecl& decl,
                     clang::ASTContext& context,
                     std::string& name) {
   StringRef original_name = decl.getName();
-  bool member_prefix = original_name.startswith(kBlinkFieldPrefix);
+  bool member_prefix = original_name.starts_with(kBlinkFieldPrefix);
 
   StringRef rename_part = !member_prefix
                               ? original_name
@@ -907,10 +937,11 @@ bool GetNameForDecl(const clang::VarDecl& decl,
   // static class members match against VarDecls. Blink style dictates that
   // these should be prefixed with `s_`, so strip that off. Also check for `m_`
   // and strip that off too, for code that accidentally uses the wrong prefix.
-  if (original_name.startswith(kBlinkStaticMemberPrefix))
+  if (original_name.starts_with(kBlinkStaticMemberPrefix)) {
     original_name = original_name.substr(strlen(kBlinkStaticMemberPrefix));
-  else if (original_name.startswith(kBlinkFieldPrefix))
+  } else if (original_name.starts_with(kBlinkFieldPrefix)) {
     original_name = original_name.substr(strlen(kBlinkFieldPrefix));
+  }
 
   bool is_const = IsProbablyConst(decl, context);
   if (is_const) {
@@ -1385,7 +1416,7 @@ bool IsCallee(const clang::UnresolvedUsingValueDecl& decl,
   // filtered out fields before calling |IsCallee|.
   clang::IdentifierInfo* info = GetUnresolvedName(decl).getAsIdentifierInfo();
   assert(info);
-  bool name_looks_like_a_field = info->getName().startswith(kBlinkFieldPrefix);
+  bool name_looks_like_a_field = info->getName().starts_with(kBlinkFieldPrefix);
   assert(!name_looks_like_a_field);
 
   // Looking just at clang::UnresolvedUsingValueDecl, we cannot tell whether it
@@ -1448,8 +1479,8 @@ class UnresolvedRewriterBase : public RewriterBase<TargetNode> {
                                            llvm::StringRef old_name,
                                            std::string& new_name) {
     // |m_fieldName| -> |field_name_|.
-    if (old_name.startswith(kBlinkFieldPrefix)) {
-      std::string field_name = old_name.substr(strlen(kBlinkFieldPrefix));
+    if (old_name.starts_with(kBlinkFieldPrefix)) {
+      std::string field_name = old_name.substr(strlen(kBlinkFieldPrefix)).str();
       if (field_name.find('_') == std::string::npos) {
         new_name = CamelCaseToUnderscoreCase(field_name) + "_";
         return true;
@@ -1461,8 +1492,9 @@ class UnresolvedRewriterBase : public RewriterBase<TargetNode> {
         !IsBlacklistedMethodName(old_name)) {
       new_name = old_name;
       new_name[0] = clang::toUppercase(old_name[0]);
-      if (ShouldPrefixFunctionName(old_name))
+      if (ShouldPrefixFunctionName(old_name.str())) {
         new_name = "Get" + new_name;
+      }
       return true;
     }
 
@@ -1521,7 +1553,12 @@ int main(int argc, const char* argv[]) {
   llvm::cl::opt<std::string> blocklisted_methods_file(
       kMethodBlocklistParamName, llvm::cl::value_desc("filepath"),
       llvm::cl::desc("file listing methods to be blocked (not renamed)"));
-  CommonOptionsParser options(argc, argv, category);
+  auto expected_parser = CommonOptionsParser::create(argc, argv, category);
+  if (!expected_parser) {
+    llvm::errs() << expected_parser.takeError();
+    return 1;
+  }
+  CommonOptionsParser& options = expected_parser.get();
   MethodBlocklist method_blocklist(blocklisted_methods_file);
   clang::tooling::ClangTool tool(options.getCompilations(),
                                  options.getSourcePathList());
@@ -1556,6 +1593,7 @@ int main(int argc, const char* argv[]) {
           hasTopLevelPrefix(specifiesNamespace(blink_namespace_decl)))));
 
   auto in_blink_namespace = decl(
+      unless(isExpansionInSystemHeader()),
       anyOf(decl_under_blink_namespace, decl_has_qualifier_to_blink_namespace,
             hasAncestor(decl_has_qualifier_to_blink_namespace)),
       unless(hasCanonicalDecl(isDeclInGeneratedFile())));
@@ -1568,19 +1606,19 @@ int main(int argc, const char* argv[]) {
   //     enum { VALUE };
   //   };
   // matches |x|, |y|, and |VALUE|.
-  auto field_decl_matcher = id("decl", fieldDecl(in_blink_namespace));
-  auto is_type_trait_value =
-      varDecl(hasName("value"), hasStaticStorageDuration(), isPublic(),
-              hasType(isConstQualified()),
-              hasType(type(anyOf(builtinType(), enumType()))),
-              unless(hasAncestor(recordDecl(
-                  has(cxxMethodDecl(isUserProvided(), isInstanceMethod()))))));
+  auto field_decl_matcher = fieldDecl(in_blink_namespace).bind("decl");
+  auto is_type_trait_value = varDecl(
+      hasName("value"), hasStaticStorageDuration(), isPublic(),
+      hasType(isConstQualified()),
+      hasType(type(anyOf(builtinType(), enumType()))),
+      unless(hasAncestor(recordDecl(
+          has(cxxMethodDecl(isUserProvided(), isCXXInstanceMethod()))))));
   auto var_decl_matcher =
-      id("decl", varDecl(in_blink_namespace, unless(is_type_trait_value)));
+      varDecl(in_blink_namespace, unless(is_type_trait_value)).bind("decl");
   // For known trait names, rename every instance anywhere in the codebase.
-  auto type_trait_decl_matcher = id("decl", varDecl(isKnownTraitName()));
+  auto type_trait_decl_matcher = varDecl(isKnownTraitName()).bind("decl");
   auto enum_member_decl_matcher =
-      id("decl", enumConstantDecl(in_blink_namespace));
+      enumConstantDecl(in_blink_namespace).bind("decl");
 
   FieldDeclRewriter field_decl_rewriter(&replacements);
   match_finder.addMatcher(field_decl_matcher, &field_decl_rewriter);
@@ -1599,8 +1637,7 @@ int main(int argc, const char* argv[]) {
   //     ...
   //   }
   // matches |x| in if (x).
-  auto member_matcher = id(
-      "expr",
+  auto member_matcher =
       memberExpr(
           member(field_decl_matcher),
           // Needed to avoid matching member references in functions (which will
@@ -1608,12 +1645,13 @@ int main(int argc, const char* argv[]) {
           // compiler, such as a synthesized copy constructor.
           // This skips explicitly defaulted functions as well, but that's OK:
           // there's nothing interesting to rewrite in those either.
-          unless(hasAncestor(functionDecl(isDefaulted())))));
-  auto decl_ref_matcher = id("expr", declRefExpr(to(var_decl_matcher)));
+          unless(hasAncestor(functionDecl(isDefaulted()))))
+          .bind("expr");
+  auto decl_ref_matcher = declRefExpr(to(var_decl_matcher)).bind("expr");
   auto type_trait_ref_matcher =
-      id("expr", declRefExpr(to(type_trait_decl_matcher)));
+      declRefExpr(to(type_trait_decl_matcher)).bind("expr");
   auto enum_member_ref_matcher =
-      id("expr", declRefExpr(to(enum_member_decl_matcher)));
+      declRefExpr(to(enum_member_decl_matcher)).bind("expr");
 
   MemberRewriter member_rewriter(&replacements);
   match_finder.addMatcher(member_matcher, &member_rewriter);
@@ -1633,7 +1671,7 @@ int main(int argc, const char* argv[]) {
   //     int s_;
   //   };
   // matches |&U::s_| but not |s_|.
-  auto member_ref_matcher = id("expr", declRefExpr(to(field_decl_matcher)));
+  auto member_ref_matcher = declRefExpr(to(field_decl_matcher)).bind("expr");
 
   FieldDeclRefRewriter member_ref_rewriter(&replacements);
   match_finder.addMatcher(member_ref_matcher, &member_ref_rewriter);
@@ -1645,8 +1683,7 @@ int main(int argc, const char* argv[]) {
   //     void g();
   //   };
   // matches |f| but not |g|.
-  auto function_decl_matcher = id(
-      "decl",
+  auto function_decl_matcher =
       functionDecl(
           unless(anyOf(
               // Methods are covered by the method matchers.
@@ -1659,7 +1696,8 @@ int main(int argc, const char* argv[]) {
               isBlacklistedFunction(),
               // Functions that look like blocked static methods.
               isBlocklistedMethod(method_blocklist))),
-          in_blink_namespace));
+          in_blink_namespace)
+          .bind("decl");
   FunctionDeclRewriter function_decl_rewriter(&replacements);
   match_finder.addMatcher(function_decl_matcher, &function_decl_rewriter);
 
@@ -1668,10 +1706,11 @@ int main(int argc, const char* argv[]) {
   //   f();
   //   void (*p)() = &f;
   // matches |f()| and |&f|.
-  auto function_ref_matcher = id(
-      "expr", declRefExpr(to(function_decl_matcher),
-                          // Ignore template substitutions.
-                          unless(hasAncestor(substNonTypeTemplateParmExpr()))));
+  auto function_ref_matcher =
+      declRefExpr(to(function_decl_matcher),
+                  // Ignore template substitutions.
+                  unless(hasAncestor(substNonTypeTemplateParmExpr())))
+          .bind("expr");
   FunctionRefRewriter function_ref_rewriter(&replacements);
   match_finder.addMatcher(function_ref_matcher, &function_ref_rewriter);
 
@@ -1690,8 +1729,7 @@ int main(int argc, const char* argv[]) {
       allOf(in_blink_namespace,
             unless(anyOf(isBlacklistedMethod(),
                          isBlocklistedMethod(method_blocklist)))));
-  auto method_decl_matcher = id(
-      "decl",
+  auto method_decl_matcher =
       cxxMethodDecl(
           unless(anyOf(
               // Overloaded operators have special names and should never be
@@ -1703,7 +1741,8 @@ int main(int argc, const char* argv[]) {
           // Check this last after excluding things, to avoid
           // asserts about overriding non-blink and blink for the
           // same method.
-          is_blink_method));
+          is_blink_method)
+          .bind("decl");
   MethodDeclRewriter method_decl_rewriter(&replacements);
   match_finder.addMatcher(method_decl_matcher, &method_decl_rewriter);
 
@@ -1713,10 +1752,11 @@ int main(int argc, const char* argv[]) {
   //   s.g();
   //   void (S::*p)() = &S::g;
   // matches |&S::g| but not |s.g|.
-  auto method_ref_matcher = id(
-      "expr", declRefExpr(to(method_decl_matcher),
-                          // Ignore template substitutions.
-                          unless(hasAncestor(substNonTypeTemplateParmExpr()))));
+  auto method_ref_matcher =
+      declRefExpr(to(method_decl_matcher),
+                  // Ignore template substitutions.
+                  unless(hasAncestor(substNonTypeTemplateParmExpr())))
+          .bind("expr");
 
   MethodRefRewriter method_ref_rewriter(&replacements);
   match_finder.addMatcher(method_ref_matcher, &method_ref_rewriter);
@@ -1728,7 +1768,7 @@ int main(int argc, const char* argv[]) {
   //   void (S::*p)() = &S::g;
   // matches |s.g| but not |&S::g|.
   auto method_member_matcher =
-      id("expr", memberExpr(member(method_decl_matcher)));
+      memberExpr(member(method_decl_matcher)).bind("expr");
 
   MethodMemberRewriter method_member_rewriter(&replacements);
   match_finder.addMatcher(method_member_matcher, &method_member_rewriter);
@@ -1741,9 +1781,9 @@ int main(int argc, const char* argv[]) {
   //   };
   // matches each initializer in the constructor for S.
   auto constructor_initializer_matcher =
-      cxxConstructorDecl(forEachConstructorInitializer(id(
-          "initializer",
-          cxxCtorInitializer(forAnyField(field_decl_matcher), isWritten()))));
+      cxxConstructorDecl(forEachConstructorInitializer(
+          cxxCtorInitializer(forAnyField(field_decl_matcher), isWritten())
+              .bind("initializer")));
 
   ConstructorInitializerRewriter constructor_initializer_rewriter(
       &replacements);
@@ -1772,27 +1812,27 @@ int main(int argc, const char* argv[]) {
   // Another instance where UnresolvedLookupExprs can appear is in a template
   // argument list, like the provided example.
   auto function_template_decl_matcher =
-      id("decl", functionTemplateDecl(templatedDecl(function_decl_matcher)));
+      functionTemplateDecl(templatedDecl(function_decl_matcher)).bind("decl");
   auto method_template_decl_matcher =
-      id("decl", functionTemplateDecl(templatedDecl(method_decl_matcher)));
-  auto unresolved_lookup_matcher = expr(id(
-      "expr",
-      unresolvedLookupExpr(
-          // In order to automatically rename an unresolved lookup, the lookup
-          // candidates must either all be Blink functions/function templates or
-          // all be Blink methods/method templates. Otherwise, we might end up
-          // in a situation where the naming could change depending on the
-          // selected candidate.
-          anyOf(allOverloadsMatch(anyOf(function_decl_matcher,
-                                        function_template_decl_matcher)),
-                // Note: this matches references to methods in a non-member
-                // context, e.g. Template<&Class::Method>. This and the
-                // UnresolvedMemberExpr matcher below are analogous to how the
-                // rewriter has both a MemberRefRewriter matcher to rewrite
-                // &T::method and a MethodMemberRewriter matcher to rewriter
-                // t.method().
-                allOverloadsMatch(anyOf(method_decl_matcher,
-                                        method_template_decl_matcher))))));
+      functionTemplateDecl(templatedDecl(method_decl_matcher)).bind("decl");
+  auto unresolved_lookup_matcher =
+      expr(unresolvedLookupExpr(
+               // In order to automatically rename an unresolved lookup, the
+               // lookup candidates must either all be Blink functions/function
+               // templates or all be Blink methods/method templates. Otherwise,
+               // we might end up in a situation where the naming could change
+               // depending on the selected candidate.
+               anyOf(allOverloadsMatch(anyOf(function_decl_matcher,
+                                             function_template_decl_matcher)),
+                     // Note: this matches references to methods in a non-member
+                     // context, e.g. Template<&Class::Method>. This and the
+                     // UnresolvedMemberExpr matcher below are analogous to how
+                     // the rewriter has both a MemberRefRewriter matcher to
+                     // rewrite &T::method and a MethodMemberRewriter matcher to
+                     // rewriter t.method().
+                     allOverloadsMatch(anyOf(method_decl_matcher,
+                                             method_template_decl_matcher))))
+               .bind("expr"));
   UnresolvedLookupRewriter unresolved_lookup_rewriter(&replacements);
   match_finder.addMatcher(unresolved_lookup_matcher,
                           &unresolved_lookup_rewriter);
@@ -1800,13 +1840,13 @@ int main(int argc, const char* argv[]) {
   // Unresolved member expressions (for non-dependent fields / methods) ========
   // Similar to unresolved lookup expressions, but for methods in a member
   // context, e.g. var_with_templated_type.Method().
-  auto unresolved_member_matcher = expr(id(
-      "expr",
-      unresolvedMemberExpr(
-          // Similar to UnresolvedLookupExprs, all the candidate methods must be
-          // Blink methods/method templates.
-          allOverloadsMatch(
-              anyOf(method_decl_matcher, method_template_decl_matcher)))));
+  auto unresolved_member_matcher =
+      expr(unresolvedMemberExprMatcher(
+               // Similar to UnresolvedLookupExprs, all the candidate methods
+               // must be Blink methods/method templates.
+               allOverloadsMatch(
+                   anyOf(method_decl_matcher, method_template_decl_matcher)))
+               .bind("expr"));
   UnresolvedMemberRewriter unresolved_member_rewriter(&replacements);
   match_finder.addMatcher(unresolved_member_matcher,
                           &unresolved_member_rewriter);
@@ -1828,14 +1868,16 @@ int main(int argc, const char* argv[]) {
   //    }                //    |unresolved_dependent_using_matcher|.
   //  };
   auto unresolved_dependent_using_matcher =
-      expr(id("expr", unresolvedMemberExpr(allOverloadsMatch(allOf(
-                          in_blink_namespace, unresolvedUsingValueDecl())))));
+      expr(unresolvedMemberExprMatcher(
+               allOverloadsMatch(
+                   allOf(in_blink_namespace, unresolvedUsingValueDecl())))
+               .bind("expr"));
   UnresolvedDependentMemberRewriter unresolved_dependent_member_rewriter(
       &replacements);
   match_finder.addMatcher(unresolved_dependent_using_matcher,
                           &unresolved_dependent_member_rewriter);
   auto unresolved_using_value_decl_matcher =
-      decl(id("decl", unresolvedUsingValueDecl(in_blink_namespace)));
+      decl(unresolvedUsingValueDecl(in_blink_namespace).bind("decl"));
   UnresolvedUsingValueDeclRewriter unresolved_using_value_decl_rewriter(
       &replacements);
   match_finder.addMatcher(unresolved_using_value_decl_matcher,
@@ -1845,11 +1887,12 @@ int main(int argc, const char* argv[]) {
   // Given
   //   using blink::X;
   // matches |using blink::X|.
-  auto using_decl_matcher = id(
-      "decl", usingDecl(hasAnyUsingShadowDecl(hasTargetDecl(anyOf(
-                  var_decl_matcher, field_decl_matcher, function_decl_matcher,
-                  method_decl_matcher, function_template_decl_matcher,
-                  method_template_decl_matcher, enum_member_decl_matcher)))));
+  auto using_decl_matcher =
+      usingDecl(hasAnyUsingShadowDecl(hasTargetDecl(anyOf(
+                    var_decl_matcher, field_decl_matcher, function_decl_matcher,
+                    method_decl_matcher, function_template_decl_matcher,
+                    method_template_decl_matcher, enum_member_decl_matcher))))
+          .bind("decl");
   UsingDeclRewriter using_decl_rewriter(&replacements);
   match_finder.addMatcher(using_decl_matcher, &using_decl_rewriter);
 
@@ -1872,8 +1915,9 @@ int main(int argc, const char* argv[]) {
   //   template <typename T> void f() { T::foo(); }
   // matches |T::foo|.
   auto dependent_scope_decl_ref_expr_matcher =
-      expr(id("expr", dependentScopeDeclRefExpr(has(nestedNameSpecifier(
-                          specifiesType(blink_qual_type_matcher))))));
+      expr(dependentScopeDeclRefExprMatcher(
+               has(nestedNameSpecifier(specifiesType(blink_qual_type_matcher))))
+               .bind("expr"));
   DependentScopeDeclRefExprRewriter dependent_scope_decl_ref_expr_rewriter(
       &replacements);
   match_finder.addMatcher(dependent_scope_decl_ref_expr_matcher,
@@ -1888,8 +1932,9 @@ int main(int argc, const char* argv[]) {
   //   };
   // matches |T::foo| and |x.bar|.
   auto cxx_dependent_scope_member_expr_matcher =
-      expr(id("expr", cxxDependentScopeMemberExpr(
-                          hasMemberFromType(blink_qual_type_matcher))));
+      expr(cxxDependentScopeMemberExprMatcher(
+               hasMemberFromType(blink_qual_type_matcher))
+               .bind("expr"));
   CXXDependentScopeMemberExprRewriter cxx_dependent_scope_member_expr_rewriter(
       &replacements);
   match_finder.addMatcher(cxx_dependent_scope_member_expr_matcher,
@@ -1903,8 +1948,9 @@ int main(int argc, const char* argv[]) {
   // will match obj.gmock_myMethod(...) call generated by the macros
   // (but only if it mocks a Blink method).
   auto gmock_member_matcher =
-      id("expr", memberExpr(hasDeclaration(
-                     decl(cxxMethodDecl(mocksMethod(method_decl_matcher))))));
+      memberExpr(
+          hasDeclaration(decl(cxxMethodDecl(mocksMethod(method_decl_matcher)))))
+          .bind("expr");
   GMockMemberRewriter gmock_member_rewriter(&replacements);
   match_finder.addMatcher(gmock_member_matcher, &gmock_member_rewriter);
 

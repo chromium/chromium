@@ -21,7 +21,7 @@ export function getHtml(this: MostVisitedElement) {
       @mouseenter="${this.onTileHover_}" @mouseleave="${this.onTileExit_}"
       @mousedown="${this.onTileMouseDown_}" @keydown="${this.onTileKeyDown_}"
       draggable="true" data-index="${index}">
-      <a href="${item.url.url}" aria-label="${item.title}"
+      <a href="${item.url}" aria-label="${item.title}"
           draggable="false">
       </a>
       <cr-icon-button id="actionMenuButton" class="icon-more-vert"
@@ -31,7 +31,7 @@ export function getHtml(this: MostVisitedElement) {
             !this.isFromEnterpriseShortcut_(item.source)}"
           data-index="${index}"></cr-icon-button>
       <cr-icon-button id="removeButton" class="icon-clear"
-          title="${this.i18n('linkRemoveA11y', item.title)}"
+          title="${this.getRemoveButtonText_(item.title)}"
           @click="${this.onTileRemoveButtonClick_}" tabindex="0"
           ?hidden="${this.customLinksEnabled_ ||
             this.isFromEnterpriseShortcut_(item.source)}"
@@ -137,21 +137,15 @@ export function getHtml(this: MostVisitedElement) {
   </cr-action-menu>
 </div>
 <cr-toast-manager id="toastManager" duration="10000">
-  ${!this.autoRemovalInProgress_ ? html`
-    <cr-button id="undo" aria-label="${this.i18n('undoDescription')}"
-        @click="${this.onUndoClick_}">
-      ${this.i18n('undo')}
-    </cr-button>
-    <cr-button id="restore"
-        aria-label="${this.getRestoreButtonText_()}"
-        @click="${this.onRestoreDefaultsClick_}">
-      ${this.getRestoreButtonText_()}
-    </cr-button>` : html`
-    <cr-button id="undoAutoRemoval"
-        aria-label="${this.i18n('undoDescription')}"
-        @click="${this.onUndoAutoRemovalClick_}">
-      ${this.i18n('undo')}
-    </cr-button>`}
+  <cr-button id="undo" aria-label="${this.i18n('undoDescription')}"
+      @click="${this.onUndoClick_}">
+    ${this.i18n('undo')}
+  </cr-button>
+  <cr-button id="restore"
+      aria-label="${this.getRestoreButtonText_()}"
+      @click="${this.onRestoreDefaultsClick_}">
+    ${this.getRestoreButtonText_()}
+  </cr-button>
 </cr-toast-manager>
 <!--_html_template_end_-->`;
   // clang-format on

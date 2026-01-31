@@ -63,7 +63,7 @@ class MockCallback<RepeatingCallback<R()>> {
 MockCallback(const MockCallback&) = delete;
 MockCallback& operator=(const MockCallback&) = delete;
 
-  MOCK_METHOD0_T(Run, R());
+  MOCK_METHOD(R, Run, ());
 
   RepeatingCallback<R()> Get() {
     return ::base::BindRepeating(&MockCallback::Run, ::base::Unretained(this));
@@ -78,7 +78,7 @@ class MockCallback<OnceCallback<R()>> {
 MockCallback(const MockCallback&) = delete;
 MockCallback& operator=(const MockCallback&) = delete;
 
-  MOCK_METHOD0_T(Run, R());
+  MOCK_METHOD(R, Run, ());
 
   OnceCallback<R()> Get() {
     return ::base::BindOnce(&MockCallback::Run, ::base::Unretained(this));
@@ -93,7 +93,7 @@ class MockCallback<RepeatingCallback<R(A1)>> {
 MockCallback(const MockCallback&) = delete;
 MockCallback& operator=(const MockCallback&) = delete;
 
-  MOCK_METHOD1_T(Run, R(A1));
+  MOCK_METHOD(R, Run, (A1));
 
   RepeatingCallback<R(A1)> Get() {
     return ::base::BindRepeating(&MockCallback::Run, ::base::Unretained(this));
@@ -108,7 +108,7 @@ class MockCallback<OnceCallback<R(A1)>> {
 MockCallback(const MockCallback&) = delete;
 MockCallback& operator=(const MockCallback&) = delete;
 
-  MOCK_METHOD1_T(Run, R(A1));
+  MOCK_METHOD(R, Run, (A1));
 
   OnceCallback<R(A1)> Get() {
     return ::base::BindOnce(&MockCallback::Run, ::base::Unretained(this));
@@ -123,7 +123,7 @@ class MockCallback<RepeatingCallback<R(A1, A2)>> {
 MockCallback(const MockCallback&) = delete;
 MockCallback& operator=(const MockCallback&) = delete;
 
-  MOCK_METHOD2_T(Run, R(A1, A2));
+  MOCK_METHOD(R, Run, (A1, A2));
 
   RepeatingCallback<R(A1, A2)> Get() {
     return ::base::BindRepeating(&MockCallback::Run, ::base::Unretained(this));
@@ -138,7 +138,7 @@ class MockCallback<OnceCallback<R(A1, A2)>> {
 MockCallback(const MockCallback&) = delete;
 MockCallback& operator=(const MockCallback&) = delete;
 
-  MOCK_METHOD2_T(Run, R(A1, A2));
+  MOCK_METHOD(R, Run, (A1, A2));
 
   OnceCallback<R(A1, A2)> Get() {
     return ::base::BindOnce(&MockCallback::Run, ::base::Unretained(this));
@@ -153,7 +153,7 @@ class MockCallback<RepeatingCallback<R(A1, A2, A3)>> {
 MockCallback(const MockCallback&) = delete;
 MockCallback& operator=(const MockCallback&) = delete;
 
-  MOCK_METHOD3_T(Run, R(A1, A2, A3));
+  MOCK_METHOD(R, Run, (A1, A2, A3));
 
   RepeatingCallback<R(A1, A2, A3)> Get() {
     return ::base::BindRepeating(&MockCallback::Run, ::base::Unretained(this));
@@ -168,7 +168,7 @@ class MockCallback<OnceCallback<R(A1, A2, A3)>> {
 MockCallback(const MockCallback&) = delete;
 MockCallback& operator=(const MockCallback&) = delete;
 
-  MOCK_METHOD3_T(Run, R(A1, A2, A3));
+  MOCK_METHOD(R, Run, (A1, A2, A3));
 
   OnceCallback<R(A1, A2, A3)> Get() {
     return ::base::BindOnce(&MockCallback::Run, ::base::Unretained(this));
@@ -183,7 +183,7 @@ class MockCallback<RepeatingCallback<R(A1, A2, A3, A4)>> {
 MockCallback(const MockCallback&) = delete;
 MockCallback& operator=(const MockCallback&) = delete;
 
-  MOCK_METHOD4_T(Run, R(A1, A2, A3, A4));
+  MOCK_METHOD(R, Run, (A1, A2, A3, A4));
 
   RepeatingCallback<R(A1, A2, A3, A4)> Get() {
     return ::base::BindRepeating(&MockCallback::Run, ::base::Unretained(this));
@@ -198,7 +198,7 @@ class MockCallback<OnceCallback<R(A1, A2, A3, A4)>> {
 MockCallback(const MockCallback&) = delete;
 MockCallback& operator=(const MockCallback&) = delete;
 
-  MOCK_METHOD4_T(Run, R(A1, A2, A3, A4));
+  MOCK_METHOD(R, Run, (A1, A2, A3, A4));
 
   OnceCallback<R(A1, A2, A3, A4)> Get() {
     return ::base::BindOnce(&MockCallback::Run, ::base::Unretained(this));
@@ -214,7 +214,7 @@ class MockCallback<RepeatingCallback<R(A1, A2, A3, A4, A5)>> {
 MockCallback(const MockCallback&) = delete;
 MockCallback& operator=(const MockCallback&) = delete;
 
-  MOCK_METHOD5_T(Run, R(A1, A2, A3, A4, A5));
+  MOCK_METHOD(R, Run, (A1, A2, A3, A4, A5));
 
   RepeatingCallback<R(A1, A2, A3, A4, A5)> Get() {
     return ::base::BindRepeating(&MockCallback::Run, ::base::Unretained(this));
@@ -230,7 +230,7 @@ class MockCallback<OnceCallback<R(A1, A2, A3, A4, A5)>> {
 MockCallback(const MockCallback&) = delete;
 MockCallback& operator=(const MockCallback&) = delete;
 
-  MOCK_METHOD5_T(Run, R(A1, A2, A3, A4, A5));
+  MOCK_METHOD(R, Run, (A1, A2, A3, A4, A5));
 
   OnceCallback<R(A1, A2, A3, A4, A5)> Get() {
     return ::base::BindOnce(&MockCallback::Run, ::base::Unretained(this));
@@ -246,7 +246,7 @@ class MockCallback<RepeatingCallback<R(A1, A2, A3, A4, A5, A6)>> {
 MockCallback(const MockCallback&) = delete;
 MockCallback& operator=(const MockCallback&) = delete;
 
-  MOCK_METHOD6_T(Run, R(A1, A2, A3, A4, A5, A6));
+  MOCK_METHOD(R, Run, (A1, A2, A3, A4, A5, A6));
 
   RepeatingCallback<R(A1, A2, A3, A4, A5, A6)> Get() {
     return ::base::BindRepeating(&MockCallback::Run, ::base::Unretained(this));
@@ -262,7 +262,7 @@ class MockCallback<OnceCallback<R(A1, A2, A3, A4, A5, A6)>> {
 MockCallback(const MockCallback&) = delete;
 MockCallback& operator=(const MockCallback&) = delete;
 
-  MOCK_METHOD6_T(Run, R(A1, A2, A3, A4, A5, A6));
+  MOCK_METHOD(R, Run, (A1, A2, A3, A4, A5, A6));
 
   OnceCallback<R(A1, A2, A3, A4, A5, A6)> Get() {
     return ::base::BindOnce(&MockCallback::Run, ::base::Unretained(this));
@@ -278,7 +278,7 @@ class MockCallback<RepeatingCallback<R(A1, A2, A3, A4, A5, A6, A7)>> {
 MockCallback(const MockCallback&) = delete;
 MockCallback& operator=(const MockCallback&) = delete;
 
-  MOCK_METHOD7_T(Run, R(A1, A2, A3, A4, A5, A6, A7));
+  MOCK_METHOD(R, Run, (A1, A2, A3, A4, A5, A6, A7));
 
   RepeatingCallback<R(A1, A2, A3, A4, A5, A6, A7)> Get() {
     return ::base::BindRepeating(&MockCallback::Run, ::base::Unretained(this));
@@ -294,7 +294,7 @@ class MockCallback<OnceCallback<R(A1, A2, A3, A4, A5, A6, A7)>> {
 MockCallback(const MockCallback&) = delete;
 MockCallback& operator=(const MockCallback&) = delete;
 
-  MOCK_METHOD7_T(Run, R(A1, A2, A3, A4, A5, A6, A7));
+  MOCK_METHOD(R, Run, (A1, A2, A3, A4, A5, A6, A7));
 
   OnceCallback<R(A1, A2, A3, A4, A5, A6, A7)> Get() {
     return ::base::BindOnce(&MockCallback::Run, ::base::Unretained(this));
@@ -310,7 +310,7 @@ class MockCallback<RepeatingCallback<R(A1, A2, A3, A4, A5, A6, A7, A8)>> {
 MockCallback(const MockCallback&) = delete;
 MockCallback& operator=(const MockCallback&) = delete;
 
-  MOCK_METHOD8_T(Run, R(A1, A2, A3, A4, A5, A6, A7, A8));
+  MOCK_METHOD(R, Run, (A1, A2, A3, A4, A5, A6, A7, A8));
 
   RepeatingCallback<R(A1, A2, A3, A4, A5, A6, A7, A8)> Get() {
     return ::base::BindRepeating(&MockCallback::Run, ::base::Unretained(this));
@@ -326,7 +326,7 @@ class MockCallback<OnceCallback<R(A1, A2, A3, A4, A5, A6, A7, A8)>> {
 MockCallback(const MockCallback&) = delete;
 MockCallback& operator=(const MockCallback&) = delete;
 
-  MOCK_METHOD8_T(Run, R(A1, A2, A3, A4, A5, A6, A7, A8));
+  MOCK_METHOD(R, Run, (A1, A2, A3, A4, A5, A6, A7, A8));
 
   OnceCallback<R(A1, A2, A3, A4, A5, A6, A7, A8)> Get() {
     return ::base::BindOnce(&MockCallback::Run, ::base::Unretained(this));
@@ -342,7 +342,7 @@ class MockCallback<RepeatingCallback<R(A1, A2, A3, A4, A5, A6, A7, A8, A9)>> {
 MockCallback(const MockCallback&) = delete;
 MockCallback& operator=(const MockCallback&) = delete;
 
-  MOCK_METHOD9_T(Run, R(A1, A2, A3, A4, A5, A6, A7, A8, A9));
+  MOCK_METHOD(R, Run, (A1, A2, A3, A4, A5, A6, A7, A8, A9));
 
   RepeatingCallback<R(A1, A2, A3, A4, A5, A6, A7, A8, A9)> Get() {
     return ::base::BindRepeating(&MockCallback::Run, ::base::Unretained(this));
@@ -358,7 +358,7 @@ class MockCallback<OnceCallback<R(A1, A2, A3, A4, A5, A6, A7, A8, A9)>> {
 MockCallback(const MockCallback&) = delete;
 MockCallback& operator=(const MockCallback&) = delete;
 
-  MOCK_METHOD9_T(Run, R(A1, A2, A3, A4, A5, A6, A7, A8, A9));
+  MOCK_METHOD(R, Run, (A1, A2, A3, A4, A5, A6, A7, A8, A9));
 
   OnceCallback<R(A1, A2, A3, A4, A5, A6, A7, A8, A9)> Get() {
     return ::base::BindOnce(&MockCallback::Run, ::base::Unretained(this));
@@ -376,7 +376,7 @@ class MockCallback<RepeatingCallback<R(A1, A2, A3, A4, A5, A6, A7, A8, A9,
 MockCallback(const MockCallback&) = delete;
 MockCallback& operator=(const MockCallback&) = delete;
 
-  MOCK_METHOD10_T(Run, R(A1, A2, A3, A4, A5, A6, A7, A8, A9, A10));
+  MOCK_METHOD(R, Run, (A1, A2, A3, A4, A5, A6, A7, A8, A9, A10));
 
   RepeatingCallback<R(A1, A2, A3, A4, A5, A6, A7, A8, A9, A10)> Get() {
     return ::base::BindRepeating(&MockCallback::Run, ::base::Unretained(this));
@@ -393,7 +393,7 @@ class MockCallback<OnceCallback<R(A1, A2, A3, A4, A5, A6, A7, A8, A9, A10)>> {
 MockCallback(const MockCallback&) = delete;
 MockCallback& operator=(const MockCallback&) = delete;
 
-  MOCK_METHOD10_T(Run, R(A1, A2, A3, A4, A5, A6, A7, A8, A9, A10));
+  MOCK_METHOD(R, Run, (A1, A2, A3, A4, A5, A6, A7, A8, A9, A10));
 
   OnceCallback<R(A1, A2, A3, A4, A5, A6, A7, A8, A9, A10)> Get() {
     return ::base::BindOnce(&MockCallback::Run, ::base::Unretained(this));

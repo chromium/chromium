@@ -4,13 +4,13 @@
 
 #include "chrome/browser/ui/views/toolbar/app_menu.h"
 
+#include <algorithm>
 #include <optional>
 #include <string>
 #include <string_view>
 #include <utility>
 
 #include "base/auto_reset.h"
-#include "base/containers/contains.h"
 #include "base/containers/fixed_flat_map.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
@@ -212,9 +212,9 @@ IN_PROC_BROWSER_TEST_F(AppMenuBrowserTest, ShowWithRecentlyClosedWindow) {
   EXPECT_TRUE(content::WaitForLoadStop(new_contents));
   chrome::CloseWindow(second_browser);
   ui_test_utils::WaitForBrowserToClose(second_browser);
-  EXPECT_TRUE(base::Contains(tab_restore_service->entries(),
-                             sessions::tab_restore::Type::WINDOW,
-                             &sessions::tab_restore::Entry::type));
+  EXPECT_TRUE(std::ranges::contains(tab_restore_service->entries(),
+                                    sessions::tab_restore::Type::WINDOW,
+                                    &sessions::tab_restore::Entry::type));
 
   // Show the AppMenu.
   menu_button()->ShowMenu(views::MenuRunner::NO_FLAGS);

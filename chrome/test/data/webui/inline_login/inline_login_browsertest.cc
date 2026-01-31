@@ -19,8 +19,7 @@ class InlineLoginBrowserTest : public WebUIMochaBrowserTest {
     WebUIMochaBrowserTest::RunTest(
         base::StringPrintf(
             "inline_login/inline_login_test.js&reason=%d",
-            static_cast<int>(
-                signin_metrics::Reason::kForcedSigninPrimaryAccount)),
+            static_cast<int>(signin_metrics::Reason::kFetchLstOnly)),
         base::StringPrintf("runMochaTest('InlineLoginTest', '%s');",
                            testCase.c_str()));
   }

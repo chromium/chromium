@@ -405,9 +405,8 @@ ThirdPartyStatus ApplyHook() {
   // Setup() applies the system-service patch, and stores a copy of the original
   // system service coded in |g_thunk_storage|.
   NTSTATUS ntstatus = thunk.Setup(
-      ::GetModuleHandle(kNtdllName), reinterpret_cast<void*>(&__ImageBase),
-      "NtMapViewOfSection", nullptr, entry_point, g_thunk_storage,
-      sizeof(g_thunk_storage), nullptr);
+      ::GetModuleHandle(kNtdllName), "NtMapViewOfSection", entry_point,
+      g_thunk_storage, sizeof(g_thunk_storage), nullptr);
 
   if (!NT_SUCCESS(ntstatus)) {
     // Remember the status code.

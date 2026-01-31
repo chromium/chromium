@@ -18,8 +18,8 @@ if %ERRORLEVEL% NEQ 0 (
   exit 2
 )
 
-rem Try deleting the directory 15 times and wait one second between tries.
-for /L %%G IN (1,1,15) do (
+rem Try deleting the directory 30 times and wait one second between tries.
+for /L %%G IN (1,1,30) do (
   ping -n 2 127.0.0.1 > nul
   rmdir %Directory% /s /q > nul
   if not exist %Directory% exit 0

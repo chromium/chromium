@@ -9,8 +9,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/observer_list_types.h"
 
-namespace ash {
-namespace quick_pair {
+namespace ash::quick_pair {
 
 class CompanionAppBroker {
  public:
@@ -39,7 +38,6 @@ class CompanionAppBroker {
   virtual void LaunchCompanionApp(scoped_refptr<Device> device) = 0;
 };
 
-}  // namespace quick_pair
-}  // namespace ash
+}  // namespace ash::quick_pair
 
 #endif  // ASH_QUICK_PAIR_COMPANION_APP_COMPANION_APP_BROKER_H_

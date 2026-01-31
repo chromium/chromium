@@ -156,6 +156,7 @@ TEST_F(WebAppPublisherHelperTest, CreateWebApp_Random) {
   for (int seed = 0; seed < 100; ++seed) {
     test::CreateRandomWebAppParams params;
     params.seed = seed;
+    params.parent_manifest_id = GURL();
     std::unique_ptr<WebApp> random_app = test::CreateRandomWebApp(params);
 
     auto info = std::make_unique<WebAppInstallInfo>(random_app->manifest_id(),
@@ -388,7 +389,7 @@ TEST_F(WebAppPublisherHelperTest, LaunchWithFiles_AllowWithNoPrompt) {
   const GURL app_url("https://example.com/path/index.html");
   const WebApp* app = nullptr;
 
-  base::Value::Dict pref_value;
+  base::DictValue pref_value;
   pref_value.Set(".txt", "https://example.com/path/index.html");
   profile()->GetPrefs()->SetDict(prefs::kDefaultHandlersForFileExtensions,
                                  std::move(pref_value));

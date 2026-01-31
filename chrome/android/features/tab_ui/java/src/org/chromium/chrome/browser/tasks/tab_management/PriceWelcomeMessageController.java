@@ -6,13 +6,14 @@ package org.chromium.chrome.browser.tasks.tab_management;
 
 import static org.chromium.build.NullUtil.assumeNonNull;
 
+import android.content.Context;
+
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Callback;
 import org.chromium.base.ObserverList;
 import org.chromium.base.ValueChangedCallback;
-import org.chromium.base.supplier.ObservableSupplier;
-import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.supplier.NullableObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.price_tracking.PriceTrackingFeatures;
@@ -80,29 +81,28 @@ public class PriceWelcomeMessageController {
     private final Callback<@Nullable TabGroupModelFilter> mOnTabGroupModelFilterChanged =
             new ValueChangedCallback<>(this::onTabGroupModelFilterChanged);
     private final TabSwitcherMessageManager mTabSwitcherMessageManager;
-    private final ObservableSupplier<@Nullable TabGroupModelFilter>
+    private final NullableObservableSupplier<TabGroupModelFilter>
             mCurrentTabGroupModelFilterSupplier;
-    private final MessageCardProviderCoordinator mMessageCardProviderCoordinator;
-    private final ObservableSupplierImpl<@Nullable PriceWelcomeMessageReviewActionProvider>
+    private final MessageCardProvider mMessageCardProvider;
+    private final NullableObservableSupplier<PriceWelcomeMessageReviewActionProvider>
             mPriceWelcomeMessageReviewActionProviderSupplier;
     private final Profile mProfile;
-    private final ObservableSupplierImpl<@Nullable TabListCoordinator> mTabListCoordinatorSupplier;
+    private final NullableObservableSupplier<TabListCoordinator> mTabListCoordinatorSupplier;
     private final @Nullable PriceMessageService mPriceMessageService;
 
     @VisibleForTesting
     PriceWelcomeMessageController(
             TabSwitcherMessageManager tabSwitcherMessageManager,
-            ObservableSupplier<@Nullable TabGroupModelFilter> currentTabGroupModelFilterSupplier,
-            MessageCardProviderCoordinator<@MessageType Integer, @UiType Integer>
-                    messageCardProviderCoordinator,
-            ObservableSupplierImpl<@Nullable PriceWelcomeMessageReviewActionProvider>
+            NullableObservableSupplier<TabGroupModelFilter> currentTabGroupModelFilterSupplier,
+            MessageCardProvider<@MessageType Integer, @UiType Integer> messageCardProvider,
+            NullableObservableSupplier<PriceWelcomeMessageReviewActionProvider>
                     priceWelcomeMessageReviewActionProviderSupplier,
             Profile profile,
-            ObservableSupplierImpl<@Nullable TabListCoordinator> tabListCoordinatorSupplier,
+            NullableObservableSupplier<TabListCoordinator> tabListCoordinatorSupplier,
             @Nullable PriceMessageService priceMessageService) {
         mTabSwitcherMessageManager = tabSwitcherMessageManager;
         mCurrentTabGroupModelFilterSupplier = currentTabGroupModelFilterSupplier;
-        mMessageCardProviderCoordinator = messageCardProviderCoordinator;
+        mMessageCardProvider = messageCardProvider;
         mPriceWelcomeMessageReviewActionProviderSupplier =
                 priceWelcomeMessageReviewActionProviderSupplier;
         mProfile = profile;
@@ -112,31 +112,32 @@ public class PriceWelcomeMessageController {
         if (mPriceMessageService != null) {
             currentTabGroupModelFilterSupplier.addSyncObserverAndCallIfNonNull(
                     mOnTabGroupModelFilterChanged);
-            messageCardProviderCoordinator.subscribeMessageService(mPriceMessageService);
+            messageCardProvider.subscribeMessageService(mPriceMessageService);
         }
     }
 
     /**
      * @param tabSwitcherMessageManager Manages messages for the tab switcher.
      * @param currentTabGroupModelFilterSupplier Supplies the current {@link TabGroupModelFilter}.
-     * @param messageCardProviderCoordinator To build message cards.
+     * @param messageCardProvider To build message cards.
      * @param priceWelcomeMessageReviewActionProviderSupplier Supplier for the review action
      *     provider.
      * @param profile The current {@link Profile}.
      * @param tabListCoordinatorSupplier Supplies the {@link TabListCoordinator}.
      */
     public static PriceWelcomeMessageController build(
+            Context context,
             TabSwitcherMessageManager tabSwitcherMessageManager,
-            ObservableSupplier<@Nullable TabGroupModelFilter> currentTabGroupModelFilterSupplier,
-            MessageCardProviderCoordinator<@MessageType Integer, @UiType Integer>
-                    messageCardProviderCoordinator,
-            ObservableSupplierImpl<@Nullable PriceWelcomeMessageReviewActionProvider>
+            NullableObservableSupplier<TabGroupModelFilter> currentTabGroupModelFilterSupplier,
+            MessageCardProvider<@MessageType Integer, @UiType Integer> messageCardProvider,
+            NullableObservableSupplier<PriceWelcomeMessageReviewActionProvider>
                     priceWelcomeMessageReviewActionProviderSupplier,
             Profile profile,
-            ObservableSupplierImpl<@Nullable TabListCoordinator> tabListCoordinatorSupplier) {
+            NullableObservableSupplier<TabListCoordinator> tabListCoordinatorSupplier) {
         PriceMessageService priceMessageService =
                 PriceTrackingFeatures.isPriceAnnotationsEnabled(profile)
                         ? new PriceMessageService(
+                                context,
                                 profile,
                                 tabListCoordinatorSupplier::get,
                                 priceWelcomeMessageReviewActionProviderSupplier)
@@ -145,7 +146,7 @@ public class PriceWelcomeMessageController {
         return new PriceWelcomeMessageController(
                 tabSwitcherMessageManager,
                 currentTabGroupModelFilterSupplier,
-                messageCardProviderCoordinator,
+                messageCardProvider,
                 priceWelcomeMessageReviewActionProviderSupplier,
                 profile,
                 tabListCoordinatorSupplier,
@@ -187,7 +188,7 @@ public class PriceWelcomeMessageController {
 
         if (mPriceMessageService == null
                 || !PriceTrackingUtilities.isPriceWelcomeMessageCardEnabled(mProfile)
-                || mMessageCardProviderCoordinator.isMessageShown(
+                || mMessageCardProvider.isMessageShown(
                         MessageType.PRICE_MESSAGE,
                         PriceMessageService.PriceMessageType.PRICE_WELCOME)) {
             return;

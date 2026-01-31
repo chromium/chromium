@@ -99,7 +99,7 @@ ContentSettingsForOneType Manager::BuildGrantsWithPredicate(
     base::FunctionRef<bool(const MetadataEntry&)> predicate) {
   base::flat_set<std::string> remove_keys;
   if (base::FeatureList::IsEnabled(net::features::kTpcdMetadataStageControl)) {
-    const base::Value::Dict& dict =
+    const base::DictValue& dict =
         delegate_->GetLocalState().GetDict(prefs::kCohorts);
     for (const auto itr : dict) {
       remove_keys.insert(itr.first);
@@ -141,7 +141,7 @@ ContentSettingsForOneType Manager::BuildGrantsWithPredicate(
 
     // Get the cohort from the prefs if available.
     if (!cohort.has_value() && !predicate(metadata_entry)) {
-      const base::Value::Dict& dict =
+      const base::DictValue& dict =
           delegate_->GetLocalState().GetDict(prefs::kCohorts);
 
       const std::optional<int> stored_int = dict.FindInt(key_hash);
@@ -163,11 +163,6 @@ ContentSettingsForOneType Manager::BuildGrantsWithPredicate(
                          GRACE_PERIOD_FORCED_OFF
                    : content_settings::mojom::TpcdMetadataCohort::
                          GRACE_PERIOD_FORCED_ON;
-
-      if (parser_->get_metadata_source() == MetadataSource::kServer &&
-          Parser::IsTestEntry(metadata_entry)) {
-        helpers::WriteCohortDistributionMetrics(cohort.value());
-      }
 
       ScopedDictPrefUpdate update(&delegate_->GetLocalState(), prefs::kCohorts);
       update->Set(key_hash, static_cast<int32_t>(cohort.value()));
@@ -236,10 +231,6 @@ std::string GenerateKeyHash(const MetadataEntry& metadata_entry) {
   return base::Base64Encode(base::SHA1HashString(key));
 }
 
-void WriteCohortDistributionMetrics(
-    const content_settings::mojom::TpcdMetadataCohort& cohort) {
-  base::UmaHistogramEnumeration(kMetadataCohortDistributionHistogram, cohort);
-}
 }  // namespace helpers
 
 }  // namespace tpcd::metadata

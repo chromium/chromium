@@ -8,11 +8,8 @@
 #include <memory>
 
 #include "media/capture/capture_export.h"
+#include "media/capture/video/video_capture_device.h"
 #include "media/capture/video_capture_types.h"
-
-namespace gfx {
-struct GpuMemoryBufferHandle;
-}  // namespace gfx
 
 namespace media {
 
@@ -24,8 +21,7 @@ class CAPTURE_EXPORT VideoCaptureBufferTrackerFactory {
   virtual std::unique_ptr<VideoCaptureBufferTracker> CreateTracker(
       VideoCaptureBufferType buffer_type) = 0;
   virtual std::unique_ptr<VideoCaptureBufferTracker>
-  CreateTrackerForExternalGpuMemoryBuffer(
-      gfx::GpuMemoryBufferHandle handle) = 0;
+  CreateTrackerForExternalBuffer(CapturedExternalVideoBuffer buffer) = 0;
 };
 
 }  // namespace media

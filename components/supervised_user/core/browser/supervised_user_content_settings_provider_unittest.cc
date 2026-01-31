@@ -7,18 +7,19 @@
 #include <memory>
 #include <string>
 
-#include "base/test/scoped_feature_list.h"
+#include "base/test/with_feature_override.h"
 #include "build/buildflag.h"
 #include "components/content_settings/core/browser/content_settings_mock_observer.h"
 #include "components/content_settings/core/browser/content_settings_registry.h"
 #include "components/content_settings/core/browser/content_settings_rule.h"
 #include "components/content_settings/core/browser/content_settings_utils.h"
+#include "components/content_settings/core/browser/permission_settings_info.h"
 #include "components/content_settings/core/browser/permission_settings_registry.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_utils.h"
 #include "components/content_settings/core/common/features.h"
 #include "components/prefs/testing_pref_store.h"
-#include "components/supervised_user/core/browser/supervised_user_settings_service.h"
+#include "components/supervised_user/core/browser/family_link_settings_service.h"
 #include "components/supervised_user/core/common/supervised_user_constants.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -34,7 +35,7 @@ class SupervisedUserProviderTest : public ::testing::Test {
   void TearDown() override;
 
  protected:
-  SupervisedUserSettingsService service_;
+  FamilyLinkSettingsService service_;
   scoped_refptr<TestingPrefStore> pref_store_;
   std::unique_ptr<SupervisedUserContentSettingsProvider> provider_;
   content_settings::MockObserver mock_observer_;
@@ -57,11 +58,24 @@ void SupervisedUserProviderTest::TearDown() {
   service_.Shutdown();
 }
 
+class SupervisedUserProviderTestForGeolocation
+    : public SupervisedUserProviderTest,
+      public base::test::WithFeatureOverride {
+ public:
+  SupervisedUserProviderTestForGeolocation()
+      : base::test::WithFeatureOverride(
+            content_settings::features::kApproximateGeolocationPermission) {}
+};
+
+INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(
+    SupervisedUserProviderTestForGeolocation);
+
 #if BUILDFLAG(IS_IOS)
 // GEOLOCATION and GEOLOCATION_WITH_OPTIONS are not registered on IOS.
-TEST_F(SupervisedUserProviderTest, GeolocationTest) {
+TEST_P(SupervisedUserProviderTestForGeolocation, GeolocationTest) {
   std::unique_ptr<content_settings::RuleIterator> rule_iterator =
-      provider_->GetRuleIterator(ContentSettingsType::GEOLOCATION, false);
+      provider_->GetRuleIterator(
+          content_settings::GeolocationContentSettingsType(), false);
   EXPECT_FALSE(rule_iterator);
 
   // Disable the default geolocation setting.
@@ -70,95 +84,43 @@ TEST_F(SupervisedUserProviderTest, GeolocationTest) {
   // Check that nothing happened since the setting is not registered on IOS.
   rule_iterator =
       provider_->GetRuleIterator(ContentSettingsType::GEOLOCATION, false);
-  EXPECT_FALSE(rule_iterator);
-}
-
-TEST_F(SupervisedUserProviderTest, GeolocationWithOptionsTest) {
-  base::test::ScopedFeatureList feature_list{
-      content_settings::features::kApproximateGeolocationPermission};
-  std::unique_ptr<content_settings::RuleIterator> rule_iterator =
-      provider_->GetRuleIterator(ContentSettingsType::GEOLOCATION_WITH_OPTIONS,
-                                 false);
-  EXPECT_FALSE(rule_iterator);
-
-  // Disable the default geolocation setting.
-  service_.SetLocalSetting(kGeolocationDisabled, base::Value(true));
-
-  // Check that nothing happened since the setting is not registered on IOS.
-  rule_iterator = provider_->GetRuleIterator(
-      ContentSettingsType::GEOLOCATION_WITH_OPTIONS, false);
   EXPECT_FALSE(rule_iterator);
 }
 
 #else
-TEST_F(SupervisedUserProviderTest, GeolocationTest) {
+TEST_P(SupervisedUserProviderTestForGeolocation, GeolocationTest) {
   std::unique_ptr<content_settings::RuleIterator> rule_iterator =
-      provider_->GetRuleIterator(ContentSettingsType::GEOLOCATION, false);
+      provider_->GetRuleIterator(
+          content_settings::GeolocationContentSettingsType(), false);
   EXPECT_FALSE(rule_iterator);
 
-  // Disable the default geolocation setting.
   EXPECT_CALL(mock_observer_,
-              OnContentSettingChanged(_, _, ContentSettingsType::GEOLOCATION));
+              OnContentSettingChanged(
+                  _, _, content_settings::GeolocationContentSettingsType()))
+      .Times(2);
   service_.SetLocalSetting(kGeolocationDisabled, base::Value(true));
 
-  rule_iterator =
-      provider_->GetRuleIterator(ContentSettingsType::GEOLOCATION, false);
+  rule_iterator = provider_->GetRuleIterator(
+      content_settings::GeolocationContentSettingsType(), false);
   ASSERT_TRUE(rule_iterator->HasNext());
   std::unique_ptr<content_settings::Rule> rule = rule_iterator->Next();
   EXPECT_FALSE(rule_iterator->HasNext());
 
   EXPECT_EQ(ContentSettingsPattern::Wildcard(), rule->primary_pattern);
   EXPECT_EQ(ContentSettingsPattern::Wildcard(), rule->secondary_pattern);
-  EXPECT_EQ(CONTENT_SETTING_BLOCK,
-            content_settings::ValueToContentSetting(rule->value));
+
+  const content_settings::PermissionSettingsInfo* permission_info =
+      content_settings::PermissionSettingsRegistry::GetInstance()->Get(
+          content_settings::GeolocationContentSettingsType());
+  EXPECT_TRUE(permission_info->delegate().IsBlocked(
+      (content_settings::ValueToPermissionSetting(permission_info,
+                                                  rule->value))));
 
   // Re-enable the default geolocation setting.
-  EXPECT_CALL(mock_observer_,
-              OnContentSettingChanged(_, _, ContentSettingsType::GEOLOCATION));
   service_.SetLocalSetting(kGeolocationDisabled, base::Value(false));
 
   rule_iterator =
       provider_->GetRuleIterator(ContentSettingsType::GEOLOCATION, false);
-  EXPECT_FALSE(rule_iterator);
-}
-
-TEST_F(SupervisedUserProviderTest, GeolocationWithOptionsTest) {
-  base::test::ScopedFeatureList feature_list{
-      content_settings::features::kApproximateGeolocationPermission};
-  std::unique_ptr<content_settings::RuleIterator> rule_iterator =
-      provider_->GetRuleIterator(ContentSettingsType::GEOLOCATION_WITH_OPTIONS,
-                                 false);
-  EXPECT_FALSE(rule_iterator);
-
-  // Disable the default geolocation setting.
-  EXPECT_CALL(mock_observer_,
-              OnContentSettingChanged(
-                  _, _, ContentSettingsType::GEOLOCATION_WITH_OPTIONS));
-  service_.SetLocalSetting(kGeolocationDisabled, base::Value(true));
-
-  rule_iterator = provider_->GetRuleIterator(
-      ContentSettingsType::GEOLOCATION_WITH_OPTIONS, false);
-  ASSERT_TRUE(rule_iterator->HasNext());
-  std::unique_ptr<content_settings::Rule> rule = rule_iterator->Next();
-  EXPECT_FALSE(rule_iterator->HasNext());
-
-  EXPECT_EQ(ContentSettingsPattern::Wildcard(), rule->primary_pattern);
-  EXPECT_EQ(ContentSettingsPattern::Wildcard(), rule->secondary_pattern);
-  auto* info = content_settings::PermissionSettingsRegistry::GetInstance()->Get(
-      ContentSettingsType::GEOLOCATION_WITH_OPTIONS);
-  GeolocationSetting expected_setting{PermissionOption::kDenied,
-                                      PermissionOption::kDenied};
-  EXPECT_EQ(PermissionSetting{expected_setting},
-            content_settings::ValueToPermissionSetting(info, rule->value));
-
-  // Re-enable the default geolocation setting.
-  EXPECT_CALL(mock_observer_,
-              OnContentSettingChanged(
-                  _, _, ContentSettingsType::GEOLOCATION_WITH_OPTIONS));
-  service_.SetLocalSetting(kGeolocationDisabled, base::Value(false));
-
-  rule_iterator = provider_->GetRuleIterator(
-      ContentSettingsType::GEOLOCATION_WITH_OPTIONS, false);
   EXPECT_FALSE(rule_iterator);
 }
 #endif  // !BUILDFLAG(IS_IOS)

@@ -260,7 +260,7 @@ class DeviceAPIServiceWebAppTest : public DeviceAPIServiceTest,
 
 #if BUILDFLAG(IS_CHROMEOS)
   void SetAllowedOrigin() {
-    base::Value::List allowed_origins;
+    base::ListValue allowed_origins;
     allowed_origins.Append(kTrustedUrl);
     allowed_origins.Append(kKioskAppInstallUrl);
     profile()->GetTestingPrefService()->SetManagedPref(
@@ -424,13 +424,13 @@ class DeviceAPIServiceIwaTest
   void SetAllowedOrigin(const std::string& origin) {
     profile()->GetTestingPrefService()->SetManagedPref(
         prefs::kManagedDeviceAttributesAllowedForOrigins,
-        base::Value::List().Append(origin));
+        base::ListValue().Append(origin));
   }
 
   void SetBlockedOrigin(const std::string& origin) {
     profile()->GetTestingPrefService()->SetManagedPref(
         prefs::kManagedDeviceAttributesBlockedForOrigins,
-        base::Value::List().Append(origin));
+        base::ListValue().Append(origin));
   }
 
   void SetEnterprisePoliciesForOrigin(const std::string& origin) {
@@ -634,7 +634,7 @@ class DeviceAPIServiceParamTest
   void SetAllowedOrigin(const std::string& origin) {
     profile()->GetTestingPrefService()->SetManagedPref(
         prefs::kManagedDeviceAttributesAllowedForOrigins,
-        base::Value::List().Append(origin));
+        base::ListValue().Append(origin));
   }
 
   void AllowOriginsByDefault() {
@@ -673,7 +673,7 @@ class DeviceAPIServiceParamTest
   void SetKioskBrowserPermissionsAllowedForOrigins(const std::string& origin) {
     profile()->GetPrefs()->SetList(
         prefs::kKioskBrowserPermissionsAllowedForOrigins,
-        base::Value::List().Append(std::move(origin)));
+        base::ListValue().Append(std::move(origin)));
   }
 
   void VerifyCanAccessForAllDeviceAttributesAPIs() {
@@ -722,7 +722,7 @@ class DeviceAPIServiceRegularUserTest : public DeviceAPIServiceParamTest {
 
   void RemoveAllowedOrigin() {
     profile()->GetTestingPrefService()->SetManagedPref(
-        prefs::kManagedDeviceAttributesAllowedForOrigins, base::Value::List());
+        prefs::kManagedDeviceAttributesAllowedForOrigins, base::ListValue());
   }
 
   void TearDown() override {

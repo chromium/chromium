@@ -5,36 +5,32 @@
 #include "chrome/browser/ui/ash/magic_boost/magic_boost_card_controller.h"
 
 #include "base/check_deref.h"
+#include "base/check_is_test.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ref.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
-#include "chrome/browser/ash/magic_boost/magic_boost_controller_ash.h"
+#include "chrome/browser/ash/magic_boost/magic_boost_controller.h"
 #include "chrome/browser/ui/ash/magic_boost/magic_boost_constants.h"
 #include "chrome/browser/ui/ash/magic_boost/magic_boost_metrics.h"
 #include "chrome/browser/ui/ash/magic_boost/magic_boost_opt_in_card.h"
 #include "chromeos/components/magic_boost/public/cpp/magic_boost_state.h"
 #include "chromeos/components/mahi/public/cpp/mahi_media_app_events_proxy.h"
-#include "chromeos/crosapi/mojom/magic_boost.mojom.h"
 #include "ui/views/view_utils.h"
 #include "ui/views/widget/unique_widget_ptr.h"
-
-// TODO(crbug.com/374890766): Some outstanding follow-up work:
-// 1/ Remove all references to crosapi.
-// 2/ Move the content of this directory to c/b/ui/ash.
-// 3/ Make callers to call MagicBoostControllerAsh directly?
 
 namespace chromeos {
 
 namespace {
 
-crosapi::mojom::MagicBoostController* g_crosapi_instance_for_testing = nullptr;
+ash::MagicBoostController* g_instance_for_testing = nullptr;
 
-crosapi::mojom::MagicBoostController& GetMagicBoostControllerAsh() {
-  if (g_crosapi_instance_for_testing) {
-    return CHECK_DEREF(g_crosapi_instance_for_testing);
+ash::MagicBoostController& GetMagicBoostController() {
+  if (g_instance_for_testing) {
+    CHECK_IS_TEST();
+    return CHECK_DEREF(g_instance_for_testing);
   }
-  return CHECK_DEREF(ash::MagicBoostControllerAsh::Get());
+  return CHECK_DEREF(ash::MagicBoostController::Get());
 }
 
 }  // namespace
@@ -98,9 +94,9 @@ void MagicBoostCardController::OnPdfContextMenuShown(const gfx::Rect& anchor) {
           return;
         }
 
-        controller->SetOptInFeature(should_include_orca
-                                        ? OptInFeatures::kOrcaAndHmr
-                                        : OptInFeatures::kHmrOnly);
+        controller->SetOptInFeature(
+            should_include_orca ? ash::magic_boost::OptInFeatures::kOrcaAndHmr
+                                : ash::magic_boost::OptInFeatures::kHmrOnly);
         controller->ShowOptInUi(/*anchor_view_bounds=*/anchor);
       },
       weak_factory_.GetWeakPtr(), anchor));
@@ -133,19 +129,21 @@ void MagicBoostCardController::CloseOptInUi() {
 }
 
 void MagicBoostCardController::ShowDisclaimerUi(int64_t display_id) {
-  GetMagicBoostControllerAsh().ShowDisclaimerUi(display_id, transition_action_,
-                                                opt_in_features_);
+  GetMagicBoostController().ShowDisclaimerUi(display_id, transition_action_,
+                                             opt_in_features_);
 }
 
 void MagicBoostCardController::CloseDisclaimerUi() {
-  GetMagicBoostControllerAsh().CloseDisclaimerUi();
+  GetMagicBoostController().CloseDisclaimerUi();
 }
 
-void MagicBoostCardController::SetOptInFeature(const OptInFeatures& features) {
+void MagicBoostCardController::SetOptInFeature(
+    const ash::magic_boost::OptInFeatures& features) {
   opt_in_features_ = features;
 }
 
-const OptInFeatures& MagicBoostCardController::GetOptInFeatures() const {
+const ash::magic_boost::OptInFeatures&
+MagicBoostCardController::GetOptInFeatures() const {
   return opt_in_features_;
 }
 
@@ -153,9 +151,9 @@ base::WeakPtr<MagicBoostCardController> MagicBoostCardController::GetWeakPtr() {
   return weak_factory_.GetWeakPtr();
 }
 
-void MagicBoostCardController::SetMagicBoostControllerCrosapiForTesting(
-    crosapi::mojom::MagicBoostController* delegate) {
-  g_crosapi_instance_for_testing = delegate;
+void MagicBoostCardController::SetMagicBoostControllerForTesting(
+    ash::MagicBoostController* delegate) {
+  g_instance_for_testing = delegate;
 }
 
 }  // namespace chromeos

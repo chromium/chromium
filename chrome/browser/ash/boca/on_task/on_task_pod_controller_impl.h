@@ -20,7 +20,9 @@
 #include "ui/gfx/geometry/rect.h"
 #include "ui/views/widget/widget.h"
 
+namespace chromeos {
 class ImmersiveRevealedLock;
+}  // namespace chromeos
 
 namespace ash {
 
@@ -66,7 +68,7 @@ class OnTaskPodControllerImpl : public OnTaskPodController,
 
   // Component accessors used for testing purposes.
   views::Widget* GetPodWidgetForTesting();
-  ImmersiveRevealedLock* GetTabStripRevealLockForTesting();
+  chromeos::ImmersiveRevealedLock* GetTabStripRevealLockForTesting();
   OnTaskPodSnapLocation GetSnapLocationForTesting() const;
 
  private:
@@ -81,7 +83,7 @@ class OnTaskPodControllerImpl : public OnTaskPodController,
   std::unique_ptr<views::Widget> pod_widget_;
 
   // Prevents the tab strip from hiding while in immersive fullscreen.
-  std::unique_ptr<ImmersiveRevealedLock> tab_strip_reveal_lock_;
+  std::unique_ptr<chromeos::ImmersiveRevealedLock> tab_strip_reveal_lock_;
 
   // Height of the window frame header. This is used to track the frame header
   // height when in unlocked mode for consistent positioning in locked mode.

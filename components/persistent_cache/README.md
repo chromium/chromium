@@ -36,3 +36,8 @@ To retain simplicity of design persistent_cache does not expose or enforce
 eviction mechanisms.  Clients of the cache can assume that they are free to
 insert as many entries are desired without having to reason about size
 management.
+
+## Backends
+
+The default backend is a sandboxed SQLite database. The sandboxed VFS
+implementation is in `components/sqlite_vfs`.

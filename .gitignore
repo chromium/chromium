@@ -7,6 +7,7 @@
 *.opensdf
 *.orig
 *.pdb
+*.profraw
 *.props
 *.pyc
 *.pyproj
@@ -35,8 +36,10 @@
 !Android.mk
 .*.sw?
 .DS_Store
+/.agent
 .android
 .ccls-cache
+.checkstyle
 .cipd
 .classpath
 .code-coverage
@@ -55,15 +58,10 @@
 .project
 .projectile
 .pydevproject
-.checkstyle
+.siso_failed_targets
 *.class
 compile_commands.json
 cscope.*
-child_pool-0.profraw
-child_pool-1.profraw
-child_pool-2.profraw
-child_pool-3.profraw
-default.profraw
 GPATH
 GRTAGS
 GSYMS
@@ -142,6 +140,7 @@ vs-chromium-project.txt
 /chrome/browser/resources/chromeos/mako/resources/
 /chrome/browser/resources/chromeos/seal/resources/
 /chrome/browser/resources/downloads/internal/
+/chrome/browser/resources/history/internal/
 /chrome/browser/resources/pdf/html_office
 /chrome/browser/resources/media_router/extension/src/
 /chrome/browser/resources/preinstalled_web_apps/internal/

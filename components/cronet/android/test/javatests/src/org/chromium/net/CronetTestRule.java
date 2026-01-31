@@ -21,6 +21,7 @@ import androidx.test.core.app.ApplicationProvider;
 
 import com.google.protobuf.ByteString;
 
+import org.junit.AssumptionViolatedException;
 import org.junit.rules.TestRule;
 import org.junit.runner.Description;
 import org.junit.runners.model.Statement;
@@ -236,21 +237,31 @@ public class CronetTestRule implements TestRule {
 
         Log.i(TAG, "Implementations to be tested against: %s", implementationsUnderTest);
 
-        if (packageName.startsWith("org.chromium.net")) {
-            for (CronetTestFramework.CronetImplementation implementation :
-                    implementationsUnderTest) {
-                if (BuildConfig.CRONET_FOR_AOSP_BUILD
-                        && implementation.equals(
-                                CronetTestFramework.CronetImplementation.FALLBACK)) {
-                    // Skip executing tests for JavaCronetEngine.
-                    continue;
-                }
-                Log.i(TAG, "Running test against " + implementation + " implementation.");
-                setImplementationUnderTest(implementation);
+        boolean allImplementionsSkipped = true;
+        AssumptionViolatedException lastAssumptionViolatedException = null;
+        for (CronetTestFramework.CronetImplementation implementation : implementationsUnderTest) {
+            Log.i(TAG, "Running test against " + implementation + " implementation.");
+            setImplementationUnderTest(implementation);
+            try {
+                assumeFalse(
+                        "Skipping JavaCronetEngine tests in AOSP",
+                        BuildConfig.CRONET_FOR_AOSP_BUILD
+                                && implementation.equals(
+                                        CronetTestFramework.CronetImplementation.FALLBACK));
                 evaluateWithFramework(base, testName, netLogEnabled, desc);
+                allImplementionsSkipped = false;
+            } catch (AssumptionViolatedException assumptionViolatedException) {
+                // Some tests may want so skip based on the implementation under test. Make sure
+                // we try every implementation before declaring the test skipped.
+                Log.i(
+                        TAG,
+                        implementation + " skipped due to violated assumption",
+                        assumptionViolatedException);
+                lastAssumptionViolatedException = assumptionViolatedException;
             }
-        } else {
-            evaluateWithFramework(base, testName, netLogEnabled, desc);
+        }
+        if (allImplementionsSkipped) {
+            throw lastAssumptionViolatedException;
         }
     }
 

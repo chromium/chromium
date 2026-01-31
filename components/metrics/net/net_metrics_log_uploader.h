@@ -6,10 +6,10 @@
 #define COMPONENTS_METRICS_NET_NET_METRICS_LOG_UPLOADER_H_
 
 #include <memory>
-#include <optional>
 #include <string>
 #include <string_view>
 
+#include "base/memory/scoped_refptr.h"
 #include "components/metrics/metrics_log.h"
 #include "components/metrics/metrics_log_uploader.h"
 #include "third_party/metrics_proto/reporting_info.pb.h"
@@ -19,6 +19,10 @@ namespace network {
 class SharedURLLoaderFactory;
 class SimpleURLLoader;
 }  // namespace network
+
+namespace net {
+class HttpResponseHeaders;
+}
 
 namespace metrics {
 
@@ -74,7 +78,7 @@ class NetMetricsLogUploader : public MetricsLogUploader {
   // the payload.
   void HTTPFallbackAborted();
 
-  void OnURLLoadComplete(std::optional<std::string> response_body);
+  void OnURLLoadComplete(scoped_refptr<net::HttpResponseHeaders> headers);
 
   // The URLLoader factory for loads done using the network stack.
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;

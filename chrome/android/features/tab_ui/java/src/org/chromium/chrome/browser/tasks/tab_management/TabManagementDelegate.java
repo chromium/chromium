@@ -11,7 +11,8 @@ import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 
 import org.chromium.base.supplier.LazyOneshotSupplier;
-import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.MonotonicObservableSupplier;
+import org.chromium.base.supplier.NonNullObservableSupplier;
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -82,7 +83,7 @@ public interface TabManagementDelegate {
             ViewGroup parentView,
             BrowserControlsStateProvider browserControlsStateProvider,
             ScrimManager scrimManager,
-            ObservableSupplier<Boolean> omniboxFocusStateSupplier,
+            NonNullObservableSupplier<Boolean> omniboxFocusStateSupplier,
             BottomSheetController bottomSheetController,
             DataSharingTabManager dataSharingTabManager,
             TabModelSelector tabModelSelector,
@@ -92,7 +93,7 @@ public interface TabManagementDelegate {
             ModalDialogManager modalDialogManager,
             ThemeColorProvider themeColorProvider,
             UndoBarThrottle undoBarThrottle,
-            ObservableSupplier<TabBookmarker> tabBookmarkerSupplier,
+            MonotonicObservableSupplier<TabBookmarker> tabBookmarkerSupplier,
             Supplier<ShareDelegate> shareDelegateSupplier);
 
     /**
@@ -158,21 +159,22 @@ public interface TabManagementDelegate {
             boolean isIncognito,
             DoubleConsumer onToolbarAlphaChange,
             BackPressManager backPressManager,
-            ObservableSupplier<EdgeToEdgeController> edgeToEdgeSupplier,
+            MonotonicObservableSupplier<EdgeToEdgeController> edgeToEdgeSupplier,
             @Nullable DesktopWindowStateManager desktopWindowStateManager,
-            ObservableSupplier<TabModelDotInfo> tabModelNotificationDotSupplier,
-            ObservableSupplier<CompositorViewHolder> compositorViewHolderSupplier,
-            ObservableSupplier<ShareDelegate> shareDelegateSupplier,
-            ObservableSupplier<TabBookmarker> tabBookmarkerSupplier,
+            MonotonicObservableSupplier<TabModelDotInfo> tabModelNotificationDotSupplier,
+            MonotonicObservableSupplier<CompositorViewHolder> compositorViewHolderSupplier,
+            MonotonicObservableSupplier<ShareDelegate> shareDelegateSupplier,
+            MonotonicObservableSupplier<TabBookmarker> tabBookmarkerSupplier,
             TabGroupCreationUiDelegate tabGroupCreationUiDelegate,
             UndoBarThrottle undoBarThrottle,
             LazyOneshotSupplier<HubManager> hubManagerSupplier,
             @Nullable ArchivedTabsAutoDeletePromoManager archivedTabsAutoDeletePromoManager,
             Supplier<TabGroupUiActionHandler> tabGroupUiActionHandlerSupplier,
             Supplier<LayoutStateProvider> layoutStateProviderSupplier,
-            @Nullable ObservableSupplier<Boolean> xrSpaceModeObservableSupplier,
+            @Nullable MonotonicObservableSupplier<Boolean> xrSpaceModeObservableSupplier,
             @Nullable MultiInstanceManager multiInstanceManager,
-            @Nullable DragAndDropDelegate dragDropDelegate);
+            @Nullable DragAndDropDelegate dragDropDelegate,
+            TabSwitcherBackPressHandlerManager dragHandlerManager);
 
     /**
      * Create a {@link TabGroupsPane} for the Hub.
@@ -197,7 +199,7 @@ public interface TabManagementDelegate {
             LazyOneshotSupplier<HubManager> hubManagerSupplier,
             Supplier<TabGroupUiActionHandler> tabGroupUiActionHandlerSupplier,
             Supplier<ModalDialogManager> modalDialogManagerSupplier,
-            ObservableSupplier<EdgeToEdgeController> edgeToEdgeSupplier,
+            MonotonicObservableSupplier<EdgeToEdgeController> edgeToEdgeSupplier,
             DataSharingTabManager dataSharingTabManager);
 
     /**

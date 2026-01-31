@@ -61,8 +61,8 @@ class OnDeviceLlmInternalsHandler : public web::WebUIIOSMessageHandler {
   void RegisterMessages() override;
 
  private:
-  void HandleRequestModelInformation(const base::Value::List& args);
-  void InitAndGenerateResponse(const base::Value::List& args);
+  void HandleRequestModelInformation(const base::ListValue& args);
+  void InitAndGenerateResponse(const base::ListValue& args);
 
 #if BUILDFLAG(BUILD_WITH_INTERNAL_OPTIMIZATION_GUIDE)
   void OnServerModelExecuteResponse(
@@ -99,7 +99,7 @@ void OnDeviceLlmInternalsHandler::RegisterMessages() {
 }
 
 void OnDeviceLlmInternalsHandler::HandleRequestModelInformation(
-    const base::Value::List& args) {
+    const base::ListValue& args) {
   // TODO(crbug.com/387510419): Load model name.
   std::string model_name = "";
   if (model_name.empty()) {
@@ -111,7 +111,7 @@ void OnDeviceLlmInternalsHandler::HandleRequestModelInformation(
 }
 
 void OnDeviceLlmInternalsHandler::InitAndGenerateResponse(
-    const base::Value::List& args) {
+    const base::ListValue& args) {
   CHECK(args.size() == 1);
 #if BUILDFLAG(BUILD_WITH_INTERNAL_OPTIMIZATION_GUIDE)
 

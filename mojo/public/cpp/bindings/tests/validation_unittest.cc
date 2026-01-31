@@ -100,8 +100,9 @@ std::vector<std::string> GetMatchingTests(const std::vector<std::string>& names,
   for (size_t i = 0; i < names.size(); ++i) {
     if (names[i].size() >= suffix.size() &&
         names[i].substr(0, prefix.size()) == prefix &&
-        names[i].substr(names[i].size() - suffix.size()) == suffix)
+        names[i].substr(names[i].size() - suffix.size()) == suffix) {
       tests.push_back(names[i].substr(0, names[i].size() - suffix.size()));
+    }
   }
   return tests;
 }
@@ -130,8 +131,9 @@ bool ReadAndParseDataFile(const std::string& path,
                           std::vector<uint8_t>* data,
                           size_t* num_handles) {
   std::string input;
-  if (!ReadFile(path, &input))
+  if (!ReadFile(path, &input)) {
     return false;
+  }
 
   std::string error_message;
   if (!ParseValidationTestInput(input, data, num_handles, &error_message)) {
@@ -143,18 +145,20 @@ bool ReadAndParseDataFile(const std::string& path,
 }
 
 bool ReadResultFile(const std::string& path, std::string* result) {
-  if (!ReadFile(path, result))
+  if (!ReadFile(path, result)) {
     return false;
+  }
 
   // Result files are new-line delimited text files. Remove any CRs.
   std::erase(*result, '\r');
 
   // Remove trailing LFs.
   size_t pos = result->find_last_not_of('\n');
-  if (pos == std::string::npos)
+  if (pos == std::string::npos) {
     result->clear();
-  else
+  } else {
     result->resize(pos + 1);
+  }
 
   return true;
 }
@@ -176,8 +180,9 @@ bool ReadTestCase(const std::string& test,
   }
 
   *message = CreateRawMessage(data.size());
-  if (!data.empty())
+  if (!data.empty()) {
     UNSAFE_TODO(memcpy(message->mutable_data(), &data[0], data.size()));
+  }
   message->mutable_handles()->resize(num_handles);
 
   return true;
@@ -200,12 +205,14 @@ void RunValidationTests(const std::string& prefix,
     mojo::internal::ValidationErrorObserverForTesting observer(
         run_loop.QuitClosure());
     std::ignore = test_message_receiver->Accept(&message);
-    if (expected != "PASS")  // Observer only gets called on errors.
+    if (expected != "PASS") {  // Observer only gets called on errors.
       run_loop.Run();
-    if (observer.last_error() == mojo::internal::VALIDATION_ERROR_NONE)
+    }
+    if (observer.last_error() == mojo::internal::VALIDATION_ERROR_NONE) {
       result = "PASS";
-    else
+    } else {
       result = mojo::internal::ValidationErrorToString(observer.last_error());
+    }
 
     EXPECT_EQ(expected, result) << "failed test: " << tests[i];
   }
@@ -409,8 +416,9 @@ TEST_F(ValidationTest, InputParser) {
 
     for (size_t i = 0; error_inputs[i]; ++i) {
       std::vector<uint8_t> expected;
-      if (!TestInputParser(error_inputs[i], false, expected, 0))
+      if (!TestInputParser(error_inputs[i], false, expected, 0)) {
         ADD_FAILURE() << "Unexpected test result for: " << error_inputs[i];
+      }
     }
   }
 }

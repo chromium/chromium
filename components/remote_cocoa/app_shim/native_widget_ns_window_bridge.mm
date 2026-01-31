@@ -61,6 +61,7 @@
 #include "ui/gfx/geometry/dip_util.h"
 #include "ui/gfx/geometry/size_conversions.h"
 #import "ui/gfx/mac/coordinate_conversion.h"
+#import "ui/gfx/mac/menu_text_elider_mac.h"
 #import "ui/gfx/mac/nswindow_frame_controls.h"
 #include "ui/gfx/native_ui_types.h"
 
@@ -1805,6 +1806,9 @@ void NativeWidgetNSWindowBridge::MakeFirstResponder() {
 }
 
 void NativeWidgetNSWindowBridge::SetWindowTitle(const std::u16string& title) {
+  // Truncate long titles to avoid overflow in Dock menu and window title bar.
+  std::u16string truncated_title = gfx::ElideMenuItemTitle(title);
+
   // Delay setting the window title until after any menu tracking is complete.
   if (NSRunLoop.currentRunLoop.currentMode == NSEventTrackingRunLoopMode) {
     // Install one run loop trigger to handle all the pending titles.
@@ -1820,9 +1824,9 @@ void NativeWidgetNSWindowBridge::SetWindowTitle(const std::u16string& title) {
           });
     }
 
-    GetPendingWindowTitleMap()[window_] = title;
+    GetPendingWindowTitleMap()[window_] = truncated_title;
   } else {
-    window_.title = base::SysUTF16ToNSString(title);
+    window_.title = base::SysUTF16ToNSString(truncated_title);
 
     // In case there is an unfired run loop trigger, erase any pending title so
     // that the new title now being set doesn't get smashed.

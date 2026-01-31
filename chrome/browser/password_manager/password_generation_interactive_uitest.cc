@@ -10,6 +10,7 @@
 #include "build/build_config.h"
 #include "chrome/browser/password_manager/chrome_password_manager_client.h"
 #include "chrome/browser/password_manager/password_manager_interactive_test_base.h"
+#include "chrome/browser/password_manager/password_manager_test_util.h"
 #include "chrome/browser/password_manager/password_manager_uitest_util.h"
 #include "chrome/browser/password_manager/passwords_navigation_observer.h"
 #include "chrome/browser/password_manager/profile_password_store_factory.h"
@@ -474,10 +475,7 @@ IN_PROC_BROWSER_TEST_F(PasswordGenerationInteractiveTest,
 IN_PROC_BROWSER_TEST_F(PasswordGenerationInteractiveTest,
                        AutoSavingGeneratedPassword) {
   scoped_refptr<password_manager::TestPasswordStore> password_store =
-      static_cast<password_manager::TestPasswordStore*>(
-          ProfilePasswordStoreFactory::GetForProfile(
-              browser()->profile(), ServiceAccessType::IMPLICIT_ACCESS)
-              .get());
+      GetDefaultPasswordStore(browser()->profile());
 
   FocusPasswordField();
   WaitForGenerationPopupShowing();
@@ -567,7 +565,7 @@ IN_PROC_BROWSER_TEST_F(PasswordGenerationPopupViewPrerenderingTest,
 
   auto prerender_url = embedded_test_server()->GetURL("/empty.html");
   // Loads a page in the prerender.
-  content::FrameTreeNodeId host_id =
+  content::PrerenderHostId host_id =
       prerender_helper()->AddPrerender(prerender_url);
   content::test::PrerenderHostObserver host_observer(*WebContents(), host_id);
   // It should keep the current popup controller since the prerenedering should

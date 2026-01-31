@@ -5,8 +5,9 @@
 #ifndef CONTENT_COMMON_MEMORY_COORDINATOR_MOJOM_MEMORY_CONSUMER_TRAITS_MOJOM_TRAITS_H_
 #define CONTENT_COMMON_MEMORY_COORDINATOR_MOJOM_MEMORY_CONSUMER_TRAITS_MOJOM_TRAITS_H_
 
+#include <utility>
+
 #include "base/memory_coordinator/traits.h"
-#include "base/types/cxx23_to_underlying.h"
 #include "content/common/memory_coordinator/mojom/memory_coordinator.mojom.h"
 #include "mojo/public/cpp/bindings/struct_traits.h"
 
@@ -17,7 +18,7 @@ struct StructTraits<content::mojom::MemoryConsumerTraitsDataView,
                     base::MemoryConsumerTraits> {
   template <class EnumType>
   static bool ConvertToEnum(uint8_t input, EnumType* out) {
-    if (input < 0 || input > base::to_underlying(EnumType::kMaxValue)) {
+    if (input < 0 || input > std::to_underlying(EnumType::kMaxValue)) {
       return false;
     }
 
@@ -27,39 +28,39 @@ struct StructTraits<content::mojom::MemoryConsumerTraitsDataView,
 
   static uint8_t supports_memory_limit(
       const base::MemoryConsumerTraits& input) {
-    return base::to_underlying(input.supports_memory_limit);
+    return std::to_underlying(input.supports_memory_limit);
   }
   static uint8_t in_process(const base::MemoryConsumerTraits& input) {
-    return base::to_underlying(input.in_process);
+    return std::to_underlying(input.in_process);
   }
   static uint8_t estimated_memory_usage(
       const base::MemoryConsumerTraits& input) {
-    return base::to_underlying(input.estimated_memory_usage);
+    return std::to_underlying(input.estimated_memory_usage);
   }
   static uint8_t release_memory_cost(const base::MemoryConsumerTraits& input) {
-    return base::to_underlying(input.release_memory_cost);
+    return std::to_underlying(input.release_memory_cost);
   }
   static uint8_t recreate_memory_cost(const base::MemoryConsumerTraits& input) {
-    return base::to_underlying(input.recreate_memory_cost);
+    return std::to_underlying(input.recreate_memory_cost);
   }
   static uint8_t information_retention(
       const base::MemoryConsumerTraits& input) {
-    return base::to_underlying(input.information_retention);
+    return std::to_underlying(input.information_retention);
   }
   static uint8_t memory_release_behavior(
       const base::MemoryConsumerTraits& input) {
-    return base::to_underlying(input.memory_release_behavior);
+    return std::to_underlying(input.memory_release_behavior);
   }
   static uint8_t execution_type(const base::MemoryConsumerTraits& input) {
-    return base::to_underlying(input.execution_type);
+    return std::to_underlying(input.execution_type);
   }
   static uint8_t release_gc_references(
       const base::MemoryConsumerTraits& input) {
-    return base::to_underlying(input.release_gc_references);
+    return std::to_underlying(input.release_gc_references);
   }
   static uint8_t garbage_collects_v8_heap(
       const base::MemoryConsumerTraits& input) {
-    return base::to_underlying(input.garbage_collects_v8_heap);
+    return std::to_underlying(input.garbage_collects_v8_heap);
   }
 
   static bool Read(content::mojom::MemoryConsumerTraitsDataView input,

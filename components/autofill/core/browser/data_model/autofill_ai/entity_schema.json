@@ -43,7 +43,7 @@
   {
     "name": "Vehicle",
     "attributes": [ "Make", "Model", "Year", "Owner", "Plate number", "Plate state", "VIN" ],
-    "obfuscated attributes": [ "VIN" ],
+    "obfuscated attributes": [ ],
     "required fields": "any",
     "import constraints": [
       [ "Plate number" ],
@@ -65,7 +65,6 @@
     "merge constraints": "import constraints",
     "strike keys": "import constraints",
     "disambiguation order": [ "Name", "Country" ],
-    "experiment feature": "AutofillAiNationalIdCard",
     "excluded geo-ips": [ "IN" ],
     "read only": false
   },
@@ -80,7 +79,6 @@
     "merge constraints": "import constraints",
     "strike keys": "import constraints",
     "disambiguation order": [ "Name" ],
-    "experiment feature": "AutofillAiKnownTravelerNumber",
     "read only": false
   },
   {
@@ -94,7 +92,6 @@
     "merge constraints": "import constraints",
     "strike keys": "import constraints",
     "disambiguation order": [ "Name" ],
-    "experiment feature": "AutofillAiRedressNumber",
     "read only": false
   },
   {

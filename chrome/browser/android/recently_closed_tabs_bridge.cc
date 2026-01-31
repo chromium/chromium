@@ -274,10 +274,10 @@ void RecentlyClosedTabsBridge::Destroy(JNIEnv* env) {
   delete this;
 }
 
-jboolean RecentlyClosedTabsBridge::GetRecentlyClosedEntries(
+bool RecentlyClosedTabsBridge::GetRecentlyClosedEntries(
     JNIEnv* env,
     const JavaRef<jobject>& jentries_list,
-    jint max_entry_count) {
+    int32_t max_entry_count) {
   EnsureTabRestoreService();
   if (!tab_restore_service_) {
     return false;
@@ -288,11 +288,11 @@ jboolean RecentlyClosedTabsBridge::GetRecentlyClosedEntries(
   return true;
 }
 
-jboolean RecentlyClosedTabsBridge::OpenRecentlyClosedTab(
+bool RecentlyClosedTabsBridge::OpenRecentlyClosedTab(
     JNIEnv* env,
     const JavaRef<jobject>& jtab_model,
-    jint tab_session_id,
-    jint j_disposition) {
+    int32_t tab_session_id,
+    int32_t j_disposition) {
   if (!tab_restore_service_) {
     return false;
   }
@@ -316,10 +316,10 @@ jboolean RecentlyClosedTabsBridge::OpenRecentlyClosedTab(
   return !restored_tabs.empty();
 }
 
-jboolean RecentlyClosedTabsBridge::OpenRecentlyClosedEntry(
+bool RecentlyClosedTabsBridge::OpenRecentlyClosedEntry(
     JNIEnv* env,
     const JavaRef<jobject>& jtab_model,
-    jint entry_session_id) {
+    int32_t entry_session_id) {
   // This should only be called when in bulk restore mode otherwise per-tab
   // restore should always be used.
   if (!tab_restore_service_) {
@@ -340,7 +340,7 @@ jboolean RecentlyClosedTabsBridge::OpenRecentlyClosedEntry(
   return !restored_tabs.empty();
 }
 
-jboolean RecentlyClosedTabsBridge::OpenMostRecentlyClosedEntry(
+bool RecentlyClosedTabsBridge::OpenMostRecentlyClosedEntry(
     JNIEnv* env,
     const JavaRef<jobject>& jtab_model) {
   EnsureTabRestoreService();
@@ -375,9 +375,24 @@ void RecentlyClosedTabsBridge::ClearRecentlyClosedEntries(JNIEnv* env) {
   }
 }
 
+void RecentlyClosedTabsBridge::ClearLeastRecentlyUsedClosedEntries(
+    JNIEnv* env,
+    int32_t num_to_remove) {
+  EnsureTabRestoreService();
+  if (tab_restore_service_) {
+    for (int i = 0; i < num_to_remove; i++) {
+      SessionID id = tab_restore_service_->entries().back()->id;
+      tab_restore_service_->RemoveEntryById(id);
+    }
+  }
+}
+
 void RecentlyClosedTabsBridge::TabRestoreServiceChanged(
     sessions::TabRestoreService* service) {
-  Java_RecentlyClosedBridge_onUpdated(AttachCurrentThread(), bridge_);
+  // Skip for unit tests.
+  if (!bridge_.is_null()) {
+    Java_RecentlyClosedBridge_onUpdated(AttachCurrentThread(), bridge_);
+  }
 }
 
 void RecentlyClosedTabsBridge::TabRestoreServiceDestroyed(
@@ -414,9 +429,9 @@ void RecentlyClosedTabsBridge::RestoreAndroidTabGroups(
   }
 }
 
-static jlong JNI_RecentlyClosedBridge_Init(JNIEnv* env,
-                                           const JavaRef<jobject>& jbridge,
-                                           Profile* profile) {
+static int64_t JNI_RecentlyClosedBridge_Init(JNIEnv* env,
+                                             const JavaRef<jobject>& jbridge,
+                                             Profile* profile) {
   RecentlyClosedTabsBridge* bridge = new RecentlyClosedTabsBridge(
       ScopedJavaGlobalRef<jobject>(env, jbridge), profile);
   return reinterpret_cast<intptr_t>(bridge);

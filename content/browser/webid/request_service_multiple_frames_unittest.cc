@@ -18,6 +18,7 @@
 #include "base/test/task_environment.h"
 #include "components/ukm/test_ukm_recorder.h"
 #include "content/browser/web_contents/web_contents_impl.h"
+#include "content/browser/webid/idp_network_request_manager.h"
 #include "content/browser/webid/request_service.h"
 #include "content/browser/webid/test/federated_auth_request_request_token_callback_helper.h"
 #include "content/browser/webid/test/mock_api_permission_delegate.h"
@@ -93,7 +94,6 @@ class TestIdpNetworkRequestManager : public MockIdpNetworkRequestManager {
   }
 
   void FetchConfig(const GURL& provider,
-                   blink::mojom::RpMode rp_mode,
                    int idp_brand_icon_ideal_size,
                    int idp_brand_icon_minimum_size,
                    FetchConfigCallback callback) override {
@@ -117,9 +117,11 @@ class TestIdpNetworkRequestManager : public MockIdpNetworkRequestManager {
                            const GURL& accounts_url,
                            const std::string& client_id,
                            AccountsRequestCallback callback) override {
+    IdpNetworkRequestManager::AccountsResponse response;
+    response.accounts = kAccounts;
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE,
-        base::BindOnce(std::move(callback), kFetchStatusSuccess, kAccounts));
+        FROM_HERE, base::BindOnce(std::move(callback), kFetchStatusSuccess,
+                                  std::move(response)));
     return true;
   }
 
@@ -130,6 +132,7 @@ class TestIdpNetworkRequestManager : public MockIdpNetworkRequestManager {
       bool idp_blindness,
       TokenRequestCallback callback,
       ContinueOnCallback continue_on,
+      RedirectToCallback redirect_to,
       RecordErrorMetricsCallback record_error_metrics_callback) override {
     TokenResult result;
     result.token = base::Value(kToken);
@@ -248,6 +251,7 @@ class RequestServiceMultipleFramesTest : public RenderViewHostImplTestHarness {
         GURL(),                      // picture
         "(403) 293-3421",            // phone
         "@kenr",                     // username
+        std::vector<std::string>(),  // potentially_approved_origin_hashes
         std::vector<std::string>(),  // login_hints
         std::vector<std::string>(),  // domain_hints
         std::vector<std::string>()   // labels
@@ -750,9 +754,6 @@ TEST_F(RequestServiceMultipleFramesTest, CrossSiteIframePreventSilentAccess) {
 // Tests that we send a client metadata request for cross-site iframes even if
 // all accounts are returning.
 TEST_F(RequestServiceMultipleFramesTest, CrossSiteIframeSendClientMetadata) {
-  base::test::ScopedFeatureList list;
-  list.InitAndEnableFeature(features::kFedCmIframeOrigin);
-
   const char kCrossSiteIframeUrl[] = "https://cross-site.example/iframe.html";
   RenderFrameHost* cross_site_iframe =
       NavigationSimulator::NavigateAndCommitFromDocument(

@@ -84,8 +84,7 @@ class GlicMediaPeerConnectionObserver
 
     // Attribute this to all frames in the WebContents.
     wc->ForEachRenderFrameHost([](content::RenderFrameHost* rfh) {
-      if (auto* context =
-              glic::GlicMediaContext::GetOrCreateForCurrentDocument(rfh)) {
+      if (auto* context = glic::GlicMediaContext::GetForCurrentDocument(rfh)) {
         context->OnPeerConnectionRemoved();
       }
     });
@@ -96,9 +95,8 @@ class GlicMediaPeerConnectionObserver
             PictureInPictureWindowManager::GetInstance()) {
       auto* opener_wc = pip_window_manager->GetWebContents();
       if (opener_wc) {
-        if (auto* context =
-                glic::GlicMediaContext::GetOrCreateForCurrentDocument(
-                    opener_wc->GetPrimaryMainFrame())) {
+        if (auto* context = glic::GlicMediaContext::GetForCurrentDocument(
+                opener_wc->GetPrimaryMainFrame())) {
           context->OnPeerConnectionRemoved();
         }
       }

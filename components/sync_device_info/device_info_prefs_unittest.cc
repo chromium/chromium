@@ -58,12 +58,12 @@ TEST_F(DeviceInfoPrefsTest, ShouldCleanUpCorruptEntriesUponGarbageCollection) {
   // which is a string instead of a dictionary.
   ScopedListPrefUpdate cache_guids_update(&pref_service_,
                                           kDeviceInfoRecentGUIDsWithTimestamps);
-  base::Value::List& update_list = cache_guids_update.Get();
+  base::ListValue& update_list = cache_guids_update.Get();
   update_list.Append(base::Value("corrupt_string_entry"));
 
   // Add another corrupt entry: in this case the entry is a dictionary, but it
   // contains no timestamp.
-  update_list.Append(base::Value::Dict{});
+  update_list.Append(base::DictValue{});
 
   // The end result is the list contains three entries among which one is valid.
   ASSERT_EQ(3u,

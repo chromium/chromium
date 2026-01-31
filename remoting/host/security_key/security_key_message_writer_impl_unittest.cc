@@ -8,7 +8,7 @@
 #include <memory>
 #include <utility>
 
-#include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
@@ -67,17 +67,14 @@ SecurityKeyMessageWriterImplTest::~SecurityKeyMessageWriterImplTest() = default;
 std::string SecurityKeyMessageWriterImplTest::ReadMessage(
     int payload_length_bytes) {
   std::string message_header(SecurityKeyMessage::kHeaderSizeBytes, '\0');
-  UNSAFE_TODO(read_file_.ReadAtCurrentPos(
-      std::data(message_header), SecurityKeyMessage::kHeaderSizeBytes));
+  read_file_.ReadAtCurrentPos(base::as_writable_byte_span(message_header));
 
   std::string message_type(SecurityKeyMessage::kMessageTypeSizeBytes, '\0');
-  UNSAFE_TODO(read_file_.ReadAtCurrentPos(
-      std::data(message_type), SecurityKeyMessage::kMessageTypeSizeBytes));
+  read_file_.ReadAtCurrentPos(base::as_writable_byte_span(message_type));
 
   std::string message_data(payload_length_bytes, '\0');
   if (payload_length_bytes) {
-    UNSAFE_TODO(read_file_.ReadAtCurrentPos(std::data(message_data),
-                                            payload_length_bytes));
+    read_file_.ReadAtCurrentPos(base::as_writable_byte_span(message_data));
   }
 
   return message_header + message_type + message_data;
@@ -141,7 +138,7 @@ void SecurityKeyMessageWriterImplTest::WriteMessageToOutput(
   // Destroy the writer and verify the other end of the pipe is clean.
   writer_.reset();
   char unused;
-  UNSAFE_TODO(ASSERT_LE(read_file_.ReadAtCurrentPos(&unused, 1), 0));
+  ASSERT_LE(read_file_.ReadAtCurrentPos(base::byte_span_from_ref(unused)), 0);
 }
 
 TEST_F(SecurityKeyMessageWriterImplTest, WriteMessageWithoutPayload) {
@@ -170,16 +167,14 @@ TEST_F(SecurityKeyMessageWriterImplTest, WriteMultipleMessages) {
   for (int i = 0; i < total_messages_to_write; i++) {
     // Retrieve and verify the message header.
     int length;
-    UNSAFE_TODO(ASSERT_EQ(
-        SecurityKeyMessage::kHeaderSizeBytes,
-        read_file_.ReadAtCurrentPos(reinterpret_cast<char*>(&length), 4)));
+    ASSERT_TRUE(
+        read_file_.ReadAtCurrentPosAndCheck(base::byte_span_from_ref(length)));
     ASSERT_EQ(SecurityKeyMessage::kMessageTypeSizeBytes, length);
 
     // Retrieve and verify the message type.
     std::string message_type(length, '\0');
-    int bytes_read = UNSAFE_TODO(
-        read_file_.ReadAtCurrentPos(std::data(message_type), length));
-    ASSERT_EQ(length, bytes_read);
+    ASSERT_TRUE(read_file_.ReadAtCurrentPosAndCheck(
+        base::as_writable_byte_span(message_type)));
 
     SecurityKeyMessageType type =
         SecurityKeyMessage::MessageTypeFromValue(message_type[0]);
@@ -193,7 +188,7 @@ TEST_F(SecurityKeyMessageWriterImplTest, WriteMultipleMessages) {
   // Destroy the writer and verify the other end of the pipe is clean.
   writer_.reset();
   char unused;
-  UNSAFE_TODO(ASSERT_LE(read_file_.ReadAtCurrentPos(&unused, 1), 0));
+  ASSERT_LE(read_file_.ReadAtCurrentPos(base::byte_span_from_ref(unused)), 0);
 }
 
 TEST_F(SecurityKeyMessageWriterImplTest, EnsureWriteFailsWhenPipeClosed) {

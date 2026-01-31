@@ -6,7 +6,6 @@ package org.chromium.chrome.browser.safety_hub;
 
 import android.app.Notification;
 import android.app.PendingIntent;
-import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
@@ -37,23 +36,7 @@ import java.util.List;
 /** Shows the Safety Hub notification about revoked notification permissions. */
 @NullMarked
 public class UnsubscribedNotificationsNotificationManager {
-    private static final String ACTION_ACK =
-            "org.chromium.chrome.browser.safety_hub.NOTIFICATION_ACTION_ACK";
-
     private static final String TAG = "safety_hub";
-
-    public static final class NotificationReceiver extends BroadcastReceiver {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            final @Nullable String action = intent.getAction();
-            if (action == null) return;
-            switch (action) {
-                case ACTION_ACK:
-                    UnsubscribedNotificationsNotificationManager.dismissNotification();
-                    break;
-            }
-        }
-    }
 
     private static NotificationWrapperBuilder createNotificationBuilder() {
         return NotificationWrapperBuilderFactory.createNotificationWrapperBuilder(
@@ -92,19 +75,38 @@ public class UnsubscribedNotificationsNotificationManager {
      *
      * @param numRevokedPermissions is the number of permissions revoked. If 0, the notification is
      *     dismissed.
+     * @param firstAffectedDomain is the domain of the first affected permission.
+     * @param anySuspiciousRevocations is true if any of the revoked permissions were due to
+     *     suspicious content.
+     * @param anyDisruptiveRevocations is true if any of the revoked permissions were due to
+     *     disruptive content.
      */
     @CalledByNative
-    static void displayNotification(@JniType("int32_t") int numRevokedPermissions) {
+    static void displayNotification(
+            @JniType("int32_t") int numRevokedPermissions,
+            @JniType("std::string") String firstAffectedDomain,
+            @JniType("bool") boolean anySuspiciousRevocations,
+            @JniType("bool") boolean anyDisruptiveRevocations) {
         assert numRevokedPermissions >= 0
                 : "This function expects a non-negative parameter numRevokedPermissions";
         if (numRevokedPermissions <= 0) {
             dismissNotification();
             return;
         }
-        displayOrUpdateNotification(numRevokedPermissions, TimeUtils.currentTimeMillis());
+        displayOrUpdateNotification(
+                numRevokedPermissions,
+                TimeUtils.currentTimeMillis(),
+                firstAffectedDomain,
+                anySuspiciousRevocations,
+                anyDisruptiveRevocations);
     }
 
-    private static void displayOrUpdateNotification(int numRevokedPermissions, long when) {
+    private static void displayOrUpdateNotification(
+            int numRevokedPermissions,
+            long when,
+            String firstAffectedDomain,
+            boolean anySuspiciousRevocations,
+            boolean anyDisruptiveRevocations) {
         if (!isDisruptiveNotificationRevocationEnabled()
                 && !isAutoRevokeSuspiciousNotificationEnabled()) {
             dismissNotification();
@@ -113,25 +115,17 @@ public class UnsubscribedNotificationsNotificationManager {
 
         Context context = ContextUtils.getApplicationContext();
         Resources res = context.getResources();
-        int titleId =
-                isAutoRevokeSuspiciousNotificationEnabled()
-                        ? R.plurals
-                                .safety_hub_unsubscribed_disruptive_and_suspicious_notifications_notification_title
-                        : R.plurals.safety_hub_unsubscribed_notifications_notification_title;
-        String title = res.getQuantityString(titleId, numRevokedPermissions, numRevokedPermissions);
-
+        String title = getNotificationTitle(numRevokedPermissions, firstAffectedDomain, res);
         String contents =
-                res.getQuantityString(
-                        R.plurals.safety_hub_unsubscribed_notifications_notification_message,
+                getNotificationContents(
                         numRevokedPermissions,
-                        numRevokedPermissions);
-
-        PendingIntentProvider ackIntentProvider =
-                PendingIntentProvider.getBroadcast(
-                        context,
-                        /* requestCode= */ 0,
-                        new Intent(context, NotificationReceiver.class).setAction(ACTION_ACK),
-                        PendingIntent.FLAG_UPDATE_CURRENT);
+                        anySuspiciousRevocations,
+                        anyDisruptiveRevocations,
+                        res);
+        if (contents == null) {
+            dismissNotification();
+            return;
+        }
 
         SettingsNavigation settingsNavigation =
                 SettingsNavigationFactory.createSettingsNavigation();
@@ -143,8 +137,6 @@ public class UnsubscribedNotificationsNotificationManager {
                 PendingIntentProvider.getActivity(
                         context, 0, settingsIntent, PendingIntent.FLAG_UPDATE_CURRENT);
 
-        String ack =
-                context.getString(R.string.safety_hub_unsubscribed_notifications_notification_ack);
         String review =
                 context.getString(
                         R.string.safety_hub_unsubscribed_notifications_notification_review);
@@ -171,13 +163,7 @@ public class UnsubscribedNotificationsNotificationManager {
                                 review,
                                 settingsIntentProvider,
                                 NotificationUmaTracker.ActionType
-                                        .SAFETY_HUB_UNSUBSCRIBED_NOTIFICATIONS_REVIEW)
-                        .addAction(
-                                /* icon= */ 0,
-                                ack,
-                                ackIntentProvider,
-                                NotificationUmaTracker.ActionType
-                                        .SAFETY_HUB_UNSUBSCRIBED_NOTIFICATIONS_ACK);
+                                        .SAFETY_HUB_UNSUBSCRIBED_NOTIFICATIONS_REVIEW);
 
         NotificationWrapper notification =
                 notificationWrapperBuilder.buildWithBigTextStyle(contents);
@@ -189,6 +175,49 @@ public class UnsubscribedNotificationsNotificationManager {
                         NotificationUmaTracker.SystemNotificationType
                                 .SAFETY_HUB_UNSUBSCRIBED_NOTIFICATIONS,
                         notification.getNotification());
+    }
+
+    /**
+     * Helper method to get the notification title based on the number of revoked permissions and
+     * the first affected domain.
+     */
+    private static String getNotificationTitle(
+            int numRevokedPermissions, String firstAffectedDomain, Resources res) {
+        if (numRevokedPermissions == 1) {
+            return res.getString(
+                    R.string
+                            .safety_hub_unsubscribed_disruptive_and_suspicious_notifications_notification_title_singular,
+                    firstAffectedDomain);
+        }
+        return res.getString(
+                R.string
+                        .safety_hub_unsubscribed_disruptive_and_suspicious_notifications_notification_title_plural,
+                numRevokedPermissions);
+    }
+
+    /**
+     * Helper method to get the notification contents based on the number of revoked permissions and
+     * the type of revocations.
+     */
+    private static @Nullable String getNotificationContents(
+            int numRevokedPermissions,
+            boolean anySuspiciousRevocations,
+            boolean anyDisruptiveRevocations,
+            Resources res) {
+        if (anySuspiciousRevocations && anyDisruptiveRevocations) {
+            return res.getString(
+                    R.string
+                            .safety_hub_unsubscribed_disruptive_and_suspicious_notifications_notification_message);
+        } else if (anySuspiciousRevocations) {
+            return res.getQuantityString(
+                    R.plurals.safety_hub_unsubscribed_suspicious_notifications_notification_message,
+                    numRevokedPermissions);
+        } else if (anyDisruptiveRevocations) {
+            return res.getQuantityString(
+                    R.plurals.safety_hub_unsubscribed_disruptive_notifications_notification_message,
+                    numRevokedPermissions);
+        }
+        return null;
     }
 
     /**
@@ -214,9 +243,18 @@ public class UnsubscribedNotificationsNotificationManager {
      *
      * @param numRevokedPermissions is the number of permissions revoked. If 0, the notification is
      *     dismissed.
+     * @param firstAffectedDomain is the domain of the first affected permission.
+     * @param anySuspiciousRevocations is true if any of the revoked permissions were due to
+     *     suspicious content.
+     * @param anyDisruptiveRevocations is true if any of the revoked permissions were due to
+     *     disruptive content.
      */
     @CalledByNative
-    static void updateNotification(@JniType("int32_t") int numRevokedPermissions) {
+    static void updateNotification(
+            @JniType("int32_t") int numRevokedPermissions,
+            @JniType("std::string") String firstAffectedDomain,
+            @JniType("bool") boolean anySuspiciousRevocations,
+            @JniType("bool") boolean anyDisruptiveRevocations) {
         assert numRevokedPermissions >= 0
                 : "This function expects a non-negative parameter numRevokedPermissions";
         if (numRevokedPermissions <= 0) {
@@ -232,7 +270,11 @@ public class UnsubscribedNotificationsNotificationManager {
                                 return;
                             }
                             displayOrUpdateNotification(
-                                    numRevokedPermissions, activeNotification.when);
+                                    numRevokedPermissions,
+                                    activeNotification.when,
+                                    firstAffectedDomain,
+                                    anySuspiciousRevocations,
+                                    anyDisruptiveRevocations);
                         });
     }
 

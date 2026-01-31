@@ -116,9 +116,9 @@ bool HardwareEvaluationResult::IsEligible() const {
 
 HardwareEvaluationResult EvaluateWin11HardwareRequirements() {
   static constexpr int64_t kMinTotalDiskSpace = 64 * 1024 * 1024;
-  // TODO(crbug.com/429140103): This was migrated as-is to 4MiB in ByteCount but
+  // TODO(crbug.com/429140103): This was migrated as-is to 4MiB in ByteSize but
   // the legacy code potentially intended 4GiB, needs investigation.
-  static constexpr ByteCount kMinTotalPhysicalMemory = MiB(4);
+  static constexpr ByteSize kMinTotalPhysicalMemory = MiBU(4);
 
   static const HardwareEvaluationResult evaluate_win11_upgrade_eligibility =
       [] {
@@ -128,7 +128,7 @@ HardwareEvaluationResult EvaluateWin11HardwareRequirements() {
             CPU(), OSInfo::GetInstance()->processor_vendor_name());
 
         result.memory =
-            SysInfo::AmountOfPhysicalMemory() >= kMinTotalPhysicalMemory;
+            SysInfo::AmountOfTotalPhysicalMemory() >= kMinTotalPhysicalMemory;
 
         FilePath system_path;
         result.disk = PathService::Get(DIR_SYSTEM, &system_path) &&

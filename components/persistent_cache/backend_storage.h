@@ -17,6 +17,7 @@ namespace persistent_cache {
 
 class Backend;
 enum class BackendType;
+enum class Client;
 class PersistentCache;
 struct PendingBackend;
 
@@ -39,6 +40,7 @@ class COMPONENT_EXPORT(PERSISTENT_CACHE) BackendStorage {
     // Returns no value in case of error (e.g., if the backend's files could not
     // be opened or created).
     virtual std::optional<PendingBackend> MakePendingBackend(
+        Client client,
         const base::FilePath& directory,
         const base::FilePath& base_name,
         bool single_connection,
@@ -52,6 +54,7 @@ class COMPONENT_EXPORT(PERSISTENT_CACHE) BackendStorage {
     // journaling. Returns null in case of error (e.g., if the backend's files
     // could not be opened or created, or if the backend's storage is corrupt).
     virtual std::unique_ptr<Backend> MakeBackend(
+        Client client,
         const base::FilePath& directory,
         const base::FilePath& base_name,
         bool single_connection,
@@ -79,7 +82,8 @@ class COMPONENT_EXPORT(PERSISTENT_CACHE) BackendStorage {
 
     // Deletes all files corresponding to the backend named `base_name` in
     // `directory`. Returns the total size, in bytes, of all files deleted.
-    virtual int64_t DeleteFiles(const base::FilePath& directory,
+    virtual int64_t DeleteFiles(Client client,
+                                const base::FilePath& directory,
                                 const base::FilePath& base_name) = 0;
 
    protected:
@@ -89,14 +93,20 @@ class COMPONENT_EXPORT(PERSISTENT_CACHE) BackendStorage {
   // Constructs an instance that will use the given backend type for file
   // management within `directory`. Creates `directory` if it does not already
   // exist.
-  BackendStorage(BackendType backend_type, base::FilePath directory);
+  BackendStorage(Client client,
+                 BackendType backend_type,
+                 base::FilePath directory);
 
   // Constructs an instance that will use `delegate` for file management within
   // `directory`. Creates `directory` if it does not already exist.
-  BackendStorage(std::unique_ptr<Delegate> delegate, base::FilePath directory);
+  BackendStorage(Client client,
+                 std::unique_ptr<Delegate> delegate,
+                 base::FilePath directory);
   BackendStorage(const BackendStorage&) = delete;
   BackendStorage& operator=(const BackendStorage&) = delete;
   ~BackendStorage();
+
+  Client client() const { return client_; }
 
   // Returns the directory managed by the instance.
   const base::FilePath& directory() const { return directory_; }
@@ -161,6 +171,8 @@ class COMPONENT_EXPORT(PERSISTENT_CACHE) BackendStorage {
       int64_t target_footprint);
 
  private:
+  const Client client_;
+
   // The delegate used to create/operate on backends.
   const std::unique_ptr<Delegate> delegate_;
 

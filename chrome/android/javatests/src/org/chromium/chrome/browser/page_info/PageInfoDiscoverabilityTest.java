@@ -24,7 +24,7 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.ThreadUtils;
-import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.test.params.ParameterAnnotations;
 import org.chromium.base.test.params.ParameterProvider;
@@ -41,6 +41,7 @@ import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.omnibox.LocationBarDataProvider;
 import org.chromium.chrome.browser.omnibox.UrlBarEditingTextStateProvider;
 import org.chromium.chrome.browser.omnibox.status.PageInfoIphController;
+import org.chromium.chrome.browser.omnibox.status.PermissionStatusHandler;
 import org.chromium.chrome.browser.omnibox.status.StatusMediator;
 import org.chromium.chrome.browser.omnibox.status.StatusProperties;
 import org.chromium.chrome.browser.permissions.PermissionTestRule;
@@ -143,6 +144,14 @@ public class PageInfoDiscoverabilityTest {
                             .value(ContentSettingsType.LOCAL_NETWORK_ACCESS, true));
             parameters.add(
                     new ParameterSet()
+                            .name("RequestType.kLocalNetwork")
+                            .value(ContentSettingsType.LOCAL_NETWORK, true));
+            parameters.add(
+                    new ParameterSet()
+                            .name("RequestType.kLoopbackNetwork")
+                            .value(ContentSettingsType.LOOPBACK_NETWORK, true));
+            parameters.add(
+                    new ParameterSet()
                             .name("RequestType.kMicStream")
                             .value(ContentSettingsType.MEDIASTREAM_MIC, true));
             parameters.add(
@@ -220,6 +229,7 @@ public class PageInfoDiscoverabilityTest {
     PropertyModel mModel;
     PermissionDialogController mPermissionDialogController;
     StatusMediator mMediator;
+    PermissionStatusHandler mPermissionStatusHandler;
     OneshotSupplierImpl<TemplateUrlService> mTemplateUrlServiceSupplier;
 
     @Before
@@ -242,10 +252,11 @@ public class PageInfoDiscoverabilityTest {
                                     mLocationBarDataProvider,
                                     mPermissionDialogController,
                                     mTemplateUrlServiceSupplier,
-                                    new ObservableSupplierImpl(mProfile),
+                                    ObservableSuppliers.createNonNull(mProfile),
                                     mPageInfoIphController,
                                     sPermissionTestRule.getActivity().getWindowAndroid(),
                                     null);
+                    mPermissionStatusHandler = mMediator.getPermissionStatusHandler();
                 });
     }
 
@@ -272,7 +283,8 @@ public class PageInfoDiscoverabilityTest {
     @MediumTest
     @Feature({"PageInfoDiscoverability"})
     public void testPageInfoDiscoverabilityAllowPrompt() throws Exception {
-        Assert.assertEquals(ContentSettingsType.DEFAULT, mMediator.getLastPermission());
+        Assert.assertEquals(
+                ContentSettingsType.DEFAULT, mPermissionStatusHandler.getLastPermissionForTest());
         // Prompt for location and accept it.
         RuntimePermissionTestUtils.setupGeolocationSystemMock();
         String[] requestablePermission =
@@ -295,7 +307,8 @@ public class PageInfoDiscoverabilityTest {
                 /* javascriptToExecute= */ null,
                 /* missingPermissionPromptTextId= */ 0);
 
-        Assert.assertEquals(getGeolocationType(), mMediator.getLastPermission());
+        Assert.assertEquals(
+                getGeolocationType(), mPermissionStatusHandler.getLastPermissionForTest());
     }
 
     /** Tests omnibox permission when permission is blocked by the user. */
@@ -304,7 +317,8 @@ public class PageInfoDiscoverabilityTest {
     @MediumTest
     @Feature({"PageInfoDiscoverability"})
     public void testPageInfoDiscoverabilityBlockPrompt() throws Exception {
-        Assert.assertEquals(ContentSettingsType.DEFAULT, mMediator.getLastPermission());
+        Assert.assertEquals(
+                ContentSettingsType.DEFAULT, mPermissionStatusHandler.getLastPermissionForTest());
 
         // Prompt for location and deny it.
         RuntimePermissionTestUtils.setupGeolocationSystemMock();
@@ -328,7 +342,8 @@ public class PageInfoDiscoverabilityTest {
                 /* javascriptToExecute= */ null,
                 /* missingPermissionPromptTextId= */ 0);
 
-        Assert.assertEquals(getGeolocationType(), mMediator.getLastPermission());
+        Assert.assertEquals(
+                getGeolocationType(), mPermissionStatusHandler.getLastPermissionForTest());
     }
 
     @Test
@@ -352,17 +367,18 @@ public class PageInfoDiscoverabilityTest {
                     ContentFeatureMap.isEnabled(
                             ContentFeatureList.WEB_BLUETOOTH_NEW_PERMISSIONS_BACKEND);
         }
-        Assert.assertEquals(ContentSettingsType.DEFAULT, mMediator.getLastPermission());
+        Assert.assertEquals(
+                ContentSettingsType.DEFAULT, mPermissionStatusHandler.getLastPermissionForTest());
         @ContentSettingsType.EnumType int[] permissions = {contentSettingsType};
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    mMediator.onDialogResult(
+                    mPermissionStatusHandler.onDialogResult(
                             sPermissionTestRule.getActivity().getWindowAndroid(),
                             permissions,
                             ContentSetting.ALLOW);
                 });
         Assert.assertEquals(
                 isInSiteSettings ? contentSettingsType : ContentSettingsType.DEFAULT,
-                mMediator.getLastPermission());
+                mPermissionStatusHandler.getLastPermissionForTest());
     }
 }

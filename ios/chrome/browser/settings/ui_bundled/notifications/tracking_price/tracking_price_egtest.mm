@@ -27,10 +27,8 @@ using chrome_test_util::SettingsTrackingPriceTableView;
   // Feature parameters follow a key/value format to enable or disable
   // parameters.
   std::string shoppingListFlag = std::string("ShoppingList");
-  std::string settingsMenuItem = std::string("NotificationSettingsMenuItem");
 
-  config.additional_args.push_back("--enable-features=" + shoppingListFlag +
-                                   "," + settingsMenuItem);
+  config.additional_args.push_back("--enable-features=" + shoppingListFlag);
 
   if ([self isRunningTest:@selector
             (testTrackingPriceSwipeDown_FromUpdatedSettingsView)]) {

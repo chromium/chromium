@@ -451,7 +451,7 @@ TEST_F(NetworkAnonymizationKeyTest,
   NetworkAnonymizationKey new_nak = NetworkAnonymizationKey();
 
   // The NetworkIsolationPartition value should be an int.
-  base::Value::List& list = value.GetList();
+  base::ListValue& list = value.GetList();
   list[2] = base::Value("not_an_int_value");
   EXPECT_FALSE(NetworkAnonymizationKey::FromValue(value, &new_nak));
 
@@ -504,7 +504,7 @@ TEST(NetworkAnonymizationKeyFeatureShiftTest,
   // `cross_site_double_key_value` to build it.
   base::Value serialized_site =
       cross_site_double_key_value.GetList()[0].Clone();
-  base::Value::List double_key_list;
+  base::ListValue double_key_list;
   double_key_list.Append(serialized_site.Clone());
   base::Value double_key_value = base::Value(std::move(double_key_list));
   EXPECT_FALSE(NetworkAnonymizationKey::FromValue(double_key_value,
@@ -512,7 +512,7 @@ TEST(NetworkAnonymizationKeyFeatureShiftTest,
 
   // Check that deserializing a triple keyed value (a 2-element list containing
   // two sites) fails.
-  base::Value::List triple_key_list;
+  base::ListValue triple_key_list;
   triple_key_list.Append(serialized_site.Clone());
   triple_key_list.Append(std::move(serialized_site));
   base::Value triple_key_value = base::Value(std::move(triple_key_list));

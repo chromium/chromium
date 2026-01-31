@@ -15,7 +15,7 @@
 
 namespace blink {
 
-void BoxPainter::RecordRegionCaptureData(
+void BoxPainter::RecordTrackedElementAndRegionCaptureData(
     const PaintInfo& paint_info,
     const PhysicalRect& paint_rect,
     const DisplayItemClient& background_client) {
@@ -25,6 +25,12 @@ void BoxPainter::RecordRegionCaptureData(
     if (crop_id) {
       paint_info.context.GetPaintController().RecordRegionCaptureData(
           background_client, *crop_id, ToPixelSnappedRect(paint_rect));
+    }
+
+    const TrackedElementRect* rect = element->GetTrackedElementRect();
+    if (rect) {
+      paint_info.context.GetPaintController().RecordTrackedElementData(
+          background_client, *rect, ToPixelSnappedRect(paint_rect));
     }
   }
 }

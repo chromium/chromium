@@ -28,8 +28,7 @@ class RenderFrameHost;
 // Note: DevToolsFrontendHost is not supported on Android.
 class DevToolsFrontendHost {
  public:
-  using HandleMessageCallback =
-      base::RepeatingCallback<void(base::Value::Dict)>;
+  using HandleMessageCallback = base::RepeatingCallback<void(base::DictValue)>;
 
   // Creates a new DevToolsFrontendHost for RenderFrameHost where DevTools
   // frontend is loaded.

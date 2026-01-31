@@ -5,6 +5,7 @@
 #include "chrome/browser/ash/policy/skyvault/drive_upload_observer.h"
 
 #include "base/path_service.h"
+#include "base/task/current_thread.h"
 #include "base/test/bind.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/mock_callback.h"
@@ -188,6 +189,30 @@ IN_PROC_BROWSER_TEST_F(DriveUploadObserverTest, SuccessfulSync) {
   CheckPathExistsOnDrive(observed_relative_drive_path(it->second));
 }
 
+IN_PROC_BROWSER_TEST_F(DriveUploadObserverTest, CancelSync) {
+  const std::string test_file_name = "image.webp";
+  base::FilePath source_file_path =
+      SetUpSourceFile(test_file_name, drive_mount_point());
+
+  base::MockCallback<base::RepeatingCallback<void(int64_t)>> progress_callback;
+  base::MockCallback<base::OnceCallback<void(bool)>> upload_callback;
+  EXPECT_CALL(progress_callback, Run(/*bytes_so_far=*/kFileSize / 4));
+  EXPECT_CALL(progress_callback, Run(/*bytes_so_far=*/kFileSize)).Times(0);
+  EXPECT_CALL(upload_callback, Run(/*success=*/false));
+  auto observer = DriveUploadObserver::Observe(
+      profile(), drive_root_dir().AppendASCII(test_file_name), kTrigger,
+      kFileSize, progress_callback.Get(), upload_callback.Get());
+
+  SetUpObservers();
+  auto future = base::test::TestFuture<void>();
+  on_delete_callback_ = future.GetCallback();
+  auto it = source_files_.find(source_file_path);
+  SimulateDriveUploadInProgress(kFileSize / 4, it->second);
+  observer->Cancel();
+
+  base::test::RunUntil([&] { return future.Wait(); });
+}
+
 // Send syncing error event, the cached file should be deleted.
 IN_PROC_BROWSER_TEST_F(DriveUploadObserverTest, ErrorSync) {
   const std::string test_file_name = "id3Audio.mp3";
@@ -243,9 +268,7 @@ IN_PROC_BROWSER_TEST_F(DriveUploadObserverTest, NoSyncUpdates) {
 
   drive_upload_observer->no_sync_update_timeout_.FireNow();
 
-  base::RunLoop loop;
-  loop.RunUntilIdle();
-  EXPECT_TRUE(future.Wait());
+  base::test::RunUntil([&] { return future.Wait(); });
 }
 
 // When the sync timer times out and no file metadata is returned, the upload
@@ -273,9 +296,7 @@ IN_PROC_BROWSER_TEST_F(DriveUploadObserverTest, NoFileMetadata) {
   EXPECT_CALL(upload_callback, Run(/*success=*/false));
   drive_upload_observer->no_sync_update_timeout_.FireNow();
 
-  base::RunLoop loop;
-  loop.RunUntilIdle();
-  EXPECT_TRUE(future.Wait());
+  base::test::RunUntil([&] { return future.Wait(); });
 }
 
 }  // namespace ash::cloud_upload

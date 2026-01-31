@@ -31,7 +31,6 @@
 #include "media/audio/android/audio_device.h"
 #include "media/audio/android/audio_device_id.h"
 #include "media/audio/android/audio_device_type.h"
-#include "media/audio/android/audio_track_output_stream.h"
 #include "media/audio/audio_device_description.h"
 #include "media/audio/audio_features.h"
 #include "media/audio/audio_manager.h"
@@ -42,6 +41,10 @@
 #include "media/base/localized_strings.h"
 #include "media/base/media_switches.h"
 #include "media/media_buildflags.h"
+
+#if BUILDFLAG(ENABLE_PASSTHROUGH_AUDIO_CODECS)
+#include "media/audio/android/audio_track_output_stream.h"
+#endif
 
 #if BUILDFLAG(USE_OPENSLES)
 #include "media/audio/android/opensles_input.h"
@@ -98,7 +101,7 @@ class JniDelegateImpl : public AudioManagerAndroid::JniDelegate {
   explicit JniDelegateImpl(AudioManagerAndroid* audio_manager)
       : j_audio_manager_(Java_AudioManagerAndroid_createAudioManagerAndroid(
             AttachCurrentThread(),
-            reinterpret_cast<jlong>(audio_manager))) {
+            reinterpret_cast<int64_t>(audio_manager))) {
     Java_AudioManagerAndroid_init(AttachCurrentThread(), j_audio_manager_);
   }
 
@@ -348,8 +351,7 @@ bool UseAAudioPerStreamDeviceSelection() {
 // reports a change to the list of available audio devices. `added` is `true` if
 // the invocation is caused by devices being added, and `false` if it is caused
 // by devices being removed.
-static void JNI_AudioManagerAndroid_OnDevicesChanged(JNIEnv* env,
-                                                     jboolean added) {
+static void JNI_AudioManagerAndroid_OnDevicesChanged(JNIEnv* env, bool added) {
   auto* system_monitor = base::SystemMonitor::Get();
   if (system_monitor) {
     // Asynchronous call
@@ -822,6 +824,7 @@ AudioOutputStream* AudioManagerAndroid::MakeLowLatencyOutputStream(
 #endif
 }
 
+#if BUILDFLAG(ENABLE_PASSTHROUGH_AUDIO_CODECS)
 AudioOutputStream* AudioManagerAndroid::MakeBitstreamOutputStream(
     const AudioParameters& params,
     const std::string& device_id,
@@ -829,6 +832,7 @@ AudioOutputStream* AudioManagerAndroid::MakeBitstreamOutputStream(
   DCHECK(params.IsBitstreamFormat());
   return new AudioTrackOutputStream(this, params);
 }
+#endif
 
 AudioInputStream* AudioManagerAndroid::MakeLinearInputStream(
     const AudioParameters& params,
@@ -958,13 +962,13 @@ void AudioManagerAndroid::OnStopAAudioInputStream(AAudioInputStream* stream) {
   GetJniDelegate().MaybeSetBluetoothScoState(false);
 }
 
-void AudioManagerAndroid::SetMute(JNIEnv* env, jboolean muted) {
+void AudioManagerAndroid::SetMute(JNIEnv* env, bool muted) {
   GetTaskRunner()->PostTask(
       FROM_HERE, base::BindOnce(&AudioManagerAndroid::DoSetMuteOnAudioThread,
                                 base::Unretained(this), muted));
 }
 
-void AudioManagerAndroid::OnScoStateChanged(JNIEnv* env, jboolean state) {
+void AudioManagerAndroid::OnScoStateChanged(JNIEnv* env, bool state) {
   GetTaskRunner()->PostTask(
       FROM_HERE,
       base::BindOnce(&AudioManagerAndroid::OnScoStateChangedOnAudioThread,
@@ -1078,10 +1082,14 @@ AudioParameters AudioManagerAndroid::GetPreferredOutputStreamParameters(
     frames_per_buffer = user_buffer_size;
   }
 
+#if BUILDFLAG(ENABLE_PASSTHROUGH_AUDIO_CODECS)
   // Specify hardware capabilities for HDMI audio passthrough
   AudioParameters::HardwareCapabilities hardware_capabilities(
       GetJniDelegate().GetHdmiOutputEncodingFormats(),
       /*require_encapsulation=*/false);
+#else
+  AudioParameters::HardwareCapabilities hardware_capabilities;
+#endif
 
   return AudioParameters(AudioParameters::AUDIO_PCM_LOW_LATENCY,
                          channel_layout_config, sample_rate, frames_per_buffer,

@@ -30,7 +30,7 @@ std::string GetVersionTooHighWarning(int max_version, int supplied_version) {
 }
 
 testing::AssertionResult RunManifestVersionSuccess(
-    base::Value::Dict manifest,
+    base::DictValue manifest,
     Manifest::Type expected_type,
     int expected_manifest_version,
     std::string_view expected_warning = "",
@@ -72,7 +72,7 @@ testing::AssertionResult RunManifestVersionSuccess(
 }
 
 testing::AssertionResult RunManifestVersionFailure(
-    base::Value::Dict manifest,
+    base::DictValue manifest,
     Extension::InitFromValueFlags custom_flag = Extension::NO_FLAGS) {
   std::u16string error;
   scoped_refptr<const Extension> extension =
@@ -85,7 +85,7 @@ testing::AssertionResult RunManifestVersionFailure(
 }
 
 testing::AssertionResult RunCreationWithFlags(
-    const base::Value::Dict& manifest,
+    const base::DictValue& manifest,
     mojom::ManifestLocation location,
     Manifest::Type expected_type,
     Extension::InitFromValueFlags custom_flag = Extension::NO_FLAGS) {
@@ -111,7 +111,7 @@ testing::AssertionResult RunCreationWithFlags(
 
 TEST(ExtensionTest, ExtensionManifestVersions) {
   auto get_manifest = [](std::optional<int> manifest_version) {
-    auto manifest = base::Value::Dict()
+    auto manifest = base::DictValue()
                         .Set("name", "My Extension")
                         .Set("version", "0.1")
                         .Set("description", "An awesome extension");
@@ -154,13 +154,13 @@ TEST(ExtensionTest, ExtensionManifestVersions) {
 
 TEST(ExtensionTest, PlatformAppManifestVersions) {
   auto get_manifest = [](std::optional<int> manifest_version) {
-    base::Value::Dict background;
-    background.Set("scripts", base::Value::List().Append("background.js"));
-    auto manifest = base::Value::Dict()
+    base::DictValue background;
+    background.Set("scripts", base::ListValue().Append("background.js"));
+    auto manifest = base::DictValue()
                         .Set("name", "My Platform App")
                         .Set("version", "0.1")
                         .Set("description", "A platform app")
-                        .Set("app", base::Value::Dict().Set(
+                        .Set("app", base::DictValue().Set(
                                         "background", std::move(background)));
     if (manifest_version)
       manifest.Set("manifest_version", *manifest_version);
@@ -195,9 +195,9 @@ TEST(ExtensionTest, PlatformAppManifestVersions) {
 
 TEST(ExtensionTest, HostedAppManifestVersions) {
   auto get_manifest = [](std::optional<int> manifest_version) {
-    base::Value::Dict app;
-    app.Set("urls", base::Value::List().Append("http://example.com"));
-    auto manifest = base::Value::Dict()
+    base::DictValue app;
+    app.Set("urls", base::ListValue().Append("http://example.com"));
+    auto manifest = base::DictValue()
                         .Set("name", "My Hosted App")
                         .Set("version", "0.1")
                         .Set("description", "A hosted app")
@@ -225,7 +225,7 @@ TEST(ExtensionTest, HostedAppManifestVersions) {
 
 TEST(ExtensionTest, UserScriptManifestVersions) {
   auto get_manifest = [](std::optional<int> manifest_version) {
-    auto manifest = base::Value::Dict()
+    auto manifest = base::DictValue()
                         .Set("name", "My Extension")
                         .Set("version", "0.1")
                         .Set("description", "An awesome extension")
@@ -252,7 +252,7 @@ TEST(ExtensionTest, UserScriptManifestVersions) {
 }
 
 TEST(ExtensionTest, LoginScreenFlag) {
-  auto manifest = base::Value::Dict()
+  auto manifest = base::DictValue()
                       .Set("name", "My Extension")
                       .Set("version", "0.1")
                       .Set("description", "An awesome extension")

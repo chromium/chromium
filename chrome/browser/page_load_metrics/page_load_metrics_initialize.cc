@@ -14,6 +14,7 @@
 #include "chrome/browser/heavy_ad_intervention/heavy_ad_service_factory.h"
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/page_load_metrics/observers/bookmark_bar_page_load_metrics_observer.h"
+#include "chrome/browser/page_load_metrics/observers/captcha_metrics_observer.h"
 #include "chrome/browser/page_load_metrics/observers/chrome_gws_abandoned_page_load_metrics_observer.h"
 #include "chrome/browser/page_load_metrics/observers/chrome_gws_page_load_metrics_observer.h"
 #include "chrome/browser/page_load_metrics/observers/core/amp_page_load_metrics_observer.h"
@@ -35,7 +36,6 @@
 #include "chrome/browser/page_load_metrics/observers/page_anchors_metrics_observer.h"
 #include "chrome/browser/page_load_metrics/observers/prefetch_page_load_metrics_observer.h"
 #include "chrome/browser/page_load_metrics/observers/preload_serving_metrics_page_load_metrics_observer.h"
-#include "chrome/browser/page_load_metrics/observers/preview_page_load_metrics_observer.h"
 #include "chrome/browser/page_load_metrics/observers/protocol_page_load_metrics_observer.h"
 #include "chrome/browser/page_load_metrics/observers/scheme_page_load_metrics_observer.h"
 #include "chrome/browser/page_load_metrics/observers/security_state_page_load_metrics_observer.h"
@@ -263,7 +263,6 @@ void PageLoadMetricsEmbedder::RegisterObservers(
         std::make_unique<LocalNetworkRequestsPageLoadMetricsObserver>());
     tracker->AddObserver(
         std::make_unique<TabStripPageLoadMetricsObserver>(web_contents()));
-    tracker->AddObserver(std::make_unique<PreviewPageLoadMetricsObserver>());
     tracker->AddObserver(std::make_unique<BookmarkBarMetricsObserver>());
     tracker->AddObserver(
         std::make_unique<NewTabPageInitiatedPageLoadMetricsObserver>());
@@ -298,6 +297,8 @@ void PageLoadMetricsEmbedder::RegisterObservers(
             web_contents()));
   }
 #endif
+
+  tracker->AddObserver(std::make_unique<CaptchaMetricsObserver>());
 }
 
 bool PageLoadMetricsEmbedder::IsNewTabPageUrl(const GURL& url) {

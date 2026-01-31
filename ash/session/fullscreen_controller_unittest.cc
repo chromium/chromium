@@ -61,7 +61,9 @@ class FullscreenControllerTest : public AshTestBase {
   }
 
   void TearDown() override {
+    window_state_ = nullptr;
     window_.reset();
+    test_shell_delegate_ = nullptr;
     AshTestBase::TearDown();
   }
 
@@ -75,7 +77,7 @@ class FullscreenControllerTest : public AshTestBase {
 
   void SetKeepFullscreenWithoutNotificationAllowList(
       const std::string& pattern) {
-    base::Value::List list;
+    base::ListValue list;
     list.Append(pattern);
     Shell::Get()->session_controller()->GetPrimaryUserPrefService()->SetList(
         chromeos::prefs::kKeepFullscreenWithoutNotificationUrlAllowList,
@@ -87,8 +89,8 @@ class FullscreenControllerTest : public AshTestBase {
   }
 
   std::unique_ptr<aura::Window> window_;
-  raw_ptr<WindowState, DanglingUntriaged> window_state_ = nullptr;
-  raw_ptr<TestShellDelegate, DanglingUntriaged> test_shell_delegate_ = nullptr;
+  raw_ptr<WindowState> window_state_ = nullptr;
+  raw_ptr<TestShellDelegate> test_shell_delegate_ = nullptr;
 };
 
 // Test that full screen is exited after session unlock if the allow list pref
@@ -129,7 +131,7 @@ TEST_F(FullscreenControllerTest, KeepFullscreenIfMatchingPref) {
   SetUpShellDelegate();
 
   // Set up the URL exempt list with one matching and one non-matching pattern.
-  base::Value::List list;
+  base::ListValue list;
   list.Append(kNonMatchingPattern);
   list.Append(kMatchingPattern);
   Shell::Get()->session_controller()->GetPrimaryUserPrefService()->SetList(

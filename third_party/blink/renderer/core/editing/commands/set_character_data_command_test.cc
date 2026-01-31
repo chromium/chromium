@@ -7,6 +7,7 @@
 #include "third_party/blink/renderer/core/dom/text.h"
 #include "third_party/blink/renderer/core/editing/commands/editing_state.h"
 #include "third_party/blink/renderer/core/editing/testing/editing_test_base.h"
+#include "third_party/blink/renderer/core/frame/settings.h"
 #include "third_party/blink/renderer/core/layout/layout_block_flow.h"
 #include "third_party/blink/renderer/core/layout/layout_text.h"
 
@@ -18,8 +19,8 @@ TEST_F(SetCharacterDataCommandTest, replaceTextWithSameLength) {
   SetBodyContent("<div contenteditable>This is a good test case</div>");
 
   SimpleEditCommand* command = MakeGarbageCollected<SetCharacterDataCommand>(
-      To<Text>(GetDocument().body()->firstChild()->firstChild()), 10, 4,
-      "lame");
+      To<Text>(GetDocument().body()->firstChild()->firstChild()), 10, 4, "lame",
+      EditCommand::PasswordEchoBehavior::kDoNotEcho);
 
   command->DoReapply();
   EXPECT_EQ(
@@ -37,7 +38,7 @@ TEST_F(SetCharacterDataCommandTest, replaceTextWithLongerText) {
 
   SimpleEditCommand* command = MakeGarbageCollected<SetCharacterDataCommand>(
       To<Text>(GetDocument().body()->firstChild()->firstChild()), 10, 4,
-      "lousy");
+      "lousy", EditCommand::PasswordEchoBehavior::kDoNotEcho);
 
   command->DoReapply();
   EXPECT_EQ(
@@ -54,7 +55,8 @@ TEST_F(SetCharacterDataCommandTest, replaceTextWithShorterText) {
   SetBodyContent("<div contenteditable>This is a good test case</div>");
 
   SimpleEditCommand* command = MakeGarbageCollected<SetCharacterDataCommand>(
-      To<Text>(GetDocument().body()->firstChild()->firstChild()), 10, 4, "meh");
+      To<Text>(GetDocument().body()->firstChild()->firstChild()), 10, 4, "meh",
+      EditCommand::PasswordEchoBehavior::kDoNotEcho);
 
   command->DoReapply();
   EXPECT_EQ(
@@ -74,8 +76,8 @@ TEST_F(SetCharacterDataCommandTest, insertTextIntoEmptyNode) {
       GetDocument().CreateEditingTextNode(""));
 
   SimpleEditCommand* command = MakeGarbageCollected<SetCharacterDataCommand>(
-      To<Text>(GetDocument().body()->firstChild()->firstChild()), 0, 0,
-      "hello");
+      To<Text>(GetDocument().body()->firstChild()->firstChild()), 0, 0, "hello",
+      EditCommand::PasswordEchoBehavior::kDoNotEcho);
 
   command->DoReapply();
   EXPECT_EQ(
@@ -93,7 +95,7 @@ TEST_F(SetCharacterDataCommandTest, insertTextAtEndOfNonEmptyNode) {
 
   SimpleEditCommand* command = MakeGarbageCollected<SetCharacterDataCommand>(
       To<Text>(GetDocument().body()->firstChild()->firstChild()), 5, 0,
-      ", world!");
+      ", world!", EditCommand::PasswordEchoBehavior::kDoNotEcho);
 
   command->DoReapply();
   EXPECT_EQ(
@@ -110,7 +112,8 @@ TEST_F(SetCharacterDataCommandTest, replaceEntireNode) {
   SetBodyContent("<div contenteditable>Hello</div>");
 
   SimpleEditCommand* command = MakeGarbageCollected<SetCharacterDataCommand>(
-      To<Text>(GetDocument().body()->firstChild()->firstChild()), 0, 5, "Bye");
+      To<Text>(GetDocument().body()->firstChild()->firstChild()), 0, 5, "Bye",
+      EditCommand::PasswordEchoBehavior::kDoNotEcho);
 
   command->DoReapply();
   EXPECT_EQ(
@@ -145,8 +148,8 @@ LayoutBlockFlow DIV id="sample" (editable)
 )DUMP",
             ToSimpleLayoutTree(sample_layout_object));
 
-  SimpleEditCommand* command =
-      MakeGarbageCollected<SetCharacterDataCommand>(text_node, 0, 0, "text");
+  SimpleEditCommand* command = MakeGarbageCollected<SetCharacterDataCommand>(
+      text_node, 0, 0, "text", EditCommand::PasswordEchoBehavior::kDoNotEcho);
   command->DoReapply();
   UpdateAllLifecyclePhasesForTest();
 
@@ -168,6 +171,34 @@ LayoutBlockFlow DIV id="sample" (editable)
   |  +--LayoutText #text ""
 )DUMP",
             ToSimpleLayoutTree(sample_layout_object));
+}
+
+TEST_F(SetCharacterDataCommandTest, ShouldEchoPassword) {
+  SetBodyContent("<div contenteditable></div>");
+  Text* text_node = GetDocument().CreateEditingTextNode("");
+  GetDocument().body()->firstChild()->appendChild(text_node);
+
+  GetDocument().GetSettings()->SetPasswordEchoEnabledPhysical(true);
+  auto* physical_cmd = MakeGarbageCollected<SetCharacterDataCommand>(
+      text_node, 0, 0, "hello",
+      EditCommand::PasswordEchoBehavior::kEchoIfPasswordEchoPhysicalEnabled);
+  EXPECT_TRUE(physical_cmd->ShouldEchoPassword());
+
+  GetDocument().GetSettings()->SetPasswordEchoEnabledPhysical(false);
+  EXPECT_FALSE(physical_cmd->ShouldEchoPassword());
+
+  GetDocument().GetSettings()->SetPasswordEchoEnabledTouch(true);
+  auto* touch_cmd = MakeGarbageCollected<SetCharacterDataCommand>(
+      text_node, 0, 0, "hello",
+      EditCommand::PasswordEchoBehavior::kEchoIfPasswordEchoTouchEnabled);
+  EXPECT_TRUE(touch_cmd->ShouldEchoPassword());
+
+  GetDocument().GetSettings()->SetPasswordEchoEnabledTouch(false);
+  EXPECT_FALSE(touch_cmd->ShouldEchoPassword());
+
+  auto* no_echo_cmd = MakeGarbageCollected<SetCharacterDataCommand>(
+      text_node, 0, 0, "hello", EditCommand::PasswordEchoBehavior::kDoNotEcho);
+  EXPECT_FALSE(no_echo_cmd->ShouldEchoPassword());
 }
 
 }  // namespace blink

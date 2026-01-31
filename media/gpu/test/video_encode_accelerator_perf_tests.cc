@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include <algorithm>
 #include <iomanip>
 #include <iostream>
@@ -17,7 +12,7 @@
 
 #include "base/base_switches.h"
 #include "base/command_line.h"
-#include "base/containers/contains.h"
+#include "base/containers/span.h"
 #include "base/files/file_util.h"
 #include "base/json/json_writer.h"
 #include "base/memory/raw_ptr.h"
@@ -285,7 +280,7 @@ void PerformanceMetrics::WriteToFile() const {
   output_folder_path = base::MakeAbsoluteFilePath(output_folder_path);
 
   // Write performance metrics to json.
-  base::Value::Dict metrics;
+  base::DictValue metrics;
   metrics.Set("BitstreamsEncoded",
               base::checked_cast<int>(bitstreams_encoded_));
   metrics.Set("TotalDurationMs", total_duration_.InMillisecondsF());
@@ -307,14 +302,14 @@ void PerformanceMetrics::WriteToFile() const {
               bitstream_encode_stats_.percentile_75_ms_);
 
   // Write bitstream delivery times to json.
-  base::Value::List delivery_times;
+  base::ListValue delivery_times;
   for (double bitstream_delivery_time : bitstream_delivery_times_) {
     delivery_times.Append(bitstream_delivery_time);
   }
   metrics.Set("BitstreamDeliveryTimes", std::move(delivery_times));
 
   // Write bitstream encodes times to json.
-  base::Value::List encode_times;
+  base::ListValue encode_times;
   for (double bitstream_encode_time : bitstream_encode_times_) {
     encode_times.Append(bitstream_encode_time);
   }
@@ -331,9 +326,8 @@ void PerformanceMetrics::WriteToFile() const {
   base::File metrics_output_file(
       base::FilePath(metrics_file_path),
       base::File::FLAG_CREATE_ALWAYS | base::File::FLAG_WRITE);
-  int bytes_written = metrics_output_file.WriteAtCurrentPos(
-      metrics_str.data(), metrics_str.length());
-  ASSERT_EQ(bytes_written, static_cast<int>(metrics_str.length()));
+  ASSERT_TRUE(metrics_output_file.WriteAtCurrentPosAndCheck(
+      base::as_byte_span(metrics_str)));
   VLOG(0) << "Wrote performance metrics to: " << metrics_file_path;
 }
 
@@ -565,7 +559,7 @@ void BitstreamQualityMetrics::WriteToFile(
     base::CreateDirectory(output_folder_path);
   output_folder_path = base::MakeAbsoluteFilePath(output_folder_path);
   // Write quality metrics to json.
-  base::Value::Dict metrics;
+  base::DictValue metrics;
   if (!svc_text.empty())
     metrics.Set("SVC", svc_text);
   metrics.Set("Bitrate", base::checked_cast<int>(actual_bitrate));
@@ -576,32 +570,32 @@ void BitstreamQualityMetrics::WriteToFile(
   metrics.Set("BottomRowPSNRAverage", bottom_row_psnr_stats.avg);
   metrics.Set("LogLikelihoodRatioAverage", log_likelihood_stats.avg);
   // Write ssim values bitstream delivery times to json.
-  base::Value::List ssim_values;
+  base::ListValue ssim_values;
   for (double value : ssim_stats.values_in_order)
     ssim_values.Append(value);
   metrics.Set("SSIMValues", std::move(ssim_values));
 
   // Write psnr values to json.
-  base::Value::List psnr_values;
+  base::ListValue psnr_values;
   for (double value : psnr_stats.values_in_order)
     psnr_values.Append(value);
   metrics.Set("PSNRValues", std::move(psnr_values));
 
   // Write bottom row psnr values to json.
-  base::Value::List bottom_row_psnr_values;
+  base::ListValue bottom_row_psnr_values;
   for (double value : bottom_row_psnr_stats.values_in_order)
     bottom_row_psnr_values.Append(value);
   metrics.Set("BottomRowPSNRValues", std::move(bottom_row_psnr_values));
 
   // Write log likelihood ratio values to json.
-  base::Value::List log_likelihood_values;
+  base::ListValue log_likelihood_values;
   for (double value : log_likelihood_stats.values_in_order) {
     log_likelihood_values.Append(value);
   }
   metrics.Set("LogLikelihoodRatioValues", std::move(log_likelihood_values));
 
   // Write QP values to json.
-  base::Value::List qp_values;
+  base::ListValue qp_values;
   for (double value : qp_stats.values_in_order) {
     qp_values.Append(value);
   }
@@ -623,9 +617,8 @@ void BitstreamQualityMetrics::WriteToFile(
   base::File metrics_output_file(
       base::FilePath(metrics_file_path),
       base::File::FLAG_CREATE_ALWAYS | base::File::FLAG_WRITE);
-  int bytes_written = metrics_output_file.WriteAtCurrentPos(
-      metrics_str.data(), metrics_str.length());
-  ASSERT_EQ(bytes_written, static_cast<int>(metrics_str.length()));
+  ASSERT_TRUE(metrics_output_file.WriteAtCurrentPosAndCheck(
+      base::as_byte_span(metrics_str)));
   VLOG(0) << "Wrote performance metrics to: " << metrics_file_path;
 }
 
@@ -816,7 +809,8 @@ class VideoEncoderTest : public ::testing::Test {
         }
       }
     }
-    LOG_ASSERT(!base::Contains(bitstream_processors, nullptr,
+    LOG_ASSERT(
+        !std::ranges::contains(bitstream_processors, nullptr,
                                &std::unique_ptr<BitstreamProcessor>::get));
     return bitstream_processors;
   }

@@ -168,7 +168,8 @@ class SkiaGoldIntegrationTestBase(gpu_integration_test.GpuIntegrationTest):
     # results in the toolbar hairline # being always drawn. The hariline
     # overlaps with the page's contents and interferes with the tests. Disable
     # it so the hairline isn't drawn.
-    default_args.extend(['--disable-features=AndroidBrowserControlsInViz'])
+    default_args.extend(
+        ['--disable-features=AlwaysDrawCompositedToolbarHairline'])
 
     force_color_profile_arg = [
         arg for arg in default_args if arg.startswith('--force-color-profile=')

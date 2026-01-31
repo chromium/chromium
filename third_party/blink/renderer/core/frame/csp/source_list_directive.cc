@@ -130,7 +130,7 @@ bool CSPSourceListIsNone(
          !source_list.allow_unsafe_hashes && !source_list.allow_eval &&
          !source_list.allow_wasm_eval && !source_list.allow_wasm_unsafe_eval &&
          !source_list.allow_dynamic && !source_list.nonces.size() &&
-         !source_list.hashes.size();
+         !source_list.hashes.size() && !source_list.allow_trusted_types_eval;
 }
 
 bool CSPSourceListIsSelf(
@@ -140,7 +140,7 @@ bool CSPSourceListIsSelf(
          !source_list.allow_unsafe_hashes && !source_list.allow_eval &&
          !source_list.allow_wasm_eval && !source_list.allow_wasm_unsafe_eval &&
          !source_list.allow_dynamic && !source_list.nonces.size() &&
-         !source_list.hashes.size();
+         !source_list.hashes.size() && !source_list.allow_trusted_types_eval;
 }
 
 bool CSPSourceListIsHashOrNoncePresent(

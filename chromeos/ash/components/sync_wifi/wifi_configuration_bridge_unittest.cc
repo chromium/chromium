@@ -11,7 +11,6 @@
 #include <utility>
 
 #include "ash/constants/ash_features.h"
-#include "base/containers/contains.h"
 #include "base/containers/flat_map.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
@@ -308,8 +307,8 @@ TEST_F(WifiConfigurationBridgeTest, InitWithTwoNetworksFromServer) {
 
   std::vector<NetworkIdentifier> ids = bridge()->GetAllIdsForTesting();
   EXPECT_EQ(2u, ids.size());
-  EXPECT_TRUE(base::Contains(ids, meow_network_id()));
-  EXPECT_TRUE(base::Contains(ids, woof_network_id()));
+  EXPECT_TRUE(std::ranges::contains(ids, meow_network_id()));
+  EXPECT_TRUE(std::ranges::contains(ids, woof_network_id()));
 
   const std::vector<sync_pb::WifiConfigurationSpecifics>& networks =
       synced_network_updater()->add_or_update_calls();
@@ -335,8 +334,8 @@ TEST_F(WifiConfigurationBridgeTest,
   EXPECT_FALSE(error);
   std::vector<NetworkIdentifier> ids = bridge()->GetAllIdsForTesting();
   EXPECT_EQ(2u, ids.size());
-  EXPECT_TRUE(base::Contains(ids, meow_network_id()));
-  EXPECT_TRUE(base::Contains(ids, woof_network_id()));
+  EXPECT_TRUE(std::ranges::contains(ids, meow_network_id()));
+  EXPECT_TRUE(std::ranges::contains(ids, woof_network_id()));
 
   const std::vector<sync_pb::WifiConfigurationSpecifics>& networks =
       synced_network_updater()->add_or_update_calls();
@@ -361,7 +360,7 @@ TEST_F(WifiConfigurationBridgeTest, ApplyIncrementalSyncChangesOneAdd) {
       std::move(add_changes));
   std::vector<NetworkIdentifier> ids = bridge()->GetAllIdsForTesting();
   EXPECT_EQ(1u, ids.size());
-  EXPECT_TRUE(base::Contains(ids, meow_network_id()));
+  EXPECT_TRUE(std::ranges::contains(ids, meow_network_id()));
 
   const std::vector<sync_pb::WifiConfigurationSpecifics>& networks =
       synced_network_updater()->add_or_update_calls();
@@ -388,7 +387,7 @@ TEST_F(WifiConfigurationBridgeTest,
                                         std::move(add_changes));
   std::vector<NetworkIdentifier> ids = bridge()->GetAllIdsForTesting();
   EXPECT_EQ(1u, ids.size());
-  EXPECT_TRUE(base::Contains(ids, meow_network_id()));
+  EXPECT_TRUE(std::ranges::contains(ids, meow_network_id()));
 
   const std::vector<sync_pb::WifiConfigurationSpecifics>& networks =
       synced_network_updater()->add_or_update_calls();
@@ -427,7 +426,7 @@ TEST_F(WifiConfigurationBridgeTest,
                                         std::move(add_changes));
   std::vector<NetworkIdentifier> ids = bridge()->GetAllIdsForTesting();
   EXPECT_EQ(1u, ids.size());
-  EXPECT_TRUE(base::Contains(ids, meow_network_id()));
+  EXPECT_TRUE(std::ranges::contains(ids, meow_network_id()));
 
   const std::vector<sync_pb::WifiConfigurationSpecifics>& networks =
       synced_network_updater()->add_or_update_calls();
@@ -625,7 +624,7 @@ TEST_F(WifiConfigurationBridgeTest, LocalConfiguredAndUpdated_BeforeInit) {
       GenerateTestWifiSpecifics(meow_network_id(), kSyncPsk, /*timestamp=*/100);
   local_network_collector()->AddNetwork(meow_local);
 
-  base::Value::Dict set_properties;
+  base::DictValue set_properties;
   set_properties.Set(shill::kAutoConnectProperty, true);
   bridge()->OnNetworkUpdate(guid, &set_properties);
 
@@ -697,7 +696,7 @@ TEST_F(WifiConfigurationBridgeTest, LocalUpdate) {
   EXPECT_CALL(*processor(), Put)
       .WillOnce(testing::SaveArg<0>(&storage_key));
   std::string guid = meow_network_id().SerializeToString();
-  base::Value::Dict set_properties;
+  base::DictValue set_properties;
   set_properties.Set(shill::kAutoConnectProperty, true);
   bridge()->OnNetworkUpdate(guid, &set_properties);
   base::RunLoop().RunUntilIdle();
@@ -713,7 +712,7 @@ TEST_F(WifiConfigurationBridgeTest, LocalUpdate_UntrackedField) {
 
   EXPECT_CALL(*processor(), Put).Times(0);
   std::string guid = meow_network_id().SerializeToString();
-  base::Value::Dict set_properties;
+  base::DictValue set_properties;
   set_properties.Set(shill::kUIDataProperty, "random_change");
   bridge()->OnNetworkUpdate(guid, &set_properties);
   base::RunLoop().RunUntilIdle();
@@ -732,7 +731,7 @@ TEST_F(WifiConfigurationBridgeTest, LocalUpdate_FromSync) {
 
   EXPECT_CALL(*processor(), Put).Times(0);
 
-  base::Value::Dict set_properties;
+  base::DictValue set_properties;
   set_properties.Set(shill::kAutoConnectProperty, true);
   bridge()->OnNetworkUpdate(guid, &set_properties);
   base::RunLoop().RunUntilIdle();

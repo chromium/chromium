@@ -48,8 +48,7 @@ class AwPermissionRequest {
 
   // Invoked by Java peer when request is processed, |granted| indicates the
   // request was granted or not.
-  void OnAccept(JNIEnv* env,
-                jboolean granted);
+  void OnAccept(JNIEnv* env, bool granted);
   void Destroy(JNIEnv* env);
 
   // Return the origin which initiated the request.

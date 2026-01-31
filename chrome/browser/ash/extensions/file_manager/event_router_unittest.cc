@@ -54,7 +54,7 @@ TEST(EventRouterTest, PopulateCrostiniEvent) {
             extensions::api::file_manager_private::CrostiniEventType::kUnshare);
   EXPECT_EQ(ext_event.vm_name, "vmname");
   EXPECT_EQ(ext_event.entries.size(), 1u);
-  base::Value::Dict ext_props;
+  base::DictValue ext_props;
   ext_props.Set(
       "fileSystemRoot",
       "filesystem:chrome-extension://extensionid/external/mountname/");
@@ -75,7 +75,7 @@ TEST(EventRouterTest, PopulateCrostiniEvent) {
             extensions::api::file_manager_private::CrostiniEventType::kShare);
   EXPECT_EQ(swa_event.vm_name, "vmname");
   EXPECT_EQ(swa_event.entries.size(), 1u);
-  base::Value::Dict swa_props;
+  base::DictValue swa_props;
   swa_props.Set("fileSystemRoot",
                 "filesystem:chrome://file-manager/external/mountname/");
   swa_props.Set("fileSystemName", "filesystemname");
@@ -186,7 +186,7 @@ MATCHER(ExpectNoArgs, "") {
 // the `field` against the `expected_value`.
 MATCHER_P3(ExpectEventArgString, index, field, expected_value, "") {
   EXPECT_GE(arg.size(), 1u);
-  const base::Value::List* outputs = arg[0].GetDict().FindList("outputs");
+  const base::ListValue* outputs = arg[0].GetDict().FindList("outputs");
   EXPECT_TRUE(outputs) << "The outputs field is not available on the event";
   EXPECT_GT(outputs->size(), index)
       << "The supplied index on outputs is not available, size: "
@@ -209,17 +209,17 @@ MATCHER_P4(ExpectEventArgPauseParams,
            expected_always_show_review,
            "") {
   EXPECT_GE(arg.size(), 1u);
-  const base::Value::Dict* pause_params =
+  const base::DictValue* pause_params =
       arg[0].GetDict().FindDict("pauseParams");
   EXPECT_TRUE(pause_params)
       << "The pause_params field is not available on the event";
 
-  const base::Value::Dict* conflict_pause_params =
+  const base::DictValue* conflict_pause_params =
       pause_params->FindDict("conflictParams");
   EXPECT_FALSE(conflict_pause_params)
       << "The conflictParams field should not be available on the event";
 
-  const base::Value::Dict* policy_pause_params =
+  const base::DictValue* policy_pause_params =
       pause_params->FindDict("policyParams");
   EXPECT_TRUE(policy_pause_params)
       << "The policyParams field is not available on the event";
@@ -258,7 +258,7 @@ MATCHER_P4(ExpectEventArgPolicyError,
            expected_always_show_review,
            "") {
   EXPECT_GE(arg.size(), 1u);
-  const base::Value::Dict* policy_error =
+  const base::DictValue* policy_error =
       arg[0].GetDict().FindDict("policyError");
   EXPECT_TRUE(policy_error)
       << "The policyError field is not available on the event";
@@ -423,7 +423,7 @@ TEST_F(FileManagerEventRouterLocalFilesTest, OnLocalUserFilesPolicyChanged) {
   event_router->ForceBroadcastingForTesting(true);
 
   // Expect the preferences changed event.
-  base::Value::List event_args =
+  base::ListValue event_args =
       extensions::api::file_manager_private::OnPreferencesChanged::Create();
   base::RunLoop run_loop;
   EXPECT_CALL(observer, OnBroadcastEvent(Field(&extensions::Event::event_args,

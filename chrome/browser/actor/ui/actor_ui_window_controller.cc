@@ -10,6 +10,8 @@
 #include "chrome/browser/actor/ui/actor_ui_tab_controller_interface.h"
 #include "chrome/browser/actor/ui/handoff_button_controller.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/browser_command_controller.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/common/chrome_features.h"
@@ -30,6 +32,7 @@ ActorUiContentsContainerController::ActorUiContentsContainerController(
       overlay_(actor_overlay_web_view),
       window_controller_(window_controller) {
   CHECK(contents_container_view_);
+  CHECK(window_controller_);
   if (features::kGlicActorUiHandoffButton.Get()) {
     handoff_button_controller_ = std::make_unique<HandoffButtonController>(
         contents_container_view_, window_controller);
@@ -167,6 +170,7 @@ void ActorUiContentsContainerController::OnWebContentsDetached(
 
   if (overlay_) {
     overlay_->CloseUI();
+    UpdateFindInPageCommandState();
   }
 }
 
@@ -176,6 +180,13 @@ void ActorUiContentsContainerController::OnActorOverlayBackgroundChange(
     return;
   }
   overlay_->SetOverlayBackground(is_visible);
+}
+
+void ActorUiContentsContainerController::
+    NotifyWindowOmniboxPopupVisibilityChanged() {
+  if (auto* tab_controller = GetActorUiTabController()) {
+    tab_controller->OnWindowOmniboxPopupVisibilityChanged();
+  }
 }
 
 void ActorUiContentsContainerController::OnOverlayStateChanged(
@@ -201,11 +212,13 @@ void ActorUiContentsContainerController::EnsureOverlayReady(
   }
   if (!is_visible) {
     overlay_->CloseUI();
+    UpdateFindInPageCommandState();
     return;
   }
   overlay_->ShowUI(tabs::TabInterface::GetFromContents(
                        contents_container_view_->web_contents()),
                    runner.Release());
+  UpdateFindInPageCommandState();
 }
 
 void ActorUiContentsContainerController::ApplyOverlayState(
@@ -220,7 +233,20 @@ void ActorUiContentsContainerController::ApplyOverlayState(
   }
   overlay_->SetBorderGlowVisibility(state.border_glow_visible);
   if (state.mouse_target.has_value()) {
+    // If we have a mouse target, we should not ALSO have a mouse_down state.
+    // This DCHECK ensures that the ActorOverlayState will only request a mouse
+    // movement OR a click, never both.
+    DCHECK(!state.mouse_down);
     overlay_->MoveCursorTo(state.mouse_target.value(), runner.Release());
+    return;
+  } else if (state.mouse_down) {
+    overlay_->TriggerClickAnimation(runner.Release());
+  }
+}
+
+void ActorUiContentsContainerController::UpdateFindInPageCommandState() {
+  if (auto* command_controller = window_controller_->GetCommandController()) {
+    command_controller->TabStateChanged();
   }
 }
 
@@ -264,6 +290,33 @@ ActorUiWindowController::GetControllerForWebContents(
   return nullptr;
 }
 
+bool ActorUiWindowController::IsAnyOmniboxPopupOpened() const {
+  return is_omnibox_popup_open_;
+}
+
+void ActorUiWindowController::OnOmniboxPopupStateChanged(bool is_open) {
+  is_omnibox_popup_open_ = is_open;
+  if (base::FeatureList::IsEnabled(
+          features::kGlicActorPostTaskUiUpdateEnabled)) {
+    // Use PostTask to avoid re-entrancy issues and race conditions during
+    // Tab Discard where the WebContents <-> TabModel mapping is temporarily
+    // unstable. This prevents the crash in GetFromContents().
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE,
+        base::BindOnce(
+            &ActorUiWindowController::OnOmniboxPopupStateChangedInternal,
+            weak_ptr_factory_.GetWeakPtr(), is_open));
+  } else {
+    OnOmniboxPopupStateChangedInternal(is_open);
+  }
+}
+
+void ActorUiWindowController::OnOmniboxPopupStateChangedInternal(bool is_open) {
+  for (const auto& container : contents_container_controllers_) {
+    container->NotifyWindowOmniboxPopupVisibilityChanged();
+  }
+}
+
 void ActorUiWindowController::InitializeImmersiveModeObserver() {
   if (immersive_mode_observer_.IsObserving()) {
     return;
@@ -289,6 +342,22 @@ void ActorUiWindowController::InitializeImmersiveModeObserver() {
 }
 
 void ActorUiWindowController::NotifyControllersOfImmersiveChange() {
+  if (base::FeatureList::IsEnabled(
+          features::kGlicActorPostTaskUiUpdateEnabled)) {
+    // Use PostTask to avoid re-entrancy issues and race conditions during
+    // Tab Discard where the WebContents <-> TabModel mapping is temporarily
+    // unstable. This prevents the crash in GetFromContents().
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE,
+        base::BindOnce(&ActorUiWindowController::
+                           NotifyControllersOfImmersiveChangeInternal,
+                       weak_ptr_factory_.GetWeakPtr()));
+  } else {
+    NotifyControllersOfImmersiveChangeInternal();
+  }
+}
+
+void ActorUiWindowController::NotifyControllersOfImmersiveChangeInternal() {
   for (const auto& controller : contents_container_controllers_) {
     controller->NotifyTabControllerOnImmersiveModeChanged();
   }
@@ -342,4 +411,9 @@ bool ActorUiWindowController::IsToolbarPinned() const {
 
 void ActorUiWindowController::TearDown() {
   contents_container_controllers_.clear();
+}
+
+chrome::BrowserCommandController*
+ActorUiWindowController::GetCommandController() {
+  return browser_window_interface_->GetFeatures().browser_command_controller();
 }

@@ -6,7 +6,7 @@
 
 #import "base/strings/sys_string_conversions.h"
 #import "components/themes/ntp_background.pb.h"
-#import "ios/chrome/browser/content_suggestions/ui_bundled/new_tab_page_app_interface.h"
+#import "ios/chrome/browser/content_suggestions/test/new_tab_page_app_interface.h"
 #import "ios/chrome/browser/home_customization/model/home_customization_seed_colors.h"
 #import "ios/chrome/browser/home_customization/ui/home_customization_accessibility_identifiers.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_color_palette.h"
@@ -128,6 +128,13 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
 
 // Tests that a custom color can be set.
 - (void)testCustomizeColor {
+#if !TARGET_IPHONE_SIMULATOR
+  // TODO(crbug.com/474141910): Re-enable when fixed.
+  if (![ChromeEarlGrey isIPadIdiom]) {
+    EARL_GREY_TEST_DISABLED(@"Test is flaky on iPhone device.");
+  }
+#endif
+
   [[EarlGrey
       selectElementWithMatcher:grey_accessibilityID(
                                    kNTPCustomizationMenuButtonIdentifier)]

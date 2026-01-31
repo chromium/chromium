@@ -8,6 +8,8 @@ namespace legion {
 
 BASE_FEATURE(kLegion, base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kLegionSeverAttestation, base::FEATURE_DISABLED_BY_DEFAULT);
+
 const base::FeatureParam<std::string> kLegionApiKey{&kLegion, "api-key", ""};
 
 const base::FeatureParam<std::string> kLegionUrl{&kLegion, "url", ""};
@@ -19,11 +21,11 @@ const base::FeatureParam<std::string> kLegionTokenServerUrl{
 const base::FeatureParam<std::string> kLegionTokenServerGetInitialDataPath{
     &kLegion,
     /*name=*/"LegionTokenServerGetInitialDataPath",
-    /*default_value=*/"/v1/legion/getInitialData"};
+    /*default_value=*/"/v1/privatearateaipp/getInitialData"};
 
 const base::FeatureParam<std::string> kLegionTokenServerGetTokensPath{
     &kLegion, /*name=*/"LegionTokenServerGetTokensPath",
-    /*default_value=*/"/v1/legion/auth"};
+    /*default_value=*/"/v1/privatearateaipp/auth-chrome"};
 
 const base::FeatureParam<int> kLegionAuthTokenCacheBatchSize{
     &kLegion, /*name=*/"LegionAuthTokenCacheBatchSize",

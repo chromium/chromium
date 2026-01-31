@@ -10,7 +10,7 @@
 #import "base/ios/block_types.h"
 #import "components/data_sharing/public/group_data.h"
 
-@protocol ApplicationCommands;
+@protocol SceneCommands;
 enum class ShareKitFlowOutcome;
 @class ShareKitPreviewItem;
 
@@ -20,8 +20,8 @@ enum class ShareKitFlowOutcome;
 // The base view controller on which the join flow will be presented.
 @property(nonatomic, weak) UIViewController* baseViewController;
 
-// Application commands handler.
-@property(nonatomic, weak) id<ApplicationCommands> applicationHandler;
+// Scene commands handler.
+@property(nonatomic, weak) id<SceneCommands> sceneHandler;
 
 // The token used to join the group, containing the collab ID and the secret.
 @property(nonatomic, assign) data_sharing::GroupToken token;

@@ -6,8 +6,9 @@
 #define CHROME_BROWSER_GLIC_BROWSER_UI_TAB_UNDERLINE_VIEW_CONTROLLER_H_
 
 #include "base/memory/raw_ptr.h"
+#include "components/tabs/public/tab_interface.h"
 
-class Browser;
+class BrowserWindowInterface;
 
 namespace glic {
 class TabUnderlineView;
@@ -18,7 +19,7 @@ class TabUnderlineViewController {
 
   // Initialization. Starts observing the state of the browser.
   virtual void Initialize(TabUnderlineView* underline_view,
-                          Browser* browser) = 0;
+                          BrowserWindowInterface* browser_window_interface) = 0;
 };
 
 }  // namespace glic

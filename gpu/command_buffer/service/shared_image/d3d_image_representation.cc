@@ -164,7 +164,7 @@ void DawnD3DBufferRepresentation::EndAccess() {
   // Do this before further operations since those could end up destroying the
   // Dawn device and we want the fence to be duplicated before then.
   D3DImageBacking* d3d_image_backing = static_cast<D3DImageBacking*>(backing());
-  d3d_image_backing->EndAccessDawnBuffer(device_, buffer_);
+  d3d_image_backing->EndAccessDawnBuffer(device_, backend_type_, buffer_);
 
   // All further operations on the buffer are errors (they would be racy
   // with other backings).

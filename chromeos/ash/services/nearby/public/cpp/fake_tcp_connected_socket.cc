@@ -6,8 +6,7 @@
 
 #include "base/notimplemented.h"
 
-namespace ash {
-namespace nearby {
+namespace ash::nearby {
 
 FakeTcpConnectedSocket::FakeTcpConnectedSocket(
     mojo::ScopedDataPipeProducerHandle producer_handle,
@@ -58,5 +57,4 @@ void FakeTcpConnectedSocket::SetKeepAlive(bool enable,
   NOTIMPLEMENTED();
 }
 
-}  // namespace nearby
-}  // namespace ash
+}  // namespace ash::nearby

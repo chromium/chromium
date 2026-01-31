@@ -4,7 +4,6 @@
 
 #import "ios/components/security_interstitials/lookalikes/lookalike_url_tab_allow_list.h"
 
-#import "base/containers/contains.h"
 #import "ios/web/public/web_state.h"
 
 LookalikeUrlTabAllowList::LookalikeUrlTabAllowList(web::WebState* web_state) {}
@@ -18,7 +17,7 @@ LookalikeUrlTabAllowList& LookalikeUrlTabAllowList::operator=(
 LookalikeUrlTabAllowList::~LookalikeUrlTabAllowList() = default;
 
 bool LookalikeUrlTabAllowList::IsDomainAllowed(const std::string& domain) {
-  return base::Contains(allowed_domains_, domain);
+  return allowed_domains_.contains(domain);
 }
 
 void LookalikeUrlTabAllowList::AllowDomain(const std::string& domain) {

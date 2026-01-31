@@ -45,7 +45,7 @@ class MessagingDelegate {
 
   // If web_contents is a tab, returns a dictionary representing its tab.
   // Otherwise returns nullptr.
-  virtual std::optional<base::Value::Dict> MaybeGetTabInfo(
+  virtual std::optional<base::DictValue> MaybeGetTabInfo(
       content::WebContents* web_contents);
 
   // Returns the WebContents for the given tab ID, if found.

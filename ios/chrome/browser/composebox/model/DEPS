@@ -1,6 +1,8 @@
 include_rules = [
+  # keep-sorted start
   "+components/contextual_search",
+  "+components/omnibox/composebox/ios/composebox_query_controller_ios.h",
   "+ios/chrome/browser/signin/model",
   "+ios/chrome/browser/variations/model/client",
-  "+components/omnibox/composebox/ios/composebox_query_controller_ios.h"
+  # keep-sorted end
 ]

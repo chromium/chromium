@@ -24,7 +24,7 @@ void CommandInjectingSocket::SetSessionId(std::string session_id) {
   session_id_ = std::move(session_id);
 }
 
-void CommandInjectingSocket::SetParams(base::Value::Dict params) {
+void CommandInjectingSocket::SetParams(base::DictValue params) {
   params_ = std::move(params);
 }
 
@@ -34,7 +34,7 @@ bool CommandInjectingSocket::IsSaturated() const {
 
 bool CommandInjectingSocket::Send(const std::string& message) {
   if (skip_count_ == 0) {
-    base::Value::Dict command;
+    base::DictValue command;
     command.Set("id", next_cmd_id++);
     command.Set("method", method_);
     command.Set("params", params_.Clone());

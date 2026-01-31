@@ -42,6 +42,7 @@
 #include "components/omnibox/browser/tailored_word_break_iterator.h"
 #include "components/omnibox/common/omnibox_features.h"
 #include "components/omnibox/common/string_cleaning.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
 #include "components/search_engines/template_url_service.h"
 #include "third_party/metrics_proto/omnibox_event.pb.h"
 
@@ -168,7 +169,8 @@ ScoredHistoryMatches URLIndexPrivateData::HistoryItemsForTerms(
   bool history_ids_were_trimmed = false;
   // A set containing the list of words extracted from each search string,
   // used to prevent running duplicate searches.
-  std::set<String16Vector> seen_search_words;
+  absl::flat_hash_set<String16Vector> seen_search_words;
+  seen_search_words.reserve(search_strings.size());
   for (const std::u16string& search_string : search_strings) {
     // The search string we receive may contain escaped characters. For reducing
     // the index we need individual, lower-cased words, ignoring escapings. For
@@ -192,9 +194,9 @@ ScoredHistoryMatches URLIndexPrivateData::HistoryItemsForTerms(
     if (lower_words.empty())
       continue;
     // If we've already searched for this list of words, don't do it again.
-    if (seen_search_words.find(lower_words) != seen_search_words.end())
+    if (!seen_search_words.insert(lower_words).second) {
       continue;
-    seen_search_words.insert(lower_words);
+    }
 
     HistoryIDVector history_ids = HistoryIDsFromWords(lower_words);
     history_ids_were_trimmed |= TrimHistoryIdsPool(&history_ids);
@@ -226,11 +228,11 @@ ScoredHistoryMatches URLIndexPrivateData::HistoryItemsForTerms(
     // Filter unique matches to maximize the use of the `max_matches` capacity.
     // It's possible this'll still end up with duplicates as having unique
     // URL IDs does not guarantee having unique `stripped_destination_url`.
-    std::set<HistoryID> seen_history_ids;
+    absl::flat_hash_set<HistoryID> seen_history_ids;
+    seen_history_ids.reserve(scored_items.size());
     std::erase_if(scored_items, [&](const auto& scored_item) {
       HistoryID scored_item_id = scored_item.url_info.id();
-      bool duplicate = seen_history_ids.count(scored_item_id);
-      seen_history_ids.insert(scored_item_id);
+      bool duplicate = !seen_history_ids.insert(scored_item_id).second;
       return duplicate;
     });
     if (!skip_resize && scored_items.size() > max_matches) {
@@ -666,7 +668,8 @@ void URLIndexPrivateData::HistoryIdsToScoredMatches(
   // problematic when there are multiple duplicate matches. Try counting the
   // unique hosts in the matches instead.
   size_t num_unique_hosts;
-  std::set<std::string> unique_hosts = {};
+  absl::flat_hash_set<std::string> unique_hosts;
+  unique_hosts.reserve(history_ids.size());
   for (const auto& history_id : history_ids) {
     DCHECK(history_info_map_.count(history_id));
     unique_hosts.insert(

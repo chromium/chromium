@@ -34,6 +34,7 @@
 #include "chrome/browser/ui/views/profiles/profile_picker_post_sign_in_adapter.h"
 #include "chrome/browser/ui/views/profiles/profile_picker_web_contents_host.h"
 #include "chrome/browser/ui/webui/intro/intro_ui.h"
+#include "chrome/browser/ui/webui/signin/signin_ui_error.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/common/webui_url_constants.h"
 #include "components/prefs/pref_service.h"
@@ -508,6 +509,12 @@ FirstRunFlowController::~FirstRunFlowController() {
     std::move(first_run_exited_callback_)
         .Run(ProfilePicker::FirstRunExitStatus::kQuitAtEnd);
   }
+}
+
+void FirstRunFlowController::ShowSigninError(Profile* profile,
+                                             const SigninUIError& error) {
+  // Display the signin error once the browser opens.
+  HandleSigninErrorInBrowser(profile, error);
 }
 
 void FirstRunFlowController::Init() {

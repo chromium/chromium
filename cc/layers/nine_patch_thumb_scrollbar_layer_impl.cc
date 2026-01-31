@@ -153,14 +153,19 @@ void NinePatchThumbScrollbarLayerImpl::AppendTrackAndButtonsQuads(
 
   bool needs_blending = !contents_opaque();
   gfx::PointF uv_top_left(0.f, 0.f);
-  gfx::PointF uv_bottom_right(1.f, 1.f);
+
+  const gfx::Size resource_size =
+      layer_tree_impl()->GetUIResourceSize(track_and_buttons_ui_resource_id_);
+
   viz::TextureDrawQuad* quad =
       render_pass->CreateAndAppendDrawQuad<viz::TextureDrawQuad>();
   quad->SetNew(shared_quad_state, scaled_track_quad_rect,
                scaled_visible_track_quad_rect, needs_blending,
-               track_resource_id, uv_top_left, uv_bottom_right,
+               track_resource_id, uv_top_left,
+               gfx::PointF(resource_size.width(), resource_size.height()),
                SkColors::kTransparent, nearest_neighbor,
-               /*secure_output_only=*/false, gfx::ProtectedVideoType::kClear);
+               /*secure_output=*/false, gfx::ProtectedVideoType::kClear,
+               /*is_tex_coords_normalized=*/false);
   ValidateQuadResources(quad);
 }
 

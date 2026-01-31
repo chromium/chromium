@@ -32,12 +32,12 @@
 #include <unicode/utf16.h>
 
 #include <algorithm>
+#include <bit>
 #include <memory>
 #include <utility>
 
 #include "base/compiler_specific.h"
 #include "base/memory/ptr_util.h"
-#include "base/numerics/byte_conversions.h"
 #include "build/build_config.h"
 #include "skia/ext/font_utils.h"
 #include "third_party/blink/renderer/platform/font_family_names.h"
@@ -367,8 +367,7 @@ static std::pair<int16_t, int16_t> TypoAscenderAndDescender(
                                        sizeof(buffer), buffer);
   if (size == sizeof(buffer)) {
     // The buffer values are in big endian.
-    return std::make_pair(base::ByteSwap(buffer[0]),
-                          -base::ByteSwap(buffer[1]));
+    return std::make_pair(std::byteswap(buffer[0]), -std::byteswap(buffer[1]));
   }
   return std::make_pair(0, 0);
 }

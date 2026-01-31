@@ -64,7 +64,12 @@ struct SlotSpanMetadata;
 
 class PartitionStatsDumper;
 
-struct PartitionRoot;
+class PartitionRoot;
+
+struct PurgeState {
+  uint16_t generation = 0;
+  uint16_t next_bucket_index = 0;
+};
 
 namespace internal {
 // Declare PartitionRootLock() for thread analysis. Its implementation

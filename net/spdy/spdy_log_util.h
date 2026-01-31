@@ -22,13 +22,13 @@ NET_EXPORT_PRIVATE base::Value ElideGoAwayDebugDataForNetLog(
     NetLogCaptureMode capture_mode,
     std::string_view debug_data);
 
-// Given a quiche::HttpHeaderBlock, return its base::Value::List representation.
-NET_EXPORT_PRIVATE base::Value::List ElideHttpHeaderBlockForNetLog(
+// Given a quiche::HttpHeaderBlock, return its base::ListValue representation.
+NET_EXPORT_PRIVATE base::ListValue ElideHttpHeaderBlockForNetLog(
     const quiche::HttpHeaderBlock& headers,
     NetLogCaptureMode capture_mode);
 
 // Converts a quiche::HttpHeaderBlock into NetLog event parameters.
-NET_EXPORT_PRIVATE base::Value::Dict HttpHeaderBlockNetLogParams(
+NET_EXPORT_PRIVATE base::DictValue HttpHeaderBlockNetLogParams(
     const quiche::HttpHeaderBlock* headers,
     NetLogCaptureMode capture_mode);
 

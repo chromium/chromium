@@ -10,7 +10,6 @@
 #include "base/command_line.h"
 #include "base/feature_list.h"
 #include "base/files/file_path.h"
-#include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
@@ -25,7 +24,6 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sessions/chrome_tab_restore_service_client.h"
 #include "chrome/browser/sessions/session_restore_test_helper.h"
-#include "chrome/browser/sessions/tab_loader_tester.h"
 #include "chrome/browser/sessions/tab_restore_service_factory.h"
 #include "chrome/browser/sessions/tab_restore_service_load_waiter.h"
 #include "chrome/browser/tab_group_sync/tab_group_sync_service_factory.h"
@@ -55,7 +53,6 @@
 #include "components/javascript_dialogs/app_modal_dialog_view.h"
 #include "components/keep_alive_registry/keep_alive_types.h"
 #include "components/keep_alive_registry/scoped_keep_alive.h"
-#include "components/performance_manager/public/features.h"
 #include "components/saved_tab_groups/internal/saved_tab_group_model.h"
 #include "components/saved_tab_groups/public/features.h"
 #include "components/saved_tab_groups/public/saved_tab_group_tab.h"
@@ -86,10 +83,6 @@
 #include "ui/gfx/range/range.h"
 #include "url/gurl.h"
 
-#if BUILDFLAG(ENABLE_SESSION_SERVICE)
-#include "chrome/browser/sessions/tab_loader.h"
-#endif  // BUILDFLAG(ENABLE_SESSION_SERVICE)
-
 namespace sessions {
 class TabRestoreTest : public InProcessBrowserTest {
  public:
@@ -106,13 +99,6 @@ class TabRestoreTest : public InProcessBrowserTest {
 
   TabRestoreTest(const TabRestoreTest&) = delete;
   TabRestoreTest& operator=(const TabRestoreTest&) = delete;
-
-#if BUILDFLAG(ENABLE_SESSION_SERVICE)
-  void SetMaxSimultaneousLoadsForTesting(TabLoader* tab_loader) {
-    TabLoaderTester tester(tab_loader);
-    tester.SetMaxSimultaneousLoadsForTesting(1);
-  }
-#endif
 
  protected:
   void SetUpOnMainThread() override {
@@ -1240,6 +1226,12 @@ IN_PROC_BROWSER_TEST_F(TabRestoreTest, RestoreWindow) {
 IN_PROC_BROWSER_TEST_F(TabRestoreTest, RestoreWindow_ActiveTabIndex) {
   AddFileSchemeTabs(browser(), 4);
 
+  tab_groups::TabGroupId group =
+      browser()->tab_strip_model()->AddToNewGroup({3});
+  tab_groups::TabGroupVisualData group_data(u"Bar",
+                                            tab_groups::TabGroupColorId::kBlue);
+  browser()->GetTabStripModel()->ChangeTabGroupVisuals(group, group_data);
+
   // Create a second browser.
   ui_test_utils::NavigateToURLWithDisposition(
       browser(), GURL(chrome::kChromeUINewTabURL),
@@ -1494,9 +1486,6 @@ IN_PROC_BROWSER_TEST_F(TabRestoreTest,
 #define MAYBE_TabsFromRestoredWindowsAreLoadedGradually \
   TabsFromRestoredWindowsAreLoadedGradually
 #endif
-// TabLoader (used here) is available only when browser is built
-// with ENABLE_SESSION_SERVICE.
-#if BUILDFLAG(ENABLE_SESSION_SERVICE)
 IN_PROC_BROWSER_TEST_F(TabRestoreTest,
                        MAYBE_TabsFromRestoredWindowsAreLoadedGradually) {
   auto browser_created_observer =
@@ -1514,27 +1503,11 @@ IN_PROC_BROWSER_TEST_F(TabRestoreTest,
   const int active_tab_index = browser2->GetTabStripModel()->active_index();
   CloseBrowserSynchronously(browser2);
 
-  // Passed by address, so must live until the end of the test.
-  base::RepeatingCallback<void(TabLoader*)> construction_callback =
-      base::BindRepeating(&TabRestoreTest::SetMaxSimultaneousLoadsForTesting,
-                          base::Unretained(this));
-
   // Limit the number of restored tabs that are loaded.
-  if (base::FeatureList::IsEnabled(
-          performance_manager::features::
-              kBackgroundTabLoadingFromPerformanceManager)) {
-    ASSERT_TRUE(
-        performance_manager::policies::CanScheduleLoadForRestoredTabs());
-    performance_manager::policies::SetMaxLoadedBackgroundTabCountForTesting(2);
-    performance_manager::policies::
-        SetMaxSimultaneousBackgroundTabLoadsForTesting(1);
-  } else {
-    TabLoaderTester::SetMaxLoadedTabCountForTesting(2);
-
-    // When the tab loader is created configure it for this test. This ensures
-    // that no more than 1 loading slot is used for the test.
-    TabLoaderTester::SetConstructionCallbackForTesting(&construction_callback);
-  }
+  ASSERT_TRUE(performance_manager::policies::CanScheduleLoadForRestoredTabs());
+  performance_manager::policies::SetMaxLoadedBackgroundTabCountForTesting(2);
+  performance_manager::policies::SetMaxSimultaneousBackgroundTabLoadsForTesting(
+      1);
 
   // Restore recently closed window.
   browser_created_observer.emplace();
@@ -1545,7 +1518,7 @@ IN_PROC_BROWSER_TEST_F(TabRestoreTest,
   EXPECT_EQ(tabs_count, browser2->GetTabStripModel()->count());
   EXPECT_EQ(active_tab_index, browser2->GetTabStripModel()->active_index());
 
-  // These two tabs should be loaded by TabLoader.
+  // These two tabs should be loaded by session restore.
   EnsureTabFinishedRestoring(browser2->GetTabStripModel()->GetWebContentsAt(0));
   EnsureTabFinishedRestoring(
       browser2->GetTabStripModel()->GetWebContentsAt(active_tab_index));
@@ -1563,15 +1536,7 @@ IN_PROC_BROWSER_TEST_F(TabRestoreTest,
     EXPECT_FALSE(contents->IsLoading());
     EXPECT_TRUE(contents->GetController().NeedsReload());
   }
-
-  if (!base::FeatureList::IsEnabled(
-          performance_manager::features::
-              kBackgroundTabLoadingFromPerformanceManager)) {
-    // Clean up the callback.
-    TabLoaderTester::SetConstructionCallbackForTesting(nullptr);
-  }
 }
-#endif  // BUILDFLAG(ENABLE_SESSION_SERVICE)
 
 IN_PROC_BROWSER_TEST_F(TabRestoreTest, PRE_GetRestoreWindowType) {
   // The TabRestoreService should get initialized (Loaded)
@@ -1844,7 +1809,7 @@ IN_PROC_BROWSER_TEST_F(TabRestoreTest, RestoreWindowWithGroupedTabs) {
   tab_groups::TabGroupId group2 =
       browser()->tab_strip_model()->AddToNewGroup({tab_count - 1});
   tab_groups::TabGroupVisualData group2_data(
-      u"Bar", tab_groups::TabGroupColorId::kBlue);
+      u"Bar", tab_groups::TabGroupColorId::kBlue, true);
   browser()->GetTabStripModel()->ChangeTabGroupVisuals(group2, group2_data);
 
   CloseBrowserSynchronously(browser());

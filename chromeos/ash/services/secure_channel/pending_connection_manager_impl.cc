@@ -4,7 +4,6 @@
 
 #include "chromeos/ash/services/secure_channel/pending_connection_manager_impl.h"
 
-#include "base/containers/contains.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "chromeos/ash/services/secure_channel/authenticated_channel.h"
@@ -100,7 +99,7 @@ void PendingConnectionManagerImpl::HandleConnectionRequest(
 void PendingConnectionManagerImpl::OnConnectionAttemptSucceeded(
     const ConnectionDetails& connection_details,
     std::unique_ptr<AuthenticatedChannel> authenticated_channel) {
-  if (!base::Contains(details_to_attempt_details_map_, connection_details)) {
+  if (!details_to_attempt_details_map_.contains(connection_details)) {
     NOTREACHED() << "PendingConnectionManagerImpl::"
                  << "OnConnectionAttemptSucceeded(): Attempt succeeded, but "
                  << "there was no corresponding map entry. "
@@ -162,8 +161,8 @@ void PendingConnectionManagerImpl::HandleBleInitiatorRequest(
     ConnectionPriority connection_priority) {
   // If no ConnectionAttempt exists to this device in the initiator role, create
   // one.
-  if (!base::Contains(id_pair_to_ble_initiator_connection_attempts_,
-                      connection_attempt_details.device_id_pair())) {
+  if (!id_pair_to_ble_initiator_connection_attempts_.contains(
+          connection_attempt_details.device_id_pair())) {
     id_pair_to_ble_initiator_connection_attempts_[connection_attempt_details
                                                       .device_id_pair()] =
         BleInitiatorConnectionAttempt::Factory::Create(
@@ -193,8 +192,8 @@ void PendingConnectionManagerImpl::HandleBleListenerRequest(
     ConnectionPriority connection_priority) {
   // If no ConnectionAttempt exists to this device in the listener role, create
   // one.
-  if (!base::Contains(id_pair_to_ble_listener_connection_attempts_,
-                      connection_attempt_details.device_id_pair())) {
+  if (!id_pair_to_ble_listener_connection_attempts_.contains(
+          connection_attempt_details.device_id_pair())) {
     id_pair_to_ble_listener_connection_attempts_[connection_attempt_details
                                                      .device_id_pair()] =
         BleListenerConnectionAttempt::Factory::Create(
@@ -241,8 +240,8 @@ void PendingConnectionManagerImpl::HandleNearbyInitiatorRequest(
     ConnectionPriority connection_priority) {
   // If no ConnectionAttempt exists to this device in the initiator role, create
   // one.
-  if (!base::Contains(id_pair_to_nearby_initiator_connection_attempts_,
-                      connection_attempt_details.device_id_pair())) {
+  if (!id_pair_to_nearby_initiator_connection_attempts_.contains(
+          connection_attempt_details.device_id_pair())) {
     id_pair_to_nearby_initiator_connection_attempts_[connection_attempt_details
                                                          .device_id_pair()] =
         NearbyInitiatorConnectionAttempt::Factory::Create(

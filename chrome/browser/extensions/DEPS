@@ -4,6 +4,7 @@ include_rules = [
   "+components/guest_view/common",
   "+components/security_state/content",
   "+components/live_caption",
+  "+components/split_tabs",
   "+components/tabs/public",
   "+components/app_icon_loader",
   "+extensions/strings/grit/extensions_strings.h",

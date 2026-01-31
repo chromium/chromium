@@ -49,6 +49,10 @@ class CSSShapeCommand : public GarbageCollected<CSSShapeCommand> {
   // This should be private, but can't because of MakeGarbageCollected.
   CSSShapeCommand() : type_(Type::kPathSegClosePath) {}
 
+  bool HasRandomFunctions() const {
+    return end_point_ && end_point_->HasRandomFunctions();
+  }
+
  private:
   Type type_;
   Member<const CSSValue> end_point_;
@@ -87,6 +91,15 @@ class CSSShapeArcCommand : public CSSShapeCommand {
            has_direction_agnostic_radius_ ==
                other.has_direction_agnostic_radius_;
   }
+
+  bool HasRandomFunctions() const {
+    if (CSSShapeCommand::HasRandomFunctions()) {
+      return true;
+    }
+    return (angle_ && angle_->HasRandomFunctions()) ||
+           (radius_ && radius_->HasRandomFunctions());
+  }
+
   void Trace(Visitor* visitor) const override {
     visitor->Trace(angle_);
     visitor->Trace(radius_);
@@ -135,6 +148,16 @@ class CSSShapeCurveCommand : public CSSShapeCommand {
     return control_points_;
   }
 
+  bool HasRandomFunctions() const {
+    if (CSSShapeCommand::HasRandomFunctions()) {
+      return true;
+    }
+    return (control_points_.at(0).second &&
+            control_points_.at(0).second->HasRandomFunctions()) ||
+           (NumControlPoints == 2 && control_points_.at(1).second &&
+            control_points_.at(1).second->HasRandomFunctions());
+  }
+
  private:
   std::array<CSSShapeControlPoint, NumControlPoints> control_points_;
 };
@@ -159,6 +182,15 @@ class CSSShapeValue : public CSSValue {
   bool Equals(const CSSShapeValue& other) const {
     return wind_rule_ == other.wind_rule_ && *origin_ == *other.origin_ &&
            commands_ == other.commands_;
+  }
+
+  bool HasRandomFunctions() const {
+    for (const CSSShapeCommand* command : commands_) {
+      if (command->HasRandomFunctions()) {
+        return true;
+      }
+    }
+    return origin_ && origin_->HasRandomFunctions();
   }
 
   void TraceAfterDispatch(blink::Visitor*) const;

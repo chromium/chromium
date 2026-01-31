@@ -73,7 +73,8 @@ std::unique_ptr<webapps::WebappIcon> MakeWebAppIcon(
 }  // anonymous namespace
 
 // static JNI method.
-static jint JNI_WebApkUpdateManager_GetWebApkTargetShellVersion(JNIEnv* env) {
+static int32_t JNI_WebApkUpdateManager_GetWebApkTargetShellVersion(
+    JNIEnv* env) {
   return base::GetFieldTrialParamByFeatureAsInt(
       kWebApkShellUpdate, kWebApkTargetShellVersion.name,
       kWebApkTargetShellVersion.default_value);
@@ -87,37 +88,37 @@ static void JNI_WebApkUpdateManager_StoreWebApkUpdateRequestToFile(
     std::string& java_scope,
     std::u16string& java_name,
     std::u16string& java_short_name,
-    jboolean java_has_custom_name,
+    bool java_has_custom_name,
     std::string& java_manifest_id,
     std::string& java_app_key,
     std::string& java_primary_icon_url,
     const JavaRef<jbyteArray>& java_primary_icon_data,
-    jboolean java_is_primary_icon_maskable,
+    bool java_is_primary_icon_maskable,
     std::string& java_splash_icon_url,
     const JavaRef<jbyteArray>& java_splash_icon_data,
-    jboolean java_is_splash_icon_maskable,
+    bool java_is_splash_icon_maskable,
     std::vector<std::string>& java_icon_urls,
     std::vector<std::string>& java_icon_hashes,
-    jint java_display_mode,
-    jint java_orientation,
-    jlong java_theme_color,
-    jlong java_background_color,
-    jlong java_dark_theme_color,
-    jlong java_dark_background_color,
+    int32_t java_display_mode,
+    int32_t java_orientation,
+    int64_t java_theme_color,
+    int64_t java_background_color,
+    int64_t java_dark_theme_color,
+    int64_t java_dark_background_color,
     std::string& java_share_target_action,
     std::u16string& java_share_target_param_title,
     std::u16string& java_share_target_param_text,
-    const jboolean java_share_target_param_is_method_post,
-    const jboolean java_share_target_param_is_enctype_multipart,
+    const bool java_share_target_param_is_method_post,
+    const bool java_share_target_param_is_enctype_multipart,
     std::vector<std::u16string>& java_share_target_param_file_names,
     const JavaRef<jobjectArray>& java_share_target_param_accepts,
     const JavaRef<jobjectArray>& java_shortcuts,
     const JavaRef<jobjectArray>& java_shortcut_icon_data,
     std::string& java_web_manifest_url,
     std::string& webapk_package,
-    jint java_webapk_version,
-    jboolean java_is_manifest_stale,
-    jboolean java_is_app_identity_update_supported,
+    int32_t java_webapk_version,
+    bool java_is_manifest_stale,
+    bool java_is_app_identity_update_supported,
     const JavaRef<jintArray>& java_update_reasons,
     const JavaRef<jobject>& java_callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);

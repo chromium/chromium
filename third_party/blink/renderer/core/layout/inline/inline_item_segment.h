@@ -11,6 +11,7 @@
 #include <bit>
 
 #include "base/check_op.h"
+#include "base/containers/span.h"
 #include "base/dcheck_is_on.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/layout/inline/offset_mapping.h"
@@ -148,7 +149,7 @@ class CORE_EXPORT InlineItemSegments {
 
    private:
     RunSegmenter::RunSegmenterRange range_;
-    base::raw_span<const InlineItemSegment> span_;
+    base::span<const InlineItemSegment> span_;
     unsigned segment_index_;
     unsigned start_offset_;
     unsigned end_offset_;

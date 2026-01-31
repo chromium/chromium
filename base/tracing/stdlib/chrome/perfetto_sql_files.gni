@@ -15,7 +15,6 @@ chrome_stdlib_sql_files = [
   "metadata.sql",
   "input.sql",
   "page_loads.sql",
-  "scroll_interactions.sql",
   "speedometer.sql",
   "speedometer_2_1.sql",
   "speedometer_3.sql",
@@ -32,4 +31,5 @@ chrome_stdlib_sql_files = [
   "scroll_jank/scroll_offsets.sql",
   "scroll_jank/utils.sql",
   "scroll_jank_tagging.sql",
+  "scroll_jank_v4.sql",
 ]

@@ -30,12 +30,17 @@ class TouchUsageMetricsRecorderTest : public AshTestBase {
     event_generator_ = GetEventGenerator();
   }
 
+  void TearDown() override {
+    event_generator_ = nullptr;
+    AshTestBase::TearDown();
+  }
+
  protected:
   // Used to verify recorded data.
   base::HistogramTester histogram_tester_;
 
   // Used to generate input events.
-  raw_ptr<ui::test::EventGenerator, DanglingUntriaged> event_generator_;
+  raw_ptr<ui::test::EventGenerator> event_generator_;
 };
 
 // Verifies that a singular TouchscreenUsageRecorder, tested in isolation, does

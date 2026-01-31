@@ -44,9 +44,11 @@ TEST_P(HeadlessTestExpectationsTest, NormalTestExpectations) {
 }
 
 TEST_P(HeadlessTestExpectationsTest, ForkedHeadlessModeTestExpectations) {
-  TestMetaInfo test_meta_info;
-  test_meta_info.fork_headless_mode_expectations = true;
-  base::FilePath path = GetTestExpectationFilePath(test_meta_info);
+  auto test_meta_info = TestMetaInfo::FromString(R"(
+  // META: fork_headless_mode_expectations
+  // )");
+
+  base::FilePath path = GetTestExpectationFilePath(test_meta_info.value());
 
   switch (GetHeadlessType()) {
     case HeadlessType::kUnspecified:
@@ -62,9 +64,11 @@ TEST_P(HeadlessTestExpectationsTest, ForkedHeadlessModeTestExpectations) {
 }
 
 TEST_P(HeadlessTestExpectationsTest, ForkedHeadlessShellTestExpectations) {
-  TestMetaInfo test_meta_info;
-  test_meta_info.fork_headless_shell_expectations = true;
-  base::FilePath path = GetTestExpectationFilePath(test_meta_info);
+  auto test_meta_info = TestMetaInfo::FromString(R"(
+  // META: fork_headless_shell_expectations
+  // )");
+
+  base::FilePath path = GetTestExpectationFilePath(test_meta_info.value());
 
   switch (GetHeadlessType()) {
     case HeadlessType::kUnspecified:

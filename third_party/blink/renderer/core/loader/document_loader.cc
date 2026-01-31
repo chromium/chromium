@@ -29,6 +29,7 @@
 
 #include "third_party/blink/renderer/core/loader/document_loader.h"
 
+#include <algorithm>
 #include <memory>
 #include <optional>
 #include <utility>
@@ -344,8 +345,8 @@ struct SameSizeAsDocumentLoader
   Member<MHTMLArchive> archive;
   std::unique_ptr<WebNavigationParams> params;
   std::unique_ptr<PolicyContainer> policy_container;
-  std::optional<network::ParsedPermissionsPolicy>
-      isolated_app_permissions_policy;
+  const std::optional<Vector<IsolatedAppPermissionPolicyEntry>>
+      isolated_app_policy;
   DocumentToken token;
   KURL url;
   KURL original_url;
@@ -422,8 +423,7 @@ struct SameSizeAsDocumentLoader
       initiator_origin_trial_features;
   const Vector<String> force_enabled_origin_trials;
   bool navigation_scroll_allowed;
-  bool origin_agent_cluster;
-  bool origin_agent_cluster_left_as_default;
+  AgentClusterKey agent_cluster_key;
   bool is_cross_site_cross_browsing_context_group;
   bool should_have_sticky_user_activation;
   std::vector<WebHistoryItem> navigation_api_back_entries
@@ -532,7 +532,7 @@ DocumentLoader::DocumentLoader(
     std::unique_ptr<ExtraData> extra_data)
     : params_(std::move(navigation_params)),
       policy_container_(std::move(policy_container)),
-      initial_permissions_policy_(params_->permissions_policy_override),
+      isolated_app_policy_(params_->isolated_app_policy),
       token_(params_->document_token),
       url_(params_->url),
       original_url_(params_->url),
@@ -597,9 +597,7 @@ DocumentLoader::DocumentLoader(
           CopyInitiatorOriginTrials(params_->initiator_origin_trial_features)),
       force_enabled_origin_trials_(
           CopyForceEnabledOriginTrials(params_->force_enabled_origin_trials)),
-      origin_agent_cluster_(params_->origin_agent_cluster),
-      origin_agent_cluster_left_as_default_(
-          params_->origin_agent_cluster_left_as_default),
+      agent_cluster_key_(params_->agent_cluster_key),
       is_cross_site_cross_browsing_context_group_(
           params_->is_cross_site_cross_browsing_context_group),
       should_have_sticky_user_activation_(
@@ -619,8 +617,8 @@ DocumentLoader::DocumentLoader(
           params_->initial_permission_statuses)),
       force_new_document_sequence_number_(
           params_->force_new_document_sequence_number) {
-  TRACE_EVENT_WITH_FLOW0("loading", "DocumentLoader::DocumentLoader",
-                         TRACE_ID_LOCAL(this), TRACE_EVENT_FLAG_FLOW_OUT);
+  TRACE_EVENT("loading", "DocumentLoader::DocumentLoader",
+              perfetto::Flow::FromPointer(this));
   DCHECK(frame_);
   DCHECK(params_);
 
@@ -726,9 +724,7 @@ DocumentLoader::CreateWebNavigationParamsToCloneDocument() {
   // sandbox flags and various policies are copied separately during commit in
   // CommitNavigation() and CalculateSandboxFlags().
   params->storage_key = window->GetStorageKey();
-  params->origin_agent_cluster = origin_agent_cluster_;
-  params->origin_agent_cluster_left_as_default =
-      origin_agent_cluster_left_as_default_;
+  params->agent_cluster_key = agent_cluster_key_;
   params->grant_load_local_resources = grant_load_local_resources_;
   // Various attributes that relates to the last "real" navigation that is known
   // by the browser must be carried over.
@@ -808,8 +804,8 @@ LocalFrameClient& DocumentLoader::GetLocalFrameClient() const {
 }
 
 DocumentLoader::~DocumentLoader() {
-  TRACE_EVENT_WITH_FLOW0("loading", "DocumentLoader::~DocumentLoader",
-                         TRACE_ID_LOCAL(this), TRACE_EVENT_FLAG_FLOW_IN);
+  TRACE_EVENT("loading", "DocumentLoader::~DocumentLoader",
+              perfetto::TerminatingFlow::FromPointer(this));
   DCHECK_EQ(state_, kSentDidFinishLoad);
 
   // Before being collected by the GC, it is expected the DocumentLoader to be
@@ -1325,9 +1321,8 @@ DocumentLoader::TakeProcessBackgroundDataCallback() {
 }
 
 void DocumentLoader::BodyDataReceivedImpl(BodyData& data) {
-  TRACE_EVENT_WITH_FLOW0("loading", "DocumentLoader::BodyDataReceivedImpl",
-                         TRACE_ID_LOCAL(this),
-                         TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT);
+  TRACE_EVENT("loading", "DocumentLoader::BodyDataReceivedImpl",
+              perfetto::Flow::FromPointer(this));
   base::SpanOrSize<const char> encoded_data = data.EncodedData();
   if (encoded_data.size()) {
     if (response_.WasFetchedViaServiceWorker()) {
@@ -1339,10 +1334,8 @@ void DocumentLoader::BodyDataReceivedImpl(BodyData& data) {
                           main_resource_identifier_, this, encoded_data);
   }
 
-  TRACE_EVENT_WITH_FLOW1("loading", "DocumentLoader::HandleData",
-                         TRACE_ID_LOCAL(this),
-                         TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT,
-                         "length", encoded_data.size());
+  TRACE_EVENT("loading", "DocumentLoader::HandleData",
+              perfetto::Flow::FromPointer(this), "length", encoded_data.size());
 
   DCHECK(!frame_->GetPage()->Paused());
   time_of_last_data_received_ = clock_->NowTicks();
@@ -1365,9 +1358,8 @@ void DocumentLoader::BodyLoadingFinished(
     int64_t total_encoded_body_length,
     int64_t total_decoded_body_length,
     const std::optional<WebURLError>& error) {
-  TRACE_EVENT_WITH_FLOW0("loading", "DocumentLoader::BodyLoadingFinished",
-                         TRACE_ID_LOCAL(this),
-                         TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT);
+  TRACE_EVENT("loading", "DocumentLoader::BodyLoadingFinished",
+              perfetto::Flow::FromPointer(this));
 
   DCHECK(frame_);
   if (!error) {
@@ -1459,9 +1451,8 @@ void DocumentLoader::LoadFailed(const ResourceError& error) {
 }
 
 void DocumentLoader::FinishedLoading(base::TimeTicks finish_time) {
-  TRACE_EVENT_WITH_FLOW0("loading", "DocumentLoader::FinishedLoading",
-                         TRACE_ID_LOCAL(this),
-                         TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT);
+  TRACE_EVENT("loading", "DocumentLoader::FinishedLoading",
+              perfetto::Flow::FromPointer(this));
   body_loader_.reset();
   virtual_time_pauser_.UnpauseVirtualTime();
 
@@ -1617,10 +1608,9 @@ void DocumentLoader::HandleResponse() {
 }
 
 void DocumentLoader::CommitData(BodyData& data) {
-  TRACE_EVENT_WITH_FLOW1("loading", "DocumentLoader::CommitData",
-                         TRACE_ID_LOCAL(this),
-                         TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT,
-                         "length", data.EncodedData().size());
+  TRACE_EVENT("loading", "DocumentLoader::CommitData",
+              perfetto::Flow::FromPointer(this), "length",
+              data.EncodedData().size());
 
   // This can happen if document.close() is called by an event handler while
   // there's still pending incoming data.
@@ -2052,13 +2042,14 @@ void DocumentLoader::StartLoadingInternal() {
 
   InitializePrefetchedSignedExchangeManager();
 
+  // https://crbug.com/471268403 implies that this is sometimes null.
+  CHECK(body_loader_);
   body_loader_->SetDefersLoading(freeze_mode_);
 }
 
 void DocumentLoader::StartLoadingResponse() {
-  TRACE_EVENT_WITH_FLOW0("loading", "DocumentLoader::StartLoadingResponse",
-                         TRACE_ID_LOCAL(this),
-                         TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT);
+  TRACE_EVENT("loading", "DocumentLoader::StartLoadingResponse",
+              perfetto::Flow::FromPointer(this));
   // TODO(dcheng): Clean up the null checks in this helper.
   if (!frame_)
     return;
@@ -2151,9 +2142,8 @@ void DocumentLoader::StartLoadingResponse() {
 }
 
 void DocumentLoader::DidInstallNewDocument(Document* document) {
-  TRACE_EVENT_WITH_FLOW0("loading", "DocumentLoader::DidInstallNewDocument",
-                         TRACE_ID_LOCAL(this),
-                         TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT);
+  TRACE_EVENT("loading", "DocumentLoader::DidInstallNewDocument",
+              perfetto::Flow::FromPointer(this));
   // This was called already during `InitializeWindow`, but it could be that we
   // didn't have a Document then (which happens when `InitializeWindow` reuses
   // the window and calls `LocalDOMWindow::ClearForReuse()`). This is
@@ -2535,26 +2525,23 @@ bool HasPotentialUniversalAccessPrivilege(LocalFrame* frame) {
 
 }  // namespace
 
-WindowAgent* GetWindowAgentForOrigin(
+WindowAgent* GetWindowAgentForAgentClusterKey(
     LocalFrame* frame,
-    SecurityOrigin* origin,
-    bool is_origin_agent_cluster,
-    bool origin_agent_cluster_left_as_default) {
+    const AgentClusterKey& agent_cluster_key) {
   // TODO(keishi): Also check if AllowUniversalAccessFromFileURLs might
   // dynamically change.
-  return frame->window_agent_factory().GetAgentForOrigin(
-      HasPotentialUniversalAccessPrivilege(frame), origin,
-      is_origin_agent_cluster, origin_agent_cluster_left_as_default);
+  return frame->window_agent_factory().GetAgentForAgentClusterKey(
+      HasPotentialUniversalAccessPrivilege(frame), agent_cluster_key);
 }
 
-// Inheriting cases use their agent's "is origin-keyed" value, which is set
+// Inheriting cases use their agent's AgentClusterKey value, which is set
 // by whatever they're inheriting from.
 //
 // javascript: URLs use the calling page as their Url() value, so we need to
 // include them explicitly.
 //
 // Discarded pages retain their Url() value so must be included explicitly.
-bool ShouldInheritExplicitOriginKeying(const KURL& url, CommitReason reason) {
+bool ShouldInheritAgentClusterKey(const KURL& url, CommitReason reason) {
   return Document::ShouldInheritSecurityOriginFromOwner(url) ||
          reason == CommitReason::kJavascriptUrl ||
          reason == CommitReason::kDiscard;
@@ -2568,9 +2555,8 @@ bool DocumentLoader::IsSameOriginInitiator() const {
 }
 
 void DocumentLoader::InitializeWindow(Document* owner_document) {
-  TRACE_EVENT_WITH_FLOW0("loading", "DocumentLoader::InitializeWindow",
-                         TRACE_ID_LOCAL(this),
-                         TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT);
+  TRACE_EVENT("loading", "DocumentLoader::InitializeWindow",
+              perfetto::Flow::FromPointer(this));
   // Javascript URLs, XSLT committed document and discarded documents must not
   // pass a new policy_container_, since they must keep the previous document
   // one.
@@ -2632,35 +2618,48 @@ void DocumentLoader::InitializeWindow(Document* owner_document) {
     security_origin = CalculateOrigin(owner_document);
   }
 
-  bool origin_agent_cluster = origin_agent_cluster_;
-  // Note: this code must be kept in sync with
-  // WindowAgentFactory::GetAgentForOrigin(), as the two conditions below hand
-  // out universal WindowAgent objects, and thus override OAC.
-  if (HasPotentialUniversalAccessPrivilege(frame_.Get()) ||
-      security_origin->IsLocal()) {
+  AgentClusterKey agent_cluster_key = agent_cluster_key_;
+  if (IsPagePopupRunningInWebTest(frame_)) {
+    // Additionally, if we are a page popup in LayoutTests ensure we use the
+    // popup owner's AgentClusterKey so the tests can possibly access the
+    // document via internals API.
+    agent_cluster_key = frame_->PagePopupOwner()
+                            ->GetExecutionContext()
+                            ->GetAgent()
+                            ->GetAgentClusterKey();
+
+    // Note: this code must be kept in sync with
+    // WindowAgentFactory::GetAgentForOrigin(), as the two conditions below hand
+    // out universal WindowAgent objects, and thus override the AgentClusterKey
+    // provided by the browser process.
+  } else if (HasPotentialUniversalAccessPrivilege(frame_.Get()) ||
+             security_origin->IsLocal()) {
     // In this case we either have AllowUniversalAccessFromFileURLs enabled, or
     // WebSecurity is disabled, or it's a local scheme such as file://; any of
     // these cases forces us to use a common WindowAgent for all origins, so
-    // don't attempt to use OriginAgentCluster. Note:
+    // don't attempt to pass the AgentClusterKey sent from the browser. Note:
     // AllowUniversalAccessFromFileURLs is deprecated as of Android R, so
     // eventually this use case will diminish.
-    origin_agent_cluster = false;
-  } else if (ShouldInheritExplicitOriginKeying(Url(), commit_reason_) &&
+    agent_cluster_key = AgentClusterKey::CreateUniversalFileAgent();
+  } else if (ShouldInheritAgentClusterKey(Url(), commit_reason_) &&
              owner_document && owner_document->domWindow()) {
     // Since we're inheriting the owner document's origin, we should also use
-    // its OriginAgentCluster (OAC) in determining which WindowAgent to use,
-    // overriding the OAC value sent in the commit params. For example, when
-    // about:blank is loaded, it has OAC = false, but if we have an owner, then
-    // we are using the owner's SecurityOrigin, we should match the OAC value
-    // also. JavaScript URLs also use their owner's SecurityOrigins, and don't
-    // set OAC as part of their commit params.
+    // its AgentClusterKey to determine which WindowAgent to use, overriding the
+    // AgentClusterKey sent in the commit params. This happens mainly in two
+    // cases:
+    //   1. about:blank documents with an owner, which inherit both
+    //   SecurityOrigin and AgentClusterKey from their owner.
+    //   2. JavaScript URLs also inherit their SecurityOrigin and
+    //   AgentClusterKey from their owner (and don't pass an AgentClusterKey in
+    //   their commit params).
+    //
     // TODO(wjmaclean,domenic): we're currently verifying that the OAC
     // inheritance is correct for both XSLT documents and non-initial
     // about:blank cases. Given the relationship between OAC, SecurityOrigin,
     // and COOP/COEP, a single inheritance pathway would make sense; this work
     // is being tracked in https://crbug.com/1183935.
-    origin_agent_cluster =
-        owner_document->domWindow()->GetAgent()->IsOriginKeyedForInheritance();
+    agent_cluster_key =
+        owner_document->domWindow()->GetAgent()->GetAgentClusterKey();
   }
 
   bool inherited_has_storage_access = false;
@@ -2674,18 +2673,9 @@ void DocumentLoader::InitializeWindow(Document* owner_document) {
   // Document::IsSecureTransitionTo.
   if (!ShouldReuseDOMWindow(frame_->DomWindow(), security_origin.get(),
                             window_anonymous_matching)) {
-    auto* agent = GetWindowAgentForOrigin(
-        frame_.Get(), security_origin.get(), origin_agent_cluster,
-        origin_agent_cluster_left_as_default_);
+    auto* agent =
+        GetWindowAgentForAgentClusterKey(frame_.Get(), agent_cluster_key);
     frame_->SetDOMWindow(MakeGarbageCollected<LocalDOMWindow>(*frame_, agent));
-
-    // TODO(https://crbug.com/1111897): This call is likely to happen happen
-    // multiple times per agent, since navigations can happen multiple times per
-    // agent. This is subpar.
-    if (!ShouldInheritExplicitOriginKeying(Url(), commit_reason_) &&
-        origin_agent_cluster) {
-      agent->ForceOriginKeyedBecauseOfInheritance();
-    }
 
     // No need to sync this back to the browser, since it just came from the
     // browser.
@@ -2708,9 +2698,8 @@ void DocumentLoader::InitializeWindow(Document* owner_document) {
       // window to be reused, we should not inherit the initial empty document's
       // Agent, which was a universal access Agent.
       // This happens only in android webview.
-      frame_->DomWindow()->ResetWindowAgent(GetWindowAgentForOrigin(
-          frame_.Get(), security_origin.get(), origin_agent_cluster,
-          origin_agent_cluster_left_as_default_));
+      frame_->DomWindow()->ResetWindowAgent(
+          GetWindowAgentForAgentClusterKey(frame_.Get(), agent_cluster_key));
     }
     frame_->DomWindow()->ClearForReuse();
 
@@ -2824,9 +2813,8 @@ void DocumentLoader::InitializeWindow(Document* owner_document) {
 }
 
 void DocumentLoader::CommitNavigation() {
-  TRACE_EVENT_WITH_FLOW0("loading", "DocumentLoader::CommitNavigation",
-                         TRACE_ID_LOCAL(this),
-                         TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT);
+  TRACE_EVENT("loading", "DocumentLoader::CommitNavigation",
+              perfetto::Flow::FromPointer(this));
   base::ScopedUmaHistogramTimer histogram_timer(
       "Navigation.DocumentLoader.CommitNavigation");
   base::ElapsedTimer timer;
@@ -2918,9 +2906,9 @@ void DocumentLoader::CommitNavigation() {
     // PermissionsPolicy and DocumentPolicy require SecurityOrigin and origin
     // trials to be initialized.
     // TODO(iclelland): Add Permissions-Policy-Report-Only to Origin Policy.
-    security_init.ApplyPermissionsPolicy(
-        *frame_.Get(), response_, frame_policy_, initial_permissions_policy_,
-        FencedFrameProperties(), url_);
+    security_init.ApplyPermissionsPolicy(*frame_.Get(), response_,
+                                         frame_policy_, isolated_app_policy_,
+                                         FencedFrameProperties(), url_);
 
     // |document_policy_| is parsed in document loader because it is
     // compared with |frame_policy.required_document_policy| to decide
@@ -3193,9 +3181,8 @@ void DocumentLoader::CommitNavigation() {
 }
 
 void DocumentLoader::CreateParserPostCommit() {
-  TRACE_EVENT_WITH_FLOW0("loading", "DocumentLoader::CreateParserPostCommit",
-                         TRACE_ID_LOCAL(this),
-                         TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT);
+  TRACE_EVENT("loading", "DocumentLoader::CreateParserPostCommit",
+              perfetto::Flow::FromPointer(this));
   base::ElapsedTimer timer;
   SpeculationRulesHeader::ProcessHeadersForDocumentResponse(
       response_, *frame_->DomWindow());
@@ -3400,7 +3387,7 @@ void DocumentLoader::RecordAcceptLanguageAndContentLanguageMetric() {
             kContentLanguageMatchesPrimaryAcceptLanguage);
   }
 
-  if (base::Contains(accept_languages, content_language)) {
+  if (std::ranges::contains(accept_languages, content_language)) {
     base::UmaHistogramEnumeration(language_histogram_name,
                                   AcceptLanguageAndContentLanguageUsage::
                                       kContentLanguageMatchesAnyAcceptLanguage);
@@ -3434,10 +3421,8 @@ void DocumentLoader::RecordParentAndChildContentLanguageMetric() {
 }
 
 void DocumentLoader::RecordUseCountersForCommit() {
-  TRACE_EVENT_WITH_FLOW0("loading",
-                         "DocumentLoader::RecordUseCountersForCommit",
-                         TRACE_ID_LOCAL(this),
-                         TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT);
+  TRACE_EVENT("loading", "DocumentLoader::RecordUseCountersForCommit",
+              perfetto::Flow::FromPointer(this));
   // Pre-commit state, count usage the use counter associated with "this"
   // (provisional document loader) instead of frame_'s document loader.
   if (response_.DidServiceWorkerNavigationPreload()) {
@@ -3549,10 +3534,16 @@ void DocumentLoader::RecordUseCountersForCommit() {
     case network::mojom::DeviceBoundSessionUsage::kDeferred:
       CountUse(WebFeature::kDeviceBoundSessionRequestDeferral);
       [[fallthrough]];
-    case network::mojom::DeviceBoundSessionUsage::kInScopeNotDeferred:
+    case network::mojom::DeviceBoundSessionUsage::kInScopeRefreshNotYetNeeded:
+    case network::mojom::DeviceBoundSessionUsage::kInScopeRefreshNotAllowed:
+    case network::mojom::DeviceBoundSessionUsage::
+        kInScopeProactiveRefreshNotPossible:
+    case network::mojom::DeviceBoundSessionUsage::
+        kInScopeProactiveRefreshAttempted:
       CountUse(WebFeature::kDeviceBoundSessionRequestInScope);
       break;
-    case network::mojom::DeviceBoundSessionUsage::kNoUsage:
+    case network::mojom::DeviceBoundSessionUsage::kNoSiteMatchNotInScope:
+    case network::mojom::DeviceBoundSessionUsage::kSiteMatchNotInScope:
     case network::mojom::DeviceBoundSessionUsage::kUnknown:
       break;
   }

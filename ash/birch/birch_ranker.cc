@@ -5,6 +5,7 @@
 #include "ash/birch/birch_ranker.h"
 
 #include <algorithm>
+#include <utility>
 
 #include "ash/birch/birch_coral_item.h"
 #include "ash/birch/birch_item.h"
@@ -12,7 +13,6 @@
 #include "base/check.h"
 #include "base/command_line.h"
 #include "base/time/time.h"
-#include "base/types/cxx23_to_underlying.h"
 
 namespace {
 // How long release notes remain top ranked.
@@ -35,8 +35,8 @@ void BirchRanker::RankCalendarItems(std::vector<BirchCalendarItem>* items) {
   std::sort(items->begin(), items->end(),
             [](const BirchCalendarItem& a, const BirchCalendarItem& b) {
               if (a.start_time() == b.start_time()) {
-                return base::to_underlying(a.response_status()) <
-                       base::to_underlying(b.response_status());
+                return std::to_underlying(a.response_status()) <
+                       std::to_underlying(b.response_status());
               }
               return a.start_time() < b.start_time();
             });

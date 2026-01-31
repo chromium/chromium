@@ -150,6 +150,8 @@ class OpenXrApiWrapper {
 
   uint32_t GetRecommendedSwapchainSampleCount() const;
 
+  uint16_t GetMaxRenderLayers() const;
+
   static void DEVICE_VR_EXPORT SetTestHook(VRTestHook* hook);
 
  private:
@@ -253,6 +255,10 @@ class OpenXrApiWrapper {
 
   bool received_initial_valid_primary_views_ = false;
   uint64_t frames_before_initial_valid_primary_views_ = 0;
+
+  // The number will be updated from XrSystemGraphicsProperties
+  // when session is initialized.
+  uint32_t max_layer_count_ = 0;
 
   // The rest of these objects store information about the current frame and are
   // updated each frame.

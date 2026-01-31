@@ -68,6 +68,99 @@ suite('<settings-internet-known-networks-subpage>', () => {
   }
 
   suite('KnownNetworksPage', () => {
+    test('Set and unset preferred network', async () => {
+      await init();
+      internetKnownNetworksPage.networkType = NetworkType.kWiFi;
+      mojoApi.setNetworkTypeEnabledState(NetworkType.kWiFi, true);
+      const wifi1 = OncMojo.getDefaultNetworkState(NetworkType.kWiFi, 'wifi1');
+      wifi1.guid = 'wifi1_guid';
+      setNetworksForTest([
+        wifi1,
+      ]);
+
+      Router.getInstance().navigateTo(routes.KNOWN_NETWORKS);
+      await flushTasks();
+
+      const notPreferredList =
+          internetKnownNetworksPage.shadowRoot!.querySelector(
+              '#notPreferredNetworkList');
+      assertTrue(!!notPreferredList);
+      const notPreferredItems = notPreferredList.querySelectorAll('.list-item');
+      assertEquals(1, notPreferredItems.length);
+
+      const menuButton =
+          notPreferredItems[0]!.querySelector<CrIconButtonElement>(
+              '.icon-more-vert');
+      assertTrue(!!menuButton);
+      menuButton.click();
+      await waitAfterNextRender(menuButton);
+
+      const menu = internetKnownNetworksPage.shadowRoot!
+                       .querySelector<CrActionMenuElement>('#dotsMenu');
+      assertTrue(!!menu);
+      assertTrue(menu.open);
+
+      const addPreferredButton =
+          menu.querySelector<HTMLButtonElement>('#addPreferredButton');
+      assertTrue(!!addPreferredButton);
+      addPreferredButton.click();
+      await waitAfterNextRender(addPreferredButton);
+
+      const expectedConfig = OncMojo.getDefaultManagedProperties(
+          NetworkType.kWiFi, wifi1.guid, wifi1.name);
+      expectedConfig.priority = OncMojo.createManagedInt(1);
+      assertTrue(mojoApi.setPropertiesCalls.length === 1);
+      assertEquals(
+          mojoApi.setPropertiesCalls[0]!.guid,
+          wifi1.guid,
+      );
+      assertEquals(
+          mojoApi.setPropertiesCalls[0]!.properties.priority!.value,
+          expectedConfig.priority!.activeValue,
+      );
+
+      // Now unset it.
+      mojoApi.resetForTest();
+      mojoApi.addNetworksForTest([wifi1]);
+      wifi1.priority = 1;
+
+      // Re-fetch the elements after the list has updated.
+      await flushTasks();
+      const preferredList = internetKnownNetworksPage.shadowRoot!.querySelector(
+          '#preferredNetworkList');
+      assertTrue(!!preferredList);
+      const preferredItems = preferredList.querySelectorAll('.list-item');
+      assertEquals(1, preferredItems.length);
+
+      const menuButton2 = preferredItems[0]!.querySelector<CrIconButtonElement>(
+          '.icon-more-vert');
+      assertTrue(!!menuButton2);
+      menuButton2.click();
+      await waitAfterNextRender(menuButton2);
+
+      const menu2 = internetKnownNetworksPage.shadowRoot!
+                        .querySelector<CrActionMenuElement>('#dotsMenu');
+      assertTrue(!!menu2);
+      assertTrue(menu2.open);
+
+      const removePreferredButton =
+          menu2.querySelector<HTMLButtonElement>('#removePreferredButton');
+      assertTrue(!!removePreferredButton);
+      removePreferredButton.click();
+      await waitAfterNextRender(removePreferredButton);
+
+      expectedConfig.priority = OncMojo.createManagedInt(0);
+      assertTrue(mojoApi.setPropertiesCalls.length === 1);
+      assertEquals(
+          mojoApi.setPropertiesCalls[0]!.guid,
+          wifi1.guid,
+      );
+      assertEquals(
+          mojoApi.setPropertiesCalls[0]!.properties.priority!.value,
+          expectedConfig.priority!.activeValue,
+      );
+    });
+
     test('WiFi', async () => {
       await init();
       internetKnownNetworksPage.networkType = NetworkType.kWiFi;

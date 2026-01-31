@@ -45,7 +45,6 @@ public final class FeedFeatures {
      *     is signed in and confirms it's not a child profile.
      */
     public static boolean isWebFeedUIEnabled(Profile profile) {
-        // TODO(b/197354832, b/188188861): change consent check to SIGNIN.
         boolean isPrimaryAccountSignedIn = false;
         if (IdentityServicesProvider.get().getSigninManager(profile) != null) {
             isPrimaryAccountSignedIn =

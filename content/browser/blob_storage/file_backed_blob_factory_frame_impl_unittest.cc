@@ -9,6 +9,7 @@
 #include "content/browser/blob_storage/chrome_blob_storage_context.h"
 #include "content/browser/child_process_security_policy_impl.h"
 #include "content/public/browser/render_frame_host.h"
+#include "content/public/common/child_process_id.h"
 #include "content/public/test/mock_render_process_host.h"
 #include "content/test/test_render_frame_host.h"
 #include "content/test/test_render_view_host.h"
@@ -41,7 +42,7 @@ class FileBackedBlobFactoryFrameImplTest
   void SetUp() override {
     RenderViewHostImplTestHarness::SetUp();
 
-    process_id_ = main_test_rfh()->GetProcess()->GetDeprecatedID();
+    process_id_ = main_test_rfh()->GetProcess()->GetID();
     FileBackedBlobFactoryFrameImpl::CreateForCurrentDocument(
         main_test_rfh(), factory_.BindNewEndpointAndPassDedicatedReceiver());
 
@@ -70,7 +71,7 @@ class FileBackedBlobFactoryFrameImplTest
   }
 
  protected:
-  int process_id_;
+  ChildProcessId process_id_;
   mojo::AssociatedRemote<blink::mojom::FileBackedBlobFactory> factory_;
   std::vector<std::string> bad_messages_;
 };

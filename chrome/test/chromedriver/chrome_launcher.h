@@ -48,8 +48,8 @@ Status ProcessExtensions(const std::vector<std::string>& extensions,
                          Switches& switches,
                          std::vector<std::string>& bg_pages);
 Status PrepareUserDataDir(const base::FilePath& user_data_dir,
-                          const base::Value::Dict* custom_prefs,
-                          const base::Value::Dict* custom_local_state);
+                          const base::DictValue* custom_prefs,
+                          const base::DictValue* custom_local_state);
 Status ParseDevToolsActivePortFile(const base::FilePath& user_data_dir,
                                    int& port);
 Status RemoveOldDevToolsActivePortFile(const base::FilePath& user_data_dir);

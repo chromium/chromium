@@ -14,6 +14,9 @@ import static org.hamcrest.Matchers.not;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
+import static org.chromium.base.test.transit.ViewElement.displayingAtLeastOption;
+import static org.chromium.base.test.transit.ViewFinder.waitForView;
+
 import android.content.res.Configuration;
 
 import androidx.appcompat.app.AppCompatDelegate;
@@ -41,6 +44,8 @@ import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Feature;
+import org.chromium.base.test.util.Features.DisableFeatures;
+import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.firstrun.FirstRunPageDelegate;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
@@ -49,9 +54,7 @@ import org.chromium.chrome.browser.privacy.settings.PrivacyPreferencesManagerImp
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileProvider;
 import org.chromium.chrome.browser.signin.SigninFirstRunFragmentTest.CustomSigninFirstRunFragment;
-import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.SigninChecker;
-import org.chromium.chrome.browser.signin.services.SigninManager;
 import org.chromium.chrome.browser.sync.SyncServiceFactory;
 import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
 import org.chromium.chrome.test.R;
@@ -60,7 +63,7 @@ import org.chromium.chrome.test.util.browser.signin.AccountManagerTestRule;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.externalauth.ExternalAuthUtils;
 import org.chromium.components.prefs.PrefService;
-import org.chromium.components.signin.identitymanager.IdentityManager;
+import org.chromium.components.signin.SigninFeatures;
 import org.chromium.components.signin.test.util.TestAccounts;
 import org.chromium.components.sync.SyncService;
 import org.chromium.components.user_prefs.UserPrefs;
@@ -126,11 +129,8 @@ public class SigninFirstRunFragmentRenderTest {
     @Mock private ExternalAuthUtils mExternalAuthUtilsMock;
     @Mock private FirstRunPageDelegate mFirstRunPageDelegateMock;
     @Mock private PolicyLoadListener mPolicyLoadListenerMock;
-    @Mock private SigninManager mSigninManagerMock;
     @Mock private SyncService mSyncService;
     @Mock private SigninChecker mSigninCheckerMock;
-    @Mock private IdentityManager mIdentityManagerMock;
-    @Mock private IdentityServicesProvider mIdentityServicesProviderMock;
     @Mock private PrivacyPreferencesManagerImpl mPrivacyPreferencesManagerMock;
     @Mock private UserPrefs.Natives mUserPrefsJni;
     @Mock private PrefService mPrefService;
@@ -169,14 +169,6 @@ public class SigninFirstRunFragmentRenderTest {
 
         when(mExternalAuthUtilsMock.canUseGooglePlayServices()).thenReturn(true);
         ExternalAuthUtils.setInstanceForTesting(mExternalAuthUtilsMock);
-        IdentityServicesProvider.setInstanceForTests(mIdentityServicesProviderMock);
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    when(IdentityServicesProvider.get().getSigninManager(mProfileMock))
-                            .thenReturn(mSigninManagerMock);
-                    when(IdentityServicesProvider.get().getIdentityManager(mProfileMock))
-                            .thenReturn(mIdentityManagerMock);
-                });
         SyncServiceFactory.setInstanceForTesting(mSyncService);
         SigninCheckerProvider.setForTests(mSigninCheckerMock);
         when(mPolicyLoadListenerMock.get()).thenReturn(false);
@@ -220,6 +212,24 @@ public class SigninFirstRunFragmentRenderTest {
     @Test
     @MediumTest
     @Feature("RenderTest")
+    @DisableFeatures(SigninFeatures.FRE_SIGN_IN_ALTERNATIVE_SECONDARY_BUTTON_TEXT)
+    public void testFragmentRotationToPortraitWithAccount_Legacy() throws IOException {
+        mAccountManagerTestRule.addAccount(TestAccounts.ACCOUNT1);
+        launchActivityWithFragment(Configuration.ORIENTATION_LANDSCAPE);
+
+        ActivityTestUtils.rotateActivityToOrientation(
+                mActivityTestRule.getActivity(), Configuration.ORIENTATION_PORTRAIT);
+        ViewUtils.onViewWaiting(
+                allOf(withId(R.id.account_text_secondary), isCompletelyDisplayed()));
+        mRenderTestRule.render(
+                mActivityTestRule.getActivity().findViewById(android.R.id.content),
+                "signin_first_run_fragment_with_account_portrait_legacy");
+    }
+
+    @Test
+    @MediumTest
+    @Feature("RenderTest")
+    @EnableFeatures(SigninFeatures.FRE_SIGN_IN_ALTERNATIVE_SECONDARY_BUTTON_TEXT)
     public void testFragmentRotationToPortraitWithAccount() throws IOException {
         mAccountManagerTestRule.addAccount(TestAccounts.ACCOUNT1);
         launchActivityWithFragment(Configuration.ORIENTATION_LANDSCAPE);
@@ -237,6 +247,25 @@ public class SigninFirstRunFragmentRenderTest {
     @MediumTest
     @Feature("RenderTest")
     @ParameterAnnotations.UseMethodParameter(NightModeAndOrientationParameterProvider.class)
+    @DisableFeatures(SigninFeatures.FRE_SIGN_IN_ALTERNATIVE_SECONDARY_BUTTON_TEXT)
+    public void testFragmentWithAccount_Legacy(boolean nightModeEnabled, int orientation)
+            throws IOException {
+        mAccountManagerTestRule.addAccount(TestAccounts.ACCOUNT1);
+
+        launchActivityWithFragment(orientation);
+
+        CriteriaHelper.pollUiThread(
+                () -> mFragment.getView().findViewById(R.id.account_text_secondary).isShown());
+        mRenderTestRule.render(
+                mActivityTestRule.getActivity().findViewById(android.R.id.content),
+                "signin_first_run_fragment_with_account_legacy");
+    }
+
+    @Test
+    @MediumTest
+    @Feature("RenderTest")
+    @ParameterAnnotations.UseMethodParameter(NightModeAndOrientationParameterProvider.class)
+    @EnableFeatures(SigninFeatures.FRE_SIGN_IN_ALTERNATIVE_SECONDARY_BUTTON_TEXT)
     public void testFragmentWithAccount(boolean nightModeEnabled, int orientation)
             throws IOException {
         mAccountManagerTestRule.addAccount(TestAccounts.ACCOUNT1);
@@ -271,6 +300,26 @@ public class SigninFirstRunFragmentRenderTest {
     @MediumTest
     @Feature("RenderTest")
     @ParameterAnnotations.UseMethodParameter(NightModeAndOrientationParameterProvider.class)
+    @DisableFeatures(SigninFeatures.FRE_SIGN_IN_ALTERNATIVE_SECONDARY_BUTTON_TEXT)
+    public void testFragmentWithAccountOnManagedDevice_Legacy(
+            boolean nightModeEnabled, int orientation) throws IOException {
+        when(mPolicyLoadListenerMock.get()).thenReturn(true);
+        mAccountManagerTestRule.addAccount(TestAccounts.ACCOUNT1);
+
+        launchActivityWithFragment(orientation);
+
+        CriteriaHelper.pollUiThread(
+                () -> mFragment.getView().findViewById(R.id.account_text_secondary).isShown());
+        mRenderTestRule.render(
+                mActivityTestRule.getActivity().findViewById(android.R.id.content),
+                "signin_first_run_fragment_with_account_managed_legacy");
+    }
+
+    @Test
+    @MediumTest
+    @Feature("RenderTest")
+    @ParameterAnnotations.UseMethodParameter(NightModeAndOrientationParameterProvider.class)
+    @EnableFeatures(SigninFeatures.FRE_SIGN_IN_ALTERNATIVE_SECONDARY_BUTTON_TEXT)
     public void testFragmentWithAccountOnManagedDevice(boolean nightModeEnabled, int orientation)
             throws IOException {
         when(mPolicyLoadListenerMock.get()).thenReturn(true);
@@ -289,6 +338,26 @@ public class SigninFirstRunFragmentRenderTest {
     @MediumTest
     @Feature("RenderTest")
     @ParameterAnnotations.UseMethodParameter(NightModeAndOrientationParameterProvider.class)
+    @DisableFeatures(SigninFeatures.FRE_SIGN_IN_ALTERNATIVE_SECONDARY_BUTTON_TEXT)
+    public void testFragmentWithAccountOnManagedDevice_doesNotApplyFREStringVariations_Legacy(
+            boolean nightModeEnabled, int orientation) throws IOException {
+        when(mPolicyLoadListenerMock.get()).thenReturn(true);
+        mAccountManagerTestRule.addAccount(TestAccounts.ACCOUNT1);
+
+        launchActivityWithFragment(orientation);
+
+        CriteriaHelper.pollUiThread(
+                () -> mFragment.getView().findViewById(R.id.account_text_secondary).isShown());
+        mRenderTestRule.render(
+                mActivityTestRule.getActivity().findViewById(android.R.id.content),
+                "signin_first_run_fragment_with_account_managed_and_string_variation_legacy");
+    }
+
+    @Test
+    @MediumTest
+    @Feature("RenderTest")
+    @ParameterAnnotations.UseMethodParameter(NightModeAndOrientationParameterProvider.class)
+    @EnableFeatures(SigninFeatures.FRE_SIGN_IN_ALTERNATIVE_SECONDARY_BUTTON_TEXT)
     public void testFragmentWithAccountOnManagedDevice_doesNotApplyFREStringVariations(
             boolean nightModeEnabled, int orientation) throws IOException {
         when(mPolicyLoadListenerMock.get()).thenReturn(true);
@@ -341,6 +410,21 @@ public class SigninFirstRunFragmentRenderTest {
     @MediumTest
     @Feature("RenderTest")
     @ParameterAnnotations.UseMethodParameter(NightModeAndOrientationParameterProvider.class)
+    @DisableFeatures(SigninFeatures.FRE_SIGN_IN_ALTERNATIVE_SECONDARY_BUTTON_TEXT)
+    public void testFragmentWithoutAccount_Legacy(boolean nightModeEnabled, int orientation)
+            throws IOException {
+        launchActivityWithFragment(orientation);
+
+        mRenderTestRule.render(
+                mActivityTestRule.getActivity().findViewById(android.R.id.content),
+                "signin_first_run_fragment_without_account_legacy");
+    }
+
+    @Test
+    @MediumTest
+    @Feature("RenderTest")
+    @ParameterAnnotations.UseMethodParameter(NightModeAndOrientationParameterProvider.class)
+    @EnableFeatures(SigninFeatures.FRE_SIGN_IN_ALTERNATIVE_SECONDARY_BUTTON_TEXT)
     public void testFragmentWithoutAccount(boolean nightModeEnabled, int orientation)
             throws IOException {
         launchActivityWithFragment(orientation);
@@ -354,6 +438,22 @@ public class SigninFirstRunFragmentRenderTest {
     @MediumTest
     @Feature("RenderTest")
     @ParameterAnnotations.UseMethodParameter(NightModeAndOrientationParameterProvider.class)
+    @DisableFeatures(SigninFeatures.FRE_SIGN_IN_ALTERNATIVE_SECONDARY_BUTTON_TEXT)
+    public void testFragmentWithoutAccountOnManagedDevice_Legacy(
+            boolean nightModeEnabled, int orientation) throws IOException {
+        when(mPolicyLoadListenerMock.get()).thenReturn(true);
+        launchActivityWithFragment(orientation);
+
+        mRenderTestRule.render(
+                mActivityTestRule.getActivity().findViewById(android.R.id.content),
+                "signin_first_run_fragment_without_account_managed_legacy");
+    }
+
+    @Test
+    @MediumTest
+    @Feature("RenderTest")
+    @ParameterAnnotations.UseMethodParameter(NightModeAndOrientationParameterProvider.class)
+    @EnableFeatures(SigninFeatures.FRE_SIGN_IN_ALTERNATIVE_SECONDARY_BUTTON_TEXT)
     public void testFragmentWithoutAccountOnManagedDevice(boolean nightModeEnabled, int orientation)
             throws IOException {
         when(mPolicyLoadListenerMock.get()).thenReturn(true);
@@ -385,6 +485,25 @@ public class SigninFirstRunFragmentRenderTest {
     @MediumTest
     @Feature("RenderTest")
     @ParameterAnnotations.UseMethodParameter(NightModeAndOrientationParameterProvider.class)
+    @DisableFeatures(SigninFeatures.FRE_SIGN_IN_ALTERNATIVE_SECONDARY_BUTTON_TEXT)
+    public void testFragmentWithChildAccount_doesNotApplyFREStringVariation_Legacy(
+            boolean nightModeEnabled, int orientation) throws IOException {
+        mAccountManagerTestRule.addAccount(TestAccounts.CHILD_ACCOUNT);
+
+        launchActivityWithFragment(orientation);
+
+        CriteriaHelper.pollUiThread(
+                () -> mFragment.getView().findViewById(R.id.account_text_secondary).isShown());
+        mRenderTestRule.render(
+                mActivityTestRule.getActivity().findViewById(android.R.id.content),
+                "signin_first_run_fragment_with_child_account_and_string_variation_legacy");
+    }
+
+    @Test
+    @MediumTest
+    @Feature("RenderTest")
+    @ParameterAnnotations.UseMethodParameter(NightModeAndOrientationParameterProvider.class)
+    @EnableFeatures(SigninFeatures.FRE_SIGN_IN_ALTERNATIVE_SECONDARY_BUTTON_TEXT)
     public void testFragmentWithChildAccount_doesNotApplyFREStringVariation(
             boolean nightModeEnabled, int orientation) throws IOException {
         mAccountManagerTestRule.addAccount(TestAccounts.CHILD_ACCOUNT);
@@ -417,6 +536,27 @@ public class SigninFirstRunFragmentRenderTest {
     @MediumTest
     @Feature("RenderTest")
     @ParameterAnnotations.UseMethodParameter(NightModeAndOrientationParameterProvider.class)
+    @DisableFeatures(SigninFeatures.FRE_SIGN_IN_ALTERNATIVE_SECONDARY_BUTTON_TEXT)
+    public void testFragmentWhenMetricsReportingIsDisabledByPolicy_Legacy(
+            boolean nightModeEnabled, int orientation) throws IOException {
+        when(mPolicyLoadListenerMock.get()).thenReturn(true);
+        when(mPrivacyPreferencesManagerMock.isUsageAndCrashReportingPermittedByPolicy())
+                .thenReturn(false);
+
+        PrivacyPreferencesManagerImpl.setInstanceForTesting(mPrivacyPreferencesManagerMock);
+
+        launchActivityWithFragment(orientation);
+
+        mRenderTestRule.render(
+                mActivityTestRule.getActivity().findViewById(android.R.id.content),
+                "signin_first_run_fragment_when_metrics_reporting_is_disabled_by_policy_legacy");
+    }
+
+    @Test
+    @MediumTest
+    @Feature("RenderTest")
+    @ParameterAnnotations.UseMethodParameter(NightModeAndOrientationParameterProvider.class)
+    @EnableFeatures(SigninFeatures.FRE_SIGN_IN_ALTERNATIVE_SECONDARY_BUTTON_TEXT)
     public void testFragmentWhenMetricsReportingIsDisabledByPolicy(
             boolean nightModeEnabled, int orientation) throws IOException {
         when(mPolicyLoadListenerMock.get()).thenReturn(true);
@@ -436,6 +576,31 @@ public class SigninFirstRunFragmentRenderTest {
     @MediumTest
     @Feature("RenderTest")
     @ParameterAnnotations.UseMethodParameter(NightModeAndOrientationParameterProvider.class)
+    @DisableFeatures(SigninFeatures.FRE_SIGN_IN_ALTERNATIVE_SECONDARY_BUTTON_TEXT)
+    public void testFragmentWhenMetricsReportingIsDisabledByPolicyWithAccount_Legacy(
+            boolean nightModeEnabled, int orientation) throws IOException {
+        when(mPolicyLoadListenerMock.get()).thenReturn(true);
+        when(mPrivacyPreferencesManagerMock.isUsageAndCrashReportingPermittedByPolicy())
+                .thenReturn(false);
+
+        PrivacyPreferencesManagerImpl.setInstanceForTesting(mPrivacyPreferencesManagerMock);
+
+        mAccountManagerTestRule.addAccount(TestAccounts.ACCOUNT1);
+
+        launchActivityWithFragment(orientation);
+
+        CriteriaHelper.pollUiThread(
+                () -> mFragment.getView().findViewById(R.id.account_text_secondary).isShown());
+        mRenderTestRule.render(
+                mActivityTestRule.getActivity().findViewById(android.R.id.content),
+                "signin_first_run_fragment_when_metrics_reporting_is_disabled_by_policy_with_account_legacy");
+    }
+
+    @Test
+    @MediumTest
+    @Feature("RenderTest")
+    @ParameterAnnotations.UseMethodParameter(NightModeAndOrientationParameterProvider.class)
+    @EnableFeatures(SigninFeatures.FRE_SIGN_IN_ALTERNATIVE_SECONDARY_BUTTON_TEXT)
     public void testFragmentWhenMetricsReportingIsDisabledByPolicyWithAccount(
             boolean nightModeEnabled, int orientation) throws IOException {
         when(mPolicyLoadListenerMock.get()).thenReturn(true);
@@ -482,6 +647,21 @@ public class SigninFirstRunFragmentRenderTest {
     @MediumTest
     @Feature("RenderTest")
     @ParameterAnnotations.UseMethodParameter(NightModeAndOrientationParameterProvider.class)
+    @DisableFeatures(SigninFeatures.FRE_SIGN_IN_ALTERNATIVE_SECONDARY_BUTTON_TEXT)
+    public void testFragment_WelcomeToChrome_EasierAcrossDevices_Legacy(
+            boolean nightModeEnabled, int orientation) throws IOException {
+        launchActivityWithFragment(orientation);
+
+        mRenderTestRule.render(
+                mActivityTestRule.getActivity().findViewById(android.R.id.content),
+                "signin_first_run_fragment_welcome_to_chrome_easier_across_devices_legacy");
+    }
+
+    @Test
+    @MediumTest
+    @Feature("RenderTest")
+    @ParameterAnnotations.UseMethodParameter(NightModeAndOrientationParameterProvider.class)
+    @EnableFeatures(SigninFeatures.FRE_SIGN_IN_ALTERNATIVE_SECONDARY_BUTTON_TEXT)
     public void testFragment_WelcomeToChrome_EasierAcrossDevices(
             boolean nightModeEnabled, int orientation) throws IOException {
         launchActivityWithFragment(orientation);
@@ -513,7 +693,13 @@ public class SigninFirstRunFragmentRenderTest {
         ApplicationTestUtils.waitForActivityState(mActivityTestRule.getActivity(), Stage.RESUMED);
         // Parts of SigninFirstRunFragment are initialized asynchronously, so ensure the load
         // spinner is not displayed before grabbing a screenshot.
-        ViewUtils.waitForVisibleView(withId(R.id.signin_fre_continue_button));
+        //
+        // In landscape in smaller screens, the continue button may be outside the screen bounds.
+        int minDisplayedPercentage = orientation == Configuration.ORIENTATION_LANDSCAPE ? 0 : 51;
+        waitForView(
+                withId(R.id.signin_fre_continue_button),
+                displayingAtLeastOption(minDisplayedPercentage));
+
         onView(withId(R.id.fre_native_and_policy_load_progress_spinner))
                 .check(matches(not(isDisplayed())));
     }

@@ -214,7 +214,7 @@ class CORE_EXPORT CSSParserToken {
     value_length_ = string.length();
     value_is_8bit_ = string.Is8Bit();
     if (value_is_8bit_ && value_length_ <= sizeof(value_data_char_inline_)) {
-      UNSAFE_TODO(
+      UNSAFE_BUFFERS(
           memcpy(value_data_char_inline_, string.Bytes(), value_length_));
       value_is_inline_ = true;
     } else {

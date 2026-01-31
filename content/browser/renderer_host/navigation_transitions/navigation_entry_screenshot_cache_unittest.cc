@@ -570,31 +570,4 @@ TEST_F(NavigationEntryScreenshotCacheTest, OnWebContentsDestroyed) {
   ASSERT_TRUE(GetManager()->IsEmpty());
 }
 
-// `base::MEMORY_PRESSURE_LEVEL_CRITICAL` signals the purge of all the cached
-// screenshots within the global manager's Profile. This test asserts that.
-TEST_F(NavigationEntryScreenshotCacheTest, OnMemoryPressureCritical) {
-  GetManager()->SetMemoryBudgetForTesting(10240U);
-
-  RestoreEntriesToTab(tab1(), 1, 10, 9);
-
-  CacheScreenshot(tab1(), 1, SK_ColorRED);
-  CacheScreenshot(tab1(), 2, SK_ColorGREEN);
-  CacheScreenshot(tab1(), 3, SK_ColorBLUE);
-  CacheScreenshot(tab1(), 4, SK_ColorBLACK);
-  CacheScreenshot(tab1(), 5, SK_ColorWHITE);
-  CacheScreenshot(tab1(), 6, SK_ColorGRAY);
-
-  GetManager()->OnMemoryPressure(base::MEMORY_PRESSURE_LEVEL_CRITICAL);
-
-  AssertEntryHasNoScreenshot(tab1(), 1);
-  AssertEntryHasNoScreenshot(tab1(), 2);
-  AssertEntryHasNoScreenshot(tab1(), 3);
-  AssertEntryHasNoScreenshot(tab1(), 4);
-  AssertEntryHasNoScreenshot(tab1(), 5);
-  AssertEntryHasNoScreenshot(tab1(), 6);
-
-  ASSERT_TRUE(GetCacheForTab(tab1())->IsEmpty());
-  ASSERT_TRUE(GetManager()->IsEmpty());
-}
-
 }  // namespace content

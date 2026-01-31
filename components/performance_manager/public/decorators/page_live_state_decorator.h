@@ -123,7 +123,7 @@ class PageLiveStateDecorator
   void OnTakenFromGraph(Graph* graph) override;
 
   // NodeDataDescriber implementation:
-  base::Value::Dict DescribePageNodeData(const PageNode* node) const override;
+  base::DictValue DescribePageNodeData(const PageNode* node) const override;
 
   // PageNodeObserver implementation:
   void OnPageNodeAdded(const PageNode* page_node) override;

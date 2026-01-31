@@ -165,7 +165,9 @@ void ExpectClean(UpdaterScope scope) {
     // If the path exists, then expect only the log and json files to be
     // present.
     int count = CountDirectoryFiles(*path);
-    for (const auto& file_name : {"updater.log", "prefs.json"}) {
+    for (const auto& file_name :
+         {"updater.log", "updater.log.old", "prefs.json",
+          "updater_history.jsonl", "updater_history.jsonl.old"}) {
       if (base::PathExists(path->Append(file_name))) {
         count -= 1;
       }
@@ -409,7 +411,7 @@ base::CommandLine MakeElevated(base::CommandLine command_line) {
   return command_line;
 }
 
-void SetPlatformPolicies(const base::Value::Dict& values) {
+void SetPlatformPolicies(const base::DictValue& values) {
   const CFStringRef domain = CFSTR(LEGACY_GOOGLE_UPDATE_APPID);
 
   // Synchronize just to be safe. Ignore spurious errors if the domain

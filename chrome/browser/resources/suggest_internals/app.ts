@@ -231,7 +231,7 @@ class SuggestInternalsAppElement extends CrLitElement {
 
   protected requestFilter_(request: Request): boolean {
     const filter = this.filter_.trim().toLowerCase();
-    return request.url.url.toLowerCase().includes(filter);
+    return request.url.toLowerCase().includes(filter);
   }
 
   protected showOutputControls_() {

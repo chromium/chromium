@@ -46,6 +46,7 @@ std::optional<autofill::FormData> JsonStringToFormData(
     NSString* json_string,
     const GURL& page_url,
     const url::Origin& frame_origin,
+    const GURL& form_frame_url,
     const autofill::FieldDataManager& field_data_manager,
     const std::string& frame_id) {
   std::unique_ptr<base::Value> formValue = autofill::ParseJson(json_string);
@@ -58,8 +59,14 @@ std::optional<autofill::FormData> JsonStringToFormData(
     return std::nullopt;
   }
 
-  return autofill::ExtractFormData(*dict, false, std::u16string(), page_url,
-                                   frame_origin, field_data_manager, frame_id);
+  base::expected<autofill::FormData, autofill::ExtractFormDataFailure>
+      form_or_failure = autofill::ExtractFormData(
+          *dict, /*form_name_filter=*/std::nullopt, page_url, frame_origin,
+          form_frame_url, field_data_manager, frame_id);
+  if (form_or_failure.has_value()) {
+    return std::move(form_or_failure).value();
+  }
+  return std::nullopt;
 }
 
 bool IsCrossOriginIframe(web::WebState* web_state,

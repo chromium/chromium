@@ -54,7 +54,7 @@ void PermissionsEventRouter::OnExtensionPermissionsUpdated(
   }
 
   // Trigger the onAdded and onRemoved events in the extension.
-  base::Value::List event_args;
+  base::ListValue event_args;
   std::unique_ptr<api::permissions::Permissions> packed_permissions =
       permissions_api_helpers::PackPermissionSet(permissions);
   event_args.Append(packed_permissions->ToValue());

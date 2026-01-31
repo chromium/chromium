@@ -17,33 +17,35 @@ namespace webnn {
 
 // Creates and adds the package dependency with the lifetime of a process.
 // Returns the package path if successful, or an empty path on failure.
-base::FilePath COMPONENT_EXPORT(WEBNN_PUBLIC_CPP)
+base::FilePath COMPONENT_EXPORT(WEBNN_PUBLIC_CPP_WIN)
     InitializePackageDependencyForProcess(
         base::wcstring_view package_family_name,
         PACKAGE_VERSION min_version);
 
 // Creates the package dependency with the lifetime of the provided file path.
 // Returns the dependency ID if successful, or an empty string on failure.
-std::wstring COMPONENT_EXPORT(WEBNN_PUBLIC_CPP)
+std::wstring COMPONENT_EXPORT(WEBNN_PUBLIC_CPP_WIN)
     TryCreatePackageDependencyForFilePath(
         base::wcstring_view package_family_name,
         PACKAGE_VERSION min_version,
-        const base::FilePath& file_path);
+        const base::FilePath& file_path,
+        CreatePackageDependencyOptions options =
+            CreatePackageDependencyOptions_None);
 
 // Creates the package dependency with the lifetime of a process. Returns the
 // dependency ID if successful, or an empty string on failure.
-std::wstring COMPONENT_EXPORT(WEBNN_PUBLIC_CPP)
+std::wstring COMPONENT_EXPORT(WEBNN_PUBLIC_CPP_WIN)
     TryCreatePackageDependencyForProcess(
         base::wcstring_view package_family_name,
         PACKAGE_VERSION min_version);
 
 // Adds the package dependency using the provided dependency ID. Returns the
 // package path if successful, or an empty path on failure.
-base::FilePath COMPONENT_EXPORT(WEBNN_PUBLIC_CPP)
+base::FilePath COMPONENT_EXPORT(WEBNN_PUBLIC_CPP_WIN)
     AddPackageDependency(base::wcstring_view dependency_id);
 
 // Deletes the package dependency using the provided dependency ID.
-bool COMPONENT_EXPORT(WEBNN_PUBLIC_CPP)
+bool COMPONENT_EXPORT(WEBNN_PUBLIC_CPP_WIN)
     DeletePackageDependency(base::wcstring_view dependency_id);
 
 }  // namespace webnn

@@ -15,7 +15,6 @@
 #include <sys/eventfd.h>
 #include <sys/ioctl.h>
 
-#include "base/containers/contains.h"
 #include "base/containers/heap_array.h"
 #include "base/functional/callback_helpers.h"
 #include "base/location.h"
@@ -335,8 +334,8 @@ void V4L2StatefulVideoDecoder::Initialize(const VideoDecoderConfig& config,
       return;
     }
 
-    is_mtk8173_ = base::Contains(
-        std::string(reinterpret_cast<const char*>(caps.card)), "8173");
+    is_mtk8173_ =
+        std::string(reinterpret_cast<const char*>(caps.card)).contains("8173");
     DVLOGF_IF(1, is_mtk8173_) << "This is an MTK8173 device (Hana, Oak)";
   }
 
@@ -929,7 +928,7 @@ void V4L2StatefulVideoDecoder::TryAndDequeueCAPTUREQueueBuffers() {
 
     const int64_t flat_timespec =
         TimeValToTimeDelta(dequeued_buffer->GetTimeStamp()).InMilliseconds();
-    if (base::Contains(encoding_timestamps_, flat_timespec)) {
+    if (encoding_timestamps_.contains(flat_timespec)) {
       UMA_HISTOGRAM_TIMES(
           "Media.PlatformVideoDecoding.Decode",
           base::TimeTicks::Now() - encoding_timestamps_[flat_timespec]);
@@ -1210,8 +1209,8 @@ int V4L2StatefulVideoDecoder::GetMaxNumDecoderInstances() {
     PLOG(ERROR) << "Failed querying caps";
     return std::numeric_limits<int>::max();
   }
-  const bool is_mtk8173 = base::Contains(
-      std::string(reinterpret_cast<const char*>(caps.card)), "8173");
+  const bool is_mtk8173 =
+      std::string(reinterpret_cast<const char*>(caps.card)).contains("8173");
   // Experimentally MTK8173 (e.g. Hana) can initialize the driver  up to 30
   // times simultaneously, however legacy code limits this to 10 [1] . All other
   // drivers used to limit this to 32 [2] but in practice I could only open up

@@ -18,7 +18,7 @@
 namespace strike_database {
 
 // Most strike database in Autofill don't incorporate any special logic and
-// simple want to store strikes up to a given (constexpr) limit. This class
+// simply want to store strikes up to a given (constexpr) limit. This class
 // reduces the boilerplate in such cases. Simply define the traits of the strike
 // database and define the strike database as an alias:
 //
@@ -46,17 +46,19 @@ class SimpleStrikeDatabase : public StrikeDatabaseIntegratorBase {
   }
   ~SimpleStrikeDatabase() override = default;
 
-  std::optional<size_t> GetMaximumEntries() const override {
+  // Functions are `final` because they are (indirectly) called by
+  // the constructor.
+  std::optional<size_t> GetMaximumEntries() const final {
     return Traits::kMaxStrikeEntities;
   }
-  std::optional<size_t> GetMaximumEntriesAfterCleanup() const override {
+  std::optional<size_t> GetMaximumEntriesAfterCleanup() const final {
     return Traits::kMaxStrikeEntitiesAfterCleanup;
   }
-  std::string GetProjectPrefix() const override {
+  std::string GetProjectPrefix() const final {
     return std::string(Traits::kName);
   }
-  int GetMaxStrikesLimit() const override { return Traits::kMaxStrikeLimit; }
-  std::optional<base::TimeDelta> GetExpiryTimeDelta() const override {
+  int GetMaxStrikesLimit() const final { return Traits::kMaxStrikeLimit; }
+  std::optional<base::TimeDelta> GetExpiryTimeDelta() const final {
     return Traits::kExpiryTimeDelta;
   }
   bool UniqueIdsRequired() const override { return Traits::kUniqueIdRequired; }

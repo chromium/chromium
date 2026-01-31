@@ -75,13 +75,13 @@ TEST_F(PageCaptureApiUnitTest, PageNavigationDuringSaveAsMHTML) {
   // Regression test for crbug.com/1494490
   function->SetBrowserContextForTesting(profile());
   function->SetArgs(
-      base::Value::List().Append(base::Value::Dict().Set("tabId", tab_id)));
+      base::ListValue().Append(base::DictValue().Set("tabId", tab_id)));
   api_test_utils::SendResponseHelper response_helper(function.get());
   function->RunWithValidation().Execute();
 
   web_contents_tester->NavigateAndCommit(GURL("https://www.chromium.org"));
   response_helper.WaitForResponse();
-  const base::Value::List* results = function->GetResultListForTest();
+  const base::ListValue* results = function->GetResultListForTest();
   ASSERT_TRUE(results);
   EXPECT_TRUE(results->empty()) << "Did not expect a result";
   CHECK(function->response_type());

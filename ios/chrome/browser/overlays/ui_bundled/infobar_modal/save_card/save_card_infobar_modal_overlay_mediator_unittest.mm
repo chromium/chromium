@@ -59,6 +59,7 @@ constexpr NSString* kCardCvc = @"123";
 
 constexpr std::string_view kSaveCreditCardPromptOfferBaseHistogram =
     "Autofill.SaveCreditCardPromptOffer.IOS";
+constexpr std::string_view kSavingWithoutCvcSuffix = ".SavingWithoutCvc";
 constexpr char kSaveCreditCardPromptResultHistogramStringForLocalSave[] =
     "Autofill.SaveCreditCardPromptResult.IOS.Local.Modal.NumStrikes.0."
     "NoFixFlow";
@@ -248,23 +249,29 @@ TEST_F(SaveCardInfobarModalOverlayMediatorTest,
 
   mediator_.consumer = consumer;
   histogramTester.ExpectBucketCount(
-      base::StrCat({kSaveCreditCardPromptOfferBaseHistogram, ".Server.Modal"}),
+      base::StrCat({kSaveCreditCardPromptOfferBaseHistogram, ".Server.Modal",
+                    kSavingWithoutCvcSuffix}),
       SaveCardPromptOffer::kShown, 1);
   histogramTester.ExpectBucketCount(
       base::StrCat({kSaveCreditCardPromptOfferBaseHistogram,
-                    ".Server.Modal.NumStrikes.0.NoFixFlow"}),
+                    ".Server.Modal.NumStrikes.0.NoFixFlow",
+                    kSavingWithoutCvcSuffix}),
       SaveCardPromptOffer::kShown, 1);
   histogramTester.ExpectBucketCount(
-      kSaveCreditCardPromptResultHistogramStringForServerSave,
+      base::StrCat({kSaveCreditCardPromptResultHistogramStringForServerSave,
+                    kSavingWithoutCvcSuffix}),
       SaveCreditCardPromptResultIOS::kShown, 1);
 
   SaveCard();
   histogramTester.ExpectBucketCount(
-      kSaveCreditCardPromptResultHistogramStringForServerSave,
+      base::StrCat({kSaveCreditCardPromptResultHistogramStringForServerSave,
+                    kSavingWithoutCvcSuffix}),
       SaveCreditCardPromptResultIOS::kAccepted, 1);
 
   histogramTester.ExpectTotalCount(
-      kSaveCreditCardPromptResultHistogramStringForServerSave, 2);
+      base::StrCat({kSaveCreditCardPromptResultHistogramStringForServerSave,
+                    kSavingWithoutCvcSuffix}),
+      2);
 }
 
 // Tests histogram entry is not recorded for server save offer shown when modal
@@ -282,7 +289,8 @@ TEST_F(SaveCardInfobarModalOverlayMediatorTest,
       base::StrCat({kSaveCreditCardPromptOfferBaseHistogram, ".Server.Modal"}),
       SaveCardPromptOffer::kShown, 0);
   histogramTester.ExpectBucketCount(
-      kSaveCreditCardPromptResultHistogramStringForServerSave,
+      base::StrCat({kSaveCreditCardPromptResultHistogramStringForServerSave,
+                    kSavingWithoutCvcSuffix}),
       SaveCreditCardPromptResultIOS::kShown, 0);
 }
 
@@ -296,25 +304,31 @@ TEST_F(SaveCardInfobarModalOverlayMediatorTest,
 
   mediator_.consumer = consumer;
   histogramTester.ExpectBucketCount(
-      base::StrCat({kSaveCreditCardPromptOfferBaseHistogram, ".Server.Modal"}),
+      base::StrCat({kSaveCreditCardPromptOfferBaseHistogram, ".Server.Modal",
+                    kSavingWithoutCvcSuffix}),
       SaveCardPromptOffer::kShown, 1);
   histogramTester.ExpectBucketCount(
       base::StrCat({kSaveCreditCardPromptOfferBaseHistogram,
-                    ".Server.Modal.NumStrikes.0.NoFixFlow"}),
+                    ".Server.Modal.NumStrikes.0.NoFixFlow",
+                    kSavingWithoutCvcSuffix}),
       SaveCardPromptOffer::kShown, 1);
   histogramTester.ExpectBucketCount(
-      kSaveCreditCardPromptResultHistogramStringForServerSave,
+      base::StrCat({kSaveCreditCardPromptResultHistogramStringForServerSave,
+                    kSavingWithoutCvcSuffix}),
       SaveCreditCardPromptResultIOS::kShown, 1);
 
   EXPECT_CALL(*delegate_, SetCreditCardUploadCompletionCallback);
   OCMExpect([mediator_delegate_ stopOverlayForMediator:mediator_]);
   [mediator_ dismissInfobarModal:nil];
   histogramTester.ExpectBucketCount(
-      kSaveCreditCardPromptResultHistogramStringForServerSave,
+      base::StrCat({kSaveCreditCardPromptResultHistogramStringForServerSave,
+                    kSavingWithoutCvcSuffix}),
       SaveCreditCardPromptResultIOS::kDenied, 1);
 
   histogramTester.ExpectTotalCount(
-      kSaveCreditCardPromptResultHistogramStringForServerSave, 2);
+      base::StrCat({kSaveCreditCardPromptResultHistogramStringForServerSave,
+                    kSavingWithoutCvcSuffix}),
+      2);
 }
 
 // Tests histogram entry is not recorded for modal as denied when dismissed
@@ -325,18 +339,22 @@ TEST_F(SaveCardInfobarModalOverlayMediatorTest,
 
   SaveCard();
   histogramTester.ExpectBucketCount(
-      kSaveCreditCardPromptResultHistogramStringForServerSave,
+      base::StrCat({kSaveCreditCardPromptResultHistogramStringForServerSave,
+                    kSavingWithoutCvcSuffix}),
       SaveCreditCardPromptResultIOS::kAccepted, 1);
 
   EXPECT_CALL(*delegate_, SetCreditCardUploadCompletionCallback);
   OCMExpect([mediator_delegate_ stopOverlayForMediator:mediator_]);
   [mediator_ dismissInfobarModal:nil];
   histogramTester.ExpectBucketCount(
-      kSaveCreditCardPromptResultHistogramStringForServerSave,
+      base::StrCat({kSaveCreditCardPromptResultHistogramStringForServerSave,
+                    kSavingWithoutCvcSuffix}),
       SaveCreditCardPromptResultIOS::kDenied, 0);
 
   histogramTester.ExpectTotalCount(
-      kSaveCreditCardPromptResultHistogramStringForServerSave, 1);
+      base::StrCat({kSaveCreditCardPromptResultHistogramStringForServerSave,
+                    kSavingWithoutCvcSuffix}),
+      1);
 }
 
 // Tests histogram entry for server save modal denied on link clicked before
@@ -349,7 +367,8 @@ TEST_F(SaveCardInfobarModalOverlayMediatorTest, LogsModalDeniedOnLinkClick) {
   OCMExpect([mediator_delegate_ stopOverlayForMediator:mediator_]);
   [mediator_ dismissModalAndOpenURL:url];
   histogramTester.ExpectBucketCount(
-      kSaveCreditCardPromptResultHistogramStringForServerSave,
+      base::StrCat({kSaveCreditCardPromptResultHistogramStringForServerSave,
+                    kSavingWithoutCvcSuffix}),
       SaveCreditCardPromptResultIOS::kLinkClicked, 1);
 }
 
@@ -368,18 +387,22 @@ TEST_F(SaveCardInfobarModalOverlayMediatorTest,
       .WillByDefault(Return(true));
   SaveCard();
   histogramTester.ExpectBucketCount(
-      kSaveCreditCardPromptResultHistogramStringForServerSave,
+      base::StrCat({kSaveCreditCardPromptResultHistogramStringForServerSave,
+                    kSavingWithoutCvcSuffix}),
       SaveCreditCardPromptResultIOS::kAccepted, 1);
 
   EXPECT_CALL(*delegate_, SetCreditCardUploadCompletionCallback);
   OCMExpect([mediator_delegate_ stopOverlayForMediator:mediator_]);
   [mediator_ dismissModalAndOpenURL:url];
   histogramTester.ExpectBucketCount(
-      kSaveCreditCardPromptResultHistogramStringForServerSave,
+      base::StrCat({kSaveCreditCardPromptResultHistogramStringForServerSave,
+                    kSavingWithoutCvcSuffix}),
       SaveCreditCardPromptResultIOS::kLinkClicked, 0);
 
   histogramTester.ExpectTotalCount(
-      kSaveCreditCardPromptResultHistogramStringForServerSave, 1);
+      base::StrCat({kSaveCreditCardPromptResultHistogramStringForServerSave,
+                    kSavingWithoutCvcSuffix}),
+      1);
 }
 
 class SaveCardInfobarModalOverlayMediatorWithLocalSave
@@ -398,23 +421,29 @@ TEST_F(SaveCardInfobarModalOverlayMediatorWithLocalSave,
 
   mediator_.consumer = consumer;
   histogramTester.ExpectBucketCount(
-      base::StrCat({kSaveCreditCardPromptOfferBaseHistogram, ".Local.Modal"}),
+      base::StrCat({kSaveCreditCardPromptOfferBaseHistogram, ".Local.Modal",
+                    kSavingWithoutCvcSuffix}),
       SaveCardPromptOffer::kShown, 1);
   histogramTester.ExpectBucketCount(
       base::StrCat({kSaveCreditCardPromptOfferBaseHistogram,
-                    ".Local.Modal.NumStrikes.0.NoFixFlow"}),
+                    ".Local.Modal.NumStrikes.0.NoFixFlow",
+                    kSavingWithoutCvcSuffix}),
       SaveCardPromptOffer::kShown, 1);
   histogramTester.ExpectBucketCount(
-      kSaveCreditCardPromptResultHistogramStringForLocalSave,
+      base::StrCat({kSaveCreditCardPromptResultHistogramStringForLocalSave,
+                    kSavingWithoutCvcSuffix}),
       SaveCreditCardPromptResultIOS::kShown, 1);
 
   SaveCard();
   histogramTester.ExpectBucketCount(
-      kSaveCreditCardPromptResultHistogramStringForLocalSave,
+      base::StrCat({kSaveCreditCardPromptResultHistogramStringForLocalSave,
+                    kSavingWithoutCvcSuffix}),
       SaveCreditCardPromptResultIOS::kAccepted, 1);
 
   histogramTester.ExpectTotalCount(
-      kSaveCreditCardPromptResultHistogramStringForLocalSave, 2);
+      base::StrCat({kSaveCreditCardPromptResultHistogramStringForLocalSave,
+                    kSavingWithoutCvcSuffix}),
+      2);
 }
 
 // Tests that a SaveCardInfobarModalOverlayMediator does not show Modal in
@@ -731,7 +760,7 @@ class SaveCardInfobarModalOverlayMediatorMetricsTest
         break;
       case autofill::payments::PaymentsAutofillClient::CardSaveType::
           kCardSaveOnly:
-        suffix = "";
+        suffix = ".SavingWithoutCvc";
         break;
       case autofill::payments::PaymentsAutofillClient::CardSaveType::
           kCvcSaveOnly:
@@ -752,19 +781,11 @@ TEST_P(SaveCardInfobarModalOverlayMediatorMetricsTest, LogsOfferModalShown) {
 
   const auto& test_case = GetParam();
   std::string destination = test_case.is_for_upload ? ".Server" : ".Local";
-  std::string suffix;
-  switch (test_case.card_save_type) {
-    case autofill::payments::PaymentsAutofillClient::CardSaveType::
-        kCardSaveWithCvc:
-      suffix = ".SavingWithCvc";
-      break;
-    case autofill::payments::PaymentsAutofillClient::CardSaveType::
-        kCardSaveOnly:
-      suffix = "";
-      break;
-    case autofill::payments::PaymentsAutofillClient::CardSaveType::kCvcSaveOnly:
-      FAIL() << "This test case shouldn't exist for the modal UI.";
-  }
+  std::string suffix = test_case.card_save_type ==
+                               autofill::payments::PaymentsAutofillClient::
+                                   CardSaveType::kCardSaveWithCvc
+                           ? ".SavingWithCvc"
+                           : ".SavingWithoutCvc";
 
   histogram_tester.ExpectUniqueSample(
       base::StrCat({"Autofill.SaveCreditCardPromptOffer.IOS", destination,

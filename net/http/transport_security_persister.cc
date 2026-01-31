@@ -117,15 +117,15 @@ std::string LoadState(const base::FilePath& path) {
 }
 
 // Serializes STS data from |state| to a Value.
-base::Value::List SerializeSTSData(const TransportSecurityState* state) {
-  base::Value::List sts_list;
+base::ListValue SerializeSTSData(const TransportSecurityState* state) {
+  base::ListValue sts_list;
 
   TransportSecurityState::STSStateIterator sts_iterator(*state);
   for (; sts_iterator.HasNext(); sts_iterator.Advance()) {
     const TransportSecurityState::STSState& sts_state =
         sts_iterator.domain_state();
 
-    base::Value::Dict serialized;
+    base::DictValue serialized;
     serialized.Set(kHostname,
                    HashedDomainToExternalString(sts_iterator.hostname()));
     serialized.Set(kStsIncludeSubdomains, sts_state.include_subdomains);
@@ -156,7 +156,7 @@ void DeserializeSTSData(const base::Value& sts_list,
   base::Time current_time(base::Time::Now());
 
   for (const base::Value& sts_entry : sts_list.GetList()) {
-    const base::Value::Dict* sts_dict = sts_entry.GetIfDict();
+    const base::DictValue* sts_dict = sts_entry.GetIfDict();
     if (!sts_dict)
       continue;
 
@@ -269,7 +269,7 @@ void TransportSecurityPersister::OnWriteFinished(base::OnceClosure callback) {
 std::optional<std::string> TransportSecurityPersister::SerializeData() {
   CHECK(foreground_runner_->RunsTasksInCurrentSequence());
 
-  base::Value::Dict toplevel;
+  base::DictValue toplevel;
   toplevel.Set(kVersionKey, kCurrentVersionValue);
   toplevel.Set(kSTSKey, SerializeSTSData(transport_security_state_));
 
@@ -295,7 +295,7 @@ base::TimeDelta TransportSecurityPersister::GetCommitInterval() {
 
 void TransportSecurityPersister::Deserialize(const std::string& serialized,
                                              TransportSecurityState* state) {
-  std::optional<base::Value::Dict> value = base::JSONReader::ReadDict(
+  std::optional<base::DictValue> value = base::JSONReader::ReadDict(
       serialized, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   if (!value) {
     return;

@@ -23,7 +23,7 @@ namespace web_app {
 GetProgressiveWebAppSizeJob::GetProgressiveWebAppSizeJob(
     Profile* profile,
     const webapps::AppId& app_id,
-    base::Value::Dict& debug_value,
+    base::DictValue& debug_value,
     ResultCallback result_callback)
     : app_id_(app_id),
       profile_(profile),
@@ -65,7 +65,8 @@ void GetProgressiveWebAppSizeJob::OnQuotaModelInfoLoaded(
         quota_storage_info_list) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
-  if (!lock_with_app_resources_->registrar().IsInRegistrar(app_id_)) {
+  if (!lock_with_app_resources_->registrar().AppMatches(
+          app_id_, WebAppFilter::IsAppSurfaceableToUser())) {
     // (crbug.com/1480755): This crash is not expected as the app is checked for
     // validity when the command is evoked in StartWithLock. We are also still
     // holding the lock so a change to the status of the app throughout is not

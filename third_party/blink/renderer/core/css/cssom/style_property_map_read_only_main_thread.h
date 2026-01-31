@@ -25,9 +25,9 @@ class CORE_EXPORT StylePropertyMapReadOnlyMainThread
       const StylePropertyMapReadOnlyMainThread&) = delete;
   ~StylePropertyMapReadOnlyMainThread() override = default;
 
-  CSSStyleValue* get(const ExecutionContext*,
-                     const String& property_name,
-                     ExceptionState&) const override;
+  V8UnionCSSStyleValueOrUndefined* get(const ExecutionContext*,
+                                       const String& property_name,
+                                       ExceptionState&) const override;
   CSSStyleValueVector getAll(const ExecutionContext*,
                              const String& property_name,
                              ExceptionState&) const override;

@@ -19,7 +19,12 @@ BASE_DECLARE_FEATURE(kVerticalTabs);
 
 BASE_DECLARE_FEATURE(kTabSelectionByPointer);
 
+BASE_DECLARE_FEATURE(kBackToOpener);
+
+BASE_DECLARE_FEATURE(kProjectsPanel);
+
 bool IsVerticalTabsFeatureEnabled();
+bool IsProjectsPanelFeatureEnabled();
 
 }  // namespace tabs
 

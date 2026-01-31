@@ -4,13 +4,13 @@
 
 #include "components/trusted_vault/test/fake_trusted_vault_client.h"
 
+#include <algorithm>
 #include <list>
 #include <map>
 #include <string>
 #include <utility>
 #include <vector>
 
-#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/location.h"
@@ -65,7 +65,7 @@ FakeTrustedVaultClient::FakeServer::RequestRotatedKeysFromServer(
   }
 
   const std::vector<std::vector<uint8_t>>& latest_keys = it->second;
-  if (!base::Contains(latest_keys, key_known_by_client)) {
+  if (!std::ranges::contains(latest_keys, key_known_by_client)) {
     // |key_known_by_client| is invalid or too old: cannot be used to follow
     // key rotation.
     return {};

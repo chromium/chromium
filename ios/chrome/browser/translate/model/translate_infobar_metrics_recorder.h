@@ -62,9 +62,6 @@ enum class MobileMessagesTranslateModalPresent {
 + (void)recordModalEvent:(MobileMessagesTranslateModalEvent)event;
 // Records a histogram for `presentEvent`.
 + (void)recordModalPresent:(MobileMessagesTranslateModalPresent)presentEvent;
-// Records a histogram for an infobar (both legacy and Messages) that the user
-// did not interact with throughout its lifetime.
-+ (void)recordUnusedInfobar;
 @end
 
 #endif  // IOS_CHROME_BROWSER_TRANSLATE_MODEL_TRANSLATE_INFOBAR_METRICS_RECORDER_H_

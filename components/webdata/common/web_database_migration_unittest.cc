@@ -2,9 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <algorithm>
 #include <string>
 
-#include "base/containers/contains.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/path_service.h"
@@ -50,13 +50,13 @@ std::string NormalizeSchemaForComparison(const std::string& schema) {
   normalized.reserve(schema.size());
   bool skip_following_spaces = false;
   for (char c : schema) {
-    if (base::Contains("\"[]`", c)) {  // Quotes
+    if (std::ranges::contains("\"[]`", c)) {  // Quotes
       continue;
     }
     if (c == ' ' && skip_following_spaces) {
       continue;
     }
-    bool is_separator = base::Contains(",()", c);
+    bool is_separator = std::ranges::contains(",()", c);
     if (is_separator && !normalized.empty() && normalized.back() == ' ') {
       normalized.pop_back();
     }
@@ -1893,6 +1893,44 @@ TEST_F(WebDatabaseMigrationTest, MigrateVersion146ToCurrent) {
     EXPECT_EQ(s_metadata.ColumnInt(2), 22);
     EXPECT_EQ(s_metadata.ColumnInt(3), 33);
     ASSERT_FALSE(s_metadata.Step());
+  }
+}
+
+TEST_F(WebDatabaseMigrationTest, MigrateVersion147ToCurrent) {
+  ASSERT_NO_FATAL_FAILURE(LoadDatabase(FILE_PATH_LITERAL("version_147.sql")));
+  {
+    sql::Database connection(sql::test::kTestTag);
+    ASSERT_TRUE(connection.Open(GetDatabasePath()));
+    ASSERT_TRUE(sql::MetaTable::DoesTableExist(&connection));
+    EXPECT_EQ(147, VersionFromConnection(&connection));
+    EXPECT_FALSE(connection.DoesTableExist("valuables_metadata"));
+  }
+  DoMigration();
+  {
+    sql::Database connection(sql::test::kTestTag);
+    ASSERT_TRUE(connection.Open(GetDatabasePath()));
+    ASSERT_TRUE(sql::MetaTable::DoesTableExist(&connection));
+    EXPECT_EQ(WebDatabase::kCurrentVersionNumber,
+              VersionFromConnection(&connection));
+    EXPECT_TRUE(connection.DoesTableExist("valuables_metadata"));
+  }
+}
+
+TEST_F(WebDatabaseMigrationTest, MigrateVersion148ToCurrent) {
+  ASSERT_NO_FATAL_FAILURE(LoadDatabase(FILE_PATH_LITERAL("version_148.sql")));
+  {
+    sql::Database connection(sql::test::kTestTag);
+    ASSERT_TRUE(connection.Open(GetDatabasePath()));
+    EXPECT_EQ(148, VersionFromConnection(&connection));
+    EXPECT_TRUE(connection.DoesColumnExist("addresses", "last_modifier_id"));
+  }
+  DoMigration();
+  {
+    sql::Database connection(sql::test::kTestTag);
+    ASSERT_TRUE(connection.Open(GetDatabasePath()));
+    EXPECT_EQ(WebDatabase::kCurrentVersionNumber,
+              VersionFromConnection(&connection));
+    EXPECT_FALSE(connection.DoesColumnExist("addresses", "last_modifier_id"));
   }
 }
 

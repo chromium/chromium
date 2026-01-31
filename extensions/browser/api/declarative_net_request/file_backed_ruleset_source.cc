@@ -89,7 +89,7 @@ ReadJSONRulesResult ParseRulesFromJSON(const RulesetID& ruleset_id,
   // We don't use json_schema_compiler::util::PopulateArrayFromList since it
   // fails if a single Value can't be deserialized. However we want to ignore
   // values which can't be parsed to maintain backwards compatibility.
-  const base::Value::List& rules_list = rules.GetList();
+  const base::ListValue& rules_list = rules.GetList();
 
   // Ignore any rulesets which exceed the static rule count limit (This is
   // defined as dnr_api::GUARANTEED_MINIMUM_STATIC_RULES + the global rule count
@@ -426,7 +426,7 @@ bool FileBackedRulesetSource::SerializeRulesToJSON(
     std::string* json) const {
   DCHECK_LE(rules.size(), rule_count_limit());
 
-  base::Value::List rules_value =
+  base::ListValue rules_value =
       json_schema_compiler::util::CreateValueFromArray(rules);
 
   std::optional<std::string> json_string = base::WriteJson(rules_value);

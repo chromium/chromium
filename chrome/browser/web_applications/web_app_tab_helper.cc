@@ -28,6 +28,7 @@
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/browser/web_applications/web_app_ui_manager.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
+#include "chrome/browser/web_applications/web_contents/web_contents_manager.h"
 #include "chrome/common/chrome_features.h"
 #include "components/page_load_metrics/browser/metrics_web_contents_observer.h"
 #include "components/tabs/public/tab_interface.h"
@@ -132,10 +133,8 @@ void WebAppTabHelper::SetState(std::optional<webapps::AppId> app_id,
 
   // If the app_id is changing, then it should exist in the database.
   DCHECK(app_id_ == app_id || !app_id ||
-         provider_->registrar_unsafe().IsInstallState(
-             *app_id, {proto::InstallState::SUGGESTED_FROM_ANOTHER_DEVICE,
-                       proto::InstallState::INSTALLED_WITHOUT_OS_INTEGRATION,
-                       proto::InstallState::INSTALLED_WITH_OS_INTEGRATION}) ||
+         provider_->registrar_unsafe().AppMatches(
+             *app_id, WebAppFilter::IsAppSurfaceableToUser()) ||
          provider_->registrar_unsafe().IsUninstalling(*app_id));
 
   if (app_id_ == app_id && window_app_id_ == window_app_id) {
@@ -203,26 +202,13 @@ void WebAppTabHelper::ReadyToCommitNavigation(
 }
 
 void WebAppTabHelper::PrimaryPageChanged(content::Page& page) {
-  // This method is invoked whenever primary page of a WebContents
-  // (WebContents::GetPrimaryPage()) changes to `page`. This happens in one of
-  // the following cases:
-  // 1) when the current RenderFrameHost in the primary main frame changes after
-  //    a navigation.
-  // 2) when the current RenderFrameHost in the primary main frame is
-  //    reinitialized after a crash.
-  // 3) when a cross-document navigation commits in the current RenderFrameHost
-  //    of the primary main frame.
-  //
-  // The new primary page might either be a brand new one (if the committed
-  // navigation created a new document in the primary main frame) or an existing
-  // one (back-forward cache restore or prerendering activation).
-  //
-  // This notification is not dispatched for changes of pages in the non-primary
-  // frame trees (prerendering, fenced frames) and when the primary page is
-  // destroyed (e.g., when closing a tab).
-  //
-  // See the declaration of WebContentsObserver::PrimaryPageChanged for more
-  // information.
+  get_all_specified_manifests_subscription_ =
+      provider_->web_contents_manager().GetPrimaryPageAllSpecifiedManifests(
+          *web_contents(),
+          base::BindRepeating(
+              &WebAppTabHelper::OnManifestSpecifiedOnPrimaryPage,
+              weak_factory_.GetWeakPtr()));
+
   provider_->manifest_update_manager().MaybeUpdate(
       page.GetMainDocument().GetLastCommittedURL(), app_id_, web_contents());
 
@@ -435,8 +421,8 @@ void WebAppTabHelper::MaybeSchedulePreinstallUpdate() {
   if (in_scope_app == window_app_id()) {
     return;
   }
-  provider_->scheduler().FetchManifestAndUpdate(app_for_updating->manifest_id,
-                                                app_for_updating->install_url,
+  provider_->scheduler().FetchManifestAndUpdate(app_for_updating->install_url,
+                                                app_for_updating->manifest_id,
                                                 base::DoNothing());
 }
 
@@ -450,6 +436,15 @@ void WebAppTabHelper::MaybeRecordManifestAppliedUseCounter() {
       blink::mojom::WebFeature::kInstalledManifestApplied);
   meaure_manifest_applied_use_counter_ = false;
   can_record_manifest_applied_ = false;
+}
+
+void WebAppTabHelper::OnManifestSpecifiedOnPrimaryPage(
+    const content::PageManifestManager::ManifestResult& result) {
+  if (!result.has_value()) {
+    return;
+  }
+  provider_->manifest_update_manager().OnManifestSeenOnPrimaryPage(
+      *web_contents(), result.value(), base::PassKey<WebAppTabHelper>());
 }
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(WebAppTabHelper);

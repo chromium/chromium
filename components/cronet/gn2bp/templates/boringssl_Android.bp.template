@@ -39,7 +39,7 @@ package {
 build = ["sources.bp"]
 
 cc_defaults {
-    name: "${GN2BP_MODULE_PREFIX}cronet_defaults",
+    name: "${GN2BP_MODULE_PREFIX}boringssl_defaults",
     stl: "none",
     apex_available: [
         "com.android.tethering",
@@ -54,41 +54,16 @@ cc_defaults {
         "${GN2BP_MODULE_PREFIX}buildtools_third_party_libc___libc__",
         "${GN2BP_MODULE_PREFIX}buildtools_third_party_libc__abi_libc__abi"
     ],
-}
-
-cc_defaults {
-    name: "${GN2BP_MODULE_PREFIX}boringssl_flags",
-    cflags: [
-        "-fvisibility=hidden",
-        "-DBORINGSSL_SHARED_LIBRARY",
-        "-DBORINGSSL_ANDROID_SYSTEM",
-        // Chromium uses extensive harderning mode, so setting the same for boringssl.
-        // This should override any platform default.
-        "-U_LIBCPP_HARDENING_MODE",
-        "-D_LIBCPP_HARDENING_MODE=_LIBCPP_HARDENING_MODE_EXTENSIVE",
-        "-DOPENSSL_SMALL",
-        "-Werror",
-        "-Wno-unused-parameter",
-    ],
-    cppflags: [
-        "-Wall",
-        "-Werror",
-    ],
-}
-
-cc_defaults {
-    name: "${GN2BP_MODULE_PREFIX}boringssl_defaults",
     local_include_dirs: ["src/include"],
     export_include_dirs: ["src/include"],
-    cflags: [
-        "-DBORINGSSL_IMPLEMENTATION",
-    ],
 }
 
 cc_defaults {
     name: "${GN2BP_MODULE_PREFIX}libcrypto_defaults",
+    defaults: ["${GN2BP_MODULE_PREFIX}third_party_boringssl_boringssl__flags_libcrypto"],
     target: {
         android: {
+            cflags: ["-DBORINGSSL_SHARED_LIBRARY"],
             // On FIPS builds (i.e. Android only) prevent other libraries
             // from pre-empting symbols in libcrypto which could affect FIPS
             // compliance and cause integrity checks to fail. See b/160231064.
@@ -102,8 +77,6 @@ cc_object {
     name: "${GN2BP_MODULE_PREFIX}bcm_object",
     defaults: [
         "${GN2BP_MODULE_PREFIX}boringssl_defaults",
-        "${GN2BP_MODULE_PREFIX}boringssl_flags",
-        "${GN2BP_MODULE_PREFIX}cronet_defaults",
         "${GN2BP_MODULE_PREFIX}libcrypto_bcm_sources",
         "${GN2BP_MODULE_PREFIX}libcrypto_defaults",
     ],
@@ -147,12 +120,21 @@ cc_object {
     },
 }
 
+// libcrypto must be compiled as a separate shared library to pass the
+// FIPS integrity test (POST). the FIPS self-check mechanism requires the
+// crypto code to be in its own segregated block so that its integrity can
+// be verified. All other components of boringSSL should be statically
+// linked to the main shared library.
+//
+// See https://boringssl.googlesource.com/boringssl/+/master/crypto/fipsmodule/FIPS.md#shared-build
+// for more information on FIPS compliance.
 cc_library_shared {
     name: "${GN2BP_MODULE_PREFIX}libcrypto",
+    // Make sure to use the same name between tot and stable, so that
+    // AFDO understands they are the same library.
+    stem: "libcrypto_httpengine",
     defaults: [
         "${GN2BP_MODULE_PREFIX}boringssl_defaults",
-        "${GN2BP_MODULE_PREFIX}boringssl_flags",
-        "${GN2BP_MODULE_PREFIX}cronet_defaults",
         "${GN2BP_MODULE_PREFIX}libcrypto_defaults",
         "${GN2BP_MODULE_PREFIX}libcrypto_sources",
     ],
@@ -174,29 +156,16 @@ cc_library_shared {
             inject_bssl_hash: true,
         },
     },
+    afdo: true,
 }
 
-cc_library_shared {
-    name: "${GN2BP_MODULE_PREFIX}libssl",
+cc_library_static {
+    name: "${GN2BP_MODULE_PREFIX}ssl_and_pki",
     defaults: [
         "${GN2BP_MODULE_PREFIX}boringssl_defaults",
-        "${GN2BP_MODULE_PREFIX}boringssl_flags",
-        "${GN2BP_MODULE_PREFIX}cronet_defaults",
         "${GN2BP_MODULE_PREFIX}libssl_sources",
-    ],
-    unique_host_soname: true,
-    shared_libs: ["${GN2BP_MODULE_PREFIX}libcrypto"],
-}
-
-cc_library_shared {
-    name: "${GN2BP_MODULE_PREFIX}libpki",
-    defaults: [
-        "${GN2BP_MODULE_PREFIX}boringssl_defaults",
-        "${GN2BP_MODULE_PREFIX}boringssl_flags",
-        "${GN2BP_MODULE_PREFIX}cronet_defaults",
         "${GN2BP_MODULE_PREFIX}libpki_sources",
+        "${GN2BP_MODULE_PREFIX}third_party_boringssl_boringssl__flags",
     ],
-    unique_host_soname: true,
-    cflags: ["-D_BORINGSSL_LIBPKI_"],
     shared_libs: ["${GN2BP_MODULE_PREFIX}libcrypto"],
 }

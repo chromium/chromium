@@ -63,12 +63,12 @@ class SplitVariationsCmdUnittest(unittest.TestCase):
       return
     max_size = max(len(data) for data in data_lists)
     min_size = min(len(data) for data in data_lists)
-    if switch_name != _FORCE_FIELD_TRIAL_PARAMS_SWITCH_NAME:
+    if switch_name == _FORCE_FIELD_TRIALS_SWITCH_NAME:
       self.assertTrue(max_size - min_size <= 1)
     joined_switch_data = []
     for data in data_lists:
       joined_switch_data.extend(data)
-    self.assertEqual(ref_switch_data, joined_switch_data)
+    self.assertCountEqual(ref_switch_data, joined_switch_data)
 
 
   def testLoadFromFileAndSaveToStrings(self):
@@ -137,6 +137,29 @@ class SplitVariationsCmdUnittest(unittest.TestCase):
         '--force-fieldtrial-params="ScaleTile+MemoryLimit.Scale+120%:x/100/y/Test"')
     splits = split_variations_cmd.SplitVariationsCmdFromString(input_string)
     self.assertEqual(1, len(splits))
+
+  def testSplitFeaturesGroupedByValue(self):
+    """Check that features are grouped by values."""
+    input_string = ('--enable-features="FeatureA<Trial1,FeatureB<Trial1"')
+    splits = split_variations_cmd.SplitVariationsCmdFromString(input_string)
+    self.assertEqual(len(splits), 1)
+
+  def testSplitVariationsCmdFeatureByTrials(self):
+    """Check that features are assigned to corresponding trial groups"""
+    input_string = (
+        '--force-fieldtrials="Trial1/Disabled/*Trial2/Enabled/" '
+        '--enable-features="FeatureA<Trial1,FeatureC<Trial1"')
+    splits = split_variations_cmd.SplitVariationsCmdFromString(input_string)
+    self.assertEqual(len(splits), 2)
+    for split_str in splits:
+      data = split_variations_cmd.ParseVariationsCmdFromString(split_str)
+      trials = [
+          t.trial_name for t in data.get(_FORCE_FIELD_TRIALS_SWITCH_NAME, [])
+      ]
+      features = [f.key for f in data.get(_ENABLE_FEATURES_SWITCH_NAME, [])]
+      if 'Trial1' in trials:
+        self.assertIn('FeatureA', features)
+        self.assertIn('FeatureC', features)
 
 if __name__ == '__main__':
   unittest.main()

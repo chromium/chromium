@@ -7,7 +7,7 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/policy/policy_util.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/web_applications/sub_apps_install_dialog_controller.h"
+#include "chrome/browser/ui/views/web_apps/sub_apps_install_dialog_controller.h"
 #include "chrome/browser/ui/web_applications/sub_apps_service_impl.h"
 #include "chrome/browser/ui/web_applications/test/isolated_web_app_test_utils.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
@@ -81,8 +81,8 @@ class SubAppsAdminPolicyTest : public IsolatedWebAppBrowserTestHarness {
     IsolatedWebAppUrlInfo parent_app = app->InstallChecked(profile());
     parent_app_id_ = parent_app.app_id();
 
-    EXPECT_EQ(provider().registrar_unsafe().GetInstallState(parent_app_id_),
-              proto::InstallState::INSTALLED_WITH_OS_INTEGRATION);
+    EXPECT_TRUE(provider().registrar_unsafe().AppMatches(
+        parent_app_id_, WebAppFilter::InstalledInOperatingSystemForTesting()));
     EXPECT_THAT(provider().registrar_unsafe().AppMatches(
                     parent_app_id_, WebAppFilter::IsIsolatedApp()),
                 IsTrue());
@@ -115,7 +115,7 @@ class SubAppsAdminPolicyTest : public IsolatedWebAppBrowserTestHarness {
   void SetAllowlistedOrigins(
       const std::vector<std::string>& allowlisted_origins) {
     policy::PolicyMap policy_map;
-    base::Value::List allowed_origins;
+    base::ListValue allowed_origins;
 
     for (auto& origin : allowlisted_origins) {
       allowed_origins.Append(base::Value(origin));

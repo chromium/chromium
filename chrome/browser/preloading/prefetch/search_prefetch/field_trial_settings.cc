@@ -10,6 +10,7 @@
 #include "base/metrics/field_trial_params.h"
 #include "base/system/sys_info.h"
 #include "net/base/features.h"
+#include "url/gurl.h"
 
 namespace {
 size_t g_cache_size_for_testing = 0;
@@ -123,6 +124,11 @@ bool IsNoVarySearchDiskCacheEnabled() {
 
 bool CacheAliasLoaderDryRunModeEnabled() {
   return base::FeatureList::IsEnabled(kCacheAliasLoaderDryRunMode);
+}
+
+BASE_FEATURE(kSearchPrefetchBeaconLogging, base::FEATURE_DISABLED_BY_DEFAULT);
+bool IsSearchPrefetchBeaconLoggingEnabled(const GURL& url) {
+  return base::FeatureList::IsEnabled(kSearchPrefetchBeaconLogging);
 }
 
 bool IsPrefetchIncognitoEnabled() {

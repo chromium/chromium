@@ -84,7 +84,7 @@ class PasswordSyncTokenFetcher final {
                                   signin::AccessTokenInfo token_info);
   void FetchSyncToken(const std::string& access_token);
   void OnSimpleLoaderComplete(std::optional<std::string> response_body);
-  void ProcessValidTokenResponse(base::Value::Dict json_response);
+  void ProcessValidTokenResponse(base::DictValue json_response);
 
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
   const raw_ptr<Profile> profile_;

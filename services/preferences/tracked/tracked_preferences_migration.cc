@@ -52,7 +52,7 @@ class TrackedPreferencesMigrator
       PrefFilterID id,
       InterceptablePrefFilter::FinalizeFilterOnLoadCallback
           finalize_filter_on_load,
-      base::Value::Dict prefs);
+      base::DictValue prefs);
 
  private:
   friend class base::RefCounted<TrackedPreferencesMigrator>;
@@ -83,8 +83,8 @@ class TrackedPreferencesMigrator
   std::unique_ptr<PrefHashStore> unprotected_pref_hash_store_;
   std::unique_ptr<PrefHashStore> protected_pref_hash_store_;
 
-  std::unique_ptr<base::Value::Dict> unprotected_prefs_;
-  std::unique_ptr<base::Value::Dict> protected_prefs_;
+  std::unique_ptr<base::DictValue> unprotected_prefs_;
+  std::unique_ptr<base::DictValue> protected_prefs_;
 };
 
 // Invokes |store_cleaner| for every |keys_to_clean|.
@@ -121,7 +121,7 @@ void ScheduleSourcePrefStoreCleanup(
 // the configuration/implementation in |origin_pref_hash_store|.
 void CleanupMigratedHashes(const PrefNameSet& migrated_pref_names,
                            PrefHashStore* origin_pref_hash_store,
-                           base::Value::Dict& origin_pref_store) {
+                           base::DictValue& origin_pref_store) {
   DictionaryHashStoreContents dictionary_contents(origin_pref_store);
   std::unique_ptr<PrefHashStoreTransaction> transaction(
       origin_pref_hash_store->BeginTransaction(&dictionary_contents));
@@ -136,12 +136,12 @@ void CleanupMigratedHashes(const PrefNameSet& migrated_pref_names,
 // true if any old duplicates remain in |old_store| and sets |new_store_altered|
 // to true if any value was copied to |new_store|.
 void MigratePrefsFromOldToNewStore(const PrefNameSet& pref_names,
-                                   base::Value::Dict& old_store,
-                                   base::Value::Dict& new_store,
+                                   base::DictValue& old_store,
+                                   base::DictValue& new_store,
                                    PrefHashStore* new_hash_store,
                                    bool* old_store_needs_cleanup,
                                    bool* new_store_altered) {
-  const base::Value::Dict* old_hash_store_contents =
+  const base::DictValue* old_hash_store_contents =
       DictionaryHashStoreContents(old_store).GetContents();
   DictionaryHashStoreContents dictionary_contents(new_store);
   std::unique_ptr<PrefHashStoreTransaction> new_hash_store_transaction(
@@ -227,8 +227,8 @@ void TrackedPreferencesMigrator::InterceptFilterOnLoad(
     PrefFilterID id,
     InterceptablePrefFilter::FinalizeFilterOnLoadCallback
         finalize_filter_on_load,
-    base::Value::Dict prefs) {
-  auto prefs_migration = std::make_unique<base::Value::Dict>(std::move(prefs));
+    base::DictValue prefs) {
+  auto prefs_migration = std::make_unique<base::DictValue>(std::move(prefs));
   switch (id) {
     case UNPROTECTED_PREF_FILTER:
       finalize_unprotected_filter_on_load_ = std::move(finalize_filter_on_load);
@@ -276,11 +276,11 @@ void TrackedPreferencesMigrator::MigrateIfReady() {
   }
 
   // Hand the processed prefs back to their respective filters.
-  std::unique_ptr<base::Value::Dict> unprotected_prefs =
+  std::unique_ptr<base::DictValue> unprotected_prefs =
       std::move(unprotected_prefs_);
   std::move(finalize_unprotected_filter_on_load_)
       .Run(std::move(*unprotected_prefs), unprotected_prefs_altered);
-  std::unique_ptr<base::Value::Dict> protected_prefs =
+  std::unique_ptr<base::DictValue> protected_prefs =
       std::move(protected_prefs_);
   std::move(finalize_protected_filter_on_load_)
       .Run(std::move(*protected_prefs), protected_prefs_altered);

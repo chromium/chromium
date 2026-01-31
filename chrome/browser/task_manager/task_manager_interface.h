@@ -9,9 +9,10 @@
 #include <stdint.h>
 
 #include <memory>
+#include <optional>
 #include <utility>
 
-#include "base/byte_count.h"
+#include "base/byte_size.h"
 #include "base/observer_list.h"
 #include "base/process/kill.h"
 #include "base/process/process_handle.h"
@@ -53,8 +54,8 @@ class TaskManagerInterface {
   // task cannot be found it will be attributed to the browser process task.
   static void UpdateAccumulatedStatsNetworkForRoute(
       content::GlobalRenderFrameHostId render_frame_host_id,
-      base::ByteCount recv_bytes,
-      base::ByteCount sent_bytes);
+      base::ByteSize recv_bytes,
+      base::ByteSize sent_bytes);
 
   void AddObserver(TaskManagerObserver* observer);
   void RemoveObserver(TaskManagerObserver* observer);
@@ -86,15 +87,18 @@ class TaskManagerInterface {
   // Returns the current memory footprint/swapped memory of the task with
   // |task_id| in bytes. A value of -1 means no valid value is currently
   // available.
-  virtual base::ByteCount GetMemoryFootprintUsage(TaskId task_id) const = 0;
-  virtual base::ByteCount GetSwappedMemoryUsage(TaskId task_id) const = 0;
+  virtual std::optional<base::ByteSize> GetMemoryFootprintUsage(
+      TaskId task_id) const = 0;
+  virtual std::optional<base::ByteSize> GetSwappedMemoryUsage(
+      TaskId task_id) const = 0;
 
   // Returns the GPU memory usage of the task with |task_id| in bytes. A value
   // of -1 means no valid value is currently available.
   // |has_duplicates| will be set to true if this process' GPU resource count is
   // inflated because it is counting other processes' resources.
-  virtual base::ByteCount GetGpuMemoryUsage(TaskId task_id,
-                                            bool* has_duplicates) const = 0;
+  virtual std::optional<base::ByteSize> GetGpuMemoryUsage(
+      TaskId task_id,
+      bool* has_duplicates) const = 0;
 
   // Returns the number of average idle CPU wakeups per second since the last
   // refresh cycle. A value of -1 means no valid value is currently available.
@@ -171,36 +175,29 @@ class TaskManagerInterface {
 
   // Returns the network usage (in bytes per second) during the current refresh
   // cycle for the task with |task_id|.
-  virtual base::ByteCount GetNetworkUsage(TaskId task_id) const = 0;
+  virtual base::ByteSize GetNetworkUsage(TaskId task_id) const = 0;
 
   // Returns the network usage during the current lifetime of the task
   // for the task with |task_id|.
-  virtual base::ByteCount GetCumulativeNetworkUsage(TaskId task_id) const = 0;
+  virtual base::ByteSize GetCumulativeNetworkUsage(TaskId task_id) const = 0;
 
   // Returns the total network usage (in bytes per second) during the current
   // refresh cycle for the process on which the task with |task_id| is running.
   // This is the sum of all the network usage of the individual tasks (that
-  // can be gotten by the above GetNetworkUsage()). A value of -1 means network
-  // usage calculation refresh is currently not available.
-  virtual base::ByteCount GetProcessTotalNetworkUsage(TaskId task_id) const = 0;
-
-  // Returns the total network usage during the lifetime of the process
-  // on which the task with |task_id| is running.
-  // This is the sum of all the network usage of the individual tasks (that
-  // can be gotten by the above GetTotalNetworkUsage()).
-  virtual base::ByteCount GetCumulativeProcessTotalNetworkUsage(
+  // can be gotten by the above GetNetworkUsage()).
+  virtual std::optional<base::ByteSize> GetProcessTotalNetworkUsage(
       TaskId task_id) const = 0;
 
-  // Returns the Sqlite used memory (in bytes) for the task with |task_id|.
-  // A value of -1 means no valid value is currently available.
-  virtual base::ByteCount GetSqliteMemoryUsed(TaskId task_id) const = 0;
+  // Returns the Sqlite used memory for the task with |task_id|. A value of
+  // nullopt means no valid value is currently available.
+  virtual std::optional<base::ByteSize> GetSqliteMemoryUsed(
+      TaskId task_id) const = 0;
 
-  // Returns the allocated and used V8 memory (in bytes) for the task with
-  // |task_id|. A return value of false means no valid value is currently
-  // available.
+  // Returns the allocated and used V8 memory for the task with |task_id|. A
+  // return value of false means no valid value is currently available.
   virtual bool GetV8Memory(TaskId task_id,
-                           base::ByteCount* allocated,
-                           base::ByteCount* used) const = 0;
+                           base::ByteSize* allocated,
+                           base::ByteSize* used) const = 0;
 
   // Gets the Blink resource cache stats for the task with |task_id|.
   // A return value of false means that task does NOT report WebCache stats.

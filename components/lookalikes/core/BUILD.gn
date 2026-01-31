@@ -70,7 +70,7 @@ source_set("unit_tests") {
     ":safety_tips",
     "//components/url_formatter",
     "//components/url_formatter/spoof_checks/common_words:common",
-    "//components/url_formatter/spoof_checks/common_words:common_words_dafsa",
+    "//components/url_formatter/spoof_checks/common_words:common_words_test_dafsa",
     "//components/url_formatter/spoof_checks/top_domains:generate_top_domains_test_trie",
     "//components/url_formatter/spoof_checks/top_domains:test_top_bucket_domains",
     "//components/url_formatter/spoof_checks/top_domains:test_top_bucket_domains_header",

@@ -24,12 +24,12 @@ class MockSafetyHubResult : public SafetyHubResult {
     return std::make_unique<MockSafetyHubResult>(*this);
   }
 
-  base::Value::Dict ToDictValue() const override { return BaseToDictValue(); }
+  base::DictValue ToDictValue() const override { return BaseToDictValue(); }
 
   bool IsTriggerForMenuNotification() const override { return true; }
 
   bool WarrantsNewMenuNotification(
-      const base::Value::Dict& previousResult) const override {
+      const base::DictValue& previousResult) const override {
     return true;
   }
 
@@ -58,6 +58,6 @@ TEST_F(SafetyHubResultTest, ResultBaseToDict) {
   auto result = std::make_unique<MockSafetyHubResult>(time);
   EXPECT_EQ(result->timestamp(), time);
   // The timestamp saved in the dict should be the Value of time.
-  base::Value::Dict dict = result->ToDictValue();
+  base::DictValue dict = result->ToDictValue();
   EXPECT_EQ(*dict.Find(kSafetyHubTimestampResultKey), base::TimeToValue(time));
 }

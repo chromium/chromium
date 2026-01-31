@@ -5,6 +5,8 @@
 #ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_FOUNDATIONS_AUTOFILL_MANAGER_TEST_API_H_
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_FOUNDATIONS_AUTOFILL_MANAGER_TEST_API_H_
 
+#include "base/containers/flat_map.h"
+#include "base/containers/to_vector.h"
 #include "base/memory/raw_ref.h"
 #include "components/autofill/core/browser/foundations/autofill_driver_test_api.h"
 #include "components/autofill/core/browser/foundations/autofill_manager.h"
@@ -17,6 +19,13 @@ class AutofillManagerTestApi {
   explicit AutofillManagerTestApi(AutofillManager* manager)
       : manager_(*manager) {}
 
+  // Returns the cached FormStructures.
+  const std::vector<const FormStructure*> form_structures() const {
+    return base::ToVector(
+        manager_->form_structures_,
+        [](const auto& p) -> const FormStructure* { return p.second.get(); });
+  }
+
   FormStructure* FindCachedFormById(const FormGlobalId& form_id) {
     return manager_->FindCachedFormById(form_id, /*pass_key=*/{});
   }
@@ -27,20 +36,28 @@ class AutofillManagerTestApi {
 
   void OnLoadedServerPredictions(
       std::string response,
-      const std::vector<FormSignature>& queried_form_signatures) {
-    OnLoadedServerPredictions(AutofillCrowdsourcingManager::QueryResponse{
-        response, queried_form_signatures});
+      const std::vector<FormSignature>& queried_form_signatures,
+      const std::vector<FormData>& forms) {
+    OnLoadedServerPredictions(
+        AutofillCrowdsourcingManager::QueryResponse{response,
+                                                    queried_form_signatures},
+        forms);
   }
 
   void OnLoadedServerPredictions(
-      AutofillCrowdsourcingManager::QueryResponse response) {
+      AutofillCrowdsourcingManager::QueryResponse response,
+      const std::vector<FormData>& forms) {
     manager_->NotifyObservers(
         &AutofillManager::Observer::OnBeforeLoadedServerPredictions);
-    manager_->OnLoadedServerPredictions(std::move(response));
+    manager_->OnLoadedServerPredictions(forms, std::move(response));
   }
 
   void OnFormsParsed(const std::vector<FormData>& forms) {
     manager_->OnFormsParsed(forms);
+  }
+
+  void QueryServerPredictions(const std::vector<FormData>& forms) {
+    manager_->QueryServerPredictions(forms);
   }
 
   FormStructure* AddSeenFormStructure(

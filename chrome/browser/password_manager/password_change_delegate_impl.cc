@@ -8,6 +8,7 @@
 
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/affiliations/affiliation_service_factory.h"
@@ -314,10 +315,10 @@ PasswordChangeDelegateImpl::~PasswordChangeDelegateImpl() {
   }
   switch (current_state_) {
     case State::kNoState:
-    case State::kOfferingPasswordChange:
-    case State::kWaitingForAgreement:
     case State::kPasswordSuccessfullyChanged:
       break;
+    case State::kOfferingPasswordChange:
+    case State::kWaitingForAgreement:
     case State::kWaitingForChangePasswordForm:
     case State::kChangePasswordFormNotFound:
     case State::kChangingPassword:
@@ -354,7 +355,8 @@ void PasswordChangeDelegateImpl::StartPasswordChangeFlow() {
   // TODO(452883239): Clean this up when model is downloaded on start-up for
   // everybody.
   if (base::FeatureList::IsEnabled(
-          password_manager::features::kDownloadModelForPasswordChange)) {
+          password_manager::features::
+              kProactivelyDownloadModelForPasswordChange)) {
     PasswordFieldClassificationModelHandlerFactory::GetForBrowserContext(
         originator_->GetBrowserContext());
   }

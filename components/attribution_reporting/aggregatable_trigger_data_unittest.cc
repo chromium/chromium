@@ -98,12 +98,12 @@ TEST(AggregatableTriggerDataTest, FromJSON) {
       },
       {
           "not_dictionary",
-          base::Value(base::Value::List()),
+          base::Value(base::ListValue()),
           ErrorIs(TriggerRegistrationError::kAggregatableTriggerDataWrongType),
       },
       {
           "key_piece_missing",
-          base::Value(base::Value::Dict()),
+          base::Value(base::DictValue()),
           ErrorIs(TriggerRegistrationError::
                       kAggregatableTriggerDataKeyPieceMissing),
       },

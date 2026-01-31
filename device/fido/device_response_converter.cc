@@ -11,7 +11,6 @@
 #include <utility>
 
 #include "base/compiler_specific.h"
-#include "base/containers/contains.h"
 #include "base/containers/span.h"
 #include "base/i18n/streaming_utf8_validator.h"
 #include "base/numerics/safe_conversions.h"
@@ -36,8 +35,10 @@ namespace {
 constexpr size_t kResponseCodeLength = 1;
 
 ProtocolVersion ConvertStringToProtocolVersion(std::string_view version) {
-  if (version == kCtap2Version || version == kCtap2_1Version)
+  if (version == kCtap2Version || version == kCtap2_1Version ||
+      version == kCtap2_2Version) {
     return ProtocolVersion::kCtap2;
+  }
   if (version == kU2fVersion)
     return ProtocolVersion::kU2f;
 
@@ -50,6 +51,9 @@ std::optional<Ctap2Version> ConvertStringToCtap2Version(
     return Ctap2Version::kCtap2_0;
   if (version == kCtap2_1Version)
     return Ctap2Version::kCtap2_1;
+  if (version == kCtap2_2Version) {
+    return Ctap2Version::kCtap2_2;
+  }
 
   return std::nullopt;
 }
@@ -402,7 +406,7 @@ std::optional<AuthenticatorGetInfoResponse> ReadCTAPGetInfoResponse(
   }
 
   if (protocol_versions.empty() ||
-      (base::Contains(protocol_versions, ProtocolVersion::kCtap2) &&
+      (protocol_versions.contains(ProtocolVersion::kCtap2) &&
        ctap2_versions.empty())) {
     return std::nullopt;
   }
@@ -443,6 +447,8 @@ std::optional<AuthenticatorGetInfoResponse> ReadCTAPGetInfoResponse(
         options.supports_min_pin_length_extension = true;
       } else if (extension_str == kExtensionHmacSecret) {
         options.supports_hmac_secret = true;
+      } else if (extension_str == kExtensionHmacSecretMc) {
+        options.supports_hmac_secret_mc = true;
       } else if (extension_str == kExtensionPRF) {
         options.supports_prf = true;
       } else if (extension_str == kExtensionLargeBlob) {

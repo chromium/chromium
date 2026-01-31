@@ -37,7 +37,7 @@ void CreateAndAddProjectorHTMLSource(content::WebUI* web_ui,
   source->AddResourcePaths(kAshProjectorCommonResources);
   source->AddResourcePaths(kChromeosProjectorAppBundleResources);
 
-  source->AddResourcePath("", IDR_ASH_PROJECTOR_APP_UNTRUSTED_INDEX_HTML);
+  source->SetDefaultResource(IDR_ASH_PROJECTOR_APP_UNTRUSTED_INDEX_HTML);
   source->AddLocalizedString("appTitle", IDS_ASH_PROJECTOR_DISPLAY_SOURCE);
 
   // Provide a list of specific script resources (javascript files and inlined

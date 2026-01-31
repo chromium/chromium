@@ -77,7 +77,7 @@ function createJobEntry(
     'creationTime': {internalValue: BigInt(date)},
     'printerId': 'printerId',
     'printerName': 'printerName',
-    'printerUri': {url: '192.168.1.1'},
+    'printerUri': '192.168.1.1',
     'numberOfPages': 4,
     'printerErrorCode': printerErrorCode,
     'completedInfo': null,

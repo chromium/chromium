@@ -70,7 +70,7 @@ class JwkReader {
   //
   // NOTE: |*result| is owned by the JwkReader.
   Status GetOptionalList(std::string_view member_name,
-                         const base::Value::List** result,
+                         const base::ListValue** result,
                          bool* member_exists) const;
 
   // Extracts the required string member |member_name| and saves the
@@ -101,7 +101,7 @@ class JwkReader {
   Status VerifyAlg(std::string_view expected_alg) const;
 
  private:
-  base::Value::Dict dict_;
+  base::DictValue dict_;
 };
 
 // Helper class for building the JSON for a JWK.
@@ -126,13 +126,13 @@ class JwkWriter {
   void ToJson(std::vector<uint8_t>* utf8_bytes) const;
 
  private:
-  base::Value::Dict dict_;
+  base::DictValue dict_;
 };
 
 // Converts a JWK "key_ops" array to the corresponding WebCrypto usages. Used by
 // testing.
 Status GetWebCryptoUsagesFromJwkKeyOpsForTest(
-    const base::Value::List& key_ops,
+    const base::ListValue& key_ops,
     blink::WebCryptoKeyUsageMask* usages);
 
 }  // namespace webcrypto

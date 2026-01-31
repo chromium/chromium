@@ -40,10 +40,10 @@ class SettingsPrivateDelegate : public KeyedService {
                                                   const base::Value* value);
 
   // Gets the value of the pref with the given |name|.
-  std::optional<base::Value::Dict> GetPref(const std::string& name);
+  std::optional<base::DictValue> GetPref(const std::string& name);
 
   // Gets the values of all allowlisted prefs.
-  virtual base::Value::List GetAllPrefs();
+  virtual base::ListValue GetAllPrefs();
 
   // Gets the value.
   virtual base::Value GetDefaultZoom();

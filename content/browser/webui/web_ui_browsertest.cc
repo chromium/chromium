@@ -115,16 +115,16 @@ class TestWebUIMessageHandler : public WebUIMessageHandler {
   }
 
  private:
-  void OnMessageRequiringGesture(const base::Value::List& args) {
+  void OnMessageRequiringGesture(const base::ListValue& args) {
     ++message_requiring_gesture_count_;
   }
 
-  void OnNotifyFinish(const base::Value::List& args) {
+  void OnNotifyFinish(const base::ListValue& args) {
     if (finish_closure_)
       finish_closure_.Run();
   }
 
-  void OnSendMessage(const base::Value::List& args) {
+  void OnSendMessage(const base::ListValue& args) {
     // This message will be invoked when WebContents changes the main RFH
     // and the old main RFH is still alive during navigating from WebUI page
     // to cross-site. WebUI message should be handled with old main RFH.

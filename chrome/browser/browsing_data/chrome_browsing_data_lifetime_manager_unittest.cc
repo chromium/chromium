@@ -223,12 +223,11 @@ TEST(ChromeBrowsingDataLifetimeManager,
   builder.AddTestingFactory(TrustedVaultServiceFactory::GetInstance(),
                             TrustedVaultServiceFactory::GetDefaultFactory());
   builder.AddTestingFactory(SyncServiceFactory::GetInstance(),
-                            SyncServiceFactory::GetDefaultFactory());
+                            base::BindRepeating(&CreateTestSyncService));
 
   auto testing_profile = builder.Build();
   syncer::TestSyncService* sync_service = static_cast<syncer::TestSyncService*>(
-      SyncServiceFactory::GetInstance()->SetTestingFactoryAndUse(
-          testing_profile.get(), base::BindRepeating(&CreateTestSyncService)));
+      SyncServiceFactory::GetForProfile(testing_profile.get()));
 
   content::MockBrowsingDataRemoverDelegate delegate;
   auto* remover = testing_profile->GetBrowsingDataRemover();

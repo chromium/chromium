@@ -81,7 +81,7 @@ class WebsiteEventsObserverBrowserTest
   }
 
   void SetAllowlistedUrls(const std::vector<std::string>& allowlisted_urls) {
-    base::Value::List allowed_urls;
+    base::ListValue allowed_urls;
     for (const auto& url : allowlisted_urls) {
       allowed_urls.Append(url);
     }

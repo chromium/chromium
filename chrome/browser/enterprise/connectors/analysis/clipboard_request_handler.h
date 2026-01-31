@@ -28,7 +28,7 @@ class ClipboardRequestHandler : public RequestHandlerBase {
 
   static std::unique_ptr<ClipboardRequestHandler> Create(
       ContentAnalysisInfo* content_analysis_info,
-      safe_browsing::BinaryUploadService* upload_service,
+      BinaryUploadService* upload_service,
       Profile* profile,
       GURL url,
       Type type,
@@ -60,7 +60,7 @@ class ClipboardRequestHandler : public RequestHandlerBase {
       std::unique_ptr<ClipboardAnalysisRequest> request);
 
   ClipboardRequestHandler(ContentAnalysisInfo* content_analysis_info,
-                          safe_browsing::BinaryUploadService* upload_service,
+                          BinaryUploadService* upload_service,
                           Profile* profile,
                           GURL url,
                           Type type,

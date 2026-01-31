@@ -292,10 +292,12 @@ def CheckChangeOnUpload(input_api, output_api):
     results.extend(_CheckStyle(input_api, output_api))
     results.extend(_CheckForPrintfDebugging(input_api, output_api))
     results.extend(_CheckForForbiddenChromiumCode(input_api, output_api))
+    results.extend(input_api.canned_checks.CheckAyeAye(input_api, output_api))
     return results
 
 
 def CheckChangeOnCommit(input_api, output_api):
     results = []
     results.extend(_CommonChecks(input_api, output_api))
+    results.extend(input_api.canned_checks.CheckAyeAye(input_api, output_api))
     return results

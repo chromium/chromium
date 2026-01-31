@@ -16,24 +16,28 @@ import org.junit.runner.notification.RunListener;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.lang.reflect.Method;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Enumeration;
 import java.util.List;
 import java.util.ServiceLoader;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 import java.util.regex.Pattern;
+import java.util.stream.Stream;
 
 /**
- *  Runs tests based on JUnit from the classpath on the host JVM based on the
- *  provided filter configurations.
+ * Runs tests based on JUnit from the classpath on the host JVM based on the provided filter
+ * configurations.
  */
 public final class JunitTestMain {
     private static final int CLASS_SUFFIX_LEN = ".class".length();
     private static final Pattern COLON = Pattern.compile(":");
     private static final Pattern FORWARD_SLASH = Pattern.compile("/");
+    private static final Pattern PARAMETERIZED_SUFFIX_REGEX = Pattern.compile("\\[.*?\\]");
 
     private JunitTestMain() {}
 
@@ -43,42 +47,46 @@ public final class JunitTestMain {
     }
 
     /** Finds all test classes on the class path annotated with RunWith. */
-    public static Class[] findClassesFromClasspath() {
+    public static Class<?>[] findClassesFromClasspath() {
         String[] jarPaths = COLON.split(System.getProperty("java.class.path"));
-        List<Class> classes = new ArrayList<Class>();
-        for (String jp : jarPaths) {
-            // Do not look at android.jar.
-            if (jp.contains("third_party/android_sdk")) {
-                continue;
-            }
-            try {
-                JarFile jf = new JarFile(jp);
-                for (Enumeration<JarEntry> eje = jf.entries(); eje.hasMoreElements(); ) {
-                    JarEntry je = eje.nextElement();
-                    String cn = je.getName();
-                    // Skip classes in common libraries.
-                    if (cn.startsWith("androidx.") || cn.startsWith("junit")) {
-                        continue;
-                    }
-                    // Skip nested classes and classes that do not end with "Test".
-                    // That tests end with "Test" is enforced by TestClassNameCheck ErrorProne
-                    // check.
-                    if (cn.contains("$") || !cn.endsWith("Test.class")) {
-                        continue;
-                    }
-                    cn = cn.substring(0, cn.length() - CLASS_SUFFIX_LEN);
-                    cn = FORWARD_SLASH.matcher(cn).replaceAll(".");
-                    Class<?> c = classOrNull(cn);
-                    if (c != null && c.isAnnotationPresent(RunWith.class)) {
-                        classes.add(c);
-                    }
-                }
-                jf.close();
-            } catch (IOException e) {
-                System.err.println("Error while reading classes from " + jp);
-            }
+        return Arrays.stream(jarPaths)
+                .parallel()
+                .flatMap(JunitTestMain::readClassesFromJar)
+                .toArray(Class<?>[]::new);
+    }
+
+    private static Stream<Class<?>> readClassesFromJar(String jp) {
+        // Do not look at android.jar.
+        if (jp.contains("third_party/android_sdk")) {
+            return Stream.empty();
         }
-        return classes.toArray(new Class[0]);
+        List<Class<?>> ret = new ArrayList<>();
+        try {
+            JarFile jf = new JarFile(jp);
+            for (Enumeration<JarEntry> eje = jf.entries(); eje.hasMoreElements(); ) {
+                JarEntry je = eje.nextElement();
+                String cn = je.getName();
+                // Skip classes in common libraries.
+                if (cn.startsWith("androidx.") || cn.startsWith("junit")) {
+                    continue;
+                }
+                // Skip nested classes and classes that do not end with "Test". That tests end with
+                // "Test" is enforced by TestClassNameCheck ErrorProne check.
+                if (cn.contains("$") || !cn.endsWith("Test.class")) {
+                    continue;
+                }
+                cn = cn.substring(0, cn.length() - CLASS_SUFFIX_LEN);
+                cn = FORWARD_SLASH.matcher(cn).replaceAll(".");
+                Class<?> c = classOrNull(cn);
+                if (c != null && c.isAnnotationPresent(RunWith.class)) {
+                    ret.add(c);
+                }
+            }
+            jf.close();
+        } catch (IOException e) {
+            System.err.println("Error while reading classes from " + jp);
+        }
+        return ret.stream();
     }
 
     private static Class<?> classOrNull(String className) {
@@ -97,11 +105,54 @@ public final class JunitTestMain {
         return null;
     }
 
+    /** Checks if a class contains at least one method that matches all the given gtest filters. */
+    private static boolean classContainsMethodMatchingAllFilters(
+            Class<?> c, List<GtestFilter> filters) {
+        for (Method m : c.getMethods()) {
+            boolean methodMatchesAll = true;
+            for (GtestFilter filter : filters) {
+                if (!filter.shouldRun(c.getName(), m.getName())) {
+                    methodMatchesAll = false;
+                    break;
+                }
+            }
+            if (methodMatchesAll) return true;
+        }
+        return false;
+    }
+
     private static Result listTestMain(JunitTestArgParser parser)
             throws FileNotFoundException, JSONException {
         JUnitCore core = new JUnitCore();
         TestListComputer computer = new TestListComputer(parser.mShadowsAllowlist);
-        Class[] classes = findClassesFromClasspath();
+        Class<?>[] classes = findClassesFromClasspath();
+
+        // Parse filters
+        List<GtestFilter> preFilters = new ArrayList<>();
+        List<GtestFilter> postFilters = new ArrayList<>();
+        for (String gtestFilter : parser.mGtestFilters) {
+            // Remove parameterized suffixes and # for method names as pre-filtering doesn't support
+            // them.
+            preFilters.add(
+                    new GtestFilter(
+                            PARAMETERIZED_SUFFIX_REGEX
+                                    .matcher(gtestFilter)
+                                    .replaceAll("")
+                                    .replaceAll("#", ".")));
+            // Keep the full filter for post-filtering to account for parameterized suffixes and
+            // per-method filters.
+            postFilters.add(new GtestFilter(gtestFilter));
+        }
+
+        // Pre-filtering avoids expensive reflection on classes that would have been filtered out.
+        if (!postFilters.isEmpty()) {
+            classes =
+                    Arrays.stream(classes)
+                            .parallel()
+                            .filter(c -> classContainsMethodMatchingAllFilters(c, preFilters))
+                            .toArray(Class<?>[]::new);
+        }
+
         Request testRequest = Request.classes(computer, classes);
         for (String packageFilter : parser.mPackageFilters) {
             testRequest = testRequest.filterWith(new PackageFilter(packageFilter));
@@ -109,8 +160,8 @@ public final class JunitTestMain {
         for (Class<?> runnerFilter : parser.mRunnerFilters) {
             testRequest = testRequest.filterWith(new RunnerFilter(runnerFilter));
         }
-        for (String gtestFilter : parser.mGtestFilters) {
-            testRequest = testRequest.filterWith(new GtestFilter(gtestFilter));
+        for (GtestFilter gtestFilter : postFilters) {
+            testRequest = testRequest.filterWith(gtestFilter);
         }
         Result ret = core.run(testRequest);
         computer.writeJson(new File(parser.mJsonConfig));
@@ -121,7 +172,7 @@ public final class JunitTestMain {
         String data = new String(Files.readAllBytes(Paths.get(parser.mJsonConfig)));
         JSONObject jsonConfig = new JSONObject(data);
         ChromiumAndroidConfigurer.setJsonConfig(jsonConfig);
-        Class[] classes = ConfigFilter.classesFromConfig(jsonConfig);
+        Class<?>[] classes = ConfigFilter.classesFromConfig(jsonConfig);
 
         JUnitCore core = new JUnitCore();
         GtestLogger gtestLogger = new GtestLogger(System.out);

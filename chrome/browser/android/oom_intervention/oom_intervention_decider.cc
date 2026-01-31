@@ -137,16 +137,16 @@ void OomInterventionDecider::OnPrefInitialized(bool success) {
     return;
 
   // Migrate `kBlacklist` to `kBlocklist`.
-  const base::Value::List& old_pref_value = prefs_->GetList(kBlacklist);
+  const base::ListValue& old_pref_value = prefs_->GetList(kBlacklist);
   if (!old_pref_value.empty()) {
     prefs_->SetList(kBlocklist, old_pref_value.Clone());
-    prefs_->SetList(kBlacklist, base::Value::List());
+    prefs_->SetList(kBlacklist, base::ListValue());
   }
 
   if (delegate_->WasLastShutdownClean())
     return;
 
-  const base::Value::List& declined_list = prefs_->GetList(kDeclinedHostList);
+  const base::ListValue& declined_list = prefs_->GetList(kDeclinedHostList);
   if (!declined_list.empty()) {
     const std::string& last_declined = declined_list.back().GetString();
     if (!IsInList(kBlocklist, last_declined))
@@ -175,7 +175,7 @@ void OomInterventionDecider::AddToList(const char* list_name,
   if (IsInList(list_name, host))
     return;
   ScopedListPrefUpdate update(prefs_, list_name);
-  base::Value::List& update_list = update.Get();
+  base::ListValue& update_list = update.Get();
   update_list.Append(host);
   if (update_list.size() > kMaxListSize)
     update_list.erase(update_list.begin());

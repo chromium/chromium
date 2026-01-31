@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/media_router/media_router_ui.h"
 
+#include <algorithm>
 #include <utility>
 #include <vector>
 
@@ -583,8 +584,8 @@ void MediaRouterUI::OnRoutesUpdated(const std::vector<MediaRoute>& routes) {
   }
 
   if (terminating_route_id_ &&
-      !base::Contains(routes, terminating_route_id_.value(),
-                      &MediaRoute::media_route_id)) {
+      !std::ranges::contains(routes, terminating_route_id_.value(),
+                             &MediaRoute::media_route_id)) {
     terminating_route_id_.reset();
   }
   UpdateSinks();

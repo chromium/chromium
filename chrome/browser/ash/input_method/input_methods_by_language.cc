@@ -8,7 +8,6 @@
 #include <array>
 #include <string_view>
 
-#include "base/containers/contains.h"
 #include "base/containers/span.h"
 
 namespace ash::input_method {
@@ -141,46 +140,46 @@ base::span<const std::string_view> SwedishInputMethods() {
 }
 
 LanguageCategory InputMethodToLanguageCategory(std::string_view input_method) {
-  if (base::Contains(AfrikaansInputMethods(), input_method)) {
+  if (std::ranges::contains(AfrikaansInputMethods(), input_method)) {
     return LanguageCategory::kAfrikaans;
   }
-  if (base::Contains(DanishInputMethods(), input_method)) {
+  if (std::ranges::contains(DanishInputMethods(), input_method)) {
     return LanguageCategory::kDanish;
   }
-  if (base::Contains(DutchInputMethods(), input_method)) {
+  if (std::ranges::contains(DutchInputMethods(), input_method)) {
     return LanguageCategory::kDutch;
   }
-  if (base::Contains(EnglishInputMethods(), input_method)) {
+  if (std::ranges::contains(EnglishInputMethods(), input_method)) {
     return LanguageCategory::kEnglish;
   }
-  if (base::Contains(FinnishInputMethods(), input_method)) {
+  if (std::ranges::contains(FinnishInputMethods(), input_method)) {
     return LanguageCategory::kFinnish;
   }
-  if (base::Contains(FrenchInputMethods(), input_method)) {
+  if (std::ranges::contains(FrenchInputMethods(), input_method)) {
     return LanguageCategory::kFrench;
   }
-  if (base::Contains(GermanInputMethods(), input_method)) {
+  if (std::ranges::contains(GermanInputMethods(), input_method)) {
     return LanguageCategory::kGerman;
   }
-  if (base::Contains(ItalianInputMethods(), input_method)) {
+  if (std::ranges::contains(ItalianInputMethods(), input_method)) {
     return LanguageCategory::kItalian;
   }
-  if (base::Contains(JapaneseInputMethods(), input_method)) {
+  if (std::ranges::contains(JapaneseInputMethods(), input_method)) {
     return LanguageCategory::kJapanese;
   }
-  if (base::Contains(NorwegianInputMethods(), input_method)) {
+  if (std::ranges::contains(NorwegianInputMethods(), input_method)) {
     return LanguageCategory::kNorwegian;
   }
-  if (base::Contains(PolishInputMethods(), input_method)) {
+  if (std::ranges::contains(PolishInputMethods(), input_method)) {
     return LanguageCategory::kPolish;
   }
-  if (base::Contains(PortugeseInputMethods(), input_method)) {
+  if (std::ranges::contains(PortugeseInputMethods(), input_method)) {
     return LanguageCategory::kPortugese;
   }
-  if (base::Contains(SpanishInputMethods(), input_method)) {
+  if (std::ranges::contains(SpanishInputMethods(), input_method)) {
     return LanguageCategory::kSpanish;
   }
-  if (base::Contains(SwedishInputMethods(), input_method)) {
+  if (std::ranges::contains(SwedishInputMethods(), input_method)) {
     return LanguageCategory::kSwedish;
   }
   return LanguageCategory::kOther;

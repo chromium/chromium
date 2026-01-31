@@ -10,7 +10,6 @@
 
 #include "base/barrier_closure.h"
 #include "base/compiler_specific.h"
-#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/ptr_util.h"
@@ -90,20 +89,16 @@ void RecordSessionStorageCachePurgedHistogram(
 }  // namespace
 
 SessionStorageImpl::SessionStorageImpl(
-    const base::FilePath& partition_directory,
+    const base::FilePath& storage_partition_directory,
     BackingMode backing_mode,
-    std::string database_name,
     DestructSessionStorageCallback destruct_callback,
     mojo::PendingReceiver<mojom::SessionStorageControl> receiver)
     : destruct_callback_(std::move(destruct_callback)),
       backing_mode_(backing_mode),
-      database_name_(std::move(database_name)),
-      partition_directory_(partition_directory),
+      storage_partition_directory_(storage_partition_directory),
       memory_dump_id_(base::StringPrintf("SessionStorage/0x%" PRIXPTR,
                                          reinterpret_cast<uintptr_t>(this))),
-      receiver_(this, std::move(receiver)),
-      is_low_end_mode_(
-          base::SysInfo::IsLowEndDeviceOrPartialLowEndModeEnabled()) {
+      receiver_(this, std::move(receiver)) {
   base::trace_event::MemoryDumpManager::GetInstance()
       ->RegisterDumpProviderWithSequencedTaskRunner(
           this, "SessionStorage",
@@ -122,17 +117,15 @@ SessionStorageImpl::~SessionStorageImpl() {
 
 void SessionStorageImpl::BindNamespace(
     const std::string& namespace_id,
-    mojo::PendingReceiver<blink::mojom::SessionStorageNamespace> receiver,
-    BindNamespaceCallback callback) {
+    mojo::PendingReceiver<blink::mojom::SessionStorageNamespace> receiver) {
   if (connection_state_ != CONNECTION_FINISHED) {
-    RunWhenConnected(base::BindOnce(
-        &SessionStorageImpl::BindNamespace, weak_ptr_factory_.GetWeakPtr(),
-        namespace_id, std::move(receiver), std::move(callback)));
+    RunWhenConnected(base::BindOnce(&SessionStorageImpl::BindNamespace,
+                                    weak_ptr_factory_.GetWeakPtr(),
+                                    namespace_id, std::move(receiver)));
     return;
   }
   auto found = namespaces_.find(namespace_id);
   if (found == namespaces_.end()) {
-    std::move(callback).Run(/*success=*/false);
     return;
   }
 
@@ -150,24 +143,21 @@ void SessionStorageImpl::BindNamespace(
   // Track the total sessionStorage cache size.
   UMA_HISTOGRAM_COUNTS_100000("SessionStorageContext.CacheSizeInKB",
                               total_cache_size / 1024);
-  std::move(callback).Run(/*success=*/true);
 }
 
 void SessionStorageImpl::BindStorageArea(
     const blink::StorageKey& storage_key,
     const std::string& namespace_id,
-    mojo::PendingReceiver<blink::mojom::StorageArea> receiver,
-    BindStorageAreaCallback callback) {
+    mojo::PendingReceiver<blink::mojom::StorageArea> receiver) {
   if (connection_state_ != CONNECTION_FINISHED) {
-    RunWhenConnected(base::BindOnce(
-        &SessionStorageImpl::BindStorageArea, weak_ptr_factory_.GetWeakPtr(),
-        storage_key, namespace_id, std::move(receiver), std::move(callback)));
+    RunWhenConnected(base::BindOnce(&SessionStorageImpl::BindStorageArea,
+                                    weak_ptr_factory_.GetWeakPtr(), storage_key,
+                                    namespace_id, std::move(receiver)));
     return;
   }
 
   auto found = namespaces_.find(namespace_id);
   if (found == namespaces_.end()) {
-    std::move(callback).Run(/*success=*/false);
     return;
   }
 
@@ -181,7 +171,6 @@ void SessionStorageImpl::BindStorageArea(
 
   PurgeUnusedAreasIfNeeded();
   found->second->OpenArea(storage_key, std::move(receiver), namespace_entry);
-  std::move(callback).Run(/*success=*/true);
 }
 
 void SessionStorageImpl::CreateNamespace(const std::string& namespace_id) {
@@ -233,8 +222,8 @@ void SessionStorageImpl::CloneNamespace(
             clone_from_namespace_id);
         clone_from_ns->second->AddChildNamespaceWaitingForClone(
             clone_to_namespace_id);
-      } else if (base::Contains(metadata_.namespace_storage_key_map(),
-                                clone_from_namespace_id)) {
+      } else if (metadata_.namespace_storage_key_map().contains(
+                     clone_from_namespace_id)) {
         CHECK_EQ(connection_state_, CONNECTION_FINISHED,
                  base::NotFatalUntil::M146);
         // The namespace exists on disk but is not in-use, so do the appropriate
@@ -352,19 +341,19 @@ void SessionStorageImpl::DeleteStorage(const blink::StorageKey& storage_key,
 
   // If we don't have the namespace loaded, then we can delete it all using the
   // metadata.
-  scoped_refptr<SessionStorageMetadata::MapData> map_data =
+  scoped_refptr<DomStorageDatabase::SharedMapLocator> map_locator =
       metadata_.TakeExistingMap(namespace_id, storage_key);
-  if (!map_data || !database_) {
+  if (!map_locator || !database_) {
     // Nothing to delete.
     std::move(callback).Run();
     return;
   }
 
   // Delete `storage_key` from `namespace_id` in the database.  Also delete
-  // `map_data` when not referenced by a cloned session.
+  // `map_locator` when not referenced by a cloned session.
   std::vector<DomStorageDatabase::MapLocator> maps_to_delete;
-  if (map_data->ReferenceCount() == 0) {
-    maps_to_delete.emplace_back(namespace_id, storage_key, map_data->map_id());
+  if (map_locator->session_ids().empty()) {
+    maps_to_delete.emplace_back(std::move(*map_locator));
   }
   database_->DeleteStorageKeysFromSession(
       namespace_id, /*metadata_to_delete=*/{storage_key},
@@ -461,7 +450,7 @@ void SessionStorageImpl::PurgeUnusedAreasIfNeeded() {
     purge_reason = SessionStorageCachePurgeReason::kSizeLimitExceeded;
   else if (data_maps_.size() > kMaxSessionStorageAreaCount)
     purge_reason = SessionStorageCachePurgeReason::kAreaCountLimitExceeded;
-  else if (is_low_end_mode_) {
+  else if (base::SysInfo::IsLowEndDeviceOrPartialLowEndModeEnabled()) {
     purge_reason = SessionStorageCachePurgeReason::kInactiveOnLowEndDevice;
   }
 
@@ -479,16 +468,14 @@ void SessionStorageImpl::PurgeUnusedAreasIfNeeded() {
   RecordSessionStorageCachePurgedHistogram(purge_reason, purged_size_kib);
 }
 
-void SessionStorageImpl::ScavengeUnusedNamespaces(
-    ScavengeUnusedNamespacesCallback callback) {
+void SessionStorageImpl::ScavengeUnusedNamespaces() {
   if (has_scavenged_) {
-    std::move(callback).Run();
     return;
   }
   if (connection_state_ != CONNECTION_FINISHED) {
     RunWhenConnected(
         base::BindOnce(&SessionStorageImpl::ScavengeUnusedNamespaces,
-                       weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+                       weak_ptr_factory_.GetWeakPtr()));
     return;
   }
   has_scavenged_ = true;
@@ -503,7 +490,6 @@ void SessionStorageImpl::ScavengeUnusedNamespaces(
   }
   DeleteNamespacesFromMetadataAndDatabase(std::move(namespaces_to_delete));
   protected_namespaces_from_scavenge_.clear();
-  std::move(callback).Run();
 }
 
 bool SessionStorageImpl::OnMemoryDump(
@@ -538,7 +524,7 @@ bool SessionStorageImpl::OnMemoryDump(
     return true;
   }
   for (const auto& it : data_maps_) {
-    const auto& storage_key = it.second->map_data()->storage_key();
+    const auto& storage_key = it.second->map_locator().storage_key();
     std::string storage_key_str =
         storage_key.GetMemoryDumpString(/*max_length=*/50);
     std::string area_dump_name = base::StringPrintf(
@@ -547,6 +533,10 @@ bool SessionStorageImpl::OnMemoryDump(
     it.second->storage_area()->OnMemoryDump(area_dump_name, pmd);
   }
   return true;
+}
+
+const base::FilePath& SessionStorageImpl::GetStoragePartitionDirectory() const {
+  return storage_partition_directory_;
 }
 
 void SessionStorageImpl::PretendToConnectForTesting() {
@@ -569,21 +559,25 @@ void SessionStorageImpl::SetDatabaseOpenCallbackForTesting(
   RunWhenConnected(std::move(callback));
 }
 
-scoped_refptr<SessionStorageMetadata::MapData>
+base::FilePath SessionStorageImpl::GetDatabasePath() const {
+  return DomStorageDatabase::GetPath(StorageType::kSessionStorage,
+                                     storage_partition_directory_);
+}
+
+scoped_refptr<DomStorageDatabase::SharedMapLocator>
 SessionStorageImpl::RegisterNewAreaMap(const std::string& namespace_id,
                                        const blink::StorageKey& storage_key) {
-  scoped_refptr<SessionStorageMetadata::MapData> map_entry =
+  scoped_refptr<DomStorageDatabase::SharedMapLocator> map_entry =
       metadata_.RegisterNewMap(namespace_id, storage_key);
-
   if (database_) {
     // Save the new map in the database.
     DomStorageDatabase::Metadata metadata;
-    metadata.next_map_id = map_entry->map_id() + 1;
+    metadata.next_map_id = map_entry->map_id().value() + 1;
     metadata.map_metadata.push_back({
         .map_locator{
             /*session_id=*/namespace_id,
             map_entry->storage_key(),
-            map_entry->map_id(),
+            map_entry->map_id().value(),
         },
     });
     database_->PutMetadata(std::move(metadata),
@@ -593,18 +587,18 @@ SessionStorageImpl::RegisterNewAreaMap(const std::string& namespace_id,
   return map_entry;
 }
 
-void SessionStorageImpl::OnDataMapCreation(
-    const std::vector<uint8_t>& map_prefix,
-    SessionStorageDataMap* map) {
-  DCHECK(data_maps_.find(map_prefix) == data_maps_.end());
-  data_maps_.emplace(std::piecewise_construct,
-                     std::forward_as_tuple(map_prefix),
-                     std::forward_as_tuple(map));
+void SessionStorageImpl::OnDataMapCreation(int64_t map_id,
+                                           SessionStorageDataMap* map) {
+  auto result = data_maps_.emplace(std::piecewise_construct,
+                                   std::forward_as_tuple(map_id),
+                                   std::forward_as_tuple(map));
+
+  // `map_id` must identify a unique new map that did not exist in `data_maps_`.
+  CHECK(result.second);
 }
 
-void SessionStorageImpl::OnDataMapDestruction(
-    const std::vector<uint8_t>& map_prefix) {
-  data_maps_.erase(map_prefix);
+void SessionStorageImpl::OnDataMapDestruction(int64_t map_id) {
+  data_maps_.erase(map_id);
 }
 
 void SessionStorageImpl::OnCommitResult(DbStatus status) {
@@ -631,9 +625,8 @@ void SessionStorageImpl::OnCommitResult(DbStatus status) {
 }
 
 scoped_refptr<SessionStorageDataMap>
-SessionStorageImpl::MaybeGetExistingDataMapForId(
-    const std::vector<uint8_t>& map_number_as_bytes) {
-  auto it = data_maps_.find(map_number_as_bytes);
+SessionStorageImpl::MaybeGetExistingDataMapForId(int64_t map_id) {
+  auto it = data_maps_.find(map_id);
   if (it == data_maps_.end())
     return nullptr;
   return base::WrapRefCounted(it->second);
@@ -701,14 +694,14 @@ void SessionStorageImpl::DeleteNamespacesFromMetadataAndDatabase(
   // Remove each namespace from `metadata_`.
   std::vector<DomStorageDatabase::MapLocator> maps_to_delete;
   for (const std::string& namespace_id : namespace_ids) {
-    std::map<blink::StorageKey, scoped_refptr<SessionStorageMetadata::MapData>>
+    std::map<blink::StorageKey,
+             scoped_refptr<DomStorageDatabase::SharedMapLocator>>
         namespace_to_delete = metadata_.TakeNamespace(namespace_id);
 
     // Find unreferenced map key/value pairs to delete from `database_`.
-    for (const auto& [storage_key, map_data] : namespace_to_delete) {
-      if (map_data->ReferenceCount() == 0) {
-        maps_to_delete.emplace_back(namespace_id, storage_key,
-                                    map_data->map_id());
+    for (auto& [storage_key, map_locator] : namespace_to_delete) {
+      if (map_locator->session_ids().empty()) {
+        maps_to_delete.emplace_back(std::move(*map_locator));
       }
     }
   }
@@ -747,20 +740,15 @@ void SessionStorageImpl::InitiateConnection(bool in_memory_only) {
            base::NotFatalUntil::M146);
 
   if (backing_mode_ != BackingMode::kNoDisk && !in_memory_only &&
-      !partition_directory_.empty()) {
+      !storage_partition_directory_.empty()) {
     // We were given a subdirectory to write to, so use a disk backed database.
     if (backing_mode_ == BackingMode::kClearDiskStateOnOpen) {
-      DomStorageDatabaseFactory::Destroy(
-          partition_directory_, database_name_,
-          AsyncDomStorageDatabase::GetTaskRunnerForDb(partition_directory_,
-                                                      database_name_),
-          base::DoNothing());
+      DomStorageDatabaseFactory::Destroy(GetDatabasePath(), base::DoNothing());
     }
 
     in_memory_ = false;
     database_ = AsyncDomStorageDatabase::Open(
-        StorageType::kSessionStorage, partition_directory_, database_name_,
-        memory_dump_id_,
+        StorageType::kSessionStorage, GetDatabasePath(), memory_dump_id_,
         base::BindOnce(&SessionStorageImpl::OnDatabaseOpened,
                        weak_ptr_factory_.GetWeakPtr()));
     return;
@@ -770,7 +758,7 @@ void SessionStorageImpl::InitiateConnection(bool in_memory_only) {
   in_memory_ = true;
   database_ = AsyncDomStorageDatabase::Open(
       StorageType::kSessionStorage,
-      /*directory=*/base::FilePath(), "SessionStorageDatabase", memory_dump_id_,
+      /*database_path=*/base::FilePath(), memory_dump_id_,
       base::BindOnce(&SessionStorageImpl::OnDatabaseOpened,
                      weak_ptr_factory_.GetWeakPtr()));
 }
@@ -866,9 +854,7 @@ void SessionStorageImpl::DeleteAndRecreateDatabase() {
   // Destroy database, and try again.
   if (!in_memory_) {
     DomStorageDatabaseFactory::Destroy(
-        partition_directory_, database_name_,
-        AsyncDomStorageDatabase::GetTaskRunnerForDb(partition_directory_,
-                                                    database_name_),
+        GetDatabasePath(),
         base::BindOnce(&SessionStorageImpl::OnDBDestroyed,
                        weak_ptr_factory_.GetWeakPtr(), recreate_in_memory));
   } else {

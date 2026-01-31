@@ -29,7 +29,7 @@ constexpr int kFocusToggleAcceleratorModifiers =
 #elif BUILDFLAG(IS_CHROMEOS)
 // ui::EF_COMMAND_DOWN is the search key for ChromeOS.
 constexpr int kFocusToggleAcceleratorModifiers =
-    ui::EF_COMMAND_DOWN | ui::EF_SHIFT_DOWN;
+    ui::EF_COMMAND_DOWN | ui::EF_ALT_DOWN;
 #else
 constexpr int kFocusToggleAcceleratorModifiers =
     ui::EF_ALT_DOWN | ui::EF_SHIFT_DOWN;

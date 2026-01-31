@@ -10,7 +10,7 @@ import android.graphics.drawable.Drawable;
 import android.view.View;
 
 import org.chromium.base.metrics.RecordUserAction;
-import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
@@ -36,7 +36,7 @@ import java.util.function.Supplier;
  */
 @NullMarked
 public class ShareButtonController extends BaseButtonDataProvider {
-    private final ObservableSupplier<ShareDelegate> mShareDelegateSupplier;
+    private final MonotonicObservableSupplier<ShareDelegate> mShareDelegateSupplier;
     private final Supplier<@Nullable Tracker> mTrackerSupplier;
     private final Runnable mOnShareRunnable;
 
@@ -57,7 +57,7 @@ public class ShareButtonController extends BaseButtonDataProvider {
             Context context,
             Drawable buttonDrawable,
             ActivityTabProvider tabProvider,
-            ObservableSupplier<ShareDelegate> shareDelegateSupplier,
+            MonotonicObservableSupplier<ShareDelegate> shareDelegateSupplier,
             Supplier<@Nullable Tracker> trackerSupplier,
             ModalDialogManager modalDialogManager,
             Runnable onShareRunnable) {

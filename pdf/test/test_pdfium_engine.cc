@@ -59,8 +59,8 @@ int TestPDFiumEngine::GetNumberOfPages() const {
   return static_cast<int>(kPageNumber);
 }
 
-base::Value::List TestPDFiumEngine::GetBookmarks() {
-  return base::Value::List();
+base::ListValue TestPDFiumEngine::GetBookmarks() {
+  return base::ListValue();
 }
 
 }  // namespace chrome_pdf

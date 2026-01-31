@@ -590,7 +590,8 @@ TEST(CanonicalCookieTest, CreateWithInvalidDomain) {
       &status);
   EXPECT_EQ(nullptr, cookie.get());
   EXPECT_TRUE(status.HasExactlyExclusionReasonsForTesting(
-      {CookieInclusionStatus::ExclusionReason::EXCLUDE_INVALID_DOMAIN}));
+      {CookieInclusionStatus::ExclusionReason::EXCLUDE_DOMAIN_MISMATCH,
+       CookieInclusionStatus::ExclusionReason::EXCLUDE_INVALID_DOMAIN}));
 }
 
 // Creating a cookie for an eTLD is possible, but it must match the hostname and
@@ -2955,6 +2956,7 @@ TEST(CanonicalCookieTest, MultipleExclusionReasons) {
   ASSERT_FALSE(cookie2);
   EXPECT_TRUE(create_status.HasExactlyExclusionReasonsForTesting(
       {CookieInclusionStatus::ExclusionReason::EXCLUDE_INVALID_PREFIX,
+       CookieInclusionStatus::ExclusionReason::EXCLUDE_DOMAIN_MISMATCH,
        CookieInclusionStatus::ExclusionReason::EXCLUDE_INVALID_DOMAIN}));
 
   // Test IsSetPermittedInContext()
@@ -3771,6 +3773,45 @@ TEST(CanonicalCookieTest, TestHasNonASCIIHistograms) {
   check_histograms();
 }
 
+TEST(CanonicalCookieTest, TestEmptyNameHistograms) {
+  const char kEmptyNameHistogram[] = "Cookie.Parse.EmptyName";
+  const char kEmptyNameAmbiguousValue[] =
+      "Cookie.Parse.EmptyNameAmbiguousValue";
+
+  base::Time creation_time = base::Time::Now();
+  std::optional<base::Time> server_time = std::nullopt;
+  std::optional<CookiePartitionKey> cookie_partition_key = std::nullopt;
+  CookieSourceType source_type = CookieSourceType::kHTTP;
+  CookieInclusionStatus status;
+
+  {
+    base::HistogramTester histograms;
+    EXPECT_TRUE(CanonicalCookie::Create(
+        GURL("https://example.org"), "A=B", creation_time, server_time,
+        cookie_partition_key, source_type, &status));
+    histograms.ExpectUniqueSample(kEmptyNameHistogram, false, 1);
+    histograms.ExpectTotalCount(kEmptyNameAmbiguousValue, 0);
+  }
+
+  {
+    base::HistogramTester histograms;
+    EXPECT_TRUE(CanonicalCookie::Create(
+        GURL("https://example.org"), "A", creation_time, server_time,
+        cookie_partition_key, source_type, &status));
+    histograms.ExpectUniqueSample(kEmptyNameHistogram, true, 1);
+    histograms.ExpectUniqueSample(kEmptyNameAmbiguousValue, false, 1);
+  }
+
+  {
+    base::HistogramTester histograms;
+    EXPECT_TRUE(CanonicalCookie::Create(
+        GURL("https://example.org"), "=A=B", creation_time, server_time,
+        cookie_partition_key, source_type, &status));
+    histograms.ExpectUniqueSample(kEmptyNameHistogram, true, 1);
+    histograms.ExpectUniqueSample(kEmptyNameAmbiguousValue, true, 1);
+  }
+}
+
 TEST(CanonicalCookieTest, BuildCookieLine) {
   std::vector<std::unique_ptr<CanonicalCookie>> cookies;
   GURL url("https://example.com/");
@@ -4067,7 +4108,8 @@ TEST(CanonicalCookieTest, CreateSanitizedCookie_Logic) {
       false /*httponly*/, CookieSameSite::NO_RESTRICTION,
       COOKIE_PRIORITY_DEFAULT, std::nullopt /*partition_key*/, &status));
   EXPECT_TRUE(status.HasExactlyExclusionReasonsForTesting(
-      {CookieInclusionStatus::ExclusionReason::EXCLUDE_INVALID_DOMAIN}));
+      {CookieInclusionStatus::ExclusionReason::EXCLUDE_DOMAIN_MISMATCH,
+       CookieInclusionStatus::ExclusionReason::EXCLUDE_INVALID_DOMAIN}));
   EXPECT_FALSE(CanonicalCookie::CreateSanitizedCookie(
       GURL("http://www.foo.com/foo"), "A", "B", std::string(), "foo",
       base::Time(), base::Time(), base::Time(), false /*secure*/,
@@ -4170,7 +4212,8 @@ TEST(CanonicalCookieTest, CreateSanitizedCookie_Logic) {
       CookieSameSite::NO_RESTRICTION, COOKIE_PRIORITY_DEFAULT,
       std::nullopt /*partition_key*/, &status));
   EXPECT_TRUE(status.HasExactlyExclusionReasonsForTesting(
-      {CookieInclusionStatus::ExclusionReason::EXCLUDE_INVALID_DOMAIN}));
+      {CookieInclusionStatus::ExclusionReason::EXCLUDE_DOMAIN_MISMATCH,
+       CookieInclusionStatus::ExclusionReason::EXCLUDE_INVALID_DOMAIN}));
 
   // Path with unusual characters escaped.
   cc = CanonicalCookie::CreateSanitizedCookie(

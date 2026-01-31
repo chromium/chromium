@@ -349,12 +349,11 @@ class FakeServer {
   }
 
   [[nodiscard]] AssertionResult VerifyRegistrationJwt(std::string_view jwt) {
-    std::optional<base::Value::Dict> header = signin::ExtractHeaderFromJwt(jwt);
+    std::optional<base::DictValue> header = signin::ExtractHeaderFromJwt(jwt);
     if (!header) {
       return AssertionFailure() << "JWT header not found";
     }
-    std::optional<base::Value::Dict> payload =
-        signin::ExtractPayloadFromJwt(jwt);
+    std::optional<base::DictValue> payload = signin::ExtractPayloadFromJwt(jwt);
     if (!payload) {
       return AssertionFailure() << "JWT payload not found";
     }

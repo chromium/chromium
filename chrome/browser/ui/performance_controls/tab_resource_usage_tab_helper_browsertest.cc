@@ -4,7 +4,7 @@
 
 #include "chrome/browser/ui/performance_controls/tab_resource_usage_tab_helper.h"
 
-#include "base/byte_count.h"
+#include "base/byte_size.h"
 #include "base/test/bind.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/performance_controls/test_support/memory_metrics_refresh_waiter.h"
@@ -20,7 +20,7 @@
 
 namespace {
 constexpr char kTestDomain[] = "https://foo.bar";
-constexpr base::ByteCount kTestMemoryUsage = base::ByteCount(100000);
+constexpr base::ByteSize kTestMemoryUsage = base::ByteSize(100000);
 DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kTabId);
 DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kUpdatedEvent);
 }  // namespace
@@ -90,7 +90,7 @@ IN_PROC_BROWSER_TEST_F(TabResourceUsageTabHelperBrowsertest,
                      base::BindOnce([](TabResourceUsageTabHelper& helper) {
                        return helper.GetMemoryUsage();
                      }),
-                     testing::Ne(base::ByteCount(0))));
+                     testing::Ne(base::ByteSize(0))));
 }
 
 IN_PROC_BROWSER_TEST_F(TabResourceUsageTabHelperBrowsertest,
@@ -100,7 +100,7 @@ IN_PROC_BROWSER_TEST_F(TabResourceUsageTabHelperBrowsertest,
       InstrumentTab(kTabId),
       WithTabHelper(kTabId,
                     base::BindOnce([](TabResourceUsageTabHelper& helper) {
-                      helper.SetMemoryUsage(base::ByteCount::Max());
+                      helper.SetMemoryUsage(base::ByteSize::Max());
                     })),
       WithElement(
           kBrowserViewElementId,
@@ -117,7 +117,7 @@ IN_PROC_BROWSER_TEST_F(TabResourceUsageTabHelperBrowsertest,
                      base::BindOnce([](TabResourceUsageTabHelper& helper) {
                        return helper.GetMemoryUsage();
                      }),
-                     testing::Ne(base::ByteCount::Max())));
+                     testing::Ne(base::ByteSize::Max())));
 }
 
 // Clears memory usage on navigate.
@@ -134,5 +134,5 @@ IN_PROC_BROWSER_TEST_F(TabResourceUsageTabHelperBrowsertest,
                      base::BindOnce([](TabResourceUsageTabHelper& tab_helper) {
                        return tab_helper.GetMemoryUsage();
                      }),
-                     base::ByteCount(0)));
+                     base::ByteSize(0)));
 }

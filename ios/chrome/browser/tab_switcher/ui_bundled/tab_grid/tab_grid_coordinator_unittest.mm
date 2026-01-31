@@ -17,15 +17,16 @@
 #import "ios/chrome/browser/bookmarks/model/bookmark_model_factory.h"
 #import "ios/chrome/browser/incognito_reauth/ui_bundled/incognito_reauth_scene_agent.h"
 #import "ios/chrome/browser/main/ui_bundled/bvc_container_view_controller.h"
-#import "ios/chrome/browser/popup_menu/ui_bundled/popup_menu_coordinator.h"
+#import "ios/chrome/browser/popup_menu/coordinator/popup_menu_coordinator.h"
 #import "ios/chrome/browser/saved_tab_groups/model/tab_group_sync_service_factory.h"
 #import "ios/chrome/browser/sessions/model/ios_chrome_tab_restore_service_factory.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
-#import "ios/chrome/browser/shared/public/commands/application_commands.h"
+#import "ios/chrome/browser/shared/public/commands/bwg_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/quick_delete_commands.h"
+#import "ios/chrome/browser/shared/public/commands/scene_commands.h"
 #import "ios/chrome/browser/shared/public/commands/settings_commands.h"
 #import "ios/chrome/browser/shared/public/commands/snackbar_commands.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
@@ -122,12 +123,16 @@ class TabGridCoordinatorTest : public BlockCleanupTest {
 
     browser_ = std::make_unique<TestBrowser>(profile_.get(), scene_state_);
 
-    // Set up ApplicationCommands mock.
-    id mock_application_handler =
-        OCMProtocolMock(@protocol(ApplicationCommands));
+    // Set up SceneCommands mock.
+    id mock_application_handler = OCMProtocolMock(@protocol(SceneCommands));
     CommandDispatcher* dispatcher = browser_->GetCommandDispatcher();
     [dispatcher startDispatchingToTarget:mock_application_handler
-                             forProtocol:@protocol(ApplicationCommands)];
+                             forProtocol:@protocol(SceneCommands)];
+
+    // Set up GeminiCommands mock.
+    id mock_gemini_handler = OCMProtocolMock(@protocol(BWGCommands));
+    [dispatcher startDispatchingToTarget:mock_gemini_handler
+                             forProtocol:@protocol(BWGCommands)];
 
     // Set up QuickDeleteCommands mock.
     id mock_quick_delete_handler_ =
@@ -142,18 +147,17 @@ class TabGridCoordinatorTest : public BlockCleanupTest {
 
     AddAgentsToBrowser(incognito_browser_.get());
 
-    id mockApplicationCommandHandler =
-        OCMProtocolMock(@protocol(ApplicationCommands));
+    id mockSceneHandler = OCMProtocolMock(@protocol(SceneCommands));
     IncognitoReauthSceneAgent* reauth_agent = [[IncognitoReauthSceneAgent alloc]
-              initWithReauthModule:[[ReauthenticationModule alloc] init]
-        applicationCommandsHandler:mockApplicationCommandHandler];
+        initWithReauthModule:[[ReauthenticationModule alloc] init]
+                sceneHandler:mockSceneHandler];
     [scene_state_ addAgent:reauth_agent];
 
     coordinator_ = [[TabGridCoordinator alloc]
-        initWithApplicationCommandEndpoint:mockApplicationCommandHandler
-                            regularBrowser:browser_.get()
-                           inactiveBrowser:browser_->CreateInactiveBrowser()
-                          incognitoBrowser:incognito_browser_.get()];
+        initWithSceneCommandsEndpoint:mockSceneHandler
+                       regularBrowser:browser_.get()
+                      inactiveBrowser:browser_->CreateInactiveBrowser()
+                     incognitoBrowser:incognito_browser_.get()];
     coordinator_.animationsDisabledForTesting = YES;
 
     // TabGridCoordinator will make its view controller the root, so stash the

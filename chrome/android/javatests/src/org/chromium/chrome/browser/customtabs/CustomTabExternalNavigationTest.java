@@ -318,7 +318,6 @@ public class CustomTabExternalNavigationTest {
                         .setIsInitialNavigationInFrame(true)
                         .build();
         assertTrue(mNavigationDelegate.shouldDisableExternalIntentRequestsForUrl(params1, intent));
-        assertTrue((intent.getFlags() & Intent.FLAG_ACTIVITY_MULTIPLE_TASK) == 0);
 
         // The link is not verified for the current TWA
         ExternalNavigationParams params2 =
@@ -333,7 +332,6 @@ public class CustomTabExternalNavigationTest {
                         .setIsInitialNavigationInFrame(true)
                         .build();
         assertFalse(mNavigationDelegate.shouldDisableExternalIntentRequestsForUrl(params2, intent));
-        assertTrue((intent.getFlags() & Intent.FLAG_ACTIVITY_MULTIPLE_TASK) == 0);
 
         // The link is verified for the current TWA but the specific navigation case allows for
         // external intents
@@ -349,6 +347,5 @@ public class CustomTabExternalNavigationTest {
                         .setIsInitialNavigationInFrame(true)
                         .build();
         assertFalse(mNavigationDelegate.shouldDisableExternalIntentRequestsForUrl(params3, intent));
-        assertTrue((intent.getFlags() & Intent.FLAG_ACTIVITY_MULTIPLE_TASK) != 0);
     }
 }

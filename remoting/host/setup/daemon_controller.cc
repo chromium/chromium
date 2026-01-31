@@ -57,7 +57,7 @@ void DaemonController::CheckPermission(bool it2me, BoolCallback callback) {
   return delegate_->CheckPermission(it2me, std::move(callback));
 }
 
-void DaemonController::SetConfigAndStart(base::Value::Dict config,
+void DaemonController::SetConfigAndStart(base::DictValue config,
                                          bool consent,
                                          CompletionCallback done) {
   DCHECK(caller_task_runner_->BelongsToCurrentThread());
@@ -71,7 +71,7 @@ void DaemonController::SetConfigAndStart(base::Value::Dict config,
   ServiceOrQueueRequest(std::move(request));
 }
 
-void DaemonController::UpdateConfig(base::Value::Dict config,
+void DaemonController::UpdateConfig(base::DictValue config,
                                     CompletionCallback done) {
   DCHECK(caller_task_runner_->BelongsToCurrentThread());
 
@@ -118,12 +118,12 @@ DaemonController::~DaemonController() {
 void DaemonController::DoGetConfig(GetConfigCallback done) {
   DCHECK(delegate_task_runner_->BelongsToCurrentThread());
 
-  std::optional<base::Value::Dict> config = delegate_->GetConfig();
+  std::optional<base::DictValue> config = delegate_->GetConfig();
   caller_task_runner_->PostTask(
       FROM_HERE, base::BindOnce(std::move(done), std::move(config)));
 }
 
-void DaemonController::DoSetConfigAndStart(base::Value::Dict config,
+void DaemonController::DoSetConfigAndStart(base::DictValue config,
                                            bool consent,
                                            CompletionCallback done) {
   DCHECK(delegate_task_runner_->BelongsToCurrentThread());
@@ -131,7 +131,7 @@ void DaemonController::DoSetConfigAndStart(base::Value::Dict config,
   delegate_->SetConfigAndStart(std::move(config), consent, std::move(done));
 }
 
-void DaemonController::DoUpdateConfig(base::Value::Dict config,
+void DaemonController::DoUpdateConfig(base::DictValue config,
                                       CompletionCallback done) {
   DCHECK(delegate_task_runner_->BelongsToCurrentThread());
 
@@ -171,7 +171,7 @@ void DaemonController::InvokeCompletionCallbackAndScheduleNext(
 
 void DaemonController::InvokeConfigCallbackAndScheduleNext(
     GetConfigCallback done,
-    std::optional<base::Value::Dict> config) {
+    std::optional<base::DictValue> config) {
   DCHECK(caller_task_runner_->BelongsToCurrentThread());
 
   std::move(done).Run(std::move(config));

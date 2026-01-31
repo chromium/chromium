@@ -8,14 +8,17 @@
 
 #include <algorithm>
 
-#include "base/containers/contains.h"
+#include "base/functional/callback_helpers.h"
 #include "build/build_config.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/sessions/app_session_service_factory.h"
+#include "chrome/browser/sessions/session_service_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
+#include "chrome/browser/ui/browser_window/public/profile_browser_collection.h"
 #include "chrome/browser/ui/interaction/browser_elements.h"
 #include "chrome/browser/ui/tab_contents/tab_contents_iterator.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
@@ -36,6 +39,7 @@
 #endif
 
 using content::WebContents;
+using ProfileBrowsersCloseCallback = chrome::ProfileBrowsersCloseCallback;
 
 namespace {
 
@@ -118,8 +122,7 @@ bool BrowserMatches(BrowserWindowInterface* browser,
     return false;
   }
 
-  if (!DoesBrowserMatchProfile(*browser->GetBrowserForMigrationOnly(), profile,
-                               match_types)) {
+  if (!DoesBrowserMatchProfile(*browser, profile, match_types)) {
     return false;
   }
 
@@ -181,10 +184,6 @@ BrowserWindowInterface* FindBrowserWithTabbedOrAnyType(
     bool match_original_profiles,
     bool match_current_workspace,
     int64_t display_id = display::kInvalidDisplayId) {
-  BrowserList* browser_list_impl = BrowserList::GetInstance();
-  if (!browser_list_impl) {
-    return nullptr;
-  }
   uint32_t match_types = kMatchAny;
   if (match_tabbed) {
     match_types |= kMatchNormal;
@@ -208,17 +207,111 @@ BrowserWindowInterface* FindBrowserWithTabbedOrAnyType(
 size_t GetBrowserCountImpl(Profile* profile,
                            uint32_t match_types,
                            int64_t display_id = display::kInvalidDisplayId) {
-  BrowserList* browser_list_impl = BrowserList::GetInstance();
   size_t count = 0;
-  if (browser_list_impl) {
-    for (const auto& i : *browser_list_impl) {
-      if (BrowserMatches(i, profile, Browser::WindowFeature::kFeatureNone,
-                         match_types, display_id)) {
-        count++;
-      }
+  GlobalBrowserCollection::GetInstance()->ForEach(
+      [&count, profile, match_types,
+       display_id](BrowserWindowInterface* browser) {
+        if (BrowserMatches(browser, profile,
+                           Browser::WindowFeature::kFeatureNone, match_types,
+                           display_id)) {
+          count++;
+        }
+        return true;
+      });
+  return count;
+}
+
+// Forward declaration.
+void TryToCloseBrowsersForProfile(
+    Profile* original_profile,
+    bool match_original_profile,
+    const ProfileBrowsersCloseCallback& on_close_success,
+    const ProfileBrowsersCloseCallback& on_close_aborted,
+    const base::FilePath& profile_path,
+    bool skip_beforeunload);
+
+void PostTryToCloseBrowsersForProfile(
+    Profile* original_profile,
+    bool match_original_profile,
+    const ProfileBrowsersCloseCallback& on_close_success,
+    const ProfileBrowsersCloseCallback& on_close_aborted,
+    const base::FilePath& profile_path,
+    bool skip_beforeunload,
+    bool tab_close_confirmed) {
+  static bool resetting_handlers = false;
+
+  if (tab_close_confirmed) {
+    TryToCloseBrowsersForProfile(original_profile, match_original_profile,
+                                 on_close_success, on_close_aborted,
+                                 profile_path, skip_beforeunload);
+  } else if (!resetting_handlers) {
+    base::AutoReset<bool> resetting_handlers_scoper(&resetting_handlers, true);
+    GlobalBrowserCollection::GetInstance()->ForEach(
+        [original_profile,
+         match_original_profile](BrowserWindowInterface* browser) {
+          bool matches = match_original_profile
+                             ? browser->GetProfile()->GetOriginalProfile() ==
+                                   original_profile
+                             : browser->GetProfile() == original_profile;
+          if (matches) {
+            browser->GetBrowserForMigrationOnly()->ResetTryToCloseWindow();
+          }
+          return true;
+        });
+    if (on_close_aborted) {
+      on_close_aborted.Run(profile_path);
     }
   }
-  return count;
+}
+
+void TryToCloseBrowsersForProfile(
+    Profile* original_profile,
+    bool match_original_profile,
+    const ProfileBrowsersCloseCallback& on_close_success,
+    const ProfileBrowsersCloseCallback& on_close_aborted,
+    const base::FilePath& profile_path,
+    bool skip_beforeunload) {
+  auto matches_profile = [original_profile, match_original_profile](
+                             BrowserWindowInterface* browser) {
+    return match_original_profile
+               ? browser->GetProfile()->GetOriginalProfile() == original_profile
+               : browser->GetProfile() == original_profile;
+  };
+
+  bool waiting_for_close = false;
+
+  GlobalBrowserCollection::GetInstance()->ForEach(
+      [&](BrowserWindowInterface* browser) {
+        if (!matches_profile(browser)) {
+          return true;
+        }
+        if (browser->GetBrowserForMigrationOnly()->TryToCloseWindow(
+                skip_beforeunload,
+                base::BindRepeating(&PostTryToCloseBrowsersForProfile,
+                                    original_profile, match_original_profile,
+                                    on_close_success, on_close_aborted,
+                                    profile_path, skip_beforeunload))) {
+          waiting_for_close = true;
+          return false;
+        }
+        return true;
+      });
+
+  if (waiting_for_close) {
+    return;
+  }
+
+  if (on_close_success) {
+    on_close_success.Run(profile_path);
+  }
+
+  GlobalBrowserCollection::GetInstance()->ForEach(
+      [&](BrowserWindowInterface* browser) {
+        if (matches_profile(browser) && browser->GetWindow()) {
+          browser->GetWindow()->Close();
+        }
+        return true;
+      });
 }
 
 }  // namespace
@@ -398,6 +491,23 @@ size_t GetTabbedBrowserCount(Profile* profile) {
       profile, kMatchNormal | kIncludeBrowsersScheduledForDeletion);
 }
 
+void CloseAllBrowsersWithProfile(Profile* profile) {
+  ProfileBrowserCollection* browser_collection =
+      ProfileBrowserCollection::GetForProfile(profile);
+  if (!browser_collection) {
+    return;
+  }
+
+  browser_collection->ForEach(
+      [profile](BrowserWindowInterface* browser) {
+        if (browser->GetProfile()->GetOriginalProfile() ==
+            profile->GetOriginalProfile()) {
+          browser->GetWindow()->Close();
+        }
+        return true;
+      });
+}
+
 size_t GetOffTheRecordBrowsersActiveForProfile(Profile* profile) {
   if (!profile) {
     return 0;
@@ -416,6 +526,25 @@ size_t GetOffTheRecordBrowsersActiveForProfile(Profile* profile) {
   return incognito_window_count;
 }
 
+bool IsOffTheRecordBrowserInUse(Profile* profile) {
+  if (!profile) {
+    return false;
+  }
+
+  bool off_the_record_in_use = false;
+  GlobalBrowserCollection::GetInstance()->ForEach(
+      [&](BrowserWindowInterface* browser) {
+        Profile* window_profile = browser->GetProfile();
+        if (window_profile && window_profile->IsSameOrParent(profile) &&
+            window_profile->IsOffTheRecord()) {
+          off_the_record_in_use = true;
+        }
+        return !off_the_record_in_use;
+      });
+
+  return off_the_record_in_use;
+}
+
 size_t GetGuestBrowserCount() {
   size_t guest_browser_count = 0;
   GlobalBrowserCollection::GetInstance()->ForEach(
@@ -427,6 +556,43 @@ size_t GetGuestBrowserCount() {
         return true;
       });
   return guest_browser_count;
+}
+
+void CloseAllBrowsersWithProfile(
+    Profile* profile,
+    bool skip_beforeunload,
+    const ProfileBrowsersCloseCallback& on_close_success,
+    const ProfileBrowsersCloseCallback& on_close_aborted) {
+  SessionServiceFactory::ShutdownForProfile(profile);
+  AppSessionServiceFactory::ShutdownForProfile(profile);
+
+  TryToCloseBrowsersForProfile(profile->GetOriginalProfile(),
+                               /*match_original_profile=*/true,
+                               on_close_success, on_close_aborted,
+                               profile->GetPath(), skip_beforeunload);
+}
+
+void CloseAllBrowsersWithIncognitoProfile(Profile* profile,
+                                          bool skip_beforeunload) {
+  CHECK(profile->IsOffTheRecord());
+
+  // If any matching browser is devtools, we can't skip beforeunload.
+  if (skip_beforeunload) {
+    GlobalBrowserCollection::GetInstance()->ForEach(
+        [profile, &skip_beforeunload](BrowserWindowInterface* browser) {
+          if (browser->GetProfile() == profile &&
+              browser->GetType() ==
+                  BrowserWindowInterface::Type::TYPE_DEVTOOLS) {
+            skip_beforeunload = false;
+            return false;
+          }
+          return true;
+        });
+  }
+
+  TryToCloseBrowsersForProfile(profile, /*match_original_profile=*/false,
+                               base::NullCallback(), base::NullCallback(),
+                               profile->GetPath(), skip_beforeunload);
 }
 
 }  // namespace chrome

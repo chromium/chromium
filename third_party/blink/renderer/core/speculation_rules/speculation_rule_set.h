@@ -119,10 +119,6 @@ class CORE_EXPORT SpeculationRuleSet final
   const HeapVector<Member<SpeculationRule>>& prefetch_rules() const {
     return prefetch_rules_;
   }
-  const HeapVector<Member<SpeculationRule>>& prefetch_with_subresources_rules()
-      const {
-    return prefetch_with_subresources_rules_;
-  }
   const HeapVector<Member<SpeculationRule>>& prerender_rules() const {
     return prerender_rules_;
   }
@@ -171,7 +167,6 @@ class CORE_EXPORT SpeculationRuleSet final
 
   SpeculationRuleSetId inspector_id_;
   HeapVector<Member<SpeculationRule>> prefetch_rules_;
-  HeapVector<Member<SpeculationRule>> prefetch_with_subresources_rules_;
   HeapVector<Member<SpeculationRule>> prerender_rules_;
   HeapVector<Member<SpeculationRule>> prerender_until_script_rules_;
   // The original source is reused to reparse speculation rule sets when the

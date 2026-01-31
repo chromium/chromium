@@ -11,6 +11,7 @@ import static org.chromium.components.permissions.PermissionUtil.getGeolocationT
 
 import android.Manifest;
 import android.text.TextUtils;
+import android.view.View;
 
 import androidx.test.filters.MediumTest;
 
@@ -43,7 +44,10 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.ui.hats.SurveyClient;
 import org.chromium.chrome.browser.ui.hats.SurveyClientFactory;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
+import org.chromium.chrome.test.R;
+import org.chromium.components.browser_ui.site_settings.GeolocationSetting;
 import org.chromium.components.browser_ui.site_settings.WebsitePreferenceBridgeJni;
+import org.chromium.components.browser_ui.widget.RichRadioButtonList;
 import org.chromium.components.content_settings.ContentSetting;
 import org.chromium.components.content_settings.ContentSettingsType;
 import org.chromium.components.permissions.EmbeddedPermissionDialogMediator;
@@ -127,8 +131,32 @@ public class EmbeddedPermissionPromptTest {
                 });
     }
 
+    private void selectLocationPrecision(View dialogView, GeolocationSetting setting) {
+        if (setting == null || dialogView == null) {
+            return;
+        }
+        View recycler = dialogView.findViewById(R.id.rich_radio_button_list_recycler_view);
+        RichRadioButtonList radioList = (RichRadioButtonList) recycler.getParent();
+        Assert.assertNotNull("RichRadioButtonList not found in the dialog.", radioList);
+
+        final String approximateId = "approximate_location_option";
+        final String preciseId = "precise_location_option";
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    if (setting.mPrecise == ContentSetting.ALLOW) {
+                        radioList.setSelectedItem(preciseId);
+                    } else if (setting.mApproximate == ContentSetting.ALLOW) {
+                        radioList.setSelectedItem(approximateId);
+                    }
+                });
+    }
+
     private void checkPermission(
-            @ContentSettingsType.EnumType int type, String title, ChromeActivity activity)
+            @ContentSettingsType.EnumType int type,
+            String title,
+            ChromeActivity activity,
+            GeolocationSetting expectedSetting)
             throws Exception {
         final Tab tab = ThreadUtils.runOnUiThreadBlocking(() -> activity.getActivityTab());
         final PermissionUpdateWaiter permissionUpdateWaiter =
@@ -136,6 +164,21 @@ public class EmbeddedPermissionPromptTest {
         ThreadUtils.runOnUiThreadBlocking(() -> tab.addObserver(permissionUpdateWaiter));
         switch (type) {
             case ContentSettingsType.GEOLOCATION, ContentSettingsType.GEOLOCATION_WITH_OPTIONS -> {
+                if (expectedSetting != null
+                        && type == ContentSettingsType.GEOLOCATION_WITH_OPTIONS) {
+                    GeolocationSetting actualSetting =
+                            ThreadUtils.runOnUiThreadBlocking(
+                                    () ->
+                                            WebsitePreferenceBridgeJni.get()
+                                                    .getGeolocationSettingForOrigin(
+                                                            ProfileManager
+                                                                    .getLastUsedRegularProfile(),
+                                                            type,
+                                                            mActivityTestRule.getURL(TEST_PAGE),
+                                                            mActivityTestRule.getURL(TEST_PAGE)));
+                    Assert.assertEquals(
+                            "Geolocation setting does not match.", expectedSetting, actualSetting);
+                }
                 mActivityTestRule.runJavaScriptCodeInCurrentTab("checkGeolocation();");
             }
             default -> {
@@ -224,7 +267,37 @@ public class EmbeddedPermissionPromptTest {
             final String expectedPermission,
             final String expectedTitle)
             throws Exception {
+        runTest(
+                testAndroidPermissionDelegate,
+                page,
+                nodeId,
+                type,
+                value,
+                response,
+                expectedPromptText,
+                expectedPositiveButtonText,
+                expectedPositiveEphemeralButtonText,
+                expectedNegativeButtonText,
+                expectedPermission,
+                expectedTitle,
+                /* expectedSetting= */ null);
+    }
 
+    private void runTest(
+            final TestAndroidPermissionDelegate testAndroidPermissionDelegate,
+            final String page,
+            final String nodeId,
+            @ContentSettingsType.EnumType int type,
+            @ContentSetting int value,
+            final EmbeddedPermissiontResponse response,
+            final String expectedPromptText,
+            final String expectedPositiveButtonText,
+            final String expectedPositiveEphemeralButtonText,
+            final String expectedNegativeButtonText,
+            final String expectedPermission,
+            final String expectedTitle,
+            final GeolocationSetting expectedSetting)
+            throws Exception {
         final String url = mActivityTestRule.getURL(TEST_PAGE);
         try {
             setNativeContentSetting(type, url, value);
@@ -264,6 +337,10 @@ public class EmbeddedPermissionPromptTest {
                     expectedNegativeButtonText,
                     dialogMediator.getDelegateForTest().getNegativeButtonText());
 
+            final View dialogView =
+                    manager.getCurrentDialogForTest().get(ModalDialogProperties.CUSTOM_VIEW);
+            selectLocationPrecision(dialogView, expectedSetting);
+
             int dialogType = activity.getModalDialogManager().getCurrentType();
             switch (response) {
                 case DISMISS_OUTSIDE -> {
@@ -295,7 +372,7 @@ public class EmbeddedPermissionPromptTest {
             }
             waitForTitleUpdate(expectedTitle, activity);
             if (!TextUtils.isEmpty(expectedPermission)) {
-                checkPermission(type, expectedPermission, activity);
+                checkPermission(type, expectedPermission, activity, expectedSetting);
             }
         } finally {
             setNativeContentSetting(type, url, ContentSetting.DEFAULT);
@@ -561,6 +638,76 @@ public class EmbeddedPermissionPromptTest {
     @Features.EnableFeatures({PermissionsAndroidFeatureList.PERMISSION_ELEMENT})
     public void testAskPromptInteractionDeny() throws Exception {
         testAskPromptInteraction(EmbeddedPermissiontResponse.NEGATIVE);
+    }
+
+    @Test
+    @MediumTest
+    @Features.EnableFeatures({
+        PermissionsAndroidFeatureList.PERMISSION_ELEMENT,
+        PermissionsAndroidFeatureList.APPROXIMATE_GEOLOCATION_PERMISSION
+    })
+    public void testAskPromptInteractionGrantCoarseLocation() throws Exception {
+        RuntimePermissionTestUtils.setupGeolocationSystemMock();
+        String[] requestablePermission =
+                new String[] {
+                    Manifest.permission.ACCESS_COARSE_LOCATION,
+                    Manifest.permission.ACCESS_FINE_LOCATION
+                };
+        mTestAndroidPermissionDelegate =
+                new TestAndroidPermissionDelegate(
+                        requestablePermission, RuntimePromptResponse.GRANT);
+
+        runTest(
+                mTestAndroidPermissionDelegate,
+                TEST_PAGE,
+                "geolocation",
+                stringToContentSettingsType("geolocation"),
+                ContentSetting.ASK,
+                EmbeddedPermissiontResponse.POSITIVE,
+                LOOPBACK_ADDRESS + " wants to use your device's location",
+                "Allow while visiting the site",
+                "Allow this time",
+                "Don't allow",
+                /* expectedPermission= */ "granted",
+                /* expectedTitle= */ "promptaction",
+                /* expectedSetting= */ new GeolocationSetting(
+                        /* approximate= */ ContentSetting.ALLOW,
+                        /* precise= */ ContentSetting.BLOCK));
+    }
+
+    @Test
+    @MediumTest
+    @Features.EnableFeatures({
+        PermissionsAndroidFeatureList.PERMISSION_ELEMENT,
+        PermissionsAndroidFeatureList.APPROXIMATE_GEOLOCATION_PERMISSION
+    })
+    public void testAskPromptInteractionGrantPreciseLocation() throws Exception {
+        RuntimePermissionTestUtils.setupGeolocationSystemMock();
+        String[] requestablePermission =
+                new String[] {
+                    Manifest.permission.ACCESS_COARSE_LOCATION,
+                    Manifest.permission.ACCESS_FINE_LOCATION
+                };
+        mTestAndroidPermissionDelegate =
+                new TestAndroidPermissionDelegate(
+                        requestablePermission, RuntimePromptResponse.GRANT);
+
+        runTest(
+                mTestAndroidPermissionDelegate,
+                TEST_PAGE,
+                "geolocation",
+                stringToContentSettingsType("geolocation"),
+                ContentSetting.ASK,
+                EmbeddedPermissiontResponse.POSITIVE,
+                LOOPBACK_ADDRESS + " wants to use your device's location",
+                "Allow while visiting the site",
+                "Allow this time",
+                "Don't allow",
+                /* expectedPermission= */ "granted",
+                /* expectedTitle= */ "promptaction",
+                /* expectedSetting= */ new GeolocationSetting(
+                        /* approximate= */ ContentSetting.ALLOW,
+                        /* precise= */ ContentSetting.ALLOW));
     }
 
     @Test

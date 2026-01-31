@@ -1,0 +1,6 @@
+include_rules = [
+  # keep-sorted start
+  "+ios/chrome/browser/segmentation_platform/model",
+  "+ios/chrome/browser/tips_manager/model",
+  # keep-sorted end
+]

@@ -7,22 +7,23 @@
 
 #include <stdint.h>
 
-#include <type_traits>
+#include <concepts>
 
 #include "base/containers/span.h"
 
 namespace mojo::internal {
 
-template <typename Interface, typename SFINAE = void>
-struct SyncMethodTraits {
-  static constexpr base::span<const uint32_t> GetOrdinals() { return {}; }
-};
-
 template <typename Interface>
-struct SyncMethodTraits<Interface,
-                        std::void_t<decltype(Interface::kSyncMethodOrdinals)>> {
+struct SyncMethodTraits {
   static constexpr base::span<const uint32_t> GetOrdinals() {
-    return Interface::kSyncMethodOrdinals;
+    if constexpr (requires {
+                    {
+                      Interface::kSyncMethodOrdinals
+                    } -> std::convertible_to<base::span<const uint32_t>>;
+                  }) {
+      return Interface::kSyncMethodOrdinals;
+    }
+    return {};
   }
 };
 

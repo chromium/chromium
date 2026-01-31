@@ -145,7 +145,7 @@ IOSEnterpriseInterstitial::IOSEnterpriseInterstitial(
 IOSEnterpriseInterstitial::~IOSEnterpriseInterstitial() = default;
 
 std::string IOSEnterpriseInterstitial::GetHtmlContents() const {
-  base::Value::Dict load_time_data;
+  base::DictValue load_time_data;
   PopulateInterstitialStrings(load_time_data);
   webui::SetLoadTimeDataDefaults(client_->GetApplicationLocale(),
                                  &load_time_data);
@@ -174,7 +174,7 @@ void IOSEnterpriseInterstitial::WasDismissed() {
 }
 
 void IOSEnterpriseInterstitial::PopulateInterstitialStrings(
-    base::Value::Dict& load_time_data) const {
+    base::DictValue& load_time_data) const {
   PopulateStrings(load_time_data);
 }
 

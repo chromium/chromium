@@ -9,6 +9,7 @@
 #include <memory>
 #include <string>
 
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
@@ -43,6 +44,7 @@
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "components/signin/public/identity_manager/signin_constants.h"
+#include "components/sync/base/features.h"
 #include "components/sync_preferences/pref_service_syncable.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "content/public/test/browser_task_environment.h"
@@ -52,7 +54,7 @@
 #include "ui/gfx/image/image.h"
 #include "ui/gfx/image/image_unittest_util.h"
 
-#if BUILDFLAG(ENABLE_GLIC)
+#if BUILDFLAG(ENABLE_GLIC) && !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/glic/glic_pref_names.h"
 #include "chrome/browser/glic/public/glic_enabling.h"
 #include "chrome/browser/glic/test_support/glic_test_environment.h"
@@ -132,8 +134,8 @@ class GAIAInfoUpdateServiceTest : public testing::Test {
 
     profile_ = nullptr;
 
-    TestingBrowserProcess::GetGlobal()->TearDownGlobalFeaturesForTesting(
-        std::move(testing_profile_manager_));
+    testing_profile_manager_ = nullptr;
+    TestingBrowserProcess::GetGlobal()->TearDownGlobalFeaturesForTesting();
   }
 
   TestingProfile* profile() {
@@ -179,11 +181,11 @@ class GAIAInfoUpdateServiceTest : public testing::Test {
         .SetChromeSigninInterceptionUserChoice(gaia_id,
                                                ChromeSigninUserChoice::kSignin);
   }
-#if BUILDFLAG(ENABLE_GLIC)
+#if BUILDFLAG(ENABLE_GLIC) && !BUILDFLAG(IS_ANDROID)
   glic::GlicUnitTestEnvironment glic_test_env_;
 #endif
   content::BrowserTaskEnvironment task_environment_;
-  std::unique_ptr<TestingProfileManager> testing_profile_manager_;
+  raw_ptr<TestingProfileManager> testing_profile_manager_ = nullptr;
   raw_ptr<TestingProfile> profile_ = nullptr;
   sync_preferences::TestingPrefServiceSyncable pref_service_;
   std::unique_ptr<GAIAInfoUpdateService> service_;
@@ -191,6 +193,11 @@ class GAIAInfoUpdateServiceTest : public testing::Test {
 };
 
 TEST_F(GAIAInfoUpdateServiceTest, SyncOnSyncOff) {
+  if (base::FeatureList::IsEnabled(
+          syncer::kReplaceSyncPromosWithSignInPromos)) {
+    GTEST_SKIP() << "Sync is deprecated";
+  }
+
   AccountInfo info =
       signin::MakeAccountAvailable(identity_manager(), "pat@example.com");
   base::RunLoop().RunUntilIdle();
@@ -225,6 +232,11 @@ TEST_F(GAIAInfoUpdateServiceTest, SyncOnSyncOff) {
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
 TEST_F(GAIAInfoUpdateServiceTest, RevokeSyncConsent) {
+  if (base::FeatureList::IsEnabled(
+          syncer::kReplaceSyncPromosWithSignInPromos)) {
+    GTEST_SKIP() << "RevokeSyncConsent() is no-op as Sync is deprecated";
+  }
+
   AccountInfo info =
       signin::MakeAccountAvailable(identity_manager(), "pat@example.com");
   base::RunLoop().RunUntilIdle();
@@ -511,16 +523,17 @@ TEST_F(GAIAInfoUpdateServiceTest, SigninPrefsWithGaiaIdNotInChrome) {
   EXPECT_FALSE(HasAccountPrefs(gaia_id_not_in_chrome));
 }
 
-#if BUILDFLAG(ENABLE_GLIC)
+#if BUILDFLAG(ENABLE_GLIC) && !BUILDFLAG(IS_ANDROID)
 class GAIAInfoUpdateServiceWithGlicEnablingTest
     : public GAIAInfoUpdateServiceTest {
  public:
   GAIAInfoUpdateServiceWithGlicEnablingTest() {
     // Enable kGlic and kTabstripComboButton by default for testing.
     scoped_feature_list_.InitWithFeatures(
-        {features::kGlic, features::kTabstripComboButton,
-         features::kGlicRollout},
-        {});
+        /*enabled_features=*/
+        {features::kGlic, features::kGlicRollout},
+        /*disabled_features=*/{features::kGlicCountryFiltering,
+                               features::kGlicLocaleFiltering});
 
     RegisterGeminiSettingsPrefs(pref_service_.registry());
   }
@@ -558,8 +571,13 @@ TEST_F(GAIAInfoUpdateServiceWithGlicEnablingTest, LogInLogOut) {
       identity_manager(), email, signin::ConsentLevel::kSignin);
   EXPECT_TRUE(
       identity_manager()->HasPrimaryAccount(signin::ConsentLevel::kSignin));
-  EXPECT_FALSE(
-      identity_manager()->HasPrimaryAccount(signin::ConsentLevel::kSync));
+
+  if (!base::FeatureList::IsEnabled(
+          syncer::kReplaceSyncPromosWithSignInPromos)) {
+    EXPECT_FALSE(
+        identity_manager()->HasPrimaryAccount(signin::ConsentLevel::kSync));
+  }
+
   info = GetValidAccountInfo(info.email, info.gaia, "Pat", "Pat Foo",
                              std::string());
   MakeProfileGlicEligible();

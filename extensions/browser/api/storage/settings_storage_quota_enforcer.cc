@@ -141,7 +141,7 @@ ValueStore::WriteResult SettingsStorageQuotaEnforcer::Set(
 
 ValueStore::WriteResult SettingsStorageQuotaEnforcer::Set(
     WriteOptions options,
-    const base::Value::Dict& values) {
+    const base::DictValue& values) {
   LazyCalculateUsage();
   size_t new_used_total = used_total_;
   std::map<std::string, size_t> new_used_per_setting = used_per_setting_;

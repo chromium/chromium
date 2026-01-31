@@ -22,9 +22,9 @@ const char kLogMessageSeverityKey[] = "severity";
 
 // Converts |log_message| to a raw dictionary value used as a JSON argument to
 // JavaScript functions.
-base::Value::Dict LogMessageToDictionary(
+base::DictValue LogMessageToDictionary(
     const CrossDeviceLogBuffer::LogMessage& log_message) {
-  base::Value::Dict dictionary;
+  base::DictValue dictionary;
   dictionary.Set(kLogMessageTextKey, log_message.text);
   dictionary.Set(kLogMessageFeatureKey, int(log_message.feature));
   dictionary.Set(kLogMessageTimeKey,
@@ -56,10 +56,10 @@ void NearbyInternalsLogsHandler::OnJavascriptDisallowed() {
 }
 
 void NearbyInternalsLogsHandler::HandleGetLogMessages(
-    const base::Value::List& args) {
+    const base::ListValue& args) {
   AllowJavascript();
   const base::Value& callback_id = args[0];
-  base::Value::List list;
+  base::ListValue list;
   for (const auto& log : *CrossDeviceLogBuffer::GetInstance()->logs()) {
     list.Append(LogMessageToDictionary(log));
   }

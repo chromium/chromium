@@ -78,7 +78,7 @@ void DoAppendStringOfType(std::basic_string_view<CHAR> source,
   if constexpr (sizeof(CHAR) == 1) {
     if (type == CHAR_QUERY && length >= kMinimumLengthForSIMD) {
       i = FindInitialQuerySafeString(source);
-      output->Append(source.data(), i);
+      output->Append(source.substr(0, i));
     }
   }
   for (; i < length; i++) {
@@ -334,26 +334,5 @@ bool SetupUtf16OverrideComponents(const Replacements<char16_t>& repl,
 
   return success;
 }
-
-#ifndef WIN32
-
-int _itoa_s(int value, char* buffer, size_t size_in_chars, int radix) {
-  const char* format_str;
-  if (radix == 10)
-    format_str = "%d";
-  else if (radix == 16)
-    format_str = "%x";
-  else
-    return EINVAL;
-
-  int written = UNSAFE_TODO(snprintf(buffer, size_in_chars, format_str, value));
-  if (static_cast<size_t>(written) >= size_in_chars) {
-    // Output was truncated, or written was negative.
-    return EINVAL;
-  }
-  return 0;
-}
-
-#endif  // !WIN32
 
 }  // namespace url

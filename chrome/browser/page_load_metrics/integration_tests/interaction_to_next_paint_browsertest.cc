@@ -24,7 +24,6 @@
 #include "services/metrics/public/cpp/ukm_builders.h"
 
 using base::Bucket;
-using base::Value;
 using std::optional;
 using trace_analyzer::Query;
 using trace_analyzer::TraceAnalyzer;
@@ -81,7 +80,7 @@ int InteractionToNextPaintTest::ExtractMaxInteractionDurationFromTrace(
     // If the traceEvent doesn't contain args data, it is not
     // one of pointerdown, pointerup and click.
     if (traceEvent->HasDictArg("data")) {
-      Value::Dict data = traceEvent->GetKnownArgAsDict("data");
+      base::DictValue data = traceEvent->GetKnownArgAsDict("data");
 
       // INP only consider the events with interactionID greater than 0.
       std::string* event_name = data.FindString("type");

@@ -19,11 +19,11 @@
 #include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_actions.h"
-#include "chrome/browser/ui/browser_dialogs.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
+#include "chrome/browser/ui/dialogs/browser_dialogs.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_manager.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/ui_features.h"
@@ -162,10 +162,10 @@ void ZoomBubbleView::Refresh() {
 }
 
 ZoomBubbleView::ZoomBubbleView(Browser* browser,
-                               views::View* anchor_view,
+                               views::BubbleAnchor anchor,
                                content::WebContents* web_contents,
                                DisplayReason reason)
-    : LocationBarBubbleDelegateView(anchor_view, web_contents),
+    : LocationBarBubbleDelegateView(anchor, web_contents),
       browser_(browser),
       auto_close_duration_(kBubbleCloseDelayDefault),
       auto_close_(reason == AUTOMATIC) {

@@ -48,6 +48,9 @@ class DeviceInfoSyncClient {
   // Returns whether a CrOS device has User Metric Analysis (UMA) enabled.
   // Returns false if method is called on non-CrOS device.
   virtual bool IsUmaEnabledOnCrOSDevice() const = 0;
+
+  // Returns whether the receiving end of the Desktop to iOS promo is enabled.
+  virtual bool GetDesktopToIOSPromoReceivingEnabled() const = 0;
 };
 
 }  // namespace syncer

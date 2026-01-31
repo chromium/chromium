@@ -139,7 +139,6 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/toolbar/top/VisibleUrlText.java",
     "java/src/org/chromium/chrome/browser/toolbar/top/tab_strip/FadeTransitionHandler.java",
     "java/src/org/chromium/chrome/browser/toolbar/top/tab_strip/HeightTransitionHandler.java",
-    "java/src/org/chromium/chrome/browser/toolbar/top/tab_strip/StripVisibilityState.java",
     "java/src/org/chromium/chrome/browser/toolbar/top/tab_strip/TabStripTransitionCoordinator.java",
   ]
 
@@ -191,6 +190,7 @@ android_library("java") {
     "//chrome/browser/ui/android/omnibox:java",
     "//chrome/browser/ui/android/omnibox:java_resources",
     "//chrome/browser/ui/android/pdf:java",
+    "//chrome/browser/ui/android/tabstrip:enums_java",
     "//chrome/browser/ui/android/theme:java",
     "//chrome/browser/ui/browser_window/public/android:java",
     "//chrome/browser/url_constants/android:java",
@@ -251,10 +251,11 @@ android_library("java") {
       "java/src/org/chromium/chrome/browser/toolbar/extensions/ExtensionActionButtonProperties.java",
       "java/src/org/chromium/chrome/browser/toolbar/extensions/ExtensionActionButtonViewBinder.java",
       "java/src/org/chromium/chrome/browser/toolbar/extensions/ExtensionActionContextMenuUtils.java",
+      "java/src/org/chromium/chrome/browser/toolbar/extensions/ExtensionActionDragHelper.java",
       "java/src/org/chromium/chrome/browser/toolbar/extensions/ExtensionActionIconUtil.java",
-      "java/src/org/chromium/chrome/browser/toolbar/extensions/ExtensionActionListContainer.java",
       "java/src/org/chromium/chrome/browser/toolbar/extensions/ExtensionActionListCoordinator.java",
       "java/src/org/chromium/chrome/browser/toolbar/extensions/ExtensionActionListMediator.java",
+      "java/src/org/chromium/chrome/browser/toolbar/extensions/ExtensionActionListRecyclerView.java",
       "java/src/org/chromium/chrome/browser/toolbar/extensions/ExtensionActionPopup.java",
       "java/src/org/chromium/chrome/browser/toolbar/extensions/ExtensionActionsUpdateHelper.java",
       "java/src/org/chromium/chrome/browser/toolbar/extensions/ExtensionToolbarCoordinatorImpl.java",
@@ -264,6 +265,7 @@ android_library("java") {
       "java/src/org/chromium/chrome/browser/toolbar/extensions/ExtensionsMenuMediator.java",
       "java/src/org/chromium/chrome/browser/toolbar/extensions/ExtensionsMenuProperties.java",
       "java/src/org/chromium/chrome/browser/toolbar/extensions/ExtensionsMenuViewBinder.java",
+      "java/src/org/chromium/chrome/browser/toolbar/extensions/ExtensionsToolbarDragTouchHandler.java",
     ]
 
     deps += [
@@ -293,14 +295,12 @@ android_resources("java_resources") {
     "java/res/drawable-hdpi/badge_update_dark.png",
     "java/res/drawable-hdpi/badge_update_light.png",
     "java/res/drawable-hdpi/btn_tabswitcher_modern.png",
-    "java/res/drawable-hdpi/btn_toolbar_home.png",
     "java/res/drawable-hdpi/incognito_small.png",
     "java/res/drawable-hdpi/modern_location_bar.9.png",
     "java/res/drawable-hdpi/popup_bg_bottom.9.png",
     "java/res/drawable-mdpi/badge_update_dark.png",
     "java/res/drawable-mdpi/badge_update_light.png",
     "java/res/drawable-mdpi/btn_tabswitcher_modern.png",
-    "java/res/drawable-mdpi/btn_toolbar_home.png",
     "java/res/drawable-mdpi/incognito_small.png",
     "java/res/drawable-mdpi/modern_location_bar.9.png",
     "java/res/drawable-mdpi/popup_bg_bottom.9.png",
@@ -309,21 +309,18 @@ android_resources("java_resources") {
     "java/res/drawable-xhdpi/badge_update_dark.png",
     "java/res/drawable-xhdpi/badge_update_light.png",
     "java/res/drawable-xhdpi/btn_tabswitcher_modern.png",
-    "java/res/drawable-xhdpi/btn_toolbar_home.png",
     "java/res/drawable-xhdpi/incognito_small.png",
     "java/res/drawable-xhdpi/modern_location_bar.9.png",
     "java/res/drawable-xhdpi/popup_bg_bottom.9.png",
     "java/res/drawable-xxhdpi/badge_update_dark.png",
     "java/res/drawable-xxhdpi/badge_update_light.png",
     "java/res/drawable-xxhdpi/btn_tabswitcher_modern.png",
-    "java/res/drawable-xxhdpi/btn_toolbar_home.png",
     "java/res/drawable-xxhdpi/incognito_small.png",
     "java/res/drawable-xxhdpi/modern_location_bar.9.png",
     "java/res/drawable-xxhdpi/popup_bg_bottom.9.png",
     "java/res/drawable-xxxhdpi/badge_update_dark.png",
     "java/res/drawable-xxxhdpi/badge_update_light.png",
     "java/res/drawable-xxxhdpi/btn_tabswitcher_modern.png",
-    "java/res/drawable-xxxhdpi/btn_toolbar_home.png",
     "java/res/drawable-xxxhdpi/incognito_small.png",
     "java/res/drawable-xxxhdpi/popup_bg_bottom.9.png",
     "java/res/drawable/home_surface_search_box_background.xml",
@@ -467,9 +464,11 @@ robolectric_library("junit") {
     "//chrome/browser/ui/android/native_page:java",
     "//chrome/browser/ui/android/omnibox:java",
     "//chrome/browser/ui/android/omnibox:java_resources",
+    "//chrome/browser/ui/android/tabstrip:enums_java",
     "//chrome/browser/ui/android/theme:java",
     "//chrome/browser/ui/android/toolbar:java_resources",
     "//chrome/browser/ui/browser_window/public/android:java",
+    "//chrome/browser/url_constants/android:java",
     "//chrome/browser/user_education:java",
     "//chrome/test/android:chrome_java_unit_test_support",
     "//components/browser_ui/bottomsheet/android:java",
@@ -477,6 +476,7 @@ robolectric_library("junit") {
     "//components/browser_ui/settings/android:java",
     "//components/browser_ui/styles/android:java",
     "//components/browser_ui/theme/android:java_resources",
+    "//components/browser_ui/util/android:test_support_java",
     "//components/browser_ui/widget/android:java",
     "//components/embedder_support/android:util_java",
     "//components/feature_engagement:feature_engagement_java",
@@ -500,6 +500,7 @@ robolectric_library("junit") {
     "//third_party/androidx:androidx_fragment_fragment_testing_java",
     "//third_party/androidx:androidx_lifecycle_lifecycle_common_java",
     "//third_party/androidx:androidx_preference_preference_java",
+    "//third_party/androidx:androidx_recyclerview_recyclerview_java",
     "//third_party/androidx:androidx_test_core_java",
     "//third_party/androidx:androidx_test_ext_junit_java",
     "//third_party/androidx:androidx_test_runner_java",
@@ -517,10 +518,39 @@ robolectric_library("junit") {
 
   if (enable_extensions_core) {
     sources += [
+      "java/src/org/chromium/chrome/browser/toolbar/extensions/ExtensionActionDragHelperTest.java",
       "java/src/org/chromium/chrome/browser/toolbar/extensions/ExtensionActionListMediatorTest.java",
       "java/src/org/chromium/chrome/browser/toolbar/extensions/ExtensionActionsUpdateHelperTest.java",
       "java/src/org/chromium/chrome/browser/toolbar/extensions/ExtensionsMenuCoordinatorTest.java",
       "java/src/org/chromium/chrome/browser/toolbar/extensions/ExtensionsMenuMediatorTest.java",
+    ]
+  }
+}
+
+if (enable_extensions_core) {
+  android_library("javatests") {
+    testonly = true
+    resources_package = "org.chromium.chrome.browser.toolbar"
+    sources = [ "java/src/org/chromium/chrome/browser/toolbar/extensions/ExtensionToolbarTest.java" ]
+    deps = [
+      ":java",
+      ":java_resources",
+      "//base:base_java",
+      "//base:base_java_test_support",
+      "//base:base_java_test_support_uncommon",
+      "//chrome/android:chrome_java",
+      "//chrome/browser/flags:java",
+      "//chrome/browser/profiles/android:java",
+      "//chrome/browser/ui/android/extensions:java",
+      "//chrome/browser/ui/android/extensions:test_support_java",
+      "//chrome/test/android:chrome_java_integration_test_support",
+      "//chrome/test/android:chrome_java_transit",
+      "//content/public/test/android:content_java_test_support",
+      "//third_party/androidx:androidx_test_espresso_espresso_core_java",
+      "//third_party/androidx:androidx_test_runner_java",
+      "//third_party/hamcrest:hamcrest_core_java",
+      "//third_party/junit",
+      "//ui/android:ui_java_test_support",
     ]
   }
 }

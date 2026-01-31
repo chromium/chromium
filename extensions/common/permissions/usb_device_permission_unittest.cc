@@ -65,19 +65,18 @@ scoped_refptr<const Extension> CreateTestApp(
     base::Value usb_device_permission) {
   return ExtensionBuilder()
       .SetManifest(
-          base::Value::Dict()
+          base::DictValue()
               .Set("name", "test app")
               .Set("version", "1")
-              .Set("app", base::Value::Dict().Set(
+              .Set("app", base::DictValue().Set(
                               "background",
-                              base::Value::Dict().Set(
+                              base::DictValue().Set(
                                   "scripts",
-                                  base::Value::List().Append("background.js"))))
+                                  base::ListValue().Append("background.js"))))
               .Set("permissions",
-                   base::Value::List().Append("usb").Append(
-                       base::Value::Dict().Set(
-                           "usbDevices", base::Value::List().Append(std::move(
-                                             usb_device_permission))))))
+                   base::ListValue().Append("usb").Append(base::DictValue().Set(
+                       "usbDevices", base::ListValue().Append(
+                                         std::move(usb_device_permission))))))
       .Build();
 }
 
@@ -96,7 +95,7 @@ TEST(USBDevicePermissionTest, PermissionDataOrder) {
 
 TEST(USBDevicePermissionTest, CheckVendorAndProductId) {
   base::Value permission_data_value(
-      base::Value::Dict().Set("vendorId", 0x02ad).Set("productId", 0x138c));
+      base::DictValue().Set("vendorId", 0x02ad).Set("productId", 0x138c));
 
   UsbDevicePermissionData permission_data;
   ASSERT_TRUE(permission_data.FromValue(&permission_data_value));
@@ -132,7 +131,7 @@ TEST(USBDevicePermissionTest, CheckVendorAndProductId) {
 }
 
 TEST(USBDevicePermissionTest, CheckInterfaceId) {
-  base::Value permission_data_value(base::Value::Dict()
+  base::Value permission_data_value(base::DictValue()
                                         .Set("vendorId", 0x02ad)
                                         .Set("productId", 0x138c)
                                         .Set("interfaceId", 3));
@@ -168,8 +167,7 @@ TEST(USBDevicePermissionTest, CheckInterfaceId) {
 }
 
 TEST(USBDevicePermissionTest, InterfaceClass) {
-  base::Value permission_data_value(
-      base::Value::Dict().Set("interfaceClass", 3));
+  base::Value permission_data_value(base::DictValue().Set("interfaceClass", 3));
   UsbDevicePermissionData permission_data;
   EXPECT_TRUE(permission_data.FromValue(&permission_data_value));
 
@@ -208,7 +206,7 @@ TEST(USBDevicePermissionTest, InterfaceClass) {
 
 TEST(USBDevicePermissionTest, InterfaceClassWithVendorId) {
   base::Value permission_data_value(
-      base::Value::Dict().Set("vendorId", 0x02ad).Set("interfaceClass", 3));
+      base::DictValue().Set("vendorId", 0x02ad).Set("interfaceClass", 3));
   UsbDevicePermissionData permission_data;
   EXPECT_TRUE(permission_data.FromValue(&permission_data_value));
 
@@ -255,7 +253,7 @@ TEST(USBDevicePermissionTest, InterfaceClassWithVendorId) {
 
 TEST(USBDevicePermissionTest, CheckHidUsbAgainstInterfaceClass) {
   base::Value permission_data_value(
-      base::Value::Dict().Set("vendorId", 0x02ad).Set("interfaceClass", 3));
+      base::DictValue().Set("vendorId", 0x02ad).Set("interfaceClass", 3));
   UsbDevicePermissionData permission_data;
   EXPECT_TRUE(permission_data.FromValue(&permission_data_value));
 
@@ -299,7 +297,7 @@ TEST(USBDevicePermissionTest, CheckHidUsbAgainstInterfaceClass) {
 
 TEST(USBDevicePermissionTest, CheckHidUsbAgainstDeviceIds) {
   base::Value permission_data_value(
-      base::Value::Dict().Set("vendorId", 0x02ad).Set("productId", 0x138c));
+      base::DictValue().Set("vendorId", 0x02ad).Set("productId", 0x138c));
   UsbDevicePermissionData permission_data;
   EXPECT_TRUE(permission_data.FromValue(&permission_data_value));
 
@@ -325,7 +323,7 @@ TEST(USBDevicePermissionTest, CheckHidUsbAgainstDeviceIds) {
 
 TEST(USBDevicePermissionTest, CheckDeviceAgainstDeviceIds) {
   base::Value permission_data_value(
-      base::Value::Dict().Set("vendorId", 0x02ad).Set("productId", 0x138c));
+      base::DictValue().Set("vendorId", 0x02ad).Set("productId", 0x138c));
   UsbDevicePermissionData permission_data;
   EXPECT_TRUE(permission_data.FromValue(&permission_data_value));
 
@@ -355,7 +353,7 @@ TEST(USBDevicePermissionTest, CheckDeviceAgainstDeviceIds) {
 
 TEST(USBDevicePermissionTest, CheckDeviceAgainstDeviceClass) {
   base::Value permission_data_value(
-      base::Value::Dict().Set("interfaceClass", 0x9));
+      base::DictValue().Set("interfaceClass", 0x9));
   UsbDevicePermissionData permission_data;
   EXPECT_TRUE(permission_data.FromValue(&permission_data_value));
 
@@ -403,8 +401,7 @@ TEST(USBDevicePermissionTest, CheckDeviceAgainstDeviceClass) {
 }
 
 TEST(USBDevicePermissionTest, IgnoreNullDeviceClass) {
-  base::Value permission_data_value(
-      base::Value::Dict().Set("interfaceClass", 0));
+  base::Value permission_data_value(base::DictValue().Set("interfaceClass", 0));
   UsbDevicePermissionData permission_data;
   EXPECT_TRUE(permission_data.FromValue(&permission_data_value));
 
@@ -429,7 +426,7 @@ TEST(USBDevicePermissionTest, IgnoreNullDeviceClass) {
 
 TEST(USBDevicePermissionTest, CheckDeviceAgainstInterfaceClass) {
   base::Value permission_data_value(
-      base::Value::Dict().Set("interfaceClass", 0x3));
+      base::DictValue().Set("interfaceClass", 0x3));
   UsbDevicePermissionData permission_data;
   EXPECT_TRUE(permission_data.FromValue(&permission_data_value));
 
@@ -514,7 +511,7 @@ TEST(USBDevicePermissionTest, CheckDeviceAgainstInterfaceClass) {
 }
 
 TEST(USBDevicePermissionTest, CheckDeviceAndInterfaceId) {
-  base::Value permission_data_value(base::Value::Dict()
+  base::Value permission_data_value(base::DictValue()
                                         .Set("vendorId", 0x02ad)
                                         .Set("productId", 0x138c)
                                         .Set("interfaceId", 3));
@@ -548,7 +545,7 @@ TEST(USBDevicePermissionTest, CheckDeviceAndInterfaceId) {
 TEST(USBDevicePermissionTest,
      CheckDeviceAndInterfaceIDAgainstMissingInterfaceId) {
   base::Value permission_data_value(
-      base::Value::Dict().Set("vendorId", 0x02ad).Set("productId", 0x138c));
+      base::DictValue().Set("vendorId", 0x02ad).Set("productId", 0x138c));
   UsbDevicePermissionData permission_data;
   EXPECT_TRUE(permission_data.FromValue(&permission_data_value));
 
@@ -568,27 +565,26 @@ TEST(USBDevicePermissionTest,
 
 TEST(USBDevicePermissionTest, InvalidPermission_NoVendorId) {
   base::Value permission_data_value(
-      base::Value::Dict().Set("productId", 0x138c).Set("interfaceClass", 3));
+      base::DictValue().Set("productId", 0x138c).Set("interfaceClass", 3));
   UsbDevicePermissionData permission_data;
   ASSERT_FALSE(permission_data.FromValue(&permission_data_value));
 }
 
 TEST(USBDevicePermissionTest, InvalidPermission_OnlyVendorId) {
-  base::Value permission_data_value(
-      base::Value::Dict().Set("vendorId", 0x02ad));
+  base::Value permission_data_value(base::DictValue().Set("vendorId", 0x02ad));
   UsbDevicePermissionData permission_data;
   ASSERT_FALSE(permission_data.FromValue(&permission_data_value));
 }
 
 TEST(USBDevicePermissionTest, InvalidPermission_NoProductIdWithInterfaceId) {
   base::Value permission_data_value(
-      base::Value::Dict().Set("vendorId", 0x02ad).Set("interfaceId", 3));
+      base::DictValue().Set("vendorId", 0x02ad).Set("interfaceId", 3));
   UsbDevicePermissionData permission_data;
   ASSERT_FALSE(permission_data.FromValue(&permission_data_value));
 }
 
 TEST(USBDevicePermissionTest, RejectInterfaceIdIfInterfaceClassPresent) {
-  base::Value permission_data_value(base::Value::Dict()
+  base::Value permission_data_value(base::DictValue()
                                         .Set("vendorId", 0x02ad)
                                         .Set("productId", 0x128c)
                                         .Set("interfaceId", 3)

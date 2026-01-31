@@ -1,0 +1,36 @@
+{
+   "lang": "en",
+   "type": "Document",
+   "~children": [ {
+      "type": "NonStruct",
+      "~children": [ {
+         "attributes": [ {
+            "O": "PrintField",
+            "Role": "cb"
+         }, {
+            "Desc": "First unchecked checkbox",
+            "O": "PrintField"
+         } ],
+         "type": "Form"
+      }, {
+         "attributes": [ {
+            "O": "PrintField",
+            "Role": "cb"
+         } ],
+         "type": "Form"
+      }, {
+         "type": "NonStruct"
+      }, {
+         "attributes": [ {
+            "O": "PrintField",
+            "Role": "cb"
+         }, {
+            "O": "PrintField",
+            "checked": "on"
+         } ],
+         "type": "Form"
+      }, {
+         "type": "NonStruct"
+      } ]
+   } ]
+}

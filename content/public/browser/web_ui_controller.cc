@@ -15,10 +15,9 @@ WebUIController::~WebUIController() {
   RemoveWebUIManagedInterfaces(this);
 }
 
-bool WebUIController::OverrideHandleWebUIMessage(
-    const GURL& source_url,
-    const std::string& message,
-    const base::Value::List& args) {
+bool WebUIController::OverrideHandleWebUIMessage(const GURL& source_url,
+                                                 const std::string& message,
+                                                 const base::ListValue& args) {
   return false;
 }
 

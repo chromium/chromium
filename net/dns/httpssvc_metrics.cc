@@ -4,9 +4,9 @@
 
 #include "net/dns/httpssvc_metrics.h"
 
+#include <algorithm>
 #include <string_view>
 
-#include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/metrics/histogram.h"
 #include "base/metrics/histogram_base.h"
@@ -65,7 +65,7 @@ void HttpssvcMetrics::SaveForHttps(enum HttpssvcDnsRcode rcode,
   // We only record one "parsable" sample per HTTPS query. In case multiple
   // matching records are present in the response, we combine their parsable
   // values with logical AND.
-  const bool parsable = !base::Contains(condensed_records, false);
+  const bool parsable = !std::ranges::contains(condensed_records, false);
 
   DCHECK(!is_https_parsable_.has_value());
   is_https_parsable_ = parsable;

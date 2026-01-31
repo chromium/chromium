@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/app_mode/kiosk_external_update_validator.h"
 
+#include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/task/sequenced_task_runner.h"
@@ -22,27 +23,47 @@ KioskExternalUpdateValidator::KioskExternalUpdateValidator(
     : backend_task_runner_(backend_task_runner),
       crx_file_(file),
       crx_unpack_dir_(crx_unpack_dir),
+      crx_copy_path_(crx_unpack_dir.Append(crx_file_.path.BaseName())),
       delegate_(delegate) {}
 
 KioskExternalUpdateValidator::~KioskExternalUpdateValidator() = default;
 
-void KioskExternalUpdateValidator::Start() {
+void KioskExternalUpdateValidator::StartCopyAndValidationOnBackendThread() {
+  if (!base::CopyFile(crx_file_.path, crx_copy_path_)) {
+    LOG(ERROR) << "Failed to copy CRX from " << crx_file_.path.value();
+    content::GetUIThreadTaskRunner({})->PostTask(
+        FROM_HERE,
+        base::BindOnce(
+            &KioskExternalUpdateValidatorDelegate::OnExternalUpdateCopyFailure,
+            delegate_, crx_file_.extension_id, crx_file_.path));
+
+    return;
+  }
+
+  extensions::CRXFileInfo copied_crx(crx_file_);
+  copied_crx.path = crx_copy_path_;
+
   auto unpacker = base::MakeRefCounted<extensions::SandboxedUnpacker>(
       extensions::mojom::ManifestLocation::kExternalPref,
       extensions::Extension::NO_FLAGS, crx_unpack_dir_,
       backend_task_runner_.get(), this);
-  if (!backend_task_runner_->PostTask(
-          FROM_HERE,
-          base::BindOnce(&extensions::SandboxedUnpacker::StartWithCrx,
-                         unpacker.get(), crx_file_))) {
-    NOTREACHED();
-  }
+
+  unpacker->StartWithCrx(copied_crx);
+}
+
+void KioskExternalUpdateValidator::Start() {
+  backend_task_runner_->PostTask(
+      FROM_HERE,
+      base::BindOnce(
+          &KioskExternalUpdateValidator::StartCopyAndValidationOnBackendThread,
+          this));
 }
 
 void KioskExternalUpdateValidator::OnUnpackFailure(
     const extensions::CrxInstallError& error) {
   LOG(ERROR) << "Failed to unpack external kiosk crx file: "
              << crx_file_.extension_id << " " << error.message();
+
   content::GetUIThreadTaskRunner({})->PostTask(
       FROM_HERE,
       base::BindOnce(
@@ -53,10 +74,10 @@ void KioskExternalUpdateValidator::OnUnpackFailure(
 void KioskExternalUpdateValidator::OnUnpackSuccess(
     const base::FilePath& temp_dir,
     const base::FilePath& extension_dir,
-    std::unique_ptr<base::Value::Dict> original_manifest,
+    std::unique_ptr<base::DictValue> original_manifest,
     const extensions::Extension* extension,
     const SkBitmap& install_icon,
-    base::Value::Dict ruleset_install_prefs) {
+    base::DictValue ruleset_install_prefs) {
   DCHECK(crx_file_.extension_id == extension->id());
 
   std::string minimum_browser_version;
@@ -73,7 +94,7 @@ void KioskExternalUpdateValidator::OnUnpackSuccess(
       base::BindOnce(
           &KioskExternalUpdateValidatorDelegate::OnExternalUpdateUnpackSuccess,
           delegate_, crx_file_.extension_id, extension->VersionString(),
-          minimum_browser_version, temp_dir));
+          minimum_browser_version, temp_dir, crx_copy_path_));
 }
 
 }  // namespace ash

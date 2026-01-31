@@ -39,7 +39,8 @@ ${this.showDrawer_ ? html`
       </picture>
     </if>
   </cr-drawer>` : ''}
-<div id="container">
+<div id="container" class="cr-scrollable">
+  <div id="scrollableShadow" class="cr-scrollable-top-shadow"></div>
   <div id="left" ?hidden="${this.narrow_}">
     <extensions-sidebar @close-drawer="${this.onCloseDrawer_}"
         ?in-dev-mode="${this.inDevMode}"

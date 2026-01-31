@@ -50,7 +50,7 @@ bool IsValueInRange(int value, std::optional<int> max_value) {
   return value > 0 && value <= effective_max_value;
 }
 
-base::expected<int, ParseError> ParseValue(const base::Value::Dict& dict,
+base::expected<int, ParseError> ParseValue(const base::DictValue& dict,
                                            std::optional<int> max_value) {
   const base::Value* value = dict.Find(kValue);
   if (!value) {
@@ -65,7 +65,7 @@ base::expected<int, ParseError> ParseValue(const base::Value::Dict& dict,
   return int_value;
 }
 
-base::expected<int, ParseError> ParseBudget(const base::Value::Dict& dict) {
+base::expected<int, ParseError> ParseBudget(const base::DictValue& dict) {
   const base::Value* value = dict.Find(kBudget);
   if (!value) {
     return base::unexpected(ParseError());
@@ -74,7 +74,7 @@ base::expected<int, ParseError> ParseBudget(const base::Value::Dict& dict) {
 }
 
 base::expected<absl::uint128, ParseError> ParseKeyPiece(
-    const base::Value::Dict& dict) {
+    const base::DictValue& dict) {
   const base::Value* v = dict.Find(kKeyPiece);
   if (!v) {
     return base::unexpected(ParseError());
@@ -91,7 +91,7 @@ ParseDebugDataElement(base::Value& elem,
                       std::set<std::string>& unknown_types,
                       std::optional<int> max_value,
                       ParseDebugDataTypeFunc parse_debug_data_type) {
-  base::Value::Dict* dict = elem.GetIfDict();
+  base::DictValue* dict = elem.GetIfDict();
   if (!dict) {
     return base::unexpected(
         AggregatableDebugReportingConfigError::kDebugDataInvalid);
@@ -109,7 +109,7 @@ ParseDebugDataElement(base::Value& elem,
         return AggregatableDebugReportingConfigError::kDebugDataValueInvalid;
       }));
 
-  base::Value::List* l = dict->FindList(kTypes);
+  base::ListValue* l = dict->FindList(kTypes);
   if (!l || l->empty()) {
     return base::unexpected(
         AggregatableDebugReportingConfigError::kDebugDataTypesInvalid);
@@ -153,7 +153,7 @@ ParseDebugDataElement(base::Value& elem,
 
 base::expected<AggregatableDebugReportingConfig::DebugData,
                AggregatableDebugReportingConfigError>
-ParseDebugData(base::Value::Dict& dict,
+ParseDebugData(base::DictValue& dict,
                std::optional<int> max_value,
                const DebugDataTypes& debug_data_types,
                ParseDebugDataTypeFunc parse_debug_data_type) {
@@ -162,7 +162,7 @@ ParseDebugData(base::Value::Dict& dict,
     return {};
   }
 
-  base::Value::List* l = value->GetIfList();
+  base::ListValue* l = value->GetIfList();
   if (!l) {
     return base::unexpected(
         AggregatableDebugReportingConfigError::kDebugDataInvalid);
@@ -187,7 +187,7 @@ ParseDebugData(base::Value::Dict& dict,
   return data;
 }
 
-void SerializeConfig(base::Value::Dict& dict,
+void SerializeConfig(base::DictValue& dict,
                      const AggregatableDebugReportingConfig& config) {
   dict.Set(kKeyPiece, HexEncodeAggregationKey(config.key_piece));
 
@@ -197,16 +197,16 @@ void SerializeConfig(base::Value::Dict& dict,
   }
 
   if (!config.debug_data.empty()) {
-    auto list = base::Value::List::with_capacity(config.debug_data.size());
+    auto list = base::ListValue::with_capacity(config.debug_data.size());
     for (const auto& [type, contribution] : config.debug_data) {
       CHECK(base::IsValueInRangeForNumericType<int>(contribution.value()));
 
       list.Append(
-          base::Value::Dict()
+          base::DictValue()
               .Set(kKeyPiece, HexEncodeAggregationKey(contribution.key_piece()))
               .Set(kValue, static_cast<int>(contribution.value()))
               .Set(kTypes,
-                   base::Value::List().Append(SerializeDebugDataType(type))));
+                   base::ListValue().Append(SerializeDebugDataType(type))));
     }
     dict.Set(kDebugData, std::move(list));
   }
@@ -225,7 +225,7 @@ bool IsValid(int budget,
 
 base::expected<AggregatableDebugReportingConfig,
                AggregatableDebugReportingConfigError>
-ParseConfig(base::Value::Dict& dict,
+ParseConfig(base::DictValue& dict,
             std::optional<int> max_value,
             const DebugDataTypes& debug_data_types,
             ParseDebugDataTypeFunc parse_debug_data_type) {
@@ -248,13 +248,13 @@ ParseConfig(base::Value::Dict& dict,
 
 base::expected<SourceAggregatableDebugReportingConfig,
                AggregatableDebugReportingConfigError>
-ParseSourceConfig(base::Value::Dict& dict) {
+ParseSourceConfig(base::DictValue& dict) {
   base::Value* v = dict.Find(kAggregatableDebugReporting);
   if (!v) {
     return SourceAggregatableDebugReportingConfig();
   }
 
-  base::Value::Dict* d = v->GetIfDict();
+  base::DictValue* d = v->GetIfDict();
   if (!d) {
     return base::unexpected(
         AggregatableDebugReportingConfigError::kRootInvalid);
@@ -275,13 +275,13 @@ ParseSourceConfig(base::Value::Dict& dict) {
 
 base::expected<AggregatableDebugReportingConfig,
                AggregatableDebugReportingConfigError>
-ParseTriggerConfig(base::Value::Dict& dict) {
+ParseTriggerConfig(base::DictValue& dict) {
   base::Value* v = dict.Find(kAggregatableDebugReporting);
   if (!v) {
     return AggregatableDebugReportingConfig();
   }
 
-  base::Value::Dict* d = v->GetIfDict();
+  base::DictValue* d = v->GetIfDict();
   if (!d) {
     return base::unexpected(
         AggregatableDebugReportingConfigError::kRootInvalid);
@@ -327,7 +327,7 @@ uint32_t AggregatableDebugReportingContribution::value() const {
 // static
 base::expected<AggregatableDebugReportingConfig,
                AggregatableDebugReportingConfigError>
-AggregatableDebugReportingConfig::Parse(base::Value::Dict& dict) {
+AggregatableDebugReportingConfig::Parse(base::DictValue& dict) {
   auto parsed = ParseTriggerConfig(dict);
   if (!parsed.has_value()) {
     base::UmaHistogramEnumeration(
@@ -362,9 +362,8 @@ AggregatableDebugReportingConfig& AggregatableDebugReportingConfig::operator=(
 AggregatableDebugReportingConfig& AggregatableDebugReportingConfig::operator=(
     AggregatableDebugReportingConfig&&) = default;
 
-void AggregatableDebugReportingConfig::Serialize(
-    base::Value::Dict& dict) const {
-  base::Value::Dict body;
+void AggregatableDebugReportingConfig::Serialize(base::DictValue& dict) const {
+  base::DictValue body;
   SerializeConfig(body, *this);
   dict.Set(kAggregatableDebugReporting, std::move(body));
 }
@@ -372,7 +371,7 @@ void AggregatableDebugReportingConfig::Serialize(
 // static
 base::expected<SourceAggregatableDebugReportingConfig,
                AggregatableDebugReportingConfigError>
-SourceAggregatableDebugReportingConfig::Parse(base::Value::Dict& dict) {
+SourceAggregatableDebugReportingConfig::Parse(base::DictValue& dict) {
   auto parsed = ParseSourceConfig(dict);
   if (!parsed.has_value()) {
     base::UmaHistogramEnumeration(
@@ -421,13 +420,13 @@ SourceAggregatableDebugReportingConfig::operator=(
     SourceAggregatableDebugReportingConfig&&) = default;
 
 void SourceAggregatableDebugReportingConfig::Serialize(
-    base::Value::Dict& dict) const {
+    base::DictValue& dict) const {
   // `budget_` is 0 when aggregatable debug reporting is not opted in.
   if (budget_ == 0) {
     return;
   }
 
-  base::Value::Dict body;
+  base::DictValue body;
   body.Set(kBudget, budget_);
   SerializeConfig(body, config_);
   dict.Set(kAggregatableDebugReporting, std::move(body));

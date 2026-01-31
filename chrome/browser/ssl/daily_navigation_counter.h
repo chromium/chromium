@@ -32,7 +32,7 @@ class DailyNavigationCounter {
   // days ago will be discarded today.
   // `save_interval` is the number of navigations after which the counts are
   // saved to `dict`.
-  DailyNavigationCounter(base::Value::Dict* dict,
+  DailyNavigationCounter(base::DictValue* dict,
                          base::Clock* clock,
                          size_t rolling_window_duration_in_days,
                          size_t save_interval);
@@ -49,7 +49,7 @@ class DailyNavigationCounter {
   size_t unsaved_count_for_testing() const { return unsaved_count_; }
 
  private:
-  raw_ptr<base::Value::Dict> dict_;
+  raw_ptr<base::DictValue> dict_;
   raw_ptr<base::Clock> clock_;
   // Number of navigations that haven't been saved in the pref yet.
   int unsaved_count_ = 0;

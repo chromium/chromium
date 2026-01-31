@@ -31,7 +31,7 @@ class CastAudioJson {
 class CastAudioJsonProvider {
  public:
   using TuningChangedCallback =
-      base::RepeatingCallback<void(std::optional<base::Value::Dict> contents)>;
+      base::RepeatingCallback<void(std::optional<base::DictValue> contents)>;
 
   virtual ~CastAudioJsonProvider() = default;
 
@@ -41,7 +41,7 @@ class CastAudioJsonProvider {
   // at CastAudioJson::GetReadOnlyFilePath() will be returned.
   // This function will run on the thread on which it is called, and may
   // perform blocking I/O.
-  virtual std::optional<base::Value::Dict> GetCastAudioConfig() = 0;
+  virtual std::optional<base::DictValue> GetCastAudioConfig() = 0;
 
   // |callback| will be called when a new cast_audio config is available.
   // |callback| will always be called from the same thread, but not necessarily
@@ -72,7 +72,7 @@ class CastAudioJsonProviderImpl : public CastAudioJsonProvider {
   };
 
   // CastAudioJsonProvider implementation:
-  std::optional<base::Value::Dict> GetCastAudioConfig() override;
+  std::optional<base::DictValue> GetCastAudioConfig() override;
   void SetTuningChangedCallback(TuningChangedCallback callback) override;
 
   base::SequenceBound<FileWatcher> cast_audio_watcher_;

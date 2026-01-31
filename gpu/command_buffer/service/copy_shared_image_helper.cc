@@ -130,6 +130,26 @@ bool CopyPixelsToTexture(
     SharedContextState* shared_context_state,
     const std::vector<GrBackendSemaphore>& begin_semaphores,
     std::vector<GrBackendSemaphore>& end_semaphores) {
+  // We have implemented CompoundImageBacking::ProduceMemory() which can lead
+  // to a performance regression when it's underlying GPU backing holds the
+  // latest data. Previously, an unimplemented
+  // CompoundImageBacking::ProduceMemory() would return nullptr below,
+  // triggering a more efficient GPU-GPU copy fallback in
+  // CopySharedImageHelper::CopySharedImage(). With
+  // CompoundImageBacking::ProduceMemory() implementation, a GPU->CPU copy
+  // occurs internally in CompoundImageBacking first, followed by a CPU->GPU
+  // upload in this method, which is less performant than a direct GPU->GPU
+  // transfer.
+  // For cases where the underlying GPU backing has stale data compared to its
+  // shm backing, CompoundImageBacking::ProduceMemory() actually results in perf
+  // improvements as compared to GPU->GPU fallback since the fallback will now
+  // trigger a readback (from CSI's shm backing to its GPU backing) before
+  // actual GPU->GPU copy happens.
+  // TODO(crbug.com/470101115): Ideally SharedImageCopyManager will replace
+  // all copy operation here. But if perf regression is reported before that
+  // happens, we will need to fix this issue by adding some temporary
+  // workaround like querying CompoundImageBacking if its gpu backing has the
+  // latest data or not and choose copy path accordingly.
   auto source_shared_image =
       representation_factory->ProduceMemory(source_mailbox);
   if (!source_shared_image) {

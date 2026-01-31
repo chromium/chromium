@@ -33,14 +33,14 @@ extern const char kWebCryptoNamedCurveP256[];
 // Converts a crosapi keystore algorithm into a WebCrypto dictionary. Returns
 // std::nullopt on error.
 COMPONENT_EXPORT(CROSAPI)
-std::optional<base::Value::Dict> MakeDictionaryFromKeystoreAlgorithm(
+std::optional<base::DictValue> MakeDictionaryFromKeystoreAlgorithm(
     const mojom::KeystoreAlgorithmPtr& algorithm);
 
 // Converts a WebCrypto dictionary into a crosapi keystore algorithm. Returns
 // std::nullopt on error.
 COMPONENT_EXPORT(CROSAPI)
 std::optional<mojom::KeystoreAlgorithmPtr> MakeKeystoreAlgorithmFromDictionary(
-    const base::Value::Dict& dictionary);
+    const base::DictValue& dictionary);
 
 // Creates the RSASSA-PKCS1-v1_5 variant of the KeystoreAlgorithm union
 // and populates the modulus_length and sw_backed fields with the provided

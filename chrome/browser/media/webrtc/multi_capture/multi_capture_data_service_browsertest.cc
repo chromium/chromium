@@ -58,7 +58,7 @@ class MultiCaptureDataTestBase : public policy::PolicyTest {
   void SetAllowedOriginsPolicy(
       const std::vector<std::string>& allowlisted_origins) {
     policy::PolicyMap policies;
-    base::Value::List allowed_origins;
+    base::ListValue allowed_origins;
     for (const auto& allowed_origin : allowlisted_origins) {
       allowed_origins.Append(base::Value(allowed_origin));
     }

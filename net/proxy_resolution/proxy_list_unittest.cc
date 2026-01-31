@@ -360,7 +360,7 @@ TEST(ProxyListTest, ToValue) {
   }));
 
   base::Value expected(base::Value::Type::LIST);
-  base::Value::List& exp_list = expected.GetList();
+  base::ListValue& exp_list = expected.GetList();
   exp_list.Append("[https://foo:443]");
   exp_list.Append("[https://foo-a:443, https://foo-b:443] (IP Protection)");
 
@@ -453,7 +453,7 @@ TEST(ProxyListTest, NonIpProtectionMultiProxyChainToValue) {
   }));
 
   base::Value expected(base::Value::Type::LIST);
-  base::Value::List& exp_list = expected.GetList();
+  base::ListValue& exp_list = expected.GetList();
   exp_list.Append("[https://foo:443]");
   exp_list.Append("[https://foo-a:443, https://foo-b:443]");
 

@@ -18,7 +18,7 @@ static std::string JNI_ContentUtils_GetBrowserUserAgent(JNIEnv* env) {
 static void JNI_ContentUtils_SetUserAgentOverride(
     JNIEnv* env,
     const base::android::JavaRef<jobject>& jweb_contents,
-    jboolean j_override_in_new_tabs) {
+    bool j_override_in_new_tabs) {
   constexpr char kLinuxInfoStr[] = "X11; Linux x86_64";
 
   // Note: Any updates to desktop overrides here should also be applied to

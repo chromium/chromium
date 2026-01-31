@@ -1,0 +1,35 @@
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto2";
+
+option optimize_for = LITE_RUNTIME;
+
+package skills.proto;
+
+// Contains information about a single Skill, as passed down from the server.
+message Skill {
+  // A unique identifier for this Skill.
+  optional string id = 1;
+
+  // The user-facing name of this Skill.
+  optional string name = 2;
+
+  // The category of this Skill, e.g. "Shopping", "Writing", etc.
+  optional string category = 3;
+
+  // The icon to use when rendering this Skill.
+  optional string icon = 4;
+
+  // The prompt to execute the Skill.
+  optional string prompt = 5;
+}
+
+// Contains a list of Skills received from the server.
+//
+// This is used as the metadata associated with the SKILLS Optimization type.
+// This is also used to download the full list of first-party Skills.
+message SkillsList {
+  repeated Skill skills = 1;
+}

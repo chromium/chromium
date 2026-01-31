@@ -31,7 +31,7 @@ void OsSettingsHatsHandler::RegisterMessages() {
 }
 
 void OsSettingsHatsHandler::HandleSettingsUsedSearch(
-    const base::Value::List& args) {
+    const base::ListValue& args) {
   DCHECK(args.empty());
   AllowJavascript();
 
@@ -41,7 +41,7 @@ void OsSettingsHatsHandler::HandleSettingsUsedSearch(
 }
 
 void OsSettingsHatsHandler::HandleSendSettingsHats(
-    const base::Value::List& args) {
+    const base::ListValue& args) {
   DCHECK(args.empty());
   AllowJavascript();
 

@@ -67,7 +67,7 @@ bool ParseBitfield(const std::string& bitfield,
         break;
 
       if (val & (1UL << j))
-        EvdevSetBit(&(*out)[0], code);
+        EvdevSetBit(*out, code);
     }
   }
 

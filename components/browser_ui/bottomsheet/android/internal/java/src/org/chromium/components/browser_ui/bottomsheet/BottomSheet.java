@@ -240,7 +240,7 @@ class BottomSheet extends FrameLayout
 
         mMinHalfFullDistance =
                 getResources().getDimensionPixelSize(R.dimen.bottom_sheet_min_full_half_distance);
-        mSheetBgColor = SemanticColorUtils.getSheetBgColor(context);
+        mSheetBgColor = getNonModalBottomSheetBgColor(context);
         mGestureDetector = new BottomSheetSwipeDetector(context, this);
         mIsTouchEnabled = true;
     }
@@ -1460,16 +1460,16 @@ class BottomSheet extends FrameLayout
             }
         }
 
-        int colorNoScrim = SemanticColorUtils.getSheetBgColor(getContext());
-        int colorOnScrim = getSheetOnScrimBackgroundColor(getContext());
+        int colorNonModal = getNonModalBottomSheetBgColor(getContext());
+        int colorModal = getModalBottomSheetBgColor(getContext());
 
         // Calculate the color based on the ratio between PEEK / FULL state.
         float maxOffset = getMaxOffsetPx();
         float minOffset = getPeekRatio() * mContainerHeight;
 
         boolean isResizableSheet = isHalfStateEnabled() || isPeekStateEnabled();
-        if (!isResizableSheet || maxOffset <= minOffset || colorOnScrim == colorNoScrim) {
-            int newColor = mSheetContent.hasCustomScrimLifecycle() ? colorNoScrim : colorOnScrim;
+        if (!isResizableSheet || maxOffset <= minOffset || colorModal == colorNonModal) {
+            int newColor = mSheetContent.hasCustomScrimLifecycle() ? colorNonModal : colorModal;
             udpateSheetBgColorTint(newColor);
             return;
         }
@@ -1478,9 +1478,7 @@ class BottomSheet extends FrameLayout
         float colorRatio = Math.max(0, currentOffset - minOffset) / (maxOffset - minOffset);
         int newColor =
                 ColorUtils.overlayColor(
-                        /* baseColor= */ colorNoScrim,
-                        /* overlayColor= */ colorOnScrim,
-                        colorRatio);
+                        /* baseColor= */ colorNonModal, /* overlayColor= */ colorModal, colorRatio);
         udpateSheetBgColorTint(newColor);
     }
 
@@ -1551,7 +1549,17 @@ class BottomSheet extends FrameLayout
      * @param context The {@link Context} used to retrieve attrs, colors, and dimens.
      * @return The {@link ColorInt} for the background of a bottom sheet showing on a scrim
      */
-    private static @ColorInt int getSheetOnScrimBackgroundColor(Context context) {
+    private static @ColorInt int getModalBottomSheetBgColor(Context context) {
         return ContextCompat.getColor(context, R.color.bottom_sheet_bg_color);
+    }
+
+    /**
+     * Get the color to use for non-modal bottom sheet.
+     *
+     * @param context The {@link Context} used to retrieve attrs, colors, and dimens.
+     * @return The {@link ColorInt} for the background of a bottom sheet showing on a scrim
+     */
+    private static @ColorInt int getNonModalBottomSheetBgColor(Context context) {
+        return SemanticColorUtils.getColorSurface(context);
     }
 }

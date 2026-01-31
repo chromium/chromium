@@ -7,8 +7,8 @@
 #include <set>
 
 #include "chrome/browser/android/tab_android.h"
-#include "chrome/browser/page_content_annotations/page_content_extraction_service.h"
 #include "chrome/browser/profiles/profile.h"
+#include "components/page_content_annotations/content/page_content_extraction_service.h"
 #include "components/page_content_annotations/core/page_content_annotations_features.h"
 #include "components/page_content_annotations/core/page_content_cache.h"
 #include "content/public/browser/page.h"
@@ -54,6 +54,11 @@ void PageContentExtractionTabModelObserverAndroid::WillCloseTab(
   // receive this observation if the app quit before the undo timeout. It is
   // more reliable to observe this and undo closure.
   service_->OnTabClosed(tab->GetAndroidId());
+}
+
+void PageContentExtractionTabModelObserverAndroid::TabClosureCommitted(
+    TabAndroid* tab) {
+  service_->TabClosureCommitted(tab->GetAndroidId());
 }
 
 void PageContentExtractionTabModelObserverAndroid::TabClosureUndone(

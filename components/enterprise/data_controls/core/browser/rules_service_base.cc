@@ -104,7 +104,7 @@ void RulesServiceBase::OnDataControlsRulesUpdate() {
   DCHECK(pref_registrar_.prefs());
   rules_.clear();
 
-  const base::Value::List& rules_list =
+  const base::ListValue& rules_list =
       pref_registrar_.prefs()->GetList(kDataControlsRulesPref);
 
   for (const base::Value& rule_value : rules_list) {

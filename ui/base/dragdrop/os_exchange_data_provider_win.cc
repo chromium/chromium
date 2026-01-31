@@ -33,12 +33,14 @@
 #include "base/files/file_path.h"
 #include "base/functional/callback.h"
 #include "base/i18n/file_util_icu.h"
+#include "base/json/json_writer.h"
 #include "base/no_destructor.h"
 #include "base/notreached.h"
 #include "base/pickle.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/values.h"
 #include "base/win/scoped_hdc.h"
 #include "base/win/scoped_hglobal.h"
 #include "base/win/shlwapi.h"
@@ -336,19 +338,52 @@ void OSExchangeDataProviderWin::SetString(std::u16string_view data) {
       ClipboardFormatType::PlainTextAType().ToFormatEtc(), storage));
 }
 
-void OSExchangeDataProviderWin::SetURL(const GURL& url,
-                                       std::u16string_view title) {
+void OSExchangeDataProviderWin::SetURLs(
+    base::span<const ClipboardUrlInfo> url_infos) {
   // NOTE WELL:
   // Every time you change the order of the first two CLIPFORMATS that get
   // added here, you need to update the EnumerationViaCOM test case in
   // the _unittest.cc file to reflect the new arrangement otherwise that test
   // will fail! It assumes an insertion order.
 
-  // Add text/x-moz-url for drags from Firefox
+  // Build shared representations for all URL formats. BookmarkListType stores
+  // a JSON data, while the newline-delimited string remains the fallback
+  // for text/uri-list and plain text.
+  std::string url_title_list;
+  base::ListValue bookmark_entries;
+  for (const auto& url_info : url_infos) {
+    if (!url_title_list.empty()) {
+      url_title_list += '\n';
+    }
+    url_title_list += url_info.url.spec();
+    url_title_list += '\n';
+    url_title_list += base::UTF16ToUTF8(url_info.title);
+
+    base::DictValue entry;
+    entry.Set("url", url_info.url.spec());
+    entry.Set("title", base::UTF16ToUTF8(url_info.title));
+    bookmark_entries.Append(std::move(entry));
+  }
+
+  // Add MozUrlType clipboard format, which supports a URL/title pair for
+  // bookmark drags.
   STGMEDIUM storage = CreateStorageForString(
-      base::StrCat({base::UTF8ToUTF16(url.spec()), u"\n", title}));
+      base::StrCat({base::UTF8ToUTF16(url_infos.front().url.spec()), u"\n",
+                    url_infos.front().title}));
   data_->contents_.push_back(DataObjectImpl::StoredDataInfo::TakeStorageMedium(
       ClipboardFormatType::MozUrlType().ToFormatEtc(), storage));
+
+  // Add BookmarkListType clipboard format only when multiple items are given.
+  if (url_infos.size() > 1) {
+    base::Value bookmark_entries_value(std::move(bookmark_entries));
+    std::string bookmark_list_json;
+    if (base::JSONWriter::Write(bookmark_entries_value, &bookmark_list_json)) {
+      storage = CreateStorageForString(base::UTF8ToUTF16(bookmark_list_json));
+      data_->contents_.push_back(
+          DataObjectImpl::StoredDataInfo::TakeStorageMedium(
+              ClipboardFormatType::BookmarkListType().ToFormatEtc(), storage));
+    }
+  }
 
   // Add a .URL shortcut file for dragging to Explorer if there is not already
   // FileContents from dragging an image.  Also mark the synthesized file
@@ -356,10 +391,10 @@ void OSExchangeDataProviderWin::SetURL(const GURL& url,
   // this may confuse some web pages into dropping a file rather than a link.
   // See https://crbug.com/1274395 for background.
   if (!HasFileContents()) {
-    std::wstring valid_file_name =
-        CreateValidFileNameFromTitle(url, base::AsWString(title));
+    std::wstring valid_file_name = CreateValidFileNameFromTitle(
+        url_infos.front().url, base::AsWString(url_infos.front().title));
     std::string shortcut_url_file_contents =
-        GetInternetShortcutFileContents(url);
+        GetInternetShortcutFileContents(url_infos.front().url);
     SetFileContents(base::FilePath(valid_file_name),
                     shortcut_url_file_contents);
     storage = CreateStorageForString(std::string_view());
@@ -369,10 +404,14 @@ void OSExchangeDataProviderWin::SetURL(const GURL& url,
   }
 
   // Add a UniformResourceLocator link for apps like IE and Word.
-  storage = CreateStorageForString(base::UTF8ToUTF16(url.spec()));
+  // This sets a single URL, as the CFSTR_INETURL format provides the standard
+  // clipboard representation for a single URL.
+  // https://learn.microsoft.com/en-us/windows/win32/shell/clipboard#cfstr_ineturl
+  const auto& url_info = url_infos.front();
+  storage = CreateStorageForString(base::UTF8ToUTF16(url_info.url.spec()));
   data_->contents_.push_back(DataObjectImpl::StoredDataInfo::TakeStorageMedium(
       ClipboardFormatType::UrlType().ToFormatEtc(), storage));
-  storage = CreateStorageForString(url.spec());
+  storage = CreateStorageForString(url_info.url.spec());
   data_->contents_.push_back(DataObjectImpl::StoredDataInfo::TakeStorageMedium(
       ClipboardFormatType::UrlAType().ToFormatEtc(), storage));
 
@@ -380,7 +419,11 @@ void OSExchangeDataProviderWin::SetURL(const GURL& url,
 
   // Also add text representations (these should be last since they're the
   // least preferable).
-  SetString(base::UTF8ToUTF16(url.spec()));
+  if (url_infos.size() > 1) {
+    SetString(base::UTF8ToUTF16(url_title_list));
+  } else {
+    SetString(base::UTF8ToUTF16(url_info.url.spec()));
+  }
 }
 
 void OSExchangeDataProviderWin::SetFilename(const base::FilePath& path) {
@@ -428,7 +471,8 @@ std::optional<GURL> OSExchangeDataProviderWin::GetPlainTextURL() const {
 void OSExchangeDataProviderWin::SetVirtualFileContentsForTesting(
     const std::vector<std::pair<base::FilePath, std::string>>&
         filenames_and_contents,
-    DWORD tymed) {
+    DWORD tymed,
+    bool show_cfhdrop_without_data) {
   size_t num_files = filenames_and_contents.size();
   if (!num_files)
     return;
@@ -468,6 +512,18 @@ void OSExchangeDataProviderWin::SetVirtualFileContentsForTesting(
                    filenames_and_contents[i].second.length());
     SetVirtualFileContentAtIndexForTesting(data_buffer, tymed,  // IN-TEST
                                            static_cast<LONG>(i));
+  }
+
+  // This simulates ZIP Shell Folder behavior where data is available via format
+  // FileContentAtIndexType(0)
+  if (show_cfhdrop_without_data) {
+    FORMATETC cf_hdrop_format =
+        ClipboardFormatType::CFHDropType().ToFormatEtc();
+    cf_hdrop_format.tymed = TYMED_NULL;
+    STGMEDIUM null_medium = kNullStorageMedium;
+    data_->contents_.push_back(
+        DataObjectImpl::StoredDataInfo::TakeStorageMedium(cf_hdrop_format,
+                                                          null_medium));
   }
 }
 
@@ -585,48 +641,26 @@ std::optional<std::u16string> OSExchangeDataProviderWin::GetString() const {
   return std::nullopt;
 }
 
-std::optional<OSExchangeDataProvider::UrlInfo>
-OSExchangeDataProviderWin::GetURLAndTitle(FilenameToURLPolicy policy) const {
-  GURL url;
-  std::u16string title;
-  if (clipboard_util::GetUrl(
-          source_object_.Get(), &url, &title,
-          policy == FilenameToURLPolicy::CONVERT_FILENAMES ? true : false)) {
-    DCHECK(url.is_valid());
-    return UrlInfo{std::move(url), std::move(title)};
-  } else if (std::optional<GURL> plaintext_url = GetPlainTextURL();
-             plaintext_url.has_value()) {
-    DCHECK(plaintext_url->is_valid());
-    title = net::GetSuggestedFilename(*plaintext_url, "", "", "", "",
-                                      std::string());
-    return UrlInfo{std::move(plaintext_url).value(), std::move(title)};
-  }
-  return std::nullopt;
-}
-
-std::optional<std::vector<GURL>> OSExchangeDataProviderWin::GetURLs(
+std::vector<ClipboardUrlInfo> OSExchangeDataProviderWin::GetURLs(
     FilenameToURLPolicy policy) const {
-  std::vector<GURL> local_urls;
-
-  if (std::optional<UrlInfo> url_info =
-          GetURLAndTitle(FilenameToURLPolicy::DO_NOT_CONVERT_FILENAMES);
-      url_info.has_value()) {
-    local_urls.push_back(url_info->url);
+  std::vector<ClipboardUrlInfo> url_infos;
+  if (clipboard_util::GetUrlInfos(
+          source_object_.Get(), url_infos,
+          policy == FilenameToURLPolicy::CONVERT_FILENAMES)) {
+    DCHECK(!url_infos.empty());
+    return url_infos;
   }
 
-  if (policy == FilenameToURLPolicy::CONVERT_FILENAMES) {
-    if (std::optional<std::vector<FileInfo>> fileinfos = GetFilenames();
-        fileinfos.has_value()) {
-      for (const auto& fileinfo : fileinfos.value()) {
-        local_urls.push_back(net::FilePathToFileURL(fileinfo.path));
-      }
-    }
+  if (std::optional<GURL> plaintext_url = GetPlainTextURL();
+      plaintext_url.has_value()) {
+    DCHECK(plaintext_url->is_valid());
+    GURL url = std::move(plaintext_url).value();
+    std::u16string title =
+        net::GetSuggestedFilename(url, "", "", "", "", std::string());
+    url_infos.emplace_back(std::move(url), std::move(title));
   }
 
-  if (local_urls.size()) {
-    return local_urls;
-  }
-  return std::nullopt;
+  return url_infos;
 }
 
 std::optional<std::vector<FileInfo>> OSExchangeDataProviderWin::GetFilenames()

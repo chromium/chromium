@@ -154,7 +154,7 @@ class NET_EXPORT_PRIVATE HttpAuth {
       AuthorizationResult authorization_result);
 
   // Returns a value for logging an authorization result to a NetLog.
-  static base::Value::Dict NetLogAuthorizationResultParams(
+  static base::DictValue NetLogAuthorizationResultParams(
       const char* name,
       AuthorizationResult authorization_result);
 

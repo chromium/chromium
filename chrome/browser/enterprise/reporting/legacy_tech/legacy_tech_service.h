@@ -9,8 +9,8 @@
 
 #include "base/no_destructor.h"
 #include "chrome/browser/enterprise/reporting/legacy_tech/legacy_tech_report_generator.h"
-#include "chrome/browser/enterprise/reporting/legacy_tech/legacy_tech_url_matcher.h"
 #include "chrome/browser/profiles/profile_keyed_service_factory.h"
+#include "components/enterprise/browser/reporting/pref_url_list_matcher.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "content/public/browser/legacy_tech_cookie_issue_details.h"
 
@@ -38,7 +38,7 @@ class LegacyTechService : public KeyedService {
                        cookie_issue_details) const;
 
  private:
-  LegacyTechURLMatcher url_matcher_;
+  PrefURLListMatcher url_matcher_;
   LegacyTechReportTrigger trigger_;
 };
 

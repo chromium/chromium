@@ -113,7 +113,7 @@ class AbusiveNotificationPermissionsManagerTest : public ::testing::Test {
           safe_browsing::NotificationRevocationSource::kUnknown) {
     AddAbusiveNotification(url, cs);
     content_settings::ContentSettingConstraints constraint;
-    base::Value::Dict value;
+    base::DictValue value;
     value.Set(safety_hub::kRevokedStatusDictKeyStr,
               is_ignored ? safety_hub::kIgnoreStr : safety_hub::kRevokeStr);
     std::optional<std::string> source_str =
@@ -573,7 +573,7 @@ TEST_F(
   hcsm()->SetWebsiteSettingDefaultScope(
       GURL(url2), GURL(url2), revoked_notifications_type,
       base::Value(
-          base::Value::Dict()
+          base::DictValue()
               .Set(safety_hub::kRevokedStatusDictKeyStr, safety_hub::kRevokeStr)
               .Set(kAbusiveRevocationSourceKeyStr,
                    kSafeBrowsingUnwantedRevocationStr)),
@@ -690,7 +690,7 @@ TEST_F(AbusiveNotificationPermissionsManagerTest,
   hcsm()->SetWebsiteSettingDefaultScope(
       GURL(url1), GURL(url1), revoked_notifications_type,
       base::Value(
-          base::Value::Dict()
+          base::DictValue()
               .Set(safety_hub::kRevokedStatusDictKeyStr, safety_hub::kRevokeStr)
               .Set(kAbusiveRevocationSourceKeyStr,
                    kSafeBrowsingUnwantedRevocationStr)),
@@ -1178,12 +1178,12 @@ class SuspiciousNotificationRevocationTest
   }
 
   void RecordSuspiciousNotifications(const GURL& url, int count) {
-    base::Value::Dict engagement;
+    base::DictValue engagement;
     std::string date =
         permissions::NotificationsEngagementService::GetBucketLabel(
             base::Time::Now());
-    base::Value::Dict* bucket =
-        &engagement.Set(date, base::Value::Dict())->GetDict();
+    base::DictValue* bucket =
+        &engagement.Set(date, base::DictValue())->GetDict();
     bucket->Set("suspicious_count", count);
     hcsm()->SetWebsiteSettingDefaultScope(
         url, GURL(), ContentSettingsType::NOTIFICATION_INTERACTIONS,
@@ -1366,8 +1366,7 @@ TEST_F(SuspiciousNotificationRevocationTest,
   hcsm()->SetWebsiteSettingDefaultScope(
       GURL(url2), GURL(url2),
       ContentSettingsType::REVOKED_DISRUPTIVE_NOTIFICATION_PERMISSIONS,
-      base::Value(
-          base::Value::Dict().Set("revoked_status", "ignore_inside_sh")),
+      base::Value(base::DictValue().Set("revoked_status", "ignore_inside_sh")),
       constraint);
   EXPECT_TRUE(
       DisruptiveNotificationPermissionsManager::
@@ -1408,7 +1407,7 @@ TEST_F(SuspiciousNotificationRevocationTest,
   hcsm()->SetWebsiteSettingDefaultScope(
       GURL(url1), GURL(url1),
       ContentSettingsType::SUSPICIOUS_NOTIFICATION_SHOW_ORIGINAL,
-      base::Value(base::Value::Dict().Set(
+      base::Value(base::DictValue().Set(
           safe_browsing::kSuspiciousNotificationShowOriginalKey, true)),
       constraint);
 

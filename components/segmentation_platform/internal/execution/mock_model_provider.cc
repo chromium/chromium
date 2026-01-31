@@ -6,7 +6,6 @@
 
 #include <utility>
 
-#include "base/containers/contains.h"
 #include "base/functional/callback.h"
 #include "base/logging.h"
 #include "components/segmentation_platform/public/model_provider.h"
@@ -65,7 +64,7 @@ std::unique_ptr<ModelProvider> TestModelProviderFactory::CreateProvider(
 
 std::unique_ptr<DefaultModelProvider>
 TestModelProviderFactory::CreateDefaultProvider(proto::SegmentId segment_id) {
-  if (!base::Contains(data_->segments_supporting_default_model, segment_id)) {
+  if (!data_->segments_supporting_default_model.contains(segment_id)) {
     return nullptr;
   }
 

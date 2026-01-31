@@ -12,7 +12,6 @@
 
 #include "base/feature_list.h"
 #include "base/functional/callback_helpers.h"
-#include "base/metrics/field_trial_params.h"
 #include "base/strings/cstring_view.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
@@ -107,7 +106,7 @@
 #if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/sharing_hub/sharing_hub_features.h"
 #include "chrome/browser/ui/browser_commands.h"
-#include "chrome/browser/ui/browser_list.h"
+#include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"  // nogncheck crbug.com/40147906
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"  // nogncheck crbug.com/40147906
 #include "chrome/browser/ui/lens/lens_search_controller.h"
@@ -143,6 +142,7 @@ constexpr auto kChromeSettingsSubPages = std::to_array<base::cstring_view>({
     chrome::kPaymentsSubPage,
     chrome::kResetProfileSettingsSubPage,
     chrome::kSearchEnginesSubPage,
+    chrome::kSecuritySubPage,
     chrome::kSyncSetupSubPage,
 #if !BUILDFLAG(IS_CHROMEOS)
     chrome::kImportDataSubPage,
@@ -655,11 +655,18 @@ bool ChromeAutocompleteProviderClient::ShouldSendPageTitleSuggestParam() const {
       /*country=*/"us", /*locale=*/"en-US");
 }
 
-bool ChromeAutocompleteProviderClient::IsOmniboxNextFeatureParamEnabled(
-    const std::string& param_name) const {
+bool ChromeAutocompleteProviderClient::IsOmniboxNextLensSearchChipEnabled()
+    const {
 #if !BUILDFLAG(IS_ANDROID)
-  return base::GetFieldTrialParamByFeatureAsBool(
-      omnibox::internal::kWebUIOmniboxAimPopup, param_name, false);
+  return IsOmniboxNextAimPopupEnabled() && omnibox::kShowLensSearchChip.Get();
+#else
+  return false;
+#endif  // !BUILDFLAG(IS_ANDROID)
+}
+
+bool ChromeAutocompleteProviderClient::IsOmniboxNextAimPopupEnabled() const {
+#if !BUILDFLAG(IS_ANDROID)
+  return omnibox::IsAimPopupEnabled(profile_);
 #else
   return false;
 #endif  // !BUILDFLAG(IS_ANDROID)
@@ -711,8 +718,7 @@ void ChromeAutocompleteProviderClient::OpenIncognitoClearBrowsingDataDialog() {
 void ChromeAutocompleteProviderClient::CloseIncognitoWindows() {
 #if !BUILDFLAG(IS_ANDROID)
   if (profile_->IsIncognitoProfile()) {
-    BrowserList::CloseAllBrowsersWithIncognitoProfile(
-        profile_, base::DoNothing(), base::DoNothing(), true);
+    chrome::CloseAllBrowsersWithIncognitoProfile(profile_);
   }
 #endif  // !BUILDFLAG(IS_ANDROID)
 }
@@ -742,8 +748,12 @@ void ChromeAutocompleteProviderClient::OpenLensOverlay(bool show) {
   if (auto* lens_search_controller =
           GetLensSearchController(GetWebContents(web_contents_getter_))) {
     if (show) {
+      // If the Omnibox Next Lens search chip feature is enabled, do not show
+      // the contextual search box in the Lens Overlay.
+      bool should_show_csb = !IsOmniboxNextLensSearchChipEnabled();
       lens_search_controller->OpenLensOverlay(
-          lens::LensOverlayInvocationSource::kOmniboxPageAction);
+          lens::LensOverlayInvocationSource::kOmniboxPageAction,
+          should_show_csb);
     } else {
       // TODO(crbug.com/402497756): For prototyping, reusing the existing
       // omnibox entry point. However, for production, create a new invocation

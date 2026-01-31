@@ -71,7 +71,11 @@ void OmniboxPopupViewWebUI::UpdatePopupAppearance() {
   const bool should_be_visible =
       controller()->popup_state_manager()->popup_state() !=
           OmniboxPopupState::kAim &&
-      !controller()->autocomplete_controller()->result().empty() &&
+      (!controller()->autocomplete_controller()->result().empty() ||
+       controller()
+           ->autocomplete_controller()
+           ->result()
+           .has_contextual_chips()) &&
       !omnibox_view_->IsImeShowingPopup();
 
   if (!should_be_visible) {

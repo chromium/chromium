@@ -312,6 +312,10 @@ process is determined by command-line arguments:
         * The value of `installerdata` needs to be URL encoded.
         * The data will be decoded and written to a file same as in
           [installdataindex](#installdataindex).
+    *   --installsource=...
+        * A user defined `installsource` string for use with offline installs.
+          This is passed up in the `installsource` field in install type event
+          pings.
     *   --offlinedir={GUID}
         *   Performs offline install, which means no update check or file
             download is performed against the server during installation.

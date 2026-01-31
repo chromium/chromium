@@ -79,7 +79,7 @@ class ShellExtensionLoader : public ExtensionRegistrar::Delegate {
   void OnExtensionInstalled(const Extension* extension,
                             const syncer::StringOrdinal& page_ordinal,
                             int install_flags,
-                            base::Value::Dict ruleset_install_prefs) override;
+                            base::DictValue ruleset_install_prefs) override;
 
   raw_ptr<content::BrowserContext> browser_context_;  // Not owned.
 

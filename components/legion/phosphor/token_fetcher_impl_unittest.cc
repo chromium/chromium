@@ -20,8 +20,13 @@
 #include "base/test/trace_test_utils.h"
 #include "base/time/time.h"
 #include "components/legion/features.h"
+#include "components/legion/phosphor/blind_sign_auth_factory.h"
+#include "components/legion/phosphor/blind_sign_auth_factory_impl.h"
+#include "components/legion/phosphor/config_http.h"
 #include "components/legion/phosphor/mock_blind_sign_auth.h"
+#include "components/legion/phosphor/oauth_token_provider.h"
 #include "components/legion/phosphor/token_fetcher_helper.h"
+#include "net/base/net_errors.h"
 #include "net/http/http_status_code.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/test/test_url_loader_factory.h"
@@ -86,29 +91,22 @@ MATCHER_P(IsNearWithJitter, expected, "") {
   return false;
 }
 
-// A mock delegate for use in testing the fetcher.
-struct MockTokenFetcherImplDelegate : public TokenFetcherImpl::Delegate {
+// A mock OAuthTokenProvider for use in testing the fetcher.
+struct MockOAuthTokenProvider : public OAuthTokenProvider {
   bool IsTokenFetchEnabled() override { return is_token_fetch_enabled; }
   void RequestOAuthToken(RequestOAuthTokenCallback callback) override {
     std::move(callback).Run(response_result, std::move(response_access_token));
-  }
-  std::unique_ptr<quiche::BlindSignAuthInterface> CreateBlindSignAuth(
-      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory)
-      override {
-    return std::move(bsa_to_return);
   }
 
   bool is_token_fetch_enabled = true;
   GetAuthnTokensResult response_result = GetAuthnTokensResult::kSuccess;
   std::optional<std::string> response_access_token = "access_token";
-  std::unique_ptr<quiche::BlindSignAuthInterface> bsa_to_return;
 };
 
 class TokenFetcherImplTest : public testing::Test {
  protected:
   using GetAuthnTokensFuture = base::test::TestFuture<
-      const std::optional<std::vector<BlindSignedAuthToken>>,
-      std::optional<base::Time>>;
+      base::expected<std::vector<BlindSignedAuthToken>, base::Time>>;
 
   TokenFetcherImplTest()
       : expiration_time_(base::Time::Now() + base::Hours(1)),
@@ -121,33 +119,32 @@ class TokenFetcherImplTest : public testing::Test {
         legion::kLegion, {{"LegionBackoffJitter", "0.25"}});
     auto bsa = std::make_unique<MockBlindSignAuth>();
     bsa_ = bsa.get();
-    delegate_.bsa_to_return = std::move(bsa);
-    fetcher_ = std::make_unique<TokenFetcherImpl>(
-        &delegate_, test_url_loader_factory_.GetSafeWeakWrapper()->Clone());
+    fetcher_ = std::make_unique<TokenFetcherImpl>(&oauth_token_provider_,
+                                                  std::move(bsa));
   }
 
   // Call `GetAuthnTokens()` and run until it completes.
   void GetAuthnTokens(int num_tokens) {
     fetcher_->GetAuthnTokens(num_tokens, tokens_future_.GetCallback());
 
-    ASSERT_TRUE(tokens_future_.Wait()) << "GetAuthnTokens did not call back";
+    CHECK(tokens_future_.Wait()) << "GetAuthnTokens did not call back";
   }
 
   // Expect that the GetAuthnTokens call returned the given tokens.
   void ExpectGetAuthnTokensResult(
       std::vector<BlindSignedAuthToken> bsa_tokens) {
-    EXPECT_EQ(std::get<0>(tokens_future_.Get()), bsa_tokens);
+    auto& result = tokens_future_.Get();
+    CHECK(result.has_value());
+    EXPECT_EQ(result.value(), bsa_tokens);
   }
 
-  // Expect that the GetAuthnTokens call returned nullopt, with
+  // Expect that the GetAuthnTokens call returned an error, with
   // `try_again_after` within the expected range.
   void ExpectGetAuthnTokensResultFailed(base::TimeDelta try_again_delta) {
-    auto& [bsa_tokens, try_again_after] = tokens_future_.Get();
-    EXPECT_EQ(bsa_tokens, std::nullopt);
-    if (!bsa_tokens) {
-      EXPECT_THAT(*try_again_after - base::Time::Now(),
-                  IsNearWithJitter(try_again_delta));
-    }
+    auto& result = tokens_future_.Get();
+    CHECK(!result.has_value());
+    EXPECT_THAT(result.error() - base::Time::Now(),
+                IsNearWithJitter(try_again_delta));
     // Clear future so it can be reused and accept new tokens.
     tokens_future_.Clear();
   }
@@ -169,8 +166,8 @@ class TokenFetcherImplTest : public testing::Test {
 
   base::Time expiration_time_;
 
-  // Delegate for the fetcher under test.
-  MockTokenFetcherImplDelegate delegate_;
+  // Mock providers for the fetcher under test.
+  MockOAuthTokenProvider oauth_token_provider_;
 
   // Fetcher under test.
   std::unique_ptr<TokenFetcherImpl> fetcher_;
@@ -194,7 +191,9 @@ TEST_F(TokenFetcherImplTest, Success) {
   EXPECT_TRUE(bsa_->GetTokensCalledInDifferentThread());
   EXPECT_EQ(bsa_->oauth_token(), "access_token");
   EXPECT_EQ(bsa_->num_tokens(), 2);
-  EXPECT_EQ(bsa_->proxy_layer(), quiche::ProxyLayer::kProxyA);
+  EXPECT_EQ(bsa_->proxy_layer(), quiche::ProxyLayer::kTerminalLayer);
+  EXPECT_EQ(bsa_->service_type(),
+            quiche::BlindSignAuthServiceType::kChromePrivateAratea);
   std::vector<BlindSignedAuthToken> expected;
   expected.push_back(
       CreateMockBlindSignedAuthTokenForTesting("single-use-1", expiration_time_)
@@ -222,7 +221,7 @@ TEST_F(TokenFetcherImplTest, NoTokens) {
 
   EXPECT_TRUE(bsa_->GetTokensCalledInDifferentThread());
   EXPECT_EQ(bsa_->num_tokens(), 1);
-  EXPECT_EQ(bsa_->proxy_layer(), quiche::ProxyLayer::kProxyA);
+  EXPECT_EQ(bsa_->proxy_layer(), quiche::ProxyLayer::kTerminalLayer);
   EXPECT_EQ(bsa_->oauth_token(), "access_token");
   ExpectGetAuthnTokensResultFailed(default_transient_backoff_);
 }
@@ -237,7 +236,7 @@ TEST_F(TokenFetcherImplTest, MalformedTokens) {
 
   EXPECT_TRUE(bsa_->GetTokensCalledInDifferentThread());
   EXPECT_EQ(bsa_->num_tokens(), 1);
-  EXPECT_EQ(bsa_->proxy_layer(), quiche::ProxyLayer::kProxyA);
+  EXPECT_EQ(bsa_->proxy_layer(), quiche::ProxyLayer::kTerminalLayer);
   EXPECT_EQ(bsa_->oauth_token(), "access_token");
   ExpectGetAuthnTokensResultFailed(default_transient_backoff_);
 }
@@ -258,7 +257,7 @@ TEST_F(TokenFetcherImplTest, MalformedTokenExtensions) {
 
   EXPECT_TRUE(bsa_->GetTokensCalledInDifferentThread());
   EXPECT_EQ(bsa_->num_tokens(), 1);
-  EXPECT_EQ(bsa_->proxy_layer(), quiche::ProxyLayer::kProxyA);
+  EXPECT_EQ(bsa_->proxy_layer(), quiche::ProxyLayer::kTerminalLayer);
   EXPECT_EQ(bsa_->oauth_token(), "access_token");
   ExpectGetAuthnTokensResultFailed(default_transient_backoff_);
 }
@@ -278,7 +277,7 @@ TEST_F(TokenFetcherImplTest, MalformedTokenEmptyTokenValue) {
 
   EXPECT_TRUE(bsa_->GetTokensCalledInDifferentThread());
   EXPECT_EQ(bsa_->num_tokens(), 1);
-  EXPECT_EQ(bsa_->proxy_layer(), quiche::ProxyLayer::kProxyA);
+  EXPECT_EQ(bsa_->proxy_layer(), quiche::ProxyLayer::kTerminalLayer);
   EXPECT_EQ(bsa_->oauth_token(), "access_token");
   ExpectGetAuthnTokensResultFailed(default_transient_backoff_);
 }
@@ -298,7 +297,7 @@ TEST_F(TokenFetcherImplTest, MalformedTokenEmptyExtensionsValue) {
 
   EXPECT_TRUE(bsa_->GetTokensCalledInDifferentThread());
   EXPECT_EQ(bsa_->num_tokens(), 1);
-  EXPECT_EQ(bsa_->proxy_layer(), quiche::ProxyLayer::kProxyA);
+  EXPECT_EQ(bsa_->proxy_layer(), quiche::ProxyLayer::kTerminalLayer);
   EXPECT_EQ(bsa_->oauth_token(), "access_token");
   ExpectGetAuthnTokensResultFailed(default_transient_backoff_);
 }
@@ -311,7 +310,7 @@ TEST_F(TokenFetcherImplTest, BlindSignedTokenError400) {
 
   EXPECT_TRUE(bsa_->GetTokensCalledInDifferentThread());
   EXPECT_EQ(bsa_->num_tokens(), 1);
-  EXPECT_EQ(bsa_->proxy_layer(), quiche::ProxyLayer::kProxyA);
+  EXPECT_EQ(bsa_->proxy_layer(), quiche::ProxyLayer::kTerminalLayer);
   EXPECT_EQ(bsa_->oauth_token(), "access_token");
   ExpectGetAuthnTokensResultFailed(default_bug_backoff_);
 }
@@ -324,7 +323,7 @@ TEST_F(TokenFetcherImplTest, BlindSignedTokenError401) {
 
   EXPECT_TRUE(bsa_->GetTokensCalledInDifferentThread());
   EXPECT_EQ(bsa_->num_tokens(), 1);
-  EXPECT_EQ(bsa_->proxy_layer(), quiche::ProxyLayer::kProxyA);
+  EXPECT_EQ(bsa_->proxy_layer(), quiche::ProxyLayer::kTerminalLayer);
   EXPECT_EQ(bsa_->oauth_token(), "access_token");
   ExpectGetAuthnTokensResultFailed(default_bug_backoff_);
 }
@@ -337,7 +336,7 @@ TEST_F(TokenFetcherImplTest, BlindSignedTokenError403) {
 
   EXPECT_TRUE(bsa_->GetTokensCalledInDifferentThread());
   EXPECT_EQ(bsa_->num_tokens(), 1);
-  EXPECT_EQ(bsa_->proxy_layer(), quiche::ProxyLayer::kProxyA);
+  EXPECT_EQ(bsa_->proxy_layer(), quiche::ProxyLayer::kTerminalLayer);
   EXPECT_EQ(bsa_->oauth_token(), "access_token");
   ExpectGetAuthnTokensResultFailed(default_not_eligible_backoff_);
 }
@@ -350,15 +349,16 @@ TEST_F(TokenFetcherImplTest, BlindSignedTokenErrorOther) {
 
   EXPECT_TRUE(bsa_->GetTokensCalledInDifferentThread());
   EXPECT_EQ(bsa_->num_tokens(), 1);
-  EXPECT_EQ(bsa_->proxy_layer(), quiche::ProxyLayer::kProxyA);
+  EXPECT_EQ(bsa_->proxy_layer(), quiche::ProxyLayer::kTerminalLayer);
   EXPECT_EQ(bsa_->oauth_token(), "access_token");
   ExpectGetAuthnTokensResultFailed(default_transient_backoff_);
 }
 
 // Fetching OAuth token returns a transient error.
 TEST_F(TokenFetcherImplTest, AuthTokenTransientError) {
-  delegate_.response_access_token = std::nullopt;
-  delegate_.response_result = GetAuthnTokensResult::kFailedOAuthTokenTransient;
+  oauth_token_provider_.response_access_token = std::nullopt;
+  oauth_token_provider_.response_result =
+      GetAuthnTokensResult::kFailedOAuthTokenTransient;
   GetAuthnTokens(1);
 
   EXPECT_FALSE(bsa_->get_tokens_called());
@@ -367,8 +367,9 @@ TEST_F(TokenFetcherImplTest, AuthTokenTransientError) {
 
 // Fetching OAuth token returns a persistent error.
 TEST_F(TokenFetcherImplTest, AuthTokenPersistentError) {
-  delegate_.response_access_token = std::nullopt;
-  delegate_.response_result = GetAuthnTokensResult::kFailedOAuthTokenPersistent;
+  oauth_token_provider_.response_access_token = std::nullopt;
+  oauth_token_provider_.response_result =
+      GetAuthnTokensResult::kFailedOAuthTokenPersistent;
 
   GetAuthnTokens(1);
 
@@ -378,8 +379,9 @@ TEST_F(TokenFetcherImplTest, AuthTokenPersistentError) {
 
 // No primary account.
 TEST_F(TokenFetcherImplTest, NoAccount) {
-  delegate_.response_access_token = std::nullopt;
-  delegate_.response_result = GetAuthnTokensResult::kFailedNoAccount;
+  oauth_token_provider_.response_access_token = std::nullopt;
+  oauth_token_provider_.response_result =
+      GetAuthnTokensResult::kFailedNoAccount;
 
   GetAuthnTokens(1);
 
@@ -489,6 +491,53 @@ TEST_F(TokenFetcherImplTest, CalculateBackoffNoJitter) {
   check_fn(kFailedBSA400, base::TimeDelta::Max(), false);
   fetcher_->AccountStatusChanged(true);
   check_fn(kFailedBSA400, default_bug_backoff_, true);
+}
+
+class ProdBlindSignAuthTokenFetcherImplTest : public testing::Test {
+ public:
+  ProdBlindSignAuthTokenFetcherImplTest() = default;
+  ~ProdBlindSignAuthTokenFetcherImplTest() override = default;
+
+ protected:
+  base::test::TaskEnvironment task_environment_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
+
+  network::TestURLLoaderFactory test_url_loader_factory_;
+  MockOAuthTokenProvider oauth_token_provider_;
+};
+
+// Tests that TokenFetcherImpl fails gracefully when the blind sign auth token
+// fetch fails. This is an integration test of TokenFetcherImpl,
+// BlindSignAuthFactoryImpl, and ConfigHttp.
+TEST_F(ProdBlindSignAuthTokenFetcherImplTest, FetchFails) {
+  BlindSignAuthFactoryImpl bsa_factory;
+
+  auto bsa = bsa_factory.CreateBlindSignAuth(
+      test_url_loader_factory_.GetSafeWeakWrapper()->Clone());
+
+  TokenFetcherImpl fetcher(&oauth_token_provider_, std::move(bsa));
+
+  // Set up BSA to fail.
+  GURL::Replacements replacements;
+  const std::string path = ConfigHttp::GetInitialDataPath();
+  replacements.SetPathStr(path);
+  GURL expected_url =
+      ConfigHttp::GetServerUrl().ReplaceComponents(replacements);
+  test_url_loader_factory_.AddResponse(
+      expected_url, network::mojom::URLResponseHead::New(), "",
+      network::URLLoaderCompletionStatus(net::ERR_FAILED));
+
+  base::test::TestFuture<
+      base::expected<std::vector<BlindSignedAuthToken>, base::Time>>
+      tokens_future;
+  fetcher.GetAuthnTokens(1, tokens_future.GetCallback());
+
+  ASSERT_TRUE(tokens_future.Wait());
+  auto& result = tokens_future.Get();
+  ASSERT_FALSE(result.has_value());
+  EXPECT_THAT(
+      result.error() - base::Time::Now(),
+      IsNearWithJitter(legion::kLegionTryGetAuthTokensTransientBackoff.Get()));
 }
 
 }  // namespace legion::phosphor

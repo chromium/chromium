@@ -248,6 +248,10 @@ void AddStrings(content::WebUIDataSource* html_source, bool is_glic_version) {
 
   html_source->AddString("managedDeviceDisclaimer",
                          GetManagedDeviceDisclaimer());
+
+  html_source->AddBoolean("usePrimaryAndTonalButtonsForPromos",
+                          base::FeatureList::IsEnabled(
+                              switches::kUsePrimaryAndTonalButtonsForPromos));
 }
 
 void AddFlags(content::WebUIDataSource* html_source, bool is_glic_version) {
@@ -416,10 +420,9 @@ ProfilePickerHandler* ProfilePickerUI::GetProfilePickerHandlerForTesting() {
   return profile_picker_handler_;
 }
 
-void ProfilePickerUI::ShowForceSigninErrorDialog(
-    const ForceSigninUIError& error) {
-  profile_picker_handler_->DisplayForceSigninErrorDialog(base::FilePath(),
-                                                         error);
+void ProfilePickerUI::ShowSigninErrorDialog(
+    const std::variant<ForceSigninUIError, SigninUIError>& error) {
+  profile_picker_handler_->DisplaySigninErrorDialog(base::FilePath(), error);
 }
 
 WEB_UI_CONTROLLER_TYPE_IMPL(ProfilePickerUI)

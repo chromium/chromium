@@ -15,11 +15,15 @@ import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationCoor
 import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationCoordinator.BottomSheetType.SINGLE_THEME_COLLECTION;
 import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationCoordinator.BottomSheetType.THEME;
 import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationCoordinator.BottomSheetType.THEME_COLLECTIONS;
+import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils.NtpBackgroundImageType.CHROME_COLOR;
+import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils.NtpBackgroundImageType.IMAGE_FROM_DISK;
+import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils.NtpBackgroundImageType.THEME_COLLECTION;
 import static org.chromium.chrome.browser.preferences.ChromePreferenceKeys.APP_LAUNCH_SEARCH_ENGINE_HAD_LOGO;
 import static org.chromium.chrome.browser.preferences.ChromePreferenceKeys.NTP_BACKGROUND_IMAGE_LANDSCAPE_INFO;
 import static org.chromium.chrome.browser.preferences.ChromePreferenceKeys.NTP_BACKGROUND_IMAGE_LANDSCAPE_INFO_FOR_DAILY_REFRESH;
 import static org.chromium.chrome.browser.preferences.ChromePreferenceKeys.NTP_BACKGROUND_IMAGE_PORTRAIT_INFO;
 import static org.chromium.chrome.browser.preferences.ChromePreferenceKeys.NTP_BACKGROUND_IMAGE_PORTRAIT_INFO_FOR_DAILY_REFRESH;
+import static org.chromium.chrome.browser.preferences.ChromePreferenceKeys.NTP_CUSTOMIZATION_BACKGROUND_IMAGE_TYPE;
 import static org.chromium.chrome.browser.preferences.ChromePreferenceKeys.NTP_CUSTOMIZATION_BACKGROUND_INFO;
 import static org.chromium.chrome.browser.preferences.ChromePreferenceKeys.NTP_CUSTOMIZATION_BACKGROUND_INFO_FOR_DAILY_REFRESH;
 import static org.chromium.chrome.browser.preferences.ChromePreferenceKeys.NTP_CUSTOMIZATION_CHROME_COLOR_DAILY_REFRESH_ENABLED;
@@ -28,11 +32,13 @@ import static org.chromium.chrome.browser.preferences.ChromePreferenceKeys.NTP_C
 import static org.chromium.chrome.browser.preferences.ChromePreferenceKeys.NTP_CUSTOMIZATION_PRIMARY_COLOR;
 import static org.chromium.chrome.browser.preferences.ChromePreferenceKeys.NTP_CUSTOMIZATION_PRIMARY_COLOR_FOR_DAILY_REFRESH;
 import static org.chromium.chrome.browser.preferences.ChromePreferenceKeys.NTP_CUSTOMIZATION_THEME_COLOR_ID;
+import static org.chromium.components.browser_ui.styles.SemanticColorUtils.getDefaultIconColor;
 
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.ColorStateList;
+import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
@@ -44,6 +50,10 @@ import android.os.Build;
 import android.provider.Browser;
 import android.text.TextUtils;
 import android.util.DisplayMetrics;
+import android.view.Gravity;
+import android.view.View;
+import android.widget.FrameLayout;
+import android.widget.ImageButton;
 
 import androidx.annotation.ColorInt;
 import androidx.annotation.IntDef;
@@ -51,6 +61,9 @@ import androidx.annotation.StyleRes;
 import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.content.res.AppCompatResources;
 import androidx.browser.customtabs.CustomTabsIntent;
+import androidx.core.content.ContextCompat;
+import androidx.core.view.ViewCompat;
+import androidx.core.widget.ImageViewCompat;
 
 import com.google.android.material.color.DynamicColors;
 import com.google.android.material.color.DynamicColorsOptions;
@@ -67,6 +80,7 @@ import org.chromium.base.task.BackgroundOnlyAsyncTask;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.ntp_customization.policy.NtpCustomizationPolicyManager;
 import org.chromium.chrome.browser.ntp_customization.theme.chrome_colors.NtpThemeColorFromHexInfo;
 import org.chromium.chrome.browser.ntp_customization.theme.chrome_colors.NtpThemeColorInfo;
 import org.chromium.chrome.browser.ntp_customization.theme.chrome_colors.NtpThemeColorInfo.NtpThemeColorId;
@@ -83,6 +97,8 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.theme.ThemeUtils;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.components.browser_ui.util.GlobalDiscardableReferencePool;
+import org.chromium.components.browser_ui.widget.displaystyle.HorizontalDisplayStyle;
+import org.chromium.components.browser_ui.widget.displaystyle.UiConfig;
 import org.chromium.components.image_fetcher.ImageFetcher;
 import org.chromium.components.image_fetcher.ImageFetcherConfig;
 import org.chromium.components.image_fetcher.ImageFetcherFactory;
@@ -254,6 +270,12 @@ public class NtpCustomizationUtils {
         }
     }
 
+    /** Returns whether custom Ntp's background theme is enabled. */
+    public static boolean isNtpThemeCustomizationEnabled() {
+        return ChromeFeatureList.sNewTabPageCustomizationV2.isEnabled()
+                && NtpCustomizationPolicyManager.getInstance().isNtpCustomBackgroundEnabled();
+    }
+
     /**
      * Returns the customized primary color if set, null otherwise.
      *
@@ -262,28 +284,33 @@ public class NtpCustomizationUtils {
      */
     public @Nullable static @ColorInt Integer getPrimaryColorFromCustomizedThemeColor(
             Context context, boolean checkDailyRefresh) {
-        if (!ChromeFeatureList.sNewTabPageCustomizationV2.isEnabled()) return null;
-
-        @NtpBackgroundImageType int imageType = getNtpBackgroundImageTypeFromSharedPreference();
+        @NtpBackgroundImageType int imageType = getNtpBackgroundImageType();
         if (imageType == NtpBackgroundImageType.DEFAULT) {
             return null;
         }
 
+        NtpThemeDailyRefreshManager ntpThemeDailyRefreshManager =
+                NtpThemeDailyRefreshManager.getInstance();
+        @ColorInt int color;
         if (imageType == NtpBackgroundImageType.CHROME_COLOR) {
-            NtpThemeDailyRefreshManager ntpThemeDailyRefreshManager =
-                    NtpThemeDailyRefreshManager.getInstance();
             @NtpThemeColorId
             int colorId = ntpThemeDailyRefreshManager.getNtpThemeColorIdForChromeColorTheme();
             if (colorId <= NtpThemeColorId.DEFAULT || colorId >= NtpThemeColorId.NUM_ENTRIES) {
                 return null;
             }
             if (checkDailyRefresh) {
-                colorId = ntpThemeDailyRefreshManager.mayApplyDailyRefreshForChromeColor(colorId);
+                colorId = ntpThemeDailyRefreshManager.maybeApplyDailyRefreshForChromeColor(colorId);
             }
             return context.getColor(NtpThemeColorUtils.getNtpThemePrimaryColorResId(colorId));
+        } else if (imageType == NtpBackgroundImageType.THEME_COLLECTION) {
+            if (checkDailyRefresh) {
+                ntpThemeDailyRefreshManager.maybeApplyDailyRefreshForThemeCollection();
+            }
+            color = ntpThemeDailyRefreshManager.getNtpThemeColorForThemeCollection();
+        } else {
+            color = getCustomizedPrimaryColorFromSharedPreference();
         }
 
-        @ColorInt int color = getCustomizedPrimaryColorFromSharedPreference();
         return (color != NtpThemeColorInfo.COLOR_NOT_SET) ? color : null;
     }
 
@@ -302,7 +329,7 @@ public class NtpCustomizationUtils {
 
     /** Loads the NtpThemeColorInfo from the SharedPreference, null otherwise. */
     public @Nullable static NtpThemeColorInfo loadColorInfoFromSharedPreference(Context context) {
-        if (!ChromeFeatureList.sNewTabPageCustomizationV2.isEnabled()) return null;
+        if (!NtpCustomizationUtils.isNtpThemeCustomizationEnabled()) return null;
 
         @NtpBackgroundImageType int imageType = getNtpBackgroundImageTypeFromSharedPreference();
         if (imageType != NtpBackgroundImageType.CHROME_COLOR
@@ -373,12 +400,18 @@ public class NtpCustomizationUtils {
                 NtpBackgroundImageType.DEFAULT);
     }
 
+    /** Removes the NTP's background image type from the SharedPreference. */
+    public static void removeNtpBackgroundImageTypeFromSharedPreference() {
+        SharedPreferencesManager prefsManager = ChromeSharedPreferences.getInstance();
+        prefsManager.removeKey(ChromePreferenceKeys.NTP_CUSTOMIZATION_BACKGROUND_IMAGE_TYPE);
+    }
+
     /**
      * Gets the current NTP's background image type from the SharedPreference. Returns
      * NtpBackgroundImageType.DEFAULT if the feature flag is disabled.
      */
     public static @NtpBackgroundImageType int getNtpBackgroundImageType() {
-        if (!ChromeFeatureList.sNewTabPageCustomizationV2.isEnabled()) {
+        if (!isNtpThemeCustomizationEnabled()) {
             return NtpBackgroundImageType.DEFAULT;
         }
 
@@ -430,7 +463,7 @@ public class NtpCustomizationUtils {
      * @param file The file to save the image to.
      */
     @VisibleForTesting
-    static void saveBitmapImageToFile(@Nullable Bitmap backgroundImageBitmap, File file) {
+    public static void saveBitmapImageToFile(@Nullable Bitmap backgroundImageBitmap, File file) {
         if (backgroundImageBitmap == null) {
             deleteBackgroundImageFile(file);
             return;
@@ -452,7 +485,7 @@ public class NtpCustomizationUtils {
      *     landscape matrices.
      */
     @VisibleForTesting
-    static void updateBackgroundImageInfo(BackgroundImageInfo backgroundImageInfo) {
+    public static void updateBackgroundImageInfo(BackgroundImageInfo backgroundImageInfo) {
         SharedPreferencesManager prefs = ChromeSharedPreferences.getInstance();
 
         prefs.writeString(
@@ -468,7 +501,8 @@ public class NtpCustomizationUtils {
      *     landscape matrices.
      */
     @VisibleForTesting
-    static void updateDailyRefreshBackgroundImageInfo(BackgroundImageInfo backgroundImageInfo) {
+    public static void updateDailyRefreshBackgroundImageInfo(
+            BackgroundImageInfo backgroundImageInfo) {
         SharedPreferencesManager prefs = ChromeSharedPreferences.getInstance();
 
         prefs.writeString(
@@ -481,7 +515,7 @@ public class NtpCustomizationUtils {
 
     /** Returns whether a white background should be applied on fake search box. */
     public static boolean shouldApplyWhiteBackgroundOnSearchBox() {
-        if (!ChromeFeatureList.sNewTabPageCustomizationV2.isEnabled()) return false;
+        if (!NtpCustomizationUtils.isNtpThemeCustomizationEnabled()) return false;
 
         return shouldApplyWhiteBackgroundOnSearchBox(
                 NtpCustomizationConfigManager.getInstance().getBackgroundImageType());
@@ -494,6 +528,15 @@ public class NtpCustomizationUtils {
     public static boolean shouldApplyWhiteBackgroundOnSearchBox(@NtpBackgroundImageType int type) {
         return type == NtpBackgroundImageType.IMAGE_FROM_DISK
                 || type == NtpBackgroundImageType.THEME_COLLECTION;
+    }
+
+    /**
+     * Returns whether the edit icon should use a grey background on LFF devices. This is true if
+     * the current background image type is theme collection or uploaded image.
+     */
+    @VisibleForTesting
+    static boolean shouldUseEditIconWithGreyBackground() {
+        return shouldApplyWhiteBackgroundOnSearchBox();
     }
 
     /**
@@ -871,9 +914,42 @@ public class NtpCustomizationUtils {
     static void resetCustomizedColors() {
         SharedPreferencesManager prefsManager = ChromeSharedPreferences.getInstance();
         prefsManager.removeKey(ChromePreferenceKeys.NTP_CUSTOMIZATION_BACKGROUND_COLOR);
-        prefsManager.removeKey(ChromePreferenceKeys.NTP_CUSTOMIZATION_PRIMARY_COLOR);
         prefsManager.removeKey(ChromePreferenceKeys.NTP_CUSTOMIZATION_THEME_COLOR_ID);
-        prefsManager.removeKey(ChromePreferenceKeys.NTP_CUSTOMIZATION_BACKGROUND_IMAGE_TYPE);
+        prefsManager.removeKey(
+                ChromePreferenceKeys.NTP_CUSTOMIZATION_CHROME_COLOR_DAILY_REFRESH_ENABLED);
+    }
+
+    /** Removes the NTP's background image related keys from the SharedPreference */
+    static void resetCustomizedImage() {
+        SharedPreferencesManager prefsManager = ChromeSharedPreferences.getInstance();
+        prefsManager.removeKey(NTP_CUSTOMIZATION_PRIMARY_COLOR);
+        prefsManager.removeKey(NTP_CUSTOMIZATION_PRIMARY_COLOR_FOR_DAILY_REFRESH);
+        prefsManager.removeKey(NTP_CUSTOMIZATION_BACKGROUND_INFO);
+        prefsManager.removeKey(NTP_CUSTOMIZATION_BACKGROUND_INFO_FOR_DAILY_REFRESH);
+        prefsManager.removeKey(NTP_CUSTOMIZATION_LAST_DAILY_REFRESH_TIMESTAMP);
+        prefsManager.removeKey(NTP_BACKGROUND_IMAGE_PORTRAIT_INFO);
+        prefsManager.removeKey(NTP_BACKGROUND_IMAGE_PORTRAIT_INFO_FOR_DAILY_REFRESH);
+        prefsManager.removeKey(NTP_BACKGROUND_IMAGE_LANDSCAPE_INFO);
+        prefsManager.removeKey(NTP_BACKGROUND_IMAGE_LANDSCAPE_INFO_FOR_DAILY_REFRESH);
+        deleteBackgroundImageFile(createBackgroundImageFile());
+        deleteBackgroundImageFile(createDailyRefreshBackgroundImageFile());
+    }
+
+    /** Removes all NTP custom background related data. */
+    public static void resetNtpCustomBackgroundData() {
+        SharedPreferencesManager prefsManager = ChromeSharedPreferences.getInstance();
+        if (!prefsManager.contains(NTP_CUSTOMIZATION_BACKGROUND_IMAGE_TYPE)) {
+            // If the no data has been cached or has been cleaned up before, exits here.
+            return;
+        }
+
+        @NtpBackgroundImageType
+        int type = prefsManager.readInt(NTP_CUSTOMIZATION_BACKGROUND_IMAGE_TYPE);
+        removeNtpBackgroundImageTypeFromSharedPreference();
+        switch (type) {
+            case CHROME_COLOR -> resetCustomizedColors();
+            case IMAGE_FROM_DISK, THEME_COLLECTION -> resetCustomizedImage();
+        }
     }
 
     /** Returns whether all flags are enabled to allow edge-to-edge for customized theme. */
@@ -890,7 +966,7 @@ public class NtpCustomizationUtils {
     public static boolean canEnableEdgeToEdgeForCustomizedTheme(boolean isTablet) {
         return !isTablet
                 && Build.VERSION.SDK_INT >= Build.VERSION_CODES.R
-                && ChromeFeatureList.sNewTabPageCustomizationV2.isEnabled();
+                && NtpCustomizationUtils.isNtpThemeCustomizationEnabled();
     }
 
     /**
@@ -1065,7 +1141,7 @@ public class NtpCustomizationUtils {
      *     collection info.
      */
     @VisibleForTesting
-    static void setCustomBackgroundInfoToSharedPreference(
+    public static void setCustomBackgroundInfoToSharedPreference(
             CustomBackgroundInfo customBackgroundInfo) {
         SharedPreferencesManager prefsManager = ChromeSharedPreferences.getInstance();
         prefsManager.writeString(
@@ -1079,7 +1155,7 @@ public class NtpCustomizationUtils {
      * @param customBackgroundInfo The new {@link CustomBackgroundInfo} for daily refresh.
      */
     @VisibleForTesting
-    static void setDailyRefreshCustomBackgroundInfoToSharedPreference(
+    public static void setDailyRefreshCustomBackgroundInfoToSharedPreference(
             CustomBackgroundInfo customBackgroundInfo) {
         SharedPreferencesManager prefsManager = ChromeSharedPreferences.getInstance();
         prefsManager.writeString(
@@ -1273,7 +1349,7 @@ public class NtpCustomizationUtils {
      * image settings with the daily refresh settings. This includes updating SharedPreferences and
      * renaming the background image file.
      */
-    static void applyDailyRefreshThemeCollectionImage() {
+    public static void commitThemeCollectionDailyRefresh() {
         // 1. Overwrite current theme collection image info with daily refresh image info in
         // SharedPreferences.
         BackgroundImageInfo dailyRefreshNtpBackgroundImageInfo =
@@ -1335,6 +1411,147 @@ public class NtpCustomizationUtils {
                 ? TemplateUrlServiceFactory.getForProfile(profile).doesDefaultSearchEngineHaveLogo()
                 : ChromeSharedPreferences.getInstance()
                         .readBoolean(APP_LAUNCH_SEARCH_ENGINE_HAD_LOGO, true);
+    }
+
+    /**
+     * Determines if the app is running in a narrow layout (e.g., split-screen) on a tablet.
+     *
+     * <p>A tablet is considered to be in a narrow window if its horizontal display style is less
+     * than {@link HorizontalDisplayStyle#WIDE}.
+     *
+     * @param isTablet Whether the device is a tablet.
+     * @param uiConfig The {@link UiConfig} providing the current display style.
+     * @return True if the device is a tablet but the current window width is restricted.
+     */
+    public static boolean isInNarrowWindowOnTablet(boolean isTablet, UiConfig uiConfig) {
+        return isTablet
+                && uiConfig.getCurrentDisplayStyle().horizontal < HorizontalDisplayStyle.WIDE;
+    }
+
+    /**
+     * Calculates the total horizontal margin (sum of start and end margins) for the search box.
+     *
+     * <p>The margin scales based on the device type and available window width:
+     *
+     * <ul>
+     *   <li>Tablets in narrow/split-screen: Uses narrow-window specific margins.
+     *   <li>Tablets in full/wide view: Uses wide-window specific margins.
+     *   <li>Phones: Uses the standard Most Visited Tiles (MVT) container margin.
+     * </ul>
+     *
+     * @param resource The {@link Resources} to retrieve dimension pixel sizes.
+     * @param uiConfig The {@link UiConfig} to check the current display style.
+     * @param isTablet Whether the device is a tablet.
+     * @return The combined left and right margins in pixels.
+     */
+    public static int getSearchBoxTwoSideMargin(
+            Resources resource, UiConfig uiConfig, boolean isTablet) {
+        if (isInNarrowWindowOnTablet(isTablet, uiConfig)) {
+            return resource.getDimensionPixelSize(
+                            R.dimen.ntp_search_box_lateral_margin_narrow_window_tablet)
+                    * 2;
+        } else if (isTablet) {
+            return resource.getDimensionPixelSize(R.dimen.ntp_search_box_lateral_margin_tablet) * 2;
+        } else {
+            return resource.getDimensionPixelSize(R.dimen.mvt_container_lateral_margin) * 2;
+        }
+    }
+
+    /**
+     * Returns the adjusted height of the search box on NTP.
+     *
+     * @param resources The resources to get dimens.
+     * @param showSearchBoxTall Whether to show a tall search box.
+     * @param hasShadowApplied Whether a shadow is shown on the search box. Drawing shadow requires
+     *     extra paddings on top and bottom of the search box.
+     */
+    public static int getSearchBoxHeightWithShadows(
+            Resources resources, boolean showSearchBoxTall, boolean hasShadowApplied) {
+        int searchBoxHeight =
+                showSearchBoxTall
+                        ? resources.getDimensionPixelSize(R.dimen.ntp_search_box_height_tall)
+                        : resources.getDimensionPixelSize(R.dimen.ntp_search_box_height);
+        if (!hasShadowApplied) return searchBoxHeight;
+
+        int extraPadding = getLogoVerticalPaddingForShadowPx(resources) * 2;
+        return searchBoxHeight + extraPadding;
+    }
+
+    /**
+     * Calculates the adjusted bottom margin for the Logo view in pixels.
+     *
+     * <p>If a shadow is applied to the search box, this method subtracts the shadow's padding from
+     * the margin. This ensures the perceived visual gap between the logo and the search box remains
+     * consistent, regardless of whether the shadow is present.
+     *
+     * @param resources Android resources.
+     * @param applyShadow Whether to account for the search box's shadow padding.
+     * @return The final adjusted bottom margin in pixels.
+     */
+    public static int getLogoViewBottomMarginPx(Resources resources, boolean applyShadow) {
+        int bottomMargin = resources.getDimensionPixelSize(R.dimen.ntp_logo_margin_bottom);
+        if (applyShadow) {
+            bottomMargin -= getLogoVerticalPaddingForShadowPx(resources);
+        }
+        return bottomMargin;
+    }
+
+    /**
+     * Returns the internal padding required to accommodate the search box shadow.
+     *
+     * <p>This padding provides the necessary space for the shadow to be rendered without being
+     * clipped by the view's boundaries.
+     *
+     * @param resources Android resources.
+     * @return The shadow padding in pixels.
+     */
+    private static int getLogoVerticalPaddingForShadowPx(Resources resources) {
+        return resources.getDimensionPixelSize(
+                R.dimen.composeplate_view_button_padding_for_shadow_bottom);
+    }
+
+    /**
+     * Creates and configures an NTP customization button.
+     *
+     * @param context The current Context.
+     * @param onClickListener The listener to be attached to the button.
+     * @return The created and configured ImageButton.
+     */
+    public static ImageButton createNtpCustomizationButton(
+            Context context, View.OnClickListener onClickListener) {
+        ImageButton ntpCustomizationButton = new ImageButton(context);
+        Resources resources = context.getResources();
+        ntpCustomizationButton.setImageResource(R.drawable.ic_edit_24dp);
+        ntpCustomizationButton.setBackgroundResource(R.drawable.edit_icon_circle_background);
+
+        if (shouldUseEditIconWithGreyBackground()) {
+            ImageViewCompat.setImageTintList(
+                    ntpCustomizationButton, ColorStateList.valueOf(Color.WHITE));
+            ViewCompat.setBackgroundTintList(
+                    ntpCustomizationButton,
+                    ColorStateList.valueOf(
+                            ContextCompat.getColor(
+                                    context,
+                                    R.color.ntp_customization_edit_icon_color_in_grey_background)));
+        } else {
+            ImageViewCompat.setImageTintList(
+                    ntpCustomizationButton, ColorStateList.valueOf(getDefaultIconColor(context)));
+        }
+
+        int size =
+                resources.getDimensionPixelSize(
+                        R.dimen.ntp_customization_edit_icon_background_size);
+        FrameLayout.LayoutParams layoutParams = new FrameLayout.LayoutParams(size, size);
+        layoutParams.gravity = Gravity.BOTTOM | Gravity.END;
+        int margin = resources.getDimensionPixelSize(R.dimen.ntp_customization_button_margin);
+        layoutParams.setMargins(0, 0, margin, margin);
+        ntpCustomizationButton.setLayoutParams(layoutParams);
+
+        ntpCustomizationButton.setOnClickListener(onClickListener);
+        ntpCustomizationButton.setContentDescription(
+                context.getString(R.string.ntp_customization_title));
+
+        return ntpCustomizationButton;
     }
 
     public static void resetSharedPreferenceForTesting() {

@@ -40,13 +40,13 @@ void CryptAuthKeyRegistryImpl::RegisterPrefs(PrefRegistrySimple* registry) {
 
 CryptAuthKeyRegistryImpl::CryptAuthKeyRegistryImpl(PrefService* pref_service)
     : pref_service_(pref_service) {
-  const base::Value::Dict& dict =
+  const base::DictValue& dict =
       pref_service_->GetDict(prefs::kCryptAuthKeyRegistry);
 
   for (const CryptAuthKeyBundle::Name& name : CryptAuthKeyBundle::AllNames()) {
     std::string name_string =
         CryptAuthKeyBundle::KeyBundleNameEnumToString(name);
-    const base::Value::Dict* bundle_dict = dict.FindDict(name_string);
+    const base::DictValue* bundle_dict = dict.FindDict(name_string);
     if (!bundle_dict)
       continue;
 
@@ -68,8 +68,8 @@ void CryptAuthKeyRegistryImpl::OnKeyRegistryUpdated() {
   pref_service_->SetDict(prefs::kCryptAuthKeyRegistry, AsDictionary());
 }
 
-base::Value::Dict CryptAuthKeyRegistryImpl::AsDictionary() const {
-  base::Value::Dict dict;
+base::DictValue CryptAuthKeyRegistryImpl::AsDictionary() const {
+  base::DictValue dict;
   for (const auto& name_bundle_pair : key_bundles_) {
     dict.Set(
         CryptAuthKeyBundle::KeyBundleNameEnumToString(name_bundle_pair.first),

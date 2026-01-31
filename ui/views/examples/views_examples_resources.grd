@@ -14,6 +14,10 @@
         Abort Animation
       </message>
 
+      <message translateable="false" name="IDS_START_ANIMATION_BUTTON">
+        Start Animation
+      </message>
+
       <!-- actions example -->
       <message translateable="false" name="IDS_ASSIGN_ACTION_TO_CONTROL">
         Assign
@@ -288,6 +292,9 @@
       </message>
       <message translateable="false" name="IDS_MENU_BUTTON_LABEL">
         Open a menu
+      </message>
+      <message translateable="false" name="IDS_DRAGGABLE_MENU_BUTTON_LABEL">
+        Draggables
       </message>
 
       <!-- message box example -->

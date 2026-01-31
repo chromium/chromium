@@ -139,10 +139,10 @@ column-gap: normal
 column-height: auto
 column-rule-break: auto
 column-rule-color: rgb(0, 0, 0)
-column-rule-edge-end-inset: 0px
-column-rule-edge-start-inset: 0px
-column-rule-interior-end-inset: -50%
-column-rule-interior-start-inset: -50%
+column-rule-edge-inset-end: 0px
+column-rule-edge-inset-start: 0px
+column-rule-interior-inset-end: -50%
+column-rule-interior-inset-start: -50%
 column-rule-style: none
 column-rule-visibility-items: all
 column-rule-width: 3px
@@ -188,6 +188,7 @@ flex-wrap: nowrap
 float: none
 flood-color: rgb(0, 0, 0)
 flood-opacity: 1
+flow-tolerance: normal
 font-kerning: auto
 font-language-override: normal
 font-optical-sizing: auto
@@ -214,8 +215,8 @@ grid-auto-flow: row
 grid-auto-rows: auto
 grid-column-end: auto
 grid-column-start: auto
-grid-lanes-direction: column
-grid-lanes-fill: normal
+grid-lanes-direction: normal
+grid-lanes-pack: normal
 grid-row-end: auto
 grid-row-start: auto
 grid-template-areas: none
@@ -238,7 +239,6 @@ interest-delay-end: normal
 interest-delay-start: normal
 interpolate-size: numeric-only
 isolation: auto
-item-tolerance: normal
 justify-content: normal
 justify-items: normal
 justify-self: auto
@@ -307,10 +307,8 @@ overflow-wrap: normal
 overflow-x: visible
 overflow-y: visible
 overlay: none
-overscroll-area: none
 overscroll-behavior-block: auto
 overscroll-behavior-inline: auto
-overscroll-position: none
 padding-block-end: 0px
 padding-block-start: 0px
 padding-bottom: 0px
@@ -339,10 +337,10 @@ rotate: none
 row-gap: normal
 row-rule-break: auto
 row-rule-color: rgb(0, 0, 0)
-row-rule-edge-end-inset: 0px
-row-rule-edge-start-inset: 0px
-row-rule-interior-end-inset: -50%
-row-rule-interior-start-inset: -50%
+row-rule-edge-inset-end: 0px
+row-rule-edge-inset-start: 0px
+row-rule-interior-inset-end: -50%
+row-rule-interior-inset-start: -50%
 row-rule-style: none
 row-rule-visibility-items: all
 row-rule-width: 3px
@@ -400,13 +398,12 @@ text-decoration-style: solid
 text-emphasis-color: rgb(0, 0, 0)
 text-emphasis-position: auto
 text-emphasis-style: none
-text-grow: none
+text-fit: none
 text-indent: 0px
 text-justify: auto
 text-overflow: clip
 text-rendering: auto
 text-shadow: none
-text-shrink: none
 text-size-adjust: auto
 text-spacing-trim: normal
 text-transform: none
@@ -414,11 +411,11 @@ text-underline-position: auto
 text-wrap-mode: wrap
 text-wrap-style: auto
 timeline-scope: none
-timeline-trigger-exit-range-end: auto
-timeline-trigger-exit-range-start: auto
+timeline-trigger-active-range-end: auto
+timeline-trigger-active-range-start: auto
+timeline-trigger-entry-range-end: normal
+timeline-trigger-entry-range-start: normal
 timeline-trigger-name: none
-timeline-trigger-range-end: normal
-timeline-trigger-range-start: normal
 timeline-trigger-source: auto
 top: auto
 touch-action: auto
@@ -442,6 +439,7 @@ view-timeline-name: none
 view-transition-class: none
 view-transition-group: normal
 view-transition-name: none
+view-transition-scope: none
 visibility: visible
 white-space-collapse: collapse
 widows: 2

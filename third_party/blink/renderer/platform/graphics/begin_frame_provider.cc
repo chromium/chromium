@@ -17,6 +17,7 @@
 #include "third_party/blink/renderer/platform/mojo/mojo_binding_context.h"
 #include "third_party/blink/renderer/platform/scheduler/public/thread_scheduler.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
+#include "third_party/perfetto/include/perfetto/tracing/track_event_args.h"
 #include "ui/gfx/mojom/presentation_feedback.mojom-blink.h"
 
 namespace blink {
@@ -70,8 +71,7 @@ void BeginFrameProvider::CreateCompositorFrameSinkIfNeeded() {
 
   // Once we are using RAF, this thread is driving user interactive display
   // updates. Update priority accordingly.
-  base::PlatformThread::SetCurrentThreadType(
-      base::ThreadType::kDisplayCritical);
+  base::PlatformThread::SetCurrentThreadType(base::ThreadType::kPresentation);
 
   mojo::Remote<mojom::blink::EmbeddedFrameSinkProvider> provider;
   Platform::Current()->GetBrowserInterfaceBroker()->GetInterface(
@@ -106,9 +106,8 @@ void BeginFrameProvider::OnBeginFrame(
     const viz::BeginFrameArgs& args,
     const HashMap<uint32_t, viz::FrameTimingDetails>&,
     Vector<viz::ReturnedResource> resources) {
-  TRACE_EVENT_WITH_FLOW0("blink", "BeginFrameProvider::OnBeginFrame",
-                         TRACE_ID_GLOBAL(args.trace_id),
-                         TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT);
+  TRACE_EVENT("blink", "BeginFrameProvider::OnBeginFrame",
+              perfetto::Flow::Global(args.trace_id));
 
   if (args.deadline < base::TimeTicks::Now()) {
     compositor_frame_sink_->DidNotProduceFrame(viz::BeginFrameAck(args, false));

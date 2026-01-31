@@ -19,6 +19,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
+import static org.chromium.chrome.browser.url_constants.UrlConstantResolver.getOriginalNativeNtpUrl;
 import static org.chromium.ui.test.util.ViewUtils.onViewWaiting;
 
 import android.content.ComponentCallbacks;
@@ -269,8 +270,8 @@ public class ToolbarTest {
         Tab tab = mActivityTestRule.getActivityTab();
 
         // Load new tab page.
-        mActivityTestRule.loadUrl(UrlConstants.NTP_URL);
-        Assert.assertEquals(UrlConstants.NTP_URL, ChromeTabUtils.getUrlStringOnUiThread(tab));
+        mActivityTestRule.loadUrl(getOriginalNativeNtpUrl());
+        Assert.assertEquals(getOriginalNativeNtpUrl(), ChromeTabUtils.getUrlStringOnUiThread(tab));
         assertFalse(isErrorPage(tab));
 
         // Stop the server and also disconnect the network.
@@ -453,7 +454,7 @@ public class ToolbarTest {
     public void testIncognitoNtpAccessibilityOrder_TopControls() throws Exception {
         setAccessibilityEnabled(true);
 
-        mActivityTestRule.loadUrlInNewTab(UrlConstants.NTP_URL, true);
+        mActivityTestRule.loadUrlInNewTab(getOriginalNativeNtpUrl(), true);
 
         final ToolbarPhone toolbarPhone =
                 (ToolbarPhone) mActivity.getToolbarManager().getToolbarLayoutForTesting();
@@ -469,7 +470,7 @@ public class ToolbarTest {
     public void testIncognitoNtpAccessibilityOrder_BottomControls() throws Exception {
         setAccessibilityEnabled(true);
 
-        mActivityTestRule.loadUrlInNewTab(UrlConstants.NTP_URL, true);
+        mActivityTestRule.loadUrlInNewTab(getOriginalNativeNtpUrl(), true);
 
         final ToolbarPhone toolbarPhone =
                 (ToolbarPhone) mActivity.getToolbarManager().getToolbarLayoutForTesting();
@@ -485,7 +486,7 @@ public class ToolbarTest {
     public void testRegularNtpAccessibilityOrder_NoEffect() throws Exception {
         setAccessibilityEnabled(true);
 
-        mActivityTestRule.loadUrlInNewTab(UrlConstants.NTP_URL, false);
+        mActivityTestRule.loadUrlInNewTab(getOriginalNativeNtpUrl(), false);
 
         final ToolbarPhone toolbarPhone =
                 (ToolbarPhone) mActivity.getToolbarManager().getToolbarLayoutForTesting();
@@ -501,7 +502,7 @@ public class ToolbarTest {
     public void testIncognitoNtpAccessibilityOrder_OnNavigating() throws Exception {
         setAccessibilityEnabled(true);
 
-        mActivityTestRule.loadUrlInNewTab(UrlConstants.NTP_URL, true);
+        mActivityTestRule.loadUrlInNewTab(getOriginalNativeNtpUrl(), true);
 
         final Tab incognitoNtpTab = mActivityTestRule.getActivityTab();
         ToolbarPhone toolbarPhone =
@@ -532,7 +533,8 @@ public class ToolbarTest {
     public void testIncognitoNtpAccessibilityOrder_OnIncognitoTabsSwitch() throws Exception {
         setAccessibilityEnabled(true);
 
-        final Tab incognitoNtpTab = mActivityTestRule.loadUrlInNewTab(UrlConstants.NTP_URL, true);
+        final Tab incognitoNtpTab =
+                mActivityTestRule.loadUrlInNewTab(getOriginalNativeNtpUrl(), true);
         // Open the second incognito tab that will be active on load
         mActivityTestRule.loadUrlInNewTab("about:blank", true);
 
@@ -565,7 +567,8 @@ public class ToolbarTest {
         setAccessibilityEnabled(true);
 
         // 1. Load an incognito NTP.
-        final Tab incognitoNtpTab = mActivityTestRule.loadUrlInNewTab(UrlConstants.NTP_URL, true);
+        final Tab incognitoNtpTab =
+                mActivityTestRule.loadUrlInNewTab(getOriginalNativeNtpUrl(), true);
 
         // 2. Change toolbar position to bottom to verify order is handled correctly.
         setControlsPosition(ControlsPosition.BOTTOM);
@@ -598,7 +601,8 @@ public class ToolbarTest {
     public void testIncognitoNtpAccessibilityOrder_ResetOnOpenRegularTab() throws Exception {
         setAccessibilityEnabled(true);
 
-        final Tab incognitoNtpTab = mActivityTestRule.loadUrlInNewTab(UrlConstants.NTP_URL, true);
+        final Tab incognitoNtpTab =
+                mActivityTestRule.loadUrlInNewTab(getOriginalNativeNtpUrl(), true);
 
         setControlsPosition(ControlsPosition.BOTTOM);
 
@@ -619,7 +623,8 @@ public class ToolbarTest {
             throws Exception {
         setAccessibilityEnabled(true);
 
-        final Tab incognitoNtpTab = mActivityTestRule.loadUrlInNewTab(UrlConstants.NTP_URL, true);
+        final Tab incognitoNtpTab =
+                mActivityTestRule.loadUrlInNewTab(getOriginalNativeNtpUrl(), true);
 
         final BrowserControlsManager browserControlsManager =
                 ThreadUtils.runOnUiThreadBlocking(

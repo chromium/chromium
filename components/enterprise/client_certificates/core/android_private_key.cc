@@ -47,10 +47,10 @@ client_certificates_pb::PrivateKey AndroidPrivateKey::ToProto() const {
   return private_key;
 }
 
-base::Value::Dict AndroidPrivateKey::ToDict() const {
+base::DictValue AndroidPrivateKey::ToDict() const {
   std::vector<uint8_t> wrapped = key_->GetIdentifier();
   if (wrapped.size() == 0) {
-    return base::Value::Dict();
+    return base::DictValue();
   }
   return BuildSerializedPrivateKey(wrapped);
 }

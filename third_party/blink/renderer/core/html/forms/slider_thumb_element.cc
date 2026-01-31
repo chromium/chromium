@@ -408,7 +408,11 @@ bool SliderContainerElement::CanSlide() {
       }
     }
   }
-  bool is_horizontal = GetComputedStyle()->IsHorizontalWritingMode();
+  const ComputedStyle* container_style = GetComputedStyle();
+  if (!container_style) {
+    return false;
+  }
+  bool is_horizontal = container_style->IsHorizontalWritingMode();
   if ((sliding_direction_ == Direction::kVertical && is_horizontal) ||
       (sliding_direction_ == Direction::kHorizontal && !is_horizontal)) {
     return false;

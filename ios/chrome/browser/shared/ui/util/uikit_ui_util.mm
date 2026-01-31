@@ -408,9 +408,7 @@ NSAttributedString* TextForTabGroupCount(int count, CGFloat font_size) {
   if (count <= 0) {
     string = @"";
   } else if (count < 100) {
-    string = IsTabGridEmptyThumbnailUIEnabled()
-                 ? [NSString stringWithFormat:@"%d", count]
-                 : [NSString stringWithFormat:@"+%d", count];
+    string = [NSString stringWithFormat:@"%d", count];
   } else {
     string = @"99+";
   }

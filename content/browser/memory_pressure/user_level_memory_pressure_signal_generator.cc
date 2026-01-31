@@ -17,7 +17,7 @@
 #include "base/files/file_path.h"
 #include "base/files/scoped_file.h"
 #include "base/functional/bind.h"
-#include "base/memory/memory_pressure_listener.h"
+#include "base/memory/memory_pressure_listener_registry.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
@@ -261,37 +261,7 @@ void UserLevelMemoryPressureSignalGenerator::HandleMemoryPressureLevel(
   }
 
   current_level_ = level;
-  NotifyMemoryPressure(level);
-}
-
-// static
-void UserLevelMemoryPressureSignalGenerator::NotifyMemoryPressure(
-    base::MemoryPressureLevel level) {
-  // Notifies GPU process and Utility processes.
-  for (BrowserChildProcessHostIterator iter; !iter.Done(); ++iter) {
-    if (!iter.GetData().GetProcess().IsValid())
-      continue;
-
-    ChildProcessHostImpl* host =
-        static_cast<ChildProcessHostImpl*>(iter.GetHost());
-    host->NotifyMemoryPressureToChildProcess(level);
-  }
-
-  // Notifies renderer processes.
-  for (RenderProcessHost::iterator iter = RenderProcessHost::AllHostsIterator();
-       !iter.IsAtEnd(); iter.Advance()) {
-    RenderProcessHost* host = iter.GetCurrentValue();
-    if (!host || !host->IsInitializedAndNotDead())
-      continue;
-    if (!host->GetProcess().IsValid())
-      continue;
-
-    static_cast<RenderProcessHostImpl*>(host)->NotifyMemoryPressureToRenderer(
-        level);
-  }
-
-  // Notifies browser process.
-  base::MemoryPressureListener::NotifyMemoryPressure(level);
+  base::MemoryPressureListenerRegistry::NotifyMemoryPressure(level);
 }
 
 // static

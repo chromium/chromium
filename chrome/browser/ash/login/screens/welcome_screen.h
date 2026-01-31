@@ -109,7 +109,7 @@ class WelcomeScreen : public BaseScreen,
   void AddObserver(Observer* observer);
   void RemoveObserver(Observer* observer);
 
-  const base::Value::Dict& GetConfigurationForTesting() const {
+  const base::DictValue& GetConfigurationForTesting() const {
     return context()->configuration;
   }
 
@@ -124,7 +124,7 @@ class WelcomeScreen : public BaseScreen,
   // BaseScreen:
   void ShowImpl() override;
   void HideImpl() override;
-  void OnUserAction(const base::Value::List& action_id) override;
+  void OnUserAction(const base::ListValue& action_id) override;
   bool HandleAccelerator(LoginAcceleratorAction action) override;
 
   void CancelChromeVoxHintIdleDetection();
@@ -162,7 +162,7 @@ class WelcomeScreen : public BaseScreen,
           language_switch_result);
 
   // Callback for ResolveUILanguageList() (from l10n_util).
-  void OnLanguageListResolved(base::Value::List new_language_list,
+  void OnLanguageListResolved(base::ListValue new_language_list,
                               const std::string& new_language_list_locale,
                               const std::string& new_selected_language);
 

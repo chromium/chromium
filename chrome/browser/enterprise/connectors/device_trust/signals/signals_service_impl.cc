@@ -36,7 +36,7 @@ SignalsServiceImpl::~SignalsServiceImpl() = default;
 
 void SignalsServiceImpl::CollectSignals(CollectSignalsCallback callback) {
   auto start_time = base::TimeTicks::Now();
-  auto signals = std::make_unique<base::Value::Dict>();
+  auto signals = std::make_unique<base::DictValue>();
   auto* signals_ptr = signals.get();
 
   auto barrier_closure = base::BarrierClosure(
@@ -53,11 +53,11 @@ void SignalsServiceImpl::CollectSignals(CollectSignalsCallback callback) {
 void SignalsServiceImpl::OnSignalsDecorated(
     CollectSignalsCallback callback,
     base::TimeTicks start_time,
-    std::unique_ptr<base::Value::Dict> signals) {
+    std::unique_ptr<base::DictValue> signals) {
   LogSignalsCollectionLatency(kLatencyHistogramVariant, start_time);
 
   if (!signals) {
-    base::Value::Dict empty_dictionary;
+    base::DictValue empty_dictionary;
     std::move(callback).Run(std::move(empty_dictionary));
   } else {
     signals_filterer_->Filter(*signals);

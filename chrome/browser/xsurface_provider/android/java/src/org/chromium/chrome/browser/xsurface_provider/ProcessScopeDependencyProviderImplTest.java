@@ -11,7 +11,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
@@ -84,7 +84,7 @@ public final class ProcessScopeDependencyProviderImplTest {
                 public void setMetricsReportingEnabled(boolean enabled) {}
 
                 @Override
-                public ObservableSupplier<Boolean>
+                public MonotonicObservableSupplier<Boolean>
                         getUsageAndCrashReportingPermittedObservableSupplier() {
                     return null;
                 }

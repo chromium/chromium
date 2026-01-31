@@ -20,6 +20,7 @@ from pylib.symbols import deobfuscator
 from pylib.symbols import stack_symbolizer
 from pylib.utils import dexdump
 from pylib.utils import gold_utils
+from pylib.utils import logging_utils
 from pylib.utils import test_filter
 
 with host_paths.SysPath(host_paths.BUILD_UTIL_PATH):
@@ -1004,6 +1005,10 @@ class InstrumentationTestInstance(test_instance.TestInstance):
     return self._system_packages_to_remove
 
   @property
+  def target_package(self):
+    return self._test_apk.GetAllInstrumentations()[0]['android:targetPackage']
+
+  @property
   def test_apk(self):
     return self._test_apk
 
@@ -1089,6 +1094,9 @@ class InstrumentationTestInstance(test_instance.TestInstance):
 
   #override
   def SetUp(self):
+    if self.wait_for_java_debugger and not self._test_apk.GetIsDebuggable():
+      raise Exception('Passed --wait-for-java-debugger flag but did not set '
+                      'debuggable_apks = true in GN args')
     self._data_deps.extend(
         self._data_deps_delegate(self._runtime_deps_path))
     if self._proguard_mapping_path:
@@ -1100,6 +1108,13 @@ class InstrumentationTestInstance(test_instance.TestInstance):
 
   def GetRunDisabledFlag(self):
     return self._run_disabled
+
+  def GetLogcatPackageNames(self):
+    ret = {self.target_package, self._test_package}
+    if self._apk_under_test:
+      ret.add(self._apk_under_test.GetPackageName())
+    ret.update(x.GetPackageName() for x in self._additional_apks)
+    return ','.join(sorted(ret))
 
   def MaybeDeobfuscateLines(self, lines):
     if not self._deobfuscator:
@@ -1115,6 +1130,14 @@ class InstrumentationTestInstance(test_instance.TestInstance):
       for t in inflated_tests:
         logging.debug('  %s', GetUniqueTestName(t))
       logging.warning('Unmatched Filters: %s', self._test_filters)
+    filtered_tests_with_excluded = FilterTests(inflated_tests,
+                                               self._test_filters,
+                                               self._annotations, [])
+    if len(filtered_tests_with_excluded) != len(filtered_tests):
+      color = (logging_utils.BACK.YELLOW, logging_utils.FORE.BLACK)
+      with logging_utils.OverrideColor(logging.WARNING, color):
+        logging.warning('Excluded one or more disabled tests. '
+                        'Consider adding: --gtest_also_run_disabled_tests')
     return filtered_tests
 
   def IsApkForceQueryable(self, apk):

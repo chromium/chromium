@@ -105,6 +105,9 @@ class CORE_EXPORT SVGImage final : public Image {
   void ResetAnimation() override;
   void RestoreAnimation();
 
+  void SetDidEncounterXSL() { did_encounter_xsl_ = true; }
+  bool GetDidEncounterXSL() { return did_encounter_xsl_; }
+
   // Does the SVG image/document contain any animations?
   bool MaybeAnimated() override;
 
@@ -262,6 +265,8 @@ class CORE_EXPORT SVGImage final : public Image {
 
   int data_change_count_ = 0;
   base::TimeDelta data_change_elapsed_time_;
+
+  bool did_encounter_xsl_ = false;
 
   base::WeakPtrFactory<SVGImage> weak_ptr_factory_{this};
   FRIEND_TEST_ALL_PREFIXES(ElementFragmentAnchorTest,

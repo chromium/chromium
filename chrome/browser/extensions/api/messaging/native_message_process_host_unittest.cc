@@ -199,7 +199,7 @@ class NativeMessagingTest : public ::testing::Test,
   TestingProfile profile_;
 
   std::string last_message_;
-  std::optional<base::Value::Dict> last_message_parsed_;
+  std::optional<base::DictValue> last_message_parsed_;
   bool channel_closed_ = false;
 };
 
@@ -375,7 +375,7 @@ TEST_F(NativeMessagingTest, ReconnectArgs) {
   ASSERT_FALSE(last_message_.empty());
   ASSERT_TRUE(last_message_parsed_);
 
-  const base::Value::List* args_value = last_message_parsed_->FindList("args");
+  const base::ListValue* args_value = last_message_parsed_->FindList("args");
   ASSERT_TRUE(args_value);
   std::vector<base::CommandLine::StringType> args;
   args.reserve(args_value->size());

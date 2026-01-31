@@ -23,6 +23,7 @@
 #import "base/task/thread_pool.h"
 #import "base/time/default_clock.h"
 #import "base/time/default_tick_clock.h"
+#import "components/activity_reporter/activity_reporter.h"
 #import "components/application_locale_storage/application_locale_storage.h"
 #import "components/breadcrumbs/core/breadcrumbs_status.h"
 #import "components/breadcrumbs/core/crash_reporter_breadcrumb_observer.h"
@@ -44,9 +45,12 @@
 #import "components/prefs/pref_service.h"
 #import "components/sessions/core/session_id_generator.h"
 #import "components/signin/core/browser/active_primary_accounts_metrics_recorder.h"
+#import "components/supervised_user/core/browser/device_parental_controls.h"
+#import "components/supervised_user/core/browser/device_parental_controls_noop_impl.h"
 #import "components/translate/core/browser/translate_download_manager.h"
 #import "components/ukm/ukm_service.h"
 #import "components/update_client/configurator.h"
+#import "components/update_client/net/network_chromium.h"
 #import "components/update_client/update_query_params.h"
 #import "components/variations/service/variations_service.h"
 #import "components/version_info/channel.h"
@@ -396,15 +400,31 @@ net_log::NetExportFileWriter* ApplicationContextImpl::GetNetExportFileWriter() {
 }
 
 network_time::NetworkTimeTracker*
-ApplicationContextImpl::GetNetworkTimeTracker() {
+ApplicationContextImpl::GetNetworkTimeTrackerMaybeUninitialized() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!network_time_tracker_) {
-    network_time_tracker_.reset(new network_time::NetworkTimeTracker(
-        base::WrapUnique(new base::DefaultClock),
-        base::WrapUnique(new base::DefaultTickClock), GetLocalState(),
-        GetSharedURLLoaderFactory(), std::nullopt));
+    network_time_tracker_ = std::make_unique<network_time::NetworkTimeTracker>(
+        std::make_unique<base::DefaultClock>(),
+        std::make_unique<base::DefaultTickClock>(),
+        /*pref_service=*/nullptr,
+        /*url_loader_factory=*/nullptr,
+        /*fetch_behavior=*/std::nullopt);
+    CHECK(!network_time_tracker_->is_initialized());
   }
   return network_time_tracker_.get();
+}
+
+network_time::NetworkTimeTracker*
+ApplicationContextImpl::GetNetworkTimeTracker() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  auto* network_time_tracker = GetNetworkTimeTrackerMaybeUninitialized();
+  if (!network_time_tracker->is_initialized()) {
+    network_time_tracker->Initialize(
+        /*pref_service=*/GetLocalState(),
+        /*url_loader_factory=*/GetSharedURLLoaderFactory());
+    CHECK(network_time_tracker->is_initialized());
+  }
+  return network_time_tracker;
 }
 
 IOSChromeIOThread* ApplicationContextImpl::GetIOSChromeIOThread() {
@@ -420,6 +440,23 @@ gcm::GCMDriver* ApplicationContextImpl::GetGCMDriver() {
   }
   DCHECK(gcm_driver_);
   return gcm_driver_.get();
+}
+
+activity_reporter::ActivityReporter*
+ApplicationContextImpl::GetActivityReporter() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (!activity_reporter_) {
+    activity_reporter_ = activity_reporter::CreateActivityReporter(
+        base::BindRepeating(
+            [](PrefService* pref_service) { return pref_service; },
+            GetLocalState()),
+        base::MakeRefCounted<update_client::NetworkFetcherChromiumFactory>(
+            GetSharedURLLoaderFactory(),
+            // Never send cookies for activity reports.
+            base::BindRepeating([](const GURL& url) { return false; })),
+        base::DoNothing());
+  }
+  return activity_reporter_.get();
 }
 
 component_updater::ComponentUpdateService*
@@ -578,6 +615,15 @@ ApplicationContextImpl::GetAutoDeletionService() {
         std::make_unique<auto_deletion::AutoDeletionService>(GetLocalState());
   }
   return auto_deletion_service_.get();
+}
+
+supervised_user::DeviceParentalControls&
+ApplicationContextImpl::GetDeviceParentalControls() {
+  if (!device_parental_controls_) {
+    device_parental_controls_ =
+        std::make_unique<supervised_user::DeviceParentalControlsNoOpImpl>();
+  }
+  return *device_parental_controls_;
 }
 
 optimization_guide::OptimizationGuideGlobalState*

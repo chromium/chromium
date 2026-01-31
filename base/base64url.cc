@@ -131,6 +131,30 @@ void Base64UrlEncode(std::string_view input,
   Base64UrlEncode(base::as_byte_span(input), policy, output);
 }
 
+void Base64UrlEncodeEarlyStartup(span<const uint8_t> input,
+                                 Base64UrlEncodePolicy policy,
+                                 std::string* output) {
+  *output = Base64EncodeEarlyStartup(input);
+
+  ReplaceChars(*output, "+", "-", output);
+  ReplaceChars(*output, "/", "_", output);
+
+  switch (policy) {
+    case Base64UrlEncodePolicy::INCLUDE_PADDING:
+      // The padding included in |*output| will not be amended.
+      break;
+    case Base64UrlEncodePolicy::OMIT_PADDING:
+      // The padding included in |*output| will be removed.
+      const size_t last_non_padding_pos =
+          output->find_last_not_of(kPaddingChar);
+      if (last_non_padding_pos != std::string::npos) {
+        output->resize(last_non_padding_pos + 1);
+      }
+
+      break;
+  }
+}
+
 bool Base64UrlDecode(std::string_view input,
                      Base64UrlDecodePolicy policy,
                      std::string* output) {

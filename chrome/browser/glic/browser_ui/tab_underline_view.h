@@ -17,8 +17,7 @@
 #include "ui/views/metadata/view_factory.h"
 #include "ui/views/view.h"
 
-class Browser;
-class Tab;
+class BrowserWindowInterface;
 
 namespace gfx {
 class Canvas;
@@ -32,13 +31,20 @@ class TabUnderlineView : public AnimatedEffectView {
   METADATA_HEADER(TabUnderlineView, views::View)
 
  public:
+  // The height of the underline effect. Also used for the padding outside the
+  // underline.
+  static constexpr int kEffectThickness = 2;
+
+  // The radius to use for rounded corners of the underline effect.
+  static constexpr float kCornerRadius = kEffectThickness / 2.0f;
+
   // Allows the test to inject the tester at the border's creation.
   class Factory {
    public:
     static std::unique_ptr<TabUnderlineView> Create(
         std::unique_ptr<TabUnderlineViewController> controller,
-        Browser* browser,
-        Tab* tab);
+        BrowserWindowInterface* browser_window_interface,
+        tabs::TabHandle tab_handle);
     static void set_factory(Factory* factory) { factory_ = factory; }
 
    protected:
@@ -48,8 +54,8 @@ class TabUnderlineView : public AnimatedEffectView {
     // For tests to override.
     virtual std::unique_ptr<TabUnderlineView> CreateUnderlineView(
         std::unique_ptr<TabUnderlineViewController> controller,
-        Browser* browser,
-        Tab* tab) = 0;
+        BrowserWindowInterface* browser_window_interface,
+        tabs::TabHandle tab) = 0;
 
    private:
     static Factory* factory_;
@@ -61,7 +67,14 @@ class TabUnderlineView : public AnimatedEffectView {
 
   // Returns the TabInterface corresponding to `underline_view_`, if it is
   // valid.
-  base::WeakPtr<tabs::TabInterface> GetTabInterface();
+  tabs::TabInterface* GetTabInterface();
+
+  enum class Orientation {
+    kHorizontal,
+    kVertical,
+  };
+
+  void SetOrientation(Orientation orientation);
 
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kGlicTabUnderlineElementId);
 
@@ -69,14 +82,15 @@ class TabUnderlineView : public AnimatedEffectView {
   friend class Factory;
   explicit TabUnderlineView(
       std::unique_ptr<TabUnderlineViewController> controller,
-      Browser* browser,
-      Tab* tab,
+      BrowserWindowInterface* browser_window_interface,
+      tabs::TabHandle tab_handle,
       std::unique_ptr<Tester> tester);
 
  private:
   // `AnimatedEffectView`:
   bool IsCycleDone(base::TimeTicks timestamp) override;
   base::TimeDelta GetTotalDuration() const override;
+  std::vector<SkColor> GetEffectColors() override;
   void PopulateShaderUniforms(
       std::vector<cc::PaintShader::FloatUniform>& float_uniforms,
       std::vector<cc::PaintShader::Float2Uniform>& float2_uniforms,
@@ -84,13 +98,22 @@ class TabUnderlineView : public AnimatedEffectView {
       std::vector<cc::PaintShader::IntUniform>& int_uniforms) const override;
   void DrawEffect(gfx::Canvas* canvas, const cc::PaintFlags& flags) override;
 
-  int ComputeWidth();
+  // `views::View`:
+  void OnThemeChanged() override;
+
+  int ComputeDimension();
+
+  void OnActiveTabChanged(BrowserWindowInterface* browser_window_interface);
 
   // The controller responsible for notifying the view about various browser
   // UI status changes that affect showing and animating of the tab underlines.
   const std::unique_ptr<TabUnderlineViewController> controller_;
 
-  raw_ptr<Tab> tab_ = nullptr;
+  tabs::TabHandle tab_handle_;
+
+  Orientation orientation_ = Orientation::kHorizontal;
+
+  base::CallbackListSubscription active_tab_subscription_;
 };
 
 BEGIN_VIEW_BUILDER(, TabUnderlineView, AnimatedEffectView)

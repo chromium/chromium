@@ -46,7 +46,10 @@ class PowerEventObserverTest : public AshTestBase {
     observer_ = Shell::Get()->power_event_observer();
   }
 
-  void TearDown() override { AshTestBase::TearDown(); }
+  void TearDown() override {
+    observer_ = nullptr;
+    AshTestBase::TearDown();
+  }
 
  protected:
   int GetNumVisibleCompositors() {
@@ -65,7 +68,7 @@ class PowerEventObserverTest : public AshTestBase {
     return Shell::Get()->session_controller()->IsScreenLocked();
   }
 
-  raw_ptr<PowerEventObserver, DanglingUntriaged> observer_ = nullptr;
+  raw_ptr<PowerEventObserver> observer_ = nullptr;
 };
 
 TEST_F(PowerEventObserverTest, LockBeforeSuspend) {

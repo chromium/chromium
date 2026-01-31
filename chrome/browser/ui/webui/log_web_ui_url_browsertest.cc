@@ -45,10 +45,15 @@ class LogWebUIUrlTest : public InProcessBrowserTest {
 
   ~LogWebUIUrlTest() override = default;
 
-  base::HistogramTester& histogram_tester() { return histogram_tester_; }
+  // InProcessBrowserTest:
+  void SetUpOnMainThread() override {
+    histogram_tester_ = std::make_unique<base::HistogramTester>();
+  }
+
+  base::HistogramTester& histogram_tester() { return *histogram_tester_; }
 
   void RunTest(std::u16string title, const GURL& url) {
-    EXPECT_THAT(histogram_tester_.GetAllSamples(webui::kWebUICreatedForUrl),
+    EXPECT_THAT(histogram_tester().GetAllSamples(webui::kWebUICreatedForUrl),
                 ::testing::IsEmpty());
 
     auto* tab = browser()->tab_strip_model()->GetActiveWebContents();
@@ -56,12 +61,12 @@ class LogWebUIUrlTest : public InProcessBrowserTest {
     ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
     ASSERT_EQ(title, title_watcher.WaitAndGetTitle());
     uint32_t origin_hash = base::Hash(url.DeprecatedGetOriginAsURL().spec());
-    EXPECT_THAT(histogram_tester_.GetAllSamples(webui::kWebUICreatedForUrl),
+    EXPECT_THAT(histogram_tester().GetAllSamples(webui::kWebUICreatedForUrl),
                 ElementsAre(Bucket(origin_hash, 1)));
   }
 
  private:
-  base::HistogramTester histogram_tester_;
+  std::unique_ptr<base::HistogramTester> histogram_tester_;
 };
 
 IN_PROC_BROWSER_TEST_F(LogWebUIUrlTest, TestExtensionsPage) {

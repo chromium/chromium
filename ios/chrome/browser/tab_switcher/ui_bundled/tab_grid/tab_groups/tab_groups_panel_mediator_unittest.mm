@@ -32,6 +32,7 @@
 #import "ios/chrome/browser/shared/model/web_state_list/tab_group.h"
 #import "ios/chrome/browser/shared/model/web_state_list/test/fake_web_state_list_delegate.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/tab_grid_mode_holder.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/tab_groups/tab_group_sync_service_observer_bridge.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/tab_groups/tab_groups_panel_consumer.h"
@@ -368,7 +369,11 @@ TEST_F(TabGroupsPanelMediatorTest,
   EXPECT_FALSE(toolbars_mutator.configuration.addToButton);
 
   EXPECT_FALSE(toolbars_mutator.configuration.closeAllButton);
-  EXPECT_FALSE(toolbars_mutator.configuration.newTabButton);
+  if (base::FeatureList::IsEnabled(kTabRecallNewTabGroupButton)) {
+    EXPECT_TRUE(toolbars_mutator.configuration.newTabButton);
+  } else {
+    EXPECT_FALSE(toolbars_mutator.configuration.newTabButton);
+  }
   EXPECT_FALSE(toolbars_mutator.configuration.searchButton);
   EXPECT_FALSE(toolbars_mutator.configuration.selectTabsButton);
   EXPECT_FALSE(toolbars_mutator.configuration.undoButton);
@@ -419,7 +424,11 @@ TEST_F(TabGroupsPanelMediatorTest,
   EXPECT_FALSE(toolbars_mutator.configuration.addToButton);
 
   EXPECT_FALSE(toolbars_mutator.configuration.closeAllButton);
-  EXPECT_FALSE(toolbars_mutator.configuration.newTabButton);
+  if (base::FeatureList::IsEnabled(kTabRecallNewTabGroupButton)) {
+    EXPECT_TRUE(toolbars_mutator.configuration.newTabButton);
+  } else {
+    EXPECT_FALSE(toolbars_mutator.configuration.newTabButton);
+  }
   EXPECT_FALSE(toolbars_mutator.configuration.searchButton);
   EXPECT_FALSE(toolbars_mutator.configuration.selectTabsButton);
   EXPECT_FALSE(toolbars_mutator.configuration.undoButton);

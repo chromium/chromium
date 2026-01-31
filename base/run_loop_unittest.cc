@@ -537,7 +537,7 @@ class MockTask {
   MockTask(const MockTask&) = delete;
   MockTask& operator=(const MockTask&) = delete;
 
-  MOCK_METHOD0(Task, void());
+  MOCK_METHOD(void, Task, ());
 };
 
 }  // namespace

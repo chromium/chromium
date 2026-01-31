@@ -10,6 +10,7 @@
 #include "base/functional/callback.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/time/time.h"
+#include "third_party/perfetto/include/perfetto/tracing/track_event_args.h"
 #include "url/gurl.h"
 
 namespace content {
@@ -40,7 +41,8 @@ class PrefetchSingleRedirectHop final {
  public:
   PrefetchSingleRedirectHop(PrefetchContainer& prefetch_container,
                             const GURL& url,
-                            bool is_isolated_network_context_required);
+                            bool is_isolated_network_context_required,
+                            perfetto::Flow flow);
   ~PrefetchSingleRedirectHop();
 
   PrefetchSingleRedirectHop(const PrefetchSingleRedirectHop&) = delete;

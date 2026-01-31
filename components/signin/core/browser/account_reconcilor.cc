@@ -11,7 +11,6 @@
 #include <set>
 #include <utility>
 
-#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/location.h"
@@ -37,7 +36,6 @@
 #include "components/signin/public/identity_manager/accounts_in_cookie_jar_info.h"
 #include "components/signin/public/identity_manager/accounts_mutator.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
-#include "components/signin/public/identity_manager/identity_utils.h"
 #include "components/signin/public/identity_manager/set_accounts_in_cookie_result.h"
 #include "google_apis/gaia/gaia_auth_util.h"
 #include "google_apis/gaia/gaia_urls.h"
@@ -90,20 +88,6 @@ bool IsAnyAccountInErrorState(
   }
   return false;
 }
-
-#if BUILDFLAG(ENABLE_DICE_SUPPORT)
-// If Uno is enabled and there is no "clear on exit" setting affecting Gaia,
-// consider the migration done.
-void MaybeMigrateClearOnExit(SigninClient& client,
-                             signin::IdentityManager& identity_manager) {
-  PrefService& prefs = *client.GetPrefs();
-  if (!client.AreSigninCookiesDeletedOnExit() &&
-      signin::AreGoogleCookiesRebuiltAfterClearingWhenSignedIn(identity_manager,
-                                                               prefs)) {
-    prefs.SetBoolean(prefs::kCookieClearOnExitMigrationNoticeComplete, true);
-  }
-}
-#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
 }  // namespace
 
@@ -175,14 +159,6 @@ AccountReconcilor::~AccountReconcilor() {
   DCHECK(!registered_with_identity_manager_);
 }
 
-// static
-void AccountReconcilor::RegisterProfilePrefs(PrefRegistrySimple* registry) {
-#if BUILDFLAG(ENABLE_DICE_SUPPORT)
-  registry->RegisterBooleanPref(
-      prefs::kCookieClearOnExitMigrationNoticeComplete, false);
-#endif
-}
-
 void AccountReconcilor::RegisterWithAllDependencies() {
   RegisterWithContentSettings();
   RegisterWithIdentityManager();
@@ -204,12 +180,6 @@ void AccountReconcilor::Initialize(bool start_reconcile_if_tokens_available) {
   DCHECK(delegate_);
   delegate_->set_reconcilor(this);
   timeout_ = delegate_->GetReconcileTimeout();
-
-#if BUILDFLAG(ENABLE_DICE_SUPPORT)
-  MaybeMigrateClearOnExit(*client_, *identity_manager_);
-
-  pref_observer_.Init(client_->GetPrefs());
-#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
   if (delegate_->IsReconcileEnabled()) {
     SetState(AccountReconcilorState::kScheduled);
@@ -249,6 +219,7 @@ void AccountReconcilor::Shutdown() {
   }
   was_shut_down_ = true;
   DisableReconcile(false /* logout_all_accounts */);
+  client_ = nullptr;
   delegate_.reset();
   DCHECK(WasShutDown());
   identity_manager_observer_.Reset();
@@ -288,12 +259,6 @@ void AccountReconcilor::RegisterWithIdentityManager() {
   }
 
   identity_manager_observer_.Observe(identity_manager_);
-#if BUILDFLAG(ENABLE_DICE_SUPPORT)
-  pref_observer_.Add(
-      prefs::kExplicitBrowserSignin,
-      base::BindRepeating(&MaybeMigrateClearOnExit, std::ref(*client_),
-                          std::ref(*identity_manager_)));
-#endif
   registered_with_identity_manager_ = true;
 }
 
@@ -303,9 +268,6 @@ void AccountReconcilor::UnregisterWithIdentityManager() {
     return;
   }
 
-#if BUILDFLAG(ENABLE_DICE_SUPPORT)
-  pref_observer_.RemoveAll();
-#endif
   identity_manager_observer_.Reset();
   registered_with_identity_manager_ = false;
 }
@@ -351,11 +313,6 @@ void AccountReconcilor::OnContentSettingChanged(
     return;
   }
 
-#if BUILDFLAG(ENABLE_DICE_SUPPORT)
-  // Perform the "clear on exit" migration if applicable.
-  MaybeMigrateClearOnExit(*client_, *identity_manager_);
-#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
-
   // If this does not affect GAIA, just ignore. The secondary pattern is not
   // needed.
   if (!primary_pattern.Matches(GaiaUrls::GetInstance()->gaia_url())) {
@@ -369,9 +326,6 @@ void AccountReconcilor::OnContentSettingChanged(
 void AccountReconcilor::OnPrimaryAccountChanged(
     const signin::PrimaryAccountChangeEvent& event_details) {
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
-  // Perform the "clear on exit" migration if applicable.
-  MaybeMigrateClearOnExit(*client_, *identity_manager_);
-
   if (event_details.GetEventTypeFor(ConsentLevel::kSignin) ==
       signin::PrimaryAccountChangeEvent::Type::kCleared) {
     VLOG(1) << "AccountReconcilor::OnPrimaryAccountChanged";
@@ -652,7 +606,7 @@ void AccountReconcilor::OnAccountsInCookieUpdated(
 
   if (!primary_account.empty() &&
       delegate_->ShouldAbortReconcileIfPrimaryHasError() &&
-      !base::Contains(chrome_accounts, primary_account)) {
+      !std::ranges::contains(chrome_accounts, primary_account)) {
     VLOG(1) << "Primary account has error, abort.";
     DCHECK(is_reconcile_started_);
     AbortReconcile();

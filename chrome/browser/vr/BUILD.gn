@@ -102,9 +102,6 @@ if (enable_vr) {
       "renderers/radial_gradient_quad_renderer.h",
       "renderers/textured_quad_renderer.cc",
       "renderers/textured_quad_renderer.h",
-      "skia_surface_provider.cc",
-      "skia_surface_provider.h",
-      "skia_surface_provider_factory.h",
       "target_property.cc",
       "target_property.h",
       "ui.cc",
@@ -156,25 +153,6 @@ if (enable_vr) {
     if (is_android) {
       sources += [ "jni_onload.cc" ]
       deps += [ "//third_party/jni_zero" ]
-    }
-
-    if (use_command_buffer) {
-      sources += [
-        "cmd_buffer_surface_provider.cc",
-        "cmd_buffer_surface_provider.h",
-        "skia_surface_provider_factory_cmd_buffer.cc",
-      ]
-      deps += [
-        "//gpu/command_buffer/client:gles2_implementation",
-        "//gpu/skia_bindings",
-      ]
-    } else {
-      sources += [
-        "native_gl_surface_provider.cc",
-        "native_gl_surface_provider.h",
-        "skia_surface_provider_factory_native_gl.cc",
-      ]
-      deps += [ "//ui/gl/init" ]
     }
   }
 

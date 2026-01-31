@@ -6,7 +6,6 @@
 #include <set>
 #include <vector>
 
-#include "base/containers/contains.h"
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "components/services/app_service/public/cpp/instance.h"
@@ -643,8 +642,8 @@ TEST_F(InstanceRegistryTest, GetInstances) {
     EXPECT_EQ("a", instance->AppId());
     windows.insert(instance->Window());
   }
-  EXPECT_TRUE(base::Contains(windows, &window1));
-  EXPECT_TRUE(base::Contains(windows, &window3));
+  EXPECT_TRUE(windows.contains(&window1));
+  EXPECT_TRUE(windows.contains(&window3));
 
   instances = instance_registry().GetInstances("b");
   EXPECT_EQ(1U, instances.size());

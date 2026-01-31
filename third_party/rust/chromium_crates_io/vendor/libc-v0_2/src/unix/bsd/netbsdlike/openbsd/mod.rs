@@ -616,16 +616,16 @@ s! {
         pub d_reclen: u16,
         pub d_type: u8,
         pub d_namlen: u8,
-        __d_padding: [u8; 4],
+        __d_padding: Padding<[u8; 4]>,
         pub d_name: [c_char; 256],
     }
 
     pub struct sockaddr_storage {
         pub ss_len: u8,
         pub ss_family: crate::sa_family_t,
-        __ss_pad1: [u8; 6],
-        __ss_pad2: i64,
-        __ss_pad3: [u8; 240],
+        __ss_pad1: Padding<[u8; 6]>,
+        __ss_pad2: Padding<i64>,
+        __ss_pad3: Padding<[u8; 240]>,
     }
 
     pub struct siginfo_t {
@@ -634,9 +634,9 @@ s! {
         pub si_errno: c_int,
         pub si_addr: *mut c_char,
         #[cfg(target_pointer_width = "32")]
-        __pad: [u8; 112],
+        __pad: Padding<[u8; 112]>,
         #[cfg(target_pointer_width = "64")]
-        __pad: [u8; 108],
+        __pad: Padding<[u8; 108]>,
     }
 
     pub struct lastlog {
@@ -1460,6 +1460,15 @@ const SI_PAD: size_t = (SI_MAXSZ / size_of::<c_int>()) - 3;
 
 pub const MAP_STACK: c_int = 0x4000;
 pub const MAP_CONCEAL: c_int = 0x8000;
+
+// https://github.com/openbsd/src/blob/f8a2f73b6503213f5eb24ca315ac7e1f9421c0c9/sys/net/if.h#L135
+pub const LINK_STATE_UNKNOWN: c_int = 0; // link unknown
+pub const LINK_STATE_INVALID: c_int = 1; // link invalid
+pub const LINK_STATE_DOWN: c_int = 2; // link is down
+pub const LINK_STATE_KALIVE_DOWN: c_int = 3; // keepalive reports down
+pub const LINK_STATE_UP: c_int = 4; // link is up
+pub const LINK_STATE_HALF_DUPLEX: c_int = 5; // link is up and half duplex
+pub const LINK_STATE_FULL_DUPLEX: c_int = 6; // link is up and full duplex
 
 // https://github.com/openbsd/src/blob/HEAD/sys/net/if.h#L187
 pub const IFF_UP: c_int = 0x1; // interface is up

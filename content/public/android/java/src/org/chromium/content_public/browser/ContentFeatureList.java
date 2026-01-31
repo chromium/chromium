@@ -26,10 +26,15 @@ public class ContentFeatureList {
     // Features files, then remove the constants below.
 
     // Alphabetical:
+    public static final String ACCESSIBILITY_ATOMIC_LIVE_REGIONS = "AccessibilityAtomicLiveRegions";
+
     public static final String ACCESSIBILITY_DEPRECATE_TYPE_ANNOUNCE =
             "AccessibilityDeprecateTypeAnnounce";
 
     public static final String ACCESSIBILITY_EXTENDED_SELECTION = "AccessibilityExtendedSelection";
+
+    public static final String ACCESSIBILITY_IME_GET_FORMATTED_TEXT =
+            "AccessibilityImeGetFormattedText";
 
     public static final String ACCESSIBILITY_IMPROVE_LIVE_REGION_ANNOUNCE =
             "AccessibilityImproveLiveRegionAnnounce";
@@ -56,6 +61,9 @@ public class ContentFeatureList {
     public static final String ANDROID_MEDIA_INSERTION = "AndroidMediaInsertion";
 
     public static final String ANDROID_PK_AUTOCORRECT_UNDERLINE = "AndroidPkAutocorrectUnderline";
+
+    public static final String ANDROID_SPELLING_UNDERLINE_IN_COMPOSITION_MODE =
+            "AndroidSpellingUnderlineInCompositionMode";
 
     public static final String HIDE_PASTE_POPUP_ON_GSB = "HidePastePopupOnGSB";
 
@@ -152,7 +160,7 @@ public class ContentFeatureList {
     // Use a CachedFlag as this is often checked before native is loaded, and must stay consistent
     // once decided upon.
     public static final CachedFlag sJavalessRenderers =
-            new CachedFlag(ContentFeatureMap.getInstance(), JAVALESS_RENDERERS, false, false);
+            new CachedFlag(ContentFeatureMap.getInstance(), JAVALESS_RENDERERS, false, true);
 
     public static final MutableFlagWithSafeDefault sAndroidDesktopZoomScaling =
             new MutableFlagWithSafeDefault(

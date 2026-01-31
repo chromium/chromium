@@ -63,20 +63,17 @@ class TabOrganizationService : public KeyedService,
   // existing session, they should first call GetSessionForBrowser to confirm.
   TabOrganizationSession* CreateSessionForBrowser(
       const Browser* browser,
-      const TabOrganizationEntryPoint entrypoint,
       const tabs::TabInterface* base_session_tab = nullptr);
 
   // If the session exists, destroys the session, calls CreateSessionForBrowser.
   TabOrganizationSession* ResetSessionForBrowser(
       const Browser* browser,
-      const TabOrganizationEntryPoint entrypoint,
       const tabs::TabInterface* base_session_tab = nullptr);
 
   // Convenience method that resets the session, starts a request if not in the
   // first run experience, and opens the Organization UI.
   void RestartSessionAndShowUI(
       const Browser* browser,
-      const TabOrganizationEntryPoint entrypoint,
       const tabs::TabInterface* base_session_tab = nullptr);
 
   // Allows for other User actions to open up the Organization UI.
@@ -94,14 +91,12 @@ class TabOrganizationService : public KeyedService,
 
   // Checks if the user is in the first run experience, and starts a request if
   // not.
-  void StartRequestIfNotFRE(const Browser* browser,
-                            const TabOrganizationEntryPoint entrypoint);
+  void StartRequestIfNotFRE(const Browser* browser);
 
   // Starts a request for the tab organization session that exists for the
   // browser, creating a new session if one does not already exists. Does not
   // start a request if one is already started.
-  void StartRequest(const Browser* browser,
-                    const TabOrganizationEntryPoint entrypoint);
+  void StartRequest(const Browser* browser);
 
   void AddObserver(TabOrganizationObserver* observer) {
     observers_.AddObserver(observer);

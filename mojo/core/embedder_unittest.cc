@@ -59,8 +59,9 @@ MojoResult CreateSharedBufferFromRegion(T&& region, MojoHandle* handle) {
   MojoResult result =
       SharedBufferDispatcher::CreateFromPlatformSharedMemoryRegion(
           T::TakeHandleForSerialization(std::forward<T>(region)), &buffer);
-  if (result != MOJO_RESULT_OK)
+  if (result != MOJO_RESULT_OK) {
     return result;
+  }
 
   *handle = Core::Get()->AddDispatcher(std::move(buffer));
   return MOJO_RESULT_OK;
@@ -79,8 +80,10 @@ MojoResult ExtractRegionFromSharedBuffer(MojoHandle handle, T* region) {
 #if BUILDFLAG(MOJO_SUPPORT_LEGACY_CORE)
     scoped_refptr<Dispatcher> dispatcher =
         Core::Get()->GetAndRemoveDispatcher(handle);
-    if (!dispatcher || dispatcher->GetType() != Dispatcher::Type::SHARED_BUFFER)
+    if (!dispatcher ||
+        dispatcher->GetType() != Dispatcher::Type::SHARED_BUFFER) {
       return MOJO_RESULT_INVALID_ARGUMENT;
+    }
 
     auto* buffer = static_cast<SharedBufferDispatcher*>(dispatcher.get());
     platform_region = buffer->PassPlatformSharedMemoryRegion();
@@ -125,8 +128,9 @@ TEST_F(EmbedderTest, SendMessagePipeWithWriteQueue) {
   CreateMessagePipe(&server_mp2, &client_mp2);
 
   static const size_t kNumMessages = 1001;
-  for (size_t i = 1; i <= kNumMessages; i++)
+  for (size_t i = 1; i <= kNumMessages; i++) {
     WriteMessage(client_mp2, std::string(i, 'A' + (i % 26)));
+  }
 
   // Now send client2.
   WriteMessageWithHandles(server_mp, "hey", &client_mp2, 1);
@@ -137,8 +141,9 @@ TEST_F(EmbedderTest, SendMessagePipeWithWriteQueue) {
   EXPECT_NE(MOJO_HANDLE_INVALID, client_mp2);
 
   // Now verify that all the messages that were written were sent correctly.
-  for (size_t i = 1; i <= kNumMessages; i++)
+  for (size_t i = 1; i <= kNumMessages; i++) {
     ASSERT_EQ(std::string(i, 'A' + (i % 26)), ReadMessage(server_mp2));
+  }
 
   ASSERT_EQ(MOJO_RESULT_OK, MojoClose(server_mp2));
   ASSERT_EQ(MOJO_RESULT_OK, MojoClose(client_mp2));
@@ -379,7 +384,10 @@ enum class HandleType {
 };
 
 const HandleType kTestHandleTypes[] = {
-    HandleType::MACH, HandleType::POSIX, HandleType::POSIX, HandleType::MACH,
+    HandleType::MACH,
+    HandleType::POSIX,
+    HandleType::POSIX,
+    HandleType::MACH,
 };
 
 // Test that we can mix file descriptors and mach port handles.

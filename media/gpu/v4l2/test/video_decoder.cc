@@ -14,7 +14,6 @@
 #include <vector>
 
 #include "base/bits.h"
-#include "base/containers/contains.h"
 #include "base/logging.h"
 #include "media/base/video_types.h"
 #include "media/gpu/v4l2/test/upstream_pix_fmt.h"
@@ -64,7 +63,7 @@ void VideoDecoder::NegotiateCAPTUREFormat() {
   // may prefer a different format than what is needed. If
   // not, negotiations need to be done to see if the preferred format can
   // be used.
-  if (!base::Contains(kPreferredFormats, fourcc)) {
+  if (!std::ranges::contains(kPreferredFormats, fourcc)) {
     bool format_found = false;
     for (const auto& preferred_fourcc : kPreferredFormats) {
       VLOG(1) << "Trying to see if preferred format ("

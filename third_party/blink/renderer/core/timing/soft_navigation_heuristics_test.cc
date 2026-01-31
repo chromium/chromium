@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/notreached.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/time/time.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/scheduler/task_attribution_id.h"
@@ -81,6 +82,8 @@ TEST_F(SoftNavigationHeuristicsTest,
 }
 
 TEST_F(SoftNavigationHeuristicsTest, ResetHeuristicOnSetBecameEmpty) {
+  base::HistogramTester histogram_tester;
+
   auto* heuristics = CreateSoftNavigationHeuristicsForTest();
   ASSERT_TRUE(heuristics);
 
@@ -96,6 +99,12 @@ TEST_F(SoftNavigationHeuristicsTest, ResetHeuristicOnSetBecameEmpty) {
     std::optional<SoftNavigationHeuristics::EventScope> event_scope(
         heuristics->MaybeCreateEventScopeForInputEvent(*event));
     root_task_state = tracker->CurrentTaskState();
+
+    // Set the URL so a histogram entry gets logged. Do this directly through
+    // the context to avoid other objects holding a reference to it, which would
+    // prevent garbage collection.
+    root_task_state->GetSoftNavigationContext()->AddUrl(
+        "foo", base::UnguessableToken::Create());
   }
   EXPECT_TRUE(root_task_state);
   EXPECT_TRUE(heuristics->IsTrackingSoftNavigationsForTest());
@@ -118,12 +127,16 @@ TEST_F(SoftNavigationHeuristicsTest, ResetHeuristicOnSetBecameEmpty) {
   // The heuristics still should not have been reset since there is a live
   // root task, which is being held onto by its descendant task.
   EXPECT_TRUE(heuristics->IsTrackingSoftNavigationsForTest());
+  histogram_tester.ExpectTotalCount("PageLoad.Internal.SoftNavigationOutcome",
+                                    0);
 
   // Finally, this should allow the click task to be GCed, which should cause
   // the heuristics to be reset.
   descendant_task_state = nullptr;
   ThreadState::Current()->CollectAllGarbageForTesting();
   EXPECT_FALSE(heuristics->IsTrackingSoftNavigationsForTest());
+  histogram_tester.ExpectTotalCount("PageLoad.Internal.SoftNavigationOutcome",
+                                    1);
 }
 
 TEST_F(SoftNavigationHeuristicsTest, NestedEventScopesAreMerged) {
@@ -244,9 +257,12 @@ TEST_F(SoftNavigationHeuristicsTest, SoftNavigationEmittedOnlyOnce) {
   // Simulate a paint in a separate task.
   {
     TextRecord* record = CreateTextRecordForTest(node1, 1000, 1000, context);
+    record->SetPaintTime(/*paint_time=*/base::TimeTicks::Now(),
+                         /*info=*/DOMPaintTimingInfo());
     context->AddPaintedArea(record);
     heuristics->OnPaintFinished();
     EXPECT_TRUE(context->SatisfiesSoftNavPaintCriteria(1));
+    EXPECT_TRUE(context->HasFirstContentfulPaint());
     EXPECT_EQ(heuristics->SoftNavigationCount(), 1u);
   }
 
@@ -266,6 +282,8 @@ TEST_F(SoftNavigationHeuristicsTest, SoftNavigationEmittedOnlyOnce) {
   // And another paint
   {
     TextRecord* record = CreateTextRecordForTest(node2, 1000, 1000, context);
+    record->SetPaintTime(/*paint_time=*/base::TimeTicks::Now(),
+                         /*info=*/DOMPaintTimingInfo());
     context->AddPaintedArea(record);
     heuristics->OnPaintFinished();
     EXPECT_TRUE(context->SatisfiesSoftNavPaintCriteria(1));

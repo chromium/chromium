@@ -5,6 +5,8 @@
 #include "third_party/blink/renderer/core/css/css_dynamic_range_limit_mix_value.h"
 
 #include "base/memory/values_equivalent.h"
+#include "third_party/blink/renderer/core/css/css_primitive_value.h"
+#include "third_party/blink/renderer/core/css/css_value.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 
 namespace blink::cssvalue {
@@ -37,6 +39,20 @@ String CSSDynamicRangeLimitMixValue::CustomCSSText() const {
   }
   result.Append(")");
   return result.ReleaseString();
+}
+
+bool CSSDynamicRangeLimitMixValue::HasRandomFunctions() const {
+  for (const CSSValue* limit : limits_) {
+    if (limit->HasRandomFunctions()) {
+      return true;
+    }
+  }
+  for (const CSSPrimitiveValue* percentage : percentages_) {
+    if (percentage->HasRandomFunctions()) {
+      return true;
+    }
+  }
+  return false;
 }
 
 void CSSDynamicRangeLimitMixValue::TraceAfterDispatch(

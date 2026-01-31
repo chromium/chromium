@@ -15,7 +15,7 @@
 // Any change to this class should also be reflected on
 // `ProfileKeyedServiceFactory`.
 // For simplicity the unit tests are found in
-// profile_keyed_service_factory_unittests.cc.
+// profile_keyed_service_factory_unittest.cc.
 class RefcountedProfileKeyedServiceFactory
     : public RefcountedBrowserContextKeyedServiceFactory {
  public:

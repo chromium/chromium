@@ -58,8 +58,7 @@ class ToolbarLayer : public Layer {
                          int progress_bar_static_background_color,
                          float corner_radius,
                          bool progress_bar_visual_update_available,
-                         bool visible,
-                         const viz::OffsetTag& offset_tag);
+                         bool visible);
 
   void SetOpacity(float opacity);
 
@@ -72,22 +71,9 @@ class ToolbarLayer : public Layer {
 
   int GetIndexOfLayer(scoped_refptr<cc::slim::Layer> layer);
 
-  scoped_refptr<cc::slim::Layer> ToolbarParentLayer();
-
   base::WeakPtr<ui::ResourceManager> resource_manager_;
 
-  // Root layer
   scoped_refptr<cc::slim::Layer> layer_;
-
-  // Layers which are tagged with the toolbar's OffsetTag. These layers only
-  // move vertically.
-  scoped_refptr<cc::slim::Layer> toolbar_layers_;
-
-  // Layers which are tagged with the progress bar's OffsetTag. These layers
-  // move with the same vertical movement as the toolbar_layers, but also move
-  // horizontally from load progress updates.
-  scoped_refptr<cc::slim::Layer> progress_bar_layers_;
-
   scoped_refptr<cc::slim::SolidColorLayer> toolbar_background_layer_;
   scoped_refptr<cc::slim::NinePatchLayer> url_bar_background_layer_;
   scoped_refptr<cc::slim::UIResourceLayer> bitmap_layer_;

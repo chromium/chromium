@@ -49,12 +49,13 @@ _EXAMPLE_BLOBS_BEFORE = """
 
 
 class BinarySizeDifferTest(unittest.TestCase):
-  def ChangePackageSize(
-      self,
-      packages: MutableMapping[str, binary_sizes.PackageSizes],
-      name: str,
-      compressed_increase: int,
-      uncompressed_increase: Optional[int] = None):
+
+  def ChangePackageSize(self,
+                        packages: MutableMapping[str,
+                                                 binary_sizes.PackageSizes],
+                        name: str,
+                        compressed_increase: int,
+                        uncompressed_increase: Optional[int] = None):
     if uncompressed_increase is None:
       uncompressed_increase = compressed_increase
     original_package = packages[name]
@@ -63,6 +64,7 @@ class BinarySizeDifferTest(unittest.TestCase):
         uncompressed=original_package.uncompressed + uncompressed_increase)
     packages[name] = new_package
 
+  # TODO: Split this into smaller tests.
   def testComputePackageDiffs(self):
     # TODO(crbug.com/40219667): Disabled on Windows because Windows doesn't allow opening a
     # NamedTemporaryFile by name.
@@ -98,31 +100,36 @@ class BinarySizeDifferTest(unittest.TestCase):
         self.assertEqual(growth['status_code'], SUCCESS)
         self.assertEqual(growth['compressed']['web_engine'], 8 * 1024)
 
-        # Increase beyond the limit (adds another 8k)
-        self.ChangePackageSize(other_sizes, 'web_engine', 8 * 1024 + 1)
+        # Increase beyond the limit (adds another 24k)
+        self.ChangePackageSize(other_sizes,
+                               'web_engine',
+                               24 * 1024 + 1,
+                               uncompressed_increase=16 * 1024)
         binary_sizes.WritePackageSizesJson(after_file.name, other_sizes)
         growth = binary_size_differ.ComputePackageDiffs(before_file.name,
                                                         after_file.name)
         self.assertEqual(growth['status_code'], FAILURE)
-        self.assertEqual(growth['compressed']['web_engine'], 16 * 1024 + 1)
+        self.assertEqual(growth['compressed']['web_engine'], 32 * 1024 + 1)
         self.assertIn('check failed', growth['summary'])
-        self.assertIn(f'web_engine (compressed) grew by {16 * 1024 + 1} bytes',
+        self.assertIn(f'web_engine (compressed) grew by {32 * 1024 + 1} bytes',
                       growth['summary'])
 
-        # Increase beyond the limit, but compressed does not increase.
+        # Increase beyond the limit, but compressed does not.
+        other_sizes = copy.deepcopy(sizes)
         binary_sizes.WritePackageSizesJson(before_file.name, other_sizes)
         self.ChangePackageSize(other_sizes,
                                'web_engine',
-                               16 * 1024 + 1,
-                               uncompressed_increase=0)
+                               32 * 1024 + 1,
+                               uncompressed_increase=15 * 1024)
         binary_sizes.WritePackageSizesJson(after_file.name, other_sizes)
         growth = binary_size_differ.ComputePackageDiffs(before_file.name,
                                                         after_file.name)
-        self.assertEqual(growth['uncompressed']['web_engine'], SUCCESS)
+        self.assertEqual(growth['uncompressed']['web_engine'], 15 * 1024)
         self.assertEqual(growth['status_code'], SUCCESS)
-        self.assertEqual(growth['compressed']['web_engine'], 16 * 1024 + 1)
+        self.assertEqual(growth['compressed']['web_engine'], 32 * 1024 + 1)
 
         # Increase beyond the limit, but compressed goes down.
+        other_sizes = copy.deepcopy(sizes)
         binary_sizes.WritePackageSizesJson(before_file.name, other_sizes)
         self.ChangePackageSize(other_sizes,
                                'web_engine',
@@ -135,33 +142,35 @@ class BinarySizeDifferTest(unittest.TestCase):
         self.assertEqual(growth['compressed']['web_engine'], 16 * 1024 + 1)
 
         # Increase beyond the second limit. Fails, regardless of uncompressed.
+        other_sizes = copy.deepcopy(sizes)
         binary_sizes.WritePackageSizesJson(before_file.name, other_sizes)
         self.ChangePackageSize(other_sizes,
                                'web_engine',
-                               100 * 1024 + 1,
+                               128 * 1024 + 1,
                                uncompressed_increase=-4 * 1024)
         binary_sizes.WritePackageSizesJson(after_file.name, other_sizes)
         growth = binary_size_differ.ComputePackageDiffs(before_file.name,
                                                         after_file.name)
         self.assertEqual(growth['status_code'], FAILURE)
-        self.assertEqual(growth['compressed']['web_engine'], 100 * 1024 + 1)
+        self.assertEqual(growth['compressed']['web_engine'], 128 * 1024 + 1)
 
         # Increase beyond the second limit, but roller authored CL.
+        other_sizes = copy.deepcopy(sizes)
         binary_sizes.WritePackageSizesJson(before_file.name, other_sizes)
         self.ChangePackageSize(other_sizes,
                                'web_engine',
-                               100 * 1024 + 1,
+                               128 * 1024 + 1,
                                uncompressed_increase=-4 * 1024)
         binary_sizes.WritePackageSizesJson(after_file.name, other_sizes)
         growth = binary_size_differ.ComputePackageDiffs(before_file.name,
                                                         after_file.name,
                                                         author='big-autoroller')
         self.assertEqual(growth['status_code'], ROLLER_SIZE_WARNING)
-        self.assertEqual(growth['compressed']['web_engine'], 100 * 1024 + 1)
+        self.assertEqual(growth['compressed']['web_engine'], 128 * 1024 + 1)
         self.assertNotIn('check failed', growth['summary'])
         self.assertIn('growth by an autoroller will be ignored',
                       growth['summary'])
-        self.assertIn(f'web_engine (compressed) grew by {100 * 1024 + 1} bytes',
+        self.assertIn(f'web_engine (compressed) grew by {128 * 1024 + 1} bytes',
                       growth['summary'])
       finally:
         os.remove(after_file.name)

@@ -7,8 +7,7 @@
 #include "base/check.h"
 #include "base/check_op.h"
 
-namespace ash {
-namespace quick_pair {
+namespace ash::quick_pair {
 
 namespace {
 
@@ -43,5 +42,4 @@ void QuickPairBrowserDelegate::SetInstanceForTesting(
   g_test_instance = instance;
 }
 
-}  // namespace quick_pair
-}  // namespace ash
+}  // namespace ash::quick_pair

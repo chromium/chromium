@@ -87,6 +87,7 @@
 <translation id="1874309113135274312">Google Chrome Beta (mDNS-In)</translation>
 <translation id="1877026089748256423">Chrome versija ir novecojusi.</translation>
 <translation id="1880677175115548835">Atlasīt tekstu</translation>
+<translation id="1896602904211344018">Iegūt lietotni Chrome</translation>
 <translation id="1919130412786645364">Atļaut pierakstīties pārlūkā Chrome</translation>
 <translation id="1953553007165777902">Notiek lejupielāde... Atlikušais laiks: <ph name="MINUTE" /> minūte(-es).</translation>
 <translation id="1979600810166324878">Saņemiet labāku aizsardzību, atrodoties ceļā, ar funkciju “Droša pārlūkošana ar papildu aizsardzību” pārlūkā Chrome operētājsistēmai iOS.</translation>
@@ -120,6 +121,7 @@
 <translation id="2216543877350048334">Lai noņemtu savu Google kontu no pārlūka Chrome, izrakstieties.</translation>
 <translation id="2236949375853147973">Manas darbības</translation>
 <translation id="22791603784558743">Aizvērt Gemini pārlūka Chrome izstrādātāju versijā</translation>
+<translation id="2284380654876659752">Kad apmeklējat kādu vietni, pārlūks Chrome nosūta funkcijai <ph name="BEGIN_LINK" />Google droša pārlūkošana<ph name="END_LINK" /> pieslēptu URL daļu, izmantojot konfidencialitātes serveri, kas slēpj jūsu IP adresi. Ja vietnē tiek veiktas aizdomīgas darbības, tiek nosūtīti arī pilni URL un lapas satura fragmenti.</translation>
 <translation id="2290014774651636340">Trūkst Google API atslēgu. Tiks atspējotas dažas Google Chrome funkcijas.</translation>
 <translation id="2290095356545025170">Vai tiešām vēlaties atinstalēt Google Chrome?</translation>
 <translation id="2301513536169703857">Pierakstieties pārlūkā Chrome, lai varētu piekļūt parolēm, grāmatzīmēm un citiem datiem visās savās ierīcēs.</translation>
@@ -172,7 +174,6 @@
 <translation id="2857540653560290388">Notiek Chrome palaišana...</translation>
 <translation id="286025080868315611">Uzziniet, kāpēc Chrome bloķē noteiktas lejupielādes</translation>
 <translation id="2861074815332034794">Notiek Chrome atjaunināšana (<ph name="PROGRESS_PERCENT" />)</translation>
-<translation id="2871893339301912279">Esat pierakstījies pārlūkā Chrome!</translation>
 <translation id="2875053229394024379">Pierakstoties pārlūkā Chrome ar savu Google kontu, varat izmantot savu Chrome profilu ar Gemini. <ph name="BEGIN_LINK" />Uzziniet, kā pierakstīties pārlūkā Chrome<ph name="END_LINK" />.</translation>
 <translation id="2876628302275096482">Uzziniet vairāk par to, <ph name="BEGIN_LINK" />kā pārlūkā Chrome tiek saglabāta jūsu datu konfidencialitāte<ph name="END_LINK" />.</translation>
 <translation id="2885378588091291677">Uzdevumu pārvaldnieks</translation>
@@ -270,7 +271,9 @@
 <translation id="3885770153807205175">Valodas atlasītājs</translation>
 <translation id="3889417619312448367">Atinstalēt Google Chrome</translation>
 <translation id="3892148308691398805">Kopēt tekstu</translation>
+<translation id="3893985792899396936">Chrome padoms: meklējiet, izmantojot Lens</translation>
 <translation id="3906096710440765802">Pierakstieties pārlūkā Chrome, lai iegūtu savas paroles, grāmatzīmes un citu saturu visās savās ierīcēs.</translation>
+<translation id="3921132130819999051">Ļaujiet pārlūkam Chrome veikt pārlūkošanu jūsu vietā</translation>
 <translation id="3941890832296813527">Instalēšanas kļūda: instalēšanas programmas faila nosaukums nav derīgs vai netiek atbalstīts.</translation>
 <translation id="395904275706073188">Aizsargātas lapas nevar lasīt. Izmēģiniet citu lapu.</translation>
 <translation id="3968962723676998462">Lai savā kontā (<ph name="ACCOUNT_EMAIL" />) izmantotu un saglabātu Chrome datus, ievadiet ieejas frāzi.</translation>
@@ -302,6 +305,7 @@
 <translation id="4242034826641750751">Pārlūkam Chrome ir nepieciešama atļauja izmantot kameru un mikrofonu šajā vietnē.</translation>
 <translation id="424864128008805179">Vai izrakstīties no pārlūka Chrome?</translation>
 <translation id="4251615635259297716">Vai saistīt Chrome datus ar šo kontu?</translation>
+<translation id="4280647692742956593">Lejupielādējiet pārlūku Chrome savā tālrunī, lai atvērtu vai izveidotu jaunas ciļņu grupas, atrodoties ceļā.</translation>
 <translation id="4281844954008187215">Google pakalpojumu noteikumi</translation>
 <translation id="4293420128516039005">Pierakstieties, lai sinhronizētu un personalizētu Chrome visās savās ierīcēs.</translation>
 <translation id="430327780270213103">Atļaut paplašinājumam rādīt piekļuves pieprasījumus Chrome rīkjoslā</translation>
@@ -310,8 +314,8 @@
 <translation id="4329315893554541805">Lai varētu izmantot personalizēšanu un citas funkcijas, iekļaujiet pārlūku Chrome iestatījumos “Darbības tīmeklī un lietotnēs” un “Saistītie Google pakalpojumi”.</translation>
 <translation id="4334241893986177674">Meklēt šajā ekrānuzņēmumā</translation>
 <translation id="4334294535648607276">Lejupielāde pabeigta.</translation>
-<translation id="4337324600316876133">Lai saņemtu turpmākus Google Chrome atjauninājumus, nepieciešama operētājsistēma macOS 12 vai jaunāka versija. Šajā datorā tiek izmantota operētājsistēma macOS 11.</translation>
 <translation id="4343195214584226067">Paplašinājums <ph name="EXTENSION_NAME" /> pievienots pārlūkam Chrome</translation>
+<translation id="4344128547036991536">Kad atvērsiet Google Lens, Google serveriem tiks automātiski nosūtīts lapas nosaukums, vietrādis URL un saturs, tostarp PDF faili. <ph name="LEARN_MORE" /></translation>
 <translation id="4348548358339558429">Lai izmantotu personalizēšanu, iekļaujiet pārlūku Chrome iestatījumā “Darbības tīmeklī un lietotnēs”</translation>
 <translation id="436060642166082913">Pārlūkā Chrome šī lejupielāde tika bloķēta, jo šis fails var kaitēt jūsu personīgajiem un sociālo tīklu kontiem</translation>
 <translation id="4367027658822022112">Varat piespraust funkciju Google Lens, lai ērti tai piekļūtu. Sānu paneļa augšdaļā noklikšķiniet uz pogas “Piespraust”.</translation>
@@ -323,7 +327,6 @@
 <translation id="4459234553906210702">Reklāmu izvērtēšana ļauj jūsu apmeklētajām vietnēm pieprasīt informāciju no Chrome, lai efektīvāk novērtētu vietnēs rādīto reklāmu veiktspēju. Reklāmu izvērtēšana ierobežo starpvietņu izsekošanu, pārsūtot starp vietnēm pēc iespējas mazāk informācijas.</translation>
 <translation id="4493028449971051158">Palaišanas kļūda: lūdzu, palaidiet instalēšanas programmu kā administrators.</translation>
 <translation id="4501471624619070934">Instalēšana neizdevās, jo šajā valstī piekļuve ir ierobežota.</translation>
-<translation id="4567424176335768812">Jūs esat pierakstījies kā <ph name="USER_EMAIL_ADDRESS" />. Tagad varat piekļūt savām grāmatzīmēm, vēsturei un citiem iestatījumiem visās ierīcēs, kurās esat pierakstījies.</translation>
 <translation id="4571503333518166079">Pāriet uz Chrome paziņojumu iestatījumiem</translation>
 <translation id="4592634244097223647">Jautāt Google par šo attēlu</translation>
 <translation id="459622048091363950">Tiklīdz pārlūkam Chrome tiks sniegta piekļuve, vietnes varēs lūgt jums piekļuvi.</translation>
@@ -353,10 +356,10 @@
 <translation id="4885446229353981848">Vienmēr rādīt Google Lens saīsni</translation>
 <translation id="4891791193823137474">Ļaut Google Chrome darboties fonā</translation>
 <translation id="4895437082222824641">Atvērt saiti jaunā Chrome &amp;cilnē</translation>
+<translation id="4918086044614829423">Pieņemt</translation>
 <translation id="4918844574251943176">Attēls ir nokopēts</translation>
 <translation id="4926882258455737990">Lai izmantotu citu Google kontu ar Gemini pārlūkā Chrome, <ph name="BEGIN_LINK" />izveidojiet jaunu profilu<ph name="END_LINK" /> un pierakstieties, izmantojot attiecīgo kontu.</translation>
 <translation id="492720062778050435">Chrome iesaka pārskatīt šo paplašinājumu</translation>
-<translation id="4946912144186040233">Chrome labāk izprot veidlapas un var tās ātrāk automātiski aizpildīt. Šis iestatījums ir izslēgts.</translation>
 <translation id="4953650215774548573">Iestatīt Google Chrome kā manu noklusējuma pārlūku</translation>
 <translation id="495931528404527476">Pārlūkprogrammā Chrome</translation>
 <translation id="4969674060580488087">Chrome OS Flex nevarēja sinhronizēt jūsu datus, jo jūsu konta pierakstīšanās informācija ir novecojusi.</translation>
@@ -366,6 +369,7 @@
 <translation id="5003967926796347400">Noklikšķiniet uz Google paroļu pārvaldnieks.</translation>
 <translation id="5043786843026425788">Uzzināt vairāk par meklēšanu, izmantojot Google Lens pārlūkā Chrome</translation>
 <translation id="504867494566807945">Atveriet saites pārlūkā Chrome no jebkuras lietotnes. Turklāt pārlūks tiks piesprausts uzdevumjoslā, lai nodrošinātu ērtāku piekļuvi.</translation>
+<translation id="5105120510934353742">Lai saņemtu turpmākus Google Chrome atjauninājumus, nepieciešama operētājsistēma macOS 13 vai jaunāka versija. Šajā datorā tiek izmantota operētājsistēma macOS 12.</translation>
 <translation id="5114340746415930644">Lai savā kontā (<ph name="USER_EMAIL" />) izmantotu un saglabātu Chrome datus, ievadiet ieejas frāzi.</translation>
 <translation id="5120334927898581447">Automātiska pierakstīšanās pārlūkā Chrome, kad pierakstāties citos Google pakalpojumos</translation>
 <translation id="5126049312684316860">Pārlūkā Chrome tiek iepriekš ielādēts vēl vairāk lapu, ko jūs, iespējams, apmeklēsiet. Tādējādi var tās ielādēt ātrāk tad, kad tās tiešām apmeklējat.</translation>
@@ -375,6 +379,7 @@
 <translation id="5163087008893166964">Laipni lūdzam pārlūkā Chrome (tika atvērts jauns pārlūka logs)!</translation>
 <translation id="5166439563123238795">Pārlūkam Chrome ir nepieciešama atļauja izsekot jūsu roku kustības.</translation>
 <translation id="5167819546851111585">Kas jums šodien padomā?</translation>
+<translation id="5169778651486082413">Izmantojiet savas paroles pārlūkā Chrome savā tālrunī</translation>
 <translation id="5170938038195470297">Jūsu profilu nevar lietot, jo tas ir veidots ar jaunāku Google Chrome versiju.
 
 Dažas funkcijas var nebūt pieejamas. Norādiet citu profila direktoriju vai lietojiet jaunāku Chrome versiju.</translation>
@@ -402,9 +407,7 @@ Dažas funkcijas var nebūt pieejamas. Norādiet citu profila direktoriju vai li
 <translation id="5430073640787465221">Jūsu preferenču fails ir bojāts vai nederīgs. Google Chrome nespēj atkopt jūsu iestatījumus.</translation>
 <translation id="5465210843490471889">Izvēlieties Chrome profilu, ko izmantot ar <ph name="START_GLIC_STYLING" />Gemini<ph name="END_GLIC_STYLING" /></translation>
 <translation id="5468572406162360320">Lai palīdzētu uzlabot šīs funkcijas, pārlūks Chrome nosūta Google serveriem datus par jūsu mijiedarbību ar tām. Šos datus var lasīt, apstrādāt un anotēt pārskatītāji.</translation>
-<translation id="5510398294750420479">Lejupielādējiet pārlūku Chrome savā tālrunī, lai nodrošinātu papildu aizsardzību, atrodoties ceļā.</translation>
 <translation id="5524890928877629608">meklēšanas apgabala augšējais kreisais stūris: <ph name="LEFT" />% pa kreisi, <ph name="TOP" />% augšdaļā</translation>
-<translation id="5530733413481476019">Pārlūka Chrome darbības paātrināšana</translation>
 <translation id="5550137307985173298">Jaunas cilnes lapā noklikšķiniet uz pogas Pielāgot pārlūku Chrome, lai piešķirtu pārlūkam Chrome jaunu izskatu.</translation>
 <translation id="5566025111015594046">Google Chrome (mDNS ienākošā datplūsma)</translation>
 <translation id="5579324208890605088">Palaišanas kļūda: lūdzu, palaidiet instalēšanas programmu kā parasts lietotājs, nevis kā administrators.</translation>
@@ -422,6 +425,7 @@ Dažas funkcijas var nebūt pieejamas. Norādiet citu profila direktoriju vai li
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="569897634095159764">Nevar izveidot savienojumu ar internetu. Starpniekserverī ir nepieciešama autentifikācija.</translation>
 <translation id="5709557627224531708">Chrome iestatīšana par noklusējuma pārlūku</translation>
+<translation id="5719246646468301581">Google Chrome un ChromeOS pakalpojumu sniegšanas papildu noteikumi</translation>
 <translation id="5719324992913248873">Veicot šo darbību, tiks ieviestas tālāk norādītās izmaiņas.
           <ph name="LINE_BREAKS" />
            • Tiks atiestatīti noteikti Chrome iestatījumi un Chrome īsinājumtaustiņi.
@@ -458,6 +462,7 @@ Dažas funkcijas var nebūt pieejamas. Norādiet citu profila direktoriju vai li
 <translation id="6008161919456049856">Jūsu Google kontā saglabātās paroles, maksājuma veidi un adreses tiks noņemtas no šīs ierīces. Lai atkal izmantotu šos datus pārlūkā Chrome, atkārtoti pierakstieties.</translation>
 <translation id="6009821354356307391">Uzdot papildu jautājumu</translation>
 <translation id="6014316319780893079">Izmantojot <ph name="BEGIN_LINK" />Chrome rīkus<ph name="END_LINK" />, varat droši pārlūkot saturu un pārvaldīt jums pieejamās iespējas.</translation>
+<translation id="6018578474045062808">Izmēģiniet Google Lens pārlūkā Chrome savā tālrunī</translation>
 <translation id="6022659036123304283">Pielāgojiet Chrome savām prasībām</translation>
 <translation id="6025087594896450715">Pārlūks Google Chrome tiks restartēts pēc: <ph name="REMAINING_TIME" /></translation>
 <translation id="6040143037577758943">Aizvērt</translation>
@@ -480,6 +485,8 @@ Dažas funkcijas var nebūt pieejamas. Norādiet citu profila direktoriju vai li
 <translation id="6173637689840186878"><ph name="PAGE_TITLE" /> — Google Chrome beta versija</translation>
 <translation id="6180522807229584611">Šī cilne izmanto papildu resursus. Lai uzlabotu veiktspēju, ļaujiet pārlūkā Chrome padarīt to neaktīvu.</translation>
 <translation id="6182736845697986886">Instalēšana neizdevās, jo radās atjauninājumu servera iekšēja kļūda.</translation>
+<translation id="6183773856988300112">Gemini pārlūkā Chrome izmanto automātisko pārlūkošanu, lai darbotos jūsu cilnēs un veiktu jūsu dotos uzdevumus. <ph name="LINK_BEGIN" />Uzziniet vairāk<ph name="LINK_END" />.</translation>
+<translation id="6187085551300363958">Chrome padoms: paroļu saglabāšana</translation>
 <translation id="6192058120268468905">Jūsu konts pārlūkā Chrome</translation>
 <translation id="6220551899604141979"><ph name="PARTNER_NAME" /> pievienoja paplašinājumu, kas var ietekmēt pārlūka Chrome darbību.
 
@@ -499,6 +506,7 @@ Dažas funkcijas var nebūt pieejamas. Norādiet citu profila direktoriju vai li
 <translation id="6326175484149238433">Noņemt no pārlūka Chrome</translation>
 <translation id="6327105987658262776">Atjauninājums nav pieejams.</translation>
 <translation id="6334815226785304306">Iestatīt Google Chrome kā noklusējuma pārlūku un piespraust to uzdevumu joslai</translation>
+<translation id="63540178978900677">Chrome vairs nav jūsu noklusējuma pārlūks. Vai iestatīt Chrome par noklusējuma pārlūku?</translation>
 <translation id="6360449101159168105">Kamēr šī cilne nebija aktīva, tika atbrīvota atmiņa pārlūka Chrome ātrākai darbībai. Varat izvēlēties vienmēr saglabāt šo vietni aktīvu.</translation>
 <translation id="6388799252195623474">palīdzēt man ar šo</translation>
 <translation id="6412673304250309937">Vietrāži URL tiek pārbaudīti, salīdzinot ar nedrošu vietņu sarakstu, kas glabājas pārlūkprogrammā Chrome. Ja kādā vietnē tiek mēģināts nozagt jūsu paroli vai ja jūs lejupielādējat kaitīgu failu, Chrome var nosūtīt attiecīgo URL un lapas satura fragmentus uz funkciju Droša pārlūkošana.</translation>
@@ -506,6 +514,8 @@ Dažas funkcijas var nebūt pieejamas. Norādiet citu profila direktoriju vai li
 <translation id="6418662306461808273">Vai pāriet uz esošo Chrome profilu?</translation>
 <translation id="6426623519983252346">Kad nākamreiz iOS ierīcē atvērsiet pārlūku Chrome, tiks parādīts aicinājums izmēģināt funkciju <ph name="FEATURE_NAME" />.</translation>
 <translation id="6434035853014503219">Paldies, ka izvēlējāties Chrome kā noklusējuma pārlūku!</translation>
+<translation id="6438015621983209660">Izmantojiet funkciju “Droša pārlūkošana ar papildu aizsardzību” pārlūkā Chrome savā tālrunī</translation>
+<translation id="6442774133615368941">Iepērcieties, tulkojiet un identificējiet redzamo saturu, izmantojot kameru iOS lietotnē Chrome.</translation>
 <translation id="6473905796280459355">Pāriet uz lapu “Par Chrome”</translation>
 <translation id="6481963882741794338">Saistiet pārlūku Chrome un citus Google pakalpojumus personalizēšanai un citiem mērķiem</translation>
 <translation id="648319183876919572">Droša pārlūkošana ar papildu aizsardzību nodrošina efektīvāku aizsardzību pret bīstamām vietnēm un lejupielādēm</translation>
@@ -578,12 +588,14 @@ Dažas funkcijas var nebūt pieejamas. Norādiet citu profila direktoriju vai li
 <translation id="7193885263065350793">Jūsu organizācija aizver pārlūku Chrome, ja tas <ph name="TIMEOUT_DURATION" /> netiek izmantots.</translation>
 <translation id="7242029209006116544">Jūs pierakstāties ar pārvaldītu kontu un nodrošināt, ka tā administrators var pārvaldīt jūsu Google Chrome profilu. Jūsu Chrome dati, piemēram, lietotnes, grāmatzīmes, vēsture, paroles un citi iestatījumi tiks neatgriezeniski saistīti ar lietotāju <ph name="USER_NAME" />. Varēsiet dzēst šos datus, izmantojot Google kontu informācijas paneli, taču nevarēsiet saistīt šos datus ar citu kontu. Ja vēlaties, varat izveidot jaunu profilu, lai atsevišķi glabātu Chrome datus. <ph name="LEARN_MORE" /></translation>
 <translation id="7285616922384953075">Pārlūku Chrome pārvalda organizācija “<ph name="MANAGER" />”</translation>
+<translation id="7285990705317078173">Lejupielādējiet pārlūku Chrome savā tālrunī, lai izsekotu cenas un saņemtu brīdinājumus, kad kādā vietnē tiek konstatēts cenas samazinājums.</translation>
 <translation id="7288567540154601580">Cilnes un paplašinājumi</translation>
 <translation id="7296210096911315575">Svarīga informācija par izmantošanu un drošību</translation>
 <translation id="7302361266603927550">Noteikti jūsu Chrome dati vēl nav saglabāti jūsu Google kontā. Pirms izrakstāties, uzgaidiet dažas minūtes. Ja izrakstīsieties tūlīt, šie dati tiks dzēsti.</translation>
 <translation id="7308322188646931570">Pārlūkam Chrome ir nepieciešama piekļuve krātuvei, lai varētu lejupielādēt failus.</translation>
 <translation id="7339898014177206373">Jauns logs</translation>
 <translation id="7352651011704765696">Radās problēma</translation>
+<translation id="7379321689415048316">Chrome var automātiski aizpildīt sarežģītus laukus, kurus standarta automātiskās aizpildes funkcija var neatpazīt.</translation>
 <translation id="7386878009611068389">Lai tiktu lietoti jūsu vecāka izvēlētie iestatījumi un jūs tiešsaistē saņemtu labāku aizsardzību, pārslēdzieties uz Chrome profilu, kurā jau pierakstījāties ar kontu <ph name="USER_EMAIL_ADDRESS" />.</translation>
 <translation id="7398801000654795464">Pārlūkā Chrome iepriekš pierakstījāties kā lietotājs <ph name="USER_EMAIL_ADDRESS" />. Lai pierakstītos vēlreiz, lūdzu, izmantojiet to pašu kontu.</translation>
 <translation id="7412494426921990001">Noklikšķiniet uz Chrome izvēlnes.</translation>
@@ -598,7 +610,6 @@ Dažas funkcijas var nebūt pieejamas. Norādiet citu profila direktoriju vai li
 <translation id="7481213027396403996">Visaugstākais Chrome drošības līmenis</translation>
 <translation id="749228101751499733">Kamēr esat pierakstījies, pārlūkā Chrome varat izmantot savas paroles un citu saturu no Google konta. <ph name="SHORTCUT" /> var mainīt jūsu Google pakalpojumu iestatījumus.</translation>
 <translation id="7496017508659652909">Pārlūkā Chrome tiek iepriekš ielādētas lapas, tādējādi paātrinot pārlūkošanu un meklēšanu. Varat <ph name="BEGIN_LINK" />uzzināt vairāk par lapu iepriekšēju ielādi<ph name="END_LINK" />.</translation>
-<translation id="7510927761955779701">Chrome labāk izprot veidlapas un var tās ātrāk automātiski aizpildīt. Šis iestatījums ir ieslēgts.</translation>
 <translation id="7514258452813684157">Google atjauninātāja pakalpojums</translation>
 <translation id="7515191208480168435">Varat piespraust funkciju Google Lens, lai ērti tai piekļūtu.</translation>
 <translation id="7535429826459677826">Google Chrome Dev</translation>
@@ -616,6 +627,7 @@ Dažas funkcijas var nebūt pieejamas. Norādiet citu profila direktoriju vai li
 <translation id="7627609214560473136">Lai aizsargātu savus datus, ļaujiet pārlūkā Chrome noņemt atļaujas vietnēm, ko pēdējā laikā neesat apmeklējis.</translation>
 <translation id="7629695634924605473">Ja jūsu paroles kādreiz tiks apdraudētas, pārlūkā Chrome saņemsiet paziņojumu</translation>
 <translation id="7641148173327520642">Jūsu sistēmas administrators ir konfigurējis Google Chrome atvērt <ph name="ALTERNATIVE_BROWSER_NAME" />, lai piekļūtu <ph name="TARGET_URL_HOSTNAME" />.</translation>
+<translation id="7641448682796883218">Chrome padoms: funkcija “Droša pārlūkošana ar papildu aizsardzību”</translation>
 <translation id="7649070708921625228">Palīdzība</translation>
 <translation id="7651907282515937834">Chrome Enterprise logotips</translation>
 <translation id="76531479118467370">Pārlūkā Chrome šī lejupielāde tika bloķēta, jo jūs izslēdzāt drošu pārlūkošanu un failu nevar verificēt.</translation>
@@ -643,6 +655,7 @@ Dažas funkcijas var nebūt pieejamas. Norādiet citu profila direktoriju vai li
 <translation id="7832314606810669113">Pierakstieties pārlūkā Chrome, lai varētu piekļūt grāmatzīmēm un citiem datiem visās savās ierīcēs. Šī grāmatzīme tiks saglabāta jūsu Google kontā pēc pierakstīšanās.</translation>
 <translation id="7845233973568007926">Pateicamies, ka veicāt instalēšanu. Pirms <ph name="BUNDLE_NAME" /> izmantošanas ir jārestartē dators.</translation>
 <translation id="7849037457735762883">Turpiniet darbu no vietas, kur to pārtraucāt: pārlūkā Chrome var tikt atjaunotas jūsu cilnes ikreiz, kad to restartējat. Lai to ieslēgtu, pārejiet uz lapu</translation>
+<translation id="7869620795354551924">Lai izmantotu savas saglabātās paroles, izmantojiet saiti kvadrātkodā, lejupielādējiet pārlūku Chrome operētājsistēmai iOS un pierakstieties savā Google kontā.</translation>
 <translation id="7872446069773932638">Notiek lejupielāde... Atlikušais laiks: <ph name="SECONDS" /> sekunde(-es).</translation>
 <translation id="7886087451482920026">Atlasiet tekstu, izmantojot Google Lens.</translation>
 <translation id="7887929410013642057">Vienmēr rādīt MI režīma saīsnes</translation>
@@ -696,6 +709,9 @@ Dažas funkcijas var nebūt pieejamas. Norādiet citu profila direktoriju vai li
 <translation id="8418845734693287262">Chrome OS nevarēja sinhronizēt jūsu datus, jo jūsu konta pierakstīšanās informācija ir novecojusi.</translation>
 <translation id="842386925677997438">Chrome drošības rīki</translation>
 <translation id="8425765582779547329">Lai tiktu lietoti jūsu vecāka izvēlētie iestatījumi un jūs tiešsaistē saņemtu labāku aizsardzību, pierakstieties pārlūkā Chrome.</translation>
+<translation id="842852285618875960">Ir sasniegts Google Chrome grāmatzīmju skaita ierobežojums (<ph name="BOOKMARK_LIMIT" />), tāpēc noteiktas jūsu grāmatzīmes vēl nav saglabātas jūsu Google kontā.
+
+Jaunas grāmatzīmes nevar saglabāt jūsu kontā, kamēr neizdzēsīsiet dažas no tām. Ja izrakstīsieties tūlīt, nesaglabātās grāmatzīmes tiks dzēstas.</translation>
 <translation id="8433638294851456451">Lai nosūtītu numuru no šejienes uz savu Android tālruni, abās ierīcēs pierakstieties pārlūkā Chrome.</translation>
 <translation id="8496177819998570653">Google p&amp;aroļu pārvaldnieks</translation>
 <translation id="8498858610309223613">Tikko tika piemērots īpašs Google Chrome drošības atjauninājums. Restartējiet tūlīt, un mēs atjaunosim jūsu cilnes.</translation>
@@ -729,10 +745,10 @@ Dažas funkcijas var nebūt pieejamas. Norādiet citu profila direktoriju vai li
 <translation id="878572486461146056">Instalēšanas kļūda: administrators ir piemērojis grupas politiku, kas neļauj veikt instalēšanu: <ph name="INSTALL_ERROR" />.</translation>
 <translation id="8796919761992612392">P&amp;ielāgot pārlūku Chrome</translation>
 <translation id="8798550110818026746">Jūsu organizācija var skatīt un pārvaldīt pārlūkošanas datus, piemēram, grāmatzīmes, vēsturi un paroles. Tā nevar skatīt pārlūkošanas datus citos Chrome profilos.</translation>
+<translation id="8813277370772331957">Atgādināt vēlāk</translation>
 <translation id="8821043148920470810">Lai saņemtu turpmākus Google Chrome atjauninājumus, nepieciešama operētājsistēma Windows 10 vai jaunāka versija. Šajā datorā tiek izmantota operētājsistēma Windows 7.</translation>
 <translation id="8823341990149967727">Chrome versija ir novecojusi</translation>
 <translation id="8834965163890861871">Google Chrome mēģina rediģēt paroles. Lai to atļautu, ierakstiet savu Windows paroli.</translation>
-<translation id="8843516219908676469">Chrome labāk izprot veidlapas un var tās ātrāk automātiski aizpildīt.</translation>
 <translation id="8851180723659088381">{NUM_EXTENSIONS,plural, =1{Chrome iesaka to noņemt.}zero{Chrome iesaka tos noņemt.}one{Chrome iesaka tos noņemt.}other{Chrome iesaka tos noņemt.}}</translation>
 <translation id="8862326446509486874">Jums nav vajadzīgo tiesību, lai instalētu sistēmas līmenī. Mēģiniet vēlreiz palaist instalēšanas programmu kā administrators.</translation>
 <translation id="8865415417596392024">Chrome dati jūsu kontā</translation>

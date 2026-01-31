@@ -26,6 +26,29 @@
 #include "ui/compositor/layer_tree_owner.h"
 #include "ui/views/view_class_properties.h"
 
+namespace {
+static constexpr base::TimeDelta kShowDropTargetForLinkAfterHideLookbackWindow =
+    base::Seconds(30);
+static constexpr base::TimeDelta kHideDropTargetDelay = base::Milliseconds(100);
+static constexpr base::TimeDelta kShowNudgeDelay = base::Milliseconds(1000);
+
+static constexpr int kDropTargetHideForOSWidth =
+#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_WIN)
+    32;
+#elif BUILDFLAG(IS_LINUX)
+    50;
+#else
+    0;
+#endif
+static constexpr double kDropTargetHideForOSPercentage =
+#if BUILDFLAG(IS_WIN)
+    1.4;
+#else
+    0;
+#endif
+
+}  // namespace
+
 MultiContentsViewDropTargetController::MultiContentsViewDropTargetController(
     MultiContentsDropTargetView& drop_target_view,
     DropDelegate& drop_delegate,
@@ -63,14 +86,14 @@ MultiContentsViewDropTargetController::DropTargetShowTimer::DropTargetShowTimer(
     MultiContentsDropTargetView::DragType drag_type)
     : drop_side(drop_side), drag_type(drag_type) {}
 
-void MultiContentsViewDropTargetController::OnTabDragUpdated(
-    TabDragDelegate::DragController& controller,
+TabDragContext* MultiContentsViewDropTargetController::OnTabDragUpdated(
+    TabDragTarget::DragController& controller,
     const gfx::Point& point_in_screen) {
   // Only allow creating split with a single dragged tab.
   if (controller.GetSessionData().num_dragging_tabs() != 1) {
     ResetDropTargetTimers();
     HideDropTarget();
-    return;
+    return nullptr;
   }
 
   const gfx::Point point_in_parent = views::View::ConvertPointFromScreen(
@@ -78,10 +101,11 @@ void MultiContentsViewDropTargetController::OnTabDragUpdated(
   if (PointOverlapsWithOSDropTarget(point_in_parent)) {
     ResetDropTargetTimers();
     HideDropTarget();
-    return;
+    return nullptr;
   }
   HandleDragUpdate(point_in_parent,
                    MultiContentsDropTargetView::DragType::kTab);
+  return nullptr;
 }
 
 void MultiContentsViewDropTargetController::OnTabDragEntered() {}
@@ -195,7 +219,7 @@ void MultiContentsViewDropTargetController::DoDrop(
 }
 
 void MultiContentsViewDropTargetController::HandleTabDrop(
-    TabDragDelegate::DragController& controller) {
+    TabDragTarget::DragController& controller) {
   CHECK(drop_target_view_->GetVisible());
   CHECK(drop_target_view_->side().has_value());
   MultiContentsDropTargetView::DropSide side =
@@ -228,8 +252,7 @@ void MultiContentsViewDropTargetController::OnWebContentsDragUpdate(
     return;
   }
 
-  if (base::FeatureList::IsEnabled(features::kSideBySideDropTargetNudge) &&
-      ShouldShowNudge() && drop_target_view_->ShouldShowAnimation()) {
+  if (ShouldShowNudge() && drop_target_view_->ShouldShowAnimation()) {
     HandleDragUpdateForNudge(point);
   } else {
     HandleDragUpdate(point, MultiContentsDropTargetView::DragType::kLink);
@@ -288,11 +311,10 @@ void MultiContentsViewDropTargetController::HandleDragUpdateForNudge(
     const gfx::Point& point_in_view) {
   CHECK_LE(0, point_in_view.x());
   CHECK_LE(point_in_view.x(), drop_target_parent_view_->width());
-  CHECK(base::FeatureList::IsEnabled(features::kSideBySideDropTargetNudge));
   const bool is_rtl = base::i18n::IsRTL();
   const float point_ratio =
       (1.0f * point_in_view.x()) / drop_target_parent_view_->width();
-  const float nudge_ratio = features::kSideBySideDropTargetNudgeShowRatio.Get();
+  const float nudge_ratio = kNudgeShowRatio;
 
   // Either hide or show the drop target if the drag is in the trigger area.
   if (point_ratio > nudge_ratio && point_ratio < 1.0f - nudge_ratio) {
@@ -341,15 +363,14 @@ void MultiContentsViewDropTargetController::StartOrUpdateDropTargetTimer(
 
   base::TimeDelta show_delay;
   if (drag_type == MultiContentsDropTargetView::DragType::kTab) {
-    show_delay = features::kSideBySideShowDropTargetDelay.Get();
+    show_delay = kShowDropTargetForTabDelay;
   } else if (base::Time::Now() - drop_target_last_hidden_ <
-             features::kSideBySideShowDropTargetForLinkAfterHideLookbackWindow
-                 .Get()) {
+             kShowDropTargetForLinkAfterHideLookbackWindow) {
     // If a drop target was recently closed for a link drag, use a longer delay
     // to avoid blocking elements on the page.
-    show_delay = features::kSideBySideShowDropTargetForLinkAfterHideDelay.Get();
+    show_delay = kShowDropTargetForLinkAfterHideDelay;
   } else {
-    show_delay = features::kSideBySideShowDropTargetForLinkDelay.Get();
+    show_delay = kShowDropTargetForLinkDelay;
   }
 
   show_drop_target_timer_->timer.Start(
@@ -373,7 +394,7 @@ void MultiContentsViewDropTargetController::ShowTimerDelayedDropTarget() {
 
 void MultiContentsViewDropTargetController::StartDropTargetHideTimer() {
   hide_drop_target_timer_.Start(
-      FROM_HERE, features::kSideBySideHideDropTargetDelay.Get(),
+      FROM_HERE, kHideDropTargetDelay,
       base::BindOnce(&MultiContentsViewDropTargetController::HideDropTarget,
                      base::Unretained(this), false));
 }
@@ -391,7 +412,7 @@ void MultiContentsViewDropTargetController::StartNudgeShowTimer(
   show_nudge_timer_.emplace(drop_side,
                             MultiContentsDropTargetView::DragType::kLink);
   show_nudge_timer_->timer.Start(
-      FROM_HERE, features::kSideBySideShowNudgeDelay.Get(),
+      FROM_HERE, kShowNudgeDelay,
       base::BindOnce(
           &MultiContentsViewDropTargetController::ShowTimerDelayedNudge,
           base::Unretained(this), drop_side));
@@ -429,10 +450,8 @@ bool MultiContentsViewDropTargetController::PointOverlapsWithOSDropTarget(
       point_in_screen.x() - screen_bounds.x();
 
   const float hide_for_os_width = std::max(
-      features::kSideBySideDropTargetHideForOSWidth.Get(),
-      static_cast<int>(
-          screen_width *
-          features::kSideBySideDropTargetHideForOSPercentage.Get() / 100));
+      kDropTargetHideForOSWidth,
+      static_cast<int>(screen_width * kDropTargetHideForOSPercentage / 100));
 
   return (drag_x_relative_to_screen_bounds < hide_for_os_width) ||
          (drag_x_relative_to_screen_bounds > screen_width - hide_for_os_width);
@@ -451,8 +470,6 @@ void MultiContentsViewDropTargetController::
 }
 
 bool MultiContentsViewDropTargetController::ShouldShowNudge() {
-  return nudge_shown_count_ <
-             features::kSideBySideDropTargetNudgeShownLimit.Get() &&
-         nudge_used_count_ <
-             features::kSideBySideDropTargetNudgeUsedLimit.Get();
+  return nudge_shown_count_ < kNudgeShownLimit &&
+         nudge_used_count_ < kNudgeUsedLimit;
 }

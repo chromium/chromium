@@ -108,7 +108,7 @@ SupportPacketMetadata::SupportPacketMetadata(
 SupportPacketMetadata::~SupportPacketMetadata() = default;
 
 void SupportPacketMetadata::SetChromeMetadataFields() {
-  base::Value::Dict chrome_metadata = policy::GetChromeMetadataValue(
+  base::DictValue chrome_metadata = policy::GetChromeMetadataValue(
       policy::GetChromeMetadataParams(/*application_name=*/"Support Tool"));
 
   FindStringAndSetInSupportPacketMetadata(
@@ -122,7 +122,7 @@ void SupportPacketMetadata::SetChromeMetadataFields() {
 }
 
 void SupportPacketMetadata::FindStringAndSetInSupportPacketMetadata(
-    const base::Value::Dict& chrome_metadata,
+    const base::DictValue& chrome_metadata,
     const char* chrome_metadata_key,
     const char* support_packet_key) {
   const std::string* value = chrome_metadata.FindString(chrome_metadata_key);

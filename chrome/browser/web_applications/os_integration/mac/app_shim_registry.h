@@ -178,7 +178,7 @@ class AppShimRegistry {
       const base::FilePath& user_data_dir);
 
   // For logging and debug purposes.
-  base::Value::Dict AsDebugDict() const;
+  base::DictValue AsDebugDict() const;
 
  protected:
   friend class base::NoDestructor<AppShimRegistry>;

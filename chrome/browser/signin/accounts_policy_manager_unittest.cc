@@ -103,33 +103,28 @@ class AccountsPolicyManagerTest : public testing::Test {
       identity_test_env_adaptor_;
 };
 
-TEST_F(AccountsPolicyManagerTest, ClearPrimarySyncAccountWhenSigninNotAllowed) {
+TEST_F(AccountsPolicyManagerTest, ClearPrimaryAccountWhenSigninNotAllowed) {
   GetIdentityTestEnv()->MakePrimaryAccountAvailable(
-      "test@foo.com", signin::ConsentLevel::kSync);
+      "test@foo.com", signin::ConsentLevel::kSignin);
   GetProfile()->GetPrefs()->SetBoolean(prefs::kSigninAllowed, false);
 
-  EXPECT_FALSE(GetIdentityTestEnv()->identity_manager()->HasPrimaryAccount(
-      signin::ConsentLevel::kSync));
   EXPECT_FALSE(GetIdentityTestEnv()->identity_manager()->HasPrimaryAccount(
       signin::ConsentLevel::kSignin));
 }
 
-TEST_F(AccountsPolicyManagerTest,
-       ClearPrimarySyncAccountWhenPatternNotAllowed) {
+TEST_F(AccountsPolicyManagerTest, ClearPrimaryAccountWhenPatternNotAllowed) {
   GetIdentityTestEnv()->MakePrimaryAccountAvailable(
-      "test@foo.com", signin::ConsentLevel::kSync);
+      "test@foo.com", signin::ConsentLevel::kSignin);
   GetLocalState()->SetString(prefs::kGoogleServicesUsernamePattern,
                              ".*@bar.com");
 
-  EXPECT_FALSE(GetIdentityTestEnv()->identity_manager()->HasPrimaryAccount(
-      signin::ConsentLevel::kSync));
   EXPECT_FALSE(GetIdentityTestEnv()->identity_manager()->HasPrimaryAccount(
       signin::ConsentLevel::kSignin));
 }
 
 TEST_F(AccountsPolicyManagerTest, ClearProfileWhenSigninAndSignoutNotAllowed) {
   GetIdentityTestEnv()->MakePrimaryAccountAvailable(
-      "test@foo.com", signin::ConsentLevel::kSync);
+      "test@foo.com", signin::ConsentLevel::kSignin);
 
   // Create a second profile.
   GetProfileManager()->CreateTestingProfile(
@@ -143,29 +138,6 @@ TEST_F(AccountsPolicyManagerTest, ClearProfileWhenSigninAndSignoutNotAllowed) {
   GetSigninSlient(GetProfile())
       ->set_is_clear_primary_account_allowed_for_testing(
           SigninClient::SignoutDecision::CLEAR_PRIMARY_ACCOUNT_DISALLOWED);
-  GetProfile()->GetPrefs()->SetBoolean(prefs::kSigninAllowed, false);
-  base::RunLoop().RunUntilIdle();
-
-  EXPECT_EQ(1u, GetProfileManager()->profile_manager()->GetNumberOfProfiles());
-}
-
-TEST_F(AccountsPolicyManagerTest,
-       ClearProfileWhenSigninAndRevokeSyncNotAllowed) {
-  GetIdentityTestEnv()->MakePrimaryAccountAvailable(
-      "test@foo.com", signin::ConsentLevel::kSync);
-
-  // Create a second profile.
-  GetProfileManager()->CreateTestingProfile(
-      "accounts_policy_manager_test_profile_path_1",
-      IdentityTestEnvironmentProfileAdaptor::
-          GetIdentityTestEnvironmentFactories());
-  ASSERT_EQ(2u, GetProfileManager()->profile_manager()->GetNumberOfProfiles());
-
-  // Disable sign out and sign in. This should result in the initial profile
-  // being deleted.
-  GetSigninSlient(GetProfile())
-      ->set_is_clear_primary_account_allowed_for_testing(
-          SigninClient::SignoutDecision::REVOKE_SYNC_DISALLOWED);
   GetProfile()->GetPrefs()->SetBoolean(prefs::kSigninAllowed, false);
   base::RunLoop().RunUntilIdle();
 
@@ -196,7 +168,7 @@ TEST_F(AccountsPolicyManagerTest, ClearProfileUnallowedAccounts) {
   EXPECT_TRUE(identity_manager()->HasAccountWithRefreshToken(account_id3));
 
   // Set prefs to only allow example.com secondary accounts
-  base::Value::List profile_separation_domain_exception_list;
+  base::ListValue profile_separation_domain_exception_list;
   profile_separation_domain_exception_list.Append("example.com");
   GetProfile()->GetPrefs()->SetList(
       prefs::kProfileSeparationDomainExceptionList,
@@ -239,7 +211,7 @@ TEST_F(AccountsPolicyManagerTest, ClearProfileUnallowedAccountsDisabled) {
   EXPECT_TRUE(identity_manager()->HasAccountWithRefreshToken(account_id3));
 
   // Set prefs to only allow example.com secondary accounts
-  base::Value::List profile_separation_domain_exception_list;
+  base::ListValue profile_separation_domain_exception_list;
   profile_separation_domain_exception_list.Append("example.com");
   GetProfile()->GetPrefs()->SetList(
       prefs::kProfileSeparationDomainExceptionList,

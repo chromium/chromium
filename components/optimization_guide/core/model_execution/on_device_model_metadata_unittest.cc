@@ -8,6 +8,7 @@
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/bind.h"
+#include "base/test/gmock_expected_support.h"
 #include "base/test/task_environment.h"
 #include "base/test/test.pb.h"
 #include "components/optimization_guide/core/optimization_guide_constants.h"
@@ -20,6 +21,8 @@ namespace optimization_guide {
 
 namespace {
 
+using base::test::ErrorIs;
+
 const struct OnDeviceBaseModelSpec kModelSpec = {"test", "0.0.1", {}};
 const struct OnDeviceBaseModelSpec kModelSpecNew = {"test", "0.0.2", {}};
 
@@ -30,7 +33,6 @@ class OnDeviceModelMetadataTest : public testing::Test {
 
   void SetUp() override {
     loader_.reset();
-    metadata_.reset();
     ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
     loader_.emplace(base::BindRepeating(&OnDeviceModelMetadataTest::UpdateModel,
                                         base::Unretained(this)),
@@ -48,33 +50,34 @@ class OnDeviceModelMetadataTest : public testing::Test {
 
   void RunUntilIdle() { task_environment_.RunUntilIdle(); }
 
-  void UpdateModel(std::unique_ptr<OnDeviceModelMetadata> metadata) {
+  void UpdateModel(MaybeOnDeviceModelMetadata metadata) {
     metadata_ = std::move(metadata);
   }
 
   OnDeviceModelMetadataLoader& loader() { return *loader_; }
 
-  const OnDeviceModelMetadata* metadata() { return metadata_.get(); }
+  const MaybeOnDeviceModelMetadata& metadata() { return metadata_; }
 
  private:
   base::test::TaskEnvironment task_environment_;
 
   base::ScopedTempDir temp_dir_;
 
-  std::unique_ptr<OnDeviceModelMetadata> metadata_;
+  MaybeOnDeviceModelMetadata metadata_ =
+      base::unexpected(OnDeviceModelStatus::kNotReadyForUnknownReason);
   std::optional<OnDeviceModelMetadataLoader> loader_;
 };
 
 TEST_F(OnDeviceModelMetadataTest, EmptyFilePath) {
   loader().Load(base::FilePath(), "test", kModelSpec);
   RunUntilIdle();
-  ASSERT_FALSE(metadata());
+  EXPECT_THAT(metadata(), ErrorIs(OnDeviceModelStatus::kInstallNotComplete));
 }
 
 TEST_F(OnDeviceModelMetadataTest, ConfigFileNotInProvidedPath) {
   loader().Load(temp_dir(), "test", kModelSpec);
   RunUntilIdle();
-  ASSERT_FALSE(metadata());
+  EXPECT_THAT(metadata(), ErrorIs(OnDeviceModelStatus::kInstallNotComplete));
 }
 
 TEST_F(OnDeviceModelMetadataTest, ValidConfig) {
@@ -85,7 +88,8 @@ TEST_F(OnDeviceModelMetadataTest, ValidConfig) {
                     config);
   loader().Load(temp_dir(), "test", kModelSpec);
   RunUntilIdle();
-  EXPECT_EQ(1, metadata()->validation_config().validation_prompts().size());
+  ASSERT_OK_AND_ASSIGN(const OnDeviceModelMetadata& model_metadata, metadata());
+  EXPECT_EQ(1, model_metadata.validation_config().validation_prompts().size());
 }
 
 TEST_F(OnDeviceModelMetadataTest, ResolvesToLastLoad) {
@@ -113,24 +117,27 @@ TEST_F(OnDeviceModelMetadataTest, ResolvesToLastLoad) {
   RunUntilIdle();
 
   // The final state should match the last Load.
-  EXPECT_EQ(metadata()->version(), "version2");
-  EXPECT_EQ(metadata()->model_spec().model_version,
+  ASSERT_OK_AND_ASSIGN(const OnDeviceModelMetadata& model_metadata, metadata());
+  EXPECT_EQ(model_metadata.version(), "version2");
+  EXPECT_EQ(model_metadata.model_spec().model_version,
             kModelSpecNew.model_version);
-  EXPECT_EQ(metadata()->model_spec().model_name, kModelSpecNew.model_name);
-  EXPECT_EQ(2, metadata()->validation_config().validation_prompts().size());
+  EXPECT_EQ(model_metadata.model_spec().model_name, kModelSpecNew.model_name);
+  EXPECT_EQ(2, model_metadata.validation_config().validation_prompts().size());
 }
 
-TEST_F(OnDeviceModelMetadataTest, NullStateChangeResets) {
+TEST_F(OnDeviceModelMetadataTest, InvalidStateChangeResets) {
   proto::OnDeviceModelExecutionConfig config;
   config.mutable_validation_config()->add_validation_prompts()->set_prompt(
       "test prompt");
   WriteConfigToFile(temp_dir().Append(kOnDeviceModelExecutionConfigFile),
                     config);
   loader().Load(temp_dir(), "test", kModelSpec);
-  loader().StateChanged(nullptr);
+  loader().StateChanged(
+      base::unexpected(OnDeviceModelStatus::kInstallNotComplete));
   RunUntilIdle();
-  // Should have reverted to null again after the first load finished.
-  EXPECT_EQ(nullptr, metadata());
+  // metadata should have reverted to error state again after the first load
+  // finished.
+  EXPECT_THAT(metadata(), ErrorIs(OnDeviceModelStatus::kInstallNotComplete));
 }
 
 }  // namespace

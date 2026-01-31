@@ -25,9 +25,10 @@ import androidx.preference.PreferenceScreen;
 
 import org.chromium.base.CallbackUtils;
 import org.chromium.base.ContextUtils;
-import org.chromium.base.supplier.ObservableSupplier;
-import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.supplier.MonotonicObservableSupplier;
+import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.OneshotSupplier;
+import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
@@ -109,7 +110,8 @@ public class AccountManagementFragment extends ChromeBaseSettingsFragment
     private SyncService mSyncService;
     private SyncService.@Nullable SyncSetupInProgressHandle mSyncSetupInProgressHandle;
     private @Nullable OneshotSupplier<SnackbarManager> mSnackbarManagerSupplier;
-    private final ObservableSupplierImpl<String> mPageTitle = new ObservableSupplierImpl<>();
+    private final SettableMonotonicObservableSupplier<String> mPageTitle =
+            ObservableSuppliers.createMonotonic();
 
     @Override
     public void onCreatePreferences(@Nullable Bundle savedState, @Nullable String rootKey) {
@@ -128,7 +130,7 @@ public class AccountManagementFragment extends ChromeBaseSettingsFragment
     }
 
     @Override
-    public ObservableSupplier<String> getPageTitle() {
+    public MonotonicObservableSupplier<String> getPageTitle() {
         return mPageTitle;
     }
 
@@ -237,7 +239,11 @@ public class AccountManagementFragment extends ChromeBaseSettingsFragment
                             : R.string.sign_out);
             signOutPreference.setOnPreferenceClickListener(
                     preference -> {
-                        if (!isVisible() || !isResumed() || mSignedInCoreAccountInfo == null) {
+                        if (!isVisible() || !isResumed()) {
+                            return false;
+                        }
+                        if (!getIdentityManager().hasPrimaryAccount(ConsentLevel.SIGNIN)) {
+                            // Primary account might have been signed-out asynchronously already.
                             return false;
                         }
                         SignOutCoordinator.startSignOutFlow(
@@ -565,7 +571,8 @@ public class AccountManagementFragment extends ChromeBaseSettingsFragment
         arguments.putInt(SHOW_GAIA_SERVICE_TYPE_EXTRA, serviceType);
         SettingsNavigation settingsNavigation =
                 SettingsNavigationFactory.createSettingsNavigation();
-        settingsNavigation.startSettings(context, AccountManagementFragment.class, arguments);
+        settingsNavigation.startSettings(
+                context, AccountManagementFragment.class, arguments, /* addToBackStack= */ true);
     }
 
     private void closeDialogIfOpen(String tag) {
@@ -593,9 +600,8 @@ public class AccountManagementFragment extends ChromeBaseSettingsFragment
         return assumeNonNull(IdentityServicesProvider.get().getSigninManager(getProfile()));
     }
 
-    // TODO(crbug.com/444470792): Determine what pieces of logic are dynamic and need handling.
     public static final ChromeBaseSearchIndexProvider SEARCH_INDEX_DATA_PROVIDER =
             new ChromeBaseSearchIndexProvider(
                     AccountManagementFragment.class.getName(),
-                    R.xml.account_management_preferences);
+                    ChromeBaseSearchIndexProvider.INDEX_OPT_OUT);
 }

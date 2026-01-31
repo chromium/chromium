@@ -14,7 +14,6 @@
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/system/toast/anchored_nudge.h"
-#include "base/containers/contains.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "chromeos/ui/base/nudge_util.h"
@@ -317,7 +316,7 @@ void AnchoredNudgeManagerImpl::Show(AnchoredNudgeData& nudge_data) {
 
   // If `id` is already in use, close the nudge without triggering its hide
   // animation so it can be immediately replaced.
-  if (base::Contains(shown_nudges_, id)) {
+  if (shown_nudges_.contains(id)) {
     auto* nudge_widget = shown_nudges_[id]->GetWidget();
     if (nudge_widget && !nudge_widget->IsClosed()) {
       // Cache cleanup occurs on nudge's `OnWidgetDestroying()`.
@@ -390,8 +389,7 @@ void AnchoredNudgeManagerImpl::Show(AnchoredNudgeData& nudge_data) {
 void AnchoredNudgeManagerImpl::Cancel(const std::string& id) {
   // Return early if the nudge is not cached in `shown_nudges_`, or the nudge
   // hide animation is already being observed.
-  if (!base::Contains(shown_nudges_, id) ||
-      base::Contains(hide_animation_observers_, id)) {
+  if (!shown_nudges_.contains(id) || hide_animation_observers_.contains(id)) {
     return;
   }
 
@@ -472,18 +470,18 @@ void AnchoredNudgeManagerImpl::OnSessionStateChanged(
   CloseAllNudges();
 }
 
-// TODO(b/311526868): Replace instances of `base::Contains()` and
+// TODO(b/311526868): Replace instances of `std::ranges::contains()` and
 // `shown_nudges_[id]` with logic that only performs a single lookup.
 
 // TODO(b/296948349): Replace this with a new `GetNudge(id)` function as this
 // does not accurately reflect is a nudge is shown or not.
 bool AnchoredNudgeManagerImpl::IsNudgeShown(const std::string& id) {
-  return base::Contains(shown_nudges_, id);
+  return shown_nudges_.contains(id);
 }
 
 std::u16string_view AnchoredNudgeManagerImpl::GetNudgeBodyTextForTest(
     const std::string& id) {
-  CHECK(base::Contains(shown_nudges_, id));
+  CHECK(shown_nudges_.contains(id));
   return views::AsViewClass<views::Label>(
              shown_nudges_[id]->GetViewByID(VIEW_ID_SYSTEM_NUDGE_BODY_LABEL))
       ->GetText();
@@ -491,32 +489,32 @@ std::u16string_view AnchoredNudgeManagerImpl::GetNudgeBodyTextForTest(
 
 views::View* AnchoredNudgeManagerImpl::GetNudgeAnchorViewForTest(
     const std::string& id) {
-  CHECK(base::Contains(shown_nudges_, id));
+  CHECK(shown_nudges_.contains(id));
   return shown_nudges_[id]->GetAnchorView();
 }
 
 views::LabelButton* AnchoredNudgeManagerImpl::GetNudgePrimaryButtonForTest(
     const std::string& id) {
-  CHECK(base::Contains(shown_nudges_, id));
+  CHECK(shown_nudges_.contains(id));
   return views::AsViewClass<views::LabelButton>(
       shown_nudges_[id]->GetViewByID(VIEW_ID_SYSTEM_NUDGE_PRIMARY_BUTTON));
 }
 
 views::LabelButton* AnchoredNudgeManagerImpl::GetNudgeSecondaryButtonForTest(
     const std::string& id) {
-  CHECK(base::Contains(shown_nudges_, id));
+  CHECK(shown_nudges_.contains(id));
   return views::AsViewClass<views::LabelButton>(
       shown_nudges_[id]->GetViewByID(VIEW_ID_SYSTEM_NUDGE_SECONDARY_BUTTON));
 }
 
 AnchoredNudge* AnchoredNudgeManagerImpl::GetShownNudgeForTest(
     const std::string& id) {
-  return base::Contains(shown_nudges_, id) ? shown_nudges_[id] : nullptr;
+  return shown_nudges_.contains(id) ? shown_nudges_[id] : nullptr;
 }
 
 NudgeCatalogName AnchoredNudgeManagerImpl::GetNudgeCatalogNameForTest(
     const std::string& id) {
-  CHECK(base::Contains(shown_nudges_, id));
+  CHECK(shown_nudges_.contains(id));
   return shown_nudges_[id]->catalog_name();
 }
 

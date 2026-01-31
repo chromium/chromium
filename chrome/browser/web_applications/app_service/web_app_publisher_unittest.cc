@@ -27,10 +27,10 @@
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "ash/constants/web_app_id_constants.h"
-#include "chrome/browser/apps/app_service/app_launch_params.h"
 #include "chromeos/ash/components/system/fake_statistics_provider.h"
 #include "chromeos/ash/components/system/statistics_provider.h"
 #include "chromeos/constants/url_constants.h"
+#include "components/services/app_service/public/cpp/app_launch_params.h"
 #include "net/base/url_util.h"
 #endif
 

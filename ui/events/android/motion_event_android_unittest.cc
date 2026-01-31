@@ -390,8 +390,8 @@ TEST(MotionEventAndroidTest, CreateFor) {
   int history_size = 0;
   int action_index = 0;
 
-  const jlong down_time_ms = base::TimeTicks::Now().ToUptimeMillis();
-  const jlong event_time_ms = down_time_ms;
+  const int64_t down_time_ms = base::TimeTicks::Now().ToUptimeMillis();
+  const int64_t event_time_ms = down_time_ms;
 
   JNIEnv* env = base::android::AttachCurrentThread();
   base::android::ScopedJavaLocalRef<jobject> obj =
@@ -451,8 +451,8 @@ TEST(MotionEventAndroidTest, NativeBackedConstructor) {
   const float y = 200;
   // Java_MotionEvent_obtain expects timestamps(down time, event time) obtained
   // from |SystemClock#uptimeMillis()|.
-  const jlong down_time_ms = base::TimeTicks::Now().ToUptimeMillis();
-  const jlong event_time_ms = down_time_ms;
+  const int64_t down_time_ms = base::TimeTicks::Now().ToUptimeMillis();
+  const int64_t event_time_ms = down_time_ms;
   JNIEnv* env = base::android::AttachCurrentThread();
   base::android::ScopedJavaLocalRef<jobject> java_motion_event =
       JNI_MotionEvent::Java_MotionEvent_obtain(env, down_time_ms, event_time_ms,

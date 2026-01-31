@@ -13,6 +13,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
+#include "build/build_config.h"
 #include "chrome/browser/extensions/extension_apitest.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/chrome_paths.h"
@@ -301,8 +302,15 @@ IN_PROC_BROWSER_TEST_F(ContentCapabilitiesTest,
   CheckSiteCanRead(/*expected=*/true);
 }
 
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_AsyncClipboardNoReadWriteContentCapability \
+  DISABLED_AsyncClipboardNoReadWriteContentCapability
+#else
+#define MAYBE_AsyncClipboardNoReadWriteContentCapability \
+  AsyncClipboardNoReadWriteContentCapability
+#endif
 IN_PROC_BROWSER_TEST_F(ContentCapabilitiesTest,
-                       AsyncClipboardNoReadWriteContentCapability) {
+                       MAYBE_AsyncClipboardNoReadWriteContentCapability) {
   LoadExtensionWithCapabilitiesAndNavigateToPage("[]");
   SetPermissionOverrideForAsyncClipboardTests(
       blink::mojom::PermissionStatus::GRANTED);

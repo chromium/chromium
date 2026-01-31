@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/views/bookmarks/bookmark_sign_in_promo_bubble_view.h"
 
+#include "chrome/browser/signin/signin_promo_util.h"
 #include "chrome/browser/ui/signin/promos/bubble_signin_promo_view.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/bookmarks/browser/bookmark_node.h"
@@ -30,6 +31,7 @@ BookmarkSigninPromoBubbleView::BookmarkSigninPromoBubbleView(
           views::DISTANCE_UNRELATED_CONTROL_VERTICAL)));
   set_fixed_width(views::LayoutProvider::Get()->GetDistanceMetric(
       views::DISTANCE_MODAL_DIALOG_PREFERRED_WIDTH));
+  set_margins(BubbleSignInPromoView::GetBubbleSigninPromoMargins());
 
   // Show the sign in promo.
   auto* sign_in_promo = AddChildView(std::make_unique<BubbleSignInPromoView>(

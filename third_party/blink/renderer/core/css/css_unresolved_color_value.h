@@ -50,6 +50,8 @@ class CORE_EXPORT CSSUnresolvedColorValue : public CSSValue {
 
   Color Resolve(const CSSLengthResolver& resolver) const;
 
+  bool HasRandomFunctions() const;
+
  private:
   const Color::ColorSpace color_space_;
   std::array<Member<const CSSPrimitiveValue>, 3> channels_;

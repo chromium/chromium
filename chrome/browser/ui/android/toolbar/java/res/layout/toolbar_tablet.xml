@@ -11,15 +11,22 @@ found in the LICENSE file.
 <org.chromium.chrome.browser.toolbar.top.ToolbarTablet
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/toolbar"
     android:layout_width="match_parent"
     android:layout_height="@dimen/toolbar_height_no_shadow"
     android:layout_marginTop="@dimen/tab_strip_height"
     android:background="@macro/default_bg_color"
-     >
+    >
 
-    <LinearLayout
+  <!-- This view is intended to serve as a fixed height background when ToolbarTablet, its parent, expands beyond its normal height (e.g. when showing the Fusebox). Its height should not be mutated at runtime, only its visibility. -->
+  <View android:layout_width="match_parent"
+      android:id="@+id/toolbar_tablet_fixed_height_bg"
+      android:layout_height="@dimen/toolbar_height_no_shadow"
+      android:background="@macro/default_bg_color"
+      android:visibility="gone"
+  />
+
+  <LinearLayout
         android:id="@+id/toolbar_tablet_layout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -28,7 +35,7 @@ found in the LICENSE file.
         <org.chromium.chrome.browser.toolbar.home_button.HomeButton
             android:id="@+id/home_button"
             style="@style/ToolbarHoverableButton.AdaptiveDensity"
-            android:src="@drawable/btn_toolbar_home"
+            android:src="@drawable/ic_home_24dp"
             android:contentDescription="@string/accessibility_toolbar_btn_home"
             android:tooltipText="@string/accessibility_toolbar_btn_home"
             android:visibility="gone"
@@ -93,7 +100,8 @@ found in the LICENSE file.
             android:id="@+id/extension_toolbar_container_stub"
             android:inflatedId="@+id/extension_toolbar_container"
             android:layout_width="wrap_content"
-            android:layout_height="match_parent" />
+            android:layout_height="?attr/toolbarButtonHeight"
+            android:layout_marginVertical="?attr/toolbarButtonMarginVertical"/>
 
         <org.chromium.chrome.browser.toolbar.top.ToggleTabStackButton
             android:id="@+id/tab_switcher_button"

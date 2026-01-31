@@ -9,7 +9,6 @@
 
 #include "base/check.h"
 #include "base/command_line.h"
-#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/ptr_util.h"
@@ -229,7 +228,9 @@ class MockWebContentsDelegate : public WebContentsDelegate {
   MOCK_METHOD4(RegisterProtocolHandler,
                void(RenderFrameHost*, const std::string&, const GURL&, bool));
   MOCK_METHOD(void, NavigationStateChanged, (WebContents*, InvalidateTypes));
-
+  MOCK_METHOD(bool,
+              PreHandleGestureEvent,
+              (WebContents*, const blink::WebGestureEvent&));
   blink::ProtocolHandlerSecurityLevel GetProtocolHandlerSecurityLevel(
       RenderFrameHost*) override {
     return security_level_;
@@ -308,7 +309,7 @@ class FakeImageDownloader : public blink::mojom::ImageDownloader {
                      uint32_t max_bitmap_size,
                      bool bypass_cache,
                      DownloadImageCallback callback) override {
-    if (!base::Contains(fake_response_data_per_url_, url)) {
+    if (!fake_response_data_per_url_.contains(url)) {
       // This could return a 404, but there is no test that currently relies on
       // it.
       return;
@@ -325,7 +326,7 @@ class FakeImageDownloader : public blink::mojom::ImageDownloader {
       uint32_t max_bitmap_size,
       bool bypass_cache,
       DownloadImageFromAxNodeCallback callback) override {
-    if (!base::Contains(fake_response_data_per_ax_node_id_, ax_node_id)) {
+    if (!fake_response_data_per_ax_node_id_.contains(ax_node_id)) {
       // This could return a 404, but there is no test that currently relies on
       // it.
       return;
@@ -1173,6 +1174,11 @@ TEST_F(WebContentsImplTest, CrossSiteUnloadHandlers) {
   const GURL url2("http://www.yahoo.com");
   orig_rfh->SuddenTerminationDisablerChanged(
       true, blink::mojom::SuddenTerminationDisablerType::kBeforeUnloadHandler);
+  // Put a user gesture on the frame to wait for the beforeunload event to
+  // complete.
+  orig_rfh->ActivateUserActivation(
+      blink::mojom::UserActivationNotificationType::kTest,
+      /*sticky_only=*/true);
   controller().LoadURL(url2, Referrer(), ui::PAGE_TRANSITION_TYPED,
                        std::string());
   EXPECT_TRUE(orig_rfh->is_waiting_for_beforeunload_completion());
@@ -1219,6 +1225,11 @@ TEST_F(WebContentsImplTest, CrossSiteNavigationPreempted) {
   const GURL url2("http://www.yahoo.com");
   orig_rfh->SuddenTerminationDisablerChanged(
       true, blink::mojom::SuddenTerminationDisablerType::kBeforeUnloadHandler);
+  // Put a user gesture on the frame to wait for the beforeunload event to
+  // complete.
+  orig_rfh->ActivateUserActivation(
+      blink::mojom::UserActivationNotificationType::kTest,
+      /*sticky_only=*/true);
   controller().LoadURL(url2, Referrer(), ui::PAGE_TRANSITION_TYPED,
                        std::string());
   EXPECT_TRUE(orig_rfh->is_waiting_for_beforeunload_completion());
@@ -1370,6 +1381,11 @@ TEST_F(WebContentsImplTest, CrossSiteNavigationNotPreemptedByFrame) {
   const GURL url2("http://www.yahoo.com");
   orig_rfh->SuddenTerminationDisablerChanged(
       true, blink::mojom::SuddenTerminationDisablerType::kBeforeUnloadHandler);
+  // Put a user gesture on the frame to wait for the beforeunload event to
+  // complete.
+  orig_rfh->ActivateUserActivation(
+      blink::mojom::UserActivationNotificationType::kTest,
+      /*sticky_only=*/true);
   controller().LoadURL(url2, Referrer(), ui::PAGE_TRANSITION_TYPED,
                        std::string());
 
@@ -1413,6 +1429,11 @@ TEST_F(WebContentsImplTest, CrossSiteNotPreemptedDuringBeforeUnload) {
   // This test assumes a beforeunload handler is present.
   orig_rfh->SuddenTerminationDisablerChanged(
       true, blink::mojom::SuddenTerminationDisablerType::kBeforeUnloadHandler);
+  // Put a user gesture on the frame to wait for the beforeunload event to
+  // complete.
+  orig_rfh->ActivateUserActivation(
+      blink::mojom::UserActivationNotificationType::kTest,
+      /*sticky_only=*/true);
   auto same_site_navigation = NavigationSimulator::CreateRendererInitiated(
       kSameSiteUrl, main_test_rfh());
   same_site_navigation->SetHasUserGesture(false);
@@ -3773,6 +3794,47 @@ TEST_F(WebContentsImplTest, IsLoadingExcludingAdFrames) {
   ad_frame_navigation->Commit();
   EXPECT_FALSE(contents()->IsLoading());
   EXPECT_FALSE(contents()->IsLoadingExcludingAdSubframes());
+}
+
+TEST_F(WebContentsImplTest, SetIgnoreZoomGestures) {
+  MockWebContentsDelegate delegate;
+  contents()->SetDelegate(&delegate);
+
+  // Setup Gesture Events
+  blink::WebGestureEvent pinch_event(
+      blink::WebInputEvent::Type::kGesturePinchUpdate,
+      blink::WebInputEvent::kNoModifiers, base::TimeTicks::Now(),
+      blink::WebGestureDevice::kTouchpad);
+
+  blink::WebGestureEvent double_tap_event(
+      blink::WebInputEvent::Type::kGestureDoubleTap,
+      blink::WebInputEvent::kNoModifiers, base::TimeTicks::Now(),
+      blink::WebGestureDevice::kTouchscreen);
+
+  blink::WebGestureEvent scroll_event(
+      blink::WebInputEvent::Type::kGestureScrollUpdate,
+      blink::WebInputEvent::kNoModifiers, base::TimeTicks::Now(),
+      blink::WebGestureDevice::kTouchscreen);
+
+  // Default case. Zoom gesture events are not ignored.
+  EXPECT_CALL(delegate, PreHandleGestureEvent(::testing::_, ::testing::_))
+      .WillRepeatedly(::testing::Return(false));
+  EXPECT_FALSE(contents()->PreHandleGestureEvent(pinch_event));
+  EXPECT_FALSE(contents()->PreHandleGestureEvent(double_tap_event));
+  testing::Mock::VerifyAndClearExpectations(&delegate);
+
+  // Only pinch and Double Tab gestures should be ignored.
+  contents()->SetIgnoreZoomGestures(true);
+  EXPECT_CALL(delegate, PreHandleGestureEvent(::testing::_, ::testing::_))
+      .Times(0);
+  EXPECT_TRUE(contents()->PreHandleGestureEvent(pinch_event));
+  EXPECT_TRUE(contents()->PreHandleGestureEvent(double_tap_event));
+
+  testing::Mock::VerifyAndClearExpectations(&delegate);
+
+  EXPECT_CALL(delegate, PreHandleGestureEvent(::testing::_, ::testing::_))
+      .WillOnce(::testing::Return(false));
+  EXPECT_FALSE(contents()->PreHandleGestureEvent(scroll_event));
 }
 
 }  // namespace content

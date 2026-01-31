@@ -16,6 +16,8 @@ static_library("on_task") {
     "locked_session_window_tracker_factory.h",
     "on_task_extensions_manager_impl.cc",
     "on_task_extensions_manager_impl.h",
+    "on_task_locked_controller.cc",
+    "on_task_locked_controller.h",
     "on_task_locked_session_navigation_throttle.cc",
     "on_task_locked_session_navigation_throttle.h",
     "on_task_locked_session_window_tracker.cc",

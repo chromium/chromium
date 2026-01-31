@@ -10,7 +10,6 @@
 #include <utility>
 
 #include "base/compiler_specific.h"
-#include "base/containers/contains.h"
 #include "base/containers/span.h"
 #include "base/feature_list.h"
 #include "base/feature_list_buildflags.h"
@@ -68,7 +67,7 @@ const struct {
 
 // Adds a |StringValue| to |list| for each platform where |bitmask| indicates
 // whether the entry is available on that platform.
-void AddOsStrings(unsigned bitmask, base::Value::List* list) {
+void AddOsStrings(unsigned bitmask, base::ListValue* list) {
   for (const auto& entry : kBitsToOs) {
     if (bitmask & entry.bit) {
       list->Append(entry.name);
@@ -103,8 +102,9 @@ bool IsDefaultValue(const FeatureEntry& entry,
   NOTREACHED();
 }
 
-// Returns the Value::List representing the choice data in the specified entry.
-base::Value::List CreateOptionsData(
+// Returns the base::ListValue representing the choice data in the specified
+// entry.
+base::ListValue CreateOptionsData(
     const FeatureEntry& entry,
     const std::set<std::string>& enabled_entries) {
   DCHECK(entry.type == FeatureEntry::MULTI_VALUE ||
@@ -116,9 +116,9 @@ base::Value::List CreateOptionsData(
          entry.type == FeatureEntry::PLATFORM_FEATURE_NAME_WITH_PARAMS_VALUE
 #endif  // BUILDFLAG(IS_CHROMEOS)
   );
-  base::Value::List result;
+  base::ListValue result;
   for (int i = 0; i < entry.NumOptions(); ++i) {
-    base::Value::Dict dict;
+    base::DictValue dict;
     const std::string name = entry.NameForOption(i);
     dict.Set("internal_name", name);
     dict.Set("description", entry.DescriptionForOption(i));
@@ -207,7 +207,7 @@ std::string CombineAndSanitizeOriginLists(const std::string& value1,
   std::vector<std::string> origin_vector;
   for (const std::string& list : {value1, value2}) {
     for (const std::string& origin : TokenizeOriginList(list)) {
-      if (!base::Contains(seen_origins, origin)) {
+      if (!seen_origins.contains(origin)) {
         origin_vector.push_back(origin);
         seen_origins.insert(origin);
       }
@@ -488,7 +488,7 @@ void FlagsState::SetOriginListFlag(const std::string& internal_name,
 
   std::set<std::string> enabled_entries;
   GetSanitizedEnabledFlags(flags_storage, &enabled_entries);
-  const bool enabled = base::Contains(enabled_entries, entry->internal_name);
+  const bool enabled = enabled_entries.contains(entry->internal_name);
   if (enabled) {
     DidModifyOriginListFlag(*flags_storage, *entry);
   }
@@ -506,7 +506,7 @@ void FlagsState::SetStringFlag(const std::string& internal_name,
 
   std::set<std::string> enabled_entries;
   GetSanitizedEnabledFlags(flags_storage, &enabled_entries);
-  const bool enabled = base::Contains(enabled_entries, entry->internal_name);
+  const bool enabled = enabled_entries.contains(entry->internal_name);
   if (enabled) {
     DidModifyStringFlag(*flags_storage, *entry);
   }
@@ -539,7 +539,7 @@ void FlagsState::RemoveFlagsSwitches(
     // For any featrue name in |features| that is not in |switch_added_values| -
     // i.e. it wasn't added by about_flags code, add it to |remaining_features|.
     for (const auto& feature : features) {
-      if (!base::Contains(switch_added_values, std::string(feature))) {
+      if (!switch_added_values.contains(std::string(feature))) {
         remaining_features.push_back(feature);
       }
     }
@@ -672,8 +672,8 @@ std::vector<std::string> FlagsState::RegisterEnabledFeatureVariationParameters(
 void FlagsState::GetFlagFeatureEntries(
     FlagsStorage* flags_storage,
     FlagAccess access,
-    base::Value::List& supported_entries,
-    base::Value::List& unsupported_entries,
+    base::ListValue& supported_entries,
+    base::ListValue& unsupported_entries,
     base::RepeatingCallback<bool(const FeatureEntry&)> skip_feature_entry) {
   DCHECK(flags_storage);
   std::set<std::string> enabled_entries;
@@ -686,12 +686,12 @@ void FlagsState::GetFlagFeatureEntries(
       continue;
     }
 
-    base::Value::Dict data;
+    base::DictValue data;
     data.Set("internal_name", entry.internal_name);
     data.Set("name", entry.visible_name);
     data.Set("description", entry.visible_description);
 
-    base::Value::List supported_platforms;
+    base::ListValue supported_platforms;
     AddOsStrings(entry.supported_platforms, &supported_platforms);
     data.Set("supported_platforms", std::move(supported_platforms));
     // True if the switch is not currently passed.
@@ -699,7 +699,7 @@ void FlagsState::GetFlagFeatureEntries(
     data.Set("is_default", is_default_value);
 
     if (!entry.links.empty()) {
-      base::Value::List links;
+      base::ListValue links;
       for (auto* link : entry.links) {
         links.Append(link);
       }
@@ -794,7 +794,7 @@ void FlagsState::AddSwitchMapping(
     const std::string& switch_name,
     const std::string& switch_value,
     std::map<std::string, SwitchEntry>* name_to_switch_map) const {
-  DCHECK(!base::Contains(*name_to_switch_map, key));
+  DCHECK(!name_to_switch_map->contains(key));
 
   SwitchEntry* entry = &(*name_to_switch_map)[key];
   entry->switch_name = switch_name;
@@ -807,7 +807,7 @@ void FlagsState::AddFeatureMapping(
     bool feature_state,
     const std::string& variation_id,
     std::map<std::string, SwitchEntry>* name_to_switch_map) const {
-  DCHECK(!base::Contains(*name_to_switch_map, key));
+  DCHECK(!name_to_switch_map->contains(key));
 
   SwitchEntry* entry = &(*name_to_switch_map)[key];
   entry->feature_name = feature_name;
@@ -843,8 +843,23 @@ void FlagsState::AddSwitchesToCommandLine(
         variation_ids.push_back(entry.variation_id);
       }
     } else if (!entry.switch_name.empty()) {
-      command_line->AppendSwitchASCII(entry.switch_name, entry.switch_value);
-      flags_switches_[entry.switch_name] = entry.switch_value;
+      if (entry.switch_name == enable_features_flag_name ||
+          entry.switch_name == disable_features_flag_name) {
+        // Make sure we don't overwrite the existing `enable_features_flag_name`
+        // or `disable_features_flag_name` switch.
+        const bool feature_state =
+            entry.switch_name == enable_features_flag_name;
+        std::map<std::string, bool> features;
+        for (std::string_view feature :
+             base::FeatureList::SplitFeatureListString(entry.switch_value)) {
+          features[std::string(feature)] = feature_state;
+        }
+        MergeFeatureCommandLineSwitch(features, entry.switch_name.c_str(),
+                                      feature_state, command_line);
+      } else {
+        command_line->AppendSwitchASCII(entry.switch_name, entry.switch_value);
+        flags_switches_[entry.switch_name] = entry.switch_value;
+      }
     }
     // If an entry doesn't match either of the above, then it is likely the
     // default entry for a FEATURE_VALUE entry. Safe to ignore.
@@ -876,11 +891,11 @@ void FlagsState::MergeFeatureCommandLineSwitch(
   std::vector<std::string_view> features =
       base::FeatureList::SplitFeatureListString(original_switch_value);
   // Only add features that don't already exist in the lists.
-  // Note: The base::Contains() call results in O(n^2) performance, but in
-  // practice n should be very small.
+  // Note: The std::ranges::contains() call results in O(n^2) performance, but
+  // in practice n should be very small.
   for (const auto& entry : feature_switches) {
     if (entry.second == feature_state &&
-        !base::Contains(features, entry.first)) {
+        !std::ranges::contains(features, entry.first)) {
       features.push_back(entry.first);
       appended_switches_[switch_name].insert(entry.first);
     }

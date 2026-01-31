@@ -4,9 +4,9 @@
 
 #include "chrome/browser/ui/views/permissions/permission_prompt_base_view.h"
 
+#include <algorithm>
 #include <memory>
 
-#include "base/containers/contains.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/picture_in_picture/picture_in_picture_occlusion_tracker.h"
 #include "chrome/browser/picture_in_picture/picture_in_picture_window_manager.h"
@@ -140,8 +140,8 @@ IN_PROC_BROWSER_TEST_F(PermissionPromptBaseViewBrowserTest,
   // always-on-top window that can occlude UI.
   PictureInPictureOcclusionTracker* tracker =
       PictureInPictureWindowManager::GetInstance()->GetOcclusionTracker();
-  EXPECT_TRUE(
-      base::Contains(tracker->GetPictureInPictureWidgetsForTesting(), bubble));
+  EXPECT_TRUE(std::ranges::contains(
+      tracker->GetPictureInPictureWidgetsForTesting(), bubble));
 
   bubble->CloseNow();
 }

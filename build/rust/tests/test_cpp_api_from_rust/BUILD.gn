@@ -1,0 +1,25 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/rust/rust_static_library.gni")
+
+rust_static_library("rust_lib") {
+  crate_root = "lib.rs"
+  sources = [ crate_root ]
+  testonly = true
+  cpp_api_from_rust = {
+    target_name = "rust_lib_bindings"
+  }
+}
+
+source_set("test_cpp_api_from_rust") {
+  sources = [ "unittests.cc" ]
+  deps = [
+    ":rust_lib_bindings",
+    "//base",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
+  testonly = true
+}

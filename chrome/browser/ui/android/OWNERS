@@ -1,1 +1,3 @@
 file://chrome/android/OWNERS
+
+per-file browser_navigator_android*.*=jthiesen@chromium.org

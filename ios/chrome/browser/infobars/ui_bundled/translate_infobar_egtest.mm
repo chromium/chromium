@@ -21,7 +21,7 @@
 #import "ios/chrome/browser/infobars/ui_bundled/modals/infobar_translate_modal_constants.h"
 #import "ios/chrome/browser/intelligence/features/features.h"
 #import "ios/chrome/browser/location_bar/badge/ui/location_bar_badge_constants.h"
-#import "ios/chrome/browser/popup_menu/ui_bundled/popup_menu_constants.h"
+#import "ios/chrome/browser/popup_menu/public/popup_menu_constants.h"
 #import "ios/chrome/browser/reader_mode/model/features.h"
 #import "ios/chrome/browser/reader_mode/ui/constants.h"
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
@@ -31,6 +31,7 @@
 #import "ios/chrome/test/earl_grey/chrome_earl_grey_ui.h"
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
 #import "ios/chrome/test/earl_grey/scoped_disable_timer_tracking.h"
+#import "ios/chrome/test/earl_grey/test_switches.h"
 #import "ios/chrome/test/earl_grey/web_http_server_chrome_test_case.h"
 #import "ios/chrome/test/scoped_eg_synchronization_disabler.h"
 #import "ios/components/webui/web_ui_url_constants.h"
@@ -313,24 +314,26 @@ void TestResponseProvider::GetLanguageResponse(
 
 - (AppLaunchConfiguration)appConfigurationForTestCase {
   AppLaunchConfiguration config;
-  config.features_enabled.push_back(kEnableReaderModeTranslation);
   config.features_enabled.push_back(kEnableReaderModeTranslationWithInfobar);
+  config.additional_args.push_back(std::string("-") +
+                                   test_switches::kUseDefaultInfobarDuration);
 
+  // TODO(crbug.com/467309708): Refactor to create a test class for Reading Mode
+  // once the translation feature is enabled by default.
   if ([self isRunningTest:@selector(testTranslateInReaderMode)] ||
       [self isRunningTest:@selector(testTranslateAfterReaderMode)] ||
       [self isRunningTest:@selector(testTranslatePriorToReaderMode)] ||
       [self isRunningTest:@selector(testAutotranslateInReaderMode)] ||
+      [self isRunningTest:@selector(testNoAutotranslateInReaderMode)] ||
       [self isRunningTest:@selector(testTranslateBadgeInReaderMode)] ||
       [self isRunningTest:@selector(testTranslateInClosedReaderMode)] ||
       [self isRunningTest:@selector
-            (testTranslateBadgeWithReaderModeBadgeSupport)]) {
-    config.features_enabled.push_back(kEnableReaderMode);
+            (testTranslateBadgeWithReaderModeBadgeSupport)] ||
+      [self
+          isRunningTest:@selector(testTranslateInReaderModeAndNavigatesBack)]) {
     config.features_enabled.push_back(kEnableReaderModeInUS);
-  }
-
-  if ([self isRunningTest:@selector
-            (testTranslateBadgeWithReaderModeBadgeSupport)]) {
-    config.features_enabled.push_back(kEnableReaderModeBadgeSupport);
+    config.features_enabled.push_back(kProactiveSuggestionsFramework);
+    config.features_enabled.push_back(kPageActionMenu);
   }
 
   if ([self isRunningTest:@selector(testInfobarTranslateRevert)] ||
@@ -538,9 +541,7 @@ void TestResponseProvider::GetLanguageResponse(
   [ChromeEarlGrey loadURL:URL];
   [ChromeEarlGrey tapWebStateElementWithID:@"click"];
   [ChromeEarlGrey waitForWebStateContainingText:kLanguagePathText];
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::OmniboxText(
-                                          someLanguageURL.GetContent())]
-      assertWithMatcher:grey_notNil()];
+  [ChromeEarlGrey waitForWebStateVisibleURL:someLanguageURL];
   [self assertContentLanguage:@"es" htmlRootLanguage:@"" adoptedLanguage:@"es"];
 }
 
@@ -1077,9 +1078,7 @@ void TestResponseProvider::GetLanguageResponse(
   [ChromeEarlGreyUI openToolsMenu];
 
   id<GREYMatcher> tableViewMatcher =
-      [ChromeEarlGrey isNewOverflowMenuEnabled]
-          ? grey_accessibilityID(kPopupMenuToolsMenuActionListId)
-          : grey_accessibilityID(kPopupMenuToolsMenuTableViewId);
+      grey_accessibilityID(kPopupMenuToolsMenuActionListId);
   [[[[EarlGrey selectElementWithMatcher:grey_allOf(grey_accessibilityID(
                                                        kToolsMenuTranslateId),
                                                    grey_interactable(), nil)]
@@ -1311,9 +1310,7 @@ void TestResponseProvider::GetLanguageResponse(
   [ChromeEarlGreyUI openToolsMenu];
 
   id<GREYMatcher> tableViewMatcher =
-      [ChromeEarlGrey isNewOverflowMenuEnabled]
-          ? grey_accessibilityID(kPopupMenuToolsMenuActionListId)
-          : grey_accessibilityID(kPopupMenuToolsMenuTableViewId);
+      grey_accessibilityID(kPopupMenuToolsMenuActionListId);
   [[[EarlGrey
       selectElementWithMatcher:grey_allOf(
                                    grey_accessibilityID(kToolsMenuTranslateId),
@@ -1365,9 +1362,7 @@ void TestResponseProvider::GetLanguageResponse(
   [ChromeEarlGreyUI openToolsMenu];
 
   id<GREYMatcher> tableViewMatcher =
-      [ChromeEarlGrey isNewOverflowMenuEnabled]
-          ? grey_accessibilityID(kPopupMenuToolsMenuActionListId)
-          : grey_accessibilityID(kPopupMenuToolsMenuTableViewId);
+      grey_accessibilityID(kPopupMenuToolsMenuActionListId);
   [[[EarlGrey
       selectElementWithMatcher:grey_allOf(
                                    grey_accessibilityID(kToolsMenuTranslateId),
@@ -1391,14 +1386,6 @@ void TestResponseProvider::GetLanguageResponse(
                      kBadgeButtonTranslateAcceptedAccessibilityIdentifier)]
       assertWithMatcher:grey_notNil()];
   [ChromeEarlGrey waitForWebStateContainingText:"Translated"];
-  // TODO(crbug.com/457880049): Clean up when feature is enabled by default.
-  NSString* imageViewIdentifier =
-      [ChromeEarlGrey isAskGeminiChipEnabled]
-          ? kLocationBarBadgeImageViewIdentifier
-          : @"ContextualPanelEntrypointImageViewAXID";
-  [ChromeEarlGrey
-      waitForSufficientlyVisibleElementWithMatcher:grey_accessibilityID(
-                                                       imageViewIdentifier)];
 }
 
 // Tests that translation settings in Reader Mode is displayed and that
@@ -1433,9 +1420,7 @@ void TestResponseProvider::GetLanguageResponse(
   [ChromeEarlGreyUI openToolsMenu];
 
   id<GREYMatcher> tableViewMatcher =
-      [ChromeEarlGrey isNewOverflowMenuEnabled]
-          ? grey_accessibilityID(kPopupMenuToolsMenuActionListId)
-          : grey_accessibilityID(kPopupMenuToolsMenuTableViewId);
+      grey_accessibilityID(kPopupMenuToolsMenuActionListId);
   [[[EarlGrey
       selectElementWithMatcher:grey_allOf(
                                    grey_accessibilityID(kToolsMenuTranslateId),
@@ -1483,6 +1468,61 @@ void TestResponseProvider::GetLanguageResponse(
   // The "Show Original?" banner should be visible again.
   GREYAssertTrue([self isAfterTranslateBannerVisible],
                  @"Show Original Banner was not found.");
+}
+
+// Tests that translation settings in Reader Mode are not applied when
+// navigating to a different page on the navigation stack.
+- (void)testTranslateInReaderModeAndNavigatesBack {
+  // Set up server with a French page.
+  std::unique_ptr<web::DataResponseProvider> provider(new TestResponseProvider);
+  web::test::SetUpHttpServer(std::move(provider));
+
+  GURL URL = web::test::HttpServer::MakeUrl(
+      base::StringPrintf("http://%s", kFrenchPageDistillablePath));
+
+  // Load URL.
+  [ChromeEarlGrey loadURL:URL];
+
+  // Open Reader Mode.
+  GREYAssertTrue(
+      [ChromeEarlGrey showReaderModeAndWaitUntilReaderModeWebStateIsReady],
+      @"Reader mode content could not be loaded.");
+
+  // Verify Reader Mode is active.
+  [ChromeEarlGrey
+      waitForSufficientlyVisibleElementWithMatcher:
+          grey_accessibilityID(kReaderModeViewAccessibilityIdentifier)];
+
+  // iOS26 introduces latency in the UI detection logic, which results in the
+  // infobar disappearing before the EG test attempts to detect it.
+  // Temporarily disabling synchronization allows the infobar to be detected
+  // within the expected latency.
+  ScopedSynchronizationDisabler disabler;
+  // Select translation in the tools menu.
+  [ChromeEarlGreyUI openToolsMenu];
+
+  id<GREYMatcher> tableViewMatcher =
+      grey_accessibilityID(kPopupMenuToolsMenuActionListId);
+  [[[EarlGrey
+      selectElementWithMatcher:grey_allOf(
+                                   grey_accessibilityID(kToolsMenuTranslateId),
+                                   grey_sufficientlyVisible(), nil)]
+         usingSearchAction:grey_scrollInDirection(kGREYDirectionDown, 150)
+      onElementWithMatcher:tableViewMatcher] performAction:grey_tap()];
+
+  // Check Translate banner is presented.
+  GREYAssertTrue([self isBeforeTranslateBannerVisible],
+                 @"Before Translate banner was not found");
+  // Tap banner button to translate.
+  GREYAssertTrue([self selectTranslateButton],
+                 @"Could not tap on Translate banner action button");
+
+  // Verify page is translated.
+  [ChromeEarlGrey waitForWebStateContainingText:"Translated"];
+
+  // Close Reader Mode by navigating back.
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::BackButton()]
+      performAction:grey_tap()];
 }
 
 // Tests that autotranslate applies to both the original page and the Reading
@@ -1536,6 +1576,71 @@ void TestResponseProvider::GetLanguageResponse(
 
   // Verify page is translated.
   [ChromeEarlGrey waitForWebStateContainingText:"Translated"];
+}
+
+// Tests that if the original page is not translated, the Reading Mode page is
+// not either, regardless of the autotranslate settings.
+- (void)testNoAutotranslateInReaderMode {
+  // Start the HTTP server.
+  std::unique_ptr<web::DataResponseProvider> provider(new TestResponseProvider);
+  web::test::SetUpHttpServer(std::move(provider));
+
+  // Load a page with French text.
+  GURL URL = web::test::HttpServer::MakeUrl(
+      base::StringPrintf("http://%s", kFrenchPageDistillablePath));
+  [ChromeEarlGrey loadURL:URL];
+
+  // Make sure that French to English translation is not automatic.
+  GREYAssert(![TranslateAppInterface shouldAutoTranslateFromLanguage:@"fr"
+                                                          toLanguage:@"en"],
+             @"French to English translation is automatic");
+
+  // Check Translate banner is presented.
+  GREYAssertTrue([self isBeforeTranslateBannerVisible],
+                 @"Before Translate banner was not found");
+  // Show modal.
+  [[EarlGrey
+      selectElementWithMatcher:grey_allOf(
+                                   grey_accessibilityID(
+                                       kInfobarBannerOpenModalButtonIdentifier),
+                                   grey_accessibilityTrait(
+                                       UIAccessibilityTraitButton),
+                                   nil)] performAction:grey_tap()];
+  // Select the Always Translate button.
+  [[EarlGrey
+      selectElementWithMatcher:
+          grey_allOf(grey_accessibilityID(
+                         kTranslateInfobarModalAlwaysTranslateButtonAXId),
+                     grey_accessibilityTrait(UIAccessibilityTraitButton), nil)]
+      performAction:grey_tap()];
+
+  // Make sure the page is translated.
+  [ChromeEarlGrey waitForWebStateContainingText:"Translated"];
+  // Wait for "Show Original?" banner to appear.
+  GREYAssertTrue([self isAfterTranslateBannerVisible],
+                 @"Show Original Banner was not found.");
+
+  // Tap on banner button to revert.
+  [[EarlGrey
+      selectElementWithMatcher:
+          grey_allOf(grey_accessibilityLabel(l10n_util::GetNSString(
+                         IDS_IOS_TRANSLATE_INFOBAR_TRANSLATE_UNDO_ACTION)),
+                     grey_accessibilityTrait(UIAccessibilityTraitButton), nil)]
+      performAction:grey_tap()];
+  [ChromeEarlGrey waitForWebStateContainingText:"Restored"];
+
+  // Open Reader Mode.
+  GREYAssertTrue(
+      [ChromeEarlGrey showReaderModeAndWaitUntilReaderModeWebStateIsReady],
+      @"Reader mode content could not be loaded.");
+
+  // Verify Reader Mode is active.
+  [ChromeEarlGrey
+      waitForSufficientlyVisibleElementWithMatcher:
+          grey_accessibilityID(kReaderModeViewAccessibilityIdentifier)];
+
+  // Verify page is not translated.
+  [ChromeEarlGrey waitForWebStateNotContainingText:"Translated"];
 }
 
 // Tests that opening and closing reader mode does not impact the state of the

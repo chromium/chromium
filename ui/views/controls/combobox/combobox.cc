@@ -282,7 +282,7 @@ void Combobox::SetInvalid(bool invalid) {
   }
 
   UpdateBorder();
-  OnPropertyChanged(&selected_index_, PropertyEffects::kPaint);
+  OnPropertyChanged(&invalid_, PropertyEffects::kPaint);
 }
 
 void Combobox::SetBorderColorId(ui::ColorId color_id) {
@@ -322,7 +322,8 @@ void Combobox::SetSizeToLargestLabel(bool size_to_largest_label) {
 
   size_to_largest_label_ = size_to_largest_label;
   content_size_ = GetContentSize();
-  OnPropertyChanged(&selected_index_, PropertyEffects::kPreferredSizeChanged);
+  OnPropertyChanged(&size_to_largest_label_,
+                    PropertyEffects::kPreferredSizeChanged);
 }
 
 bool Combobox::IsMenuRunning() const {

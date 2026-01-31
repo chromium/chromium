@@ -37,7 +37,6 @@
 #include <queue>
 
 #include "base/auto_reset.h"
-#include "base/containers/contains.h"
 #include "base/containers/fixed_flat_set.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/numerics/safe_conversions.h"
@@ -207,6 +206,20 @@
 
 namespace blink {
 namespace {
+
+bool IsIgnoredAsInsideInactiveColumnTab(Node* node) {
+  if (!node || !RuntimeEnabledFeatures::CSSScrollMarkerGroupModesEnabled() ||
+      node->IsCarouselPseudoElement()) {
+    return false;
+  }
+  // Check if we are inside a ::column with inactive ::scroll-marker.
+  // The IsInsideInactiveColumnTab bit is set by ScrollMarkerGroupData when
+  // the active column changes.
+  if (const LayoutObject* layout_object = node->GetLayoutObject()) {
+    return layout_object->EnclosingBox()->InsideInactiveColumnTab();
+  }
+  return false;
+}
 
 const ScrollMarkerPseudoElement* GetScrollMarker(const Node* node) {
   auto* element = DynamicTo<Element>(node);
@@ -1151,7 +1164,7 @@ AXObjectInclusion AXNodeObject::ShouldIncludeBasedOnSemantics(
           ax::mojom::blink::Role::kVideo,
       });
 
-  if (base::Contains(always_included_computed_roles, RoleValue())) {
+  if (always_included_computed_roles.contains(RoleValue())) {
     return kIncludeObject;
   }
 
@@ -1206,8 +1219,7 @@ AXObjectInclusion AXNodeObject::ShouldIncludeBasedOnSemantics(
     // next layer. All nodes have a single child, meaning that this child has no
     // siblings.
     if (!IsExemptFromInlineBlockCheck(native_role_) && GetLayoutObject() &&
-        GetLayoutObject()->IsInline() &&
-        GetLayoutObject()->IsAtomicInlineLevel() &&
+        GetLayoutObject()->IsAtomicInline() &&
         node->parentNode()->childElementCount() > 1) {
       return kIncludeObject;
     }
@@ -1258,36 +1270,36 @@ AXObjectInclusion AXNodeObject::ShouldIncludeBasedOnSemantics(
   return kDefaultBehavior;
 }
 
-bool AXNodeObject::ComputeIsIgnoredAsInsideInactiveScrollMarkerTab() {
-  Node* node = GetNode();
-  if (!node || !RuntimeEnabledFeatures::CSSScrollMarkerGroupModesEnabled()) {
+bool AXNodeObject::ComputeIsIgnoredAsInsideInactiveScrollMarkerTab() const {
+  if (!RuntimeEnabledFeatures::CSSScrollMarkerGroupModesEnabled()) {
     return false;
   }
-  if (node->IsCarouselPseudoElement()) {
-    // The carousel pseudo-elements should never be ignored.
-    return false;
-  }
-  if (IsOriginatingElementForInactiveScrollMarkerInTabsMode(node)) {
-    return true;
-  }
-  if (!ParentObject()) {
-    return false;
+  if (Node* node = GetNode()) {
+    if (node->IsCarouselPseudoElement()) {
+      // The carousel pseudo-elements should never be ignored.
+      return false;
+    }
+    // Check if this node is the originating element for inactive
+    // ::scroll-marker in tabs mode.
+    if (IsOriginatingElementForInactiveScrollMarkerInTabsMode(node)) {
+      return true;
+    }
   }
   // As soon as one of the ancestors is the originating element for
   // ::scroll-marker in tabs mode, we know this node is inside the originating
   // element for ::scroll-marker in tabs mode, so we just propagate this info
   // down to the children.
-  return ParentObject()
-      ->InsideOriginatingElementForInactiveScrollMarkerInTabsMode();
+  return ParentObject() && ParentObject()->InsideInactiveScrollMarkerTab();
 }
 
 bool AXNodeObject::ComputeIsIgnored(IgnoredReasons* ignored_reasons) const {
   Node* node = GetNode();
 
   // Everything (besides carousel pseudo-elements) inside and including the
-  // originating element of the
-  // ::scroll-marker is in tabs mode should be ignored in AX tree.
-  if (InsideOriginatingElementForInactiveScrollMarkerInTabsMode()) {
+  // originating element of the ::scroll-marker is in tabs mode should be
+  // ignored in AX tree.
+  if (InsideInactiveScrollMarkerTab() ||
+      IsIgnoredAsInsideInactiveColumnTab(node)) {
     if (ignored_reasons) {
       ignored_reasons->push_back(IgnoredReason(kAXInactiveCarouselTabContent));
     }
@@ -3200,7 +3212,19 @@ AccessibilitySelectedState AXNodeObject::IsSelected() const {
 
   // Selection follows focus, but ONLY in single selection containers, and only
   // if aria-selected was not present to override.
-  return IsSelectedFromFocus() ? kSelectedStateTrue : kSelectedStateFalse;
+  if (IsSelectedFromFocus()) {
+    return kSelectedStateTrue;
+  }
+
+  // Per ARIA spec, implicit selection is not allowed when:
+  // - Container is multiselectable, or
+  // - Any item has aria-checked.
+  const AXObject* container = ContainerWidget();
+  if (container && (container->IsMultiSelectable() ||
+                    !AXObjectCache().IsImplicitSelectionAllowed(container))) {
+    return kSelectedStateUndefined;
+  }
+  return kSelectedStateFalse;
 }
 
 bool AXNodeObject::IsSelectedFromFocusSupported() const {
@@ -3388,8 +3412,7 @@ AccessibilityExpanded AXNodeObject::IsExpanded() const {
       CommandEventType command = command_for_element->GetCommandEventType(
           html_element->command(), html_element->GetExecutionContext());
       bool is_popover_command =
-          command_for_element->IsValidBuiltinPopoverCommand(*html_element,
-                                                            command);
+          command_for_element->IsValidBuiltinPopoverCommand(command);
       if (command_for_element && is_popover_command &&
           !element->IsDescendantOrShadowDescendantOf(command_for_element)) {
         return command_for_element->popoverOpen() ? kExpandedExpanded
@@ -3902,6 +3925,13 @@ AXObject::AXObjectVector AXNodeObject::RadioButtonsInGroup() const {
     return radio_buttons;
 
   if (auto* node_radio_button = DynamicTo<HTMLInputElement>(node_.Get())) {
+    if (auto* cache = DynamicTo<AXObjectCacheImpl>(AXObjectCache())) {
+      radio_buttons = cache->GetRadioButtonGroupMembers(node_radio_button);
+      if (!radio_buttons.empty()) {
+        return radio_buttons;
+      }
+    }
+
     HeapVector<Member<HTMLInputElement>> html_radio_buttons =
         FindAllRadioButtonsWithSameName(node_radio_button);
     for (HTMLInputElement* radio_button : html_radio_buttons) {
@@ -5289,7 +5319,9 @@ String AXNodeObject::TextAlternative(
   // visible element without causing an accessibility error or user problem.
   // Note: if this is part of another label or description, it needs to be
   // computed as a name, in order to contribute to that.
-  if (aria_label_or_description_root || !IsNameProhibited()) {
+  if ((aria_label_or_description_root || !IsNameProhibited()) &&
+      !(has_explicitly_empty_native_text_alternative &&
+        (IsA<HTMLImageElement>(node) || IsA<HTMLAreaElement>(node)))) {
     String resulting_text = TextAlternativeFromTooltip(
         name_from, name_sources, &found_text_alternative, &text_alternative,
         related_objects);
@@ -5352,8 +5384,7 @@ static bool ShouldInsertSpaceBetweenObjectsIfNeeded(
   // spec: https://www.w3.org/TR/css-display-3/#the-display-properties
   CHECK(next_layout);
   CHECK(prev_layout);
-  if (next_layout->IsAtomicInlineLevel() ||
-      prev_layout->IsAtomicInlineLevel()) {
+  if (next_layout->IsAtomicInline() || prev_layout->IsAtomicInline()) {
     return true;
   }
 
@@ -5814,12 +5845,7 @@ int AXNodeObject::TextOffsetInFormattingContext(int offset) const {
                        : offset;
   }
 
-  // TODO(crbug.com/567964): LayoutObject::IsAtomicInlineLevel() also includes
-  // block-level replaced elements. We need to explicitly exclude them via
-  // LayoutObject::IsInline().
-  const bool is_atomic_inline_level =
-      layout_obj->IsInline() && layout_obj->IsAtomicInlineLevel();
-  if (!is_atomic_inline_level && !layout_obj->IsText()) {
+  if (!layout_obj->IsAtomicInline() && !layout_obj->IsText()) {
     // Not in a formatting context in which text offsets are meaningful.
     return AXObject::TextOffsetInFormattingContext(offset);
   }
@@ -6059,7 +6085,9 @@ void AXNodeObject::AddPseudoElementChildrenFromLayoutTree() {
     // All added pseudo-element descendants are included in the tree.
     if (AXObject* ax_child = AXObjectCache().GetOrCreate(child, this)) {
       DCHECK(AXObjectCacheImpl::IsRelevantPseudoElementDescendant(*child));
-      AddChildAndCheckIncluded(ax_child);
+      if (ax_child->IsIncludedInTree()) {
+        AddChildAndCheckIncluded(ax_child);
+      }
     }
     child = child->NextSibling();
   }
@@ -6292,6 +6320,12 @@ void AXNodeObject::AddNodeChildImpl(Node* node) {
   // Should not have another parent unless owned.
   if (AXObjectCache().IsAriaOwned(ax_child))
     return;  // Do not add owned children to their natural parent.
+  if (Element* element = DynamicTo<Element>(node);
+      element && element->GetOverscrollContainer()) {
+    // Targets of toggle-overscroll actions have an overscroll container
+    // with a ::-internal-overscroll-area-parent which owns them.
+    return;
+  }
 
   AXObject* ax_cached_parent =
       ax_child ? ax_child->ParentObjectIfPresent() : nullptr;
@@ -6892,8 +6926,12 @@ String AXNodeObject::TextAlternativeFromTooltip(
   }
 
   if (name_sources) {
-    name_sources->push_back(
-        NameSource(*found_text_alternative, html_names::kPopovertargetAttr));
+    // Map NameFrom enum to corresponding HTML attribute
+    const QualifiedName& attr_name =
+        name_from == ax::mojom::blink::NameFrom::kInterestFor
+            ? html_names::kInterestforAttr
+            : html_names::kPopovertargetAttr;
+    name_sources->push_back(NameSource(*found_text_alternative, attr_name));
     name_sources->back().type = name_from;
   }
 
@@ -7272,7 +7310,7 @@ String AXNodeObject::NativeTextAlternative(
       name_sources->push_back(NameSource(*found_text_alternative, kAltAttr));
       name_sources->back().type = name_from;
     }
-    if (!alt.empty()) {
+    if (!alt.IsNull()) {
       text_alternative = alt;
       if (name_sources) {
         NameSource& source = name_sources->back();
@@ -8298,8 +8336,7 @@ AXObject* AXNodeObject::GetFirstInlineBlockOrDeepestInlineAXChildInLayoutTree(
     if (ax_object && ax_object->IsIncludedInTree() &&
         !current_node->IsMarkerPseudoElement()) {
       if (ax_object->GetLayoutObject() &&
-          ax_object->GetLayoutObject()->IsInline() &&
-          ax_object->GetLayoutObject()->IsAtomicInlineLevel()) {
+          ax_object->GetLayoutObject()->IsAtomicInline()) {
         return ax_object;
       }
     }

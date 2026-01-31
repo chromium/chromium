@@ -11,6 +11,7 @@
 #include "base/functional/bind.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
+#include "build/build_config.h"
 #include "chrome/browser/actor/actor_keyed_service.h"
 #include "chrome/browser/actor/actor_keyed_service_factory.h"
 #include "chrome/browser/background/glic/glic_launcher_configuration.h"
@@ -95,13 +96,12 @@ void GlicHandler::SetWebUIForTesting(content::WebUI* web_ui) {
   set_web_ui(web_ui);
 }
 
-void GlicHandler::HandleSetGlicOsLauncherEnabled(
-    const base::Value::List& args) {
+void GlicHandler::HandleSetGlicOsLauncherEnabled(const base::ListValue& args) {
   UserEducationService::MaybeNotifyNewBadgeFeatureUsed(
       web_ui()->GetWebContents()->GetBrowserContext(), features::kGlic);
 }
 
-void GlicHandler::HandleGetGlicShortcut(const base::Value::List& args) {
+void GlicHandler::HandleGetGlicShortcut(const base::ListValue& args) {
   CHECK_EQ(1U, args.size());
   const base::Value& callback_id = args[0];
 
@@ -112,7 +112,7 @@ void GlicHandler::HandleGetGlicShortcut(const base::Value::List& args) {
                             .GetShortcutText()));
 }
 
-void GlicHandler::HandleSetGlicShortcut(const base::Value::List& args) {
+void GlicHandler::HandleSetGlicShortcut(const base::ListValue& args) {
   CHECK_EQ(2U, args.size());
   const base::Value& callback_id = args[0];
   const std::string accelerator_string = args[1].GetString();
@@ -128,7 +128,7 @@ void GlicHandler::HandleSetGlicShortcut(const base::Value::List& args) {
 }
 
 void GlicHandler::HandleGetGlicFocusToggleShortcut(
-    const base::Value::List& args) {
+    const base::ListValue& args) {
   CHECK_EQ(1U, args.size());
   const base::Value& callback_id = args[0];
 
@@ -141,7 +141,7 @@ void GlicHandler::HandleGetGlicFocusToggleShortcut(
 }
 
 void GlicHandler::HandleSetGlicFocusToggleShortcut(
-    const base::Value::List& args) {
+    const base::ListValue& args) {
   CHECK_EQ(2U, args.size());
   const base::Value& callback_id = args[0];
   const std::string accelerator_string = args[1].GetString();
@@ -153,7 +153,7 @@ void GlicHandler::HandleSetGlicFocusToggleShortcut(
 }
 
 void GlicHandler::HandleSetShortcutSuspensionState(
-    const base::Value::List& args) {
+    const base::ListValue& args) {
   CHECK_EQ(1U, args.size());
   const bool should_suspend = args[0].GetBool();
   auto* const global_accelerator_listener =
@@ -164,8 +164,7 @@ void GlicHandler::HandleSetShortcutSuspensionState(
   }
 }
 
-void GlicHandler::HandleGetGlicDisallowedByAdmin(
-    const base::Value::List& args) {
+void GlicHandler::HandleGetGlicDisallowedByAdmin(const base::ListValue& args) {
   CHECK_EQ(1U, args.size());
   const base::Value& callback_id = args[0];
   AllowJavascript();

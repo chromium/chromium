@@ -5,6 +5,7 @@
 #ifndef IOS_CHROME_BROWSER_READER_MODE_UI_READER_MODE_OPTIONS_CONSUMER_H_
 #define IOS_CHROME_BROWSER_READER_MODE_UI_READER_MODE_OPTIONS_CONSUMER_H_
 
+#import "components/dom_distiller/core/distilled_page_prefs.h"
 #import "components/dom_distiller/core/mojom/distilled_page_prefs.mojom.h"
 
 // A protocol for a consumer of Reader mode options.
@@ -14,7 +15,8 @@
 - (void)setSelectedFontFamily:(dom_distiller::mojom::FontFamily)fontFamily;
 
 // Sets `theme` as the currently selected theme.
-- (void)setSelectedTheme:(dom_distiller::mojom::Theme)theme;
+- (void)setSelectedTheme:(dom_distiller::mojom::Theme)theme
+              fromSource:(dom_distiller::ThemeSettingsUpdateSource)source;
 
 // Sets the decrease font size button status to `enabled`.
 - (void)setDecreaseFontSizeButtonEnabled:(BOOL)enabled;

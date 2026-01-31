@@ -8,7 +8,6 @@
 #include <set>
 #include <utility>
 
-#include "base/containers/contains.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -60,7 +59,7 @@ class TestEventRouter : public EventRouter {
 
   bool ExtensionHasEventListener(const ExtensionId& extension_id,
                                  const std::string& event_name) const override {
-    return base::Contains(fake_registry_, Entry(extension_id, event_name));
+    return fake_registry_.contains(Entry(extension_id, event_name));
   }
 
   // Pretend that |extension_id| is listening for |event_name|.
@@ -234,6 +233,8 @@ class ChromeRuntimeAPIDelegateTest : public ExtensionServiceTestWithInstall {
   }
 
   void TearDown() override {
+    update_install_gate_.reset();
+    runtime_delegate_.reset();
     ExtensionDownloader::set_test_delegate(nullptr);
     ChromeRuntimeAPIDelegate::set_tick_clock_for_tests(nullptr);
     ExtensionServiceTestWithInstall::TearDown();

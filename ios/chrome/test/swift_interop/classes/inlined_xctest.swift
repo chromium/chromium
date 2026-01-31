@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import Interop
+import Classes
 import UIKit
 import XCTest
 
@@ -19,6 +19,11 @@ class InlinedClassTest: XCTestCase {
     composed.Increment(2)
     let result: Int32 = composed.Increment(8)
     XCTAssertEqual(result, 10, "Stack based class didn't work")
+  }
+
+  func testRenamed() {
+    let obj = RenamedClass()
+    XCTAssertTrue(obj.Check())
   }
 
 }

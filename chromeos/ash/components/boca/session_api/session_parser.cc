@@ -131,7 +131,7 @@ namespace ash::boca {
   return ::boca::ViewScreenConfig::UNKNOWN;
 }
 
-void ParseTeacherProtoFromJson(base::Value::Dict* session_dict,
+void ParseTeacherProtoFromJson(base::DictValue* session_dict,
                                ::boca::Session* session) {
   const auto* teacher_dict = session_dict->FindDict(kTeacher);
   if (!teacher_dict) {
@@ -140,7 +140,7 @@ void ParseTeacherProtoFromJson(base::Value::Dict* session_dict,
   *session->mutable_teacher() = ConvertUserIdentityJsonToProto(teacher_dict);
 }
 
-void ParseJoinCodeProtoFromJson(base::Value::Dict* session_dict,
+void ParseJoinCodeProtoFromJson(base::DictValue* session_dict,
                                 ::boca::Session* session) {
   if (!session_dict->FindDict(kJoinCode)) {
     return;
@@ -154,7 +154,7 @@ void ParseJoinCodeProtoFromJson(base::Value::Dict* session_dict,
   }
 }
 
-void ParseRosterProtoFromJson(base::Value::Dict* session_dict,
+void ParseRosterProtoFromJson(base::DictValue* session_dict,
                               ::boca::Session* session) {
   auto* roster_dict = session_dict->FindDict(kRoster);
   if (roster_dict) {
@@ -194,7 +194,7 @@ void ParseRosterProtoFromJson(base::Value::Dict* session_dict,
   }
 }
 
-void ParseSessionConfigProtoFromJson(base::Value::Dict* session_dict,
+void ParseSessionConfigProtoFromJson(base::DictValue* session_dict,
                                      ::boca::Session* session,
                                      bool is_producer) {
   if (!session_dict->FindDict(kStudentGroupsConfig)) {
@@ -202,7 +202,7 @@ void ParseSessionConfigProtoFromJson(base::Value::Dict* session_dict,
   }
   auto* student_groups = session->mutable_student_group_configs();
 
-  base::Value::Dict* config;
+  base::DictValue* config;
   if (is_producer) {
     config = session_dict->FindDict(kStudentGroupsConfig)
                  ->FindDict(kMainStudentGroupName);
@@ -270,7 +270,7 @@ void ParseSessionConfigProtoFromJson(base::Value::Dict* session_dict,
   (*student_groups)[kMainStudentGroupName] = std::move(session_config);
 }
 
-void ParseStudentStatusProtoFromJson(base::Value::Dict* session_dict,
+void ParseStudentStatusProtoFromJson(base::DictValue* session_dict,
                                      ::boca::Session* session,
                                      bool is_producer) {  // Student status.
   auto* student_status_dict = session_dict->FindDict(kStudentStatus);
@@ -308,7 +308,7 @@ void ParseStudentStatusProtoFromJson(base::Value::Dict* session_dict,
 
 void ParseIndividualStudentStatusFromJson(
     ::boca::StudentStatus* student_status,
-    base::Value::Dict* student_status_dict) {
+    base::DictValue* student_status_dict) {
   // Set the student state
   if (auto* state_ptr = student_status_dict->FindString(kStudentStatusState)) {
     student_status->set_state(StudentStatusJsonToProto(*state_ptr));
@@ -443,15 +443,15 @@ std::unique_ptr<::boca::Session> GetSessionProtoFromJson(std::string json,
 }
 
 void ParseRosterJsonFromProto(::boca::Roster* roster,
-                              base::Value::Dict* roster_dict) {
-  base::Value::List student_groups;
+                              base::DictValue* roster_dict) {
+  base::ListValue student_groups;
   if (roster && !roster->student_groups().empty()) {
-    base::Value::Dict main_group;
+    base::DictValue main_group;
     // Only handle main roster student for now.
     main_group.Set(kTitle, kMainStudentGroupName);
-    base::Value::List students;
+    base::ListValue students;
     for (const auto& student : roster->student_groups()[0].students()) {
-      base::Value::Dict item;
+      base::DictValue item;
       item.Set(kGaiaId, student.gaia_id());
       item.Set(kEmail, student.email());
       item.Set(kFullName, student.full_name());
@@ -462,7 +462,7 @@ void ParseRosterJsonFromProto(::boca::Roster* roster,
     student_groups.Append(std::move(main_group));
   }
   // Always create empty group for join code.
-  base::Value::Dict access_code_group;
+  base::DictValue access_code_group;
   access_code_group.Set(kTitle, kAccessCodeGroupName);
   access_code_group.Set(kGroupSource, ::boca::StudentGroup::JOIN_CODE);
   student_groups.Append(std::move(access_code_group));
@@ -470,21 +470,21 @@ void ParseRosterJsonFromProto(::boca::Roster* roster,
 }
 
 void ParseOnTaskConfigJsonFromProto(::boca::OnTaskConfig* on_task_config,
-                                    base::Value::Dict* on_task_config_dict) {
+                                    base::DictValue* on_task_config_dict) {
   if (on_task_config && on_task_config->has_active_bundle()) {
-    base::Value::Dict bundle;
+    base::DictValue bundle;
     bundle.Set(kLocked, on_task_config->active_bundle().locked());
     bundle.Set(kLockToAppHome,
                on_task_config->active_bundle().lock_to_app_home());
-    base::Value::List content_configs;
+    base::ListValue content_configs;
     for (const auto& content :
          on_task_config->active_bundle().content_configs()) {
-      base::Value::Dict item;
+      base::DictValue item;
       item.Set(kUrl, content.url());
       item.Set(kTitle, content.title());
       item.Set(kFavIcon, content.favicon_url());
       if (content.has_locked_navigation_options()) {
-        base::Value::Dict navigation_type;
+        base::DictValue navigation_type;
         navigation_type.Set(
             kNavigationType,
             content.locked_navigation_options().navigation_type());
@@ -498,7 +498,7 @@ void ParseOnTaskConfigJsonFromProto(::boca::OnTaskConfig* on_task_config,
 }
 
 void ParseCaptionConfigJsonFromProto(::boca::CaptionsConfig* captions_config,
-                                     base::Value::Dict* caption_config_dict) {
+                                     base::DictValue* caption_config_dict) {
   if (captions_config) {
     caption_config_dict->Set(kCaptionsEnabled,
                              captions_config->captions_enabled());

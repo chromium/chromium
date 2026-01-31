@@ -74,7 +74,7 @@ class MockPermissionDelegate
               GetIdpSigninStatus,
               (const url::Origin&),
               (override));
-  MOCK_METHOD(base::Value::List,
+  MOCK_METHOD(base::ListValue,
               GetAccounts,
               (const url::Origin& identity_provider),
               (override));

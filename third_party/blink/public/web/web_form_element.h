@@ -47,7 +47,9 @@ class BLINK_EXPORT WebFormElement final : public WebElement {
  public:
   ~WebFormElement() override { Reset(); }
 
-  WebFormElement() : WebElement() {}
+  explicit WebFormElement(
+      cppgc::SourceLocation loc = BLINK_WEB_NODE_LOCATION_FROM_HERE)
+      : WebElement(loc) {}
   WebFormElement(const WebFormElement& element) = default;
 
   WebFormElement& operator=(const WebFormElement& element) {

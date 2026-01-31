@@ -54,6 +54,12 @@ class COMPONENT_EXPORT(GFX) D3DSharedFence
   static scoped_refptr<D3DSharedFence> CreateFromUnownedHandle(
       HANDLE shared_handle);
 
+  // Similar to CreateFromUnownedHandle() but also opens the |shared_handle| as
+  // a ID3D12Fence to Wait or Signal for the given |d3d12_signal_device|.
+  static scoped_refptr<D3DSharedFence> CreateFromUnownedHandleAndOpenD3D12Fence(
+      ID3D12Device* d3d12_signal_device,
+      HANDLE shared_handle);
+
   // Create from an existing ID3D12Fence to wait on.
   // |fence_value| is the initial value this fence will wait on.
   static scoped_refptr<D3DSharedFence> CreateFromD3D12Fence(

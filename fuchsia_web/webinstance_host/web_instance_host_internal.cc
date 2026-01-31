@@ -190,9 +190,6 @@ void HandleDisableCodeGenerationParam(
   // Add the JIT-less option to the comma-separated set of V8 flags passed to
   // Blink.
   AppendToSwitch(kJavaScriptFlags, kV8JitlessFlag, launch_args);
-
-  // TODO(crbug.com/42050417): Disable use of VmexResource in this case, once
-  // migrated off of ambient VMEX.
 }
 
 }  // namespace

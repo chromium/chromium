@@ -37,7 +37,7 @@ TEST_F(AccountTransferClientDataTest, CreateFidoAccountTransferClientDataJson) {
       client_data_json, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   ASSERT_TRUE(parsed_json);
   ASSERT_TRUE(parsed_json->is_dict());
-  base::Value::Dict& parsed_json_dict = parsed_json.value().GetDict();
+  base::DictValue& parsed_json_dict = parsed_json.value().GetDict();
   EXPECT_EQ(*parsed_json_dict.FindString(kClientDataTypeKey), kCtapRequestType);
   EXPECT_EQ(*parsed_json_dict.FindString(kClientDataChallengeKey),
             *Base64UrlString(kChallengeBase64Url));

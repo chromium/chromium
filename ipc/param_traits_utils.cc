@@ -91,7 +91,7 @@ bool ReadCharVector(const base::Pickle* m,
 
 void WriteValue(const base::Value& value, int recursion, base::Pickle* pickle);
 
-void WriteDictValue(const base::Value::Dict& value,
+void WriteDictValue(const base::DictValue& value,
                     int recursion,
                     base::Pickle* pickle) {
   WriteParam(pickle, base::checked_cast<int>(value.size()));
@@ -101,7 +101,7 @@ void WriteDictValue(const base::Value::Dict& value,
   }
 }
 
-void WriteListValue(const base::Value::List& value,
+void WriteListValue(const base::ListValue& value,
                     int recursion,
                     base::Pickle* pickle) {
   WriteParam(pickle, base::checked_cast<int>(value.size()));
@@ -166,11 +166,12 @@ bool ReadValue(const base::Pickle* pickle,
                int recursion,
                base::Value* value);
 
-// Helper for ReadValue that reads a Value::Dict into a pre-allocated object.
+// Helper for ReadValue that reads a base::DictValue into a pre-allocated
+// object.
 bool ReadDictValue(const base::Pickle* pickle,
                    base::PickleIterator* iter,
                    int recursion,
-                   base::Value::Dict* value) {
+                   base::DictValue* value) {
   int size;
   if (!ReadParam(pickle, iter, &size)) {
     return false;
@@ -189,11 +190,12 @@ bool ReadDictValue(const base::Pickle* pickle,
   return true;
 }
 
-// Helper for ReadValue that reads a Value::List into a pre-allocated object.
+// Helper for ReadValue that reads a base::ListValue into a pre-allocated
+// object.
 bool ReadListValue(const base::Pickle* pickle,
                    base::PickleIterator* iter,
                    int recursion,
-                   base::Value::List* value) {
+                   base::ListValue* value) {
   int size;
   if (!ReadParam(pickle, iter, &size)) {
     return false;
@@ -275,7 +277,7 @@ bool ReadValue(const base::Pickle* pickle,
       break;
     }
     case base::Value::Type::DICT: {
-      base::Value::Dict val;
+      base::DictValue val;
       if (!ReadDictValue(pickle, iter, recursion, &val)) {
         return false;
       }
@@ -283,7 +285,7 @@ bool ReadValue(const base::Pickle* pickle,
       break;
     }
     case base::Value::Type::LIST: {
-      base::Value::List val;
+      base::ListValue val;
       if (!ReadListValue(pickle, iter, recursion, &val)) {
         return false;
       }
@@ -426,14 +428,13 @@ bool ParamTraits<std::vector<bool>>::Read(const base::Pickle* m,
   return true;
 }
 
-void ParamTraits<base::Value::Dict>::Write(base::Pickle* m,
-                                           const param_type& p) {
+void ParamTraits<base::DictValue>::Write(base::Pickle* m, const param_type& p) {
   WriteDictValue(p, 0, m);
 }
 
-bool ParamTraits<base::Value::Dict>::Read(const base::Pickle* m,
-                                          base::PickleIterator* iter,
-                                          param_type* r) {
+bool ParamTraits<base::DictValue>::Read(const base::Pickle* m,
+                                        base::PickleIterator* iter,
+                                        param_type* r) {
   return ReadDictValue(m, iter, 0, r);
 }
 
@@ -971,14 +972,13 @@ bool ParamTraits<base::FilePath>::Read(const base::Pickle* m,
   return r->ReadFromPickle(iter);
 }
 
-void ParamTraits<base::Value::List>::Write(base::Pickle* m,
-                                           const param_type& p) {
+void ParamTraits<base::ListValue>::Write(base::Pickle* m, const param_type& p) {
   WriteListValue(p, 0, m);
 }
 
-bool ParamTraits<base::Value::List>::Read(const base::Pickle* m,
-                                          base::PickleIterator* iter,
-                                          param_type* r) {
+bool ParamTraits<base::ListValue>::Read(const base::Pickle* m,
+                                        base::PickleIterator* iter,
+                                        param_type* r) {
   return ReadListValue(m, iter, 0, r);
 }
 

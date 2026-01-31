@@ -49,7 +49,7 @@ ash::NewWindowDelegate::Disposition ConvertDisposition(
 }
 
 std::unique_ptr<OpenUrlParam> ParseOpenUrlActionPerformerParams(
-    const base::Value::Dict* params) {
+    const base::DictValue* params) {
   if (!params) {
     CAMPAIGNS_LOG(ERROR) << "Empty parameter to OpenUrlActionPerformer.";
     return nullptr;
@@ -78,7 +78,7 @@ OpenUrlActionPerformer::~OpenUrlActionPerformer() = default;
 
 void OpenUrlActionPerformer::Run(int campaign_id,
                                  std::optional<int> group_id,
-                                 const base::Value::Dict* params,
+                                 const base::DictValue* params,
                                  growth::ActionPerformer::Callback callback) {
   auto open_url_param = ParseOpenUrlActionPerformerParams(params);
   if (!open_url_param) {

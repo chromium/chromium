@@ -110,8 +110,8 @@ void DeviceNetworkConfigurationUpdaterAsh::ImportClientCertificates() {
 }
 
 void DeviceNetworkConfigurationUpdaterAsh::ApplyNetworkPolicy(
-    const base::Value::List& network_configs_onc,
-    const base::Value::Dict& global_network_config) {
+    const base::ListValue& network_configs_onc,
+    const base::DictValue& global_network_config) {
   // Ensure this is runnng on the UI thead because we're accessing global data
   // to populate the substitutions.
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);

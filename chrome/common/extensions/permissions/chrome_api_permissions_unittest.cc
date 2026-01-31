@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/containers/contains.h"
 #include "extensions/buildflags/buildflags.h"
 #include "extensions/common/features/feature_provider.h"
 #include "extensions/common/mojom/api_permission_id.mojom.h"

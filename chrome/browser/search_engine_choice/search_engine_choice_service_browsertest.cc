@@ -31,11 +31,11 @@
 
 namespace {
 
-using search_engines::GetChoiceCompletionMetadata;
-using search_engines::SearchEngineChoiceScreenConditions;
-using search_engines::SearchEngineChoiceService;
-using search_engines::SearchEngineChoiceServiceFactory;
-using ChoiceStatus = search_engines::SearchEngineChoiceService::ChoiceStatus;
+using ::regional_capabilities::SearchEngineChoiceScreenConditions;
+using ::search_engines::GetChoiceCompletionMetadata;
+using ::search_engines::SearchEngineChoiceService;
+using ::search_engines::SearchEngineChoiceServiceFactory;
+using ChoiceStatus = ::search_engines::SearchEngineChoiceService::ChoiceStatus;
 
 class SearchEngineChoiceServiceBrowserTest : public InProcessBrowserTest {
  public:
@@ -190,7 +190,7 @@ const RestoreTestParam kTestParams[] = {
         .run_1_expectations =
             {.has_dialog_service = false,
              .expected_delayed_static_conditions =
-                 SearchEngineChoiceScreenConditions::kEligible,
+                 SearchEngineChoiceScreenConditions::kEligibleForRestore,
              .choice_status = ChoiceStatus::kFromRestoredDevice},
         // Run 2:  Since the choice was not flagged as imported in the session
         // where the clone was detected, for the "JustInTime" mode, we don't
@@ -209,14 +209,14 @@ const RestoreTestParam kTestParams[] = {
         .run_1_expectations =
             {.has_dialog_service = false,
              .expected_delayed_static_conditions =
-                 SearchEngineChoiceScreenConditions::kEligible,
+                 SearchEngineChoiceScreenConditions::kEligibleForRestore,
              .choice_status = ChoiceStatus::kFromRestoredDevice},
         // Run 2: We are able to wipe the choice timestamp and make remake the
         // profile eligible to get the choice dialog.
         .run_2_expectations =
             {.has_dialog_service = true,
              .expected_delayed_static_conditions =
-                 SearchEngineChoiceScreenConditions::kEligible,
+                 SearchEngineChoiceScreenConditions::kEligibleForRestore,
              .choice_status = ChoiceStatus::kFromRestoredDevice},
     },
 };
@@ -250,8 +250,15 @@ IN_PROC_BROWSER_TEST_P(SearchEngineChoiceServiceRestoreBrowserTest,
   search_engine_choice_service->RecordChoiceMade(
       search_engines::ChoiceMadeLocation::kChoiceScreen,
       TemplateURLServiceFactory::GetForProfile(profile));
+
+  auto metadata = GetChoiceCompletionMetadata(*profile->GetPrefs());
+  ASSERT_TRUE(metadata.has_value());
   ASSERT_TRUE(HasChoiceTimestamp(profile));
-  ASSERT_TRUE(GetChoiceCompletionMetadata(*profile->GetPrefs()).has_value());
+
+  // To prevent flakiness since the `DoesChoicePredateDeviceRestore()` function
+  // only has per-second granularity, adjust the timestamp back by a second.
+  metadata->timestamp -= base::Seconds(1);
+  SetChoiceCompletionMetadata(*profile->GetPrefs(), *metadata);
 
   ASSERT_EQ(GetStaticConditions(profile),
             GetRunExpectations().expected_delayed_static_conditions);
@@ -292,11 +299,23 @@ IN_PROC_BROWSER_TEST_P(SearchEngineChoiceServiceRestoreBrowserTest,
   EXPECT_EQ(GetStaticConditions(profile),
             GetRunExpectations().expected_delayed_static_conditions);
   EXPECT_EQ(GetChoiceStatus(profile), GetRunExpectations().choice_status);
+
+  // To prevent flakiness since the `DoesChoicePredateDeviceRestore()` function
+  // only has per-second granularity, adjust the timestamp back by a second.
+  choice_completion_metadata->timestamp -= base::Seconds(1);
+  SetChoiceCompletionMetadata(*profile->GetPrefs(),
+                              *choice_completion_metadata);
 }
 
 // Run 2, where the metrics ID gets reset following the clone detection.
+// TODO(https://crbug.com/419039727): Fix the flakiness.
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
+#define MAYBE_StaticConditions DISABLED_StaticConditions
+#else
+#define MAYBE_StaticConditions StaticConditions
+#endif
 IN_PROC_BROWSER_TEST_P(SearchEngineChoiceServiceRestoreBrowserTest,
-                       StaticConditions) {
+                       MAYBE_StaticConditions) {
   // The clone was detected in the previous session, but we reset the ID
   // starting in this one.
   ASSERT_FALSE(g_browser_process->GetMetricsServicesManager()

@@ -23,6 +23,7 @@
 #include "chrome/browser/web_applications/generated_icon_fix_util.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolation_data.h"
 #include "chrome/browser/web_applications/model/app_installed_by.h"
+#include "chrome/browser/web_applications/model/display_override.h"
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom-forward.h"
 #include "chrome/browser/web_applications/proto/web_app.pb.h"
 #include "chrome/browser/web_applications/proto/web_app_install_state.pb.h"
@@ -42,7 +43,6 @@
 #include "components/webapps/common/web_app_id.h"
 #include "services/network/public/cpp/permissions_policy/permissions_policy_declaration.h"
 #include "third_party/blink/public/common/manifest/manifest.h"
-#include "third_party/blink/public/common/safe_url_pattern.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "url/gurl.h"
 
@@ -59,15 +59,14 @@ class UrlPatternWithRegexMatcher;
 class WebAppScope;
 
 class InstalledByPassKey {
-  friend std::unique_ptr<WebApp> ParseWebAppProto(const proto::WebApp& proto);
+  friend std::unique_ptr<WebApp> ParseWebAppProto(
+      const proto::WebApp& proto,
+      const webapps::AppId& expected_app_id);
   InstalledByPassKey() = default;
 };
 
 class WebApp {
  public:
-  // Deprecated, use the other constructor instead.
-  explicit WebApp(const webapps::AppId& app_id);
-
   // This creates a web app object, and will CHECK-fail if the arguments are
   // invalid. To be valid, the following invariants must hold:
   // - All GURLs and the `manifest_id` must be non-empty and valid.
@@ -127,12 +126,8 @@ class WebApp {
         ResolvePlatformSpecificUserDisplayMode(sync_proto()));
   }
 
-  const std::vector<DisplayMode>& display_mode_override() const {
+  const std::vector<DisplayOverride>& display_mode_override() const {
     return display_mode_override_;
-  }
-
-  const std::vector<blink::SafeUrlPattern>& borderless_url_patterns() const {
-    return borderless_url_patterns_;
   }
 
   syncer::StringOrdinal user_page_ordinal() const {
@@ -169,6 +164,8 @@ class WebApp {
   // - Partially installed no integration: The app is considered installed, but
   // does not have any OS integration with the operating system (no shortcuts,
   // etc). This is used for preinstalled apps on non-CrOS device.
+  // - Suggested from migration: The app is not fully installed on this device,
+  // and is pending migration from another app.
   proto::InstallState install_state() const { return install_state_; }
 
   // Sync-initiated installation produces a stub app awaiting for full
@@ -325,7 +322,7 @@ class WebApp {
     friend bool operator==(const ExternalManagementConfig&,
                            const ExternalManagementConfig&) = default;
 
-    base::Value::Dict AsDebugValue() const;
+    base::DictValue AsDebugValue() const;
 
     bool is_placeholder = false;
     base::flat_set<GURL> install_urls;
@@ -422,6 +419,9 @@ class WebApp {
 
   // A Web App can be installed from multiple sources simultaneously. Installs
   // add a source to the app. Uninstalls remove a source from the app.
+  // `AddSource()` should always happen after the install state has been set for
+  // the web app. Without this, the CHECK inside this function can fail, or not
+  // catch the edge cases for which it might happen.
   void AddSource(WebAppManagement::Type source);
   void RemoveSource(WebAppManagement::Type source);
   bool HasAnySources() const;
@@ -448,11 +448,25 @@ class WebApp {
 
   void SetName(const std::string& name);
   void SetDescription(const std::string& description);
+
+  // Sets the start_url of the web app.  This call will CHECK-fail if the
+  // start_url is empty or not valid. If the manifest_id is not yet set, this
+  // will set the manifest_id using the start_url.
+  // TODO(): Remove this fallback as all web apps should be guaranteed to have
+  // the manifest_id set.
+  //
+  // Note: When serialized to disk, the code will CHECK-fail if the start_url is
+  // not prefixed by the scope.
   void SetStartUrl(const GURL& start_url);
-  void SetLaunchQueryParams(std::optional<std::string> launch_query_params);
-  // Sets the scope after clearing the query and fragment from the scope url, as
-  // per spec. This call will check-fail if the scope is not valid.
+
+  // The scope will have the query and fragment from the scope url, as per spec.
+  // This call will CHECK-fail if the scope is empty or not valid.
+  //
+  // Note: When serialized to disk, the code will CHECK-fail if the start_url is
+  // not prefixed by the scope.
   void SetScope(const GURL& scope);
+
+  void SetLaunchQueryParams(std::optional<std::string> launch_query_params);
   void SetThemeColor(std::optional<SkColor> theme_color);
   void SetDarkModeThemeColor(std::optional<SkColor> theme_color);
   void SetBackgroundColor(std::optional<SkColor> background_color);
@@ -460,9 +474,8 @@ class WebApp {
   void SetDisplayMode(DisplayMode display_mode);
   // Sets the UserDisplayMode for the current platform (CrOS or default).
   void SetUserDisplayMode(mojom::UserDisplayMode user_display_mode);
-  void SetDisplayModeOverride(std::vector<DisplayMode> display_mode_override);
-  void SetBorderlessUrlPatterns(
-      std::vector<blink::SafeUrlPattern> borderless_url_patterns);
+  void SetDisplayModeOverride(
+      std::vector<DisplayOverride> display_mode_override);
   void SetWebAppChromeOsData(std::optional<WebAppChromeOsData> chromeos_data);
   void SetInstallState(proto::InstallState install_state);
   void SetIsFromSyncAndPendingInstallation(
@@ -561,6 +574,25 @@ class WebApp {
 
   void SetStoredTrustedIconSizes(IconPurpose purpose, SortedSizesPx sizes);
 
+  const std::vector<proto::WebAppMigrationSource>&
+  unvalidated_migration_sources() const {
+    return unvalidated_migration_sources_;
+  }
+  const std::vector<proto::WebAppMigrationSource>& validated_migration_sources()
+      const {
+    return validated_migration_sources_;
+  }
+  const std::optional<proto::PendingMigrationInfo>& pending_migration_info()
+      const {
+    return pending_migration_info_;
+  }
+
+  void SetUnvalidatedMigrationSources(
+      std::vector<proto::WebAppMigrationSource> sources);
+  void SetValidatedMigrationSources(
+      std::vector<proto::WebAppMigrationSource> sources);
+  void SetPendingMigrationInfo(std::optional<proto::PendingMigrationInfo> info);
+
   void SetInstalledBy(InstalledByPassKey,
                       std::deque<AppInstalledBy> installed_by);
 
@@ -577,10 +609,21 @@ class WebApp {
 
  private:
   friend class WebAppDatabase;
-  friend std::unique_ptr<WebApp> ParseWebAppProto(const proto::WebApp& proto);
+  friend std::unique_ptr<WebApp> ParseWebAppProto(
+      const proto::WebApp& proto,
+      const webapps::AppId& expected_app_id);
   friend std::unique_ptr<proto::WebApp> WebAppToProto(const WebApp& web_app);
   friend std::ostream& operator<<(std::ostream&, const WebApp&);
 
+  // TODO(http://crbug.com/384536509): Remove this after migrating parent_app_id
+  // in the database to parent_manifest_id.
+  WebApp(const webapps::AppId& app_id,
+         const webapps::ManifestId& manifest_id,
+         const GURL& start_url,
+         const GURL& scope,
+         std::optional<webapps::AppId> parent_app_id);
+
+  // LINT.IfChange(MemberVariables)
   webapps::AppId app_id_;
 
   // This set always contains at least one source.
@@ -596,8 +639,7 @@ class WebApp {
   std::optional<SkColor> background_color_;
   std::optional<SkColor> dark_mode_background_color_;
   DisplayMode display_mode_ = DisplayMode::kUndefined;
-  std::vector<DisplayMode> display_mode_override_;
-  std::vector<blink::SafeUrlPattern> borderless_url_patterns_;
+  std::vector<DisplayOverride> display_mode_override_;
   std::optional<WebAppChromeOsData> chromeos_data_;
   proto::InstallState install_state_ =
       proto::InstallState::INSTALLED_WITHOUT_OS_INTEGRATION;
@@ -692,6 +734,11 @@ class WebApp {
   SortedSizesPx stored_trusted_icon_sizes_maskable_;
 
   std::deque<AppInstalledBy> installed_by_;
+
+  std::vector<proto::WebAppMigrationSource> unvalidated_migration_sources_;
+  std::vector<proto::WebAppMigrationSource> validated_migration_sources_;
+  std::optional<proto::PendingMigrationInfo> pending_migration_info_;
+  // LINT.ThenChange(//chrome/browser/web_applications/proto/web_app.proto)
 
   // New fields must be added to:
   //  - |operator==|

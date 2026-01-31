@@ -1,0 +1,24 @@
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = 'proto2';
+
+option optimize_for = LITE_RUNTIME;
+option java_package = 'org.chromium.components.omnibox';
+option java_outer_classname = 'AimModelsProto';
+
+package omnibox;
+
+// The AIM model mode that is applied to a query.
+// Next ID: 4
+enum ModelMode {
+  // Unspecified model mode.
+  MODEL_MODE_UNSPECIFIED = 0;
+  // Gemini regular model mode.
+  MODEL_MODE_GEMINI_REGULAR = 1;
+  // Gemini pro model mode.
+  MODEL_MODE_GEMINI_PRO = 2;
+  // Autoroute mode.
+  MODEL_MODE_GEMINI_PRO_AUTOROUTE = 3;
+}

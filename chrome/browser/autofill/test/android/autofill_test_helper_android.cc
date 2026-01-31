@@ -33,7 +33,8 @@ PersonalDataManager* GetPersonalDataManagerForLastUsedProfile() {
 }  // anonymous namespace
 
 // static
-static jlong JNI_AutofillTestHelper_GetDateNDaysAgo(JNIEnv* env, jint days) {
+static int64_t JNI_AutofillTestHelper_GetDateNDaysAgo(JNIEnv* env,
+                                                      int32_t days) {
   return (AutofillClock::Now() - base::Days(days)).ToTimeT();
 }
 
@@ -57,7 +58,7 @@ static void JNI_AutofillTestHelper_AddServerCreditCardWithAdditionalFields(
     JNIEnv* env,
     const base::android::JavaRef<jobject>& jcard,
     std::u16string& nickname,
-    jint jcard_issuer) {
+    int32_t jcard_issuer) {
   std::unique_ptr<CreditCard> card = std::make_unique<CreditCard>();
   PersonalDataManagerAndroid::PopulateNativeCreditCardFromJava(jcard, env,
                                                                card.get());
@@ -75,8 +76,8 @@ static void JNI_AutofillTestHelper_AddServerCreditCardWithAdditionalFields(
 static void JNI_AutofillTestHelper_SetProfileUseStats(
     JNIEnv* env,
     std::string& guid,
-    jint count,
-    jint days_since_last_used) {
+    int32_t count,
+    int32_t days_since_last_used) {
   DCHECK(count >= 0 && days_since_last_used >= 0);
 
   PersonalDataManager* personal_data_manager =
@@ -90,8 +91,8 @@ static void JNI_AutofillTestHelper_SetProfileUseStats(
 }
 
 // static
-static jint JNI_AutofillTestHelper_GetProfileUseCount(JNIEnv* env,
-                                                      std::string& guid) {
+static int32_t JNI_AutofillTestHelper_GetProfileUseCount(JNIEnv* env,
+                                                         std::string& guid) {
   PersonalDataManager* personal_data_manager =
       GetPersonalDataManagerForLastUsedProfile();
   const AutofillProfile* profile =
@@ -100,8 +101,8 @@ static jint JNI_AutofillTestHelper_GetProfileUseCount(JNIEnv* env,
 }
 
 // static
-static jlong JNI_AutofillTestHelper_GetProfileUseDate(JNIEnv* env,
-                                                      std::string& guid) {
+static int64_t JNI_AutofillTestHelper_GetProfileUseDate(JNIEnv* env,
+                                                        std::string& guid) {
   PersonalDataManager* personal_data_manager =
       GetPersonalDataManagerForLastUsedProfile();
   const AutofillProfile* profile =
@@ -113,8 +114,8 @@ static jlong JNI_AutofillTestHelper_GetProfileUseDate(JNIEnv* env,
 static std::string JNI_AutofillTestHelper_AddCreditCardWithUseStats(
     JNIEnv* env,
     const JavaRef<jobject>& jcard,
-    jint count,
-    jint days_since_last_used) {
+    int32_t count,
+    int32_t days_since_last_used) {
   DCHECK(count >= 0 && days_since_last_used >= 0);
 
   CreditCard card;
@@ -133,8 +134,8 @@ static std::string JNI_AutofillTestHelper_AddCreditCardWithUseStats(
 }
 
 // static
-static jint JNI_AutofillTestHelper_GetCreditCardUseCount(JNIEnv* env,
-                                                         std::string& guid) {
+static int32_t JNI_AutofillTestHelper_GetCreditCardUseCount(JNIEnv* env,
+                                                            std::string& guid) {
   PersonalDataManager* personal_data_manager =
       GetPersonalDataManagerForLastUsedProfile();
   const CreditCard* card =
@@ -143,8 +144,8 @@ static jint JNI_AutofillTestHelper_GetCreditCardUseCount(JNIEnv* env,
 }
 
 // static
-static jlong JNI_AutofillTestHelper_GetCreditCardUseDate(JNIEnv* env,
-                                                         std::string& guid) {
+static int64_t JNI_AutofillTestHelper_GetCreditCardUseDate(JNIEnv* env,
+                                                           std::string& guid) {
   PersonalDataManager* personal_data_manager =
       GetPersonalDataManagerForLastUsedProfile();
   const CreditCard* card =
@@ -153,7 +154,7 @@ static jlong JNI_AutofillTestHelper_GetCreditCardUseDate(JNIEnv* env,
 }
 
 // TODO(crbug.com/40477114): Use a mock clock for testing.
-static jlong JNI_AutofillTestHelper_GetCurrentDate(JNIEnv* env) {
+static int64_t JNI_AutofillTestHelper_GetCurrentDate(JNIEnv* env) {
   return base::Time::Now().ToTimeT();
 }
 
@@ -187,11 +188,7 @@ static void JNI_AutofillTestHelper_AddMaskedBankAccount(
 }
 
 // static
-static void JNI_AutofillTestHelper_AddEwallet(
-    JNIEnv* env,
-    const JavaRef<jobject>& jewallet) {
-  Ewallet ewallet =
-      PersonalDataManagerAndroid::CreateNativeEwalletFromJava(env, jewallet);
+static void JNI_AutofillTestHelper_AddEwallet(const Ewallet& ewallet) {
   PersonalDataManager* personal_data_manager =
       GetPersonalDataManagerForLastUsedProfile();
   personal_data_manager->payments_data_manager().AddEwalletForTest(ewallet);

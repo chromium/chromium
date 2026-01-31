@@ -22,6 +22,7 @@ class EmbeddedTestServer;
 }  // namespace net
 
 @class CWVWebView;
+@class CWVEarlyInitFlags;
 class GURL;
 @class NSURL;
 
@@ -33,6 +34,13 @@ namespace ios_web_view {
 class WebViewInttestBase : public PlatformTest {
  protected:
   WebViewInttestBase();
+
+  // Initializes the fixture with the given `flags`.
+  //
+  // Use this constructor when features need to be enabled during the early
+  // initialization phase (before `WebMain` starts), which is required for
+  // features that affect the global state or singleton initialization.
+  explicit WebViewInttestBase(CWVEarlyInitFlags* _Nullable flags);
   ~WebViewInttestBase() override;
 
   // Returns URL to an html page with title set to |title|.

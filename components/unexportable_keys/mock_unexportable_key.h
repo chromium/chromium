@@ -10,7 +10,7 @@
 
 namespace unexportable_keys {
 
-class MockUnexportableKey : public crypto::UnexportableSigningKey {
+class MockUnexportableKey : public crypto::StatefulUnexportableSigningKey {
  public:
   MockUnexportableKey();
   ~MockUnexportableKey() override;
@@ -30,9 +30,16 @@ class MockUnexportableKey : public crypto::UnexportableSigningKey {
               (base::span<const uint8_t> data),
               (override));
   MOCK_METHOD(bool, IsHardwareBacked, (), (const, override));
-#if BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_APPLE)
   MOCK_METHOD(SecKeyRef, GetSecKeyRef, (), (const, override));
-#endif  // BUILDFLAG(IS_MAC)
+#endif  // BUILDFLAG(IS_APPLE)
+  MOCK_METHOD(crypto::StatefulUnexportableSigningKey*,
+              AsStatefulUnexportableSigningKey,
+              (),
+              (override));
+  // crypto::StatefulUnexportableSigningKey:
+  MOCK_METHOD(std::string, GetKeyTag, (), (const, override));
+  MOCK_METHOD(base::Time, GetCreationTime, (), (const, override));
 };
 
 }  // namespace unexportable_keys

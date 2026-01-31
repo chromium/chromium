@@ -21,12 +21,12 @@ namespace test {
 
 // Constructs a value that points a policy referencing external data at |url|
 // and sets the expected hash of the external data to that of |data|.
-base::Value::Dict ConstructExternalDataReference(const std::string& url,
-                                                 const std::string& data);
+base::DictValue ConstructExternalDataReference(const std::string& url,
+                                               const std::string& data);
 
 // Constructs the external data policy from the content of the file located on
 // |external_data_path|, and returns it as a dictionary.
-base::Value::Dict ConstructExternalDataPolicy(
+base::DictValue ConstructExternalDataPolicy(
     const net::test_server::EmbeddedTestServer& test_server,
     const std::string& external_data_path);
 

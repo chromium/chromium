@@ -16,7 +16,6 @@ BASE_FEATURE(kEnableExactMatchForNonLatinLocale,
 // DO NOT REMOVE: Tast integration tests use this feature. (See crbug/1340267)
 BASE_FEATURE(kForceShowContinueSection, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kDynamicSearchUpdateAnimation, base::FEATURE_ENABLED_BY_DEFAULT);
-BASE_FEATURE(kLauncherPlayStoreSearch, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kAppsCollections, base::FEATURE_DISABLED_BY_DEFAULT);
 
 bool IsExactMatchForNonLatinLocaleEnabled() {
@@ -40,10 +39,6 @@ base::TimeDelta DynamicSearchUpdateAnimationDuration() {
 
 bool IsForceShowContinueSectionEnabled() {
   return base::FeatureList::IsEnabled(kForceShowContinueSection);
-}
-
-bool IsLauncherPlayStoreSearchEnabled() {
-  return base::FeatureList::IsEnabled(kLauncherPlayStoreSearch);
 }
 
 bool IsAppsCollectionsEnabled() {

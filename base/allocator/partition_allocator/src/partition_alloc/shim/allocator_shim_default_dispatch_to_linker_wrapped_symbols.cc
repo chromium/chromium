@@ -29,19 +29,19 @@ namespace {
 
 using allocator_shim::AllocatorDispatch;
 
-void* RealMalloc(size_t size, void* context) {
+void* RealMalloc(size_t size, AllocToken, void* context) {
   return __real_malloc(size);
 }
 
-void* RealCalloc(size_t n, size_t size, void* context) {
+void* RealCalloc(size_t n, size_t size, AllocToken, void* context) {
   return __real_calloc(n, size);
 }
 
-void* RealRealloc(void* address, size_t size, void* context) {
+void* RealRealloc(void* address, size_t size, AllocToken, void* context) {
   return __real_realloc(address, size);
 }
 
-void* RealMemalign(size_t alignment, size_t size, void* context) {
+void* RealMemalign(size_t alignment, size_t size, AllocToken, void* context) {
   return __real_memalign(alignment, size);
 }
 

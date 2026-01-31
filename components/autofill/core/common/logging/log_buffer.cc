@@ -14,29 +14,29 @@ namespace autofill {
 
 namespace {
 
-bool IsElement(const base::Value::Dict& value) {
+bool IsElement(const base::DictValue& value) {
   const std::string* type = value.FindString("type");
   return type && *type == "element";
 }
 
-bool IsTextNode(const base::Value::Dict& value) {
+bool IsTextNode(const base::DictValue& value) {
   const std::string* type = value.FindString("type");
   return type && *type == "text";
 }
 
-bool IsFragment(const base::Value::Dict& value) {
+bool IsFragment(const base::DictValue& value) {
   const std::string* type = value.FindString("type");
   return type && *type == "fragment";
 }
 
-void AppendChildToLastNode(std::vector<base::Value::Dict>* buffer,
-                           base::Value::Dict&& new_child) {
+void AppendChildToLastNode(std::vector<base::DictValue>* buffer,
+                           base::DictValue&& new_child) {
   if (buffer->empty()) {
     buffer->push_back(std::move(new_child));
     return;
   }
 
-  base::Value::Dict& parent = buffer->back();
+  base::DictValue& parent = buffer->back();
   // Elements and Fragments can have children, but TextNodes cannot.
   DCHECK(!IsTextNode(parent));
 
@@ -45,7 +45,7 @@ void AppendChildToLastNode(std::vector<base::Value::Dict>* buffer,
     return;
   }
 
-  base::Value::List list;
+  base::ListValue list;
   list.Append(std::move(new_child));
   parent.Set("children", std::move(list));
 }
@@ -58,11 +58,11 @@ void AppendChildToLastNode(std::vector<base::Value::Dict>* buffer,
 //
 // If the last child of the element in buffer is a text node, append |text| to
 // it and return true (successful coalescing). Otherwise return false.
-bool TryCoalesceString(std::vector<base::Value::Dict>* buffer,
+bool TryCoalesceString(std::vector<base::DictValue>* buffer,
                        std::string_view text) {
   if (buffer->empty())
     return false;
-  base::Value::Dict& parent = buffer->back();
+  base::DictValue& parent = buffer->back();
   auto* children = parent.FindList("children");
   if (!children)
     return false;
@@ -75,8 +75,8 @@ bool TryCoalesceString(std::vector<base::Value::Dict>* buffer,
   return true;
 }
 
-base::Value::Dict CreateEmptyFragment() {
-  base::Value::Dict dict;
+base::DictValue CreateEmptyFragment() {
+  base::DictValue dict;
   dict.Set("type", "fragment");
   return dict;
 }
@@ -92,7 +92,7 @@ LogBuffer::LogBuffer(LogBuffer&& other) noexcept = default;
 LogBuffer& LogBuffer::operator=(LogBuffer&& other) = default;
 LogBuffer::~LogBuffer() = default;
 
-std::optional<base::Value::Dict> LogBuffer::RetrieveResult() {
+std::optional<base::DictValue> LogBuffer::RetrieveResult() {
   // The buffer should always start with a fragment.
   DCHECK(buffer_.size() >= 1);
 
@@ -107,7 +107,7 @@ std::optional<base::Value::Dict> LogBuffer::RetrieveResult() {
   // If the fragment has a single child, remove it from |children| and return
   // that directly.
   if (children->size() == 1) {
-    return std::optional<base::Value::Dict>(
+    return std::optional<base::DictValue>(
         std::move((*children).back().GetDict()));
   }
 
@@ -118,7 +118,7 @@ LogBuffer& operator<<(LogBuffer& buf, Tag&& tag) {
   if (!buf.active())
     return buf;
 
-  base::Value::Dict dict;
+  base::DictValue dict;
   dict.Set("type", "element");
   dict.Set("value", std::move(tag.name));
   buf.buffer_.emplace_back(std::move(dict));
@@ -132,7 +132,7 @@ LogBuffer& operator<<(LogBuffer& buf, CTag&& tag) {
   if (buf.buffer_.size() <= 1)
     return buf;
 
-  base::Value::Dict node_to_add = std::move(buf.buffer_.back());
+  base::DictValue node_to_add = std::move(buf.buffer_.back());
   buf.buffer_.pop_back();
 
   AppendChildToLastNode(&buf.buffer_, std::move(node_to_add));
@@ -143,13 +143,13 @@ LogBuffer& operator<<(LogBuffer& buf, Attrib&& attrib) {
   if (!buf.active())
     return buf;
 
-  base::Value::Dict& node = buf.buffer_.back();
+  base::DictValue& node = buf.buffer_.back();
   DCHECK(IsElement(node));
 
   if (auto* attributes = node.FindDict("attributes")) {
     attributes->Set(attrib.name, std::move(attrib.value));
   } else {
-    base::Value::Dict dict;
+    base::DictValue dict;
     dict.Set(attrib.name, std::move(attrib.value));
     node.Set("attributes", std::move(dict));
   }
@@ -173,7 +173,7 @@ LogBuffer& operator<<(LogBuffer& buf, std::string_view text) {
   if (TryCoalesceString(&buf.buffer_, text))
     return buf;
 
-  base::Value::Dict node_to_add;
+  base::DictValue node_to_add;
   node_to_add.Set("type", "text");
   // This text is not HTML escaped because the rest of the frame work takes care
   // of that and it must not be escaped twice.
@@ -190,7 +190,7 @@ LogBuffer& operator<<(LogBuffer& buf, LogBuffer&& buffer) {
   if (!buf.active())
     return buf;
 
-  std::optional<base::Value::Dict> node_to_add = buffer.RetrieveResult();
+  std::optional<base::DictValue> node_to_add = buffer.RetrieveResult();
   if (!node_to_add)
     return buf;
 
@@ -199,8 +199,8 @@ LogBuffer& operator<<(LogBuffer& buf, LogBuffer&& buffer) {
     if (!children)
       return buf;
     for (auto& child : *children) {
-      AppendChildToLastNode(
-          &buf.buffer_, std::exchange(child.GetDict(), base::Value::Dict()));
+      AppendChildToLastNode(&buf.buffer_,
+                            std::exchange(child.GetDict(), base::DictValue()));
     }
     return buf;
   }

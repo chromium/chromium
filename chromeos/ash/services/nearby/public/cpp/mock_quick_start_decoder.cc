@@ -4,8 +4,7 @@
 
 #include "mock_quick_start_decoder.h"
 
-namespace ash {
-namespace nearby {
+namespace ash::nearby {
 
 MockQuickStartDecoder::~MockQuickStartDecoder() = default;
 
@@ -22,5 +21,4 @@ void MockQuickStartDecoder::BindInterface(
   receiver_set_.Add(this, std::move(pending_receiver));
 }
 
-}  // namespace nearby
-}  // namespace ash
+}  // namespace ash::nearby

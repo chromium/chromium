@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 // Protected memory is memory holding security-sensitive data intended to be
 // left read-only for the majority of its lifetime to avoid being overwritten
 // by attackers. ProtectedMemory is a simple wrapper around platform-specific
@@ -287,7 +282,7 @@ class BASE_EXPORT AutoWritableMemoryBase {
   template <typename T>
   static bool IsObjectInProtectedSection(const T& object) {
     const T* const ptr = std::addressof(object);
-    const T* const ptr_end = ptr + 1;
+    const T* const ptr_end = UNSAFE_TODO(ptr + 1);
     return (ptr >= internal::kProtectedMemoryStart) &&
            (ptr_end <= internal::kProtectedMemoryEnd);
   }
@@ -300,7 +295,7 @@ class BASE_EXPORT AutoWritableMemoryBase {
   template <typename T>
   static bool SetObjectReadWrite(T& object) {
     T* const ptr = std::addressof(object);
-    T* const ptr_end = ptr + 1;
+    T* const ptr_end = UNSAFE_TODO(ptr + 1);
     return SetMemoryReadWrite(ptr, ptr_end);
   }
 

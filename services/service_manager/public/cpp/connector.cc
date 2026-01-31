@@ -4,7 +4,6 @@
 
 #include "services/service_manager/public/cpp/connector.h"
 
-#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "services/service_manager/public/cpp/identity.h"
 #include "services/service_manager/public/mojom/service.mojom.h"
@@ -119,7 +118,7 @@ bool Connector::HasBinderOverrideForTesting(
   if (service_overrides == local_binder_overrides_.end())
     return false;
 
-  return base::Contains(service_overrides->second, interface_name);
+  return service_overrides->second.contains(interface_name);
 }
 
 void Connector::ClearBinderOverrideForTesting(

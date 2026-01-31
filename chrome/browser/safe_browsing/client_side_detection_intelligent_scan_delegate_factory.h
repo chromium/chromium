@@ -7,10 +7,13 @@
 
 #include "base/no_destructor.h"
 #include "chrome/browser/profiles/profile_keyed_service_factory.h"
-#include "components/safe_browsing/content/browser/client_side_detection_host.h"
 
 class KeyedService;
 class Profile;
+
+namespace safe_browsing {
+class IntelligentScanDelegate;
+}
 
 namespace safe_browsing {
 
@@ -22,8 +25,7 @@ class ClientSideDetectionIntelligentScanDelegateFactory
  public:
   // Creates the service if it doesn't exist already for the given |profile|.
   // If the service already exists, return its pointer.
-  static ClientSideDetectionHost::IntelligentScanDelegate* GetForProfile(
-      Profile* profile);
+  static IntelligentScanDelegate* GetForProfile(Profile* profile);
 
   // Returns the singleton instance.
   static ClientSideDetectionIntelligentScanDelegateFactory* GetInstance();

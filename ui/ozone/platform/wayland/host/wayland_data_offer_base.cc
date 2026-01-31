@@ -6,7 +6,6 @@
 
 #include <algorithm>
 
-#include "base/containers/contains.h"
 #include "ui/base/clipboard/clipboard_constants.h"
 
 namespace ui {
@@ -15,7 +14,7 @@ WaylandDataOfferBase::WaylandDataOfferBase() = default;
 WaylandDataOfferBase::~WaylandDataOfferBase() = default;
 
 void WaylandDataOfferBase::EnsureTextMimeTypeIfNeeded() {
-  if (base::Contains(mime_types_, kMimeTypePlainText)) {
+  if (std::ranges::contains(mime_types_, kMimeTypePlainText)) {
     return;
   }
 

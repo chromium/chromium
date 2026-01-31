@@ -53,14 +53,14 @@ struct PdfInkInputData {
 std::optional<ink::StrokeInputBatch> CreateInkInputBatch(
     base::span<const PdfInkInputData> inputs);
 
-base::Value::Dict CreateSetAnnotationModeMessageForTesting(
+base::DictValue CreateSetAnnotationModeMessageForTesting(
     InkAnnotationMode mode);
 
-base::Value::Dict CreateSetAnnotationBrushMessageForTesting(
+base::DictValue CreateSetAnnotationBrushMessageForTesting(
     std::string_view type,
     const TestAnnotationBrushMessageParams* params);
 
-base::Value::Dict CreateSetAnnotationUndoRedoMessageForTesting(
+base::DictValue CreateSetAnnotationUndoRedoMessageForTesting(
     TestAnnotationUndoRedoMessageType type);
 
 MATCHER_P6(InkAffineTransformEq,

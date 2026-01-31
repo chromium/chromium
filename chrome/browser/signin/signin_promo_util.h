@@ -43,10 +43,6 @@ bool ShouldShowSyncPromo(Profile& profile);
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
-// Whether we should show the sync promo after an extension was installed.
-bool ShouldShowExtensionSyncPromo(Profile& profile,
-                                  const extensions::Extension& extension);
-
 // Whether we should show the sign in promo after an extension was installed.
 bool ShouldShowExtensionSignInPromo(Profile& profile,
                                     const extensions::Extension& extension);

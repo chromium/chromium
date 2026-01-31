@@ -1,0 +1,1 @@
+lightColor: rgb(16, 16, 16), darkColor: rgb(255, 255, 255)

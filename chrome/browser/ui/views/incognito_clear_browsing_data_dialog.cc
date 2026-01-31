@@ -6,7 +6,7 @@
 
 #include "base/metrics/histogram_functions.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/browser_list.h"
+#include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/views/accessibility/theme_tracking_non_accessible_image_view.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/grit/generated_resources.h"
@@ -158,9 +158,7 @@ void IncognitoClearBrowsingDataDialog::OnCloseWindowsButtonClicked() {
   // Skipping before-unload trigger to give incognito mode users a chance to
   // quickly close all incognito windows without needing to confirm closing the
   // open forms.
-  BrowserList::CloseAllBrowsersWithIncognitoProfile(
-      incognito_profile_, base::DoNothing(), base::DoNothing(),
-      /*skip_beforeunload=*/true);
+  chrome::CloseAllBrowsersWithIncognitoProfile(incognito_profile_);
 }
 
 void IncognitoClearBrowsingDataDialog::OnCancelButtonClicked() {

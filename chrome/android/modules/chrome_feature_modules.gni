@@ -8,6 +8,7 @@ import("//chrome/android/modules/buildflags.gni")
 import("//chrome/android/modules/on_demand/on_demand_module.gni")
 import("//chrome/android/modules/stack_unwinder/stack_unwinder_module.gni")
 import("//chrome/android/modules/test_dummy/test_dummy_module.gni")
+import("//chrome/android/modules/xr/xr_module.gni")
 import("//device/vr/buildflags/buildflags.gni")
 
 # List of feature module descs for each Chrome flavor. These lists are used to
@@ -32,10 +33,8 @@ chrome_module_descs = [
   on_demand_module_desc,
   test_dummy_module_desc,
   stack_unwinder_module_desc,
+  xr_module_desc,
 ]
 if (dfmify_dev_ui) {
   chrome_module_descs += [ dev_ui_module_desc ]
 }
-
-# TODO: Remove once unused downstream.
-monochrome_module_descs = chrome_module_descs

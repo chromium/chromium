@@ -235,15 +235,6 @@
       <message name="IDS_PAGE_INFO_COOKIES" desc="The label for the Cookies setting in the Page Information Window.">
         Cookies
       </message>
-      <message name="IDS_PAGE_INFO_COOKIES_BUTTON_TEXT" desc="The label on a button in the Page Information Window that, when clicked, opens a dialog where cookies can be managed by the user.">
-          Cookies <ph name="NUM_COOKIES">$1<ex>(4 in use)</ex></ph>
-      </message>
-      <message name="IDS_PAGE_INFO_NUM_COOKIES_PARENTHESIZED" desc="The label of the counts for allowed cookies that are in use on the page. This text will be used in IDS_PAGE_INFO_COOKIES_BUTTON_TEXT.">
-        {NUM_COOKIES, plural, =1 {(1 in use)} other {(# in use)}}
-      </message>
-      <message name="IDS_PAGE_INFO_NUM_COOKIES" desc="The label of the counts for allowed cookies that are in use on the page. This text will be shown next to IDS_PAGE_INFO_COOKIES_BUTTON_TEXT. It is the same as IDS_PAGE_INFO_NUM_COOKIES_PARENTHESIZED, but without parenthesis">
-        {NUM_COOKIES, plural, =1 {1 in use} other {# in use}}
-      </message>
       <message name="IDS_PAGE_INFO_COOKIES_TOOLTIP" desc="A tooltip that appears when the user hovers over the 'Cookies and site data' button. Options on the next screen include: Block third-party cookies, Manage cookies and site data, and See related sites.">
         Options for cookies and site data
       </message>
@@ -402,6 +393,12 @@
     </message>
     <message name="IDS_PAGE_INFO_STATE_TEXT_LOCAL_NETWORK_ACCESS_ASK" desc="The Page Info permission subpage and the main page info page contain a label which shows the state of the site permission. This is the text shown if the local network access permission is in the ask state and the site can prompt the user to ask if they allow the site to make local network requests.">
       Can ask to connect to any device on your local network
+    </message>
+    <message name="IDS_PAGE_INFO_STATE_TEXT_LOCAL_NETWORK_ASK" desc="The Page Info permission subpage and the main page info page contain a label which shows the state of the site permission. This is the text shown if the local network permission is in the ask state and the site can prompt the user to ask if they allow the site to make local network requests to other local network devices.">
+      Can ask to access other devices on your local network
+    </message>
+    <message name="IDS_PAGE_INFO_STATE_TEXT_LOOPBACK_NETWORK_ASK" desc="The Page Info permission subpage and the main page info page contain a label which shows the state of the site permission. This is the text shown if the loopback network permission is in the ask state and the site can prompt the user to ask if they allow the site to make local network requests to the device.">
+      Can ask to access other apps and services on this device
     </message>
 
     <!-- UI for device access granted to the site using the device chooser (e.g. USB, Bluetooth) -->
@@ -709,29 +706,8 @@
   <message name="IDS_PAGE_INFO_COOKIES_DESCRIPTION" desc="The description of cookies in Cookies Subpage with placeholder for link to settings.">
     Cookies and other site data are used to remember you, for example to sign you in or to personalize ads. To manage cookies for all sites, see <ph name="SETTINGS">$1<ex>Settings</ex></ph>.
   </message>
-  <message name="IDS_PAGE_INFO_TRACKING_PROTECTION_SITE_GRANT_DESCRIPTION" desc="Description text for the 'Cookies and site data' subpage in the page info bubble for when a site has a TPCD grant. Contains a link to the third-party cookies settings page.">
-   Chrome limits most sites from using third-party cookies. But third-party cookies are allowed on this site because it relies on them to provide basic services. Visit settings to <ph name="LINK">$1<ex>manage access to third-party cookies</ex></ph>.
-  </message>
-  <message name="IDS_PAGE_INFO_TRACKING_PROTECTION_DESCRIPTION" desc="Description text for the 'Cookies and site data' subpage in the page info bubble. Contains a link to the third-party cookies settings page.">
-    Chrome limits most sites from using third-party cookies to track you as you browse. Visit settings to <ph name="LINK">$1<ex>manage access to third-party cookies</ex></ph>.
-  </message>
-  <message name="IDS_PAGE_INFO_TRACKING_PROTECTION_BLOCKED_COOKIES_DESCRIPTION" desc="Description text for the 'Cookies and site data' subpage in the page info bubble if all cookies are blocked. Contains a link to the third-party cookies settings page.">
-    You blocked sites from using third-party cookies to track you as you browse. Visit settings to <ph name="LINK">$1<ex>manage access to third-party cookies</ex></ph>.
-  </message>
-  <message name="IDS_PAGE_INFO_TRACKING_PROTECTION_INCOGNITO_BLOCKED_COOKIES_DESCRIPTION" desc="Description text for the 'Cookies and site data' subpage in the page info bubble in incognito mode when cookies are blocked. Contains a link to the third-party cookies settings page.">
-    Chrome blocks sites from using third-party cookies to track you as you browse. Visit settings to <ph name="LINK">$1<ex>manage access to third-party cookies</ex></ph>.
-  </message>
   <message name="IDS_PAGE_INFO_COOKIES_SETTINGS_LINK" desc="The text of the link to cookies settings.">
     Settings
-  </message>
-  <message name="IDS_PAGE_INFO_TRACKING_PROTECTION_SETTINGS_LINK" desc="The text of the link to the third-party cookies settings within the 'Cookies and site data' page info subpage description.">
-    manage access to third-party cookies
-  </message>
-  <message name="IDS_PAGE_INFO_BLOCK_THIRD_PARTY_COOKIES_TITLE" desc="The title on the blocking third-party cookies toggle in cookies subpage.">
-    Block third-party cookies
-  </message>
-  <message name="IDS_PAGE_INFO_BLOCK_THIRD_PARTY_COOKIES_TOGGLE_TOOLTIP" desc="The tooltip on the blocking third-party cookies toggle in cookies subpage. It is only used by screen reader so no screenshot for that.">
-    Block third-party cookies
   </message>
   <message name="IDS_PAGE_INFO_BLOCK_THIRD_PARTY_COOKIES_MANAGED_BY_SETTINGS_TOOLTIP" desc="The tooltip on the blocking third-party cookies icon in cookies subpage if blocking is explicitly set by user in cookies settings.">
     Managed by cookies settings
@@ -762,12 +738,6 @@
   </message>
   <message name="IDS_PAGE_INFO_COOKIES_THIRD_PARTY_COOKIES_LABEL" desc="A label next to a toggle that allows or blocks third-party cookies.  When the toggle is enabled, third party cookies are allowed.">
     Third-party cookies
-  </message>
-  <message name="IDS_PAGE_INFO_TRACKING_PROTECTION_COOKIES_LIMITED_RESTART_TITLE" desc="Subtitle shown on the page info bubble indicating how long until cookies are limited again.">
-    {COUNT, plural,
-              =0 {Chrome will limit cookies again today}
-              =1 {Chrome will limit cookies again tomorrow}
-              other {# days until Chrome limits cookies again}}
   </message>
   <message name="IDS_PAGE_INFO_TRACKING_PROTECTION_COOKIES_BLOCKED_RESTART_TITLE" desc="Subtitle shown on the page info bubble indicating how long until cookies are blocked again.">
     {COUNT, plural,

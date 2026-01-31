@@ -8,6 +8,7 @@
 #include "base/functional/callback_helpers.h"
 #include "components/services/storage/public/mojom/blob_storage_context.mojom.h"
 #include "content/browser/indexed_db/indexed_db_external_object_storage.h"
+#include "content/browser/indexed_db/instance/backing_store.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 
 namespace content::indexed_db {

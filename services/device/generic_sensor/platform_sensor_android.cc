@@ -37,8 +37,8 @@ scoped_refptr<PlatformSensorAndroid> PlatformSensorAndroid::Create(
       type, reading_buffer, std::move(provider));
   JNIEnv* env = AttachCurrentThread();
   sensor->j_object_.Reset(
-      Java_PlatformSensor_create(env, java_provider, static_cast<jint>(type),
-                                 reinterpret_cast<jlong>(sensor.get())));
+      Java_PlatformSensor_create(env, java_provider, static_cast<int32_t>(type),
+                                 reinterpret_cast<int64_t>(sensor.get())));
   if (!sensor->j_object_) {
     return nullptr;
   }
@@ -67,7 +67,7 @@ mojom::ReportingMode PlatformSensorAndroid::GetReportingMode() {
 
 PlatformSensorConfiguration PlatformSensorAndroid::GetDefaultConfiguration() {
   JNIEnv* env = AttachCurrentThread();
-  jdouble frequency =
+  double frequency =
       Java_PlatformSensor_getDefaultConfiguration(env, j_object_);
   return PlatformSensorConfiguration(frequency);
 }
@@ -116,11 +116,11 @@ void PlatformSensorAndroid::NotifyPlatformSensorError(JNIEnv*) {
 }
 
 void PlatformSensorAndroid::UpdatePlatformSensorReading(JNIEnv*,
-                                                        jdouble timestamp,
-                                                        jdouble value1,
-                                                        jdouble value2,
-                                                        jdouble value3,
-                                                        jdouble value4) {
+                                                        double timestamp,
+                                                        double value1,
+                                                        double value2,
+                                                        double value3,
+                                                        double value4) {
   SensorReading reading;
   reading.raw.timestamp = timestamp;
   reading.raw.values[0] = value1;
@@ -133,7 +133,7 @@ void PlatformSensorAndroid::UpdatePlatformSensorReading(JNIEnv*,
 
 void PlatformSensorAndroid::SimulateSensorEventFromJavaForTesting(
     base::android::ScopedJavaGlobalRef<jobject> j_object_,
-    jint reading_values_length) {
+    int32_t reading_values_length) {
   Java_PlatformSensor_simulateSensorEventForTesting(  // IN-TEST
       AttachCurrentThread(), j_object_, reading_values_length);
 }

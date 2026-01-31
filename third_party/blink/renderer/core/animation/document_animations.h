@@ -37,6 +37,7 @@
 #include "third_party/blink/renderer/core/animation/css/css_animation.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/dom/document_lifecycle.h"
+#include "third_party/blink/renderer/core/dom/trigger_scoped_name.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_map.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_set.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
@@ -91,11 +92,16 @@ class CORE_EXPORT DocumentAnimations final
     return timelines_;
   }
 
-  static void UpdateTriggerAttachment(
+  using TriggerAttachmentMap =
+      HeapHashMap<Member<const TriggerScopedName>,
+                  std::pair<Member<AnimationTrigger>,
+                            Member<const StyleTriggerAttachment>>>;
+  static void FindRelevantTriggerAttachments(
       CSSAnimation& animation,
-      base::FunctionRef<void(AnimationTrigger& trigger,
-                             const StyleTriggerAttachment& attachment)>
-          function);
+      TriggerAttachmentMap& relevant_attachments_out);
+  static void UpdateTriggerAttachments(
+      CSSAnimation& animation,
+      const TriggerAttachmentMap& relevant_attachments);
 
   void AddAnimationTrigger(AnimationTrigger& trigger);
 
@@ -112,11 +118,11 @@ class CORE_EXPORT DocumentAnimations final
   // crbug.com/447174988 is investigated.
   // TODO(crbug.com/447174988): Remove UpdateAnimationTriggerAttachments when
   // the bug is resolved.
-  void ExecutePendingTriggerAttachmentUpdates();
-  void AddPendingTriggerAttachmentUpdate(CSSAnimation* animation);
-  void RemovePendingTriggerAttachmentUpdate(CSSAnimation* animation);
+  void ExecuteTriggerAttachmentUpdates();
+  void AddTriggeredAnimation(CSSAnimation* animation);
 
-  void UpdateCompositorAnimationTriggers();
+  void UpdateCompositorAnimationTriggers(
+      const PaintArtifactCompositor* paint_artifact_compositor);
 
   uint64_t current_transition_generation_;
   void Trace(Visitor*) const;
@@ -135,7 +141,7 @@ class CORE_EXPORT DocumentAnimations final
   HeapHashSet<WeakMember<AnimationTrigger>> triggers_;
   // Animations which should be attached to triggers after style and layout
   // updates.
-  HeapHashSet<WeakMember<CSSAnimation>> pending_trigger_attachment_updates_;
+  HeapHashSet<WeakMember<CSSAnimation>> triggered_animations_;
 };
 
 }  // namespace blink

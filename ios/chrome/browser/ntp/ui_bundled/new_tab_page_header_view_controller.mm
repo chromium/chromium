@@ -15,11 +15,10 @@
 #import "base/strings/sys_string_conversions.h"
 #import "components/omnibox/common/omnibox_features.h"
 #import "components/prefs/pref_service.h"
-#import "components/signin/public/base/signin_switches.h"
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/bubble/public/in_product_help_type.h"
-#import "ios/chrome/browser/content_suggestions/ui_bundled/content_suggestions_collection_utils.h"
-#import "ios/chrome/browser/content_suggestions/ui_bundled/ntp_home_constant.h"
+#import "ios/chrome/browser/content_suggestions/public/ntp_home_constants.h"
+#import "ios/chrome/browser/content_suggestions/ui/content_suggestions_collection_utils.h"
 #import "ios/chrome/browser/home_customization/coordinator/home_customization_delegate.h"
 #import "ios/chrome/browser/ntp/model/new_tab_page_tab_helper.h"
 #import "ios/chrome/browser/ntp/search_engine_logo/mediator/search_engine_logo_mediator.h"
@@ -51,9 +50,9 @@
 #import "ios/chrome/browser/shared/ui/util/util_swift.h"
 #import "ios/chrome/browser/signin/model/authentication_service.h"
 #import "ios/chrome/browser/start_surface/ui_bundled/start_surface_features.h"
-#import "ios/chrome/browser/toolbar/ui_bundled/public/fakebox_focuser.h"
-#import "ios/chrome/browser/toolbar/ui_bundled/public/toolbar_utils.h"
-#import "ios/chrome/browser/toolbar/ui_bundled/tab_groups/ui/tab_group_indicator_view.h"
+#import "ios/chrome/browser/toolbar/legacy/ui_bundled/public/fakebox_focuser.h"
+#import "ios/chrome/browser/toolbar/legacy/ui_bundled/public/toolbar_utils.h"
+#import "ios/chrome/browser/toolbar/tab_group/ui/tab_group_indicator_view.h"
 #import "ios/chrome/common/NSString+Chromium.h"
 #import "ios/chrome/common/material_timing.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
@@ -570,6 +569,11 @@ const CGFloat kIdentityDiscMaxFontSize = 24;
 
   // Initially set the constraints of the identity disc.
   [self updateIdentityDiscConstraints];
+
+  if (_hasAccountError) {
+    // updateADPBadgeWithErrorFound was invoked before the view was created.
+    [self.headerView setIdentityDiscErrorBadge];
+  }
 }
 
 // Creates the Home customization menu and adds it to the header view.
@@ -767,7 +771,8 @@ const CGFloat kIdentityDiscMaxFontSize = 24;
       constraintEqualToConstant:content_suggestions::FakeOmniboxHeight()];
   self.fakeOmniboxTopMarginConstraint = [logoView.bottomAnchor
       constraintEqualToAnchor:fakeOmnibox.topAnchor
-                     constant:-content_suggestions::SearchFieldTopMargin()];
+                     constant:-content_suggestions::SearchFieldTopMargin(
+                                  _searchEngineLogoState)];
   self.headerViewHeightConstraint =
       [headerView.heightAnchor constraintEqualToConstant:[self headerHeight]];
   self.headerViewHeightConstraint.active = YES;
@@ -854,6 +859,7 @@ const CGFloat kIdentityDiscMaxFontSize = 24;
 
 - (void)searchEngineLogoStateDidChange:(SearchEngineLogoState)logoState {
   _searchEngineLogoState = logoState;
+  self.headerView.logoState = logoState;
   [self.doodleHeightConstraint
       setConstant:content_suggestions::DoodleHeight(_searchEngineLogoState,
                                                     self.traitCollection)];
@@ -863,6 +869,8 @@ const CGFloat kIdentityDiscMaxFontSize = 24;
   self.headerViewHeightConstraint.constant =
       content_suggestions::HeightForLogoHeader(_searchEngineLogoState,
                                                self.traitCollection);
+  self.fakeOmniboxTopMarginConstraint.constant =
+      -content_suggestions::SearchFieldTopMargin(_searchEngineLogoState);
   // Trigger relayout so that it immediately returns the updated content height
   // for the NTP to update content inset.
   [self.view setNeedsLayout];
@@ -872,11 +880,6 @@ const CGFloat kIdentityDiscMaxFontSize = 24;
 }
 
 #pragma mark - NewTabPageHeaderConsumer
-
-- (void)setSearchEngineLogoState:(SearchEngineLogoState)logoState {
-  _searchEngineLogoState = logoState;
-  [self updateFakeboxDisplay];
-}
 
 - (void)setSearchEngineLogoMediator:
     (SearchEngineLogoMediator*)searchEngineLogoMediator {
@@ -918,10 +921,6 @@ const CGFloat kIdentityDiscMaxFontSize = 24;
 - (void)updateADPBadgeWithErrorFound:(BOOL)hasAccountError
                                 name:(NSString*)name
                                email:(NSString*)email {
-  CHECK(
-      base::FeatureList::IsEnabled(switches::kEnableErrorBadgeOnIdentityDisc) ||
-      base::FeatureList::IsEnabled(switches::kEnableIdentityInAuthError));
-
   if (hasAccountError == _hasAccountError) {
     return;
   }

@@ -7,7 +7,6 @@
 #include <map>
 #include <utility>
 
-#include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/lazy_instance.h"
@@ -30,6 +29,7 @@
 #include "extensions/renderer/scripts_run_info.h"
 #include "extensions/renderer/trace_util.h"
 #include "third_party/blink/public/platform/web_isolated_world_info.h"
+#include "third_party/blink/public/web/extension_script_streamer.h"
 #include "third_party/blink/public/web/web_document.h"
 #include "third_party/blink/public/web/web_local_frame.h"
 #include "third_party/blink/public/web/web_script_execution_callback.h"
@@ -236,8 +236,12 @@ void ScriptInjection::InjectJs(std::set<std::string>* executing_scripts,
   TRACE_RENDERER_EXTENSION_EVENT("ScriptInjection::InjectJs", host_id().id);
 
   DCHECK(!did_inject_js_);
+
+  ExtensionFrameHelper* frame_helper = ExtensionFrameHelper::Get(render_frame_);
+  CHECK(frame_helper);
+
   std::vector<blink::WebScriptSource> sources = injector_->GetJsSources(
-      run_location_, executing_scripts, num_injected_js_scripts);
+      run_location_, executing_scripts, num_injected_js_scripts, frame_helper);
   DCHECK(!sources.empty());
 
   base::ElapsedTimer exec_timer;
@@ -258,9 +262,6 @@ void ScriptInjection::InjectJs(std::set<std::string>* executing_scripts,
           ? blink::mojom::EvaluationTiming::kAsynchronous
           : blink::mojom::EvaluationTiming::kSynchronous;
 
-  ExtensionFrameHelper* frame_helper = ExtensionFrameHelper::Get(render_frame_);
-  CHECK(frame_helper);
-
   std::optional<std::string> world_id = injector_->GetExecutionWorldId();
   const std::string& host_string_id = injection_host_->id().id;
   const mojom::ExecutionWorld execution_world = injector_->GetExecutionWorld();
@@ -280,7 +281,7 @@ void ScriptInjection::InjectJs(std::set<std::string>* executing_scripts,
     constexpr size_t kMaxActiveUserScriptWorldCount = 10;
     if (active_user_script_worlds &&
         active_user_script_worlds->size() >= kMaxActiveUserScriptWorldCount &&
-        !base::Contains(*active_user_script_worlds, world_id)) {
+        !active_user_script_worlds->contains(world_id)) {
       // If there are 10 or more active user script worlds, we use the default
       // world for future injections.
       // Note: This *can* mean that up to 11 user script worlds for this

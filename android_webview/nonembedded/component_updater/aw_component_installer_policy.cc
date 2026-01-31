@@ -72,7 +72,7 @@ void AwComponentInstallerPolicy::OnCustomUninstall() {
 void AwComponentInstallerPolicy::ComponentReady(
     const base::Version& version,
     const base::FilePath& install_dir,
-    base::Value::Dict manifest) {
+    base::DictValue manifest) {
   base::FilePath cps_component_base_path =
       GetComponentsProviderServiceDirectory();
   int highest_sequence_number =

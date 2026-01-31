@@ -9,7 +9,6 @@
 #include "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #include "ios/web/public/thread/web_task_traits.h"
 #include "ios/web/public/thread/web_thread.h"
-#include "net/base/completion_repeating_callback.h"
 #include "net/base/io_buffer.h"
 #include "net/base/net_errors.h"
 #include "net/disk_cache/disk_cache.h"
@@ -24,12 +23,8 @@ class IOThreadCacheCounter {
  public:
   IOThreadCacheCounter(
       const scoped_refptr<net::URLRequestContextGetter>& context_getter,
-      const net::Int64CompletionRepeatingCallback& result_callback)
-      : next_step_(STEP_GET_BACKEND),
-        context_getter_(context_getter),
-        result_callback_(result_callback),
-        result_(0),
-        backend_(nullptr) {}
+      const base::RepeatingCallback<void(int64_t)>& result_callback)
+      : context_getter_(context_getter), result_callback_(result_callback) {}
 
   void Count() {
     web::GetIOThreadTaskRunner({})->PostTask(
@@ -105,11 +100,11 @@ class IOThreadCacheCounter {
     delete this;
   }
 
-  Step next_step_;
+  Step next_step_ = STEP_GET_BACKEND;
   scoped_refptr<net::URLRequestContextGetter> context_getter_;
-  net::Int64CompletionRepeatingCallback result_callback_;
-  int64_t result_;
-  raw_ptr<disk_cache::Backend> backend_;
+  base::RepeatingCallback<void(int64_t)> result_callback_;
+  int64_t result_ = 0;
+  raw_ptr<disk_cache::Backend> backend_ = nullptr;
 };
 
 }  // namespace

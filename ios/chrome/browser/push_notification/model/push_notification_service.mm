@@ -4,10 +4,11 @@
 
 #import "ios/chrome/browser/push_notification/model/push_notification_service.h"
 
+#import <utility>
+
 #import "base/strings/string_number_conversions.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/task/sequenced_task_runner.h"
-#import "base/types/cxx23_to_underlying.h"
 #import "base/values.h"
 #import "components/pref_registry/pref_registry_syncable.h"
 #import "components/prefs/pref_registry_simple.h"
@@ -81,9 +82,8 @@ void PushNotificationService::RegisterLocalStatePrefs(
     PrefRegistrySimple* registry) {
   registry->RegisterIntegerPref(
       prefs::kPushNotificationAuthorizationStatus,
-      base::to_underlying(
+      std::to_underlying(
           push_notification::SettingsAuthorizationStatus::NOTDETERMINED));
   registry->RegisterDictionaryPref(prefs::kAppLevelPushNotificationPermissions);
   registry->RegisterDictionaryPref(prefs::kHandledDeliveredNotificationIds);
 }
-

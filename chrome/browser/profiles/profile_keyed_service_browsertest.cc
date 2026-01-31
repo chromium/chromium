@@ -22,6 +22,7 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/profile_waiter.h"
 #include "components/commerce/core/commerce_feature_list.h"
+#include "components/contextual_tasks/public/features.h"
 #include "components/enterprise/buildflags/buildflags.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/keyed_service/core/dependency_graph.h"
@@ -187,6 +188,10 @@ class ProfileKeyedServiceBrowserTest : public InProcessBrowserTest {
     // clang-format off
     feature_list_.InitWithFeatures(
         {
+#if !BUILDFLAG(IS_ANDROID)
+          features::kInitialWebUI,
+          features::kWebUIReloadButton,
+#endif  // !BUILDFLAG(IS_ANDROID)
           features::kTrustSafetySentimentSurvey,
 #if BUILDFLAG(IS_WIN)
           switches::kEnableBoundSessionCredentials,
@@ -200,6 +205,7 @@ class ProfileKeyedServiceBrowserTest : public InProcessBrowserTest {
           omnibox::kOnDeviceHeadProviderNonIncognito,
 #endif  // BUILDFLAG(BUILD_WITH_TFLITE_LIB)
           switches::kSyncEnableBookmarksInTransportMode,
+          contextual_tasks::kContextualTasks,
         },
         {});
     // clang-format on
@@ -390,6 +396,9 @@ IN_PROC_BROWSER_TEST_F(ProfileKeyedServiceGuestBrowserTest,
     "BrowserManagerService",
     "BrowsingDataLifetimeManager",
     "BrowsingDataRemover",
+    "ContextualSearchService",
+    "ContextualTasksService",
+    "ContextualTasksUiService",
     "CookieSettings",
 #if BUILDFLAG(IS_WIN)
     "BoundSessionCookieRefreshService",
@@ -398,6 +407,14 @@ IN_PROC_BROWSER_TEST_F(ProfileKeyedServiceGuestBrowserTest,
     "ExtensionInstallEventRouter",
 #endif  // BUILDFLAG(ENTERPRISE_CONTENT_ANALYSIS)
     "ChromeEnterpriseRealTimeUrlLookupService",
+#if !BUILDFLAG(IS_ANDROID)
+    "ChromePasswordProtectionService",
+#if BUILDFLAG(IS_CHROMEOS)
+    "AshPolicyBlocklistService",
+#else
+    "ChromePolicyBlocklistService",
+#endif  // !BUILDFLAG(IS_CHROMEOS)
+#endif  // !BUILDFLAG(IS_ANDROID)
 #if BUILDFLAG(IS_CHROMEOS)
     "ComponentExtensionContentSettingsAllowlist",
 #endif
@@ -422,6 +439,9 @@ IN_PROC_BROWSER_TEST_F(ProfileKeyedServiceGuestBrowserTest,
     // TODO(crbug.com/374351946): Investigate if this is necessary on CrOS.
     "LiveTranslateController",
 #endif  // !BUILDFLAG(IS_CHROMEOS)
+#if !BUILDFLAG(IS_ANDROID)
+    "LookalikeUrlServiceFactory",
+#endif
     "MediaRouter",
     "MediaRouterUIService",
     "NotificationDisplayService",
@@ -447,6 +467,9 @@ IN_PROC_BROWSER_TEST_F(ProfileKeyedServiceGuestBrowserTest,
     "ResumableUDPSocketManager",
     "RulesRegistryService",
     "SafeBrowsingPrivateEventRouter",
+#if !BUILDFLAG(IS_ANDROID)
+    "SafeSearch",
+#endif
     "SerialConnectionManager",
     "SerialPortManager",
     "SettingsPrivateEventRouter",
@@ -458,7 +481,6 @@ IN_PROC_BROWSER_TEST_F(ProfileKeyedServiceGuestBrowserTest,
     "TCPSocketEventDispatcher",
     "TabGroupsEventRouter",
     "ToolbarActionsModel",
-    "TrackingProtectionSettings",
     "UDPSocketEventDispatcher",
     "UkmBackgroundRecorderService",
 #if BUILDFLAG(IS_WIN)
@@ -628,6 +650,8 @@ IN_PROC_BROWSER_TEST_F(ProfileKeyedServiceGuestBrowserTest,
 #endif  // BUILDFLAG(ENTERPRISE_CONTENT_ANALYSIS)
     "ContentIndexProvider",
     "ContentSettingsService",
+    "ContextualTasksService",
+    "ContextualTasksUiService",
     "CookieSettings",
     "CookiesAPI",
 #if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
@@ -791,6 +815,9 @@ IN_PROC_BROWSER_TEST_F(ProfileKeyedServiceGuestBrowserTest,
     "RulesRegistryService",
     "RuntimeAPI",
     "SafeBrowsingMetricsCollector",
+#if !BUILDFLAG(IS_ANDROID)
+    "SafeBrowsingNetworkContextService",
+#endif
     "SafeBrowsingPrivateEventRouter",
     "SafeBrowsingTailoredSecurityService",
     "SearchEngineChoiceServiceFactory",
@@ -837,7 +864,6 @@ IN_PROC_BROWSER_TEST_F(ProfileKeyedServiceGuestBrowserTest,
     "TemplateURLServiceFactory",
     "ThemeService",
     "ToolbarActionsModel",
-    "TrackingProtectionSettings",
     "TranslateRanker",
     "TriggeredProfileResetter",
     "TtsAPI",

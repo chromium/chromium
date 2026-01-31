@@ -11,16 +11,40 @@
 #include "base/containers/span.h"
 #include "base/logging.h"
 #include "base/notreached.h"
+#include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkBlendMode.h"
 #include "third_party/skia/include/core/SkCanvas.h"
 #include "third_party/skia/include/core/SkClipOp.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "third_party/skia/include/core/SkColorFilter.h"
+#include "third_party/skia/include/core/SkColorSpace.h"
 #include "third_party/skia/include/core/SkPaint.h"
 #include "third_party/skia/include/core/SkRect.h"
 #include "third_party/skia/include/effects/SkColorMatrix.h"
 
 namespace skia {
+
+namespace {
+
+void ApplyColorMatrix(SkPixmap& pm, const std::array<float, 20>& m) {
+  CHECK_EQ(pm.colorType(), kRGBA_F32_SkColorType);
+  CHECK_NE(pm.alphaType(), kPremul_SkAlphaType);
+  for (int y = 0; y < pm.height(); ++y) {
+    for (int x = 0; x < pm.width(); ++x) {
+      SkColor4f& c = *reinterpret_cast<SkColor4f*>(pm.writable_addr(x, y));
+      // Only apply the RGB parts of matrix (the alpha channel will be
+      // unchanged).
+      c = {
+          c.fR * m[0] + c.fG * m[1] + c.fB * m[2] + m[4],
+          c.fR * m[5] + c.fG * m[6] + c.fB * m[7] + m[9],
+          c.fR * m[10] + c.fG * m[11] + c.fB * m[12] + m[14],
+          c.fA,
+      };
+    }
+  }
+}
+
+}  // namespace
 
 void BlitRGBAToYUVA(SkImage* src_image,
                     base::span<SkSurface* const> dst_surfaces,
@@ -108,6 +132,72 @@ void BlitRGBAToYUVA(SkImage* src_image,
       }
       plane_canvas->drawImageRect(src_image, src_rect, plane_dst_rect,
                                   sampling_options, &paint, constraint);
+    }
+  }
+}
+
+void ConvertRGBAToOrFromYUVA(SkPixmap src_pm,
+                             SkYUVColorSpace src_yuv_cs,
+                             SkPixmap dst_pm,
+                             SkYUVColorSpace dst_yuv_cs) {
+  CHECK(src_pm.dimensions() == dst_pm.dimensions());
+  if (dst_pm.alphaType() == kOpaque_SkAlphaType) {
+    CHECK(src_pm.alphaType() == kOpaque_SkAlphaType);
+  }
+  const int h = src_pm.height();
+  const int w = src_pm.width();
+  const SkAlphaType alpha_type = src_pm.alphaType() == kOpaque_SkAlphaType
+                                     ? kOpaque_SkAlphaType
+                                     : kUnpremul_SkAlphaType;
+
+  // If we need to do YUV to RGB conversion, we will do that in-place in
+  // `src_rgb_row`.
+  SkPixmap src_rgb_row;
+  SkBitmap src_rgb_row_bm;
+  std::array<float, 20> src_matrix;
+  if (src_yuv_cs != kIdentity_SkYUVColorSpace) {
+    src_rgb_row_bm.allocPixels(SkImageInfo::Make(
+        w, 1, kRGBA_F32_SkColorType, alpha_type, src_pm.refColorSpace()));
+    src_rgb_row = src_rgb_row_bm.pixmap();
+    SkColorMatrix::YUVtoRGB(src_yuv_cs).getRowMajor(src_matrix.data());
+  }
+
+  // If we need to do RGB to YUV conversion, we will do that in-place in
+  // `dst_rgb_row`.
+  SkBitmap dst_rgb_row_bm;
+  SkPixmap dst_rgb_row;
+  std::array<float, 20> dst_matrix;
+  if (dst_yuv_cs != kIdentity_SkYUVColorSpace) {
+    dst_rgb_row_bm.allocPixels(SkImageInfo::Make(
+        w, 1, kRGBA_F32_SkColorType, alpha_type, dst_pm.refColorSpace()));
+    dst_rgb_row = dst_rgb_row_bm.pixmap();
+    SkColorMatrix::RGBtoYUV(dst_yuv_cs).getRowMajor(dst_matrix.data());
+  }
+
+  // Process one row at a time.
+  for (int y = 0; y < h; ++y) {
+    // Extract the source and destination rows.
+    SkPixmap src_yuv_row;
+    SkPixmap dst_yuv_row;
+    const auto row_rect = SkIRect::MakeXYWH(0, y, w, 1);
+    CHECK(src_pm.extractSubset(&src_yuv_row, row_rect));
+    CHECK(dst_pm.extractSubset(&dst_yuv_row, row_rect));
+
+    // Let `src_rgb_row` be the source row in full-range RGB.
+    if (src_yuv_cs == kIdentity_SkYUVColorSpace) {
+      src_rgb_row = src_yuv_row;
+    } else {
+      CHECK(src_yuv_row.readPixels(src_rgb_row));
+      ApplyColorMatrix(src_rgb_row, src_matrix);
+    }
+
+    // Write `dst_yuv_row`.
+    if (dst_yuv_cs == kIdentity_SkYUVColorSpace) {
+      CHECK(src_rgb_row.readPixels(dst_yuv_row));
+    } else {
+      src_rgb_row.readPixels(dst_rgb_row);
+      ApplyColorMatrix(dst_rgb_row, dst_matrix);
+      dst_rgb_row.readPixels(dst_yuv_row);
     }
   }
 }

@@ -20,7 +20,7 @@
 #include "chrome/browser/actor/execution_engine.h"
 #include "chrome/browser/actor/tools/observation_delay_metrics.h"
 #include "chrome/browser/actor/tools/tool_callbacks.h"
-#include "chrome/common/actor.mojom-data-view.h"
+#include "chrome/common/actor.mojom.h"
 #include "chrome/common/actor/journal_details_builder.h"
 #include "chrome/common/actor/task_id.h"
 #include "chrome/common/chrome_features.h"

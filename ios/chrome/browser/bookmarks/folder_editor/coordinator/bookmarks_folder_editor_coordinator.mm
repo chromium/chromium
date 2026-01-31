@@ -81,6 +81,12 @@
   return self;
 }
 
+- (void)dealloc {
+  CHECK(!_viewController, base::NotFatalUntil::M152);
+}
+
+#pragma mark - Chrome Coordinator
+
 - (void)start {
   [super start];
   // TODO(crbug.com/40251259): Create a mediator.
@@ -151,9 +157,7 @@
   _viewController = nil;
 }
 
-- (void)dealloc {
-  CHECK(!_viewController, base::NotFatalUntil::M152);
-}
+#pragma mark - BookmarksFolderEditorCoordinator
 
 - (BOOL)canDismiss {
   CHECK(_viewController, base::NotFatalUntil::M152);

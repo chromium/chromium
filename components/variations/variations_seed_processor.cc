@@ -167,17 +167,6 @@ void RegisterVariationIds(base::PassKey<VariationsSeedProcessor> pass_key,
                              variation_id, web_visibility_time_window);
 }
 
-// Executes |callback| on every override defined by |experiment|.
-void ApplyUIStringOverrides(
-    const Study::Experiment& experiment,
-    const VariationsSeedProcessor::UIStringOverrideCallback& callback) {
-  for (int i = 0; i < experiment.override_ui_string_size(); ++i) {
-    const Study::Experiment::OverrideUIString& override =
-        experiment.override_ui_string(i);
-    callback.Run(override.name_hash(), base::UTF8ToUTF16(override.value()));
-  }
-}
-
 // Whether the given study should be activated on startup.
 bool ShouldActivate(const Study& study,
                     const std::string group_name,
@@ -201,7 +190,6 @@ void ForceExperimentState(
     base::PassKey<VariationsSeedProcessor> pass_key,
     const Study& study,
     const Study::Experiment& experiment,
-    const VariationsSeedProcessor::UIStringOverrideCallback& override_callback,
     StickyActivationManager& sticky_activation_manager,
     base::FieldTrial& trial) {
   RegisterExperimentParams(study, experiment);
@@ -212,11 +200,6 @@ void ForceExperimentState(
     // trial. Otherwise, since we look up params by trial and group name, the
     // params won't be registered under the correct key.
     trial.Activate();
-  }
-
-  // UI Strings can only be overridden from ACTIVATE_ON_STARTUP experiments.
-  if (study.activation_type() == Study::ACTIVATE_ON_STARTUP) {
-    ApplyUIStringOverrides(experiment, override_callback);
   }
 }
 
@@ -352,7 +335,6 @@ VariationsSeedProcessor::~VariationsSeedProcessor() = default;
 void VariationsSeedProcessor::CreateTrialsFromSeed(
     const VariationsSeed& seed,
     const ClientFilterableState& client_state,
-    const UIStringOverrideCallback& override_callback,
     const EntropyProviders& entropy_providers,
     const VariationsLayers& layers,
     base::FeatureList* feature_list) {
@@ -362,14 +344,12 @@ void VariationsSeedProcessor::CreateTrialsFromSeed(
       FilterAndValidateStudies(seed, client_state, layers);
 
   for (const ProcessedStudy& study : filtered_studies) {
-    CreateTrialFromStudy(study, override_callback, entropy_providers, layers,
-                         feature_list);
+    CreateTrialFromStudy(study, entropy_providers, layers, feature_list);
   }
 }
 
 void VariationsSeedProcessor::CreateTrialFromStudy(
     const ProcessedStudy& processed_study,
-    const UIStringOverrideCallback& override_callback,
     const EntropyProviders& entropy_providers,
     const VariationsLayers& layers,
     base::FeatureList* feature_list) {
@@ -450,8 +430,7 @@ void VariationsSeedProcessor::CreateTrialFromStudy(
             base::FeatureList::OVERRIDE_DISABLE_FEATURE, trial);
       }
       ForceExperimentState(base::PassKey<VariationsSeedProcessor>(), study,
-                           experiment, override_callback,
-                           *sticky_activation_manager_, *trial);
+                           experiment, *sticky_activation_manager_, *trial);
       return;
     }
   }
@@ -476,7 +455,6 @@ void VariationsSeedProcessor::CreateTrialFromStudy(
           processed_study.GetDefaultExperimentName(), entropy_provider.value(),
           study.randomization_seed(), StudyIsLowAnonymity(study)));
 
-  bool has_overrides = false;
   bool enables_or_disables_features = false;
   for (const auto& experiment : study.experiment()) {
     // Groups with forcing flags have probability 0 and will never be selected.
@@ -495,7 +473,6 @@ void VariationsSeedProcessor::CreateTrialFromStudy(
     RegisterVariationIds(base::PassKey<VariationsSeedProcessor>(), experiment,
                          study, is_trial_overridden);
 
-    has_overrides = has_overrides || experiment.override_ui_string_size() > 0;
     if (experiment.feature_association().enable_feature_size() != 0 ||
         experiment.feature_association().disable_feature_size() != 0) {
       enables_or_disables_features = true;
@@ -524,14 +501,6 @@ void VariationsSeedProcessor::CreateTrialFromStudy(
     // trial. Otherwise, since we look up params by trial and group name, the
     // params won't be registered under the correct key.
     trial->Activate();
-  }
-
-  // UI Strings can only be overridden from ACTIVATE_ON_STARTUP experiments.
-  // Only do this if the chosen experiment was found in the study. Not found can
-  // happen if the trial was forced on the command line.
-  if (study.activation_type() == Study::ACTIVATE_ON_STARTUP && has_overrides &&
-      experiment.has_value()) {
-    ApplyUIStringOverrides(*experiment, override_callback);
   }
 }
 

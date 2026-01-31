@@ -16,6 +16,7 @@
 #include "components/services/app_service/public/cpp/file_handler.h"
 #include "components/webapps/common/web_app_id.h"
 #include "content/public/common/alternative_error_page_override_info.mojom-forward.h"
+#include "third_party/blink/public/common/safe_url_pattern.h"
 
 class GURL;
 class Profile;
@@ -45,8 +46,15 @@ namespace web_app {
 // hard-coded as OTR).
 bool AreWebAppsEnabled(Profile* profile);
 
+// Returns WebAppInstallByUserEnabled policy configuration. Returns true if this
+// policy is not set or enabled. Returns false if this policy is disabled.
+bool IsWebAppInstallByUserPolicyEnabled(Profile* profile);
+
 // Is user allowed to install web apps from UI:
 bool AreWebAppsUserInstallable(Profile* profile);
+
+// Returns if force installation of web apps is allowed
+bool AreWebAppsForceInstallable(Profile* profile);
 
 // Get BrowserContext to use for a WebApp KeyedService creation. This will
 // return a `nullptr` if `AreWebAppsEnabled` returns false for the given

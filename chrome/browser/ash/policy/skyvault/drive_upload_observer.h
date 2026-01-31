@@ -37,15 +37,18 @@ class DriveUploadObserver
       ::file_manager::io_task::IOTaskController::Observer {
  public:
   // Starts observing the upload of the file specified at construct time.
-  static void Observe(Profile* profile,
-                      base::FilePath file_path,
-                      UploadTrigger trigger,
-                      int64_t file_bytes,
-                      base::RepeatingCallback<void(int64_t)> progress_callback,
-                      base::OnceCallback<void(bool)> upload_callback);
+  static base::WeakPtr<DriveUploadObserver> Observe(
+      Profile* profile,
+      base::FilePath file_path,
+      UploadTrigger trigger,
+      int64_t file_bytes,
+      base::RepeatingCallback<void(int64_t)> progress_callback,
+      base::OnceCallback<void(bool)> upload_callback);
 
   DriveUploadObserver(const DriveUploadObserver&) = delete;
   DriveUploadObserver& operator=(const DriveUploadObserver&) = delete;
+
+  void Cancel();
 
   FRIEND_TEST_ALL_PREFIXES(DriveUploadObserverTest, NoSyncUpdates);
   FRIEND_TEST_ALL_PREFIXES(DriveUploadObserverTest, NoFileMetadata);
@@ -92,7 +95,8 @@ class DriveUploadObserver
   scoped_refptr<storage::FileSystemContext> file_system_context_;
   const raw_ptr<drive::DriveIntegrationService> drive_integration_service_;
 
-  // The Id of the delete task. It'll have a value only if the upload fails.
+  // The Id of the delete task. It'll have a value only if the upload fails or
+  // is cancelled.
   std::optional<::file_manager::io_task::IOTaskId> observed_delete_task_id_ =
       std::nullopt;
 

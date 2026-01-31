@@ -740,13 +740,6 @@ GpuProcessHost::GpuProcessHost(int host_id, GpuProcessKind kind)
           switches::kInProcessGPU)) {
     in_process_ = true;
   }
-#if !BUILDFLAG(IS_ANDROID)
-  if (!in_process_ && kind != GPU_PROCESS_KIND_INFO_COLLECTION) {
-    memory_pressure_listener_registration_ =
-        std::make_unique<base::MemoryPressureListenerRegistration>(
-            FROM_HERE, base::MemoryPressureListenerTag::kGpuProcessHost, this);
-  }
-#endif
 
   // If the 'single GPU process' policy ever changes, we still want to maintain
   // it for 'gpu thread' mode and only create one instance of host and thread.
@@ -935,7 +928,7 @@ bool GpuProcessHost::Init() {
     // WGL needs to create its own window and pump messages on it.
     options.message_pump_type = base::MessagePumpType::UI;
 #endif
-    options.thread_type = base::ThreadType::kDisplayCritical;
+    options.thread_type = base::ThreadType::kPresentation;
     in_process_gpu_thread_->StartWithOptions(std::move(options));
   } else if (!LaunchGpuProcess()) {
     return false;
@@ -1486,11 +1479,5 @@ GpuProcessHost::info_collection_gpu_service() {
 int GpuProcessHost::GetIDForTesting() const {
   return process_->GetData().id;
 }
-
-#if !BUILDFLAG(IS_ANDROID)
-void GpuProcessHost::OnMemoryPressure(base::MemoryPressureLevel level) {
-  gpu_host_->gpu_service()->OnMemoryPressure(level);
-}
-#endif
 
 }  // namespace content

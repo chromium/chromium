@@ -28,7 +28,6 @@
 <translation id="2329392777730037872">クライアントで <ph name="URL" /> を開けませんでした。</translation>
 <translation id="2359808026110333948">続行</translation>
 <translation id="2366718077645204424">ホストにアクセスできません。お使いのネットワークの設定が原因であることが考えられます。</translation>
-<translation id="242591256144136845">Copyright 2025 Google LLC. All Rights Reserved.</translation>
 <translation id="2504109125669302160"><ph name="PRODUCT_NAME" />に「アクセシビリティ」権限を付与する</translation>
 <translation id="2509394361235492552"><ph name="HOSTNAME" /> に接続されました</translation>
 <translation id="2540992418118313681">このパソコンの閲覧と制御の権限を別のユーザーと共有しますか？</translation>
@@ -47,6 +46,7 @@
 <translation id="3150823315463303127">ホストでポリシーを読み取れませんでした。</translation>
 <translation id="3171922709365450819">このデバイスは第三者の認証を必要とするため、このクライアントではサポートされていません。</translation>
 <translation id="3197730452537982411">リモートデスクトップ</translation>
+<translation id="3236334139428307578">Copyright 2026 The Chromium Authors. All Rights Reserved.</translation>
 <translation id="324272851072175193">手順をメールで送信</translation>
 <translation id="3305934114213025800"><ph name="PRODUCT_NAME" /> が変更を求めています。</translation>
 <translation id="3339299787263251426">インターネット経由でパソコンに安全にアクセス</translation>
@@ -111,6 +111,7 @@
 <translation id="5823554426827907568"><ph name="CLIENT_USERNAME" /> さんがあなたの画面を表示して、キーボードとマウスを操作する権限をリクエストしています。このリクエストに心当たりがない場合は、[<ph name="IDS_SHARE_CONFIRM_DIALOG_DECLINE" />] を押します。それ以外の場合は、準備ができたら [<ph name="IDS_SHARE_CONFIRM_DIALOG_CONFIRM" />] を選択して接続を許可します。</translation>
 <translation id="5823658491130719298">リモート アクセスを行うパソコンで Chrome を開き、<ph name="INSTALLATION_LINK" /> にアクセスします</translation>
 <translation id="5841343754884244200">表示オプション</translation>
+<translation id="5965133372831030509">Copyright 2026 Google LLC. All Rights Reserved.</translation>
 <translation id="6033507038939587647">キーボード オプション</translation>
 <translation id="6040143037577758943">閉じる</translation>
 <translation id="6062854958530969723">ホストを初期化できませんでした。</translation>
@@ -138,7 +139,6 @@
 <translation id="7067321367069083429">画面がタッチ スクリーンとして機能します</translation>
 <translation id="7116737094673640201">Chrome リモート デスクトップへようこそ</translation>
 <translation id="7144878232160441200">再読み込み</translation>
-<translation id="7298392173540380852">Copyright 2025 The Chromium Authors. All Rights Reserved.</translation>
 <translation id="7312846573060934304">ホストはオフラインです。</translation>
 <translation id="7319983568955948908">共有を停止</translation>
 <translation id="7359298090707901886">選択されたブラウザでは、ローカルマシンで URL を開けません。</translation>

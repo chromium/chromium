@@ -68,6 +68,49 @@ void PhishingModelSetterImpl::SetImageEmbeddingAndPhishingFlatBufferModel(
   }
 }
 
+void PhishingModelSetterImpl::SetImageEmbeddingAndPhishingTfLiteModel(
+    int classification_input_width,
+    int classification_input_height,
+    base::File classification_model,
+    int image_embedding_input_width,
+    int image_embedding_input_height,
+    base::File image_embedding_model) {
+  std::unique_ptr<Scorer> scorer =
+      safe_browsing::Scorer::CreateScorerWithImageEmbeddingModel(
+          classification_input_width, classification_input_height,
+          std::move(classification_model), image_embedding_input_width,
+          image_embedding_input_height, std::move(image_embedding_model));
+
+  if (!scorer) {
+    return;
+  }
+
+  ScorerStorage::GetInstance()->SetScorer(std::move(scorer));
+
+  if (observer_for_testing_.is_bound()) {
+    observer_for_testing_->PhishingModelUpdated();
+  }
+}
+
+void PhishingModelSetterImpl::SetPhishingTfLiteModel(
+    int classification_input_width,
+    int classification_input_height,
+    base::File tflite_visual_model) {
+  std::unique_ptr<Scorer> scorer = safe_browsing::Scorer::Create(
+      classification_input_width, classification_input_height,
+      std::move(tflite_visual_model));
+
+  if (!scorer) {
+    return;
+  }
+
+  ScorerStorage::GetInstance()->SetScorer(std::move(scorer));
+
+  if (observer_for_testing_.is_bound()) {
+    observer_for_testing_->PhishingModelUpdated();
+  }
+}
+
 void PhishingModelSetterImpl::SetPhishingFlatBufferModel(
     base::ReadOnlySharedMemoryRegion flatbuffer_region,
     base::File tflite_visual_model) {
@@ -92,6 +135,20 @@ void PhishingModelSetterImpl::AttachImageEmbeddingModel(
   }
 
   scorer->AttachImageEmbeddingModel(std::move(image_embedding_model));
+}
+
+void PhishingModelSetterImpl::AttachImageEmbeddingModelAndDimensions(
+    int image_embedding_input_width,
+    int image_embedding_input_height,
+    base::File image_embedding_model) {
+  Scorer* scorer = ScorerStorage::GetInstance()->GetScorer();
+  if (!scorer) {
+    return;
+  }
+
+  scorer->AttachImageEmbeddingModel(image_embedding_input_width,
+                                    image_embedding_input_height,
+                                    std::move(image_embedding_model));
 }
 
 void PhishingModelSetterImpl::ClearScorer() {

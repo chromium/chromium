@@ -701,7 +701,7 @@ void FocusModeController::OnTimerTick() {
       return;
     case FocusModeSession::State::kEnding:
       timer_.Stop();
-      congratulatory_index_ = base::RandInt(
+      congratulatory_index_ = base::RandIntInclusive(
           /*min=*/0, /*max=*/focus_mode_util::kCongratulatoryTitleNum - 1);
 
       if (media_widget_) {
@@ -820,7 +820,7 @@ void FocusModeController::SaveSelectedTaskSettingsToUserPrefs(
     const std::optional<FocusModeTask>& task) {
   if (PrefService* active_user_prefs =
           Shell::Get()->session_controller()->GetActivePrefService()) {
-    base::Value::Dict selected_task_dict;
+    base::DictValue selected_task_dict;
 
     // If there is a selected task, we will save its `task_id.list_id` and
     // `task_id.id`; otherwise, we will store an empty dict.

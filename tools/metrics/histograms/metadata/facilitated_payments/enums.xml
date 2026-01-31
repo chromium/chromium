@@ -124,6 +124,20 @@ reviewer.
 
 <!-- LINT.ThenChange(/components/facilitated_payments/core/metrics/facilitated_payments_metrics.h:PixAccountLinkingFlowExitedReason) -->
 
+<!-- LINT.IfChange(FacilitatedPayments.Pix.PaymentCodeValidation.RustResult) -->
+
+<enum name="FacilitatedPayments.Pix.PaymentCodeValidation.RustResult">
+  <int value="0" label="Dynamic"/>
+  <int value="1" label="Static"/>
+  <int value="2" label="error: Non-Pix merchant-presented code"/>
+  <int value="3"
+      label="error: Additional data field template contains no data"/>
+  <int value="4" label="error: CRC is not the final data field"/>
+  <int value="5" label="error: Unknown Pix code type"/>
+</enum>
+
+<!-- LINT.ThenChange(/components/facilitated_payments/core/metrics/facilitated_payments_metrics.h:PixCodeRustValidationResult) -->
+
 <!-- LINT.IfChange(FacilitatedPayments.PixCodeValidationResult) -->
 
 <enum name="FacilitatedPayments.PixCodeValidationResult">

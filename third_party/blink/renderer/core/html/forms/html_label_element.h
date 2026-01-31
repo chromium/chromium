@@ -43,7 +43,10 @@ class CORE_EXPORT HTMLLabelElement final : public HTMLElement {
   bool WillRespondToMouseClickEvents() override;
 
  private:
+  // TODO(crbug.com/452084024): Remove this when the
+  // LabelInteractiveContentCheckBeforeHandler flag is removed
   bool IsInInteractiveContent(Node*) const;
+  bool IsInInteractiveContent(Event&) const;
 
   bool IsInteractiveContent() const override;
   void AccessKeyAction(SimulatedClickCreationScope creation_scope) override;

@@ -97,7 +97,7 @@ ManagePasswordsListView::ManagePasswordsListView(
           /*action_image_icon=*/
           ui::ImageModel::FromVectorIcon(
               vector_icons::kLaunchIcon, ui::kColorIconSecondary,
-              GetLayoutConstant(PAGE_INFO_ICON_SIZE))));
+              GetLayoutConstant(LayoutConstant::kPageInfoIconSize))));
   manage_passwords_button->SetID(static_cast<int>(
       password_manager::ManagePasswordsViewIDs::kManagePasswordsButton));
   manage_passwords_button->SetTooltipText(

@@ -1,3 +1,4 @@
+use std::env::VarError;
 use std::process::{
     Command,
     Output,
@@ -27,6 +28,8 @@ const ALLOWED_CFGS: &[&str] = &[
     // Corresponds to `__USE_TIME_BITS64` in UAPI
     "linux_time_bits64",
     "musl_v1_2_3",
+    // Corresponds to `_REDIR_TIME64` in musl
+    "musl32_time64",
     "vxworks_lt_25_09",
 ];
 
@@ -35,7 +38,7 @@ const CHECK_CFG_EXTRA: &[(&str, &[&str])] = &[
     (
         "target_os",
         &[
-            "switch", "aix", "ohos", "hurd", "rtems", "visionos", "nuttx", "cygwin",
+            "switch", "aix", "ohos", "hurd", "rtems", "visionos", "nuttx", "cygwin", "qurt",
         ],
     ),
     (
@@ -48,12 +51,15 @@ const CHECK_CFG_EXTRA: &[(&str, &[&str])] = &[
     ),
 ];
 
+/// Musl architectures that set `#define _REDIR_TIME64 1`.
+const MUSL_REDIR_TIME64_ARCHES: &[&str] = &["arm", "mips", "powerpc", "x86"];
+
 fn main() {
     // Avoid unnecessary re-building.
     println!("cargo:rerun-if-changed=build.rs");
 
     let (rustc_minor_ver, _is_nightly) = rustc_minor_nightly();
-    let libc_ci = env::var("LIBC_CI").is_ok();
+    let libc_ci = env_flag("LIBC_CI");
     let target_env = env::var("CARGO_CFG_TARGET_ENV").unwrap_or_default();
     let target_os = env::var("CARGO_CFG_TARGET_OS").unwrap_or_default();
     let target_ptr_width = env::var("CARGO_CFG_TARGET_POINTER_WIDTH").unwrap_or_default();
@@ -98,13 +104,25 @@ fn main() {
         _ => (),
     }
 
-    let musl_v1_2_3 = env::var("RUST_LIBC_UNSTABLE_MUSL_V1_2_3").is_ok();
+    let mut musl_v1_2_3 = env_flag("RUST_LIBC_UNSTABLE_MUSL_V1_2_3");
     println!("cargo:rerun-if-env-changed=RUST_LIBC_UNSTABLE_MUSL_V1_2_3");
-    // loongarch64 and ohos have already updated
-    if musl_v1_2_3 || target_arch == "loongarch64" || target_env == "ohos" {
-        // FIXME(musl): enable time64 api as well
-        set_cfg("musl_v1_2_3");
+
+    // OpenHarmony uses a fork of the musl libc
+    let musl = target_env == "musl" || target_env == "ohos";
+
+    // loongarch64 and ohos only exist with recent musl
+    if target_arch == "loongarch64" || target_env == "ohos" {
+        musl_v1_2_3 = true;
     }
+
+    if musl && musl_v1_2_3 {
+        set_cfg("musl_v1_2_3");
+        if MUSL_REDIR_TIME64_ARCHES.contains(&target_arch.as_str()) {
+            set_cfg("musl32_time64");
+            set_cfg("linux_time_bits64");
+        }
+    }
+
     let linux_time_bits64 = env::var("RUST_LIBC_UNSTABLE_LINUX_TIME_BITS64").is_ok();
     println!("cargo:rerun-if-env-changed=RUST_LIBC_UNSTABLE_LINUX_TIME_BITS64");
     if linux_time_bits64 {
@@ -307,4 +325,14 @@ fn set_cfg(cfg: &str) {
         "trying to set cfg {cfg}, but it is not in ALLOWED_CFGS",
     );
     println!("cargo:rustc-cfg={cfg}");
+}
+
+/// Return true if the env is set to a value other than `0`.
+fn env_flag(key: &str) -> bool {
+    match env::var(key) {
+        Ok(x) if x == "0" => false,
+        Err(VarError::NotPresent) => false,
+        Err(VarError::NotUnicode(_)) => panic!("non-unicode var for `{key}`"),
+        Ok(_) => true,
+    }
 }

@@ -298,7 +298,7 @@ bool AlternativeNameAddressComponent::SameAs(
     return false;
   }
 
-  for (size_t i = 0; i < other.Subcomponents().size(); i++) {
+  for (size_t i = 0; i < other.Subcomponents().size(); ++i) {
     if (!(Subcomponents()[i]->SameAs(*other.Subcomponents()[i]))) {
       return false;
     }

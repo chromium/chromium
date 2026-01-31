@@ -50,7 +50,7 @@ class PairingRegistryDelegateWin : public protocol::PairingRegistry::Delegate {
   bool SetRootKeys(HKEY privileged, HKEY unprivileged);
 
   // PairingRegistry::Delegate interface
-  base::Value::List LoadAll() override;
+  base::ListValue LoadAll() override;
   bool DeleteAll() override;
   protocol::PairingRegistry::Pairing Load(
       const std::string& client_id) override;

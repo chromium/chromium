@@ -4,7 +4,6 @@
 
 #include "printing/print_settings_conversion.h"
 
-#include "base/containers/contains.h"
 #include "base/test/values_test_util.h"
 #include "base/values.h"
 #include "build/build_config.h"
@@ -131,13 +130,13 @@ const char kCustomMargins[] = R"({
 }  // namespace
 
 TEST(PrintSettingsConversionTest, InvalidSettings) {
-  base::Value::Dict dict = base::test::ParseJsonDict("{}");
+  base::DictValue dict = base::test::ParseJsonDict("{}");
   ASSERT_TRUE(dict.empty());
   EXPECT_FALSE(PrintSettingsFromJobSettings(dict));
 }
 
 TEST(PrintSettingsConversionTest, Conversion) {
-  base::Value::Dict dict = base::test::ParseJsonDict(kPrinterSettings);
+  base::DictValue dict = base::test::ParseJsonDict(kPrinterSettings);
   std::unique_ptr<PrintSettings> settings = PrintSettingsFromJobSettings(dict);
   ASSERT_TRUE(settings);
 #if BUILDFLAG(IS_CHROMEOS)
@@ -184,7 +183,7 @@ TEST(PrintSettingsConversionTest, WithValidImageableArea) {
   const PageMargins kExpectedPageMargins(0, 12, 118, 354, 118, 118);
 #endif
 
-  base::Value::Dict dict =
+  base::DictValue dict =
       base::test::ParseJsonDict(kPrinterSettingsWithImageableArea);
   std::unique_ptr<PrintSettings> settings = PrintSettingsFromJobSettings(dict);
   ASSERT_TRUE(settings);
@@ -208,7 +207,7 @@ TEST(PrintSettingsConversionTest, WithValidFlippedImageableArea) {
   const PageMargins kExpectedPageMargins(354, 0, 118, 118, 354, 118);
 #endif
 
-  base::Value::Dict dict =
+  base::DictValue dict =
       base::test::ParseJsonDict(kPrinterSettingsWithImageableArea);
   dict.Set("landscape", true);
   std::unique_ptr<PrintSettings> settings = PrintSettingsFromJobSettings(dict);
@@ -221,7 +220,7 @@ TEST(PrintSettingsConversionTest, WithValidFlippedImageableArea) {
 }
 
 TEST(PrintSettingsConversionTest, WithOutOfBoundsImageableArea) {
-  base::Value::Dict dict =
+  base::DictValue dict =
       base::test::ParseJsonDict(kPrinterSettingsWithImageableArea);
   auto* media_size_dict = dict.FindDict("mediaSize");
   ASSERT_TRUE(media_size_dict);
@@ -235,7 +234,7 @@ TEST(PrintSettingsConversionTest, WithOutOfBoundsImageableArea) {
 }
 
 TEST(PrintSettingsConversionTest, WithMissingImageableAreaValue) {
-  base::Value::Dict dict =
+  base::DictValue dict =
       base::test::ParseJsonDict(kPrinterSettingsWithImageableArea);
   auto* media_size_dict = dict.FindDict("mediaSize");
   ASSERT_TRUE(media_size_dict);
@@ -260,7 +259,7 @@ TEST(PrintSettingsConversionTest, WithCustomMarginsAndImageableArea) {
   const PageMargins kExpectedPageMargins(0, 0, 125, 83, 333, 42);
 #endif
 
-  base::Value::Dict dict =
+  base::DictValue dict =
       base::test::ParseJsonDict(kPrinterSettingsWithImageableArea);
   dict.Set("marginsType", static_cast<int>(mojom::MarginType::kCustomMargins));
   dict.Set("marginsCustom", base::test::ParseJson(kCustomMargins));
@@ -279,7 +278,7 @@ TEST(PrintSettingsConversionTest, WithNonSquarePixels) {
   static constexpr gfx::Size kExpectedSize{6614, 9354};
   static constexpr gfx::Rect kExpectedPrintableArea{0, 0, 5669, 9323};
 
-  base::Value::Dict dict =
+  base::DictValue dict =
       base::test::ParseJsonDict(kPrinterSettingsWithNonSquarePixels);
   std::unique_ptr<PrintSettings> settings = PrintSettingsFromJobSettings(dict);
   ASSERT_TRUE(settings);
@@ -292,14 +291,14 @@ TEST(PrintSettingsConversionTest, WithNonSquarePixels) {
 #endif  // !BUILDFLAG(IS_MAC)
 
 TEST(PrintSettingsConversionTest, MissingDeviceName) {
-  base::Value::Dict dict = base::test::ParseJsonDict(kPrinterSettings);
+  base::DictValue dict = base::test::ParseJsonDict(kPrinterSettings);
   EXPECT_TRUE(dict.Remove("deviceName"));
   EXPECT_FALSE(PrintSettingsFromJobSettings(dict));
 }
 
 #if BUILDFLAG(IS_CHROMEOS)
 TEST(PrintSettingsConversionTest, DontSendUsername) {
-  base::Value::Dict dict = base::test::ParseJsonDict(kPrinterSettings);
+  base::DictValue dict = base::test::ParseJsonDict(kPrinterSettings);
   dict.Set(kSettingSendUserInfo, false);
   std::unique_ptr<PrintSettings> settings = PrintSettingsFromJobSettings(dict);
   ASSERT_TRUE(settings);
@@ -310,10 +309,10 @@ TEST(PrintSettingsConversionTest, DontSendUsername) {
 
 #if BUILDFLAG(IS_CHROMEOS) || (BUILDFLAG(IS_LINUX) && BUILDFLAG(USE_CUPS))
 TEST(PrintSettingsConversionTest, FilterNonJobSettings) {
-  base::Value::Dict dict = base::test::ParseJsonDict(kPrinterSettings);
+  base::DictValue dict = base::test::ParseJsonDict(kPrinterSettings);
 
   {
-    base::Value::Dict advanced_attributes;
+    base::DictValue advanced_attributes;
     advanced_attributes.Set("printer-info", "yada");
     advanced_attributes.Set("printer-make-and-model", "yada");
     advanced_attributes.Set("system_driverinfo", "yada");
@@ -324,7 +323,7 @@ TEST(PrintSettingsConversionTest, FilterNonJobSettings) {
   std::unique_ptr<PrintSettings> settings = PrintSettingsFromJobSettings(dict);
   ASSERT_TRUE(settings);
   EXPECT_EQ(settings->advanced_settings().size(), 1u);
-  ASSERT_TRUE(base::Contains(settings->advanced_settings(), "Foo"));
+  ASSERT_TRUE(settings->advanced_settings().contains("Foo"));
   EXPECT_EQ(settings->advanced_settings().at("Foo"), base::Value("Bar"));
 }
 #endif  // BUILDFLAG(IS_CHROMEOS) || (BUILDFLAG(IS_LINUX) &&

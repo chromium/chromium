@@ -442,12 +442,12 @@ KeepAliveURLLoader::KeepAliveURLLoader(
       weak_document_ptr_(std::move(weak_document_ptr)),
       network_isolation_key_(network_isolation_key),
       ukm_source_id_(ukm_source_id),
-      request_tracker_(
+      request_trackers_(
           GetContentClient()->browser()->MaybeCreateKeepAliveRequestTracker(
               resource_request,
               ukm_source_id,
               base::BindRepeating(&KeepAliveURLLoader::IsContextDetached,
-                                  // `this` owns `request_tracker_`, so it is
+                                  // `this` owns `request_trackers_`, so it is
                                   // safe to use.
                                   base::Unretained(this)))),
       storage_partition_(storage_partition),
@@ -487,8 +487,8 @@ void KeepAliveURLLoader::StartInternal(bool is_retry) {
   }
 
   LogFetchKeepAliveRequestMetric(is_retry ? "Retried" : "Started");
-  if (request_tracker_) {
-    request_tracker_->AdvanceToNextStage(
+  for (auto& request_tracker : request_trackers_) {
+    request_tracker->AdvanceToNextStage(
         KeepAliveRequestTracker::RequestStageType::kRequestStarted);
   }
   if (IsFetchLater()) {
@@ -532,7 +532,7 @@ KeepAliveURLLoader::~KeepAliveURLLoader() {
   TRACE_EVENT_END("loading", perfetto::Track(request_id_));
 
   // Allows logging to start as early as possible.
-  request_tracker_.reset();
+  request_trackers_.clear();
   disconnected_loader_timer_.Stop();
   if (IsStarted()) {
     GetContentClient()->browser()->OnKeepaliveRequestFinished();
@@ -630,10 +630,10 @@ void KeepAliveURLLoader::EndReceiveRedirect(
 
   TRACE_EVENT("loading", "KeepAliveURLLoader::EndReceiveRedirect", "request_id",
               request_id_);
-  if (request_tracker_) {
-    // Note: redirect may have been cancelled by throttle before reaching here.
-    request_tracker_->AdvanceToNextStage(
-        request_tracker_->GetNextRedirectStageType());
+  // Note: redirect may have been cancelled by throttle before reaching here.
+  for (auto& request_tracker : request_trackers_) {
+    request_tracker->AdvanceToNextStage(
+        request_tracker->GetNextRedirectStageType());
   }
 
   // Throttles from content-embedder has already been run for this redirect.
@@ -706,11 +706,10 @@ void KeepAliveURLLoader::OnReceiveResponse(
               request_id_, "url", last_url_);
 
   LogFetchKeepAliveRequestMetric("Succeeded");
-  if (request_tracker_) {
-    request_tracker_->AdvanceToNextStage(
+  for (auto& request_tracker : request_trackers_) {
+    request_tracker->AdvanceToNextStage(
         KeepAliveRequestTracker::RequestStageType::kResponseReceived);
   }
-
   if (observer_for_testing_) {
     CHECK_IS_TEST();
     observer_for_testing_->OnReceiveResponse(this);
@@ -800,12 +799,11 @@ void KeepAliveURLLoader::OnComplete(
     retry_state_ = RetryState::kRetryFailed;
   }
 
-  if (request_tracker_) {
-    request_tracker_->AdvanceToNextStage(
+  for (auto& request_tracker : request_trackers_) {
+    request_tracker->AdvanceToNextStage(
         KeepAliveRequestTracker::RequestStageType::kLoaderCompleted,
         completion_status);
   }
-
   if (completion_status.error_code != net::OK) {
     // If the request succeeds, it should've been logged in `OnReceiveResponse`.
     LogFetchKeepAliveRequestMetric("Failed");
@@ -1069,11 +1067,11 @@ void KeepAliveURLLoader::AttemptRetryIfAllowed() {
 
   // TODO(crbug.com/417930271): Track the retry as a state in the
   // KeepAliveRequestTracker too.
-  request_tracker_ =
+  request_trackers_ =
       GetContentClient()->browser()->MaybeCreateKeepAliveRequestTracker(
           resource_request_, ukm_source_id_,
           base::BindRepeating(&KeepAliveURLLoader::IsContextDetached,
-                              // `this` owns `request_tracker_`, so it is
+                              // `this` owns `request_trackers_`, so it is
                               // safe to use.
                               base::Unretained(this)));
 
@@ -1267,9 +1265,8 @@ void KeepAliveURLLoader::CancelWithStatus(
     // Only logs if there is no error logged by `OnComplete()` yet.
     LogFetchKeepAliveRequestMetric("Failed");
   }
-
-  if (request_tracker_) {
-    request_tracker_->AdvanceToNextStage(
+  for (auto& request_tracker : request_trackers_) {
+    request_tracker->AdvanceToNextStage(
         KeepAliveRequestTracker::RequestStageType::kRequestFailed, status);
   }
 
@@ -1339,11 +1336,12 @@ void KeepAliveURLLoader::OnURLLoaderDisconnected() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   TRACE_EVENT("loading", "KeepAliveURLLoader::OnURLLoaderDisconnected",
               "request_id", request_id_);
-  if (request_tracker_) {
-    request_tracker_->AdvanceToNextStage(
+  for (auto& request_tracker : request_trackers_) {
+    request_tracker->AdvanceToNextStage(
         KeepAliveRequestTracker::RequestStageType::
             kLoaderDisconnectedFromRenderer);
   }
+
   if (!IsStarted()) {
     // May be the last chance to start a deferred loader.
     LogFetchLaterMetric(
@@ -1376,8 +1374,8 @@ void KeepAliveURLLoader::OnDisconnectedLoaderTimerFired() {
     return;
   }
 
-  if (request_tracker_) {
-    request_tracker_->AdvanceToNextStage(
+  for (auto& request_tracker : request_trackers_) {
+    request_tracker->AdvanceToNextStage(
         KeepAliveRequestTracker::RequestStageType::
             kRequestCancelledAfterTimeLimit);
   }
@@ -1390,8 +1388,8 @@ void KeepAliveURLLoader::OnDisconnectedLoaderTimerFired() {
 void KeepAliveURLLoader::Shutdown() {
   base::UmaHistogramBoolean(
       "FetchKeepAlive.Requests2.Shutdown.IsStarted.Browser", IsStarted());
-  if (request_tracker_) {
-    request_tracker_->AdvanceToNextStage(
+  for (auto& request_tracker : request_trackers_) {
+    request_tracker->AdvanceToNextStage(
         KeepAliveRequestTracker::RequestStageType::kBrowserShutdown);
   }
   if (!IsStarted()) {
@@ -1425,8 +1423,8 @@ void KeepAliveURLLoader::Cancel() {
     mojo::ReportBadMessage("Unexpected call to KeepAliveURLLoader::Cancel()");
     return;
   }
-  if (request_tracker_) {
-    request_tracker_->AdvanceToNextStage(
+  for (auto& request_tracker : request_trackers_) {
+    request_tracker->AdvanceToNextStage(
         KeepAliveRequestTracker::RequestStageType::kRequestCancelledByRenderer);
   }
   LogFetchLaterMetric(FetchLaterBrowserMetricType::kAbortedByInitiator);

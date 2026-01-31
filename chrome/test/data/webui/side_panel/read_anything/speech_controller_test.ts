@@ -70,6 +70,8 @@ suite('SpeechController', () => {
       onPlayingFromSelection() {
 
       },
+
+      onWordBoundary() {},
     };
 
     readAloudModel = new TestReadAloudModelBrowserProxy();
@@ -626,15 +628,20 @@ suite('SpeechController', () => {
     assertEquals(1, readAloudModel.getCallCount('moveSpeechBackwards'));
   });
 
-  test('onHighlightGranularityChange draws highlight', () => {
-    const granularity = chrome.readingMode.wordHighlighting;
-    setContent('no more melon cake', readAloudModel);
-    assertFalse(highlighter.hasCurrentGranularity());
+  test(
+      'onHighlightGranularityChange draws highlight after speech has been triggered',
+      () => {
+        const granularity = chrome.readingMode.wordHighlighting;
+        setContent('no more melon cake', readAloudModel);
+        assertFalse(highlighter.hasCurrentGranularity());
 
-    speechController.onHighlightGranularityChange(granularity);
+        speechController.onHighlightGranularityChange(granularity);
+        assertFalse(highlighter.hasCurrentGranularity());
 
-    assertTrue(highlighter.hasCurrentGranularity());
-  });
+        speechController.setHasSpeechBeenTriggered(true);
+        speechController.onHighlightGranularityChange(granularity);
+        assertTrue(highlighter.hasCurrentGranularity());
+      });
 
   test('onLockScreen while paused does nothing', () => {
     speechController.onLockScreen();
@@ -667,11 +674,11 @@ suite('SpeechController', () => {
     assertEquals(0, speech.getCallCount('speak'));
   });
 
-  test('onReadingModeWillHide while paused does nothing', () => {
+  test('onReadingModeWillHide while paused cancels speech', () => {
     speechController.onReadingModeWillClose();
 
+    assertEquals(1, speech.getCallCount('cancel'));
     assertEquals(0, speech.getCallCount('pause'));
-    assertEquals(0, speech.getCallCount('cancel'));
     assertEquals(0, speech.getCallCount('speak'));
   });
 

@@ -30,5 +30,26 @@ public interface ParentAuthDelegate {
     /**
      * @see {@link ExtensionParentApproval#requestExtensionApproval()}
      */
-    void requestExtensionAuth(WindowAndroid windowAndroid, Callback<Boolean> onCompletionCallback);
+    // TODO(crbug.com/452271027): Deprecate this in favor of the enum version.
+    default void requestExtensionAuth(
+            @SuppressWarnings("unused") WindowAndroid windowAndroid,
+            Callback<Boolean> onCompletionCallback) {
+        // SHIM: Default implementation to prevent breakage before Clank roll.
+        if (onCompletionCallback != null) {
+            onCompletionCallback.onResult(false);
+        }
+    }
+
+    /**
+     * @see {@link ExtensionParentApproval#requestExtensionApproval()}
+     */
+    // TODO(crbug.com/452271027): Remove this default implementation in the cleanup CL.
+    default void requestExtensionAuthWithResult(
+            @SuppressWarnings("unused") WindowAndroid windowAndroid,
+            Callback<Integer> onCompletionCallback) {
+        // SHIM: Default implementation to prevent breakage before Clank roll.
+        if (onCompletionCallback != null) {
+            onCompletionCallback.onResult(0);
+        }
+    }
 }

@@ -6,13 +6,13 @@
 
 #include <stddef.h>
 
+#include <algorithm>
 #include <limits>
 #include <memory>
 #include <utility>
 
 #include "ash/constants/ash_features.h"
 #include "base/command_line.h"
-#include "base/containers/contains.h"
 #include "base/format_macros.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
@@ -1141,7 +1141,7 @@ bool NetworkStateHandler::UpdateBlockedByPolicy(NetworkState* network) const {
     blocked_by_policy =
         !network->IsManagedByPolicy() &&
         (OnlyManagedWifiNetworksAllowed() ||
-         base::Contains(blocked_hex_ssids_, network->GetHexSsid()));
+         std::ranges::contains(blocked_hex_ssids_, network->GetHexSsid()));
   } else {
     blocked_by_policy = !network->IsManagedByPolicy() &&
                         allow_only_policy_cellular_networks_to_connect_;
@@ -1401,7 +1401,7 @@ void NetworkStateHandler::SetDeviceStateUpdatedForTest(
 // ShillPropertyHandler::Delegate overrides
 
 void NetworkStateHandler::UpdateManagedList(ManagedState::ManagedType type,
-                                            const base::Value::List& entries) {
+                                            const base::ListValue& entries) {
   CHECK(!notifying_network_observers_);
 
   ManagedStateList* managed_list = GetManagedList(type);
@@ -1412,7 +1412,7 @@ void NetworkStateHandler::UpdateManagedList(ManagedState::ManagedType type,
   std::map<std::string, std::unique_ptr<ManagedState>> managed_map;
   for (auto& item : *managed_list) {
     std::string path = item->path();
-    DCHECK(!base::Contains(managed_map, path));
+    DCHECK(!managed_map.contains(path));
     managed_map[path] = std::move(item);
   }
   // Clear the list (objects are temporarily owned by managed_map).
@@ -1502,7 +1502,7 @@ void NetworkStateHandler::UpdateBlockedCellularNetworks() {
 }
 
 void NetworkStateHandler::ProfileListChanged(
-    const base::Value::List& profile_list) {
+    const base::ListValue& profile_list) {
   NET_LOG(EVENT) << "ProfileListChanged. Re-Requesting Network Properties";
   ProcessIsUserLoggedIn(profile_list);
   for (ManagedStateList::iterator iter = network_list_.begin();
@@ -1523,7 +1523,7 @@ void NetworkStateHandler::ProfileListChanged(
 void NetworkStateHandler::UpdateManagedStateProperties(
     ManagedState::ManagedType type,
     const std::string& path,
-    const base::Value::Dict& properties) {
+    const base::DictValue& properties) {
   ManagedStateList* managed_list = GetManagedList(type);
   ManagedState* managed = GetModifiableManagedState(managed_list, path);
   if (!managed) {
@@ -1561,7 +1561,7 @@ void NetworkStateHandler::UpdateManagedStateProperties(
 
 void NetworkStateHandler::UpdateNetworkStateProperties(
     NetworkState* network,
-    const base::Value::Dict& properties) {
+    const base::DictValue& properties) {
   DCHECK(network);
   bool network_property_updated = false;
   std::string prev_connection_state = network->connection_state();
@@ -1785,7 +1785,7 @@ void NetworkStateHandler::UpdateIPConfigProperties(
     ManagedState::ManagedType type,
     const std::string& path,
     const std::string& ip_config_path,
-    base::Value::Dict properties) {
+    base::DictValue properties) {
   if (type == ManagedState::MANAGED_TYPE_NETWORK) {
     NetworkState* network = GetModifiableNetworkState(path);
     if (!network) {
@@ -2502,7 +2502,7 @@ void NetworkStateHandler::SetDefaultNetworkValues(const std::string& path,
 }
 
 void NetworkStateHandler::ProcessIsUserLoggedIn(
-    const base::Value::List& profile_list) {
+    const base::ListValue& profile_list) {
   // The profile list contains the shared profile on the login screen. Once the
   // user is logged in there is more than one profile in the profile list.
   is_user_logged_in_ = profile_list.size() > 1;

@@ -54,6 +54,8 @@ class TabInterfaceAndroid : public tabs::TabInterface {
   base::CallbackListSubscription RegisterModalUIChanged(
       TabInterfaceCallback callback) override;
   bool IsInNormalWindow() const override;
+  BrowserWindowInterface* GetBrowserWindowInterface() override;
+  const BrowserWindowInterface* GetBrowserWindowInterface() const override;
   tabs::TabFeatures* GetTabFeatures() override;
   const tabs::TabFeatures* GetTabFeatures() const override;
   bool IsPinned() const override;

@@ -35,6 +35,15 @@ TimeDelta ElapsedThreadTimer::Elapsed() const {
   return ThreadTicks::Now() - begin_;
 }
 
+ElapsedLiveTimer::ElapsedLiveTimer() : start_time_(LiveTicks::Now()) {}
+
+TimeDelta ElapsedLiveTimer::Elapsed() const {
+  if (g_mock_elapsed_timers_for_test) {
+    return ScopedMockElapsedTimersForTest::kMockElapsedTime;
+  }
+  return LiveTicks::Now() - start_time_;
+}
+
 // static
 constexpr TimeDelta ScopedMockElapsedTimersForTest::kMockElapsedTime;
 

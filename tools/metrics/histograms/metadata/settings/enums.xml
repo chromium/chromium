@@ -47,7 +47,7 @@ chromium-metrics-reviews@google.com.
   <int value="-1091584228" label="NonCardPaymentMethodsManagementFragment"/>
   <int value="-1035378917" label="PrivacySettingsFragment"/>
   <int value="-1022730020" label="AutofillOptionsFragment"/>
-  <int value="-988526347" label="RWSCookieSettings"/>
+  <int value="-988526347" label="(Obsolete) RWSCookieSettings"/>
   <int value="-980428258" label="FledgeAllSitesFragment"/>
   <int value="-894030932" label="AutofillLocalIbanEditor"/>
   <int value="-847585811" label="DeveloperSettings"/>
@@ -78,6 +78,7 @@ chromium-metrics-reviews@google.com.
   <int value="168428260" label="PrivacyGuideFragment"/>
   <int value="217285687" label="AppearanceSettingsFragment"/>
   <int value="323758419" label="TrackingProtectionSettings"/>
+  <int value="351534386" label="SiteSearchSettings"/>
   <int value="383093746" label="PrivacySandboxSettingsFragment"/>
   <int value="406265787" label="LanguageSettings"/>
   <int value="436870314" label="SiteSettings"/>
@@ -88,20 +89,21 @@ chromium-metrics-reviews@google.com.
   <int value="493474121" label="StandardProtectionSettingsFragment"/>
   <int value="513483078" label="DoNotTrackSettings"/>
   <int value="590543987" label="StorageAccessSubpageSettings"/>
+  <int value="603280071" label="CookieSettings"/>
   <int value="688926211" label="ManageSyncSettings"/>
   <int value="690866195" label="SafetyHubFragment"/>
   <int value="706619094" label="CredentialEditFragmentView"/>
   <int value="721075728" label="FederatedCredentialFragmentView"/>
   <int value="734412281" label="SearchResultsPreferenceFragment"/>
   <int value="790603956" label="ChosenObjectSettings"/>
-  <int value="851266805" label="RwsCookieSettings"/>
+  <int value="851266805" label="(Obsolete) RwsCookieSettings"/>
   <int value="853227285" label="ImageDescriptionsSettings"/>
   <int value="887082954"
       label="(Obsolete) FingerprintingProtectionSettingsFragment"/>
   <int value="894297033" label="SingleCategorySettings"/>
   <int value="903277107" label="FledgeBlockedSitesFragment"/>
   <int value="1015549581" label="AlwaysTranslateListFragment"/>
-  <int value="1118292269" label="HomeModulesConfigSettings"/>
+  <int value="1118292269" label="(Obsolete) HomeModulesConfigSettings"/>
   <int value="1322563897" label="TopicsManageFragment"/>
   <int value="1370078648" label="AdaptiveToolbarSettingsFragment"/>
   <int value="1370406966" label="AutofillLocalCardEditor"/>
@@ -492,14 +494,6 @@ chromium-metrics-reviews@google.com.
   <int value="13" label="Ad Topics card is reached"/>
 </enum>
 
-<enum name="SettingsPrivacySandboxDialogDisplayHostHash">
-  <int value="-2051070284" label="about:blank"/>
-  <int value="-1854305789" label="new-tab-page-third-party"/>
-  <int value="-1840427391" label="settings"/>
-  <int value="-1762176184" label="history"/>
-  <int value="-1652896464" label="new-tab-page"/>
-</enum>
-
 <!-- LINT.IfChange(SettingsPrivacySandboxProfileEnabledState) -->
 
 <enum name="SettingsPrivacySandboxProfileEnabledState">
@@ -516,22 +510,6 @@ chromium-metrics-reviews@google.com.
 </enum>
 
 <!-- LINT.ThenChange(//chrome/browser/privacy_sandbox/profile_bucket_metrics.h:SettingsPrivacySandboxProfileEnabledState) -->
-
-<enum name="SettingsPrivacySandboxPromptHelperEvent">
-  <int value="0" label="Helper Created"/>
-  <int value="1" label="Prompt not required"/>
-  <int value="2" label="Non top frame navigation"/>
-  <int value="3" label="About blank opened"/>
-  <int value="4" label="URL not suitable"/>
-  <int value="5" label="Sync setup in progress"/>
-  <int value="6" label="Signin dialog currently shown"/>
-  <int value="7" label="Prompt already exists for browser"/>
-  <int value="8" label="Window too small for dialog"/>
-  <int value="9" label="Prompt shown"/>
-  <int value="10"
-      label="Search engine choice dialog will be or has been displayed"/>
-  <int value="11" label="Browser not a normal tabbed browser"/>
-</enum>
 
 <!-- LINT.IfChange(SettingsPrivacySandboxPromptStartupState) -->
 

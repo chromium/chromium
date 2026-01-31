@@ -43,7 +43,7 @@ ChangePinControllerImpl::~ChangePinControllerImpl() {
 
 void ChangePinControllerImpl::IsChangePinFlowAvailable(
     PinAvailableCallback callback) {
-  if (enclave_manager_->is_loaded()) {
+  if (enclave_manager_->IsLoaded()) {
     NotifyPinAvailability(std::move(callback));
     return;
   }
@@ -53,7 +53,7 @@ void ChangePinControllerImpl::IsChangePinFlowAvailable(
 }
 
 void ChangePinControllerImpl::StartChangePin(SuccessCallback callback) {
-  if (notify_pin_change_callback_) {
+  if (notify_pin_change_callback_ || !enclave_manager_->IsRegistered()) {
     std::move(callback).Run(false);
     return;
   }
@@ -68,20 +68,30 @@ void ChangePinControllerImpl::CancelAuthenticatorRequest() {
   RecordHistogram(ChangePinEvent::kNewPinCancelled);
 }
 
-void ChangePinControllerImpl::OnReauthComplete(std::string rapt) {
+void ChangePinControllerImpl::OnGPMReauthComplete(std::string rapt) {
+  if (!enclave_manager_->IsRegistered()) {
+    model_->SetStep(Step::kGPMError);
+    RecordHistogram(ChangePinEvent::kFailed);
+    return;
+  }
   CHECK_EQ(model_->step(), Step::kGPMReauthForPinReset);
   rapt_ = std::move(rapt);
   model_->SetStep(Step::kGPMChangePin);
   RecordHistogram(ChangePinEvent::kReauthCompleted);
 }
 
-void ChangePinControllerImpl::OnRecoverSecurityDomainClosed() {
+void ChangePinControllerImpl::OnGPMRecoverSecurityDomainClosed() {
   // User closed the reauth window.
   Reset(/*success=*/false);
   RecordHistogram(ChangePinEvent::kReauthCancelled);
 }
 
 void ChangePinControllerImpl::OnGPMPinEntered(const std::u16string& pin) {
+  if (!enclave_manager_->IsRegistered()) {
+    model_->SetStep(Step::kGPMError);
+    RecordHistogram(ChangePinEvent::kFailed);
+    return;
+  }
   CHECK(rapt_.has_value() && (model_->step() == Step::kGPMChangePin ||
                               model_->step() == Step::kGPMChangeArbitraryPin));
   model_->DisableUiOrShowLoadingDialog();
@@ -127,8 +137,8 @@ void ChangePinControllerImpl::OnGpmPinChanged(bool success) {
 
 void ChangePinControllerImpl::NotifyPinAvailability(
     PinAvailableCallback callback) {
-  std::move(callback).Run(enclave_manager_->is_registered() &&
-                          enclave_manager_->is_ready() &&
+  std::move(callback).Run(enclave_manager_->IsRegistered() &&
+                          enclave_manager_->IsReady() &&
                           enclave_manager_->has_wrapped_pin());
 }
 

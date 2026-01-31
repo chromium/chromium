@@ -12,7 +12,7 @@ namespace syncer {
 
 GetAllNodesRequestBarrier::GetAllNodesRequestBarrier(
     DataTypeSet requested_types,
-    base::OnceCallback<void(base::Value::List)> callback)
+    base::OnceCallback<void(base::ListValue)> callback)
     : awaiting_types_(requested_types), callback_(std::move(callback)) {
   CHECK(!awaiting_types_.empty());
 }
@@ -29,11 +29,11 @@ GetAllNodesRequestBarrier::~GetAllNodesRequestBarrier() {
 // Only return one type of nodes each time.
 void GetAllNodesRequestBarrier::OnReceivedNodesForType(
     const DataType type,
-    base::Value::List node_list) {
+    base::ListValue node_list) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   // Add these results to our list.
-  auto type_dict = base::Value::Dict()
+  auto type_dict = base::DictValue()
                        .Set("type", DataTypeToDebugString(type))
                        .Set("nodes", std::move(node_list));
   result_accumulator_.Append(std::move(type_dict));

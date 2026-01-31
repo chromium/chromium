@@ -79,7 +79,7 @@ void AccelerometerProviderMojo::OnNewDeviceAdded(
         continue;
       }
 
-      if (base::Contains(accelerometers_, iio_device_id))
+      if (accelerometers_.contains(iio_device_id))
         continue;
 
       RegisterAccelerometerWithId(iio_device_id);
@@ -510,7 +510,7 @@ void AccelerometerProviderMojo::GetAttributesCallback(
         std::distance(std::begin(kLocationStrings), it));
     accelerometer.location = source;
 
-    if (base::Contains(location_to_accelerometer_id_, source)) {
+    if (location_to_accelerometer_id_.contains(source)) {
       LOG(WARNING) << "Duplicated location source " << source
                    << " of accel id: " << id << ", and accel id: "
                    << location_to_accelerometer_id_[source];

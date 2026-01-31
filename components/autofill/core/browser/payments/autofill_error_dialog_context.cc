@@ -38,6 +38,14 @@ AutofillErrorDialogContext::WithBnplPermanentOrTemporaryError(
   return autofill_error_dialog_context;
 }
 
+AutofillErrorDialogContext
+AutofillErrorDialogContext::WithBnplUnsupportedCurrencyError() {
+  AutofillErrorDialogContext autofill_error_dialog_context;
+  autofill_error_dialog_context.type =
+      AutofillErrorDialogType::kBnplUnsupportedCurrencyError;
+  return autofill_error_dialog_context;
+}
+
 AutofillErrorDialogContext::AutofillErrorDialogContext() = default;
 
 AutofillErrorDialogContext::AutofillErrorDialogContext(

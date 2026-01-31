@@ -4,9 +4,9 @@
 
 #include "components/translate/core/browser/translate_manager.h"
 
+#include <algorithm>
 #include <utility>
 
-#include "base/containers/contains.h"
 #include "base/json/json_reader.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/metrics_hashes.h"
@@ -604,7 +604,7 @@ TEST_F(TranslateManagerTest, LanguageAddedToAcceptLanguagesAfterTranslation) {
   // Accept languages shouldn't contain "hi" before translating to that language
   std::vector<std::string> languages;
   mock_translate_client_.GetTranslatePrefs()->GetLanguageList(&languages);
-  EXPECT_FALSE(base::Contains(languages, "hi"));
+  EXPECT_FALSE(std::ranges::contains(languages, "hi"));
 
   prefs_.SetBoolean(prefs::kOfferTranslateEnabled, true);
   translate_manager_->GetLanguageState()->LanguageDetermined("zu", true);
@@ -616,7 +616,7 @@ TEST_F(TranslateManagerTest, LanguageAddedToAcceptLanguagesAfterTranslation) {
   // Accept languages should now contain "hi" because the user chose to
   // translate to it once.
   mock_translate_client_.GetTranslatePrefs()->GetLanguageList(&languages);
-  EXPECT_TRUE(base::Contains(languages, "hi"));
+  EXPECT_TRUE(std::ranges::contains(languages, "hi"));
 }
 
 TEST_F(TranslateManagerTest,
@@ -649,21 +649,21 @@ TEST_F(TranslateManagerTest,
   // Accept languages shouldn't contain "en" before translating to that language
   std::vector<std::string> languages;
   mock_translate_client_.GetTranslatePrefs()->GetLanguageList(&languages);
-  EXPECT_FALSE(base::Contains(languages, "en"));
+  EXPECT_FALSE(std::ranges::contains(languages, "en"));
 
   prefs_.SetBoolean(prefs::kOfferTranslateEnabled, true);
   translate_manager_->GetLanguageState()->LanguageDetermined("en", true);
   network_notifier_.SimulateOnline();
   translate_manager_->InitiateTranslation("fr");
 
-  EXPECT_FALSE(base::Contains(languages, "en"));
+  EXPECT_FALSE(std::ranges::contains(languages, "en"));
   translate_manager_->TranslatePage("fr", "en", false);
 
   // Accept languages should not contain "en" because it is redundant
   // with "en-US" already being present.
   languages.clear();
   mock_translate_client_.GetTranslatePrefs()->GetLanguageList(&languages);
-  EXPECT_FALSE(base::Contains(languages, "en"));
+  EXPECT_FALSE(std::ranges::contains(languages, "en"));
 }
 
 TEST_F(TranslateManagerTest, DontTranslateOffline) {
@@ -1563,6 +1563,71 @@ TEST_F(TranslateManagerTest, HrefTranslateSimilarLanguages) {
       histogram_tester.GetAllSamples(kTranslatePageLoadTriggerDecision),
       ElementsAre(Bucket(
           static_cast<int>(TriggerDecision::kAutomaticTranslationByHref), 1)));
+}
+
+TEST_F(TranslateManagerTest, PreventAutoTranslate) {
+  PrepareTranslateManager();
+  manager_->set_application_locale("en");
+
+  ON_CALL(mock_translate_client_, IsTranslatableURL(GURL()))
+      .WillByDefault(Return(true));
+  language::AcceptLanguagesService accept_languages(&prefs_,
+                                                    accept_languages_prefs);
+  ON_CALL(mock_translate_client_, GetAcceptLanguagesService())
+      .WillByDefault(Return(&accept_languages));
+
+  // Set up auto-translation from French to German.
+  translate_prefs_.AddLanguagePairToAlwaysTranslateList("fr", "de");
+
+  // Explicitly disable auto translate from translate manager.
+  translate_manager_->SetEnableAutoTranslate(false);
+
+  network_notifier_.SimulateOnline();
+
+  // The language of the page is determined to be French.
+  translate_manager_->GetLanguageState()->LanguageDetermined("fr", true);
+
+  // Set up expectations for the trigger decision.
+  ExpectHighestPriorityTriggerDecision(TriggerDecision::kShowIcon);
+  EXPECT_CALL(*mock_translate_metrics_logger_,
+              LogTriggerDecision(TriggerDecision::kAutomaticTranslationByPref))
+      .Times(0);
+
+  // Trigger the auto translate functionality.
+  translate_manager_->InitiateTranslation("fr");
+}
+
+TEST_F(TranslateManagerTest, SupportAutoTranslate) {
+  PrepareTranslateManager();
+  manager_->set_application_locale("en");
+
+  ON_CALL(mock_translate_client_, IsTranslatableURL(GURL()))
+      .WillByDefault(Return(true));
+  language::AcceptLanguagesService accept_languages(&prefs_,
+                                                    accept_languages_prefs);
+  ON_CALL(mock_translate_client_, GetAcceptLanguagesService())
+      .WillByDefault(Return(&accept_languages));
+
+  // Set up auto-translation from French to German.
+  translate_prefs_.AddLanguagePairToAlwaysTranslateList("fr", "de");
+
+  // Explicitly enable auto translate from translate manager.
+  translate_manager_->SetEnableAutoTranslate(true);
+
+  network_notifier_.SimulateOnline();
+
+  // The language of the page is determined to be French.
+  translate_manager_->GetLanguageState()->LanguageDetermined("fr", true);
+
+  // Set up expectations for the trigger decision.
+  ExpectHighestPriorityTriggerDecision(
+      TriggerDecision::kAutomaticTranslationByPref);
+  EXPECT_CALL(*mock_translate_metrics_logger_,
+              LogTriggerDecision(TriggerDecision::kShowIcon))
+      .Times(1);
+
+  // Trigger the auto translate functionality.
+  translate_manager_->InitiateTranslation("fr");
 }
 
 }  // namespace testing

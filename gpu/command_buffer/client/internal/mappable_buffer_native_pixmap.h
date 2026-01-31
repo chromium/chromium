@@ -14,9 +14,9 @@
 #include "components/viz/common/resources/shared_image_format.h"
 #include "gpu/command_buffer/client/gpu_command_buffer_client_export.h"
 #include "gpu/command_buffer/client/internal/mappable_buffer.h"
+#include "ui/gfx/client_native_pixmap.h"
 
 namespace gfx {
-class ClientNativePixmap;
 class ClientNativePixmapFactory;
 }  // namespace gfx
 
@@ -61,6 +61,8 @@ class GPU_COMMAND_BUFFER_CLIENT_EXPORT MappableBufferNativePixmap
   int stride(size_t plane) const override;
   gfx::GpuMemoryBufferType GetType() const override;
   gfx::GpuMemoryBufferHandle CloneHandle() const override;
+
+  uint64_t GetPlaneSize(size_t plane) { return pixmap_->GetPlaneSize(plane); }
 
  private:
   friend class ClientSharedImage;

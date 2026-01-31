@@ -2,18 +2,28 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+# TODO(crbug.com/474578313): Clean the `chrome/browser/startup` target to be
+# windows-only.
 assert(!is_android, "Startup launch manager is only for desktop platforms")
 
 source_set("startup") {
-  public = [ "startup_launch_manager.h" ]
+  public = [
+    "startup_features.h",
+    "startup_launch_manager.h",
+  ]
 
-  sources = [ "startup_launch_manager.cc" ]
+  sources = [
+    "startup_features.cc",
+    "startup_launch_manager.cc",
+  ]
 
   deps = [
     "//base",
     "//chrome/browser:browser_process",
+    "//chrome/common:constants",
     "//chrome/common:non_code_constants",
     "//chrome/installer/util:with_no_strings",
+    "//components/prefs",
     "//ui/base/unowned_user_data",
   ]
 }

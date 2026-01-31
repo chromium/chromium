@@ -298,8 +298,9 @@ struct ArraySerializationHelper<T, false, false> {
     DCHECK(!validate_params->element_validate_params)
         << "Primitive type should not have array validate params";
 
-    if (!validate_params->validate_enum_func)
+    if (!validate_params->validate_enum_func) {
       return true;
+    }
 
     // Enum validation.
     for (uint32_t i = 0; i < header->num_elements; ++i) {
@@ -401,11 +402,10 @@ struct ArraySerializationHelper<Pointer<T>, false, false> {
       if (!validate_params->element_is_nullable &&
           !UNSAFE_TODO(elements[i]).offset) {
         ReportValidationError(
-            validation_context,
-            VALIDATION_ERROR_UNEXPECTED_NULL_POINTER,
+            validation_context, VALIDATION_ERROR_UNEXPECTED_NULL_POINTER,
             MakeMessageWithArrayIndex("null in array expecting valid pointers",
-                                      header->num_elements,
-                                      i).c_str());
+                                      header->num_elements, i)
+                .c_str());
         return false;
       }
       if (!ValidateCaller<T>::Run(UNSAFE_TODO(elements[i]), validation_context,
@@ -453,8 +453,7 @@ struct ArraySerializationHelper<U, true, false> {
       if (!validate_params->element_is_nullable &&
           UNSAFE_TODO(elements[i]).is_null()) {
         ReportValidationError(
-            validation_context,
-            VALIDATION_ERROR_UNEXPECTED_NULL_POINTER,
+            validation_context, VALIDATION_ERROR_UNEXPECTED_NULL_POINTER,
             MakeMessageWithArrayIndex("null in array expecting valid unions",
                                       header->num_elements, i)
                 .c_str());
@@ -487,8 +486,9 @@ class Array_Data {
   static bool Validate(const void* data,
                        ValidationContext* validation_context,
                        const ContainerValidateParams* validate_params) {
-    if (!data)
+    if (!data) {
       return true;
+    }
     if (!IsAligned(data)) {
       ReportValidationError(validation_context,
                             VALIDATION_ERROR_MISALIGNED_OBJECT);
@@ -509,12 +509,11 @@ class Array_Data {
     if (validate_params->expected_num_elements != 0 &&
         header->num_elements != validate_params->expected_num_elements) {
       ReportValidationError(
-          validation_context,
-          VALIDATION_ERROR_UNEXPECTED_ARRAY_HEADER,
+          validation_context, VALIDATION_ERROR_UNEXPECTED_ARRAY_HEADER,
           MakeMessageWithExpectedArraySize(
               "fixed-size array has wrong number of elements",
-              header->num_elements,
-              validate_params->expected_num_elements).c_str());
+              header->num_elements, validate_params->expected_num_elements)
+              .c_str());
       return false;
     }
     if (!validation_context->ClaimMemory(data, header->num_bytes)) {

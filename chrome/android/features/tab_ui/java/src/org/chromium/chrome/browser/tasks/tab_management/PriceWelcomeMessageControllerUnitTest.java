@@ -14,6 +14,8 @@ import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import android.content.Context;
+
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
@@ -25,7 +27,9 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
-import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.supplier.ObservableSuppliers;
+import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
+import org.chromium.base.supplier.SettableNullableObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.price_tracking.PriceTrackingFeatures;
 import org.chromium.chrome.browser.price_tracking.PriceTrackingUtilities;
@@ -35,6 +39,7 @@ import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabModelObserver;
 import org.chromium.chrome.browser.tasks.tab_management.PriceMessageService.PriceWelcomeMessageReviewActionProvider;
 import org.chromium.chrome.browser.tasks.tab_management.PriceWelcomeMessageController.PriceMessageUpdateObserver;
+import org.chromium.chrome.browser.tasks.tab_management.TabProperties.UiType;
 import org.chromium.chrome.browser.tasks.tab_management.TabSwitcherMessageManager.MessageType;
 
 /** Unit tests for {@link PriceWelcomeMessageController}. */
@@ -45,9 +50,10 @@ public class PriceWelcomeMessageControllerUnitTest {
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
+    @Mock private Context mContext;
     @Mock private TabSwitcherMessageManager mTabSwitcherMessageManager;
     @Mock private TabGroupModelFilter mTabGroupModelFilter;
-    @Mock private MessageCardProviderCoordinator mMessageCardProviderCoordinator;
+    @Mock private MessageCardProvider<@MessageType Integer, @UiType Integer> mMessageCardProvider;
     @Mock private Profile mProfile;
     @Mock private TabListCoordinator mTabListCoordinator;
     @Mock private PriceMessageService mPriceMessageService;
@@ -57,12 +63,12 @@ public class PriceWelcomeMessageControllerUnitTest {
 
     @Captor private ArgumentCaptor<TabModelObserver> mTabModelObserverCaptor;
 
-    private final ObservableSupplierImpl<TabGroupModelFilter> mTabGroupModelFilterSupplier =
-            new ObservableSupplierImpl<>();
-    private final ObservableSupplierImpl<TabListCoordinator> mTabListCoordinatorSupplier =
-            new ObservableSupplierImpl<>();
-    private final ObservableSupplierImpl<PriceWelcomeMessageReviewActionProvider>
-            mActionProviderSupplier = new ObservableSupplierImpl<>();
+    private final SettableMonotonicObservableSupplier<TabGroupModelFilter>
+            mTabGroupModelFilterSupplier = ObservableSuppliers.createMonotonic();
+    private final SettableMonotonicObservableSupplier<TabListCoordinator>
+            mTabListCoordinatorSupplier = ObservableSuppliers.createMonotonic();
+    private final SettableNullableObservableSupplier<PriceWelcomeMessageReviewActionProvider>
+            mActionProviderSupplier = ObservableSuppliers.createNullable();
 
     private PriceWelcomeMessageController mController;
     private MockTab mTab;
@@ -88,7 +94,7 @@ public class PriceWelcomeMessageControllerUnitTest {
                 new PriceWelcomeMessageController(
                         mTabSwitcherMessageManager,
                         mTabGroupModelFilterSupplier,
-                        mMessageCardProviderCoordinator,
+                        mMessageCardProvider,
                         mActionProviderSupplier,
                         mProfile,
                         mTabListCoordinatorSupplier,
@@ -152,8 +158,7 @@ public class PriceWelcomeMessageControllerUnitTest {
         mController.removePriceWelcomeMessage();
 
         verify(mTabListCoordinator)
-                .removeSpecialListItem(
-                        eq(TabProperties.UiType.PRICE_MESSAGE), eq(MessageType.PRICE_MESSAGE));
+                .removeSpecialListItem(eq(UiType.PRICE_MESSAGE), eq(MessageType.PRICE_MESSAGE));
         verify(mPriceMessageUpdateObserver).onRemovePriceWelcomeMessage();
     }
 
@@ -215,35 +220,38 @@ public class PriceWelcomeMessageControllerUnitTest {
 
     @Test
     public void testBuild_priceAnnotationsEnabled() {
-        reset(mMessageCardProviderCoordinator);
-        ObservableSupplierImpl<TabGroupModelFilter> spySupplier = spy(mTabGroupModelFilterSupplier);
+        reset(mMessageCardProvider);
+        SettableMonotonicObservableSupplier<TabGroupModelFilter> spySupplier =
+                spy(mTabGroupModelFilterSupplier);
         mController =
                 PriceWelcomeMessageController.build(
+                        mContext,
                         mTabSwitcherMessageManager,
                         spySupplier,
-                        mMessageCardProviderCoordinator,
+                        mMessageCardProvider,
                         mActionProviderSupplier,
                         mProfile,
                         mTabListCoordinatorSupplier);
-        verify(mMessageCardProviderCoordinator)
-                .subscribeMessageService(any(PriceMessageService.class));
+        verify(mMessageCardProvider).subscribeMessageService(any(PriceMessageService.class));
         verify(spySupplier).addSyncObserverAndCallIfNonNull(any());
     }
 
     @Test
     public void testBuild_priceAnnotationsDisabled() {
         PriceTrackingFeatures.setPriceAnnotationsEnabledForTesting(false);
-        reset(mMessageCardProviderCoordinator);
-        ObservableSupplierImpl<TabGroupModelFilter> spySupplier = spy(mTabGroupModelFilterSupplier);
+        reset(mMessageCardProvider);
+        SettableMonotonicObservableSupplier<TabGroupModelFilter> spySupplier =
+                spy(mTabGroupModelFilterSupplier);
         mController =
                 PriceWelcomeMessageController.build(
+                        mContext,
                         mTabSwitcherMessageManager,
                         spySupplier,
-                        mMessageCardProviderCoordinator,
+                        mMessageCardProvider,
                         mActionProviderSupplier,
                         mProfile,
                         mTabListCoordinatorSupplier);
-        verify(mMessageCardProviderCoordinator, never()).subscribeMessageService(any());
+        verify(mMessageCardProvider, never()).subscribeMessageService(any());
         verify(spySupplier, never()).addSyncObserverAndCallIfNonNull(any());
     }
 }

@@ -47,6 +47,10 @@ struct AILanguageModelInstanceInfo {
 
   // Supported prompt input types for the session.
   array<AILanguageModelPromptType>? input_types;
+
+  // Multimodal input format parameters for preprocessing.
+  int32? audio_sample_rate_hz;
+  int32? audio_channel_count;
 };
 
 // The role for a given prompt. See LanguageModelPromptRole in IDL.

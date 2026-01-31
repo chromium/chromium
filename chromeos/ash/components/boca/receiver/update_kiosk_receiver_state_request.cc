@@ -45,7 +45,7 @@ std::string UpdateKioskReceiverStateRequest::GetRelativeUrl() {
 }
 
 std::optional<std::string> UpdateKioskReceiverStateRequest::GetRequestBody() {
-  base::Value::Dict request_body;
+  base::DictValue request_body;
   request_body.Set(kStateKey,
                    ReceiverConnectionStateStringFromProto(connection_state_));
   return base::WriteJson(request_body);

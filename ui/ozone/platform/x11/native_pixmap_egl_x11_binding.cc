@@ -11,7 +11,6 @@
 #include "base/logging.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/posix/eintr_wrapper.h"
-#include "ui/gfx/buffer_format_util.h"
 #include "ui/gfx/linux/native_pixmap_dmabuf.h"
 #include "ui/gfx/x/connection.h"
 #include "ui/gfx/x/dri3.h"

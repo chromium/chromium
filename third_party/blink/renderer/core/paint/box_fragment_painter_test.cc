@@ -238,4 +238,164 @@ TEST_P(BoxFragmentPainterTest, TextareaBoxDecorationBackground) {
                           IsSameId(textarea->Id(), kBackgroundType)));
 }
 
+TEST_P(BoxFragmentPainterTest, TrackElementDiv) {
+  SetBodyInnerHTML(R"HTML(
+    <div style="overflow: hidden; position: relative;
+                            width: 100px; height: 100px">
+      <div id="target" style="height:50px;">ABCD</div>
+    </div>
+  )HTML");
+  // Initially all the texts are painted.
+  auto* target = GetDocument().getElementById(AtomicString("target"));
+
+  auto highlight_id = base::Token(1, 2);
+  auto highlight =
+      std::make_unique<TrackedElementRect>(TrackedElementId(highlight_id));
+  target->SetTrackedElementRect(std::move(highlight));
+
+  UpdateAllLifecyclePhasesForTest();
+
+  auto* tracked_element_data = MakeGarbageCollected<TrackedElementData>();
+  // Contains background pixels (not the text pixels)
+  tracked_element_data->map[TrackedElementId(highlight_id)] =
+      gfx::Rect(8, 8, 100, 50);
+
+  EXPECT_THAT(ContentPaintChunks(),
+              ElementsAre(VIEW_SCROLLING_BACKGROUND_CHUNK_COMMON,
+                          IsPaintChunkWithTrackedElementData(
+                              1, 2, tracked_element_data)));
+}
+
+TEST_P(BoxFragmentPainterTest, TrackElementSpanInlineBox) {
+  // Using style="background-color: red;" makes the span an inline box
+  // fragment.
+
+  SetBodyInnerHTML(R"HTML(
+    <div id="parent" style="overflow: hidden; position: relative;
+                            width: 100px; height: 100px">
+      <span id="target" style="background-color: red;">A</span>
+    </div>
+  )HTML");
+  // Initially all the texts are painted.
+  auto* target = GetDocument().getElementById(AtomicString("target"));
+
+  auto highlight_id = base::Token(1, 2);
+  auto highlight =
+      std::make_unique<TrackedElementRect>(TrackedElementId(highlight_id));
+  target->SetTrackedElementRect(std::move(highlight));
+
+  UpdateAllLifecyclePhasesForTest();
+
+  auto* tracked_element_data = MakeGarbageCollected<TrackedElementData>();
+  // Contains only text pixels
+  tracked_element_data->map[TrackedElementId(highlight_id)] =
+      gfx::Rect(8, 8, 1, 1);
+
+  EXPECT_THAT(ContentPaintChunks(),
+              ElementsAre(VIEW_SCROLLING_BACKGROUND_CHUNK_COMMON,
+                          IsPaintChunkWithTrackedElementData(
+                              1, 3, tracked_element_data)));
+}
+
+TEST_P(BoxFragmentPainterTest, TrackElementSpanShouldForceInlineBox) {
+  // Blink uses an optimization for inline elements (like <span>) called Culled
+  // Inlines. If an inline element has no visual properties (no background,
+  // border, or outline), layout determines it doesn't need its own geometry box
+  // (PhysicalBoxFragment). Instead, it just paints the text children directly
+  // to save memory. Span without any attibutes normaly generates  makes the
+  // span an inline box fragment.
+  //
+  // Adding a tracked element should force skip the culling and
+  // requrest for layout regeneration.
+
+  SetBodyInnerHTML(R"HTML(
+    <div id="parent" style="overflow: hidden; position: relative;
+                            width: 100px; height: 100px">
+      <span id="target">A</span>
+    </div>
+  )HTML");
+  // Initially all the texts are painted.
+  auto* target = GetDocument().getElementById(AtomicString("target"));
+
+  auto highlight_id = base::Token(1, 2);
+  auto highlight =
+      std::make_unique<TrackedElementRect>(TrackedElementId(highlight_id));
+  target->SetTrackedElementRect(std::move(highlight));
+
+  UpdateAllLifecyclePhasesForTest();
+
+  auto* tracked_element_data = MakeGarbageCollected<TrackedElementData>();
+  // Contains only text pixels
+  tracked_element_data->map[TrackedElementId(highlight_id)] =
+      gfx::Rect(8, 8, 1, 1);
+
+  EXPECT_THAT(ContentPaintChunks(),
+              ElementsAre(VIEW_SCROLLING_BACKGROUND_CHUNK_COMMON,
+                          IsPaintChunkWithTrackedElementData(
+                              1, 2, tracked_element_data)));
+}
+
+TEST_P(BoxFragmentPainterTest, TrackElementWithSubRect) {
+  SetBodyInnerHTML(R"HTML(
+    <div style="overflow: hidden; position: relative;
+                            width: 100px; height: 100px">
+      <div id="target" style="height:50px;">ABCD</div>
+    </div>
+  )HTML");
+  // Initially all the texts are painted.
+  auto* target = GetDocument().getElementById(AtomicString("target"));
+
+  auto highlight_id = base::Token(1, 2);
+  auto highlight = std::make_unique<TrackedElementRect>(
+      TrackedElementId(highlight_id),
+      TrackedElementRect::SubRect{
+          gfx::Rect(10, 10, 20, 20),
+          TrackedElementRect::SubRect::Type::kIntersectWithElementRect});
+  target->SetTrackedElementRect(std::move(highlight));
+
+  UpdateAllLifecyclePhasesForTest();
+
+  auto* tracked_element_data = MakeGarbageCollected<TrackedElementData>();
+  // 8, 8 is the default body margin. 10, 10 is the sub-rect offset.
+  tracked_element_data->map[TrackedElementId(highlight_id)] =
+      gfx::Rect(18, 18, 20, 20);
+
+  EXPECT_THAT(ContentPaintChunks(),
+              ElementsAre(VIEW_SCROLLING_BACKGROUND_CHUNK_COMMON,
+                          IsPaintChunkWithTrackedElementData(
+                              1, 2, tracked_element_data)));
+}
+
+TEST_P(BoxFragmentPainterTest, TrackElementWithSubRectNoIntersection) {
+  SetBodyInnerHTML(R"HTML(
+    <div style="overflow: hidden; position: relative;
+                            width: 100px; height: 100px">
+      <div id="target" style="width:20px; height:20px; background: blue;"></div>
+    </div>
+  )HTML");
+  auto* target = GetDocument().getElementById(AtomicString("target"));
+
+  auto highlight_id = base::Token(1, 2);
+  // Create a sub-rect that is larger than the element and starts at a negative
+  // offset.
+  auto highlight = std::make_unique<TrackedElementRect>(
+      TrackedElementId(highlight_id),
+      TrackedElementRect::SubRect{
+          gfx::Rect(-10, -10, 100, 100),
+          TrackedElementRect::SubRect::Type::kNoIntersection});
+  target->SetTrackedElementRect(std::move(highlight));
+
+  UpdateAllLifecyclePhasesForTest();
+
+  auto* tracked_element_data = MakeGarbageCollected<TrackedElementData>();
+  // 8, 8 (margin) - 10, 10 (offset) = -2, -2. Size remains 100, 100.
+  tracked_element_data->map[TrackedElementId(highlight_id)] =
+      gfx::Rect(-2, -2, 100, 100);
+
+  EXPECT_THAT(ContentPaintChunks(),
+              ElementsAre(VIEW_SCROLLING_BACKGROUND_CHUNK_COMMON,
+                          IsPaintChunkWithTrackedElementData(
+                              1, 2, tracked_element_data)));
+}
+
 }  // namespace blink

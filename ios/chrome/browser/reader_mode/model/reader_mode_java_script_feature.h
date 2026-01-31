@@ -42,7 +42,7 @@ class ReaderModeJavaScriptFeature : public web::JavaScriptFeature {
   // whether the web page is distillable. Returns `std::nullopt` if any of the
   // parameters cannot be extracted.
   std::optional<std::vector<double>> TransformToDerivedFeatures(
-      const base::Value::Dict& body,
+      const base::DictValue& body,
       const GURL& request_url);
 };
 

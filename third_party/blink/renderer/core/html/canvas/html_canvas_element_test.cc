@@ -22,7 +22,7 @@
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
 #include "third_party/blink/renderer/core/script/classic_script.h"
 #include "third_party/blink/renderer/core/testing/core_unit_test_helper.h"
-#include "third_party/blink/renderer/platform/graphics/test/gpu_memory_buffer_test_platform.h"
+#include "third_party/blink/renderer/platform/graphics/test/gpu_compositing_test_platform.h"
 #include "third_party/blink/renderer/platform/graphics/test/gpu_test_utils.h"
 #include "third_party/blink/renderer/platform/testing/paint_test_configurations.h"
 
@@ -161,7 +161,7 @@ TEST_P(HTMLCanvasElementTest, CanvasMemoryUsage) {
   GetDocument().body()->appendChild(script);
   UpdateAllLifecyclePhasesForTest();
   EXPECT_EQ(
-      base::ByteCount(10 * 10 * /* Buffer Count */ 1 * /* Bytes per pixel */ 4),
+      base::ByteSize(10 * 10 * /* Buffer Count */ 1 * /* Bytes per pixel */ 4),
       canvas->GetMemoryUsage());
 
   canvas->NotifyGpuContextLost();
@@ -174,8 +174,7 @@ TEST_P(HTMLCanvasElementTest, CanvasMemoryUsageGpuAccelerated) {
 
   auto raster_context_provider = viz::TestContextProvider::CreateRaster();
   InitializeSharedGpuContextRaster(raster_context_provider.get());
-  ScopedTestingPlatformSupport<GpuMemoryBufferTestPlatform>
-      accelerated_platform;
+  ScopedTestingPlatformSupport<GpuCompositingTestPlatform> accelerated_platform;
   GetDocument().GetSettings()->SetAcceleratedCompositingEnabled(true);
 
   SetBodyInnerHTML("<canvas id='canvas' width='10px' height='10px'></canvas>");
@@ -193,7 +192,7 @@ TEST_P(HTMLCanvasElementTest, CanvasMemoryUsageGpuAccelerated) {
   GetDocument().body()->appendChild(script);
   UpdateAllLifecyclePhasesForTest();
   EXPECT_EQ(
-      base::ByteCount(10 * 10 * /* Buffer Count */ 1 * /* Bytes per pixel */ 4),
+      base::ByteSize(10 * 10 * /* Buffer Count */ 1 * /* Bytes per pixel */ 4),
       canvas->GetMemoryUsage());
 
   canvas->NotifyGpuContextLost();

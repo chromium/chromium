@@ -5,7 +5,7 @@
 #include <initializer_list>
 
 #include "ash/constants/ash_features.h"
-#include "base/byte_count.h"
+#include "base/byte_size.h"
 #include "base/files/file_util.h"
 #include "base/rand_util.h"
 #include "base/strings/string_number_conversions.h"
@@ -49,7 +49,8 @@ namespace ash::settings {
 namespace {
 
 const std::string FormatBytesToString(int64_t bytes) {
-  return base::UTF16ToUTF8(ui::FormatBytes(base::ByteCount(bytes)));
+  return base::UTF16ToUTF8(
+      ui::FormatBytes(base::ByteSize(base::checked_cast<uint64_t>((bytes)))));
 }
 
 // Provides a minimal interface to initialize a drive item with only the

@@ -54,6 +54,7 @@ Response TargetHandler::CreateTarget(
     std::optional<bool> background,
     std::optional<bool> for_tab,
     std::optional<bool> hidden,
+    std::optional<bool> focus,
     std::string* out_target_id) {
 #if BUILDFLAG(IS_MAC)
   if (enable_begin_frame_control.value_or(false)) {

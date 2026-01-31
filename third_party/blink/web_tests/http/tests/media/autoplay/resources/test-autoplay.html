@@ -22,14 +22,25 @@ function runMediaTests() {
   });
 }
 
-function runWebAudioTests() {
+async function runWebAudioTests() {
   const audioContext = new AudioContext();
+
+  if (audioContext.state === 'running') {
+    results.webAudio = audioContext.state;
+    return;
+  }
+
+  // When autoplay is allowed, we wait for the state transition to "running".
+  // When it is blocked, no "statechange" event will be fired.
+  if (results.media?.name !== 'NotAllowedError') {
+    await new Promise(resolve => { audioContext.onstatechange = resolve; });
+  }
   results.webAudio = audioContext.state;
 }
 
 async function runTests() {
   await runMediaTests();
-  runWebAudioTests();
+  await runWebAudioTests();
 }
 
 window.addEventListener('load', async function() {

@@ -197,6 +197,12 @@ public class Connector implements MessageReceiver, HandleOwner<MessagePipeHandle
                         receiver.accept(
                                 new Message(
                                         ByteBuffer.wrap(readResult.mData), readResult.mHandles));
+            } catch (BadMessageException e) {
+                // TODO(crbug.com/469861566): The exception handler should close the pipe in this
+                // case. Keep the behaviour consistent with the RuntimeException handling, until
+                // we are sure that we can close the pipe here.
+                accepted =
+                        ExceptionHandler.DefaultExceptionHandler.getInstance().handleException(e);
             } catch (RuntimeException e) {
                 // The DefaultExceptionHandler will decide whether any uncaught exception will
                 // close the connection or not.

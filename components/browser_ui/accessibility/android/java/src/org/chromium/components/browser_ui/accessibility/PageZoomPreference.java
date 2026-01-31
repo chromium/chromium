@@ -102,7 +102,7 @@ public abstract class PageZoomPreference extends Preference {
         updateViews(getCurrentZoomValue(), true);
 
         // Set up text size contrast slider.
-        if (ContentFeatureMap.isEnabled(ContentFeatureList.SMART_ZOOM)) {
+        if (shouldShowTextSizeContrastSetting()) {
             holder.findViewById(R.id.text_size_contrast_section).setVisibility(View.VISIBLE);
 
             mTextSizeContrastCurrentLevelText =
@@ -133,6 +133,10 @@ public abstract class PageZoomPreference extends Preference {
             setCurrentContrastValue(mTextSizeContrastFactor);
             updateViews(mTextSizeContrastFactor, false);
         }
+    }
+
+    static boolean shouldShowTextSizeContrastSetting() {
+        return ContentFeatureMap.isEnabled(ContentFeatureList.SMART_ZOOM);
     }
 
     /**

@@ -22,7 +22,6 @@
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/timer/timer.h"
-#include "base/types/cxx23_to_underlying.h"
 #include "build/build_config.h"
 #include "cc/paint/paint_flags.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
@@ -490,7 +489,7 @@ void StatusView::OnPaint(gfx::Canvas* canvas) {
 
   std::array<SkVector, 4> rad{};
   auto round_corner = [&rad, radius](gfx::RRectF::Corner c) {
-    int index = base::to_underlying(c);
+    int index = std::to_underlying(c);
     rad[index] = {radius, radius};
   };
 

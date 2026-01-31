@@ -24,7 +24,7 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 
 import org.chromium.base.ThreadUtils;
-import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.data_sharing.DataSharingTabManager;
@@ -56,13 +56,13 @@ public class CollaborationTestUtils {
     private final Profile mProfile;
 
     // Mock ShareDelegate and its supplier for controlling share sheet behavior.
-    @Mock private final ObservableSupplier<ShareDelegate> mShareDelegateSupplier;
+    @Mock private final MonotonicObservableSupplier<ShareDelegate> mShareDelegateSupplier;
     @Mock private final ShareDelegate mShareDelegate;
 
     public CollaborationTestUtils(SyncTestRule syncTestRule, Profile profile) {
         mSyncTestRule = syncTestRule;
         mProfile = profile;
-        mShareDelegateSupplier = Mockito.mock(ObservableSupplier.class);
+        mShareDelegateSupplier = Mockito.mock(MonotonicObservableSupplier.class);
         mShareDelegate = Mockito.mock(ShareDelegate.class);
     }
 

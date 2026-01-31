@@ -27,7 +27,7 @@
 #include "components/optimization_guide/proto/models.pb.h"
 #include "components/optimization_guide/proto/on_device_base_model_metadata.pb.h"
 #include "components/optimization_guide/proto/on_device_model_execution_config.pb.h"
-#include "components/optimization_guide/public/mojom/model_broker.mojom-data-view.h"
+#include "components/optimization_guide/public/mojom/model_broker.mojom-shared.h"
 #include "components/prefs/pref_service.h"
 #include "services/on_device_model/public/cpp/model_assets.h"
 
@@ -93,8 +93,9 @@ bool ArePerformanceHintsCompatible(
     return true;
   }
   // Check if the adaptation model supports any of the base model's hints.
-  return base::Contains(adaptation_metadata.supported_performance_hints(),
-                        base_spec.selected_performance_hint);
+  return std::ranges::contains(
+      adaptation_metadata.supported_performance_hints(),
+      base_spec.selected_performance_hint);
 }
 
 std::optional<OnDeviceModelAdaptationAvailability>

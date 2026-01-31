@@ -77,10 +77,10 @@ MixerInput::MixerInput(Source* source, FilterGroup* filter_group)
       // Round up to nearest multiple of SincResampler::kMaxKernelSize. The read
       // size must be > kMaxKernelSize, so we round up to at least 2 *
       // kMaxKernelSize.
-      source_read_size_ =
-          RoundUpMultiple(std::max(source_->desired_read_size(),
-                                   ::media::SincResampler::kMaxKernelSize + 1),
-                          ::media::SincResampler::kMaxKernelSize);
+      source_read_size_ = RoundUpMultiple(
+          std::max(static_cast<size_t>(source_->desired_read_size()),
+                   ::media::SincResampler::kMaxKernelSize + 1),
+          ::media::SincResampler::kMaxKernelSize);
     }
     resample_ratio_ = static_cast<double>(input_samples_per_second_) /
                       output_samples_per_second_;

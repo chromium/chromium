@@ -14,7 +14,7 @@ namespace net::device_bound_sessions {
 
 // Converts a public key in SPKI format to a JWK (JSON Web Key). Only supports
 // ES256 and RS256 keys.
-base::Value::Dict NET_EXPORT
+base::DictValue NET_EXPORT
 ConvertPkeySpkiToJwk(crypto::SignatureVerifier::SignatureAlgorithm algorithm,
                      base::span<const uint8_t> pkey_spki);
 

@@ -285,7 +285,9 @@ public class TabsTest {
                             mActivityTestRule
                                     .getKeyboardDelegate()
                                     .isKeyboardShowing(
-                                            mActivityTestRule.getActivity().getTabsView());
+                                            mActivityTestRule
+                                                    .getActivity()
+                                                    .getTabsViewForTesting());
                     Criteria.checkThat(isKeyboardShowing, Matchers.is(show));
                 });
     }
@@ -298,7 +300,7 @@ public class TabsTest {
     @LargeTest
     @Restriction(DeviceFormFactor.TABLET_OR_DESKTOP)
     @Feature({"Android-TabSwitcher"})
-    @DisableIf.Device(DeviceFormFactor.ONLY_TABLET) // crbug.com/353910783
+    @DisabledTest(message = "crbug.com/353910783")
     public void testHideKeyboard() throws Exception {
         // Open a new tab(The 1st tab) and click node.
         mActivityTestRule.loadUrlInNewTab(getUrl(TEST_FILE_PATH), false);
@@ -574,6 +576,7 @@ public class TabsTest {
     @Test
     @MediumTest
     @Feature({"Android-TabSwitcher"})
+    @DisableIf.Device(DeviceFormFactor.DESKTOP) // https://crbug.com/446934111
     public void testLastClosedUndoableTabGetsHidden() {
         final TabModel model =
                 mActivityTestRule.getActivity().getTabModelSelector().getCurrentModel();
@@ -806,6 +809,7 @@ public class TabsTest {
     @Test
     @MediumTest
     @Feature({"Android-TabSwitcher"})
+    @DisableIf.Device(DeviceFormFactor.DESKTOP) // https://crbug.com/446934111
     public void testLastClosedTabTriggersNotifyChangedCall() {
         final TabModel model =
                 mActivityTestRule.getActivity().getTabModelSelector().getCurrentModel();
@@ -875,6 +879,7 @@ public class TabsTest {
     @Test
     @MediumTest
     @Feature({"Android-TabSwitcher"})
+    @DisabledTest(message = "https://crbug.com/471243722")
     public void testIncognitoTabsNotRestoredAfterSwipe() throws Exception {
         mActivityTestRule.loadUrl(getUrl(TEST_PAGE_FILE_PATH));
 

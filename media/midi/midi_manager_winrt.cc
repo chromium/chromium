@@ -32,6 +32,7 @@
 #include <memory>
 
 #include "base/containers/heap_array.h"
+#include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/scoped_generic.h"
 #include "base/strings/string_util.h"
@@ -682,15 +683,12 @@ class MidiManagerWinrt::MidiInPortManager final
                 return hr;
               }
 
-              uint8_t* p_buffer_data = nullptr;
-              uint32_t data_length = 0;
-              hr = base::win::GetPointerToBufferData(
-                  buffer.Get(), &p_buffer_data, &data_length);
+              base::span<uint8_t> buffer_span;
+              hr = base::win::GetPointerToBufferData(buffer.Get(), buffer_span);
               if (FAILED(hr))
                 return hr;
 
-              std::vector<uint8_t> data(p_buffer_data,
-                                        p_buffer_data + data_length);
+              std::vector<uint8_t> data(buffer_span.begin(), buffer_span.end());
 
               task_service->PostBoundTask(
                   kComTaskRunner,
@@ -739,7 +737,7 @@ class MidiManagerWinrt::MidiInPortManager final
     MidiPort<Win::Devices::Midi::IMidiInPort>* port = GetPortByDeviceId(dev_id);
     CHECK(port);
 
-    midi_manager_->ReceiveMidiData(port->index, &data[0], data.size(), time);
+    midi_manager_->ReceiveMidiData(port->index, data, time);
   }
 };
 
@@ -856,8 +854,7 @@ void MidiManagerWinrt::SendOnComRunner(uint32_t port_index,
   }
 
   WRL::ComPtr<Win::Storage::Streams::IBuffer> buffer;
-  HRESULT hr = base::win::CreateIBufferFromData(
-      data.data(), static_cast<UINT32>(data.size()), &buffer);
+  HRESULT hr = base::win::CreateIBufferFromData(data, &buffer);
   if (FAILED(hr)) {
     VLOG(1) << "CreateIBufferFromData failed: " << PrintHr(hr);
     return;

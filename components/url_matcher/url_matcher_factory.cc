@@ -108,7 +108,7 @@ static base::LazyInstance<URLMatcherConditionFactoryMethods>::DestructorAtExit
 scoped_refptr<URLMatcherConditionSet>
 URLMatcherFactory::CreateFromURLFilterDictionary(
     URLMatcherConditionFactory* url_matcher_condition_factory,
-    const base::Value::Dict& url_filter_dict,
+    const base::DictValue& url_filter_dict,
     base::MatcherStringPattern::ID id,
     std::string* error) {
   std::unique_ptr<URLMatcherSchemeFilter> url_matcher_schema_filter;
@@ -255,13 +255,13 @@ std::unique_ptr<URLMatcherPortFilter> URLMatcherFactory::CreateURLMatcherPorts(
     *error = kInvalidPortRanges;
     return nullptr;
   }
-  const base::Value::List& value_list = value->GetList();
+  const base::ListValue& value_list = value->GetList();
 
   for (const auto& entry : value_list) {
     if (entry.is_int()) {
       ranges.push_back(URLMatcherPortFilter::CreateRange(entry.GetInt()));
     } else if (entry.is_list()) {
-      const base::Value::List& entry_list = entry.GetList();
+      const base::ListValue& entry_list = entry.GetList();
       if (entry_list.size() != 2u || !entry_list[0].is_int() ||
           !entry_list[1].is_int()) {
         *error = kInvalidPortRanges;

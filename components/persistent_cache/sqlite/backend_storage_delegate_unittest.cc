@@ -8,9 +8,10 @@
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "components/persistent_cache/backend.h"
+#include "components/persistent_cache/client.h"
 #include "components/persistent_cache/pending_backend.h"
-#include "components/persistent_cache/sqlite/constants.h"
 #include "components/persistent_cache/sqlite/sqlite_backend_impl.h"
+#include "components/sqlite_vfs/constants.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace persistent_cache::sqlite {
@@ -33,25 +34,26 @@ class SqliteBackendStorageDelegateTest : public testing::Test {
 TEST_F(SqliteBackendStorageDelegateTest, GetBaseName) {
   ASSERT_EQ(delegate().GetBaseName(base::FilePath()), base::FilePath());
   ASSERT_EQ(delegate().GetBaseName(temp_path()), base::FilePath());
-  ASSERT_EQ(delegate().GetBaseName(
-                temp_path().AppendASCII("spam").AddExtension(kDbFileExtension)),
+  ASSERT_EQ(delegate().GetBaseName(temp_path().AppendASCII("spam").AddExtension(
+                sqlite_vfs::kDbFileExtension)),
             base::FilePath::FromASCII("spam"));
   ASSERT_EQ(delegate().GetBaseName(temp_path().AppendASCII("spam").AddExtension(
-                kJournalFileExtension)),
+                sqlite_vfs::kJournalFileExtension)),
             base::FilePath());
   ASSERT_EQ(delegate().GetBaseName(temp_path().AppendASCII("spam").AddExtension(
-                kWalJournalFileExtension)),
+                sqlite_vfs::kWalJournalFileExtension)),
             base::FilePath());
 }
 
 TEST_F(SqliteBackendStorageDelegateTest, CreateAndDelete) {
   base::FilePath base_name = base::FilePath::FromASCII("base_name");
   auto pending_backend =
-      delegate().MakePendingBackend(temp_path(), base_name,
+      delegate().MakePendingBackend(Client::kTest, temp_path(), base_name,
                                     /*single_connection=*/false,
                                     /*journal_mode_wal=*/false);
   ASSERT_NE(pending_backend, std::nullopt);
-  auto backend = SqliteBackendImpl::Bind(*std::move(pending_backend));
+  auto backend =
+      SqliteBackendImpl::Bind(*std::move(pending_backend), Client::kTest);
   ASSERT_NE(backend, nullptr);
 
   // The backend should have created some files.
@@ -63,7 +65,8 @@ TEST_F(SqliteBackendStorageDelegateTest, CreateAndDelete) {
   int64_t dir_size = base::ComputeDirectorySize(temp_path());
 
   // Ask the delegate to delete them.
-  ASSERT_EQ(delegate().DeleteFiles(temp_path(), base_name), dir_size);
+  ASSERT_EQ(delegate().DeleteFiles(Client::kTest, temp_path(), base_name),
+            dir_size);
 
   // The files should now be gone.
   ASSERT_TRUE(base::IsDirectoryEmpty(temp_path()));
@@ -72,11 +75,12 @@ TEST_F(SqliteBackendStorageDelegateTest, CreateAndDelete) {
 TEST_F(SqliteBackendStorageDelegateTest, CreateAndDeleteWal) {
   base::FilePath base_name = base::FilePath::FromASCII("base_name");
   auto pending_backend =
-      delegate().MakePendingBackend(temp_path(), base_name,
+      delegate().MakePendingBackend(Client::kTest, temp_path(), base_name,
                                     /*single_connection=*/true,
                                     /*journal_mode_wal=*/true);
   ASSERT_NE(pending_backend, std::nullopt);
-  auto backend = SqliteBackendImpl::Bind(*std::move(pending_backend));
+  auto backend =
+      SqliteBackendImpl::Bind(*std::move(pending_backend), Client::kTest);
   ASSERT_NE(backend, nullptr);
 
   // The backend should have created some files.
@@ -88,7 +92,8 @@ TEST_F(SqliteBackendStorageDelegateTest, CreateAndDeleteWal) {
   int64_t dir_size = base::ComputeDirectorySize(temp_path());
 
   // Ask the delegate to delete them.
-  ASSERT_EQ(delegate().DeleteFiles(temp_path(), base_name), dir_size);
+  ASSERT_EQ(delegate().DeleteFiles(Client::kTest, temp_path(), base_name),
+            dir_size);
 
   // The files should now be gone.
   ASSERT_TRUE(base::IsDirectoryEmpty(temp_path()));

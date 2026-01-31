@@ -10,16 +10,22 @@
 #ifndef COMPONENTS_FEEDBACK_REDACTION_TOOL_URL_CANON_IP_H_
 #define COMPONENTS_FEEDBACK_REDACTION_TOOL_URL_CANON_IP_H_
 
+#include <string_view>
+
+#include "base/containers/span.h"
+#include "components/feedback/redaction_tool/ip_address.h"
 #include "components/feedback/redaction_tool/url_canon.h"
 #include "components/feedback/redaction_tool/url_parse.h"
 
 namespace redaction_internal {
 
 // Writes the given IPv4 address to |output|.
-void AppendIPv4Address(const unsigned char address[4], CanonOutput* output);
+void AppendIPv4Address(base::span<const unsigned char, 4> address,
+                       CanonOutput* output);
 
 // Writes the given IPv6 address to |output|.
-void AppendIPv6Address(const unsigned char address[16], CanonOutput* output);
+void AppendIPv6Address(base::span<const unsigned char, 16> address,
+                       CanonOutput* output);
 
 // Converts an IPv4 address to a 32-bit number (network byte order).
 //
@@ -32,13 +38,13 @@ void AppendIPv6Address(const unsigned char address[16], CanonOutput* output);
 //
 // On success, |num_ipv4_components| will be populated with the number of
 // components in the IPv4 address.
-CanonHostInfo::Family IPv4AddressToNumber(const char* spec,
+CanonHostInfo::Family IPv4AddressToNumber(std::string_view spec,
                                           const Component& host,
-                                          unsigned char address[4],
+                                          base::span<unsigned char, 4> address,
                                           int* num_ipv4_components);
-CanonHostInfo::Family IPv4AddressToNumber(const char16_t* spec,
+CanonHostInfo::Family IPv4AddressToNumber(std::u16string_view spec,
                                           const Component& host,
-                                          unsigned char address[4],
+                                          base::span<unsigned char, 4> address,
                                           int* num_ipv4_components);
 
 // Converts an IPv6 address to a 128-bit number (network byte order), returning
@@ -46,12 +52,12 @@ CanonHostInfo::Family IPv4AddressToNumber(const char16_t* spec,
 //
 // NOTE that |host| is expected to be surrounded by square brackets.
 // i.e. "[::1]" rather than "::1".
-bool IPv6AddressToNumber(const char* spec,
+bool IPv6AddressToNumber(std::string_view spec,
                          const Component& host,
-                         unsigned char address[16]);
-bool IPv6AddressToNumber(const char16_t* spec,
+                         base::span<unsigned char, 16> address);
+bool IPv6AddressToNumber(std::u16string_view spec,
                          const Component& host,
-                         unsigned char address[16]);
+                         base::span<unsigned char, 16> address);
 
 }  // namespace redaction_internal
 

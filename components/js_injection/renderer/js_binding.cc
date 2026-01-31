@@ -12,10 +12,10 @@
 
 #include "base/check_op.h"
 #include "base/compiler_specific.h"
-#include "base/containers/contains.h"
 #include "base/strings/string_util.h"
 #include "components/js_injection/common/interfaces.mojom-forward.h"
 #include "components/js_injection/renderer/js_communication.h"
+#include "content/public/common/isolated_world_ids.h"
 #include "content/public/renderer/render_frame.h"
 #include "gin/converter.h"
 #include "gin/data_object_builder.h"
@@ -72,6 +72,16 @@ class V8ArrayBufferPayload : public blink::WebMessageArrayBufferPayload {
   v8::Local<v8::ArrayBuffer> array_buffer_;
 };
 
+v8::Local<v8::Context> GetScriptContext(blink::WebLocalFrame* web_frame,
+                                        int32_t world_id) {
+  v8::Isolate* isolate = web_frame->GetAgentGroupScheduler()->Isolate();
+  if (world_id != content::ISOLATED_WORLD_ID_GLOBAL) {
+    return web_frame->GetScriptContextFromWorldId(isolate, world_id);
+  } else {
+    return web_frame->MainWorldScriptContext();
+  }
+}
+
 }  // namespace
 
 namespace js_injection {
@@ -82,7 +92,8 @@ cppgc::WeakPersistent<JsBinding> JsBinding::Install(
     const std::u16string& js_object_name,
     base::WeakPtr<JsCommunication> js_communication,
     v8::Isolate* isolate,
-    v8::Local<v8::Context> context) {
+    v8::Local<v8::Context> context,
+    int32_t world_id) {
   CHECK(!js_object_name.empty())
       << "JavaScript wrapper name shouldn't be empty";
 
@@ -93,7 +104,7 @@ cppgc::WeakPersistent<JsBinding> JsBinding::Install(
     blink::WebLocalFrame* web_frame = render_frame->GetWebFrame();
     isolate = web_frame->GetAgentGroupScheduler()->Isolate();
     handle_scope.emplace(isolate);
-    context = web_frame->MainWorldScriptContext();
+    context = GetScriptContext(web_frame, world_id);
     if (context.IsEmpty()) {
       return nullptr;
     }
@@ -102,7 +113,7 @@ cppgc::WeakPersistent<JsBinding> JsBinding::Install(
   }
   JsBinding* js_binding = cppgc::MakeGarbageCollected<JsBinding>(
       isolate->GetCppHeap()->GetAllocationHandle(), render_frame,
-      js_object_name, js_communication);
+      js_object_name, js_communication, world_id);
   v8::Local<v8::Object> wrapper;
   if (!js_binding->GetWrapper(isolate).ToLocal(&wrapper)) {
     return nullptr;
@@ -119,11 +130,12 @@ cppgc::WeakPersistent<JsBinding> JsBinding::Install(
 
 JsBinding::JsBinding(content::RenderFrame* render_frame,
                      const std::u16string& js_object_name,
-                     base::WeakPtr<JsCommunication> js_communication)
+                     base::WeakPtr<JsCommunication> js_communication,
+                     int32_t world_id)
     : render_frame_(render_frame),
       js_object_name_(js_object_name),
-      js_communication_(js_communication) {
-}
+      world_id_(world_id),
+      js_communication_(js_communication) {}
 
 JsBinding::~JsBinding() = default;
 
@@ -138,7 +150,7 @@ void JsBinding::OnPostMessage(blink::WebMessagePayload message) {
   v8::Isolate* isolate = web_frame->GetAgentGroupScheduler()->Isolate();
   v8::HandleScope handle_scope(isolate);
 
-  v8::Local<v8::Context> context = web_frame->MainWorldScriptContext();
+  v8::Local<v8::Context> context = GetScriptContext(web_frame, world_id_);
   if (context.IsEmpty())
     return;
 

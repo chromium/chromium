@@ -20,10 +20,13 @@
 #include <string_view>
 #include <vector>
 
+#include "base/byte_size.h"
 #include "base/check_op.h"
 #include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
+#include "base/i18n/encoding_detection.h"
+#include "base/i18n/icu_string_conversions.h"
 #include "base/lazy_instance.h"
 #include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
@@ -224,6 +227,23 @@ bool ReadFilenamesAvailable() {
              ClipboardFormatType::FilenameAType().ToFormatEtc().cfFormat);
 }
 
+// Limit the size of clipboard data to 256 MiB to prevent allocation failures.
+// See https://crbug.com/1164680.
+constexpr auto kMaxClipboardSize = base::MiBU(256);
+
+HANDLE GetClipboardDataWithLimit(UINT format) {
+  HANDLE data = ::GetClipboardData(format);
+  if (!data) {
+    return nullptr;
+  }
+
+  if (::GlobalSize(data) > kMaxClipboardSize.InBytes()) {
+    return nullptr;
+  }
+
+  return data;
+}
+
 }  // namespace
 
 // Clipboard factory method.
@@ -262,7 +282,7 @@ std::optional<DataTransferEndpoint> ClipboardWin::GetSource(
     return std::nullopt;
   }
 
-  HANDLE data = ::GetClipboardData(
+  HANDLE data = GetClipboardDataWithLimit(
       ClipboardFormatType::InternalSourceUrlType().ToFormatEtc().cfFormat);
   if (!data) {
     return std::nullopt;
@@ -389,7 +409,7 @@ void ClipboardWin::ReadAvailableTypes(
   if (!clipboard.Acquire(GetClipboardWindow()))
     return;
 
-  HANDLE hdata = ::GetClipboardData(
+  HANDLE hdata = GetClipboardDataWithLimit(
       ClipboardFormatType::DataTransferCustomType().ToFormatEtc().cfFormat);
   if (!hdata)
     return;
@@ -414,7 +434,7 @@ void ClipboardWin::ReadText(ClipboardBuffer buffer,
   if (!clipboard.Acquire(GetClipboardWindow()))
     return;
 
-  HANDLE data = ::GetClipboardData(CF_UNICODETEXT);
+  HANDLE data = GetClipboardDataWithLimit(CF_UNICODETEXT);
   if (!data)
     return;
 
@@ -440,7 +460,7 @@ void ClipboardWin::ReadAsciiText(ClipboardBuffer buffer,
   if (!clipboard.Acquire(GetClipboardWindow()))
     return;
 
-  HANDLE data = ::GetClipboardData(CF_TEXT);
+  HANDLE data = GetClipboardDataWithLimit(CF_TEXT);
   if (!data)
     return;
 
@@ -474,7 +494,7 @@ void ClipboardWin::ReadHTML(ClipboardBuffer buffer,
   if (!clipboard.Acquire(GetClipboardWindow()))
     return;
 
-  HANDLE data = ::GetClipboardData(
+  HANDLE data = GetClipboardDataWithLimit(
       ClipboardFormatType::HtmlType().ToFormatEtc().cfFormat);
   if (!data)
     return;
@@ -538,6 +558,15 @@ void ClipboardWin::ReadRTF(ClipboardBuffer buffer,
   RecordRead(ClipboardFormatMetric::kRtf);
 
   ReadData(ClipboardFormatType::RtfType(), data_dst, result);
+
+  std::string encoding;
+  if (base::DetectEncoding(*result, &encoding)) {
+    std::string normalized;
+    if (base::ConvertToUtf8AndNormalize(*result, encoding, &normalized)) {
+      *result = normalized;
+    }
+  }
+
   TrimAfterNull(result);
 }
 
@@ -577,7 +606,7 @@ void ClipboardWin::ReadDataTransferCustomData(
   if (!clipboard.Acquire(GetClipboardWindow()))
     return;
 
-  HANDLE hdata = ::GetClipboardData(
+  HANDLE hdata = GetClipboardDataWithLimit(
       ClipboardFormatType::DataTransferCustomType().ToFormatEtc().cfFormat);
   if (!hdata)
     return;
@@ -608,32 +637,19 @@ void ClipboardWin::ReadFilenames(ClipboardBuffer buffer,
   if (!clipboard.Acquire(GetClipboardWindow()))
     return;
 
-  // TODO(crbug.com/40749279): Refactor similar code in clipboard_utils_win:
-  // clipboard_util::GetFilenames() and reuse rather than duplicate.
-  HANDLE data = ::GetClipboardData(
+  HANDLE data = GetClipboardDataWithLimit(
       ClipboardFormatType::CFHDropType().ToFormatEtc().cfFormat);
   if (data) {
     {
       base::win::ScopedHGlobal<HDROP> hdrop(data);
-      if (!hdrop.data()) {
-        return;
-      }
-
-      const int kMaxFilenameLen = 4096;
-      const unsigned num_files = DragQueryFileW(hdrop.data(), 0xffffffff, 0, 0);
-      for (unsigned int i = 0; i < num_files; ++i) {
-        wchar_t filename[kMaxFilenameLen];
-        if (!DragQueryFileW(hdrop.data(), i, filename, kMaxFilenameLen)) {
-          continue;
-        }
-        base::FilePath path(filename);
-        result->push_back(ui::FileInfo(path, base::FilePath()));
+      for (const auto& filename : clipboard_util::GetFilenames(hdrop.data())) {
+        result->emplace_back(base::FilePath(filename), base::FilePath());
       }
     }
     return;
   }
 
-  data = ::GetClipboardData(
+  data = GetClipboardDataWithLimit(
       ClipboardFormatType::FilenameType().ToFormatEtc().cfFormat);
   if (data) {
     {
@@ -647,7 +663,7 @@ void ClipboardWin::ReadFilenames(ClipboardBuffer buffer,
     return;
   }
 
-  data = ::GetClipboardData(
+  data = GetClipboardDataWithLimit(
       ClipboardFormatType::FilenameAType().ToFormatEtc().cfFormat);
   if (data) {
     {
@@ -678,8 +694,8 @@ void ClipboardWin::ReadBookmark(const DataTransferEndpoint* data_dst,
   if (!clipboard.Acquire(GetClipboardWindow()))
     return;
 
-  HANDLE data =
-      ::GetClipboardData(ClipboardFormatType::UrlType().ToFormatEtc().cfFormat);
+  HANDLE data = GetClipboardDataWithLimit(
+      ClipboardFormatType::UrlType().ToFormatEtc().cfFormat);
   if (!data)
     return;
 
@@ -703,7 +719,7 @@ void ClipboardWin::ReadData(const ClipboardFormatType& format,
   if (!clipboard.Acquire(GetClipboardWindow()))
     return;
 
-  HANDLE data = ::GetClipboardData(format.ToFormatEtc().cfFormat);
+  HANDLE data = GetClipboardDataWithLimit(format.ToFormatEtc().cfFormat);
   if (!data)
     return;
 
@@ -897,8 +913,8 @@ std::vector<uint8_t> ClipboardWin::ReadPngInternal(
   if (!clipboard.Acquire(GetClipboardWindow()))
     return std::vector<uint8_t>();
 
-  HANDLE data =
-      ::GetClipboardData(ClipboardFormatType::PngType().ToFormatEtc().cfFormat);
+  HANDLE data = GetClipboardDataWithLimit(
+      ClipboardFormatType::PngType().ToFormatEtc().cfFormat);
 
   if (!data)
     return std::vector<uint8_t>();
@@ -930,9 +946,6 @@ SkBitmap ClipboardWin::ReadBitmapInternal(ClipboardBuffer buffer) const {
     return SkBitmap();
   int color_table_length = 0;
 
-  // Image is too large, and may cause an allocation failure.
-  // See https://crbug.com/1164680.
-  constexpr size_t kMaxImageSizeBytes = 1 << 27;  // 128 MiB
   size_t image_size_bytes;
   // Estimate the number of bytes per pixel. For images with fewer than one byte
   // pixel we will over-estimate the size. For compressed images we will
@@ -952,8 +965,9 @@ SkBitmap ClipboardWin::ReadBitmapInternal(ClipboardBuffer buffer) const {
            .AssignIfValid(&image_size_bytes))
     return SkBitmap();
   // If the image size is too big then return an empty image.
-  if (image_size_bytes > kMaxImageSizeBytes)
+  if (image_size_bytes > kMaxClipboardSize.InBytes()) {
     return SkBitmap();
+  }
 
   // For more information on BITMAPINFOHEADER and biBitCount definition,
   // see https://docs.microsoft.com/en-us/windows/win32/wmdm/-bitmapinfoheader

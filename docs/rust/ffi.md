@@ -14,14 +14,16 @@ in the Chromium day of the Comprehensive Rust course.
 
 Chromium also supports the following tools:
 
-* [`bindgen`](https://rust-lang.github.io/rust-bindgen/) - see
+* [`bindgen`](https://rust-lang.github.io/rust-bindgen/): see
   `//build/rust/rust_bindgen.gni` for usage instructions.
+* [Crubit](https://github.com/google/crubit/) (experimental/unstable support):
+  see [`cpp_api_from_rust.md`](cpp_api_from_rust.md) for usage instructions.
 
 At this point Chromium's `//build/rust/*.gni` templates do not support other FFI
 tools like:
 
 * [`cbindgen`](https://github.com/mozilla/cbindgen)
-* [`crubit`](https://github.com/google/crubit)
+* [`zngur`](https://github.com/HKalbasi/zngur)
 
 ### Related Rust idioms
 

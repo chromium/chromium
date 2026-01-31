@@ -55,6 +55,8 @@
 #include "components/sync/service/configure_context.h"
 #include "components/sync/service/data_type_manager_impl.h"
 #include "components/sync/service/data_type_status_table.h"
+#include "components/sync/service/device_statistics_request_impl.h"
+#include "components/sync/service/glue/sync_transport_data_prefs.h"
 #include "components/sync/service/local_data_description.h"
 #include "components/sync/service/local_data_migration_item_queue.h"
 #include "components/sync/service/sync_auth_manager.h"
@@ -87,6 +89,12 @@ namespace {
 
 BASE_FEATURE(kSyncUnsubscribeFromTypesWithPermanentErrors,
              base::FEATURE_ENABLED_BY_DEFAULT);
+
+// Delay before downloading device statistics and recording related metrics. The
+// exact number is somewhat arbitrary, chosen to ensure that refresh tokens are
+// loaded, the local cache GUID is up to date, and to avoid interfering with
+// general (sync or browser) startup.
+constexpr base::TimeDelta kDeviceStatisticsTrackerDelay = base::Seconds(30);
 
 #if BUILDFLAG(IS_ANDROID)
 constexpr int kMinGmsVersionCodeWithCustomPassphraseApi = 235204000;
@@ -209,6 +217,17 @@ void MaybeClearAccountKeyedPreferences(
     user_settings.KeepAccountSettingsPrefsOnlyForUsers(gaia_ids);
   }
 #endif  // !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
+}
+
+std::unique_ptr<DeviceStatisticsRequest> CreateDeviceStatisticsRequest(
+    signin::IdentityManager* identity_manager,
+    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
+    std::string_view user_agent,
+    const CoreAccountInfo& account,
+    const GURL& url) {
+  return std::make_unique<DeviceStatisticsRequestImpl>(
+      identity_manager, std::move(url_loader_factory), user_agent, account,
+      url);
 }
 
 }  // namespace
@@ -416,6 +435,14 @@ void SyncServiceImpl::Initialize(DataTypeController::TypeVector controllers) {
   local_data_migration_item_queue_ =
       std::make_unique<LocalDataMigrationItemQueue>(this,
                                                     data_type_manager_.get());
+
+  if (base::FeatureList::IsEnabled(kSyncRecordDeviceStatisticsMetrics)) {
+    base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
+        FROM_HERE,
+        base::BindOnce(&SyncServiceImpl::MaybeStartDeviceStatisticsTracker,
+                       weak_factory_.GetWeakPtr()),
+        kDeviceStatisticsTrackerDelay);
+  }
 }
 
 void SyncServiceImpl::StartSyncingWithServer() {
@@ -424,6 +451,20 @@ void SyncServiceImpl::StartSyncingWithServer() {
   }
   if (IsLocalSyncEnabled()) {
     TriggerRefresh(TriggerRefreshSource::kLocalSync, DataTypeSet::All());
+  }
+
+  if (engine_ && sync_client_->IsMetricsAndCrashReportingEnabled() &&
+      base::FeatureList::IsEnabled(kSyncRecordDeviceStatisticsMetrics)) {
+    device_statistics_tracker_ = std::make_unique<DeviceStatisticsTracker>(
+        sync_client_->GetPrefService(), sync_client_->GetIdentityManager(),
+        sync_service_url_,
+        base::BindRepeating(
+            &CreateDeviceStatisticsRequest, sync_client_->GetIdentityManager(),
+            url_loader_factory_, MakeUserAgentForSync(channel_)),
+        SyncTransportDataPrefs::GetCacheGuidsForAllGaiaIds(
+            sync_client_->GetPrefService()));
+    device_statistics_tracker_->Start(base::BindOnce(
+        &SyncServiceImpl::DeviceStatisticsTrackerDone, base::Unretained(this)));
   }
 }
 
@@ -669,6 +710,8 @@ void SyncServiceImpl::Shutdown() {
   TRACE_EVENT0("sync", "SyncServiceImpl::Shutdown");
 
   NotifyShutdown();
+
+  device_statistics_tracker_.reset();
 
   // Ensure the LocalDataMigrationItemQueue, the DataTypeManager and the
   // engine are destroyed in order since they hold consecutive pointers to each
@@ -2022,7 +2065,7 @@ void SyncServiceImpl::RemoveProtocolEventObserver(
 }
 
 void SyncServiceImpl::GetAllNodesForDebugging(
-    base::OnceCallback<void(base::Value::List)> callback) {
+    base::OnceCallback<void(base::ListValue)> callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   data_type_manager_->GetAllNodesForDebugging(std::move(callback));
@@ -2449,8 +2492,6 @@ void SyncServiceImpl::SelectTypeAndMigrateLocalDataItemsWhenActive(
   // have made the user consent to sync.
   CHECK(!HasSyncConsent());
 
-  // TODO(crbug.com/386752831): Add a metric here.
-
   std::optional<UserSelectableType> user_selectable_type =
       GetUserSelectableTypeFromDataType(data_type);
   CHECK(user_selectable_type.has_value());
@@ -2481,9 +2522,43 @@ void SyncServiceImpl::SelectTypeAndMigrateLocalDataItemsWhenActive(
           data_type, std::move(items));
 }
 
-void SyncServiceImpl::AcknowledgeBookmarksLimitExceededError() {
+void SyncServiceImpl::AcknowledgeBookmarksLimitExceededError(
+    BookmarksLimitExceededHelpClickedSource source) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  base::UmaHistogramEnumeration("Sync.BookmarksLimitExceededHelpClickedSource",
+                                source);
   bookmark_sync_error_state_.AcknowledgeError();
+}
+
+void SyncServiceImpl::MaybeStartDeviceStatisticsTracker() {
+  CHECK(base::FeatureList::IsEnabled(kSyncRecordDeviceStatisticsMetrics));
+
+  if (!sync_client_->IsMetricsAndCrashReportingEnabled()) {
+    return;
+  }
+
+  if (!auth_manager_->IsActiveAccountInfoFullyLoaded()) {
+    // It shouldn't happen in practice that the account info (refresh tokens)
+    // still aren't fully loaded at this point.
+    return;
+  }
+
+  device_statistics_tracker_ = std::make_unique<DeviceStatisticsTracker>(
+      sync_client_->GetPrefService(), sync_client_->GetIdentityManager(),
+      sync_service_url_,
+      base::BindRepeating(&CreateDeviceStatisticsRequest,
+                          sync_client_->GetIdentityManager(),
+                          url_loader_factory_, MakeUserAgentForSync(channel_)),
+      SyncTransportDataPrefs::GetCacheGuidsForAllGaiaIds(
+          sync_client_->GetPrefService()));
+  device_statistics_tracker_->Start(base::BindOnce(
+      &SyncServiceImpl::DeviceStatisticsTrackerDone, base::Unretained(this)));
+}
+
+void SyncServiceImpl::DeviceStatisticsTrackerDone() {
+  CHECK(base::FeatureList::IsEnabled(kSyncRecordDeviceStatisticsMetrics));
+
+  device_statistics_tracker_.reset();
 }
 
 }  // namespace syncer

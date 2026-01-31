@@ -79,7 +79,6 @@
 #include "chrome/browser/ui/webui/ash/cellular_setup/mobile_setup_ui.h"
 #include "chrome/browser/ui/webui/ash/cloud_upload/cloud_upload_ui.h"
 #include "chrome/browser/ui/webui/ash/crostini_installer/crostini_installer_ui.h"
-#include "chrome/browser/ui/webui/ash/crostini_upgrader/crostini_upgrader_ui.h"
 #include "chrome/browser/ui/webui/ash/cryptohome/cryptohome_ui.h"
 #include "chrome/browser/ui/webui/ash/curtain_ui/remote_maintenance_curtain_ui.h"
 #include "chrome/browser/ui/webui/ash/drive_internals/drive_internals_ui.h"
@@ -117,7 +116,7 @@
 #include "chrome/browser/ui/webui/nearby_internals/nearby_internals_ui.h"
 #include "chrome/browser/ui/webui/nearby_share/nearby_share_dialog_ui.h"
 #include "chromeos/ash/components/install_attributes/install_attributes.h"
-#include "chromeos/ash/experiences/guest_os/borealis/motd/borealis_motd_dialog.h"
+#include "chromeos/ash/experiences/guest_os/borealis/motd/borealis_motd_ui.h"
 #include "ui/webui/webui_util.h"
 #if !defined(OFFICIAL_BUILD)
 #include "ash/webui/sample_system_web_app_ui/sample_system_web_app_ui.h"
@@ -258,7 +257,6 @@ void RegisterAshChromeWebUIConfigs() {
   map.AddWebUIConfig(MakeConnectivityDiagnosticsUIConfig());
   map.AddWebUIConfig(std::make_unique<CrostiniCreditsUI>());
   map.AddWebUIConfig(std::make_unique<CrostiniInstallerUIConfig>());
-  map.AddWebUIConfig(std::make_unique<CrostiniUpgraderUIConfig>());
   map.AddWebUIConfig(std::make_unique<CryptohomeUIConfig>());
   map.AddWebUIConfig(MakeDiagnosticsUIConfig());
   map.AddWebUIConfig(std::make_unique<DriveInternalsUIConfig>());

@@ -14,8 +14,8 @@ RecorderDevToolsClient::~RecorderDevToolsClient() = default;
 
 Status RecorderDevToolsClient::SendCommandAndGetResult(
     const std::string& method,
-    const base::Value::Dict& params,
-    base::Value::Dict* result) {
+    const base::DictValue& params,
+    base::DictValue* result) {
   commands_.emplace_back(method, params.Clone());
 
   // For any tests that directly call SendCommandAndGetResults, we'll just

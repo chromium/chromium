@@ -34,10 +34,11 @@ import org.chromium.base.ObserverList;
 import org.chromium.base.TraceEvent;
 import org.chromium.base.library_loader.LibraryLoader;
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.base.supplier.MonotonicObservableSupplier;
+import org.chromium.base.supplier.NonNullObservableSupplier;
 import org.chromium.base.supplier.NullableObservableSupplier;
-import org.chromium.base.supplier.ObservableSupplier;
-import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.OneshotSupplier;
+import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.build.annotations.Initializer;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -108,8 +109,8 @@ public class ToolbarControlContainer extends OptimizedFrameLayout
     private final ObserverList<TouchEventObserver> mTouchEventObservers = new ObserverList<>();
     private final Callback<Boolean> mOnXrSpaceModeChanged = this::onXrSpaceModeChanged;
     private final Callback<Resource> mOnResourceCaptureCallback = this::onToolbarCaptureUpdated;
-    private @Nullable ObservableSupplier<Boolean> mXrSpaceModeObservableSupplier;
-    private @Nullable ObservableSupplierImpl<Integer> mHeightChangedSupplier;
+    private @Nullable MonotonicObservableSupplier<Boolean> mXrSpaceModeObservableSupplier;
+    private @Nullable SettableNonNullObservableSupplier<Integer> mHeightChangedSupplier;
     private ToolbarDataProvider mToolbarDataProvider;
 
     /**
@@ -204,7 +205,7 @@ public class ToolbarControlContainer extends OptimizedFrameLayout
     }
 
     public void setOnHeightChangedListener(
-            @Nullable ObservableSupplierImpl<Integer> heightChangedSupplier) {
+            @Nullable SettableNonNullObservableSupplier<Integer> heightChangedSupplier) {
         mHeightChangedSupplier = heightChangedSupplier;
     }
 
@@ -439,7 +440,7 @@ public class ToolbarControlContainer extends OptimizedFrameLayout
             boolean isIncognito,
             NullableObservableSupplier<@BrowserControlsState Integer> constraintsSupplier,
             Supplier<@Nullable Tab> tabSupplier,
-            ObservableSupplier<Boolean> compositorInMotionSupplier,
+            NonNullObservableSupplier<Boolean> compositorInMotionSupplier,
             BrowserStateBrowserControlsVisibilityDelegate
                     browserStateBrowserControlsVisibilityDelegate,
             OneshotSupplier<LayoutStateProvider> layoutStateProviderSupplier,
@@ -578,7 +579,7 @@ public class ToolbarControlContainer extends OptimizedFrameLayout
                 Toolbar toolbar,
                 NullableObservableSupplier<@BrowserControlsState Integer> constraintsSupplier,
                 Supplier<@Nullable Tab> tabSupplier,
-                ObservableSupplier<Boolean> compositorInMotionSupplier,
+                NonNullObservableSupplier<Boolean> compositorInMotionSupplier,
                 BrowserStateBrowserControlsVisibilityDelegate
                         browserStateBrowserControlsVisibilityDelegate,
                 BooleanSupplier isVisible,
@@ -645,7 +646,7 @@ public class ToolbarControlContainer extends OptimizedFrameLayout
         private Toolbar mToolbar;
         private ConstraintsChecker mConstraintsObserver;
         private Supplier<@Nullable Tab> mTabSupplier;
-        private ObservableSupplier<Boolean> mCompositorInMotionSupplier;
+        private @Nullable NonNullObservableSupplier<Boolean> mCompositorInMotionSupplier;
 
         private BrowserStateBrowserControlsVisibilityDelegate
                 mBrowserStateBrowserControlsVisibilityDelegate;
@@ -687,7 +688,7 @@ public class ToolbarControlContainer extends OptimizedFrameLayout
                 Toolbar toolbar,
                 NullableObservableSupplier<@BrowserControlsState Integer> constraintsSupplier,
                 Supplier<@Nullable Tab> tabSupplier,
-                ObservableSupplier<Boolean> compositorInMotionSupplier,
+                NonNullObservableSupplier<Boolean> compositorInMotionSupplier,
                 BrowserStateBrowserControlsVisibilityDelegate
                         browserStateBrowserControlsVisibilityDelegate,
                 BooleanSupplier controlContainerIsVisibleSupplier,
@@ -762,8 +763,7 @@ public class ToolbarControlContainer extends OptimizedFrameLayout
                 // capture when the controls were partially or fully scrolled off, in the middle
                 // of motion, before the view became dirty.
                 if (mCompositorInMotionSupplier != null) {
-                    Boolean compositorInMotion = mCompositorInMotionSupplier.get();
-                    if (Boolean.TRUE.equals(compositorInMotion)) {
+                    if (mCompositorInMotionSupplier.get()) {
                         CaptureReadinessResult.logCaptureReasonFromResult(
                                 CaptureReadinessResult.notReady(
                                         TopToolbarBlockCaptureReason.COMPOSITOR_IN_MOTION));
@@ -841,17 +841,15 @@ public class ToolbarControlContainer extends OptimizedFrameLayout
         }
 
         public void onPageLoadStopped() {
-            if (ChromeFeatureList.sBrowserControlsInViz.isEnabled()) {
-                // With capture suppression, we don't capture after navigating. Instead, we schedule
-                // a capture to happen when the controls become unlocked. With BCIV, there is no
-                // surface sync, so it's more likely to scroll before the capture is complete. To
-                // fix this, we capture after page load finishes. This is late enough in navigation
-                // to not delay other important tasks on the main thread, and early enough so we
-                // have a capture available before the controls are unlocked.
-                mNeedCaptureAfterPageLoad = true;
-                onResourceRequested();
-                mNeedCaptureAfterPageLoad = false;
-            }
+            // With capture suppression, we don't capture after navigating. Instead, we schedule
+            // a capture to happen when the controls become unlocked. With BCIV, there is no
+            // surface sync, so it's more likely to scroll before the capture is complete. To
+            // fix this, we capture after page load finishes. This is late enough in navigation
+            // to not delay other important tasks on the main thread, and early enough so we
+            // have a capture available before the controls are unlocked.
+            mNeedCaptureAfterPageLoad = true;
+            onResourceRequested();
+            mNeedCaptureAfterPageLoad = false;
         }
 
         private boolean shouldSampleStaleCaptureHistogram() {
@@ -1002,7 +1000,11 @@ public class ToolbarControlContainer extends OptimizedFrameLayout
         }
     }
 
-    int getToolbarCaptureHeight() {
+    /**
+     * @return The height of the screenshot of the toolbar (may include the tabstrip on large form
+     *     factors.)
+     */
+    public int getToolbarCaptureHeight() {
         return mToolbarCaptureSize.height();
     }
 
@@ -1036,7 +1038,7 @@ public class ToolbarControlContainer extends OptimizedFrameLayout
     }
 
     public void setXrSpaceModeObservableSupplierMaybe(
-            @Nullable ObservableSupplier<Boolean> xrSpaceModeObservableSupplier) {
+            @Nullable MonotonicObservableSupplier<Boolean> xrSpaceModeObservableSupplier) {
         if (mXrSpaceModeObservableSupplier == null && xrSpaceModeObservableSupplier != null) {
             mXrSpaceModeObservableSupplier = xrSpaceModeObservableSupplier;
             mXrSpaceModeObservableSupplier.addSyncObserver(mOnXrSpaceModeChanged);

@@ -214,7 +214,6 @@ void WindowImpl::Init(HWND parent, const Rect& bounds) {
   }
 
   ATOM atom = GetWindowClassAtom();
-  auto weak_this = weak_factory_.GetWeakPtr();
   HWND hwnd = CreateWindowEx(window_ex_style_, reinterpret_cast<wchar_t*>(atom),
                              nullptr, window_style_, x, y, width, height,
                              parent, nullptr, nullptr, this);
@@ -230,14 +229,8 @@ void WindowImpl::Init(HWND parent, const Rect& bounds) {
   }
 
   if (!hwnd_ && create_window_error == 0) {
-    bool still_alive = !!weak_this;
-    base::debug::Alias(&still_alive);
     base::debug::Alias(&hwnd);
     base::debug::Alias(&atom);
-    bool got_create = got_create_;
-    base::debug::Alias(&got_create);
-    bool got_valid_hwnd = got_valid_hwnd_;
-    base::debug::Alias(&got_valid_hwnd);
     WNDCLASSEX class_info = {};
     class_info.cbSize = sizeof(WNDCLASSEX);
     BOOL got_class =
@@ -297,9 +290,6 @@ LRESULT CALLBACK WindowImpl::WndProc(HWND hwnd,
     DCHECK(window);
     SetWindowUserData(hwnd, window);
     window->hwnd_ = hwnd;
-    window->got_create_ = true;
-    if (hwnd)
-      window->got_valid_hwnd_ = true;
   } else {
     window = reinterpret_cast<WindowImpl*>(GetWindowUserData(hwnd));
   }

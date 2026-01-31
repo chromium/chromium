@@ -7,7 +7,6 @@
 #include <algorithm>
 
 #include "base/check_deref.h"
-#include "base/containers/contains.h"
 #include "base/debug/alias.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
@@ -330,6 +329,7 @@ bool BrowserAccessibilityAndroid::IsCollection() const {
     case ax::mojom::Role::kMenu:
     case ax::mojom::Role::kMenuBar:
     case ax::mojom::Role::kMenuListPopup:
+    case ax::mojom::Role::kTabList:
       return true;
     default:
       return ui::IsTableLike(GetRole());
@@ -346,6 +346,7 @@ bool BrowserAccessibilityAndroid::IsCollectionItem() const {
     case ax::mojom::Role::kMenuItemCheckBox:
     case ax::mojom::Role::kMenuItemRadio:
     case ax::mojom::Role::kMenuListOption:
+    case ax::mojom::Role::kTab:
       return true;
     default:
       return ui::IsCellOrTableHeader(GetRole());
@@ -538,13 +539,13 @@ bool BrowserAccessibilityAndroid::IsInterestingOnAndroid() const {
     }
   }
 
-  // Allows users to select options in a listbox with touch interaction.
-  if (GetRole() == ax::mojom::Role::kListBoxOption) {
-    return true;
-  }
-
   while (parent) {
-    if (ui::IsControl(parent->GetRole()) && !IsFocusable()) {
+    // Generally, if a parent is a control (like a combobox) and the child isn't
+    // focusable, the child is hidden to reduce clutter.
+    // However, an exception is made for kListBoxOption so it remains exposed
+    // for touch interaction.
+    if (ui::IsControl(parent->GetRole()) && !IsFocusable() &&
+        GetRole() != ax::mojom::Role::kListBoxOption) {
       return false;
     }
 
@@ -591,9 +592,19 @@ bool BrowserAccessibilityAndroid::IsInterestingOnAndroid() const {
     return false;
   }
 
-  // Otherwise, the interesting nodes are leaf nodes with non-whitespace accessible name.
-  return IsLeaf() && !base::ContainsOnlyChars(GetAccessibleNameUTF16(),
-                                               base::kWhitespaceUTF16);
+  // Otherwise, the interesting nodes are leaf nodes with non-whitespace
+  // accessible name or text content.
+
+  // First, we determine whether we have a nonempty, nonwhitespace name.
+  bool has_nonwhitespace_name = !base::ContainsOnlyChars(
+      GetString16Attribute(ax::mojom::StringAttribute::kName),
+      base::kWhitespaceUTF16);
+
+  // And, whether we have nonempty, nonwhitespace text.
+  bool has_nonwhitespace_text =
+      !base::ContainsOnlyChars(GetTextContentUTF16(), base::kWhitespaceUTF16);
+
+  return IsLeaf() && (has_nonwhitespace_name || has_nonwhitespace_text);
 }
 
 BrowserAccessibilityAndroid*
@@ -755,7 +766,7 @@ bool BrowserAccessibilityAndroid::IsChildOfLeaf() const {
 }
 
 bool BrowserAccessibilityAndroid::IsLeaf() const {
-  if (base::Contains(GetLeafMap(), this)) {
+  if (GetLeafMap().contains(this)) {
     return GetLeafMap()[this];
   }
 
@@ -954,8 +965,8 @@ void BrowserAccessibilityAndroid::AccumulateSubstringTextContentUTF16(
     return;
   }
 
-  if (ComputeAndroidNameTo() == AndroidNameTo::kText &&
-      !is_non_atomic_text_field) {
+  AndroidNameTo name_to = ComputeAndroidNameTo();
+  if (name_to == AndroidNameTo::kText && !is_non_atomic_text_field) {
     text = GetNameAsString16();
   }
 
@@ -1000,12 +1011,22 @@ void BrowserAccessibilityAndroid::AccumulateSubstringTextContentUTF16(
     }
   }
 
+  // Compute whether this node's name attribute should override its text. This
+  // is used in the below block to determine whether we should proceed with
+  // surfacing text at all. Name overrides text when we've mapped name to
+  // Android's content description, it is non-empty, and this node's role
+  // supports name overriding child text contents.
+  bool name_overrides_text =
+      ui::SupportsNamingWithChildContent(GetRole()) &&
+      name_to == AndroidNameTo::kContentDescription &&
+      !GetStringAttribute(ax::mojom::StringAttribute::kName).empty();
+
   // This is called from IsLeaf, so don't call PlatformChildCount
   // from within this!
   // Only for roles that do not support naming with child content, we loop
   // through the children, in order to populate the visual content (use Android
   // text API), in addition to populating the aria label information.
-  if (text.empty() && !ui::SupportsNamingWithChildContent(GetRole()) &&
+  if (text.empty() && !name_overrides_text &&
       ((HasOnlyTextChildren() && !HasListMarkerChild()) ||
        (IsFocusable() && HasOnlyTextAndImageChildren()))) {
     for (auto it = InternalChildrenBegin(); it != InternalChildrenEnd(); ++it) {
@@ -1021,9 +1042,11 @@ void BrowserAccessibilityAndroid::AccumulateSubstringTextContentUTF16(
     text = std::move(value);
   }
 
+  // Append the URL/filename only if we don't already have an accessible name.
   if (text.empty() &&
       (ui::IsLink(GetRole()) || ui::IsImageOrVideo(GetRole())) &&
-      !HasExplicitlyEmptyName()) {
+      !HasExplicitlyEmptyName() &&
+      ComputeAndroidNameTo() == AndroidNameTo::kText) {
     std::u16string url = GetString16Attribute(ax::mojom::StringAttribute::kUrl);
     text = ui::AXUrlBaseText(url);
   }
@@ -1068,12 +1091,17 @@ std::u16string BrowserAccessibilityAndroid::GetValueForControl() const {
 std::u16string BrowserAccessibilityAndroid::GetHint() const {
   std::vector<std::u16string> strings;
 
-  // If we're returning the value as the main text, the name needs to be
-  // part of the hint.
-  if (ShouldExposeValueAsName(GetValueForControl()) &&
-      ComputeAndroidNameTo() == AndroidNameTo::kText) {
-    if (std::u16string name = GetNameAsString16(); !name.empty()) {
-      strings.push_back(name);
+  // TODO(accessibility): Remove this path once we roll out supplemental
+  // descriptions.
+  if (!base::FeatureList::IsEnabled(
+          features::kAccessibilityPopulateSupplementalDescriptionApi)) {
+    // If we're returning the value as the main text, the name needs to be
+    // part of the hint.
+    if (ShouldExposeValueAsName(GetValueForControl()) &&
+        ComputeAndroidNameTo() == AndroidNameTo::kText) {
+      if (std::u16string name = GetNameAsString16(); !name.empty()) {
+        strings.push_back(name);
+      }
     }
   }
 
@@ -1162,36 +1190,18 @@ std::u16string BrowserAccessibilityAndroid::GetSupplementalDescription() const {
   if (ComputeAndroidNameTo() == AndroidNameTo::kSupplementalDescription) {
     return GetNameAsString16();
   }
+
+  // The control's value has been promoted to the primary `text` field.
+  // In this situation, the accessible name (which was originally destined
+  // for `text`) should be demoted to `supplementalDescription`.
+  if (base::FeatureList::IsEnabled(
+          features::kAccessibilityPopulateSupplementalDescriptionApi) &&
+      ShouldExposeValueAsName(GetValueForControl()) &&
+      ComputeAndroidNameTo() == AndroidNameTo::kText) {
+    return GetNameAsString16();
+  }
+
   return u"";
-}
-
-std::u16string BrowserAccessibilityAndroid::GetAccessibleNameUTF16() const {
-  // 1. The primary source for an accessible name is the direct text content.
-  // If it's available, we use it immediately.
-  std::u16string name = GetTextContentUTF16();
-  if (!name.empty()) {
-    return name;
-  }
-
-  // 2. If text content is empty, check if the name is *supposed* to map to the
-  // text property anyway. If so, it means the accessible name is intentionally
-  // empty, and we should not check any fallback sources.
-  if (ComputeAndroidNameTo() == AndroidNameTo::kText) {
-    return {};  // Return an empty string.
-  }
-
-  // 3. If the name doesn't map to the text property (e.g., it comes from an
-  //    attribute like `aria-label`), we check a chain of fallback sources in
-  //    order of priority.
-  name = GetContainerTitle();
-  if (name.empty()) {
-    name = GetContentDescription();
-  }
-  if (name.empty()) {
-    name = GetSupplementalDescription();
-  }
-
-  return name;
 }
 
 std::u16string BrowserAccessibilityAndroid::GetMultiselectableStateDescription()
@@ -1853,18 +1863,63 @@ bool BrowserAccessibilityAndroid::Scroll(int direction,
 // form AXB and new_value_ to be of the form AYB, where X and Y are the pieces
 // that don't match. We take the X to be the "removed" characters and Y to be
 // the "added" characters.
-
+//
+// The above diff-based text change calculation is effective, except for text
+// committed by CJKV IMEs. For these IMEs, the actual text change for
+// accessibility services is the entire committed string, which may not align
+// with a minimal character-level diff. For example, if a composition "はn"
+// results in "はな", the committed text is "はな", not just "な".
+// Given: |' (cursor location in composition), X' (prior composition text),
+// | (cursor location after commit), X (committed text), A (prefix text),
+// B (postfix text) where the old value is A|'X'B, and the new value is AX|B,
+// the indices are derived as follows:
+// * fromIndex = location(|') = location(|) - len(X)
+// * addedCount = len(X)
+// * removedCount = len(X') = len(A|'X'B) - (len(AX|B) - len(X))
 int BrowserAccessibilityAndroid::GetTextChangeFromIndex() const {
+  if (::features::IsAccessibilityTextChangeTypesEnabled()) {
+    int committed_text_length =
+        node()->GetIntAttribute(ax::mojom::IntAttribute::kCommittedTextLength);
+    // If the text change is due to a IME text commit.
+    if (committed_text_length > 0) {
+      // Cursor should move to the end of committed text.
+      DCHECK_GE(GetSelectionStart() - committed_text_length, 0);
+      // This is current_cursor_location - len(X).
+      return GetSelectionStart() - committed_text_length;
+    }
+  }
+
   // This is len(A)
   return CommonPrefixLength(old_value_, new_value_);
 }
 
 int BrowserAccessibilityAndroid::GetTextChangeAddedCount() const {
+  if (::features::IsAccessibilityTextChangeTypesEnabled()) {
+    int committed_text_length =
+        node()->GetIntAttribute(ax::mojom::IntAttribute::kCommittedTextLength);
+    // If the text change is due to a IME text commit.
+    if (committed_text_length > 0) {
+      // This is len(X).
+      return committed_text_length;
+    }
+  }
+
   // This is len(AYB) - (len(A) + len(B)), or len(Y), the added characters.
   return new_value_.length() - CommonEndLengths(old_value_, new_value_);
 }
 
 int BrowserAccessibilityAndroid::GetTextChangeRemovedCount() const {
+  if (::features::IsAccessibilityTextChangeTypesEnabled()) {
+    int committed_text_length =
+        node()->GetIntAttribute(ax::mojom::IntAttribute::kCommittedTextLength);
+    // If the text change is due to a IME text commit.
+    if (committed_text_length > 0) {
+      // This is len(A|X'B)-(len(AX|B) - len(X))
+      return old_value_.length() -
+             (new_value_.length() - committed_text_length);
+    }
+  }
+
   // This is len(AXB) - (len(A) + len(B)), or len(X), the removed characters.
   return old_value_.length() - CommonEndLengths(old_value_, new_value_);
 }
@@ -2046,7 +2101,8 @@ int BrowserAccessibilityAndroid::ColumnCount() const {
       GetRole() == ax::mojom::Role::kListBox ||
       GetRole() == ax::mojom::Role::kMenu ||
       GetRole() == ax::mojom::Role::kMenuBar ||
-      GetRole() == ax::mojom::Role::kMenuListPopup) {
+      GetRole() == ax::mojom::Role::kMenuListPopup ||
+      GetRole() == ax::mojom::Role::kTabList) {
     ax_cols = 1;
   }
 
@@ -2209,10 +2265,10 @@ void BrowserAccessibilityAndroid::GetWordBoundaries(
   for (auto it = InternalChildrenBegin(); it != InternalChildrenEnd(); ++it) {
     BrowserAccessibilityAndroid* child =
         static_cast<BrowserAccessibilityAndroid*>(it.get());
-    concatenated_text += child->GetAccessibleNameUTF16();
+    concatenated_text += child->GetTextContentUTF16();
   }
 
-  std::u16string text = GetAccessibleNameUTF16();
+  std::u16string text = GetTextContentUTF16();
   if (text.empty() || concatenated_text == text) {
     // Great - this node is just the concatenation of its children, so
     // we can get the word boundaries recursively.
@@ -2598,23 +2654,26 @@ BrowserAccessibilityAndroid::ComputeAndroidNameTo() const {
       }
       break;
     case ax::mojom::NameFrom::kRelatedElement:
-      // TODO(crbug.com/447426033): Map all kRelatedElement accessible names for
-      // android.
       if (::features::IsAccessibilityLabeledByEnabled() &&
           GetData().HasIntListAttribute(
               ax::mojom::IntListAttribute::kLabelledbyIds)) {
         name_to_cache_ = AndroidNameTo::kLabeledBy;
+      } else if (base::FeatureList::IsEnabled(
+                     features::
+                         kAccessibilityPopulateSupplementalDescriptionApi)) {
+        // Fallback to supplemental description when labeledBy cannot be used.
+        name_to_cache_ = AndroidNameTo::kSupplementalDescription;
       } else {
         name_to_cache_ = AndroidNameTo::kText;
       }
       break;
+    case ax::mojom::NameFrom::kAttributeExplicitlyEmpty:
     case ax::mojom::NameFrom::kCssAltText:
     case ax::mojom::NameFrom::kPopoverTarget:
     case ax::mojom::NameFrom::kInterestFor:
       name_to_cache_ = AndroidNameTo::kContentDescription;
       break;
     case ax::mojom::NameFrom::kNone:
-    case ax::mojom::NameFrom::kAttributeExplicitlyEmpty:
     case ax::mojom::NameFrom::kCaption:
     case ax::mojom::NameFrom::kContents:
     case ax::mojom::NameFrom::kPlaceholder:

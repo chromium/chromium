@@ -1306,7 +1306,7 @@ void HttpHandler::HandleCommand(
     const net::HttpServerRequestInfo& request,
     const std::string& trimmed_path,
     const HttpResponseSenderFunc& send_response_func) {
-  base::Value::Dict params;
+  base::DictValue params;
   std::string session_id;
   CommandMap::const_iterator iter = command_map_->begin();
   while (true) {
@@ -1334,7 +1334,7 @@ void HttpHandler::HandleCommand(
   if (request.data.length()) {
     std::optional<base::Value> parsed_body = base::JSONReader::Read(
         request.data, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
-    base::Value::Dict* body_params =
+    base::DictValue* body_params =
         parsed_body ? parsed_body->GetIfDict() : nullptr;
     if (!body_params) {
       if (w3cMode(session_id, session_thread_map_)) {
@@ -1411,14 +1411,14 @@ std::unique_ptr<net::HttpServerResponseInfo> HttpHandler::PrepareLegacyResponse(
         kChromeDriverVersion, base::SysInfo::OperatingSystemName().c_str(),
         base::SysInfo::OperatingSystemVersion().c_str(),
         base::SysInfo::OperatingSystemArchitecture().c_str()));
-    base::Value::Dict error;
+    base::DictValue error;
     error.Set("message", full_status.message());
     value = std::make_unique<base::Value>(std::move(error));
   }
   if (!value)
     value = std::make_unique<base::Value>();
 
-  base::Value::Dict body_params;
+  base::DictValue body_params;
   body_params.Set("status", status.code());
   body_params.Set("value", base::Value::FromUniquePtrValue(std::move(value)));
   body_params.Set("sessionId", session_id);
@@ -1576,9 +1576,9 @@ HttpHandler::PrepareStandardResponse(
   if (!value)
     value = std::make_unique<base::Value>();
 
-  base::Value::Dict body_params;
+  base::DictValue body_params;
   if (status.IsError()){
-    base::Value::Dict* inner_params = body_params.EnsureDict("value");
+    base::DictValue* inner_params = body_params.EnsureDict("value");
     inner_params->Set("error", StatusCodeToString(status.code()));
     inner_params->Set("message", status.message());
     inner_params->Set("stacktrace", status.stack_trace());
@@ -1749,7 +1749,7 @@ void HttpHandler::SendResponseOverWebSocket(
     std::unique_ptr<base::Value> result,
     const std::string& session_id,
     bool w3c) {
-  base::Value::Dict response;
+  base::DictValue response;
   if (status.IsOk()) {
     if (!result) {
       return;
@@ -1779,7 +1779,7 @@ Command HttpHandler::WrapCreateNewSessionCommand(Command command) {
       const std::string&, bool)>;
   return base::BindRepeating(
       [](Command create_and_init, CommandCallbackWrapper callback_to_prepend,
-         const base::Value::Dict& params, const std::string& session_id,
+         const base::DictValue& params, const std::string& session_id,
          const CommandCallback& callback) {
         create_and_init.Run(params, session_id,
                             base::BindRepeating(callback_to_prepend, callback));
@@ -1794,7 +1794,7 @@ void HttpHandler::OnNewSessionCreated(const CommandCallback& next_callback,
                                       std::unique_ptr<base::Value> result,
                                       const std::string& session_id,
                                       bool w3c) {
-  base::Value::Dict* dict = result ? result->GetIfDict() : nullptr;
+  base::DictValue* dict = result ? result->GetIfDict() : nullptr;
   if (status.IsOk() && dict &&
       dict->FindByDottedPath("capabilities.webSocketUrl")) {
     session_connection_map_.emplace(session_id, std::vector<int>{});
@@ -1852,7 +1852,7 @@ void HttpHandler::OnNewBidiSessionOnCmdThread(
 void HttpHandler::OnWebSocketMessage(HttpServerInterface* http_server,
                                      int connection_id,
                                      const std::string& data) {
-  base::Value::Dict parsed;
+  base::DictValue parsed;
   Status status = internal::ParseBidiCommand(data, parsed);
 
   auto it = connection_session_map_.find(connection_id);
@@ -1926,7 +1926,7 @@ void HttpHandler::OnWebSocketMessage(HttpServerInterface* http_server,
   }
 
   // Session command handling is delegated to BiDiMapper.
-  base::Value::Dict params;
+  base::DictValue params;
   params.Set("bidiCommand", std::move(parsed));
   params.Set("connectionId", connection_id);
 
@@ -2025,7 +2025,7 @@ bool internal::MatchesCommand(const std::string& method,
                               const std::string& path,
                               const CommandMapping& command,
                               std::string* session_id,
-                              base::Value::Dict* out_params) {
+                              base::DictValue* out_params) {
   if (!MatchesMethod(command.method, method))
     return false;
 
@@ -2036,7 +2036,7 @@ bool internal::MatchesCommand(const std::string& method,
   if (path_parts.size() != command_path_parts.size())
     return false;
 
-  base::Value::Dict params;
+  base::DictValue params;
   for (size_t i = 0; i < path_parts.size(); ++i) {
     CHECK(command_path_parts[i].length());
     if (command_path_parts[i][0] == ':') {
@@ -2069,7 +2069,7 @@ bool internal::IsNewSession(const CommandMapping& command) {
 }
 
 Status internal::ParseBidiCommand(const std::string& data,
-                                  base::Value::Dict& parsed) {
+                                  base::DictValue& parsed) {
   Status status{kOk};
   std::optional<base::Value> maybe_bidi_command =
       base::JSONReader::Read(data, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
@@ -2091,7 +2091,7 @@ Status internal::ParseBidiCommand(const std::string& data,
     return Status(kInvalidArgument,
                   "BiDi command has no 'method' of type string: " + data);
   }
-  base::Value::Dict* maybe_params = parsed.FindDict("params");
+  base::DictValue* maybe_params = parsed.FindDict("params");
   if (!maybe_params) {
     return Status(kInvalidArgument,
                   "BiDi command has no 'params' of type dictionary: " + data);
@@ -2099,10 +2099,10 @@ Status internal::ParseBidiCommand(const std::string& data,
   return status;
 }
 
-base::Value::Dict internal::CreateBidiErrorResponse(
+base::DictValue internal::CreateBidiErrorResponse(
     Status status,
     std::optional<base::Value> maybe_id) {
-  base::Value::Dict ret;
+  base::DictValue ret;
   // Error is generated by ChromeDriver
   ret.Set("type", "error");
   ret.Set("message", status.message());

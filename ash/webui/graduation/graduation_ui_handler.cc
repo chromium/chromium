@@ -8,7 +8,6 @@
 #include <utility>
 
 #include "ash/webui/graduation/graduation_state_tracker.h"
-#include "ash/webui/graduation/mojom/graduation_ui.mojom-shared.h"
 #include "ash/webui/graduation/mojom/graduation_ui.mojom.h"
 #include "ash/webui/graduation/webview_auth_handler.h"
 #include "base/functional/bind.h"

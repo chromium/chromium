@@ -55,7 +55,10 @@ def RetrieveResources():
         print('\'resources\' folder already exists. Clearing it...')
         filelist = glob.glob(os.path.join(resources_path, '*'))
         for f in filelist:
-            os.remove(f)
+            if os.path.isdir(f):
+                shutil.rmtree(f)
+            else:
+                os.remove(f)
 
     # Copy necessary files.
     for r in RESOURCES:

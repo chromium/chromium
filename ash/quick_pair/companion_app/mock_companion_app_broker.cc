@@ -6,8 +6,7 @@
 
 #include "testing/gmock/include/gmock/gmock.h"
 
-namespace ash {
-namespace quick_pair {
+namespace ash::quick_pair {
 
 MockCompanionAppBroker::MockCompanionAppBroker() = default;
 
@@ -21,5 +20,4 @@ void MockCompanionAppBroker::RemoveObserver(Observer* observer) {
   observers_.RemoveObserver(observer);
 }
 
-}  // namespace quick_pair
-}  // namespace ash
+}  // namespace ash::quick_pair

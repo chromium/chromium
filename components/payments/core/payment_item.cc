@@ -43,14 +43,14 @@ PaymentItem& PaymentItem::operator=(const PaymentItem& other) {
   return *this;
 }
 
-bool PaymentItem::FromValueDict(const base::Value::Dict& dict) {
+bool PaymentItem::FromValueDict(const base::DictValue& dict) {
   const std::string* label_val = dict.FindString(kPaymentItemLabel);
   if (!label_val) {
     return false;
   }
   label = *label_val;
 
-  const base::Value::Dict* amount_dict = dict.FindDict(kPaymentItemAmount);
+  const base::DictValue* amount_dict = dict.FindDict(kPaymentItemAmount);
   if (!amount_dict) {
     return false;
   }
@@ -65,8 +65,8 @@ bool PaymentItem::FromValueDict(const base::Value::Dict& dict) {
   return true;
 }
 
-base::Value::Dict PaymentItem::ToValueDict() const {
-  base::Value::Dict result;
+base::DictValue PaymentItem::ToValueDict() const {
+  base::DictValue result;
   result.Set(kPaymentItemLabel, label);
   result.Set(kPaymentItemAmount, PaymentCurrencyAmountToValueDict(*amount));
   result.Set(kPaymentItemPending, pending);

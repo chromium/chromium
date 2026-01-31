@@ -16,7 +16,6 @@ mojom("mojom") {
     "input_method_user_data.mojom",
     "japanese_settings.mojom",
     "user_data_japanese_dictionary.mojom",
-    "user_data_japanese_legacy_config.mojom",
   ]
 
   webui_module_path = "/"

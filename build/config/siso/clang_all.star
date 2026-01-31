@@ -4,6 +4,7 @@
 # found in the LICENSE file.
 """Siso configuration for clang."""
 
+load("@builtin//lib/gn.star", "gn")
 load("@builtin//path.star", "path")
 load("@builtin//struct.star", "module")
 load("./ar.star", "ar")
@@ -12,12 +13,17 @@ load("./gn_logs.star", "gn_logs")
 load("./mac_sdk.star", "mac_sdk")
 load("./win_sdk.star", "win_sdk")
 
-__clang_plugin_configs = [
-    "build/config/unsafe_buffers_paths.txt",
-    "build/config/warning_suppression.txt",
-    # crbug.com/418842344: Angle, PDFium use a different plugin config.
-    "unsafe_buffers_paths.txt",
-]
+def __clang_plugin_configs(ctx):
+    configs = [
+        "build/config/unsafe_buffers_paths.txt",
+        "build/config/warning_suppression.txt",
+        # crbug.com/418842344: Angle, PDFium use a different plugin config.
+        "unsafe_buffers_paths.txt",
+    ]
+
+    if "args.gn" in ctx.metadata and gn.args(ctx).get("sanitizer_coverage_skip_stdlib_and_absl"):
+        configs += ["build/config/sanitizers/ignorelist_stdlib_and_absl.txt"]
+    return configs
 
 def __filegroups(ctx):
     gn_logs_data = gn_logs.read(ctx)
@@ -68,6 +74,7 @@ def __filegroups(ctx):
 
 def __input_deps(ctx):
     build_dir = ctx.fs.canonpath(".")
+    clang_plugin_configs = __clang_plugin_configs(ctx)
 
     return {
         # need this because we use
@@ -84,10 +91,10 @@ def __input_deps(ctx):
             path.join(build_dir, "phony/buildtools/third_party/libc++/copy_custom_headers") + ":inputs",
             path.join(build_dir, "phony/buildtools/third_party/libc++/copy_libcxx_headers") + ":inputs",
         ],
-        "third_party/llvm-build/Release+Asserts/bin/clang": __clang_plugin_configs,
-        "third_party/llvm-build/Release+Asserts/bin/clang++": __clang_plugin_configs,
-        "third_party/llvm-build/Release+Asserts/bin/clang-cl": __clang_plugin_configs,
-        "third_party/llvm-build/Release+Asserts/bin/clang-cl.exe": __clang_plugin_configs,
+        "third_party/llvm-build/Release+Asserts/bin/clang": clang_plugin_configs,
+        "third_party/llvm-build/Release+Asserts/bin/clang++": clang_plugin_configs,
+        "third_party/llvm-build/Release+Asserts/bin/clang-cl": clang_plugin_configs,
+        "third_party/llvm-build/Release+Asserts/bin/clang-cl.exe": clang_plugin_configs,
         "third_party/llvm-build/Release+Asserts/bin/lld-link": [
             "build/config/c++/libc++.natvis",
             "build/win/as_invoker.manifest",

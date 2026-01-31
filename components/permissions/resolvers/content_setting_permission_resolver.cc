@@ -4,6 +4,8 @@
 
 #include "components/permissions/resolvers/content_setting_permission_resolver.h"
 
+#include <variant>
+
 #include "base/notimplemented.h"
 #include "base/notreached.h"
 #include "base/values.h"
@@ -46,9 +48,10 @@ ContentSettingPermissionResolver::DeterminePermissionStatus(
 PermissionSetting
 ContentSettingPermissionResolver::ComputePermissionDecisionResult(
     const PermissionSetting& previous_setting,
-    PermissionDecision decision,
-    PromptOptions prompt_options) const {
-  return PermissionUtil::PermissionDecisionToContentSetting(decision);
+    const PermissionPromptDecision& decision) const {
+  CHECK(std::holds_alternative<std::monostate>(decision.prompt_options));
+  return PermissionUtil::PermissionDecisionToContentSetting(
+      decision.overall_decision);
 }
 
 ContentSettingPermissionResolver::PromptParameters

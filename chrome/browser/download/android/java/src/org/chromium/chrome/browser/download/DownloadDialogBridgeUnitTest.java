@@ -24,7 +24,6 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.Robolectric;
 import org.robolectric.annotation.Config;
-import org.robolectric.shadows.ShadowLog;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.download.dialogs.DownloadLocationDialogCoordinator;
@@ -64,7 +63,6 @@ public class DownloadDialogBridgeUnitTest {
 
     @Before
     public void setUp() {
-        ShadowLog.stream = System.out;
         DownloadDialogBridgeJni.setInstanceForTesting(mNativeMock);
         mActivity = Robolectric.buildActivity(Activity.class).setup().get();
         mBridge = new DownloadDialogBridge(FAKE_NATIVE_HOLDER, mLocationDialog);

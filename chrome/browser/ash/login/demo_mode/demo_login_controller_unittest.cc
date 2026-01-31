@@ -146,12 +146,12 @@ class DemoLoginControllerTest : public testing::Test {
         chromeos::FakePowerManagerClient::Get());
     policy_controller_ = chromeos::PowerPolicyController::Get();
 
-    base::Value::Dict account;
+    base::DictValue account;
     account.Set(kAccountsPrefDeviceLocalAccountsKeyId, kPublicAccountUserId);
     account.Set(
         kAccountsPrefDeviceLocalAccountsKeyType,
         static_cast<int>(policy::DeviceLocalAccountType::kPublicSession));
-    base::Value::List accounts;
+    base::ListValue accounts;
     accounts.Append(std::move(account));
     settings_helper_.Set(kAccountsPrefDeviceLocalAccounts,
                          base::Value(std::move(accounts)));
@@ -371,7 +371,7 @@ TEST_F(DemoLoginControllerTest,
   // `policy_connector_ash->GetDeviceCloudPolicyManager()` is null. We remove
   // the fake one here so `DemoLoginController::GetDeviceIntegrity()` cannot
   // find any policy managers, and it will return failure (an empty
-  // base::Value::Dict), causing the request to fail.
+  // base::DictValue), causing the request to fail.
   GetDemoLoginController()->SetDeviceCloudPolicyManagerForTesting(nullptr);
 
   // Verify demo account login gets triggered by `ExistingUserController`.

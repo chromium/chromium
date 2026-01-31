@@ -85,12 +85,10 @@ class ContentSettingBubbleDialogTest
                   &CreateTestPopupNavigationDelegate) {
     scoped_feature_list_.InitWithFeatures(
         {features::kQuietNotificationPrompts},
-        // Cookies icon intentionally does not show when 3PC are blocked.
-        {content_settings::features::kTrackingProtection3pcd,
-         // `kLeftHandSideActivityIndicators` should be disabled as it changes
-         // the UI of the camera/mic activity indicator. The new UI will be
-         // tested separately.
-         content_settings::features::kLeftHandSideActivityIndicators});
+        // `kLeftHandSideActivityIndicators` should be disabled as it changes
+        // the UI of the camera/mic activity indicator. The new UI will be
+        // tested separately.
+        {content_settings::features::kLeftHandSideActivityIndicators});
   }
 
   ContentSettingBubbleDialogTest(const ContentSettingBubbleDialogTest&) =
@@ -154,8 +152,8 @@ void ContentSettingBubbleDialogTest::ApplyContentSettingsForType(
     case ContentSettingsType::AUTOMATIC_DOWNLOADS: {
       // Automatic downloads are handled by DownloadRequestLimiter.
       DownloadRequestLimiter::TabDownloadState* tab_download_state =
-          g_browser_process->download_request_limiter()->GetDownloadState(
-              web_contents, true);
+          g_browser_process->download_request_limiter()
+              ->GetOrCreateDownloadState(web_contents);
       tab_download_state->set_download_seen();
       tab_download_state->SetDownloadStatusAndNotify(
           url::Origin::Create(web_contents->GetVisibleURL()),

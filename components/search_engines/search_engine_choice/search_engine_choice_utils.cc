@@ -4,6 +4,7 @@
 
 #include "components/search_engines/search_engine_choice/search_engine_choice_utils.h"
 
+#include <algorithm>
 #include <memory>
 #include <optional>
 #include <string>
@@ -12,7 +13,6 @@
 #include "base/check_is_test.h"
 #include "base/check_op.h"
 #include "base/command_line.h"
-#include "base/containers/contains.h"
 #include "base/containers/fixed_flat_map.h"
 #include "base/containers/to_vector.h"
 #include "base/feature_list.h"
@@ -94,16 +94,16 @@ ChoiceScreenDisplayState::ChoiceScreenDisplayState(
 
 ChoiceScreenDisplayState::~ChoiceScreenDisplayState() = default;
 
-base::Value::Dict ChoiceScreenDisplayState::ToDict() const {
+base::DictValue ChoiceScreenDisplayState::ToDict() const {
   // TODO(crbug.com/454023518): Non-regional set engine support is not currently
   // expected to result in uploading nor locally caching display metrics.
   CHECK(!includes_non_regional_set_engine);
 
-  auto dict = base::Value::Dict();
+  auto dict = base::DictValue();
 
   dict.Set(kDisplayStateCountryIdKey, country_id.Serialize());
 
-  base::Value::List* search_engines_array =
+  base::ListValue* search_engines_array =
       dict.EnsureList(kDisplayStateSearchEnginesKey);
   for (SearchEngineType search_engine_type : search_engines) {
     search_engines_array->Append(static_cast<int>(search_engine_type));
@@ -119,14 +119,14 @@ base::Value::Dict ChoiceScreenDisplayState::ToDict() const {
 
 // static
 std::optional<ChoiceScreenDisplayState> ChoiceScreenDisplayState::FromDict(
-    const base::Value::Dict& dict) {
+    const base::DictValue& dict) {
   std::optional<int> parsed_country_code =
       dict.FindInt(kDisplayStateCountryIdKey);
   std::optional<CountryId> parsed_country_id;
   if (parsed_country_code.has_value()) {
     parsed_country_id = CountryId::Deserialize(parsed_country_code.value());
   }
-  const base::Value::List* parsed_search_engines =
+  const base::ListValue* parsed_search_engines =
       dict.FindList(kDisplayStateSearchEnginesKey);
   std::optional<int> parsed_selected_engine_index =
       dict.FindInt(kDisplayStateSelectedEngineIndexKey);
@@ -180,9 +180,9 @@ ChoiceScreenData::ChoiceScreenData(
           current_default_to_highlight != nullptr,
           /*includes_non_regional_set_engine=*/
           current_default_to_highlight != nullptr &&
-              !base::Contains(search_engines_,
-                              current_default_to_highlight,
-                              &std::unique_ptr<TemplateURL>::get))),
+              !std::ranges::contains(search_engines_,
+                                     current_default_to_highlight,
+                                     &std::unique_ptr<TemplateURL>::get))),
       current_default_to_highlight_(current_default_to_highlight) {}
 
 ChoiceScreenData::~ChoiceScreenData() = default;

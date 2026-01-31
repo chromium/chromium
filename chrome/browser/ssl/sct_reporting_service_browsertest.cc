@@ -401,31 +401,31 @@ class SCTReportingServiceBrowserTest : public CertVerifierBrowserTest {
     // 2022-01-01 00:00:00 GMT.
     base::Time server_time =
         base::Time::UnixEpoch() + base::Seconds(1640995200);
-    base::Value::Dict response;
+    base::DictValue response;
     response.Set("responseStatus", "OK");
     response.Set("now", base::TimeFormatAsIso8601(server_time));
 
-    base::Value::List suffixes;
+    base::ListValue suffixes;
     for (const auto& suffix : suffix_list_) {
       suffixes.Append(base::Base64Encode(base::as_byte_span(suffix)));
     }
     response.Set("hashSuffix", std::move(suffixes));
 
-    base::Value::List log_list;
+    base::ListValue log_list;
     {
-      base::Value::Dict log_status;
+      base::DictValue log_status;
       log_status.Set("logId", base::Base64Encode(kTestGoogleLogId));
       log_status.Set("ingestedUntil", base::TimeFormatAsIso8601(server_time));
       log_list.Append(std::move(log_status));
     }
     {
-      base::Value::Dict log_status;
+      base::DictValue log_status;
       log_status.Set("logId", base::Base64Encode(kTestNonGoogleLogId1));
       log_status.Set("ingestedUntil", base::TimeFormatAsIso8601(server_time));
       log_list.Append(std::move(log_status));
     }
     {
-      base::Value::Dict log_status;
+      base::DictValue log_status;
       log_status.Set("logId", base::Base64Encode(kTestNonGoogleLogId2));
       log_status.Set("ingestedUntil", base::TimeFormatAsIso8601(server_time));
       log_list.Append(std::move(log_status));

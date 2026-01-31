@@ -77,6 +77,48 @@
       </li>
     </details>
     <hr>
+    <details>
+      <summary>Create Window</summary>
+      <li style="padding: 5px 0;"><button id="create_window_button">create()</button></li>
+        <label><input type="checkbox" id="create_window_focused_checkbox" checked>focused</label>
+        <label><input type="checkbox" id="create_window_incognito_checkbox">incognito</label>
+        <label><input type="checkbox" id="create_window_set_self_as_opener_checkbox">setSelfAsOpener</label>
+      </li>
+      <li style="padding: 5px 0;">
+        <label>type:</label>
+        <select id="create_window_type_select">
+          <option value="normal" selected>normal</option>
+          <option value="popup">popup</option>
+          <option value="panel">panel</option>
+        </select>
+      </li>
+      <li style="padding: 5px 0;">
+        <label>state:</label>
+        <select id="create_window_state_select">
+          <option value="normal" selected>normal</option>
+          <option value="minimized">minimized</option>
+          <option value="maximized">maximized</option>
+          <option value="fullscreen">fullscreen</option>
+        </select>
+      </li>
+      <li style="padding: 5px 0;">
+        <label>left:<input type="number" id="create_window_left_input" value="0" style="width: 8ch;"></label>
+        <label>top:<input type="number" id="create_window_top_input" value="0" style="width: 8ch;"></label>
+      </li>
+      <li style="padding: 5px 0;">
+        <label>width:<input type="number" id="create_window_width_input" value="800" style="width: 8ch;"></label>
+        <label>height:<input type="number" id="create_window_height_input" value="600" style="width: 8ch;"></label>
+      </li>
+      <li style="padding: 5px 0;">
+        <label>url:</label>
+        <input type="text" id="create_window_url_input" placeholder="e.g., https://www.google.com" style="width: 200px;">
+      </li>
+      <li style="padding: 5px 0;">
+        <label>tabId:</label>
+        <input type="number" id="create_window_tab_id_input" placeholder="Tab to add to the new window" style="width: 200px;">
+      </li>
+    </details>
+    <hr>
   </ul>
 
   <p>API return value:</p>

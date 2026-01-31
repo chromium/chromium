@@ -148,8 +148,8 @@ fn test_write_f64() {
         (3.1, "3.1"),
         (-1.5, "-1.5"),
         (0.5, "0.5"),
-        (f64::MIN, "-1.7976931348623157e308"),
-        (f64::MAX, "1.7976931348623157e308"),
+        (f64::MIN, "-1.7976931348623157e+308"),
+        (f64::MAX, "1.7976931348623157e+308"),
         (f64::EPSILON, "2.220446049250313e-16"),
     ];
     test_encode_ok(tests);
@@ -1037,22 +1037,28 @@ fn test_parse_number() {
 
     #[cfg(feature = "arbitrary_precision")]
     test_parse_ok(vec![
-        ("1e999", Number::from_string_unchecked("1e999".to_owned())),
+        ("1e999", Number::from_string_unchecked("1e+999".to_owned())),
         ("1e+999", Number::from_string_unchecked("1e+999".to_owned())),
-        ("-1e999", Number::from_string_unchecked("-1e999".to_owned())),
+        (
+            "-1e999",
+            Number::from_string_unchecked("-1e+999".to_owned()),
+        ),
         ("1e-999", Number::from_string_unchecked("1e-999".to_owned())),
-        ("1E999", Number::from_string_unchecked("1E999".to_owned())),
-        ("1E+999", Number::from_string_unchecked("1E+999".to_owned())),
-        ("-1E999", Number::from_string_unchecked("-1E999".to_owned())),
-        ("1E-999", Number::from_string_unchecked("1E-999".to_owned())),
-        ("1E+000", Number::from_string_unchecked("1E+000".to_owned())),
+        ("1E999", Number::from_string_unchecked("1e+999".to_owned())),
+        ("1E+999", Number::from_string_unchecked("1e+999".to_owned())),
+        (
+            "-1E999",
+            Number::from_string_unchecked("-1e+999".to_owned()),
+        ),
+        ("1E-999", Number::from_string_unchecked("1e-999".to_owned())),
+        ("1E+000", Number::from_string_unchecked("1e+000".to_owned())),
         (
             "2.3e999",
-            Number::from_string_unchecked("2.3e999".to_owned()),
+            Number::from_string_unchecked("2.3e+999".to_owned()),
         ),
         (
             "-2.3e999",
-            Number::from_string_unchecked("-2.3e999".to_owned()),
+            Number::from_string_unchecked("-2.3e+999".to_owned()),
         ),
     ]);
 }

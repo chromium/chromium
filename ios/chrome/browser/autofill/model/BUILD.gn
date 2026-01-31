@@ -208,8 +208,6 @@ source_set("unit_tests") {
     "//components/autofill/ios/form_util:autofill_form_features_ts",
     "//components/autofill/ios/form_util:child_frame_registration_test_ts",
     "//components/autofill/ios/form_util:fill_util_test_js",
-    "//components/autofill/ios/form_util:form_lib_js",
-    "//components/autofill/ios/form_util:form_util_feature",
     "//components/autofill/ios/form_util:frame_registration_feature",
     "//components/autofill/ios/form_util:test_support",
     "//components/feature_engagement/public",
@@ -221,10 +219,11 @@ source_set("unit_tests") {
     "//components/security_state/ios",
     "//components/sync_user_events:test_support",
     "//ios/chrome/app/application_delegate:app_state",
+    "//ios/chrome/browser/autofill/form_input_accessory/coordinator",
+    "//ios/chrome/browser/autofill/form_input_accessory/ui",
     "//ios/chrome/browser/autofill/model/bottom_sheet",
     "//ios/chrome/browser/autofill/model/bottom_sheet:save_card_bottom_sheet_model",
     "//ios/chrome/browser/autofill/ui_bundled:coordinator",
-    "//ios/chrome/browser/autofill/ui_bundled/form_input_accessory",
     "//ios/chrome/browser/infobars/model",
     "//ios/chrome/browser/passwords/model",
     "//ios/chrome/browser/settings/ui_bundled:test_support",
@@ -250,10 +249,6 @@ source_set("unit_tests") {
     "//ui/base:test_support",
     "//ui/gfx:test_support",
   ]
-
-  # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
-  # enable the diagnostic by removing this line.
-  configs += [ "//build/config/compiler:no_exit_time_destructors" ]
 }
 
 bundle_data("unit_tests_bundle_data") {

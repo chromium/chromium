@@ -4,6 +4,8 @@
 
 #include "ash/wm/window_cycle/window_cycle_controller.h"
 
+#include <algorithm>
+
 #include "ash/accessibility/accessibility_controller.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/events/event_rewriter_controller_impl.h"
@@ -26,7 +28,6 @@
 #include "ash/wm/window_cycle/window_cycle_list.h"
 #include "ash/wm/window_util.h"
 #include "base/check.h"
-#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/user_metrics.h"
@@ -423,7 +424,7 @@ WindowCycleController::BuildWindowListForWindowCycling(
   for (aura::Window* window : window_list) {
     // The latter-activated window in a snap group should have been added. Skip
     // inserting to avoid duplicates.
-    if (base::Contains(adjusted_window_list, window)) {
+    if (std::ranges::contains(adjusted_window_list, window)) {
       continue;
     }
 

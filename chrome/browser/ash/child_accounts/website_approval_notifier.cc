@@ -18,10 +18,10 @@
 #include "chrome/browser/notifications/notification_display_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_key.h"
-#include "chrome/browser/supervised_user/supervised_user_settings_service_factory.h"
+#include "chrome/browser/supervised_user/family_link_settings_service_factory.h"
 #include "chrome/grit/generated_resources.h"
 #include "chromeos/ui/vector_icons/vector_icons.h"
-#include "components/supervised_user/core/browser/supervised_user_settings_service.h"
+#include "components/supervised_user/core/browser/family_link_settings_service.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/message_center/public/cpp/notification.h"
 #include "url/gurl.h"
@@ -69,13 +69,14 @@ void OnNotificationClick(const GURL& url) {
 
 WebsiteApprovalNotifier::WebsiteApprovalNotifier(Profile* profile)
     : profile_(profile) {
-  supervised_user::SupervisedUserSettingsService* settings_service =
-      SupervisedUserSettingsServiceFactory::GetForKey(
+  supervised_user::FamilyLinkSettingsService* family_link_settings_service =
+      supervised_user::FamilyLinkSettingsServiceFactory::GetForKey(
           profile_->GetProfileKey());
   website_approval_subscription_ =
-      settings_service->SubscribeForNewWebsiteApproval(base::BindRepeating(
-          &WebsiteApprovalNotifier::MaybeShowApprovalNotification,
-          weak_ptr_factory_.GetWeakPtr()));
+      family_link_settings_service->SubscribeForNewWebsiteApproval(
+          base::BindRepeating(
+              &WebsiteApprovalNotifier::MaybeShowApprovalNotification,
+              weak_ptr_factory_.GetWeakPtr()));
 }
 
 WebsiteApprovalNotifier::~WebsiteApprovalNotifier() = default;

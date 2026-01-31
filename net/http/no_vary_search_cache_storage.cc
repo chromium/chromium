@@ -24,7 +24,6 @@
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/time/time.h"
-#include "base/types/cxx23_to_underlying.h"
 #include "net/base/pickle.h"
 #include "net/base/pickle_base_types.h"
 #include "net/base/pickle_traits.h"
@@ -83,7 +82,7 @@ enum class JournalEntryType : uint32_t {
 template <>
 struct PickleTraits<JournalEntryType> {
   static void Serialize(base::Pickle& pickle, const JournalEntryType& value) {
-    WriteToPickle(pickle, base::to_underlying(value));
+    WriteToPickle(pickle, std::to_underlying(value));
   }
 
   static std::optional<JournalEntryType> Deserialize(
@@ -102,7 +101,7 @@ struct PickleTraits<JournalEntryType> {
   }
 
   static size_t PickleSize(const JournalEntryType& value) {
-    return EstimatePickleSize(base::to_underlying(value));
+    return EstimatePickleSize(std::to_underlying(value));
   }
 };
 

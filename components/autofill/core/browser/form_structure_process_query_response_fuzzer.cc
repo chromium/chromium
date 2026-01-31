@@ -6,10 +6,9 @@
 
 #include <iostream>
 
+#include "base/base64.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/autofill/core/browser/crowdsourcing/autofill_crowdsourcing_encoding.h"
-#include "components/autofill/core/browser/form_structure.h"
-#include "components/autofill/core/browser/form_structure_test_api.h"
 #include "components/autofill/core/browser/test_utils/autofill_test_utils.h"
 #include "components/autofill/core/common/form_data.h"
 #include "components/autofill/core/common/form_data_test_api.h"
@@ -32,25 +31,33 @@ void AddField(const std::string& label,
   test_api(*form_data).Append(field);
 }
 
-// We run ProcessServerPredictionsQueryResponse twice with hardcoded forms
+std::string SerializeAndEncode(const AutofillQueryResponse& response) {
+  std::string unencoded_response_string;
+  if (!response.SerializeToString(&unencoded_response_string)) {
+    LOG(ERROR) << "Cannot serialize the response proto";
+    return "";
+  }
+  return base::Base64Encode(unencoded_response_string);
+}
+
+// We run ParseServerPredictionsFromQueryResponse twice with hardcoded forms
 // vectors. Ideally we should also generate forms vectors by using fuzzing, but
 // at the moment we use simplified approach. There is no specific reason to use
 // those two hardcoded forms vectors, so it can be changed if needed.
 DEFINE_BINARY_PROTO_FUZZER(const AutofillQueryResponse& response) {
-  std::vector<raw_ref<FormStructure>> forms;
-  ProcessServerPredictionsQueryResponse(response, forms,
-                                        test::GetEncodedSignatures(forms),
-                                        /*log_manager=*/nullptr);
+  std::vector<FormData> forms;
+  ParseServerPredictionsFromQueryResponse(
+      SerializeAndEncode(response), forms, test::GetEncodedSignatures(forms),
+      /*log_manager=*/nullptr, /*ignore_small_forms=*/true);
 
-  FormData form_data;
-  AddField("username", "username", FormControlType::kInputText, &form_data);
-  AddField("password", "password", FormControlType::kInputPassword, &form_data);
+  FormData form;
+  AddField("username", "username", FormControlType::kInputText, &form);
+  AddField("password", "password", FormControlType::kInputPassword, &form);
 
-  FormStructure form(form_data);
   forms.emplace_back(form);
-  ProcessServerPredictionsQueryResponse(response, forms,
-                                        test::GetEncodedSignatures(forms),
-                                        /*log_manager=*/nullptr);
+  ParseServerPredictionsFromQueryResponse(
+      SerializeAndEncode(response), forms, test::GetEncodedSignatures(forms),
+      /*log_manager=*/nullptr, /*ignore_small_forms=*/true);
 }
 
 }  // namespace

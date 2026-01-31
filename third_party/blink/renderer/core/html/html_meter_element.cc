@@ -256,6 +256,8 @@ void HTMLMeterElement::AdjustStyle(ComputedStyleBuilder& builder) {
   builder.SetUAShadowHostData(std::make_unique<StyleUAShadowHostData>(
       /* width */ Length(),
       /* height */ Length(),
+      /* max_width */ Length(),
+      /* max_height */ Length(),
       StyleAspectRatio(EAspectRatioType::kAuto, gfx::SizeF()),
       /* alt_text */ g_null_atom,
       /* alt_attr */ g_null_atom,

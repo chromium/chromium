@@ -10,8 +10,6 @@
 #include "ui/base/metadata/metadata_header_macros.h"
 
 class BrowserWindowInterface;
-class TabStripController;
-class TabStrip;
 
 // TabSearchButton should leverage the look and feel of the existing
 // NewTabButton for sizing and appropriate theming. This class updates the
@@ -21,11 +19,9 @@ class TabSearchButton : public TabStripControlButton {
   METADATA_HEADER(TabSearchButton, TabStripControlButton)
 
  public:
-  TabSearchButton(TabStripController* tab_strip_controller,
-                  BrowserWindowInterface* browser_window_interface,
+  TabSearchButton(BrowserWindowInterface* browser_window_interface,
                   Edge fixed_flat_edge,
-                  Edge animated_flat_edge,
-                  TabStrip* tab_strip);
+                  Edge animated_flat_edge);
   TabSearchButton(const TabSearchButton&) = delete;
   TabSearchButton& operator=(const TabSearchButton&) = delete;
   ~TabSearchButton() override;

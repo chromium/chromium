@@ -9,13 +9,16 @@
 #import "ios/chrome/browser/overscroll_actions/ui_bundled/overscroll_actions_controller.h"
 #import "ios/chrome/browser/save_to_photos/ui_bundled/save_to_photos_coordinator.h"
 #import "ios/chrome/browser/shared/public/commands/activity_service_commands.h"
+#import "ios/chrome/browser/shared/public/commands/sync_presenter_commands.h"
 
+@class DownloadListCoordinator;
 @class NewTabPageCoordinator;
 
 // Coordinator for BrowserViewController. Testing category to expose properties
 // used for tests only.
 @interface BrowserCoordinator (Testing) <ActivityServiceCommands,
-                                         OverscrollActionsControllerDelegate>
+                                         OverscrollActionsControllerDelegate,
+                                         SyncPresenterCommands>
 
 // The coordinator used for the New Tab Page.
 @property(nonatomic, strong, readonly) NewTabPageCoordinator* NTPCoordinator;
@@ -23,6 +26,10 @@
 // Coordinator for displaying the Save to Photos UI.
 @property(nonatomic, strong, readonly)
     SaveToPhotosCoordinator* saveToPhotosCoordinator;
+
+// Coordinator for displaying the Download List UI.
+@property(nonatomic, strong, readonly)
+    DownloadListCoordinator* downloadListCoordinator;
 
 @end
 

@@ -40,7 +40,7 @@ class OriginVerifier {
                     const base::android::JavaRef<jstring>& j_relationship,
                     const base::android::JavaRef<jobject>& jweb_contents);
 
-  static jlong Init(
+  static int64_t Init(
       JNIEnv* env,
       const base::android::JavaRef<jobject>& obj,
       const base::android::JavaRef<jobject>& jbrowser_context_handle);

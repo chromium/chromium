@@ -36,6 +36,8 @@
 #include "net/base/ip_endpoint.h"
 #include "net/base/net_errors.h"
 #include "net/base/port_util.h"
+#include "net/cert/x509_certificate.h"
+#include "net/cert/x509_util.h"
 #include "net/log/net_log_source.h"
 #include "net/socket/next_proto.h"
 #include "net/socket/ssl_server_socket.h"
@@ -267,6 +269,30 @@ EmbeddedTestServer::OCSPConfig& EmbeddedTestServer::OCSPConfig::operator=(
 EmbeddedTestServer::OCSPConfig& EmbeddedTestServer::OCSPConfig::operator=(
     OCSPConfig&&) = default;
 
+EmbeddedTestServer::CertAndKey::CertAndKey(bssl::UniquePtr<CRYPTO_BUFFER> cert,
+                                           bssl::UniquePtr<EVP_PKEY> pkey)
+    : pkey(std::move(pkey)) {
+  cert_chain.push_back(std::move(cert));
+}
+EmbeddedTestServer::CertAndKey::CertAndKey(
+    std::vector<bssl::UniquePtr<CRYPTO_BUFFER>> cert_chain,
+    bssl::UniquePtr<EVP_PKEY> pkey)
+    : cert_chain(std::move(cert_chain)), pkey(std::move(pkey)) {}
+EmbeddedTestServer::CertAndKey::~CertAndKey() = default;
+
+EmbeddedTestServer::CertAndKey::CertAndKey(const CertAndKey& other)
+    : cert_chain(x509_util::DupCryptoBuffers(other.cert_chain)),
+      pkey(bssl::UpRef(other.pkey)) {}
+EmbeddedTestServer::CertAndKey::CertAndKey(CertAndKey&&) = default;
+EmbeddedTestServer::CertAndKey& EmbeddedTestServer::CertAndKey::operator=(
+    const CertAndKey& other) {
+  cert_chain = x509_util::DupCryptoBuffers(other.cert_chain);
+  pkey = bssl::UpRef(other.pkey);
+  return *this;
+}
+EmbeddedTestServer::CertAndKey& EmbeddedTestServer::CertAndKey::operator=(
+    CertAndKey&&) = default;
+
 EmbeddedTestServer::ServerCertificateConfig::ServerCertificateConfig() =
     default;
 EmbeddedTestServer::ServerCertificateConfig::ServerCertificateConfig(
@@ -450,7 +476,7 @@ std::vector<SSLServerCredential> EmbeddedTestServer::GenerateCertAndKeys() {
 
   credentials_.clear();
   for (const auto& config : cert_configs_) {
-    std::optional<CredentialPair> credential = GenerateCertAndKey(config);
+    std::optional<CredentialPair> credential = ConfigToCredentialPair(config);
     if (!credential.has_value()) {
       return {};
     }
@@ -471,8 +497,40 @@ std::vector<SSLServerCredential> EmbeddedTestServer::GenerateCertAndKeys() {
 }
 
 std::optional<EmbeddedTestServer::CredentialPair>
+EmbeddedTestServer::ConfigToCredentialPair(
+    const ServerCertificateConfig& cert_config) const {
+  if (!cert_config.cert_and_key) {
+    return GenerateCertAndKey(cert_config);
+  }
+
+  Credential credential;
+  SSLServerCredential ssl_server_credential;
+
+  ssl_server_credential.trust_anchor_id = cert_config.trust_anchor_id;
+  ssl_server_credential.signature_algorithm_for_testing =
+      cert_config.signature_algorithm_for_testing;
+
+  ssl_server_credential.cert_chain =
+      x509_util::DupCryptoBuffers(cert_config.cert_and_key->cert_chain);
+
+  credential.x509_cert = X509Certificate::CreateFromBuffer(
+      bssl::UpRef(cert_config.cert_and_key->cert_chain[0]),
+      x509_util::DupCryptoBuffers(
+          base::span(cert_config.cert_and_key->cert_chain).subspan(1u)));
+
+  ssl_server_credential.pkey = bssl::UpRef(cert_config.cert_and_key->pkey);
+
+  return CredentialPair{.credential = std::move(credential),
+                        .ssl_credential = std::move(ssl_server_credential)};
+}
+
+std::optional<EmbeddedTestServer::CredentialPair>
 EmbeddedTestServer::GenerateCertAndKey(
-    const ServerCertificateConfig& cert_config) {
+    const ServerCertificateConfig& cert_config) const {
+  // This method should only be called on configs that didn't specify a
+  // cert_and_key.
+  CHECK(!cert_config.cert_and_key);
+
   base::ScopedAllowBlockingForTesting allow_blocking;
   base::FilePath certs_dir(GetTestCertsDirectory());
   auto now = base::Time::Now();

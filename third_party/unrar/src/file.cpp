@@ -21,7 +21,7 @@ File::File()
   CurFilePos=0;
 
 #ifdef CHROMIUM_UNRAR
-  hOpenFile=FILE_BAD_HANDLE;
+  reader_delegate_ = nullptr;
 #endif
 }
 
@@ -58,8 +58,8 @@ bool File::Open(const std::wstring &Name,uint Mode)
 #ifdef _WIN_ALL
 #if defined(CHROMIUM_UNRAR)
   // Do not open a file handle since the sandbox doesn't allow it. Use the
-  // handle provided by the caller.
-  hNewFile = hOpenFile;
+  // delegate provided by the caller.
+  return reader_delegate_;
 #else
   uint Access=WriteMode ? GENERIC_WRITE:GENERIC_READ;
   if (UpdateMode)
@@ -112,8 +112,8 @@ bool File::Open(const std::wstring &Name,uint Mode)
 
 #if defined(CHROMIUM_UNRAR)
   // Do not open a file handle since the sandbox doesn't allow it. Use the
-  // handle provided by the caller.
-  int handle = hOpenFile;
+  // delegate provided by the caller.
+  return reader_delegate_;
 #else
   int flags=UpdateMode ? O_RDWR:(WriteMode ? O_WRONLY:O_RDONLY);
 
@@ -137,7 +137,6 @@ bool File::Open(const std::wstring &Name,uint Mode)
   WideToChar(Name,NameA);
 
   int handle=open(NameA.c_str(),flags);
-#endif  // defined(CHROMIUM_UNRAR)
 
 #ifdef LOCK_EX
 
@@ -175,6 +174,7 @@ bool File::Open(const std::wstring &Name,uint Mode)
     TruncatedAfterReadError=false;
   }
   return Success;
+#endif  // defined(CHROMIUM_UNRAR)
 }
 
 
@@ -199,9 +199,8 @@ bool File::WOpen(const std::wstring &Name)
 bool File::Create(const std::wstring &Name,uint Mode)
 {
 #if defined(CHROMIUM_UNRAR)
-  // Since the Chromium sandbox does not allow the creation of files, use the
-  // provided file.
-  hFile = hOpenFile;
+  // Since the Chromium sandbox does not allow the creation of files.
+  return true;
 #else
   // 2025.09.03: Likely outdated info, see https://www.illumos.org/issues/2000
   // OpenIndiana based NAS and CIFS shares fail to set the file time if file
@@ -270,14 +269,15 @@ bool File::WCreate(const std::wstring &Name,uint Mode)
 
 bool File::Close()
 {
+#if defined(CHROMIUM_UNRAR)
+  return reader_delegate_;
+#endif
   bool Success=true;
 
   if (hFile!=FILE_BAD_HANDLE)
   {
     if (!SkipClose)
     {
-#if !defined(CHROMIUM_UNRAR)
-// unrar should not close the file handle since it wasn't opened by unrar.
 #ifdef _WIN_ALL
       // We use the standard system handle for stdout in Windows
       // and it must not be closed here.
@@ -290,7 +290,6 @@ bool File::Close()
       Success=fclose(hFile)!=EOF;
 #endif
 #endif
-#endif  // defined(CHROMIUM_UNRAR)
     }
     hFile=FILE_BAD_HANDLE;
   }
@@ -480,6 +479,13 @@ int File::Read(void *Data,size_t Size)
 // Returns -1 in case of error.
 int File::DirectRead(void *Data,size_t Size)
 {
+#if defined(CHROMIUM_UNRAR)
+  if (reader_delegate_) {
+    int64_t ret = reader_delegate_->Read(
+        base::span<uint8_t>((uint8_t*)Data, Size));
+    return (ret < 0) ? -1 : (int)ret;
+  }
+#endif
 #ifdef _WIN_ALL
   const size_t MaxDeviceRead=20000;
   const size_t MaxLockedRead=32768;
@@ -553,6 +559,21 @@ void File::Seek(int64 Offset,int Method)
 
 bool File::RawSeek(int64 Offset,int Method)
 {
+#if defined(CHROMIUM_UNRAR)
+  if (reader_delegate_) {
+    int64_t absolute_offset = Offset;
+    if (Method == SEEK_CUR) {
+      int64_t current = reader_delegate_->Tell();
+      if (current == -1) return false;
+      absolute_offset += current;
+    } else if (Method == SEEK_END) {
+      int64_t len = reader_delegate_->GetLength();
+      if (len == -1) return false;
+      absolute_offset += len;
+    }
+    return reader_delegate_->Seek(absolute_offset);
+  }
+#endif
   if (hFile==FILE_BAD_HANDLE)
     return true;
   if (!IsSeekable()) // To extract archives from stdin with -si.
@@ -614,6 +635,9 @@ bool File::RawSeek(int64 Offset,int Method)
 
 int64 File::Tell()
 {
+#if defined(CHROMIUM_UNRAR)
+  if (reader_delegate_) return reader_delegate_->Tell();
+#endif
   if (hFile==FILE_BAD_HANDLE)
     if (AllowExceptions)
       ErrHandler.SeekError(FileName);
@@ -813,6 +837,9 @@ void File::GetOpenFileTime(RarTime *ftm,RarTime *ftc,RarTime *fta)
 
 int64 File::FileLength()
 {
+#if defined(CHROMIUM_UNRAR)
+  if (reader_delegate_) return reader_delegate_->GetLength();
+#endif
   int64 SavePos=Tell();
   Seek(0,SEEK_END);
   int64 Length=Tell();
@@ -886,7 +913,7 @@ int64 File::Copy(File &Dest,int64 Length)
 #endif
 
 #if defined(CHROMIUM_UNRAR)
-void File::SetFileHandle(FileHandle hF) {
-  hOpenFile = hF;
+void File::SetReaderDelegate(third_party_unrar::RarReaderDelegate* delegate) {
+  reader_delegate_ = delegate;
 }
 #endif  // defined(CHROMIUM_UNRAR)

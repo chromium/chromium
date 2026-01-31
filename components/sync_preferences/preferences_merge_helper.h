@@ -19,13 +19,13 @@ namespace helper {
 // Merges `local_value` and `server_value` list values.
 // All entries of `server_value` come first and then of `local_value`. Any
 // repeating value in `local_value` is excluded in the result.
-base::Value::List MergeListValues(const base::Value::List& local_value,
-                                  const base::Value::List& server_value);
+base::ListValue MergeListValues(const base::ListValue& local_value,
+                                const base::ListValue& server_value);
 
 // Merges `local_value` and `server_value` dict values.
 // Entry from `server_value` wins in case of conflict.
-base::Value::Dict MergeDictionaryValues(const base::Value::Dict& local_value,
-                                        const base::Value::Dict& server_value);
+base::DictValue MergeDictionaryValues(const base::DictValue& local_value,
+                                      const base::DictValue& server_value);
 
 // Merges the `local_value` into the supplied `server_value` and returns
 // the result. If there is a conflict, the server value takes precedence. Note
@@ -42,10 +42,10 @@ base::Value MergePreference(const PrefModelAssociatorClient* client,
 // and the local store, from the updated merged value `new_value`. Returns a
 // pair with the first item being the updated local value, followed by the
 // updated account value.
-std::pair<base::Value::Dict, base::Value::Dict> UnmergeDictionaryValues(
-    base::Value::Dict new_value,
-    const base::Value::Dict& original_local_value,
-    const base::Value::Dict& original_account_value);
+std::pair<base::DictValue, base::DictValue> UnmergeDictionaryValues(
+    base::DictValue new_value,
+    const base::DictValue& original_local_value,
+    const base::DictValue& original_account_value);
 
 }  // namespace helper
 }  // namespace sync_preferences

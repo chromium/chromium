@@ -72,7 +72,7 @@ class OmniboxPageHandler : public AutocompleteController::Observer,
  private:
   void OnBitmapFetched(mojom::AutocompleteControllerType type,
                        const GURL& image_url,
-                       const SkBitmap& bitmap);
+                       SkBitmap bitmap);
 
   // Looks up whether the hostname is a typed host (i.e., has received
   // typed visits).  Return true if the lookup succeeded; if so, the

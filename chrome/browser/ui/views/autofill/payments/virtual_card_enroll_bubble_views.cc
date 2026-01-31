@@ -6,7 +6,7 @@
 
 #include <memory>
 
-#include "chrome/browser/ui/browser_dialogs.h"
+#include "chrome/browser/ui/dialogs/browser_dialogs.h"
 #include "chrome/browser/ui/views/autofill/payments/dialog_view_ids.h"
 #include "chrome/browser/ui/views/autofill/payments/payments_view_util.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
@@ -118,9 +118,17 @@ void VirtualCardEnrollBubbleViews::AddedToWidget() {
   header_view->AddChildView(std::move(image));
 
   GetBubbleFrameView()->SetHeaderView(std::move(header_view));
-  GetBubbleFrameView()->SetTitleView(
-      std::make_unique<TitleWithIconAfterLabelView>(
-          GetWindowTitle(), TitleWithIconAfterLabelView::Icon::GOOGLE_PAY));
+  if (base::FeatureList::IsEnabled(features::kAutofillEnableWalletBranding)) {
+    auto title_view = std::make_unique<views::Label>(
+        GetWindowTitle(), views::style::CONTEXT_DIALOG_TITLE);
+    title_view->SetHorizontalAlignment(gfx::ALIGN_TO_HEAD);
+    title_view->SetMultiLine(true);
+    GetBubbleFrameView()->SetTitleView(std::move(title_view));
+  } else {
+    GetBubbleFrameView()->SetTitleView(
+        std::make_unique<TitleWithIconAfterLabelView>(
+            GetWindowTitle(), TitleWithIconAfterLabelView::Icon::GOOGLE_PAY));
+  }
 }
 
 std::u16string VirtualCardEnrollBubbleViews::GetWindowTitle() const {
@@ -200,54 +208,30 @@ void VirtualCardEnrollBubbleViews::Init() {
       views::BoxLayout::Orientation::kVertical);
   card_identifier_view->SetCrossAxisAlignment(
       views::BoxLayout::CrossAxisAlignment::kStart);
-  if (base::FeatureList::IsEnabled(
-          features::kAutofillEnableNewFopDisplayDesktop)) {
-    std::optional<std::u16string> card_identifier =
-        card.CardIdentifierForAutofillDisplay();
-    // Add the card identifier/nickname as the primary label, if it exists.
-    if (card_identifier.has_value()) {
-      card_identifier_view->AddChildView(std::make_unique<views::Label>(
-          *card_identifier, views::style::CONTEXT_DIALOG_BODY_TEXT,
-          views::style::STYLE_PRIMARY));
-    }
-    views::style::TextStyle stype = card_identifier.has_value()
-                                        ? views::style::STYLE_SECONDARY
-                                        : views::style::STYLE_PRIMARY;
-    // Add the network and last 4 digits: on a second line if a card identifier
-    // exists, or as the primary label (and on the first line) otherwise.
-    auto* network_and_4digits_view = card_identifier_view->AddChildView(
-        std::make_unique<views::BoxLayoutView>());
-    network_and_4digits_view->SetOrientation(
-        views::BoxLayout::Orientation::kHorizontal);
-    network_and_4digits_view->SetBetweenChildSpacing(
-        provider->GetDistanceMetric(DISTANCE_RELATED_LABEL_HORIZONTAL_LIST));
-    network_and_4digits_view->AddChildView(std::make_unique<views::Label>(
-        card.NetworkAndLastFourDigits(
-            /*obfuscation_length=*/2),
-        views::style::CONTEXT_DIALOG_BODY_TEXT, stype));
-    network_and_4digits_view->AddChildView(GetBadgeView());
-  } else {
-    auto* card_name_4digits_view = card_identifier_view->AddChildView(
-        std::make_unique<views::BoxLayoutView>());
-    card_name_4digits_view->SetOrientation(
-        views::BoxLayout::Orientation::kHorizontal);
-    card_name_4digits_view->SetBetweenChildSpacing(
-        provider->GetDistanceMetric(DISTANCE_RELATED_LABEL_HORIZONTAL_LIST));
-    auto* card_name_label = card_name_4digits_view->AddChildView(
-        std::make_unique<views::Label>(card.CardNameForAutofillDisplay(),
-                                       views::style::CONTEXT_DIALOG_BODY_TEXT,
-                                       views::style::STYLE_PRIMARY));
-    card_name_label->SetHorizontalAlignment(
-        gfx::HorizontalAlignment::ALIGN_TO_HEAD);
-    card_name_4digits_view->SetFlexForView(card_name_label, /*flex=*/1);
-    card_name_4digits_view->AddChildView(std::make_unique<views::Label>(
-        card.ObfuscatedNumberWithVisibleLastFourDigits(),
-        views::style::CONTEXT_DIALOG_BODY_TEXT, views::style::STYLE_PRIMARY));
+  std::optional<std::u16string> card_identifier =
+      card.CardIdentifierForAutofillDisplay();
+  // Add the card identifier/nickname as the primary label, if it exists.
+  if (card_identifier.has_value()) {
     card_identifier_view->AddChildView(std::make_unique<views::Label>(
-        l10n_util::GetStringUTF16(IDS_AUTOFILL_VIRTUAL_CARD_ENTRY_PREFIX),
-        ChromeTextContext::CONTEXT_DIALOG_BODY_TEXT_SMALL,
-        views::style::STYLE_SECONDARY));
+        *card_identifier, views::style::CONTEXT_DIALOG_BODY_TEXT,
+        views::style::STYLE_PRIMARY));
   }
+  views::style::TextStyle stype = card_identifier.has_value()
+                                      ? views::style::STYLE_SECONDARY
+                                      : views::style::STYLE_PRIMARY;
+  // Add the network and last 4 digits: on a second line if a card identifier
+  // exists, or as the primary label (and on the first line) otherwise.
+  auto* network_and_4digits_view = card_identifier_view->AddChildView(
+      std::make_unique<views::BoxLayoutView>());
+  network_and_4digits_view->SetOrientation(
+      views::BoxLayout::Orientation::kHorizontal);
+  network_and_4digits_view->SetBetweenChildSpacing(
+      provider->GetDistanceMetric(DISTANCE_RELATED_LABEL_HORIZONTAL_LIST));
+  network_and_4digits_view->AddChildView(std::make_unique<views::Label>(
+      card.NetworkAndLastFourDigits(
+          /*obfuscation_length=*/2),
+      views::style::CONTEXT_DIALOG_BODY_TEXT, stype));
+  network_and_4digits_view->AddChildView(GetBadgeView());
 
   AddChildView(CreateLegalMessageView())
       ->SetID(DialogViewId::LEGAL_MESSAGE_VIEW);

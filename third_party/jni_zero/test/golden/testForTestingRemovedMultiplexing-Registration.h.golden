@@ -29,7 +29,7 @@ inline jclass org_jni_1zero_SampleProxyEdgeCases_clazz(JNIEnv* env) {
 
 
 // Forward Declarations.
-JNI_ZERO_MUXED_ENTRYPOINT jint Muxed_org_jni_1zero_SampleProxyEdgeCases_addStructB(
+JNI_ZERO_MUXED_ENTRYPOINT int32_t Muxed_org_jni_1zero_SampleProxyEdgeCases_addStructB(
     JNIEnv* env,
     jobject caller,
     jobject b);
@@ -50,15 +50,15 @@ JNI_ZERO_MUXED_ENTRYPOINT void Muxed_org_jni_1zero_SampleProxyEdgeCases_setBool(
     JNIEnv* env,
     jobject b,
     jobject i);
-JNI_ZERO_MUXED_ENTRYPOINT jboolean Muxed_org_jni_1zero_SampleProxyEdgeCases_setStringBuilder(
+JNI_ZERO_MUXED_ENTRYPOINT bool Muxed_org_jni_1zero_SampleProxyEdgeCases_setStringBuilder(
     JNIEnv* env,
     jobject sb);
-JNI_ZERO_MUXED_ENTRYPOINT jint Muxed_org_jni_1zero_SampleProxyEdgeCases_setStringBuilder(
+JNI_ZERO_MUXED_ENTRYPOINT int32_t Muxed_org_jni_1zero_SampleProxyEdgeCases_setStringBuilder(
     JNIEnv* env,
-    jint sb);
+    int32_t sb);
 JNI_ZERO_BOUNDARY_EXPORT void Java_org_jni_1zero_SampleProxyEdgeCases_nativeInstanceMethod(
     JNIEnv* env,
-    jlong nativeInstance);
+    int64_t nativeInstance);
 JNI_ZERO_BOUNDARY_EXPORT void Java_org_jni_1zero_SampleProxyEdgeCases_nativeStaticMethod(
     JNIEnv* env);
 
@@ -66,25 +66,25 @@ JNI_ZERO_BOUNDARY_EXPORT void Java_org_jni_1zero_SampleProxyEdgeCases_nativeStat
 JNI_ZERO_BOUNDARY_EXPORT void Java_J_N_V(JNIEnv* env, jclass jcaller) {
   return Muxed_org_jni_1zero_SampleProxyEdgeCases_foo__weirdly__escaped_name1(env);
 }
-JNI_ZERO_BOUNDARY_EXPORT jint Java_J_N_II(JNIEnv* env, jclass jcaller, jint p0) {
+JNI_ZERO_BOUNDARY_EXPORT int32_t Java_J_N_II(JNIEnv* env, jclass jcaller, int32_t p0) {
   return Muxed_org_jni_1zero_SampleProxyEdgeCases_setStringBuilder(env, p0);
 }
 JNI_ZERO_BOUNDARY_EXPORT jobject Java_J_N_OO(JNIEnv* env, jclass jcaller, jobject p0) {
   return Muxed_org_jni_1zero_SampleProxyEdgeCases_genericsWithNestedClassArray(env, p0);
 }
-JNI_ZERO_BOUNDARY_EXPORT jboolean Java_J_N_ZO(JNIEnv* env, jclass jcaller, jobject p0) {
+JNI_ZERO_BOUNDARY_EXPORT bool Java_J_N_ZO(JNIEnv* env, jclass jcaller, jobject p0) {
   return Muxed_org_jni_1zero_SampleProxyEdgeCases_setStringBuilder(env, p0);
 }
 JNI_ZERO_BOUNDARY_EXPORT void Java_J_N_VOO(JNIEnv* env, jclass jcaller, jobject p0, jobject p1) {
   return Muxed_org_jni_1zero_SampleProxyEdgeCases_setBool(env, p0, p1);
 }
-JNI_ZERO_BOUNDARY_EXPORT jint Java_J_N_IOO(JNIEnv* env, jclass jcaller, jobject p0, jobject p1) {
+JNI_ZERO_BOUNDARY_EXPORT int32_t Java_J_N_IOO(JNIEnv* env, jclass jcaller, jobject p0, jobject p1) {
   return Muxed_org_jni_1zero_SampleProxyEdgeCases_addStructB(env, p0, p1);
 }
 JNI_ZERO_BOUNDARY_EXPORT jobject Java_J_N_OOO(
     JNIEnv* env,
     jclass jcaller,
-    jint switch_num,
+    int32_t switch_num,
     jobject p0,
     jobject p1) {
   JNI_ZERO_DCHECK(switch_num >= 0 && switch_num < 2);

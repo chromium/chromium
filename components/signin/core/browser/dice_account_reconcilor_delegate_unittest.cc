@@ -8,7 +8,6 @@
 #include "base/test/task_environment.h"
 #include "base/test/with_feature_override.h"
 #include "components/signin/public/base/consent_level.h"
-#include "components/signin/public/base/signin_client.h"
 #include "components/signin/public/base/signin_pref_names.h"
 #include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/accounts_in_cookie_jar_info.h"
@@ -41,8 +40,7 @@ class DiceAccountReconcilorDelegateTest : public testing::Test {
  public:
   DiceAccountReconcilorDelegateTest()
       : identity_test_environment_(nullptr, &pref_service_, nullptr),
-        delegate_(identity_manager(),
-                  identity_test_environment_.signin_client()) {}
+        delegate_(identity_manager()) {}
 
   DiceAccountReconcilorDelegate& delegate() { return delegate_; }
 
@@ -63,18 +61,6 @@ class DiceAccountReconcilorDelegateTest : public testing::Test {
   IdentityTestEnvironment identity_test_environment_;
   DiceAccountReconcilorDelegate delegate_;
 };
-
-TEST_F(DiceAccountReconcilorDelegateTest, GetConsentLevelForPrimaryAccount) {
-  EXPECT_EQ(delegate().GetConsentLevelForPrimaryAccount(),
-            ConsentLevel::kSignin);
-
-  // Sign in.
-  identity_test_environment().MakePrimaryAccountAvailable(
-      "test@gmail.com", ConsentLevel::kSignin);
-  // Simulate Dice User migrating.
-  pref_service()->SetBoolean(prefs::kExplicitBrowserSignin, false);
-  EXPECT_EQ(delegate().GetConsentLevelForPrimaryAccount(), ConsentLevel::kSync);
-}
 
 TEST_F(DiceAccountReconcilorDelegateTest,
        IsCookieBasedConsistencyModePreChromeSignIn) {

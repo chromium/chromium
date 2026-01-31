@@ -19,6 +19,7 @@
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/input/synthetic_web_input_event_builders.h"
 #include "third_party/blink/public/mojom/page/widget.mojom-shared.h"
+#include "third_party/blink/public/web/web_script_source.h"
 #include "third_party/blink/renderer/core/css/properties/css_property_ref.h"
 #include "third_party/blink/renderer/core/css/properties/longhands.h"
 #include "third_party/blink/renderer/core/css/style_engine.h"
@@ -38,6 +39,7 @@
 #include "third_party/blink/renderer/core/input/event_handler.h"
 #include "third_party/blink/renderer/core/layout/layout_image.h"
 #include "third_party/blink/renderer/core/paint/paint_layer_scrollable_area.h"
+#include "third_party/blink/renderer/core/scroll/scrollbar.h"
 #include "third_party/blink/renderer/core/testing/sim/sim_request.h"
 #include "third_party/blink/renderer/core/testing/sim/sim_test.h"
 #include "third_party/blink/renderer/platform/scheduler/test/fake_task_runner.h"
@@ -48,6 +50,7 @@
 #include "third_party/blink/renderer/platform/widget/widget_base.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 #include "ui/base/mojom/window_show_state.mojom-blink.h"
+#include "ui/display/screen_info.h"
 
 #if BUILDFLAG(IS_WIN)
 #include "components/stylus_handwriting/win/features.h"
@@ -125,6 +128,55 @@ TEST_F(WebFrameWidgetSimTest, AutoResizeAllocatedLocalSurfaceId) {
                   .MainFrameViewWidget()
                   ->LayerTreeHostForTesting()
                   ->new_local_surface_id_request_for_testing());
+}
+
+TEST_F(WebFrameWidgetSimTest, ColorGamutChangeTriggersMediaQuery) {
+  SimRequest request("https://example.com/test.html", "text/html");
+  LoadURL("https://example.com/test.html");
+  request.Complete(R"HTML(
+    <script>
+      window.__changed = false;
+      const mq = window.matchMedia("(color-gamut: p3)");
+      mq.addEventListener("change", () => { window.__changed = true; });
+    </script>
+  )HTML");
+
+  viz::ParentLocalSurfaceIdAllocator allocator;
+  allocator.GenerateId();
+
+  VisualProperties visual_properties;
+  visual_properties.local_surface_id = allocator.GetCurrentLocalSurfaceId();
+
+  display::ScreenInfo screen_info;
+  screen_info.display_color_spaces =
+      gfx::DisplayColorSpaces(gfx::ColorSpace::CreateSRGB());
+  visual_properties.screen_infos = display::ScreenInfos(screen_info);
+
+  WebView().MainFrameWidget()->ApplyVisualProperties(visual_properties);
+  WebView().MainFrameViewWidget()->UpdateSurfaceAndScreenInfo(
+      visual_properties.local_surface_id.value(),
+      visual_properties.compositor_viewport_pixel_rect,
+      visual_properties.screen_infos);
+
+  Compositor().BeginFrame();
+  test::RunPendingTasks();
+
+  screen_info.display_color_spaces =
+      gfx::DisplayColorSpaces(gfx::ColorSpace::CreateDisplayP3D65());
+  visual_properties.screen_infos = display::ScreenInfos(screen_info);
+
+  WebView().MainFrameViewWidget()->UpdateSurfaceAndScreenInfo(
+      visual_properties.local_surface_id.value(),
+      visual_properties.compositor_viewport_pixel_rect,
+      visual_properties.screen_infos);
+
+  Compositor().BeginFrame();
+  test::RunPendingTasks();
+
+  v8::HandleScope handle_scope(Window().GetIsolate());
+  v8::Local<v8::Value> changed = MainFrame().ExecuteScriptAndReturnValue(
+      WebScriptSource("window.__changed"));
+  EXPECT_TRUE(changed->BooleanValue(Window().GetIsolate()));
 }
 
 TEST_F(WebFrameWidgetSimTest, FrameSinkIdHitTestAPI) {
@@ -244,9 +296,9 @@ class WebFrameWidgetScrollContainerHitTest : public WebFrameWidgetSimTest {
         widget.GetScrollableContainerIdAt(box1_target_offset);
     EXPECT_EQ(scrollable_id, box1_dom_node_id);
 
-    visual_viewport.SetScrollOffset(ScrollOffset(0, 50),
-                                    mojom::blink::ScrollType::kProgrammatic,
-                                    cc::ScrollSourceType::kNone);
+    visual_viewport.SetScrollOffset(
+        ScrollOffset(0, 50), mojom::blink::ScrollType::kProgrammatic,
+        cc::ScrollSourceType::kNone, mojom::blink::ScrollBehavior::kInstant);
     EXPECT_EQ(visual_viewport.GetScrollOffset(), ScrollOffset(0, 50));
     scrollable_id = widget.GetScrollableContainerIdAt(box2_target_offset);
     EXPECT_EQ(scrollable_id, box2_dom_node_id);

@@ -30,7 +30,7 @@ static void JNI_NotificationSchedulerTask_OnStartTask(
 }
 
 // static
-static jboolean JNI_NotificationSchedulerTask_OnStopTask(JNIEnv* env) {
+static bool JNI_NotificationSchedulerTask_OnStopTask(JNIEnv* env) {
   ProfileKey* profile_key = ::android::GetLastUsedRegularProfileKey();
   auto* service = NotificationScheduleServiceFactory::GetForKey(profile_key);
   auto* handler = service->GetBackgroundTaskSchedulerHandler();
@@ -49,8 +49,8 @@ void NotificationBackgroundTaskSchedulerAndroid::Schedule(
     base::TimeDelta window_end) {
   JNIEnv* env = base::android::AttachCurrentThread();
   Java_NotificationSchedulerTask_schedule(
-      env, base::saturated_cast<jlong>(window_start.InMilliseconds()),
-      base::saturated_cast<jlong>(window_end.InMilliseconds()));
+      env, base::saturated_cast<int64_t>(window_start.InMilliseconds()),
+      base::saturated_cast<int64_t>(window_end.InMilliseconds()));
 }
 
 void NotificationBackgroundTaskSchedulerAndroid::Cancel() {

@@ -2,41 +2,98 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-action_foreach("registry_controlled_domains") {
-  script = "//net/tools/dafsa/make_dafsa.py"
-  sources = [
-    "effective_tld_names.gperf",
-    "effective_tld_names_unittest1.gperf",
-    "effective_tld_names_unittest2.gperf",
-    "effective_tld_names_unittest3.gperf",
-    "effective_tld_names_unittest4.gperf",
-    "effective_tld_names_unittest5.gperf",
-    "effective_tld_names_unittest6.gperf",
-  ]
-  outputs = [ "${target_gen_dir}/{{source_name_part}}-reversed-inc.cc" ]
-  args = [
-    "--reverse",
-    "{{source}}",
-    rebase_path("${target_gen_dir}/{{source_name_part}}-reversed-inc.cc",
-                root_build_dir),
-  ]
+_gperf_files = [
+  {
+    source = "effective_tld_names.gperf"
+    namespace = "net::registry_controlled_domains"
+    testonly = false
+  },
+  {
+    source = "effective_tld_names_unittest1.gperf"
+    namespace = "net::test1"
+    testonly = true
+  },
+  {
+    source = "effective_tld_names_unittest2.gperf"
+    namespace = "net::test2"
+    testonly = true
+  },
+  {
+    source = "effective_tld_names_unittest3.gperf"
+    namespace = "net::test3"
+    testonly = true
+  },
+  {
+    source = "effective_tld_names_unittest4.gperf"
+    namespace = "net::test4"
+    testonly = true
+  },
+  {
+    source = "effective_tld_names_unittest5.gperf"
+    namespace = "net::test5"
+    testonly = true
+  },
+  {
+    source = "effective_tld_names_unittest6.gperf"
+    namespace = "net::test6"
+    testonly = true
+  },
+]
+
+_generated_reversed_targets = []
+_generated_reversed_test_targets = []
+_generated_lookup_string_test_set_targets = []
+foreach(_item, _gperf_files) {
+  _source = _item.source
+  _source_name = get_path_info(_item.source, "name")
+
+  _reversed_target_name = "generate_" + _source_name + "_reversed_dafsa"
+  action(_reversed_target_name) {
+    script = "//net/tools/dafsa/make_dafsa.py"
+    sources = [ _item.source ]
+    testonly = _item.testonly
+
+    outputs = [ "${target_gen_dir}/${_source_name}-reversed-inc.cc" ]
+    args = [
+      "--reverse",
+      "--namespace=${_item.namespace}",
+      rebase_path(_item.source, root_build_dir),
+      rebase_path("${target_gen_dir}/${_source_name}-reversed-inc.cc",
+                  root_build_dir),
+    ]
+  }
+  if (_item.testonly) {
+    _generated_reversed_test_targets += [ ":${_reversed_target_name}" ]
+  } else {
+    _generated_reversed_targets += [ ":${_reversed_target_name}" ]
+  }
+
+  _string_test_set_target_name = "generate_" + _source_name + "_dafsa"
+  action(_string_test_set_target_name) {
+    script = "//net/tools/dafsa/make_dafsa.py"
+    sources = [ _item.source ]
+    testonly = true
+
+    outputs = [ "${target_gen_dir}/${_source_name}-inc.cc" ]
+    args = [
+      "--namespace=${_item.namespace}",
+      rebase_path(_item.source, root_build_dir),
+      rebase_path("${target_gen_dir}/${_source_name}-inc.cc", root_build_dir),
+    ]
+  }
+  _generated_lookup_string_test_set_targets +=
+      [ ":${_string_test_set_target_name}" ]
 }
 
-action_foreach("lookup_strings_test_sets") {
-  script = "//net/tools/dafsa/make_dafsa.py"
-  sources = [
-    "effective_tld_names.gperf",
-    "effective_tld_names_unittest1.gperf",
-    "effective_tld_names_unittest2.gperf",
-    "effective_tld_names_unittest3.gperf",
-    "effective_tld_names_unittest4.gperf",
-    "effective_tld_names_unittest5.gperf",
-    "effective_tld_names_unittest6.gperf",
-  ]
-  outputs = [ "${target_gen_dir}/{{source_name_part}}-inc.cc" ]
-  args = [
-    "{{source}}",
-    rebase_path("${target_gen_dir}/{{source_name_part}}-inc.cc",
-                root_build_dir),
-  ]
+group("registry_controlled_domains") {
+  public_deps = _generated_reversed_targets
+}
+group("registry_controlled_domains_test_dafsas") {
+  public_deps = _generated_reversed_test_targets
+  testonly = true
+}
+
+group("lookup_strings_test_sets") {
+  public_deps = _generated_lookup_string_test_set_targets
+  testonly = true
 }

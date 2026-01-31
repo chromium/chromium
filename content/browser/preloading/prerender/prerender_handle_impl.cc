@@ -152,36 +152,29 @@ bool ShouldFireErrorCallback(PrerenderFinalStatus status) {
 
 PrerenderHandleImpl::PrerenderHandleImpl(
     base::WeakPtr<PrerenderHostRegistry> prerender_host_registry,
-    FrameTreeNodeId frame_tree_node_id,
+    PrerenderHostId prerender_host_id,
     const GURL& prerendering_url,
     std::optional<net::HttpNoVarySearchData> no_vary_search_hint)
     : handle_id_(GetNextHandleId()),
+      prerender_host_id_(prerender_host_id),
       prerender_host_registry_(std::move(prerender_host_registry)),
-      frame_tree_node_id_(frame_tree_node_id),
       prerendering_url_(prerendering_url),
       no_vary_search_hint_(std::move(no_vary_search_hint)) {
   CHECK(!prerendering_url_.is_empty());
   // PrerenderHandleImpl is now designed only for embedder triggers. If you use
   // this handle for other triggers, please make sure to update the logging etc.
-  auto* prerender_host = GetPrerenderHost();
+  auto* prerender_host =
+      prerender_host_registry_->FindNonReservedHostById(prerender_host_id_);
   CHECK(prerender_host);
   CHECK_EQ(prerender_host->trigger_type(), PreloadingTriggerType::kEmbedder);
-  prerender_host->AddObserver(this);
+  obs_.Observe(prerender_host);
 }
 
 PrerenderHandleImpl::~PrerenderHandleImpl() {
-  // GetPrerenderHost() fetches the PrerenderHost by the frame_tree_node_id_.
-  // If the underlying PrerenderHost is reused, frame_tree_node_id_ will
-  // be reset and prerender_host will be nullptr. The reused host will
-  // not be cancelled.
-  PrerenderHost* prerender_host = GetPrerenderHost();
-  if (!prerender_host) {
-    return;
+  if (prerender_host_registry_) {
+    prerender_host_registry_->CancelHost(
+        prerender_host_id_, PrerenderFinalStatus::kTriggerDestroyed);
   }
-  prerender_host->RemoveObserver(this);
-
-  prerender_host_registry_->CancelHost(frame_tree_node_id_,
-                                       PrerenderFinalStatus::kTriggerDestroyed);
 }
 
 int32_t PrerenderHandleImpl::GetHandleId() const {
@@ -203,7 +196,7 @@ base::WeakPtr<PrerenderHandle> PrerenderHandleImpl::GetWeakPtr() {
 
 void PrerenderHandleImpl::SetPreloadingAttemptFailureReason(
     PreloadingFailureReason reason) {
-  auto* prerender_host = GetPrerenderHost();
+  auto* prerender_host = obs_.GetSource();
   if (!prerender_host || !prerender_host->preloading_attempt()) {
     return;
   }
@@ -272,23 +265,8 @@ void PrerenderHandleImpl::OnFailed(PrerenderFinalStatus status) {
   }
 }
 
-void PrerenderHandleImpl::OnHostReused() {
-  // Since the frame_tree_node_id_ is reused by the new PrerenderHost, we will
-  // stop tracking the FrameTree and reset frame_tree_node_id_.
-  // TODO(crbug.com/434826191): Add a new unique identifier for the
-  // PrerenderHost.
-  frame_tree_node_id_ = FrameTreeNodeId();
-}
-
-PrerenderHost* PrerenderHandleImpl::GetPrerenderHost() {
-  auto* prerender_frame_tree_node =
-      FrameTreeNode::GloballyFindByID(frame_tree_node_id_);
-  if (!prerender_frame_tree_node) {
-    return nullptr;
-  }
-  PrerenderHost& prerender_host =
-      PrerenderHost::GetFromFrameTreeNode(*prerender_frame_tree_node);
-  return &prerender_host;
+void PrerenderHandleImpl::OnHostDestroyed(PrerenderFinalStatus status) {
+  obs_.Reset();
 }
 
 }  // namespace content

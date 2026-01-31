@@ -5,6 +5,7 @@
 #include "ui/views/corewm/tooltip_state_manager.h"
 
 #include <stddef.h>
+#include <stdint.h>
 
 #include <utility>
 #include <vector>
@@ -48,6 +49,19 @@ int TooltipStateManager::GetMaxWidth(const gfx::Point& location) const {
   return tooltip_->GetMaxWidth(location);
 }
 
+void TooltipStateManager::SetTooltipParentWindow(aura::Window* window) {
+  if (tooltip_parent_window_ == window) {
+    return;
+  }
+
+  window_observation_.Reset();
+  tooltip_parent_window_ = window;
+
+  if (window) {
+    window_observation_.Observe(window);
+  }
+}
+
 void TooltipStateManager::HideAndReset() {
   // Hide any open tooltips.
   will_hide_tooltip_timer_.Stop();
@@ -55,8 +69,8 @@ void TooltipStateManager::HideAndReset() {
 
   // Cancel pending tooltips and reset states.
   will_show_tooltip_timer_.Stop();
-  tooltip_id_ = nullptr;
-  tooltip_parent_window_ = nullptr;
+  tooltip_id_ = 0;
+  SetTooltipParentWindow(nullptr);
 }
 
 void TooltipStateManager::Show(aura::Window* window,
@@ -68,9 +82,9 @@ void TooltipStateManager::Show(aura::Window* window,
   HideAndReset();
 
   position_ = position;
-  tooltip_id_ = wm::GetTooltipId(window);
+  tooltip_id_ = reinterpret_cast<std::uintptr_t>(wm::GetTooltipId(window));
   tooltip_text_ = tooltip_text;
-  tooltip_parent_window_ = window;
+  SetTooltipParentWindow(window);
   tooltip_trigger_ = trigger;
 
   std::u16string truncated_text =
@@ -144,6 +158,12 @@ void TooltipStateManager::StartWillShowTooltipTimer(
     // TODO(bebeaudr): Fix this by ensuring that the unit tests wait for the
     // timer to fire before continuing.
     ShowNow(trimmed_text, hide_delay);
+  }
+}
+
+void TooltipStateManager::OnWindowDestroying(aura::Window* window) {
+  if (tooltip_parent_window_ == window) {
+    HideAndReset();
   }
 }
 

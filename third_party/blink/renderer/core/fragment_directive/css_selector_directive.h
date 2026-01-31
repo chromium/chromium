@@ -17,7 +17,7 @@ namespace blink {
 // TODO(crbug/1265423): Rename to SelectorDirective
 class CssSelectorDirective : public Directive {
  public:
-  static CssSelectorDirective* TryParse(const String& directive_string);
+  static CssSelectorDirective* TryParse(const StringView& directive_string);
   static Type ClassType() { return kSelector; }
   explicit CssSelectorDirective(const String& value);
 

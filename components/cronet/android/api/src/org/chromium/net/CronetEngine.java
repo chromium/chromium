@@ -10,7 +10,7 @@ import android.os.Process;
 import android.os.SystemClock;
 import android.util.Log;
 
-import androidx.annotation.Nullable;
+import androidx.annotation.NonNull;
 import androidx.annotation.VisibleForTesting;
 
 import org.json.JSONObject;
@@ -30,6 +30,7 @@ import java.util.Comparator;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.Executor;
 
@@ -516,8 +517,8 @@ public abstract class CronetEngine {
          * user; or some enterprise profile configuration, or (most likely) some network
          * autoconfiguration (e.g., Web Proxy Auto-Discovery Protocol). This is usually referred to
          * as "system" proxy configuration. If present, respecting the system proxy configuration is
-         * often a requirement to obtain local and/or internet connectivity. Cronet already handles
-         * the system proxy configuration internally.
+         * often a requirement to obtain local and/or internet connectivity. CronetEngine already
+         * handles the system proxy configuration internally.
          *
          * <p>A proxy configuration defined via this API are refererred to as "app" proxy
          * configuration. App and system proxy configuration are separate and, most importantly,
@@ -534,14 +535,8 @@ public abstract class CronetEngine {
          * @return the builder to facilitate chaining.
          */
         @ProxyOptions.Experimental
-        public Builder setProxyOptions(@Nullable ProxyOptions proxyOptions) {
-            if (!mBuilderDelegate
-                    .getSupportedConfigOptions()
-                    .contains(ICronetEngineBuilder.PROXY_OPTIONS)) {
-                throw new UnsupportedOperationException(
-                        "This Cronet implementation does not support ProxyOptions");
-            }
-            mBuilderDelegate.setProxyOptions(proxyOptions);
+        public Builder setProxyOptions(@NonNull ProxyOptions proxyOptions) {
+            mBuilderDelegate.setProxyOptions(Objects.requireNonNull(proxyOptions));
             return this;
         }
 

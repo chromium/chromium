@@ -12,18 +12,18 @@
 #include "base/logging.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/string_number_conversions.h"
+#include "components/webauthn/core/browser/remote_validation.h"
+#include "components/webauthn/core/browser/webauthn_security_utils.h"
 #include "content/browser/bad_message.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/browser/web_authentication_delegate.h"
-#include "content/public/browser/webauthn_security_utils.h"
 #include "content/public/common/content_client.h"
 #include "device/fido/public/fido_transport_protocol.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 #include "net/base/url_util.h"
-#include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
@@ -41,203 +41,38 @@
 
 namespace content {
 
-static const net::NetworkTrafficAnnotationTag kRpIdCheckTrafficAnnotation =
-    net::DefineNetworkTrafficAnnotation("webauthn_rp_id_check", R"(
-        semantics {
-          sender: "Web Authentication"
-          description:
-            "WebAuthn credentials are bound to domain names. If a web site "
-            "attempts to use a credential owned by a different domain then a "
-            "network request is made to the owning domain to see whether the "
-            "calling origin is authorized."
-          trigger:
-            "A web-site initiates a WebAuthn request and the requested RP ID "
-            "cannot be trivially validated."
-          user_data {
-            type: WEB_CONTENT
-          }
-          data: "None sent. Response is public information from the target "
-                "domain, or an error."
-          internal {
-            contacts {
-              email: "chrome-webauthn@google.com"
-            }
-          }
-          destination: WEBSITE
-          last_reviewed: "2023-10-31"
-        }
-        policy {
-          cookies_allowed: NO
-          setting: "Not controlled by a setting because the operation is "
-            "triggered by web sites and is needed to implement the "
-            "WebAuthn API."
-          policy_exception_justification:
-            "No policy provided because the operation is triggered by "
-            "websites to fetch public information. No background activity "
-            "occurs."
-        })");
-
-// kRpIdMaxBodyBytes is the maximum number of bytes that we'll download in order
-// to validate an RP ID.
-constexpr size_t kRpIdMaxBodyBytes = 1u << 18;
-
-WebAuthRequestSecurityChecker::RemoteValidation::~RemoteValidation() = default;
-
-// static
-std::unique_ptr<WebAuthRequestSecurityChecker::RemoteValidation>
-WebAuthRequestSecurityChecker::RemoteValidation::Create(
-    const url::Origin& caller_origin,
-    const std::string& relying_party_id,
-    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-    base::OnceCallback<void(blink::mojom::AuthenticatorStatus)> callback) {
-  if (!url_loader_factory) {
-    std::move(callback).Run(
-        blink::mojom::AuthenticatorStatus::BAD_RELYING_PARTY_ID);
-    return nullptr;
-  }
-
-  // The relying party may allow other origins to use its RP ID based on the
-  // contents of a .well-known file.
-  std::string canonicalized_domain_storage;
-  url::StdStringCanonOutput canon_output(&canonicalized_domain_storage);
-  url::CanonHostInfo host_info;
-  url::CanonicalizeHostVerbose(relying_party_id,
-                               url::Component(0, relying_party_id.size()),
-                               &canon_output, &host_info);
-  const std::string_view canonicalized_domain(canon_output.data(),
-                                              canon_output.length());
-  if (host_info.family != url::CanonHostInfo::Family::NEUTRAL ||
-      !net::IsCanonicalizedHostCompliant(canonicalized_domain)) {
-    // The RP ID must look like a hostname, e.g. not an IP address.
-    std::move(callback).Run(
-        blink::mojom::AuthenticatorStatus::BAD_RELYING_PARTY_ID);
-    return nullptr;
-  }
-
-  constexpr char well_known_url_template[] =
-      "https://domain.com/.well-known/webauthn";
-  GURL well_known_url(well_known_url_template);
-  CHECK(well_known_url.is_valid());
-
-  GURL::Replacements replace_host;
-  replace_host.SetHostStr(canonicalized_domain);
-  well_known_url = well_known_url.ReplaceComponents(replace_host);
-
-  auto network_request = std::make_unique<network::ResourceRequest>();
-  network_request->url = well_known_url;
-  network_request->credentials_mode = network::mojom::CredentialsMode::kOmit;
-
-  std::unique_ptr<RemoteValidation> validation(
-      new RemoteValidation(caller_origin, std::move(callback)));
-
-  validation->loader_ = network::SimpleURLLoader::Create(
-      std::move(network_request), kRpIdCheckTrafficAnnotation);
-  validation->loader_->SetTimeoutDuration(base::Seconds(10));
-  validation->loader_->SetURLLoaderFactoryOptions(
-      network::mojom::kURLLoadOptionBlockAllCookies);
-  validation->loader_->DownloadToString(
-      url_loader_factory.get(),
-      base::BindOnce(&RemoteValidation::OnFetchComplete,
-                     // `validation` owns the `SimpleURLLoader` so if it's
-                     // deleted, the loader will be too.
-                     base::Unretained(validation.get())),
-      kRpIdMaxBodyBytes);
-
-  return validation;
-}
-
-// static
-blink::mojom::AuthenticatorStatus
-WebAuthRequestSecurityChecker::RemoteValidation::ValidateWellKnownJSON(
-    const url::Origin& caller_origin,
-    const std::string_view json) {
-  // This code processes a .well-known/webauthn JSON. See
-  // https://github.com/w3c/webauthn/wiki/Explainer:-Related-origin-requests
-
-  auto result = base::JSONReader::ReadDict(json, base::JSON_PARSE_RFC);
-
-  if (!result.has_value()) {
-    return blink::mojom::AuthenticatorStatus::
-        BAD_RELYING_PARTY_ID_JSON_PARSE_ERROR;
-  }
-
-  const base::Value::List* origins = result->FindList("origins");
-  if (!origins) {
-    return blink::mojom::AuthenticatorStatus::
-        BAD_RELYING_PARTY_ID_JSON_PARSE_ERROR;
-  }
-
-  constexpr size_t kMaxLabels = 5;
-  bool hit_limits = false;
-  base::flat_set<std::string> labels_seen;
-  for (const base::Value& origin_str : *origins) {
-    if (!origin_str.is_string()) {
+namespace {
+blink::mojom::AuthenticatorStatus ToAuthenticatorStatus(
+    webauthn::ValidationStatus status) {
+  switch (status) {
+    case webauthn::ValidationStatus::kSuccess:
+      return blink::mojom::AuthenticatorStatus::SUCCESS;
+    case webauthn::ValidationStatus::kOpaqueDomain:
+      return blink::mojom::AuthenticatorStatus::OPAQUE_DOMAIN;
+    case webauthn::ValidationStatus::kInvalidProtocol:
+      return blink::mojom::AuthenticatorStatus::INVALID_PROTOCOL;
+    case webauthn::ValidationStatus::kInvalidDomain:
+      return blink::mojom::AuthenticatorStatus::INVALID_DOMAIN;
+    case webauthn::ValidationStatus::kBadRelyingPartyId:
+      return blink::mojom::AuthenticatorStatus::BAD_RELYING_PARTY_ID;
+    case webauthn::ValidationStatus::kJsonParseError:
       return blink::mojom::AuthenticatorStatus::
           BAD_RELYING_PARTY_ID_JSON_PARSE_ERROR;
-    }
-
-    const GURL url(origin_str.GetString());
-    if (!url.is_valid()) {
-      continue;
-    }
-
-    const std::string domain =
-        net::registry_controlled_domains::GetDomainAndRegistry(
-            url, net::registry_controlled_domains::INCLUDE_PRIVATE_REGISTRIES);
-    if (domain.empty()) {
-      continue;
-    }
-
-    const std::string::size_type dot_index = domain.find('.');
-    if (dot_index == std::string::npos) {
-      continue;
-    }
-
-    const std::string etld_plus_1_label = domain.substr(0, dot_index);
-    if (!base::Contains(labels_seen, etld_plus_1_label)) {
-      if (labels_seen.size() >= kMaxLabels) {
-        hit_limits = true;
-        continue;
-      }
-      labels_seen.insert(etld_plus_1_label);
-    }
-
-    const auto origin = url::Origin::Create(url);
-    if (origin.IsSameOriginWith(caller_origin)) {
-      return blink::mojom::AuthenticatorStatus::SUCCESS;
-    }
+    case webauthn::ValidationStatus::kNoJsonMatchHitLimits:
+      return blink::mojom::AuthenticatorStatus::
+          BAD_RELYING_PARTY_ID_NO_JSON_MATCH_HIT_LIMITS;
+    case webauthn::ValidationStatus::kNoJsonMatch:
+      return blink::mojom::AuthenticatorStatus::
+          BAD_RELYING_PARTY_ID_NO_JSON_MATCH;
+    case webauthn::ValidationStatus::kAttemptedFetch:
+      return blink::mojom::AuthenticatorStatus::
+          BAD_RELYING_PARTY_ID_ATTEMPTED_FETCH;
+    case webauthn::ValidationStatus::kWrongContentType:
+      return blink::mojom::AuthenticatorStatus::
+          BAD_RELYING_PARTY_ID_WRONG_CONTENT_TYPE;
   }
-
-  if (hit_limits) {
-    return blink::mojom::AuthenticatorStatus::
-        BAD_RELYING_PARTY_ID_NO_JSON_MATCH_HIT_LIMITS;
-  }
-  return blink::mojom::AuthenticatorStatus::BAD_RELYING_PARTY_ID_NO_JSON_MATCH;
 }
-
-WebAuthRequestSecurityChecker::RemoteValidation::RemoteValidation(
-    const url::Origin& caller_origin,
-    base::OnceCallback<void(blink::mojom::AuthenticatorStatus)> callback)
-    : caller_origin_(caller_origin), callback_(std::move(callback)) {}
-
-// OnFetchComplete is called when the `.well-known/webauthn` for an
-// RP ID has finished downloading.
-void WebAuthRequestSecurityChecker::RemoteValidation::OnFetchComplete(
-    std::optional<std::string> body) {
-  if (!body) {
-    std::move(callback_).Run(blink::mojom::AuthenticatorStatus::
-                                 BAD_RELYING_PARTY_ID_ATTEMPTED_FETCH);
-    return;
-  }
-
-  if (loader_->ResponseInfo()->mime_type != "application/json") {
-    std::move(callback_).Run(blink::mojom::AuthenticatorStatus::
-                                 BAD_RELYING_PARTY_ID_WRONG_CONTENT_TYPE);
-    return;
-  }
-
-  std::move(callback_).Run(ValidateWellKnownJSON(caller_origin_, *body));
-}
+}  // namespace
 
 WebAuthRequestSecurityChecker::WebAuthRequestSecurityChecker(
     RenderFrameHost* host)
@@ -310,7 +145,7 @@ WebAuthRequestSecurityChecker::ValidateAncestorOrigins(
   return blink::mojom::AuthenticatorStatus::NOT_ALLOWED_ERROR;
 }
 
-std::unique_ptr<WebAuthRequestSecurityChecker::RemoteValidation>
+std::unique_ptr<webauthn::RemoteValidation>
 WebAuthRequestSecurityChecker::ValidateDomainAndRelyingPartyID(
     const url::Origin& caller_origin,
     const std::string& relying_party_id,
@@ -330,10 +165,10 @@ WebAuthRequestSecurityChecker::ValidateDomainAndRelyingPartyID(
   }
 #endif  // !BUILDFLAG(IS_ANDROID)
 
-  blink::mojom::AuthenticatorStatus domain_validation =
-      OriginAllowedToMakeWebAuthnRequests(caller_origin);
-  if (domain_validation != blink::mojom::AuthenticatorStatus::SUCCESS) {
-    std::move(callback).Run(domain_validation);
+  webauthn::ValidationStatus domain_validation =
+      webauthn::OriginAllowedToMakeWebAuthnRequests(caller_origin);
+  if (domain_validation != webauthn::ValidationStatus::kSuccess) {
+    std::move(callback).Run(ToAuthenticatorStatus(domain_validation));
     return nullptr;
   }
 
@@ -365,8 +200,8 @@ WebAuthRequestSecurityChecker::ValidateDomainAndRelyingPartyID(
     relying_party_origin = remote_desktop_client_override_origin.value();
   }
 
-  if (OriginIsAllowedToClaimRelyingPartyId(relying_party_id,
-                                           relying_party_origin)) {
+  if (webauthn::OriginIsAllowedToClaimRelyingPartyId(relying_party_id,
+                                                     relying_party_origin)) {
     std::move(callback).Run(blink::mojom::AuthenticatorStatus::SUCCESS);
     return nullptr;
   }
@@ -382,8 +217,15 @@ WebAuthRequestSecurityChecker::ValidateDomainAndRelyingPartyID(
         GetContentClient()->browser()->GetSystemSharedURLLoaderFactory();
   }
 
-  return RemoteValidation::Create(caller_origin, relying_party_id,
-                                  url_loader_factory, std::move(callback));
+  return webauthn::RemoteValidation::Create(
+      caller_origin, relying_party_id, url_loader_factory,
+      base::BindOnce(
+          [](base::OnceCallback<void(blink::mojom::AuthenticatorStatus)>
+                 callback,
+             webauthn::ValidationStatus status) {
+            std::move(callback).Run(ToAuthenticatorStatus(status));
+          },
+          std::move(callback)));
 }
 
 blink::mojom::AuthenticatorStatus

@@ -64,9 +64,7 @@ class DefaultExternalConstants : public ExternalConstants {
     return GetCrxPublicKeyHash();
   }
 
-  base::Value::Dict DictPolicies() const override {
-    return base::Value::Dict();
-  }
+  base::DictValue DictPolicies() const override { return base::DictValue(); }
 
   base::TimeDelta OverinstallTimeout() const override {
     return base::Minutes(2);

@@ -9,6 +9,7 @@ if (is_android) {
 
 static_library("regional_capabilities") {
   sources = [
+    "enums.h",
     "regional_capabilities_internals_data_holder.cc",
     "regional_capabilities_internals_data_holder.h",
     "regional_capabilities_metrics.cc",

@@ -48,7 +48,7 @@ class WIFI_EXPORT WiFiService {
   // Get Properties of network identified by |network_guid|. Populates
   // |properties| on success, |error| on failure.
   virtual void GetProperties(const std::string& network_guid,
-                             base::Value::Dict* properties,
+                             base::DictValue* properties,
                              std::string* error) = 0;
 
   // Gets the merged properties of the network with id |network_guid| from the
@@ -56,7 +56,7 @@ class WIFI_EXPORT WiFiService {
   // the currently active settings. Populates |managed_properties| on success,
   // |error| on failure.
   virtual void GetManagedProperties(const std::string& network_guid,
-                                    base::Value::Dict* managed_properties,
+                                    base::DictValue* managed_properties,
                                     std::string* error) = 0;
 
   // Get the cached read-only properties of the network with id |network_guid|.
@@ -65,13 +65,13 @@ class WIFI_EXPORT WiFiService {
   // returns a subset of the properties returned by |GetProperties|. Populates
   // |properties| on success, |error| on failure.
   virtual void GetState(const std::string& network_guid,
-                        base::Value::Dict* properties,
+                        base::DictValue* properties,
                         std::string* error) = 0;
 
   // Set Properties of network identified by |network_guid|. Populates |error|
   // on failure.
   virtual void SetProperties(const std::string& network_guid,
-                             base::Value::Dict properties,
+                             base::DictValue properties,
                              std::string* error) = 0;
 
   // Creates a new network configuration from |properties|. If |shared| is true,
@@ -79,7 +79,7 @@ class WIFI_EXPORT WiFiService {
   // network already exists, this will fail and populate |error|. On success
   // populates the |network_guid| of the new network.
   virtual void CreateNetwork(bool shared,
-                             base::Value::Dict properties,
+                             base::DictValue properties,
                              std::string* network_guid,
                              std::string* error) = 0;
 
@@ -87,7 +87,7 @@ class WIFI_EXPORT WiFiService {
   // Populates |network_list| on success.
   virtual void GetVisibleNetworks(const std::string& network_type,
                                   bool include_details,
-                                  base::Value::List* network_list) = 0;
+                                  base::ListValue* network_list) = 0;
 
   // Request network scan. Send |NetworkListChanged| event on completion.
   virtual void RequestNetworkScan() = 0;

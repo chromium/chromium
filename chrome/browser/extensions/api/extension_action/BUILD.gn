@@ -21,6 +21,7 @@ source_set("extension_action") {
     deps += [
       "//chrome/browser/ui/extensions",
       "//chrome/browser/ui/extensions:extension_popup_types",
+      "//components/tabs:public",
     ]
   }
 
@@ -44,8 +45,4 @@ source_set("extension_action") {
     "//ui/gfx",
     "//url",
   ]
-
-  if (enable_extensions) {
-    deps += [ "//chrome/browser/ui/tabs:tab_strip" ]
-  }
 }

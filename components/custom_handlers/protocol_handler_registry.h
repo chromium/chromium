@@ -99,6 +99,8 @@ class ProtocolHandlerRegistry : public KeyedService {
   void AddObserver(Observer* observer);
   void RemoveObserver(Observer* observer);
 
+  void SetDelegateForTesting(std::unique_ptr<Delegate> delegate);
+
   // Called when a site tries to register as a protocol handler. If the request
   // can be handled silently by the registry - either to ignore the request
   // or to update an existing handler - the request will succeed. If this
@@ -149,7 +151,9 @@ class ProtocolHandlerRegistry : public KeyedService {
 
   // Clear all protocol handlers registered in [begin, end).
   // Does not delete predefined or policy installed handlers.
-  void ClearUserDefinedHandlers(base::Time begin, base::Time end);
+  void ClearUserDefinedHandlers(base::Time begin,
+                                base::Time end,
+                                bool save = false);
 
   // Get the list of ignored protocol handlers.
   ProtocolHandlerList GetIgnoredHandlers();
@@ -188,13 +192,20 @@ class ProtocolHandlerRegistry : public KeyedService {
   bool HasIgnoredEquivalent(const ProtocolHandler& handler) const;
 
   // Causes the given protocol handler to not be ignored anymore.
-  void RemoveIgnoredHandler(const ProtocolHandler& handler);
+  void RemoveIgnoredHandler(const ProtocolHandler& handler, bool save = true);
 
   // Returns true if the protocol has a default protocol handler.
   bool IsHandledProtocol(std::string_view scheme) const;
 
+  // Mark the scheme's default handler as confirmed by the user.
+  void ConfirmProtocolHandler(std::string_view scheme, bool save);
+
+  // Returns true if the user has granted permission to use the scheme's default
+  // handler.
+  bool IsProtocolHandlerConfirmed(std::string_view scheme) const;
+
   // Removes the given protocol handler from the registry.
-  void RemoveHandler(const ProtocolHandler& handler);
+  void RemoveHandler(const ProtocolHandler& handler, bool save = true);
 
   // Remove the default handler for the given protocol.
   void RemoveDefaultHandler(std::string_view scheme);
@@ -271,11 +282,11 @@ class ProtocolHandlerRegistry : public KeyedService {
 
   // Returns a JSON list of protocol handlers. The caller is responsible for
   // deleting this Value.
-  base::Value::List EncodeRegisteredHandlers();
+  base::ListValue EncodeRegisteredHandlers();
 
   // Returns a JSON list of ignored protocol handlers. The caller is
   // responsible for deleting this Value.
-  base::Value::List EncodeIgnoredHandlers();
+  base::ListValue EncodeIgnoredHandlers();
 
   // Notifies observers of a change to the registry.
   void NotifyChanged();
@@ -303,7 +314,7 @@ class ProtocolHandlerRegistry : public KeyedService {
   // These pointers may be invalidated by other changes in the preferences
   // storage, hence they must not be stored in a way that outlives the current
   // stack frame.
-  std::vector<const base::Value::Dict*> GetHandlersFromPref(
+  std::vector<const base::DictValue*> GetHandlersFromPref(
       const char* pref_name) const;
 
   // Ignores future requests to register the given protocol handler.

@@ -36,7 +36,7 @@ class WebUIIOSImpl : public web::WebUIIOS {
                                MessageCallback callback) override;
   void ProcessWebUIIOSMessage(const GURL& source_url,
                               std::string_view message,
-                              const base::Value::List& args) override;
+                              const base::ListValue& args) override;
   void CallJavascriptFunction(std::string_view function_name,
                               base::span<const base::ValueView> args) override;
   void ResolveJavascriptCallback(const base::ValueView callback_id,

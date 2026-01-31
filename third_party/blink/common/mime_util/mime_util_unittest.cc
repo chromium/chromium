@@ -42,15 +42,7 @@ TEST(MimeUtilJsonMimeTypeTest, IsJSON) {
   EXPECT_TRUE(IsJSONMimeType("text/blah+json;x=1"));
   EXPECT_TRUE(IsJSONMimeType("text/html+json"));
   EXPECT_TRUE(IsJSONMimeType("image/svg+json"));
-}
 
-TEST(MimeUtilJsonMimeTypeTest, IsJSONStrictTokenValidation) {
-  base::test::ScopedFeatureList features;
-  features.InitWithFeatureState(
-      blink::features::kStrictJsonMimeTypeTokenValidation, true);
-
-  EXPECT_TRUE(IsJSONMimeType("application/json"));
-  EXPECT_TRUE(IsJSONMimeType("text/json"));
   EXPECT_TRUE(IsJSONMimeType("text/hal+json"));
   EXPECT_FALSE(IsJSONMimeType("te xt/hal+json"));
   EXPECT_FALSE(IsJSONMimeType("text/ha l+json"));
@@ -64,7 +56,6 @@ TEST(MimeUtilTest, LookupTypes) {
 
   EXPECT_TRUE(IsSupportedImageMimeType("image/jpeg"));
   EXPECT_TRUE(IsSupportedImageMimeType("Image/JPEG"));
-  EXPECT_FALSE(IsSupportedImageMimeType("image/jxl"));
   EXPECT_EQ(IsSupportedImageMimeType("image/avif"),
             BUILDFLAG(ENABLE_AV1_DECODER));
   EXPECT_FALSE(IsSupportedImageMimeType("image/lolcat"));
@@ -102,5 +93,21 @@ TEST(MimeUtilTest, LookupTypes) {
   EXPECT_FALSE(IsSupportedNonImageMimeType("application/vnd.doc;x=y+json"));
   EXPECT_FALSE(IsSupportedNonImageMimeType("Application/VND.DOC;X=Y+JSON"));
 }
+
+#if BUILDFLAG(ENABLE_JXL_DECODER)
+class JxlFeatureFlagTest : public testing::TestWithParam<bool> {};
+
+TEST_P(JxlFeatureFlagTest, JxlSupportMatchesFeatureFlag) {
+  base::test::ScopedFeatureList features;
+  features.InitWithFeatureState(blink::features::kJXLImageFormat, GetParam());
+  EXPECT_EQ(IsSupportedImageMimeType("image/jxl"), GetParam());
+}
+
+INSTANTIATE_TEST_SUITE_P(MimeUtilTest, JxlFeatureFlagTest, testing::Bool());
+#else
+TEST(MimeUtilTest, JxlNotSupportedWhenDecoderDisabled) {
+  EXPECT_FALSE(IsSupportedImageMimeType("image/jxl"));
+}
+#endif
 
 }  // namespace blink

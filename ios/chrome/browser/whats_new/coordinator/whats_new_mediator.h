@@ -8,11 +8,11 @@
 #import "ios/chrome/browser/whats_new/ui/whats_new_detail_view_action_handler.h"
 #import "ios/chrome/browser/whats_new/ui/whats_new_table_view_action_handler.h"
 
-@protocol WhatsNewMediatorConsumer;
-@protocol ApplicationCommands;
-@protocol WhatsNewCommands;
 @protocol LensCommands;
+@protocol SceneCommands;
 @protocol SettingsCommands;
+@protocol WhatsNewCommands;
+@protocol WhatsNewMediatorConsumer;
 
 class UrlLoadingBrowserAgent;
 
@@ -28,8 +28,8 @@ class UrlLoadingBrowserAgent;
 // Url loading agent.
 @property(nonatomic, assign) UrlLoadingBrowserAgent* urlLoadingAgent;
 
-// Application command handler.
-@property(nonatomic, weak) id<ApplicationCommands> applicationHandler;
+// Scene commands handler.
+@property(nonatomic, weak) id<SceneCommands> sceneHandler;
 
 // Dispatcher for handling Lens promo actions.
 @property(nonatomic, weak) id<LensCommands> lensHandler;

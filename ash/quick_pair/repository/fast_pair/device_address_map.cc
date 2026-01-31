@@ -121,7 +121,7 @@ bool DeviceAddressMap::HasPersistedRecordsForModelId(
     return false;
   }
 
-  const base::Value::Dict& device_address_map_dict =
+  const base::DictValue& device_address_map_dict =
       local_state->GetDict(kDeviceAddressMapPref);
   for (std::pair<const std::string&, const base::Value&> record :
        device_address_map_dict) {
@@ -147,7 +147,7 @@ void DeviceAddressMap::LoadPersistedRecordsFromPrefs() {
     return;
   }
 
-  const base::Value::Dict& device_address_map_dict =
+  const base::DictValue& device_address_map_dict =
       local_state->GetDict(kDeviceAddressMapPref);
   for (std::pair<const std::string&, const base::Value&> record :
        device_address_map_dict) {

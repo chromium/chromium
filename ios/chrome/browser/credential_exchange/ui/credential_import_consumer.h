@@ -21,6 +21,9 @@ enum class CredentialImportStage;
 // Sets the email of the signed-in user's account.
 - (void)setUserEmail:(const std::string&)userEmail;
 
+// Sets the name of the exporter password manager.
+- (void)setExporterDisplayName:(NSString*)exporterDisplayName;
+
 // Updates the UI based on the provided `importStage`.
 - (void)transitionToImportStage:(CredentialImportStage)importStage;
 

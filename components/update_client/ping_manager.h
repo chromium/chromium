@@ -27,7 +27,7 @@ class PingManager : public base::RefCountedThreadSafe<PingManager> {
   // be discarded if it has not been sent for any reason.
   virtual void SendPing(const std::string& session_id,
                         const CrxComponent& component,
-                        std::vector<base::Value::Dict> events,
+                        std::vector<base::DictValue> events,
                         base::OnceClosure callback);
 
  protected:

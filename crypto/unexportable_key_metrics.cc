@@ -222,7 +222,7 @@ void MeasureTpmOperationsInternal(UnexportableKeyProvider::Config config) {
   auto delete_key = [&provider](UnexportableSigningKey* key) {
     if (StatefulUnexportableKeyProvider* stateful_provider =
             provider->AsStatefulUnexportableKeyProvider()) {
-      stateful_provider->DeleteSigningKeySlowly(key->GetWrappedKey());
+      stateful_provider->DeleteWrappedKeysSlowly({key->GetWrappedKey()});
     }
     delete key;
   };
@@ -292,6 +292,10 @@ std::string OperationToString(TPMOperation operation) {
       return "WrappedKeyCreation";
     case TPMOperation::kWrappedKeyExport:
       return "WrappedKeyExport";
+    case TPMOperation::kSelectAlgorithm:
+      return "SelectAlgorithm";
+    case TPMOperation::kKeyDeletion:
+      return "KeyDeletion";
   }
 }
 
@@ -307,11 +311,11 @@ std::string AlgorithmToString(SignatureVerifier::SignatureAlgorithm algorithm) {
 }
 
 void MaybeMeasureTpmOperations(UnexportableKeyProvider::Config config) {
-    base::ThreadPool::PostTask(
-        FROM_HERE,
-        {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
-         base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN},
-        base::BindOnce(&MeasureTpmOperationsInternal, std::move(config)));
+  base::ThreadPool::PostTask(
+      FROM_HERE,
+      {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
+       base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN},
+      base::BindOnce(&MeasureTpmOperationsInternal, std::move(config)));
 }
 
 }  // namespace crypto

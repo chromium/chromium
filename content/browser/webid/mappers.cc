@@ -317,12 +317,10 @@ std::vector<IdentityRequestDialogDisclosureField> GetDisclosureFields(
       list.push_back(IdentityRequestDialogDisclosureField::kEmail);
     } else if (field == kDefaultFieldPicture) {
       list.push_back(IdentityRequestDialogDisclosureField::kPicture);
-    } else if (IsAlternativeIdentifiersEnabled()) {
-      if (field == kFieldPhoneNumber) {
-        list.push_back(IdentityRequestDialogDisclosureField::kPhoneNumber);
-      } else if (field == kFieldUsername) {
-        list.push_back(IdentityRequestDialogDisclosureField::kUsername);
-      }
+    } else if (field == kFieldPhoneNumber) {
+      list.push_back(IdentityRequestDialogDisclosureField::kPhoneNumber);
+    } else if (field == kFieldUsername) {
+      list.push_back(IdentityRequestDialogDisclosureField::kUsername);
     }
   }
   return list;

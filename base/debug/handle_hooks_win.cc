@@ -55,8 +55,7 @@ BOOL WINAPI DuplicateHandleHook(HANDLE source_process,
 
 }  // namespace
 
-namespace base {
-namespace debug {
+namespace base::debug {
 
 namespace {
 
@@ -243,13 +242,14 @@ void HandleHooks::PatchLoadedModules() {
                             kSize * sizeof(HMODULE), &returned)) {
     return;
   }
-  returned /= sizeof(HMODULE);
-  returned = std::min(kSize, returned);
-
-  for (DWORD current = 0; current < returned; current++) {
-    AddIATPatch(UNSAFE_TODO(modules[current]));
+  const size_t modules_count =
+      std::min<size_t>(kSize, returned / sizeof(HMODULE));
+  // SAFETY: Trust that ::EnumProcessModules returns the number of bytes it said
+  // it did, and that `modules_count` is calculated correctly.
+  auto modules_span = UNSAFE_BUFFERS(base::span(modules.get(), modules_count));
+  for (DWORD current = 0; current < modules_count; current++) {
+    AddIATPatch(modules_span[current]);
   }
 }
 
-}  // namespace debug
-}  // namespace base
+}  // namespace base::debug

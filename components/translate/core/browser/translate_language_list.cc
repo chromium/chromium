@@ -12,7 +12,6 @@
 #include <string_view>
 
 #include "base/check.h"
-#include "base/debug/dump_without_crashing.h"
 #include "base/functional/bind.h"
 #include "base/json/json_reader.h"
 #include "base/lazy_instance.h"
@@ -486,22 +485,22 @@ bool TranslateLanguageList::SetSupportedLanguages(
   //   "tl": {"XX": "LanguageName", ...}
   // }
   // Where "tl" is set in kTargetLanguagesKey.
-  std::optional<base::Value::Dict> json_value = base::JSONReader::ReadDict(
+  std::optional<base::DictValue> json_value = base::JSONReader::ReadDict(
       language_list, base::JSON_ALLOW_TRAILING_COMMAS);
 
   if (!json_value) {
-    NotifyEvent(__LINE__, "Language list is invalid");
-    base::debug::DumpWithoutCrashing();
+    LOG(ERROR) << "Failed to parse language list.";
+    // TODO(bug:478219404): Find better way to report this issue.
     return false;
   }
   // The first level dictionary contains two sub-dicts, first for source
   // languages and second for target languages. We want to use the target
   // languages.
-  const base::Value::Dict* target_languages =
+  const base::DictValue* target_languages =
       json_value->FindDict(TranslateLanguageList::kTargetLanguagesKey);
   if (!target_languages) {
-    NotifyEvent(__LINE__, "Target languages are not found in the response");
-    base::debug::DumpWithoutCrashing();
+    LOG(ERROR) << "Target languages not found in translate language list.";
+    // TODO(bug:478219404): Find better way to report this issue.
     return false;
   }
 

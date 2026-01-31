@@ -456,9 +456,9 @@ TEST_F(BrowserAccessibilityManagerFuchsiaTest, HitTest) {
     EXPECT_EQ(*last_request_id, action_data.request_id);
   }
 
-  // Fire blink event to signify the hit test result.
-  manager_->FireBlinkEvent(ax::mojom::Event::kHover, node_2,
-                           action_data.request_id);
+  // Fire source event to signify the hit test result.
+  manager_->FireSourceEvent(ax::mojom::Event::kHover, node_2,
+                            action_data.request_id);
 
   {
     const std::map<int, std::optional<uint32_t>>& hit_test_results =
@@ -512,8 +512,8 @@ TEST_F(BrowserAccessibilityManagerFuchsiaTest, HitTestFails) {
     EXPECT_EQ(last_target->y(), 2);
   }
 
-  // FIre blink event to signify the hit test result.
-  manager_->FireBlinkEvent(ax::mojom::Event::kHover, nullptr, 4);
+  // Fire source event to signify the hit test result.
+  manager_->FireSourceEvent(ax::mojom::Event::kHover, nullptr, 4);
 
   {
     const std::map<int, std::optional<uint32_t>>& hit_test_results =

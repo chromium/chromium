@@ -16,25 +16,25 @@
 namespace allocator_shim {
 namespace {
 
-void* MallocImpl(size_t size, void* context) {
+void* MallocImpl(size_t size, AllocToken, void* context) {
   MallocZoneFunctions& functions = GetFunctionsForZone(context);
   return functions.malloc(reinterpret_cast<struct _malloc_zone_t*>(context),
                           size);
 }
 
-void* CallocImpl(size_t n, size_t size, void* context) {
+void* CallocImpl(size_t n, size_t size, AllocToken, void* context) {
   MallocZoneFunctions& functions = GetFunctionsForZone(context);
   return functions.calloc(reinterpret_cast<struct _malloc_zone_t*>(context), n,
                           size);
 }
 
-void* MemalignImpl(size_t alignment, size_t size, void* context) {
+void* MemalignImpl(size_t alignment, size_t size, AllocToken, void* context) {
   MallocZoneFunctions& functions = GetFunctionsForZone(context);
   return functions.memalign(reinterpret_cast<struct _malloc_zone_t*>(context),
                             alignment, size);
 }
 
-void* ReallocImpl(void* ptr, size_t size, void* context) {
+void* ReallocImpl(void* ptr, size_t size, AllocToken, void* context) {
   MallocZoneFunctions& functions = GetFunctionsForZone(context);
   return functions.realloc(reinterpret_cast<struct _malloc_zone_t*>(context),
                            ptr, size);

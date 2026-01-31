@@ -342,6 +342,7 @@
 <translation id="2201071101391734388"><ph name="INDEX" />. fénykép a legutóbbi <ph name="TOTAL_COUNT" /> fénykép közül.</translation>
 <translation id="2201687081523799384">A Google Tasks összecsukása</translation>
 <translation id="2208323208084708176">Egységes asztali mód</translation>
+<translation id="2210311543574621570">A Ctrl + V billentyűparancs nyomva tartásakor megjelenik a vágólap. A billentyűparancs kikapcsolásához tiltsa le a #clipboard-history-longpress jelzőt a chrome://flags oldalon.</translation>
 <translation id="2215920961700443347">Nincs internetkapcsolat. Csatlakozzon az internethez, és próbálja újra.</translation>
 <translation id="2222841058024245321">7. asztal</translation>
 <translation id="2223384056430485343">Osztott képernyőn</translation>

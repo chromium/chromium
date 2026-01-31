@@ -81,35 +81,33 @@ void OSSyncHandler::OnSyncShutdown(syncer::SyncService* service) {
   NOTREACHED();
 }
 
-void OSSyncHandler::HandleDidNavigateToOsSyncPage(
-    const base::Value::List& args) {
+void OSSyncHandler::HandleDidNavigateToOsSyncPage(const base::ListValue& args) {
   HandleOsSyncPrefsDispatch(args);
 }
 
-void OSSyncHandler::HandleOsSyncPrefsDispatch(const base::Value::List& args) {
+void OSSyncHandler::HandleOsSyncPrefsDispatch(const base::ListValue& args) {
   AllowJavascript();
 
   PushSyncPrefs();
 }
 
 void OSSyncHandler::HandleDidNavigateAwayFromOsSyncPage(
-    const base::Value::List& args) {
+    const base::ListValue& args) {
   // TODO(https://crbug.com/1278325): Remove this.
 }
 
-void OSSyncHandler::HandleOpenBrowserSyncSettings(
-    const base::Value::List& args) {
+void OSSyncHandler::HandleOpenBrowserSyncSettings(const base::ListValue& args) {
   ash::NewWindowDelegate::GetInstance()->OpenUrl(
       GURL(chrome::kChromeUISettingsURL).Resolve(chrome::kSyncSetupSubPage),
       ash::NewWindowDelegate::OpenUrlFrom::kUserInteraction,
       ash::NewWindowDelegate::Disposition::kSwitchToTab);
 }
 
-void OSSyncHandler::HandleSetOsSyncDatatypes(const base::Value::List& args) {
+void OSSyncHandler::HandleSetOsSyncDatatypes(const base::ListValue& args) {
   CHECK_EQ(1u, args.size());
   const base::Value& result_value = args[0];
   CHECK(result_value.is_dict());
-  const base::Value::Dict& result = result_value.GetDict();
+  const base::DictValue& result = result_value.GetDict();
 
   // Wallpaper sync status is stored directly to the profile's prefs.
   bool wallpaper_synced = result.FindBool(kWallpaperEnabledKey).value();
@@ -155,7 +153,7 @@ void OSSyncHandler::PushSyncPrefs() {
     return;
   }
 
-  base::Value::Dict args;
+  base::DictValue args;
   SyncUserSettings* user_settings = service->GetUserSettings();
   // Tell the UI layer which data types are registered/enabled by the user.
   args.Set("syncAllOsTypes", user_settings->IsSyncAllOsTypesEnabled());

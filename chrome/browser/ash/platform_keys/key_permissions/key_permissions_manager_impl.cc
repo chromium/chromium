@@ -6,12 +6,12 @@
 
 #include <stdint.h>
 
+#include <algorithm>
 #include <memory>
 #include <optional>
 #include <string>
 #include <vector>
 
-#include "base/containers/contains.h"
 #include "base/containers/queue.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
@@ -313,7 +313,7 @@ void KeyPermissionsManagerImpl::OnGotTokens(
     return;
   }
 
-  if (!base::Contains(token_ids, token_id_)) {
+  if (!std::ranges::contains(token_ids, token_id_)) {
     LOG(ERROR) << "KeyPermissionsManager doesn't have access to token: "
                << static_cast<int>(token_id_);
     return;

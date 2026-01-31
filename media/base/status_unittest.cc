@@ -276,7 +276,7 @@ TEST_F(StatusTest, StaticOKMethodGivesCorrectSerialization) {
 TEST_F(StatusTest, SingleLayerError) {
   NormalStatus failed = FailEasily();
   base::Value actual = MediaSerializeForTesting(failed);
-  const base::Value::Dict& actual_dict = actual.GetDict();
+  const base::DictValue& actual_dict = actual.GetDict();
   ASSERT_EQ(actual_dict.size(), 5ul);
   ASSERT_EQ(*actual_dict.FindString("message"), "Message");
   ASSERT_EQ(actual_dict.FindList("stack")->size(), 1ul);
@@ -298,7 +298,7 @@ TEST_F(StatusTest, SingleLayerError) {
 TEST_F(StatusTest, MultipleErrorLayer) {
   NormalStatus failed = FailRecursively(3);
   base::Value actual = MediaSerializeForTesting(failed);
-  const base::Value::Dict& actual_dict = actual.GetDict();
+  const base::DictValue& actual_dict = actual.GetDict();
   ASSERT_EQ(actual_dict.size(), 5ul);
   ASSERT_EQ(*actual_dict.FindString("message"), "Message");
   ASSERT_EQ(actual_dict.FindList("stack")->size(), 4ul);
@@ -313,7 +313,7 @@ TEST_F(StatusTest, MultipleErrorLayer) {
 TEST_F(StatusTest, CanHaveData) {
   NormalStatus failed = FailWithData("example", "data");
   base::Value actual = MediaSerializeForTesting(failed);
-  const base::Value::Dict& actual_dict = actual.GetDict();
+  const base::DictValue& actual_dict = actual.GetDict();
   ASSERT_EQ(actual_dict.size(), 5ul);
   ASSERT_EQ(*actual_dict.FindString("message"), "Message");
   ASSERT_EQ(actual_dict.FindList("stack")->size(), 1ul);
@@ -331,7 +331,7 @@ TEST_F(StatusTest, CanUseCustomSerializer) {
   NormalStatus failed =
       FailWithData("example", UselessThingToBeSerialized("F"));
   base::Value actual = MediaSerializeForTesting(failed);
-  const base::Value::Dict& actual_dict = actual.GetDict();
+  const base::DictValue& actual_dict = actual.GetDict();
   ASSERT_EQ(actual_dict.size(), 5ul);
   ASSERT_EQ(*actual_dict.FindString("message"), "Message");
   ASSERT_EQ(actual_dict.FindList("stack")->size(), 1ul);
@@ -348,14 +348,14 @@ TEST_F(StatusTest, CanUseCustomSerializer) {
 TEST_F(StatusTest, CausedByHasVector) {
   NormalStatus causal = FailWithCause();
   base::Value actual = MediaSerializeForTesting(causal);
-  const base::Value::Dict& actual_dict = actual.GetDict();
+  const base::DictValue& actual_dict = actual.GetDict();
   ASSERT_EQ(actual_dict.size(), 6ul);
   ASSERT_EQ(*actual_dict.FindString("message"), "Message");
   ASSERT_EQ(actual_dict.FindList("stack")->size(), 1ul);
   ASSERT_EQ(actual_dict.FindDict("data")->size(), 0ul);
   ASSERT_NE(actual_dict.Find("cause"), nullptr);
 
-  const base::Value::Dict* nested = actual_dict.FindDict("cause");
+  const base::DictValue* nested = actual_dict.FindDict("cause");
   ASSERT_NE(nested, nullptr);
   ASSERT_EQ(nested->size(), 5ul);
   ASSERT_EQ(*nested->FindString("message"), "Message");
@@ -370,15 +370,14 @@ TEST_F(StatusTest, CausedByCanAssignCopy) {
   base::Value causal_serialized = MediaSerializeForTesting(causal);
   base::Value copy_causal_serialized = MediaSerializeForTesting(copy_causal);
 
-  base::Value::Dict* original = causal_serialized.GetDict().FindDict("cause");
+  base::DictValue* original = causal_serialized.GetDict().FindDict("cause");
   ASSERT_EQ(original->size(), 5ul);
   ASSERT_EQ(*original->FindString("message"), "Message");
   ASSERT_EQ(original->FindList("stack")->size(), 1ul);
   ASSERT_EQ(original->Find("cause"), nullptr);
   ASSERT_EQ(original->FindDict("data")->size(), 0ul);
 
-  base::Value::Dict* copied =
-      copy_causal_serialized.GetDict().FindDict("cause");
+  base::DictValue* copied = copy_causal_serialized.GetDict().FindDict("cause");
   ASSERT_EQ(copied->size(), 5ul);
   ASSERT_EQ(*copied->FindString("message"), "Message");
   ASSERT_EQ(copied->FindList("stack")->size(), 1ul);
@@ -391,7 +390,7 @@ TEST_F(StatusTest, CanCopyEasily) {
   NormalStatus withData = DoSomethingGiveItBack(failed);
 
   base::Value actual = MediaSerializeForTesting(failed);
-  const base::Value::Dict& actual_dict = actual.GetDict();
+  const base::DictValue& actual_dict = actual.GetDict();
   ASSERT_EQ(actual_dict.size(), 5ul);
   ASSERT_EQ(*actual_dict.FindString("message"), "Message");
   ASSERT_EQ(actual_dict.FindList("stack")->size(), 1ul);
@@ -475,7 +474,7 @@ TEST_F(StatusTest, TypedStatusWithNoDefaultAndNoOk) {
   EXPECT_TRUE(ok.has_value());
   // One cannot call ok.code() without an okay type.
 
-  base::Value::Dict actual = MediaSerializeForTesting(bar).TakeDict();
+  base::DictValue actual = MediaSerializeForTesting(bar).TakeDict();
   EXPECT_EQ(*actual.FindInt("code"), static_cast<int>(bar.code()));
 }
 
@@ -503,7 +502,7 @@ TEST_F(StatusTest, TypedStatusWithNoDefaultHasOk) {
   EXPECT_TRUE(ok.has_value());
   EXPECT_EQ(ok.code(), NDStatus::Codes::kOk);
 
-  base::Value::Dict actual = MediaSerializeForTesting(bar).TakeDict();
+  base::DictValue actual = MediaSerializeForTesting(bar).TakeDict();
   EXPECT_EQ(*actual.FindInt("code"), static_cast<int>(bar.code()));
 }
 

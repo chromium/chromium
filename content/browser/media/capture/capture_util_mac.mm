@@ -30,7 +30,8 @@ std::unique_ptr<media::VideoCaptureDevice> CreateScreenCaptureKitDeviceMac(
   }
 }
 
-std::optional<NativeWindowId> GetNativeWindowIdMac(WebContents& web_contents) {
+std::optional<DesktopMediaID::Id> GetNativeWindowIdMac(
+    WebContents& web_contents) {
   gfx::NativeView native_view = web_contents.GetNativeView();
   NSView* ns_view = native_view.GetNativeNSView();
   if (!ns_view) {
@@ -43,7 +44,9 @@ std::optional<NativeWindowId> GetNativeWindowIdMac(WebContents& web_contents) {
   }
 
   int64_t window_number = [ns_window windowNumber];
-  return window_number > 0 ? std::make_optional(window_number) : std::nullopt;
+  return window_number > 0 ? std::make_optional(
+                                 static_cast<DesktopMediaID::Id>(window_number))
+                           : std::nullopt;
 }
 
 }  // namespace content

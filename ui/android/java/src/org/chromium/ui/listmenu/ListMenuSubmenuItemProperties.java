@@ -13,6 +13,7 @@ import static org.chromium.ui.listmenu.ListMenuItemProperties.IS_TEXT_ELLIPSIZED
 import static org.chromium.ui.listmenu.ListMenuItemProperties.KEY_LISTENER;
 import static org.chromium.ui.listmenu.ListMenuItemProperties.START_ICON_BITMAP;
 import static org.chromium.ui.listmenu.ListMenuItemProperties.TITLE;
+import static org.chromium.ui.listmenu.ListMenuItemProperties.TOOLTIP;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
@@ -30,6 +31,7 @@ public class ListMenuSubmenuItemProperties {
     public static final PropertyKey[] ALL_KEYS = {
         TITLE,
         CONTENT_DESCRIPTION,
+        TOOLTIP,
         START_ICON_BITMAP,
         CLICK_LISTENER,
         HOVER_LISTENER,

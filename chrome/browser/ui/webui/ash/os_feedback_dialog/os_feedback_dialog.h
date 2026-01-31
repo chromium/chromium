@@ -30,7 +30,7 @@ class OsFeedbackDialog : public SystemWebDialogDelegate {
   static gfx::NativeWindow FindDialogWindow();
 
  protected:
-  explicit OsFeedbackDialog(base::Value::Dict feedback_info);
+  explicit OsFeedbackDialog(base::DictValue feedback_info);
   OsFeedbackDialog(const OsFeedbackDialog&) = delete;
   OsFeedbackDialog& operator=(const OsFeedbackDialog&) = delete;
   ~OsFeedbackDialog() override;
@@ -42,7 +42,7 @@ class OsFeedbackDialog : public SystemWebDialogDelegate {
 
   // Used to populate feedback context when launched from Dialog (eg. from login
   // screen).
-  const base::Value::Dict feedback_info_;
+  const base::DictValue feedback_info_;
 };
 
 }  // namespace ash

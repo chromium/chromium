@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "base/command_line.h"
-#include "base/containers/contains.h"
 #include "base/debug/crash_logging.h"
 #include "base/debug/dump_without_crashing.h"
 #include "base/functional/bind.h"
@@ -29,6 +28,7 @@
 #include "components/viz/common/surfaces/parent_local_surface_id_allocator.h"
 #include "content/browser/compositor/surface_utils.h"
 #include "content/browser/gpu/compositor_util.h"
+#include "content/public/browser/render_widget_host_view.h"
 #include "content/public/common/content_switches.h"
 #include "third_party/blink/public/mojom/widget/record_content_to_visible_time_request.mojom.h"
 #include "third_party/khronos/GLES2/gl2.h"
@@ -145,8 +145,8 @@ void DelegatedFrameHost::WasHidden(HiddenCause cause) {
 void DelegatedFrameHost::CopyFromCompositingSurface(
     const gfx::Rect& src_subrect,
     const gfx::Size& output_size,
-    base::OnceCallback<void(const viz::CopyOutputBitmapWithMetadata&)>
-        callback) {
+    base::TimeDelta timeout,
+    base::OnceCallback<void(const content::CopyFromSurfaceResult&)> callback) {
   const viz::SurfaceId surface_id(frame_sink_id_, local_surface_id_);
 
   ui::Compositor::ScopedKeepSurfaceAliveCallback keep_surface_alive;
@@ -159,18 +159,18 @@ void DelegatedFrameHost::CopyFromCompositingSurface(
   CopyFromCompositingSurfaceInternal(
       src_subrect, output_size, surface_id,
       viz::CopyOutputRequest::ResultFormat::RGBA,
-      viz::CopyOutputRequest::ResultDestination::kSystemMemory,
+      viz::CopyOutputRequest::ResultDestination::kSystemMemory, timeout,
       base::BindOnce(
-          [](base::OnceCallback<void(const viz::CopyOutputBitmapWithMetadata&)>
+          [](base::OnceCallback<void(const content::CopyFromSurfaceResult&)>
                  callback,
              ui::Compositor::ScopedKeepSurfaceAliveCallback keep_alive,
              std::unique_ptr<viz::CopyOutputResult> result) {
             if (keep_alive) {
               std::move(keep_alive).RunAndReset();
             }
-            auto scoped_bitmap = result->ScopedAccessSkBitmap();
             std::move(callback).Run(
-                scoped_bitmap.GetOutScopedBitmapAndMetadata());
+                ToCopyFromSurfaceResult(result->ScopedAccessSkBitmap()
+                                            .GetOutScopedBitmapAndMetadata()));
           },
           std::move(callback), std::move(keep_surface_alive)));
 }
@@ -184,7 +184,7 @@ void DelegatedFrameHost::CopyFromCompositingSurfaceAsTexture(
       src_subrect, output_size, surface_id,
       viz::CopyOutputRequest::ResultFormat::RGBA,
       viz::CopyOutputRequest::ResultDestination::kSharedImage,
-      std::move(callback));
+      base::TimeDelta(), std::move(callback));
 }
 
 void DelegatedFrameHost::CopyFromCompositingSurfaceInternal(
@@ -193,6 +193,7 @@ void DelegatedFrameHost::CopyFromCompositingSurfaceInternal(
     const viz::SurfaceId& surface_id,
     viz::CopyOutputRequest::ResultFormat format,
     viz::CopyOutputRequest::ResultDestination destination,
+    base::TimeDelta timeout,
     viz::CopyOutputRequest::CopyOutputRequestCallback callback) {
   auto request = std::make_unique<viz::CopyOutputRequest>(format, destination,
                                                           std::move(callback));
@@ -234,7 +235,9 @@ void DelegatedFrameHost::CopyFromCompositingSurfaceInternal(
         gfx::Vector2d(output_size.width(), output_size.height()));
   }
   CHECK(host_frame_sink_manager_);
-  host_frame_sink_manager_->RequestCopyOfOutput(surface_id, std::move(request));
+  host_frame_sink_manager_->RequestCopyOfOutput(
+      surface_id, std::move(request), /*capture_exact_surface_id=*/false,
+      timeout);
 }
 
 void DelegatedFrameHost::SetFrameEvictionStateAndNotifyObservers(

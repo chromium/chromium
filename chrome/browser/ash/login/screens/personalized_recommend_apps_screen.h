@@ -73,18 +73,18 @@ class PersonalizedRecommendAppsScreen : public BaseScreen {
   bool MaybeSkip(WizardContext& context) override;
   void ShowImpl() override;
   void HideImpl() override;
-  void OnUserAction(const base::Value::List& args) override;
+  void OnUserAction(const base::ListValue& args) override;
 
   void OnResponseReceived(const std::vector<OOBEAppDefinition>& app_infos,
                           const std::vector<OOBEDeviceUseCase>& use_cases,
                           AppsFetchingResult result);
 
-  void OnInstall(base::Value::List selected_apps_package_ids);
+  void OnInstall(base::ListValue selected_apps_package_ids);
 
   void ShowOverviewStep();
   // TODO(b/345694992) : Extend browser test to test timeout logic.
   void ExitScreenTimeout();
-  void SetAppsAndUseCasesData(base::Value::List apps_with_use_cases_list);
+  void SetAppsAndUseCasesData(base::ListValue apps_with_use_cases_list);
 
   std::unique_ptr<base::OneShotTimer> delay_set_apps_timer_;
   base::TimeDelta delay_set_apps_step_ = base::Seconds(2);

@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.messages;
 
 import android.content.res.Resources;
+import android.graphics.Rect;
 import android.view.View;
 
 import androidx.coordinatorlayout.widget.CoordinatorLayout;
@@ -70,13 +71,43 @@ public class MessageContainerCoordinator implements BrowserControlsStateProvider
         assert mContainer != null;
         mContainer.setVisibility(View.VISIBLE);
         updateMargins();
-        for (MessageContainerObserver o : mObservers) o.onShowMessageContainer();
+
+        // Given the async nature of the layout process in Android, if we pass a rect directly
+        // after updateMargins(), we get an empty rect. We wait until layout is performed.
+        mContainer.addOnLayoutChangeListener(
+                new View.OnLayoutChangeListener() {
+                    @Override
+                    public void onLayoutChange(
+                            View v,
+                            int left,
+                            int top,
+                            int right,
+                            int bottom,
+                            int oldLeft,
+                            int oldTop,
+                            int oldRight,
+                            int oldBottom) {
+                        if (mContainer == null) return;
+                        mContainer.removeOnLayoutChangeListener(this);
+
+                        Rect rect = new Rect();
+                        mContainer.getGlobalVisibleRect(rect);
+                        int viewId = mContainer.getId();
+                        for (MessageContainerObserver o : mObservers) {
+                            o.onShowMessageContainer(viewId, rect);
+                        }
+                    }
+                });
     }
 
     protected void hideMessageContainer() {
         assert mContainer != null;
+        int viewId = mContainer.getId();
+
         mContainer.setVisibility(View.GONE);
-        for (MessageContainerObserver o : mObservers) o.onHideMessageContainer();
+        for (MessageContainerObserver o : mObservers) {
+            o.onHideMessageContainer(viewId);
+        }
     }
 
     /**

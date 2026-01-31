@@ -86,7 +86,7 @@ class MojoGpuVideoAcceleratorFactories
   std::unique_ptr<media::VideoEncodeAccelerator> CreateVideoEncodeAccelerator()
       override;
 
-  bool ShouldUseGpuMemoryBuffersForVideoFrames(
+  bool ShouldUseMappableSharedImagesForVideoFrames(
       bool for_media_stream) const override;
   OutputFormat VideoFrameOutputFormat(
       media::VideoPixelFormat pixel_format) override;

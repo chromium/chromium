@@ -6,6 +6,7 @@
 
 #include <algorithm>
 #include <memory>
+#include <optional>
 
 #include "base/android/callback_android.h"
 #include "base/android/jni_array.h"
@@ -13,6 +14,7 @@
 #include "base/android/jni_string.h"
 #include "base/android/token_android.h"
 #include "base/functional/bind.h"
+#include "chrome/browser/android/restore_entity_tracker_android.h"
 #include "chrome/browser/android/tab_android.h"
 #include "chrome/browser/android/tab_group_collection_data_android.h"
 #include "chrome/browser/android/tab_state_storage_service_factory.h"
@@ -27,10 +29,6 @@
 #include "chrome/browser/tab/jni_headers/StorageLoadedData_jni.h"
 
 namespace tabs {
-
-namespace {
-
-using ScopedJavaLocalRef = base::android::ScopedJavaLocalRef<jobject>;
 
 base::android::ScopedJavaLocalRef<jobject> CreateLoadedTabState(
     JNIEnv* env,
@@ -66,62 +64,45 @@ base::android::ScopedJavaLocalRef<jobject> CreateLoadedTabState(
           tab_state.user_agent(),
           tab_state.last_navigation_committed_timestamp_millis(),
           j_tab_group_id, tab_state.tab_has_sensitive_content(),
-          tab_state.is_pinned());
+          tab_state.is_pinned(), tab_state.url());
 
   return Java_StorageLoadedData_createLoadedTabState(env, tab_state.tab_id(),
                                                      j_tab_state);
 }
 
-base::android::ScopedJavaLocalRef<jobjectArray> CreateLoadedTabStates(
-    JNIEnv* env,
-    std::vector<tabs_pb::TabState>& loaded_tabs) {
-  std::vector<base::android::ScopedJavaLocalRef<jobject>>
-      j_loaded_tab_state_vector;
-  for (auto& loaded_tab : loaded_tabs) {
-    j_loaded_tab_state_vector.push_back(CreateLoadedTabState(env, loaded_tab));
-  }
-
-  base::android::ScopedJavaLocalRef<jclass> type = base::android::GetClass(
-      env, "org/chromium/chrome/browser/tab/StorageLoadedData$LoadedTabState");
-  return base::android::ToTypedJavaArrayOfObjects(
-      env, j_loaded_tab_state_vector, type.obj());
-}
-
-base::android::ScopedJavaLocalRef<jobjectArray> CreateGroupCollectionData(
-    JNIEnv* env,
-    std::vector<std::unique_ptr<TabGroupCollectionData>>& loaded_groups) {
-  std::vector<base::android::ScopedJavaLocalRef<jobject>> j_loaded_group_vector;
-  for (auto& loaded_group : loaded_groups) {
-    auto* android_group =
-        new TabGroupCollectionDataAndroid(std::move(loaded_group));
-    j_loaded_group_vector.push_back(android_group->GetJavaObject());
-  }
-
-  base::android::ScopedJavaLocalRef<jclass> type = base::android::GetClass(
-      env, "org/chromium/chrome/browser/tab/TabGroupCollectionData");
-  return base::android::ToTypedJavaArrayOfObjects(env, j_loaded_group_vector,
-                                                  type.obj());
-}
-
-}  // namespace
-
 StorageLoadedDataAndroid::StorageLoadedDataAndroid(
     JNIEnv* env,
     std::unique_ptr<StorageLoadedData> data)
     : data_(std::move(data)) {
-  base::android::ScopedJavaLocalRef<jobjectArray> loaded_tab_states =
-      CreateLoadedTabStates(env, data_->GetLoadedTabs());
-  base::android::ScopedJavaLocalRef<jobjectArray> loaded_groups =
-      CreateGroupCollectionData(env, data_->GetLoadedGroups());
+  std::vector<TabGroupCollectionDataAndroid*> tab_group_collection_data_android;
+  for (auto& loaded_group : data_->GetLoadedGroups()) {
+    auto* android_group =
+        new TabGroupCollectionDataAndroid(std::move(loaded_group));
+    tab_group_collection_data_android.push_back(android_group);
+  }
+  const StorageLoadedData::StorageLoadingContext& context =
+      data_->GetLoadingContext();
   j_object_ = Java_StorageLoadedData_createData(
-      env, reinterpret_cast<intptr_t>(this), loaded_tab_states, loaded_groups,
-      data_->GetActiveTabIndex().value_or(-1));
+      env, reinterpret_cast<intptr_t>(this), data_->GetLoadedTabs(),
+      tab_group_collection_data_android,
+      data_->GetActiveTabIndex().value_or(-1),
+      static_cast<int>(context.status()), context.error_message());
 }
 
 StorageLoadedDataAndroid::~StorageLoadedDataAndroid() = default;
 
 void StorageLoadedDataAndroid::Destroy(JNIEnv* env) {
   delete this;
+}
+
+void StorageLoadedDataAndroid::OnTabRejected(JNIEnv* env, int tab_android_id) {
+  RestoreEntityTrackerAndroid* tracker =
+      static_cast<RestoreEntityTrackerAndroid*>(data_->GetTracker());
+  std::optional<StorageId> parent_id =
+      tracker->GetParentIdForTab(tab_android_id);
+  if (parent_id.has_value()) {
+    GetData()->NotifyChildRejected(*parent_id);
+  }
 }
 
 base::android::ScopedJavaLocalRef<jobject>

@@ -52,6 +52,27 @@ class CRYPTO_EXPORT FakeKeychainV2 : public KeychainV2 {
   OSStatus ItemDelete(CFDictionaryRef query) override;
   OSStatus ItemUpdate(CFDictionaryRef query,
                       CFDictionaryRef keychain_data) override;
+  OSStatus AddGenericPassword(std::string_view service_name,
+                              std::string_view account_name,
+                              base::span<const uint8_t> password) override;
+  base::expected<std::vector<uint8_t>, OSStatus> FindGenericPassword(
+      std::string_view service_name,
+      std::string_view account_name) override;
+
+  // Returns the password that OSCrypt uses to generate its encryption key.
+  std::string GetEncryptionPassword() const;
+
+  // |FindGenericPassword()| can return different results depending on user
+  // interaction with the system Keychain.  For mocking purposes we allow the
+  // user of this class to specify the result code of the
+  // |FindGenericPassword()| call so we can simulate the result of different
+  // user interactions.
+  void set_find_generic_result(OSStatus result) {
+    find_generic_result_ = result;
+  }
+  // Returns the true if |AddGenericPassword()| was called.
+  bool called_add_generic() const { return called_add_generic_; }
+
 #if !BUILDFLAG(IS_IOS)
   base::apple::ScopedCFTypeRef<CFTypeRef> TaskCopyValueForEntitlement(
       SecTaskRef task,
@@ -73,6 +94,12 @@ class CRYPTO_EXPORT FakeKeychainV2 : public KeychainV2 {
   // keychain_access_group_ is the value of `kSecAttrAccessGroup` that this
   // keychain expects to operate on.
   base::apple::ScopedCFTypeRef<CFStringRef> keychain_access_group_;
+
+  // Result code for the |FindGenericPassword()| method.
+  OSStatus find_generic_result_ = noErr;
+
+  // Records whether |AddGenericPassword()| gets called.
+  bool called_add_generic_ = false;
 };
 
 }  // namespace crypto::apple

@@ -78,7 +78,7 @@ void ConflictsDataFetcher::GetListOfModules() {
 
   // The request is handled asynchronously, filling up the |module_list_|,
   // and will callback via OnModuleDatabaseIdle() on completion.
-  module_list_ = base::Value::List();
+  module_list_ = base::ListValue();
 
   auto* module_database = ModuleDatabase::GetInstance();
   module_database->StartInspection();
@@ -90,7 +90,7 @@ void ConflictsDataFetcher::OnNewModuleFound(const ModuleInfoKey& module_key,
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(module_list_);
 
-  base::Value::Dict data;
+  base::DictValue data;
 
   std::string type_string;
   if (module_data.module_properties & ModuleInfoData::kPropertyShellExtension) {
@@ -117,7 +117,7 @@ void ConflictsDataFetcher::OnModuleDatabaseIdle() {
 
   ModuleDatabase::GetInstance()->RemoveObserver(this);
 
-  base::Value::Dict results;
+  base::DictValue results;
   results.Set("moduleCount", static_cast<int>(module_list_->size()));
   results.Set("moduleList", std::move(*module_list_));
   module_list_ = std::nullopt;

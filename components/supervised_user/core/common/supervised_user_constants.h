@@ -5,6 +5,8 @@
 #ifndef COMPONENTS_SUPERVISED_USER_CORE_COMMON_SUPERVISED_USER_CONSTANTS_H_
 #define COMPONENTS_SUPERVISED_USER_CORE_COMMON_SUPERVISED_USER_CONSTANTS_H_
 
+#include <optional>
+
 #include "base/files/file_path.h"
 #include "ui/base/page_transition_types.h"
 
@@ -150,6 +152,12 @@ enum class SupervisedUserFilterTopLevelResult : int {
   kBlockNotInAllowlist = 3,
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/families/enums.xml:top_level_filtering_result)
+
+// Callsite-specific configuration for the web filtering metrics reporting.
+struct WebFilterMetricsOptions {
+  std::optional<ui::PageTransition> transition_type = std::nullopt;
+  FilteringContext filtering_context = FilteringContext::kDefault;
+};
 
 // Constants used by SupervisedUserURLFilter::RecordFilterResultEvent.
 extern const int kHistogramFilteringBehaviorSpacing;

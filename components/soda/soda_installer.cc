@@ -4,10 +4,10 @@
 
 #include "components/soda/soda_installer.h"
 
+#include <algorithm>
 #include <optional>
 #include <string>
 
-#include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/observer_list.h"
 #include "base/strings/string_split.h"
@@ -152,7 +152,7 @@ const std::set<LanguageCode> SodaInstaller::InstalledLanguages() const {
 }
 
 bool SodaInstaller::IsLanguageInstalled(LanguageCode language_code) const {
-  return base::Contains(installed_languages_, language_code);
+  return installed_languages_.contains(language_code);
 }
 
 void SodaInstaller::AddObserver(Observer* observer) {
@@ -180,7 +180,7 @@ void SodaInstaller::NotifySodaInstalledForTesting(LanguageCode language_code) {
 
   // Otherwise, this means a language pack installed.
   installed_languages_.insert(language_code);
-  if (base::Contains(language_pack_progress_, language_code)) {
+  if (language_pack_progress_.contains(language_code)) {
     language_pack_progress_.erase(language_code);
   }
   if (soda_binary_installed_) {
@@ -199,7 +199,7 @@ void SodaInstaller::NotifySodaErrorForTesting(LanguageCode language_code,
     language_pack_progress_.clear();
   } else {
     // Error with the language pack download.
-    if (base::Contains(language_pack_progress_, language_code)) {
+    if (language_pack_progress_.contains(language_code)) {
       language_pack_progress_.erase(language_code);
     }
   }
@@ -224,7 +224,7 @@ void SodaInstaller::NotifySodaProgressForTesting(int progress,
     is_soda_downloading_ = true;
   } else {
     // Language pack download progress.
-    if (base::Contains(language_pack_progress_, language_code)) {
+    if (language_pack_progress_.contains(language_code)) {
       language_pack_progress_.insert({language_code, progress});
     } else {
       language_pack_progress_[language_code] = progress;
@@ -240,7 +240,7 @@ bool SodaInstaller::IsAnyLanguagePackInstalledForTesting() const {
 void SodaInstaller::RegisterRegisteredLanguagePackPref(
     PrefRegistrySimple* registry) {
   // TODO: Default to one of the user's languages.
-  base::Value::List default_languages;
+  base::ListValue default_languages;
   default_languages.Append(base::Value(kUsEnglishLocale));
   registry->RegisterListPref(prefs::kSodaRegisteredLanguagePacks,
                              std::move(default_languages));
@@ -272,7 +272,7 @@ void SodaInstaller::RegisterLanguage(std::string_view language,
                                      PrefService* global_prefs) {
   ScopedListPrefUpdate update(global_prefs,
                               prefs::kSodaRegisteredLanguagePacks);
-  if (!base::Contains(*update, base::Value(language))) {
+  if (!update->contains(language)) {
     update->Append(language);
   }
 
@@ -283,7 +283,7 @@ void SodaInstaller::UnregisterLanguage(std::string_view language,
                                        PrefService* global_prefs) {
   ScopedListPrefUpdate update(global_prefs,
                               prefs::kSodaRegisteredLanguagePacks);
-  if (base::Contains(*update, base::Value(language))) {
+  if (update->contains(language)) {
     update->EraseValue(base::Value(language));
   }
 }
@@ -295,18 +295,18 @@ void SodaInstaller::UnregisterLanguages(PrefService* global_prefs) {
 }
 
 bool SodaInstaller::IsLanguageEnabled(std::string_view language) {
-  return base::Contains(GetLiveCaptionEnabledLanguages(), language);
+  return std::ranges::contains(GetLiveCaptionEnabledLanguages(), language);
 }
 
 bool SodaInstaller::IsSodaLanguageDownloading(
     LanguageCode language_code) const {
   return (is_soda_downloading_ && IsLanguageInstalled(language_code)) ||
-         base::Contains(language_pack_progress_, language_code);
+         language_pack_progress_.contains(language_code);
 }
 
 bool SodaInstaller::IsSodaDownloading(LanguageCode language_code) const {
   return is_soda_downloading_ ||
-         base::Contains(language_pack_progress_, language_code);
+         language_pack_progress_.contains(language_code);
 }
 
 std::optional<SodaInstaller::ErrorCode> SodaInstaller::GetSodaInstallErrorCode(

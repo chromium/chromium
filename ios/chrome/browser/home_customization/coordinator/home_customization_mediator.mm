@@ -4,7 +4,6 @@
 
 #import "ios/chrome/browser/home_customization/coordinator/home_customization_mediator.h"
 
-#import "base/containers/contains.h"
 #import "base/memory/raw_ptr.h"
 #import "components/commerce/core/commerce_feature_list.h"
 #import "components/commerce/core/pref_names.h"
@@ -12,7 +11,7 @@
 #import "components/ntp_tiles/pref_names.h"
 #import "components/prefs/pref_service.h"
 #import "components/safety_check/safety_check_pref_names.h"
-#import "ios/chrome/browser/content_suggestions/ui_bundled/set_up_list/public/set_up_list_utils.h"
+#import "ios/chrome/browser/content_suggestions/set_up_list/public/set_up_list_utils.h"
 #import "ios/chrome/browser/discover_feed/model/discover_feed_visibility_browser_agent.h"
 #import "ios/chrome/browser/discover_feed/model/feed_constants.h"
 #import "ios/chrome/browser/home_customization/coordinator/home_customization_navigation_delegate.h"

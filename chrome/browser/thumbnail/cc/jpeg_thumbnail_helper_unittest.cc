@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/bind.h"
@@ -26,7 +27,7 @@
 #include "third_party/skia/include/core/SkColor.h"
 #include "third_party/skia/include/core/SkPaint.h"
 #include "third_party/skia/include/core/SkScalar.h"
-#include "third_party/skia/include/effects/SkGradientShader.h"
+#include "third_party/skia/include/effects/SkGradient.h"
 #include "ui/gfx/codec/jpeg_codec.h"
 
 namespace thumbnail {
@@ -36,10 +37,10 @@ constexpr int kDimension = 16;
 constexpr int kKiB = 1024;
 
 SkPaint SetupPaint() {
-  SkColor colors[] = {SK_ColorRED, SK_ColorGREEN, SK_ColorBLUE};
+  SkColor4f colors[] = {SkColors::kRed, SkColors::kGreen, SkColors::kBlue};
   SkScalar pos[] = {0, SK_Scalar1 / 2, SK_Scalar1};
   SkPaint paint;
-  paint.setShader(SkGradientShader::MakeSweep(256, 256, colors, pos, 3));
+  paint.setShader(SkShaders::SweepGradient({256, 256}, {{colors, pos, SkTileMode::kClamp}, {}}));
   return paint;
 }
 
@@ -149,8 +150,7 @@ TEST_F(JpegThumbnailHelperTest, ReadThumbnail) {
   base::FilePath file_path = GetFile(tab_id);
   base::File file(file_path,
                   base::File::FLAG_CREATE_ALWAYS | base::File::FLAG_WRITE);
-  UNSAFE_TODO(file.Write(0, reinterpret_cast<const char*>(data.value().data()),
-                         data.value().size()));
+  ASSERT_TRUE(file.WriteAndCheck(0, base::as_byte_span(data.value())));
 
   // Read the image
   base::RunLoop loop1;
@@ -187,8 +187,7 @@ TEST_F(JpegThumbnailHelperTest, DeleteThumbnail) {
   base::FilePath file_path = GetFile(tab_id);
   base::File file(file_path,
                   base::File::FLAG_CREATE_ALWAYS | base::File::FLAG_WRITE);
-  UNSAFE_TODO(
-      file.Write(0, reinterpret_cast<const char*>(data->data()), data->size()));
+  ASSERT_TRUE(file.WriteAndCheck(0, base::as_byte_span(data.value())));
 
   // Delete the image
   GetInterface().Delete(tab_id);

@@ -374,7 +374,7 @@ TEST_F(PrefServiceSyncableTest, ModelAssociationCloudHasData) {
   syncer::SyncDataList in;
   syncer::SyncChangeList out;
   AddToRemoteDataList(kStringPrefName, base::Value(kExampleUrl1), &in);
-  auto urls_to_restore = base::Value::List().Append(kExampleUrl1);
+  auto urls_to_restore = base::ListValue().Append(kExampleUrl1);
   AddToRemoteDataList(kListPrefName, urls_to_restore, &in);
   AddToRemoteDataList(kDefaultCharsetPrefName,
                       base::Value(kNonDefaultCharsetValue), &in);
@@ -387,7 +387,7 @@ TEST_F(PrefServiceSyncableTest, ModelAssociationCloudHasData) {
 
   // No associator client is registered, so lists and dictionaries should not
   // get merged (remote write wins).
-  auto expected_urls = base::Value::List().Append(kExampleUrl1);
+  auto expected_urls = base::ListValue().Append(kExampleUrl1);
   EXPECT_FALSE(FindValue(kListPrefName, out));
   EXPECT_EQ(GetPreferenceValue(kListPrefName), expected_urls);
   EXPECT_EQ(kNonDefaultCharsetValue, prefs_.GetString(kDefaultCharsetPrefName));
@@ -543,14 +543,14 @@ TEST_F(PrefServiceSyncableMergeTest, ShouldMergeSelectedListValues) {
   }
 
   auto urls_to_restore =
-      base::Value::List().Append(kExampleUrl1).Append(kExampleUrl2);
+      base::ListValue().Append(kExampleUrl1).Append(kExampleUrl2);
   syncer::SyncDataList in;
   AddToRemoteDataList(kMergeableListPrefName, urls_to_restore, &in);
 
   syncer::SyncChangeList out;
   InitWithSyncDataTakeOutput(in, &out);
 
-  auto expected_urls = base::Value::List()
+  auto expected_urls = base::ListValue()
                            .Append(kExampleUrl1)
                            .Append(kExampleUrl2)
                            .Append(kExampleUrl0);
@@ -566,7 +566,7 @@ TEST_F(PrefServiceSyncableMergeTest, ShouldMergeSelectedListValues) {
 TEST_F(PrefServiceSyncableMergeTest, ManagedListPreferences) {
   // Make the list of urls to restore on startup managed.
   auto managed_value =
-      base::Value::List().Append(kExampleUrl0).Append(kExampleUrl1);
+      base::ListValue().Append(kExampleUrl0).Append(kExampleUrl1);
   managed_prefs_->SetValue(kMergeableListPrefName,
                            base::Value(managed_value.Clone()),
                            WriteablePrefStore::DEFAULT_PREF_WRITE_FLAGS);
@@ -574,7 +574,7 @@ TEST_F(PrefServiceSyncableMergeTest, ManagedListPreferences) {
   // Set a cloud version.
   syncer::SyncDataList in;
   auto urls_to_restore =
-      base::Value::List().Append(kExampleUrl1).Append(kExampleUrl2);
+      base::ListValue().Append(kExampleUrl1).Append(kExampleUrl2);
   AddToRemoteDataList(kMergeableListPrefName, urls_to_restore, &in);
 
   syncer::SyncChangeList out;
@@ -584,7 +584,7 @@ TEST_F(PrefServiceSyncableMergeTest, ManagedListPreferences) {
   EXPECT_FALSE(FindValue(kMergeableListPrefName, out));
 
   // Changing the user-controlled value should sync as usual.
-  auto user_value = base::Value::List().Append("http://chromium.org");
+  auto user_value = base::ListValue().Append("http://chromium.org");
   prefs_.SetList(kMergeableListPrefName, user_value.Clone());
   std::optional<base::Value> actual = FindValue(kMergeableListPrefName, out);
   ASSERT_TRUE(actual);
@@ -593,7 +593,7 @@ TEST_F(PrefServiceSyncableMergeTest, ManagedListPreferences) {
 
   // An incoming sync transaction should change the user value, not the managed
   // value.
-  auto sync_value = base::Value::List().Append("http://crbug.com");
+  auto sync_value = base::ListValue().Append("http://crbug.com");
   syncer::SyncChangeList list;
   list.push_back(MakeRemoteChange(kMergeableListPrefName, sync_value,
                                   SyncChange::ACTION_UPDATE));
@@ -617,14 +617,14 @@ TEST_F(PrefServiceSyncableMergeTest, ShouldMergeSelectedDictionaryValues) {
   }
 
   auto remote_update =
-      base::Value::Dict().Set("my_key2", base::Value("my_value2"));
+      base::DictValue().Set("my_key2", base::Value("my_value2"));
   syncer::SyncDataList in;
   AddToRemoteDataList(kMergeableDictPrefName, remote_update, &in);
 
   syncer::SyncChangeList out;
   InitWithSyncDataTakeOutput(in, &out);
 
-  auto expected_dict = base::Value::Dict()
+  auto expected_dict = base::DictValue()
                            .Set("my_key1", base::Value("my_value1"))
                            .Set("my_key2", base::Value("my_value2"))
                            .Set("my_key3", base::Value("my_value3"));

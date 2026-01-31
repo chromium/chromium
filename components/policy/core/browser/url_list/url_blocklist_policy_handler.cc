@@ -120,7 +120,7 @@ void URLBlocklistPolicyHandler::ApplyPolicySettings(const PolicyMap& policies,
   const base::Value* url_blocklist_policy =
       policies.GetValue(policy_name(), base::Value::Type::LIST);
 
-  std::optional<base::Value::List> merged_url_blocklist;
+  std::optional<base::ListValue> merged_url_blocklist;
 
 #if !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
   const base::Value* disabled_schemes_policy =

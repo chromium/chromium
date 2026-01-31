@@ -30,7 +30,7 @@ class SysInternalsMessageHandler : public content::WebUIMessageHandler {
  private:
   // Handle the Javascript message |getSysInfo|. The message is sent to get
   // system information.
-  void HandleGetSysInfo(const base::Value::List& args);
+  void HandleGetSysInfo(const base::ListValue& args);
 
   // The callback function to handle the returning data.
   //
@@ -62,7 +62,7 @@ class SysInternalsMessageHandler : public content::WebUIMessageHandler {
   //   total (counter)
   // }
   //
-  void ReplySysInfo(base::Value callback_id, base::Value::Dict result);
+  void ReplySysInfo(base::Value callback_id, base::DictValue result);
 
   base::WeakPtrFactory<SysInternalsMessageHandler> weak_ptr_factory_{this};
 };

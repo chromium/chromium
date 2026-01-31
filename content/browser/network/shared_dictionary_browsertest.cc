@@ -7,7 +7,7 @@
 
 #include "base/base_paths.h"
 #include "base/files/file_util.h"
-#include "base/memory/memory_pressure_listener.h"
+#include "base/memory/memory_pressure_listener_registry.h"
 #include "base/metrics/statistics_recorder.h"
 #include "base/path_service.h"
 #include "base/strings/strcat.h"
@@ -880,7 +880,7 @@ class SharedDictionaryBrowserTest
   }
 
   void SendMemoryPressureToNetworkService() {
-    content::GetNetworkService()->OnMemoryPressure(
+    base::MemoryPressureListenerRegistry::NotifyMemoryPressure(
         base::MEMORY_PRESSURE_LEVEL_CRITICAL);
     // To make sure that OnMemoryPressure has been received by the network
     // service, send a GetNetworkList IPC and wait for the result.
@@ -958,7 +958,7 @@ class SharedDictionaryBrowserTest
       return nullptr;
     }
     auto response = std::make_unique<net::test_server::BasicHttpResponse>();
-    if (base::Contains(request.headers, "Authorization")) {
+    if (request.headers.contains("Authorization")) {
       response->set_code(net::HTTP_OK);
       std::optional<std::string> dict_hash =
           GetAvailableDictionary(request.headers);

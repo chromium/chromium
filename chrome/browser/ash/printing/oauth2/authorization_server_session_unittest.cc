@@ -38,7 +38,7 @@ class PrintingOAuth2AuthorizationServerSessionTest : public testing::Test {
       const std::string& access_token,
       const std::string& refresh_token = "") {
     base::flat_map<std::string, std::string> params;
-    base::Value::Dict fields;
+    base::DictValue fields;
     EXPECT_EQ("", server_.ReceivePOSTWithURLParams(url_, params));
     fields.Set("access_token", access_token);
     fields.Set("token_type", "bearer");
@@ -111,7 +111,7 @@ TEST_F(PrintingOAuth2AuthorizationServerSessionTest, FirstTokenRequest) {
   EXPECT_EQ(params["code_verifier"], "code_verifier_P2s&");
 
   // Prepare and send the response.
-  base::Value::Dict fields;
+  base::DictValue fields;
   fields.Set("access_token", "access_token_@(#a");
   fields.Set("token_type", "bearer");
   fields.Set("refresh_token", "refresh_token_X)(@K");
@@ -136,7 +136,7 @@ TEST_F(PrintingOAuth2AuthorizationServerSessionTest, FirstTokenRequestError) {
   EXPECT_EQ(params["code_verifier"], "c");
 
   // Prepare and send the response.
-  base::Value::Dict fields;
+  base::DictValue fields;
   fields.Set("access_token", "access_token_1");
   // The field "token_type" is wrong.
   fields.Set("token_type", "bearer_WRONG");
@@ -172,7 +172,7 @@ TEST_F(PrintingOAuth2AuthorizationServerSessionTest, NextTokenRequest) {
   EXPECT_EQ(params["refresh_token"], "refresh_token_X)(@K");
 
   // Prepare and send the response.
-  base::Value::Dict fields;
+  base::DictValue fields;
   fields.Set("access_token", "new_access_token_123");
   fields.Set("token_type", "bearer");
   server_.ResponseWithJSON(net::HttpStatusCode::HTTP_OK, fields);
@@ -200,7 +200,7 @@ TEST_F(PrintingOAuth2AuthorizationServerSessionTest, NextTokenRequestError) {
   base::flat_map<std::string, std::string> params;
   ASSERT_EQ("", server_.ReceivePOSTWithURLParams(url_, params));
   EXPECT_EQ(params["refresh_token"], "refresh_token_X)(@K");
-  base::Value::Dict fields;
+  base::DictValue fields;
   fields.Set("token_type", "bearer");
   // The field "access_token" is missing.
   server_.ResponseWithJSON(net::HttpStatusCode::HTTP_OK, fields);
@@ -246,7 +246,7 @@ TEST_F(PrintingOAuth2AuthorizationServerSessionTest, InvalidRefreshToken) {
   base::flat_map<std::string, std::string> params;
   ASSERT_EQ("", server_.ReceivePOSTWithURLParams(url_, params));
   EXPECT_EQ(params["refresh_token"], "refresh_token_X)@K");
-  base::Value::Dict fields;
+  base::DictValue fields;
   fields.Set("error", "invalid_grant");
   server_.ResponseWithJSON(net::HttpStatusCode::HTTP_BAD_REQUEST, fields);
 

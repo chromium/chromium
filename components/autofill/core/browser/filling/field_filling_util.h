@@ -53,7 +53,10 @@ std::optional<std::u16string> GetNumericSelectControlValue(
     std::string* failure_to_fill);
 
 // Returns an obfuscated version of `value`.
-std::u16string GetObfuscatedValue(const std::u16string& value);
+// `visible_suffix_length` defines how many of the last n characters should
+// not be obfuscated.
+std::u16string GetObfuscatedValue(const std::u16string& value,
+                                  size_t visible_suffix_length = 0);
 
 // Gets the country value to fill in a select control.
 // Returns an empty string if no value for filling was found.

@@ -41,7 +41,10 @@ import org.chromium.ui.test.util.DeviceRestriction;
     ContentFeatureList.ACCESSIBILITY_UNIFIED_SNAPSHOTS,
     ContentFeatureList.ACCESSIBILITY_POPULATE_SUPPLEMENTAL_DESCRIPTION_API
 })
-@EnableFeatures(ContentFeatureList.ACCESSIBILITY_DEPRECATE_TYPE_ANNOUNCE)
+@EnableFeatures({
+    ContentFeatureList.ACCESSIBILITY_DEPRECATE_TYPE_ANNOUNCE,
+    ContentFeatureList.ACCESSIBILITY_SET_SELECTABLE_ON_ALL_NODES_WITH_TEXT
+})
 @TestAnimations.EnableAnimations
 public class WebContentsAccessibilityTreeTest {
     // File path that holds all the relevant tests.
@@ -206,18 +209,21 @@ public class WebContentsAccessibilityTreeTest {
 
     @Test
     @SmallTest
+    @EnableFeatures(ContentFeatureList.ACCESSIBILITY_POPULATE_SUPPLEMENTAL_DESCRIPTION_API)
     public void test_descComboboxFocusable() {
         performAccnameTest("desc-combobox-focusable.html");
     }
 
     @Test
     @SmallTest
+    @EnableFeatures(ContentFeatureList.ACCESSIBILITY_POPULATE_SUPPLEMENTAL_DESCRIPTION_API)
     public void test_descFromContentOfDescribedbyElement() {
         performAccnameTest("desc-from-content-of-describedby-element.html");
     }
 
     @Test
     @SmallTest
+    @EnableFeatures(ContentFeatureList.ACCESSIBILITY_POPULATE_SUPPLEMENTAL_DESCRIPTION_API)
     public void test_nameComboboxFocusable() {
         performAccnameTest("name-combobox-focusable.html");
     }
@@ -226,6 +232,12 @@ public class WebContentsAccessibilityTreeTest {
     @SmallTest
     public void test_nameDivContentOnly() {
         performAccnameTest("name-div-content-only.html");
+    }
+
+    @Test
+    @SmallTest
+    public void test_nameImgEmptyAltTitle() {
+        performAccnameTest("name-img-empty-alt-title.html");
     }
 
     // ------------------ ARIA TESTS ------------------ //
@@ -358,18 +370,21 @@ public class WebContentsAccessibilityTreeTest {
 
     @Test
     @SmallTest
+    @EnableFeatures(ContentFeatureList.ACCESSIBILITY_POPULATE_SUPPLEMENTAL_DESCRIPTION_API)
     public void test_ariaCombobox() {
         performAriaTest("aria-combobox.html");
     }
 
     @Test
     @SmallTest
+    @EnableFeatures(ContentFeatureList.ACCESSIBILITY_POPULATE_SUPPLEMENTAL_DESCRIPTION_API)
     public void test_ariaComboboxImplicitHaspopup() {
         performAriaTest("aria-combobox-implicit-haspopup.html");
     }
 
     @Test
     @SmallTest
+    @EnableFeatures(ContentFeatureList.ACCESSIBILITY_POPULATE_SUPPLEMENTAL_DESCRIPTION_API)
     public void test_ariaComboboxUneditable() {
         performAriaTest("aria-combobox-uneditable.html");
     }
@@ -460,6 +475,7 @@ public class WebContentsAccessibilityTreeTest {
 
     @Test
     @SmallTest
+    @EnableFeatures(ContentFeatureList.ACCESSIBILITY_POPULATE_SUPPLEMENTAL_DESCRIPTION_API)
     public void test_ariaErrormessage() {
         performAriaTest("aria-errormessage.html");
     }
@@ -551,6 +567,7 @@ public class WebContentsAccessibilityTreeTest {
 
     @Test
     @SmallTest
+    @EnableFeatures(ContentFeatureList.ACCESSIBILITY_POPULATE_SUPPLEMENTAL_DESCRIPTION_API)
     public void test_ariaIllegalVal() {
         performAriaTest("aria-illegal-val.html");
     }
@@ -605,6 +622,7 @@ public class WebContentsAccessibilityTreeTest {
 
     @Test
     @SmallTest
+    @EnableFeatures(ContentFeatureList.ACCESSIBILITY_POPULATE_SUPPLEMENTAL_DESCRIPTION_API)
     public void test_ariaLabelledbyHeading() {
         performAriaTest("aria-labelledby-heading.html");
     }
@@ -891,6 +909,7 @@ public class WebContentsAccessibilityTreeTest {
 
     @Test
     @SmallTest
+    @EnableFeatures(ContentFeatureList.ACCESSIBILITY_POPULATE_SUPPLEMENTAL_DESCRIPTION_API)
     public void test_ariaReadonly() {
         performAriaTest("aria-readonly.html");
     }
@@ -1077,12 +1096,14 @@ public class WebContentsAccessibilityTreeTest {
 
     @Test
     @SmallTest
+    @EnableFeatures(ContentFeatureList.ACCESSIBILITY_POPULATE_SUPPLEMENTAL_DESCRIPTION_API)
     public void test_ariaTextboxWithAriaTextboxChild() {
         performAriaTest("aria-textbox-with-aria-textbox-child.html");
     }
 
     @Test
     @SmallTest
+    @EnableFeatures(ContentFeatureList.ACCESSIBILITY_POPULATE_SUPPLEMENTAL_DESCRIPTION_API)
     public void test_ariaTextboxWithNonTextChildren() {
         performAriaTest("aria-textbox-with-non-text-children.html");
     }
@@ -1203,6 +1224,7 @@ public class WebContentsAccessibilityTreeTest {
 
     @Test
     @SmallTest
+    @EnableFeatures(ContentFeatureList.ACCESSIBILITY_POPULATE_SUPPLEMENTAL_DESCRIPTION_API)
     public void test_inputTextAriaPlaceholder() {
         performAriaTest("input-text-aria-placeholder.html");
     }
@@ -1401,6 +1423,7 @@ public class WebContentsAccessibilityTreeTest {
 
     @Test
     @SmallTest
+    @EnableFeatures(ContentFeatureList.ACCESSIBILITY_POPULATE_SUPPLEMENTAL_DESCRIPTION_API)
     public void test_actions() {
         performHtmlTest("actions.html");
     }
@@ -1643,6 +1666,7 @@ public class WebContentsAccessibilityTreeTest {
 
     @Test
     @SmallTest
+    @EnableFeatures(ContentFeatureList.ACCESSIBILITY_POPULATE_SUPPLEMENTAL_DESCRIPTION_API)
     public void test_contenteditableWithNoDescendants() {
         performHtmlTest("contenteditable-with-no-descendants.html");
     }
@@ -1655,18 +1679,21 @@ public class WebContentsAccessibilityTreeTest {
 
     @Test
     @SmallTest
+    @EnableFeatures(ContentFeatureList.ACCESSIBILITY_POPULATE_SUPPLEMENTAL_DESCRIPTION_API)
     public void test_customSelect() {
         performHtmlTest("custom-select.html");
     }
 
     @Test
     @SmallTest
+    @EnableFeatures(ContentFeatureList.ACCESSIBILITY_POPULATE_SUPPLEMENTAL_DESCRIPTION_API)
     public void test_customSelectOpen() {
         performHtmlTest("custom-select-open.html");
     }
 
     @Test
     @SmallTest
+    @EnableFeatures(ContentFeatureList.ACCESSIBILITY_POPULATE_SUPPLEMENTAL_DESCRIPTION_API)
     public void test_customSelectLabelElement() {
         performHtmlTest("custom-select-label-element.html");
     }
@@ -1679,12 +1706,14 @@ public class WebContentsAccessibilityTreeTest {
 
     @Test
     @SmallTest
+    @EnableFeatures(ContentFeatureList.ACCESSIBILITY_POPULATE_SUPPLEMENTAL_DESCRIPTION_API)
     public void test_customSelectSimple() {
         performHtmlTest("custom-select-simple.html");
     }
 
     @Test
     @SmallTest
+    @EnableFeatures(ContentFeatureList.ACCESSIBILITY_POPULATE_SUPPLEMENTAL_DESCRIPTION_API)
     public void test_customSelectSimpleOpen() {
         performHtmlTest("custom-select-simple-open.html");
     }
@@ -1866,6 +1895,7 @@ public class WebContentsAccessibilityTreeTest {
 
     @Test
     @SmallTest
+    @EnableFeatures(ContentFeatureList.ACCESSIBILITY_POPULATE_SUPPLEMENTAL_DESCRIPTION_API)
     public void test_htmlVsAriaAttributes() {
         performHtmlTest("html-vs-aria-attributes.html");
     }
@@ -2003,12 +2033,14 @@ public class WebContentsAccessibilityTreeTest {
 
     @Test
     @SmallTest
+    @EnableFeatures(ContentFeatureList.ACCESSIBILITY_POPULATE_SUPPLEMENTAL_DESCRIPTION_API)
     public void test_inputDateWithPopupOpenMultipleForWin() {
         performHtmlTest("input-date-with-popup-open-multiple-for-win.html");
     }
 
     @Test
     @SmallTest
+    @EnableFeatures(ContentFeatureList.ACCESSIBILITY_POPULATE_SUPPLEMENTAL_DESCRIPTION_API)
     public void test_inputDateWithPopupOpenMultiple() {
         performHtmlTest("input-date-with-popup-open-multiple.html");
     }
@@ -2021,6 +2053,7 @@ public class WebContentsAccessibilityTreeTest {
 
     @Test
     @SmallTest
+    @EnableFeatures(ContentFeatureList.ACCESSIBILITY_POPULATE_SUPPLEMENTAL_DESCRIPTION_API)
     public void test_inputDate() {
         performHtmlTest("input-date.html");
     }
@@ -2033,6 +2066,7 @@ public class WebContentsAccessibilityTreeTest {
 
     @Test
     @SmallTest
+    @EnableFeatures(ContentFeatureList.ACCESSIBILITY_POPULATE_SUPPLEMENTAL_DESCRIPTION_API)
     public void test_inputDatetime() {
         performHtmlTest("input-datetime.html");
     }
@@ -2045,6 +2079,7 @@ public class WebContentsAccessibilityTreeTest {
 
     @Test
     @SmallTest
+    @EnableFeatures(ContentFeatureList.ACCESSIBILITY_POPULATE_SUPPLEMENTAL_DESCRIPTION_API)
     public void test_inputFile() {
         performHtmlTest("input-file.html");
     }
@@ -2057,6 +2092,7 @@ public class WebContentsAccessibilityTreeTest {
 
     @Test
     @SmallTest
+    @EnableFeatures(ContentFeatureList.ACCESSIBILITY_POPULATE_SUPPLEMENTAL_DESCRIPTION_API)
     public void test_inputList() {
         performHtmlTest("input-list.html");
     }
@@ -2135,6 +2171,7 @@ public class WebContentsAccessibilityTreeTest {
 
     @Test
     @SmallTest
+    @EnableFeatures(ContentFeatureList.ACCESSIBILITY_POPULATE_SUPPLEMENTAL_DESCRIPTION_API)
     public void test_inputTextNameCalc() {
         performHtmlTest("input-text-name-calc.html");
     }
@@ -2147,18 +2184,21 @@ public class WebContentsAccessibilityTreeTest {
 
     @Test
     @SmallTest
+    @EnableFeatures(ContentFeatureList.ACCESSIBILITY_POPULATE_SUPPLEMENTAL_DESCRIPTION_API)
     public void test_inputTextReadOnly() {
         performHtmlTest("input-text-read-only.html");
     }
 
     @Test
     @SmallTest
+    @EnableFeatures(ContentFeatureList.ACCESSIBILITY_POPULATE_SUPPLEMENTAL_DESCRIPTION_API)
     public void test_inputTextValue() {
         performHtmlTest("input-text-value.html");
     }
 
     @Test
     @SmallTest
+    @EnableFeatures(ContentFeatureList.ACCESSIBILITY_POPULATE_SUPPLEMENTAL_DESCRIPTION_API)
     public void test_inputText() {
         performHtmlTest("input-text.html");
     }
@@ -2171,30 +2211,35 @@ public class WebContentsAccessibilityTreeTest {
 
     @Test
     @SmallTest
+    @EnableFeatures(ContentFeatureList.ACCESSIBILITY_POPULATE_SUPPLEMENTAL_DESCRIPTION_API)
     public void test_inputTime() {
         performHtmlTest("input-time.html");
     }
 
     @Test
     @SmallTest
+    @EnableFeatures(ContentFeatureList.ACCESSIBILITY_POPULATE_SUPPLEMENTAL_DESCRIPTION_API)
     public void test_inputTypesWithPlaceholder() {
         performHtmlTest("input-types-with-placeholder.html");
     }
 
     @Test
     @SmallTest
+    @EnableFeatures(ContentFeatureList.ACCESSIBILITY_POPULATE_SUPPLEMENTAL_DESCRIPTION_API)
     public void test_inputTypesWithValueAndPlaceholder() {
         performHtmlTest("input-types-with-value-and-placeholder.html");
     }
 
     @Test
     @SmallTest
+    @EnableFeatures(ContentFeatureList.ACCESSIBILITY_POPULATE_SUPPLEMENTAL_DESCRIPTION_API)
     public void test_inputTypesWithValue() {
         performHtmlTest("input-types-with-value.html");
     }
 
     @Test
     @SmallTest
+    @EnableFeatures(ContentFeatureList.ACCESSIBILITY_POPULATE_SUPPLEMENTAL_DESCRIPTION_API)
     public void test_inputTypes() {
         performHtmlTest("input-types.html");
     }
@@ -2219,6 +2264,7 @@ public class WebContentsAccessibilityTreeTest {
 
     @Test
     @SmallTest
+    @EnableFeatures(ContentFeatureList.ACCESSIBILITY_POPULATE_SUPPLEMENTAL_DESCRIPTION_API)
     public void test_interactiveControlsWithLabels() {
         performHtmlTest("interactive-controls-with-labels.html");
     }
@@ -2382,12 +2428,14 @@ public class WebContentsAccessibilityTreeTest {
 
     @Test
     @SmallTest
+    @EnableFeatures(ContentFeatureList.ACCESSIBILITY_POPULATE_SUPPLEMENTAL_DESCRIPTION_API)
     public void test_optgroupMenulist() {
         performHtmlTest("optgroup-menulist.html");
     }
 
     @Test
     @SmallTest
+    @EnableFeatures(ContentFeatureList.ACCESSIBILITY_POPULATE_SUPPLEMENTAL_DESCRIPTION_API)
     public void test_optgroupCustomMenulist() {
         performHtmlTest("optgroup-custom-menulist.html");
     }
@@ -2521,6 +2569,7 @@ public class WebContentsAccessibilityTreeTest {
 
     @Test
     @SmallTest
+    // @EnableFeatures(ContentFeatureList.ACCESSIBILITY_POPULATE_SUPPLEMENTAL_DESCRIPTION_API)
     public void test_selectOpen() {
         performHtmlTest("select-open.html");
     }

@@ -9,7 +9,6 @@
 #include <utility>
 
 #include "base/check.h"
-#include "base/containers/contains.h"
 #include "base/memory/ptr_util.h"
 #include "base/notreached.h"
 #include "url/gurl.h"
@@ -225,7 +224,7 @@ bool URLMatcherCondition::IsMatch(
     const std::set<MatcherStringPattern::ID>& matching_patterns,
     const GURL& url) const {
   DCHECK(string_pattern_);
-  if (!base::Contains(matching_patterns, string_pattern_->id())) {
+  if (!matching_patterns.contains(string_pattern_->id())) {
     return false;
   }
   // The criteria HOST_CONTAINS, PATH_CONTAINS, QUERY_CONTAINS are based on
@@ -468,7 +467,7 @@ void URLMatcherConditionFactory::ForgetUnusedPatterns(
     const std::set<MatcherStringPattern::ID>& used_patterns) {
   auto i = substring_pattern_singletons_.begin();
   while (i != substring_pattern_singletons_.end()) {
-    if (base::Contains(used_patterns, i->first->id())) {
+    if (used_patterns.contains(i->first->id())) {
       ++i;
     } else {
       substring_pattern_singletons_.erase(i++);
@@ -477,7 +476,7 @@ void URLMatcherConditionFactory::ForgetUnusedPatterns(
 
   i = regex_pattern_singletons_.begin();
   while (i != regex_pattern_singletons_.end()) {
-    if (base::Contains(used_patterns, i->first->id())) {
+    if (used_patterns.contains(i->first->id())) {
       ++i;
     } else {
       regex_pattern_singletons_.erase(i++);
@@ -486,7 +485,7 @@ void URLMatcherConditionFactory::ForgetUnusedPatterns(
 
   i = origin_and_path_regex_pattern_singletons_.begin();
   while (i != origin_and_path_regex_pattern_singletons_.end()) {
-    if (base::Contains(used_patterns, i->first->id())) {
+    if (used_patterns.contains(i->first->id())) {
       ++i;
     } else {
       origin_and_path_regex_pattern_singletons_.erase(i++);
@@ -715,7 +714,7 @@ URLMatcherSchemeFilter::URLMatcherSchemeFilter(
 URLMatcherSchemeFilter::~URLMatcherSchemeFilter() = default;
 
 bool URLMatcherSchemeFilter::IsMatch(const GURL& url) const {
-  return base::Contains(filters_, url.GetScheme());
+  return std::ranges::contains(filters_, url.GetScheme());
 }
 
 //
@@ -855,7 +854,7 @@ bool URLMatcherConditionSet::IsMatch(
   // elements are found, no need to verify match that is expected to take more
   // cycles.
   for (auto i = query_conditions_.begin(); i != query_conditions_.end(); ++i) {
-    if (!base::Contains(matching_patterns, i->string_pattern()->id())) {
+    if (!matching_patterns.contains(i->string_pattern()->id())) {
       return false;
     }
   }

@@ -2,17 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "media/gpu/windows/d3d11_av1_accelerator.h"
 
 #include <numeric>
 #include <tuple>
 #include <utility>
 
+#include "base/compiler_specific.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
@@ -114,13 +110,15 @@ bool D3D11AV1Accelerator::SubmitDecoderBuffer(
   size_t tile_offset = 0;
   for (size_t i = 0; i < tile_buffers.size(); ++i) {
     const auto& tile = tile_buffers[i];
-    tiles[i].DataOffset = tile_offset;
-    tiles[i].DataSize = tile.size;
-    tiles[i].row = i / pic_params.tiles.cols;
-    tiles[i].column = i % pic_params.tiles.cols;
-    tiles[i].anchor_frame = 0xFF;
+    UNSAFE_TODO(tiles[i]).DataOffset = tile_offset;
+    UNSAFE_TODO(tiles[i]).DataSize = tile.size;
+    UNSAFE_TODO(tiles[i]).row = i / pic_params.tiles.cols;
+    UNSAFE_TODO(tiles[i]).column = i % pic_params.tiles.cols;
+    UNSAFE_TODO(tiles[i]).anchor_frame = 0xFF;
 
-    CHECK_EQ(bitstream_buffer.Write({tile.data, tile.size}), tile.size);
+    CHECK_EQ(
+        bitstream_buffer.Write(UNSAFE_TODO(base::span(tile.data, tile.size))),
+        tile.size);
     tile_offset += tile.size;
   }
 
@@ -198,8 +196,8 @@ bool D3D11AV1Accelerator::FillPicParams(
         tile_info.tile_columns_log2;
     const int last_width_idx = tile_info.tile_columns - 1;
     for (int i = 0; i < last_width_idx; ++i)
-      pp->tiles.widths[i] = tile_width_sb;
-    pp->tiles.widths[last_width_idx] =
+      UNSAFE_TODO(pp->tiles.widths[i]) = tile_width_sb;
+    UNSAFE_TODO(pp->tiles.widths[last_width_idx]) =
         tile_info.sb_columns - last_width_idx * tile_width_sb;
 
     const auto tile_height_sb =
@@ -207,17 +205,17 @@ bool D3D11AV1Accelerator::FillPicParams(
         tile_info.tile_rows_log2;
     const int last_height_idx = tile_info.tile_rows - 1;
     for (int i = 0; i < last_height_idx; ++i)
-      pp->tiles.heights[i] = tile_height_sb;
-    pp->tiles.heights[last_height_idx] =
+      UNSAFE_TODO(pp->tiles.heights[i]) = tile_height_sb;
+    UNSAFE_TODO(pp->tiles.heights[last_height_idx]) =
         tile_info.sb_rows - last_height_idx * tile_height_sb;
   } else {
     for (int i = 0; i < pp->tiles.cols; ++i) {
-      pp->tiles.widths[i] =
-          frame_header.tile_info.tile_column_width_in_superblocks[i];
+      UNSAFE_TODO(pp->tiles.widths[i]) = UNSAFE_TODO(
+          frame_header.tile_info.tile_column_width_in_superblocks[i]);
     }
     for (int i = 0; i < pp->tiles.rows; ++i) {
-      pp->tiles.heights[i] =
-          frame_header.tile_info.tile_row_height_in_superblocks[i];
+      UNSAFE_TODO(pp->tiles.heights[i]) =
+          UNSAFE_TODO(frame_header.tile_info.tile_row_height_in_superblocks[i]);
     }
   }
 
@@ -280,14 +278,14 @@ bool D3D11AV1Accelerator::FillPicParams(
   auto set_frame_ref_params = [&](size_t i, size_t ref_idx, int32_t width,
                                   int32_t height,
                                   const libgav1::GlobalMotion& gm) {
-    pp->frame_refs[i].Index = ref_idx;
-    pp->frame_refs[i].width = width;
-    pp->frame_refs[i].height = height;
+    UNSAFE_TODO(pp->frame_refs[i]).Index = ref_idx;
+    UNSAFE_TODO(pp->frame_refs[i]).width = width;
+    UNSAFE_TODO(pp->frame_refs[i]).height = height;
     for (size_t j = 0; j < 6; ++j) {
-      pp->frame_refs[i].wmmat[j] = gm.params[j];
+      UNSAFE_TODO(pp->frame_refs[i].wmmat[j]) = UNSAFE_TODO(gm.params[j]);
     }
-    pp->frame_refs[i].wmtype = gm.type;
-    pp->frame_refs[i].wminvalid =
+    UNSAFE_TODO(pp->frame_refs[i]).wmtype = gm.type;
+    UNSAFE_TODO(pp->frame_refs[i]).wminvalid =
         gm.type == libgav1::kGlobalMotionTransformationTypeIdentity;
   };
 
@@ -299,7 +297,7 @@ bool D3D11AV1Accelerator::FillPicParams(
   // Find the first ref_frame_idx[i] that points to a valid AV1 picture in DPB.
   if (!is_intra_frame && disable_invalid_ref_) {
     for (size_t j = 0; j < libgav1::kNumReferenceFrameTypes - 1; ++j) {
-      const auto ref_idx = frame_header.reference_frame_index[j];
+      const auto ref_idx = UNSAFE_TODO(frame_header.reference_frame_index[j]);
       first_valid_rp = static_cast<D3D11AV1Picture*>(ref_frames[ref_idx].get());
       if (first_valid_rp) {
         first_valid_ref =
@@ -312,11 +310,11 @@ bool D3D11AV1Accelerator::FillPicParams(
 
   for (size_t i = 0; i < libgav1::kNumReferenceFrameTypes - 1; ++i) {
     if (is_intra_frame) {
-      pp->frame_refs[i].Index = 0xFF;
+      UNSAFE_TODO(pp->frame_refs[i]).Index = 0xFF;
       continue;
     }
 
-    const auto ref_idx = frame_header.reference_frame_index[i];
+    const auto ref_idx = UNSAFE_TODO(frame_header.reference_frame_index[i]);
     const auto* rp =
         static_cast<const D3D11AV1Picture*>(ref_frames[ref_idx].get());
 
@@ -341,7 +339,7 @@ bool D3D11AV1Accelerator::FillPicParams(
                              /*width=*/std::get<2>(first_valid_ref),
                              /*height=*/std::get<3>(first_valid_ref), gm);
       } else {
-        pp->frame_refs[i].Index = 0xFF;
+        UNSAFE_TODO(pp->frame_refs[i]).Index = 0xFF;
       }
     } else {
       const auto& gm =
@@ -353,7 +351,7 @@ bool D3D11AV1Accelerator::FillPicParams(
 
   for (size_t i = 0; i < libgav1::kNumReferenceFrameTypes; ++i) {
     const auto* rp = static_cast<const D3D11AV1Picture*>(ref_frames[i].get());
-    pp->RefFrameMapTextureIndex[i] =
+    UNSAFE_TODO(pp->RefFrameMapTextureIndex[i]) =
         rp ? rp->picture_buffer()->picture_index() : 0xFF;
   }
 
@@ -369,7 +367,8 @@ bool D3D11AV1Accelerator::FillPicParams(
   pp->loop_filter.delta_lf_present = frame_header.delta_lf.present;
 
   for (size_t i = 0; i < libgav1::kNumReferenceFrameTypes; ++i)
-    pp->loop_filter.ref_deltas[i] = frame_header.loop_filter.ref_deltas[i];
+    UNSAFE_TODO(pp->loop_filter.ref_deltas[i]) =
+        frame_header.loop_filter.ref_deltas[i];
   pp->loop_filter.mode_deltas[0] = frame_header.loop_filter.mode_deltas[0];
   pp->loop_filter.mode_deltas[1] = frame_header.loop_filter.mode_deltas[1];
   pp->loop_filter.delta_lf_res = frame_header.delta_lf.scale;
@@ -382,10 +381,12 @@ bool D3D11AV1Accelerator::FillPicParams(
         2,  // libgav1::kLoopRestorationTypeSgrProj
     };
 
-    pp->loop_filter.frame_restoration_type[i] =
-        kD3D11LoopRestorationMapping[frame_header.loop_restoration.type[i]];
-    pp->loop_filter.log2_restoration_unit_size[i] =
-        frame_header.loop_restoration.unit_size_log2[i];
+    UNSAFE_TODO({
+      pp->loop_filter.frame_restoration_type[i] =
+          kD3D11LoopRestorationMapping[frame_header.loop_restoration.type[i]];
+      pp->loop_filter.log2_restoration_unit_size[i] =
+          frame_header.loop_restoration.unit_size_log2[i];
+    })
   }
 
   pp->quantization.delta_q_present = frame_header.delta_q.present;
@@ -416,16 +417,18 @@ bool D3D11AV1Accelerator::FillPicParams(
     // despite it being a two-bit entry with range 0-3, so check for this, and
     // subtract.
     // See https://aomediacodec.github.io/av1-spec/#cdef-params-syntax
-    uint8_t y_str = frame_header.cdef.y_secondary_strength[i] >> coeff_shift;
-    uint8_t uv_str = frame_header.cdef.uv_secondary_strength[i] >> coeff_shift;
+    uint8_t y_str =
+        UNSAFE_TODO(frame_header.cdef.y_secondary_strength[i]) >> coeff_shift;
+    uint8_t uv_str =
+        UNSAFE_TODO(frame_header.cdef.uv_secondary_strength[i]) >> coeff_shift;
     y_str = y_str == 4 ? 3 : y_str;
     uv_str = uv_str == 4 ? 3 : uv_str;
-    pp->cdef.y_strengths[i].primary =
-        frame_header.cdef.y_primary_strength[i] >> coeff_shift;
-    pp->cdef.y_strengths[i].secondary = y_str;
-    pp->cdef.uv_strengths[i].primary =
-        frame_header.cdef.uv_primary_strength[i] >> coeff_shift;
-    pp->cdef.uv_strengths[i].secondary = uv_str;
+    UNSAFE_TODO(pp->cdef.y_strengths[i]).primary =
+        UNSAFE_TODO(frame_header.cdef.y_primary_strength[i]) >> coeff_shift;
+    UNSAFE_TODO(pp->cdef.y_strengths[i]).secondary = y_str;
+    UNSAFE_TODO(pp->cdef.uv_strengths[i]).primary =
+        UNSAFE_TODO(frame_header.cdef.uv_primary_strength[i]) >> coeff_shift;
+    UNSAFE_TODO(pp->cdef.uv_strengths[i]).secondary = uv_str;
   }
 
   pp->interp_filter = frame_header.interpolation_filter;
@@ -436,10 +439,10 @@ bool D3D11AV1Accelerator::FillPicParams(
   pp->segmentation.temporal_update = frame_header.segmentation.temporal_update;
   for (size_t i = 0; i < libgav1::kMaxSegments; ++i) {
     for (size_t j = 0; j < libgav1::kSegmentFeatureMax; ++j) {
-      pp->segmentation.feature_mask[i].mask |=
-          frame_header.segmentation.feature_enabled[i][j] << j;
-      pp->segmentation.feature_data[i][j] =
-          frame_header.segmentation.feature_data[i][j];
+      UNSAFE_TODO(pp->segmentation.feature_mask[i]).mask |=
+          UNSAFE_TODO(frame_header.segmentation.feature_enabled[i][j]) << j;
+      UNSAFE_TODO(pp->segmentation.feature_data[i][j]) =
+          UNSAFE_TODO(frame_header.segmentation.feature_data[i][j]);
     }
   }
 
@@ -458,27 +461,29 @@ bool D3D11AV1Accelerator::FillPicParams(
         libgav1::kMatrixCoefficientsIdentity;
     pp->film_grain.grain_seed = fg.grain_seed;
     pp->film_grain.num_y_points = fg.num_y_points;
-    for (uint8_t i = 0; i < fg.num_y_points; ++i) {
-      pp->film_grain.scaling_points_y[i][0] = fg.point_y_value[i];
-      pp->film_grain.scaling_points_y[i][1] = fg.point_y_scaling[i];
-    }
-    pp->film_grain.num_cb_points = fg.num_u_points;
-    for (uint8_t i = 0; i < fg.num_u_points; ++i) {
-      pp->film_grain.scaling_points_cb[i][0] = fg.point_u_value[i];
-      pp->film_grain.scaling_points_cb[i][1] = fg.point_u_scaling[i];
-    }
-    pp->film_grain.num_cr_points = fg.num_v_points;
-    for (uint8_t i = 0; i < fg.num_v_points; ++i) {
-      pp->film_grain.scaling_points_cr[i][0] = fg.point_v_value[i];
-      pp->film_grain.scaling_points_cr[i][1] = fg.point_v_scaling[i];
-    }
-    for (size_t i = 0; i < std::size(fg.auto_regression_coeff_y); ++i) {
-      pp->film_grain.ar_coeffs_y[i] = fg.auto_regression_coeff_y[i] + 128;
-    }
-    for (size_t i = 0; i < std::size(fg.auto_regression_coeff_u); ++i) {
-      pp->film_grain.ar_coeffs_cb[i] = fg.auto_regression_coeff_u[i] + 128;
-      pp->film_grain.ar_coeffs_cr[i] = fg.auto_regression_coeff_v[i] + 128;
-    }
+    UNSAFE_TODO({
+      for (uint8_t i = 0; i < fg.num_y_points; ++i) {
+        pp->film_grain.scaling_points_y[i][0] = fg.point_y_value[i];
+        pp->film_grain.scaling_points_y[i][1] = fg.point_y_scaling[i];
+      }
+      pp->film_grain.num_cb_points = fg.num_u_points;
+      for (uint8_t i = 0; i < fg.num_u_points; ++i) {
+        pp->film_grain.scaling_points_cb[i][0] = fg.point_u_value[i];
+        pp->film_grain.scaling_points_cb[i][1] = fg.point_u_scaling[i];
+      }
+      pp->film_grain.num_cr_points = fg.num_v_points;
+      for (uint8_t i = 0; i < fg.num_v_points; ++i) {
+        pp->film_grain.scaling_points_cr[i][0] = fg.point_v_value[i];
+        pp->film_grain.scaling_points_cr[i][1] = fg.point_v_scaling[i];
+      }
+      for (size_t i = 0; i < std::size(fg.auto_regression_coeff_y); ++i) {
+        pp->film_grain.ar_coeffs_y[i] = fg.auto_regression_coeff_y[i] + 128;
+      }
+      for (size_t i = 0; i < std::size(fg.auto_regression_coeff_u); ++i) {
+        pp->film_grain.ar_coeffs_cb[i] = fg.auto_regression_coeff_u[i] + 128;
+        pp->film_grain.ar_coeffs_cr[i] = fg.auto_regression_coeff_v[i] + 128;
+      }
+    })
     // libgav1 will provide the multipliers by subtracting 128 and the offsets
     // by subtracting 256. Restore values as DXVA spec requires values without
     // subtraction.

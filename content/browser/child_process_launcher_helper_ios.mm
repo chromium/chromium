@@ -432,7 +432,7 @@ void ChildProcessLauncherHelper::OnChildProcessStarted(
       // Add the process to the global table.
       {
         base::AutoLock guard(*g_process_table_lock_);
-        CHECK(!base::Contains(*g_process_table_, process_id));
+        CHECK(!g_process_table_->contains(process_id));
         g_process_table_->emplace(process_id, this);
       }
 

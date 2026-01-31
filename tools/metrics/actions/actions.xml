@@ -189,7 +189,6 @@ should be able to be added at any place in this file.
       summary="For AddToHomescreen IPH feature."/>
   <variant name="_AddToHomescreenTextBubble"
       summary="For AddToHomescreen IPH feature using text bubble (obsolete)."/>
-  <variant name="_AIHubNewBadge" summary="For AI Hub New Badge feature."/>
   <variant name="_AndroidTabDeclutter" summary="For archived tabs on android."/>
   <variant name="_AppSpecificHistory"
       summary="For App Specific History feature."/>
@@ -382,11 +381,13 @@ should be able to be added at any place in this file.
       summary="For FocusHelpBubbleScreenReaderPromo feature."/>
   <variant name="_FollowWhileBrowsing"
       summary="For Follow While-Browsing IPH feature."/>
-  <variant name="_GeminiContextualCueChip"
-      summary="For Gemini contextual cue chip feature."/>
   <variant name="_GenericAlwaysTriggerHelpUiFeature"
       summary="For generic always show help UI feature."/>
   <variant name="_GlicPromo" summary="For Glic feature."/>
+  <variant name="_GlicTrustFirstOnboardingShortcutSnoozePromo"
+      summary="For Glic shortcut feature with a snooze promo."/>
+  <variant name="_GlicTrustFirstOnboardingShortcutToastPromo"
+      summary="For Glic shortcut feature with a toast promo."/>
   <variant name="_GlicTryIt" summary="For Glic feature with a call to action."/>
   <variant name="_GlobalMediaControls"
       summary="For GlobalMediaControls feature."/>
@@ -413,6 +414,7 @@ should be able to be added at any place in this file.
                intent chip."/>
   <variant name="_iOSAddressPromoDesktop"
       summary="For iOSAddressPromoDesktop feature"/>
+  <variant name="_iOSAIHubNewBadge" summary="For AI Hub New Badge feature."/>
   <variant name="_IOSBWGPromoFeature" summary="For IOSBWGPromoFeature feature"/>
   <variant name="_iOSChoiceScreen"
       summary="(obsolete) For iOSChoiceScreen feature"/>
@@ -444,8 +446,12 @@ should be able to be added at any place in this file.
       summary="For iOSFeedSwipeAnimatedFeature feature"/>
   <variant name="_iOSFeedSwipeStaticFeature"
       summary="For iOSFeedSwipeStaticFeature feature"/>
+  <variant name="_iOSGeminiContextualCueChip"
+      summary="For Gemini contextual cue chip feature."/>
   <variant name="_iOSGeminiFullscreenPromoFeature"
       summary="For iOSGeminiFullscreenPromoFeature feature"/>
+  <variant name="_iOSGeminiImageRemix"
+      summary="For iOSGeminiImageRemix IPH feature"/>
   <variant name="_iOSHistoryOnOverflowMenuFeature"
       summary="For iOSHistoryOnOverflowMenuFeature feature"/>
   <variant name="_iOSHomepageCustomizationNewBadge"
@@ -473,11 +479,15 @@ should be able to be added at any place in this file.
       summary="For iOSPasswordPromoDesktop feature"/>
   <variant name="_iOSPaymentPromoDesktop"
       summary="For iOSPaymentPromoDesktop feature"/>
+  <variant name="_iOSPinMostVisitedSiteFeature"
+      summary="For iOSPinMostVisitedSiteFeature feature"/>
   <variant name="_iOSPostDefaultAbandonmentPromo"
       summary="For iOSPostDefaultAbandonmentPromo feature"/>
   <variant name="_iOSPromoAllTabs"
       summary="For All Tabs default browser promo."/>
   <variant name="_iOSPromoAppStore" summary="For iOSPromoAppStore feature"/>
+  <variant name="_iOSPromoBackgroundCustomization"
+      summary="For iOSPromoBackgroundCustomization feature."/>
   <variant name="_iOSPromoCredentialProviderExtension"
       summary="For iOSPromoCredentialProviderExtension feature"/>
   <variant name="_iOSPromoDefaultBrowser"
@@ -514,6 +524,8 @@ should be able to be added at any place in this file.
   <variant name="_iOSPromoWhatsNew" summary="For iOSPromoWhatsNew feature"/>
   <variant name="_iOSPullToRefreshFeature"
       summary="For iOSPullToRefreshFeature feature"/>
+  <variant name="_iOSReaderModeLargeOmniboxEntrypointFeature"
+      summary="For iOSReaderModeLargeOmniboxEntrypoint feature"/>
   <variant name="_iOSReaderModeOptionsFeature"
       summary="For Reader Mode options IPH."/>
   <variant name="_iOSReminderNotificationsOverflowMenuBubbleFeature"
@@ -570,6 +582,8 @@ should be able to be added at any place in this file.
   <variant name="_NewTabPageButton" summary="Deprecated in M79-."/>
   <variant name="_NewTabPageHomeButton"
       summary="For NewTabPageHomeButton feature. (obsolete)"/>
+  <variant name="_NewTabPageThemeCustomization"
+      summary="In product help for NewTabPage theme customization feature."/>
   <variant name="_NewTabTip" summary="For NewTabTip feature."/>
   <variant name="_PageInfo" summary="In product help for opening PageInfo."/>
   <variant name="_PageInfoStoreInfo" summary="For PageInfoStoreInfo feature."/>
@@ -668,70 +682,6 @@ should be able to be added at any place in this file.
       summary="For the RestoreTabsOnFRE feature."/>
   <variant name="_RtlGestureNavigation"
       summary="For the gesture navigation in RTL mode."/>
-  <variant name="_ScalableIphGaming"
-      summary="For a variant of Scalable Iph feature."/>
-  <variant name="_ScalableIphHelpAppBasedEight"
-      summary="For a variant of Scalable Iph feature."/>
-  <variant name="_ScalableIphHelpAppBasedFive"
-      summary="For a variant of Scalable Iph feature."/>
-  <variant name="_ScalableIphHelpAppBasedFour"
-      summary="For a variant of Scalable Iph feature."/>
-  <variant name="_ScalableIphHelpAppBasedNine"
-      summary="For a variant of Scalable Iph feature."/>
-  <variant name="_ScalableIphHelpAppBasedNudge"
-      summary="For a variant of Scalable Iph feature."/>
-  <variant name="_ScalableIphHelpAppBasedOne"
-      summary="For a variant of Scalable Iph feature."/>
-  <variant name="_ScalableIphHelpAppBasedSeven"
-      summary="For a variant of Scalable Iph feature."/>
-  <variant name="_ScalableIphHelpAppBasedSix"
-      summary="For a variant of Scalable Iph feature."/>
-  <variant name="_ScalableIphHelpAppBasedTen"
-      summary="For a variant of Scalable Iph feature."/>
-  <variant name="_ScalableIphHelpAppBasedThree"
-      summary="For a variant of Scalable Iph feature."/>
-  <variant name="_ScalableIphHelpAppBasedTwo"
-      summary="For a variant of Scalable Iph feature."/>
-  <variant name="_ScalableIphTimerBasedEight"
-      summary="For a variant of Scalable Iph feature."/>
-  <variant name="_ScalableIphTimerBasedFive"
-      summary="For a variant of Scalable Iph feature."/>
-  <variant name="_ScalableIphTimerBasedFour"
-      summary="For a variant of Scalable Iph feature."/>
-  <variant name="_ScalableIphTimerBasedNine"
-      summary="For a variant of Scalable Iph feature."/>
-  <variant name="_ScalableIphTimerBasedOne"
-      summary="For a variant of Scalable Iph feature."/>
-  <variant name="_ScalableIphTimerBasedSeven"
-      summary="For a variant of Scalable Iph feature."/>
-  <variant name="_ScalableIphTimerBasedSix"
-      summary="For a variant of Scalable Iph feature."/>
-  <variant name="_ScalableIphTimerBasedTen"
-      summary="For a variant of Scalable Iph feature."/>
-  <variant name="_ScalableIphTimerBasedThree"
-      summary="For a variant of Scalable Iph feature."/>
-  <variant name="_ScalableIphTimerBasedTwo"
-      summary="For a variant of Scalable Iph feature."/>
-  <variant name="_ScalableIphUnlockedBasedEight"
-      summary="For a variant of Scalable Iph feature."/>
-  <variant name="_ScalableIphUnlockedBasedFive"
-      summary="For a variant of Scalable Iph feature."/>
-  <variant name="_ScalableIphUnlockedBasedFour"
-      summary="For a variant of Scalable Iph feature."/>
-  <variant name="_ScalableIphUnlockedBasedNine"
-      summary="For a variant of Scalable Iph feature."/>
-  <variant name="_ScalableIphUnlockedBasedOne"
-      summary="For a variant of Scalable Iph feature."/>
-  <variant name="_ScalableIphUnlockedBasedSeven"
-      summary="For a variant of Scalable Iph feature."/>
-  <variant name="_ScalableIphUnlockedBasedSix"
-      summary="For a variant of Scalable Iph feature."/>
-  <variant name="_ScalableIphUnlockedBasedTen"
-      summary="For a variant of Scalable Iph feature."/>
-  <variant name="_ScalableIphUnlockedBasedThree"
-      summary="For a variant of Scalable Iph feature."/>
-  <variant name="_ScalableIphUnlockedBasedTwo"
-      summary="For a variant of Scalable Iph feature."/>
   <variant name="_SharedHighlightingBuilder"
       summary="For SharedHighlightingBuilder feature."/>
   <variant name="_SharedHighlightingReceiver"
@@ -3475,6 +3425,25 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="Actor.Ui.GlobalTaskIndicator.{NudgeText}.Click">
+  <owner>mjenn@google.com</owner>
+  <owner>chrstne@google.com</owner>
+  <owner>kenok@google.com</owner>
+  <owner>koilos@google.com</owner>
+  <description>
+    Recorded when the user clicks the Global Task Indicator.
+  </description>
+  <token key="NudgeText">
+    <variant name="CompleteTasks"
+        summary="Task Indicator text shown when a task is complete."/>
+    <variant name="Default"
+        summary="Task Indicator shown in default state with no text."/>
+    <variant name="NeedsAttention"
+        summary="Task Indicator text shown when one or more tasks need
+                 attention."/>
+  </token>
+</action>
+
 <action name="Actor.Ui.HandoffButton.GiveControl.Clicked">
   <owner>chrstne@google.com</owner>
   <owner>kenok@google.com</owner>
@@ -3517,6 +3486,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="Actor.Ui.TaskNudge.{NudgeText}.Click">
+  <owner>mjenn@google.com</owner>
   <owner>chrstne@google.com</owner>
   <owner>kenok@google.com</owner>
   <owner>koilos@google.com</owner>
@@ -3528,9 +3498,10 @@ should be able to be added at any place in this file.
     <variant name="CompleteTasks"
         summary="Task Nudge text shown when a task is complete."/>
     <variant name="MultipleTasksNeedAttention"
-        summary="Task Nudge text shown when multiple tasks need attention"/>
+        summary="Obsolete. Task Nudge text shown when multiple tasks need
+                 attention."/>
     <variant name="NeedsAttention"
-        summary="Task Nudge text shown when one task needs attention."/>
+        summary="Task Nudge text shown when one or more tasks need attention."/>
   </token>
 </action>
 
@@ -3838,6 +3809,15 @@ should be able to be added at any place in this file.
   <description>User navigated to the Android in-app history page.</description>
 </action>
 
+<action name="Android.BookmarkPage.CopyLink">
+  <owner>wylieb@google.com</owner>
+  <owner>hocheung@chromium.org</owner>
+  <description>
+    User copied a bookmark link on the native Android bookmark page by clicking
+    &quot;copy link&quot; from the per-row overflow menu (non-selection mode).
+  </description>
+</action>
+
 <action name="Android.BookmarkPage.ReadingList.MarkAsRead">
   <owner>wylieb@google.com</owner>
   <owner>chrome-collections@google.com</owner>
@@ -4132,6 +4112,33 @@ should be able to be added at any place in this file.
   <description>
     User tapped on a phone number, address or email address, activating a
     content detector and causing a content intent to be sent.
+  </description>
+</action>
+
+<action name="Android.CrossDeviceSettingImport.Apply">
+  <owner>clank-app-team@google.com</owner>
+  <owner>jhimawan@google.com</owner>
+  <description>
+    Recorded when the user taps on the &quot;Apply&quot; button in the
+    cross-device settings import snackbar.
+  </description>
+</action>
+
+<action name="Android.CrossDeviceSettingImport.Redo">
+  <owner>clank-app-team@google.com</owner>
+  <owner>jhimawan@google.com</owner>
+  <description>
+    Recorded when the user taps on the &quot;Redo&quot; button in the
+    cross-device settings import snackbar.
+  </description>
+</action>
+
+<action name="Android.CrossDeviceSettingImport.Undo">
+  <owner>clank-app-team@google.com</owner>
+  <owner>jhimawan@google.com</owner>
+  <description>
+    Recorded when the user taps on the &quot;Undo&quot; button in the
+    cross-device settings import snackbar.
   </description>
 </action>
 
@@ -4568,6 +4575,13 @@ should be able to be added at any place in this file.
   <description>User navigated to the native Android history page.</description>
 </action>
 
+<action name="Android.Hub.PaneSwiped">
+  <owner>madhavpruthi@google.com</owner>
+  <description>
+    The user switched to another pane using swipe gesture in the Hub.
+  </description>
+</action>
+
 <action name="Android.LauncherShortcut.NewIncognitoTab">
   <owner>twellington@chromium.org</owner>
   <description>
@@ -4767,6 +4781,21 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="Android.TabStripMenu.NewTab">
+  <owner>mklw@google.com</owner>
+  <description>
+    User tapped 'New tab' on the tab strip context menu to open a New tab.
+  </description>
+</action>
+
+<action name="Android.TabStripMenu.ReopenClosedEntry">
+  <owner>mklw@google.com</owner>
+  <description>
+    User tapped 'Reopen closed entry' on the tab strip context menu to reopen
+    the last closed entry.
+  </description>
+</action>
+
 <action name="Android.TabStripMenu.SaveWindowName">
   <owner>aishwaryarj@google.com</owner>
   <description>
@@ -4856,6 +4885,519 @@ should be able to be added at any place in this file.
     User taps on a Window from the in-app window manager list to bring the
     Window to the foreground.
   </description>
+</action>
+
+<action name="AndroidWebView.ApiCall.{ApiName}">
+  <owner>abhijithnair@chromium.org</owner>
+  <owner>android_webview/OWNERS</owner>
+  <description>
+    WebView API {ApiName} was called.
+
+    This is only recorded on Android WebView. This is only recorded if the
+    `WebViewEnableApiCallUserActions` feature is enabled.
+  </description>
+  <token key="ApiName">
+    <variant name="CookieManagerAcceptCookie"
+        summary="CookieManager method `acceptCookie`"/>
+    <variant name="CookieManagerAcceptThirdPartyCookies"
+        summary="CookieManager method `acceptThirdPartyCookies`"/>
+    <variant name="CookieManagerAllowFileSchemeCookies"
+        summary="CookieManager method `allowFileSchemeCookies`"/>
+    <variant name="CookieManagerFlush" summary="CookieManager method `flush`"/>
+    <variant name="CookieManagerGetCookie"
+        summary="CookieManager method `getCookie`"/>
+    <variant name="CookieManagerHasCookies"
+        summary="CookieManager method `hasCookies`"/>
+    <variant name="CookieManagerRemoveAllCookie"
+        summary="CookieManager method `removeAllCookie`"/>
+    <variant name="CookieManagerRemoveAllCookies"
+        summary="CookieManager method `removeAllCookies`"/>
+    <variant name="CookieManagerRemoveExpiredCookie"
+        summary="CookieManager method `removeExpiredCookie`"/>
+    <variant name="CookieManagerRemoveSessionCookie"
+        summary="CookieManager method `removeSessionCookie`"/>
+    <variant name="CookieManagerRemoveSessionCookies"
+        summary="CookieManager method `removeSessionCookies`"/>
+    <variant name="CookieManagerSetAcceptCookie"
+        summary="CookieManager method `setAcceptCookie`"/>
+    <variant name="CookieManagerSetAcceptFileSchemeCookies"
+        summary="CookieManager method `setAcceptFileSchemeCookies`"/>
+    <variant name="CookieManagerSetAcceptThirdPartyCookies"
+        summary="CookieManager method `setAcceptThirdPartyCookies`"/>
+    <variant name="CookieManagerSetCookie"
+        summary="CookieManager method `setCookie`"/>
+    <variant name="GeolocationPermissionsAllow"
+        summary="GeolocationPermissions method `allow`"/>
+    <variant name="GeolocationPermissionsClear"
+        summary="GeolocationPermissions method `clear`"/>
+    <variant name="GeolocationPermissionsClearAll"
+        summary="GeolocationPermissions method `clearAll`"/>
+    <variant name="GeolocationPermissionsGetAllowed"
+        summary="GeolocationPermissions method `getAllowed`"/>
+    <variant name="GeolocationPermissionsGetOrigins"
+        summary="GeolocationPermissions method `getOrigins`"/>
+    <variant name="WebIconDatabaseBulkRequestIconForPageUrl"
+        summary="WebIconDatabase method `bulkRequestIconForPageUrl`"/>
+    <variant name="WebIconDatabaseClose"
+        summary="WebIconDatabase method `close`"/>
+    <variant name="WebIconDatabaseGetInstance"
+        summary="WebIconDatabase method `getInstance`"/>
+    <variant name="WebIconDatabaseOpen"
+        summary="WebIconDatabase method `open`"/>
+    <variant name="WebIconDatabaseReleaseIconForPageUrl"
+        summary="WebIconDatabase method `releaseIconForPageUrl`"/>
+    <variant name="WebIconDatabaseRemoveAllIcons"
+        summary="WebIconDatabase method `removeAllIcons`"/>
+    <variant name="WebIconDatabaseRequestIconForPageUrl"
+        summary="WebIconDatabase method `requestIconForPageUrl`"/>
+    <variant name="WebIconDatabaseRetainIconForPageUrl"
+        summary="WebIconDatabase method `retainIconForPageUrl`"/>
+    <variant name="WebSettingsGetAllowContentAccess"
+        summary="WebSettings method `getAllowContentAccess`"/>
+    <variant name="WebSettingsGetAllowFileAccess"
+        summary="WebSettings method `getAllowFileAccess`"/>
+    <variant name="WebSettingsGetAllowFileAccessFromFileUrls"
+        summary="WebSettings method `getAllowFileAccessFromFileUrls`"/>
+    <variant name="WebSettingsGetAllowUniversalAccessFromFileUrls"
+        summary="WebSettings method `getAllowUniversalAccessFromFileUrls`"/>
+    <variant name="WebSettingsGetBlockNetworkImage"
+        summary="WebSettings method `getBlockNetworkImage`"/>
+    <variant name="WebSettingsGetBlockNetworkLoads"
+        summary="WebSettings method `getBlockNetworkLoads`"/>
+    <variant name="WebSettingsGetBuiltInZoomControls"
+        summary="WebSettings method `getBuiltInZoomControls`"/>
+    <variant name="WebSettingsGetCacheMode"
+        summary="WebSettings method `getCacheMode`"/>
+    <variant name="WebSettingsGetCursiveFontFamily"
+        summary="WebSettings method `getCursiveFontFamily`"/>
+    <variant name="WebSettingsGetDatabaseEnabled"
+        summary="WebSettings method `getDatabaseEnabled`"/>
+    <variant name="WebSettingsGetDefaultFixedFontSize"
+        summary="WebSettings method `getDefaultFixedFontSize`"/>
+    <variant name="WebSettingsGetDefaultFontSize"
+        summary="WebSettings method `getDefaultFontSize`"/>
+    <variant name="WebSettingsGetDefaultTextEncodingName"
+        summary="WebSettings method `getDefaultTextEncodingName`"/>
+    <variant name="WebSettingsGetDisabledActionModeMenuItems"
+        summary="WebSettings method `getDisabledActionModeMenuItems`"/>
+    <variant name="WebSettingsGetDisplayZoomControls"
+        summary="WebSettings method `getDisplayZoomControls`"/>
+    <variant name="WebSettingsGetDomStorageEnabled"
+        summary="WebSettings method `getDomStorageEnabled`"/>
+    <variant name="WebSettingsGetFantasyFontFamily"
+        summary="WebSettings method `getFantasyFontFamily`"/>
+    <variant name="WebSettingsGetFixedFontFamily"
+        summary="WebSettings method `getFixedFontFamily`"/>
+    <variant name="WebSettingsGetForceDark"
+        summary="WebSettings method `getForceDark`"/>
+    <variant name="WebSettingsGetJavaScriptCanOpenWindowsAutomatically"
+        summary="WebSettings method
+                 `getJavaScriptCanOpenWindowsAutomatically`"/>
+    <variant name="WebSettingsGetJavaScriptEnabled"
+        summary="WebSettings method `getJavaScriptEnabled`"/>
+    <variant name="WebSettingsGetLayoutAlgorithm"
+        summary="WebSettings method `getLayoutAlgorithm`"/>
+    <variant name="WebSettingsGetLoadsImagesAutomatically"
+        summary="WebSettings method `getLoadsImagesAutomatically`"/>
+    <variant name="WebSettingsGetLoadWithOverviewMode"
+        summary="WebSettings method `getLoadWithOverviewMode`"/>
+    <variant name="WebSettingsGetMediaPlaybackRequiresUserGesture"
+        summary="WebSettings method `getMediaPlaybackRequiresUserGesture`"/>
+    <variant name="WebSettingsGetMinimumFontSize"
+        summary="WebSettings method `getMinimumFontSize`"/>
+    <variant name="WebSettingsGetMinimumLogicalFontSize"
+        summary="WebSettings method `getMinimumLogicalFontSize`"/>
+    <variant name="WebSettingsGetMixedContentMode"
+        summary="WebSettings method `getMixedContentMode`"/>
+    <variant name="WebSettingsGetOffscreenPreRaster"
+        summary="WebSettings method `getOffscreenPreRaster`"/>
+    <variant name="WebSettingsGetPluginState"
+        summary="WebSettings method `getPluginState`"/>
+    <variant name="WebSettingsGetSafeBrowsingEnabled"
+        summary="WebSettings method `getSafeBrowsingEnabled`"/>
+    <variant name="WebSettingsGetSansSerifFontFamily"
+        summary="WebSettings method `getSansSerifFontFamily`"/>
+    <variant name="WebSettingsGetSaveFormData"
+        summary="WebSettings method `getSaveFormData`"/>
+    <variant name="WebSettingsGetSerifFontFamily"
+        summary="WebSettings method `getSerifFontFamily`"/>
+    <variant name="WebSettingsGetStandardFontFamily"
+        summary="WebSettings method `getStandardFontFamily`"/>
+    <variant name="WebSettingsGetTextZoom"
+        summary="WebSettings method `getTextZoom`"/>
+    <variant name="WebSettingsGetUserAgentString"
+        summary="WebSettings method `getUserAgentString`"/>
+    <variant name="WebSettingsGetUseWideViewPort"
+        summary="WebSettings method `getUseWideViewPort`"/>
+    <variant name="WebSettingsIsAlgorithmicDarkeningAllowed"
+        summary="WebSettings method `isAlgorithmicDarkeningAllowed`"/>
+    <variant name="WebSettingsSetAlgorithmicDarkeningAllowed"
+        summary="WebSettings method `setAlgorithmicDarkeningAllowed`"/>
+    <variant name="WebSettingsSetAllowContentAccess"
+        summary="WebSettings method `setAllowContentAccess`"/>
+    <variant name="WebSettingsSetAllowFileAccess"
+        summary="WebSettings method `setAllowFileAccess`"/>
+    <variant name="WebSettingsSetAllowFileAccessFromFileUrls"
+        summary="WebSettings method `setAllowFileAccessFromFileUrls`"/>
+    <variant name="WebSettingsSetAllowUniversalAccessFromFileUrls"
+        summary="WebSettings method `setAllowUniversalAccessFromFileUrls`"/>
+    <variant name="WebSettingsSetBlockNetworkImage"
+        summary="WebSettings method `setBlockNetworkImage`"/>
+    <variant name="WebSettingsSetBlockNetworkLoads"
+        summary="WebSettings method `setBlockNetworkLoads`"/>
+    <variant name="WebSettingsSetBuiltInZoomControls"
+        summary="WebSettings method `setBuiltInZoomControls`"/>
+    <variant name="WebSettingsSetCacheMode"
+        summary="WebSettings method `setCacheMode`"/>
+    <variant name="WebSettingsSetCursiveFontFamily"
+        summary="WebSettings method `setCursiveFontFamily`"/>
+    <variant name="WebSettingsSetDatabaseEnabled"
+        summary="WebSettings method `setDatabaseEnabled`"/>
+    <variant name="WebSettingsSetDefaultFixedFontSize"
+        summary="WebSettings method `setDefaultFixedFontSize`"/>
+    <variant name="WebSettingsSetDefaultFontSize"
+        summary="WebSettings method `setDefaultFontSize`"/>
+    <variant name="WebSettingsSetDefaultTextEncodingName"
+        summary="WebSettings method `setDefaultTextEncodingName`"/>
+    <variant name="WebSettingsSetDisabledActionModeMenuItems"
+        summary="WebSettings method `setDisabledActionModeMenuItems`"/>
+    <variant name="WebSettingsSetDisplayZoomControls"
+        summary="WebSettings method `setDisplayZoomControls`"/>
+    <variant name="WebSettingsSetDomStorageEnabled"
+        summary="WebSettings method `setDomStorageEnabled`"/>
+    <variant name="WebSettingsSetFantasyFontFamily"
+        summary="WebSettings method `setFantasyFontFamily`"/>
+    <variant name="WebSettingsSetFixedFontFamily"
+        summary="WebSettings method `setFixedFontFamily`"/>
+    <variant name="WebSettingsSetForceDark"
+        summary="WebSettings method `setForceDark`"/>
+    <variant name="WebSettingsSetGeolocationEnabled"
+        summary="WebSettings method `setGeolocationEnabled`"/>
+    <variant name="WebSettingsSetJavaScriptCanOpenWindowsAutomatically"
+        summary="WebSettings method
+                 `setJavaScriptCanOpenWindowsAutomatically`"/>
+    <variant name="WebSettingsSetJavaScriptEnabled"
+        summary="WebSettings method `setJavaScriptEnabled`"/>
+    <variant name="WebSettingsSetLayoutAlgorithm"
+        summary="WebSettings method `setLayoutAlgorithm`"/>
+    <variant name="WebSettingsSetLoadsImagesAutomatically"
+        summary="WebSettings method `setLoadsImagesAutomatically`"/>
+    <variant name="WebSettingsSetLoadWithOverviewMode"
+        summary="WebSettings method `setLoadWithOverviewMode`"/>
+    <variant name="WebSettingsSetMediaPlaybackRequiresUserGesture"
+        summary="WebSettings method `setMediaPlaybackRequiresUserGesture`"/>
+    <variant name="WebSettingsSetMinimumFontSize"
+        summary="WebSettings method `setMinimumFontSize`"/>
+    <variant name="WebSettingsSetMinimumLogicalFontSize"
+        summary="WebSettings method `setMinimumLogicalFontSize`"/>
+    <variant name="WebSettingsSetMixedContentMode"
+        summary="WebSettings method `setMixedContentMode`"/>
+    <variant name="WebSettingsSetNeedInitialFocus"
+        summary="WebSettings method `setNeedInitialFocus`"/>
+    <variant name="WebSettingsSetOffscreenPreRaster"
+        summary="WebSettings method `setOffscreenPreRaster`"/>
+    <variant name="WebSettingsSetPluginState"
+        summary="WebSettings method `setPluginState`"/>
+    <variant name="WebSettingsSetSafeBrowsingEnabled"
+        summary="WebSettings method `setSafeBrowsingEnabled`"/>
+    <variant name="WebSettingsSetSansSerifFontFamily"
+        summary="WebSettings method `setSansSerifFontFamily`"/>
+    <variant name="WebSettingsSetSaveFormData"
+        summary="WebSettings method `setSaveFormData`"/>
+    <variant name="WebSettingsSetSerifFontFamily"
+        summary="WebSettings method `setSerifFontFamily`"/>
+    <variant name="WebSettingsSetStandardFontFamily"
+        summary="WebSettings method `setStandardFontFamily`"/>
+    <variant name="WebSettingsSetSupportMultipleWindows"
+        summary="WebSettings method `setSupportMultipleWindows`"/>
+    <variant name="WebSettingsSetSupportZoom"
+        summary="WebSettings method `setSupportZoom`"/>
+    <variant name="WebSettingsSetTextSize"
+        summary="WebSettings method `setTextSize`"/>
+    <variant name="WebSettingsSetTextZoom"
+        summary="WebSettings method `setTextZoom`"/>
+    <variant name="WebSettingsSetUserAgent"
+        summary="WebSettings method `setUserAgent`"/>
+    <variant name="WebSettingsSetUserAgentString"
+        summary="WebSettings method `setUserAgentString`"/>
+    <variant name="WebSettingsSetUseWideViewPort"
+        summary="WebSettings method `setUseWideViewPort`"/>
+    <variant name="WebSettingsSupportMultipleWindows"
+        summary="WebSettings method `supportMultipleWindows`"/>
+    <variant name="WebSettingsSupportZoom"
+        summary="WebSettings method `supportZoom`"/>
+    <variant name="WebStorageDeleteAllData"
+        summary="WebStorage method `deleteAllData`"/>
+    <variant name="WebStorageDeleteOrigin"
+        summary="WebStorage method `deleteOrigin`"/>
+    <variant name="WebStorageGetOrigins"
+        summary="WebStorage method `getOrigins`"/>
+    <variant name="WebStorageGetQuotaForOrigin"
+        summary="WebStorage method `getQuotaForOrigin`"/>
+    <variant name="WebStorageGetUsageForOrigin"
+        summary="WebStorage method `getUsageForOrigin`"/>
+    <variant name="WebViewDatabaseClearFormData"
+        summary="WebViewDatabase method `clearFormData`"/>
+    <variant name="WebViewDatabaseClearHttpAuthUsernamePassword"
+        summary="WebViewDatabase method `clearHttpAuthUsernamePassword`"/>
+    <variant name="WebViewDatabaseClearUsernamePassword"
+        summary="WebViewDatabase method `clearUsernamePassword`"/>
+    <variant name="WebViewDatabaseGetHttpAuthUsernamePassword"
+        summary="WebViewDatabase method `getHttpAuthUsernamePassword`"/>
+    <variant name="WebViewDatabaseHasFormData"
+        summary="WebViewDatabase method `hasFormData`"/>
+    <variant name="WebViewDatabaseHasHttpAuthUsernamePassword"
+        summary="WebViewDatabase method `hasHttpAuthUsernamePassword`"/>
+    <variant name="WebViewDatabaseHasUsernamePassword"
+        summary="WebViewDatabase method `hasUsernamePassword`"/>
+    <variant name="WebViewDatabaseSetHttpAuthUsernamePassword"
+        summary="WebViewDatabase method `setHttpAuthUsernamePassword`"/>
+    <variant name="WebViewInstanceAddJavascriptInterface"
+        summary="WebView instance method `addJavascriptInterface`"/>
+    <variant name="WebViewInstanceAutofill"
+        summary="WebView instance method `autofill`"/>
+    <variant name="WebViewInstanceCanGoBack"
+        summary="WebView instance method `canGoBack`"/>
+    <variant name="WebViewInstanceCanGoBackOrForward"
+        summary="WebView instance method `canGoBackOrForward`"/>
+    <variant name="WebViewInstanceCanGoForward"
+        summary="WebView instance method `canGoForward`"/>
+    <variant name="WebViewInstanceCanZoomIn"
+        summary="WebView instance method `canZoomIn`"/>
+    <variant name="WebViewInstanceCanZoomOut"
+        summary="WebView instance method `canZoomOut`"/>
+    <variant name="WebViewInstanceCapturePicture"
+        summary="WebView instance method `capturePicture`"/>
+    <variant name="WebViewInstanceClearCache"
+        summary="WebView instance method `clearCache`"/>
+    <variant name="WebViewInstanceClearFormData"
+        summary="WebView instance method `clearFormData`"/>
+    <variant name="WebViewInstanceClearHistory"
+        summary="WebView instance method `clearHistory`"/>
+    <variant name="WebViewInstanceClearMatches"
+        summary="WebView instance method `clearMatches`"/>
+    <variant name="WebViewInstanceClearSslPreferences"
+        summary="WebView instance method `clearSslPreferences`"/>
+    <variant name="WebViewInstanceClearView"
+        summary="WebView instance method `clearView`"/>
+    <variant name="WebViewInstanceComputeScroll"
+        summary="WebView instance method `computeScroll`"/>
+    <variant name="WebViewInstanceCopyBackForwardList"
+        summary="WebView instance method `copyBackForwardList`"/>
+    <variant name="WebViewInstanceCreatePrintDocumentAdapter"
+        summary="WebView instance method `createPrintDocumentAdapter`"/>
+    <variant name="WebViewInstanceCreateWebMessageChannel"
+        summary="WebView instance method `createWebMessageChannel`"/>
+    <variant name="WebViewInstanceDestroy"
+        summary="WebView instance method `destroy`"/>
+    <variant name="WebViewInstanceDispatchKeyEvent"
+        summary="WebView instance method `dispatchKeyEvent`"/>
+    <variant name="WebViewInstanceDocumentHasImages"
+        summary="WebView instance method `documentHasImages`"/>
+    <variant name="WebViewInstanceDoesSupportFullscreen"
+        summary="WebView instance method `doesSupportFullscreen`"/>
+    <variant name="WebViewInstanceEvaluateJavascript"
+        summary="WebView instance method `evaluateJavascript`"/>
+    <variant name="WebViewInstanceExtractSmartClipData"
+        summary="WebView instance method `extractSmartClipData`"/>
+    <variant name="WebViewInstanceFindAllAsync"
+        summary="WebView instance method `findAllAsync`"/>
+    <variant name="WebViewInstanceFindFocus"
+        summary="WebView instance method `findFocus`"/>
+    <variant name="WebViewInstanceFindNext"
+        summary="WebView instance method `findNext`"/>
+    <variant name="WebViewInstanceFlingScroll"
+        summary="WebView instance method `flingScroll`"/>
+    <variant name="WebViewInstanceGetAccessibilityNodeProvider"
+        summary="WebView instance method `getAccessibilityNodeProvider`"/>
+    <variant name="WebViewInstanceGetCertificate"
+        summary="WebView instance method `getCertificate`"/>
+    <variant name="WebViewInstanceGetContentHeight"
+        summary="WebView instance method `getContentHeight`"/>
+    <variant name="WebViewInstanceGetContentWidth"
+        summary="WebView instance method `getContentWidth`"/>
+    <variant name="WebViewInstanceGetFavicon"
+        summary="WebView instance method `getFavicon`"/>
+    <variant name="WebViewInstanceGetHandler"
+        summary="WebView instance method `getHandler`"/>
+    <variant name="WebViewInstanceGetHitTestResult"
+        summary="WebView instance method `getHitTestResult`"/>
+    <variant name="WebViewInstanceGetHttpAuthUsernamePassword"
+        summary="WebView instance method `getHttpAuthUsernamePassword`"/>
+    <variant name="WebViewInstanceGetOriginalUrl"
+        summary="WebView instance method `getOriginalUrl`"/>
+    <variant name="WebViewInstanceGetProgress"
+        summary="WebView instance method `getProgress`"/>
+    <variant name="WebViewInstanceGetRendererPriorityWaivedWhenNotVisible"
+        summary="WebView instance method
+                 `getRendererPriorityWaivedWhenNotVisible`"/>
+    <variant name="WebViewInstanceGetRendererRequestedPriority"
+        summary="WebView instance method `getRendererRequestedPriority`"/>
+    <variant name="WebViewInstanceGetScale"
+        summary="WebView instance method `getScale`"/>
+    <variant name="WebViewInstanceGetSettings"
+        summary="WebView instance method `getSettings`"/>
+    <variant name="WebViewInstanceGetTextClassifier"
+        summary="WebView instance method `getTextClassifier`"/>
+    <variant name="WebViewInstanceGetTitle"
+        summary="WebView instance method `getTitle`"/>
+    <variant name="WebViewInstanceGetUrl"
+        summary="WebView instance method `getUrl`"/>
+    <variant name="WebViewInstanceGetWebChromeClient"
+        summary="WebView instance method `getWebChromeClient`"/>
+    <variant name="WebViewInstanceGetWebViewClient"
+        summary="WebView instance method `getWebViewClient`"/>
+    <variant name="WebViewInstanceGetWebViewRenderProcess"
+        summary="WebView instance method `getWebViewRenderProcess`"/>
+    <variant name="WebViewInstanceGetWebViewRenderProcessClient"
+        summary="WebView instance method `getWebViewRenderProcessClient`"/>
+    <variant name="WebViewInstanceGoBack"
+        summary="WebView instance method `goBack`"/>
+    <variant name="WebViewInstanceGoBackOrForward"
+        summary="WebView instance method `goBackOrForward`"/>
+    <variant name="WebViewInstanceGoForward"
+        summary="WebView instance method `goForward`"/>
+    <variant name="WebViewInstanceInsertVisualStateCallback"
+        summary="WebView instance method `insertVisualStateCallback`"/>
+    <variant name="WebViewInstanceInvokeZoomPicker"
+        summary="WebView instance method `invokeZoomPicker`"/>
+    <variant name="WebViewInstanceIsPaused"
+        summary="WebView instance method `isPaused`"/>
+    <variant name="WebViewInstanceIsPrivateBrowsingEnabled"
+        summary="WebView instance method `isPrivateBrowsingEnabled`"/>
+    <variant name="WebViewInstanceLoadData"
+        summary="WebView instance method `loadData`"/>
+    <variant name="WebViewInstanceLoadDataWithBaseURL"
+        summary="WebView instance method `loadDataWithBaseURL`"/>
+    <variant name="WebViewInstanceLoadUrl"
+        summary="WebView instance method `loadUrl`"/>
+    <variant name="WebViewInstanceLoadUrlAdditionalHeaders"
+        summary="WebView instance method `loadUrlAdditionalHeaders`"/>
+    <variant name="WebViewInstanceNotifyFindDialogDismissed"
+        summary="WebView instance method `notifyFindDialogDismissed`"/>
+    <variant name="WebViewInstanceOnCheckIsTextEditor"
+        summary="WebView instance method `onCheckIsTextEditor`"/>
+    <variant name="WebViewInstanceOnCreateInputConnection"
+        summary="WebView instance method `onCreateInputConnection`"/>
+    <variant name="WebViewInstanceOnDragEvent"
+        summary="WebView instance method `onDragEvent`"/>
+    <variant name="WebViewInstanceOnFinishTemporaryDetach"
+        summary="WebView instance method `onFinishTemporaryDetach`"/>
+    <variant name="WebViewInstanceOnFocusChanged"
+        summary="WebView instance method `onFocusChanged`"/>
+    <variant name="WebViewInstanceOnGenericMotionEvent"
+        summary="WebView instance method `onGenericMotionEvent`"/>
+    <variant name="WebViewInstanceOnHoverEvent"
+        summary="WebView instance method `onHoverEvent`"/>
+    <variant name="WebViewInstanceOnKeyDown"
+        summary="WebView instance method `onKeyDown`"/>
+    <variant name="WebViewInstanceOnKeyMultiple"
+        summary="WebView instance method `onKeyMultiple`"/>
+    <variant name="WebViewInstanceOnKeyUp"
+        summary="WebView instance method `onKeyUp`"/>
+    <variant name="WebViewInstanceOnPause"
+        summary="WebView instance method `onPause`"/>
+    <variant name="WebViewInstanceOnProvideAutofillVirtualStructure"
+        summary="WebView instance method `onProvideAutofillVirtualStructure`"/>
+    <variant name="WebViewInstanceOnProvideContentCaptureStructure"
+        summary="WebView instance method `onProvideContentCaptureStructure`"/>
+    <variant name="WebViewInstanceOnProvideVirtualStructure"
+        summary="WebView instance method `onProvideVirtualStructure`"/>
+    <variant name="WebViewInstanceOnResume"
+        summary="WebView instance method `onResume`"/>
+    <variant name="WebViewInstanceOnStartTemporaryDetach"
+        summary="WebView instance method `onStartTemporaryDetach`"/>
+    <variant name="WebViewInstanceOnTouchEvent"
+        summary="WebView instance method `onTouchEvent`"/>
+    <variant name="WebViewInstanceOnTrackballEvent"
+        summary="WebView instance method `onTrackballEvent`"/>
+    <variant name="WebViewInstanceOnWindowFocusChanged"
+        summary="WebView instance method `onWindowFocusChanged`"/>
+    <variant name="WebViewInstanceOverlayHorizontalScrollbar"
+        summary="WebView instance method `overlayHorizontalScrollbar`"/>
+    <variant name="WebViewInstanceOverlayVerticalScrollbar"
+        summary="WebView instance method `overlayVerticalScrollbar`"/>
+    <variant name="WebViewInstancePageDown"
+        summary="WebView instance method `pageDown`"/>
+    <variant name="WebViewInstancePageUp"
+        summary="WebView instance method `pageUp`"/>
+    <variant name="WebViewInstancePauseTimers"
+        summary="WebView instance method `pauseTimers`"/>
+    <variant name="WebViewInstancePerformLongClick"
+        summary="WebView instance method `performLongClick`"/>
+    <variant name="WebViewInstancePostMessageToMainFrame"
+        summary="WebView instance method `postMessageToMainFrame`"/>
+    <variant name="WebViewInstancePostUrl"
+        summary="WebView instance method `postUrl`"/>
+    <variant name="WebViewInstanceReload"
+        summary="WebView instance method `reload`"/>
+    <variant name="WebViewInstanceRemoveJavascriptInterface"
+        summary="WebView instance method `removeJavascriptInterface`"/>
+    <variant name="WebViewInstanceRequestChildRectangleOnScreen"
+        summary="WebView instance method `requestChildRectangleOnScreen`"/>
+    <variant name="WebViewInstanceRequestFocus"
+        summary="WebView instance method `requestFocus`"/>
+    <variant name="WebViewInstanceRequestFocusNodeHref"
+        summary="WebView instance method `requestFocusNodeHref`"/>
+    <variant name="WebViewInstanceRequestImageRef"
+        summary="WebView instance method `requestImageRef`"/>
+    <variant name="WebViewInstanceRestoreState"
+        summary="WebView instance method `restoreState`"/>
+    <variant name="WebViewInstanceResumeTimers"
+        summary="WebView instance method `resumeTimers`"/>
+    <variant name="WebViewInstanceSaveState"
+        summary="WebView instance method `saveState`"/>
+    <variant name="WebViewInstanceSaveWebArchive"
+        summary="WebView instance method `saveWebArchive`"/>
+    <variant name="WebViewInstanceSetBackgroundColor"
+        summary="WebView instance method `setBackgroundColor`"/>
+    <variant name="WebViewInstanceSetDownloadListener"
+        summary="WebView instance method `setDownloadListener`"/>
+    <variant name="WebViewInstanceSetFindListener"
+        summary="WebView instance method `setFindListener`"/>
+    <variant name="WebViewInstanceSetHorizontalScrollbarOverlay"
+        summary="WebView instance method `setHorizontalScrollbarOverlay`"/>
+    <variant name="WebViewInstanceSetHttpAuthUsernamePassword"
+        summary="WebView instance method `setHttpAuthUsernamePassword`"/>
+    <variant name="WebViewInstanceSetInitialScale"
+        summary="WebView instance method `setInitialScale`"/>
+    <variant name="WebViewInstanceSetLayerType"
+        summary="WebView instance method `setLayerType`"/>
+    <variant name="WebViewInstanceSetLayoutParams"
+        summary="WebView instance method `setLayoutParams`"/>
+    <variant name="WebViewInstanceSetNetworkAvailable"
+        summary="WebView instance method `setNetworkAvailable`"/>
+    <variant name="WebViewInstanceSetOverscrollMode"
+        summary="WebView instance method `setOverscrollMode`"/>
+    <variant name="WebViewInstanceSetPictureListener"
+        summary="WebView instance method `setPictureListener`"/>
+    <variant name="WebViewInstanceSetRendererPriorityPolicy"
+        summary="WebView instance method `setRendererPriorityPolicy`"/>
+    <variant name="WebViewInstanceSetScrollBarStyle"
+        summary="WebView instance method `setScrollBarStyle`"/>
+    <variant name="WebViewInstanceSetSmartClipResultHandler"
+        summary="WebView instance method `setSmartClipResultHandler`"/>
+    <variant name="WebViewInstanceSetTextClassifier"
+        summary="WebView instance method `setTextClassifier`"/>
+    <variant name="WebViewInstanceSetVerticalScrollbarOverlay"
+        summary="WebView instance method `setVerticalScrollbarOverlay`"/>
+    <variant name="WebViewInstanceSetWebChromeClient"
+        summary="WebView instance method `setWebChromeClient`"/>
+    <variant name="WebViewInstanceSetWebViewClient"
+        summary="WebView instance method `setWebViewClient`"/>
+    <variant name="WebViewInstanceSetWebViewRenderProcessClient"
+        summary="WebView instance method `setWebViewRenderProcessClient`"/>
+    <variant name="WebViewInstanceShowFindDialog"
+        summary="WebView instance method `showFindDialog`"/>
+    <variant name="WebViewInstanceStopLoading"
+        summary="WebView instance method `stopLoading`"/>
+    <variant name="WebViewInstanceZoomBy"
+        summary="WebView instance method `zoomBy`"/>
+    <variant name="WebViewInstanceZoomIn"
+        summary="WebView instance method `zoomIn`"/>
+    <variant name="WebViewInstanceZoomOut"
+        summary="WebView instance method `zoomOut`"/>
+  </token>
 </action>
 
 <action name="AppCloseButton_Clk">
@@ -5444,18 +5986,6 @@ should be able to be added at any place in this file.
     User has pressed Assistant key to open Assistant new entry point. Note that
     there can be a chance that the actual key combo is not Assistant key as this
     shortcut is configurable for now: https://crbug.com/387507743.
-  </description>
-</action>
-
-<action name="Assistant.NewEntryPoint.Launcher">
-  <obsolete>
-    Deprecated in M139. Replaced with Apps.AppList.GeminiSearchBoxIcon.
-  </obsolete>
-  <owner>yawano@google.com</owner>
-  <owner>assistive-eng@google.com</owner>
-  <description>
-    User has opened the new entry point by activating a button in the launcher
-    (app list).
   </description>
 </action>
 
@@ -7916,7 +8446,7 @@ should be able to be added at any place in this file.
 
 <action name="ChooseDefaultSearchEngine">
   <owner>dgn@chromium.org</owner>
-  <owner>chrome-waffle-eng@google.com</owner>
+  <owner>chrome-regionalcapabilities@google.com</owner>
   <description>
     Action indicating that the user clicked on the &quot;Change&quot; button in
     the search settings page to view the search engines list dialog and choose a
@@ -10325,19 +10855,6 @@ should be able to be added at any place in this file.
   </token>
 </action>
 
-<action name="ContextualTasks.AppMenu.UserAction{ActionType}">
-  <owner>sophiechang@chromium.org</owner>
-  <owner>chrome-contextual-tasks-eng@google.com</owner>
-  <description>
-    The user interacted with the contextual tasks entry in the app menu.
-    {ActionType}
-  </description>
-  <token key="ActionType">
-    <variant name=".CloseSidePanel" summary="The user closed the side panel."/>
-    <variant name=".OpenSidePanel" summary="The user opened the side panel."/>
-  </token>
-</action>
-
 <action name="ContextualTasks.TabChange.UserAction{ActionType}">
   <owner>sophiechang@chromium.org</owner>
   <owner>chrome-contextual-tasks-eng@google.com</owner>
@@ -12214,7 +12731,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="EditSearchEngines">
-  <owner>chrome-waffle-eng@google.com</owner>
+  <owner>chrome-regionalcapabilities@google.com</owner>
   <owner>chrome-omnibox-team@google.com</owner>
   <description>
     Action indicating that the user navigated to the search engines settings
@@ -12355,7 +12872,7 @@ should be able to be added at any place in this file.
 
 <action name="ExpandSearchEngineDescription">
   <owner>dgn@chromium.org</owner>
-  <owner>chrome-waffle-eng@google.com</owner>
+  <owner>chrome-regionalcapabilities@google.com</owner>
   <description>
     Action indicating that the user expanded the chevron in the search engine
     choice page to view the search engine description.
@@ -14039,6 +14556,15 @@ should be able to be added at any place in this file.
   <description>Logged if the FRE is accepted.</description>
 </action>
 
+<action name="Glic.Fre.Accept.Onboarding">
+  <owner>tommasin@chromium.org</owner>
+  <owner>zalmashni@google.com</owner>
+  <description>
+    Logged if the Trust First Onboarding flow is accepted. Only recorded for the
+    Trust First Onboarding flow.
+  </description>
+</action>
+
 <action name="Glic.Fre.CheckAuthBeforeShowSync" not_user_triggered="true">
   <owner>birnie@chromium.org</owner>
   <owner>carlosk@chromium.org</owner>
@@ -14097,6 +14623,15 @@ should be able to be added at any place in this file.
   <description>
     User closed the disabled by admin panel in the FRE by clicking the
     confirmation button.
+  </description>
+</action>
+
+<action name="Glic.Fre.Dismissed.Onboarding">
+  <owner>tommasin@chromium.org</owner>
+  <owner>zalmashni@google.com</owner>
+  <description>
+    Logged if the Trust First Onboarding flow is dismissed before completion.
+    Only recorded for the Trust First Onboarding flow.
   </description>
 </action>
 
@@ -14188,6 +14723,15 @@ should be able to be added at any place in this file.
   <description>
     Logged if the glic FRE is shown. Logged as soon as the widget is visible.
     This occurs before the UI is fully loaded.
+  </description>
+</action>
+
+<action name="Glic.Fre.Shown.Onboarding">
+  <owner>tommasin@chromium.org</owner>
+  <owner>zalmashni@google.com</owner>
+  <description>
+    Logged if the Trust First Onboarding flow is shown. Only recorded for the
+    Trust First Onboarding flow.
   </description>
 </action>
 
@@ -17936,6 +18480,15 @@ should be able to be added at any place in this file.
   <description>
     Recorded when the user accept the default suggestion in the omnibox by
     pressing go or enter.
+  </description>
+</action>
+
+<action name="IOS.Omnibox.MobileFusebox.Action.DragAndDrop">
+  <owner>thegreenfrog@chromium.org</owner>
+  <owner>ericekey@google.com</owner>
+  <description>
+    Recorded when a user drags and drops an item into the Composebox. The item
+    type is recorded in the Omnibox.MobileFusebox.DragAndDrop histogram.
   </description>
 </action>
 
@@ -25162,6 +25715,15 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="MobileBookmarkManagerCopyLink">
+  <owner>wylieb@google.com</owner>
+  <owner>hocheung@chromium.org</owner>
+  <description>
+    Recorded when a user copies the link of a selected bookmark in the Android
+    bookmarks manager.
+  </description>
+</action>
+
 <action name="MobileBookmarkManagerDeleteBulk">
   <owner>twellington@google.com</owner>
   <owner>clank-app-team@google.com</owner>
@@ -26205,6 +26767,23 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="MobileGeminiCameraSettingsBack">
+  <owner>joepeplowski@google.com</owner>
+  <owner>bling-alchemy-eng@google.com</owner>
+  <description>
+    Reported when user goes back from Gemini Camera Settings UI to Gemini
+    Settings screen. iOS only.
+  </description>
+</action>
+
+<action name="MobileGeminiCameraSettingsClose">
+  <owner>joepeplowski@google.com</owner>
+  <owner>bling-alchemy-eng@google.com</owner>
+  <description>
+    Reported when Gemini Camera Settings UI was dismissed. iOS only.
+  </description>
+</action>
+
 <action name="MobileGeminiEntryPointAutomatic">
   <owner>kanouche@google.com</owner>
   <owner>bling-alchemy@google.com</owner>
@@ -26227,6 +26806,22 @@ should be able to be added at any place in this file.
   <description>
     Records the entry point used to access Gemini, includes all entry points
     whether they lead to FRE or regular BWG flow. iOS only.
+  </description>
+</action>
+
+<action name="MobileGeminiFeedbackThumbsDown">
+  <owner>joepeplowski@google.com</owner>
+  <owner>bling-alchemy-eng@google.com</owner>
+  <description>
+    The user tapped the thumbs down feedback button for a Gemini response.
+  </description>
+</action>
+
+<action name="MobileGeminiFeedbackThumbsUp">
+  <owner>joepeplowski@google.com</owner>
+  <owner>bling-alchemy-eng@google.com</owner>
+  <description>
+    The user tapped the thumbs up feedback button for a Gemini response.
   </description>
 </action>
 
@@ -26292,6 +26887,31 @@ should be able to be added at any place in this file.
 <action name="MobileGeminiFREShown">
   <owner>kanouche@google.com</owner>
   <description>Reported when the BWG FRE was shown. iOS only.</description>
+</action>
+
+<action name="MobileGeminiImageRemixContextMenuEntryPointShown">
+  <owner>joepeplowski@google.com</owner>
+  <owner>bling-alchemy-eng@google.com</owner>
+  <description>
+    The user was shown the Gemini Image Remix context menu entry point.
+  </description>
+</action>
+
+<action name="MobileGeminiImageRemixContextMenuEntryPointTapped">
+  <owner>joepeplowski@google.com</owner>
+  <owner>bling-alchemy-eng@google.com</owner>
+  <description>
+    The user tapped the Gemini Image Remix context menu entry point.
+  </description>
+</action>
+
+<action name="MobileGeminiImageRemixIPHTapped">
+  <owner>joepeplowski@google.com</owner>
+  <owner>bling-alchemy-eng@google.com</owner>
+  <description>
+    Recorded when the user taps on the Gemini Image Remix IPH or its anchor to
+    trigger the feature.
+  </description>
 </action>
 
 <action name="MobileGeminiLocationSettingsBack">
@@ -27114,6 +27734,11 @@ should be able to be added at any place in this file.
   <description>User opened the data saver item in the app menu.</description>
 </action>
 
+<action name="MobileMenuDefaultBrowserPromo">
+  <owner>eleanorlee@google.com</owner>
+  <description>MobileMenuDefaultBrowserPromo</description>
+</action>
+
 <action name="MobileMenuDeleteFromReadingList">
   <owner>wylieb@google.com</owner>
   <description>
@@ -27274,6 +27899,11 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="MobileMenuNewIncognitoWindow">
+  <obsolete>
+    Deprecated as of 01/2026 in favor of the enumerated histogram
+    Android.MultiWindowMode.NewWindow.AppSource2 that tracks various new window
+    creation sources.
+  </obsolete>
   <owner>shuyng@google.com</owner>
   <owner>clank-large-form-factors@google.com</owner>
   <description>
@@ -27318,6 +27948,11 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="MobileMenuNewWindow">
+  <obsolete>
+    Deprecated as of 01/2026 in favor of the enumerated histogram
+    Android.MultiWindowMode.NewWindow.AppSource2 that tracks various new window
+    creation sources.
+  </obsolete>
   <owner>jinsukkim@chromium.org</owner>
   <owner>twellington@chromium.org</owner>
   <description>User pressed 'New Window' in the app menu.</description>
@@ -28307,99 +28942,100 @@ should be able to be added at any place in this file.
 
 <action name="MobilePasswordCheckupCoordinatorCheckStateCanceled"
     not_user_triggered="true">
+  <obsolete>Deprecated as of 12/2025</obsolete>
   <owner>noemies@google.com</owner>
   <description>
     Reported to track the canceled state of the password check upon opening
-    Password Issues from the Password Checkup homepage. iOS only.
-    TODO(crbug.com/409680593): This user action was added to investigate a
-    crash. Remove when done with the investigation.
+    Password Issues from the Password Checkup homepage. iOS only. This user
+    action was added to investigate a crash, see crbug.com/409680593.
   </description>
 </action>
 
 <action name="MobilePasswordCheckupCoordinatorCheckStateIdle"
     not_user_triggered="true">
+  <obsolete>Deprecated as of 12/2025</obsolete>
   <owner>noemies@google.com</owner>
   <description>
     Reported to track the idle state of the password check upon opening Password
-    Issues from the Password Checkup homepage. iOS only.
-    TODO(crbug.com/409680593): This user action was added to investigate a
-    crash. Remove when done with the investigation.
+    Issues from the Password Checkup homepage. iOS only. This user action was
+    added to investigate a crash, see crbug.com/409680593.
   </description>
 </action>
 
 <action name="MobilePasswordCheckupCoordinatorCheckStateNoPasswords"
     not_user_triggered="true">
+  <obsolete>Deprecated as of 12/2025</obsolete>
   <owner>noemies@google.com</owner>
   <description>
     Reported to track the no passwords state of the password check upon opening
-    Password Issues from the Password Checkup homepage. iOS only.
-    TODO(crbug.com/409680593): This user action was added to investigate a
-    crash. Remove when done with the investigation.
+    Password Issues from the Password Checkup homepage. iOS only. This user
+    action was added to investigate a crash, see crbug.com/409680593.
   </description>
 </action>
 
 <action name="MobilePasswordCheckupCoordinatorCheckStateOffline"
     not_user_triggered="true">
+  <obsolete>Deprecated as of 12/2025</obsolete>
   <owner>noemies@google.com</owner>
   <description>
     Reported to track the offline state of the password check upon opening
-    Password Issues from the Password Checkup homepage. iOS only.
-    TODO(crbug.com/409680593): This user action was added to investigate a
-    crash. Remove when done with the investigation.
+    Password Issues from the Password Checkup homepage. iOS only. This user
+    action was added to investigate a crash, see crbug.com/409680593.
   </description>
 </action>
 
 <action name="MobilePasswordCheckupCoordinatorCheckStateOther"
     not_user_triggered="true">
+  <obsolete>Deprecated as of 12/2025</obsolete>
   <owner>noemies@google.com</owner>
   <description>
     Reported to track the other state of the password check upon opening
-    Password Issues from the Password Checkup homepage. iOS only.
-    TODO(crbug.com/409680593): This user action was added to investigate a
-    crash. Remove when done with the investigation.
+    Password Issues from the Password Checkup homepage. iOS only. This user
+    action was added to investigate a crash, see crbug.com/409680593.
   </description>
 </action>
 
 <action name="MobilePasswordCheckupCoordinatorCheckStateQuotaLimit"
     not_user_triggered="true">
+  <obsolete>Deprecated as of 12/2025</obsolete>
   <owner>noemies@google.com</owner>
   <description>
     Reported to track the quota limit state of the password check upon opening
-    Password Issues from the Password Checkup homepage. iOS only.
-    TODO(crbug.com/409680593): This user action was added to investigate a
-    crash. Remove when done with the investigation.
+    Password Issues from the Password Checkup homepage. iOS only. This user
+    action was added to investigate a crash, see crbug.com/409680593.
   </description>
 </action>
 
 <action name="MobilePasswordCheckupCoordinatorCheckStateRunning"
     not_user_triggered="true">
+  <obsolete>Deprecated as of 12/2025</obsolete>
   <owner>noemies@google.com</owner>
   <description>
     Reported to track the running state of the password check upon opening
-    Password Issues from the Password Checkup homepage. iOS only.
-    TODO(crbug.com/409680593): This user action was added to investigate a
-    crash. Remove when done with the investigation.
+    Password Issues from the Password Checkup homepage. iOS only. This user
+    action was added to investigate a crash, see crbug.com/409680593.
   </description>
 </action>
 
 <action name="MobilePasswordCheckupCoordinatorCheckStateSignedOut"
     not_user_triggered="true">
+  <obsolete>Deprecated as of 12/2025</obsolete>
   <owner>noemies@google.com</owner>
   <description>
     Reported to track the signed out state of the password check upon opening
-    Password Issues from the Password Checkup homepage. iOS only.
-    TODO(crbug.com/409680593): This user action was added to investigate a
-    crash. Remove when done with the investigation.
+    Password Issues from the Password Checkup homepage. iOS only. This user
+    action was added to investigate a crash, see crbug.com/409680593.
   </description>
 </action>
 
 <action name="MobilePasswordCheckupCoordinatorShowReauth"
     not_user_triggered="true">
+  <obsolete>Deprecated as of 12/2025</obsolete>
   <owner>noemies@google.com</owner>
   <description>
     Reported when reauth is requested as a result of entering the Password
-    Checkup homepage. iOS only. TODO(crbug.com/409680593): This user action was
-    added to investigate a crash. Remove when done with the investigation.
+    Checkup homepage. iOS only. This user action was added to investigate a
+    crash, see crbug.com/409680593.
   </description>
 </action>
 
@@ -28465,11 +29101,11 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="MobilePasswordIssuesCoordinatorStart" not_user_triggered="true">
+  <obsolete>Deprecated as of 12/2025</obsolete>
   <owner>noemies@google.com</owner>
   <description>
-    Reported when the PasswordIssuesCoordinator is started. iOS only.
-    TODO(crbug.com/409680593): This user action was added to investigate a
-    crash. Remove when done with the investigation.
+    Reported when the PasswordIssuesCoordinator is started. iOS only. This user
+    action was added to investigate a crash, see crbug.com/409680593.
   </description>
 </action>
 
@@ -28504,20 +29140,22 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="MobilePasswordIssuesViewDidAppear" not_user_triggered="true">
+  <obsolete>Deprecated as of 12/2025</obsolete>
   <owner>noemies@google.com</owner>
   <description>
     Reported when the PasswordIssuesTableViewController view has appeared. iOS
-    only. TODO(crbug.com/409680593): This user action was added to investigate a
-    crash. Remove when done with the investigation.
+    only. This user action was added to investigate a crash, see
+    crbug.com/409680593.
   </description>
 </action>
 
 <action name="MobilePasswordIssuesViewDidLoad" not_user_triggered="true">
+  <obsolete>Deprecated as of 12/2025</obsolete>
   <owner>noemies@google.com</owner>
   <description>
     Reported when the PasswordIssuesTableViewController view has loaded. iOS
-    only. TODO(crbug.com/409680593): This user action was added to investigate a
-    crash. Remove when done with the investigation.
+    only. This user action was added to investigate a crash, see
+    crbug.com/409680593.
   </description>
 </action>
 
@@ -28955,6 +29593,19 @@ should be able to be added at any place in this file.
     Recorded on Android when a user clears all entries using the context menu
     from Recent Tabs &gt; Recently Closed. This corresponds to clearing the
     native TabRestoreService.
+  </description>
+</action>
+
+<action name="MobileRecentTabManagerRecentWindowOpened">
+  <owner>aishwaryarj@google.com</owner>
+  <owner>zheliooo@google.com</owner>
+  <owner>clank-large-form-factors@google.com</owner>
+  <description>
+    A recently closed window was opened from the recent tabs manager. This
+    corresponds to restoring an entire instance and all its associated tabs.
+    This action is distinct from restoring multiple tabs that were closed via a
+    multi-select bulk event, which is tracked separately as
+    MobileRecentTabManagerRecentBulkEventOpened.
   </description>
 </action>
 
@@ -29723,6 +30374,24 @@ should be able to be added at any place in this file.
   <owner>edchin@chromium.org</owner>
   <owner>marq@chromium.org</owner>
   <description>User in the iOS tab grid closed an incognito tab.</description>
+</action>
+
+<action name="MobileTabGridCloseOtherIncognitoTabs">
+  <owner>ewannpv@chromium.org</owner>
+  <owner>bling-meridian@google.com</owner>
+  <description>
+    User in the incognito tab grid context menu used the 'Close Other Tabs'
+    control.
+  </description>
+</action>
+
+<action name="MobileTabGridCloseOtherRegularTabs">
+  <owner>ewannpv@chromium.org</owner>
+  <owner>bling-meridian@google.com</owner>
+  <description>
+    User in the regular tab grid context menu used the 'Close Other Tabs'
+    control.
+  </description>
 </action>
 
 <action name="MobileTabGridCloseRegularTab">
@@ -35170,7 +35839,7 @@ should be able to be added at any place in this file.
 <action name="OsDefaultsChoiceDialogClosed">
   <owner>dgn@chromium.org</owner>
   <owner>triploblastic@google.com</owner>
-  <owner>chrome-waffle-eng@google.com</owner>
+  <owner>chrome-regionalcapabilities@google.com</owner>
   <description>
     Recorded when a choice dialog to invite users to finish choosing their
     default browser app and search engine choice from OS is closed. In rare
@@ -35181,7 +35850,7 @@ should be able to be added at any place in this file.
 <action name="OsDefaultsChoiceDialogShown" not_user_triggered="true">
   <owner>dgn@chromium.org</owner>
   <owner>triploblastic@google.com</owner>
-  <owner>chrome-waffle-eng@google.com</owner>
+  <owner>chrome-regionalcapabilities@google.com</owner>
   <description>
     Recorded when a choice dialog to invite users to finish choosing their
     default browser app and search engine choice from OS is shown.
@@ -35191,7 +35860,7 @@ should be able to be added at any place in this file.
 <action name="OsDefaultsChoiceDialogUnblocked" not_user_triggered="true">
   <owner>dgn@chromium.org</owner>
   <owner>triploblastic@google.com</owner>
-  <owner>chrome-waffle-eng@google.com</owner>
+  <owner>chrome-regionalcapabilities@google.com</owner>
   <description>
     Recorded when a choice dialog to invite users to finish choosing their
     default browser app and search engine choice from OS is unblocked.
@@ -38071,6 +38740,15 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="SafeBrowsing.Settings.SafeBrowsingRowClicked">
+  <owner>yawfrempong@google.com</owner>
+  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <description>
+    User clicks the safe browsing row expand arrow in the
+    chrome://settings/security page.
+  </description>
+</action>
+
 <action name="SafeBrowsing.Settings.ShowedFromDefault">
   <owner>xinghuilu@chromium.org</owner>
   <owner>chrome-safebrowsing-alerts@google.com</owner>
@@ -38718,7 +39396,7 @@ should be able to be added at any place in this file.
 
 <action name="SearchEngineChoiceScreenShown">
   <owner>dgn@chromium.org</owner>
-  <owner>chrome-waffle-eng@google.com</owner>
+  <owner>chrome-regionalcapabilities@google.com</owner>
   <description>
     Recorded when the search engine choice screen is displayed. The screen could
     be displayed in the modal dialog (or promo) and the first run experience on
@@ -39318,6 +39996,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="Settings.BWGSettings">
+  <obsolete>Renamed to Settings.GeminiSettings.</obsolete>
   <owner>joemerramos@google.com</owner>
   <description>
     Reported when user navigates to BWG Settings. iOS only.
@@ -39325,6 +40004,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="Settings.BWGSettings.BWGAppActivity">
+  <obsolete>Renamed to Settings.GeminiSettings.GeminiAppsActivity.</obsolete>
   <owner>joemerramos@google.com</owner>
   <description>
     Reported when user tap BWG App Activity row in Settings. iOS only.
@@ -39332,6 +40012,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="Settings.BWGSettings.BWGExtensions">
+  <obsolete>Renamed to Settings.GeminiSettings.GeminiExtensions.</obsolete>
   <owner>joemerramos@google.com</owner>
   <description>
     Reported when user tap BWG Extensions row in Settings. iOS only.
@@ -39453,6 +40134,38 @@ should be able to be added at any place in this file.
   <owner>koilos@google.com</owner>
   <description>
     User enables the Fingerprinting Protection in the Privacy settings page.
+  </description>
+</action>
+
+<action name="Settings.GeminiSettings">
+  <owner>joemerramos@google.com</owner>
+  <owner>bling-alchemy@google.com</owner>
+  <description>
+    Reported when user navigates to Gemini Settings. iOS only.
+  </description>
+</action>
+
+<action name="Settings.GeminiSettings.GeminiAppsActivity">
+  <owner>joemerramos@google.com</owner>
+  <owner>bling-alchemy@google.com</owner>
+  <description>
+    Reported when user taps Gemini Apps Activity row in Settings. iOS only.
+  </description>
+</action>
+
+<action name="Settings.GeminiSettings.GeminiExtensions">
+  <owner>joemerramos@google.com</owner>
+  <owner>bling-alchemy@google.com</owner>
+  <description>
+    Reported when user taps Gemini Extensions row in Settings. iOS only.
+  </description>
+</action>
+
+<action name="Settings.GeminiSettings.GeminiPersonalization">
+  <owner>joepeplowski@google.com</owner>
+  <owner>bling-alchemy@google.com</owner>
+  <description>
+    Reported when user taps Gemini Personalization row in Settings. iOS only.
   </description>
 </action>
 
@@ -40802,6 +41515,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="Settings.TrackingProtection.SiteExceptionAdded">
+  <obsolete>Deprecated 01/2026 because the project was discontinued.</obsolete>
   <owner>fmacintosh@google.com</owner>
   <owner>koilos@google.com</owner>
   <description>
@@ -40811,6 +41525,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="Settings.TrackingProtection.SiteExceptionRemoved">
+  <obsolete>Deprecated 01/2026 because the project was discontinued.</obsolete>
   <owner>fmacintosh@google.com</owner>
   <owner>koilos@google.com</owner>
   <description>
@@ -43015,6 +43730,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="Signin_Impression_FromDevicesPage" not_user_triggered="true">
+  <obsolete>No longer recorded.</obsolete>
   <owner>gogerald@chromium.org</owner>
   <description>
     Recorded when showing sign in entry in the chrome://devices page.
@@ -43040,6 +43756,7 @@ should be able to be added at any place in this file.
 
 <action name="Signin_Impression_FromGoogleServicesSettings"
     not_user_triggered="true">
+  <obsolete>No longer recorded.</obsolete>
   <owner>bsazonov@chromium.org</owner>
   <owner>jlebel@chromium.org</owner>
   <description>
@@ -43048,6 +43765,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="Signin_Impression_FromKaleidoscope">
+  <obsolete>No longer recorded.</obsolete>
   <owner>beccahughes@chromium.org</owner>
   <owner>steimel@chromium.org</owner>
   <owner>media-dev@chromium.org</owner>
@@ -43080,6 +43798,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="Signin_Impression_FromNTP" not_user_triggered="true">
+  <obsolete>No longer recorded.</obsolete>
   <owner>gogerald@chromium.org</owner>
   <description>
     Recorded when showing sign in entry in the new tab page.
@@ -43223,6 +43942,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="Signin_Impression_FromTabSwitcher" not_user_triggered="true">
+  <obsolete>No longer recorded.</obsolete>
   <owner>bzanotti@chromium.org</owner>
   <description>
     Recorded when showing sign in entry in the tab switcher.
@@ -43616,13 +44336,6 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
-<action name="Signin_Show_UntrustedSigninPrompt">
-  <owner>gogerald@chromium.org</owner>
-  <description>
-    Recorded when showing untrusted sign in confirmation dialog.
-  </description>
-</action>
-
 <action name="Signin_Signin_AbortAdvancedSyncSettings">
   <owner>tangltom@chromium.org</owner>
   <description>
@@ -43855,6 +44568,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="Signin_Signin_FromDevicesPage">
+  <obsolete>No longer recorded.</obsolete>
   <owner>gogerald@chromium.org</owner>
   <description>
     Recorded on sign in start from access point
@@ -43900,6 +44614,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="Signin_Signin_FromEnterpriseSignoutSheet">
+  <obsolete>No longer recorded.</obsolete>
   <owner>ewannpv@chromium.org</owner>
   <owner>jlebel@chromium.org</owner>
   <description>
@@ -43951,6 +44666,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="Signin_Signin_FromGoogleServicesSettings">
+  <obsolete>No longer recorded.</obsolete>
   <owner>bsazonov@chromium.org</owner>
   <owner>jlebel@chromium.org</owner>
   <description>
@@ -44031,6 +44747,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="Signin_Signin_FromNTP">
+  <obsolete>Removed 01/2026.</obsolete>
   <owner>gogerald@chromium.org</owner>
   <description>
     Recorded on sign in start from access point
@@ -44080,6 +44797,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="Signin_Signin_FromNtpIdentityDisc">
+  <obsolete>No longer recorded.</obsolete>
   <owner>treib@chromium.org</owner>
   <description>
     Recorded on signin start from access point
@@ -44253,6 +44971,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="Signin_Signin_FromSupervisedUser">
+  <obsolete>No longer recorded.</obsolete>
   <owner>gogerald@chromium.org</owner>
   <description>
     Recorded on sign in start from access point
@@ -44270,6 +44989,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="Signin_Signin_FromTabSwitcher">
+  <obsolete>No longer recorded.</obsolete>
   <owner>bzanotti@chromium.org</owner>
   <description>
     Recorded on sign in start from access point
@@ -44330,6 +45050,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="Signin_Signin_ShowAdvancedSyncSettings">
+  <obsolete>Deprecated 2026/01</obsolete>
   <owner>triploblastic@chromium.org</owner>
   <owner>bsazonov@chromium.org</owner>
   <description>
@@ -47227,6 +47948,24 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="SwitchToHorizontalTabStrip">
+  <owner>agale@chromium.org</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
+  <description>
+    Recorded when the user switches to horizontal tab strip mode. This user
+    action only applies to Desktop.
+  </description>
+</action>
+
+<action name="SwitchToVerticalTabStrip">
+  <owner>agale@chromium.org</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
+  <description>
+    Recorded when the user switches to vertical tab strip mode. This user action
+    only applies to Desktop.
+  </description>
+</action>
+
 <action name="Sync_CustomizeSync">
   <owner>msalama@chromium.org</owner>
   <owner>chrome-signin-team@google.com</owner>
@@ -49341,6 +50080,9 @@ should be able to be added at any place in this file.
     <variant name=".MoveToGroup"
         summary="Recorded when the 'Move to group' option in the context menu
                  is selected."/>
+    <variant name=".MuteSite"
+        summary="Recorded when the 'Mute site' option in the context menu is
+                 selected."/>
     <variant name=".PinTab"
         summary="Recorded when the 'Pin Tab' option in the context menu is
                  selected."/>
@@ -49350,6 +50092,9 @@ should be able to be added at any place in this file.
     <variant name=".ShareTab"
         summary="Recorded when the 'Share' option in the context menu is
                  selected."/>
+    <variant name=".UnmuteSite"
+        summary="Recorded when the 'Unmute site' option in the context menu
+                 is selected."/>
     <variant name=".UnpinTab"
         summary="Recorded when the 'Unpin Tab' option in the context menu is
                  selected."/>
@@ -51020,13 +51765,6 @@ should be able to be added at any place in this file.
   <description>
     User launched voice interaction session through long pressing app list
     button.
-  </description>
-</action>
-
-<action name="VoiceInteraction.Started.Assistant">
-  <owner>muyuanli@chromium.org</owner>
-  <description>
-    User launched voice interaction session through Assistant key.
   </description>
 </action>
 
@@ -53050,7 +53788,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action
-    name="{ClosingSidePanelType}.{ClosingSidePanelEntry}.ClosedToOpen.{OpeningSidePanelEntry}">
+    name="{ClosingSidePanelType}.{ClosingSidePanelEntry}.EntryClosedToOpen.{OpeningSidePanelEntry}">
   <owner>corising@chromium.org</owner>
   <owner>top-chrome-desktop-ui@google.com</owner>
   <description>

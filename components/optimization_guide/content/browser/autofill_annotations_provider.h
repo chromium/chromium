@@ -101,6 +101,8 @@ class AutofillAnnotationsProvider : public base::SupportsUserData::Data {
   static const void* UserDataKey();
 };
 
+std::ostream& operator<<(std::ostream& o, AutofillFieldRedactionReason reason);
+
 }  // namespace optimization_guide
 
 #endif  // COMPONENTS_OPTIMIZATION_GUIDE_CONTENT_BROWSER_AUTOFILL_ANNOTATIONS_PROVIDER_H_

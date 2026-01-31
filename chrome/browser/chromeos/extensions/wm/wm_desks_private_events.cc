@@ -35,9 +35,7 @@ void WMDesksEventsRouter::OnDeskAdded(const base::Uuid& desk_id,
       from_undo ? events::DESK_EVENTS_ON_DESK_REMOVAL_UNDONE
                 : events::DESK_EVENTS_ON_DESK_ADDED,
       api::wm_desks_private::OnDeskAdded::kEventName,
-      base::Value::List()
-          .Append(desk_id.AsLowercaseString())
-          .Append(from_undo));
+      base::ListValue().Append(desk_id.AsLowercaseString()).Append(from_undo));
   event_router_->BroadcastEvent(std::move(event));
 }
 
@@ -50,7 +48,7 @@ void WMDesksEventsRouter::OnDeskRemoved(const base::Uuid& desk_id) {
   auto event = std::make_unique<Event>(
       events::DESK_EVENTS_ON_DESK_REMOVED,
       api::wm_desks_private::OnDeskRemoved::kEventName,
-      base::Value::List().Append(desk_id.AsLowercaseString()));
+      base::ListValue().Append(desk_id.AsLowercaseString()));
   event_router_->BroadcastEvent(std::move(event));
 }
 
@@ -64,7 +62,7 @@ void WMDesksEventsRouter::OnDeskSwitched(const base::Uuid& deactivated,
   auto event =
       std::make_unique<Event>(events::DESK_EVENTS_ON_DESK_SWITCHED,
                               api::wm_desks_private::OnDeskSwitched::kEventName,
-                              base::Value::List()
+                              base::ListValue()
                                   .Append(deactivated.AsLowercaseString())
                                   .Append(activated.AsLowercaseString()));
   event_router_->BroadcastEvent(std::move(event));

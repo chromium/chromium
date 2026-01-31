@@ -73,9 +73,6 @@ bool IsUninstallable(Profile* profile, const std::string& app_id);
 // Returns whether the default Crostini VM is running for the user.
 bool IsCrostiniRunning(Profile* profile);
 
-// Whether the user is able to perform a container upgrade.
-bool ShouldAllowContainerUpgrade(Profile* profile);
-
 // Returns whether default Crostini container should be configured according to
 // the configuration specified by CrostiniAnsiblePlaybook user policy.
 bool ShouldConfigureDefaultContainer(Profile* profile);

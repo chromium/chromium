@@ -80,7 +80,10 @@ WebAppUninstallCommand::WebAppUninstallCommand(
           *GetMutableDebugValue().EnsureDict("remove_install_url_job"),
           app_id,
           install_source,
-          install_url)) {}
+          install_url)) {
+  // Track an uninstallation event, regardless of whether it succeeded or not.
+  webapps::InstallableMetrics::TrackUninstallEvent(uninstall_source);
+}
 
 WebAppUninstallCommand::WebAppUninstallCommand(
     webapps::WebappUninstallSource uninstall_source,
@@ -98,7 +101,10 @@ WebAppUninstallCommand::WebAppUninstallCommand(
           profile,
           *GetMutableDebugValue().EnsureDict("remove_install_source_job"),
           app_id,
-          install_managements)) {}
+          install_managements)) {
+  // Track an uninstallation event, regardless of whether it succeeded or not.
+  webapps::InstallableMetrics::TrackUninstallEvent(uninstall_source);
+}
 
 WebAppUninstallCommand::WebAppUninstallCommand(
     webapps::WebappUninstallSource uninstall_source,
@@ -120,6 +126,8 @@ WebAppUninstallCommand::WebAppUninstallCommand(
       << "The uninstall source for removing all user-installable install "
          "management types must be a user uninstall source. Source:"
       << uninstall_source;
+  // Track an uninstallation event, regardless of whether it succeeded or not.
+  webapps::InstallableMetrics::TrackUninstallEvent(uninstall_source);
 }
 
 WebAppUninstallCommand::~WebAppUninstallCommand() = default;

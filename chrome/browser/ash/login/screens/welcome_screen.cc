@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/login/screens/welcome_screen.h"
 
+#include <algorithm>
 #include <utility>
 #include <vector>
 
@@ -11,7 +12,6 @@
 #include "ash/constants/ash_switches.h"
 #include "base/check_is_test.h"
 #include "base/command_line.h"
-#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
@@ -31,6 +31,7 @@
 #include "chrome/browser/ash/system/timezone_resolver_manager.h"
 #include "chrome/browser/ash/system/timezone_util.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/global_features.h"
 #include "chrome/browser/lifetime/application_lifetime.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/ash/login/input_events_blocker.h"
@@ -42,6 +43,7 @@
 #include "chrome/grit/generated_resources.h"
 #include "chromeos/ash/components/quick_start/quick_start_metrics.h"
 #include "chromeos/dbus/constants/dbus_switches.h"
+#include "components/application_locale_storage/application_locale_storage.h"
 #include "components/language/core/browser/pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/browser_thread.h"
@@ -163,8 +165,13 @@ bool IsMeetDeviceConfigurable() {
          switches::IsDeviceRequisitionConfigurable();
 }
 
+ApplicationLocaleStorage* GetApplicationLocaleStorage() {
+  // TODO(crbug.com/404133029): Avoid g_browser_process usage.
+  return g_browser_process->GetFeatures()->application_locale_storage();
+}
+
 std::string GetApplicationLocale() {
-  return g_browser_process->GetApplicationLocale();
+  return GetApplicationLocaleStorage()->Get();
 }
 
 }  // namespace
@@ -244,7 +251,8 @@ void WelcomeScreen::SetApplicationLocaleAndInputMethod(
       base::BindOnce(&WelcomeScreen::OnLanguageChangedCallback,
                      language_weak_ptr_factory_.GetWeakPtr(),
                      base::Owned(new InputEventsBlocker), input_method));
-  locale_util::SwitchLanguage(locale, /*enable_locale_keyboard_layouts=*/true,
+  locale_util::SwitchLanguage(GetApplicationLocaleStorage(), locale,
+                              /*enable_locale_keyboard_layouts=*/true,
                               /*login_layouts_only=*/false, std::move(callback),
                               ProfileManager::GetActiveUserProfile());
 }
@@ -271,7 +279,8 @@ void WelcomeScreen::SetApplicationLocale(const std::string& locale,
       base::BindOnce(&WelcomeScreen::OnLanguageChangedCallback,
                      language_weak_ptr_factory_.GetWeakPtr(),
                      base::Owned(new InputEventsBlocker), std::string()));
-  locale_util::SwitchLanguage(locale, /*enable_locale_keyboard_layouts=*/true,
+  locale_util::SwitchLanguage(GetApplicationLocaleStorage(), locale,
+                              /*enable_locale_keyboard_layouts=*/true,
                               /*login_layouts_only=*/false, std::move(callback),
                               ProfileManager::GetActiveUserProfile());
   if (is_from_ui) {
@@ -287,7 +296,8 @@ void WelcomeScreen::SetInputMethod(const std::string& input_method) {
       input_method::InputMethodManager::Get()
           ->GetActiveIMEState()
           ->GetEnabledInputMethodIds();
-  if (input_method.empty() || !base::Contains(input_methods, input_method)) {
+  if (input_method.empty() ||
+      !std::ranges::contains(input_methods, input_method)) {
     LOG(WARNING) << "The input method is empty or ineligible!";
     return;
   }
@@ -401,7 +411,7 @@ void WelcomeScreen::HideImpl() {
   CancelChromeVoxHintIdleDetection();
 }
 
-void WelcomeScreen::OnUserAction(const base::Value::List& args) {
+void WelcomeScreen::OnUserAction(const base::ListValue& args) {
   const std::string& action_id = args[0].GetString();
   if (action_id == kUserActionQuickStartClicked) {
     OnQuickStartClicked();
@@ -645,7 +655,7 @@ void WelcomeScreen::ScheduleResolveLanguageList(
 }
 
 void WelcomeScreen::OnLanguageListResolved(
-    base::Value::List new_language_list,
+    base::ListValue new_language_list,
     const std::string& new_language_list_locale,
     const std::string& new_selected_language) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);

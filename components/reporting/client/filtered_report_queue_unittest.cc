@@ -146,17 +146,17 @@ TEST_F(FilteredReportQueueTest, MixedStringsTest) {
 }
 
 TEST_F(FilteredReportQueueTest, JsonAcceptedTest) {
-  auto filter = std::make_unique<MockFilter<base::Value::Dict>>();
+  auto filter = std::make_unique<MockFilter<base::DictValue>>();
   auto* const mock_filter = filter.get();
 
   auto actual_report_queue = std::make_unique<MockReportQueue>();
   auto* const mock_report_queue = actual_report_queue.get();
-  auto queue = std::make_unique<FilteredReportQueue<base::Value::Dict>>(
+  auto queue = std::make_unique<FilteredReportQueue<base::DictValue>>(
       std::move(filter), std::move(actual_report_queue));
 
   static constexpr char kTestKey[] = "TEST_KEY";
   static constexpr char kTestValue[] = "TEST_VALUE";
-  base::Value::Dict test_dict;
+  base::DictValue test_dict;
   test_dict.Set(kTestKey, kTestValue);
 
   EXPECT_CALL(*mock_filter, is_accepted(_))
@@ -174,17 +174,17 @@ TEST_F(FilteredReportQueueTest, JsonAcceptedTest) {
 }
 
 TEST_F(FilteredReportQueueTest, JsonRejectedTest) {
-  auto filter = std::make_unique<MockFilter<base::Value::Dict>>();
+  auto filter = std::make_unique<MockFilter<base::DictValue>>();
   auto* const mock_filter = filter.get();
 
   auto actual_report_queue = std::make_unique<MockReportQueue>();
   auto* const mock_report_queue = actual_report_queue.get();
-  auto queue = std::make_unique<FilteredReportQueue<base::Value::Dict>>(
+  auto queue = std::make_unique<FilteredReportQueue<base::DictValue>>(
       std::move(filter), std::move(actual_report_queue));
 
   static constexpr char kTestKey[] = "TEST_KEY";
   static constexpr char kTestValue[] = "TEST_VALUE";
-  base::Value::Dict test_dict;
+  base::DictValue test_dict;
   test_dict.Set(kTestKey, kTestValue);
 
   EXPECT_CALL(*mock_filter, is_accepted(_))
@@ -201,17 +201,17 @@ TEST_F(FilteredReportQueueTest, JsonRejectedTest) {
 }
 
 TEST_F(FilteredReportQueueTest, MixedJsonTest) {
-  auto filter = std::make_unique<MockFilter<base::Value::Dict>>();
+  auto filter = std::make_unique<MockFilter<base::DictValue>>();
   auto* const mock_filter = filter.get();
 
   auto actual_report_queue = std::make_unique<MockReportQueue>();
   auto* const mock_report_queue = actual_report_queue.get();
-  auto queue = std::make_unique<FilteredReportQueue<base::Value::Dict>>(
+  auto queue = std::make_unique<FilteredReportQueue<base::DictValue>>(
       std::move(filter), std::move(actual_report_queue));
 
   static constexpr char kTestKey[] = "TEST_KEY";
   static constexpr char kTestValue[] = "TEST_VALUE";
-  base::Value::Dict test_dict;
+  base::DictValue test_dict;
   test_dict.Set(kTestKey, kTestValue);
 
   {

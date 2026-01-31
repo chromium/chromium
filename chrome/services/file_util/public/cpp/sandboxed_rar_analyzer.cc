@@ -13,6 +13,8 @@
 #include "base/task/thread_pool.h"
 #include "chrome/common/safe_browsing/archive_analyzer_results.h"
 #include "chrome/services/file_util/public/mojom/safe_archive_analyzer.mojom.h"
+#include "components/enterprise/obfuscation/core/obfuscated_file_reader.h"
+#include "components/enterprise/obfuscation/core/utils.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -23,7 +25,9 @@ namespace {
 // thread with either `success_callback` or `failure_callback`.
 void PrepareFileToAnalyze(
     base::FilePath file_path,
-    base::OnceCallback<void(SandboxedRarAnalyzer::WrappedFilePtr)>
+    bool is_obfuscated,
+    base::OnceCallback<void(SandboxedRarAnalyzer::WrappedFilePtr,
+                            std::optional<enterprise_obfuscation::HeaderData>)>
         success_callback,
     base::OnceCallback<void(safe_browsing::ArchiveAnalysisResult reason)>
         failure_callback) {
@@ -53,8 +57,23 @@ void PrepareFileToAnalyze(
     return;
   }
 
+  std::optional<enterprise_obfuscation::HeaderData> header_data;
+  if (is_obfuscated) {
+    auto header_result =
+        enterprise_obfuscation::ObfuscatedFileReader::ReadHeaderData(*file);
+    if (!header_result.has_value()) {
+      content::GetUIThreadTaskRunner({})->PostTask(
+          FROM_HERE,
+          base::BindOnce(std::move(failure_callback),
+                         safe_browsing::ArchiveAnalysisResult::kFailedToOpen));
+      return;
+    }
+    header_data = std::move(header_result.value());
+  }
+
   content::GetUIThreadTaskRunner({})->PostTask(
-      FROM_HERE, base::BindOnce(std::move(success_callback), std::move(file)));
+      FROM_HERE, base::BindOnce(std::move(success_callback), std::move(file),
+                                std::move(header_data)));
 }
 
 }  // namespace
@@ -67,7 +86,22 @@ SandboxedRarAnalyzer::CreateAnalyzer(
     ResultCallback callback,
     mojo::PendingRemote<chrome::mojom::FileUtilService> service) {
   return std::unique_ptr<SandboxedRarAnalyzer, base::OnTaskRunnerDeleter>(
-      new SandboxedRarAnalyzer(rar_file_path, password, std::move(callback),
+      new SandboxedRarAnalyzer(rar_file_path, password,
+                               /*is_obfuscated_file=*/false,
+                               std::move(callback), std::move(service)),
+      base::OnTaskRunnerDeleter(content::GetUIThreadTaskRunner({})));
+}
+
+// static
+std::unique_ptr<SandboxedRarAnalyzer, base::OnTaskRunnerDeleter>
+SandboxedRarAnalyzer::CreateObfuscatedAnalyzer(
+    const base::FilePath& rar_file_path,
+    base::optional_ref<const std::string> password,
+    ResultCallback callback,
+    mojo::PendingRemote<chrome::mojom::FileUtilService> service) {
+  return std::unique_ptr<SandboxedRarAnalyzer, base::OnTaskRunnerDeleter>(
+      new SandboxedRarAnalyzer(rar_file_path, password,
+                               /*is_obfuscated_file=*/true, std::move(callback),
                                std::move(service)),
       base::OnTaskRunnerDeleter(content::GetUIThreadTaskRunner({})));
 }
@@ -75,10 +109,12 @@ SandboxedRarAnalyzer::CreateAnalyzer(
 SandboxedRarAnalyzer::SandboxedRarAnalyzer(
     const base::FilePath& rar_file_path,
     base::optional_ref<const std::string> password,
+    bool is_obfuscated_file,
     ResultCallback callback,
     mojo::PendingRemote<chrome::mojom::FileUtilService> service)
     : file_path_(rar_file_path),
       password_(password.CopyAsOptional()),
+      is_obfuscated_file_(is_obfuscated_file),
       callback_(std::move(callback)),
       service_(std::move(service)),
       file_task_runner_(base::ThreadPool::CreateSequencedTaskRunner(
@@ -99,7 +135,7 @@ void SandboxedRarAnalyzer::Start() {
   file_task_runner_->PostTask(
       FROM_HERE,
       base::BindOnce(
-          &PrepareFileToAnalyze, file_path_,
+          &PrepareFileToAnalyze, file_path_, is_obfuscated_file_,
           base::BindOnce(&SandboxedRarAnalyzer::AnalyzeFile, GetWeakPtr()),
           base::BindOnce(&SandboxedRarAnalyzer::ReportFileFailure,
                          GetWeakPtr())));
@@ -108,16 +144,28 @@ void SandboxedRarAnalyzer::Start() {
 SandboxedRarAnalyzer::~SandboxedRarAnalyzer() = default;
 
 void SandboxedRarAnalyzer::AnalyzeFile(
-    SandboxedRarAnalyzer::WrappedFilePtr file) {
+    WrappedFilePtr file,
+    std::optional<enterprise_obfuscation::HeaderData> header_data) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   DCHECK(!file_path_.value().empty());
   if (remote_analyzer_) {
     mojo::PendingRemote<chrome::mojom::TemporaryFileGetter>
         temp_file_getter_remote =
             temp_file_getter_.GetRemoteTemporaryFileGetter();
-    remote_analyzer_->AnalyzeRarFile(
-        std::move(*file), password_, std::move(temp_file_getter_remote),
-        base::BindOnce(&SandboxedRarAnalyzer::AnalyzeFileDone, GetWeakPtr()));
+    if (header_data.has_value()) {
+      auto header_data_ptr = chrome::mojom::ObfuscatedFileUtilHeaderData::New();
+      header_data_ptr->derived_key.assign(header_data->derived_key.begin(),
+                                          header_data->derived_key.end());
+      header_data_ptr->nonce_prefix = header_data->nonce_prefix;
+      remote_analyzer_->AnalyzeObfuscatedRarFile(
+          std::move(*file), password_, std::move(header_data_ptr),
+          std::move(temp_file_getter_remote),
+          base::BindOnce(&SandboxedRarAnalyzer::AnalyzeFileDone, GetWeakPtr()));
+    } else {
+      remote_analyzer_->AnalyzeRarFile(
+          std::move(*file), password_, std::move(temp_file_getter_remote),
+          base::BindOnce(&SandboxedRarAnalyzer::AnalyzeFileDone, GetWeakPtr()));
+    }
   } else {
     AnalyzeFileDone(safe_browsing::ArchiveAnalyzerResults());
   }

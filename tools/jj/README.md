@@ -24,10 +24,10 @@ This means whenever you see jj say "ignoring git submodule" (generally only
 when you switch between submitted commits), you will need to run `gclient sync`.
 
 ### Syncing code
-`jj sync` (using the config in `tools/jj/config.md`)
+`jj sync` (using the config in `tools/jj/config.toml`)
 
 ### Uploading code
-Currently manual (`git cl upload`)
+`jj upload` (using the config in `tools/jj/config.toml`)
 
 ### Presubmits
 Currently manual (`git cl presubmit`)

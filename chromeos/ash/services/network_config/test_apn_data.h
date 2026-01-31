@@ -66,8 +66,8 @@ struct TestApnData {
   std::vector<std::string> onc_apn_types;
 
   chromeos::network_config::mojom::ApnPropertiesPtr AsMojoApn() const;
-  base::Value::Dict AsOncApn() const;
-  base::Value::Dict AsShillApn() const;
+  base::DictValue AsOncApn() const;
+  base::DictValue AsShillApn() const;
   std::string AsApnShillDict() const;
 
   // Verifies that an APN constructed as a Mojo struct matches with the test
@@ -77,7 +77,7 @@ struct TestApnData {
 
   // Verifies that an APN constructed as an ONC dictionary matches with the
   // test APN data.
-  bool OncApnEquals(const base::Value::Dict& onc_apn,
+  bool OncApnEquals(const base::DictValue& onc_apn,
                     bool has_state_field,
                     bool is_password_masked) const;
 };

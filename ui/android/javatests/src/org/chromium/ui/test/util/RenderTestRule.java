@@ -177,6 +177,7 @@ public class RenderTestRule extends TestWatcher {
         Component.UI_BROWSER_TOOLBAR,
         Component.UI_BROWSER_THUMBNAIL,
         Component.UI_BROWSER_WEB_APP_INSTALLS,
+        Component.UI_NOTIFICATIONS,
         Component.UI_SETTINGS_PRIVACY,
     })
     @Retention(RetentionPolicy.SOURCE)
@@ -232,6 +233,7 @@ public class RenderTestRule extends TestWatcher {
         String UI_BROWSER_THUMBNAIL = "UI>Browser>Thumbnail";
         String UI_BROWSER_TOOLBAR = "UI>Browser>Toolbar";
         String UI_BROWSER_WEB_APP_INSTALLS = "UI>Browser>WebAppInstalls";
+        String UI_NOTIFICATIONS = "UI>Notifications";
         String UI_SETTINGS_PRIVACY = "UI>Settings>Privacy";
     }
 

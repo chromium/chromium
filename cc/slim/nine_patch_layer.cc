@@ -83,7 +83,7 @@ void NinePatchLayer::AppendQuads(viz::CompositorRenderPass& render_pass,
         return gfx::IntersectRects(quad_state->visible_quad_layer_rect, rect);
       },
       layer_tree_impl->GetClientResourceProvider(), &render_pass, quad_state,
-      quad_generator_.GeneratePatches());
+      quad_generator_.GeneratePatches(), image_bounds);
 }
 
 }  // namespace cc::slim

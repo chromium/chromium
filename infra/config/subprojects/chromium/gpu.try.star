@@ -635,6 +635,16 @@ gpu_win_builder(
 )
 
 gpu_win_builder(
+    name = "gpu-fyi-try-win11-amd-rx-5500xt-exp",
+    description_html = "Runs release GPU tests on experimental Win/AMD RX 5500XT configs",
+    mirrors = [
+        "ci/GPU FYI Win x64 Builder",
+        "ci/Win11 FYI x64 Experimental Release (AMD RX 5500XT)",
+    ],
+    gn_args = "ci/GPU FYI Win x64 Builder",
+)
+
+gpu_win_builder(
     name = "gpu-fyi-try-win11-x64-amd-780m-exp",
     description_html = "Runs release GPU tests on experimental Win/AMD 780M configs",
     mirrors = [

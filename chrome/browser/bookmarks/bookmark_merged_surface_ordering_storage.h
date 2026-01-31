@@ -96,10 +96,10 @@ class BookmarkMergedSurfaceOrderingStorage
   // Returns a dict with the key representing one of the
   // `BookmarkParentFolder::PermanentFolderType` and the value a list of child
   // nodes ids if non-default order is tracked.
-  base::Value::Dict EncodeOrderingToDict() const;
+  base::DictValue EncodeOrderingToDict() const;
 
   // Returns list of child nodes id.
-  static base::Value::List EncodeChildren(
+  static base::ListValue EncodeChildren(
       const BookmarkParentFolderChildren& children);
 
   const raw_ptr<const BookmarkMergedSurfaceService> service_;

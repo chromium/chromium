@@ -64,9 +64,7 @@ class TabAlertControllerInteractiveUiTest
  public:
   TabAlertControllerInteractiveUiTest() {
     scoped_feature_list_.InitWithFeatures(
-        {features::kGlic, features::kTabstripComboButton,
-         glic::mojom::features::kGlicMultiTab},
-        {});
+        {features::kGlic, glic::mojom::features::kGlicMultiTab}, {});
   }
   ~TabAlertControllerInteractiveUiTest() override = default;
 
@@ -96,7 +94,7 @@ IN_PROC_BROWSER_TEST_F(TabAlertControllerInteractiveUiTest,
       AddInstrumentedTab(kSecondTabId, GetTestUrl()),
       ObserveState(kTab1AlertState, browser(), 0),
       ObserveState(kTab2AlertState, browser(), 1),
-      OpenGlicWindow(
+      DeprecatedOpenGlicWindow(
           glic::test::InteractiveGlicTest::GlicWindowMode::kAttached),
       SelectTab(kTabStripElementId, 0),
       ClickMockGlicElement(kMockGlicContextAccessButton),
@@ -122,7 +120,7 @@ IN_PROC_BROWSER_TEST_F(TabAlertControllerInteractiveUiTest,
   RunTestSequence(
       LoadStartingPage(kFirstTabId, 0, browser()),
       LoadStartingPage(kSecondTabId, 0, browser2),
-      OpenGlicWindow(
+      DeprecatedOpenGlicWindow(
           glic::test::InteractiveGlicTest::GlicWindowMode::kDetached),
       ActivateSurface(kBrowserViewElementId),
       ObserveState(kTab1AlertState, browser(), 0),

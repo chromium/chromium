@@ -29,14 +29,14 @@ class QuickStartMessage {
 
   explicit QuickStartMessage(QuickStartMessageType message_type);
   QuickStartMessage(QuickStartMessageType message_type,
-                    base::Value::Dict payload);
+                    base::DictValue payload);
   QuickStartMessage(QuickStartMessage&) = delete;
   QuickStartMessage& operator=(QuickStartMessage&) = delete;
   ~QuickStartMessage();
 
-  base::Value::Dict* GetPayload();
+  base::DictValue* GetPayload();
   QuickStartMessageType get_type() { return message_type_; }
-  std::unique_ptr<base::Value::Dict> GenerateEncodedMessage();
+  std::unique_ptr<base::DictValue> GenerateEncodedMessage();
 
   // Read a message from raw data.
   // NOTE: This function must be called in a process isolated from the
@@ -55,7 +55,7 @@ class QuickStartMessage {
   // sandbox
   static bool enable_sandbox_checks_;
   QuickStartMessageType message_type_;
-  base::Value::Dict payload_;
+  base::DictValue payload_;
 };
 
 }  // namespace ash::quick_start

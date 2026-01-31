@@ -31,6 +31,7 @@ ChromeBrowserCloudManagementRegisterWatcher::
 }
 ChromeBrowserCloudManagementRegisterWatcher::
     ~ChromeBrowserCloudManagementRegisterWatcher() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   controller_->RemoveObserver(this);
 }
 
@@ -45,18 +46,30 @@ RegisterResult ChromeBrowserCloudManagementRegisterWatcher::
   if (token_storage->RetrieveDMToken().is_valid())
     return RegisterResult::kEnrollmentSuccessBeforeDialogDisplayed;
 
+  bool registration_succeeded = true;
+  if (register_result_.has_value()) {
+    // |register_result_| has been set only if the enrollment has finished.
+    // And it must be failed if it's finished without a DM token which is
+    // checked above. Show the error message directly.
+    DCHECK(!register_result_.value());
+
+    if (!token_storage->ShouldDisplayErrorMessageOnFailure()) {
+      return RegisterResult::kEnrollmentFailedSilentlyBeforeDialogDisplayed;
+    }
+    registration_succeeded = false;
+  }
+
   // Unretained(this) is safe because `run_loop_` runs in the current scope
-  // and is not quit until after `callback` executes. Without the run loop it
-  // would NOT be safe, because `this` is deleted in PostMainMessageLoopRun. If
-  // execution returned from the current scope, potentially the browser could
-  // start shutting down and exit the main thread, destroying `this` with
-  // `callback` scheduled to run on the ThreadPool. (Which sequence runs
-  // `callback` is an implementation detail of EnterpriseStartupDialog that
-  // ChromeBrowserCloudManagementRegisterWatcher should not make assumptions
-  // about.)
+  // and is not quit until after `callback` executes.
   EnterpriseStartupDialog::DialogResultCallback callback = base::BindOnce(
       &ChromeBrowserCloudManagementRegisterWatcher::OnDialogClosed,
       base::Unretained(this));
+  // Make sure the dialog is closed before returning from this function, to
+  // enforce that `callback` cannot outlive this.
+  base::ScopedClosureRunner dialog_resetter(base::BindOnce(
+      [](std::unique_ptr<EnterpriseStartupDialog>& dialog) { dialog.reset(); },
+      std::ref(dialog_)));
+
   if (test_create_dialog_callback_) {
     dialog_ = std::move(test_create_dialog_callback_).Run(std::move(callback));
   } else {
@@ -65,20 +78,13 @@ RegisterResult ChromeBrowserCloudManagementRegisterWatcher::
 
   visible_start_time_ = base::Time::Now();
 
-  if (register_result_.has_value()) {
-    // |register_result_| has been set only if the enrollment has finished.
-    // And it must be failed if it's finished without a DM token which is
-    // checked above. Show the error message directly.
-    DCHECK(!register_result_.value());
-
-    if (!token_storage->ShouldDisplayErrorMessageOnFailure())
-      return RegisterResult::kEnrollmentFailedSilentlyBeforeDialogDisplayed;
-
-    DisplayErrorMessage();
-  } else {
+  if (registration_succeeded) {
     // Display the loading dialog and wait for the enrollment process.
     dialog_->DisplayLaunchingInformationWithThrobber(l10n_util::GetStringUTF16(
         IDS_ENTERPRISE_STARTUP_CLOUD_POLICY_ENROLLMENT_TOOLTIP));
+
+  } else {
+    DisplayErrorMessage();
   }
   RecordEnrollmentStartDialog(EnrollmentStartupDialog::kShown);
   run_loop_.Run();
@@ -118,6 +124,7 @@ void ChromeBrowserCloudManagementRegisterWatcher::RecordEnrollmentStartDialog(
 
 void ChromeBrowserCloudManagementRegisterWatcher::OnPolicyRegisterFinished(
     bool succeeded) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   register_result_ = succeeded;
 
   // If dialog still exists, dismiss the dialog for a success enrollment or

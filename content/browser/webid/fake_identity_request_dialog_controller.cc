@@ -189,6 +189,8 @@ void FakeIdentityRequestDialogController::CloseModalDialog() {
   }
 }
 
+void FakeIdentityRequestDialogController::OnFlowCompleted(bool success) {}
+
 void FakeIdentityRequestDialogController::WebContentsDestroyed() {
   if (popup_dismiss_callback_) {
     std::move(popup_dismiss_callback_).Run(DismissReason::kOther);

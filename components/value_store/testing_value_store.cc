@@ -52,7 +52,7 @@ ValueStore::ReadResult TestingValueStore::GetKeys() {
     return ReadResult(CreateStatusCopy(status_));
   }
 
-  base::Value::Dict settings;
+  base::DictValue settings;
   for (auto entry : storage_) {
     settings.Set(entry.first, base::Value());
   }
@@ -69,7 +69,7 @@ ValueStore::ReadResult TestingValueStore::Get(
   if (!status_.ok())
     return ReadResult(CreateStatusCopy(status_));
 
-  base::Value::Dict settings;
+  base::DictValue settings;
   for (const auto& key : keys) {
     base::Value* value = storage_.Find(key);
     if (value) {
@@ -89,14 +89,14 @@ ValueStore::ReadResult TestingValueStore::Get() {
 ValueStore::WriteResult TestingValueStore::Set(WriteOptions options,
                                                const std::string& key,
                                                const base::Value& value) {
-  base::Value::Dict settings;
+  base::DictValue settings;
   settings.Set(key, value.Clone());
   return Set(options, settings);
 }
 
 ValueStore::WriteResult TestingValueStore::Set(
     WriteOptions options,
-    const base::Value::Dict& settings) {
+    const base::DictValue& settings) {
   write_count_++;
   if (!status_.ok())
     return WriteResult(CreateStatusCopy(status_));

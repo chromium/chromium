@@ -496,12 +496,11 @@
 - (void)consistencyDefaultAccountCoordinatorSignin:
     (ConsistencyDefaultAccountCoordinator*)coordinator {
   DCHECK_EQ(coordinator, self.defaultAccountCoordinator);
-  if (base::FeatureList::IsEnabled(switches::kEnableIdentityInAuthError) &&
-      !self.selectedIdentity.hasValidAuth) {
+  if (self.selectedIdentity.hasValidAuth) {
+    [self startSignIn];
+  } else {
     [self startReauthFlowWithIdentity:self.selectedIdentity];
-    return;
   }
-  [self startSignIn];
 }
 
 - (void)consistencyDefaultAccountCoordinatorOpenAddAccount:

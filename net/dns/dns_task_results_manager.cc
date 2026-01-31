@@ -335,8 +335,8 @@ void DnsTaskResultsManager::UpdateEndpoints() {
 
   net_log_.AddEvent(NetLogEventType::HOST_RESOLVER_SERVICE_ENDPOINTS_UPDATED,
                     [&] {
-                      base::Value::Dict dict;
-                      base::Value::List endpoints;
+                      base::DictValue dict;
+                      base::ListValue endpoints;
                       for (const auto& endpoint : current_endpoints_) {
                         endpoints.Append(endpoint.ToValue());
                       }
@@ -361,7 +361,7 @@ void DnsTaskResultsManager::RecordResolutionDelayResult(bool timedout) {
       NetLogEventType::HOST_RESOLVER_SERVICE_ENDPOINTS_RESOLUTION_DELAY, [&]() {
         base::TimeDelta elapsed =
             base::TimeTicks::Now() - resolution_delay_start_time_;
-        base::Value::Dict dict;
+        base::DictValue dict;
         dict.Set("timedout", timedout);
         dict.Set("elapsed", base::NumberToString(elapsed.InMilliseconds()));
         return dict;

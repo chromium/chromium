@@ -54,7 +54,7 @@ class PrivateKeyFactory {
   // Will use the data in `serialized_private_key` to load the private key into
   // a usable instance, and then invoke `callback` with it.
   virtual void LoadPrivateKeyFromDict(
-      const base::Value::Dict& serialized_private_key,
+      const base::DictValue& serialized_private_key,
       PrivateKeyCallback callback) = 0;
 
  protected:

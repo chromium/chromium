@@ -132,6 +132,7 @@ public class ContextualSearchTriggerTest extends ContextualSearchInstrumentation
     @Test
     @SmallTest
     @Feature({"ContextualSearch"})
+    @DisableIf.Device(DeviceFormFactor.DESKTOP) // https://crbug.com/446934111
     public void testTapGestureFollowedByScrollClearsSelection() throws Exception {
         clickWordNode("intelligence");
         fakeResponse(false, 200, "Intelligence", "Intelligence", "alternate-term", false);
@@ -400,7 +401,6 @@ public class ContextualSearchTriggerTest extends ContextualSearchInstrumentation
     @Test
     @SmallTest
     @Feature({"ContextualSearch", "ReadAloud"})
-    @EnableFeatures(ChromeFeatureList.READALOUD_TAP_TO_SEEK)
     @DisabledTest(message = "flaky, see crbug.com/406344411")
     public void testTapToSeekSuppression() throws Exception {
         changeReadAloudActivePlaybackTab();

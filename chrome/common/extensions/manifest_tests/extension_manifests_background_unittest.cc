@@ -41,7 +41,7 @@ TEST_F(ExtensionManifestBackgroundTest, BackgroundPermission) {
 
 TEST_F(ExtensionManifestBackgroundTest, BackgroundScripts) {
   std::string error;
-  std::optional<base::Value::Dict> manifest =
+  std::optional<base::DictValue> manifest =
       LoadManifest("background_scripts.json", &error);
   ASSERT_TRUE(manifest);
 
@@ -67,7 +67,7 @@ TEST_F(ExtensionManifestBackgroundTest, BackgroundScripts) {
 
 TEST_F(ExtensionManifestBackgroundTest, BackgroundServiceWorkerScript) {
   std::string error;
-  std::optional<base::Value::Dict> manifest =
+  std::optional<base::DictValue> manifest =
       LoadManifest("background_script_sw.json", &error);
   ASSERT_TRUE(manifest);
 
@@ -111,7 +111,7 @@ TEST_F(ExtensionManifestBackgroundTest, BackgroundPageWebRequest) {
   ScopedCurrentChannel current_channel(version_info::Channel::DEV);
 
   std::string error;
-  std::optional<base::Value::Dict> manifest =
+  std::optional<base::DictValue> manifest =
       LoadManifest("background_page.json", &error);
   ASSERT_TRUE(manifest);
   manifest->SetByDottedPath("background.persistent", false);
@@ -121,7 +121,7 @@ TEST_F(ExtensionManifestBackgroundTest, BackgroundPageWebRequest) {
   ASSERT_TRUE(extension.get());
   EXPECT_TRUE(BackgroundInfo::HasLazyBackgroundPage(extension.get()));
 
-  base::Value::List permissions;
+  base::ListValue permissions;
   permissions.Append("webRequest");
   manifest->Set(keys::kPermissions, std::move(permissions));
   LoadAndExpectError(ManifestData(std::move(*manifest), ""),

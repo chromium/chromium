@@ -7,7 +7,6 @@
 #include <algorithm>
 #include <string>
 
-#include "base/containers/contains.h"
 #include "base/functional/callback_helpers.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/string_number_conversions.h"
@@ -154,7 +153,7 @@ void NearbyPerSessionDiscoveryManager::OnShareTargetDiscovered(
   // Update metrics.
   UpdateFurthestDiscoveryProgressIfNecessary(
       DiscoveryProgress::kDiscoveredShareTargetNothingSent);
-  if (!base::Contains(discovered_share_targets_, share_target.id)) {
+  if (!discovered_share_targets_.contains(share_target.id)) {
     ++num_discovered_;
     if (num_discovered_ == 1) {
       base::UmaHistogramMediumTimes(
@@ -201,7 +200,7 @@ void NearbyPerSessionDiscoveryManager::OnShareTargetLost(
 
   // It is possible that we already removed a ShareTarget from the map when
   // deduping by ShareTarget device_id.
-  if (!base::Contains(discovered_share_targets_, share_target.id)) {
+  if (!discovered_share_targets_.contains(share_target.id)) {
     CD_LOG(VERBOSE, Feature::NS)
         << "NearbyPerSessionDiscoveryManager::" << __func__
         << ": Share target id=" << share_target.id

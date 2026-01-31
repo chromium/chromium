@@ -201,16 +201,15 @@ class TaskRunnerWithCap : public base::TaskRunner {
   base::queue<LocationAndTask> pending_tasks_;
 };
 
-base::Value::Dict NetLogGetAdaptersDoneParams(
-    DhcpAdapterNamesLoggingInfo* info) {
-  base::Value::Dict result;
+base::DictValue NetLogGetAdaptersDoneParams(DhcpAdapterNamesLoggingInfo* info) {
+  base::DictValue result;
 
   // Add information on each of the adapters enumerated (including those that
   // were subsequently skipped).
-  base::Value::List adapters_list;
+  base::ListValue adapters_list;
   for (IP_ADAPTER_ADDRESSES* adapter = info->adapters.get(); adapter;
        adapter = adapter->Next) {
-    base::Value::Dict adapter_value;
+    base::DictValue adapter_value;
 
     adapter_value.Set("AdapterName", adapter->AdapterName);
     adapter_value.Set("IfType", static_cast<int>(adapter->IfType));
@@ -245,8 +244,8 @@ base::Value::Dict NetLogGetAdaptersDoneParams(
   return result;
 }
 
-base::Value::Dict NetLogFetcherDoneParams(int fetcher_index, int net_error) {
-  base::Value::Dict result;
+base::DictValue NetLogFetcherDoneParams(int fetcher_index, int net_error) {
+  base::DictValue result;
 
   result.Set("fetcher_index", fetcher_index);
   result.Set("net_error", net_error);

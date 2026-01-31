@@ -140,7 +140,7 @@ class PreinstalledWebAppMigrationBrowserTest
     const WebAppRegistrar& registrar = provider->registrar_unsafe();
     std::vector<webapps::AppId> app_ids = registrar.GetAppIds();
     for (const auto& app_id : app_ids) {
-      if (!registrar.IsInRegistrar(app_id)) {
+      if (!registrar.GetInstallState(app_id).has_value()) {
         continue;
       }
       apps::AppReadinessWaiter(profile(), app_id).Await();
@@ -254,7 +254,7 @@ class PreinstalledWebAppMigrationBrowserTest
           run_loop.Quit();
         });
 
-    base::Value::List app_configs;
+    base::ListValue app_configs;
     if (pass_config) {
       std::string app_config_string = base::ReplaceStringPlaceholders(
           R"({
@@ -269,7 +269,7 @@ class PreinstalledWebAppMigrationBrowserTest
       app_configs.Append(*base::JSONReader::Read(
           app_config_string, base::JSON_PARSE_CHROMIUM_EXTENSIONS));
     }
-    base::AutoReset<const base::Value::List*> configs_for_testing =
+    base::AutoReset<const base::ListValue*> configs_for_testing =
         PreinstalledWebAppManager::SetConfigsForTesting(&app_configs);
 
     WebAppProvider::GetForTest(profile())

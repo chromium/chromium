@@ -11,6 +11,7 @@
 #include "components/sharing_message/sharing_message_handler.h"
 #include "components/sharing_message/sharing_message_sender.h"
 #include "components/sharing_message/sharing_service.h"
+#include "components/sync/protocol/unencrypted_sharing_message.pb.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
 class MockSharingService : public SharingService {
@@ -32,6 +33,12 @@ class MockSharingService : public SharingService {
       base::OnceClosure(const SharingTargetDeviceInfo& device,
                         base::TimeDelta response_timeout,
                         components_sharing_message::SharingMessage message,
+                        SharingMessageSender::ResponseCallback callback));
+
+  MOCK_METHOD3(
+      SendUnencryptedMessageToDevice,
+      base::OnceClosure(const SharingTargetDeviceInfo& device,
+                        sync_pb::UnencryptedSharingMessage message,
                         SharingMessageSender::ResponseCallback callback));
 
   MOCK_CONST_METHOD1(

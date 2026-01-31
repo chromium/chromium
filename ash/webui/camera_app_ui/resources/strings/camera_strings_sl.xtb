@@ -48,6 +48,7 @@
 <translation id="2761536921376153655">Vrsta optičnega branja</translation>
 <translation id="28682968802727151">Predogled zrcaljenja</translation>
 <translation id="2879583609344924966"><ph name="CAMERA" /> je priključena.</translation>
+<translation id="3063987824612038785">Vse datoteke fotoaparata bodo shranjene v Google Drive</translation>
 <translation id="3067436040345934772">Premakni v desno</translation>
 <translation id="3081586908890909590">Preklop na snemanje videa</translation>
 <translation id="3091480460059548935">Zaznavanje besedila v predogledu</translation>
@@ -67,6 +68,7 @@
 <translation id="3642192109456033823">Obdelava videoposnetka …</translation>
 <translation id="3789724198583203151">Zavrti za 90 stopinj v levo</translation>
 <translation id="3810838688059735925">Video</translation>
+<translation id="386366972082231038">Vse datoteke fotoaparata bodo shranjene v OneDrive</translation>
 <translation id="4060608699153044055">Snemanje ni mogoče zaradi pomanjkanja prostora za shranjevanje v napravi. Če želite začeti snemati, morate sprostiti prostor v napravi.</translation>
 <translation id="4061162772429051350"><ph name="MAGAPIXELS_AMOUNT" /> mio. slikovnih pik</translation>
 <translation id="4118525110028899586">Začasna zaustavitev snemanja</translation>
@@ -100,6 +102,7 @@
 <translation id="5634947914995388399">Razširitev pogovornega okna in ustavitev skeniranja</translation>
 <translation id="5662366948659129155">Optično branje <ph name="COUNT" />. strani</translation>
 <translation id="5671277269877808209">Kvadratno</translation>
+<translation id="5725797473946373607">Naslednjič ne prikaži tega pogovornega okna</translation>
 <translation id="574392208103952083">Srednji</translation>
 <translation id="5746169159649715125">Shrani kot PDF</translation>
 <translation id="5753488212459587150">Omogoči poznavalski način</translation>
@@ -156,6 +159,7 @@
 <translation id="7983668134180549431">Zaznano je bilo besedilo.</translation>
 <translation id="8079255378695216066">Snemanja ni mogoče začeti</translation>
 <translation id="8120146556401698679">Premikanje, nagibanje in povečanje/pomanjšanje</translation>
+<translation id="8127459436205030819">Vaše datoteke so morda vidne skrbniku</translation>
 <translation id="8131740175452115882">Potrdi</translation>
 <translation id="8145038249676204903">Preklop na fotografiranje</translation>
 <translation id="8167081290930651932">Shrani kot fotografijo</translation>
@@ -165,6 +169,7 @@
 <translation id="8609951387004618906">Odpri povezavo <ph name="URL" /></translation>
 <translation id="8629662593426079630">360p</translation>
 <translation id="8711011893539266636">Preklopite izklop zvoka. Izklop zvoka je aktiven.</translation>
+<translation id="8712637175834984815">Razumem</translation>
 <translation id="8730621377337864115">Končano</translation>
 <translation id="8732462232047530626">Predogled metapodatkov</translation>
 <translation id="874854738381978209">Zaznano je omrežje Wi-Fi.</translation>

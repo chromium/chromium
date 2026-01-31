@@ -1,10 +1,4 @@
-*   `article_renderer.js`: A shared script used by both `cloned.js` and
-    `viewer.js` to render a distilled article, ensuring consistent output and
-    avoiding code duplication.
-*   `utils.js`: A shared script for common helper functions used across
-    different extension pages.
-
-### Third-Party & Core Chromium Files (Developer-provided)
+# Readability.js Test Extension
 
 ## Overview
 

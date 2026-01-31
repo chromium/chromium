@@ -2,14 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "media/gpu/chromeos/vulkan_overlay_adaptor.h"
 
 #include "base/bits.h"
+#include "base/compiler_specific.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/task/thread_pool.h"
@@ -678,7 +674,7 @@ VulkanOverlayAdaptor::VulkanTextureImage::Create(
       framebuffer_info.sType = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO;
       framebuffer_info.renderPass = render_pass;
       framebuffer_info.attachmentCount = 1;
-      framebuffer_info.pAttachments = image_views.data() + i;
+      framebuffer_info.pAttachments = UNSAFE_TODO(image_views.data() + i);
       framebuffer_info.width = sizes[i].width();
       framebuffer_info.height = sizes[i].height();
       framebuffer_info.layers = 1;
@@ -1183,7 +1179,7 @@ void VulkanOverlayAdaptor::Process(gpu::VulkanImage& in_image,
   descriptor_write[1].dstArrayElement = 0;
   descriptor_write[1].descriptorType = VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE;
   descriptor_write[1].descriptorCount = 1;
-  descriptor_write[1].pImageInfo = image_info.data() + 1;
+  descriptor_write[1].pImageInfo = UNSAFE_TODO(image_info.data() + 1);
   descriptor_write[2].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
   descriptor_write[2].dstSet = transform_descriptor_pool_->Get()[0];
   descriptor_write[2].dstBinding = 0;
@@ -1191,7 +1187,7 @@ void VulkanOverlayAdaptor::Process(gpu::VulkanImage& in_image,
   descriptor_write[2].descriptorType =
       VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
   descriptor_write[2].descriptorCount = 1;
-  descriptor_write[2].pImageInfo = image_info.data() + 2;
+  descriptor_write[2].pImageInfo = UNSAFE_TODO(image_info.data() + 2);
 
   vkUpdateDescriptorSets(vulkan_device_queue_->GetVulkanDevice(),
                          descriptor_write.size(), descriptor_write.data(), 0,

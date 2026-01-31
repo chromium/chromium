@@ -184,7 +184,7 @@ class SessionLogHandlerTest : public NoSessionAshTestBase {
         .WillByDefault(testing::ReturnRef(base::EmptyString()));
 
     // Call handler to enable Javascript.
-    base::Value::List args;
+    base::ListValue args;
     web_ui_.HandleReceivedMessage("initialize", args);
   }
 
@@ -250,7 +250,7 @@ TEST_F(SessionLogHandlerTest, SaveSessionLog) {
   base::FilePath log_path = temp_dir_.GetPath().AppendASCII("test_path");
   ui::SelectFileDialog::SetFactory(
       std::make_unique<TestSelectFileDialogFactory>(log_path));
-  base::Value::List args;
+  base::ListValue args;
   args.Append(kHandlerFunctionName);
   session_log_handler_->SetLogCreatedClosureForTest(run_loop.QuitClosure());
   web_ui_.HandleReceivedMessage("saveSessionLog", args);
@@ -306,7 +306,7 @@ TEST_F(SessionLogHandlerTest, SaveHeaderOnlySessionLog) {
   base::FilePath log_path = temp_dir_.GetPath().AppendASCII("test_path");
   ui::SelectFileDialog::SetFactory(
       std::make_unique<TestSelectFileDialogFactory>(log_path));
-  base::Value::List args;
+  base::ListValue args;
   args.Append(kHandlerFunctionName);
   session_log_handler_->SetLogCreatedClosureForTest(run_loop.QuitClosure());
   web_ui_.HandleReceivedMessage("saveSessionLog", args);
@@ -344,7 +344,7 @@ TEST_F(SessionLogHandlerTest, SelectDirectory) {
       std::make_unique<TestSelectFileDialogFactory>(log_path));
 
   const size_t call_data_count_before_call = web_ui_.call_data().size();
-  base::Value::List args;
+  base::ListValue args;
   args.Append(kHandlerFunctionName);
   base::RunLoop run_loop;
   session_log_handler_->SetLogCreatedClosureForTest(run_loop.QuitClosure());
@@ -367,7 +367,7 @@ TEST_F(SessionLogHandlerTest, CancelDialog) {
       std::make_unique<TestSelectFileDialogFactory>(base::FilePath()));
 
   const size_t call_data_count_before_call = web_ui_.call_data().size();
-  base::Value::List args;
+  base::ListValue args;
   args.Append(kHandlerFunctionName);
   web_ui_.HandleReceivedMessage("saveSessionLog", args);
   RunTasks();
@@ -386,7 +386,7 @@ TEST_F(SessionLogHandlerTest, AddToHoldingSpace) {
   base::FilePath log_path = temp_dir_.GetPath().AppendASCII("test_path");
   ui::SelectFileDialog::SetFactory(
       std::make_unique<TestSelectFileDialogFactory>(log_path));
-  base::Value::List args;
+  base::ListValue args;
   args.Append(kHandlerFunctionName);
 
   EXPECT_CALL(holding_space_client(),
@@ -406,7 +406,7 @@ TEST_F(SessionLogHandlerTest, CleanUpDialogOnDeconstruct) {
   base::FilePath log_path = temp_dir_.GetPath().AppendASCII("test_path");
   ui::SelectFileDialog::SetFactory(
       std::make_unique<TestSelectFileDialogFactory>(log_path));
-  base::Value::List args;
+  base::ListValue args;
   args.Append(kHandlerFunctionName);
   base::RunLoop run_loop;
 
@@ -423,7 +423,7 @@ TEST_F(SessionLogHandlerTest, NoUseAfterFree) {
   base::FilePath log_path = temp_dir_.GetPath().AppendASCII("test_path");
   ui::SelectFileDialog::SetFactory(
       std::make_unique<TestSelectFileDialogFactory>(log_path));
-  base::Value::List args;
+  base::ListValue args;
   args.Append(kHandlerFunctionName);
   base::RunLoop run_loop;
 

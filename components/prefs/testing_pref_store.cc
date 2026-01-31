@@ -79,7 +79,7 @@ bool TestingPrefStore::GetValue(std::string_view key,
   return prefs_.GetValue(key, value);
 }
 
-base::Value::Dict TestingPrefStore::GetValues() const {
+base::DictValue TestingPrefStore::GetValues() const {
   return prefs_.AsDict();
 }
 

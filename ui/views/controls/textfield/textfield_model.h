@@ -22,6 +22,10 @@
 #include "ui/gfx/text_constants.h"
 #include "ui/views/views_export.h"
 
+namespace ui {
+class ScopedClipboardWriter;
+}  // namespace ui
+
 namespace views {
 
 namespace internal {
@@ -58,10 +62,6 @@ class VIEWS_EXPORT TextfieldModel {
 
     // Called any time that the text property is modified in TextfieldModel
     virtual void OnTextChanged() {}
-
-    // Writes `text` to `clipboard_buffer`, if permitted by the implementation.
-    virtual void WriteTextToClipboard(ui::ClipboardBuffer clipboard_buffer,
-                                      const std::u16string_view& text) {}
 
    protected:
     virtual ~Delegate();
@@ -201,9 +201,20 @@ class VIEWS_EXPORT TextfieldModel {
   // if text has changed after cutting.
   bool Cut();
 
+  // Copies the provided text to the clipboard and deletes the selected text.
+  // Returns true if the textfield's text has changed after cutting.
+  // `clipboard_writer` is expected to be non-null.
+  bool Cut(std::u16string text,
+           std::unique_ptr<ui::ScopedClipboardWriter> clipboard_writer);
+
   // Copies the currently selected text and puts it to clipboard. Returns true
   // if something was copied to the clipboard.
   bool Copy();
+
+  // Copies the provided text to the clipboard. Returns true if any text was
+  // copied to the clipboard. `clipboard_writer` is expected to be non-null.
+  bool Copy(std::u16string text,
+            std::unique_ptr<ui::ScopedClipboardWriter> clipboard_writer);
 
   // Pastes text from the clipboard at current cursor position. Returns true
   // if any text is pasted.
@@ -328,6 +339,10 @@ class VIEWS_EXPORT TextfieldModel {
   void SetRenderTextText(std::u16string text);
 
   void ClearComposition();
+
+  // Returns true if copying or cutting to the clipboard is allowed based on the
+  // current state of the textfield.
+  bool CutOrCopyAllowed() const;
 
   // Clears the kill buffer. Used to clear global state between tests.
   static void ClearKillBuffer();

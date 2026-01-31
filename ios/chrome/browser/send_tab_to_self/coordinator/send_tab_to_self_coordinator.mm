@@ -39,10 +39,10 @@
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
-#import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/browser_coordinator_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/open_new_tab_command.h"
+#import "ios/chrome/browser/shared/public/commands/scene_commands.h"
 #import "ios/chrome/browser/shared/public/commands/show_signin_command.h"
 #import "ios/chrome/browser/shared/public/commands/snackbar_commands.h"
 #import "ios/chrome/browser/shared/public/commands/toolbar_commands.h"
@@ -120,8 +120,7 @@ void OpenManageDevicesTab(CommandDispatcher* dispatcher) {
     return;
   }
 
-  id<ApplicationCommands> handler =
-      HandlerForProtocol(dispatcher, ApplicationCommands);
+  id<SceneCommands> handler = HandlerForProtocol(dispatcher, SceneCommands);
   [handler openURLInNewTab:[OpenNewTabCommand
                                commandWithURLFromChrome:
                                    GURL(kGoogleMyAccountDeviceActivityURL)]];
@@ -181,6 +180,10 @@ void OpenManageDevicesTab(CommandDispatcher* dispatcher) {
   return self;
 }
 
+- (void)dealloc {
+  CHECK(!_signinPresenter, base::NotFatalUntil::M152);
+}
+
 #pragma mark - ChromeCoordinator Methods
 
 - (void)start {
@@ -198,7 +201,7 @@ void OpenManageDevicesTab(CommandDispatcher* dispatcher) {
                     identityManager:IdentityManagerFactory::GetForProfile(
                                         self.profile)];
   _mediator.delegate = self;
-  [self show];
+  [self waitAndShow];
 }
 
 // Do not call directly, use `[self.delegate
@@ -212,6 +215,9 @@ void OpenManageDevicesTab(CommandDispatcher* dispatcher) {
   [_mediator disconnect];
   _mediator.delegate = nil;
   _mediator = nil;
+  _signinPresenter = nil;
+  _browserCoordinatorHandler = nil;
+  _title = nil;
   [_navigationController.presentingViewController
       dismissViewControllerAnimated:YES
                          completion:self.dismissedCompletion];
@@ -341,12 +347,26 @@ void OpenManageDevicesTab(CommandDispatcher* dispatcher) {
   [_browserCoordinatorHandler closeCurrentTab];
 }
 
-// Shows the Send Tab To Self UI, either the device list or the sign-in promo.
+// Wait until a UI can be shown to send tab to self, then shows it.
+- (void)waitAndShow {
+  std::optional<send_tab_to_self::EntryPointDisplayReason> displayReason =
+      [self displayReason];
+  if (displayReason == std::nullopt) {
+    [self waitForDeviceList];
+  } else {
+    [self show];
+  }
+}
+
 - (void)show {
   std::optional<send_tab_to_self::EntryPointDisplayReason> displayReason =
       [self displayReason];
-  DCHECK(displayReason);
-
+  if (displayReason == std::nullopt) {
+    // The coordinator should only be started if the view can be shown, so this
+    // case should not occur.
+    [self.delegate sendTabToSelfCoordinatorWantsToBeStopped:self];
+    return;
+  }
   switch (*displayReason) {
     case send_tab_to_self::EntryPointDisplayReason::kInformNoTargetDevice:
     case send_tab_to_self::EntryPointDisplayReason::kOfferFeature: {
@@ -427,6 +447,11 @@ void OpenManageDevicesTab(CommandDispatcher* dispatcher) {
     [self.delegate sendTabToSelfCoordinatorWantsToBeStopped:self];
     return;
   }
+  [self waitForDeviceList];
+}
+
+// Waits for the device list to be available and shows it.
+- (void)waitForDeviceList {
   __weak __typeof(self) weakSelf = self;
   _targetDeviceListWaiter = std::make_unique<TargetDeviceListWaiter>(
       SyncServiceFactory::GetForProfile(self.profile),

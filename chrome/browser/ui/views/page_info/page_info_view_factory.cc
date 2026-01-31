@@ -84,7 +84,7 @@ class PageInfoSubpageView : public views::View {
 };
 
 int GetIconSize() {
-  return GetLayoutConstant(PAGE_INFO_ICON_SIZE);
+  return GetLayoutConstant(LayoutConstant::kPageInfoIconSize);
 }
 
 }  // namespace
@@ -449,9 +449,16 @@ const ui::ImageModel PageInfoViewFactory::GetPermissionIcon(
                                 : &vector_icons::kInstallDesktopIcon;
       break;
     case ContentSettingsType::LOCAL_NETWORK_ACCESS:
-      // TODO(crbug.com/400455013): Replace with final icons.
       icon = show_blocked_badge ? &vector_icons::kRouterOffIcon
                                 : &vector_icons::kRouterIcon;
+      break;
+    case ContentSettingsType::LOCAL_NETWORK:
+      icon = show_blocked_badge ? &vector_icons::kRouterOffIcon
+                                : &vector_icons::kRouterIcon;
+      break;
+    case ContentSettingsType::LOOPBACK_NETWORK:
+      icon = show_blocked_badge ? &vector_icons::kDesktopAccessDisabledIcon
+                                : &vector_icons::kDesktopWindowsIcon;
       break;
     default:
       break;

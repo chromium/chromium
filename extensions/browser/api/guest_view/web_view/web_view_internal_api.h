@@ -375,7 +375,7 @@ class WebViewInternalFindFunction : public WebViewInternalExtensionFunction {
       delete;
 
   // Used by WebViewInternalFindHelper to Respond().
-  void ForwardResponse(base::Value::Dict results);
+  void ForwardResponse(base::DictValue results);
 
  protected:
   ~WebViewInternalFindFunction() override;

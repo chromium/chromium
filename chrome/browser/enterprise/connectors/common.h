@@ -18,8 +18,8 @@
 #include "extensions/buildflags/buildflags.h"
 
 #if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
-#include "chrome/browser/safe_browsing/cloud_content_scanning/binary_upload_service.h"
 #include "chrome/browser/safe_browsing/cloud_content_scanning/deep_scanning_utils.h"
+#include "components/enterprise/connectors/core/cloud_content_scanning/binary_upload_service.h"
 #endif  // BUILDFLAG(SAFE_BROWSING_AVAILABLE)
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
@@ -109,6 +109,13 @@ bool ResultShouldAllowDataUse(const AnalysisSettings& settings,
 EventResult CalculateEventResult(const AnalysisSettings& settings,
                                  bool allowed_by_scan_result,
                                  bool should_warn);
+
+// Returns the appropriate BinaryUploadService for the given `profile` and
+// `settings`. This can be a cloud or local service.
+BinaryUploadService* GetBinaryUploadServiceForConnector(
+    Profile* profile,
+    const enterprise_connectors::AnalysisSettings& settings);
+
 #endif  // BUILDFLAG(SAFE_BROWSING_AVAILABLE)
 
 #if BUILDFLAG(ENTERPRISE_CONTENT_ANALYSIS)

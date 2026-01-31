@@ -26,8 +26,7 @@ void AppendToCommandLine(std::vector<std::string>& vec, bool includes_program) {
 
 }  // namespace
 
-static jboolean JNI_CommandLine_HasSwitch(JNIEnv* env,
-                                          std::string& switch_string) {
+static bool JNI_CommandLine_HasSwitch(JNIEnv* env, std::string& switch_string) {
   return CommandLine::ForCurrentProcess()->HasSwitch(switch_string);
 }
 

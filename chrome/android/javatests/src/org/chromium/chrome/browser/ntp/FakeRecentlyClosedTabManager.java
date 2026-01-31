@@ -55,6 +55,15 @@ public class FakeRecentlyClosedTabManager implements RecentlyClosedTabManager {
     }
 
     @Override
+    public void clearLeastRecentlyUsedClosedEntries(int numToRemove) {
+        if (numToRemove == 0) return;
+        for (int i = 0; i < numToRemove; i++) {
+            mTabs.remove(mTabs.size() - 1);
+        }
+        if (mEntriesUpdatedRunnable != null) mEntriesUpdatedRunnable.run();
+    }
+
+    @Override
     public void destroy() {}
 
     public void setRecentlyClosedEntries(List<RecentlyClosedEntry> tabs) {

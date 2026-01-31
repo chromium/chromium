@@ -5,13 +5,12 @@
 package org.chromium.components.embedder_support.util;
 
 import org.chromium.build.annotations.NullMarked;
-import org.chromium.url.GURL;
 
 /**
  * Java side version of chrome/common/url_constants.cc
  *
  * <p>Do not add any more NTP related constants. TODO(crbug.com/40281619) Move NTP related constants
- * to ChromeUrlConstants.java
+ * to UrlConstantsResolver.java
  */
 @NullMarked
 public class UrlConstants {
@@ -55,16 +54,12 @@ public class UrlConstants {
     public static final String ABOUT_URL = "chrome://about/";
 
     public static final String NTP_HOST = "newtab";
-    public static final String NTP_URL = "chrome-native://newtab/";
-    public static final String NTP_NON_NATIVE_URL = "chrome://newtab/";
     public static final String NTP_ABOUT_URL = "about:newtab";
 
     // Don't use this URL. The constant is added for legacy reasons.
     public static final String NEW_TAB_PAGE_URL_LEGACY = "chrome://new-tab-page/";
 
     public static final String BOOKMARKS_HOST = "bookmarks";
-    public static final String BOOKMARKS_URL = "chrome://bookmarks/";
-    public static final String BOOKMARKS_NATIVE_URL = "chrome-native://bookmarks/";
     public static final String BOOKMARKS_FOLDER_URL = "chrome-native://bookmarks/folder/";
     public static final String BOOKMARKS_UNCATEGORIZED_URL =
             "chrome-native://bookmarks/uncategorized/";
@@ -77,10 +72,7 @@ public class UrlConstants {
     public static final String RECENT_TABS_URL = "chrome-native://recent-tabs/";
     public static final String GRID_TAB_SWITCHER_URL = "chrome-native://gts/";
 
-    // TODO(dbeam): do we need both HISTORY_URL and NATIVE_HISTORY_URL?
     public static final String HISTORY_HOST = "history";
-    public static final String HISTORY_URL = "chrome://history/";
-    public static final String NATIVE_HISTORY_URL = "chrome-native://history/";
 
     public static final String LAUNCHPAD_HOST = "apps";
     public static final String LAUNCHPAD_URL = "chrome://apps/";
@@ -149,19 +141,16 @@ public class UrlConstants {
     public static final String PDF_URL_PARAM = "link?url=";
     public static final String PDF_URL_QUERY_PARAM = "url";
 
-    private static class Holder {
-        private static final String SERIALIZED_NTP_URL =
-                "73,1,true,0,6,0,-1,0,-1,9,6,0,-1,15,1,0,-1,0,-1,false,false,chrome://newtab/";
-        private static final GURL sNtpGurl =
-                GURL.deserializeLatestVersionOnly(SERIALIZED_NTP_URL.replace(',', '\0'));
-    }
-
-    /**
-     * Returns a cached GURL representation of {@link UrlConstants.NTP_NON_NATIVE_URL}. It is safe
-     * to call this method before native is loaded and doing so will not block on native loading
-     * completion since a hardcoded, serialized string is used.
+    /*
+     * Clients should not use these constants directly, and instead should use UrlConstantResolver
+     * to ensure URL overrides from extensions are respected.
      */
-    public static GURL ntpGurl() {
-        return Holder.sNtpGurl;
-    }
+    @Deprecated public static final String NTP_URL = "chrome-native://newtab/";
+    @Deprecated public static final String NTP_NON_NATIVE_URL = "chrome://newtab/";
+    @Deprecated public static final String BOOKMARKS_URL = "chrome://bookmarks/";
+    @Deprecated public static final String BOOKMARKS_NATIVE_URL = "chrome-native://bookmarks/";
+
+    // TODO(dbeam): do we need both HISTORY_URL and NATIVE_HISTORY_URL?
+    @Deprecated public static final String HISTORY_URL = "chrome://history/";
+    @Deprecated public static final String NATIVE_HISTORY_URL = "chrome-native://history/";
 }

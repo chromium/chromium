@@ -74,7 +74,7 @@ std::optional<display::Display> GetFirstTouchDisplay() {
 bool GetVirtualKeyboardFeatureValue(PrefService* prefs,
                                     const std::string& feature_path) {
   DCHECK(prefs);
-  const base::Value::Dict& features =
+  const base::DictValue& features =
       prefs->GetDict(prefs::kAccessibilityVirtualKeyboardFeatures);
 
   return features.FindBool(feature_path).value_or(false);
@@ -456,9 +456,12 @@ void KeyboardControllerImpl::TransferGestureEventToShelf(
       ash::Shelf::ForWindow(keyboard_ui_controller_->GetKeyboardWindow());
   if (shelf) {
     shelf->ProcessGestureEvent(e);
-    aura::Env::GetInstance()->gesture_recognizer()->TransferEventsTo(
-        keyboard_ui_controller_->GetGestureConsumer(), shelf->GetWindow(),
-        ui::TransferTouchesBehavior::kCancel);
+    auto* current_consumer = keyboard_ui_controller_->GetGestureConsumer();
+    if (current_consumer) {
+      aura::Env::GetInstance()->gesture_recognizer()->TransferEventsTo(
+          current_consumer, shelf->GetWindow(),
+          ui::TransferTouchesBehavior::kCancel);
+    }
     HideKeyboard(HideReason::kUser);
   }
 }

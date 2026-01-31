@@ -47,7 +47,7 @@ static base::android::ScopedJavaLocalRef<jobject> ConvertUiInfoToJavaObject(
       base::android::ConvertUTF16ToJavaString(env, ui_info.cancel_text),
       base::android::ConvertUTF16ToJavaString(env, ui_info.description_text),
       base::android::ConvertUTF16ToJavaString(env, ui_info.loading_description),
-      ui_info.is_google_pay_branding_enabled);
+      ui_info.is_chrome_branding_enabled);
   // LINT.ThenChange(//components/autofill/android/java/src/org/chromium/components/autofill/payments/AutofillSaveCardUiInfo.java)
 }
 
@@ -60,7 +60,7 @@ AutofillSaveCardBottomSheetBridge::AutofillSaveCardBottomSheetBridge(
   CHECK(tab_model);
   java_autofill_save_card_bottom_sheet_bridge_ =
       Java_AutofillSaveCardBottomSheetBridge_Constructor(
-          base::android::AttachCurrentThread(), reinterpret_cast<jlong>(this),
+          base::android::AttachCurrentThread(), reinterpret_cast<int64_t>(this),
           window_android->GetJavaObject(), tab_model->GetJavaObject());
 }
 

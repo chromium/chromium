@@ -39,17 +39,13 @@ class IOSWebContentHandlerImplTest : public PlatformTest {
     web_content_handler_ = std::make_unique<IOSWebContentHandlerImpl>(
         &web_state_, mock_parent_access_commands_handler_,
         /*is_main_frame=*/true);
-    url_formatter_ = std::make_unique<supervised_user::UrlFormatter>(
-        filter_, supervised_user::FilteringBehaviorReason::DEFAULT);
   }
 
   IOSWebContentHandlerImpl* web_content_handler() {
     return web_content_handler_.get();
   }
 
-  supervised_user::UrlFormatter* url_formatter() {
-    return url_formatter_.get();
-  }
+  supervised_user::FamilyLinkUrlFilter& url_filter() { return filter_; }
 
   base::HistogramTester histogram_tester_;
   id mock_parent_access_commands_handler_;
@@ -57,13 +53,15 @@ class IOSWebContentHandlerImplTest : public PlatformTest {
 
  private:
   web::WebTaskEnvironment task_environment_;
-  std::unique_ptr<supervised_user::UrlFormatter> url_formatter_;
   TestingPrefServiceSimple pref_service_;
   base::test::ScopedFeatureList feature_list_;
+  supervised_user::FamilyLinkSettingsService family_link_settings_service_;
 
   // Filter with no checker client, as it will be only used in offline manner.
-  supervised_user::SupervisedUserURLFilter filter_ =
-      supervised_user::SupervisedUserURLFilter(
+  // Conversely, the settings service is used uninitialized too.
+  supervised_user::FamilyLinkUrlFilter filter_ =
+      supervised_user::FamilyLinkUrlFilter(
+          family_link_settings_service_,
           pref_service_,
           std::make_unique<supervised_user::FakeURLFilterDelegate>(),
           /*url_checker_client=*/nullptr);
@@ -90,9 +88,14 @@ TEST_F(IOSWebContentHandlerImplTest, HideParentAccessBottomsheet) {
                                   completion:[OCMArg any]]);
   OCMExpect([mock_parent_access_commands_handler_ hideParentAccessBottomSheet]);
 
-  web_content_handler()->RequestLocalApproval(
-      GURL("https://www.example.com"), u"Bob", *url_formatter(),
-      supervised_user::FilteringBehaviorReason::DEFAULT, base::DoNothing());
+  supervised_user::WebFilteringResult result;
+  result.url = GURL("https://www.example.com");
+  result.behavior = supervised_user::FilteringBehavior::kBlock;
+  result.reason = supervised_user::FilteringBehaviorReason::DEFAULT;
+  GURL target_url = url_filter().GetEffectiveUrlToUnblock(result);
+
+  web_content_handler()->RequestLocalApproval(target_url, result, u"Bob",
+                                              /*callback=*/base::DoNothing());
 
   web_content_handler()->MaybeCloseLocalApproval();
   histogram_tester_.ExpectTotalCount(

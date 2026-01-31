@@ -202,14 +202,6 @@ TEST_F(AutofillPasswordsEphemeralModuleTest,
 // Validates that `IsEnabled(…)` returns true when under the impression limit
 // and false otherwise.
 TEST_F(AutofillPasswordsEphemeralModuleTest, TestIsEnabled) {
-  // Enable the feature flag for ephemeral modules.
-  scoped_feature_list_.Reset();
-  scoped_feature_list_.InitWithFeaturesAndParameters(
-      {{features::kSegmentationPlatformTipsEphemeralCard,
-        {{features::kTipsEphemeralCardModuleMaxImpressionCount, "3"}}},
-       {features::kSegmentationPlatformEphemeralCardRanker, {}}},
-      {});
-
   EXPECT_TRUE(AutofillPasswordsEphemeralModule::IsEnabled(0));
   EXPECT_TRUE(AutofillPasswordsEphemeralModule::IsEnabled(1));
   EXPECT_TRUE(AutofillPasswordsEphemeralModule::IsEnabled(2));

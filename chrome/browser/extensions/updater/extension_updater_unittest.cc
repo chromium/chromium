@@ -19,7 +19,6 @@
 #include <vector>
 
 #include "base/command_line.h"
-#include "base/containers/contains.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
@@ -227,7 +226,7 @@ class StubExtensionRegistrarDelegate : public ExtensionRegistrar::Delegate {
   void OnExtensionInstalled(const Extension* extension,
                             const syncer::StringOrdinal& page_ordinal,
                             int install_flags,
-                            base::Value::Dict ruleset_install_prefs) override {}
+                            base::DictValue ruleset_install_prefs) override {}
 };
 
 class MockUpdateService : public UpdateService {
@@ -280,7 +279,7 @@ class TestCrxInstallerFactory
     crx_extension_id_ = file.extension_id;
     crx_install_path_ = file.path;
 
-    if (base::Contains(fake_crx_installers_, crx_extension_id_)) {
+    if (fake_crx_installers_.contains(crx_extension_id_)) {
       return fake_crx_installers_[crx_extension_id_];
     }
 
@@ -445,7 +444,7 @@ static std::map<std::string, ParamsMap> GetPingDataFromURL(
     base::SplitStringIntoKeyValuePairs(unescaped, '=', '&', &extension_params);
     std::multimap<std::string, std::string> param_map;
     param_map.insert(extension_params.begin(), extension_params.end());
-    if (base::Contains(param_map, "id") && base::Contains(param_map, "ping")) {
+    if (param_map.contains("id") && param_map.contains("ping")) {
       std::string id = param_map.find("id")->second;
       result[id] = ParamsMap();
 
@@ -456,7 +455,7 @@ static std::map<std::string, ParamsMap> GetPingDataFromURL(
       base::StringPairs ping_params;
       base::SplitStringIntoKeyValuePairs(ping, '=', '&', &ping_params);
       for (const auto& ping_param : ping_params) {
-        if (!base::Contains(result[id], ping_param.first)) {
+        if (!result[id].contains(ping_param.first)) {
           result[id][ping_param.first] = std::set<std::string>();
         }
         result[id][ping_param.first].insert(ping_param.second);
@@ -542,7 +541,7 @@ class ExtensionUpdaterTest : public testing::Test {
       CHECK_EQ(count, 1) << "Can't create two extensions with the same key";
     }
     for (int i = 1; i <= count; i++) {
-      base::Value::Dict manifest;
+      base::DictValue manifest;
       manifest.Set(manifest_keys::kVersion, base::StringPrintf("%d.0.0.0", i));
       manifest.Set(manifest_keys::kName,
                    base::StringPrintf("Extension %d.%d", id, i));
@@ -2232,7 +2231,7 @@ class ExtensionUpdaterTest : public testing::Test {
     std::map<std::string, ParamsMap> url1_ping_data =
         GetPingDataFromURL(url1_fetch_url);
     ParamsMap url1_params = ParamsMap();
-    if (!url1_ping_data.empty() && base::Contains(url1_ping_data, id)) {
+    if (!url1_ping_data.empty() && url1_ping_data.contains(id)) {
       url1_params = url1_ping_data[id];
     }
 
@@ -2242,14 +2241,14 @@ class ExtensionUpdaterTest : public testing::Test {
     // Now make sure the google query had the correct ping parameter.
     bool did_rollcall = false;
     if (rollcall_ping_days != 0) {
-      ASSERT_TRUE(base::Contains(url1_params, "r"));
+      ASSERT_TRUE(url1_params.contains("r"));
       ASSERT_EQ(1u, url1_params["r"].size());
       EXPECT_EQ(base::NumberToString(rollcall_ping_days),
                 *url1_params["r"].begin());
       did_rollcall = true;
     }
     if (active_bit && active_ping_days != 0 && did_rollcall) {
-      ASSERT_TRUE(base::Contains(url1_params, "a"));
+      ASSERT_TRUE(url1_params.contains("a"));
       ASSERT_EQ(1u, url1_params["a"].size());
       EXPECT_EQ(base::NumberToString(active_ping_days),
                 *url1_params["a"].begin());
@@ -2645,7 +2644,7 @@ TEST_F(ExtensionUpdaterTest, TestUpdatingRemotelyDisabledExtensions) {
 
 TEST_F(ExtensionUpdaterTest, TestPendingInstall) {
   // Add an extension as a pending update with a higher version number.
-  base::Value::Dict manifest;
+  base::DictValue manifest;
   manifest.Set(manifest_keys::kKey, kExtensionManifestKey);
   manifest.Set(manifest_keys::kName, "Fake extension");
   manifest.Set(manifest_keys::kVersion, "1.0.0.1");

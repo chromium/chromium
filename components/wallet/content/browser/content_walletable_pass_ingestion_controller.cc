@@ -6,6 +6,7 @@
 
 #include "base/strings/utf_string_conversions.h"
 #include "components/optimization_guide/content/browser/page_content_proto_provider.h"
+#include "components/wallet/content/browser/walletable_pass_barcode_detector_impl.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "third_party/blink/public/mojom/content_extraction/ai_page_content.mojom.h"
@@ -27,6 +28,11 @@ void ContentWalletablePassIngestionController::DidFinishLoad(
   if (render_frame_host->IsInPrimaryMainFrame()) {
     StartWalletablePassDetectionFlow(validated_url);
   }
+}
+
+void ContentWalletablePassIngestionController::DetectBarcodes(
+    BarcodeDetectionCallback callback) {
+  barcode_detector_.Detect(web_contents(), std::move(callback));
 }
 
 std::string ContentWalletablePassIngestionController::GetPageTitle() const {

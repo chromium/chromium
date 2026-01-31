@@ -152,7 +152,7 @@ class MirroringActivity : public CastActivity,
   void OnMirroringResumed();
 
   // Scrubs AES related data in messages with type "OFFER".
-  static std::string GetScrubbedLogMessage(const base::Value::Dict& message);
+  static std::string GetScrubbedLogMessage(const base::DictValue& message);
 
   // Starts the mirroring service via the Ui thread. Can only be called on the
   // Ui thread.
@@ -180,7 +180,7 @@ class MirroringActivity : public CastActivity,
       channel_to_service_receiver_;
 
   // Most recent fetched mirroring stats.
-  base::Value::Dict most_recent_mirroring_stats_;
+  base::DictValue most_recent_mirroring_stats_;
 
   mojo::Receiver<mirroring::mojom::SessionObserver> observer_receiver_{this};
 

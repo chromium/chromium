@@ -32,7 +32,6 @@ class IsolatedWebAppURLLoader {
   static void CreateAndStart(
       content::BrowserContext* browser_context,
       const base::FilePath& web_bundle_path,
-      bool dev_mode,
       const web_package::SignedWebBundleId& web_bundle_id,
       mojo::PendingReceiver<network::mojom::URLLoader> loader_receiver,
       mojo::PendingRemote<network::mojom::URLLoaderClient> loader_client,

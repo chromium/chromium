@@ -25,10 +25,12 @@ AssociatedGroup& AssociatedGroup::operator=(const AssociatedGroup& other) =
     default;
 
 AssociatedGroupController* AssociatedGroup::GetController() {
-  if (controller_)
+  if (controller_) {
     return controller_.get();
-  if (controller_getter_)
+  }
+  if (controller_getter_) {
     return controller_getter_.Run();
+  }
   return nullptr;
 }
 

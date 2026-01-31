@@ -56,6 +56,7 @@ import org.chromium.components.browser_ui.share.ShareHelper;
 import org.chromium.components.browser_ui.util.FirstDrawDetector;
 import org.chromium.components.omnibox.OmniboxFeatures;
 import org.chromium.ui.KeyboardVisibilityDelegate;
+import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.base.KeyNavigationUtil;
 import org.chromium.ui.display.DisplayAndroid;
 import org.chromium.ui.display.DisplayUtil;
@@ -105,7 +106,6 @@ public class UrlBar extends AutocompleteEditText {
     private @Nullable Callback<Boolean> mUrlTextWrappingChangeListener;
 
     private final Rect mClipBounds = new Rect();
-    @VisibleForTesting final Runnable mEnforceMaxTextHeight = this::enforceMaxTextHeight;
 
     private boolean mFocused;
     private boolean mFocusEventEmitted;
@@ -294,8 +294,15 @@ public class UrlBar extends AutocompleteEditText {
         // come from a software keyboard.
         // - If we pass the event here, it will be emitted twice (once before IME and once after),
         // - if we don't pass the event after IME, soft keyboard navigation will not work.
+        // DPAD and TAB keys are also not passed into the listeners here. This is to prevent those
+        // keys from being consumed too early. Premature consumption of these keys can break certain
+        // IME features, for example, keyboard navigation within the Chinese / Japanese candidate
+        // window.
         return (KeyNavigationUtil.isActionDown(event)
-                        && !KeyNavigationUtil.isEnter(event)
+                        // Pass NUMPAD_ENTER as IME inserts a newline character.
+                        && event.getKeyCode() != KeyEvent.KEYCODE_ENTER
+                        && !KeyNavigationUtil.isGoAnyDirection(event)
+                        && !KeyNavigationUtil.isTabNavigation(event)
                         && (mKeyDownListener != null
                                 && mKeyDownListener.onKey(this, keyCode, event)))
                 || super_onKeyPreIme(keyCode, event);
@@ -309,7 +316,9 @@ public class UrlBar extends AutocompleteEditText {
 
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
-        return (KeyNavigationUtil.isEnter(event)
+        return ((KeyNavigationUtil.isEnter(event)
+                                || KeyNavigationUtil.isGoAnyDirection(event)
+                                || KeyNavigationUtil.isTabNavigation(event))
                         && (mKeyDownListener != null
                                 && mKeyDownListener.onKey(this, keyCode, event)))
                 || super_onKeyDown(keyCode, event);
@@ -345,7 +354,9 @@ public class UrlBar extends AutocompleteEditText {
         if (!mFocused) mFocusEventEmitted = false;
         super.onFocusChanged(focused, direction, previouslyFocusedRect);
 
-        if (!mIsInCct && OmniboxFeatures.sMultilineEditField.isEnabled()) {
+        if (!mIsInCct
+                && !DeviceFormFactor.isNonMultiDisplayContextOnTablet(getContext())
+                && OmniboxFeatures.sMultilineEditField.isEnabled()) {
             setInputIsMultilineEligible(false);
             if (focused) {
                 setSingleLine(false);
@@ -378,6 +389,7 @@ public class UrlBar extends AutocompleteEditText {
     @Override
     public void onFinishInflate() {
         super.onFinishInflate();
+        enforceMaxTextHeight();
         setPrivateImeOptions(IME_OPTION_RESTRICT_STYLUS_WRITING_AREA);
     }
 
@@ -1117,12 +1129,6 @@ public class UrlBar extends AutocompleteEditText {
     @Override
     public void layout(int left, int top, int right, int bottom) {
         super.layout(left, top, right, bottom);
-        // Do not scale the Omnibox font size if our height is set to WRAP_CONTENT.
-        // This ensures we don't trigger the recurring layout/adjust/layout/adjust cycle.
-        if (getLayoutParams().height != LayoutParams.WRAP_CONTENT) {
-            post(mEnforceMaxTextHeight);
-        }
-
         // Note: this must happen after the *entire* layout cycle completes.
         // Running this during onLayout guarantees that isLayoutRequested will remain true,
         // and the text layout will remain unresolved, suppressing resolution of display text
@@ -1277,15 +1283,8 @@ public class UrlBar extends AutocompleteEditText {
     @VisibleForTesting
     void enforceMaxTextHeight() {
         if (mUseSmallTextHeight) return;
-        // Our viewHeight calculation may not be correct if layout is requested, e.g. if our padding
-        // and height change simultaneously. The padding change will be reflected immediately, but
-        // the height change requires a layout cycle to be reflected.
-        if (isLayoutRequested()) {
-            post(mEnforceMaxTextHeight);
-            return;
-        }
 
-        int viewHeight = getHeight() - getPaddingTop() - getPaddingBottom();
+        int viewHeight = getResources().getDimensionPixelSize(R.dimen.location_bar_height);
         // Don't touch the text size if the view has not measured and shown yet, or if it's a
         // subject to custom layout constraints (e.g. CCT) that might result with font size being
         // too small.

@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "ash/public/cpp/ash_public_export.h"
+#include "chromeos/ui/clipboard_history/clipboard_history_types.h"
 #include "ui/views/controls/views_text_services_context_menu_base.h"
 
 namespace chromeos::clipboard_history {

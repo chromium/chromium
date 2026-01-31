@@ -185,6 +185,7 @@ public abstract class ChildConnectionAllocator {
             Runnable freeSlotCallback,
             String packageName,
             String serviceClassName,
+            @Nullable String fallbackServiceClassName,
             boolean bindToCaller,
             boolean bindAsExternalService,
             boolean isSandboxedForHistograms) {
@@ -218,8 +219,11 @@ public abstract class ChildConnectionAllocator {
         // experimental results.
         disableZygote = SysUtils.isLowEndDevice() || disableZygote;
         String suffix = disableZygote ? NON_ZYGOTE_SUFFIX : ZYGOTE_SUFFIX;
-        String fallbackServiceClassName =
-                disableZygote ? null : serviceClassName + NON_ZYGOTE_SUFFIX;
+        if (fallbackServiceClassName != null) {
+            fallbackServiceClassName += suffix;
+        } else {
+            fallbackServiceClassName = disableZygote ? null : serviceClassName + NON_ZYGOTE_SUFFIX;
+        }
         return new VariableSizeAllocatorImpl(
                 launcherHandler,
                 freeSlotCallback,
@@ -423,7 +427,9 @@ public abstract class ChildConnectionAllocator {
     @VisibleForTesting
     public abstract boolean anyConnectionAllocated();
 
-    /** @return the count of connections managed by the allocator */
+    /**
+     * @return the count of connections managed by the allocator.
+     */
     public abstract int allocatedConnectionsCountForTesting();
 
     public void setConnectionFactoryForTesting(ConnectionFactory connectionFactory) {
@@ -711,14 +717,13 @@ public abstract class ChildConnectionAllocator {
     }
 
     /**
-     * Workaround allocator for Android 10 bug.
-     * Android 10 has a bug that UID used for non-primary user cannot be freed correctly,
-     * eventually exhausting the pool of UIDs for isolated services. There is a global pool of
-     * 1000 UIDs, and each app zygote has a smaller pool of 100; the bug appplies to both cases.
-     * The leaked UID in the app zygote pool are released when the zygote is killed; leaked UIDs in
-     * the global pool are released when the device is rebooted. So way to slightly delay until the
-     * device needs to be rebooted is to use up the app zygote pool first before using the
-     * non-zygote global pool.
+     * Workaround allocator for Android 10 bug. Android 10 has a bug that UID used for non-primary
+     * user cannot be freed correctly, eventually exhausting the pool of UIDs for isolated services.
+     * There is a global pool of 1000 UIDs, and each app zygote has a smaller pool of 100; the bug
+     * appplies to both cases. The leaked UID in the app zygote pool are released when the zygote is
+     * killed; leaked UIDs in the global pool are released when the device is rebooted. So way to
+     * slightly delay until the device needs to be rebooted is to use up the app zygote pool first
+     * before using the non-zygote global pool.
      */
     private static class Android10WorkaroundAllocatorImpl extends ChildConnectionAllocator {
         private final VariableSizeAllocatorImpl mZygoteAllocator;

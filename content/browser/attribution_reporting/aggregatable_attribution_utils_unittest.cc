@@ -320,7 +320,7 @@ TEST(AggregatableAttributionUtilsTest, RoundsSourceRegistrationTime) {
     std::optional<AggregatableReportRequest> request =
         CreateAggregatableReportRequest(report);
     ASSERT_TRUE(request.has_value());
-    const base::Value::Dict& additional_fields =
+    const base::DictValue& additional_fields =
         request->shared_info().additional_fields;
     const std::string* actual_serialized_time =
         additional_fields.FindString("source_registration_time");

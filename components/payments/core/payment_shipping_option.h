@@ -14,7 +14,7 @@
 // https://w3c.github.io/browser-payment-api/#dom-paymentshippingoption
 
 namespace base {
-class Value;
+class DictValue;
 }
 
 namespace payments {
@@ -31,7 +31,7 @@ class PaymentShippingOption {
 
   // Populates the properties of this PaymentShippingOption from |dict|.
   // Returns true if the required values are present.
-  bool FromValueDict(const base::Value::Dict& dict);
+  bool FromValueDict(const base::DictValue& dict);
 
   // An identifier used to reference this PaymentShippingOption. It is unique
   // for a given PaymentRequest.

@@ -52,10 +52,10 @@ class NavigationTracker : public PageLoadStrategy {
   Status OnConnected(DevToolsClient* client) override;
   Status OnEvent(DevToolsClient* client,
                  const std::string& method,
-                 const base::Value::Dict& params) override;
+                 const base::DictValue& params) override;
   Status OnCommandSuccess(DevToolsClient* client,
                           const std::string& method,
-                          const base::Value::Dict* result,
+                          const base::DictValue* result,
                           const Timeout& command_timeout) override;
 
  private:

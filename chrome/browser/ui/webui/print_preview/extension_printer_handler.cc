@@ -117,7 +117,7 @@ struct ExtensionPrinterSettings {
   std::string destination_id;
   std::string capabilities;
   gfx::Size page_size;
-  base::Value::Dict ticket;
+  base::DictValue ticket;
 };
 
 // Parses print job `settings` for an extension printer and returns the parsed
@@ -125,7 +125,7 @@ struct ExtensionPrinterSettings {
 // this function triggers a crash, that means the TS code and the C++ code are
 // out of sync.
 ExtensionPrinterSettings ParseExtensionPrinterSettings(
-    const base::Value::Dict& settings) {
+    const base::DictValue& settings) {
   ExtensionPrinterSettings parsed_settings;
   parsed_settings.destination_id = *settings.FindString(kSettingDeviceName);
   parsed_settings.capabilities = *settings.FindString(kSettingCapabilities);
@@ -199,7 +199,7 @@ void ExtensionPrinterHandler::StartGetCapability(
 
 void ExtensionPrinterHandler::StartPrint(
     const std::u16string& job_title,
-    base::Value::Dict settings,
+    base::DictValue settings,
     scoped_refptr<base::RefCountedMemory> print_data,
     PrintCallback callback) {
   ExtensionPrinterSettings parsed_settings =
@@ -246,7 +246,7 @@ void ExtensionPrinterHandler::StartGrantPrinterAccess(
   std::optional<ProvisionalUsbPrinter> printer =
       ParseProvisionalUsbPrinterId(printer_id);
   if (!printer.has_value()) {
-    std::move(callback).Run(base::Value::Dict());
+    std::move(callback).Run(base::DictValue());
     return;
   }
 
@@ -254,7 +254,7 @@ void ExtensionPrinterHandler::StartGrantPrinterAccess(
       UsbDeviceManager::Get(profile_)->GetDeviceInfo(
           printer.value().device_guid);
   if (!device) {
-    std::move(callback).Run(base::Value::Dict());
+    std::move(callback).Run(base::DictValue());
     return;
   }
 
@@ -319,7 +319,7 @@ void ExtensionPrinterHandler::DispatchPrintJob(
 
 void ExtensionPrinterHandler::WrapGetPrintersCallback(
     AddedPrintersCallback callback,
-    base::Value::List printers,
+    base::ListValue printers,
     bool done) {
   DCHECK_GT(pending_enumeration_count_, 0);
   PRINTER_LOG(EVENT) << "ExtensionPrinterHandler::WrapGetPrintersCallback(): "
@@ -339,9 +339,9 @@ void ExtensionPrinterHandler::WrapGetPrintersCallback(
 
 void ExtensionPrinterHandler::WrapGetCapabilityCallback(
     GetCapabilityCallback callback,
-    base::Value::Dict capability) {
-  base::Value::Dict capabilities;
-  base::Value::Dict cdd = ValidateCddForPrintPreview(std::move(capability));
+    base::DictValue capability) {
+  base::DictValue capabilities;
+  base::DictValue cdd = ValidateCddForPrintPreview(std::move(capability));
   // Leave |capabilities| empty if |cdd| is empty.
   if (!cdd.empty()) {
     capabilities.Set(kSettingCapabilities,
@@ -358,7 +358,7 @@ void ExtensionPrinterHandler::WrapPrintCallback(PrintCallback callback,
 
 void ExtensionPrinterHandler::WrapGetPrinterInfoCallback(
     GetPrinterInfoCallback callback,
-    base::Value::Dict printer_info) {
+    base::DictValue printer_info) {
   std::move(callback).Run(std::move(printer_info));
 }
 
@@ -371,7 +371,7 @@ void ExtensionPrinterHandler::OnUsbDevicesEnumerated(
   DevicePermissionsManager* permissions_manager =
       DevicePermissionsManager::Get(profile_);
 
-  base::Value::List printer_list;
+  base::ListValue printer_list;
 
   for (const auto& extension : registry->enabled_extensions()) {
     const UsbPrinterManifestData* manifest_data =
@@ -395,7 +395,7 @@ void ExtensionPrinterHandler::OnUsbDevicesEnumerated(
         }
 
         printer_list.Append(
-            base::Value::Dict()
+            base::DictValue()
                 .Set("id",
                      GenerateProvisionalUsbPrinterId(extension.get(), *device))
                 .Set("name",
@@ -413,7 +413,7 @@ void ExtensionPrinterHandler::OnUsbDevicesEnumerated(
 
   DCHECK_GT(pending_enumeration_count_, 0);
   pending_enumeration_count_--;
-  base::Value::List list = std::move(printer_list);
+  base::ListValue list = std::move(printer_list);
   if (!list.empty()) {
     callback.Run(std::move(list));
   }

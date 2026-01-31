@@ -34,17 +34,20 @@
 #include "base/memory/ptr_util.h"
 #include "base/numerics/checked_math.h"
 #include "base/types/to_address.h"
+#include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
 #include "third_party/blink/renderer/platform/wtf/text/character_names.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_buffer.h"
 #include "third_party/blink/renderer/platform/wtf/text/text_codec_ascii_fast_path.h"
 
 namespace blink {
 
-// We'll use nonCharacter* constants to signal invalid utf-8.
+namespace {
+
+// We'll use kNonCharacter* constants to signal invalid utf-8.
 // The number in the name signals how many input bytes were invalid.
-const int kNonCharacter1 = -1;
-const int kNonCharacter2 = -2;
-const int kNonCharacter3 = -3;
+constexpr int kNonCharacter1 = -1;
+constexpr int kNonCharacter2 = -2;
+constexpr int kNonCharacter3 = -3;
 
 bool IsNonCharacter(int character) {
   return character >= kNonCharacter3 && character <= kNonCharacter1;
@@ -55,33 +58,7 @@ ALWAYS_INLINE size_t LengthOfNonCharacter(int character) {
   return -character;
 }
 
-std::unique_ptr<TextCodec> TextCodecUtf8::Create(const TextEncoding&) {
-  return base::WrapUnique(new TextCodecUtf8());
-}
-
-void TextCodecUtf8::RegisterEncodingNames(EncodingNameRegistrar registrar) {
-  registrar("UTF-8", "UTF-8");
-
-  // Additional aliases that originally were present in the encoding
-  // table in WebKit on Macintosh, and subsequently added by
-  // TextCodecICU. Perhaps we can prove some are not used on the web
-  // and remove them.
-  registrar("unicode11utf8", "UTF-8");
-  registrar("unicode20utf8", "UTF-8");
-  registrar("utf8", "UTF-8");
-  registrar("x-unicode20utf8", "UTF-8");
-
-  // Additional aliases present in the WHATWG Encoding Standard
-  // (http://encoding.spec.whatwg.org/)
-  // and Firefox (24), but not in ICU 4.6.
-  registrar("unicode-1-1-utf-8", "UTF-8");
-}
-
-void TextCodecUtf8::RegisterCodecs(TextCodecRegistrar registrar) {
-  registrar("UTF-8", Create);
-}
-
-static constexpr std::array<uint8_t, 256> kNonASCIISequenceLength = {
+constexpr std::array<uint8_t, 256> kNonASCIISequenceLength = {
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
@@ -94,7 +71,7 @@ static constexpr std::array<uint8_t, 256> kNonASCIISequenceLength = {
     2, 2, 2, 2, 2, 2, 2, 2, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3,
     4, 4, 4, 4, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
 
-static inline int DecodeNonASCIISequence(base::span<const uint8_t> sequence) {
+inline int DecodeNonASCIISequence(base::span<const uint8_t> sequence) {
   DCHECK(!IsASCII(sequence[0]));
 
   const size_t length = sequence.size();
@@ -151,8 +128,8 @@ static inline int DecodeNonASCIISequence(base::span<const uint8_t> sequence) {
          0x03C82080;
 }
 
-static inline base::span<UChar> AppendCharacter(base::span<UChar> destination,
-                                                int character) {
+inline base::span<UChar> AppendCharacter(base::span<UChar> destination,
+                                         int character) {
   DCHECK(!IsNonCharacter(character));
   DCHECK(!U_IS_SURROGATE(character));
   if (U_IS_BMP(character)) {
@@ -165,161 +142,6 @@ static inline base::span<UChar> AppendCharacter(base::span<UChar> destination,
   return destination;
 }
 
-void TextCodecUtf8::ConsumePartialSequenceBytes(size_t num_bytes) {
-  DCHECK_GE(partial_sequence_size_, num_bytes);
-  partial_sequence_size_ -= num_bytes;
-
-  base::span(partial_sequence_)
-      .first(partial_sequence_size_)
-      .copy_from(base::span(partial_sequence_)
-                     .subspan(num_bytes, partial_sequence_size_));
-}
-
-void TextCodecUtf8::HandleError(int character,
-                                base::span<UChar>& destination,
-                                bool stop_on_error,
-                                bool& saw_error) {
-  saw_error = true;
-  if (stop_on_error)
-    return;
-  // Each error generates a replacement character and consumes 1-3 bytes.
-  destination.take_first<1u>()[0] = uchar::kReplacementCharacter;
-  DCHECK(IsNonCharacter(character));
-  size_t num_bytes_consumed = LengthOfNonCharacter(character);
-  DCHECK_GE(num_bytes_consumed, 1u);
-  DCHECK_LE(num_bytes_consumed, 3u);
-  ConsumePartialSequenceBytes(num_bytes_consumed);
-}
-
-template <>
-bool TextCodecUtf8::HandlePartialSequence<LChar>(
-    base::span<LChar>& destination,
-    base::span<const uint8_t>& source,
-    bool flush,
-    bool,
-    bool&) {
-  DCHECK(partial_sequence_size_);
-  do {
-    if (IsASCII(partial_sequence_[0])) {
-      destination.take_first<1u>()[0] = partial_sequence_[0];
-      ConsumePartialSequenceBytes(1);
-      continue;
-    }
-    size_t count = kNonASCIISequenceLength[partial_sequence_[0]];
-    if (!count)
-      return true;
-
-    // Copy from `source` until we have `count` bytes.
-    if (count > partial_sequence_size_ && !source.empty()) {
-      size_t additional_bytes =
-          std::min<size_t>(count - partial_sequence_size_, source.size());
-      base::span(partial_sequence_)
-          .subspan(partial_sequence_size_, additional_bytes)
-          .copy_from(source.take_first(additional_bytes));
-      partial_sequence_size_ += additional_bytes;
-    }
-
-    // If we still don't have `count` bytes, fill the rest with zeros (any other
-    // lead byte would do), so we can run `DecodeNonASCIISequence` to tell if
-    // the chunk that we have is valid. These bytes are not part of the partial
-    // sequence, so don't increment `partial_sequence_size`.
-    auto partial_data = base::span(partial_sequence_).first(count);
-    if (count > partial_sequence_size_) {
-      std::ranges::fill(partial_data.last(count - partial_sequence_size_), 0);
-    }
-
-    const int character = DecodeNonASCIISequence(partial_data);
-    if (count > partial_sequence_size_) {
-      size_t noncharacter_len = LengthOfNonCharacter(character);
-      DCHECK(IsNonCharacter(character));
-      DCHECK_LE(noncharacter_len, partial_sequence_size_);
-      // If we're not at the end, and the partial sequence that we have is
-      // incomplete but otherwise valid, a non-character is not an error.
-      if (!flush && noncharacter_len == partial_sequence_size_) {
-        return false;
-      }
-    }
-
-    if (character & ~0xff)
-      return true;
-
-    partial_sequence_size_ -= count;
-    destination.take_first<1u>()[0] = static_cast<LChar>(character);
-  } while (partial_sequence_size_);
-
-  return false;
-}
-
-template <>
-bool TextCodecUtf8::HandlePartialSequence<UChar>(
-    base::span<UChar>& destination,
-    base::span<const uint8_t>& source,
-    bool flush,
-    bool stop_on_error,
-    bool& saw_error) {
-  DCHECK(partial_sequence_size_);
-  do {
-    if (IsASCII(partial_sequence_[0])) {
-      destination.take_first<1u>()[0] = partial_sequence_[0];
-      ConsumePartialSequenceBytes(1);
-      continue;
-    }
-    size_t count = kNonASCIISequenceLength[partial_sequence_[0]];
-    if (!count) {
-      HandleError(kNonCharacter1, destination, stop_on_error, saw_error);
-      if (stop_on_error)
-        return false;
-      continue;
-    }
-
-    // Copy from `source` until we have `count` bytes.
-    if (count > partial_sequence_size_ && !source.empty()) {
-      size_t additional_bytes =
-          std::min<size_t>(count - partial_sequence_size_, source.size());
-
-      base::span(partial_sequence_)
-          .subspan(partial_sequence_size_, additional_bytes)
-          .copy_from(source.first(additional_bytes));
-      source = source.subspan(additional_bytes);
-      partial_sequence_size_ += additional_bytes;
-    }
-
-    // If we still don't have `count` bytes, fill the rest with zeros (any other
-    // lead byte would do), so we can run `DecodeNonASCIISequence` to tell if
-    // the chunk that we have is valid. These bytes are not part of the partial
-    // sequence, so don't increment `partial_sequence_size`.
-    auto partial_data = base::span(partial_sequence_).first(count);
-    if (count > partial_sequence_size_) {
-      std::ranges::fill(partial_data.last(count - partial_sequence_size_), 0);
-    }
-
-    const int character = DecodeNonASCIISequence(partial_data);
-    if (count > partial_sequence_size_) {
-      size_t noncharacter_len = LengthOfNonCharacter(character);
-      DCHECK(IsNonCharacter(character));
-      DCHECK_LE(noncharacter_len, partial_sequence_size_);
-      // If we're not at the end, and the partial sequence that we have is
-      // incomplete but otherwise valid, a non-character is not an error.
-      if (!flush && noncharacter_len == partial_sequence_size_) {
-        return false;
-      }
-    }
-
-    if (IsNonCharacter(character)) {
-      HandleError(character, destination, stop_on_error, saw_error);
-      if (stop_on_error)
-        return false;
-      continue;
-    }
-
-    partial_sequence_size_ -= count;
-    destination = AppendCharacter(destination, character);
-  } while (partial_sequence_size_);
-
-  return false;
-}
-
-namespace {
 template <typename CharType>
 class InlinedStringBuffer {
  public:
@@ -353,7 +175,183 @@ class InlinedStringBuffer {
   std::variant<InlinedArray, OutlinedArray> buffer_;
   base::span<CharType> span_ = base::span(std::get<InlinedArray>(buffer_));
 };
+
 }  // namespace
+
+std::unique_ptr<TextCodec> TextCodecUtf8::Create(const TextEncoding&) {
+  return base::WrapUnique(new TextCodecUtf8());
+}
+
+bool TextCodecUtf8::IsSupported(StringView canonical_name) {
+  return EqualIgnoringASCIICase(canonical_name, "UTF-8");
+}
+
+void TextCodecUtf8::RegisterEncodingNames(EncodingNameRegistrar registrar) {
+  AtomicString canonical_name("UTF-8");
+  registrar("UTF-8", canonical_name);
+
+  // Additional aliases that originally were present in the encoding
+  // table in WebKit on Macintosh, and subsequently added by
+  // TextCodecICU. Perhaps we can prove some are not used on the web
+  // and remove them.
+  registrar("unicode11utf8", canonical_name);
+  registrar("unicode20utf8", canonical_name);
+  registrar("utf8", canonical_name);
+  registrar("x-unicode20utf8", canonical_name);
+
+  // Additional aliases present in the WHATWG Encoding Standard
+  // (http://encoding.spec.whatwg.org/)
+  // and Firefox (24), but not in ICU 4.6.
+  registrar("unicode-1-1-utf-8", canonical_name);
+}
+
+void TextCodecUtf8::RegisterCodecs(TextCodecRegistrar registrar) {
+  registrar("UTF-8", Create);
+}
+
+void TextCodecUtf8::SavePartialSequenceBytes(
+    base::span<const uint8_t>& source) {
+  DCHECK(!partial_sequence_size_);
+  partial_sequence_size_ = source.size();
+  base::span(partial_sequence_)
+      .first(partial_sequence_size_)
+      .copy_from(source.take_first(partial_sequence_size_));
+}
+
+void TextCodecUtf8::ConsumePartialSequenceBytes(size_t num_bytes) {
+  DCHECK_GE(partial_sequence_size_, num_bytes);
+  partial_sequence_size_ -= num_bytes;
+  base::span(partial_sequence_)
+      .first(partial_sequence_size_)
+      .copy_from(base::span(partial_sequence_)
+                     .subspan(num_bytes, partial_sequence_size_));
+}
+
+void TextCodecUtf8::FillPartialSequenceBytes(
+    size_t sequence_length,
+    base::span<const uint8_t>& source) {
+  DCHECK_GT(sequence_length, partial_sequence_size_);
+  // Copy from `source` until we have `sequence_length` bytes.
+  if (!source.empty()) {
+    size_t additional_bytes = std::min<size_t>(
+        sequence_length - partial_sequence_size_, source.size());
+    base::span(partial_sequence_)
+        .subspan(partial_sequence_size_, additional_bytes)
+        .copy_from(source.take_first(additional_bytes));
+    partial_sequence_size_ += additional_bytes;
+  }
+  // If we still don't have `sequence_length` bytes, fill the rest with zeros
+  // (any other lead byte would do), so we can run `DecodeNonASCIISequence` to
+  // tell if the chunk that we have is valid. These bytes are not part of the
+  // partial sequence, so don't increment `partial_sequence_size`.
+  if (sequence_length > partial_sequence_size_) {
+    std::ranges::fill(base::span(partial_sequence_)
+                          .first(sequence_length)
+                          .last(sequence_length - partial_sequence_size_),
+                      0);
+  }
+}
+
+bool TextCodecUtf8::NeedMoreData(size_t sequence_length,
+                                 int character,
+                                 bool flush) const {
+  if (sequence_length <= partial_sequence_size_) {
+    return false;
+  }
+  // If at the end, there's no more data.
+  if (flush) {
+    return false;
+  }
+  const size_t noncharacter_len = LengthOfNonCharacter(character);
+  DCHECK(IsNonCharacter(character));
+  DCHECK_LE(noncharacter_len, partial_sequence_size_);
+  // The partial sequence that we have is incomplete but otherwise valid, a
+  // non-character is not an error.
+  return noncharacter_len == partial_sequence_size_;
+}
+
+bool TextCodecUtf8::HandlePartialSequence(base::span<LChar>& destination,
+                                          base::span<const uint8_t>& source,
+                                          bool flush) {
+  DCHECK(partial_sequence_size_);
+  do {
+    if (IsASCII(partial_sequence_[0])) {
+      destination.take_first<1u>()[0] = partial_sequence_[0];
+      ConsumePartialSequenceBytes(1);
+      continue;
+    }
+    size_t count = kNonASCIISequenceLength[partial_sequence_[0]];
+    int character;
+    if (!count) {
+      character = kNonCharacter1;
+    } else {
+      if (count > partial_sequence_size_) {
+        FillPartialSequenceBytes(count, source);
+      }
+      character =
+          DecodeNonASCIISequence(base::span(partial_sequence_).first(count));
+      if (NeedMoreData(count, character, flush)) {
+        return false;
+      }
+    }
+    // The character is invalid or outside the Latin-1 range. Both of these
+    // cases are handled by the UTF-16 code-path.
+    if (character & ~0xff) {
+      return true;
+    }
+    // `count` should be always be two here and the partial buffer can't
+    // contain more code units than that at this point. ASCII characters can't
+    // be partial, and all Latin-1 characters can be encoded with two code
+    // units. Anything else (non-Latin-1, invalid characters) would be handled
+    // by the UTF-16 code-path (below).
+    DCHECK_EQ(count, 2u);
+    DCHECK_EQ(partial_sequence_size_, count);
+    partial_sequence_size_ -= count;
+    destination.take_first<1u>()[0] = static_cast<LChar>(character);
+  } while (partial_sequence_size_);
+
+  return false;
+}
+
+bool TextCodecUtf8::HandlePartialSequence(base::span<UChar>& destination,
+                                          base::span<const uint8_t>& source,
+                                          bool flush,
+                                          bool stop_on_error,
+                                          bool& saw_error) {
+  DCHECK(partial_sequence_size_);
+  do {
+    if (IsASCII(partial_sequence_[0])) {
+      destination.take_first<1u>()[0] = partial_sequence_[0];
+      ConsumePartialSequenceBytes(1);
+      continue;
+    }
+    size_t count = kNonASCIISequenceLength[partial_sequence_[0]];
+    int character;
+    if (!count) {
+      character = kNonCharacter1;
+    } else {
+      if (count > partial_sequence_size_) {
+        FillPartialSequenceBytes(count, source);
+      }
+      character =
+          DecodeNonASCIISequence(base::span(partial_sequence_).first(count));
+      if (NeedMoreData(count, character, flush)) {
+        return false;
+      }
+    }
+    if (IsNonCharacter(character)) {
+      saw_error = true;
+      if (stop_on_error)
+        return false;
+      count = LengthOfNonCharacter(character);
+      character = uchar::kReplacementCharacter;
+    }
+    destination = AppendCharacter(destination, character);
+    ConsumePartialSequenceBytes(count);
+  } while (partial_sequence_size_);
+
+  return false;
+}
 
 String TextCodecUtf8::Decode(base::span<const uint8_t> bytes,
                              FlushBehavior flush,
@@ -381,8 +379,7 @@ String TextCodecUtf8::Decode(base::span<const uint8_t> bytes,
       base::span<LChar> destination_for_handle_partial_sequence = destination;
       base::span<const uint8_t> source_for_handle_partial_sequence = source;
       if (HandlePartialSequence(destination_for_handle_partial_sequence,
-                                source_for_handle_partial_sequence, do_flush,
-                                stop_on_error, saw_error)) {
+                                source_for_handle_partial_sequence, do_flush)) {
         source = source_for_handle_partial_sequence;
         goto upConvertTo16Bit;
       }
@@ -422,11 +419,7 @@ String TextCodecUtf8::Decode(base::span<const uint8_t> bytes,
         character = kNonCharacter1;
       } else {
         if (count > source.size()) {
-          DCHECK(!partial_sequence_size_);
-          partial_sequence_size_ = source.size();
-          base::span(partial_sequence_)
-              .first(partial_sequence_size_)
-              .copy_from(source.take_first(partial_sequence_size_));
+          SavePartialSequenceBytes(source);
           break;
         }
         character = DecodeNonASCIISequence(source.first(count));
@@ -510,11 +503,7 @@ upConvertTo16Bit:
         character = kNonCharacter1;
       } else {
         if (count > source.size()) {
-          DCHECK(!partial_sequence_size_);
-          partial_sequence_size_ = source.size();
-          base::span(partial_sequence_)
-              .first(partial_sequence_size_)
-              .copy_from(source.take_first(partial_sequence_size_));
+          SavePartialSequenceBytes(source);
           break;
         }
         character = DecodeNonASCIISequence(source.first(count));
@@ -524,15 +513,11 @@ upConvertTo16Bit:
         if (stop_on_error)
           break;
         // Each error generates one replacement character and consumes the
-        // 'largest subpart' of the incomplete character.
-        // Note that the nonCharacterX constants go from -1..-3 and contain
-        // the negative of number of bytes comprising the broken encoding
-        // detected. So subtracting c (when isNonCharacter(c)) adds the number
-        // of broken bytes.
-        destination16.take_first<1u>()[0] = uchar::kReplacementCharacter;
-
-        source = source.subspan(LengthOfNonCharacter(character));
-        continue;
+        // 'largest subpart' of the incomplete character. Note that the
+        // kNonCharacterX constants go from -1..-3 and contain the negative of
+        // number of bytes comprising the broken encoding detected.
+        count = LengthOfNonCharacter(character);
+        character = uchar::kReplacementCharacter;
       }
       source = source.subspan(count);
       destination16 = AppendCharacter(destination16, character);

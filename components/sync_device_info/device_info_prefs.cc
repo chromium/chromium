@@ -63,7 +63,7 @@ DeviceInfoPrefs::~DeviceInfoPrefs() = default;
 bool DeviceInfoPrefs::IsRecentLocalCacheGuid(
     const std::string& cache_guid) const {
   TRACE_EVENT0("sync", "DeviceInfoPrefs::IsRecentLocalCacheGuid");
-  const base::Value::List& recent_local_cache_guids =
+  const base::ListValue& recent_local_cache_guids =
       pref_service_->GetList(kDeviceInfoRecentGUIDsWithTimestamps);
 
   return std::any_of(recent_local_cache_guids.begin(),
@@ -77,7 +77,7 @@ void DeviceInfoPrefs::AddLocalCacheGuid(const std::string& cache_guid) {
   TRACE_EVENT0("sync", "DeviceInfoPrefs::AddLocalCacheGuid");
   ScopedListPrefUpdate update_cache_guids(pref_service_,
                                           kDeviceInfoRecentGUIDsWithTimestamps);
-  base::Value::List& update_list = update_cache_guids.Get();
+  base::ListValue& update_list = update_cache_guids.Get();
 
   // Remove any existing entries for this `cache_guid`, to be reinserted below,
   // in the first position.
@@ -85,7 +85,7 @@ void DeviceInfoPrefs::AddLocalCacheGuid(const std::string& cache_guid) {
     return MatchesGuidInDictionary(entry, cache_guid);
   });
 
-  base::Value::Dict new_entry;
+  base::DictValue new_entry;
   new_entry.Set(kCacheGuidKey, cache_guid);
   new_entry.Set(kTimestampKey,
                 clock_->Now().ToDeltaSinceWindowsEpoch().InDays());

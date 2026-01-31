@@ -12,7 +12,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/not_fatal_until.h"
 #include "build/branding_buildflags.h"
-#include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/feature_engagement/tracker_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/promos/promos_pref_names.h"
@@ -190,7 +189,7 @@ IOSPromoConstants::IOSPromoTypeConfigs SetUpEnhancedBrowsingBubble(
       config.accept_button_text_id =
           IDS_IOS_DESKTOP_PROMO_BUBBLE_BUTTON_ACCEPT_REMINDER;
       config.promo_image =
-          ui::ImageModel::FromVectorIcon(kEnhancedBrowsingOnIosIcon);
+          ui::ImageModel::FromResourceId(IDR_ENHANCED_BROWSING_ON_IOS);
       break;
     case BubbleType::kReminderConfirmation: {
       SetUpBaseReminderConfirmationConfig(config);
@@ -212,7 +211,7 @@ IOSPromoConstants::IOSPromoTypeConfigs SetUpLensBubble(BubbleType bubble_type) {
     case BubbleType::kQRCode:
       config.promo_title_id = IDS_IOS_DESKTOP_LENS_PROMO_BUBBLE_TITLE_QR;
       config.promo_description_id =
-          IDS_IOS_DESKTOP_LENS_PROMO_BUBBLE_DESCRIPTION;
+          IDS_IOS_DESKTOP_LENS_PROMO_BUBBLE_DESCRIPTION_QR;
       config.accept_button_text_id =
           IDS_IOS_DESKTOP_PROMO_BUBBLE_BUTTON_ACCEPT_QR;
       config.promo_image =
@@ -222,7 +221,7 @@ IOSPromoConstants::IOSPromoTypeConfigs SetUpLensBubble(BubbleType bubble_type) {
     case BubbleType::kReminder:
       config.promo_title_id = IDS_IOS_DESKTOP_LENS_PROMO_BUBBLE_TITLE_REMINDER;
       config.promo_description_id =
-          IDS_IOS_DESKTOP_LENS_PROMO_BUBBLE_DESCRIPTION;
+          IDS_IOS_DESKTOP_LENS_PROMO_BUBBLE_DESCRIPTION_REMINDER;
       config.accept_button_text_id =
           IDS_IOS_DESKTOP_PROMO_BUBBLE_BUTTON_ACCEPT_REMINDER;
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
@@ -514,7 +513,7 @@ void IOSPromoBubble::ShowPromoBubble(Anchor anchor,
   }
 
   auto promo_bubble = std::make_unique<views::BubbleDialogModelHost>(
-      dialog_model_builder.Build(), anchor.view, anchor.arrow);
+      dialog_model_builder.Build(), anchor.anchor_base, anchor.arrow);
 
   if (ios_promo_config.with_header) {
     promo_bubble->SetFootnoteView(CreateContentView(

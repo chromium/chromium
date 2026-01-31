@@ -259,14 +259,14 @@ class KeyboardAccessoryMediator
     private boolean shouldShowSuggestion(AutofillSuggestion suggestion) {
         switch (suggestion.getSuggestionType()) {
             case SuggestionType.INSECURE_CONTEXT_PAYMENT_DISABLED_MESSAGE:
-                // The insecure context warning has a replacement in the fallback sheet.
+            // The insecure context warning has a replacement in the fallback sheet.
             case SuggestionType.TITLE:
             case SuggestionType.SEPARATOR:
             case SuggestionType.UNDO_OR_CLEAR:
-            case SuggestionType.ALL_LOYALTY_CARDS_ENTRY:
             case SuggestionType.ALL_SAVED_PASSWORDS_ENTRY:
             case SuggestionType.GENERATE_PASSWORD_ENTRY:
             case SuggestionType.MANAGE_ADDRESS:
+            case SuggestionType.MANAGE_AUTOFILL_AI:
             case SuggestionType.MANAGE_CREDIT_CARD:
             case SuggestionType.MANAGE_IBAN:
             case SuggestionType.MANAGE_PLUS_ADDRESS:

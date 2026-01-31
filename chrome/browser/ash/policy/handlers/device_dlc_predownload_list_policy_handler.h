@@ -46,7 +46,7 @@ class DeviceDlcPredownloadListPolicyHandler {
   // Decode a list of DLCs that should be pre downloaded to the device from
   // human-readable strings to DLC IDs. Any warning messages from the decoding
   // and schema validation process are stored in |warning|.
-  static base::Value::List DecodeDeviceDlcPredownloadListPolicy(
+  static base::ListValue DecodeDeviceDlcPredownloadListPolicy(
       const google::protobuf::RepeatedPtrField<std::string>& raw_policy_value,
       std::string& out_warning);
 

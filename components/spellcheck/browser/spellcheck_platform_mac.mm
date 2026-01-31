@@ -16,6 +16,7 @@
 #include "base/strings/sys_string_conversions.h"
 #include "base/time/time.h"
 #include "components/spellcheck/common/spellcheck_common.h"
+#include "components/spellcheck/common/spellcheck_decoration.h"
 #include "components/spellcheck/common/spellcheck_result.h"
 #include "content/public/browser/browser_thread.h"
 
@@ -299,7 +300,7 @@ void RequestTextCheck(PlatformSpellChecker* spell_checker_instance,
 
             // In this use case, the spell checker should never
             // return anything but a single range per result.
-            check_results.emplace_back(SpellCheckResult::SPELLING,
+            check_results.emplace_back(spellcheck::Decoration::SPELLING,
                                        result.range.location,
                                        result.range.length);
           }

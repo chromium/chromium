@@ -93,14 +93,6 @@ export class SettingsSubpageElement extends SettingsSubpageElementBase {
       },
 
       /**
-       * Whether we should hide the "close" button to get to the previous page.
-       */
-      hideCloseButton: {
-        type: Boolean,
-        value: false,
-      },
-
-      /**
        * Whether the subpage search term should be preserved across navigations.
        */
       preserveSearchTerm: {
@@ -123,7 +115,6 @@ export class SettingsSubpageElement extends SettingsSubpageElementBase {
   declare searchLabel: string;
   declare searchIcon: string;
   declare searchTerm: string;
-  declare hideCloseButton: boolean;
   declare preserveSearchTerm: boolean;
   declare private active_: boolean;
   private lastActiveValue_: boolean = false;
@@ -192,9 +183,6 @@ export class SettingsSubpageElement extends SettingsSubpageElementBase {
 
   /** Focuses the back button when page is loaded. */
   focusBackButton() {
-    if (this.hideCloseButton) {
-      return;
-    }
     afterNextRender(this, () => focusWithoutInk(this.$.closeButton));
   }
 

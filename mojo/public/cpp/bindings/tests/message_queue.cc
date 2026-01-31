@@ -10,11 +10,9 @@
 namespace mojo {
 namespace test {
 
-MessageQueue::MessageQueue() {
-}
+MessageQueue::MessageQueue() {}
 
-MessageQueue::~MessageQueue() {
-}
+MessageQueue::~MessageQueue() {}
 
 bool MessageQueue::IsEmpty() const {
   return queue_.empty();

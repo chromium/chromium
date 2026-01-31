@@ -78,9 +78,15 @@ source_set("test_support") {
     "mock_autofill_annotations_provider.h",
     "mock_media_transcript_provider.cc",
     "mock_media_transcript_provider.h",
+    "no_response_ai_page_content_agent.cc",
+    "no_response_ai_page_content_agent.h",
   ]
   public_deps = [
     ":browser",
+    "//base",
+    "//content/public/browser",
+    "//mojo/public/cpp/bindings",
+    "//services/service_manager/public/cpp",
     "//testing/gmock",
   ]
 }

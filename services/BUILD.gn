@@ -78,6 +78,7 @@ test("services_unittests") {
         # require connection to the Java classes. Without a direct dependency,
         # the unit tests will encounter a ClassNotFoundException error at
         # runtime.
+        "//services/device/serial:native_unittests_java",
         "//services/on_device_model/android:java",
         "//services/on_device_model/android:native_java_unittests_java",
         "//services/on_device_model/android:unit_tests",
@@ -160,6 +161,7 @@ if (is_android) {
       "device/geolocation/android/junit/src/org/chromium/device/geolocation/LocationProviderTest.java",
       "device/nfc/android/junit/src/org/chromium/device/nfc/NFCTest.java",
       "device/nfc/android/junit/src/org/chromium/device/nfc/NfcBlocklistTest.java",
+      "device/serial/android/javatests/src/org/chromium/device/serial/ChromeSerialManagerTest.java",
       "shape_detection/android/junit/src/org/chromium/shape_detection/BitmapUtilsTest.java",
     ]
     deps = [
@@ -172,6 +174,7 @@ if (is_android) {
       "//base:base_java",
       "//base:base_java_test_support",
       "//base:base_junit_test_support",
+      "//base:flagged_apis_java",
       "//mojo/public/java:base_java",
       "//mojo/public/java:bindings_java",
       "//mojo/public/java:system_java",
@@ -185,6 +188,7 @@ if (is_android) {
       "//services/device/public/java:nfc_java",
       "//services/device/public/mojom:generic_sensor_java",
       "//services/device/public/mojom:mojom_java",
+      "//services/device/serial:java",
       "//services/shape_detection:shape_detection_java",
       "//skia/public/mojom:mojom_java",
       "//third_party/google-truth:google_truth_java",

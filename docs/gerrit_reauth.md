@@ -424,14 +424,11 @@ template](https://issues.chromium.org/issues/new?component=1456702&template=2176
 
 **Why can't I submit this CL?**
 
-There is a tooltip in the Gerrit Web UI that will explain what is missing:
+There is a dialog in the Gerrit Web UI that will explain what is missing:
 
 ![](./images/gerrit_reauth_explanation.png)
 
 Likely one of the committers who reviewed the CL did not do ReAuth.
-
-We are aware that this is not very discoverable; we're investigating how to
-improve it.
 
 **ReAuth doesn't work in `screen`, `tmux`, `shpool`, etc.**
 

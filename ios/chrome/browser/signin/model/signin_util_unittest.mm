@@ -31,30 +31,25 @@ class SigninUtilTest : public PlatformTest {
   }
 
   AccountInfo FakeAccountFull() {
-    AccountInfo account;
-    account.account_id = CoreAccountId::FromString("account_id");
-    account.gaia = GaiaId("gaia");
-    account.email = "person@example.org";
-    account.full_name = "Full Name";
-    account.given_name = "Given Name";
-    account.picture_url = "https://example.org/path";
-    return account;
+    return AccountInfo::Builder(GaiaId("gaia"), "person@example.org")
+        .SetAccountId(CoreAccountId::FromString("account_id"))
+        .SetFullName("Full Name")
+        .SetGivenName("Given Name")
+        .SetAvatarUrl("https://example.org/path")
+        .Build();
   }
 
   AccountInfo FakeAccountMinimal() {
-    AccountInfo account;
-    account.gaia = GaiaId("gaia");
-    account.email = "person@example.org";
-    return account;
+    return AccountInfo::Builder(GaiaId("gaia"), "person@example.org").Build();
   }
 
   void ExpectEqualAccountFields(const AccountInfo& a, const AccountInfo& b) {
-    EXPECT_EQ(a.account_id, b.account_id);
-    EXPECT_EQ(a.gaia, b.gaia);
-    EXPECT_EQ(a.email, b.email);
-    EXPECT_EQ(a.full_name, b.full_name);
-    EXPECT_EQ(a.given_name, b.given_name);
-    EXPECT_EQ(a.picture_url, b.picture_url);
+    EXPECT_EQ(a.GetAccountId(), b.GetAccountId());
+    EXPECT_EQ(a.GetGaiaId(), b.GetGaiaId());
+    EXPECT_EQ(a.GetEmail(), b.GetEmail());
+    EXPECT_EQ(a.GetFullName(), b.GetFullName());
+    EXPECT_EQ(a.GetGivenName(), b.GetGivenName());
+    EXPECT_EQ(a.GetAvatarUrl(), b.GetAvatarUrl());
   }
 
   FakeSystemIdentityManager* fake_system_identity_manager() {

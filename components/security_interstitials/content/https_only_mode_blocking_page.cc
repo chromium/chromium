@@ -134,7 +134,7 @@ void HttpsOnlyModeBlockingPage::CommandReceived(const std::string& command) {
 }
 
 void HttpsOnlyModeBlockingPage::PopulateInterstitialStrings(
-    base::Value::Dict& load_time_data) {
+    base::DictValue& load_time_data) {
   PopulateHttpsOnlyModeStringsForSharedHTML(
       load_time_data, /*august2024_refresh_enabled=*/true);
   PopulateHttpsOnlyModeStringsForBlockingPage(

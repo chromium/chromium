@@ -15,25 +15,21 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
 #include "base/observer_list.h"
+#include "base/scoped_observation.h"
 #include "build/build_config.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/prefs/pref_change_registrar.h"
+#include "components/supervised_user/core/browser/device_parental_controls.h"
+#include "components/supervised_user/core/browser/family_link_url_filter.h"
 #include "components/supervised_user/core/browser/remote_web_approvals_manager.h"
-#include "components/supervised_user/core/browser/supervised_user_content_filters_service.h"
 #include "components/supervised_user/core/browser/supervised_user_preferences.h"
-#include "components/supervised_user/core/browser/supervised_user_url_filter.h"
 #include "components/supervised_user/core/common/supervised_user_constants.h"
 #include "components/supervised_user/core/common/supervised_users.h"
 #include "google_apis/gaia/gaia_id.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
-#if BUILDFLAG(IS_ANDROID)
-#include "components/supervised_user/core/browser/android/content_filters_observer_bridge.h"
-#endif
-
 class PrefService;
 class SupervisedUserServiceObserver;
-class SupervisedUserServiceFactory;
 
 namespace signin {
 class IdentityManager;
@@ -44,7 +40,7 @@ class SyncService;
 }  // namespace syncer
 
 namespace supervised_user {
-class SupervisedUserSettingsService;
+class FamilyLinkSettingsService;
 
 // Represents custodian data - who is responsible for managing the supervised
 // user's settings.
@@ -80,12 +76,7 @@ class Custodian {
 // * `profile.managed_user_id` for url filtering, remove approvals and custodian
 //    data,
 // * `incognito.mode_availability` for incognito mode.
-class SupervisedUserService : public KeyedService
-#if BUILDFLAG(IS_ANDROID)
-    ,
-                              public ContentFiltersObserverBridge::Observer
-#endif
-{
+class SupervisedUserService : public KeyedService {
  public:
   // Delegate encapsulating platform-specific logic that is invoked from this
   // service.
@@ -122,36 +113,16 @@ class SupervisedUserService : public KeyedService
   // Returns the URL filter for filtering navigations and classifying sites in
   // the history view. Both this method and the returned filter may only be used
   // on the UI thread.
-  SupervisedUserURLFilter* GetURLFilter() const;
-
-  // Returns true if the user is supervised locally (e.g. on the device).
-  // Currently, local supervision is only supported on Android.
-  bool IsSupervisedLocally() const;
-  // Returns true if the user is supervised locally (e.g. on the device) and
-  // requested browser content to be filtered.
-  bool IsLocalBrowserFilteringEnabled() const;
-  // Returns true if the user is supervised locally (e.g. on the device) and
-  // requested search content to be filtered.
-  bool IsLocalSearchFilteringEnabled() const;
+  FamilyLinkUrlFilter* GetURLFilter() const;
 
   std::optional<Custodian> GetCustodian() const;
   std::optional<Custodian> GetSecondCustodian() const;
-
-  // Returns true if the url is blocked due to supervision restrictions on the
-  // primary account user.
-  bool IsBlockedURL(const GURL& url) const;
 
   void AddObserver(SupervisedUserServiceObserver* observer);
   void RemoveObserver(SupervisedUserServiceObserver* observer);
 
   // ProfileKeyedService override:
   void Shutdown() override;
-
-#if BUILDFLAG(IS_ANDROID)
-  // ContentFiltersObserverBridge::Observer:
-  void OnContentFiltersObserverEnabled(std::string_view setting_name) override;
-  void OnContentFiltersObserverDisabled(std::string_view setting_name) override;
-#endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_CHROMEOS)
   bool signout_required_after_supervision_enabled() {
@@ -169,26 +140,12 @@ class SupervisedUserService : public KeyedService
       signin::IdentityManager* identity_manager,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       PrefService& user_prefs,
-      SupervisedUserSettingsService& settings_service,
-      SupervisedUserContentFiltersService* content_filters_service,
+      FamilyLinkSettingsService& settings_service,
       syncer::SyncService* sync_service,
-      std::unique_ptr<SupervisedUserURLFilter> url_filter,
-      std::unique_ptr<SupervisedUserService::PlatformDelegate> platform_delegate
-#if BUILDFLAG(IS_ANDROID)
-      ,
-      std::unique_ptr<ContentFiltersObserverBridge>
-          browser_content_filters_observer,
-      std::unique_ptr<ContentFiltersObserverBridge>
-          search_content_filters_observer
-#endif
-  );
-
-#if BUILDFLAG(IS_ANDROID)
-  base::WeakPtr<ContentFiltersObserverBridge>
-  GetBrowserContentFiltersObserverWeakPtrForTesting();
-  base::WeakPtr<ContentFiltersObserverBridge>
-  GetSearchContentFiltersObserverWeakPtrForTesting();
-#endif  // BUILDFLAG(IS_ANDROID)
+      std::unique_ptr<FamilyLinkUrlFilter> url_filter,
+      std::unique_ptr<SupervisedUserService::PlatformDelegate>
+          platform_delegate,
+      const DeviceParentalControls& device_parental_controls);
 
  private:
   // Activates the service which controls managed settings of url filtering and
@@ -216,8 +173,6 @@ class SupervisedUserService : public KeyedService
 
   // Adds url filtering change handlers, originating from Family Link.
   void AddURLFilterPrefChangeHandlers();
-  // Adds sentinel handlers that prevent unintended changes to url filtering.
-  void AddURLFilterPrefChangeSentinels();
   // Removes all url filtering change handlers. Intentionally idempotent.
   void RemoveURLFilterPrefChangeHandlers();
   // Add or remove all pref handlers related to custodians. The removal method
@@ -225,19 +180,13 @@ class SupervisedUserService : public KeyedService
   void AddCustodianPrefChangeHandlers();
   void RemoveCustodianPrefChangeHandlers();
 
-#if BUILDFLAG(IS_ANDROID)
-  // Enables content filters and then notifies observers.
-  void EnableSearchContentFilters();
-  void DisableSearchContentFilters();
-  void EnableBrowserContentFilters();
-  void DisableBrowserContentFilters();
-#endif  // BUILDFLAG(IS_ANDROID)
+  // Closes incognito tabs on each availability change, under condition that
+  // any parental controls are enabled and incognito mode is not available.
+  void OnIncognitoModeAvailabilityChanged();
 
   const raw_ref<PrefService> user_prefs_;
 
-  const raw_ref<SupervisedUserSettingsService> settings_service_;
-
-  const raw_ptr<SupervisedUserContentFiltersService> content_filters_service_;
+  const raw_ref<FamilyLinkSettingsService> settings_service_;
 
   const raw_ptr<syncer::SyncService> sync_service_;
 
@@ -245,9 +194,11 @@ class SupervisedUserService : public KeyedService
 
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
 
-  std::unique_ptr<SupervisedUserURLFilter> url_filter_;
+  std::unique_ptr<FamilyLinkUrlFilter> url_filter_;
 
   std::unique_ptr<PlatformDelegate> platform_delegate_;
+
+  const raw_ref<const DeviceParentalControls> device_parental_controls_;
 
   // Registrar for core prefs that drive this service.
   PrefChangeRegistrar main_pref_change_registrar_;
@@ -259,15 +210,6 @@ class SupervisedUserService : public KeyedService
   // Registrar for preferences that control custodian data. They're observed
   // only when the profile is subject to parental controls.
   PrefChangeRegistrar custodian_pref_change_registrar_;
-
-#if BUILDFLAG(IS_ANDROID)
-  // Observers for the content filters
-  std::unique_ptr<ContentFiltersObserverBridge>
-      browser_content_filters_observer_;
-  std::unique_ptr<ContentFiltersObserverBridge>
-      search_content_filters_observer_;
-
-#endif  // BUILDFLAG(IS_ANDROID)
 
   // True only when |Shutdown()| method has been called.
   bool did_shutdown_ = false;

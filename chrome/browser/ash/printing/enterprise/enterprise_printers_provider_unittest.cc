@@ -41,8 +41,8 @@ std::vector<std::string> GetPrinterIds(const std::vector<Printer>& printers) {
   return base::ToVector(printers, &Printer::id);
 }
 
-base::Value::List StringsToValueList(const std::vector<std::string>& strings) {
-  base::Value::List list;
+base::ListValue StringsToValueList(const std::vector<std::string>& strings) {
+  base::ListValue list;
   list.reserve(strings.size());
   for (const std::string& s : strings) {
     list.Append(s);
@@ -152,7 +152,7 @@ class EnterprisePrintersProviderTest : public testing::Test {
     // Explicitly set empty allowlist to disable all printers. Individual test
     // cases will override this.
     prefs_->SetManagedPref(prefs::kRecommendedPrintersAllowlist,
-                           base::Value::List());
+                           base::ListValue());
     cros_settings_->Set(kDevicePrintersAllowlist, base::Value());
 
     prefs_->SetManagedPref(

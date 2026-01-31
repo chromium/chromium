@@ -29,8 +29,7 @@ void PrintWindowHierarchy(const aura::Window* active_window,
   *out << std::string(indent, ' ');
   *out << " [window]";
   window->GetDebugInfo(active_window, focused_window, capture_window, out);
-  if (base::Contains(window->GetAllPropertyKeys(),
-                     chromeos::kWindowStateTypeKey)) {
+  if (window->GetAllPropertyKeys().contains(chromeos::kWindowStateTypeKey)) {
     *out << " state=" << window->GetProperty(chromeos::kWindowStateTypeKey);
   }
 

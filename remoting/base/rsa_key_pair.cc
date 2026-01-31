@@ -61,9 +61,13 @@ std::string RsaKeyPair::GenerateCertificate() {
   std::string der_cert;
   net::x509_util::CreateSelfSignedCert(
       key_.key(), net::x509_util::DIGEST_SHA256, "CN=chromoting",
-      base::RandInt(1, std::numeric_limits<int>::max()), base::Time::Now(),
-      base::Time::Now() + base::Days(1), {}, &der_cert);
+      base::RandIntInclusive(1, std::numeric_limits<int>::max()),
+      base::Time::Now(), base::Time::Now() + base::Days(1), {}, &der_cert);
   return der_cert;
+}
+
+std::vector<uint8_t> RsaKeyPair::Sign(base::span<const uint8_t> data) {
+  return crypto::sign::Sign(crypto::sign::RSA_PSS_SHA256, key_, data);
 }
 
 }  // namespace remoting

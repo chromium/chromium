@@ -83,7 +83,7 @@ class SetTimeMessageHandler : public content::WebUIMessageHandler,
   }
 
  private:
-  void OnPageReady(const base::Value::List& args) { AllowJavascript(); }
+  void OnPageReady(const base::ListValue& args) { AllowJavascript(); }
 
   // SystemClockClient::Observer:
   void SystemClockUpdated() override {
@@ -103,7 +103,7 @@ class SetTimeMessageHandler : public content::WebUIMessageHandler,
   // Handler for Javascript call to set the system clock when the user sets a
   // new time. Expects the time as the number of seconds since the Unix
   // epoch, treated as a double.
-  void OnSetTime(const base::Value::List& args) {
+  void OnSetTime(const base::ListValue& args) {
     double seconds = args[0].GetDouble();
     SystemClockClient::Get()->SetTime(static_cast<int64_t>(seconds));
   }
@@ -111,7 +111,7 @@ class SetTimeMessageHandler : public content::WebUIMessageHandler,
   // Handler for Javascript call to change the system time zone when the user
   // selects a new time zone. Expects the time zone ID as a string, as it
   // appears in the time zone option values.
-  void OnSetTimezone(const base::Value::List& args) {
+  void OnSetTimezone(const base::ListValue& args) {
     if (args.empty() || !args[0].is_string()) {
       NOTREACHED();
     }
@@ -122,7 +122,7 @@ class SetTimeMessageHandler : public content::WebUIMessageHandler,
     system::SetTimezoneFromUI(profile, timezone_id);
   }
 
-  void DoneClicked(const base::Value::List& args) {
+  void DoneClicked(const base::ListValue& args) {
     if (!parent_access::ParentAccessService::IsApprovalRequired(
             SupervisedAction::kUpdateClock)) {
       OnParentAccessValidation(true);
@@ -178,7 +178,7 @@ SetTimeUI::SetTimeUI(content::WebUI* web_ui) : MojoWebDialogUI(web_ui) {
   };
   source->AddLocalizedStrings(kStrings);
 
-  base::Value::Dict values;
+  base::DictValue values;
   // List of list of strings: [[ID, name], [ID, name], ...]
   values.Set("timezoneList", system::GetTimezoneList());
 

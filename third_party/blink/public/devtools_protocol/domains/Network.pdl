@@ -166,6 +166,15 @@ domain Network
       High
       VeryHigh
 
+  # The render blocking behavior of a resource request.
+  experimental type RenderBlockingBehavior extends string
+    enum
+      Blocking
+      InBodyParserBlocking
+      NonBlocking
+      NonBlockingDynamic
+      PotentiallyBlocking
+
   # Post data entry for HTTP request
   type PostDataEntry extends object
     properties
@@ -324,8 +333,6 @@ domain Network
       # TODO(https://crbug.com/1263483): Remove this once frontend code does
       # not reference it anymore.
       PreflightInvalidAllowExternal
-      PreflightMissingAllowPrivateNetwork
-      PreflightInvalidAllowPrivateNetwork
       InvalidAllowMethodsPreflightResponse
       InvalidAllowHeadersPreflightResponse
       MethodDisallowedByPreflightResponse
@@ -336,25 +343,7 @@ domain Network
       # Request carried a target IP address space property that did not match
       # the target resource's address space.
       InvalidPrivateNetworkAccess
-      # Request was a private network request yet did not carry a target IP
-      # address space.
-      UnexpectedPrivateNetworkAccess
       NoCorsRedirectModeNotFollow
-      # Request was a private network request and needed user permission yet did
-      # not carry `Private-Network-Access-Id` in the preflight response.
-      # https://github.com/WICG/private-network-access/blob/main/permission_prompt/explainer.md
-      PreflightMissingPrivateNetworkAccessId
-      # Request was a private network request and needed user permission yet did
-      # not carry `Private-Network-Access-Name` in the preflight response.
-      # https://github.com/WICG/private-network-access/blob/main/permission_prompt/explainer.md
-      PreflightMissingPrivateNetworkAccessName
-      # Request was a private network request and needed user permission yet not
-      # able to request for permission.
-      # https://github.com/WICG/private-network-access/blob/main/permission_prompt/explainer.md
-      PrivateNetworkAccessPermissionUnavailable
-      # Request was a private network request and is denied by user permission.
-      # https://github.com/WICG/private-network-access/blob/main/permission_prompt/explainer.md
-      PrivateNetworkAccessPermissionDenied
       # Request was a local network request and is denied by user permission.
       # https://wicg.github.io/local-network-access/
       LocalNetworkAccessPermissionDenied
@@ -613,8 +602,6 @@ domain Network
       optional CookieSameSite sameSite
       # Cookie Priority
       experimental CookiePriority priority
-      # True if cookie is SameParty.
-      experimental deprecated boolean sameParty
       # Cookie source scheme type.
       experimental CookieSourceScheme sourceScheme
       # Cookie source port. Valid values are {-1, [1, 65535]}, -1 indicates an unspecified port.
@@ -678,12 +665,6 @@ domain Network
       # value.
       # This is the "Schemeful Same-Site" version of the blocked reason.
       SchemefulSameSiteUnspecifiedTreatedAsLax
-      # The cookie had the "SameParty" attribute but came from a cross-party response.
-      SamePartyFromCrossPartyContext
-      # The cookie had the "SameParty" attribute but did not specify the "Secure" attribute
-      # (which is required in order to use "SameParty"); or specified the "SameSite=Strict"
-      # attribute (which is forbidden when using "SameParty").
-      SamePartyConflictsWithOtherAttributes
       # The cookie's name/value pair size exceeded the size limit defined in
       # RFC6265bis.
       NameValuePairExceedsMaxSize
@@ -740,8 +721,6 @@ domain Network
       # value.
       # This is the "Schemeful Same-Site" version of the blocked reason.
       SchemefulSameSiteUnspecifiedTreatedAsLax
-      # The cookie had the "SameParty" attribute and the request was made from a cross-party context.
-      SamePartyFromCrossPartyContext
       # The cookie's name/value pair size exceeded the size limit defined in
       # RFC6265bis.
       NameValuePairExceedsMaxSize
@@ -838,8 +817,6 @@ domain Network
       optional TimeSinceEpoch expires
       # Cookie Priority.
       experimental optional CookiePriority priority
-      # True if cookie is SameParty.
-      experimental optional boolean sameParty
       # Cookie source scheme type.
       experimental optional CookieSourceScheme sourceScheme
       # Cookie source port. Valid values are {-1, [1, 65535]}, -1 indicates an unspecified port.
@@ -1145,8 +1122,20 @@ domain Network
       experimental optional boolean reportDirectSocketTraffic
       # Enable storing response bodies outside of renderer, so that these survive
       # a cross-process navigation. Requires maxTotalBufferSize to be set.
-      # Currently defaults to false.
+      # Currently defaults to false. This field is being deprecated in favor of the dedicated
+      # configureDurableMessages command, due to the possibility of deadlocks when awaiting
+      # Network.enable before issuing Runtime.runIfWaitingForDebugger.
       experimental optional boolean enableDurableMessages
+
+  # Configures storing response bodies outside of renderer, so that these survive
+  # a cross-process navigation.
+  # If maxTotalBufferSize is not set, durable messages are disabled.
+  experimental command configureDurableMessages
+    parameters
+      # Buffer size in bytes to use when preserving network payloads (XHRs, etc).
+      optional integer maxTotalBufferSize
+      # Per-resource buffer size in bytes to use when preserving network payloads (XHRs, etc).
+      optional integer maxResourceBufferSize
 
   # Returns all browser cookies. Depending on the backend support, will return detailed cookie
   # information in the `cookies` field.
@@ -1195,6 +1184,8 @@ domain Network
     returns
       # Request body string, omitting files from multipart requests
       string postData
+      # True, if content was sent as base64.
+      boolean base64Encoded
 
   # Returns content served for the given currently intercepted request.
   experimental command getResponseBodyForInterception
@@ -1294,8 +1285,6 @@ domain Network
       optional TimeSinceEpoch expires
       # Cookie Priority type.
       experimental optional CookiePriority priority
-      # True if cookie is SameParty.
-      experimental optional boolean sameParty
       # Cookie source scheme type.
       experimental optional CookieSourceScheme sourceScheme
       # Cookie source port. Valid values are {-1, [1, 65535]}, -1 indicates an unspecified port.
@@ -1486,6 +1475,8 @@ domain Network
       optional Page.FrameId frameId
       # Whether the request is initiated by a user gesture. Defaults to false.
       optional boolean hasUserGesture
+      # The render blocking behavior of the request.
+      experimental optional RenderBlockingBehavior renderBlockingBehavior
 
   # Fired when resource loading priority is changed
   experimental event resourceChangedPriority
@@ -1821,6 +1812,8 @@ domain Network
       Headers headers
       # Connection timing information for the request.
       experimental ConnectTiming connectTiming
+      # How the request site's device bound sessions were used during this request.
+      optional array of DeviceBoundSessionWithUsage deviceBoundSessionUsages
       # The client security state set for the request.
       optional ClientSecurityState clientSecurityState
       # Whether the site has partitioned cookies stored in a partition different than the current one.
@@ -2033,6 +2026,256 @@ domain Network
       # Origin of the document(s) which configured the endpoints.
       string origin
       array of ReportingApiEndpoint endpoints
+
+  # Unique identifier for a device bound session.
+  experimental type DeviceBoundSessionKey extends object
+    properties
+      # The site the session is set up for.
+      string site
+      # The id of the session.
+      string id
+
+  # How a device bound session was used during a request.
+  experimental type DeviceBoundSessionWithUsage extends object
+    properties
+      # The key for the session.
+      DeviceBoundSessionKey sessionKey
+      # How the session was used (or not used).
+      enum usage
+        NotInScope
+        InScopeRefreshNotYetNeeded
+        InScopeRefreshNotAllowed
+        ProactiveRefreshNotPossible
+        ProactiveRefreshAttempted
+        Deferred
+
+  # A device bound session's cookie craving.
+  experimental type DeviceBoundSessionCookieCraving extends object
+    properties
+      # The name of the craving.
+      string name
+      # The domain of the craving.
+      string domain
+      # The path of the craving.
+      string path
+      # The `Secure` attribute of the craving attributes.
+      boolean secure
+      # The `HttpOnly` attribute of the craving attributes.
+      boolean httpOnly
+      # The `SameSite` attribute of the craving attributes.
+      optional CookieSameSite sameSite
+
+  # A device bound session's inclusion URL rule.
+  experimental type DeviceBoundSessionUrlRule extends object
+    properties
+      # See comments on `net::device_bound_sessions::SessionInclusionRules::UrlRule::rule_type`.
+      enum ruleType
+        Exclude
+        Include
+      # See comments on `net::device_bound_sessions::SessionInclusionRules::UrlRule::host_pattern`.
+      string hostPattern
+      # See comments on `net::device_bound_sessions::SessionInclusionRules::UrlRule::path_prefix`.
+      string pathPrefix
+
+  # A device bound session's inclusion rules.
+  experimental type DeviceBoundSessionInclusionRules extends object
+    properties
+      # See comments on `net::device_bound_sessions::SessionInclusionRules::origin_`.
+      string origin
+      # Whether the whole site is included. See comments on
+      # `net::device_bound_sessions::SessionInclusionRules::include_site_` for more
+      # details; this boolean is true if that value is populated.
+      boolean includeSite
+      # See comments on `net::device_bound_sessions::SessionInclusionRules::url_rules_`.
+      array of DeviceBoundSessionUrlRule urlRules
+
+  # A device bound session.
+  experimental type DeviceBoundSession extends object
+    properties
+      # The site and session ID of the session.
+      DeviceBoundSessionKey key
+      # See comments on `net::device_bound_sessions::Session::refresh_url_`.
+      string refreshUrl
+      # See comments on `net::device_bound_sessions::Session::inclusion_rules_`.
+      DeviceBoundSessionInclusionRules inclusionRules
+      # See comments on `net::device_bound_sessions::Session::cookie_cravings_`.
+      array of DeviceBoundSessionCookieCraving cookieCravings
+      # See comments on `net::device_bound_sessions::Session::expiry_date_`.
+      Network.TimeSinceEpoch expiryDate
+      # See comments on `net::device_bound_sessions::Session::cached_challenge__`.
+      optional string cachedChallenge
+      # See comments on `net::device_bound_sessions::Session::allowed_refresh_initiators_`.
+      array of string allowedRefreshInitiators
+
+  # A unique identifier for a device bound session event.
+  experimental type DeviceBoundSessionEventId extends string
+
+  # A fetch result for a device bound session creation or refresh.
+  experimental type DeviceBoundSessionFetchResult extends string
+    enum
+      Success
+      KeyError
+      SigningError
+      ServerRequestedTermination
+      InvalidSessionId
+      InvalidChallenge
+      TooManyChallenges
+      InvalidFetcherUrl
+      InvalidRefreshUrl
+      TransientHttpError
+      ScopeOriginSameSiteMismatch
+      RefreshUrlSameSiteMismatch
+      MismatchedSessionId
+      MissingScope
+      NoCredentials
+      SubdomainRegistrationWellKnownUnavailable
+      SubdomainRegistrationUnauthorized
+      SubdomainRegistrationWellKnownMalformed
+      SessionProviderWellKnownUnavailable
+      RelyingPartyWellKnownUnavailable
+      FederatedKeyThumbprintMismatch
+      InvalidFederatedSessionUrl
+      InvalidFederatedKey
+      TooManyRelyingOriginLabels
+      BoundCookieSetForbidden
+      NetError
+      ProxyError
+      EmptySessionConfig
+      InvalidCredentialsConfig
+      InvalidCredentialsType
+      InvalidCredentialsEmptyName
+      InvalidCredentialsCookie
+      PersistentHttpError
+      RegistrationAttemptedChallenge
+      InvalidScopeOrigin
+      ScopeOriginContainsPath
+      RefreshInitiatorNotString
+      RefreshInitiatorInvalidHostPattern
+      InvalidScopeSpecification
+      MissingScopeSpecificationType
+      EmptyScopeSpecificationDomain
+      EmptyScopeSpecificationPath
+      InvalidScopeSpecificationType
+      InvalidScopeIncludeSite
+      MissingScopeIncludeSite
+      FederatedNotAuthorizedByProvider
+      FederatedNotAuthorizedByRelyingParty
+      SessionProviderWellKnownMalformed
+      SessionProviderWellKnownHasProviderOrigin
+      RelyingPartyWellKnownMalformed
+      RelyingPartyWellKnownHasRelyingOrigins
+      InvalidFederatedSessionProviderSessionMissing
+      InvalidFederatedSessionWrongProviderOrigin
+      InvalidCredentialsCookieCreationTime
+      InvalidCredentialsCookieName
+      InvalidCredentialsCookieParsing
+      InvalidCredentialsCookieUnpermittedAttribute
+      InvalidCredentialsCookieInvalidDomain
+      InvalidCredentialsCookiePrefix
+      InvalidScopeRulePath
+      InvalidScopeRuleHostPattern
+      ScopeRuleOriginScopedHostPatternMismatch
+      ScopeRuleSiteScopedHostPatternMismatch
+      SigningQuotaExceeded
+      InvalidConfigJson
+      InvalidFederatedSessionProviderFailedToRestoreKey
+      FailedToUnwrapKey
+      SessionDeletedDuringRefresh
+
+  # Session event details specific to creation.
+  experimental type CreationEventDetails extends object
+    properties
+      # The result of the fetch attempt.
+      DeviceBoundSessionFetchResult fetchResult
+      # The session if there was a newly created session. This is populated for
+      # all successful creation events.
+      optional DeviceBoundSession newSession
+
+  # Session event details specific to refresh.
+  experimental type RefreshEventDetails extends object
+    properties
+      # The result of a refresh.
+      enum refreshResult
+        Refreshed
+        InitializedService
+        Unreachable
+        ServerError
+        RefreshQuotaExceeded
+        FatalError
+        SigningQuotaExceeded
+      # If there was a fetch attempt, the result of that.
+      optional DeviceBoundSessionFetchResult fetchResult
+      # The session display if there was a newly created session. This is populated
+      # for any refresh event that modifies the session config.
+      optional DeviceBoundSession newSession
+      # See comments on `net::device_bound_sessions::RefreshEventResult::was_fully_proactive_refresh`.
+      boolean wasFullyProactiveRefresh
+
+  # Session event details specific to termination.
+  experimental type TerminationEventDetails extends object
+    properties
+      # The reason for a session being deleted.
+      enum deletionReason
+        Expired
+        FailedToRestoreKey
+        FailedToUnwrapKey
+        StoragePartitionCleared
+        ClearBrowsingData
+        ServerRequested
+        InvalidSessionParams
+        RefreshFatalError
+
+  # Session event details specific to challenges.
+  experimental type ChallengeEventDetails extends object
+    properties
+      # The result of a challenge.
+      enum challengeResult
+        Success
+        NoSessionId
+        NoSessionMatch
+        CantSetBoundCookie
+      # The challenge set.
+      string challenge
+
+  # Triggered when the initial set of device bound sessions is added.
+  experimental event deviceBoundSessionsAdded
+    parameters
+      # The device bound sessions.
+      array of DeviceBoundSession sessions
+
+  # Triggered when a device bound session event occurs.
+  experimental event deviceBoundSessionEventOccurred
+    parameters
+      # A unique identifier for this session event.
+      DeviceBoundSessionEventId eventId
+      # The site this session event is associated with.
+      string site
+      # Whether this event was considered successful.
+      boolean succeeded
+      # The session ID this event is associated with. May not be populated for
+      # failed events.
+      optional string sessionId
+
+      # The below are the different session event type details. Exactly one is populated.
+      optional CreationEventDetails creationEventDetails
+      optional RefreshEventDetails refreshEventDetails
+      optional TerminationEventDetails terminationEventDetails
+      optional ChallengeEventDetails challengeEventDetails
+
+  # Sets up tracking device bound sessions and fetching of initial set of sessions.
+  experimental command enableDeviceBoundSessions
+    parameters
+      # Whether to enable or disable events.
+      boolean enable
+
+  # Fetches the schemeful site for a specific origin.
+  experimental command fetchSchemefulSite
+    parameters
+      # The URL origin.
+      string origin
+    returns
+      # The corresponding schemeful site.
+      string schemefulSite
 
   # An object providing the result of a network resource load.
   experimental type LoadNetworkResourcePageResult extends object

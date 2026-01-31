@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "base/check.h"
+#include "base/containers/flat_map.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/logging.h"
@@ -180,6 +181,16 @@ class UpdateServiceStubUntrusted : public mojom::UpdateService {
     observer->OnComplete(mojom::UpdateService_Result::kPermissionDenied);
   }
 
+  void GetUpdaterState(GetUpdaterStateCallback callback) override {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    impl_->GetUpdaterState(std::move(callback));
+  }
+
+  void GetPoliciesJson(GetPoliciesJsonCallback callback) override {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    impl_->GetPoliciesJson(std::move(callback));
+  }
+
  private:
   void OnClientDisconnected();
 
@@ -342,6 +353,25 @@ void UpdateServiceStub::RunInstaller(const std::string& app_id,
                       install_settings, language.value_or(""),
                       std::move(state_change_callback),
                       std::move(on_complete_callback).Then(task_end_listener_));
+}
+
+void UpdateServiceStub::GetUpdaterState(GetUpdaterStateCallback callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  task_start_listener_.Run();
+  impl_->GetUpdaterState(
+      base::BindOnce(
+          [](const updater::UpdateService::UpdaterState& updater_state) {
+            return mojom::UpdaterState::New(updater_state);
+          })
+          .Then(std::move(callback))
+          .Then(task_end_listener_));
+}
+
+void UpdateServiceStub::GetPoliciesJson(GetPoliciesJsonCallback callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  task_start_listener_.Run();
+  impl_->GetPoliciesJson(
+      base::BindOnce(std::move(callback)).Then(task_end_listener_));
 }
 
 void UpdateServiceStub::CheckForUpdate(

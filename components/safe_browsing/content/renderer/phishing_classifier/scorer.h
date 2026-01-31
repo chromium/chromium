@@ -69,12 +69,28 @@ class Scorer {
   static std::unique_ptr<Scorer> Create(base::ReadOnlySharedMemoryRegion region,
                                         base::File visual_tflite_model);
 
+  static std::unique_ptr<Scorer> Create(int classification_input_width,
+                                        int classification_input_height,
+                                        base::File tflite_visual_model);
+
   static std::unique_ptr<Scorer> CreateScorerWithImageEmbeddingModel(
       base::ReadOnlySharedMemoryRegion region,
       base::File visual_tflite_model,
       base::File image_embedding_model);
 
+  static std::unique_ptr<Scorer> CreateScorerWithImageEmbeddingModel(
+      int classification_input_width,
+      int classification_input_height,
+      base::File tflite_visual_model,
+      int image_embedding_input_width,
+      int image_embedding_input_height,
+      base::File image_embedding_model);
+
   void AttachImageEmbeddingModel(base::File image_embedding_model);
+
+  void AttachImageEmbeddingModel(int image_embedding_input_width,
+                                 int image_embedding_input_height,
+                                 base::File image_embedding_model);
 
   // This method computes the probability that the given features are indicative
   // of phishing.  It returns a score value that falls in the range [0.0,1.0]
@@ -98,36 +114,7 @@ class Scorer {
       base::OnceCallback<void(ImageFeatureEmbedding)> callback) const;
 #endif
 
-  // Returns the version number of the loaded client model.
-  int model_version() const;
-
-  int dom_model_version() const;
-
   bool HasVisualTfLiteModel() const;
-
-  // -- Accessors used by the page feature extractor ---------------------------
-
-  // Returns a callback to find if a page word is in the model.
-  base::RepeatingCallback<bool(uint32_t)> find_page_word_callback() const;
-
-  // Returns a callback to find if a page term is in the model.
-  base::RepeatingCallback<bool(const std::string&)> find_page_term_callback()
-      const;
-
-  // Return the maximum number of words per term for the loaded model.
-  size_t max_words_per_term() const;
-
-  // Returns the murmurhash3 seed for the loaded model.
-  uint32_t murmurhash3_seed() const;
-
-  // Return the maximum number of unique shingle hashes per page.
-  size_t max_shingles_per_page() const;
-
-  // Return the number of words in a shingle.
-  size_t shingle_size() const;
-
-  // Returns the threshold probability above which we send a CSD ping.
-  float threshold_probability() const;
 
   // Returns the version of the visual TFLite model.
   int tflite_model_version() const;
@@ -139,22 +126,20 @@ class Scorer {
   const google::protobuf::RepeatedPtrField<TfLiteModelMetadata::Threshold>&
   tflite_thresholds() const;
 
+  // Set the dimensions for image classification.
+  void SetClassificationDimensions(int classification_input_width,
+                                   int classification_input_height);
+
+  // Set the dimensions for image embedding.
+  void SetImageEmbeddingDimensions(int image_embedding_input_width,
+                                   int image_embedding_input_height);
+
   // Disable copy and move.
   Scorer(const Scorer&) = delete;
   Scorer& operator=(const Scorer&) = delete;
 
  private:
   friend class PhishingScorerTest;
-
-  bool has_page_term(const std::string& str) const;
-  bool has_page_word(uint32_t page_word_hash) const;
-
-  double ComputeRuleScore(const flat::ClientSideModel_::Rule* rule,
-                          const FeatureMap& features) const;
-
-  // Helper function which converts log odds to a probability in the range
-  // [0.0,1.0].
-  double LogOdds2Prob(const double log_odds) const;
 
   // Apply the tflite model to the bitmap. The scores are returned by running
   // `callback` on the provided `callback_task_runner`. This is expected to be
@@ -187,6 +172,13 @@ class Scorer {
       thresholds_;
   base::MemoryMappedFile image_embedding_model_;
   base::MemoryMappedFile visual_tflite_model_;
+
+  int classification_input_width_;
+  int classification_input_height_;
+
+  int image_embedding_input_width_;
+  int image_embedding_input_height_;
+
   base::WeakPtrFactory<Scorer> weak_ptr_factory_{this};
 };
 

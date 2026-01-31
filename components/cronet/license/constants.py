@@ -54,6 +54,8 @@ RAW_LICENSE_TO_FORMATTED_DETAILS = {
       ("MPL", LicenseType.RECIPROCAL, "SPDX-license-identifier-MPL-2.0"),
     "NCSA":
       ("NCSA", LicenseType.NOTICE, "SPDX-license-identifier-NCSA"),
+    "ISC":
+      ("ISC", LicenseType.NOTICE, "SPDX-license-identifier-ISC"),
     "unencumbered":
       ("UNENCUMBERED", LicenseType.UNENCUMBERED,
        "SPDX-license-identifier-Unlicense"),

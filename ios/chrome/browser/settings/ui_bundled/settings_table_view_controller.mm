@@ -117,10 +117,10 @@
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/profile/profile_manager_ios.h"
 #import "ios/chrome/browser/shared/model/utils/first_run_util.h"
-#import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/open_new_tab_command.h"
 #import "ios/chrome/browser/shared/public/commands/popup_menu_commands.h"
+#import "ios/chrome/browser/shared/public/commands/scene_commands.h"
 #import "ios/chrome/browser/shared/public/commands/settings_commands.h"
 #import "ios/chrome/browser/shared/public/commands/show_signin_command.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
@@ -482,9 +482,7 @@ struct EnhancedSafeBrowsingActivePromoData
     [self updateBWGNewIPHBadge];
   }
 
-  if ([self shouldShowNotificationsSettings]) {
-    [self updateNotificationsDetailText];
-  }
+  [self updateNotificationsDetailText];
 }
 
 - (void)viewDidAppear:(BOOL)animated {
@@ -536,11 +534,9 @@ struct EnhancedSafeBrowsingActivePromoData
     [model addItem:[self BWGSettingsDetailItem]
         toSectionWithIdentifier:SettingsSectionIdentifierAdvanced];
   }
-  if ([self shouldShowNotificationsSettings]) {
-    _notificationsItem = [self notificationsItem];
-    [model addItem:_notificationsItem
-        toSectionWithIdentifier:SettingsSectionIdentifierAdvanced];
-  }
+  _notificationsItem = [self notificationsItem];
+  [model addItem:_notificationsItem
+      toSectionWithIdentifier:SettingsSectionIdentifierAdvanced];
   [model addItem:[self voiceSearchDetailItem]
       toSectionWithIdentifier:SettingsSectionIdentifierAdvanced];
   [model addItem:[self safetyCheckDetailItem]
@@ -1302,7 +1298,6 @@ struct EnhancedSafeBrowsingActivePromoData
           [[AutofillProfileTableViewController alloc] initWithBrowser:_browser];
       break;
     case SettingsItemTypeNotifications:
-      CHECK([self shouldShowNotificationsSettings]);
       base::RecordAction(base::UserMetricsAction("Settings.Notifications"));
       [self showNotifications];
       break;
@@ -1349,8 +1344,8 @@ struct EnhancedSafeBrowsingActivePromoData
     case SettingsItemTypeSafariDataImport: {
       CHECK(ShouldShowSafariDataImportEntryPoint(_profile->GetPrefs()));
       base::RecordAction(base::UserMetricsAction("Settings.SafariImport"));
-      id<ApplicationCommands> handler = HandlerForProtocol(
-          _browser->GetCommandDispatcher(), ApplicationCommands);
+      id<SceneCommands> handler =
+          HandlerForProtocol(_browser->GetCommandDispatcher(), SceneCommands);
       [handler displaySafariDataImportFromEntryPoint:
                    SafariDataImportEntryPoint::kSetting
                                        withUIHandler:self];
@@ -1751,8 +1746,9 @@ struct EnhancedSafeBrowsingActivePromoData
   syncer::SyncService* syncService =
       SyncServiceFactory::GetForProfile(_profile);
   CHECK(syncService, base::NotFatalUntil::M151);
-  identityAccountItem.shouldDisplayError =
-      GetAccountErrorUIInfo(syncService) != nil;
+  if (GetAccountErrorUIInfo(syncService) != nil) {
+    identityAccountItem.detailImage = TableViewAccountDetailImage::kError;
+  }
 }
 
 - (void)reloadAccountCell {
@@ -1784,9 +1780,11 @@ struct EnhancedSafeBrowsingActivePromoData
   }
 
   UITableViewCell* accountCell = nil;
-  for (UITableViewCell* cell in [self.tableView visibleCells]) {
-    if ([cell isKindOfClass:[TableViewAccountCell class]]) {
-      accountCell = cell;
+  for (NSIndexPath* visibleIndexPath in self.tableView
+           .indexPathsForVisibleRows) {
+    if ([self.tableViewModel itemTypeForIndexPath:visibleIndexPath] ==
+        SettingsItemTypeAccount) {
+      accountCell = [self.tableView cellForRowAtIndexPath:visibleIndexPath];
       break;
     }
   }
@@ -1836,7 +1834,7 @@ struct EnhancedSafeBrowsingActivePromoData
 
 // Check if the default search engine is managed by policy.
 - (BOOL)isDefaultSearchEngineManagedByPolicy {
-  const base::Value::Dict& dict = _profile->GetPrefs()->GetDict(
+  const base::DictValue& dict = _profile->GetPrefs()->GetDict(
       DefaultSearchManager::kDefaultSearchProviderDataPrefName);
 
   if (dict.FindBoolByDottedPath(DefaultSearchManager::kDisabledByPolicy) ||
@@ -1848,7 +1846,7 @@ struct EnhancedSafeBrowsingActivePromoData
 
 // Returns the text to be displayed by the managed Search Engine item.
 - (NSString*)managedSearchEngineDetailText {
-  const base::Value::Dict& dict = _profile->GetPrefs()->GetDict(
+  const base::DictValue& dict = _profile->GetPrefs()->GetDict(
       DefaultSearchManager::kDefaultSearchProviderDataPrefName);
   if (dict.FindBoolByDottedPath(DefaultSearchManager::kDisabledByPolicy)) {
     // Default search engine is disabled by policy.
@@ -1933,8 +1931,6 @@ struct EnhancedSafeBrowsingActivePromoData
 // Updates the state of the Safety Check notifications button based on whether
 // the user has Safety Check notifications enabled.
 - (void)updateSafetyCheckNotificationsButtonState {
-  CHECK(IsSafetyCheckNotificationsEnabled());
-
   // Safety Check notifications are controlled by app-wide notification
   // settings, not profile-specific ones. No Gaia ID is required below in
   // `GetMobileNotificationPermissionStatusForClient()`.
@@ -1986,11 +1982,6 @@ struct EnhancedSafeBrowsingActivePromoData
                                browser:_browser];
   _downloadsSettingsCoordinator.delegate = self;
   [_downloadsSettingsCoordinator start];
-}
-
-// Returns YES if the Notifications settings should show.
-- (BOOL)shouldShowNotificationsSettings {
-  return base::FeatureList::IsEnabled(kNotificationSettingsMenuItem);
 }
 
 // Records that the user has reached the impression limit for the enhanced safe
@@ -2629,8 +2620,7 @@ struct EnhancedSafeBrowsingActivePromoData
     (PushNotificationClientId)clientID {
   [self updateNotificationsDetailText];
 
-  if (IsSafetyCheckNotificationsEnabled() &&
-      clientID == PushNotificationClientId::kSafetyCheck) {
+  if (clientID == PushNotificationClientId::kSafetyCheck) {
     [self updateSafetyCheckNotificationsButtonState];
   }
 }

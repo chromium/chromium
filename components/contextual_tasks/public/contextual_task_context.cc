@@ -6,6 +6,8 @@
 
 #include "base/strings/utf_string_conversions.h"
 #include "components/contextual_tasks/public/contextual_task.h"
+#include "components/url_deduplication/url_deduplication_helper.h"
+#include "components/visited_url_ranking/public/url_visit_util.h"
 
 namespace contextual_tasks {
 
@@ -20,7 +22,8 @@ UrlAttachmentDecoratorData::UrlAttachmentDecoratorData(
 UrlAttachmentDecoratorData& UrlAttachmentDecoratorData::operator=(
     UrlAttachmentDecoratorData&&) = default;
 
-UrlAttachment::UrlAttachment(const GURL& url) : url_(url) {}
+UrlAttachment::UrlAttachment(const GURL& url, ResourceType resource_type)
+    : url_(url), resource_type(resource_type) {}
 
 UrlAttachment::~UrlAttachment() = default;
 
@@ -64,6 +67,10 @@ SessionID UrlAttachment::GetTabSessionId() const {
   return decorator_data_.contextual_search_context_data.tab_session_id;
 }
 
+ResourceType UrlAttachment::GetResourceType() const {
+  return resource_type;
+}
+
 UrlAttachmentDecoratorData& UrlAttachment::GetMutableDecoratorDataForTesting() {
   return decorator_data_;
 }
@@ -75,7 +82,7 @@ UrlAttachmentDecoratorData& UrlAttachment::GetMutableDecoratorData() {
 ContextualTaskContext::ContextualTaskContext(const ContextualTask& task)
     : task_id_(task.GetTaskId()) {
   for (const auto& url_resource : task.GetUrlResources()) {
-    UrlAttachment attachment(url_resource.url);
+    UrlAttachment attachment(url_resource.url, url_resource.resource_type);
     if (url_resource.title.has_value()) {
       attachment.title_ = base::UTF8ToUTF16(url_resource.title.value());
     }
@@ -116,6 +123,41 @@ ContextualTaskContext::GetMutableUrlAttachmentsForTesting() {
 
 std::vector<UrlAttachment>& ContextualTaskContext::GetMutableUrlAttachments() {
   return urls_;
+}
+
+bool ContextualTaskContext::ContainsURL(
+    const GURL& url,
+    url_deduplication::URLDeduplicationHelper* deduplication_helper) const {
+  visited_url_ranking::URLMergeKey merge_key =
+      visited_url_ranking::ComputeURLMergeKey(url, std::u16string(),
+                                              deduplication_helper);
+  for (const auto& attachment : urls_) {
+    if (visited_url_ranking::ComputeURLMergeKey(
+            attachment.GetURL(), std::u16string(), deduplication_helper) ==
+        merge_key) {
+      return true;
+    }
+  }
+  return false;
+}
+
+std::vector<const UrlAttachment*>
+ContextualTaskContext::GetMatchingUrlAttachments(
+    const GURL& url,
+    url_deduplication::URLDeduplicationHelper* deduplication_helper) const {
+  // TODO(crbug.com/470979776): Add unit tests for this function.
+  std::vector<const UrlAttachment*> matching_attachments;
+  visited_url_ranking::URLMergeKey merge_key =
+      visited_url_ranking::ComputeURLMergeKey(url, std::u16string(),
+                                              deduplication_helper);
+  for (const auto& attachment : urls_) {
+    if (visited_url_ranking::ComputeURLMergeKey(
+            attachment.GetURL(), std::u16string(), deduplication_helper) ==
+        merge_key) {
+      matching_attachments.push_back(&attachment);
+    }
+  }
+  return matching_attachments;
 }
 
 }  // namespace contextual_tasks

@@ -48,6 +48,7 @@
 <translation id="2761536921376153655">ಸ್ಕ್ಯಾನ್ ಪ್ರಕಾರ</translation>
 <translation id="28682968802727151">ಮಿರರ್ ಪೂರ್ವವೀಕ್ಷಣೆ</translation>
 <translation id="2879583609344924966"><ph name="CAMERA" /> ಪ್ಲಗ್-ಇನ್ ಆಗಿದೆ.</translation>
+<translation id="3063987824612038785">ಎಲ್ಲಾ ಕ್ಯಾಮರಾ ಫೈಲ್‌ಗಳನ್ನು Google Drive ನಲ್ಲಿ ಸೇವ್ ಮಾಡಲಾಗುತ್ತದೆ</translation>
 <translation id="3067436040345934772">ಬಲಕ್ಕೆ ಪ್ಯಾನ್ ಮಾಡಿ</translation>
 <translation id="3081586908890909590">ವೀಡಿಯೊ ರೆಕಾರ್ಡ್ ಮೋಡ್‌ಗೆ ಬದಲಿಸಿ</translation>
 <translation id="3091480460059548935">ಪೂರ್ವವೀಕ್ಷಣೆಯಲ್ಲಿ ಪಠ್ಯ ಪತ್ತೆಹಚ್ಚುವಿಕೆ</translation>
@@ -67,6 +68,7 @@
 <translation id="3642192109456033823">ವೀಡಿಯೊ ಪ್ರಕ್ರಿಯೆಗೊಳಿಸಲಾಗುತ್ತಿದೆ...</translation>
 <translation id="3789724198583203151">ಅಪ್ರದಕ್ಷಿಣಾಕಾರವಾಗಿ 90 ಡಿಗ್ರಿಗಳಷ್ಟು ತಿರುಗಿಸಿ</translation>
 <translation id="3810838688059735925">ವೀಡಿಯೊ</translation>
+<translation id="386366972082231038">ಎಲ್ಲಾ ಕ್ಯಾಮರಾ ಫೈಲ್‌ಗಳನ್ನು OneDrive ನಲ್ಲಿ ಸೇವ್ ಮಾಡಲಾಗುತ್ತದೆ</translation>
 <translation id="4060608699153044055">ಸಾಧನದಲ್ಲಿ ಕಡಿಮೆ ಸಂಗ್ರಹಣೆಯ ಸ್ಥಳ ಇರುವ ಕಾರಣ ನೀವು ರೆಕಾರ್ಡ್ ಮಾಡಲು ಸಾಧ್ಯವಿಲ್ಲ. ರೆಕಾರ್ಡಿಂಗ್ ಮಾಡುವುದನ್ನು ಪ್ರಾರಂಭಿಸಲು, ನಿಮ್ಮ ಸಾಧನದಲ್ಲಿ ನೀವು ಸ್ಥಳಾವಕಾಶವನ್ನು ತೆರವುಗೊಳಿಸಬೇಕು.</translation>
 <translation id="4061162772429051350"><ph name="MAGAPIXELS_AMOUNT" /> MP</translation>
 <translation id="4118525110028899586">ರೆಕಾರ್ಡಿಂಗ್ ವಿರಾಮಗೊಳಿಸಿ</translation>
@@ -100,6 +102,7 @@
 <translation id="5634947914995388399">ಡೈಲಾಗ್‌ ಅನ್ನು ವಿಸ್ತರಿಸಿ ಮತ್ತು ಸ್ಕ್ಯಾನ್ ಮಾಡುವುದನ್ನು ನಿಲ್ಲಿಸಿ</translation>
 <translation id="5662366948659129155">ಪುಟ <ph name="COUNT" /> ಅನ್ನು ಸ್ಕ್ಯಾನ್ ಮಾಡಲಾಗುತ್ತಿದೆ</translation>
 <translation id="5671277269877808209">ಚೌಕ</translation>
+<translation id="5725797473946373607">ಮುಂದಿನ ಬಾರಿ ಈ ಡೈಲಾಗ್ ಅನ್ನು ತೋರಿಸಬೇಡಿ</translation>
 <translation id="574392208103952083">ಮಧ್ಯಮ</translation>
 <translation id="5746169159649715125">PDF ನಂತೆ ಸೇವ್‌ ಮಾಡಿ.</translation>
 <translation id="5753488212459587150">ತಜ್ಞರ ಮೋಡ್ ಸಕ್ರಿಯಗೊಳಿಸಿ</translation>
@@ -156,6 +159,7 @@
 <translation id="7983668134180549431">ಪಠ್ಯ ಪತ್ತೆಯಾಗಿದೆ.</translation>
 <translation id="8079255378695216066">ರೆಕಾರ್ಡಿಂಗ್ ಅನ್ನು ಪ್ರಾರಂಭಿಸಲು ಸಾಧ್ಯವಿಲ್ಲ</translation>
 <translation id="8120146556401698679">ಪ್ಯಾನ್ ಮಾಡಿ ಟಿಲ್ಟ್ ಮಾಡಿ ಝೂಮ್ ಮಾಡಿ</translation>
+<translation id="8127459436205030819">ನಿಮ್ಮ ಫೈಲ್‌ಗಳು ನಿಮ್ಮ ನಿರ್ವಾಹಕರಿಗೆ ಗೋಚರಿಸಬಹುದು</translation>
 <translation id="8131740175452115882">ದೃಢೀಕರಿಸು</translation>
 <translation id="8145038249676204903">ಫೋಟೋ ತೆಗೆದುಕೊಳ್ಳಿ ಮೋಡ್‌ಗೆ ಬದಲಿಸಿ</translation>
 <translation id="8167081290930651932">ಫೋಟೋ ಫಾರ್ಮ್ಯಾಟ್‌ನಲ್ಲಿ ಸೇವ್ ಮಾಡಿ</translation>
@@ -165,6 +169,7 @@
 <translation id="8609951387004618906"><ph name="URL" /> ಅನ್ನು ತೆರೆಯಿರಿ</translation>
 <translation id="8629662593426079630">360p</translation>
 <translation id="8711011893539266636">ಮೈಕ್ರೊಫೋನ್ ಅನ್ನು ಮ್ಯೂಟ್ ಮಾಡುವ ಬಟನ್ ಟಾಗಲ್ ಮಾಡಿ. ಮ್ಯೂಟ್ ಆನ್ ಆಗಿದೆ</translation>
+<translation id="8712637175834984815">ಅರ್ಥವಾಯಿತು</translation>
 <translation id="8730621377337864115">ಮುಗಿದಿದೆ</translation>
 <translation id="8732462232047530626">ಮೆಟಾಡೇಟಾವನ್ನು ಪೂರ್ವವೀಕ್ಷಿಸಿ</translation>
 <translation id="874854738381978209">ವೈ-ಫೈ ನೆಟ್‌ವರ್ಕ್ ಪತ್ತೆಯಾಗಿದೆ.</translation>

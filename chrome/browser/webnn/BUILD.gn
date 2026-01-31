@@ -2,6 +2,8 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//services/webnn/features.gni")
+
 source_set("webnn") {
   sources = []
   deps = []
@@ -20,9 +22,14 @@ source_set("webnn") {
       "//chrome/common:constants",
       "//components/prefs",
       "//content/public/browser",
-      "//services/webnn/public/cpp",
-      "//services/webnn/public/mojom",
-      "//third_party/windows_app_sdk_headers",
+      "//services/webnn:buildflags",
+      "//services/webnn/public/cpp:win",
+      "//services/webnn/public/mojom:features",
+      "//third_party/windows_app_sdk_headers:version_info",
     ]
+
+    if (webnn_install_runtime_in_chrome_installer) {
+      deps += [ "//chrome/installer/util:with_no_strings" ]
+    }
   }
 }

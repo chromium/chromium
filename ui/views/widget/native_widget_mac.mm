@@ -182,18 +182,13 @@ void NativeWidgetMac::OnWindowKeyStatusChanged(
   if (!widget || !widget->OnNativeWidgetActivationChanged(is_key)) {
     return;
   }
-  // The contentView is the BridgedContentView hosting the views::RootView. The
-  // focus manager will already know if a native subview has focus.
-  if (!is_content_first_responder) {
-    return;
-  }
 
   if (is_key) {
     widget->OnNativeFocus();
     widget->GetFocusManager()->RestoreFocusedView();
   } else {
     widget->OnNativeBlur();
-    widget->GetFocusManager()->StoreFocusedView(true);
+    widget->GetFocusManager()->StoreFocusedView(false);
     parent_key_lock_.reset();
   }
 }
@@ -566,7 +561,7 @@ void NativeWidgetMac::InitModalType(ui::mojom::ModalType modal_type) {
   DCHECK_NE(ui::mojom::ModalType::kSystem, modal_type);
 
   // A peculiarity of the constrained window framework is that it permits a
-  // dialog of MODAL_TYPE_WINDOW to have a null parent window; falling back to
+  // dialog of ModalType::kWindow to have a null parent window; falling back to
   // a non-modal window in this case.
   DCHECK(ns_window_host_->parent() ||
          modal_type == ui::mojom::ModalType::kWindow);

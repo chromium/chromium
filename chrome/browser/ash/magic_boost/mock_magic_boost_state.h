@@ -6,13 +6,13 @@
 #define CHROME_BROWSER_ASH_MAGIC_BOOST_MOCK_MAGIC_BOOST_STATE_H_
 
 #include "base/functional/callback_forward.h"
-#include "chrome/browser/ash/magic_boost/magic_boost_state_ash.h"
+#include "chrome/browser/ash/magic_boost/magic_boost_state.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
 namespace ash {
 
-// A class that mocks `MagicBoostStateAsh` to use in tests.
-class MockMagicBoostState : public MagicBoostStateAsh {
+// A class that mocks `MagicBoostState` to use in tests.
+class MockMagicBoostState : public MagicBoostState {
  public:
   MockMagicBoostState();
 

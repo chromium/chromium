@@ -256,7 +256,7 @@ void PulseAudioInputStream::SendLogMessage(const char* format, ...) {
     return;
   va_list args;
   va_start(args, format);
-  log_callback_.Run("PAIS::" + base::StringPrintV(format, args));
+  log_callback_.Run("PAIS::" + UNSAFE_TODO(base::StringPrintV(format, args)));
   va_end(args);
 }
 

@@ -8,7 +8,7 @@ import android.graphics.Color;
 import android.view.Window;
 
 import org.chromium.base.Callback;
-import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.NonNullObservableSupplier;
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -23,7 +23,7 @@ import org.chromium.build.annotations.Nullable;
  */
 @NullMarked
 public class EdgeToEdgeSystemBarColorHelper extends BaseSystemBarColorHelper {
-    private final ObservableSupplier<Boolean> mDoesContentFitWindowSupplier;
+    private final NonNullObservableSupplier<Boolean> mDoesContentFitWindowSupplier;
     private final OneshotSupplier<SystemBarColorHelper> mEdgeToEdgeDelegateHelperSupplier;
     private final Window mWindow;
     private WindowSystemBarColorHelper mWindowColorHelper;
@@ -42,7 +42,7 @@ public class EdgeToEdgeSystemBarColorHelper extends BaseSystemBarColorHelper {
      */
     public EdgeToEdgeSystemBarColorHelper(
             Window window,
-            ObservableSupplier<Boolean> doesContentFitWindowSupplier,
+            NonNullObservableSupplier<Boolean> doesContentFitWindowSupplier,
             OneshotSupplier<SystemBarColorHelper> delegateHelperSupplier,
             boolean canColorStatusBarColor) {
         mWindow = window;
@@ -52,7 +52,7 @@ public class EdgeToEdgeSystemBarColorHelper extends BaseSystemBarColorHelper {
         mCanColorStatusBarColor = canColorStatusBarColor;
 
         // Initial values. By default, read the values from window.
-        mIsActivityEdgeToEdge = Boolean.FALSE.equals(mDoesContentFitWindowSupplier.get());
+        mIsActivityEdgeToEdge = !doesContentFitWindowSupplier.get();
         mStatusBarColor = mWindowColorHelper.getStatusBarColor();
         mNavBarColor = mWindowColorHelper.getNavigationBarColor();
         mNavBarDividerColor = mWindowColorHelper.getNavigationBarDividerColor();

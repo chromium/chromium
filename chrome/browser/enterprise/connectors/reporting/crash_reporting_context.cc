@@ -45,11 +45,11 @@ policy::ChromeBrowserCloudManagementController* GetCBCMController() {
       ->chrome_browser_cloud_management_controller();
 }
 
-base::Value::Dict GetBrowserCrashEventDeprecated(const std::string& channel,
-                                                 const std::string& version,
-                                                 const std::string& report_id,
-                                                 const std::string& platform) {
-  base::Value::Dict event;
+base::DictValue GetBrowserCrashEventDeprecated(const std::string& channel,
+                                               const std::string& version,
+                                               const std::string& report_id,
+                                               const std::string& platform) {
+  base::DictValue event;
   event.Set(kKeyChannel, channel);
   event.Set(kKeyVersion, version);
   event.Set(kKeyReportId, report_id);

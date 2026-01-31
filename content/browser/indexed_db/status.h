@@ -36,7 +36,6 @@ class CONTENT_EXPORT Status {
 
   Status& operator=(const Status& rhs);
   Status& operator=(Status&&) noexcept;
-  Status& operator=(leveldb::Status&& rhs) noexcept;
 
   // Create a success or error status that didn't originate in the database
   // engine.

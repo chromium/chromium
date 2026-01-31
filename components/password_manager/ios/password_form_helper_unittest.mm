@@ -23,7 +23,6 @@
 #import "components/autofill/ios/common/field_data_manager_factory_ios.h"
 #import "components/autofill/ios/form_util/autofill_test_with_web_state.h"
 #import "components/autofill/ios/form_util/form_handlers_java_script_feature.h"
-#import "components/autofill/ios/form_util/form_util_java_script_feature.h"
 #import "components/autofill/ios/form_util/renderer_id_test_util.h"
 #import "components/password_manager/core/browser/mock_password_manager.h"
 #import "components/password_manager/core/browser/password_manager_driver.h"
@@ -90,7 +89,6 @@ class PasswordFormHelperTest : public AutofillTestWithWebState {
         autofill::test::CreateRendererIdTestJavaScriptFeature();
     web_client->SetJavaScriptFeatures(
         {autofill::FormHandlersJavaScriptFeature::GetInstance(),
-         autofill::FormUtilJavaScriptFeature::GetInstance(),
          autofill::AutofillJavaScriptFeature::GetInstance(),
          password_manager::PasswordManagerJavaScriptFeature::GetInstance(),
          renderer_id_feature_.get()});
@@ -154,11 +152,11 @@ class PasswordFormHelperTest : public AutofillTestWithWebState {
   std::unique_ptr<base::Value> ValidFormSubmittedMessageBody(
       std::string frame_id) {
     return std::make_unique<base::Value>(
-        base::Value::Dict()
+        base::DictValue()
             .Set("name", "test_form")
             .Set("origin", BaseUrl())
-            .Set("fields", base::Value::List().Append(
-                               base::Value::Dict()
+            .Set("fields", base::ListValue().Append(
+                               base::DictValue()
                                    .Set("name", "test_field")
                                    .Set("form_control_type", "password")))
             .Set("host_frame", frame_id));
@@ -696,7 +694,7 @@ TEST_F(PasswordFormHelperTest, FillUsernameAndPassword_MissingFillResultField) {
 
   // Test the missing did_fill_username field.
   {
-    auto result = base::Value(base::Value::Dict()
+    auto result = base::Value(base::DictValue()
                                   .Set("did_fill_password", base::Value(true))
                                   .Set("did_attempt_fill", base::Value(true)));
     main_frame_ptr->AddJsResultForFunctionCall(&result,
@@ -717,7 +715,7 @@ TEST_F(PasswordFormHelperTest, FillUsernameAndPassword_MissingFillResultField) {
 
   // Test the missing did_fill_password field.
   {
-    auto result = base::Value(base::Value::Dict()
+    auto result = base::Value(base::DictValue()
                                   .Set("did_fill_username", base::Value(true))
                                   .Set("did_attempt_fill", base::Value(true)));
     main_frame_ptr->AddJsResultForFunctionCall(&result,
@@ -738,7 +736,7 @@ TEST_F(PasswordFormHelperTest, FillUsernameAndPassword_MissingFillResultField) {
 
   // Test the missing did_attempt_fill field.
   {
-    auto result = base::Value(base::Value::Dict()
+    auto result = base::Value(base::DictValue()
                                   .Set("did_fill_username", base::Value(true))
                                   .Set("did_fill_password", base::Value(true)));
     main_frame_ptr->AddJsResultForFunctionCall(&result,
@@ -975,7 +973,7 @@ TEST_F(PasswordFormHelperTest, HandleFormSubmittedMessage_CantExtractFormData) {
   LoadHtml(@"<p>");
 
   auto incomplete_message_body = std::make_unique<base::Value>(
-      base::Value::Dict().Set("host_frame", GetMainFrame()->GetFrameId()));
+      base::DictValue().Set("host_frame", GetMainFrame()->GetFrameId()));
 
   // Set a message with an incomplete body that misses the required keys to be
   // parsed to form data.

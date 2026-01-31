@@ -4,8 +4,10 @@
 
 #include "components/autofill/core/browser/data_model/valuables/loyalty_card.h"
 
+#include <cstdint>
 #include <string>
 
+#include "base/time/time.h"
 #include "components/affiliations/core/browser/affiliation_utils.h"
 #include "components/autofill/core/browser/data_model/valuables/valuable_types.h"
 
@@ -16,13 +18,16 @@ LoyaltyCard::LoyaltyCard(ValuableId id,
                          std::string program_name,
                          GURL program_logo,
                          std::string loyalty_card_number,
-                         std::vector<GURL> merchant_domains)
+                         std::vector<GURL> merchant_domains,
+                         base::Time use_date,
+                         int64_t use_count)
     : id_(std::move(id)),
       merchant_name_(std::move(merchant_name)),
       program_name_(std::move(program_name)),
       program_logo_(std::move(program_logo)),
       loyalty_card_number_(std::move(loyalty_card_number)),
-      merchant_domains_(std::move(merchant_domains)) {}
+      merchant_domains_(std::move(merchant_domains)),
+      valuable_metadata_(id_, use_date, use_count) {}
 
 LoyaltyCard::LoyaltyCard(const LoyaltyCard&) = default;
 LoyaltyCard::LoyaltyCard(LoyaltyCard&&) = default;
@@ -44,6 +49,11 @@ LoyaltyCard::AffiliationCategory LoyaltyCard::GetAffiliationCategory(
       });
   return has_affiliated_domain ? AffiliationCategory::kAffiliated
                                : AffiliationCategory::kNonAffiliated;
+}
+
+void LoyaltyCard::RecordLoyaltyCardUsed(base::Time date) {
+  valuable_metadata_.use_date = date;
+  ++valuable_metadata_.use_count;
 }
 
 }  // namespace autofill

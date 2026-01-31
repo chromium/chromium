@@ -63,8 +63,6 @@ class PLATFORM_EXPORT FontSelector : public FontCacheClient {
                             const AtomicString& family_name,
                             const FontDataForRangeSet&) = 0;
 
-  virtual unsigned Version() const = 0;
-
   virtual void ReportNotDefGlyph() const = 0;
 
   virtual void RegisterForInvalidationCallbacks(FontSelectorClient*) = 0;

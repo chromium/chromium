@@ -75,5 +75,5 @@ TEST_F(EqualsTest, Array) {
   EXPECT_TRUE(n1.Equals(n2));
 }
 
-}  // test
-}  // mojo
+}  // namespace test
+}  // namespace mojo

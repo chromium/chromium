@@ -13,7 +13,7 @@ namespace enterprise_connectors {
 // Service in charge of retrieving context-aware signals for its consumers.
 class SignalsService {
  public:
-  using CollectSignalsCallback = base::OnceCallback<void(base::Value::Dict)>;
+  using CollectSignalsCallback = base::OnceCallback<void(base::DictValue)>;
 
   virtual ~SignalsService() = default;
 

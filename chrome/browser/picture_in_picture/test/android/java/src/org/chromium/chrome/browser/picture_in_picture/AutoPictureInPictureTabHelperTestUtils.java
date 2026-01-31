@@ -34,6 +34,13 @@ public class AutoPictureInPictureTabHelperTestUtils {
                                 .initializeForTesting(webContents));
     }
 
+    public static boolean isCurrentlyAudible(WebContents webContents) {
+        return ThreadUtils.runOnUiThreadBlocking(
+                () ->
+                        AutoPictureInPictureTabHelperTestUtilsJni.get()
+                                .isCurrentlyAudible(webContents));
+    }
+
     /**
      * Polls the UI thread until the auto-PiP trigger state for the given {@link WebContents}
      * matches the {@code expectedInPip} state.
@@ -165,6 +172,8 @@ public class AutoPictureInPictureTabHelperTestUtils {
     @NativeMethods
     interface Natives {
         void initializeForTesting(@JniType("content::WebContents*") WebContents webContents);
+
+        boolean isCurrentlyAudible(@JniType("content::WebContents*") WebContents webContents);
 
         boolean isInAutoPictureInPicture(@JniType("content::WebContents*") WebContents webContents);
 

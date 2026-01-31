@@ -43,29 +43,29 @@ class DevToolsExtensionsProtocolTest : public DevToolsProtocolTestBase {
     command_line->RemoveSwitch(::switches::kEnableUnsafeExtensionDebugging);
   }
 
-  const base::Value::Dict* SendLoadUnpackedCommand(const std::string& path) {
+  const base::DictValue* SendLoadUnpackedCommand(const std::string& path) {
     base::FilePath extension_path =
         base::PathService::CheckedGet(chrome::DIR_TEST_DATA)
             .AppendASCII("devtools")
             .AppendASCII("extensions")
             .AppendASCII(path);
 
-    base::Value::Dict params;
+    base::DictValue params;
     params.Set("path", extension_path.AsUTF8Unsafe());
 
     return SendCommandSync("Extensions.loadUnpacked", std::move(params));
   }
 
-  const base::Value::Dict* SendStorageCommand(
+  const base::DictValue* SendStorageCommand(
       const std::string& command,
       const extensions::Extension* extension,
-      base::Value::Dict extra_params) {
-    base::Value::Dict storage_params;
+      base::DictValue extra_params) {
+    base::DictValue storage_params;
     storage_params.Set("id", extension->id());
     storage_params.Set("storageArea", "local");
     storage_params.Merge(std::move(extra_params));
 
-    const base::Value::Dict* get_result =
+    const base::DictValue* get_result =
         SendCommandSync(command, std::move(storage_params));
     return get_result;
   }
@@ -112,9 +112,9 @@ IN_PROC_BROWSER_TEST_F(DevToolsExtensionsProtocolTest,
       registry->GetInstalledExtension(id);
   ASSERT_TRUE(extension_before);
 
-  base::Value::Dict params;
+  base::DictValue params;
   params.Set("id", id);
-  const base::Value::Dict* uninstall_result =
+  const base::DictValue* uninstall_result =
       SendCommandSync("Extensions.uninstall", std::move(params));
   ASSERT_FALSE(uninstall_result);
 
@@ -125,7 +125,7 @@ IN_PROC_BROWSER_TEST_F(DevToolsExtensionsProtocolTest,
 
 IN_PROC_BROWSER_TEST_F(DevToolsExtensionsProtocolWithUnsafeDebuggingTest,
                        CanInstallExtension) {
-  const base::Value::Dict* result =
+  const base::DictValue* result =
       SendLoadUnpackedCommand("simple_background_page");
   ASSERT_TRUE(result);
   ASSERT_TRUE(result->FindString("id"));
@@ -142,13 +142,13 @@ IN_PROC_BROWSER_TEST_F(DevToolsExtensionsProtocolWithUnsafeDebuggingTest,
 
 IN_PROC_BROWSER_TEST_F(DevToolsExtensionsProtocolWithUnsafeDebuggingTest,
                        ThrowsOnWrongPath) {
-  const base::Value::Dict* result = SendLoadUnpackedCommand("non-existent");
+  const base::DictValue* result = SendLoadUnpackedCommand("non-existent");
   ASSERT_FALSE(result);
 }
 
 IN_PROC_BROWSER_TEST_F(DevToolsExtensionsProtocolWithUnsafeDebuggingTest,
                        CanUninstallExtension) {
-  const base::Value::Dict* install_result =
+  const base::DictValue* install_result =
       SendLoadUnpackedCommand("simple_background_page");
 
   std::string id = *install_result->FindString("id");
@@ -158,9 +158,9 @@ IN_PROC_BROWSER_TEST_F(DevToolsExtensionsProtocolWithUnsafeDebuggingTest,
       registry->GetInstalledExtension(id);
   ASSERT_TRUE(extension_before);
 
-  base::Value::Dict params;
+  base::DictValue params;
   params.Set("id", id);
-  const base::Value::Dict* uninstall_result =
+  const base::DictValue* uninstall_result =
       SendCommandSync("Extensions.uninstall", std::move(params));
   ASSERT_TRUE(uninstall_result);
 
@@ -185,9 +185,9 @@ IN_PROC_BROWSER_TEST_F(DevToolsExtensionsProtocolWithUnsafeDebuggingTest,
       registry->GetInstalledExtension(id);
   ASSERT_TRUE(extension_before);
 
-  base::Value::Dict params;
+  base::DictValue params;
   params.Set("id", id);
-  const base::Value::Dict* uninstall_result =
+  const base::DictValue* uninstall_result =
       SendCommandSync("Extensions.uninstall", std::move(params));
   ASSERT_FALSE(uninstall_result);
 
@@ -205,9 +205,9 @@ IN_PROC_BROWSER_TEST_F(DevToolsExtensionsProtocolWithUnsafeDebuggingTest,
   const extensions::Extension* extension = registry->GetInstalledExtension(id);
   ASSERT_FALSE(extension);
 
-  base::Value::Dict params;
+  base::DictValue params;
   params.Set("id", id);
-  const base::Value::Dict* uninstallResult =
+  const base::DictValue* uninstallResult =
       SendCommandSync("Extensions.uninstall", std::move(params));
   ASSERT_FALSE(uninstallResult);
 
@@ -259,7 +259,7 @@ IN_PROC_BROWSER_TEST_F(DevToolsExtensionsProtocolWithUnsafeDebuggingTest,
                        CanGetStorageValues) {
   ExtensionTestMessageListener activated_listener("WORKER_ACTIVATED");
 
-  const base::Value::Dict* load_result =
+  const base::DictValue* load_result =
       SendLoadUnpackedCommand("service_worker");
   ASSERT_TRUE(load_result);
 
@@ -283,15 +283,15 @@ IN_PROC_BROWSER_TEST_F(DevToolsExtensionsProtocolWithUnsafeDebuggingTest,
   //  Set some dummy values in storage.
   ASSERT_TRUE(SendStorageCommand(
       "Extensions.setStorageItems", extension,
-      base::Value::Dict().Set("values", base::Value::Dict()
-                                            .Set("foo", "bar")
-                                            .Set("other", "value")
-                                            .Set("remove-on-clear", "value"))));
+      base::DictValue().Set("values", base::DictValue()
+                                          .Set("foo", "bar")
+                                          .Set("other", "value")
+                                          .Set("remove-on-clear", "value"))));
 
   // Check only the requested keys are returned.
-  const base::Value::Dict* get_result = SendStorageCommand(
+  const base::DictValue* get_result = SendStorageCommand(
       "Extensions.getStorageItems", extension,
-      base::Value::Dict().Set("keys", base::Value::List().Append("foo")));
+      base::DictValue().Set("keys", base::ListValue().Append("foo")));
   ASSERT_TRUE(get_result);
   ASSERT_EQ(*get_result->FindDict("data")->FindString("foo"), "bar");
   ASSERT_FALSE(get_result->FindDict("data")->contains("other"));
@@ -299,31 +299,31 @@ IN_PROC_BROWSER_TEST_F(DevToolsExtensionsProtocolWithUnsafeDebuggingTest,
   // Remove the `foo` key.
   ASSERT_TRUE(SendStorageCommand(
       "Extensions.removeStorageItems", extension,
-      base::Value::Dict().Set("keys", base::Value::List().Append("foo"))));
+      base::DictValue().Set("keys", base::ListValue().Append("foo"))));
 
   // Check the `foo` key no longer exists.
-  const base::Value::Dict* get_result_2 = SendStorageCommand(
+  const base::DictValue* get_result_2 = SendStorageCommand(
       "Extensions.getStorageItems", extension,
-      base::Value::Dict().Set("keys", base::Value::List().Append("foo")));
+      base::DictValue().Set("keys", base::ListValue().Append("foo")));
   ASSERT_TRUE(get_result_2);
   ASSERT_FALSE(get_result_2->FindDict("data")->contains("foo"));
 
   // Clear the storage area.
   ASSERT_TRUE(SendStorageCommand("Extensions.clearStorageItems", extension,
-                                 base::Value::Dict()));
+                                 base::DictValue()));
 
   // Check the `remove-on-clear` key no longer exists.
-  const base::Value::Dict* get_result_3 = SendStorageCommand(
+  const base::DictValue* get_result_3 = SendStorageCommand(
       "Extensions.getStorageItems", extension,
-      base::Value::Dict().Set("keys",
-                              base::Value::List().Append("remove-on-clear")));
+      base::DictValue().Set("keys",
+                            base::ListValue().Append("remove-on-clear")));
   ASSERT_TRUE(get_result_3);
   ASSERT_FALSE(get_result_3->FindDict("data")->contains("remove-on-clear"));
 }
 
 IN_PROC_BROWSER_TEST_F(DevToolsExtensionsProtocolWithUnsafeDebuggingTest,
                        CanGetStorageValuesBackgroundPage) {
-  const base::Value::Dict* load_result =
+  const base::DictValue* load_result =
       SendLoadUnpackedCommand("background_page_storage_access");
   ASSERT_TRUE(load_result);
 
@@ -342,12 +342,12 @@ IN_PROC_BROWSER_TEST_F(DevToolsExtensionsProtocolWithUnsafeDebuggingTest,
   agent_host_->AttachClient(this);
 
   ASSERT_TRUE(SendStorageCommand("Extensions.getStorageItems", extension,
-                                 base::Value::Dict()));
+                                 base::DictValue()));
 }
 
 IN_PROC_BROWSER_TEST_F(DevToolsExtensionsProtocolWithUnsafeDebuggingTest,
                        CanGetStorageValuesContentScript) {
-  const base::Value::Dict* load_result =
+  const base::DictValue* load_result =
       SendLoadUnpackedCommand("simple_content_script");
   ASSERT_TRUE(load_result);
 
@@ -368,13 +368,13 @@ IN_PROC_BROWSER_TEST_F(DevToolsExtensionsProtocolWithUnsafeDebuggingTest,
   agent_host_->AttachClient(this);
 
   ASSERT_TRUE(SendStorageCommand("Extensions.getStorageItems", extension,
-                                 base::Value::Dict()));
+                                 base::DictValue()));
 }
 
 IN_PROC_BROWSER_TEST_F(DevToolsExtensionsProtocolWithUnsafeDebuggingTest,
                        CannotGetStorageValuesWithoutContentScript) {
   // Load an extension with no associated content scripts.
-  const base::Value::Dict* load_result =
+  const base::DictValue* load_result =
       SendLoadUnpackedCommand("service_worker");
   ASSERT_TRUE(load_result);
 
@@ -394,8 +394,8 @@ IN_PROC_BROWSER_TEST_F(DevToolsExtensionsProtocolWithUnsafeDebuggingTest,
   agent_host_ = FindPageHost("/devtools/page_with_content_script.html");
   agent_host_->AttachClient(this);
 
-  const base::Value::Dict* get_result = SendStorageCommand(
-      "Extensions.getStorageItems", extension, base::Value::Dict());
+  const base::DictValue* get_result = SendStorageCommand(
+      "Extensions.getStorageItems", extension, base::DictValue());
 
   // Command should fail as extension has not injected content script.
   EXPECT_FALSE(get_result);
@@ -408,7 +408,7 @@ IN_PROC_BROWSER_TEST_F(DevToolsExtensionsProtocolWithUnsafeDebuggingTest,
                        CannotGetStorageValuesUnrelatedTarget) {
   ExtensionTestMessageListener activated_listener("WORKER_ACTIVATED");
 
-  const base::Value::Dict* load_result =
+  const base::DictValue* load_result =
       SendLoadUnpackedCommand("service_worker");
   ASSERT_TRUE(load_result);
 
@@ -430,11 +430,11 @@ IN_PROC_BROWSER_TEST_F(DevToolsExtensionsProtocolWithUnsafeDebuggingTest,
 
   // Try to load data from the second extension from a context associated with
   // the first extension. This should be blocked.
-  base::Value::Dict storage_params;
+  base::DictValue storage_params;
   storage_params.Set("id", second_extension_id);
   storage_params.Set("storageArea", "local");
 
-  const base::Value::Dict* get_result =
+  const base::DictValue* get_result =
       SendCommandSync("Extensions.getStorageItems", std::move(storage_params));
 
   // Command should fail as target does not have access.

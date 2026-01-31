@@ -7,13 +7,13 @@
 #include <stdint.h>
 #include <string.h>
 
+#include <algorithm>
 #include <compare>
 #include <ostream>
 #include <string_view>
 #include <tuple>
 
 #include "base/check_op.h"
-#include "base/containers/contains.h"
 #include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/string_number_conversions.h"
@@ -73,7 +73,7 @@ bool IsValidInput(std::string_view scheme,
 
   // about:blank and other no-access schemes translate into an opaque origin.
   // This helps consistency with ShouldTreatAsOpaqueOrigin in Blink.
-  if (base::Contains(GetNoAccessSchemes(), scheme))
+  if (std::ranges::contains(GetNoAccessSchemes(), scheme))
     return false;
 
   SchemeType scheme_type = SCHEME_WITH_HOST_PORT_AND_USER_INFORMATION;
@@ -86,7 +86,7 @@ bool IsValidInput(std::string_view scheme,
     // remove this local scheme exception.
     // For standard compliant non special scheme url parsing, a host can be
     // empty for non-special URLs. Therefore, we don't check a host nor port.
-    if (base::Contains(GetLocalSchemes(), scheme)) {
+    if (std::ranges::contains(GetLocalSchemes(), scheme)) {
       return true;
     }
 

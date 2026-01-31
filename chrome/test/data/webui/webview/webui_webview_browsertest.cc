@@ -3,17 +3,21 @@
 // found in the LICENSE file.
 
 #include "base/command_line.h"
+#include "base/files/file_util.h"
 #include "base/functional/bind.h"
+#include "base/memory/ref_counted_memory.h"
 #include "base/path_service.h"
+#include "base/strings/string_split.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/threading/thread_restrictions.h"
 #include "build/build_config.h"
 #include "build/buildflag.h"
 #include "build/config/coverage/buildflags.h"
 #include "chrome/app/chrome_command_ids.h"
+#include "chrome/browser/extensions/tab_helper.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/renderer_context_menu/render_view_context_menu_test_util.h"
-#include "chrome/browser/signin/signin_promo.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/ui_features.h"
@@ -29,26 +33,123 @@
 #include "content/public/browser/render_view_host.h"
 #include "content/public/browser/render_widget_host.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/browser/web_ui.h"
+#include "content/public/browser/web_ui_controller.h"
+#include "content/public/browser/web_ui_data_source.h"
+#include "content/public/browser/webui_config.h"
+#include "content/public/common/bindings_policy.h"
 #include "content/public/common/drop_data.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "content/public/test/scoped_web_ui_controller_factory_registration.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 
 #if BUILDFLAG(ENABLE_GLIC)
 #include "chrome/browser/glic/test_support/glic_test_environment.h"
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS)
-#include "ash/constants/ash_switches.h"
-#include "chrome/browser/ash/login/test/oobe_screen_waiter.h"
-#include "chrome/browser/ui/ash/login/login_display_host.h"
-#include "chrome/browser/ui/webui/ash/login/welcome_screen_handler.h"
-#endif
-
 // Turn these tests off on Mac while we collect data on windows server crashes
 // on mac chromium builders.
 // http://crbug.com/653353
 #if !BUILDFLAG(IS_MAC)
+
+namespace {
+
+// Use `kChromeUIContextualTasksURL` because it is allow-listed for web view
+// use in `chrome/common/extensions/api/_api_features.json`.
+const char* kTestWebViewURL = chrome::kChromeUIContextualTasksURL;
+const char* kTestWebViewHost = chrome::kChromeUIContextualTasksHost;
+
+// A simple WebUI controller that serves a blank page with a <webview> tag, and
+// supports loading files through the chrome://webui-test/ URL.
+// Responds with a content of "%DIR_TEST_DATA%/webui/<filename>" if the request
+// path has "/test/<filename>" format.
+class TestWebUIController : public content::WebUIController {
+ public:
+  explicit TestWebUIController(content::WebUI* web_ui)
+      : content::WebUIController(web_ui) {
+    web_ui->SetBindings(
+        content::BindingsPolicySet({content::BindingsPolicyValue::kWebUi}));
+    content::WebContents* web_contents = web_ui->GetWebContents();
+    // Necessary for web view to be allowed.
+    extensions::TabHelper::CreateForWebContents(web_contents);
+    content::WebUIDataSource* source = content::WebUIDataSource::CreateAndAdd(
+        web_contents->GetBrowserContext(), kTestWebViewHost);
+    source->SetRequestFilter(
+        base::BindRepeating(&TestWebUIController::ShouldHandleRequestCallback),
+        base::BindRepeating(&TestWebUIController::HandleRequestCallback));
+    source->OverrideContentSecurityPolicy(
+        network::mojom::CSPDirectiveName::ScriptSrc,
+        "script-src chrome://webui-test;");
+  }
+
+ private:
+  static bool ShouldHandleRequestCallback(const std::string& path) {
+    // Only handle the root path (main HTML) or files the test framework
+    // recognizes.
+    return path.empty() || ShouldHandleTestFileRequestCallback(path);
+  }
+
+  // Whether the request corresponds to a test file.
+  // See `HandleRequestCallback()` below for details.
+  static bool ShouldHandleTestFileRequestCallback(const std::string& path) {
+    std::vector<std::string> url_substr = base::SplitString(
+        path, "/", base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
+    if (url_substr.size() != 2 || url_substr[0] != "test") {
+      return false;
+    }
+
+    base::ScopedAllowBlockingForTesting allow_blocking;
+    base::FilePath test_data_dir;
+    base::PathService::Get(chrome::DIR_TEST_DATA, &test_data_dir);
+    return base::PathExists(
+        test_data_dir.AppendASCII("webui").AppendASCII(url_substr[1]));
+  }
+
+  static void HandleRequestCallback(
+      const std::string& path,
+      content::WebUIDataSource::GotDataCallback callback) {
+    if (path.empty()) {
+      // Main document.
+      std::move(callback).Run(new base::RefCountedString(R"(
+          <!DOCTYPE html>
+          <html>
+            <body>
+              <webview src="about:blank"></webview>
+            </body>
+          </html>)"));
+      return;
+    }
+
+    // Test resources.
+    // Responds with a content of "%DIR_TEST_DATA%/webui/<filename>" if the
+    // request path has "/test/<filename>" format.
+    CHECK(ShouldHandleTestFileRequestCallback(path));
+    base::ScopedAllowBlockingForTesting allow_blocking;
+
+    std::vector<std::string> url_substr = base::SplitString(
+        path, "/", base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
+    std::string contents;
+    base::FilePath test_data_dir;
+    base::PathService::Get(chrome::DIR_TEST_DATA, &test_data_dir);
+    CHECK(base::ReadFileToString(
+        test_data_dir.AppendASCII("webui").AppendASCII(url_substr[1]),
+        &contents));
+
+    base::RefCountedString* ref_contents = new base::RefCountedString();
+    ref_contents->as_string() = contents;
+    std::move(callback).Run(ref_contents);
+  }
+};
+
+class TestWebUIConfig
+    : public content::DefaultWebUIConfig<TestWebUIController> {
+ public:
+  TestWebUIConfig()
+      : DefaultWebUIConfig(content::kChromeUIScheme, kTestWebViewHost) {}
+};
+
+}  // namespace
 
 class WebUIWebViewBrowserTest : public WebUIMochaBrowserTest {
  public:
@@ -60,52 +161,20 @@ class WebUIWebViewBrowserTest : public WebUIMochaBrowserTest {
     embedded_test_server()->ServeFilesFromDirectory(test_data_dir);
     ASSERT_TRUE(embedded_test_server()->Start());
 
-#if BUILDFLAG(IS_CHROMEOS)
-    // Wait for the OOBE WebUI to be shown.
-    ash::OobeScreenWaiter(ash::WelcomeView::kScreenId).Wait();
-#else
-    set_test_loader_host(GetWebViewEnabledWebUIURL().GetHost());
-    ASSERT_TRUE(
-        ui_test_utils::NavigateToURL(browser(), GetWebViewEnabledWebUIURL()));
-#endif
+    web_ui_config_registration_ =
+        std::make_unique<content::ScopedWebUIConfigRegistration>(
+            std::make_unique<TestWebUIConfig>());
+    set_test_loader_host(kTestWebViewHost);
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL(kTestWebViewURL)));
     WebUIMochaBrowserTest::SetUpOnMainThread();
   }
-
-#if BUILDFLAG(IS_CHROMEOS)
-  Profile* GetProfileForSetup() override {
-    return Profile::FromBrowserContext(
-        GetWebContentsForTesting()->GetBrowserContext());
-  }
-
-  void SetUpCommandLine(base::CommandLine* command_line) override {
-    WebUIMochaBrowserTest::SetUpCommandLine(command_line);
-    // Force showing OOBE WebUI on the ChromeOS ASH configuration.
-    command_line->AppendSwitch(ash::switches::kLoginManager);
-    command_line->AppendSwitch(ash::switches::kForceLoginManagerInTests);
-  }
-#endif
 
   GURL GetTestUrl(const std::string& path) const {
     return embedded_test_server()->base_url().Resolve(path);
   }
 
-#if !BUILDFLAG(IS_CHROMEOS)
-  GURL GetWebViewEnabledWebUIURL() const {
-    return GURL(signin::GetEmbeddedPromoURL(
-        signin_metrics::AccessPoint::kStartPage,
-        signin_metrics::Reason::kForcedSigninPrimaryAccount, false));
-  }
-#endif
-
   content::WebContents* GetWebContentsForTesting() {
-#if BUILDFLAG(IS_CHROMEOS)
-    return ash::LoginDisplayHost::default_host()
-        ->GetOobeUI()
-        ->web_ui()
-        ->GetWebContents();
-#else
     return browser()->tab_strip_model()->GetActiveWebContents();
-#endif
   }
 
   testing::AssertionResult RunContentScriptTestCase(
@@ -131,6 +200,9 @@ class WebUIWebViewBrowserTest : public WebUIMochaBrowserTest {
   // Required to enable chrome://glic.
   glic::GlicTestEnvironment glic_test_env_;
 #endif
+
+  std::unique_ptr<content::ScopedWebUIConfigRegistration>
+      web_ui_config_registration_;
 };
 
 // Checks that hiding and showing the WebUI host page doesn't break guests in
@@ -308,13 +380,7 @@ IN_PROC_BROWSER_TEST_F(WebUIWebViewBrowserTest, AddContentScriptWithCode) {
 IN_PROC_BROWSER_TEST_F(WebUIWebViewBrowserTest, ContextMenuInspectElement) {
   content::ContextMenuParams params;
   content::WebContents* web_contents =
-#if BUILDFLAG(IS_CHROMEOS)
-      // OOBE WebUI.
-      ash::LoginDisplayHost::default_host()->GetOobeWebContents();
-#else
       browser()->tab_strip_model()->GetActiveWebContents();
-#endif
-
   TestRenderViewContextMenu menu(*web_contents->GetPrimaryMainFrame(), params);
   EXPECT_FALSE(menu.IsItemPresent(IDC_CONTENT_CONTEXT_INSPECTELEMENT));
 }

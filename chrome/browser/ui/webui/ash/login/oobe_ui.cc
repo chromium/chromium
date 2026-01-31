@@ -30,6 +30,7 @@
 #include "chrome/browser/ash/drive/file_system_util.h"
 #include "chrome/browser/ash/login/enrollment/auto_enrollment_check_screen_view.h"
 #include "chrome/browser/ash/login/enrollment/enrollment_screen_view.h"
+#include "chrome/browser/ash/login/fjord_oobe/fjord_oobe_util.h"
 #include "chrome/browser/ash/login/quick_unlock/pin_backend.h"
 #include "chrome/browser/ash/login/quick_unlock/quick_unlock_factory.h"
 #include "chrome/browser/ash/login/quick_unlock/quick_unlock_utils.h"
@@ -74,7 +75,7 @@
 #include "chrome/browser/ui/webui/ash/login/error_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/family_link_notice_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/fingerprint_setup_screen_handler.h"
-#include "chrome/browser/ui/webui/ash/login/fjord_oobe_util.h"
+#include "chrome/browser/ui/webui/ash/login/fjord_fw_update_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/fjord_station_setup_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/fjord_touch_controller_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/gaia_info_screen_handler.h"
@@ -133,7 +134,6 @@
 #include "chrome/browser/ui/webui/ash/login/welcome_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/wrong_hwid_screen_handler.h"
 #include "chrome/browser/ui/webui/metrics_handler.h"
-#include "chrome/browser/ui/webui/test_files_request_filter.h"
 #include "chrome/browser/ui/webui/theme_source.h"
 #include "chrome/common/chrome_constants.h"
 #include "chrome/common/chrome_features.h"
@@ -283,7 +283,7 @@ void AddTestAPIResources(content::WebUIDataSource* source) {
 
 // Creates a WebUIDataSource for chrome://oobe
 void CreateAndAddOobeUIDataSource(Profile* profile,
-                                  const base::Value::Dict& localized_strings,
+                                  const base::DictValue& localized_strings,
                                   const std::string& display_type) {
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
 
@@ -376,14 +376,6 @@ void CreateAndAddOobeUIDataSource(Profile* profile,
       "script-src chrome://resources chrome://webui-test 'self';");
   source->OverrideContentSecurityPolicy(
       network::mojom::CSPDirectiveName::ObjectSrc, "object-src chrome:;");
-
-  // Only add a filter when runing as test.
-  const bool is_running_test = command_line->HasSwitch(::switches::kTestName) ||
-                               command_line->HasSwitch(::switches::kTestType);
-  if (is_running_test) {
-    source->SetRequestFilter(::test::GetTestShouldHandleRequest(),
-                             ::test::GetTestFilesRequestFilter());
-  }
 }
 
 std::string GetDisplayType(const GURL& url) {
@@ -593,6 +585,7 @@ void OobeUI::ConfigureOobeDisplay() {
   if (fjord_util::ShouldShowFjordOobe()) {
     AddScreenHandler(std::make_unique<FjordTouchControllerScreenHandler>());
     AddScreenHandler(std::make_unique<FjordStationSetupScreenHandler>());
+    AddScreenHandler(std::make_unique<FjordFwUpdateScreenHandler>());
   }
 
   Profile* const profile = Profile::FromWebUI(web_ui());
@@ -735,7 +728,7 @@ OobeUI::OobeUI(content::WebUI* web_ui, const GURL& url)
     AddWebUIHandler(std::make_unique<OobeTestAPIHandler>());
   }
 
-  base::Value::Dict localized_strings = GetLocalizedStrings();
+  base::DictValue localized_strings = GetLocalizedStrings();
 
   // Set up the chrome://oobe/ source.
   CreateAndAddOobeUIDataSource(Profile::FromWebUI(web_ui), localized_strings,
@@ -799,8 +792,8 @@ OobeScreensHandlerFactory* OobeUI::GetOobeScreensHandlerFactory() {
   return oobe_screens_handler_factory_.get();
 }
 
-base::Value::Dict OobeUI::GetLocalizedStrings() {
-  base::Value::Dict localized_strings;
+base::DictValue OobeUI::GetLocalizedStrings() {
+  base::DictValue localized_strings;
   core_handler_->GetLocalizedStrings(&localized_strings);
   for (BaseWebUIHandler* handler : webui_handlers_) {
     handler->GetLocalizedStrings(&localized_strings);

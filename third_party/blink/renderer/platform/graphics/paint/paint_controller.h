@@ -17,6 +17,7 @@
 #include "cc/input/layer_selection_bound.h"
 #include "cc/paint/element_id.h"
 #include "third_party/blink/renderer/platform/geometry/infinite_int_rect.h"
+#include "third_party/blink/renderer/platform/graphics/compositor_element_id.h"
 #include "third_party/blink/renderer/platform/graphics/paint/display_item.h"
 #include "third_party/blink/renderer/platform/graphics/paint/display_item_list.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_artifact.h"
@@ -84,6 +85,7 @@ struct SubsequencesData {
 };
 
 class PaintController;
+struct TrackedElementRect;
 
 class PLATFORM_EXPORT PaintControllerPersistentData
     : public GarbageCollected<PaintControllerPersistentData> {
@@ -163,6 +165,12 @@ class PLATFORM_EXPORT PaintController {
   bool CurrentEffectivelyInvisible() const {
     return paint_chunker_.CurrentEffectivelyInvisible();
   }
+  void SetCanvasSubtreeId(CompositorElementId id) {
+    paint_chunker_.SetCanvasSubtreeId(id);
+  }
+  CompositorElementId CanvasSubtreeId() const {
+    return paint_chunker_.CanvasSubtreeId();
+  }
   void EnsureChunk();
 
   bool CurrentChunkIsNonEmptyAndTransparentToHitTest() const {
@@ -178,6 +186,10 @@ class PLATFORM_EXPORT PaintController {
   void RecordRegionCaptureData(const DisplayItemClient& client,
                                const RegionCaptureCropId& crop_id,
                                const gfx::Rect& rect);
+
+  void RecordTrackedElementData(const DisplayItemClient& client,
+                                const TrackedElementRect& tracked_element_rect,
+                                const gfx::Rect& rect);
 
   void RecordScrollHitTestData(
       const DisplayItemClient&,

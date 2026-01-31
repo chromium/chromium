@@ -6,12 +6,12 @@
 
 #include <stddef.h>
 
+#include <algorithm>
 #include <array>
 #include <optional>
 #include <string>
 #include <string_view>
 
-#include "base/containers/contains.h"
 #include "base/containers/fixed_flat_map.h"
 #include "base/containers/fixed_flat_set.h"
 #include "base/feature_list.h"
@@ -84,8 +84,8 @@ std::string AutofillCountry::CountryCodeForLocale(std::string_view locale) {
   std::string country_code = icu::Locale(likely_locale.data()).getCountry();
 
   // Default to the United States if we have no better guess.
-  if (!base::Contains(CountryDataMap::GetInstance()->country_codes(),
-                      country_code)) {
+  if (!std::ranges::contains(CountryDataMap::GetInstance()->country_codes(),
+                             country_code)) {
     return "US";
   }
 
@@ -194,7 +194,7 @@ bool AutofillCountry::IsAddressFieldSettingAccessible(
   // or part of the Autofill's address extensions.
   return (is_valid_field && ::i18n::addressinput::IsFieldUsed(
                                 libaddressinput_field, country_code_)) ||
-         base::Contains(
+         std::ranges::contains(
              address_format_extensions(), field_type,
              [](const AddressFormatExtension& rule) { return rule.type; });
 }

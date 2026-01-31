@@ -54,7 +54,7 @@ public class BindingsVersioningTest {
     /** Testing serializing old struct version to newer one. */
     @Test
     @SmallTest
-    public void testOldToNew() {
+    public void testOldToNew() throws BadMessageException {
         {
             MultiVersionStructV0 v0 = new MultiVersionStructV0();
             v0.fInt32 = 123;
@@ -149,7 +149,7 @@ public class BindingsVersioningTest {
     /** Testing serializing new struct version to older one. */
     @Test
     @SmallTest
-    public void testNewToOld() {
+    public void testNewToOld() throws BadMessageException {
         MultiVersionStruct struct = newStruct();
         {
             MultiVersionStructV0 expected = new MultiVersionStructV0();

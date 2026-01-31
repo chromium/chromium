@@ -27,7 +27,6 @@
 #include <tuple>
 #include <utility>
 
-#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
@@ -809,7 +808,7 @@ void MidiManagerWin::OnDevicesChanged(
 void MidiManagerWin::ReceiveMidiData(uint32_t index,
                                      const std::vector<uint8_t>& data,
                                      base::TimeTicks time) {
-  MidiManager::ReceiveMidiData(index, data.data(), data.size(), time);
+  MidiManager::ReceiveMidiData(index, data, time);
 }
 
 void MidiManagerWin::PostTask(base::OnceClosure task) {
@@ -876,9 +875,9 @@ void MidiManagerWin::ReflectActiveDeviceList(
 
   // Find new ports from active ports and append them to known ports.
   for (auto& port : *active_ports) {
-    if (!base::Contains(*known_ports, *port, [](const auto& candidate) -> T& {
-          return *candidate;
-        })) {
+    if (!std::ranges::contains(
+            *known_ports, *port,
+            [](const auto& candidate) -> T& { return *candidate; })) {
       size_t index = known_ports->size();
       port->set_index(index);
       known_ports->push_back(std::move(port));

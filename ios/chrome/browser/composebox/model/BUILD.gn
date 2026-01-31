@@ -15,6 +15,7 @@ source_set("model") {
     "//components/keyed_service/core",
     "//components/omnibox/composebox/ios",
     "//components/variations",
+    "//ios/chrome/app:tests_hook",
     "//ios/chrome/browser/search_engines/model",
     "//ios/chrome/browser/shared/model/application_context",
     "//ios/chrome/browser/shared/model/profile",
@@ -25,5 +26,28 @@ source_set("model") {
     "//ios/chrome/common",
     "//ios/web/public",
     "//services/network/public/cpp",
+  ]
+}
+
+source_set("test_support") {
+  testonly = true
+  sources = [
+    "mock_ios_contextual_search_service.h",
+    "mock_ios_contextual_search_service.mm",
+  ]
+  deps = [
+    ":model",
+    "//base",
+    "//components/application_locale_storage",
+    "//components/contextual_search:test_support",
+    "//components/lens:lens_url_utils",
+    "//components/omnibox/composebox/ios",
+    "//ios/chrome/browser/search_engines/model",
+    "//ios/chrome/browser/shared/model/application_context",
+    "//ios/chrome/browser/shared/model/profile",
+    "//ios/chrome/browser/signin/model",
+    "//ios/chrome/browser/variations/model/client",
+    "//ios/chrome/common",
+    "//testing/gmock",
   ]
 }

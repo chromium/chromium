@@ -33,7 +33,7 @@ TtsEngine::TtsEngine() = default;
 TtsEngine::~TtsEngine() = default;
 
 //  static
-bool TtsEngine::Parse(const base::Value::List& tts_voices,
+bool TtsEngine::Parse(const base::ListValue& tts_voices,
                       TtsEngine* out_engine,
                       std::u16string* error) {
   CHECK(out_engine->voices.empty());
@@ -43,7 +43,7 @@ bool TtsEngine::Parse(const base::Value::List& tts_voices,
       return false;
     }
 
-    const base::Value::Dict& one_tts_voice = one_tts_voice_val.GetDict();
+    const base::DictValue& one_tts_voice = one_tts_voice_val.GetDict();
     TtsVoice voice_data;
     const base::Value* name = one_tts_voice.Find(keys::kTtsVoicesVoiceName);
     if (name) {
@@ -129,7 +129,7 @@ TtsEngineManifestHandler::~TtsEngineManifestHandler() = default;
 bool TtsEngineManifestHandler::Parse(Extension* extension,
                                      std::u16string* error) {
   auto info = std::make_unique<TtsEngine>();
-  const base::Value::Dict* tts_dict =
+  const base::DictValue* tts_dict =
       extension->manifest()->available_values().FindDict(keys::kTtsEngine);
   if (!tts_dict) {
     *error = errors::kInvalidTts;

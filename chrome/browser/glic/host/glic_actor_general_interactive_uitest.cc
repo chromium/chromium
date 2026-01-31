@@ -2,11 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <utility>
+
 #include "base/base64.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/protobuf_matchers.h"
 #include "base/time/time.h"
-#include "base/types/cxx23_to_underlying.h"
 #include "build/build_config.h"
 #include "chrome/browser/actor/actor_features.h"
 #include "chrome/browser/actor/actor_tab_data.h"
@@ -15,8 +16,8 @@
 #include "chrome/browser/actor/ui/actor_ui_state_manager_prefs.h"
 #include "chrome/browser/devtools/devtools_window_testing.h"
 #include "chrome/browser/glic/host/glic_actor_interactive_uitest_common.h"
+#include "chrome/browser/glic/public/glic_side_panel_coordinator.h"
 #include "chrome/browser/search/search.h"
-#include "chrome/browser/ui/views/side_panel/glic/glic_side_panel_coordinator.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/optimization_guide/proto/features/actions_data.pb.h"
@@ -246,7 +247,7 @@ class GlicActorWithActorDisabledUiTest : public test::InteractiveGlicTest {
 };
 
 IN_PROC_BROWSER_TEST_F(GlicActorWithActorDisabledUiTest, ActorNotAvailable) {
-  RunTestSequence(OpenGlicWindow(GlicWindowMode::kAttached),
+  RunTestSequence(DeprecatedOpenGlicWindow(GlicWindowMode::kAttached),
                   InAnyContext(CheckJsResult(
                       kGlicContentsElementId,
                       "() => { return !(client.browser.actInFocusedTab); }")));
@@ -362,7 +363,7 @@ IN_PROC_BROWSER_TEST_F(GlicActorGeneralUiTest, WaitObserveTabFirstAction) {
   RunTestSequence(
       // Create a task without taking any actions so as not to add a tab to the
       // task's acting set.
-      OpenGlicWindow(GlicWindowMode::kAttached),
+      DeprecatedOpenGlicWindow(GlicWindowMode::kAttached),
       CreateTask(task_id_, ""),
 
       // Add two tabs to ensure the correct tab is being added to the
@@ -623,7 +624,8 @@ class GlicActorCallbackOrderGeneralUiTest : public GlicActorGeneralUiTest {
     feature_list_.InitWithFeaturesAndParameters(
         {
             {features::kGlicActor,
-             {{features::kGlicActorClickDelay.name, "60000ms"}}},
+             {{features::kGlicActorClickDelay.name, "60000ms"},
+              {features::kGlicActorPolicyControlExemption.name, "true"}}},
             {actor::kGlicPerformActionsReturnsBeforeStateChange, {}},
         },
         /*disabled_features=*/{});
@@ -665,7 +667,7 @@ class GlicActorCallbackOrderGeneralUiTest : public GlicActorGeneralUiTest {
               return state == $1;
             });
           )JS",
-              base::to_underlying(state));
+              std::to_underlying(state));
           ASSERT_TRUE(content::ExecJs(glic_contents, script));
         })));
   }

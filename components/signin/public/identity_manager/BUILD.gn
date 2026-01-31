@@ -47,7 +47,6 @@ source_set("identity_manager") {
     "primary_account_change_event.cc",
     "primary_account_change_event.h",
     "primary_account_mutator.h",
-    "scope_set.h",
     "set_accounts_in_cookie_result.h",
     "signin_constants.h",
   ]
@@ -172,6 +171,10 @@ source_set("unit_tests") {
 
   if (!is_fuchsia) {
     deps += [ "//pdf:buildflags" ]
+  }
+
+  if (is_android) {
+    deps += [ "//components/signin/public/android:jni_headers" ]
   }
 
   # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and

@@ -31,7 +31,7 @@ namespace {
 // add-request.
 std::unique_ptr<ExtensionsWorkflowEvent> GenerateReport(
     const std::string& extension_id,
-    const base::Value::Dict* request_data) {
+    const base::DictValue* request_data) {
   auto report = std::make_unique<ExtensionsWorkflowEvent>();
   report->set_id(extension_id);
   if (request_data) {
@@ -95,9 +95,9 @@ ExtensionRequestReportGenerator::GenerateForProfile(Profile* profile) {
   std::string webstore_update_url =
       extension_urls::GetDefaultWebstoreUpdateUrl().spec();
 
-  const base::Value::Dict& pending_requests =
+  const base::DictValue& pending_requests =
       profile->GetPrefs()->GetDict(prefs::kCloudExtensionRequestIds);
-  const base::Value::Dict& uploaded_requests =
+  const base::DictValue& uploaded_requests =
       profile->GetPrefs()->GetDict(kCloudExtensionRequestUploadedIds);
 
   for (auto [extension_id, request_data] : pending_requests) {

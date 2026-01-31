@@ -1,5 +1,5 @@
 Name: Fuchsia SDK
-URL: https://fuchsia.dev/fuchsia-src/development/sdk
+URL: Internal
 Version: N/A
 Revision: DEPS
 Update Mechanism: Autoroll
@@ -8,8 +8,10 @@ Shipped: yes
 License: BSD-2-Clause, Apache-2.0, MIT
 License File: sdk/LICENSE
 License Android Compatible: yes
+Local Modifications: None
 
 Description:
 This directory contains the current Fuchsia SDK. The SDK contains headers,
 libraries and tools that are needed to build Chromium for Fuchsia. It also
 contains boot images that are used to run tests on Fuchsia in emulation.
+The SDK is hosted at https://fuchsia.dev/fuchsia-src/development/sdk

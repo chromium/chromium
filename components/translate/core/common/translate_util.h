@@ -27,10 +27,6 @@ bool IsTFLiteLanguageDetectionEnabled();
 // prediction is reliable.
 float GetTFLiteLanguageDetectionThreshold();
 
-// Feature flag used to control the auto-always and auto-never snackbar
-// parameters (i.e. threshold and maximum-number-of).
-BASE_DECLARE_FEATURE(kTranslateAutoSnackbars);
-
 // The number of times the user should consecutively translate for "Always
 // Translate" to automatically trigger.
 int GetAutoAlwaysThreshold();

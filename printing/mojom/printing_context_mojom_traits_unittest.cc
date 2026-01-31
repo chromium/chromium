@@ -62,12 +62,12 @@ PrintSettings::RequestedMedia GenerateSampleRequestedMedia() {
 }
 
 #if BUILDFLAG(ENABLE_OOP_PRINTING_NO_OOP_BASIC_PRINT_DIALOG)
-base::Value::Dict GenerateSampleSystemPrintDialogData(
+base::DictValue GenerateSampleSystemPrintDialogData(
 #if BUILDFLAG(IS_MAC)
     bool include_optional_data
 #endif
 ) {
-  base::Value::Dict data;
+  base::DictValue data;
 
 #if BUILDFLAG(IS_MAC)
   data.Set(kMacSystemPrintDialogDataDestinationType, 4);
@@ -77,7 +77,8 @@ base::Value::Dict GenerateSampleSystemPrintDialogData(
            base::Value::BlobStorage({0x00, 0x01}));
   if (include_optional_data) {
     data.Set(kMacSystemPrintDialogDataDestinationFormat, "application/pdf");
-    data.Set(kMacSystemPrintDialogDataDestinationLocation, "/foo/bar.pdf");
+    data.Set(kMacSystemPrintDialogDataDestinationFileUrl,
+             "file:///foo/bar.pdf");
   }
 
 #elif BUILDFLAG(IS_LINUX)
@@ -91,6 +92,20 @@ base::Value::Dict GenerateSampleSystemPrintDialogData(
 
   return data;
 }
+
+#if BUILDFLAG(IS_LINUX)
+base::DictValue GenerateSampleSystemPrintDialogDataPortal() {
+  base::DictValue data;
+  data.Set(kLinuxSystemPrintDialogDataPrintSettingsBin,
+           base::Value::BlobStorage({0x01, 0x02}));
+  data.Set(kLinuxSystemPrintDialogDataPageSetupBin,
+           base::Value::BlobStorage({0x03, 0x04}));
+  data.Set(kLinuxSystemPrintDialogDataPrintToken, "123");
+  data.Set(kLinuxSystemPrintDialogDataParentHandle, "handle");
+
+  return data;
+}
+#endif
 #endif  // BUILDFLAG(ENABLE_OOP_PRINTING_NO_OOP_BASIC_PRINT_DIALOG)
 
 // Support two possible sample `PrintSettings`, to ensure that certain fields
@@ -732,7 +747,7 @@ TEST(PrintingContextMojomTraitsTest,
   PrintSettings input = GenerateSamplePrintSettingsDefaultMargins();
 
   // Generate some system print dialog data which is invalid.
-  base::Value::Dict data;
+  base::DictValue data;
   data.Set("foo", "bar");
   input.set_system_print_dialog_data(std::move(data));
 
@@ -746,7 +761,7 @@ TEST(PrintingContextMojomTraitsTest,
   PrintSettings input = GenerateSamplePrintSettingsDefaultMargins();
 
   // Generate some system print dialog data.
-  base::Value::Dict data = GenerateSampleSystemPrintDialogData(
+  base::DictValue data = GenerateSampleSystemPrintDialogData(
 #if BUILDFLAG(IS_MAC)
       /*include_optional_data=*/true
 #endif
@@ -768,7 +783,7 @@ TEST(
   PrintSettings input = GenerateSamplePrintSettingsDefaultMargins();
 
   // Generate some system print dialog data.
-  base::Value::Dict data =
+  base::DictValue data =
       GenerateSampleSystemPrintDialogData(/*include_optional_data=*/false);
 
   // Override with out-of-range destination type.
@@ -786,7 +801,7 @@ TEST(
   PrintSettings input = GenerateSamplePrintSettingsDefaultMargins();
 
   // Generate some system print dialog data.
-  base::Value::Dict data =
+  base::DictValue data =
       GenerateSampleSystemPrintDialogData(/*include_optional_data=*/false);
 
   // Override with invalid data type for destination type.
@@ -804,7 +819,7 @@ TEST(
   PrintSettings input = GenerateSamplePrintSettingsDefaultMargins();
 
   // Generate some system print dialog data.
-  base::Value::Dict data =
+  base::DictValue data =
       GenerateSampleSystemPrintDialogData(/*include_optional_data=*/false);
 
   // Override with invalid data type for page format.
@@ -822,7 +837,7 @@ TEST(
   PrintSettings input = GenerateSamplePrintSettingsDefaultMargins();
 
   // Generate some system print dialog data.
-  base::Value::Dict data =
+  base::DictValue data =
       GenerateSampleSystemPrintDialogData(/*include_optional_data=*/false);
 
   // Override with invalid data type for print settings.
@@ -841,7 +856,7 @@ TEST(
   PrintSettings input = GenerateSamplePrintSettingsDefaultMargins();
 
   // Generate some system print dialog data.
-  base::Value::Dict data =
+  base::DictValue data =
       GenerateSampleSystemPrintDialogData(/*include_optional_data=*/false);
 
   // Override with invalid data type for destination format.
@@ -859,11 +874,11 @@ TEST(
   PrintSettings input = GenerateSamplePrintSettingsDefaultMargins();
 
   // Generate some system print dialog data.
-  base::Value::Dict data =
+  base::DictValue data =
       GenerateSampleSystemPrintDialogData(/*include_optional_data=*/false);
 
   // Override with invalid data type for destination location.
-  data.Set(kMacSystemPrintDialogDataDestinationLocation, 0xBAD);
+  data.Set(kMacSystemPrintDialogDataDestinationFileUrl, 0xBAD);
   input.set_system_print_dialog_data(std::move(data));
 
   PrintSettings output;
@@ -873,13 +888,42 @@ TEST(
 #endif  // BUILDFLAG(IS_MAC)
 
 #if BUILDFLAG(IS_LINUX)
+TEST(PrintingContextMojomTraitsTest,
+     TestSerializeAndDeserializePrintSettingsSystemPrintDialogDataPortal) {
+  PrintSettings input = GenerateSamplePrintSettingsDefaultMargins();
+  input.set_system_print_dialog_data(
+      GenerateSampleSystemPrintDialogDataPortal());
+
+  PrintSettings output;
+  EXPECT_TRUE(
+      mojo::test::SerializeAndDeserialize<mojom::PrintSettings>(input, output));
+
+  EXPECT_EQ(output.system_print_dialog_data(),
+            input.system_print_dialog_data());
+}
+
+TEST(PrintingContextMojomTraitsTest,
+     TestSerializeAndDeserializePrintSettingsSystemPrintDialogDataMixed) {
+  PrintSettings input = GenerateSamplePrintSettingsDefaultMargins();
+  base::DictValue data = GenerateSampleSystemPrintDialogData();
+  base::DictValue portal_data = GenerateSampleSystemPrintDialogDataPortal();
+  for (auto item : portal_data) {
+    data.Set(item.first, item.second.Clone());
+  }
+  input.set_system_print_dialog_data(std::move(data));
+
+  PrintSettings output;
+  EXPECT_FALSE(
+      mojo::test::SerializeAndDeserialize<mojom::PrintSettings>(input, output));
+}
+
 TEST(
     PrintingContextMojomTraitsTest,
     TestSerializeAndDeserializePrintSettingsSystemPrintDialogPrinterInvalidDataType) {
   PrintSettings input = GenerateSamplePrintSettingsDefaultMargins();
 
   // Generate some system print dialog data.
-  base::Value::Dict data = GenerateSampleSystemPrintDialogData();
+  base::DictValue data = GenerateSampleSystemPrintDialogData();
 
   // Override with invalid data type for printer.
   data.Set(kLinuxSystemPrintDialogDataPrinter, 0xBAD);
@@ -896,7 +940,7 @@ TEST(
   PrintSettings input = GenerateSamplePrintSettingsDefaultMargins();
 
   // Generate some system print dialog data.
-  base::Value::Dict data = GenerateSampleSystemPrintDialogData();
+  base::DictValue data = GenerateSampleSystemPrintDialogData();
 
   // Override with invalid data type for printer.
   data.Set(kLinuxSystemPrintDialogDataPrintSettings, 0xBAD);
@@ -913,7 +957,7 @@ TEST(
   PrintSettings input = GenerateSamplePrintSettingsDefaultMargins();
 
   // Generate some system print dialog data.
-  base::Value::Dict data = GenerateSampleSystemPrintDialogData();
+  base::DictValue data = GenerateSampleSystemPrintDialogData();
 
   // Override with invalid data type for printer.
   data.Set(kLinuxSystemPrintDialogDataPageSetup, 0xBAD);

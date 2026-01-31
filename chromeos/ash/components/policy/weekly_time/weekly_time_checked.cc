@@ -40,7 +40,7 @@ WeeklyTimeChecked& WeeklyTimeChecked::operator=(const WeeklyTimeChecked&) =
 
 // static
 std::optional<WeeklyTimeChecked> WeeklyTimeChecked::FromDict(
-    const base::Value::Dict& dict) {
+    const base::DictValue& dict) {
   auto* day_of_week_str = dict.FindString(kDayOfWeek);
   if (!day_of_week_str) {
     LOG(ERROR) << "Missing day_of_week.";

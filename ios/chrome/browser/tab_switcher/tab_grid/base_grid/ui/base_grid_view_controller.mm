@@ -309,17 +309,15 @@ typedef NS_ENUM(NSInteger, DragEntrySide) {
   [coordinator
       animateAlongsideTransition:^(
           id<UIViewControllerTransitionCoordinatorContext> context) {
-        if (IsTabGridEmptyThumbnailUIEnabled()) {
-          for (UICollectionViewCell* cell in self.collectionView.visibleCells) {
-            if ([cell isKindOfClass:[GridCell class]]) {
-              GridCell* gridCell = ObjCCastStrict<GridCell>(cell);
-              gridCell.layoutType = [self layoutTypeForContainerSize:size
-                                                          isGridCell:YES];
-            } else if ([cell isKindOfClass:[GroupGridCell class]]) {
-              GroupGridCell* gridCell = ObjCCastStrict<GroupGridCell>(cell);
-              gridCell.layoutType = [self layoutTypeForContainerSize:size
-                                                          isGridCell:NO];
-            }
+        for (UICollectionViewCell* cell in self.collectionView.visibleCells) {
+          if ([cell isKindOfClass:[GridCell class]]) {
+            GridCell* gridCell = ObjCCastStrict<GridCell>(cell);
+            gridCell.layoutType = [self layoutTypeForContainerSize:size
+                                                        isGridCell:YES];
+          } else if ([cell isKindOfClass:[GroupGridCell class]]) {
+            GroupGridCell* gridCell = ObjCCastStrict<GroupGridCell>(cell);
+            gridCell.layoutType = [self layoutTypeForContainerSize:size
+                                                        isGridCell:NO];
           }
         }
         [self.collectionView.collectionViewLayout invalidateLayout];
@@ -995,6 +993,11 @@ typedef NS_ENUM(NSInteger, DragEntrySide) {
     NSIndexPath* sourceIndexPath = dropItem.sourceIndexPath;
     NSIndexPath* destinationIndexPath = coordinator.destinationIndexPath;
 
+    if (!dropItem.dragItem) {
+      base::debug::DumpWithoutCrashing();
+      return;
+    }
+
     self.dragEndAtNewIndex = YES;
     _dropAnimationInProgress = YES;
     [self.delegate gridViewControllerDropAnimationWillBegin:self];
@@ -1011,15 +1014,20 @@ typedef NS_ENUM(NSInteger, DragEntrySide) {
       _isNewGroupShiftingToDifferentFinalIndexPath = YES;
     }
     _isGroupBeingCreatedFromDragAndDrop = YES;
-    TabInfo* tabInfo = static_cast<TabInfo*>(dropItem.dragItem.localObject);
-    if (sourceItem.tabGroupItem) {
-      [self.mutator mergeGroup:sourceItem.tabGroupItem
+    if ([dropItem.dragItem.localObject isKindOfClass:[TabGroupInfo class]]) {
+      [self.mutator mergeGroup:dropItem.dragItem.localObject
            intoDestinationItem:destinationItem];
     } else if ([destinationCell isKindOfClass:[GroupGridCell class]]) {
+      TabInfo* tabInfo = static_cast<TabInfo*>(dropItem.dragItem.localObject);
       [self.mutator addDroppedTab:tabInfo
                        sourceItem:sourceItem
                           toGroup:destinationItem.tabGroupItem.tabGroup];
     } else {
+      TabInfo* tabInfo = static_cast<TabInfo*>(dropItem.dragItem.localObject);
+      if (!tabInfo) {
+        base::debug::DumpWithoutCrashing();
+        return;
+      }
       // If the index path of `sourceItem` < `destinationItem`, then the logic
       // will ensure that there is no animation for the replacement of
       // `destinationItem` into the new group. There is also logic ensure that
@@ -1806,12 +1814,9 @@ typedef NS_ENUM(NSInteger, DragEntrySide) {
   cell.tabsCount = item.numberOfTabsInGroup;
   cell.title = item.title;
   cell.accessibilityIdentifier = GroupGridCellAccessibilityIdentifier(index);
-  if (IsTabGridEmptyThumbnailUIEnabled()) {
-    cell.layoutType =
-        [self layoutTypeForContainerSize:self.collectionView.bounds.size
-                              isGridCell:NO];
-  }
-
+  cell.layoutType =
+      [self layoutTypeForContainerSize:self.collectionView.bounds.size
+                            isGridCell:NO];
   cell.facePileProvider =
       [self.gridProvider facePileProviderForItem:groupItemIdentifier];
 
@@ -1878,13 +1883,10 @@ typedef NS_ENUM(NSInteger, DragEntrySide) {
   cell.theme = self.theme;
   cell.itemIdentifier = itemIdentifier;
   cell.title = item.title;
-  cell.titleHidden = item.hidesTitle;
   [cell setAccessibilityIdentifiersWithIndex:index];
-  if (IsTabGridEmptyThumbnailUIEnabled()) {
-    cell.layoutType =
-        [self layoutTypeForContainerSize:self.collectionView.bounds.size
-                              isGridCell:YES];
-  }
+  cell.layoutType =
+      [self layoutTypeForContainerSize:self.collectionView.bounds.size
+                            isGridCell:YES];
   if (self.mode == TabGridMode::kSelection) {
     if ([self.gridProvider isItemSelected:itemIdentifier]) {
       cell.state = GridCellStateEditingSelected;
@@ -2238,7 +2240,7 @@ typedef NS_ENUM(NSInteger, DragEntrySide) {
       }
       break;
     case DragEntrySideNone:
-      NOTREACHED();
+      return NO;
   }
   return YES;
 }

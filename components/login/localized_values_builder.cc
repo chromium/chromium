@@ -9,7 +9,7 @@
 
 namespace login {
 
-LocalizedValuesBuilder::LocalizedValuesBuilder(base::Value::Dict* dict)
+LocalizedValuesBuilder::LocalizedValuesBuilder(base::DictValue* dict)
     : dict_(dict) {}
 
 void LocalizedValuesBuilder::Add(const std::string& key,

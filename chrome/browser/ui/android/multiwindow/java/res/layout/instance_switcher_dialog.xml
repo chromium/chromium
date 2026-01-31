@@ -1,15 +1,69 @@
 <?xml version="1.0" encoding="utf-8"?>
-
 <!--
-Copyright 2021 The Chromium Authors
+Copyright 2025 The Chromium Authors
 Use of this source code is governed by a BSD-style license that can be
 found in the LICENSE file.
 -->
 
-<FrameLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content">
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:paddingHorizontal="@dimen/instance_switcher_dialog_content_padding"
+    android:paddingTop="@dimen/instance_switcher_dialog_content_padding">
 
-    <include layout="@layout/instance_switcher_list"/>
-</FrameLayout>
+    <com.google.android.material.tabs.TabLayout
+        android:id="@+id/tabs"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingBottom="@dimen/instance_switcher_dialog_list_item_padding"
+        style="@style/TabLayoutStyle"
+        app:tabUnboundedRipple="false">
+        <com.google.android.material.tabs.TabItem
+            android:id="@+id/active_instances"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
+
+        <com.google.android.material.tabs.TabItem
+            android:id="@+id/inactive_instances"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
+    </com.google.android.material.tabs.TabLayout>
+
+    <FrameLayout
+        android:id="@+id/instance_list_container"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1">
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/active_instance_list"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:divider="@null"/>
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/inactive_instance_list"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:visibility="gone"
+            android:divider="@null"/>
+    </FrameLayout>
+
+    <FrameLayout
+        android:id="@+id/inactive_list_empty_state_view"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/instance_switcher_dialog_list_item_height"
+        android:visibility="gone"
+        android:background="@drawable/single_list_item_background">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:text="@string/instance_switcher_no_inactive_windows"
+            android:textAppearance="@style/TextAppearance.TextLarge.Primary.InstanceSwitcherItem" />
+    </FrameLayout>
+
+    <include layout="@layout/instance_switcher_cmd_item" />
+
+</LinearLayout>

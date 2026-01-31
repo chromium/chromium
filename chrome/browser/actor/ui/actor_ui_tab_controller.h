@@ -7,9 +7,9 @@
 
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ref.h"
+#include "base/timer/timer.h"
 #include "chrome/browser/actor/ui/actor_ui_tab_controller_interface.h"
 #include "chrome/browser/actor/ui/handoff_button_controller.h"
-#include "chrome/browser/ui/omnibox/omnibox_tab_helper.h"
 #include "components/tabs/public/tab_interface.h"
 #include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
 
@@ -18,8 +18,7 @@ class ActorKeyedService;
 }
 namespace actor::ui {
 
-class ActorUiTabController : public ActorUiTabControllerInterface,
-                             public OmniboxTabHelper::Observer {
+class ActorUiTabController : public ActorUiTabControllerInterface {
  public:
   ActorUiTabController(tabs::TabInterface& tab,
                        ActorKeyedService* actor_keyed_service);
@@ -39,13 +38,6 @@ class ActorUiTabController : public ActorUiTabControllerInterface,
   [[nodiscard]] base::ScopedClosureRunner RegisterHandoffButtonController(
       HandoffButtonController* controller) override;
   UiTabState GetCurrentUiTabState() const override;
-
-  // OmniboxTabHelper::Observer:
-  void OnOmniboxInputStateChanged() override {}
-  void OnOmniboxInputInProgress(bool in_progress) override {}
-  void OnOmniboxFocusChanged(OmniboxFocusState state,
-                             OmniboxFocusChangeReason reason) override;
-  void OnOmniboxPopupVisibilityChanged(bool popup_is_open) override {}
 
   void OnImmersiveModeChanged() override;
 
@@ -78,6 +70,9 @@ class ActorUiTabController : public ActorUiTabControllerInterface,
   // Run the test callback after updates have been made.
   void OnUpdateFinished();
 
+  // Called when the omnibox's popup visibility changes.
+  void OnWindowOmniboxPopupVisibilityChanged() override;
+
   // Sets the Tab Indicator visibility.
   void SetActorTabIndicatorVisibility(TabIndicatorStatus tab_indicator_status,
                                       base::OnceClosure callback);
@@ -93,13 +88,6 @@ class ActorUiTabController : public ActorUiTabControllerInterface,
   // determines if the scrim background should be visible if the mouse is
   // hovering over either the overlay or the handoff button.
   void UpdateScrimBackground();
-  void OnTabWillDetach(tabs::TabInterface* tab_interface,
-                       tabs::TabInterface::DetachReason reason);
-  void OnTabWillDiscard(tabs::TabInterface* tab_interface,
-                        content::WebContents* old_contents,
-                        content::WebContents* new_contents);
-
-  void UpdateOmniboxTabHelperObserver();
 
   void UnregisterActorOverlayStateChange();
   void UnregisterActorOverlayBackgroundChange();
@@ -118,7 +106,6 @@ class ActorUiTabController : public ActorUiTabControllerInterface,
   // Determines if the scrim background should be visible. This is set to true
   // if the mouse is hovering over either the overlay or the handoff button.
   bool should_show_scrim_background_ = false;
-  bool is_focusing_omnibox_ = false;
 
   // Owns this class via TabModel.
   const raw_ref<tabs::TabInterface> tab_;
@@ -141,10 +128,6 @@ class ActorUiTabController : public ActorUiTabControllerInterface,
   base::RetainingOneShotTimer update_scrim_background_debounce_timer_;
 
   ::ui::ScopedUnownedUserData<ActorUiTabController> scoped_unowned_user_data_;
-
-  // Observer to get notifications when the omnibox is focused.
-  base::ScopedObservation<OmniboxTabHelper, OmniboxTabHelper::Observer>
-      omnibox_tab_helper_observer_{this};
 
   base::WeakPtrFactory<ActorUiTabController> weak_factory_{this};
 };

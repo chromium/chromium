@@ -70,8 +70,8 @@ NSError* CreateTestError() {
       errorWithDomain:NSURLErrorDomain
                  code:NSURLErrorNetworkConnectionLost
              userInfo:@{
-               NSURLErrorFailingURLStringErrorKey :
-                   base::SysUTF8ToNSString(kTestUrl)
+               NSURLErrorFailingURLErrorKey :
+                   [NSURL URLWithString:base::SysUTF8ToNSString(kTestUrl)]
              }]);
 }
 }  // namespace

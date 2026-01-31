@@ -26,8 +26,16 @@ class AutoPictureInPictureTabModelObserverHelper final
       public TabModelObserver,
       public TabModelListObserver {
  public:
-  AutoPictureInPictureTabModelObserverHelper(content::WebContents* web_contents,
-                                             ActivatedChangedCallback callback);
+  class Delegate {
+   public:
+    virtual ~Delegate() = default;
+    virtual bool IsTabDragging(content::WebContents* web_contents) const = 0;
+  };
+
+  AutoPictureInPictureTabModelObserverHelper(
+      content::WebContents* web_contents,
+      ActivatedChangedCallback callback,
+      std::unique_ptr<Delegate> delegate = nullptr);
   ~AutoPictureInPictureTabModelObserverHelper() override;
 
   // AutoPictureInPictureTabObserverHelperBase:
@@ -46,12 +54,13 @@ class AutoPictureInPictureTabModelObserverHelper final
 
  private:
   // Find the correct tab model to observe.
-  void ReevaluateObservedModelAndState();
+  void ReevaluateObservedModelAndState(bool check_tab_activation = true);
 
   // Updates `is_tab_activated_` based on the current model state and runs the
   // callback if it changed.
   void UpdateIsTabActivated();
 
+  std::unique_ptr<Delegate> delegate_;
   raw_ptr<TabModel> observed_tab_model_ = nullptr;
   bool is_tab_activated_ = false;
   bool is_observing_ = false;

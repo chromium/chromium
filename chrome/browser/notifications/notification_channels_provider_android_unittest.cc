@@ -575,7 +575,7 @@ TEST_F(NotificationChannelsProviderAndroidTest,
   channels_provider_->ClearAllContentSettingsRules(
       ContentSettingsType::JAVASCRIPT);
   channels_provider_->ClearAllContentSettingsRules(
-      ContentSettingsType::GEOLOCATION);
+      content_settings::GeolocationContentSettingsType());
   content::RunAllTasksUntilIdle();
 
   // Check two rules are still returned.
@@ -669,7 +669,7 @@ TEST_F(NotificationChannelsProviderAndroidTest,
 
   auto result = content_settings::TestUtils::GetLastModified(
       channels_provider_.get(), GURL(kTestOrigin), GURL(kTestOrigin),
-      ContentSettingsType::GEOLOCATION);
+      content_settings::GeolocationContentSettingsType());
 
   EXPECT_TRUE(result.is_null());
 

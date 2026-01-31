@@ -42,7 +42,7 @@ class UserReportingSettings : public ReportingSettings, public ProfileObserver {
   bool GetBoolean(const std::string& path, bool* out_value) const override;
   bool GetInteger(const std::string& path, int* out_value) const override;
   bool GetList(const std::string& path,
-               const base::Value::List** out_value) const override;
+               const base::ListValue** out_value) const override;
 
   // Only bool and List are allowed, otherwise will return false.
   bool GetReportingEnabled(const std::string& path,

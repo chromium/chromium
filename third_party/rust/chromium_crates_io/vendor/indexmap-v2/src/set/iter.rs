@@ -1,6 +1,5 @@
-use crate::map::{ExtractCore, IndexMapCore};
-
 use super::{Bucket, IndexSet, Slice};
+use crate::inner::{Core, ExtractCore};
 
 use alloc::vec::{self, Vec};
 use core::fmt;
@@ -640,7 +639,7 @@ pub struct ExtractIf<'a, T, F> {
 
 impl<T, F> ExtractIf<'_, T, F> {
     #[track_caller]
-    pub(super) fn new<R>(core: &mut IndexMapCore<T, ()>, range: R, pred: F) -> ExtractIf<'_, T, F>
+    pub(super) fn new<R>(core: &mut Core<T, ()>, range: R, pred: F) -> ExtractIf<'_, T, F>
     where
         R: RangeBounds<usize>,
         F: FnMut(&T) -> bool,

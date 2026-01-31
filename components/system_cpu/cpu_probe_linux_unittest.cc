@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/files/file.h"
 #include "base/files/file_path.h"
 #include "base/files/scoped_temp_dir.h"
@@ -19,6 +20,7 @@
 #include "components/system_cpu/cpu_sample.h"
 #include "components/system_cpu/pressure_test_support.h"
 #include "components/system_cpu/procfs_stat_cpu_parser.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace system_cpu {
@@ -46,8 +48,8 @@ class CpuProbeLinuxTest : public testing::Test {
     if (!stat_file_.SetLength(0)) {
       return false;
     }
-    if (contents.size() > 0) {
-      if (!UNSAFE_TODO(stat_file_.Write(0, contents.data(), contents.size()))) {
+    if (!contents.empty()) {
+      if (!stat_file_.WriteAndCheck(0, base::as_byte_span(contents))) {
         return false;
       }
     }

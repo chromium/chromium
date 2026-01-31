@@ -51,7 +51,7 @@ class BaseScreen {
       const WizardContext& context) const;
 
   // Forwards user action if screen is shown.
-  void HandleUserAction(const base::Value::List& args);
+  void HandleUserAction(const base::ListValue& args);
 
   // Returns `true` if `action` was handled by the screen.
   virtual bool HandleAccelerator(LoginAcceleratorAction action);
@@ -72,7 +72,7 @@ class BaseScreen {
 
   // Called when user action event with happened. Notification about this event
   // comes from the JS counterpart. Not called if the screen is hidden
-  virtual void OnUserAction(const base::Value::List& args);
+  virtual void OnUserAction(const base::ListValue& args);
 
   WizardContext* context() const { return wizard_context_; }
 

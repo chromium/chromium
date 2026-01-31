@@ -146,7 +146,9 @@ TEST(VectorTest, Erase) {
   EXPECT_EQ(int_vector.end(), end);
 
   auto item2 = std::lower_bound(int_vector.begin(), int_vector.end(), 2);
-  auto item4 = int_vector.erase(item2, UNSAFE_TODO(item2 + 2));
+  // SAFETY: Arithmetic with the return values of begin()/end() is unsafe, but
+  // acceptable for a test.
+  auto item4 = int_vector.erase(item2, UNSAFE_BUFFERS(item2 + 2));
   EXPECT_EQ(2u, int_vector.size());
   EXPECT_EQ(4, *item4);
 
@@ -183,13 +185,17 @@ TEST(VectorTest, Iterator) {
   EXPECT_TRUE(end != it);
 
   EXPECT_EQ(10, *it);
-  UNSAFE_TODO(++it);
-  EXPECT_EQ(11, *it);
-  UNSAFE_TODO(++it);
-  EXPECT_EQ(12, *it);
-  UNSAFE_TODO(++it);
-  EXPECT_EQ(13, *it);
-  UNSAFE_TODO(++it);
+  // SAFETY: Arithmetic with the return values of begin()/end() is unsafe, but
+  // acceptable for a test.
+  UNSAFE_BUFFERS({
+    ++it;
+    EXPECT_EQ(11, *it);
+    ++it;
+    EXPECT_EQ(12, *it);
+    ++it;
+    EXPECT_EQ(13, *it);
+    ++it;
+  });
 
   EXPECT_TRUE(end == it);
 }
@@ -233,9 +239,7 @@ TEST(VectorTest, OwnPtr) {
   ASSERT_EQ(0, destruct_number);
 
   wtf_size_t index = 0;
-  for (OwnPtrVector::iterator iter = vector.begin(); iter != vector.end();
-       UNSAFE_TODO(++iter)) {
-    std::unique_ptr<DestructCounter>& ref_counter = *iter;
+  for (const auto& ref_counter : vector) {
     EXPECT_EQ(index, static_cast<wtf_size_t>(ref_counter.get()->Get()));
     EXPECT_EQ(index, static_cast<wtf_size_t>(ref_counter->Get()));
     index++;
@@ -375,37 +379,39 @@ TEST(VectorTest, ContainerAnnotations) {
   vector_a.push_back(10);
   vector_a.reserve(32);
 
+  // SAFETY: This is a test for unsafe operations.
+
   volatile int* int_pointer_a = vector_a.data();
-  EXPECT_DEATH(UNSAFE_TODO(int_pointer_a[1]) = 11, "container-overflow");
+  EXPECT_DEATH(UNSAFE_BUFFERS(int_pointer_a[1]) = 11, "container-overflow");
   vector_a.push_back(11);
-  UNSAFE_TODO(int_pointer_a[1]) = 11;
-  EXPECT_DEATH(UNSAFE_TODO(int_pointer_a[2]) = 12, "container-overflow");
-  EXPECT_DEATH((void)UNSAFE_TODO(int_pointer_a[2]), "container-overflow");
+  UNSAFE_BUFFERS(int_pointer_a[1]) = 11;
+  EXPECT_DEATH(UNSAFE_BUFFERS(int_pointer_a[2]) = 12, "container-overflow");
+  EXPECT_DEATH((void)UNSAFE_BUFFERS(int_pointer_a[2]), "container-overflow");
   vector_a.shrink_to_fit();
   vector_a.reserve(16);
   int_pointer_a = vector_a.data();
-  EXPECT_DEATH((void)UNSAFE_TODO(int_pointer_a[2]), "container-overflow");
+  EXPECT_DEATH((void)UNSAFE_BUFFERS(int_pointer_a[2]), "container-overflow");
 
   Vector<int> vector_b(vector_a);
   vector_b.reserve(16);
   volatile int* int_pointer_b = vector_b.data();
-  EXPECT_DEATH((void)UNSAFE_TODO(int_pointer_b[2]), "container-overflow");
+  EXPECT_DEATH((void)UNSAFE_BUFFERS(int_pointer_b[2]), "container-overflow");
 
   Vector<int> vector_c((Vector<int>(vector_a)));
   volatile int* int_pointer_c = vector_c.data();
-  EXPECT_DEATH((void)UNSAFE_TODO(int_pointer_c[2]), "container-overflow");
+  EXPECT_DEATH((void)UNSAFE_BUFFERS(int_pointer_c[2]), "container-overflow");
   vector_c.push_back(13);
   vector_c.swap(vector_b);
 
   volatile int* int_pointer_b2 = vector_b.data();
   volatile int* int_pointer_c2 = vector_c.data();
-  UNSAFE_TODO(int_pointer_b2[2]) = 13;
-  EXPECT_DEATH((void)UNSAFE_TODO(int_pointer_b2[3]), "container-overflow");
-  EXPECT_DEATH((void)UNSAFE_TODO(int_pointer_c2[2]), "container-overflow");
+  UNSAFE_BUFFERS(int_pointer_b2[2]) = 13;
+  EXPECT_DEATH((void)UNSAFE_BUFFERS(int_pointer_b2[3]), "container-overflow");
+  EXPECT_DEATH((void)UNSAFE_BUFFERS(int_pointer_c2[2]), "container-overflow");
 
   vector_b = vector_c;
   volatile int* int_pointer_b3 = vector_b.data();
-  EXPECT_DEATH((void)UNSAFE_TODO(int_pointer_b3[2]), "container-overflow");
+  EXPECT_DEATH((void)UNSAFE_BUFFERS(int_pointer_b3[2]), "container-overflow");
 }
 #endif  // defined(ANNOTATE_CONTIGUOUS_CONTAINER)
 

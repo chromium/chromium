@@ -18,11 +18,11 @@ class SessionStorage {
  public:
   virtual ~SessionStorage() = default;
 
-  virtual void StoreSession(const base::Value::Dict& information,
+  virtual void StoreSession(const base::DictValue& information,
                             base::OnceClosure on_done) = 0;
   virtual void DeleteSession(base::OnceClosure on_done) = 0;
   virtual void RetrieveSession(
-      base::OnceCallback<void(std::optional<base::Value::Dict>)> on_done) = 0;
+      base::OnceCallback<void(std::optional<base::DictValue>)> on_done) = 0;
 
   virtual void HasSession(base::OnceCallback<void(bool)> on_done) const = 0;
 };

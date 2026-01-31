@@ -28,7 +28,8 @@ namespace {
 inline constexpr uint64_t kTestTimeOfDayUnitId = 17;
 }  // namespace
 
-TestWallpaperController::TestWallpaperController() : id_cache_(0) {
+TestWallpaperController::TestWallpaperController()
+    : id_cache_(DailyGooglePhotosIdCache::NO_AUTO_EVICT) {
   ClearCounts();
 }
 

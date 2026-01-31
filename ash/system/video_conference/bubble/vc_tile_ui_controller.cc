@@ -100,7 +100,7 @@ std::unique_ptr<FeatureTile> VcTileUiController::CreateTile() {
 
 void VcTileUiController::OnDlcStateChanged(
     const dlcservice::DlcState& dlc_state) {
-  if (!base::Contains(dlc_ids_, dlc_state.id())) {
+  if (!dlc_ids_.contains(dlc_state.id())) {
     return;
   }
 

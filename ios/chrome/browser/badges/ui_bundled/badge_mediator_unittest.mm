@@ -6,7 +6,6 @@
 
 #import <map>
 
-#import "base/containers/contains.h"
 #import "base/memory/raw_ptr.h"
 #import "base/strings/utf_string_conversions.h"
 #import "base/test/scoped_feature_list.h"
@@ -40,10 +39,13 @@
 
 namespace {
 // The two infobar types used in tests.  Both support badges.
-InfobarType kFirstInfobarType = InfobarType::kInfobarTypePasswordSave;
-std::u16string kFirstInfobarMessageText = u"FakeInfobarDelegate1";
-InfobarType kSecondInfobarType = InfobarType::kInfobarTypePasswordUpdate;
-std::u16string kSecondInfobarMessageText = u"FakeInfobarDelegate2";
+constexpr InfobarType kFirstInfobarType = InfobarType::kInfobarTypePasswordSave;
+constexpr std::u16string_view kFirstInfobarMessageText =
+    u"FakeInfobarDelegate1";
+constexpr InfobarType kSecondInfobarType =
+    InfobarType::kInfobarTypePasswordUpdate;
+constexpr std::u16string_view kSecondInfobarMessageText =
+    u"FakeInfobarDelegate2";
 // Parameters used for BadgeMediator test fixtures.
 enum class TestParam {
   kNormal,
@@ -112,9 +114,9 @@ class BadgeMediatorTest : public testing::TestWithParam<TestParam> {
 
   // Adds an Infobar of `type` to the InfoBarManager and returns the infobar.
   // Pass in different `message_text` to avoid replacing existing infobar.
-  InfoBarIOS* AddInfobar(InfobarType type, std::u16string message_text) {
+  InfoBarIOS* AddInfobar(InfobarType type, std::u16string_view message_text) {
     std::unique_ptr<InfoBarIOS> added_infobar =
-        std::make_unique<FakeInfobarIOS>(type, message_text);
+        std::make_unique<FakeInfobarIOS>(type, std::u16string(message_text));
     InfoBarIOS* infobar = added_infobar.get();
     infobar_manager()->AddInfoBar(std::move(added_infobar));
     return infobar;
@@ -224,7 +226,7 @@ TEST_P(BadgeMediatorTest,
   EXPECT_EQ(badge_consumer_.displayedBadge.badgeType, kBadgeTypePasswordSave);
   AppendActivatedWebState();
   std::unique_ptr<InfoBarIOS> added_infobar = std::make_unique<FakeInfobarIOS>(
-      kSecondInfobarType, kSecondInfobarMessageText);
+      kSecondInfobarType, std::u16string(kSecondInfobarMessageText));
   InfoBarManagerImpl::FromWebState(web_state_list()->GetWebStateAt(0))
       ->AddInfoBar(std::move(added_infobar));
   EXPECT_FALSE(badge_consumer_.displayedBadge);
@@ -237,7 +239,7 @@ TEST_P(BadgeMediatorTest, BadgeMediatorTestDoNotAddInfobarIfWebStateListGone) {
   ASSERT_FALSE(badge_consumer_.displayedBadge);
   [badge_mediator_ disconnect];
   std::unique_ptr<InfoBarIOS> added_infobar = std::make_unique<FakeInfobarIOS>(
-      kSecondInfobarType, kSecondInfobarMessageText);
+      kSecondInfobarType, std::u16string(kSecondInfobarMessageText));
   InfoBarManagerImpl::FromWebState(web_state_list()->GetActiveWebState())
       ->AddInfoBar(std::move(added_infobar));
   EXPECT_FALSE(badge_consumer_.displayedBadge);
@@ -304,7 +306,7 @@ TEST_P(BadgeMediatorTest, InfobarBannerOverlayObserving) {
   std::map<InfobarType, BadgeState> badge_states =
       tab_helper->GetInfobarBadgeStates();
   ASSERT_EQ(1U, badge_states.size());
-  ASSERT_TRUE(base::Contains(badge_states, type));
+  ASSERT_TRUE(badge_states.contains(type));
   BadgeState state = badge_states[type];
   ASSERT_FALSE(state & BadgeStatePresented);
 

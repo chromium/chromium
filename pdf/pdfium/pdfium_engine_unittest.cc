@@ -568,7 +568,7 @@ TEST_P(PDFiumEngineTest, GetNamedDestination) {
   EXPECT_EQ(0u, valid_page_obj->page);
   EXPECT_EQ("XYZ", valid_page_obj->view);
   ASSERT_EQ(3u, valid_page_obj->num_params);
-  UNSAFE_TODO({ EXPECT_EQ(1.2f, valid_page_obj->params[2]); });
+  EXPECT_EQ(1.2f, valid_page_obj->params[2]);
 
   // A destination with an invalid page object
   std::optional<PDFiumEngine::NamedDestination> invalid_page_obj =

@@ -135,6 +135,6 @@ bool OmniboxClient::IsAimPopupEnabled() const {
   return false;
 }
 
-omnibox::ChromeAimToolsAndModels OmniboxClient::AimToolMode() const {
-  return omnibox::ChromeAimToolsAndModels::TOOL_MODE_UNSPECIFIED;
+omnibox::ToolMode OmniboxClient::AimToolMode() const {
+  return omnibox::ToolMode::TOOL_MODE_UNSPECIFIED;
 }

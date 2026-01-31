@@ -8,7 +8,6 @@
 #include <string_view>
 #include <utility>
 
-#include "base/containers/contains.h"
 #include "base/containers/flat_map.h"
 #include "base/logging.h"
 #include "base/strings/escape.h"
@@ -519,7 +518,7 @@ bool CastMediaSource::ProvidesStreamingAudioCapture() const {
 void CastMediaSource::set_supported_app_types(
     const std::vector<ReceiverAppType>& types) {
   DCHECK(!types.empty());
-  DCHECK(base::Contains(types, ReceiverAppType::kWeb));
+  DCHECK(std::ranges::contains(types, ReceiverAppType::kWeb));
   supported_app_types_ = types;
 }
 

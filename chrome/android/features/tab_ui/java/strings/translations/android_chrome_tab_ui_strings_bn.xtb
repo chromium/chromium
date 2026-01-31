@@ -20,6 +20,7 @@
 <translation id="1499635324672558517">সবকটি ছদ্মবেশী ট্যাব বন্ধ করবেন?</translation>
 <translation id="1501480321619201731">আইটেমের গ্রুপ মুছুন</translation>
 <translation id="1553638665176794706">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" />টি ইনঅ্যাক্টিভ আইটেম}one{<ph name="TABS_COUNT_MANY" />টি ইনঅ্যাক্টিভ আইটেম}other{<ph name="TABS_COUNT_MANY" />টি ইনঅ্যাক্টিভ আইটেম}}</translation>
+<translation id="1568067597247500137">সাইটটি মিউট করুন</translation>
 <translation id="1645759014353344461"><ph name="TABS_COUNT_MANY" />টি ট্যাব, গ্রুপ করা হয়েছে</translation>
 <translation id="1657719826150349398">ট্যাব নিচে সরান</translation>
 <translation id="1670942869417022142">মিউট করা অডিও</translation>
@@ -82,13 +83,13 @@
 <translation id="3619255692378312441">অ্যাক্সেস ম্যানেজ করুন</translation>
 <translation id="3649471731638882002">{TAB_COUNT,plural, =1{আইটেম বন্ধ করুন}one{আইটেম বন্ধ করুন}other{আইটেমগুলি বন্ধ করুন}}</translation>
 <translation id="3652027618765638838"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
+<translation id="3714430408451673233">ট্যাব বটম শিট অর্ধেক উচ্চতায় খোলা আছে।</translation>
 <translation id="374923079891132274">শিট শেয়ার করার প্রিভিউয়ের জন্য থাম্বনেল।</translation>
 <translation id="3776329373944672717">ট্যাব গ্রুপ টাইটেল <ph name="TITLE_OF_GROUP" /></translation>
 <translation id="3810973564298564668">পরিচালনা করুন</translation>
 <translation id="3849789634341518784">{TAB_COUNT,plural, =1{ট্যাব আনপিন করুন}one{ট্যাব আনপিন করুন}other{ট্যাব আনপিন করুন}}</translation>
 <translation id="3940195383040445971">ট্যাবে দাম ট্র্যাক করুন</translation>
 <translation id="3940717704786481856">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" />টি নতুন ট্যাব,<ph name="ANY_CLOSED" />টি বন্ধ আছে}one{<ph name="MANY_ADDED" />টি নতুন ট্যাব,<ph name="ANY_CLOSED" />টি বন্ধ আছে}other{<ph name="MANY_ADDED" />টি নতুন ট্যাব,<ph name="ANY_CLOSED" />টি বন্ধ আছে}}</translation>
-<translation id="3954615705217314756">{TABS_COUNT,plural, =1{ট্যাব গ্রুপ করুন}one{ট্যাব গ্রুপ করুন}other{ট্যাব গ্রুপ করুন}}</translation>
 <translation id="3962134438902735041">{TABS_COUNT,plural, =1{বেছে নেওয়া <ph name="TABS_COUNT_ONE" />টি ট্যাব আনপিন করুন}one{বেছে নেওয়া <ph name="TABS_COUNT_MANY" />টি ট্যাব আনপিন করুন}other{বেছে নেওয়া <ph name="TABS_COUNT_MANY" />টি ট্যাব আনপিন করুন}}</translation>
 <translation id="4009732926939031387">{NUM_DAYS,plural, =1{<ph name="NUM_DAYS_ONE" /> দিন আগে তৈরি করা হয়েছে}one{<ph name="NUM_DAYS_MANY" /> দিন আগে তৈরি করা হয়েছে}other{<ph name="NUM_DAYS_MANY" /> দিন আগে তৈরি করা হয়েছে}}</translation>
 <translation id="4076226664360336092">ট্যাব গ্রুপের তালিকা, পূর্ণ উচ্চতায় খোলা আছে</translation>
@@ -126,8 +127,10 @@
 <translation id="5339733443032484186">আপনার শেষ ট্যাব</translation>
 <translation id="5380159289133845234">ডুপ্লিকেট ট্যাব আর্কাইভ করুন</translation>
 <translation id="5446043142172831860">ট্যাব সরান এবং গ্রুপ থেকে বেরিয়ে আসুন</translation>
+<translation id="5465437530117042974">ট্যাব বটম শিটে করা পরিবর্তন বন্ধ করা হয়েছে।</translation>
 <translation id="5490235265819901748">ট্যাব গ্রুপ বড় করে দেখানো হয়েছে</translation>
 <translation id="5494920125229734069">সকল বেছে নিন</translation>
+<translation id="5505998972479309757">{LIMIT_COUNT,plural, =1{সর্বাধিক <ph name="LIMIT_COUNT_ONE" />টি ফাইল, ট্যাব বা ছবি যোগ করুন}one{সর্বাধিক <ph name="LIMIT_COUNT_MANY" />টি ফাইল, ট্যাব বা ছবি যোগ করুন}other{সর্বাধিক <ph name="LIMIT_COUNT_MANY" />টি ফাইল, ট্যাব বা ছবি যোগ করুন}}</translation>
 <translation id="5551694449008560081">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" />টি ট্যাব, <ph name="COLOR_NAME" /> কালার সহ, ট্যাব গ্রুপ বন্ধ করুন।}one{<ph name="TABS_COUNT_MANY" />টি ট্যাব, <ph name="COLOR_NAME" /> কালার সহ, ট্যাব গ্রুপ বন্ধ করুন।}other{<ph name="TABS_COUNT_MANY" />টি ট্যাব, <ph name="COLOR_NAME" /> কালার সহ, ট্যাব গ্রুপ বন্ধ করুন।}}</translation>
 <translation id="5556417849629758491">স্টোর সংক্রান্ত তথ্য দেখুন, স্ক্রিনের সবচেয়ে উপরের অংশে এই বিকল্প উপলভ্য আছে</translation>
 <translation id="5627941783489838464">কোনও ট্যাব সম্পর্কিত আপডেট নেই</translation>
@@ -140,7 +143,9 @@
 <translation id="6040143037577758943">বন্ধ</translation>
 <translation id="6051432659151380973">আপনার ট্যাব গ্রুপ অটোমেটিক সেভ হবে</translation>
 <translation id="6054741997831917303">এই আইটেমের দাম সম্প্রতি <ph name="PREVIOUS_PRICE" /> থেকে কমে <ph name="NEW_PRICE" /> হয়েছে</translation>
+<translation id="606985262342505139">ট্যাব বটম শিট সম্পূর্ণ উচ্চতায় খোলা আছে</translation>
 <translation id="6109251075362363230">সবচেয়ে সাম্প্রতিক ব্যবহৃত ডুপ্লিকেট ট্যাব ছাড়া সব ডুপ্লিকেট ট্যাব এখন আর্কাইভ করা হবে।</translation>
+<translation id="612596694132302162">সাইটটি আনমিউট করুন</translation>
 <translation id="6149218574440723463">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" />টি বেছে নেওয়া আইটেম বন্ধ করুন}one{<ph name="TABS_COUNT_MANY" />টি বেছে নেওয়া আইটেম বন্ধ করুন}other{<ph name="TABS_COUNT_MANY" />টি বেছে নেওয়া আইটেম বন্ধ করুন}}</translation>
 <translation id="61924696525243173">{WINDOW_COUNT,plural, =1{নতুন উইন্ডোতে গ্রুপ সরান}one{অন্য উইন্ডোতে গ্রুপ সরান}other{অন্য উইন্ডোতে গ্রুপ সরান}}</translation>
 <translation id="6212374449852603982">{TAB_COUNT,plural, =1{ট্যাব ডানদিকে সরান}one{ট্যাব ডানদিকে সরান}other{ট্যাব ডানদিকে সরান}}</translation>
@@ -195,7 +200,6 @@
 <translation id="7792771145871471484">সাজেশন পর্যালোচনা করুন।</translation>
 <translation id="7792860826279960128">শেয়ার করা ট্যাব গ্রুপে করা পরিবর্তন সম্পর্কে বিজ্ঞপ্তি অর্ধেক স্ক্রিন জুড়ে দেখানো হচ্ছে</translation>
 <translation id="7825973332242257878">ট্যাব গ্রুপ</translation>
-<translation id="7838146321400849846">{TABS_COUNT,plural, =1{বেছে নেওয়া <ph name="TABS_COUNT_ONE" />টি ট্যাব গ্রুপ করুন}one{বেছে নেওয়া <ph name="TABS_COUNT_MANY" />টি ট্যাব গ্রুপ করুন}other{বেছে নেওয়া <ph name="TABS_COUNT_MANY" />টি ট্যাব গ্রুপ করুন}}</translation>
 <translation id="7853202427316060426">ক্রিয়াকলাপ</translation>
 <translation id="7854360405711302755">{REVIEWS,plural, =1{ <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /> রেটিং, <ph name="REVIEWS_COUNT_ONE" />টি রিভিউ}one{<ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /> রেটিং, <ph name="REVIEWS_COUNT_MANY" />টি রিভিউ}other{<ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /> রেটিং, <ph name="REVIEWS_COUNT_MANY" />টি রিভিউ}}</translation>
 <translation id="7885132941432959125">ডানদিকে ট্যাব সরান</translation>
@@ -223,7 +227,6 @@
 <translation id="8428213095426709021">সেটিংস</translation>
 <translation id="855081842937141170">ট্যাব পিন করুন</translation>
 <translation id="8633025649649592204">সাম্প্রতিক অ্যাক্টিভিটি</translation>
-<translation id="8635822281281406185">সর্বাধিক ১০টি ফাইল, ট্যাব বা ছবি যোগ করুন</translation>
 <translation id="8712637175834984815">বুঝেছি</translation>
 <translation id="8714939927607906138">খুব কম দামে</translation>
 <translation id="8730621377337864115">হয়ে গেছে</translation>

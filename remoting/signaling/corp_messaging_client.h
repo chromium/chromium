@@ -40,11 +40,15 @@ class ScopedProtobufHttpRequest;
 // A class for sending and receiving messages via the Corp messaging API.
 class CorpMessagingClient final : public MessagingClient {
  public:
+  using SignalingAddressChangedCallback =
+      CorpMessageChannelStrategy::SignalingAddressChangedCallback;
+
   CorpMessagingClient(
       const std::string& username,
       const std::string& public_key,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-      std::unique_ptr<net::ClientCertStore> client_cert_store);
+      std::unique_ptr<net::ClientCertStore> client_cert_store,
+      const SignalingAddressChangedCallback& on_signaling_address_changed);
 
   CorpMessagingClient(const CorpMessagingClient&) = delete;
   CorpMessagingClient& operator=(const CorpMessagingClient&) = delete;

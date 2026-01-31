@@ -31,27 +31,39 @@
 #include "third_party/blink/renderer/core/frame/settings.h"
 #include "third_party/blink/renderer/core/layout/layout_text.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
-#include "third_party/blink/renderer/platform/wtf/text/strcat.h"
 
 namespace blink {
 
-InsertIntoTextNodeCommand::InsertIntoTextNodeCommand(Text* node,
-                                                     unsigned offset,
-                                                     const String& text)
+InsertIntoTextNodeCommand::InsertIntoTextNodeCommand(
+    Text* node,
+    unsigned offset,
+    const String& text,
+    PasswordEchoBehavior password_echo_behavior)
     : SimpleEditCommand(node->GetDocument()),
       node_(node),
       offset_(offset),
-      text_(text) {
+      text_(text),
+      password_echo_behavior_(password_echo_behavior) {
   DCHECK(node_);
   DCHECK_LE(offset_, node_->length());
   DCHECK(!text_.empty());
 }
 
+bool InsertIntoTextNodeCommand::ShouldEchoPassword() const {
+  const Settings* settings = GetDocument().GetSettings();
+  switch (password_echo_behavior_) {
+    case PasswordEchoBehavior::kEchoIfPasswordEchoPhysicalEnabled:
+      return settings && settings->GetPasswordEchoEnabledPhysical();
+    case PasswordEchoBehavior::kEchoIfPasswordEchoTouchEnabled:
+      return settings && settings->GetPasswordEchoEnabledTouch();
+    case PasswordEchoBehavior::kDoNotEcho:
+      return false;
+  }
+  NOTREACHED();
+}
+
 void InsertIntoTextNodeCommand::DoApply(EditingState*) {
-  const bool password_echo_enabled =
-      GetDocument().GetSettings() &&
-      GetDocument().GetSettings()->GetPasswordEchoEnabledPhysical() &&
-      GetDocument().GetSettings()->GetPasswordEchoEnabledTouch();
+  bool password_echo_enabled = ShouldEchoPassword();
   if (password_echo_enabled) {
     GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kEditing);
   }

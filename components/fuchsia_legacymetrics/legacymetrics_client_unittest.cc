@@ -2,8 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "components/fuchsia_legacymetrics/legacymetrics_client.h"
+
 #include <fuchsia/legacymetrics/cpp/fidl.h>
 #include <fuchsia/legacymetrics/cpp/fidl_test_base.h>
+
 #include <cmath>
 #include <string>
 #include <utility>
@@ -18,8 +21,7 @@
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "base/time/time.h"
-#include "components/fuchsia_legacymetrics/legacymetrics_client.h"
-#include "components/fuchsia_legacymetrics/legacymetrics_histogram_flattener.h"
+#include "components/fuchsia_legacymetrics/legacymetrics_deltas.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 

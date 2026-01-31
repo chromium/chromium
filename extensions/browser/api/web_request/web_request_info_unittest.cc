@@ -40,7 +40,7 @@ TEST(WebRequestInfoTest, CreateRequestBodyDataFromFile) {
   ASSERT_TRUE(value);
 
   base::Value expected_value(base::Value::Type::LIST);
-  base::Value::Dict dict;
+  base::DictValue dict;
   dict.Set(extension_web_request_api_constants::kRequestBodyRawFileKey,
            kFilePath);
   expected_value.GetList().Append(std::move(dict));

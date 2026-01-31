@@ -7,6 +7,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "components/tabs/public/tab_interface.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/menu/menu_runner.h"
@@ -15,8 +16,6 @@ namespace views {
 class ImageButton;
 class MenuRunner;
 }  // namespace views
-
-class LensOverlayController;
 
 namespace lens {
 
@@ -28,12 +27,11 @@ class LensPreselectionBubble : public views::BubbleDialogDelegateView,
 
  public:
   using ExitClickedCallback = views::Button::PressedCallback;
-  explicit LensPreselectionBubble(
-      base::WeakPtr<LensOverlayController> lens_overlay_controller,
-      views::View* anchor_view,
-      bool offline,
-      ExitClickedCallback exit_clicked_callback,
-      base::OnceClosure on_cancel_callback);
+  explicit LensPreselectionBubble(tabs::TabHandle tab_handle,
+                                  views::View* anchor_view,
+                                  bool offline,
+                                  ExitClickedCallback exit_clicked_callback,
+                                  base::OnceClosure on_cancel_callback);
   ~LensPreselectionBubble() override;
 
   // views::BubbleDialogDelegateView:
@@ -62,11 +60,7 @@ class LensPreselectionBubble : public views::BubbleDialogDelegateView,
   // Opens the more info menu.
   void OpenMoreInfoMenu();
 
-  // Weak pointer to the overlay controller for routing more info menu options.
-  // The overlay controller manages the lifetime of the bubble's owner and
-  // should always outlive it.
-  const base::WeakPtr<LensOverlayController> lens_overlay_controller_;
-
+  tabs::TabHandle tab_handle_;
   raw_ptr<views::Label> label_ = nullptr;
   raw_ptr<views::ImageView> icon_view_ = nullptr;
   // More info button. Only shown when search bubble enabled.

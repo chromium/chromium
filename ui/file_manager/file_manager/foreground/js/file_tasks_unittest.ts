@@ -5,11 +5,8 @@
 import {loadTimeData} from 'chrome://resources/ash/common/load_time_data.m.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chromeos/chai_assert.js';
 
-import type {EntryLocation} from '../../background/js/entry_location_impl.js';
-import {createCrostiniForTest} from '../../background/js/mock_crostini.js';
 import {MockProgressCenter} from '../../background/js/mock_progress_center.js';
 import type {VolumeInfo} from '../../background/js/volume_info.js';
-import type {VolumeManager} from '../../background/js/volume_manager.js';
 import {installMockChrome, MockMetrics} from '../../common/js/mock_chrome.js';
 import {MockFileEntry, MockFileSystem} from '../../common/js/mock_entry.js';
 import {ProgressItemState} from '../../common/js/progress_center_common.js';
@@ -30,7 +27,6 @@ import type {TaskController} from './task_controller.js';
 import type {TaskHistory} from './task_history.js';
 import type {DefaultTaskDialog} from './ui/default_task_dialog.js';
 import type {ImportCrostiniImageDialog} from './ui/import_crostini_image_dialog.js';
-import type {InstallLinuxPackageDialog} from './ui/install_linux_package_dialog.js';
 
 let passwordDialog: XfPasswordDialog;
 
@@ -128,8 +124,6 @@ function failWithMessage(message: string, details?: string) {
 
 /** Returns mocked file manager components. */
 function getMockFileManager(): FileManager {
-  const crostini = createCrostiniForTest();
-
   passwordDialog = {} as unknown as XfPasswordDialog;
   const fileManager = {
     volumeManager: {
@@ -167,15 +161,12 @@ function getMockFileManager(): FileManager {
       },
       changeDirectoryEntry: function(_displayRoot: Entry) {},
     } as unknown as DirectoryModel,
-    crostini: crostini,
     progressCenter: new MockProgressCenter(),
     taskController: {
       createItems(_fileTasks: FileTasks) {},
     } as unknown as TaskController,
   };
 
-  fileManager.crostini.initVolumeManager(
-      fileManager.volumeManager as unknown as VolumeManager);
   return fileManager as unknown as FileManager;
 }
 
@@ -200,8 +191,7 @@ function showHtmlOfAlertDialogIsCalled(
             fileManager.volumeManager, fileManager.metadataModel,
             fileManager.directoryModel, fileManager.ui,
             mockFileTransferController, entries, mockTaskHistory,
-            fileManager.crostini, fileManager.progressCenter,
-            fileManager.taskController)
+            fileManager.progressCenter, fileManager.taskController)
         .then(tasks => {
           tasks.executeDefault();
         });
@@ -226,8 +216,7 @@ function showDefaultTaskDialogCalled(entries: Entry[]): Promise<void> {
             fileManager.volumeManager, fileManager.metadataModel,
             fileManager.directoryModel, fileManager.ui,
             mockFileTransferController, entries, mockTaskHistory,
-            fileManager.crostini, fileManager.progressCenter,
-            fileManager.taskController)
+            fileManager.progressCenter, fileManager.taskController)
         .then(tasks => {
           tasks.executeDefault();
         });
@@ -252,8 +241,7 @@ async function showImportCrostiniImageDialogIsCalled(entries: Entry[]):
             fileManager.volumeManager, fileManager.metadataModel,
             fileManager.directoryModel, fileManager.ui,
             mockFileTransferController, entries, mockTaskHistory,
-            fileManager.crostini, fileManager.progressCenter,
-            fileManager.taskController)
+            fileManager.progressCenter, fileManager.taskController)
         .then(tasks => {
           tasks.executeDefault();
         });
@@ -436,62 +424,10 @@ export async function testOpenWithMostRecentlyExecuted(done: () => void) {
   const tasks = await FileTasks.create(
       fileManager.volumeManager, fileManager.metadataModel,
       fileManager.directoryModel, fileManager.ui, mockFileTransferController,
-      [mockEntry], taskHistory as TaskHistory, fileManager.crostini,
-      fileManager.progressCenter, fileManager.taskController);
+      [mockEntry], taskHistory as TaskHistory, fileManager.progressCenter,
+      fileManager.taskController);
   await tasks.executeDefault();
   assertTrue(descriptorEqual(latestTaskDescriptor, executedTask!));
-
-  done();
-}
-
-function setUpInstallLinuxPackage() {
-  const fileManager = getMockFileManager();
-  fileManager.volumeManager.getLocationInfo = (_entry): EntryLocation => {
-    return {
-      rootType: RootType.CROSTINI,
-    } as unknown as EntryLocation;
-  };
-  const fileTask = {
-    descriptor: {
-      appId: LEGACY_FILES_EXTENSION_ID,
-      taskType: 'app',
-      actionId: 'install-linux-package',
-    },
-    isDefault: false,
-    isGenericFileHandler: false,
-    title: '__MSG_INSTALL_LINUX_PACKAGE__',
-  };
-  chrome.fileManagerPrivate.getFileTasks =
-      (_entries: Entry[], _sourceUrls: string[],
-       callback: (tasks: any) => void) => {
-        setTimeout(callback.bind(null, {tasks: [fileTask]}), 0);
-      };
-  return fileManager;
-}
-
-/**
- * Tests opening a .deb file. The crostini linux package install dialog should
- * be called.
- */
-export async function testOpenInstallLinuxPackageDialog(done: () => void) {
-  const fileManager = setUpInstallLinuxPackage();
-  const mockFileSystem = new MockFileSystem('volumeId');
-  const mockEntry = MockFileEntry.create(mockFileSystem, '/test.deb');
-
-  await new Promise<void>(async (resolve) => {
-    fileManager.ui.installLinuxPackageDialog = {
-      showInstallLinuxPackageDialog: function(_entry: Entry) {
-        resolve();
-      },
-    } as unknown as InstallLinuxPackageDialog;
-
-    const tasks = await FileTasks.create(
-        fileManager.volumeManager, fileManager.metadataModel,
-        fileManager.directoryModel, fileManager.ui, mockFileTransferController,
-        [mockEntry], mockTaskHistory, fileManager.crostini,
-        fileManager.progressCenter, fileManager.taskController);
-    await tasks.executeDefault();
-  });
 
   done();
 }
@@ -559,7 +495,7 @@ export async function testMountArchiveAndChangeDirectoryNotificationSuccess(
   const tasks = await FileTasks.create(
       fileManager.volumeManager, fileManager.metadataModel,
       fileManager.directoryModel, fileManager.ui, mockFileTransferController,
-      [], mockTaskHistory, fileManager.crostini, fileManager.progressCenter,
+      [], mockTaskHistory, fileManager.progressCenter,
       fileManager.taskController);
 
   fileManager.volumeManager!.mountArchive =
@@ -602,7 +538,7 @@ testMountArchiveAndChangeDirectoryNotificationInvalidArchive(done: () => void) {
   const tasks = await FileTasks.create(
       fileManager.volumeManager, fileManager.metadataModel,
       fileManager.directoryModel, fileManager.ui, mockFileTransferController,
-      [], mockTaskHistory, fileManager.crostini, fileManager.progressCenter,
+      [], mockTaskHistory, fileManager.progressCenter,
       fileManager.taskController);
 
   fileManager.volumeManager.mountArchive = function(_url, _password) {
@@ -640,7 +576,7 @@ testMountArchiveAndChangeDirectoryNotificationCancelPassword(done: () => void) {
   const tasks = await FileTasks.create(
       fileManager.volumeManager, fileManager.metadataModel,
       fileManager.directoryModel, fileManager.ui, mockFileTransferController,
-      [], mockTaskHistory, fileManager.crostini, fileManager.progressCenter,
+      [], mockTaskHistory, fileManager.progressCenter,
       fileManager.taskController);
 
   fileManager.volumeManager.mountArchive = function(_url, _password) {
@@ -684,7 +620,7 @@ testMountArchiveAndChangeDirectoryNotificationEncryptedArchive(
   const tasks = await FileTasks.create(
       fileManager.volumeManager, fileManager.metadataModel,
       fileManager.directoryModel, fileManager.ui, mockFileTransferController,
-      [], mockTaskHistory, fileManager.crostini, fileManager.progressCenter,
+      [], mockTaskHistory, fileManager.progressCenter,
       fileManager.taskController);
 
   fileManager.volumeManager.mountArchive = function(

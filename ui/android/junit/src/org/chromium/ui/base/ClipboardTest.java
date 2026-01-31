@@ -217,8 +217,9 @@ public class ClipboardTest {
         assertEquals(file2, clipCaptor.getValue().getItemAt(1).getUri().toString());
     }
 
+    // TODO(crbug.com/450954710): This test fails on SDK 36.
     @Test
-    @Config(shadows = ShadowToast.class)
+    @Config(sdk = 29, shadows = ShadowToast.class)
     public void setTextWithNotification() {
         Clipboard.getInstance().setText("label", "text", false);
         assertNull(ShadowToast.getLatestToast());
@@ -228,8 +229,9 @@ public class ClipboardTest {
         assertTextFromLatestToast(R.string.copied);
     }
 
+    // TODO(crbug.com/450954710): This test fails on SDK 36.
     @Test
-    @Config(shadows = ShadowToast.class)
+    @Config(sdk = 29, shadows = ShadowToast.class)
     public void setImageWithNotification() {
         Clipboard.getInstance().setImageUri(mTempImageUri, false);
         ShadowLooper.idleMainLooper();

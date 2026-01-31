@@ -5,7 +5,6 @@
 #include "media/gpu/vaapi/vaapi_video_decoder_delegate.h"
 
 #include "base/compiler_specific.h"
-#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/numerics/safe_conversions.h"
@@ -186,7 +185,7 @@ VaapiVideoDecoderDelegate::SetupDecryptDecode(
   DCHECK(decrypt_config_);
   // We also need to make sure we have the key data for the active
   // DecryptConfig now that the protected session exists.
-  if (!base::Contains(hw_key_data_map_, decrypt_config_->key_id())) {
+  if (!hw_key_data_map_.contains(decrypt_config_->key_id())) {
     DVLOG(1) << "Looking up the key data for: " << decrypt_config_->key_id();
     chromeos_cdm_context_->GetHwKeyData(
         decrypt_config_.get(), hw_identifier_,
@@ -299,7 +298,7 @@ void VaapiVideoDecoderDelegate::OnGetHwKeyData(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   // There's a special case here where we are updating usage times/checking on
   // key validity, and in that case the key is already in the map.
-  if (base::Contains(hw_key_data_map_, key_id)) {
+  if (hw_key_data_map_.contains(key_id)) {
     if (status == Decryptor::Status::kSuccess)
       return;
     // This key is no longer valid, decryption will fail, so stop playback

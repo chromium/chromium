@@ -40,6 +40,9 @@ inline constexpr size_t kClientDataHashLength = 32;
 // https://www.w3.org/TR/webauthn/#sec-authenticator-data
 inline constexpr size_t kRpIdHashLength = 32;
 
+// Maximum length of each PRF inputs.
+inline constexpr size_t kMaxPRFInputSize = 256;
+
 // Length of the key used to encrypt large blobs.
 // TODO(nsatragno): add a link to the spec once it's published.
 inline constexpr size_t kLargeBlobKeyLength = 32;
@@ -452,6 +455,8 @@ COMPONENT_EXPORT(FIDO_PUBLIC) extern const char kCableClientHelloMessage[];
 inline constexpr Ctap2Version kCtap2Versions2_0[] = {Ctap2Version::kCtap2_0};
 inline constexpr Ctap2Version kCtap2Versions2_1[] = {Ctap2Version::kCtap2_0,
                                                      Ctap2Version::kCtap2_1};
+inline constexpr Ctap2Version kCtap2Versions2_2[] = {
+    Ctap2Version::kCtap2_0, Ctap2Version::kCtap2_1, Ctap2Version::kCtap2_2};
 
 // Protocol version strings.
 // https://fidoalliance.org/specs/fido-v2.0-ps-20190130/fido-client-to-authenticator-protocol-v2.0-ps-20190130.html#authenticatorGetInfo
@@ -462,7 +467,12 @@ COMPONENT_EXPORT(FIDO_PUBLIC) extern const char kU2fVersion[];
 // TODO(nsatragno): link to the spec once this is standardized.
 COMPONENT_EXPORT(FIDO_PUBLIC) extern const char kCtap2_1Version[];
 
+// The version identifier for CTAP 2.2.
+// https://fidoalliance.org/specs/fido-v2.2-rd-20241003/fido-client-to-authenticator-protocol-v2.2-rd-20241003.html#authenticatorGetInfo
+COMPONENT_EXPORT(FIDO_PUBLIC) extern const char kCtap2_2Version[];
+
 COMPONENT_EXPORT(FIDO_PUBLIC) extern const char kExtensionHmacSecret[];
+COMPONENT_EXPORT(FIDO_PUBLIC) extern const char kExtensionHmacSecretMc[];
 COMPONENT_EXPORT(FIDO_PUBLIC) extern const char kExtensionCredProtect[];
 COMPONENT_EXPORT(FIDO_PUBLIC) extern const char kExtensionLargeBlob[];
 COMPONENT_EXPORT(FIDO_PUBLIC) extern const char kExtensionLargeBlobKey[];

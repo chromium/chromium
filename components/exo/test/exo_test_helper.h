@@ -19,10 +19,6 @@ namespace viz {
 class SharedImageFormat;
 }
 
-namespace gfx {
-class GpuMemoryBuffer;
-}
-
 namespace exo {
 class ClientControlledShellSurface;
 class InputMethodSurface;

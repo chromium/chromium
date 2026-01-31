@@ -73,15 +73,15 @@ namespace {
 
 // Specifies frame type for test.
 enum class TestFrameType {
-  kNv12GpuMemoryBuffer,  // Implies
-                         // media::VideoFrame::STORAGE_MAPPABLE_SHARED_IMAGE
-  kNv12Software,         // Implies media::VideoFrame::STORAGE_OWNED_MEMORY
-  kI420                  // Implies media::VideoFrame::STORAGE_OWNED_MEMORY
+  kNv12MappableSharedImage,  // Implies
+                             // media::VideoFrame::STORAGE_MAPPABLE_SHARED_IMAGE
+  kNv12Software,             // Implies media::VideoFrame::STORAGE_OWNED_MEMORY
+  kI420                      // Implies media::VideoFrame::STORAGE_OWNED_MEMORY
 };
 
-const TestFrameType kTestFrameTypes[] = {TestFrameType::kNv12GpuMemoryBuffer,
-                                         TestFrameType::kNv12Software,
-                                         TestFrameType::kI420};
+const TestFrameType kTestFrameTypes[] = {
+    TestFrameType::kNv12MappableSharedImage, TestFrameType::kNv12Software,
+    TestFrameType::kI420};
 
 const media::VideoCodec kTrackRecorderTestCodec[] = {
     media::VideoCodec::kVP8,
@@ -414,7 +414,7 @@ class VideoTrackRecorderTest : public VideoTrackRecorderTestBase {
         media::VideoPixelFormat::PIXEL_FORMAT_NV12, base::TimeDelta(),
         test_sii_.get());
     scoped_refptr<media::VideoFrame> video_frame2 = video_frame;
-    if (frame_type == TestFrameType::kNv12GpuMemoryBuffer) {
+    if (frame_type == TestFrameType::kNv12MappableSharedImage) {
       video_frame2 = media::ConvertToMemoryMappedFrame(video_frame);
     }
 
@@ -425,7 +425,7 @@ class VideoTrackRecorderTest : public VideoTrackRecorderTestBase {
                        video_frame2->stride(0) * frame_size.height()));
     UNSAFE_TODO(memset(video_frame2->writable_data(1), kBlackUV,
                        video_frame2->stride(1) * (frame_size.height() / 2)));
-    if (frame_type == TestFrameType::kNv12GpuMemoryBuffer) {
+    if (frame_type == TestFrameType::kNv12MappableSharedImage) {
       return video_frame;
     }
     return video_frame2;
@@ -567,7 +567,7 @@ TEST_P(VideoTrackRecorderTestParam, VideoEncoding) {
   const gfx::Size& frame_size = testing::get<1>(GetParam());
   const TestFrameType test_frame_type = testing::get<3>(GetParam());
 
-  // We don't support alpha channel with GpuMemoryBuffer frames.
+  // We don't support alpha channel with MappableSI frames.
   if (test_frame_type != TestFrameType::kI420 && encode_alpha_channel) {
     return;
   }
@@ -622,7 +622,7 @@ TEST_P(VideoTrackRecorderTestParam, VideoEncoding) {
   EXPECT_GE(second_frame_encoded_data->size(), kEncodedSizeThreshold);
   EXPECT_GE(third_frame_encoded_data->size(), kEncodedSizeThreshold);
 
-  // We only support NV12 with GpuMemoryBuffer video frame.
+  // We only support NV12 with MappableSI video frame.
   if (test_frame_type == TestFrameType::kI420 && encode_alpha_channel &&
       CanEncodeAlphaChannel()) {
     EXPECT_GE(first_frame_encoded_data->side_data()->alpha_data.size(),
@@ -654,7 +654,7 @@ TEST_P(VideoTrackRecorderTestParam, ConfigureEncoderWithScreenContent) {
   const gfx::Size& frame_size = testing::get<1>(GetParam());
   const TestFrameType test_frame_type = testing::get<3>(GetParam());
 
-  // We don't support alpha channel with GpuMemoryBuffer frames.
+  // We don't support alpha channel with MappableSI frames.
   if (test_frame_type != TestFrameType::kI420 && encode_alpha_channel) {
     return;
   }
@@ -687,7 +687,7 @@ TEST_P(VideoTrackRecorderTestParam, CheckMetricsProviderInVideoEncoding) {
   const gfx::Size& frame_size = testing::get<1>(GetParam());
   const TestFrameType test_frame_type = testing::get<3>(GetParam());
 
-  // We don't support alpha channel with GpuMemoryBuffer frames.
+  // We don't support alpha channel with MappableSI frames.
   if (test_frame_type != TestFrameType::kI420 && encode_alpha_channel) {
     return;
   }
@@ -789,8 +789,8 @@ TEST_P(VideoTrackRecorderTestParam, EncodeFrameRGB) {
 
   // TODO(crbug/1177593): Refactor test harness to use a cleaner parameter
   // space.
-  // Let kI420 indicate owned memory, and kNv12GpuMemoryBuffer to indicate GMB
-  // storage. Don't test for kNv12Software.
+  // Let kI420 indicate owned memory, and kNv12MappableSharedImage indicate
+  // mappable SI storage. Don't test for kNv12Software.
   const TestFrameType test_frame_type = testing::get<3>(GetParam());
   if (test_frame_type == TestFrameType::kNv12Software) {
     return;
@@ -984,8 +984,8 @@ std::string PrintTestParams(
   ss << " size " + testing::get<1>(info.param).ToString() << " encode alpha "
      << (testing::get<2>(info.param) ? "true" : "false") << " frame type ";
   switch (testing::get<3>(info.param)) {
-    case TestFrameType::kNv12GpuMemoryBuffer:
-      ss << "NV12 GMB";
+    case TestFrameType::kNv12MappableSharedImage:
+      ss << "NV12 MappableSharedImage";
       break;
     case TestFrameType::kNv12Software:
       ss << "I420 SW";

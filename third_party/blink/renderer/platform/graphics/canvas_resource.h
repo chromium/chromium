@@ -4,6 +4,7 @@
 
 #include <string>
 
+#include "base/byte_size.h"
 #include "base/check_op.h"
 #include "base/dcheck_is_on.h"
 #include "base/memory/shared_memory_mapping.h"
@@ -87,7 +88,7 @@ class PLATFORM_EXPORT CanvasResource
 
   // The bounds for this resource.
   gfx::Size Size() const { return GetClientSharedImage()->size(); }
-  base::ByteCount EstimatedSizeInBytes() const {
+  base::ByteSize EstimatedSizeInBytes() const {
     return GetClientSharedImage()->EstimatedSizeInBytes();
   }
 

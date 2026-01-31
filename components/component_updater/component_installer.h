@@ -52,7 +52,7 @@ class ComponentInstallerPolicy {
   // |install_dir|. Called only from a thread belonging to a blocking thread
   // pool. The implementation of this function must be efficient since the
   // function can be called when Chrome starts.
-  virtual bool VerifyInstallation(const base::Value::Dict& manifest,
+  virtual bool VerifyInstallation(const base::DictValue& manifest,
                                   const base::FilePath& install_dir) const = 0;
 
   // Returns true if the component supports a group policy to enable updates.
@@ -69,7 +69,7 @@ class ComponentInstallerPolicy {
   // update_client::InstallError::NONE otherwise. Called only from a thread
   // belonging to a blocking thread pool.
   virtual update_client::CrxInstaller::Result OnCustomInstall(
-      const base::Value::Dict& manifest,
+      const base::DictValue& manifest,
       const base::FilePath& install_dir) = 0;
 
   // OnCustomUninstall is called during the unregister (uninstall) process.
@@ -90,7 +90,7 @@ class ComponentInstallerPolicy {
   // |manifest| is the manifest for this version of the component.
   virtual void ComponentReady(const base::Version& version,
                               const base::FilePath& install_dir,
-                              base::Value::Dict manifest) = 0;
+                              base::DictValue manifest) = 0;
 
   // Returns a relative path that will be appended to the component updater
   // root directories to find the data for this particular component.
@@ -185,7 +185,7 @@ class ComponentInstaller final : public update_client::CrxInstaller {
     base::FilePath install_dir;
     base::Version version;
     std::string fingerprint;
-    std::optional<base::Value::Dict> manifest;
+    std::optional<base::DictValue> manifest;
 
    private:
     friend class base::RefCountedThreadSafe<RegistrationInfo>;
@@ -203,7 +203,7 @@ class ComponentInstaller final : public update_client::CrxInstaller {
                            scoped_refptr<RegistrationInfo> registration_info);
   update_client::CrxInstaller::Result InstallHelper(
       const base::FilePath& unpack_path,
-      base::Value::Dict* manifest,
+      base::DictValue* manifest,
       base::Version* version,
       base::FilePath* install_path);
   void StartRegistration(const base::Version& registered_version,
@@ -212,7 +212,7 @@ class ComponentInstaller final : public update_client::CrxInstaller {
   void FinishRegistration(scoped_refptr<RegistrationInfo> registration_info,
                           RegisterCallback register_callback,
                           base::OnceClosure callback);
-  std::optional<base::Value::Dict> GetValidInstallationManifest(
+  std::optional<base::DictValue> GetValidInstallationManifest(
       const base::FilePath& path);
   std::optional<base::Version> SelectComponentVersion(
       const base::Version& registered_version,
@@ -224,7 +224,7 @@ class ComponentInstaller final : public update_client::CrxInstaller {
       const base::FilePath& base_dir,
       std::optional<base::Version> selected_version);
   std::optional<base::FilePath> GetComponentDirectory();
-  void ComponentReady(base::Value::Dict manifest);
+  void ComponentReady(base::DictValue manifest);
   void UninstallOnTaskRunner();
 
   SEQUENCE_CHECKER(sequence_checker_);

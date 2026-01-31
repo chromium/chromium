@@ -56,13 +56,13 @@ std::vector<jni_zero::ScopedJavaLocalRef<jobject>> ToJavaTopicsArray(
 }
 }  // namespace
 
-static jboolean JNI_PrivacySandboxBridge_IsPrivacySandboxRestricted(
+static bool JNI_PrivacySandboxBridge_IsPrivacySandboxRestricted(
     JNIEnv* env,
     const JavaRef<jobject>& j_profile) {
   return GetPrivacySandboxService(j_profile)->IsPrivacySandboxRestricted();
 }
 
-static jboolean JNI_PrivacySandboxBridge_IsRestrictedNoticeEnabled(
+static bool JNI_PrivacySandboxBridge_IsRestrictedNoticeEnabled(
     JNIEnv* env,
     const JavaRef<jobject>& j_profile) {
   return GetPrivacySandboxService(j_profile)->IsRestrictedNoticeEnabled();
@@ -95,8 +95,8 @@ static std::vector<jni_zero::ScopedJavaLocalRef<jobject>>
 JNI_PrivacySandboxBridge_GetChildTopicsCurrentlyAssigned(
     JNIEnv* env,
     const JavaRef<jobject>& j_profile,
-    jint topic_id,
-    jint taxonomy_version) {
+    int32_t topic_id,
+    int32_t taxonomy_version) {
   return ToJavaTopicsArray(
       env, GetPrivacySandboxService(j_profile)->GetChildTopicsCurrentlyAssigned(
                privacy_sandbox::CanonicalTopic(browsing_topics::Topic(topic_id),
@@ -106,9 +106,9 @@ JNI_PrivacySandboxBridge_GetChildTopicsCurrentlyAssigned(
 static void JNI_PrivacySandboxBridge_SetTopicAllowed(
     JNIEnv* env,
     const JavaRef<jobject>& j_profile,
-    jint topic_id,
-    jint taxonomy_version,
-    jboolean allowed) {
+    int32_t topic_id,
+    int32_t taxonomy_version,
+    bool allowed) {
   GetPrivacySandboxService(j_profile)->SetTopicAllowed(
       privacy_sandbox::CanonicalTopic(browsing_topics::Topic(topic_id),
                                       taxonomy_version),
@@ -143,15 +143,15 @@ static void JNI_PrivacySandboxBridge_SetFledgeJoiningAllowed(
     JNIEnv* env,
     const JavaRef<jobject>& j_profile,
     const JavaRef<jstring>& top_frame_etld_plus1,
-    jboolean allowed) {
+    bool allowed) {
   GetPrivacySandboxService(j_profile)->SetFledgeJoiningAllowed(
       base::android::ConvertJavaStringToUTF8(top_frame_etld_plus1), allowed);
 }
 
-static jint JNI_PrivacySandboxBridge_GetRequiredPromptType(
+static int32_t JNI_PrivacySandboxBridge_GetRequiredPromptType(
     JNIEnv* env,
     const JavaRef<jobject>& j_profile,
-    jint surface_type) {
+    int32_t surface_type) {
   // If the FRE is disabled, as it is in tests which must not be interrupted
   // with dialogs, do not attempt to show a dialog.
   const auto& command_line = *base::CommandLine::ForCurrentProcess();
@@ -166,21 +166,21 @@ static jint JNI_PrivacySandboxBridge_GetRequiredPromptType(
 static void JNI_PrivacySandboxBridge_PromptActionOccurred(
     JNIEnv* env,
     const JavaRef<jobject>& j_profile,
-    jint action,
-    jint surface_type) {
+    int32_t action,
+    int32_t surface_type) {
   GetPrivacySandboxService(j_profile)->PromptActionOccurred(
       static_cast<PrivacySandboxService::PromptAction>(action),
       static_cast<PrivacySandboxService::SurfaceType>(surface_type));
 }
 
-static jboolean JNI_PrivacySandboxBridge_IsRelatedWebsiteSetsDataAccessEnabled(
+static bool JNI_PrivacySandboxBridge_IsRelatedWebsiteSetsDataAccessEnabled(
     JNIEnv* env,
     const JavaRef<jobject>& j_profile) {
   return GetPrivacySandboxService(j_profile)
       ->IsRelatedWebsiteSetsDataAccessEnabled();
 }
 
-static jboolean JNI_PrivacySandboxBridge_IsRelatedWebsiteSetsDataAccessManaged(
+static bool JNI_PrivacySandboxBridge_IsRelatedWebsiteSetsDataAccessManaged(
     JNIEnv* env,
     const JavaRef<jobject>& j_profile) {
   return GetPrivacySandboxService(j_profile)
@@ -190,7 +190,7 @@ static jboolean JNI_PrivacySandboxBridge_IsRelatedWebsiteSetsDataAccessManaged(
 static void JNI_PrivacySandboxBridge_SetRelatedWebsiteSetsDataAccessEnabled(
     JNIEnv* env,
     const JavaRef<jobject>& j_profile,
-    jboolean enabled) {
+    bool enabled) {
   GetPrivacySandboxService(j_profile)->SetRelatedWebsiteSetsDataAccessEnabled(
       enabled);
 }
@@ -211,7 +211,7 @@ JNI_PrivacySandboxBridge_GetRelatedWebsiteSetOwner(
   return ConvertUTF8ToJavaString(env, rwsOwner->GetURL().GetHost());
 }
 
-static jboolean JNI_PrivacySandboxBridge_IsPartOfManagedRelatedWebsiteSet(
+static bool JNI_PrivacySandboxBridge_IsPartOfManagedRelatedWebsiteSet(
     JNIEnv* env,
     const JavaRef<jobject>& j_profile,
     const JavaRef<jstring>& origin) {
@@ -225,7 +225,7 @@ static jboolean JNI_PrivacySandboxBridge_IsPartOfManagedRelatedWebsiteSet(
 static void JNI_PrivacySandboxBridge_TopicsToggleChanged(
     JNIEnv* env,
     const JavaRef<jobject>& j_profile,
-    jboolean new_value) {
+    bool new_value) {
   GetPrivacySandboxService(j_profile)->TopicsToggleChanged(new_value);
 }
 
@@ -241,7 +241,7 @@ JNI_PrivacySandboxBridge_SetAllPrivacySandboxAllowedForTesting(  // IN-TEST
 static void JNI_PrivacySandboxBridge_RecordActivityType(
     JNIEnv* env,
     const JavaRef<jobject>& j_profile,
-    jint activity_type) {
+    int32_t activity_type) {
   privacy_sandbox::PrivacySandboxActivityTypesService*
       privacy_sandbox_activity_types_service =
           PrivacySandboxActivityTypesFactory::GetForProfile(
@@ -254,7 +254,7 @@ static void JNI_PrivacySandboxBridge_RecordActivityType(
                       PrivacySandboxStorageActivityType>(activity_type));
 }
 
-static jboolean
+static bool
 JNI_PrivacySandboxBridge_PrivacySandboxPrivacyGuideShouldShowAdTopicsCard(
     JNIEnv* env,
     const JavaRef<jobject>& j_profile) {
@@ -262,7 +262,7 @@ JNI_PrivacySandboxBridge_PrivacySandboxPrivacyGuideShouldShowAdTopicsCard(
       ->PrivacySandboxPrivacyGuideShouldShowAdTopicsCard();
 }
 
-static jboolean JNI_PrivacySandboxBridge_ShouldUsePrivacyPolicyChinaDomain(
+static bool JNI_PrivacySandboxBridge_ShouldUsePrivacyPolicyChinaDomain(
     JNIEnv* env,
     const JavaRef<jobject>& j_profile) {
   return GetPrivacySandboxService(j_profile)
@@ -272,8 +272,8 @@ static jboolean JNI_PrivacySandboxBridge_ShouldUsePrivacyPolicyChinaDomain(
 static ScopedJavaLocalRef<jstring>
 JNI_PrivacySandboxBridge_GetEmbeddedPrivacyPolicyURL(
     JNIEnv* env,
-    jint domain_type,
-    jint color_scheme,
+    int32_t domain_type,
+    int32_t color_scheme,
     const JavaRef<jstring>& locale) {
   return ConvertUTF8ToJavaString(
       env,

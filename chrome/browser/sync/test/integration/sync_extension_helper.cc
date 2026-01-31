@@ -20,6 +20,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sync/test/integration/sync_datatype_helper.h"
 #include "chrome/browser/sync/test/integration/sync_test.h"
+#include "chrome/common/chrome_paths.h"
 #include "components/crx_file/id_util.h"
 #include "components/sync/model/string_ordinal.h"
 #include "extensions/browser/disable_reason.h"
@@ -44,7 +45,7 @@ using extensions::Extension;
 using extensions::ExtensionPrefs;
 using extensions::Manifest;
 
-const char kFakeExtensionPrefix[] = "fakeextension";
+const std::string_view kFakeExtensionPrefix = "fakeextension";
 
 // static
 SyncExtensionHelper* SyncExtensionHelper::GetInstance() {
@@ -62,8 +63,6 @@ void SyncExtensionHelper::SetupIfNecessary(SyncTest* test) {
     return;
   }
 
-  extension_name_prefix_ =
-      kFakeExtensionPrefix + base::Uuid::GenerateRandomV4().AsLowercaseString();
   for (int i = 0; i < test->num_clients(); ++i) {
     SetupProfile(test->GetProfile(i));
   }
@@ -281,19 +280,24 @@ bool SyncExtensionHelper::ExtensionStatesMatch(Profile* profile1,
 }
 
 std::string SyncExtensionHelper::CreateFakeExtensionName(int index) {
-  return extension_name_prefix_ + base::NumberToString(index);
+  return base::StrCat({kFakeExtensionPrefix, base::NumberToString(index)});
 }
 
 bool SyncExtensionHelper::ExtensionNameToIndex(const std::string& name,
                                                int* index) {
-  if (!(base::StartsWith(name, extension_name_prefix_,
+  if (!(base::StartsWith(name, kFakeExtensionPrefix,
                          base::CompareCase::SENSITIVE) &&
-        base::StringToInt(name.substr(extension_name_prefix_.size()), index))) {
+        base::StringToInt(name.substr(kFakeExtensionPrefix.size()), index))) {
     LOG(WARNING) << "Unable to convert extension name \"" << name
                  << "\" to index";
     return false;
   }
   return true;
+}
+
+extensions::ExtensionId SyncExtensionHelper::GetExtensionId(
+    const std::string& name) const {
+  return crx_file::id_util::GenerateId(name);
 }
 
 void SyncExtensionHelper::SetupProfile(Profile* profile) {
@@ -318,7 +322,7 @@ std::string NameToPublicKey(const std::string& name) {
 scoped_refptr<Extension> CreateExtension(const base::FilePath& base_dir,
                                          const std::string& name,
                                          Manifest::Type type) {
-  base::Value::Dict source;
+  base::DictValue source;
   source.SetByDottedPath(extensions::manifest_keys::kName, name);
   const std::string& public_key = NameToPublicKey(name);
   source.SetByDottedPath(extensions::manifest_keys::kPublicKey, public_key);
@@ -330,21 +334,21 @@ scoped_refptr<Extension> CreateExtension(const base::FilePath& base_dir,
       break;
     case Manifest::TYPE_THEME:
       source.SetByDottedPath(extensions::manifest_keys::kTheme,
-                             base::Value::Dict());
+                             base::DictValue());
       break;
     case Manifest::TYPE_HOSTED_APP:
     case Manifest::TYPE_LEGACY_PACKAGED_APP:
       source.SetByDottedPath(extensions::manifest_keys::kApp,
-                             base::Value::Dict());
+                             base::DictValue());
       source.SetByDottedPath(extensions::manifest_keys::kLaunchWebURL,
                              "http://www.example.com");
       break;
     case Manifest::TYPE_PLATFORM_APP: {
       source.SetByDottedPath(extensions::manifest_keys::kApp,
-                             base::Value::Dict());
+                             base::DictValue());
       source.SetByDottedPath(extensions::manifest_keys::kPlatformAppBackground,
-                             base::Value::Dict());
-      base::Value::List scripts;
+                             base::DictValue());
+      base::ListValue scripts;
       scripts.Append("main.js");
       source.SetByDottedPath(
           extensions::manifest_keys::kPlatformAppBackgroundScripts,

@@ -35,8 +35,7 @@ public class InterfaceControlMessagesHelper {
      * MessageReceiver that forwards a message containing a {@link RunResponseMessageParams} to a
      * callback.
      */
-    private static class RunResponseForwardToCallback extends SideEffectFreeCloseable
-            implements MessageReceiver {
+    private static class RunResponseForwardToCallback implements MessageReceiver {
         private final SendRunMessageCallback mCallback;
 
         RunResponseForwardToCallback(SendRunMessageCallback callback) {
@@ -47,12 +46,15 @@ public class InterfaceControlMessagesHelper {
          * @see MessageReceiver#accept(Message)
          */
         @Override
-        public boolean accept(Message message) {
+        public boolean accept(Message message) throws BadMessageException {
             RunResponseMessageParams response =
                     RunResponseMessageParams.deserialize(message.asServiceMessage().getPayload());
             mCallback.call(response);
             return true;
         }
+
+        @Override
+        public void close() {}
     }
 
     /** Sends the given run message through the receiver, registering the callback. */
@@ -65,10 +67,16 @@ public class InterfaceControlMessagesHelper {
                 params.serializeWithHeader(
                         core,
                         new MessageHeader(
+                                MessageHeader.TEMPORARY_DEFAULT_INTERFACE_ID,
                                 InterfaceControlMessagesConstants.RUN_MESSAGE_ID,
                                 MessageHeader.MESSAGE_EXPECTS_RESPONSE_FLAG,
                                 0));
-        receiver.acceptWithResponder(message, new RunResponseForwardToCallback(callback));
+        try {
+            receiver.acceptWithResponder(message, new RunResponseForwardToCallback(callback));
+        } catch (BadMessageException e) {
+            // Should not happen, because we serialized the message ourselves above.
+            throw new IllegalStateException(e);
+        }
     }
 
     /** Sends the given run or close pipe message through the receiver. */
@@ -78,14 +86,21 @@ public class InterfaceControlMessagesHelper {
                 params.serializeWithHeader(
                         core,
                         new MessageHeader(
+                                MessageHeader.TEMPORARY_DEFAULT_INTERFACE_ID,
                                 InterfaceControlMessagesConstants.RUN_OR_CLOSE_PIPE_MESSAGE_ID));
-        receiver.accept(message);
+        try {
+            receiver.accept(message);
+        } catch (BadMessageException e) {
+            // Should not happen, because we serialized the message ourselves above.
+            throw new IllegalStateException(e);
+        }
     }
 
     /** Handles a received run message. */
     @SuppressWarnings("NullAway") // Thinks response.output is @NonNull.
     public static <I extends Interface, P extends Proxy> boolean handleRun(
-            Core core, Manager<I, P> manager, ServiceMessage message, MessageReceiver responder) {
+            Core core, Manager<I, P> manager, ServiceMessage message, MessageReceiver responder)
+            throws BadMessageException {
         Message payload = message.getPayload();
         RunMessageParams query = RunMessageParams.deserialize(payload);
         RunResponseMessageParams response = new RunResponseMessageParams();
@@ -101,6 +116,7 @@ public class InterfaceControlMessagesHelper {
                 response.serializeWithHeader(
                         core,
                         new MessageHeader(
+                                MessageHeader.TEMPORARY_DEFAULT_INTERFACE_ID,
                                 InterfaceControlMessagesConstants.RUN_MESSAGE_ID,
                                 MessageHeader.MESSAGE_IS_RESPONSE_FLAG,
                                 message.getHeader().getRequestId())));
@@ -111,7 +127,7 @@ public class InterfaceControlMessagesHelper {
      * |false|.
      */
     public static <I extends Interface, P extends Proxy> boolean handleRunOrClosePipe(
-            Manager<I, P> manager, ServiceMessage message) {
+            Manager<I, P> manager, ServiceMessage message) throws BadMessageException {
         Message payload = message.getPayload();
         RunOrClosePipeMessageParams query = RunOrClosePipeMessageParams.deserialize(payload);
         if (query.input.which() == RunOrClosePipeInput.Tag.RequireVersion) {

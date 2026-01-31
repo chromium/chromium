@@ -14,6 +14,14 @@
       /* Make the <li> element actionable in APC */
       cursor: pointer;
     }
+    #checkboxPseudo-label::before {
+      content: "";
+      position: absolute;
+      left: 0;
+      width: 15px;
+      height: 15px;
+      border: 3px solid red;
+    }
   </style>
 </head>
 
@@ -30,6 +38,12 @@
     <li>
       <input id="checkbox" type="checkbox" value="Checkbox">
       <label id="checkbox-label" for="checkbox">Label for the checkbox</label>
+    </li>
+    <li>
+      <div style="position:relative">
+          <input id="checkboxPseudo" type="checkbox" value="CheckboxPseudo">
+          <label id="checkboxPseudo-label" for="checkboxPseudo">Label for the checkboxPseudo</label>
+      </div>
     </li>
   </ul>
 </body>

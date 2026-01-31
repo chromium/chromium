@@ -79,6 +79,10 @@ inline constexpr char kWebNNOrtEpDevice[] = "webnn-ort-ep-device";
 inline constexpr char kWebNNOrtIgnoreEpBlocklist[] =
     "webnn-ort-ignore-ep-blocklist";
 
+// Ignore all IHV execution providers, only the default CPUExecutionProvider and
+// DmlExecutionProvider will be used.
+inline constexpr char kWebNNOrtIgnoreIhvEps[] = "webnn-ort-ignore-ihv-eps";
+
 // Configure the graph optimization level of ONNX Runtime.
 // Usage: --webnn-ort-graph-optimization-level=DISABLE_ALL
 // Other levels could be "BASIC", "EXTENDED" and "ALL".

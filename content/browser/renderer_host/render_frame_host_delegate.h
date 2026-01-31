@@ -722,12 +722,6 @@ class CONTENT_EXPORT RenderFrameHostDelegate {
   // ignored.
   virtual bool ShouldIgnoreUnresponsiveRenderer();
 
-  // Returns the base permissions policy that should be applied to the Isolated
-  // Web App running in the given RenderFrameHostImpl. If std::nullopt is
-  // returned the default non-isolated permissions policy will be applied.
-  virtual std::optional<network::ParsedPermissionsPolicy>
-  GetPermissionsPolicyForIsolatedWebApp(RenderFrameHostImpl* source);
-
   // Updates the draggable regions defined by the app-region CSS property.
   virtual void DraggableRegionsChanged(
       const std::vector<blink::mojom::DraggableRegionPtr>& regions) {}

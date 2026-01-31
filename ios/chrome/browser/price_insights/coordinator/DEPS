@@ -1,7 +1,9 @@
 include_rules = [
-  "+ios/chrome/browser/price_notifications/ui_bundled",
+  # keep-sorted start
   "+ios/chrome/browser/bookmarks/model",
   "+ios/chrome/browser/commerce/model",
   "+ios/chrome/browser/contextual_panel/coordinator",
   "+ios/chrome/browser/contextual_panel/utils",
+  "+ios/chrome/browser/price_notifications/ui_bundled",
+  # keep-sorted end
 ]

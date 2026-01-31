@@ -1,0 +1,8 @@
+{
+  "name": "webui-codemods",
+  "version": "0.0.1",
+  "type": "module",
+  "dependencies": {
+    "jscodeshift": "17.3.0"
+  }
+}

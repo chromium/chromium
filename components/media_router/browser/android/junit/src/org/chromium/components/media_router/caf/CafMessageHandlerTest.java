@@ -388,7 +388,7 @@ public class CafMessageHandlerTest {
 
     @Test
     public void testCastV2MessageWithWrongTypeInnerMessage() throws JSONException {
-        org.robolectric.shadows.ShadowLog.stream = System.out;
+
         JSONObject innerMessage = new JSONObject().put("type", "STOP");
         final JSONObject message = buildCastV2Message(CLIENT_ID1, innerMessage);
         // Replace the inner JSON message with string.

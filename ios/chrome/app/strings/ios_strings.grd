@@ -194,6 +194,9 @@
       <message name="IDS_IOS_ACCNAME_NEW_INCOGNITO_TAB" desc="The accessibility label for the new incognito tab button on the new tab page [Length: unlimited]">
         New incognito tab
       </message>
+      <message name="IDS_IOS_ACCNAME_OPEN_PAGE_ACTION_MENU" desc="The accessibility label for the button that opens the page action menu [Length: unlimited]">
+        Open page action menu
+      </message>
       <message name="IDS_IOS_ACCNAME_RELOAD" desc="The accessibility label for the reload button [Length: unlimited] [iOS only]">
         Reload
       </message>
@@ -330,7 +333,7 @@
         Microphone
       </message>
       <message name="IDS_IOS_AI_HUB_OPEN_PRICE_TRACKING_ACCESSIBILITY_LABEL" desc="The accessibility label for the button to open price tracking in the AI hub.">
-        Show price history for this product
+        Currently tracking this product. Open to see price history
       </message>
       <message name="IDS_IOS_AI_HUB_OPEN_TRANSLATE_SETTINGS_ACCESSIBILITY_LABEL" desc="The accessibility label for the button to open translate settings in the AI hub.">
         Open Translate settings
@@ -352,6 +355,9 @@
       </message>
       <message name="IDS_IOS_AI_HUB_PRICE_TRACKING_LABEL" desc="The label for the Price tracking feature of the AI hub.">
         Price history
+      </message>
+      <message name="IDS_IOS_AI_HUB_PRICE_TRACKING_TRACK_BUTTON_LABEL" translateable="false" desc="The button label for tracking prices in the Price tracking feature of the AI hub when the user is not tracking the product.">
+        Track
       </message>
       <message name="IDS_IOS_AI_HUB_READER_MODE_LABEL" desc="The button label for the Reader mode entry point of the AI hub.">
         Reading Mode
@@ -937,26 +943,17 @@
       <message name="IDS_IOS_BOOKMARK_ACTION_MOVE" desc="Title of the action that moves a bookmark in the bookmark action sheet. [Length: 30em.] [iOS only]">
         Move
       </message>
-      <message name="IDS_IOS_BOOKMARK_ACTION_SELECT" desc="Title of the action that selects a bookmark in the bookmark action sheet. [Length: 30em.] [iOS only]">
-        Select
-      </message>
       <message name="IDS_IOS_BOOKMARK_CHOOSE_GROUP_BUTTON" desc="Button to assign a folder to an uncategorized bookmark. [iOS only]">
         Choose folder
       </message>
       <message name="IDS_IOS_BOOKMARK_CONTEXT_BAR_DELETE" desc="Text on the bookmarks context bar for delete action">
        Delete
       </message>
-      <message name="IDS_IOS_BOOKMARK_CONTEXT_BAR_EDIT" desc="Text on the bookmarks context bar for edit action">
-        Edit
-      </message>
       <message name="IDS_IOS_BOOKMARK_CONTEXT_BAR_MORE" desc="Text on the bookmarks context bar to show more context menu">
         More…
       </message>
       <message name="IDS_IOS_BOOKMARK_CONTEXT_BAR_NEW_FOLDER" desc="Text on the bookmarks context bar to create new folder">
         New folder
-      </message>
-      <message name="IDS_IOS_BOOKMARK_CONTEXT_BAR_SELECT" desc="Text on the bookmarks context bar for select action">
-        Select
       </message>
       <message name="IDS_IOS_BOOKMARK_CONTEXT_MENU_EDIT" desc="Text on the bookmarks context menu to edit selected bookmark">
         Edit Bookmark
@@ -1007,6 +1004,12 @@
       </message>
       <message name="IDS_IOS_BOOKMARK_NAME_FIELD_HEADER" desc="Title shown above bookmark name field on Edit Bookmark screen. [Length: 20em]" meaning="Name of an inanimate object">
         Name
+      </message>
+      <message name="IDS_IOS_BOOKMARK_NAVIGATION_BAR_DESELECT_ALL" desc="Text shown on left navigation bar button in the bookmarks menu to deselect all bookmarks.">
+        Deselect all
+      </message>
+      <message name="IDS_IOS_BOOKMARK_NAVIGATION_BAR_SELECT_ALL" desc="Text shown on left navigation bar button in the bookmarks menu to select all bookmarks.">
+        Select all
       </message>
       <message name="IDS_IOS_BOOKMARK_NEW_BOOKMARKS_BAR_TITLE" desc="Text that describes the bookmarks present in the bookmarks bar for chrome on desktop. [Length: 30em.] [iOS only]">
         Bookmarks bar
@@ -1353,6 +1356,9 @@
       <message name="IDS_IOS_CHECK_PASSWORDS_NOW_BUTTON" desc="Label of a button which starts Password Check [Length: 22em] [iOS only]" meaning="By clicking this button user will start checking all passwords for security issues.">
         Check now
       </message>
+      <message name="IDS_IOS_CHOOSE_FROM_DRIVE_ACTION_NAME" desc="Title for an action to choose a file from Google Drive. 'Google Drive' is the name of the 'Google Drive' app." meaning="Title for an action to choose a file from Google Drive. 'Google Drive' is the name of the 'Google Drive' app.">
+        Google Drive
+      </message>
       <message name="IDS_IOS_CLEAR_AUTOFILL" desc="Label for the option in settings to clear form data. [Length: 20em] [iOS only]">
         Autofill data
       </message>
@@ -1413,6 +1419,9 @@
       <message name="IDS_IOS_COLLAPSED_PRIMARY_TOOLBAR_BUTTON" desc="The accessibility label for the collapsed toolbar button in primary toolbar. [iOS only].">
         Collapsed primary toolbar button
       </message>
+      <message name="IDS_IOS_COMPOSEBOX_ADD_ATTACHMENT_BUTTON_ACCESSIBILITY_LABEL" desc="The accessibility announcement read by Voice Over for the button that enables the user to add other attachments to the search query. [iOS only].">
+        Add attachment
+      </message>
       <message name="IDS_IOS_COMPOSEBOX_ADD_CURRENT_TAB_ACTION" desc="The contextual menu option for attaching the current tab. [iOS only].">
         Add current tab
       </message>
@@ -1428,20 +1437,43 @@
       <message name="IDS_IOS_COMPOSEBOX_AIM_ENABLED_PLACEHOLDER" desc="The placeholder to show when AIM is enabled and no user text was added.">
         Ask Google anything
       </message>
+      <message name="IDS_IOS_COMPOSEBOX_ATTACHMENT_FILE_ACCESSIBILITY_LABEL" desc="The accessibility announcement prefix read by Voice Over for a file attachment in AI Mode input plate. [iOS only].">
+        Attached file {title}
+      </message>
+      <message name="IDS_IOS_COMPOSEBOX_ATTACHMENT_IMAGE_INDEXED_ACCESSIBILITY_LABEL" desc="The accessibility announcement read by Voice Over for a image attachment in AI Mode input plate, with its index. Example: `Attached image 1` for the first attached image. [iOS only].">
+        Attached image {index}
+      </message>
+      <message name="IDS_IOS_COMPOSEBOX_ATTACHMENT_TAB_ACCESSIBILITY_LABEL" desc="The accessibility announcement prefix read by Voice Over for a tab attachment in AI Mode input plate. [iOS only].">
+        Attached tab {title}
+      </message>
       <message name="IDS_IOS_COMPOSEBOX_CAMERA_ACTION" desc="The contextual menu option for opening the camera. [iOS only].">
         Camera
       </message>
       <message name="IDS_IOS_COMPOSEBOX_CANNOT_RELOAD_TAB_ERROR" desc="Message displayed in a snackbar when reloading a tab fails. [iOS only].">
         Can’t reload tabs
       </message>
+      <message name="IDS_IOS_COMPOSEBOX_CANVAS_ACTION" desc="The contextual menu option for opening the tool where users can dynamically build and edit content with the help of AI. [iOS only].">
+        Canvas
+      </message>
+      <message name="IDS_IOS_COMPOSEBOX_CANVAS_ENABLED_PLACEHOLDER" desc="The placeholder to show when Canvas is enabled and no user text was added.">
+        Create anything
+      </message>
       <message name="IDS_IOS_COMPOSEBOX_CREATE_IMAGE_ACTION" desc="The contextual menu option instructing the input plate to use the image generation tool. [iOS only].">
         Create image
+      </message>
+      <message name="IDS_IOS_COMPOSEBOX_DELETE_ATTACHMENT_ACCESSIBILITY_CUSTOM_ACTION" desc="The name of the custom accessibility action for that deletes a previously added attachment from the list of attachments in the AIM Composebox. [iOS only].">
+        Delete attachment
       </message>
       <message name="IDS_IOS_COMPOSEBOX_FILES_ACTION" desc="The contextual menu option for opening the file picker. [iOS only].">
         Files
       </message>
       <message name="IDS_IOS_COMPOSEBOX_GALLERY_ACTION" desc="The contextual menu option for opening the gallery picker. [iOS only].">
         Gallery
+      </message>
+      <message name="IDS_IOS_COMPOSEBOX_IMAGE_GEN_MAXIMUM_ATTACHMENTS_REACHED" desc="Message displayed in a snackbar when the user tries to attach more than the maximum allowed number of images to an image generation prompt. [iOS only].">
+          {COUNT, plural,
+          =1 {Add up to 1 image}
+          other {Add up to {COUNT} images}}
       </message>
       <message name="IDS_IOS_COMPOSEBOX_IMAGE_GEN_PLACEHOLDER" desc="The placeholder displayed in the compose box when the nano banana or image generation mode is enabled. [iOS only].">
         Describe your image
@@ -1454,11 +1486,26 @@
       <message name="IDS_IOS_COMPOSEBOX_MENU_TITLE" desc="Title for the contextual menu, the menu allows the user to attach images, tabs, files to their query. [iOS only].">
         Ask Google about tabs and more
       </message>
+      <message name="IDS_IOS_COMPOSEBOX_MODEL_SELECTOR_OPTION_AUTO" desc="Title for the contextual menu option where the system automatically selects the optimal model per query. [iOS only].">
+        Auto
+      </message>
+      <message name="IDS_IOS_COMPOSEBOX_MODEL_SELECTOR_TITLE" desc="Title for the contextual menu section for selecting the AI model to us. [iOS only].">
+        Gemini <ph name="VERSION_NUMBER">$1<ex>3</ex></ph> models
+      </message>
+      <message name="IDS_IOS_COMPOSEBOX_MODEL_SELECTOR_OPTION_THINKING" desc="Title for the contextual menu option for the advanced thinking reasoning model. [iOS only].">
+        Thinking
+      </message>
       <message name="IDS_IOS_COMPOSEBOX_SELECT_TAB_ACTION" desc="The contextual menu option for opening the tab picker for selection. [iOS only].">
         Tabs
       </message>
       <message name="IDS_IOS_COMPOSEBOX_TAB_PICKER_ADD_TABS_TITLE" desc="Title for the Composebox tab picker when no tabs are selected.">
         Add recent tabs
+      </message>
+      <message name="IDS_IOS_COMPOSEBOX_TAB_PICKER_EMPTY_STATE_SUBTITLE" desc="Subtitle for the empty state view in the composebox tab picker.">
+        Open a new tab to add it to your question
+      </message>
+      <message name="IDS_IOS_COMPOSEBOX_TAB_PICKER_EMPTY_STATE_TITLE" desc="Title for the empty state view in the composebox tab picker.">
+        No open tabs
       </message>
       <message name="IDS_IOS_COMPOSEBOX_UNABLE_TO_ADD_ATTACHMENT" desc="Message displayed in a snackbar when a file upload fails. [iOS only].">
         Unable to add attachments
@@ -1725,6 +1772,39 @@
       <message name="IDS_IOS_CONTENT_SUGGESTIONS_PIN_SITE" desc="The name of the 'Pin Site' command in the Content Suggestions articles context menu">
         Pin site
       </message>
+      <message name="IDS_IOS_CONTENT_SUGGESTIONS_PIN_SITE_ADD_PINNED_SITE_APPLY_BUTTON" desc="The top-right button of form for the user to add a pinned site. Tapping this button will close the form and add the filled information as a pinned site to the most visited tiles [Length: 7em]">
+        Add
+      </message>
+      <message name="IDS_IOS_CONTENT_SUGGESTIONS_PIN_SITE_ADD_PINNED_SITE_TITLE" desc="The title of form for the user to add a pinned site">
+        Add site
+      </message>
+      <message name="IDS_IOS_CONTENT_SUGGESTIONS_PIN_SITE_EDIT_PINNED_SITE_APPLY_BUTTON" desc="The top-right button of form for the user to modify an existing pinned site in the most visited tiles [Length: 7em]">
+        Save
+      </message>
+      <message name="IDS_IOS_CONTENT_SUGGESTIONS_PIN_SITE_EDIT_PINNED_SITE_TITLE" desc="The title of form for the user to edit an existing pinned site">
+        Edit site
+      </message>
+      <message name="IDS_IOS_CONTENT_SUGGESTIONS_PIN_SITE_FORM_FOOTER" desc="The footer of form for the user to add or edit a pinned site">
+        Your edits will only apply to your pinned sites on this device.
+      </message>
+      <message name="IDS_IOS_CONTENT_SUGGESTIONS_PIN_SITE_FORM_NAME" desc="The label of the 'name' field of form for the user to add or edit a pinned site">
+        Name
+      </message>
+      <message name="IDS_IOS_CONTENT_SUGGESTIONS_PIN_SITE_FORM_URL" desc="The label of the 'URL' field of form for the user to edit an existing pinned site">
+        URL
+      </message>
+      <message name="IDS_IOS_CONTENT_SUGGESTIONS_PIN_SITE_IN_PRODUCT_HELP" desc="In-product help that points at the first most visited tile in content suggestions to educate the user that they could long tap on the tile to pin this site">
+        Tap and hold to pin your favorite sites
+      </message>
+      <message name="IDS_IOS_CONTENT_SUGGESTIONS_PIN_SITE_SNACKBAR_ADDED_AND_PINNED" desc="The notification displayed at the bottom of the screen after the user has pinned a site through the 'Add site' button">
+        Site added and pinned
+      </message>
+      <message name="IDS_IOS_CONTENT_SUGGESTIONS_PIN_SITE_SNACKBAR_EDITS_SAVED" desc="The notification displayed at the bottom of the screen after the user has successfully edited a pinned site">
+        Edits saved
+      </message>
+      <message name="IDS_IOS_CONTENT_SUGGESTIONS_PIN_SITE_SNACKBAR_PINNED" desc="The notification displayed at the bottom of the screen after the user has pinned a site">
+        Site pinned
+      </message>
       <message name="IDS_IOS_CONTENT_SUGGESTIONS_PRICE_TRACKING_PROMO_ALLOW" desc="Label indicating user can allow price tracking notifications">
           Allow price tracking notifications…
       </message>
@@ -1955,6 +2035,15 @@
             </message>
       <message name="IDS_IOS_CREDENTIAL_BOTTOM_SHEET_USE_PASSWORD" desc="The action button to use the selected credentials to fill the username and password fields on the webpage.">
         Use password
+      </message>
+      <message name="IDS_IOS_CREDENTIAL_EXCHANGE_GENERIC_ERROR_TITLE" desc="Title of the alert shown during credential import flow when any generic error happened preventing the flow from finishing. [iOS only]">
+        Trouble importing your data
+      </message>
+      <message name="IDS_IOS_CREDENTIAL_EXCHANGE_NOTHING_IMPORTED_MESSAGE" desc="Message of the alert shown during credential import flow when the other password manager did not share any passwords or passkeys. [iOS only]">
+        The other password manager didn't share any passwords or passkeys
+      </message>
+      <message name="IDS_IOS_CREDENTIAL_EXCHANGE_NOTHING_IMPORTED_TITLE" desc="Title of the alert shown during credential import flow when the other password manager did not share any passwords or passkeys. [iOS only]">
+        Nothing imported
       </message>
       <message name="IDS_IOS_CREDENTIAL_IMPORT_CONFLICT_RESOLUTION_TITLE" desc="Title modal that enables user to resolve conflict between existing credentials in Google Password Manager and those that are currently being imported. [iOS only]">
         Merge duplicates
@@ -2940,6 +3029,42 @@
       <message name="IDS_IOS_FIRST_RUN_WELCOME_SCREEN_TITLE_IPHONE" desc="The title of the welcome screen presented to the user on First Run when on iPhone [iOS only]">
         Built for Your iPhone
       </message>
+      <message name="IDS_IOS_GEMINI_IMAGE_REMIX_ENTRY_POINT_IPH" desc="Main text in the in-product help tooltip suggesting to users that they can create an image with Gemini.">
+        Create an image with Gemini
+      </message>
+      <message name="IDS_IOS_GEMINI_IMAGE_REMIX_TOOL_IPH" desc="Main text in the in-product help tooltip suggesting to users that they can upload an image to remix with Nano Banana.">
+        Upload an image to remix with Nano Banana
+      </message>
+      <message name="IDS_IOS_GEMINI_PERMISSION_CAMERA_DISABLED_PROMPT_BODY" desc="Text body of the Gemini-specific camera permission prompt when camera is already disabled.">
+        To let Gemini use your camera, turn on Camera in iOS settings
+      </message>
+      <message name="IDS_IOS_GEMINI_PERMISSION_CAMERA_DISABLED_PROMPT_GO_TO_SETTINGS" desc="Label for action button to bring user to iOS settings in the camera permission prompt when camera is already disabled.">
+        Go to Settings
+      </message>
+      <message name="IDS_IOS_GEMINI_PERMISSION_CAMERA_DISABLED_PROMPT_NO_THANKS" desc="Label for decline button in the camera permission prompt when camera is already disabled.">
+        No thanks
+      </message>
+      <message name="IDS_IOS_GEMINI_PERMISSION_CAMERA_DISABLED_PROMPT_TITLE" desc="Title of the Gemini-specific camera permission prompt when camera is already disabled.">
+        Turn on Camera
+      </message>
+      <message name="IDS_IOS_GEMINI_PERMISSION_CAMERA_PROMPT_BODY" desc="Text body of the Gemini-specific camera permission prompt.">
+        Let Gemini use your camera to take photos
+      </message>
+      <message name="IDS_IOS_GEMINI_PERMISSION_CAMERA_PROMPT_TITLE" desc="Title of the Gemini-specific camera permission prompt.">
+        Allow “Gemini” to use your camera
+      </message>
+      <message name="IDS_IOS_GEMINI_PROMO_REMIX_IMAGE_BOX_BODY" desc="'Remix an image' body text for the Gemini Promo page.">
+        Long press an image on the web to edit with Gemini
+      </message>
+      <message name="IDS_IOS_GEMINI_PROMO_REMIX_IMAGE_BOX_TITLE" desc="'Remix an image' title text for the Gemini Promo page.">
+        Remix an image
+      </message>
+      <message name="IDS_IOS_GEMINI_SETTINGS_CAMERA_FOOTER_TEXT" desc="The footer text of a camera permission row in the Gemini settings pages.">
+        Take photos and share with Gemini to create and remix images.
+      </message>
+      <message name="IDS_IOS_GEMINI_SETTINGS_CAMERA_TITLE" desc="Title for settings within Gemini related to the camera. Used as a page title and a settings row title.">
+        Camera
+      </message>
       <message name="IDS_IOS_GENERIC_PASSKIT_ERROR" desc="Generic error message on failure reading a PassKit object. [Length: 60em] [iOS only]">
         Sorry, your Pass cannot be installed to Passbook at this time.
       </message>
@@ -3060,6 +3185,9 @@
       <message name="IDS_IOS_HISTORY_OTHER_FORMS_OF_HISTORY" desc="The notification at the top of the history page indicating that deleting Chrome browsing history will not delete other forms of history stored at Google My Activity.">
         Your Google Account may have other forms of browsing history at <ph name="BEGIN_LINK">BEGIN_LINK</ph>history.google.com<ph name="END_LINK">END_LINK</ph>.
       </message>
+      <message name="IDS_IOS_HISTORY_SELECT_BUTTON" desc="Text for select button contained in the history page toolbar.">
+          Select
+      </message>
       <message name="IDS_IOS_HISTORY_SYNC_FOOTER_WITHOUT_EMAIL" desc="Small text above the main button on a page that asks users to start syncing their tabs and browsing history. The first sentence is meant to reassure users that they can always change their mind and opt out again. Separately, the second sentence explains how history data may be used to personalise the user's experience in other services.  The tone should be friendly and reassuring.">
         You can stop syncing anytime in settings. Google may personalize Search and other services based on your history.
       </message>
@@ -3083,6 +3211,9 @@
       </message>
       <message name="IDS_IOS_HISTORY_SYNC_TITLE" desc="Title of a page that asks users to start syncing their tabs and browsing history, so they can get back to sites they visited more quickly without having to type them, for example by seeing these sites suggested in the Omnibox.">
         Save time, type less
+      </message>
+      <message name="IDS_IOS_HOME_BACKGROUND_CUSTOMIZATION_IPH" desc="In-product help that points at the entrypoint for the Home Customization menu in the new tab page when background customization is added.">
+        Pick a theme, color, or more for your background
       </message>
       <message name="IDS_IOS_HOME_CUSTOMIZATION_ACCESSIBILITY_LABEL" desc="Accessibility label for the Home Customization menu in the new tab page.">
         Customize your home screen
@@ -3237,6 +3368,15 @@
       <message name="IDS_IOS_IDENTITY_DISC_WITH_NAME_AND_EMAIL_OPEN_ACCOUNT_MENU_WITH_ERROR" desc="The content description for a toolbar button displaying user profile picture. Tapping on this button opens the account menu [iOS only].">
           Signed in as <ph name="USER_NAME">$1<ex>Peter Parker</ex></ph>. <ph name="USER_EMAIL">$2<ex>peter.parker@gmail.com</ex></ph>. Google Account error. Open account menu.
       </message>
+      <message name="IDS_IOS_IDENTITY_ERROR_INFOBAR_DEVICE_MANAGEMENT_REQUIRED_FIX_NOW_BUTTON" desc="Button label on an infobar prompting the user to take action to fix an account issue. [iOS only]">
+        Fix now
+      </message>
+      <message name="IDS_IOS_IDENTITY_ERROR_INFOBAR_DEVICE_MANAGEMENT_REQUIRED_LEARN_MORE_BUTTON" desc="Button label on an infobar allowing the user to get more information about an issue. [iOS only]">
+        Learn more
+      </message>
+      <message name="IDS_IOS_IDENTITY_ERROR_INFOBAR_DEVICE_MANAGEMENT_SERVICES_UNAVAILABLE_MESSAGE" desc="Message body of the identity error info bar when device management policies restrict access to some services. [iOS only]">
+        Some services aren’t available for your account
+      </message>
       <message name="IDS_IOS_IDENTITY_ERROR_INFOBAR_ENTER_BUTTON_LABEL" meaning="An on-screen button that enters the user's input" desc="The label of the enter passphrase action button in the identity error info bar. [iOS only]">
         Enter
       </message>
@@ -3336,6 +3476,11 @@
           =1 {Imported {count} history item}
           other {Imported {count} history items}}
       </message>
+      <message name="IDS_IOS_IMPORT_ITEM_TYPE_IMPORTED_DETAILED_TEXT_INVALID_PASSKEYS" desc="The description of the 'Passkey' row displayed on an import screen displaying the number of passkeys that has failed to be imported. Will not be displayed when all passkeys are successfully imported. Do not include a period - it will be handled separately. [iOS only]">
+        {count, plural,
+          =1 {Couldn't import {count} passkey}
+          other {Couldn't import {count} passkeys}}
+      </message>
       <message name="IDS_IOS_IMPORT_ITEM_TYPE_IMPORTED_DETAILED_TEXT_INVALID_PASSWORDS" desc="The description of the 'Password' row displayed on an import screen displaying the number of passwords that has failed to be imported. Will not be displayed when all passwords are successfully imported. Do not include a period - it will be handled separately. [iOS only]">
         {count, plural,
           =1 {Couldn't import {count} password}
@@ -3359,8 +3504,8 @@
       </message>
       <message name="IDS_IOS_IMPORT_ITEM_TYPE_PENDING_DETAILED_TEXT_CREDIT_CARDS" desc="The detailed text of the 'Credit card' row displayed on an import screen displaying the number of credit cards that will be imported. [iOS only]">
         {count, plural,
-          =1 {{count} card}
-          other {{count} cards}}
+          =1 {{count} credit card}
+          other {{count} credit cards}}
       </message>
       <message name="IDS_IOS_IMPORT_ITEM_TYPE_PENDING_DETAILED_TEXT_HISTORY" desc="The detailed text of the 'History' row displayed on an import screen displaying the number of history items that will be imported. [iOS only]">
         {count, plural,
@@ -4187,14 +4332,11 @@
       <message name="IDS_IOS_NEW_TAB_LEARN_MORE_ABOUT_SUGGESTED_CONTENT" desc="Text in the footer of the New Tab Page. Part of the text is a link to a help center page where the user can learn more about suggested content.">
         <ph name="BEGIN_LINK">BEGIN_LINK</ph>Learn more<ph name="END_LINK">END_LINK</ph> about suggested content
       </message>
-      <message name="IDS_IOS_NEW_TAB_LOGO_ACCESSIBILITY_LABEL" desc="Label of the Google logo shown on the New Tab Page to signal that the current search engine is Google. Read by Text To Speech">
-        Searching with Google
-      </message>
       <message name="IDS_IOS_NEW_TAB_MOST_VISITED" desc="Title for the Most Visited panel of the new tab page. [Length: 10em] [iOS only]">
         Most visited
       </message>
       <message name="IDS_IOS_NEW_TAB_MOST_VISITED_ITEM_REMOVED" desc="Text shown when the user removes one of the most visited websites on the new tab page.">
-        Item removed
+        This site won't be shown again
       </message>
       <message name="IDS_IOS_NEW_TAB_PAGE" desc="Label for text saying the user is on the new tab page">
         New tab page
@@ -4702,6 +4844,21 @@ Handoff must also be enabled in the General section of Settings, and your device
       <message name="IDS_IOS_PASSKEY_BOOTSTRAPPING_TITLE" desc="Title of the screen shown when the user needs to enter their Google Password Manager pin to use passkeys on their device.">
         Verify it’s you to use your passkeys on this device
       </message>
+      <message name="IDS_IOS_PASSKEY_CREATION_BOTTOM_SHEET_ACCOUNT" desc="Below the Passkey Creation Bottom Sheet's subtitle, this indicates in which account the new passkey will be saved (the currently signed in account). [iOS only]">
+        Passkeys are saved in Google Password Manager for
+      </message>
+      <message name="IDS_IOS_PASSKEY_CREATION_BOTTOM_SHEET_CREATE" desc="Passkey Creation Bottom Sheet's button to create a passkey. [iOS only]">
+        Create
+      </message>
+      <message name="IDS_IOS_PASSKEY_CREATION_BOTTOM_SHEET_SAVE_ANOTHER_WAY" desc="Passkey Creation Bottom Sheet's button to use a different credential provider to create the passkey, if any are available. [iOS only]">
+        Save another way
+      </message>
+      <message name="IDS_IOS_PASSKEY_CREATION_BOTTOM_SHEET_SUBTITLE" desc="Passkey Creation Bottom Sheet's subtitle. [iOS only]">
+        Sign in faster from any of your synced devices.
+      </message>
+      <message name="IDS_IOS_PASSKEY_CREATION_BOTTOM_SHEET_TITLE" desc="Passkey Creation Bottom Sheet's title. The user's username/email and website domain will appear below this. [iOS only]">
+        Create a passkey for
+      </message>
       <message name="IDS_IOS_PASSKEY_CREATION_DATE" desc="Passkey creation date. [iOS only]">
         Created on <ph name="Date"><ex>2023/12/31</ex>$1</ph>
       </message>
@@ -5099,7 +5256,7 @@ Handoff must also be enabled in the General section of Settings, and your device
         Use keyboard
       </message>
       <message name="IDS_IOS_PERMISSIONS_ALERT_DIALOG_BUTTON_TEXT_DENY" desc="Button text to deny access to permissions. This should match the iOS built-in alert for permissions access.">
-        Don't allow
+        Don't Allow
       </message>
       <message name="IDS_IOS_PERMISSIONS_ALERT_DIALOG_BUTTON_TEXT_GRANT" desc="Button text to allow access to permissions. This should match the iOS built-in alert for permissions access.">
         Allow
@@ -5332,54 +5489,7 @@ Handoff must also be enabled in the General section of Settings, and your device
       <message name="IDS_IOS_PRINT_PDF_TRY_AGAIN" desc="Label of the button letting the user try to download a PDF again, after a failure. [iOS only]">
         Try again
       </message>
-      <message name="IDS_IOS_PRIVACY_GUIDE_CANCEL_BUTTON" desc="Text for the 'Cancel' button on the Welcome step of the Privacy Guide.">
-        Cancel
-      </message>
-      <message name="IDS_IOS_PRIVACY_GUIDE_HISTORY_SYNC" desc="Label for the switch in the History Sync step of the Privacy Guide.">
-        History sync
-      </message>
-      <message name="IDS_IOS_PRIVACY_GUIDE_HISTORY_SYNC_ACROSS_DEVICES" desc="Bullet point for the 'History sync' switch in the 'When on' section">
-        You'll have your history on all your synced devices so you can continue what you were doing
-      </message>
-      <message name="IDS_IOS_PRIVACY_GUIDE_HISTORY_SYNC_GOOGLE_ACCOUNT" desc="Bullet point for the 'History sync' switch in the 'Things to consider' section">
-        The URLs you visit are saved to your Google Account
-      </message>
-      <message name="IDS_IOS_PRIVACY_GUIDE_HISTORY_SYNC_GOOGLE_SEARCH" desc="Bullet point for the 'History sync' switch in the 'When on' section">
-        If Google is also your default search engine, you'll see better, contextually relevant suggestions
-      </message>
-      <message name="IDS_IOS_PRIVACY_GUIDE_LETS_GO_BUTTON" desc="Text for the 'Let's go' button on the Welcome step of the Privacy Guide.">
-        Let's go
-      </message>
-      <message name="IDS_IOS_PRIVACY_GUIDE_NEXT_BUTTON" desc="Text for the 'Next' button that appears in a few steps of the Privacy Guide.">
-        Next
-      </message>
-      <message name="IDS_IOS_PRIVACY_GUIDE_THINGS_TO_CONSIDER_HEADER" desc="Header for the Privacy Guide Things To Consider section.">
-        Things to consider
-      </message>
-      <message name="IDS_IOS_PRIVACY_GUIDE_TITLE" desc="Title for the Privacy Guide settings menu row.">
-        Privacy guide
-      </message>
-      <message name="IDS_IOS_PRIVACY_GUIDE_URL_USAGE_BROWSER_FASTER" desc="Bullet point for the 'Make Searches and Browsing' better switch 'When on' section.">
-        You'll browse faster because content is proactively loaded based on your current webpage visit
-      </message>
-      <message name="IDS_IOS_PRIVACY_GUIDE_URL_USAGE_IMPROVED_SUGGESTIONS" desc="Bullet point for the 'Make Searches and Browsing' better switch 'When on' section.">
-        You'll get improved suggestions in the address bar
-      </message>
-      <message name="IDS_IOS_PRIVACY_GUIDE_URL_USAGE_PREDICT_SITES" desc="Bullet point for the 'Make Searches and Browsing' better switch 'Things to consider' section.">
-        URLs you visit are sent to Google to predict what sites you might visit next
-      </message>
-      <message name="IDS_IOS_PRIVACY_GUIDE_URL_USAGE_USAGE_REPORT" desc="Bullet point for the 'Make Searches and Browsing' better switch 'Things to consider' section.">
-        If you also share Chrome usage reports, those reports include the URLs you visit
-      </message>
-      <message name="IDS_IOS_PRIVACY_GUIDE_WELCOME_SUBTITLE" desc="Subtitle for the Privacy Guide Welcome step.">
-        Take a guided tour of key privacy and security controls. For more options, go to individual settings.
-      </message>
-      <message name="IDS_IOS_PRIVACY_GUIDE_WELCOME_TITLE" desc="Title for the Privacy Guide Welcome step.">
-        A guide of your privacy choices
-      </message>
-      <message name="IDS_IOS_PRIVACY_GUIDE_WHEN_ON_HEADER" desc="Header for the Privacy Guide When On section.">
-        When on
-      </message>
+
       <message name="IDS_IOS_PRIVACY_POLICY" desc="The label to access the privacy policy, displayed in the application settings, with no product name. [Length: 30em] [iOS only]">
         Google Privacy Policy
       </message>
@@ -5509,6 +5619,9 @@ Handoff must also be enabled in the General section of Settings, and your device
       <message name="IDS_IOS_READER_MODE_OPTIONS_COLOR_THEME_BUTTON_LABEL" desc="Label of a Reading mode options button which changes the Reading mode color scheme." meaning="Label of a Reading mode options button which changes the Reading mode color scheme. This should be one, at most two characters to preview the color scheme e.g. Aa in English.">
         Aa
       </message>
+      <message name="IDS_IOS_READER_MODE_OPTIONS_FONT_FAMILY_LEXEND_LABEL" desc="The label for the Lexend font option in the Reader Mode options menu.">
+        Lexend
+      </message>
       <message name="IDS_IOS_READER_MODE_OPTIONS_FONT_FAMILY_MENU_TITLE" desc="Title of the Reading mode font family drop-down menu which contains font families to choose from.">
         Font
       </message>
@@ -5563,11 +5676,11 @@ Handoff must also be enabled in the General section of Settings, and your device
       <message name="IDS_IOS_READING_LIST_DELETE_BUTTON" desc="Label of the button to delete the reading list entries [Length: 25em]" meaning="Delete the selected entries. [Length: 25em]">
         Delete
       </message>
+      <message name="IDS_IOS_READING_LIST_DESELECT_ALL_BUTTON" desc="Label of the button to deselect all the reading list entries (delete, mark as read/unread) [Length: 20em]" meaning="Deselect all of the reading list entries. [Length: 20em]">
+        Deselect All
+      </message>
       <message name="IDS_IOS_READING_LIST_DONE_BUTTON" desc="Label of the button to dismiss reading list dialog">
         Done
-      </message>
-      <message name="IDS_IOS_READING_LIST_EDIT_BUTTON" desc="Label of the button to edit the reading list entries (delete, mark as read/unread) [Length: 20em]" meaning="Start editing the reading list entries. [Length: 20em]">
-        Edit
       </message>
       <message name="IDS_IOS_READING_LIST_ENTRY_ACCESSIBILITY_LABEL" desc="Accessibility label for a reading list entry. Summarizes fields in the reading list entry (title, status and url). Read by Text To Speech. Similar to IDS_IOS_READING_LIST_ENTRY_WITH_UPLOAD_STATE_ACCESSIBILITY_LABEL">
         <ph name="TITLE"><ex>Chromium - The Chromium projects</ex>$1</ph>, <ph name="STATE"><ex>available offline</ex>$2</ph>, <ph name="URL"><ex>http://www.chromium.org/Home</ex>$3</ph>
@@ -5614,6 +5727,12 @@ Handoff must also be enabled in the General section of Settings, and your device
       <message name="IDS_IOS_READING_LIST_READ_HEADER" desc="Heading. Appears above a list of articles the user has already read, in their Reading List. Appears on the same page as an 'Unread' heading, which contains articles the user hasn't read yet. In English, 'Read' can be both verb and adjective so we needed to be more explicit. Does not need to be translated literally. [Length: 40em]" meaning="The entries below this header are read. [Length: 40em]">
         Pages you've read
       </message>
+      <message name="IDS_IOS_READING_LIST_SELECT_ALL_BUTTON" desc="Label of the button to select all the reading list entries (delete, mark as read/unread) [Length: 20em]" meaning="Select all of the reading list entries. [Length: 20em]">
+        Select All
+      </message>
+      <message name="IDS_IOS_READING_LIST_SELECT_BUTTON" desc="Label of the button to select the reading list entries (delete, mark as read/unread) [Length: 20em]" meaning="Start editing the reading list entries. [Length: 20em]">
+        Select
+      </message>
       <message name="IDS_IOS_READING_LIST_SNACKBAR_MESSAGE" desc="Message briefly displayed at the bottom of the screen to the user to inform that the selected page has been added to the reading list. [Length: 35em]" meaning="The selected page has been added to your reading list. [Length: 35em]">
         Added to Reading List
       </message>
@@ -5640,6 +5759,12 @@ Handoff must also be enabled in the General section of Settings, and your device
       </message>
       <message name="IDS_IOS_READING_LIST_UNREAD_HEADER" desc="Header for the list containing the unread reading list entries" meaning="The entries below this header are unread. [Length: 15em]">
         Unread
+      </message>
+      <message name="IDS_IOS_READING_MODE_SETTING_DESCRIPTION" desc="Description of the setting to enable the 'Reading mode available' message [iOS only]">
+        Access Reading Mode from the address bar when available
+      </message>
+      <message name="IDS_IOS_READING_MODE_SETTING_TITLE" desc="Title of the setting to enable the 'Reading mode available' message [iOS only]" meaning="Title of the setting to enable the 'Reading mode available' message [iOS only]">
+        Show Reading Mode
       </message>
       <message name="IDS_IOS_RECENT_TABS_DISABLED_BY_ORGANIZATION" desc="This message is shown in the Other Devices section of the Recent Tabs view if browser sign-in is disabled via policy by the device's administrator / organization.">
         Turned off by your organization
@@ -5866,8 +5991,11 @@ Handoff must also be enabled in the General section of Settings, and your device
       <message name="IDS_IOS_SAFARI_IMPORT_IMPORT_INSTRUCTIONS_TWO" desc="Instructions view to teach users how to import data from Safari - step 2. [iOS only]">
         Select your Safari export <ph name="BEGIN_BOLD">BEGIN_BOLD</ph>.zip<ph name="END_BOLD">END_BOLD</ph> file
       </message>
-      <message name="IDS_IOS_SAFARI_IMPORT_IMPORT_ITEM_TYPE_PENDING_DISCLAIMER" desc="The bottom text displayed on Safari import screen to declare that the data will be saved to the user's Google account. [iOS only]">
+      <message name="IDS_IOS_SAFARI_IMPORT_IMPORT_ITEM_TYPE_PENDING_DISCLAIMER_ACCOUNT_STORE" desc="The bottom text displayed on Safari import screen to declare that the data will be saved to the user's Google account. Shown to logged-in users. [iOS only]">
         Your data will be saved to your Google Account, <ph name="USER_EMAIL">$1<ex>elisa.g.beckett@gmail.com</ex></ph>
+      </message>
+      <message name="IDS_IOS_SAFARI_IMPORT_IMPORT_ITEM_TYPE_PENDING_DISCLAIMER_PROFILE_STORE" desc="The bottom text displayed on Safari import screen to declare that the data will be saved to the user's Google account. Shown to users that are not logged in. [iOS only]">
+        Your info is saved to your device
       </message>
       <message name="IDS_IOS_SAFARI_IMPORT_IMPORT_NOT_ALLOWED_MESSAGE" desc="Message body of an alert dialog explaining that the data import is blocked by an organizational policy.">
         Importing this data is not allowed by your organization's policy.
@@ -5880,9 +6008,6 @@ Handoff must also be enabled in the General section of Settings, and your device
       </message>
       <message name="IDS_IOS_SAFARI_IMPORT_INVALID_PASSWORD_LIST_BUTTON_CLOSE" desc="Bar button on the top right of the view that lists all invalid passwords. Tapping on this button dismisses the view. [iOS only]">
         Close
-      </message>
-      <message name="IDS_IOS_SAFARI_IMPORT_INVALID_PASSWORD_LIST_DESCRIPTION" desc="Descriptive text showing under the title on the view that lists all invalid passwords. [iOS only]">
-        The following passwords were not imported to Google Password Manager, because they don't match with the requirements.
       </message>
       <message name="IDS_IOS_SAFARI_IMPORT_INVALID_PASSWORD_LIST_TITLE" desc="Title of the view that lists all invalid passwords. [iOS only]">
         Invalid data
@@ -5916,9 +6041,6 @@ Handoff must also be enabled in the General section of Settings, and your device
       </message>
       <message name="IDS_IOS_SAFARI_IMPORT_PASSWORD_CONFLICT_RESOLUTION_BUTTON_SELECT_ALL" desc="Bar button to automatically mark all passwords displayed on the screen as selected. It shows up at the bottom of the modal that enables user to resolve conflict between existing Passwords in Google Password Manager and those imported from Safari. [iOS only]">
         Select all
-      </message>
-      <message name="IDS_IOS_SAFARI_IMPORT_PASSWORD_CONFLICT_RESOLUTION_DISCLAIMER" desc="Disclaimer showing on the top of the modal that enables user to resolve conflict between existing Passwords in Google Password Manager and those imported from Safari. [iOS only]">
-        You already have passwords for these accounts in your Google Password Manager. If you choose to import one of the passwords below, it will replace the existing one.
       </message>
       <message name="IDS_IOS_SAFARI_IMPORT_PASSWORD_UNMASK_REAUTH_REASON" desc="Message explaining that the reason why we are requiring the user to re-authenticate is to be able to show the password in plain text. This is shown by iOS in the passcode reauthentication system dialogue, right under the OS string 'Enter iPhone Passcode for $BROWSER_NAME'. [Length: 22em]">
         Unlock to show password
@@ -6137,6 +6259,9 @@ Handoff must also be enabled in the General section of Settings, and your device
       <message name="IDS_IOS_SAFE_MODE_CRASH_REPORT_SENT" desc="The message indicating that Chrome sent a crash report. [Length: 140em]">
         Crash report sent.
       </message>
+      <message name="IDS_IOS_SAFE_MODE_NEEDS_OS_UPDATE" desc="The message indicating that Chrome crashed due to a known issue with the current version of iOS. [Length: 140em]">
+        Something went really wrong. Please update your iOS version.
+      </message>
       <message name="IDS_IOS_SAFE_MODE_RELOAD_CHROME" desc="The label of a button used to start Chrome from safe mode.  Clicking this button dismisses the safe mode UI and launches Chrome. [Length: 30em]">
         Try again
       </message>
@@ -6310,6 +6435,9 @@ Handoff must also be enabled in the General section of Settings, and your device
       </message>
       <message name="IDS_IOS_SEARCH_WITH_TITLE_SEARCH_WITH" desc="Edit menu button title to open a tab with a Search query of the current selection. Will contain the search provider. [Length: 25em]." meaning="Edit menu Search button [Length: 25em]">
         Search with <ph name="SEARCH_PROVIDER">$1<ex>Google</ex></ph>
+      </message>
+      <message name="IDS_IOS_SELECT_ACTION_TITLE" desc="Title of the action used to select items. [iOS only]">
+        Select
       </message>
       <message name="IDS_IOS_SEND_TAB_PROMO_ALLOW_BUTTON" desc="Text for the Allow button for the Send Tab to Self promo Magic Stack module.">
         Allow Tabs Notifications…
@@ -6682,6 +6810,12 @@ Handoff must also be enabled in the General section of Settings, and your device
       <message name="IDS_IOS_SET_UP_LIST_AUTOFILL_SHORT_DESCRIPTION" desc="Shortened description for the Set Up List item that encourages the user to set up Chrome's autofill settings.">
         Access your passwords across other apps.
       </message>
+      <message name="IDS_IOS_SET_UP_LIST_BACKGROUND_CUSTOMIZATION_DESCRIPTION" desc="Description for the Set Up List item that encourages the user to set up background customization settings.">
+        Choose from themes, colors or upload an image
+      </message>
+      <message name="IDS_IOS_SET_UP_LIST_BACKGROUND_CUSTOMIZATION_TITLE" desc="Title for the Set Up List item that encourages the user to set up background customization settings.">
+        Customize your homepage
+      </message>
       <message name="IDS_IOS_SET_UP_LIST_COLLAPSE" desc="Accessibility label for the button to expand the Set Up List.">
         Collapse list
       </message>
@@ -6699,6 +6833,12 @@ Handoff must also be enabled in the General section of Settings, and your device
       </message>
       <message name="IDS_IOS_SET_UP_LIST_NOTIFICATIONS_TITLE" desc="Title for the Set Up List item that encourages the user to enable Chrome notifications.">
         Get notifications
+      </message>
+      <message name="IDS_IOS_SET_UP_LIST_SAFARI_IMPORT_DESCRIPTION" desc="Description for the Set Up List item that encourages the user to set up Safari data import settings.">
+        Import passwords, history, bookmarks and more
+      </message>
+      <message name="IDS_IOS_SET_UP_LIST_SAFARI_IMPORT_TITLE" desc="Title for the Set Up List item that encourages the user to set up Safari data import settings.">
+        Bring your data from Safari
       </message>
       <message name="IDS_IOS_SET_UP_LIST_TRY_BUTTON_ACCESSIBILITY_HINT" desc="Action hint for the Try button on the Set Up List view. This is spoken by VoiceOver. ">
         Double tap to try
@@ -7164,23 +7304,23 @@ Handoff must also be enabled in the General section of Settings, and your device
       <message name="IDS_IOS_SWITCH_PROFILE_SWITCH_TITLE" desc="Title for the switch profile developer panel in Settings-&gt;Switch Profile giving the list of loaded profiles [iOS only]">
         Switch to another profile
       </message>
-      <message name="IDS_IOS_SYNCED_SET_UP_SNACKBAR_APPLIED_ACTION" desc="The action button text for the snackbar shown after new tab page preferences have been applied. [iOS only]">
+      <message name="IDS_IOS_SYNCED_SET_UP_SNACKBAR_APPLIED_ACTION" desc="The action button text for the snackbar shown after New Tab page preferences have been applied. [iOS only]">
         Undo
       </message>
-      <message name="IDS_IOS_SYNCED_SET_UP_SNACKBAR_APPLIED_MESSAGE_NTP" desc="The message text for the snackbar shown after new tab page preferences have been applied. [iOS only]">
-        Applied your new tab page preferences
+      <message name="IDS_IOS_SYNCED_SET_UP_SNACKBAR_APPLIED_MESSAGE_NTP" desc="The message text for the snackbar shown after New Tab page preferences have been applied. [iOS only]">
+        Applied your New Tab page preferences
       </message>
-      <message name="IDS_IOS_SYNCED_SET_UP_SNACKBAR_PROMO_ACTION" desc="The action button text for the snackbar that prompts the user to apply their synced new tab page settings. [iOS only]">
+      <message name="IDS_IOS_SYNCED_SET_UP_SNACKBAR_PROMO_ACTION" desc="The action button text for the snackbar that prompts the user to apply their synced New Tab page settings. [iOS only]">
         Apply
       </message>
-      <message name="IDS_IOS_SYNCED_SET_UP_SNACKBAR_PROMO_MESSAGE_NTP" desc="The message text for the snackbar that prompts the user to apply their synced new tab page settings from another device. [iOS only]">
-        Would you like to apply your new tab page customizations from another device?
+      <message name="IDS_IOS_SYNCED_SET_UP_SNACKBAR_PROMO_MESSAGE_NTP" desc="The message text for the snackbar that prompts the user to apply their synced New Tab page settings from another device. [iOS only]">
+        Apply your New Tab page preferences?
       </message>
-      <message name="IDS_IOS_SYNCED_SET_UP_SNACKBAR_REMOVED_ACTION" desc="The action button text for the snackbar shown after new tab page preferences have been removed. [iOS only]">
+      <message name="IDS_IOS_SYNCED_SET_UP_SNACKBAR_REMOVED_ACTION" desc="The action button text for the snackbar shown after New Tab page preferences have been removed. [iOS only]">
         Redo
       </message>
-      <message name="IDS_IOS_SYNCED_SET_UP_SNACKBAR_REMOVED_MESSAGE_NTP" desc="The message text for the snackbar shown after new tab page preferences have been removed. [iOS only]">
-        Removed new tab page preferences
+      <message name="IDS_IOS_SYNCED_SET_UP_SNACKBAR_REMOVED_MESSAGE_NTP" desc="The message text for the snackbar shown after New Tab page preferences have been removed. [iOS only]">
+        Removed your New Tab page preferences
       </message>
       <message name="IDS_IOS_SYNCED_SET_UP_SUBTITLE_TEXT" desc="Subtitle text on the Synced Set Up screen, indicating that the user's data is being loaded. [iOS only]">
         Getting your stuff…
@@ -7226,6 +7366,15 @@ Handoff must also be enabled in the General section of Settings, and your device
       </message>
       <message name="IDS_IOS_SYNC_ENTER_PASSPHRASE_TITLE" desc="Title for the dialog where the user enters the passphrase.">
         Enter passphrase
+      </message>
+      <message name="IDS_IOS_SYNC_ERROR_BOOKMARKS_LIMIT_EXCEEDED_BUTTON" desc="The button label to display when the user has too many bookmarks to sync.">
+        Learn more
+      </message>
+      <message name="IDS_IOS_SYNC_ERROR_BOOKMARKS_LIMIT_EXCEEDED_MESSAGE" desc="The error message to display when the user has too many bookmarks to sync.">
+        To save bookmarks in your account, delete your unused bookmarks
+      </message>
+      <message name="IDS_IOS_SYNC_ERROR_BOOKMARKS_LIMIT_EXCEEDED_TITLE" desc="The error title to display when the user has too many bookmarks to sync.">
+        Some bookmarks aren't saved
       </message>
       <message name="IDS_IOS_SYNC_ERROR_DESCRIPTION" desc="The error message to display when a generic error prevents sync from starting.">
         Sync isn't working.
@@ -7585,6 +7734,9 @@ Handoff must also be enabled in the General section of Settings, and your device
       </message>
       <message name="IDS_IOS_TAB_STRIP_TAB_GROUP_EXPAND" desc="The accessibility label for expanding a collapsed tab group. [iOS only]">
         Expand tab group.
+      </message>
+      <message name="IDS_IOS_TAB_SWITCHER_CLOSE_ALL_ACTION_BUTTON" desc="Text of the Close All button in the Tab Switcher overflow menu. [iOS only]">
+        Close All
       </message>
       <message name="IDS_IOS_TAB_SWITCHER_CLOSE_GROUP" desc="The accessibility label for the closing of a selected tab group. [iOS only]">
         Close group.

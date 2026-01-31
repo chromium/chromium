@@ -49,10 +49,10 @@ std::optional<UserSelectableType> GetUserSelectableTypeFromString(
 std::string UserSelectableTypeSetToString(UserSelectableTypeSet types);
 DataTypeSet UserSelectableTypeToAllDataTypes(UserSelectableType type);
 
-base::Value::List UserSelectableTypeSetToValueList(
+base::ListValue UserSelectableTypeSetToValueList(
     syncer::UserSelectableTypeSet user_selected_types);
 syncer::UserSelectableTypeSet ValueListToUserSelectableTypeSet(
-    const base::Value::List& value_list);
+    const base::ListValue& value_list);
 
 DataType UserSelectableTypeToCanonicalDataType(UserSelectableType type);
 
@@ -87,6 +87,11 @@ DataType UserSelectableOsTypeToCanonicalDataType(UserSelectableOsType type);
 // Returns the type if the string matches a known OS type.
 std::optional<UserSelectableOsType> GetUserSelectableOsTypeFromString(
     const std::string& type);
+
+base::ListValue UserSelectableOsTypeSetToValueList(
+    syncer::UserSelectableOsTypeSet user_selected_types);
+syncer::UserSelectableOsTypeSet ValueListToUserSelectableOsTypeSet(
+    const base::ListValue& value_list);
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 // For GTest.

@@ -184,12 +184,12 @@ class EnterpriseSearchAggregatorProvider : public AutocompleteProvider {
   // further parse the `base::Value` into `RequestParsed` and update
   // `requests[request_index]` with the `RequestParsed.
   void HandleParsedJson(int request_index,
-                        const std::optional<base::Value::Dict>& response_value);
+                        const std::optional<base::DictValue>& response_value);
 
   // Parses the response `base::Value` into `RequestParsed`.
   RequestParsed ParseEnterpriseSearchAggregatorSearchResults(
       const std::vector<SuggestionType>& suggestion_types,
-      const base::Value::Dict& root_val);
+      const base::DictValue& root_val);
 
   // Helper method to parse query, people, and content suggestions.
   // - `input_words` is used for scoring matches.
@@ -214,23 +214,23 @@ class EnterpriseSearchAggregatorProvider : public AutocompleteProvider {
   //  policy,
   //  - `match.relevance` = 1001.
   RequestParsed ParseResultList(std::set<std::u16string> input_words,
-                                const base::Value::List* results,
+                                const base::ListValue* results,
                                 SuggestionType suggestion_type,
                                 bool is_navigation);
 
   // Helper method to get `destination_url` based on `suggestion_type` for
   // `CreateMatch()`.
-  std::string GetMatchDestinationUrl(const base::Value::Dict& result,
+  std::string GetMatchDestinationUrl(const base::DictValue& result,
                                      SuggestionType suggestion_type) const;
 
   // Helper method to get `description` based on `suggestion_type` for
   // `CreateMatch()`.
-  std::string GetMatchDescription(const base::Value::Dict& result,
+  std::string GetMatchDescription(const base::DictValue& result,
                                   SuggestionType suggestion_type) const;
 
   // Helper method to get `contents` based on `suggestion_type` for
   // `CreateMatch()`.
-  std::string GetMatchContents(const base::Value::Dict& result,
+  std::string GetMatchContents(const base::DictValue& result,
                                SuggestionType suggestion_type) const;
 
   // Helper method to get a localized metadata string depending on which of
@@ -248,13 +248,13 @@ class EnterpriseSearchAggregatorProvider : public AutocompleteProvider {
   // `GetMatchContents()`, and `GetEmailUsernames()` should be passed to
   // `GetStrongScoringFields()`.
   std::vector<std::string> GetStrongScoringFields(
-      const base::Value::Dict& result,
+      const base::DictValue& result,
       SuggestionType suggestion_type,
       const std::string& contents,
       const std::string& description,
       const std::vector<std::u16string> email_usernames) const;
   std::vector<std::string> GetWeakScoringFields(
-      const base::Value::Dict& result,
+      const base::DictValue& result,
       SuggestionType suggestion_type) const;
 
   // Helper to create a match.

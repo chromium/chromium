@@ -37,7 +37,6 @@
 #include "base/version_info/version_info.h"
 #include "build/build_config.h"
 #include "chrome/app/chrome_command_ids.h"
-#include "chrome/browser/apps/app_service/app_launch_params.h"
 #include "chrome/browser/apps/app_service/app_registry_cache_waiter.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
@@ -116,6 +115,7 @@
 #include "components/policy/core/common/policy_pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "components/search_engines/template_url_service.h"
+#include "components/services/app_service/public/cpp/app_launch_params.h"
 #include "components/services/app_service/public/cpp/app_launch_util.h"
 #include "components/sessions/core/command_storage_manager_test_helper.h"
 #include "components/strings/grit/components_strings.h"
@@ -1596,29 +1596,6 @@ IN_PROC_BROWSER_TEST_F(BrowserTest, DisableMenuItemsWhenIncognitoIsForced) {
   EXPECT_TRUE(new_command_updater->IsCommandEnabled(IDC_NEW_INCOGNITO_WINDOW));
 }
 
-#if BUILDFLAG(IS_CHROMEOS)
-IN_PROC_BROWSER_TEST_F(BrowserTest, ArcBrowserWindowFeaturesSetCorrectly) {
-  Browser* new_browser = Browser::Create(
-      Browser::CreateParams(Browser::TYPE_CUSTOM_TAB, browser()->profile(),
-                            /* user_gesture= */ true));
-  ASSERT_TRUE(new_browser);
-
-  EXPECT_FALSE(new_browser->SupportsWindowFeature(
-      Browser::WindowFeature::kFeatureLocationBar));
-  EXPECT_FALSE(new_browser->SupportsWindowFeature(
-      Browser::WindowFeature::kFeatureTitleBar));
-  EXPECT_FALSE(new_browser->SupportsWindowFeature(
-      Browser::WindowFeature::kFeatureTabStrip));
-  EXPECT_FALSE(new_browser->SupportsWindowFeature(
-      Browser::WindowFeature::kFeatureBookmarkBar));
-  EXPECT_FALSE(
-      new_browser->SupportsWindowFeature(Browser::WindowFeature::kFeatureNone));
-
-  EXPECT_TRUE(new_browser->SupportsWindowFeature(
-      Browser::WindowFeature::kFeatureToolbar));
-}
-#endif
-
 // Makes sure New Incognito Window command is disabled when Incognito mode is
 // not available.
 IN_PROC_BROWSER_TEST_F(BrowserTest,
@@ -2787,13 +2764,13 @@ IN_PROC_BROWSER_TEST_F(BrowserTest, TestPopupBounds) {
 }
 
 IN_PROC_BROWSER_TEST_F(BrowserTest, IsOffTheRecordBrowserInUse) {
-  EXPECT_FALSE(BrowserList::IsOffTheRecordBrowserInUse(browser()->profile()));
+  EXPECT_FALSE(chrome::IsOffTheRecordBrowserInUse(browser()->profile()));
 
   Browser* incognito_browser = CreateIncognitoBrowser(browser()->profile());
-  EXPECT_TRUE(BrowserList::IsOffTheRecordBrowserInUse(browser()->profile()));
+  EXPECT_TRUE(chrome::IsOffTheRecordBrowserInUse(browser()->profile()));
 
   CloseBrowserSynchronously(incognito_browser);
-  EXPECT_FALSE(BrowserList::IsOffTheRecordBrowserInUse(browser()->profile()));
+  EXPECT_FALSE(chrome::IsOffTheRecordBrowserInUse(browser()->profile()));
 }
 
 IN_PROC_BROWSER_TEST_F(BrowserTest, TestActiveTabChangedUserAction) {
@@ -3166,22 +3143,22 @@ IN_PROC_BROWSER_TEST_F(BrowserTest, PreventCloseYieldsCancelledEvent) {
   const absl::Cleanup policy_cleanup = [this]() {
     // Clear policy values, otherwise we won't be able to gracefully close the
     // browser test.
-    profile()->GetPrefs()->SetList(prefs::kWebAppSettings, base::Value::List());
+    profile()->GetPrefs()->SetList(prefs::kWebAppSettings, base::ListValue());
   };
 
   // Set up policy values.
   static constexpr char kCalculatorAppUrl[] = "https://calculator.apps.chrome/";
   profile()->GetPrefs()->SetList(
       prefs::kWebAppSettings,
-      base::Value::List().Append(
-          base::Value::Dict()
+      base::ListValue().Append(
+          base::DictValue()
               .Set(web_app::kManifestId, kCalculatorAppUrl)
               .Set(web_app::kRunOnOsLogin, web_app::kRunWindowed)
               .Set(web_app::kPreventClose, true)));
   profile()->GetPrefs()->SetList(
       prefs::kWebAppInstallForceList,
-      base::Value::List().Append(
-          base::Value::Dict()
+      base::ListValue().Append(
+          base::DictValue()
               .Set(web_app::kUrlKey, kCalculatorAppUrl)
               .Set(web_app::kDefaultLaunchContainerKey,
                    web_app::kDefaultLaunchContainerWindowValue)));

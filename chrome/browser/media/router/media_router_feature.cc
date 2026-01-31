@@ -68,11 +68,6 @@ BASE_FEATURE(kFallbackToAudioTabMirroring,
 #endif  // !BUILDFLAG(IS_ANDROID) ||
         // BUILDFLAG(ENABLE_DESKTOP_ANDROID_EXTENSIONS)
 
-#if BUILDFLAG(IS_MAC)
-BASE_FEATURE(kUseNetworkFrameworkForLocalDiscovery,
-             base::FEATURE_ENABLED_BY_DEFAULT);
-#endif
-
 namespace {
 const PrefService::Preference* GetMediaRouterPref(
     content::BrowserContext* context) {

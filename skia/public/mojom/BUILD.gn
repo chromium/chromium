@@ -33,6 +33,7 @@ mojom("mojom") {
   generate_java = true
   sources = [
     "bitmap.mojom",
+    "hdr_metadata.mojom",
     "image_info.mojom",
     "skcolor.mojom",
     "skcolor4f.mojom",
@@ -139,6 +140,48 @@ mojom("mojom") {
         },
       ]
       traits_headers = [ "skcolorspace_primaries_mojom_traits.h" ]
+      traits_public_deps = [ "//skia" ]
+    },
+    {
+      types = [
+        {
+          mojom = "skia.mojom.SkHdrContentLightLevelInformation"
+          cpp = "::skhdr::ContentLightLevelInformation"
+        },
+        {
+          mojom = "skia.mojom.SkHdrMasteringDisplayColorVolume"
+          cpp = "::skhdr::MasteringDisplayColorVolume"
+        },
+        {
+          mojom = "skia.mojom.SkHdrAgtmGainCurveControlPoint"
+          cpp = "::skhdr::AdaptiveGlobalToneMap::GainCurve::ControlPoint"
+        },
+        {
+          mojom = "skia.mojom.SkHdrAgtmGainCurve"
+          cpp = "::skhdr::AdaptiveGlobalToneMap::GainCurve"
+        },
+        {
+          mojom = "skia.mojom.SkHdrAgtmComponentMixingFunction"
+          cpp = "::skhdr::AdaptiveGlobalToneMap::ComponentMixingFunction"
+        },
+        {
+          mojom = "skia.mojom.SkHdrAgtmColorGainFunction"
+          cpp = "::skhdr::AdaptiveGlobalToneMap::ColorGainFunction"
+        },
+        {
+          mojom = "skia.mojom.SkHdrAgtmAlternateImage"
+          cpp = "::skhdr::AdaptiveGlobalToneMap::AlternateImage"
+        },
+        {
+          mojom = "skia.mojom.SkHdrAgtmHeadroomAdaptiveToneMap"
+          cpp = "::skhdr::AdaptiveGlobalToneMap::HeadroomAdaptiveToneMap"
+        },
+        {
+          mojom = "skia.mojom.SkHdrAdaptiveGlobalToneMap"
+          cpp = "::skhdr::AdaptiveGlobalToneMap"
+        },
+      ]
+      traits_headers = [ "hdr_metadata_mojom_traits.h" ]
       traits_public_deps = [ "//skia" ]
     },
     {

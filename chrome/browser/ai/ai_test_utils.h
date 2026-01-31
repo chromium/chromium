@@ -22,12 +22,11 @@
 #include "components/update_client/crx_update_item.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "services/on_device_model/public/mojom/download_observer.mojom.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/mojom/ai/ai_common.mojom.h"
-#include "third_party/blink/public/mojom/ai/ai_language_model.mojom.h"
 #include "third_party/blink/public/mojom/ai/ai_manager.mojom.h"
-#include "third_party/blink/public/mojom/ai/model_download_progress_observer.mojom.h"
 #include "third_party/blink/public/mojom/ai/model_streaming_responder.mojom.h"
 
 class AITestUtils {
@@ -81,7 +80,7 @@ class AITestUtils {
   };
 
   class MockModelDownloadProgressMonitor
-      : public blink::mojom::ModelDownloadProgressObserver {
+      : public on_device_model::mojom::DownloadObserver {
    public:
     MockModelDownloadProgressMonitor();
     ~MockModelDownloadProgressMonitor() override;
@@ -90,53 +89,22 @@ class AITestUtils {
     MockModelDownloadProgressMonitor& operator=(
         const MockModelDownloadProgressMonitor&) = delete;
 
-    mojo::PendingRemote<blink::mojom::ModelDownloadProgressObserver>
+    mojo::PendingRemote<on_device_model::mojom::DownloadObserver>
     BindNewPipeAndPassRemote();
 
-    // `blink::mojom::ModelDownloadProgressObserver` implementation.
+    // `on_device_model::mojom::DownloadObserver` implementation.
     MOCK_METHOD(void,
                 OnDownloadProgressUpdate,
                 (uint64_t downloaded_bytes, uint64_t total_bytes),
                 (override));
 
    private:
-    mojo::Receiver<blink::mojom::ModelDownloadProgressObserver> receiver_{this};
-  };
-
-  class MockCreateLanguageModelClient
-      : public blink::mojom::AIManagerCreateLanguageModelClient {
-   public:
-    MockCreateLanguageModelClient();
-    ~MockCreateLanguageModelClient() override;
-    MockCreateLanguageModelClient(const MockCreateLanguageModelClient&) =
-        delete;
-    MockCreateLanguageModelClient& operator=(
-        const MockCreateLanguageModelClient&) = delete;
-
-    mojo::PendingRemote<blink::mojom::AIManagerCreateLanguageModelClient>
-    BindNewPipeAndPassRemote();
-
-    MOCK_METHOD(
-        void,
-        OnResult,
-        (mojo::PendingRemote<blink::mojom::AILanguageModel> language_model,
-         blink::mojom::AILanguageModelInstanceInfoPtr info),
-        (override));
-
-    MOCK_METHOD(void,
-                OnError,
-                (blink::mojom::AIManagerCreateClientError error,
-                 blink::mojom::QuotaErrorInfoPtr quota_error_info),
-                (override));
-
-   private:
-    mojo::Receiver<blink::mojom::AIManagerCreateLanguageModelClient> receiver_{
-        this};
+    mojo::Receiver<on_device_model::mojom::DownloadObserver> receiver_{this};
   };
 
   class FakeMonitor {
    public:
-    mojo::PendingRemote<blink::mojom::ModelDownloadProgressObserver>
+    mojo::PendingRemote<on_device_model::mojom::DownloadObserver>
     BindNewPipeAndPassRemote();
 
     // Expects that the next `OnDownloadProgressUpdate` is called with

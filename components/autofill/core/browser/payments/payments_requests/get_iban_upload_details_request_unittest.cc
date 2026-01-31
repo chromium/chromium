@@ -28,7 +28,7 @@ class GetIbanUploadDetailsRequestTest : public testing::Test {
 
   GetIbanUploadDetailsRequest* GetRequest() { return request_.get(); }
 
-  void ParseResponse(const base::Value::Dict& response) {
+  void ParseResponse(const base::DictValue& response) {
     request_->ParseResponse(response);
   }
 
@@ -37,7 +37,7 @@ class GetIbanUploadDetailsRequestTest : public testing::Test {
   std::u16string context_token() const {
     return request_->context_token_for_testing();
   }
-  base::Value::Dict* legal_message() const {
+  base::DictValue* legal_message() const {
     return request_->legal_message_for_testing();
   }
 
@@ -74,13 +74,13 @@ TEST_F(GetIbanUploadDetailsRequestTest,
 }
 
 TEST_F(GetIbanUploadDetailsRequestTest, ParseResponse_ResponseIsComplete) {
-  base::Value::Dict response =
-      base::Value::Dict()
-          .Set("iban_details", base::Value::Dict().Set("validation_regex",
-                                                       kCapitalizedIbanRegex))
+  base::DictValue response =
+      base::DictValue()
+          .Set("iban_details",
+               base::DictValue().Set("validation_regex", kCapitalizedIbanRegex))
           .Set("context_token", base::Value(u"some token"))
           .Set("legal_message",
-               base::Value::Dict().Set("terms_of_service", "Terms of Service"));
+               base::DictValue().Set("terms_of_service", "Terms of Service"));
 
   ParseResponse(response);
 
@@ -90,12 +90,12 @@ TEST_F(GetIbanUploadDetailsRequestTest, ParseResponse_ResponseIsComplete) {
 }
 
 TEST_F(GetIbanUploadDetailsRequestTest, ParseResponse_MissingContextToken) {
-  base::Value::Dict response =
-      base::Value::Dict()
-          .Set("iban_details", base::Value::Dict().Set("validation_regex",
-                                                       kCapitalizedIbanRegex))
+  base::DictValue response =
+      base::DictValue()
+          .Set("iban_details",
+               base::DictValue().Set("validation_regex", kCapitalizedIbanRegex))
           .Set("legal_message",
-               base::Value::Dict().Set("terms_of_service", "Terms of Service"));
+               base::DictValue().Set("terms_of_service", "Terms of Service"));
 
   ParseResponse(response);
 
@@ -103,10 +103,10 @@ TEST_F(GetIbanUploadDetailsRequestTest, ParseResponse_MissingContextToken) {
 }
 
 TEST_F(GetIbanUploadDetailsRequestTest, ParseResponse_MissingLegalMessage) {
-  base::Value::Dict response =
-      base::Value::Dict()
-          .Set("iban_details", base::Value::Dict().Set("validation_regex",
-                                                       kCapitalizedIbanRegex))
+  base::DictValue response =
+      base::DictValue()
+          .Set("iban_details",
+               base::DictValue().Set("validation_regex", kCapitalizedIbanRegex))
           .Set("context_token", base::Value(u"some token"));
 
   ParseResponse(response);
@@ -115,11 +115,11 @@ TEST_F(GetIbanUploadDetailsRequestTest, ParseResponse_MissingLegalMessage) {
 }
 
 TEST_F(GetIbanUploadDetailsRequestTest, ParseResponse_MissingValidationRegex) {
-  base::Value::Dict response =
-      base::Value::Dict()
+  base::DictValue response =
+      base::DictValue()
           .Set("context_token", base::Value(u"some token"))
           .Set("legal_message",
-               base::Value::Dict().Set("terms_of_service", "Terms of Service"));
+               base::DictValue().Set("terms_of_service", "Terms of Service"));
 
   ParseResponse(response);
 

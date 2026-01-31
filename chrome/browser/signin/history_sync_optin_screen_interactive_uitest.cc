@@ -117,7 +117,8 @@ IN_PROC_BROWSER_TEST_P(HistorySyncOptinScreenFromPromoEntryPointInteractiveTest,
             *identity_test_env(), account_info, IsUnrestricted());
         // Mock processing an ENABLE SYNC header as part of the sign-in.
         // This also signs in the user.
-        process_dice_header_delegate_impl->EnableSync(account_info);
+        process_dice_header_delegate_impl->CompleteChromeSignInAfterGaiaSignin(
+            account_info);
       }),
       WaitForShow(SigninViewController::kHistorySyncOptinViewId),
       InstrumentNonTabWebView(kHistorySyncOptinDialogContentsId,

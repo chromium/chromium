@@ -6,6 +6,8 @@
 
 #import "base/strings/sys_string_conversions.h"
 #import "components/webauthn/core/browser/import/import_processing_result.h"
+#import "ios/chrome/browser/data_import/public/utils.h"
+#import "ios/chrome/browser/shared/ui/util/url_with_title.h"
 
 @implementation PasskeyImportItem
 
@@ -23,12 +25,9 @@
 }
 
 - (instancetype)initWithRpId:(NSString*)rpId username:(NSString*)username {
-  self = [super init];
-  if (self) {
-    _rpId = rpId;
-    _username = username;
-  }
-  return self;
+  return [super
+      initWithUrl:GetURLWithTitleForURLString(base::SysNSStringToUTF8(rpId))
+         username:username];
 }
 
 @end

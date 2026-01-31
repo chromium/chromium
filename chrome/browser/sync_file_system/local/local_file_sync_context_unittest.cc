@@ -10,7 +10,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/containers/contains.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
@@ -53,7 +52,7 @@ using storage::FileSystemURLSet;
 // multi-file-system-context environment.
 // Basic combined tests (single-thread / single-file-system-context)
 // that involve LocalFileSyncContext are also in
-// syncable_file_system_unittests.cc.
+// syncable_file_system_unittest.cc.
 
 namespace sync_file_system {
 
@@ -413,7 +412,7 @@ TEST_F(LocalFileSyncContextTest, InitializeFileSystemContext) {
   FileSystemURLSet urls;
   file_system.GetChangedURLsInTracker(&urls);
   ASSERT_EQ(1U, urls.size());
-  EXPECT_TRUE(base::Contains(urls, kURL));
+  EXPECT_TRUE(urls.contains(kURL));
 
   // Finishing the test.
   sync_context_->ShutdownOnUIThread();
@@ -485,7 +484,7 @@ TEST_F(LocalFileSyncContextTest, MultipleFileSystemContexts) {
   FileSystemURLSet urls;
   file_system1.GetChangedURLsInTracker(&urls);
   ASSERT_EQ(1U, urls.size());
-  EXPECT_TRUE(base::Contains(urls, kURL1));
+  EXPECT_TRUE(urls.contains(kURL1));
 
   // file_system1's tracker must have no change.
   urls.clear();
@@ -499,13 +498,13 @@ TEST_F(LocalFileSyncContextTest, MultipleFileSystemContexts) {
   urls.clear();
   file_system1.GetChangedURLsInTracker(&urls);
   ASSERT_EQ(1U, urls.size());
-  EXPECT_TRUE(base::Contains(urls, kURL1));
+  EXPECT_TRUE(urls.contains(kURL1));
 
   // file_system2's tracker now must have the change for kURL2.
   urls.clear();
   file_system2.GetChangedURLsInTracker(&urls);
   ASSERT_EQ(1U, urls.size());
-  EXPECT_TRUE(base::Contains(urls, kURL2));
+  EXPECT_TRUE(urls.contains(kURL2));
 
   SyncFileMetadata metadata;
   FileChangeList changes;
@@ -662,9 +661,9 @@ TEST_F(LocalFileSyncContextTest, ApplyRemoteChangeForDeletion) {
   FileSystemURLSet urls;
   file_system.GetChangedURLsInTracker(&urls);
   ASSERT_EQ(3U, urls.size());
-  ASSERT_TRUE(base::Contains(urls, kFile));
-  ASSERT_TRUE(base::Contains(urls, kDir));
-  ASSERT_TRUE(base::Contains(urls, kChild));
+  ASSERT_TRUE(urls.contains(kFile));
+  ASSERT_TRUE(urls.contains(kDir));
+  ASSERT_TRUE(urls.contains(kChild));
   for (auto iter = urls.begin(); iter != urls.end(); ++iter) {
     file_system.ClearChangeForURLInTracker(*iter);
   }
@@ -811,7 +810,7 @@ TEST_F(LocalFileSyncContextTest, ApplyRemoteChangeForAddOrUpdate) {
   FileSystemURLSet urls;
   file_system.GetChangedURLsInTracker(&urls);
   ASSERT_EQ(1U, urls.size());
-  EXPECT_TRUE(base::Contains(urls, kFile1));
+  EXPECT_TRUE(urls.contains(kFile1));
   file_system.ClearChangeForURLInTracker(*urls.begin());
 
   // Prepare temporary files which represent the remote file data.

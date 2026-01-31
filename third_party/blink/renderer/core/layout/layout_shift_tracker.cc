@@ -851,9 +851,8 @@ void LayoutShiftTracker::AttributionsToTracedValue(TracedValue& value) const {
   if (!*it)
     return;
 
-  bool should_include_names;
-  TRACE_EVENT_CATEGORY_GROUP_ENABLED(
-      TRACE_DISABLED_BY_DEFAULT("layout_shift.debug"), &should_include_names);
+  bool should_include_names = TRACE_EVENT_CATEGORY_ENABLED(
+      TRACE_DISABLED_BY_DEFAULT("layout_shift.debug"));
 
   value.BeginArray("impacted_nodes");
   while (it != attributions_.end() && it->node_id != kInvalidDOMNodeId) {

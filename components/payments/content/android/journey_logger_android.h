@@ -25,31 +25,28 @@ class JourneyLoggerAndroid {
   void Destroy(JNIEnv* env);
 
   void SetNumberOfSuggestionsShown(JNIEnv* env,
-                                   jint jsection,
-                                   jint jnumber,
-                                   jboolean jhas_complete_suggestion);
+                                   int32_t jsection,
+                                   int32_t jnumber,
+                                   bool jhas_complete_suggestion);
   void SetOptOutOffered(JNIEnv* env);
   void SetActivationlessShow(JNIEnv* env);
   void SetSkippedShow(JNIEnv* env);
   void SetShown(JNIEnv* env);
   void SetPayClicked(JNIEnv* env);
-  void SetSelectedMethod(JNIEnv* env,
-                         jint jPaymentMethodCategory);
+  void SetSelectedMethod(JNIEnv* env, int32_t jPaymentMethodCategory);
   void SetRequestedInformation(JNIEnv* env,
-                               jboolean requested_shipping,
-                               jboolean requested_email,
-                               jboolean requested_phone,
-                               jboolean requested_name);
+                               bool requested_shipping,
+                               bool requested_email,
+                               bool requested_phone,
+                               bool requested_name);
   void SetRequestedPaymentMethods(
       JNIEnv* env,
       const base::android::JavaRef<jintArray>& jmethods);
   void SetCompleted(JNIEnv* env);
-  void SetAborted(JNIEnv* env,
-                  jint jreason);
+  void SetAborted(JNIEnv* env, int32_t jreason);
   void SetNotShown(JNIEnv* env);
   void SetNoMatchingCredentialsShown(JNIEnv* env);
-  void RecordCheckoutStep(JNIEnv* env,
-                          jint jstep);
+  void RecordCheckoutStep(JNIEnv* env, int32_t jstep);
   void SetPaymentAppUkmSourceId(JNIEnv* env, ukm::SourceId source_id);
 
  private:

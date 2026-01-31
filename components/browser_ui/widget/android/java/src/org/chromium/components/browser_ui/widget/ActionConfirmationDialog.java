@@ -8,6 +8,7 @@ import static org.chromium.build.NullUtil.assumeNonNull;
 
 import android.content.Context;
 import android.content.res.Resources;
+import android.text.method.LinkMovementMethod;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
@@ -289,7 +290,7 @@ public class ActionConfirmationDialog {
      */
     public void show(
             Function<Resources, String> titleResolver,
-            Function<Resources, String> descriptionResolver,
+            Function<Resources, ? extends CharSequence> descriptionResolver,
             @StringRes int positiveButtonRes,
             @StringRes int negativeButtonRes,
             boolean supportStopShowing,
@@ -302,8 +303,9 @@ public class ActionConfirmationDialog {
         CheckBox stopShowingCheckBox = customView.findViewById(R.id.stop_showing_check_box);
         stopShowingCheckBox.setVisibility(supportStopShowing ? View.VISIBLE : View.GONE);
 
-        String descriptionText = descriptionResolver.apply(resources);
+        CharSequence descriptionText = descriptionResolver.apply(resources);
         descriptionTextView.setText(descriptionText);
+        descriptionTextView.setMovementMethod(LinkMovementMethod.getInstance());
 
         StopShowingDelegate stopShowingDelegate =
                 (buttonClickResult) -> {

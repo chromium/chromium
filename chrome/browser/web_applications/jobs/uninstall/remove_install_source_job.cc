@@ -4,7 +4,8 @@
 
 #include "chrome/browser/web_applications/jobs/uninstall/remove_install_source_job.h"
 
-#include "base/containers/contains.h"
+#include <algorithm>
+
 #include "base/strings/to_string.h"
 #include "chrome/browser/web_applications/jobs/uninstall/remove_web_app_job.h"
 #include "chrome/browser/web_applications/locks/all_apps_lock.h"
@@ -50,7 +51,7 @@ Action GetAction(const WebAppManagementTypes& sources,
 RemoveInstallSourceJob::RemoveInstallSourceJob(
     webapps::WebappUninstallSource uninstall_source,
     Profile& profile,
-    base::Value::Dict& debug_value,
+    base::DictValue& debug_value,
     webapps::AppId app_id,
     WebAppManagementTypes install_managements_to_remove)
     : uninstall_source_(uninstall_source),
@@ -127,7 +128,7 @@ void RemoveInstallSourceJob::
     WebApp::ExternalConfigMap modified_config_map;
     for (const auto& [type, config_data] :
          app->management_to_external_config_map()) {
-      if (!base::Contains(install_managements_to_remove_, type)) {
+      if (!std::ranges::contains(install_managements_to_remove_, type)) {
         modified_config_map.insert_or_assign(type, config_data);
       }
     }

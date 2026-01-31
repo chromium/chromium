@@ -21,7 +21,7 @@
 namespace {
 
 void SerializeAndSend(extensions::NativeMessageHost* native_message_host,
-                      const base::Value::Dict& message) {
+                      const base::DictValue& message) {
   DCHECK(native_message_host);
   std::string message_string;
   if (!base::JSONWriter::Write(message, &message_string)) {
@@ -64,7 +64,7 @@ void FakeArcSupport::Close() {
 
 void FakeArcSupport::ClickAgreeButton() {
   DCHECK_EQ(ui_page_, ArcSupportHost::UIPage::TERMS);
-  base::Value::Dict message;
+  base::DictValue message;
   message.Set("event", "onAgreed");
   message.Set("tosContent", tos_content_);
   message.Set("tosShown", tos_shown_);
@@ -78,7 +78,7 @@ void FakeArcSupport::ClickAgreeButton() {
 
 void FakeArcSupport::ClickCancelButton() {
   DCHECK_EQ(ui_page_, ArcSupportHost::UIPage::TERMS);
-  base::Value::Dict message;
+  base::DictValue message;
   message.Set("event", "onCanceled");
   message.Set("tosContent", tos_content_);
   message.Set("tosShown", tos_shown_);
@@ -141,7 +141,7 @@ void FakeArcSupport::PostMessageFromNativeHost(
       message_string, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   DCHECK(parsed_json);
 
-  const base::Value::Dict& message = parsed_json->GetDict();
+  const base::DictValue& message = parsed_json->GetDict();
   const std::string* action = message.FindString("action");
   if (!action) {
     NOTREACHED() << message_string;

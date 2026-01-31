@@ -71,7 +71,7 @@ class UserCreationScreen
   bool MaybeSkip(WizardContext& context) override;
   void ShowImpl() override;
   void HideImpl() override;
-  void OnUserAction(const base::Value::List& args) override;
+  void OnUserAction(const base::ListValue& args) override;
   bool HandleAccelerator(LoginAcceleratorAction action) override;
 
   // Runs either exit_callback_ or |test_exit_delegate| observer.

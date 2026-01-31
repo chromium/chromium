@@ -42,6 +42,11 @@ class DevToolsHttpServiceRegistry {
                const DevToolsDispatchHttpRequestParams& params,
                DevToolsHttpServiceHandler::Callback callback);
 
+  void RequestAsStream(Profile* profile,
+                       const DevToolsDispatchHttpRequestParams& params,
+                       DevToolsHttpServiceHandler::StreamWriter stream_writer,
+                       DevToolsHttpServiceHandler::Callback callback);
+
   void AddForTesting(Service service) {
     services_.push_back(std::move(service));
   }

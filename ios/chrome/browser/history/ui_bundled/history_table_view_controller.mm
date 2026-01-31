@@ -37,9 +37,9 @@
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
-#import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/quick_delete_commands.h"
+#import "ios/chrome/browser/shared/public/commands/scene_commands.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_link_header_footer_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_text_header_footer_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_text_item.h"
@@ -120,14 +120,6 @@ const CGFloat kButtonHorizontalPadding = 30.0;
   self.title = l10n_util::GetNSString(IDS_HISTORY_TITLE);
   // Configures NavigationController Toolbar buttons.
   [self configureViewsForNonEditModeWithAnimation:NO];
-  // Adds the "Done" button and hooks it up to `dismissHistory`.
-  UIBarButtonItem* dismissButton = [[UIBarButtonItem alloc]
-      initWithBarButtonSystemItem:UIBarButtonSystemItemDone
-                           target:self
-                           action:@selector(dismissHistory)];
-  [dismissButton setAccessibilityIdentifier:
-                     kHistoryNavigationControllerDoneButtonIdentifier];
-  self.navigationItem.rightBarButtonItem = dismissButton;
 
   // SearchController Configuration.
   // Init the searchController with nil so the results are displayed on the same
@@ -158,7 +150,7 @@ const CGFloat kButtonHorizontalPadding = 30.0;
                      action:@selector(dismissSearchController:)
            forControlEvents:UIControlEventTouchUpInside];
 
-  // Place the search bar in the navigation bar.
+  // Configures the navigation bar with a search bar and done button.
   [self updateNavigationBar];
   self.navigationItem.hidesSearchBarWhenScrolling = NO;
 }
@@ -334,7 +326,7 @@ const CGFloat kButtonHorizontalPadding = 30.0;
   self.deleteButton.enabled =
       [[self.tableView indexPathsForSelectedRows] count];
   self.editButton.enabled = !self.empty;
-  [self setToolbarItems:[self toolbarButtons] animated:animated];
+  [self setToolbarItems:[self createToolbarButtons] animated:animated];
 }
 
 // Configure the navigationItem contents for the current state.
@@ -362,7 +354,30 @@ const CGFloat kButtonHorizontalPadding = 30.0;
     self.navigationItem.searchController = self.searchController;
     self.navigationItem.largeTitleDisplayMode =
         UINavigationItemLargeTitleDisplayModeAutomatic;
+    self.navigationItem.rightBarButtonItem =
+        [self createNavigationBarDoneButton];
   }
+}
+
+// Returns a done button for the navigation bar. Disables edit mode or dimisses
+// the view when tapped.
+- (UIBarButtonItem*)createNavigationBarDoneButton {
+  UIBarButtonItem* doneButton;
+  UIBarButtonSystemItem buttonItem;
+  SEL action;
+  BOOL isEditingWithoutActiveSearch =
+      self.isEditing && self.searchController.searchBar.text.length == 0;
+
+  buttonItem = isEditingWithoutActiveSearch ? UIBarButtonSystemItemDone
+                                            : UIBarButtonSystemItemClose;
+  action = isEditingWithoutActiveSearch ? @selector(exitEditMode)
+                                        : @selector(dismissHistory);
+  doneButton = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:buttonItem
+                                                             target:self
+                                                             action:action];
+  doneButton.accessibilityIdentifier =
+      kHistoryNavigationControllerDoneButtonIdentifier;
+  return doneButton;
 }
 
 #pragma mark - HistoryConsumer
@@ -455,28 +470,6 @@ const CGFloat kButtonHorizontalPadding = 30.0;
   [self.delegate dismissViewController:self];
 }
 
-- (NSArray<UIBarButtonItem*>*)toolbarButtons {
-  if ([self isEmptyState]) {
-    return @[
-      [self createSpacerButton], self.clearBrowsingDataButton,
-      [self createSpacerButton]
-    ];
-  }
-  if (self.isEditing) {
-    return @[ self.deleteButton, [self createSpacerButton], self.cancelButton ];
-  }
-  return @[
-    self.clearBrowsingDataButton, [self createSpacerButton], self.editButton
-  ];
-}
-
-- (UIBarButtonItem*)createSpacerButton {
-  return [[UIBarButtonItem alloc]
-      initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace
-                           target:nil
-                           action:nil];
-}
-
 // Dismisses the search controller when there's a touch event on the scrim.
 - (void)dismissSearchController:(UIControl*)sender {
   if (self.searchController.active) {
@@ -484,42 +477,120 @@ const CGFloat kButtonHorizontalPadding = 30.0;
   }
 }
 
+// Returns toolbar buttons for the current state of the view.
+- (NSArray<UIBarButtonItem*>*)createToolbarButtons {
+  if ([self isEmptyState]) {
+    return @[
+      [self createSpacerButton], self.clearBrowsingDataButton,
+      [self createSpacerButton]
+    ];
+  }
+
+  if (self.isEditing) {
+    // Configure toolbar in edit mode based on whether there is a search in
+    // progress.
+    BOOL isShowingSearchResults =
+        self.searchController.searchBar.text.length != 0 &&
+        self.searchController.active;
+
+    return isShowingSearchResults
+        ? @[ self.deleteButton, [self createSpacerButton], self.cancelButton ]
+        : @[ [self createSpacerButton], self.deleteButton, [self createSpacerButton] ];
+  }
+
+  // Not in edit mode or search mode.
+  return @[
+    self.clearBrowsingDataButton, [self createSpacerButton], self.editButton
+  ];
+}
+
+// Returns a toolbar button spacer.
+- (UIBarButtonItem*)createSpacerButton {
+  return [[UIBarButtonItem alloc]
+      initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace
+                           target:nil
+                           action:nil];
+}
+
+//  Exits edit mode and updates the view.
+- (void)exitEditMode {
+  [self animateViewsConfigurationForEditingChange];
+  [self updateNavigationBar];
+}
+
+// Called when the delete button is tapped. Removes selected items from history
+// and updates the view.
+- (void)didTapDeleteButton {
+  [super deleteSelectedItemsFromHistory];
+  [self setEditing:NO animated:NO];
+  [self updateNavigationBar];
+}
+
+// Called when the edit button is tapped. Updates the view for edit mode.
+- (void)didTapEditButton {
+  [self animateViewsConfigurationForEditingChange];
+  [self updateNavigationBar];
+}
+
 // Shows scrim overlay and hide toolbar.
 - (void)showScrim {
-  if (self.scrimView.alpha < 1.0f) {
-    self.navigationController.toolbarHidden = YES;
-    self.scrimView.alpha = 0.0f;
-    [self.tableView addSubview:self.scrimView];
-    // We attach our constraints to the superview because the tableView is
-    // a scrollView and it seems that we get an empty frame when attaching to
-    // it.
-    AddSameConstraints(self.scrimView, self.view.superview);
-    self.tableView.accessibilityElementsHidden = YES;
-    self.tableView.scrollEnabled = NO;
-    __weak __typeof(self) weakSelf = self;
-    [UIView animateWithDuration:kTableViewNavigationScrimFadeDuration
-                     animations:^{
-                       weakSelf.scrimView.alpha = 1.0f;
-                       [weakSelf.view layoutIfNeeded];
-                     }];
+  if (self.scrimView.alpha >= 1.0f) {
+    return;
   }
+  self.navigationController.toolbarHidden = YES;
+  UIView* scrimView = self.scrimView;
+  scrimView.alpha = 0.0f;
+  [self.tableView addSubview:self.scrimView];
+  UIView* superview = self.tableView.superview;
+  // We attach our constraints to the superview because the tableView is
+  // a scrollView and it seems that we get an empty frame when attaching to
+  // it.
+  if (@available(iOS 26, *)) {
+    // On iOS 26+, the search bar won't be obscured by the scrim view even when
+    // the scrim view's top constraint is aligned with the superview's top,
+    // likely due to changes in UIKit's layout system or view hierarchy
+    // handling.
+    AddSameConstraints(scrimView, superview);
+  } else {
+    [NSLayoutConstraint activateConstraints:@[
+      [scrimView.leadingAnchor constraintEqualToAnchor:superview.leadingAnchor],
+      [scrimView.trailingAnchor
+          constraintEqualToAnchor:superview.trailingAnchor],
+      [scrimView.bottomAnchor constraintEqualToAnchor:superview.bottomAnchor],
+      [scrimView.topAnchor
+          constraintEqualToAnchor:self.navigationController.navigationBar
+                                      .bottomAnchor],
+    ]];
+  }
+  self.tableView.accessibilityElementsHidden = YES;
+  self.tableView.scrollEnabled = NO;
+  [UIView animateWithDuration:kTableViewNavigationScrimFadeDuration
+                   animations:^{
+                     scrimView.alpha = 1.0f;
+                     [superview layoutIfNeeded];
+                   }];
 }
 
 // Hides scrim and restore toolbar.
 - (void)hideScrim {
-  if (self.scrimView.alpha > 0.0f) {
-    self.navigationController.toolbarHidden = NO;
-    __weak __typeof(self) weakSelf = self;
-    [UIView animateWithDuration:kTableViewNavigationScrimFadeDuration
-        animations:^{
-          weakSelf.scrimView.alpha = 0.0f;
-        }
-        completion:^(BOOL finished) {
-          [weakSelf.scrimView removeFromSuperview];
-          weakSelf.tableView.accessibilityElementsHidden = NO;
-          weakSelf.tableView.scrollEnabled = YES;
-        }];
+  if (self.scrimView.alpha <= 0.0f) {
+    return;
   }
+  self.navigationController.toolbarHidden = NO;
+  __weak __typeof(self) weakSelf = self;
+  [UIView animateWithDuration:kTableViewNavigationScrimFadeDuration
+      animations:^{
+        weakSelf.scrimView.alpha = 0.0f;
+      }
+      completion:^(BOOL finished) {
+        HistoryTableViewController* strongSelf = weakSelf;
+        if (!strongSelf) {
+          return;
+        }
+        [strongSelf.scrimView removeFromSuperview];
+        strongSelf.tableView.accessibilityElementsHidden = NO;
+        strongSelf.tableView.scrollEnabled = YES;
+      }];
 }
 
 #pragma mark - Helper Methods
@@ -552,8 +623,7 @@ const CGFloat kButtonHorizontalPadding = 30.0;
 
 - (UIBarButtonItem*)cancelButton {
   if (!_cancelButton) {
-    NSString* titleString =
-        l10n_util::GetNSString(IDS_HISTORY_CANCEL_EDITING_BUTTON);
+    NSString* titleString = l10n_util::GetNSString(IDS_DONE);
     _cancelButton = [[UIBarButtonItem alloc]
         initWithTitle:titleString
                 style:UIBarButtonItemStylePlain
@@ -585,13 +655,12 @@ const CGFloat kButtonHorizontalPadding = 30.0;
 
 - (UIBarButtonItem*)deleteButton {
   if (!_deleteButton) {
-    NSString* titleString =
-        l10n_util::GetNSString(IDS_HISTORY_DELETE_SELECTED_ENTRIES_BUTTON);
     _deleteButton = [[UIBarButtonItem alloc]
-        initWithTitle:titleString
-                style:UIBarButtonItemStylePlain
-               target:self
-               action:@selector(deleteSelectedItemsFromHistory)];
+        initWithBarButtonSystemItem:UIBarButtonSystemItemTrash
+                             target:self
+                             action:@selector(didTapDeleteButton)];
+    _deleteButton.accessibilityLabel =
+        l10n_util::GetNSString(IDS_HISTORY_DELETE_SELECTED_ENTRIES_BUTTON);
     _deleteButton.accessibilityIdentifier =
         kHistoryToolbarDeleteButtonIdentifier;
     _deleteButton.tintColor = [UIColor colorNamed:kRedColor];
@@ -602,12 +671,12 @@ const CGFloat kButtonHorizontalPadding = 30.0;
 - (UIBarButtonItem*)editButton {
   if (!_editButton) {
     NSString* titleString =
-        l10n_util::GetNSString(IDS_HISTORY_START_EDITING_BUTTON);
-    _editButton = [[UIBarButtonItem alloc]
-        initWithTitle:titleString
-                style:UIBarButtonItemStylePlain
-               target:self
-               action:@selector(animateViewsConfigurationForEditingChange)];
+        l10n_util::GetNSString(IDS_IOS_HISTORY_SELECT_BUTTON);
+    _editButton =
+        [[UIBarButtonItem alloc] initWithTitle:titleString
+                                         style:UIBarButtonItemStylePlain
+                                        target:self
+                                        action:@selector(didTapEditButton)];
     _editButton.accessibilityIdentifier = kHistoryToolbarEditButtonIdentifier;
     // Buttons don't conform to dynamic types. So it's safe to just use the
     // default font size.

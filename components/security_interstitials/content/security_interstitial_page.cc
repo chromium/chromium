@@ -73,7 +73,7 @@ SecurityInterstitialPage::TypeID SecurityInterstitialPage::GetTypeForTesting() {
 }
 
 std::string SecurityInterstitialPage::GetHTMLContents() {
-  base::Value::Dict load_time_data;
+  base::DictValue load_time_data;
   PopulateInterstitialStrings(load_time_data);
   webui::SetLoadTimeDataDefaults(controller()->GetApplicationLocale(),
                                  &load_time_data);

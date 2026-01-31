@@ -425,6 +425,11 @@ class ComputedStyle final : public ComputedStyleBase {
                                       const ComputedStyle* old_style,
                                       const ComputedStyle* new_style);
 
+  // Returns true if the ComputedStyle change requires the LayoutObject to be
+  // reinserted into the layout-tree.
+  static bool NeedsReinsertLayoutTree(const ComputedStyle& old_style,
+                                      const ComputedStyle& new_style);
+
   StyleSelfAlignmentData ResolvedAlignSelf(
       const StyleSelfAlignmentData& normal_value_behavior,
       const ComputedStyle* parent_style = nullptr) const;
@@ -1163,21 +1168,40 @@ class ComputedStyle final : public ComputedStyleBase {
 
   // Grid Lanes utility functions.
   GridTrackSizingDirection GridLanesTrackSizingDirection() const {
-    switch (GridLanesDirection()) {
-      case EGridLanesDirection::kColumn:
-      case EGridLanesDirection::kColumnReverse:
+    switch (GetGridLanesDirection().orientation) {
+      case kColumn:
         return kForColumns;
-      case EGridLanesDirection::kRow:
-      case EGridLanesDirection::kRowReverse:
+      case kNormal:
+        // The 'normal' keyword resolves to 'columns' or 'rows' depending on
+        // whether 'grid-template-columns' or 'grid-template-rows' was set
+        // (respectively), defaulting to columns if both or neither are set.
+        if (SpecifiedGridTemplateColumns()) {
+          return kForColumns;
+        } else if (SpecifiedGridTemplateRows()) {
+          return kForRows;
+        }
+        return kForColumns;
+      case kRow:
         return kForRows;
     }
     NOTREACHED();
   }
 
-  bool IsReverseGridLanesDirection() const {
-    const auto grid_lanes_direction = GridLanesDirection();
-    return (grid_lanes_direction == EGridLanesDirection::kColumnReverse ||
-            grid_lanes_direction == EGridLanesDirection::kRowReverse);
+  // If true, it changes the direction that tracks fill themselves; columns fill
+  // from bottom-up, rows fill rtl.
+  bool IsReverseGridLanesFillDirection() const {
+    return GetGridLanesDirection().is_fill_reverse;
+  }
+
+  // If true, it changes the order you choose tracks when they're tied and what
+  // direction the track cursor moves in; columns choose the rightmost and go
+  // left; rows choose the bottommost and go up.
+  bool IsReverseGridLanesTrackDirection() const {
+    return GetGridLanesDirection().is_track_reverse;
+  }
+
+  bool IsGridLanesPackDense() const {
+    return GridLanesPack() == EGridLanesPack::kDense;
   }
 
   // Grid axis utility functions, usable in Grid and Grid Lanes.
@@ -1269,6 +1293,14 @@ class ComputedStyle final : public ComputedStyleBase {
   // text-align utility functions.
   using ComputedStyleBase::GetTextAlign;
   ETextAlign GetTextAlign(bool is_last_line) const;
+
+  // text-indent utility functions.
+  bool IsTextIndentEachLine() const {
+    return EnumHasFlags(GetTextIndentFlags(), TextIndentFlags::kEachLine);
+  }
+  bool IsTextIndentHanging() const {
+    return EnumHasFlags(GetTextIndentFlags(), TextIndentFlags::kHanging);
+  }
 
   // text-transform utility functions.
   [[nodiscard]] String ApplyTextTransform(
@@ -1924,6 +1956,12 @@ class ComputedStyle final : public ComputedStyleBase {
 
   // Returns true if 'overflow' is 'visible' or 'clip' along both axes.
   bool IsOverflowVisibleOrClip() const {
+    // With this feature enabled, a scrollable overflow vale on one axis does
+    // not force the other axis to a scrollable overflow value - so both axes
+    // need to be checked.
+    if (RuntimeEnabledFeatures::SingleAxisScrollContainersEnabled()) {
+      return IsOverflowValueScrollableX() && IsOverflowValueScrollableY();
+    }
     bool overflow_x =
         OverflowX() == EOverflow::kVisible || OverflowX() == EOverflow::kClip;
     DCHECK(!overflow_x || OverflowY() == EOverflow::kVisible ||
@@ -1932,13 +1970,41 @@ class ComputedStyle final : public ComputedStyleBase {
   }
 
   // An overflow value of visible or clip is not a scroll container, all other
-  // values result in a scroll container. Also note that if visible or clip is
-  // set on one axis, then the other axis must also be visible or clip. For
-  // example, "overflow-x: clip; overflow-y: visible" is allowed, but
-  // "overflow-x: clip; overflow-y: hidden" is not.
+  // values result in a scroll container.
+  static bool IsOverflowValueScrollable(EOverflow overflow) {
+    return overflow != EOverflow::kVisible && overflow != EOverflow::kClip;
+  }
+
+  // An overflow value of visible or clip is not a scroll container, all other
+  // values result in a scroll container. Returns true if either axis has a
+  // scrollable overflow value.
   bool IsScrollContainer() const {
-    return OverflowX() != EOverflow::kVisible &&
-           OverflowX() != EOverflow::kClip;
+    return IsOverflowValueScrollable(OverflowX()) ||
+           IsOverflowValueScrollable(OverflowY());
+  }
+
+  // Returns true if the element has a scrollable overflow value in the logical
+  // inline direction.
+  bool IsOverflowValueScrollableInline() const {
+    return IsOverflowValueScrollable(OverflowInlineDirection());
+  }
+
+  // Returns true if the element has a scrollable overflow value in the logical
+  // block direction.
+  bool IsOverflowValueScrollableBlock() const {
+    return IsOverflowValueScrollable(OverflowBlockDirection());
+  }
+
+  // Returns true if the element has a scrollable overflow value in the physical
+  // horizontal direction.
+  bool IsOverflowValueScrollableX() const {
+    return IsOverflowValueScrollable(OverflowX());
+  }
+
+  // Returns true if the element has a scrollable overflow value in the physical
+  // vertical direction.
+  bool IsOverflowValueScrollableY() const {
+    return IsOverflowValueScrollable(OverflowY());
   }
 
   // Returns true if object-fit, object-position and object-view-box would avoid
@@ -2022,12 +2088,15 @@ class ComputedStyle final : public ComputedStyleBase {
            HasCurrentTransformRelatedAnimation() ||
            HasCurrentFilterAnimation() || HasCurrentBackdropFilterAnimation();
   }
-  bool RequiresPropertyNodeForAnimation() const {
-    return IsRunningOpacityAnimationOnCompositor() ||
-           IsRunningTransformAnimationOnCompositor() ||
+  bool IsRunningTransformRelatedAnimationOnCompositor() const {
+    return IsRunningTransformAnimationOnCompositor() ||
            IsRunningScaleAnimationOnCompositor() ||
            IsRunningRotateAnimationOnCompositor() ||
-           IsRunningTranslateAnimationOnCompositor() ||
+           IsRunningTranslateAnimationOnCompositor();
+  }
+  bool RequiresPropertyNodeForAnimation() const {
+    return IsRunningOpacityAnimationOnCompositor() ||
+           IsRunningTransformRelatedAnimationOnCompositor() ||
            IsRunningFilterAnimationOnCompositor() ||
            IsRunningBackdropFilterAnimationOnCompositor();
   }
@@ -2478,7 +2547,7 @@ class ComputedStyle final : public ComputedStyleBase {
       return HasPseudoElementStyle(kPseudoIdScrollButton);
     }
     if (pseudo == kPseudoIdOverscrollAreaParent) {
-      return HasOverscrollArea();
+      return IsInternalOverscrollAreaAuto();
     }
     if (!HasPseudoElementStyle(pseudo)) {
       return false;
@@ -2500,10 +2569,6 @@ class ComputedStyle final : public ComputedStyleBase {
 
   bool HasScrollMarkerGroupAfter() const {
     return GetScrollMarkerGroup() && GetScrollMarkerGroup()->PositionAfter();
-  }
-
-  bool HasOverscrollArea() const {
-    return OverscrollArea() && !OverscrollArea()->GetNames().empty();
   }
 
   // Empty value means scroll-marker-group: none.
@@ -2535,9 +2600,6 @@ class ComputedStyle final : public ComputedStyleBase {
   // when the overlay property computes to 'auto', or when the element is a
   // ::backdrop pseudo.
   bool IsRenderedInTopLayer(const Element& element) const;
-
-  // Load the images of CSS properties that were deferred by LazyLoad.
-  void LoadDeferredImages(Document&) const;
 
   static mojom::blink::ColorScheme UsedColorScheme(bool is_dark_color_scheme) {
     return is_dark_color_scheme ? mojom::blink::ColorScheme::kDark
@@ -2599,6 +2661,13 @@ class ComputedStyle final : public ComputedStyleBase {
   bool HasAnimationTrigger() const;
 
   bool HasBaseEffectiveAppearance() const;
+
+  bool IsInternalOverscrollAreaAuto() const {
+    return InternalOverscrollArea() == EInternalOverscrollArea::kAuto;
+  }
+  bool IsInternalOverscrollPositionAuto() const {
+    return InternalOverscrollPosition() == EInternalOverscrollPosition::kAuto;
+  }
 
  private:
   bool IsInlineSizeContainer() const {
@@ -2683,19 +2752,6 @@ class ComputedStyle final : public ComputedStyleBase {
            display == EDisplay::kTableColumn ||
            display == EDisplay::kTableCell ||
            display == EDisplay::kTableCaption;
-  }
-
-  static GridTrackSizingDirection GridLanesTrackSizingDirection(
-      EGridLanesDirection direction) {
-    switch (direction) {
-      case EGridLanesDirection::kColumn:
-      case EGridLanesDirection::kColumnReverse:
-        return kForColumns;
-      case EGridLanesDirection::kRow:
-      case EGridLanesDirection::kRowReverse:
-        return kForRows;
-    }
-    NOTREACHED();
   }
 
   static CORE_EXPORT const ComputedGridTrackList& ComputedGridTemplate(
@@ -3385,6 +3441,15 @@ class ComputedStyleBuilder final : public ComputedStyleBuilderBase {
         SetMayHavePadding();
       }
       MutablePaddingLeftInternal() = v;
+    }
+  }
+
+  void SetPageMarginSafety(EPageMarginSafety v) {
+    if (GetPageMarginSafety() != v) {
+      if (v != EPageMarginSafety::kNone) {
+        SetMayHaveMargin();
+      }
+      SetPageMarginSafetyInternal(v);
     }
   }
 

@@ -4,7 +4,17 @@
 
 #include "chrome/browser/android/recently_closed_tabs_bridge.h"
 
+#include "base/memory/raw_ptr.h"
+#include "base/run_loop.h"
+#include "chrome/browser/android/recently_closed_tabs_bridge.h"
+#include "chrome/browser/sessions/chrome_tab_restore_service_client.h"
+#include "chrome/browser/sessions/tab_restore_service_factory.h"
+#include "chrome/test/base/chrome_render_view_host_test_harness.h"
+#include "components/sessions/content/content_live_tab.h"
 #include "components/sessions/core/tab_restore_service.h"
+#include "components/sessions/core/tab_restore_service_impl.h"
+#include "content/public/browser/navigation_controller.h"
+#include "content/public/browser/navigation_entry.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace recent_tabs {
@@ -187,23 +197,105 @@ TEST(RecentlyClosedTabsBridge_TabIterator, EmptyWindow) {
   ASSERT_EQ(it, TabIterator::end(entries));
 }
 
-// Test iteration over entries when the first few entries are empty.
-TEST(RecentlyClosedTabsBridge_TabIterator, EmptyFirstEntries) {
-  sessions::TabRestoreService::Entries entries;
-  int tab_counter = 0;
-  AddGroupWithTabs(entries, u"foo", 0, &tab_counter);
-  AddGroupWithTabs(entries, u"bar", 0, &tab_counter);
-  AddWindowWithTabs(entries, "baz", 0, &tab_counter);
-  AddTab(entries, &tab_counter);
+// ----- RecentlyClosedTabsBridge TEST HELPERS -----
 
-  // Group with 0 tabs is skipped.
-  auto it = TabIterator::begin(entries);
-  ASSERT_NE(it, TabIterator::end(entries));
-  EXPECT_TRUE(it.IsCurrentEntryTab());
-  EXPECT_EQ(0, it->tabstrip_index);
-  ++it;
+// Setup required test environment and TabRestoreService.
+class RecentlyClosedTabsBridgeTest : public ChromeRenderViewHostTestHarness {
+ protected:
+  raw_ptr<sessions::TabRestoreService> tab_restore_service_ = nullptr;
+  raw_ptr<recent_tabs::RecentlyClosedTabsBridge> bridge_ = nullptr;
 
-  ASSERT_EQ(it, TabIterator::end(entries));
+  void SetUp() override {
+    ChromeRenderViewHostTestHarness::SetUp();
+
+    // Create tab_restore_service and override the TabRestoreServiceFactory.
+    CreateService();
+    ASSERT_TRUE(tab_restore_service_);
+
+    bridge_ = new RecentlyClosedTabsBridge(nullptr, profile());
+  }
+
+  void TearDown() override {
+    if (bridge_) {
+      bridge_->Destroy(nullptr);
+      bridge_ = nullptr;
+    }
+    ChromeRenderViewHostTestHarness::TearDown();
+  }
+
+  void CreateService() {
+    // Override the TabRestoreServiceFactory to use a custom testing instance.
+    TabRestoreServiceFactory::GetInstance()->SetTestingFactory(
+        profile(), base::BindRepeating([](content::BrowserContext* context) {
+          Profile* profile = Profile::FromBrowserContext(context);
+          auto service = std::make_unique<sessions::TabRestoreServiceImpl>(
+              std::make_unique<ChromeTabRestoreServiceClient>(profile),
+              profile->GetPrefs(), nullptr);
+
+          return std::unique_ptr<KeyedService>(std::move(service));
+        }));
+
+    // Retrieve and cache the raw pointer for use in the test class.
+    tab_restore_service_ = TabRestoreServiceFactory::GetForProfile(profile());
+    EXPECT_TRUE(tab_restore_service_);
+  }
+
+  std::optional<SessionID> AddHistoricalEntries(int index) {
+    sessions::LiveTab* live_tab =
+        sessions::ContentLiveTab::GetOrCreateForWebContents(web_contents());
+    EXPECT_TRUE(live_tab);
+    return tab_restore_service_->CreateHistoricalTab(live_tab, index);
+  }
+
+  void NavigateToNonEmptyPage() {
+    NavigateAndCommit(GURL("https://google.com"));
+    auto* entry = web_contents()->GetController().GetLastCommittedEntry();
+    ASSERT_TRUE(entry);
+    ASSERT_FALSE(entry->GetURL().is_empty());
+  }
+};
+
+// ----- RecentlyClosedTabsBridge TESTS BEGIN -----
+
+// Verify ClearAllRecentlyUsedClosedEntries clears all TabRestoreService entries.
+TEST_F(RecentlyClosedTabsBridgeTest, ClearAllRecentlyUsedClosedEntries) {
+  // Create 3 entries.
+  NavigateToNonEmptyPage();
+  AddHistoricalEntries(0);
+  AddHistoricalEntries(1);
+  AddHistoricalEntries(2);
+
+  // Verify there are 3 entries in the TabRestoreService.
+  EXPECT_EQ(tab_restore_service_->entries().size(), 3U);
+
+  // Trigger clear all entries.
+  bridge_->ClearRecentlyClosedEntries(nullptr);
+
+  // Verify the entries in the TabRestoreService are cleared.
+  EXPECT_EQ(tab_restore_service_->entries().size(), 0U);
+}
+
+// Verify that ClearLeastRecentlyUsedClosedEntries removes the specified number of least
+// recently used entries.
+TEST_F(RecentlyClosedTabsBridgeTest, ClearLeastRecentlyUsedClosedEntries) {
+  // Create 3 entries.
+  NavigateToNonEmptyPage();
+  AddHistoricalEntries(0);
+  AddHistoricalEntries(1);
+  std::optional<SessionID> sessionId = AddHistoricalEntries(2);
+  ASSERT_TRUE(sessionId.has_value());
+
+  // Verify there are 3 entries in the TabRestoreService.
+  EXPECT_EQ(tab_restore_service_->entries().size(), 3U);
+
+  // Trigger clear 2 least recently used entries.
+  bridge_->ClearLeastRecentlyUsedClosedEntries(nullptr, 2);
+
+  // Verify only 1 entry remaining in the TabRestoreService.
+  EXPECT_EQ(tab_restore_service_->entries().size(), 1U);
+
+  // Verify the remaining entry matches the ID of the most recently added entry.
+  EXPECT_EQ(tab_restore_service_->entries().front()->id.id(), sessionId->id());
 }
 
 }  // namespace

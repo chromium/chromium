@@ -1,0 +1,18 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/features.gni")
+
+source_set("on_device_ai") {
+  sources = [
+    "ai_utils.cc",
+    "ai_utils.h",
+  ]
+  public_deps = [
+    "//base",
+    "//components/optimization_guide/core",
+    "//content/public/common",
+    "//mojo/public/cpp/bindings",
+  ]
+}

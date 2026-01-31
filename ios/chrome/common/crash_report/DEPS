@@ -1,3 +1,5 @@
 include_rules = [
+  # keep-sorted start
   "+components/crash/core/app",
+  # keep-sorted end
 ]

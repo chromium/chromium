@@ -22,6 +22,7 @@ static_library("cryptauth") {
     "//ash/constants",
     "//base",
     "//chrome/browser:browser_process",
+    "//chrome/browser/gcm",
     "//chrome/browser/profiles",
     "//chrome/common:constants",
     "//chromeos/ash/components/multidevice/logging",

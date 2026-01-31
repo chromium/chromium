@@ -12,7 +12,7 @@ xcode = struct(
     # Xcode 16 beta version used on beta bots.
     x16betabots = _xcode.for_ios("16f6"),
     # Xcode 26 beta version used on beta bots.
-    x26betabots = _xcode.for_ios("17c48"),
+    x26betabots = _xcode.for_ios("17c52"),
     # in use by ios-webkit-tot
     x14wk = _xcode.for_ios("14c18wk"),
 )

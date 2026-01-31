@@ -33,9 +33,9 @@ class TokenManagerImpl : public TokenManager {
   ~TokenManagerImpl() override;
 
   // TokenManager implementation.
-  bool IsAuthTokenAvailable(proto::FeatureName feature_name) override;
-  std::optional<BlindSignedAuthToken> GetAuthToken(
-      proto::FeatureName feature_name) override;
+  void GetAuthToken(proto::FeatureName feature_name,
+                    GetAuthTokenCallback callback) override;
+  void PrefetchAuthTokens(proto::FeatureName feature_name) override;
 
  private:
   internal::FeatureTokenManager* GetOrCreateFeatureManager(

@@ -41,7 +41,7 @@ wallpaper-grid-item.sea-pen-image {
   border-top-left-radius: 50%;
   top: 0px;
   box-shadow: 0 -14px 0 0 var(--cros-bg-color);
-  content: "";
+  content: '';
   height: 28px;
   left: 38px;
   position: absolute;
@@ -51,7 +51,7 @@ wallpaper-grid-item.sea-pen-image {
 .sea-pen-image[aria-selected='true']::part(iconContainer)::after {
   border-top-left-radius: 50%;
   box-shadow: -14px 0 0 0 var(--cros-bg-color);
-  content: "";
+  content: '';
   height: 28px;
   left: 0px;
   position: absolute;

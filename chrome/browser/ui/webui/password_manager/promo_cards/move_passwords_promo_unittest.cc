@@ -56,7 +56,7 @@ class PromoCardMovePasswordsTest : public ChromeRenderViewHostTestHarness {
 
   void EnableAccountStorage() {
     fake_sync_service_->SetSignedIn(signin::ConsentLevel::kSignin);
-    ASSERT_TRUE(password_manager::features_util::IsAccountStorageEnabled(
+    ASSERT_TRUE(password_manager::features_util::IsAccountStorageActive(
         fake_sync_service_.get()));
   }
 

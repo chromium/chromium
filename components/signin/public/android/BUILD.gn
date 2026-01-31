@@ -52,9 +52,6 @@ android_library("java") {
     "java/src/org/chromium/components/signin/base/AccountCapabilities.java",
     "java/src/org/chromium/components/signin/base/AccountInfo.java",
     "java/src/org/chromium/components/signin/base/CoreAccountInfo.java",
-    "java/src/org/chromium/components/signin/identitymanager/AccountInfoService.java",
-    "java/src/org/chromium/components/signin/identitymanager/AccountInfoServiceImpl.java",
-    "java/src/org/chromium/components/signin/identitymanager/AccountInfoServiceProvider.java",
     "java/src/org/chromium/components/signin/identitymanager/AccountManagedStatusFinder.java",
     "java/src/org/chromium/components/signin/identitymanager/IdentityManager.java",
     "java/src/org/chromium/components/signin/identitymanager/IdentityManagerImpl.java",
@@ -72,7 +69,6 @@ java_cpp_features("signin_java_features_srcjar") {
 }
 
 generate_jni("jni_headers") {
-  namespace = "signin"
   sources = [
     "java/src/org/chromium/components/signin/AccountCapabilitiesFetcher.java",
     "java/src/org/chromium/components/signin/SigninFeatureMap.java",
@@ -107,7 +103,6 @@ java_cpp_enum("java_enums") {
 }
 
 generate_jni("test_support_jni_headers") {
-  namespace = "signin"
   sources = [
     "java/src/org/chromium/components/signin/test/util/AccountCapabilitiesFetcherTestUtil.java",
     "java/src/org/chromium/components/signin/test/util/AccountInfoSerializer.java",
@@ -139,7 +134,6 @@ android_library("signin_java_test_support") {
     "java/src/org/chromium/components/signin/test/util/AccountHolder.java",
     "java/src/org/chromium/components/signin/test/util/AccountInfoSerializer.java",
     "java/src/org/chromium/components/signin/test/util/AccountManagerFacadeUtil.java",
-    "java/src/org/chromium/components/signin/test/util/FakeAccountInfoService.java",
     "java/src/org/chromium/components/signin/test/util/FakeAccountManagerDelegate.java",
     "java/src/org/chromium/components/signin/test/util/FakeAccountManagerFacade.java",
     "java/src/org/chromium/components/signin/test/util/FakeIdentityManager.java",
@@ -187,10 +181,7 @@ android_library("unit_device_javatests") {
     "//third_party/mockito:mockito_java",
   ]
 
-  sources = [
-    "javatests/src/org/chromium/components/signin/AccountManagerFacadeTest.java",
-    "javatests/src/org/chromium/components/signin/identitymanager/ProfileOAuth2TokenServiceDelegateTest.java",
-  ]
+  sources = [ "javatests/src/org/chromium/components/signin/AccountManagerFacadeTest.java" ]
 }
 
 robolectric_library("junit") {
@@ -200,7 +191,6 @@ robolectric_library("junit") {
     "junit/src/org/chromium/components/signin/AccountUtilsTest.java",
     "junit/src/org/chromium/components/signin/PatternMatcherTest.java",
     "junit/src/org/chromium/components/signin/base/AccountCapabilitiesTest.java",
-    "junit/src/org/chromium/components/signin/identitymanager/AccountInfoServiceImplTest.java",
   ]
   deps = [
     ":java",

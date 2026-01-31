@@ -5,7 +5,6 @@
 #ifndef CHROMEOS_ASH_SERVICES_SECURE_CHANNEL_FAKE_NEARBY_CONNECTION_STATE_LISTENER_H_
 #define CHROMEOS_ASH_SERVICES_SECURE_CHANNEL_FAKE_NEARBY_CONNECTION_STATE_LISTENER_H_
 
-#include "chromeos/ash/services/secure_channel/public/mojom/nearby_connector.mojom-shared.h"
 #include "chromeos/ash/services/secure_channel/public/mojom/nearby_connector.mojom.h"
 
 namespace ash::secure_channel {

@@ -75,29 +75,29 @@ TEST_F(InheritParentPriorityVoterTest, ChildFrame) {
   // Set the parent frame to the USER_VISIBLE priority. The child frame will
   // inherit it through a vote of the same priority.
   parent_frame_node->SetPriorityAndReason(
-      {base::TaskPriority::USER_VISIBLE, kDummyReason});
+      {base::Process::Priority::kUserVisible, kDummyReason});
 
   EXPECT_EQ(observer().GetVoteCount(), 1u);
   EXPECT_TRUE(
       observer().HasVote(voter_id(), GetExecutionContext(child_frame_node),
-                         base::TaskPriority::USER_VISIBLE,
+                         base::Process::Priority::kUserVisible,
                          InheritParentPriorityVoter::kPriorityInheritedReason));
 
   // Set the parent frame to the USER_BLOCKING priority. The child frame will
   // not inherit a higher priority.
   parent_frame_node->SetPriorityAndReason(
-      {base::TaskPriority::USER_BLOCKING, kDummyReason});
+      {base::Process::Priority::kUserBlocking, kDummyReason});
 
   EXPECT_EQ(observer().GetVoteCount(), 1u);
   EXPECT_TRUE(
       observer().HasVote(voter_id(), GetExecutionContext(child_frame_node),
-                         base::TaskPriority::USER_VISIBLE,
+                         base::Process::Priority::kUserVisible,
                          InheritParentPriorityVoter::kPriorityInheritedReason));
 
   // Set the parent frame to its default value. The existing vote will be
   // invalidated.
   parent_frame_node->SetPriorityAndReason(
-      {base::TaskPriority::BEST_EFFORT, kDummyReason});
+      {base::Process::Priority::kBestEffort, kDummyReason});
 
   EXPECT_EQ(observer().GetVoteCount(), 0u);
   EXPECT_FALSE(
@@ -122,12 +122,12 @@ TEST_F(InheritParentPriorityVoterTest, AdFrame) {
   // Set the parent frame to the USER_VISIBLE priority. The child frame will
   // inherit it because it is *not* an ad frame initially.
   parent_frame_node->SetPriorityAndReason(
-      {base::TaskPriority::USER_VISIBLE, kDummyReason});
+      {base::Process::Priority::kUserVisible, kDummyReason});
 
   EXPECT_EQ(observer().GetVoteCount(), 1u);
   EXPECT_TRUE(
       observer().HasVote(voter_id(), GetExecutionContext(child_frame_node),
-                         base::TaskPriority::USER_VISIBLE,
+                         base::Process::Priority::kUserVisible,
                          InheritParentPriorityVoter::kPriorityInheritedReason));
 
   // Set the ad frame bit. This will remove the vote on the child.

@@ -23,7 +23,7 @@ void SetManagedPkPredictiveWritingAllowed(Profile& profile, bool allowed) {
 }
 
 void SetPredictiveWritingEnabled(Profile& profile, bool enabled) {
-  base::Value::Dict input_method_setting;
+  base::DictValue input_method_setting;
   input_method_setting.SetByDottedPath(
       "xkb:us::eng.physicalKeyboardEnabledPredictiveWriting", enabled);
   profile.GetPrefs()->Set(::prefs::kLanguageInputMethodSpecificSettings,

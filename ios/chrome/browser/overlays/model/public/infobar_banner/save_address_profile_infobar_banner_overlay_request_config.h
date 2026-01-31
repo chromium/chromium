@@ -9,7 +9,7 @@
 
 #include <string>
 
-#import "base/memory/raw_ptr.h"
+#import "base/memory/weak_ptr.h"
 #include "ios/chrome/browser/overlays/model/public/overlay_request_config.h"
 #include "ios/chrome/browser/overlays/model/public/overlay_user_data.h"
 
@@ -52,7 +52,7 @@ class SaveAddressProfileBannerRequestConfig
   void CreateAuxiliaryData(base::SupportsUserData* user_data) override;
 
   // The InfoBar causing this banner.
-  raw_ptr<infobars::InfoBar, DanglingUntriaged> infobar_ = nullptr;
+  base::WeakPtr<infobars::InfoBar> infobar_;
   // Configuration data extracted from `infobar_`'s save address profile
   // delegate.
   std::u16string message_text_;

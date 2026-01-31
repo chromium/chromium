@@ -316,6 +316,45 @@ TEST_F(IconUtilTest, TestBasicCreateHICONFromSkBitmap) {
   ::ReleaseDC(NULL, hdc);
 }
 
+// This test case makes sure that CreateHICONFromSkBitmapSizedTo creates a
+// valid HICON with the requested dimensions.
+TEST_F(IconUtilTest, TestCreateHICONFromSkBitmapSizedTo) {
+  // Create a bitmap larger than the target icon size.
+  int src_width = 48;
+  int src_height = 48;
+  SkBitmap bitmap = CreateTransparentBlackSkBitmap(src_width, src_height);
+
+  // Resize to small icon size.
+  int target_width = kSmallIconWidth;
+  int target_height = kSmallIconHeight;
+
+  base::win::ScopedGDIObject<HICON> icon(
+      IconUtil::CreateHICONFromSkBitmapSizedTo(bitmap, target_width,
+                                               target_height));
+  EXPECT_TRUE(icon.is_valid());
+
+  // Verify the icon dimensions.
+  ICONINFO icon_info;
+  ASSERT_TRUE(GetIconInfo(icon.get(), &icon_info));
+  EXPECT_TRUE(icon_info.fIcon);
+
+  // The bitmap handle contained in the icon information is a handle to a
+  // compatible bitmap so we need to call ::GetDIBits() in order to retrieve
+  // the bitmap's header information.
+  BITMAPINFO bitmap_info;
+  UNSAFE_TODO(::ZeroMemory(&bitmap_info, sizeof(BITMAPINFO)));
+  bitmap_info.bmiHeader.biSize = sizeof(BITMAPINFO);
+  HDC hdc = ::GetDC(NULL);
+  int result = ::GetDIBits(hdc, icon_info.hbmColor, 0, target_width, NULL,
+                           &bitmap_info, DIB_RGB_COLORS);
+  ASSERT_GT(result, 0);
+  EXPECT_EQ(bitmap_info.bmiHeader.biWidth, target_width);
+  EXPECT_EQ(bitmap_info.bmiHeader.biHeight, target_height);
+  EXPECT_EQ(bitmap_info.bmiHeader.biPlanes, 1);
+  EXPECT_EQ(bitmap_info.bmiHeader.biBitCount, 32);
+  ::ReleaseDC(NULL, hdc);
+}
+
 // This test case makes sure that CreateIconFileFromImageFamily creates a
 // valid .ico file given an ImageFamily, and appropriately creates all icon
 // sizes from the given input.

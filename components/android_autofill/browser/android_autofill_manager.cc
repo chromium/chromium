@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "base/check_op.h"
-#include "base/containers/contains.h"
 #include "base/memory/ptr_util.h"
 #include "base/notreached.h"
 #include "components/android_autofill/browser/android_form_event_logger.h"
@@ -17,6 +16,7 @@
 #include "components/android_autofill/browser/autofill_type_util.h"
 #include "components/autofill/content/browser/content_autofill_driver.h"
 #include "components/autofill/core/browser/field_types.h"
+#include "components/autofill/core/browser/suggestions/suggestion_util.h"
 #include "components/autofill/core/common/mojom/autofill_types.mojom-shared.h"
 #include "components/autofill/core/common/unique_ids.h"
 #include "content/public/browser/render_frame_host.h"
@@ -156,7 +156,8 @@ void AndroidAutofillManager::OnHidePopupImpl() {
 void AndroidAutofillManager::OnFormProcessed(
     const FormData& form,
     const FormStructure& form_structure) {
-  DenseSet<FormType> form_types = form_structure.GetFormTypes();
+  DenseSet<FormType> form_types =
+      form_structure.GetFormTypes(GetAcUnrecognizedBehavior(client()));
   for (FormType form_type : form_types) {
     if (auto* logger = GetEventFormLogger(form_type)) {
       logger->OnDidParseForm();

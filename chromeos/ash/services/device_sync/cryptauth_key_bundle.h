@@ -59,7 +59,7 @@ class CryptAuthKeyBundle {
       const std::string& name);
 
   static std::optional<CryptAuthKeyBundle> FromDictionary(
-      const base::Value::Dict& dict);
+      const base::DictValue& dict);
 
   explicit CryptAuthKeyBundle(Name name);
 
@@ -101,7 +101,7 @@ class CryptAuthKeyBundle {
   // Remove the key corresponding to |handle| from the bundle.
   void DeleteKey(const std::string& handle);
 
-  base::Value::Dict AsDictionary() const;
+  base::DictValue AsDictionary() const;
 
   bool operator==(const CryptAuthKeyBundle& other) const;
   bool operator!=(const CryptAuthKeyBundle& other) const;

@@ -5,6 +5,8 @@
 #ifndef CC_ANIMATION_ANIMATION_TRIGGER_H_
 #define CC_ANIMATION_ANIMATION_TRIGGER_H_
 
+#include <vector>
+
 #include "base/containers/flat_map.h"
 #include "base/memory/ref_counted.h"
 #include "cc/animation/animation.h"
@@ -26,6 +28,37 @@ class CC_ANIMATION_EXPORT AnimationTrigger
     : public base::RefCounted<AnimationTrigger>,
       public ProtectedSequenceSynchronizer {
  public:
+  enum class Behavior {
+    kPlay,
+    kPause,
+    kReset,
+    kPlayOnce,
+    kPlayBackwards,
+    kPlayForwards,
+    kReplay,
+    kNone,
+  };
+
+  struct CC_ANIMATION_EXPORT AnimationData {
+    AnimationData(int animation_id,
+                  int timeline_id,
+                  Behavior activate_behavior,
+                  Behavior deactivate_behavior);
+    AnimationData(const AnimationData& data);
+    ~AnimationData();
+
+    // The id of the animation to be played, paused, etc.
+    int animation_id;
+
+    // The id of the timeline of the animation to be played, etc.
+    int timeline_id;
+
+    Behavior activate_behavior;
+    Behavior deactivate_behavior;
+
+    bool operator==(const AnimationData&) const;
+  };
+
   AnimationTrigger(const AnimationTrigger&) = delete;
   AnimationTrigger& operator=(const AnimationTrigger&) = delete;
 
@@ -47,6 +80,10 @@ class CC_ANIMATION_EXPORT AnimationTrigger
   bool InProtectedSequence() const override;
   void WaitForProtectedSequenceCompletion() const override;
 
+  void SetAnimationData(std::vector<AnimationData>& data);
+  const std::vector<AnimationData>& GetAnimationDataForTest();
+
+  void PushPropertiesTo(AnimationTrigger* trigger_impl);
   void SetNeedsPushProperties();
 
  protected:
@@ -59,6 +96,7 @@ class CC_ANIMATION_EXPORT AnimationTrigger
   const int id_;
 
   raw_ptr<AnimationHost> animation_host_;
+  ProtectedSequenceReadable<std::vector<AnimationData>> animation_data_;
 };
 
 }  // namespace cc

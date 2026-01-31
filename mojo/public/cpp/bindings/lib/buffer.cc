@@ -97,19 +97,22 @@ bool Buffer::AttachHandles(std::vector<ScopedHandle>* handles) {
   MojoResult rv = MojoAppendMessageData(
       message_.value(), 0, reinterpret_cast<MojoHandle*>(handles->data()),
       static_cast<uint32_t>(handles->size()), nullptr, &data_, &new_size);
-  if (rv != MOJO_RESULT_OK)
+  if (rv != MOJO_RESULT_OK) {
     return false;
+  }
 
   size_ = new_size;
-  for (auto& handle : *handles)
+  for (auto& handle : *handles) {
     std::ignore = handle.release();
+  }
   handles->clear();
   return true;
 }
 
 void Buffer::Seal() {
-  if (!message_.is_valid())
+  if (!message_.is_valid()) {
     return;
+  }
 
   // Ensure that the backing message has the final accumulated payload size.
   DCHECK_LE(message_payload_size_, cursor_);

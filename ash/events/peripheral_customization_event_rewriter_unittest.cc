@@ -16,8 +16,6 @@
 #include "ash/public/cpp/accelerator_keycode_lookup_cache.h"
 #include "ash/public/cpp/input_device_settings_controller.h"
 #include "ash/public/cpp/test/mock_input_device_settings_controller.h"
-#include "ash/public/mojom/input_device_settings.mojom-forward.h"
-#include "ash/public/mojom/input_device_settings.mojom-shared.h"
 #include "ash/public/mojom/input_device_settings.mojom.h"
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"

@@ -22,23 +22,23 @@ scoped_refptr<extensions::Extension> AddMediaGalleriesApp(
     const std::string& name,
     const std::vector<std::string>& media_galleries_permissions,
     Profile* profile) {
-  base::Value::Dict manifest;
+  base::DictValue manifest;
   manifest.Set(extensions::manifest_keys::kName, name);
   manifest.Set(extensions::manifest_keys::kVersion, "0.1");
   manifest.Set(extensions::manifest_keys::kManifestVersion, 2);
-  base::Value::List background_script_list;
+  base::ListValue background_script_list;
   background_script_list.Append("background.js");
   manifest.SetByDottedPath(
       extensions::manifest_keys::kPlatformAppBackgroundScripts,
       std::move(background_script_list));
 
-  base::Value::List permission_detail_list;
+  base::ListValue permission_detail_list;
   for (const auto& permission : media_galleries_permissions)
     permission_detail_list.Append(permission);
-  base::Value::Dict media_galleries_permission;
+  base::DictValue media_galleries_permission;
   media_galleries_permission.Set("mediaGalleries",
                                  std::move(permission_detail_list));
-  base::Value::List permission_list;
+  base::ListValue permission_list;
   permission_list.Append(std::move(media_galleries_permission));
   manifest.Set(extensions::manifest_keys::kPermissions,
                std::move(permission_list));

@@ -40,9 +40,8 @@ namespace password_manager {
 namespace {
 
 // Returns the base::Value associated with the promo card.
-base::Value::Dict PromoCardToValueDict(
-    const PasswordPromoCardBase* promo_card) {
-  base::Value::Dict dict;
+base::DictValue PromoCardToValueDict(const PasswordPromoCardBase* promo_card) {
+  base::DictValue dict;
   dict.Set("id", promo_card->GetPromoID());
   dict.Set("title", promo_card->GetTitle());
   dict.Set("description", promo_card->GetDescription());
@@ -104,12 +103,12 @@ void PromoCardsHandler::RegisterMessages() {
                                             base::Unretained(this)));
 }
 
-void PromoCardsHandler::RestartChrome(const base::Value::List& args) {
+void PromoCardsHandler::RestartChrome(const base::ListValue& args) {
   chrome::AttemptRestart();
 }
 
 void PromoCardsHandler::HandleGetAvailablePromoCard(
-    const base::Value::List& args) {
+    const base::ListValue& args) {
   AllowJavascript();
   CHECK_EQ(1U, args.size());
   const base::Value& callback_id = args[0];
@@ -138,7 +137,7 @@ void PromoCardsHandler::FinishGetAvailablePromoCard(
 }
 
 void PromoCardsHandler::HandleRecordPromoDismissed(
-    const base::Value::List& args) {
+    const base::ListValue& args) {
   AllowJavascript();
   CHECK_EQ(1U, args.size());
   const std::string& promo_id = args[0].GetString();

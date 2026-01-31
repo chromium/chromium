@@ -16,7 +16,6 @@
 
 #include "base/check.h"
 #include "base/check_deref.h"
-#include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/i18n/case_conversion.h"
@@ -51,7 +50,6 @@
 #include "components/autofill/core/common/autofill_util.h"
 #include "components/autofill/core/common/form_data.h"
 #include "components/autofill/core/common/form_field_data.h"
-#include "components/autofill/core/common/mojom/autofill_types.mojom-shared.h"
 #include "components/autofill/core/common/mojom/autofill_types.mojom.h"
 #include "components/autofill/core/common/password_form_fill_data.h"
 #include "components/autofill/core/common/signatures.h"
@@ -353,8 +351,9 @@ void AnnotateFieldsWithSignatures(
 // fields, both of which are cached in the Document.
 bool HasPasswordField(const WebLocalFrame& frame) {
   auto ContainsPasswordField = [&](const auto& fields) {
-    return base::Contains(fields, blink::mojom::FormControlType::kInputPassword,
-                          &WebFormControlElement::FormControlTypeForAutofill);
+    return std::ranges::contains(
+        fields, blink::mojom::FormControlType::kInputPassword,
+        &WebFormControlElement::FormControlTypeForAutofill);
   };
 
   WebDocument doc = frame.GetDocument();
@@ -833,8 +832,8 @@ void PasswordAutofillAgent::NotifyPasswordManagerAboutUserFieldModification(
 
   GetPasswordManagerDriver().UserModifiedNonPasswordField(
       GetFieldRendererId(element), element_value,
-      base::Contains(autocomplete_attribute,
-                     password_manager::constants::kAutocompleteUsername),
+      autocomplete_attribute.contains(
+          password_manager::constants::kAutocompleteUsername),
       is_likely_otp);
 }
 
@@ -1561,7 +1560,7 @@ bool PasswordAutofillAgent::IsUsernameInputField(
     const WebInputElement& input_element) const {
   return input_element &&
          input_element.FormControlTypeForAutofill() != kInputPassword &&
-         base::Contains(web_input_to_password_info_, FieldRef(input_element));
+         web_input_to_password_info_.contains(FieldRef(input_element));
 }
 
 void PasswordAutofillAgent::ReadyToCommitNavigation(
@@ -1911,15 +1910,10 @@ void PasswordAutofillAgent::CleanupOnDocumentShutdown() {
   all_autofilled_elements_.clear();
   field_renderer_id_to_submit_ = FieldRendererId();
   suggestion_banned_fields_.clear();
+  times_received_fill_data_.clear();
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
   page_passwords_analyser_.Reset();
 #endif
-
-  for (const auto& [_, times_received_data] : times_received_fill_data_) {
-    base::UmaHistogramCounts100("PasswordManager.TimesReceivedFillDataForForm",
-                                times_received_data);
-  }
-  times_received_fill_data_.clear();
 }
 
 void PasswordAutofillAgent::InformBrowserAboutUserInput(

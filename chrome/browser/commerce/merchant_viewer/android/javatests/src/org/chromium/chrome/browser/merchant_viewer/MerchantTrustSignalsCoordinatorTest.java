@@ -39,7 +39,7 @@ import org.robolectric.annotation.Config;
 
 import org.chromium.base.Callback;
 import org.chromium.base.FeatureOverrides;
-import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features;
@@ -89,7 +89,7 @@ public class MerchantTrustSignalsCoordinatorTest {
 
     @Mock private MerchantTrustMessageScheduler mMockMerchantMessageScheduler;
 
-    @Mock private ObservableSupplier<Tab> mMockTabProvider;
+    @Mock private MonotonicObservableSupplier<Tab> mMockTabProvider;
 
     @Mock private Tab mMockTab;
 

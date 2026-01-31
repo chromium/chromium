@@ -10,6 +10,7 @@ import pathlib
 import typing
 
 from . import buildozer
+from . import comments
 from . import pyl
 from . import starlark_conversions
 from . import values
@@ -57,23 +58,30 @@ def _per_test_modifications(
             match mod_key.value:
               case ('ci_only' | 'experiment_percentage'
                     | 'isolate_profile_data' | 'retry_only_failed_tests'):
-                mixin_builder[mod_key.value] = (
-                    starlark_conversions.convert_direct(mod_value))
+                converted_mod_value = starlark_conversions.convert_direct(
+                    mod_value)
 
               case 'args':
                 mod_value = typing.cast(pyl.List[pyl.Str], mod_value)
-                mixin_builder[mod_key.value] = (
-                    starlark_conversions.convert_args(mod_value))
+                converted_mod_value = starlark_conversions.convert_args(
+                    mod_value)
 
               case 'swarming':
                 mod_value = typing.cast(pyl.Dict[pyl.Str, pyl.Value], mod_value)
-                mixin_builder[mod_key.value] = (
-                    starlark_conversions.convert_swarming(mod_value))
+                converted_mod_value = starlark_conversions.convert_swarming(
+                    mod_value)
 
               case _:
                 raise Exception(
                     f'{mod_key.start}: unhandled key in modifications: "{mod_key.value}"'
                 )
+
+            converted_mod_value = comments.ensure_no_comments(
+                mod_value,
+                converted_mod_value,
+                message=f'on value for "{mod_key.value}"')
+            mixin_builder[mod_key.value] = converted_mod_value
+
 
         case 'replacements':
           value = typing.cast(
@@ -94,8 +102,15 @@ def _per_test_modifications(
               case 'args' | 'precommit_args' | 'non_precommit_args':
                 args_builder = values.DictValueBuilder()
                 for arg_name, arg_value in replace_value.items:
-                  args_builder[starlark_conversions.convert_arg(arg_name)] = (
-                      starlark_conversions.convert_direct(arg_value))
+                  converted_arg_value = starlark_conversions.convert_direct(
+                      arg_value)
+                  converted_arg_value = comments.ensure_no_comments(
+                      arg_value,
+                      converted_arg_value,
+                      message=f'on replacement value for "{arg_name.value}"')
+                  converted_arg_name = starlark_conversions.convert_arg(
+                      arg_name)
+                  args_builder[converted_arg_name] = converted_arg_value
                 replacements_builder[replace_key.value] = args_builder
 
               case _:
@@ -167,11 +182,22 @@ def _compute_edits(
             case ('android_webview_gpu_telemetry_tests'
                   | 'cast_streaming_tests' | 'gpu_telemetry_tests'
                   | 'gtest_tests' | 'isolated_scripts' | 'scripts'):
-              targets_builder.append(starlark_conversions.convert_direct(suite))
+              converted_value = starlark_conversions.convert_direct(suite)
+              converted_value = comments.ensure_no_comments(
+                  suite,
+                  converted_value,
+                  message=f'value for suite type {suite_type.value}')
+              converted_value = comments.comment(suite_type, converted_value)
+              targets_builder.append(converted_value)
 
             case 'skylab_tests' | 'skylab_gpu_telemetry_tests':
-              skylab_targets_builder.append(
-                  starlark_conversions.convert_direct(suite))
+              converted_value = starlark_conversions.convert_direct(suite)
+              converted_value = comments.ensure_no_comments(
+                  suite,
+                  converted_value,
+                  message=f'value for suite type {suite_type.value}')
+              converted_value = comments.comment(suite_type, converted_value)
+              skylab_targets_builder.append(converted_value)
               settings_builder['use_swarming'] = 'False'
 
             case 'junit_tests' | _:
@@ -180,7 +206,12 @@ def _compute_edits(
               )
 
       case 'additional_compile_targets':
-        bundle_builder[key.value] = starlark_conversions.convert_direct(value)
+        converted_value = starlark_conversions.convert_direct(value)
+        converted_value = comments.ensure_no_comments(
+            value,
+            converted_value,
+            message='on additional_compile_targets list')
+        bundle_builder[key.value] = converted_value
 
       case 'args':
         value = typing.cast(pyl.List[pyl.Str], value)
@@ -193,9 +224,12 @@ def _compute_edits(
           mixins_builder.append(starlark_conversions.convert_direct(element))
 
       case 'cros_board':
+        converted_value = starlark_conversions.convert_direct(value)
+        converted_value = comments.ensure_no_comments(value,
+                                                      converted_value,
+                                                      message='on skylab dict')
         skylab_mixin_builder['skylab'] = values.CallValueBuilder(
-            'targets.skylab',
-            {key.value: starlark_conversions.convert_direct(value)})
+            'targets.skylab', {key.value: converted_value})
 
       case 'browser_config':
         value = typing.cast(pyl.Str, value)
@@ -218,7 +252,10 @@ def _compute_edits(
             starlark_conversions.convert_swarming(value))
 
       case 'use_swarming':
-        settings_builder[key.value] = starlark_conversions.convert_direct(value)
+        converted_value = starlark_conversions.convert_direct(value)
+        converted_value = comments.ensure_no_comments(
+            value, converted_value, message='on use_swarming value')
+        settings_builder[key.value] = converted_value
 
       case _:
         raise Exception(
@@ -245,8 +282,8 @@ class WaterfallError(Exception):
 class StarlarkEdits:
   """Edits to make to a starlark file to migrate tests for builders."""
 
-  targets_builder_defaults: dict[str, str]
-  """The parameters to set in the targets.builder_defaults declaration.
+  targets_bundle_defaults: dict[str, str]
+  """The parameters to set in the targets.bundle_defaults declaration.
 
   parameter name -> string representation of parameter value
   """
@@ -375,11 +412,11 @@ def update_starlark(
   # on the file level, such as adding a new rule, use __pkg__ as the target name
   file_target = f'{star_file}:__pkg__'
 
-  buildozer.run('new_load //lib/targets.star targets', file_target)
+  buildozer.run('new_load @chromium-luci//targets.star targets', file_target)
 
   def create_defaults(kind):
     # %{kind} as the pattern tells it to operate on all rules of that kind.
-    # There shouldn't be more than one targets.builder_defaults.set "rule".
+    # There shouldn't be more than one targets.bundle_defaults.set "rule".
     defaults_target = f'{star_file}:%{kind}'
     # Check if a declaration of the kind already exists, any print operation
     # will result in output if there is already a rule
@@ -395,7 +432,7 @@ def update_starlark(
     return defaults_target
 
   for kind, defaults in (
-      ('targets.builder_defaults.set', edits.targets_builder_defaults),
+      ('targets.bundle_defaults.set', edits.targets_bundle_defaults),
       ('targets.settings_defaults.set', edits.targets_settings_defaults),
   ):
     if not defaults:

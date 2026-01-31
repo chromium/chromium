@@ -5,8 +5,7 @@
 #ifndef DEVICE_VR_OPENXR_OPENXR_HAND_UTILS_H_
 #define DEVICE_VR_OPENXR_OPENXR_HAND_UTILS_H_
 
-#include "device/vr/public/mojom/xr_hand_tracking_data.mojom-forward.h"
-#include "device/vr/public/mojom/xr_hand_tracking_data.mojom-shared.h"
+#include "device/vr/public/mojom/xr_hand_tracking_data.mojom.h"
 #include "device/vr/vr_export.h"
 #include "third_party/openxr/src/include/openxr/openxr.h"
 

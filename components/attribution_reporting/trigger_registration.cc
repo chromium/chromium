@@ -37,14 +37,14 @@ namespace {
 using ::attribution_reporting::mojom::TriggerRegistrationError;
 
 template <typename T>
-void SerializeListIfNotEmpty(base::Value::Dict& dict,
+void SerializeListIfNotEmpty(base::DictValue& dict,
                              std::string_view key,
                              const std::vector<T>& vec) {
   if (vec.empty()) {
     return;
   }
 
-  auto list = base::Value::List::with_capacity(vec.size());
+  auto list = base::ListValue::with_capacity(vec.size());
   for (const auto& value : vec) {
     list.Append(value.ToJson());
   }
@@ -61,7 +61,7 @@ base::expected<std::vector<T>, TriggerRegistrationError> ParseList(
     return {};
   }
 
-  base::Value::List* list = input_value->GetIfList();
+  base::ListValue* list = input_value->GetIfList();
   if (!list) {
     return base::unexpected(wrong_type);
   }
@@ -106,7 +106,7 @@ void RecordFeatureUsage(const TriggerRegistration& registration) {
 }
 
 base::expected<TriggerRegistration, TriggerRegistrationError> ParseDict(
-    base::Value::Dict dict) {
+    base::DictValue dict) {
   TriggerRegistration registration;
 
   ASSIGN_OR_RETURN(
@@ -185,7 +185,7 @@ base::expected<TriggerRegistration, TriggerRegistrationError> ParseDict(
 // static
 base::expected<TriggerRegistration, TriggerRegistrationError>
 TriggerRegistration::Parse(base::Value value) {
-  if (base::Value::Dict* dict = value.GetIfDict()) {
+  if (base::DictValue* dict = value.GetIfDict()) {
     return ParseDict(std::move(*dict));
   } else {
     return base::unexpected(TriggerRegistrationError::kRootWrongType);
@@ -224,8 +224,8 @@ TriggerRegistration::TriggerRegistration(TriggerRegistration&&) = default;
 TriggerRegistration& TriggerRegistration::operator=(TriggerRegistration&&) =
     default;
 
-base::Value::Dict TriggerRegistration::ToJson() const {
-  base::Value::Dict dict;
+base::DictValue TriggerRegistration::ToJson() const {
+  base::DictValue dict;
 
   filters.SerializeIfNotEmpty(dict);
 

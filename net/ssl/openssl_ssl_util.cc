@@ -116,10 +116,10 @@ int MapOpenSSLErrorSSL(uint32_t error_code) {
   }
 }
 
-base::Value::Dict NetLogOpenSSLErrorParams(int net_error,
-                                           int ssl_error,
-                                           const OpenSSLErrorInfo& error_info) {
-  base::Value::Dict dict;
+base::DictValue NetLogOpenSSLErrorParams(int net_error,
+                                         int ssl_error,
+                                         const OpenSSLErrorInfo& error_info) {
+  base::DictValue dict;
   dict.Set("net_error", net_error);
   dict.Set("ssl_error", ssl_error);
   if (error_info.error_code != 0) {

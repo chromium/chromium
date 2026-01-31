@@ -7,6 +7,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/time/default_tick_clock.h"
@@ -50,6 +51,8 @@
 namespace blink {
 
 namespace {
+
+BASE_FEATURE(kPaintTimingUseDelayedTaskAt, base::FEATURE_ENABLED_BY_DEFAULT);
 
 WindowPerformance* GetPerformanceInstance(LocalFrame* frame) {
   WindowPerformance* performance = nullptr;
@@ -432,9 +435,24 @@ void PaintTiming::MarkPaintTimingInternal() {
               performance->GetTimeOriginInternal() +
               base::Milliseconds(paint_timing_info.presentation_time);
 
-          performance->GetTaskRunner().PostDelayedTask(
-              FROM_HERE, std::move(flush),
-              target_time - base::TimeTicks::Now());
+          if (base::FeatureList::IsEnabled(kPaintTimingUseDelayedTaskAt)) {
+            // It's possible to get multiple callbacks with the same
+            // presentation time, e.g. if a frame gets dropped, which leads to
+            // multiple frames having the same `target_time`. We expect the
+            // callbacks to arrive in order, but the order the `flush` tasks run
+            // depends on delayed task scheduling. PostDelayedTaskAt() uses the
+            // `target_time` directly, using posting order to break ties, which
+            // avoids potential task reordering due to needing to compute the
+            // delayed runtime based on delay.
+            performance->GetTaskRunner().PostDelayedTaskAt(
+                base::subtle::PostDelayedTaskPassKey{}, FROM_HERE,
+                std::move(flush), target_time,
+                base::subtle::DelayPolicy::kPrecise);
+          } else {
+            performance->GetTaskRunner().PostDelayedTask(
+                FROM_HERE, std::move(flush),
+                target_time - base::TimeTicks::Now());
+          }
         } else {
           std::move(flush).Run();
         }

@@ -2,16 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "media/gpu/mac/video_toolbox_h264_accelerator.h"
 
 #include <array>
 #include <utility>
 
+#include "base/compiler_specific.h"
+#include "base/feature_list.h"
 #include "base/numerics/byte_conversions.h"
 #include "build/build_config.h"
 #include "media/base/media_log.h"
@@ -20,7 +17,12 @@
 namespace media {
 
 namespace {
+
 constexpr size_t kNALUHeaderLength = 4;
+
+// Kill-switch: Remove after M145 is stable.
+BASE_FEATURE(kResetDecoderForNonIDR, base::FEATURE_ENABLED_BY_DEFAULT);
+
 }  // namespace
 
 VideoToolboxH264Accelerator::VideoToolboxH264Accelerator(
@@ -130,7 +132,7 @@ VideoToolboxH264Accelerator::Status VideoToolboxH264Accelerator::SubmitSlice(
     const std::vector<SubsampleEntry>& subsamples) {
   DVLOG(3) << __func__;
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  slice_nalu_data_.push_back(base::span(data, size));
+  slice_nalu_data_.push_back(UNSAFE_TODO(base::span(data, size)));
   return Status::kOk;
 }
 
@@ -215,6 +217,17 @@ VideoToolboxH264Accelerator::Status VideoToolboxH264Accelerator::SubmitDecode(
     return Status::kFail;
   }
 
+  if (!pic->idr && first_decode_ &&
+      base::FeatureList::IsEnabled(kResetDecoderForNonIDR)) {
+    // Flag the sample if it's non-IDR and the first sample provided. This was
+    // recommended by Apple to prevent corruption when seeking to SEI
+    // recovery points. See https://crbug.com/451536366.
+    CMSetAttachment(sample.get(),
+                    kCMSampleBufferAttachmentKey_ResetDecoderBeforeDecoding,
+                    kCFBooleanTrue, kCMAttachmentMode_ShouldNotPropagate);
+  }
+  first_decode_ = false;
+
   VideoToolboxDecompressionSessionMetadata session_metadata = {
 #if defined(ARCH_CPU_X86_FAMILY)
       // Allow software decoding on Intel hardware where the cutoff is around
@@ -249,6 +262,7 @@ void VideoToolboxH264Accelerator::Reset() {
   active_pps_data_.clear();
   active_format_.reset();
   slice_nalu_data_.clear();
+  first_decode_ = true;
 }
 
 }  // namespace media

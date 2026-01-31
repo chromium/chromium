@@ -18,6 +18,7 @@
 #include "build/build_config.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/safe_browsing/buildflags.h"
+#include "components/safe_browsing/core/browser/intelligent_scan_delegate.h"
 #include "components/safe_browsing/core/browser/referrer_chain_provider.h"
 #include "components/safe_browsing/core/browser/referring_app_info.h"
 #include "components/safe_browsing/core/browser/safe_browsing_token_fetcher.h"
@@ -76,6 +77,28 @@ class MockReferrerChainProvider : public ReferrerChainProvider {
                AttributionResult(const GURL& event_url,
                                  int user_gesture_count_limit,
                                  ReferrerChain* out_referrer_chain));
+};
+
+class MockIntelligentScanDelegate : public IntelligentScanDelegate {
+ public:
+  MOCK_METHOD(bool,
+              ShouldRequestIntelligentScan,
+              (ClientPhishingRequest*),
+              (override));
+  MOCK_METHOD(ModelType, GetIntelligentScanModelType, (bool), (override));
+  MOCK_METHOD(std::optional<base::UnguessableToken>,
+              StartIntelligentScan,
+              (std::string, IntelligentScanDoneCallback),
+              (override));
+  MOCK_METHOD(bool,
+              CancelIntelligentScan,
+              (const base::UnguessableToken&),
+              (override));
+  MOCK_METHOD(bool,
+              ShouldShowScamWarning,
+              (std::optional<IntelligentScanVerdict>),
+              (override));
+  MOCK_METHOD(void, OnScamWarningShown, (), (override));
 };
 
 bool GetRequestProto(const network::ResourceRequest& request,
@@ -165,6 +188,8 @@ class RealTimeUrlLookupServiceTest : public PlatformTest {
         &test_pref_service_,
         /*sync_observer=*/nullptr);
     referrer_chain_provider_ = std::make_unique<MockReferrerChainProvider>();
+    intelligent_scan_delegate_ =
+        std::make_unique<MockIntelligentScanDelegate>();
 
     auto token_fetcher = std::make_unique<TestSafeBrowsingTokenFetcher>();
     raw_token_fetcher_ = token_fetcher->AsWeakPtr();
@@ -199,7 +224,7 @@ class RealTimeUrlLookupServiceTest : public PlatformTest {
                                 GetMinAllowedTimestampForReferrerChains,
                             base::Unretained(this)),
         referrer_chain_provider_.get(),
-        /*webui_delegate=*/nullptr);
+        /*webui_delegate=*/nullptr, intelligent_scan_delegate_.get());
   }
 
   void TearDown() override {
@@ -412,6 +437,7 @@ class RealTimeUrlLookupServiceTest : public PlatformTest {
   sync_preferences::TestingPrefServiceSyncable test_pref_service_;
   base::test::ScopedFeatureList feature_list_;
   std::unique_ptr<MockReferrerChainProvider> referrer_chain_provider_;
+  std::unique_ptr<MockIntelligentScanDelegate> intelligent_scan_delegate_;
 };
 
 TEST_F(RealTimeUrlLookupServiceTest, StartFillingRequestProto) {
@@ -512,6 +538,47 @@ TEST_F(RealTimeUrlLookupServiceTest, TestFillReferringAppInfo) {
       }
     }
   }
+}
+
+TEST_F(RealTimeUrlLookupServiceTest, TestFillLlamaForcedTriggerCapability) {
+  SetSafeBrowsingState(&test_pref_service_,
+                       SafeBrowsingState::ENHANCED_PROTECTION);
+  struct {
+    IntelligentScanDelegate::ModelType model_type;
+    IntelligentScanModelType expected_proto_model_type;
+  } kTestCases[] = {
+      {IntelligentScanDelegate::ModelType::kNotSupportedOnDevice,
+       IntelligentScanModelType::NOT_SUPPORTED},
+      {IntelligentScanDelegate::ModelType::kNotSupportedServerSide,
+       IntelligentScanModelType::NOT_SUPPORTED},
+      {IntelligentScanDelegate::ModelType::kOnDevice,
+       IntelligentScanModelType::ON_DEVICE_MODEL},
+      {IntelligentScanDelegate::ModelType::kServerSide,
+       IntelligentScanModelType::SERVER_SIDE_MODEL},
+  };
+
+  for (const auto& test_case : kTestCases) {
+    SCOPED_TRACE(base::StringPrintf("model_type: %d",
+                                    static_cast<int>(test_case.model_type)));
+    EXPECT_CALL(*intelligent_scan_delegate_, GetIntelligentScanModelType(_))
+        .WillOnce(Return(test_case.model_type));
+    auto result = StartFillingRequestProto(GURL("http://example.com/"),
+                                           /*is_sampled_report=*/false);
+    EXPECT_EQ(result->llama_forced_trigger_capability().supported_model_type(),
+              test_case.expected_proto_model_type);
+  }
+}
+
+TEST_F(RealTimeUrlLookupServiceTest,
+       TestFillLlamaForcedTriggerCapability_EnhancedProtectionDisabled) {
+  SetSafeBrowsingState(&test_pref_service_,
+                       SafeBrowsingState::STANDARD_PROTECTION);
+  EXPECT_CALL(*intelligent_scan_delegate_, GetIntelligentScanModelType(_))
+      .Times(0);
+  auto result = StartFillingRequestProto(GURL("http://example.com/"),
+                                         /*is_sampled_report=*/false);
+  EXPECT_EQ(result->llama_forced_trigger_capability().supported_model_type(),
+            IntelligentScanModelType::NOT_SUPPORTED);
 }
 
 TEST_F(RealTimeUrlLookupServiceTest, TestSanitizeURL) {

@@ -131,7 +131,7 @@ class HeadlessBrowserTestWithUrlBlockPolicy
     : public HeadlessBrowserTestWithPolicy {
  protected:
   void SetPolicy() override {
-    base::Value::List value;
+    base::ListValue value;
     value.Append("*/blocked.html");
 
     policy::PolicyMap policy;

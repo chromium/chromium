@@ -53,8 +53,14 @@ void DataProtectionUIController::ContentsViewDataProtectionController::
     return;
   }
 
+  // TODO(alshawwa): GetFromContents() crashes in PWAs in the ChromeOS case. We
+  // therefore use MaybeGetFromContents() and perform a nullptr check. Resolve
+  // the ChromeOS PWA case.
   tabs::TabInterface* tab =
-      tabs::TabInterface::GetFromContents(web_view->web_contents());
+      tabs::TabInterface::MaybeGetFromContents(web_view->web_contents());
+  if (!tab) {
+    return;
+  }
 
   enterprise_data_protection::DataProtectionNavigationController* controller =
       tab->GetTabFeatures()->data_protection_controller();

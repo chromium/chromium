@@ -166,7 +166,7 @@ auto InvokeReportSentCallback(SentResult result) {
 }
 
 AggregatableReport CreateExampleAggregatableReport() {
-  base::Value::Dict additional_fields;
+  base::DictValue additional_fields;
   additional_fields.Set("source_registration_time", "1234569600");
   additional_fields.Set(
       "attribution_destination",
@@ -192,7 +192,7 @@ AggregatableReport CreateExampleAggregatableReport() {
 }
 
 AggregatableReport CreateExampleAggregatableDebugReport() {
-  base::Value::Dict additional_fields;
+  base::DictValue additional_fields;
   additional_fields.Set(
       "attribution_destination",
       url::Origin::Create(GURL("https://example.destination")).Serialize());
@@ -240,7 +240,7 @@ class MockReportSender : public AttributionReportSender {
   MOCK_METHOD(void,
               SendReport,
               (AggregatableDebugReport,
-               base::Value::Dict report_body,
+               base::DictValue report_body,
                AggregatableDebugReportSentCallback),
               (override));
 };
@@ -3385,7 +3385,7 @@ TEST_F(AttributionManagerImplTest, AggregatableDebugReport_ReportSent) {
   EXPECT_CALL(*report_sender_, SendReport(An<AggregatableDebugReport>(), _, _))
       .Times(3)
       .WillRepeatedly([&](AggregatableDebugReport report,
-                          base::Value::Dict report_body,
+                          base::DictValue report_body,
                           AggregatableDebugReportSentCallback callback) {
         EXPECT_THAT(report_body,
                     base::test::IsJson(assembled_report.GetAsJson()));

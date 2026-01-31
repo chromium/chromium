@@ -11,7 +11,7 @@
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_url_loader_delegate.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
-#import "ios/chrome/browser/toolbar/ui_bundled/public/toolbar_constants.h"
+#import "ios/chrome/browser/toolbar/legacy/ui_bundled/public/toolbar_constants.h"
 #import "ios/chrome/common/string_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
@@ -274,6 +274,16 @@ NSAttributedString* FormatHTMLListForUILabel(NSString* listString) {
                        withAction:@selector(updateToolbarMargins)];
   }
   return self;
+}
+
+- (UIEdgeInsets)intrinsicContentVisualInsets {
+  [self layoutIfNeeded];
+  [_containerView layoutIfNeeded];
+  [_stackView layoutIfNeeded];
+  CGFloat topInset = _stackView.frame.origin.y;
+  CGFloat botInset = _containerView.frame.size.height -
+                     _stackView.frame.origin.y - _stackView.frame.size.height;
+  return UIEdgeInsetsMake(topInset, 0, botInset, 0);
 }
 
 #pragma mark - UIView overrides

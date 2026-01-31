@@ -100,7 +100,7 @@ void FileManagerUI::CreateAndAddTrustedAppDataSource(content::WebUI* web_ui,
       web_ui->GetWebContents()->GetBrowserContext(), kChromeUIFileManagerHost);
 
   // Setup chrome://file-manager main and default page.
-  source->AddResourcePath("", IDR_FILE_MANAGER_MAIN_HTML);
+  source->SetDefaultResource(IDR_FILE_MANAGER_MAIN_HTML);
   // Add chrome://file-manager content.
   source->AddResourcePaths(kFileManagerSwaResources);
 
@@ -109,7 +109,7 @@ void FileManagerUI::CreateAndAddTrustedAppDataSource(content::WebUI* web_ui,
 
   // Load time data: add files app strings and feature flags.
   source->EnableReplaceI18nInJS();
-  base::Value::Dict dict = delegate_->GetLoadTimeData();
+  base::DictValue dict = delegate_->GetLoadTimeData();
   dict.Set("WINDOW_NUMBER", window_number);
   source->AddLocalizedStrings(dict);
   source->UseStringsJs();

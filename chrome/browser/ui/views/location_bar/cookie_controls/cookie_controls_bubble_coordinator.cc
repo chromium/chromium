@@ -50,10 +50,9 @@ void CookieControlsBubbleCoordinator::ShowBubble(
 
   // TODO(crbug.com/376283777): An action ID should be created and used here
   // when Cookie Controls is migrated to the new page actions framework.
-  views::View* anchor_view =
-      toolbar_button_provider->GetAnchorView(std::nullopt);
+  auto anchor = toolbar_button_provider->GetBubbleAnchor(std::nullopt);
   auto bubble_view = std::make_unique<CookieControlsBubbleViewImpl>(
-      anchor_view, web_contents,
+      anchor, web_contents,
       base::BindOnce(&CookieControlsBubbleCoordinator::OnViewIsDeleting,
                      base::Unretained(this)));
   bubble_view_ = bubble_view.get();

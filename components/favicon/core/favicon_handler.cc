@@ -9,7 +9,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
@@ -69,7 +68,7 @@ bool HasExpiredOrIncompleteResult(
   for (float favicon_scale : favicon_scales) {
     int edge_size_in_pixel = std::ceil(desired_size_in_dip * favicon_scale);
     gfx::Size value(edge_size_in_pixel, edge_size_in_pixel);
-    if (!base::Contains(favicon_sizes, value)) {
+    if (!std::ranges::contains(favicon_sizes, value)) {
       return true;
     }
   }

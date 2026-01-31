@@ -8,7 +8,6 @@
 #include <optional>
 #include <ostream>
 
-#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/notreached.h"
 #include "base/strings/strcat.h"
@@ -17,9 +16,12 @@
 #include "base/test/bind.h"
 #include "base/version_info/channel.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
+#include "components/content_settings/core/browser/permission_settings_registry.h"
 #include "components/content_settings/core/common/content_settings.h"
+#include "components/content_settings/core/common/content_settings_utils.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
+#include "components/supervised_user/core/browser/family_link_url_filter.h"
 #include "components/supervised_user/core/browser/fetcher_config.h"
 #include "components/supervised_user/core/browser/proto/kidsmanagement_messages.pb.h"
 #include "components/supervised_user/core/browser/proto_fetcher.h"
@@ -27,7 +29,6 @@
 #include "components/supervised_user/core/browser/supervised_user_preferences.h"
 #include "components/supervised_user/core/browser/supervised_user_service.h"
 #include "components/supervised_user/core/browser/supervised_user_service_observer.h"
-#include "components/supervised_user/core/browser/supervised_user_url_filter.h"
 #include "components/supervised_user/core/common/pref_names.h"
 #include "components/supervised_user/core/common/supervised_user_constants.h"
 #include "components/supervised_user/test_support/testutil_proto_fetcher.h"
@@ -142,10 +143,11 @@ bool AreSafeSitesConfigured(const FamilyLinkSettingsState::Services& services) {
   return IsSafeSitesEnabled(services.pref_service.get());
 }
 
-bool IsUrlConfigured(SupervisedUserURLFilter& url_filter,
-                     const GURL& url,
-                     FilteringBehavior expected_filtering_behavior) {
-  SupervisedUserURLFilter::Result result = url_filter.GetFilteringBehavior(url);
+bool IsUrlConfigured(
+    const SupervisedUserUrlFilteringService& url_filtering_service,
+    const GURL& url,
+    FilteringBehavior expected_filtering_behavior) {
+  WebFilteringResult result = url_filtering_service.GetFilteringBehavior(url);
 
   if (!result.IsFromManualList()) {
     // The change that arrived doesn't have the manual mode for requested url
@@ -166,17 +168,13 @@ bool IsUrlConfigured(SupervisedUserURLFilter& url_filter,
 bool UrlFiltersAreConfigured(const FamilyLinkSettingsState::Services& services,
                              const std::optional<GURL>& allowed_url,
                              const std::optional<GURL>& blocked_url) {
-  SupervisedUserURLFilter* url_filter =
-      services.supervised_user_service->GetURLFilter();
-  CHECK(url_filter);
-
   if (!AreSafeSitesConfigured(services)) {
     return false;
   }
 
   if (allowed_url.has_value()) {
-    if (!IsUrlConfigured(*url_filter, *allowed_url,
-                         FilteringBehavior::kAllow)) {
+    if (!IsUrlConfigured(*services.supervised_user_url_filtering_service,
+                         *allowed_url, FilteringBehavior::kAllow)) {
       LOG(WARNING) << allowed_url->spec()
                    << " is not configured yet (requested: kAllow).";
       return false;
@@ -184,8 +182,8 @@ bool UrlFiltersAreConfigured(const FamilyLinkSettingsState::Services& services,
   }
 
   if (blocked_url.has_value()) {
-    if (!IsUrlConfigured(*url_filter, *blocked_url,
-                         FilteringBehavior::kBlock)) {
+    if (!IsUrlConfigured(*services.supervised_user_url_filtering_service,
+                         *blocked_url, FilteringBehavior::kBlock)) {
       LOG(WARNING) << blocked_url->spec()
                    << " is not configured yet (requested: kBlock).";
       return false;
@@ -198,7 +196,7 @@ bool UrlFiltersAreEmpty(const FamilyLinkSettingsState::Services& services) {
   return services.supervised_user_service->GetURLFilter()
              ->GetFilteringStatistics()
              .GetManagedSiteList() ==
-         SupervisedUserURLFilter::ManagedSiteList::kEmpty;
+         FamilyLinkUrlFilter::ManagedSiteList::kEmpty;
 }
 
 bool ToggleHasExpectedValue(const FamilyLinkSettingsState::Services& services,
@@ -228,12 +226,15 @@ bool ToggleHasExpectedValue(const FamilyLinkSettingsState::Services& services,
     bool is_geolocation_blocked = !static_cast<bool>(toggle.state);
     // The supervised user has the geolocation blocked if the corresponding
     // content setting is blocked.
+    const content_settings::PermissionSettingsInfo* geolocation_info =
+        content_settings::PermissionSettingsRegistry::GetInstance()->Get(
+            content_settings::GeolocationContentSettingsType());
     bool is_geolocation_configured =
         is_geolocation_blocked ==
-        (services.host_content_settings_map->GetDefaultContentSetting(
-             ContentSettingsType::GEOLOCATION, &provider_type) ==
-         ContentSetting::CONTENT_SETTING_BLOCK);
-
+        geolocation_info->delegate().IsBlocked(
+            services.host_content_settings_map->GetDefaultPermissionSetting(
+                content_settings::GeolocationContentSettingsType(),
+                &provider_type));
     return permission_pref_has_expected_value && is_geolocation_configured;
   }
   CHECK(toggle.type == FamilyLinkToggleType::kExtensionsToggle);
@@ -467,9 +468,13 @@ bool FamilyLinkSettingsState::ToggleIntent::Check(
 
 FamilyLinkSettingsState::Services::Services(
     const SupervisedUserService& supervised_user_service,
+    const SupervisedUserUrlFilteringService&
+        supervised_user_url_filtering_service,
     const PrefService& pref_service,
     const HostContentSettingsMap& host_content_settings_map)
     : supervised_user_service(supervised_user_service),
+      supervised_user_url_filtering_service(
+          supervised_user_url_filtering_service),
       pref_service(pref_service),
       host_content_settings_map(host_content_settings_map) {}
 

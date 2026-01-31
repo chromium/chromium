@@ -5,6 +5,7 @@
 #include "chrome/browser/web_applications/commands/set_user_display_mode_command.h"
 
 #include "base/test/test_future.h"
+#include "chrome/browser/web_applications/mojom/user_display_mode.mojom-shared.h"
 #include "chrome/browser/web_applications/test/fake_web_app_provider.h"
 #include "chrome/browser/web_applications/test/os_integration_test_override_impl.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
@@ -12,6 +13,8 @@
 #include "chrome/browser/web_applications/web_app_command_scheduler.h"
 #include "chrome/browser/web_applications/web_app_install_params.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
+#include "components/webapps/browser/installable/installable_metrics.h"
+#include "components/webapps/common/web_app_id.h"
 
 namespace web_app {
 
@@ -88,6 +91,43 @@ TEST_F(SetUserDisplayModeCommandTest, SetUserDisplayMode) {
   ASSERT_TRUE(state.has_value());
   EXPECT_TRUE(state->has_shortcut());
   EXPECT_EQ(mojom::UserDisplayMode::kStandalone,
+            registrar().GetAppUserDisplayMode(app_id));
+}
+
+TEST_F(SetUserDisplayModeCommandTest, NoDisplayModeSetForMigratingApps) {
+  auto install_info = WebAppInstallInfo::CreateWithStartUrlForTesting(
+      GURL("https://example.com/"));
+  install_info->title = u"Test App";
+  install_info->user_display_mode =
+      web_app::mojom::UserDisplayMode::kStandalone;
+
+  web_app::proto::WebAppMigrationSource source;
+  source.set_manifest_id("https://migration.example.com/start.html");
+  install_info->migration_sources.push_back(std::move(source));
+
+  WebAppInstallParams params;
+  params.install_state = proto::InstallState::SUGGESTED_FROM_MIGRATION;
+  params.add_to_applications_menu = false;
+  params.add_to_desktop = false;
+  params.add_to_quick_launch_bar = false;
+
+  base::test::TestFuture<const webapps::AppId&, webapps::InstallResultCode>
+      result;
+  provider()->scheduler().InstallFromInfoWithParams(
+      std::move(install_info), /*overwrite_existing_manifest_fields=*/true,
+      webapps::WebappInstallSource::OMNIBOX_INSTALL_ICON, result.GetCallback(),
+      params);
+  ASSERT_TRUE(result.Wait());
+  EXPECT_EQ(result.Get<webapps::InstallResultCode>(),
+            webapps::InstallResultCode::kSuccessNewInstall);
+  const webapps::AppId& app_id = result.Get<webapps::AppId>();
+
+  // User display mode will not be set.
+  EXPECT_EQ(mojom::UserDisplayMode::kBrowser,
+            registrar().GetAppUserDisplayMode(app_id));
+  SetUserDisplayModeAndAwaitCompletion(app_id,
+                                       mojom::UserDisplayMode::kStandalone);
+  EXPECT_EQ(mojom::UserDisplayMode::kBrowser,
             registrar().GetAppUserDisplayMode(app_id));
 }
 

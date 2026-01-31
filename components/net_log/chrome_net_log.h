@@ -20,7 +20,7 @@ namespace net_log {
 //  * The operating system version
 //
 //  Safe to call on any thread.
-base::Value::Dict GetPlatformConstantsForNetLog(
+base::DictValue GetPlatformConstantsForNetLog(
     const base::CommandLine::StringType& command_line_string,
     const std::string& channel_string);
 

@@ -39,7 +39,7 @@ std::vector<int> ExtractIgnoredPolicyProtoTagsFromProto(
 std::optional<std::string> ExtractTimezoneFromProto(
     const enterprise_management::DeviceOffHoursProto& container);
 
-// Return Value::Dict in format:
+// Return base::DictValue in format:
 // { "timezone" : string,
 //   "intervals" : list of "OffHours" Intervals,
 //   "ignored_policy_proto_tags" : integer list }
@@ -52,7 +52,7 @@ std::optional<std::string> ExtractTimezoneFromProto(
 // }
 // This function is used by device_policy_decoder.cc to save "OffHours"
 // policy in PolicyMap.
-std::optional<base::Value::Dict> ConvertOffHoursProtoToValue(
+std::optional<base::DictValue> ConvertOffHoursProtoToValue(
     const enterprise_management::DeviceOffHoursProto& container);
 
 }  // namespace off_hours

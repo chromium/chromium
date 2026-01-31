@@ -170,7 +170,7 @@ const char* TestEnvironmentKeyToString(TestEnvironmentKey key) {
 
 bool WriteTestEnvironmentToFile(const TestEnvironmentMap& test_environment,
                                 const base::FilePath& keys_file) {
-  base::Value::Dict ds;
+  base::DictValue ds;
   for (const auto& [key, value] : test_environment) {
     ds.Set(TestEnvironmentKeyToString(key), value);
   }

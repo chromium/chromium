@@ -29,6 +29,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+import static org.chromium.base.test.transit.ViewFinder.waitForNoView;
 import static org.chromium.chrome.browser.keyboard_accessory.AccessoryAction.AUTOFILL_SUGGESTION;
 import static org.chromium.chrome.browser.keyboard_accessory.AccessoryAction.CREDMAN_CONDITIONAL_UI_REENTRY;
 import static org.chromium.chrome.browser.keyboard_accessory.AccessoryAction.GENERATE_PASSWORD_AUTOMATIC;
@@ -39,9 +40,6 @@ import static org.chromium.chrome.browser.keyboard_accessory.bar_component.Keybo
 import static org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryProperties.SHEET_OPENER_ITEM;
 import static org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryProperties.SHOW_SWIPING_IPH;
 import static org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryProperties.VISIBLE;
-import static org.chromium.ui.test.util.ViewUtils.VIEW_GONE;
-import static org.chromium.ui.test.util.ViewUtils.VIEW_INVISIBLE;
-import static org.chromium.ui.test.util.ViewUtils.VIEW_NULL;
 import static org.chromium.ui.test.util.ViewUtils.onViewWaiting;
 
 import android.content.pm.ActivityInfo;
@@ -57,7 +55,7 @@ import android.widget.ImageButton;
 import android.widget.LinearLayout;
 
 import androidx.annotation.DimenRes;
-import androidx.annotation.Nullable;
+import androidx.annotation.Px;
 import androidx.coordinatorlayout.widget.CoordinatorLayout;
 import androidx.test.espresso.ViewInteraction;
 import androidx.test.espresso.matcher.RootMatchers;
@@ -83,6 +81,7 @@ import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.autofill.AutofillImageFetcher;
 import org.chromium.chrome.browser.autofill.AutofillImageFetcherFactory;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
@@ -501,8 +500,7 @@ public class KeyboardAccessoryViewTest {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> mModel.get(BAR_ITEMS).remove(mModel.get(BAR_ITEMS).get(1)));
 
-        ViewUtils.waitForViewCheckingState(
-                withText(R.string.more_passkeys), VIEW_INVISIBLE | VIEW_GONE | VIEW_NULL);
+        waitForNoView(withText(R.string.more_passkeys));
         onView(withText(R.string.password_generation_accessory_button))
                 .check(matches(isDisplayed()));
         onView(withText(R.string.more_passkeys)).check(doesNotExist());
@@ -1014,26 +1012,68 @@ public class KeyboardAccessoryViewTest {
     @Test
     @MediumTest
     @EnableFeatures(ChromeFeatureList.AUTOFILL_ANDROID_KEYBOARD_ACCESSORY_DYNAMIC_POSITIONING)
-    public void testUndockedStyleWithDynamicPositioning() throws InterruptedException {
+    public void testUndockedStyleWithDynamicPositioning_BottomNotch() throws InterruptedException {
         ThreadUtils.runOnUiThreadBlocking(() -> mModel.set(VISIBLE, true));
         KeyboardAccessoryView view = mKeyboardAccessoryView.take();
 
-        int horizontalOffset = 10;
-        int verticalOffset = 20;
-        KeyboardAccessoryStyle style =
-                new KeyboardAccessoryStyle(
-                        /* isDocked= */ false,
+        final @Px int horizontalOffset = 10;
+        final @Px int verticalOffset = 20;
+        final @Px int maxWidth = 100;
+
+        // Bottom notch style.
+        KeyboardAccessoryStyle bottomNotchStyle =
+                KeyboardAccessoryStyle.createUndockedKeyboardAccessoryStyle(
                         horizontalOffset,
                         verticalOffset,
-                        /* maxWidth= */ 100);
+                        maxWidth,
+                        KeyboardAccessoryStyle.NotchPosition.BOTTOM);
 
-        ThreadUtils.runOnUiThreadBlocking(() -> view.setStyle(style));
+        ThreadUtils.runOnUiThreadBlocking(() -> view.setStyle(bottomNotchStyle));
 
         CoordinatorLayout.LayoutParams params =
                 (CoordinatorLayout.LayoutParams) view.getLayoutParams();
         assertEquals(android.view.Gravity.LEFT | android.view.Gravity.TOP, params.gravity);
-        assertEquals(horizontalOffset, params.leftMargin);
         assertEquals(verticalOffset, params.topMargin);
+        assertEquals(0, view.getPaddingTop());
+        assertEquals(
+                view.getResources().getDimensionPixelSize(R.dimen.keyboard_accessory_notch_height),
+                view.getPaddingBottom());
+        assertTrue(view.getClipToOutline());
+
+        CriteriaHelper.pollUiThread(() -> view.getTranslationX() == horizontalOffset);
+    }
+
+    @Test
+    @MediumTest
+    @EnableFeatures(ChromeFeatureList.AUTOFILL_ANDROID_KEYBOARD_ACCESSORY_DYNAMIC_POSITIONING)
+    public void testUndockedStyleWithDynamicPositioning_TopNotch() throws InterruptedException {
+        ThreadUtils.runOnUiThreadBlocking(() -> mModel.set(VISIBLE, true));
+        KeyboardAccessoryView view = mKeyboardAccessoryView.take();
+
+        final @Px int horizontalOffset = 10;
+        final @Px int verticalOffset = 20;
+        final @Px int maxWidth = 100;
+
+        // Top notch style.
+        KeyboardAccessoryStyle topNotchStyle =
+                KeyboardAccessoryStyle.createUndockedKeyboardAccessoryStyle(
+                        horizontalOffset,
+                        verticalOffset,
+                        maxWidth,
+                        KeyboardAccessoryStyle.NotchPosition.TOP);
+
+        ThreadUtils.runOnUiThreadBlocking(() -> view.setStyle(topNotchStyle));
+        CoordinatorLayout.LayoutParams params =
+                (CoordinatorLayout.LayoutParams) view.getLayoutParams();
+        assertEquals(android.view.Gravity.LEFT | android.view.Gravity.TOP, params.gravity);
+        assertEquals(verticalOffset, params.topMargin);
+        assertEquals(0, view.getPaddingBottom());
+        assertEquals(
+                view.getResources().getDimensionPixelSize(R.dimen.keyboard_accessory_notch_height),
+                view.getPaddingTop());
+        assertTrue(view.getClipToOutline());
+
+        CriteriaHelper.pollUiThread(() -> view.getTranslationX() == horizontalOffset);
     }
 
     /**
@@ -1158,14 +1198,9 @@ public class KeyboardAccessoryViewTest {
                             return;
                         }
 
-                        group.addButton(
-                                buttons.getContext()
-                                        .getDrawable(R.drawable.ic_password_manager_key),
-                                "Key Icon");
+                        group.addButton(R.drawable.ic_password_manager_key, "Key Icon");
 
-                        group.addButton(
-                                buttons.getContext().getDrawable(R.drawable.ic_credit_card_black),
-                                "Card Icon 2");
+                        group.addButton(R.drawable.ic_credit_card_black, "Card Icon 2");
                     }
 
                     @Override

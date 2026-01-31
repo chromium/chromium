@@ -69,6 +69,8 @@ class PrintDialogLinuxPortalTest : public testing::Test {
     EXPECT_CALL(*mock_bus_, GetConnectionName())
         .WillRepeatedly(Return(":1.23"));
 
+    EXPECT_CALL(*mock_bus_, IsConnected()).WillRepeatedly(Return(true));
+
     EXPECT_CALL(*mock_bus_, GetObjectProxy(_, _))
         .WillRepeatedly(Return(mock_proxy_.get()));
 

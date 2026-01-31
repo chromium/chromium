@@ -120,7 +120,7 @@ class NavigationWebMessageSender
                            NewCrossDocNavDuringCrossDocNav);
 
   static std::unique_ptr<WebMessage> CreateWebMessage(
-      base::Value::Dict message_dict);
+      base::DictValue message_dict);
 
   NavigationWebMessageSender(content::Page& page,
                              const std::u16string& js_object_name,
@@ -139,7 +139,7 @@ class NavigationWebMessageSender
   void OnFirstContentfulPaintInPrimaryMainFrame() override;
 
   void PostMessageWithType(std::string_view type);
-  void PostMessage(base::Value::Dict message_dict);
+  void PostMessage(base::DictValue message_dict);
 
   bool ShouldSendMessageForNavigation(
       content::NavigationHandle* navigation_handle);

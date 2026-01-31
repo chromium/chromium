@@ -11,7 +11,6 @@
 #include <utility>
 
 #include "base/check_op.h"
-#include "base/containers/contains.h"
 #include "base/containers/flat_map.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ref.h"
@@ -675,7 +674,7 @@ const flat::UrlRule* FindMatchAmongCandidates(
     if (!DoesURLMatchRequestDomainList(url, *rule))
       continue;
 
-    if (base::Contains(disabled_rule_ids, rule->id()))
+    if (disabled_rule_ids.contains(rule->id()))
       continue;
 
     if (matched_rules)

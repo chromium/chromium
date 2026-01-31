@@ -22,7 +22,7 @@ class LocaleTemplateUrlLoader : public ProfileObserver {
                           TemplateURLService* service,
                           Profile* profile);
   void Destroy(JNIEnv* env);
-  jboolean LoadTemplateUrls(JNIEnv* env);
+  bool LoadTemplateUrls(JNIEnv* env);
   void RemoveTemplateUrls(JNIEnv* env);
   void OverrideDefaultSearchProvider(JNIEnv* env);
   void SetGoogleAsDefaultSearch(JNIEnv* env);

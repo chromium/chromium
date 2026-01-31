@@ -7,7 +7,6 @@
 #import <algorithm>
 
 #import "base/check.h"
-#import "base/containers/contains.h"
 #import "base/containers/flat_set.h"
 #import "base/functional/bind.h"
 #import "base/memory/raw_ptr.h"
@@ -155,7 +154,7 @@ bool CheckForDuplicates(
 
   credential.note = SysNSStringToUTF16(note);
   credential.stored_in = {
-      password_manager::features_util::IsAccountStorageEnabled(_syncService)
+      password_manager::features_util::IsAccountStorageActive(_syncService)
           ? password_manager::PasswordForm::Store::kAccountStore
           : password_manager::PasswordForm::Store::kProfileStore};
 
@@ -220,13 +219,13 @@ bool CheckForDuplicates(
 
 - (BOOL)isTLDMissing {
   std::string hostname = self.URL.GetHost();
-  return !base::Contains(hostname, '.');
+  return !hostname.contains('.');
 }
 
 - (BOOL)shouldShowSuggestPasswordItem {
   // Only show the field `suggestPasswordItem` to user who are signed in and
   // syncing password to their Google Account.
-  return password_manager::features_util::IsAccountStorageEnabled(_syncService);
+  return password_manager::features_util::IsAccountStorageActive(_syncService);
 }
 
 // Requests a generated password and calls the completion block with the result.

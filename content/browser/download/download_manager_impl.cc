@@ -7,7 +7,6 @@
 #include <iterator>
 #include <utility>
 
-#include "base/containers/contains.h"
 #include "base/debug/alias.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
@@ -326,7 +325,7 @@ download::DownloadItemImpl* DownloadManagerImpl::CreateActiveItem(
     const download::DownloadCreateInfo& info) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
-  if (base::Contains(downloads_by_guid_, info.guid))
+  if (downloads_by_guid_.contains(info.guid))
     return nullptr;
 
   download::DownloadItemImpl* download =
@@ -931,7 +930,7 @@ void DownloadManagerImpl::CreateSavePackageDownloadItemWithId(
     uint32_t id) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DCHECK_NE(download::DownloadItem::kInvalidId, id);
-  DCHECK(!base::Contains(downloads_, id));
+  DCHECK(!downloads_.contains(id));
 
   download::DownloadItemImpl* download_item = item_factory_->CreateSavePageItem(
       this, id, main_file_path, main_file_display_name, page_url, mime_type,
@@ -1137,7 +1136,7 @@ download::DownloadItem* DownloadManagerImpl::CreateDownloadItem(
   auto in_progress_download = RetrieveInProgressDownload(id);
 
   // Return null to clear cancelled or non-resumable download.
-  if (base::Contains(cleared_download_guids_on_startup_, guid)) {
+  if (cleared_download_guids_on_startup_.contains(guid)) {
     return nullptr;
   }
 
@@ -1199,8 +1198,8 @@ download::DownloadItem* DownloadManagerImpl::CreateDownloadItem(
 
 void DownloadManagerImpl::OnDownloadCreated(
     std::unique_ptr<download::DownloadItemImpl> download) {
-  DCHECK(!base::Contains(downloads_, download->GetId()));
-  DCHECK(!base::Contains(downloads_by_guid_, download->GetGuid()));
+  DCHECK(!downloads_.contains(download->GetId()));
+  DCHECK(!downloads_by_guid_.contains(download->GetGuid()));
   download::DownloadItemImpl* item = download.get();
   downloads_[item->GetId()] = std::move(download);
   downloads_by_guid_[item->GetGuid()] = item;
@@ -1598,11 +1597,6 @@ bool DownloadManagerImpl::ShouldClearDownloadFromDB(
     download::DownloadItem::DownloadState state,
     download::DownloadInterruptReason reason,
     const base::Time& start_time) {
-  if (!base::FeatureList::IsEnabled(
-          download::features::kDeleteExpiredDownloads)) {
-    return false;
-  }
-
   // Use system time to determine if the download is expired. Manually setting
   // the system time can affect this.
   bool expired = base::Time::Now() - start_time >=

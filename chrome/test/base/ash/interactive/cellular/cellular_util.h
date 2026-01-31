@@ -76,9 +76,9 @@ void ConfigureEsimProfile(const EuiccInfo& euicc_info,
 // network. This function implements logic that is normally handled when the
 // policy is ingested by ChromeOS but before it is applied; for example,
 // automatically marking the `CustomAPNList` property as recommended.
-base::Value::Dict GenerateCellularPolicy(const SimInfo& info,
-                                         bool allow_apn_modification = true,
-                                         bool allow_roaming = true);
+base::DictValue GenerateCellularPolicy(const SimInfo& info,
+                                       bool allow_apn_modification = true,
+                                       bool allow_roaming = true);
 
 }  // namespace ash
 

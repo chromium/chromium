@@ -9,6 +9,7 @@
 #import "ios/chrome/browser/intelligence/bwg/ui/bwg_promo_view_controller_delegate.h"
 #import "ios/chrome/browser/intelligence/bwg/ui/bwg_ui_utils.h"
 #import "ios/chrome/browser/intelligence/bwg/utils/bwg_constants.h"
+#import "ios/chrome/browser/intelligence/features/features.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
@@ -124,6 +125,22 @@ const CGFloat kBaselineAdjustment = 10.0;
   return wrapperContainer;
 }
 
+// Creates a feature row with an icon and localized title/body IDs.
+- (UIView*)createFeatureRowWithIcon:(UIImage*)icon
+                            titleID:(int)titleID
+                             bodyID:(int)bodyID {
+  NSString* title = l10n_util::GetNSString(titleID);
+  NSString* body = l10n_util::GetNSString(bodyID);
+
+  UIImageView* iconImageView = [[UIImageView alloc] initWithImage:icon];
+  UIView* iconContainer = [self createIconContainerView:iconImageView];
+  UIStackView* titleBodyStackView =
+      [self createContentDescriptionWithTitle:title body:body];
+  return [self
+      createContentHorizontalStackViewWithIconContainer:iconContainer
+                                         titleBodyStack:titleBodyStackView];
+}
+
 // Configures the main stack view and contains all the content including the
 // buttons.
 - (void)configureMainStackView {
@@ -151,44 +168,33 @@ const CGFloat kBaselineAdjustment = 10.0;
       configurationWithPointSize:kIconSize
                           weight:UIImageSymbolWeightMedium];
 
-  UIImageView* firstIconImageView = [[UIImageView alloc]
-      initWithImage:CustomSymbolWithConfiguration(kTextSearchSymbol, config)];
+  UIView* askRow =
+      [self createFeatureRowWithIcon:CustomSymbolWithConfiguration(
+                                         kTextSearchSymbol, config)
+                             titleID:IDS_IOS_BWG_PROMO_FIRST_BOX_TITLE
+                              bodyID:IDS_IOS_BWG_PROMO_FIRST_BOX_BODY];
+  [_mainStackView addArrangedSubview:askRow];
+  [_mainStackView addArrangedSubview:[self createSeparatorView]];
 
-  UIView* firstIconContainer =
-      [self createIconContainerView:firstIconImageView];
-  UIStackView* firstTitleBodyStackView = [self
-      createContentDescriptionWithTitle:l10n_util::GetNSString(
-                                            IDS_IOS_BWG_PROMO_FIRST_BOX_TITLE)
+  if (IsGeminiImageRemixToolShowFRERowEnabled()) {
+    UIView* remixRow = [self
+        createFeatureRowWithIcon:DefaultSymbolWithConfiguration(
+                                     kPhotoOnRectangleAngled, config)
+                         titleID:IDS_IOS_GEMINI_PROMO_REMIX_IMAGE_BOX_TITLE
+                          bodyID:IDS_IOS_GEMINI_PROMO_REMIX_IMAGE_BOX_BODY];
+    [_mainStackView addArrangedSubview:remixRow];
+    [_mainStackView addArrangedSubview:[self createSeparatorView]];
+  }
 
-                                   body:l10n_util::GetNSString(
-                                            IDS_IOS_BWG_PROMO_FIRST_BOX_BODY)];
-  UIStackView* firstContentHorizontalStackView =
-      [self createContentHorizontalStackViewWithIconContainer:firstIconContainer
-                                               titleBodyStack:
-                                                   firstTitleBodyStackView];
-  [_mainStackView addArrangedSubview:firstContentHorizontalStackView];
+  UIView* summarizeRow =
+      [self createFeatureRowWithIcon:DefaultSymbolWithConfiguration(
+                                         kListBulletSymbol, config)
+                             titleID:IDS_IOS_BWG_PROMO_SECOND_BOX_TITLE
+                              bodyID:IDS_IOS_BWG_PROMO_SECOND_BOX_BODY];
+  [_mainStackView addArrangedSubview:summarizeRow];
 
-  UIView* separatorView = [self createSeparatorView];
-  [_mainStackView addArrangedSubview:separatorView];
-
-  UIImageView* secondIconImageView = [[UIImageView alloc]
-      initWithImage:DefaultSymbolWithConfiguration(kListBulletSymbol, config)];
-
-  UIView* secondIconContainer =
-      [self createIconContainerView:secondIconImageView];
-  UIStackView* secondTitleBodyStackView = [self
-      createContentDescriptionWithTitle:l10n_util::GetNSString(
-                                            IDS_IOS_BWG_PROMO_SECOND_BOX_TITLE)
-
-                                   body:l10n_util::GetNSString(
-                                            IDS_IOS_BWG_PROMO_SECOND_BOX_BODY)];
-  UIStackView* secondContentHorizontalStackView = [self
-      createContentHorizontalStackViewWithIconContainer:secondIconContainer
-                                         titleBodyStack:
-                                             secondTitleBodyStackView];
-  [_mainStackView addArrangedSubview:secondContentHorizontalStackView];
   [_mainStackView setCustomSpacing:kSpacingScrollViewAndButtons
-                         afterView:secondContentHorizontalStackView];
+                         afterView:summarizeRow];
   [self configureButtons];
 }
 
@@ -460,7 +466,7 @@ const CGFloat kBaselineAdjustment = 10.0;
 // Did tap Secondary Button.
 - (void)didTapSecondaryButton:(UIButton*)sender {
   RecordFREPromoAction(IOSGeminiFREAction::kDismiss);
-  [self.mutator didCloseBWGPromo];
+  [self.mutator didCloseGeminiPromo];
 }
 
 @end

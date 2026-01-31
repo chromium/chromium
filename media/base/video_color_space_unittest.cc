@@ -79,6 +79,120 @@ TEST(VideoColorSpaceTest, IsHDR) {
       VideoColorSpace::TransferID::ARIB_STD_B67,
       VideoColorSpace::MatrixID::BT2020_NCL, gfx::ColorSpace::RangeID::LIMITED);
   EXPECT_TRUE(video_cs_arib_std_b67.IsHDR());
+
+  // BT.2020 with SDR transfer functions is not HDR.
+  VideoColorSpace video_cs_bt2020_sdr = VideoColorSpace(
+      VideoColorSpace::PrimaryID::BT2020,
+      VideoColorSpace::TransferID::BT2020_10,
+      VideoColorSpace::MatrixID::BT2020_NCL, gfx::ColorSpace::RangeID::LIMITED);
+  EXPECT_FALSE(video_cs_bt2020_sdr.IsHDR());
+}
+
+TEST(VideoColorSpaceTest, GuessBT2020FromPrimaries) {
+  VideoColorSpace video_cs =
+      VideoColorSpace(VideoColorSpace::PrimaryID::BT2020,
+                      VideoColorSpace::TransferID::UNSPECIFIED,
+                      VideoColorSpace::MatrixID::UNSPECIFIED,
+                      gfx::ColorSpace::RangeID::LIMITED);
+
+  auto guessed_cs = video_cs.GuessGfxColorSpace();
+  EXPECT_TRUE(guessed_cs.IsValid());
+  EXPECT_EQ(guessed_cs, gfx::ColorSpace(gfx::ColorSpace::PrimaryID::BT2020,
+                                        gfx::ColorSpace::TransferID::BT2020_10,
+                                        gfx::ColorSpace::MatrixID::BT2020_NCL,
+                                        gfx::ColorSpace::RangeID::LIMITED));
+}
+
+TEST(VideoColorSpaceTest, GuessBT2020FromPQTransfer) {
+  // PQ transfer function strongly indicates BT2020 (used in HDR10).
+  VideoColorSpace video_cs =
+      VideoColorSpace(VideoColorSpace::PrimaryID::UNSPECIFIED,
+                      VideoColorSpace::TransferID::SMPTEST2084,
+                      VideoColorSpace::MatrixID::UNSPECIFIED,
+                      gfx::ColorSpace::RangeID::LIMITED);
+
+  auto guessed_cs = video_cs.GuessGfxColorSpace();
+  EXPECT_TRUE(guessed_cs.IsValid());
+  EXPECT_EQ(guessed_cs, gfx::ColorSpace(gfx::ColorSpace::PrimaryID::BT2020,
+                                        gfx::ColorSpace::TransferID::PQ,
+                                        gfx::ColorSpace::MatrixID::BT2020_NCL,
+                                        gfx::ColorSpace::RangeID::LIMITED));
+}
+
+TEST(VideoColorSpaceTest, GuessBT2020FromHLGTransfer) {
+  // HLG transfer function strongly indicates BT2020 (used in HLG HDR).
+  VideoColorSpace video_cs =
+      VideoColorSpace(VideoColorSpace::PrimaryID::UNSPECIFIED,
+                      VideoColorSpace::TransferID::ARIB_STD_B67,
+                      VideoColorSpace::MatrixID::UNSPECIFIED,
+                      gfx::ColorSpace::RangeID::LIMITED);
+
+  auto guessed_cs = video_cs.GuessGfxColorSpace();
+  EXPECT_TRUE(guessed_cs.IsValid());
+  EXPECT_EQ(guessed_cs, gfx::ColorSpace(gfx::ColorSpace::PrimaryID::BT2020,
+                                        gfx::ColorSpace::TransferID::HLG,
+                                        gfx::ColorSpace::MatrixID::BT2020_NCL,
+                                        gfx::ColorSpace::RangeID::LIMITED));
+}
+
+TEST(VideoColorSpaceTest, GuessBT2020FromBT2020_10Transfer) {
+  VideoColorSpace video_cs =
+      VideoColorSpace(VideoColorSpace::PrimaryID::UNSPECIFIED,
+                      VideoColorSpace::TransferID::BT2020_10,
+                      VideoColorSpace::MatrixID::UNSPECIFIED,
+                      gfx::ColorSpace::RangeID::LIMITED);
+
+  auto guessed_cs = video_cs.GuessGfxColorSpace();
+  EXPECT_TRUE(guessed_cs.IsValid());
+  EXPECT_EQ(guessed_cs, gfx::ColorSpace(gfx::ColorSpace::PrimaryID::BT2020,
+                                        gfx::ColorSpace::TransferID::BT2020_10,
+                                        gfx::ColorSpace::MatrixID::BT2020_NCL,
+                                        gfx::ColorSpace::RangeID::LIMITED));
+}
+
+TEST(VideoColorSpaceTest, GuessBT2020FromBT2020_12Transfer) {
+  VideoColorSpace video_cs =
+      VideoColorSpace(VideoColorSpace::PrimaryID::UNSPECIFIED,
+                      VideoColorSpace::TransferID::BT2020_12,
+                      VideoColorSpace::MatrixID::UNSPECIFIED,
+                      gfx::ColorSpace::RangeID::LIMITED);
+
+  auto guessed_cs = video_cs.GuessGfxColorSpace();
+  EXPECT_TRUE(guessed_cs.IsValid());
+  EXPECT_EQ(guessed_cs, gfx::ColorSpace(gfx::ColorSpace::PrimaryID::BT2020,
+                                        gfx::ColorSpace::TransferID::BT2020_12,
+                                        gfx::ColorSpace::MatrixID::BT2020_NCL,
+                                        gfx::ColorSpace::RangeID::LIMITED));
+}
+
+TEST(VideoColorSpaceTest, GuessBT2020FromMatrix) {
+  VideoColorSpace video_cs = VideoColorSpace(
+      VideoColorSpace::PrimaryID::UNSPECIFIED,
+      VideoColorSpace::TransferID::UNSPECIFIED,
+      VideoColorSpace::MatrixID::BT2020_NCL, gfx::ColorSpace::RangeID::LIMITED);
+
+  auto guessed_cs = video_cs.GuessGfxColorSpace();
+  EXPECT_TRUE(guessed_cs.IsValid());
+  EXPECT_EQ(guessed_cs, gfx::ColorSpace(gfx::ColorSpace::PrimaryID::BT2020,
+                                        gfx::ColorSpace::TransferID::BT2020_10,
+                                        gfx::ColorSpace::MatrixID::BT2020_NCL,
+                                        gfx::ColorSpace::RangeID::LIMITED));
+}
+
+TEST(VideoColorSpaceTest, GuessBT709FromPartialHints) {
+  // When only BT.709 hints are present, should guess BT.709 (not BT.2020).
+  VideoColorSpace video_cs =
+      VideoColorSpace(VideoColorSpace::PrimaryID::BT709,
+                      VideoColorSpace::TransferID::UNSPECIFIED,
+                      VideoColorSpace::MatrixID::UNSPECIFIED,
+                      gfx::ColorSpace::RangeID::LIMITED);
+
+  auto guessed_cs = video_cs.GuessGfxColorSpace();
+  EXPECT_TRUE(guessed_cs.IsValid());
+  EXPECT_EQ(guessed_cs, gfx::ColorSpace(gfx::ColorSpace::PrimaryID::BT709,
+                                        gfx::ColorSpace::TransferID::BT709,
+                                        gfx::ColorSpace::MatrixID::BT709,
+                                        gfx::ColorSpace::RangeID::LIMITED));
 }
 
 }  // namespace media

@@ -464,8 +464,7 @@ TEST_P(ScrollAnimatorSimTest, TestRootFrameUserScrollCallBackCancelAnimation) {
   // callback will be executed.
   GetDocument().View()->GetScrollableArea()->SetScrollOffset(
       ScrollOffset(0, 300), mojom::blink::ScrollType::kProgrammatic,
-      cc::ScrollSourceType::kNone, mojom::blink::ScrollBehavior::kSmooth,
-      ScrollableArea::ScrollCallback());
+      cc::ScrollSourceType::kNone, mojom::blink::ScrollBehavior::kSmooth);
   Compositor().BeginFrame();
   ASSERT_TRUE(finished);
 }

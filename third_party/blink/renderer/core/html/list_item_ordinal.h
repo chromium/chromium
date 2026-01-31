@@ -9,6 +9,7 @@
 
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 
 namespace blink {
 
@@ -38,7 +39,10 @@ class CORE_EXPORT ListItemOrdinal {
   // element.
   std::optional<int> ExplicitValue() const;
   void SetExplicitValue(int, const Element&);
-  bool UseExplicitValue() const { return type_ == kExplicit; }
+  bool UseExplicitValue() const {
+    DCHECK(!RuntimeEnabledFeatures::CSSListCounterAccountingEnabled());
+    return type_ == kExplicit;
+  }
   void ClearExplicitValue(const Node&);
   void MarkDirty() { SetType(kNeedsUpdate); }
 
@@ -104,6 +108,9 @@ class CORE_EXPORT ListItemOrdinal {
   mutable int value_ = 0;
   // `explicit_value_` represents the value of li elements. When the `type` is
   // set to `kExplicit`, the value of `value_` is the same as `explicit_value_`.
+  //
+  // TODO(crbug.com/40760770): Remove `explicit_value_` when
+  // CSSListCounterAccounting is enabled by default and removed.
   mutable std::optional<int> explicit_value_;
   mutable unsigned type_ : 2;  // ValueType
 };

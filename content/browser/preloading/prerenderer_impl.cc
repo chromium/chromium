@@ -41,7 +41,6 @@ PreloadingType ConvertSpeculationActionToPreloadingType(
     case blink::mojom::SpeculationAction::kPrerenderUntilScript:
       return PreloadingType::kPrerenderUntilScript;
     case blink::mojom::SpeculationAction::kPrefetch:
-    case blink::mojom::SpeculationAction::kPrefetchWithSubresources:
       NOTREACHED();
   }
 }
@@ -55,7 +54,7 @@ struct PrerendererImpl::PrerenderInfo {
   blink::mojom::SpeculationEagerness eagerness;
   blink::mojom::SpeculationAction action;
   bool is_target_blank;
-  FrameTreeNodeId prerender_host_id;
+  PrerenderHostId prerender_host_id;
   GURL url;
 
   PrerenderInfo() = default;
@@ -86,7 +85,7 @@ bool PrerendererImpl::PrerenderInfo::PrerenderInfoComparator(
 }
 
 // `prerender_host_id` is not provided by `SpeculationCandidatePtr`, so
-// FrameTreeNodeId() is assigned instead. The value should be updated once it is
+// PrerenderHostId() is assigned instead. The value should be updated once it is
 // available.
 PrerendererImpl::PrerenderInfo::PrerenderInfo(
     const blink::mojom::SpeculationCandidatePtr& candidate)
@@ -141,8 +140,9 @@ void PrerendererImpl::PrimaryPageChanged(Page& page) {
 void PrerendererImpl::ProcessCandidatesForPrerender(
     const std::vector<blink::mojom::SpeculationCandidatePtr>& candidates,
     bool enable_cross_origin_prerender_iframes) {
-  if (!registry_)
+  if (!registry_) {
     return;
+  }
 
   // Extract only the candidates which apply to prerender, and sort them by URL
   // so we can efficiently compare them to `started_prerenders_`.
@@ -169,7 +169,7 @@ void PrerendererImpl::ProcessCandidatesForPrerender(
 
   // Collects the host ids corresponding to the URLs that are removed from the
   // speculation rules. These hosts are cancelled later.
-  std::vector<FrameTreeNodeId> removed_prerender_rules;
+  std::vector<PrerenderHostId> removed_prerender_rules;
 
   // Compare the sorted candidate and started prerender lists to one another.
   // Since they are sorted, we process the lexicographically earlier of the two
@@ -248,16 +248,16 @@ void PrerendererImpl::ProcessCandidatesForPrerender(
   }
 
   std::vector<std::pair<GURL, PreloadingType>> to_be_cancelled_prerender_list;
-  for (auto ftn_id : removed_prerender_rules) {
+  for (PrerenderHostId id : removed_prerender_rules) {
     if (PrerenderHost* prerender_host =
-            registry_->FindNonReservedHostById(ftn_id)) {
+            registry_->FindNonReservedHostById(id)) {
       to_be_cancelled_prerender_list.emplace_back(
           prerender_host->GetInitialUrl(),
           ConvertSpeculationActionToPreloadingType(
               prerender_host->speculation_action()));
     }
   }
-  std::set<FrameTreeNodeId> canceled_prerender_rules_set =
+  std::set<PrerenderHostId> canceled_prerender_rules_set =
       registry_->CancelHosts(
           removed_prerender_rules,
           PrerenderCancellationReason(
@@ -279,8 +279,8 @@ void PrerendererImpl::ProcessCandidatesForPrerender(
   // removed from `started_prerenders_` via `OnCancel`.
   CHECK(std::find_if(started_prerenders_.begin(), started_prerenders_.end(),
                      [&](const PrerenderInfo& x) {
-                       return base::Contains(canceled_prerender_rules_set,
-                                             x.prerender_host_id);
+                       return canceled_prerender_rules_set.contains(
+                           x.prerender_host_id);
                      }) == started_prerenders_.end());
 
   // Actually start the candidates in their original order once the diffing is
@@ -343,8 +343,9 @@ bool PrerendererImpl::MaybePrerender(
   CHECK(!render_frame_host_->IsInLifecycleState(
       RenderFrameHost::LifecycleState::kPrerendering));
 
-  if (!registry_)
+  if (!registry_) {
     return false;
+  }
 
   auto& rfhi = static_cast<RenderFrameHostImpl&>(render_frame_host_.get());
 
@@ -412,7 +413,9 @@ bool PrerendererImpl::MaybePrerender(
                              candidate->eagerness,
                              SpeculationRulesTags(candidate->tags)),
       Referrer{*candidate->referrer}, no_vary_search_hint, &rfhi,
-      web_contents->GetWeakPtr(), ui::PAGE_TRANSITION_LINK,
+      web_contents->GetWeakPtr(),
+      candidate->form_submission ? ui::PAGE_TRANSITION_FORM_SUBMIT
+                                 : ui::PAGE_TRANSITION_LINK,
       should_warm_up_compositor,
       /*should_prepare_paint_tree=*/false, candidate->action,
       /*url_match_predicate=*/{},
@@ -507,18 +510,18 @@ bool PrerendererImpl::ShouldWaitForPrerenderResult(const GURL& url) {
   return begin != end;
 }
 
-void PrerendererImpl::OnCancel(FrameTreeNodeId host_frame_tree_node_id,
+void PrerendererImpl::OnCancel(PrerenderHostId host_id,
                                const PrerenderCancellationReason& reason) {
   switch (reason.final_status()) {
     // TODO(crbug.com/40275452): Support other final status cases.
     case PrerenderFinalStatus::kTimeoutBackgrounded:
     case PrerenderFinalStatus::kMaxNumOfRunningNonImmediatePrerendersExceeded:
     case PrerenderFinalStatus::kSpeculationRuleRemoved: {
-      auto erasing_prerender_it = std::find_if(
-          started_prerenders_.begin(), started_prerenders_.end(),
-          [&](const PrerenderInfo& prerender_info) {
-            return prerender_info.prerender_host_id == host_frame_tree_node_id;
-          });
+      auto erasing_prerender_it =
+          std::find_if(started_prerenders_.begin(), started_prerenders_.end(),
+                       [&](const PrerenderInfo& prerender_info) {
+                         return prerender_info.prerender_host_id == host_id;
+                       });
 
       if (erasing_prerender_it != started_prerenders_.end()) {
         auto url = erasing_prerender_it->url;
@@ -546,7 +549,7 @@ void PrerendererImpl::SetPrerenderCancellationCallback(
 
 void PrerendererImpl::CancelStartedPrerenders() {
   if (registry_) {
-    std::vector<FrameTreeNodeId> started_prerender_ids;
+    std::vector<PrerenderHostId> started_prerender_ids;
     for (auto& prerender_info : started_prerenders_) {
       started_prerender_ids.push_back(prerender_info.prerender_host_id);
     }

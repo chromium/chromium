@@ -14,6 +14,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/trace_event/trace_event.h"
+#include "base/version_info/version_info.h"
 #include "components/optimization_guide/core/delivery/model_util.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/optimization_guide/core/optimization_guide_util.h"
@@ -75,6 +76,8 @@ bool PredictionModelFetcherImpl::FetchOptimizationGuideServiceModels(
   pending_models_request_->set_locale(locale);
   *pending_models_request_->mutable_origin_info() =
       optimization_guide::GetClientOriginInfo();
+  pending_models_request_->mutable_origin_info()->set_version(
+      version_info::GetVersionNumber());
 
   for (const auto& model_request_info : models_request_info) {
     *pending_models_request_->add_requested_models() = model_request_info;

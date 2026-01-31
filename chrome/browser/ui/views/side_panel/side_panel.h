@@ -114,6 +114,9 @@ class SidePanel : public views::AccessiblePaneView,
   // and resets the animation.
   void ResetSidePanelAnimationContent();
 
+  void SetActiveEntryUsesDefaultHorizontalAlignment(
+      bool use_default_horizontal_alignment);
+
   // This is the parent view for the contents of the side panel.
   views::View* GetContentParentView();
 
@@ -184,6 +187,12 @@ class SidePanel : public views::AccessiblePaneView,
   std::unique_ptr<VisibleBoundsViewClipper> visible_bounds_view_clipper_;
 
   gfx::RoundedCornersF background_radii_;
+
+  // When false, the side panel's should align to the opposite side of what it
+  // typically would based on the alignment pref and panel type. This is special
+  // case behavior that should be removed when toolbar and content height side
+  // panels are unified.
+  bool use_default_horizontal_alignment_ = true;
 
   // Keeps track of the side the side panel will appear on (left or right).
   HorizontalAlignment horizontal_alignment_;

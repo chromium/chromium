@@ -230,12 +230,31 @@ content_mojolpm_fuzzer_test("idb_factory_mojolpm_fuzzer") {
   proto_deps = [ "//third_party/blink/public/mojom:mojom_modules_mojolpm" ]
 
   seed_corpus_sources = [
+    "//content/test/data/fuzzer_corpus/idb_factory_mojolpm_fuzzer/basic_blob.textproto",
     "//content/test/data/fuzzer_corpus/idb_factory_mojolpm_fuzzer/basic_index_operations.textproto",
     "//content/test/data/fuzzer_corpus/idb_factory_mojolpm_fuzzer/basic_put_get.textproto",
     "//content/test/data/fuzzer_corpus/idb_factory_mojolpm_fuzzer/idb_factory.textproto",
     "//content/test/data/fuzzer_corpus/idb_factory_mojolpm_fuzzer/index_cursor.textproto",
     "//content/test/data/fuzzer_corpus/idb_factory_mojolpm_fuzzer/object_store_cursor.textproto",
   ]
+}
+
+content_mojolpm_fuzzer_test("dom_storage_mojolpm_fuzzer") {
+  sources = [ "dom_storage_mojolpm_fuzzer.cc" ]
+
+  proto_source = "dom_storage_mojolpm_fuzzer.proto"
+  testcase_proto_kind = "content.fuzzing.dom_storage.proto.Testcase"
+
+  deps = [
+    ":mojolpm_fuzzer_support",
+    "//content/browser:for_content_tests",
+    "//content/public/browser:browser_sources",
+    "//third_party/blink/public/mojom:mojom_platform_mojolpm",
+  ]
+
+  proto_deps = [ "//third_party/blink/public/mojom:mojom_platform_mojolpm" ]
+
+  seed_corpus_sources = [ "//content/test/data/fuzzer_corpus/dom_storage_mojolpm_fuzzer/basic_put.textproto" ]
 }
 
 content_mojolpm_fuzzer_test("file_system_manager_mojolpm_fuzzer") {
@@ -553,23 +572,6 @@ if (enable_mojom_fuzzer) {
 
     import_dirs = [ root_gen_dir ]
     testonly = true
-  }
-}
-
-if (use_fuzzing_engine) {
-  test("cookie_readiness_list_parser_fuzzer") {
-    sources = [ "../../browser/cookie_insight_list/cookie_readiness_list/cookie_readiness_list_parser_fuzztest.cc" ]
-
-    fuzztests = [ "CookieReadinessListParserFuzzTest.ParseReadinessListSuccessfullyParsesAnyString" ]
-
-    testonly = true
-    deps = [
-      "//base",
-      "//base:i18n",
-      "//content/browser",
-      "//content/public/browser:browser_sources",
-      "//third_party/fuzztest:fuzztest_gtest_main",
-    ]
   }
 }
 

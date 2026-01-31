@@ -2,16 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "components/omnibox/browser/on_device_tail_model_executor.h"
+
+#include <algorithm>
 #include <memory>
 #include <string>
 #include <vector>
 
-#include "base/containers/contains.h"
 #include "base/files/file_path.h"
 #include "base/path_service.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
-#include "components/omnibox/browser/on_device_tail_model_executor.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -416,7 +417,7 @@ TEST_F(OnDeviceTailModelExecutorTest,
       auto words =
           base::SplitString(prediction.suggestion, base::kWhitespaceASCII,
                             base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
-      EXPECT_FALSE(base::Contains(words, "login"));
+      EXPECT_FALSE(std::ranges::contains(words, "login"));
     }
   }
 
@@ -427,8 +428,8 @@ TEST_F(OnDeviceTailModelExecutorTest,
     OnDeviceTailModelExecutor::ModelInput input("logi", "", 5);
     predictions = executor_->GenerateSuggestionsForPrefix(input);
     for (auto& prediction : predictions) {
-      EXPECT_FALSE(base::Contains(prediction.suggestion, "abc"));
-      EXPECT_FALSE(base::Contains(prediction.suggestion, "ogi"));
+      EXPECT_FALSE(prediction.suggestion.contains("abc"));
+      EXPECT_FALSE(prediction.suggestion.contains("ogi"));
     }
   }
 }

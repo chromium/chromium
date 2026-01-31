@@ -10,6 +10,8 @@ from . import pyl
 from . import values
 
 _MAGIC_ARG_MAPPING = {
+    '$$MAGIC_SUBSTITUTION_AndroidDesktopGtestRemote':
+    'ANDROID_DESKTOP_GTEST_REMOTE',
     '$$MAGIC_SUBSTITUTION_AndroidDesktopTelemetryRemote':
     'ANDROID_DESKTOP_TELEMETRY_REMOTE',
     '$$MAGIC_SUBSTITUTION_ChromeOSTelemetryRemote': 'CROS_TELEMETRY_REMOTE',
@@ -69,19 +71,19 @@ def convert_direct(
 
 @typing.overload
 def convert_direct(
-    value: pyl.Dict | pyl.List,
+    value: pyl.Value,
     *,
     include_comments: typing.Literal[False],
-) -> values.ValueBuilder:
+) -> values.Value:
   ...  # pragma: no cover
 
 
 @typing.overload
 def convert_direct(
-    value: pyl.Dict | pyl.List,
+    value: pyl.Value,
     *,
     include_comments: bool = True,
-) -> values.MaybeCommentedValue[values.ValueBuilder]:
+) -> values.MaybeCommentedValue[values.Value]:
   ...  # pragma: no cover
 
 
@@ -91,7 +93,7 @@ def convert_direct(value, *, include_comments=True):
   This converts pyl values where the starlark representation is the
   same.
   """
-  T = typing.TypeVar('T', bound=(str | values.ValueBuilder))
+  T = typing.TypeVar('T', bound=values.Value)
 
   def maybe_comment(converted: T) -> values.MaybeCommentedValue[T]:
     if include_comments and value.comments:
@@ -106,15 +108,15 @@ def convert_direct(value, *, include_comments=True):
     case pyl.List():
       return maybe_comment(
           typing.cast(
-              values.ValueBuilder,
+              values.Value,
               values.ListValueBuilder(
                   [convert_direct(e) for e in value.elements])))
     case pyl.Dict():  # pragma: no branch
       return maybe_comment(converted=typing.cast(
-          values.ValueBuilder,
+          values.Value,
           values.DictValueBuilder({
               typing.cast(str, convert_direct(k)):
-              convert_direct(v)
+              comments.ensure_no_comments(v, convert_direct(v))
               for k, v in value.items
           })))
   typing.assert_never(value)  # pragma: no cover
@@ -151,8 +153,8 @@ def convert_resultdb(resultdb: pyl.Dict[pyl.Str, pyl.Value]) -> values.Value:
             f'{key.start}: unhandled key in resultdb: "{key.value}"')
 
     converted_value = convert_direct(value)
-    assert not isinstance(converted_value, values.CommentedValue), (
-        f'{value.start}: unexpected comment on value for key "{key.value}"')
+    converted_value = comments.ensure_no_comments(
+        value, converted_value, message=f'value for "{key.value}" in resultdb')
     converted_param = param_name(key)
     value_builder[converted_param] = converted_value
 
@@ -182,8 +184,8 @@ def convert_swarming(swarming: pyl.Dict[pyl.Str, pyl.Value]) -> values.Value:
             f'{key.start}: unhandled key in swarming: "{key.value}"')
 
     converted_value = convert_direct(value)
-    assert not isinstance(converted_value, values.CommentedValue), (
-        f'{value.start}: unexpected comment on value for key "{key.value}"')
+    converted_value = comments.ensure_no_comments(
+        value, converted_value, message=f'value for "{key.value}" in swarming')
     value_builder[converted_param] = converted_value
 
   return value_builder
@@ -202,8 +204,8 @@ def convert_skylab(skylab: pyl.Dict[pyl.Str, pyl.Value]) -> values.Value:
         raise Exception(f'{key.start}: unhandled key in skylab: "{key.value}"')
 
     converted_value = convert_direct(value)
-    assert not isinstance(converted_value, values.CommentedValue), (
-        f'{value.start}: unexpected comment on value for key "{key.value}"')
+    converted_value = comments.ensure_no_comments(
+        value, converted_value, message=f'value for "{key.value}" in skylab')
     converted_param = param_name(key)
     value_builder[converted_param] = converted_value
 

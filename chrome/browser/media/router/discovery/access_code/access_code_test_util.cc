@@ -96,13 +96,12 @@ void MockAccessCodeCastPrefUpdater::UpdateDeviceAddedTimeDict(
 }
 
 void MockAccessCodeCastPrefUpdater::GetDevicesDict(
-    base::OnceCallback<void(base::Value::Dict)> get_devices_callback) {
+    base::OnceCallback<void(base::DictValue)> get_devices_callback) {
   std::move(get_devices_callback).Run(devices_dict_.Clone());
 }
 
 void MockAccessCodeCastPrefUpdater::GetDeviceAddedTimeDict(
-    base::OnceCallback<void(base::Value::Dict)>
-        get_device_added_time_callback) {
+    base::OnceCallback<void(base::DictValue)> get_device_added_time_callback) {
   std::move(get_device_added_time_callback)
       .Run(device_added_time_dict_.Clone());
 }
@@ -133,12 +132,12 @@ void MockAccessCodeCastPrefUpdater::ClearDeviceAddedTimeDict(
   std::move(on_cleared_callback).Run();
 }
 
-void MockAccessCodeCastPrefUpdater::set_devices_dict(base::Value::Dict dict) {
+void MockAccessCodeCastPrefUpdater::set_devices_dict(base::DictValue dict) {
   devices_dict_ = std::move(dict);
 }
 
 void MockAccessCodeCastPrefUpdater::set_device_added_time_dict(
-    base::Value::Dict dict) {
+    base::DictValue dict) {
   device_added_time_dict_ = std::move(dict);
 }
 

@@ -25,7 +25,7 @@
 #include "content/browser/loader/url_loader_factory_utils.h"
 #include "content/browser/renderer_host/code_cache_host_impl.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
-#include "content/browser/renderer_host/private_network_access_util.h"
+#include "content/browser/renderer_host/local_network_access_util.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/service_worker/service_worker_client.h"
 #include "content/browser/service_worker/service_worker_context_core.h"
@@ -44,6 +44,7 @@
 #include "content/public/browser/permission_controller.h"
 #include "content/public/browser/permission_descriptor_util.h"
 #include "content/public/browser/service_worker_context.h"
+#include "content/public/common/child_process_id_util.h"
 #include "content/public/common/content_client.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "mojo/public/cpp/system/message_pipe.h"
@@ -197,6 +198,13 @@ void DedicatedWorkerHost::CreateContentSecurityNotifier(
   mojo::MakeSelfOwnedReceiver(
       std::make_unique<ContentSecurityNotifier>(ancestor_render_frame_host_id_),
       std::move(receiver));
+}
+
+void DedicatedWorkerHost::CreateLockManager(
+    mojo::PendingReceiver<blink::mojom::LockManager> receiver) {
+  static_cast<StoragePartitionImpl*>(GetProcessHost()->GetStoragePartition())
+      ->BindLockManager(GetStorageKey(), GetToken().value(),
+                        std::move(receiver));
 }
 
 void DedicatedWorkerHost::OnMojoDisconnect() {
@@ -440,11 +448,11 @@ void DedicatedWorkerHost::DidStartScriptLoad(
             .allow_non_secure_local_network_access;
 
     worker_client_security_state_->private_network_request_policy =
-        DerivePrivateNetworkRequestPolicy(
+        DeriveLocalNetworkAccessRequestPolicy(
             worker_client_security_state_->ip_address_space,
             worker_client_security_state_->is_web_secure_context,
             allow_non_secure_local_network_access,
-            PrivateNetworkRequestContext::kWorker);
+            LocalNetworkAccessRequestContext::kWorker);
 
     // Check for policy overrides on LNA. For dedicated workers, we apply
     // policy based on origin of the document that owns the worker.
@@ -452,8 +460,9 @@ void DedicatedWorkerHost::DidStartScriptLoad(
     ContentBrowserClient* client = GetContentClient()->browser();
     BrowserContext* context = ancestor_render_frame_host->GetBrowserContext();
     url::Origin origin = ancestor_render_frame_host->GetLastCommittedOrigin();
-    ContentBrowserClient::PrivateNetworkRequestPolicyOverride policy_override =
-        client->ShouldOverridePrivateNetworkRequestPolicy(context, origin);
+    ContentBrowserClient::LocalNetworkAccessRequestPolicyOverride
+        policy_override = client->ShouldOverrideLocalNetworkAccessRequestPolicy(
+            context, origin);
     worker_client_security_state_->private_network_request_policy =
         OverrideLocalNetworkAccessPolicy(
             worker_client_security_state_->private_network_request_policy,
@@ -971,7 +980,7 @@ void DedicatedWorkerHost::BindPressureService(
 void DedicatedWorkerHost::ObserveNetworkServiceCrash(
     StoragePartitionImpl* storage_partition_impl) {
   auto params = network::mojom::URLLoaderFactoryParams::New();
-  params->process_id = worker_process_host_->GetDeprecatedID();
+  params->process_id = ToOriginatingProcess(worker_process_host_->GetID());
   params->debug_tag = "DedicatedWorkerHost::ObserveNetworkServiceCrash";
   network_service_connection_error_handler_holder_.reset();
   storage_partition_impl->GetNetworkContext()->CreateURLLoaderFactory(

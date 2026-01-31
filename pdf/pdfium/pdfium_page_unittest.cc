@@ -1169,6 +1169,11 @@ INSTANTIATE_TEST_SUITE_P(All, PDFiumPageButtonTest, testing::Bool());
 
 class PDFiumPageThumbnailTest : public PDFiumTestBase {
  public:
+  struct ComparisonOptions {
+    bool use_platform_suffix;
+    bool fuzzy_match;
+  };
+
   PDFiumPageThumbnailTest() = default;
   PDFiumPageThumbnailTest(const PDFiumPageThumbnailTest&) = delete;
   PDFiumPageThumbnailTest& operator=(const PDFiumPageThumbnailTest&) = delete;
@@ -1179,28 +1184,32 @@ class PDFiumPageThumbnailTest : public PDFiumTestBase {
                              float device_pixel_ratio,
                              const gfx::Size& expected_thumbnail_size,
                              const std::string& expectation_file_prefix) {
-    return TestGenerateThumbnailWithPlatformSpecificData(
+    return TestGenerateThumbnailWithOptions(
         engine, page_index, device_pixel_ratio, expected_thumbnail_size,
         expectation_file_prefix,
-        /*use_platform_suffix=*/false);
+        {.use_platform_suffix = false, .fuzzy_match = false});
   }
 
-  void TestGenerateThumbnailWithPlatformSpecificData(
+  void TestGenerateThumbnailWithOptions(
       PDFiumEngine& engine,
       size_t page_index,
       float device_pixel_ratio,
       const gfx::Size& expected_thumbnail_size,
       const std::string& expectation_file_prefix,
-      bool use_platform_suffix) {
+      const ComparisonOptions& options) {
     sk_sp<SkImage> image = GenerateThumbnailImage(
         engine, page_index, device_pixel_ratio, expected_thumbnail_size);
     ASSERT_TRUE(image);
 
     base::FilePath expectation_png_file_path = GetThumbnailTestData(
         expectation_file_prefix, page_index, device_pixel_ratio,
-        /*use_skia=*/GetParam(), use_platform_suffix);
+        /*use_skia=*/GetParam(), options.use_platform_suffix);
 
-    EXPECT_TRUE(MatchesPngFile(*image, expectation_png_file_path));
+    if (options.fuzzy_match) {
+      EXPECT_TRUE(FuzzyMatchesPngFile(*image, expectation_png_file_path));
+    } else {
+      EXPECT_TRUE(MatchesPngFile(*image, expectation_png_file_path));
+    }
   }
 
   sk_sp<SkImage> GenerateThumbnailImage(
@@ -1274,10 +1283,10 @@ TEST_P(PDFiumPageThumbnailTest, GenerateThumbnailWithOverlapCropBox) {
   std::unique_ptr<PDFiumEngine> engine =
       InitializeEngine(&client, FILE_PATH_LITERAL("hello_world_cropped.pdf"));
   ASSERT_TRUE(engine);
-  TestGenerateThumbnailWithPlatformSpecificData(
+  TestGenerateThumbnailWithOptions(
       *engine, /*page_index=*/0, /*device_pixel_ratio=*/1,
       /*expected_thumbnail_size=*/{162, 108}, "hello_world_cropped",
-      /*use_platform_suffix=*/true);
+      {.use_platform_suffix = true, .fuzzy_match = true});
 }
 
 // For crbug.com/438884266

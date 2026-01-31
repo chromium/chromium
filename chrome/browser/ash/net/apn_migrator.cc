@@ -6,7 +6,6 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/network_config_service.h"
-#include "base/containers/contains.h"
 #include "base/values.h"
 #include "chromeos/ash/components/login/login_state/login_state.h"
 #include "chromeos/ash/components/network/managed_cellular_pref_handler.h"
@@ -29,9 +28,9 @@ using chromeos::network_config::mojom::ApnType;
 using chromeos::network_config::mojom::ManagedApnPropertiesPtr;
 
 std::optional<ApnPropertiesPtr> GetPreRevampApnFromDict(
-    const base::Value::Dict* cellular_dict,
+    const base::DictValue* cellular_dict,
     const char* key) {
-  const base::Value::Dict* apn_dict =
+  const base::DictValue* apn_dict =
       chromeos::network_config::GetDictionary(cellular_dict, key);
   if (!apn_dict) {
     return std::nullopt;
@@ -133,7 +132,7 @@ void ApnMigrator::NetworkListChanged() {
       // The network has already been updated in Shill with the correct logic
       // depending on if the flag is enabled or disabled. Finish early so we
       // don't redundantly update Shill.
-      if (base::Contains(shill_updated_iccids_, network->iccid())) {
+      if (shill_updated_iccids_.contains(network->iccid())) {
         continue;
       }
 
@@ -169,7 +168,7 @@ void ApnMigrator::NetworkListChanged() {
 
       // The network has already been migrated, either the last time the flag
       // was on, or this time. Send Shill the revamp APN list.
-      if (const base::Value::List* custom_apn_list =
+      if (const base::ListValue* custom_apn_list =
               GetNetworkMetadataStore()->GetCustomApnList(network->guid())) {
         if (!ash::features::IsAllowApnModificationPolicyEnabled() ||
             network_configuration_handler_->AllowApnModification()) {
@@ -181,7 +180,7 @@ void ApnMigrator::NetworkListChanged() {
           NET_LOG(EVENT)
               << "Not setting custom APN list as admin has restricted "
                  "use of custom APNs";
-          base::Value::List empty_custom_apn_list;
+          base::ListValue empty_custom_apn_list;
           SetShillCustomApnListForNetwork(*network, &empty_custom_apn_list);
         }
         continue;
@@ -189,7 +188,7 @@ void ApnMigrator::NetworkListChanged() {
 
       NET_LOG(EVENT) << "Network has already been migrated, setting with the "
                      << "empty custom APN list: " << network->iccid();
-      base::Value::List empty_custom_apn_list;
+      base::ListValue empty_custom_apn_list;
       SetShillCustomApnListForNetwork(*network, &empty_custom_apn_list);
     }
   }
@@ -208,7 +207,7 @@ void ApnMigrator::OnClearPropertiesFailure(const std::string iccid,
 
 void ApnMigrator::SetShillCustomApnListForNetwork(
     const NetworkState& network,
-    const base::Value::List* apn_list) {
+    const base::ListValue* apn_list) {
   network_configuration_handler_->SetProperties(
       network.path(),
       chromeos::network_config::CustomApnListToOnc(network.guid(), apn_list),
@@ -246,7 +245,7 @@ void ApnMigrator::MigrateNetwork(const NetworkState& network) {
   DCHECK(ash::features::IsApnRevampEnabled());
 
   // Return early if the network is already in the process of being migrated.
-  if (base::Contains(iccids_in_migration_, network.iccid())) {
+  if (iccids_in_migration_.contains(network.iccid())) {
     NET_LOG(DEBUG) << "Attempting to migrate network that already has a "
                    << "migration in progress, returning early: "
                    << network.iccid();
@@ -257,7 +256,7 @@ void ApnMigrator::MigrateNetwork(const NetworkState& network) {
       network.iccid()));
 
   // Get the pre-revamp APN list.
-  const base::Value::List* custom_apn_list =
+  const base::ListValue* custom_apn_list =
       GetNetworkMetadataStore()->GetPreRevampCustomApnList(network.guid());
 
   // If the pre-revamp APN list is empty, set the revamp list as empty and
@@ -265,7 +264,7 @@ void ApnMigrator::MigrateNetwork(const NetworkState& network) {
   if (!custom_apn_list || custom_apn_list->empty()) {
     NET_LOG(EVENT) << "Pre-revamp APN list is empty, sending empty list to "
                    << "Shill: " << network.iccid();
-    base::Value::List empty_apn_list;
+    base::ListValue empty_apn_list;
     SetShillCustomApnListForNetwork(network, &empty_apn_list);
     return;
   }
@@ -289,7 +288,7 @@ void ApnMigrator::OnGetManagedProperties(
     std::string iccid,
     std::string guid,
     const std::string& service_path,
-    std::optional<base::Value::Dict> properties,
+    std::optional<base::DictValue> properties,
     std::optional<std::string> error) {
   if (error.has_value()) {
     NET_LOG(ERROR) << "Error fetching managed properties for " << iccid
@@ -313,7 +312,7 @@ void ApnMigrator::OnGetManagedProperties(
   }
 
   // Get the pre-revamp APN list.
-  const base::Value::List* custom_apn_list =
+  const base::ListValue* custom_apn_list =
       GetNetworkMetadataStore()->GetPreRevampCustomApnList(guid);
 
   // At this point, the pre-revamp APN list should not be empty. However, there
@@ -324,7 +323,7 @@ void ApnMigrator::OnGetManagedProperties(
     NET_LOG(EVENT) << "Custom APN list cleared during GetManagedProperties() "
                    << "call, setting Shill with empty list for network: "
                    << guid;
-    base::Value::List empty_apn_list;
+    base::ListValue empty_apn_list;
     SetShillCustomApnListForNetwork(*network, &empty_apn_list);
     return;
   }
@@ -337,7 +336,7 @@ void ApnMigrator::OnGetManagedProperties(
   NET_LOG(EVENT) << "pre_revamp_custom_apn: "
                  << pre_revamp_custom_apn->access_point_name;
 
-  const base::Value::Dict* cellular_dict =
+  const base::DictValue* cellular_dict =
       chromeos::network_config::GetDictionary(&properties.value(),
                                               ::onc::network_config::kCellular);
   std::optional<ApnPropertiesPtr> last_connected_attach_apn =
@@ -378,7 +377,7 @@ void ApnMigrator::OnGetManagedProperties(
       NET_LOG(EVENT)
           << "Managed network's selected APN doesn't match the saved custom "
           << "APN, setting Shill with empty list for network: " << guid;
-      base::Value::List empty_apn_list;
+      base::ListValue empty_apn_list;
       CellularNetworkMetricsLogger::LogManagedCustomApnMigrationType(
           CellularNetworkMetricsLogger::ManagedApnMigrationType::
               kDoesNotMatchSelectedApn);

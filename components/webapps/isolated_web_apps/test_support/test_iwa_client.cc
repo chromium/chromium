@@ -22,15 +22,12 @@ void TestIwaClient::GetIwaSourceForRequest(
     const network::ResourceRequest& request,
     const std::optional<content::FrameTreeNodeId>& frame_tree_node,
     base::OnceCallback<void(base::expected<IwaSourceWithModeOrGeneratedResponse,
-                                           std::string>)> callback) {
+                                           SourceRequestError>)> callback) {
   NOTREACHED();
 }
 
 IwaRuntimeDataProvider* TestIwaClient::GetRuntimeDataProvider() {
   return nullptr;
 }
-
-MockIwaClient::MockIwaClient() = default;
-MockIwaClient::~MockIwaClient() = default;
 
 }  // namespace web_app::test

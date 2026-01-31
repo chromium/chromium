@@ -34,12 +34,13 @@ DeviceDelegateAndroid::~DeviceDelegateAndroid() = default;
 WalletEligibilityForPixAccountLinking
 DeviceDelegateAndroid::IsPixAccountLinkingSupported() const {
   JNIEnv* env = base::android::AttachCurrentThread();
-  jint eligibility =
+  int32_t eligibility =
       Java_DeviceDelegate_getWalletEligibilityForPixAccountLinking(env);
-  CHECK(eligibility >= static_cast<jint>(
+  CHECK(eligibility >= static_cast<int32_t>(
                            WalletEligibilityForPixAccountLinking::kEligible) &&
-        eligibility <= static_cast<jint>(WalletEligibilityForPixAccountLinking::
-                                             kWalletVersionNotSupported));
+        eligibility <=
+            static_cast<int32_t>(WalletEligibilityForPixAccountLinking::
+                                     kWalletVersionNotSupported));
   return static_cast<WalletEligibilityForPixAccountLinking>(eligibility);
 }
 

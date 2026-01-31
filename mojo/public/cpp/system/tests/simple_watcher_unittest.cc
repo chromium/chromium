@@ -95,23 +95,22 @@ TEST_F(SimpleWatcherTest, WatchFailedPreconditionNoSpam) {
   bool had_failed_precondition = false;
 
   SimpleWatcher watcher(FROM_HERE, SimpleWatcher::ArmingPolicy::AUTOMATIC);
-  MojoResult rc =
-      watcher.Watch(consumer_handle.get(), MOJO_HANDLE_SIGNAL_READABLE,
-                    OnReady([&](MojoResult result) {
-                      EXPECT_FALSE(had_failed_precondition);
-                      switch (result) {
-                        case MOJO_RESULT_OK: {
-                          base::span<const uint8_t> buffer;
-                          consumer_handle->BeginReadData(
-                              MOJO_READ_DATA_FLAG_NONE, buffer);
-                          consumer_handle->EndReadData(buffer.size());
-                          break;
-                        }
-                        case MOJO_RESULT_FAILED_PRECONDITION:
-                          had_failed_precondition = true;
-                          break;
-                      }
-                    }));
+  MojoResult rc = watcher.Watch(
+      consumer_handle.get(), MOJO_HANDLE_SIGNAL_READABLE,
+      OnReady([&](MojoResult result) {
+        EXPECT_FALSE(had_failed_precondition);
+        switch (result) {
+          case MOJO_RESULT_OK: {
+            base::span<const uint8_t> buffer;
+            consumer_handle->BeginReadData(MOJO_READ_DATA_FLAG_NONE, buffer);
+            consumer_handle->EndReadData(buffer.size());
+            break;
+          }
+          case MOJO_RESULT_FAILED_PRECONDITION:
+            had_failed_precondition = true;
+            break;
+        }
+      }));
   EXPECT_EQ(MOJO_RESULT_OK, rc);
 
   size_t bytes_written = 0;

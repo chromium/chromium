@@ -1448,7 +1448,7 @@ TEST_F(LayerContextImplUpdateDisplayTreeEffectNodeTest,
   int mask_layer_id =
       AddDefaultLayerToUpdate(update.get(), cc::mojom::LayerType::kTileDisplay);
   cc::ElementId mask_element_id(mask_layer_id);
-  update->layers.back()->element_id = mask_element_id;
+  SetLayerElementId(update->layers.back().get(), mask_element_id);
 
   // Create an EffectNode that references this layer.
   auto node_update = CreateDefaultSecondaryRootEffectNode();
@@ -1486,7 +1486,7 @@ TEST_F(LayerContextImplUpdateDisplayTreeEffectNodeTest,
   int mask_layer_id =
       AddDefaultLayerToUpdate(update.get(), cc::mojom::LayerType::kLayer);
   cc::ElementId mask_element_id(mask_layer_id);
-  update->layers.back()->element_id = mask_element_id;
+  SetLayerElementId(update->layers.back().get(), mask_element_id);
 
   auto node_update = CreateDefaultSecondaryRootEffectNode();
   node_update->backdrop_mask_element_id = mask_element_id;

@@ -265,7 +265,7 @@ export class LogoElement extends CrLitElement {
         this.showAnimation_ ? DoodleImageType.kAnimation :
                               DoodleImageType.kStatic,
         null);
-    const onClickUrl = new URL(this.doodle_!.image!.onClickUrl.url);
+    const onClickUrl = new URL(this.doodle_!.image!.onClickUrl);
     if (this.imageClickParams_) {
       for (const param of new URLSearchParams(this.imageClickParams_)) {
         onClickUrl.searchParams.append(param[0], param[1]);
@@ -298,7 +298,7 @@ export class LogoElement extends CrLitElement {
 
   protected onShare_(e: CustomEvent<DoodleShareChannel>) {
     const doodleId =
-        new URL(this.doodle_!.image!.onClickUrl!.url).searchParams.get('ct');
+        new URL(this.doodle_!.image!.onClickUrl!).searchParams.get('ct');
     if (!doodleId) {
       return;
     }
@@ -327,19 +327,19 @@ export class LogoElement extends CrLitElement {
   }
 
   private computeImageUrl_(): string {
-    return this.imageDoodle_ ? this.imageDoodle_.imageUrl.url : '';
+    return this.imageDoodle_ ? this.imageDoodle_.imageUrl : '';
   }
 
   private computeAnimationUrl_(): string {
     return this.imageDoodle_ && this.imageDoodle_.animationUrl ?
         `chrome-untrusted://new-tab-page/image?${
-            this.imageDoodle_.animationUrl.url}` :
+            this.imageDoodle_.animationUrl}` :
         '';
   }
 
   private computeIframeUrl_(): string {
     if (this.doodle_ && this.doodle_.interactive) {
-      const url = new URL(this.doodle_.interactive.url.url);
+      const url = new URL(this.doodle_.interactive.url);
       url.searchParams.append('theme_messages', '0');
       return url.href;
     } else {

@@ -27,7 +27,7 @@ int OpenApkAsset(const std::string& file_path,
   JNIEnv* env = base::android::AttachCurrentThread();
   ScopedJavaLocalRef<jlongArray> jarr =
       Java_ApkAssets_open(env, file_path, split_name);
-  std::vector<jlong> results;
+  std::vector<int64_t> results;
   base::android::JavaLongArrayToLongVector(env, jarr, &results);
   CHECK_EQ(3U, results.size());
   int fd = static_cast<int>(results[0]);

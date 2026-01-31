@@ -28,20 +28,23 @@ struct Serializer<StringDataView, MaybeConstUserType> {
 
   static void Serialize(MaybeConstUserType& input,
                         MessageFragment<String_Data>& fragment) {
-    if (CallIsNullIfExists<Traits>(input))
+    if (CallIsNullIfExists<Traits>(input)) {
       return;
+    }
 
     auto r = Traits::GetUTF8(input);
     fragment.AllocateArrayData(r.size());
-    if (r.size() > 0)
+    if (r.size() > 0) {
       UNSAFE_TODO(memcpy(fragment->storage(), r.data(), r.size()));
+    }
   }
 
   static bool Deserialize(String_Data* input,
                           UserType* output,
                           Message* message) {
-    if (!input)
+    if (!input) {
       return CallSetToNullIfExists<Traits>(output);
+    }
     return Traits::Read(StringDataView(input, message), output);
   }
 };

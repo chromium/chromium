@@ -34,6 +34,8 @@ _LINUX_DRIVER_TAGS = frozenset([
 _WINDOWS_DRIVER_TAGS = frozenset([
     'nvidia_ge_31.0.15.4601',
     'nvidia_lt_31.0.15.4601',
+    'nvidia_ge_32.0.15.8180',
+    'nvidia_lt_32.0.15.8180',
 ])
 _DRIVER_TAGS_BY_OS = {
     'android': _ANDROID_DRIVER_TAGS,

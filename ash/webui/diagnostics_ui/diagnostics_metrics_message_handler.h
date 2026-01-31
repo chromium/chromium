@@ -45,7 +45,7 @@ class DiagnosticsMetricsMessageHandler : public content::WebUIMessageHandler {
 
  private:
   // Records navigation events between screens within Diagnostics App.
-  void HandleRecordNavigation(const base::Value::List& args);
+  void HandleRecordNavigation(const base::ListValue& args);
 
   NavigationView current_view_;
   base::Time navigation_started_;

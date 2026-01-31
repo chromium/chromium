@@ -78,10 +78,10 @@ class ImageButtonFactoryWidgetTest : public ViewsTestBase {
 TEST_F(ImageButtonFactoryWidgetTest, SetImageFromVectorIconWithColor) {
   AddImageButton(CreateVectorImageButton(Button::PressedCallback()));
   SetImageFromVectorIconWithColor(button(), vector_icons::kCloseRoundedIcon,
-                                  SK_ColorRED, SK_ColorRED);
+                                  {SK_ColorBLUE, SK_ColorBLUE});
   EXPECT_FALSE(button()->GetImage(Button::STATE_NORMAL).isNull());
   EXPECT_FALSE(button()->GetImage(Button::STATE_DISABLED).isNull());
-  EXPECT_EQ(SK_ColorRED, InkDrop::Get(button())->GetBaseColor());
+  EXPECT_EQ(SK_ColorBLUE, InkDrop::Get(button())->GetBaseColor());
 }
 
 TEST_F(ImageButtonFactoryWidgetTest, CreateVectorImageButtonWithNativeTheme) {

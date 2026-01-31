@@ -12,9 +12,8 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_key.h"
 #include "chrome/browser/supervised_user/android/website_parent_approval.h"
-#include "chrome/browser/supervised_user/supervised_user_settings_service_factory.h"
-#include "components/supervised_user/core/browser/supervised_user_settings_service.h"
-#include "components/supervised_user/core/browser/supervised_user_utils.h"
+#include "chrome/browser/supervised_user/family_link_settings_service_factory.h"
+#include "components/supervised_user/core/browser/family_link_settings_service.h"
 #include "components/supervised_user/core/common/supervised_user_constants.h"
 #include "content/public/browser/web_contents.h"
 
@@ -46,19 +45,17 @@ SupervisedUserWebContentHandlerImpl::~SupervisedUserWebContentHandlerImpl() =
     default;
 
 void SupervisedUserWebContentHandlerImpl::RequestLocalApproval(
-    const GURL& url,
+    const GURL& target_url,
+    supervised_user::WebFilteringResult filtering_result,
     const std::u16string& child_display_name,
-    const supervised_user::UrlFormatter& url_formatter,
-    const supervised_user::FilteringBehaviorReason& filtering_behavior_reason,
     ApprovalRequestInitiatedCallback callback) {
   CHECK(web_contents_);
   Profile* profile =
       Profile::FromBrowserContext(web_contents_->GetBrowserContext());
   CHECK(profile);
-  supervised_user::SupervisedUserSettingsService* settings_service =
-      SupervisedUserSettingsServiceFactory::GetForKey(profile->GetProfileKey());
-
-  GURL target_url = url_formatter.FormatUrl(url);
+  supervised_user::FamilyLinkSettingsService* settings_service =
+      supervised_user::FamilyLinkSettingsServiceFactory::GetForKey(
+          profile->GetProfileKey());
 
   WebsiteParentApproval::RequestLocalApproval(
       web_contents_, target_url,
@@ -74,7 +71,7 @@ void SupervisedUserWebContentHandlerImpl::RequestLocalApproval(
 }
 
 void SupervisedUserWebContentHandlerImpl::OnLocalApprovalRequestCompleted(
-    supervised_user::SupervisedUserSettingsService& settings_service,
+    supervised_user::FamilyLinkSettingsService& settings_service,
     const GURL& url,
     base::TimeTicks start_time,
     AndroidLocalWebApprovalFlowOutcome request_outcome) {

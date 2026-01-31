@@ -35,7 +35,7 @@ XrActivityListener::XrActivityListener(int render_process_id,
   }
   ScopedJavaLocalRef<jobject> j_xr_activity_listener =
       Java_XrActivityListener_Constructor(
-          env, (jlong)this,
+          env, (int64_t)this,
           webxr::GetJavaWebContents(render_process_id, render_frame_id));
   if (j_xr_activity_listener.is_null()) {
     return;

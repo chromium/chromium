@@ -151,6 +151,7 @@ class FakeMediaMetricsProvider
   void OnError(const media::PipelineStatus& status) override {}
   void OnFallback(const media::PipelineStatus& status) override {}
   void SetIsEME() override {}
+  void SetHasTrackChange() override {}
   void SetTimeToMetadata(base::TimeDelta elapsed) override {}
   void SetTimeToFirstFrame(base::TimeDelta elapsed) override {}
   void SetTimeToPlayReady(base::TimeDelta elapsed) override {}

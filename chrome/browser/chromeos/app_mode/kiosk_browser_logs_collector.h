@@ -10,15 +10,15 @@
 
 #include "base/scoped_observation.h"
 #include "chrome/browser/chromeos/app_mode/kiosk_web_contents_observer.h"
-#include "chrome/browser/ui/browser_list.h"
-#include "chrome/browser/ui/browser_list_observer.h"
+#include "chrome/browser/ui/browser_window/public/browser_collection_observer.h"
+#include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 
 class BrowserWindowInterface;
 
 namespace chromeos {
 
 // Collects and observes logs from web content in browser tabs.
-class KioskBrowserLogsCollector : public BrowserListObserver {
+class KioskBrowserLogsCollector : public BrowserCollectionObserver {
  public:
   explicit KioskBrowserLogsCollector(
       KioskWebContentsObserver::LoggerCallback logger_callback);
@@ -26,9 +26,9 @@ class KioskBrowserLogsCollector : public BrowserListObserver {
 
   class KioskTabStripModelObserver;
 
-  // `BrowserListObserver` implementation:
-  void OnBrowserAdded(Browser* browser) override;
-  void OnBrowserRemoved(Browser* browser) override;
+  // `BrowserCollectionObserver` implementation:
+  void OnBrowserCreated(BrowserWindowInterface* browser) override;
+  void OnBrowserClosed(BrowserWindowInterface* browser) override;
 
  private:
   void ObserveAlreadyOpenBrowsers();
@@ -39,8 +39,8 @@ class KioskBrowserLogsCollector : public BrowserListObserver {
                      std::unique_ptr<KioskTabStripModelObserver>>
       tab_strip_model_observers_;
 
-  base::ScopedObservation<BrowserList, BrowserListObserver>
-      browser_list_observer_{this};
+  base::ScopedObservation<GlobalBrowserCollection, BrowserCollectionObserver>
+      browser_collection_observer_{this};
 };
 
 }  // namespace chromeos

@@ -60,11 +60,11 @@ class TestTitleObserver : public TabStripModelObserver {
   }
 
   // TabstripModelObserver:
-  void TabChangedAt(content::WebContents* contents,
-                    int index,
-                    TabChangeType change_type) override {
+  void OnTabChangedAt(tabs::TabInterface* tab,
+                      int index,
+                      TabChangeType change_type) override {
     content::NavigationEntry* entry =
-        contents->GetController().GetVisibleEntry();
+        tab->GetContents()->GetController().GetVisibleEntry();
     std::u16string title = entry ? entry->GetTitle() : std::u16string();
 
     if (title != target_title_) {
@@ -146,8 +146,7 @@ class UrlHidingInterstitialPage
   bool ShouldDisplayURL() const override { return false; }
 
  protected:
-  void PopulateInterstitialStrings(base::Value::Dict& load_time_data) override {
-  }
+  void PopulateInterstitialStrings(base::DictValue& load_time_data) override {}
 };
 
 // An observer that associates a URL-hiding interstitial when a page loads when

@@ -7,7 +7,7 @@
 #include "ash/public/cpp/clipboard_history_controller.h"
 #include "base/check_deref.h"
 #include "base/unguessable_token.h"
-#include "chromeos/crosapi/mojom/clipboard_history.mojom.h"
+#include "chromeos/ui/clipboard_history/clipboard_history_types.h"
 #include "ui/aura/client/focus_client.h"
 #include "ui/events/event_constants.h"
 
@@ -33,7 +33,7 @@ void QuickInsertPasteRequest::OnWindowFocused(aura::Window* gained_focus,
   // TODO: b/329309518: Use a dedicated show source for Quick Insert.
   clipboard_history_controller_->PasteClipboardItemById(
       clipboard_item_id_.ToString(), ui::EF_NONE,
-      crosapi::mojom::ClipboardHistoryControllerShowSource::kVirtualKeyboard);
+      chromeos::clipboard_history::ShowSource::kVirtualKeyboard);
   observation_.Reset();
 }
 

@@ -121,7 +121,7 @@ class MockMediaRouter : public MediaRouterBase {
       void(mojom::MediaRouteProviderId provider_id,
            mojom::MediaRouteProvider::GetStateCallback callback));
   MOCK_CONST_METHOD0(GetLogs, base::Value());
-  MOCK_CONST_METHOD0(GetState, base::Value::Dict());
+  MOCK_CONST_METHOD0(GetState, base::DictValue());
   MOCK_METHOD0(GetLogger, LoggerImpl*());
   MOCK_METHOD(MediaRouterDebugger&, GetDebugger, (), (override));
 #endif

@@ -5,6 +5,10 @@
     border-bottom: var(--cr-separator-line);
   }
 
+  #lastSection {
+    border-top: var(--cr-separator-line);
+  }
+
 </style>
 <settings-subpage page-title="$i18n{autofillAiPageTitle}">
 <div id="topSection">
@@ -20,18 +24,22 @@
       <h3 class="description-header">$i18n{columnHeadingWhenOn}</h3>
       <ul class="icon-bulleted-list">
         <li>
-          <cr-icon icon="settings20:sync-saved-locally" aria-hidden="true">
+          <cr-icon icon="[[getFirstWhenOnSectionIcon_()]]" aria-hidden="true">
           </cr-icon>
           <div class="cr-secondary-text">
-            $i18n{autofillAiWhenOnSavedInfo}
+            [[getFirstWhenOnSectionTitle_()]]
           </div>
         </li>
-        <li>
-          <cr-icon icon="settings20:text-analysis" aria-hidden="true"></cr-icon>
-          <div class="cr-secondary-text">
-            $i18n{autofillAiWhenOnUseToFill}
-          </div>
-        </li>
+        <template is="dom-if" if="[[!autofillAiAvailableByDefault_]]" restamp>
+          <li>
+            <cr-icon icon="settings20:text-analysis"
+                aria-hidden="true">
+            </cr-icon>
+            <div class="cr-secondary-text">
+                $i18n{autofillAiWhenOnUseToFill}
+            </div>
+          </li>
+        </template>
       </ul>
     </div>
     <div class="column">
@@ -61,8 +69,31 @@
   </div>
 </div>
 
+<template is="dom-if" if="[[autofillAiReauthOnViewingSensitiveDataEnabled_]]"
+    restamp>
+  <settings-toggle-button id="optInAuthenticationToggle"
+      disabled="[[ineligibleUser]]"
+      pref="{{prefs.autofill.autofill_ai.reauth_before_viewing_sensitive_data}}"
+      no-extension-indicator
+      label="$i18n{autofillAiAuthenticationToggleTitle}"
+      sub-label="$i18n{autofillAiAuthenticationToggleSubtitle}"
+      no-toggle-on-host-click
+      on-click="onChangeAuthenticationRequirementClicked_"
+      on-change="onChangeAuthenticationRequirementClicked_">
+  </settings-toggle-button>
+</template>
+
 <settings-autofill-ai-entries-list
     list-title="$i18n{autofillAiEntityInstancesHeader}"
     prefs="{{prefs}}">
 </settings-autofill-ai-entries-list>
+
+<template is="dom-if"
+    if="[[isUserEligibleForWalletablePassDetection_]]" restamp>
+  <div id="lastSection">
+    <settings-walletable-pass-detection-toggle
+        id="walletablePassDetectionToggle">
+    </settings-walletable-pass-detection-toggle>
+  </div>
+</template>
 </settings-subpage>

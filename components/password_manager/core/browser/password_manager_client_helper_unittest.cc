@@ -133,7 +133,7 @@ TEST_F(PasswordManagerClientHelperTest,
 }
 
 TEST_F(PasswordManagerClientHelperTest, PromptMoveForMovableFormInAccountMode) {
-  ON_CALL(*client()->GetPasswordFeatureManager(), IsAccountStorageEnabled)
+  ON_CALL(*client()->GetPasswordFeatureManager(), IsAccountStorageActive)
       .WillByDefault(Return(true));
   EXPECT_CALL(*client(), PromptUserToEnableAutosignin).Times(0);
 #if !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
@@ -152,7 +152,7 @@ TEST_F(PasswordManagerClientHelperTest, PromptMoveForMovableFormInAccountMode) {
 }
 
 TEST_F(PasswordManagerClientHelperTest, NoPromptToMoveForUnmovableForm) {
-  ON_CALL(*client()->GetPasswordFeatureManager(), IsAccountStorageEnabled)
+  ON_CALL(*client()->GetPasswordFeatureManager(), IsAccountStorageActive)
       .WillByDefault(Return(true));
   EXPECT_CALL(*client(), PromptUserToMovePasswordToAccount).Times(0);
   EXPECT_CALL(*client(), PromptUserToEnableAutosignin).Times(0);
@@ -165,7 +165,7 @@ TEST_F(PasswordManagerClientHelperTest, NoPromptToMoveForUnmovableForm) {
 }
 
 TEST_F(PasswordManagerClientHelperTest, NoPromptToMoveForGaiaAccountForm) {
-  ON_CALL(*client()->GetPasswordFeatureManager(), IsAccountStorageEnabled)
+  ON_CALL(*client()->GetPasswordFeatureManager(), IsAccountStorageActive)
       .WillByDefault(Return(true));
 
   EXPECT_CALL(*client(), PromptUserToMovePasswordToAccount).Times(0);
@@ -178,7 +178,7 @@ TEST_F(PasswordManagerClientHelperTest, NoPromptToMoveForGaiaAccountForm) {
 
 TEST_F(PasswordManagerClientHelperTest,
        NoPromptToMoveIfAccountStorageDisabled) {
-  ON_CALL(*client()->GetPasswordFeatureManager(), IsAccountStorageEnabled)
+  ON_CALL(*client()->GetPasswordFeatureManager(), IsAccountStorageActive)
       .WillByDefault(Return(false));
 
   EXPECT_CALL(*client(), PromptUserToMovePasswordToAccount).Times(0);

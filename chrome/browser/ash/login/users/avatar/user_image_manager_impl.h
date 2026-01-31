@@ -219,7 +219,7 @@ class UserImageManagerImpl : public ProfileDownloaderDelegate {
   void TryToCreateImageSyncObserver();
 
   // Returns the image properties for the user's user image.
-  const base::Value::Dict* GetImageProperties();
+  const base::DictValue* GetImageProperties();
 
   // Returns immutable version of user with `user_id_`.
   const user_manager::User* GetUser() const;

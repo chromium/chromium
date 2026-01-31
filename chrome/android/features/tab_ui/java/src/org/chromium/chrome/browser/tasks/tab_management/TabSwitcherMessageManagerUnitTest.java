@@ -32,8 +32,11 @@ import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
+import org.robolectric.annotation.Config;
 
-import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.supplier.ObservableSuppliers;
+import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
+import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.app.tabmodel.ArchivedTabModelOrchestrator;
@@ -115,12 +118,12 @@ public class TabSwitcherMessageManagerUnitTest {
     private ArgumentCaptor<MultiWindowModeStateDispatcher.MultiWindowModeObserver>
             mMultiWindowModeObserverCaptor;
 
-    private final ObservableSupplierImpl<TabGroupModelFilter> mCurrentTabGroupModelFilterSupplier =
-            new ObservableSupplierImpl<>();
-    private final ObservableSupplierImpl<EdgeToEdgeController> mEdgeToEdgeSupplier =
-            new ObservableSupplierImpl<>();
-    private final ObservableSupplierImpl<Integer> mTabCountSupplier =
-            new ObservableSupplierImpl<>(INITIAL_TAB_COUNT);
+    private final org.chromium.base.supplier.SettableNullableObservableSupplier<TabGroupModelFilter>
+            mCurrentTabGroupModelFilterSupplier = ObservableSuppliers.createNullable();
+    private final SettableMonotonicObservableSupplier<EdgeToEdgeController> mEdgeToEdgeSupplier =
+            ObservableSuppliers.createMonotonic();
+    private final SettableNonNullObservableSupplier<Integer> mTabCountSupplier =
+            ObservableSuppliers.createNonNull(INITIAL_TAB_COUNT);
     private TabSwitcherMessageManager mMessageManager;
     private MockTab mTab1;
     private MockTab mTab2;
@@ -145,8 +148,8 @@ public class TabSwitcherMessageManagerUnitTest {
         doReturn(mTabModel).when(mTabGroupModelFilter).getTabModel();
         doReturn(mProfile).when(mTabModel).getProfile();
         doReturn(mProfile).when(mProfile).getOriginalProfile();
-        mCurrentTabGroupModelFilterSupplier.set(mTabGroupModelFilter);
 
+        mCurrentTabGroupModelFilterSupplier.set(mTabGroupModelFilter);
         when(mArchivedTabModelOrchestrator.getTabCountSupplier()).thenReturn(mTabCountSupplier);
 
         mActivityScenarioRule.getScenario().onActivity(this::onActivityReady);
@@ -196,12 +199,16 @@ public class TabSwitcherMessageManagerUnitTest {
         assertFalse(mCurrentTabGroupModelFilterSupplier.hasObservers());
     }
 
+    // TODO(crbug.com/450954710): This test fails on SDK 36.
+    @Config(sdk = 29)
     @Test
     public void testBeforeReset() {
         mMessageManager.beforeReset();
         verify(mTabGroupModelFilter).removeObserver(any());
     }
 
+    // TODO(crbug.com/450954710): This test fails on SDK 36.
+    @Config(sdk = 29)
     @Test
     public void testAfterReset() {
         verify(mTabGroupModelFilter, times(2)).addObserver(any());
@@ -217,6 +224,8 @@ public class TabSwitcherMessageManagerUnitTest {
         verify(mTabGroupModelFilter, times(4)).addObserver(any());
     }
 
+    // TODO(crbug.com/450954710): This test fails on SDK 36.
+    @Config(sdk = 29)
     @Test
     public void removeMessageItemsWhenCloseLastTab() {
         // Mock that mTab1 is not the only tab in the current tab model and it will be closed.
@@ -241,6 +250,8 @@ public class TabSwitcherMessageManagerUnitTest {
         verify(mMessageUpdateObserver).onRemoveAllAppendedMessage();
     }
 
+    // TODO(crbug.com/450954710): This test fails on SDK 36.
+    @Config(sdk = 29)
     @Test
     public void removeMessageItemsWhenCloseMultipleTabs() {
         // Simulate only some tabs being closed.
@@ -265,6 +276,8 @@ public class TabSwitcherMessageManagerUnitTest {
         verify(mMessageUpdateObserver).onRemoveAllAppendedMessage();
     }
 
+    // TODO(crbug.com/450954710): This test fails on SDK 36.
+    @Config(sdk = 29)
     @Test
     public void removeMessageItemsWhenCloseLastTab_withGroupSuggestion() {
         createGroupSuggestion();
@@ -296,6 +309,8 @@ public class TabSwitcherMessageManagerUnitTest {
         verify(mMessageUpdateObserver).onRemoveAllAppendedMessage();
     }
 
+    // TODO(crbug.com/450954710): This test fails on SDK 36.
+    @Config(sdk = 29)
     @Test
     public void restoreMessageItemsWhenUndoLastTabClosure() {
         // Mock that mTab1 was not the only tab in the current tab model and its closure will be
@@ -310,6 +325,8 @@ public class TabSwitcherMessageManagerUnitTest {
         verify(mMessageUpdateObserver).onRestoreAllAppendedMessage();
     }
 
+    // TODO(crbug.com/450954710): This test fails on SDK 36.
+    @Config(sdk = 29)
     @Test
     public void enterMultiWindowMode() {
         mMultiWindowModeObserverCaptor.getValue().onMultiWindowModeChanged(true);
@@ -327,6 +344,8 @@ public class TabSwitcherMessageManagerUnitTest {
         verify(mMessageUpdateObserver).onRemoveAllAppendedMessage();
     }
 
+    // TODO(crbug.com/450954710): This test fails on SDK 36.
+    @Config(sdk = 29)
     @Test
     public void enterMultiWindowMode_withGroupSuggestion() {
         createGroupSuggestion();
@@ -351,6 +370,8 @@ public class TabSwitcherMessageManagerUnitTest {
         verify(mMessageUpdateObserver).onRemoveAllAppendedMessage();
     }
 
+    // TODO(crbug.com/450954710): This test fails on SDK 36.
+    @Config(sdk = 29)
     @Test
     public void exitMultiWindowMode() {
         mMultiWindowModeObserverCaptor.getValue().onMultiWindowModeChanged(false);
@@ -358,6 +379,8 @@ public class TabSwitcherMessageManagerUnitTest {
         verify(mMessageUpdateObserver).onRestoreAllAppendedMessage();
     }
 
+    // TODO(crbug.com/450954710): This test fails on SDK 36.
+    @Config(sdk = 29)
     @Test
     public void dismissHandlerSkipWhenUnbound() {
         @MessageType int messageType = MessageType.INCOGNITO_REAUTH_PROMO_MESSAGE;

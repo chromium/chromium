@@ -4,7 +4,8 @@
 
 #include "components/safe_browsing/core/browser/realtime/policy_engine.h"
 
-#include "base/containers/contains.h"
+#include <algorithm>
+
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "build/build_config.h"
@@ -45,7 +46,7 @@ namespace safe_browsing {
 // static
 bool RealTimePolicyEngine::IsInExcludedCountry(
     const std::string& country_code) {
-  return base::Contains(GetExcludedCountries(), country_code);
+  return std::ranges::contains(GetExcludedCountries(), country_code);
 }
 
 // static

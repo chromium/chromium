@@ -195,10 +195,8 @@ bool FtlSignalStrategy::Core::SendStanza(
     return false;
   }
 
-  std::string to_error;
   SignalingAddress to =
-      SignalingAddress::Parse(stanza.get(), SignalingAddress::TO, &to_error);
-  DCHECK(to_error.empty());
+      SignalingAddress::Parse(stanza.get(), SignalingAddress::TO);
 
   // Synthesizing the from attribute in the message.
   stanza->SetAttr(kQNameFrom, local_address_.id());
@@ -324,6 +322,11 @@ void FtlSignalStrategy::Core::OnReceiveMessagesStreamClosed(
 void FtlSignalStrategy::Core::OnMessageReceived(
     const SignalingAddress& sender_address,
     const SignalingMessage& message) {
+  if (sender_address.channel() != SignalingAddress::Channel::FTL) {
+    LOG(WARNING) << "Ignoring message sent from non-FTL JID.";
+    return;
+  }
+
   for (auto& listener : listeners_) {
     if (listener.OnSignalStrategyIncomingMessage(sender_address, message)) {
       return;
